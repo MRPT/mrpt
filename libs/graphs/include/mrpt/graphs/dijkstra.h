@@ -188,7 +188,7 @@ class CDijkstra
 	 */
 	CDijkstra(
 		const graph_t& graph, const TNodeID source_node_ID,
-		functor_edge_weight_t functor_edge_weight = functor_edge_weight_t,
+		functor_edge_weight_t functor_edge_weight = functor_edge_weight_t(),
 		functor_on_progress_t functor_on_progress = functor_on_progress_t())
 		: m_cached_graph(graph), m_source_node_ID(source_node_ID)
 	{

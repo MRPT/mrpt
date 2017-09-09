@@ -203,7 +203,7 @@ double mrpt::vision::bundle_adj_full(
 
 		// provide feedback to the user:
 		if (user_feedback)
-			(*user_feedback)(
+			user_feedback(
 				iter, res, max_iters, observations, frame_poses,
 				landmark_points);
 

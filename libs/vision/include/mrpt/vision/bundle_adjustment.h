@@ -103,7 +103,7 @@ double VISION_IMPEXP bundle_adj_full(
 	const mrpt::utils::TParametersDouble& extra_params =
 		mrpt::utils::TParametersDouble(),
 	const mrpt::vision::TBundleAdjustmentFeedbackFunctor user_feedback =
-		mrpt::vision::TBundleAdjustmentFeedbackFunctor);
+		mrpt::vision::TBundleAdjustmentFeedbackFunctor());
 
 /** @} */
 

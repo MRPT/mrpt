@@ -1605,7 +1605,7 @@ void CCameraSensor::thread_save_images(unsigned int my_working_thread_index)
 					mrpt::obs::CObservation::Ptr obs =
 						std::dynamic_pointer_cast<mrpt::obs::CObservation>(
 							i->second);
-					(*m_hook_pre_save)(obs, m_hook_pre_save_param);
+					m_hook_pre_save(obs, m_hook_pre_save_param);
 				}
 			}
 
