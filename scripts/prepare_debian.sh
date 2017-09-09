@@ -1,16 +1,15 @@
 #!/bin/bash
-# Copies sources from source tree and delete windows-only files, for preparing a Debian package.
+# Prepare to build a Debian package.
 # JLBC, 2008-2017
 
-set -x
-set -e
+set -e   # end on error
 
 APPEND_SNAPSHOT_NUM=0
 IS_FOR_UBUNTU=0
 SKIP_HEAVY_DOCS=0
 APPEND_LINUX_DISTRO=""
 VALUE_EXTRA_CMAKE_PARAMS=""
-while getopts "suhed:c:" OPTION
+while getopts "suhd:c:" OPTION
 do
      case $OPTION in
          s)
@@ -35,27 +34,47 @@ do
      esac
 done
 
-# Checks
-# --------------------------------
 if [ -f version_prefix.txt ];
 then
 	MRPT_VERSION_STR=`head -n 1 version_prefix.txt`
-	MRPT_VERSION_MAJOR=${MRPT_VERSION_STR:0:1}
-	MRPT_VERSION_MINOR=${MRPT_VERSION_STR:2:1}
-	MRPT_VERSION_PATCH=${MRPT_VERSION_STR:4:1}
-	MRPT_VER_MM="${MRPT_VERSION_MAJOR}.${MRPT_VERSION_MINOR}"
-	MRPT_VER_MMP="${MRPT_VERSION_MAJOR}.${MRPT_VERSION_MINOR}.${MRPT_VERSION_PATCH}"
-	echo "MRPT version: ${MRPT_VER_MMP}"
+else
+	echo "Error: cannot find version_prefix.txt!!"
+	exit 1
+fi
+
+# Append snapshot?
+if [ $APPEND_SNAPSHOT_NUM == "1" ];
+then
+        MRPT_SNAPSHOT_VERSION=`date +%Y%m%d-%H%M`
+        MRPT_SNAPSHOT_VERSION+="-git-"
+        MRPT_SNAPSHOT_VERSION+=`git rev-parse --short=8 HEAD`
+        MRPT_SNAPSHOT_VERSION+="-"
+        MRPT_VERSION_STR="${MRPT_VERSION_STR}~snapshot${MRPT_SNAPSHOT_VERSION}${APPEND_LINUX_DISTRO}"
+else
+        MRPT_VERSION_STR="${MRPT_VERSION_STR}${APPEND_LINUX_DISTRO}"
+fi
+
+# Call prepare_release, which also detects MRPT version and exports it
+# in MRPT_VERSION_STR, etc.
+if [ -f version_prefix.txt ];
+then
+	MRPTSRC=`pwd`
+	source scripts/prepare_release.sh
+	echo
+	echo "## Done prepare_release.sh"
+	echo "=========== Generating MRPT ${MRPT_VER_MMP} Debian package =============="
+	cd $MRPTSRC
 else
 	echo "ERROR: Run this script from the MRPT root directory."
 	exit 1
 fi
 
-MRPTSRC=`pwd`
+set -x
 if [ -z "$MRPT_DEB_DIR" ]; then
         MRPT_DEB_DIR="$HOME/mrpt_debian"
 fi
 MRPT_EXTERN_DEBIAN_DIR="$MRPTSRC/packaging/debian/"
+MRPT_EXTERN_UBUNTU_PPA_DIR="$MRPTSRC/packaging/ubuntu-ppa/"
 
 if [ -f ${MRPT_EXTERN_DEBIAN_DIR}/control.in ];
 then
@@ -65,39 +84,21 @@ else
 	exit 1
 fi
 
-# Append snapshot?
-MRPT_SNAPSHOT_VERSION=`date +%Y%m%d-%H%M`
-MRPT_SNAPSHOT_VERSION+="-git-"
-MRPT_SNAPSHOT_VERSION+=`git rev-parse --short=8 HEAD`
-MRPT_SNAPSHOT_VERSION+="-"
-
-if [ $APPEND_SNAPSHOT_NUM == "1" ];
-then
-	MRPT_VERSION_STR="${MRPT_VERSION_STR}~snapshot${MRPT_SNAPSHOT_VERSION}${APPEND_LINUX_DISTRO}"
-else
-	MRPT_VERSION_STR="${MRPT_VERSION_STR}${APPEND_LINUX_DISTRO}"
-fi
-
 MRPT_DEBSRC_DIR=$MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}
 
 echo "MRPT_VERSION_STR: ${MRPT_VERSION_STR}"
 echo "MRPT_DEBSRC_DIR: ${MRPT_DEBSRC_DIR}"
 
 # Prepare a directory for building the debian package:
-# 
+#
 rm -fR $MRPT_DEB_DIR || true
-mkdir -p ${MRPT_DEBSRC_DIR}
+mkdir -p $MRPT_DEB_DIR
 
-# Export / copy sources to target dir:
-if [ -d "$MRPTSRC/.git" ];
-then
-	echo "Exporting git source tree to ${MRPT_DEBSRC_DIR}"
-	git archive  --format=tar HEAD | tar -x -C ${MRPT_DEBSRC_DIR}
-
-else
-	echo "Copying sources to ${MRPT_DEBSRC_DIR}"
-	cp -R . ${MRPT_DEBSRC_DIR}
-fi
+# Orig tarball:
+echo "Copying orig tarball: mrpt_${MRPT_VERSION_STR}.orig.tar.gz"
+cp $HOME/mrpt_release/mrpt*.tar.gz $MRPT_DEB_DIR/mrpt_${MRPT_VERSION_STR}.orig.tar.gz
+cd ${MRPT_DEB_DIR}
+tar -xf mrpt_${MRPT_VERSION_STR}.orig.tar.gz
 
 if [ ! -f "${MRPT_DEBSRC_DIR}/CMakeLists.txt" ];
 then
@@ -106,45 +107,29 @@ then
 fi
 
 cd ${MRPT_DEBSRC_DIR}
-echo "Deleting Windows-only and not required files for Debian packages..."
-
-# Deletions:
-rm -fR lib
-rm -fR packaging
-
-# Not stable...
-rm -fR apps/hmt-slam*
-
-rm -fR scripts/Hha.dll scripts/hhc.exe scripts/prepare_*.sh scripts/recompile*
-
-find . -name '.gitignore' | xargs rm 
-
-# Normal for Debian pkgs: remove embedded copy of Eigen
-rm -fR otherlibs/eigen3/
-
-# Don't use embedded version in Debian pkgs: use system pkgs.
-rm -fR otherlibs/assimp
-
-
-# Orig tarball:
-cd ..
-echo "Creating orig tarball: mrpt_${MRPT_VERSION_STR}.orig.tar.gz"
-tar czf mrpt_${MRPT_VERSION_STR}.orig.tar.gz mrpt-${MRPT_VERSION_STR}
-
-echo "LEAVE_EMBEDDED_EIGEN=${LEAVE_EMBEDDED_EIGEN}"
 
 # Copy debian directory:
-mkdir mrpt-${MRPT_VERSION_STR}/debian
-cp -r ${MRPT_EXTERN_DEBIAN_DIR}/* mrpt-${MRPT_VERSION_STR}/debian
+mkdir debian
+cp -r ${MRPT_EXTERN_DEBIAN_DIR}/* debian
+
+# Use modified control file for Ubuntu PPA packages:
+if [ $IS_FOR_UBUNTU == "1" ];
+then
+	cp ${MRPT_EXTERN_UBUNTU_PPA_DIR}/control.in debian/
+fi
+
+
+# Export signing pub key:
+mkdir debian/upstream/
+gpg --export --export-options export-minimal --armor > debian/upstream/signing-key.asc
 
 # Parse debian/ control.in --> control
-mv mrpt-${MRPT_VERSION_STR}/debian/control.in mrpt-${MRPT_VERSION_STR}/debian/control
-sed -i "s/@MRPT_VER_MM@/${MRPT_VER_MM}/g" mrpt-${MRPT_VERSION_STR}/debian/control 
-
+mv debian/control.in debian/control
+sed -i "s/@MRPT_VER_MM@/${MRPT_VER_MM}/g" debian/control
 
 # Replace the text "REPLACE_HERE_EXTRA_CMAKE_PARAMS" in the "debian/rules" file
 # with: ${${VALUE_EXTRA_CMAKE_PARAMS}}
-RULES_FILE=mrpt-${MRPT_VERSION_STR}/debian/rules
+RULES_FILE=debian/rules
 sed -i -e "s/REPLACE_HERE_EXTRA_CMAKE_PARAMS/${VALUE_EXTRA_CMAKE_PARAMS}/g" $RULES_FILE
 echo "Using these extra parameters for CMake: '${VALUE_EXTRA_CMAKE_PARAMS}'"
 
@@ -157,28 +142,24 @@ then
 fi
 
 # Strip my custom files...
-rm mrpt-${MRPT_VERSION_STR}/debian/*.new || true 
+rm debian/*.new || true
 # debian/source file issues for old Ubuntu distros:
-if [ $IS_FOR_UBUNTU == "1" ];
-then
-	rm -fr mrpt-${MRPT_VERSION_STR}/debian/source
-fi
-
+#if [ $IS_FOR_UBUNTU == "1" ];
+#then
+#	rm -fr debian/source
+#fi
 
 # Prepare install files:
-cd mrpt-${MRPT_VERSION_STR}
-
 # For each library, create its "<lib>.install" file:
 cd libs
 LST_LIBS=$(ls -d */);   # List only directories
-for lib in $LST_LIBS; 
-do   
+for lib in $LST_LIBS;
+do
 	lib=${lib%/}  # Remove the trailing "/"
 	echo "usr/lib/libmrpt-${lib}.so.${MRPT_VER_MM}"   > ../debian/libmrpt-${lib}${MRPT_VER_MM}.install
 	echo "usr/lib/libmrpt-${lib}.so.${MRPT_VER_MMP}" >> ../debian/libmrpt-${lib}${MRPT_VER_MM}.install
 done
 cd .. # Back to MRPT root
-
 
 # Figure out the next Debian version number:
 echo "Detecting next Debian version number..."
@@ -206,6 +187,8 @@ DEBEMAIL="José Luis Blanco Claraco <joseluisblancoc@gmail.com>" debchange $DEBC
 echo "Copying back the new changelog to a temporary file in: ${MRPT_EXTERN_DEBIAN_DIR}changelog.new"
 cp debian/changelog ${MRPT_EXTERN_DEBIAN_DIR}changelog.new
 
+set +x
+
 echo "=============================================================="
 echo "Now, you can build the source Deb package with 'debuild -S -sa'"
 echo "=============================================================="
@@ -213,6 +196,4 @@ echo "=============================================================="
 cd ..
 ls -lh
 
-
 exit 0
-

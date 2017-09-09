@@ -206,7 +206,8 @@ bool CCANBusReader::tryToOpenComms(std::string* err_msg)
 			if (!m_com_port.empty())
 			{
 				//			    cout << "Creating port" << endl;
-				m_mySerialPort = new CSerialPort();  // Create the port myself:
+				m_mySerialPort =
+					new mrpt::comms::CSerialPort();  // Create the port myself:
 			}
 			else
 				throw std::logic_error(
@@ -217,7 +218,6 @@ bool CCANBusReader::tryToOpenComms(std::string* err_msg)
 		// We assure now we have a stream... try to open it, if it's not done
 		// yet.
 		bool just_open = false;
-		//		CSerialPort* COM = dynamic_cast<CSerialPort*>(m_stream);
 		if (m_mySerialPort != nullptr)
 		{
 			if (!m_mySerialPort->isOpen())
@@ -385,9 +385,6 @@ bool CCANBusReader::waitContinuousSampleFrame(
 	uint8_t& out_src_address, uint8_t& out_data_length, uint16_t& out_pgn,
 	vector<uint8_t>& out_data, vector<char>& out_raw_frame)
 {
-	//	CSerialPort* COM = dynamic_cast<CSerialPort*>(m_stream);
-	//	ASSERTMSG_(COM!=nullptr,"No I/O channel bound to this object");
-
 	size_t nRead, nBytesToRead;
 	size_t nFrameBytes = 0;
 	size_t lengthField;
@@ -508,7 +505,6 @@ bool CCANBusReader::setupSerialComms()
 		m_com_baudRate == 9600 || m_com_baudRate == 38400 ||
 		m_com_baudRate == 57600 || m_com_baudRate == 500000);
 
-	//	CSerialPort* COM = dynamic_cast<CSerialPort*>(m_stream);
 	if (m_mySerialPort == nullptr) return true;
 
 	int detected_rate = 0;
@@ -596,9 +592,6 @@ bool CCANBusReader::queryVersion(bool printOutVersion)
 // Returns false if timeout
 bool CCANBusReader::waitACK(uint16_t timeout_ms)
 {
-	//	CSerialPort* COM = dynamic_cast<CSerialPort*>(m_stream);
-	//	ASSERT_(COM);
-
 	uint8_t b = 0;
 	CTicTac tictac;
 	tictac.Tic();
@@ -626,9 +619,6 @@ bool CCANBusReader::waitACK(uint16_t timeout_ms)
 
 bool CCANBusReader::waitForVersion(uint16_t timeout, bool printOutVersion)
 {
-	//    CSerialPort* COM = dynamic_cast<CSerialPort*>(m_stream);
-	//	ASSERT_(COM);
-
 	uint8_t b;
 	unsigned int nBytes = 0;
 
@@ -680,9 +670,6 @@ bool CCANBusReader::waitForVersion(uint16_t timeout, bool printOutVersion)
 // Returns false if timeout
 bool CCANBusReader::waitIncomingFrame(uint16_t timeout)
 {
-	//	CSerialPort* COM = dynamic_cast<CSerialPort*>(m_stream);
-	//	ASSERT_(COM);
-
 	uint8_t b;
 	unsigned int nBytes = 0;
 
@@ -740,9 +727,6 @@ bool CCANBusReader::sendCommandToCANReader(
 	MRPT_UNUSED_PARAM(wait);
 	uint8_t cmd_full[1024];
 	ASSERT_(sizeof(cmd_full) > cmd_len);
-
-	//	CSerialPort* COM = dynamic_cast<CSerialPort*>(m_stream);
-	//	ASSERT_(COM);
 
 	// command is just plain text so no frame header nor CRC is needed
 	memcpy(cmd_full, cmd, cmd_len);

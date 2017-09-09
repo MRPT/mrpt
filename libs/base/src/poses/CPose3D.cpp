@@ -593,13 +593,19 @@ void CPose3D::getAsQuaternion(
 bool mrpt::poses::operator==(const CPose3D& p1, const CPose3D& p2)
 {
 	return (p1.m_coords == p2.m_coords) &&
-		   (p1.getRotationMatrix() == p2.getRotationMatrix());
+		   ((p1.getRotationMatrix() - p2.getRotationMatrix())
+				.array()
+				.abs()
+				.maxCoeff() < 1e-6);
 }
 
 bool mrpt::poses::operator!=(const CPose3D& p1, const CPose3D& p2)
 {
 	return (p1.m_coords != p2.m_coords) ||
-		   (p1.getRotationMatrix() != p2.getRotationMatrix());
+		   ((p1.getRotationMatrix() - p2.getRotationMatrix())
+				.array()
+				.abs()
+				.maxCoeff() >= 1e-6);
 }
 
 /*---------------------------------------------------------------

@@ -1,0 +1,40 @@
+=head1 NAME
+
+benchmarking-image-features - GUI app for different detector/descriptors
+
+=head1 SYNOPSIS
+
+benchmarking-image-features [I<dataset.rawlog>]
+
+=head1 DESCRIPTION
+
+A complete GUI viewer and editor of robotic datasets.
+
+=head1 BUGS
+
+Please report bugs at https://github.com/MRPT/mrpt/issues
+
+=head1 SEE ALSO
+
+The application wiki page at http://www.mrpt.org/Applications
+
+=head1 AUTHORS
+
+
+B<benchmarking-image-features> is part of the Mobile Robot Programming Toolkit (MRPT), It
+under development by Raghavender Sahdev during the Google Summer of Code (GSOC)
+2017 program.
+
+This manual page was written by Raghavender Sahdev <raghavendersahdev@gmail.com>.
+
+=head1 COPYRIGHT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the BSD License.
+
+On Debian GNU/Linux systems, the complete text of the BSD License can be 
+found in `/usr/share/common-licenses/BSD'.
+
+=cut
+
+

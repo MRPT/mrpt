@@ -1,11 +1,12 @@
-/* +------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          http://www.mrpt.org/                          |
-   |                                                                        |
-   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                |
-   | Released under BSD License. See details in http://www.mrpt.org/License |
-   +------------------------------------------------------------------------+ */
+/* +---------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
+   |                          http://www.mrpt.org/                             |
+   |                                                                           |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
+   +---------------------------------------------------------------------------+
+   */
 
 #include "vision-precomp.h"  // Precompiled headers
 
@@ -286,7 +287,13 @@ void CFeature::dumpToTextStream(mrpt::utils::CStream& out) const
 			out.printf("FASTER-12\n");
 			break;
 		case 10:
-			out.printf("ORB");
+			out.printf("ORB\n");
+			break;
+		case 11:
+			out.printf("AKAZE\n");
+			break;
+		case 12:
+			out.printf("LSD");
 			break;
 	}
 	out.printf("Status:                         ");
@@ -335,6 +342,11 @@ void CFeature::dumpToTextStream(mrpt::utils::CStream& out) const
 										   : out.printf("No\n");
 	out.printf("Has ORB descriptor?:			");
 	descriptors.hasDescriptorORB() ? out.printf("Yes\n") : out.printf("No\n");
+	//# added by Raghavender Sahdev
+	out.printf("Has BLD descriptor?:			");
+	descriptors.hasDescriptorBLD() ? out.printf("Yes\n") : out.printf("No\n");
+	out.printf("Has LATCH descriptor?:			");
+	descriptors.hasDescriptorLATCH() ? out.printf("Yes\n") : out.printf("No\n");
 
 	out.printf("Has multiscale?:                ");
 	if (!descriptors.hasDescriptorMultiSIFT())
@@ -387,7 +399,9 @@ void CFeature::writeToStream(mrpt::utils::CStream& out, int* version) const
 			<< descriptors.SpinImg << descriptors.SpinImg_range_rows
 			<< descriptors.PolarImg << descriptors.LogPolarImg
 			<< descriptors.polarImgsNoRotation
-			<< descriptors.multiSIFTDescriptors << descriptors.ORB;
+			<< descriptors.multiSIFTDescriptors << descriptors.ORB
+			//# ADDED by Raghavender Sahdev
+			<< descriptors.BLD << descriptors.LATCH;
 	}
 }
 
@@ -411,7 +425,9 @@ void CFeature::readFromStream(mrpt::utils::CStream& in, int version)
 			}
 			in >> descriptors.SIFT >> descriptors.SURF >> descriptors.SpinImg >>
 				descriptors.SpinImg_range_rows >> descriptors.PolarImg >>
-				descriptors.LogPolarImg >> descriptors.polarImgsNoRotation;
+				descriptors.LogPolarImg >> descriptors.polarImgsNoRotation
+				// # added by Raghavender Sahdev
+				>> descriptors.BLD >> descriptors.LATCH;
 			if (version > 0) in >> descriptors.multiSIFTDescriptors;
 			if (version > 1) in >> descriptors.ORB;
 
@@ -461,7 +477,9 @@ CFeature::TDescriptors::TDescriptors()
 	  PolarImg(0, 0),
 	  LogPolarImg(0, 0),
 	  polarImgsNoRotation(false),
-	  ORB()
+	  ORB(),
+	  BLD(),
+	  LATCH()
 {
 }
 
@@ -515,6 +533,11 @@ float CFeature::descriptorDistanceTo(
 			descriptorToUse = descLogPolarImages;
 		else if (descriptors.hasDescriptorORB())
 			descriptorToUse = descORB;
+		// # added by Raghavender Sahdev - BLD/LATCH descriptors
+		else if (descriptors.hasDescriptorBLD())
+			descriptorToUse = descBLD;
+		else if (descriptors.hasDescriptorLATCH())
+			descriptorToUse = descLATCH;
 		else
 			THROW_EXCEPTION(
 				"Feature has no descriptors and descriptorToUse=descAny")
@@ -542,6 +565,11 @@ float CFeature::descriptorDistanceTo(
 		}
 		case descORB:
 			return float(descriptorORBDistanceTo(oFeature));
+		// # added by Raghavender Sahdev
+		case descBLD:
+			return (descriptorBLDDistanceTo(oFeature));
+		case descLATCH:
+			return (descriptorLATCHDistanceTo(oFeature));
 		default:
 			THROW_EXCEPTION_FMT(
 				"Unknown value for 'descriptorToUse'=%u",
@@ -836,6 +864,58 @@ uint8_t CFeature::descriptorORBDistanceTo(const CFeature& oFeature) const
 	return float(distance);
 }  // end-descriptorORBDistanceTo
 
+// # added by Raghavender Sahdev
+// --------------------------------------------------
+// descriptorBLDDistanceTo
+// --------------------------------------------------
+float CFeature::descriptorBLDDistanceTo(
+	const CFeature& oFeature, bool normalize_distances) const
+{
+	ASSERT_(this->descriptors.BLD.size() == oFeature.descriptors.BLD.size());
+	ASSERT_(
+		this->descriptors.hasDescriptorBLD() &&
+		oFeature.descriptors.hasDescriptorBLD())
+
+	float dist = 0.0f;
+	std::vector<unsigned char>::const_iterator itDesc1, itDesc2;
+	for (itDesc1 = this->descriptors.BLD.begin(),
+		itDesc2 = oFeature.descriptors.BLD.begin();
+		 itDesc1 != this->descriptors.BLD.end(); itDesc1++, itDesc2++)
+	{
+		dist += square(*itDesc1 - *itDesc2);
+	}
+	if (normalize_distances) dist /= this->descriptors.BLD.size();
+	dist = sqrt(dist);
+	if (normalize_distances) dist /= 64.0f;
+	return dist;
+}  // end descriptorBLDDistanceTo
+
+// --------------------------------------------------
+// descriptorLATCHDistanceTo
+// --------------------------------------------------
+float CFeature::descriptorLATCHDistanceTo(
+	const CFeature& oFeature, bool normalize_distances) const
+{
+	ASSERT_(
+		this->descriptors.LATCH.size() == oFeature.descriptors.LATCH.size());
+	ASSERT_(
+		this->descriptors.hasDescriptorLATCH() &&
+		oFeature.descriptors.hasDescriptorLATCH())
+
+	float dist = 0.0f;
+	std::vector<unsigned char>::const_iterator itDesc1, itDesc2;
+	for (itDesc1 = this->descriptors.LATCH.begin(),
+		itDesc2 = oFeature.descriptors.LATCH.begin();
+		 itDesc1 != this->descriptors.LATCH.end(); itDesc1++, itDesc2++)
+	{
+		dist += square(*itDesc1 - *itDesc2);
+	}
+	if (normalize_distances) dist /= this->descriptors.LATCH.size();
+	dist = sqrt(dist);
+	if (normalize_distances) dist /= 64.0f;
+	return dist;
+}  // end descriptorLATCHDistanceTo
+
 // --------------------------------------------------
 //              saveToTextFile
 // --------------------------------------------------
@@ -913,6 +993,23 @@ void CFeature::saveToTextFile(const std::string& filename, bool APPEND)
 		for (size_t k = 0; k < this->descriptors.ORB.size(); ++k)
 			f.printf("%d ", this->descriptors.ORB[k]);
 
+	// # ADDED by Raghavender Sahdev
+	f.printf("%2d ", int(this->descriptors.hasDescriptorBLD() ? 1 : 0));
+	if (this->descriptors.hasDescriptorBLD())
+	{
+		f.printf("%4d ", int(this->descriptors.BLD.size()));
+		for (unsigned int k = 0; k < this->descriptors.BLD.size(); k++)
+			f.printf("%4d ", this->descriptors.BLD[k]);
+	}
+
+	f.printf("%2d ", int(this->descriptors.hasDescriptorLATCH() ? 1 : 0));
+	if (this->descriptors.hasDescriptorLATCH())
+	{
+		f.printf("%4d ", int(this->descriptors.LATCH.size()));
+		for (unsigned int k = 0; k < this->descriptors.LATCH.size(); k++)
+			f.printf("%4d ", this->descriptors.LATCH[k]);
+	}
+
 	f.printf("\n");
 	f.close();
 
@@ -985,6 +1082,22 @@ void CFeatureList::saveToTextFile(const std::string& filename, bool APPEND)
 			for (unsigned int k = 0; k < (*it)->descriptors.SURF.size(); k++)
 				f.printf("%8.5f ", (*it)->descriptors.SURF[k]);
 		}
+		// # added by Raghavender Sahdev
+		f.printf("%2d ", int((*it)->descriptors.hasDescriptorBLD() ? 1 : 0));
+		if ((*it)->descriptors.hasDescriptorBLD())
+		{
+			f.printf("%4d ", int((*it)->descriptors.BLD.size()));
+			for (unsigned int k = 0; k < (*it)->descriptors.BLD.size(); k++)
+				f.printf("%4d ", (*it)->descriptors.BLD[k]);
+		}
+
+		f.printf("%2d ", int((*it)->descriptors.hasDescriptorLATCH() ? 1 : 0));
+		if ((*it)->descriptors.hasDescriptorLATCH())
+		{
+			f.printf("%4d ", int((*it)->descriptors.LATCH.size()));
+			for (unsigned int k = 0; k < (*it)->descriptors.LATCH.size(); k++)
+				f.printf("%4d ", (*it)->descriptors.LATCH[k]);
+		}
 
 		f.printf("\n");
 	}  // end for
@@ -1008,7 +1121,7 @@ void CFeatureList::loadFromTextFile(const std::string& filename)
 	{
 		try
 		{
-			CFeature::Ptr feat_ptr = mrpt::make_aligned_shared<CFeature>();
+			CFeature::Ptr feat_ptr = std::make_shared<CFeature>();
 			CFeature* feat = feat_ptr.get();  // for faster access
 
 			int _ID;
@@ -1046,6 +1159,47 @@ void CFeatureList::loadFromTextFile(const std::string& filename)
 				}
 
 				if (!line) throw std::string("SIFT-data");
+			}
+
+			//# ADDED by Raghavender Sahdev
+			int hasBLD;
+			if (!(line >> hasBLD)) throw std::string("hasBLD");
+			if (hasBLD)
+			{
+				size_t N;
+				if (!(line >> N)) throw std::string("BLD-len");
+				feat->descriptors.BLD.resize(N);
+				for (size_t i = 0; i < N; i++)
+				{
+					int val;
+					line >> val;
+					feat->descriptors.BLD[i] =
+						val;  // comment copied from SIFT, DON'T read directly
+					// SIFT[i] since it's a uint8_t, interpreted as a
+					// cha
+				}
+
+				if (!line) throw std::string("BLD-data");
+			}
+
+			int hasLATCH;
+			if (!(line >> hasLATCH)) throw std::string("hasLATCH");
+			if (hasBLD)
+			{
+				size_t N;
+				if (!(line >> N)) throw std::string("LATCH-len");
+				feat->descriptors.LATCH.resize(N);
+				for (size_t i = 0; i < N; i++)
+				{
+					int val;
+					line >> val;
+					feat->descriptors.LATCH[i] =
+						val;  // comment copied from SIFT, DON'T read directly
+					// SIFT[i] since it's a uint8_t, interpreted as a
+					// cha
+				}
+
+				if (!line) throw std::string("LATCH-data");
 			}
 
 			int hasSURF;
@@ -1295,6 +1449,20 @@ bool CFeature::getFirstDescriptorAsMatrix(mrpt::math::CMatrixFloat& desc) const
 		desc.setSize(1, descriptors.SIFT.size());
 		for (size_t i = 0; i < descriptors.SIFT.size(); i++)
 			desc(0, i) = descriptors.SIFT[i];
+		return true;
+	}
+	else if (descriptors.hasDescriptorBLD())
+	{
+		desc.setSize(1, descriptors.BLD.size());
+		for (size_t i = 0; i < descriptors.BLD.size(); i++)
+			desc(0, i) = descriptors.BLD[i];
+		return true;
+	}
+	else if (descriptors.hasDescriptorLATCH())
+	{
+		desc.setSize(1, descriptors.LATCH.size());
+		for (size_t i = 0; i < descriptors.LATCH.size(); i++)
+			desc(0, i) = descriptors.LATCH[i];
 		return true;
 	}
 	else if (descriptors.hasDescriptorSURF())

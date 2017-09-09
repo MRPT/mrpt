@@ -10,6 +10,10 @@
 #pragma once
 #include <QTreeView>
 
+/** This class implements tree view for storage observations matching robot
+ * poses
+*/
+
 class CObservationTreeModel;
 
 class CObservationTree : public QTreeView

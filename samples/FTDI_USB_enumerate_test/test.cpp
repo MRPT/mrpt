@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers/CInterfaceFTDI.h>
+#include <mrpt/comms/CInterfaceFTDI.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/datetime.h>
 
@@ -16,7 +16,7 @@
 #include <thread>
 
 using namespace mrpt;
-using namespace mrpt::hwdrivers;
+using namespace mrpt::comms;
 using namespace mrpt::utils;
 using namespace std;
 

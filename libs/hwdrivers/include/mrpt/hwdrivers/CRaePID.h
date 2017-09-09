@@ -10,7 +10,7 @@
 #define CRaePID_H
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/hwdrivers/CSerialPort.h>
+#include <mrpt/comms/CSerialPort.h>
 #include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/utils/CConfigFileBase.h>
 
@@ -40,7 +40,7 @@ class HWDRIVERS_IMPEXP CRaePID : public mrpt::hwdrivers::CGenericSensor
 
 	/** COM port
 	 */
-	CSerialPort COM;
+	mrpt::comms::CSerialPort COM;
 
 	/** Poses
 	 */

@@ -28,15 +28,12 @@
 *     - `ptr.pointer()` --> `ptr.get()`
 *  - Smart pointers have been renamed from `CFooPtr` to the more standard `CFoo::Ptr`, with a new pointer-to-const version `CFoo::ConstPtr`.
 *    - Note: To help with porting and maintaining existing code bases, MRPT 2.* comes by default with a CMake flag `MRPT_1X_BACKCOMPATIB_SMARTPTR_NAMES`, which declares aliases of smart pointers with the old name `CFooPtr`. It is recommended to switch it OFF when writing new code as well as port existing code since this feature will be removed in the future.
-*  - Creating a `shared_ptr` of objects containing Eigen classes (if in doubt, always use this instead of `std::make_shared`):
-*     - Example: Old code
-*        \code
-*        CFoo::Ptr o = CFoo::Create();
-*        \endcode
-*       becomes in MRPT 2.0:
-*        \code
-*        CFoo::Ptr o = mrpt::make_aligned_shared<CFoo>();
-*        \endcode
+*  - You can keep using code like:
+*    \code
+*    CFoo::Ptr o = CFoo::Create();
+*    \endcode
+*    in MRPT 2.0 to create a smart pointer, but can also use `std::make_shared<CFoo>()`, or `mrpt::make_aligned_shared<CFoo>()` if the class must be memory-aligned (typically, if it contains Eigen matrices).
+*    The arguments of `Create()` are now [perfectly-forwarded](http://en.cppreference.com/w/cpp/utility/forward) to the class ctor, so the parameter list must exactly match any of the available ctors.
 *  - Smart pointer typecasting now is done via C++11 standard functions:
 *     - Example: Old code
 *        \code
@@ -55,6 +52,7 @@
 *    - `mrpt::system::sleep(5);` --> `std::this_thread::sleep_for(5ms);`
 *    - `mrpt::synch::CSemaphore sem; sem.waitForSignal(timeout); sem.release();` --> `std::promise<void> sem; auto fut = sem.get_future(); fut.wait_for(...); sem.set_value();`
 *  - `mrpt::utils::CObject::duplicate()` has been removed, use the equivalent (redundant) `mrpt::utils::CObject::clone()`.
+*  - CSerialPort, `mrpt::utils::net`, sockets: have been moved to its own new module \ref mrpt_comms_grp under namespace `mrpt::comms`.
 *
 * **Optional changes**
 *   - Use the `Foo::ConstPtr` smart pointers when possible instead of its non-const counterpart.

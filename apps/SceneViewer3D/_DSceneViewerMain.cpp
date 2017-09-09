@@ -2154,8 +2154,8 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 		const double scene_size = bb_min.distanceTo(bb_max);
 
 		// Set the point cloud as the only object in scene:
-		m_canvas->m_openGLScene =
-			mrpt::make_aligned_shared<opengl::COpenGLScene>();
+		auto scene = mrpt::make_aligned_shared<opengl::COpenGLScene>();
+		m_canvas->setOpenGLSceneRef(scene);
 
 		if (dlgPLY.cbXYGrid->GetValue())
 		{
@@ -2164,12 +2164,11 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 					bb_min.x, bb_max.x, bb_min.y, bb_max.y, 0,
 					scene_size * 0.02);
 			obj->setColor(0.3, 0.3, 0.3);
-			m_canvas->m_openGLScene->insert(obj);
+			scene->insert(obj);
 		}
 
 		if (dlgPLY.cbXYZ->GetValue())
-			m_canvas->m_openGLScene->insert(
-				mrpt::opengl::stock_objects::CornerXYZ());
+			scene->insert(mrpt::opengl::stock_objects::CornerXYZ());
 
 		double ptSize;
 		dlgPLY.cbPointSize->GetStringSelection().ToDouble(&ptSize);
@@ -2205,18 +2204,18 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 		if (gl_points_col) gl_points_col->setPose(CPose3D(ptCloudPose));
 
 		// Insert point cloud into scene:
-		if (gl_points) m_canvas->m_openGLScene->insert(gl_points);
-		if (gl_points_col) m_canvas->m_openGLScene->insert(gl_points_col);
+		if (gl_points) scene->insert(gl_points);
+		if (gl_points_col) scene->insert(gl_points_col);
 
-		m_canvas->cameraPointingX = (bb_min.x + bb_max.x) * 0.5;
-		m_canvas->cameraPointingY = (bb_min.y + bb_max.y) * 0.5;
-		m_canvas->cameraPointingZ = (bb_min.z + bb_max.z) * 0.5;
+		m_canvas->setCameraPointing(
+			(bb_min.x + bb_max.x) * 0.5, (bb_min.y + bb_max.y) * 0.5,
+			(bb_min.z + bb_max.z) * 0.5);
 
-		m_canvas->cameraZoomDistance = 2 * scene_size;
-		m_canvas->cameraAzimuthDeg = 45;
-		m_canvas->cameraElevationDeg = 30;
+		m_canvas->setZoomDistance(2 * scene_size);
+		m_canvas->setAzimuthDegrees(45);
+		m_canvas->setElevationDegrees(30);
 
-		COpenGLViewport::Ptr gl_view = m_canvas->m_openGLScene->getViewport();
+		COpenGLViewport::Ptr gl_view = scene->getViewport();
 		gl_view->setViewportClipDistances(0.01, 10 * scene_size);
 
 		loadedFileName =

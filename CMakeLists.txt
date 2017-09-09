@@ -331,12 +331,6 @@ INCLUDE_DIRECTORIES("${MRPT_CONFIG_FILE_INCLUDE_DIR}")
 # Add user supplied extra options (optimization, etc...)
 SET(USER_EXTRA_CPP_FLAGS "" CACHE STRING "Put extra compiler options here if desired")
 
-# ----------------------------------------------------------------------------
-# 			Set the maximum level of warnings:
-# ----------------------------------------------------------------------------
-SET( MRPT_EXTRA_WARNINGS ON CACHE BOOL "Enable extra warnings apart from -Wall")
-MARK_AS_ADVANCED(MRPT_EXTRA_WARNINGS)
-
 # Should be set to true for development
 SET( MRPT_WARNINGS_ARE_ERRORS OFF CACHE BOOL "Treat warnings as errors")
 MARK_AS_ADVANCED(MRPT_WARNINGS_ARE_ERRORS)
@@ -344,13 +338,6 @@ MARK_AS_ADVANCED(MRPT_WARNINGS_ARE_ERRORS)
 # Whole program optimization?
 SET( MRPT_WHOLE_PROGRAM_OPTIMIZATION OFF CACHE BOOL "Flags for whole program optimization.")
 MARK_AS_ADVANCED(MRPT_WHOLE_PROGRAM_OPTIMIZATION)
-
-# Even more warnings for different compilers
-IF(MRPT_EXTRA_WARNINGS)
-   IF (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
-      add_compile_options(-Wreturn-type -Wextra -Wtype-limits -Wcast-align -Wparentheses -Wno-unused-parameter) # -Wold-style-cast  -Woverloaded-virtual
-   ENDIF()
-ENDIF()
 
 # Enable profiling?
 SET(MRPT_ENABLE_PROFILING OFF CACHE BOOL "Enable profiling (add -g -pg in GCC/CLANG, /PROFILE in Visual C++)")
@@ -442,17 +429,11 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 	SET(CMAKE_CXX_FLAGS_COVERAGE "${CMAKE_CXX_FLAGS_DEBUG} --coverage -fno-inline -fno-inline-small-functions -fno-default-inline")
 	SET(CMAKE_EXE_LINKER_FLAGS_COVERAGE "${CMAKE_EXE_LINKER_FLAGS_DEBUG} --coverage")
 	SET(CMAKE_SHARED_LINKER_FLAGS_COVERAGE "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} --coverage")
-
-	# Trusty error: Boost needs -fext-numeric-literals
-	# /usr/include/boost/math/constants/constants.hpp:260:1148: error: unable to find numeric literal operator ‘operator""Q’
-	# /usr/include/boost/math/constants/constants.hpp:260:1148: note: use -std=gnu++11 or -fext-numeric-literals to enable more built-in suffixes
-	add_compile_options(-fext-numeric-literals)
 ENDIF()
 
 # CLang options ================================
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
-	SET( MRPT_BUILD_CLANG_PEDANTIC OFF CACHE BOOL "Enable pedantic error detection (clang)")
-	MARK_AS_ADVANCED(MRPT_BUILD_CLANG_PEDANTIC)
+	add_definitions(-D__STRICT_ANSI__) # fixes errors like "support for type '__float128' is not yet implemented"
 
 	# High level of warnings.
 	# no-unused-private-field: clang seems to complain in templates without reason.
@@ -474,6 +455,9 @@ endif()
 # Shared options between GCC and CLANG:
 # ======================================
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
+	# Even more warnings for different compilers
+	add_compile_options(-Wreturn-type -Wextra -Wabi -Wtype-limits -Wcast-align -Wparentheses -Wno-unused-parameter) # -Wold-style-cast  -Woverloaded-virtual
+
 	IF(MRPT_WARNINGS_ARE_ERRORS)
 		add_compile_options(-Werror)
 	ENDIF()

@@ -257,12 +257,10 @@ bool COccupancyGridMap2D::internal_insertObservation(
 					int trg_cx = x2idx(scanPoints_x[idx]);
 					int trg_cy = y2idx(scanPoints_y[idx]);
 
-#if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
 					// The x> comparison implicitly holds if x<0
 					ASSERT_(
 						static_cast<unsigned int>(trg_cx) < size_x &&
 						static_cast<unsigned int>(trg_cy) < size_y);
-#endif
 
 					// Use "fractional integers" to approximate float operations
 					//  during the ray tracing:
@@ -279,8 +277,10 @@ bool COccupancyGridMap2D::internal_insertObservation(
 					float N_1 = 1.0f / nStepsRay;  // Avoid division twice.
 
 					// Increments at each raytracing step:
-					int frAcx = round((Acx << FRBITS) * N_1);  //  Acx*128 / N
-					int frAcy = round((Acy << FRBITS) * N_1);  //  Acy*128 / N
+					int frAcx =
+						(Acx < 0 ? -1 : +1) * round((Acx_ << FRBITS) * N_1);
+					int frAcy =
+						(Acy < 0 ? -1 : +1) * round((Acy_ << FRBITS) * N_1);
 
 					int frCX = cx << FRBITS;
 					int frCY = cy << FRBITS;

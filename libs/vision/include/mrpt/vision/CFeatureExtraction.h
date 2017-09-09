@@ -1,11 +1,12 @@
-/* +------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          http://www.mrpt.org/                          |
-   |                                                                        |
-   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                |
-   | Released under BSD License. See details in http://www.mrpt.org/License |
-   +------------------------------------------------------------------------+ */
+/* +---------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
+   |                          http://www.mrpt.org/                             |
+   |                                                                           |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
+   +---------------------------------------------------------------------------+
+   */
 #ifndef CFeatureExtraction_H
 #define CFeatureExtraction_H
 
@@ -161,16 +162,14 @@ class VISION_IMPEXP CFeatureExtraction
 		/** FAST and FASTER Options */
 		struct VISION_IMPEXP TFASTOptions
 		{
-			/** default= 20 */
-			int threshold;
-			/** (default=5) minimum distance between features (in pixels) */
-			float min_distance;
-			/** Default = true */
-			bool nonmax_suppression;
-			/** (default=false) If true, use CImage::KLT_response to compute the
-			 * response at each point instead of the FAST "standard response".
-			 */
-			bool use_KLT_response;
+			int threshold;  //!< default= 20
+			float min_distance;  //!< (default=5) minimum distance between
+			//! features (in pixels)
+			bool nonmax_suppression;  //!< Default = true
+			bool use_KLT_response;  //!< (default=false) If true, use
+			//! CImage::KLT_response to compute the
+			//! response at each point instead of the
+			//! FAST "standard response".
 		} FASTOptions;
 
 		/** ORB Options */
@@ -194,13 +193,13 @@ class VISION_IMPEXP CFeatureExtraction
 		struct VISION_IMPEXP TSIFTOptions
 		{
 			TSIFTOptions() : threshold(0.04), edgeThreshold(10) {}
-			/** Default: Hess (OpenCV should be preferred, but its nonfree
-			 * module is not always available by default in all systems) */
-			TSIFTImplementation implementation;
-			/** default= 0.04 */
-			double threshold;
-			/** default= 10 */
-			double edgeThreshold;
+			TSIFTImplementation implementation;  //!< Default: Hess (OpenCV
+			//! should be preferred, but its
+			//! nonfree module is not always
+			//! available by default in all
+			//! systems)
+			double threshold;  //!< default= 0.04
+			double edgeThreshold;  //!< default= 10
 		} SIFTOptions;
 
 		struct VISION_IMPEXP TSURFOptions
@@ -215,72 +214,108 @@ class VISION_IMPEXP CFeatureExtraction
 
 			/** SURF Options
 			  */
-			/** Compute the rotation invariant SURF (dim=128) if set to true
-			 * (default), or the smaller uSURF otherwise (dim=64) */
-			bool rotation_invariant;
-			/** Default: 600 */
-			int hessianThreshold;
-			/** Default: 2 */
-			int nOctaves;
-			/** Default: 4 */
-			int nLayersPerOctave;
+			bool rotation_invariant;  //!< Compute the rotation invariant SURF
+			//!(dim=128) if set to true (default), or
+			//! the smaller uSURF otherwise (dim=64)
+			int hessianThreshold;  //!< Default: 600
+			int nOctaves;  //!< Default: 2
+			int nLayersPerOctave;  //!< Default: 4
 		} SURFOptions;
 
 		struct VISION_IMPEXP TSpinImagesOptions
 		{
 			/** SpinImages Options
 			  */
-			/** Number of bins in the "intensity" axis of the 2D histogram
-			 * (default=10). */
-			unsigned int hist_size_intensity;
-			/** Number of bins in the "distance" axis of the 2D histogram
-			 * (default=10). */
-			unsigned int hist_size_distance;
-			/** Standard deviation in "distance", used for the "soft histogram"
-			 * (default=0.4 pixels) */
-			float std_dist;
-			/** Standard deviation in "intensity", used for the "soft histogram"
-			 * (default=20 units [0,255]) */
-			float std_intensity;
-			/** Maximum radius of the area of which the histogram is built, in
-			 * pixel units (default=20 pixels) */
-			unsigned int radius;
+			unsigned int hist_size_intensity;  //!< Number of bins in the
+			//!"intensity" axis of the 2D
+			//! histogram (default=10).
+			unsigned int hist_size_distance;  //!< Number of bins in the
+			//!"distance" axis of the 2D
+			//! histogram (default=10).
+			float std_dist;  //!< Standard deviation in "distance", used for the
+			//!"soft histogram" (default=0.4 pixels)
+			float std_intensity;  //!< Standard deviation in "intensity", used
+			//! for the "soft histogram" (default=20 units
+			//![0,255])
+			unsigned int radius;  //!< Maximum radius of the area of which the
+			//! histogram is built, in pixel units
+			//!(default=20 pixels)
 		} SpinImagesOptions;
 
 		/** PolarImagesOptions Options
 		  */
 		struct VISION_IMPEXP TPolarImagesOptions
 		{
-			/** Number of bins in the "angular" axis of the polar image
-			 * (default=8). */
-			unsigned int bins_angle;
-			/** Number of bins in the "distance" axis of the polar image
-			 * (default=6). */
-			unsigned int bins_distance;
-			/** Maximum radius of the area of which the polar image is built, in
-			 * pixel units (default=20 pixels) */
-			unsigned int radius;
+			unsigned int bins_angle;  //!< Number of bins in the "angular" axis
+			//! of the polar image (default=8).
+			unsigned int bins_distance;  //!< Number of bins in the "distance"
+			//! axis of the polar image (default=6).
+			unsigned int radius;  //!< Maximum radius of the area of which the
+			//! polar image is built, in pixel units
+			//!(default=20 pixels)
 		} PolarImagesOptions;
 
 		/** LogPolarImagesOptions Options
 		  */
 		struct VISION_IMPEXP TLogPolarImagesOptions
 		{
-			/** Maximum radius of the area of which the log polar image is
-			 * built, in pixel units (default=30 pixels) */
-			unsigned int radius;
-			/** (default=16) Log-Polar image patch will have dimensions WxH,
-			 * with:  W=num_angles,  H= rho_scale * log(radius) */
-			unsigned int num_angles;
-			/** (default=5) Log-Polar image patch will have dimensions WxH,
-			 * with:  W=num_angles,  H= rho_scale * log(radius) */
-			double rho_scale;
+			unsigned int radius;  //!< Maximum radius of the area of which the
+			//! log polar image is built, in pixel units
+			//!(default=30 pixels)
+			unsigned int num_angles;  //!< (default=16) Log-Polar image patch
+			//! will have dimensions WxH, with:
+			//! W=num_angles,  H= rho_scale *
+			//! log(radius)
+			double rho_scale;  //!< (default=5) Log-Polar image patch will have
+			//! dimensions WxH, with:  W=num_angles,  H=
+			//! rho_scale * log(radius)
 		} LogPolarImagesOptions;
+
+		// # added by Raghavender Sahdev
+		/** AKAZEOptions Options
+		 */
+		struct VISION_IMPEXP TAKAZEOptions
+		{
+			int descriptor_type;
+			int descriptor_size;
+			int descriptor_channels;
+			float threshold;
+			int nOctaves;
+			int nOctaveLayers;
+			int diffusivity;
+		} AKAZEOptions;
+
+		/** LSDOptions Options
+		 */
+		struct VISION_IMPEXP TLSDOptions
+		{
+			int scale;
+			int nOctaves;
+		} LSDOptions;
+
+		/** BLDOptions Descriptor Options
+		 */
+		struct VISION_IMPEXP TBLDOptions
+		{
+			int ksize_;
+			int reductionRatio;
+			int widthOfBand;
+			int numOfOctave;
+
+		} BLDOptions;
+
+		/** LATCHOptions Descriptor
+		 */
+		struct VISION_IMPEXP TLATCHOptions
+		{
+			int bytes;  // = 32,
+			bool rotationInvariance;  // = true,
+			int half_ssd_size;  // = 3
+		} LATCHOptions;
 	};
 
-	/** Set all the parameters of the desired method here before calling
-	 * "detectFeatures" */
-	TOptions options;
+	TOptions options;  //!< Set all the parameters of the desired method here
+	//! before calling "detectFeatures"
 
 	/** Constructor
 	*/
@@ -472,6 +507,28 @@ class VISION_IMPEXP CFeatureExtraction
 	*/
 	void internal_computeLogPolarImageDescriptors(
 		const mrpt::utils::CImage& in_img, CFeatureList& in_features) const;
+	/** Compute a BLD descriptor of the provided features into the input image
+	* \param in_img (input) The image from where to compute the descriptors.
+	* \param in_features (input/output) The list of features whose descriptors
+	* are going to be computed.
+	*
+	* \note Additional parameters from
+	* CFeatureExtraction::TOptions::LogPolarImagesOptions are used in this
+	* method.
+	*/
+	void internal_computeBLDLineDescriptors(
+		const mrpt::utils::CImage& in_img, CFeatureList& in_features) const;
+	/** Compute a LATCH descriptor of the provided features into the input image
+	* \param in_img (input) The image from where to compute the descriptors.
+	* \param in_features (input/output) The list of features whose descriptors
+	* are going to be computed.
+	*
+	* \note Additional parameters from
+	* CFeatureExtraction::TOptions::LogPolarImagesOptions are used in this
+	* method.
+	*/
+	void internal_computeLATCHDescriptors(
+		const mrpt::utils::CImage& in_img, CFeatureList& in_features) const;
 
 #if 0  // Delete? see comments in .cpp
 			/** Select good features using the openCV implementation of the KLT method.
@@ -574,6 +631,35 @@ class VISION_IMPEXP CFeatureExtraction
 	void extractFeaturesFASTER_N(
 		const int N, const mrpt::utils::CImage& img, CFeatureList& feats,
 		unsigned int init_ID = 0, unsigned int nDesiredFeatures = 0,
+		const TImageROI& ROI = TImageROI()) const;
+
+	// # added by Raghavender Sahdev
+	//-------------------------------------------------------------------------------------
+	//                               AKAZE
+	//-------------------------------------------------------------------------------------
+	/** Extract features from the image based on the AKAZE method.
+	* \param img The image from where to extract the images.
+	* \param feats The list of extracted features.
+	* \param nDesiredFeatures Number of features to be extracted. Default:
+	* authomatic.
+	*/
+	void extractFeaturesAKAZE(
+		const mrpt::utils::CImage& inImg, CFeatureList& feats,
+		unsigned int init_ID, unsigned int nDesiredFeatures,
+		const TImageROI& ROI = TImageROI()) const;
+
+	//-------------------------------------------------------------------------------------
+	//                               LSD
+	//-------------------------------------------------------------------------------------
+	/** Extract features from the image based on the LSD method.
+	* \param img The image from where to extract the images.
+	* \param feats The list of extracted features.
+	* \param nDesiredFeatures Number of features to be extracted. Default:
+	* authomatic.
+	*/
+	void extractFeaturesLSD(
+		const mrpt::utils::CImage& inImg, CFeatureList& feats,
+		unsigned int init_ID, unsigned int nDesiredFeatures,
 		const TImageROI& ROI = TImageROI()) const;
 
 	// ------------------------------------------------------------------------------------

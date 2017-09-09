@@ -10,7 +10,8 @@
 #ifndef CPtuBase_H
 #define CPtuBase_H
 
-#include <mrpt/hwdrivers/CSerialPort.h>
+#include <mrpt/comms/CSerialPort.h>
+#include <mrpt/hwdrivers/link_pragmas.h>
 
 namespace mrpt
 {
@@ -28,7 +29,7 @@ class HWDRIVERS_IMPEXP CPtuBase
 	double tiltResolution, panResolution;
 
    protected:
-	CSerialPort serPort;
+	mrpt::comms::CSerialPort serPort;
 
 	/**************************** Methods ***********************/
 

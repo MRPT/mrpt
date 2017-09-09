@@ -53,9 +53,7 @@ IF(BUILD_EXAMPLES)
 	SET(LIST_EXAMPLES_IN_THIS_DIR
 		db
 		times
-		SocketsTest
 		directoryExplorer
-		http_tests
 		fileSystemWatcher
 		geometry3D
 		poses
@@ -65,8 +63,21 @@ IF(BUILD_EXAMPLES)
 		variant
 		dirs_files_manipulation
 		backtrace-example
+		params-by-name
+		quaternions
+		optimize-lm
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-base)
+	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
+	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
+
+	# === Depending on: mrpt-base, mrpt-comms ===
+	SET(LIST_EXAMPLES_IN_THIS_DIR
+		http_tests
+		SerialPort_test
+		SocketsTest
+		)
+	SET(CMAKE_EXAMPLE_DEPS mrpt-base mrpt-comms)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
@@ -87,7 +98,6 @@ IF(BUILD_EXAMPLES)
 		matrix
 		displayPlots
 		textFonts
-		optimize-lm
 		kmeans
 		slerp_demo
 		texture_sizes_test
@@ -137,11 +147,9 @@ IF(BUILD_EXAMPLES)
 		polygonSplit
 		setOfTexturedTrianglesTest
 		gui_windows_events
-		quaternions
 		unscented_transform_test
 		grab3Dvideo
 		coordinate_conversions
-		params-by-name
 		checkerboardDetectors
 		multipleCheckerboards
 		voronoi_test
@@ -237,7 +245,6 @@ IF(BUILD_EXAMPLES)
 			GPS_test
 			sonar_SRF10_test
 			eNoses_test
-			SerialPort_test
 			FTDI_USB_enumerate_test
 			joystick
 			captureVideoFFmpeg

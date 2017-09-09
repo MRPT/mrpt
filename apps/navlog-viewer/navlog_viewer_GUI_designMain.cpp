@@ -879,12 +879,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					gl_path->setColor_u8(mrpt::utils::TColor(0x00, 0x00, 0xff));
 					gl_robot_frame->insert(gl_path);
 				}
-				else
-				{
-					gl_path =
-						std::dynamic_pointer_cast<mrpt::opengl::CSetOfLines>(
-							gl_path_r);
-				}
+				gl_path->clear();
 				if (sel_ptg_idx < int(m_logdata_ptg_paths.size()) &&
 					sel_ptg_idx >= 0)
 				{
@@ -907,7 +902,6 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 										  .desiredDirection)
 								: log.ptg_last_k_NOP;
 						float max_dist = ptg->getRefDistance();
-						gl_path->clear();
 						ptg->add_robotShape_to_setOfLines(*gl_path);
 
 						ptg->renderPathAsSimpleLine(

@@ -129,9 +129,9 @@ CStream* CBoardENoses::checkConnectionAndConnect()
 	if (!m_stream_FTDI && !m_stream_SERIAL)
 	{
 		if (!m_COM_port.empty())
-			m_stream_SERIAL.reset(new CSerialPort);
+			m_stream_SERIAL.reset(new mrpt::comms::CSerialPort);
 		else
-			m_stream_FTDI.reset(new CInterfaceFTDI);
+			m_stream_FTDI.reset(new mrpt::comms::CInterfaceFTDI);
 	}
 
 	if (m_stream_FTDI)
@@ -304,8 +304,8 @@ bool CBoardENoses::getObservation(mrpt::obs::CObservationGasSensors& obs)
 			obs.sensorLabel = m_sensorLabel;
 
 			// Set Timestamp
-			uint32_t* p =
-				(uint32_t*)&readings[readings.size() - 2];  // Get readings time
+			uint16_t* p =
+				(uint16_t*)&readings[readings.size() - 2];  // Get readings time
 			// from frame
 			// (always last 2
 			// words)

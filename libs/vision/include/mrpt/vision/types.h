@@ -83,8 +83,12 @@ enum TFeatureType
 	/** ORB detector and descriptor, OpenCV's implementation ("ORB: an efficient
 	   alternative to SIFT or SURF", E. Rublee, V. Rabaud, K. Konolige, G.
 	   Bradski, ICCV, 2012). */
-	featORB
+	featORB,
+	// #added by Raghavender Sahdev
+	featAKAZE,  //!< AKAZE detector, OpenCV's implementation
+	featLSD  //!< LSD detector, OpenCV's implementation
 	// Remember: If new values are added, also update TEnumTypeFiller below!
+
 };
 
 /** The bitwise OR combination of values of TDescriptorType are used in
@@ -106,8 +110,11 @@ enum TDescriptorType
 	/** Log-Polar image descriptor */
 	descLogPolarImages = 16,
 	/** Bit-based feature descriptor */
-	descORB = 32
+	descORB = 32,
 	// Remember: If new values are added, also update TEnumTypeFiller below!
+	// #added by Raghavender Sahdev
+	descBLD = 64,  //!< BLD Line descriptor
+	descLATCH = 128  //!< LATCH Line descriptor
 };
 
 enum TFeatureTrackStatus
@@ -758,6 +765,8 @@ struct TEnumTypeFiller<mrpt::vision::TFeatureType>
 		MRPT_FILL_ENUM(featFASTER10);
 		MRPT_FILL_ENUM(featFASTER12);
 		MRPT_FILL_ENUM(featORB);
+		MRPT_FILL_ENUM(featAKAZE);
+		MRPT_FILL_ENUM(featLSD);
 	}
 };
 template <>
@@ -774,6 +783,8 @@ struct TEnumTypeFiller<mrpt::vision::TDescriptorType>
 		MRPT_FILL_ENUM(descPolarImages);
 		MRPT_FILL_ENUM(descLogPolarImages);
 		MRPT_FILL_ENUM(descORB);
+		MRPT_FILL_ENUM(descBLD);
+		MRPT_FILL_ENUM(descLATCH);
 	}
 };
 }

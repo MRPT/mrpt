@@ -74,7 +74,7 @@ VISION_EXTRA_DIR="$CUR_DIR/libs/vision/src/pnp"
 VISION_CITATION_FILES="$CUR_DIR/doc/pnp_algos.bib"
 if ( [ "$skipMAINMRPTDOCS" -eq "0" ] )
 then
-	MRPT_LIST_DIRECTORIES=$(echo $CUR_DIR/doc/doxygen-pages $CUR_DIR/libs/*/include/)
+	MRPT_LIST_DIRECTORIES=$(echo $CUR_DIR/doc/doxygen-pages $CUR_DIR/libs/*/include/ $CUR_DIR/libs/*/src/)
 else
 	MRPT_LIST_DIRECTORIES=$(echo $CUR_DIR/doc/doxygen-pages)
 fi
@@ -137,7 +137,7 @@ MRPT_SVN_NUMBER=""
 if [ -d .svn ]
 then
 	printf "Obtaining SVN number (This may take a *while* the first time, be patient)...\n"
-	printf "Running svnversion...\n"
+	printf "Running svnversion..."
 	MRPT_SVN_NUMBER="SVN:`svnversion .`"
 
 	if [ $? -ne 0 ]
@@ -154,7 +154,7 @@ fi
 if [ -d .git ]
 then
 	printf "Obtaining Git commit id...\n"
-	printf "Running...\n"
+	printf "Running..."
 	MRPT_SVN_NUMBER="Git: `git log --pretty=format:'%h %cd' -n 1`"
 
 	if [ $? -ne 0 ]
@@ -179,7 +179,7 @@ echo "The cwd is: " `pwd`
 MRPT_LIBS_DOT=`cat design_of_images/graph_mrpt_libs.dot`
 
 # Create the new directory:
-printf "Copying images...\n"
+printf "Copying images..."
 mkdir images 2> /dev/null
 rm images/* 2> /dev/null
 mkdir html 2> /dev/null
@@ -240,16 +240,16 @@ export MRPT_USE_SEARCHENGINE
 export genLATEX
 export genRTF
 
-printf "Generating DOXYGEN project...\n"
+printf "Generating DOXYGEN project..."
 envsubst < doxygen_project.txt.in > doxygen_project.txt
 
 printf "OK\n"
 
-printf "Parsing header (.h.in) files for version variables...\n"
+printf "Parsing header (.h.in) files for version variables..."
 eval "echo \"`cat ../doc/doxygen-pages/mainPage_doc.h.in`\"" > ../doc/doxygen-pages/mainPage_doc.h
 printf "OK\n"
 
-printf "Generating the html footer...\n"
+printf "Generating the html footer..."
 
 if [ "$includeCounter" = "YES" ]
 then

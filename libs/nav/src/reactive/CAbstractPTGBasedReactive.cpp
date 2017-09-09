@@ -109,6 +109,7 @@ CAbstractPTGBasedReactive::~CAbstractPTGBasedReactive()
 	this->preDestructor();  // ensure the robot is stopped; free dynamic objects
 }
 
+/** \callergraph */
 void CAbstractPTGBasedReactive::initialize()
 {
 	std::lock_guard<std::recursive_mutex> csl(m_nav_cs);
@@ -237,8 +238,9 @@ void CAbstractPTGBasedReactive::setHolonomicMethod(
 	}
 }
 
-// The main method: executes one time-iteration of the reactive navigation
-// algorithm.
+/** The main method: executes one time-iteration of the reactive navigation
+ * algorithm.
+ * \callergraph */
 void CAbstractPTGBasedReactive::performNavigationStep()
 {
 	// Security tests:
@@ -919,6 +921,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 	}
 }
 
+/** \callergraph */
 void CAbstractPTGBasedReactive::STEP8_GenerateLogRecord(
 	CLogFileRecord& newLogRec, const std::vector<TPose2D>& relTargets,
 	int nSelectedPTG, const mrpt::kinematics::CVehicleVelCmd::Ptr& new_vel_cmd,
@@ -984,6 +987,7 @@ void CAbstractPTGBasedReactive::STEP8_GenerateLogRecord(
 	}
 }
 
+/** \callergraph */
 void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	TCandidateMovementPTG& cm, const std::vector<double>& in_TPObstacles,
 	const mrpt::nav::ClearanceDiagram& in_clearance,
@@ -1432,6 +1436,7 @@ double CAbstractPTGBasedReactive::generate_vel_cmd(
 	return cmdvel_speed_scale;
 }
 
+/** \callergraph */
 bool CAbstractPTGBasedReactive::impl_waypoint_is_reachable(
 	const mrpt::math::TPoint2D& wp) const
 {
@@ -1471,11 +1476,13 @@ bool CAbstractPTGBasedReactive::impl_waypoint_is_reachable(
 	MRPT_END;
 }
 
+/** \callergraph */
 bool CAbstractPTGBasedReactive::STEP2_SenseObstacles()
 {
 	return implementSenseObstacles(m_WS_Obstacles_timestamp);
 }
 
+/** \callergraph */
 void CAbstractPTGBasedReactive::onStartNewNavigation()
 {
 	m_last_curPoseVelUpdate_robot_time = -1e9;
@@ -1502,6 +1509,7 @@ bool CAbstractPTGBasedReactive::TSentVelCmd::isValid() const
 	return this->poseVel.timestamp != INVALID_TIMESTAMP;
 }
 
+/** \callergraph */
 void CAbstractPTGBasedReactive::build_movement_candidate(
 	CParameterizedTrajectoryGenerator* ptg, const size_t indexPTG,
 	const std::vector<mrpt::math::TPose2D>& relTargets,

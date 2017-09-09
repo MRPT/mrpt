@@ -33,10 +33,6 @@
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 
-// TCP sockets:
-#include <mrpt/utils/CServerTCPSocket.h>
-#include <mrpt/utils/CClientTCPSocket.h>
-
 #include <mrpt/utils/CEnhancedMetaFile.h>
 #include <mrpt/utils/CCanvas.h>
 #include <mrpt/utils/CImage.h>
@@ -63,7 +59,6 @@
 #include <mrpt/utils/exceptions.h>
 #include <mrpt/utils/crc.h>
 #include <mrpt/utils/md5.h>
-#include <mrpt/utils/net_utils.h>
 #include <mrpt/utils/CListOfClasses.h>
 #include <mrpt/utils/CTextFileLinesParser.h>
 #include <mrpt/utils/CRateTimer.h>

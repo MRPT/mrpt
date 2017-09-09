@@ -18,9 +18,11 @@ if(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 
 	set(CPP_FILES
 		robot-map-gui_main.cpp
+		CUndoManager.cpp
 		CDocument.cpp
 		gui/CMainWindow.cpp
 		gui/glWidget/CGLWidget.cpp
+		gui/glWidget/CRobotPose.cpp
 		gui/glWidget/CViewerContainer.cpp
 		gui/observationTree/CObservationTree.cpp
 		gui/observationTree/CObservationTreeModel.cpp
@@ -94,5 +96,6 @@ if(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 	DeclareAppDependencies(${PROJECT_NAME} mrpt-slam mrpt-gui mrpt-opengl mrpt-vision)
 
 	DeclareAppForInstall(${PROJECT_NAME})
+	AppStartMenuLink(${PROJECT_NAME} "Robot-made maps viewer")   # Add link to the Start menu (in Windows Installable packages)
 
 endif(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENGL_GLUT)

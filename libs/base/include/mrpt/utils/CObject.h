@@ -204,6 +204,12 @@ inline mrpt::utils::CObject::Ptr CObject::duplicateGetSmartPtr() const
 		const override;                                                     \
 	_STATIC_LINKAGE_ mrpt::utils::CObject* CreateObject();                  \
 	_VIRTUAL_LINKAGE_ mrpt::utils::CObject* clone() const override;         \
+	template <typename... Args>                                             \
+	static Ptr Create(Args&&... args)                                       \
+	{                                                                       \
+		return mrpt::make_aligned_shared<class_name>(                       \
+			std::forward<Args>(args)...);                                   \
+	}                                                                       \
 	/*! @} */                                                               \
    public:                                                                  \
 	MRPT_MAKE_ALIGNED_OPERATOR_NEW

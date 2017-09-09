@@ -18,6 +18,7 @@
 
 #include <mrpt/otherlibs/mapbox/variant.hpp>
 #include <vector>
+#include <type_traits>  // remove_reference_t
 
 namespace mrpt
 {
@@ -249,7 +250,7 @@ class BASE_IMPEXP CStream
 	template <typename RET, typename T, typename... R>
 	RET ReadVariant_helper(
 		CSerializable::Ptr& ptr,
-		typename std::enable_if<is_shared_ptr<T>::value>::type* = nullptr)
+		std::enable_if_t<is_shared_ptr<T>::value>* = nullptr)
 	{
 		if (IS_CLASS(ptr, typename T::element_type))
 			return std::dynamic_pointer_cast<typename T::element_type>(ptr);
@@ -259,7 +260,7 @@ class BASE_IMPEXP CStream
 	template <typename RET, typename T, typename... R>
 	RET ReadVariant_helper(
 		CSerializable::Ptr& ptr,
-		typename std::enable_if<!is_shared_ptr<T>::value>::type* = nullptr)
+		std::enable_if_t<!is_shared_ptr<T>::value>* = nullptr)
 	{
 		if (IS_CLASS(ptr, T)) return dynamic_cast<T&>(*ptr);
 		return ReadVariant_helper<RET, R...>(ptr);
@@ -311,6 +312,21 @@ class BASE_IMPEXP CStream
 	void WriteVariant(T t)
 	{
 		t.match([&](auto& o) { this->WriteObject(o); });
+	}
+
+	/** Reads a simple POD type and returns by value. Useful when `stream >>
+	 * var;`
+	  * cannot be used becuase of errors of misaligned reference binding.
+	  * Use with macro `MRPT_READ_POD` to avoid typing the type T yourself.
+	  * \note [New in MRPT 2.0.0]
+	  * \note Write operator `s << var;` is safe for misaligned variables.
+	  */
+	template <typename T>
+	T ReadPOD()
+	{
+		T ret;
+		ReadBufferFixEndianness(&ret, 1);
+		return ret;
 	}
 
 	/** Reads an object from stream, where its class must be the same
@@ -412,8 +428,10 @@ class BASE_IMPEXP CStream
 
 };  // End of class def.
 
-#define DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE(T)                           \
-	CStream BASE_IMPEXP& operator<<(mrpt::utils::CStream& out, const T& a); \
+// Note: write op accepts parameters by value on purpose, to avoid misaligned
+// reference binding errors.
+#define DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE(T)                          \
+	CStream BASE_IMPEXP& operator<<(mrpt::utils::CStream& out, const T a); \
 	CStream BASE_IMPEXP& operator>>(mrpt::utils::CStream& in, T& a);
 
 // Definitions:
@@ -431,6 +449,15 @@ DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE(double)
 #ifdef HAVE_LONG_DOUBLE
 DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE(long double)
 #endif
+
+#define MRPT_READ_POD(_STREAM, _VARIABLE)                                    \
+	do                                                                       \
+	{                                                                        \
+		const std::remove_cv_t<std::remove_reference_t<decltype(_VARIABLE)>> \
+			val = _STREAM.ReadPOD<std::remove_cv_t<                          \
+				std::remove_reference_t<decltype(_VARIABLE)>>>();            \
+		::memcpy(&_VARIABLE, &val, sizeof(val));                             \
+	} while (0)
 
 // Why this shouldn't be templatized?: There's a more modern system
 // in MRPT that serializes any kind of vector<T>, deque<T>, etc... but
@@ -494,9 +521,8 @@ CStream BASE_IMPEXP& operator>>(
 	mrpt::utils::CStream& s, std::vector<size_t>& a);
 #endif
 //
-template <typename T,
-		  typename std::enable_if<std::is_base_of<mrpt::utils::CSerializable,
-												  T>::value>::type* = nullptr>
+template <typename T, std::enable_if_t<std::is_base_of<
+						  mrpt::utils::CSerializable, T>::value>* = nullptr>
 mrpt::utils::CStream& operator>>(
 	mrpt::utils::CStream& in, typename std::shared_ptr<T>& pObj)
 {

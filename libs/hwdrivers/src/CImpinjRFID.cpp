@@ -105,9 +105,10 @@ void CImpinjRFID::loadConfig_sensorSpecific(
 void CImpinjRFID::connect()
 {
 	if (!connected)
-
+	{
 		// Start the server
-		server = new mrpt::utils::CServerTCPSocket(port);
+		server = std::make_unique<mrpt::comms::CServerTCPSocket>(port);
+	}
 
 	client = server->accept();
 

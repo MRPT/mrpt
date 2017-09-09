@@ -55,7 +55,7 @@ class NAV_IMPEXP CRobot2NavInterface : public mrpt::utils::COutputLogger
 	*   return the latest values from a cache which is updated in a parallel
 	* thread.
 	* \return false on any error retrieving these values from the robot.
-	*/
+	* \callergraph */
 	virtual bool getCurrentPoseAndSpeeds(
 		/** (output) The latest robot pose (typically from a
 		   mapping/localization module), in world coordinates. (x,y: meters,
@@ -84,6 +84,7 @@ class NAV_IMPEXP CRobot2NavInterface : public mrpt::utils::COutputLogger
 	 * startWatchdog()
 	 * \return false on any error.
 	 * \sa startWatchdog
+   * \callergraph
 	 */
 	virtual bool changeSpeeds(
 		const mrpt::kinematics::CVehicleVelCmd& vel_cmd) = 0;
@@ -93,7 +94,8 @@ class NAV_IMPEXP CRobot2NavInterface : public mrpt::utils::COutputLogger
 	  * so there is no need to change that past command. The unique effect of
 	 * this callback would be resetting the watchdog timer.
 	  * \return false on any error.
-	  * \sa changeSpeeds(), startWatchdog() */
+	  * \sa changeSpeeds(), startWatchdog()
+	* \callergraph */
 	virtual bool changeSpeedsNOP();
 
 	/** Stop the robot right now.

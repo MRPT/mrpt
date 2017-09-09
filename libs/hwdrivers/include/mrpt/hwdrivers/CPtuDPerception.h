@@ -10,7 +10,7 @@
 #ifndef CPtuDPerception_H
 #define CPtuDPerception_H
 
-#include <mrpt/hwdrivers/CSerialPort.h>
+#include <mrpt/comms/CSerialPort.h>
 #include <mrpt/hwdrivers/CPtuBase.h>
 
 namespace mrpt

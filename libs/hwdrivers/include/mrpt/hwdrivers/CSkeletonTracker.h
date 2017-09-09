@@ -11,7 +11,7 @@
 #define CSkeletonTracker_H
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/hwdrivers/CSerialPort.h>
+#include <mrpt/comms/CSerialPort.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/obs/CObservationSkeleton.h>
