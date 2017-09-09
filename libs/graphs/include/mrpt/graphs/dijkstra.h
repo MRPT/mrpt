@@ -313,7 +313,7 @@ class CDijkstra
 
 			// Let the user know about our progress...
 			if (functor_on_progress)
-				(*functor_on_progress)(graph, visitedCount);
+				functor_on_progress(graph, visitedCount);
 
 			// For each arc from "u":
 			const std::set<TNodeID>& neighborsOfU =
@@ -343,7 +343,7 @@ class CDijkstra
 						edge_ui_reverse = true;
 					}
 					ASSERT_(edge_ui != graph.edges.end());
-					edge_ui_weight = (*functor_edge_weight)(
+					edge_ui_weight = functor_edge_weight(
 						graph, edge_ui->first.first, edge_ui->first.second,
 						edge_ui->second);
 					edge_ui_found = true;
