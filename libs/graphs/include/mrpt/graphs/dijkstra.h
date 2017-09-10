@@ -312,8 +312,7 @@ class CDijkstra
 			visitedCount++;
 
 			// Let the user know about our progress...
-			if (functor_on_progress)
-				functor_on_progress(graph, visitedCount);
+			if (functor_on_progress) functor_on_progress(graph, visitedCount);
 
 			// For each arc from "u":
 			const std::set<TNodeID>& neighborsOfU =
