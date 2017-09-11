@@ -22,7 +22,7 @@
 		- All mrpt::utils::CObject derived classes:
 		- In MRPT <=1.5.3, there was a typedef `Foo::SmartPtr` => `FooPtr`.
 		- In MRPT >=1.5.4 is has been replaced by `Foo::Ptr` => `FooPtr` for compatibility with MRPT >=2.0.
-		- stlplus smart pointers in MRPT 1.5.4 now have C++11 shared_ptr-compatible methods, to ease the transition towards MRPT 2.0 in user code (in particular, for MRPT ROS packages):
+		- stlplus smart pointers in MRPT 1.5.4 now have C++11 shared_ptr-compatible methods, to ease the transition towards MRPT 2.0 in user code (in particular, for MRPT ROS packages). Also, a new template `mrpt::prt_cast<TARGET_PTR>::from(ptr)` is provided to write user code compatible with both MRPT >=1.5.4 & >=2.0.0.
 	- Build system:
 		- Fix MRPTConfig.cmake for system octomap libraries.
 		- Fix package-contains-vcs-control-file (.gitingore) Lintian error.

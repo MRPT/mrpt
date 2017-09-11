@@ -279,6 +279,8 @@ namespace mrpt
 			static const mrpt::utils::TRuntimeClassId class##class_name; \
 			virtual const mrpt::utils::TRuntimeClassId* GetRuntimeClass() const MRPT_OVERRIDE; \
 			friend class mrpt::utils::CStream; \
+			typedef class_name##Ptr Ptr; \
+			typedef class_name##Ptr ConstPtr; \
 		/*! @}  */ \
 
 		/** This must be inserted as implementation of some required members for
@@ -300,6 +302,21 @@ namespace mrpt
 		void BASE_IMPEXP registerAllPendingClasses();
 
 	} // End of namespace
+
+/** Converts a smart pointer Base::Ptr to Derived::Ptr, in a way compatible
+* with MRPT >=1.5.4 and MRPT 2.x series.
+* \ingroup mrpt_base_grp
+*/
+template <typename CAST_TO>
+struct ptr_cast
+{
+	template <typename CAST_FROM_PTR>
+	static typename CAST_TO::Ptr from(const CAST_FROM_PTR &ptr)
+	{
+		return typename CAST_TO::Ptr(ptr);
+	}
+};
+
 } // End of namespace
 
 // JL: I want these operators to reside in std so STL algorithms can always find them.
