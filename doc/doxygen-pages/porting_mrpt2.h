@@ -40,10 +40,15 @@
 *        CObservationPtr obs = getObsFromSomewhere();
 *        CObservationGPSPtr gps = CObservationGPS(obs);
 *        \endcode
-*       becomes in MRPT 2.0:
+*       becomes pure C++14 in MRPT 2.0:
 *        \code
 *        CObservation::Ptr obs = getObsFromSomewhere();
 *        CObservationGPS::Ptr gps = std::dynamic_pointer_cast<CObservationGPS>(obs);
+*        \endcode
+*       or, if you need to keep your code compatible with MRPT >=1.5.4:
+*        \code
+*        CObservation::Ptr obs = getObsFromSomewhere();
+*        CObservationGPS::Ptr gps = mrpt::ptr_cast<CObservationGPS>::from(obs);
 *        \endcode
 *  - Threads, semaphores and mutexes are now based on C++11 standard library. Required changes:
 *    - `mrpt::synch::CCriticalSection cs;` --> `std::mutex cs;`
