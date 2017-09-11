@@ -1,319 +1,93 @@
-This package was debianized by Jose Luis Blanco <joseluisblancoc@gmail.com> on
-Wed, 06 Aug 2008 18:54:03 +0200.
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: MRPT
+Upstream-Contact: José Luis Blanco Claraco <joseluisblancoc@gmail.com>
+Source: https://www.mrpt.org/download-mrpt/
 
-It was downloaded from https://www.mrpt.org/
+Files: *
+Copyright: 2006-2017, Individual authors (See AUTHORS file)           
+License: BSD-3-clause
 
-Upstream Authors:
+Files: libs/base/include/mrpt/otherlibs/nanoflann/*
+Copyright: 2008-2009 Marius Muja (mariusm@cs.ubc.ca)
+           2008-2009 David G. Lowe (lowe@cs.ubc.ca)
+           2011-2017 José Luis Blanco Claraco (joseluisblancoc@gmail.com)
+License: BSD-3-clause
 
-   Copyright (c) 2005-2017, Individual authors (See AUTHORS)
-   All rights reserved.
+Files: otherlibs/mexplus/*
+Copyright: 2014, Kota Yamaguchi
+License: BSD-3-clause
 
-   Redistribution and use in source and binary forms, with or without
-   modification, are permitted provided that the following conditions are
-   met:
-       * Redistributions of source code must retain the above copyright
-         notice, this list of conditions and the following disclaimer.
-       * Redistributions in binary form must reproduce the above copyright
-         notice, this list of conditions and the following disclaimer in the
-         documentation and/or other materials provided with the distribution.
-       * Neither the name of the copyright holders nor the
-         names of its contributors may be used to endorse or promote products
-         derived from this software without specific prior written permission.
+Files: otherlibs/wxThings/*
+Copyright: 2000-2002, John Labenki
+License: wxWindows Library Licence
 
-   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-   'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
-   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-   PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE
-   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-     SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-   ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-   POSSIBILITY OF SUCH DAMAGE.
+Files: otherlibs/gtest-1.8.0/*
+Copyright: 2005, Google Inc.
+License: BSD-3-clause
 
+Files: libs/base/src/utils/simpleini/*
+Copyright: 2006, Brodie Thiesfield
+License: Expat
 
-The Debian packaging is Copyright 2010-17, Jose Luis Blanco <joseluisblancoc@gmail.com>
-and is licensed under the GPL, see `/usr/share/common-licenses/GPL'.
+Files: libs/base/src/utils/xmlparser/*	
+Copyright: 2002, Frank Vanden Berghen
+License: BSD-3-clause
+Comment: BSD-3 license sent by the author through personal communication.
+         Sources is in http://www.applied-mathematics.net/tools/xmlParser.html
 
-MRPT contains portions of code from other authors:
+Files: libs/gui/src/mathplots/*
+Copyright: 2003, David Schalig
+           2003-2007, Davide Rondini
+		   2007 Val Greene
+		   2007 Jose Luis Blanco
+License: WXwindows
 
- * NANOFLANN
+Files: libs/base/include/mrpt/otherlibs/stlplus/*
+Copyright: 1999-2004, Southampton University
+           2004-2008, Andy Rushton
+License: BSD-3-clause
+Comment: Project website is http://stlplus.sourceforge.net/
 
- Copyright 2008-2009  Marius Muja (mariusm@cs.ubc.ca). All rights reserved.
- Copyright 2008-2009  David G. Lowe (lowe@cs.ubc.ca). All rights reserved.
- Copyright 2011-2017 Jose L. Blanco (joseluisblancoc@gmail.com). All rights reserved.
+Files: libs/base/include/mrpt/utils/msvc_inttypes.h
+Copyright: 2006, Alexander Chemeris
+License: BSD-3-clause
 
- THE BSD LICENSE
+Files: libs/hwdrivers/src/xSens_*/*
+Copyright: 2006-2012, Xsens Technologies B.V.
+License: MT SDK Software License Agreement 
+Comment: Permission is granted by Xsens Technologies to distribute this code as
+         part of MRPT sources.
 
- Redistribution and use in source and binary forms, with or without
- modification, are permitted provided that the following conditions
- are met:
- 1. Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
- 2. Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
- 3. Neither the name of the University nor the names of its contributors
-    may be used to endorse or promote products derived from this software
-    without specific prior written permission.
+Files: libs/base/src/utils/md5.cpp
+Copyright: 1991-1992, RSA Data Security, Inc.
+           2009 Frank Thilo <thilo@unix-ag.org>
+License: public-domain
+Comment: License to copy and use this software is granted provided that it
+         is identified as the "RSA Data Security, Inc. MD5 Message-Digest
+         Algorithm" in all material mentioning or referencing this software
+         or this function.
+         License is also granted to make and use derivative works provided
+         that such works are identified as "derived from the RSA Data
+         Security, Inc. MD5 Message-Digest Algorithm" in all material
+         mentioning or referencing the derived work.
+         RSA Data Security, Inc. makes no representations concerning either
+         the merchantability of this software or the suitability of this
+         software for any particular purpose. It is provided "as is"
+         without express or implied warranty of any kind.
 
- THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
- ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
- FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- SUCH DAMAGE.
+Files: libs/base/include/mrpt/otherlibs/exprtk.h
+Copyright: 1999-2016, Arash Partow
+License: Expat
 
- * mexplus
-     https://github.com/kyamagu/mexplus
+Files: libs/hwdrivers/src/rplidar/*
+Copyright: 2014-2016, Shanghai Slamtec Co., Ltd.
+License: BSD-2-clause
 
-        Copyright (c) 2014 Kota Yamaguchi
-        3-clauses BSD License
-
- * simpleini
-    http://code.jellycan.com/simpleini/
-
-	Copyright (c) 2006, Brodie Thiesfield
-
-	Permission is hereby granted, free of charge, to any person obtaining a
-	copy of this software and associated documentation files (the "Software"),
-	to deal in the Software without restriction, including without limitation
-	the rights to use, copy, modify, merge, publish, distribute, sublicense,
-	and/or sell copies of the Software, and to permit persons to whom the
-	Software is furnished to do so, subject to the following conditions:
-
-	The above copyright notice and this permission notice shall be included in
-	all copies or substantial portions of the Software.
-
-	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-	THE SOFTWARE.
-
-
- * xmlparser
-     http://www.applied-mathematics.net/tools/xmlParser.html
-     BSD-style license sent by the author through personal communication.
-
-Copyright (c) 2002, Frank Vanden Berghen
-All rights reserved.
-
-The following license terms apply to projects that are in some way related to
-the "The Mobile Robot Programming Toolkit (MRPT)" project, including
-applications using "The Mobile Robot Programming Toolkit (MRPT)" and tools
-developed for enhancing "The Mobile Robot Programming Toolkit (MRPT)". All
-other projects (not related to "The Mobile Robot Programming Toolkit (MRPT)")
-have to use this code under the Aladdin Free Public License (AFPL)
-See the file "AFPL-license.txt" for more information about the AFPL license.
-(see http://www.artifex.com/downloads/doc/Public.htm for detailed AFPL terms)
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-* Redistributions of source code must retain the above copyright
-   notice, this list of conditions and the following disclaimer.
-* Redistributions in binary form must reproduce the above copyright
-   notice, this list of conditions and the following disclaimer in the
-   documentation and/or other materials provided with the distribution.
-* Neither the name of Frank Vanden Berghen nor the
-   names of its contributors may be used to endorse or promote products
-   derived from this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY Frank Vanden Berghen ``AS IS'' AND ANY
-EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL <copyright holder> BE LIABLE FOR ANY
-DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-
- * wxMathPlot
-    http://sourceforge.net/projects/wxmathplot/
-    A framework for mathematical graph plotting in wxWindows.
-    Published under the wxWindows Library Licence.
-    The original author is David Schalig <mrhill@users.sourceforge.net>.
-    From June 2007 the project is maintained by Davide Rondini.
-      <cdron@users.sourceforge.net>.
-    Authors can be contacted via the wxMathPlot's homepage at
-      http://sourceforge.net/projects/wxmathplot
-    Contributors: Jose Luis Blanco, Val Greene.
-
-     WXWINDOWS LIBRARY LICENCE
-
-    TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
-
-    This library is free software; you can redistribute it and/or modify it
-    under the terms of the GNU Library General Public Licence as published by
-    the Free Software Foundation; either version 2 of the Licence, or (at
-    your option) any later version.
-
-    This library is distributed in the hope that it will be useful, but
-    WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Library
-    General Public Licence for more details.
-
-    You should have received a copy of the GNU Library General Public Licence
-    along with this software, usually in a file named COPYING.LIB. If not,
-    write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
-    Boston, MA 02110-1301, USA.
-
-    EXCEPTION NOTICE
-
-    1. As a special exception, the copyright holders of this library give
-    permission for additional uses of the text contained in this release of
-    the library as licenced under the wxWindows Library Licence, applying
-    either version 3 of the Licence, or (at your option) any later version of
-    the Licence as published by the copyright holders of version 3 of the
-    Licence document.
-
-    2. The exception is that you may use, copy, link, modify and distribute
-    under the user's own terms, binary object code versions of works based
-    on the Library.
-
-    3. If you copy code from files distributed under the terms of the GNU
-    General Public Licence or the GNU Library General Public Licence into a
-    copy of this library, as this licence permits, the exception does not
-    apply to the code that you add in this way. To avoid misleading anyone as
-    to the status of such modified files, you must delete this exception
-    notice from such code and/or adjust the licensing conditions notice
-    accordingly.
-
-    4. If you write modifications of your own for this library, it is your
-    choice whether to permit this exception to apply to your modifications.
-    If you do not wish that, you must delete the exception notice from such
-    code and/or adjust the licensing conditions notice accordingly.
-
-
-
- * STLplus
-    http://stlplus.sourceforge.net/
-    Copyright (C) 1999-2004 Southampton University, 2004-2008 Andy Rushton.
-    All rights reserved.
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions
-    are met:
-    * Redistributions of source code must retain the above Copyright notice,
-      this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above Copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
-    * Neither the name of the STLplus library nor the names of its contributors
-      may be used to endorse or promote products derived from this software
-      without specific prior written permission.
-
-    This software is provided by the Copyright holders and contributors "as is"
-    and any express or implied warranties, including, but not limited to, the
-    implied warranties of merchantability and fitness for a particular purpose
-    are disclaimed. In no event shall the Copyright owner or contributors be
-    liable for any direct, indirect, incidental, special, exemplary, or
-    consequential damages (including, but not limited to, procurement of
-    substitute goods or services; loss of use, data, or profits; or business
-    interruption) however caused and on any theory of liability, whether in
-    contract, strict liability, or tort (including negligence or otherwise)
-    arising in any way out of the use of this software, even if advised of the
-    possibility of such damage.
-
-
- * ISO C9x  compliant inttypes.h for Microsoft Visual Studio
-    Based on ISO/IEC 9899:TC2 Committee draft (May 6, 2005) WG14/N1124
-   Copyright (c) 2006 Alexander Chemeris
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-
-      1. Redistributions of source code must retain the above copyright notice,
-         this list of conditions and the following disclaimer.
-
-      2. Redistributions in binary form must reproduce the above copyright
-         notice, this list of conditions and the following disclaimer in the
-         documentation and/or other materials provided with the distribution.
-
-      3. The name of the author may be used to endorse or promote products
-         derived from this software without specific prior written permission.
-
- * xSens CMT library for interfacing MTi devices.
-
-    Copyright (C) Xsens Technologies B.V., 2006.  All rights reserved.
-
-    Permission is granted by Xsens Technologies to distribute this
-    code as part of MRPT sources.
-
-    This source code is intended for use only by Xsens Technologies BV and
-    those that have explicit written permission to use it from
-    Xsens Technologies BV.
-
-    THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
-    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-    PARTICULAR PURPOSE.
-
- * MD5 implementation:
-    converted to C++ class by Frank Thilo (thilo@unix-ag.org)
-    for bzflag (http://www.bzflag.org)
-      based on:
-    md5.h and md5.c
-    reference implemantion of RFC 1321
-
-    Copyright (C) 1991-2, RSA Data Security, Inc. Created 1991. All
-    rights reserved.
-
-    License to copy and use this software is granted provided that it
-    is identified as the "RSA Data Security, Inc. MD5 Message-Digest
-    Algorithm" in all material mentioning or referencing this software
-    or this function.
-
-    License is also granted to make and use derivative works provided
-    that such works are identified as "derived from the RSA Data
-    Security, Inc. MD5 Message-Digest Algorithm" in all material
-    mentioning or referencing the derived work.
-
-    RSA Data Security, Inc. makes no representations concerning either
-    the merchantability of this software or the suitability of this
-    software for any particular purpose. It is provided "as is"
-    without express or implied warranty of any kind.
-
- * Google test suite: gtest
-    Copyright 2008, Google Inc.
-    All rights reserved.
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are
-    met:
-
-        * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-        * Redistributions in binary form must reproduce the above
-    copyright notice, this list of conditions and the following disclaimer
-    in the documentation and/or other materials provided with the
-    distribution.
-        * Neither the name of Google Inc. nor the names of its
-    contributors may be used to endorse or promote products derived from
-    this software without specific prior written permission.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-    A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-    OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-    SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-    LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-    DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-    THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+Files:
+Copyright:
+License:
+Comment: Project web is: 
 
  * The CSparse library for sparse matrix manipulation.
     CSPARSE: a Concise Sparse matrix package.
@@ -749,10 +523,3 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
   Creative Commons may be contacted at http://creativecommons.org/.
 
- * exprtk: C++ Mathematical Expression Toolkit Library
- Arash Partow (1999-2016)
-  MIT License  http://www.opensource.org/licenses/MIT
-
- * rplidar: Low-cost LiDAR driver
- Copyright (c) 2014 - 2016 Shanghai Slamtec Co., Ltd.
-  2-clause BSD License
