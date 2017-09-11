@@ -13,10 +13,10 @@
 	AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
   ---------------------------------------------------------------*/
 
+#include "vision-precomp.h"  // Precompiled headers
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>
 
-#include "vision-precomp.h"  // Precompiled headers
 #include <mrpt/system/os.h>
 #include <mrpt/vision/CFeatureExtraction.h>  // important import
 #include <mrpt/utils/CMemoryStream.h>
