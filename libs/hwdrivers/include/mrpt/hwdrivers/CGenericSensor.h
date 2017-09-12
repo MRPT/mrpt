@@ -99,7 +99,8 @@ namespace mrpt
 			  *    building custom sensors outside mrpt libraries in user code.
 			  */
 			static void registerClass(const TSensorClassId* pNewClass);
-
+			typedef CGenericSensorPtr Ptr;
+			typedef stlplus::smart_ptr<const CGenericSensor> ConstPtr;
 		private:
 			synch::CCriticalSection			m_csObjList;		//!< The critical section for m_objList
 			TListObservations				m_objList;		//!< The queue of objects to be returned by getObservations

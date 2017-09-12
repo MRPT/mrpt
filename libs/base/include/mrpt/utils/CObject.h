@@ -198,8 +198,10 @@ namespace mrpt
 				inline void setFromPointerDoNotFreeAtDtor(const class_name* p) { this->set(const_cast<mrpt::utils::CObject*>(static_cast<const mrpt::utils::CObject*>(p))); m_holder->increment(); } \
 				/*! Return the internal plain C++ pointer */ \
 				inline class_name * pointer() { return dynamic_cast<class_name*>(base_name##Ptr::pointer()); } \
+				inline class_name * get() { return this->pointer(); } \
 				/*! Return the internal plain C++ pointer (const) */ \
 				inline const class_name * pointer() const { return dynamic_cast<const class_name*>(base_name##Ptr::pointer()); } \
+				inline const class_name * get() const { return this->pointer(); } \
 				inline class_name* operator ->(void) { return dynamic_cast<class_name*>( base_name##Ptr::operator ->() ); } \
 				inline const class_name* operator ->(void) const { return dynamic_cast<const class_name*>( base_name##Ptr::operator ->() ); } \
 				inline class_name& operator *(void) { return *dynamic_cast<class_name*>( base_name##Ptr::operator ->() ); } \
