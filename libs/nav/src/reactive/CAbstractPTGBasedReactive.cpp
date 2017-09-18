@@ -1281,7 +1281,7 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 	cm.PTG = ptg;
 
 	// If the user doesn't want to use this PTG, just mark it as invalid:
-	ipf.targets.assign(relTargets.size(), PTGTarget()); // Init to default, invalid state
+	ipf.targets.clear();
 	bool use_this_ptg = true;
 	{
 		const TNavigationParamsPTG * navpPTG = dynamic_cast<const TNavigationParamsPTG*>(&navp);
@@ -1304,7 +1304,7 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 		for (size_t i=0;i<relTargets.size();i++)
 		{
 			const auto & trg = relTargets[i];
-			PTGTarget & ptg_target = ipf.targets[i];
+			PTGTarget ptg_target;
 
 			ptg_target.valid_TP = ptg->inverseMap_WS2TP(trg.x, trg.y, ptg_target.target_k, ptg_target.target_dist);
 			if (!ptg_target.valid_TP) continue;
@@ -1313,6 +1313,8 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 			ptg_target.target_alpha = ptg->index2alpha(ptg_target.target_k);
 			ptg_target.TP_Target.x = cos(ptg_target.target_alpha) * ptg_target.target_dist;
 			ptg_target.TP_Target.y = sin(ptg_target.target_alpha) * ptg_target.target_dist;
+
+			ipf.targets.emplace_back(ptg_target);
 		}
 	}
 
