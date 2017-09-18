@@ -369,7 +369,7 @@ Depends: ${shlibs:Depends}, ${misc:Depends}, libeigen3-dev,
          libmrpt-vision@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-graphs@MRPT_VER_MM@ (= ${binary:Version}),
          libsuitesparse-dev,
-         liboctomap-dev
+         liboctomap-dev | perl
 Description: Mobile Robot Programming Toolkit - Development headers
  The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
  and open source C++ library aimed to help robotics researchers to design and
