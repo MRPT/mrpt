@@ -187,6 +187,13 @@ class MainWindow : public QMainWindow
 	QLineEdit* param4_edit_desc;  //!< TextField for descriptor parameter 4
 	QLineEdit* param5_edit_desc;  //!< TextField for descriptor parameter 5
 
+	QCheckBox* param1_boolean;
+	QCheckBox* param2_boolean;
+
+	QCheckBox* param1_boolean_desc;
+	QCheckBox* param2_boolean_desc;
+
+
 	/// provide user options like repeatability, activate/deactivate non-maximal
 	/// suppression, image decimation, step-by-step playback of images.
 	QCheckBox* homography_enable;  //!< Checkbox to activate homography based
