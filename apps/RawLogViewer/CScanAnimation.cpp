@@ -386,10 +386,9 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 	// Check what observations are too old and must be deleted:
 	const double largest_period = 0.2;
 	vector_string lst_to_delete;
-	for (TListGlObjects::iterator it = m_gl_objects.begin();
-		 it != m_gl_objects.end(); ++it)
+	for (auto &o : m_gl_objects)
 	{
-		TRenderObject& ro = it->second;
+		TRenderObject& ro = o.second;
 
 		if ((tim_last == INVALID_TIMESTAMP &&
 			 wereScans)  // Scans without timestamps
@@ -397,19 +396,17 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 				fabs(mrpt::system::timeDifference(ro.timestamp, tim_last)) >
 					largest_period))
 		{
-			lst_to_delete.push_back(it->first);
+			lst_to_delete.push_back(o.first);
 		}
 	}
 
 	// Remove too old observations:
-	for (vector_string::iterator s = lst_to_delete.begin();
-		 s != lst_to_delete.end(); ++s)
+	for (const auto &s : lst_to_delete)
 	{
-		TRenderObject& ro = m_gl_objects[*s];
-
+		TRenderObject& ro = m_gl_objects[s];
 		m_plot3D->getOpenGLSceneRef()->removeObject(
 			ro.obj);  // Remove from the opengl viewport
-		m_gl_objects.erase(*s);  // and from my list
+		m_gl_objects.erase(s);  // and from my list
 	}
 
 	// Force refresh view:
@@ -417,8 +414,8 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 	m_plot3D->Refresh();
 
 	// Post-process: unload 3D observations.
-	for (CSensoryFrame::iterator it = sf->begin(); it != sf->end(); ++it)
-		(*it)->unload();
+	for (auto &o: *sf)
+		o->unload();
 	for (size_t i = 0; i < obs3D_to_clear.size(); i++)
 	{
 		obs3D_to_clear[i]->resizePoints3DVectors(0);
