@@ -558,36 +558,48 @@ void MainWindow::on_descriptor_choose(int choice)
 
 	if (choice == 0)  //!< SIFT descriptors
 	{
+        param1_desc->setText("Threshold: ");
+        param2_desc->setText("Edge Threshold: ");
+        param1_edit_desc->setText("0.04");
+        param2_edit_desc->setText("10");
+        param3_desc->setVisible(false);
+        param4_desc->setVisible(false);
+        param5_desc->setVisible(false);
+        param3_edit_desc->setVisible(false);
+        param4_edit_desc->setVisible(false);
+        param5_edit_desc->setVisible(false);
+        param1_boolean_desc->setVisible(false);
+        param2_boolean_desc->setVisible(false);
+
+
 #if !MRPT_HAS_SIFT_HESS
 		QMessageBox::information(
 			this, "SIFT error",
 			"MRPT has been compiled without SIFT Hess support");
 		return;
 #endif
-		param1_desc->setText("Threshold: ");
-		param2_desc->setText("Edge Threshold: ");
-		param1_edit_desc->setText("0.04");
-		param2_edit_desc->setText("10");
-		param3_desc->setVisible(false);
-		param4_desc->setVisible(false);
-		param5_desc->setVisible(false);
-		param3_edit_desc->setVisible(false);
-		param4_edit_desc->setVisible(false);
-		param5_edit_desc->setVisible(false);
+
 	}
 	else if (choice == 1)  //!< SURF descriptors
 	{
 		param1_desc->setText("hessianThreshold: ");
 		param2_desc->setText("nLayersPerOctave: ");
 		param3_desc->setText("nOctaves: ");
-		param4_desc->setText("if rotation invariant: ");
+		//param4_desc->setText("if rotation invariant: ");
 		param1_edit_desc->setText("600");
 		param2_edit_desc->setText("4");
 		param3_edit_desc->setText("2");
-		param4_edit_desc->setText("true");
+		//param4_edit_desc->setText("true");
+        param1_boolean_desc->setChecked(true);
+        param1_boolean_desc->setText("If rotation invariant");
+        param1_boolean_desc->setVisible(true);
 
+        param4->setVisible(false);
+        param4_edit_desc->setVisible(false);
 		param5_desc->setVisible(false);
 		param5_edit_desc->setVisible(false);
+
+        param2_boolean_desc->setVisible(false);
 	}
 	else if (choice == 2)  //!< Intensity-domain spin image descriptors
 	{
@@ -601,6 +613,10 @@ void MainWindow::on_descriptor_choose(int choice)
 		param3_edit_desc->setText("10");
 		param4_edit_desc->setText("0.4");
 		param5_edit_desc->setText("20");
+
+
+        param1_boolean_desc->setVisible(false);
+        param2_boolean_desc->setVisible(false);
 	}
 	else if (choice == 3)  // Polar Image descriptor
 	{
@@ -615,6 +631,8 @@ void MainWindow::on_descriptor_choose(int choice)
 		param5_desc->setVisible(false);
 		param4_edit_desc->setVisible(false);
 		param5_edit_desc->setVisible(false);
+        param1_boolean_desc->setVisible(false);
+        param2_boolean_desc->setVisible(false);
 	}
 	else if (choice == 4)  // Log Polar Image descriptor
 	{
@@ -629,20 +647,29 @@ void MainWindow::on_descriptor_choose(int choice)
 		param5_desc->setVisible(false);
 		param4_edit_desc->setVisible(false);
 		param5_edit_desc->setVisible(false);
+        param1_boolean_desc->setVisible(false);
+        param2_boolean_desc->setVisible(false);
 	}
 	else if (choice == 5)  // ORB Descriptor
 	{
 		param1_desc->setText("Min Distance ");
-		param2_desc->setText("If extract patch true/false: ");
+		//param2_desc->setText("If extract patch true/false: ");
 		param3_desc->setText("Number of levels: ");
 		param4_desc->setText("Scale factor: ");
 		param1_edit_desc->setText("0");
-		param2_edit_desc->setText("false");
+		//param2_edit_desc->setText("false");
 		param3_edit_desc->setText("8");
 		param4_edit_desc->setText("1.2");
+        param1_boolean_desc->setText("If extract patch true/false:");
+        param1_boolean_desc->setChecked(true);
+        param1_boolean_desc->setVisible(true);
 
-		param5_desc->setVisible(false);
-		param5_edit_desc->setVisible(false);
+        param2_desc->setVisible(false);
+        param2_edit_desc->setVisible(false);
+        param5_desc->setVisible(false);
+        param5_edit_desc->setVisible(false);
+
+        param2_boolean_desc->setVisible(false);
 	}
 	else if (choice == 6)  // BLD Descriptor
 	{
@@ -657,20 +684,28 @@ void MainWindow::on_descriptor_choose(int choice)
 
 		param5_desc->setVisible(false);
 		param5_edit_desc->setVisible(false);
+        param1_boolean_desc->setVisible(false);
+        param2_boolean_desc->setVisible(false);
 	}
 	else if (choice == 7)  // LATCH Descriptor
 	{
 		param1_desc->setText("sizeDescriptor (bytes) ");
-		param2_desc->setText("rotation invariance: ");
+		//param2_desc->setText("rotation invariance: ");
 		param3_desc->setText("half_ssd_size: ");
 		param1_edit_desc->setText("32");
-		param2_edit_desc->setText("true");
+		//param2_edit_desc->setText("true");
 		param3_edit_desc->setText("3");
+        param1_boolean_desc->setChecked(true);
+        param1_boolean_desc->setText("rotation invariance: ");
+        param1_boolean_desc->setVisible(true);
 
-		param4_desc->setVisible(false);
-		param4_edit_desc->setVisible(false);
-		param5_desc->setVisible(false);
+        param2_desc->setVisible(false);
+        param2_edit_desc->setVisible(false);
+        param4_desc->setVisible(false);
+        param4_edit_desc->setVisible(false);
+        param5_desc->setVisible(false);
 		param5_edit_desc->setVisible(false);
+        param2_boolean_desc->setVisible(false);
 	}
 	else
 	{
@@ -695,13 +730,20 @@ void MainWindow::on_detector_choose(int choice)
 		param1->setText("Min distance : ");
 		param2->setText("Radius : ");
 		param3->setText("Threshold : ");
-		param4->setText("Tile-image true/false : ");
+		//param4->setText("Tile-image true/false : ");
 		param1_edit->setText("7");
 		param2_edit->setText("7");
 		param3_edit->setText("0.1");
-		param4_edit->setText("true");
-		param5->setVisible(false);
-		param5_edit->setVisible(false);
+		//param4_edit->setText("true");
+        param1_boolean->setChecked(true);
+        param1_boolean->setText("Tile-image true/false: ");
+        param1_boolean->setVisible(true);
+
+        param4->setVisible(false);
+        param4_edit->setVisible(false);
+        param5->setVisible(false);
+        param5_edit->setVisible(false);
+        param2_boolean->setVisible(false);
 	}
 	// for Harris Features
 	else if (choice == 1)
@@ -710,12 +752,20 @@ void MainWindow::on_detector_choose(int choice)
 		param2->setText("Sensitivity, k : ");
 		param3->setText("Smoothing, sigma : ");
 		param4->setText("Block size, radius : ");
-		param5->setText("Tile_image (true/false) : ");
+		//param5->setText("Tile_image (true/false) : ");
 		param1_edit->setText("0.005");
 		param2_edit->setText("0.04");
 		param3_edit->setText("1.5");
 		param4_edit->setText("3");
-		param5_edit->setText("true");
+		//param5_edit->setText("true");
+        param1_boolean->setChecked(true);
+        param1_boolean->setText("Tile-image (true/false): ");
+        param1_boolean->setVisible(true);
+
+        param2_boolean->setVisible(false);
+
+        param5->setVisible(false);
+        param5_edit->setVisible(false);
 	}
 	// BCD Features not implemented yet in MRPT library
 	/*else if(choice == 2)
@@ -741,51 +791,76 @@ void MainWindow::on_detector_choose(int choice)
 		param3_edit->setVisible(false);
 		param4_edit->setVisible(false);
 		param5_edit->setVisible(false);
-	}
+
+        param1_boolean->setVisible(false);
+        param2_boolean->setVisible(false);
+    }
 	// for SURF Features
 	else if (choice == 3)
 	{
 		param1->setText("HessianThreshold: ");
 		param2->setText("nLayersPerOctave: ");
 		param3->setText("nOctaves: ");
-		param4->setText("if rotation invariant: ");
+		//param4->setText("if rotation invariant: ");
 		param1_edit->setText("600");
 		param2_edit->setText("4");
 		param3_edit->setText("2");
-		param4_edit->setText("true");
+		//param4_edit->setText("true");
 
-		param5->setVisible(false);
-		param5_edit->setVisible(false);
-	}
+        param1_boolean->setChecked(true);
+        param1_boolean->setText("if rotation invariant: ");
+        param1_boolean->setVisible(true);
+
+        param4->setVisible(false);
+        param4_edit->setVisible(false);
+        param5->setVisible(false);
+        param5_edit->setVisible(false);
+        param2_boolean->setVisible(false);
+    }
 	// for FAST, FASTER9, FASTER10, FASTER12 features
 	else if (choice == 4 || choice == 5 || choice == 6 || choice == 7)
 	{
 		param1->setText("Threshold: ");
 		param2->setText("MinimumDistance: ");
-		param3->setText("Enable non maximal supression (true/false): ");
-		param4->setText("Enable use KLT response (true/false): ");
+		//param3->setText("Enable non maximal supression (true/false): ");
+		//param4->setText("Enable use KLT response (true/false): ");
 		param1_edit->setText("20");
 		param2_edit->setText("5");
-		param3_edit->setText("true");
-		param4_edit->setText("true");
+		//param3_edit->setText("true");
+		//param4_edit->setText("true");
 
-		param5->setVisible(false);
-		param5_edit->setVisible(false);
+        param1_boolean->setChecked(true);
+        param1_boolean->setText("Enable non maximal supression (true/false): ");
+        param1_boolean->setVisible(true);
+        param2_boolean->setChecked(true);
+        param2_boolean->setText("Enable use KLT response (true/false):  ");
+        param2_boolean->setVisible(true);
+
+        param3->setVisible(false);
+        param3_edit->setVisible(false);
+        param4->setVisible(false);
+        param4_edit->setVisible(false);
+        param5->setVisible(false);
+        param5_edit->setVisible(false);
 	}
 	// ORB Features
 	else if (choice == 8)
 	{
 		param1->setText("Min Distance: ");
-		param2->setText("if extract patch true / false: ");
+		//param2->setText("if extract patch true / false: ");
 		param3->setText("Number of levels: ");
 		param4->setText("Scale factor: ");
 		param1_edit->setText("0");
-		param2_edit->setText("false");
+		//param2_edit->setText("false");
 		param3_edit->setText("8");
 		param4_edit->setText("1.2");
+        param1_boolean->setChecked(false);
+        param1_boolean->setVisible(true);
+        param1_boolean->setText("if extract patch (true/false): ");
 
 		param5->setVisible(false);
 		param5_edit->setVisible(false);
+        param2_boolean->setVisible(false);
 	}
 	else if (choice == 9)
 	{
@@ -799,6 +874,9 @@ void MainWindow::on_detector_choose(int choice)
 		param3_edit->setText("0.001");
 		param4_edit->setText("4");
 		param5_edit->setText("4");
+
+        param1_boolean->setVisible(false);
+        param2_boolean->setVisible(false);
 	}
 	else if (choice == 10)
 	{
@@ -813,6 +891,8 @@ void MainWindow::on_detector_choose(int choice)
 		param3_edit->setVisible(false);
 		param4_edit->setVisible(false);
 		param5_edit->setVisible(false);
+        param1_boolean->setVisible(false);
+        param2_boolean->setVisible(false);
 	}
 	else
 	{
@@ -1226,8 +1306,10 @@ void MainWindow::fillDetectorInfo()
 		klt_opts.radius = param2_edit->text().toInt();
 		klt_opts.threshold = param3_edit->text().toFloat();
 		string temp_str = param4_edit->text().toStdString();
-		bool temp_bool = temp_str.compare("true") == 0;
-		klt_opts.tile_image = temp_bool;
+		//bool temp_bool = temp_str.compare("true") == 0;
+		//klt_opts.tile_image = temp_bool;
+
+        klt_opts.tile_image = param1_boolean->isChecked();
 
 		fext.options.KLTOptions.min_distance = klt_opts.min_distance;
 		fext.options.KLTOptions.radius = klt_opts.radius;
@@ -1243,11 +1325,13 @@ void MainWindow::fillDetectorInfo()
 		harris_opts.k = param2_edit->text().toFloat();
 		harris_opts.sigma = param3_edit->text().toFloat();
 		harris_opts.radius = param4_edit->text().toFloat();
-		string temp_str = param5_edit->text().toStdString();
-		bool temp_bool = temp_str.compare("true") ? false : true;
-		harris_opts.tile_image = temp_bool;
+		//string temp_str = param5_edit->text().toStdString();
+		//bool temp_bool = temp_str.compare("true") ? false : true;
+        //harris_opts.tile_image = temp_bool;
+        harris_opts.tile_image = param1_boolean->isChecked();
 
-		fext.options.harrisOptions.threshold = harris_opts.threshold;  // 0.005;
+
+        fext.options.harrisOptions.threshold = harris_opts.threshold;  // 0.005;
 		fext.options.harrisOptions.k = harris_opts.k;  // default sensitivity
 		fext.options.harrisOptions.sigma =
 			harris_opts.sigma;  // default from matlab smoothing filter
@@ -1278,10 +1362,12 @@ void MainWindow::fillDetectorInfo()
 		SURF_opts.hessianThreshold = param1_edit->text().toInt();
 		SURF_opts.nLayersPerOctave = param2_edit->text().toInt();
 		SURF_opts.nOctaves = param3_edit->text().toInt();
-		string temp_str = param4_edit->text().toStdString();
-		bool temp_bool = temp_str.compare("true") == 0;
-		SURF_opts.rotation_invariant = temp_bool;
-		//cout << temp_bool << endl;
+		//string temp_str = param4_edit->text().toStdString();
+		//bool temp_bool = temp_str.compare("true") == 0;
+        //SURF_opts.rotation_invariant = temp_bool;
+        SURF_opts.rotation_invariant = param1_boolean->isChecked();
+
+        //cout << temp_bool << endl;
 
 		fext.options.SURFOptions.hessianThreshold = SURF_opts.hessianThreshold;
 		fext.options.SURFOptions.nLayersPerOctave = SURF_opts.nLayersPerOctave;
@@ -1296,15 +1382,19 @@ void MainWindow::fillDetectorInfo()
 	{
 		fast_opts.threshold = param1_edit->text().toFloat();
 		fast_opts.min_distance = param2_edit->text().toFloat();
-		string temp_str = param3_edit->text().toStdString();
-		bool temp_bool = temp_str.compare("true") == 0;
-		fast_opts.use_KLT_response = temp_bool;
+		//string temp_str = param3_edit->text().toStdString();
+		//bool temp_bool = temp_str.compare("true") == 0;
+        //fast_opts.use_KLT_response = temp_bool;
+        fast_opts.use_KLT_response = param1_boolean->isChecked();
 
-		temp_str = param4_edit->text().toStdString();
-		temp_bool = temp_str.compare("true") == 0;
-		fast_opts.non_max_suppresion = temp_bool;
 
-		if (detector_selected == 4)
+        //temp_str = param4_edit->text().toStdString();
+		//temp_bool = temp_str.compare("true") == 0;
+        //fast_opts.non_max_suppresion = temp_bool;
+        fast_opts.non_max_suppresion = param2_boolean->isChecked();
+
+
+        if (detector_selected == 4)
 			fext.options.featsType = featFAST;
 		else if (detector_selected == 5)
 			fext.options.featsType = featFASTER9;
@@ -1323,10 +1413,12 @@ void MainWindow::fillDetectorInfo()
 	{
 		fext.options.featsType = featORB;
 		ORB_opts.min_distance = param1_edit->text().toInt();
-		string temp_str = param2_edit->text().toStdString();
-		bool temp_bool = temp_str.compare("true") == 0;
-		ORB_opts.extract_patch = temp_bool;
-		ORB_opts.n_levels = param3_edit->text().toInt();
+		//string temp_str = param2_edit->text().toStdString();
+		//bool temp_bool = temp_str.compare("true") == 0;
+        //ORB_opts.extract_patch = temp_bool;
+        ORB_opts.extract_patch = param1_boolean->isChecked();
+
+        ORB_opts.n_levels = param3_edit->text().toInt();
 		ORB_opts.scale_factor = param4_edit->text().toFloat();
 
 		fext.options.ORBOptions.min_distance = ORB_opts.min_distance;
@@ -1399,10 +1491,12 @@ void MainWindow::fillDescriptorInfo()
 		SURF_opts.hessianThreshold = param1_edit_desc->text().toInt();
 		SURF_opts.nLayersPerOctave = param2_edit_desc->text().toInt();
 		SURF_opts.nOctaves = param3_edit_desc->text().toInt();
-		string temp_str = param4_edit_desc->text().toStdString();
-		bool temp_bool = temp_str.compare("true") == 0;
-		SURF_opts.rotation_invariant = temp_bool;
-		//cout << temp_bool << endl;
+		//string temp_str = param4_edit_desc->text().toStdString();
+		//bool temp_bool = temp_str.compare("true") == 0;
+        //SURF_opts.rotation_invariant = temp_bool;
+        SURF_opts.rotation_invariant = param1_boolean->isChecked();
+
+        //cout << temp_bool << endl;
 
 		fext.options.SURFOptions.hessianThreshold = SURF_opts.hessianThreshold;
 		fext.options.SURFOptions.nLayersPerOctave = SURF_opts.nLayersPerOctave;
@@ -1459,10 +1553,12 @@ void MainWindow::fillDescriptorInfo()
 	{
 		desc_to_compute = TDescriptorType(32);  //!< ORB image descriptor
 
-		string temp_str = param1_edit_desc->text().toStdString();
-		bool temp_bool = temp_str.compare("true") == 0;
-		ORB_opts.extract_patch = temp_bool;
-		//cout << temp_bool << endl;
+		//string temp_str = param1_edit_desc->text().toStdString();
+		//bool temp_bool = temp_str.compare("true") == 0;
+        //ORB_opts.extract_patch = temp_bool;
+        ORB_opts.extract_patch = param1_boolean->isChecked();
+
+        //cout << temp_bool << endl;
 
 		ORB_opts.min_distance = param2_edit_desc->text().toInt();
 		ORB_opts.n_levels = param3_edit_desc->text().toInt();
@@ -1491,10 +1587,12 @@ void MainWindow::fillDescriptorInfo()
 	{
 		desc_to_compute = TDescriptorType(128);  //!< LATCH image descriptor
 
-		string temp_str = param2_edit_desc->text().toStdString();
-		bool temp_bool = temp_str.compare("true") == 0;
-		LATCH_opts.rotationInvariance = temp_bool;
-		//cout << temp_bool << endl;
+		//string temp_str = param2_edit_desc->text().toStdString();
+		//bool temp_bool = temp_str.compare("true") == 0;
+        //LATCH_opts.rotationInvariance = temp_bool;
+        LATCH_opts.rotationInvariance = param1_boolean->isChecked();
+
+        //cout << temp_bool << endl;
 
 		LATCH_opts.bytes = param1_edit_desc->text().toInt();
 		LATCH_opts.half_ssd_size = param3_edit_desc->text().toInt();
@@ -2354,16 +2452,27 @@ void MainWindow::initializeParameters()
 	param5 = new QLabel;
 	param5_edit = new QLineEdit;
 
+    param1_boolean = new QCheckBox ("Tile-image true/false");
+    param2_boolean = new QCheckBox;
+    param1_boolean->setChecked(true);
+    param1_boolean->setVisible(true);
+    param2_boolean->setVisible(false);
+
 	param1->setText("Min distance : ");
 	param2->setText("Radius : ");
 	param3->setText("Threshold : ");
-	param4->setText("Tile-image true/false : ");
+	//param4->setText("Tile-image true/false : ");
 	param1_edit->setText("7");
 	param2_edit->setText("7");
 	param3_edit->setText("0.1");
-	param4_edit->setText("true");
-	param5->setVisible(false);
-	param5_edit->setVisible(false);
+	//param4_edit->setText("true");
+    param4->setVisible(false);
+    param4_edit->setVisible(false);
+    param5->setVisible(false);
+    param5_edit->setVisible(false);
+
+    param1_boolean->setFixedSize(PARAMS_WIDTH*2, PARAMS_HEIGHT);
+    param2_boolean->setFixedSize(PARAMS_WIDTH*2, PARAMS_HEIGHT);
 
 	param1_edit->setFixedSize(PARAMS_WIDTH, PARAMS_HEIGHT);
 	param2_edit->setFixedSize(PARAMS_WIDTH, PARAMS_HEIGHT);
@@ -2388,17 +2497,29 @@ void MainWindow::initializeParameters()
 	param5_desc = new QLabel;
 	param5_edit_desc = new QLineEdit;
 
-	/// by default initially SURF descriptor is selected
+    param1_boolean_desc = new QCheckBox ("If rotation invariant");
+    param1_boolean_desc->setChecked(true);
+    param2_boolean_desc = new QCheckBox;
+    param1_boolean_desc->setVisible(true);
+    param2_boolean_desc->setVisible(false);
+
+
+    /// by default initially SURF descriptor is selected
 	param1_desc->setText("hessianThreshold: ");
 	param2_desc->setText("nLayersPerOctave: ");
 	param3_desc->setText("nOctaves: ");
-	param4_desc->setText("if rotation invariant: ");
+	//param4_desc->setText("if rotation invariant: ");
 	param1_edit_desc->setText("600");
 	param2_edit_desc->setText("4");
 	param3_edit_desc->setText("2");
-	param4_edit_desc->setText("true");
-	param5_desc->setVisible(false);
-	param5_edit_desc->setVisible(false);
+	//param4_edit_desc->setText("true");
+    param4_desc->setVisible(false);
+    param4_edit_desc->setVisible(false);
+    param5_desc->setVisible(false);
+    param5_edit_desc->setVisible(false);
+
+    param1_boolean_desc->setFixedSize(PARAMS_WIDTH*2, PARAMS_HEIGHT);
+    param2_boolean_desc->setFixedSize(PARAMS_WIDTH*2, PARAMS_HEIGHT);
 
 	param1_edit_desc->setFixedSize(PARAMS_WIDTH, PARAMS_HEIGHT);
 	param2_edit_desc->setFixedSize(PARAMS_WIDTH, PARAMS_HEIGHT);
@@ -3528,19 +3649,24 @@ MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
 	paramVBox->addWidget(param4_edit, 4, 1, 1, 1);
 	paramVBox->addWidget(param5, 5, 0, 1, 1);
 	paramVBox->addWidget(param5_edit, 5, 1, 1, 1);
+    paramVBox->addWidget(param1_boolean, 6, 0, 2, 2);
+    paramVBox->addWidget(param2_boolean, 7, 0, 2, 2);
 
-	paramVBox->addWidget(descriptor_param_label, 0, 2);
-	paramVBox->addWidget(param1_desc, 1, 2);
-	paramVBox->addWidget(param1_edit_desc, 1, 3);
-	paramVBox->addWidget(param2_desc, 2, 2);
-	paramVBox->addWidget(param2_edit_desc, 2, 3);
-	paramVBox->addWidget(param3_desc, 3, 2);
-	paramVBox->addWidget(param3_edit_desc, 3, 3);
-	paramVBox->addWidget(param4_desc, 4, 2);
-	paramVBox->addWidget(param4_edit_desc, 4, 3);
-	paramVBox->addWidget(param5_desc, 5, 2);
-	paramVBox->addWidget(param5_edit_desc, 5, 3);
-	paramVBox->setSizeConstraint(QLayout::SetMinimumSize);
+	paramVBox->addWidget(descriptor_param_label, 0, 2, 1, 1);
+	paramVBox->addWidget(param1_desc, 1, 2, 1, 1);
+	paramVBox->addWidget(param1_edit_desc, 1, 3, 1, 1);
+	paramVBox->addWidget(param2_desc, 2, 2, 1, 1);
+	paramVBox->addWidget(param2_edit_desc, 2, 3, 1, 1);
+	paramVBox->addWidget(param3_desc, 3, 2, 1, 1);
+	paramVBox->addWidget(param3_edit_desc, 3, 3, 1, 1);
+	paramVBox->addWidget(param4_desc, 4, 2, 1, 1);
+	paramVBox->addWidget(param4_edit_desc, 4, 3, 1, 1);
+	paramVBox->addWidget(param5_desc, 5, 2, 1, 1);
+	paramVBox->addWidget(param5_edit_desc, 5, 3, 1, 1);
+    paramVBox->addWidget(param1_boolean_desc, 6, 2, 2, 2);
+    paramVBox->addWidget(param2_boolean_desc, 7, 2, 2, 2);
+
+    paramVBox->setSizeConstraint(QLayout::SetMinimumSize);
 
 	paramsGroupBox->setLayout(paramVBox);
 	paramsGroupBox->setBaseSize(320, 180);

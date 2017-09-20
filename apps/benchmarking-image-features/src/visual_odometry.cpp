@@ -318,8 +318,6 @@ Mat VisualOdometry::generateVO(
 		img_1, img_2, points1, points2,
 		status);  // track those features to img_2
 
-	// TODO: add a fucntion to load these values directly from KITTI's calib
-	// files
 	// WARNING: different sequences in the KITTI VO dataset have different
 	// intrinsic/extrinsic parameters
 	//cout << calibration_file << " calibration file " << endl;
