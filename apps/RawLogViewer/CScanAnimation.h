@@ -56,6 +56,7 @@ class CScanAnimation : public wxDialog
 	wxFlexGridSizer* FlexGridSizer8;
 	wxCheckBox* cbAllowMix;
 	wxRadioButton* rbFile;
+	wxCheckBox* cbViewOrtho;
 	wxStaticBoxSizer* StaticBoxSizer1;
 	wxStaticText* lbNumPoints;
 	wxButton* btnPlay;
@@ -82,6 +83,7 @@ class CScanAnimation : public wxDialog
 	static const long ID_SPINCTRL1;
 	static const long ID_BUTTON4;
 	static const long ID_STATICTEXT2;
+	static const long ID_CHECKBOX2;
 	static const long ID_STATICTEXT3;
 	//*)
 
@@ -98,6 +100,7 @@ class CScanAnimation : public wxDialog
 	void OnrbLoadedSelect(wxCommandEvent& event);
 	void OnrbFile(wxCommandEvent& event);
 	void OncbAllowMixClick(wxCommandEvent& event);
+	void OncbViewOrthoClick(wxCommandEvent& event);
 	//*)
 
 	DECLARE_EVENT_TABLE()

@@ -252,7 +252,10 @@
 								<border>5</border>
 								<option>1</option>
 							</object>
-							<object class="spacer">
+							<object class="sizeritem">
+								<object class="wxCheckBox" name="ID_CHECKBOX2" variable="cbViewOrtho" member="yes">
+									<label>Orthogonal projection</label>
+								</object>
 								<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 								<border>5</border>
 								<option>1</option>
