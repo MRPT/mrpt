@@ -295,8 +295,8 @@ double CTimeLogger::getLastTime(const std::string& name) const
 }
 
 CTimeLoggerEntry::CTimeLoggerEntry(
-	CTimeLogger& logger, const char* section_name)
-	: m_logger(logger), m_section_name(section_name)
+	const CTimeLogger& logger, const char* section_name)
+	: m_logger(const_cast<CTimeLogger&>(logger)), m_section_name(section_name)
 {
 	m_logger.enter(m_section_name);
 }
