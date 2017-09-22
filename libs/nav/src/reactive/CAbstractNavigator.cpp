@@ -302,7 +302,8 @@ void CAbstractNavigator::processNavigateCommand(const TNavigationParams *params)
 	ASSERT_(params->target.targetDesiredRelSpeed >= .0 && params->target.targetDesiredRelSpeed <= 1.0);
 
 	// Copy data:
-	m_navigationParams = dynamic_cast<CAbstractNavigator::TNavigationParams *>(params->clone());
+	mrpt::utils::delete_safe(m_navigationParams);
+	m_navigationParams = params->clone();
 	ASSERT_(m_navigationParams != nullptr);
 
 	// Transform: relative -> absolute, if needed.
@@ -599,4 +600,3 @@ CAbstractNavigator::TPendingEvent::TPendingEvent() :
 	event_cannot_get_closer_target(false)
 {
 }
-
