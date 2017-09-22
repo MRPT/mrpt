@@ -75,7 +75,6 @@ namespace mrpt
 		{
 			virtual ~TNavigationParamsBase() {}
 			virtual std::string getAsText() const =0; //!< Gets navigation params as a human-readable format
-			virtual TNavigationParamsBase* clone() const = 0;
 		protected:
 			friend bool NAV_IMPEXP operator==(const TNavigationParamsBase&, const TNavigationParamsBase&);
 			virtual bool isEqual(const TNavigationParamsBase& o) const =0;
@@ -87,7 +86,7 @@ namespace mrpt
 			TargetInfo  target; //!< Navigation target
 
 			virtual std::string getAsText() const MRPT_OVERRIDE; //!< Gets navigation params as a human-readable format
-			virtual TNavigationParamsBase* clone() const MRPT_OVERRIDE { return new TNavigationParams(*this); }
+			virtual TNavigationParams* clone() const { return new TNavigationParams(*this); }
 		protected:
 			virtual bool isEqual(const TNavigationParamsBase& o) const MRPT_OVERRIDE;
 		};
@@ -95,7 +94,7 @@ namespace mrpt
 		/** \name Navigation control API
 		  * @{ */
 
-		/** Loads all params from a file. To be called before initialize(). 
+		/** Loads all params from a file. To be called before initialize().
 		  * Each derived class *MUST* load its own parameters, and then call *ITS PARENT'S* overriden method to ensure all params are loaded. */
 		virtual void loadConfigFile(const mrpt::utils::CConfigFileBase &c);
 		/** Saves all current options to a config file.
@@ -127,9 +126,9 @@ namespace mrpt
 		/** Returns the current navigator state. */
 		inline TState getCurrentState() const { return m_navigationState; }
 
-		/** Sets a user-provided frame transformer object; used only if providing targets in a frame ID 
-		  * different than the one in which robot odometry is given (both IDs default to `"map"`). 
-		  * Ownership of the pointee object remains belonging to the user, which is responsible of deleting it 
+		/** Sets a user-provided frame transformer object; used only if providing targets in a frame ID
+		  * different than the one in which robot odometry is given (both IDs default to `"map"`).
+		  * Ownership of the pointee object remains belonging to the user, which is responsible of deleting it
 		  * and ensuring its a valid pointer during the lifetime of this navigator object.
 		  * \todo [MRPT 2.0: Make this a weak_ptr]
 		  */
@@ -218,12 +217,12 @@ namespace mrpt
 		virtual bool changeSpeedsNOP(); //!< Default: forward call to m_robot.changeSpeedsNOP(). Can be overriden.
 		virtual bool stop(bool isEmergencyStop); //!< Default: forward call to m_robot.stop(). Can be overriden.
 
-		/** Default implementation: check if target_dist is below the accepted distance. 
+		/** Default implementation: check if target_dist is below the accepted distance.
 		  * If true is returned here, the end-of-navigation event will be sent out (only for non-intermediary targets).
 		  */
 		virtual bool checkHasReachedTarget(const double targetDist) const;
 
-		/** Checks whether the robot shape, when placed at the given pose (relative to the current pose), 
+		/** Checks whether the robot shape, when placed at the given pose (relative to the current pose),
 		* is colliding with any of the latest known obstacles.
 		* Default implementation: always returns false. */
 		virtual bool checkCollisionWithLatestObstacles(const mrpt::math::TPose2D &relative_robot_pose) const;
@@ -232,7 +231,7 @@ namespace mrpt
 		TNavigationParams  *m_navigationParams;  //!< Current navigation parameters
 
 		CRobot2NavInterface   &m_robot; //!< The navigator-robot interface.
-		
+
 		/** Optional, user-provided frame transformer.
 		  * Note: We dont have ownership of the pointee object! */
 		mrpt::poses::FrameTransformer<2> *m_frame_tf;

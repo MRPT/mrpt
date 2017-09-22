@@ -33,6 +33,7 @@
 		- Fix aborting reading from LMS111 scanner on first error.
 		- Fix corrupted pointers in CNetworkOfPoses after copy or move operations.
 		- Fix invalid TP-targets generated during reactive navigation.
+		- Fix memory leak in reactivenav engine.
 
 <hr>
 <a name="1.5.3">

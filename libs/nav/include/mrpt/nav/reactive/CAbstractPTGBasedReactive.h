@@ -83,7 +83,7 @@ namespace mrpt
 			std::vector<size_t>    restrict_PTG_indices;
 
 			virtual std::string getAsText() const MRPT_OVERRIDE;
-			virtual TNavigationParamsBase* clone() const MRPT_OVERRIDE { return new TNavigationParamsPTG(*this); }
+			virtual TNavigationParams* clone() const MRPT_OVERRIDE { return new TNavigationParamsPTG(*this); }
 		protected:
 			virtual bool isEqual(const CAbstractNavigator::TNavigationParamsBase& o) const MRPT_OVERRIDE;
 		};
