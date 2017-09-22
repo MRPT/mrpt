@@ -291,7 +291,7 @@ void CAbstractNavigator::processNavigateCommand(const TNavigationParams* params)
 		params->target.targetDesiredRelSpeed <= 1.0);
 
 	// Copy data:
-	m_navigationParams.reset(params->clone());
+	m_navigationParams = params->clone();
 
 	// Transform: relative -> absolute, if needed.
 	if (m_navigationParams->target.targetIsRelative)

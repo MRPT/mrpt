@@ -53,9 +53,10 @@ class NAV_IMPEXP CWaypointsNavigator : public mrpt::nav::CAbstractNavigator
 		std::vector<mrpt::nav::CAbstractNavigator::TargetInfo> multiple_targets;
 
 		virtual std::string getAsText() const override;
-		virtual TNavigationParamsBase* clone() const override
+		virtual std::unique_ptr<TNavigationParams> clone() const override
 		{
-			return new TNavigationParamsWaypoints(*this);
+			return std::unique_ptr<TNavigationParams>(
+				new TNavigationParamsWaypoints(*this));
 		}
 
 	   protected:

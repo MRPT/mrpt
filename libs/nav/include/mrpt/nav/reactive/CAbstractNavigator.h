@@ -108,7 +108,6 @@ class NAV_IMPEXP CAbstractNavigator : public mrpt::utils::COutputLogger
 		virtual ~TNavigationParamsBase() {}
 		/** Gets navigation params as a human-readable format */
 		virtual std::string getAsText() const = 0;
-		virtual TNavigationParamsBase* clone() const = 0;
 
 	   protected:
 		friend bool NAV_IMPEXP operator==(
@@ -125,9 +124,9 @@ class NAV_IMPEXP CAbstractNavigator : public mrpt::utils::COutputLogger
 
 		/** Gets navigation params as a human-readable format */
 		virtual std::string getAsText() const override;
-		virtual TNavigationParamsBase* clone() const override
+		virtual std::unique_ptr<TNavigationParams> clone() const
 		{
-			return new TNavigationParams(*this);
+			return std::make_unique<TNavigationParams>(*this);
 		}
 
 	   protected:
@@ -262,8 +261,8 @@ class NAV_IMPEXP CAbstractNavigator : public mrpt::utils::COutputLogger
 	 * state variables, etc. */
 	virtual void onStartNewNavigation() = 0;
 
-  /** Called after each call to CAbstractNavigator::navigate() */
-  virtual void onNavigateCommandReceived();
+	/** Called after each call to CAbstractNavigator::navigate() */
+	virtual void onNavigateCommandReceived();
 
 	/** Call to the robot getCurrentPoseAndSpeeds() and updates members
 	 * m_curPoseVel accordingly.

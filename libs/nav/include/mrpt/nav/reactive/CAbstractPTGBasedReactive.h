@@ -106,9 +106,10 @@ class NAV_IMPEXP CAbstractPTGBasedReactive : public CWaypointsNavigator
 		std::vector<size_t> restrict_PTG_indices;
 
 		virtual std::string getAsText() const override;
-		virtual TNavigationParamsBase* clone() const override
+		virtual std::unique_ptr<TNavigationParams> clone() const override
 		{
-			return new TNavigationParamsPTG(*this);
+			return std::unique_ptr<TNavigationParams>(
+				new TNavigationParamsPTG(*this));
 		}
 
 	   protected:
