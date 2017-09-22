@@ -52,7 +52,6 @@ CWaypointsNavigator::CWaypointsNavigator(CRobot2NavInterface& robot_if)
 }
 
 CWaypointsNavigator::~CWaypointsNavigator() {}
-
 void CWaypointsNavigator::onNavigateCommandReceived()
 {
 	CAbstractNavigator::onNavigateCommandReceived();

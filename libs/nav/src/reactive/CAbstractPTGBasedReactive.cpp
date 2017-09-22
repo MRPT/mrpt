@@ -298,11 +298,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			(!m_copy_prev_navParams) ||
 			!(*m_copy_prev_navParams == *m_navigationParams);
 		if (target_changed_since_last_iteration)
-		{
-			m_copy_prev_navParams.reset(
-				dynamic_cast<CAbstractNavigator::TNavigationParams*>(
-					m_navigationParams->clone()));
-		}
+			m_copy_prev_navParams = m_navigationParams->clone();
 
 		// Load the list of target(s) from the navigationParam user command.
 		// Semantic is: any of the target is good. If several targets are
