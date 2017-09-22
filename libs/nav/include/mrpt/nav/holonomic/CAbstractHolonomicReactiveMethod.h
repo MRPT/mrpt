@@ -56,7 +56,7 @@ class NAV_IMPEXP CAbstractHolonomicReactiveMethod
 		double maxObstacleDist;
 		/** The computed clearance for each direction (optional in some
 		 * implementations). Leave to default (NULL) if not needed. */
-		mrpt::nav::ClearanceDiagram* clearance;
+		const mrpt::nav::ClearanceDiagram* clearance;
 
 		NavInput();
 	};
