@@ -164,7 +164,7 @@ DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
  *    CHolonomicND navigation.
  * \sa CHolonomicND, CHolonomicLogFileRecord
  */
-class CLogFileRecord_ND : public CHolonomicLogFileRecord
+class NAV_IMPEXP CLogFileRecord_ND : public CHolonomicLogFileRecord
 {
 	DEFINE_SERIALIZABLE(CLogFileRecord_ND)
 
