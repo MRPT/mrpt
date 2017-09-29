@@ -95,10 +95,9 @@ class OBS_IMPEXP CMetricMap : public mrpt::utils::CSerializable,
 	virtual bool isEmpty() const = 0;
 
 	/** Load the map contents from a CSimpleMap object, erasing all previous
-	 * content of the map.
-	 *  This is automaticed invoking "insertObservation" for each observation at
-	 * the mean 3D robot pose as
-	 *   given by the "poses::CPosePDF" in the CSimpleMap object.
+	 * content of the map. This is done invoking `insertObservation()` for each
+	 * observation at the mean 3D robot pose of each pose-observations pair in
+	 * the CSimpleMap object.
 	 *
 	 * \sa insertObservation, CSimpleMap
 	 * \exception std::exception Some internal steps in invoked methods can
@@ -107,16 +106,7 @@ class OBS_IMPEXP CMetricMap : public mrpt::utils::CSerializable,
 	void loadFromProbabilisticPosesAndObservations(
 		const mrpt::maps::CSimpleMap& Map);
 
-	/** Load the map contents from a CSimpleMap object, erasing all previous
-	 * content of the map.
-	 *  This is automaticed invoking "insertObservation" for each observation at
-	 * the mean 3D robot pose as
-	 *   given by the "poses::CPosePDF" in the CSimpleMap object.
-	 *
-	 * \sa insertObservation, CSimpleMap
-	 * \exception std::exception Some internal steps in invoked methods can
-	 * raise exceptions on invalid parameters, etc...
-	 */
+	///! \overload
 	inline void loadFromSimpleMap(const mrpt::maps::CSimpleMap& Map)
 	{
 		loadFromProbabilisticPosesAndObservations(Map);

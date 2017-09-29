@@ -34,13 +34,6 @@ void CMetricMap::clear()
 	publishEvent(mrptEventMetricMapClear(this));
 }
 
-/*---------------------------------------------------------------
-Load the map contents from a CSensFrameProbSequence object,
-erasing all previous content of the map.
-This is automaticed invoking "insertObservation" for each
-observation at the mean 3D robot pose as given by
-the "poses::CPosePDF" in the CSensFrameProbSequence object.
-  ---------------------------------------------------------------*/
 void CMetricMap::loadFromProbabilisticPosesAndObservations(
 	const mrpt::maps::CSimpleMap& sfSeq)
 {
@@ -55,6 +48,8 @@ void CMetricMap::loadFromProbabilisticPosesAndObservations(
 	for (size_t i = 0; i < n; i++)
 	{
 		sfSeq.get(i, posePDF, sf);
+		ASSERTMSG_(posePDF, "Input simplemap contains an empty `CPose3DPDF` object!");
+		ASSERTMSG_(sf, "Input simplemap contains an empty `CSensoryFrame` object!");
 
 		CPose3D robotPose;
 		posePDF->getMean(robotPose);
