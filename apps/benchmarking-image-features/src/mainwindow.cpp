@@ -116,7 +116,7 @@ void MainWindow::on_button_generate_clicked()
 	// ReadInputFormat();
 	CFeatureList featsImage2_2;
 
-	float temp_dist1 = 0, temp_dist2 = 0;
+	//float temp_dist1 = 0, temp_dist2 = 0;
 
 	double min_dist = 0, max_dist = 0;
 	size_t min_dist_idx = 0, max_dist_idx = 0;
@@ -161,7 +161,7 @@ void MainWindow::on_button_generate_clicked()
 
 			/// compute the second closest descriptor
 			float temp_second = std::numeric_limits<double>::max();  // 999999
-			for (int i = 0; i < featsImage2.size(); i++)
+			for (unsigned int i = 0; i < featsImage2.size(); i++)
 			{
 				if (distances[i] == min_dist) continue;
 				if (temp_second > distances[i])
@@ -500,7 +500,7 @@ void MainWindow::on_button_generate_clicked()
 	}  // end of for loop with i1 index
 
 	/// computing % of descriptor matches here
-	for (int i = 0; i < featsImage1.size(); i++)
+	for (unsigned int i = 0; i < featsImage1.size(); i++)
 	{
 		if (dist1_p[i] < threshold_dist1 && dist2_p[i] > threshold_dist2)
 			successful_matches++;
@@ -1006,23 +1006,17 @@ void MainWindow::readRawlogFiles(string rawlog)
 
 	/// APPROACH 1: not required
 	/*mrpt::utils::CFileGZInputStream rawlog_stream_;// = new CFileGZInputStream
-
 	rawlog_stream_.open(rawlog);
-
 	CSensoryFrame frames;
 	CActionCollection actions;
 	//CObservation ooobs;
-
 	mrpt::obs::CActionCollection::Ptr action ;
 	CSensoryFrame::Ptr    observations;
 	CObservation::Ptr      obs;
 	size_t entry1_ = 0;
-
 	rawlog_stream_.close();
-
 	//cout << CRawlog::getActionObservationPairOrObservation( rawlog_stream_,
 	action, observations, obs, entry_) << endl;
-
 	//cout << ("end of stream!") << endl;
 	//cout << observations->size() << endl;
 	*/
@@ -1677,7 +1671,7 @@ void MainWindow::on_detector_button_clicked()
         cvtColor(cvImg1, temp1, CV_GRAY2RGB);
 
 	/// Drawing a marker around key-points for image 1
-	for (int i = 0; i < featsImage1.size(); i++)
+	for (unsigned int i = 0; i < featsImage1.size(); i++)
 	{
 		int temp_x = (int)featsImage1.getFeatureX(i);
 		int temp_y = (int)featsImage1.getFeatureY(i);
@@ -1723,7 +1717,7 @@ void MainWindow::on_detector_button_clicked()
 
 
 		/// Drawing a marker around key-points for image 2
-		for (int i = 0; i < featsImage2.size(); i++)
+		for (unsigned int i = 0; i < featsImage2.size(); i++)
 		{
 			int temp_x = (int)featsImage2.getFeatureX(i);
 			int temp_y = (int)featsImage2.getFeatureY(i);
@@ -2145,7 +2139,7 @@ void MainWindow::readFilesFromFolder(int next_prev)
 		rawlog_type == 1)  // meaning stereo datasets for rawlog input type
 	{
 		dir = opendir(file_path1.c_str());
-		while (pdir = readdir(dir))
+		while ((pdir = readdir(dir)))
 		{
 			char* temp_filepath = pdir->d_name;
 			// temp_filepath.substr(0,3);
@@ -2169,7 +2163,7 @@ void MainWindow::readFilesFromFolder(int next_prev)
 		}
 
 		/// this loop simply pushes absolute paths for the left images
-		for (int i = 0, j = 0; i < files.size(); i++)
+		for (unsigned int i = 0, j = 0; i < files.size(); i++)
 		{
 			if (files.at(i).size() > 4)  // this removes the . and .. in linux
 			// as all files will have size more
@@ -2182,7 +2176,7 @@ void MainWindow::readFilesFromFolder(int next_prev)
 		}  // end of for
 
 		/// this loop simply pushes absolute paths for the right images
-		for (int i = 0, j = 0; i < files2.size(); i++)
+		for (unsigned int i = 0, j = 0; i < files2.size(); i++)
 		{
 			if (files2.at(i).size() > 4)  // this removes the . and .. in linux
 			// as all files will have size more
@@ -2204,8 +2198,8 @@ void MainWindow::readFilesFromFolder(int next_prev)
 			2)  // meaning stereo dataset or single image dataset
 	{
 		dir = opendir(file_path1.c_str());
-		while (pdir = readdir(dir)) files.push_back(pdir->d_name);
-		for (int i = 0, j = 0; i < files.size(); i++)
+		while ((pdir = readdir(dir))) files.push_back(pdir->d_name);
+		for (unsigned int i = 0, j = 0; i < files.size(); i++)
 		{
 			if (files.at(i).size() > 4)  // this removes the . and .. in linux
 			// as all files will have size more
@@ -2232,9 +2226,9 @@ void MainWindow::readFilesFromFolder(int next_prev)
 		file_path2 = inputFilePath2->text().toStdString();
 
 		dir2 = opendir(file_path2.c_str());
-		while (pdir2 = readdir(dir2)) files2.push_back(pdir2->d_name);
+		while ((pdir2 = readdir(dir2))) files2.push_back(pdir2->d_name);
 		//cout << "after while before for" << endl;
-		for (int i = 0, j = 0; i < files2.size(); i++)
+		for (unsigned int i = 0, j = 0; i < files2.size(); i++)
 		{
 			if (files2.at(i).size() > 4)  // this removes the . and .. in linux
 			// as all files will have size more
@@ -2256,11 +2250,17 @@ void MainWindow::readFilesFromFolder(int next_prev)
 	/// assumption both folders of the stereo image dataset have the same number
 	/// of images
 	if (next_prev == 1)
-		current_imageIndex = (++current_imageIndex) % files_fullpath.size();
+        {
+                current_imageIndex = current_imageIndex + 1;
+		current_imageIndex = (current_imageIndex) % files_fullpath.size();
+        }
 	else if (next_prev == 2)
 		current_imageIndex = current_imageIndex % files_fullpath.size();
 	else
-		current_imageIndex = (--current_imageIndex) % files_fullpath.size();
+        {
+                current_imageIndex = current_imageIndex - 1;
+		current_imageIndex = (current_imageIndex) % files_fullpath.size();
+        }
 }
 
 /************************************************************************************************
@@ -2292,7 +2292,7 @@ void MainWindow::displayImagesWithoutDetector()
         cvtColor(cvImg1, temp1, CV_GRAY2RGB);
 
 	/// draw a marker for key-points in image 1
-	for (int i = 0; i < featsImage1.size(); i++)
+	for (unsigned int i = 0; i < featsImage1.size(); i++)
 	{
 		int temp_x = (int)featsImage1.getFeatureX(i);
 		int temp_y = (int)featsImage1.getFeatureY(i);
@@ -2334,7 +2334,7 @@ void MainWindow::displayImagesWithoutDetector()
             cvtColor(cvImg2, temp2, CV_GRAY2RGB);
 
 		/// draw a marker for key-points in image 2
-		for (int i = 0; i < featsImage2.size(); i++)
+		for (unsigned int i = 0; i < featsImage2.size(); i++)
 		{
 			int temp_x = (int)featsImage2.getFeatureX(i);
 			int temp_y = (int)featsImage2.getFeatureY(i);
@@ -2713,9 +2713,9 @@ void MainWindow::onTrackingEnabled(int state)
 				4)  // meaning stereo dataset or single image dataset
 		{
 			dir = opendir(file_path_temp.c_str());
-			while (pdir = readdir(dir)) files.push_back(pdir->d_name);
+			while ((pdir = readdir(dir))) files.push_back(pdir->d_name);
 
-			for (int i = 0, j = 0; i < files.size(); i++)
+			for (unsigned long i = 0, j = 0; i < files.size(); i++)
 			{
 				if (files.at(i).size() > 4)  // this removes the . and .. in
 				// linux as all files will have
@@ -2771,7 +2771,7 @@ Point MainWindow::trackKeyPoint(
 	/// key-point in img_test needs to be computed
 	/// iterate over all key-points to find the best matching key-point in the
 	/// test image
-	for (int i = 0; i < feat_test.size(); i++)
+	for (unsigned int i = 0; i < feat_test.size(); i++)
 	{
 		int temp_x = (int)feat_test.getFeatureX(i);
 		int temp_y = (int)feat_test.getFeatureY(i);
@@ -3024,7 +3024,7 @@ void MainWindow::on_browseTesting_clicked()
 ************************************************************************************************/
 void MainWindow::displayVector(vector<string> paths)
 {
-	for (int i = 0; i < paths.size(); i++) cout << paths.at(i) << endl;
+	for (unsigned long i = 0; i < paths.size(); i++) cout << paths.at(i) << endl;
 }
 
 /************************************************************************************************
@@ -3062,8 +3062,8 @@ void MainWindow::store_Training_TestingSets()
 			if (true)
 			{
 				dir = opendir(file_path_temp.c_str());
-				while (pdir = readdir(dir)) files.push_back(pdir->d_name);
-				for (int i = 0, j = 0; i < files.size(); i++)
+				while ((pdir = readdir(dir))) files.push_back(pdir->d_name);
+				for (unsigned int i = 0, j = 0; i < files.size(); i++)
 				{
 					if (files.at(i).size() > 4)  // this removes the . and .. in
 					// linux as all files will have
@@ -3101,8 +3101,8 @@ void MainWindow::store_Training_TestingSets()
 			if (true)
 			{
 				dir = opendir(file_path_temp.c_str());
-				while (pdir = readdir(dir)) files.push_back(pdir->d_name);
-				for (int i = 0, j = 0; i < files.size(); i++)
+				while ((pdir = readdir(dir))) files.push_back(pdir->d_name);
+				for (unsigned int i = 0, j = 0; i < files.size(); i++)
 				{
 					if (files.at(i).size() > 4)  // this removes the . and .. in
 					// linux as all files will have
@@ -3780,7 +3780,7 @@ void MainWindow::drawLineLSD(Mat img, int image_left_right)
 	{
 		if (image_left_right == 0)
 		{
-			for (int i = 0; i < featsImage1.size(); i++)
+			for (unsigned int i = 0; i < featsImage1.size(); i++)
 			{
 				float temp_x1 = featsImage1.getByID(i).get()->x2[0];
 				float temp_x2 = featsImage1.getByID(i).get()->x2[1];
@@ -3797,7 +3797,7 @@ void MainWindow::drawLineLSD(Mat img, int image_left_right)
 		}
 		else
 		{
-			for (int i = 0; i < featsImage2.size(); i++)
+			for (unsigned int i = 0; i < featsImage2.size(); i++)
 			{
 				float temp_x1 = featsImage2.getByID(i).get()->x2[0];
 				float temp_x2 = featsImage2.getByID(i).get()->x2[1];
@@ -3838,8 +3838,8 @@ string MainWindow::findRepeatability(float mouse_x, float mouse_y)
 			4)  // meaning stereo dataset or single image dataset
 	{
 		dir = opendir(file_path1_temp.c_str());
-		while (pdir = readdir(dir)) files.push_back(pdir->d_name);
-		for (int i = 0, j = 0; i < files.size(); i++)
+		while ((pdir = readdir(dir))) files.push_back(pdir->d_name);
+		for (unsigned int i = 0, j = 0; i < files.size(); i++)
 		{
 			if (files.at(i).size() > 4)  // this removes the . and .. in linux
 			// as all files will have size more
@@ -3894,7 +3894,7 @@ string MainWindow::findRepeatability(float mouse_x, float mouse_y)
 		// cout << "Number of Features in image " << i << " : " <<
 		// temp_featsImage1.size() << endl;
 		bool repeatable = false;
-		for (int j = 0; j < temp_featsImage1.size(); j++)
+		for (unsigned int j = 0; j < temp_featsImage1.size(); j++)
 		{
 			repeatable = checkIfSamePoint(
 				mouse_x, mouse_y, temp_featsImage1.getFeatureX(j),
@@ -3972,8 +3972,8 @@ string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 			4)  // meaning stereo dataset or single image dataset
 	{
 		dir = opendir(file_path1_temp.c_str());
-		while (pdir = readdir(dir)) files.push_back(pdir->d_name);
-		for (int i = 0, j = 0; i < files.size(); i++)
+		while ((pdir = readdir(dir))) files.push_back(pdir->d_name);
+		for (unsigned int i = 0, j = 0; i < files.size(); i++)
 		{
 			if (files.at(i).size() > 4)  // this removes the . and .. in linux
 			// as all files will have size more
@@ -3997,8 +3997,8 @@ string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 		3)  // meaning single image dataset for repeatability
 	{
 		dir2 = opendir(file_path2_temp.c_str());
-		while (pdir2 = readdir(dir2)) files2.push_back(pdir2->d_name);
-		for (int i = 0, j = 0; i < files2.size(); i++)
+		while ((pdir2 = readdir(dir2))) files2.push_back(pdir2->d_name);
+		for (unsigned int i = 0, j = 0; i < files2.size(); i++)
 		{
 			if (files2.at(i).size() > 4)  // this removes the . and .. in linux
 			// as all files will have size more
@@ -4028,7 +4028,7 @@ string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 
 	double homographies[files_fullpath2.size()][3][3];
 
-	for (int k = 0; k < files_fullpath2.size(); k++)
+	for (unsigned int k = 0; k < files_fullpath2.size(); k++)
 	{
 		string line;
 		ifstream myfile(files_fullpath2.at(k));
@@ -4061,15 +4061,13 @@ string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 		cout << endl;
 	}
     int files_length = files_fullpath.size();
-    int files_length2 = files_fullpath2.size();
+    //int files_length2 = files_fullpath2.size();
     /*
 	/// Simply displaying the files here for checking purposes
-
 	for (int y = 0; y < files_length; y++)
 	{
 		// cout << files_fullpath.at(y) << endl;
 	}
-
 	for (int y = 0; y < files_length2; y++)
 	{
 		// cout << files_fullpath2.at(y) << endl;
@@ -4123,9 +4121,9 @@ string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 		double temp_y_after = homographies[i - 1][1][0] * temp_x_before +
 							  homographies[i - 1][1][1] * temp_y_before +
 							  homographies[i - 1][1][2];
-		double temp_z_after = homographies[i - 1][2][0] * temp_x_before +
-							  homographies[i - 1][2][1] * temp_y_before +
-							  homographies[i - 1][2][2];
+		//double temp_z_after = homographies[i - 1][2][0] * temp_x_before +
+		//					  homographies[i - 1][2][1] * temp_y_before +
+		//					  homographies[i - 1][2][2];
 
 		//cout << temp_x_after << " afterX " << temp_y_after << " afterY "
 		//	 << endl;
@@ -4138,7 +4136,7 @@ string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 		//	 << temp_featsImage1.size() << endl;
 		bool repeatable = false;
 
-		for (int j = 0; j < temp_featsImage1.size(); j++)
+		for (unsigned int j = 0; j < temp_featsImage1.size(); j++)
 		{
 			repeatable = checkIfSamePoint(
 				temp_x_after, temp_y_after, temp_featsImage1.getFeatureX(j),
@@ -4217,7 +4215,7 @@ string MainWindow::falsePositivesNegatives()
 
 		//"i" in featsImage1 matches with min_dist_indexes[i] in featsImage2
 		// computing false positives here
-		for (int i = 0; i < featsImage1.size(); i++)
+		for (unsigned int i = 0; i < featsImage1.size(); i++)
 		{
 			float test_x = featsImage2.getFeatureX(min_dist_indexes[i]);
 			float test_y = featsImage2.getFeatureY(min_dist_indexes[i]);
@@ -4238,7 +4236,7 @@ string MainWindow::falsePositivesNegatives()
 			// check if a keypoint match actually exist around the area in image
 			// 2
 			bool flag_false_negative = false;
-			for (int j = 0; j < featsImage2.size(); j++)
+			for (unsigned int j = 0; j < featsImage2.size(); j++)
 			{
 				int temp_x = featsImage2.getFeatureX(j);
 				int temp_y = featsImage2.getFeatureY(j);
@@ -4384,10 +4382,10 @@ void MainWindow::Mouse_Pressed()
 		if (images_static != NULL) images_static_sift_surf2->setVisible(false);
 	}
 
-	QRect tqr = image1->contentsRect();  // getContentsMargins(a,b,c,d);
-	QMargins qmr = image1->contentsMargins();
-	QSize szt = image1->frameSize();
-	QRect qrect = image1->frameRect();
+	//QRect tqr = image1->contentsRect();  // getContentsMargins(a,b,c,d);
+	//QMargins qmr = image1->contentsMargins();
+	//QSize szt = image1->frameSize();
+	//QRect qrect = image1->frameRect();
 	// QFrame::Shadow  shd = image1->frameShadow();
 
 	/*cout << qmr.top() << " " << qmr.bottom() << " " << qmr.left() << " "
@@ -4476,7 +4474,7 @@ void MainWindow::Mouse_Pressed()
                 cvtColor(cvImg2, temp2, CV_GRAY2RGB);
 
 			/// draw a marker around image 1 keypoints
-			for (int i = 0; i < featsImage2.size(); i++)
+			for (unsigned int i = 0; i < featsImage2.size(); i++)
 			{
 				int temp_x = (int)featsImage2.getFeatureX(i);
 				int temp_y = (int)featsImage2.getFeatureY(i);
@@ -4507,7 +4505,7 @@ void MainWindow::Mouse_Pressed()
 
 		/// drawing marker all over the image and coloring the selected one with
 		/// a different color
-		for (int i = 0; i < featsImage1.size(); i++)
+		for (unsigned int i = 0; i < featsImage1.size(); i++)
 		{
 			int temp_x = (int)featsImage1.getFeatureX(i);
 			int temp_y = (int)featsImage1.getFeatureY(i);
@@ -4592,7 +4590,7 @@ void MainWindow::Mouse_Pressed()
                 cvtColor(cvImg2, temp2, CV_GRAY2RGB);
 
 			/// draw a marker around image 2 keypoints
-			for (int i = 0; i < featsImage2.size(); i++)
+			for (unsigned int i = 0; i < featsImage2.size(); i++)
 			{
 				int temp_x = (int)featsImage2.getFeatureX(i);
 				int temp_y = (int)featsImage2.getFeatureY(i);
@@ -4623,7 +4621,7 @@ void MainWindow::Mouse_Pressed()
 
 		/// drawing marker all over the image and coloring the selected one with
 		/// a different color
-		for (int i = 0; i < featsImage1.size(); i++)
+		for (unsigned int i = 0; i < featsImage1.size(); i++)
 		{
 			int temp_x = (int)featsImage1.getFeatureX(i);
 			int temp_y = (int)featsImage1.getFeatureY(i);
@@ -4735,3 +4733,4 @@ int MainWindow::findClosest(double x, double y, double X[], double Y[], int n)
 	}
 	return pos;
 }
+

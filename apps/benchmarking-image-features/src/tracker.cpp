@@ -132,12 +132,13 @@ cv::Mat Tracker::trackThemAll(
 
 	{  // FPS:
 		static CTicTac tictac;
-		const double T = tictac.Tac();
+		//const double T = tictac.Tac();
 		tictac.Tic();
-		const double fps = 1.0 / (std::max(1e-5, T));
+		//const double fps = 1.0 / (std::max(1e-5, T));
 		// theImg.filledRectangle(1,1,175,25,TColor(0,0,0));
 
-		const int current_adapt_thres = tracker->getDetectorAdaptiveThreshold();
+		//const int current_adapt_thres =
+		tracker->getDetectorAdaptiveThreshold();
 	}
 
 	// Draw feature tracks
