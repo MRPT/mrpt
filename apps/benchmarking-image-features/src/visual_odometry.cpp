@@ -73,7 +73,7 @@ double VisualOdometry::getAbsoluteScale(
 	ifstream myfile(poses_ground_truth);
 
 	double x = 0, y = 0, z = 0;
-	double x_prev, y_prev, z_prev;
+	double x_prev=0, y_prev=0, z_prev=0;
 	if (myfile.is_open())
 	{
 		while ((getline(myfile, line)) && (i <= frame_id))
@@ -345,7 +345,7 @@ Mat VisualOdometry::generateVO(
 	R_f = R.clone();
 	t_f = t.clone();
 
-	clock_t begin = clock();
+	//clock_t begin = clock();
 
 	// namedWindow( "Road facing camera", WINDOW_AUTOSIZE );// Create a window
 	// for display.
@@ -379,7 +379,7 @@ Mat VisualOdometry::generateVO(
 		Mat prevPts(2, prevFeatures.size(), CV_64F),
 			currPts(2, currFeatures.size(), CV_64F);
 
-		for (int i = 0; i < prevFeatures.size(); i++)
+		for (unsigned int i = 0; i < prevFeatures.size(); i++)
 		{  // this (x,y) combination makes sense as observed from the source
 			// code of triangulatePoints on GitHub
 			prevPts.at<double>(0, i) = prevFeatures.at(i).x;
@@ -448,8 +448,8 @@ Mat VisualOdometry::generateVO(
 		cnt.setValue(numFrame);
 	}
 
-	clock_t end = clock();
-	double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+	//clock_t end = clock();
+	//double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
 	//cout << "Total time taken: " << elapsed_secs << "s" << endl;
 
 	storeGroundTruth(groundtruth);
@@ -559,7 +559,7 @@ void VisualOdometry::featureTracking(
 	// getting rid of points for which the KLT tracking failed or those who have
 	// gone outside the frame
 	int indexCorrection = 0;
-	for (int i = 0; i < status.size(); i++)
+	for (unsigned int i = 0; i < status.size(); i++)
 	{
 		Point2f pt = points2.at(i - indexCorrection);
 		if ((status.at(i) == 0) || (pt.x < 0) || (pt.y < 0))
@@ -589,7 +589,7 @@ void VisualOdometry::featureDetection(
 
 	vector<KeyPoint>::iterator iterator = keypoints_1.begin();
 
-	for (int i = 0; i < featsList1.size(); i++)
+	for (unsigned int i = 0; i < featsList1.size(); i++)
 	{
 		Point2f temp_pt(featsList1.getFeatureX(i), featsList1.getFeatureY(i));
 		KeyPoint temp;

@@ -115,7 +115,7 @@ class MainWindow : public QMainWindow
 	//! when loading image datasets
 	QPushButton* next_button;  //!< previous button to go forward one image when
 	//! loading image datasets
-	int current_imageIndex;  //!< used as a counter variable in
+	unsigned long current_imageIndex;  //!< used as a counter variable in
 	//! readFilesFromFolder function
 
 	QPushButton*
