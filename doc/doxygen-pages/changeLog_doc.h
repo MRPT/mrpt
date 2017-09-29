@@ -45,6 +45,7 @@
 		- Fix aborting reading from LMS111 scanner on first error.
 		- Fix == operator on CPose3D: it now uses an epsilon for comparing the rotation matrices.
 		- Fix accessing unaligned POD variables deserializing CObservationGPS (via the new `MRPT_READ_POD()` macro).
+		- Fix segfault in CMetricMap::loadFromSimpleMap() if the provided CMetricMap has empty smart pointers.
 
 <hr>
 <a name="1.5.4">
