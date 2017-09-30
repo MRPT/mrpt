@@ -48,8 +48,8 @@ void CMetricMap::loadFromProbabilisticPosesAndObservations(
 	for (size_t i = 0; i < n; i++)
 	{
 		sfSeq.get(i, posePDF, sf);
-		ASSERTMSG_(posePDF, "Input simplemap contains an empty `CPose3DPDF` object!");
-		ASSERTMSG_(sf, "Input simplemap contains an empty `CSensoryFrame` object!");
+		ASSERTMSG_(posePDF, "Input map has an empty `CPose3DPDF` ptr");
+		ASSERTMSG_(sf, "Input map has an empty `CSensoryFrame` ptr");
 
 		CPose3D robotPose;
 		posePDF->getMean(robotPose);
