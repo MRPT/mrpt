@@ -193,7 +193,6 @@ class MainWindow : public QMainWindow
 	QCheckBox* param1_boolean_desc;
 	QCheckBox* param2_boolean_desc;
 
-
 	/// provide user options like repeatability, activate/deactivate non-maximal
 	/// suppression, image decimation, step-by-step playback of images.
 	QCheckBox* homography_enable;  //!< Checkbox to activate homography based
