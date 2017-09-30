@@ -81,7 +81,7 @@ cv::Mat Tracker::trackThemAll(
 	CImage theImg;  // The grabbed image:
 	theImg.loadFromFile(files_fullpath_tracking.at(current_num));
 
-	//cout << theImg.isColor() << " color check" << endl;
+	// cout << theImg.isColor() << " color check" << endl;
 
 	// Take the resolution upon first valid frame.
 	if (!hasResolution)
@@ -132,25 +132,25 @@ cv::Mat Tracker::trackThemAll(
 
 	{  // FPS:
 		static CTicTac tictac;
-		//const double T = tictac.Tac();
+		// const double T = tictac.Tac();
 		tictac.Tic();
-		//const double fps = 1.0 / (std::max(1e-5, T));
+		// const double fps = 1.0 / (std::max(1e-5, T));
 		// theImg.filledRectangle(1,1,175,25,TColor(0,0,0));
 
-		//const int current_adapt_thres =
+		// const int current_adapt_thres =
 		tracker->getDetectorAdaptiveThreshold();
 	}
 
 	// Draw feature tracks
 	if (SHOW_FEAT_TRACKS)
 	{
-		//cout << "here in show_FEAT_TRACKS" << endl;
+		// cout << "here in show_FEAT_TRACKS" << endl;
 		// Update new feature coords:
 		tracker->getProfiler().enter("drawFeatureTracks");
 
 		std::set<TFeatureID> observed_IDs;
 
-		//cout << "tracked feats size" << trackedFeats.size() << endl;
+		// cout << "tracked feats size" << trackedFeats.size() << endl;
 		for (size_t i = 0; i < trackedFeats.size(); ++i)
 		{
 			const TSimpleFeature& ft = trackedFeats[i];
