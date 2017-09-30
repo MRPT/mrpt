@@ -35,7 +35,6 @@ using namespace mrpt;
 using namespace mrpt::poses;
 using namespace std;
 
-
 using namespace cv;
 using namespace cv::xfeatures2d;
 
@@ -116,7 +115,7 @@ void MainWindow::on_button_generate_clicked()
 	// ReadInputFormat();
 	CFeatureList featsImage2_2;
 
-	//float temp_dist1 = 0, temp_dist2 = 0;
+	// float temp_dist1 = 0, temp_dist2 = 0;
 
 	double min_dist = 0, max_dist = 0;
 	size_t min_dist_idx = 0, max_dist_idx = 0;
@@ -149,7 +148,7 @@ void MainWindow::on_button_generate_clicked()
 				min_dist, max_dist, &min_dist_idx, &max_dist_idx);
 
 			const double dist_std = mrpt::math::stddev(distances);
-			//cout << "Min Distance : " << min_dist << " for image2 feature # "
+			// cout << "Min Distance : " << min_dist << " for image2 feature # "
 			//	 << min_dist_idx << " Distances sigma " << dist_std
 			//	 << " I Feature X : " << featsImage1.getFeatureX(i1)
 			//	 << " I Feature Y : " << featsImage1.getFeatureY(i1)
@@ -558,19 +557,18 @@ void MainWindow::on_descriptor_choose(int choice)
 
 	if (choice == 0)  //!< SIFT descriptors
 	{
-        param1_desc->setText("Threshold: ");
-        param2_desc->setText("Edge Threshold: ");
-        param1_edit_desc->setText("0.04");
-        param2_edit_desc->setText("10");
-        param3_desc->setVisible(false);
-        param4_desc->setVisible(false);
-        param5_desc->setVisible(false);
-        param3_edit_desc->setVisible(false);
-        param4_edit_desc->setVisible(false);
-        param5_edit_desc->setVisible(false);
-        param1_boolean_desc->setVisible(false);
-        param2_boolean_desc->setVisible(false);
-
+		param1_desc->setText("Threshold: ");
+		param2_desc->setText("Edge Threshold: ");
+		param1_edit_desc->setText("0.04");
+		param2_edit_desc->setText("10");
+		param3_desc->setVisible(false);
+		param4_desc->setVisible(false);
+		param5_desc->setVisible(false);
+		param3_edit_desc->setVisible(false);
+		param4_edit_desc->setVisible(false);
+		param5_edit_desc->setVisible(false);
+		param1_boolean_desc->setVisible(false);
+		param2_boolean_desc->setVisible(false);
 
 #if !MRPT_HAS_SIFT_HESS
 		QMessageBox::information(
@@ -578,28 +576,27 @@ void MainWindow::on_descriptor_choose(int choice)
 			"MRPT has been compiled without SIFT Hess support");
 		return;
 #endif
-
 	}
 	else if (choice == 1)  //!< SURF descriptors
 	{
 		param1_desc->setText("hessianThreshold: ");
 		param2_desc->setText("nLayersPerOctave: ");
 		param3_desc->setText("nOctaves: ");
-		//param4_desc->setText("if rotation invariant: ");
+		// param4_desc->setText("if rotation invariant: ");
 		param1_edit_desc->setText("600");
 		param2_edit_desc->setText("4");
 		param3_edit_desc->setText("2");
-		//param4_edit_desc->setText("true");
-        param1_boolean_desc->setChecked(true);
-        param1_boolean_desc->setText("If rotation invariant");
-        param1_boolean_desc->setVisible(true);
+		// param4_edit_desc->setText("true");
+		param1_boolean_desc->setChecked(true);
+		param1_boolean_desc->setText("If rotation invariant");
+		param1_boolean_desc->setVisible(true);
 
-        param4->setVisible(false);
-        param4_edit_desc->setVisible(false);
+		param4->setVisible(false);
+		param4_edit_desc->setVisible(false);
 		param5_desc->setVisible(false);
 		param5_edit_desc->setVisible(false);
 
-        param2_boolean_desc->setVisible(false);
+		param2_boolean_desc->setVisible(false);
 	}
 	else if (choice == 2)  //!< Intensity-domain spin image descriptors
 	{
@@ -614,9 +611,8 @@ void MainWindow::on_descriptor_choose(int choice)
 		param4_edit_desc->setText("0.4");
 		param5_edit_desc->setText("20");
 
-
-        param1_boolean_desc->setVisible(false);
-        param2_boolean_desc->setVisible(false);
+		param1_boolean_desc->setVisible(false);
+		param2_boolean_desc->setVisible(false);
 	}
 	else if (choice == 3)  // Polar Image descriptor
 	{
@@ -631,8 +627,8 @@ void MainWindow::on_descriptor_choose(int choice)
 		param5_desc->setVisible(false);
 		param4_edit_desc->setVisible(false);
 		param5_edit_desc->setVisible(false);
-        param1_boolean_desc->setVisible(false);
-        param2_boolean_desc->setVisible(false);
+		param1_boolean_desc->setVisible(false);
+		param2_boolean_desc->setVisible(false);
 	}
 	else if (choice == 4)  // Log Polar Image descriptor
 	{
@@ -647,29 +643,29 @@ void MainWindow::on_descriptor_choose(int choice)
 		param5_desc->setVisible(false);
 		param4_edit_desc->setVisible(false);
 		param5_edit_desc->setVisible(false);
-        param1_boolean_desc->setVisible(false);
-        param2_boolean_desc->setVisible(false);
+		param1_boolean_desc->setVisible(false);
+		param2_boolean_desc->setVisible(false);
 	}
 	else if (choice == 5)  // ORB Descriptor
 	{
 		param1_desc->setText("Min Distance ");
-		//param2_desc->setText("If extract patch true/false: ");
+		// param2_desc->setText("If extract patch true/false: ");
 		param3_desc->setText("Number of levels: ");
 		param4_desc->setText("Scale factor: ");
 		param1_edit_desc->setText("0");
-		//param2_edit_desc->setText("false");
+		// param2_edit_desc->setText("false");
 		param3_edit_desc->setText("8");
 		param4_edit_desc->setText("1.2");
-        param1_boolean_desc->setText("If extract patch true/false:");
-        param1_boolean_desc->setChecked(true);
-        param1_boolean_desc->setVisible(true);
+		param1_boolean_desc->setText("If extract patch true/false:");
+		param1_boolean_desc->setChecked(true);
+		param1_boolean_desc->setVisible(true);
 
-        param2_desc->setVisible(false);
-        param2_edit_desc->setVisible(false);
-        param5_desc->setVisible(false);
-        param5_edit_desc->setVisible(false);
+		param2_desc->setVisible(false);
+		param2_edit_desc->setVisible(false);
+		param5_desc->setVisible(false);
+		param5_edit_desc->setVisible(false);
 
-        param2_boolean_desc->setVisible(false);
+		param2_boolean_desc->setVisible(false);
 	}
 	else if (choice == 6)  // BLD Descriptor
 	{
@@ -684,28 +680,28 @@ void MainWindow::on_descriptor_choose(int choice)
 
 		param5_desc->setVisible(false);
 		param5_edit_desc->setVisible(false);
-        param1_boolean_desc->setVisible(false);
-        param2_boolean_desc->setVisible(false);
+		param1_boolean_desc->setVisible(false);
+		param2_boolean_desc->setVisible(false);
 	}
 	else if (choice == 7)  // LATCH Descriptor
 	{
 		param1_desc->setText("sizeDescriptor (bytes) ");
-		//param2_desc->setText("rotation invariance: ");
+		// param2_desc->setText("rotation invariance: ");
 		param3_desc->setText("half_ssd_size: ");
 		param1_edit_desc->setText("32");
-		//param2_edit_desc->setText("true");
+		// param2_edit_desc->setText("true");
 		param3_edit_desc->setText("3");
-        param1_boolean_desc->setChecked(true);
-        param1_boolean_desc->setText("rotation invariance: ");
-        param1_boolean_desc->setVisible(true);
+		param1_boolean_desc->setChecked(true);
+		param1_boolean_desc->setText("rotation invariance: ");
+		param1_boolean_desc->setVisible(true);
 
-        param2_desc->setVisible(false);
-        param2_edit_desc->setVisible(false);
-        param4_desc->setVisible(false);
-        param4_edit_desc->setVisible(false);
-        param5_desc->setVisible(false);
+		param2_desc->setVisible(false);
+		param2_edit_desc->setVisible(false);
+		param4_desc->setVisible(false);
+		param4_edit_desc->setVisible(false);
+		param5_desc->setVisible(false);
 		param5_edit_desc->setVisible(false);
-        param2_boolean_desc->setVisible(false);
+		param2_boolean_desc->setVisible(false);
 	}
 	else
 	{
@@ -730,20 +726,20 @@ void MainWindow::on_detector_choose(int choice)
 		param1->setText("Min distance : ");
 		param2->setText("Radius : ");
 		param3->setText("Threshold : ");
-		//param4->setText("Tile-image true/false : ");
+		// param4->setText("Tile-image true/false : ");
 		param1_edit->setText("7");
 		param2_edit->setText("7");
 		param3_edit->setText("0.1");
-		//param4_edit->setText("true");
-        param1_boolean->setChecked(true);
-        param1_boolean->setText("Tile-image true/false: ");
-        param1_boolean->setVisible(true);
+		// param4_edit->setText("true");
+		param1_boolean->setChecked(true);
+		param1_boolean->setText("Tile-image true/false: ");
+		param1_boolean->setVisible(true);
 
-        param4->setVisible(false);
-        param4_edit->setVisible(false);
-        param5->setVisible(false);
-        param5_edit->setVisible(false);
-        param2_boolean->setVisible(false);
+		param4->setVisible(false);
+		param4_edit->setVisible(false);
+		param5->setVisible(false);
+		param5_edit->setVisible(false);
+		param2_boolean->setVisible(false);
 	}
 	// for Harris Features
 	else if (choice == 1)
@@ -752,20 +748,20 @@ void MainWindow::on_detector_choose(int choice)
 		param2->setText("Sensitivity, k : ");
 		param3->setText("Smoothing, sigma : ");
 		param4->setText("Block size, radius : ");
-		//param5->setText("Tile_image (true/false) : ");
+		// param5->setText("Tile_image (true/false) : ");
 		param1_edit->setText("0.005");
 		param2_edit->setText("0.04");
 		param3_edit->setText("1.5");
 		param4_edit->setText("3");
-		//param5_edit->setText("true");
-        param1_boolean->setChecked(true);
-        param1_boolean->setText("Tile-image (true/false): ");
-        param1_boolean->setVisible(true);
+		// param5_edit->setText("true");
+		param1_boolean->setChecked(true);
+		param1_boolean->setText("Tile-image (true/false): ");
+		param1_boolean->setVisible(true);
 
-        param2_boolean->setVisible(false);
+		param2_boolean->setVisible(false);
 
-        param5->setVisible(false);
-        param5_edit->setVisible(false);
+		param5->setVisible(false);
+		param5_edit->setVisible(false);
 	}
 	// BCD Features not implemented yet in MRPT library
 	/*else if(choice == 2)
@@ -792,75 +788,75 @@ void MainWindow::on_detector_choose(int choice)
 		param4_edit->setVisible(false);
 		param5_edit->setVisible(false);
 
-        param1_boolean->setVisible(false);
-        param2_boolean->setVisible(false);
-    }
+		param1_boolean->setVisible(false);
+		param2_boolean->setVisible(false);
+	}
 	// for SURF Features
 	else if (choice == 3)
 	{
 		param1->setText("HessianThreshold: ");
 		param2->setText("nLayersPerOctave: ");
 		param3->setText("nOctaves: ");
-		//param4->setText("if rotation invariant: ");
+		// param4->setText("if rotation invariant: ");
 		param1_edit->setText("600");
 		param2_edit->setText("4");
 		param3_edit->setText("2");
-		//param4_edit->setText("true");
+		// param4_edit->setText("true");
 
-        param1_boolean->setChecked(true);
-        param1_boolean->setText("if rotation invariant: ");
-        param1_boolean->setVisible(true);
+		param1_boolean->setChecked(true);
+		param1_boolean->setText("if rotation invariant: ");
+		param1_boolean->setVisible(true);
 
-        param4->setVisible(false);
-        param4_edit->setVisible(false);
-        param5->setVisible(false);
-        param5_edit->setVisible(false);
-        param2_boolean->setVisible(false);
-    }
+		param4->setVisible(false);
+		param4_edit->setVisible(false);
+		param5->setVisible(false);
+		param5_edit->setVisible(false);
+		param2_boolean->setVisible(false);
+	}
 	// for FAST, FASTER9, FASTER10, FASTER12 features
 	else if (choice == 4 || choice == 5 || choice == 6 || choice == 7)
 	{
 		param1->setText("Threshold: ");
 		param2->setText("MinimumDistance: ");
-		//param3->setText("Enable non maximal supression (true/false): ");
-		//param4->setText("Enable use KLT response (true/false): ");
+		// param3->setText("Enable non maximal supression (true/false): ");
+		// param4->setText("Enable use KLT response (true/false): ");
 		param1_edit->setText("20");
 		param2_edit->setText("5");
-		//param3_edit->setText("true");
-		//param4_edit->setText("true");
+		// param3_edit->setText("true");
+		// param4_edit->setText("true");
 
-        param1_boolean->setChecked(true);
-        param1_boolean->setText("Enable non maximal supression (true/false): ");
-        param1_boolean->setVisible(true);
-        param2_boolean->setChecked(true);
-        param2_boolean->setText("Enable use KLT response (true/false):  ");
-        param2_boolean->setVisible(true);
+		param1_boolean->setChecked(true);
+		param1_boolean->setText("Enable non maximal supression (true/false): ");
+		param1_boolean->setVisible(true);
+		param2_boolean->setChecked(true);
+		param2_boolean->setText("Enable use KLT response (true/false):  ");
+		param2_boolean->setVisible(true);
 
-        param3->setVisible(false);
-        param3_edit->setVisible(false);
-        param4->setVisible(false);
-        param4_edit->setVisible(false);
-        param5->setVisible(false);
-        param5_edit->setVisible(false);
+		param3->setVisible(false);
+		param3_edit->setVisible(false);
+		param4->setVisible(false);
+		param4_edit->setVisible(false);
+		param5->setVisible(false);
+		param5_edit->setVisible(false);
 	}
 	// ORB Features
 	else if (choice == 8)
 	{
 		param1->setText("Min Distance: ");
-		//param2->setText("if extract patch true / false: ");
+		// param2->setText("if extract patch true / false: ");
 		param3->setText("Number of levels: ");
 		param4->setText("Scale factor: ");
 		param1_edit->setText("0");
-		//param2_edit->setText("false");
+		// param2_edit->setText("false");
 		param3_edit->setText("8");
 		param4_edit->setText("1.2");
-        param1_boolean->setChecked(false);
-        param1_boolean->setVisible(true);
-        param1_boolean->setText("if extract patch (true/false): ");
+		param1_boolean->setChecked(false);
+		param1_boolean->setVisible(true);
+		param1_boolean->setText("if extract patch (true/false): ");
 
 		param5->setVisible(false);
 		param5_edit->setVisible(false);
-        param2_boolean->setVisible(false);
+		param2_boolean->setVisible(false);
 	}
 	else if (choice == 9)
 	{
@@ -875,8 +871,8 @@ void MainWindow::on_detector_choose(int choice)
 		param4_edit->setText("4");
 		param5_edit->setText("4");
 
-        param1_boolean->setVisible(false);
-        param2_boolean->setVisible(false);
+		param1_boolean->setVisible(false);
+		param2_boolean->setVisible(false);
 	}
 	else if (choice == 10)
 	{
@@ -891,8 +887,8 @@ void MainWindow::on_detector_choose(int choice)
 		param3_edit->setVisible(false);
 		param4_edit->setVisible(false);
 		param5_edit->setVisible(false);
-        param1_boolean->setVisible(false);
-        param2_boolean->setVisible(false);
+		param1_boolean->setVisible(false);
+		param2_boolean->setVisible(false);
 	}
 	else
 	{
@@ -1002,7 +998,7 @@ void MainWindow::makeVisionOptionsVisible(bool flag)
 ************************************************************************************************/
 void MainWindow::readRawlogFiles(string rawlog)
 {
-	//cout << "Rawlog file selected: " << rawlog << endl;
+	// cout << "Rawlog file selected: " << rawlog << endl;
 
 	/// APPROACH 1: not required
 	/*mrpt::utils::CFileGZInputStream rawlog_stream_;// = new CFileGZInputStream
@@ -1024,7 +1020,8 @@ void MainWindow::readRawlogFiles(string rawlog)
 	/// APPROACH 2 this is what we need
 	CRawlog dataset;
 	dataset.loadFromRawLogFile(rawlog);
-	//cout << "Rawlog dataset size: " << dataset.size() << " entries loaded." << endl;
+	// cout << "Rawlog dataset size: " << dataset.size() << " entries loaded."
+	// << endl;
 
 	string errorMsg;
 	ofstream ostream1;
@@ -1040,7 +1037,7 @@ void MainWindow::readRawlogFiles(string rawlog)
 				/// to be implemented
 				case CRawlog::etSensoryFrame:
 				{
-					//cout << "etSensoryFrame " << i << endl;
+					// cout << "etSensoryFrame " << i << endl;
 					CSensoryFrame::Ptr SF = dataset.getAsObservations(i);
 
 					for (unsigned int k = 0; k < SF->size(); k++)
@@ -1051,7 +1048,7 @@ void MainWindow::readRawlogFiles(string rawlog)
 							CObservationStereoImages::Ptr obsSt =
 								SF->getObservationByIndexAs<
 									CObservationStereoImages::Ptr>(k);
-							//cout << " inside stereo Sensory Frame"
+							// cout << " inside stereo Sensory Frame"
 							//	 << obsSt->imageLeft.getHeight() << endl;
 						}
 						if (SF->getObservationByIndex(k)->GetRuntimeClass() ==
@@ -1061,26 +1058,26 @@ void MainWindow::readRawlogFiles(string rawlog)
 								SF->getObservationByIndexAs<
 									CObservationImage::Ptr>(k);
 
-							//cout << " inside monocular Sensory Frame"
+							// cout << " inside monocular Sensory Frame"
 							//	 << obsIm->image.getHeight() << endl;
 							Mat cvImg =
 								cv::cvarrToMat(obsIm->image.getAs<IplImage>());
-							//imshow("view", cvImg);
-							//waitKey(1);
+							// imshow("view", cvImg);
+							// waitKey(1);
 						}
 					}
 				}  // end of etSensoryFrame case
 				break;
 				case CRawlog::etObservation:
 				{
-					//cout << "etObservation " << i << endl;
+					// cout << "etObservation " << i << endl;
 					CObservation::Ptr o = dataset.getAsObservation(i);
 					// cout << o->sensorLabel << " type : etObs" <<
 					// dataset.getType(i) << " index: " << i << endl;
 
 					if (IS_CLASS(o, CObservationStereoImages))
 					{
-						//cout << " stereo Image detected " << endl;
+						// cout << " stereo Image detected " << endl;
 						CObservationStereoImages::Ptr obsSt =
 							std::dynamic_pointer_cast<CObservationStereoImages>(
 								o);
@@ -1095,7 +1092,7 @@ void MainWindow::readRawlogFiles(string rawlog)
 						inputFilePath->setText(
 							QString::fromStdString(str.str()));
 
-						//cout << obsSt->imageLeft
+						// cout << obsSt->imageLeft
 						//			.getExternalStorageFileAbsolutePath()
 						//	 << " external " << endl;
 
@@ -1108,7 +1105,7 @@ void MainWindow::readRawlogFiles(string rawlog)
 					}
 					else if (IS_CLASS(o, CObservationImage))
 					{
-						//cout << "monocular image detected " << endl;
+						// cout << "monocular image detected " << endl;
 						CObservationImage::Ptr obsIm =
 							std::dynamic_pointer_cast<CObservationImage>(o);
 
@@ -1135,15 +1132,14 @@ void MainWindow::readRawlogFiles(string rawlog)
 				break;
 				case CRawlog::etActionCollection:
 				{
-					//cout << "etActionCollection " << i << endl;
-					//cout << " type : etAC " << dataset.getType(i)
+					// cout << "etActionCollection " << i << endl;
+					// cout << " type : etAC " << dataset.getType(i)
 					//	 << " index: " << i << endl;
 					break;
 				}  // end of etActionCollection
 
-				default:
-                    ;// nothing goes here;
-					//cout << " I am in default block" << endl;
+				default:;  // nothing goes here;
+					// cout << " I am in default block" << endl;
 			}  // end of switch case block
 			/// this breaks out of the for loop as only the path of the folder
 			/// storing the images is required.
@@ -1155,7 +1151,7 @@ void MainWindow::readRawlogFiles(string rawlog)
 		}  // end of the try block
 		catch (exception& e)
 		{
-			//cout << " CATCH CATCH CATCH BLOCK %$#@%($@*%(&@(%&@(%@(#$%(@#^$%"
+			// cout << " CATCH CATCH CATCH BLOCK %$#@%($@*%(&@(%&@(%@(#$%(@#^$%"
 			//	 << endl;
 			errorMsg = e.what();
 			break;
@@ -1279,7 +1275,7 @@ void MainWindow::on_file_input_choose(int choice)
 void MainWindow::fillDetectorInfo()
 {
 	numFeats = numFeaturesLineEdit->text().toInt();
-	//cout << file_path1 << " File Path in fillDetectorInfo " << endl;
+	// cout << file_path1 << " File Path in fillDetectorInfo " << endl;
 
 	img1.loadFromFile(file_path1);
 	resolution_x = img1.getWidth();
@@ -1290,7 +1286,7 @@ void MainWindow::fillDetectorInfo()
 		 rawlog_type == 1))  // stereo image or stereo dataset
 		img2.loadFromFile(file_path2);
 
-	//cout << file_path1 << " File Path in fillDetectorInfo AFTER IMAGE READ "
+	// cout << file_path1 << " File Path in fillDetectorInfo AFTER IMAGE READ "
 	//	 << endl;
 
 	if (detector_selected == 0)  // 0 = KLT Detector
@@ -1300,17 +1296,17 @@ void MainWindow::fillDetectorInfo()
 		klt_opts.radius = param2_edit->text().toInt();
 		klt_opts.threshold = param3_edit->text().toFloat();
 		string temp_str = param4_edit->text().toStdString();
-		//bool temp_bool = temp_str.compare("true") == 0;
-		//klt_opts.tile_image = temp_bool;
+		// bool temp_bool = temp_str.compare("true") == 0;
+		// klt_opts.tile_image = temp_bool;
 
-        klt_opts.tile_image = param1_boolean->isChecked();
+		klt_opts.tile_image = param1_boolean->isChecked();
 
 		fext.options.KLTOptions.min_distance = klt_opts.min_distance;
 		fext.options.KLTOptions.radius = klt_opts.radius;
 		fext.options.KLTOptions.threshold = klt_opts.threshold;
 		fext.options.KLTOptions.tile_image = klt_opts.tile_image;
 
-		//cout << "detecting KLT Features " << endl;
+		// cout << "detecting KLT Features " << endl;
 	}
 	else if (detector_selected == 1)  // Harris Features
 	{
@@ -1319,13 +1315,12 @@ void MainWindow::fillDetectorInfo()
 		harris_opts.k = param2_edit->text().toFloat();
 		harris_opts.sigma = param3_edit->text().toFloat();
 		harris_opts.radius = param4_edit->text().toFloat();
-		//string temp_str = param5_edit->text().toStdString();
-		//bool temp_bool = temp_str.compare("true") ? false : true;
-        //harris_opts.tile_image = temp_bool;
-        harris_opts.tile_image = param1_boolean->isChecked();
+		// string temp_str = param5_edit->text().toStdString();
+		// bool temp_bool = temp_str.compare("true") ? false : true;
+		// harris_opts.tile_image = temp_bool;
+		harris_opts.tile_image = param1_boolean->isChecked();
 
-
-        fext.options.harrisOptions.threshold = harris_opts.threshold;  // 0.005;
+		fext.options.harrisOptions.threshold = harris_opts.threshold;  // 0.005;
 		fext.options.harrisOptions.k = harris_opts.k;  // default sensitivity
 		fext.options.harrisOptions.sigma =
 			harris_opts.sigma;  // default from matlab smoothing filter
@@ -1334,7 +1329,7 @@ void MainWindow::fillDetectorInfo()
 		// fext.options.harrisOptions.min_distance = 100;
 		fext.options.harrisOptions.tile_image = harris_opts.tile_image;
 
-		//cout << "detecting Harris Features " << endl;
+		// cout << "detecting Harris Features " << endl;
 	}
 
 	else if (detector_selected == 2)  // SIFT Detector
@@ -1348,7 +1343,7 @@ void MainWindow::fillDetectorInfo()
 		// fext.options.SIFTOptions.implementation =
 		// CFeatureExtraction::CSBinary;
 
-		//cout << "detecting SIFT Features " << endl;
+		// cout << "detecting SIFT Features " << endl;
 	}
 	else if (detector_selected == 3)  // 3= SURF Detector
 	{
@@ -1356,12 +1351,12 @@ void MainWindow::fillDetectorInfo()
 		SURF_opts.hessianThreshold = param1_edit->text().toInt();
 		SURF_opts.nLayersPerOctave = param2_edit->text().toInt();
 		SURF_opts.nOctaves = param3_edit->text().toInt();
-		//string temp_str = param4_edit->text().toStdString();
-		//bool temp_bool = temp_str.compare("true") == 0;
-        //SURF_opts.rotation_invariant = temp_bool;
-        SURF_opts.rotation_invariant = param1_boolean->isChecked();
+		// string temp_str = param4_edit->text().toStdString();
+		// bool temp_bool = temp_str.compare("true") == 0;
+		// SURF_opts.rotation_invariant = temp_bool;
+		SURF_opts.rotation_invariant = param1_boolean->isChecked();
 
-        //cout << temp_bool << endl;
+		// cout << temp_bool << endl;
 
 		fext.options.SURFOptions.hessianThreshold = SURF_opts.hessianThreshold;
 		fext.options.SURFOptions.nLayersPerOctave = SURF_opts.nLayersPerOctave;
@@ -1376,19 +1371,17 @@ void MainWindow::fillDetectorInfo()
 	{
 		fast_opts.threshold = param1_edit->text().toFloat();
 		fast_opts.min_distance = param2_edit->text().toFloat();
-		//string temp_str = param3_edit->text().toStdString();
-		//bool temp_bool = temp_str.compare("true") == 0;
-        //fast_opts.use_KLT_response = temp_bool;
-        fast_opts.use_KLT_response = param1_boolean->isChecked();
+		// string temp_str = param3_edit->text().toStdString();
+		// bool temp_bool = temp_str.compare("true") == 0;
+		// fast_opts.use_KLT_response = temp_bool;
+		fast_opts.use_KLT_response = param1_boolean->isChecked();
 
+		// temp_str = param4_edit->text().toStdString();
+		// temp_bool = temp_str.compare("true") == 0;
+		// fast_opts.non_max_suppresion = temp_bool;
+		fast_opts.non_max_suppresion = param2_boolean->isChecked();
 
-        //temp_str = param4_edit->text().toStdString();
-		//temp_bool = temp_str.compare("true") == 0;
-        //fast_opts.non_max_suppresion = temp_bool;
-        fast_opts.non_max_suppresion = param2_boolean->isChecked();
-
-
-        if (detector_selected == 4)
+		if (detector_selected == 4)
 			fext.options.featsType = featFAST;
 		else if (detector_selected == 5)
 			fext.options.featsType = featFASTER9;
@@ -1407,12 +1400,12 @@ void MainWindow::fillDetectorInfo()
 	{
 		fext.options.featsType = featORB;
 		ORB_opts.min_distance = param1_edit->text().toInt();
-		//string temp_str = param2_edit->text().toStdString();
-		//bool temp_bool = temp_str.compare("true") == 0;
-        //ORB_opts.extract_patch = temp_bool;
-        ORB_opts.extract_patch = param1_boolean->isChecked();
+		// string temp_str = param2_edit->text().toStdString();
+		// bool temp_bool = temp_str.compare("true") == 0;
+		// ORB_opts.extract_patch = temp_bool;
+		ORB_opts.extract_patch = param1_boolean->isChecked();
 
-        ORB_opts.n_levels = param3_edit->text().toInt();
+		ORB_opts.n_levels = param3_edit->text().toInt();
 		ORB_opts.scale_factor = param4_edit->text().toFloat();
 
 		fext.options.ORBOptions.min_distance = ORB_opts.min_distance;
@@ -1485,12 +1478,12 @@ void MainWindow::fillDescriptorInfo()
 		SURF_opts.hessianThreshold = param1_edit_desc->text().toInt();
 		SURF_opts.nLayersPerOctave = param2_edit_desc->text().toInt();
 		SURF_opts.nOctaves = param3_edit_desc->text().toInt();
-		//string temp_str = param4_edit_desc->text().toStdString();
-		//bool temp_bool = temp_str.compare("true") == 0;
-        //SURF_opts.rotation_invariant = temp_bool;
-        SURF_opts.rotation_invariant = param1_boolean->isChecked();
+		// string temp_str = param4_edit_desc->text().toStdString();
+		// bool temp_bool = temp_str.compare("true") == 0;
+		// SURF_opts.rotation_invariant = temp_bool;
+		SURF_opts.rotation_invariant = param1_boolean->isChecked();
 
-        //cout << temp_bool << endl;
+		// cout << temp_bool << endl;
 
 		fext.options.SURFOptions.hessianThreshold = SURF_opts.hessianThreshold;
 		fext.options.SURFOptions.nLayersPerOctave = SURF_opts.nLayersPerOctave;
@@ -1547,12 +1540,12 @@ void MainWindow::fillDescriptorInfo()
 	{
 		desc_to_compute = TDescriptorType(32);  //!< ORB image descriptor
 
-		//string temp_str = param1_edit_desc->text().toStdString();
-		//bool temp_bool = temp_str.compare("true") == 0;
-        //ORB_opts.extract_patch = temp_bool;
-        ORB_opts.extract_patch = param1_boolean->isChecked();
+		// string temp_str = param1_edit_desc->text().toStdString();
+		// bool temp_bool = temp_str.compare("true") == 0;
+		// ORB_opts.extract_patch = temp_bool;
+		ORB_opts.extract_patch = param1_boolean->isChecked();
 
-        //cout << temp_bool << endl;
+		// cout << temp_bool << endl;
 
 		ORB_opts.min_distance = param2_edit_desc->text().toInt();
 		ORB_opts.n_levels = param3_edit_desc->text().toInt();
@@ -1581,12 +1574,12 @@ void MainWindow::fillDescriptorInfo()
 	{
 		desc_to_compute = TDescriptorType(128);  //!< LATCH image descriptor
 
-		//string temp_str = param2_edit_desc->text().toStdString();
-		//bool temp_bool = temp_str.compare("true") == 0;
-        //LATCH_opts.rotationInvariance = temp_bool;
-        LATCH_opts.rotationInvariance = param1_boolean->isChecked();
+		// string temp_str = param2_edit_desc->text().toStdString();
+		// bool temp_bool = temp_str.compare("true") == 0;
+		// LATCH_opts.rotationInvariance = temp_bool;
+		LATCH_opts.rotationInvariance = param1_boolean->isChecked();
 
-        //cout << temp_bool << endl;
+		// cout << temp_bool << endl;
 
 		LATCH_opts.bytes = param1_edit_desc->text().toInt();
 		LATCH_opts.half_ssd_size = param3_edit_desc->text().toInt();
@@ -1655,20 +1648,19 @@ void MainWindow::on_detector_button_clicked()
 	elapsedTime_detector = clock.Tac();
 
 	/// save to file
-	//cout << "before saving to file" << endl;
+	// cout << "before saving to file" << endl;
 	featsImage1.saveToTextFile("./KeyPoints1.txt");
 
-	//cout << "after saving to file" << endl;
+	// cout << "after saving to file" << endl;
 	cvImg1 = cv::cvarrToMat(img1.getAs<IplImage>());
 
-
-    /// converting to color images to draw markers in correct color
-    cv::Mat temp1(cvImg1.cols, cvImg1.rows, cvImg1.type());
-    //cout << "channels " << temp1.channels() << " dims" << temp1.dims << endl;
-    if (temp1.channels() == 3)
-        cvtColor(cvImg1, temp1, CV_BGR2RGB);
-    else
-        cvtColor(cvImg1, temp1, CV_GRAY2RGB);
+	/// converting to color images to draw markers in correct color
+	cv::Mat temp1(cvImg1.cols, cvImg1.rows, cvImg1.type());
+	// cout << "channels " << temp1.channels() << " dims" << temp1.dims << endl;
+	if (temp1.channels() == 3)
+		cvtColor(cvImg1, temp1, CV_BGR2RGB);
+	else
+		cvtColor(cvImg1, temp1, CV_GRAY2RGB);
 
 	/// Drawing a marker around key-points for image 1
 	for (unsigned int i = 0; i < featsImage1.size(); i++)
@@ -1683,9 +1675,8 @@ void MainWindow::on_detector_button_clicked()
 	}
 	drawLineLSD(temp1, 0);  /// 0 means draw line on left image
 
-
-    /// converting the cv::Mat to a QImage and changing the resolution of the
-    /// output images
+	/// converting the cv::Mat to a QImage and changing the resolution of the
+	/// output images
 
 	QImage dest1 = QImage(
 		(uchar*)temp1.data, temp1.cols, temp1.rows, temp1.step,
@@ -1694,7 +1685,7 @@ void MainWindow::on_detector_button_clicked()
 		dest1.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, Qt::KeepAspectRatio);
 	image1->setPixmap(QPixmap::fromImage(qscaled1));
 
-	//cout << "Number of Features in image 1: " << featsImage1.size() << endl;
+	// cout << "Number of Features in image 1: " << featsImage1.size() << endl;
 
 	if (currentInputIndex == 1 || currentInputIndex == 4 ||
 		(currentInputIndex == 2 && rawlog_type == 1))
@@ -1706,15 +1697,13 @@ void MainWindow::on_detector_button_clicked()
 		// img2.loadFromFile(file_path2);
 		cv::Mat cvImg2 = cv::cvarrToMat(img2.getAs<IplImage>());
 
-        /// converting to color to draw coloured markers
-        cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
-        //cout << "dimensions " << temp2.dims << endl;
-        if (temp2.channels() == 3)
-            cvtColor(cvImg2, temp2, CV_BGR2RGB);
-        else
-            cvtColor(cvImg2, temp2, CV_GRAY2RGB);
-
-
+		/// converting to color to draw coloured markers
+		cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
+		// cout << "dimensions " << temp2.dims << endl;
+		if (temp2.channels() == 3)
+			cvtColor(cvImg2, temp2, CV_BGR2RGB);
+		else
+			cvtColor(cvImg2, temp2, CV_GRAY2RGB);
 
 		/// Drawing a marker around key-points for image 2
 		for (unsigned int i = 0; i < featsImage2.size(); i++)
@@ -1729,15 +1718,14 @@ void MainWindow::on_detector_button_clicked()
 		}
 		drawLineLSD(temp2, 1);  // 1 means draw on right image
 
-
-
 		QImage dest2 = QImage(
 			(uchar*)temp2.data, temp2.cols, temp2.rows, temp2.step,
 			QImage::Format_RGB888);
 		QImage qscaled2 =
 			dest2.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, Qt::KeepAspectRatio);
 		image2->setPixmap(QPixmap::fromImage(qscaled2));
-		//cout << "Number of Features in image 2: " << featsImage2.size() << endl;
+		// cout << "Number of Features in image 2: " << featsImage2.size() <<
+		// endl;
 	}
 
 	/// compute dispersion of the image // maybe change the following to a
@@ -1851,7 +1839,7 @@ void MainWindow::on_descriptor_button_clicked()
 		}
 		featsImage1.saveToTextFile("./Key_Descriptors1.txt");
 
-		//cout << featsImage1.size() << endl;
+		// cout << featsImage1.size() << endl;
 	}
 	// storing size of descriptors for visualizer
 	if (descriptor_selected == 0)
@@ -1905,7 +1893,7 @@ void MainWindow::on_descriptor_button_clicked()
 	descriptor_result = temp_info2;
 
 	descriptor_info->setText(QString::fromStdString(concat.str()));
-	//cout << "Time Elapsed : " << tic.Tac() << endl;
+	// cout << "Time Elapsed : " << tic.Tac() << endl;
 	detector_info->setVisible(false);
 	descriptor_info2->setVisible(false);
 	descriptor_info3->setVisible(false);
@@ -1929,7 +1917,7 @@ void MainWindow::showEvaluation(int mode)
 	descriptor_info->setVisible(false);
 	evaluation_info->setVisible(true);
 
-	//cout << "end of show evaluation function" << endl;
+	// cout << "end of show evaluation function" << endl;
 }
 
 /************************************************************************************************
@@ -2113,14 +2101,14 @@ void MainWindow::ReadInputFormat()
 ************************************************************************************************/
 void MainWindow::readFilesFromFolder(int next_prev)
 {
-	//cout << " You clicked me" << endl;
+	// cout << " You clicked me" << endl;
 	ReadInputFormat();
 	flag_read_files_bug = false;
 
 	file_path1 = inputFilePath->text().toStdString();
 
-	//cout << file_path1 << endl;
-	//cout << currentInputIndex << endl;
+	// cout << file_path1 << endl;
+	// cout << currentInputIndex << endl;
 
 	/// used for the single images dataset case
 	DIR* dir;
@@ -2214,7 +2202,7 @@ void MainWindow::readFilesFromFolder(int next_prev)
 	sort(
 		files_fullpath.begin(),
 		files_fullpath.end());  // Use the start and end like this
-	//cout << current_imageIndex << "current IMage index" << endl;
+	// cout << current_imageIndex << "current IMage index" << endl;
 	file_path1 = files_fullpath.at(current_imageIndex);
 
 	/// DO the following only if user selects option for providing a STEREO
@@ -2227,7 +2215,7 @@ void MainWindow::readFilesFromFolder(int next_prev)
 
 		dir2 = opendir(file_path2.c_str());
 		while ((pdir2 = readdir(dir2))) files2.push_back(pdir2->d_name);
-		//cout << "after while before for" << endl;
+		// cout << "after while before for" << endl;
 		for (unsigned int i = 0, j = 0; i < files2.size(); i++)
 		{
 			if (files2.at(i).size() > 4)  // this removes the . and .. in linux
@@ -2250,17 +2238,17 @@ void MainWindow::readFilesFromFolder(int next_prev)
 	/// assumption both folders of the stereo image dataset have the same number
 	/// of images
 	if (next_prev == 1)
-        {
-                current_imageIndex = current_imageIndex + 1;
+	{
+		current_imageIndex = current_imageIndex + 1;
 		current_imageIndex = (current_imageIndex) % files_fullpath.size();
-        }
+	}
 	else if (next_prev == 2)
 		current_imageIndex = current_imageIndex % files_fullpath.size();
 	else
-        {
-                current_imageIndex = current_imageIndex - 1;
+	{
+		current_imageIndex = current_imageIndex - 1;
 		current_imageIndex = (current_imageIndex) % files_fullpath.size();
-        }
+	}
 }
 
 /************************************************************************************************
@@ -2283,13 +2271,14 @@ void MainWindow::displayImagesWithoutDetector()
 	featsImage1.clear();
 	fext.detectFeatures(img1, featsImage1, 0, numFeats);
 
-    /// converting to color to draw markers in color for both color and grayscale images
-    cv::Mat temp1(cvImg1.cols, cvImg1.rows, cvImg1.type());
-    //cout << "dimensions " << temp1.dims << endl;
-    if (temp1.channels() == 3)
-        cvtColor(cvImg1, temp1, CV_BGR2RGB);
-    else
-        cvtColor(cvImg1, temp1, CV_GRAY2RGB);
+	/// converting to color to draw markers in color for both color and
+	/// grayscale images
+	cv::Mat temp1(cvImg1.cols, cvImg1.rows, cvImg1.type());
+	// cout << "dimensions " << temp1.dims << endl;
+	if (temp1.channels() == 3)
+		cvtColor(cvImg1, temp1, CV_BGR2RGB);
+	else
+		cvtColor(cvImg1, temp1, CV_GRAY2RGB);
 
 	/// draw a marker for key-points in image 1
 	for (unsigned int i = 0; i < featsImage1.size(); i++)
@@ -2303,7 +2292,6 @@ void MainWindow::displayImagesWithoutDetector()
 			CROSS_SIZE, CROSS_THICKNESS);
 	}
 	drawLineLSD(temp1, 0);  // 0 means draw line on left image
-
 
 	QImage dest1 = QImage(
 		(uchar*)temp1.data, temp1.cols, temp1.rows, temp1.step,
@@ -2324,14 +2312,15 @@ void MainWindow::displayImagesWithoutDetector()
 		featsImage2.clear();
 		fext.detectFeatures(img2, featsImage2, 0, numFeats);
 
-        /// converting to color to draw markers in color for both color and grayscale images
-        cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
+		/// converting to color to draw markers in color for both color and
+		/// grayscale images
+		cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
 
-        //cout << "dimensions " << temp2.dims << endl;
-        if (temp2.channels() == 3)
-            cvtColor(cvImg2, temp2, CV_BGR2RGB);
-        else
-            cvtColor(cvImg2, temp2, CV_GRAY2RGB);
+		// cout << "dimensions " << temp2.dims << endl;
+		if (temp2.channels() == 3)
+			cvtColor(cvImg2, temp2, CV_BGR2RGB);
+		else
+			cvtColor(cvImg2, temp2, CV_GRAY2RGB);
 
 		/// draw a marker for key-points in image 2
 		for (unsigned int i = 0; i < featsImage2.size(); i++)
@@ -2345,8 +2334,6 @@ void MainWindow::displayImagesWithoutDetector()
 				CROSS_SIZE, CROSS_THICKNESS);
 		}
 		drawLineLSD(temp2, 0);  // 0 means draw line on left image
-
-
 
 		QImage dest2 = QImage(
 			(uchar*)temp2.data, temp2.cols, temp2.rows, temp2.step,
@@ -2395,7 +2382,7 @@ void MainWindow::on_sample_clicked()
 	cv::Mat cvImg1 = cv::cvarrToMat(img1.getAs<IplImage>());
 
 	cv::Mat temp1(cvImg1.cols, cvImg1.rows, cvImg1.type());
-	//cout << "dimensions " << temp1.dims << endl;
+	// cout << "dimensions " << temp1.dims << endl;
 	if (temp1.channels() == 3)
 		cvtColor(cvImg1, temp1, CV_BGR2RGB);
 	else
@@ -2418,7 +2405,7 @@ void MainWindow::on_sample_clicked()
 		// Size(int(downsampled_clicked*cvImg1.cols),int(downsampled_clicked*cvImg1.rows);
 
 		cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
-		//cout << "dimensions " << temp2.dims << endl;
+		// cout << "dimensions " << temp2.dims << endl;
 		if (temp2.channels() == 3)
 			cvtColor(cvImg2, temp2, CV_BGR2RGB);
 		else
@@ -2426,7 +2413,7 @@ void MainWindow::on_sample_clicked()
 		QImage disp2 = QImage(
 			(uchar*)temp2.data, temp2.cols, temp2.rows, temp2.step,
 			QImage::Format_RGB888);
-		//cout << "right before scaling the qimage" << endl;
+		// cout << "right before scaling the qimage" << endl;
 		QImage qscaled2 = disp2.scaled(
 			int(IMAGE_WIDTH * sampling_rate), int(IMAGE_HEIGHT * sampling_rate),
 			Qt::KeepAspectRatio);
@@ -2452,27 +2439,27 @@ void MainWindow::initializeParameters()
 	param5 = new QLabel;
 	param5_edit = new QLineEdit;
 
-    param1_boolean = new QCheckBox ("Tile-image true/false");
-    param2_boolean = new QCheckBox;
-    param1_boolean->setChecked(true);
-    param1_boolean->setVisible(true);
-    param2_boolean->setVisible(false);
+	param1_boolean = new QCheckBox("Tile-image true/false");
+	param2_boolean = new QCheckBox;
+	param1_boolean->setChecked(true);
+	param1_boolean->setVisible(true);
+	param2_boolean->setVisible(false);
 
 	param1->setText("Min distance : ");
 	param2->setText("Radius : ");
 	param3->setText("Threshold : ");
-	//param4->setText("Tile-image true/false : ");
+	// param4->setText("Tile-image true/false : ");
 	param1_edit->setText("7");
 	param2_edit->setText("7");
 	param3_edit->setText("0.1");
-	//param4_edit->setText("true");
-    param4->setVisible(false);
-    param4_edit->setVisible(false);
-    param5->setVisible(false);
-    param5_edit->setVisible(false);
+	// param4_edit->setText("true");
+	param4->setVisible(false);
+	param4_edit->setVisible(false);
+	param5->setVisible(false);
+	param5_edit->setVisible(false);
 
-    param1_boolean->setFixedSize(PARAMS_WIDTH*2, PARAMS_HEIGHT);
-    param2_boolean->setFixedSize(PARAMS_WIDTH*2, PARAMS_HEIGHT);
+	param1_boolean->setFixedSize(PARAMS_WIDTH * 2, PARAMS_HEIGHT);
+	param2_boolean->setFixedSize(PARAMS_WIDTH * 2, PARAMS_HEIGHT);
 
 	param1_edit->setFixedSize(PARAMS_WIDTH, PARAMS_HEIGHT);
 	param2_edit->setFixedSize(PARAMS_WIDTH, PARAMS_HEIGHT);
@@ -2497,29 +2484,28 @@ void MainWindow::initializeParameters()
 	param5_desc = new QLabel;
 	param5_edit_desc = new QLineEdit;
 
-    param1_boolean_desc = new QCheckBox ("If rotation invariant");
-    param1_boolean_desc->setChecked(true);
-    param2_boolean_desc = new QCheckBox;
-    param1_boolean_desc->setVisible(true);
-    param2_boolean_desc->setVisible(false);
+	param1_boolean_desc = new QCheckBox("If rotation invariant");
+	param1_boolean_desc->setChecked(true);
+	param2_boolean_desc = new QCheckBox;
+	param1_boolean_desc->setVisible(true);
+	param2_boolean_desc->setVisible(false);
 
-
-    /// by default initially SURF descriptor is selected
+	/// by default initially SURF descriptor is selected
 	param1_desc->setText("hessianThreshold: ");
 	param2_desc->setText("nLayersPerOctave: ");
 	param3_desc->setText("nOctaves: ");
-	//param4_desc->setText("if rotation invariant: ");
+	// param4_desc->setText("if rotation invariant: ");
 	param1_edit_desc->setText("600");
 	param2_edit_desc->setText("4");
 	param3_edit_desc->setText("2");
-	//param4_edit_desc->setText("true");
-    param4_desc->setVisible(false);
-    param4_edit_desc->setVisible(false);
-    param5_desc->setVisible(false);
-    param5_edit_desc->setVisible(false);
+	// param4_edit_desc->setText("true");
+	param4_desc->setVisible(false);
+	param4_edit_desc->setVisible(false);
+	param5_desc->setVisible(false);
+	param5_edit_desc->setVisible(false);
 
-    param1_boolean_desc->setFixedSize(PARAMS_WIDTH*2, PARAMS_HEIGHT);
-    param2_boolean_desc->setFixedSize(PARAMS_WIDTH*2, PARAMS_HEIGHT);
+	param1_boolean_desc->setFixedSize(PARAMS_WIDTH * 2, PARAMS_HEIGHT);
+	param2_boolean_desc->setFixedSize(PARAMS_WIDTH * 2, PARAMS_HEIGHT);
 
 	param1_edit_desc->setFixedSize(PARAMS_WIDTH, PARAMS_HEIGHT);
 	param2_edit_desc->setFixedSize(PARAMS_WIDTH, PARAMS_HEIGHT);
@@ -2555,16 +2541,18 @@ void MainWindow::on_generateVisualOdometry_clicked()
 			"Please specify a valid inputs for the single image dataset");
 		return;
 	}
-    if (calibration_file.empty() || file_path3.empty())
-    {
-        QMessageBox::information(
-                this, "Calibration / Ground truth File read error",
-                "Please specify valid inputs for the ground truth and calibration files");
-        return;
-    }
+	if (calibration_file.empty() || file_path3.empty())
+	{
+		QMessageBox::information(
+			this, "Calibration / Ground truth File read error",
+			"Please specify valid inputs for the ground truth and calibration "
+			"files");
+		return;
+	}
 
 	fillDetectorInfo();
-	//cout << file_path1 << " filepath1 " << file_path3 << " filepath3" << endl;
+	// cout << file_path1 << " filepath1 " << file_path3 << " filepath3" <<
+	// endl;
 
 	int feat_type = detector_selected;
 
@@ -2611,7 +2599,7 @@ void MainWindow::on_generateVisualOdometry_clicked()
 		QImage::Format_RGB888);
 	QImage qscaled2 =
 		dest2.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, Qt::KeepAspectRatio);
-	//cout << "right before setting  " << endl;
+	// cout << "right before setting  " << endl;
 	visualOdom->setPixmap(QPixmap::fromImage(qscaled2));
 	visualOdom->setVisible(true);
 }
@@ -2689,17 +2677,17 @@ void MainWindow::onTrackingEnabled(int state)
 			"Please specify a valid input file for the dataset!!");
 		return;
 	}
-	//cout << currentInputIndex << " current Input Index" << endl;
+	// cout << currentInputIndex << " current Input Index" << endl;
 	if (tracking_enable->isChecked() && (currentInputIndex == 3))
 	{
 		tracking_activated = true;
 		trackIt->setVisible(true);
-		//cout << " You clicked me .!!" << endl;
+		// cout << " You clicked me .!!" << endl;
 
 		/// read all the files in the dataset
 		string file_path_temp = inputFilePath->text().toStdString();
-		//cout << file_path_temp << endl;
-		//cout << currentInputIndex << endl;
+		// cout << file_path_temp << endl;
+		// cout << currentInputIndex << endl;
 		DIR* dir;
 		dirent* pdir;
 		vector<string> files;
@@ -2731,7 +2719,7 @@ void MainWindow::onTrackingEnabled(int state)
 		sort(
 			files_fullpath_tracking.begin(),
 			files_fullpath_tracking.end());  // Use the start and end like this
-		//cout << current_imageIndex << "current Image index" << endl;
+		// cout << current_imageIndex << "current Image index" << endl;
 	}
 	else
 	{
@@ -2915,7 +2903,7 @@ void MainWindow::updateVOProgress()
 	// QMessageBox::information(this, "SIFT error","MRPT has been compiled
 	// without SIFT Hess support");
 	// VO_progress->setText(QString::fromStdString(std::to_string(visual_odom.cnt.m_value)));
-	//cout << visual_odom.cnt.m_value << "  updateVOProgress " << endl;
+	// cout << visual_odom.cnt.m_value << "  updateVOProgress " << endl;
 	// sleep(1);
 	// VO_progress->setVisible(false);
 	// VO_progress->setVisible(true);
@@ -3024,7 +3012,8 @@ void MainWindow::on_browseTesting_clicked()
 ************************************************************************************************/
 void MainWindow::displayVector(vector<string> paths)
 {
-	for (unsigned long i = 0; i < paths.size(); i++) cout << paths.at(i) << endl;
+	for (unsigned long i = 0; i < paths.size(); i++)
+		cout << paths.at(i) << endl;
 }
 
 /************************************************************************************************
@@ -3048,7 +3037,7 @@ void MainWindow::store_Training_TestingSets()
 			/// read all the files in the dataset
 
 			string file_path_temp = training_set->text().toStdString();
-			//cout << file_path_temp << endl;
+			// cout << file_path_temp << endl;
 			// cout << currentInputIndex << endl;
 			DIR* dir;
 			dirent* pdir;
@@ -3088,7 +3077,7 @@ void MainWindow::store_Training_TestingSets()
 			/// read all the files in the dataset
 
 			string file_path_temp = testing_set->text().toStdString();
-			//cout << file_path_temp << endl;
+			// cout << file_path_temp << endl;
 
 			DIR* dir;
 			dirent* pdir;
@@ -3527,7 +3516,7 @@ MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
 	// Counter a, b;
 	// connect(&visual_odom.current_frame, SIGNAL(valueChanged(int)), this,
 	// SLOT(setValue(int)));
-	//connect(
+	// connect(
 	//	&visual_odom.cnt, SIGNAL(valueChanged(int)), this, SLOT(setValue(int)));
 	connect(
 		&visual_odom.cnt, SIGNAL(valueChanged(int)), this,
@@ -3649,8 +3638,8 @@ MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
 	paramVBox->addWidget(param4_edit, 4, 1, 1, 1);
 	paramVBox->addWidget(param5, 5, 0, 1, 1);
 	paramVBox->addWidget(param5_edit, 5, 1, 1, 1);
-    paramVBox->addWidget(param1_boolean, 6, 0, 2, 2);
-    paramVBox->addWidget(param2_boolean, 7, 0, 2, 2);
+	paramVBox->addWidget(param1_boolean, 6, 0, 2, 2);
+	paramVBox->addWidget(param2_boolean, 7, 0, 2, 2);
 
 	paramVBox->addWidget(descriptor_param_label, 0, 2, 1, 1);
 	paramVBox->addWidget(param1_desc, 1, 2, 1, 1);
@@ -3663,10 +3652,10 @@ MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
 	paramVBox->addWidget(param4_edit_desc, 4, 3, 1, 1);
 	paramVBox->addWidget(param5_desc, 5, 2, 1, 1);
 	paramVBox->addWidget(param5_edit_desc, 5, 3, 1, 1);
-    paramVBox->addWidget(param1_boolean_desc, 6, 2, 2, 2);
-    paramVBox->addWidget(param2_boolean_desc, 7, 2, 2, 2);
+	paramVBox->addWidget(param1_boolean_desc, 6, 2, 2, 2);
+	paramVBox->addWidget(param2_boolean_desc, 7, 2, 2, 2);
 
-    paramVBox->setSizeConstraint(QLayout::SetMinimumSize);
+	paramVBox->setSizeConstraint(QLayout::SetMinimumSize);
 
 	paramsGroupBox->setLayout(paramVBox);
 	paramsGroupBox->setBaseSize(320, 180);
@@ -3787,9 +3776,9 @@ void MainWindow::drawLineLSD(Mat img, int image_left_right)
 				float temp_y1 = featsImage1.getByID(i).get()->y2[0];
 				float temp_y2 = featsImage1.getByID(i).get()->y2[1];
 				/* get a random color */
-				int R = (i*5 % (255 + 1));
-				int G = (i*10 % (255 + 1));
-				int B = (i*15 % (255 + 1));
+				int R = (i * 5 % (255 + 1));
+				int G = (i * 10 % (255 + 1));
+				int B = (i * 15 % (255 + 1));
 				line(
 					img, Point(temp_x1, temp_y1), Point(temp_x2, temp_y2),
 					Scalar(R, G, B), 3);
@@ -3804,9 +3793,9 @@ void MainWindow::drawLineLSD(Mat img, int image_left_right)
 				float temp_y1 = featsImage2.getByID(i).get()->y2[0];
 				float temp_y2 = featsImage2.getByID(i).get()->y2[1];
 				/* get a random color */
-                int R = (i*5 % (255 + 1));
-                int G = (i*10 % (255 + 1));
-                int B = (i*15 % (255 + 1));
+				int R = (i * 5 % (255 + 1));
+				int G = (i * 10 % (255 + 1));
+				int B = (i * 15 % (255 + 1));
 				line(
 					img, Point(temp_x1, temp_y1), Point(temp_x2, temp_y2),
 					Scalar(R, G, B), 3);
@@ -3820,7 +3809,7 @@ void MainWindow::drawLineLSD(Mat img, int image_left_right)
 ************************************************************************************************/
 string MainWindow::findRepeatability(float mouse_x, float mouse_y)
 {
-	//cout << " You called me : findRepeatability" << endl;
+	// cout << " You called me : findRepeatability" << endl;
 	ReadInputFormat();
 
 	string file_path1_temp = inputFilePath->text().toStdString();
@@ -3932,7 +3921,7 @@ string MainWindow::findRepeatability(float mouse_x, float mouse_y)
 	}
 	double percent_repeat =
 		(double)repeatability / (double)(files_length - 1) * 100.00;
-	//cout << "Repeatability : " << repeatability
+	// cout << "Repeatability : " << repeatability
 	//	 << "Number of files : " << files_length << endl
 	//	 << "Repeatability % " << percent_repeat << endl;
 	stringstream ss;
@@ -3954,14 +3943,14 @@ string MainWindow::findRepeatability(float mouse_x, float mouse_y)
 ************************************************************************************************/
 string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 {
-	//cout << " You called me : findRepeatabilityHomography" << endl;
+	// cout << " You called me : findRepeatabilityHomography" << endl;
 	ReadInputFormat();
 
 	string file_path1_temp = inputFilePath->text().toStdString();
 
 	// cout << file_path1_temp << endl;
 
-	//cout << currentInputIndex << endl;
+	// cout << currentInputIndex << endl;
 	DIR* dir;
 	dirent* pdir;
 	vector<string> files;
@@ -4060,9 +4049,9 @@ string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 		}
 		cout << endl;
 	}
-    int files_length = files_fullpath.size();
-    //int files_length2 = files_fullpath2.size();
-    /*
+	int files_length = files_fullpath.size();
+	// int files_length2 = files_fullpath2.size();
+	/*
 	/// Simply displaying the files here for checking purposes
 	for (int y = 0; y < files_length; y++)
 	{
@@ -4072,7 +4061,7 @@ string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 	{
 		// cout << files_fullpath2.at(y) << endl;
 	}
-    */
+	*/
 
 	// repeatibility_threshold
 
@@ -4121,18 +4110,18 @@ string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 		double temp_y_after = homographies[i - 1][1][0] * temp_x_before +
 							  homographies[i - 1][1][1] * temp_y_before +
 							  homographies[i - 1][1][2];
-		//double temp_z_after = homographies[i - 1][2][0] * temp_x_before +
+		// double temp_z_after = homographies[i - 1][2][0] * temp_x_before +
 		//					  homographies[i - 1][2][1] * temp_y_before +
 		//					  homographies[i - 1][2][2];
 
-		//cout << temp_x_after << " afterX " << temp_y_after << " afterY "
+		// cout << temp_x_after << " afterX " << temp_y_after << " afterY "
 		//	 << endl;
 
 		temp_featsImage1.clear();
 		temp_img1.loadFromFile(files_fullpath.at(i));
 
 		fext.detectFeatures(temp_img1, temp_featsImage1, 0, numFeats);
-		//cout << "Number of Features in image " << i << " : "
+		// cout << "Number of Features in image " << i << " : "
 		//	 << temp_featsImage1.size() << endl;
 		bool repeatable = false;
 
@@ -4176,7 +4165,7 @@ string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 	double percent_repeat =
 		(double)repeatability / (double)(files_length - 1) *
 		100.00;  // files_length-1 because the first file is referene frame
-	//cout << "Repeatability (Homography Based) : " << repeatability
+	// cout << "Repeatability (Homography Based) : " << repeatability
 	//	 << "Number of files : " << files_length << endl
 	//	 << "Repeatability % " << percent_repeat << endl;
 	stringstream ss;
@@ -4222,8 +4211,8 @@ string MainWindow::falsePositivesNegatives()
 
 			float initial_x = featsImage1.getFeatureX(i);
 			float initial_y = featsImage1.getFeatureY(i);
-			//cout << "test_x: " << test_x << " test_y: " << test_y << endl;
-			//cout << "initial_x: " << initial_x << " initial_y: " << initial_y
+			// cout << "test_x: " << test_x << " test_y: " << test_y << endl;
+			// cout << "initial_x: " << initial_x << " initial_y: " << initial_y
 			//	 << endl;
 			bool isInNeighborhood = checkIfSamePoint(
 				initial_x, initial_y, test_x, test_y, false_pos_neg_threshold);
@@ -4256,7 +4245,7 @@ string MainWindow::falsePositivesNegatives()
 			flag_false_negative = false;
 		}
 	}
-	//cout << "False Positives: " << number_false_positives
+	// cout << "False Positives: " << number_false_positives
 	//	 << " False Negatives: " << number_false_negatives << endl;
 
 	stringstream ss;
@@ -4353,11 +4342,12 @@ void MainWindow::Mouse_Pressed()
 		file_path1,
 		IMREAD_ANYCOLOR);  // cv::cvarrToMat(img1.getAs<IplImage>());
 
-    cv::Mat temp_desc_ref(desc_Ref_img.cols, desc_Ref_img.rows, desc_Ref_img.type());
-    if (temp_desc_ref.channels() == 3)
-        cvtColor(desc_Ref_img, temp_desc_ref, CV_BGR2RGB);
-    else
-        cvtColor(desc_Ref_img, temp_desc_ref, CV_GRAY2RGB);
+	cv::Mat temp_desc_ref(
+		desc_Ref_img.cols, desc_Ref_img.rows, desc_Ref_img.type());
+	if (temp_desc_ref.channels() == 3)
+		cvtColor(desc_Ref_img, temp_desc_ref, CV_BGR2RGB);
+	else
+		cvtColor(desc_Ref_img, temp_desc_ref, CV_GRAY2RGB);
 
 	/// images1 have all the descriptors
 	if (images_static_sift_surf != NULL)
@@ -4382,10 +4372,10 @@ void MainWindow::Mouse_Pressed()
 		if (images_static != NULL) images_static_sift_surf2->setVisible(false);
 	}
 
-	//QRect tqr = image1->contentsRect();  // getContentsMargins(a,b,c,d);
-	//QMargins qmr = image1->contentsMargins();
-	//QSize szt = image1->frameSize();
-	//QRect qrect = image1->frameRect();
+	// QRect tqr = image1->contentsRect();  // getContentsMargins(a,b,c,d);
+	// QMargins qmr = image1->contentsMargins();
+	// QSize szt = image1->frameSize();
+	// QRect qrect = image1->frameRect();
 	// QFrame::Shadow  shd = image1->frameShadow();
 
 	/*cout << qmr.top() << " " << qmr.bottom() << " " << qmr.left() << " "
@@ -4415,7 +4405,7 @@ void MainWindow::Mouse_Pressed()
 	// computing th repleatibility of the detector here
 	string repeatability_result = findRepeatability(temp_x, temp_y);
 
-	//cout << "after repeatability " << endl;
+	// cout << "after repeatability " << endl;
 
 	string repeatability_result2 = "";
 	if (homography_activated == true && homography_path.size() > 1)
@@ -4442,9 +4432,9 @@ void MainWindow::Mouse_Pressed()
 		if (currentInputIndex == 1 || currentInputIndex == 4 ||
 			(currentInputIndex == 2 && rawlog_type == 1))
 		{
-			//cout << "going to set the iamges2[pos] " << endl;
+			// cout << "going to set the iamges2[pos] " << endl;
 			images_static2 = images2[pos];
-			//cout << " successfully set images2[pos]" << endl;
+			// cout << " successfully set images2[pos]" << endl;
 		}
 
 		/// this is done to fix the overlaying of labels on top of each other.
@@ -4465,13 +4455,13 @@ void MainWindow::Mouse_Pressed()
 			// featsImage2.saveToTextFile("./KeyPoints2.txt");
 			cv::Mat cvImg2 = cv::cvarrToMat(img2.getAs<IplImage>());
 
-			//cout << " Before the for loop " << endl;
+			// cout << " Before the for loop " << endl;
 
-            cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
-            if (temp2.channels() == 3)
-                cvtColor(cvImg2, temp2, CV_BGR2RGB);
-            else
-                cvtColor(cvImg2, temp2, CV_GRAY2RGB);
+			cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
+			if (temp2.channels() == 3)
+				cvtColor(cvImg2, temp2, CV_BGR2RGB);
+			else
+				cvtColor(cvImg2, temp2, CV_GRAY2RGB);
 
 			/// draw a marker around image 1 keypoints
 			for (unsigned int i = 0; i < featsImage2.size(); i++)
@@ -4487,17 +4477,16 @@ void MainWindow::Mouse_Pressed()
 			drawLineLSD(temp2, 1);  // 1 means right image
 			drawMarker(
 				temp2, Point(
-							featsImage2.getFeatureX(temp_idx),
-							featsImage2.getFeatureY(temp_idx)),
+						   featsImage2.getFeatureX(temp_idx),
+						   featsImage2.getFeatureY(temp_idx)),
 				Scalar(255, 0, 0), MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
-
 
 			QImage dest2 = QImage(
 				(uchar*)temp2.data, temp2.cols, temp2.rows, temp2.step,
 				QImage::Format_RGB888);
 			QImage qscaled2 =
 				dest2.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, Qt::KeepAspectRatio);
-			//cout << "right before setting  " << endl;
+			// cout << "right before setting  " << endl;
 			image2->setPixmap(QPixmap::fromImage(qscaled2));
 		}
 
@@ -4528,10 +4517,10 @@ void MainWindow::Mouse_Pressed()
 			plotInfo->setVisible(true);
 		}
 
-		//cout << "before adding images_static widget " << endl;
+		// cout << "before adding images_static widget " << endl;
 		desc_VisualizeGrid->addWidget(images_static, 0, 0, 1, 1);
 		images_static->setVisible(true);
-		//cout << "after adding images_static widget " << endl;
+		// cout << "after adding images_static widget " << endl;
 
 		if (currentInputIndex == 1 || currentInputIndex == 4 ||
 			(currentInputIndex == 2 && rawlog_type == 1))
@@ -4553,7 +4542,7 @@ void MainWindow::Mouse_Pressed()
 			desc_VisualizeGrid->addWidget(
 				featureMatched, 1, 0, 1,
 				1);  // add the label telling about the feature matching
-		//cout << "end of additions " << endl;
+		// cout << "end of additions " << endl;
 	}
 	else if (
 		descriptor_selected == 0 || descriptor_selected == 1 ||
@@ -4571,7 +4560,7 @@ void MainWindow::Mouse_Pressed()
 
 		flag_descriptor_match = true;
 		featureMatched = new QLabel;
-		//cout << " inside 0,1,5,6,7 descriptor" << endl;
+		// cout << " inside 0,1,5,6,7 descriptor" << endl;
 		if (currentInputIndex == 1 || currentInputIndex == 4 ||
 			(currentInputIndex == 2 && rawlog_type == 1))
 		{
@@ -4582,12 +4571,13 @@ void MainWindow::Mouse_Pressed()
 			int temp_idx = min_dist_indexes[pos];
 			cv::Mat cvImg2 = cv::cvarrToMat(img2.getAs<IplImage>());
 
-            /// converting to colour image to show markers in color for grayscale images too
-            cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
-            if (temp2.channels() == 3)
-                cvtColor(cvImg2, temp2, CV_BGR2RGB);
-            else
-                cvtColor(cvImg2, temp2, CV_GRAY2RGB);
+			/// converting to colour image to show markers in color for
+			/// grayscale images too
+			cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
+			if (temp2.channels() == 3)
+				cvtColor(cvImg2, temp2, CV_BGR2RGB);
+			else
+				cvtColor(cvImg2, temp2, CV_GRAY2RGB);
 
 			/// draw a marker around image 2 keypoints
 			for (unsigned int i = 0; i < featsImage2.size(); i++)
@@ -4601,10 +4591,9 @@ void MainWindow::Mouse_Pressed()
 			drawLineLSD(temp2, 1);  // 1 means draw on right image
 			drawMarker(
 				temp2, Point(
-							featsImage2.getFeatureX(temp_idx),
-							featsImage2.getFeatureY(temp_idx)),
+						   featsImage2.getFeatureX(temp_idx),
+						   featsImage2.getFeatureY(temp_idx)),
 				Scalar(255, 0, 0), MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
-
 
 			QImage dest2 = QImage(
 				(uchar*)temp2.data, temp2.cols, temp2.rows, temp2.step,
@@ -4617,7 +4606,7 @@ void MainWindow::Mouse_Pressed()
 		stringstream ss;
 		ss << temp_x << " , " << temp_y << endl;
 		string str = ss.str();
-		//cout << str << endl;
+		// cout << str << endl;
 
 		/// drawing marker all over the image and coloring the selected one with
 		/// a different color
@@ -4651,7 +4640,7 @@ void MainWindow::Mouse_Pressed()
 		}
 
 		desc_VisualizeGrid->addWidget(images_static_sift_surf, 0, 0, 1, 1);
-		//cout << "before adding images_plots_sift_surf" << endl;
+		// cout << "before adding images_plots_sift_surf" << endl;
 
 		QLabel* detector_info = new QLabel("");
 		if (currentInputIndex == 0 || currentInputIndex == 3)
@@ -4663,11 +4652,11 @@ void MainWindow::Mouse_Pressed()
 				1);  // add the label telling about the feature matching
 	}
 
-	//cout << "before storing the images " << endl;
+	// cout << "before storing the images " << endl;
 
 	QImage dest1 = QImage(
-		(uchar*)temp_desc_ref.data, temp_desc_ref.cols, temp_desc_ref.rows, temp_desc_ref.step,
-		QImage::Format_RGB888);
+		(uchar*)temp_desc_ref.data, temp_desc_ref.cols, temp_desc_ref.rows,
+		temp_desc_ref.step, QImage::Format_RGB888);
 	QImage qscaled1 =
 		dest1.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, Qt::KeepAspectRatio);
 	image1->setPixmap(QPixmap::fromImage(qscaled1));
@@ -4691,7 +4680,7 @@ void MainWindow::Mouse_Pressed()
 	descriptor_info2->setVisible(false);
 	descriptor_info3->setVisible(true);
 	evaluation_info->setVisible(false);
-	//cout << "end of mouse press event " << endl;
+	// cout << "end of mouse press event " << endl;
 
 	showEvaluation(1);
 }
@@ -4701,8 +4690,8 @@ void MainWindow::Mouse_Pressed()
 ************************************************************************************************/
 void MainWindow::Mouse_current_pos()
 {
-	//cout << "Mouse Pressed" << endl;
-	//cout << image1->x << " x " << image1->y << endl;
+	// cout << "Mouse Pressed" << endl;
+	// cout << image1->x << " x " << image1->y << endl;
 }
 
 /************************************************************************************************
@@ -4733,4 +4722,3 @@ int MainWindow::findClosest(double x, double y, double X[], double Y[], int n)
 	}
 	return pos;
 }
-
