@@ -31,9 +31,9 @@ namespace bayes
 	struct CParticleFilterDataImpl : public CParticleFilterCapable
 	{
 		/// CRTP helper method
-		inline const Derived& derived() const { return *static_cast<const Derived*>(this); }
+		inline const Derived& derived() const { return *dynamic_cast<const Derived*>(this); }
 		/// CRTP helper method
-		inline       Derived& derived()       { return *static_cast<Derived*>(this); }
+		inline       Derived& derived()       { return *dynamic_cast<Derived*>(this); }
 
 		double getW(size_t i) const MRPT_OVERRIDE
 		{

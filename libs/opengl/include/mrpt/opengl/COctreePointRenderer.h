@@ -117,6 +117,7 @@ namespace mrpt
 			struct OPENGL_IMPEXP TNode
 			{
 				TNode() :
+					is_leaf(true),
 					bb_min( std::numeric_limits<float>::max(), std::numeric_limits<float>::max(), std::numeric_limits<float>::max() ),
 					bb_max(-std::numeric_limits<float>::max(),-std::numeric_limits<float>::max(),-std::numeric_limits<float>::max() )
 				{ }
