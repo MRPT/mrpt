@@ -133,14 +133,16 @@ class COctreePointRenderer
 	struct OPENGL_IMPEXP TNode
 	{
 		TNode()
-			: bb_min(
+			: is_leaf(true),
+			  bb_min(
 				  std::numeric_limits<float>::max(),
 				  std::numeric_limits<float>::max(),
 				  std::numeric_limits<float>::max()),
 			  bb_max(
 				  -std::numeric_limits<float>::max(),
 				  -std::numeric_limits<float>::max(),
-				  -std::numeric_limits<float>::max())
+				  -std::numeric_limits<float>::max()),
+			  all(false)
 		{
 		}
 
