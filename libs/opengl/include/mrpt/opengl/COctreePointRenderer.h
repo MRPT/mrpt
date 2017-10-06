@@ -119,7 +119,8 @@ namespace mrpt
 				TNode() :
 					is_leaf(true),
 					bb_min( std::numeric_limits<float>::max(), std::numeric_limits<float>::max(), std::numeric_limits<float>::max() ),
-					bb_max(-std::numeric_limits<float>::max(),-std::numeric_limits<float>::max(),-std::numeric_limits<float>::max() )
+					bb_max(-std::numeric_limits<float>::max(),-std::numeric_limits<float>::max(),-std::numeric_limits<float>::max() ),
+					all(false)
 				{ }
 
 				bool                  is_leaf;     //!< true: it's a leaf and \a pts has valid indices; false: \a children is valid.
