@@ -153,6 +153,7 @@ void project3DPointsFromDepthImageInto(
  *  Classes that grab observations of this type are:
  *		- mrpt::hwdrivers::CSwissRanger3DCamera
  *		- mrpt::hwdrivers::CKinect
+ *		- mrpt::hwdrivers::COpenNI2Sensor
  *
  *  There are two sets of calibration parameters (see
  *mrpt::vision::checkerBoardStereoCalibration() or the ready-to-use GUI program
