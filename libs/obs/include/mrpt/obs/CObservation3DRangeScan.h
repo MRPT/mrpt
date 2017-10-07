@@ -98,6 +98,7 @@ namespace obs
 	 *  Classes that grab observations of this type are:
 	 *		- mrpt::hwdrivers::CSwissRanger3DCamera
 	 *		- mrpt::hwdrivers::CKinect
+	 *		- mrpt::hwdrivers::COpenNI2Sensor
 	 *
 	 *  There are two sets of calibration parameters (see mrpt::vision::checkerBoardStereoCalibration() or the ready-to-use GUI program <a href="http://www.mrpt.org/Application:kinect-calibrate" >kinect-calibrate</a>):
 	 *		- cameraParams: Projection parameters of the depth camera.
