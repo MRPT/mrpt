@@ -341,6 +341,7 @@ namespace mrpt
 				void OnKeyDown(wxKeyEvent& event);
 				void OnResize(wxSizeEvent& event);
 				void OnMouseDown(wxMouseEvent& event);
+				void OnMouseMove(wxMouseEvent& event);
 
 				DECLARE_EVENT_TABLE()
 		}; // end class CWindowDialog

@@ -187,7 +187,7 @@ namespace mrpt
 		  *  IMPORTANTE NOTICE: Event handlers in your observer class will be invoked from the wxWidgets internal MRPT thread,
 		  *    so all your code in the handler must be thread safe.
 		  *
-		  * \sa mrptEventMouseDown
+		  * \sa mrptEventMouseMove
 		  */
 		class GUI_IMPEXP mrptEventMouseDown : public mrpt::utils::mrptEvent
 		{
@@ -200,6 +200,30 @@ namespace mrpt
 				bool   _leftButton,
 				bool   _rightButton
 				) : source_object(obj), coords(_coords), leftButton(_leftButton), rightButton(_rightButton)
+			{ }
+
+			CBaseGUIWindow *source_object;
+			mrpt::utils::TPixelCoord  coords;
+			bool   leftButton;
+			bool   rightButton;
+		}; // End of class def.
+
+		   /**  An event sent by a window when the mouse is moved over it.
+		   *  IMPORTANTE NOTICE: Event handlers in your observer class will be invoked from the wxWidgets internal MRPT thread,
+		   *    so all your code in the handler must be thread safe.
+		   * \sa mrptEventMouseDown
+		   */
+		class GUI_IMPEXP mrptEventMouseMove : public mrpt::utils::mrptEvent
+		{
+		protected:
+			virtual void do_nothing() MRPT_OVERRIDE { } //!< Just to allow this class to be polymorphic
+		public:
+			inline mrptEventMouseMove(
+				CBaseGUIWindow *obj,
+				mrpt::utils::TPixelCoord  _coords,
+				bool   _leftButton,
+				bool   _rightButton
+			) : source_object(obj), coords(_coords), leftButton(_leftButton), rightButton(_rightButton)
 			{ }
 
 			CBaseGUIWindow *source_object;
