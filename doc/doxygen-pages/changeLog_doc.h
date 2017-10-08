@@ -18,6 +18,8 @@
 	- \ref mrpt_base_grp
 		- Fix potential uninitialized value in CRobot2DPoseEstimator::getLatestRobotPose()
 		- MRPT_getCompilationDate() returns time as well
+	- \ref mrpt_gui_grp
+		- mrpt::gui::mrptEventMouseMove:  Added new mrpt::gui windows event type.
 	- Smart pointers:
 		- All mrpt::utils::CObject derived classes:
 		- In MRPT <=1.5.3, there was a typedef `Foo::SmartPtr` => `FooPtr`.

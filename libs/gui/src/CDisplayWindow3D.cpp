@@ -86,6 +86,7 @@ namespace mrpt
 
 			void OnCharCustom( wxKeyEvent& event );
 			void OnMouseDown(wxMouseEvent& event);
+			void OnMouseMove(wxMouseEvent& event);
 
 			void OnPreRender();
 			void OnPostRender();
@@ -108,6 +109,7 @@ CMyGLCanvas_DisplayWindow3D::CMyGLCanvas_DisplayWindow3D(
 
 	Connect(wxEVT_LEFT_DOWN,(wxObjectEventFunction)&CMyGLCanvas_DisplayWindow3D::OnMouseDown);
 	Connect(wxEVT_RIGHT_DOWN,(wxObjectEventFunction)&CMyGLCanvas_DisplayWindow3D::OnMouseDown);
+	Connect(wxEVT_MOTION, (wxObjectEventFunction)&CMyGLCanvas_DisplayWindow3D::OnMouseMove);
 }
 
 void CMyGLCanvas_DisplayWindow3D::display3D_processKeyEvent(CDisplayWindow3D *m_win3D, wxKeyEvent&ev)
@@ -155,13 +157,26 @@ void CMyGLCanvas_DisplayWindow3D::OnCharCustom( wxKeyEvent& ev )
 void CMyGLCanvas_DisplayWindow3D::OnMouseDown(wxMouseEvent& event)
 {
 	// Send the event:
-	if (m_win3D)
+	if (m_win3D && m_win3D->hasSubscribers())
 	{
 		try {
 			m_win3D->publishEvent( mrptEventMouseDown(m_win3D, TPixelCoord(event.GetX(), event.GetY()), event.LeftDown(), event.RightDown() ) );
 		} catch(...) { }
 	}
 
+	event.Skip(); // so it's processed by the wx system!
+}
+
+void CMyGLCanvas_DisplayWindow3D::OnMouseMove(wxMouseEvent& event)
+{
+	// Send the event:
+	if (m_win3D && m_win3D->hasSubscribers())
+	{
+		try {
+			m_win3D->publishEvent(mrptEventMouseMove(m_win3D, TPixelCoord(event.GetX(), event.GetY()), event.LeftDown(), event.RightDown()));
+		}
+		catch (...) {}
+	}
 	event.Skip(); // so it's processed by the wx system!
 }
 

@@ -185,6 +185,7 @@ CWindowDialog::CWindowDialog(
 
 	m_image->Connect(wxEVT_LEFT_DOWN,(wxObjectEventFunction)&CWindowDialog::OnMouseDown,NULL,this);
 	m_image->Connect(wxEVT_RIGHT_DOWN,(wxObjectEventFunction)&CWindowDialog::OnMouseDown,NULL,this);
+	m_image->Connect(wxEVT_MOTION, (wxObjectEventFunction)&CWindowDialog::OnMouseMove, NULL, this);
 
     // Increment number of windows:
     //int winCount =
@@ -249,7 +250,7 @@ void CWindowDialog::OnChar(wxKeyEvent& event)
 void CWindowDialog::OnResize(wxSizeEvent& event)
 {
 	// Send the event:
-	if (m_win2D)
+	if (m_win2D && m_win2D->hasSubscribers())
 	{
 		try {
 			m_win2D->publishEvent( mrptEventWindowResize(m_win2D,event.GetSize().GetWidth(),event.GetSize().GetHeight()));
@@ -261,11 +262,24 @@ void CWindowDialog::OnResize(wxSizeEvent& event)
 void CWindowDialog::OnMouseDown(wxMouseEvent& event)
 {
 	// Send the event:
-	if (m_win2D)
+	if (m_win2D && m_win2D->hasSubscribers())
 	{
 		try {
 			m_win2D->publishEvent( mrptEventMouseDown(m_win2D, TPixelCoord(event.GetX(), event.GetY()), event.LeftDown(), event.RightDown() ) );
 		} catch(...) { }
+	}
+	event.Skip(); // so it's processed by the wx system!
+}
+
+void CWindowDialog::OnMouseMove(wxMouseEvent& event)
+{
+	// Send the event:
+	if (m_win2D && m_win2D->hasSubscribers())
+	{
+		try {
+			m_win2D->publishEvent(mrptEventMouseMove(m_win2D, TPixelCoord(event.GetX(), event.GetY()), event.LeftDown(), event.RightDown()));
+		}
+		catch (...) {}
 	}
 	event.Skip(); // so it's processed by the wx system!
 }
