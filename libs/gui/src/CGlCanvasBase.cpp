@@ -38,7 +38,6 @@ float CGlCanvasBase::SENSIBILITY_DEG_PER_PIXEL = 0.1f;
 #endif
 #endif
 
-#endif
 
 void CGlCanvasBase::setMinimumZoom(float zoom) { m_minZoom = zoom; }
 void CGlCanvasBase::setMaximumZoom(float zoom) { m_maxZoom = zoom; }
@@ -338,3 +337,4 @@ void CGlCanvasBase::CamaraParams::setElevationDeg(float deg)
 	else if (cameraElevationDeg > 90.0f)
 		cameraElevationDeg = 90.0f;
 }
+#endif

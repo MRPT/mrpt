@@ -67,6 +67,9 @@ IF(BUILD_mrpt-gui)
 		target_link_libraries(mrpt-gui ${OpenCV_LIBRARIES})
 	ENDIF()
 
-	# Link against gl:
-	TARGET_LINK_LIBRARIES(mrpt-gui ${MRPT_OPENGL_LIBS})
+	IF(CMAKE_MRPT_HAS_OPENGL_GLUT)
+		# Link against gl:
+		TARGET_LINK_LIBRARIES(mrpt-gui ${MRPT_OPENGL_LIBS})
+	ENDIF()
+
 ENDIF()
