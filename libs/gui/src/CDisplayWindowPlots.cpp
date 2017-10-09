@@ -290,7 +290,18 @@ void CWindowDialogPlots::OnMouseMove(wxMouseEvent& event)
 	m_curCursorPos.y = m_plot->p2y(Y);
 	m_last_mouse_point.x = X;
 	m_last_mouse_point.y = Y;
-	event.Skip();
+
+	// Send the event:
+	if (m_winPlots && m_winPlots->hasSubscribers())
+	{
+		try {
+			m_winPlots->publishEvent(mrptEventMouseMove(m_winPlots,
+				TPixelCoord(event.GetX(), event.GetY()),
+				event.LeftDown(), event.RightDown()));
+		}
+		catch (...) {}
+	}
+	event.Skip(); // so it's processed by the wx system!
 }
 
 // Add / Modify a 2D plot using a MATLAB-like format string
