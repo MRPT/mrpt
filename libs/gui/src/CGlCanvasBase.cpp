@@ -38,7 +38,6 @@ float CGlCanvasBase::SENSIBILITY_DEG_PER_PIXEL = 0.1f;
 #endif
 #endif
 
-
 void CGlCanvasBase::setMinimumZoom(float zoom) { m_minZoom = zoom; }
 void CGlCanvasBase::setMaximumZoom(float zoom) { m_maxZoom = zoom; }
 void CGlCanvasBase::setMousePos(int x, int y)

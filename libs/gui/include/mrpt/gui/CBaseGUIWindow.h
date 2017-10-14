@@ -249,17 +249,17 @@ class GUI_IMPEXP mrptEventMouseDown : public mrpt::utils::mrptEvent
 */
 class GUI_IMPEXP mrptEventMouseMove : public mrpt::utils::mrptEvent
 {
-protected:
+   protected:
 	/** Just to allow this class to be polymorphic */
 	virtual void do_nothing() override {}
-public:
+   public:
 	inline mrptEventMouseMove(
 		CBaseGUIWindow* obj, mrpt::utils::TPixelCoord _coords, bool _leftButton,
 		bool _rightButton)
 		: source_object(obj),
-		coords(_coords),
-		leftButton(_leftButton),
-		rightButton(_rightButton)
+		  coords(_coords),
+		  leftButton(_leftButton),
+		  rightButton(_rightButton)
 	{
 	}
 

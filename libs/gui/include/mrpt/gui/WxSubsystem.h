@@ -392,7 +392,6 @@ class CWindowDialog : public wxFrame
 	void OnMouseDown(wxMouseEvent& event);
 	void OnMouseMove(wxMouseEvent& event);
 
-
 	DECLARE_EVENT_TABLE()
 };  // end class CWindowDialog
 
