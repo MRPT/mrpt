@@ -30,7 +30,7 @@ IMPLEMENTS_GENERIC_SENSOR(CKinect, mrpt::hwdrivers)
 //#define KINECT_PROFILE_MEM_ALLOC
 
 #if MRPT_HAS_KINECT_FREENECT
-#include <libfreenect.h>
+#include <libfreenect/libfreenect.h>
 #else
 #define KINECT_W 640
 #define KINECT_H 480
