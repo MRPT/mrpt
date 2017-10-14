@@ -31,7 +31,11 @@ IMPLEMENTS_GENERIC_SENSOR(CKinect,mrpt::hwdrivers)
 //#define KINECT_PROFILE_MEM_ALLOC
 
 #if MRPT_HAS_KINECT_FREENECT
-#	include <libfreenect.h>
+# if defined(__APPLE__)
+#  include <libfreenect/libfreenect.h>
+# else
+#  include <libfreenect.h>
+#endif
 #else
 #	define KINECT_W 640
 #	define KINECT_H 480
