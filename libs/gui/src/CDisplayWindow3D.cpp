@@ -111,8 +111,7 @@ CMyGLCanvas_DisplayWindow3D::CMyGLCanvas_DisplayWindow3D(
 		wxEVT_LEFT_DOWN, &CMyGLCanvas_DisplayWindow3D::OnMouseDown, this);
 	this->Bind(
 		wxEVT_RIGHT_DOWN, &CMyGLCanvas_DisplayWindow3D::OnMouseDown, this);
-	this->Bind(
-		wxEVT_MOTION, &CMyGLCanvas_DisplayWindow3D::OnMouseMove, this);
+	this->Bind(wxEVT_MOTION, &CMyGLCanvas_DisplayWindow3D::OnMouseMove, this);
 }
 
 void CMyGLCanvas_DisplayWindow3D::display3D_processKeyEvent(
