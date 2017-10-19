@@ -86,7 +86,8 @@ std::string CAboutBoxBase::information(
 		str += MRPT_OPENCV_VERSION;
 		str += "\n";
 #else
-		str += "None" + "\n";
+		str += "None";
+		str += "\n";
 #endif
 	}
 
