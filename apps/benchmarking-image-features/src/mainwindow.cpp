@@ -23,6 +23,11 @@
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/obs/CRawlog.h>
 
+// provides `sleep` on unix systems
+#if !defined(_WIN32)
+    #include <unistd.h>
+#endif
+
 /// using namespaces
 using namespace mrpt::obs;
 using namespace mrpt::system;
