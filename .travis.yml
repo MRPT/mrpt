@@ -14,20 +14,6 @@ addons:
     - build-essential
     - pkg-config
     - cmake
-    - libftdi-dev
-    - zlib1g-dev
-    - libusb-1.0-0-dev
-    - libdc1394-22-dev
-    - libjpeg-dev
-    - libopencv-dev
-    - libgtest-dev
-    - libeigen3-dev
-    - libsuitesparse-dev
-    - libpcl-all
-    - libopenni2-dev
-    - libudev-dev
-    - libboost-python-dev
-    - libpython-dev python-numpy
 
 before_install:
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update; fi
@@ -44,7 +30,13 @@ install:
   - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$CXX" == "clang++" ]; then export CXX="clang++-3.8"; fi
   - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TASK" == "lint" ]; then pip install -r travis/python_reqs.txt; fi
   - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TASK" == "lint" ]; then pip install -r travis/python_reqs.txt; fi
-  - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$DEPS" != "headless" ]; then 
+  - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$DEPS" != "minimal" ]; then
+    sudo apt-get install libftdi-dev zlib1g-dev libusb-1.0-0-dev libdc1394-22-dev -y ;
+    sudo apt-get install libjpeg-dev libopencv-dev libgtest-dev libeigen3-dev -y ;
+    sudo apt-get install libsuitesparse-dev libpcl-all libopenni2-dev libudev-dev  -y ;
+    sudo apt-get install libboost-python-dev libpython-dev python-numpy -y ;
+    fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$DEPS" != "headless" ]; then
     sudo apt-get install libwxgtk3.0-dev -y ;
     sudo apt-get install freeglut3-dev -y ;
     sudo apt-get install libavformat-dev libswscale-dev -y ;
@@ -75,6 +67,12 @@ matrix:
   - compiler: gcc
     os: linux
     env: TASK="test" DEPS="headless"
+  - compiler: gcc
+    os: linux
+    env: TASK="build" DEPS="minimal"
+  - compiler: gcc
+    os: linux
+    env: TASK="test" DEPS="minimal"
   - compiler: clang
     os: linux
     env: TASK="build"
@@ -90,4 +88,3 @@ matrix:
   - language: python
     os: linux
     env: TASK="lint"
-
