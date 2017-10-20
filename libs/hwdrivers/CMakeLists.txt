@@ -52,10 +52,10 @@ IF(CMAKE_MRPT_HAS_FREENECT)
 		ENDIF ()
 	ELSE ()
 		# Embedded version:
-		INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/hwdrivers/src/libfreenect/")
+		INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/otherlibs/libfreenect/")
 		LIST(APPEND hwdrivers_EXTRA_SRCS
-			"${MRPT_LIBS_ROOT}/hwdrivers/src/libfreenect/*.c"
-			"${MRPT_LIBS_ROOT}/hwdrivers/src/libfreenect/*.h"
+			"${MRPT_SOURCE_DIR}/otherlibs/libfreenect/*.c"
+			"${MRPT_SOURCE_DIR}/otherlibs/libfreenect/*.h"
 			)
 		LIST(APPEND hwdrivers_EXTRA_SRCS_NAME
 			"libfreenect"
@@ -65,16 +65,16 @@ IF(CMAKE_MRPT_HAS_FREENECT)
 		# Special stuff for windows:
 		if (WIN32)
 			LIST(APPEND hwdrivers_EXTRA_SRCS
-				"${MRPT_LIBS_ROOT}/hwdrivers/src/libfreenect/platform/windows/libusb10emu/libusb-1.0/libusbemu.cpp"
-				"${MRPT_LIBS_ROOT}/hwdrivers/src/libfreenect/platform/windows/libusb10emu/libusb-1.0/failguard.cpp"
+				"${MRPT_SOURCE_DIR}/otherlibs/libfreenect/platform/windows/libusb10emu/libusb-1.0/libusbemu.cpp"
+				"${MRPT_SOURCE_DIR}/otherlibs/libfreenect/platform/windows/libusb10emu/libusb-1.0/failguard.cpp"
 				)
 			LIST(APPEND hwdrivers_EXTRA_SRCS_NAME
 				"libfreenect"
 				"libfreenect"
 				)
 
-			INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/hwdrivers/src/libfreenect/platform/windows")
-			INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/hwdrivers/src/libfreenect/platform/windows/libusb10emu")
+			INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/otherlibs/libfreenect/platform/windows")
+			INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/otherlibs/libfreenect/platform/windows/libusb10emu")
 			# libfreenect.h includes libusb.h:
 			include_directories("${LIBUSB_1_INCLUDE_DIRS}")
 
