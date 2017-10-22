@@ -61,6 +61,9 @@ class CGlWidget : public mrpt::gui::CQtGlCanvasBase
 	bool setSelectedObservationSize(double s);
 	bool setSelectedObservationColor(int type);
 
+   public slots:
+	void updateSelectionWithoutSignals(const std::vector<size_t>& idx);
+
    signals:
 	void selectedChanged(const std::vector<CRobotPose::Ptr>& idx);
 	void zoomChanged(float zoom);
@@ -89,6 +92,7 @@ class CGlWidget : public mrpt::gui::CQtGlCanvasBase
 	double maximumSizeObservation(const QPoint& pos) const;
 
 	bool selectPoint(float x, float y, double maxDist);
+	void selectPoint(size_t index);
 
 	template <class Container>
 	int searchPoseFromList(
@@ -103,7 +107,7 @@ class CGlWidget : public mrpt::gui::CQtGlCanvasBase
 	void removePoseFromSelected(int index);
 	void selectPose(CRobotPose::Ptr robotPose);
 	bool deselectAll();
-	CRobotPose::Ptr getRobotPose(int index);
+	CRobotPose::Ptr getRobotPose(size_t index);
 
 	mrpt::opengl::COpenGLViewport::Ptr m_miniMapViewport;
 	mrpt::opengl::CSetOfObjects::Ptr m_map;

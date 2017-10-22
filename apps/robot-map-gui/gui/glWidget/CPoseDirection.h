@@ -17,22 +17,22 @@
 class CPoseDirection : public QWidget
 {
 	Q_OBJECT
-public:
+   public:
 	CPoseDirection(QWidget* parent = nullptr);
 	virtual ~CPoseDirection();
-	void setDirection(double yaw,double pitch, double roll);
+	void setDirection(double yaw, double pitch, double roll);
 	double getYaw() const;
 	double getPitch() const;
 	double getRoll() const;
 	void setIndex(size_t index);
 
-signals:
-	void updateDirection(size_t index, double yaw,double pitch, double roll);
+   signals:
+	void updateDirection(size_t index, double yaw, double pitch, double roll);
 
-private slots:
+   private slots:
 	void dataChanged();
 
-private:
+   private:
 	std::unique_ptr<Ui::CPoseDirection> m_ui;
 	int m_index;
 };

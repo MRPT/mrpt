@@ -177,6 +177,14 @@ void CViewerContainer::updateConfigChanges(
 		connect(
 			gl, &CGlWidget::selectedChanged, this,
 			&CViewerContainer::changedSelected);
+
+		connect(
+			gl, &CGlWidget::selectedChanged, this,
+			&CViewerContainer::changedSelected);
+
+		connect(
+			this, &CViewerContainer::selectedChanged, gl,
+			&CGlWidget::updateSelectionWithoutSignals);
 	}
 }
 

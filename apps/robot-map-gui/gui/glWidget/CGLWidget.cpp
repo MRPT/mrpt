@@ -209,6 +209,7 @@ void CGlWidget::updateObservations()
 	bool isShowObs = m_isShowObs;
 
 	std::vector<CRobotPose::Ptr> selectedPoints = m_selectedPoints;
+
 	if (isShowObs) setSelectedObservation(false);
 	m_visiblePoints->clear();
 
@@ -222,14 +223,14 @@ void CGlWidget::updateObservations()
 		m_visiblePoints->insert(robotPose);
 		++id;
 	}
-	m_selectedPoints.clear();
 
 	double maxDist = maximumSizeObservation(QPoint(0, 0));
 	assert(maxDist != -1.0);
+
 	for (auto& it : selectedPoints)
 	{
-		mrpt::math::TPose3D pose = it->getPose();
-		selectPoint(pose.x, pose.y, maxDist * 2);
+		size_t id = it->getId();
+		selectPoint(id);
 	}
 
 	emit selectedChanged(m_selectedPoints);
@@ -381,6 +382,16 @@ bool CGlWidget::setSelectedObservationColor(int type)
 	return false;
 }
 
+void CGlWidget::updateSelectionWithoutSignals(const std::vector<size_t>& idx)
+{
+	blockSignals(true);
+	deselectAll();
+
+	for (auto& id : idx) selectPoint(id);
+
+	blockSignals(false);
+}
+
 void CGlWidget::resizeGL(int width, int height)
 {
 	CQtGlCanvasBase::resizeGL(width, height);
@@ -509,7 +520,7 @@ void CGlWidget::mousePressEvent(QMouseEvent* event)
 		if (!needUnpressMouse)
 		{
 			needUnpressMouse =
-					selectPoint(scenePos.second.x, scenePos.second.y, maxDist);
+				selectPoint(scenePos.second.x, scenePos.second.y, maxDist);
 			if (needUnpressMouse)
 			{
 				needUpdateScene = needUnpressMouse;
@@ -554,6 +565,7 @@ void CGlWidget::keyPressEvent(QKeyEvent* event)
 	{
 		std::vector<size_t> idx;
 		for (auto& it : m_selectedPoints) idx.push_back(it->getId());
+		deselectAll();
 		emit deleteRobotPoses(idx);
 	}
 }
@@ -625,23 +637,26 @@ bool CGlWidget::selectPoint(float x, float y, double maxDist)
 	int poseIndex = searchPose(x, y, maxDist);
 	if (poseIndex != -1)
 	{
-		auto robotPose = getRobotPose(poseIndex);
-		robotPose->setSelected(true);
-		m_selectedPoints.push_back(robotPose);
-		removeRobotDirection();
-		emit selectedChanged(m_selectedPoints);
-
-		if (m_selectedPoints.size() == 1)
-		{
-			mrpt::math::TPose3D pose = robotPose->getPose();
-
-			emit showPoseDirection(
-				robotPose->getId(), pose.yaw, pose.pitch, pose.roll);
-		}
-
+		selectPoint((size_t)poseIndex);
 		return true;
 	}
 	return false;
+}
+
+void CGlWidget::selectPoint(size_t poseIndex)
+{
+	auto robotPose = getRobotPose(poseIndex);
+	robotPose->setSelected(true);
+	m_selectedPoints.push_back(robotPose);
+	removeRobotDirection();
+	emit selectedChanged(m_selectedPoints);
+
+	if (m_selectedPoints.size() == 1)
+	{
+		mrpt::math::TPose3D pose = robotPose->getPose();
+		emit showPoseDirection(
+			robotPose->getId(), pose.yaw, pose.pitch, pose.roll);
+	}
 }
 
 template <class Container>
@@ -745,7 +760,7 @@ bool CGlWidget::deselectAll()
 	return changedVectors;
 }
 
-CRobotPose::Ptr CGlWidget::getRobotPose(int index)
+CRobotPose::Ptr CGlWidget::getRobotPose(size_t index)
 {
 	auto it = m_visiblePoints->begin() + index;
 	assert(it != m_visiblePoints->end());
