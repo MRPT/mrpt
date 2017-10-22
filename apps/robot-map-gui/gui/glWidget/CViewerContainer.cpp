@@ -166,6 +166,10 @@ void CViewerContainer::updateConfigChanges(
 			SIGNAL(deleteRobotPoses(const std::vector<size_t>&)));
 
 		connect(
+			gl, SIGNAL(showPoseDirection(size_t, double, double, double)),
+			SIGNAL(showPoseDirection(size_t, double, double, double)));
+
+		connect(
 			gl,
 			SIGNAL(moveRobotPoses(const std::vector<size_t>&, const QPointF&)),
 			SIGNAL(moveRobotPoses(const std::vector<size_t>&, const QPointF&)));
@@ -186,11 +190,11 @@ void CViewerContainer::showAllObservation(bool is)
 	forEachGl([is](CGlWidget* gl) { gl->setSelectedObservation(is); });
 }
 
-void CViewerContainer::changedSelected(const std::vector<CRobotPose::Ptr> &robotPoses)
+void CViewerContainer::changedSelected(
+	const std::vector<CRobotPose::Ptr>& robotPoses)
 {
 	std::vector<size_t> indexes;
-	for (auto& pose: robotPoses)
-		indexes.push_back(pose->getId());
+	for (auto& pose : robotPoses) indexes.push_back(pose->getId());
 	emit selectedChanged(indexes);
 }
 

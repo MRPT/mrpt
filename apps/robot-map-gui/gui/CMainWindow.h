@@ -66,6 +66,10 @@ class CMainWindow : public QMainWindow
 	void saveMetricMapRepresentation();
 	void saveMetricmapInBinaryFormat();
 
+	void updateDirection(size_t index, double yaw, double pitch, double roll);
+	void showPoseDirection(size_t index, double yaw, double pitch, double roll);
+	void hidePoseDirection();
+
    private:
 	void updateRenderMapFromConfig();
 	void applyMapsChanges();
@@ -77,6 +81,8 @@ class CMainWindow : public QMainWindow
 	void addRecentFilesToMenu();
 
 	void showErrorMessage(const QString& str) const;
+
+	void updateSaveButtonState();
 
 	CDocument* m_document;
 	CObservationTreeModel* m_model;

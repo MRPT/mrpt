@@ -49,6 +49,7 @@ class CViewerContainer : public QWidget
 	void selectedChanged(const std::vector<size_t>& idx);
 	void deleteRobotPoses(const std::vector<size_t>& idx);
 	void moveRobotPoses(const std::vector<size_t>& idx, const QPointF& dist);
+	void showPoseDirection(size_t idx, double yaw, double pitch, double roll);
 
    public slots:
 	void showAllObservation(bool is);

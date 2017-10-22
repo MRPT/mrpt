@@ -69,6 +69,7 @@ class CGlWidget : public mrpt::gui::CQtGlCanvasBase
 	void elevationChanged(float ang);
 	void deleteRobotPoses(const std::vector<size_t>& idx);
 	void moveRobotPoses(const std::vector<size_t>& idx, const QPointF& dist);
+	void showPoseDirection(size_t idx, double yaw, double pitch, double roll);
 
    protected:
 	virtual void resizeGL(int width, int height) override;

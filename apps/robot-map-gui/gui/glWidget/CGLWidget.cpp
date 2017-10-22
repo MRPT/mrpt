@@ -25,7 +25,6 @@
 
 #include <QMouseEvent>
 #include <QApplication>
-#include <QDebug>
 
 // Include libraries in linking (needed for Windows)
 #include <mrpt/config.h>
@@ -207,7 +206,10 @@ void CGlWidget::setDocument(CDocument* doc)
 
 void CGlWidget::updateObservations()
 {
-	if (m_isShowObs) m_map->removeObject(m_visiblePoints);
+	bool isShowObs = m_isShowObs;
+
+	std::vector<CRobotPose::Ptr> selectedPoints = m_selectedPoints;
+	if (isShowObs) setSelectedObservation(false);
 	m_visiblePoints->clear();
 
 	int id = 0;
@@ -220,7 +222,6 @@ void CGlWidget::updateObservations()
 		m_visiblePoints->insert(robotPose);
 		++id;
 	}
-	std::vector<CRobotPose::Ptr> selectedPoints = m_selectedPoints;
 	m_selectedPoints.clear();
 
 	double maxDist = maximumSizeObservation(QPoint(0, 0));
@@ -228,13 +229,12 @@ void CGlWidget::updateObservations()
 	for (auto& it : selectedPoints)
 	{
 		mrpt::math::TPose3D pose = it->getPose();
-		selectPoint(pose.x, pose.y, maxDist);
+		selectPoint(pose.x, pose.y, maxDist * 2);
 	}
 
 	emit selectedChanged(m_selectedPoints);
-	qDebug() << "updateObservations " << m_selectedPoints.size();
 
-	if (m_isShowObs) setSelectedObservation(m_isShowObs);
+	if (isShowObs) setSelectedObservation(isShowObs);
 }
 
 void CGlWidget::setZoom(float zoom)
@@ -485,11 +485,10 @@ void CGlWidget::mousePressEvent(QMouseEvent* event)
 	auto sceneOtherPos = sceneToWorld(otherPos);
 	if (scenePos.first && sceneOtherPos.first)
 	{
-		double maxDist = maximumSizeObservation(pos);
-
 		bool needUnpressMouse = false;
 		bool needUpdateScene = false;
 
+		double maxDist = maximumSizeObservation(pos);
 		int selectedIndex =
 			searchSelectedPose(scenePos.second.x, scenePos.second.y, maxDist);
 
@@ -510,7 +509,7 @@ void CGlWidget::mousePressEvent(QMouseEvent* event)
 		if (!needUnpressMouse)
 		{
 			needUnpressMouse =
-				selectPoint(scenePos.second.x, scenePos.second.y, maxDist);
+					selectPoint(scenePos.second.x, scenePos.second.y, maxDist);
 			if (needUnpressMouse)
 			{
 				needUpdateScene = needUnpressMouse;
@@ -631,7 +630,15 @@ bool CGlWidget::selectPoint(float x, float y, double maxDist)
 		m_selectedPoints.push_back(robotPose);
 		removeRobotDirection();
 		emit selectedChanged(m_selectedPoints);
-		qDebug() << "selectPoint " << m_selectedPoints.size();
+
+		if (m_selectedPoints.size() == 1)
+		{
+			mrpt::math::TPose3D pose = robotPose->getPose();
+
+			emit showPoseDirection(
+				robotPose->getId(), pose.yaw, pose.pitch, pose.roll);
+		}
+
 		return true;
 	}
 	return false;
@@ -710,14 +717,12 @@ void CGlWidget::removePoseFromSelected(int index)
 	robotPose->setSelected(false);
 	m_selectedPoints.erase(it);
 	emit selectedChanged(m_selectedPoints);
-	qDebug() << "removePoseFromSelected " << m_selectedPoints.size();
 }
 
 void CGlWidget::selectPose(CRobotPose::Ptr robotPose)
 {
 	robotPose->setSelected(true);
 	m_selectedPoints.push_back(robotPose);
-	qDebug() << "selectPose CRobotPose " << m_selectedPoints.size();
 	emit selectedChanged(m_selectedPoints);
 	removeRobotDirection();
 }
@@ -736,7 +741,6 @@ bool CGlWidget::deselectAll()
 
 	m_selectedPoints.clear();
 	emit selectedChanged(m_selectedPoints);
-	qDebug() << "deselectAll " << m_selectedPoints.size();
 	removeRobotDirection();
 	return changedVectors;
 }

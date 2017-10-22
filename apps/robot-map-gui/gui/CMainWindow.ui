@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1072</width>
-    <height>902</height>
+    <width>902</width>
+    <height>615</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -40,7 +40,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1072</width>
+     <width>902</width>
      <height>19</height>
     </rect>
    </property>
@@ -269,6 +269,18 @@
    <addaction name="m_actionShowConfig"/>
    <addaction name="m_actionMapConfiguration"/>
   </widget>
+  <widget class="QDockWidget" name="m_dockWidgetDirection">
+   <property name="floating">
+    <bool>false</bool>
+   </property>
+   <property name="windowTitle">
+    <string>Pose direction</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="CPoseDirection" name="m_poseDirection"/>
+  </widget>
   <action name="m_actionOpen">
    <property name="icon">
     <iconset resource="../resources/resources.qrc">
@@ -420,6 +432,12 @@
    <class>CViewerContainer</class>
    <extends>QWidget</extends>
    <header>gui/glWidget/CViewerContainer.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CPoseDirection</class>
+   <extends>QWidget</extends>
+   <header location="global">gui/glWidget/CPoseDirection.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
