@@ -8,30 +8,31 @@
    +---------------------------------------------------------------------------+
    */
 #pragma once
-#include <QTreeView>
+#include <QWidget>
 
-/** This class implements tree view for storage observations matching robot
- * poses
-*/
+#include <memory>
 
-class CObservationTreeModel;
+#include "ui_CPoseDirection.h"
 
-class CObservationTree : public QTreeView
+class CPoseDirection : public QWidget
 {
 	Q_OBJECT
    public:
-	CObservationTree(QWidget* parent = nullptr);
-	virtual ~CObservationTree() = default;
-	virtual void setModel(QAbstractItemModel* model);
-	void changeSelected(const std::vector<size_t>& idx);
+	CPoseDirection(QWidget* parent = nullptr);
+	virtual ~CPoseDirection();
+	void setDirection(double yaw, double pitch, double roll);
+	double getYaw() const;
+	double getPitch() const;
+	double getRoll() const;
+	void setIndex(size_t index);
 
-   public slots:
-	void expandAll();
-	void collapseAll();
+   signals:
+	void updateDirection(size_t index, double yaw, double pitch, double roll);
 
-   protected:
-	virtual void contextMenuEvent(QContextMenuEvent* event);
+   private slots:
+	void dataChanged();
 
    private:
-	CObservationTreeModel* m_model;
+	std::unique_ptr<Ui::CPoseDirection> m_ui;
+	int m_index;
 };

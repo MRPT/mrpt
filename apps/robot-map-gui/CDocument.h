@@ -62,14 +62,23 @@ class CDocument
 	const TypeConfig& typeConfig() const;
 
 	std::vector<size_t> remove(const std::vector<size_t>& indexes);
+
 	void move(
 		const std::vector<size_t>& indexes,
 		const mrpt::maps::CSimpleMap::TPosePDFSensFramePairList& posesObsPairs);
+	void move(
+		size_t index,
+		const mrpt::maps::CSimpleMap::TPosePDFSensFramePair& posesObsPair,
+		bool disableUpdateMetricMap = false);
+
 	void insert(
 		const std::vector<size_t>& idx,
 		mrpt::maps::CSimpleMap::TPosePDFSensFramePairList& posesObsPairs);
+
 	mrpt::maps::CSimpleMap::TPosePDFSensFramePairList get(
 		const std::vector<size_t>& idx) const;
+	mrpt::maps::CSimpleMap::TPosePDFSensFramePair get(size_t idx) const;
+
 	mrpt::maps::CSimpleMap::TPosePDFSensFramePairList getReverse(
 		const std::vector<size_t>& idx) const;
 

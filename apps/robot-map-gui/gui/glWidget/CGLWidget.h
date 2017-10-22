@@ -61,13 +61,18 @@ class CGlWidget : public mrpt::gui::CQtGlCanvasBase
 	bool setSelectedObservationSize(double s);
 	bool setSelectedObservationColor(int type);
 
+   public slots:
+	void updateSelectionWithoutSignals(const std::vector<size_t>& idx);
+
    signals:
+	void selectedChanged(const std::vector<CRobotPose::Ptr>& idx);
 	void zoomChanged(float zoom);
 	void mousePosChanged(double x, double y);
 	void azimuthChanged(float ang);
 	void elevationChanged(float ang);
 	void deleteRobotPoses(const std::vector<size_t>& idx);
 	void moveRobotPoses(const std::vector<size_t>& idx, const QPointF& dist);
+	void showPoseDirection(size_t idx, double yaw, double pitch, double roll);
 
    protected:
 	virtual void resizeGL(int width, int height) override;
@@ -87,6 +92,7 @@ class CGlWidget : public mrpt::gui::CQtGlCanvasBase
 	double maximumSizeObservation(const QPoint& pos) const;
 
 	bool selectPoint(float x, float y, double maxDist);
+	void selectPoint(size_t index);
 
 	template <class Container>
 	int searchPoseFromList(
@@ -101,7 +107,7 @@ class CGlWidget : public mrpt::gui::CQtGlCanvasBase
 	void removePoseFromSelected(int index);
 	void selectPose(CRobotPose::Ptr robotPose);
 	bool deselectAll();
-	CRobotPose::Ptr getRobotPose(int index);
+	CRobotPose::Ptr getRobotPose(size_t index);
 
 	mrpt::opengl::COpenGLViewport::Ptr m_miniMapViewport;
 	mrpt::opengl::CSetOfObjects::Ptr m_map;

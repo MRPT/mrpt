@@ -162,13 +162,21 @@ void CDocument::move(
 	const CSimpleMap::TPosePDFSensFramePairList& posesObsPairs)
 {
 	for (size_t i = 0; i < indexes.size(); ++i)
-	{
-		m_simplemap.remove(indexes[i]);
-		m_simplemap.insertToPos(
-			indexes[i], posesObsPairs[i].first, posesObsPairs[i].second);
-	}
+		move(indexes[i], posesObsPairs[i], true);
+
 	m_changedFile = true;
 	updateMetricMap();
+}
+
+void CDocument::move(
+	size_t index, const CSimpleMap::TPosePDFSensFramePair& posesObsPair,
+	bool disableUpdateMetricMap)
+{
+	m_simplemap.remove(index);
+	m_simplemap.insertToPos(index, posesObsPair.first, posesObsPair.second);
+
+	m_changedFile = true;
+	if (!disableUpdateMetricMap) updateMetricMap();
 }
 
 void CDocument::insert(
@@ -189,11 +197,17 @@ CSimpleMap::TPosePDFSensFramePairList CDocument::get(
 	CSimpleMap::TPosePDFSensFramePairList posesObsPairs;
 	for (auto& it : idx)
 	{
-		CSimpleMap::TPosePDFSensFramePair pair;
-		m_simplemap.get(it, pair.first, pair.second);
+		CSimpleMap::TPosePDFSensFramePair pair = get(it);
 		posesObsPairs.push_back(pair);
 	}
 	return posesObsPairs;
+}
+
+CSimpleMap::TPosePDFSensFramePair CDocument::get(size_t idx) const
+{
+	CSimpleMap::TPosePDFSensFramePair posesObsPair;
+	m_simplemap.get(idx, posesObsPair.first, posesObsPair.second);
+	return posesObsPair;
 }
 
 CSimpleMap::TPosePDFSensFramePairList CDocument::getReverse(

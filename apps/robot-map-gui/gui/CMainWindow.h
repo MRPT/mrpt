@@ -58,12 +58,17 @@ class CMainWindow : public QMainWindow
 	void applyConfigurationForCurrentMaps();
 	void showMapConfiguration();
 
+	void selectedChanged(const std::vector<size_t>& idx);
 	void deleteRobotPoses(const std::vector<size_t>& idx);
 	void moveRobotPoses(const std::vector<size_t>& idx, const QPointF& dist);
 
 	void openRecent();
 	void saveMetricMapRepresentation();
 	void saveMetricmapInBinaryFormat();
+
+	void updateDirection(size_t index, double yaw, double pitch, double roll);
+	void showPoseDirection(size_t index, double yaw, double pitch, double roll);
+	void hidePoseDirection();
 
    private:
 	void updateRenderMapFromConfig();
@@ -76,6 +81,8 @@ class CMainWindow : public QMainWindow
 	void addRecentFilesToMenu();
 
 	void showErrorMessage(const QString& str) const;
+
+	void updateSaveButtonState();
 
 	CDocument* m_document;
 	CObservationTreeModel* m_model;

@@ -25,11 +25,16 @@
 #include <QFileDialog>
 #include <QTreeWidgetItem>
 #include <QErrorMessage>
+#include <QDebug>
 
 #include "mrpt/gui/CQtGlCanvasBase.h"
 #include "mrpt/poses/CPose3D.h"
 #include "mrpt/gui/about_box.h"
 #include "mrpt/gui/error_box.h"
+#include "mrpt/math/wrap2pi.h"
+#include "mrpt/utils/bits.h"
+
+using namespace mrpt::utils;
 
 CMainWindow::CMainWindow(QWidget* parent)
 	: QMainWindow(parent),
@@ -40,6 +45,8 @@ CMainWindow::CMainWindow(QWidget* parent)
 	m_ui->setupUi(this);
 
 	m_ui->m_dockWidgetNodeViewer->setVisible(false);
+	m_ui->m_dockWidgetDirection->setVisible(false);
+	m_ui->m_dockWidgetConfig->setVisible(false);
 
 	m_ui->m_undoAction->setShortcut(QKeySequence(QKeySequence::Undo));
 	m_ui->m_redoAction->setShortcut(QKeySequence(QKeySequence::Redo));
@@ -86,6 +93,9 @@ CMainWindow::CMainWindow(QWidget* parent)
 	connect(
 		m_ui->m_actionShowAllObs, &QAction::triggered, m_ui->m_viewer,
 		&CViewerContainer::showAllObservation);
+	connect(
+		m_ui->m_poseDirection, &CPoseDirection::updateDirection, this,
+		&CMainWindow::updateDirection);
 
 	connect(
 		m_ui->m_expandAll, &QPushButton::released, m_ui->m_observationsTree,
@@ -95,11 +105,20 @@ CMainWindow::CMainWindow(QWidget* parent)
 		&CObservationTree::collapseAll);
 
 	connect(
+		m_ui->m_viewer, &CViewerContainer::selectedChanged, this,
+		&CMainWindow::selectedChanged);
+	connect(
 		m_ui->m_viewer, &CViewerContainer::deleteRobotPoses, this,
 		&CMainWindow::deleteRobotPoses);
 	connect(
 		m_ui->m_viewer, &CViewerContainer::moveRobotPoses, this,
 		&CMainWindow::moveRobotPoses);
+	connect(
+		m_ui->m_viewer, &CViewerContainer::selectedChanged, this,
+		&CMainWindow::selectedChanged);
+	connect(
+		m_ui->m_viewer, &CViewerContainer::showPoseDirection, this,
+		&CMainWindow::showPoseDirection);
 
 	m_ui->m_actionSave->setDisabled(true);
 	m_ui->m_actionSaveAsText->setDisabled(true);
@@ -179,7 +198,7 @@ void CMainWindow::saveMap()
 	if (!m_document) return;
 
 	m_document->saveSimpleMap();
-	m_ui->m_actionSave->setDisabled(!m_document->isFileChanged());
+	updateSaveButtonState();
 }
 
 void CMainWindow::saveAsText()
@@ -317,6 +336,11 @@ void CMainWindow::showMapConfiguration()
 	delete d;
 }
 
+void CMainWindow::selectedChanged(const std::vector<size_t>& idx)
+{
+	m_ui->m_observationsTree->changeSelected(idx);
+}
+
 void CMainWindow::addRobotPosesFromMap(
 	std::vector<size_t> idx,
 	mrpt::maps::CSimpleMap::TPosePDFSensFramePairList posesObsPairs)
@@ -324,7 +348,7 @@ void CMainWindow::addRobotPosesFromMap(
 	if (!m_document || idx.empty()) return;
 
 	m_document->insert(idx, posesObsPairs);
-	m_ui->m_actionSave->setDisabled(!m_document->isFileChanged());
+	updateSaveButtonState();
 	applyMapsChanges();
 }
 
@@ -333,7 +357,7 @@ void CMainWindow::deleteRobotPosesFromMap(const std::vector<size_t>& idx)
 	if (!m_document || idx.empty()) return;
 
 	m_document->remove(idx);
-	m_ui->m_actionSave->setDisabled(!m_document->isFileChanged());
+	updateSaveButtonState();
 	applyMapsChanges();
 }
 
@@ -355,7 +379,7 @@ void CMainWindow::moveRobotPosesOnMap(
 			mrpt::poses::CPose3D(dist.x(), dist.y(), 0.0));
 	}
 	m_document->move(idx, posesObsPairs);
-	m_ui->m_actionSave->setDisabled(!m_document->isFileChanged());
+	updateSaveButtonState();
 	applyMapsChanges();
 }
 
@@ -381,7 +405,7 @@ void CMainWindow::deleteRobotPoses(const std::vector<size_t>& idx)
 		m_document->getReverse(idx);
 
 	auto reverseInd = m_document->remove(idx);
-	m_ui->m_actionSave->setDisabled(!m_document->isFileChanged());
+	updateSaveButtonState();
 	applyMapsChanges();
 
 	auto redo = [idx, this]() { this->deleteRobotPosesFromMap(idx); };
@@ -441,6 +465,45 @@ void CMainWindow::saveMetricmapInBinaryFormat()
 
 	m_document->saveMetricmapInBinaryFormat(
 		fileName.toStdString(), action->text().toStdString());
+}
+
+void CMainWindow::updateDirection(
+	size_t index, double yaw, double pitch, double roll)
+{
+	if (!m_document) return;
+
+	auto posesObsPair = m_document->get(index);
+
+	auto posePDF = posesObsPair.first;
+	auto pose = posePDF->getMeanVal();
+
+	pose.setFromValues(
+		pose[0], pose[1], pose[2], DEG2RAD(yaw), DEG2RAD(pitch), DEG2RAD(roll));
+	auto newPosePDF = std::make_shared<mrpt::poses::CPose3DPDFGaussian>(
+		pose, posePDF->getCovariance());
+
+	posesObsPair.first = newPosePDF;
+	m_document->move(index, posesObsPair);
+
+	updateSaveButtonState();
+
+	m_ui->m_poseDirection->blockSignals(true);
+	applyMapsChanges();
+	m_ui->m_poseDirection->blockSignals(false);
+}
+
+void CMainWindow::showPoseDirection(
+	size_t idx, double yaw, double pitch, double roll)
+{
+	m_ui->m_dockWidgetDirection->setVisible(true);
+	m_ui->m_poseDirection->setIndex(idx);
+	m_ui->m_poseDirection->setDirection(
+		RAD2DEG(yaw), RAD2DEG(pitch), RAD2DEG(roll));
+}
+
+void CMainWindow::hidePoseDirection()
+{
+	m_ui->m_dockWidgetDirection->setVisible(false);
 }
 
 void CMainWindow::updateRenderMapFromConfig()
@@ -529,4 +592,9 @@ void CMainWindow::showErrorMessage(const QString& str) const
 	QErrorMessage msg;
 	msg.showMessage(str);
 	msg.exec();
+}
+
+void CMainWindow::updateSaveButtonState()
+{
+	m_ui->m_actionSave->setDisabled(!m_document->isFileChanged());
 }
