@@ -23,6 +23,19 @@ CObservationTreeModel::CObservationTreeModel(
 }
 
 CObservationTreeModel::~CObservationTreeModel() {}
+
+QItemSelection CObservationTreeModel::changeSelected(const std::vector<size_t> &indexes)
+{
+	QItemSelection selection;
+	for (auto& idx: indexes)
+	{
+		QModelIndex i = index(idx, 0, QModelIndex());
+		if (i != QModelIndex())
+			selection.select(i, i);
+	}
+	return selection;
+}
+
 int CObservationTreeModel::rowCount(const QModelIndex& parent) const
 {
 	CNode* parentNode;
@@ -59,7 +72,7 @@ QModelIndex CObservationTreeModel::index(
 
 	CNode* parentNode = getNodeFromIndexSafe(parent);
 
-	CNode* childItem = parentNode->child(row);
+	CNode* childItem = (parentNode->child(row));
 	if (childItem)
 		return createIndex(row, column, childItem);
 	else

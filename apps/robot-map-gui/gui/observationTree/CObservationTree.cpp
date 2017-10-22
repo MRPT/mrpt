@@ -13,6 +13,8 @@
 
 #include <QContextMenuEvent>
 #include <QMenu>
+#include <QDebug>
+
 
 CObservationTree::CObservationTree(QWidget* parent)
 	: QTreeView(parent), m_model(nullptr)
@@ -23,6 +25,15 @@ void CObservationTree::setModel(QAbstractItemModel* model)
 {
 	m_model = dynamic_cast<CObservationTreeModel*>(model);
 	QTreeView::setModel(model);
+}
+
+void CObservationTree::changeSelected(const std::vector<size_t> &idx)
+{
+	blockSignals(true);
+	clearSelection();
+	QItemSelection selection = m_model->changeSelected(idx);
+	selectionModel()->select(selection, QItemSelectionModel::Select);
+	blockSignals(false);
 }
 
 void CObservationTree::expandAll()

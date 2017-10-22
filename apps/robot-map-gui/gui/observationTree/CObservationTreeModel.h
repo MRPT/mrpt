@@ -9,6 +9,8 @@
    */
 #pragma once
 #include <QAbstractTableModel>
+#include <QItemSelection>
+#include <QDebug>
 
 #include "CRootNode.h"
 
@@ -30,6 +32,8 @@ class CObservationTreeModel : public QAbstractTableModel
 	CObservationTreeModel(
 		const mrpt::maps::CSimpleMap& simplemap, QObject* parent = nullptr);
 	virtual ~CObservationTreeModel();
+
+	QItemSelection changeSelected(const std::vector<size_t>& indexes);
 
 	// QAbstractItemModel interface
 	virtual int rowCount(const QModelIndex& parent) const override;
