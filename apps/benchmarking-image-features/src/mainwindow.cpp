@@ -4376,40 +4376,48 @@ void MainWindow::Mouse_Pressed()
 		if (images_static != NULL) images_static_sift_surf2->setVisible(false);
 	}
 
-/*
-    cout << image1->size().width() << " 1 " << image1->size().height() << endl;
-    cout << image1->x << " 2 " << image1->y << endl;
-    cout << IMAGE_WIDTH << " REAL " << IMAGE_HEIGHT << endl;
-    //cout << image1->logicalDpiX() << " 3 " << image1->logicalDpiY() << endl;
-    //cout << image1->physicalDpiX() << " 4 " << image1->physicalDpiY() << endl;
-    //cout << image1->width() << " 5 " << image1->height() << endl;
-    cout << image1->widthMM() << " 6 " << image1->heightMM() << endl;
-    //cout << image1->baseSize().width() << " 7 " << image1->baseSize().height() << endl;
-    //cout << image1->baseSize().rwidth() << " 8 " << image1->baseSize().rheight() << endl;
-    cout << image1->frameGeometry().x() << " 9 " << image1->frameGeometry().y() << endl;
-    //cout << image1->maximumWidth() << " 10 " << image1->maximumHeight() << endl;
-    cout << image1->pixmap()->width() << " 11 " << image1->pixmap()->height() << endl;
-    //cout << mouse_x << " 12 " << mouse_y << endl;
-*/
+	/*
+		cout << image1->size().width() << " 1 " << image1->size().height() <<
+	   endl;
+		cout << image1->x << " 2 " << image1->y << endl;
+		cout << IMAGE_WIDTH << " REAL " << IMAGE_HEIGHT << endl;
+		//cout << image1->logicalDpiX() << " 3 " << image1->logicalDpiY() <<
+	   endl;
+		//cout << image1->physicalDpiX() << " 4 " << image1->physicalDpiY() <<
+	   endl;
+		//cout << image1->width() << " 5 " << image1->height() << endl;
+		cout << image1->widthMM() << " 6 " << image1->heightMM() << endl;
+		//cout << image1->baseSize().width() << " 7 " <<
+	   image1->baseSize().height() << endl;
+		//cout << image1->baseSize().rwidth() << " 8 " <<
+	   image1->baseSize().rheight() << endl;
+		cout << image1->frameGeometry().x() << " 9 " <<
+	   image1->frameGeometry().y() << endl;
+		//cout << image1->maximumWidth() << " 10 " << image1->maximumHeight() <<
+	   endl;
+		cout << image1->pixmap()->width() << " 11 " <<
+	   image1->pixmap()->height() << endl;
+		//cout << mouse_x << " 12 " << mouse_y << endl;
+	*/
 
-
-    /// mapping to the correct x and y dimensions in the qlabel to correctly get the clicked point in horizontal and vertical direction
-    int pixel_width = image1->pixmap()->width();
+	/// mapping to the correct x and y dimensions in the qlabel to correctly get
+	/// the clicked point in horizontal and vertical direction
+	int pixel_width = image1->pixmap()->width();
 	int mapped_mouse_x = mouse_x / pixel_width * resolution_x;
 
-    //int mapped_mouse_y = mouse_y / IMAGE_HEIGHT * resolution_y;
+	// int mapped_mouse_y = mouse_y / IMAGE_HEIGHT * resolution_y;
 
-    double pixel_height = image1->pixmap()->height();
-    double other_height = image1->size().height();
-    double temp_mouse_y = (mouse_y + (pixel_height - other_height)/2 );
-    int mapped_mouse_y = (int) ((double)temp_mouse_y / (double) pixel_height  * resolution_y);
+	double pixel_height = image1->pixmap()->height();
+	double other_height = image1->size().height();
+	double temp_mouse_y = (mouse_y + (pixel_height - other_height) / 2);
+	int mapped_mouse_y =
+		(int)((double)temp_mouse_y / (double)pixel_height * resolution_y);
 
-    /*cout << mouse_x << " 12 " << temp_mouse_y << endl;
-    cout << mapped_mouse_x << " mapped " << mapped_mouse_y << endl;
-     */
+	/*cout << mouse_x << " 12 " << temp_mouse_y << endl;
+	cout << mapped_mouse_x << " mapped " << mapped_mouse_y << endl;
+	 */
 
-
-    int pos = findClosest(mapped_mouse_x, mapped_mouse_y, x, y, numDesc1);
+	int pos = findClosest(mapped_mouse_x, mapped_mouse_y, x, y, numDesc1);
 	float temp_x = featsImage1.getFeatureX(
 		pos);  // get the descriptor x coordinate corresponding to images1[cnt]
 	float temp_y = featsImage1.getFeatureY(pos);
