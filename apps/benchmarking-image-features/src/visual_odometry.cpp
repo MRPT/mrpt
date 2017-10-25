@@ -55,8 +55,7 @@ double VisualOdometry::computeOdomError()
 						 pow((ground_truth_y[i] - ground_truth_y[i + 1]), 2)));
 	}
 	double percentage = abs(error - total) / (double)total * 100.00;
-	// cout << error << " error " << total << " total " << percentage
-	//	 << " % accuracy" << endl;
+
 	// display();
 	return percentage;
 }
@@ -82,7 +81,7 @@ double VisualOdometry::getAbsoluteScale(
 			x_prev = x;
 			y_prev = y;
 			std::istringstream in(line);
-			// cout << line << '\n';
+
 			for (int j = 0; j < 12; j++)
 			{
 				in >> z;
@@ -130,17 +129,14 @@ vector<double> VisualOdometry::getCalibrationParams(string calibration_file)
 
 	if (myfile.is_open())
 	{
-		// cout << " before while " << endl;
 		while ((getline(myfile, line)) && (i < 1))
 		{
-			// cout << line << " file line " << endl;
 			std::istringstream in(line);
 
-			// cout << line << '\n';
 			for (int j = 0; j < 12; j++)
 			{
 				in >> z;
-				// cout << z << " zzz " << endl;
+
 				if (j == 7)
 				{
 					point_y = std::stod(z);
@@ -166,8 +162,6 @@ vector<double> VisualOdometry::getCalibrationParams(string calibration_file)
 		cout << "Unable to open calibration file for Visual Odometry";
 		return params;
 	}
-	// cout << focal << " f " << point_x << " p_X " << point_y << " p_Y " <<
-	// endl;
 	params.push_back(focal);
 	params.push_back(point_x);
 	params.push_back(point_y);
@@ -180,7 +174,7 @@ vector<double> VisualOdometry::getCalibrationParams(string calibration_file)
 void VisualOdometry::storeGroundTruth(string poses_ground_truth)
 {
 	char ch = poses_ground_truth.at(poses_ground_truth.length() - 5);
-	// cout << ch << endl;
+
 	vector<int> shifts = computeStartingPoint(ch);
 	string line;
 	int i = 0;
@@ -193,23 +187,20 @@ void VisualOdometry::storeGroundTruth(string poses_ground_truth)
 		while ((getline(myfile, line)) && (i <= MAX_FRAME))
 		{
 			std::istringstream in(line);
-			// cout << line << '\n';
+
 			for (int j = 0; j < 12; j++)
 			{
 				in >> z;
-				// cout << z << " z value " ;
 				if (j == 11)
 				{
 					y = z;
 					ground_truth_y[i] = (int)y + shifts.at(1);
-					// cout << y << " y ";
 				}
 				if (j == 3)
 				{
 					x = z;
 
 					ground_truth_x[i] = (int)x + shifts.at(0);
-					// cout << x << " x " << endl;
 				}
 			}
 			i++;
@@ -267,8 +258,6 @@ Mat VisualOdometry::generateVO(
 	ofstream myfile;
 	myfile.open("results1_1.txt");
 
-	// cout << "in generateVO method" << endl;
-
 	double scale = 1.00;
 	// char filename1[200];
 	// char filename2[200];
@@ -321,14 +310,12 @@ Mat VisualOdometry::generateVO(
 
 	// WARNING: different sequences in the KITTI VO dataset have different
 	// intrinsic/extrinsic parameters
-	// cout << calibration_file << " calibration file " << endl;
 	vector<double> cameraParams = getCalibrationParams(calibration_file);
 
 	double focal = cameraParams.at(0);  // 718.8560;
 	cv::Point2d pp(
 		cameraParams.at(1), cameraParams.at(2));  // pp(607.1928, 185.2157);
 
-	// cout << focal << "focal " << pp.x << " x " << pp.y << " y " << endl;
 	// double focal = 718.8560;
 	// cv::Point2d pp(607.1928, 185.2157);
 	// recovering the pose and the essential matrix
@@ -363,7 +350,6 @@ Mat VisualOdometry::generateVO(
 
 		sprintf(filename, temp4.c_str(), numFrame);
 
-		// cout << numFrame << endl;
 		Mat currImage_c = imread(filename);
 		CImage img3;
 		img3.loadFromFile(filename);
@@ -391,19 +377,12 @@ Mat VisualOdometry::generateVO(
 		}
 
 		scale = getAbsoluteScale(numFrame, 0, t.at<double>(2), groundtruth);
-		// scale = 1;
-		// cout << "Scale is " << scale << endl;
 
 		if ((scale > 0.1) && (t.at<double>(2) > t.at<double>(0)) &&
 			(t.at<double>(2) > t.at<double>(1)))
 		{
 			t_f = t_f + scale * (R_f * t);
 			R_f = R * R_f;
-		}
-
-		else
-		{
-			// cout << "scale below 0.1, or incorrect translation" << endl;
 		}
 
 		// lines for printing results
@@ -414,9 +393,6 @@ Mat VisualOdometry::generateVO(
 		// trakced go below a particular threshold
 		if (prevFeatures.size() < MIN_NUM_FEAT)
 		{
-			// cout << "Number of tracked features reduced to " <<
-			// prevFeatures.size() << endl;
-			// cout << "trigerring redection" << endl;
 			featureDetection(img3, prevFeatures, feat_type);
 			featureTracking(
 				prevImage, currImage, prevFeatures, currFeatures, status);
@@ -426,14 +402,13 @@ Mat VisualOdometry::generateVO(
 		prevFeatures = currFeatures;
 
 		char ch = groundtruth.at(groundtruth.length() - 5);
-		// cout << ch << endl;
+
 		vector<int> shifts = computeStartingPoint(ch);
 
 		int x = int(t_f.at<double>(0)) + shifts.at(0);
 		int y = int(t_f.at<double>(2)) + shifts.at(1);
 		circle(traj, Point(x, y), 1, CV_RGB(255, 0, 0), 2);
 
-		// cout << "predict: " << x << " x " << y << " y " << endl;
 		predicted_x[numFrame] = x;
 		predicted_y[numFrame] = y;
 
@@ -449,16 +424,11 @@ Mat VisualOdometry::generateVO(
 		cnt.setValue(numFrame);
 	}
 
-	// clock_t end = clock();
-	// double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-	// cout << "Total time taken: " << elapsed_secs << "s" << endl;
-
 	storeGroundTruth(groundtruth);
 	for (int i = 0; i < MAX_FRAME; i++)
 	{
 		int x = (int)ground_truth_x[i];
 		int y = (int)ground_truth_y[i];
-		// cout << "x: " << x << " y: " << y << endl;
 
 		circle(traj, Point(x, y), 1, CV_RGB(0, 255, 0), 2);
 	}
