@@ -81,8 +81,6 @@ cv::Mat Tracker::trackThemAll(
 	CImage theImg;  // The grabbed image:
 	theImg.loadFromFile(files_fullpath_tracking.at(current_num));
 
-	// cout << theImg.isColor() << " color check" << endl;
-
 	// Take the resolution upon first valid frame.
 	if (!hasResolution)
 	{
@@ -144,7 +142,6 @@ cv::Mat Tracker::trackThemAll(
 	// Draw feature tracks
 	if (SHOW_FEAT_TRACKS)
 	{
-		// cout << "here in show_FEAT_TRACKS" << endl;
 		// Update new feature coords:
 		tracker->getProfiler().enter("drawFeatureTracks");
 
@@ -156,7 +153,6 @@ cv::Mat Tracker::trackThemAll(
 			const TSimpleFeature& ft = trackedFeats[i];
 			std::list<TPixelCoord>& seq = feat_tracks[ft.ID];
 
-			// cout << "here bro " << endl;
 			// drawMarker(cvImg1, Point(trackedFeats.getFeatureX(i),
 			// trackedFeats.getFeatureY(i)),  Scalar(0, 255, 0), MARKER_CROSS,
 			// CROSS_SIZE, CROSS_THICKNESS);
