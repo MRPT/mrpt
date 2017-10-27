@@ -1032,7 +1032,7 @@ void CObservation3DRangeScan::convertTo2DScan(mrpt::obs::CObservation2DRangeScan
 			const double phi_wrt_origin = atan2(ys[i], xs[i]);
 
 			int i_range = (phi_wrt_origin-ang0)/A_ang;
-			if (i_range<0 || i_range>=int(N))
+			if (i_range<0 || i_range>=int(nLaserRays))
 				continue;
 
 			const float  r_wrt_origin = ::hypotf(xs[i],ys[i]);
