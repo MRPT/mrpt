@@ -11,7 +11,8 @@
 #include <mrpt/utils/compiler_fixes.h>
 #include <mrpt/utils/mrpt_macros.h>
 #include <mrpt/utils/integer_select.h>
-#include <mrpt/utils/CArray.h>
+
+#include <array>
 
 namespace mrpt
 {
@@ -56,9 +57,8 @@ void BASE_IMPEXP reduced_hash(const std::string& value, uint64_t& hash);
   */
 template <typename KEY, typename VALUE, unsigned int NUM_BYTES_HASH_TABLE = 1,
 		  unsigned int NUM_HAS_TABLE_COLLISIONS_ALLOWED = 5,
-		  typename VECTOR_T = mrpt::utils::CArray<
-			  mrpt::utils::CArray<ts_map_entry<KEY, VALUE>,
-								  NUM_HAS_TABLE_COLLISIONS_ALLOWED>,
+		  typename VECTOR_T = std::array<
+			  std::array<ts_map_entry<KEY, VALUE>,NUM_HAS_TABLE_COLLISIONS_ALLOWED>,
 			  1u << (8 * NUM_BYTES_HASH_TABLE)>>
 class ts_hash_map
 {
@@ -201,7 +201,7 @@ class ts_hash_map
 		typename mrpt::utils::uint_select_by_bytecount<
 			NUM_BYTES_HASH_TABLE>::type hash;
 		reduced_hash(key, hash);
-		mrpt::utils::CArray<ts_map_entry<KEY, VALUE>,
+		std::array<ts_map_entry<KEY, VALUE>,
 							NUM_HAS_TABLE_COLLISIONS_ALLOWED>& match_arr =
 			m_vec[hash];
 		for (unsigned int i = 0; i < NUM_HAS_TABLE_COLLISIONS_ALLOWED; i++)
@@ -222,7 +222,7 @@ class ts_hash_map
 		typename mrpt::utils::uint_select_by_bytecount<
 			NUM_BYTES_HASH_TABLE>::type hash;
 		reduced_hash(key, hash);
-		const mrpt::utils::CArray<ts_map_entry<KEY, VALUE>,
+		const std::array<ts_map_entry<KEY, VALUE>,
 								  NUM_HAS_TABLE_COLLISIONS_ALLOWED>& match_arr =
 			m_vec[hash];
 		for (unsigned int i = 0; i < NUM_HAS_TABLE_COLLISIONS_ALLOWED; i++)

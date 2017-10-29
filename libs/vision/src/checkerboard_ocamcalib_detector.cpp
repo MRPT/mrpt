@@ -60,7 +60,8 @@ France, September 2008.
 \************************************************************************************/
 
 #include "checkerboard_ocamcalib_detector.h"
-#include <mrpt/utils/CArray.h>
+
+#include <array>
 #include <map>
 
 #if MRPT_HAS_OPENCV
@@ -2606,7 +2607,7 @@ void quadListMakeUnique(std::vector<CvCBQuad::Ptr>& quads)
 	std::map<CvCBQuad*, size_t> pointer2index;
 	for (size_t i = 0; i < quads.size(); i++) pointer2index[quads[i].get()] = i;
 
-	vector<CArray<size_t, 4>> neig_indices(quads.size());
+	vector<std::array<size_t, 4>> neig_indices(quads.size());
 	for (size_t i = 0; i < quads.size(); i++)
 		for (size_t j = 0; j < 4; j++)
 			neig_indices[i][j] = pointer2index[quads[i]->neighbors[j].get()];
