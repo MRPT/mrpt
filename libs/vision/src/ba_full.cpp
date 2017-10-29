@@ -67,7 +67,7 @@ double mrpt::vision::bundle_adj_full(
 	typedef JacData<FrameDof, PointDof, ObsDim> MyJacData;
 	typedef aligned_containers<MyJacData>::vector_t MyJacDataVec;
 
-	typedef CArray<double, ObsDim> Array_O;
+	typedef std::array<double, ObsDim> Array_O;
 	typedef CArrayDouble<FrameDof> Array_F;
 	typedef CArrayDouble<PointDof> Array_P;
 	typedef CMatrixFixedNumeric<double, FrameDof, FrameDof> Matrix_FxF;

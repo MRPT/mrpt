@@ -306,7 +306,7 @@ class VISION_IMPEXP CCamModel : public mrpt::utils::CLoadableOptions
 		// it
 		mrpt::math::CArrayNumeric<double, 4> tmp1;
 		mrpt::math::CArrayNumeric<double, 2> tmp2;  // This would be a
-		// CArray<double,3>, but to
+		// array<double,3>, but to
 		// avoid copying, we let
 		// "R2" lie in tmp1.
 		// Camera Parameters

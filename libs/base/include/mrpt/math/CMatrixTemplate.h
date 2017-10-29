@@ -12,8 +12,8 @@
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/system/memory.h>
 #include <mrpt/math/math_frwds.h>  // forward declarations
-#include <mrpt/utils/CArray.h>  // type CMatrixTemplateSize
 #include <algorithm>  // swap()
+#include <array>
 
 namespace mrpt
 {
@@ -22,12 +22,12 @@ namespace math
 /** Auxiliary class used in CMatrixTemplate:size(), CMatrixTemplate::resize(),
  * CMatrixFixedNumeric::size(), CMatrixFixedNumeric::resize(), to mimic the
  * behavior of STL-containers */
-struct CMatrixTemplateSize : public mrpt::utils::CArray<size_t, 2>
+struct CMatrixTemplateSize : public std::array<size_t, 2>
 {
-	typedef mrpt::utils::CArray<size_t, 2> Base;
+	typedef std::array<size_t, 2> Base;
 	typedef CMatrixTemplateSize mrpt_autotype;
 
-	inline CMatrixTemplateSize() : mrpt::utils::CArray<size_t, 2>() {}
+	inline CMatrixTemplateSize() : std::array<size_t, 2>() {}
 	inline CMatrixTemplateSize(const size_t* d)
 	{
 		(*this)[0] = d[0];
