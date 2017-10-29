@@ -23,6 +23,9 @@
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/obs/CRawlog.h>
 
+#include <chrono>
+#include <thread>
+
 /// using namespaces
 using namespace mrpt::obs;
 using namespace mrpt::system;
@@ -2458,7 +2461,8 @@ void MainWindow::on_generateVisualOdometry_clicked()
 	this->progressBar->show();
 	vo_message_running->show();
 	vo_message_dialog->show();
-	sleep(4);
+	using namespace std::chrono_literals;
+	std::this_thread::sleep_for(4s);
 	QFuture<Mat> future = QtConcurrent::run(
 		&this->visual_odom, &VisualOdometry::generateVO, fext, numFeats,
 		file_paths, feat_type);
