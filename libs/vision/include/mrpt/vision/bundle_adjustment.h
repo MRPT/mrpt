@@ -14,7 +14,8 @@
 #include <mrpt/utils/TCamera.h>
 #include <mrpt/utils/TParameters.h>
 #include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/utils/CArray.h>
+
+#include <array>
 #include <functional>
 
 // The methods declared in this file are implemented in separate files in:
@@ -143,7 +144,7 @@ double VISION_IMPEXP reprojectionResiduals(
 	const mrpt::utils::TCamera& camera_params,
 	const mrpt::vision::TFramePosesVec& frame_poses,
 	const mrpt::vision::TLandmarkLocationsVec& landmark_points,
-	std::vector<mrpt::utils::CArray<double, 2>>& out_residuals,
+	std::vector<std::array<double, 2>>& out_residuals,
 	const bool frame_poses_are_inverse, const bool use_robust_kernel = true,
 	const double kernel_param = 3.0,
 	std::vector<double>* out_kernel_1st_deriv = nullptr);
@@ -154,7 +155,7 @@ double VISION_IMPEXP reprojectionResiduals(
 	const mrpt::utils::TCamera& camera_params,
 	const mrpt::vision::TFramePosesMap& frame_poses,
 	const mrpt::vision::TLandmarkLocationsMap& landmark_points,
-	std::vector<mrpt::utils::CArray<double, 2>>& out_residuals,
+	std::vector<std::array<double, 2>>& out_residuals,
 	const bool frame_poses_are_inverse, const bool use_robust_kernel = true,
 	const double kernel_param = 3.0,
 	std::vector<double>* out_kernel_1st_deriv = nullptr);

@@ -284,7 +284,7 @@ int main(int argc, char** argv)
 			landmark_points = landmark_points_noisy;
 
 #if 0
-			vector<CArray<double,2> > resids;
+			vector<std::array<double,2> > resids;
 			const double initial_total_sq_err = mrpt::vision::reprojectionResiduals(allObs,camera_params,frame_poses, landmark_points,resids, false);
 			cout << "Initial avr error in px: " << std::sqrt(initial_total_sq_err/allObs.size()) << endl;
 #endif

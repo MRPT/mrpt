@@ -11,11 +11,12 @@
 #define ba_internals_H
 
 #include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/utils/CArray.h>
 #include <mrpt/math/CArrayNumeric.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/utils/aligned_containers.h>
 #include <mrpt/vision/types.h>
+
+#include <array>
 
 // Declarations shared between ba_*.cpp files, but which are private to MRPT
 //  not to be seen by an MRPT API user.
@@ -243,7 +244,7 @@ void ba_compute_Jacobians(
   */
 void ba_build_gradient_Hessians(
 	const TSequenceFeatureObservations& observations,
-	const std::vector<mrpt::utils::CArray<double, 2>>& residual_vec,
+	const std::vector<std::array<double, 2>>& residual_vec,
 	const mrpt::aligned_containers<JacData<6, 3, 2>>::vector_t& jac_data_vec,
 	mrpt::aligned_containers<
 		mrpt::math::CMatrixFixedNumeric<double, 6, 6>>::vector_t& U,

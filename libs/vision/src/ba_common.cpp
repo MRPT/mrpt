@@ -102,7 +102,7 @@ void mrpt::vision::ba_initial_estimate(
 template <bool POSES_INVERSE>
 inline void reprojectionResidualsElement(
 	const TCamera& camera_params, const TFeatureObservation& OBS,
-	CArray<double, 2>& out_residual, const TFramePosesVec::value_type& frame,
+	std::array<double, 2>& out_residual, const TFramePosesVec::value_type& frame,
 	const TLandmarkLocationsVec::value_type& point, double& sum,
 	const bool use_robust_kernel, const double kernel_param,
 	double* out_kernel_1st_deriv)
@@ -142,7 +142,7 @@ double mrpt::vision::reprojectionResiduals(
 	const TSequenceFeatureObservations& observations,
 	const TCamera& camera_params, const TFramePosesMap& frame_poses,
 	const TLandmarkLocationsMap& landmark_points,
-	std::vector<CArray<double, 2>>& out_residuals,
+	std::vector<std::array<double, 2>>& out_residuals,
 	const bool frame_poses_are_inverse, const bool use_robust_kernel,
 	const double kernel_param, std::vector<double>* out_kernel_1st_deriv)
 {
@@ -191,7 +191,7 @@ double mrpt::vision::reprojectionResiduals(
 	const TSequenceFeatureObservations& observations,
 	const TCamera& camera_params, const TFramePosesVec& frame_poses,
 	const TLandmarkLocationsVec& landmark_points,
-	std::vector<CArray<double, 2>>& out_residuals,
+	std::vector<std::array<double, 2>>& out_residuals,
 	const bool frame_poses_are_inverse, const bool use_robust_kernel,
 	const double kernel_param, std::vector<double>* out_kernel_1st_deriv)
 {
@@ -236,7 +236,7 @@ double mrpt::vision::reprojectionResiduals(
 // Compute gradients & Hessian blocks
 void mrpt::vision::ba_build_gradient_Hessians(
 	const TSequenceFeatureObservations& observations,
-	const vector<CArray<double, 2>>& residual_vec,
+	const vector<std::array<double, 2>>& residual_vec,
 	const mrpt::aligned_containers<JacData<6, 3, 2>>::vector_t& jac_data_vec,
 	mrpt::aligned_containers<CMatrixFixedNumeric<double, 6, 6>>::vector_t& U,
 	mrpt::aligned_containers<CArrayDouble<6>>::vector_t& eps_frame,
