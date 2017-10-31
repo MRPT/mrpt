@@ -15,7 +15,6 @@
 #include <QMenu>
 #include <QDebug>
 
-
 CObservationTree::CObservationTree(QWidget* parent)
 	: QTreeView(parent), m_model(nullptr)
 {
@@ -27,7 +26,7 @@ void CObservationTree::setModel(QAbstractItemModel* model)
 	QTreeView::setModel(model);
 }
 
-void CObservationTree::changeSelected(const std::vector<size_t> &idx)
+void CObservationTree::changeSelected(const std::vector<size_t>& idx)
 {
 	blockSignals(true);
 	clearSelection();

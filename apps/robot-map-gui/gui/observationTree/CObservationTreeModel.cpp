@@ -23,15 +23,14 @@ CObservationTreeModel::CObservationTreeModel(
 }
 
 CObservationTreeModel::~CObservationTreeModel() {}
-
-QItemSelection CObservationTreeModel::changeSelected(const std::vector<size_t> &indexes)
+QItemSelection CObservationTreeModel::changeSelected(
+	const std::vector<size_t>& indexes)
 {
 	QItemSelection selection;
-	for (auto& idx: indexes)
+	for (auto& idx : indexes)
 	{
 		QModelIndex i = index(idx, 0, QModelIndex());
-		if (i != QModelIndex())
-			selection.select(i, i);
+		if (i != QModelIndex()) selection.select(i, i);
 	}
 	return selection;
 }

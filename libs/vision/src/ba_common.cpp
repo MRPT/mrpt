@@ -102,7 +102,8 @@ void mrpt::vision::ba_initial_estimate(
 template <bool POSES_INVERSE>
 inline void reprojectionResidualsElement(
 	const TCamera& camera_params, const TFeatureObservation& OBS,
-	std::array<double, 2>& out_residual, const TFramePosesVec::value_type& frame,
+	std::array<double, 2>& out_residual,
+	const TFramePosesVec::value_type& frame,
 	const TLandmarkLocationsVec::value_type& point, double& sum,
 	const bool use_robust_kernel, const double kernel_param,
 	double* out_kernel_1st_deriv)

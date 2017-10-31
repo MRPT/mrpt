@@ -55,11 +55,12 @@ void BASE_IMPEXP reduced_hash(const std::string& value, uint64_t& hash);
   * \note Defined in #include <mrpt/utils/ts_hash_map.h>
   * \ingroup stlext_grp
   */
-template <typename KEY, typename VALUE, unsigned int NUM_BYTES_HASH_TABLE = 1,
-		  unsigned int NUM_HAS_TABLE_COLLISIONS_ALLOWED = 5,
-		  typename VECTOR_T = std::array<
-			  std::array<ts_map_entry<KEY, VALUE>,NUM_HAS_TABLE_COLLISIONS_ALLOWED>,
-			  1u << (8 * NUM_BYTES_HASH_TABLE)>>
+template <
+	typename KEY, typename VALUE, unsigned int NUM_BYTES_HASH_TABLE = 1,
+	unsigned int NUM_HAS_TABLE_COLLISIONS_ALLOWED = 5,
+	typename VECTOR_T = std::array<
+		std::array<ts_map_entry<KEY, VALUE>, NUM_HAS_TABLE_COLLISIONS_ALLOWED>,
+		1u << (8 * NUM_BYTES_HASH_TABLE)>>
 class ts_hash_map
 {
    public:
@@ -201,9 +202,8 @@ class ts_hash_map
 		typename mrpt::utils::uint_select_by_bytecount<
 			NUM_BYTES_HASH_TABLE>::type hash;
 		reduced_hash(key, hash);
-		std::array<ts_map_entry<KEY, VALUE>,
-							NUM_HAS_TABLE_COLLISIONS_ALLOWED>& match_arr =
-			m_vec[hash];
+		std::array<ts_map_entry<KEY, VALUE>, NUM_HAS_TABLE_COLLISIONS_ALLOWED>&
+			match_arr = m_vec[hash];
 		for (unsigned int i = 0; i < NUM_HAS_TABLE_COLLISIONS_ALLOWED; i++)
 		{
 			if (!match_arr[i].used)
@@ -223,7 +223,7 @@ class ts_hash_map
 			NUM_BYTES_HASH_TABLE>::type hash;
 		reduced_hash(key, hash);
 		const std::array<ts_map_entry<KEY, VALUE>,
-								  NUM_HAS_TABLE_COLLISIONS_ALLOWED>& match_arr =
+						 NUM_HAS_TABLE_COLLISIONS_ALLOWED>& match_arr =
 			m_vec[hash];
 		for (unsigned int i = 0; i < NUM_HAS_TABLE_COLLISIONS_ALLOWED; i++)
 		{

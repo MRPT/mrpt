@@ -100,7 +100,7 @@ class CMyRedirector : public std::streambuf
 			s = _U(str.c_str());
 #endif
 
-#if wxCHECK_VERSION(3, 0, 0) && !defined(__APPLE__) // OSX build error?
+#if wxCHECK_VERSION(3, 0, 0) && !defined(__APPLE__)  // OSX build error?
 			m_txt->GetEventHandler()->CallAfter(&wxTextCtrl::WriteText, s);
 #else
 			m_txt->WriteText(s);  // bad solution, but at least compiles (and
