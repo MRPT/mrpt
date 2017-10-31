@@ -60,15 +60,21 @@ if [ -f version_prefix.txt ];
 then
 	MRPTSRC=`pwd`
 
-	source scripts/prepare_release.sh
-	echo
-	echo "## Done prepare_release.sh"
-	echo "=========== Generating MRPT ${MRPT_VER_MMP} Debian package =============="
-	cd $MRPTSRC
+  if [ -f $HOME/mrpt_release/mrpt*.tar.gz ];
+  then
+    echo "## release file already exists. Reusing it."
+  else
+    source scripts/prepare_release.sh
+    echo
+    echo "## Done prepare_release.sh"
+  fi
 else
 	echo "ERROR: Run this script from the MRPT root directory."
 	exit 1
 fi
+
+echo "=========== Generating MRPT ${MRPT_VER_MMP} Debian package =============="
+cd $MRPTSRC
 
 set -x
 if [ -z "$MRPT_DEB_DIR" ]; then
