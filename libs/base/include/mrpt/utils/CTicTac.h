@@ -28,7 +28,7 @@ namespace utils
 		void   Tic();  //!< Starts the stopwatch. \sa Tac
 		double Tac();  //!< Stops the stopwatch.  \return Returns the ellapsed time in seconds.  \sa Tic
 	private:
-		unsigned char largeInts[64];
+		unsigned long long largeInts[8];
 	}; // End of class def.
 
 } // End of namespace
