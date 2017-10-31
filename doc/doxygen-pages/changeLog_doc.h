@@ -37,6 +37,7 @@
 		- Fix invalid TP-targets generated during reactive navigation.
 		- Fix memory leak in reactivenav engine.
 		- Fix potential out-of-range access in CObservation3DRangeScan::convertTo2DScan()
+		- Fix potential SIGBUS in armhf (patch by Steve Langasek) inside mrpt::utils::CTicTac
 
 <hr>
 <a name="1.5.3">
