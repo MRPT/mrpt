@@ -67,7 +67,7 @@ Copyright: 1991-1992, RSA Data Security, Inc.
            2009 Frank Thilo <thilo@unix-ag.org>
 License: rsa-license
 
-Files: libs/base/include/mrpt/otherlibs/exprtk.h
+Files: libs/base/include/mrpt/otherlibs/exprtk.hpp
 Copyright: 1999-2016, Arash Partow
 License: Expat
 
