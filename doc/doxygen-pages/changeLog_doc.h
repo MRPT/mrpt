@@ -47,9 +47,17 @@
 		- Fix accessing unaligned POD variables deserializing CObservationGPS (via the new `MRPT_READ_POD()` macro).
 		- Fix segfault in CMetricMap::loadFromSimpleMap() if the provided CMetricMap has empty smart pointers.
 
+
+<hr>
+<a name="1.5.5">
+<h2>Version 1.5.5: (Under development) </h2></a>
+- <b>Detailed list of changes:</b>
+	- BUG FIXES:
+		- Fix likelihood computation in mrpt::maps::CReflectivityGridMap2D (which led to crash)
+
 <hr>
 <a name="1.5.4">
-<h2>Version 1.5.4: (Under development)  </h2></a>
+<h2>Version 1.5.4: Released 31/OCT/2017 </h2></a>
 - <b>Detailed list of changes:</b>
 	- \ref mrpt_base_grp
 		- Fix potential uninitialized value in CRobot2DPoseEstimator::getLatestRobotPose()
