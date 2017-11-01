@@ -15,7 +15,8 @@
 <a name="1.5.5">
 <h2>Version 1.5.5: (Under development) </h2></a>
 - <b>Detailed list of changes:</b>
-	- (None yet!)
+	- BUG FIXES:
+		- Fix likelihood computation in mrpt::maps::CReflectivityGridMap2D (which led to crash)
 
 <hr>
 <a name="1.5.4">
