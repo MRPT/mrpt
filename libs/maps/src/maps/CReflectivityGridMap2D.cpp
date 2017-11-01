@@ -204,7 +204,7 @@ double	 CReflectivityGridMap2D::internal_computeObservationLikelihood(
 		{
 			ASSERT_ABOVEEQ_(o->reflectivityLevel,0)
 			ASSERT_BELOWEQ_(o->reflectivityLevel,1)
-			return -0.5*square( ( m_logodd_lut.p2l(*cell) - o->reflectivityLevel )/o->sensorStdNoise);
+			return -0.5*square( ( m_logodd_lut.l2p(*cell) - o->reflectivityLevel )/o->sensorStdNoise);
 		}
 	}
 	else
@@ -230,9 +230,6 @@ void  CReflectivityGridMap2D::writeToStream(mrpt::utils::CStream &out, int *vers
 		if (n)
 			out.WriteBuffer(&m_map[0],n);
 
-		// Save the insertion options:
-		// out << insertionOptions.maxOccupancyUpdateCertainty;
-
 		out << genericMapParams; // v1
 	}
 }
@@ -256,9 +253,6 @@ void  CReflectivityGridMap2D::readFromStream(mrpt::utils::CStream &in, int versi
 			m_map.resize(n);
 			if (n)
 				in.ReadBuffer(&m_map[0],n);
-
-			// Load the insertion options:
-			// in >> insertionOptions.maxOccupancyUpdateCertainty;
 
 			if (version>=1) 
 				in >> genericMapParams;
