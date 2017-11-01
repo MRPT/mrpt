@@ -8,7 +8,7 @@ Build-Depends: debhelper (>= 10),
 	zlib1g-dev,
 	libjpeg-dev,
 	libwxgtk3.0-dev | libwxgtk2.8-dev,
-	libftdi1-dev [linux-any],
+	libftdi1-dev,
 	freeglut3-dev,
 	libopencv-dev,
 	libavcodec-dev, libavformat-dev, libavutil-dev, libswscale-dev,
@@ -21,7 +21,7 @@ Build-Depends: debhelper (>= 10),
 	libusb-1.0-0-dev [linux-any],
 	libudev-dev [linux-any],
 	libjs-jquery,
-	libfreenect-dev (>= 0.2),
+	libfreenect-dev,
 	libpcap-dev,
 	libopenni2-dev,
 	gdb,
@@ -33,7 +33,7 @@ Build-Depends: debhelper (>= 10),
 	liboctomap-dev,
 	qtbase5-dev,
 	libqt5opengl5-dev
-Standards-Version: 4.0.0
+Standards-Version: 4.1.1
 Homepage: https://www.mrpt.org/
 
 Package: mrpt-doc

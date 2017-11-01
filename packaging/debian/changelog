@@ -1,3 +1,10 @@
+mrpt (1:1.5.4-1) unstable; urgency=medium
+
+  * New version of upstream sources (Closes: #880388).
+  * debian/copyright: Updated to machine-readable format.
+
+ -- José Luis Blanco Claraco <joseluisblancoc@gmail.com>  Tue, 31 Oct 2017 13:26:15 +0100
+
 mrpt (1:1.5.3-1) unstable; urgency=medium
 
   * New version of upstream sources.
