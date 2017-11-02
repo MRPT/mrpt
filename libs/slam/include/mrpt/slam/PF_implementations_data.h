@@ -202,7 +202,7 @@ class PF_implementation : public mrpt::utils::COutputLogger
 		// into the
 		//  new one, but this can be done only once:
 		std::vector<bool> oldParticleAlreadyCopied(N_old, false);
-		std::vector<PARTICLE_TYPE *> oldParticleFirstCopies(N_old, nullptr);
+		std::vector<PARTICLE_TYPE*> oldParticleFirstCopies(N_old, nullptr);
 
 		size_t i;
 		typename MYSELF::CParticleList::iterator newPartIt;
@@ -226,8 +226,8 @@ class PF_implementation : public mrpt::utils::COutputLogger
 			{
 				// Make a copy:
 				ASSERT_(oldParticleFirstCopies[i_in_old]);
-				newPartData = new PARTICLE_TYPE(
-					*oldParticleFirstCopies[i_in_old]);
+				newPartData =
+					new PARTICLE_TYPE(*oldParticleFirstCopies[i_in_old]);
 			}
 
 			newPartIt->d.reset(newPartData);
