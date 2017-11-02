@@ -195,13 +195,14 @@ class PF_implementation : public mrpt::utils::COutputLogger
 		//   New are in "newParticles",
 		//   "newParticlesWeight","newParticlesDerivedFromIdx"
 		// ---------------------------------------------------------------------------------
-		const size_t N = newParticles.size();
+		const size_t N = newParticles.size(), N_old = old_particles.size();
 		typename MYSELF::CParticleList newParticlesArray(N);
 
 		// For efficiency, just copy the "CParticleData" from the old particle
 		// into the
 		//  new one, but this can be done only once:
-		std::vector<bool> oldParticleAlreadyCopied(old_particles.size(), false);
+		std::vector<bool> oldParticleAlreadyCopied(N_old, false);
+		std::vector<PARTICLE_TYPE *> oldParticleFirstCopies(N_old, nullptr);
 
 		size_t i;
 		typename MYSELF::CParticleList::iterator newPartIt;
@@ -213,18 +214,20 @@ class PF_implementation : public mrpt::utils::COutputLogger
 
 			// The data (CParticleData):
 			PARTICLE_TYPE* newPartData;
-			if (!oldParticleAlreadyCopied[newParticlesDerivedFromIdx[i]])
+			const size_t i_in_old = newParticlesDerivedFromIdx[i];
+			if (!oldParticleAlreadyCopied[i_in_old])
 			{
 				// The first copy of this old particle:
-				newPartData =
-					old_particles[newParticlesDerivedFromIdx[i]].d.release();
-				oldParticleAlreadyCopied[newParticlesDerivedFromIdx[i]] = true;
+				newPartData = old_particles[i_in_old].d.release();
+				oldParticleAlreadyCopied[i_in_old] = true;
+				oldParticleFirstCopies[i_in_old] = newPartData;
 			}
 			else
 			{
 				// Make a copy:
+				ASSERT_(oldParticleFirstCopies[i_in_old]);
 				newPartData = new PARTICLE_TYPE(
-					*old_particles[newParticlesDerivedFromIdx[i]].d);
+					*oldParticleFirstCopies[i_in_old]);
 			}
 
 			newPartIt->d.reset(newPartData);
