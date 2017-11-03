@@ -96,18 +96,6 @@ need to account for this with an extra offset.
 #define MRPT_scanf_format_check(_FMT_, _VARARGS_)
 #endif
 
-// A cross-compiler definition for aligned memory structures:
-#if defined(_MSC_VER)
-#define MRPT_ALIGN16 __declspec(align(16))
-#define MRPT_ALIGN32 __declspec(align(32))
-#elif defined(__GNUC__)
-#define MRPT_ALIGN16 __attribute__((aligned(16)))
-#define MRPT_ALIGN32 __attribute__((aligned(32)))
-#else
-#define MRPT_ALIGN16
-#define MRPT_ALIGN32
-#endif
-
 /** A macro for obtaining the name of the current function:  */
 #if defined(_MSC_VER) && (_MSC_VER >= 1300)
 #define __CURRENT_FUNCTION_NAME__ __FUNCTION__
