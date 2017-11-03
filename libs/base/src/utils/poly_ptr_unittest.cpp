@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/utils/poly_ptr.h>
-#include <mrpt/utils/copy_ptr.h>
+#include <mrpt/utils/generic_copier_ptr.h>
 
 #include <mrpt/poses/CPose2D.h>
 #include <gtest/gtest.h>
