@@ -282,21 +282,21 @@ void CPose3DQuat::inverseComposePoint(
 			const double Ay = 2 * (gy - m_coords[1]);
 			const double Az = 2 * (gz - m_coords[2]);
 
-			alignas(16) const double vals[3 * 4] = {
-				-qy * Az + qz * Ay,
-				qy * Ay + qz * Az,
-				qx * Ay - 2 * qy * Ax - qr * Az,
-				qx * Az + qr * Ay - 2 * qz * Ax,
+			alignas(16)
+				const double vals[3 * 4] = {-qy * Az + qz * Ay,
+											qy * Ay + qz * Az,
+											qx * Ay - 2 * qy * Ax - qr * Az,
+											qx * Az + qr * Ay - 2 * qz * Ax,
 
-				qx * Az - qz * Ax,
-				qy * Ax - 2 * qx * Ay + qr * Az,
-				qx * Ax + qz * Az,
-				qy * Az - 2 * qz * Ay - qr * Ax,
+											qx * Az - qz * Ax,
+											qy * Ax - 2 * qx * Ay + qr * Az,
+											qx * Ax + qz * Az,
+											qy * Az - 2 * qz * Ay - qr * Ax,
 
-				qy * Ax - qx * Ay,
-				qz * Ax - qr * Ay - 2 * qx * Az,
-				qr * Ax + qz * Ay - 2 * qy * Az,
-				qx * Ax + qy * Ay};
+											qy * Ax - qx * Ay,
+											qz * Ax - qr * Ay - 2 * qx * Az,
+											qr * Ax + qz * Ay - 2 * qy * Az,
+											qx * Ax + qy * Ay};
 
 			CMatrixDouble44 norm_jacob(UNINITIALIZED_MATRIX);
 			this->quat().normalizationJacobian(norm_jacob);

@@ -233,8 +233,8 @@ double computeJacobiansAndErrors(
 
 		// Compute the jacobians:
 		alignas(16)
-		std::pair<mrpt::utils::TPairNodeIDs, typename gst::TPairJacobs>
-			newMapEntry;
+			std::pair<mrpt::utils::TPairNodeIDs, typename gst::TPairJacobs>
+				newMapEntry;
 		newMapEntry.first = ids;
 		gst::SE_TYPE::jacobian_dP1DP2inv_depsilon(
 			P1DP2inv, &newMapEntry.second.first, &newMapEntry.second.second);

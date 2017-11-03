@@ -204,8 +204,8 @@ void CPosePDFGaussianInf::rotateCov(const double ang)
 	const double ccos = cos(ang);
 	const double ssin = sin(ang);
 
-	alignas(16) const double rot_vals[] = {ccos, -ssin, 0., ssin, ccos,
-											0.,   0.,	0., 1.};
+	alignas(16)
+		const double rot_vals[] = {ccos, -ssin, 0., ssin, ccos, 0., 0., 0., 1.};
 
 	const CMatrixFixedNumeric<double, 3, 3> rot(rot_vals);
 
