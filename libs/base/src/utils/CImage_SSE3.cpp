@@ -39,15 +39,15 @@
   */
 void image_SSSE3_scale_half_3c8u(const uint8_t* in, uint8_t* out, int w, int h)
 {
-	MRPT_ALIGN16 const unsigned long long mask0[2] = {
+	alignas(16) const unsigned long long mask0[2] = {
 		0x0D0C080706020100ull, 0x808080808080800Eull};  // Long words are in
 	// inverse order due to
 	// little endianness
-	MRPT_ALIGN16 const unsigned long long mask1[2] = {0x8080808080808080ull,
+	alignas(16) const unsigned long long mask1[2] = {0x8080808080808080ull,
 													  0x0E0A090804030280ull};
-	MRPT_ALIGN16 const unsigned long long mask2[2] = {0x0C0B0A0605040080ull,
+	alignas(16) const unsigned long long mask2[2] = {0x0C0B0A0605040080ull,
 													  0x8080808080808080ull};
-	MRPT_ALIGN16 const unsigned long long mask3[2] = {0x808080808080800Full,
+	alignas(16) const unsigned long long mask3[2] = {0x808080808080800Full,
 													  0x8080808080808080ull};
 
 	const __m128i m0 = _mm_load_si128((const __m128i*)mask0);

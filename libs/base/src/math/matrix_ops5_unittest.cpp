@@ -26,7 +26,7 @@ using namespace std;
 
 TEST(Matrices, loadFromArray)
 {
-	MRPT_ALIGN16 const double nums[3 * 4] = {1, 2, 3, 4,  5,  6,
+	alignas(16) const double nums[3 * 4] = {1, 2, 3, 4,  5,  6,
 											 7, 8, 9, 10, 11, 12};
 
 	CMatrixFixedNumeric<double, 3, 4> mat;
@@ -38,7 +38,7 @@ TEST(Matrices, loadFromArray)
 
 TEST(Matrices, CMatrixFixedNumeric_loadWithEigenMap)
 {
-	MRPT_ALIGN16 double nums[3 * 4] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+	alignas(16) double nums[3 * 4] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
 
 	// Row major
 	const CMatrixFixedNumeric<double, 3, 4> mat =
@@ -51,7 +51,7 @@ TEST(Matrices, CMatrixFixedNumeric_loadWithEigenMap)
 
 TEST(Matrices, EigenMatrix_loadWithEigenMap)
 {
-	MRPT_ALIGN16 double nums[3 * 4] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+	alignas(16) double nums[3 * 4] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
 	// Col major
 	const Eigen::Matrix<double, 3, 4> mat =
 		Eigen::Map<Eigen::Matrix<double, 3, 4>, Eigen::Aligned>(nums);

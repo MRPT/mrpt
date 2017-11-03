@@ -287,7 +287,7 @@ void TPose3D::getAsQuaternion(
 	//   http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty
 	if (out_dq_dr)
 	{
-		MRPT_ALIGN16 const double nums[4 * 3] = {
+		alignas(16) const double nums[4 * 3] = {
 			-0.5 * q[3], 0.5 * (-csc + scs), -0.5 * q[1],
 			-0.5 * q[2], 0.5 * (-ssc - ccs), 0.5 * q[0],
 			0.5 * q[1],  0.5 * (ccc - sss),  0.5 * q[3],

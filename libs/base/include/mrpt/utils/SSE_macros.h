@@ -14,7 +14,7 @@
 #define BUILD_128BIT_CONST(                                                 \
 	_name, B0, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, \
 	B15)                                                                    \
-	MRPT_ALIGN16 const unsigned long long _name[2] = {                      \
+	alignas(16) const unsigned long long _name[2] = {                      \
 		0x##B7##B6##B5##B4##B3##B2##B1##B0##ull,                            \
 		0x##B15##B14##B13##B12##B11##B10##B9##B8##ull};
 
