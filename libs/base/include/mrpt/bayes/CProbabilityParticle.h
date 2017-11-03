@@ -9,7 +9,7 @@
 #ifndef CPROBABILITYPARTICLE_H
 #define CPROBABILITYPARTICLE_H
 
-#include <mrpt/utils/copy_ptr.h>
+#include <mrpt/utils/generic_copier_ptr.h>
 
 namespace mrpt
 {

@@ -75,12 +75,21 @@ class generic_copier_ptr
 		o.m_ptr = nullptr;
 	}
 	/** move operator */
-	generic_copier_ptr<T, Copier>& operator=(
-		const generic_copier_ptr<T, Copier>&& o)
+	generic_copier_ptr<T, Copier>& operator=(generic_copier_ptr<T, Copier>&& o)
 	{
 		if (this == &o) return *this;
 		m_ptr = o.m_ptr;
 		o.m_ptr = nullptr;
+		return *this;
+	}
+
+	/** copy operator */
+	generic_copier_ptr<T, Copier>& operator=(
+		const generic_copier_ptr<T, Copier>& o)
+	{
+		if (this == &o) return *this;
+		this->reset();
+		m_ptr = Copier().copy(o.m_ptr);
 		return *this;
 	}
 
@@ -138,6 +147,22 @@ class generic_copier_ptr
 };
 
 }  // end NS internal
+
+/** Smart pointer for polymorphic classes with a `clone()` method.
+  * No shared copies, that is, each `poly_ptr<T>` owns a unique instance of `T`.
+  * Copying a `poly_ptr<T>` invokes the copy operator for `T`.
+  * \sa copy_ptr<T>
+  */
+template <typename T>
+using poly_ptr = internal::generic_copier_ptr<T, internal::CopyCloner<T>>;
+
+/** Smart pointer for non-polymorphic classes.
+* No shared copies, that is, each `copy_ptr<T>` owns a unique instance of `T`.
+* Copying a `copy_ptr<T>` invokes the copy operator for `T`.
+* \sa poly_ptr<T>
+*/
+template <typename T>
+using copy_ptr = internal::generic_copier_ptr<T, internal::CopyStatic<T>>;
 
 /** @} */  // end of grouping
 }  // End of namespace
