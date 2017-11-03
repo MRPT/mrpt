@@ -75,21 +75,21 @@ void CPose3DQuatPDF::jacobiansPoseComposition(
 	df_dx.set_unsafe(1, 1, 1);
 	df_dx.set_unsafe(2, 2, 1);
 
-	alignas(16) const double vals2[3 * 4] = {
-		2 * (-qz * ay + qy * az),
-		2 * (qy * ay + qz * az),
-		2 * (-2 * qy * ax + qx * ay + qr * az),
-		2 * (-2 * qz * ax - qr * ay + qx * az),
+	alignas(16)
+		const double vals2[3 * 4] = {2 * (-qz * ay + qy * az),
+									 2 * (qy * ay + qz * az),
+									 2 * (-2 * qy * ax + qx * ay + qr * az),
+									 2 * (-2 * qz * ax - qr * ay + qx * az),
 
-		2 * (qz * ax - qx * az),
-		2 * (qy * ax - 2 * qx * ay - qr * az),
-		2 * (qx * ax + qz * az),
-		2 * (qr * ax - 2 * qz * ay + qy * az),
+									 2 * (qz * ax - qx * az),
+									 2 * (qy * ax - 2 * qx * ay - qr * az),
+									 2 * (qx * ax + qz * az),
+									 2 * (qr * ax - 2 * qz * ay + qy * az),
 
-		2 * (-qy * ax + qx * ay),
-		2 * (qz * ax + qr * ay - 2 * qx * az),
-		2 * (-qr * ax + qz * ay - 2 * qy * az),
-		2 * (qx * ax + qy * ay)};
+									 2 * (-qy * ax + qx * ay),
+									 2 * (qz * ax + qr * ay - 2 * qx * az),
+									 2 * (-qr * ax + qz * ay - 2 * qy * az),
+									 2 * (qx * ax + qy * ay)};
 
 	// df_dx(0:3,3:7) = vals2 * NORM_JACOB
 	df_dx.block(0, 3, 3, 4).noalias() =

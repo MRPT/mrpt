@@ -283,14 +283,14 @@ void CPose3D::rebuildRotationMatrix()
 #endif
 
 	alignas(16) const double rot_vals[] = {cy * cp,
-											cy * sp * sr - sy * cr,
-											cy * sp * cr + sy * sr,
-											sy * cp,
-											sy * sp * sr + cy * cr,
-											sy * sp * cr - cy * sr,
-											-sp,
-											cp * sr,
-											cp * cr};
+										   cy * sp * sr - sy * cr,
+										   cy * sp * cr + sy * sr,
+										   sy * cp,
+										   sy * sp * sr + cy * cr,
+										   sy * sp * cr - cy * sr,
+										   -sp,
+										   cp * sr,
+										   cp * cr};
 	m_ROT.loadFromArray(rot_vals);
 }
 

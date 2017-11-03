@@ -119,7 +119,7 @@ double matrix_test_chol_Nx6x6_sparse(int DIM, int a2)
 double matrix_test_loadFromArray(int N, int a2)
 {
 	alignas(16) double nums[4 * 4] = {0, 1, 2,  3,  4,  5,  6,  7,
-									   8, 9, 10, 11, 12, 13, 14, 15};
+									  8, 9, 10, 11, 12, 13, 14, 15};
 
 	CMatrixFixedNumeric<double, 4, 4> M;
 
@@ -131,7 +131,7 @@ double matrix_test_loadFromArray(int N, int a2)
 double matrix_test_loadWithEigenMap(int N, int a2)
 {
 	alignas(16) double nums[4 * 4] = {0, 1, 2,  3,  4,  5,  6,  7,
-									   8, 9, 10, 11, 12, 13, 14, 15};
+									  8, 9, 10, 11, 12, 13, 14, 15};
 
 	CMatrixFixedNumeric<double, 4, 4> M;
 
