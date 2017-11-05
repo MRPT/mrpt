@@ -22,7 +22,7 @@ IMPLEMENTS_SERIALIZABLE(CObservationReflectivity, CObservation, mrpt::obs)
 /** Default constructor.
  */
 CObservationReflectivity::CObservationReflectivity()
-	: reflectivityLevel(0.5f), sensorPose(), sensorStdNoise(0.2f)
+	: reflectivityLevel(0.5f), channel(-1), sensorPose(), sensorStdNoise(0.2f)
 {
 }
 
@@ -34,10 +34,10 @@ void CObservationReflectivity::writeToStream(
 	mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
-		*version = 0;
+		*version = 1;
 	else
 	{
-		out << reflectivityLevel << sensorPose;
+		out << reflectivityLevel << channel << sensorPose;
 		out << sensorLabel << timestamp;
 	}
 }
@@ -52,7 +52,9 @@ void CObservationReflectivity::readFromStream(
 	{
 		case 0:
 		{
-			in >> reflectivityLevel >> sensorPose;
+			in >> reflectivityLevel;
+			if (version >= 1) in >> channel;
+			in >> sensorPose;
 			in >> sensorLabel >> timestamp;
 		}
 		break;

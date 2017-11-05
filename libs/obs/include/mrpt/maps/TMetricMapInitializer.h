@@ -270,7 +270,7 @@ class OBS_IMPEXP TSetOfMetricMapInitializers
 	  *
 	  * // ====================================================
 	  * // Creation Options for ReflectivityGridMap ##:
-	  * [<sectionName>+"_reflectivityGrid_##_creationOpts"]
+	  * [<sectionName>+"_reflectivityMap_##_creationOpts"]
 	  *  min_x=<value>  // See CReflectivityGridMap2D::CReflectivityGridMap2D
 	  *  max_x=<value>
 	  *  min_y=<value>
@@ -278,7 +278,7 @@ class OBS_IMPEXP TSetOfMetricMapInitializers
 	  *  resolution=<value>
 	  *
 	  * // Insertion Options for HeightGridMap ##:
-	  * [<sectionName>+"_reflectivityGrid_##_insertOpts"]
+	  * [<sectionName>+"_reflectivityMap_##_insertOpts"]
 	  *  <See CReflectivityGridMap2D::TInsertionOptions>
 	  *
 	  *
