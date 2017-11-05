@@ -39,6 +39,8 @@
 			- Added methods to load/save mrpt::nav::TWaypointSequence to configuration files.
 		- \ref mrpt_comms_grp [NEW IN MRPT 2.0.0]
 			- This new module has been created to hold all serial devices & networking classes, with minimal dependencies.
+		- \ref mrpt_maps_grp
+			- Added optional "channel" attribute to CReflectivityGrdMap2D and CObservationReflectivity to support different colors of light.
 	- BUG FIXES:
 		- Fix reactive navigator inconsistent state if navigation API is called from within rnav callbacks.
 		- Fix incorrect evaluation of "ASSERT" formulas in mrpt::nav::CMultiObjectiveMotionOptimizerBase
