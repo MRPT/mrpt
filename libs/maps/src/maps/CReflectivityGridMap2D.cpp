@@ -137,6 +137,11 @@ bool CReflectivityGridMap2D::internal_insertObservation(
 		const CObservationReflectivity* o =
 			static_cast<const CObservationReflectivity*>(obs);
 
+		if ( o->channel != -1 && insertionOptions.channel != -1 &&
+			 o->channel != insertionOptions.channel ) {
+			return false; // Incorrect channel
+		}
+
 		CPose3D sensor_pose;
 		sensor_pose.composeFrom(robotPose3D, o->sensorPose);
 
@@ -197,6 +202,11 @@ double CReflectivityGridMap2D::internal_computeObservationLikelihood(
 		const CObservationReflectivity* o =
 			static_cast<const CObservationReflectivity*>(obs);
 
+		if ( o->channel != -1 && insertionOptions.channel != -1 &&
+			 o->channel != insertionOptions.channel ) {
+			return 0; // Incorrect channel
+		}
+
 		CPose3D sensor_pose;
 		sensor_pose.composeFrom(takenFrom, o->sensorPose);
 
@@ -225,7 +235,7 @@ void CReflectivityGridMap2D::writeToStream(
 	mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
-		*version = 2;
+		*version = 3;
 	else
 	{
 		dyngridcommon_writeToStream(out);
@@ -234,6 +244,9 @@ void CReflectivityGridMap2D::writeToStream(
 		const uint32_t n = static_cast<uint32_t>(m_map.size());
 		out << n;
 		if (n) out.WriteBuffer(&m_map[0], n);
+
+		// Save the insertion options
+		out << insertionOptions.channel; // v3
 
 		out << genericMapParams;  // v1
 	}
@@ -250,6 +263,7 @@ void CReflectivityGridMap2D::readFromStream(
 		case 0:
 		case 1:
 		case 2:
+		case 3:
 		{
 			dyngridcommon_readFromStream(in, version < 2);
 
@@ -258,6 +272,9 @@ void CReflectivityGridMap2D::readFromStream(
 			in >> n;
 			m_map.resize(n);
 			if (n) in.ReadBuffer(&m_map[0], n);
+
+			// Load the insertion options:
+			if (version>=3) in >> insertionOptions.channel;
 
 			if (version >= 1) in >> genericMapParams;
 		}
@@ -270,7 +287,7 @@ void CReflectivityGridMap2D::readFromStream(
 /*---------------------------------------------------------------
 					TInsertionOptions
  ---------------------------------------------------------------*/
-CReflectivityGridMap2D::TInsertionOptions::TInsertionOptions() {}
+CReflectivityGridMap2D::TInsertionOptions::TInsertionOptions() : channel(-1) {}
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
@@ -281,7 +298,7 @@ void CReflectivityGridMap2D::TInsertionOptions::dumpToTextStream(
 		"\n----------- [CReflectivityGridMap2D::TInsertionOptions] "
 		"------------ \n\n");
 
-	// LOADABLEOPTS_DUMP_VAR(maxOccupancyUpdateCertainty, float)
+	LOADABLEOPTS_DUMP_VAR(channel, int);
 
 	out.printf("\n");
 }
@@ -294,8 +311,7 @@ void CReflectivityGridMap2D::TInsertionOptions::loadFromConfigFile(
 {
 	MRPT_UNUSED_PARAM(iniFile);
 	MRPT_UNUSED_PARAM(section);
-	// MRPT_LOAD_CONFIG_VAR( maxOccupancyUpdateCertainty,	float, iniFile,
-	// section )
+	MRPT_LOAD_CONFIG_VAR(channel, int, iniFile, section);
 }
 
 /*---------------------------------------------------------------
