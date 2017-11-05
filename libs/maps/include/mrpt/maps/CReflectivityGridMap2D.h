@@ -81,6 +81,8 @@ class MAPS_IMPEXP CReflectivityGridMap2D : public CMetricMap,
 			const std::string& section) override;  // See base docs
 		void dumpToTextStream(
 			mrpt::utils::CStream& out) const override;  // See base docs
+
+		int16_t channel; //!< The reflectivity channel for this map. If channel=-1, then any channel will be accepted. Otherwise, the map will ignore CObservationReflectivity instances with a differing channel. (Default=-1)
 	} insertionOptions;
 
 	/** See docs in base class: in this class this always returns 0 */
