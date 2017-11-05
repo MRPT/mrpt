@@ -274,7 +274,7 @@ void CReflectivityGridMap2D::readFromStream(
 			if (n) in.ReadBuffer(&m_map[0], n);
 
 			// Load the insertion options:
-			if (version>=3) in >> insertionOptions.channel;
+			if (version >= 3) in >> insertionOptions.channel;
 
 			if (version >= 1) in >> genericMapParams;
 		}
