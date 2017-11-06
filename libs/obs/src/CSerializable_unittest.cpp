@@ -20,10 +20,35 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
-MRPT_TODO("Make this and lstClasses[] with one single macro?");
-template class mrpt::utils::CTraitsTest<CObservation2DRangeScan>;
-template class mrpt::utils::CTraitsTest<CObservation3DRangeScan>;
-// ...
+#define TEST_CLASS_MOVE_COPY_CTORS(_classname) template class mrpt::utils::CTraitsTest<_classname>
+
+TEST_CLASS_MOVE_COPY_CTORS(CObservation2DRangeScan);
+TEST_CLASS_MOVE_COPY_CTORS(CObservation3DRangeScan);
+TEST_CLASS_MOVE_COPY_CTORS(CObservationRGBD360);
+TEST_CLASS_MOVE_COPY_CTORS(CObservationBearingRange);
+TEST_CLASS_MOVE_COPY_CTORS(CObservationBatteryState);
+TEST_CLASS_MOVE_COPY_CTORS(CObservationWirelessPower);
+TEST_CLASS_MOVE_COPY_CTORS(CObservationRFID);
+TEST_CLASS_MOVE_COPY_CTORS(CObservationBeaconRanges);
+TEST_CLASS_MOVE_COPY_CTORS(CObservationComment);
+TEST_CLASS_MOVE_COPY_CTORS(CObservationGasSensors);
+TEST_CLASS_MOVE_COPY_CTORS(CObservationGPS);
+TEST_CLASS_MOVE_COPY_CTORS(CObservationReflectivity);
+TEST_CLASS_MOVE_COPY_CTORS(CObservationIMU);
+TEST_CLASS_MOVE_COPY_CTORS(CObservationOdometry);
+TEST_CLASS_MOVE_COPY_CTORS(CObservationRange);
+#if MRPT_HAS_OPENCV  // These classes need CImage serialization
+TEST_CLASS_MOVE_COPY_CTORS(CObservationImage);
+TEST_CLASS_MOVE_COPY_CTORS(CObservationStereoImages);
+#endif
+TEST_CLASS_MOVE_COPY_CTORS(CObservationCANBusJ1939);
+TEST_CLASS_MOVE_COPY_CTORS(CObservationRawDAQ);
+TEST_CLASS_MOVE_COPY_CTORS(CObservation6DFeatures);
+TEST_CLASS_MOVE_COPY_CTORS(CObservationVelodyneScan);
+TEST_CLASS_MOVE_COPY_CTORS(CActionRobotMovement2D);
+TEST_CLASS_MOVE_COPY_CTORS(CActionRobotMovement3D);
+
+
 
 // Defined in tests/test_main.cpp
 namespace mrpt
