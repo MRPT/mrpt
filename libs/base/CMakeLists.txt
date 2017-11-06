@@ -84,6 +84,8 @@ define_mrpt_lib(
 IF(BUILD_mrpt-base)
 	IF(WIN32)
 		target_link_libraries(mrpt-base Dbghelp) # For mrpt::system::getCallStackBackTrace()
+	ELSE()
+		target_link_libraries(mrpt-base ${CMAKE_DL_LIBS}) # For mrpt::system::getCallStackBackTrace()
 	ENDIF()
 
 	# Ignore precompiled headers in some sources:
