@@ -51,6 +51,7 @@ void CObservationReflectivity::readFromStream(
 	switch (version)
 	{
 		case 0:
+		case 1:
 		{
 			in >> reflectivityLevel;
 			if (version >= 1) in >> channel;
@@ -66,4 +67,7 @@ void CObservationReflectivity::readFromStream(
 void CObservationReflectivity::getDescriptionAsText(std::ostream& o) const
 {
 	CObservation::getDescriptionAsText(o);
+
+	o << "reflectivityLevel=" << reflectivityLevel << std::endl;
+	o << "channel=" << channel << " (-1=any)" <<  std::endl;
 }
