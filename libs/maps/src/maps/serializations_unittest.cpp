@@ -12,12 +12,32 @@
 
 #include <mrpt/utils/CMemoryStream.h>
 #include <gtest/gtest.h>
+#include <mrpt/utils/CTraitsTest.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
 using namespace std;
+
+#define TEST_CLASS_MOVE_COPY_CTORS(_classname) template class mrpt::utils::CTraitsTest<_classname>
+
+TEST_CLASS_MOVE_COPY_CTORS(CBeacon);
+TEST_CLASS_MOVE_COPY_CTORS(CBeaconMap);
+TEST_CLASS_MOVE_COPY_CTORS(CColouredPointsMap);
+TEST_CLASS_MOVE_COPY_CTORS(CGasConcentrationGridMap2D);
+TEST_CLASS_MOVE_COPY_CTORS(CWirelessPowerGridMap2D);
+TEST_CLASS_MOVE_COPY_CTORS(CHeightGridMap2D);
+TEST_CLASS_MOVE_COPY_CTORS(CReflectivityGridMap2D);
+TEST_CLASS_MOVE_COPY_CTORS(COccupancyGridMap2D);
+TEST_CLASS_MOVE_COPY_CTORS(CSimplePointsMap);
+TEST_CLASS_MOVE_COPY_CTORS(CRandomFieldGridMap3D);
+TEST_CLASS_MOVE_COPY_CTORS(CWeightedPointsMap);
+
+MRPT_TODO("liboctomap doesn't work nice with move ctors...");
+//TEST_CLASS_MOVE_COPY_CTORS(COctoMap);
+//TEST_CLASS_MOVE_COPY_CTORS(CColouredOctoMap);
+
 
 // Create a set of classes, then serialize and deserialize to test possible
 // bugs:
@@ -35,7 +55,8 @@ TEST(SerializeTestMaps, WriteReadToMem)
 		CLASS_ID(CSimplePointsMap),
 		CLASS_ID(CRandomFieldGridMap3D),
 		CLASS_ID(CWeightedPointsMap),
-		CLASS_ID(COctoMap)};
+		CLASS_ID(COctoMap),
+		CLASS_ID(CColouredOctoMap)};
 
 	for (size_t i = 0; i < sizeof(lstClasses) / sizeof(lstClasses[0]); i++)
 	{
