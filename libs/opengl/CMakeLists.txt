@@ -68,13 +68,13 @@ IF(BUILD_mrpt-opengl)
 	ENDIF()
 
 	# Link against gl, glu, glut:
-	TARGET_LINK_LIBRARIES(mrpt-opengl ${MRPT_OPENGL_LIBS} ${MRPT_3DS_LIBS})
+	TARGET_LINK_LIBRARIES(mrpt-opengl PRIVATE ${MRPT_OPENGL_LIBS} ${MRPT_3DS_LIBS})
 
 	# Link against assimp:
 	IF (CMAKE_MRPT_HAS_ASSIMP)
 		IF(TARGET "EP_assimp")
 			ADD_DEPENDENCIES(mrpt-opengl EP_assimp)
 		ENDIF()
-		TARGET_LINK_LIBRARIES(mrpt-opengl ${ASSIMP_LIBRARIES})
+		TARGET_LINK_LIBRARIES(mrpt-opengl PRIVATE ${ASSIMP_LIBRARIES})
 	ENDIF ()
 ENDIF()
