@@ -30,22 +30,20 @@ build:
   ci:
     - sudo add-apt-repository -y ppa:jolting/backport-mrpt
     - sudo apt-get update
-    - sudo apt-get install -y build-essential
-    - sudo apt-get install -y pkg-config
-    - sudo apt-get install -y cmake
+    - sudo apt-get install -y build-essential pkg-config cmake
     - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$DEPS" != "minimal" ]; then
       sudo apt-get install libftdi-dev zlib1g-dev libusb-1.0-0-dev libdc1394-22-dev -y ;
       sudo apt-get install libjpeg-dev libopencv-dev libgtest-dev libeigen3-dev -y ;
       sudo apt-get install libsuitesparse-dev libpcl-all libopenni2-dev libudev-dev  -y ;
       sudo apt-get install libboost-python-dev libpython-dev python-numpy -y ;
+        if [ "$DEPS" != "headless" ]; then
+        sudo apt-get install libwxgtk3.0-dev -y ;
+        sudo apt-get install freeglut3-dev -y ;
+        sudo apt-get install libavformat-dev libswscale-dev -y ;
+        sudo apt-get install libassimp-dev -y ;
+        sudo apt-get install qtbase5-dev libqt5opengl5-dev -y ;
+        fi
       fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$DEPS" != "headless" ]; then
-      sudo apt-get install libwxgtk3.0-dev -y ;
-      sudo apt-get install freeglut3-dev -y ;
-      sudo apt-get install libavformat-dev libswscale-dev -y ;
-      sudo apt-get install libassimp-dev -y ;
-      sudo apt-get install qtbase5-dev libqt5opengl5-dev -y ;
-      fi    
     - bash travis/travis_main.sh
 
 #after_success:
