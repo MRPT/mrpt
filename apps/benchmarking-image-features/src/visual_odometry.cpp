@@ -558,8 +558,6 @@ void VisualOdometry::featureDetection(
 	CFeatureList featsList1;
 	fext.detectFeatures(img1, featsList1, numFeats);
 
-	vector<KeyPoint>::iterator iterator = keypoints_1.begin();
-
 	for (unsigned int i = 0; i < featsList1.size(); i++)
 	{
 		Point2f temp_pt(featsList1.getFeatureX(i), featsList1.getFeatureY(i));
