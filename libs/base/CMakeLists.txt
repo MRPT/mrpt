@@ -64,6 +64,10 @@ if (MSVC AND MSVC_VERSION GREATER 1800) # VS>= 2013
 	LIST(APPEND base_EXTRA_SRCS_NAME 	"MSVC debug natvis")
 endif()
 
+# We need pthread's in C files:
+if ((${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX) AND NOT WIN32)
+	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread")
+endif()
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":
 #---------------------------------------------
