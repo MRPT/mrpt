@@ -29,7 +29,7 @@ namespace obs
  * \sa CObservation
  * \ingroup mrpt_obs_grp
  */
-class OBS_IMPEXP CObservationRawDAQ : public CObservation
+class CObservationRawDAQ : public CObservation
 {
 	DEFINE_SERIALIZABLE(CObservationRawDAQ)
    public:

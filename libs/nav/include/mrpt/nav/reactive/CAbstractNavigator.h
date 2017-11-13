@@ -17,7 +17,6 @@
 #include <mrpt/poses/FrameTransformer.h>
 #include <mrpt/obs/obs_frwds.h>
 
-#include <mrpt/nav/link_pragmas.h>
 
 #include <mutex>
 #include <memory>  // unique_ptr
@@ -58,7 +57,7 @@ namespace nav
  * children classes
  *  \ingroup nav_reactive
  */
-class NAV_IMPEXP CAbstractNavigator : public mrpt::utils::COutputLogger
+class CAbstractNavigator : public mrpt::utils::COutputLogger
 {
    public:
 	/** ctor */
@@ -68,7 +67,7 @@ class NAV_IMPEXP CAbstractNavigator : public mrpt::utils::COutputLogger
 
 	/** Individual target info in CAbstractNavigator::TNavigationParamsBase and
 	 * derived classes */
-	struct NAV_IMPEXP TargetInfo
+	struct TargetInfo
 	{
 		/** Coordinates of desired target location. Heading may be ignored by
 		 * some reactive implementations. */
@@ -103,7 +102,7 @@ class NAV_IMPEXP CAbstractNavigator : public mrpt::utils::COutputLogger
 	};
 
 	/** Base for all high-level navigation commands. See derived classes */
-	struct NAV_IMPEXP TNavigationParamsBase
+	struct TNavigationParamsBase
 	{
 		virtual ~TNavigationParamsBase() {}
 		/** Gets navigation params as a human-readable format */
@@ -117,7 +116,7 @@ class NAV_IMPEXP CAbstractNavigator : public mrpt::utils::COutputLogger
 
 	/** The struct for configuring navigation requests. Used in
 	 * CAbstractPTGBasedReactive::navigate() */
-	struct NAV_IMPEXP TNavigationParams : public TNavigationParamsBase
+	struct TNavigationParams : public TNavigationParamsBase
 	{
 		/** Navigation target */
 		TargetInfo target;
@@ -201,7 +200,7 @@ class NAV_IMPEXP CAbstractNavigator : public mrpt::utils::COutputLogger
 
 	/** @}*/
 
-	struct NAV_IMPEXP TAbstractNavigatorParams
+	struct TAbstractNavigatorParams
 		: public mrpt::utils::CLoadableOptions
 	{
 		/** Default value=0, means use the "targetAllowedDistance" passed by the
@@ -323,7 +322,7 @@ class NAV_IMPEXP CAbstractNavigator : public mrpt::utils::COutputLogger
 	/** mutex for all navigation methods */
 	std::recursive_mutex m_nav_cs;
 
-	struct NAV_IMPEXP TRobotPoseVel
+	struct TRobotPoseVel
 	{
 		mrpt::math::TPose2D pose;
 		mrpt::math::TTwist2D velGlobal, velLocal;

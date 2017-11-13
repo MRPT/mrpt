@@ -29,7 +29,7 @@ namespace obs
  * \sa CObservation, CActionRobotMovement2D
  * \ingroup mrpt_obs_grp
  */
-class OBS_IMPEXP CObservationOdometry : public CObservation
+class CObservationOdometry : public CObservation
 {
 	DEFINE_SERIALIZABLE(CObservationOdometry)
 

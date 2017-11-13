@@ -14,7 +14,6 @@
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/obs/obs_frwds.h>
 
-#include <mrpt/maps/link_pragmas.h>
 
 namespace mrpt
 {
@@ -30,7 +29,7 @@ namespace maps
  * \sa CMetricMap, CWeightedPointsMap, CPoint, mrpt::utils::CSerializable
  * \ingroup mrpt_maps_grp
  */
-class MAPS_IMPEXP CSimplePointsMap : public CPointsMap
+class CSimplePointsMap : public CPointsMap
 {
 	DEFINE_SERIALIZABLE(CSimplePointsMap)
 

@@ -13,7 +13,6 @@
 #include <mrpt/maps/CRandomFieldGridMap2D.h>
 #include <mrpt/obs/CObservationWirelessPower.h>
 
-#include <mrpt/maps/link_pragmas.h>
 
 namespace mrpt
 {
@@ -34,7 +33,7 @@ namespace maps
  * mrpt::maps::CMultiMetricMap
   * \ingroup mrpt_maps_grp
   */
-class MAPS_IMPEXP CWirelessPowerGridMap2D : public CRandomFieldGridMap2D
+class CWirelessPowerGridMap2D : public CRandomFieldGridMap2D
 {
 	DEFINE_SERIALIZABLE(CWirelessPowerGridMap2D)
    public:
@@ -49,7 +48,7 @@ class MAPS_IMPEXP CWirelessPowerGridMap2D : public CRandomFieldGridMap2D
 
 	/** Parameters related with inserting observations into the map:
 	  */
-	struct MAPS_IMPEXP TInsertionOptions : public utils::CLoadableOptions,
+	struct TInsertionOptions : public utils::CLoadableOptions,
 										   public TInsertionOptionsCommon
 	{
 		/** Default values loader */

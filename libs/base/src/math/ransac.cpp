@@ -190,9 +190,9 @@ bool RANSAC_Template<NUMTYPE>::execute(
 }
 
 // Template instantiation:
-template class BASE_IMPEXP mrpt::math::RANSAC_Template<float>;
-template class BASE_IMPEXP mrpt::math::RANSAC_Template<double>;
+template class mrpt::math::RANSAC_Template<float>;
+template class mrpt::math::RANSAC_Template<double>;
 
 #ifdef HAVE_LONG_DOUBLE
-template class BASE_IMPEXP mrpt::math::RANSAC_Template<long double>;
+template class mrpt::math::RANSAC_Template<long double>;
 #endif

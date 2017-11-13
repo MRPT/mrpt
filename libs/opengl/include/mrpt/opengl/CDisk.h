@@ -30,7 +30,7 @@ namespace opengl
   *
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CDisk : public CRenderizableDisplayList
+class CDisk : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CDisk)
 

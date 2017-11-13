@@ -9,7 +9,6 @@
 #pragma once
 
 #include <mrpt/utils/CTicTac.h>
-#include <mrpt/base/link_pragmas.h>
 
 namespace mrpt
 {
@@ -21,7 +20,7 @@ namespace utils
  * \note [New in MRPT 1.5.0]
  * \ingroup mrpt_base_grp
  */
-class BASE_IMPEXP CRateTimer
+class CRateTimer
 {
    public:
 	/** Ctor: specifies the desired rate (Hz) */

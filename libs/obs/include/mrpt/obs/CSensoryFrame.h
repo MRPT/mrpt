@@ -12,7 +12,6 @@
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/obs/CObservation.h>
-#include <mrpt/obs/link_pragmas.h>
 
 namespace mrpt
 {
@@ -52,7 +51,7 @@ namespace obs
   * \sa CObservation
   * \ingroup mrpt_obs_grp
   */
-class OBS_IMPEXP CSensoryFrame : public mrpt::utils::CSerializable
+class CSensoryFrame : public mrpt::utils::CSerializable
 {
 	DEFINE_SERIALIZABLE(CSensoryFrame)
 

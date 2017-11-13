@@ -12,7 +12,6 @@
 
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/maps/link_pragmas.h>
 
 namespace mrpt
 {
@@ -22,7 +21,7 @@ namespace maps
  * classes for details.
   * This class implements those operations which are especific to DEMs.
   * \ingroup mrpt_maps_grp */
-class MAPS_IMPEXP CHeightGridMap2D_Base
+class CHeightGridMap2D_Base
 {
    public:
 	CHeightGridMap2D_Base();
@@ -40,7 +39,7 @@ class MAPS_IMPEXP CHeightGridMap2D_Base
 	bool getMinMaxHeight(float& z_min, float& z_max) const;
 
 	/** Extra params for insertIndividualPoint() */
-	struct MAPS_IMPEXP TPointInsertParams
+	struct TPointInsertParams
 	{
 		/** (Default:0.0) If !=0, use this value as the uncertainty (standard
 		 * deviation) for the point "z" coordinate, instead of the map-wise

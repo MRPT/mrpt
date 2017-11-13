@@ -13,7 +13,6 @@
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/utils/TMatchingPair.h>
-#include <mrpt/tfest/link_pragmas.h>
 #include <mrpt/poses/poses_frwds.h>
 #include <mrpt/tfest/indiv-compat-decls.h>
 
@@ -64,7 +63,7 @@ bool TFEST_IMPEXP se3_l2(
 	bool forceScaleToUnity = false);
 
 /** Parameters for se3_l2_robust(). See function for more details */
-struct TFEST_IMPEXP TSE3RobustParams
+struct TSE3RobustParams
 {
 	/** (Default=5)  The minimum amount of points in a set to start a consensus
 	 * set. \sa ransac_maxSetSizePct */
@@ -114,7 +113,7 @@ struct TFEST_IMPEXP TSE3RobustParams
 };
 
 /** Output placeholder for se3_l2_robust() */
-struct TFEST_IMPEXP TSE3RobustResult
+struct TSE3RobustResult
 {
 	/** The best transformation found */
 	mrpt::poses::CPose3DQuat transformation;

@@ -19,7 +19,7 @@ namespace opengl
   *  \sa opengl::COpenGLScene
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CSimpleLine : public CRenderizableDisplayList
+class CSimpleLine : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CSimpleLine)
 

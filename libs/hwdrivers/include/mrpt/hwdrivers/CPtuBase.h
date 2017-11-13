@@ -11,7 +11,6 @@
 #define CPtuBase_H
 
 #include <mrpt/comms/CSerialPort.h>
-#include <mrpt/hwdrivers/link_pragmas.h>
 
 namespace mrpt
 {
@@ -21,7 +20,7 @@ namespace hwdrivers
   * control a generic Pan and Tilt Unit, working in radians.
   * \ingroup mrpt_hwdrivers_grp
   */
-class HWDRIVERS_IMPEXP CPtuBase
+class CPtuBase
 {
 	/*************************** Atributes **********************/
 

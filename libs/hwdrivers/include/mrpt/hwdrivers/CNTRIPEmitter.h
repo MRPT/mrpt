@@ -61,7 +61,7 @@ namespace hwdrivers
   * \ingroup mrpt_hwdrivers_grp
   * \sa CGPSInterface, CGPS_NTRIP, CNTRIPClient
   */
-class HWDRIVERS_IMPEXP CNTRIPEmitter : public CGenericSensor
+class CNTRIPEmitter : public CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CNTRIPEmitter)
 

@@ -42,7 +42,7 @@ namespace opengl
  * http://www.edwardrosten.com/cvd/ )
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CText3D : public CRenderizableDisplayList
+class CText3D : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CText3D)
    protected:

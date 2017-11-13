@@ -33,7 +33,7 @@ namespace opengl
   *
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CColorBar : public CRenderizableDisplayList
+class CColorBar : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CColorBar)
 

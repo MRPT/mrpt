@@ -54,7 +54,7 @@ class CPlanarLaserScan;
   *  \sa mrpt::opengl::CPointCloud, opengl::COpenGLScene
   * \ingroup mrpt_maps_grp
   */
-class MAPS_IMPEXP CPlanarLaserScan : public CRenderizableDisplayList
+class CPlanarLaserScan : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CPlanarLaserScan)
    protected:

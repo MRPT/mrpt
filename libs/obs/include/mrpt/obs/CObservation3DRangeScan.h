@@ -28,7 +28,7 @@ namespace mrpt
 namespace obs
 {
 /** Used in CObservation3DRangeScan::project3DPointsFromDepthImageInto() */
-struct OBS_IMPEXP T3DPointsProjectionParams
+struct T3DPointsProjectionParams
 {
 	/** (Default: false) If false, local (sensor-centric) coordinates of points
 	 * are generated. Otherwise, points are transformed with \a sensorPose.
@@ -58,7 +58,7 @@ struct OBS_IMPEXP T3DPointsProjectionParams
 	}
 };
 /** Used in CObservation3DRangeScan::convertTo2DScan() */
-struct OBS_IMPEXP T3DPointsTo2DScanParams
+struct T3DPointsTo2DScanParams
 {
 	/** The sensor label that will have the newly created observation. */
 	std::string sensorLabel;
@@ -222,7 +222,7 @@ void project3DPointsFromDepthImageInto(
  *CObservation
  * \ingroup mrpt_obs_grp
  */
-class OBS_IMPEXP CObservation3DRangeScan : public CObservation
+class CObservation3DRangeScan : public CObservation
 {
 	DEFINE_SERIALIZABLE(CObservation3DRangeScan)
 
@@ -524,7 +524,7 @@ class OBS_IMPEXP CObservation3DRangeScan : public CObservation
 	bool hasPixelLabels() const { return pixelLabels ? true : false; }
 	/** Virtual interface to all pixel-label information structs. See
 	 * CObservation3DRangeScan::pixelLabels */
-	struct OBS_IMPEXP TPixelLabelInfoBase
+	struct TPixelLabelInfoBase
 	{
 		/** Used in CObservation3DRangeScan::pixelLabels */
 		using Ptr = std::shared_ptr<TPixelLabelInfoBase>;

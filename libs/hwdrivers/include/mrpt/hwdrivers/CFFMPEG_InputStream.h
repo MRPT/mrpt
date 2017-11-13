@@ -14,7 +14,6 @@
 #include <mrpt/utils/CImage.h>
 #include <mrpt/utils/safe_pointers.h>
 
-#include <mrpt/hwdrivers/link_pragmas.h>
 
 /*---------------------------------------------------------------
 	Class
@@ -42,7 +41,7 @@ namespace hwdrivers
  * wiki</a>.
   * \ingroup mrpt_hwdrivers_grp
   */
-class HWDRIVERS_IMPEXP CFFMPEG_InputStream
+class CFFMPEG_InputStream
 {
    private:
 	/** The internal ffmpeg state */

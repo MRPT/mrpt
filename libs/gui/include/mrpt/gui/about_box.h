@@ -9,7 +9,6 @@
 
 #pragma once
 
-#include <mrpt/gui/link_pragmas.h>
 #include <string>
 
 namespace mrpt

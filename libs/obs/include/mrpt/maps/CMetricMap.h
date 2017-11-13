@@ -20,7 +20,6 @@
 #include <mrpt/maps/TMetricMapInitializer.h>
 #include <mrpt/maps/metric_map_types.h>
 #include <mrpt/obs/obs_frwds.h>
-#include <mrpt/obs/link_pragmas.h>
 #include <deque>
 
 namespace mrpt
@@ -53,7 +52,7 @@ namespace maps
  * \sa CObservation, CSensoryFrame, CMultiMetricMap
  * \ingroup mrpt_obs_grp
  */
-class OBS_IMPEXP CMetricMap : public mrpt::utils::CSerializable,
+class CMetricMap : public mrpt::utils::CSerializable,
 							  public mrpt::utils::CObservable
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CMetricMap)

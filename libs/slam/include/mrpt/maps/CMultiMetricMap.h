@@ -29,7 +29,6 @@
 #include <mrpt/utils/poly_ptr_ptr.h>
 #include <mrpt/obs/obs_frwds.h>
 
-#include <mrpt/slam/link_pragmas.h>
 
 namespace mrpt
 {
@@ -140,7 +139,7 @@ class TSetOfMetricMapInitializers;
  *dependency on map classes in mrpt-vision.
  * \sa CMetricMap  \ingroup mrpt_slam_grp
  */
-class SLAM_IMPEXP CMultiMetricMap : public mrpt::maps::CMetricMap
+class CMultiMetricMap : public mrpt::maps::CMetricMap
 {
 	DEFINE_SERIALIZABLE(CMultiMetricMap)
    protected:

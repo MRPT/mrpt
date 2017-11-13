@@ -28,7 +28,7 @@ namespace obs
  * \sa CObservation
  * \ingroup mrpt_obs_grp
  */
-class OBS_IMPEXP CObservationBearingRange : public CObservation
+class CObservationBearingRange : public CObservation
 {
 	DEFINE_SERIALIZABLE(CObservationBearingRange)
 
@@ -53,7 +53,7 @@ class OBS_IMPEXP CObservationBearingRange : public CObservation
 
 	/** Each one of the measurements:
 		*/
-	struct OBS_IMPEXP TMeasurement
+	struct TMeasurement
 	{
 		/** The sensed landmark distance, in meters. */
 		float range;

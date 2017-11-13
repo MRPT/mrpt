@@ -35,7 +35,7 @@ namespace opengl
   *  \sa CText3D
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CText : public CRenderizable
+class CText : public CRenderizable
 {
 	DEFINE_SERIALIZABLE(CText)
    protected:

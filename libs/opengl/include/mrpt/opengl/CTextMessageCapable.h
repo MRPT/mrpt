@@ -21,7 +21,7 @@ namespace opengl
  * graphic classes.
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CTextMessageCapable
+class CTextMessageCapable
 {
    protected:
 	std::map<size_t, mrpt::opengl::T2DTextData> m_2D_texts;

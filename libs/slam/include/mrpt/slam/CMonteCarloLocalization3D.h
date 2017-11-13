@@ -14,7 +14,6 @@
 #include <mrpt/slam/TMonteCarloLocalizationParams.h>
 #include <mrpt/obs/obs_frwds.h>
 
-#include <mrpt/slam/link_pragmas.h>
 
 namespace mrpt
 {
@@ -31,7 +30,7 @@ namespace slam
  * CParticleFilterCapable
  * \ingroup mrpt_slam_grp
  */
-class SLAM_IMPEXP CMonteCarloLocalization3D
+class CMonteCarloLocalization3D
 	: public mrpt::poses::CPose3DPDFParticles,
 	  public PF_implementation<mrpt::poses::CPose3D, CMonteCarloLocalization3D>
 {

@@ -14,7 +14,6 @@
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 
-#include <mrpt/hwdrivers/link_pragmas.h>
 
 namespace mrpt
 {
@@ -46,7 +45,7 @@ typedef enum {
   * \sa CImageGrabber_dc1394
   * \ingroup mrpt_hwdrivers_grp
   */
-struct HWDRIVERS_IMPEXP TCaptureOptions_dc1394
+struct TCaptureOptions_dc1394
 {
 	TCaptureOptions_dc1394()
 		: frame_width(640),
@@ -151,7 +150,7 @@ struct HWDRIVERS_IMPEXP TCaptureOptions_dc1394
   * \sa The most generic camera grabber in MRPT: mrpt::hwdrivers::CCameraSensor
   * \ingroup mrpt_hwdrivers_grp
   */
-class HWDRIVERS_IMPEXP CImageGrabber_dc1394
+class CImageGrabber_dc1394
 {
    protected:
 	/** Set to false if we could not initialize the camera.

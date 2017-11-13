@@ -11,7 +11,6 @@
 #include <mrpt/config.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/CTicTac.h>
-#include <mrpt/comms/link_pragmas.h>
 
 namespace mrpt
 {
@@ -45,7 +44,7 @@ namespace comms
  * \todo Add the internal buffer to the Windows implementation also
  * \ingroup mrpt_comms_grp
  */
-class COMMS_IMPEXP CSerialPort : public mrpt::utils::CStream
+class CSerialPort : public mrpt::utils::CStream
 {
 	friend class PosixSignalDispatcherImpl;
 

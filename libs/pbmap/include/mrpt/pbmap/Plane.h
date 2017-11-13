@@ -21,7 +21,6 @@
 #if MRPT_HAS_PCL
 
 #include <mrpt/utils/utils_defs.h>
-#include <mrpt/pbmap/link_pragmas.h>
 
 #include <mrpt/utils/CSerializable.h>
 #include <pcl/point_types.h>
@@ -46,7 +45,7 @@ namespace pbmap
  *
  * \ingroup mrpt_pbmap_grp
  */
-class PBMAP_IMPEXP Plane : public mrpt::utils::CSerializable
+class Plane : public mrpt::utils::CSerializable
 {
 	DEFINE_SERIALIZABLE(Plane)
 

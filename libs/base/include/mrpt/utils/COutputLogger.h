@@ -10,7 +10,6 @@
 #ifndef COUTPUTLOGGER_H
 #define COUTPUTLOGGER_H
 
-#include <mrpt/base/link_pragmas.h>
 #include <mrpt/utils/mrpt_macros.h>
 #include <mrpt/utils/TEnumType.h>
 #include <mrpt/system/os.h>  // for console color constants
@@ -119,7 +118,7 @@ typedef void (*output_logger_callback_t)(
  * \sa TMsg
  * \ingroup mrpt_base_grp
  */
-class BASE_IMPEXP COutputLogger
+class COutputLogger
 {
    public:
 	static mrpt::system::TConsoleColor logging_levels_to_colors
@@ -252,7 +251,7 @@ class BASE_IMPEXP COutputLogger
 		output_logger_callback_t userFunc, void* userParam = NULL);
 	/** @} */
 
-	struct BASE_IMPEXP TCallbackEntry
+	struct TCallbackEntry
 	{
 		output_logger_callback_t func;
 		void* userParam;
@@ -287,7 +286,7 @@ class BASE_IMPEXP COutputLogger
 	 *
 	 * <center><em> [name | level | timestamp:] body </em></center>
 	 */
-	struct BASE_IMPEXP TMsg
+	struct TMsg
 	{
 		/** \brief Class constructor that passes a message in std::string
 		 * form as well as a reference to the COutputLogger that provided the
@@ -338,7 +337,7 @@ class BASE_IMPEXP COutputLogger
 };
 
 /** For use in MRPT_LOG_DEBUG_STREAM(), etc. */
-struct BASE_IMPEXP COutputLoggerStreamWrapper
+struct COutputLoggerStreamWrapper
 {
 	COutputLoggerStreamWrapper(
 		VerbosityLevel level, const COutputLogger& logger)

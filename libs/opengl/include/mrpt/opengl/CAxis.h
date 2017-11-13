@@ -28,7 +28,7 @@ namespace opengl
   *
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CAxis : public CRenderizableDisplayList
+class CAxis : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CAxis)
    protected:

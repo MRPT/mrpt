@@ -19,7 +19,6 @@
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/graphs/ScalarFactorGraph.h>
 
-#include <mrpt/maps/link_pragmas.h>
 #include <list>
 
 namespace mrpt
@@ -38,7 +37,7 @@ class COccupancyGridMap2D;
 /** The contents of each cell in a CRandomFieldGridMap2D map.
   * \ingroup mrpt_maps_grp
  **/
-struct MAPS_IMPEXP TRandomFieldCell
+struct TRandomFieldCell
 {
 	/** Constructor */
 	TRandomFieldCell(double kfmean_dm_mean = 1e-20, double kfstd_dmmeanw = 0)
@@ -240,7 +239,7 @@ class CRandomFieldGridMap2D
 	  *  Derived classes instantions of their "TInsertionOptions" MUST set the
 	 * pointer "m_insertOptions_common" upon construction.
 	  */
-	struct MAPS_IMPEXP TInsertionOptionsCommon
+	struct TInsertionOptionsCommon
 	{
 		/** Default values loader */
 		TInsertionOptionsCommon();
@@ -337,7 +336,7 @@ class CRandomFieldGridMap2D
 	/** Base class for user-supplied objects capable of describing cells
 	 * connectivity, used to build prior factors of the MRF graph. \sa
 	 * setCellsConnectivity() */
-	struct MAPS_IMPEXP ConnectivityDescriptor
+	struct ConnectivityDescriptor
 	{
 		using Ptr = std::shared_ptr<ConnectivityDescriptor>;
 		ConnectivityDescriptor();

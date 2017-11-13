@@ -10,7 +10,6 @@
 
 #include <mrpt/utils/core_defs.h>
 #include <mrpt/utils/pimpl.h>
-#include <mrpt/base/link_pragmas.h>
 #include <map>
 #include <string>
 
@@ -48,7 +47,7 @@ namespace math
  * \note (New in MRPT 1.5.0)
  * \ingroup mrpt_base_grp
  */
-class BASE_IMPEXP CRuntimeCompiledExpression
+class CRuntimeCompiledExpression
 {
    public:
 	/** Default ctor */

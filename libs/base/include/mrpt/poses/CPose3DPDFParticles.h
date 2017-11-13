@@ -29,7 +29,7 @@ namespace poses
  * \sa CPose3D, CPose3DPDF, CPoseGaussianPDF
  * \ingroup poses_pdf_grp
  */
-class BASE_IMPEXP CPose3DPDFParticles
+class CPose3DPDFParticles
 	: public CPose3DPDF,
 	  public mrpt::bayes::CParticleFilterData<CPose3D>,
 	  public mrpt::bayes::CParticleFilterDataImpl<

@@ -37,12 +37,12 @@ namespace nav
  * and derived classes.
  *  \ingroup nav_reactive
  */
-class NAV_IMPEXP CWaypointsNavigator : public mrpt::nav::CAbstractNavigator
+class CWaypointsNavigator : public mrpt::nav::CAbstractNavigator
 {
    public:
 	/** The struct for configuring navigation requests to CWaypointsNavigator
 	 * and derived classes. */
-	struct NAV_IMPEXP TNavigationParamsWaypoints
+	struct TNavigationParamsWaypoints
 		: public CAbstractNavigator::TNavigationParams
 	{
 		/** If not empty, this will prevail over the base class single goal
@@ -108,7 +108,7 @@ class NAV_IMPEXP CWaypointsNavigator : public mrpt::nav::CAbstractNavigator
 	bool isRelativePointReachable(
 		const mrpt::math::TPoint2D& wp_local_wrt_robot) const;
 
-	struct NAV_IMPEXP TWaypointsNavigatorParams
+	struct TWaypointsNavigatorParams
 		: public mrpt::utils::CLoadableOptions
 	{
 		/** In meters. <0: unlimited */

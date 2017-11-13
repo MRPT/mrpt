@@ -99,7 +99,7 @@ class CExceptionNotDefPos : public mrpt::utils::CMRPTException
   *mrpt::math::CMatrixTemplateNumeric, etc.
   * \ingroup mrpt_base_grp
   */
-class BASE_IMPEXP CSparseMatrix
+class CSparseMatrix
 {
    private:
 	cs sparse_matrix;
@@ -442,7 +442,7 @@ class BASE_IMPEXP CSparseMatrix
 	  * \note This class designed to be "uncopiable".
 	  * \sa The main class: CSparseMatrix
 	  */
-	class BASE_IMPEXP CholeskyDecomp
+	class CholeskyDecomp
 	{
 	   private:
 		css* m_symbolic_structure;

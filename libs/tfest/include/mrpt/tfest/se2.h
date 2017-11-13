@@ -13,7 +13,6 @@
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/utils/TMatchingPair.h>
-#include <mrpt/tfest/link_pragmas.h>
 #include <mrpt/poses/poses_frwds.h>
 #include <mrpt/tfest/indiv-compat-decls.h>
 
@@ -72,7 +71,7 @@ bool TFEST_IMPEXP se2_l2(
 	mrpt::poses::CPosePDFGaussian& out_transformation);
 
 /** Parameters for se2_l2_robust(). See function for more details */
-struct TFEST_IMPEXP TSE2RobustParams
+struct TSE2RobustParams
 {
 	/** (Default=3) */
 	unsigned int ransac_minSetSize;
@@ -143,7 +142,7 @@ struct TFEST_IMPEXP TSE2RobustParams
 };
 
 /** Output placeholder for se2_l2_robust() */
-struct TFEST_IMPEXP TSE2RobustResult
+struct TSE2RobustResult
 {
 	/** The output as a set of transformations (sum of Gaussians) */
 	mrpt::poses::CPosePDFSOG transformation;

@@ -28,7 +28,7 @@ namespace opengl
   * \ingroup mrpt_opengl_grp
   *
   */
-class OPENGL_IMPEXP CArrow : public CRenderizableDisplayList
+class CArrow : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CArrow)
    protected:

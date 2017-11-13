@@ -53,7 +53,7 @@ namespace hwdrivers
   *  \endcode
   * \ingroup mrpt_hwdrivers_grp
   */
-class HWDRIVERS_IMPEXP CIMUXSens : public hwdrivers::CGenericSensor
+class CIMUXSens : public hwdrivers::CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CIMUXSens)
    protected:

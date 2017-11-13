@@ -12,7 +12,6 @@
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/system/datetime.h>
 
-#include <mrpt/obs/link_pragmas.h>
 
 namespace mrpt
 {
@@ -27,7 +26,7 @@ namespace obs
  * \sa CActionCollection, CRawlog
  * \ingroup mrpt_obs_grp
  */
-class OBS_IMPEXP CAction : public mrpt::utils::CSerializable
+class CAction : public mrpt::utils::CSerializable
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CAction)
 

@@ -45,7 +45,7 @@ namespace hwdrivers
   *  \endcode
   * \ingroup mrpt_hwdrivers_grp
   */
-class HWDRIVERS_IMPEXP CRoboticHeadInterface : public mrpt::utils::COutputLogger
+class CRoboticHeadInterface : public mrpt::utils::COutputLogger
 {
    private:
 	mrpt::comms::CInterfaceFTDI m_usbConnection;

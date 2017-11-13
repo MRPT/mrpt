@@ -105,7 +105,7 @@ enum TIMUDataIndex
  * \sa CObservation
  * \ingroup mrpt_obs_grp
  */
-class OBS_IMPEXP CObservationIMU : public CObservation
+class CObservationIMU : public CObservation
 {
 	DEFINE_SERIALIZABLE(CObservationIMU)
 

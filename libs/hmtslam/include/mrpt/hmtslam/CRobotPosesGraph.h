@@ -22,7 +22,7 @@ namespace mrpt
 namespace hmtslam
 {
 /** Information kept for each robot pose used in CRobotPosesGraph */
-struct HMTSLAM_IMPEXP TPoseInfo
+struct TPoseInfo
 {
 	/** The observations */
 	mrpt::obs::CSensoryFrame sf;
@@ -36,7 +36,7 @@ struct HMTSLAM_IMPEXP TPoseInfo
  * NODE_ANNOTATION_POSES_GRAPH.
   * \ingroup mrpt_hmtslam_grp
   */
-class HMTSLAM_IMPEXP CRobotPosesGraph : public mrpt::utils::CSerializable,
+class CRobotPosesGraph : public mrpt::utils::CSerializable,
 										public std::map<TPoseID, TPoseInfo>
 {
 	DEFINE_SERIALIZABLE(CRobotPosesGraph)

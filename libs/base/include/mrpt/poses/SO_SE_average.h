@@ -23,12 +23,12 @@ namespace poses
 /** Computes weighted and un-weighted averages of SO(2) or SO(3) orientations
   * \sa SE_average, SE_traits<2>, SE_traits<3>, CPose3D, CPose2D */
 template <size_t DOF>
-class BASE_IMPEXP SO_average;
+class SO_average;
 
 /** Computes weighted and un-weighted averages of SE(2) or SE(3) poses
   * \sa SO_average, SE_traits<2>, SE_traits<3>, CPose3D, CPose2D */
 template <size_t DOF>
-class BASE_IMPEXP SE_average;
+class SE_average;
 
 /** Computes weighted and un-weighted averages of SO(2) orientations.
   * Add values to average with \a append(), when done call \a get_average().
@@ -41,7 +41,7 @@ class BASE_IMPEXP SE_average;
   * \note Class introduced in MRPT 1.3.1
   * \sa SE_traits */
 template <>
-class BASE_IMPEXP SO_average<2>
+class SO_average<2>
 {
    public:
 	/** Constructor */
@@ -83,7 +83,7 @@ class BASE_IMPEXP SO_average<2>
   * \note Class introduced in MRPT 1.3.1
   * \sa SE_traits */
 template <>
-class BASE_IMPEXP SO_average<3>
+class SO_average<3>
 {
    public:
 	/** Constructor */
@@ -119,7 +119,7 @@ class BASE_IMPEXP SO_average<3>
   * \note Class introduced in MRPT 1.3.1
   * \sa SE_traits */
 template <>
-class BASE_IMPEXP SE_average<2>
+class SE_average<2>
 {
    public:
 	/** Constructor */
@@ -156,7 +156,7 @@ class BASE_IMPEXP SE_average<2>
   * \note Class introduced in MRPT 1.3.1
   * \sa SE_traits */
 template <>
-class BASE_IMPEXP SE_average<3>
+class SE_average<3>
 {
    public:
 	/** Constructor */

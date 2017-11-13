@@ -20,7 +20,7 @@ namespace utils
  * \sa CSerializable
  * \ingroup mrpt_base_grp
  */
-class BASE_IMPEXP CTypeSelector : public mrpt::utils::CSerializable
+class CTypeSelector : public mrpt::utils::CSerializable
 {
 	DEFINE_SERIALIZABLE(CTypeSelector)
    protected:

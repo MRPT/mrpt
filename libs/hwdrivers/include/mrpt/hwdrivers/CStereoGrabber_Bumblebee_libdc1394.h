@@ -9,7 +9,6 @@
 #pragma once
 
 #include <mrpt/obs/CObservationStereoImages.h>
-#include <mrpt/hwdrivers/link_pragmas.h>
 #include <mrpt/hwdrivers/CImageGrabber_dc1394.h>
 
 #include <mrpt/config.h>
@@ -35,7 +34,7 @@ namespace hwdrivers
  * MRPT: mrpt::hwdrivers::CCameraSensor
   * \ingroup mrpt_hwdrivers_grp
   */
-class HWDRIVERS_IMPEXP CStereoGrabber_Bumblebee_libdc1394
+class CStereoGrabber_Bumblebee_libdc1394
 {
    public:
 	/** Constructor. Parameters have the same meaning as in

@@ -41,7 +41,7 @@ namespace poses
  * \ingroup poses_grp
  * \sa CPose3DRotVec, CPoseOrPoint,CPoint3D, mrpt::math::CQuaternion
  */
-class BASE_IMPEXP CPose3DRotVec : public CPose<CPose3DRotVec>,
+class CPose3DRotVec : public CPose<CPose3DRotVec>,
 								  public mrpt::utils::CSerializable
 {
 	DEFINE_SERIALIZABLE(CPose3DRotVec)
@@ -551,14 +551,14 @@ class BASE_IMPEXP CPose3DRotVec : public CPose<CPose3DRotVec>,
 };  // End of class def.
 DEFINE_SERIALIZABLE_POST(CPose3DRotVec)
 
-std::ostream BASE_IMPEXP& operator<<(std::ostream& o, const CPose3DRotVec& p);
+std::ostream& operator<<(std::ostream& o, const CPose3DRotVec& p);
 
 /** Unary - operator: return the inverse pose "-p" (Note that is NOT the same
  * than a pose with negative x y z yaw pitch roll) */
-CPose3DRotVec BASE_IMPEXP operator-(const CPose3DRotVec& p);
+CPose3DRotVec operator-(const CPose3DRotVec& p);
 
-bool BASE_IMPEXP operator==(const CPose3DRotVec& p1, const CPose3DRotVec& p2);
-bool BASE_IMPEXP operator!=(const CPose3DRotVec& p1, const CPose3DRotVec& p2);
+bool operator==(const CPose3DRotVec& p1, const CPose3DRotVec& p2);
+bool operator!=(const CPose3DRotVec& p1, const CPose3DRotVec& p2);
 
 }  // End of namespace
 }  // End of namespace

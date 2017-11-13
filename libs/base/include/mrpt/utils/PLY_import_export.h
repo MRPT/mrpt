@@ -24,7 +24,7 @@ namespace utils
   * \sa PLY_Exporter
  * \ingroup mrpt_base_grp
   */
-class BASE_IMPEXP PLY_Importer
+class PLY_Importer
 {
    public:
 	/** Loads from a PLY file.
@@ -82,7 +82,7 @@ class BASE_IMPEXP PLY_Importer
   * \sa PLY_Importer
  * \ingroup mrpt_base_grp
   */
-class BASE_IMPEXP PLY_Exporter
+class PLY_Exporter
 {
    public:
 	/** Saves to a PLY file.

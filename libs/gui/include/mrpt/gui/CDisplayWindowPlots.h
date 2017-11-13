@@ -28,7 +28,7 @@ namespace gui
  *   See CDisplayWindowPlots::plot
  * \ingroup mrpt_gui_grp
  */
-class GUI_IMPEXP CDisplayWindowPlots : public mrpt::gui::CBaseGUIWindow
+class CDisplayWindowPlots : public mrpt::gui::CBaseGUIWindow
 {
    public:
 	using Ptr = std::shared_ptr<CDisplayWindowPlots>;

@@ -22,7 +22,6 @@
 
 #include <mrpt/slam/PF_implementations_data.h>
 
-#include <mrpt/slam/link_pragmas.h>
 
 namespace mrpt
 {
@@ -35,7 +34,7 @@ namespace maps
 /** Auxiliary class used in mrpt::maps::CMultiMetricMapPDF
  * \ingroup mrpt_slam_grp
   */
-class SLAM_IMPEXP CRBPFParticleData : public mrpt::utils::CSerializable
+class CRBPFParticleData : public mrpt::utils::CSerializable
 {
 	DEFINE_SERIALIZABLE(CRBPFParticleData)
    public:
@@ -59,7 +58,7 @@ DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
  * \sa mrpt::slam::CMetricMapBuilderRBPF
  * \ingroup metric_slam_grp
  */
-class SLAM_IMPEXP CMultiMetricMapPDF
+class CMultiMetricMapPDF
 	: public mrpt::utils::CSerializable,
 	  public mrpt::bayes::CParticleFilterData<CRBPFParticleData>,
 	  public mrpt::bayes::CParticleFilterDataImpl<
@@ -112,7 +111,7 @@ class SLAM_IMPEXP CMultiMetricMapPDF
 	 *    when running a particle filter.
 	 * \sa prediction_and_update
 	 */
-	struct SLAM_IMPEXP TPredictionParams : public utils::CLoadableOptions
+	struct TPredictionParams : public utils::CLoadableOptions
 	{
 		/** Default settings method */
 		TPredictionParams();

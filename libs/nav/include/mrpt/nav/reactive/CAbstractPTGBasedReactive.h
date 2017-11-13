@@ -90,14 +90,14 @@ namespace nav
   * \sa CReactiveNavigationSystem, CReactiveNavigationSystem3D
   *  \ingroup nav_reactive
   */
-class NAV_IMPEXP CAbstractPTGBasedReactive : public CWaypointsNavigator
+class CAbstractPTGBasedReactive : public CWaypointsNavigator
 {
    public:
 	MRPT_MAKE_ALIGNED_OPERATOR_NEW
 
 	/** The struct for configuring navigation requests to
 	 * CAbstractPTGBasedReactive and derived classes. */
-	struct NAV_IMPEXP TNavigationParamsPTG
+	struct TNavigationParamsPTG
 		: public CWaypointsNavigator::TNavigationParamsWaypoints
 	{
 		/** (Default=empty) Optionally, a list of PTG indices can be sent such
@@ -170,7 +170,7 @@ class NAV_IMPEXP CAbstractPTGBasedReactive : public CWaypointsNavigator
 		m_navlogfiles_dir = sDir;
 	}
 	std::string getLogFileDirectory() const { return m_navlogfiles_dir; }
-	struct NAV_IMPEXP TAbstractPTGNavigatorParams
+	struct TAbstractPTGNavigatorParams
 		: public mrpt::utils::CLoadableOptions
 	{
 		/** C++ class name of the holonomic navigation method to run in the
@@ -432,7 +432,7 @@ class NAV_IMPEXP CAbstractPTGBasedReactive : public CWaypointsNavigator
 		const TNavigationParams& navp = TNavigationParams(),
 		const mrpt::math::TPose2D& relPoseVelCmd_NOP = mrpt::poses::CPose2D());
 
-	struct NAV_IMPEXP TSentVelCmd
+	struct TSentVelCmd
 	{
 		/** 0-based index of used PTG */
 		int ptg_index;

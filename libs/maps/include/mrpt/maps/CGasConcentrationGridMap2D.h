@@ -13,7 +13,6 @@
 #include <mrpt/maps/CRandomFieldGridMap2D.h>
 #include <mrpt/obs/CObservationGasSensors.h>
 
-#include <mrpt/maps/link_pragmas.h>
 
 namespace mrpt
 {
@@ -34,7 +33,7 @@ namespace maps
  * mrpt::maps::CMultiMetricMap
   * \ingroup mrpt_maps_grp
   */
-class MAPS_IMPEXP CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
+class CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
 {
 	DEFINE_SERIALIZABLE(CGasConcentrationGridMap2D)
    public:
@@ -49,7 +48,7 @@ class MAPS_IMPEXP CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
 
 	/** Parameters related with inserting observations into the map:
 	  */
-	struct MAPS_IMPEXP TInsertionOptions : public utils::CLoadableOptions,
+	struct TInsertionOptions : public utils::CLoadableOptions,
 										   public TInsertionOptionsCommon
 	{
 		/** Default values loader */
@@ -111,7 +110,7 @@ class MAPS_IMPEXP CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
 	bool simulateAdvection(const double& STD_increase_value);
 
 	// Params for the estimation of the gaussian volume in a cell.
-	struct MAPS_IMPEXP TGaussianCell
+	struct TGaussianCell
 	{
 		int cx;  // x-index of the cell
 		int cy;  // y-index of the cell
@@ -119,7 +118,7 @@ class MAPS_IMPEXP CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
 	};
 
 	// Params for the estimation of the wind effect on each cell of the grid
-	struct MAPS_IMPEXP TGaussianWindTable
+	struct TGaussianWindTable
 	{
 		// Fixed params
 		float resolution;  // Cell_resolution. To be read from config-file

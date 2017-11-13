@@ -38,7 +38,7 @@ namespace opengl
   *
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CMeshFast : public CRenderizableDisplayList
+class CMeshFast : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CMeshFast)
 

@@ -15,7 +15,6 @@
 
 #include <mrpt/utils/CObserver.h>
 
-#include <mrpt/slam/link_pragmas.h>
 
 namespace mrpt
 {
@@ -34,7 +33,7 @@ namespace slam
   *
   * \ingroup mrpt_slam_grp
   */
-class SLAM_IMPEXP COccupancyGridMapFeatureExtractor
+class COccupancyGridMapFeatureExtractor
 	: public mrpt::utils::CObserver
 {
    public:

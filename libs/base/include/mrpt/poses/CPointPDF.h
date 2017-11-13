@@ -36,7 +36,7 @@ namespace poses
  * \sa CPoint3D
  * \ingroup poses_pdf_grp
  */
-class BASE_IMPEXP CPointPDF
+class CPointPDF
 	: public mrpt::utils::CSerializable,
 	  public mrpt::utils::CProbabilityDensityFunction<CPoint3D, 3>
 {

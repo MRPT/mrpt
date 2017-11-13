@@ -36,7 +36,7 @@ T interpolate(const T& x, const VECTOR& ys, const T& x0, const T& x1);
  * "y" values already are in the correct range).
   * \sa spline, interpolate, leastSquareLinearFit
   */
-double BASE_IMPEXP interpolate2points(
+double interpolate2points(
 	const double x, const double x0, const double y0, const double x1,
 	const double y1, bool wrap2pi = false);
 

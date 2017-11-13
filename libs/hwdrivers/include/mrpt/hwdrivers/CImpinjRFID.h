@@ -26,7 +26,7 @@ namespace hwdrivers
  * This is done because the manufacturer only provides libraries for C# and
  * Java. The program that runs the device must be started after this object
   */
-class HWDRIVERS_IMPEXP CImpinjRFID : public mrpt::hwdrivers::CGenericSensor
+class CImpinjRFID : public mrpt::hwdrivers::CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CImpinjRFID)
 

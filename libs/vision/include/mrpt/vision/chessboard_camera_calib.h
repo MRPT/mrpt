@@ -14,7 +14,6 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/vision/types.h>
-#include <mrpt/vision/link_pragmas.h>
 
 namespace mrpt
 {
@@ -28,7 +27,7 @@ namespace vision
  * mrpt::vision::checkerBoardCameraCalibration (All the information can be left
  * empty and will be filled up in the calibration method).
   */
-struct VISION_IMPEXP TImageCalibData
+struct TImageCalibData
 {
 	/** This image will be automatically loaded from the file name passed to
 	 * checkerBoardCameraCalibration */

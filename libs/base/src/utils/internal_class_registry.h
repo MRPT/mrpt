@@ -24,7 +24,7 @@ std::atomic<int> BASE_IMPEXP& pending_class_registers_count();
 CThreadSafeQueue<TRegisterFunction> BASE_IMPEXP& pending_class_registers();
 /** Set to true if pending_class_registers() has been called after
  * registerAllPendingClasses(). Startup value is false. */
-extern volatile bool BASE_IMPEXP pending_class_registers_modified;
+extern volatile bool pending_class_registers_modified;
 
 }  // End of namespace
 }  // End of namespace

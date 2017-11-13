@@ -38,7 +38,7 @@ class CPosePDFGaussian;  // frd decl.
  * \sa CPose2D, CPose3DPDF, CPoseRandomSampler
  * \ingroup poses_pdf_grp
  */
-class BASE_IMPEXP CPosePDF
+class CPosePDF
 	: public mrpt::utils::CSerializable,
 	  public mrpt::utils::CProbabilityDensityFunction<CPose2D, 3>
 {

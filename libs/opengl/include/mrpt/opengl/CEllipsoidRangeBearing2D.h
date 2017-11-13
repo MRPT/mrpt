@@ -40,7 +40,7 @@ namespace opengl
   *
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CEllipsoidRangeBearing2D
+class CEllipsoidRangeBearing2D
 	: public CGeneralizedEllipsoidTemplate<2>
 {
 	typedef CGeneralizedEllipsoidTemplate<2> BASE;

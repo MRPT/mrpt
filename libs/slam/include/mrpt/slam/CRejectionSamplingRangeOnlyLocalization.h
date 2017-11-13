@@ -16,7 +16,6 @@
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/obs/obs_frwds.h>
 
-#include <mrpt/slam/link_pragmas.h>
 
 namespace mrpt
 {
@@ -35,7 +34,7 @@ namespace slam
  * (default=0).
  * \sa bayes::CRejectionSamplingCapable  \ingroup mrpt_slam_grp
  */
-class SLAM_IMPEXP CRejectionSamplingRangeOnlyLocalization
+class CRejectionSamplingRangeOnlyLocalization
 	: public bayes::CRejectionSamplingCapable<mrpt::poses::CPose2D>
 {
    public:
@@ -95,7 +94,7 @@ class SLAM_IMPEXP CRejectionSamplingRangeOnlyLocalization
 
 	/** Data for each beacon observation with a correspondence with the map.
 	  */
-	struct SLAM_IMPEXP TDataPerBeacon
+	struct TDataPerBeacon
 	{
 		TDataPerBeacon()
 			: sensorOnRobot(),

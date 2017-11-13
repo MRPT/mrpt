@@ -25,7 +25,7 @@ namespace utils
   *  Based on code from http://www.devmaster.net/forums/showthread.php?t=7037
  * \ingroup mrpt_base_grp
   */
-class BASE_IMPEXP CConsoleRedirector : public std::streambuf
+class CConsoleRedirector : public std::streambuf
 {
    protected:
 	/** The text output file stream. */

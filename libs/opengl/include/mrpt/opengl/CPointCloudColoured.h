@@ -43,7 +43,7 @@ namespace opengl
   *
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CPointCloudColoured
+class CPointCloudColoured
 	: public CRenderizable,
 	  public COctreePointRenderer<CPointCloudColoured>,
 	  public mrpt::utils::PLY_Importer,

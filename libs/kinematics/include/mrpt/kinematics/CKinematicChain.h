@@ -14,7 +14,6 @@
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/utils/aligned_containers.h>
 
-#include <mrpt/kinematics/link_pragmas.h>
 
 namespace mrpt
 {
@@ -27,7 +26,7 @@ namespace kinematics
   * follows a Denavit-Hartenberg standard parameterization: [theta, d, a,
  * alpha].
   */
-struct KINEMATICS_IMPEXP TKinematicLink
+struct TKinematicLink
 {
 	/** Rotation from X_i to X_{i+1} (radians) */
 	double theta;
@@ -70,7 +69,7 @@ KINEMATICS_IMPEXP mrpt::utils::CStream& operator<<(
   * \sa CPose3D
   * \ingroup kinematics_grp
   */
-class KINEMATICS_IMPEXP CKinematicChain : public mrpt::utils::CSerializable
+class CKinematicChain : public mrpt::utils::CSerializable
 {
 	DEFINE_SERIALIZABLE(CKinematicChain)
 

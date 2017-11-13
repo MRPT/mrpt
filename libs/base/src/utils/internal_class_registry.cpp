@@ -54,7 +54,7 @@ typedef std::map<std::string, const TRuntimeClassId*> TClassnameToRuntimeId;
  * users do not use this class in any direct way.
   * \note Class is thread-safe.
   */
-class BASE_IMPEXP CClassRegistry
+class CClassRegistry
 {
    public:
 	/**  The unique access point point to the singleton instance.

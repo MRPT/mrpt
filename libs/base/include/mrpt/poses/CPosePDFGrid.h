@@ -24,7 +24,7 @@ namespace poses
  * \sa CPose2D, CPosePDF, CPose2DGridTemplate
  * \ingroup poses_pdf_grp
  */
-class BASE_IMPEXP CPosePDFGrid : public CPosePDF,
+class CPosePDFGrid : public CPosePDF,
 								 public CPose2DGridTemplate<double>
 {
 	DEFINE_SERIALIZABLE(CPosePDFGrid)

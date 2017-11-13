@@ -11,7 +11,6 @@
 #define TSLIDINGWINDOW_H
 
 #include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/graphslam/link_pragmas.h>
 
 #include <algorithm>  // std::transform
 #include <cmath>  // sqrt
@@ -47,7 +46,7 @@ namespace graphslam
  *
  * \ingroup mrpt_graphslam_grp
  */
-struct GRAPHSLAM_IMPEXP TSlidingWindow : public mrpt::utils::CLoadableOptions
+struct TSlidingWindow : public mrpt::utils::CLoadableOptions
 {
    public:
 	TSlidingWindow(std::string name = "window");

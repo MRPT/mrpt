@@ -38,7 +38,7 @@ enum
  * \sa CStream, CFileInputStream, CFileOutputStrea, CFileGZInputStream
  * \ingroup mrpt_base_grp
  */
-class BASE_IMPEXP CFileStream : public CStream
+class CFileStream : public CStream
 {
    protected:
 	size_t Read(void* Buffer, size_t Count) override;

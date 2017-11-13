@@ -24,7 +24,7 @@ namespace obs
  * \sa mrpt::obs::CReflectivityGridMap2D, CObservation
  * \ingroup mrpt_obs_grp
  */
-class OBS_IMPEXP CObservationReflectivity : public CObservation
+class CObservationReflectivity : public CObservation
 {
 	DEFINE_SERIALIZABLE(CObservationReflectivity)
 

@@ -11,7 +11,6 @@
 #define mrpt_utils_tpixelcoord_H
 
 #include <iosfwd>
-#include <mrpt/base/link_pragmas.h>
 
 namespace mrpt
 {
@@ -19,7 +18,7 @@ namespace utils
 {
 /** A pair (x,y) of pixel coordinates (subpixel resolution). \ingroup
  * mrpt_base_grp  */
-struct BASE_IMPEXP TPixelCoordf
+struct TPixelCoordf
 {
 	/** The type of \a x and \a y */
 	typedef float pixel_coord_t;
@@ -33,10 +32,10 @@ struct BASE_IMPEXP TPixelCoordf
 };
 
 /** Prints TPixelCoordf as "(x,y)" */
-std::ostream BASE_IMPEXP& operator<<(std::ostream& o, const TPixelCoordf& p);
+std::ostream& operator<<(std::ostream& o, const TPixelCoordf& p);
 
 /** A pair (x,y) of pixel coordinates (integer resolution). */
-struct BASE_IMPEXP TPixelCoord
+struct TPixelCoord
 {
 	/** The type of \a x and \a y */
 	typedef int pixel_coord_t;
@@ -47,7 +46,7 @@ struct BASE_IMPEXP TPixelCoord
 };
 
 /** Prints TPixelCoord as "(x,y)" */
-std::ostream BASE_IMPEXP& operator<<(std::ostream& o, const TPixelCoord& p);
+std::ostream& operator<<(std::ostream& o, const TPixelCoord& p);
 
 /** A type for image sizes. */
 typedef TPixelCoord TImageSize;

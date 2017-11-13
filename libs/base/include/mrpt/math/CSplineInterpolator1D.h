@@ -25,7 +25,7 @@ namespace math
   * \ sa mrpt::math::spline, mrpt::poses::CPose3DInterpolator
  * \ingroup interpolation_grp
  */
-class BASE_IMPEXP CSplineInterpolator1D : public mrpt::utils::CSerializable
+class CSplineInterpolator1D : public mrpt::utils::CSerializable
 {
 	DEFINE_SERIALIZABLE(CSplineInterpolator1D)
 

@@ -8,7 +8,6 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/base/link_pragmas.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/utils/aligned_containers.h>
 //#include <mrpt/poses/CPose3DInterpolator.h>
@@ -51,7 +50,7 @@ enum FrameLookUpStatus
 * \sa FrameTransformer, CPose3D
 */
 template <int DIM>
-class BASE_IMPEXP FrameTransformerInterface
+class FrameTransformerInterface
 {
    public:
 	/** This will be mapped to CPose2D (DIM=2) or CPose3D (DIM=3) */
@@ -90,7 +89,7 @@ class BASE_IMPEXP FrameTransformerInterface
 * \sa FrameTransformerInterface
 */
 template <int DIM>
-class BASE_IMPEXP FrameTransformer : public FrameTransformerInterface<DIM>
+class FrameTransformer : public FrameTransformerInterface<DIM>
 {
    public:
 	typedef FrameTransformerInterface<DIM> base_t;
@@ -131,7 +130,7 @@ class BASE_IMPEXP FrameTransformer : public FrameTransformerInterface<DIM>
 	// in the future [s]
 	// double m_max_age_pose_cache;      //!< Max age of stored poses [s]
 
-	struct BASE_IMPEXP TF_TreeEdge
+	struct TF_TreeEdge
 	{
 		// TODO: CPose{2,3}DInterpolator?
 		typename base_t::pose_t pose;

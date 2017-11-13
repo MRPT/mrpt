@@ -36,7 +36,7 @@ namespace hmtslam
  * \sa CHierarchicalMHMap, CHMHMapArc, CHMHMapNode
   * \ingroup mrpt_hmtslam_grp
  */
-class HMTSLAM_IMPEXP CHierarchicalMapMHPartition
+class CHierarchicalMapMHPartition
 	: public mrpt::utils::COutputLogger
 {
    protected:

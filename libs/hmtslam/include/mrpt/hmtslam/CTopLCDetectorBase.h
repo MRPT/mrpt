@@ -23,7 +23,7 @@ namespace hmtslam
   *  \sa mrpt::slam::CHMTSLAM
   * \ingroup mrpt_hmtslam_grp
   */
-class HMTSLAM_IMPEXP CTopLCDetectorBase
+class CTopLCDetectorBase
 {
    protected:
 	CHMTSLAM* m_hmtslam;

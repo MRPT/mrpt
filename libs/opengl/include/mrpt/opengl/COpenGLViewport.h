@@ -62,7 +62,7 @@ class CRenderizable;
   *  Refer to mrpt::opengl::COpenGLScene for further details.
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP COpenGLViewport : public mrpt::utils::CSerializable,
+class COpenGLViewport : public mrpt::utils::CSerializable,
 									  public mrpt::utils::CObservable
 {
 	DEFINE_SERIALIZABLE(COpenGLViewport)
@@ -487,7 +487,7 @@ inline COpenGLViewport::Ptr& operator<<(
  * be invoked from an internal GUI thread of MRPT,
   *    so all your code in the handler must be thread safe.
   */
-class OPENGL_IMPEXP mrptEventGLPreRender : public mrpt::utils::mrptEvent
+class mrptEventGLPreRender : public mrpt::utils::mrptEvent
 {
    protected:
 	/** Just to allow this class to be polymorphic */
@@ -512,7 +512,7 @@ class OPENGL_IMPEXP mrptEventGLPreRender : public mrpt::utils::mrptEvent
  * be invoked from an internal GUI thread of MRPT,
   *    so all your code in the handler must be thread safe.
   */
-class OPENGL_IMPEXP mrptEventGLPostRender : public mrpt::utils::mrptEvent
+class mrptEventGLPostRender : public mrpt::utils::mrptEvent
 {
    protected:
 	/** Just to allow this class to be polymorphic */

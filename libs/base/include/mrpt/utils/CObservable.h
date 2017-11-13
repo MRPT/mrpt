@@ -10,7 +10,6 @@
 #define CObservable_H
 
 #include <mrpt/config.h>
-#include <mrpt/base/link_pragmas.h>
 #include <set>
 
 namespace mrpt
@@ -33,7 +32,7 @@ class mrptEvent;
   *  \sa CObserver, mrptEvent
  * \ingroup mrpt_base_grp
   */
-class BASE_IMPEXP CObservable
+class CObservable
 {
 	friend class CObserver;
 

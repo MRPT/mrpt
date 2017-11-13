@@ -14,7 +14,6 @@
 #include <mrpt/obs/CObservation.h>
 #include <map>
 
-#include <mrpt/hwdrivers/link_pragmas.h>
 #include <map>
 #include <mutex>
 
@@ -25,12 +24,12 @@ namespace mrpt
  */
 namespace hwdrivers
 {
-class HWDRIVERS_IMPEXP CGenericSensor;
+class CGenericSensor;
 
 /** A structure for runtime ID class type information in the context of
  * hwdrivers::CGenericSensor.
   */
-struct HWDRIVERS_IMPEXP TSensorClassId
+struct TSensorClassId
 {
 	/** Class name */
 	const char* className;
@@ -70,7 +69,7 @@ struct HWDRIVERS_IMPEXP TSensorClassId
   *    http://www.mrpt.org/Application:RawLogGrabber
   * \ingroup mrpt_hwdrivers_grp
   */
-class HWDRIVERS_IMPEXP CGenericSensor
+class CGenericSensor
 {
    public:
 	using Ptr = std::shared_ptr<CGenericSensor>;

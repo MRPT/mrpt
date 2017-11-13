@@ -24,7 +24,7 @@ namespace obs
  * of reading this kind of observations.
  * \ingroup mrpt_obs_grp
  */
-class OBS_IMPEXP CObservationRFID : public CObservation
+class CObservationRFID : public CObservation
 {
 	DEFINE_SERIALIZABLE(CObservationRFID)
 
@@ -38,7 +38,7 @@ class OBS_IMPEXP CObservationRFID : public CObservation
 	mrpt::poses::CPose3D sensorPoseOnRobot;
 
 	/** Each of the individual readings of a RFID tag */
-	struct OBS_IMPEXP TTagReading
+	struct TTagReading
 	{
 		TTagReading() : power(-1000) {}
 		/** The power or signal strength as sensed by the RFID receiver (in dBm)

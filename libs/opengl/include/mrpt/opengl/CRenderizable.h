@@ -14,7 +14,6 @@
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/opengl/opengl_fonts.h>
-#include <mrpt/opengl/link_pragmas.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <deque>
 
@@ -41,7 +40,7 @@ class CSetOfObjects;
   *  \sa opengl::COpenGLScene, mrpt::opengl
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CRenderizable : public mrpt::utils::CSerializable
+class CRenderizable : public mrpt::utils::CSerializable
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CRenderizable)
 

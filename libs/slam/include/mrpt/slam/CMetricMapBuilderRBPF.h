@@ -18,7 +18,6 @@
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/safe_pointers.h>
 
-#include <mrpt/slam/link_pragmas.h>
 
 namespace mrpt
 {
@@ -57,7 +56,7 @@ namespace slam
  *
  * \sa CMetricMap   \ingroup metric_slam_grp
  */
-class SLAM_IMPEXP CMetricMapBuilderRBPF : public mrpt::slam::CMetricMapBuilder
+class CMetricMapBuilderRBPF : public mrpt::slam::CMetricMapBuilder
 {
    public:
 	/** The map PDF: It includes a path and associated map for each particle. */
@@ -84,7 +83,7 @@ class SLAM_IMPEXP CMetricMapBuilderRBPF : public mrpt::slam::CMetricMapBuilder
 	/** Options for building a CMetricMapBuilderRBPF object, passed to the
 	 * constructor.
 	  */
-	struct SLAM_IMPEXP TConstructionOptions : public utils::CLoadableOptions
+	struct TConstructionOptions : public utils::CLoadableOptions
 	{
 	   public:
 		/** Constructor */
@@ -195,7 +194,7 @@ of type CMetricMapBuilderRBPF  */
 	/** This structure will hold stats after each execution of
 	 * processActionObservation
 	  */
-	struct SLAM_IMPEXP TStats
+	struct TStats
 	{
 		TStats() : observationsInserted(false) {}
 		/** Whether the SF has been inserted in the metric maps. */

@@ -16,7 +16,6 @@
 #include <mrpt/opengl/CRenderizable.h>
 #endif
 
-#include <mrpt/opengl/link_pragmas.h>
 
 namespace mrpt
 {
@@ -33,7 +32,7 @@ namespace gl_utils
 
 /** Information about the rendering process being issued. \sa See
  * getCurrentRenderingInfo for more details */
-struct OPENGL_IMPEXP TRenderInfo
+struct TRenderInfo
 {
 	/** Rendering viewport geometry (in pixels) */
 	int vp_x, vp_y, vp_width, vp_height;

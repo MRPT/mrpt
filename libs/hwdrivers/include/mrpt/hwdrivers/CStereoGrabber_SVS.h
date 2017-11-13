@@ -10,7 +10,6 @@
 #define CStereoGrabber_SVS_H
 
 #include <mrpt/obs/CObservationStereoImages.h>
-#include <mrpt/hwdrivers/link_pragmas.h>
 
 namespace mrpt
 {
@@ -19,7 +18,7 @@ namespace hwdrivers
 /** Options used when creating a STOC Videre Design camera capture object
   * \ingroup mrpt_hwdrivers_grp
   */
-struct HWDRIVERS_IMPEXP TCaptureOptions_SVS
+struct TCaptureOptions_SVS
 {
 	TCaptureOptions_SVS(
 		int _frame_width = 640, int _frame_height = 480, double _framerate = 30,
@@ -66,7 +65,7 @@ struct HWDRIVERS_IMPEXP TCaptureOptions_SVS
   *MRPT: mrpt::hwdrivers::CCameraSensor
   * \ingroup mrpt_hwdrivers_grp
   */
-class HWDRIVERS_IMPEXP CStereoGrabber_SVS
+class CStereoGrabber_SVS
 {
    protected:
 	/** If this has been correctly initiated */

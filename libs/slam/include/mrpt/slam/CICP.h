@@ -64,12 +64,12 @@ enum TICPCovarianceMethod
  * \sa CMetricMapsAlignmentAlgorithm
  * \ingroup mrpt_slam_grp
  */
-class SLAM_IMPEXP CICP : public mrpt::slam::CMetricMapsAlignmentAlgorithm
+class CICP : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 {
    public:
 	/** The ICP algorithm configuration data
 	 */
-	class SLAM_IMPEXP TConfigParams : public utils::CLoadableOptions
+	class TConfigParams : public utils::CLoadableOptions
 	{
 	   public:
 		/** Initializer for default values: */
@@ -192,7 +192,7 @@ class SLAM_IMPEXP CICP : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 	/** Destructor */
 	virtual ~CICP() {}
 	/** The ICP algorithm return information*/
-	struct SLAM_IMPEXP TReturnInfo
+	struct TReturnInfo
 	{
 		TReturnInfo() : nIterations(0), goodness(0), quality(0) {}
 		/** The number of executed iterations until convergence */

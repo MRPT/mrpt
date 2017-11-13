@@ -8,7 +8,6 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/hwdrivers/link_pragmas.h>
 
 namespace mrpt
 {
@@ -18,7 +17,7 @@ namespace hwdrivers
   * \sa CStereoGrabber_Bumblebee, CStereoGrabber_Bumblebee_dc1394
   * \ingroup mrpt_hwdrivers_grp
   */
-struct HWDRIVERS_IMPEXP TCaptureOptions_bumblebee
+struct TCaptureOptions_bumblebee
 {
 	TCaptureOptions_bumblebee();
 

@@ -21,7 +21,7 @@ namespace utils
  * any class registered by the mechanism of CSerializable classes.
  * \ingroup mrpt_base_grp
   */
-class BASE_IMPEXP CListOfClasses
+class CListOfClasses
 {
    private:
 	typedef std::set<const mrpt::utils::TRuntimeClassId*> TSet;

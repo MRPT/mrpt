@@ -97,13 +97,13 @@ namespace utils
 {
 class CStream;
 
-CStream BASE_IMPEXP& operator<<(
+CStream& operator<<(
 	mrpt::utils::CStream& s, const mrpt::math::CVectorFloat& a);
-CStream BASE_IMPEXP& operator<<(
+CStream& operator<<(
 	mrpt::utils::CStream& s, const mrpt::math::CVectorDouble& a);
-CStream BASE_IMPEXP& operator>>(
+CStream& operator>>(
 	mrpt::utils::CStream& in, mrpt::math::CVectorDouble& a);
-CStream BASE_IMPEXP& operator>>(
+CStream& operator>>(
 	mrpt::utils::CStream& in, mrpt::math::CVectorFloat& a);
 }
 }

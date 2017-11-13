@@ -27,7 +27,7 @@ namespace system
  * strtok.
  * \sa system::tokenize
  */
-char BASE_IMPEXP* strtok(
+char* strtok(
 	char* str, const char* strDelimit, char** context) noexcept;
 
 /** Tokenizes a string according to a set of delimiting characters.
@@ -45,74 +45,74 @@ char BASE_IMPEXP* strtok(
  considered one single delimiters. If `false`, a blank token will be returned
  between each pair of delimiters.
  */
-void BASE_IMPEXP tokenize(
+void tokenize(
 	const std::string& inString, const std::string& inDelimiters,
 	std::deque<std::string>& outTokens, bool skipBlankTokens = true) noexcept;
 /** \overload */
-void BASE_IMPEXP tokenize(
+void tokenize(
 	const std::string& inString, const std::string& inDelimiters,
 	std::vector<std::string>& outTokens, bool skipBlankTokens = true) noexcept;
 
 /**  Removes leading and trailing spaces */
-std::string BASE_IMPEXP trim(const std::string& str);
+std::string trim(const std::string& str);
 
 /** Returns a upper-case version of a string.
  * \sa lowerCase  */
-std::string BASE_IMPEXP upperCase(const std::string& str);
+std::string upperCase(const std::string& str);
 
 /** Returns an lower-case version of a string.
  * \sa upperCase  */
-std::string BASE_IMPEXP lowerCase(const std::string& str);
+std::string lowerCase(const std::string& str);
 
 /** Decodes a UTF-8 string into an UNICODE string.
  *  See http://en.wikipedia.org/wiki/UTF-8  and
  * http://www.codeguru.com/cpp/misc/misc/multi-lingualsupport/article.php/c10451/.
   */
-void BASE_IMPEXP
+void
 	decodeUTF8(const std::string& strUTF8, vector_word& out_uniStr);
 
 /** Encodes a 2-bytes UNICODE string into a UTF-8 string.
  *  See http://en.wikipedia.org/wiki/UTF-8 and
  * http://www.codeguru.com/cpp/misc/misc/multi-lingualsupport/article.php/c10451/.
   */
-void BASE_IMPEXP encodeUTF8(const vector_word& input, std::string& output);
+void encodeUTF8(const vector_word& input, std::string& output);
 
 /** Encode a sequence of bytes as a string in base-64.
  * \sa decodeBase64  */
-void BASE_IMPEXP
+void
 	encodeBase64(const vector_byte& inputData, std::string& outString);
 
 /** Decode a base-64 string into the original sequence of bytes.
  * \sa encodeBase64
  * \return false on invalid base-64 string passed as input, true on success.
  */
-bool BASE_IMPEXP
+bool
 	decodeBase64(const std::string& inString, vector_byte& outData);
 
 /** This function implements formatting with the appropriate SI metric unit
  * prefix: 1e-12->'p', 1e-9->'n', 1e-6->'u', 1e-3->'m', 1->'', 1e3->'K',
  * 1e6->'M', 1e9->'G', 1e12->'T' \sa intervalFormat */
-std::string BASE_IMPEXP unitsFormat(
+std::string unitsFormat(
 	const double val, int nDecimalDigits = 2, bool middle_space = true);
 
 /** Enlarge the string with spaces up to the given length. */
-std::string BASE_IMPEXP rightPad(
+std::string rightPad(
 	const std::string& str, const size_t total_len,
 	bool truncate_if_larger = false);
 
 /** Return true if the two strings are equal (case sensitive)  \sa strCmpI  */
-bool BASE_IMPEXP strCmp(const std::string& s1, const std::string& s2);
+bool strCmp(const std::string& s1, const std::string& s2);
 
 /** Return true if the two strings are equal (case insensitive)  \sa strCmp */
-bool BASE_IMPEXP strCmpI(const std::string& s1, const std::string& s2);
+bool strCmpI(const std::string& s1, const std::string& s2);
 
 /** Return true if "str" starts with "subStr" (case sensitive)  \sa strStartsI
  */
-bool BASE_IMPEXP strStarts(const std::string& str, const std::string& subStr);
+bool strStarts(const std::string& str, const std::string& subStr);
 
 /** Return true if "str" starts with "subStr" (case insensitive)  \sa strStarts
  */
-bool BASE_IMPEXP strStartsI(const std::string& str, const std::string& subStr);
+bool strStartsI(const std::string& str, const std::string& subStr);
 
 /** Generates a string for a container in the format [A,B,C,...], and the
  * fmt string for <b>each</b> vector element.

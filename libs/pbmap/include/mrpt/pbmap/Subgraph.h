@@ -20,7 +20,6 @@
 #if MRPT_HAS_PCL
 
 #include <mrpt/utils/utils_defs.h>
-#include <mrpt/pbmap/link_pragmas.h>
 
 #include <mrpt/pbmap/PbMap.h>
 
@@ -34,7 +33,7 @@ namespace pbmap
  *
  * \ingroup mrpt_pbmap_grp
  */
-class PBMAP_IMPEXP Subgraph
+class Subgraph
 {
    public:
 	/*!Subgraph constructor with no parameters*/

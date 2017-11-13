@@ -11,7 +11,6 @@
 
 #include <string>
 #include <vector>
-#include <mrpt/base/link_pragmas.h>
 #include <mrpt/poses/poses_frwds.h>
 #include <ostream>
 
@@ -29,7 +28,7 @@ namespace utils
  * points-like entities in 2D or 3D.
  * \ingroup mrpt_base_grp
   */
-struct BASE_IMPEXP TMatchingPair
+struct TMatchingPair
 {
 	TMatchingPair()
 		: this_idx(0),
@@ -91,7 +90,7 @@ typedef TMatchingPair const* TMatchingPairConstPtr;
 /** A list of TMatchingPair
  * \ingroup mrpt_base_grp
   */
-class BASE_IMPEXP TMatchingPairList : public std::vector<TMatchingPair>
+class TMatchingPairList : public std::vector<TMatchingPair>
 {
    public:
 	/** Checks if the given index from the "other" map appears in the list. */
@@ -159,13 +158,13 @@ class BASE_IMPEXP TMatchingPairList : public std::vector<TMatchingPair>
 
 /** A comparison operator, for sorting lists of TMatchingPair's, first order by
  * this_idx, if equals, by other_idx   */
-bool BASE_IMPEXP operator<(const TMatchingPair& a, const TMatchingPair& b);
+bool operator<(const TMatchingPair& a, const TMatchingPair& b);
 
 /** A comparison operator  */
-bool BASE_IMPEXP operator==(const TMatchingPair& a, const TMatchingPair& b);
+bool operator==(const TMatchingPair& a, const TMatchingPair& b);
 
 /** A comparison operator */
-bool BASE_IMPEXP
+bool
 	operator==(const TMatchingPairList& a, const TMatchingPairList& b);
 
 }  // End of namespace

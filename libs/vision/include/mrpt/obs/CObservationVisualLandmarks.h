@@ -25,7 +25,7 @@ namespace obs
  * \sa CLandmarksMap, CObservation
  * \ingroup mrpt_vision_grp
  */
-class VISION_IMPEXP CObservationVisualLandmarks : public CObservation
+class CObservationVisualLandmarks : public CObservation
 {
 	DEFINE_SERIALIZABLE(CObservationVisualLandmarks)
 

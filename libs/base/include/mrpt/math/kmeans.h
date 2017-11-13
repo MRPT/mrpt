@@ -20,7 +20,7 @@ namespace detail
 {
 // Auxiliary method: templatized for working with float/double's.
 template <typename SCALAR>
-double BASE_IMPEXP internal_kmeans(
+double internal_kmeans(
 	const bool use_kmeansplusplus_method, const size_t nPoints, const size_t k,
 	const size_t dims, const SCALAR* points, const size_t attempts,
 	SCALAR* out_center, int* out_assignments);

@@ -68,7 +68,7 @@ enum predefined_voxel_sets_t
   *  \sa opengl::COpenGLScene
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP COctoMapVoxels : public CRenderizableDisplayList
+class COctoMapVoxels : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(COctoMapVoxels)
    public:
@@ -96,7 +96,7 @@ class OPENGL_IMPEXP COctoMapVoxels : public CRenderizableDisplayList
 	};
 
 	/** The info of each of the voxels */
-	struct OPENGL_IMPEXP TVoxel
+	struct TVoxel
 	{
 		mrpt::math::TPoint3D coords;
 		double side_length;
@@ -112,7 +112,7 @@ class OPENGL_IMPEXP COctoMapVoxels : public CRenderizableDisplayList
 	};
 
 	/** The info of each grid block */
-	struct OPENGL_IMPEXP TGridCube
+	struct TGridCube
 	{
 		/** opposite corners of the cube */
 		mrpt::math::TPoint3D min, max;
@@ -125,7 +125,7 @@ class OPENGL_IMPEXP COctoMapVoxels : public CRenderizableDisplayList
 		}
 	};
 
-	struct OPENGL_IMPEXP TInfoPerVoxelSet
+	struct TInfoPerVoxelSet
 	{
 		bool visible;
 		std::vector<TVoxel> voxels;

@@ -28,7 +28,7 @@ namespace nav
  * \sa CReactiveNavigationSystem, CHolonomicLogFileRecord
  *  \ingroup nav_reactive
  */
-class NAV_IMPEXP CLogFileRecord : public mrpt::utils::CSerializable
+class CLogFileRecord : public mrpt::utils::CSerializable
 {
 	DEFINE_SERIALIZABLE(CLogFileRecord)
 
@@ -39,7 +39,7 @@ class NAV_IMPEXP CLogFileRecord : public mrpt::utils::CSerializable
 	/** The structure used to store all relevant information about each
 	  *  transformation into TP-Space.
 	  *  \ingroup nav_reactive  */
-	struct NAV_IMPEXP TInfoPerPTG
+	struct TInfoPerPTG
 	{
 		/** A short description for the applied PTG */
 		std::string PTG_desc;

@@ -19,7 +19,7 @@ namespace mrpt
 namespace utils
 {
 /** Internal triplet for each property in utils::CMHPropertiesValuesList */
-struct BASE_IMPEXP TPropertyValueIDTriplet
+struct TPropertyValueIDTriplet
 {
 	TPropertyValueIDTriplet() : name(), value(nullptr), ID(0) {}
 	std::string name;
@@ -35,7 +35,7 @@ struct BASE_IMPEXP TPropertyValueIDTriplet
  * \sa CSerializable, CPropertiesValuesList
 * \ingroup mrpt_base_grp
  */
-class BASE_IMPEXP CMHPropertiesValuesList : public mrpt::utils::CSerializable
+class CMHPropertiesValuesList : public mrpt::utils::CSerializable
 {
 	DEFINE_SERIALIZABLE(CMHPropertiesValuesList)
 

@@ -17,7 +17,6 @@
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
 
-#include <mrpt/detectors/link_pragmas.h>
 
 namespace mrpt
 {
@@ -27,7 +26,7 @@ namespace detectors
  *
  * \sa CPointsMap   \ingroup mrpt_slam_grp
  */
-class DETECTORS_IMPEXP CDetectorDoorCrossing : public mrpt::utils::COutputLogger
+class CDetectorDoorCrossing : public mrpt::utils::COutputLogger
 {
    public:
 	/** The constructor. See options for customizing the default parameters.
@@ -38,7 +37,7 @@ class DETECTORS_IMPEXP CDetectorDoorCrossing : public mrpt::utils::COutputLogger
 	/** In this structure parameters can be changed to customize the
 	  *   behaviour of this algorithm.
 	  */
-	struct DETECTORS_IMPEXP TOptions
+	struct TOptions
 	{
 		TOptions()
 			: windowSize(5), gridResolution(0.2f)  //, gridUpdateFactor(0.5)
@@ -56,7 +55,7 @@ class DETECTORS_IMPEXP CDetectorDoorCrossing : public mrpt::utils::COutputLogger
 	/** A structure used as output in this method.
 	  * \sa process
 	  */
-	struct DETECTORS_IMPEXP TDoorCrossingOutParams
+	struct TDoorCrossingOutParams
 	{
 		TDoorCrossingOutParams()
 			: enoughtInformation(false),

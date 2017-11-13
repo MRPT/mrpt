@@ -16,7 +16,6 @@
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/obs/obs_frwds.h>
 
-#include <mrpt/maps/link_pragmas.h>
 
 namespace mrpt
 {
@@ -45,7 +44,7 @@ namespace maps
   * \ingroup mrpt_maps_grp
  * \sa CMetricMap
  */
-class MAPS_IMPEXP CBeaconMap : public mrpt::maps::CMetricMap
+class CBeaconMap : public mrpt::maps::CMetricMap
 {
 	DEFINE_SERIALIZABLE(CBeaconMap)
 
@@ -112,7 +111,7 @@ class MAPS_IMPEXP CBeaconMap : public mrpt::maps::CMetricMap
 		const TMatchingRatioParams& params) const override;
 
 	/** With this struct options are provided to the likelihood computations */
-	struct MAPS_IMPEXP TLikelihoodOptions : public utils::CLoadableOptions
+	struct TLikelihoodOptions : public utils::CLoadableOptions
 	{
 	   public:
 		/** Initilization of default parameters
@@ -134,7 +133,7 @@ class MAPS_IMPEXP CBeaconMap : public mrpt::maps::CMetricMap
 	/** This struct contains data for choosing the method by which new beacons
 	 * are inserted in the map.
 	 */
-	struct MAPS_IMPEXP TInsertionOptions : public utils::CLoadableOptions
+	struct TInsertionOptions : public utils::CLoadableOptions
 	{
 	   public:
 		/** Initilization of default parameters */

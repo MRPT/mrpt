@@ -42,7 +42,7 @@ namespace hwdrivers
 	* \note And modified by Jan Girlich - University of Hamburg
 * \ingroup mrpt_hwdrivers_grp
 	*/
-class HWDRIVERS_IMPEXP CIbeoLuxETH : public mrpt::hwdrivers::CGenericSensor
+class CIbeoLuxETH : public mrpt::hwdrivers::CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CIbeoLuxETH)
 

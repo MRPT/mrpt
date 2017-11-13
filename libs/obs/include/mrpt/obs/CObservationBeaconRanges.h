@@ -24,7 +24,7 @@ namespace obs
  * \sa CObservation
  * \ingroup mrpt_obs_grp
  */
-class OBS_IMPEXP CObservationBeaconRanges : public CObservation
+class CObservationBeaconRanges : public CObservation
 {
 	DEFINE_SERIALIZABLE(CObservationBeaconRanges)
 
@@ -38,7 +38,7 @@ class OBS_IMPEXP CObservationBeaconRanges : public CObservation
 	float stdError;
 
 	/** Each one of the measurements */
-	struct OBS_IMPEXP TMeasurement
+	struct TMeasurement
 	{
 		TMeasurement()
 			: sensorLocationOnRobot(),

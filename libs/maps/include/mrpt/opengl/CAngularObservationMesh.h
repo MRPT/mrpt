@@ -41,14 +41,14 @@ namespace opengl
   *
   * \ingroup mrpt_maps_grp
   */
-class MAPS_IMPEXP CAngularObservationMesh : public CRenderizableDisplayList
+class CAngularObservationMesh : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CAngularObservationMesh)
    public:
 	/**
 	  * Range specification type, with several uses.
 	  */
-	struct MAPS_IMPEXP TDoubleRange
+	struct TDoubleRange
 	{
 	   private:
 		/**

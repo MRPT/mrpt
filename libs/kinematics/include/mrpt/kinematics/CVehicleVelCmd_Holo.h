@@ -18,7 +18,7 @@ namespace kinematics
 *
 * \ingroup mrpt_kinematics_grp
 */
-class KINEMATICS_IMPEXP CVehicleVelCmd_Holo : public CVehicleVelCmd
+class CVehicleVelCmd_Holo : public CVehicleVelCmd
 {
 	DEFINE_SERIALIZABLE(CVehicleVelCmd_Holo)
    public:

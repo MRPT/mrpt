@@ -21,7 +21,6 @@
 
 #include <mrpt/utils.h>
 #include <mrpt/graphs/CGraphPartitioner.h>
-#include <mrpt/pbmap/link_pragmas.h>
 
 #include <mrpt/pbmap/PbMap.h>
 #include <mrpt/pbmap/Plane.h>
@@ -47,7 +46,7 @@ namespace pbmap
  *
  * \ingroup mrpt_pbmap_grp
  */
-class PBMAP_IMPEXP SemanticClustering
+class SemanticClustering
 {
    private:
 	unsigned currentSemanticGroup;

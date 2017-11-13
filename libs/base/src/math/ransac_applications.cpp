@@ -176,7 +176,7 @@ void mrpt::math::ransac_detect_3D_planes(
 
 // Template explicit instantiations:
 #define EXPLICIT_INST_ransac_detect_3D_planes(_TYPE_)                      \
-	template void BASE_IMPEXP mrpt::math::ransac_detect_3D_planes<_TYPE_>( \
+	template void mrpt::math::ransac_detect_3D_planes<_TYPE_>( \
 		const Eigen::Matrix<_TYPE_, Eigen::Dynamic, 1>& x,                 \
 		const Eigen::Matrix<_TYPE_, Eigen::Dynamic, 1>& y,                 \
 		const Eigen::Matrix<_TYPE_, Eigen::Dynamic, 1>& z,                 \
@@ -344,7 +344,7 @@ void mrpt::math::ransac_detect_2D_lines(
 
 // Template explicit instantiations:
 #define EXPLICIT_INSTANT_ransac_detect_2D_lines(_TYPE_)                   \
-	template void BASE_IMPEXP mrpt::math::ransac_detect_2D_lines<_TYPE_>( \
+	template void mrpt::math::ransac_detect_2D_lines<_TYPE_>( \
 		const Eigen::Matrix<_TYPE_, Eigen::Dynamic, 1>& x,                \
 		const Eigen::Matrix<_TYPE_, Eigen::Dynamic, 1>& y,                \
 		std::vector<std::pair<size_t, TLine2D>>& out_detected_lines,      \

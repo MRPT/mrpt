@@ -11,7 +11,6 @@
 
 #include <cstdlib>
 #include <mrpt/utils/mrpt_macros.h>
-#include <mrpt/base/link_pragmas.h>
 
 namespace mrpt
 {
@@ -30,7 +29,7 @@ namespace math
   * \note Based on `poly34.h`, by Khashin S.I.
  * http://math.ivanovo.ac.ru/dalgebra/Khashin/index.html - khash2 (at) gmail.com
  */
-int BASE_IMPEXP solve_poly3(double* x, double a, double b, double c) noexcept;
+int solve_poly3(double* x, double a, double b, double c) noexcept;
 
 /** Solves quartic equation `x^4 + a*x^3 + b*x^2 + c*x + d = 0` by Dekart-Euler
  * method.
@@ -45,7 +44,7 @@ int BASE_IMPEXP solve_poly3(double* x, double a, double b, double c) noexcept;
   * \note Based on `poly34.h`, by Khashin S.I.
  * http://math.ivanovo.ac.ru/dalgebra/Khashin/index.html - khash2 (at) gmail.com
  */
-int BASE_IMPEXP
+int
 	solve_poly4(double* x, double a, double b, double c, double d) noexcept;
 
 /** Solves equation `x^5 + a*x^4 + b*x^3 + c*x^2 + d*x + e = 0`.
@@ -56,13 +55,13 @@ int BASE_IMPEXP
   * \note Based on `poly34.h`, by Khashin S.I.
  * http://math.ivanovo.ac.ru/dalgebra/Khashin/index.html - khash2 (at) gmail.com
  */
-int BASE_IMPEXP solve_poly5(
+int solve_poly5(
 	double* x, double a, double b, double c, double d, double e) noexcept;
 
 /** Solve equation x^4 + b*x^2 + d = 0 */
-int BASE_IMPEXP solve_poly4Bi(double* x, double b, double d) noexcept;
+int solve_poly4Bi(double* x, double b, double d) noexcept;
 /** Solve equation x^4 + b*x^2 + c*x + d = 0 */
-int BASE_IMPEXP solve_poly4De(double* x, double b, double c, double d) noexcept;
+int solve_poly4De(double* x, double b, double c, double d) noexcept;
 
 /** Solves equation `a*x^2 + b*x + c = 0`.
   * Returns the number of real roots: either 0 or 2; or 1 if a=0 (in this case
@@ -71,7 +70,7 @@ int BASE_IMPEXP solve_poly4De(double* x, double b, double c, double d) noexcept;
   * \note Based on `poly34.h`, by Khashin S.I.
  * http://math.ivanovo.ac.ru/dalgebra/Khashin/index.html - khash2 (at) gmail.com
  */
-int BASE_IMPEXP
+int
 	solve_poly2(double a, double b, double c, double& r1, double& r2) noexcept;
 
 /** @} */

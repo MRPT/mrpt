@@ -28,7 +28,7 @@ namespace opengl
   *
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CSphere : public CRenderizableDisplayList
+class CSphere : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CSphere)
 

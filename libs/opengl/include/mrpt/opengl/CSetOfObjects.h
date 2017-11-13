@@ -27,7 +27,7 @@ namespace opengl
   *  \sa opengl::COpenGLScene
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CSetOfObjects : public CRenderizable
+class CSetOfObjects : public CRenderizable
 {
 	DEFINE_SERIALIZABLE(CSetOfObjects)
 

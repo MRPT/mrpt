@@ -17,7 +17,6 @@
 #include <mrpt/graphs/ScalarFactorGraph.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
-#include <mrpt/maps/link_pragmas.h>
 
 // Fwdr decl:
 class vtkStructuredGrid;
@@ -35,7 +34,7 @@ namespace maps
 // to depend on compiler options, etc.
 #pragma pack(push, 1)
 #endif
-struct MAPS_IMPEXP TRandomFieldVoxel
+struct TRandomFieldVoxel
 {
 	/** Mean and sigma (standard deviation) estimated values for the voxel. */
 	double mean_value, stddev_value;
@@ -127,7 +126,7 @@ class CRandomFieldGridMap3D
 	  *  Derived classes instantions of their "TInsertionOptions" MUST set the
 	 * pointer "m_insertOptions_common" upon construction.
 	  */
-	struct MAPS_IMPEXP TInsertionOptions : public mrpt::utils::CLoadableOptions
+	struct TInsertionOptions : public mrpt::utils::CLoadableOptions
 	{
 		/** Default values loader */
 		TInsertionOptions();
@@ -173,7 +172,7 @@ class CRandomFieldGridMap3D
 	/** Base class for user-supplied objects capable of describing voxels
 	 * connectivity, used to build prior factors of the MRF graph. \sa
 	 * setvoxelsConnectivity() */
-	struct MAPS_IMPEXP ConnectivityDescriptor
+	struct ConnectivityDescriptor
 	{
 		using Ptr = std::shared_ptr<ConnectivityDescriptor>;
 		// Virtual destructor for polymorphic type.

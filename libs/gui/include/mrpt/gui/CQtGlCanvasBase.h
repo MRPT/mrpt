@@ -9,7 +9,6 @@
 
 #pragma once
 #include <mrpt/gui/CGlCanvasBase.h>
-#include <mrpt/gui/link_pragmas.h>
 
 #include <mrpt/config.h>
 #if MRPT_HAS_Qt5
@@ -26,7 +25,7 @@ namespace mrpt
 {
 namespace gui
 {
-class GUI_IMPEXP CQtGlCanvasBase : public QOpenGLWidget,
+class CQtGlCanvasBase : public QOpenGLWidget,
 								   public mrpt::gui::CGlCanvasBase
 {
    public:

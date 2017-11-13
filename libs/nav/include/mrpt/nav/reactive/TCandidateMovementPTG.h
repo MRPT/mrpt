@@ -9,7 +9,6 @@
 #pragma once
 
 #include <mrpt/utils/TParameters.h>
-#include <mrpt/nav/link_pragmas.h>
 
 namespace mrpt
 {
@@ -21,7 +20,7 @@ class CParameterizedTrajectoryGenerator;
 *\sa CReactiveNavigationSystem, CReactiveNavigationSystem3D
 *  \ingroup nav_reactive
 */
-struct NAV_IMPEXP TCandidateMovementPTG
+struct TCandidateMovementPTG
 {
 	/** The associated PTG. nullptr if not applicable / undefined. */
 	CParameterizedTrajectoryGenerator* PTG;

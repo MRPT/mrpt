@@ -26,7 +26,7 @@ struct TEnumType;
 class CConfigFilePrefixer;
 
 /** Default padding sizes for macros MRPT_SAVE_CONFIG_VAR_COMMENT(), etc. */
-extern int BASE_IMPEXP MRPT_SAVE_NAME_PADDING, MRPT_SAVE_VALUE_PADDING;
+extern int MRPT_SAVE_NAME_PADDING, MRPT_SAVE_VALUE_PADDING;
 
 /** This class allows loading and storing values and vectors of different types
  * from a configuration text, which can be implemented as a ".ini" file, a
@@ -37,7 +37,7 @@ extern int BASE_IMPEXP MRPT_SAVE_NAME_PADDING, MRPT_SAVE_VALUE_PADDING;
   * See: \ref config_file_format
   * \ingroup mrpt_base_grp
   */
-class BASE_IMPEXP CConfigFileBase
+class CConfigFileBase
 {
 	friend class CConfigFilePrefixer;
 

@@ -24,7 +24,6 @@
 #include <mrpt/obs/obs_frwds.h>
 #include <mrpt/utils/TEnumType.h>
 
-#include <mrpt/maps/link_pragmas.h>
 
 #include <mrpt/config.h>
 #if (                                                \
@@ -63,7 +62,7 @@ namespace maps
  *
  * \ingroup mrpt_maps_grp
  **/
-class MAPS_IMPEXP COccupancyGridMap2D : public CMetricMap,
+class COccupancyGridMap2D : public CMetricMap,
 // Inherit from the corresponding specialization of CLogOddsGridMap2D<>:
 #ifdef OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS
 										public CLogOddsGridMap2D<int8_t>
@@ -228,7 +227,7 @@ class MAPS_IMPEXP COccupancyGridMap2D : public CMetricMap,
 
 	/** An internal structure for storing data related to counting the new
 	 * information apported by some observation */
-	struct MAPS_IMPEXP TUpdateCellsInfoChangeOnly
+	struct TUpdateCellsInfoChangeOnly
 	{
 		TUpdateCellsInfoChangeOnly(
 			bool enabled = false, double I_change = 0, int cellsUpdated = 0)
@@ -458,7 +457,7 @@ class MAPS_IMPEXP COccupancyGridMap2D : public CMetricMap,
 	void copyMapContentFrom(const COccupancyGridMap2D& otherMap);
 
 	/** Used for returning entropy related information \sa computeEntropy */
-	struct MAPS_IMPEXP TEntropyInfo
+	struct TEntropyInfo
 	{
 		TEntropyInfo()
 			: H(0),
@@ -492,7 +491,7 @@ class MAPS_IMPEXP COccupancyGridMap2D : public CMetricMap,
 	/** With this struct options are provided to the observation insertion
 	* process.
 	* \sa CObservation::insertIntoGridMap */
-	class MAPS_IMPEXP TInsertionOptions : public mrpt::utils::CLoadableOptions
+	class TInsertionOptions : public mrpt::utils::CLoadableOptions
 	{
 	   public:
 		/** Initilization of default parameters
@@ -569,7 +568,7 @@ class MAPS_IMPEXP COccupancyGridMap2D : public CMetricMap,
 
 	/** With this struct options are provided to the observation likelihood
 	 * computation process */
-	class MAPS_IMPEXP TLikelihoodOptions : public mrpt::utils::CLoadableOptions
+	class TLikelihoodOptions : public mrpt::utils::CLoadableOptions
 	{
 	   public:
 		/** Initilization of default parameters */
@@ -861,7 +860,7 @@ class MAPS_IMPEXP COccupancyGridMap2D : public CMetricMap,
 	};
 
 	/** Input params for laserScanSimulatorWithUncertainty() */
-	struct MAPS_IMPEXP TLaserSimulUncertaintyParams
+	struct TLaserSimulUncertaintyParams
 	{
 		/** (Default: sumMonteCarlo) Select the method to do the uncertainty
 		 * propagation */
@@ -913,7 +912,7 @@ class MAPS_IMPEXP COccupancyGridMap2D : public CMetricMap,
 	};
 
 	/** Output params for laserScanSimulatorWithUncertainty() */
-	struct MAPS_IMPEXP TLaserSimulUncertaintyResult
+	struct TLaserSimulUncertaintyResult
 	{
 		/** The scan + its uncertainty */
 		mrpt::obs::CObservation2DRangeScanWithUncertainty scanWithUncert;
@@ -1119,7 +1118,7 @@ class MAPS_IMPEXP COccupancyGridMap2D : public CMetricMap,
 	 *    critical points.
 	 * \sa findCriticalPoints
 	 */
-	struct MAPS_IMPEXP TCriticalPointsList
+	struct TCriticalPointsList
 	{
 		TCriticalPointsList()
 			: x(),

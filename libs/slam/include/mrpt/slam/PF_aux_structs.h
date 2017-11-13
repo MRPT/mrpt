@@ -14,7 +14,6 @@
 #include <iostream>
 #include <iterator>
 
-#include <mrpt/slam/link_pragmas.h>
 
 namespace mrpt
 {
@@ -28,14 +27,14 @@ using namespace std;
 
 /** Auxiliary structure used in KLD-sampling in particle filters \sa
  * CPosePDFParticles, CMultiMetricMapPDF */
-struct SLAM_IMPEXP TPoseBin2D
+struct TPoseBin2D
 {
 	TPoseBin2D() : x(0), y(0), phi(0) {}
 	/** Bin indices */
 	int x, y, phi;
 
 	/** less-than ordering of bins for usage in STL containers */
-	struct SLAM_IMPEXP lt_operator
+	struct lt_operator
 	{
 		inline bool operator()(const TPoseBin2D& s1, const TPoseBin2D& s2) const
 		{
@@ -49,12 +48,12 @@ struct SLAM_IMPEXP TPoseBin2D
 };
 
 /** Auxiliary structure   */
-struct SLAM_IMPEXP TPathBin2D
+struct TPathBin2D
 {
 	std::vector<TPoseBin2D> bins;
 
 	/** less-than ordering of bins for usage in STL containers */
-	struct SLAM_IMPEXP lt_operator
+	struct lt_operator
 	{
 		bool operator()(const TPathBin2D& s1, const TPathBin2D& s2) const
 		{
@@ -76,14 +75,14 @@ struct SLAM_IMPEXP TPathBin2D
 
 /** Auxiliary structure used in KLD-sampling in particle filters \sa
  * CPosePDFParticles, CMultiMetricMapPDF */
-struct SLAM_IMPEXP TPoseBin3D
+struct TPoseBin3D
 {
 	TPoseBin3D() : x(0), y(0), z(0), yaw(0), pitch(0), roll(0) {}
 	/** Bin indices */
 	int x, y, z, yaw, pitch, roll;
 
 	/** less-than ordering of bins for usage in STL containers */
-	struct SLAM_IMPEXP lt_operator
+	struct lt_operator
 	{
 		bool operator()(const TPoseBin3D& s1, const TPoseBin3D& s2) const
 		{

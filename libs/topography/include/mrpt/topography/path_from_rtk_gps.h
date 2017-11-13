@@ -14,7 +14,6 @@
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/obs/CRawlog.h>
 
-#include <mrpt/topography/link_pragmas.h>
 
 namespace mrpt
 {
@@ -25,7 +24,7 @@ namespace topography
 
 /** Used to return optional information from mrpt::topography::path_from_rtk_gps
  */
-struct TOPO_IMPEXP TPathFromRTKInfo
+struct TPathFromRTKInfo
 {
 	/** the path of the "best" GPS. */
 	std::map<mrpt::system::TTimeStamp, mrpt::math::TPoint3D> best_gps_path;

@@ -13,7 +13,6 @@
 #include <mrpt/utils/COutputLogger.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/utils/CConfigFileBase.h>
-#include <mrpt/hwdrivers/link_pragmas.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
@@ -41,7 +40,7 @@ namespace hwdrivers
   * \sa comms::CSerialPort
   * \ingroup mrpt_hwdrivers_grp
   */
-class HWDRIVERS_IMPEXP C2DRangeFinderAbstract
+class C2DRangeFinderAbstract
 	: public mrpt::utils::COutputLogger,
 	  public mrpt::hwdrivers::CGenericSensor
 {

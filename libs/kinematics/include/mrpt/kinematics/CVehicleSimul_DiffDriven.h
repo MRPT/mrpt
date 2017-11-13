@@ -20,7 +20,7 @@ namespace kinematics
  *
  * \ingroup mrpt_kinematics_grp
  */
-class KINEMATICS_IMPEXP CVehicleSimul_DiffDriven
+class CVehicleSimul_DiffDriven
 	: public CVehicleSimulVirtualBase
 {
    public:

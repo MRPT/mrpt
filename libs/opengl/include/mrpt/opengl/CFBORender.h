@@ -27,7 +27,7 @@ namespace opengl
   *  \sa Example "fbo_render_test"
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CFBORender : public mrpt::opengl::CTextMessageCapable
+class CFBORender : public mrpt::opengl::CTextMessageCapable
 {
    public:
 	/** Constructor.

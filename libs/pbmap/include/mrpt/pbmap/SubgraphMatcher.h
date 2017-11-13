@@ -20,7 +20,6 @@
 #if MRPT_HAS_PCL
 
 #include <mrpt/utils/utils_defs.h>
-#include <mrpt/pbmap/link_pragmas.h>
 
 #include <mrpt/pbmap/heuristicParams.h>
 #include <mrpt/pbmap/PbMap.h>

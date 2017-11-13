@@ -25,7 +25,7 @@ namespace nav
  *    CHolonomicVFF navigation.
  * \sa CHolonomicVFF, CHolonomicLogFileRecord
  */
-class NAV_IMPEXP CLogFileRecord_VFF : public CHolonomicLogFileRecord
+class CLogFileRecord_VFF : public CHolonomicLogFileRecord
 {
 	DEFINE_SERIALIZABLE(CLogFileRecord_VFF)
    public:
@@ -49,7 +49,7 @@ DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
  *
  *  \sa CAbstractHolonomicReactiveMethod,CReactiveNavigationSystem
  */
-class NAV_IMPEXP CHolonomicVFF : public CAbstractHolonomicReactiveMethod
+class CHolonomicVFF : public CAbstractHolonomicReactiveMethod
 {
 	DEFINE_SERIALIZABLE(CHolonomicVFF)
    public:
@@ -66,7 +66,7 @@ class NAV_IMPEXP CHolonomicVFF : public CAbstractHolonomicReactiveMethod
 		mrpt::utils::CConfigFileBase& c) const override;  // See base class docs
 
 	/** Algorithm options */
-	struct NAV_IMPEXP TOptions : public mrpt::utils::CLoadableOptions
+	struct TOptions : public mrpt::utils::CLoadableOptions
 	{
 		/** For stopping gradually (Default: 0.10) */
 		double TARGET_SLOW_APPROACHING_DISTANCE;

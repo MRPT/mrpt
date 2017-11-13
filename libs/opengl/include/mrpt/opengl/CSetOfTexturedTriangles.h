@@ -26,7 +26,7 @@ namespace opengl
   *  \sa opengl::COpenGLScene
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CSetOfTexturedTriangles : public CTexturedObject
+class CSetOfTexturedTriangles : public CTexturedObject
 {
 	DEFINE_SERIALIZABLE(CSetOfTexturedTriangles)
 
@@ -34,7 +34,7 @@ class OPENGL_IMPEXP CSetOfTexturedTriangles : public CTexturedObject
 	/** Triangle vertex. This structure encapsulates the vertex coordinates and
 	 * the image pixels.
 	  */
-	struct OPENGL_IMPEXP TVertex
+	struct TVertex
 	{
 		/** Default constructor			 */
 		TVertex();
@@ -50,7 +50,7 @@ class OPENGL_IMPEXP CSetOfTexturedTriangles : public CTexturedObject
 
 	/** Triangle. This structure encapsulates the triangle vertices.
 	  */
-	struct OPENGL_IMPEXP TTriangle
+	struct TTriangle
 	{
 		/** Default constructor */
 		TTriangle();

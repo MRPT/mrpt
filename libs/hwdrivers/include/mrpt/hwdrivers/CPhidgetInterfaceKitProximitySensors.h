@@ -101,7 +101,7 @@ enum SensorType
 	UNPLUGGED
 };
 
-class HWDRIVERS_IMPEXP CPhidgetInterfaceKitProximitySensors
+class CPhidgetInterfaceKitProximitySensors
 	: public mrpt::utils::COutputLogger,
 	  public CGenericSensor
 {

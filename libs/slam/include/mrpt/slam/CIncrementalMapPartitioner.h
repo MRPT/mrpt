@@ -18,7 +18,6 @@
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/poses/poses_frwds.h>
 
-#include <mrpt/slam/link_pragmas.h>
 
 namespace mrpt
 {
@@ -28,7 +27,7 @@ namespace slam
   *   observations taken at some poses/nodes.
   * \ingroup mrpt_slam_grp
   */
-class SLAM_IMPEXP CIncrementalMapPartitioner
+class CIncrementalMapPartitioner
 	: public mrpt::utils::COutputLogger,
 	  public mrpt::utils::CSerializable
 {
@@ -47,7 +46,7 @@ class SLAM_IMPEXP CIncrementalMapPartitioner
 
 	/** Configuration of the algorithm:
 	  */
-	struct SLAM_IMPEXP TOptions : public utils::CLoadableOptions
+	struct TOptions : public utils::CLoadableOptions
 	{
 		/*\brief  Sets default values at object creation
 		  */

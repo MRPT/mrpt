@@ -18,7 +18,6 @@
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/obs/CActionCollection.h>
 
-#include <mrpt/slam/link_pragmas.h>
 #include <mutex>
 
 namespace mrpt
@@ -33,7 +32,7 @@ namespace slam
  *
  * \sa CMetricMap  \ingroup metric_slam_grp
  */
-class SLAM_IMPEXP CMetricMapBuilder : public mrpt::utils::COutputLogger
+class CMetricMapBuilder : public mrpt::utils::COutputLogger
 {
    protected:
 	/** Critical zones */
@@ -113,7 +112,7 @@ class SLAM_IMPEXP CMetricMapBuilder : public mrpt::utils::COutputLogger
 		const std::string& fileName, bool compressGZ = true) const;
 
 	/** Options for the algorithm */
-	struct SLAM_IMPEXP TOptions
+	struct TOptions
 	{
 		TOptions(mrpt::utils::VerbosityLevel& verb_level_ref)
 			: verbosity_level(verb_level_ref),

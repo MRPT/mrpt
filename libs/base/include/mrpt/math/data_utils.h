@@ -520,14 +520,14 @@ void weightedHistogramLog(
  * page</a>.
   * \ingroup stats_grp
   */
-double BASE_IMPEXP averageLogLikelihood(const CVectorDouble& logLikelihoods);
+double averageLogLikelihood(const CVectorDouble& logLikelihoods);
 
 /** Computes the average of a sequence of angles in radians taking into account
  * the correct wrapping in the range \f$ ]-\pi,\pi [ \f$, for example, the mean
  * of (2,-2) is \f$ \pi \f$, not 0.
   * \ingroup stats_grp
   */
-double BASE_IMPEXP averageWrap2Pi(const CVectorDouble& angles);
+double averageWrap2Pi(const CVectorDouble& angles);
 
 /** A numerically-stable method to average likelihood values with strongly
  * different ranges (weighted likelihoods).
@@ -541,7 +541,7 @@ double BASE_IMPEXP averageWrap2Pi(const CVectorDouble& angles);
  * page</a>.
   * \ingroup stats_grp
   */
-double BASE_IMPEXP averageLogLikelihood(
+double averageLogLikelihood(
 	const CVectorDouble& logWeights, const CVectorDouble& logLikelihoods);
 
 /**  @} */  // end of grouping container_ops_grp

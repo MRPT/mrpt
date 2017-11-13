@@ -115,7 +115,7 @@ enum TConstructorFlags_CImage
  *mrpt::vision::CImagePyramid, CSerializable, CCanvas
  * \ingroup mrpt_base_grp
  */
-class BASE_IMPEXP CImage : public mrpt::utils::CSerializable, public CCanvas
+class CImage : public mrpt::utils::CSerializable, public CCanvas
 {
 	DEFINE_SERIALIZABLE(CImage)
 

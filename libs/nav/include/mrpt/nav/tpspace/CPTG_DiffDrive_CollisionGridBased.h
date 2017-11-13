@@ -22,7 +22,7 @@ namespace nav
 
 /** Trajectory points in C-Space for non-holonomic robots \sa
  * CPTG_DiffDrive_CollisionGridBased */
-struct NAV_IMPEXP TCPoint
+struct TCPoint
 {
 	TCPoint() {}
 	TCPoint(
@@ -49,7 +49,7 @@ mrpt::utils::CStream NAV_IMPEXP& operator>>(
  * shape must be set before initializing with setRobotShape().
   * The rest of PTG parameters should have been set at the constructor.
   */
-class NAV_IMPEXP CPTG_DiffDrive_CollisionGridBased
+class CPTG_DiffDrive_CollisionGridBased
 	: public CPTG_RobotShape_Polygonal
 {
    public:
@@ -165,7 +165,7 @@ class NAV_IMPEXP CPTG_DiffDrive_CollisionGridBased
 	typedef std::vector<std::pair<uint16_t, float>> TCollisionCell;
 
 	/** An internal class for storing the collision grid  */
-	class NAV_IMPEXP CCollisionGrid
+	class CCollisionGrid
 		: public mrpt::utils::CDynamicGrid<TCollisionCell>
 	{
 	   private:
