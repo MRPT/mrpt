@@ -66,6 +66,9 @@ macro(DeclareAppDependencies name)
 		mark_as_advanced(CLEAR BUILD_APP_${name})
 	endif (NOT AUX_ALL_DEPS_BUILD)
 
+	# We need pthread's on unices
+	target_link_libraries(${name} Threads::Threads)
+
 endmacro(DeclareAppDependencies)
 
 # Macro for adding links to the Start menu folder (for binary packages in Windows)

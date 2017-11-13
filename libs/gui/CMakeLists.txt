@@ -55,21 +55,21 @@ IF(BUILD_mrpt-gui)
 	ENDIF()
 
 	IF(CMAKE_MRPT_HAS_WXWIDGETS)
-		target_link_libraries(mrpt-gui ${wxWidgets_LIBRARIES})
+		target_link_libraries(mrpt-gui PRIVATE ${wxWidgets_LIBRARIES})
 	ENDIF()
 
 	IF(CMAKE_MRPT_HAS_Qt5)
-		qt5_use_modules(mrpt-gui Widgets OpenGL)
-		target_link_libraries(mrpt-gui Qt5::Widgets Qt5::OpenGL)
+		#qt5_use_modules(mrpt-gui Widgets OpenGL) # deprecated!
+		target_link_libraries(mrpt-gui PRIVATE Qt5::Widgets Qt5::OpenGL)
 	ENDIF()
 
 	IF(CMAKE_MRPT_HAS_OPENCV)
-		target_link_libraries(mrpt-gui ${OpenCV_LIBRARIES})
+		target_link_libraries(mrpt-gui PRIVATE ${OpenCV_LIBRARIES})
 	ENDIF()
 
 	IF(CMAKE_MRPT_HAS_OPENGL_GLUT)
 		# Link against gl:
-		TARGET_LINK_LIBRARIES(mrpt-gui ${MRPT_OPENGL_LIBS})
+		TARGET_LINK_LIBRARIES(mrpt-gui PRIVATE ${MRPT_OPENGL_LIBS})
 	ENDIF()
 
 ENDIF()

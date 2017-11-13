@@ -17,6 +17,8 @@
 #include <sstream>
 #include <iostream>
 #include <stdexcept>
+#include <mrpt/config.h>
+#include <mrpt/utils/compiler_fixes.h>  // Disable MSVC warning 4251 in this class
 
 namespace mrpt
 {

@@ -64,14 +64,10 @@ if (MSVC AND MSVC_VERSION GREATER 1800) # VS>= 2013
 	LIST(APPEND base_EXTRA_SRCS_NAME 	"MSVC debug natvis")
 endif()
 
-# We need pthread's
-if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
-	IF (UNIX OR APPLE)
-		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread")
-	ENDIF()
+# We need pthread's in C files:
+if ((${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX) AND NOT WIN32)
+	add_compile_options(-pthread)
 endif()
-
 
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":
@@ -82,10 +78,15 @@ define_mrpt_lib(
 	)
 
 IF(BUILD_mrpt-base)
+	# We need pthread's on unices
+	target_link_libraries(mrpt-base
+		PRIVATE
+		Threads::Threads)
+
 	IF(WIN32)
-		target_link_libraries(mrpt-base Dbghelp) # For mrpt::system::getCallStackBackTrace()
+		target_link_libraries(mrpt-base PRIVATE Dbghelp) # For mrpt::system::getCallStackBackTrace()
 	ELSE()
-		target_link_libraries(mrpt-base ${CMAKE_DL_LIBS}) # For mrpt::system::getCallStackBackTrace()
+		target_link_libraries(mrpt-base PRIVATE ${CMAKE_DL_LIBS}) # For mrpt::system::getCallStackBackTrace()
 	ENDIF()
 
 	# Ignore precompiled headers in some sources:
@@ -105,24 +106,24 @@ IF(BUILD_mrpt-base)
 	ENDIF()
 
 	IF(CMAKE_MRPT_HAS_OPENCV)
-		target_link_libraries(mrpt-base ${OpenCV_LIBRARIES})
+		target_link_libraries(mrpt-base PRIVATE ${OpenCV_LIBRARIES})
 	ENDIF()
 
 	if (NOT "${SuiteSparse_LIBRARIES}" STREQUAL "")
-		target_link_libraries(mrpt-base ${SuiteSparse_LIBRARIES})
+		target_link_libraries(mrpt-base PRIVATE ${SuiteSparse_LIBRARIES})
 	endif ()
 
 	IF(CMAKE_MRPT_HAS_WXWIDGETS)
-		target_link_libraries(mrpt-base ${wxWidgets_LIBRARIES})
+		target_link_libraries(mrpt-base PRIVATE ${wxWidgets_LIBRARIES})
 	ENDIF()
 
 	IF(CMAKE_MRPT_HAS_ZLIB)
 		IF(NOT CMAKE_MRPT_HAS_ZLIB_SYSTEM_IS_WX AND CMAKE_MRPT_HAS_ZLIB_SYSTEM)
-			target_link_libraries(mrpt-base ${MRPT_ZLIB_LIBS})
+			target_link_libraries(mrpt-base PRIVATE ${MRPT_ZLIB_LIBS})
 		ENDIF()
 	ENDIF()
 
 	IF(CMAKE_MRPT_HAS_JPEG)
-		target_link_libraries(mrpt-base ${JPEG_LIBS})
+		target_link_libraries(mrpt-base PRIVATE ${JPEG_LIBS})
 	ENDIF()
 ENDIF()
