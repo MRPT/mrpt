@@ -60,10 +60,9 @@ struct THeightGridmapCell
   *
   * \ingroup mrpt_maps_grp
   */
-class CHeightGridMap2D
-	: public mrpt::maps::CMetricMap,
-	  public utils::CDynamicGrid<THeightGridmapCell>,
-	  public CHeightGridMap2D_Base
+class CHeightGridMap2D : public mrpt::maps::CMetricMap,
+						 public utils::CDynamicGrid<THeightGridmapCell>,
+						 public CHeightGridMap2D_Base
 {
 	DEFINE_SERIALIZABLE(CHeightGridMap2D)
    public:
@@ -163,17 +162,15 @@ class CHeightGridMap2D
 		const mrpt::obs::CObservation* obs,
 		const mrpt::poses::CPose3D& takenFrom) override;
 
-	MAP_DEFINITION_START(CHeightGridMap2D, MAPS_IMPEXP)
+	MAP_DEFINITION_START(CHeightGridMap2D)
 	/** See CHeightGridMap2D::CHeightGridMap2D */
 	double min_x, max_x, min_y, max_y, resolution;
 	/** The kind of map representation (see CHeightGridMap2D::CHeightGridMap2D)
 	 */
 	mrpt::maps::CHeightGridMap2D::TMapRepresentation mapType;
 	mrpt::maps::CHeightGridMap2D::TInsertionOptions insertionOpts;
-	MAP_DEFINITION_END(CHeightGridMap2D, MAPS_IMPEXP)
+	MAP_DEFINITION_END(CHeightGridMap2D, )
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CHeightGridMap2D, CMetricMap, MAPS_IMPEXP)
 
 }  // End of namespace
 
@@ -184,7 +181,7 @@ namespace global_settings
   * Affects to:
   *		- CHeightGridMap2D::getAs3DObject
   */
-extern MAPS_IMPEXP bool HEIGHTGRIDMAP_EXPORT3D_AS_MESH;
+extern bool HEIGHTGRIDMAP_EXPORT3D_AS_MESH;
 }
 
 // Specializations MUST occur at the same namespace:

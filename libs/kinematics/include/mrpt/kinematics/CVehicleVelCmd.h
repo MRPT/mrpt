@@ -90,8 +90,6 @@ class CVehicleVelCmd : public mrpt::utils::CSerializable
 		const mrpt::kinematics::CVehicleVelCmd& prev_vel_cmd, const double beta,
 		const TVelCmdParams& params) = 0;
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CVehicleVelCmd, mrpt::utils::CSerializable, KINEMATICS_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

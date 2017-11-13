@@ -116,7 +116,7 @@ void COccupancyGridMap2D::simulateScanRay(
 	const double A_ =
 		angle_direction +
 		(angleNoiseStd > .0
-			 ? randomGenerator.drawGaussian1D_normalized() * angleNoiseStd
+			 ? getRandomGenerator().drawGaussian1D_normalized() * angleNoiseStd
 			 : .0);
 
 // Unit vector in the directorion of the ray:
@@ -177,7 +177,7 @@ void COccupancyGridMap2D::simulateScanRay(
 		out_valid = (ray_len < max_ray_len);  // out_range<max_range_meters;
 		// Add additive Gaussian noise:
 		if (noiseStd > 0 && out_valid)
-			out_range += noiseStd * randomGenerator.drawGaussian1D_normalized();
+			out_range += noiseStd * getRandomGenerator().drawGaussian1D_normalized();
 	}
 }
 

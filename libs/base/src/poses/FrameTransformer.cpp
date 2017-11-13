@@ -11,7 +11,6 @@
 
 #include <mrpt/poses/FrameTransformer.h>  // for FrameTransformer, FrameTran...
 #include <string>  // for string
-#include <mrpt/base/link_pragmas.h>  // for
 #include <mrpt/system/datetime.h>  // for TTimeStamp, INVALID_TIMESTAMP
 #include <mrpt/utils/mrpt_macros.h>  // for ASSERTMSG_
 

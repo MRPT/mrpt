@@ -18,7 +18,6 @@
 #include <mrpt/gui/keycodes.h>
 #include <mrpt/gui/gui_frwds.h>
 
-
 #include <mutex>
 #include <future>
 

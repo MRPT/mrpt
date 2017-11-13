@@ -87,7 +87,7 @@ void Message_NV_OEM6_GENERIC_SHORT_FRAME::internal_readFromStream(
 }
 
 // ------------
-const std::string OBS_IMPEXP& nv_oem6_solution_status::enum2str(int val)
+const std::string& nv_oem6_solution_status::enum2str(int val)
 {
 	static bool init_map = false;
 	static std::map<int, std::string> val2str;
@@ -121,7 +121,7 @@ const std::string OBS_IMPEXP& nv_oem6_solution_status::enum2str(int val)
 	return (it == val2str.end()) ? nullstr : it->second;
 }
 
-const std::string OBS_IMPEXP& nv_oem6_position_type::enum2str(int val)
+const std::string& nv_oem6_position_type::enum2str(int val)
 {
 	static bool init_map = false;
 	static std::map<int, std::string> val2str;
@@ -164,7 +164,7 @@ const std::string OBS_IMPEXP& nv_oem6_position_type::enum2str(int val)
 	return (it == val2str.end()) ? nullstr : it->second;
 }
 
-const std::string OBS_IMPEXP& nv_oem6_ins_status_type::enum2str(int val)
+const std::string& nv_oem6_ins_status_type::enum2str(int val)
 {
 	static bool init_map = false;
 	static std::map<int, std::string> val2str;

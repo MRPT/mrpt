@@ -430,7 +430,7 @@ class CStream
 
 // Note: write op accepts parameters by value on purpose, to avoid misaligned
 // reference binding errors.
-#define DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE(T)                          \
+#define DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE(T)              \
 	CStream& operator<<(mrpt::utils::CStream& out, const T a); \
 	CStream& operator>>(mrpt::utils::CStream& in, T& a);
 
@@ -466,26 +466,21 @@ DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE(long double)
 
 // Write --------------------
 CStream& operator<<(mrpt::utils::CStream& s, const char* a);
-CStream& operator<<(
-	mrpt::utils::CStream& s, const std::string& str);
+CStream& operator<<(mrpt::utils::CStream& s, const std::string& str);
 
 CStream& operator<<(mrpt::utils::CStream&, const vector_int& a);
 CStream& operator<<(mrpt::utils::CStream&, const vector_uint& a);
 CStream& operator<<(mrpt::utils::CStream&, const vector_word& a);
-CStream& operator<<(
-	mrpt::utils::CStream&, const vector_signed_word& a);
+CStream& operator<<(mrpt::utils::CStream&, const vector_signed_word& a);
 CStream& operator<<(mrpt::utils::CStream&, const vector_long& a);
 CStream& operator<<(mrpt::utils::CStream&, const vector_byte& a);
-CStream& operator<<(
-	mrpt::utils::CStream&, const vector_signed_byte& a);
+CStream& operator<<(mrpt::utils::CStream&, const vector_signed_byte& a);
 
 CStream& operator<<(mrpt::utils::CStream&, const vector_bool& a);
-CStream& operator<<(
-	mrpt::utils::CStream&, const std::vector<std::string>&);
+CStream& operator<<(mrpt::utils::CStream&, const std::vector<std::string>&);
 
 #if MRPT_WORD_SIZE != 32  // If it's 32 bit, size_t <=> uint32_t
-CStream& operator<<(
-	mrpt::utils::CStream&, const std::vector<size_t>& a);
+CStream& operator<<(mrpt::utils::CStream&, const std::vector<size_t>& a);
 #endif
 
 // Read --------------------
@@ -495,30 +490,23 @@ CStream& operator>>(mrpt::utils::CStream& in, std::string& str);
 CStream& operator>>(mrpt::utils::CStream& in, vector_int& a);
 CStream& operator>>(mrpt::utils::CStream& in, vector_uint& a);
 CStream& operator>>(mrpt::utils::CStream& in, vector_word& a);
-CStream& operator>>(
-	mrpt::utils::CStream& in, vector_signed_word& a);
+CStream& operator>>(mrpt::utils::CStream& in, vector_signed_word& a);
 CStream& operator>>(mrpt::utils::CStream& in, vector_long& a);
 CStream& operator>>(mrpt::utils::CStream& in, vector_byte& a);
-CStream& operator>>(
-	mrpt::utils::CStream& in, vector_signed_byte& a);
+CStream& operator>>(mrpt::utils::CStream& in, vector_signed_byte& a);
 CStream& operator>>(mrpt::utils::CStream& in, vector_bool& a);
 
-CStream& operator>>(
-	mrpt::utils::CStream& in, std::vector<std::string>& a);
+CStream& operator>>(mrpt::utils::CStream& in, std::vector<std::string>& a);
 
 // For backward compatibility, since in MRPT<0.8.1 vector_XXX and
 // std::vector<XXX> were exactly equivalent, now there're not.
 CStream& operator>>(mrpt::utils::CStream& s, std::vector<float>& a);
-CStream& operator>>(
-	mrpt::utils::CStream& s, std::vector<double>& a);
-CStream& operator<<(
-	mrpt::utils::CStream& s, const std::vector<float>& a);
-CStream& operator<<(
-	mrpt::utils::CStream& s, const std::vector<double>& a);
+CStream& operator>>(mrpt::utils::CStream& s, std::vector<double>& a);
+CStream& operator<<(mrpt::utils::CStream& s, const std::vector<float>& a);
+CStream& operator<<(mrpt::utils::CStream& s, const std::vector<double>& a);
 
 #if MRPT_WORD_SIZE != 32  // If it's 32 bit, size_t <=> uint32_t
-CStream& operator>>(
-	mrpt::utils::CStream& s, std::vector<size_t>& a);
+CStream& operator>>(mrpt::utils::CStream& s, std::vector<size_t>& a);
 #endif
 //
 template <typename T, std::enable_if_t<std::is_base_of<

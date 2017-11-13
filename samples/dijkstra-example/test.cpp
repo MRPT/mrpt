@@ -59,7 +59,7 @@ void TestDijkstra()
 	CNetworkOfPoses2D::global_poses_t optimal_poses, optimal_poses_dijkstra;
 	aligned_containers<TNodeID, CPose2D>::map_t real_poses;
 
-	randomGenerator.randomize(10);
+	getRandomGenerator().randomize(10);
 
 	// ----------------------------
 	// Create a random graph:
@@ -73,9 +73,9 @@ void TestDijkstra()
 	for (size_t j = 0; j < N_VERTEX; j++)
 	{
 		CPose2D p(
-			randomGenerator.drawUniform(-NODES_XY_MAX, NODES_XY_MAX),
-			randomGenerator.drawUniform(-NODES_XY_MAX, NODES_XY_MAX),
-			randomGenerator.drawUniform(-M_PI, M_PI));
+			getRandomGenerator().drawUniform(-NODES_XY_MAX, NODES_XY_MAX),
+			getRandomGenerator().drawUniform(-NODES_XY_MAX, NODES_XY_MAX),
+			getRandomGenerator().drawUniform(-M_PI, M_PI));
 		real_poses[j] = p;
 
 		// for the figure:

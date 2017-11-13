@@ -161,22 +161,20 @@ class CPose3DQuatPDFGaussian : public CPose3DQuatPDF
 	double mahalanobisDistanceTo(const CPose3DQuatPDFGaussian& theOther);
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(CPose3DQuatPDFGaussian, CPose3DQuatPDF)
 
 bool operator==(
 	const CPose3DQuatPDFGaussian& p1, const CPose3DQuatPDFGaussian& p2);
 /** Pose composition for two 3D pose Gaussians  \sa
  * CPose3DQuatPDFGaussian::operator += */
-CPose3DQuatPDFGaussian
-	operator+(const CPose3DQuatPDFGaussian& x, const CPose3DQuatPDFGaussian& u);
+CPose3DQuatPDFGaussian operator+(
+	const CPose3DQuatPDFGaussian& x, const CPose3DQuatPDFGaussian& u);
 /** Inverse pose composition for two 3D pose Gaussians  \sa
  * CPose3DQuatPDFGaussian::operator -= */
-CPose3DQuatPDFGaussian
-	operator-(const CPose3DQuatPDFGaussian& x, const CPose3DQuatPDFGaussian& u);
+CPose3DQuatPDFGaussian operator-(
+	const CPose3DQuatPDFGaussian& x, const CPose3DQuatPDFGaussian& u);
 
 /** Dumps the mean and covariance matrix to a text stream. */
-std::ostream& operator<<(
-	std::ostream& out, const CPose3DQuatPDFGaussian& obj);
+std::ostream& operator<<(std::ostream& out, const CPose3DQuatPDFGaussian& obj);
 
 }  // End of namespace
 

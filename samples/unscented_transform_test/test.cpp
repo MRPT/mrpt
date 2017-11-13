@@ -214,7 +214,7 @@ void TestCalibrate_pose2quat()
 	// o.mean = CPose3D(1.0,2.0,3.0, DEG2RAD(00),DEG2RAD(90),DEG2RAD(0));
 
 	CMatrixFixedNumeric<double, 7, 1> v;
-	mrpt::random::randomGenerator.drawGaussian1DMatrix(v);
+	mrpt::random::getRandomGenerator().drawGaussian1DMatrix(v);
 	v *= 1e-3;
 	o.cov.multiply_AAt(v);  // COV = v*vt
 	for (int i = 0; i < 7; i++) o.cov(i, i) += 0.01;

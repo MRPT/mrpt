@@ -269,8 +269,6 @@ class COpenGLScene : public mrpt::utils::CSerializable
 		}
 	}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	COpenGLScene, mrpt::utils::CSerializable, OPENGL_IMPEXP)
 
 /** Inserts an openGL object into a scene. Allows call chaining. \sa
  * mrpt::opengl::COpenGLScene::insert  */

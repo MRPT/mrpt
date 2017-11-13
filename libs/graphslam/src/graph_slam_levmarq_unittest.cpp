@@ -95,13 +95,13 @@ TEST_F(GraphSlamLevMarqTester2D, OptimizeSampleRingPath)
 {
 	for (int seed = 1; seed < 5; seed++)
 	{
-		randomGenerator.randomize(seed);
+		getRandomGenerator().randomize(seed);
 		test_ring_path();
 	}
 }
 TEST_F(GraphSlamLevMarqTester2D, BinarySerialization)
 {
-	randomGenerator.randomize(123);
+	getRandomGenerator().randomize(123);
 	test_graph_bin_serialization();
 }
 
@@ -109,12 +109,12 @@ TEST_F(GraphSlamLevMarqTester3D, OptimizeSampleRingPath)
 {
 	for (int seed = 1; seed < 5; seed++)
 	{
-		randomGenerator.randomize(seed);
+		getRandomGenerator().randomize(seed);
 		test_ring_path();
 	}
 }
 TEST_F(GraphSlamLevMarqTester3D, BinarySerialization)
 {
-	randomGenerator.randomize(123);
+	getRandomGenerator().randomize(123);
 	test_graph_bin_serialization();
 }

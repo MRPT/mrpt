@@ -204,8 +204,6 @@ class CCylinder : public CRenderizableDisplayList
 							 : (Z <= mHeight && Z >= 0);
 	}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CCylinder, CRenderizableDisplayList, OPENGL_IMPEXP)
 }
 }
 #endif

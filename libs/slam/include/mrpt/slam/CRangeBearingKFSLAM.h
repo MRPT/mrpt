@@ -28,7 +28,6 @@
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
 #include <mrpt/slam/data_association.h>
 
-
 namespace mrpt
 {
 namespace slam

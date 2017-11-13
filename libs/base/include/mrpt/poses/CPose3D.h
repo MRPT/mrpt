@@ -85,8 +85,7 @@ class CPose3DRotVec;
  * \ingroup poses_grp
  * \sa CPoseOrPoint,CPoint3D, mrpt::math::CQuaternion
  */
-class CPose3D : public CPose<CPose3D>,
-							public mrpt::utils::CSerializable
+class CPose3D : public CPose<CPose3D>, public mrpt::utils::CSerializable
 {
 	DEFINE_SERIALIZABLE(CPose3D)
 
@@ -778,7 +777,6 @@ class CPose3D : public CPose<CPose3D>,
 	/** @} */
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST(CPose3D)
 
 std::ostream& operator<<(std::ostream& o, const CPose3D& p);
 

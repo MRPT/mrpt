@@ -209,9 +209,6 @@ class CMHPropertiesValuesList : public mrpt::utils::CSerializable
 	const_iterator end() const { return m_properties.end(); }
 	size_t size() const { return m_properties.size(); }
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(
-	CMHPropertiesValuesList, mrpt::utils::CSerializable)
-
 }  // End of namespace
 }  // end of namespace
 #endif

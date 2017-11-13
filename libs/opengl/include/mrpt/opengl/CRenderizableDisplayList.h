@@ -36,8 +36,7 @@ namespace opengl
   *  \sa mrpt::opengl::CRenderizable
   * \ingroup mrpt_opengl_grp
   */
-class CRenderizableDisplayList
-	: public mrpt::opengl::CRenderizable
+class CRenderizableDisplayList : public mrpt::opengl::CRenderizable
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CRenderizableDisplayList)
 
@@ -127,8 +126,6 @@ class CRenderizableDisplayList
 	}
 	/** @} */
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CRenderizableDisplayList, CRenderizable, OPENGL_IMPEXP)
 
 }  // end namespace
 

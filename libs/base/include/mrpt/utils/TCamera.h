@@ -207,12 +207,9 @@ class TCamera : public mrpt::utils::CSerializable
 	/** Get the value of the k3 distortion parameter.  */
 	inline void k3(double val) { dist[4] = val; }
 };  // end class TCamera
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(TCamera, mrpt::utils::CSerializable)
 
-bool
-	operator==(const mrpt::utils::TCamera& a, const mrpt::utils::TCamera& b);
-bool
-	operator!=(const mrpt::utils::TCamera& a, const mrpt::utils::TCamera& b);
+bool operator==(const mrpt::utils::TCamera& a, const mrpt::utils::TCamera& b);
+bool operator!=(const mrpt::utils::TCamera& a, const mrpt::utils::TCamera& b);
 
 }  // End of namespace
 }  // end of namespace

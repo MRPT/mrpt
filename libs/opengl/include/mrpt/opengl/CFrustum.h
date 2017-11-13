@@ -151,8 +151,6 @@ class CFrustum : public CRenderizableDisplayList
 	/** Destructor  */
 	virtual ~CFrustum() {}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CFrustum, CRenderizableDisplayList, OPENGL_IMPEXP)
 }
 }
 #endif

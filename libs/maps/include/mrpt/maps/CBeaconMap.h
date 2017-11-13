@@ -16,7 +16,6 @@
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/obs/obs_frwds.h>
 
-
 namespace mrpt
 {
 namespace maps
@@ -315,16 +314,14 @@ class CBeaconMap : public mrpt::maps::CMetricMap
 	 * not exist. */
 	CBeacon* getBeaconByID(CBeacon::TBeaconID id);
 
-	MAP_DEFINITION_START(CBeaconMap, MAPS_IMPEXP)
+	MAP_DEFINITION_START(CBeaconMap)
 	/** Observations insertion options */
 	mrpt::maps::CBeaconMap::TInsertionOptions insertionOpts;
 	/** Probabilistic observation likelihood options */
 	mrpt::maps::CBeaconMap::TLikelihoodOptions likelihoodOpts;
-	MAP_DEFINITION_END(CBeaconMap, MAPS_IMPEXP)
+	MAP_DEFINITION_END(CBeaconMap, )
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CBeaconMap, CMetricMap, MAPS_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

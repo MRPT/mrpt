@@ -50,8 +50,6 @@ class CVehicleVelCmd_Holo : public CVehicleVelCmd
 		const mrpt::kinematics::CVehicleVelCmd& prev_vel_cmd, const double beta,
 		const TVelCmdParams& params) override;
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CVehicleVelCmd_Holo, CVehicleVelCmd, KINEMATICS_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

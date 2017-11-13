@@ -16,7 +16,6 @@
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/utils/TEnumType.h>
 
-
 namespace mrpt
 {
 namespace maps
@@ -362,15 +361,13 @@ class CColouredPointsMap : public CPointsMap
 		mrpt::utils::TColorf& pt_color) const override;
 	/** @} */
 
-	MAP_DEFINITION_START(CColouredPointsMap, MAPS_IMPEXP)
+	MAP_DEFINITION_START(CColouredPointsMap)
 	mrpt::maps::CPointsMap::TInsertionOptions insertionOpts;
 	mrpt::maps::CPointsMap::TLikelihoodOptions likelihoodOpts;
 	mrpt::maps::CColouredPointsMap::TColourOptions colourOpts;
-	MAP_DEFINITION_END(CColouredPointsMap, MAPS_IMPEXP)
+	MAP_DEFINITION_END(CColouredPointsMap, )
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CColouredPointsMap, CPointsMap, MAPS_IMPEXP)
 
 }  // End of namespace
 

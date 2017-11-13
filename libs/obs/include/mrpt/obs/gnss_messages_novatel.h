@@ -101,7 +101,7 @@ enum nv_position_type_t : uint32_t
 	CDGPS = 66
 };
 /** for nv_position_type_t */
-const std::string OBS_IMPEXP& enum2str(int val);
+const std::string& enum2str(int val);
 }
 
 namespace nv_oem6_solution_status
@@ -151,7 +151,7 @@ enum nv_solution_status_t : uint32_t
 	INVALID_FIX
 };
 /** for nv_solution_status_t */
-const std::string OBS_IMPEXP& enum2str(int val);
+const std::string& enum2str(int val);
 }
 namespace nv_oem6_ins_status_type
 {
@@ -179,7 +179,7 @@ enum nv_ins_status_type_t : uint32_t
 	// begin the alignment process.
 };
 /** for nv_ins_status_type_t */
-const std::string OBS_IMPEXP& enum2str(int val);
+const std::string& enum2str(int val);
 }
 
 /** Novatel generic frame (to store frames without a parser at the present

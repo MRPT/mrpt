@@ -72,8 +72,6 @@ class CObservationCANBusJ1939 : public CObservation
 	void getDescriptionAsText(std::ostream& o) const override;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CObservationCANBusJ1939, CObservation, OBS_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

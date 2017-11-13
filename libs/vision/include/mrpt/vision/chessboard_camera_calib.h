@@ -88,7 +88,7 @@ typedef std::map<std::string, TImageCalibData> TCalibrationImageList;
  * success.
  * \sa CImage::findChessboardCorners, checkerBoardStereoCalibration
  */
-bool VISION_IMPEXP checkerBoardCameraCalibration(
+bool checkerBoardCameraCalibration(
 	TCalibrationImageList& images, unsigned int check_size_x,
 	unsigned int check_size_y, double check_squares_length_X_meters,
 	double check_squares_length_Y_meters,
@@ -98,7 +98,7 @@ bool VISION_IMPEXP checkerBoardCameraCalibration(
 
 /** \overload with matrix of intrinsic params instead of mrpt::utils::TCamera
  */
-bool VISION_IMPEXP checkerBoardCameraCalibration(
+bool checkerBoardCameraCalibration(
 	TCalibrationImageList& images, unsigned int check_size_x,
 	unsigned int check_size_y, double check_squares_length_X_meters,
 	double check_squares_length_Y_meters,

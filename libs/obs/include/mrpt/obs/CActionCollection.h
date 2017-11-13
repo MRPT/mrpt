@@ -184,8 +184,6 @@ class CActionCollection : public mrpt::utils::CSerializable
 	void eraseByIndex(const size_t& index);
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CActionCollection, mrpt::utils::CSerializable, OBS_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

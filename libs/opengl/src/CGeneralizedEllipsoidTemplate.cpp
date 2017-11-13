@@ -149,7 +149,7 @@ void renderGeneralizedEllipsoidTemplate<3>(
 			generalizedEllipsoidPoints: 2D
   ---------------------------------------------------------------*/
 template <>
-void OPENGL_IMPEXP generalizedEllipsoidPoints<2>(
+void generalizedEllipsoidPoints<2>(
 	const mrpt::math::CMatrixFixedNumeric<double, 2, 2>& U,
 	const mrpt::math::CMatrixFixedNumeric<double, 2, 1>& mean,
 	std::vector<mrpt::math::CMatrixFixedNumeric<float, 2, 1>>& out_params_pts,
@@ -193,7 +193,7 @@ inline void aux_add3DpointWithEigenVectors(
 			generalizedEllipsoidPoints: 3D
   ---------------------------------------------------------------*/
 template <>
-void OPENGL_IMPEXP generalizedEllipsoidPoints<3>(
+void generalizedEllipsoidPoints<3>(
 	const mrpt::math::CMatrixFixedNumeric<double, 3, 3>& U,
 	const mrpt::math::CMatrixFixedNumeric<double, 3, 1>& mean,
 	std::vector<mrpt::math::CMatrixFixedNumeric<float, 3, 1>>& pts,

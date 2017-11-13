@@ -147,8 +147,6 @@ class COpenGLStandardObject : public CRenderizableDisplayList
 	  */
 	virtual ~COpenGLStandardObject() {}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	COpenGLStandardObject, CRenderizableDisplayList, OPENGL_IMPEXP)
 }  // end namespace
 }  // End of namespace
 #endif

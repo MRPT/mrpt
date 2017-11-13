@@ -29,7 +29,6 @@
 #include <mrpt/utils/poly_ptr_ptr.h>
 #include <mrpt/obs/obs_frwds.h>
 
-
 namespace mrpt
 {
 namespace maps
@@ -485,8 +484,6 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 	unsigned int m_ID;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CMultiMetricMap, mrpt::maps::CMetricMap, SLAM_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

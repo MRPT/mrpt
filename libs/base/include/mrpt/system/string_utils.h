@@ -27,8 +27,7 @@ namespace system
  * strtok.
  * \sa system::tokenize
  */
-char* strtok(
-	char* str, const char* strDelimit, char** context) noexcept;
+char* strtok(char* str, const char* strDelimit, char** context) noexcept;
 
 /** Tokenizes a string according to a set of delimiting characters.
  * Example:
@@ -68,8 +67,7 @@ std::string lowerCase(const std::string& str);
  *  See http://en.wikipedia.org/wiki/UTF-8  and
  * http://www.codeguru.com/cpp/misc/misc/multi-lingualsupport/article.php/c10451/.
   */
-void
-	decodeUTF8(const std::string& strUTF8, vector_word& out_uniStr);
+void decodeUTF8(const std::string& strUTF8, vector_word& out_uniStr);
 
 /** Encodes a 2-bytes UNICODE string into a UTF-8 string.
  *  See http://en.wikipedia.org/wiki/UTF-8 and
@@ -79,15 +77,13 @@ void encodeUTF8(const vector_word& input, std::string& output);
 
 /** Encode a sequence of bytes as a string in base-64.
  * \sa decodeBase64  */
-void
-	encodeBase64(const vector_byte& inputData, std::string& outString);
+void encodeBase64(const vector_byte& inputData, std::string& outString);
 
 /** Decode a base-64 string into the original sequence of bytes.
  * \sa encodeBase64
  * \return false on invalid base-64 string passed as input, true on success.
  */
-bool
-	decodeBase64(const std::string& inString, vector_byte& outData);
+bool decodeBase64(const std::string& inString, vector_byte& outData);
 
 /** This function implements formatting with the appropriate SI metric unit
  * prefix: 1e-12->'p', 1e-9->'n', 1e-6->'u', 1e-3->'m', 1->'', 1e3->'K',

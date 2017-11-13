@@ -17,7 +17,6 @@
 #include <mrpt/poses/FrameTransformer.h>
 #include <mrpt/obs/obs_frwds.h>
 
-
 #include <mutex>
 #include <memory>  // unique_ptr
 #include <functional>
@@ -109,7 +108,7 @@ class CAbstractNavigator : public mrpt::utils::COutputLogger
 		virtual std::string getAsText() const = 0;
 
 	   protected:
-		friend bool NAV_IMPEXP operator==(
+		friend bool operator==(
 			const TNavigationParamsBase&, const TNavigationParamsBase&);
 		virtual bool isEqual(const TNavigationParamsBase& o) const = 0;
 	};
@@ -200,8 +199,7 @@ class CAbstractNavigator : public mrpt::utils::COutputLogger
 
 	/** @}*/
 
-	struct TAbstractNavigatorParams
-		: public mrpt::utils::CLoadableOptions
+	struct TAbstractNavigatorParams : public mrpt::utils::CLoadableOptions
 	{
 		/** Default value=0, means use the "targetAllowedDistance" passed by the
 		 * user in the navigation request. */
@@ -354,7 +352,7 @@ class CAbstractNavigator : public mrpt::utils::COutputLogger
 	MRPT_MAKE_ALIGNED_OPERATOR_NEW
 };
 
-bool NAV_IMPEXP operator==(
+bool operator==(
 	const CAbstractNavigator::TNavigationParamsBase&,
 	const CAbstractNavigator::TNavigationParamsBase&);
 }

@@ -106,7 +106,7 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
 	CMultiMetricMap metricMap;
 	metricMap.setListOfMaps(&mapList);
 
-	randomGenerator.randomize();
+	getRandomGenerator().randomize();
 
 	// Load the map (if any):
 	// -------------------------

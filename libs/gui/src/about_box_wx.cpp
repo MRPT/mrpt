@@ -15,7 +15,7 @@
 #include "CAboutBox_wx.h"
 #endif
 
-void GUI_IMPEXP mrpt::gui::show_mrpt_about_box_wxWidgets(
+void mrpt::gui::show_mrpt_about_box_wxWidgets(
 	void* parent_wx_window, const std::string& appName,
 	const std::string& additionalInfo, const bool showStandardInfo)
 {

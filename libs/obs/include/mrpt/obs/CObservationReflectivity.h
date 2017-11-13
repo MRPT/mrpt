@@ -37,7 +37,9 @@ class CObservationReflectivity : public CObservation
 	  */
 	float reflectivityLevel;
 
-	/** The channel for this observation. If channel=-1, it can be inserted into any CReflectivityGridMap2D. Otherwise, it can only be inserted into reflectivity maps with the same channel. (Default=-1)
+	/** The channel for this observation. If channel=-1, it can be inserted into
+	 * any CReflectivityGridMap2D. Otherwise, it can only be inserted into
+	 * reflectivity maps with the same channel. (Default=-1)
 		 */
 	int16_t channel;
 
@@ -62,8 +64,6 @@ class CObservationReflectivity : public CObservation
 	void getDescriptionAsText(std::ostream& o) const override;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CObservationReflectivity, CObservation, OBS_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

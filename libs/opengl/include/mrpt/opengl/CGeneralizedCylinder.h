@@ -437,8 +437,6 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 	  */
 	virtual ~CGeneralizedCylinder(){};
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CGeneralizedCylinder, CRenderizableDisplayList, OPENGL_IMPEXP)
 }
 }
 #endif

@@ -23,8 +23,7 @@ namespace nav
   *\sa CReactiveNavigationSystem, CReactiveNavigationSystem3D
   *  \ingroup nav_reactive
   */
-class CMultiObjectiveMotionOptimizerBase
-	: public mrpt::utils::CObject
+class CMultiObjectiveMotionOptimizerBase : public mrpt::utils::CObject
 {
 	DEFINE_VIRTUAL_MRPT_OBJECT(CMultiObjectiveMotionOptimizerBase)
    public:
@@ -109,7 +108,5 @@ class CMultiObjectiveMotionOptimizerBase
 	std::vector<mrpt::math::CRuntimeCompiledExpression> m_movement_assert_exprs;
 	std::map<std::string, double> m_expr_vars;
 };
-DEFINE_MRPT_OBJECT_POST_CUSTOM_LINKAGE(
-	CMultiObjectiveMotionOptimizerBase, NAV_IMPEXP)
 }
 }

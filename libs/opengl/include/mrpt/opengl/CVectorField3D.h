@@ -402,8 +402,6 @@ class CVectorField3D : public CRenderizableDisplayList
 	/** Private, virtual destructor: only can be deleted from smart pointers. */
 	virtual ~CVectorField3D() {}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CVectorField3D, CRenderizableDisplayList, OPENGL_IMPEXP)
 
 }  // end namespace
 

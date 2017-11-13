@@ -188,7 +188,7 @@ int main(int argc, char** argv)
 		// Set relative path for externally-stored images in rawlogs:
 		string rawlog_images_path = extractFileDirectory(RAWLOG_FILE);
 		rawlog_images_path += "/Images";
-		CImage::IMAGES_PATH_BASE = rawlog_images_path;  // Set it.
+		CImage::setImagesPathBase(rawlog_images_path);  // Set it.
 
 		// Run:
 		MapBuilding_RBPF();
@@ -293,7 +293,7 @@ void MapBuilding_RBPF()
 	mapBuilder.options.enableMapUpdating = true;
 	mapBuilder.options.debugForceInsertion = false;
 
-	randomGenerator.randomize();
+	getRandomGenerator().randomize();
 
 	// Prepare output directory:
 	// --------------------------------

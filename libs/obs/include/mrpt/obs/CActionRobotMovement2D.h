@@ -211,8 +211,6 @@ class CActionRobotMovement2D : public CAction
 	mutable mrpt::poses::CPose2D m_fastDrawGauss_M;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CActionRobotMovement2D, CAction, OBS_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

@@ -97,8 +97,7 @@ class CReactiveNavigationSystem : public CAbstractPTGBasedReactive
 	virtual bool checkCollisionWithLatestObstacles(
 		const mrpt::math::TPose2D& relative_robot_pose) const override;
 
-	struct TReactiveNavigatorParams
-		: public mrpt::utils::CLoadableOptions
+	struct TReactiveNavigatorParams : public mrpt::utils::CLoadableOptions
 	{
 		double min_obstacles_height,
 			max_obstacles_height;  // The range of "z" coordinates for obstacles

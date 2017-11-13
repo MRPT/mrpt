@@ -25,8 +25,7 @@ namespace mrpt
 {
 namespace gui
 {
-class CQtGlCanvasBase : public QOpenGLWidget,
-								   public mrpt::gui::CGlCanvasBase
+class CQtGlCanvasBase : public QOpenGLWidget, public mrpt::gui::CGlCanvasBase
 {
    public:
 	CQtGlCanvasBase(QWidget* parent = nullptr);

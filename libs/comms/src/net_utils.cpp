@@ -47,7 +47,7 @@ using namespace std;
 /*---------------------------------------------------------------
 							http_get
   ---------------------------------------------------------------*/
-ERRORCODE_HTTP COMMS_IMPEXP mrpt::comms::net::http_get(
+ERRORCODE_HTTP mrpt::comms::net::http_get(
 	const string& url, string& out_content, string& out_errormsg, int port,
 	const string& auth_user, const string& auth_pass,
 	int* out_http_responsecode, mrpt::utils::TParameters<string>* extra_headers,
@@ -64,7 +64,7 @@ ERRORCODE_HTTP COMMS_IMPEXP mrpt::comms::net::http_get(
 	return ret;
 }
 
-ERRORCODE_HTTP COMMS_IMPEXP mrpt::comms::net::http_request(
+ERRORCODE_HTTP mrpt::comms::net::http_request(
 	const string& http_method, const string& http_send_content,
 	const string& url, vector_byte& out_content, string& out_errormsg, int port,
 	const string& auth_user, const string& auth_pass,
@@ -380,7 +380,7 @@ ERRORCODE_HTTP COMMS_IMPEXP mrpt::comms::net::http_request(
 /*---------------------------------------------------------------
 	http_get
 ---------------------------------------------------------------*/
-ERRORCODE_HTTP COMMS_IMPEXP mrpt::comms::net::http_get(
+ERRORCODE_HTTP mrpt::comms::net::http_get(
 	const string& url, vector_byte& out_content, string& out_errormsg, int port,
 	const string& auth_user, const string& auth_pass,
 	int* out_http_responsecode, mrpt::utils::TParameters<string>* extra_headers,

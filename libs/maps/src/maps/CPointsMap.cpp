@@ -1572,7 +1572,7 @@ namespace obs
 // linking:
 //  ptr_internal_build_points_map_from_scan2D is a functor in "mrpt-obs", set by
 //  "mrpt-maps" at its startup.
-extern void OBS_IMPEXP (*ptr_internal_build_points_map_from_scan2D)(
+extern void (*ptr_internal_build_points_map_from_scan2D)(
 	const mrpt::obs::CObservation2DRangeScan& obs,
 	mrpt::maps::CMetricMap::Ptr& out_map, const void* insertOps);
 }

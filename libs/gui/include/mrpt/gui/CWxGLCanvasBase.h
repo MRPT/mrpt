@@ -66,8 +66,8 @@ namespace gui
   * \ingroup mrpt_gui_grp
   */
 class CWxGLCanvasBase : public CGlCanvasBase,
-								   public wxGLCanvas,
-								   public mrpt::opengl::CTextMessageCapable
+						public wxGLCanvas,
+						public mrpt::opengl::CTextMessageCapable
 {
    public:
 	CWxGLCanvasBase(

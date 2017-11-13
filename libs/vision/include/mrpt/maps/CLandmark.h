@@ -127,8 +127,6 @@ class CLandmark : public mrpt::utils::CSerializable
 	static TLandmarkID m_counterIDs;
 
 };  // End of class definition
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CLandmark, mrpt::utils::CSerializable, VISION_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

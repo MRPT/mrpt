@@ -60,21 +60,19 @@ void registerClassCustomName(
  * mrpt::utils::registerClass.
   * \sa registerClass, findRegisteredClass
   */
-std::vector<const mrpt::utils::TRuntimeClassId*>
-	getAllRegisteredClasses();
+std::vector<const mrpt::utils::TRuntimeClassId*> getAllRegisteredClasses();
 
 /** Like getAllRegisteredClasses(), but filters the list to only include
  * children clases of a given base one.
   * \sa getAllRegisteredClasses(), getAllRegisteredClassesChildrenOf()  */
-std::vector<const TRuntimeClassId*>
-	getAllRegisteredClassesChildrenOf(const TRuntimeClassId* parent_id);
+std::vector<const TRuntimeClassId*> getAllRegisteredClassesChildrenOf(
+	const TRuntimeClassId* parent_id);
 
 /** Return info about a given class by its name, or nullptr if the class is not
  * registered
   * \sa registerClass, getAllRegisteredClasses
   */
-const TRuntimeClassId* findRegisteredClass(
-	const std::string& className);
+const TRuntimeClassId* findRegisteredClass(const std::string& className);
 
 template <typename T>
 constexpr const mrpt::utils::TRuntimeClassId* CLASS_ID_impl()
@@ -151,10 +149,11 @@ class CObject
    protected:
 	static mrpt::utils::TRuntimeClassId* _GetBaseClass();
 	static const mrpt::utils::TRuntimeClassId runtimeClassId;
+
    public:
 	using Ptr = std::shared_ptr<CObject>;
 	using ConstPtr = std::shared_ptr<const CObject>;
-	static const mrpt::utils::TRuntimeClassId & GetRuntimeClassIdStatic();
+	static const mrpt::utils::TRuntimeClassId& GetRuntimeClassIdStatic();
 	/** Returns information about the class of an object in runtime. */
 	virtual const mrpt::utils::TRuntimeClassId* GetRuntimeClass() const
 	{
@@ -182,27 +181,25 @@ inline mrpt::utils::CObject::Ptr CObject::duplicateGetSmartPtr() const
 	return mrpt::utils::CObject::Ptr(this->clone());
 }
 
-/** Just like DEFINE_MRPT_OBJECT but with DLL export/import linkage keywords.
- * Note: The replication of macro arguments is to avoid errors with empty macro
- * arguments */
-#define DEFINE_MRPT_OBJECT_CUSTOM_LINKAGE(                                  \
-	class_name, _STATIC_LINKAGE_, _VIRTUAL_LINKAGE_)                        \
+/** This declaration must be inserted in all CObject classes definition, within
+* the class declaration. */
+#define DEFINE_MRPT_OBJECT(class_name)                                      \
 	/*! @name RTTI stuff  */                                                \
 	/*! @{  */                                                              \
    protected:                                                               \
-	_STATIC_LINKAGE_ const mrpt::utils::TRuntimeClassId* _GetBaseClass();   \
-	_STATIC_LINKAGE_ mrpt::utils::CLASSINIT _init_##class_name;             \
-	_STATIC_LINKAGE_ const mrpt::utils::TRuntimeClassId runtimeClassId;     \
+	static const mrpt::utils::TRuntimeClassId* _GetBaseClass();             \
+	static mrpt::utils::CLASSINIT _init_##class_name;                       \
+	static const mrpt::utils::TRuntimeClassId runtimeClassId;               \
    public:                                                                  \
 	/*! A typedef for the associated smart pointer */                       \
 	using Ptr = std::shared_ptr<class_name>;                                \
 	using ConstPtr = std::shared_ptr<const class_name>;                     \
-	_STATIC_LINKAGE_ const mrpt::utils::TRuntimeClassId & GetRuntimeClassIdStatic(); \
-	_STATIC_LINKAGE_ const mrpt::utils::TRuntimeClassId* classinfo;         \
-	_VIRTUAL_LINKAGE_ const mrpt::utils::TRuntimeClassId* GetRuntimeClass() \
-		const override;                                                     \
-	_STATIC_LINKAGE_ mrpt::utils::CObject* CreateObject();                  \
-	_VIRTUAL_LINKAGE_ mrpt::utils::CObject* clone() const override;         \
+	static constexpr const char* className = #class_name;                   \
+	static const mrpt::utils::TRuntimeClassId& GetRuntimeClassIdStatic();   \
+	static const mrpt::utils::TRuntimeClassId* classinfo;                   \
+	virtual const mrpt::utils::TRuntimeClassId* GetRuntimeClass() const override; \
+	static mrpt::utils::CObject* CreateObject();                            \
+	virtual mrpt::utils::CObject* clone() const override;                   \
 	template <typename... Args>                                             \
 	static Ptr Create(Args&&... args)                                       \
 	{                                                                       \
@@ -212,69 +209,6 @@ inline mrpt::utils::CObject::Ptr CObject::duplicateGetSmartPtr() const
 	/*! @} */                                                               \
    public:                                                                  \
 	MRPT_MAKE_ALIGNED_OPERATOR_NEW
-
-/** This declaration must be inserted in all CObject classes definition, within
- * the class declaration. */
-#define DEFINE_MRPT_OBJECT(class_name) \
-	DEFINE_MRPT_OBJECT_CUSTOM_LINKAGE( \
-		class_name, static /*none*/, virtual /*none*/)
-
-// This macro is a workaround to avoid possibly empty arguments to MACROS (when
-// _LINKAGE_ evals to nothing...)
-#define DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE( \
-	class_name, base_name, _LINKAGE_)                \
-	DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE2(    \
-		class_name, base_name, _LINKAGE_ class_name)
-
-// Use this one when there is NO import/export macro:
-#define DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_NO_LINKAGE(class_name, base_name) \
-	DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE2(                             \
-		class_name, base_name, class_name)
-
-/**  This declaration must be inserted in all CObject classes definition, before
- * the class declaration.  */
-
-/**  This declaration must be inserted in all CObject classes definition, after
- * the class declaration.  */
-#define DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE2( \
-	class_name, base_name, class_name_LINKAGE_)
-
-// This macro is a workaround to avoid possibly empty arguments to MACROS (when
-// _LINKAGE_ evals to nothing...)
-#define DEFINE_MRPT_OBJECT_POST_CUSTOM_LINKAGE(class_name, _LINKAGE_) \
-	DEFINE_MRPT_OBJECT_POST_CUSTOM_LINKAGE2(class_name, _LINKAGE_ class_name)
-
-// Use this macro when there is NO export/import macro:
-#define DEFINE_MRPT_OBJECT_POST_NO_LINKAGE(class_name) \
-	DEFINE_MRPT_OBJECT_POST_CUSTOM_LINKAGE2(class_name, class_name)
-
-// This one is almost identical to the one above, but without a member:
-/**  This declaration must be inserted in all CObject classes definition, before
- * the class declaration. */
-
-/**  This declaration must be inserted in all CObject classes definition, after
- * the class declaration. */
-/** MRPT 1.X backwards-compatible smart pointer name (to be removed in a future
- * version of MRPT! Use CFoo::Ptr instead) */
-#ifdef MRPT_1X_BACKCOMPATIB_SMARTPTR_NAMES
-#define DEFINE_MRPT_OBJECT_POST_CUSTOM_LINKAGE2( \
-	class_name, class_name_LINKAGE_)             \
-	using class_name##Ptr = class_name::Ptr;
-#else
-#define DEFINE_MRPT_OBJECT_POST_CUSTOM_LINKAGE2(class_name, class_name_LINKAGE_)
-#endif
-
-/**  This declaration must be inserted in all CObject classes definition, before
- * the class declaration.
-  */
-
-/**  This declaration must be inserted in all CObject classes definition, before
- * the class declaration.
-  */
-#define DEFINE_MRPT_OBJECT_POST(class_name) \
-	DEFINE_MRPT_OBJECT_POST_CUSTOM_LINKAGE( \
-		class_name,)  // This macro is valid for classes within
-// mrpt-base only.
 
 /** This must be inserted in all CObject classes implementation files
   */
@@ -287,13 +221,14 @@ inline mrpt::utils::CObject::Ptr CObject::duplicateGetSmartPtr() const
 	{                                                                          \
 		return CLASS_ID(base);                                                 \
 	}                                                                          \
-	const mrpt::utils::TRuntimeClassId & NameSpace::class_name::GetRuntimeClassIdStatic() \
+	const mrpt::utils::TRuntimeClassId&                                        \
+		NameSpace::class_name::GetRuntimeClassIdStatic()                       \
 	{                                                                          \
 		return NameSpace::class_name::runtimeClassId;                          \
 	}                                                                          \
-	const mrpt::utils::TRuntimeClassId NameSpace::class_name::runtimeClassId = { \
-		#class_name, NameSpace::class_name::CreateObject,                      \
-		&class_name::_GetBaseClass};                                           \
+	const mrpt::utils::TRuntimeClassId NameSpace::class_name::runtimeClassId = \
+		{#class_name, NameSpace::class_name::CreateObject,                     \
+		 &class_name::_GetBaseClass};                                          \
 	const mrpt::utils::TRuntimeClassId* NameSpace::class_name::classinfo =     \
 		&NameSpace::class_name::runtimeClassId;                                \
 	const mrpt::utils::TRuntimeClassId*                                        \
@@ -318,6 +253,7 @@ inline mrpt::utils::CObject::Ptr CObject::duplicateGetSmartPtr() const
    protected:                                                     \
 	static const mrpt::utils::TRuntimeClassId* _GetBaseClass();   \
 	static const mrpt::utils::TRuntimeClassId runtimeClassId;     \
+                                                                  \
    public:                                                        \
 	using Ptr = std::shared_ptr<class_name>;                      \
 	using ConstPtr = std::shared_ptr<const class_name>;           \

@@ -86,8 +86,8 @@ std::string extractFileName(const std::string& filePath);
   *   ends in ".gz", for example, for "foo.map.gz", this will return "map".
   * \sa extractFileName,extractFileDirectory
   */
-std::string
-	extractFileExtension(const std::string& filePath, bool ignore_gz = false);
+std::string extractFileExtension(
+	const std::string& filePath, bool ignore_gz = false);
 
 /** Extract the whole path (the directory) of a filename from a complete path
  * plus name plus extension.

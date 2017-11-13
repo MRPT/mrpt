@@ -106,8 +106,6 @@ class CSetOfTexturedTriangles : public CTexturedObject
 	/** Private, virtual destructor: only can be deleted from smart pointers */
 	virtual ~CSetOfTexturedTriangles();
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CSetOfTexturedTriangles, CTexturedObject, OPENGL_IMPEXP)
 
 }  // end namespace
 

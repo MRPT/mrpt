@@ -131,8 +131,6 @@ class CLogFileRecord : public mrpt::utils::CSerializable
 	mrpt::nav::CParameterizedTrajectoryGenerator::TNavDynamicState
 		ptg_last_navDynState;
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CLogFileRecord, mrpt::utils::CSerializable, NAV_IMPEXP)
 }
 }
 

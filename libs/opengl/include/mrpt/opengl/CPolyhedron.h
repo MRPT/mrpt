@@ -947,8 +947,6 @@ class CPolyhedron : public CRenderizableDisplayList
 	/** Destructor. */
 	virtual ~CPolyhedron() {}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CPolyhedron, CRenderizableDisplayList, OPENGL_IMPEXP)
 
 // Implemented after the definition of Smart::Ptrs in the _POST() macro above.
 template <class T>
@@ -964,22 +962,22 @@ size_t CPolyhedron::getIntersection(
 /**
   * Reads a polyhedron edge from a binary stream.
   */
-OPENGL_IMPEXP mrpt::utils::CStream& operator>>(
+mrpt::utils::CStream& operator>>(
 	mrpt::utils::CStream& in, CPolyhedron::TPolyhedronEdge& o);
 /**
   * Writes a polyhedron edge to a binary stream.
   */
-OPENGL_IMPEXP mrpt::utils::CStream& operator<<(
+mrpt::utils::CStream& operator<<(
 	mrpt::utils::CStream& out, const CPolyhedron::TPolyhedronEdge& o);
 /**
   * Reads a polyhedron face from a binary stream.
   */
-OPENGL_IMPEXP mrpt::utils::CStream& operator>>(
+mrpt::utils::CStream& operator>>(
 	mrpt::utils::CStream& in, CPolyhedron::TPolyhedronFace& o);
 /**
   * Writes a polyhedron face to a binary stream.
   */
-OPENGL_IMPEXP mrpt::utils::CStream& operator<<(
+mrpt::utils::CStream& operator<<(
 	mrpt::utils::CStream& out, const CPolyhedron::TPolyhedronFace& o);
 }
 namespace utils

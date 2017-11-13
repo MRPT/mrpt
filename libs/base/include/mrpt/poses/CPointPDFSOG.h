@@ -188,7 +188,6 @@ class CPointPDFSOG : public CPointPDF
 	double evaluatePDF(const CPoint3D& x, bool sumOverAllZs) const;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(CPointPDFSOG, CPointPDF)
 }  // End of namespace
 }  // End of namespace
 #endif

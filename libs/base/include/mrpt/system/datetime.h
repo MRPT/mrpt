@@ -50,21 +50,20 @@ struct TTimeParts
 /** Builds a timestamp from the parts (Parts are in UTC)
   * \sa timestampToParts
   */
-mrpt::system::TTimeStamp
-	buildTimestampFromParts(const mrpt::system::TTimeParts& p);
+mrpt::system::TTimeStamp buildTimestampFromParts(
+	const mrpt::system::TTimeParts& p);
 
 /** Builds a timestamp from the parts (Parts are in local time)
   * \sa timestampToParts, buildTimestampFromParts
   */
-mrpt::system::TTimeStamp
-	buildTimestampFromPartsLocalTime(const mrpt::system::TTimeParts& p);
+mrpt::system::TTimeStamp buildTimestampFromPartsLocalTime(
+	const mrpt::system::TTimeParts& p);
 
 /** Gets the individual parts of a date/time (days, hours, minutes, seconds) -
  * UTC time or local time
   * \sa buildTimestampFromParts
   */
-void
-	timestampToParts(TTimeStamp t, TTimeParts& p, bool localTime = false);
+void timestampToParts(TTimeStamp t, TTimeParts& p, bool localTime = false);
 
 /** Returns the current (UTC) system time.
   * \sa now,getCurrentLocalTime
@@ -124,8 +123,8 @@ inline double now_double()
 
 /** Shifts a timestamp the given amount of seconds (>0: forwards in time, <0:
  * backwards) \sa secondsToTimestamp */
-mrpt::system::TTimeStamp
-	timestampAdd(const mrpt::system::TTimeStamp tim, const double num_seconds);
+mrpt::system::TTimeStamp timestampAdd(
+	const mrpt::system::TTimeStamp tim, const double num_seconds);
 
 /** Transform a time interval (in seconds) into TTimeStamp (e.g. which can be
  * added to an existing valid timestamp)
@@ -157,8 +156,7 @@ std::string dateToString(const mrpt::system::TTimeStamp t);
 
 /** Returns the number of seconds ellapsed from midnight in the given timestamp
  */
-double
-	extractDayTimeFromTimestamp(const mrpt::system::TTimeStamp t);
+double extractDayTimeFromTimestamp(const mrpt::system::TTimeStamp t);
 
 /** Convert a timestamp into this textual form (UTC): HH:MM:SS.MMMMMM
  */

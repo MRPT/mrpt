@@ -34,9 +34,8 @@ namespace poses
  * \ingroup poses_pdf_grp
  * \sa CPoint2D, CPointPDF
  */
-class CPoint2DPDF
-	: public mrpt::utils::CSerializable,
-	  public mrpt::utils::CProbabilityDensityFunction<CPoint2D, 2>
+class CPoint2DPDF : public mrpt::utils::CSerializable,
+					public mrpt::utils::CProbabilityDensityFunction<CPoint2D, 2>
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CPoint2DPDF)
 
@@ -71,7 +70,6 @@ class CPoint2DPDF
 	};
 	static inline bool is_PDF() { return is_PDF_val != 0; }
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(CPoint2DPDF, mrpt::utils::CSerializable)
 
 }  // End of namespace
 }  // End of namespace

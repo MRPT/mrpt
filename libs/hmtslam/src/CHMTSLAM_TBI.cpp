@@ -36,9 +36,9 @@ void CHMTSLAM::thread_TBI()
 
 	// Seems that must be called in each thread??
 	if (obj->m_options.random_seed)
-		randomGenerator.randomize(obj->m_options.random_seed);
+		getRandomGenerator().randomize(obj->m_options.random_seed);
 	else
-		randomGenerator.randomize();
+		getRandomGenerator().randomize();
 
 	try
 	{

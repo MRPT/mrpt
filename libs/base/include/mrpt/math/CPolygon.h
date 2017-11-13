@@ -20,7 +20,7 @@ namespace math
  * \ingroup geometry_grp
  */
 class CPolygon : public mrpt::utils::CSerializable,
-							 public mrpt::math::TPolygon2D
+				 public mrpt::math::TPolygon2D
 {
 	DEFINE_SERIALIZABLE(CPolygon)
 
@@ -68,7 +68,6 @@ class CPolygon : public mrpt::utils::CSerializable,
 		return TPolygon2D::contains(TPoint2D(x, y));
 	}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(CPolygon, mrpt::utils::CSerializable)
 
 }  // End of namespace
 }  // End of namespace

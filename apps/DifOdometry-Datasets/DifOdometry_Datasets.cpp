@@ -55,7 +55,7 @@ void CDifodoDatasets::loadConfiguration(const utils::CConfigFileBase& ini)
 
 	// Set external images directory:
 	const string imgsPath = CRawlog::detectImagesDirectory(filename);
-	CImage::IMAGES_PATH_BASE = imgsPath;
+	CImage::setImagesPathBase(imgsPath);
 
 	//					Load ground-truth
 	//=========================================================

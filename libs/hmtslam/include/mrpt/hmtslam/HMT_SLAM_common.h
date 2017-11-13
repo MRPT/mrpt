@@ -13,7 +13,6 @@
 #include <mrpt/utils/list_searchable.h>
 #include <set>
 
-
 #define COMMON_TOPOLOG_HYP static_cast<THypothesisID>(0)
 
 #define NODE_ANNOTATION_METRIC_MAPS "metricMaps"  // CMultiMetricMap
@@ -77,7 +76,7 @@ typedef std::set<TPoseID> TPoseIDSet;
   * \ingroup mrpt_hmtslam_grp
   */
 class THypothesisIDSet : public mrpt::utils::CSerializable,
-										public std::set<THypothesisID>
+						 public std::set<THypothesisID>
 {
 	DEFINE_SERIALIZABLE(THypothesisIDSet)
 
@@ -100,14 +99,12 @@ class THypothesisIDSet : public mrpt::utils::CSerializable,
 	  */
 	void debugDump() const;
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	THypothesisIDSet, mrpt::utils::CSerializable, HMTSLAM_IMPEXP)
 
 /** A class for storing a sequence of arcs (a path).
   * \sa CHMTSLAM
   */
 class TArcList : public mrpt::utils::list_searchable<
-									std::shared_ptr<mrpt::hmtslam::CHMHMapArc>>
+					 std::shared_ptr<mrpt::hmtslam::CHMHMapArc>>
 {
    private:
 	typedef mrpt::utils::list_searchable<

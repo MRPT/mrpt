@@ -229,12 +229,12 @@ class CObservation3DRangeScan : public CObservation
    protected:
 	/** If set to true, m_points3D_external_file is valid. */
 	bool m_points3D_external_stored;
-	/** 3D points are in CImage::IMAGES_PATH_BASE+<this_file_name> */
+	/** 3D points are in CImage::getImagesPathBase()+<this_file_name> */
 	std::string m_points3D_external_file;
 
 	/** If set to true, m_rangeImage_external_file is valid. */
 	bool m_rangeImage_external_stored;
-	/** rangeImage is in CImage::IMAGES_PATH_BASE+<this_file_name> */
+	/** rangeImage is in CImage::getImagesPathBase()+<this_file_name> */
 	std::string m_rangeImage_external_file;
 
    public:
@@ -810,8 +810,6 @@ class CObservation3DRangeScan : public CObservation
 	static TCached3DProjTables m_3dproj_lut;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CObservation3DRangeScan, CObservation, OBS_IMPEXP)
 
 }  // End of namespace
 

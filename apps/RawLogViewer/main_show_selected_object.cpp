@@ -583,17 +583,17 @@ catch (mrpt::utils::CExceptionExternalImageNotFound& e)
 			_U(format(
 				   "The current directory for relative images is:\n%s\n\nDo "
 				   "you want to set it to a different one?",
-				   CImage::IMAGES_PATH_BASE.c_str())
+				   CImage::getImagesPathBase().c_str())
 				   .c_str()),
 			_("Error with delayed loading image"), wxYES_NO, this))
 	{
-		// Change CImage::IMAGES_PATH_BASE
+		// Change CImage::getImagesPathBase()
 		wxDirDialog dirDialog(
 			this, _("Choose the base directory for relative image paths"),
-			_U(CImage::IMAGES_PATH_BASE.c_str()), 0, wxDefaultPosition);
+			_U(CImage::getImagesPathBase().c_str()), 0, wxDefaultPosition);
 		if (dirDialog.ShowModal() == wxID_OK)
 		{
-			CImage::IMAGES_PATH_BASE = string(dirDialog.GetPath().mb_str());
+			CImage::setImagesPathBase(string(dirDialog.GetPath().mb_str()));
 		}
 	}
 }

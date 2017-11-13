@@ -157,8 +157,6 @@ class CHolonomicND : public CAbstractHolonomicReactiveMethod
 		const float TargetDist, std::vector<double>& out_gaps_evaluation);
 
 };  // end of CHolonomicND
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CHolonomicND, CAbstractHolonomicReactiveMethod, NAV_IMPEXP)
 
 /** A class for storing extra information about the execution of
  *    CHolonomicND navigation.
@@ -178,8 +176,6 @@ class CLogFileRecord_ND : public CHolonomicLogFileRecord
 	double riskEvaluation;
 	CHolonomicND::TSituations situation;
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CLogFileRecord_ND, CHolonomicLogFileRecord, NAV_IMPEXP)
 
 /** @} */
 }  // end namespace

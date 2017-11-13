@@ -15,7 +15,6 @@
 #include <mrpt/utils/TEnumType.h>
 #include <mrpt/gui/CDisplayWindow.h>
 
-
 namespace mrpt
 {
 namespace hwdrivers
@@ -208,9 +207,8 @@ namespace hwdrivers
   *		- http://http://www.openni.org/
   * \ingroup mrpt_hwdrivers_grp
   */
-class COpenNI2_RGBD360
-	: public mrpt::hwdrivers::CGenericSensor,
-	  public mrpt::hwdrivers::COpenNI2Generic
+class COpenNI2_RGBD360 : public mrpt::hwdrivers::CGenericSensor,
+						 public mrpt::hwdrivers::COpenNI2Generic
 {
 	DEFINE_GENERIC_SENSOR(COpenNI2_RGBD360)
 

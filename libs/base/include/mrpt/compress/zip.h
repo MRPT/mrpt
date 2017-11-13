@@ -35,8 +35,7 @@ void compress(
 	std::vector<unsigned char>& outData);
 
 /** Compress an array of bytes and write the result into a stream. */
-void
-	compress(void* inData, size_t inDataSize, mrpt::utils::CStream& out);
+void compress(void* inData, size_t inDataSize, mrpt::utils::CStream& out);
 
 /** Compress an array of bytes and write the result into a stream. */
 void compress(
@@ -70,8 +69,7 @@ void decompress(
   * \return true on success, false on error.
   * \sa compress_gz_file, decompress_gz_data_block
   */
-bool
-	decompress_gz_file(const std::string& file_path, vector_byte& buffer);
+bool decompress_gz_file(const std::string& file_path, vector_byte& buffer);
 
 /** Compress a memory buffer into a gzip file (xxxx.gz).
   *  compress_level: 0=no compression, 1=best speed, 9=maximum

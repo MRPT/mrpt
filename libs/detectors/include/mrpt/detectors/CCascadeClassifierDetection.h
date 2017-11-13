@@ -19,8 +19,7 @@ namespace detectors
 /**
   * \ingroup mrpt_detectors_grp
   */
-class CCascadeClassifierDetection
-	: virtual public CObjectDetection
+class CCascadeClassifierDetection : virtual public CObjectDetection
 {
    public:
 	CCascadeClassifierDetection();

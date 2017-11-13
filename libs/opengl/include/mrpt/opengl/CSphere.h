@@ -97,8 +97,6 @@ class CSphere : public CRenderizableDisplayList
 	/** Private, virtual destructor: only can be deleted from smart pointers */
 	virtual ~CSphere() {}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CSphere, CRenderizableDisplayList, OPENGL_IMPEXP)
 
 }  // end namespace
 

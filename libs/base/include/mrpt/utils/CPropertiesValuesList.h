@@ -74,9 +74,6 @@ class CPropertiesValuesList : public mrpt::utils::CSerializable
 	std::vector<std::string> getPropertyNames() const;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(
-	CPropertiesValuesList, mrpt::utils::CSerializable)
-
 }  // End of namespace
 }  // End of namespace
 

@@ -69,9 +69,9 @@ void Example_GMRF()
 
 	for (int i = 0; i < 20; i++)
 	{
-		const double value = randomGenerator.drawUniform(0.01, 0.99);
-		const double x = randomGenerator.drawUniform(0.1, 0.95 * X_SIZE);
-		const double y = randomGenerator.drawUniform(0.1, 0.95 * Y_SIZE);
+		const double value = getRandomGenerator().drawUniform(0.01, 0.99);
+		const double x = getRandomGenerator().drawUniform(0.1, 0.95 * X_SIZE);
+		const double y = getRandomGenerator().drawUniform(0.1, 0.95 * Y_SIZE);
 
 		printf(
 			"Observation: (x,y)=(%6.02f,%6.02f,)  => value: %6.03f\n", x, y,

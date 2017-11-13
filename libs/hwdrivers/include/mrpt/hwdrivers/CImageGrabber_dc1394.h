@@ -14,7 +14,6 @@
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 
-
 namespace mrpt
 {
 namespace hwdrivers

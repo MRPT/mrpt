@@ -65,15 +65,13 @@ bool vectorFromTextFile(
 * \return Returns false on any error, true on everything OK.
 * \sa loadBinaryFile
 */
-bool
-	vectorToBinaryFile(const vector_byte& vec, const std::string& fileName);
+bool vectorToBinaryFile(const vector_byte& vec, const std::string& fileName);
 
 /** Loads a entire file as a vector of bytes.
 * \return Returns false on any error, true on everything OK.
 * \sa vectorToBinaryFile
 */
-bool
-	loadBinaryFile(vector_byte& out_data, const std::string& fileName);
+bool loadBinaryFile(vector_byte& out_data, const std::string& fileName);
 
 /** @} */
 

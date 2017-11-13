@@ -43,8 +43,7 @@ namespace opengl
   *
   * \ingroup mrpt_opengl_grp
   */
-class CEllipsoidInverseDepth2D
-	: public CGeneralizedEllipsoidTemplate<2>
+class CEllipsoidInverseDepth2D : public CGeneralizedEllipsoidTemplate<2>
 {
 	typedef CGeneralizedEllipsoidTemplate<2> BASE;
 	DEFINE_SERIALIZABLE(CEllipsoidInverseDepth2D)
@@ -77,8 +76,6 @@ class CEllipsoidInverseDepth2D
 	/** Private, virtual destructor: only can be deleted from smart pointers */
 	virtual ~CEllipsoidInverseDepth2D() {}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CEllipsoidInverseDepth2D, CRenderizableDisplayList, OPENGL_IMPEXP)
 
 }  // end namespace
 

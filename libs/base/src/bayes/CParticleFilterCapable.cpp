@@ -101,7 +101,7 @@ void CParticleFilterCapable::computeResampling(
 			Q[M - 1] = 1.1;
 
 			vector<double> T(M);
-			randomGenerator.drawUniformVector(T, 0.0, 0.999999);
+			getRandomGenerator().drawUniformVector(T, 0.0, 0.999999);
 			T.push_back(1.0);
 
 			// Sort:
@@ -170,7 +170,7 @@ void CParticleFilterCapable::computeResampling(
 				Q[M - 1] = 1.1;
 
 				vector<double> T(M);
-				randomGenerator.drawUniformVector(T, 0.0, 0.999999);
+				getRandomGenerator().drawUniformVector(T, 0.0, 0.999999);
 				T.push_back(1.0);
 
 				// Sort:
@@ -211,7 +211,7 @@ void CParticleFilterCapable::computeResampling(
 			double T_offset = 0;
 			for (i = 0; i < M; i++)
 			{
-				T[i] = T_offset + randomGenerator.drawUniform(0.0, _1_M_eps);
+				T[i] = T_offset + getRandomGenerator().drawUniform(0.0, _1_M_eps);
 				T_offset += _1_M;
 			}
 			T[M] = 1;
@@ -243,7 +243,7 @@ void CParticleFilterCapable::computeResampling(
 			// Uniform random vector:
 			vector<double> T(M + 1);
 			double _1_M = 1.0 / M;
-			T[0] = randomGenerator.drawUniform(0.0, _1_M);
+			T[0] = getRandomGenerator().drawUniform(0.0, _1_M);
 			for (i = 1; i < M; i++) T[i] = T[i - 1] + _1_M;
 			T[M] = 1;
 
@@ -501,7 +501,7 @@ size_t CParticleFilterCapable::fastDrawSample(
 				"resamplingMethod must be 'prMultinomial' for a dynamic number "
 				"of particles!");
 
-		double draw = randomGenerator.drawUniform(0, 0.999999);
+		double draw = getRandomGenerator().drawUniform(0, 0.999999);
 		double CDF_next = -1.;
 		double CDF = -1.;
 

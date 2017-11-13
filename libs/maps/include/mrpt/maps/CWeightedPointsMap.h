@@ -15,7 +15,6 @@
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/math/CMatrix.h>
 
-
 namespace mrpt
 {
 namespace maps
@@ -145,15 +144,13 @@ class CWeightedPointsMap : public CPointsMap
 	virtual void PLY_import_set_vertex_count(const size_t N) override;
 	/** @} */
 
-	MAP_DEFINITION_START(CWeightedPointsMap, MAPS_IMPEXP)
+	MAP_DEFINITION_START(CWeightedPointsMap)
 	/** Observations insertion options */
 	mrpt::maps::CPointsMap::TInsertionOptions insertionOpts;
 	/** Probabilistic observation likelihood options */
 	mrpt::maps::CPointsMap::TLikelihoodOptions likelihoodOpts;
-	MAP_DEFINITION_END(CWeightedPointsMap, MAPS_IMPEXP)
+	MAP_DEFINITION_END(CWeightedPointsMap, )
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CWeightedPointsMap, CPointsMap, MAPS_IMPEXP)
 }  // End of namespace
 
 namespace utils

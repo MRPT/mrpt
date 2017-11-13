@@ -379,8 +379,8 @@ double poses_test_convert_ypr_quat_pdf(int a1, int a2)
 
 	{
 		CMatrixFixedNumeric<double, 6, 8> v;
-		mrpt::random::randomGenerator.randomize(1234);
-		mrpt::random::randomGenerator.drawGaussian1DMatrix(v);
+		mrpt::random::getRandomGenerator().randomize(1234);
+		mrpt::random::getRandomGenerator().drawGaussian1DMatrix(v);
 		v *= 0.1;
 		a_cov.multiply_AAt(v);  // COV = v*vt
 		for (int i = 3; i < 6; i++) a_cov(i, i) += square(DEG2RAD(2.0));
@@ -412,8 +412,8 @@ double poses_test_convert_quat_ypr_pdf(int a1, int a2)
 	CMatrixDouble66 a_cov;
 	{
 		CMatrixFixedNumeric<double, 6, 8> v;
-		mrpt::random::randomGenerator.randomize(1234);
-		mrpt::random::randomGenerator.drawGaussian1DMatrix(v);
+		mrpt::random::getRandomGenerator().randomize(1234);
+		mrpt::random::getRandomGenerator().drawGaussian1DMatrix(v);
 		v *= 0.1;
 		a_cov.multiply_AAt(v);  // COV = v*vt
 		for (int i = 3; i < 6; i++) a_cov(i, i) += square(DEG2RAD(2.0));
@@ -441,7 +441,7 @@ double poses_test_convert_quat_ypr_pdf(int a1, int a2)
 // ------------------------------------------------------
 void register_tests_poses()
 {
-	randomGenerator.randomize(1234);
+	getRandomGenerator().randomize(1234);
 
 	lstTests.push_back(
 		TestData("poses: CPose3D (+) CPose3D", poses_test_compose3D));

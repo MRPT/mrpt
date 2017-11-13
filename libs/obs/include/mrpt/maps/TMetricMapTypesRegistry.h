@@ -55,16 +55,15 @@ struct TMetricMapTypesRegistry
 
 /** Add a MAP_DEFINITION_START() ... MAP_DEFINITION_END() block inside the
  * declaration of each metric map */
-#define MAP_DEFINITION_START(_CLASS_NAME_, _LINKAGE_)                           \
+#define MAP_DEFINITION_START(_CLASS_NAME_)                                      \
    public:                                                                      \
 	/** @name Map Definition Interface stuff (see                               \
 	 * mrpt::maps::TMetricMapInitializer) @{ */                                 \
-	struct _LINKAGE_ TMapDefinitionBase                                         \
-		: public mrpt::maps::TMetricMapInitializer                              \
+	struct TMapDefinitionBase : public mrpt::maps::TMetricMapInitializer        \
 	{                                                                           \
 		TMapDefinitionBase() : TMetricMapInitializer(CLASS_ID(_CLASS_NAME_)) {} \
 	};                                                                          \
-	struct _LINKAGE_ TMapDefinition : public TMapDefinitionBase                 \
+	struct TMapDefinition : public TMapDefinitionBase                           \
 	{
 #define MAP_DEFINITION_END(_CLASS_NAME_, _LINKAGE_)                          \
 	TMapDefinition();                                                        \

@@ -262,8 +262,6 @@ class CMeshFast : public CRenderizableDisplayList
 	/** Private, virtual destructor: only can be deleted from smart pointers */
 	virtual ~CMeshFast() {}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CMeshFast, CRenderizableDisplayList, OPENGL_IMPEXP)
 
 }  // end namespace
 

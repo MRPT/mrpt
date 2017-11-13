@@ -73,7 +73,7 @@
 //#endif
 
 // Hack for MRPT: Link as part of mrpt-gui itself.
-#define WXDLLIMPEXP_MATHPLOT GUI_IMPEXP
+#define WXDLLIMPEXP_MATHPLOT 
 
 
 #if defined(__GNUG__) && !defined(__clang__)

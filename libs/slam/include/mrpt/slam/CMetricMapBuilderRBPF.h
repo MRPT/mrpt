@@ -18,7 +18,6 @@
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/safe_pointers.h>
 
-
 namespace mrpt
 {
 namespace slam

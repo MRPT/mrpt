@@ -14,7 +14,6 @@
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/poses/CPose3DQuat.h>
 
-
 namespace mrpt
 {
 namespace vision

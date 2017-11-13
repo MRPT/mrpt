@@ -16,7 +16,6 @@
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/obs/obs_frwds.h>
 
-
 namespace mrpt
 {
 namespace maps

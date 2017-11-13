@@ -53,8 +53,7 @@ namespace hwdrivers
   *
   * \ingroup mrpt_hwdrivers_grp
   */
-class CBoardSonars : public mrpt::comms::CInterfaceFTDI,
-									  public CGenericSensor
+class CBoardSonars : public mrpt::comms::CInterfaceFTDI, public CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CBoardSonars)
 

@@ -101,7 +101,7 @@ double grid_test_4(int a1, int a2)
 
 double grid_test_5_6(int a1, int a2)
 {
-	randomGenerator.randomize(333);
+	getRandomGenerator().randomize(333);
 
 	// prepare the laser scan:
 	CObservation2DRangeScan scan1;
@@ -118,9 +118,9 @@ double grid_test_5_6(int a1, int a2)
 	for (long i = 0; i < N; i++)
 	{
 		CPose2D pose(
-			randomGenerator.drawUniform(-1.0, 1.0),
-			randomGenerator.drawUniform(-1.0, 1.0),
-			randomGenerator.drawUniform(-M_PI, M_PI));
+			getRandomGenerator().drawUniform(-1.0, 1.0),
+			getRandomGenerator().drawUniform(-1.0, 1.0),
+			getRandomGenerator().drawUniform(-M_PI, M_PI));
 		CPose3D pose3D(pose);
 
 		gridmap.insertObservation(&scan1, &pose3D);
@@ -140,7 +140,7 @@ double grid_test_7(int a1, int a2)
 
 double grid_test_8(int a1, int a2)
 {
-	randomGenerator.randomize(333);
+	getRandomGenerator().randomize(333);
 
 	// prepare the laser scan:
 	CObservation2DRangeScan scan1;
@@ -163,9 +163,9 @@ double grid_test_8(int a1, int a2)
 	for (long i = 0; i < N; i++)
 	{
 		CPose2D pose(
-			randomGenerator.drawUniform(-1.0, 1.0),
-			randomGenerator.drawUniform(-1.0, 1.0),
-			randomGenerator.drawUniform(-M_PI, M_PI));
+			getRandomGenerator().drawUniform(-1.0, 1.0),
+			getRandomGenerator().drawUniform(-1.0, 1.0),
+			getRandomGenerator().drawUniform(-M_PI, M_PI));
 		R += gridmap.computeObservationLikelihood(&scan1, pose);
 	}
 	return tictac.Tac() / N;

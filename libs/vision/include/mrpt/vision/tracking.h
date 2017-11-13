@@ -350,14 +350,14 @@ struct CFeatureTracker_KL : public CGenericFeatureTracker
 /** Search for correspondences which are not in the same row and deletes them
   * ...
   */
-void VISION_IMPEXP checkTrackedFeatures(
+void checkTrackedFeatures(
 	CFeatureList& leftList, CFeatureList& rightList,
 	vision::TMatchingOptions options);
 
 /** Filter bad correspondences by distance
   * ...
   */
-void VISION_IMPEXP filterBadCorrsByDistance(
+void filterBadCorrsByDistance(
 	mrpt::utils::TMatchingPairList& list,  // The list of correspondences
 	unsigned int numberOfSigmas);  // Threshold
 

@@ -48,9 +48,9 @@ void CHMTSLAM::thread_LSLAM()
 
 	// Seems that must be called in each thread??
 	if (obj->m_options.random_seed)
-		randomGenerator.randomize(obj->m_options.random_seed);
+		getRandomGenerator().randomize(obj->m_options.random_seed);
 	else
-		randomGenerator.randomize();
+		getRandomGenerator().randomize();
 
 	try
 	{
@@ -68,7 +68,7 @@ void CHMTSLAM::thread_LSLAM()
 		while (!obj->m_terminateThreads)
 		{
 			if (obj->m_options.random_seed)
-				randomGenerator.randomize(obj->m_options.random_seed);
+				getRandomGenerator().randomize(obj->m_options.random_seed);
 
 			// Process pending message?
 			{
@@ -88,7 +88,7 @@ void CHMTSLAM::thread_LSLAM()
 			if (!obj->isInputQueueEmpty())
 			{
 				if (obj->m_options.random_seed)
-					randomGenerator.randomize(obj->m_options.random_seed);
+					getRandomGenerator().randomize(obj->m_options.random_seed);
 
 				// Get the next object from the queue:
 				CSerializable::Ptr nextObject =
@@ -164,7 +164,7 @@ void CHMTSLAM::thread_LSLAM()
 							it->second.m_posesPendingAddPartitioner.clear();
 
 							if (obj->m_options.random_seed)
-								randomGenerator.randomize(
+								getRandomGenerator().randomize(
 									obj->m_options.random_seed);
 							// -----------------------------------------------------------------------
 							// 3) Process the new grouping, which is a quite
@@ -188,7 +188,7 @@ void CHMTSLAM::thread_LSLAM()
 								static CTicTac tictac;
 								tictac.Tic();
 								if (obj->m_options.random_seed)
-									randomGenerator.randomize(
+									getRandomGenerator().randomize(
 										obj->m_options.random_seed);
 
 								TMessageLSLAMfromTBI::Ptr msgFromTBI =

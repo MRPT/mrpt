@@ -14,7 +14,6 @@
 #include <mrpt/obs/CObservationIMU.h>
 #include <mrpt/vision/CStereoRectifyMap.h>
 
-
 namespace mrpt
 {
 namespace hwdrivers

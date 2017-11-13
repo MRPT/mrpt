@@ -30,7 +30,7 @@ void register_tests_matrices2();
 
 void register_tests_matrices()
 {
-	randomGenerator.randomize(1234);
+	getRandomGenerator().randomize(1234);
 
 	register_tests_matrices1();
 	register_tests_matrices2();
@@ -73,8 +73,8 @@ double matrix_test_mult_dyn(int a1, int a2)
 	CMatrixTemplateNumeric<T> B(DIM2, DIM3);
 	CMatrixTemplateNumeric<T> C(DIM1, DIM3);
 
-	randomGenerator.drawGaussian1DMatrix(A, T(0), T(1));
-	randomGenerator.drawGaussian1DMatrix(B, T(0), T(1));
+	getRandomGenerator().drawGaussian1DMatrix(A, T(0), T(1));
+	getRandomGenerator().drawGaussian1DMatrix(B, T(0), T(1));
 
 	const long N = 10000;
 	CTicTac tictac;
@@ -92,8 +92,8 @@ double matrix_test_mult_fix(int a1, int a2)
 	CMatrixFixedNumeric<T, DIM2, DIM3> B;
 	CMatrixFixedNumeric<T, DIM1, DIM3> C;
 
-	randomGenerator.drawGaussian1DMatrix(A, T(0), T(1));
-	randomGenerator.drawGaussian1DMatrix(B, T(0), T(1));
+	getRandomGenerator().drawGaussian1DMatrix(A, T(0), T(1));
+	getRandomGenerator().drawGaussian1DMatrix(B, T(0), T(1));
 
 	const long N = 10000;
 	CTicTac tictac;
@@ -109,7 +109,7 @@ double matrix_test_inv_dyn(int a1, int a2)
 {
 	CMatrixTemplateNumeric<T> A(DIM1, DIM1);
 	CMatrixTemplateNumeric<T> A2(DIM1, DIM1);
-	randomGenerator.drawGaussian1DMatrix(A, T(0), T(1));
+	getRandomGenerator().drawGaussian1DMatrix(A, T(0), T(1));
 
 	const long N = 1000;
 	CTicTac tictac;
@@ -124,7 +124,7 @@ template <typename T, size_t DIM1>
 double matrix_test_inv_fix(int a1, int a2)
 {
 	CMatrixFixedNumeric<T, DIM1, DIM1> A, A2;
-	randomGenerator.drawGaussian1DMatrix(A, T(0), T(1));
+	getRandomGenerator().drawGaussian1DMatrix(A, T(0), T(1));
 
 	const long N = 1000;
 	CTicTac tictac;
@@ -139,7 +139,7 @@ template <typename T, size_t DIM1>
 double matrix_test_det_dyn(int a1, int a2)
 {
 	CMatrixTemplateNumeric<T> A(DIM1, DIM1);
-	randomGenerator.drawGaussian1DMatrix(A, T(0), T(1));
+	getRandomGenerator().drawGaussian1DMatrix(A, T(0), T(1));
 
 	const long N = 10000;
 	CTicTac tictac;
@@ -154,7 +154,7 @@ template <typename T, size_t DIM1>
 double matrix_test_det_fix(int a1, int a2)
 {
 	CMatrixFixedNumeric<T, DIM1, DIM1> A;
-	randomGenerator.drawGaussian1DMatrix(A, T(0), T(1));
+	getRandomGenerator().drawGaussian1DMatrix(A, T(0), T(1));
 
 	const long N = 10000;
 	CTicTac tictac;

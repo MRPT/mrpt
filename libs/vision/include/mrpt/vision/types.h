@@ -17,7 +17,6 @@
 #include <mrpt/utils/TMatchingPair.h>
 #include <mrpt/utils/TEnumType.h>
 
-
 namespace mrpt
 {
 namespace vision
@@ -189,8 +188,7 @@ typedef std::map<mrpt::vision::TFeatureID, TRelativeFeaturePos>
  * of functions handling this structure to see what they expect.
   *  \sa mrpt::vision::bundle_adj_full
   */
-struct TSequenceFeatureObservations
-	: public std::vector<TFeatureObservation>
+struct TSequenceFeatureObservations : public std::vector<TFeatureObservation>
 {
 	typedef std::vector<TFeatureObservation> BASE;
 
@@ -552,8 +550,7 @@ struct TMultiResMatchingOutput
 /** Struct containing the options when matching multi-resolution SIFT-like
  * descriptors
 */
-struct TMultiResDescMatchOptions
-	: public mrpt::utils::CLoadableOptions
+struct TMultiResDescMatchOptions : public mrpt::utils::CLoadableOptions
 {
 	/** Whether or not use the filter based on orientation test */
 	bool useOriFilter;

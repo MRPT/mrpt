@@ -40,9 +40,8 @@ namespace hwdrivers
   * \sa comms::CSerialPort
   * \ingroup mrpt_hwdrivers_grp
   */
-class C2DRangeFinderAbstract
-	: public mrpt::utils::COutputLogger,
-	  public mrpt::hwdrivers::CGenericSensor
+class C2DRangeFinderAbstract : public mrpt::utils::COutputLogger,
+							   public mrpt::hwdrivers::CGenericSensor
 {
    private:
 	mrpt::obs::CObservation2DRangeScan m_lastObservation;

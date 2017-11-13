@@ -78,7 +78,7 @@ void CPosePDFParticlesExtended::copyFrom(const CPosePDF& o)
 		std::vector<vector<double>> parts;
 		std::vector<vector<double>>::iterator partsIt;
 
-		randomGenerator.drawGaussianMultivariateMany(parts, M, pdf->cov);
+		getRandomGenerator().drawGaussianMultivariateMany(parts, M, pdf->cov);
 
 		m_particles.clear();
 		m_particles.resize(M);
@@ -342,9 +342,9 @@ void CPosePDFParticlesExtended::readFromStream(
  ---------------------------------------------------------------*/
 void CPosePDFParticlesExtended::offsetTransitionModel(double& val)
 {
-	if (randomGenerator.drawUniform(0.0, 1.0) < options.probabilityChangingBias)
+	if (getRandomGenerator().drawUniform(0.0, 1.0) < options.probabilityChangingBias)
 	{
-		val = randomGenerator.drawUniform(-options.changingBiasUnifRange, 1.0);
+		val = getRandomGenerator().drawUniform(-options.changingBiasUnifRange, 1.0);
 		//		val = min( val, 0.5f*options.changingBiasUnifRange );
 		//		val = max( val,-0.5f*options.changingBiasUnifRange );
 	}
@@ -612,7 +612,7 @@ void CPosePDFParticlesExtended::prediction_and_update_pfAuxiliaryPFOptimal(
 					maxLikelihood[k] = newPoseLikelihood;  //  :'-( !!!
 				}
 
-			} while (acceptanceProb < randomGenerator.drawUniform(0.0, 0.999) &&
+			} while (acceptanceProb < getRandomGenerator().drawUniform(0.0, 0.999) &&
 					 (++timeoutCount) < MAX_TIMEOUT);
 
 			if (timeoutCount >= MAX_TIMEOUT) newPose = bestNewPose;
@@ -699,16 +699,16 @@ void CPosePDFParticlesExtended::resetUniform(
 	size_t i, M = m_particles.size();
 	for (i = 0; i < M; i++)
 	{
-		m_particles[i].d->pose.x(randomGenerator.drawUniform(x_min, x_max));
-		m_particles[i].d->pose.y(randomGenerator.drawUniform(y_min, y_max));
+		m_particles[i].d->pose.x(getRandomGenerator().drawUniform(x_min, x_max));
+		m_particles[i].d->pose.y(getRandomGenerator().drawUniform(y_min, y_max));
 		m_particles[i].d->pose.phi(
-			randomGenerator.drawUniform(phi_min, phi_max));
+			getRandomGenerator().drawUniform(phi_min, phi_max));
 		m_particles[i].d->state.resize(state_min.size());
 		m_particles[i].d->state.resize(state_max.size());
 
 		for (int k = 0; k < state_min.size(); k++)
 			m_particles[i].d->state[k] =
-				randomGenerator.drawUniform(state_min[k], state_max[k]);
+				getRandomGenerator().drawUniform(state_min[k], state_max[k]);
 
 		m_particles[i].log_w = 0;
 	}
@@ -761,7 +761,7 @@ void CPosePDFParticlesExtended::changeCoordinatesReference(
  ---------------------------------------------------------------*/
 void CPosePDFParticlesExtended::drawSingleSample(CPose2D& outPart) const
 {
-	float uni = randomGenerator.drawUniform(0.0f, 0.9999f);
+	float uni = getRandomGenerator().drawUniform(0.0f, 0.9999f);
 	double cum = 0;
 	CParticleList::const_iterator it;
 

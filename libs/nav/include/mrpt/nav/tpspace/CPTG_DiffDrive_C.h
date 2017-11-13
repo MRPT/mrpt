@@ -70,7 +70,5 @@ class CPTG_DiffDrive_C : public CPTG_DiffDrive_CollisionGridBased
 	/** A generation parameter */
 	double K;
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CPTG_DiffDrive_C, CParameterizedTrajectoryGenerator, NAV_IMPEXP)
 }
 }

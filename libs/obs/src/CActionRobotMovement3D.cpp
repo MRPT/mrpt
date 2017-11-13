@@ -212,53 +212,53 @@ void CActionRobotMovement3D::computeFromOdometry_model6DOF(
 		float Ayaw1_draw =
 			Ayaw1 +
 			(o.mm6DOFModel.a1 * Ayaw1 + o.mm6DOFModel.a2 * Atrans) *
-				randomGenerator.drawGaussian1D_normalized();
+				getRandomGenerator().drawGaussian1D_normalized();
 		float Apitch1_draw = Apitch1 +
 							 (o.mm6DOFModel.a3 * odometryIncrement.z()) *
-								 randomGenerator.drawGaussian1D_normalized();
+								 getRandomGenerator().drawGaussian1D_normalized();
 		float Atrans_draw =
 			Atrans +
 			(o.mm6DOFModel.a4 * Atrans + o.mm6DOFModel.a5 * Ayaw2 +
 			 o.mm6DOFModel.a6 * (Aroll + Apitch2)) *
-				randomGenerator.drawGaussian1D_normalized();
+				getRandomGenerator().drawGaussian1D_normalized();
 
 		float Aroll_draw = Aroll +
 						   (o.mm6DOFModel.a7 * Aroll) *
-							   randomGenerator.drawGaussian1D_normalized();
+							   getRandomGenerator().drawGaussian1D_normalized();
 		float Apitch2_draw = Apitch2 +
 							 (o.mm6DOFModel.a8 * Apitch2) *
-								 randomGenerator.drawGaussian1D_normalized();
+								 getRandomGenerator().drawGaussian1D_normalized();
 		float Ayaw2_draw =
 			Ayaw2 +
 			(o.mm6DOFModel.a9 * Ayaw2 + o.mm6DOFModel.a10 * Atrans) *
-				randomGenerator.drawGaussian1D_normalized();
+				getRandomGenerator().drawGaussian1D_normalized();
 
 		// Output:
 		aux->m_particles[i].d->x(
 			Atrans_draw * sin(Apitch1_draw) * cos(Ayaw1_draw) +
 			motionModelConfiguration.mm6DOFModel.additional_std_XYZ *
-				randomGenerator.drawGaussian1D_normalized());
+				getRandomGenerator().drawGaussian1D_normalized());
 		aux->m_particles[i].d->y(
 			Atrans_draw * sin(Apitch1_draw) * sin(Ayaw1_draw) +
 			motionModelConfiguration.mm6DOFModel.additional_std_XYZ *
-				randomGenerator.drawGaussian1D_normalized());
+				getRandomGenerator().drawGaussian1D_normalized());
 		aux->m_particles[i].d->z(
 			Atrans_draw * cos(Apitch1_draw) +
 			motionModelConfiguration.mm6DOFModel.additional_std_XYZ *
-				randomGenerator.drawGaussian1D_normalized());
+				getRandomGenerator().drawGaussian1D_normalized());
 
 		double new_yaw =
 			Ayaw1_draw + Ayaw2_draw +
 			motionModelConfiguration.mm6DOFModel.additional_std_angle *
-				randomGenerator.drawGaussian1D_normalized();
+				getRandomGenerator().drawGaussian1D_normalized();
 		double new_pitch =
 			Apitch1_draw + Apitch2_draw +
 			motionModelConfiguration.mm6DOFModel.additional_std_angle *
-				randomGenerator.drawGaussian1D_normalized();
+				getRandomGenerator().drawGaussian1D_normalized();
 		double new_roll =
 			Aroll_draw +
 			motionModelConfiguration.mm6DOFModel.additional_std_angle *
-				randomGenerator.drawGaussian1D_normalized();
+				getRandomGenerator().drawGaussian1D_normalized();
 
 		aux->m_particles[i].d->setYawPitchRoll(new_yaw, new_pitch, new_roll);
 		aux->m_particles[i].d->normalizeAngles();

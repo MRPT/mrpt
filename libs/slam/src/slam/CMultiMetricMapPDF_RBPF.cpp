@@ -419,7 +419,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 			// -------------------------------------------------------------------------------------------
 			finalPose =
 				finalEstimatedPoseGauss.mean;  // Add to the new robot pose:
-			randomGenerator.drawGaussianMultivariate(
+			getRandomGenerator().drawGaussianMultivariate(
 				rndSamples, finalEstimatedPoseGauss.cov);
 			// Add noise:
 			finalPose.setFromValues(

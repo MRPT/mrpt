@@ -11,7 +11,6 @@
 
 #include <mrpt/utils/CLoadableOptions.h>
 
-
 namespace mrpt
 {
 namespace slam

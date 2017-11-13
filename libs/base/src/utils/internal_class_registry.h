@@ -20,8 +20,8 @@ typedef void (*TRegisterFunction)();  // A void(void) function
 
 // Use a queue for the pending register issues, but also an atomic counter,
 // which is much faster to check than a CS.
-std::atomic<int> BASE_IMPEXP& pending_class_registers_count();
-CThreadSafeQueue<TRegisterFunction> BASE_IMPEXP& pending_class_registers();
+std::atomic<int>& pending_class_registers_count();
+CThreadSafeQueue<TRegisterFunction>& pending_class_registers();
 /** Set to true if pending_class_registers() has been called after
  * registerAllPendingClasses(). Startup value is false. */
 extern volatile bool pending_class_registers_modified;

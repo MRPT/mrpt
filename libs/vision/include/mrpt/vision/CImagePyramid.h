@@ -12,7 +12,6 @@
 
 #include <mrpt/utils/CImage.h>
 
-
 namespace mrpt
 {
 namespace vision

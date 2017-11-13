@@ -39,10 +39,10 @@ CHMHMapNode::CHMHMapNode(
 		m_ID = 0;
 		do
 		{
-			m_ID++; /* = (((uint64_t)randomGenerator.drawUniform(0.0f,0xFFFF))
+			m_ID++; /* = (((uint64_t)getRandomGenerator().drawUniform(0.0f,0xFFFF))
 				<< 32) |
-				(((uint64_t)randomGenerator.drawUniform(0.0f,0xFFFF)) << 16) |
-				(((uint64_t)randomGenerator.drawUniform(0.0f,0xFFFF)));*/
+				(((uint64_t)getRandomGenerator().drawUniform(0.0f,0xFFFF)) << 16) |
+				(((uint64_t)getRandomGenerator().drawUniform(0.0f,0xFFFF)));*/
 		} while (m_parent->getNodeByID(m_ID));
 	}
 }

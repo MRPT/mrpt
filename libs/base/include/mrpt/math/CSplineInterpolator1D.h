@@ -100,8 +100,6 @@ class CSplineInterpolator1D : public mrpt::utils::CSerializable
 		return anyValid;
 	}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(
-	CSplineInterpolator1D, mrpt::utils::CSerializable)
 
 }  // End of namespace
 }  // End of namespace

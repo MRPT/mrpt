@@ -23,7 +23,6 @@
 
 #include <mrpt/slam/PF_implementations_data.h>
 
-
 /** \file PF_implementations.h
  *  This file contains the implementations of the template members declared in
  * mrpt::slam::PF_implementation
@@ -858,7 +857,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 						permutationPathsAuxVector.size() - 1);
 
 					const size_t idx =
-						mrpt::random::randomGenerator.drawUniform32bit() %
+						mrpt::random::getRandomGenerator().drawUniform32bit() %
 						stateSpaceBinsLastTimestepParticles[idxBinSpacePath]
 							.size();
 					k = stateSpaceBinsLastTimestepParticles[idxBinSpacePath]
@@ -887,7 +886,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 					if (oldPartIdxsStillNotPropragated.size())
 					{
 						const size_t idx =
-							mrpt::random::randomGenerator.drawUniform32bit() %
+							mrpt::random::getRandomGenerator().drawUniform32bit() %
 							oldPartIdxsStillNotPropragated.size();
 						vector_size_t::iterator it =
 							oldPartIdxsStillNotPropragated.begin() +
@@ -898,7 +897,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 					else
 					{
 						// N>N_old -> Uniformly draw index:
-						k = mrpt::random::randomGenerator.drawUniform32bit() %
+						k = mrpt::random::getRandomGenerator().drawUniform32bit() %
 							me->m_particles.size();
 					}
 				}
@@ -1004,7 +1003,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 			maxMeanLik) < -PF_options.max_loglikelihood_dyn_range)
 	{
 		// Select another 'k' uniformly:
-		k = mrpt::random::randomGenerator.drawUniform32bit() %
+		k = mrpt::random::getRandomGenerator().drawUniform32bit() %
 			me->m_particles.size();
 		me->logStr(
 			mrpt::utils::LVL_DEBUG,
@@ -1094,7 +1093,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 				}
 			} while (++timeout < maxTries &&
 					 acceptanceProb <
-						 mrpt::random::randomGenerator.drawUniform(0.0, 0.999));
+						 mrpt::random::getRandomGenerator().drawUniform(0.0, 0.999));
 
 			if (timeout >= maxTries)
 			{

@@ -534,10 +534,10 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 
 					// Pick 2 random correspondences:
 					uint32_t idx1, idx2;
-					idx1 = randomGenerator.drawUniform32bit() % nCorrs;
+					idx1 = getRandomGenerator().drawUniform32bit() % nCorrs;
 					do
 					{
-						idx2 = randomGenerator.drawUniform32bit() % nCorrs;
+						idx2 = getRandomGenerator().drawUniform32bit() % nCorrs;
 					} while (idx1 == idx2);  // Avoid a degenerated case!
 
 					// Uniqueness of features:

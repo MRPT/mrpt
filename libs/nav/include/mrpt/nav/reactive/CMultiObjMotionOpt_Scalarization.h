@@ -64,7 +64,5 @@ class CMultiObjMotionOpt_Scalarization
 		const std::vector<mrpt::nav::TCandidateMovementPTG>& movs,
 		TResultInfo& extra_info) override;
 };
-DEFINE_MRPT_OBJECT_POST_CUSTOM_LINKAGE(
-	CMultiObjMotionOpt_Scalarization, NAV_IMPEXP)
 }
 }

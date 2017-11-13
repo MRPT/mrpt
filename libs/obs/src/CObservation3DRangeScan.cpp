@@ -507,10 +507,10 @@ void CObservation3DRangeScan::rangeImage_getExternalStorageFileAbsolutePath(
 	}
 	else
 	{
-		out_path = CImage::IMAGES_PATH_BASE;
-		size_t N = CImage::IMAGES_PATH_BASE.size() - 1;
-		if (CImage::IMAGES_PATH_BASE[N] != '/' &&
-			CImage::IMAGES_PATH_BASE[N] != '\\')
+		out_path = CImage::getImagesPathBase();
+		size_t N = CImage::getImagesPathBase().size() - 1;
+		if (CImage::getImagesPathBase()[N] != '/' &&
+			CImage::getImagesPathBase()[N] != '\\')
 			out_path += "/";
 		out_path += m_rangeImage_external_file;
 	}
@@ -527,10 +527,10 @@ void CObservation3DRangeScan::points3D_getExternalStorageFileAbsolutePath(
 	}
 	else
 	{
-		out_path = CImage::IMAGES_PATH_BASE;
-		size_t N = CImage::IMAGES_PATH_BASE.size() - 1;
-		if (CImage::IMAGES_PATH_BASE[N] != '/' &&
-			CImage::IMAGES_PATH_BASE[N] != '\\')
+		out_path = CImage::getImagesPathBase();
+		size_t N = CImage::getImagesPathBase().size() - 1;
+		if (CImage::getImagesPathBase()[N] != '/' &&
+			CImage::getImagesPathBase()[N] != '\\')
 			out_path += "/";
 		out_path += m_points3D_external_file;
 	}
@@ -552,12 +552,12 @@ void CObservation3DRangeScan::points3D_convertToExternalStorage(
 			mrpt::system::fileNameChangeExtension(fileName_, "bin");
 
 	// Use "use_this_base_dir" in "*_getExternalStorageFileAbsolutePath()"
-	// instead of CImage::IMAGES_PATH_BASE
-	const string savedDir = CImage::IMAGES_PATH_BASE;
-	CImage::IMAGES_PATH_BASE = use_this_base_dir;
+	// instead of CImage::getImagesPathBase()
+	const string savedDir = CImage::getImagesPathBase();
+	CImage::setImagesPathBase(use_this_base_dir);
 	const string real_absolute_file_path =
 		points3D_getExternalStorageFileAbsolutePath();
-	CImage::IMAGES_PATH_BASE = savedDir;
+	CImage::setImagesPathBase(savedDir);
 
 	if (EXTERNALS_AS_TEXT)
 	{
@@ -597,12 +597,12 @@ void CObservation3DRangeScan::rangeImage_convertToExternalStorage(
 			mrpt::system::fileNameChangeExtension(fileName_, "bin");
 
 	// Use "use_this_base_dir" in "*_getExternalStorageFileAbsolutePath()"
-	// instead of CImage::IMAGES_PATH_BASE
-	const string savedDir = CImage::IMAGES_PATH_BASE;
-	CImage::IMAGES_PATH_BASE = use_this_base_dir;
+	// instead of CImage::getImagesPathBase()
+	const string savedDir = CImage::getImagesPathBase();
+	CImage::setImagesPathBase(use_this_base_dir);
 	const string real_absolute_file_path =
 		rangeImage_getExternalStorageFileAbsolutePath();
-	CImage::IMAGES_PATH_BASE = savedDir;
+	CImage::setImagesPathBase(savedDir);
 
 	if (EXTERNALS_AS_TEXT)
 	{

@@ -86,7 +86,7 @@ struct TMatchingRatioParams
 
 /** Common params to all maps derived from mrpt::maps::CMetricMap  */
 class TMapGenericParams : public mrpt::utils::CLoadableOptions,
-									 public mrpt::utils::CSerializable
+						  public mrpt::utils::CSerializable
 {
 	DEFINE_SERIALIZABLE(TMapGenericParams)
    public:
@@ -105,7 +105,6 @@ class TMapGenericParams : public mrpt::utils::CLoadableOptions,
 	void dumpToTextStream(
 		mrpt::utils::CStream& out) const override;  // See base docs
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_LINKAGE(TMapGenericParams, OBS_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

@@ -27,8 +27,7 @@ namespace mrpt
  * http://senzee.blogspot.com/2006/05/c-formatting-stdstring.html
   *  Function implemented in format.cpp
   */
-std::string format(const char* fmt, ...)
-	MRPT_printf_format_check(1, 2);
+std::string format(const char* fmt, ...) MRPT_printf_format_check(1, 2);
 
 namespace math
 {

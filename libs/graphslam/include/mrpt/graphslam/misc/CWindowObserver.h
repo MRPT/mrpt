@@ -17,7 +17,6 @@
 #include <mrpt/opengl/gl_utils.h>
 #include <mrpt/system/string_utils.h>
 
-
 #include <iostream>
 #include <string>
 #include <map>

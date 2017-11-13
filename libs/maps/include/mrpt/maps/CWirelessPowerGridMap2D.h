@@ -13,7 +13,6 @@
 #include <mrpt/maps/CRandomFieldGridMap2D.h>
 #include <mrpt/obs/CObservationWirelessPower.h>
 
-
 namespace mrpt
 {
 namespace maps
@@ -49,7 +48,7 @@ class CWirelessPowerGridMap2D : public CRandomFieldGridMap2D
 	/** Parameters related with inserting observations into the map:
 	  */
 	struct TInsertionOptions : public utils::CLoadableOptions,
-										   public TInsertionOptionsCommon
+							   public TInsertionOptionsCommon
 	{
 		/** Default values loader */
 		TInsertionOptions();
@@ -83,17 +82,15 @@ class CWirelessPowerGridMap2D : public CRandomFieldGridMap2D
 		const mrpt::obs::CObservation* obs,
 		const mrpt::poses::CPose3D& takenFrom) override;
 
-	MAP_DEFINITION_START(CWirelessPowerGridMap2D, MAPS_IMPEXP)
+	MAP_DEFINITION_START(CWirelessPowerGridMap2D)
 	/** See CWirelessPowerGridMap2D::CWirelessPowerGridMap2D */
 	double min_x, max_x, min_y, max_y, resolution;
 	/** The kind of map representation (see
 	 * CWirelessPowerGridMap2D::CWirelessPowerGridMap2D) */
 	mrpt::maps::CWirelessPowerGridMap2D::TMapRepresentation mapType;
 	mrpt::maps::CWirelessPowerGridMap2D::TInsertionOptions insertionOpts;
-	MAP_DEFINITION_END(CWirelessPowerGridMap2D, MAPS_IMPEXP)
+	MAP_DEFINITION_END(CWirelessPowerGridMap2D, )
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CWirelessPowerGridMap2D, CRandomFieldGridMap2D, MAPS_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

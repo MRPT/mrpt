@@ -13,7 +13,6 @@
 #include <mrpt/slam/CICP.h>
 #include <mrpt/poses/CRobot2DPoseEstimator.h>
 
-
 namespace mrpt
 {
 namespace slam

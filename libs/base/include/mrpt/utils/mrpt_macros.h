@@ -494,8 +494,7 @@ need to account for this with an extra offset.
 namespace mrpt
 {
 // Redeclared here for convenience:
-std::string format(const char* fmt, ...)
-	MRPT_printf_format_check(1, 2);
+std::string format(const char* fmt, ...) MRPT_printf_format_check(1, 2);
 }
 
 #endif

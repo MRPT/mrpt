@@ -22,7 +22,6 @@
 
 #include <mrpt/slam/PF_implementations_data.h>
 
-
 namespace mrpt
 {
 namespace slam
@@ -47,8 +46,6 @@ class CRBPFParticleData : public mrpt::utils::CSerializable
 	CMultiMetricMap mapTillNow;
 	std::deque<mrpt::math::TPose3D> robotPath;
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CRBPFParticleData, mrpt::utils::CSerializable, SLAM_IMPEXP)
 
 /** Declares a class that represents a Rao-Blackwellized set of particles for
  * solving the SLAM problem (This class is the base of RBPF-SLAM applications).
@@ -280,8 +277,6 @@ class CMultiMetricMapPDF
 	/** @} */
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CMultiMetricMapPDF, mrpt::utils::CSerializable, SLAM_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

@@ -16,7 +16,6 @@
 #include <mrpt/opengl/CRenderizable.h>
 #endif
 
-
 namespace mrpt
 {
 namespace opengl
@@ -88,24 +87,23 @@ struct TRenderInfo
   *
   *  \note Used by  COpenGLViewport, CSetOfObjects
   */
-void OPENGL_IMPEXP
-	renderSetOfObjects(const mrpt::opengl::CListOpenGLObjects& objs);
+void renderSetOfObjects(const mrpt::opengl::CListOpenGLObjects& objs);
 
 /** Checks glGetError and throws an exception if an error situation is found */
-void OPENGL_IMPEXP checkOpenGLError();
+void checkOpenGLError();
 
 /** Can be used by derived classes to draw a triangle with a normal vector
  * computed automatically - to be called within a glBegin()-glEnd() block. */
-void OPENGL_IMPEXP renderTriangleWithNormal(
+void renderTriangleWithNormal(
 	const mrpt::math::TPoint3D& p1, const mrpt::math::TPoint3D& p2,
 	const mrpt::math::TPoint3D& p3);
-void OPENGL_IMPEXP renderTriangleWithNormal(
+void renderTriangleWithNormal(
 	const mrpt::math::TPoint3Df& p1, const mrpt::math::TPoint3Df& p2,
 	const mrpt::math::TPoint3Df& p3);
 
 /** Can be used by derived classes to draw a quad with a normal vector computed
  * automatically - to be called within a glBegin()-glEnd() block. */
-void OPENGL_IMPEXP renderQuadWithNormal(
+void renderQuadWithNormal(
 	const mrpt::math::TPoint3Df& p1, const mrpt::math::TPoint3Df& p2,
 	const mrpt::math::TPoint3Df& p3, const mrpt::math::TPoint3Df& p4);
 
@@ -126,7 +124,7 @@ void OPENGL_IMPEXP renderQuadWithNormal(
   * \endcode
   *  where (rend_x,rend_y) are both in the range [-1,1].
   */
-void OPENGL_IMPEXP getCurrentRenderingInfo(TRenderInfo& ri);
+void getCurrentRenderingInfo(TRenderInfo& ri);
 
 /** Draws a message box with a centered (possibly multi-lined) text.
   *  It consists of a filled rectangle with a frame around and the centered text
@@ -157,7 +155,7 @@ void OPENGL_IMPEXP getCurrentRenderingInfo(TRenderInfo& ri);
   *
   *  <img src="gl_utils_message_box.jpg" >
   */
-void OPENGL_IMPEXP renderMessageBox(
+void renderMessageBox(
 	const float msg_x, const float msg_y, const float msg_w, const float msg_h,
 	const std::string& text, float text_scale,
 	const mrpt::utils::TColor& back_col = mrpt::utils::TColor(0, 0, 50, 150),
@@ -176,13 +174,13 @@ void OPENGL_IMPEXP renderMessageBox(
 
 /** This method is safe for calling from within ::render() methods \sa
  * renderTextBitmap */
-void OPENGL_IMPEXP renderTextBitmap(const char* str, void* fontStyle);
+void renderTextBitmap(const char* str, void* fontStyle);
 
 /** Return the exact width in pixels for a given string, as will be rendered by
  * renderTextBitmap().
   * \sa renderTextBitmap
   */
-int OPENGL_IMPEXP textBitmapWidth(
+int textBitmapWidth(
 	const std::string& str, mrpt::opengl::TOpenGLFont font =
 								mrpt::opengl::MRPT_GLUT_BITMAP_TIMES_ROMAN_24);
 
@@ -194,10 +192,10 @@ int OPENGL_IMPEXP textBitmapWidth(
 /// sets the font to use for future font rendering commands. currently "sans",
 /// "serif" and "mono" are available.
 /// @param fontname string containing font name
-void OPENGL_IMPEXP glSetFont(const std::string& fontname);
+void glSetFont(const std::string& fontname);
 
 /// returns the name of the currently active font
-const OPENGL_IMPEXP std::string& glGetFont();
+const std::string& glGetFont();
 
 /// renders a string in GL using the current settings.
 /// Font coordinates are +X along the line and +Y along the up direction of
@@ -214,7 +212,7 @@ const OPENGL_IMPEXP std::string& glGetFont();
 /// @param kerning distance between characters
 /// \note This functions comes from libcvd (LGPL,
 /// http://www.edwardrosten.com/cvd/ )
-mrpt::utils::TPixelCoordf OPENGL_IMPEXP glDrawText(
+mrpt::utils::TPixelCoordf glDrawText(
 	const std::string& text, const double textScale,
 	enum TOpenGLFontStyle style = NICE, double spacing = 1.5,
 	double kerning = 0.1);
@@ -223,7 +221,7 @@ mrpt::utils::TPixelCoordf OPENGL_IMPEXP glDrawText(
 /// @ref glDrawText but without any visual output
 /// \note This functions comes from libcvd (LGPL,
 /// http://www.edwardrosten.com/cvd/ )
-mrpt::utils::TPixelCoordf OPENGL_IMPEXP glGetExtends(
+mrpt::utils::TPixelCoordf glGetExtends(
 	const std::string& text, const double textScale, double spacing = 1.5,
 	double kerning = 0.1);
 

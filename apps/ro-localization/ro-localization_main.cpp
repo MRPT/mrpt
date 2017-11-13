@@ -141,7 +141,7 @@ void TestParticlesLocalization()
 	pfOptions.dumpToConsole();
 
 	// Init random & serialization:
-	randomGenerator.randomize();
+	getRandomGenerator().randomize();
 
 	/*	if( MAP_FILE!="NOT FOUND!" )
 		{

@@ -123,7 +123,7 @@ void Run_HMT_SLAM()
 	// Set relative path for externally-stored images in rawlogs:
 	string rawlog_images_path = extractFileDirectory(rawlogFileName);
 	rawlog_images_path += "/Images";
-	CImage::IMAGES_PATH_BASE = rawlog_images_path;  // Set it.
+	CImage::setImagesPathBase(rawlog_images_path);  // Set it.
 
 	// Load the config options for mapping:
 	// ----------------------------------------

@@ -13,7 +13,6 @@
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/synch/MT_buffer.h>
 
-
 #include <future>
 #include <list>
 

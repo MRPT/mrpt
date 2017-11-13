@@ -62,8 +62,6 @@ class CObservationOdometry : public CObservation
 	void getDescriptionAsText(std::ostream& o) const override;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CObservationOdometry, CObservation, OBS_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

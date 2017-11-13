@@ -22,14 +22,14 @@ TEST(Base64, RandomEncDec)
 {
 	for (size_t seed = 0; seed < 500; seed++)
 	{
-		randomGenerator.randomize(seed);
+		getRandomGenerator().randomize(seed);
 
-		const size_t block_len = randomGenerator.drawUniform32bit() % 567;
+		const size_t block_len = getRandomGenerator().drawUniform32bit() % 567;
 
 		vector_byte myData(block_len);
 		for (size_t n = 0; n < block_len; n++)
 			myData[n] =
-				static_cast<uint8_t>(randomGenerator.drawUniform32bit());
+				static_cast<uint8_t>(getRandomGenerator().drawUniform32bit());
 
 		std::string myStr;
 		mrpt::system::encodeBase64(myData, myStr);

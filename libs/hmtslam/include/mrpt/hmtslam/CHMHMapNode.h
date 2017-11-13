@@ -137,8 +137,6 @@ class CHMHMapNode : public mrpt::utils::CSerializable
 		const TNodeID& otherArea, const THypothesisID& hyp_id) const;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CHMHMapNode, mrpt::utils::CSerializable, HMTSLAM_IMPEXP)
 
 /** A map between node IDs and nodes (used in HMT-SLAM).
   * \sa CHMTSLAM
