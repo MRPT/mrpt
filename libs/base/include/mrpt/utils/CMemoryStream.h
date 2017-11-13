@@ -24,7 +24,7 @@ namespace utils
  * \sa CStream
  * \ingroup mrpt_base_grp
  */
-class BASE_IMPEXP CMemoryStream : public CStream
+class CMemoryStream : public CStream
 {
    protected:
 	size_t Read(void* Buffer, size_t Count) override;
@@ -100,7 +100,7 @@ class BASE_IMPEXP CMemoryStream : public CStream
 
 namespace internal
 {
-struct BASE_IMPEXP TFreeFnDataForZMQ
+struct TFreeFnDataForZMQ
 {
 	CMemoryStream* buf;
 	bool do_free;
@@ -108,7 +108,7 @@ struct BASE_IMPEXP TFreeFnDataForZMQ
 };
 /** Used in mrpt_send_to_zmq(). `hint` points to a `TFreeFnDataForZMQ` struct,
  * to be freed here. */
-void BASE_IMPEXP free_fn_for_zmq(void* data, void* hint);
+void free_fn_for_zmq(void* data, void* hint);
 }
 }  // End of namespace
 }  // end of namespace

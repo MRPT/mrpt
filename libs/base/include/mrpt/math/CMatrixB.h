@@ -21,7 +21,7 @@ namespace math
  * http://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes
  * \ingroup mrpt_base_grp
  */
-class BASE_IMPEXP CMatrixB : public mrpt::utils::CSerializable,
+class CMatrixB : public mrpt::utils::CSerializable,
 							 public CMatrixBool
 {
 	DEFINE_SERIALIZABLE(CMatrixB)

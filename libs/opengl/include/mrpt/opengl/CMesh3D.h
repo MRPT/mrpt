@@ -35,7 +35,7 @@ namespace opengl
   *
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CMesh3D : public CRenderizableDisplayList
+class CMesh3D : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CMesh3D)
 

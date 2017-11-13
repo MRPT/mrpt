@@ -20,7 +20,7 @@ namespace poses
  * \ingroup poses_pdf_grp
  * \sa CPoint2DPDF
  */
-class BASE_IMPEXP CPoint2DPDFGaussian : public CPoint2DPDF
+class CPoint2DPDFGaussian : public CPoint2DPDF
 {
 	DEFINE_SERIALIZABLE(CPoint2DPDFGaussian)
 

@@ -79,7 +79,7 @@ namespace vision
   * \sa mrpt::vision::CFeature
   * \ingroup mrptvision_features
   */
-class VISION_IMPEXP CFeatureExtraction
+class CFeatureExtraction
 {
    public:
 	enum TSIFTImplementation
@@ -92,7 +92,7 @@ class VISION_IMPEXP CFeatureExtraction
 	};
 
 	/** The set of parameters for all the detectors & descriptor algorithms */
-	struct VISION_IMPEXP TOptions : public utils::CLoadableOptions
+	struct TOptions : public utils::CLoadableOptions
 	{
 		/** Initalizer */
 		TOptions(const TFeatureType featsType = featKLT);
@@ -128,7 +128,7 @@ class VISION_IMPEXP CFeatureExtraction
 		bool FIND_SUBPIXEL;
 
 		/** KLT Options */
-		struct VISION_IMPEXP TKLTOptions
+		struct TKLTOptions
 		{
 			int radius;  // size of the block of pixels used
 			float threshold;  // (default=0.1) for rejecting weak local maxima
@@ -140,7 +140,7 @@ class VISION_IMPEXP CFeatureExtraction
 		} KLTOptions;
 
 		/** Harris Options */
-		struct VISION_IMPEXP THarrisOptions
+		struct THarrisOptions
 		{
 			float threshold;  // (default=0.005) for rejecting weak local maxima
 			// (with min_eig < threshold*max(eig_image))
@@ -155,12 +155,12 @@ class VISION_IMPEXP CFeatureExtraction
 		} harrisOptions;
 
 		/** BCD Options */
-		struct VISION_IMPEXP TBCDOptions
+		struct TBCDOptions
 		{
 		} BCDOptions;
 
 		/** FAST and FASTER Options */
-		struct VISION_IMPEXP TFASTOptions
+		struct TFASTOptions
 		{
 			int threshold;  //!< default= 20
 			float min_distance;  //!< (default=5) minimum distance between
@@ -173,7 +173,7 @@ class VISION_IMPEXP CFeatureExtraction
 		} FASTOptions;
 
 		/** ORB Options */
-		struct VISION_IMPEXP TORBOptions
+		struct TORBOptions
 		{
 			TORBOptions()
 				: n_levels(8),
@@ -190,7 +190,7 @@ class VISION_IMPEXP CFeatureExtraction
 		} ORBOptions;
 
 		/** SIFT Options  */
-		struct VISION_IMPEXP TSIFTOptions
+		struct TSIFTOptions
 		{
 			TSIFTOptions() : threshold(0.04), edgeThreshold(10) {}
 			TSIFTImplementation implementation;  //!< Default: Hess (OpenCV
@@ -202,7 +202,7 @@ class VISION_IMPEXP CFeatureExtraction
 			double edgeThreshold;  //!< default= 10
 		} SIFTOptions;
 
-		struct VISION_IMPEXP TSURFOptions
+		struct TSURFOptions
 		{
 			TSURFOptions()
 				: rotation_invariant(true),
@@ -222,7 +222,7 @@ class VISION_IMPEXP CFeatureExtraction
 			int nLayersPerOctave;  //!< Default: 4
 		} SURFOptions;
 
-		struct VISION_IMPEXP TSpinImagesOptions
+		struct TSpinImagesOptions
 		{
 			/** SpinImages Options
 			  */
@@ -244,7 +244,7 @@ class VISION_IMPEXP CFeatureExtraction
 
 		/** PolarImagesOptions Options
 		  */
-		struct VISION_IMPEXP TPolarImagesOptions
+		struct TPolarImagesOptions
 		{
 			unsigned int bins_angle;  //!< Number of bins in the "angular" axis
 			//! of the polar image (default=8).
@@ -257,7 +257,7 @@ class VISION_IMPEXP CFeatureExtraction
 
 		/** LogPolarImagesOptions Options
 		  */
-		struct VISION_IMPEXP TLogPolarImagesOptions
+		struct TLogPolarImagesOptions
 		{
 			unsigned int radius;  //!< Maximum radius of the area of which the
 			//! log polar image is built, in pixel units
@@ -274,7 +274,7 @@ class VISION_IMPEXP CFeatureExtraction
 		// # added by Raghavender Sahdev
 		/** AKAZEOptions Options
 		 */
-		struct VISION_IMPEXP TAKAZEOptions
+		struct TAKAZEOptions
 		{
 			int descriptor_type;
 			int descriptor_size;
@@ -287,7 +287,7 @@ class VISION_IMPEXP CFeatureExtraction
 
 		/** LSDOptions Options
 		 */
-		struct VISION_IMPEXP TLSDOptions
+		struct TLSDOptions
 		{
 			int scale;
 			int nOctaves;
@@ -295,7 +295,7 @@ class VISION_IMPEXP CFeatureExtraction
 
 		/** BLDOptions Descriptor Options
 		 */
-		struct VISION_IMPEXP TBLDOptions
+		struct TBLDOptions
 		{
 			int ksize_;
 			int reductionRatio;
@@ -306,7 +306,7 @@ class VISION_IMPEXP CFeatureExtraction
 
 		/** LATCHOptions Descriptor
 		 */
-		struct VISION_IMPEXP TLATCHOptions
+		struct TLATCHOptions
 		{
 			int bytes;  // = 32,
 			bool rotationInvariance;  // = true,

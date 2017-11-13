@@ -11,7 +11,6 @@
 #define mrpt_vision_tracking_H
 
 #include <mrpt/vision/types.h>
-#include <mrpt/vision/link_pragmas.h>
 
 #include <mrpt/vision/CFeature.h>
 #include <mrpt/vision/TSimpleFeature.h>
@@ -146,7 +145,7 @@ namespace vision
   *
   * \sa CFeatureTracker_KL, the example application "track-video-features".
   */
-struct VISION_IMPEXP CGenericFeatureTracker
+struct CGenericFeatureTracker
 {
 	/** Optional list of extra parameters to the algorithm. */
 	mrpt::utils::TParametersDouble extra_params;
@@ -234,7 +233,7 @@ struct VISION_IMPEXP CGenericFeatureTracker
 		return m_detector_adaptive_thres;
 	}
 
-	struct VISION_IMPEXP TExtraOutputInfo
+	struct TExtraOutputInfo
 	{
 		/** In the new_img with the last adaptive threshold */
 		size_t raw_FAST_feats_detected;
@@ -320,7 +319,7 @@ typedef std::unique_ptr<CGenericFeatureTracker> CGenericFeatureTrackerAutoPtr;
   *
   *  \sa OpenCV's method cvCalcOpticalFlowPyrLK
   */
-struct VISION_IMPEXP CFeatureTracker_KL : public CGenericFeatureTracker
+struct CFeatureTracker_KL : public CGenericFeatureTracker
 {
 	/** Default ctor */
 	inline CFeatureTracker_KL() {}

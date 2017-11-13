@@ -28,7 +28,7 @@ namespace obs
  * \sa CObservation
  * \ingroup mrpt_obs_grp
  */
-class OBS_IMPEXP CObservationWindSensor : public CObservation
+class CObservationWindSensor : public CObservation
 {
 	DEFINE_SERIALIZABLE(CObservationWindSensor)
 

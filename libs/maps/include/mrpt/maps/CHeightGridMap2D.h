@@ -17,9 +17,7 @@
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/color_maps.h>
 #include <mrpt/utils/TEnumType.h>
-#include <mrpt/maps/link_pragmas.h>
 #include <mrpt/poses/poses_frwds.h>
-#include <mrpt/maps/link_pragmas.h>
 #include <mrpt/obs/obs_frwds.h>
 
 namespace mrpt
@@ -27,7 +25,7 @@ namespace mrpt
 namespace maps
 {
 /** The contents of each cell in a CHeightGridMap2D map */
-struct MAPS_IMPEXP THeightGridmapCell
+struct THeightGridmapCell
 {
 	/** The current average height (in meters) */
 	float h;
@@ -62,7 +60,7 @@ struct MAPS_IMPEXP THeightGridmapCell
   *
   * \ingroup mrpt_maps_grp
   */
-class MAPS_IMPEXP CHeightGridMap2D
+class CHeightGridMap2D
 	: public mrpt::maps::CMetricMap,
 	  public utils::CDynamicGrid<THeightGridmapCell>,
 	  public CHeightGridMap2D_Base
@@ -97,7 +95,7 @@ class MAPS_IMPEXP CHeightGridMap2D
 	bool isEmpty() const override;
 
 	/** Parameters related with inserting observations into the map */
-	struct MAPS_IMPEXP TInsertionOptions : public utils::CLoadableOptions
+	struct TInsertionOptions : public utils::CLoadableOptions
 	{
 		/** Default values loader */
 		TInsertionOptions();

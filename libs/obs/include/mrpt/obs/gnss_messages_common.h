@@ -12,7 +12,6 @@
 #include <mrpt/system/datetime.h>
 #include <iostream>
 #include <cstring>  // memset()
-#include <mrpt/obs/link_pragmas.h>
 #include <mrpt/obs/gnss_messages_type_list.h>
 
 namespace mrpt
@@ -24,7 +23,7 @@ namespace obs
 namespace gnss
 {
 /** Pure virtual base for all message types. \sa mrpt::obs::CObservationGPS  */
-struct OBS_IMPEXP gnss_message
+struct gnss_message
 {
 	/** Type of GNSS message */
 	gnss_message_type_t message_type;
@@ -80,7 +79,7 @@ struct OBS_IMPEXP gnss_message
 
 /** A smart pointer to a GNSS message. \sa gnss_message,
  * mrpt::obs::CObservationGPS  */
-struct OBS_IMPEXP gnss_message_ptr
+struct gnss_message_ptr
 {
    protected:
 	gnss_message* ptr;
@@ -135,7 +134,7 @@ struct OBS_IMPEXP gnss_message_ptr
    public:
 
 #define GNSS_BINARY_MSG_DEFINITION_START(_MSG_ID)                            \
-	struct OBS_IMPEXP Message_##_MSG_ID : public gnss_message                \
+	struct Message_##_MSG_ID : public gnss_message                \
 	{                                                                        \
 		GNSS_MESSAGE_BINARY_BLOCK(&fields, sizeof(fields))                   \
 		enum : uint32_t                                                      \
@@ -143,7 +142,7 @@ struct OBS_IMPEXP gnss_message_ptr
 			msg_type = _MSG_ID                                               \
 		}; /* Static msg type (member expected by templates)*/               \
 		Message_##_MSG_ID() : gnss_message((gnss_message_type_t)msg_type) {} \
-		struct OBS_IMPEXP content_t                                          \
+		struct content_t                                          \
 		{
 #define GNSS_BINARY_MSG_DEFINITION_MID                                       \
 	content_t() { ::memset(this, 0, sizeof(*this)); }                        \
@@ -165,7 +164,7 @@ struct OBS_IMPEXP gnss_message_ptr
 
 /** UTC (Coordinated Universal Time) time-stamp structure for GPS messages. \sa
  * mrpt::obs::CObservationGPS */
-struct OBS_IMPEXP UTC_time
+struct UTC_time
 {
 	uint8_t hour;
 	uint8_t minute;

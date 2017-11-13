@@ -50,7 +50,7 @@ namespace hwdrivers
   * \note Class introduced in MRPT 1.2.2
   * \ingroup mrpt_hwdrivers_grp
   */
-class HWDRIVERS_IMPEXP CRoboPeakLidar : public C2DRangeFinderAbstract
+class CRoboPeakLidar : public C2DRangeFinderAbstract
 {
 	DEFINE_GENERIC_SENSOR(CRoboPeakLidar)
    public:

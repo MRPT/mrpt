@@ -20,7 +20,6 @@
 #include <mrpt/vision/types.h>
 #include <mrpt/vision/chessboard_camera_calib.h>
 #include <mrpt/obs/obs_frwds.h>
-#include <mrpt/vision/link_pragmas.h>
 
 namespace mrpt
 {

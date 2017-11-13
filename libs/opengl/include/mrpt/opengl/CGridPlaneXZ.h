@@ -29,7 +29,7 @@ namespace opengl
   *
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CGridPlaneXZ : public CRenderizableDisplayList
+class CGridPlaneXZ : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CGridPlaneXZ)
 

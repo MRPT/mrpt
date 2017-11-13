@@ -11,7 +11,6 @@
 #define mrpt_utils_tcolor_H
 
 #include <cstdint>
-#include <mrpt/base/link_pragmas.h>
 #include <iosfwd>
 #include <iostream>
 
@@ -23,7 +22,7 @@ class CStream;
 
 /** A RGB color - 8bit
  * \ingroup mrpt_base_grp */
-struct BASE_IMPEXP TColor
+struct TColor
 {
 	inline TColor() : R(0), G(0), B(0), A(255) {}
 	inline TColor(uint8_t r, uint8_t g, uint8_t b, uint8_t alpha = 255)
@@ -74,14 +73,14 @@ struct BASE_IMPEXP TColor
 	static TColor gray;
 };
 // Text streaming:
-std::ostream BASE_IMPEXP& operator<<(std::ostream& o, const TColor& c);
+std::ostream& operator<<(std::ostream& o, const TColor& c);
 // Binary streaming:
-CStream BASE_IMPEXP& operator<<(mrpt::utils::CStream& o, const TColor& c);
-CStream BASE_IMPEXP& operator>>(mrpt::utils::CStream& i, TColor& c);
+CStream& operator<<(mrpt::utils::CStream& o, const TColor& c);
+CStream& operator>>(mrpt::utils::CStream& i, TColor& c);
 
 /** A RGB color - floats in the range [0,1]
  * \ingroup mrpt_base_grp */
-struct BASE_IMPEXP TColorf
+struct TColorf
 {
 	TColorf(float r = 0, float g = 0, float b = 0, float alpha = 1.0f)
 		: R(r), G(g), B(b), A(alpha)
@@ -109,10 +108,10 @@ bool operator==(const TColor& first, const TColor& second);
 // bool operator!=(const TColor& first, const TColor& second);
 
 // Text streaming:
-std::ostream BASE_IMPEXP& operator<<(std::ostream& o, const TColorf& c);
+std::ostream& operator<<(std::ostream& o, const TColorf& c);
 // Binary streaming:
-CStream BASE_IMPEXP& operator<<(mrpt::utils::CStream& o, const TColorf& c);
-CStream BASE_IMPEXP& operator>>(mrpt::utils::CStream& i, TColorf& c);
+CStream& operator<<(mrpt::utils::CStream& o, const TColorf& c);
+CStream& operator>>(mrpt::utils::CStream& i, TColorf& c);
 
 }  // end namespace
 }  // end of namespace

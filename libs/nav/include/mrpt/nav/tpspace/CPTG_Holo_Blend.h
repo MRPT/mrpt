@@ -25,7 +25,7 @@ namespace nav
  * \note [New in MRPT 1.5.0]
  *  \ingroup nav_tpspace
  */
-class NAV_IMPEXP CPTG_Holo_Blend : public CPTG_RobotShape_Circular
+class CPTG_Holo_Blend : public CPTG_RobotShape_Circular
 {
 	DEFINE_SERIALIZABLE(CPTG_Holo_Blend)
    public:

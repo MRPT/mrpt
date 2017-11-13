@@ -21,7 +21,7 @@ namespace nav
  * taken into account
   *  \ingroup nav_reactive
   */
-struct NAV_IMPEXP TRobotShape
+struct TRobotShape
 {
 	size_t size() const { return polygons.size(); }
 	void resize(size_t num_levels)
@@ -82,7 +82,7 @@ struct NAV_IMPEXP TRobotShape
 * CAbstractHolonomicReactiveMethod
 *  \ingroup nav_reactive
 */
-class NAV_IMPEXP CReactiveNavigationSystem3D : public CAbstractPTGBasedReactive
+class CReactiveNavigationSystem3D : public CAbstractPTGBasedReactive
 {
    public:
 	MRPT_MAKE_ALIGNED_OPERATOR_NEW
@@ -133,7 +133,7 @@ class NAV_IMPEXP CReactiveNavigationSystem3D : public CAbstractPTGBasedReactive
 	// ------------------------------------------------------
 
 	/** A set of PTGs of the same type, one per "height level" */
-	struct NAV_IMPEXP TPTGmultilevel
+	struct TPTGmultilevel
 	{
 		std::vector<CParameterizedTrajectoryGenerator*> PTGs;
 		mrpt::math::TPoint2D TP_Target;

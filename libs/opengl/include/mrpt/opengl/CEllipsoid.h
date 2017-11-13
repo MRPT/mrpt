@@ -44,7 +44,7 @@ namespace opengl
   *
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CEllipsoid : public CRenderizableDisplayList
+class CEllipsoid : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CEllipsoid)
 

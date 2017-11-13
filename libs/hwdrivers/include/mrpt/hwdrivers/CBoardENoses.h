@@ -54,7 +54,7 @@ namespace hwdrivers
   *
   * \ingroup mrpt_hwdrivers_grp
   */
-class HWDRIVERS_IMPEXP CBoardENoses : public mrpt::hwdrivers::CGenericSensor
+class CBoardENoses : public mrpt::hwdrivers::CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CBoardENoses)
 

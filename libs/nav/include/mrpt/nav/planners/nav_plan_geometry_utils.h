@@ -10,7 +10,6 @@
 #pragma once
 
 #include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/nav/link_pragmas.h>
 
 namespace mrpt
 {

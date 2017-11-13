@@ -19,7 +19,7 @@ namespace opengl
   *  \sa opengl::COpenGLScene
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CTexturedPlane : public CTexturedObject
+class CTexturedPlane : public CTexturedObject
 {
 	DEFINE_SERIALIZABLE(CTexturedPlane)
    protected:

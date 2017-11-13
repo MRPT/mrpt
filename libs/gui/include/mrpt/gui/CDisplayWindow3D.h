@@ -114,7 +114,7 @@ class CMyGLCanvas_DisplayWindow3D;
  * href="http://www.mrpt.org/Tutorial_3D_Scenes" > tutorial only</a>.
   * \ingroup mrpt_gui_grp
   */
-class GUI_IMPEXP CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
+class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 {
    public:
 	using Ptr = std::shared_ptr<CDisplayWindow3D>;
@@ -408,7 +408,7 @@ class GUI_IMPEXP CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
  * from the wxWidgets internal MRPT thread,
   *    so all your code in the handler must be thread safe.
   */
-class GUI_IMPEXP mrptEvent3DWindowGrabImageFile : public mrpt::utils::mrptEvent
+class mrptEvent3DWindowGrabImageFile : public mrpt::utils::mrptEvent
 {
    protected:
 	/** Just to allow this class to be polymorphic */
@@ -437,7 +437,7 @@ class GUI_IMPEXP mrptEvent3DWindowGrabImageFile : public mrpt::utils::mrptEvent
   * \ingroup mrpt_gui_grp
   * \note New in MRPT 1.5.0
   */
-class GUI_IMPEXP CDisplayWindow3DLocker
+class CDisplayWindow3DLocker
 {
    public:
 	/** Acquires the lock of the 3D scene of the referenced window, and returns

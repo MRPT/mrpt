@@ -10,7 +10,6 @@
 #ifndef MRPT_MACROS_H
 #define MRPT_MACROS_H
 
-#include <mrpt/base/link_pragmas.h>
 #include <sstream>  // ostringstream
 #include <stdexcept>  // logic_error
 
@@ -495,7 +494,7 @@ need to account for this with an extra offset.
 namespace mrpt
 {
 // Redeclared here for convenience:
-std::string BASE_IMPEXP format(const char* fmt, ...)
+std::string format(const char* fmt, ...)
 	MRPT_printf_format_check(1, 2);
 }
 

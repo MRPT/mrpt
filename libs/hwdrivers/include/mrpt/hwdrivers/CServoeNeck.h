@@ -11,7 +11,6 @@
 #define CServoeNeck_H
 
 #include <mrpt/utils/utils_defs.h>
-#include <mrpt/hwdrivers/link_pragmas.h>
 #include <mrpt/comms/CInterfaceFTDI.h>
 
 namespace mrpt
@@ -20,7 +19,7 @@ namespace hwdrivers
 {
 /** A USB-interface for a custom "robotic neck" designed at MAPIR lab.
   * \ingroup mrpt_hwdrivers_grp */
-class HWDRIVERS_IMPEXP CServoeNeck : public mrpt::comms::CInterfaceFTDI
+class CServoeNeck : public mrpt::comms::CInterfaceFTDI
 {
    public:
 	CServoeNeck();

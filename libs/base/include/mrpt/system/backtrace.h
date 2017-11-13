@@ -11,7 +11,6 @@
 
 #include <vector>
 #include <string>
-#include <mrpt/base/link_pragmas.h>
 
 namespace mrpt
 {
@@ -30,11 +29,11 @@ struct TCallStackEntry
 };
 
 #ifdef _MSC_VER
-template class BASE_IMPEXP std::vector<TCallStackEntry>;
+template class std::vector<TCallStackEntry>;
 #endif
 
 /** See: getCallStackBackTrace() */
-struct BASE_IMPEXP TCallStackBackTrace
+struct TCallStackBackTrace
 {
 	TCallStackBackTrace();
 	std::vector<TCallStackEntry> backtrace_levels;
@@ -48,7 +47,7 @@ struct BASE_IMPEXP TCallStackBackTrace
   * backtrace. If possible, human-readable names are used for
   * functions.
   */
-void BASE_IMPEXP getCallStackBackTrace(TCallStackBackTrace& out_bt);
+void getCallStackBackTrace(TCallStackBackTrace& out_bt);
 
 }  // End of namespace
 }  // End of namespace

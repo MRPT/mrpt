@@ -41,7 +41,7 @@ namespace random
  * mrpt::random::randomGenerator
  * \ingroup mrpt_base_grp
   */
-class BASE_IMPEXP CRandomGenerator
+class CRandomGenerator
 {
    protected:
 	/** Data used internally by the MT19937 PRNG algorithm. */
@@ -330,7 +330,7 @@ class BASE_IMPEXP CRandomGenerator
 
 /** A static instance of a CRandomGenerator class, for use in single-thread
  * applications */
-extern BASE_IMPEXP CRandomGenerator randomGenerator;
+extern CRandomGenerator randomGenerator;
 
 /** A random number generator for usage in STL algorithms expecting a function
  * like this (eg, random_shuffle):

@@ -40,7 +40,7 @@ namespace obs
   * \sa CObservation
  * \ingroup mrpt_obs_grp
   */
-class OBS_IMPEXP CObservationStereoImages : public mrpt::obs::CObservation
+class CObservationStereoImages : public mrpt::obs::CObservation
 {
 	DEFINE_SERIALIZABLE(CObservationStereoImages)
 	// This must be added for declaration of MEX-related functions

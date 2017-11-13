@@ -9,7 +9,6 @@
 #pragma once
 
 #include <mrpt/utils/core_defs.h>
-#include <mrpt/tfest/link_pragmas.h>
 #include <functional>
 
 namespace mrpt
@@ -24,7 +23,7 @@ namespace tfest
 	* \sa TSE3RobustParams::user_individual_compat_callback ,
  * TSE2RobustParams::user_individual_compat_callback
 	*/
-struct TFEST_IMPEXP TPotentialMatch
+struct TPotentialMatch
 {
 	size_t idx_this, idx_other;
 };

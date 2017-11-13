@@ -21,7 +21,7 @@ namespace obs
  * \sa CObservation
  * \ingroup mrpt_obs_grp
  */
-class OBS_IMPEXP CObservationCANBusJ1939 : public CObservation
+class CObservationCANBusJ1939 : public CObservation
 {
 	DEFINE_SERIALIZABLE(CObservationCANBusJ1939)
 

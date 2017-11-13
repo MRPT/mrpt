@@ -13,7 +13,6 @@
 #include <mrpt/utils/CImage.h>
 
 #include <mrpt/vision/types.h>
-#include <mrpt/vision/link_pragmas.h>
 
 namespace mrpt
 {

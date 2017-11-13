@@ -21,7 +21,7 @@ namespace utils
  * \sa CStream
  * \ingroup mrpt_base_grp
  */
-class BASE_IMPEXP CMemoryChunk : public CSerializable, public CMemoryStream
+class CMemoryChunk : public CSerializable, public CMemoryStream
 {
 	DEFINE_SERIALIZABLE(CMemoryChunk)
 

@@ -12,7 +12,6 @@
 
 #include <mrpt/maps/CRandomFieldGridMap2D.h>
 #include <mrpt/maps/CHeightGridMap2D_Base.h>
-#include <mrpt/maps/link_pragmas.h>
 
 namespace mrpt
 {
@@ -34,7 +33,7 @@ namespace maps
   * \note New in MRPT 1.4.0
   * \ingroup mrpt_maps_grp
   */
-class MAPS_IMPEXP CHeightGridMap2D_MRF : public CRandomFieldGridMap2D,
+class CHeightGridMap2D_MRF : public CRandomFieldGridMap2D,
 										 public CHeightGridMap2D_Base
 {
 	DEFINE_SERIALIZABLE(CHeightGridMap2D_MRF)
@@ -49,7 +48,7 @@ class MAPS_IMPEXP CHeightGridMap2D_MRF : public CRandomFieldGridMap2D,
 		bool run_first_map_estimation_now = true);
 
 	/** Parameters related with inserting observations into the map */
-	struct MAPS_IMPEXP TInsertionOptions : public utils::CLoadableOptions,
+	struct TInsertionOptions : public utils::CLoadableOptions,
 										   public TInsertionOptionsCommon
 	{
 		/** Default values loader */

@@ -27,12 +27,12 @@ namespace system
   *  \sa CDirectoryExplorer
  * \ingroup mrpt_base_grp
   */
-class BASE_IMPEXP CFileSystemWatcher
+class CFileSystemWatcher
 {
    public:
 	/** Each of the changes detected by utils::CFileSystemWatcher
 	  */
-	struct BASE_IMPEXP TFileSystemChange
+	struct TFileSystemChange
 	{
 		TFileSystemChange()
 			: path(),

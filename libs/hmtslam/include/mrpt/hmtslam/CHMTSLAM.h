@@ -17,7 +17,6 @@
 #include <mrpt/hmtslam/CHierarchicalMHMap.h>
 #include <mrpt/hmtslam/CTopLCDetector_GridMatching.h>
 #include <mrpt/hmtslam/CTopLCDetector_FabMap.h>
-#include <mrpt/hmtslam/link_pragmas.h>
 #include <mrpt/slam/CICP.h>
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/slam/TKLDParams.h>
@@ -64,7 +63,7 @@ class CLSLAM_RBPF_2DLASER;
  * \sa CHierarchicalMHMap
   * \ingroup mrpt_hmtslam_grp
  */
-class HMTSLAM_IMPEXP CHMTSLAM : public mrpt::utils::COutputLogger,
+class CHMTSLAM : public mrpt::utils::COutputLogger,
 								public mrpt::utils::CSerializable
 {
 	friend class CLocalMetricHypothesis;
@@ -512,7 +511,7 @@ DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
 
 /** Virtual base for local SLAM methods, used in mrpt::slam::CHMTSLAM.
   */
-class HMTSLAM_IMPEXP CLSLAMAlgorithmBase
+class CLSLAMAlgorithmBase
 {
 	friend class CLocalMetricHypothesis;
 
@@ -562,7 +561,7 @@ class HMTSLAM_IMPEXP CLSLAMAlgorithmBase
  * map.
   *  This class is used internally in mrpt::slam::CHMTSLAM
   */
-class HMTSLAM_IMPEXP CLSLAM_RBPF_2DLASER : public CLSLAMAlgorithmBase
+class CLSLAM_RBPF_2DLASER : public CLSLAMAlgorithmBase
 {
 	friend class CLocalMetricHypothesis;
 

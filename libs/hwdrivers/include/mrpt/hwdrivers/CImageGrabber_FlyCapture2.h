@@ -11,7 +11,6 @@
 
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
-#include <mrpt/hwdrivers/link_pragmas.h>
 
 namespace mrpt
 {
@@ -19,7 +18,7 @@ namespace hwdrivers
 {
 /** Options used when creating a camera capture object of type
  * CImageGrabber_FlyCapture2   \ingroup mrpt_hwdrivers_grp */
-struct HWDRIVERS_IMPEXP TCaptureOptions_FlyCapture2
+struct TCaptureOptions_FlyCapture2
 {
 	TCaptureOptions_FlyCapture2();
 
@@ -185,7 +184,7 @@ struct HWDRIVERS_IMPEXP TCaptureOptions_FlyCapture2
  * [samples]/captureVideoFlyCapture2_stereo.
  * \ingroup mrpt_hwdrivers_grp
  */
-class HWDRIVERS_IMPEXP CImageGrabber_FlyCapture2
+class CImageGrabber_FlyCapture2
 {
    protected:
 	/** Opaque pointer to the FlyCapture2::Camera object. nullptr if no camera

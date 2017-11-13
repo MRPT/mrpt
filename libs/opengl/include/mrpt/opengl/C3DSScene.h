@@ -23,7 +23,7 @@ namespace opengl
   *  \sa opengl::COpenGLScene
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP C3DSScene : public CRenderizableDisplayList
+class C3DSScene : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(C3DSScene)
 

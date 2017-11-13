@@ -18,7 +18,7 @@ namespace kinematics
  *
  * \ingroup mrpt_kinematics_grp
  */
-class KINEMATICS_IMPEXP CVehicleVelCmd_DiffDriven : public CVehicleVelCmd
+class CVehicleVelCmd_DiffDriven : public CVehicleVelCmd
 {
 	DEFINE_SERIALIZABLE(CVehicleVelCmd_DiffDriven)
    public:

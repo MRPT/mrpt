@@ -11,7 +11,6 @@
 #include <mrpt/utils/core_defs.h>
 #include <mrpt/utils/types_simple.h>
 #include <mrpt/utils/TParameters.h>
-#include <mrpt/comms/link_pragmas.h>
 
 namespace mrpt
 {

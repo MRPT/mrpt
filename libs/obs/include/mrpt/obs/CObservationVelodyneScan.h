@@ -72,7 +72,7 @@ namespace obs
   * \sa CObservation, CPointsMap, CVelodyneScanner
   * \ingroup mrpt_obs_grp
   */
-class OBS_IMPEXP CObservationVelodyneScan : public CObservation
+class CObservationVelodyneScan : public CObservation
 {
 	DEFINE_SERIALIZABLE(CObservationVelodyneScan)
 
@@ -115,7 +115,7 @@ class OBS_IMPEXP CObservationVelodyneScan : public CObservation
 	@{ */
 
 #pragma pack(push, 1)
-	struct OBS_IMPEXP laser_return_t
+	struct laser_return_t
 	{
 		uint16_t distance;
 		uint8_t intensity;
@@ -123,7 +123,7 @@ class OBS_IMPEXP CObservationVelodyneScan : public CObservation
 	/** Raw Velodyne data block.
 	*  Each block contains data from either the upper or lower laser
 	*  bank.  The device returns three times as many upper bank blocks. */
-	struct OBS_IMPEXP raw_block_t
+	struct raw_block_t
 	{
 		uint16_t header;  ///< Block id: UPPER_BANK or LOWER_BANK
 		uint16_t rotation;  ///< 0-35999, divide by 100 to get degrees
@@ -132,7 +132,7 @@ class OBS_IMPEXP CObservationVelodyneScan : public CObservation
 
 	/** One unit of data from the scanner (the payload of one UDP DATA packet)
 	 */
-	struct OBS_IMPEXP TVelodyneRawPacket
+	struct TVelodyneRawPacket
 	{
 		raw_block_t blocks[BLOCKS_PER_PACKET];
 		/** us from top of hour */
@@ -144,7 +144,7 @@ class OBS_IMPEXP CObservationVelodyneScan : public CObservation
 	};
 
 	/** Payload of one POSITION packet */
-	struct OBS_IMPEXP TVelodynePositionPacket
+	struct TVelodynePositionPacket
 	{
 		char unused1[198];
 		uint32_t gps_timestamp;
@@ -181,7 +181,7 @@ class OBS_IMPEXP CObservationVelodyneScan : public CObservation
 		const override;  // See base class docs
 
 	/** See \a point_cloud and \a scan_packets */
-	struct OBS_IMPEXP TPointCloud
+	struct TPointCloud
 	{
 		std::vector<float> x, y, z;
 		/** Color [0,255] */
@@ -211,7 +211,7 @@ class OBS_IMPEXP CObservationVelodyneScan : public CObservation
 
 	/** @name Related to conversion to 3D point cloud
 	  * @{ */
-	struct OBS_IMPEXP TGeneratePointCloudParameters
+	struct TGeneratePointCloudParameters
 	{
 		/** Minimum azimuth, in degrees (Default=0). Points will be generated
 		 * only the the area of interest [minAzimuth, maxAzimuth] */
@@ -274,7 +274,7 @@ class OBS_IMPEXP CObservationVelodyneScan : public CObservation
 		const TGeneratePointCloudParameters& params = defaultPointCloudParams);
 
 	/** Results for generatePointCloudAlongSE3Trajectory() */
-	struct OBS_IMPEXP TGeneratePointCloudSE3Results
+	struct TGeneratePointCloudSE3Results
 	{
 		/** Number of points in the observation */
 		size_t num_points;

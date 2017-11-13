@@ -17,7 +17,6 @@
 #include <mrpt/utils/TMatchingPair.h>
 #include <mrpt/utils/TEnumType.h>
 
-#include <mrpt/vision/link_pragmas.h>
 
 namespace mrpt
 {
@@ -138,7 +137,7 @@ enum TFeatureTrackStatus
 
 /** One feature observation entry, used within sequences with
  * TSequenceFeatureObservations */
-struct VISION_IMPEXP TFeatureObservation
+struct TFeatureObservation
 {
 	inline TFeatureObservation() {}
 	inline TFeatureObservation(
@@ -190,7 +189,7 @@ typedef std::map<mrpt::vision::TFeatureID, TRelativeFeaturePos>
  * of functions handling this structure to see what they expect.
   *  \sa mrpt::vision::bundle_adj_full
   */
-struct VISION_IMPEXP TSequenceFeatureObservations
+struct TSequenceFeatureObservations
 	: public std::vector<TFeatureObservation>
 {
 	typedef std::vector<TFeatureObservation> BASE;
@@ -255,7 +254,7 @@ struct VISION_IMPEXP TSequenceFeatureObservations
 
 /** Parameters associated to a stereo system
   */
-struct VISION_IMPEXP TStereoSystemParams : public mrpt::utils::CLoadableOptions
+struct TStereoSystemParams : public mrpt::utils::CLoadableOptions
 {
 	/** Initilization of default parameters */
 	TStereoSystemParams();
@@ -328,7 +327,7 @@ struct VISION_IMPEXP TStereoSystemParams : public mrpt::utils::CLoadableOptions
 
 /** A structure for storing a 3D ROI
   */
-struct VISION_IMPEXP TROI
+struct TROI
 {
 	// Constructors
 	TROI();
@@ -345,7 +344,7 @@ struct VISION_IMPEXP TROI
 
 /** A structure for defining a ROI within an image
   */
-struct VISION_IMPEXP TImageROI
+struct TImageROI
 {
 	// Constructors
 	TImageROI();
@@ -362,7 +361,7 @@ struct VISION_IMPEXP TImageROI
 
 /** A structure containing options for the matching
   */
-struct VISION_IMPEXP TMatchingOptions : public mrpt::utils::CLoadableOptions
+struct TMatchingOptions : public mrpt::utils::CLoadableOptions
 {
 	/** Method for propagating the feature's image coordinate uncertainty into
 	 * 3D space. Default value: Prop_Linear
@@ -523,7 +522,7 @@ struct VISION_IMPEXP TMatchingOptions : public mrpt::utils::CLoadableOptions
 /** Struct containing the output after matching multi-resolution SIFT-like
  * descriptors
 */
-struct VISION_IMPEXP TMultiResMatchingOutput
+struct TMultiResMatchingOutput
 {
 	int nMatches;
 
@@ -553,7 +552,7 @@ struct VISION_IMPEXP TMultiResMatchingOutput
 /** Struct containing the options when matching multi-resolution SIFT-like
  * descriptors
 */
-struct VISION_IMPEXP TMultiResDescMatchOptions
+struct TMultiResDescMatchOptions
 	: public mrpt::utils::CLoadableOptions
 {
 	/** Whether or not use the filter based on orientation test */
@@ -649,7 +648,7 @@ struct VISION_IMPEXP TMultiResDescMatchOptions
 /** Struct containing the options when computing the multi-resolution SIFT-like
  * descriptors
 */
-struct VISION_IMPEXP TMultiResDescOptions : public mrpt::utils::CLoadableOptions
+struct TMultiResDescOptions : public mrpt::utils::CLoadableOptions
 {
 	/** The size of the base patch */
 	uint32_t basePSize;

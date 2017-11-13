@@ -20,7 +20,7 @@ namespace gnss
 #pragma pack(push, 1)
 
 /** Novatel OEM6 regular header structure \sa mrpt::obs::CObservationGPS  */
-struct OBS_IMPEXP nv_oem6_header_t
+struct nv_oem6_header_t
 {
 	enum : uint8_t
 	{
@@ -48,7 +48,7 @@ struct OBS_IMPEXP nv_oem6_header_t
 };
 
 /** Novatel OEM6 short header structure \sa mrpt::obs::CObservationGPS  */
-struct OBS_IMPEXP nv_oem6_short_header_t
+struct nv_oem6_short_header_t
 {
 	enum : uint8_t
 	{
@@ -184,7 +184,7 @@ const std::string OBS_IMPEXP& enum2str(int val);
 
 /** Novatel generic frame (to store frames without a parser at the present
  * time). \sa mrpt::obs::CObservationGPS  */
-struct OBS_IMPEXP Message_NV_OEM6_GENERIC_FRAME : public gnss_message
+struct Message_NV_OEM6_GENERIC_FRAME : public gnss_message
 {
 	Message_NV_OEM6_GENERIC_FRAME()
 		: gnss_message((gnss_message_type_t)NV_OEM6_GENERIC_FRAME)
@@ -203,7 +203,7 @@ struct OBS_IMPEXP Message_NV_OEM6_GENERIC_FRAME : public gnss_message
 
 /** Novatel generic short-header frame (to store frames without a parser at the
  * present time). \sa mrpt::obs::CObservationGPS  */
-struct OBS_IMPEXP Message_NV_OEM6_GENERIC_SHORT_FRAME : public gnss_message
+struct Message_NV_OEM6_GENERIC_SHORT_FRAME : public gnss_message
 {
 	Message_NV_OEM6_GENERIC_SHORT_FRAME()
 		: gnss_message((gnss_message_type_t)NV_OEM6_GENERIC_SHORT_FRAME)
@@ -299,13 +299,13 @@ bool getAllFieldValues(std::ostream& o) const override;
 GNSS_BINARY_MSG_DEFINITION_MID_END
 
 /** Novatel frame: NV_OEM6_RANGECMP. \sa mrpt::obs::CObservationGPS  */
-struct OBS_IMPEXP Message_NV_OEM6_RANGECMP : public gnss_message
+struct Message_NV_OEM6_RANGECMP : public gnss_message
 {
 	Message_NV_OEM6_RANGECMP()
 		: gnss_message((gnss_message_type_t)NV_OEM6_RANGECMP), num_obs(0)
 	{
 	}
-	struct OBS_IMPEXP TCompressedRangeLog
+	struct TCompressedRangeLog
 	{
 		uint8_t data[24];
 	};
@@ -345,13 +345,13 @@ uint32_t crc;
 GNSS_BINARY_MSG_DEFINITION_END
 
 /** Novatel frame: NV_OEM6_VERSION. \sa mrpt::obs::CObservationGPS  */
-struct OBS_IMPEXP Message_NV_OEM6_VERSION : public gnss_message
+struct Message_NV_OEM6_VERSION : public gnss_message
 {
 	Message_NV_OEM6_VERSION()
 		: gnss_message((gnss_message_type_t)NV_OEM6_VERSION), num_comps(0)
 	{
 	}
-	struct OBS_IMPEXP TComponentVersion
+	struct TComponentVersion
 	{
 		uint32_t type;
 		char model[16], serial[16];

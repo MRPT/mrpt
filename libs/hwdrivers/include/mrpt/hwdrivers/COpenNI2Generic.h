@@ -11,7 +11,6 @@
 
 #include <mrpt/obs/CObservation3DRangeScan.h>
 
-#include <mrpt/hwdrivers/link_pragmas.h>
 
 namespace mrpt
 {
@@ -25,7 +24,7 @@ namespace hwdrivers
   *		- http://http://www.openni.org/
   * \ingroup mrpt_hwdrivers_grp
   */
-class HWDRIVERS_IMPEXP COpenNI2Generic
+class COpenNI2Generic
 {
    public:
 	/** Default ctor (width=640, height=480, fps=30) */
@@ -136,7 +135,7 @@ class HWDRIVERS_IMPEXP COpenNI2Generic
 
    protected:
 	/** The list of available devices */
-	class HWDRIVERS_IMPEXP CDevice;
+	class CDevice;
 	static std::vector<std::shared_ptr<CDevice>> vDevices;
 	static int numInstances;
 

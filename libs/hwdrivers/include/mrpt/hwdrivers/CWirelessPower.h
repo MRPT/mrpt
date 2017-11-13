@@ -22,7 +22,7 @@ namespace hwdrivers
  * mrpt::obs::CObservationWirelessPower
   * \ingroup mrpt_hwdrivers_grp
   */
-class HWDRIVERS_IMPEXP CWirelessPower : public mrpt::hwdrivers::CGenericSensor
+class CWirelessPower : public mrpt::hwdrivers::CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CWirelessPower)
 

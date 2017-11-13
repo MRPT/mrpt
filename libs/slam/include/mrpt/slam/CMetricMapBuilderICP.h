@@ -13,7 +13,6 @@
 #include <mrpt/slam/CICP.h>
 #include <mrpt/poses/CRobot2DPoseEstimator.h>
 
-#include <mrpt/slam/link_pragmas.h>
 
 namespace mrpt
 {
@@ -26,7 +25,7 @@ namespace slam
  *	 thread-safe.
  * \ingroup metric_slam_grp
  */
-class SLAM_IMPEXP CMetricMapBuilderICP : public mrpt::slam::CMetricMapBuilder
+class CMetricMapBuilderICP : public mrpt::slam::CMetricMapBuilder
 {
    public:
 	/** Default constructor - Upon construction, you can set the parameters in
@@ -40,7 +39,7 @@ class SLAM_IMPEXP CMetricMapBuilderICP : public mrpt::slam::CMetricMapBuilder
 
 	/** Algorithm configuration params
 	  */
-	struct SLAM_IMPEXP TConfigParams : public mrpt::utils::CLoadableOptions
+	struct TConfigParams : public mrpt::utils::CLoadableOptions
 	{
 		/** Initializer */
 		TConfigParams(mrpt::utils::VerbosityLevel& parent_verbosity_level);
@@ -179,7 +178,7 @@ class SLAM_IMPEXP CMetricMapBuilderICP : public mrpt::slam::CMetricMapBuilder
 	mrpt::poses::CPose2D m_auxAccumOdometry;
 
 	/** Traveled distances from last map update / ICP-based localization. */
-	struct SLAM_IMPEXP TDist
+	struct TDist
 	{
 		TDist() : lin(0), ang(0) {}
 		double lin;  // meters

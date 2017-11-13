@@ -46,7 +46,7 @@ namespace poses
   * \sa CPoseOrPoint
  * \ingroup interpolation_grp poses_grp
  */
-class BASE_IMPEXP CPose3DInterpolator
+class CPose3DInterpolator
 	: public mrpt::utils::CSerializable,
 	  public mrpt::poses::CPoseInterpolatorBase<3>
 {

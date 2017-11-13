@@ -41,7 +41,7 @@ namespace utils
  * \sa CStream
  * \ingroup mrpt_base_grp
  */
-class BASE_IMPEXP CSerializable : public mrpt::utils::CObject
+class CSerializable : public mrpt::utils::CObject
 {
 	// This must be added to any CObject derived class:
 	DEFINE_VIRTUAL_MRPT_OBJECT(CSerializable)
@@ -104,7 +104,7 @@ DEFINE_MRPT_OBJECT_POST(CSerializable)
  * \sa StringToObject, <a href="http://www.mrpt.org/Integration_with_BABEL"
  * >Integration with BABEL</a>
  */
-std::string BASE_IMPEXP ObjectToString(const CSerializable* o);
+std::string ObjectToString(const CSerializable* o);
 
 /** Used to pass CORBA-like objects (strings) into a MRPT object.
  * \param str An string generated with ObjectToString
@@ -114,7 +114,7 @@ std::string BASE_IMPEXP ObjectToString(const CSerializable* o);
  * \sa ObjectToString, <a href="http://www.mrpt.org/Integration_with_BABEL"
  * >Integration with BABEL</a>
  */
-void BASE_IMPEXP
+void
 	StringToObject(const std::string& str, CSerializable::Ptr& obj);
 
 /** Converts (serializes) an MRPT object into an array of bytes.
@@ -123,7 +123,7 @@ void BASE_IMPEXP
  * be set automatically.
  * \sa OctetVectorToObject, ObjectToString
  */
-void BASE_IMPEXP
+void
 	ObjectToOctetVector(const CSerializable* o, vector_byte& out_vector);
 
 /** Converts back (de-serializes) a sequence of binary data into a MRPT object,
@@ -134,7 +134,7 @@ void BASE_IMPEXP
  * pointer.
  * \sa ObjectToOctetVector, StringToObject
  */
-void BASE_IMPEXP
+void
 	OctetVectorToObject(const vector_byte& in_data, CSerializable::Ptr& obj);
 
 /** Converts (serializes) an MRPT object into an array of bytes within a
@@ -145,7 +145,7 @@ void BASE_IMPEXP
  * be set automatically.
  * \sa RawStringToObject, ObjectToOctetVector
  */
-void BASE_IMPEXP
+void
 	ObjectToRawString(const CSerializable* o, std::string& out_str);
 
 /** Converts back (de-serializes) a sequence of binary data within a std::string
@@ -156,7 +156,7 @@ void BASE_IMPEXP
  * pointer.
  * \sa ObjectToRawString
  */
-void BASE_IMPEXP
+void
 	RawStringToObject(const std::string& in_str, CSerializable::Ptr& obj);
 
 /** @} */
@@ -193,7 +193,7 @@ void BASE_IMPEXP
 
 #define DEFINE_SERIALIZABLE_POST(class_name)      \
 	DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE2( \
-		class_name, mrpt::utils::CSerializable, BASE_IMPEXP class_name)
+		class_name, mrpt::utils::CSerializable, class_name)
 
 /**  This declaration must be inserted in all CSerializable classes definition,
  * before the class declaration.
@@ -209,7 +209,7 @@ void BASE_IMPEXP
 
 #define DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(class_name, base_name) \
 	DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE(                    \
-		class_name, base_name, BASE_IMPEXP)
+		class_name, base_name,)
 
 /** This must be inserted in all CSerializable classes implementation files */
 #define IMPLEMENTS_SERIALIZABLE(class_name, base, NameSpace) \

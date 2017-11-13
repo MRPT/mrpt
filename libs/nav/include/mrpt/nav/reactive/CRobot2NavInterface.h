@@ -9,7 +9,6 @@
 #pragma once
 
 #include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/nav/link_pragmas.h>
 #include <mrpt/obs/obs_frwds.h>  // CSimplePointsMap
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/COutputLogger.h>
@@ -42,7 +41,7 @@ namespace nav
   * \sa CReactiveNavigationSystem, CAbstractNavigator
   *  \ingroup nav_reactive
   */
-class NAV_IMPEXP CRobot2NavInterface : public mrpt::utils::COutputLogger
+class CRobot2NavInterface : public mrpt::utils::COutputLogger
 {
    public:
 	CRobot2NavInterface();

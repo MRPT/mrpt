@@ -59,7 +59,7 @@ namespace nav
 * CAbstractHolonomicReactiveMethod
 *  \ingroup nav_reactive
 */
-class NAV_IMPEXP CReactiveNavigationSystem : public CAbstractPTGBasedReactive
+class CReactiveNavigationSystem : public CAbstractPTGBasedReactive
 {
    public:
 	MRPT_MAKE_ALIGNED_OPERATOR_NEW
@@ -97,7 +97,7 @@ class NAV_IMPEXP CReactiveNavigationSystem : public CAbstractPTGBasedReactive
 	virtual bool checkCollisionWithLatestObstacles(
 		const mrpt::math::TPose2D& relative_robot_pose) const override;
 
-	struct NAV_IMPEXP TReactiveNavigatorParams
+	struct TReactiveNavigatorParams
 		: public mrpt::utils::CLoadableOptions
 	{
 		double min_obstacles_height,

@@ -15,7 +15,6 @@
 #include <mrpt/opengl/opengl_fonts.h>
 #include <mrpt/opengl/CTextMessageCapable.h>
 #include <mrpt/opengl/COpenGLScene.h>
-#include <mrpt/gui/link_pragmas.h>
 
 namespace mrpt
 {
@@ -66,7 +65,7 @@ namespace gui
  * the mouse. See OnUserManuallyMovesCamera
   * \ingroup mrpt_gui_grp
   */
-class GUI_IMPEXP CWxGLCanvasBase : public CGlCanvasBase,
+class CWxGLCanvasBase : public CGlCanvasBase,
 								   public wxGLCanvas,
 								   public mrpt::opengl::CTextMessageCapable
 {

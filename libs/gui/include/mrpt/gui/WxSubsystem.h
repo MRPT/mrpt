@@ -16,7 +16,6 @@
 #include <mrpt/utils/types_math.h>
 #include <mrpt/gui/gui_frwds.h>
 
-#include <mrpt/gui/link_pragmas.h>
 
 #include <queue>
 #include <map>
@@ -99,7 +98,7 @@ namespace gui
   *  \sa gui::CDisplayWindow, gui::CDisplayWindow3D
   * \ingroup mrpt_gui_grp
   */
-class GUI_IMPEXP WxSubsystem
+class WxSubsystem
 {
 #if MRPT_HAS_WXWIDGETS
 
@@ -192,7 +191,7 @@ class GUI_IMPEXP WxSubsystem
 
 	/** The data structure for each inter-thread request:
 	  */
-	struct GUI_IMPEXP TRequestToWxMainThread
+	struct TRequestToWxMainThread
 	{
 		TRequestToWxMainThread()
 			: source2D(nullptr),

@@ -28,7 +28,7 @@ namespace utils
   * \sa CClientTCPSocket
  * \ingroup mrpt_base_grp
   */
-class BASE_IMPEXP CMessage
+class CMessage
 {
    public:
 	/** An identifier of the message type (only the least-sig byte is typically

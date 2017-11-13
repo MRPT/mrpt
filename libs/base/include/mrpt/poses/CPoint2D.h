@@ -33,7 +33,7 @@ class CPose2D;
  * \sa CPoseOrPoint,CPose, CPoint
  * \ingroup poses_grp
  */
-class BASE_IMPEXP CPoint2D : public CPoint<CPoint2D>,
+class CPoint2D : public CPoint<CPoint2D>,
 							 public mrpt::utils::CSerializable
 {
 	DEFINE_SERIALIZABLE(CPoint2D)

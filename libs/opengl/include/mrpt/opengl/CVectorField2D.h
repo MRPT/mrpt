@@ -33,7 +33,7 @@ namespace opengl
   * \ingroup mrpt_opengl_grp
   */
 
-class OPENGL_IMPEXP CVectorField2D : public CRenderizableDisplayList
+class CVectorField2D : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CVectorField2D)
    protected:

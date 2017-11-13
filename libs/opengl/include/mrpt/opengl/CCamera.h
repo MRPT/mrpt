@@ -27,7 +27,7 @@ class CCamera;
   *  \sa opengl::COpenGLScene
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CCamera : public CRenderizable
+class CCamera : public CRenderizable
 {
 	friend class COpenGLViewport;
 

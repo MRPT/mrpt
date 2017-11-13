@@ -25,7 +25,7 @@ namespace utils
   *   unless this behavior is explicitly disabled with  \a enableCommentFilters
 * \ingroup mrpt_base_grp
   */
-class BASE_IMPEXP CTextFileLinesParser
+class CTextFileLinesParser
 {
    public:
 	/** Default constructor; should call \a open() at some moment later. */

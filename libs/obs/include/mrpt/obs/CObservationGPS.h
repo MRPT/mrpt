@@ -66,7 +66,7 @@ namespace obs
  * \sa CObservation
  * \ingroup mrpt_obs_grp
  */
-class OBS_IMPEXP CObservationGPS : public CObservation
+class CObservationGPS : public CObservation
 {
 	DEFINE_SERIALIZABLE(CObservationGPS)
 

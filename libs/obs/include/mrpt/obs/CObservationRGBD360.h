@@ -81,7 +81,7 @@ namespace obs
  *CObservation
  * \ingroup mrpt_obs_grp
  */
-class OBS_IMPEXP CObservationRGBD360 : public CObservation
+class CObservationRGBD360 : public CObservation
 {
 	DEFINE_SERIALIZABLE(CObservationRGBD360)
 

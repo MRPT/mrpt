@@ -8,7 +8,6 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/base/link_pragmas.h>
 #include <cstdlib>
 #include <cmath>
 
@@ -24,7 +23,7 @@ namespace math
   * Discrete time equation: `y[k]=alpha*y[k-1]+(1-alpha)*x[k]`.
   * With: x[k] input, y[k] output, alpha a parameter in [0,1]
   */
-struct BASE_IMPEXP LowPassFilter_IIR1
+struct LowPassFilter_IIR1
 {
 	LowPassFilter_IIR1(double alpha = 0.5, double y_k_minus_1 = .0);
 	/** Processes one input sample, updates the filter state and return the

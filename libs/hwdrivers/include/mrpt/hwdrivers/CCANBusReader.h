@@ -57,7 +57,7 @@ namespace hwdrivers
   * \sa C2DRangeFinderAbstract
   * \ingroup mrpt_hwdrivers_grp
   */
-class HWDRIVERS_IMPEXP CCANBusReader : public mrpt::utils::COutputLogger,
+class CCANBusReader : public mrpt::utils::COutputLogger,
 									   public CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CCANBusReader)

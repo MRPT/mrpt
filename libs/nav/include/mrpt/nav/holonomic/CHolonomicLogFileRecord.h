@@ -9,7 +9,6 @@
 #ifndef CHolonomicLogFileRecord_H
 #define CHolonomicLogFileRecord_H
 
-#include <mrpt/nav/link_pragmas.h>
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/math/CMatrixD.h>
 
@@ -25,7 +24,7 @@ namespace nav
  *
  * \sa CReactiveNavigationSystem, CHolonomicLogFileRecord
  */
-class NAV_IMPEXP CHolonomicLogFileRecord : public utils::CSerializable
+class CHolonomicLogFileRecord : public utils::CSerializable
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CHolonomicLogFileRecord)
    public:

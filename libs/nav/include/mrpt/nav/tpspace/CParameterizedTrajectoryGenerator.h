@@ -15,7 +15,6 @@
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/math/CPolygon.h>
 #include <cstdint>
-#include <mrpt/nav/link_pragmas.h>
 #include <mrpt/nav/holonomic/ClearanceDiagram.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/kinematics/CVehicleVelCmd.h>
@@ -74,7 +73,7 @@ enum PTG_collision_behavior_t
  *
  *  \ingroup nav_tpspace
  */
-class NAV_IMPEXP CParameterizedTrajectoryGenerator
+class CParameterizedTrajectoryGenerator
 	: public mrpt::utils::CSerializable,
 	  public mrpt::utils::CLoadableOptions
 {
@@ -165,7 +164,7 @@ class NAV_IMPEXP CParameterizedTrajectoryGenerator
 
 	/** Dynamic state that may affect the PTG path parameterization. \ingroup
 	 * nav_reactive  */
-	struct NAV_IMPEXP TNavDynamicState
+	struct TNavDynamicState
 	{
 		/** Current vehicle velocity (local frame of reference) */
 		mrpt::math::TTwist2D curVelLocal;
@@ -504,7 +503,7 @@ using TListPTGPtr =
 /** Base class for all PTGs using a 2D polygonal robot shape model.
  *  \ingroup nav_tpspace
  */
-class NAV_IMPEXP CPTG_RobotShape_Polygonal
+class CPTG_RobotShape_Polygonal
 	: public CParameterizedTrajectoryGenerator
 {
    public:
@@ -547,7 +546,7 @@ class NAV_IMPEXP CPTG_RobotShape_Polygonal
 /** Base class for all PTGs using a 2D circular robot shape model.
  *  \ingroup nav_tpspace
  */
-class NAV_IMPEXP CPTG_RobotShape_Circular
+class CPTG_RobotShape_Circular
 	: public CParameterizedTrajectoryGenerator
 {
    public:

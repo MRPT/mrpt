@@ -26,7 +26,7 @@ namespace obs
  * capable of reading this kind of observations.
  * \ingroup mrpt_obs_grp
  */
-class OBS_IMPEXP CObservationWirelessPower : public CObservation
+class CObservationWirelessPower : public CObservation
 {
 	DEFINE_SERIALIZABLE(CObservationWirelessPower)
 

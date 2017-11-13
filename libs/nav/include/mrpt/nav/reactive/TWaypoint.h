@@ -15,14 +15,13 @@
 #include <vector>
 #include <string>
 
-#include <mrpt/nav/link_pragmas.h>
 
 namespace mrpt
 {
 namespace nav
 {
 /** A single waypoint within TWaypointSequence. \ingroup nav_reactive */
-struct NAV_IMPEXP TWaypoint
+struct TWaypoint
 {
 	/** [Must be set by the user] Coordinates of desired target location
 	 * (world/global coordinates).
@@ -69,7 +68,7 @@ struct NAV_IMPEXP TWaypoint
 };
 
 /** used in getAsOpenglVisualization() */
-struct NAV_IMPEXP TWaypointsRenderingParams
+struct TWaypointsRenderingParams
 {
 	TWaypointsRenderingParams();
 
@@ -86,7 +85,7 @@ struct NAV_IMPEXP TWaypointsRenderingParams
  * Users can directly fill in the list of waypoints manipulating the public
  * field `waypoints`.
  *  \ingroup nav_reactive */
-struct NAV_IMPEXP TWaypointSequence
+struct TWaypointSequence
 {
 	std::vector<TWaypoint> waypoints;
 
@@ -108,7 +107,7 @@ struct NAV_IMPEXP TWaypointSequence
 };
 
 /** A waypoint with an execution status. \ingroup nav_reactive */
-struct NAV_IMPEXP TWaypointStatus : public TWaypoint
+struct TWaypointStatus : public TWaypoint
 {
 	/** Whether this waypoint has been reached already (to within the allowed
 	 * distance as per user specifications) or skipped. */
@@ -133,7 +132,7 @@ struct NAV_IMPEXP TWaypointStatus : public TWaypoint
 /** The struct for querying the status of waypoints navigation. Used in
  * CWaypointsNavigator::getWaypointNavStatus().
  *  \ingroup nav_reactive */
-struct NAV_IMPEXP TWaypointStatusSequence
+struct TWaypointStatusSequence
 {
 	/** Waypoints parameters and status (reached, skipped, etc.) */
 	std::vector<TWaypointStatus> waypoints;

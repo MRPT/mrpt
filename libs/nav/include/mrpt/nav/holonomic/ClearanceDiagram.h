@@ -12,7 +12,6 @@
 #include <map>
 #include <cstdint>
 #include <mrpt/opengl/opengl_frwds.h>
-#include <mrpt/nav/link_pragmas.h>
 namespace mrpt
 {
 namespace utils
@@ -34,7 +33,7 @@ namespace nav
 	*
 	*  \ingroup nav_tpspace
 	*/
-class NAV_IMPEXP ClearanceDiagram
+class ClearanceDiagram
 {
    public:
 	/** default ctor */

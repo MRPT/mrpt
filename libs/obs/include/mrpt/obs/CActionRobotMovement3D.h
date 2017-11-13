@@ -26,7 +26,7 @@ namespace obs
 * \ingroup mrpt_obs_grp
 * \sa CAction
 */
-class OBS_IMPEXP CActionRobotMovement3D : public CAction
+class CActionRobotMovement3D : public CAction
 {
 	DEFINE_SERIALIZABLE(CActionRobotMovement3D)
 
@@ -62,7 +62,7 @@ class OBS_IMPEXP CActionRobotMovement3D : public CAction
 	};
 
 	/** The parameter to be passed to "computeFromOdometry". */
-	struct OBS_IMPEXP TMotionModelOptions
+	struct TMotionModelOptions
 	{
 		/** Default values loader. */
 		TMotionModelOptions();
@@ -70,7 +70,7 @@ class OBS_IMPEXP CActionRobotMovement3D : public CAction
 		/** The model to be used. */
 		TDrawSampleMotionModel modelSelection;
 
-		struct OBS_IMPEXP TOptions_6DOFModel
+		struct TOptions_6DOFModel
 		{
 			/** Options for the 6DOFModel model  which generates a
 			 * CPosePDFParticles object an then create from that

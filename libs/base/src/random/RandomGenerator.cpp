@@ -129,10 +129,10 @@ void CRandomGenerator::drawGaussianMultivariate(
 }
 
 // Instantiations:
-template BASE_IMPEXP void CRandomGenerator::drawGaussianMultivariate<double>(
+template void CRandomGenerator::drawGaussianMultivariate<double>(
 	std::vector<double>& out_result, const CMatrixTemplateNumeric<double>& cov,
 	const std::vector<double>* mean);
-template BASE_IMPEXP void CRandomGenerator::drawGaussianMultivariate<float>(
+template void CRandomGenerator::drawGaussianMultivariate<float>(
 	std::vector<float>& out_result, const CMatrixTemplateNumeric<float>& cov,
 	const std::vector<float>* mean);
 

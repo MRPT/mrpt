@@ -27,7 +27,7 @@ namespace hwdrivers
   *  \sa mrpt::obs::CObservationWindSensor
   * \ingroup mrpt_hwdrivers_grp
   */
-class HWDRIVERS_IMPEXP CGillAnemometer : public mrpt::hwdrivers::CGenericSensor
+class CGillAnemometer : public mrpt::hwdrivers::CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CGillAnemometer)
 

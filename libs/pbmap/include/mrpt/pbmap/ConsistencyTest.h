@@ -20,7 +20,6 @@
 #if MRPT_HAS_PCL
 
 #include <mrpt/utils/types_math.h>  // Eigen
-#include <mrpt/pbmap/link_pragmas.h>
 #include <mrpt/pbmap/PbMap.h>
 
 namespace mrpt
@@ -33,7 +32,7 @@ namespace pbmap
  *
  * \ingroup mrpt_pbmap_grp
  */
-class PBMAP_IMPEXP ConsistencyTest
+class ConsistencyTest
 {
    public:
 	/*!Constructor */

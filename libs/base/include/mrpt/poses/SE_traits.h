@@ -26,11 +26,11 @@ namespace poses
   * \sa SE_traits<2>, SE_traits<3>, CPose3D, CPose2D
   */
 template <size_t DOF>
-struct BASE_IMPEXP SE_traits;
+struct SE_traits;
 
 /** Specialization of SE for 3D poses \sa SE_traits */
 template <>
-struct BASE_IMPEXP SE_traits<3>
+struct SE_traits<3>
 {
 	enum
 	{
@@ -81,7 +81,7 @@ struct BASE_IMPEXP SE_traits<3>
 
 /** Specialization of SE for 2D poses \sa SE_traits */
 template <>
-struct BASE_IMPEXP SE_traits<2>
+struct SE_traits<2>
 {
 	enum
 	{

@@ -20,7 +20,7 @@ namespace gnss
 #pragma pack(push, 1)
 
 /** NMEA datum: GGA. \sa mrpt::obs::CObservationGPS  */
-struct OBS_IMPEXP Message_NMEA_GGA : public gnss_message
+struct Message_NMEA_GGA : public gnss_message
 {
 	GNSS_MESSAGE_BINARY_BLOCK(&fields, sizeof(fields))
 	/** Static msg type (member expected by templates) */
@@ -29,7 +29,7 @@ struct OBS_IMPEXP Message_NMEA_GGA : public gnss_message
 		msg_type = NMEA_GGA
 	};
 	Message_NMEA_GGA() : gnss_message((gnss_message_type_t)msg_type) {}
-	struct OBS_IMPEXP content_t
+	struct content_t
 	{
 		/** The GPS sensor measured timestamp (in UTC time) */
 		UTC_time UTCTime;
@@ -106,7 +106,7 @@ struct OBS_IMPEXP Message_NMEA_GGA : public gnss_message
 };
 
 /** NMEA datum: GLL. \sa mrpt::obs::CObservationGPS  */
-struct OBS_IMPEXP Message_NMEA_GLL : public gnss_message
+struct Message_NMEA_GLL : public gnss_message
 {
 	GNSS_MESSAGE_BINARY_BLOCK(&fields, sizeof(fields))
 	/** Static msg type (member expected by templates) */
@@ -115,7 +115,7 @@ struct OBS_IMPEXP Message_NMEA_GLL : public gnss_message
 		msg_type = NMEA_GLL
 	};
 	Message_NMEA_GLL() : gnss_message((gnss_message_type_t)msg_type) {}
-	struct OBS_IMPEXP content_t
+	struct content_t
 	{
 		/** The GPS sensor measured timestamp (in UTC time) */
 		UTC_time UTCTime;
@@ -136,7 +136,7 @@ struct OBS_IMPEXP Message_NMEA_GLL : public gnss_message
 };
 
 /** NMEA datum: RMC. \sa mrpt::obs::CObservationGPS   */
-struct OBS_IMPEXP Message_NMEA_RMC : public gnss_message
+struct Message_NMEA_RMC : public gnss_message
 {
 	GNSS_MESSAGE_BINARY_BLOCK(&fields, sizeof(fields))
 	/** Static msg type (member expected by templates) */
@@ -145,7 +145,7 @@ struct OBS_IMPEXP Message_NMEA_RMC : public gnss_message
 		msg_type = NMEA_RMC
 	};
 	Message_NMEA_RMC() : gnss_message((gnss_message_type_t)msg_type) {}
-	struct OBS_IMPEXP content_t
+	struct content_t
 	{
 		/** The GPS sensor measured timestamp (in UTC time) */
 		UTC_time UTCTime;
@@ -181,7 +181,7 @@ struct OBS_IMPEXP Message_NMEA_RMC : public gnss_message
 };
 
 /** NMEA datum: VTG. \sa mrpt::obs::CObservationGPS  */
-struct OBS_IMPEXP Message_NMEA_VTG : public gnss_message
+struct Message_NMEA_VTG : public gnss_message
 {
 	GNSS_MESSAGE_BINARY_BLOCK(&fields, sizeof(fields))
 	/** Static msg type (member expected by templates) */
@@ -190,7 +190,7 @@ struct OBS_IMPEXP Message_NMEA_VTG : public gnss_message
 		msg_type = NMEA_VTG
 	};
 	Message_NMEA_VTG() : gnss_message((gnss_message_type_t)msg_type) {}
-	struct OBS_IMPEXP content_t
+	struct content_t
 	{
 		/** Degrees */
 		double true_track, magnetic_track;
@@ -206,7 +206,7 @@ struct OBS_IMPEXP Message_NMEA_VTG : public gnss_message
 };
 
 /** NMEA datum: ZDA. \sa mrpt::obs::CObservationGPS   */
-struct OBS_IMPEXP Message_NMEA_ZDA : public gnss_message
+struct Message_NMEA_ZDA : public gnss_message
 {
 	GNSS_MESSAGE_BINARY_BLOCK(&fields, sizeof(fields))
 	/** Static msg type (member expected by templates) */
@@ -215,7 +215,7 @@ struct OBS_IMPEXP Message_NMEA_ZDA : public gnss_message
 		msg_type = NMEA_ZDA
 	};
 	Message_NMEA_ZDA() : gnss_message((gnss_message_type_t)msg_type) {}
-	struct OBS_IMPEXP content_t
+	struct content_t
 	{
 		/** The GPS sensor measured timestamp (in UTC time) */
 		UTC_time UTCTime;

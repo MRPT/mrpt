@@ -24,7 +24,7 @@ namespace obs
  * \sa CObservation
  * \ingroup mrpt_obs_grp
  */
-class OBS_IMPEXP CObservationGasSensors : public CObservation
+class CObservationGasSensors : public CObservation
 {
 	DEFINE_SERIALIZABLE(CObservationGasSensors)
 
@@ -35,7 +35,7 @@ class OBS_IMPEXP CObservationGasSensors : public CObservation
 
 	/** The structure for each e-nose
 	 */
-	struct OBS_IMPEXP TObservationENose
+	struct TObservationENose
 	{
 		TObservationENose()
 			: eNosePoseOnTheRobot(),
@@ -87,7 +87,7 @@ class OBS_IMPEXP CObservationGasSensors : public CObservation
 	 *
 	 * \sa CObservationGasSensors
 	 */
-	class OBS_IMPEXP CMOSmodel
+	class CMOSmodel
 	{
 	   public:
 		/** Constructor  */
@@ -126,7 +126,7 @@ class OBS_IMPEXP CObservationGasSensors : public CObservation
 		/** The content of each m_lastObservations in the estimation when using
 		 * the option : MOS_MODEl (useMOSmodel =1)
 			*/
-		struct OBS_IMPEXP TdataMap
+		struct TdataMap
 		{
 			/** Sensore reading */
 			float reading;

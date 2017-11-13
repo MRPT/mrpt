@@ -16,7 +16,7 @@ namespace mrpt
 {
 namespace opengl
 {
-class OPENGL_IMPEXP CPolyhedron;
+class CPolyhedron;
 
 /**
   * This class represents arbitrary polyhedra. The class includes a set of
@@ -41,7 +41,7 @@ class OPENGL_IMPEXP CPolyhedron;
   *
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CPolyhedron : public CRenderizableDisplayList
+class CPolyhedron : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CPolyhedron)
    public:
@@ -49,7 +49,7 @@ class OPENGL_IMPEXP CPolyhedron : public CRenderizableDisplayList
 	  * Struct used to store a polyhedron edge. The struct consists only of two
 	 * vertex indices, used to access the polyhedron vertex list.
 	  */
-	struct OPENGL_IMPEXP TPolyhedronEdge
+	struct TPolyhedronEdge
 	{
 		/**
 		  * First vertex.
@@ -86,7 +86,7 @@ class OPENGL_IMPEXP CPolyhedron : public CRenderizableDisplayList
 	  * Struct used to store a polyhedron face. Consists on a set of vertex
 	 * indices and a normal vector.
 	  */
-	struct OPENGL_IMPEXP TPolyhedronFace
+	struct TPolyhedronFace
 	{
 		/** Vector of indices to the vertex list. */
 		std::vector<uint32_t> vertices;

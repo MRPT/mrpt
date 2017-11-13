@@ -24,7 +24,7 @@ namespace nav
  * mrpt::kinematics::CVehicleSimulVirtualBase
   *  \ingroup nav_reactive
   */
-class NAV_IMPEXP CRobot2NavInterfaceForSimulator_Holo
+class CRobot2NavInterfaceForSimulator_Holo
 	: public CRobot2NavInterface
 {
    private:
@@ -112,7 +112,7 @@ class NAV_IMPEXP CRobot2NavInterfaceForSimulator_Holo
  * mrpt::kinematics::CVehicleSimulVirtualBase
   *  \ingroup nav_reactive
   */
-class NAV_IMPEXP CRobot2NavInterfaceForSimulator_DiffDriven
+class CRobot2NavInterfaceForSimulator_DiffDriven
 	: public CRobot2NavInterface
 {
    private:

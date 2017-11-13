@@ -10,7 +10,6 @@
 #pragma once
 
 #include <mrpt/utils/core_defs.h>
-#include <mrpt/obs/link_pragmas.h>
 #include <mrpt/obs/obs_frwds.h>
 #include <map>
 #include <string>
@@ -30,7 +29,7 @@ using MapCtorFromDefFunctor = std::function<mrpt::maps::CMetricMap*(
 
 /** Class factory & registry for map classes. Used from
  * mrpt::maps::TMetricMapInitializer */
-struct OBS_IMPEXP TMetricMapTypesRegistry
+struct TMetricMapTypesRegistry
 {
    public:
 	static TMetricMapTypesRegistry& Instance();

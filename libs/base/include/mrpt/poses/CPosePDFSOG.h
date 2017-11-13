@@ -33,14 +33,14 @@ namespace poses
  * \sa CPose2D, CPosePDF, CPosePDFParticles
  * \ingroup poses_pdf_grp
  */
-class BASE_IMPEXP CPosePDFSOG : public CPosePDF
+class CPosePDFSOG : public CPosePDF
 {
 	DEFINE_SERIALIZABLE(CPosePDFSOG)
 
    public:
 	/** The struct for each mode:
 	 */
-	struct BASE_IMPEXP TGaussianMode
+	struct TGaussianMode
 	{
 		TGaussianMode() : mean(), cov(), log_w(0) {}
 		CPose2D mean;

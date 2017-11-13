@@ -9,7 +9,6 @@
 #pragma once
 
 #include <mrpt/utils/CDynamicGrid.h>
-#include <mrpt/base/link_pragmas.h>
 #include <map>
 
 namespace mrpt
@@ -23,7 +22,7 @@ namespace math
  * mrpt::obs::CSinCosLookUpTableFor2DScans
  * \ingroup mrpt_base_grp
   */
-class BASE_IMPEXP CAtan2LookUpTable
+class CAtan2LookUpTable
 {
    public:
 	CAtan2LookUpTable() noexcept;
@@ -62,7 +61,7 @@ class BASE_IMPEXP CAtan2LookUpTable
  * \endcode
  * \ingroup mrpt_base_grp
   */
-class BASE_IMPEXP CAtan2LookUpTableMultiRes
+class CAtan2LookUpTableMultiRes
 {
    public:
 	CAtan2LookUpTableMultiRes() noexcept;

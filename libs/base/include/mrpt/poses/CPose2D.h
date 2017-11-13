@@ -37,7 +37,7 @@ namespace poses
  * \sa CPoseOrPoint,CPoint2D
  * \ingroup poses_grp
  */
-class BASE_IMPEXP CPose2D : public CPose<CPose2D>,
+class CPose2D : public CPose<CPose2D>,
 							public mrpt::utils::CSerializable
 {
    public:
@@ -359,18 +359,18 @@ class BASE_IMPEXP CPose2D : public CPose<CPose2D>,
 };  // End of class def.
 DEFINE_SERIALIZABLE_POST(CPose2D)
 
-std::ostream BASE_IMPEXP& operator<<(std::ostream& o, const CPose2D& p);
+std::ostream& operator<<(std::ostream& o, const CPose2D& p);
 
 /** Unary - operator: return the inverse pose "-p" (Note that is NOT the same
  * than a pose with negative x y phi) \sa CPose2D::inverse() */
-CPose2D BASE_IMPEXP operator-(const CPose2D& p);
+CPose2D operator-(const CPose2D& p);
 
 /** Compose a 2D point from a new coordinate base given by a 2D pose. */
-mrpt::math::TPoint2D BASE_IMPEXP
+mrpt::math::TPoint2D
 	operator+(const CPose2D& pose, const mrpt::math::TPoint2D& pnt);
 
-bool BASE_IMPEXP operator==(const CPose2D& p1, const CPose2D& p2);
-bool BASE_IMPEXP operator!=(const CPose2D& p1, const CPose2D& p2);
+bool operator==(const CPose2D& p1, const CPose2D& p2);
+bool operator!=(const CPose2D& p1, const CPose2D& p2);
 
 /** Eigen aligment-compatible container */
 typedef mrpt::aligned_containers<CPose2D>::vector_t StdVector_CPose2D;

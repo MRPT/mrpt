@@ -72,7 +72,7 @@ namespace hwdrivers
 	* \note This class was contributed by Adrien Barral - Robopec (France)
 * \ingroup mrpt_hwdrivers_grp
 	*/
-class HWDRIVERS_IMPEXP CLMS100Eth : public C2DRangeFinderAbstract
+class CLMS100Eth : public C2DRangeFinderAbstract
 {
 	DEFINE_GENERIC_SENSOR(CLMS100Eth)
    public:

@@ -28,7 +28,7 @@ namespace math
  * models can be anything else, not only matrices.
   */
 template <typename NUMTYPE = double>
-class BASE_IMPEXP RANSAC_Template : public mrpt::utils::COutputLogger
+class RANSAC_Template : public mrpt::utils::COutputLogger
 {
    public:
 	RANSAC_Template() : mrpt::utils::COutputLogger("RANSAC_Template") {}

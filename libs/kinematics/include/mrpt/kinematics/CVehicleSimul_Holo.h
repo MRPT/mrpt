@@ -21,7 +21,7 @@ namespace kinematics
  * the velocity commands in this kinematic model.
  * \ingroup mrpt_kinematics_grp
   */
-class KINEMATICS_IMPEXP CVehicleSimul_Holo : public CVehicleSimulVirtualBase
+class CVehicleSimul_Holo : public CVehicleSimulVirtualBase
 {
    public:
 	typedef CVehicleVelCmd_Holo kinematic_cmd_t;

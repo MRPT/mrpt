@@ -16,7 +16,6 @@
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/utils/TEnumType.h>
 
-#include <mrpt/maps/link_pragmas.h>
 
 namespace mrpt
 {
@@ -29,7 +28,7 @@ namespace maps
  * mrpt::utils::CSerializable
  * \ingroup mrpt_maps_grp
  */
-class MAPS_IMPEXP CColouredPointsMap : public CPointsMap
+class CColouredPointsMap : public CPointsMap
 {
 	DEFINE_SERIALIZABLE(CColouredPointsMap)
 
@@ -256,7 +255,7 @@ class MAPS_IMPEXP CColouredPointsMap : public CPointsMap
 	};
 
 	/** The definition of parameters for generating colors from laser scans */
-	struct MAPS_IMPEXP TColourOptions : public utils::CLoadableOptions
+	struct TColourOptions : public utils::CLoadableOptions
 	{
 		/** Initilization of default parameters */
 		TColourOptions();

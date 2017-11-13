@@ -1415,14 +1415,14 @@ mrpt::utils::CStream& operator<<(
 	return out;
 }
 
-BASE_IMPEXP mrpt::utils::CStream& operator>>(
+mrpt::utils::CStream& operator>>(
 	mrpt::utils::CStream& in, mrpt::math::TTwist2D& o);
-BASE_IMPEXP mrpt::utils::CStream& operator<<(
+mrpt::utils::CStream& operator<<(
 	mrpt::utils::CStream& out, const mrpt::math::TTwist2D& o);
 
-BASE_IMPEXP mrpt::utils::CStream& operator>>(
+mrpt::utils::CStream& operator>>(
 	mrpt::utils::CStream& in, mrpt::math::TTwist3D& o);
-BASE_IMPEXP mrpt::utils::CStream& operator<<(
+mrpt::utils::CStream& operator<<(
 	mrpt::utils::CStream& out, const mrpt::math::TTwist3D& o);
 
 mrpt::utils::CStream& operator>>(

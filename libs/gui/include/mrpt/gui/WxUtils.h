@@ -15,7 +15,6 @@
 #include <mrpt/utils/CConfigFileMemory.h>
 #include <mrpt/gui/keycodes.h>
 
-#include <mrpt/gui/link_pragmas.h>
 
 #if MRPT_HAS_WXWIDGETS
 
@@ -140,7 +139,7 @@ mrptKeyModifier keyEventToMrptKeyModifier(const wxKeyEvent& ev);
 
 /** A custom control to display the bitmap and avoid flicker
   */
-class GUI_IMPEXP wxMRPTImageControl : public wxPanel
+class wxMRPTImageControl : public wxPanel
 {
    protected:
 	wxBitmap* m_img;
@@ -172,7 +171,7 @@ class GUI_IMPEXP wxMRPTImageControl : public wxPanel
 // end wxMRPTImageControl  -----------
 
 /** A panel to select the camera input from all the formats supported by MRPT */
-class GUI_IMPEXP CPanelCameraSelection : public wxPanel
+class CPanelCameraSelection : public wxPanel
 {
    public:
 	CPanelCameraSelection(wxWindow* parent, wxWindowID id = wxID_ANY);

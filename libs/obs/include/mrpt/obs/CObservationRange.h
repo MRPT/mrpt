@@ -27,7 +27,7 @@ namespace obs
  * \sa CObservation
  * \ingroup mrpt_obs_grp
  */
-class OBS_IMPEXP CObservationRange : public CObservation
+class CObservationRange : public CObservation
 {
 	DEFINE_SERIALIZABLE(CObservationRange)
 
@@ -43,7 +43,7 @@ class OBS_IMPEXP CObservationRange : public CObservation
 	/** Cone aperture of each ultrasonic beam, in radians. */
 	float sensorConeApperture;
 
-	struct OBS_IMPEXP TMeasurement
+	struct TMeasurement
 	{
 		TMeasurement() : sensorID(0), sensorPose(), sensedDistance(0) {}
 		/** Some kind of sensor ID which identifies it on the bus (if

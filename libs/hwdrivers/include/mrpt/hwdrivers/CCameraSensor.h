@@ -343,7 +343,7 @@ namespace hwdrivers
  * prepareVideoSourceFromUserSelection()
   * \ingroup mrpt_hwdrivers_grp
   */
-class HWDRIVERS_IMPEXP CCameraSensor : public mrpt::utils::COutputLogger,
+class CCameraSensor : public mrpt::utils::COutputLogger,
 									   public CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CCameraSensor)

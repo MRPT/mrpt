@@ -18,7 +18,6 @@
 
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/pbmap/link_pragmas.h>
 
 namespace mrpt
 {
@@ -30,7 +29,7 @@ namespace pbmap
  *
  * \ingroup mrpt_pbmap_grp
  */
-struct PBMAP_IMPEXP config_heuristics
+struct config_heuristics
 {
 	// [global]
 	/*! Global parameter to indicate the path to previous PbMaps used for place

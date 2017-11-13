@@ -43,7 +43,7 @@ class CPose3DPDF;
  * \sa CPose3DQuatPDF, CPose3DPDF
  * \ingroup poses_pdf_grp
  */
-class BASE_IMPEXP CPose3DQuatPDF
+class CPose3DQuatPDF
 	: public mrpt::utils::CSerializable,
 	  public mrpt::utils::CProbabilityDensityFunction<CPose3DQuat, 7>
 {

@@ -24,7 +24,7 @@ namespace utils
 namespace internal
 {
 // Aux class.
-struct BASE_IMPEXP dynamic_grid_txt_saver
+struct dynamic_grid_txt_saver
 {
 	bool saveToTextFile(const std::string& fileName) const;
 	virtual unsigned int getSizeX() const = 0;

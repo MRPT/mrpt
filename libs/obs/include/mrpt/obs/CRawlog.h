@@ -65,7 +65,7 @@ typedef std::multimap<mrpt::system::TTimeStamp, CObservation::Ptr>
  *RawLog file format</a>.
  * \ingroup mrpt_obs_grp
  */
-class OBS_IMPEXP CRawlog : public mrpt::utils::CSerializable
+class CRawlog : public mrpt::utils::CSerializable
 {
 	DEFINE_SERIALIZABLE(CRawlog)
 

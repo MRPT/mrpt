@@ -18,7 +18,6 @@
 #include <octomap/octomap.h>
 #include <mrpt/obs/obs_frwds.h>
 
-#include <mrpt/maps/link_pragmas.h>
 
 namespace mrpt
 {
@@ -32,7 +31,7 @@ namespace maps
  * \sa CMetricMap, the example in "MRPT/samples/octomap_simple"
  * \ingroup mrpt_maps_grp
  */
-class MAPS_IMPEXP COctoMap
+class COctoMap
 	: public COctoMapBase<octomap::OcTree, octomap::OcTreeNode>
 {
 	DEFINE_SERIALIZABLE(COctoMap)

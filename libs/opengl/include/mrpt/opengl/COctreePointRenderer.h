@@ -130,7 +130,7 @@ class COctreePointRenderer
 	  *  Instead of pointers, children are referenced by their indices in \a
 	 * m_octree_nodes
 	  */
-	struct OPENGL_IMPEXP TNode
+	struct TNode
 	{
 		TNode()
 			: is_leaf(true),
@@ -262,7 +262,7 @@ class COctreePointRenderer
 		MRPT_MAKE_ALIGNED_OPERATOR_NEW
 	};
 
-	struct OPENGL_IMPEXP TRenderQueueElement
+	struct TRenderQueueElement
 	{
 		inline TRenderQueueElement(const size_t id, float area_sq)
 			: node_id(id), render_area_sqpixels(area_sq)

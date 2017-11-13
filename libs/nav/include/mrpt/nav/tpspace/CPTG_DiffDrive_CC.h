@@ -24,7 +24,7 @@ namespace nav
  * \note [Before MRPT 1.5.0 this was named CPTG4]
  *  \ingroup nav_tpspace
  */
-class NAV_IMPEXP CPTG_DiffDrive_CC : public CPTG_DiffDrive_CollisionGridBased
+class CPTG_DiffDrive_CC : public CPTG_DiffDrive_CollisionGridBased
 {
 	DEFINE_SERIALIZABLE(CPTG_DiffDrive_CC)
    public:

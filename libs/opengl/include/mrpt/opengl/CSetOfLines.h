@@ -32,7 +32,7 @@ namespace opengl
   *
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CSetOfLines : public CRenderizableDisplayList
+class CSetOfLines : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CSetOfLines)
    protected:

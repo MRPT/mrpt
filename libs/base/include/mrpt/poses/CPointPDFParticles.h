@@ -22,7 +22,7 @@ namespace poses
 /** Data within each particle
  * \ingroup poses_pdf_grp
   */
-class BASE_IMPEXP TSimple3DPoint : public mrpt::utils::CSerializable
+class TSimple3DPoint : public mrpt::utils::CSerializable
 {
 	DEFINE_SERIALIZABLE(TSimple3DPoint)
    public:
@@ -38,7 +38,7 @@ DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(TSimple3DPoint, mrpt::utils::CSerializable)
  * \sa CPointPDF
  * \ingroup poses_pdf_grp
  */
-class BASE_IMPEXP CPointPDFParticles
+class CPointPDFParticles
 	: public CPointPDF,
 	  public mrpt::bayes::CParticleFilterData<TSimple3DPoint>,
 	  public mrpt::bayes::CParticleFilterDataImpl<

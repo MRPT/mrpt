@@ -72,7 +72,7 @@ namespace hwdrivers
   * \note Class introduced in MRPT 1.3.1
   * \ingroup mrpt_hwdrivers_grp
   */  // clang-format
-class HWDRIVERS_IMPEXP CIMUIntersense : public hwdrivers::CGenericSensor
+class CIMUIntersense : public hwdrivers::CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CIMUIntersense)
    protected:

@@ -18,7 +18,6 @@
 
 #include <mrpt/opengl/CSetOfObjects.h>
 
-#include <mrpt/maps/link_pragmas.h>
 
 namespace mrpt
 {
@@ -41,7 +40,7 @@ class CBeaconMap;
   * \sa CBeaconMap, CPointPDFSOG
   * \ingroup mrpt_maps_grp
   */
-class MAPS_IMPEXP CBeacon : public mrpt::poses::CPointPDF
+class CBeacon : public mrpt::poses::CPointPDF
 {
 	DEFINE_SERIALIZABLE(CBeacon)
 

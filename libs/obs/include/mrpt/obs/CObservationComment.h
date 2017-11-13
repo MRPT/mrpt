@@ -24,7 +24,7 @@ namespace obs
  * \sa CObservation
  * \ingroup mrpt_obs_grp
  */
-class OBS_IMPEXP CObservationComment : public CObservation
+class CObservationComment : public CObservation
 {
 	DEFINE_SERIALIZABLE(CObservationComment)
 

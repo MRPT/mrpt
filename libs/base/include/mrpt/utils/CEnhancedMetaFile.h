@@ -23,7 +23,7 @@ namespace utils
  * instead.
   * \ingroup mrpt_base_grp
   */
-class BASE_IMPEXP CEnhancedMetaFile : public CCanvas
+class CEnhancedMetaFile : public CCanvas
 {
    private:
 	void_ptr_noncopy m_hdc;

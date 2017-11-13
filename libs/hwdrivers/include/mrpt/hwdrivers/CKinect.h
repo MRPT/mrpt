@@ -15,7 +15,6 @@
 #include <mrpt/utils/TEnumType.h>
 #include <mrpt/gui/CDisplayWindow.h>
 
-#include <mrpt/hwdrivers/link_pragmas.h>
 
 // MRPT implements a common interface to Kinect disregarding the
 //  actual underlying library. These macros defined in "mrpt/config.h"
@@ -267,7 +266,7 @@ namespace hwdrivers
   *		- http://nicolas.burrus.name/index.php/Research/KinectCalibration
   * \ingroup mrpt_hwdrivers_grp
   */
-class HWDRIVERS_IMPEXP CKinect : public mrpt::hwdrivers::CGenericSensor
+class CKinect : public mrpt::hwdrivers::CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CKinect)
 

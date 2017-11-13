@@ -26,7 +26,7 @@ namespace poses
   *  **All methods are thread-safe**.
   * \ingroup poses_grp poses_pdf_grp
   */
-class BASE_IMPEXP CRobot2DPoseEstimator
+class CRobot2DPoseEstimator
 {
    public:
 	/** Default constructor */

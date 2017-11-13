@@ -23,7 +23,7 @@ namespace utils
  * \sa CStream
  * \ingroup mrpt_base_grp
  */
-class BASE_IMPEXP CStdOutStream : public CStream
+class CStdOutStream : public CStream
 {
    protected:
 	/** Method responsible for reading from the stream. in this class it has no

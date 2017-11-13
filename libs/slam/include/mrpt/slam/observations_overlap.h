@@ -11,7 +11,6 @@
 
 #include <mrpt/obs/obs_frwds.h>
 #include <mrpt/obs/CSensoryFrame.h>
-#include <mrpt/slam/link_pragmas.h>
 
 namespace mrpt
 {

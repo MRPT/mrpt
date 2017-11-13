@@ -42,7 +42,7 @@ namespace utils
  * \note The default behavior is dumping all the information at destruction.
  * \ingroup mrpt_base_grp
  */
-class BASE_IMPEXP CTimeLogger : public mrpt::utils::COutputLogger
+class CTimeLogger : public mrpt::utils::COutputLogger
 {
    private:
 	CTicTac m_tictac;
@@ -50,7 +50,7 @@ class BASE_IMPEXP CTimeLogger : public mrpt::utils::COutputLogger
 	std::string m_name;
 
 	//! Data of all the calls:
-	struct BASE_IMPEXP TCallData
+	struct TCallData
 	{
 		TCallData();
 
@@ -72,7 +72,7 @@ class BASE_IMPEXP CTimeLogger : public mrpt::utils::COutputLogger
    public:
 	/** Data of each call section: # of calls, minimum, maximum, average and
 	 * overall execution time (in seconds) \sa getStats */
-	struct BASE_IMPEXP TCallStats
+	struct TCallStats
 	{
 		size_t n_calls;
 		double min_t, max_t, mean_t, total_t, last_t;
@@ -149,7 +149,7 @@ class BASE_IMPEXP CTimeLogger : public mrpt::utils::COutputLogger
  * \endcode
  * \ingroup mrpt_base_grp
  */
-struct BASE_IMPEXP CTimeLoggerEntry
+struct CTimeLoggerEntry
 {
 	CTimeLoggerEntry(const CTimeLogger& logger, const char* section_name);
 	~CTimeLoggerEntry();
@@ -160,9 +160,9 @@ struct BASE_IMPEXP CTimeLoggerEntry
 /** @name Auxiliary stuff for the global profiler used in MRPT_START / MRPT_END
   macros.
   @{ */
-void BASE_IMPEXP global_profiler_enter(const char* func_name) noexcept;
-void BASE_IMPEXP global_profiler_leave(const char* func_name) noexcept;
-mrpt::utils::CTimeLogger BASE_IMPEXP& global_profiler_getref() noexcept;
+void global_profiler_enter(const char* func_name) noexcept;
+void global_profiler_leave(const char* func_name) noexcept;
+mrpt::utils::CTimeLogger& global_profiler_getref() noexcept;
 /** @} */
 
 }  // End of namespace

@@ -13,7 +13,6 @@
 #include <mrpt/utils/list_searchable.h>
 #include <set>
 
-#include <mrpt/hmtslam/link_pragmas.h>
 
 #define COMMON_TOPOLOG_HYP static_cast<THypothesisID>(0)
 
@@ -51,8 +50,8 @@ namespace mrpt
 {
 namespace hmtslam
 {
-class HMTSLAM_IMPEXP CHMHMapArc;
-class HMTSLAM_IMPEXP CHMHMapNode;
+class CHMHMapArc;
+class CHMHMapNode;
 
 /** An integer number uniquely identifying each of the concurrent hypotheses for
  * the robot topological path (& possibly local metric clusters) in HMT-SLAM.
@@ -77,7 +76,7 @@ typedef std::set<TPoseID> TPoseIDSet;
   *  \sa THypothesisID, CHierarchicalMHMap
   * \ingroup mrpt_hmtslam_grp
   */
-class HMTSLAM_IMPEXP THypothesisIDSet : public mrpt::utils::CSerializable,
+class THypothesisIDSet : public mrpt::utils::CSerializable,
 										public std::set<THypothesisID>
 {
 	DEFINE_SERIALIZABLE(THypothesisIDSet)
@@ -107,7 +106,7 @@ DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
 /** A class for storing a sequence of arcs (a path).
   * \sa CHMTSLAM
   */
-class HMTSLAM_IMPEXP TArcList : public mrpt::utils::list_searchable<
+class TArcList : public mrpt::utils::list_searchable<
 									std::shared_ptr<mrpt::hmtslam::CHMHMapArc>>
 {
    private:

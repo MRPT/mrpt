@@ -13,7 +13,6 @@
 #include <mrpt/poses/SE_traits.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/poses/poses_frwds.h>
-#include <mrpt/base/link_pragmas.h>
 
 namespace mrpt
 {
@@ -50,7 +49,7 @@ enum TInterpolatorMethod
 * \ingroup interpolation_grp poses_grp
 */
 template <int DIM>
-class BASE_IMPEXP CPoseInterpolatorBase
+class CPoseInterpolatorBase
 {
    public:
 	/** Default ctor: empty sequence of poses */

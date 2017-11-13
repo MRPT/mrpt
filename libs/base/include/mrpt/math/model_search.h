@@ -62,7 +62,7 @@ namespace math
   *  \author Zoltar Gaal
   * \ingroup ransac_grp
   */
-class BASE_IMPEXP ModelSearch
+class ModelSearch
 {
    private:
 	//! Select random (unique) indices from the 0..p_size sequence

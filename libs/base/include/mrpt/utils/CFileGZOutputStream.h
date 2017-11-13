@@ -28,7 +28,7 @@ namespace utils
 // We don't have wxwidgets:
 #define CFileGZOutputStream CFileOutputStream
 #else
-class BASE_IMPEXP CFileGZOutputStream : public CStream
+class CFileGZOutputStream : public CStream
 {
    protected:
 	size_t Read(void* Buffer, size_t Count) override;

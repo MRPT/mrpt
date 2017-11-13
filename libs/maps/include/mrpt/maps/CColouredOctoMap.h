@@ -15,7 +15,6 @@
 #include <octomap/ColorOcTree.h>
 #include <mrpt/obs/obs_frwds.h>
 
-#include <mrpt/maps/link_pragmas.h>
 
 namespace mrpt
 {
@@ -29,7 +28,7 @@ namespace maps
  * \sa CMetricMap, the example in "MRPT/samples/octomap_simple"
  * \ingroup mrpt_maps_grp
  */
-class MAPS_IMPEXP CColouredOctoMap
+class CColouredOctoMap
 	: public COctoMapBase<octomap::ColorOcTree, octomap::ColorOcTreeNode>
 {
 	DEFINE_SERIALIZABLE(CColouredOctoMap)

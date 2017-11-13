@@ -13,4 +13,3 @@
 #include <mrpt/utils/compiler_fixes.h>
 #include <mrpt/utils/mrpt_macros.h>
 
-#include <mrpt/base/link_pragmas.h>  // Linking pragmas for Win32

@@ -15,7 +15,6 @@
 #include <mrpt/poses/CPose2D.h>
 
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
-#include <mrpt/nav/link_pragmas.h>
 
 namespace mrpt
 {
@@ -187,7 +186,7 @@ class TMoveTree : public mrpt::graphs::CDirectedTree<EDGE_TYPE>
 };  // end TMoveTree
 
 /** An edge for the move tree used for planning in SE2 and TP-space */
-struct NAV_IMPEXP TMoveEdgeSE2_TP
+struct TMoveEdgeSE2_TP
 {
 	/** The ID of the parent node in the tree */
 	mrpt::utils::TNodeID parent_id;
@@ -218,7 +217,7 @@ struct NAV_IMPEXP TMoveEdgeSE2_TP
 	TMoveEdgeSE2_TP() : parent_id(INVALID_NODEID) {}
 };
 
-struct NAV_IMPEXP TNodeSE2
+struct TNodeSE2
 {
 	/** state in SE2 as 2D pose (x, y, phi) */
 	mrpt::math::TPose2D state;
@@ -248,7 +247,7 @@ struct PoseDistanceMetric<TNodeSE2>
 	PoseDistanceMetric() {}
 };
 
-struct NAV_IMPEXP TNodeSE2_TP
+struct TNodeSE2_TP
 {
 	/** state in SE2 as 2D pose (x, y, phi) */
 	mrpt::math::TPose2D state;

@@ -53,7 +53,7 @@ namespace nav
  *
  *  \sa CAbstractHolonomicReactiveMethod,CReactiveNavigationSystem
  */
-class NAV_IMPEXP CHolonomicFullEval : public CAbstractHolonomicReactiveMethod
+class CHolonomicFullEval : public CAbstractHolonomicReactiveMethod
 {
 	DEFINE_SERIALIZABLE(CHolonomicFullEval)
    public:
@@ -70,7 +70,7 @@ class NAV_IMPEXP CHolonomicFullEval : public CAbstractHolonomicReactiveMethod
 		mrpt::utils::CConfigFileBase& c) const override;  // See base class docs
 
 	/** Algorithm options */
-	struct NAV_IMPEXP TOptions : public mrpt::utils::CLoadableOptions
+	struct TOptions : public mrpt::utils::CLoadableOptions
 	{
 		/** Directions with collision-free distances below this threshold are
 		 * not elegible. */
@@ -142,7 +142,7 @@ class NAV_IMPEXP CHolonomicFullEval : public CAbstractHolonomicReactiveMethod
 	// manipulate the final evaluations of each
 	// directions
 
-	struct NAV_IMPEXP EvalOutput
+	struct EvalOutput
 	{
 		unsigned int best_k;
 		double best_eval;

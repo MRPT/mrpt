@@ -18,7 +18,6 @@
 #include <mrpt/maps/CLogOddsGridMap2D.h>
 #include <mrpt/obs/obs_frwds.h>
 
-#include <mrpt/maps/link_pragmas.h>
 
 namespace mrpt
 {
@@ -40,7 +39,7 @@ namespace maps
   *		- mrSimpleAverage: Each cell only stores the current average value.
   * \ingroup mrpt_maps_grp
   */
-class MAPS_IMPEXP CReflectivityGridMap2D : public CMetricMap,
+class CReflectivityGridMap2D : public CMetricMap,
 										   public utils::CDynamicGrid<int8_t>,
 										   public CLogOddsGridMap2D<int8_t>
 {
@@ -71,7 +70,7 @@ class MAPS_IMPEXP CReflectivityGridMap2D : public CMetricMap,
 
 	/** Parameters related with inserting observations into the map.
 	  */
-	struct MAPS_IMPEXP TInsertionOptions : public utils::CLoadableOptions
+	struct TInsertionOptions : public utils::CLoadableOptions
 	{
 		/** Default values loader */
 		TInsertionOptions();

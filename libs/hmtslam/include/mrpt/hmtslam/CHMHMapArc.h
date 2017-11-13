@@ -17,7 +17,7 @@ namespace mrpt
 {
 namespace hmtslam
 {
-class HMTSLAM_IMPEXP CHierarchicalMHMap;
+class CHierarchicalMHMap;
 
 /** A class for representing an arc between two nodes in a hierarchical,
  * multi-hypothesis map.
@@ -28,7 +28,7 @@ class HMTSLAM_IMPEXP CHierarchicalMHMap;
  * \sa CHierarchicalMHMap,CHMHMapNode
   * \ingroup mrpt_hmtslam_grp
  */
-class HMTSLAM_IMPEXP CHMHMapArc : public mrpt::utils::CSerializable
+class CHMHMapArc : public mrpt::utils::CSerializable
 {
 	friend class CHierarchicalMHMap;
 	friend class CHMHMapNode;

@@ -40,7 +40,7 @@ class CImage;
  * \sa CImage
  * \ingroup mrpt_base_grp
  */
-class BASE_IMPEXP CCanvas
+class CCanvas
 {
    protected:
 	/** The selected font name. */

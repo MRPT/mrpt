@@ -9,7 +9,6 @@
 #ifndef mrpt_synch_pipe_H
 #define mrpt_synch_pipe_H
 
-#include <mrpt/base/link_pragmas.h>
 #include <mrpt/utils/CStream.h>
 #include <string>
 #include <memory>  // for unique_ptr<>
@@ -39,7 +38,7 @@ class CPipeWriteEndPoint;
   *
   * \ingroup synch_grp
   */
-class BASE_IMPEXP CPipe
+class CPipe
 {
    public:
 	/** Creates a new pipe and returns the read & write end-points as newly
@@ -61,7 +60,7 @@ class BASE_IMPEXP CPipe
 };  // end of CPipe
 
 /** Common interface of read & write pipe end-points */
-class BASE_IMPEXP CPipeBaseEndPoint : public mrpt::utils::CStream
+class CPipeBaseEndPoint : public mrpt::utils::CStream
 {
 	friend class CPipe;
 
@@ -123,7 +122,7 @@ static_assert(
 /** The read end-point in a pipe created with mrpt::synch::CPipe.
   * Use the method mrpt::utils::CStream::ReadBuffer() of the base class CStream
  * for blocking reading. */
-class BASE_IMPEXP CPipeReadEndPoint : public CPipeBaseEndPoint
+class CPipeReadEndPoint : public CPipeBaseEndPoint
 {
 	friend class CPipe;
 
@@ -142,7 +141,7 @@ class BASE_IMPEXP CPipeReadEndPoint : public CPipeBaseEndPoint
 /** The write end-point in a pipe created with mrpt::synch::CPipe.
   * Use the method mrpt::utils::CStream::WriteBuffer() of the base class CStream
  * for blocking writing. */
-class BASE_IMPEXP CPipeWriteEndPoint : public CPipeBaseEndPoint
+class CPipeWriteEndPoint : public CPipeBaseEndPoint
 {
 	friend class CPipe;
 

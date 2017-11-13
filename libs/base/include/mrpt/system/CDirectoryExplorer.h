@@ -29,13 +29,13 @@ namespace system
   *  \sa CFileSystemWatcher
  * \ingroup mrpt_base_grp
   */
-class BASE_IMPEXP CDirectoryExplorer
+class CDirectoryExplorer
 {
    public:
 	/** This represents the information about each file.
 	  * \sa
 	  */
-	struct BASE_IMPEXP TFileInfo
+	struct TFileInfo
 	{
 		/** The file name (without the whole path).
 		  */
