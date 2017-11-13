@@ -42,13 +42,10 @@ CMAKE_FLAGS = \
 %:
 	dh $@ --buildsystem=cmake
 
-override_dh_auto_build:
-	dh_auto_build -O--buildsystem=cmake
-
-	# Also build doc targets:
+override_dh_auto_build-indep:
+	# Build doc targets:
 	dh_auto_build -O--buildsystem=cmake -- \
 		documentation_html \
-		documentation_performance_html \
 		man_pages_all \
 		documentation_psgz_guides
 
