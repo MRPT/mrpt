@@ -12,7 +12,8 @@
 #
 #  NOTE: CMake can be obtained at http://www.cmake.org/
 # ----------------------------------------------------------------------------
-PROJECT(MRPT)
+# Tell CMake we'll use both C & C++ for use in its tests/flags.
+PROJECT(MRPT LANGUAGES C CXX)
 
 # -------------------------
 #        Setup CMake
@@ -215,6 +216,10 @@ ADD_CUSTOM_TARGET(uninstall
 if(ENABLE_SOLUTION_FOLDERS)
 	set_target_properties(uninstall PROPERTIES FOLDER "CMakeTargets")
 endif()
+
+# See docs for CMake FindThreads()
+SET(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads) # Defines imported target Threads::Threads
 
 # ----------------------------------------------------------------------------
 # Other sub-scripts:
