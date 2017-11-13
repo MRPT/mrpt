@@ -288,7 +288,7 @@ void CPose3DQuatPDFGaussian::changeCoordinatesReference(
 void CPose3DQuatPDFGaussian::drawSingleSample(CPose3DQuat& outPart) const
 {
 	MRPT_START
-	randomGenerator.drawGaussianMultivariate(outPart, cov, &mean);
+	getRandomGenerator().drawGaussianMultivariate(outPart, cov, &mean);
 	MRPT_END
 }
 
@@ -300,7 +300,7 @@ void CPose3DQuatPDFGaussian::drawManySamples(
 {
 	MRPT_START
 
-	randomGenerator.drawGaussianMultivariateMany(outSamples, N, cov);
+	getRandomGenerator().drawGaussianMultivariateMany(outSamples, N, cov);
 
 	for (vector<CVectorDouble>::iterator it = outSamples.begin();
 		 it != outSamples.end(); ++it)

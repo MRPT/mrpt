@@ -14,7 +14,6 @@
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/utils/CLoadableOptions.h>
 
-
 namespace mrpt
 {
 namespace maps
@@ -26,8 +25,7 @@ namespace maps
  * \sa CPointsMap
   * \ingroup mrpt_maps_grp
  */
-class CPointCloudFilterByDistance
-	: public mrpt::maps::CPointCloudFilterBase
+class CPointCloudFilterByDistance : public mrpt::maps::CPointCloudFilterBase
 {
    public:
 	// See base docs

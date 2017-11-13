@@ -23,10 +23,9 @@ namespace math
  * \ingroup mrpt_base_grp
  */
 class CMatrixD : public mrpt::utils::CSerializable,
-								   public CMatrixTemplateNumeric<double>
+				 public CMatrixTemplateNumeric<double>
 {
-	DEFINE_SERIALIZABLE_CUSTOM_LINKAGE(
-		CMatrixD, void, static, virtual)
+	DEFINE_SERIALIZABLE(CMatrixD)
    public:
 	/** Constructor */
 	CMatrixD() : CMatrixTemplateNumeric<double>(1, 1) {}
@@ -75,10 +74,7 @@ class CMatrixD : public mrpt::utils::CSerializable,
 	explicit CMatrixD(const TPoint3D& p);
 
 };  // end of class definition
-::mrpt::utils::CStream& operator>>(
-	mrpt::utils::CStream& in, CMatrixD::Ptr& pObj);
-DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE2(
-	CMatrixD, mrpt::utils::CSerializable, CMatrixD)
+mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in, CMatrixD::Ptr& pObj);
 
 }  // End of namespace
 }  // End of namespace

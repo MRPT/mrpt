@@ -317,8 +317,6 @@ class CObservationVelodyneScan : public CObservation
 		std::ostream& o) const override;  // See base class docs
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CObservationVelodyneScan, CObservation, OBS_IMPEXP)
 
 }  // End of namespace
 

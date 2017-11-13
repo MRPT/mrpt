@@ -579,8 +579,6 @@ class CAngularObservationMesh : public CRenderizableDisplayList
 		obs.validRange = valid;
 	}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CAngularObservationMesh, CRenderizableDisplayList, MAPS_IMPEXP)
 
 template <class T>
 void CAngularObservationMesh::trace2DSetOfRays(

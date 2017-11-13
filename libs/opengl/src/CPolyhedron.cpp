@@ -454,11 +454,11 @@ double getHeight(const TPolygon3D& p, const TPoint3D& c)
 	double l = mrpt::math::distance(p[0], p[1]);
 	for (size_t i = 1; i < N; i++)
 		if (abs(mrpt::math::distance(p[i], c) - r) >=
-			mrpt::math::geometryEpsilon)
+			mrpt::math::getEpsilon())
 			throw std::logic_error("There is a non-regular polygon.");
 		else if (
 			abs(mrpt::math::distance(p[i], p[(i + 1) % N]) - l) >=
-			mrpt::math::geometryEpsilon)
+			mrpt::math::getEpsilon())
 			throw std::logic_error("There is a non-regular polygon.");
 	return sqrt(square(l) - square(r));
 }
@@ -1213,7 +1213,7 @@ void CPolyhedron::getCenter(TPoint3D& center) const
 
 CPolyhedron::Ptr CPolyhedron::CreateRandomPolyhedron(double radius)
 {
-	switch (mrpt::random::randomGenerator.drawUniform32bit() % 34)
+	switch (mrpt::random::getRandomGenerator().drawUniform32bit() % 34)
 	{
 		case 0:
 			return CreateTetrahedron(radius);
@@ -1263,30 +1263,30 @@ CPolyhedron::Ptr CPolyhedron::CreateRandomPolyhedron(double radius)
 			return CreateDeltoidalHexecontahedron(radius);
 		case 23:
 			return CreateArchimedeanRegularPrism(
-				(mrpt::random::randomGenerator.drawUniform32bit() % 10) + 3,
+				(mrpt::random::getRandomGenerator().drawUniform32bit() % 10) + 3,
 				radius);
 		case 24:
 			return CreateArchimedeanRegularAntiprism(
-				(mrpt::random::randomGenerator.drawUniform32bit() % 10) + 3,
+				(mrpt::random::getRandomGenerator().drawUniform32bit() % 10) + 3,
 				radius);
 		case 25:
 			return CreateJohnsonSolidWithConstantBase(
-				((mrpt::random::randomGenerator.drawUniform32bit() % 4) << 1) +
+				((mrpt::random::getRandomGenerator().drawUniform32bit() % 4) << 1) +
 					4,
 				radius, "C+");
 		case 26:
 			return CreateJohnsonSolidWithConstantBase(
-				((mrpt::random::randomGenerator.drawUniform32bit() % 4) << 1) +
+				((mrpt::random::getRandomGenerator().drawUniform32bit() % 4) << 1) +
 					4,
 				radius, "C-C+");
 		case 27:
 			return CreateJohnsonSolidWithConstantBase(
-				((mrpt::random::randomGenerator.drawUniform32bit() % 4) << 1) +
+				((mrpt::random::getRandomGenerator().drawUniform32bit() % 4) << 1) +
 					4,
 				radius, "C-PRC+");
 		case 28:
 			return CreateJohnsonSolidWithConstantBase(
-				((mrpt::random::randomGenerator.drawUniform32bit() % 4) << 1) +
+				((mrpt::random::getRandomGenerator().drawUniform32bit() % 4) << 1) +
 					4,
 				radius, "C-AC+");
 		case 29:
@@ -1297,11 +1297,11 @@ CPolyhedron::Ptr CPolyhedron::CreateRandomPolyhedron(double radius)
 			return CreateJohnsonSolidWithConstantBase(10, radius, "R-AR+");
 		case 32:
 			return CreateCatalanTrapezohedron(
-				(mrpt::random::randomGenerator.drawUniform32bit() % 5) + 3,
+				(mrpt::random::getRandomGenerator().drawUniform32bit() % 5) + 3,
 				radius);
 		case 33:
 			return CreateCatalanDoublePyramid(
-				(mrpt::random::randomGenerator.drawUniform32bit() % 5) + 3,
+				(mrpt::random::getRandomGenerator().drawUniform32bit() % 5) + 3,
 				radius);
 		default:
 			return CreateEmpty();

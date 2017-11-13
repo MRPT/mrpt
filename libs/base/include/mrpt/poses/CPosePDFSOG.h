@@ -219,7 +219,6 @@ class CPosePDFSOG : public CPosePDF
 		const double& minMahalanobisDistToDrop = 0) override;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(CPosePDFSOG, CPosePDF)
 }  // End of namespace
 }  // End of namespace
 #endif

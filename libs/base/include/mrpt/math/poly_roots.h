@@ -44,8 +44,7 @@ int solve_poly3(double* x, double a, double b, double c) noexcept;
   * \note Based on `poly34.h`, by Khashin S.I.
  * http://math.ivanovo.ac.ru/dalgebra/Khashin/index.html - khash2 (at) gmail.com
  */
-int
-	solve_poly4(double* x, double a, double b, double c, double d) noexcept;
+int solve_poly4(double* x, double a, double b, double c, double d) noexcept;
 
 /** Solves equation `x^5 + a*x^4 + b*x^3 + c*x^2 + d*x + e = 0`.
   * Returns the number of real roots `N`<=5.
@@ -70,8 +69,7 @@ int solve_poly4De(double* x, double b, double c, double d) noexcept;
   * \note Based on `poly34.h`, by Khashin S.I.
  * http://math.ivanovo.ac.ru/dalgebra/Khashin/index.html - khash2 (at) gmail.com
  */
-int
-	solve_poly2(double a, double b, double c, double& r1, double& r2) noexcept;
+int solve_poly2(double a, double b, double c, double& r1, double& r2) noexcept;
 
 /** @} */
 

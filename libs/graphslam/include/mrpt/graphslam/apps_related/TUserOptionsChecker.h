@@ -67,8 +67,7 @@ struct TRegistrationDeciderOrOptimizerProps
  *
  * \ingroup mrpt_graphslam_grp
  */
-struct TRegistrationDeciderProps
-	: public TRegistrationDeciderOrOptimizerProps
+struct TRegistrationDeciderProps : public TRegistrationDeciderOrOptimizerProps
 {
 	TRegistrationDeciderProps() : type(""), rawlog_format("") {}
 	~TRegistrationDeciderProps() {}
@@ -89,8 +88,7 @@ struct TRegistrationDeciderProps
  *
  * \ingroup mrpt_graphslam_grp
  */
-struct TOptimizerProps
-	: public TRegistrationDeciderOrOptimizerProps
+struct TOptimizerProps : public TRegistrationDeciderOrOptimizerProps
 {
 	TOptimizerProps() {}
 	~TOptimizerProps() {}

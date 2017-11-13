@@ -220,7 +220,7 @@ void CPose3DPDFGaussianInf::drawSingleSample(CPose3D& outPart) const
 	this->cov_inv.inv(cov);
 
 	CVectorDouble v;
-	randomGenerator.drawGaussianMultivariate(v, cov);
+	getRandomGenerator().drawGaussianMultivariate(v, cov);
 
 	outPart.setFromValues(
 		mean.x() + v[0], mean.y() + v[1], mean.z() + v[2], mean.yaw() + v[3],
@@ -242,7 +242,7 @@ void CPose3DPDFGaussianInf::drawManySamples(
 	CMatrixDouble66 cov(UNINITIALIZED_MATRIX);
 	this->cov_inv.inv(cov);
 
-	randomGenerator.drawGaussianMultivariateMany(outSamples, N, cov);
+	getRandomGenerator().drawGaussianMultivariateMany(outSamples, N, cov);
 
 	for (vector<CVectorDouble>::iterator it = outSamples.begin();
 		 it != outSamples.end(); ++it)

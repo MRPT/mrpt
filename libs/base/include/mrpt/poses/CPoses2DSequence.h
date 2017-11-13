@@ -94,9 +94,6 @@ class CPoses2DSequence : public mrpt::utils::CSerializable
 	mrpt::aligned_containers<CPose2D>::vector_t poses;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(
-	CPoses2DSequence, mrpt::utils::CSerializable)
-
 }  // End of namespace
 }  // End of namespace
 

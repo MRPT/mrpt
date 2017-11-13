@@ -82,7 +82,7 @@ CGraphSlamEngine<GRAPH_T>::~CGraphSlamEngine()
 	if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum"))
 	{
 		MRPT_LOG_DEBUG_STREAM("Changing back the CImage PATH");
-		CImage::IMAGES_PATH_BASE = m_img_prev_path_base;
+		CImage::setImagesPathBase(m_img_prev_path_base);
 	}
 
 	// delete the CDisplayWindowPlots object
@@ -313,14 +313,14 @@ void CGraphSlamEngine<GRAPH_T>::initClass()
 	if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum"))
 	{
 		// keep the last path - change back to it after rawlog parsing
-		m_img_prev_path_base = CImage::IMAGES_PATH_BASE;
+		m_img_prev_path_base = CImage::getImagesPathBase();
 
 		std::string rawlog_fname_noext =
 			system::extractFileName(m_rawlog_fname);
 		std::string rawlog_dir = system::extractFileDirectory(m_rawlog_fname);
 		std::string m_img_external_storage_dir =
 			rawlog_dir + rawlog_fname_noext + "_Images/";
-		CImage::IMAGES_PATH_BASE = m_img_external_storage_dir;
+		CImage::getImagesPathBase() = m_img_external_storage_dir;
 	}
 
 	// 3DRangeScans viewports initialization, in case of RGBD datasets

@@ -14,7 +14,6 @@
 #include <iostream>
 #include <iterator>
 
-
 namespace mrpt
 {
 namespace slam

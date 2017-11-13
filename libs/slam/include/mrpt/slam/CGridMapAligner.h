@@ -40,8 +40,7 @@ namespace slam
  * \sa CMetricMapsAlignmentAlgorithm
  * \ingroup mrpt_slam_grp
  */
-class CGridMapAligner
-	: public mrpt::slam::CMetricMapsAlignmentAlgorithm
+class CGridMapAligner : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 {
    private:
 	/** Private member, implements one the algorithms.

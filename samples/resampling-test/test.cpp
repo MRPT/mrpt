@@ -42,7 +42,7 @@ map<string, CVectorDouble> results;
 	ERR_STDs.clear();                                                     \
 	for (size_t i = 0; i < N_TESTS; i++)                                  \
 	{                                                                     \
-		mrpt::random::randomGenerator.drawUniformVector(                  \
+		mrpt::random::getRandomGenerator().drawUniformVector(                  \
 			log_ws, MIN_LOG_WEIG, 0.0);                                   \
 		CParticleFilterCapable::log2linearWeights(log_ws, lin_ws);        \
 		CParticleFilterCapable::computeResampling(                        \
@@ -120,7 +120,7 @@ int main(int argc, char** argv)
 {
 	try
 	{
-		randomGenerator.randomize();
+		getRandomGenerator().randomize();
 
 		if (argc > 1) N_PARTICLES = atoi(argv[1]);
 

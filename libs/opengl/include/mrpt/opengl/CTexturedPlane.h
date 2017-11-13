@@ -90,8 +90,6 @@ class CTexturedPlane : public CTexturedObject
 	/** Private, virtual destructor: only can be deleted from smart pointers */
 	virtual ~CTexturedPlane();
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CTexturedPlane, CTexturedObject, OPENGL_IMPEXP)
 
 }  // end namespace
 

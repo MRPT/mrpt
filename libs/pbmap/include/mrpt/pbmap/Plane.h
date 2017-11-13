@@ -220,7 +220,6 @@ normal
 	//    vector<float> S;
 	//    vector<vector<float> > HSV;
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_LINKAGE(Plane, PBMAP_IMPEXP)
 }
 }  // End of namespaces
 

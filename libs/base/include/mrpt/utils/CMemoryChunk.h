@@ -26,7 +26,6 @@ class CMemoryChunk : public CSerializable, public CMemoryStream
 	DEFINE_SERIALIZABLE(CMemoryChunk)
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(CMemoryChunk, mrpt::utils::CSerializable)
 
 }  // End of namespace
 }  // end of namespace

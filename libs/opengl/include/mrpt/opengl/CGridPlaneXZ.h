@@ -109,8 +109,6 @@ class CGridPlaneXZ : public CRenderizableDisplayList
 	/** Private, virtual destructor: only can be deleted from smart pointers */
 	virtual ~CGridPlaneXZ() {}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CGridPlaneXZ, CRenderizableDisplayList, OPENGL_IMPEXP)
 
 }  // end namespace
 

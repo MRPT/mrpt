@@ -31,7 +31,6 @@ class TSimple3DPoint : public mrpt::utils::CSerializable
 	TSimple3DPoint(const CPoint3D& v) : x(v.x()), y(v.y()), z(v.z()) {}
 	float x, y, z;
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(TSimple3DPoint, mrpt::utils::CSerializable)
 
 /** A probability distribution of a 2D/3D point, represented as a set of random
  * samples (particles).
@@ -106,8 +105,6 @@ class CPointPDFParticles
 		const double& minMahalanobisDistToDrop = 0) override;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(CPointPDFParticles, CPointPDF)
-
 }  // End of namespace
 }  // End of namespace
 

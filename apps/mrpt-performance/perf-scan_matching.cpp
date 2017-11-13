@@ -175,12 +175,12 @@ double scan_matching_test_4(int nCorrs, int nRepets)
 		TMatchingPair& m = in_correspondences[i];
 		m.this_idx = i;
 		m.other_idx = i;
-		m.this_x = mrpt::random::randomGenerator.drawUniform(-10, 10);
-		m.this_y = mrpt::random::randomGenerator.drawUniform(-10, 10);
-		m.this_z = mrpt::random::randomGenerator.drawUniform(-10, 10);
-		m.other_x = mrpt::random::randomGenerator.drawUniform(-10, 10);
-		m.other_y = mrpt::random::randomGenerator.drawUniform(-10, 10);
-		m.other_z = mrpt::random::randomGenerator.drawUniform(-10, 10);
+		m.this_x = mrpt::random::getRandomGenerator().drawUniform(-10, 10);
+		m.this_y = mrpt::random::getRandomGenerator().drawUniform(-10, 10);
+		m.this_z = mrpt::random::getRandomGenerator().drawUniform(-10, 10);
+		m.other_x = mrpt::random::getRandomGenerator().drawUniform(-10, 10);
+		m.other_y = mrpt::random::getRandomGenerator().drawUniform(-10, 10);
+		m.other_z = mrpt::random::getRandomGenerator().drawUniform(-10, 10);
 	}
 
 	const size_t N = nRepets;

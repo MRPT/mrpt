@@ -88,14 +88,12 @@ void fclose(FILE* f);
 /** An OS-independent version of strcat.
   * \return It will always return the "dest" pointer.
   */
-char* strcat(
-	char* dest, size_t destSize, const char* source) noexcept;
+char* strcat(char* dest, size_t destSize, const char* source) noexcept;
 
 /** An OS-independent version of strcpy.
   * \return It will always return the "dest" pointer.
   */
-char* strcpy(
-	char* dest, size_t destSize, const char* source) noexcept;
+char* strcpy(char* dest, size_t destSize, const char* source) noexcept;
 
 /** An OS-independent version of strcmp.
   * \return It will return 0 when both strings are equal, casi sensitive.
@@ -110,14 +108,12 @@ int _strcmpi(const char* str1, const char* str2) noexcept;
 /** An OS-independent version of strncmp.
   * \return It will return 0 when both strings are equal, casi sensitive.
   */
-int
-	_strncmp(const char* str, const char* subStr, size_t count) noexcept;
+int _strncmp(const char* str, const char* subStr, size_t count) noexcept;
 
 /** An OS-independent version of strnicmp.
   * \return It will return 0 when both strings are equal, casi insensitive.
   */
-int
-	_strnicmp(const char* str, const char* subStr, size_t count) noexcept;
+int _strnicmp(const char* str, const char* subStr, size_t count) noexcept;
 
 /** An OS-independent version of strtoll.
   */
@@ -193,8 +189,7 @@ enum TConsoleColor
   * By default the color of "cout" is changed, unless changeStdErr=true, in
  * which case "cerr" is changed.
   */
-void
-	setConsoleColor(TConsoleColor color, bool changeStdErr = false);
+void setConsoleColor(TConsoleColor color, bool changeStdErr = false);
 
 /** @brief Execute Generic Shell Command
  *

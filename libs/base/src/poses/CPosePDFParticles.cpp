@@ -71,7 +71,7 @@ void CPosePDFParticles::copyFrom(const CPosePDF& o)
 		std::vector<CVectorDouble> parts;
 		std::vector<CVectorDouble>::iterator partsIt;
 
-		randomGenerator.drawGaussianMultivariateMany(parts, M, pdf->cov);
+		getRandomGenerator().drawGaussianMultivariateMany(parts, M, pdf->cov);
 
 		clearParticles();
 		m_particles.resize(M);
@@ -248,9 +248,9 @@ void CPosePDFParticles::resetUniform(
 	size_t i, M = m_particles.size();
 	for (i = 0; i < M; i++)
 	{
-		m_particles[i].d->x(randomGenerator.drawUniform(x_min, x_max));
-		m_particles[i].d->y(randomGenerator.drawUniform(y_min, y_max));
-		m_particles[i].d->phi(randomGenerator.drawUniform(phi_min, phi_max));
+		m_particles[i].d->x(getRandomGenerator().drawUniform(x_min, x_max));
+		m_particles[i].d->y(getRandomGenerator().drawUniform(y_min, y_max));
+		m_particles[i].d->phi(getRandomGenerator().drawUniform(phi_min, phi_max));
 		m_particles[i].log_w = 0;
 	}
 
@@ -278,13 +278,13 @@ void CPosePDFParticles::resetAroundSetOfPoses(
 		{
 			m_particles[i].d.reset(new CPose2D());
 			m_particles[i].d->x(
-				randomGenerator.drawUniform(
+				getRandomGenerator().drawUniform(
 					p.x - spread_x * 0.5, p.x + spread_x * 0.5));
 			m_particles[i].d->y(
-				randomGenerator.drawUniform(
+				getRandomGenerator().drawUniform(
 					p.y - spread_y * 0.5, p.y + spread_y * 0.5));
 			m_particles[i].d->phi(
-				randomGenerator.drawUniform(
+				getRandomGenerator().drawUniform(
 					p.phi - spread_phi_rad * 0.5,
 					p.phi + spread_phi_rad * 0.5));
 			m_particles[i].log_w = 0;
@@ -341,7 +341,7 @@ void CPosePDFParticles::changeCoordinatesReference(
  ---------------------------------------------------------------*/
 void CPosePDFParticles::drawSingleSample(CPose2D& outPart) const
 {
-	const double uni = randomGenerator.drawUniform(0.0, 0.9999);
+	const double uni = getRandomGenerator().drawUniform(0.0, 0.9999);
 	double cum = 0;
 
 	for (CParticleList::const_iterator it = m_particles.begin();

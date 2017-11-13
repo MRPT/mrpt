@@ -46,7 +46,7 @@ namespace tfest
  * mrpt::scanmatching::HornMethod()
   * \sa se2_l2, se3_l2_robust
   */
-bool TFEST_IMPEXP se3_l2(
+bool se3_l2(
 	const mrpt::utils::TMatchingPairList& in_correspondences,
 	mrpt::poses::CPose3DQuat& out_transform, double& out_scale,
 	bool forceScaleToUnity = false);
@@ -56,7 +56,7 @@ bool TFEST_IMPEXP se3_l2(
   * This version accepts corresponding points as two vectors of TPoint3D (must
  * have identical length).
   */
-bool TFEST_IMPEXP se3_l2(
+bool se3_l2(
 	const std::vector<mrpt::math::TPoint3D>& in_points_this,
 	const std::vector<mrpt::math::TPoint3D>& in_points_other,
 	mrpt::poses::CPose3DQuat& out_transform, double& out_scale,
@@ -150,7 +150,7 @@ struct TSE3RobustResult
  * mrpt::scanmatching::leastSquareErrorRigidTransformation6DRANSAC()
   * \sa se2_l2, se3_l2
   */
-bool TFEST_IMPEXP se3_l2_robust(
+bool se3_l2_robust(
 	const mrpt::utils::TMatchingPairList& in_correspondences,
 	const TSE3RobustParams& in_params, TSE3RobustResult& out_results);
 

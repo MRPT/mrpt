@@ -64,7 +64,7 @@ class CLSLAM_RBPF_2DLASER;
   * \ingroup mrpt_hmtslam_grp
  */
 class CHMTSLAM : public mrpt::utils::COutputLogger,
-								public mrpt::utils::CSerializable
+				 public mrpt::utils::CSerializable
 {
 	friend class CLocalMetricHypothesis;
 	friend class CLSLAM_RBPF_2DLASER;
@@ -506,8 +506,6 @@ class CHMTSLAM : public mrpt::utils::COutputLogger,
 	} m_options;
 
 };  // End of class CHMTSLAM.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CHMTSLAM, mrpt::utils::CSerializable, HMTSLAM_IMPEXP)
 
 /** Virtual base for local SLAM methods, used in mrpt::slam::CHMTSLAM.
   */

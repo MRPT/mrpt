@@ -9,7 +9,6 @@
 #ifndef COBSERVATION_H
 #define COBSERVATION_H
 
-
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/math/math_frwds.h>
@@ -159,8 +158,6 @@ class CObservation : public mrpt::utils::CSerializable
 	/** @} */
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CObservation, mrpt::utils::CSerializable, OBS_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

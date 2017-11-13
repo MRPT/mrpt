@@ -2067,10 +2067,10 @@ void xRawLogViewerFrame::loadRawlogFile(const string& str, int first, int last)
 
 	// Set default delayed-load images base path:
 	toolbarcomboImages->Clear();
-	CImage::IMAGES_PATH_BASE = CRawlog::detectImagesDirectory(str);
+	CImage::setImagesPathBase(CRawlog::detectImagesDirectory(str));
 
 	// Add found dir to the combo:
-	toolbarcomboImages->Append(_U(CImage::IMAGES_PATH_BASE.c_str()));
+	toolbarcomboImages->Append(_U(CImage::getImagesPathBase().c_str()));
 	toolbarcomboImages->SetSelection(0);
 
 	// An extra rectified images dir??
@@ -5827,7 +5827,7 @@ void xRawLogViewerFrame::OnComboImageDirsChange(wxCommandEvent& event)
 
 	if (mrpt::system::fileExists(dirc))
 	{
-		CImage::IMAGES_PATH_BASE = dirc;
+		CImage::setImagesPathBase(dirc);
 		// wxMessageBox( _("The current directory for external images has been
 		// set to:\n")+dir , _("External images"));
 

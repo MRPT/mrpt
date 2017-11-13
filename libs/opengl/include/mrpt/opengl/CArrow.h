@@ -118,8 +118,6 @@ class CArrow : public CRenderizableDisplayList
 	/** Private, virtual destructor: only can be deleted from smart pointers */
 	virtual ~CArrow() {}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CArrow, CRenderizableDisplayList, OPENGL_IMPEXP)
 
 }  // end namespace
 }  // End of namespace

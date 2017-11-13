@@ -90,8 +90,7 @@ inline void* aligned_calloc(size_t bytes, size_t alignment)
   * If old_ptr is nullptr, a new block will be reserved from scratch.
   * \sa aligned_malloc, aligned_free
   */
-void* aligned_realloc(
-	void* old_ptr, size_t bytes, size_t alignment);
+void* aligned_realloc(void* old_ptr, size_t bytes, size_t alignment);
 
 /** Frees a memory block reserved by aligned_malloc
   * \sa aligned_malloc

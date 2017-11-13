@@ -110,8 +110,6 @@ class CCamera : public CRenderizable
 	/** Private, virtual destructor: only can be deleted from smart pointers */
 	virtual ~CCamera() {}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CCamera, CRenderizable, OPENGL_IMPEXP)
 
 }  // end namespace opengl
 

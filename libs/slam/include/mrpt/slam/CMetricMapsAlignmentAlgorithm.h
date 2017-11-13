@@ -26,8 +26,7 @@ namespace slam
  *
  * \sa CPointsMap, \ingroup mrpt_slam_grp
  */
-class CMetricMapsAlignmentAlgorithm
-	: public mrpt::utils::COutputLogger
+class CMetricMapsAlignmentAlgorithm : public mrpt::utils::COutputLogger
 {
    public:
 	CMetricMapsAlignmentAlgorithm()

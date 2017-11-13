@@ -30,8 +30,6 @@ class CLogFileRecord_VFF : public CHolonomicLogFileRecord
 	DEFINE_SERIALIZABLE(CLogFileRecord_VFF)
    public:
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CLogFileRecord_VFF, CHolonomicLogFileRecord, NAV_IMPEXP)
 
 /** A holonomic reactive navigation method, based on Virtual Force Fields (VFF).
  *
@@ -96,8 +94,6 @@ class CHolonomicVFF : public CAbstractHolonomicReactiveMethod
 		options.TARGET_SLOW_APPROACHING_DISTANCE = dist;
 	}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CHolonomicVFF, CAbstractHolonomicReactiveMethod, NAV_IMPEXP)
 /** @} */
 }
 }

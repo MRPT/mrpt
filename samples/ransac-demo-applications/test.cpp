@@ -34,7 +34,7 @@ mrpt::gui::CDisplayWindow3D::Ptr win;
 // ------------------------------------------------------
 void TestRANSACPlanes()
 {
-	randomGenerator.randomize();
+	getRandomGenerator().randomize();
 
 	// Generate random points:
 	// ------------------------------------
@@ -52,9 +52,9 @@ void TestRANSACPlanes()
 		for (size_t i = 0; i < N_plane; i++)
 		{
 			const double xx =
-				randomGenerator.drawUniform(-3, 3) + 5 * cos(0.4 * p);
+				getRandomGenerator().drawUniform(-3, 3) + 5 * cos(0.4 * p);
 			const double yy =
-				randomGenerator.drawUniform(-3, 3) + 5 * sin(0.4 * p);
+				getRandomGenerator().drawUniform(-3, 3) + 5 * sin(0.4 * p);
 			const double zz =
 				-(PLANE_EQ[p][3] + PLANE_EQ[p][0] * xx + PLANE_EQ[p][1] * yy) /
 				PLANE_EQ[p][2];
@@ -66,9 +66,9 @@ void TestRANSACPlanes()
 
 	for (size_t i = 0; i < N_noise; i++)
 	{
-		xs.push_back(randomGenerator.drawUniform(-7, 7));
-		ys.push_back(randomGenerator.drawUniform(-7, 7));
-		zs.push_back(randomGenerator.drawUniform(-7, 7));
+		xs.push_back(getRandomGenerator().drawUniform(-7, 7));
+		ys.push_back(getRandomGenerator().drawUniform(-7, 7));
+		zs.push_back(getRandomGenerator().drawUniform(-7, 7));
 	}
 
 	// Run RANSAC
@@ -109,9 +109,9 @@ void TestRANSACPlanes()
 		glPlane->setPose(glPlanePose);
 
 		glPlane->setColor(
-			randomGenerator.drawUniform(0, 1),
-			randomGenerator.drawUniform(0, 1),
-			randomGenerator.drawUniform(0, 1), 0.6);
+			getRandomGenerator().drawUniform(0, 1),
+			getRandomGenerator().drawUniform(0, 1),
+			getRandomGenerator().drawUniform(0, 1), 0.6);
 
 		scene->insert(glPlane);
 	}
@@ -146,7 +146,7 @@ void TestRANSACPlanes()
 // ------------------------------------------------------
 void TestRANSACLines()
 {
-	randomGenerator.randomize();
+	getRandomGenerator().randomize();
 
 	// Generate random points in 2D
 	// ------------------------------------
@@ -163,9 +163,9 @@ void TestRANSACLines()
 	{
 		for (size_t i = 0; i < N_line; i++)
 		{
-			const double xx = randomGenerator.drawUniform(-10, 10);
+			const double xx = getRandomGenerator().drawUniform(-10, 10);
 			const double yy =
-				randomGenerator.drawGaussian1D(0, 0.05) -
+				getRandomGenerator().drawGaussian1D(0, 0.05) -
 				(LINE_EQ[p][2] + LINE_EQ[p][0] * xx) / LINE_EQ[p][1];
 			xs.push_back(xx);
 			ys.push_back(yy);
@@ -174,8 +174,8 @@ void TestRANSACLines()
 
 	for (size_t i = 0; i < N_noise; i++)
 	{
-		xs.push_back(randomGenerator.drawUniform(-15, 15));
-		ys.push_back(randomGenerator.drawUniform(-15, 15));
+		xs.push_back(getRandomGenerator().drawUniform(-15, 15));
+		ys.push_back(getRandomGenerator().drawUniform(-15, 15));
 	}
 
 	// Run RANSAC

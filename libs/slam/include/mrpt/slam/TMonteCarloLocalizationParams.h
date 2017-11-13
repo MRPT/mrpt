@@ -12,7 +12,6 @@
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/slam/TKLDParams.h>
 
-
 namespace mrpt
 {
 namespace slam

@@ -147,8 +147,6 @@ class CPlanarLaserScan : public CRenderizableDisplayList
 	/** Private, virtual destructor: only can be deleted from smart pointers */
 	virtual ~CPlanarLaserScan() {}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CPlanarLaserScan, CRenderizableDisplayList, MAPS_IMPEXP)
 
 }  // end namespace
 }  // End of namespace

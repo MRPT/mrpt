@@ -14,7 +14,6 @@
 #include <mrpt/utils/CTimeLogger.h>
 #include <deque>
 
-
 namespace mrpt
 {
 namespace graphs

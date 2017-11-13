@@ -178,8 +178,6 @@ class CEllipsoid : public CRenderizableDisplayList
 	/** Private, virtual destructor: only can be deleted from smart pointers */
 	virtual ~CEllipsoid() {}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CEllipsoid, CRenderizableDisplayList, OPENGL_IMPEXP)
 
 }  // end namespace
 

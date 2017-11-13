@@ -24,8 +24,7 @@ namespace poses
  * \sa CPose2D, CPosePDF, CPose2DGridTemplate
  * \ingroup poses_pdf_grp
  */
-class CPosePDFGrid : public CPosePDF,
-								 public CPose2DGridTemplate<double>
+class CPosePDFGrid : public CPosePDF, public CPose2DGridTemplate<double>
 {
 	DEFINE_SERIALIZABLE(CPosePDFGrid)
 
@@ -86,7 +85,6 @@ class CPosePDFGrid : public CPosePDF,
 		std::vector<mrpt::math::CVectorDouble>& outSamples) const override;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(CPosePDFGrid, CPosePDF)
 }  // End of namespace
 }  // End of namespace
 #endif

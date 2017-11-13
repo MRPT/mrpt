@@ -12,4 +12,3 @@
 #include <mrpt/config.h>
 #include <mrpt/utils/compiler_fixes.h>
 #include <mrpt/utils/mrpt_macros.h>
-

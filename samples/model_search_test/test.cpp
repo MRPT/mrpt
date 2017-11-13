@@ -65,7 +65,7 @@ struct Fit3DPlane
 // ------------------------------------------------------
 void TestRANSAC()
 {
-	randomGenerator.randomize(789);
+	getRandomGenerator().randomize(789);
 
 	// Generate random points:
 	// ------------------------------------
@@ -77,8 +77,8 @@ void TestRANSAC()
 	std::vector<TPoint3D> data;
 	for (size_t i = 0; i < N_plane; i++)
 	{
-		const double xx = randomGenerator.drawUniform(-3, 3);
-		const double yy = randomGenerator.drawUniform(-3, 3);
+		const double xx = getRandomGenerator().drawUniform(-3, 3);
+		const double yy = getRandomGenerator().drawUniform(-3, 3);
 		const double zz =
 			-(PLANE_EQ[3] + PLANE_EQ[0] * xx + PLANE_EQ[1] * yy) / PLANE_EQ[2];
 		data.push_back(TPoint3D(xx, yy, zz));
@@ -88,9 +88,9 @@ void TestRANSAC()
 	{
 		TPoint3D& p = data[i];
 		p += TPoint3D(
-			randomGenerator.drawUniform(-4, 4),
-			randomGenerator.drawUniform(-4, 4),
-			randomGenerator.drawUniform(-4, 4));
+			getRandomGenerator().drawUniform(-4, 4),
+			getRandomGenerator().drawUniform(-4, 4),
+			getRandomGenerator().drawUniform(-4, 4));
 	}
 
 	// Run RANSAC

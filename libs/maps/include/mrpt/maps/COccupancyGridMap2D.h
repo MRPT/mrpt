@@ -24,7 +24,6 @@
 #include <mrpt/obs/obs_frwds.h>
 #include <mrpt/utils/TEnumType.h>
 
-
 #include <mrpt/config.h>
 #if (                                                \
 	!defined(OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS) &&   \
@@ -65,9 +64,9 @@ namespace maps
 class COccupancyGridMap2D : public CMetricMap,
 // Inherit from the corresponding specialization of CLogOddsGridMap2D<>:
 #ifdef OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS
-										public CLogOddsGridMap2D<int8_t>
+							public CLogOddsGridMap2D<int8_t>
 #else
-										public CLogOddsGridMap2D<int16_t>
+							public CLogOddsGridMap2D<int16_t>
 #endif
 {
 	DEFINE_SERIALIZABLE(COccupancyGridMap2D)
@@ -1167,19 +1166,17 @@ class COccupancyGridMap2D : public CMetricMap,
 	 */
 	int direction2idx(int dx, int dy);
 
-	MAP_DEFINITION_START(COccupancyGridMap2D, MAPS_IMPEXP)
+	MAP_DEFINITION_START(COccupancyGridMap2D)
 	/** See COccupancyGridMap2D::COccupancyGridMap2D */
 	float min_x, max_x, min_y, max_y, resolution;
 	/** Observations insertion options */
 	mrpt::maps::COccupancyGridMap2D::TInsertionOptions insertionOpts;
 	/** Probabilistic observation likelihood options */
 	mrpt::maps::COccupancyGridMap2D::TLikelihoodOptions likelihoodOpts;
-	MAP_DEFINITION_END(COccupancyGridMap2D, MAPS_IMPEXP)
+	MAP_DEFINITION_END(COccupancyGridMap2D, )
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	COccupancyGridMap2D, CMetricMap, MAPS_IMPEXP)
 
-bool MAPS_IMPEXP operator<(
+bool operator<(
 	const COccupancyGridMap2D::TPairLikelihoodIndex& e1,
 	const COccupancyGridMap2D::TPairLikelihoodIndex& e2);
 

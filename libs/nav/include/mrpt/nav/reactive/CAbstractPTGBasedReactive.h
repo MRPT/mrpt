@@ -170,8 +170,7 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 		m_navlogfiles_dir = sDir;
 	}
 	std::string getLogFileDirectory() const { return m_navlogfiles_dir; }
-	struct TAbstractPTGNavigatorParams
-		: public mrpt::utils::CLoadableOptions
+	struct TAbstractPTGNavigatorParams : public mrpt::utils::CLoadableOptions
 	{
 		/** C++ class name of the holonomic navigation method to run in the
 		 * transformed TP-Space */

@@ -20,7 +20,8 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
-#define TEST_CLASS_MOVE_COPY_CTORS(_classname) template class mrpt::utils::CTraitsTest<_classname>
+#define TEST_CLASS_MOVE_COPY_CTORS(_classname) \
+	template class mrpt::utils::CTraitsTest<_classname>
 
 TEST_CLASS_MOVE_COPY_CTORS(CObservation2DRangeScan);
 TEST_CLASS_MOVE_COPY_CTORS(CObservation3DRangeScan);
@@ -47,8 +48,6 @@ TEST_CLASS_MOVE_COPY_CTORS(CObservation6DFeatures);
 TEST_CLASS_MOVE_COPY_CTORS(CObservationVelodyneScan);
 TEST_CLASS_MOVE_COPY_CTORS(CActionRobotMovement2D);
 TEST_CLASS_MOVE_COPY_CTORS(CActionRobotMovement3D);
-
-
 
 // Defined in tests/test_main.cpp
 namespace mrpt

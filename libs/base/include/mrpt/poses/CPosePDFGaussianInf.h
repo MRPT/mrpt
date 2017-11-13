@@ -195,26 +195,23 @@ class CPosePDFGaussianInf : public CPosePDF
 	}
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(CPosePDFGaussianInf, CPosePDF)
 
-bool
-	operator==(const CPosePDFGaussianInf& p1, const CPosePDFGaussianInf& p2);
+bool operator==(const CPosePDFGaussianInf& p1, const CPosePDFGaussianInf& p2);
 /** Pose compose operator: RES = A (+) B , computing both the mean and the
  * covariance */
-CPosePDFGaussianInf
-	operator+(const CPosePDFGaussianInf& a, const CPosePDFGaussianInf& b);
+CPosePDFGaussianInf operator+(
+	const CPosePDFGaussianInf& a, const CPosePDFGaussianInf& b);
 /** Pose inverse compose operator: RES = A (-) B , computing both the mean and
  * the covariance */
-CPosePDFGaussianInf
-	operator-(const CPosePDFGaussianInf& a, const CPosePDFGaussianInf& b);
+CPosePDFGaussianInf operator-(
+	const CPosePDFGaussianInf& a, const CPosePDFGaussianInf& b);
 /** Returns the Gaussian distribution of \f$ \mathbf{C} \f$, for \f$ \mathbf{C}
  * = \mathbf{A} \oplus \mathbf{B} \f$. */
 poses::CPosePDFGaussianInf operator+(
 	const mrpt::poses::CPose2D& A, const mrpt::poses::CPosePDFGaussianInf& B);
 
 /** Dumps the mean and covariance matrix to a text stream. */
-std::ostream& operator<<(
-	std::ostream& out, const CPosePDFGaussianInf& obj);
+std::ostream& operator<<(std::ostream& out, const CPosePDFGaussianInf& obj);
 
 }  // End of namespace
 }  // End of namespace

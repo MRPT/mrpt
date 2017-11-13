@@ -134,7 +134,7 @@ struct gnss_message_ptr
    public:
 
 #define GNSS_BINARY_MSG_DEFINITION_START(_MSG_ID)                            \
-	struct Message_##_MSG_ID : public gnss_message                \
+	struct Message_##_MSG_ID : public gnss_message                           \
 	{                                                                        \
 		GNSS_MESSAGE_BINARY_BLOCK(&fields, sizeof(fields))                   \
 		enum : uint32_t                                                      \
@@ -142,7 +142,7 @@ struct gnss_message_ptr
 			msg_type = _MSG_ID                                               \
 		}; /* Static msg type (member expected by templates)*/               \
 		Message_##_MSG_ID() : gnss_message((gnss_message_type_t)msg_type) {} \
-		struct content_t                                          \
+		struct content_t                                                     \
 		{
 #define GNSS_BINARY_MSG_DEFINITION_MID                                       \
 	content_t() { ::memset(this, 0, sizeof(*this)); }                        \

@@ -142,8 +142,7 @@ namespace hwdrivers
   * \sa CGPS_NTRIP, CNTRIPEmitter, mrpt::obs::CObservationGPS
   * \ingroup mrpt_hwdrivers_grp
   */
-class CGPSInterface : public mrpt::utils::COutputLogger,
-									   public CGenericSensor
+class CGPSInterface : public mrpt::utils::COutputLogger, public CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CGPSInterface)
 

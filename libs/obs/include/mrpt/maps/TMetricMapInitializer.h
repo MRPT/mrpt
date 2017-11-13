@@ -87,8 +87,7 @@ struct TMetricMapInitializer : public mrpt::utils::CLoadableOptions
   * \sa CMultiMetricMap::CMultiMetricMap, utils::CLoadableOptions
   * \ingroup mrpt_obs_grp
   */
-class TSetOfMetricMapInitializers
-	: public mrpt::utils::CLoadableOptions
+class TSetOfMetricMapInitializers : public mrpt::utils::CLoadableOptions
 {
    protected:
 	std::deque<TMetricMapInitializer::Ptr> m_list;

@@ -11,7 +11,6 @@
 
 #include <mrpt/obs/CObservation3DRangeScan.h>
 
-
 namespace mrpt
 {
 namespace hwdrivers

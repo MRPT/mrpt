@@ -42,7 +42,7 @@ namespace poses
  * \sa CPose3DRotVec, CPoseOrPoint,CPoint3D, mrpt::math::CQuaternion
  */
 class CPose3DRotVec : public CPose<CPose3DRotVec>,
-								  public mrpt::utils::CSerializable
+					  public mrpt::utils::CSerializable
 {
 	DEFINE_SERIALIZABLE(CPose3DRotVec)
 
@@ -549,7 +549,6 @@ class CPose3DRotVec : public CPose<CPose3DRotVec>,
 	/** @} */
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST(CPose3DRotVec)
 
 std::ostream& operator<<(std::ostream& o, const CPose3DRotVec& p);
 

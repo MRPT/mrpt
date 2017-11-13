@@ -15,7 +15,6 @@
 #include <octomap/ColorOcTree.h>
 #include <mrpt/obs/obs_frwds.h>
 
-
 namespace mrpt
 {
 namespace maps
@@ -78,14 +77,14 @@ class CColouredOctoMap
 	virtual void getAsOctoMapVoxels(
 		mrpt::opengl::COctoMapVoxels& gl_obj) const override;
 
-	MAP_DEFINITION_START(CColouredOctoMap, MAPS_IMPEXP)
+	MAP_DEFINITION_START(CColouredOctoMap)
 	/** The finest resolution of the octomap (default: 0.10 meters) */
 	double resolution;
 	/** Observations insertion options */
 	mrpt::maps::CColouredOctoMap::TInsertionOptions insertionOpts;
 	/** Probabilistic observation likelihood options */
 	mrpt::maps::CColouredOctoMap::TLikelihoodOptions likelihoodOpts;
-	MAP_DEFINITION_END(CColouredOctoMap, MAPS_IMPEXP)
+	MAP_DEFINITION_END(CColouredOctoMap, )
 
    protected:
 	bool internal_insertObservation(
@@ -95,8 +94,6 @@ class CColouredOctoMap
 	TColourUpdate m_colour_method;  //! Method used to updated voxels colour.
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CColouredOctoMap, CMetricMap, MAPS_IMPEXP)
 
 }  // End of namespace
 

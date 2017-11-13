@@ -29,11 +29,11 @@ class CMyRejectionSampling : public CRejectionSamplingCapable<CPose2D>
    protected:
 	void RS_drawFromProposal(CPose2D& outSample)
 	{
-		double ang = randomGenerator.drawUniform(-M_PI, M_PI);
-		double R = randomGenerator.drawGaussian1D(1.0, SIGMA);
+		double ang = getRandomGenerator().drawUniform(-M_PI, M_PI);
+		double R = getRandomGenerator().drawGaussian1D(1.0, SIGMA);
 		outSample.x(1.0f - cos(ang) * R);
 		outSample.y(sin(ang) * R);
-		outSample.phi(randomGenerator.drawUniform(-M_PI, M_PI));
+		outSample.phi(getRandomGenerator().drawUniform(-M_PI, M_PI));
 	}
 
 	/** Returns the NORMALIZED observation likelihood at a given point of the

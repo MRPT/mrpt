@@ -37,8 +37,6 @@ class CHolonomicLogFileRecord : public utils::CSerializable
 		return nullptr;
 	}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CHolonomicLogFileRecord, mrpt::utils::CSerializable, NAV_IMPEXP)
 
 /** @} */
 }

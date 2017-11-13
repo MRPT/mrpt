@@ -295,8 +295,6 @@ class CFeature : public mrpt::utils::CSerializable
 		float& minDistAngle, bool normalize_distances, bool dont_shift_angle);
 
 };  // end of class
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CFeature, mrpt::utils::CSerializable, VISION_IMPEXP)
 
 /****************************************************
 				Class CFEATURELIST
@@ -304,8 +302,7 @@ DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
 /** A list of visual features, to be used as output by detectors, as
  * input/output by trackers, etc.
   */
-class CFeatureList
-	: public mrpt::math::KDTreeCapable<CFeatureList>
+class CFeatureList : public mrpt::math::KDTreeCapable<CFeatureList>
 {
    protected:
 	typedef std::vector<CFeature::Ptr> TInternalFeatList;

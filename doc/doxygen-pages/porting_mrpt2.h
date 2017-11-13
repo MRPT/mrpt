@@ -27,7 +27,7 @@
 *     - `ptr.make_unique()` does no longer exists, and does not make sense (read above).
 *     - `ptr.pointer()` --> `ptr.get()`
 *  - Smart pointers have been renamed from `CFooPtr` to the more standard `CFoo::Ptr`, with a new pointer-to-const version `CFoo::ConstPtr`.
-*    - Note: To help with porting and maintaining existing code bases, MRPT 2.* comes by default with a CMake flag `MRPT_1X_BACKCOMPATIB_SMARTPTR_NAMES`, which declares aliases of smart pointers with the old name `CFooPtr`. It is recommended to switch it OFF when writing new code as well as port existing code since this feature will be removed in the future.
+*    - Note: To help with porting and maintaining existing code bases, MRPT >=1.5.4 offers MRPT2-like `CFoo::Ptr` smart pointers. Refer to changelog of mrpt 1.5.4.
 *  - You can keep using code like:
 *    \code
 *    CFoo::Ptr o = CFoo::Create();
@@ -58,6 +58,8 @@
 *    - `mrpt::synch::CSemaphore sem; sem.waitForSignal(timeout); sem.release();` --> `std::promise<void> sem; auto fut = sem.get_future(); fut.wait_for(...); sem.set_value();`
 *  - `mrpt::utils::CObject::duplicate()` has been removed, use the equivalent (redundant) `mrpt::utils::CObject::clone()`.
 *  - CSerialPort, `mrpt::utils::net`, sockets: have been moved to its own new module \ref mrpt_comms_grp under namespace `mrpt::comms`.
+*  - Static variables have been dropped in favor of global getter/setter functions. This allowed removing all DLL import/export macros for Windows compilers. Important changes are:
+*    - `mrpt::math::randomGenerator` --> `mrpt::math::getRandomGenerator()`
 *
 * **Optional changes**
 *   - Use the `Foo::ConstPtr` smart pointers when possible instead of its non-const counterpart.

@@ -85,8 +85,6 @@ class CAxis : public CRenderizableDisplayList
 	/** Private, virtual destructor: only can be deleted from smart pointers */
 	virtual ~CAxis() {}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CAxis, CRenderizableDisplayList, OPENGL_IMPEXP)
 
 }  // end namespace
 }  // End of namespace

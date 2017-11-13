@@ -92,8 +92,6 @@ class TStereoCamera : public mrpt::utils::CSerializable
 	}
 
 };  // end class TStereoCamera
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(TStereoCamera, mrpt::utils::CSerializable)
-
 }  // End of namespace
 }  // end of namespace
 #endif

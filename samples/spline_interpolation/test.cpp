@@ -124,7 +124,7 @@ void TestSplineInterpolationVector()
 
 	// Create random data:
 	mrpt::math::linspace(-20.0, 20.0, N, data_x);
-	randomGenerator.drawGaussian1DVector(data_y, 2.0, 1.0);
+	getRandomGenerator().drawGaussian1DVector(data_y, 2.0, 1.0);
 
 	// Create interpolator
 	mrpt::math::CSplineInterpolator1D interp(data_x, data_y);

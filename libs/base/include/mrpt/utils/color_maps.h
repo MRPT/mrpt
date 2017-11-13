@@ -10,7 +10,6 @@
 #ifndef color_maps_H
 #define color_maps_H
 
-
 namespace mrpt
 {
 namespace utils
@@ -22,13 +21,11 @@ namespace utils
 
 /** Transform HSV color components to RGB, all of them in the range [0,1]  \sa
  * rgb2hsv */
-void
-	hsv2rgb(float h, float s, float v, float& r, float& g, float& b);
+void hsv2rgb(float h, float s, float v, float& r, float& g, float& b);
 
 /** Transform RGB color components to HSV, all of them in the range [0,1] \sa
  * hsv2rgb */
-void
-	rgb2hsv(float r, float g, float b, float& h, float& s, float& v);
+void rgb2hsv(float r, float g, float b, float& h, float& s, float& v);
 
 /** Different colormaps for use in mrpt::utils::colormap() */
 enum TColormap

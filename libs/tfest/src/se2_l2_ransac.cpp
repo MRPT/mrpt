@@ -246,7 +246,7 @@ bool tfest::se2_l2_robust(
 #ifdef DO_PROFILING
 		timlog.enter("ransac.permute");
 #endif
-		randomGenerator.permuteVector(corrsIdxs, corrsIdxsPermutation);
+		getRandomGenerator().permuteVector(corrsIdxs, corrsIdxsPermutation);
 
 #ifdef DO_PROFILING
 		timlog.leave("ransac.permute");

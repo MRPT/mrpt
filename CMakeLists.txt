@@ -177,10 +177,6 @@ ENDIF()
 SET(MRPT_ENABLE_PRECOMPILED_HDRS ON CACHE BOOL "Enable precompiled headers (thru 'mrpt/LIB.h')")
 MARK_AS_ADVANCED(MRPT_ENABLE_PRECOMPILED_HDRS)
 
-# Backwards-compatible 1.* smart pointer type names
-# ===================================================
-SET(MRPT_1X_BACKCOMPATIB_SMARTPTR_NAMES ON CACHE BOOL "Enable MRPT 1.* backwards-compatible smart pointer names: CFooPtr as CFoo::Ptr")
-
 # Eigen library plugins:
 # ===================================================
 include(cmakemodules/script_eigen.cmake REQUIRED)

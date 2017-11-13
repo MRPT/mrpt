@@ -141,7 +141,7 @@ int main(int argc, char** argv)
 
 		// Also, set the path in CImage to enable online visualization in a GUI
 		// window:
-		CImage::IMAGES_PATH_BASE = rawlog_ext_imgs_dir;
+		CImage::setImagesPathBase(rawlog_ext_imgs_dir);
 
 		rawlog_postfix += string(".rawlog");
 		rawlog_postfix = fileNameStripInvalidChars(rawlog_postfix);

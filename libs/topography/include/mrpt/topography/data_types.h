@@ -12,7 +12,6 @@
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
-
 namespace mrpt
 {
 namespace topography
@@ -76,10 +75,10 @@ struct TCoords
 	}
 };
 
-bool TOPO_IMPEXP operator==(const TCoords& a, const TCoords& o);
-bool TOPO_IMPEXP operator!=(const TCoords& a, const TCoords& o);
+bool operator==(const TCoords& a, const TCoords& o);
+bool operator!=(const TCoords& a, const TCoords& o);
 
-std::ostream TOPO_IMPEXP& operator<<(std::ostream& out, const TCoords& o);
+std::ostream& operator<<(std::ostream& out, const TCoords& o);
 
 struct TEllipsoid
 {
@@ -216,8 +215,8 @@ struct TGeodeticCoords
 	double height;
 };
 
-bool TOPO_IMPEXP operator==(const TGeodeticCoords& a, const TGeodeticCoords& o);
-bool TOPO_IMPEXP operator!=(const TGeodeticCoords& a, const TGeodeticCoords& o);
+bool operator==(const TGeodeticCoords& a, const TGeodeticCoords& o);
+bool operator!=(const TGeodeticCoords& a, const TGeodeticCoords& o);
 
 /** Parameters for a topographic transfomation
   * \sa TDatum10Params, transform7params

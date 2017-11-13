@@ -17,7 +17,6 @@
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
 
-
 namespace mrpt
 {
 namespace detectors

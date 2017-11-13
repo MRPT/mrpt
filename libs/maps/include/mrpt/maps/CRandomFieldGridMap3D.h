@@ -17,7 +17,6 @@
 #include <mrpt/graphs/ScalarFactorGraph.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
-
 // Fwdr decl:
 class vtkStructuredGrid;
 
@@ -290,8 +289,6 @@ class CRandomFieldGridMap3D
 	/** Vector with the precomputed priors for each GMRF model */
 	std::deque<TPriorFactorGMRF> m_mrf_factors_priors;
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CRandomFieldGridMap3D, mrpt::utils::CSerializable, MAPS_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

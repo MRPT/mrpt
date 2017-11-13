@@ -238,7 +238,7 @@ class CDisplayWindowPlots : public mrpt::gui::CBaseGUIWindow
 	  * \sa axis, axis_equal, axis_fit, hold_on, hold_off
 	  */
 	template <typename T>
-	void GUI_IMPEXP plotEllipse(
+	void plotEllipse(
 		const T mean_x, const T mean_y,
 		const mrpt::math::CMatrixTemplateNumeric<T>& cov22,
 		const float quantiles,
@@ -248,7 +248,7 @@ class CDisplayWindowPlots : public mrpt::gui::CBaseGUIWindow
 
 	//! \overload
 	template <typename T>
-	void GUI_IMPEXP plotEllipse(
+	void plotEllipse(
 		const T mean_x, const T mean_y,
 		const mrpt::math::CMatrixFixedNumeric<T, 2, 2>& cov22,
 		const float quantiles,

@@ -14,7 +14,6 @@
 #include <mrpt/nav/planners/PlannerRRT_common.h>
 #include <numeric>
 
-
 namespace mrpt
 {
 namespace nav
@@ -72,8 +71,7 @@ class PlannerRRT_SE2_TPS : public PlannerTPS_VirtualBase
 	/** The type of poses at nodes */
 	typedef mrpt::math::TPose2D node_pose_t;
 
-	struct TPlannerInput
-		: public TPlannerInputTempl<node_pose_t, node_pose_t>
+	struct TPlannerInput : public TPlannerInputTempl<node_pose_t, node_pose_t>
 	{
 		TPlannerInput()
 		{
@@ -84,8 +82,7 @@ class PlannerRRT_SE2_TPS : public PlannerTPS_VirtualBase
 		}
 	};
 
-	struct TPlannerResult
-		: public TPlannerResultTempl<TMoveTreeSE2_TP>
+	struct TPlannerResult : public TPlannerResultTempl<TMoveTreeSE2_TP>
 	{
 	};
 

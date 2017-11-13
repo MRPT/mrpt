@@ -29,8 +29,7 @@ namespace nav
 /** A base class for holonomic reactive navigation methods.
  *  \sa CHolonomicVFF,CHolonomicND,CHolonomicFullEval, CReactiveNavigationSystem
  */
-class CAbstractHolonomicReactiveMethod
-	: public mrpt::utils::CSerializable
+class CAbstractHolonomicReactiveMethod : public mrpt::utils::CSerializable
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CAbstractHolonomicReactiveMethod)
    public:
@@ -135,8 +134,6 @@ class CAbstractHolonomicReactiveMethod
 	/** used in setConfigFileSectionName(), initialize() */
 	std::string m_cfgSectionName;
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CAbstractHolonomicReactiveMethod, mrpt::utils::CSerializable, NAV_IMPEXP)
 /** @} */
 }
 }

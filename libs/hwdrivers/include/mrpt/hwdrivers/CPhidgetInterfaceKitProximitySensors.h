@@ -101,9 +101,8 @@ enum SensorType
 	UNPLUGGED
 };
 
-class CPhidgetInterfaceKitProximitySensors
-	: public mrpt::utils::COutputLogger,
-	  public CGenericSensor
+class CPhidgetInterfaceKitProximitySensors : public mrpt::utils::COutputLogger,
+											 public CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CPhidgetInterfaceKitProximitySensors)
 

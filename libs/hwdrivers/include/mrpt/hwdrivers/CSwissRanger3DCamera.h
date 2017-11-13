@@ -15,7 +15,6 @@
 
 #include <mrpt/gui/CDisplayWindow.h>
 
-
 namespace mrpt
 {
 namespace hwdrivers
@@ -110,8 +109,7 @@ namespace hwdrivers
   *  \endcode
   * \ingroup mrpt_hwdrivers_grp
   */
-class CSwissRanger3DCamera
-	: public mrpt::hwdrivers::CGenericSensor
+class CSwissRanger3DCamera : public mrpt::hwdrivers::CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CSwissRanger3DCamera)
 

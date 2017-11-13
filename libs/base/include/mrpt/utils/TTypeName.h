@@ -54,7 +54,7 @@ in <mrpt/utils/stl_serialization.h>
 template <typename T>
 struct TTypeName
 {
-	static std::string get() { return std::string(T::classinfo->className); }
+	static std::string get() { return std::string(T::className); }
 };
 
 /** Identical to MRPT_DECLARE_TTYPENAME but intended for user code.

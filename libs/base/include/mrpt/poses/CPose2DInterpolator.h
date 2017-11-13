@@ -47,16 +47,12 @@ namespace poses
   * \sa CPoseOrPoint
  * \ingroup interpolation_grp poses_grp
  */
-class CPose2DInterpolator
-	: public mrpt::utils::CSerializable,
-	  public mrpt::poses::CPoseInterpolatorBase<2>
+class CPose2DInterpolator : public mrpt::utils::CSerializable,
+							public mrpt::poses::CPoseInterpolatorBase<2>
 {
 	// This must be added to any CSerializable derived class:
 	DEFINE_SERIALIZABLE(CPose2DInterpolator)
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(
-	CPose2DInterpolator, mrpt::utils::CSerializable)
-
 }  // End of namespace
 }  // End of namespace

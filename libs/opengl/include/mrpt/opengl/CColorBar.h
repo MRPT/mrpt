@@ -92,7 +92,5 @@ class CColorBar : public CRenderizableDisplayList
 		/** Label text font size */
 		double label_font_size = .05);
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CColorBar, CRenderizableDisplayList, OPENGL_IMPEXP)
 }
 }

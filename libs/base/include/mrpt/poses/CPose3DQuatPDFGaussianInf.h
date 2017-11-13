@@ -150,7 +150,6 @@ class CPose3DQuatPDFGaussianInf : public CPose3DQuatPDF
 	double evaluateNormalizedPDF(const CPose3DQuat& x) const;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(CPose3DQuatPDFGaussianInf, CPose3DQuatPDF)
 
 bool operator==(
 	const CPose3DQuatPDFGaussianInf& p1, const CPose3DQuatPDFGaussianInf& p2);

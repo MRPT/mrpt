@@ -161,7 +161,7 @@ typedef std::vector<TImageStereoCalibData> TCalibrationStereoImageList;
  * \sa CImage::findChessboardCorners, checkerBoardCameraCalibration,
  * mrpt::hwdrivers::CKinect
  */
-bool VISION_IMPEXP checkerBoardStereoCalibration(
+bool checkerBoardStereoCalibration(
 	TCalibrationStereoImageList& images, const TStereoCalibParams& params,
 	TStereoCalibResults& out_results);
 

@@ -127,7 +127,6 @@ class CPoint2DPDFGaussian : public CPoint2DPDF
 	double mahalanobisDistanceToPoint(const double x, const double y) const;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(CPoint2DPDFGaussian, CPoint2DPDF)
 }  // End of namespace
 }  // End of namespace
 #endif

@@ -43,11 +43,10 @@ namespace opengl
   *
   * \ingroup mrpt_opengl_grp
   */
-class CPointCloudColoured
-	: public CRenderizable,
-	  public COctreePointRenderer<CPointCloudColoured>,
-	  public mrpt::utils::PLY_Importer,
-	  public mrpt::utils::PLY_Exporter
+class CPointCloudColoured : public CRenderizable,
+							public COctreePointRenderer<CPointCloudColoured>,
+							public mrpt::utils::PLY_Importer,
+							public mrpt::utils::PLY_Exporter
 {
 	DEFINE_SERIALIZABLE(CPointCloudColoured)
 
@@ -267,12 +266,10 @@ class CPointCloudColoured
 		mrpt::utils::TColorf& pt_color) const override;
 	/** @} */
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CPointCloudColoured, CRenderizable, OPENGL_IMPEXP)
 
-OPENGL_IMPEXP mrpt::utils::CStream& operator>>(
+mrpt::utils::CStream& operator>>(
 	mrpt::utils::CStream& in, CPointCloudColoured::TPointColour& o);
-OPENGL_IMPEXP mrpt::utils::CStream& operator<<(
+mrpt::utils::CStream& operator<<(
 	mrpt::utils::CStream& out, const CPointCloudColoured::TPointColour& o);
 
 }  // end namespace

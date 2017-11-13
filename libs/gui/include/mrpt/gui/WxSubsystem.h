@@ -16,7 +16,6 @@
 #include <mrpt/utils/types_math.h>
 #include <mrpt/gui/gui_frwds.h>
 
-
 #include <queue>
 #include <map>
 #include <thread>

@@ -644,8 +644,6 @@ class CRandomFieldGridMap2D
 		const size_t seed_cyo, const size_t objective_cxo,
 		const size_t objective_cyo);
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CRandomFieldGridMap2D, CMetricMap, MAPS_IMPEXP)
 
 }  // End of namespace
 

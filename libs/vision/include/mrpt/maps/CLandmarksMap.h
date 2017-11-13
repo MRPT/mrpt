@@ -701,18 +701,16 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 	// See base docs
 	virtual void auxParticleFilterCleanUp() override;
 
-	MAP_DEFINITION_START(CLandmarksMap, VISION_IMPEXP)
+	MAP_DEFINITION_START(CLandmarksMap)
 	typedef std::pair<mrpt::math::TPoint3D, unsigned int> TPairIdBeacon;
 	/** Initial contents of the map, especified by a set of 3D Beacons with
 	 * associated IDs */
 	std::deque<TPairIdBeacon> initialBeacons;
 	mrpt::maps::CLandmarksMap::TInsertionOptions insertionOpts;
 	mrpt::maps::CLandmarksMap::TLikelihoodOptions likelihoodOpts;
-	MAP_DEFINITION_END(CLandmarksMap, VISION_IMPEXP)
+	MAP_DEFINITION_END(CLandmarksMap, )
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CLandmarksMap, CMetricMap, VISION_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

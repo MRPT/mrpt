@@ -27,7 +27,7 @@ namespace nav
   * \exception std::runtime_error If the two points are closer than an epsilon
  * (1e-10)
   */
-bool NAV_IMPEXP collision_free_dist_segment_circ_robot(
+bool collision_free_dist_segment_circ_robot(
 	const mrpt::math::TPoint2D& p_start, const mrpt::math::TPoint2D& p_end,
 	const double robot_radius, const mrpt::math::TPoint2D& obstacle,
 	double& out_col_dist);
@@ -38,7 +38,7 @@ bool NAV_IMPEXP collision_free_dist_segment_circ_robot(
 * \return true if a collision exists, and the distance along the path will be in
 * out_col_dist; false otherwise.
 */
-bool NAV_IMPEXP collision_free_dist_arc_circ_robot(
+bool collision_free_dist_arc_circ_robot(
 	const double arc_radius, const double robot_radius,
 	const mrpt::math::TPoint2D& obstacle, double& out_col_dist);
 

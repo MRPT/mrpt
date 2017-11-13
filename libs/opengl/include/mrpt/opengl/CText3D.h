@@ -117,8 +117,6 @@ class CText3D : public CRenderizableDisplayList
 	/** Private, virtual destructor: only can be deleted from smart pointers */
 	virtual ~CText3D();
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CText3D, CRenderizableDisplayList, OPENGL_IMPEXP)
 
 }  // end namespace
 

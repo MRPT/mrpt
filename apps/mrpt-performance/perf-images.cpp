@@ -53,11 +53,11 @@ double image_test_1(int w, int img_quality)
 
 	for (int i = 0; i < 5000; i++)
 		img.line(
-			randomGenerator.drawUniform(0, w - 1),
-			randomGenerator.drawUniform(0, h - 1),
-			randomGenerator.drawUniform(0, w - 1),
-			randomGenerator.drawUniform(0, h - 1),
-			TColor(randomGenerator.drawUniform32bit()));
+			getRandomGenerator().drawUniform(0, w - 1),
+			getRandomGenerator().drawUniform(0, h - 1),
+			getRandomGenerator().drawUniform(0, w - 1),
+			getRandomGenerator().drawUniform(0, h - 1),
+			TColor(getRandomGenerator().drawUniform32bit()));
 
 	CTicTac tictac;
 
@@ -99,11 +99,11 @@ double image_saveload(int iFormat, int to_shm)
 	CImage img(w, h, 3);
 	for (int i = 0; i < 5000; i++)
 		img.line(
-			randomGenerator.drawUniform(0, w - 1),
-			randomGenerator.drawUniform(0, h - 1),
-			randomGenerator.drawUniform(0, w - 1),
-			randomGenerator.drawUniform(0, h - 1),
-			TColor(randomGenerator.drawUniform32bit()));
+			getRandomGenerator().drawUniform(0, w - 1),
+			getRandomGenerator().drawUniform(0, h - 1),
+			getRandomGenerator().drawUniform(0, w - 1),
+			getRandomGenerator().drawUniform(0, h - 1),
+			TColor(getRandomGenerator().drawUniform32bit()));
 
 	CTicTac tictac;
 
@@ -159,11 +159,11 @@ double image_test_2(int w, int h)
 
 	for (int i = 0; i < 5000; i++)
 		img.line(
-			randomGenerator.drawUniform(0, w - 1),
-			randomGenerator.drawUniform(0, h - 1),
-			randomGenerator.drawUniform(0, w - 1),
-			randomGenerator.drawUniform(0, h - 1),
-			TColor(randomGenerator.drawUniform32bit()));
+			getRandomGenerator().drawUniform(0, w - 1),
+			getRandomGenerator().drawUniform(0, h - 1),
+			getRandomGenerator().drawUniform(0, w - 1),
+			getRandomGenerator().drawUniform(0, h - 1),
+			TColor(getRandomGenerator().drawUniform32bit()));
 
 	CTicTac tictac;
 
@@ -232,11 +232,11 @@ double image_KLTscore(int WIN, int N)
 
 	for (int i = 0; i < 5000; i++)
 		img.line(
-			randomGenerator.drawUniform(0, w - 1),
-			randomGenerator.drawUniform(0, h - 1),
-			randomGenerator.drawUniform(0, w - 1),
-			randomGenerator.drawUniform(0, h - 1),
-			TColor(randomGenerator.drawUniform32bit()));
+			getRandomGenerator().drawUniform(0, w - 1),
+			getRandomGenerator().drawUniform(0, h - 1),
+			getRandomGenerator().drawUniform(0, w - 1),
+			getRandomGenerator().drawUniform(0, h - 1),
+			TColor(getRandomGenerator().drawUniform32bit()));
 
 	ASSERT_BELOW_(WIN, 128)
 	int x = 0;

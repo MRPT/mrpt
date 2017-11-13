@@ -86,8 +86,6 @@ class CDisk : public CRenderizableDisplayList
 	/** Private, virtual destructor: only can be deleted from smart pointers */
 	virtual ~CDisk() {}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CDisk, CRenderizableDisplayList, OPENGL_IMPEXP)
 
 }  // end namespace
 

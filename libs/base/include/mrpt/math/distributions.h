@@ -201,8 +201,8 @@ double chi2CDF(unsigned int degreesOfFreedom, double arg);
  *
  * \note Equivalent to MATLAB's chi2pdf(arg,degreesOfFreedom)
  */
-double
-	chi2PDF(unsigned int degreesOfFreedom, double arg, double accuracy = 1e-7);
+double chi2PDF(
+	unsigned int degreesOfFreedom, double arg, double accuracy = 1e-7);
 
 /** Returns the 'exact' PDF (first) and CDF (second) of a Non-central
  * chi-squared probability distribution, using an iterative method.

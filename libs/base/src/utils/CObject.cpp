@@ -21,7 +21,7 @@ using namespace mrpt::system;
 
 #include <cstdio>
 
-const mrpt::utils::TRuntimeClassId & CObject::GetRuntimeClassIdStatic()
+const mrpt::utils::TRuntimeClassId& CObject::GetRuntimeClassIdStatic()
 {
 	return CObject::runtimeClassId;
 }

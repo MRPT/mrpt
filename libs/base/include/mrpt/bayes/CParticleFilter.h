@@ -101,8 +101,7 @@ class CParticleFilter : public mrpt::utils::COutputLogger
 
 	/** The configuration of a particle filter.
 	  */
-	struct TParticleFilterOptions
-		: public mrpt::utils::CLoadableOptions
+	struct TParticleFilterOptions : public mrpt::utils::CLoadableOptions
 	{
 	   public:
 		/** Initilization of default parameters */

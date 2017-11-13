@@ -53,8 +53,6 @@ class CVehicleVelCmd_DiffDriven : public CVehicleVelCmd
    private:
 	double filter_max_vw(double& v, double& w, const TVelCmdParams& p);
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CVehicleVelCmd_DiffDriven, CVehicleVelCmd, KINEMATICS_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

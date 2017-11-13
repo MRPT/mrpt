@@ -72,7 +72,7 @@ bool RANSAC_Template<NUMTYPE>::execute(
 
 			// The +0.99... is due to the floor rounding afterwards when
 			// converting from random double samples to size_t
-			randomGenerator.drawUniformVector(ind, 0.0, Npts - 1 + 0.999999);
+			getRandomGenerator().drawUniformVector(ind, 0.0, Npts - 1 + 0.999999);
 
 			// Test that these points are not a degenerate configuration.
 			degenerate = degen_func(data, ind);

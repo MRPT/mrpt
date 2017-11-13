@@ -137,9 +137,10 @@ bool CReflectivityGridMap2D::internal_insertObservation(
 		const CObservationReflectivity* o =
 			static_cast<const CObservationReflectivity*>(obs);
 
-		if ( o->channel != -1 && insertionOptions.channel != -1 &&
-			 o->channel != insertionOptions.channel ) {
-			return false; // Incorrect channel
+		if (o->channel != -1 && insertionOptions.channel != -1 &&
+			o->channel != insertionOptions.channel)
+		{
+			return false;  // Incorrect channel
 		}
 
 		CPose3D sensor_pose;
@@ -202,9 +203,10 @@ double CReflectivityGridMap2D::internal_computeObservationLikelihood(
 		const CObservationReflectivity* o =
 			static_cast<const CObservationReflectivity*>(obs);
 
-		if ( o->channel != -1 && insertionOptions.channel != -1 &&
-			 o->channel != insertionOptions.channel ) {
-			return 0; // Incorrect channel
+		if (o->channel != -1 && insertionOptions.channel != -1 &&
+			o->channel != insertionOptions.channel)
+		{
+			return 0;  // Incorrect channel
 		}
 
 		CPose3D sensor_pose;
@@ -246,7 +248,7 @@ void CReflectivityGridMap2D::writeToStream(
 		if (n) out.WriteBuffer(&m_map[0], n);
 
 		// Save the insertion options
-		out << insertionOptions.channel; // v3
+		out << insertionOptions.channel;  // v3
 
 		out << genericMapParams;  // v1
 	}

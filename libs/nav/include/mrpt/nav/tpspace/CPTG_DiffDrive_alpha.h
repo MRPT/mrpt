@@ -60,7 +60,5 @@ class CPTG_DiffDrive_alpha : public CPTG_DiffDrive_CollisionGridBased
    protected:
 	double cte_a0v, cte_a0w;
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CPTG_DiffDrive_alpha, CParameterizedTrajectoryGenerator, NAV_IMPEXP)
 }
 }

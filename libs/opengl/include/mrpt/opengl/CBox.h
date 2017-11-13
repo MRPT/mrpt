@@ -132,8 +132,6 @@ class CBox : public CRenderizableDisplayList
 	virtual ~CBox() {}
    private:
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CBox, CRenderizableDisplayList, OPENGL_IMPEXP)
 }
 }
 #endif

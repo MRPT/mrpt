@@ -359,7 +359,7 @@ void CPose3DPDFGaussian::drawSingleSample(CPose3D& outPart) const
 	MRPT_START
 
 	CVectorDouble v;
-	randomGenerator.drawGaussianMultivariate(v, cov);
+	getRandomGenerator().drawGaussianMultivariate(v, cov);
 
 	outPart.setFromValues(
 		mean.x() + v[0], mean.y() + v[1], mean.z() + v[2], mean.yaw() + v[3],
@@ -377,7 +377,7 @@ void CPose3DPDFGaussian::drawManySamples(
 {
 	MRPT_START
 
-	randomGenerator.drawGaussianMultivariateMany(outSamples, N, cov);
+	getRandomGenerator().drawGaussianMultivariateMany(outSamples, N, cov);
 
 	for (vector<CVectorDouble>::iterator it = outSamples.begin();
 		 it != outSamples.end(); ++it)

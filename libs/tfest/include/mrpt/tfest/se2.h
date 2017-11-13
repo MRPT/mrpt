@@ -60,13 +60,13 @@ namespace tfest
   * \ingroup sse_optimizations
   * \ingroup mrpt_tfest_grp
   */
-bool TFEST_IMPEXP se2_l2(
+bool se2_l2(
 	const mrpt::utils::TMatchingPairList& in_correspondences,
 	mrpt::math::TPose2D& out_transformation,
 	mrpt::math::CMatrixDouble33* out_estimateCovariance = nullptr);
 
 /** \overload */
-bool TFEST_IMPEXP se2_l2(
+bool se2_l2(
 	const mrpt::utils::TMatchingPairList& in_correspondences,
 	mrpt::poses::CPosePDFGaussian& out_transformation);
 
@@ -197,7 +197,7 @@ struct TSE2RobustResult
  * mrpt::scanmatching::robustRigidTransformation()
   * \sa se3_l2, se2_l2_robust
   */
-bool TFEST_IMPEXP se2_l2_robust(
+bool se2_l2_robust(
 	const mrpt::utils::TMatchingPairList& in_correspondences,
 	const double in_normalizationStd, const TSE2RobustParams& in_ransac_params,
 	TSE2RobustResult& out_results);

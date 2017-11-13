@@ -414,9 +414,9 @@ bool COccupancyGridMap2D::saveAsBitmapTwoMapsWithCorrespondences(
 	for (i = 0; i < n; i++)
 	{
 		lineColor = TColor(
-			static_cast<long>(randomGenerator.drawUniform(0, 255.0f)),
-			static_cast<long>(randomGenerator.drawUniform(0, 255.0f)),
-			static_cast<long>(randomGenerator.drawUniform(0, 255.0f)));
+			static_cast<long>(getRandomGenerator().drawUniform(0, 255.0f)),
+			static_cast<long>(getRandomGenerator().drawUniform(0, 255.0f)),
+			static_cast<long>(getRandomGenerator().drawUniform(0, 255.0f)));
 
 		img.line(
 			m1->x2idx(corrs[i].this_x),

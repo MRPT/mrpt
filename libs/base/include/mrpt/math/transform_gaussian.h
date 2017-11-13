@@ -124,7 +124,7 @@ void transform_gaussian_montecarlo(
 {
 	MRPT_START
 	typename mrpt::aligned_containers<VECTORLIKE1>::vector_t samples_x;
-	mrpt::random::randomGenerator.drawGaussianMultivariateMany(
+	mrpt::random::getRandomGenerator().drawGaussianMultivariateMany(
 		samples_x, num_samples, x_cov, &x_mean);
 	typename mrpt::aligned_containers<VECTORLIKE3>::vector_t samples_y(
 		num_samples);

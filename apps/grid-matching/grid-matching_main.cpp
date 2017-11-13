@@ -81,7 +81,7 @@ void do_grid_align()
 {
 	CImage img1, img2;
 
-	randomGenerator.randomize();
+	getRandomGenerator().randomize();
 
 	// Grid or simplemaps?
 	if (is_match || (!is_detect_test && SAVE_CORR_AND_NONCORR_DISTS))
@@ -258,7 +258,7 @@ void do_grid_align()
 						for (unsigned int k = 0; k < obs->scan.size(); k++)
 						{
 							float v = obs->getScanRange(k);
-							v += randomGenerator.drawGaussian1D(
+							v += getRandomGenerator().drawGaussian1D(
 								0, STD_NOISE_LASER);
 							if (v < 0) v = 0;
 							obs->setScanRange(k, v);
@@ -274,11 +274,11 @@ void do_grid_align()
 
 					// Change the pose:
 					newPDF->mean.x_incr(
-						randomGenerator.drawGaussian1D(0, STD_NOISE_XY));
+						getRandomGenerator().drawGaussian1D(0, STD_NOISE_XY));
 					newPDF->mean.y_incr(
-						randomGenerator.drawGaussian1D(0, STD_NOISE_XY));
+						getRandomGenerator().drawGaussian1D(0, STD_NOISE_XY));
 					newPDF->mean.phi_incr(
-						randomGenerator.drawGaussian1D(
+						getRandomGenerator().drawGaussian1D(
 							0, DEG2RAD(STD_NOISE_PHI)));
 					newPDF->mean.normalizePhi();
 

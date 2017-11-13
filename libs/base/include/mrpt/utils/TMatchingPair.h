@@ -164,8 +164,7 @@ bool operator<(const TMatchingPair& a, const TMatchingPair& b);
 bool operator==(const TMatchingPair& a, const TMatchingPair& b);
 
 /** A comparison operator */
-bool
-	operator==(const TMatchingPairList& a, const TMatchingPairList& b);
+bool operator==(const TMatchingPairList& a, const TMatchingPairList& b);
 
 }  // End of namespace
 }  // end of namespace

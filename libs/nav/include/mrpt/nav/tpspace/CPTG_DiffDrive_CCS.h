@@ -51,7 +51,5 @@ class CPTG_DiffDrive_CCS : public CPTG_DiffDrive_CollisionGridBased
    protected:
 	double R, K;
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CPTG_DiffDrive_CCS, CParameterizedTrajectoryGenerator, NAV_IMPEXP)
 }
 }
