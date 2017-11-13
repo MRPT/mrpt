@@ -157,9 +157,9 @@ define_mrpt_lib(
 
 IF(BUILD_mrpt-hwdrivers)
 	# We need pthread's on unices
-	target_link_libraries(mrpt-hwdrivers
-		PRIVATE
-		Threads::Threads)
+	if ((${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX) AND NOT WIN32)
+		add_compile_options(-pthread)
+	endif()
 
 	# Ignore precompiled headers in intersense sources:
 	IF(CMAKE_MRPT_HAS_INTERSENSE)

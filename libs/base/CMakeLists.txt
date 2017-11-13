@@ -66,8 +66,9 @@ endif()
 
 # We need pthread's in C files:
 if ((${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX) AND NOT WIN32)
-	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread")
+	add_compile_options(-pthread)
 endif()
+
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":
 #---------------------------------------------
