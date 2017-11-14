@@ -86,7 +86,7 @@ void thread_grabbing(TThreadParam& p)
 		else
 			cerr << "Warning: Calibration file [" << cfgFile
 				 << "] not found -> Using default params. "
-					"This may cause innacurate 3D point clouds.\n Checkout the "
+					"This may cause inaccurate 3D point clouds.\n Checkout the "
 					"kinect-stereo-calib application:\n "
 					"http://www.google.com/"
 					"search?q=kinect-stereo-calib%20mrpt&btnI \n";
