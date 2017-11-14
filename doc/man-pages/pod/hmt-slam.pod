@@ -1,6 +1,6 @@
 =head1 NAME
 
-hmt-slam - Robotic Hybrid Metric Topological (HMT) mappping CLI
+hmt-slam - Robotic Hybrid Metric Topological (HMT) mapping CLI
 
 =head1 SYNOPSIS
 
