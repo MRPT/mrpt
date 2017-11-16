@@ -2093,7 +2093,7 @@ void create_viz_robot_holo(mrpt::opengl::CSetOfObjects& objs)
 	mrpt::opengl::CCylinder::Ptr obj =
 		mrpt::make_aligned_shared<mrpt::opengl::CCylinder>(
 			0.36f /*base radius*/, 0.20f /*top radius */, 1.2f /*height*/);
-	obj->setColor_u8(TColor::red);
+	obj->setColor_u8(TColor::red());
 	objs.insert(obj);
 }
 void create_viz_robot_diff(mrpt::opengl::CSetOfObjects& objs)

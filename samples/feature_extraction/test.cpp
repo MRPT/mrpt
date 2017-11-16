@@ -304,9 +304,9 @@ void TestMatchingComparative()
 
 	CFeatureList::iterator it1, it2;
 	for (it1 = list1.begin(); it1 != list1.end(); ++it1)
-		im1.cross((*it1)->x, (*it1)->y, TColor::red, '+');
+		im1.cross((*it1)->x, (*it1)->y, TColor::red(), '+');
 	for (it2 = list2.begin(); it2 != list2.end(); ++it2)
-		im2.cross((*it2)->x, (*it2)->y, TColor::red, '+');
+		im2.cross((*it2)->x, (*it2)->y, TColor::red(), '+');
 
 	CDisplayWindow win, win2;
 	win.setPos(0, 0);
@@ -395,7 +395,7 @@ void TestMatchingComparative()
 				}  // end-if
 
 				copyjoinimage.drawCircle(
-					(*it2)->x + imW, (*it2)->y, 4, TColor::blue,
+					(*it2)->x + imW, (*it2)->y, 4, TColor::blue(),
 					2);  // Keypoint
 				double rx0, rx1, ry0, ry1, tx, ty;
 				rx0 = (*it2)->x + imW - 15;

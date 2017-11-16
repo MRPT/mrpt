@@ -301,7 +301,7 @@ class CCanvas
 	 */
 	template <class FEATURELIST>
 	void drawFeaturesSimple(
-		const FEATURELIST& list, const TColor& color = TColor::red,
+		const FEATURELIST& list, const TColor& color = TColor::red(),
 		const int cross_size = 5)
 	{
 		for (size_t i = 0; i < list.size(); ++i)
@@ -322,7 +322,7 @@ class CCanvas
 	 */
 	template <class FEATURELIST>
 	void drawFeatures(
-		const FEATURELIST& list, const TColor& color = TColor::red,
+		const FEATURELIST& list, const TColor& color = TColor::red(),
 		const bool showIDs = false, const bool showResponse = false)
 	{
 		for (size_t i = 0; i < list.size(); ++i)
@@ -335,15 +335,15 @@ class CCanvas
 					x, y,
 					format(
 						"%u", static_cast<unsigned int>(list.getFeatureID(i))),
-					TColor::red);
+					TColor::red());
 			if (showResponse)
 				this->textOut(
 					x, y + 10, format(
 								   "R:%u", static_cast<unsigned int>(
 											   list.getFeatureResponse(i))),
-					TColor::red);
+					TColor::red());
 			if (!list.isPointFeature(i))
-				this->drawCircle(x, y, list.getScale(i), TColor::red);
+				this->drawCircle(x, y, list.getScale(i), TColor::red());
 		}
 	}
 };  // End of class

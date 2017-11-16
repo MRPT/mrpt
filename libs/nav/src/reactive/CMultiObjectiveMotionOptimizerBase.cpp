@@ -322,6 +322,8 @@ void CMultiObjectiveMotionOptimizerBase::TParamsBase::saveToConfigFile(
 	mrpt::utils::CConfigFileBase& c, const std::string& s) const
 {
 	// Save: formula_score
+	const int WN = mrpt::utils::MRPT_SAVE_NAME_PADDING(),
+		WV = mrpt::utils::MRPT_SAVE_VALUE_PADDING();
 
 	{
 		const std::string sComment =
@@ -333,9 +335,7 @@ void CMultiObjectiveMotionOptimizerBase::TParamsBase::saveToConfigFile(
 			"# Multiobjective optimizers will then use those scores to select "
 			"the best candidate, \n"
 			"# possibly using more parameters that follow below.\n";
-		c.write(
-			s, "dummy", "", mrpt::utils::MRPT_SAVE_NAME_PADDING,
-			mrpt::utils::MRPT_SAVE_VALUE_PADDING, sComment);
+		c.write(s, "dummy", "", WN, WV, sComment);
 
 		int idx = 0;
 		for (const auto& p : this->formula_score)
@@ -343,12 +343,8 @@ void CMultiObjectiveMotionOptimizerBase::TParamsBase::saveToConfigFile(
 			++idx;
 			const std::string sKeyName = mrpt::format("score%i_name", idx),
 							  sKeyValue = mrpt::format("score%i_formula", idx);
-			c.write(
-				s, sKeyName, p.first, mrpt::utils::MRPT_SAVE_NAME_PADDING,
-				mrpt::utils::MRPT_SAVE_VALUE_PADDING);
-			c.write(
-				s, sKeyValue, p.second, mrpt::utils::MRPT_SAVE_NAME_PADDING,
-				mrpt::utils::MRPT_SAVE_VALUE_PADDING);
+			c.write(s, sKeyName, p.first, WN, WV);
+			c.write(s, sKeyValue, p.second, WN, WV);
 		}
 	}
 
@@ -362,17 +358,12 @@ void CMultiObjectiveMotionOptimizerBase::TParamsBase::saveToConfigFile(
 			"must fulfill\n"
 			"# in order to get through the evaluation process. *All* assert "
 			"conditions must be satisfied.\n";
-		c.write(
-			s, "dummy2", "", mrpt::utils::MRPT_SAVE_NAME_PADDING,
-			mrpt::utils::MRPT_SAVE_VALUE_PADDING, sComment);
+		c.write(s, "dummy2", "", WN, WV, sComment);
 
 		for (unsigned int idx = 0; idx < movement_assert.size(); idx++)
 		{
 			const std::string sKey = mrpt::format("movement_assert%i", idx + 1);
-			c.write(
-				s, sKey, movement_assert[idx],
-				mrpt::utils::MRPT_SAVE_NAME_PADDING,
-				mrpt::utils::MRPT_SAVE_VALUE_PADDING);
+			c.write(s, sKey, movement_assert[idx], WN, WV);
 		}
 	}
 

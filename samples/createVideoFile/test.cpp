@@ -34,7 +34,7 @@ void Test_VideoFile()
 	{
 		CImage img(W, H);
 
-		img.rectangle(0, 0, 320, 200, TColor::black);
+		img.rectangle(0, 0, 320, 200, TColor::black());
 
 		img.drawCircle(
 			160 + 50 * cos(0.05 * i), 120 + 50 * sin(0.05 * i), 30,

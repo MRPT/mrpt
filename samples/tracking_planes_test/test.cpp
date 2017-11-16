@@ -669,7 +669,7 @@ void ransacHomography_distance(
 		// img_aux.colorImage( imgColor );	// Create a colorimage
 		// for(size_t j=0;j<out_inlierIndices.size(); j++)
 		//{
-		//	imgColor.cross(round(allData(2,out_inlierIndices[j])),round(allData(3,out_inlierIndices[j])),TColor::blue,'+');
+		//	imgColor.cross(round(allData(2,out_inlierIndices[j])),round(allData(3,out_inlierIndices[j])),TColor::blue(),'+');
 		//	//imgColor.textOut(round(allData(2,out_inlierIndices[j])),round(allData(3,out_inlierIndices[j])),
 		// format("%d", out_inlierIndices[j]), 255 );
 		//}
@@ -747,7 +747,7 @@ void ransacHomography_distance(
 
 			// img_aux.colorImage( imgColor );	// Create a colorimage
 			// for(size_t j=0;j<out_inlierIndices.size(); j++)
-			//	imgColor.cross(round(allData(2,out_inlierIndices[j])),round(allData(3,out_inlierIndices[j])),TColor::blue,'+');
+			//	imgColor.cross(round(allData(2,out_inlierIndices[j])),round(allData(3,out_inlierIndices[j])),TColor::blue(),'+');
 			// for(size_t j=0;j<vertices.size()-1; j++)
 			//{
 			//	imgColor.line( allData(2,vertices[j]), allData(3,vertices[j]),
@@ -769,7 +769,7 @@ void ransacHomography_distance(
 		for (size_t j = 0; j < out_inlierIndices.size(); j++)
 			imgColor.cross(
 				round(allData(2, out_inlierIndices[j])),
-				round(allData(3, out_inlierIndices[j])), TColor::blue, '+');
+				round(allData(3, out_inlierIndices[j])), TColor::blue(), '+');
 		for (size_t j = 0; j < vertices.size() - 1; j++)
 		{
 			imgColor.line(
@@ -998,7 +998,7 @@ void ransac_homographies(
 			// for(size_t j=0;j<this_best_inliers.size(); j++)
 			//	imgColor.cross(round(remainingPoints(2,
 			// this_best_inliers[j])),round(remainingPoints(3,
-			// this_best_inliers[j])),TColor::blue,'+');
+			// this_best_inliers[j])),TColor::blue(),'+');
 			// win2.showImage(imgColor);
 			// mrpt::system::pause();
 
@@ -1704,22 +1704,22 @@ int main()
 			// k = i%4;
 			// switch (k){
 			//	case 0:
-			//		color = TColor::blue;
+			//		color = TColor::blue();
 			//		break;
 			//	case 1:
-			//		color = TColor::red;
+			//		color = TColor::red();
 			//		break;
 			//	case 2:
-			//		color = TColor::green;
+			//		color = TColor::green();
 			//		break;
 			//	case 3:
-			//		color = TColor::black;
+			//		color = TColor::black();
 			//		break;
 			//	default:
 			//		color = TColor::white;
 			//}
 			// color = TColor(25*(10-i),25*(20-i),65*(i-4));
-			color = TColor::blue;
+			color = TColor::blue();
 			for (j = 0; j < plane_ind[i].size(); j++)
 				imgColor.cross(
 					round(flow_klt[plane_ind[i][j]]->x),

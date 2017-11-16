@@ -673,7 +673,7 @@ void CMetricMapBuilderICP::saveCurrentEstimationToImage(
 		y2 = metricMap.m_gridMaps[0]->y2idx(m_estRobotPath[j].y);
 
 		// Draw line:
-		EMF.line(x1, imgHeight - 1 - y1, x2, imgHeight - 1 - y2, TColor::black);
+		EMF.line(x1, imgHeight - 1 - y1, x2, imgHeight - 1 - y2, TColor::black());
 	}
 
 	MRPT_END

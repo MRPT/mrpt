@@ -1015,7 +1015,7 @@ class COccupancyGridMap2D : public CMetricMap,
 			img.rectangle(px - 7, (py + 7), px + 7, (py - 7), marks_color);
 			img.rectangle(px - 6, (py + 6), px + 6, (py - 6), marks_color);
 			if (addTextLabels)
-				img.textOut(px, py - 8, format("%u", i), TColor::black);
+				img.textOut(px, py - 8, format("%u", i), TColor::black());
 		}
 		return img.saveToFile(file.c_str());
 		MRPT_END

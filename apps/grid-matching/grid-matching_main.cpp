@@ -472,25 +472,25 @@ void do_grid_align()
 								imgGrid1LY - 1 - grid1->y2idx(pp1.y),
 								grid1->x2idx(pp2.x),
 								imgGrid1LY - 1 - grid1->y2idx(pp2.y),
-								TColor::black);
+								TColor::black());
 							imgCanvas.line(
 								grid1->x2idx(pp2.x),
 								imgGrid1LY - 1 - grid1->y2idx(pp2.y),
 								grid1->x2idx(pp3.x),
 								imgGrid1LY - 1 - grid1->y2idx(pp3.y),
-								TColor::black);
+								TColor::black());
 							imgCanvas.line(
 								grid1->x2idx(pp3.x),
 								imgGrid1LY - 1 - grid1->y2idx(pp3.y),
 								grid1->x2idx(pp4.x),
 								imgGrid1LY - 1 - grid1->y2idx(pp4.y),
-								TColor::black);
+								TColor::black());
 							imgCanvas.line(
 								grid1->x2idx(pp4.x),
 								imgGrid1LY - 1 - grid1->y2idx(pp4.y),
 								grid1->x2idx(pp1.x),
 								imgGrid1LY - 1 - grid1->y2idx(pp1.y),
-								TColor::black);
+								TColor::black());
 
 							imgCanvas.saveToFile(
 								format(

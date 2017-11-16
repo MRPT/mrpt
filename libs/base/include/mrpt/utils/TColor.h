@@ -24,13 +24,13 @@ class CStream;
  * \ingroup mrpt_base_grp */
 struct TColor
 {
-	inline TColor() : R(0), G(0), B(0), A(255) {}
-	inline TColor(uint8_t r, uint8_t g, uint8_t b, uint8_t alpha = 255)
+	constexpr inline TColor() : R(0), G(0), B(0), A(255) {}
+	constexpr inline TColor(uint8_t r, uint8_t g, uint8_t b, uint8_t alpha = 255)
 		: R(r), G(g), B(b), A(alpha)
 	{
 	}
 
-	inline explicit TColor(const unsigned int color_RGB_24bit)
+	constexpr inline explicit TColor(const unsigned int color_RGB_24bit)
 		: R(uint8_t(color_RGB_24bit >> 16)),
 		  G(uint8_t(color_RGB_24bit >> 8)),
 		  B(uint8_t(color_RGB_24bit)),
@@ -38,7 +38,7 @@ struct TColor
 	{
 	}
 
-	inline TColor(const unsigned int color_RGB_24bit, const uint8_t alpha)
+	constexpr inline TColor(const unsigned int color_RGB_24bit, const uint8_t alpha)
 		: R(uint8_t(color_RGB_24bit >> 16)),
 		  G(uint8_t(color_RGB_24bit >> 8)),
 		  B(uint8_t(color_RGB_24bit)),
@@ -60,17 +60,12 @@ struct TColor
 	TColor& operator-=(const TColor& other);
 
 	/** Predefined colors */
-	static TColor red;
-	/** Predefined colors */
-	static TColor green;
-	/** Predefined colors */
-	static TColor blue;
-	/** Predefined colors */
-	static TColor white;
-	/** Predefined colors */
-	static TColor black;
-	/** Predefined colors */
-	static TColor gray;
+	static constexpr TColor red() { return TColor(255, 0, 0); }
+	static constexpr TColor green() { return TColor(0, 255, 0); }
+	static constexpr TColor blue() { return TColor(0, 0, 255); }
+	static constexpr TColor black() { return TColor(0, 0, 0); }
+	static constexpr TColor white() { return TColor(255, 255, 255); }
+	static constexpr TColor gray() { return TColor(127, 127, 127); }
 };
 // Text streaming:
 std::ostream& operator<<(std::ostream& o, const TColor& c);

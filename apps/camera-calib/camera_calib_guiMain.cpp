@@ -792,7 +792,7 @@ void camera_calib_guiDialog::refreshDisplayedImage()
 					TColor(0, 255, 64));
 
 			imgRect.drawCircle(10, 10, 4, TColor(0, 255, 64));
-			imgRect.textOut(18, 4, "Reprojected corners", TColor::white);
+			imgRect.textOut(18, 4, "Reprojected corners", TColor::white());
 		}
 
 		// Zoom images:
@@ -808,7 +808,7 @@ void camera_calib_guiDialog::refreshDisplayedImage()
 		{
 			imgCheck.cross(
 				it->second.detected_corners[k].x * zoomVal,
-				it->second.detected_corners[k].y * zoomVal, TColor::blue, '+',
+				it->second.detected_corners[k].y * zoomVal, TColor::blue(), '+',
 				3);
 			imgCheck.drawCircle(
 				it->second.projectedPoints_distorted[k].x * zoomVal,
@@ -816,10 +816,10 @@ void camera_calib_guiDialog::refreshDisplayedImage()
 				TColor(0, 255, 64));
 		}
 		imgCheck.drawCircle(10, 10, 4, TColor(0, 255, 64));
-		imgCheck.textOut(18, 4, "Reprojected corners", TColor::white);
+		imgCheck.textOut(18, 4, "Reprojected corners", TColor::white());
 
-		imgCheck.cross(10, 30, TColor::blue, '+', 3);
-		imgCheck.textOut(18, 24, "Detected corners", TColor::white);
+		imgCheck.cross(10, 30, TColor::blue(), '+', 3);
+		imgCheck.textOut(18, 24, "Detected corners", TColor::white());
 
 		this->bmpOriginal->AssignImage(imgCheck);
 		this->bmpRectified->AssignImage(imgRect);
