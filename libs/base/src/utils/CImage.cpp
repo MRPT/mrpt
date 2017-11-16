@@ -2389,7 +2389,7 @@ bool CImage::drawChessboardCorners(
 			if (i == 0 || i == cornerCoords.size() - 1)
 				CCanvas::textOut(
 					pt.x + 5, pt.y - 5, mrpt::format("%u", i),
-					mrpt::utils::TColor::blue);
+					mrpt::utils::TColor::blue());
 		}
 	}
 

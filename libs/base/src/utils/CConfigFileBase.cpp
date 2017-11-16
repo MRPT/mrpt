@@ -17,8 +17,10 @@ using namespace std;
 using namespace mrpt::utils;
 using namespace mrpt::system;
 
-int mrpt::utils::MRPT_SAVE_NAME_PADDING = 50;
-int mrpt::utils::MRPT_SAVE_VALUE_PADDING = 20;
+static int MRPT_SAVE_NAME_PADDING = 50;
+static int MRPT_SAVE_VALUE_PADDING = 20;
+int mrpt::utils::MRPT_SAVE_NAME_PADDING() { return ::MRPT_SAVE_NAME_PADDING; }
+int mrpt::utils::MRPT_SAVE_VALUE_PADDING(){ return ::MRPT_SAVE_VALUE_PADDING;}
 
 CConfigFileBase::~CConfigFileBase() {}
 void CConfigFileBase::write(

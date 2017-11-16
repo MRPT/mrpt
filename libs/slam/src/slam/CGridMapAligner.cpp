@@ -313,7 +313,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 				CImage img_compose(FEAT_W * 2 + 15, 10 + (5 + FEAT_H) * nF);
 				img_compose.filledRectangle(
 					0, 0, img_compose.getWidth() - 1,
-					img_compose.getHeight() - 1, TColor::black);
+					img_compose.getHeight() - 1, TColor::black());
 
 				img_compose.drawImage(5, 5, im1);
 

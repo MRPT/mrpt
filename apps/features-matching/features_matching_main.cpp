@@ -409,7 +409,7 @@ bool DemoFeatures()
 			if (distances[i2] < min_dist + 0.1 * dist_std)
 			{
 				img2_show_base.cross(
-					feats2[i2]->x, feats2[i2]->y, TColor::red, '+', 7);
+					feats2[i2]->x, feats2[i2]->y, TColor::red(), '+', 7);
 				// img2_show.drawCircle(feats2[i2]->x,feats2[i2]->y,7,
 				// TColor::blue );
 
@@ -437,7 +437,7 @@ bool DemoFeatures()
 		{
 			img1_show = img1;
 
-			img1_show.cross(feats1[i1]->x, feats1[i1]->y, TColor::red, '+', 7);
+			img1_show.cross(feats1[i1]->x, feats1[i1]->y, TColor::red(), '+', 7);
 			img1_show.drawCircle(
 				feats1[i1]->x, feats1[i1]->y, 7 + anim_loops, TColor::blue);
 

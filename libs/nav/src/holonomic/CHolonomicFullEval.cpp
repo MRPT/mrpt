@@ -711,8 +711,8 @@ void CHolonomicFullEval::TOptions::saveToConfigFile(
 {
 	MRPT_START;
 
-	const int WN = mrpt::utils::MRPT_SAVE_NAME_PADDING,
-			  WV = mrpt::utils::MRPT_SAVE_VALUE_PADDING;
+	const int WN = mrpt::utils::MRPT_SAVE_NAME_PADDING(),
+			  WV = mrpt::utils::MRPT_SAVE_VALUE_PADDING();
 
 	MRPT_SAVE_CONFIG_VAR_COMMENT(
 		TOO_CLOSE_OBSTACLE,
