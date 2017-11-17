@@ -28,7 +28,17 @@ using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
 
-bool mrpt::global_settings::USE_SUT_QUAT2EULER_CONVERSION = false;
+bool USE_SUT_QUAT2EULER_CONVERSION_value = false;
+
+void mrpt::global_settings::USE_SUT_QUAT2EULER_CONVERSION(bool value)
+{
+	USE_SUT_QUAT2EULER_CONVERSION_value = value;
+}
+bool mrpt::global_settings::USE_SUT_QUAT2EULER_CONVERSION()
+{
+	return USE_SUT_QUAT2EULER_CONVERSION_value;
+}
+
 
 IMPLEMENTS_SERIALIZABLE(CPose3DPDFGaussian, CPose3DPDF, mrpt::poses)
 
@@ -130,7 +140,7 @@ void CPose3DPDFGaussian::asString(std::string& s) const
 void CPose3DPDFGaussian::copyFrom(const CPose3DQuatPDFGaussian& o)
 {
 	MRPT_START
-	if (!mrpt::global_settings::USE_SUT_QUAT2EULER_CONVERSION)
+	if (!USE_SUT_QUAT2EULER_CONVERSION_value)
 	{
 // Convert using Jacobians and first order approximation:
 

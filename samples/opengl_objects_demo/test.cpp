@@ -24,7 +24,7 @@ using namespace mrpt::utils;
 // ------------------------------------------------------
 void TestOpenGLObjects()
 {
-	mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE = 10000;
+	mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE(10000);
 
 	CDisplayWindow3D win("Demo of MRPT's OpenGL objects", 640, 480);
 

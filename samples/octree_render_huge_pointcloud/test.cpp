@@ -69,8 +69,7 @@ void insertRandomPoints_gauss(
 void TestOctreeRenderHugePointCloud()
 {
 	// Change this in your program as needed:
-	// mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL =
-	// 0.1f;
+	// mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL(0.1f);
 
 	CDisplayWindow3D win("Demo of MRPT's octree pointclouds", 640, 480);
 

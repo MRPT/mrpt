@@ -186,7 +186,8 @@ namespace global_settings
   *		- CPose3DQuatPDFGaussian::copyFrom(const CPose3DPDFGaussian &o)
   *		- CPose3DQuatPDFGaussianInf::copyFrom(const CPose3DPDFGaussianInf &o)
   */
-extern bool USE_SUT_EULER2QUAT_CONVERSION;
+void USE_SUT_EULER2QUAT_CONVERSION(bool value);
+bool USE_SUT_EULER2QUAT_CONVERSION();
 }
 
 }  // End of namespace

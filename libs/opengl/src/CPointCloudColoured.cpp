@@ -83,7 +83,7 @@ void CPointCloudColoured::render_subset(
 		std::max(
 			1.0f, static_cast<float>(
 					  N / (mrpt::global_settings::
-							   OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL *
+							   OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL() *
 						   render_area_sqpixels))));
 
 	m_last_rendered_count_ongoing += N / decimation;

@@ -50,7 +50,16 @@ using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace std;
 
-float mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE = 3.0f;
+float POINTSMAPS_3DOBJECT_POINTSIZE_value = 3.0f;
+
+void mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE(float value)
+{
+	POINTSMAPS_3DOBJECT_POINTSIZE_value = value;
+}
+float mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE()
+{
+	return POINTSMAPS_3DOBJECT_POINTSIZE_value;
+}
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CPointsMap, CMetricMap, mrpt::maps)
 
@@ -799,7 +808,7 @@ void CPointsMap::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
 	obj->setColor(
 		CPointsMap::COLOR_3DSCENE_R, CPointsMap::COLOR_3DSCENE_G,
 		CPointsMap::COLOR_3DSCENE_B, 1);
-	obj->setPointSize(mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE);
+	obj->setPointSize(POINTSMAPS_3DOBJECT_POINTSIZE_value);
 	obj->enableColorFromZ(true);
 
 	obj->setGradientColors(
