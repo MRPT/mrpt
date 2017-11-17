@@ -25,7 +25,7 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 	SET(_DEFVAL "${DEFAULT_BUILD_mrpt-${name}}")
 	IF ("${_DEFVAL}" STREQUAL "")
 		SET(_DEFVAL "ON")
-	ENDIF ("${_DEFVAL}" STREQUAL "")
+	ENDIF ()
 
 	SET(BUILD_mrpt-${name} ${_DEFVAL} CACHE BOOL "Build the library mrpt-${name}")
 	IF(BUILD_mrpt-${name})
@@ -33,7 +33,7 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 
 	IF(NOT ${is_metalib})
 		PROJECT(mrpt-${name})
-	ENDIF(NOT ${is_metalib})
+	ENDIF()
 
 	# Optional build-time plugin mechanism:
 	SET(PLUGIN_FILE_mrpt-${name} "" CACHE FILEPATH "Optional CMake file defining additional sources for mrpt-${name}")
@@ -79,7 +79,7 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 		LIST(APPEND ${name}_EXTRA_SRCS_NAME
 			"Class register"
 			)
-	ENDIF (NOT ${headers_only})
+	ENDIF ()
 
 	# Collect files
 	# ---------------------------------------------------------
@@ -88,7 +88,7 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 
 	IF (NOT N_SRCS EQUAL N_SRCS_NAMES)
 		MESSAGE(FATAL_ERROR "Mismatch length in ${name}_EXTRA_SRCS and ${name}_EXTRA_SRCS_NAME!")
-	ENDIF (NOT N_SRCS EQUAL N_SRCS_NAMES)
+	ENDIF ()
 
 	SET(${name}_srcs "")  # ALL the files
 
@@ -107,14 +107,14 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 		LIST(APPEND ${name}_srcs ${aux_list})
 		# All to group lists, may be used by the user upon return from this macro:
 		LIST(APPEND ${FILS_GROUP_NAME}_FILES ${aux_list})
-	endforeach(i)
+	endforeach()
 
 	# Remove _LIN files when compiling under Windows, and _WIN files when compiling under Linux.
 	IF(WIN32)
 		REMOVE_MATCHING_FILES_FROM_LIST(".*_LIN.cpp" ${name}_srcs)		# Win32
-	ELSE(WIN32)
+	ELSE()
 		REMOVE_MATCHING_FILES_FROM_LIST(".*_WIN.cpp" ${name}_srcs)		# Apple & Unix
-	ENDIF(WIN32)
+	ENDIF()
 
 	# Keep a list of unit testing files, for declaring them in /test:
 	set(lst_unittests ${${name}_srcs})
@@ -130,14 +130,13 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 	# Don't include here the unit testing code:
 	REMOVE_MATCHING_FILES_FROM_LIST(".*_unittest.cpp" ${name}_srcs)
 
-
 	#  Define the target:
 	set(all_${name}_srcs  ${${name}_srcs})
 
 	# Add main lib header (may not exist in meta-libs only):
 	IF (EXISTS "${CMAKE_SOURCE_DIR}/libs/${name}/include/mrpt/${name}.h")
 		set(all_${name}_srcs ${all_${name}_srcs} "${CMAKE_SOURCE_DIR}/libs/${name}/include/mrpt/${name}.h")
-	ENDIF (EXISTS "${CMAKE_SOURCE_DIR}/libs/${name}/include/mrpt/${name}.h")
+	ENDIF ()
 
 	IF (NOT ${headers_only})
 		add_definitions(-DBUILDING_mrpt_${name})
@@ -148,12 +147,23 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 			${MRPT_VERSION_RC_FILE}  # Only !="" in Win32: the .rc file with version info
 			)
 
-	ELSE(NOT ${headers_only})
+		if(MSVC)  # Define math constants if built with MSVC
+			target_compile_definitions(mrpt-${name} INTERFACE _USE_MATH_DEFINES)
+		ENDIF()
 
-		# A custom target (needs no real compiling)
-		add_custom_target(mrpt-${name} DEPENDS ${all_${name}_srcs} SOURCES ${all_${name}_srcs})
-
-	ENDIF (NOT ${headers_only})
+		if(ENABLE_SOLUTION_FOLDERS)
+			set_target_properties(mrpt-${name} PROPERTIES FOLDER "modules")
+		else(ENABLE_SOLUTION_FOLDERS)
+			SET_TARGET_PROPERTIES(mrpt-${name} PROPERTIES PROJECT_LABEL "(LIB) mrpt-${name}")
+		endif(ENABLE_SOLUTION_FOLDERS)
+	ELSE()
+		# A hdr-only library: needs no real compiling
+		add_library(mrpt-${name} INTERFACE)
+		# deps:
+		target_link_libraries(mrpt-${name} INTERFACE ${all_${name}_srcs})
+		# List of hdr files (for editing in IDEs,etc.):
+		target_sources(mrpt-${name} INTERFACE ${all_${name}_srcs})
+	ENDIF ()
 
 	add_dependencies(all_mrpt_libs mrpt-${name}) # for target: all_mrpt_libs
 
@@ -231,13 +241,6 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 	IF (EIGEN_USE_EMBEDDED_VERSION AND ${name} STREQUAL "base")
 		add_dependencies(mrpt-${name} EP_eigen3)
 	ENDIF()
-
-
-	if(ENABLE_SOLUTION_FOLDERS)
-		set_target_properties(mrpt-${name} PROPERTIES FOLDER "modules")
-	else(ENABLE_SOLUTION_FOLDERS)
-		SET_TARGET_PROPERTIES(mrpt-${name} PROPERTIES PROJECT_LABEL "(LIB) mrpt-${name}")
-	endif(ENABLE_SOLUTION_FOLDERS)
 
 	# Set custom name of lib + dynamic link numbering convenions in Linux:
 	IF (NOT ${headers_only})

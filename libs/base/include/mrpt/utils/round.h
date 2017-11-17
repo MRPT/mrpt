@@ -10,7 +10,6 @@
 #pragma once
 
 #include <mrpt/utils/SSE_types.h>  // needed by SSE intrinsics used in some inline functions below.
-#define _USE_MATH_DEFINES  // (For VS to define M_PI, etc. in cmath)
 #include <cmath>  // pow(), lrint()
 
 namespace mrpt
