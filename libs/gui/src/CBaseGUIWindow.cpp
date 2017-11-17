@@ -65,7 +65,7 @@ void CBaseGUIWindow::createWxWindow(
 	WxSubsystem::pushPendingWxRequest(REQ);
 
 	// Wait for the window to realize and signal it's alive:
-	if (!WxSubsystem::isConsoleApp)
+	if (!WxSubsystem::isConsoleApp())
 	{
 		std::this_thread::sleep_for(
 			20ms);  // Force at least 1-2 timer ticks for processing the event:
@@ -120,7 +120,7 @@ void CBaseGUIWindow::destroyWxWindow()
 		WxSubsystem::pushPendingWxRequest(REQ);
 
 		// Wait until the thread ends:
-		if (!WxSubsystem::isConsoleApp)
+		if (!WxSubsystem::isConsoleApp())
 		{
 			std::this_thread::sleep_for(20ms);  // Force at least 1-2 timer
 			// ticks for processing the

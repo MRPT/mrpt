@@ -50,7 +50,8 @@ std::mutex* WxSubsystem::cs_listPendingWxRequests = nullptr;
 
 volatile WxSubsystem::CWXMainFrame* WxSubsystem::CWXMainFrame::oneInstance =
 	nullptr;
-volatile bool WxSubsystem::isConsoleApp = true;
+bool isConsoleApp_value = true;
+bool WxSubsystem::isConsoleApp() { return isConsoleApp_value; }
 
 WxSubsystem::CAuxWxSubsystemShutdowner WxSubsystem::global_wxsubsystem_shutdown;
 
@@ -58,7 +59,7 @@ WxSubsystem::CAuxWxSubsystemShutdowner WxSubsystem::global_wxsubsystem_shutdown;
 WxSubsystem::CAuxWxSubsystemShutdowner::CAuxWxSubsystemShutdowner() {}
 WxSubsystem::CAuxWxSubsystemShutdowner::~CAuxWxSubsystemShutdowner()
 {
-	if (WxSubsystem::isConsoleApp)
+	if (WxSubsystem::isConsoleApp())
 	{
 #ifdef WXSUBSYSTEM_VERBOSE
 		printf("[~CAuxWxSubsystemShutdowner] Sending 999...\n");
@@ -930,7 +931,7 @@ void WxSubsystem::waitWxShutdownsIfNoWindows()
 		nOpenWnds = CWXMainFrame::m_windowCount;
 	}
 
-	if (!nOpenWnds && WxSubsystem::isConsoleApp)
+	if (!nOpenWnds && WxSubsystem::isConsoleApp())
 	{
 #ifdef WXSUBSYSTEM_VERBOSE
 		cout << "[WxSubsystem::waitWxShutdownsIfNoWindows] Waiting for "
@@ -1105,7 +1106,7 @@ bool WxSubsystem::createOneInstanceMainThread()
 	{
 		// We are NOT in a console application: There is already a wxApp
 		// instance running and it's not us.
-		WxSubsystem::isConsoleApp = false;
+		isConsoleApp_value = false;
 		// cout << "[createOneInstanceMainThread] Mode: User GUI." << endl;
 		if (!WxSubsystem::CWXMainFrame::oneInstance)
 		{
@@ -1122,7 +1123,7 @@ bool WxSubsystem::createOneInstanceMainThread()
 	else
 	{
 		// cout << "[createOneInstanceMainThread] Mode: Console." << endl;
-		WxSubsystem::isConsoleApp = true;
+		isConsoleApp_value = true;
 		if (wxmtd.m_wxMainThreadId.get_id() == std::thread::id())
 		{
 #ifdef WXSUBSYSTEM_VERBOSE
