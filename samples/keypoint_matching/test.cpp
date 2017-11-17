@@ -322,20 +322,20 @@ void TestMatchingComparative()
 
 	joinimage.joinImagesHorz(im1, im2);
 	infoimage.filledRectangle(0, 0, imW2, imH2, TColor(150, 150, 150));
-	infoimage.textOut(20, imH2 - 53, "SAD", TColor::blue);
-	infoimage.textOut(20, imH2 - 41, "NCC", TColor::blue);
-	infoimage.textOut(20, imH2 - 29, "SIFT", TColor::blue);
-	infoimage.textOut(20, imH2 - 17, "SURF", TColor::blue);
+	infoimage.textOut(20, imH2 - 53, "SAD", TColor::blue());
+	infoimage.textOut(20, imH2 - 41, "NCC", TColor::blue());
+	infoimage.textOut(20, imH2 - 29, "SIFT", TColor::blue());
+	infoimage.textOut(20, imH2 - 17, "SURF", TColor::blue());
 	for (it1 = list1.begin(); it1 != list1.end(); ++it1)
 	{
 		copyInfoImage = infoimage;
 		copyjoinimage = joinimage;
 		copyjoinimage.line(
-			(*it1)->x, 0, (*it1)->x, imH, TColor::green);  // Horiz
+			(*it1)->x, 0, (*it1)->x, imH, TColor::green());  // Horiz
 		copyjoinimage.line(
-			(*it1)->x + imW, 0, (*it1)->x + imW, imH, TColor::green);  // Horiz
+			(*it1)->x + imW, 0, (*it1)->x + imW, imH, TColor::green());  // Horiz
 		copyjoinimage.line(
-			0, (*it1)->y, imW + imW, (*it1)->y, TColor::green);  // Epipolar
+			0, (*it1)->y, imW + imW, (*it1)->y, TColor::green());  // Epipolar
 		copyjoinimage.drawCircle(
 			(*it1)->x, (*it1)->y, 4, TColor::green, 2);  // Keypoint
 
@@ -393,7 +393,7 @@ void TestMatchingComparative()
 				{
 					copyjoinimage.line(
 						(*it1)->x + imW, 0, (*it1)->x + imW, imH,
-						TColor::green);  // Limit line (only the first time)
+						TColor::green());  // Limit line (only the first time)
 					firstMatch = false;
 				}  // end-if
 
@@ -418,7 +418,7 @@ void TestMatchingComparative()
 				}
 				copyjoinimage.filledRectangle(
 					rx0, ry0, rx1, ry1, TColor(150, 150, 150));
-				copyjoinimage.textOut(tx, ty, format("%d", cnt), TColor::blue);
+				copyjoinimage.textOut(tx, ty, format("%d", cnt), TColor::blue());
 
 				px = 80 + cnt * 50;
 				if (px + fExt.options.patchSize > imW2) continue;
@@ -426,29 +426,29 @@ void TestMatchingComparative()
 				copyInfoImage.update_patch((*it2)->patch, px, 30);
 
 				copyInfoImage.textOut(
-					px, imH2 - 70, format("%d", cnt), TColor::blue);
+					px, imH2 - 70, format("%d", cnt), TColor::blue());
 				copyInfoImage.textOut(
-					px, imH2 - 53, format("%.2f", sad), TColor::blue);
+					px, imH2 - 53, format("%.2f", sad), TColor::blue());
 				copyInfoImage.textOut(
-					px, imH2 - 41, format("%.2f", ncc), TColor::blue);
+					px, imH2 - 41, format("%.2f", ncc), TColor::blue());
 				copyInfoImage.textOut(
-					px, imH2 - 29, format("%.2f", siftd), TColor::blue);
+					px, imH2 - 29, format("%.2f", siftd), TColor::blue());
 				copyInfoImage.textOut(
-					px, imH2 - 17, format("%.2f", surfd), TColor::blue);
+					px, imH2 - 17, format("%.2f", surfd), TColor::blue());
 
 				cnt++;
 			}  // end if
 		}  // end for it2
 		copyInfoImage.textOut(
-			80 + idxsad * 50, imH2 - 53, format("%.2f", minsad), TColor::green);
+			80 + idxsad * 50, imH2 - 53, format("%.2f", minsad), TColor::green());
 		copyInfoImage.textOut(
-			80 + idxncc * 50, imH2 - 41, format("%.2f", maxncc), TColor::green);
+			80 + idxncc * 50, imH2 - 41, format("%.2f", maxncc), TColor::green());
 		copyInfoImage.textOut(
 			80 + idxsiftd * 50, imH2 - 29, format("%.2f", minsiftd),
-			TColor::green);
+			TColor::green());
 		copyInfoImage.textOut(
 			80 + idxsurfd * 50, imH2 - 17, format("%.2f", minsurfd),
-			TColor::green);
+			TColor::green());
 
 		win.showImage(copyjoinimage);
 		win2.showImage(copyInfoImage);

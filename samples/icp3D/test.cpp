@@ -141,14 +141,10 @@ void test_icp3D()
 	CSetOfObjects::Ptr PTNS1 = mrpt::make_aligned_shared<CSetOfObjects>();
 	CSetOfObjects::Ptr PTNS2 = mrpt::make_aligned_shared<CSetOfObjects>();
 
-	CPointsMap::COLOR_3DSCENE_R = 1;
-	CPointsMap::COLOR_3DSCENE_G = 0;
-	CPointsMap::COLOR_3DSCENE_B = 0;
+	CPointsMap::COLOR_3DSCENE(mrpt::utils::TColorf(1,0,0));
 	M1.getAs3DObject(PTNS1);
 
-	CPointsMap::COLOR_3DSCENE_R = 0;
-	CPointsMap::COLOR_3DSCENE_G = 0;
-	CPointsMap::COLOR_3DSCENE_B = 1;
+	CPointsMap::COLOR_3DSCENE(mrpt::utils::TColorf(0, 0, 1));
 	M2_noisy.getAs3DObject(PTNS2);
 
 	scene2->insert(PTNS1);

@@ -12,6 +12,7 @@
 
 #include <sstream>  // ostringstream
 #include <stdexcept>  // logic_error
+#include <mrpt/config.h> // HAVE_LONG_DOUBLE
 
 /**  MRPT_CHECK_GCC_VERSION(MAJ,MIN) */
 #if defined(__GNUC__) && defined(__GNUC_MINOR__)

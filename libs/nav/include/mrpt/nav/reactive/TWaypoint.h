@@ -63,7 +63,7 @@ struct TWaypoint
 	std::string getAsText() const;
 
 	/** The default value of fields (used to detect non-set values) */
-	static const double INVALID_NUM;
+	static const int INVALID_NUM{ -100000 };
 };
 
 /** used in getAsOpenglVisualization() */

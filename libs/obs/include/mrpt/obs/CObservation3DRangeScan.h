@@ -388,8 +388,8 @@ class CObservation3DRangeScan : public CObservation
 	  * Loading always will determine the type by inspecting the file extension.
 	  * \note Default=false
 	  **/
-	void EXTERNALS_AS_TEXT(bool value);
-	bool EXTERNALS_AS_TEXT();
+	static void EXTERNALS_AS_TEXT(bool value);
+	static bool EXTERNALS_AS_TEXT();
 
 	/** \name Point cloud
 	  * @{ */

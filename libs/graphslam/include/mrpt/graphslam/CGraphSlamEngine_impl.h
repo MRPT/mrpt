@@ -320,7 +320,7 @@ void CGraphSlamEngine<GRAPH_T>::initClass()
 		std::string rawlog_dir = system::extractFileDirectory(m_rawlog_fname);
 		std::string m_img_external_storage_dir =
 			rawlog_dir + rawlog_fname_noext + "_Images/";
-		CImage::getImagesPathBase() = m_img_external_storage_dir;
+		CImage::setImagesPathBase(m_img_external_storage_dir);
 	}
 
 	// 3DRangeScans viewports initialization, in case of RGBD datasets

@@ -1501,7 +1501,7 @@ void _DSceneViewerFrame::OnmnuItemChangeMaxPointsPerOctreeNodeSelected(
 		_("Enter new value"),
 		wxString::Format(
 			_("%e"),
-			(double)mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE),
+			(double)mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE()),
 		this);
 
 	wxString sRet2 = wxGetTextFromUser(

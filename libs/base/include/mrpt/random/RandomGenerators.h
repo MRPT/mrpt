@@ -10,17 +10,13 @@
 #define RandomGenerator_H
 
 #include <mrpt/utils/utils_defs.h>
+#include <mrpt/math/CMatrixTemplateNumeric.h>
 
 #include <random>
 #include <limits>
 
 namespace mrpt
 {
-namespace math
-{
-template <class T>
-class CMatrixTemplateNumeric;
-}  // Frwd. decl.
 
 /** A namespace of pseudo-random numbers genrators of diferent distributions.
  * The central class in this namespace is mrpt::random::CRandomGenerator
