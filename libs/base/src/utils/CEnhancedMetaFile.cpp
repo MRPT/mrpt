@@ -9,33 +9,48 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
-#include <MRPT/config.h>
-
-#ifdef MRPT_OS_WINDOWS
-
 #include <mrpt/utils/CEnhancedMetaFile.h>
 #include <mrpt/system/os.h>
 #include <mrpt/utils/CImage.h>
 
-#include <windows.h>
+int LINUX_IMG_WIDTH_value = 800;
+int LINUX_IMG_HEIGHT_value = 600;
 
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::system;
 
-int CEnhancedMetaFile::LINUX_IMG_WIDTH = 800;
-int CEnhancedMetaFile::LINUX_IMG_HEIGHT = 600;
+void CEnhancedMetaFile::LINUX_IMG_WIDTH(int value) { LINUX_IMG_WIDTH_value = value; }
+int CEnhancedMetaFile::LINUX_IMG_WIDTH() { return LINUX_IMG_WIDTH_value; }
+void CEnhancedMetaFile::LINUX_IMG_HEIGHT(int value) { LINUX_IMG_HEIGHT_value = value; }
+int CEnhancedMetaFile::LINUX_IMG_HEIGHT() { return LINUX_IMG_HEIGHT_value; }
+
+#include <MRPT/config.h>
+#ifdef MRPT_OS_WINDOWS
+#include <windows.h>
+#endif
+
 
 /*---------------------------------------------------------------
 						Constructor
 ---------------------------------------------------------------*/
 CEnhancedMetaFile::CEnhancedMetaFile(
 	const std::string& targetFileName, int scaleFactor)
-	: m_scale(scaleFactor), m_hFont(nullptr)
+	: m_scale(scaleFactor), m_targetFile(targetFileName)
 {
+#ifdef MRPT_OS_WINDOWS
 	m_hdc =
 		CreateEnhMetaFileA(nullptr, targetFileName.c_str(), nullptr, nullptr);
 	if (!m_hdc.get()) THROW_EXCEPTION("Can't create EMF file!!!");
+#else
+	m_hdc = (void*)new CImage(
+		CEnhancedMetaFile::LINUX_IMG_WIDTH_value,
+		CEnhancedMetaFile::LINUX_IMG_HEIGHT_value);
+	((CImage*)m_hdc.get())
+		->filledRectangle(
+			0, 0, CEnhancedMetaFile::LINUX_IMG_WIDTH_value - 1,
+			CEnhancedMetaFile::LINUX_IMG_HEIGHT_value - 1, TColor(0, 0, 0));
+#endif
 }
 
 /*---------------------------------------------------------------
@@ -43,6 +58,7 @@ CEnhancedMetaFile::CEnhancedMetaFile(
 ---------------------------------------------------------------*/
 CEnhancedMetaFile::~CEnhancedMetaFile()
 {
+#ifdef MRPT_OS_WINDOWS
 	// Free objects:
 	if (m_hFont.get())
 	{
@@ -52,6 +68,12 @@ CEnhancedMetaFile::~CEnhancedMetaFile()
 
 	// Finish EMF:
 	DeleteEnhMetaFile(CloseEnhMetaFile((HDC)m_hdc.get()));
+#else
+((CImage*)m_hdc.get())->saveToFile(m_targetFile + ".png");
+
+// Free objects:
+delete ((CImage*)m_hdc.get());
+#endif
 }
 
 /*---------------------------------------------------------------
@@ -59,6 +81,7 @@ CEnhancedMetaFile::~CEnhancedMetaFile()
 ---------------------------------------------------------------*/
 void CEnhancedMetaFile::drawImage(int x, int y, const utils::CImage& img)
 {
+#ifdef MRPT_OS_WINDOWS
 	try
 	{
 		LPBITMAPINFO pBmpInfo =
@@ -132,6 +155,9 @@ void CEnhancedMetaFile::drawImage(int x, int y, const utils::CImage& img)
 	{
 		THROW_EXCEPTION("Unexpected runtime error!!");
 	}
+#else
+	((CImage*)m_hdc.get())->drawImage(x, y, img);
+#endif
 }
 
 /*---------------------------------------------------------------
@@ -141,6 +167,7 @@ void CEnhancedMetaFile::line(
 	int x0, int y0, int x1, int y1, const mrpt::utils::TColor color,
 	unsigned int width, TPenStyle penStyle)
 {
+#ifdef MRPT_OS_WINDOWS
 	x0 *= m_scale;
 	y0 *= m_scale;
 	x1 *= m_scale;
@@ -155,6 +182,9 @@ void CEnhancedMetaFile::line(
 
 	SelectObject((HDC)m_hdc.get(), hOldPen);
 	DeleteObject(hPen);
+#else
+	((CImage*)m_hdc.get())->line(x0, y0, x1, y1, color, width, penStyle);
+#endif
 }
 
 /*---------------------------------------------------------------
@@ -163,6 +193,7 @@ void CEnhancedMetaFile::line(
 void CEnhancedMetaFile::textOut(
 	int x0, int y0, const std::string& str, const mrpt::utils::TColor color)
 {
+#ifdef MRPT_OS_WINDOWS
 	x0 *= m_scale;
 	y0 *= m_scale;
 
@@ -170,6 +201,9 @@ void CEnhancedMetaFile::textOut(
 	::SetTextColor((HDC)m_hdc.get(), (unsigned int)color);
 
 	::TextOutA((HDC)m_hdc.get(), x0, y0, str.c_str(), (int)str.size());
+#else
+	((CImage*)m_hdc.get())->textOut(x0, y0, str, color);
+#endif
 }
 
 /*---------------------------------------------------------------
@@ -178,6 +212,7 @@ void CEnhancedMetaFile::textOut(
 void CEnhancedMetaFile::selectVectorTextFont(
 	const std::string& fontName, int fontSize, bool bold, bool italic)
 {
+#ifdef MRPT_OS_WINDOWS
 	HFONT hFont, oldFont;
 	LOGFONTA lpf;
 
@@ -201,6 +236,16 @@ void CEnhancedMetaFile::selectVectorTextFont(
 	oldFont = (HFONT)::SelectObject((HDC)m_hdc.get(), hFont);
 
 	if (oldFont) ::DeleteObject(oldFont);
+#else
+	MRPT_UNUSED_PARAM(fontSize);
+	MRPT_UNUSED_PARAM(bold);
+	MRPT_UNUSED_PARAM(italic);
+	MRPT_TRY_START;
+
+	((CImage*)m_hdc.get())->selectTextFont(fontName);
+
+	MRPT_TRY_END;
+#endif
 }
 
 /*---------------------------------------------------------------
@@ -208,7 +253,11 @@ void CEnhancedMetaFile::selectVectorTextFont(
 ---------------------------------------------------------------*/
 void CEnhancedMetaFile::setPixel(int x, int y, size_t color)
 {
+#ifdef MRPT_OS_WINDOWS
 	::SetPixel((HDC)m_hdc.get(), x * m_scale, y * m_scale, color);
+#else
+	((CImage*)m_hdc.get())->setPixel(x, y, color);
+#endif
 }
 
 /*---------------------------------------------------------------
@@ -222,5 +271,3 @@ void CEnhancedMetaFile::rectangle(
 	line(x1, y1, x0, y1, color, width);
 	line(x0, y1, x0, y0, color, width);
 }
-
-#endif  // MRPT_OS_WINDOWS
