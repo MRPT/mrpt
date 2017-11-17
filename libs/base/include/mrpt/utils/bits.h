@@ -11,7 +11,6 @@
 
 #include <mrpt/config.h>
 
-#define _USE_MATH_DEFINES  // (For VS to define M_PI, etc. in cmath)
 #include <cmath>  // floor(),isnan(),...
 #include <string>
 #include <mrpt/utils/mrpt_macros.h>
