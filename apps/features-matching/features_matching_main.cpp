@@ -186,10 +186,10 @@ bool DemoFeatures()
 	CDisplayWindow win1("Image1"), win2("Image2");
 
 	win1.setPos(10, 10);
-	win1.showImageAndPoints(img1, feats1, TColor::blue);
+	win1.showImageAndPoints(img1, feats1, TColor::blue());
 
 	win2.setPos(20 + img1.getWidth(), 10);
-	win2.showImageAndPoints(img2, feats2, TColor::blue);
+	win2.showImageAndPoints(img2, feats2, TColor::blue());
 
 	cout << "Showing all the features" << endl;
 	cout << "Press any key on windows 1 or the console to continue..." << endl;
@@ -415,7 +415,7 @@ bool DemoFeatures()
 
 				img2_show_base.textOut(
 					feats2[i2]->x + 10, feats2[i2]->y - 10,
-					format("#%u, dist=%.02f", i2, distances[i2]), TColor::gray);
+					format("#%u, dist=%.02f", i2, distances[i2]), TColor::gray());
 
 				xs_best.push_back(i2);
 				ys_best.push_back(distances[i2]);
@@ -423,7 +423,7 @@ bool DemoFeatures()
 			else
 			{
 				img2_show_base.cross(
-					feats2[i2]->x, feats2[i2]->y, TColor::gray, '+', 3);
+					feats2[i2]->x, feats2[i2]->y, TColor::gray(), '+', 3);
 			}
 		}
 
@@ -439,7 +439,7 @@ bool DemoFeatures()
 
 			img1_show.cross(feats1[i1]->x, feats1[i1]->y, TColor::red(), '+', 7);
 			img1_show.drawCircle(
-				feats1[i1]->x, feats1[i1]->y, 7 + anim_loops, TColor::blue);
+				feats1[i1]->x, feats1[i1]->y, 7 + anim_loops, TColor::blue());
 
 			img2_show = img2_show_base;
 			for (unsigned int i2 = 0; i2 < feats2.size(); i2++)
@@ -448,7 +448,7 @@ bool DemoFeatures()
 				{
 					img2_show.drawCircle(
 						feats2[i2]->x, feats2[i2]->y, 7 + anim_loops,
-						TColor::blue);
+						TColor::blue());
 				}
 			}
 

@@ -131,7 +131,7 @@ void TestImageFFT()
 		aux.drawImage(0, 0, IM2);
 		aux.rectangle(
 			u, v, u - IM1.getWidth() / 2, v - IM1.getHeight() / 2,
-			TColor::white, 2);
+			TColor::white(), 2);
 
 		win.showImage(aux);
 		win.setPos(30, 30);

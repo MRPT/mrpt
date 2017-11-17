@@ -44,7 +44,7 @@ typename OBSERVATION_T::Ptr getObservation(
 	obs_t obs_out;
 
 	// CObservation
-	const mrpt::utils::TRuntimeClassId* class_ID = OBSERVATION_T::classinfo;
+	const mrpt::utils::TRuntimeClassId* class_ID = &OBSERVATION_T::GetRuntimeClassIdStatic();
 	if (observation && observation->GetRuntimeClass()->derivedFrom(class_ID))
 	{
 		cobs_ptr = std::dynamic_pointer_cast<OBSERVATION_T>(observation);

@@ -18,8 +18,6 @@
 using namespace mrpt::nav;
 using namespace std;
 
-const double TWaypoint::INVALID_NUM = std::numeric_limits<double>::max();
-
 // TWaypoint  ==========
 TWaypoint::TWaypoint()
 	: target(INVALID_NUM, INVALID_NUM),

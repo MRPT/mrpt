@@ -63,9 +63,10 @@ float mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE()
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CPointsMap, CMetricMap, mrpt::maps)
 
-float CPointsMap::COLOR_3DSCENE_R = 0;
-float CPointsMap::COLOR_3DSCENE_G = 0;
-float CPointsMap::COLOR_3DSCENE_B = 1;
+static mrpt::utils::TColorf COLOR_3DSCENE_value(0, 0, 1);
+
+void CPointsMap::COLOR_3DSCENE(const mrpt::utils::TColorf &value) { COLOR_3DSCENE_value = value; }
+mrpt::utils::TColorf CPointsMap::COLOR_3DSCENE() { return COLOR_3DSCENE_value; }
 
 /*---------------------------------------------------------------
 						Constructor
@@ -805,17 +806,11 @@ void CPointsMap::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
 		mrpt::make_aligned_shared<opengl::CPointCloud>();
 
 	obj->loadFromPointsMap(this);
-	obj->setColor(
-		CPointsMap::COLOR_3DSCENE_R, CPointsMap::COLOR_3DSCENE_G,
-		CPointsMap::COLOR_3DSCENE_B, 1);
+	obj->setColor(COLOR_3DSCENE_value);
 	obj->setPointSize(POINTSMAPS_3DOBJECT_POINTSIZE_value);
 	obj->enableColorFromZ(true);
 
-	obj->setGradientColors(
-		TColorf(0.0, 0, 0),
-		TColorf(
-			CPointsMap::COLOR_3DSCENE_R, CPointsMap::COLOR_3DSCENE_G,
-			CPointsMap::COLOR_3DSCENE_B));
+	obj->setGradientColors(TColorf(0.0, 0, 0),COLOR_3DSCENE_value);
 
 	outObj->insert(obj);
 }

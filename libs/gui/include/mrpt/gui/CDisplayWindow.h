@@ -117,10 +117,10 @@ class CDisplayWindow : public mrpt::gui::CBaseGUIWindow
 		// Print the 4 tile lines
 		unsigned int w = imgColor.getWidth();
 		unsigned int h = imgColor.getHeight();
-		imgColor.line(0, h / 2, w - 1, h / 2, TColor::green);
-		imgColor.line(w / 4, 0, w / 4, h, TColor::green);
-		imgColor.line(w / 2, 0, w / 2, h, TColor::green);
-		imgColor.line(3 * w / 4, 0, 3 * w / 4, h, TColor::green);
+		imgColor.line(0, h / 2, w - 1, h / 2, TColor::green());
+		imgColor.line(w / 4, 0, w / 4, h, TColor::green());
+		imgColor.line(w / 2, 0, w / 2, h, TColor::green());
+		imgColor.line(3 * w / 4, 0, 3 * w / 4, h, TColor::green());
 
 		showImageAndPoints(imgColor, list, color);
 

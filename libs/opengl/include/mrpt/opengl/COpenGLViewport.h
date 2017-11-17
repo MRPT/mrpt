@@ -294,7 +294,7 @@ class COpenGLViewport : public mrpt::utils::CSerializable,
 	{
 		MRPT_START
 		size_t foundCount = 0;
-		const mrpt::utils::TRuntimeClassId* class_ID = T::classinfo;
+		const mrpt::utils::TRuntimeClassId* class_ID = &T::GetRuntimeClassIdStatic();
 		for (CListOpenGLObjects::const_iterator it = m_objects.begin();
 			 it != m_objects.end(); ++it)
 			if (*it && (*it)->GetRuntimeClass()->derivedFrom(class_ID))

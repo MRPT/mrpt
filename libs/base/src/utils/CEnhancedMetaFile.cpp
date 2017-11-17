@@ -13,8 +13,8 @@
 #include <mrpt/system/os.h>
 #include <mrpt/utils/CImage.h>
 
-int LINUX_IMG_WIDTH_value = 800;
-int LINUX_IMG_HEIGHT_value = 600;
+static int LINUX_IMG_WIDTH_value = 800;
+static int LINUX_IMG_HEIGHT_value = 600;
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -25,7 +25,7 @@ int CEnhancedMetaFile::LINUX_IMG_WIDTH() { return LINUX_IMG_WIDTH_value; }
 void CEnhancedMetaFile::LINUX_IMG_HEIGHT(int value) { LINUX_IMG_HEIGHT_value = value; }
 int CEnhancedMetaFile::LINUX_IMG_HEIGHT() { return LINUX_IMG_HEIGHT_value; }
 
-#include <MRPT/config.h>
+#include <mrpt/config.h>
 #ifdef MRPT_OS_WINDOWS
 #include <windows.h>
 #endif
@@ -43,13 +43,10 @@ CEnhancedMetaFile::CEnhancedMetaFile(
 		CreateEnhMetaFileA(nullptr, targetFileName.c_str(), nullptr, nullptr);
 	if (!m_hdc.get()) THROW_EXCEPTION("Can't create EMF file!!!");
 #else
-	m_hdc = (void*)new CImage(
-		CEnhancedMetaFile::LINUX_IMG_WIDTH_value,
-		CEnhancedMetaFile::LINUX_IMG_HEIGHT_value);
+	m_hdc = (void*)new CImage(LINUX_IMG_WIDTH_value,LINUX_IMG_HEIGHT_value);
 	((CImage*)m_hdc.get())
-		->filledRectangle(
-			0, 0, CEnhancedMetaFile::LINUX_IMG_WIDTH_value - 1,
-			CEnhancedMetaFile::LINUX_IMG_HEIGHT_value - 1, TColor(0, 0, 0));
+		->filledRectangle(0, 0, LINUX_IMG_WIDTH_value - 1,
+			LINUX_IMG_HEIGHT_value - 1, TColor(0, 0, 0));
 #endif
 }
 

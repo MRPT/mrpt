@@ -830,8 +830,7 @@ class CPointsMap : public CMetricMap,
 	/** STL-like method to check whether the map is empty: */
 	inline bool empty() const { return isEmpty(); }
 	/** Returns a 3D object representing the map.
-	  *  The color of the points is given by the static variables:
-	 * COLOR_3DSCENE_R,COLOR_3DSCENE_G,COLOR_3DSCENE_B
+	  *  The color of the points is controlled by COLOR_3DSCENE()
 	  * \sa mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE
 	  */
 	virtual void getAs3DObject(
@@ -936,11 +935,9 @@ class CPointsMap : public CMetricMap,
 
 	/** @} */
 
-	/** The color [0,1] of points when extracted from getAs3DObject
-	 * (default=blue) */
-	static float COLOR_3DSCENE_R;
-	static float COLOR_3DSCENE_G;
-	static float COLOR_3DSCENE_B;
+	/** The color of points in getAs3DObject() (default=blue) */
+	static void COLOR_3DSCENE(const mrpt::utils::TColorf &value);
+	static mrpt::utils::TColorf COLOR_3DSCENE();
 
 	// See docs in base class
 	virtual double internal_computeObservationLikelihood(

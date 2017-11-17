@@ -45,7 +45,7 @@ CGlWidget::CGlWidget(bool is2D, QWidget* parent)
 	  m_observationSize(10.),
 	  m_observationColor(mrpt::utils::TColor::red()),
 	  m_selectedObsSize(15.0),
-	  m_selectedColor(mrpt::utils::TColor::green),
+	  m_selectedColor(mrpt::utils::TColor::green()),
 	  m_isShowObs(false),
 	  m_visiblePoints(mrpt::make_aligned_shared<CSetOfObjects>()),
 	  m_currentObs(opengl::stock_objects::CornerXYZSimple()),

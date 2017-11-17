@@ -572,8 +572,7 @@ void loadMapInto3DScene(COpenGLScene& scene)
 
 	// The built maps:
 	// ---------------------------
-	CPointsMap::COLOR_3DSCENE_R = CPointsMap::COLOR_3DSCENE_G =
-		CPointsMap::COLOR_3DSCENE_B = 0.9;
+	CPointsMap::COLOR_3DSCENE(mrpt::utils::TColorf(.9f, .9f, .9f));
 
 	opengl::CSetOfObjects::Ptr objs =
 		mrpt::make_aligned_shared<opengl::CSetOfObjects>();
