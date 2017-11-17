@@ -1161,7 +1161,8 @@ namespace global_settings
   * Affects to:
   *		- mrpt::maps::CPointsMap and all its children classes.
   */
-extern float POINTSMAPS_3DOBJECT_POINTSIZE;
+void POINTSMAPS_3DOBJECT_POINTSIZE(float value);
+float POINTSMAPS_3DOBJECT_POINTSIZE();
 }
 
 namespace utils

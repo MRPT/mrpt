@@ -160,7 +160,7 @@ int main(int argc, char** argv)
 	//========================================================================================
 	gui::CDisplayWindow3D window;
 	opengl::COpenGLScene::Ptr scene;
-	mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE = 1000000;
+	mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE(1000000);
 	window.setWindowTitle("RGB-D camera frame");
 	window.resize(800, 600);
 	window.setPos(500, 50);

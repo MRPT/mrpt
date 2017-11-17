@@ -248,7 +248,8 @@ namespace global_settings
   *		- CPose3DPDFGaussian::CPose3DPDFGaussian( const CPose3DQuatPDFGaussian
   *&o)
   */
-extern bool USE_SUT_QUAT2EULER_CONVERSION;
+void USE_SUT_QUAT2EULER_CONVERSION(bool value);
+bool USE_SUT_QUAT2EULER_CONVERSION();
 }
 
 }  // End of namespace

@@ -60,6 +60,7 @@
 *  - CSerialPort, `mrpt::utils::net`, sockets: have been moved to its own new module \ref mrpt_comms_grp under namespace `mrpt::comms`.
 *  - Static variables have been dropped in favor of global getter/setter functions. This allowed removing all DLL import/export macros for Windows compilers. Important changes are:
 *    - `mrpt::math::randomGenerator` --> `mrpt::math::getRandomGenerator()`
+*    - `mrpt::global_settings` old static variables have been replaced by getter/setter functions.
 *
 * **Optional changes**
 *   - Use the `Foo::ConstPtr` smart pointers when possible instead of its non-const counterpart.

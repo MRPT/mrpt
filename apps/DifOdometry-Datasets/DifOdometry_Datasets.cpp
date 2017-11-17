@@ -171,7 +171,7 @@ void CDifodoDatasets::initializeScene()
 {
 	CPose3D rel_lenspose(0, -0.022, 0, 0, 0, 0);
 
-	global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE = 1000000;
+	global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE(1000000);
 	window.resize(1000, 900);
 	window.setPos(900, 0);
 	window.setCameraZoom(16);

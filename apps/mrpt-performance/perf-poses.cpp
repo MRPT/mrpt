@@ -371,7 +371,7 @@ double poses_test_convert_quat_ypr(int a1, int a2)
 // CONVERSIONS PDF Gauss
 double poses_test_convert_ypr_quat_pdf(int a1, int a2)
 {
-	if (a1 >= 0) mrpt::global_settings::USE_SUT_EULER2QUAT_CONVERSION = a1 != 0;
+	if (a1 >= 0) mrpt::global_settings::USE_SUT_EULER2QUAT_CONVERSION(a1 != 0);
 	const long N = 10000;
 
 	CPose3D a_mean(1.0, 2.0, 3.0, DEG2RAD(10), DEG2RAD(50), DEG2RAD(-30));
