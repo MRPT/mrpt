@@ -388,7 +388,8 @@ class CObservation3DRangeScan : public CObservation
 	  * Loading always will determine the type by inspecting the file extension.
 	  * \note Default=false
 	  **/
-	static bool EXTERNALS_AS_TEXT;
+	void EXTERNALS_AS_TEXT(bool value);
+	bool EXTERNALS_AS_TEXT();
 
 	/** \name Point cloud
 	  * @{ */
@@ -807,7 +808,7 @@ class CObservation3DRangeScan : public CObservation
 	};
 	/** 3D point cloud projection look-up-table \sa
 	 * project3DPointsFromDepthImage */
-	static TCached3DProjTables m_3dproj_lut;
+	static TCached3DProjTables & get_3dproj_lut();
 
 };  // End of class def.
 

@@ -117,7 +117,7 @@ class WxSubsystem
 	 * different threads, making things a little different (hence this
 	 * variable).
 	  */
-	static volatile bool isConsoleApp;
+	static bool isConsoleApp();
 
 	/** An auxiliary global object used just to launch a final request to the
 	 * wxSubsystem for shutdown:

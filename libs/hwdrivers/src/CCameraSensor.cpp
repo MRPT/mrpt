@@ -1458,7 +1458,7 @@ CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromUserSelection()
 	WxSubsystem::pushPendingWxRequest(REQ);
 
 	// Wait for the window to realize and signal it's alive:
-	if (!WxSubsystem::isConsoleApp)
+	if (!WxSubsystem::isConsoleApp())
 	{
 		std::this_thread::sleep_for(
 			20ms);  // Force at least 1-2 timer ticks for processing the event:

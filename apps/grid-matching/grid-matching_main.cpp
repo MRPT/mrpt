@@ -541,23 +541,6 @@ void do_grid_align()
 									"%s/_OVERLAP_MAPS_SOG_MODE_%04u.3Dscene",
 									RESULTS_DIR.c_str(), (unsigned int)nNode))
 								<< scene;
-
-							// Save also as EMF:
-							/*{
-								TMatchingPairList	corrs;
-								// How to get corrs!?
-
-								CEnhancedMetaFile::LINUX_IMG_WIDTH =
-							grid1->getSizeX() + grid2->getSizeX() + 50;
-								CEnhancedMetaFile::LINUX_IMG_HEIGHT =
-							max(grid1->getSizeY(),grid2->getSizeY()) + 50;
-								COccupancyGridMap2D::saveAsEMFTwoMapsWithCorrespondences(
-									format("%s/_OVERLAP_MAPS_SOG_MODE_%04u_corrs.emf",RESULTS_DIR.c_str(),
-							(unsigned int)nNode),
-									grid1,
-									grid2,
-									corrs );
-							}*/
 						}
 
 					}  // end SAVE_SOG_ALL

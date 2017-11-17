@@ -904,10 +904,10 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 				printf(
 					"   Largest consensus: %u\n",
 					static_cast<unsigned>(largestConsensusCorrs.size()));
-				CEnhancedMetaFile::LINUX_IMG_WIDTH =
-					m1->getSizeX() + m2->getSizeX() + 50;
-				CEnhancedMetaFile::LINUX_IMG_HEIGHT =
-					max(m1->getSizeY(), m2->getSizeY()) + 50;
+				CEnhancedMetaFile::LINUX_IMG_WIDTH(
+					m1->getSizeX() + m2->getSizeX() + 50);
+				CEnhancedMetaFile::LINUX_IMG_HEIGHT(
+					max(m1->getSizeY(), m2->getSizeY()) + 50);
 
 				for (TMapMatchingsToPoseMode::const_iterator s =
 						 sog_modes.begin();

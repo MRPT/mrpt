@@ -36,10 +36,22 @@ using namespace mrpt::math;
 IMPLEMENTS_SERIALIZABLE(CObservation3DRangeScan, CObservation, mrpt::obs)
 
 // Static LUT:
-CObservation3DRangeScan::TCached3DProjTables
-	CObservation3DRangeScan::m_3dproj_lut;
+static CObservation3DRangeScan::TCached3DProjTables lut_3dproj;
+CObservation3DRangeScan::TCached3DProjTables & CObservation3DRangeScan::get_3dproj_lut()
+{
+	return lut_3dproj;
+}
 
-bool CObservation3DRangeScan::EXTERNALS_AS_TEXT = false;
+static bool EXTERNALS_AS_TEXT_value = false;
+void CObservation3DRangeScan::EXTERNALS_AS_TEXT(bool value)
+{
+	EXTERNALS_AS_TEXT_value = value;
+}
+bool CObservation3DRangeScan::EXTERNALS_AS_TEXT()
+{
+	return EXTERNALS_AS_TEXT_value;
+}
+
 
 // Whether to use a memory pool for 3D points:
 #define COBS3DRANGE_USE_MEMPOOL
@@ -544,7 +556,7 @@ void CObservation3DRangeScan::points3D_convertToExternalStorage(
 		points3D_x.size() == points3D_y.size() &&
 		points3D_x.size() == points3D_z.size())
 
-	if (EXTERNALS_AS_TEXT)
+	if (EXTERNALS_AS_TEXT_value)
 		m_points3D_external_file =
 			mrpt::system::fileNameChangeExtension(fileName_, "txt");
 	else
@@ -559,7 +571,7 @@ void CObservation3DRangeScan::points3D_convertToExternalStorage(
 		points3D_getExternalStorageFileAbsolutePath();
 	CImage::setImagesPathBase(savedDir);
 
-	if (EXTERNALS_AS_TEXT)
+	if (EXTERNALS_AS_TEXT_value)
 	{
 		const size_t nPts = points3D_x.size();
 
@@ -589,7 +601,7 @@ void CObservation3DRangeScan::rangeImage_convertToExternalStorage(
 	const std::string& fileName_, const std::string& use_this_base_dir)
 {
 	ASSERT_(!rangeImage_isExternallyStored())
-	if (EXTERNALS_AS_TEXT)
+	if (EXTERNALS_AS_TEXT_value)
 		m_rangeImage_external_file =
 			mrpt::system::fileNameChangeExtension(fileName_, "txt");
 	else
@@ -604,7 +616,7 @@ void CObservation3DRangeScan::rangeImage_convertToExternalStorage(
 		rangeImage_getExternalStorageFileAbsolutePath();
 	CImage::setImagesPathBase(savedDir);
 
-	if (EXTERNALS_AS_TEXT)
+	if (EXTERNALS_AS_TEXT_value)
 	{
 		rangeImage.saveToTextFile(real_absolute_file_path, MATRIX_FORMAT_FIXED);
 	}
