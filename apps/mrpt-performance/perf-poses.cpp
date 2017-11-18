@@ -404,7 +404,7 @@ double poses_test_convert_ypr_quat_pdf(int a1, int a2)
 
 double poses_test_convert_quat_ypr_pdf(int a1, int a2)
 {
-	if (a1 >= 0) mrpt::global_settings::USE_SUT_QUAT2EULER_CONVERSION = a1 != 0;
+	if (a1 >= 0) mrpt::global_settings::USE_SUT_QUAT2EULER_CONVERSION(a1 != 0);
 
 	const long N = 2000;
 
