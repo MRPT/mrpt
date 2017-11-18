@@ -117,10 +117,10 @@ void CConfigWidget::removeMap()
 	if (currentRow <= 0) return;
 
 	QWidget* w = m_ui->stackedWidget->widget(currentRow);
-	assert(w);
+	ASSERT_(w);
 
 	CBaseConfig* base = dynamic_cast<CBaseConfig*>(w);
-	assert(base);
+	ASSERT_(base);
 
 	TypeOfConfig type = base->type();
 

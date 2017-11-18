@@ -225,7 +225,7 @@ void CGlWidget::updateObservations()
 	}
 
 	double maxDist = maximumSizeObservation(QPoint(0, 0));
-	assert(maxDist != -1.0);
+	ASSERT_(maxDist != -1.0);
 
 	for (auto& it : selectedPoints)
 	{
@@ -428,7 +428,7 @@ void CGlWidget::insertToMap(const CRenderizable::Ptr& newObject)
 	CQtGlCanvasBase::insertToMap(newObject);
 	if (m_is2D)
 	{
-		assert(m_miniMapViewport);
+		ASSERT_(m_miniMapViewport);
 		m_miniMapViewport->insert(newObject);
 	}
 }
@@ -438,7 +438,7 @@ void CGlWidget::removeFromMap(const CRenderizable::Ptr& newObject)
 	CQtGlCanvasBase::removeFromMap(newObject);
 	if (m_is2D)
 	{
-		assert(m_miniMapViewport);
+		ASSERT_(m_miniMapViewport);
 		m_miniMapViewport->removeObject(newObject);
 	}
 }
@@ -682,9 +682,9 @@ CRobotPose::Ptr CGlWidget::removePoseFromPointsCloud(
 	CSetOfObjects::Ptr points, int index) const
 {
 	auto it = points->begin() + index;
-	assert(it != points->end());
+	ASSERT_(it != points->end());
 	CRobotPose::Ptr robotPose = std::dynamic_pointer_cast<CRobotPose>(*it);
-	assert(robotPose);
+	ASSERT_(robotPose);
 	points->removeObject(*it);
 	return robotPose;
 }
@@ -725,9 +725,9 @@ int CGlWidget::searchPose(float x, float y, double maxDist)
 void CGlWidget::removePoseFromSelected(int index)
 {
 	auto it = m_selectedPoints.begin() + index;
-	assert(it != m_selectedPoints.end());
+	ASSERT_(it != m_selectedPoints.end());
 	CRobotPose::Ptr robotPose = std::dynamic_pointer_cast<CRobotPose>(*it);
-	assert(robotPose);
+	ASSERT_(robotPose);
 	robotPose->setSelected(false);
 	m_selectedPoints.erase(it);
 	emit selectedChanged(m_selectedPoints);
@@ -748,7 +748,7 @@ bool CGlWidget::deselectAll()
 	for (auto& it : m_selectedPoints)
 	{
 		CRobotPose::Ptr robotPose = std::dynamic_pointer_cast<CRobotPose>(it);
-		assert(robotPose);
+		ASSERT_(robotPose);
 		robotPose->setSelected(false);
 		changedVectors = true;
 	}
@@ -762,8 +762,8 @@ bool CGlWidget::deselectAll()
 CRobotPose::Ptr CGlWidget::getRobotPose(size_t index)
 {
 	auto it = m_visiblePoints->begin() + index;
-	assert(it != m_visiblePoints->end());
+	ASSERT_(it != m_visiblePoints->end());
 	CRobotPose::Ptr robotPose = std::dynamic_pointer_cast<CRobotPose>(*it);
-	assert(robotPose);
+	ASSERT_(robotPose);
 	return robotPose;
 }

@@ -27,7 +27,7 @@ int CRootNode::childCount() const { return m_posesNode.size(); }
 CNode* CRootNode::child(int id)
 {
 	int size = m_posesNode.size();
-	assert(id <= size);
+	ASSERT_(id <= size);
 	return m_posesNode[id];
 }
 

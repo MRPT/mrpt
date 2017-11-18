@@ -54,7 +54,7 @@ void COccupancyConfig::updateConfiguration(TMetricMapInitializer* options)
 {
 	COccupancyGridMap2D::TMapDefinition* mapDefination =
 		dynamic_cast<COccupancyGridMap2D::TMapDefinition*>(options);
-	assert(mapDefination);
+	ASSERT_(mapDefination);
 
 	mapDefination->genericMapParams.enableSaveAs3DObject =
 		m_ui->enableSaveAs3DObject;

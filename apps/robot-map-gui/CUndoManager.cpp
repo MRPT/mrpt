@@ -12,7 +12,7 @@
 CUndoManager::CUndoManager() : m_lastAction(-1) {}
 void CUndoManager::addAction(UserAction undo, UserAction redo)
 {
-	assert(m_undo.size() == m_redo.size());
+	ASSERT_(m_undo.size() == m_redo.size());
 	if (m_undo.size() >= 10)
 	{
 		m_undo.erase(m_undo.begin());
@@ -26,12 +26,12 @@ void CUndoManager::addAction(UserAction undo, UserAction redo)
 
 UserAction CUndoManager::redoAction()
 {
-	assert(!m_redo.empty());
+	ASSERT_(!m_redo.empty());
 	int redoSize = m_redo.size();
-	assert(m_lastAction < redoSize);
+	ASSERT_(m_lastAction < redoSize);
 	++m_lastAction;
 	auto it = m_redo.begin() + m_lastAction;
-	assert(it != m_redo.end());
+	ASSERT_(it != m_redo.end());
 
 	UserAction action = *it;
 	return action;
@@ -47,11 +47,11 @@ bool CUndoManager::hasRedo() const
 
 UserAction CUndoManager::undoAction()
 {
-	assert(!m_undo.empty());
+	ASSERT_(!m_undo.empty());
 	int undoSize = m_undo.size();
-	assert(m_lastAction < undoSize);
+	ASSERT_(m_lastAction < undoSize);
 	auto it = m_undo.begin() + m_lastAction;
-	assert(it != m_undo.end());
+	ASSERT_(it != m_undo.end());
 
 	UserAction action = *it;
 	--m_lastAction;

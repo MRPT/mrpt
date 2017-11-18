@@ -67,7 +67,7 @@ void CViewerContainer::changeHelpTextToAboutConfig()
 void CViewerContainer::showRangeScan(CNode* node)
 {
 	CRangeScanNode* obsNode = dynamic_cast<CRangeScanNode*>(node);
-	assert(obsNode);
+	ASSERT_(obsNode);
 
 	auto obj = mrpt::make_aligned_shared<mrpt::opengl::CPlanarLaserScan>();
 	obj->setScan(*(obsNode->observation().get()));
@@ -87,7 +87,7 @@ void CViewerContainer::forEachGl(const std::function<void(CGlWidget*)>& func)
 	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
 	{
 		CGlWidget* gl = dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->widget(i));
-		assert(gl);
+		ASSERT_(gl);
 		func(gl);
 	}
 }
@@ -104,12 +104,12 @@ void CViewerContainer::applyConfigChanges(RenderizableMaps renderizableMaps)
 	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
 	{
 		auto sTypeIter = m_tabsInfo.find(i);
-		assert(sTypeIter != m_tabsInfo.end());
+		ASSERT_(sTypeIter != m_tabsInfo.end());
 
 		auto it = renderizableMaps.find(sTypeIter->second);
-		assert(it != renderizableMaps.end());
+		ASSERT_(it != renderizableMaps.end());
 		CGlWidget* gl = dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->widget(i));
-		assert(gl);
+		ASSERT_(gl);
 
 		gl->fillMap(it->second);
 		gl->updateObservations();
@@ -211,7 +211,7 @@ void CViewerContainer::updatePanelInfo(int index)
 	if (containsHelpInfo() || m_ui->m_tabWidget->count() == 0) return;
 
 	CGlWidget* gl = dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->widget(index));
-	assert(gl);
+	ASSERT_(gl);
 
 	changeZoomInfo(gl->getZoom());
 	changeAzimuthDeg(gl->getAzimuthDegrees());
@@ -254,7 +254,7 @@ void CViewerContainer::zoomChanged(double d)
 	m_ui->m_zoomSlider->setValue(zoomInt);
 	CGlWidget* gl =
 		dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->currentWidget());
-	assert(gl);
+	ASSERT_(gl);
 	gl->setZoom(zoomFloat);
 }
 
@@ -267,7 +267,7 @@ void CViewerContainer::zoomChanged(int d)
 	m_ui->m_zoom->setValue(zoomD);
 	CGlWidget* gl =
 		dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->currentWidget());
-	assert(gl);
+	ASSERT_(gl);
 	gl->setZoom(zoomFloat);
 }
 
@@ -332,7 +332,7 @@ CGlWidget* CViewerContainer::getCurrentTabWidget() const
 
 	CGlWidget* gl =
 		dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->currentWidget());
-	assert(gl);
+	ASSERT_(gl);
 
 	return gl;
 }
