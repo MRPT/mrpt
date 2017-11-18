@@ -573,7 +573,6 @@ void CGlWidget::keyPressEvent(QKeyEvent* event)
 utils::TColorf CGlWidget::typeToColor(int type) const
 {
 	mrpt::utils::TColor color = mrpt::utils::TColor::red();
-	;
 	switch (type)
 	{
 		case 0:
@@ -586,13 +585,13 @@ utils::TColorf CGlWidget::typeToColor(int type) const
 			color = mrpt::utils::TColor::blue();
 			break;
 		case 3:
-			color = mrpt::utils::TColor::white;
+			color = mrpt::utils::TColor::white();
 			break;
 		case 4:
 			color = mrpt::utils::TColor::black();
 			break;
 		case 5:
-			color = mrpt::utils::TColor::gray;
+			color = mrpt::utils::TColor::gray();
 			break;
 		default:
 			break;

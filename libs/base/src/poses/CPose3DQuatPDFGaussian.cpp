@@ -33,7 +33,7 @@ bool mrpt::global_settings::USE_SUT_EULER2QUAT_CONVERSION()
 {
 	return USE_SUT_EULER2QUAT_CONVERSION_value;
 }
-void USE_SUT_EULER2QUAT_CONVERSION(bool value)
+void mrpt::global_settings::USE_SUT_EULER2QUAT_CONVERSION(bool value)
 {
 	USE_SUT_EULER2QUAT_CONVERSION_value = value;
 }
