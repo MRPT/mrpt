@@ -30,7 +30,7 @@ namespace obs
  * \sa CAction
  * \ingroup mrpt_obs_grp
  */
-class OBS_IMPEXP CActionRobotMovement2D : public CAction
+class CActionRobotMovement2D : public CAction
 {
 	DEFINE_SERIALIZABLE(CActionRobotMovement2D)
 
@@ -79,7 +79,7 @@ class OBS_IMPEXP CActionRobotMovement2D : public CAction
 		mmThrun
 	};
 	/** The parameter to be passed to "computeFromOdometry". */
-	struct OBS_IMPEXP TMotionModelOptions
+	struct TMotionModelOptions
 	{
 		/** Default values loader. */
 		TMotionModelOptions();
@@ -92,7 +92,7 @@ class OBS_IMPEXP CActionRobotMovement2D : public CAction
 		  * See docs in :
 		 * http://www.mrpt.org/tutorials/programming/odometry-and-motion-models/probabilistic_motion_models/
 		  */
-		struct OBS_IMPEXP TOptions_GaussianModel
+		struct TOptions_GaussianModel
 		{
 			float a1, a2, a3, a4, minStdXY, minStdPHI;
 		} gaussianModel;
@@ -102,7 +102,7 @@ class OBS_IMPEXP CActionRobotMovement2D : public CAction
 		  * See docs in :
 		 * http://www.mrpt.org/tutorials/programming/odometry-and-motion-models/probabilistic_motion_models/
 		  */
-		struct OBS_IMPEXP TOptions_ThrunModel
+		struct TOptions_ThrunModel
 		{
 			/** The default number of particles to generate in a internal
 			 * representation (anyway you can draw as many samples as you want
@@ -211,8 +211,6 @@ class OBS_IMPEXP CActionRobotMovement2D : public CAction
 	mutable mrpt::poses::CPose2D m_fastDrawGauss_M;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CActionRobotMovement2D, CAction, OBS_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

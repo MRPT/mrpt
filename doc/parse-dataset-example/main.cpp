@@ -68,7 +68,7 @@ int main(int argc, char **argv)
 			cout << "Using starting timestamp = " << mrpt::system::dateTimeLocalToString(start_timestamp) << endl;
 
 		// External images: autodetect the directory for images
-		CImage::IMAGES_PATH_BASE = CRawlog::detectImagesDirectory(rawlog_file);
+		CImage::setImagesPathBase(CRawlog::detectImagesDirectory(rawlog_file));
 
 		// GZ-compressed input stream:
 		CFileGZInputStream  fil(rawlog_file);

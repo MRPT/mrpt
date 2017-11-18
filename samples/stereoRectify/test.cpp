@@ -170,9 +170,9 @@ void TestStereoRectify(int argc, char** argv)
 					for (unsigned int y = 0; y < h; y += LINES_SEP)
 					{
 						img_left_rectified.line(
-							0, y, w - 1, y, mrpt::utils::TColor::red, 2);
+							0, y, w - 1, y, mrpt::utils::TColor::red(), 2);
 						img_right_rectified.line(
-							0, y, w - 1, y, mrpt::utils::TColor::red, 2);
+							0, y, w - 1, y, mrpt::utils::TColor::red(), 2);
 					}
 				}
 

@@ -61,7 +61,7 @@ int main(int argc, char** argv)
 
 		CConfigFile ini(INI_FILENAME);
 
-		randomGenerator.randomize();
+		getRandomGenerator().randomize();
 
 		int i;
 		char auxStr[2000];
@@ -133,9 +133,9 @@ int main(int argc, char** argv)
 			CPoint3D pt3D;
 
 			// Random coordinates:
-			pt3D.x(randomGenerator.drawUniform(min_x, max_x));
-			pt3D.y(randomGenerator.drawUniform(min_y, max_y));
-			pt3D.z(randomGenerator.drawUniform(min_z, max_z));
+			pt3D.x(getRandomGenerator().drawUniform(min_x, max_x));
+			pt3D.y(getRandomGenerator().drawUniform(min_y, max_y));
+			pt3D.z(getRandomGenerator().drawUniform(min_z, max_z));
 
 			// Add:
 			b.m_typePDF = CBeacon::pdfMonteCarlo;
@@ -212,11 +212,11 @@ int main(int argc, char** argv)
 				i == 0 ? ratio_outliers_first_step : ratio_outliers;
 			for (size_t q = 0; q < obs->sensedData.size(); q++)
 			{
-				if (randomGenerator.drawUniform(0.0f, 1.0f) <
+				if (getRandomGenerator().drawUniform(0.0f, 1.0f) <
 					probability_corrupt)
 				{
 					obs->sensedData[q].sensedDistance +=
-						randomGenerator.drawUniform(
+						getRandomGenerator().drawUniform(
 							outlier_uniform_min, outlier_uniform_max);
 					if (obs->sensedData[q].sensedDistance < 0)
 						obs->sensedData[q].sensedDistance = 0;
@@ -232,11 +232,11 @@ int main(int argc, char** argv)
 			if (incPose.x() != 0 || incPose.y() != 0 || incPose.phi() != 0)
 			{
 				incOdo.x_incr(
-					randomGenerator.drawGaussian1D_normalized() *
+					getRandomGenerator().drawGaussian1D_normalized() *
 					odometryNoiseXY_std);
 				incOdo.y_incr(
 					odometryBias_Y +
-					randomGenerator.drawGaussian1D_normalized() *
+					getRandomGenerator().drawGaussian1D_normalized() *
 						odometryNoiseXY_std);
 			}
 			act.computeFromOdometry(incOdo, opts);

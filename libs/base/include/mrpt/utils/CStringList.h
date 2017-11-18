@@ -29,7 +29,7 @@ namespace utils
  * as "key=value" lines.
  * \ingroup mrpt_base_grp
  */
-class BASE_IMPEXP CStringList : public mrpt::utils::CSerializable
+class CStringList : public mrpt::utils::CSerializable
 {
 	DEFINE_SERIALIZABLE(CStringList)
 
@@ -192,7 +192,6 @@ class BASE_IMPEXP CStringList : public mrpt::utils::CSerializable
 	  */
 	void set(const std::string& keyName, const bool& value);
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(CStringList, mrpt::utils::CSerializable)
 
 }  // End of namespace
 }  // End of namespace

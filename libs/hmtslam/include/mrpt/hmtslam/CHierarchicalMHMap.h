@@ -26,8 +26,8 @@ namespace hmtslam
  * \sa CHMTSLAM, CHMHMapArc, CHMHMapNode, CHierarchicalMHMapPartition
   * \ingroup mrpt_hmtslam_grp
  */
-class HMTSLAM_IMPEXP CHierarchicalMHMap : public mrpt::utils::CSerializable,
-										  public CHierarchicalMapMHPartition
+class CHierarchicalMHMap : public mrpt::utils::CSerializable,
+						   public CHierarchicalMapMHPartition
 {
 	friend class CHMHMapArc;
 	friend class CHMHMapNode;
@@ -81,8 +81,6 @@ class HMTSLAM_IMPEXP CHierarchicalMHMap : public mrpt::utils::CSerializable,
 	void clear();
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CHierarchicalMHMap, mrpt::utils::CSerializable, HMTSLAM_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

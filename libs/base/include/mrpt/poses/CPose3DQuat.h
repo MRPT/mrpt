@@ -45,8 +45,7 @@ namespace poses
  * version of this class,  mrpt::math::CQuaternion, CPoseOrPoint
  * \ingroup poses_grp
  */
-class BASE_IMPEXP CPose3DQuat : public CPose<CPose3DQuat>,
-								public mrpt::utils::CSerializable
+class CPose3DQuat : public CPose<CPose3DQuat>, public mrpt::utils::CSerializable
 {
 	DEFINE_SERIALIZABLE(CPose3DQuat)
 
@@ -660,23 +659,22 @@ class BASE_IMPEXP CPose3DQuat : public CPose<CPose3DQuat>,
 	void setToNaN() override;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST(CPose3DQuat)
 
-std::ostream BASE_IMPEXP& operator<<(std::ostream& o, const CPose3DQuat& p);
+std::ostream& operator<<(std::ostream& o, const CPose3DQuat& p);
 
 /** Unary - operator: return the inverse pose "-p" (Note that is NOT the same
  * than a pose with all its arguments multiplied by "-1") */
-CPose3DQuat BASE_IMPEXP operator-(const CPose3DQuat& p);
+CPose3DQuat operator-(const CPose3DQuat& p);
 /**  Computes the 3D point L such as \f$ L = G \ominus this \f$.  \sa
  * inverseComposePoint    */
-CPoint3D BASE_IMPEXP operator-(const CPoint3D& G, const CPose3DQuat& p);
+CPoint3D operator-(const CPoint3D& G, const CPose3DQuat& p);
 /**  Computes the 3D point L such as \f$ L = G \ominus this \f$.  \sa
  * inverseComposePoint    */
-mrpt::math::TPoint3D BASE_IMPEXP
-	operator-(const mrpt::math::TPoint3D& G, const CPose3DQuat& p);
+mrpt::math::TPoint3D operator-(
+	const mrpt::math::TPoint3D& G, const CPose3DQuat& p);
 
-bool BASE_IMPEXP operator==(const CPose3DQuat& p1, const CPose3DQuat& p2);
-bool BASE_IMPEXP operator!=(const CPose3DQuat& p1, const CPose3DQuat& p2);
+bool operator==(const CPose3DQuat& p1, const CPose3DQuat& p2);
+bool operator!=(const CPose3DQuat& p1, const CPose3DQuat& p2);
 
 }  // End of namespace
 }  // End of namespace

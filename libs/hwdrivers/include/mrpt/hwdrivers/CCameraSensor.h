@@ -343,8 +343,7 @@ namespace hwdrivers
  * prepareVideoSourceFromUserSelection()
   * \ingroup mrpt_hwdrivers_grp
   */
-class HWDRIVERS_IMPEXP CCameraSensor : public mrpt::utils::COutputLogger,
-									   public CGenericSensor
+class CCameraSensor : public mrpt::utils::COutputLogger, public CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CCameraSensor)
 
@@ -575,7 +574,7 @@ class HWDRIVERS_IMPEXP CCameraSensor : public mrpt::utils::COutputLogger,
 /** Used only from MRPT apps: Use with caution since "panel" MUST be a
  * "mrpt::gui::CPanelCameraSelection *"
   */
-CCameraSensor::Ptr HWDRIVERS_IMPEXP prepareVideoSourceFromPanel(void* panel);
+CCameraSensor::Ptr prepareVideoSourceFromPanel(void* panel);
 
 /** Parse the user options in the wxWidgets "panel" and write the configuration
  * into the given section of the given configuration file.
@@ -584,7 +583,7 @@ CCameraSensor::Ptr HWDRIVERS_IMPEXP prepareVideoSourceFromPanel(void* panel);
   * \sa prepareVideoSourceFromUserSelection, prepareVideoSourceFromPanel,
  * readConfigIntoVideoSourcePanel
   */
-void HWDRIVERS_IMPEXP writeConfigFromVideoSourcePanel(
+void writeConfigFromVideoSourcePanel(
 	void* panel, const std::string& in_cfgfile_section_name,
 	mrpt::utils::CConfigFileBase* out_cfgfile);
 
@@ -595,14 +594,14 @@ void HWDRIVERS_IMPEXP writeConfigFromVideoSourcePanel(
   * \sa prepareVideoSourceFromUserSelection, prepareVideoSourceFromPanel,
  * writeConfigFromVideoSourcePanel
   */
-void HWDRIVERS_IMPEXP readConfigIntoVideoSourcePanel(
+void readConfigIntoVideoSourcePanel(
 	void* panel, const std::string& in_cfgfile_section_name,
 	const mrpt::utils::CConfigFileBase* in_cfgfile);
 
 /** Show to the user a list of possible camera drivers and creates and open the
  * selected camera.
   */
-CCameraSensor::Ptr HWDRIVERS_IMPEXP prepareVideoSourceFromUserSelection();
+CCameraSensor::Ptr prepareVideoSourceFromUserSelection();
 
 }  // end namespace
 }  // end namespace

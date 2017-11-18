@@ -16,7 +16,7 @@ namespace mrpt
 {
 namespace opengl
 {
-class OPENGL_IMPEXP CPolyhedron;
+class CPolyhedron;
 
 /**
   * This class represents arbitrary polyhedra. The class includes a set of
@@ -41,7 +41,7 @@ class OPENGL_IMPEXP CPolyhedron;
   *
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CPolyhedron : public CRenderizableDisplayList
+class CPolyhedron : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CPolyhedron)
    public:
@@ -49,7 +49,7 @@ class OPENGL_IMPEXP CPolyhedron : public CRenderizableDisplayList
 	  * Struct used to store a polyhedron edge. The struct consists only of two
 	 * vertex indices, used to access the polyhedron vertex list.
 	  */
-	struct OPENGL_IMPEXP TPolyhedronEdge
+	struct TPolyhedronEdge
 	{
 		/**
 		  * First vertex.
@@ -86,7 +86,7 @@ class OPENGL_IMPEXP CPolyhedron : public CRenderizableDisplayList
 	  * Struct used to store a polyhedron face. Consists on a set of vertex
 	 * indices and a normal vector.
 	  */
-	struct OPENGL_IMPEXP TPolyhedronFace
+	struct TPolyhedronFace
 	{
 		/** Vector of indices to the vertex list. */
 		std::vector<uint32_t> vertices;
@@ -947,8 +947,6 @@ class OPENGL_IMPEXP CPolyhedron : public CRenderizableDisplayList
 	/** Destructor. */
 	virtual ~CPolyhedron() {}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CPolyhedron, CRenderizableDisplayList, OPENGL_IMPEXP)
 
 // Implemented after the definition of Smart::Ptrs in the _POST() macro above.
 template <class T>
@@ -964,22 +962,22 @@ size_t CPolyhedron::getIntersection(
 /**
   * Reads a polyhedron edge from a binary stream.
   */
-OPENGL_IMPEXP mrpt::utils::CStream& operator>>(
+mrpt::utils::CStream& operator>>(
 	mrpt::utils::CStream& in, CPolyhedron::TPolyhedronEdge& o);
 /**
   * Writes a polyhedron edge to a binary stream.
   */
-OPENGL_IMPEXP mrpt::utils::CStream& operator<<(
+mrpt::utils::CStream& operator<<(
 	mrpt::utils::CStream& out, const CPolyhedron::TPolyhedronEdge& o);
 /**
   * Reads a polyhedron face from a binary stream.
   */
-OPENGL_IMPEXP mrpt::utils::CStream& operator>>(
+mrpt::utils::CStream& operator>>(
 	mrpt::utils::CStream& in, CPolyhedron::TPolyhedronFace& o);
 /**
   * Writes a polyhedron face to a binary stream.
   */
-OPENGL_IMPEXP mrpt::utils::CStream& operator<<(
+mrpt::utils::CStream& operator<<(
 	mrpt::utils::CStream& out, const CPolyhedron::TPolyhedronFace& o);
 }
 namespace utils

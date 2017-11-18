@@ -13,7 +13,6 @@
 #include <mrpt/utils/types_math.h>  // Eigen
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/vision/link_pragmas.h>
 //#include <unsupported/Eigen/MatrixFunctions>
 
 namespace mrpt
@@ -60,7 +59,7 @@ namespace vision
   *  \ingroup mrpt_vision_grp
   */
 
-class VISION_IMPEXP CDifodo
+class CDifodo
 {
    protected:
 	/** Matrix that stores the original depth frames with the image resolution

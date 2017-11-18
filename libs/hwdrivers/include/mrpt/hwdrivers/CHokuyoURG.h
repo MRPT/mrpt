@@ -70,7 +70,7 @@ namespace hwdrivers
   *  \endcode
   * \ingroup mrpt_hwdrivers_grp
   */
-class HWDRIVERS_IMPEXP CHokuyoURG : public C2DRangeFinderAbstract
+class CHokuyoURG : public C2DRangeFinderAbstract
 {
 	DEFINE_GENERIC_SENSOR(CHokuyoURG)
    public:

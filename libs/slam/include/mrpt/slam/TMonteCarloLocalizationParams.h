@@ -12,8 +12,6 @@
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/slam/TKLDParams.h>
 
-#include <mrpt/slam/link_pragmas.h>
-
 namespace mrpt
 {
 namespace slam
@@ -22,7 +20,7 @@ namespace slam
 	*    when running a particle filter.
 	*   \ingroup mrpt_slam_grp
 	*/
-struct SLAM_IMPEXP TMonteCarloLocalizationParams
+struct TMonteCarloLocalizationParams
 {
 	/** Default settings method.
 		*/

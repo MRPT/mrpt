@@ -33,14 +33,14 @@ namespace poses
  * \sa CPose2D, CPosePDF, CPosePDFParticles
  * \ingroup poses_pdf_grp
  */
-class BASE_IMPEXP CPosePDFSOG : public CPosePDF
+class CPosePDFSOG : public CPosePDF
 {
 	DEFINE_SERIALIZABLE(CPosePDFSOG)
 
    public:
 	/** The struct for each mode:
 	 */
-	struct BASE_IMPEXP TGaussianMode
+	struct TGaussianMode
 	{
 		TGaussianMode() : mean(), cov(), log_w(0) {}
 		CPose2D mean;
@@ -219,7 +219,6 @@ class BASE_IMPEXP CPosePDFSOG : public CPosePDF
 		const double& minMahalanobisDistToDrop = 0) override;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(CPosePDFSOG, CPosePDF)
 }  // End of namespace
 }  // End of namespace
 #endif

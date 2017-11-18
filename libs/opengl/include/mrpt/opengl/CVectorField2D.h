@@ -33,7 +33,7 @@ namespace opengl
   * \ingroup mrpt_opengl_grp
   */
 
-class OPENGL_IMPEXP CVectorField2D : public CRenderizableDisplayList
+class CVectorField2D : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CVectorField2D)
    protected:
@@ -265,8 +265,6 @@ class OPENGL_IMPEXP CVectorField2D : public CRenderizableDisplayList
 	/** Private, virtual destructor: only can be deleted from smart pointers. */
 	virtual ~CVectorField2D() {}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CVectorField2D, CRenderizableDisplayList, OPENGL_IMPEXP)
 
 }  // end namespace
 

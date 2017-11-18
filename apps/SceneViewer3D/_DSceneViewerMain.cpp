@@ -1501,7 +1501,7 @@ void _DSceneViewerFrame::OnmnuItemChangeMaxPointsPerOctreeNodeSelected(
 		_("Enter new value"),
 		wxString::Format(
 			_("%e"),
-			(double)mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE),
+			(double)mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE()),
 		this);
 
 	wxString sRet2 = wxGetTextFromUser(
@@ -1509,15 +1509,14 @@ void _DSceneViewerFrame::OnmnuItemChangeMaxPointsPerOctreeNodeSelected(
 		_("Enter new value"),
 		wxString::Format(
 			_("%e"), (double)mrpt::global_settings::
-						 OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL),
+						 OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL()),
 		this);
 
 	double N1, N2;
 	if (sRet1.ToDouble(&N1) && sRet2.ToDouble(&N2))
 	{
-		mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE = N1;
-		mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL =
-			N2;
+		mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE(N1);
+		mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL(N2);
 
 		// Redo the octrees:
 		clear_all_octrees_in_scene();
@@ -2223,8 +2222,7 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 		updateTitle();
 
 		// Typically, LAS scenes have millions of points:
-		mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL =
-			1000;
+		mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL(1000);
 
 		Refresh(false);
 

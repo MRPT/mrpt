@@ -11,7 +11,6 @@
 
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/config.h>
-#include <mrpt/base/link_pragmas.h>
 #include <mrpt/utils/TPixelCoord.h>
 #include <mrpt/utils/TTypeName.h>
 #include <mrpt/math/math_frwds.h>  // forward declarations
@@ -32,7 +31,7 @@ namespace math
   * Lightweight 2D point. Allows coordinate access using [] operator.
   * \sa mrpt::poses::CPoint2D
   */
-struct BASE_IMPEXP TPoint2D
+struct TPoint2D
 {
 	enum
 	{
@@ -192,7 +191,7 @@ struct BASE_IMPEXP TPoint2D
   * Lightweight 2D pose. Allows coordinate access using [] operator.
   * \sa mrpt::poses::CPose2D
   */
-struct BASE_IMPEXP TPose2D
+struct TPose2D
 {
 	enum
 	{
@@ -316,7 +315,7 @@ struct BASE_IMPEXP TPose2D
 /** Lightweight 3D point (float version).
   * \sa mrpt::poses::CPoint3D, mrpt::math::TPoint3D
   */
-struct BASE_IMPEXP TPoint3Df
+struct TPoint3Df
 {
 	enum
 	{
@@ -379,7 +378,7 @@ struct BASE_IMPEXP TPoint3Df
   * Lightweight 3D point. Allows coordinate access using [] operator.
   * \sa mrpt::poses::CPoint3D, mrpt::math::TPoint3Df
   */
-struct BASE_IMPEXP TPoint3D
+struct TPoint3D
 {
 	enum
 	{
@@ -562,7 +561,7 @@ struct BASE_IMPEXP TPoint3D
 };
 
 /** XYZ point (double) + Intensity(u8) \sa mrpt::math::TPoint3D */
-struct BASE_IMPEXP TPointXYZIu8
+struct TPointXYZIu8
 {
 	mrpt::math::TPoint3D pt;
 	uint8_t intensity;
@@ -573,7 +572,7 @@ struct BASE_IMPEXP TPointXYZIu8
 	}
 };
 /** XYZ point (double) + RGB(u8) \sa mrpt::math::TPoint3D */
-struct BASE_IMPEXP TPointXYZRGBu8
+struct TPointXYZRGBu8
 {
 	mrpt::math::TPoint3D pt;
 	uint8_t R, G, B;
@@ -586,7 +585,7 @@ struct BASE_IMPEXP TPointXYZRGBu8
 	}
 };
 /** XYZ point (float) + Intensity(u8) \sa mrpt::math::TPoint3D */
-struct BASE_IMPEXP TPointXYZfIu8
+struct TPointXYZfIu8
 {
 	mrpt::math::TPoint3Df pt;
 	uint8_t intensity;
@@ -597,7 +596,7 @@ struct BASE_IMPEXP TPointXYZfIu8
 	}
 };
 /** XYZ point (float) + RGB(u8) \sa mrpt::math::TPoint3D */
-struct BASE_IMPEXP TPointXYZfRGBu8
+struct TPointXYZfRGBu8
 {
 	mrpt::math::TPoint3Df pt;
 	uint8_t R, G, B;
@@ -614,7 +613,7 @@ struct BASE_IMPEXP TPointXYZfRGBu8
  * coordinates). Allows coordinate access using [] operator.
   * \sa mrpt::poses::CPose3D
   */
-struct BASE_IMPEXP TPose3D
+struct TPose3D
 {
 	enum
 	{
@@ -765,7 +764,7 @@ struct BASE_IMPEXP TPose3D
  * coordinate access using [] operator.
   * \sa mrpt::poses::CPose3DQuat
   */
-struct BASE_IMPEXP TPose3DQuat
+struct TPose3DQuat
 {
 	enum
 	{
@@ -867,11 +866,11 @@ struct BASE_IMPEXP TPose3DQuat
 };
 
 // Text streaming functions:
-std::ostream BASE_IMPEXP& operator<<(std::ostream& o, const TPoint2D& p);
-std::ostream BASE_IMPEXP& operator<<(std::ostream& o, const TPoint3D& p);
-std::ostream BASE_IMPEXP& operator<<(std::ostream& o, const TPose2D& p);
-std::ostream BASE_IMPEXP& operator<<(std::ostream& o, const TPose3D& p);
-std::ostream BASE_IMPEXP& operator<<(std::ostream& o, const TPose3DQuat& p);
+std::ostream& operator<<(std::ostream& o, const TPoint2D& p);
+std::ostream& operator<<(std::ostream& o, const TPoint3D& p);
+std::ostream& operator<<(std::ostream& o, const TPose2D& p);
+std::ostream& operator<<(std::ostream& o, const TPose3D& p);
+std::ostream& operator<<(std::ostream& o, const TPose3DQuat& p);
 
 /**
   * Unary minus operator for 3D points.
@@ -951,17 +950,17 @@ inline bool operator!=(const TPose3D& p1, const TPose3D& p2)
 			mrpt::math::wrapTo2Pi(p2.roll));  //-V550
 }
 // Forward declarations
-struct BASE_IMPEXP TSegment3D;
-struct BASE_IMPEXP TLine3D;
-class BASE_IMPEXP TPolygon3D;
-struct BASE_IMPEXP TObject3D;
+struct TSegment3D;
+struct TLine3D;
+class TPolygon3D;
+struct TObject3D;
 
 // Pragma defined to ensure no structure packing
 /**
   * 2D segment, consisting of two points.
   * \sa TSegment3D,TLine2D,TPolygon2D,TPoint2D
   */
-struct BASE_IMPEXP TSegment2D
+struct TSegment2D
 {
    public:
 	/**
@@ -1047,7 +1046,7 @@ struct BASE_IMPEXP TSegment2D
   * 3D segment, consisting of two points.
   * \sa TSegment2D,TLine3D,TPlane,TPolygon3D,TPoint3D
   */
-struct BASE_IMPEXP TSegment3D
+struct TSegment3D
 {
    public:
 	/**
@@ -1158,7 +1157,7 @@ inline bool operator!=(const TSegment3D& s1, const TSegment3D& s2)
   * 2D line without bounds, represented by its equation \f$Ax+By+C=0\f$.
   * \sa TLine3D,TSegment2D,TPolygon2D,TPoint2D
   */
-struct BASE_IMPEXP TLine2D
+struct TLine2D
 {
    public:
 	/**
@@ -1259,7 +1258,7 @@ struct BASE_IMPEXP TLine2D
   * 3D line, represented by a base point and a director vector.
   * \sa TLine2D,TSegment3D,TPlane,TPolygon3D,TPoint3D
   */
-struct BASE_IMPEXP TLine3D
+struct TLine3D
 {
    public:
 	/**
@@ -1324,7 +1323,7 @@ struct BASE_IMPEXP TLine3D
   * 3D Plane, represented by its equation \f$Ax+By+Cz+D=0\f$
   * \sa TSegment3D,TLine3D,TPolygon3D,TPoint3D
   */
-struct BASE_IMPEXP TPlane
+struct TPlane
 {
    public:
 	/**
@@ -1449,7 +1448,7 @@ typedef TPlane TPlane3D;
   * 2D polygon, inheriting from std::vector<TPoint2D>.
   * \sa TPolygon3D,TSegment2D,TLine2D,TPoint2D, CPolygon
   */
-class BASE_IMPEXP TPolygon2D : public std::vector<TPoint2D>
+class TPolygon2D : public std::vector<TPoint2D>
 {
    public:
 	/** Distance to a point (always >=0) */
@@ -1504,7 +1503,7 @@ class BASE_IMPEXP TPolygon2D : public std::vector<TPoint2D>
   * 3D polygon, inheriting from std::vector<TPoint3D>
   * \sa TPolygon2D,TSegment3D,TLine3D,TPlane,TPoint3D
   */
-class BASE_IMPEXP TPolygon3D : public std::vector<TPoint3D>
+class TPolygon3D : public std::vector<TPoint3D>
 {
    public:
 	/** Distance to point (always >=0) */
@@ -1591,7 +1590,7 @@ const unsigned char GEOMETRIC_TYPE_UNDEFINED = 255;
  * class.
   * \sa TPoint2D,TSegment2D,TLine2D,TPolygon2D
   */
-struct BASE_IMPEXP TObject2D
+struct TObject2D
 {
    private:
 	/**
@@ -1855,7 +1854,7 @@ struct BASE_IMPEXP TObject2D
  * this class.
   * \sa TPoint3D,TSegment3D,TLine3D,TPlane,TPolygon3D
   */
-struct BASE_IMPEXP TObject3D
+struct TObject3D
 {
    private:
 	/**
@@ -2191,7 +2190,7 @@ struct BASE_IMPEXP TObject3D
 /** 2D twist: 2D velocity vector (vx,vy) + planar angular velocity (omega)
   * \sa mrpt::math::TTwist3D, mrpt::math::TPose2D
   */
-struct BASE_IMPEXP TTwist2D
+struct TTwist2D
 {
 	enum
 	{
@@ -2279,7 +2278,7 @@ struct BASE_IMPEXP TTwist2D
 /** 3D twist: 3D velocity vector (vx,vy,vz) + angular velocity (wx,wy,wz)
   * \sa mrpt::math::TTwist2D, mrpt::math::TPose3D
   */
-struct BASE_IMPEXP TTwist3D
+struct TTwist3D
 {
 	enum
 	{
@@ -2375,69 +2374,69 @@ struct BASE_IMPEXP TTwist3D
 };
 
 // Binary streaming functions
-BASE_IMPEXP mrpt::utils::CStream& operator>>(
+mrpt::utils::CStream& operator>>(
 	mrpt::utils::CStream& in, mrpt::math::TPoint2D& o);
-BASE_IMPEXP mrpt::utils::CStream& operator<<(
+mrpt::utils::CStream& operator<<(
 	mrpt::utils::CStream& out, const mrpt::math::TPoint2D& o);
 
-BASE_IMPEXP mrpt::utils::CStream& operator>>(
+mrpt::utils::CStream& operator>>(
 	mrpt::utils::CStream& in, mrpt::math::TPoint3D& o);
-BASE_IMPEXP mrpt::utils::CStream& operator<<(
+mrpt::utils::CStream& operator<<(
 	mrpt::utils::CStream& out, const mrpt::math::TPoint3D& o);
 
-BASE_IMPEXP mrpt::utils::CStream& operator>>(
+mrpt::utils::CStream& operator>>(
 	mrpt::utils::CStream& in, mrpt::math::TPose2D& o);
-BASE_IMPEXP mrpt::utils::CStream& operator<<(
+mrpt::utils::CStream& operator<<(
 	mrpt::utils::CStream& out, const mrpt::math::TPose2D& o);
 
-BASE_IMPEXP mrpt::utils::CStream& operator>>(
+mrpt::utils::CStream& operator>>(
 	mrpt::utils::CStream& in, mrpt::math::TPose3D& o);
-BASE_IMPEXP mrpt::utils::CStream& operator<<(
+mrpt::utils::CStream& operator<<(
 	mrpt::utils::CStream& out, const mrpt::math::TPose3D& o);
 
-BASE_IMPEXP mrpt::utils::CStream& operator>>(
+mrpt::utils::CStream& operator>>(
 	mrpt::utils::CStream& in, mrpt::math::TSegment2D& s);
-BASE_IMPEXP mrpt::utils::CStream& operator<<(
+mrpt::utils::CStream& operator<<(
 	mrpt::utils::CStream& out, const mrpt::math::TSegment2D& s);
 
-BASE_IMPEXP mrpt::utils::CStream& operator>>(
+mrpt::utils::CStream& operator>>(
 	mrpt::utils::CStream& in, mrpt::math::TLine2D& l);
-BASE_IMPEXP mrpt::utils::CStream& operator<<(
+mrpt::utils::CStream& operator<<(
 	mrpt::utils::CStream& out, const mrpt::math::TLine2D& l);
 
-BASE_IMPEXP mrpt::utils::CStream& operator>>(
+mrpt::utils::CStream& operator>>(
 	mrpt::utils::CStream& in, mrpt::math::TObject2D& o);
-BASE_IMPEXP mrpt::utils::CStream& operator<<(
+mrpt::utils::CStream& operator<<(
 	mrpt::utils::CStream& out, const mrpt::math::TObject2D& o);
 
-BASE_IMPEXP mrpt::utils::CStream& operator>>(
+mrpt::utils::CStream& operator>>(
 	mrpt::utils::CStream& in, mrpt::math::TSegment3D& s);
-BASE_IMPEXP mrpt::utils::CStream& operator<<(
+mrpt::utils::CStream& operator<<(
 	mrpt::utils::CStream& out, const mrpt::math::TSegment3D& s);
 
-BASE_IMPEXP mrpt::utils::CStream& operator>>(
+mrpt::utils::CStream& operator>>(
 	mrpt::utils::CStream& in, mrpt::math::TLine3D& l);
-BASE_IMPEXP mrpt::utils::CStream& operator<<(
+mrpt::utils::CStream& operator<<(
 	mrpt::utils::CStream& out, const mrpt::math::TLine3D& l);
 
-BASE_IMPEXP mrpt::utils::CStream& operator>>(
+mrpt::utils::CStream& operator>>(
 	mrpt::utils::CStream& in, mrpt::math::TPlane& p);
-BASE_IMPEXP mrpt::utils::CStream& operator<<(
+mrpt::utils::CStream& operator<<(
 	mrpt::utils::CStream& out, const mrpt::math::TPlane& p);
 
-BASE_IMPEXP mrpt::utils::CStream& operator>>(
+mrpt::utils::CStream& operator>>(
 	mrpt::utils::CStream& in, mrpt::math::TObject3D& o);
-BASE_IMPEXP mrpt::utils::CStream& operator<<(
+mrpt::utils::CStream& operator<<(
 	mrpt::utils::CStream& out, const mrpt::math::TObject3D& o);
 
-BASE_IMPEXP mrpt::utils::CStream& operator>>(
+mrpt::utils::CStream& operator>>(
 	mrpt::utils::CStream& in, mrpt::math::TTwist2D& o);
-BASE_IMPEXP mrpt::utils::CStream& operator<<(
+mrpt::utils::CStream& operator<<(
 	mrpt::utils::CStream& out, const mrpt::math::TTwist2D& o);
 
-BASE_IMPEXP mrpt::utils::CStream& operator>>(
+mrpt::utils::CStream& operator>>(
 	mrpt::utils::CStream& in, mrpt::math::TTwist3D& o);
-BASE_IMPEXP mrpt::utils::CStream& operator<<(
+mrpt::utils::CStream& operator<<(
 	mrpt::utils::CStream& out, const mrpt::math::TTwist3D& o);
 
 /** @} */  // end of grouping

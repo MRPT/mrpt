@@ -50,13 +50,23 @@ using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace std;
 
-float mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE = 3.0f;
+float POINTSMAPS_3DOBJECT_POINTSIZE_value = 3.0f;
+
+void mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE(float value)
+{
+	POINTSMAPS_3DOBJECT_POINTSIZE_value = value;
+}
+float mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE()
+{
+	return POINTSMAPS_3DOBJECT_POINTSIZE_value;
+}
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CPointsMap, CMetricMap, mrpt::maps)
 
-float CPointsMap::COLOR_3DSCENE_R = 0;
-float CPointsMap::COLOR_3DSCENE_G = 0;
-float CPointsMap::COLOR_3DSCENE_B = 1;
+static mrpt::utils::TColorf COLOR_3DSCENE_value(0, 0, 1);
+
+void CPointsMap::COLOR_3DSCENE(const mrpt::utils::TColorf &value) { COLOR_3DSCENE_value = value; }
+mrpt::utils::TColorf CPointsMap::COLOR_3DSCENE() { return COLOR_3DSCENE_value; }
 
 /*---------------------------------------------------------------
 						Constructor
@@ -796,17 +806,11 @@ void CPointsMap::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
 		mrpt::make_aligned_shared<opengl::CPointCloud>();
 
 	obj->loadFromPointsMap(this);
-	obj->setColor(
-		CPointsMap::COLOR_3DSCENE_R, CPointsMap::COLOR_3DSCENE_G,
-		CPointsMap::COLOR_3DSCENE_B, 1);
-	obj->setPointSize(mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE);
+	obj->setColor(COLOR_3DSCENE_value);
+	obj->setPointSize(POINTSMAPS_3DOBJECT_POINTSIZE_value);
 	obj->enableColorFromZ(true);
 
-	obj->setGradientColors(
-		TColorf(0.0, 0, 0),
-		TColorf(
-			CPointsMap::COLOR_3DSCENE_R, CPointsMap::COLOR_3DSCENE_G,
-			CPointsMap::COLOR_3DSCENE_B));
+	obj->setGradientColors(TColorf(0.0, 0, 0),COLOR_3DSCENE_value);
 
 	outObj->insert(obj);
 }
@@ -1569,12 +1573,13 @@ namespace mrpt
 namespace obs
 {
 // Tricky way to call to a library that depends on us, a sort of "run-time"
-// linking:
-//  ptr_internal_build_points_map_from_scan2D is a functor in "mrpt-obs", set by
-//  "mrpt-maps" at its startup.
-extern void OBS_IMPEXP (*ptr_internal_build_points_map_from_scan2D)(
+// linking: ptr_internal_build_points_map_from_scan2D is a functor in 
+// "mrpt-obs", set by "mrpt-maps" at its startup.
+using scan2pts_functor = void(*)(
 	const mrpt::obs::CObservation2DRangeScan& obs,
 	mrpt::maps::CMetricMap::Ptr& out_map, const void* insertOps);
+
+extern void internal_set_build_points_map_from_scan2D(scan2pts_functor fn);
 }
 }
 
@@ -1598,8 +1603,8 @@ struct TAuxLoadFunctor
 {
 	TAuxLoadFunctor()
 	{
-		mrpt::obs::ptr_internal_build_points_map_from_scan2D =
-			internal_build_points_map_from_scan2D;
+		mrpt::obs::internal_set_build_points_map_from_scan2D(
+			&internal_build_points_map_from_scan2D);
 	}
 };
 

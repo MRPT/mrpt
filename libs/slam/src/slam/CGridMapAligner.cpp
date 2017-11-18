@@ -313,7 +313,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 				CImage img_compose(FEAT_W * 2 + 15, 10 + (5 + FEAT_H) * nF);
 				img_compose.filledRectangle(
 					0, 0, img_compose.getWidth() - 1,
-					img_compose.getHeight() - 1, TColor::black);
+					img_compose.getHeight() - 1, TColor::black());
 
 				img_compose.drawImage(5, 5, im1);
 
@@ -534,10 +534,10 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 
 					// Pick 2 random correspondences:
 					uint32_t idx1, idx2;
-					idx1 = randomGenerator.drawUniform32bit() % nCorrs;
+					idx1 = getRandomGenerator().drawUniform32bit() % nCorrs;
 					do
 					{
-						idx2 = randomGenerator.drawUniform32bit() % nCorrs;
+						idx2 = getRandomGenerator().drawUniform32bit() % nCorrs;
 					} while (idx1 == idx2);  // Avoid a degenerated case!
 
 					// Uniqueness of features:
@@ -904,10 +904,10 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 				printf(
 					"   Largest consensus: %u\n",
 					static_cast<unsigned>(largestConsensusCorrs.size()));
-				CEnhancedMetaFile::LINUX_IMG_WIDTH =
-					m1->getSizeX() + m2->getSizeX() + 50;
-				CEnhancedMetaFile::LINUX_IMG_HEIGHT =
-					max(m1->getSizeY(), m2->getSizeY()) + 50;
+				CEnhancedMetaFile::LINUX_IMG_WIDTH(
+					m1->getSizeX() + m2->getSizeX() + 50);
+				CEnhancedMetaFile::LINUX_IMG_HEIGHT(
+					max(m1->getSizeY(), m2->getSizeY()) + 50);
 
 				for (TMapMatchingsToPoseMode::const_iterator s =
 						 sog_modes.begin();

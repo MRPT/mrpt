@@ -37,7 +37,7 @@ void generateRandomMaskImage(
 	for (unsigned r = 0; r < nrows; r++)
 		for (unsigned c = 0; c < ncols; c++)
 			m(r, c) = static_cast<float>(
-				mrpt::random::randomGenerator.drawUniform(0.0, 3.0));
+				mrpt::random::getRandomGenerator().drawUniform(0.0, 3.0));
 }
 
 double obs3d_test_depth_to_3d(int a, int b)

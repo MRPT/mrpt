@@ -33,15 +33,15 @@ namespace hmtslam
 typedef mrpt::aligned_containers<TPoseID, mrpt::poses::CPose3D>::map_t
 	TMapPoseID2Pose3D;
 
-class HMTSLAM_IMPEXP CHMTSLAM;
-class HMTSLAM_IMPEXP CLSLAM_RBPF_2DLASER;
+class CHMTSLAM;
+class CLSLAM_RBPF_2DLASER;
 
 /** Auxiliary class used in mrpt::slam::CLocalMetricHypothesis for HMT-SLAM;
  * this class keeps the data relative to each local metric particle ("a robot
  * metric path hypothesis" and its associated metric map).
   * \ingroup mrpt_hmtslam_grp
   */
-class HMTSLAM_IMPEXP CLSLAMParticleData : public mrpt::utils::CSerializable
+class CLSLAMParticleData : public mrpt::utils::CSerializable
 {
 	DEFINE_SERIALIZABLE(CLSLAMParticleData)
 
@@ -56,22 +56,20 @@ class HMTSLAM_IMPEXP CLSLAMParticleData : public mrpt::utils::CSerializable
 	mrpt::maps::CMultiMetricMap metricMaps;
 	TMapPoseID2Pose3D robotPoses;
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CLSLAMParticleData, mrpt::utils::CSerializable, HMTSLAM_IMPEXP)
 
 /** This class is used in HMT-SLAM to represent each of the Local Metric
  * Hypotheses (LMHs).
  *   It has a set of particles representing the robot path in nearby poses.
  * \sa CHMTSLAM, CLSLAM_RBPF_2DLASER
  */
-class HMTSLAM_IMPEXP CLocalMetricHypothesis
+class CLocalMetricHypothesis
 	: public mrpt::bayes::CParticleFilterData<CLSLAMParticleData>,
 	  public mrpt::bayes::CParticleFilterDataImpl<
 		  CLocalMetricHypothesis,
 		  mrpt::bayes::CParticleFilterData<CLSLAMParticleData>::CParticleList>,
 	  public mrpt::utils::CSerializable
 {
-	friend class HMTSLAM_IMPEXP CLSLAM_RBPF_2DLASER;
+	friend class CLSLAM_RBPF_2DLASER;
 
 	DEFINE_SERIALIZABLE(CLocalMetricHypothesis)
 
@@ -284,8 +282,6 @@ class HMTSLAM_IMPEXP CLocalMetricHypothesis
 	mutable mrpt::poses::StdVector_CPose2D m_movementDrawMaximumLikelihood;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CLocalMetricHypothesis, mrpt::utils::CSerializable, HMTSLAM_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

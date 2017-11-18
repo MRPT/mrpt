@@ -27,7 +27,7 @@ namespace gui
  * discussion in mrpt::gui::CBaseGUIWindow.
  * \ingroup mrpt_gui_grp
  */
-class GUI_IMPEXP CDisplayWindow : public mrpt::gui::CBaseGUIWindow
+class CDisplayWindow : public mrpt::gui::CBaseGUIWindow
 {
    public:
 	using Ptr = std::shared_ptr<CDisplayWindow>;
@@ -70,13 +70,13 @@ class GUI_IMPEXP CDisplayWindow : public mrpt::gui::CBaseGUIWindow
 	void showImageAndPoints(
 		const mrpt::utils::CImage& img, const mrpt::math::CVectorFloat& x,
 		const mrpt::math::CVectorFloat& y,
-		const mrpt::utils::TColor& color = mrpt::utils::TColor::red,
+		const mrpt::utils::TColor& color = mrpt::utils::TColor::red(),
 		const bool& showNumbers = false);
 	/** \overload */
 	void showImageAndPoints(
 		const mrpt::utils::CImage& img, const std::vector<float>& x,
 		const std::vector<float>& y,
-		const mrpt::utils::TColor& color = mrpt::utils::TColor::red,
+		const mrpt::utils::TColor& color = mrpt::utils::TColor::red(),
 		const bool& showNumbers = false);
 
 	/** Show a given color or grayscale image on the window and print a set of
@@ -88,7 +88,7 @@ class GUI_IMPEXP CDisplayWindow : public mrpt::gui::CBaseGUIWindow
 	template <class FEATURELIST>
 	void showImageAndPoints(
 		const mrpt::utils::CImage& img, const FEATURELIST& list,
-		const mrpt::utils::TColor& color = mrpt::utils::TColor::red,
+		const mrpt::utils::TColor& color = mrpt::utils::TColor::red(),
 		const bool& showIDs = false)
 	{
 		MRPT_START
@@ -107,7 +107,7 @@ class GUI_IMPEXP CDisplayWindow : public mrpt::gui::CBaseGUIWindow
 	template <class FEATURELIST>
 	void showTiledImageAndPoints(
 		const mrpt::utils::CImage& img, const FEATURELIST& list,
-		const mrpt::utils::TColor& color = mrpt::utils::TColor::red)
+		const mrpt::utils::TColor& color = mrpt::utils::TColor::red())
 	{
 		MRPT_START
 		using mrpt::utils::TColor;
@@ -117,10 +117,10 @@ class GUI_IMPEXP CDisplayWindow : public mrpt::gui::CBaseGUIWindow
 		// Print the 4 tile lines
 		unsigned int w = imgColor.getWidth();
 		unsigned int h = imgColor.getHeight();
-		imgColor.line(0, h / 2, w - 1, h / 2, TColor::green);
-		imgColor.line(w / 4, 0, w / 4, h, TColor::green);
-		imgColor.line(w / 2, 0, w / 2, h, TColor::green);
-		imgColor.line(3 * w / 4, 0, 3 * w / 4, h, TColor::green);
+		imgColor.line(0, h / 2, w - 1, h / 2, TColor::green());
+		imgColor.line(w / 4, 0, w / 4, h, TColor::green());
+		imgColor.line(w / 2, 0, w / 2, h, TColor::green());
+		imgColor.line(3 * w / 4, 0, 3 * w / 4, h, TColor::green());
 
 		showImageAndPoints(imgColor, list, color);
 
@@ -138,7 +138,7 @@ class GUI_IMPEXP CDisplayWindow : public mrpt::gui::CBaseGUIWindow
 	void showImagesAndMatchedPoints(
 		const mrpt::utils::CImage& img1, const mrpt::utils::CImage& img2,
 		const MATCHEDLIST& mList,
-		const mrpt::utils::TColor& color = mrpt::utils::TColor::red,
+		const mrpt::utils::TColor& color = mrpt::utils::TColor::red(),
 		bool showNumbers = false)
 	{
 		MRPT_START
@@ -188,7 +188,7 @@ class GUI_IMPEXP CDisplayWindow : public mrpt::gui::CBaseGUIWindow
 	void showImagesAndMatchedPoints(
 		const mrpt::utils::CImage& img1, const mrpt::utils::CImage& img2,
 		const FEATURELIST& leftList, const FEATURELIST& rightList,
-		const mrpt::utils::TColor& color = mrpt::utils::TColor::red)
+		const mrpt::utils::TColor& color = mrpt::utils::TColor::red())
 	{
 		MRPT_START
 

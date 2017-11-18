@@ -12,8 +12,6 @@
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
-#include <mrpt/topography/link_pragmas.h>
-
 namespace mrpt
 {
 namespace topography
@@ -27,7 +25,7 @@ namespace topography
 /** A coordinate that is stored as a simple "decimal" angle in degrees, but can
  * be retrieved/set in the form of DEGREES + arc-MINUTES + arc-SECONDS.
   */
-struct TOPO_IMPEXP TCoords
+struct TCoords
 {
 	// Only keep one of the possible representations:
 	/** Also obtained directly through the double(void) operator using a TCoords
@@ -77,12 +75,12 @@ struct TOPO_IMPEXP TCoords
 	}
 };
 
-bool TOPO_IMPEXP operator==(const TCoords& a, const TCoords& o);
-bool TOPO_IMPEXP operator!=(const TCoords& a, const TCoords& o);
+bool operator==(const TCoords& a, const TCoords& o);
+bool operator!=(const TCoords& a, const TCoords& o);
 
-std::ostream TOPO_IMPEXP& operator<<(std::ostream& out, const TCoords& o);
+std::ostream& operator<<(std::ostream& out, const TCoords& o);
 
-struct TOPO_IMPEXP TEllipsoid
+struct TEllipsoid
 {
 	inline TEllipsoid() : sa(6378137.0), sb(6356752.314245), name("WGS84") {}
 	inline TEllipsoid(
@@ -195,7 +193,7 @@ typedef mrpt::math::TPoint3D TGeocentricCoords;
 
 /**  A set of geodetic coordinates: latitude, longitude and height, defined over
  * a given geoid (typically, WGS84)  */
-struct TOPO_IMPEXP TGeodeticCoords
+struct TGeodeticCoords
 {
 	TGeodeticCoords() : lat(0), lon(0), height(0) {}
 	TGeodeticCoords(const double _lat, const double _lon, const double _height)
@@ -217,13 +215,13 @@ struct TOPO_IMPEXP TGeodeticCoords
 	double height;
 };
 
-bool TOPO_IMPEXP operator==(const TGeodeticCoords& a, const TGeodeticCoords& o);
-bool TOPO_IMPEXP operator!=(const TGeodeticCoords& a, const TGeodeticCoords& o);
+bool operator==(const TGeodeticCoords& a, const TGeodeticCoords& o);
+bool operator!=(const TGeodeticCoords& a, const TGeodeticCoords& o);
 
 /** Parameters for a topographic transfomation
   * \sa TDatum10Params, transform7params
   */
-struct TOPO_IMPEXP TDatum7Params
+struct TDatum7Params
 {
 	/** Deltas (X,Y,Z) */
 	double dX, dY, dZ;
@@ -244,7 +242,7 @@ struct TOPO_IMPEXP TDatum7Params
 	}
 };
 
-struct TOPO_IMPEXP TDatum7Params_TOPCON
+struct TDatum7Params_TOPCON
 {
 	/** Deltas (X,Y,Z) */
 	double dX, dY, dZ;
@@ -277,7 +275,7 @@ struct TOPO_IMPEXP TDatum7Params_TOPCON
 /** Parameters for a topographic transfomation
   * \sa TDatum7Params, transform10params
   */
-struct TOPO_IMPEXP TDatum10Params
+struct TDatum10Params
 {
 	/** Deltas (X,Y,Z) */
 	double dX, dY, dZ;
@@ -304,7 +302,7 @@ struct TOPO_IMPEXP TDatum10Params
 /** Parameters for a topographic transfomation
   * \sa TDatumHelmert3D, transformHelmert2D
   */
-struct TOPO_IMPEXP TDatumHelmert2D
+struct TDatumHelmert2D
 {
 	/** Deltas [X,Y] */
 	double dX, dY;
@@ -322,7 +320,7 @@ struct TOPO_IMPEXP TDatumHelmert2D
 	}
 };
 
-struct TOPO_IMPEXP TDatumHelmert2D_TOPCON
+struct TDatumHelmert2D_TOPCON
 {
 	double a, b, c, d;
 
@@ -336,7 +334,7 @@ struct TOPO_IMPEXP TDatumHelmert2D_TOPCON
 /** Parameters for a topographic transfomation
   * \sa TDatumHelmert2D, transformHelmert3D
   */
-struct TOPO_IMPEXP TDatumHelmert3D
+struct TDatumHelmert3D
 {
 	/** Deltas (X,Y,Z) */
 	double dX, dY, dZ;
@@ -360,7 +358,7 @@ struct TOPO_IMPEXP TDatumHelmert3D
 /** Parameters for a topographic transfomation
   * \sa TDatumHelmert2D, transformHelmert3D
   */
-struct TOPO_IMPEXP TDatumHelmert3D_TOPCON
+struct TDatumHelmert3D_TOPCON
 {
 	double a, b, c, d, e, f, g;
 
@@ -375,7 +373,7 @@ struct TOPO_IMPEXP TDatumHelmert3D_TOPCON
 /** Parameters for a topographic transfomation
   * \sa transform1D
   */
-struct TOPO_IMPEXP TDatum1DTransf
+struct TDatum1DTransf
 {
 	/** Deltas (X,Y,Z) */
 	double dX, dY, DZ;
@@ -393,7 +391,7 @@ struct TOPO_IMPEXP TDatum1DTransf
 /** Parameters for a topographic transfomation
   * \sa transform1D
   */
-struct TOPO_IMPEXP TDatumTransfInterpolation
+struct TDatumTransfInterpolation
 {
 	/** Deltas (X,Y,Z) */
 	double dX, dY;

@@ -34,7 +34,7 @@ std::cout << hist.getBinRatio(0) << std::endl;		// Result: "0.33"
 \endcode
  * \ingroup mrpt_base_grp
  */
-class BASE_IMPEXP CHistogram
+class CHistogram
 {
    private:
 	/** The histogram limits */

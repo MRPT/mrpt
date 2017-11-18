@@ -22,8 +22,8 @@ namespace mrpt
 {
 namespace hmtslam
 {
-class HMTSLAM_IMPEXP CHierarchicalMHMap;
-class HMTSLAM_IMPEXP CHMHMapArc;
+class CHierarchicalMHMap;
+class CHMHMapArc;
 
 /** A class for representing a node in a hierarchical, multi-hypothesis map.
  *   The node itself will be considered only if some given hypothesisID matchs
@@ -33,11 +33,11 @@ class HMTSLAM_IMPEXP CHMHMapArc;
  * \sa CHierarchicalMHMap,CHMHMapArc
   * \ingroup mrpt_hmtslam_grp
  */
-class HMTSLAM_IMPEXP CHMHMapNode : public mrpt::utils::CSerializable
+class CHMHMapNode : public mrpt::utils::CSerializable
 {
-	friend class HMTSLAM_IMPEXP CHierarchicalMHMap;
-	friend class HMTSLAM_IMPEXP CHierarchicalMHMapPartition;
-	friend class HMTSLAM_IMPEXP CHMHMapArc;
+	friend class CHierarchicalMHMap;
+	friend class CHierarchicalMHMapPartition;
+	friend class CHMHMapArc;
 
 	DEFINE_SERIALIZABLE(CHMHMapNode)
 
@@ -137,8 +137,6 @@ class HMTSLAM_IMPEXP CHMHMapNode : public mrpt::utils::CSerializable
 		const TNodeID& otherArea, const THypothesisID& hyp_id) const;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CHMHMapNode, mrpt::utils::CSerializable, HMTSLAM_IMPEXP)
 
 /** A map between node IDs and nodes (used in HMT-SLAM).
   * \sa CHMTSLAM

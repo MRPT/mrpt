@@ -9,7 +9,6 @@
 #ifndef CTICTAC_H
 #define CTICTAC_H
 
-#include <mrpt/base/link_pragmas.h>
 #include <type_traits>
 
 namespace mrpt
@@ -21,7 +20,7 @@ namespace utils
  *  \note The class is named after the Spanish equivalent of "Tic-Toc" ;-)
  * \ingroup mrpt_base_grp
  */
-class BASE_IMPEXP CTicTac
+class CTicTac
 {
    public:
 	/** Default constructor. Implicitly calls Tic() */

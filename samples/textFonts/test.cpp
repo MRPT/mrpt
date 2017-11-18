@@ -26,35 +26,35 @@ void TestFonts()
 
 	int y = 10;
 	img.selectTextFont("5x7");
-	img.textOut(10, y, "Hello World! with font \"5x7\"", TColor::white);
+	img.textOut(10, y, "Hello World! with font \"5x7\"", TColor::white());
 	y += 20;
 
 	img.selectTextFont("6x13");
-	img.textOut(10, y, "Hello World! with font \"6x13\"", TColor::white);
+	img.textOut(10, y, "Hello World! with font \"6x13\"", TColor::white());
 	y += 20;
 
 	img.selectTextFont("6x13B");
-	img.textOut(10, y, "Hello World! with font \"6x13B\"", TColor::white);
+	img.textOut(10, y, "Hello World! with font \"6x13B\"", TColor::white());
 	y += 20;
 
 	img.selectTextFont("6x13O");
-	img.textOut(10, y, "Hello World! with font \"6x13O\"", TColor::white);
+	img.textOut(10, y, "Hello World! with font \"6x13O\"", TColor::white());
 	y += 20;
 
 	img.selectTextFont("9x15");
-	img.textOut(10, y, "Hello World! with font \"9x15\"", TColor::white);
+	img.textOut(10, y, "Hello World! with font \"9x15\"", TColor::white());
 	y += 20;
 
 	img.selectTextFont("9x15B");
-	img.textOut(10, y, "Hello World! with font \"9x15B\"", TColor::white);
+	img.textOut(10, y, "Hello World! with font \"9x15B\"", TColor::white());
 	y += 20;
 
 	img.selectTextFont("18x18ja");
-	img.textOut(10, y, "MRPTのフォントは易しいです!", TColor::white);
+	img.textOut(10, y, "MRPTのフォントは易しいです!", TColor::white());
 	y += 20;
 
 	img.selectTextFont("10x20");
-	img.textOut(10, y, "Hello World! with font \"10x20\"", TColor::white);
+	img.textOut(10, y, "Hello World! with font \"10x20\"", TColor::white());
 	y += 20;
 
 	CDisplayWindow win1("MRPT - Demo of text fonts render");

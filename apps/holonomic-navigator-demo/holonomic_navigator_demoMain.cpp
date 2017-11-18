@@ -460,7 +460,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(
 		mrpt::opengl::CCylinder::Ptr obj =
 			mrpt::make_aligned_shared<mrpt::opengl::CCylinder>(
 				0.2f, 0.1f, 0.9f);
-		obj->setColor_u8(TColor::red);
+		obj->setColor_u8(TColor::red());
 		gl_robot->insert(obj);
 	}
 	openGLSceneRef->insert(gl_robot);

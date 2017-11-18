@@ -15,14 +15,6 @@
 
 using namespace mrpt::utils;
 
-// Static colors:
-TColor TColor::red = TColor(255, 0, 0);
-TColor TColor::green = TColor(0, 255, 0);
-TColor TColor::blue = TColor(0, 0, 255);
-TColor TColor::black = TColor(0, 0, 0);
-TColor TColor::white = TColor(255, 255, 255);
-TColor TColor::gray = TColor(127, 127, 127);
-
 TColor mrpt::utils::operator+(const TColor& first, const TColor& second)
 {
 	TColor ret;

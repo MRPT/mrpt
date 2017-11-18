@@ -14,7 +14,6 @@
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/opengl/opengl_fonts.h>
-#include <mrpt/opengl/link_pragmas.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <deque>
 
@@ -41,7 +40,7 @@ class CSetOfObjects;
   *  \sa opengl::COpenGLScene, mrpt::opengl
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CRenderizable : public mrpt::utils::CSerializable
+class CRenderizable : public mrpt::utils::CSerializable
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CRenderizable)
 
@@ -339,16 +338,13 @@ class OPENGL_IMPEXP CRenderizable : public mrpt::utils::CSerializable
 };
 /** A list of objects pointers, automatically managing memory free at
  * destructor, and managing copies correctly. */
-using CListOpenGLObjects = std::deque<CRenderizable::Ptr>
-
-	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-		CRenderizable, mrpt::utils::CSerializable, OPENGL_IMPEXP);
+using CListOpenGLObjects = std::deque<CRenderizable::Ptr>;
 
 /** Applies a mrpt::poses::CPose3D transformation to the object. Note that this
  * method doesn't <i>set</i> the pose to the given value, but <i>combines</i> it
  * with the existing one.
   * \sa setPose */
-OPENGL_IMPEXP CRenderizable::Ptr& operator<<(
+CRenderizable::Ptr& operator<<(
 	CRenderizable::Ptr& r, const mrpt::poses::CPose3D& p);
 
 }  // end namespace

@@ -18,8 +18,6 @@
 #include <octomap/octomap.h>
 #include <mrpt/obs/obs_frwds.h>
 
-#include <mrpt/maps/link_pragmas.h>
-
 namespace mrpt
 {
 namespace maps
@@ -32,8 +30,7 @@ namespace maps
  * \sa CMetricMap, the example in "MRPT/samples/octomap_simple"
  * \ingroup mrpt_maps_grp
  */
-class MAPS_IMPEXP COctoMap
-	: public COctoMapBase<octomap::OcTree, octomap::OcTreeNode>
+class COctoMap : public COctoMapBase<octomap::OcTree, octomap::OcTreeNode>
 {
 	DEFINE_SERIALIZABLE(COctoMap)
 
@@ -46,21 +43,20 @@ class MAPS_IMPEXP COctoMap
 	virtual void getAsOctoMapVoxels(
 		mrpt::opengl::COctoMapVoxels& gl_obj) const override;
 
-	MAP_DEFINITION_START(COctoMap, MAPS_IMPEXP)
+	MAP_DEFINITION_START(COctoMap)
 	/** The finest resolution of the octomap (default: 0.10 meters) */
 	double resolution;
 	/** Observations insertion options */
 	mrpt::maps::COctoMap::TInsertionOptions insertionOpts;
 	/** Probabilistic observation likelihood options */
 	mrpt::maps::COctoMap::TLikelihoodOptions likelihoodOpts;
-	MAP_DEFINITION_END(COctoMap, MAPS_IMPEXP)
+	MAP_DEFINITION_END(COctoMap, )
 
    protected:
 	bool internal_insertObservation(
 		const mrpt::obs::CObservation* obs,
 		const mrpt::poses::CPose3D* robotPose) override;
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(COctoMap, CMetricMap, MAPS_IMPEXP)
 }  // End of namespace
 
 }  // End of namespace

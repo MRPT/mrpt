@@ -26,26 +26,25 @@ namespace compress
 namespace zip
 {
 /** Compress an array of bytes into another one. */
-void BASE_IMPEXP compress(
+void compress(
 	void* inData, size_t inDataSize, std::vector<unsigned char>& outData);
 
 /** Compress an array of bytes into another one. */
-void BASE_IMPEXP compress(
+void compress(
 	const std::vector<unsigned char>& inData,
 	std::vector<unsigned char>& outData);
 
 /** Compress an array of bytes and write the result into a stream. */
-void BASE_IMPEXP
-	compress(void* inData, size_t inDataSize, mrpt::utils::CStream& out);
+void compress(void* inData, size_t inDataSize, mrpt::utils::CStream& out);
 
 /** Compress an array of bytes and write the result into a stream. */
-void BASE_IMPEXP compress(
+void compress(
 	const std::vector<unsigned char>& inData, mrpt::utils::CStream& out);
 
 /** Decompress an array of bytes into another one
   * \exception std::exception If the apriori estimated decompressed size is not
  * enought */
-void BASE_IMPEXP decompress(
+void decompress(
 	void* inData, size_t inDataSize, std::vector<unsigned char>& outData,
 	size_t outDataEstimatedSize);
 
@@ -53,7 +52,7 @@ void BASE_IMPEXP decompress(
   * \exception std::exception If the apriori estimated decompressed size is not
  * enought
   */
-void BASE_IMPEXP decompress(
+void decompress(
 	void* inData, size_t inDataSize, void* outData, size_t outDataBufferSize,
 	size_t& outDataActualSize);
 
@@ -61,7 +60,7 @@ void BASE_IMPEXP decompress(
   * \exception std::exception If the apriori estimated decompressed size is not
  * enought
   */
-void BASE_IMPEXP decompress(
+void decompress(
 	mrpt::utils::CStream& inStream, size_t inDataSize, void* outData,
 	size_t outDataBufferSize, size_t& outDataActualSize);
 
@@ -70,15 +69,14 @@ void BASE_IMPEXP decompress(
   * \return true on success, false on error.
   * \sa compress_gz_file, decompress_gz_data_block
   */
-bool BASE_IMPEXP
-	decompress_gz_file(const std::string& file_path, vector_byte& buffer);
+bool decompress_gz_file(const std::string& file_path, vector_byte& buffer);
 
 /** Compress a memory buffer into a gzip file (xxxx.gz).
   *  compress_level: 0=no compression, 1=best speed, 9=maximum
   * \return true on success, false on error.
   * \sa decompress_gz_file, compress_gz_data_block
   */
-bool BASE_IMPEXP compress_gz_file(
+bool compress_gz_file(
 	const std::string& file_path, const vector_byte& buffer,
 	const int compress_level = 9);
 
@@ -90,7 +88,7 @@ bool BASE_IMPEXP compress_gz_file(
  * error is reported.
   * \sa compress_gz_file, de
   */
-bool BASE_IMPEXP compress_gz_data_block(
+bool compress_gz_data_block(
 	const vector_byte& in_data, vector_byte& out_gz_data,
 	const int compress_level = 9);
 
@@ -100,7 +98,7 @@ bool BASE_IMPEXP compress_gz_data_block(
   * \return true on success, false on error.
   * \sa decompress_gz_file, compress_gz_data_block
   */
-bool BASE_IMPEXP decompress_gz_data_block(
+bool decompress_gz_data_block(
 	const vector_byte& in_gz_data, vector_byte& out_data);
 
 }  // End of namespace

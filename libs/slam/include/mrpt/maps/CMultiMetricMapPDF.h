@@ -22,8 +22,6 @@
 
 #include <mrpt/slam/PF_implementations_data.h>
 
-#include <mrpt/slam/link_pragmas.h>
-
 namespace mrpt
 {
 namespace slam
@@ -35,7 +33,7 @@ namespace maps
 /** Auxiliary class used in mrpt::maps::CMultiMetricMapPDF
  * \ingroup mrpt_slam_grp
   */
-class SLAM_IMPEXP CRBPFParticleData : public mrpt::utils::CSerializable
+class CRBPFParticleData : public mrpt::utils::CSerializable
 {
 	DEFINE_SERIALIZABLE(CRBPFParticleData)
    public:
@@ -48,8 +46,6 @@ class SLAM_IMPEXP CRBPFParticleData : public mrpt::utils::CSerializable
 	CMultiMetricMap mapTillNow;
 	std::deque<mrpt::math::TPose3D> robotPath;
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CRBPFParticleData, mrpt::utils::CSerializable, SLAM_IMPEXP)
 
 /** Declares a class that represents a Rao-Blackwellized set of particles for
  * solving the SLAM problem (This class is the base of RBPF-SLAM applications).
@@ -59,7 +55,7 @@ DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
  * \sa mrpt::slam::CMetricMapBuilderRBPF
  * \ingroup metric_slam_grp
  */
-class SLAM_IMPEXP CMultiMetricMapPDF
+class CMultiMetricMapPDF
 	: public mrpt::utils::CSerializable,
 	  public mrpt::bayes::CParticleFilterData<CRBPFParticleData>,
 	  public mrpt::bayes::CParticleFilterDataImpl<
@@ -112,7 +108,7 @@ class SLAM_IMPEXP CMultiMetricMapPDF
 	 *    when running a particle filter.
 	 * \sa prediction_and_update
 	 */
-	struct SLAM_IMPEXP TPredictionParams : public utils::CLoadableOptions
+	struct TPredictionParams : public utils::CLoadableOptions
 	{
 		/** Default settings method */
 		TPredictionParams();
@@ -281,8 +277,6 @@ class SLAM_IMPEXP CMultiMetricMapPDF
 	/** @} */
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CMultiMetricMapPDF, mrpt::utils::CSerializable, SLAM_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

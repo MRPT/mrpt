@@ -115,7 +115,7 @@ enum TConstructorFlags_CImage
  *mrpt::vision::CImagePyramid, CSerializable, CCanvas
  * \ingroup mrpt_base_grp
  */
-class BASE_IMPEXP CImage : public mrpt::utils::CSerializable, public CCanvas
+class CImage : public mrpt::utils::CSerializable, public CCanvas
 {
 	DEFINE_SERIALIZABLE(CImage)
 
@@ -754,7 +754,7 @@ class BASE_IMPEXP CImage : public mrpt::utils::CSerializable, public CCanvas
 	  *   An image becomes of type "external storage" only through calling
 	 * setExternalStorage. This property remains after serializing the object.
 	  *   File names can be absolute, or relative to the
-	 * CImage::IMAGES_PATH_BASE directory. Filenames staring with "X:\" or "/"
+	 * CImage::getImagesPathBase() directory. Filenames staring with "X:\" or "/"
 	 * are considered absolute paths.
 	  *   By calling this method the current contents of the image are NOT saved
 	 * to that file, because this method can be also called
@@ -773,7 +773,8 @@ class BASE_IMPEXP CImage : public mrpt::utils::CSerializable, public CCanvas
 	void setExternalStorage(const std::string& fileName) noexcept;
 
 	/** By default, "."  \sa setExternalStorage */
-	static std::string IMAGES_PATH_BASE;
+	static const std::string &getImagesPathBase();
+	static void setImagesPathBase(const std::string &path);
 
 	/** See setExternalStorage(). */
 	bool isExternallyStored() const noexcept { return m_imgIsExternalStorage; }
@@ -1103,8 +1104,6 @@ class BASE_IMPEXP CImage : public mrpt::utils::CSerializable, public CCanvas
 	void makeSureImageIsLoaded() const;
 
 };  // End of class
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(CImage, mrpt::utils::CSerializable)
-
 }  // end of namespace utils
 }  // end of namespace mrpt
 

@@ -21,7 +21,7 @@ namespace mrpt
 {
 namespace obs
 {
-struct OBS_IMPEXP TStereoImageFeatures
+struct TStereoImageFeatures
 {
 	std::pair<mrpt::utils::TPixelCoordf, mrpt::utils::TPixelCoordf> pixels;
 	unsigned int ID;
@@ -36,7 +36,7 @@ struct OBS_IMPEXP TStereoImageFeatures
  * \sa CObservation
  * \ingroup mrpt_obs_grp
  */
-class OBS_IMPEXP CObservationStereoImagesFeatures : public CObservation
+class CObservationStereoImagesFeatures : public CObservation
 {
 	DEFINE_SERIALIZABLE(CObservationStereoImagesFeatures)
 
@@ -133,8 +133,6 @@ class OBS_IMPEXP CObservationStereoImagesFeatures : public CObservation
 		cameraPoseOnRobot = newSensorPose;
 	}
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CObservationStereoImagesFeatures, CObservation, OBS_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

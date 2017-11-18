@@ -51,7 +51,7 @@ namespace opengl
   *
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CFrustum : public CRenderizableDisplayList
+class CFrustum : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CFrustum)
 
@@ -151,8 +151,6 @@ class OPENGL_IMPEXP CFrustum : public CRenderizableDisplayList
 	/** Destructor  */
 	virtual ~CFrustum() {}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CFrustum, CRenderizableDisplayList, OPENGL_IMPEXP)
 }
 }
 #endif

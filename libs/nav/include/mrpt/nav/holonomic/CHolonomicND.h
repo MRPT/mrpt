@@ -52,7 +52,7 @@ class CLogFileRecord_ND;
  *
  *  \sa CAbstractHolonomicReactiveMethod,CReactiveNavigationSystem
  */
-class NAV_IMPEXP CHolonomicND : public CAbstractHolonomicReactiveMethod
+class CHolonomicND : public CAbstractHolonomicReactiveMethod
 {
 	DEFINE_SERIALIZABLE(CHolonomicND)
    public:
@@ -91,7 +91,7 @@ class NAV_IMPEXP CHolonomicND : public CAbstractHolonomicReactiveMethod
 		mrpt::utils::CConfigFileBase& c) const override;  // See base class docs
 
 	/** Algorithm options */
-	struct NAV_IMPEXP TOptions : public mrpt::utils::CLoadableOptions
+	struct TOptions : public mrpt::utils::CLoadableOptions
 	{
 		double TOO_CLOSE_OBSTACLE, WIDE_GAP_SIZE_PERCENT,
 			RISK_EVALUATION_SECTORS_PERCENT;
@@ -157,14 +157,12 @@ class NAV_IMPEXP CHolonomicND : public CAbstractHolonomicReactiveMethod
 		const float TargetDist, std::vector<double>& out_gaps_evaluation);
 
 };  // end of CHolonomicND
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CHolonomicND, CAbstractHolonomicReactiveMethod, NAV_IMPEXP)
 
 /** A class for storing extra information about the execution of
  *    CHolonomicND navigation.
  * \sa CHolonomicND, CHolonomicLogFileRecord
  */
-class NAV_IMPEXP CLogFileRecord_ND : public CHolonomicLogFileRecord
+class CLogFileRecord_ND : public CHolonomicLogFileRecord
 {
 	DEFINE_SERIALIZABLE(CLogFileRecord_ND)
 
@@ -178,8 +176,6 @@ class NAV_IMPEXP CLogFileRecord_ND : public CHolonomicLogFileRecord
 	double riskEvaluation;
 	CHolonomicND::TSituations situation;
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CLogFileRecord_ND, CHolonomicLogFileRecord, NAV_IMPEXP)
 
 /** @} */
 }  // end namespace

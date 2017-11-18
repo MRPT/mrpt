@@ -26,7 +26,7 @@ namespace obs
  * capable of reading this kind of observations.
  * \ingroup mrpt_obs_grp
  */
-class OBS_IMPEXP CObservationWirelessPower : public CObservation
+class CObservationWirelessPower : public CObservation
 {
 	DEFINE_SERIALIZABLE(CObservationWirelessPower)
 
@@ -53,8 +53,6 @@ class OBS_IMPEXP CObservationWirelessPower : public CObservation
 		std::ostream& o) const override;  // See base class docs
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CObservationWirelessPower, CObservation, OBS_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

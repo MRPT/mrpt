@@ -18,8 +18,6 @@
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/obs/obs_frwds.h>
 
-#include <mrpt/maps/link_pragmas.h>
-
 namespace mrpt
 {
 namespace maps

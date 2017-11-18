@@ -749,7 +749,7 @@ TEST_F(Pose3DQuatTests, InvComposePoint_vs_CPose3D)
 	for (size_t i = 0; i < 10; i++)
 	{
 		std::vector<double> v(9);
-		mrpt::random::randomGenerator.drawGaussian1DVector(v, 0, 1);
+		mrpt::random::getRandomGenerator().drawGaussian1DVector(v, 0, 1);
 		test_invComposePoint_vs_CPose3D(
 			v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8]);
 	}

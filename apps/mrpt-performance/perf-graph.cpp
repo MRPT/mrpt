@@ -72,7 +72,7 @@ double graphs_dijkstra(int nNodes, int _N)
 {
 	const long N = _N;
 
-	randomGenerator.randomize(111);
+	getRandomGenerator().randomize(111);
 	// Generate random graph:
 	typedef mrpt::graphs::CNetworkOfPoses<EDGE_TYPE, MAPS_IMPLEMENTATION>
 		graph_t;
@@ -82,7 +82,7 @@ double graphs_dijkstra(int nNodes, int _N)
 		for (unsigned int i = 0; i < (unsigned int)nNodes; i++)
 		{
 			size_t nEdges =
-				1 + (mrpt::random::randomGenerator.drawUniform32bit() %
+				1 + (mrpt::random::getRandomGenerator().drawUniform32bit() %
 					 int(edge_node_ratio - 1));
 			for (TNodeID k = 0; k < nEdges; k++)
 			{
@@ -92,7 +92,7 @@ double graphs_dijkstra(int nNodes, int _N)
 				{
 					while (dest == i && dest != i + 1)  // Avoid self-loops!
 						dest =
-							mrpt::random::randomGenerator.drawUniform32bit() %
+							mrpt::random::getRandomGenerator().drawUniform32bit() %
 							nNodes;
 				}
 				gs.insertEdge(i, dest, EDGE_TYPE());
@@ -119,7 +119,7 @@ double graphs_dijkstra(int nNodes, int _N)
 // ------------------------------------------------------
 void register_tests_graph()
 {
-	randomGenerator.randomize(1234);
+	getRandomGenerator().randomize(1234);
 
 	lstTests.push_back(
 		TestData(

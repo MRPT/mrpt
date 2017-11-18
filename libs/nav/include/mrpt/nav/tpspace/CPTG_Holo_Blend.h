@@ -25,7 +25,7 @@ namespace nav
  * \note [New in MRPT 1.5.0]
  *  \ingroup nav_tpspace
  */
-class NAV_IMPEXP CPTG_Holo_Blend : public CPTG_RobotShape_Circular
+class CPTG_Holo_Blend : public CPTG_RobotShape_Circular
 {
 	DEFINE_SERIALIZABLE(CPTG_Holo_Blend)
    public:
@@ -114,7 +114,5 @@ class NAV_IMPEXP CPTG_Holo_Blend : public CPTG_RobotShape_Circular
 	static double calc_trans_distance_t_below_Tramp_abc(
 		double t, double a, double b, double c);
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CPTG_Holo_Blend, CParameterizedTrajectoryGenerator, NAV_IMPEXP)
 }
 }

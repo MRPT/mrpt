@@ -19,7 +19,6 @@
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/utils/PLY_import_export.h>
 #include <mrpt/obs/obs_frwds.h>
-#include <mrpt/maps/link_pragmas.h>
 #include <mrpt/utils/adapters.h>
 
 // Add for declaration of mexplus::from template specialization
@@ -61,10 +60,10 @@ struct pointmap_traits;
  * \sa CMetricMap, CPoint, mrpt::utils::CSerializable
   * \ingroup mrpt_maps_grp
  */
-class MAPS_IMPEXP CPointsMap : public CMetricMap,
-							   public mrpt::math::KDTreeCapable<CPointsMap>,
-							   public mrpt::utils::PLY_Importer,
-							   public mrpt::utils::PLY_Exporter
+class CPointsMap : public CMetricMap,
+				   public mrpt::math::KDTreeCapable<CPointsMap>,
+				   public mrpt::utils::PLY_Importer,
+				   public mrpt::utils::PLY_Exporter
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CPointsMap)
 	// This must be added for declaration of MEX-related functions
@@ -73,7 +72,7 @@ class MAPS_IMPEXP CPointsMap : public CMetricMap,
    protected:
 	/** Helper struct used for \a internal_loadFromRangeScan2D_prepareOneRange()
 	 */
-	struct MAPS_IMPEXP TLaserRange2DInsertContext
+	struct TLaserRange2DInsertContext
 	{
 		TLaserRange2DInsertContext(
 			const mrpt::obs::CObservation2DRangeScan& _rangeScan)
@@ -91,7 +90,7 @@ class MAPS_IMPEXP CPointsMap : public CMetricMap,
 
 	/** Helper struct used for \a internal_loadFromRangeScan3D_prepareOneRange()
 	 */
-	struct MAPS_IMPEXP TLaserRange3DInsertContext
+	struct TLaserRange3DInsertContext
 	{
 		TLaserRange3DInsertContext(
 			const mrpt::obs::CObservation3DRangeScan& _rangeScan)
@@ -202,7 +201,7 @@ class MAPS_IMPEXP CPointsMap : public CMetricMap,
 	 * process.
 	 * \sa CObservation::insertIntoPointsMap
 	 */
-	struct MAPS_IMPEXP TInsertionOptions : public utils::CLoadableOptions
+	struct TInsertionOptions : public utils::CLoadableOptions
 	{
 		/** Initilization of default parameters */
 		TInsertionOptions();
@@ -260,7 +259,7 @@ class MAPS_IMPEXP CPointsMap : public CMetricMap,
 	 * derived classes.
 	 * \sa CObservation::computeObservationLikelihood
 	 */
-	struct MAPS_IMPEXP TLikelihoodOptions : public utils::CLoadableOptions
+	struct TLikelihoodOptions : public utils::CLoadableOptions
 	{
 		/** Initilization of default parameters
 		 */
@@ -831,8 +830,7 @@ class MAPS_IMPEXP CPointsMap : public CMetricMap,
 	/** STL-like method to check whether the map is empty: */
 	inline bool empty() const { return isEmpty(); }
 	/** Returns a 3D object representing the map.
-	  *  The color of the points is given by the static variables:
-	 * COLOR_3DSCENE_R,COLOR_3DSCENE_G,COLOR_3DSCENE_B
+	  *  The color of the points is controlled by COLOR_3DSCENE()
 	  * \sa mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE
 	  */
 	virtual void getAs3DObject(
@@ -937,11 +935,9 @@ class MAPS_IMPEXP CPointsMap : public CMetricMap,
 
 	/** @} */
 
-	/** The color [0,1] of points when extracted from getAs3DObject
-	 * (default=blue) */
-	static float COLOR_3DSCENE_R;
-	static float COLOR_3DSCENE_G;
-	static float COLOR_3DSCENE_B;
+	/** The color of points in getAs3DObject() (default=blue) */
+	static void COLOR_3DSCENE(const mrpt::utils::TColorf &value);
+	static mrpt::utils::TColorf COLOR_3DSCENE();
 
 	// See docs in base class
 	virtual double internal_computeObservationLikelihood(
@@ -1153,8 +1149,6 @@ class MAPS_IMPEXP CPointsMap : public CMetricMap,
 	friend struct detail::pointmap_traits;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CPointsMap, CMetricMap, MAPS_IMPEXP)
 
 }  // End of namespace
 
@@ -1164,7 +1158,8 @@ namespace global_settings
   * Affects to:
   *		- mrpt::maps::CPointsMap and all its children classes.
   */
-extern MAPS_IMPEXP float POINTSMAPS_3DOBJECT_POINTSIZE;
+void POINTSMAPS_3DOBJECT_POINTSIZE(float value);
+float POINTSMAPS_3DOBJECT_POINTSIZE();
 }
 
 namespace utils

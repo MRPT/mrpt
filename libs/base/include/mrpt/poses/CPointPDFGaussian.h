@@ -22,7 +22,7 @@ namespace poses
  * \sa CPointPDF
  * \ingroup poses_pdf_grp
  */
-class BASE_IMPEXP CPointPDFGaussian : public CPointPDF
+class CPointPDFGaussian : public CPointPDF
 {
 	DEFINE_SERIALIZABLE(CPointPDFGaussian)
 
@@ -156,8 +156,6 @@ class BASE_IMPEXP CPointPDFGaussian : public CPointPDF
 		const CPointPDFGaussian& other, bool only_2D = false) const;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(CPointPDFGaussian, CPointPDF)
-
 }  // End of namespace
 }  // End of namespace
 

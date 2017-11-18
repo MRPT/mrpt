@@ -35,7 +35,7 @@ namespace opengl
   *  \sa CText3D
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CText : public CRenderizable
+class CText : public CRenderizable
 {
 	DEFINE_SERIALIZABLE(CText)
    protected:
@@ -73,8 +73,6 @@ class OPENGL_IMPEXP CText : public CRenderizable
 	/** Private, virtual destructor: only can be deleted from smart pointers */
 	virtual ~CText();
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CText, CRenderizable, OPENGL_IMPEXP)
 
 }  // end namespace
 

@@ -18,7 +18,7 @@ namespace kinematics
 *
 * \ingroup mrpt_kinematics_grp
 */
-class KINEMATICS_IMPEXP CVehicleVelCmd_Holo : public CVehicleVelCmd
+class CVehicleVelCmd_Holo : public CVehicleVelCmd
 {
 	DEFINE_SERIALIZABLE(CVehicleVelCmd_Holo)
    public:
@@ -50,8 +50,6 @@ class KINEMATICS_IMPEXP CVehicleVelCmd_Holo : public CVehicleVelCmd
 		const mrpt::kinematics::CVehicleVelCmd& prev_vel_cmd, const double beta,
 		const TVelCmdParams& params) override;
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CVehicleVelCmd_Holo, CVehicleVelCmd, KINEMATICS_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

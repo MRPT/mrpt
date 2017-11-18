@@ -23,21 +23,23 @@ namespace utils
  * instead.
   * \ingroup mrpt_base_grp
   */
-class BASE_IMPEXP CEnhancedMetaFile : public CCanvas
+class CEnhancedMetaFile : public CCanvas
 {
    private:
 	void_ptr_noncopy m_hdc;
 	int m_scale;
-	void_ptr_noncopy m_hFont;
+	void_ptr_noncopy m_hFont{ nullptr };
 	std::string m_targetFile;
 
    public:
 	/** In Linux, the size of the bitmap image that emulates the EMF
 	 * (Default:800) */
-	static int LINUX_IMG_WIDTH;
+	static void LINUX_IMG_WIDTH(int value);
+	static int LINUX_IMG_WIDTH();
 	/** In Linux, the size of the bitmap image that emulates the EMF
 	 * (Default:600) */
-	static int LINUX_IMG_HEIGHT;
+	static void LINUX_IMG_HEIGHT(int value);
+	static int LINUX_IMG_HEIGHT();
 
 	/** Constructor
 	  *  \param targetFileName This file will be created and the EMF saved

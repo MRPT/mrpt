@@ -28,7 +28,7 @@ namespace opengl
   *
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CAxis : public CRenderizableDisplayList
+class CAxis : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CAxis)
    protected:
@@ -85,8 +85,6 @@ class OPENGL_IMPEXP CAxis : public CRenderizableDisplayList
 	/** Private, virtual destructor: only can be deleted from smart pointers */
 	virtual ~CAxis() {}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CAxis, CRenderizableDisplayList, OPENGL_IMPEXP)
 
 }  // end namespace
 }  // End of namespace

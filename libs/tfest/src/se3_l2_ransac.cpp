@@ -80,7 +80,7 @@ bool tfest::se3_l2_robust(
 		// Generate maybe inliers
 		vector_int rub, mbSet, cSet;
 		mrpt::math::linspace((int)0, (int)N - 1, (int)N, rub);
-		randomGenerator.permuteVector(rub, mbSet);
+		getRandomGenerator().permuteVector(rub, mbSet);
 
 		// Compute first inliers output
 		TMatchingPairList mbInliers;

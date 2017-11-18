@@ -24,8 +24,6 @@
 #include <mrpt/obs/obs_frwds.h>
 #include <mrpt/utils/TEnumType.h>
 
-#include <mrpt/maps/link_pragmas.h>
-
 #include <mrpt/config.h>
 #if (                                                \
 	!defined(OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS) &&   \
@@ -63,12 +61,12 @@ namespace maps
  *
  * \ingroup mrpt_maps_grp
  **/
-class MAPS_IMPEXP COccupancyGridMap2D : public CMetricMap,
+class COccupancyGridMap2D : public CMetricMap,
 // Inherit from the corresponding specialization of CLogOddsGridMap2D<>:
 #ifdef OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS
-										public CLogOddsGridMap2D<int8_t>
+							public CLogOddsGridMap2D<int8_t>
 #else
-										public CLogOddsGridMap2D<int16_t>
+							public CLogOddsGridMap2D<int16_t>
 #endif
 {
 	DEFINE_SERIALIZABLE(COccupancyGridMap2D)
@@ -102,7 +100,7 @@ class MAPS_IMPEXP COccupancyGridMap2D : public CMetricMap,
 	/** Frees the dynamic memory buffers of map. */
 	void freeMap();
 	/** Lookup tables for log-odds */
-	static CLogOddsGridMapLUT<cellType> m_logodd_lut;
+	static CLogOddsGridMapLUT<cellType> & get_logodd_lut();
 
 	/** Store of cell occupancy values. Order: row by row, from left to right */
 	std::vector<cellType> map;
@@ -228,7 +226,7 @@ class MAPS_IMPEXP COccupancyGridMap2D : public CMetricMap,
 
 	/** An internal structure for storing data related to counting the new
 	 * information apported by some observation */
-	struct MAPS_IMPEXP TUpdateCellsInfoChangeOnly
+	struct TUpdateCellsInfoChangeOnly
 	{
 		TUpdateCellsInfoChangeOnly(
 			bool enabled = false, double I_change = 0, int cellsUpdated = 0)
@@ -352,16 +350,16 @@ class MAPS_IMPEXP COccupancyGridMap2D : public CMetricMap,
 
 	/** Scales an integer representation of the log-odd into a real valued
 	 * probability in [0,1], using p=exp(l)/(1+exp(l))  */
-	static inline float l2p(const cellType l) { return m_logodd_lut.l2p(l); }
+	static inline float l2p(const cellType l) { return get_logodd_lut().l2p(l); }
 	/** Scales an integer representation of the log-odd into a linear scale
 	 * [0,255], using p=exp(l)/(1+exp(l)) */
 	static inline uint8_t l2p_255(const cellType l)
 	{
-		return m_logodd_lut.l2p_255(l);
+		return get_logodd_lut().l2p_255(l);
 	}
 	/** Scales a real valued probability in [0,1] to an integer representation
 	 * of: log(p)-log(1-p)  in the valid range of cellType */
-	static inline cellType p2l(const float p) { return m_logodd_lut.p2l(p); }
+	static inline cellType p2l(const float p) { return get_logodd_lut().p2l(p); }
 	/** Change the contents [0,1] of a cell, given its index */
 	inline void setCell(int x, int y, float value)
 	{
@@ -458,7 +456,7 @@ class MAPS_IMPEXP COccupancyGridMap2D : public CMetricMap,
 	void copyMapContentFrom(const COccupancyGridMap2D& otherMap);
 
 	/** Used for returning entropy related information \sa computeEntropy */
-	struct MAPS_IMPEXP TEntropyInfo
+	struct TEntropyInfo
 	{
 		TEntropyInfo()
 			: H(0),
@@ -492,7 +490,7 @@ class MAPS_IMPEXP COccupancyGridMap2D : public CMetricMap,
 	/** With this struct options are provided to the observation insertion
 	* process.
 	* \sa CObservation::insertIntoGridMap */
-	class MAPS_IMPEXP TInsertionOptions : public mrpt::utils::CLoadableOptions
+	class TInsertionOptions : public mrpt::utils::CLoadableOptions
 	{
 	   public:
 		/** Initilization of default parameters
@@ -569,7 +567,7 @@ class MAPS_IMPEXP COccupancyGridMap2D : public CMetricMap,
 
 	/** With this struct options are provided to the observation likelihood
 	 * computation process */
-	class MAPS_IMPEXP TLikelihoodOptions : public mrpt::utils::CLoadableOptions
+	class TLikelihoodOptions : public mrpt::utils::CLoadableOptions
 	{
 	   public:
 		/** Initilization of default parameters */
@@ -861,7 +859,7 @@ class MAPS_IMPEXP COccupancyGridMap2D : public CMetricMap,
 	};
 
 	/** Input params for laserScanSimulatorWithUncertainty() */
-	struct MAPS_IMPEXP TLaserSimulUncertaintyParams
+	struct TLaserSimulUncertaintyParams
 	{
 		/** (Default: sumMonteCarlo) Select the method to do the uncertainty
 		 * propagation */
@@ -913,7 +911,7 @@ class MAPS_IMPEXP COccupancyGridMap2D : public CMetricMap,
 	};
 
 	/** Output params for laserScanSimulatorWithUncertainty() */
-	struct MAPS_IMPEXP TLaserSimulUncertaintyResult
+	struct TLaserSimulUncertaintyResult
 	{
 		/** The scan + its uncertainty */
 		mrpt::obs::CObservation2DRangeScanWithUncertainty scanWithUncert;
@@ -1017,7 +1015,7 @@ class MAPS_IMPEXP COccupancyGridMap2D : public CMetricMap,
 			img.rectangle(px - 7, (py + 7), px + 7, (py - 7), marks_color);
 			img.rectangle(px - 6, (py + 6), px + 6, (py - 6), marks_color);
 			if (addTextLabels)
-				img.textOut(px, py - 8, format("%u", i), TColor::black);
+				img.textOut(px, py - 8, format("%u", i), TColor::black());
 		}
 		return img.saveToFile(file.c_str());
 		MRPT_END
@@ -1119,7 +1117,7 @@ class MAPS_IMPEXP COccupancyGridMap2D : public CMetricMap,
 	 *    critical points.
 	 * \sa findCriticalPoints
 	 */
-	struct MAPS_IMPEXP TCriticalPointsList
+	struct TCriticalPointsList
 	{
 		TCriticalPointsList()
 			: x(),
@@ -1168,19 +1166,17 @@ class MAPS_IMPEXP COccupancyGridMap2D : public CMetricMap,
 	 */
 	int direction2idx(int dx, int dy);
 
-	MAP_DEFINITION_START(COccupancyGridMap2D, MAPS_IMPEXP)
+	MAP_DEFINITION_START(COccupancyGridMap2D)
 	/** See COccupancyGridMap2D::COccupancyGridMap2D */
 	float min_x, max_x, min_y, max_y, resolution;
 	/** Observations insertion options */
 	mrpt::maps::COccupancyGridMap2D::TInsertionOptions insertionOpts;
 	/** Probabilistic observation likelihood options */
 	mrpt::maps::COccupancyGridMap2D::TLikelihoodOptions likelihoodOpts;
-	MAP_DEFINITION_END(COccupancyGridMap2D, MAPS_IMPEXP)
+	MAP_DEFINITION_END(COccupancyGridMap2D, )
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	COccupancyGridMap2D, CMetricMap, MAPS_IMPEXP)
 
-bool MAPS_IMPEXP operator<(
+bool operator<(
 	const COccupancyGridMap2D::TPairLikelihoodIndex& e1,
 	const COccupancyGridMap2D::TPairLikelihoodIndex& e2);
 

@@ -43,9 +43,9 @@ CGlWidget::CGlWidget(bool is2D, QWidget* parent)
 	  m_miniMapSize(-1.0),
 	  m_minimapPercentSize(0.25),
 	  m_observationSize(10.),
-	  m_observationColor(mrpt::utils::TColor::red),
+	  m_observationColor(mrpt::utils::TColor::red()),
 	  m_selectedObsSize(15.0),
-	  m_selectedColor(mrpt::utils::TColor::green),
+	  m_selectedColor(mrpt::utils::TColor::green()),
 	  m_isShowObs(false),
 	  m_visiblePoints(mrpt::make_aligned_shared<CSetOfObjects>()),
 	  m_currentObs(opengl::stock_objects::CornerXYZSimple()),
@@ -572,24 +572,24 @@ void CGlWidget::keyPressEvent(QKeyEvent* event)
 
 utils::TColorf CGlWidget::typeToColor(int type) const
 {
-	mrpt::utils::TColor color = mrpt::utils::TColor::red;
+	mrpt::utils::TColor color = mrpt::utils::TColor::red();
 	;
 	switch (type)
 	{
 		case 0:
-			color = mrpt::utils::TColor::red;
+			color = mrpt::utils::TColor::red();
 			break;
 		case 1:
-			color = mrpt::utils::TColor::green;
+			color = mrpt::utils::TColor::green();
 			break;
 		case 2:
-			color = mrpt::utils::TColor::blue;
+			color = mrpt::utils::TColor::blue();
 			break;
 		case 3:
 			color = mrpt::utils::TColor::white;
 			break;
 		case 4:
-			color = mrpt::utils::TColor::black;
+			color = mrpt::utils::TColor::black();
 			break;
 		case 5:
 			color = mrpt::utils::TColor::gray;

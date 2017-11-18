@@ -14,8 +14,6 @@
 #include <mrpt/nav/planners/PlannerRRT_common.h>
 #include <numeric>
 
-#include <mrpt/nav/link_pragmas.h>
-
 namespace mrpt
 {
 namespace nav
@@ -67,14 +65,13 @@ namespace nav
 *  \todo Factorize into more generic path planner classes!  //template <class
 * POSE, class MOTIONS>...
 */
-class NAV_IMPEXP PlannerRRT_SE2_TPS : public PlannerTPS_VirtualBase
+class PlannerRRT_SE2_TPS : public PlannerTPS_VirtualBase
 {
    public:
 	/** The type of poses at nodes */
 	typedef mrpt::math::TPose2D node_pose_t;
 
-	struct NAV_IMPEXP TPlannerInput
-		: public TPlannerInputTempl<node_pose_t, node_pose_t>
+	struct TPlannerInput : public TPlannerInputTempl<node_pose_t, node_pose_t>
 	{
 		TPlannerInput()
 		{
@@ -85,8 +82,7 @@ class NAV_IMPEXP PlannerRRT_SE2_TPS : public PlannerTPS_VirtualBase
 		}
 	};
 
-	struct NAV_IMPEXP TPlannerResult
-		: public TPlannerResultTempl<TMoveTreeSE2_TP>
+	struct TPlannerResult : public TPlannerResultTempl<TMoveTreeSE2_TP>
 	{
 	};
 

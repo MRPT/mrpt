@@ -35,7 +35,7 @@ namespace opengl
   *
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CMesh3D : public CRenderizableDisplayList
+class CMesh3D : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CMesh3D)
 
@@ -173,8 +173,6 @@ class OPENGL_IMPEXP CMesh3D : public CRenderizableDisplayList
 	/** Private, virtual destructor: only can be deleted from smart pointers  */
 	virtual ~CMesh3D();
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CMesh3D, CRenderizableDisplayList, OPENGL_IMPEXP)
 
 }  // end namespace
 

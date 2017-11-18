@@ -945,14 +945,14 @@ void CHierarchicalMapMHPartition::computeCoordinatesTransformationBetweenNodes(
 			poseIt->setFromValues(
 				(*samplIt)[0] +
 					additionalNoiseXYratio *
-						randomGenerator.drawGaussian1D_normalized(),
+						getRandomGenerator().drawGaussian1D_normalized(),
 				(*samplIt)[1] +
 					additionalNoiseXYratio *
-						randomGenerator.drawGaussian1D_normalized(),
+						getRandomGenerator().drawGaussian1D_normalized(),
 				(*samplIt)[2],
 				(*samplIt)[3] +
 					additionalNoisePhiRad *
-						randomGenerator.drawGaussian1D_normalized(),
+						getRandomGenerator().drawGaussian1D_normalized(),
 				(*samplIt)[4], (*samplIt)[5]);
 
 			// Pose composition:

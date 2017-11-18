@@ -22,11 +22,10 @@ namespace math
  * http://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes
  * \ingroup mrpt_base_grp
  */
-class BASE_IMPEXP_TEMPL CMatrixD : public mrpt::utils::CSerializable,
-								   public CMatrixTemplateNumeric<double>
+class CMatrixD : public mrpt::utils::CSerializable,
+				 public CMatrixTemplateNumeric<double>
 {
-	DEFINE_SERIALIZABLE_CUSTOM_LINKAGE(
-		CMatrixD, void BASE_IMPEXP, static BASE_IMPEXP, virtual BASE_IMPEXP)
+	DEFINE_SERIALIZABLE(CMatrixD)
    public:
 	/** Constructor */
 	CMatrixD() : CMatrixTemplateNumeric<double>(1, 1) {}
@@ -75,10 +74,7 @@ class BASE_IMPEXP_TEMPL CMatrixD : public mrpt::utils::CSerializable,
 	explicit CMatrixD(const TPoint3D& p);
 
 };  // end of class definition
-BASE_IMPEXP::mrpt::utils::CStream& operator>>(
-	mrpt::utils::CStream& in, CMatrixD::Ptr& pObj);
-DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE2(
-	CMatrixD, mrpt::utils::CSerializable, CMatrixD)
+mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in, CMatrixD::Ptr& pObj);
 
 }  // End of namespace
 }  // End of namespace

@@ -9,7 +9,6 @@
 #ifndef MRPT_MATH_WRAP2PI_H
 #define MRPT_MATH_WRAP2PI_H
 
-#define _USE_MATH_DEFINES  // (For VS to define M_PI, etc. in cmath)
 #include <cmath>
 #include <cstddef>  // size_t
 

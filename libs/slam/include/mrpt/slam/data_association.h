@@ -15,8 +15,6 @@
 #include <mrpt/math/CMatrixTemplate.h>  // mrpt::math::CMatrixBool
 #include <mrpt/utils/TEnumType.h>
 
-#include <mrpt/slam/link_pragmas.h>
-
 namespace mrpt
 {
 namespace slam
@@ -64,7 +62,7 @@ typedef size_t prediction_index_t;
 
 /** The results from mrpt::slam::data_association
   */
-struct SLAM_IMPEXP TDataAssociationResults
+struct TDataAssociationResults
 {
 	TDataAssociationResults()
 		: associations(),
@@ -161,7 +159,7 @@ struct SLAM_IMPEXP TDataAssociationResults
   *data_association_independent_2d_points,
   *data_association_independent_3d_points
   */
-void SLAM_IMPEXP data_association_full_covariance(
+void data_association_full_covariance(
 	const mrpt::math::CMatrixDouble& Z_observations_mean,
 	const mrpt::math::CMatrixDouble& Y_predictions_mean,
 	const mrpt::math::CMatrixDouble& Y_predictions_cov,
@@ -212,7 +210,7 @@ void SLAM_IMPEXP data_association_full_covariance(
   *data_association_independent_2d_points,
   *data_association_independent_3d_points
   */
-void SLAM_IMPEXP data_association_independent_predictions(
+void data_association_independent_predictions(
 	const mrpt::math::CMatrixDouble& Z_observations_mean,
 	const mrpt::math::CMatrixDouble& Y_predictions_mean,
 	const mrpt::math::CMatrixDouble& Y_predictions_cov,

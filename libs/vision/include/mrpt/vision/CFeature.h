@@ -15,7 +15,6 @@
 #include <mrpt/math/KDTreeCapable.h>
 
 #include <mrpt/vision/types.h>
-#include <mrpt/vision/link_pragmas.h>
 
 namespace mrpt
 {
@@ -51,7 +50,7 @@ enum TListIdx
   *
   *  \sa CFeatureList, TSimpleFeature, TSimpleFeatureList
   */
-class VISION_IMPEXP CFeature : public mrpt::utils::CSerializable
+class CFeature : public mrpt::utils::CSerializable
 {
 	friend class CFeatureList;
 	friend class CMatchedFeatureList;
@@ -106,7 +105,7 @@ class VISION_IMPEXP CFeature : public mrpt::utils::CSerializable
 		const;  //!< Return false only for Blob detectors (SIFT, SURF)
 
 	/** All the possible descriptors this feature may have */
-	struct VISION_IMPEXP TDescriptors
+	struct TDescriptors
 	{
 		TDescriptors();  // Initialization
 
@@ -296,8 +295,6 @@ class VISION_IMPEXP CFeature : public mrpt::utils::CSerializable
 		float& minDistAngle, bool normalize_distances, bool dont_shift_angle);
 
 };  // end of class
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CFeature, mrpt::utils::CSerializable, VISION_IMPEXP)
 
 /****************************************************
 				Class CFEATURELIST
@@ -305,8 +302,7 @@ DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
 /** A list of visual features, to be used as output by detectors, as
  * input/output by trackers, etc.
   */
-class VISION_IMPEXP CFeatureList
-	: public mrpt::math::KDTreeCapable<CFeatureList>
+class CFeatureList : public mrpt::math::KDTreeCapable<CFeatureList>
 {
    protected:
 	typedef std::vector<CFeature::Ptr> TInternalFeatList;
@@ -505,7 +501,7 @@ class VISION_IMPEXP CFeatureList
 *****************************************************/
 /** A list of features
 */
-class VISION_IMPEXP CMatchedFeatureList
+class CMatchedFeatureList
 	: public std::deque<std::pair<CFeature::Ptr, CFeature::Ptr>>
 {
    public:

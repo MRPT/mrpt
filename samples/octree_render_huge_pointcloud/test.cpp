@@ -25,9 +25,9 @@ void insertRandomPoints_uniform(
 {
 	for (size_t i = 0; i < N; i++)
 		gl->insertPoint(
-			random::randomGenerator.drawUniform(p_min.x, p_max.x),
-			random::randomGenerator.drawUniform(p_min.y, p_max.y),
-			random::randomGenerator.drawUniform(p_min.z, p_max.z));
+			random::getRandomGenerator().drawUniform(p_min.x, p_max.x),
+			random::getRandomGenerator().drawUniform(p_min.y, p_max.y),
+			random::getRandomGenerator().drawUniform(p_min.z, p_max.z));
 }
 
 void insertRandomPoints_screw(
@@ -58,9 +58,9 @@ void insertRandomPoints_gauss(
 {
 	for (size_t i = 0; i < N; i++)
 		gl->insertPoint(
-			random::randomGenerator.drawGaussian1D(p_mean.x, p_stddevs.x),
-			random::randomGenerator.drawGaussian1D(p_mean.y, p_stddevs.y),
-			random::randomGenerator.drawGaussian1D(p_mean.z, p_stddevs.z));
+			random::getRandomGenerator().drawGaussian1D(p_mean.x, p_stddevs.x),
+			random::getRandomGenerator().drawGaussian1D(p_mean.y, p_stddevs.y),
+			random::getRandomGenerator().drawGaussian1D(p_mean.z, p_stddevs.z));
 }
 
 // ------------------------------------------------------
@@ -69,8 +69,7 @@ void insertRandomPoints_gauss(
 void TestOctreeRenderHugePointCloud()
 {
 	// Change this in your program as needed:
-	// mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL =
-	// 0.1f;
+	// mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL(0.1f);
 
 	CDisplayWindow3D win("Demo of MRPT's octree pointclouds", 640, 480);
 

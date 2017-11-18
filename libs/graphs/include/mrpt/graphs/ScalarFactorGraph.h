@@ -14,8 +14,6 @@
 #include <mrpt/utils/CTimeLogger.h>
 #include <deque>
 
-#include <mrpt/graphs/link_pragmas.h>
-
 namespace mrpt
 {
 namespace graphs
@@ -43,12 +41,12 @@ namespace graphs
  * \ingroup mrpt_graph_grp
  * \note [New in MRPT 1.5.0] Requires Eigen>=3.1
  */
-class GRAPHS_IMPEXP ScalarFactorGraph : public mrpt::utils::COutputLogger
+class ScalarFactorGraph : public mrpt::utils::COutputLogger
 {
    public:
 	ScalarFactorGraph();
 
-	struct GRAPHS_IMPEXP FactorBase
+	struct FactorBase
 	{
 		virtual ~FactorBase();
 		/** Return the residual/error of this observation. */
@@ -58,7 +56,7 @@ class GRAPHS_IMPEXP ScalarFactorGraph : public mrpt::utils::COutputLogger
 	};
 
 	/** Simple, scalar (1-dim) constraint (edge) for a GMRF */
-	struct GRAPHS_IMPEXP UnaryFactorVirtualBase : public FactorBase
+	struct UnaryFactorVirtualBase : public FactorBase
 	{
 		size_t node_id;
 		/** Returns the derivative of the residual wrt the node value */
@@ -66,7 +64,7 @@ class GRAPHS_IMPEXP ScalarFactorGraph : public mrpt::utils::COutputLogger
 	};
 
 	/** Simple, scalar (1-dim) constraint (edge) for a GMRF */
-	struct GRAPHS_IMPEXP BinaryFactorVirtualBase : public FactorBase
+	struct BinaryFactorVirtualBase : public FactorBase
 	{
 		size_t node_id_i, node_id_j;
 		/** Returns the derivative of the residual wrt the node values */

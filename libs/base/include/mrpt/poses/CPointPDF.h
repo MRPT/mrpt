@@ -36,9 +36,8 @@ namespace poses
  * \sa CPoint3D
  * \ingroup poses_pdf_grp
  */
-class BASE_IMPEXP CPointPDF
-	: public mrpt::utils::CSerializable,
-	  public mrpt::utils::CProbabilityDensityFunction<CPoint3D, 3>
+class CPointPDF : public mrpt::utils::CSerializable,
+				  public mrpt::utils::CProbabilityDensityFunction<CPoint3D, 3>
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CPointPDF)
 
@@ -99,8 +98,6 @@ class BASE_IMPEXP CPointPDF
 	}
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(CPointPDF, mrpt::utils::CSerializable)
-
 }  // End of namespace
 }  // End of namespace
 

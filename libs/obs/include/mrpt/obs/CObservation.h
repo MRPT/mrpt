@@ -9,8 +9,6 @@
 #ifndef COBSERVATION_H
 #define COBSERVATION_H
 
-#include <mrpt/obs/link_pragmas.h>
-
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/math/math_frwds.h>
@@ -40,7 +38,7 @@ namespace obs
  * \sa CSensoryFrame, CMetricMap
  * \ingroup mrpt_obs_grp
  */
-class OBS_IMPEXP CObservation : public mrpt::utils::CSerializable
+class CObservation : public mrpt::utils::CSerializable
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CObservation)
 
@@ -160,8 +158,6 @@ class OBS_IMPEXP CObservation : public mrpt::utils::CSerializable
 	/** @} */
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CObservation, mrpt::utils::CSerializable, OBS_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

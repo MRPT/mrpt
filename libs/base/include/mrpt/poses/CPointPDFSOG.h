@@ -33,14 +33,14 @@ namespace poses
  * \sa CPointPDF, CPosePDF,
  * \ingroup poses_pdf_grp
  */
-class BASE_IMPEXP CPointPDFSOG : public CPointPDF
+class CPointPDFSOG : public CPointPDF
 {
 	DEFINE_SERIALIZABLE(CPointPDFSOG)
 
    public:
 	/** The struct for each mode:
 	 */
-	struct BASE_IMPEXP TGaussianMode
+	struct TGaussianMode
 	{
 		TGaussianMode() : val(), log_w(0) {}
 		CPointPDFGaussian val;
@@ -188,7 +188,6 @@ class BASE_IMPEXP CPointPDFSOG : public CPointPDF
 	double evaluatePDF(const CPoint3D& x, bool sumOverAllZs) const;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(CPointPDFSOG, CPointPDF)
 }  // End of namespace
 }  // End of namespace
 #endif

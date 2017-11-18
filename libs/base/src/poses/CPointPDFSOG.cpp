@@ -271,7 +271,7 @@ void CPointPDFSOG::drawSingleSample(CPoint3D& outSample) const
 
 	// 2nd: Draw a position from the selected Gaussian:
 	CVectorDouble vec;
-	randomGenerator.drawGaussianMultivariate(vec, selMode->cov);
+	getRandomGenerator().drawGaussianMultivariate(vec, selMode->cov);
 
 	ASSERT_(vec.size() == 3);
 	outSample.x(selMode->mean.x() + vec[0]);

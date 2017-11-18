@@ -29,7 +29,7 @@ namespace obs
  * \sa CObservation, CActionRobotMovement2D
  * \ingroup mrpt_obs_grp
  */
-class OBS_IMPEXP CObservationOdometry : public CObservation
+class CObservationOdometry : public CObservation
 {
 	DEFINE_SERIALIZABLE(CObservationOdometry)
 
@@ -62,8 +62,6 @@ class OBS_IMPEXP CObservationOdometry : public CObservation
 	void getDescriptionAsText(std::ostream& o) const override;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CObservationOdometry, CObservation, OBS_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

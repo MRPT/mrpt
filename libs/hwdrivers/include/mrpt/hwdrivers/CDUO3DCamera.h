@@ -14,15 +14,13 @@
 #include <mrpt/obs/CObservationIMU.h>
 #include <mrpt/vision/CStereoRectifyMap.h>
 
-#include <mrpt/hwdrivers/link_pragmas.h>
-
 namespace mrpt
 {
 namespace hwdrivers
 {
 /** Options used when creating a camera capture object of type
  * CImageGrabber_FlyCapture2   \ingroup mrpt_hwdrivers_grp */
-struct HWDRIVERS_IMPEXP TCaptureOptions_DUO3D
+struct TCaptureOptions_DUO3D
 {
 	enum TYMLReadResult
 	{
@@ -155,7 +153,7 @@ struct HWDRIVERS_IMPEXP TCaptureOptions_DUO3D
   *
   * \ingroup mrpt_hwdrivers_grp
   */  // clang-format on
-class HWDRIVERS_IMPEXP CDUO3DCamera
+class CDUO3DCamera
 {
    protected:
 	// members

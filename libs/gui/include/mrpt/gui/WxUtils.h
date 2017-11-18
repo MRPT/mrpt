@@ -15,8 +15,6 @@
 #include <mrpt/utils/CConfigFileMemory.h>
 #include <mrpt/gui/keycodes.h>
 
-#include <mrpt/gui/link_pragmas.h>
-
 #if MRPT_HAS_WXWIDGETS
 
 #include <wx/sizer.h>
@@ -105,20 +103,20 @@ namespace gui
  * when not required anymore.
   * \sa MRPTImage2wxImage
   */
-wxImage GUI_IMPEXP* MRPTImage2wxImage(const mrpt::utils::CImage& img);
+wxImage* MRPTImage2wxImage(const mrpt::utils::CImage& img);
 
 /** Create a wxBitmap from a MRPT image. The new object must be freed by the
  * user when not required anymore.
   * \sa MRPTImage2wxImage
   */
-wxBitmap GUI_IMPEXP* MRPTImage2wxBitmap(const mrpt::utils::CImage& img);
+wxBitmap* MRPTImage2wxBitmap(const mrpt::utils::CImage& img);
 
 #if MRPT_HAS_OPENCV
 /** Create a wxImage from a IPL image. The new object must be freed by the user
  * when not required anymore.
   * \sa IplImage2wxImage
   */
-wxImage GUI_IMPEXP* IplImage2wxImage(void* img);
+wxImage* IplImage2wxImage(void* img);
 #endif
 
 /** Create a MRPT image from a wxImage. The new object must be freed by the user
@@ -127,20 +125,20 @@ wxImage GUI_IMPEXP* IplImage2wxImage(void* img);
  * are safer to manage.
   * \sa wxImage2MRPTImage, wxImage2MRPTImagePtr
   */
-mrpt::utils::CImage GUI_IMPEXP* wxImage2MRPTImage(const wxImage& img);
+mrpt::utils::CImage* wxImage2MRPTImage(const wxImage& img);
 
 /** Create a MRPT image from a wxImage. The new object is returned as a smart
  * pointer to a CImage object.
   * \sa wxImage2MRPTImage
   */
-mrpt::utils::CImage::Ptr GUI_IMPEXP wxImage2MRPTImagePtr(const wxImage& img);
+mrpt::utils::CImage::Ptr wxImage2MRPTImagePtr(const wxImage& img);
 
 /** Extracts the key modifiers from a wxKeyEvent */
 mrptKeyModifier keyEventToMrptKeyModifier(const wxKeyEvent& ev);
 
 /** A custom control to display the bitmap and avoid flicker
   */
-class GUI_IMPEXP wxMRPTImageControl : public wxPanel
+class wxMRPTImageControl : public wxPanel
 {
    protected:
 	wxBitmap* m_img;
@@ -172,7 +170,7 @@ class GUI_IMPEXP wxMRPTImageControl : public wxPanel
 // end wxMRPTImageControl  -----------
 
 /** A panel to select the camera input from all the formats supported by MRPT */
-class GUI_IMPEXP CPanelCameraSelection : public wxPanel
+class CPanelCameraSelection : public wxPanel
 {
    public:
 	CPanelCameraSelection(wxWindow* parent, wxWindowID id = wxID_ANY);

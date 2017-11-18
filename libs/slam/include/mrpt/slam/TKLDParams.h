@@ -11,15 +11,13 @@
 
 #include <mrpt/utils/CLoadableOptions.h>
 
-#include <mrpt/slam/link_pragmas.h>
-
 namespace mrpt
 {
 namespace slam
 {
 /** Option set for KLD algorithm.  \ingroup mrpt_slam_grp
   */
-class SLAM_IMPEXP TKLDParams : public utils::CLoadableOptions
+class TKLDParams : public utils::CLoadableOptions
 {
    public:
 	TKLDParams();

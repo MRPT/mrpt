@@ -532,30 +532,30 @@ void CActionRobotMovement2D::computeFromOdometry_modelThrun(
 		float Arot1_draw = Arot1 -
 						   (o.thrunModel.alfa1_rot_rot * fabs(Arot1) +
 							o.thrunModel.alfa2_rot_trans * Atrans) *
-							   randomGenerator.drawGaussian1D_normalized();
+							   getRandomGenerator().drawGaussian1D_normalized();
 		float Atrans_draw =
 			Atrans -
 			(o.thrunModel.alfa3_trans_trans * Atrans +
 			 o.thrunModel.alfa4_trans_rot * (fabs(Arot1) + fabs(Arot2))) *
-				randomGenerator.drawGaussian1D_normalized();
+				getRandomGenerator().drawGaussian1D_normalized();
 		float Arot2_draw = Arot2 -
 						   (o.thrunModel.alfa1_rot_rot * fabs(Arot2) +
 							o.thrunModel.alfa2_rot_trans * Atrans) *
-							   randomGenerator.drawGaussian1D_normalized();
+							   getRandomGenerator().drawGaussian1D_normalized();
 
 		// Output:
 		aux->m_particles[i].d->x(
 			Atrans_draw * cos(Arot1_draw) +
 			motionModelConfiguration.thrunModel.additional_std_XY *
-				randomGenerator.drawGaussian1D_normalized());
+				getRandomGenerator().drawGaussian1D_normalized());
 		aux->m_particles[i].d->y(
 			Atrans_draw * sin(Arot1_draw) +
 			motionModelConfiguration.thrunModel.additional_std_XY *
-				randomGenerator.drawGaussian1D_normalized());
+				getRandomGenerator().drawGaussian1D_normalized());
 		aux->m_particles[i].d->phi(
 			Arot1_draw + Arot2_draw +
 			motionModelConfiguration.thrunModel.additional_std_phi *
-				randomGenerator.drawGaussian1D_normalized());
+				getRandomGenerator().drawGaussian1D_normalized());
 		aux->m_particles[i].d->normalizePhi();
 	}
 }
@@ -619,32 +619,32 @@ void CActionRobotMovement2D::drawSingleSample_modelThrun(
 		Arot1 -
 		(motionModelConfiguration.thrunModel.alfa1_rot_rot * fabs(Arot1) +
 		 motionModelConfiguration.thrunModel.alfa2_rot_trans * Atrans) *
-			randomGenerator.drawGaussian1D_normalized();
+			getRandomGenerator().drawGaussian1D_normalized();
 	float Atrans_draw =
 		Atrans -
 		(motionModelConfiguration.thrunModel.alfa3_trans_trans * Atrans +
 		 motionModelConfiguration.thrunModel.alfa4_trans_rot *
 			 (fabs(Arot1) + fabs(Arot2))) *
-			randomGenerator.drawGaussian1D_normalized();
+			getRandomGenerator().drawGaussian1D_normalized();
 	float Arot2_draw =
 		Arot2 -
 		(motionModelConfiguration.thrunModel.alfa1_rot_rot * fabs(Arot2) +
 		 motionModelConfiguration.thrunModel.alfa2_rot_trans * Atrans) *
-			randomGenerator.drawGaussian1D_normalized();
+			getRandomGenerator().drawGaussian1D_normalized();
 
 	// Output:
 	outSample.x(
 		Atrans_draw * cos(Arot1_draw) +
 		motionModelConfiguration.thrunModel.additional_std_XY *
-			randomGenerator.drawGaussian1D_normalized());
+			getRandomGenerator().drawGaussian1D_normalized());
 	outSample.y(
 		Atrans_draw * sin(Arot1_draw) +
 		motionModelConfiguration.thrunModel.additional_std_XY *
-			randomGenerator.drawGaussian1D_normalized());
+			getRandomGenerator().drawGaussian1D_normalized());
 	outSample.phi(
 		Arot1_draw + Arot2_draw +
 		motionModelConfiguration.thrunModel.additional_std_phi *
-			randomGenerator.drawGaussian1D_normalized());
+			getRandomGenerator().drawGaussian1D_normalized());
 	outSample.normalizePhi();
 }
 
@@ -729,7 +729,7 @@ void CActionRobotMovement2D::fastDrawSingleSample_modelGaussian(
 	CVectorFloat rndVector(3, 0);
 	for (size_t i = 0; i < 3; i++)
 	{
-		float rnd = randomGenerator.drawGaussian1D_normalized();
+		float rnd = getRandomGenerator().drawGaussian1D_normalized();
 		for (size_t d = 0; d < 3; d++)
 			rndVector[d] += (m_fastDrawGauss_Z.get_unsafe(d, i) * rnd);
 	}

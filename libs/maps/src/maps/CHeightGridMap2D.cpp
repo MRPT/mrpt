@@ -93,7 +93,16 @@ mrpt::maps::CMetricMap* CHeightGridMap2D::internal_CreateFromMapDefinition(
 
 IMPLEMENTS_SERIALIZABLE(CHeightGridMap2D, CMetricMap, mrpt::maps)
 
-bool mrpt::global_settings::HEIGHTGRIDMAP_EXPORT3D_AS_MESH = true;
+bool HEIGHTGRIDMAP_EXPORT3D_AS_MESH_value = true;
+
+bool mrpt::global_settings::HEIGHTGRIDMAP_EXPORT3D_AS_MESH()
+{
+	return HEIGHTGRIDMAP_EXPORT3D_AS_MESH_value;
+}
+void mrpt::global_settings::HEIGHTGRIDMAP_EXPORT3D_AS_MESH(bool value)
+{
+	HEIGHTGRIDMAP_EXPORT3D_AS_MESH_value = value;
+}
 
 /*---------------------------------------------------------------
 						Constructor
@@ -308,7 +317,7 @@ void CHeightGridMap2D::getAs3DObject(
 {
 	if (!genericMapParams.enableSaveAs3DObject) return;
 
-	if (mrpt::global_settings::HEIGHTGRIDMAP_EXPORT3D_AS_MESH)
+	if (HEIGHTGRIDMAP_EXPORT3D_AS_MESH_value)
 	{
 		opengl::CMesh::Ptr mesh = mrpt::make_aligned_shared<opengl::CMesh>();
 

@@ -36,8 +36,7 @@ namespace hmtslam
  * \sa CHierarchicalMHMap, CHMHMapArc, CHMHMapNode
   * \ingroup mrpt_hmtslam_grp
  */
-class HMTSLAM_IMPEXP CHierarchicalMapMHPartition
-	: public mrpt::utils::COutputLogger
+class CHierarchicalMapMHPartition : public mrpt::utils::COutputLogger
 {
    protected:
 	/** The internal list of nodes and arcs in the whole hierarchical model.

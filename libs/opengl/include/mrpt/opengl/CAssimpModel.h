@@ -40,7 +40,7 @@ namespace opengl
   * \ingroup mrpt_opengl_grp
   * \note Class introduced in MRPT 1.2.2
   */
-class OPENGL_IMPEXP CAssimpModel : public CRenderizableDisplayList
+class CAssimpModel : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CAssimpModel)
 
@@ -104,8 +104,6 @@ class OPENGL_IMPEXP CAssimpModel : public CRenderizableDisplayList
 
 	mutable std::map<std::string, TInfoPerTexture> m_textureIdMap;
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CAssimpModel, CRenderizableDisplayList, OPENGL_IMPEXP)
 
 }  // end namespace
 }  // End of namespace

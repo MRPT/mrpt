@@ -17,8 +17,6 @@
 #include <mrpt/vision/types.h>
 #include <mrpt/utils/round.h>
 
-#include <mrpt/vision/link_pragmas.h>
-
 namespace mrpt
 {
 namespace vision

@@ -11,10 +11,8 @@
 
 #include <mrpt/config.h>
 
-#define _USE_MATH_DEFINES  // (For VS to define M_PI, etc. in cmath)
 #include <cmath>  // floor(),isnan(),...
 #include <string>
-#include <mrpt/base/link_pragmas.h>
 #include <mrpt/utils/mrpt_macros.h>
 #include <cstdint>
 
@@ -28,8 +26,7 @@ namespace mrpt
  * http://senzee.blogspot.com/2006/05/c-formatting-stdstring.html
   *  Function implemented in format.cpp
   */
-std::string BASE_IMPEXP format(const char* fmt, ...)
-	MRPT_printf_format_check(1, 2);
+std::string format(const char* fmt, ...) MRPT_printf_format_check(1, 2);
 
 namespace math
 {
@@ -72,8 +69,8 @@ inline T hypot_fast(const T x, const T y)
 namespace utils
 {
 class CFileStream;
-void BASE_IMPEXP global_profiler_enter(const char* func_name) noexcept;
-void BASE_IMPEXP global_profiler_leave(const char* func_name) noexcept;
+void global_profiler_enter(const char* func_name) noexcept;
+void global_profiler_leave(const char* func_name) noexcept;
 
 struct CProfilerProxy
 {
@@ -193,19 +190,19 @@ inline const R* getAs(const SMART_PTR& o)
 
 /** Reverse the order of the bytes of a given type (useful for transforming btw
  * little/big endian)  */
-void BASE_IMPEXP reverseBytesInPlace(bool& v_in_out);
-void BASE_IMPEXP reverseBytesInPlace(uint8_t& v_in_out);
-void BASE_IMPEXP reverseBytesInPlace(int8_t& v_in_out);
-void BASE_IMPEXP reverseBytesInPlace(uint16_t& v_in_out);
-void BASE_IMPEXP reverseBytesInPlace(int16_t& v_in_out);
-void BASE_IMPEXP reverseBytesInPlace(uint32_t& v_in_out);
-void BASE_IMPEXP reverseBytesInPlace(int32_t& v_in_out);
-void BASE_IMPEXP reverseBytesInPlace(uint64_t& v_in_out);
-void BASE_IMPEXP reverseBytesInPlace(int64_t& v_in_out);
-void BASE_IMPEXP reverseBytesInPlace(float& v_in_out);
-void BASE_IMPEXP reverseBytesInPlace(double& v_in_out);
+void reverseBytesInPlace(bool& v_in_out);
+void reverseBytesInPlace(uint8_t& v_in_out);
+void reverseBytesInPlace(int8_t& v_in_out);
+void reverseBytesInPlace(uint16_t& v_in_out);
+void reverseBytesInPlace(int16_t& v_in_out);
+void reverseBytesInPlace(uint32_t& v_in_out);
+void reverseBytesInPlace(int32_t& v_in_out);
+void reverseBytesInPlace(uint64_t& v_in_out);
+void reverseBytesInPlace(int64_t& v_in_out);
+void reverseBytesInPlace(float& v_in_out);
+void reverseBytesInPlace(double& v_in_out);
 #ifdef HAVE_LONG_DOUBLE
-void BASE_IMPEXP reverseBytesInPlace(long double& v_in_out);
+void reverseBytesInPlace(long double& v_in_out);
 #endif
 
 /** Reverse the order of the bytes of a given type (useful for transforming btw

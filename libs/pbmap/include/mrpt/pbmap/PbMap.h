@@ -22,7 +22,6 @@
 #include <mrpt/utils/utils_defs.h>
 
 #include <mrpt/utils/CSerializable.h>
-#include <mrpt/pbmap/link_pragmas.h>
 
 #include <mrpt/pbmap/Plane.h>
 #include <mrpt/pbmap/Miscellaneous.h>  // For typedef PointT;
@@ -47,7 +46,7 @@ namespace pbmap
 *
 *\ingroup mrpt_pbmap_grp
 */
-class PBMAP_IMPEXP PbMap : public mrpt::utils::CSerializable
+class PbMap : public mrpt::utils::CSerializable
 {
 	DEFINE_SERIALIZABLE(PbMap)
 
@@ -87,7 +86,6 @@ class PBMAP_IMPEXP PbMap : public mrpt::utils::CSerializable
 
 	//    boost::mutex mtx_pbmap_busy;
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_LINKAGE(PbMap, PBMAP_IMPEXP)
 }
 }  // End of namespaces
 

@@ -23,7 +23,7 @@ namespace poses
  * \sa CPose3D, CMultiMetricMap
  * \ingroup poses_grp
  */
-class BASE_IMPEXP CPoses3DSequence : public mrpt::utils::CSerializable
+class CPoses3DSequence : public mrpt::utils::CSerializable
 {
 	DEFINE_SERIALIZABLE(CPoses3DSequence)
    public:
@@ -94,9 +94,6 @@ class BASE_IMPEXP CPoses3DSequence : public mrpt::utils::CSerializable
 	std::vector<mrpt::math::TPose3D> m_poses;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(
-	CPoses3DSequence, mrpt::utils::CSerializable)
-
 }  // End of namespace
 }  // End of namespace
 

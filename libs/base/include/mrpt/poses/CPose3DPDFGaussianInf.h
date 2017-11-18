@@ -39,7 +39,7 @@ class CPose3DQuatPDFGaussian;
  * \sa CPose3D, CPose3DPDF, CPose3DPDFParticles, CPose3DPDFGaussian
  * \ingroup poses_pdf_grp
  */
-class BASE_IMPEXP CPose3DPDFGaussianInf : public CPose3DPDF
+class CPose3DPDFGaussianInf : public CPose3DPDF
 {
 	// This must be added to any CSerializable derived class:
 	DEFINE_SERIALIZABLE(CPose3DPDFGaussianInf)
@@ -188,21 +188,18 @@ class BASE_IMPEXP CPose3DPDFGaussianInf : public CPose3DPDF
 	double mahalanobisDistanceTo(const CPose3DPDFGaussianInf& theOther);
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(CPose3DPDFGaussianInf, CPose3DPDF)
-
-bool BASE_IMPEXP operator==(
+bool operator==(
 	const CPose3DPDFGaussianInf& p1, const CPose3DPDFGaussianInf& p2);
 /** Pose composition for two 3D pose Gaussians  \sa CPose3DPDFGaussian::operator
  * +=  */
-CPose3DPDFGaussianInf BASE_IMPEXP
-	operator+(const CPose3DPDFGaussianInf& x, const CPose3DPDFGaussianInf& u);
+CPose3DPDFGaussianInf operator+(
+	const CPose3DPDFGaussianInf& x, const CPose3DPDFGaussianInf& u);
 /** Pose composition for two 3D pose Gaussians  \sa
  * CPose3DPDFGaussianInf::operator -=  */
-CPose3DPDFGaussianInf BASE_IMPEXP
-	operator-(const CPose3DPDFGaussianInf& x, const CPose3DPDFGaussianInf& u);
+CPose3DPDFGaussianInf operator-(
+	const CPose3DPDFGaussianInf& x, const CPose3DPDFGaussianInf& u);
 /** Dumps the mean and covariance matrix to a text stream. */
-std::ostream BASE_IMPEXP& operator<<(
-	std::ostream& out, const CPose3DPDFGaussianInf& obj);
+std::ostream& operator<<(std::ostream& out, const CPose3DPDFGaussianInf& obj);
 
 }  // End of namespace
 

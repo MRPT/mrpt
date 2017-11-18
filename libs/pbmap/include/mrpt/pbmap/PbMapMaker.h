@@ -28,7 +28,6 @@
 #include <mrpt/pbmap/PbMap.h>
 #include <mrpt/pbmap/PbMapLocaliser.h>
 #include <mrpt/pbmap/SemanticClustering.h>
-#include <mrpt/pbmap/link_pragmas.h>
 #include <set>
 
 typedef pcl::PointXYZRGBA PointT;
@@ -41,7 +40,7 @@ namespace pbmap
  * frame) and a pose.
  * \ingroup mrpt_pbmap_grp
  */
-struct PBMAP_IMPEXP frameRGBDandPose
+struct frameRGBDandPose
 {
 	pcl::PointCloud<PointT>::Ptr cloudPtr;
 	Eigen::Matrix4f pose;
@@ -55,7 +54,7 @@ struct PBMAP_IMPEXP frameRGBDandPose
  *
  * \ingroup mrpt_pbmap_grp
  */
-class PBMAP_IMPEXP PbMapMaker
+class PbMapMaker
 {
    public:
 	/*!PbMapMaker's constructor sets some threshold for plane segmentation and

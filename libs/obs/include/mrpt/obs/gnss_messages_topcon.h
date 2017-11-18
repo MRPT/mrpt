@@ -18,7 +18,7 @@ namespace obs
 namespace gnss
 {
 /** GPS datum for TopCon's mmGPS devices: PZS. \sa mrpt::obs::CObservationGPS */
-struct OBS_IMPEXP Message_TOPCON_PZS : public gnss_message
+struct Message_TOPCON_PZS : public gnss_message
 {
 	/** Static msg type (member expected by templates) */
 	enum
@@ -91,7 +91,7 @@ struct OBS_IMPEXP Message_TOPCON_PZS : public gnss_message
 
 /** TopCon mmGPS devices: SATS, a generic structure for statistics about tracked
  * satelites and their positions. \sa mrpt::obs::CObservationGPS   */
-struct OBS_IMPEXP Message_TOPCON_SATS : public gnss_message
+struct Message_TOPCON_SATS : public gnss_message
 {
 	/** Static msg type (member expected by templates) */
 	enum

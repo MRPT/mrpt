@@ -30,9 +30,9 @@ void generateRandomSparseMatrix(
 	for (size_t i = 0; i < nEntries; i++)
 	{
 		MAT.insert_entry(
-			mrpt::random::randomGenerator.drawUniform32bit() % N,
-			mrpt::random::randomGenerator.drawUniform32bit() % M,
-			mrpt::random::randomGenerator.drawGaussian1D(0, 1));
+			mrpt::random::getRandomGenerator().drawUniform32bit() % N,
+			mrpt::random::getRandomGenerator().drawUniform32bit() % M,
+			mrpt::random::getRandomGenerator().drawGaussian1D(0, 1));
 	}
 
 	// Return already compressed:
@@ -62,7 +62,7 @@ TEST(SparseMatrix, InitFromDenseUnit)
 void do_test_init_random(size_t N)
 {
 	CMatrixDouble dense1;
-	mrpt::random::randomGenerator.drawGaussian1DMatrix(dense1);
+	mrpt::random::getRandomGenerator().drawGaussian1DMatrix(dense1);
 	CSparseMatrix SM(dense1);
 	CMatrixDouble dense_out;
 	SM.get_dense(dense_out);
@@ -210,9 +210,9 @@ TEST(SparseMatrix, CholeskyDecomp)
 {
 	CSparseMatrix SM(10, 10);
 	const CMatrixDouble COV1 =
-		mrpt::random::randomGenerator.drawDefinitePositiveMatrix(6, 0.2);
+		mrpt::random::getRandomGenerator().drawDefinitePositiveMatrix(6, 0.2);
 	const CMatrixDouble COV2 =
-		mrpt::random::randomGenerator.drawDefinitePositiveMatrix(4, 0.2);
+		mrpt::random::getRandomGenerator().drawDefinitePositiveMatrix(4, 0.2);
 
 	SM.insert_submatrix(0, 0, COV1);
 	SM.insert_submatrix(6, 6, COV2);

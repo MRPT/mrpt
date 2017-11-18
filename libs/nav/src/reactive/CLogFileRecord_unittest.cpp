@@ -46,7 +46,7 @@ TEST(NavTests, Serialization_WriteReadToMem)
 				delete o;
 			}
 
-			CSerializablePtr recons;
+			CSerializable::Ptr recons;
 			buf.Seek(0);
 			buf >> recons;
 		}
@@ -74,7 +74,7 @@ TEST(SerializeTestObs, WriteReadToOctectVectors)
 				delete o;
 			}
 
-			CSerializablePtr recons;
+			CSerializable::Ptr recons;
 			mrpt::utils::OctetVectorToObject(buf, recons);
 		}
 		catch (std::exception& e)

@@ -29,13 +29,12 @@ namespace nav
 /** A base class for holonomic reactive navigation methods.
  *  \sa CHolonomicVFF,CHolonomicND,CHolonomicFullEval, CReactiveNavigationSystem
  */
-class NAV_IMPEXP CAbstractHolonomicReactiveMethod
-	: public mrpt::utils::CSerializable
+class CAbstractHolonomicReactiveMethod : public mrpt::utils::CSerializable
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CAbstractHolonomicReactiveMethod)
    public:
 	/** Input parameters for CAbstractHolonomicReactiveMethod::navigate() */
-	struct NAV_IMPEXP NavInput
+	struct NavInput
 	{
 		/** Distance to obstacles in polar coordinates, relative to the robot.
 		  * First index refers to -PI direction, and last one to +PI direction.
@@ -62,7 +61,7 @@ class NAV_IMPEXP CAbstractHolonomicReactiveMethod
 	};
 
 	/** Output for CAbstractHolonomicReactiveMethod::navigate() */
-	struct NAV_IMPEXP NavOutput
+	struct NavOutput
 	{
 		/** The desired motion direction, in the range [-PI, PI] */
 		double desiredDirection;
@@ -135,8 +134,6 @@ class NAV_IMPEXP CAbstractHolonomicReactiveMethod
 	/** used in setConfigFileSectionName(), initialize() */
 	std::string m_cfgSectionName;
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CAbstractHolonomicReactiveMethod, mrpt::utils::CSerializable, NAV_IMPEXP)
 /** @} */
 }
 }

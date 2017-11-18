@@ -1151,9 +1151,9 @@ void slamdemoFrame::OnbtnRunBatchClicked(wxCommandEvent& event)
 void slamdemoFrame::resetSimulator(const std::string& map_type)
 {
 	if (options.random_seed >= 0)
-		randomGenerator.randomize(options.random_seed);
+		getRandomGenerator().randomize(options.random_seed);
 	else
-		randomGenerator.randomize();
+		getRandomGenerator().randomize();
 
 	m_SLAM.reset();
 	m_historicData.clear();
@@ -1267,9 +1267,9 @@ void slamdemoFrame::resetSimulator(const std::string& map_type)
 		for (size_t i = 0; i < options.randomMap_nLMs; i++)
 		{
 			CLandmark newLM;
-			newLM.pose_mean.x = randomGenerator.drawUniform(
+			newLM.pose_mean.x = getRandomGenerator().drawUniform(
 				-extra_width, options.path_square_len + extra_width);
-			newLM.pose_mean.y = randomGenerator.drawUniform(
+			newLM.pose_mean.y = getRandomGenerator().drawUniform(
 				-extra_width, options.path_square_len + extra_width);
 			newLM.pose_mean.z = 0;
 			newLM.ID = i;
@@ -2007,15 +2007,15 @@ void slamdemoFrame::executeOneStep()
 			// Add noise:
 			CPose2D noisyPoseIncr = poseIncr;
 			noisyPoseIncr.x_incr(
-				randomGenerator.drawGaussian1D(
+				getRandomGenerator().drawGaussian1D(
 					0, options.odometry_noise_std_xy /
 						   options.uncert_overestim_odom));
 			noisyPoseIncr.y_incr(
-				randomGenerator.drawGaussian1D(
+				getRandomGenerator().drawGaussian1D(
 					0, options.odometry_noise_std_xy /
 						   options.uncert_overestim_odom));
 			noisyPoseIncr.phi_incr(
-				randomGenerator.drawGaussian1D(
+				getRandomGenerator().drawGaussian1D(
 					0, options.odometry_noise_std_phi /
 						   options.uncert_overestim_odom));
 

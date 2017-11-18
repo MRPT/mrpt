@@ -61,15 +61,15 @@ T absDiff(const T& lhs, const T& rhs)
   * \return false on EOF or invalid format.
   * The body of the function is implemented in MATH.cpp
 	*/
-bool BASE_IMPEXP loadVector(utils::CFileStream& f, std::vector<int>& d);
+bool loadVector(utils::CFileStream& f, std::vector<int>& d);
 
 /** Loads one row of a text file as a numerical std::vector.
   * \return false on EOF or invalid format.
   * The body of the function is implemented in MATH.cpp
 	*/
-bool BASE_IMPEXP loadVector(utils::CFileStream& f, std::vector<double>& d);
+bool loadVector(utils::CFileStream& f, std::vector<double>& d);
 
-void BASE_IMPEXP medianFilter(
+void medianFilter(
 	const std::vector<double>& inV, std::vector<double>& outV,
 	const int& winSize, const int& numberOfSigmas = 2);
 
@@ -149,12 +149,12 @@ inline void extractColumnFromVectorOfVectors(
 /** Computes the factorial of an integer number and returns it as a 64-bit
  * integer number.
   */
-uint64_t BASE_IMPEXP factorial64(unsigned int n);
+uint64_t factorial64(unsigned int n);
 
 /** Computes the factorial of an integer number and returns it as a double value
  * (internally it uses logarithms for avoiding overflow).
   */
-double BASE_IMPEXP factorial(unsigned int n);
+double factorial(unsigned int n);
 
 /** Round up to the nearest power of two of a given number
   */
@@ -180,7 +180,7 @@ T round2up(T val)
   *  \param nEllipsePoints The number of points in the ellipse to generate
   * \ingroup stats_grp
   */
-std::string BASE_IMPEXP MATLAB_plotCovariance2D(
+std::string MATLAB_plotCovariance2D(
 	const CMatrixFloat& cov22, const CVectorFloat& mean, const float& stdCount,
 	const std::string& style = std::string("b"),
 	const size_t& nEllipsePoints = 30);
@@ -195,7 +195,7 @@ std::string BASE_IMPEXP MATLAB_plotCovariance2D(
   *  \param nEllipsePoints The number of points in the ellipse to generate
   * \ingroup stats_grp
   */
-std::string BASE_IMPEXP MATLAB_plotCovariance2D(
+std::string MATLAB_plotCovariance2D(
 	const CMatrixDouble& cov22, const CVectorDouble& mean,
 	const float& stdCount, const std::string& style = std::string("b"),
 	const size_t& nEllipsePoints = 30);

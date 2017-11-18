@@ -13,7 +13,6 @@
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CObject.h>
 #include <mrpt/math/CRuntimeCompiledExpression.h>
-#include <mrpt/nav/link_pragmas.h>
 
 namespace mrpt
 {
@@ -24,8 +23,7 @@ namespace nav
   *\sa CReactiveNavigationSystem, CReactiveNavigationSystem3D
   *  \ingroup nav_reactive
   */
-class NAV_IMPEXP CMultiObjectiveMotionOptimizerBase
-	: public mrpt::utils::CObject
+class CMultiObjectiveMotionOptimizerBase : public mrpt::utils::CObject
 {
 	DEFINE_VIRTUAL_MRPT_OBJECT(CMultiObjectiveMotionOptimizerBase)
    public:
@@ -33,7 +31,7 @@ class NAV_IMPEXP CMultiObjectiveMotionOptimizerBase
 	static CMultiObjectiveMotionOptimizerBase::Ptr Factory(
 		const std::string& className) noexcept;
 
-	struct NAV_IMPEXP TResultInfo
+	struct TResultInfo
 	{
 		/** For each candidate (vector indices), the numerical evaluation of all
 		 * scores defined in TParamsBase::formula_score.
@@ -60,7 +58,7 @@ class NAV_IMPEXP CMultiObjectiveMotionOptimizerBase
 	virtual void saveConfigFile(mrpt::utils::CConfigFileBase& c) const = 0;
 
 	/** Common params for all children */
-	struct NAV_IMPEXP TParamsBase : public mrpt::utils::CLoadableOptions
+	struct TParamsBase : public mrpt::utils::CLoadableOptions
 	{
 		TParamsBase();
 
@@ -110,7 +108,5 @@ class NAV_IMPEXP CMultiObjectiveMotionOptimizerBase
 	std::vector<mrpt::math::CRuntimeCompiledExpression> m_movement_assert_exprs;
 	std::map<std::string, double> m_expr_vars;
 };
-DEFINE_MRPT_OBJECT_POST_CUSTOM_LINKAGE(
-	CMultiObjectiveMotionOptimizerBase, NAV_IMPEXP)
 }
 }

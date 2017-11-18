@@ -30,7 +30,7 @@ float SIGMA = 0.03f;
 // ------------------------------------------------------
 void TestRS()
 {
-	randomGenerator.randomize();
+	getRandomGenerator().randomize();
 
 	// Load the map:
 	CMultiMetricMap map;

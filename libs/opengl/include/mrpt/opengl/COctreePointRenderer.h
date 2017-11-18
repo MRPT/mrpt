@@ -25,7 +25,8 @@ namespace global_settings
   *		- mrpt::opengl::CPointCloudColoured
   * \ingroup mrpt_opengl_grp
   */
-extern OPENGL_IMPEXP float OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL;
+void OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL(float value);
+float OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL();
 
 /** Default value = 1e5. Maximum number of elements in each octree node before
   *spliting. Affects to these classes (read their docs for further details):
@@ -33,7 +34,9 @@ extern OPENGL_IMPEXP float OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL;
   *		- mrpt::opengl::CPointCloudColoured
   * \ingroup mrpt_opengl_grp
   */
-extern OPENGL_IMPEXP size_t OCTREE_RENDER_MAX_POINTS_PER_NODE;
+size_t OCTREE_RENDER_MAX_POINTS_PER_NODE();
+void OCTREE_RENDER_MAX_POINTS_PER_NODE(size_t value);
+
 }
 
 namespace opengl
@@ -130,7 +133,7 @@ class COctreePointRenderer
 	  *  Instead of pointers, children are referenced by their indices in \a
 	 * m_octree_nodes
 	  */
-	struct OPENGL_IMPEXP TNode
+	struct TNode
 	{
 		TNode()
 			: is_leaf(true),
@@ -262,7 +265,7 @@ class COctreePointRenderer
 		MRPT_MAKE_ALIGNED_OPERATOR_NEW
 	};
 
-	struct OPENGL_IMPEXP TRenderQueueElement
+	struct TRenderQueueElement
 	{
 		inline TRenderQueueElement(const size_t id, float area_sq)
 			: node_id(id), render_area_sqpixels(area_sq)
@@ -592,7 +595,7 @@ class COctreePointRenderer
 
 		const bool has_to_compute_bb = (node_id == OCTREE_ROOT_NODE);
 
-		if (N <= mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE)
+		if (N <= mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE())
 		{
 			// No need to split this node:
 			node.is_leaf = true;

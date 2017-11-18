@@ -18,8 +18,6 @@
 #include <mrpt/maps/CLogOddsGridMap2D.h>
 #include <mrpt/obs/obs_frwds.h>
 
-#include <mrpt/maps/link_pragmas.h>
-
 namespace mrpt
 {
 namespace maps
@@ -40,9 +38,9 @@ namespace maps
   *		- mrSimpleAverage: Each cell only stores the current average value.
   * \ingroup mrpt_maps_grp
   */
-class MAPS_IMPEXP CReflectivityGridMap2D : public CMetricMap,
-										   public utils::CDynamicGrid<int8_t>,
-										   public CLogOddsGridMap2D<int8_t>
+class CReflectivityGridMap2D : public CMetricMap,
+							   public utils::CDynamicGrid<int8_t>,
+							   public CLogOddsGridMap2D<int8_t>
 {
 	DEFINE_SERIALIZABLE(CReflectivityGridMap2D)
 
@@ -71,7 +69,7 @@ class MAPS_IMPEXP CReflectivityGridMap2D : public CMetricMap,
 
 	/** Parameters related with inserting observations into the map.
 	  */
-	struct MAPS_IMPEXP TInsertionOptions : public utils::CLoadableOptions
+	struct TInsertionOptions : public utils::CLoadableOptions
 	{
 		/** Default values loader */
 		TInsertionOptions();
@@ -82,7 +80,11 @@ class MAPS_IMPEXP CReflectivityGridMap2D : public CMetricMap,
 		void dumpToTextStream(
 			mrpt::utils::CStream& out) const override;  // See base docs
 
-		int16_t channel; //!< The reflectivity channel for this map. If channel=-1, then any channel will be accepted. Otherwise, the map will ignore CObservationReflectivity instances with a differing channel. (Default=-1)
+		int16_t channel;  //!< The reflectivity channel for this map. If
+						  //!channel=-1, then any channel will be accepted.
+						  //!Otherwise, the map will ignore
+						  //!CObservationReflectivity instances with a differing
+						  //!channel. (Default=-1)
 	} insertionOptions;
 
 	/** See docs in base class: in this class this always returns 0 */
@@ -112,14 +114,12 @@ class MAPS_IMPEXP CReflectivityGridMap2D : public CMetricMap,
 		const mrpt::obs::CObservation* obs,
 		const mrpt::poses::CPose3D& takenFrom) override;
 
-	MAP_DEFINITION_START(CReflectivityGridMap2D, MAPS_IMPEXP)
+	MAP_DEFINITION_START(CReflectivityGridMap2D)
 	/** See CReflectivityGridMap2DOptions::CReflectivityGridMap2DOptions */
 	double min_x, max_x, min_y, max_y, resolution;
 	mrpt::maps::CReflectivityGridMap2D::TInsertionOptions insertionOpts;
-	MAP_DEFINITION_END(CReflectivityGridMap2D, MAPS_IMPEXP)
+	MAP_DEFINITION_END(CReflectivityGridMap2D, )
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CReflectivityGridMap2D, CMetricMap, MAPS_IMPEXP)
 
 }  // End of namespace
 

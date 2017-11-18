@@ -73,9 +73,9 @@ int main(int argc, char** argv)
 		const int random_seed = ini.read_int("Params", "random_seed", 0);
 
 		if (random_seed != 0)
-			randomGenerator.randomize(random_seed);
+			getRandomGenerator().randomize(random_seed);
 		else
-			randomGenerator.randomize();
+			getRandomGenerator().randomize();
 
 		// Set default values:
 		unsigned int nLandmarks = 3;
@@ -195,9 +195,9 @@ int main(int argc, char** argv)
 
 				// Random coordinates:
 				pt3D.mean = CPoint3D(
-					randomGenerator.drawUniform(min_x, max_x),
-					randomGenerator.drawUniform(min_y, max_y),
-					randomGenerator.drawUniform(min_z, max_z));
+					getRandomGenerator().drawUniform(min_x, max_x),
+					getRandomGenerator().drawUniform(min_y, max_y),
+					getRandomGenerator().drawUniform(min_z, max_z));
 
 				// Add:
 				LM.createOneFeature();
@@ -257,10 +257,10 @@ int main(int argc, char** argv)
 					const double Ar = DEG2RAD(3);
 					TPose3D Ap =
 						TPose3D(0.20 * cos(Ar), 0.20 * sin(Ar), 0, Ar, 0, 0);
-					// Ap.z  += randomGenerator.drawGaussian1D(0,0.05);
-					Ap.yaw += randomGenerator.drawGaussian1D(0, DEG2RAD(0.2));
-					Ap.pitch += randomGenerator.drawGaussian1D(0, DEG2RAD(2));
-					Ap.roll += randomGenerator.drawGaussian1D(0, DEG2RAD(4));
+					// Ap.z  += getRandomGenerator().drawGaussian1D(0,0.05);
+					Ap.yaw += getRandomGenerator().drawGaussian1D(0, DEG2RAD(0.2));
+					Ap.pitch += getRandomGenerator().drawGaussian1D(0, DEG2RAD(2));
+					Ap.roll += getRandomGenerator().drawGaussian1D(0, DEG2RAD(4));
 
 					incPose3D = CPose3D(Ap);
 				}
@@ -324,13 +324,13 @@ int main(int argc, char** argv)
 					incPose3D.yaw() != 0)
 				{
 					incOdo.x_incr(
-						randomGenerator.drawGaussian1D_normalized() *
+						getRandomGenerator().drawGaussian1D_normalized() *
 						odometryNoiseXY_std);
 					incOdo.y_incr(
-						randomGenerator.drawGaussian1D_normalized() *
+						getRandomGenerator().drawGaussian1D_normalized() *
 						odometryNoiseXY_std);
 					incOdo.phi_incr(
-						randomGenerator.drawGaussian1D_normalized() *
+						getRandomGenerator().drawGaussian1D_normalized() *
 						odometryNoisePhi_std);
 				}
 				act.computeFromOdometry(incOdo, opts);
@@ -347,23 +347,23 @@ int main(int argc, char** argv)
 					incPose3D.yaw() != 0)
 				{
 					noisyIncPose.x_incr(
-						randomGenerator.drawGaussian1D_normalized() *
+						getRandomGenerator().drawGaussian1D_normalized() *
 						odometryNoiseXY_std);
 					noisyIncPose.y_incr(
-						randomGenerator.drawGaussian1D_normalized() *
+						getRandomGenerator().drawGaussian1D_normalized() *
 						odometryNoiseXY_std);
 					noisyIncPose.z_incr(
-						randomGenerator.drawGaussian1D_normalized() *
+						getRandomGenerator().drawGaussian1D_normalized() *
 						odometryNoiseXY_std);
 					noisyIncPose.setYawPitchRoll(
 						noisyIncPose.yaw() +
-							randomGenerator.drawGaussian1D_normalized() *
+							getRandomGenerator().drawGaussian1D_normalized() *
 								odometryNoisePhi_std,
 						noisyIncPose.pitch() +
-							randomGenerator.drawGaussian1D_normalized() *
+							getRandomGenerator().drawGaussian1D_normalized() *
 								odometryNoisePitch_std,
 						noisyIncPose.roll() +
-							randomGenerator.drawGaussian1D_normalized() *
+							getRandomGenerator().drawGaussian1D_normalized() *
 								odometryNoiseRoll_std);
 				}
 

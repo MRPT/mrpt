@@ -9,7 +9,6 @@
 
 #pragma once
 #include <mrpt/opengl/COpenGLScene.h>
-#include <mrpt/gui/link_pragmas.h>
 
 namespace mrpt
 {
@@ -26,7 +25,7 @@ namespace gui
 /** This base class implements a working with opengl::Camera and a OpenGL
  * canvas, and it's used in gui::CWxGLCanvasBase and gui::CQtGlCanvasBase.
 */
-class GUI_IMPEXP CGlCanvasBase
+class CGlCanvasBase
 {
    public:
 	struct CamaraParams

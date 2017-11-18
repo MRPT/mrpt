@@ -14,7 +14,6 @@
 #include <mrpt/utils/types_math.h>
 #include <mrpt/utils/CStream.h>  // for >> ops
 #include <mrpt/math/matrix_serialization.h>  // for >> ops
-#include <mrpt/opengl/link_pragmas.h>
 
 namespace mrpt
 {
@@ -23,32 +22,32 @@ namespace opengl
 namespace detail
 {
 template <int DIM>
-void OPENGL_IMPEXP renderGeneralizedEllipsoidTemplate(
+void renderGeneralizedEllipsoidTemplate(
 	const std::vector<mrpt::math::CMatrixFixedNumeric<float, DIM, 1>>& pts,
 	const float lineWidth, const uint32_t slices, const uint32_t stacks);
 template <>
-void OPENGL_IMPEXP renderGeneralizedEllipsoidTemplate<2>(
+void renderGeneralizedEllipsoidTemplate<2>(
 	const std::vector<mrpt::math::CMatrixFixedNumeric<float, 2, 1>>& pts,
 	const float lineWidth, const uint32_t slices, const uint32_t stacks);
 template <>
-void OPENGL_IMPEXP renderGeneralizedEllipsoidTemplate<3>(
+void renderGeneralizedEllipsoidTemplate<3>(
 	const std::vector<mrpt::math::CMatrixFixedNumeric<float, 3, 1>>& pts,
 	const float lineWidth, const uint32_t slices, const uint32_t stacks);
 
 template <int DIM>
-void OPENGL_IMPEXP generalizedEllipsoidPoints(
+void generalizedEllipsoidPoints(
 	const mrpt::math::CMatrixFixedNumeric<double, DIM, DIM>& U,
 	const mrpt::math::CMatrixFixedNumeric<double, DIM, 1>& mean,
 	std::vector<mrpt::math::CMatrixFixedNumeric<float, DIM, 1>>& out_params_pts,
 	const uint32_t slices, const uint32_t stacks);
 template <>
-void OPENGL_IMPEXP generalizedEllipsoidPoints<2>(
+void generalizedEllipsoidPoints<2>(
 	const mrpt::math::CMatrixFixedNumeric<double, 2, 2>& U,
 	const mrpt::math::CMatrixFixedNumeric<double, 2, 1>& mean,
 	std::vector<mrpt::math::CMatrixFixedNumeric<float, 2, 1>>& out_params_pts,
 	const uint32_t slices, const uint32_t stacks);
 template <>
-void OPENGL_IMPEXP generalizedEllipsoidPoints<3>(
+void generalizedEllipsoidPoints<3>(
 	const mrpt::math::CMatrixFixedNumeric<double, 3, 3>& U,
 	const mrpt::math::CMatrixFixedNumeric<double, 3, 1>& mean,
 	std::vector<mrpt::math::CMatrixFixedNumeric<float, 3, 1>>& out_params_pts,

@@ -23,7 +23,7 @@ namespace utils
  * \sa CImage
  * \ingroup mrpt_base_grp
  */
-class BASE_IMPEXP CMappedImage
+class CMappedImage
 {
    protected:
 	CImage::Ptr m_img;

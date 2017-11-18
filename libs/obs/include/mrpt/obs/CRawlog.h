@@ -65,7 +65,7 @@ typedef std::multimap<mrpt::system::TTimeStamp, CObservation::Ptr>
  *RawLog file format</a>.
  * \ingroup mrpt_obs_grp
  */
-class OBS_IMPEXP CRawlog : public mrpt::utils::CSerializable
+class CRawlog : public mrpt::utils::CSerializable
 {
 	DEFINE_SERIALIZABLE(CRawlog)
 
@@ -437,14 +437,12 @@ class OBS_IMPEXP CRawlog : public mrpt::utils::CSerializable
 	  *choices actually exists).
 	  *
 	  *  The results from this function should be written into
-	  *mrpt::utils::CImage::IMAGES_PATH_BASE to enable automatic
+	  *mrpt::utils::CImage::getImagesPathBase() to enable automatic
 	  *  loading of extenrnally-stored images in rawlogs.
 	  */
 	static std::string detectImagesDirectory(const std::string& rawlogFilename);
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CRawlog, mrpt::utils::CSerializable, OBS_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

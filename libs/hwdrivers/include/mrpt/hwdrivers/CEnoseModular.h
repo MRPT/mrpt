@@ -53,7 +53,7 @@ namespace hwdrivers
   *
   * \ingroup mrpt_hwdrivers_grp
   */
-class HWDRIVERS_IMPEXP CEnoseModular : public mrpt::hwdrivers::CGenericSensor
+class CEnoseModular : public mrpt::hwdrivers::CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CEnoseModular)
 

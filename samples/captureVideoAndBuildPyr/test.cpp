@@ -144,7 +144,7 @@ void TestVideoBuildPyr()
 							gray_img, feats, threshold);
 
 						imgpyr.images[level].drawFeaturesSimple(
-							feats, TColor::blue);
+							feats, TColor::blue());
 					}
 				}
 

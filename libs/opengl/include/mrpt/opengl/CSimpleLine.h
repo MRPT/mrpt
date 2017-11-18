@@ -19,7 +19,7 @@ namespace opengl
   *  \sa opengl::COpenGLScene
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CSimpleLine : public CRenderizableDisplayList
+class CSimpleLine : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CSimpleLine)
 
@@ -89,8 +89,6 @@ class OPENGL_IMPEXP CSimpleLine : public CRenderizableDisplayList
 	/** Private, virtual destructor: only can be deleted from smart pointers */
 	virtual ~CSimpleLine() {}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CSimpleLine, CRenderizableDisplayList, OPENGL_IMPEXP)
 
 }  // end namespace
 

@@ -37,7 +37,7 @@ class CPose3DQuatPDFGaussian;
  * \sa CPose3D, CPose3DPDF, CPose3DPDFParticles
  * \ingroup poses_pdf_grp
  */
-class BASE_IMPEXP CPose3DPDFGaussian : public CPose3DPDF
+class CPose3DPDFGaussian : public CPose3DPDF
 {
 	DEFINE_SERIALIZABLE(CPose3DPDFGaussian)
 
@@ -208,8 +208,6 @@ class BASE_IMPEXP CPose3DPDFGaussian : public CPose3DPDF
 	void getCovSubmatrix2D(mrpt::math::CMatrixDouble& out_cov) const;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(CPose3DPDFGaussian, CPose3DPDF)
-
 /** Pose composition for two 3D pose Gaussians  \sa CPose3DPDFGaussian::operator
  * +=  */
 inline CPose3DPDFGaussian operator+(
@@ -232,11 +230,9 @@ inline CPose3DPDFGaussian operator-(
 
 /** Dumps the mean and covariance matrix to a text stream.
   */
-std::ostream BASE_IMPEXP& operator<<(
-	std::ostream& out, const CPose3DPDFGaussian& obj);
+std::ostream& operator<<(std::ostream& out, const CPose3DPDFGaussian& obj);
 
-bool BASE_IMPEXP
-	operator==(const CPose3DPDFGaussian& p1, const CPose3DPDFGaussian& p2);
+bool operator==(const CPose3DPDFGaussian& p1, const CPose3DPDFGaussian& p2);
 
 }  // End of namespace
 
@@ -252,7 +248,8 @@ namespace global_settings
   *		- CPose3DPDFGaussian::CPose3DPDFGaussian( const CPose3DQuatPDFGaussian
   *&o)
   */
-extern BASE_IMPEXP bool USE_SUT_QUAT2EULER_CONVERSION;
+void USE_SUT_QUAT2EULER_CONVERSION(bool value);
+bool USE_SUT_QUAT2EULER_CONVERSION();
 }
 
 }  // End of namespace

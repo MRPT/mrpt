@@ -22,9 +22,27 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
-float mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL =
-	0.10f;
-size_t mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE = 1e6;
+float OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL_value = 0.10f;
+size_t OCTREE_RENDER_MAX_POINTS_PER_NODE_value = 1e6;
+
+float mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL() 
+{
+	return OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL_value;
+}
+void mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL(float value)
+{
+	OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL_value = value;
+}
+
+size_t mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE()
+{
+	return OCTREE_RENDER_MAX_POINTS_PER_NODE_value;
+}
+void mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE(size_t value)
+{
+	OCTREE_RENDER_MAX_POINTS_PER_NODE_value = value;
+}
+
 
 IMPLEMENTS_SERIALIZABLE(CPointCloud, CRenderizable, mrpt::opengl)
 
@@ -174,8 +192,7 @@ void CPointCloud::render_subset(
 	const size_t decimation = mrpt::utils::round(
 		std::max(
 			1.0f, static_cast<float>(
-					  N / (mrpt::global_settings::
-							   OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL *
+					  N / (OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL_value *
 						   render_area_sqpixels))));
 
 	m_last_rendered_count_ongoing += N / decimation;

@@ -23,19 +23,19 @@ namespace system
 * (compat. with MATLAB)
 * \return Returns false on any error, true on everything OK.
 */
-bool BASE_IMPEXP vectorToTextFile(
+bool vectorToTextFile(
 	const std::vector<float>& vec, const std::string& fileName,
 	bool append = false, bool byRows = false);
 //! \overload
-bool BASE_IMPEXP vectorToTextFile(
+bool vectorToTextFile(
 	const std::vector<double>& vec, const std::string& fileName,
 	bool append = false, bool byRows = false);
 //! \overload
-bool BASE_IMPEXP vectorToTextFile(
+bool vectorToTextFile(
 	const std::vector<int>& vec, const std::string& fileName,
 	bool append = false, bool byRows = false);
 //! \overload
-bool BASE_IMPEXP vectorToTextFile(
+bool vectorToTextFile(
 	const std::vector<size_t>& vec, const std::string& fileName,
 	bool append = false, bool byRows = false);
 //! \overload
@@ -57,7 +57,7 @@ bool vectorToTextFile(const EIGEN_MATRIX& vec, const std::string& fileName)
 * \return Returns false on any error, true on everything OK.
 * \sa loadBinaryFile
 */
-bool BASE_IMPEXP vectorFromTextFile(
+bool vectorFromTextFile(
 	std::vector<double>& vec, const std::string& fileName,
 	const bool byRows = false);
 
@@ -65,15 +65,13 @@ bool BASE_IMPEXP vectorFromTextFile(
 * \return Returns false on any error, true on everything OK.
 * \sa loadBinaryFile
 */
-bool BASE_IMPEXP
-	vectorToBinaryFile(const vector_byte& vec, const std::string& fileName);
+bool vectorToBinaryFile(const vector_byte& vec, const std::string& fileName);
 
 /** Loads a entire file as a vector of bytes.
 * \return Returns false on any error, true on everything OK.
 * \sa vectorToBinaryFile
 */
-bool BASE_IMPEXP
-	loadBinaryFile(vector_byte& out_data, const std::string& fileName);
+bool loadBinaryFile(vector_byte& out_data, const std::string& fileName);
 
 /** @} */
 

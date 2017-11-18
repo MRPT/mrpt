@@ -32,14 +32,14 @@ namespace poses
  * \ingroup poses_pdf_grp
  * \sa CPose3DPDF
  */
-class BASE_IMPEXP CPose3DPDFSOG : public CPose3DPDF
+class CPose3DPDFSOG : public CPose3DPDF
 {
 	DEFINE_SERIALIZABLE(CPose3DPDFSOG)
 
    public:
 	/** The struct for each mode:
 	 */
-	struct BASE_IMPEXP TGaussianMode
+	struct TGaussianMode
 	{
 		TGaussianMode() : val(), log_w(0) {}
 		CPose3DPDFGaussian val;
@@ -147,7 +147,6 @@ class BASE_IMPEXP CPose3DPDFSOG : public CPose3DPDF
 	void appendFrom(const CPose3DPDFSOG& o);
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(CPose3DPDFSOG, CPose3DPDF)
 }  // End of namespace
 }  // End of namespace
 #endif

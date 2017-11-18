@@ -67,6 +67,11 @@ IF(BUILD_mrpt-opengl)
 	ENDIF ()
 	ENDIF()
 
+	IF (MSVC)
+		# Avoid duplicated export symbol warnings in MSVC SRC glut version
+		set_target_properties(mrpt-opengl PROPERTIES LINK_FLAGS "/ignore:4197")
+	ENDIF()
+
 	# Link against gl, glu, glut:
 	TARGET_LINK_LIBRARIES(mrpt-opengl PUBLIC ${MRPT_OPENGL_LIBS} ${MRPT_3DS_LIBS})
 

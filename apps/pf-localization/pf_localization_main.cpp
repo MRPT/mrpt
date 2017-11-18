@@ -222,7 +222,7 @@ void do_pf_localization(
 	metricMap.setListOfMaps(&mapList);
 	mapList.dumpToConsole();
 
-	randomGenerator.randomize();
+	getRandomGenerator().randomize();
 
 	// Load the map (if any):
 	// -------------------------

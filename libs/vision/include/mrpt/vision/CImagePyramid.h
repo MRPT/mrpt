@@ -12,8 +12,6 @@
 
 #include <mrpt/utils/CImage.h>
 
-#include <mrpt/vision/link_pragmas.h>
-
 namespace mrpt
 {
 namespace vision
@@ -56,7 +54,7 @@ namespace vision
   * \sa mrpt::utils::CImage
   * \ingroup mrpt_vision_grp
   */
-class VISION_IMPEXP CImagePyramid
+class CImagePyramid
 {
    public:
 	/** Default constructor, does nothing */

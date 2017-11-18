@@ -40,7 +40,7 @@ namespace vision
   * \note This class is a wrapper for OpenCV's CvVideoWriter.
   *  \ingroup mrpt_vision_grp
   */
-class VISION_IMPEXP CVideoFileWriter
+class CVideoFileWriter
 {
    private:
 	/** A pointer to CvVideoWriter */

@@ -10,7 +10,6 @@
 #define mrpt_math_forwddecls_H
 
 #include <mrpt/config.h>
-#include <mrpt/base/link_pragmas.h>
 #include <mrpt/poses/poses_frwds.h>
 #include <string>
 
@@ -30,7 +29,7 @@ class CStream;
 
 namespace system
 {
-std::string BASE_IMPEXP MRPT_getVersion();
+std::string MRPT_getVersion();
 }
 
 namespace math
@@ -164,19 +163,19 @@ namespace detail
 // Implemented in "lightweight_geom_data.cpp"
 /** Convert a pose into a light-weight structure (functional form, needed for
  * forward declarations) */
-TPoint2D BASE_IMPEXP lightFromPose(const mrpt::poses::CPoint2D& p);
+TPoint2D lightFromPose(const mrpt::poses::CPoint2D& p);
 /** Convert a pose into a light-weight structure (functional form, needed for
  * forward declarations) */
-TPoint3D BASE_IMPEXP lightFromPose(const mrpt::poses::CPoint3D& p);
+TPoint3D lightFromPose(const mrpt::poses::CPoint3D& p);
 /** Convert a pose into a light-weight structure (functional form, needed for
  * forward declarations) */
-TPose2D BASE_IMPEXP lightFromPose(const mrpt::poses::CPose2D& p);
+TPose2D lightFromPose(const mrpt::poses::CPose2D& p);
 /** Convert a pose into a light-weight structure (functional form, needed for
  * forward declarations) */
-TPose3D BASE_IMPEXP lightFromPose(const mrpt::poses::CPose3D& p);
+TPose3D lightFromPose(const mrpt::poses::CPose3D& p);
 /** Convert a pose into a light-weight structure (functional form, needed for
  * forward declarations) */
-TPose3DQuat BASE_IMPEXP lightFromPose(const mrpt::poses::CPose3DQuat& p);
+TPose3DQuat lightFromPose(const mrpt::poses::CPose3DQuat& p);
 
 template <class MATORG, class MATDEST>
 void extractMatrix(

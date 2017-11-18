@@ -29,7 +29,7 @@ namespace opengl
   *
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CGridPlaneXY : public CRenderizableDisplayList
+class CGridPlaneXY : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CGridPlaneXY)
 
@@ -108,8 +108,6 @@ class OPENGL_IMPEXP CGridPlaneXY : public CRenderizableDisplayList
 	/** Private, virtual destructor: only can be deleted from smart pointers */
 	virtual ~CGridPlaneXY() {}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CGridPlaneXY, CRenderizableDisplayList, OPENGL_IMPEXP)
 
 }  // end namespace
 

@@ -9,7 +9,6 @@
 #ifndef MRPT_SYSTEM_DATETIME_H
 #define MRPT_SYSTEM_DATETIME_H
 
-#include <mrpt/base/link_pragmas.h>
 #include <cstdint>
 #include <string>
 
@@ -51,26 +50,25 @@ struct TTimeParts
 /** Builds a timestamp from the parts (Parts are in UTC)
   * \sa timestampToParts
   */
-mrpt::system::TTimeStamp BASE_IMPEXP
-	buildTimestampFromParts(const mrpt::system::TTimeParts& p);
+mrpt::system::TTimeStamp buildTimestampFromParts(
+	const mrpt::system::TTimeParts& p);
 
 /** Builds a timestamp from the parts (Parts are in local time)
   * \sa timestampToParts, buildTimestampFromParts
   */
-mrpt::system::TTimeStamp BASE_IMPEXP
-	buildTimestampFromPartsLocalTime(const mrpt::system::TTimeParts& p);
+mrpt::system::TTimeStamp buildTimestampFromPartsLocalTime(
+	const mrpt::system::TTimeParts& p);
 
 /** Gets the individual parts of a date/time (days, hours, minutes, seconds) -
  * UTC time or local time
   * \sa buildTimestampFromParts
   */
-void BASE_IMPEXP
-	timestampToParts(TTimeStamp t, TTimeParts& p, bool localTime = false);
+void timestampToParts(TTimeStamp t, TTimeParts& p, bool localTime = false);
 
 /** Returns the current (UTC) system time.
   * \sa now,getCurrentLocalTime
   */
-mrpt::system::TTimeStamp BASE_IMPEXP getCurrentTime();
+mrpt::system::TTimeStamp getCurrentTime();
 
 /** A shortcut for system::getCurrentTime
   * \sa getCurrentTime, getCurrentLocalTime
@@ -79,24 +77,24 @@ inline mrpt::system::TTimeStamp now() { return getCurrentTime(); }
 /** Returns the current (local) time.
   * \sa now,getCurrentTime
   */
-mrpt::system::TTimeStamp BASE_IMPEXP getCurrentLocalTime();
+mrpt::system::TTimeStamp getCurrentLocalTime();
 
 /** Transform from standard "time_t" (actually a double number, it can contain
  * fractions of seconds) to TTimeStamp.
   * \sa timestampTotime_t
   */
-mrpt::system::TTimeStamp BASE_IMPEXP time_tToTimestamp(const double t);
+mrpt::system::TTimeStamp time_tToTimestamp(const double t);
 
 /** Transform from standard "time_t" to TTimeStamp.
   * \sa timestampTotime_t
   */
-mrpt::system::TTimeStamp BASE_IMPEXP time_tToTimestamp(const time_t& t);
+mrpt::system::TTimeStamp time_tToTimestamp(const time_t& t);
 
 /** Transform from TTimeStamp to standard "time_t" (actually a double number, it
  * can contain fractions of seconds).
   * \sa time_tToTimestamp, secondsToTimestamp
   */
-double BASE_IMPEXP timestampTotime_t(const mrpt::system::TTimeStamp t);
+double timestampTotime_t(const mrpt::system::TTimeStamp t);
 
 /** Transform from TTimeStamp to standard "time_t" (actually a double number, it
  * can contain fractions of seconds).
@@ -111,7 +109,7 @@ inline double timestampToDouble(const mrpt::system::TTimeStamp t)
 
 /** Returns the time difference from t1 to t2 (positive if t2 is posterior to
  * t1), in seconds \sa secondsToTimestamp */
-double BASE_IMPEXP timeDifference(
+double timeDifference(
 	const mrpt::system::TTimeStamp t_first,
 	const mrpt::system::TTimeStamp t_later);
 
@@ -125,49 +123,48 @@ inline double now_double()
 
 /** Shifts a timestamp the given amount of seconds (>0: forwards in time, <0:
  * backwards) \sa secondsToTimestamp */
-mrpt::system::TTimeStamp BASE_IMPEXP
-	timestampAdd(const mrpt::system::TTimeStamp tim, const double num_seconds);
+mrpt::system::TTimeStamp timestampAdd(
+	const mrpt::system::TTimeStamp tim, const double num_seconds);
 
 /** Transform a time interval (in seconds) into TTimeStamp (e.g. which can be
  * added to an existing valid timestamp)
   * \sa timeDifference
   */
-mrpt::system::TTimeStamp BASE_IMPEXP secondsToTimestamp(const double nSeconds);
+mrpt::system::TTimeStamp secondsToTimestamp(const double nSeconds);
 
 /** Returns a formated string with the given time difference (passed as the
  * number of seconds), as a string [H]H:MM:SS.MILISECS
   * \sa unitsFormat
   */
-std::string BASE_IMPEXP formatTimeInterval(const double timeSeconds);
+std::string formatTimeInterval(const double timeSeconds);
 
 /** Convert a timestamp into this textual form (UTC time):
  * YEAR/MONTH/DAY,HH:MM:SS.MMM
   * \sa dateTimeLocalToString
   */
-std::string BASE_IMPEXP dateTimeToString(const mrpt::system::TTimeStamp t);
+std::string dateTimeToString(const mrpt::system::TTimeStamp t);
 
 /** Convert a timestamp into this textual form (in local time):
  * YEAR/MONTH/DAY,HH:MM:SS.MMM
   * \sa dateTimeToString
   */
-std::string BASE_IMPEXP dateTimeLocalToString(const mrpt::system::TTimeStamp t);
+std::string dateTimeLocalToString(const mrpt::system::TTimeStamp t);
 
 /** Convert a timestamp into this textual form: YEAR/MONTH/DAY
  */
-std::string BASE_IMPEXP dateToString(const mrpt::system::TTimeStamp t);
+std::string dateToString(const mrpt::system::TTimeStamp t);
 
 /** Returns the number of seconds ellapsed from midnight in the given timestamp
  */
-double BASE_IMPEXP
-	extractDayTimeFromTimestamp(const mrpt::system::TTimeStamp t);
+double extractDayTimeFromTimestamp(const mrpt::system::TTimeStamp t);
 
 /** Convert a timestamp into this textual form (UTC): HH:MM:SS.MMMMMM
  */
-std::string BASE_IMPEXP timeToString(const mrpt::system::TTimeStamp t);
+std::string timeToString(const mrpt::system::TTimeStamp t);
 
 /** Convert a timestamp into this textual form (in local time): HH:MM:SS.MMMMMM
  */
-std::string BASE_IMPEXP timeLocalToString(
+std::string timeLocalToString(
 	const mrpt::system::TTimeStamp t, unsigned int secondFractionDigits = 6);
 
 /** This function implements time interval formatting: Given a time in seconds,
@@ -177,7 +174,7 @@ std::string BASE_IMPEXP timeLocalToString(
  * us.
  * \sa unitsFormat
  */
-std::string BASE_IMPEXP intervalFormat(const double seconds);
+std::string intervalFormat(const double seconds);
 
 /** @} */
 

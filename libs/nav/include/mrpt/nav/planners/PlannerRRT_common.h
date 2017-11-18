@@ -14,7 +14,6 @@
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/nav/link_pragmas.h>
 #include <string>
 #include <cstdlib>  // size_t
 
@@ -66,7 +65,7 @@ struct TPlannerResultTempl
 	}
 };
 
-struct NAV_IMPEXP RRTEndCriteria
+struct RRTEndCriteria
 {
 	/** Maximum distance from a pose to target to accept it as a valid solution
 	 * (meters). (Both acceptedDistToTarget & acceptedAngToTarget must be
@@ -92,7 +91,7 @@ struct NAV_IMPEXP RRTEndCriteria
 	}
 };
 
-struct NAV_IMPEXP RRTAlgorithmParams
+struct RRTAlgorithmParams
 {
 	/** The robot shape used when computing collisions; it's loaded from the
 	*  config file/text as a single 2xN matrix in MATLAB format, first row are
@@ -138,7 +137,7 @@ struct NAV_IMPEXP RRTAlgorithmParams
 };
 
 /** Virtual base class for TP-Space-based path planners */
-class NAV_IMPEXP PlannerTPS_VirtualBase
+class PlannerTPS_VirtualBase
 {
    public:
 	RRTEndCriteria end_criteria;
@@ -151,7 +150,7 @@ class NAV_IMPEXP PlannerTPS_VirtualBase
 	mrpt::utils::CTimeLogger& getProfiler() { return m_timelogger; }
 	const mrpt::nav::TListPTGPtr& getPTGs() const { return m_PTGs; }
 	/** Options for renderMoveTree()  */
-	struct NAV_IMPEXP TRenderPlannedPathOptions
+	struct TRenderPlannedPathOptions
 	{
 		/** Highlight the path from root towards this node (usually, the target)
 		 */

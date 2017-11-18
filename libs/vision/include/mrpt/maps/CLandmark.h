@@ -32,7 +32,7 @@ namespace maps
   * \sa CLandmarksMap
   * \ingroup mrpt_vision_grp
   */
-class VISION_IMPEXP CLandmark : public mrpt::utils::CSerializable
+class CLandmark : public mrpt::utils::CSerializable
 {
 	DEFINE_SERIALIZABLE(CLandmark)
 
@@ -127,8 +127,6 @@ class VISION_IMPEXP CLandmark : public mrpt::utils::CSerializable
 	static TLandmarkID m_counterIDs;
 
 };  // End of class definition
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CLandmark, mrpt::utils::CSerializable, VISION_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

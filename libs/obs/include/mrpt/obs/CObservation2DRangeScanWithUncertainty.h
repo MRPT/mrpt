@@ -19,7 +19,7 @@ namespace obs
 /** A 2D range scan plus an uncertainty model for each range.
   * \sa mrpt::maps::COccupancyGridMap2D::laserScanSimulatorWithUncertainty()
   */
-class OBS_IMPEXP CObservation2DRangeScanWithUncertainty
+class CObservation2DRangeScanWithUncertainty
 {
    public:
 	/** The observation with the mean ranges in the scan field */
@@ -30,7 +30,7 @@ class OBS_IMPEXP CObservation2DRangeScanWithUncertainty
 	/** The covariance matrix for all the ranges in rangeScan.scan[] */
 	Eigen::MatrixXd rangesCovar;
 
-	struct OBS_IMPEXP TEvalParams
+	struct TEvalParams
 	{
 		/** (Default: 0.5) Probability of having an outlier (dynamic obstacles,
 		 * not mapped) in each scan ray. */

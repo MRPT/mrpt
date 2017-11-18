@@ -25,7 +25,16 @@ using namespace std;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 
-double mrpt::math::geometryEpsilon = 1e-5;
+static double geometryEpsilon = 1e-5;
+
+double mrpt::math::getEpsilon()
+{
+	return geometryEpsilon;
+}
+void mrpt::math::setEpsilon(double eps)
+{
+	geometryEpsilon = eps;
+}
 
 /*---------------------------------------------------------------
 	Returns the closest point to a segment

@@ -270,7 +270,7 @@ void CPointPDFGaussian::drawSingleSample(CPoint3D& outSample) const
 	MRPT_START
 
 	CVectorDouble vec;
-	randomGenerator.drawGaussianMultivariate(vec, cov);
+	getRandomGenerator().drawGaussianMultivariate(vec, cov);
 
 	ASSERT_(vec.size() == 3);
 	outSample.x(mean.x() + vec[0]);

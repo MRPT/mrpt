@@ -22,7 +22,7 @@ namespace opengl
   *  \sa opengl::COpenGLScene, CSetOfTexturedTriangles
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CSetOfTriangles : public CRenderizableDisplayList
+class CSetOfTriangles : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CSetOfTriangles)
    public:
@@ -30,7 +30,7 @@ class OPENGL_IMPEXP CSetOfTriangles : public CRenderizableDisplayList
 	  * Triangle definition. Each vertex has three spatial coordinates and four
 	 * color values.
 	  */
-	struct OPENGL_IMPEXP TTriangle
+	struct TTriangle
 	{
 		inline TTriangle()
 		{
@@ -221,8 +221,6 @@ class OPENGL_IMPEXP CSetOfTriangles : public CRenderizableDisplayList
 	/** Private, virtual destructor: only can be deleted from smart pointers */
 	virtual ~CSetOfTriangles() {}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CSetOfTriangles, CRenderizableDisplayList, OPENGL_IMPEXP)
 /** Inserts a set of triangles into the list; note that this method allows to
  * pass another CSetOfTriangles as argument. Allows call chaining.
   * \sa mrpt::opengl::CSetOfTriangles::insertTriangle

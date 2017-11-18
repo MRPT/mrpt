@@ -50,7 +50,16 @@ bool CImage::DISABLE_ZIP_COMPRESSION = false;
 bool CImage::DISABLE_JPEG_COMPRESSION = false;
 int CImage::SERIALIZATION_JPEG_QUALITY = 95;
 
-std::string CImage::IMAGES_PATH_BASE(".");
+static std::string IMAGES_PATH_BASE(".");
+
+const std::string &CImage::getImagesPathBase()
+{
+	return IMAGES_PATH_BASE;
+}
+void CImage::setImagesPathBase(const std::string &path)
+{
+	IMAGES_PATH_BASE = path;
+}
 
 // Do performance time logging?
 #define IMAGE_ALLOC_PERFLOG 0
@@ -2380,7 +2389,7 @@ bool CImage::drawChessboardCorners(
 			if (i == 0 || i == cornerCoords.size() - 1)
 				CCanvas::textOut(
 					pt.x + 5, pt.y - 5, mrpt::format("%u", i),
-					mrpt::utils::TColor::blue);
+					mrpt::utils::TColor::blue());
 		}
 	}
 

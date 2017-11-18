@@ -66,7 +66,7 @@ namespace obs
  * \sa CObservation
  * \ingroup mrpt_obs_grp
  */
-class OBS_IMPEXP CObservationGPS : public CObservation
+class CObservationGPS : public CObservation
 {
 	DEFINE_SERIALIZABLE(CObservationGPS)
 
@@ -279,8 +279,6 @@ class OBS_IMPEXP CObservationGPS : public CObservation
 		mrpt::system::TTimeParts& utc_out);
 	/** @} */
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CObservationGPS, CObservation, OBS_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

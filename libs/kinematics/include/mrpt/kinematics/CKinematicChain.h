@@ -14,8 +14,6 @@
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/utils/aligned_containers.h>
 
-#include <mrpt/kinematics/link_pragmas.h>
-
 namespace mrpt
 {
 namespace kinematics
@@ -27,7 +25,7 @@ namespace kinematics
   * follows a Denavit-Hartenberg standard parameterization: [theta, d, a,
  * alpha].
   */
-struct KINEMATICS_IMPEXP TKinematicLink
+struct TKinematicLink
 {
 	/** Rotation from X_i to X_{i+1} (radians) */
 	double theta;
@@ -55,9 +53,8 @@ struct KINEMATICS_IMPEXP TKinematicLink
 	TKinematicLink() : theta(0), d(0), a(0), alpha(0), is_prismatic(false) {}
 };
 
-KINEMATICS_IMPEXP mrpt::utils::CStream& operator>>(
-	mrpt::utils::CStream& in, TKinematicLink& o);
-KINEMATICS_IMPEXP mrpt::utils::CStream& operator<<(
+mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in, TKinematicLink& o);
+mrpt::utils::CStream& operator<<(
 	mrpt::utils::CStream& out, const TKinematicLink& o);
 
 /** A open-loop kinematic chain model, suitable to robotic manipulators.
@@ -70,7 +67,7 @@ KINEMATICS_IMPEXP mrpt::utils::CStream& operator<<(
   * \sa CPose3D
   * \ingroup kinematics_grp
   */
-class KINEMATICS_IMPEXP CKinematicChain : public mrpt::utils::CSerializable
+class CKinematicChain : public mrpt::utils::CSerializable
 {
 	DEFINE_SERIALIZABLE(CKinematicChain)
 
@@ -193,8 +190,6 @@ class KINEMATICS_IMPEXP CKinematicChain : public mrpt::utils::CSerializable
 		const mrpt::poses::CPose3D& pose0 = mrpt::poses::CPose3D()) const;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CKinematicChain, mrpt::utils::CSerializable, KINEMATICS_IMPEXP)
 
 }  // End of namespace
 

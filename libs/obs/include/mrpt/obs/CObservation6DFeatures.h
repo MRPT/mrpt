@@ -25,7 +25,7 @@ namespace obs
  * \sa CObservation
  * \ingroup mrpt_obs_grp
  */
-class OBS_IMPEXP CObservation6DFeatures : public CObservation
+class CObservation6DFeatures : public CObservation
 {
 	DEFINE_SERIALIZABLE(CObservation6DFeatures)
    public:
@@ -36,7 +36,7 @@ class OBS_IMPEXP CObservation6DFeatures : public CObservation
 	float minSensorDistance, maxSensorDistance;
 
 	/** Each one of the measurements */
-	struct OBS_IMPEXP TMeasurement
+	struct TMeasurement
 	{
 		/** The observed feature SE(3) pose with respect to the sensor */
 		mrpt::poses::CPose3D pose;
@@ -66,8 +66,6 @@ class OBS_IMPEXP CObservation6DFeatures : public CObservation
 		std::ostream& o) const override;  // See base class docs
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CObservation6DFeatures, CObservation, OBS_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

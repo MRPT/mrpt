@@ -84,12 +84,12 @@ void slerp(
   * \param[out] p The output, interpolated pose.
   * \exception std::exception Only in Debug, if t is not in the valid range.
   */
-void BASE_IMPEXP slerp(
+void slerp(
 	const mrpt::poses::CPose3D& q0, const mrpt::poses::CPose3D& q1,
 	const double t, mrpt::poses::CPose3D& p);
 
 //! \overload
-void BASE_IMPEXP slerp(
+void slerp(
 	const mrpt::poses::CPose3DQuat& q0, const mrpt::poses::CPose3DQuat& q1,
 	const double t, mrpt::poses::CPose3DQuat& p);
 
@@ -97,7 +97,7 @@ void BASE_IMPEXP slerp(
  * as mrpt::math::TPose3D
  * form as yaw,pitch,roll angles. XYZ are ignored.
  */
-void BASE_IMPEXP slerp_ypr(
+void slerp_ypr(
 	const mrpt::math::TPose3D& q0, const mrpt::math::TPose3D& q1,
 	const double t, mrpt::math::TPose3D& p);
 

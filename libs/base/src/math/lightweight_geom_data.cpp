@@ -433,7 +433,7 @@ double TSegment2D::signedDistance(const TPoint2D& point) const
 bool TSegment2D::contains(const TPoint2D& point) const
 {
 	return abs(math::distance(point1, point) + math::distance(point2, point) -
-			   math::distance(point1, point2)) < geometryEpsilon;
+			   math::distance(point1, point2)) < getEpsilon();
 }
 void TSegment2D::generate3DObject(TSegment3D& s) const
 {
@@ -549,7 +549,7 @@ bool TSegment3D::contains(const TPoint3D& point) const
 {
 	// Not very intuitive, but very fast, method.
 	return abs(math::distance(point1, point) + math::distance(point2, point) -
-			   math::distance(point1, point2)) < geometryEpsilon;
+			   math::distance(point1, point2)) < getEpsilon();
 }
 
 bool TSegment3D::operator<(const TSegment3D& s) const
@@ -568,7 +568,7 @@ double TLine2D::evaluatePoint(const TPoint2D& point) const
 }
 bool TLine2D::contains(const TPoint2D& point) const
 {
-	return abs(distance(point)) < geometryEpsilon;
+	return abs(distance(point)) < getEpsilon();
 }
 double TLine2D::distance(const TPoint2D& point) const
 {
@@ -602,7 +602,7 @@ void TLine2D::getAsPose2D(mrpt::poses::CPose2D& outPose) const
 	// If line is horizontal, force x=0. Else, force y=0. In both cases, we'll
 	// find a suitable point.
 	outPose.phi(atan2(coefs[0], -coefs[1]));
-	if (abs(coefs[0]) < geometryEpsilon)
+	if (abs(coefs[0]) < getEpsilon())
 	{
 		outPose.x(0);
 		outPose.y(-coefs[2] / coefs[1]);
@@ -639,7 +639,7 @@ TLine2D::TLine2D(const TSegment2D& s)
 TLine2D::TLine2D(const TLine3D& l)
 {
 	// Line's projection to Z plane may be a point.
-	if (hypot(l.director[0], l.director[1]) < geometryEpsilon)
+	if (hypot(l.director[0], l.director[1]) < getEpsilon())
 		throw std::logic_error("Line is normal to projection plane");
 	coefs[0] = -l.director[1];
 	coefs[1] = l.director[0];
@@ -651,15 +651,15 @@ bool TLine3D::contains(const TPoint3D& point) const
 	double dx = point.x - pBase.x;
 	double dy = point.y - pBase.y;
 	double dz = point.z - pBase.z;
-	if (abs(dx) < geometryEpsilon && abs(dy) < geometryEpsilon &&
-		abs(dz) < geometryEpsilon)
+	if (abs(dx) < getEpsilon() && abs(dy) < getEpsilon() &&
+		abs(dz) < getEpsilon())
 		return true;
 	//       dx          dy          dz
 	// if -----------=-----------=-----------, point is inside the line.
 	//   director[0] director[1] director[2]
-	return (abs(dx * director[1] - dy * director[0]) < geometryEpsilon) &&
-		   (abs(dx * director[2] - dz * director[0]) < geometryEpsilon) &&
-		   (abs(dy * director[2] - dz * director[1]) < geometryEpsilon);
+	return (abs(dx * director[1] - dy * director[0]) < getEpsilon()) &&
+		   (abs(dx * director[2] - dz * director[0]) < getEpsilon()) &&
+		   (abs(dy * director[2] - dz * director[1]) < getEpsilon());
 }
 double TLine3D::distance(const TPoint3D& point) const
 {
@@ -684,7 +684,7 @@ void TLine3D::unitarize()
 }
 TLine3D::TLine3D(const TPoint3D& p1, const TPoint3D& p2)
 {
-	if (abs(math::distance(p1, p2)) < geometryEpsilon)
+	if (abs(math::distance(p1, p2)) < getEpsilon())
 		throw logic_error("Both points are the same");
 	pBase = p1;
 	director[0] = p2.x - p1.x;
@@ -705,7 +705,7 @@ TLine3D::TLine3D(const TLine2D& l)
 	director[2] = 0;
 	// We assume that either l.coefs[0] or l.coefs[1] is not null. Respectively,
 	// either y or x can be used as free cordinate.
-	if (abs(l.coefs[0]) >= geometryEpsilon)
+	if (abs(l.coefs[0]) >= getEpsilon())
 	{
 		pBase.x = -l.coefs[2] / l.coefs[0];
 		pBase.y = 0;
@@ -724,13 +724,13 @@ double TPlane::evaluatePoint(const TPoint3D& point) const
 }
 bool TPlane::contains(const TPoint3D& point) const
 {
-	return distance(point) < geometryEpsilon;
+	return distance(point) < getEpsilon();
 }
 bool TPlane::contains(const TLine3D& line) const
 {
 	if (!contains(line.pBase)) return false;  // Base point must be contained
 	return abs(getAngle(*this, line)) <
-		   geometryEpsilon;  // Plane's normal must be normal to director vector
+		   getEpsilon();  // Plane's normal must be normal to director vector
 }
 double TPlane::distance(const TPoint3D& point) const
 {
@@ -738,7 +738,7 @@ double TPlane::distance(const TPoint3D& point) const
 }
 double TPlane::distance(const TLine3D& line) const
 {
-	if (abs(getAngle(*this, line)) >= geometryEpsilon)
+	if (abs(getAngle(*this, line)) >= getEpsilon())
 		return 0;  // Plane crosses with line
 	else
 		return distance(line.pBase);
@@ -763,7 +763,7 @@ void TPlane::getAsPose3D(mrpt::poses::CPose3D& outPose)
 	CMatrixDouble AXIS;
 	generateAxisBaseFromDirectionAndAxis(normal, 2, AXIS);
 	for (size_t i = 0; i < 3; i++)
-		if (abs(coefs[i]) >= geometryEpsilon)
+		if (abs(coefs[i]) >= getEpsilon())
 		{
 			AXIS.set_unsafe(i, 3, -coefs[3] / coefs[i]);
 			break;
@@ -793,8 +793,8 @@ TPlane::TPlane(const TPoint3D& p1, const TPoint3D& p2, const TPoint3D& p3)
 	coefs[0] = dy1 * dz2 - dy2 * dz1;
 	coefs[1] = dz1 * dx2 - dz2 * dx1;
 	coefs[2] = dx1 * dy2 - dx2 * dy1;
-	if (abs(coefs[0]) < geometryEpsilon && abs(coefs[1]) < geometryEpsilon &&
-		abs(coefs[2]) < geometryEpsilon)
+	if (abs(coefs[0]) < getEpsilon() && abs(coefs[1]) < getEpsilon() &&
+		abs(coefs[2]) < getEpsilon())
 		throw logic_error("Points are linearly dependent");
 	coefs[3] = -coefs[0] * p1.x - coefs[1] * p1.y - coefs[2] * p1.z;
 }
@@ -806,8 +806,8 @@ TPlane::TPlane(const TPoint3D& p1, const TLine3D& r2)
 	coefs[0] = dy1 * r2.director[2] - dz1 * r2.director[1];
 	coefs[1] = dz1 * r2.director[0] - dx1 * r2.director[2];
 	coefs[2] = dx1 * r2.director[1] - dy1 * r2.director[0];
-	if (abs(coefs[0]) < geometryEpsilon && abs(coefs[1]) < geometryEpsilon &&
-		abs(coefs[2]) < geometryEpsilon)
+	if (abs(coefs[0]) < getEpsilon() && abs(coefs[1]) < getEpsilon() &&
+		abs(coefs[2]) < getEpsilon())
 		throw logic_error("Point is contained in the line");
 	coefs[3] = -coefs[0] * p1.x - coefs[1] * p1.y - coefs[2] * p1.z;
 }
@@ -816,8 +816,8 @@ TPlane::TPlane(const TLine3D& r1, const TLine3D& r2)
 	crossProduct3D(r1.director, r2.director, coefs);
 	coefs[3] =
 		-coefs[0] * r1.pBase.x - coefs[1] * r1.pBase.y - coefs[2] * r1.pBase.z;
-	if (abs(coefs[0]) < geometryEpsilon && abs(coefs[1]) < geometryEpsilon &&
-		abs(coefs[2]) < geometryEpsilon)
+	if (abs(coefs[0]) < getEpsilon() && abs(coefs[1]) < getEpsilon() &&
+		abs(coefs[2]) < getEpsilon())
 	{
 		// Lines are parallel
 		if (r1.contains(r2.pBase)) throw std::logic_error("Lines are the same");
@@ -829,7 +829,7 @@ TPlane::TPlane(const TLine3D& r1, const TLine3D& r2)
 		coefs[3] = -coefs[0] * r1.pBase.x - coefs[1] * r1.pBase.y -
 				   coefs[2] * r1.pBase.z;
 	}
-	else if (abs(evaluatePoint(r2.pBase)) >= geometryEpsilon)
+	else if (abs(evaluatePoint(r2.pBase)) >= getEpsilon())
 		throw logic_error("Lines do not intersect");
 }
 
@@ -842,18 +842,18 @@ inline void removeUnusedVertices(T& poly)
 	if (abs(mrpt::math::distance(poly[N - 1], poly[0]) +
 			mrpt::math::distance(poly[0], poly[1]) -
 			mrpt::math::distance(poly[N - 1], poly[1])) <
-		mrpt::math::geometryEpsilon)
+		mrpt::math::getEpsilon())
 		unused.push_back(0);
 	for (size_t i = 1; i < N - 1; i++)
 		if (abs(mrpt::math::distance(poly[i - 1], poly[i]) +
 				mrpt::math::distance(poly[i], poly[i + 1]) -
 				mrpt::math::distance(poly[i - 1], poly[i + 1])) <
-			mrpt::math::geometryEpsilon)
+			mrpt::math::getEpsilon())
 			unused.push_back(i);
 	if (abs(mrpt::math::distance(poly[N - 2], poly[N - 1]) +
 			mrpt::math::distance(poly[N - 1], poly[0]) -
 			mrpt::math::distance(poly[N - 2], poly[0])) <
-		mrpt::math::geometryEpsilon)
+		mrpt::math::getEpsilon())
 		unused.push_back(N - 1);
 	unused.push_back(N);
 	size_t diff = 1;
@@ -872,9 +872,9 @@ inline void removeRepVertices(T& poly)
 	if (N < 3) return;
 	std::vector<size_t> rep;
 	for (size_t i = 0; i < N - 1; i++)
-		if (mrpt::math::distance(poly[i], poly[i + 1]) < geometryEpsilon)
+		if (mrpt::math::distance(poly[i], poly[i + 1]) < getEpsilon())
 			rep.push_back(i);
-	if (mrpt::math::distance(poly[N - 1], poly[0]) < geometryEpsilon)
+	if (mrpt::math::distance(poly[N - 1], poly[0]) < getEpsilon())
 		rep.push_back(N - 1);
 	rep.push_back(N);
 	size_t diff = 1;
@@ -1011,7 +1011,7 @@ bool TPolygon2D::isConvex() const
 		for (size_t j = 0; j < N; j++)
 		{
 			double d = l.evaluatePoint(operator[](j));
-			if (abs(d) < geometryEpsilon)
+			if (abs(d) < getEpsilon())
 				continue;
 			else if (!s)
 				s = (d > 0) ? 1 : -1;
@@ -1050,7 +1050,7 @@ TPolygon2D::TPolygon2D(const TPolygon3D& p) : std::vector<TPoint2D>()
 void TPolygon2D::createRegularPolygon(
 	size_t numEdges, double radius, TPolygon2D& poly)
 {
-	if (numEdges < 3 || abs(radius) < geometryEpsilon)
+	if (numEdges < 3 || abs(radius) < getEpsilon())
 		throw std::logic_error(
 			"Invalid arguments for regular polygon creations");
 	poly.resize(numEdges);
@@ -1086,12 +1086,12 @@ bool TPolygon3D::contains(const TPoint3D& point) const
 {
 	TPoint3D pMin, pMax;
 	getPrismBounds(*this, pMin, pMax);
-	if (point.x + geometryEpsilon < pMin.x ||
-		point.y + geometryEpsilon < pMin.y ||
-		point.z + geometryEpsilon < pMin.z ||
-		point.x > pMax.x + geometryEpsilon ||
-		point.y > pMax.y + geometryEpsilon ||
-		point.z > pMax.z + geometryEpsilon)
+	if (point.x + getEpsilon() < pMin.x ||
+		point.y + getEpsilon() < pMin.y ||
+		point.z + getEpsilon() < pMin.z ||
+		point.x > pMax.x + getEpsilon() ||
+		point.y > pMax.y + getEpsilon() ||
+		point.z > pMax.z + getEpsilon())
 		return false;
 	TPlane plane;
 	if (!getPlane(plane))
@@ -1103,7 +1103,7 @@ bool TPolygon3D::contains(const TPoint3D& point) const
 	plane.getAsPose3D(pose);
 	pose = mrpt::poses::CPose3D(0, 0, 0, 0, 0, 0) - pose;
 	project3D(point, pose, projectedPoint);
-	if (abs(projectedPoint.z) >= geometryEpsilon)
+	if (abs(projectedPoint.z) >= getEpsilon())
 		return false;  // Point is not inside the polygon's plane.
 	project3D(*this, pose, projectedPoly);
 	return TPolygon2D(projectedPoly).contains(TPoint2D(projectedPoint));
@@ -1145,7 +1145,7 @@ TPolygon3D::TPolygon3D(const TPolygon2D& p) : std::vector<TPoint3D>()
 void TPolygon3D::createRegularPolygon(
 	size_t numEdges, double radius, TPolygon3D& poly)
 {
-	if (numEdges < 3 || abs(radius) < geometryEpsilon)
+	if (numEdges < 3 || abs(radius) < getEpsilon())
 		throw std::logic_error(
 			"Invalid arguments for regular polygon creations");
 	poly.resize(numEdges);
@@ -1415,14 +1415,14 @@ mrpt::utils::CStream& operator<<(
 	return out;
 }
 
-BASE_IMPEXP mrpt::utils::CStream& operator>>(
+mrpt::utils::CStream& operator>>(
 	mrpt::utils::CStream& in, mrpt::math::TTwist2D& o);
-BASE_IMPEXP mrpt::utils::CStream& operator<<(
+mrpt::utils::CStream& operator<<(
 	mrpt::utils::CStream& out, const mrpt::math::TTwist2D& o);
 
-BASE_IMPEXP mrpt::utils::CStream& operator>>(
+mrpt::utils::CStream& operator>>(
 	mrpt::utils::CStream& in, mrpt::math::TTwist3D& o);
-BASE_IMPEXP mrpt::utils::CStream& operator<<(
+mrpt::utils::CStream& operator<<(
 	mrpt::utils::CStream& out, const mrpt::math::TTwist3D& o);
 
 mrpt::utils::CStream& operator>>(

@@ -501,11 +501,11 @@ int main(int argc, char** argv)
 		VERBOSE_COUT << "Open OK.\n";
 
 		// External storage directory?
-		CImage::IMAGES_PATH_BASE = CRawlog::detectImagesDirectory(input_rawlog);
-		if (mrpt::system::directoryExists(CImage::IMAGES_PATH_BASE))
+		CImage::setImagesPathBase(CRawlog::detectImagesDirectory(input_rawlog));
+		if (mrpt::system::directoryExists(CImage::getImagesPathBase()))
 		{
 			VERBOSE_COUT << "Found external storage directory: "
-						 << CImage::IMAGES_PATH_BASE << "\n";
+						 << CImage::getImagesPathBase() << "\n";
 		}
 		else
 		{

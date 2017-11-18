@@ -27,7 +27,17 @@ using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
 
-bool mrpt::global_settings::USE_SUT_EULER2QUAT_CONVERSION = false;
+bool USE_SUT_EULER2QUAT_CONVERSION_value = false;
+
+bool mrpt::global_settings::USE_SUT_EULER2QUAT_CONVERSION()
+{
+	return USE_SUT_EULER2QUAT_CONVERSION_value;
+}
+void USE_SUT_EULER2QUAT_CONVERSION(bool value)
+{
+	USE_SUT_EULER2QUAT_CONVERSION_value = value;
+}
+
 
 IMPLEMENTS_SERIALIZABLE(CPose3DQuatPDFGaussian, CPose3DQuatPDF, mrpt::poses)
 
@@ -166,7 +176,7 @@ void aux_poseypr2posequat(
 
 void CPose3DQuatPDFGaussian::copyFrom(const CPose3DPDFGaussian& o)
 {
-	if (!mrpt::global_settings::USE_SUT_EULER2QUAT_CONVERSION)
+	if (!USE_SUT_EULER2QUAT_CONVERSION_value)
 	{  // Use Jacobians
 		CMatrixFixedNumeric<double, 4, 3> dq_dr_sub(UNINITIALIZED_MATRIX);
 
@@ -288,7 +298,7 @@ void CPose3DQuatPDFGaussian::changeCoordinatesReference(
 void CPose3DQuatPDFGaussian::drawSingleSample(CPose3DQuat& outPart) const
 {
 	MRPT_START
-	randomGenerator.drawGaussianMultivariate(outPart, cov, &mean);
+	getRandomGenerator().drawGaussianMultivariate(outPart, cov, &mean);
 	MRPT_END
 }
 
@@ -300,7 +310,7 @@ void CPose3DQuatPDFGaussian::drawManySamples(
 {
 	MRPT_START
 
-	randomGenerator.drawGaussianMultivariateMany(outSamples, N, cov);
+	getRandomGenerator().drawGaussianMultivariateMany(outSamples, N, cov);
 
 	for (vector<CVectorDouble>::iterator it = outSamples.begin();
 		 it != outSamples.end(); ++it)

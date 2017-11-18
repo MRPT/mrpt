@@ -11,7 +11,6 @@
 
 #include <mrpt/utils/types_math.h>
 #include <mrpt/obs/T2DScanProperties.h>
-#include <mrpt/obs/link_pragmas.h>
 #include <map>
 
 namespace mrpt
@@ -27,7 +26,7 @@ class CObservation2DRangeScan;
   *  This class is used in mrpt::maps::CPointsMap
  * \ingroup mrpt_obs_grp
   */
-class OBS_IMPEXP CSinCosLookUpTableFor2DScans
+class CSinCosLookUpTableFor2DScans
 {
    public:
 	/** A pair of vectors with the cos and sin values. */

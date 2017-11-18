@@ -31,7 +31,7 @@ class CObservable;
   * \sa CObserver, CObservable
  * \ingroup mrpt_base_grp
   */
-class BASE_IMPEXP mrptEvent
+class mrptEvent
 {
    protected:
 	/** Just to allow this class to be polymorphic */
@@ -65,7 +65,7 @@ class BASE_IMPEXP mrptEvent
  * destroyed and telling its observers to unsubscribe.
  * \ingroup mrpt_base_grp
   */
-class BASE_IMPEXP mrptEventOnDestroy : public mrptEvent
+class mrptEventOnDestroy : public mrptEvent
 {
    protected:
 	/** Just to allow this class to be polymorphic */

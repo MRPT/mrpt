@@ -15,7 +15,6 @@
 #include <mrpt/utils/COutputLogger.h>
 #include <mrpt/system/filesystem.h>
 
-#include <mrpt/graphslam/link_pragmas.h>
 #include <mrpt/graphslam/misc/CWindowObserver.h>
 #include <mrpt/graphslam/misc/CWindowManager.h>
 #include <mrpt/graphslam/apps_related/TUserOptionsChecker.h>

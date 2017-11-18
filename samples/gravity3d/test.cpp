@@ -51,7 +51,7 @@ void GravityDemo()
 	CDisplayWindow3D win(
 		"MRPT example: 3D gravity simulator- JLBC 2008", 1000, 700);
 
-	randomGenerator.randomize();
+	getRandomGenerator().randomize();
 
 	win.setCameraElevationDeg(50.0f);
 	win.setCameraZoom(1000);
@@ -76,26 +76,26 @@ void GravityDemo()
 	// Init at random poses & create opengl objects:
 	for (size_t i = 0; i < N_MASSES; i++)
 	{
-		masses[i].x = randomGenerator.drawUniform(-BOX, BOX);
-		masses[i].y = randomGenerator.drawUniform(-BOX, BOX);
-		masses[i].z = randomGenerator.drawUniform(-BOX, BOX) / 10;
+		masses[i].x = getRandomGenerator().drawUniform(-BOX, BOX);
+		masses[i].y = getRandomGenerator().drawUniform(-BOX, BOX);
+		masses[i].z = getRandomGenerator().drawUniform(-BOX, BOX) / 10;
 
 		double a = atan2(masses[i].y, masses[i].x);
 
 		masses[i].vx =
-			-V0 * sin(a) + randomGenerator.drawUniform(-V0 * 0.01, V0 * 0.01);
+			-V0 * sin(a) + getRandomGenerator().drawUniform(-V0 * 0.01, V0 * 0.01);
 		masses[i].vy =
-			V0 * cos(a) + randomGenerator.drawUniform(-V0 * 0.01, V0 * 0.01);
-		masses[i].vz = 0;  // randomGenerator.drawUniform(-V0,V0);
+			V0 * cos(a) + getRandomGenerator().drawUniform(-V0 * 0.01, V0 * 0.01);
+		masses[i].vz = 0;  // getRandomGenerator().drawUniform(-V0,V0);
 
-		masses[i].mass = exp(randomGenerator.drawUniform(MASS_MIN, MASS_MAX));
+		masses[i].mass = exp(getRandomGenerator().drawUniform(MASS_MIN, MASS_MAX));
 		opengl::CSphere::Ptr& obj = masses[i].obj3d =
 			mrpt::make_aligned_shared<opengl::CSphere>();
 
 		obj->setColor(
-			randomGenerator.drawUniform(0.1, 0.9),
-			randomGenerator.drawUniform(0.1, 0.9),
-			randomGenerator.drawUniform(0.1, 0.9));
+			getRandomGenerator().drawUniform(0.1, 0.9),
+			getRandomGenerator().drawUniform(0.1, 0.9),
+			getRandomGenerator().drawUniform(0.1, 0.9));
 
 		masses[i].radius = M2R * pow(masses[i].mass, 1.0 / 3.0);
 		obj->setRadius(masses[i].radius);  // Guess why ^(1/3) ;-)

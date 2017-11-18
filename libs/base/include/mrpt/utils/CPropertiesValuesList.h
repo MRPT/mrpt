@@ -21,11 +21,11 @@ namespace utils
  * \sa CSerializable, CMHPropertiesValuesList, mrpt::utils::TParameters
  * \ingroup mrpt_base_grp
  */
-class BASE_IMPEXP CPropertiesValuesList : public mrpt::utils::CSerializable
+class CPropertiesValuesList : public mrpt::utils::CSerializable
 {
 	DEFINE_SERIALIZABLE(CPropertiesValuesList)
    protected:
-	struct BASE_IMPEXP TPropertyValuePair
+	struct TPropertyValuePair
 	{
 		std::string name;
 		CSerializable::Ptr value;
@@ -74,9 +74,6 @@ class BASE_IMPEXP CPropertiesValuesList : public mrpt::utils::CSerializable
 	std::vector<std::string> getPropertyNames() const;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(
-	CPropertiesValuesList, mrpt::utils::CSerializable)
-
 }  // End of namespace
 }  // End of namespace
 

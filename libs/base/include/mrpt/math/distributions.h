@@ -30,7 +30,7 @@ namespace math
 /** Evaluates the univariate normal (Gaussian) distribution at a given point
  * "x".
   */
-double BASE_IMPEXP normalPDF(double x, double mu, double std);
+double normalPDF(double x, double mu, double std);
 
 /** Evaluates the multivariate normal (Gaussian) distribution at a given point
  * "x".
@@ -136,14 +136,14 @@ double KLD_Gaussians(
  * (pjacklam@online.no),
   *  freely available in http://home.online.no/~pjacklam.
   */
-double BASE_IMPEXP normalQuantile(double p);
+double normalQuantile(double p);
 
 /** Evaluates the Gaussian cumulative density function.
   *  The employed approximation is that from W. J. Cody
   *  freely available in http://www.netlib.org/specfun/erf
   *  \note Equivalent to MATLAB normcdf(x,mu,s) with p=(x-mu)/s
   */
-double BASE_IMPEXP normalCDF(double p);
+double normalCDF(double p);
 
 /** The "quantile" of the Chi-Square distribution, for dimension "dim" and
  * probability 0<P<1 (the inverse of chi2CDF)
@@ -151,7 +151,7 @@ double BASE_IMPEXP normalCDF(double p);
   *  \note Equivalent to MATLAB chi2inv(), but note that this is just an
  * approximation, which becomes very poor for small values of "P".
   */
-double BASE_IMPEXP chi2inv(double P, unsigned int dim = 1);
+double chi2inv(double P, unsigned int dim = 1);
 
 /*! Cumulative non-central chi square distribution (approximate).
 
@@ -173,7 +173,7 @@ only
 GPL-compatible.
 * \sa noncentralChi2PDF_CDF
 */
-double BASE_IMPEXP noncentralChi2CDF(
+double noncentralChi2CDF(
 	unsigned int degreesOfFreedom, double noncentrality, double arg);
 
 /*! Cumulative chi square distribution.
@@ -189,7 +189,7 @@ double BASE_IMPEXP noncentralChi2CDF(
    (http://hci.iwr.uni-heidelberg.de/vigra/); code under "MIT X11 License", GNU
    GPL-compatible.
 */
-double BASE_IMPEXP chi2CDF(unsigned int degreesOfFreedom, double arg);
+double chi2CDF(unsigned int degreesOfFreedom, double arg);
 
 /*! Chi square distribution PDF.
  *	Computes the density of a chi square distribution with \a degreesOfFreedom
@@ -201,14 +201,14 @@ double BASE_IMPEXP chi2CDF(unsigned int degreesOfFreedom, double arg);
  *
  * \note Equivalent to MATLAB's chi2pdf(arg,degreesOfFreedom)
  */
-double BASE_IMPEXP
-	chi2PDF(unsigned int degreesOfFreedom, double arg, double accuracy = 1e-7);
+double chi2PDF(
+	unsigned int degreesOfFreedom, double arg, double accuracy = 1e-7);
 
 /** Returns the 'exact' PDF (first) and CDF (second) of a Non-central
  * chi-squared probability distribution, using an iterative method.
   * \note Equivalent to MATLAB's ncx2cdf(arg,degreesOfFreedom,noncentrality)
   */
-std::pair<double, double> BASE_IMPEXP noncentralChi2PDF_CDF(
+std::pair<double, double> noncentralChi2PDF_CDF(
 	unsigned int degreesOfFreedom, double noncentrality, double arg,
 	double eps = 1e-7);
 

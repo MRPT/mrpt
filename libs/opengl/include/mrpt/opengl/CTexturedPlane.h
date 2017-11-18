@@ -19,7 +19,7 @@ namespace opengl
   *  \sa opengl::COpenGLScene
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CTexturedPlane : public CTexturedObject
+class CTexturedPlane : public CTexturedObject
 {
 	DEFINE_SERIALIZABLE(CTexturedPlane)
    protected:
@@ -90,8 +90,6 @@ class OPENGL_IMPEXP CTexturedPlane : public CTexturedObject
 	/** Private, virtual destructor: only can be deleted from smart pointers */
 	virtual ~CTexturedPlane();
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CTexturedPlane, CTexturedObject, OPENGL_IMPEXP)
 
 }  // end namespace
 

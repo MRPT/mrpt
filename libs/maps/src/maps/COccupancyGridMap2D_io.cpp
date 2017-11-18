@@ -386,14 +386,14 @@ bool COccupancyGridMap2D::saveAsBitmapTwoMapsWithCorrespondences(
 	img.resize(lx1 + lx2 + 1, max(ly1, ly2), 3, true);
 	img.filledRectangle(
 		0, 0, img.getWidth() - 1, img.getHeight() - 1,
-		TColor::black);  // background: black
+		TColor::black());  // background: black
 	img.drawImage(0, Ay1, img1);
 	img.drawImage(lx1 + 1, Ay2, img2);
 
 	// Draw the features:
 	// ---------------------------------------------
 	n = corrs.size();
-	TColor lineColor = TColor::black;
+	TColor lineColor = TColor::black();
 	for (i = 0; i < n; i++)
 	{
 		// In M1:
@@ -414,9 +414,9 @@ bool COccupancyGridMap2D::saveAsBitmapTwoMapsWithCorrespondences(
 	for (i = 0; i < n; i++)
 	{
 		lineColor = TColor(
-			static_cast<long>(randomGenerator.drawUniform(0, 255.0f)),
-			static_cast<long>(randomGenerator.drawUniform(0, 255.0f)),
-			static_cast<long>(randomGenerator.drawUniform(0, 255.0f)));
+			static_cast<long>(getRandomGenerator().drawUniform(0, 255.0f)),
+			static_cast<long>(getRandomGenerator().drawUniform(0, 255.0f)),
+			static_cast<long>(getRandomGenerator().drawUniform(0, 255.0f)));
 
 		img.line(
 			m1->x2idx(corrs[i].this_x),
@@ -446,7 +446,7 @@ bool COccupancyGridMap2D::saveAsEMFTwoMapsWithCorrespondences(
 	unsigned int i, Ay1, Ay2;
 	unsigned int px, py;
 
-	lineColor = TColor::red;
+	lineColor = TColor::red();
 
 // The individual maps:
 // ---------------------------------------------
@@ -482,7 +482,7 @@ bool COccupancyGridMap2D::saveAsEMFTwoMapsWithCorrespondences(
 	// Draw the features:
 	// ---------------------------------------------
 	const unsigned int n = corrs.size();
-	lineColor = TColor::black;
+	lineColor = TColor::black();
 	for (i = 0; i < n; i++)
 	{
 		// In M1:
@@ -527,12 +527,12 @@ bool COccupancyGridMap2D::saveAsEMFTwoMapsWithCorrespondences(
 		emf.textOut(
 			m1->x2idx(corrs[i].this_x) - 10,
 			Ay1 + ly1 - 1 - m1->y2idx(corrs[i].this_y) - 25, str,
-			TColor::black);
+			TColor::black());
 
 		emf.textOut(
 			lx1 + 1 + m2->x2idx(corrs[i].other_x) - 10,
 			Ay2 + ly2 - 1 - m2->y2idx(corrs[i].other_y) - 25, str,
-			TColor::black);
+			TColor::black());
 	}  // i
 
 	return true;

@@ -44,7 +44,7 @@ namespace opengl
   *
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CEllipsoid : public CRenderizableDisplayList
+class CEllipsoid : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CEllipsoid)
 
@@ -178,8 +178,6 @@ class OPENGL_IMPEXP CEllipsoid : public CRenderizableDisplayList
 	/** Private, virtual destructor: only can be deleted from smart pointers */
 	virtual ~CEllipsoid() {}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CEllipsoid, CRenderizableDisplayList, OPENGL_IMPEXP)
 
 }  // end namespace
 

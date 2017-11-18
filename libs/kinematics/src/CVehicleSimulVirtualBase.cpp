@@ -57,15 +57,15 @@ void CVehicleSimulVirtualBase::simulateOneTimeStep(const double dt)
 			nextGT.x +=
 				m_Ax_err_bias +
 				m_Ax_err_std *
-					mrpt::random::randomGenerator.drawGaussian1D_normalized();
+					mrpt::random::getRandomGenerator().drawGaussian1D_normalized();
 			nextGT.y +=
 				m_Ay_err_bias +
 				m_Ay_err_std *
-					mrpt::random::randomGenerator.drawGaussian1D_normalized();
+					mrpt::random::getRandomGenerator().drawGaussian1D_normalized();
 			nextGT.phi +=
 				m_Aphi_err_bias +
 				m_Aphi_err_std *
-					mrpt::random::randomGenerator.drawGaussian1D_normalized();
+					mrpt::random::getRandomGenerator().drawGaussian1D_normalized();
 			mrpt::math::wrapToPiInPlace(nextGT.phi);
 		}
 

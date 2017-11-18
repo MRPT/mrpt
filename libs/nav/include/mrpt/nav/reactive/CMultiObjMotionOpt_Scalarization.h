@@ -9,7 +9,6 @@
 #pragma once
 
 #include <mrpt/nav/reactive/CMultiObjectiveMotionOptimizerBase.h>
-#include <mrpt/nav/link_pragmas.h>
 
 namespace mrpt
 {
@@ -25,7 +24,7 @@ namespace nav
   * \sa CReactiveNavigationSystem, CReactiveNavigationSystem3D
   * \ingroup nav_reactive
   */
-class NAV_IMPEXP CMultiObjMotionOpt_Scalarization
+class CMultiObjMotionOpt_Scalarization
 	: public mrpt::nav::CMultiObjectiveMotionOptimizerBase
 {
 	DEFINE_MRPT_OBJECT(CMultiObjMotionOpt_Scalarization)
@@ -36,7 +35,7 @@ class NAV_IMPEXP CMultiObjMotionOpt_Scalarization
 	void loadConfigFile(const mrpt::utils::CConfigFileBase& c) override;
 	void saveConfigFile(mrpt::utils::CConfigFileBase& c) const override;
 
-	struct NAV_IMPEXP TParams
+	struct TParams
 		: public mrpt::nav::CMultiObjectiveMotionOptimizerBase::TParamsBase
 	{
 		/** A formula that takes all/a subset of scores and generates a scalar
@@ -65,7 +64,5 @@ class NAV_IMPEXP CMultiObjMotionOpt_Scalarization
 		const std::vector<mrpt::nav::TCandidateMovementPTG>& movs,
 		TResultInfo& extra_info) override;
 };
-DEFINE_MRPT_OBJECT_POST_CUSTOM_LINKAGE(
-	CMultiObjMotionOpt_Scalarization, NAV_IMPEXP)
 }
 }

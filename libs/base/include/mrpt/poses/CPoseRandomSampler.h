@@ -42,7 +42,7 @@ namespace poses
  * \ingroup poses_pdf_grp
  * \sa CPosePDF, CPose3DPDF
  */
-class BASE_IMPEXP CPoseRandomSampler
+class CPoseRandomSampler
 {
    protected:
 	// Only ONE of these can be not-NULL at a time.

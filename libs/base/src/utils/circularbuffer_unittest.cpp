@@ -61,7 +61,7 @@ TEST(circular_buffer_tests, RandomWriteAndPeek)
 	for (size_t iter = 0; iter < 1000; iter++)
 	{
 		const size_t nWr =
-			mrpt::random::randomGenerator.drawUniform32bit() % LEN;
+			mrpt::random::getRandomGenerator().drawUniform32bit() % LEN;
 		for (size_t i = 0; i < nWr; i++) cb.push(i);
 		cb_t ret;
 		for (size_t i = 0; i < nWr; i++)
@@ -85,7 +85,7 @@ TEST(circular_buffer_tests, RandomWriteManyAndPeek)
 	for (size_t iter = 0; iter < 1000; iter++)
 	{
 		const size_t nWr =
-			1 + mrpt::random::randomGenerator.drawUniform32bit() % (LEN - 1);
+			1 + mrpt::random::getRandomGenerator().drawUniform32bit() % (LEN - 1);
 		dum_buf.resize(nWr);
 		cb.push_many(&dum_buf[0], nWr);
 		cb_t ret;
@@ -109,7 +109,7 @@ TEST(circular_buffer_tests, RandomWriteAndPeekOverrun)
 	for (size_t iter = 0; iter < 100; iter++)
 	{
 		const size_t nWr =
-			mrpt::random::randomGenerator.drawUniform32bit() % LEN;
+			mrpt::random::getRandomGenerator().drawUniform32bit() % LEN;
 		for (size_t i = 0; i < nWr; i++) cb.push(i);
 		cb_t ret;
 		for (unsigned k = 0; k < 5; k++)

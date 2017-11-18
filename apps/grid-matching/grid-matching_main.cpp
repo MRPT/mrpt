@@ -81,7 +81,7 @@ void do_grid_align()
 {
 	CImage img1, img2;
 
-	randomGenerator.randomize();
+	getRandomGenerator().randomize();
 
 	// Grid or simplemaps?
 	if (is_match || (!is_detect_test && SAVE_CORR_AND_NONCORR_DISTS))
@@ -258,7 +258,7 @@ void do_grid_align()
 						for (unsigned int k = 0; k < obs->scan.size(); k++)
 						{
 							float v = obs->getScanRange(k);
-							v += randomGenerator.drawGaussian1D(
+							v += getRandomGenerator().drawGaussian1D(
 								0, STD_NOISE_LASER);
 							if (v < 0) v = 0;
 							obs->setScanRange(k, v);
@@ -274,11 +274,11 @@ void do_grid_align()
 
 					// Change the pose:
 					newPDF->mean.x_incr(
-						randomGenerator.drawGaussian1D(0, STD_NOISE_XY));
+						getRandomGenerator().drawGaussian1D(0, STD_NOISE_XY));
 					newPDF->mean.y_incr(
-						randomGenerator.drawGaussian1D(0, STD_NOISE_XY));
+						getRandomGenerator().drawGaussian1D(0, STD_NOISE_XY));
 					newPDF->mean.phi_incr(
-						randomGenerator.drawGaussian1D(
+						getRandomGenerator().drawGaussian1D(
 							0, DEG2RAD(STD_NOISE_PHI)));
 					newPDF->mean.normalizePhi();
 
@@ -472,25 +472,25 @@ void do_grid_align()
 								imgGrid1LY - 1 - grid1->y2idx(pp1.y),
 								grid1->x2idx(pp2.x),
 								imgGrid1LY - 1 - grid1->y2idx(pp2.y),
-								TColor::black);
+								TColor::black());
 							imgCanvas.line(
 								grid1->x2idx(pp2.x),
 								imgGrid1LY - 1 - grid1->y2idx(pp2.y),
 								grid1->x2idx(pp3.x),
 								imgGrid1LY - 1 - grid1->y2idx(pp3.y),
-								TColor::black);
+								TColor::black());
 							imgCanvas.line(
 								grid1->x2idx(pp3.x),
 								imgGrid1LY - 1 - grid1->y2idx(pp3.y),
 								grid1->x2idx(pp4.x),
 								imgGrid1LY - 1 - grid1->y2idx(pp4.y),
-								TColor::black);
+								TColor::black());
 							imgCanvas.line(
 								grid1->x2idx(pp4.x),
 								imgGrid1LY - 1 - grid1->y2idx(pp4.y),
 								grid1->x2idx(pp1.x),
 								imgGrid1LY - 1 - grid1->y2idx(pp1.y),
-								TColor::black);
+								TColor::black());
 
 							imgCanvas.saveToFile(
 								format(
@@ -499,16 +499,12 @@ void do_grid_align()
 
 							// Save as 3D scene:
 							COpenGLScene scene;
-							CPointsMap::COLOR_3DSCENE_R = 0;
-							CPointsMap::COLOR_3DSCENE_G = 0;
-							CPointsMap::COLOR_3DSCENE_B = 1;
+							CPointsMap::COLOR_3DSCENE(mrpt::utils::TColorf(0,0,1));
 							CSetOfObjects::Ptr obj1 =
 								mrpt::make_aligned_shared<CSetOfObjects>();
 							the_map1.getAs3DObject(obj1);
 
-							CPointsMap::COLOR_3DSCENE_R = 1;
-							CPointsMap::COLOR_3DSCENE_G = 0;
-							CPointsMap::COLOR_3DSCENE_B = 0;
+							CPointsMap::COLOR_3DSCENE(mrpt::utils::TColorf(1, 0, 0));
 							CSetOfObjects::Ptr obj2 =
 								mrpt::make_aligned_shared<CSetOfObjects>();
 							the_map2.getAs3DObject(obj2);
@@ -541,23 +537,6 @@ void do_grid_align()
 									"%s/_OVERLAP_MAPS_SOG_MODE_%04u.3Dscene",
 									RESULTS_DIR.c_str(), (unsigned int)nNode))
 								<< scene;
-
-							// Save also as EMF:
-							/*{
-								TMatchingPairList	corrs;
-								// How to get corrs!?
-
-								CEnhancedMetaFile::LINUX_IMG_WIDTH =
-							grid1->getSizeX() + grid2->getSizeX() + 50;
-								CEnhancedMetaFile::LINUX_IMG_HEIGHT =
-							max(grid1->getSizeY(),grid2->getSizeY()) + 50;
-								COccupancyGridMap2D::saveAsEMFTwoMapsWithCorrespondences(
-									format("%s/_OVERLAP_MAPS_SOG_MODE_%04u_corrs.emf",RESULTS_DIR.c_str(),
-							(unsigned int)nNode),
-									grid1,
-									grid2,
-									corrs );
-							}*/
 						}
 
 					}  // end SAVE_SOG_ALL

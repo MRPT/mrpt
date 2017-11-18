@@ -18,7 +18,7 @@ namespace kinematics
  *
  * \ingroup mrpt_kinematics_grp
  */
-class KINEMATICS_IMPEXP CVehicleVelCmd_DiffDriven : public CVehicleVelCmd
+class CVehicleVelCmd_DiffDriven : public CVehicleVelCmd
 {
 	DEFINE_SERIALIZABLE(CVehicleVelCmd_DiffDriven)
    public:
@@ -53,8 +53,6 @@ class KINEMATICS_IMPEXP CVehicleVelCmd_DiffDriven : public CVehicleVelCmd
    private:
 	double filter_max_vw(double& v, double& w, const TVelCmdParams& p);
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CVehicleVelCmd_DiffDriven, CVehicleVelCmd, KINEMATICS_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

@@ -458,7 +458,7 @@ int main(int argc, char** argv)
 				cfg.write("CONFIG", "rawlog_file", fil);
 
 				// For delayed-load images:
-				CImage::IMAGES_PATH_BASE = CRawlog::detectImagesDirectory(fil);
+				CImage::setImagesPathBase(CRawlog::detectImagesDirectory(fil));
 
 				cam->loadConfig(cfg, "CONFIG");
 				cam->initialize();  // This will raise an exception if neccesary

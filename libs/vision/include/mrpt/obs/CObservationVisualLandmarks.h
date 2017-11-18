@@ -25,7 +25,7 @@ namespace obs
  * \sa CLandmarksMap, CObservation
  * \ingroup mrpt_vision_grp
  */
-class VISION_IMPEXP CObservationVisualLandmarks : public CObservation
+class CObservationVisualLandmarks : public CObservation
 {
 	DEFINE_SERIALIZABLE(CObservationVisualLandmarks)
 
@@ -70,8 +70,6 @@ class VISION_IMPEXP CObservationVisualLandmarks : public CObservation
 	void getDescriptionAsText(std::ostream& o) const override;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CObservationVisualLandmarks, CObservation, VISION_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

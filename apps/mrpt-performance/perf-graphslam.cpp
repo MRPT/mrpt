@@ -63,7 +63,7 @@ double graphslam_levmarq_solve(int nVertices, int N)
 // ------------------------------------------------------
 void register_tests_graphslam()
 {
-	randomGenerator.randomize(1234);
+	getRandomGenerator().randomize(1234);
 	lstTests.push_back(
 		TestData(
 			"graphslam(2d): levmarq 50 KFs/101 edges",

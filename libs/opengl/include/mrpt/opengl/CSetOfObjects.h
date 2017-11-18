@@ -27,7 +27,7 @@ namespace opengl
   *  \sa opengl::COpenGLScene
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CSetOfObjects : public CRenderizable
+class CSetOfObjects : public CRenderizable
 {
 	DEFINE_SERIALIZABLE(CSetOfObjects)
 
@@ -160,8 +160,6 @@ class OPENGL_IMPEXP CSetOfObjects : public CRenderizable
 	/** Private, virtual destructor: only can be deleted from smart pointers */
 	virtual ~CSetOfObjects();
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CSetOfObjects, CRenderizable, OPENGL_IMPEXP)
 /** Inserts an object into the list. Allows call chaining.
   * \sa mrpt::opengl::CSetOfObjects::insert
   */
@@ -189,7 +187,7 @@ typename T::Ptr CSetOfObjects::getByClass(const size_t& ith) const
 {
 	MRPT_START
 	size_t foundCount = 0;
-	const mrpt::utils::TRuntimeClassId* class_ID = T::classinfo;
+	const mrpt::utils::TRuntimeClassId* class_ID = &T::GetRuntimeClassIdStatic();
 	for (CListOpenGLObjects::const_iterator it = m_objects.begin();
 		 it != m_objects.end(); ++it)
 		if (*it && (*it)->GetRuntimeClass()->derivedFrom(class_ID))

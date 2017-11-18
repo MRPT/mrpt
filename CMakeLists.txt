@@ -18,9 +18,13 @@ PROJECT(MRPT LANGUAGES C CXX)
 # -------------------------
 #        Setup CMake
 # -------------------------
-CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
+if (WIN32)
+	CMAKE_MINIMUM_REQUIRED(VERSION 3.4) # required for CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS
+else()
+	CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
+endif()
+
 set (CMAKE_CXX_STANDARD 14)  # Require C++14
-SET(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS 1) # Allow empty endif() and such (since CMake 2.4)
 if(COMMAND cmake_policy)
 	cmake_policy(SET CMP0003 NEW) # We don't want to mix relative and absolute paths in linker lib lists.
 	cmake_policy(SET CMP0005 NEW) # Escape definitions (-D) strings
@@ -33,7 +37,6 @@ if(COMMAND cmake_policy)
 	if(POLICY CMP0043)
 		cmake_policy(SET CMP0043 OLD) #  Ignore COMPILE_DEFINITIONS_<Config> properties.
 	endif()
-
 endif()
 # -------------------------
 
@@ -76,8 +79,12 @@ include(cmakemodules/DeclareMRPTLib.cmake REQUIRED)
 include(cmakemodules/DeclareMEXLib.cmake REQUIRED)
 include(cmakemodules/DeclareAppDependencies.cmake REQUIRED)
 # --------------------------
-
 include(cmakemodules/script_detect_unix_arch.cmake REQUIRED) # Detect machine architecture, on UNIX
+
+# Avoid the need for DLL export/import macros in Windows:
+if (WIN32)
+	set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS  ON)
+endif()
 
 # ------------------------------------------
 # We want libraries to be named "libXXX"
@@ -170,10 +177,6 @@ ENDIF()
 # ===================================================
 SET(MRPT_ENABLE_PRECOMPILED_HDRS ON CACHE BOOL "Enable precompiled headers (thru 'mrpt/LIB.h')")
 MARK_AS_ADVANCED(MRPT_ENABLE_PRECOMPILED_HDRS)
-
-# Backwards-compatible 1.* smart pointer type names
-# ===================================================
-SET(MRPT_1X_BACKCOMPATIB_SMARTPTR_NAMES ON CACHE BOOL "Enable MRPT 1.* backwards-compatible smart pointer names: CFooPtr as CFoo::Ptr")
 
 # Eigen library plugins:
 # ===================================================

@@ -227,7 +227,7 @@ void CPosePDFGaussianInf::drawSingleSample(CPose2D& outPart) const
 	this->cov_inv.inv(cov);
 
 	CVectorDouble v;
-	randomGenerator.drawGaussianMultivariate(v, cov);
+	getRandomGenerator().drawGaussianMultivariate(v, cov);
 
 	outPart.x(mean.x() + v[0]);
 	outPart.y(mean.y() + v[1]);
@@ -254,7 +254,7 @@ void CPosePDFGaussianInf::drawManySamples(
 
 	std::vector<CVectorDouble> rndSamples;
 
-	randomGenerator.drawGaussianMultivariateMany(rndSamples, N, cov);
+	getRandomGenerator().drawGaussianMultivariateMany(rndSamples, N, cov);
 	outSamples.resize(N);
 	for (unsigned int i = 0; i < N; i++)
 	{

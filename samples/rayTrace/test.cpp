@@ -57,13 +57,13 @@ const float RANDOM_POSE_DISTANCE = 10;
 inline double MYRAND1()
 {
 	//	return static_cast<float>(rand()%prec)/prec;
-	return randomGenerator.drawUniform(0, 1);
+	return getRandomGenerator().drawUniform(0, 1);
 }
 
 inline double MYRANDG(double scale, double shift = 0)
 {
 	//	return shift+(static_cast<float>(rand()%prec)/prec)*scale;
-	return shift + scale * randomGenerator.drawUniform(0, 1);
+	return shift + scale * getRandomGenerator().drawUniform(0, 1);
 }
 
 CPose3D randomPose()
@@ -221,7 +221,7 @@ int main()
 	uint32_t s = mrpt::system::getCurrentTime();
 	// uint32_t s=1000000;
 	cout << "Random seed: " << s << '\n';
-	mrpt::random::randomGenerator.randomize(s);
+	mrpt::random::getRandomGenerator().randomize(s);
 	try
 	{
 		display();

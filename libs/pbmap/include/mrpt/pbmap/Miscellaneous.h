@@ -27,7 +27,6 @@
 #include <vector>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
-#include <mrpt/pbmap/link_pragmas.h>
 #include <mrpt/math.h>
 
 namespace mrpt
@@ -98,11 +97,10 @@ struct Segment
 };
 
 /*! Square of the distance between two segments */
-float PBMAP_IMPEXP dist3D_Segment_to_Segment2(Segment S1, Segment S2);
+float dist3D_Segment_to_Segment2(Segment S1, Segment S2);
 
 /*! Check if a point lays inside a convex hull */
-bool PBMAP_IMPEXP
-	isInHull(PointT& point3D, pcl::PointCloud<PointT>::Ptr hull3D);
+bool isInHull(PointT& point3D, pcl::PointCloud<PointT>::Ptr hull3D);
 
 template <typename dataType>
 dataType getMode(std::vector<dataType> data, dataType range)
@@ -320,7 +318,7 @@ dataType getHistogramMeanShift(
 }
 
 //  // Bhattacharyya histogram distance function
-//  double PBMAP_IMPEXP BhattacharyyaDist(std::vector<float> &hist1,
+//  double  BhattacharyyaDist(std::vector<float> &hist1,
 //  std::vector<float> &hist2)
 //  {
 //    assert(hist1.size() == hist2.size());

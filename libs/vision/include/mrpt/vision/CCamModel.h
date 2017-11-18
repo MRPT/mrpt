@@ -33,7 +33,7 @@ namespace vision
  * for calibrating a camera
  * \ingroup mrpt_vision_grp
  */
-class VISION_IMPEXP CCamModel : public mrpt::utils::CLoadableOptions
+class CCamModel : public mrpt::utils::CLoadableOptions
 {
    public:
 	/** The parameters of a camera */

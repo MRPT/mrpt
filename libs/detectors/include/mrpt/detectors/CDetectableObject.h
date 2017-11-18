@@ -12,10 +12,7 @@
 
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/obs/CObservation.h>
-#define _USE_MATH_DEFINES  // (For VS to define M_PI, etc. in cmath)
 #include <cmath>
-
-#include <mrpt/detectors/link_pragmas.h>
 
 namespace mrpt
 {
@@ -28,7 +25,7 @@ namespace detectors
   * expandable to other source types (f.i. scanners).
   * \ingroup mrpt_detectors_grp
   */
-class DETECTORS_IMPEXP CDetectableObject : public mrpt::utils::CSerializable
+class CDetectableObject : public mrpt::utils::CSerializable
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CDetectableObject)
 
@@ -45,10 +42,8 @@ class DETECTORS_IMPEXP CDetectableObject : public mrpt::utils::CSerializable
 	};
 
 };  // End of class
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CDetectableObject, mrpt::utils::CSerializable, DETECTORS_IMPEXP)
 
-class DETECTORS_IMPEXP CDetectable2D : public CDetectableObject
+class CDetectable2D : public CDetectableObject
 {
 	DEFINE_SERIALIZABLE(CDetectable2D)
 
@@ -80,10 +75,8 @@ class DETECTORS_IMPEXP CDetectable2D : public CDetectableObject
 		return std::sqrt(std::pow(c_x1 - c_x2, 2) + pow(c_y1 - c_y2, 2));
 	};
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CDetectable2D, mrpt::detectors::CDetectableObject, DETECTORS_IMPEXP)
 
-class DETECTORS_IMPEXP CDetectable3D : public CDetectable2D
+class CDetectable3D : public CDetectable2D
 {
 	DEFINE_SERIALIZABLE(CDetectable3D)
 
@@ -98,8 +91,6 @@ class DETECTORS_IMPEXP CDetectable3D : public CDetectable2D
 	float m_z;
 
 };  // End of class
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CDetectable3D, mrpt::detectors::CDetectable2D, DETECTORS_IMPEXP)
 }
 }
 

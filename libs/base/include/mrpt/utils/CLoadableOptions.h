@@ -27,7 +27,7 @@ class CStream;
  * registered from pointers, etc...
  * \ingroup mrpt_base_grp
  */
-class BASE_IMPEXP CLoadableOptions
+class CLoadableOptions
 {
    protected:
 	/** Used to print variable info from dumpToTextStream with the macro

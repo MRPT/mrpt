@@ -716,8 +716,8 @@ void CHolonomicND::TOptions::saveToConfigFile(
 	mrpt::utils::CConfigFileBase& c, const std::string& s) const
 {
 	MRPT_START;
-	const int WN = mrpt::utils::MRPT_SAVE_NAME_PADDING,
-			  WV = mrpt::utils::MRPT_SAVE_VALUE_PADDING;
+	const int WN = mrpt::utils::MRPT_SAVE_NAME_PADDING(),
+			  WV = mrpt::utils::MRPT_SAVE_VALUE_PADDING();
 
 	MRPT_SAVE_CONFIG_VAR_COMMENT(WIDE_GAP_SIZE_PERCENT, "");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(MAX_SECTOR_DIST_FOR_D2_PERCENT, "");

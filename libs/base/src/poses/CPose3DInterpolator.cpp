@@ -220,6 +220,6 @@ void CPoseInterpolatorBase<3>::impl_interpolation(
 }
 
 // Explicit instantations:
-template class BASE_IMPEXP CPoseInterpolatorBase<3>;
+template class CPoseInterpolatorBase<3>;
 }
 }

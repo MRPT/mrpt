@@ -52,7 +52,7 @@ namespace obs
   * \sa CObservation, CPointsMap, T2DScanProperties
   * \ingroup mrpt_obs_grp
   */
-class OBS_IMPEXP CObservation2DRangeScan : public CObservation
+class CObservation2DRangeScan : public CObservation
 {
 	DEFINE_SERIALIZABLE(CObservation2DRangeScan)
 	// This must be added for declaration of MEX-related functions
@@ -250,8 +250,6 @@ class OBS_IMPEXP CObservation2DRangeScan : public CObservation
 		const std::vector<std::pair<double, double>>& angles);
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CObservation2DRangeScan, CObservation, OBS_IMPEXP)
 
 }  // End of namespace
 namespace utils

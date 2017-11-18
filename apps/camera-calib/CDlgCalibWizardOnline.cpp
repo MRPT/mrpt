@@ -441,7 +441,7 @@ void CDlgCalibWizardOnline::OntimCaptureTrigger(wxTimerEvent& event)
 			10, 10, format(
 						"%u out of %u grabbed",
 						(unsigned int)m_calibFrames.size(), nFramesToGrab),
-			TColor::white);
+			TColor::white());
 
 		m_realtimeview->AssignImage(img_to_show);
 		m_realtimeview->Refresh(false);

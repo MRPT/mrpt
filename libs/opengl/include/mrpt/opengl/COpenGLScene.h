@@ -57,7 +57,7 @@ namespace opengl
   *    It can be also displayed in real-time using gui::CDisplayWindow3D.
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP COpenGLScene : public mrpt::utils::CSerializable
+class COpenGLScene : public mrpt::utils::CSerializable
 {
 	DEFINE_SERIALIZABLE(COpenGLScene)
    public:
@@ -269,8 +269,6 @@ class OPENGL_IMPEXP COpenGLScene : public mrpt::utils::CSerializable
 		}
 	}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	COpenGLScene, mrpt::utils::CSerializable, OPENGL_IMPEXP)
 
 /** Inserts an openGL object into a scene. Allows call chaining. \sa
  * mrpt::opengl::COpenGLScene::insert  */

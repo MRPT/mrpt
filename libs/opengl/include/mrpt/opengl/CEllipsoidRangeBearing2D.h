@@ -40,8 +40,7 @@ namespace opengl
   *
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CEllipsoidRangeBearing2D
-	: public CGeneralizedEllipsoidTemplate<2>
+class CEllipsoidRangeBearing2D : public CGeneralizedEllipsoidTemplate<2>
 {
 	typedef CGeneralizedEllipsoidTemplate<2> BASE;
 	DEFINE_SERIALIZABLE(CEllipsoidRangeBearing2D)
@@ -61,8 +60,6 @@ class OPENGL_IMPEXP CEllipsoidRangeBearing2D
 	/** Private, virtual destructor: only can be deleted from smart pointers */
 	virtual ~CEllipsoidRangeBearing2D() {}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CEllipsoidRangeBearing2D, CRenderizableDisplayList, OPENGL_IMPEXP)
 
 }  // end namespace
 

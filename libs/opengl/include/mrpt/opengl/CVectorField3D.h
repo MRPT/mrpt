@@ -20,7 +20,7 @@ namespace mrpt
 {
 namespace opengl
 {
-class OPENGL_IMPEXP CVectorField3D;
+class CVectorField3D;
 
 /** A 3D vector field representation, consisting of points and arrows drawn at
  * any spatial position.
@@ -42,7 +42,7 @@ class OPENGL_IMPEXP CVectorField3D;
 	* \ingroup mrpt_opengl_grp
 	*/
 
-class OPENGL_IMPEXP CVectorField3D : public CRenderizableDisplayList
+class CVectorField3D : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CVectorField3D)
    protected:
@@ -402,8 +402,6 @@ class OPENGL_IMPEXP CVectorField3D : public CRenderizableDisplayList
 	/** Private, virtual destructor: only can be deleted from smart pointers. */
 	virtual ~CVectorField3D() {}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CVectorField3D, CRenderizableDisplayList, OPENGL_IMPEXP)
 
 }  // end namespace
 

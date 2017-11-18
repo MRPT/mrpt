@@ -27,8 +27,6 @@
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
 #include <mrpt/slam/data_association.h>
 
-#include <mrpt/slam/link_pragmas.h>
-
 namespace mrpt
 {
 namespace slam
@@ -44,7 +42,7 @@ namespace slam
   *
   * \sa CRangeBearingKFSLAM  \ingroup metric_slam_grp
   */
-class SLAM_IMPEXP CRangeBearingKFSLAM2D
+class CRangeBearingKFSLAM2D
 	: public bayes::CKalmanFilterCapable<3 /* x y yaw */, 2 /* range yaw */,
 										 2 /* x y */, 3 /* Ax Ay Ayaw */>
 // <size_t VEH_SIZE, size_t OBS_SIZE,   size_t FEAT_SIZE, size_t ACT_SIZE, size
@@ -110,7 +108,7 @@ class SLAM_IMPEXP CRangeBearingKFSLAM2D
 
 	/** The options for the algorithm
 	  */
-	struct SLAM_IMPEXP TOptions : utils::CLoadableOptions
+	struct TOptions : utils::CLoadableOptions
 	{
 		/** Default values */
 		TOptions();
@@ -164,7 +162,7 @@ class SLAM_IMPEXP CRangeBearingKFSLAM2D
 	/** Information for data-association:
 	  * \sa getLastDataAssociation
 	  */
-	struct SLAM_IMPEXP TDataAssocInfo
+	struct TDataAssocInfo
 	{
 		TDataAssocInfo() : Y_pred_means(0, 0), Y_pred_covs(0, 0) {}
 		void clear()

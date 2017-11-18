@@ -10,7 +10,6 @@
 #define CImageGrabber_OpenCV_H
 
 #include <mrpt/config.h>
-#include <mrpt/hwdrivers/link_pragmas.h>
 
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/utils/safe_pointers.h>
@@ -72,7 +71,7 @@ struct TCaptureCVOptions
   * \sa The most generic camera grabber in MRPT: mrpt::hwdrivers::CCameraSensor
   * \ingroup mrpt_hwdrivers_grp
   */
-class HWDRIVERS_IMPEXP CImageGrabber_OpenCV
+class CImageGrabber_OpenCV
 {
    protected:
 	/** Set to false if we could not initialize the camera.
