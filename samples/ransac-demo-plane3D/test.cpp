@@ -100,7 +100,7 @@ bool ransac3Dplane_degenerate(
 // ------------------------------------------------------
 void TestRANSAC()
 {
-	randomGenerator.randomize();
+	getRandomGenerator().randomize();
 
 	// Generate random points:
 	// ------------------------------------
@@ -112,8 +112,8 @@ void TestRANSAC()
 	CMatrixDouble data(3, N_plane + N_noise);
 	for (size_t i = 0; i < N_plane; i++)
 	{
-		const double xx = randomGenerator.drawUniform(-3, 3);
-		const double yy = randomGenerator.drawUniform(-3, 3);
+		const double xx = getRandomGenerator().drawUniform(-3, 3);
+		const double yy = getRandomGenerator().drawUniform(-3, 3);
 		const double zz =
 			-(PLANE_EQ[3] + PLANE_EQ[0] * xx + PLANE_EQ[1] * yy) / PLANE_EQ[2];
 		data(0, i) = xx;
@@ -123,9 +123,9 @@ void TestRANSAC()
 
 	for (size_t i = 0; i < N_noise; i++)
 	{
-		data(0, i + N_plane) = randomGenerator.drawUniform(-4, 4);
-		data(1, i + N_plane) = randomGenerator.drawUniform(-4, 4);
-		data(2, i + N_plane) = randomGenerator.drawUniform(-4, 4);
+		data(0, i + N_plane) = getRandomGenerator().drawUniform(-4, 4);
+		data(1, i + N_plane) = getRandomGenerator().drawUniform(-4, 4);
+		data(2, i + N_plane) = getRandomGenerator().drawUniform(-4, 4);
 	}
 
 	// Run RANSAC

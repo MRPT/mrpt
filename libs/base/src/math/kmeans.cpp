@@ -32,7 +32,7 @@ namespace detail
 				 internal_kmeans
    ------------------------------------------- */
 template <>
-BASE_IMPEXP double internal_kmeans<double>(
+double internal_kmeans<double>(
 	const bool use_kmeansplusplus_method, const size_t nPoints, const size_t k,
 	const size_t dims, const double* points, const size_t attempts,
 	double* out_center, int* out_assignments)
@@ -44,7 +44,7 @@ BASE_IMPEXP double internal_kmeans<double>(
 }
 
 template <>
-BASE_IMPEXP double internal_kmeans<float>(
+double internal_kmeans<float>(
 	const bool use_kmeansplusplus_method, const size_t nPoints, const size_t k,
 	const size_t dims, const float* points, const size_t attempts,
 	float* out_center, int* out_assignments)

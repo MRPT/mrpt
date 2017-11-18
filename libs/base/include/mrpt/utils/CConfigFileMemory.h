@@ -28,7 +28,7 @@ namespace utils
  * See: \ref config_file_format
  * \ingroup mrpt_base_grp
   */
-class BASE_IMPEXP CConfigFileMemory : public CConfigFileBase
+class CConfigFileMemory : public CConfigFileBase
 {
    public:
 	/** Empty constructor. Upon construction, call any of the "setContent"

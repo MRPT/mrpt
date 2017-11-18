@@ -20,7 +20,7 @@ namespace poses
  * \ingroup poses_pdf_grp
  * \sa CPoint2DPDF
  */
-class BASE_IMPEXP CPoint2DPDFGaussian : public CPoint2DPDF
+class CPoint2DPDFGaussian : public CPoint2DPDF
 {
 	DEFINE_SERIALIZABLE(CPoint2DPDFGaussian)
 
@@ -127,7 +127,6 @@ class BASE_IMPEXP CPoint2DPDFGaussian : public CPoint2DPDF
 	double mahalanobisDistanceToPoint(const double x, const double y) const;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(CPoint2DPDFGaussian, CPoint2DPDF)
 }  // End of namespace
 }  // End of namespace
 #endif

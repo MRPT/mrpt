@@ -23,7 +23,7 @@ namespace utils
  * \sa CStream, CFileStream, CFileGZOutputStream
  * \ingroup mrpt_base_grp
  */
-class BASE_IMPEXP CFileOutputStream : public CStream
+class CFileOutputStream : public CStream
 {
    protected:
 	size_t Read(void* Buffer, size_t Count) override;

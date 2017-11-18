@@ -12,7 +12,6 @@
 
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/utils/TTypeName.h>
-#include <mrpt/opengl/link_pragmas.h>
 
 namespace mrpt
 {
@@ -30,7 +29,7 @@ namespace opengl
   * Refer to standard OpenGL literature and tutorials for the meaning of each
  * field.
   */
-struct OPENGL_IMPEXP CLight
+struct CLight
 {
 	/** Default constructor, sets default values */
 	CLight();
@@ -65,9 +64,9 @@ struct OPENGL_IMPEXP CLight
 	void sendToOpenGL() const;
 };
 
-OPENGL_IMPEXP mrpt::utils::CStream& operator>>(
+mrpt::utils::CStream& operator>>(
 	mrpt::utils::CStream& in, mrpt::opengl::CLight& o);
-OPENGL_IMPEXP mrpt::utils::CStream& operator<<(
+mrpt::utils::CStream& operator<<(
 	mrpt::utils::CStream& out, const mrpt::opengl::CLight& o);
 
 }  // end namespace

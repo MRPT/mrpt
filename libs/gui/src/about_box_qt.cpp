@@ -15,7 +15,7 @@
 #include "CAboutBoxQt.h"
 #endif
 
-void GUI_IMPEXP mrpt::gui::show_mrpt_about_box_Qt(
+void mrpt::gui::show_mrpt_about_box_Qt(
 	const std::string& appName, const std::string& additionalInfo,
 	const bool showStandardInfo)
 {

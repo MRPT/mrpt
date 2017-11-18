@@ -16,7 +16,6 @@
 #include <mrpt/poses/CPosePDFGaussianInf.h>
 #include <mrpt/poses/CPose3DPDFGaussianInf.h>
 
-#include <mrpt/graphslam/link_pragmas.h>
 #include <mrpt/graphslam/NRD/CFixedIntervalsNRD.h>
 #include <mrpt/graphslam/NRD/CEmptyNRD.h>
 #include <mrpt/graphslam/NRD/CICPCriteriaNRD.h>
@@ -38,7 +37,7 @@ namespace apps
 /**\brief Properties struct for both the Registration Decider and Optimizer
 	* classes
 	*/
-struct GRAPHSLAM_IMPEXP TRegistrationDeciderOrOptimizerProps
+struct TRegistrationDeciderOrOptimizerProps
 {
 	TRegistrationDeciderOrOptimizerProps()
 		: name(""),
@@ -68,8 +67,7 @@ struct GRAPHSLAM_IMPEXP TRegistrationDeciderOrOptimizerProps
  *
  * \ingroup mrpt_graphslam_grp
  */
-struct GRAPHSLAM_IMPEXP TRegistrationDeciderProps
-	: public TRegistrationDeciderOrOptimizerProps
+struct TRegistrationDeciderProps : public TRegistrationDeciderOrOptimizerProps
 {
 	TRegistrationDeciderProps() : type(""), rawlog_format("") {}
 	~TRegistrationDeciderProps() {}
@@ -90,8 +88,7 @@ struct GRAPHSLAM_IMPEXP TRegistrationDeciderProps
  *
  * \ingroup mrpt_graphslam_grp
  */
-struct GRAPHSLAM_IMPEXP TOptimizerProps
-	: public TRegistrationDeciderOrOptimizerProps
+struct TOptimizerProps : public TRegistrationDeciderOrOptimizerProps
 {
 	TOptimizerProps() {}
 	~TOptimizerProps() {}

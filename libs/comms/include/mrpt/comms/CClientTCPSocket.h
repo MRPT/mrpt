@@ -12,7 +12,6 @@
 #include <cstdint>
 #include <mrpt/utils/CStream.h>
 #include <string>
-#include <mrpt/comms/link_pragmas.h>
 
 namespace mrpt
 {
@@ -34,7 +33,7 @@ class CServerTCPSocket;
  * CClientTCPSocket::DNS_LOOKUP_TIMEOUT_MS
   * \ingroup mrpt_comms_grp
   */
-class COMMS_IMPEXP CClientTCPSocket : public mrpt::utils::CStream
+class CClientTCPSocket : public mrpt::utils::CStream
 {
 	friend class CServerTCPSocket;
 

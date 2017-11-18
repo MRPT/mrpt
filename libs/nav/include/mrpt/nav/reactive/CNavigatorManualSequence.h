@@ -20,7 +20,7 @@ namespace nav
  * commands to the robot.
  * For a short discussion of the API, see CNavigatorVirtualBase
  */
-class NAV_IMPEXP CNavigatorManualSequence : public mrpt::nav::CAbstractNavigator
+class CNavigatorManualSequence : public mrpt::nav::CAbstractNavigator
 {
    public:
 	CNavigatorManualSequence(CRobot2NavInterface& react_iterf_impl);

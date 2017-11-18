@@ -1618,8 +1618,8 @@ void kinect_calibrate_guiDialog::ProcessNewGrabbedObs()
 
 			const std::string s =
 				mrpt::system::dateTimeLocalToString(m_last_obs->timestamp);
-			im.textOut(6, 6, s, TColor::black);
-			im.textOut(5, 5, s, TColor::white);
+			im.textOut(6, 6, s, TColor::black());
+			im.textOut(5, 5, s, TColor::white());
 
 			m_realtimeview_test->AssignImage(im);
 			m_realtimeview_test->Refresh(false);
@@ -1778,8 +1778,8 @@ void kinect_calibrate_guiDialog::ProcessNewGrabbedObs()
 				const string& s = center_messages[i];
 				const int x = img_to_show.getWidth() / 2 - 10 * s.size() / 2;
 				const int y = 230 + 25 * i;
-				img_to_show.textOut(x, y, s, TColor::black);
-				img_to_show.textOut(x - 1, y - 1, s, TColor::white);
+				img_to_show.textOut(x, y, s, TColor::black());
+				img_to_show.textOut(x - 1, y - 1, s, TColor::white());
 			}
 
 			// Show:
@@ -1930,7 +1930,7 @@ void kinect_calibrate_guiDialog::ProcessNewSelectedImageListBox()
 		{
 			mrpt::utils::CImage img(320, 240, CH_RGB);
 			img.filledRectangle(0, 0, 319, 239, TColor(200, 200, 200));
-			img.textOut(100, 110, "(No image selected)", TColor::white);
+			img.textOut(100, 110, "(No image selected)", TColor::white());
 
 			this->m_view_left->AssignImage(img);
 			this->m_view_right->AssignImage(img);

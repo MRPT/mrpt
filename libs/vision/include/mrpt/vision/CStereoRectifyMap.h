@@ -14,8 +14,6 @@
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/poses/CPose3DQuat.h>
 
-#include <mrpt/vision/link_pragmas.h>
-
 namespace mrpt
 {
 namespace vision
@@ -76,7 +74,7 @@ namespace vision
   *
   * \ingroup mrpt_vision_grp
   */
-class VISION_IMPEXP CStereoRectifyMap
+class CStereoRectifyMap
 {
    public:
 	/** Default ctor */

@@ -17,8 +17,6 @@
 #include <mrpt/opengl/gl_utils.h>
 #include <mrpt/system/string_utils.h>
 
-#include <mrpt/graphslam/link_pragmas.h>
-
 #include <iostream>
 #include <string>
 #include <map>
@@ -31,7 +29,7 @@ namespace graphslam
  *
  * \ingroup mrpt_graphslam_grp
  */
-class GRAPHSLAM_IMPEXP CWindowObserver : public mrpt::utils::CObserver
+class CWindowObserver : public mrpt::utils::CObserver
 {
    public:
 	CWindowObserver();

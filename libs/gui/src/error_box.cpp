@@ -18,7 +18,7 @@
 #include <iostream>
 #endif  // MRPT_HAS_Qt5
 
-void GUI_IMPEXP mrpt::gui::tryCatch(
+void mrpt::gui::tryCatch(
 	const std::function<void()>& tryPart, const std::string& catchMessage)
 {
 	try
@@ -35,7 +35,7 @@ void GUI_IMPEXP mrpt::gui::tryCatch(
 	}
 }
 
-void GUI_IMPEXP mrpt::gui::showErrorMessage(const std::string& str)
+void mrpt::gui::showErrorMessage(const std::string& str)
 {
 #if MRPT_HAS_Qt5
 	QErrorMessage msg;

@@ -13,8 +13,6 @@
 #include <mrpt/maps/CRandomFieldGridMap2D.h>
 #include <mrpt/obs/CObservationGasSensors.h>
 
-#include <mrpt/maps/link_pragmas.h>
-
 namespace mrpt
 {
 namespace maps
@@ -34,7 +32,7 @@ namespace maps
  * mrpt::maps::CMultiMetricMap
   * \ingroup mrpt_maps_grp
   */
-class MAPS_IMPEXP CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
+class CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
 {
 	DEFINE_SERIALIZABLE(CGasConcentrationGridMap2D)
    public:
@@ -49,8 +47,8 @@ class MAPS_IMPEXP CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
 
 	/** Parameters related with inserting observations into the map:
 	  */
-	struct MAPS_IMPEXP TInsertionOptions : public utils::CLoadableOptions,
-										   public TInsertionOptionsCommon
+	struct TInsertionOptions : public utils::CLoadableOptions,
+							   public TInsertionOptionsCommon
 	{
 		/** Default values loader */
 		TInsertionOptions();
@@ -111,7 +109,7 @@ class MAPS_IMPEXP CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
 	bool simulateAdvection(const double& STD_increase_value);
 
 	// Params for the estimation of the gaussian volume in a cell.
-	struct MAPS_IMPEXP TGaussianCell
+	struct TGaussianCell
 	{
 		int cx;  // x-index of the cell
 		int cy;  // y-index of the cell
@@ -119,7 +117,7 @@ class MAPS_IMPEXP CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
 	};
 
 	// Params for the estimation of the wind effect on each cell of the grid
-	struct MAPS_IMPEXP TGaussianWindTable
+	struct TGaussianWindTable
 	{
 		// Fixed params
 		float resolution;  // Cell_resolution. To be read from config-file
@@ -170,7 +168,7 @@ class MAPS_IMPEXP CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
 	/** The timestamp of the last time the advection simulation was executed */
 	mrpt::system::TTimeStamp timeLastSimulated;
 
-	MAP_DEFINITION_START(CGasConcentrationGridMap2D, MAPS_IMPEXP)
+	MAP_DEFINITION_START(CGasConcentrationGridMap2D)
 	/** See CGasConcentrationGridMap2D::CGasConcentrationGridMap2D */
 	float min_x, max_x, min_y, max_y, resolution;
 	/** The kind of map representation (see
@@ -178,10 +176,8 @@ class MAPS_IMPEXP CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
 	mrpt::maps::CGasConcentrationGridMap2D::TMapRepresentation mapType;
 	/** Observations insertion options */
 	mrpt::maps::CGasConcentrationGridMap2D::TInsertionOptions insertionOpts;
-	MAP_DEFINITION_END(CGasConcentrationGridMap2D, MAPS_IMPEXP)
+	MAP_DEFINITION_END(CGasConcentrationGridMap2D, )
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CGasConcentrationGridMap2D, CRandomFieldGridMap2D, MAPS_IMPEXP)
 
 }  // End of namespace
 

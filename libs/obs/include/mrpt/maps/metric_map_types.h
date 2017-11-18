@@ -12,7 +12,6 @@
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/obs/obs_frwds.h>
-#include <mrpt/obs/link_pragmas.h>
 
 namespace mrpt
 {
@@ -20,7 +19,7 @@ namespace maps
 {
 /** Parameters for the determination of matchings between point clouds, etc. \sa
  * CMetricMap::determineMatching2D, CMetricMap::determineMatching3D */
-struct OBS_IMPEXP TMatchingParams
+struct TMatchingParams
 {
 	/** Maximum linear distance between two points to be paired (meters) */
 	float maxDistForCorrespondence;
@@ -60,7 +59,7 @@ struct OBS_IMPEXP TMatchingParams
 /** Additional results from the determination of matchings between point clouds,
  * etc., apart from the pairings themselves \sa CMetricMap::determineMatching2D,
  * CMetricMap::determineMatching3D */
-struct OBS_IMPEXP TMatchingExtraResults
+struct TMatchingExtraResults
 {
 	/** The ratio [0,1] of points in otherMap with at least one correspondence.
 	 */
@@ -73,7 +72,7 @@ struct OBS_IMPEXP TMatchingExtraResults
 };
 
 /** Parameters for CMetricMap::compute3DMatchingRatio() */
-struct OBS_IMPEXP TMatchingRatioParams
+struct TMatchingRatioParams
 {
 	/** (Default: 0.10f) The minimum distance between 2 non-probabilistic map
 	 * elements for counting them as a correspondence. */
@@ -86,8 +85,8 @@ struct OBS_IMPEXP TMatchingRatioParams
 };
 
 /** Common params to all maps derived from mrpt::maps::CMetricMap  */
-class OBS_IMPEXP TMapGenericParams : public mrpt::utils::CLoadableOptions,
-									 public mrpt::utils::CSerializable
+class TMapGenericParams : public mrpt::utils::CLoadableOptions,
+						  public mrpt::utils::CSerializable
 {
 	DEFINE_SERIALIZABLE(TMapGenericParams)
    public:
@@ -106,7 +105,6 @@ class OBS_IMPEXP TMapGenericParams : public mrpt::utils::CLoadableOptions,
 	void dumpToTextStream(
 		mrpt::utils::CStream& out) const override;  // See base docs
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_LINKAGE(TMapGenericParams, OBS_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

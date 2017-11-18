@@ -16,8 +16,6 @@
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/utils/TEnumType.h>
 
-#include <mrpt/maps/link_pragmas.h>
-
 namespace mrpt
 {
 namespace maps
@@ -29,7 +27,7 @@ namespace maps
  * mrpt::utils::CSerializable
  * \ingroup mrpt_maps_grp
  */
-class MAPS_IMPEXP CColouredPointsMap : public CPointsMap
+class CColouredPointsMap : public CPointsMap
 {
 	DEFINE_SERIALIZABLE(CColouredPointsMap)
 
@@ -256,7 +254,7 @@ class MAPS_IMPEXP CColouredPointsMap : public CPointsMap
 	};
 
 	/** The definition of parameters for generating colors from laser scans */
-	struct MAPS_IMPEXP TColourOptions : public utils::CLoadableOptions
+	struct TColourOptions : public utils::CLoadableOptions
 	{
 		/** Initilization of default parameters */
 		TColourOptions();
@@ -363,15 +361,13 @@ class MAPS_IMPEXP CColouredPointsMap : public CPointsMap
 		mrpt::utils::TColorf& pt_color) const override;
 	/** @} */
 
-	MAP_DEFINITION_START(CColouredPointsMap, MAPS_IMPEXP)
+	MAP_DEFINITION_START(CColouredPointsMap)
 	mrpt::maps::CPointsMap::TInsertionOptions insertionOpts;
 	mrpt::maps::CPointsMap::TLikelihoodOptions likelihoodOpts;
 	mrpt::maps::CColouredPointsMap::TColourOptions colourOpts;
-	MAP_DEFINITION_END(CColouredPointsMap, MAPS_IMPEXP)
+	MAP_DEFINITION_END(CColouredPointsMap, )
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CColouredPointsMap, CPointsMap, MAPS_IMPEXP)
 
 }  // End of namespace
 

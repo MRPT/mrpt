@@ -47,8 +47,8 @@ DECLARE_OP_FUNCTION(op_externalize)
 			entries_skipped = 0;
 			getArgValue<string>(cmdline, "image-format", imgFileExtension);
 
-			mrpt::obs::CObservation3DRangeScan::EXTERNALS_AS_TEXT =
-				isFlagSet(cmdline, "txt-externals");
+			mrpt::obs::CObservation3DRangeScan::EXTERNALS_AS_TEXT(
+				isFlagSet(cmdline, "txt-externals"));
 
 			// Create the default "/Images" directory.
 			const string out_rawlog_basedir =

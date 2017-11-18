@@ -18,8 +18,6 @@
 
 #include <mrpt/opengl/CSetOfObjects.h>
 
-#include <mrpt/maps/link_pragmas.h>
-
 namespace mrpt
 {
 namespace utils
@@ -41,7 +39,7 @@ class CBeaconMap;
   * \sa CBeaconMap, CPointPDFSOG
   * \ingroup mrpt_maps_grp
   */
-class MAPS_IMPEXP CBeacon : public mrpt::poses::CPointPDF
+class CBeacon : public mrpt::poses::CPointPDF
 {
 	DEFINE_SERIALIZABLE(CBeacon)
 
@@ -205,8 +203,6 @@ class MAPS_IMPEXP CBeacon : public mrpt::poses::CPointPDF
 		const float& maxDistanceFromCenter = 0);
 
 };  // End of class definition
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CBeacon, mrpt::utils::CSerializable, MAPS_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

@@ -32,7 +32,7 @@ namespace utils
   *
   * \ingroup mrpt_base_grp
   */
-class BASE_IMPEXP CConfigFile : public CConfigFileBase
+class CConfigFile : public CConfigFileBase
 {
    private:
 	/** The name of the file */

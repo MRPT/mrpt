@@ -2602,7 +2602,7 @@ void CLandmarksMap::simulateBeaconReadings(
 
 			// Add noise:
 			range += out_Observations.stdError *
-					 randomGenerator.drawGaussian1D_normalized();
+					 getRandomGenerator().drawGaussian1D_normalized();
 			range = max(0.0f, range);
 
 			if (range >= out_Observations.minSensorDistance &&
@@ -2932,9 +2932,9 @@ void CLandmarksMap::simulateRangeBearingReadings(
 		point3D.sphericalCoordinates(beacon3D, range, yaw, pitch);
 
 		// Add noises:
-		range += in_stdRange * randomGenerator.drawGaussian1D_normalized();
-		yaw += in_stdYaw * randomGenerator.drawGaussian1D_normalized();
-		pitch += in_stdPitch * randomGenerator.drawGaussian1D_normalized();
+		range += in_stdRange * getRandomGenerator().drawGaussian1D_normalized();
+		yaw += in_stdYaw * getRandomGenerator().drawGaussian1D_normalized();
+		pitch += in_stdPitch * getRandomGenerator().drawGaussian1D_normalized();
 
 		yaw = math::wrapToPi(yaw);
 		range = max(0.0, range);
@@ -2962,7 +2962,7 @@ void CLandmarksMap::simulateRangeBearingReadings(
 	}  // end for it
 
 	const double fSpurious =
-		randomGenerator.drawGaussian1D(spurious_count_mean, spurious_count_std);
+		getRandomGenerator().drawGaussian1D(spurious_count_mean, spurious_count_std);
 	size_t nSpurious = 0;
 	if (spurious_count_std != 0 || spurious_count_mean != 0)
 		nSpurious = static_cast<size_t>(
@@ -2975,18 +2975,18 @@ void CLandmarksMap::simulateRangeBearingReadings(
 		// Make up yaw,pitch,range out from thin air:
 		// (the conditionals on yaw & pitch are to generate 2D observations if
 		// we are in 2D, which we learn from a null std.dev.)
-		const double range = randomGenerator.drawUniform(
+		const double range = getRandomGenerator().drawUniform(
 			out_Observations.minSensorDistance,
 			out_Observations.maxSensorDistance);
 		const double yaw = (out_Observations.sensor_std_yaw == 0)
 							   ? 0
-							   : randomGenerator.drawUniform(
+							   : getRandomGenerator().drawUniform(
 									 -0.5f * out_Observations.fieldOfView_yaw,
 									 0.5f * out_Observations.fieldOfView_yaw);
 		const double pitch =
 			(out_Observations.sensor_std_pitch == 0)
 				? 0
-				: randomGenerator.drawUniform(
+				: getRandomGenerator().drawUniform(
 					  -0.5f * out_Observations.fieldOfView_pitch,
 					  0.5f * out_Observations.fieldOfView_pitch);
 

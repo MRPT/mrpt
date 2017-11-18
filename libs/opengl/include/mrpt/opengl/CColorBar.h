@@ -33,7 +33,7 @@ namespace opengl
   *
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CColorBar : public CRenderizableDisplayList
+class CColorBar : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CColorBar)
 
@@ -92,7 +92,5 @@ class OPENGL_IMPEXP CColorBar : public CRenderizableDisplayList
 		/** Label text font size */
 		double label_font_size = .05);
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CColorBar, CRenderizableDisplayList, OPENGL_IMPEXP)
 }
 }

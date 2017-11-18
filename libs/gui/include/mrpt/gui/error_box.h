@@ -8,7 +8,6 @@
    +------------------------------------------------------------------------+ */
 
 #pragma once
-#include <mrpt/gui/link_pragmas.h>
 
 #include <string>
 
@@ -16,8 +15,8 @@ namespace mrpt
 {
 namespace gui
 {
-void GUI_IMPEXP tryCatch(
+void tryCatch(
 	const std::function<void()>& tryPart, const std::string& catchMessage);
-void GUI_IMPEXP showErrorMessage(const std::string& str);
+void showErrorMessage(const std::string& str);
 }
 }

@@ -50,7 +50,7 @@ class CParticleFilterCapable;
  * \ingroup mrpt_base_grp
  * \sa mrpt::poses::CPoseParticlesPDF
  */
-class BASE_IMPEXP CParticleFilter : public mrpt::utils::COutputLogger
+class CParticleFilter : public mrpt::utils::COutputLogger
 {
    public:
 	/** Defines different types of particle filter algorithms.
@@ -101,8 +101,7 @@ class BASE_IMPEXP CParticleFilter : public mrpt::utils::COutputLogger
 
 	/** The configuration of a particle filter.
 	  */
-	struct BASE_IMPEXP TParticleFilterOptions
-		: public mrpt::utils::CLoadableOptions
+	struct TParticleFilterOptions : public mrpt::utils::CLoadableOptions
 	{
 	   public:
 		/** Initilization of default parameters */
@@ -171,7 +170,7 @@ class BASE_IMPEXP CParticleFilter : public mrpt::utils::COutputLogger
 	};
 
 	/** Statistics for being returned from the "execute" method. */
-	struct BASE_IMPEXP TParticleFilterStats
+	struct TParticleFilterStats
 	{
 		TParticleFilterStats()
 			: ESS_beforeResample(0), weightsVariance_beforeResample(0)

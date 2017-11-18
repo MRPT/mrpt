@@ -11,7 +11,6 @@
 
 #include <mrpt/obs/obs_frwds.h>
 #include <mrpt/obs/CSensoryFrame.h>
-#include <mrpt/slam/link_pragmas.h>
 
 namespace mrpt
 {
@@ -27,7 +26,7 @@ namespace slam
  * [0,1]), possibly taking into account their relative positions.
   *  \note This is used in mrpt::slam::CIncrementalMapPartitioner
   */
-double SLAM_IMPEXP observationsOverlap(
+double observationsOverlap(
 	const mrpt::obs::CObservation* o1, const mrpt::obs::CObservation* o2,
 	const mrpt::poses::CPose3D* pose_o2_wrt_o1 = nullptr);
 
@@ -49,7 +48,7 @@ inline double observationsOverlap(
  * SF.
   *  \note This is used in mrpt::slam::CIncrementalMapPartitioner
   */
-double SLAM_IMPEXP observationsOverlap(
+double observationsOverlap(
 	const mrpt::obs::CSensoryFrame& sf1, const mrpt::obs::CSensoryFrame& sf2,
 	const mrpt::poses::CPose3D* pose_sf2_wrt_sf1 = nullptr);
 

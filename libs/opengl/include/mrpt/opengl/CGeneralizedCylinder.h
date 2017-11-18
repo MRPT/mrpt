@@ -20,7 +20,7 @@ namespace mrpt
 {
 namespace opengl
 {
-class OPENGL_IMPEXP CGeneralizedCylinder;
+class CGeneralizedCylinder;
 /**
   * This object represents any figure obtained by extruding any profile along a
  * given axis. The profile should lie over a x=0 plane, and the axis must be
@@ -28,14 +28,14 @@ class OPENGL_IMPEXP CGeneralizedCylinder;
  * perpendicular to the Z axis.
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CGeneralizedCylinder : public CRenderizableDisplayList
+class CGeneralizedCylinder : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CGeneralizedCylinder)
    public:
 	/**
 	  * Auxiliary struct holding any quadrilateral, represented by foour points.
 	  */
-	struct OPENGL_IMPEXP TQuadrilateral
+	struct TQuadrilateral
 	{
 	   private:
 		/**
@@ -437,8 +437,6 @@ class OPENGL_IMPEXP CGeneralizedCylinder : public CRenderizableDisplayList
 	  */
 	virtual ~CGeneralizedCylinder(){};
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CGeneralizedCylinder, CRenderizableDisplayList, OPENGL_IMPEXP)
 }
 }
 #endif

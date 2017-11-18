@@ -23,7 +23,7 @@ typedef uint32_t _GLENUM;
  * geometric properties.
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP COpenGLStandardObject : public CRenderizableDisplayList
+class COpenGLStandardObject : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(COpenGLStandardObject)
    protected:
@@ -147,8 +147,6 @@ class OPENGL_IMPEXP COpenGLStandardObject : public CRenderizableDisplayList
 	  */
 	virtual ~COpenGLStandardObject() {}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	COpenGLStandardObject, CRenderizableDisplayList, OPENGL_IMPEXP)
 }  // end namespace
 }  // End of namespace
 #endif

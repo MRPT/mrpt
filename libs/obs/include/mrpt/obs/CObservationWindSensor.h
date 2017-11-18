@@ -28,7 +28,7 @@ namespace obs
  * \sa CObservation
  * \ingroup mrpt_obs_grp
  */
-class OBS_IMPEXP CObservationWindSensor : public CObservation
+class CObservationWindSensor : public CObservation
 {
 	DEFINE_SERIALIZABLE(CObservationWindSensor)
 
@@ -55,8 +55,6 @@ class OBS_IMPEXP CObservationWindSensor : public CObservation
 	void getDescriptionAsText(std::ostream& o) const override;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CObservationWindSensor, CObservation, OBS_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

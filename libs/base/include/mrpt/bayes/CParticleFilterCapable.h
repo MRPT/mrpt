@@ -29,7 +29,7 @@ namespace bayes
  * \sa CParticleFilter, CParticleFilterData
  * \ingroup mrpt_base_grp
  */
-class BASE_IMPEXP CParticleFilterCapable
+class CParticleFilterCapable
 {
 	friend class CParticleFilter;
 
@@ -267,7 +267,7 @@ class BASE_IMPEXP CParticleFilterCapable
 	/** Auxiliary vectors, see CParticleFilterCapable::prepareFastDrawSample for
 	 * more information
 	  */
-	struct BASE_IMPEXP TFastDrawAuxVars
+	struct TFastDrawAuxVars
 	{
 		TFastDrawAuxVars()
 			: CDF(),

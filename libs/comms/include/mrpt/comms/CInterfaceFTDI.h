@@ -12,7 +12,6 @@
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/circular_buffer.h>
 
-#include <mrpt/comms/link_pragmas.h>
 #include <deque>
 
 namespace mrpt
@@ -23,7 +22,7 @@ namespace comms
   * \sa CInterfaceFTDI::ListAllDevices
   * \ingroup mrpt_comms_grp
   */
-struct COMMS_IMPEXP TFTDIDevice
+struct TFTDIDevice
 {
 	std::string ftdi_manufacturer;
 	std::string ftdi_description;
@@ -41,7 +40,7 @@ struct COMMS_IMPEXP TFTDIDevice
 };
 
 /** Print out all the information of a FTDI device in textual form. */
-std::ostream COMMS_IMPEXP& operator<<(std::ostream& o, const TFTDIDevice& d);
+std::ostream& operator<<(std::ostream& o, const TFTDIDevice& d);
 
 /** Used in  CInterfaceFTDI::ListAllDevices */
 typedef std::deque<TFTDIDevice> TFTDIDeviceList;
@@ -73,7 +72,7 @@ typedef std::deque<TFTDIDevice> TFTDIDeviceList;
  * \sa CStream
  * \ingroup mrpt_comms_grp
  */
-class COMMS_IMPEXP CInterfaceFTDI : public utils::CStream
+class CInterfaceFTDI : public utils::CStream
 {
    public:
 	/** Constructor, which loads driver interface (the DLL under Windows).

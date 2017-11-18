@@ -39,23 +39,23 @@ TColor TColorManager::getNextTColor()
 	}
 	else
 	{
-		bool used_red = used_colors.find(TColor::red) != used_colors.end();
-		bool used_green = used_colors.find(TColor::green) != used_colors.end();
-		bool used_blue = used_colors.find(TColor::blue) != used_colors.end();
+		bool used_red = used_colors.find(TColor::red()) != used_colors.end();
+		bool used_green = used_colors.find(TColor::green()) != used_colors.end();
+		bool used_blue = used_colors.find(TColor::blue()) != used_colors.end();
 
 		// fixed order of usage
 		// red -> green -> blue
 		if (!used_red)
 		{
-			curr_color = TColor::red;
+			curr_color = TColor::red();
 		}
 		else if (!used_green)
 		{
-			curr_color = TColor::green;
+			curr_color = TColor::green();
 		}
 		else if (!used_blue)
 		{
-			curr_color = TColor::blue;
+			curr_color = TColor::blue();
 			have_used_standard_colors = true;
 		}
 	}
@@ -78,7 +78,7 @@ void TColorManager::advanceRGBCounters()
 	THROW_EXCEPTION("Not yet implemented.");
 	// if standard colors have already been used then at first color is
 	// TColor::blue
-	if (curr_color == TColor::blue)
+	if (curr_color == TColor::blue())
 	{
 		curr_color = TColor();
 
@@ -95,8 +95,8 @@ void TColorManager::advanceRGBCounters()
 	// if the standard colors are to be used first make sure that the color we
 	// end up on is not a standard one.
 	if (use_standard_colors_first &&
-		(curr_color == TColor::red || curr_color == TColor::green ||
-		 curr_color == TColor::blue))
+		(curr_color == TColor::red() || curr_color == TColor::green() ||
+		 curr_color == TColor::blue()))
 	{
 		this->advanceRGBCounters();
 	}
@@ -126,9 +126,9 @@ void TColorManager::reset()
 
 bool TColorManager::checkStdColorsUsed()
 {
-	bool ret = used_colors.find(TColor::red) != used_colors.end() &&
-			   used_colors.find(TColor::green) != used_colors.end() &&
-			   used_colors.find(TColor::blue) != used_colors.end();
+	bool ret = used_colors.find(TColor::red()) != used_colors.end() &&
+			   used_colors.find(TColor::green()) != used_colors.end() &&
+			   used_colors.find(TColor::blue()) != used_colors.end();
 
 	return ret;
 }

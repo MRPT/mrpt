@@ -54,7 +54,7 @@ struct TObs
 // tests even if the algorithm is ok.
 bool ransac_data_assoc_run()
 {
-	randomGenerator.randomize();  // randomize with time
+	getRandomGenerator().randomize();  // randomize with time
 	// --------------------------------
 	// Load feature map:
 	// --------------------------------
@@ -64,8 +64,8 @@ bool ransac_data_assoc_run()
 	for (size_t i = 0; i < NUM_MAP_FEATS; i++)
 	{
 		the_map.setPoint(
-			i, randomGenerator.drawUniform(0, MAP_SIZE_X),
-			randomGenerator.drawUniform(0, MAP_SIZE_Y));
+			i, getRandomGenerator().drawUniform(0, MAP_SIZE_X),
+			getRandomGenerator().drawUniform(0, MAP_SIZE_Y));
 	}
 	const size_t nMapPts = the_map.size();
 	const size_t nObs = NUM_OBSERVATIONS_TO_SIMUL;
@@ -75,9 +75,9 @@ bool ransac_data_assoc_run()
 	observations.resize(nObs);
 
 	const mrpt::poses::CPose2D GT_pose(
-		mrpt::random::randomGenerator.drawUniform(-10, 10 + MAP_SIZE_X),
-		mrpt::random::randomGenerator.drawUniform(-10, 10 + MAP_SIZE_Y),
-		mrpt::random::randomGenerator.drawUniform(-M_PI, M_PI));
+		mrpt::random::getRandomGenerator().drawUniform(-10, 10 + MAP_SIZE_X),
+		mrpt::random::getRandomGenerator().drawUniform(-10, 10 + MAP_SIZE_Y),
+		mrpt::random::getRandomGenerator().drawUniform(-M_PI, M_PI));
 
 	const mrpt::poses::CPose2D GT_pose_inv = -GT_pose;
 
@@ -96,10 +96,10 @@ bool ransac_data_assoc_run()
 		observations[i].ID = idxs[i].first;
 		observations[i].x =
 			lx +
-			mrpt::random::randomGenerator.drawGaussian1D(0, normalizationStd);
+			mrpt::random::getRandomGenerator().drawGaussian1D(0, normalizationStd);
 		observations[i].y =
 			ly +
-			mrpt::random::randomGenerator.drawGaussian1D(0, normalizationStd);
+			mrpt::random::getRandomGenerator().drawGaussian1D(0, normalizationStd);
 	}
 
 	// ----------------------------------------------------

@@ -36,7 +36,7 @@ using std::vector;
  * to consider a plane as valid.
   */
 template <typename NUMTYPE>
-void BASE_IMPEXP ransac_detect_3D_planes(
+void ransac_detect_3D_planes(
 	const Eigen::Matrix<NUMTYPE, Eigen::Dynamic, 1>& x,
 	const Eigen::Matrix<NUMTYPE, Eigen::Dynamic, 1>& y,
 	const Eigen::Matrix<NUMTYPE, Eigen::Dynamic, 1>& z,
@@ -54,7 +54,7 @@ void BASE_IMPEXP ransac_detect_3D_planes(
  * to consider a line as valid.
   */
 template <typename NUMTYPE>
-void BASE_IMPEXP ransac_detect_2D_lines(
+void ransac_detect_2D_lines(
 	const Eigen::Matrix<NUMTYPE, Eigen::Dynamic, 1>& x,
 	const Eigen::Matrix<NUMTYPE, Eigen::Dynamic, 1>& y,
 	std::vector<std::pair<size_t, TLine2D>>& out_detected_lines,

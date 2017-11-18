@@ -1041,11 +1041,9 @@ void MainWindow::readRawlogFiles(string rawlog)
 							std::dynamic_pointer_cast<CObservationStereoImages>(
 								o);
 
-						/// similar to common practice of reading images-->
-						/// https://github.com/MRPT/mrpt/search?utf8=%E2%9C%93&q=IMAGES_PATH_BASE&type=
 						stringstream str;
 						str << getImageDir(rawlog) << "/Images";
-						obsSt->imageLeft.IMAGES_PATH_BASE = str.str();
+						mrpt::utils::CImage::setImagesPathBase(str.str());
 						file_path1 = str.str();
 						flag_path2++;
 						inputFilePath->setText(
@@ -1061,11 +1059,9 @@ void MainWindow::readRawlogFiles(string rawlog)
 						CObservationImage::Ptr obsIm =
 							std::dynamic_pointer_cast<CObservationImage>(o);
 
-						/// similar to common practice of reading images-->
-						/// https://github.com/MRPT/mrpt/search?utf8=%E2%9C%93&q=IMAGES_PATH_BASE&type=
 						stringstream str;
 						str << getImageDir(rawlog) << "/Images";
-						obsIm->image.IMAGES_PATH_BASE = str.str();
+						mrpt::utils::CImage::setImagesPathBase(str.str());
 						file_path1 = str.str();
 						flag_path++;
 

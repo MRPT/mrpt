@@ -224,8 +224,8 @@ int VelodyneView(int argc, char** argv)
 	mrpt::gui::CDisplayWindow3D win3D("Velodyne 3D view", 800, 600);
 
 	// Allow rendering large number of points without decimation:
-	mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL = 1;
-	mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE = 1e7;
+	mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL(1);
+	mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE(1e7);
 
 	win3D.setCameraAzimuthDeg(140);
 	win3D.setCameraElevationDeg(20);

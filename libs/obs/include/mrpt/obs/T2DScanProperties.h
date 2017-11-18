@@ -10,7 +10,6 @@
 #define T2DScanProperties_H
 
 #include <mrpt/utils/core_defs.h>
-#include <mrpt/obs/link_pragmas.h>
 
 namespace mrpt
 {
@@ -23,7 +22,7 @@ namespace obs
   * \sa CObservation2DRangeScan, CObservation2DRangeScan::getScanProperties,
  * CSinCosLookUpTableFor2DScans
   */
-struct OBS_IMPEXP T2DScanProperties
+struct T2DScanProperties
 {
 	size_t nRays;
 	double aperture;
@@ -32,8 +31,7 @@ struct OBS_IMPEXP T2DScanProperties
 };
 /** Order operator, so T2DScanProperties can appear in associative STL
  * containers. */
-bool OBS_IMPEXP
-	operator<(const T2DScanProperties& a, const T2DScanProperties& b);
+bool operator<(const T2DScanProperties& a, const T2DScanProperties& b);
 
 }  // End of namespace
 }  // End of namespace

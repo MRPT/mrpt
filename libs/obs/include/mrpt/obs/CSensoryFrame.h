@@ -12,7 +12,6 @@
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/obs/CObservation.h>
-#include <mrpt/obs/link_pragmas.h>
 
 namespace mrpt
 {
@@ -52,7 +51,7 @@ namespace obs
   * \sa CObservation
   * \ingroup mrpt_obs_grp
   */
-class OBS_IMPEXP CSensoryFrame : public mrpt::utils::CSerializable
+class CSensoryFrame : public mrpt::utils::CSerializable
 {
 	DEFINE_SERIALIZABLE(CSensoryFrame)
 
@@ -219,7 +218,7 @@ class OBS_IMPEXP CSensoryFrame : public mrpt::utils::CSerializable
 	{
 		MRPT_START
 		size_t foundCount = 0;
-		const mrpt::utils::TRuntimeClassId* class_ID = T::classinfo;
+		const mrpt::utils::TRuntimeClassId* class_ID = &T::GetRuntimeClassIdStatic();
 		for (const_iterator it = begin(); it != end(); ++it)
 			if ((*it)->GetRuntimeClass()->derivedFrom(class_ID))
 				if (foundCount++ == ith)
@@ -358,8 +357,6 @@ class OBS_IMPEXP CSensoryFrame : public mrpt::utils::CSerializable
 	std::deque<CObservation::Ptr> m_observations;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CSensoryFrame, mrpt::utils::CSerializable, OBS_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

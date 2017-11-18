@@ -40,8 +40,7 @@ namespace slam
  * \sa CMetricMapsAlignmentAlgorithm
  * \ingroup mrpt_slam_grp
  */
-class SLAM_IMPEXP CGridMapAligner
-	: public mrpt::slam::CMetricMapsAlignmentAlgorithm
+class CGridMapAligner : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 {
    private:
 	/** Private member, implements one the algorithms.
@@ -75,7 +74,7 @@ class SLAM_IMPEXP CGridMapAligner
 
 	/** The ICP algorithm configuration data
 	 */
-	class SLAM_IMPEXP TConfigParams : public utils::CLoadableOptions
+	class TConfigParams : public utils::CLoadableOptions
 	{
 	   public:
 		/** Initializer for default values:
@@ -151,7 +150,7 @@ class SLAM_IMPEXP CGridMapAligner
 
 	/** The ICP algorithm return information.
 	 */
-	struct SLAM_IMPEXP TReturnInfo
+	struct TReturnInfo
 	{
 		TReturnInfo() : goodness(0), noRobustEstimation() {}
 		/** A goodness measure for the alignment, it is a [0,1] range indicator

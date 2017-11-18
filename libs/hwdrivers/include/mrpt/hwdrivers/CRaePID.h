@@ -28,7 +28,7 @@ namespace hwdrivers
   *  \sa mrpt::obs::CObservationGasSensors
   * \ingroup mrpt_hwdrivers_grp
   */
-class HWDRIVERS_IMPEXP CRaePID : public mrpt::hwdrivers::CGenericSensor
+class CRaePID : public mrpt::hwdrivers::CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CRaePID)
 

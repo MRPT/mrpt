@@ -18,8 +18,6 @@
 #include <mrpt/gui/keycodes.h>
 #include <mrpt/gui/gui_frwds.h>
 
-#include <mrpt/gui/link_pragmas.h>
-
 #include <mutex>
 #include <future>
 
@@ -43,7 +41,7 @@ namespace gui
   *    so all your code in the handler must be thread safe.
   * \ingroup mrpt_gui_grp
   */
-class GUI_IMPEXP CBaseGUIWindow : public mrpt::utils::CObservable
+class CBaseGUIWindow : public mrpt::utils::CObservable
 {
 	friend class CWindowDialog;
 	friend class C3DWindowDialog;
@@ -168,7 +166,7 @@ class GUI_IMPEXP CBaseGUIWindow : public mrpt::utils::CObservable
  * from the wxWidgets internal MRPT thread,
   *    so all your code in the handler must be thread safe.
   */
-class GUI_IMPEXP mrptEventWindowChar : public mrpt::utils::mrptEvent
+class mrptEventWindowChar : public mrpt::utils::mrptEvent
 {
    protected:
 	/** Just to allow this class to be polymorphic */
@@ -194,7 +192,7 @@ class GUI_IMPEXP mrptEventWindowChar : public mrpt::utils::mrptEvent
  * from the wxWidgets internal MRPT thread,
   *    so all your code in the handler must be thread safe.
   */
-class GUI_IMPEXP mrptEventWindowResize : public mrpt::utils::mrptEvent
+class mrptEventWindowResize : public mrpt::utils::mrptEvent
 {
    protected:
 	/** Just to allow this class to be polymorphic */
@@ -219,7 +217,7 @@ class GUI_IMPEXP mrptEventWindowResize : public mrpt::utils::mrptEvent
   *
   * \sa mrptEventMouseMove
   */
-class GUI_IMPEXP mrptEventMouseDown : public mrpt::utils::mrptEvent
+class mrptEventMouseDown : public mrpt::utils::mrptEvent
 {
    protected:
 	/** Just to allow this class to be polymorphic */
@@ -247,7 +245,7 @@ class GUI_IMPEXP mrptEventMouseDown : public mrpt::utils::mrptEvent
 *    so all your code in the handler must be thread safe.
 * \sa mrptEventMouseDown
 */
-class GUI_IMPEXP mrptEventMouseMove : public mrpt::utils::mrptEvent
+class mrptEventMouseMove : public mrpt::utils::mrptEvent
 {
    protected:
 	/** Just to allow this class to be polymorphic */
@@ -282,7 +280,7 @@ class GUI_IMPEXP mrptEventMouseMove : public mrpt::utils::mrptEvent
   *
   * \sa CBaseGUIWindow
   */
-class GUI_IMPEXP mrptEventWindowClosed : public mrpt::utils::mrptEvent
+class mrptEventWindowClosed : public mrpt::utils::mrptEvent
 {
    protected:
 	/** Just to allow this class to be polymorphic */

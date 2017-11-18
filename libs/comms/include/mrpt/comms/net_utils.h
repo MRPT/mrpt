@@ -11,7 +11,6 @@
 #include <mrpt/utils/core_defs.h>
 #include <mrpt/utils/types_simple.h>
 #include <mrpt/utils/TParameters.h>
-#include <mrpt/comms/link_pragmas.h>
 
 namespace mrpt
 {
@@ -58,7 +57,7 @@ enum ERRORCODE_HTTP
  * \return The error or success code.
  * \sa mrpt::utils::vectorToBinaryFile
  */
-ERRORCODE_HTTP COMMS_IMPEXP http_get(
+ERRORCODE_HTTP http_get(
 	const string& url, vector_byte& out_content, string& out_errormsg,
 	int port = 80, const string& auth_user = string(),
 	const string& auth_pass = string(), int* out_http_responsecode = nullptr,
@@ -85,7 +84,7 @@ ERRORCODE_HTTP COMMS_IMPEXP http_get(
  * \return The error or success code.
  * \sa mrpt::utils::vectorToBinaryFile
  */
-ERRORCODE_HTTP COMMS_IMPEXP http_get(
+ERRORCODE_HTTP http_get(
 	const string& url, string& out_content, string& out_errormsg, int port = 80,
 	const string& auth_user = string(), const string& auth_pass = string(),
 	int* out_http_responsecode = nullptr,
@@ -94,7 +93,7 @@ ERRORCODE_HTTP COMMS_IMPEXP http_get(
 	int timeout_ms = 1000);
 
 /** Generic function for HTTP GET & POST methods. \sa http_get */
-ERRORCODE_HTTP COMMS_IMPEXP http_request(
+ERRORCODE_HTTP http_request(
 	const string& http_method, const string& http_send_content,
 	const string& url, vector_byte& out_content, string& out_errormsg,
 	int port = 80, const string& auth_user = string(),
@@ -110,12 +109,12 @@ ERRORCODE_HTTP COMMS_IMPEXP http_request(
  *
  * \return true on success, false on timeout or other error.
  */
-bool COMMS_IMPEXP DNS_resolve_async(
+bool DNS_resolve_async(
 	const std::string& server_name, std::string& out_ip,
 	const unsigned int timeout_ms = 3000);
 
 /** Returns a description of the last Sockets error */
-std::string COMMS_IMPEXP getLastSocketErrorStr();
+std::string getLastSocketErrorStr();
 
 /** @brief Ping an IP address
  *
@@ -131,7 +130,7 @@ std::string COMMS_IMPEXP getLastSocketErrorStr();
  * }
  *
  */
-bool COMMS_IMPEXP Ping(
+bool Ping(
 	const std::string& address, const int& max_attempts,
 	std::string* output_str = NULL);
 

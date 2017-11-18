@@ -30,7 +30,7 @@ namespace opengl
   *
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CDisk : public CRenderizableDisplayList
+class CDisk : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CDisk)
 
@@ -86,8 +86,6 @@ class OPENGL_IMPEXP CDisk : public CRenderizableDisplayList
 	/** Private, virtual destructor: only can be deleted from smart pointers */
 	virtual ~CDisk() {}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CDisk, CRenderizableDisplayList, OPENGL_IMPEXP)
 
 }  // end namespace
 

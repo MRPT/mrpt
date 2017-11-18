@@ -12,7 +12,6 @@
 #include <mrpt/utils/COutputLogger.h>
 #include <string>
 #include <memory>  // unique_ptr
-#include <mrpt/comms/link_pragmas.h>
 
 namespace mrpt
 {
@@ -24,7 +23,7 @@ class CClientTCPSocket;
   *  Unless otherwise noticed, operations are blocking.
  * \ingroup mrpt_comms_grp
   */
-class COMMS_IMPEXP CServerTCPSocket : public utils::COutputLogger
+class CServerTCPSocket : public utils::COutputLogger
 {
    public:
 	/** Constructor that creates the socket, performs binding, and start

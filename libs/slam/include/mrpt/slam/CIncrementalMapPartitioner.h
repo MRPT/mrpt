@@ -18,8 +18,6 @@
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/poses/poses_frwds.h>
 
-#include <mrpt/slam/link_pragmas.h>
-
 namespace mrpt
 {
 namespace slam
@@ -28,9 +26,8 @@ namespace slam
   *   observations taken at some poses/nodes.
   * \ingroup mrpt_slam_grp
   */
-class SLAM_IMPEXP CIncrementalMapPartitioner
-	: public mrpt::utils::COutputLogger,
-	  public mrpt::utils::CSerializable
+class CIncrementalMapPartitioner : public mrpt::utils::COutputLogger,
+								   public mrpt::utils::CSerializable
 {
 	// This must be added to any CSerializable derived class:
 	DEFINE_SERIALIZABLE(CIncrementalMapPartitioner)
@@ -47,7 +44,7 @@ class SLAM_IMPEXP CIncrementalMapPartitioner
 
 	/** Configuration of the algorithm:
 	  */
-	struct SLAM_IMPEXP TOptions : public utils::CLoadableOptions
+	struct TOptions : public utils::CLoadableOptions
 	{
 		/*\brief  Sets default values at object creation
 		  */
@@ -215,8 +212,6 @@ class SLAM_IMPEXP CIncrementalMapPartitioner
 	std::vector<uint8_t> m_modified_nodes;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CIncrementalMapPartitioner, mrpt::utils::CSerializable, SLAM_IMPEXP)
 }
 }  // End of namespace
 

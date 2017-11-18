@@ -35,7 +35,7 @@ class CObservable;
   * \ingroup mrpt_base_grp
   *  \sa CObservable, mrptEvent
   */
-class BASE_IMPEXP CObserver
+class CObserver
 {
 	friend class CObservable;
 

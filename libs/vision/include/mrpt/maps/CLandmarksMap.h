@@ -72,7 +72,7 @@ typedef std::vector<CLandmark> TSequenceLandmarks;
  * \sa CMetricMap
  * \ingroup mrpt_vision_grp
  */
-class VISION_IMPEXP CLandmarksMap : public mrpt::maps::CMetricMap
+class CLandmarksMap : public mrpt::maps::CMetricMap
 {
 	DEFINE_SERIALIZABLE(CLandmarksMap)
 
@@ -132,7 +132,7 @@ class VISION_IMPEXP CLandmarksMap : public mrpt::maps::CMetricMap
 	/** The list of landmarks: the wrapper class is just for maintaining the
 	 * KD-Tree representation
 	  */
-	struct VISION_IMPEXP TCustomSequenceLandmarks
+	struct TCustomSequenceLandmarks
 	{
 	   private:
 		/** The actual list */
@@ -228,7 +228,7 @@ class VISION_IMPEXP CLandmarksMap : public mrpt::maps::CMetricMap
 	/** With this struct options are provided to the observation insertion
 	 * process.
 	 */
-	struct VISION_IMPEXP TInsertionOptions : public utils::CLoadableOptions
+	struct TInsertionOptions : public utils::CLoadableOptions
 	{
 	   public:
 		/** Initilization of default parameters
@@ -343,7 +343,7 @@ class VISION_IMPEXP CLandmarksMap : public mrpt::maps::CMetricMap
 
 	/** With this struct options are provided to the likelihood computations.
 	 */
-	struct VISION_IMPEXP TLikelihoodOptions : public utils::CLoadableOptions
+	struct TLikelihoodOptions : public utils::CLoadableOptions
 	{
 	   public:
 		TLikelihoodOptions();
@@ -404,7 +404,7 @@ class VISION_IMPEXP CLandmarksMap : public mrpt::maps::CMetricMap
 		/** This struct store de GPS longitude, latitude (in degrees ) and
 		 * altitude (in meters) for the first GPS observation
 		  * compose with de sensor position on the robot */
-		struct VISION_IMPEXP TGPSOrigin
+		struct TGPSOrigin
 		{
 		   public:
 			TGPSOrigin();
@@ -431,7 +431,7 @@ class VISION_IMPEXP CLandmarksMap : public mrpt::maps::CMetricMap
 
 	/** This struct stores extra results from invoking insertObservation
 	 */
-	struct VISION_IMPEXP TInsertionResults
+	struct TInsertionResults
 	{
 		/** The number of SIFT detected in left and right images respectively
 		  */
@@ -442,7 +442,7 @@ class VISION_IMPEXP CLandmarksMap : public mrpt::maps::CMetricMap
 
 	/** With this struct options are provided to the fusion process.
 	 */
-	struct VISION_IMPEXP TFuseOptions
+	struct TFuseOptions
 	{
 		/** Initialization
 		  */
@@ -701,18 +701,16 @@ class VISION_IMPEXP CLandmarksMap : public mrpt::maps::CMetricMap
 	// See base docs
 	virtual void auxParticleFilterCleanUp() override;
 
-	MAP_DEFINITION_START(CLandmarksMap, VISION_IMPEXP)
+	MAP_DEFINITION_START(CLandmarksMap)
 	typedef std::pair<mrpt::math::TPoint3D, unsigned int> TPairIdBeacon;
 	/** Initial contents of the map, especified by a set of 3D Beacons with
 	 * associated IDs */
 	std::deque<TPairIdBeacon> initialBeacons;
 	mrpt::maps::CLandmarksMap::TInsertionOptions insertionOpts;
 	mrpt::maps::CLandmarksMap::TLikelihoodOptions likelihoodOpts;
-	MAP_DEFINITION_END(CLandmarksMap, VISION_IMPEXP)
+	MAP_DEFINITION_END(CLandmarksMap, )
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CLandmarksMap, CMetricMap, VISION_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

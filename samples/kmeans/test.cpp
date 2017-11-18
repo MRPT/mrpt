@@ -27,7 +27,7 @@ void TestKMeans()
 	typedef CArrayDouble<2> CPointType;
 	// typedef CArrayFloat<2>  CPointType;
 
-	randomGenerator.randomize();
+	getRandomGenerator().randomize();
 	CTicTac tictac;
 
 	CDisplayWindowPlots win("k-means results");
@@ -38,21 +38,21 @@ void TestKMeans()
 	{
 		// Generate N clusters of random points:
 		mrpt::aligned_containers<CPointType>::vector_t points;
-		const size_t nClusters = 2 + (randomGenerator.drawUniform32bit() % 4);
+		const size_t nClusters = 2 + (getRandomGenerator().drawUniform32bit() % 4);
 
 		for (size_t cl = 0; cl < nClusters; cl++)
 		{
-			const size_t nPts = randomGenerator.drawUniform(5, 50);
+			const size_t nPts = getRandomGenerator().drawUniform(5, 50);
 
 			TPoint2D clCenter;
-			clCenter.x = randomGenerator.drawUniform(0, 10);
-			clCenter.y = randomGenerator.drawUniform(0, 10);
+			clCenter.x = getRandomGenerator().drawUniform(0, 10);
+			clCenter.y = getRandomGenerator().drawUniform(0, 10);
 
 			for (size_t p = 0; p < nPts; p++)
 			{
 				CPointType v;
-				v[0] = clCenter.x + randomGenerator.drawGaussian1D(0, 1);
-				v[1] = clCenter.y + randomGenerator.drawGaussian1D(0, 1);
+				v[0] = clCenter.x + getRandomGenerator().drawGaussian1D(0, 1);
+				v[1] = clCenter.y + getRandomGenerator().drawGaussian1D(0, 1);
 				points.push_back(v);
 			}
 		}

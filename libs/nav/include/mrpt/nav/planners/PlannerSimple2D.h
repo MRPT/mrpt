@@ -9,7 +9,6 @@
 #ifndef PlannerSimple2D_H
 #define PlannerSimple2D_H
 
-#include <mrpt/nav/link_pragmas.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/poses/CPoint2D.h>
 
@@ -31,7 +30,7 @@ namespace nav
  * Notice that this simple planner does not take into account robot kinematic
  * constraints.
  */
-class NAV_IMPEXP PlannerSimple2D
+class PlannerSimple2D
 {
    public:
 	/** Default constructor */

@@ -29,7 +29,7 @@ namespace detectors
   * purposes) and may disappear in future versions.
   * \ingroup mrpt_detectors_grp
   */
-class DETECTORS_IMPEXP CFaceDetection : public CObjectDetection
+class CFaceDetection : public CObjectDetection
 {
    public:
 	CCascadeClassifierDetection cascadeClassifier;

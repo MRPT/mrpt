@@ -39,7 +39,7 @@ namespace nav
  * \note [Before MRPT 1.5.0 this was named CPTG1]
  *  \ingroup nav_tpspace
  */
-class NAV_IMPEXP CPTG_DiffDrive_C : public CPTG_DiffDrive_CollisionGridBased
+class CPTG_DiffDrive_C : public CPTG_DiffDrive_CollisionGridBased
 {
 	DEFINE_SERIALIZABLE(CPTG_DiffDrive_C)
    public:
@@ -70,7 +70,5 @@ class NAV_IMPEXP CPTG_DiffDrive_C : public CPTG_DiffDrive_CollisionGridBased
 	/** A generation parameter */
 	double K;
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CPTG_DiffDrive_C, CParameterizedTrajectoryGenerator, NAV_IMPEXP)
 }
 }

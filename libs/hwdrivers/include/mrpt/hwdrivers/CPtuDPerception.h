@@ -21,7 +21,7 @@ namespace hwdrivers
   * control a Pan and Tilt Unit model PTU-46-17.5, working in radians .
   * \ingroup mrpt_hwdrivers_grp
   */
-class HWDRIVERS_IMPEXP CPtuDPerception : public CPtuBase
+class CPtuDPerception : public CPtuBase
 {
    public:
 	/** Default constructor */

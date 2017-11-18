@@ -19,7 +19,7 @@ namespace mrpt
 namespace utils
 {
 /** Internal triplet for each property in utils::CMHPropertiesValuesList */
-struct BASE_IMPEXP TPropertyValueIDTriplet
+struct TPropertyValueIDTriplet
 {
 	TPropertyValueIDTriplet() : name(), value(nullptr), ID(0) {}
 	std::string name;
@@ -35,7 +35,7 @@ struct BASE_IMPEXP TPropertyValueIDTriplet
  * \sa CSerializable, CPropertiesValuesList
 * \ingroup mrpt_base_grp
  */
-class BASE_IMPEXP CMHPropertiesValuesList : public mrpt::utils::CSerializable
+class CMHPropertiesValuesList : public mrpt::utils::CSerializable
 {
 	DEFINE_SERIALIZABLE(CMHPropertiesValuesList)
 
@@ -87,7 +87,7 @@ class BASE_IMPEXP CMHPropertiesValuesList : public mrpt::utils::CSerializable
 			else
 				THROW_EXCEPTION("Null pointer")
 		}
-		const mrpt::utils::TRuntimeClassId* class_ID = T::classinfo;
+		const mrpt::utils::TRuntimeClassId* class_ID = &T::GetRuntimeClassIdStatic();
 		ASSERT_(class_ID == obj->GetRuntimeClass());
 		return std::dynamic_pointer_cast<T>(obj);
 		MRPT_END
@@ -209,9 +209,6 @@ class BASE_IMPEXP CMHPropertiesValuesList : public mrpt::utils::CSerializable
 	const_iterator end() const { return m_properties.end(); }
 	size_t size() const { return m_properties.size(); }
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(
-	CMHPropertiesValuesList, mrpt::utils::CSerializable)
-
 }  // End of namespace
 }  // end of namespace
 #endif

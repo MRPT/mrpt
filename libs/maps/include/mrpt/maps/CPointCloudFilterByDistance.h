@@ -14,8 +14,6 @@
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/utils/CLoadableOptions.h>
 
-#include <mrpt/maps/link_pragmas.h>
-
 namespace mrpt
 {
 namespace maps
@@ -27,8 +25,7 @@ namespace maps
  * \sa CPointsMap
   * \ingroup mrpt_maps_grp
  */
-class MAPS_IMPEXP CPointCloudFilterByDistance
-	: public mrpt::maps::CPointCloudFilterBase
+class CPointCloudFilterByDistance : public mrpt::maps::CPointCloudFilterBase
 {
    public:
 	// See base docs
@@ -45,7 +42,7 @@ class MAPS_IMPEXP CPointCloudFilterByDistance
 		/** [in,out] additional in/out parameters */
 		TExtraFilterParams* params = nullptr) override;
 
-	struct MAPS_IMPEXP TOptions : public mrpt::utils::CLoadableOptions
+	struct TOptions : public mrpt::utils::CLoadableOptions
 	{
 		/** (Default: 0.05 m) */
 		double min_dist;
@@ -74,7 +71,7 @@ class MAPS_IMPEXP CPointCloudFilterByDistance
 	TOptions options;
 
    private:
-	struct MAPS_IMPEXP FrameInfo
+	struct FrameInfo
 	{
 		mrpt::poses::CPose3D pose;
 		mrpt::maps::CSimplePointsMap::Ptr pc;

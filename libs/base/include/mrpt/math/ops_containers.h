@@ -15,7 +15,6 @@
 
 #include <functional>
 #include <algorithm>
-#define _USE_MATH_DEFINES  // (For VS to define M_PI, etc. in cmath)
 #include <cmath>
 
 /** \addtogroup container_ops_grp Vector and matrices mathematical operations

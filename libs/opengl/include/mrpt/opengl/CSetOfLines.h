@@ -32,7 +32,7 @@ namespace opengl
   *
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CSetOfLines : public CRenderizableDisplayList
+class CSetOfLines : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CSetOfLines)
    protected:
@@ -266,8 +266,6 @@ class OPENGL_IMPEXP CSetOfLines : public CRenderizableDisplayList
 	/** Private, virtual destructor: only can be deleted from smart pointers. */
 	virtual ~CSetOfLines() {}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CSetOfLines, CRenderizableDisplayList, OPENGL_IMPEXP)
 /** Inserts a set of segments into the list. Allows call chaining.
   * \sa mrpt::opengl::CSetOfLines::appendLines
   */

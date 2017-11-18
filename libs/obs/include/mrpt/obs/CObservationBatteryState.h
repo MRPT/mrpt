@@ -30,7 +30,7 @@ namespace obs
  * \sa CObservation
  * \ingroup mrpt_obs_grp
  */
-class OBS_IMPEXP CObservationBatteryState : public CObservation
+class CObservationBatteryState : public CObservation
 {
 	DEFINE_SERIALIZABLE(CObservationBatteryState)
 
@@ -69,8 +69,6 @@ class OBS_IMPEXP CObservationBatteryState : public CObservation
 		std::ostream& o) const override;  // See base class docs
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CObservationBatteryState, CObservation, OBS_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

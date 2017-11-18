@@ -12,7 +12,6 @@
 
 #include <mrpt/maps/CRandomFieldGridMap2D.h>
 #include <mrpt/maps/CHeightGridMap2D_Base.h>
-#include <mrpt/maps/link_pragmas.h>
 
 namespace mrpt
 {
@@ -34,8 +33,8 @@ namespace maps
   * \note New in MRPT 1.4.0
   * \ingroup mrpt_maps_grp
   */
-class MAPS_IMPEXP CHeightGridMap2D_MRF : public CRandomFieldGridMap2D,
-										 public CHeightGridMap2D_Base
+class CHeightGridMap2D_MRF : public CRandomFieldGridMap2D,
+							 public CHeightGridMap2D_Base
 {
 	DEFINE_SERIALIZABLE(CHeightGridMap2D_MRF)
    public:
@@ -49,8 +48,8 @@ class MAPS_IMPEXP CHeightGridMap2D_MRF : public CRandomFieldGridMap2D,
 		bool run_first_map_estimation_now = true);
 
 	/** Parameters related with inserting observations into the map */
-	struct MAPS_IMPEXP TInsertionOptions : public utils::CLoadableOptions,
-										   public TInsertionOptionsCommon
+	struct TInsertionOptions : public utils::CLoadableOptions,
+							   public TInsertionOptionsCommon
 	{
 		/** Default values loader */
 		TInsertionOptions();
@@ -101,7 +100,7 @@ class MAPS_IMPEXP CHeightGridMap2D_MRF : public CRandomFieldGridMap2D,
 		const mrpt::obs::CObservation* obs,
 		const mrpt::poses::CPose3D& takenFrom) override;
 
-	MAP_DEFINITION_START(CHeightGridMap2D_MRF, MAPS_IMPEXP)
+	MAP_DEFINITION_START(CHeightGridMap2D_MRF)
 	/** Runs map estimation at start up (Default:true) */
 	bool run_map_estimation_at_ctor;
 	/** See CHeightGridMap2D_MRF::CHeightGridMap2D_MRF */
@@ -111,11 +110,8 @@ class MAPS_IMPEXP CHeightGridMap2D_MRF : public CRandomFieldGridMap2D,
 	mrpt::maps::CHeightGridMap2D_MRF::TMapRepresentation mapType;
 	/** Observations insertion options */
 	mrpt::maps::CHeightGridMap2D_MRF::TInsertionOptions insertionOpts;
-	MAP_DEFINITION_END(CHeightGridMap2D_MRF, MAPS_IMPEXP)
+	MAP_DEFINITION_END(CHeightGridMap2D_MRF, )
 };
-
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CHeightGridMap2D_MRF, CRandomFieldGridMap2D, MAPS_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

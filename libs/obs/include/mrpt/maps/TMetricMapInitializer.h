@@ -14,7 +14,6 @@
 #include <mrpt/maps/TMetricMapTypesRegistry.h>
 #include <mrpt/maps/metric_map_types.h>
 #include <deque>
-#include <mrpt/obs/link_pragmas.h>
 
 namespace mrpt
 {
@@ -32,7 +31,7 @@ class TSetOfMetricMapInitializers;
   * \sa TSetOfMetricMapInitializers, mrpt::maps::CMultiMetricMap
   * \ingroup mrpt_obs_grp
   */
-struct OBS_IMPEXP TMetricMapInitializer : public mrpt::utils::CLoadableOptions
+struct TMetricMapInitializer : public mrpt::utils::CLoadableOptions
 {
 	friend class TSetOfMetricMapInitializers;
 	/** Smart pointer to TMetricMapInitializer */
@@ -88,8 +87,7 @@ struct OBS_IMPEXP TMetricMapInitializer : public mrpt::utils::CLoadableOptions
   * \sa CMultiMetricMap::CMultiMetricMap, utils::CLoadableOptions
   * \ingroup mrpt_obs_grp
   */
-class OBS_IMPEXP TSetOfMetricMapInitializers
-	: public mrpt::utils::CLoadableOptions
+class TSetOfMetricMapInitializers : public mrpt::utils::CLoadableOptions
 {
    protected:
 	std::deque<TMetricMapInitializer::Ptr> m_list;

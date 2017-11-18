@@ -12,7 +12,6 @@
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/kinematics/CVehicleVelCmd.h>
-#include <mrpt/kinematics/link_pragmas.h>
 
 namespace mrpt
 {
@@ -31,7 +30,7 @@ namespace kinematics
  *
  * \ingroup mrpt_kinematics_grp
  */
-class KINEMATICS_IMPEXP CVehicleSimulVirtualBase
+class CVehicleSimulVirtualBase
 {
    public:
 	CVehicleSimulVirtualBase();

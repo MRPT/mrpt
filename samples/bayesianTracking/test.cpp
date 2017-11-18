@@ -227,7 +227,7 @@ class CRangeBearingParticleFilter
 // ------------------------------------------------------
 void TestBayesianTracking()
 {
-	randomGenerator.randomize();
+	getRandomGenerator().randomize();
 
 	CDisplayWindowPlots winEKF("Tracking - Extended Kalman Filter", 450, 400);
 	CDisplayWindowPlots winPF("Tracking - Particle Filter", 450, 400);
@@ -286,7 +286,7 @@ void TestBayesianTracking()
 		float realBearing = atan2(y, x);
 		float obsBearing = realBearing +
 						   BEARING_SENSOR_NOISE_STD *
-							   randomGenerator.drawGaussian1D_normalized();
+							   getRandomGenerator().drawGaussian1D_normalized();
 		printf(
 			"Real/Simulated bearing: %.03f / %.03f deg\n", RAD2DEG(realBearing),
 			RAD2DEG(obsBearing));
@@ -295,7 +295,7 @@ void TestBayesianTracking()
 		float obsRange =
 			max(0.0, realRange +
 						 RANGE_SENSOR_NOISE_STD *
-							 randomGenerator.drawGaussian1D_normalized());
+							 getRandomGenerator().drawGaussian1D_normalized());
 		printf("Real/Simulated range: %.03f / %.03f \n", realRange, obsRange);
 
 		// Process with EKF:
@@ -607,15 +607,15 @@ void CRangeBearingParticleFilter::prediction_and_update_pfStandardProposal(
 	{
 		m_particles[i].d->x += DELTA_TIME * m_particles[i].d->vx +
 							   TRANSITION_MODEL_STD_XY *
-								   randomGenerator.drawGaussian1D_normalized();
+								   getRandomGenerator().drawGaussian1D_normalized();
 		m_particles[i].d->y += DELTA_TIME * m_particles[i].d->vy +
 							   TRANSITION_MODEL_STD_XY *
-								   randomGenerator.drawGaussian1D_normalized();
+								   getRandomGenerator().drawGaussian1D_normalized();
 
 		m_particles[i].d->vx += TRANSITION_MODEL_STD_VXY *
-								randomGenerator.drawGaussian1D_normalized();
+								getRandomGenerator().drawGaussian1D_normalized();
 		m_particles[i].d->vy += TRANSITION_MODEL_STD_VXY *
-								randomGenerator.drawGaussian1D_normalized();
+								getRandomGenerator().drawGaussian1D_normalized();
 	}
 
 	CObservationBearingRange::Ptr obs =
@@ -655,13 +655,13 @@ void CRangeBearingParticleFilter::initializeParticles(size_t M)
 	for (CParticleList::iterator it = m_particles.begin();
 		 it != m_particles.end(); it++)
 	{
-		(*it).d->x = randomGenerator.drawUniform(
+		(*it).d->x = getRandomGenerator().drawUniform(
 			VEHICLE_INITIAL_X - 2.0f, VEHICLE_INITIAL_X + 2.0f);
-		(*it).d->y = randomGenerator.drawUniform(
+		(*it).d->y = getRandomGenerator().drawUniform(
 			VEHICLE_INITIAL_Y - 2.0f, VEHICLE_INITIAL_Y + 2.0f);
 
-		(*it).d->vx = randomGenerator.drawGaussian1D(-VEHICLE_INITIAL_V, 0.2f);
-		(*it).d->vy = randomGenerator.drawGaussian1D(0, 0.2f);
+		(*it).d->vx = getRandomGenerator().drawGaussian1D(-VEHICLE_INITIAL_V, 0.2f);
+		(*it).d->vy = getRandomGenerator().drawGaussian1D(0, 0.2f);
 
 		it->log_w = 0;
 	}

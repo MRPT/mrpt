@@ -29,7 +29,7 @@ namespace poses
  * \sa CPose2D, CPosePDF, CPoseGaussianPDF, CParticleFilterCapable
  * \ingroup poses_pdf_grp
  */
-class BASE_IMPEXP CPosePDFParticles
+class CPosePDFParticles
 	: public CPosePDF,
 	  public mrpt::bayes::CParticleFilterData<CPose2D>,
 	  public mrpt::bayes::CParticleFilterDataImpl<
@@ -173,7 +173,6 @@ class BASE_IMPEXP CPosePDFParticles
 		const double& stdPhi) const;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(CPosePDFParticles, CPosePDF)
 
 }  // End of namespace
 }  // End of namespace

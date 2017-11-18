@@ -11,14 +11,13 @@
 
 #include <mrpt/utils/core_defs.h>
 #include <mrpt/math/CMatrix.h>
-#include <mrpt/obs/link_pragmas.h>
 
 namespace mrpt
 {
 namespace obs
 {
 /** Used in CObservation3DRangeScan::project3DPointsFromDepthImageInto() */
-struct OBS_IMPEXP TRangeImageFilterParams
+struct TRangeImageFilterParams
 {
 	/** Only used if <b>both</b> rangeMask_min and rangeMask_max are present.
 	  * This switches which condition must fulfill a range `D` to be accepted as
@@ -48,7 +47,7 @@ struct OBS_IMPEXP TRangeImageFilterParams
 
 /** Mainly for internal use within
  * CObservation3DRangeScan::project3DPointsFromDepthImageInto() */
-struct OBS_IMPEXP TRangeImageFilter
+struct TRangeImageFilter
 {
 	TRangeImageFilterParams fp;
 	/** Returns true if the point (r,c) with depth D passes all filters. */

@@ -22,8 +22,7 @@ namespace hwdrivers
   * control a Tilt Unit model DT-80, working in radians .
   * \ingroup mrpt_hwdrivers_grp
   */
-class HWDRIVERS_IMPEXP CTuMicos : public CPtuBase,
-								  public mrpt::utils::COutputLogger
+class CTuMicos : public CPtuBase, public mrpt::utils::COutputLogger
 {
    public:
 	/** Default constructor */

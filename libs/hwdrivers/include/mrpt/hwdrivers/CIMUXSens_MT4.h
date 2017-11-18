@@ -55,7 +55,7 @@ namespace hwdrivers
   *
   * \ingroup mrpt_hwdrivers_grp
   */
-class HWDRIVERS_IMPEXP CIMUXSens_MT4 : public hwdrivers::CGenericSensor
+class CIMUXSens_MT4 : public hwdrivers::CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CIMUXSens_MT4)
    protected:

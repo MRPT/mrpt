@@ -17,11 +17,6 @@
 
 namespace mrpt
 {
-namespace math
-{
-template <class T>
-class CMatrixTemplateNumeric;
-}  // Frwd. decl.
 
 /** A namespace of pseudo-random numbers genrators of diferent distributions.
  * The central class in this namespace is mrpt::random::CRandomGenerator
@@ -41,7 +36,7 @@ namespace random
  * mrpt::random::randomGenerator
  * \ingroup mrpt_base_grp
   */
-class BASE_IMPEXP CRandomGenerator
+class CRandomGenerator
 {
    protected:
 	/** Data used internally by the MT19937 PRNG algorithm. */
@@ -330,14 +325,14 @@ class BASE_IMPEXP CRandomGenerator
 
 /** A static instance of a CRandomGenerator class, for use in single-thread
  * applications */
-extern BASE_IMPEXP CRandomGenerator randomGenerator;
+CRandomGenerator &getRandomGenerator();
 
 /** A random number generator for usage in STL algorithms expecting a function
  * like this (eg, random_shuffle):
   */
 inline ptrdiff_t random_generator_for_STL(ptrdiff_t i)
 {
-	return randomGenerator.drawUniform32bit() % i;
+	return getRandomGenerator().drawUniform32bit() % i;
 }
 
 /** Fills the given matrix with independent, uniformly distributed samples.
@@ -352,7 +347,7 @@ void matrixRandomUni(
 	for (size_t r = 0; r < matrix.getRowCount(); r++)
 		for (size_t c = 0; c < matrix.getColCount(); c++)
 			matrix.get_unsafe(r, c) = static_cast<typename MAT::Scalar>(
-				randomGenerator.drawUniform(unif_min, unif_max));
+				getRandomGenerator().drawUniform(unif_min, unif_max));
 }
 
 /** Fills the given matrix with independent, uniformly distributed samples.
@@ -364,7 +359,7 @@ void vectorRandomUni(
 {
 	size_t n = v_out.size();
 	for (size_t r = 0; r < n; r++)
-		v_out[r] = randomGenerator.drawUniform(unif_min, unif_max);
+		v_out[r] = getRandomGenerator().drawUniform(unif_min, unif_max);
 }
 
 /** Fills the given matrix with independent, normally distributed samples.
@@ -379,7 +374,7 @@ void matrixRandomNormal(
 	for (size_t r = 0; r < matrix.getRowCount(); r++)
 		for (size_t c = 0; c < matrix.getColCount(); c++)
 			matrix.get_unsafe(r, c) = static_cast<typename MAT::Scalar>(
-				mean + std * randomGenerator.drawGaussian1D_normalized());
+				mean + std * getRandomGenerator().drawGaussian1D_normalized());
 }
 
 /** Generates a random vector with independent, normally distributed samples.
@@ -391,14 +386,14 @@ void vectorRandomNormal(
 {
 	size_t n = v_out.size();
 	for (size_t r = 0; r < n; r++)
-		v_out[r] = mean + std * randomGenerator.drawGaussian1D_normalized();
+		v_out[r] = mean + std * getRandomGenerator().drawGaussian1D_normalized();
 }
 
 /** Randomize the generators.
  *   A seed can be providen, or a current-time based seed can be used (default)
  */
-inline void Randomize(const uint32_t seed) { randomGenerator.randomize(seed); }
-inline void Randomize() { randomGenerator.randomize(); }
+inline void Randomize(const uint32_t seed) { getRandomGenerator().randomize(seed); }
+inline void Randomize() { getRandomGenerator().randomize(); }
 /** Returns a random permutation of a vector: all the elements of the input
  * vector are in the output but at random positions.
   */
@@ -406,7 +401,7 @@ template <class T>
 void randomPermutation(
 	const std::vector<T>& in_vector, std::vector<T>& out_result)
 {
-	randomGenerator.permuteVector(in_vector, out_result);
+	getRandomGenerator().permuteVector(in_vector, out_result);
 }
 
 /** Generate multidimensional random samples according to a given covariance
@@ -419,7 +414,7 @@ void randomNormalMultiDimensional(
 	const mrpt::math::CMatrixTemplateNumeric<T>& cov,
 	std::vector<T>& out_result)
 {
-	randomGenerator.drawGaussianMultivariate(out_result, cov);
+	getRandomGenerator().drawGaussianMultivariate(out_result, cov);
 }
 
 /** Generate a given number of multidimensional random samples according to a
@@ -441,7 +436,7 @@ void randomNormalMultiDimensionalMany(
 	std::vector<std::vector<T>>& ret,
 	std::vector<T>* samplesLikelihoods = nullptr)
 {
-	randomGenerator.drawGaussianMultivariateMany(
+	getRandomGenerator().drawGaussianMultivariateMany(
 		ret, desiredSamples, cov, static_cast<const std::vector<T>*>(nullptr),
 		samplesLikelihoods);
 }
@@ -456,7 +451,7 @@ void randomNormalMultiDimensionalMany(
 	const MATRIXLIKE& cov, size_t desiredSamples,
 	std::vector<std::vector<T>>& ret)
 {
-	randomGenerator.drawGaussianMultivariateMany(ret, desiredSamples, cov);
+	getRandomGenerator().drawGaussianMultivariateMany(ret, desiredSamples, cov);
 }
 
 /** Generate multidimensional random samples according to a given covariance
@@ -468,7 +463,7 @@ template <typename T, typename MATRIXLIKE>
 void randomNormalMultiDimensional(
 	const MATRIXLIKE& cov, std::vector<T>& out_result)
 {
-	randomGenerator.drawGaussianMultivariate(out_result, cov);
+	getRandomGenerator().drawGaussianMultivariate(out_result, cov);
 }
 
 }  // End of namespace

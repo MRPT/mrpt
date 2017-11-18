@@ -36,7 +36,7 @@ namespace utils
   * \sa CConfigFileBase
   * \ingroup mrpt_base_grp
   */
-class BASE_IMPEXP CConfigFilePrefixer : public CConfigFileBase
+class CConfigFilePrefixer : public CConfigFileBase
 {
    private:
 	/** The object we are wrapping */

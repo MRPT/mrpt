@@ -32,7 +32,7 @@ namespace obs
  * \sa CObservation, CObservationStereoImages
  * \ingroup mrpt_obs_grp
  */
-class OBS_IMPEXP CObservationImage : public CObservation
+class CObservationImage : public CObservation
 {
 	DEFINE_SERIALIZABLE(CObservationImage)
 	// This must be added for declaration of MEX-related functions
@@ -77,8 +77,6 @@ class OBS_IMPEXP CObservationImage : public CObservation
 	void getDescriptionAsText(std::ostream& o) const override;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CObservationImage, CObservation, OBS_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

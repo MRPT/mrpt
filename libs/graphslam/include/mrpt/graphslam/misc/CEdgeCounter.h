@@ -13,7 +13,6 @@
 #include <mrpt/utils/mrpt_macros.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 
-#include <mrpt/graphslam/link_pragmas.h>
 #include "CWindowManager.h"
 
 #include <iostream>
@@ -33,7 +32,7 @@ namespace detail
  *
  * \ingroup mrpt_graphslam_grp
  */
-class GRAPHSLAM_IMPEXP CEdgeCounter
+class CEdgeCounter
 {
    public:
 	typedef std::map<std::string, int>::iterator iterator;

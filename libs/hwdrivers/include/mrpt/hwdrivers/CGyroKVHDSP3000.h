@@ -69,7 +69,7 @@ enum GYRO_MODE
   * \endcode
   * \ingroup mrpt_hwdrivers_grp
   */
-class HWDRIVERS_IMPEXP CGyroKVHDSP3000 : public hwdrivers::CGenericSensor
+class CGyroKVHDSP3000 : public hwdrivers::CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CGyroKVHDSP3000)
    protected:

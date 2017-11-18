@@ -64,7 +64,7 @@ void TestLaser2Imgs()
 	// Set relative path for externally-stored images in rawlogs:
 	string rawlog_images_path = extractFileDirectory(RAWLOG_FILE);
 	rawlog_images_path += "/Images";
-	CImage::IMAGES_PATH_BASE = rawlog_images_path;  // Set it.
+	CImage::setImagesPathBase(rawlog_images_path);  // Set it.
 
 	CFileGZInputStream rawlogFile(RAWLOG_FILE);
 

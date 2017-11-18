@@ -14,7 +14,6 @@
 #include <mrpt/utils/CStream.h>
 #include <vector>
 #include <string>
-#define _USE_MATH_DEFINES  // (For VS to define M_PI, etc. in cmath)
 #include <cmath>
 
 namespace mrpt
@@ -24,7 +23,7 @@ namespace utils
 namespace internal
 {
 // Aux class.
-struct BASE_IMPEXP dynamic_grid_txt_saver
+struct dynamic_grid_txt_saver
 {
 	bool saveToTextFile(const std::string& fileName) const;
 	virtual unsigned int getSizeX() const = 0;

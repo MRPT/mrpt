@@ -20,7 +20,13 @@ using namespace mrpt::utils;
 using namespace std;
 
 // The global instance of CRandomGenerator for single-thread programs:
-CRandomGenerator mrpt::random::randomGenerator;
+static CRandomGenerator randomGenerator;
+
+CRandomGenerator & mrpt::random::getRandomGenerator()
+{
+	return randomGenerator;
+}
+
 
 // MT19937 algorithm
 // http://en.wikipedia.org/wiki/Mersenne_twister
@@ -129,10 +135,10 @@ void CRandomGenerator::drawGaussianMultivariate(
 }
 
 // Instantiations:
-template BASE_IMPEXP void CRandomGenerator::drawGaussianMultivariate<double>(
+template void CRandomGenerator::drawGaussianMultivariate<double>(
 	std::vector<double>& out_result, const CMatrixTemplateNumeric<double>& cov,
 	const std::vector<double>* mean);
-template BASE_IMPEXP void CRandomGenerator::drawGaussianMultivariate<float>(
+template void CRandomGenerator::drawGaussianMultivariate<float>(
 	std::vector<float>& out_result, const CMatrixTemplateNumeric<float>& cov,
 	const std::vector<float>* mean);
 
@@ -142,19 +148,19 @@ namespace random
 {
 double normalizedGaussian()
 {
-	return randomGenerator.drawGaussian1D_normalized();
+	return getRandomGenerator().drawGaussian1D_normalized();
 }
 
 double RandomNormal(double mean, double std)
 {
-	return randomGenerator.drawGaussian1D(mean, std);
+	return getRandomGenerator().drawGaussian1D(mean, std);
 }
 
-uint32_t RandomUniInt() { return randomGenerator.drawUniform32bit(); }
+uint32_t RandomUniInt() { return getRandomGenerator().drawUniform32bit(); }
 double RandomUni(const double min, const double max)
 {
 	return min +
-		   (max - min) * randomGenerator.drawUniform32bit() *
+		   (max - min) * getRandomGenerator().drawUniform32bit() *
 			   2.3283064370807973754314699618685e-10;  // 0xFFFFFFFF ^ -1
 }
 }

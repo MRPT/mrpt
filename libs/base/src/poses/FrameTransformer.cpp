@@ -11,7 +11,6 @@
 
 #include <mrpt/poses/FrameTransformer.h>  // for FrameTransformer, FrameTran...
 #include <string>  // for string
-#include <mrpt/base/link_pragmas.h>  // for BASE_IMPEXP
 #include <mrpt/system/datetime.h>  // for TTimeStamp, INVALID_TIMESTAMP
 #include <mrpt/utils/mrpt_macros.h>  // for ASSERTMSG_
 
@@ -32,8 +31,8 @@ namespace mrpt
 namespace poses
 {
 // Explicit instantations:
-template class BASE_IMPEXP FrameTransformerInterface<2>;
-template class BASE_IMPEXP FrameTransformerInterface<3>;
+template class FrameTransformerInterface<2>;
+template class FrameTransformerInterface<3>;
 }
 }
 
@@ -97,7 +96,7 @@ namespace mrpt
 namespace poses
 {
 // Explicit instantations:
-template class BASE_IMPEXP FrameTransformer<2>;
-template class BASE_IMPEXP FrameTransformer<3>;
+template class FrameTransformer<2>;
+template class FrameTransformer<3>;
 }
 }

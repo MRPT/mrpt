@@ -9,7 +9,6 @@
 #pragma once
 
 #include <mrpt/system/datetime.h>
-#include <mrpt/maps/link_pragmas.h>
 #include <vector>
 #include <memory>
 
@@ -31,14 +30,14 @@ namespace maps
 * \sa CPointsMap
 * \ingroup mrpt_maps_grp
 */
-class MAPS_IMPEXP CPointCloudFilterBase
+class CPointCloudFilterBase
 {
    public:
 	using Ptr = std::shared_ptr<CPointCloudFilterBase>;
 	CPointCloudFilterBase();
 	virtual ~CPointCloudFilterBase();
 
-	struct MAPS_IMPEXP TExtraFilterParams
+	struct TExtraFilterParams
 	{
 		/** If a pointer is provided to a user-given container, the list of
 		 * points to be deleted will be marked here with `true`. */

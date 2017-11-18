@@ -15,7 +15,7 @@ namespace mrpt
 {
 namespace opengl
 {
-class OPENGL_IMPEXP CCylinder;
+class CCylinder;
 /** A cylinder or cone whose base lies in the XY plane.
   * \sa opengl::COpenGLScene,opengl::CDisk
   *
@@ -29,7 +29,7 @@ class OPENGL_IMPEXP CCylinder;
   *
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CCylinder : public CRenderizableDisplayList
+class CCylinder : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CCylinder)
    protected:
@@ -204,8 +204,6 @@ class OPENGL_IMPEXP CCylinder : public CRenderizableDisplayList
 							 : (Z <= mHeight && Z >= 0);
 	}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CCylinder, CRenderizableDisplayList, OPENGL_IMPEXP)
 }
 }
 #endif

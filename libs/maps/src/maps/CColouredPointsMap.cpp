@@ -423,7 +423,7 @@ void CColouredPointsMap::getAs3DObject(
 	obj->loadFromPointsMap(this);
 	obj->setColor(1, 1, 1, 1.0);
 
-	obj->setPointSize(mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE);
+	obj->setPointSize(mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE());
 
 	outObj->insert(obj);
 }

@@ -10,7 +10,6 @@
 #define CJOYSTICK_H
 
 #include <mrpt/utils/utils_defs.h>
-#include <mrpt/hwdrivers/link_pragmas.h>
 
 /*---------------------------------------------------------------
 	Class
@@ -23,7 +22,7 @@ namespace hwdrivers
  * number of joysticks in the system.
   * \ingroup mrpt_hwdrivers_grp
   */
-class HWDRIVERS_IMPEXP CJoystick
+class CJoystick
 {
    private:
 	/** The axis limits:

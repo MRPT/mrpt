@@ -303,9 +303,6 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 #cmakedefine HAVE_LONG_DOUBLE
 #endif
 
-/* Backwards compatibility of MRPT 1.* smart pointers CFooPtr instead of CFoo::Ptr */
-#cmakedefine MRPT_1X_BACKCOMPATIB_SMARTPTR_NAMES    1
-
 /* Defined only if MRPT is being build/was built with precompiled
     headers enabled */
 #cmakedefine MRPT_ENABLE_PRECOMPILED_HDRS 1

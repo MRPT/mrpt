@@ -47,7 +47,7 @@ double pose_interp_test(int a1, int a2)
 		else
 		{
 			Ats[i] = mrpt::system::secondsToTimestamp(
-				mrpt::random::randomGenerator.drawUniform(-5.0, 5.0));
+				mrpt::random::getRandomGenerator().drawUniform(-5.0, 5.0));
 		}
 	}
 
@@ -89,7 +89,7 @@ double pose_interp_test(int a1, int a2)
 // ------------------------------------------------------
 void register_tests_pose_interp()
 {
-	mrpt::random::randomGenerator.randomize(1234);
+	mrpt::random::getRandomGenerator().randomize(1234);
 
 	using mrpt::math::TPose3D;
 	using mrpt::math::TPose2D;

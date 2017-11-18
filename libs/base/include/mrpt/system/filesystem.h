@@ -11,7 +11,6 @@
 
 #include <mrpt/config.h>
 #include <mrpt/utils/compiler_fixes.h>
-#include <mrpt/base/link_pragmas.h>
 #include <mrpt/utils/types_simple.h>
 #include <string>
 
@@ -25,28 +24,28 @@ namespace system
   * @{ */
 
 /** Returns the name of a proposed temporary file name */
-std::string BASE_IMPEXP getTempFileName();
+std::string getTempFileName();
 
 /** Returns the current working directory  */
-std::string BASE_IMPEXP getcwd();
+std::string getcwd();
 
 /** Attempts to find the directory `[PREFIX/]share/mrpt/` and returns its
  * absolute path, or empty string if not found.
   * Example return paths: Linux after installing = `/usr/share/mrpt/`;
  * manually-built system = `[CMAKE_SOURCE_DIR]/share/mrpt/`, etc.  */
-std::string BASE_IMPEXP getShareMRPTDir();
+std::string getShareMRPTDir();
 
 /** Creates a directory
   * \return Returns false on any error, true on directory created or already
  * existed.
   */
-bool BASE_IMPEXP createDirectory(const std::string& dirName);
+bool createDirectory(const std::string& dirName);
 
 /** Deletes a single file. For multiple files see deleteFiles
   * \return Returns false on any error, true on everything OK.
   * \sa deleteFiles
   */
-bool BASE_IMPEXP deleteFile(const std::string& fileName);
+bool deleteFile(const std::string& fileName);
 
 /** Delete one or more files, especified by the (optional) path and the file
  * name (including '?' or '*') - Use forward slash ('/') for directories for
@@ -54,14 +53,14 @@ bool BASE_IMPEXP deleteFile(const std::string& fileName);
  * traslated into backward slashes ('\') if MRPT is compiled under Windows.
   * \sa deleteFile
   */
-void BASE_IMPEXP deleteFiles(const std::string& s);
+void deleteFiles(const std::string& s);
 
 /** Renames a file - If the target path is different and the filesystem allows
  * it, it will be moved to the new location.
   * \return false on any error. In that case, if a pointer to a receiver string
  * is passed in error_msg, a description of the error is saved there.
   */
-bool BASE_IMPEXP renameFile(
+bool renameFile(
 	const std::string& oldFileName, const std::string& newFileName,
 	std::string* error_msg = nullptr);
 
@@ -70,7 +69,7 @@ bool BASE_IMPEXP renameFile(
   * \sa deleteFile
   * \return true on success
   */
-bool BASE_IMPEXP deleteFilesInDirectory(
+bool deleteFilesInDirectory(
 	const std::string& s, bool deleteDirectoryAsWell = false);
 
 /** Extract just the name (without extension) of a filename from a complete path
@@ -78,7 +77,7 @@ bool BASE_IMPEXP deleteFilesInDirectory(
   *  This function works for either "/" or "\" directory separators.
   * \sa extractFileExtension,extractFileDirectory
   */
-std::string BASE_IMPEXP extractFileName(const std::string& filePath);
+std::string extractFileName(const std::string& filePath);
 
 /** Extract the extension of a filename.
   *  For example, for "dummy.cpp", it will return "cpp".
@@ -87,32 +86,32 @@ std::string BASE_IMPEXP extractFileName(const std::string& filePath);
   *   ends in ".gz", for example, for "foo.map.gz", this will return "map".
   * \sa extractFileName,extractFileDirectory
   */
-std::string BASE_IMPEXP
-	extractFileExtension(const std::string& filePath, bool ignore_gz = false);
+std::string extractFileExtension(
+	const std::string& filePath, bool ignore_gz = false);
 
 /** Extract the whole path (the directory) of a filename from a complete path
  * plus name plus extension.
   *  This function works for either "/" or "\" directory separators.
   * \sa extractFileName,extractFileExtension
   */
-std::string BASE_IMPEXP extractFileDirectory(const std::string& filePath);
+std::string extractFileDirectory(const std::string& filePath);
 
 /** Test if a given file (or directory) exists.
   * \sa directoryExists
   */
-bool BASE_IMPEXP fileExists(const std::string& fileName);
+bool fileExists(const std::string& fileName);
 
 /** Test if a given directory exists (it fails if the given path refers to an
  * existing file).
   * \sa fileExists
   */
-bool BASE_IMPEXP directoryExists(const std::string& fileName);
+bool directoryExists(const std::string& fileName);
 
 /** Replace invalid filename chars by underscores ('_') or any other user-given
  * char.
   *  Invalid chars are: '<','>',':','"','/','\\','|','?','*'
   */
-std::string BASE_IMPEXP fileNameStripInvalidChars(
+std::string fileNameStripInvalidChars(
 	const std::string& filename, const char replacement_to_invalid_chars = '_');
 
 /** Replace the filename extension by another one.
@@ -121,19 +120,19 @@ std::string BASE_IMPEXP fileNameStripInvalidChars(
   *     fileNameChangeExtension("cool.txt","bar") // -> "cool.bar"
   *   \endcode
   */
-std::string BASE_IMPEXP fileNameChangeExtension(
+std::string fileNameChangeExtension(
 	const std::string& filename, const std::string& newExtension);
 
 /** Return the size of the given file, or size_t(-1) if some error is found
  * accessing that file.  */
-uint64_t BASE_IMPEXP getFileSize(const std::string& fileName);
+uint64_t getFileSize(const std::string& fileName);
 
 /** Return the time of the file last modification, or "0" if the file doesn't
  * exist.  */
-time_t BASE_IMPEXP getFileModificationTime(const std::string& filename);
+time_t getFileModificationTime(const std::string& filename);
 
 /** Windows: replace all '/'->'\' , in Linux/MacOS: replace all '\'->'/' */
-std::string BASE_IMPEXP filePathSeparatorsToNative(const std::string& filePath);
+std::string filePathSeparatorsToNative(const std::string& filePath);
 
 /** Copies file \a sourceFile to \a targetFile. If the target file exists, it
  * will be overwritten.
@@ -148,7 +147,7 @@ std::string BASE_IMPEXP filePathSeparatorsToNative(const std::string& filePath);
   * \return true on success, false on any error, whose description can be
  * optionally get in outErrStr
   */
-bool BASE_IMPEXP copyFile(
+bool copyFile(
 	const std::string& sourceFile, const std::string& targetFile,
 	std::string* outErrStr = nullptr, bool copyAttribs = true);
 

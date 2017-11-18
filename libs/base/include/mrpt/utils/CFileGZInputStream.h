@@ -24,7 +24,7 @@ namespace utils
  * \sa CFileInputStream
  * \ingroup mrpt_base_grp
  */
-class BASE_IMPEXP CFileGZInputStream : public CStream
+class CFileGZInputStream : public CStream
 {
    protected:
 	size_t Read(void* Buffer, size_t Count) override;

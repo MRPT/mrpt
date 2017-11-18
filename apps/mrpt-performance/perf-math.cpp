@@ -60,7 +60,7 @@ double math_test_FUNC(int a1, int a2, FUNC func)
 // ------------------------------------------------------
 void register_tests_math()
 {
-	randomGenerator.randomize(1234);
+	getRandomGenerator().randomize(1234);
 
 	lstTests.push_back(TestData("math: round", math_test_round));
 

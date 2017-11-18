@@ -21,7 +21,7 @@ namespace detectors
 typedef std::vector<CDetectableObject::Ptr> vector_detectable_object;
 
 /** \ingroup mrpt_detectors_grp */
-class DETECTORS_IMPEXP CObjectDetection
+class CObjectDetection
 {
    public:
 	/** Initialize the object with parameters loaded from the given config file.

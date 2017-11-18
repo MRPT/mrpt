@@ -13,8 +13,6 @@
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/synch/MT_buffer.h>
 
-#include <mrpt/hwdrivers/link_pragmas.h>
-
 #include <future>
 #include <list>
 
@@ -39,13 +37,13 @@ namespace hwdrivers
   * \ingroup mrpt_hwdrivers_grp
   *
   */
-class HWDRIVERS_IMPEXP CNTRIPClient
+class CNTRIPClient
 {
    public:
 	/** A descriptor of one stream in an NTRIP Caster - See
 	 * CNTRIPClient::retrieveListOfMountpoints
 	 */
-	struct HWDRIVERS_IMPEXP TMountPoint
+	struct TMountPoint
 	{
 		std::string mountpoint_name;
 		/** City name */
@@ -92,7 +90,7 @@ class HWDRIVERS_IMPEXP CNTRIPClient
 	/**  The arguments for connecting to a NTRIP stream, used in
 	 * CNTRIPClient::open
 	  */
-	struct HWDRIVERS_IMPEXP NTRIPArgs
+	struct NTRIPArgs
 	{
 		std::string server;
 		int port;

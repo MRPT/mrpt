@@ -99,7 +99,7 @@ void PlannerRRT_SE2_TPS::solve(
 		// -----------------------------------------
 		node_pose_t x_rand;
 		// bool rand_is_target=false;
-		if (mrpt::random::randomGenerator.drawUniform(0.0, 1.0) <
+		if (mrpt::random::getRandomGenerator().drawUniform(0.0, 1.0) <
 			params.goalBias)
 		{
 			x_rand = pi.goal_pose;
@@ -109,7 +109,7 @@ void PlannerRRT_SE2_TPS::solve(
 		{
 			// Sample uniform:
 			for (int i = 0; i < node_pose_t::static_size; i++)
-				x_rand[i] = mrpt::random::randomGenerator.drawUniform(
+				x_rand[i] = mrpt::random::getRandomGenerator().drawUniform(
 					pi.world_bbox_min[i], pi.world_bbox_max[i]);
 		}
 		const CPose2D x_rand_pose(x_rand);

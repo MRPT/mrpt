@@ -28,7 +28,7 @@ class CPoint2DPDFGaussian;
  * \sa CPose2D, CPosePDF, CPosePDFParticles
  * \ingroup poses_pdf_grp
  */
-class BASE_IMPEXP CPosePDFGaussian : public CPosePDF
+class CPosePDFGaussian : public CPosePDF
 {
 	DEFINE_SERIALIZABLE(CPosePDFGaussian)
 
@@ -198,29 +198,26 @@ class BASE_IMPEXP CPosePDFGaussian : public CPosePDF
 		const mrpt::math::TPoint2D& l, CPoint2DPDFGaussian& g) const;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(CPosePDFGaussian, CPosePDF)
 
 /** Pose compose operator: RES = A (+) B , computing both the mean and the
  * covariance */
-CPosePDFGaussian BASE_IMPEXP
-	operator+(const CPosePDFGaussian& a, const CPosePDFGaussian& b);
+CPosePDFGaussian operator+(
+	const CPosePDFGaussian& a, const CPosePDFGaussian& b);
 
 /** Pose inverse compose operator: RES = A (-) B , computing both the mean and
  * the covariance */
-CPosePDFGaussian BASE_IMPEXP
-	operator-(const CPosePDFGaussian& a, const CPosePDFGaussian& b);
+CPosePDFGaussian operator-(
+	const CPosePDFGaussian& a, const CPosePDFGaussian& b);
 
 /** Dumps the mean and covariance matrix to a text stream. */
-std::ostream BASE_IMPEXP& operator<<(
-	std::ostream& out, const CPosePDFGaussian& obj);
+std::ostream& operator<<(std::ostream& out, const CPosePDFGaussian& obj);
 
 /** Returns the Gaussian distribution of \f$ \mathbf{C} \f$, for \f$ \mathbf{C}
  * = \mathbf{A} \oplus \mathbf{B} \f$. */
-poses::CPosePDFGaussian BASE_IMPEXP operator+(
+poses::CPosePDFGaussian operator+(
 	const mrpt::poses::CPose2D& A, const mrpt::poses::CPosePDFGaussian& B);
 
-bool BASE_IMPEXP
-	operator==(const CPosePDFGaussian& p1, const CPosePDFGaussian& p2);
+bool operator==(const CPosePDFGaussian& p1, const CPosePDFGaussian& p2);
 
 }  // End of namespace
 }  // End of namespace

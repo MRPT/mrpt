@@ -14,7 +14,6 @@
 #include <mrpt/utils/TStereoCamera.h>
 #include <mrpt/vision/types.h>
 #include <mrpt/vision/chessboard_camera_calib.h>
-#include <mrpt/vision/link_pragmas.h>
 
 namespace mrpt
 {
@@ -28,7 +27,7 @@ namespace vision
  * mrpt::vision::checkerBoardCameraCalibration (All the information can be left
  * empty and will be filled up in the calibration method).
  */
-struct VISION_IMPEXP TImageStereoCalibData
+struct TImageStereoCalibData
 {
 	TImageCalibData left, right;
 
@@ -37,7 +36,7 @@ struct VISION_IMPEXP TImageStereoCalibData
 };
 
 /** Params of the optional callback provided by the user */
-struct VISION_IMPEXP TImageStereoCallbackData
+struct TImageStereoCallbackData
 {
 	/** =-1:Processing images;  =0: Initial calib without distortion, =1: Calib
 	 * of all parameters */
@@ -54,7 +53,7 @@ typedef void (*TSteroCalibCallbackFunctor)(
 	const TImageStereoCallbackData& d, void* user_data);
 
 /** Input parameters for mrpt::vision::checkerBoardStereoCalibration */
-struct VISION_IMPEXP TStereoCalibParams
+struct TStereoCalibParams
 {
 	/** The number of squares in the checkerboard in the "X" & "Y" direction. */
 	unsigned int check_size_x, check_size_y;
@@ -97,7 +96,7 @@ struct VISION_IMPEXP TStereoCalibParams
 };
 
 /** Output results for mrpt::vision::checkerBoardStereoCalibration */
-struct VISION_IMPEXP TStereoCalibResults
+struct TStereoCalibResults
 {
 	TStereoCalibResults();
 
@@ -162,7 +161,7 @@ typedef std::vector<TImageStereoCalibData> TCalibrationStereoImageList;
  * \sa CImage::findChessboardCorners, checkerBoardCameraCalibration,
  * mrpt::hwdrivers::CKinect
  */
-bool VISION_IMPEXP checkerBoardStereoCalibration(
+bool checkerBoardStereoCalibration(
 	TCalibrationStereoImageList& images, const TStereoCalibParams& params,
 	TStereoCalibResults& out_results);
 

@@ -11,7 +11,6 @@
 #define CROVIO_H
 
 #include <mrpt/utils/TCamera.h>
-#include <mrpt/hwdrivers/link_pragmas.h>
 #include <mrpt/obs/CObservationImage.h>
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
@@ -26,7 +25,7 @@ namespace hwdrivers
   *  Supports: Simple motion commands, video streaming.
   * \ingroup mrpt_hwdrivers_grp
   */
-class HWDRIVERS_IMPEXP CRovio
+class CRovio
 {
    private:
 	std::thread m_videoThread;

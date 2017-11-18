@@ -26,7 +26,7 @@ namespace obs
  * \sa CAction, CRawlog
  * \ingroup mrpt_obs_grp
  */
-class OBS_IMPEXP CActionCollection : public mrpt::utils::CSerializable
+class CActionCollection : public mrpt::utils::CSerializable
 {
 	DEFINE_SERIALIZABLE(CActionCollection)
 
@@ -133,7 +133,7 @@ class OBS_IMPEXP CActionCollection : public mrpt::utils::CSerializable
 	{
 		MRPT_START
 		size_t foundCount = 0;
-		const mrpt::utils::TRuntimeClassId* class_ID = T::classinfo;
+		const mrpt::utils::TRuntimeClassId* class_ID = &T::GetRuntimeClassIdStatic();
 		for (const_iterator it = begin(); it != end(); ++it)
 			if ((*it)->GetRuntimeClass()->derivedFrom(class_ID))
 				if (foundCount++ == ith)
@@ -184,8 +184,6 @@ class OBS_IMPEXP CActionCollection : public mrpt::utils::CSerializable
 	void eraseByIndex(const size_t& index);
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CActionCollection, mrpt::utils::CSerializable, OBS_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

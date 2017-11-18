@@ -42,7 +42,7 @@ namespace opengl
  * http://www.edwardrosten.com/cvd/ )
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CText3D : public CRenderizableDisplayList
+class CText3D : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CText3D)
    protected:
@@ -117,8 +117,6 @@ class OPENGL_IMPEXP CText3D : public CRenderizableDisplayList
 	/** Private, virtual destructor: only can be deleted from smart pointers */
 	virtual ~CText3D();
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CText3D, CRenderizableDisplayList, OPENGL_IMPEXP)
 
 }  // end namespace
 

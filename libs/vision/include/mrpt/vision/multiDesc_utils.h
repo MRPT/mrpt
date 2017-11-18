@@ -22,8 +22,6 @@
 #include <mrpt/vision/types.h>
 #include <mrpt/vision/chessboard_camera_calib.h>
 
-#include <mrpt/vision/link_pragmas.h>
-
 namespace mrpt
 {
 namespace vision
@@ -38,23 +36,22 @@ typedef std::map<
 	std::map<int, std::map<int, std::deque<std::pair<TFeatureID, double>>>>>
 	TQuantizationTable;
 
-void VISION_IMPEXP saveQTableToFile(
+void saveQTableToFile(
 	const TQuantizationTable& qTable, const std::string& filename);
 
-void VISION_IMPEXP
-	insertHashCoeffs(const CFeature::Ptr& feat, TQuantizationTable& qTable);
+void insertHashCoeffs(const CFeature::Ptr& feat, TQuantizationTable& qTable);
 
-TMultiResMatchingOutput VISION_IMPEXP relocalizeMultiDesc(
+TMultiResMatchingOutput relocalizeMultiDesc(
 	const mrpt::utils::CImage& image, CFeatureList& baseList,
 	CFeatureList& currentList, TQuantizationTable& qTable,
 	const TMultiResDescOptions& desc_opts,
 	const TMultiResDescMatchOptions& match_opts);
 
-void VISION_IMPEXP updateBaseList(
+void updateBaseList(
 	CFeatureList& baseList, const CFeatureList& currentList,
 	const std::vector<int>& idx);
 
-void VISION_IMPEXP checkScalesAndFindMore(
+void checkScalesAndFindMore(
 	CMatchedFeatureList& baseList, const CFeatureList& currentList,
 	const mrpt::utils::CImage& currentImage,
 	const TMultiResMatchingOutput& output,
@@ -71,7 +68,7 @@ void VISION_IMPEXP checkScalesAndFindMore(
  * located outside the image or at its border (where the gradient cannot be
  * computed)
 	*/
-bool VISION_IMPEXP computeGradient(
+bool computeGradient(
 	const mrpt::utils::CImage& image, const unsigned int x,
 	const unsigned int y, double& mag, double& ori);
 
@@ -88,7 +85,7 @@ bool VISION_IMPEXP computeGradient(
 	* \param sigma        [IN]    The sigma value of the Gaussian kernel used to
  * smooth the orientation histogram (typically 7.5 px).
 	*/
-bool VISION_IMPEXP computeMainOrientations(
+bool computeMainOrientations(
 	const mrpt::utils::CImage& image, const unsigned int x,
 	const unsigned int y, const unsigned int patchSize,
 	std::vector<double>& orientations, const double& sigma);
@@ -106,7 +103,7 @@ bool VISION_IMPEXP computeMainOrientations(
 	* \param n    [IN]        The number of orienation bins used in the
  * histogram (typically 8).
 	*/
-void VISION_IMPEXP interpolateHistEntry(
+void interpolateHistEntry(
 	std::vector<double>& hist, const double& cbin, const double& rbin,
 	const double& obin, const double& mag, const int d, const int n);
 
@@ -126,7 +123,7 @@ void VISION_IMPEXP interpolateHistEntry(
  * for the HASH table used in relocalization.
 	* \sa TMultiResDescOptions
 	*/
-void VISION_IMPEXP computeHistogramOfOrientations(
+void computeHistogramOfOrientations(
 	const mrpt::utils::CImage& image, const unsigned int x,
 	const unsigned int y, const unsigned int patchSize,
 	const double& orientation, std::vector<int32_t>& descriptor,
@@ -156,7 +153,7 @@ void VISION_IMPEXP computeHistogramOfOrientations(
 	* \sa TMultiResDescMatchOptions, TMultiResDescOptions,
  * TMultiResMatchingOutput
 	*/
-TMultiResMatchingOutput VISION_IMPEXP matchMultiResolutionFeatures(
+TMultiResMatchingOutput matchMultiResolutionFeatures(
 	const CFeatureList& list1, CFeatureList& list2,
 	const mrpt::utils::CImage& rightImage,
 	const TMultiResDescMatchOptions& matchOpts,
@@ -186,7 +183,7 @@ TMultiResMatchingOutput VISION_IMPEXP matchMultiResolutionFeatures(
 	* \return The number of matches found
 	* \sa TMultiResDescMatchOptions
 	*/
-int VISION_IMPEXP matchMultiResolutionFeatures(
+int matchMultiResolutionFeatures(
 	CMatchedFeatureList& mList1, CMatchedFeatureList& mList2,
 	const mrpt::utils::CImage& leftImage, const mrpt::utils::CImage& rightImage,
 	const TMultiResDescMatchOptions& matchOpts,
@@ -205,7 +202,7 @@ int VISION_IMPEXP matchMultiResolutionFeatures(
  * or for higher ones.
 	* \param opts         [IN]    The options for computing the new descriptors.
 	*/
-int VISION_IMPEXP computeMoreDescriptors(
+int computeMoreDescriptors(
 	const mrpt::utils::CImage& image, const CFeature::Ptr& inputFeat,
 	CFeature::Ptr& outputFeat, const bool& lowerScales,
 	const TMultiResDescOptions& opts);
@@ -222,7 +219,7 @@ int VISION_IMPEXP computeMoreDescriptors(
 	* \param firstScale   [OUT]   The final scale (within [0
  * feat1->multiScale.size()-1]) where to look.
 	*/
-void VISION_IMPEXP setProperScales(
+void setProperScales(
 	const CFeature::Ptr& feat1, const CFeature::Ptr& feat2, int& firstScale,
 	int& lastScale);
 
@@ -237,7 +234,7 @@ void VISION_IMPEXP setProperScales(
  * computation process.
 	* \sa TMultiResDescOptions
 */
-void VISION_IMPEXP computeMultiResolutionDescriptors(
+void computeMultiResolutionDescriptors(
 	const mrpt::utils::CImage& imageLeft, const mrpt::utils::CImage& imageRight,
 	CMatchedFeatureList& matchedFeats, const TMultiResDescOptions& opts);
 
@@ -249,7 +246,7 @@ void VISION_IMPEXP computeMultiResolutionDescriptors(
  * computation process.
 	* \sa TMultiResDescOptions
 */
-bool VISION_IMPEXP computeMultiResolutionDescriptors(
+bool computeMultiResolutionDescriptors(
 	const mrpt::utils::CImage& image, CFeature::Ptr& feat,
 	const TMultiResDescOptions& opts);
 
@@ -261,7 +258,7 @@ bool VISION_IMPEXP computeMultiResolutionDescriptors(
  * computation process.
 	* \sa TMultiResDescOptions
 	*/
-std::vector<bool> VISION_IMPEXP computeMultiResolutionDescriptors(
+std::vector<bool> computeMultiResolutionDescriptors(
 	const mrpt::utils::CImage& image, CFeatureList& list,
 	const TMultiResDescOptions& opts);
 
@@ -273,7 +270,7 @@ std::vector<bool> VISION_IMPEXP computeMultiResolutionDescriptors(
  * computation process.
 	* \sa TMultiResDescOptions
 	*/
-void VISION_IMPEXP computeMultiOrientations(
+void computeMultiOrientations(
 	const mrpt::utils::CImage& image, CFeatureList& list,
 	const TMultiResDescOptions& opts);
 

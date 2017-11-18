@@ -698,7 +698,7 @@ class CMatrixTemplate
   *  \sa CMatrixDouble, CMatrixFloat, CMatrixB
   */
 // typedef CMatrixTemplate<bool> CMatrixBool;
-class BASE_IMPEXP CMatrixBool : public CMatrixTemplate<bool>
+class CMatrixBool : public CMatrixTemplate<bool>
 {
    public:
 	/** Constructor */

@@ -39,7 +39,7 @@ namespace opengl
   *
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CBox : public CRenderizableDisplayList
+class CBox : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CBox)
 
@@ -132,8 +132,6 @@ class OPENGL_IMPEXP CBox : public CRenderizableDisplayList
 	virtual ~CBox() {}
    private:
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CBox, CRenderizableDisplayList, OPENGL_IMPEXP)
 }
 }
 #endif

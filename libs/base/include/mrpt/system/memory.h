@@ -22,7 +22,7 @@ namespace system
   *  @{ */
 
 /** Returns the memory occupied by this process, in bytes */
-unsigned long BASE_IMPEXP getMemoryUsage();
+unsigned long getMemoryUsage();
 
 /** In platforms and compilers with support to "alloca", allocate a memory block
  * on the stack; if alloca is not supported, it is emulated as a normal "malloc"
@@ -74,7 +74,7 @@ namespace os
   * \sa aligned_free, aligned_realloc, aligned_calloc
   * \note Based on code by William Chan
 */
-void BASE_IMPEXP* aligned_malloc(size_t bytes, size_t alignment);
+void* aligned_malloc(size_t bytes, size_t alignment);
 
 /** Identical to aligned_malloc, but it zeroes the reserved memory block. */
 inline void* aligned_calloc(size_t bytes, size_t alignment)
@@ -90,13 +90,12 @@ inline void* aligned_calloc(size_t bytes, size_t alignment)
   * If old_ptr is nullptr, a new block will be reserved from scratch.
   * \sa aligned_malloc, aligned_free
   */
-void BASE_IMPEXP* aligned_realloc(
-	void* old_ptr, size_t bytes, size_t alignment);
+void* aligned_realloc(void* old_ptr, size_t bytes, size_t alignment);
 
 /** Frees a memory block reserved by aligned_malloc
   * \sa aligned_malloc
   */
-void BASE_IMPEXP aligned_free(void* p);
+void aligned_free(void* p);
 
 /** Returns a pointer a bit forward in memory so it's aligned for the given
  * boundary size

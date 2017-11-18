@@ -9,7 +9,6 @@
 #ifndef CReferencedMemBlock_H
 #define CReferencedMemBlock_H
 
-#include <mrpt/base/link_pragmas.h>
 #include <vector>
 #include <memory>
 
@@ -24,7 +23,7 @@ namespace utils
   * Behaves like std::shared_ptr<>.
  * \ingroup mrpt_base_grp
   */
-class BASE_IMPEXP CReferencedMemBlock
+class CReferencedMemBlock
 {
    public:
 	/** Constructor with an optional size of the memory block */

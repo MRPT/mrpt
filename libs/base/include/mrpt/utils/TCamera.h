@@ -29,7 +29,7 @@ namespace utils
  * for calibrating a camera
  * \ingroup mrpt_base_grp
  */
-class BASE_IMPEXP TCamera : public mrpt::utils::CSerializable
+class TCamera : public mrpt::utils::CSerializable
 {
 	DEFINE_SERIALIZABLE(TCamera)
 
@@ -207,12 +207,9 @@ class BASE_IMPEXP TCamera : public mrpt::utils::CSerializable
 	/** Get the value of the k3 distortion parameter.  */
 	inline void k3(double val) { dist[4] = val; }
 };  // end class TCamera
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(TCamera, mrpt::utils::CSerializable)
 
-bool BASE_IMPEXP
-	operator==(const mrpt::utils::TCamera& a, const mrpt::utils::TCamera& b);
-bool BASE_IMPEXP
-	operator!=(const mrpt::utils::TCamera& a, const mrpt::utils::TCamera& b);
+bool operator==(const mrpt::utils::TCamera& a, const mrpt::utils::TCamera& b);
+bool operator!=(const mrpt::utils::TCamera& a, const mrpt::utils::TCamera& b);
 
 }  // End of namespace
 }  // end of namespace

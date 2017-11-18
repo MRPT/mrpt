@@ -29,8 +29,6 @@
 #include <mrpt/utils/poly_ptr_ptr.h>
 #include <mrpt/obs/obs_frwds.h>
 
-#include <mrpt/slam/link_pragmas.h>
-
 namespace mrpt
 {
 namespace maps
@@ -140,7 +138,7 @@ class TSetOfMetricMapInitializers;
  *dependency on map classes in mrpt-vision.
  * \sa CMetricMap  \ingroup mrpt_slam_grp
  */
-class SLAM_IMPEXP CMultiMetricMap : public mrpt::maps::CMetricMap
+class CMultiMetricMap : public mrpt::maps::CMetricMap
 {
 	DEFINE_SERIALIZABLE(CMultiMetricMap)
    protected:
@@ -201,7 +199,7 @@ class SLAM_IMPEXP CMultiMetricMap : public mrpt::maps::CMetricMap
 	typename T::Ptr getMapByClass(const size_t& ith = 0) const
 	{
 		size_t foundCount = 0;
-		const mrpt::utils::TRuntimeClassId* class_ID = T::classinfo;
+		const mrpt::utils::TRuntimeClassId* class_ID = &T::GetRuntimeClassIdStatic();
 		for (const_iterator it = begin(); it != end(); ++it)
 			if ((*it)->GetRuntimeClass()->derivedFrom(class_ID))
 				if (foundCount++ == ith)
@@ -486,8 +484,6 @@ class SLAM_IMPEXP CMultiMetricMap : public mrpt::maps::CMetricMap
 	unsigned int m_ID;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CMultiMetricMap, mrpt::maps::CMetricMap, SLAM_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

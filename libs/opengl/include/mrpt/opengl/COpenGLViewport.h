@@ -62,8 +62,8 @@ class CRenderizable;
   *  Refer to mrpt::opengl::COpenGLScene for further details.
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP COpenGLViewport : public mrpt::utils::CSerializable,
-									  public mrpt::utils::CObservable
+class COpenGLViewport : public mrpt::utils::CSerializable,
+						public mrpt::utils::CObservable
 {
 	DEFINE_SERIALIZABLE(COpenGLViewport)
 	friend class COpenGLScene;
@@ -294,7 +294,7 @@ class OPENGL_IMPEXP COpenGLViewport : public mrpt::utils::CSerializable,
 	{
 		MRPT_START
 		size_t foundCount = 0;
-		const mrpt::utils::TRuntimeClassId* class_ID = T::classinfo;
+		const mrpt::utils::TRuntimeClassId* class_ID = &T::GetRuntimeClassIdStatic();
 		for (CListOpenGLObjects::const_iterator it = m_objects.begin();
 			 it != m_objects.end(); ++it)
 			if (*it && (*it)->GetRuntimeClass()->derivedFrom(class_ID))
@@ -438,8 +438,6 @@ class OPENGL_IMPEXP COpenGLViewport : public mrpt::utils::CSerializable,
 
 	std::vector<CLight> m_lights;
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	COpenGLViewport, mrpt::utils::CSerializable, OPENGL_IMPEXP)
 /**
   * Inserts an openGL object into a viewport. Allows call chaining.
   * \sa mrpt::opengl::COpenGLViewport::insert
@@ -487,7 +485,7 @@ inline COpenGLViewport::Ptr& operator<<(
  * be invoked from an internal GUI thread of MRPT,
   *    so all your code in the handler must be thread safe.
   */
-class OPENGL_IMPEXP mrptEventGLPreRender : public mrpt::utils::mrptEvent
+class mrptEventGLPreRender : public mrpt::utils::mrptEvent
 {
    protected:
 	/** Just to allow this class to be polymorphic */
@@ -512,7 +510,7 @@ class OPENGL_IMPEXP mrptEventGLPreRender : public mrpt::utils::mrptEvent
  * be invoked from an internal GUI thread of MRPT,
   *    so all your code in the handler must be thread safe.
   */
-class OPENGL_IMPEXP mrptEventGLPostRender : public mrpt::utils::mrptEvent
+class mrptEventGLPostRender : public mrpt::utils::mrptEvent
 {
    protected:
 	/** Just to allow this class to be polymorphic */

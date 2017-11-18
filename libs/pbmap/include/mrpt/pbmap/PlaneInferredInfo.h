@@ -37,7 +37,7 @@ namespace pbmap
  *
  * \ingroup mrpt_pbmap_grp
  */
-class PBMAP_IMPEXP PlaneInferredInfo
+class PlaneInferredInfo
 {
    public:
 	// Context-Planes recognition functions:

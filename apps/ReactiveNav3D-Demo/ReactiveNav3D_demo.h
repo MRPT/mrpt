@@ -729,7 +729,7 @@ class CMyReactInterface
 		CPose3D robotpose3d = CPose3D(CPose2D(robotSim.getCurrentGTPose()));
 
 		// The display window is created
-		mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE = 10000;
+		mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE(10000);
 		window.setWindowTitle("Reactive Navigation. Robot motion simulation");
 		window.resize(1800, 980);
 		window.setPos(50, 0);

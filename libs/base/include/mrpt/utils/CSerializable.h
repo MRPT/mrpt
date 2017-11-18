@@ -41,7 +41,7 @@ namespace utils
  * \sa CStream
  * \ingroup mrpt_base_grp
  */
-class BASE_IMPEXP CSerializable : public mrpt::utils::CObject
+class CSerializable : public mrpt::utils::CObject
 {
 	// This must be added to any CObject derived class:
 	DEFINE_VIRTUAL_MRPT_OBJECT(CSerializable)
@@ -90,8 +90,6 @@ class BASE_IMPEXP CSerializable : public mrpt::utils::CObject
 #endif
 };  // End of class def.
 
-DEFINE_MRPT_OBJECT_POST(CSerializable)
-
 /** \addtogroup noncstream_serialization Non-CStream serialization functions (in
  * #include <mrpt/utils/CSerializable.h>)
   * \ingroup mrpt_base_grp
@@ -104,7 +102,7 @@ DEFINE_MRPT_OBJECT_POST(CSerializable)
  * \sa StringToObject, <a href="http://www.mrpt.org/Integration_with_BABEL"
  * >Integration with BABEL</a>
  */
-std::string BASE_IMPEXP ObjectToString(const CSerializable* o);
+std::string ObjectToString(const CSerializable* o);
 
 /** Used to pass CORBA-like objects (strings) into a MRPT object.
  * \param str An string generated with ObjectToString
@@ -114,8 +112,7 @@ std::string BASE_IMPEXP ObjectToString(const CSerializable* o);
  * \sa ObjectToString, <a href="http://www.mrpt.org/Integration_with_BABEL"
  * >Integration with BABEL</a>
  */
-void BASE_IMPEXP
-	StringToObject(const std::string& str, CSerializable::Ptr& obj);
+void StringToObject(const std::string& str, CSerializable::Ptr& obj);
 
 /** Converts (serializes) an MRPT object into an array of bytes.
  * \param o The object to be serialized.
@@ -123,8 +120,7 @@ void BASE_IMPEXP
  * be set automatically.
  * \sa OctetVectorToObject, ObjectToString
  */
-void BASE_IMPEXP
-	ObjectToOctetVector(const CSerializable* o, vector_byte& out_vector);
+void ObjectToOctetVector(const CSerializable* o, vector_byte& out_vector);
 
 /** Converts back (de-serializes) a sequence of binary data into a MRPT object,
  * without prior information about the object's class.
@@ -134,8 +130,7 @@ void BASE_IMPEXP
  * pointer.
  * \sa ObjectToOctetVector, StringToObject
  */
-void BASE_IMPEXP
-	OctetVectorToObject(const vector_byte& in_data, CSerializable::Ptr& obj);
+void OctetVectorToObject(const vector_byte& in_data, CSerializable::Ptr& obj);
 
 /** Converts (serializes) an MRPT object into an array of bytes within a
  * std::string, without codifying to avoid nullptr characters.
@@ -145,8 +140,7 @@ void BASE_IMPEXP
  * be set automatically.
  * \sa RawStringToObject, ObjectToOctetVector
  */
-void BASE_IMPEXP
-	ObjectToRawString(const CSerializable* o, std::string& out_str);
+void ObjectToRawString(const CSerializable* o, std::string& out_str);
 
 /** Converts back (de-serializes) a sequence of binary data within a std::string
  * into a MRPT object, without prior information about the object's class.
@@ -156,60 +150,20 @@ void BASE_IMPEXP
  * pointer.
  * \sa ObjectToRawString
  */
-void BASE_IMPEXP
-	RawStringToObject(const std::string& in_str, CSerializable::Ptr& obj);
+void RawStringToObject(const std::string& in_str, CSerializable::Ptr& obj);
 
 /** @} */
 
-/** Like DEFINE_SERIALIZABLE, but for template classes that need the DLL imp/exp
- * keyword in Windows. */
-#define DEFINE_SERIALIZABLE_CUSTOM_LINKAGE(                                  \
-	class_name, _VOID_LINKAGE_, _STATIC_LINKAGE_, _VIRTUAL_LINKAGE_)         \
-	DEFINE_MRPT_OBJECT_CUSTOM_LINKAGE(                                       \
-		class_name, _STATIC_LINKAGE_, _VIRTUAL_LINKAGE_)                     \
-   protected:                                                                \
-	/*! @name CSerializable virtual methods */                               \
-	/*! @{ */                                                                \
-	_VOID_LINKAGE_ writeToStream(mrpt::utils::CStream& out, int* getVersion) \
-		const override;                                                      \
-	_VOID_LINKAGE_ readFromStream(mrpt::utils::CStream& in, int version)     \
-		override;                                                            \
-/*! @} */
-
 /** This declaration must be inserted in all CSerializable classes definition,
- * within the class declaration. */
-#define DEFINE_SERIALIZABLE(class_name)                                 \
-	DEFINE_SERIALIZABLE_CUSTOM_LINKAGE(                                 \
-		class_name, void /*no extra linkage keyword*/, static /*none*/, \
-		virtual /*none*/)
-
-/**  This declaration must be inserted in all CSerializable classes definition,
- * before the class declaration.
-  */
-
-#define DEFINE_SERIALIZABLE_POST_CUSTOM_LINKAGE(class_name, _LINKAGE_) \
-	DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE2(                      \
-		class_name, mrpt::utils::CSerializable, _LINKAGE_ class_name)
-
-#define DEFINE_SERIALIZABLE_POST(class_name)      \
-	DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE2( \
-		class_name, mrpt::utils::CSerializable, BASE_IMPEXP class_name)
-
-/**  This declaration must be inserted in all CSerializable classes definition,
- * before the class declaration.
-  */
-
-#define DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( \
-	class_name, base_name, _LINKAGE_)                 \
-	DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE2(     \
-		class_name, base_name, _LINKAGE_ class_name)
-
-/**  This declaration must be inserted in all CSerializable classes definition,
- * before the class declaration. */
-
-#define DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(class_name, base_name) \
-	DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE(                    \
-		class_name, base_name, BASE_IMPEXP)
+* within the class declaration. */
+#define DEFINE_SERIALIZABLE(class_name)                                           \
+	DEFINE_MRPT_OBJECT(class_name)                                                \
+   protected:                                                                     \
+	/*! @name CSerializable virtual methods */                                    \
+	/*! @{ */                                                                     \
+	void writeToStream(mrpt::utils::CStream& out, int* getVersion) const override;\
+	void readFromStream(mrpt::utils::CStream& in, int version) override;          \
+	/*! @} */
 
 /** This must be inserted in all CSerializable classes implementation files */
 #define IMPLEMENTS_SERIALIZABLE(class_name, base, NameSpace) \

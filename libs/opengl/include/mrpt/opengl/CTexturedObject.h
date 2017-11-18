@@ -22,7 +22,7 @@ namespace opengl
  * opengl::CSetOfTexturedTriangles
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CTexturedObject : public CRenderizableDisplayList
+class CTexturedObject : public CRenderizableDisplayList
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CTexturedObject)
 
@@ -85,8 +85,6 @@ class OPENGL_IMPEXP CTexturedObject : public CRenderizableDisplayList
 
 	virtual void render_dl() const override;
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CTexturedObject, CRenderizableDisplayList, OPENGL_IMPEXP)
 
 }  // end namespace
 

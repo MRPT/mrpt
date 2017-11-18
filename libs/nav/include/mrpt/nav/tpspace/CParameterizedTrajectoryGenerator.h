@@ -15,7 +15,6 @@
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/math/CPolygon.h>
 #include <cstdint>
-#include <mrpt/nav/link_pragmas.h>
 #include <mrpt/nav/holonomic/ClearanceDiagram.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/kinematics/CVehicleVelCmd.h>
@@ -74,9 +73,8 @@ enum PTG_collision_behavior_t
  *
  *  \ingroup nav_tpspace
  */
-class NAV_IMPEXP CParameterizedTrajectoryGenerator
-	: public mrpt::utils::CSerializable,
-	  public mrpt::utils::CLoadableOptions
+class CParameterizedTrajectoryGenerator : public mrpt::utils::CSerializable,
+										  public mrpt::utils::CLoadableOptions
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CParameterizedTrajectoryGenerator)
    public:
@@ -165,7 +163,7 @@ class NAV_IMPEXP CParameterizedTrajectoryGenerator
 
 	/** Dynamic state that may affect the PTG path parameterization. \ingroup
 	 * nav_reactive  */
-	struct NAV_IMPEXP TNavDynamicState
+	struct TNavDynamicState
 	{
 		/** Current vehicle velocity (local frame of reference) */
 		mrpt::math::TTwist2D curVelLocal;
@@ -494,8 +492,6 @@ class NAV_IMPEXP CParameterizedTrajectoryGenerator
 		bool treat_as_obstacle = true) const;
 
 };  // end of class
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CParameterizedTrajectoryGenerator, mrpt::utils::CSerializable, NAV_IMPEXP)
 
 /** A list of PTGs (smart pointers) */
 using TListPTGPtr =
@@ -504,8 +500,7 @@ using TListPTGPtr =
 /** Base class for all PTGs using a 2D polygonal robot shape model.
  *  \ingroup nav_tpspace
  */
-class NAV_IMPEXP CPTG_RobotShape_Polygonal
-	: public CParameterizedTrajectoryGenerator
+class CPTG_RobotShape_Polygonal : public CParameterizedTrajectoryGenerator
 {
    public:
 	CPTG_RobotShape_Polygonal();
@@ -547,8 +542,7 @@ class NAV_IMPEXP CPTG_RobotShape_Polygonal
 /** Base class for all PTGs using a 2D circular robot shape model.
  *  \ingroup nav_tpspace
  */
-class NAV_IMPEXP CPTG_RobotShape_Circular
-	: public CParameterizedTrajectoryGenerator
+class CPTG_RobotShape_Circular : public CParameterizedTrajectoryGenerator
 {
    public:
 	CPTG_RobotShape_Circular();

@@ -47,7 +47,7 @@ void TestRandomGenerators()
 {
 	vector<double> x, y;
 
-	randomGenerator.randomize();
+	getRandomGenerator().randomize();
 
 	// Uniform numbers integers:
 	CDisplayWindowPlots win1("Unif(0,5) (integers)");
@@ -56,7 +56,7 @@ void TestRandomGenerators()
 	{
 		// CVectorDouble v1(100000);
 		vector_size_t v1(100000);
-		randomGenerator.drawUniformVector(v1, 0, 5.999);
+		getRandomGenerator().drawUniformVector(v1, 0, 5.999);
 
 		CHistogram hist(-2, 15, 100);
 		hist.add(v1);
@@ -73,7 +73,7 @@ void TestRandomGenerators()
 	win2.resize(400, 400);
 	{
 		CVectorDouble v1(100000);
-		randomGenerator.drawGaussian1DVector(v1, 0, 1);
+		getRandomGenerator().drawGaussian1DVector(v1, 0, 1);
 
 		CHistogram hist(-5, 5, 100);
 		hist.add(v1);
@@ -95,7 +95,7 @@ void TestRandomGenerators()
 	win3.resize(400, 400);
 	{
 		CVectorDouble v1(100000);
-		randomGenerator.drawGaussian1DVector(v1, 3, 2);
+		getRandomGenerator().drawGaussian1DVector(v1, 3, 2);
 
 		CHistogram hist(-5, 15, 100);
 		hist.add(v1);
@@ -125,7 +125,7 @@ void TestRandomGenerators()
 		CMatrixDouble22 cov;
 		cov.fromMatlabStringFormat("[7.5 -7;-7 8]");
 
-		randomGenerator.drawGaussianMultivariateMany(v1, 10000, cov, &Mean);
+		getRandomGenerator().drawGaussianMultivariateMany(v1, 10000, cov, &Mean);
 
 #if 0 
 		CVectorDouble m;

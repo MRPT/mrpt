@@ -213,9 +213,8 @@ namespace hwdrivers
 *
 * \ingroup mrpt_hwdrivers_grp
 */
-class HWDRIVERS_IMPEXP CNationalInstrumentsDAQ
-	: public mrpt::utils::COutputLogger,
-	  public CGenericSensor
+class CNationalInstrumentsDAQ : public mrpt::utils::COutputLogger,
+								public CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CNationalInstrumentsDAQ)
    public:
@@ -279,7 +278,7 @@ class HWDRIVERS_IMPEXP CNationalInstrumentsDAQ
 	 * mrpt::hwdrivers::CNationalInstrumentsDAQ to learn on the meaning
 	  * of each field. Also, see National Instruments' DAQmx API docs online.
 	  */
-	struct HWDRIVERS_IMPEXP TaskDescription
+	struct TaskDescription
 	{
 		TaskDescription();
 
@@ -304,7 +303,7 @@ class HWDRIVERS_IMPEXP CNationalInstrumentsDAQ
 		/** (Default="task###") */
 		std::string taskLabel;
 
-		struct HWDRIVERS_IMPEXP desc_ai_t
+		struct desc_ai_t
 		{
 			desc_ai_t()
 				: terminalConfig("DAQmx_Val_NRSE"),
@@ -323,7 +322,7 @@ class HWDRIVERS_IMPEXP CNationalInstrumentsDAQ
 		/** Analog inputs */
 		ai;
 
-		struct HWDRIVERS_IMPEXP desc_ao_t
+		struct desc_ao_t
 		{
 			desc_ao_t() : physicalChannelCount(0), minVal(-10), maxVal(10) {}
 			std::string physicalChannel;
@@ -335,7 +334,7 @@ class HWDRIVERS_IMPEXP CNationalInstrumentsDAQ
 		/** Analog outputs */
 		ao;
 
-		struct HWDRIVERS_IMPEXP desc_di_t
+		struct desc_di_t
 		{
 			/** The digital line (for example "Dev1/port0/line1") */
 			std::string line;
@@ -343,7 +342,7 @@ class HWDRIVERS_IMPEXP CNationalInstrumentsDAQ
 		/** Digital inputs (di) */
 		di;
 
-		struct HWDRIVERS_IMPEXP desc_do_t
+		struct desc_do_t
 		{
 			/** The digital line (for example "Dev1/port0/line1") */
 			std::string line;
@@ -351,7 +350,7 @@ class HWDRIVERS_IMPEXP CNationalInstrumentsDAQ
 		/** Digital outs (do) */
 		douts;
 
-		struct HWDRIVERS_IMPEXP desc_ci_period_t
+		struct desc_ci_period_t
 		{
 			desc_ci_period_t() : minVal(0), maxVal(0), measTime(0), divisor(1)
 			{
@@ -365,7 +364,7 @@ class HWDRIVERS_IMPEXP CNationalInstrumentsDAQ
 		/** Counter: period of a digital signal */
 		ci_period;
 
-		struct HWDRIVERS_IMPEXP desc_ci_count_edges_t
+		struct desc_ci_count_edges_t
 		{
 			desc_ci_count_edges_t()
 				: countDirection("DAQmx_Val_CountUp"), initialCount(0)
@@ -378,7 +377,7 @@ class HWDRIVERS_IMPEXP CNationalInstrumentsDAQ
 		/** Counter: period of a digital signal */
 		ci_count_edges;
 
-		struct HWDRIVERS_IMPEXP desc_ci_pulse_width_t
+		struct desc_ci_pulse_width_t
 		{
 			desc_ci_pulse_width_t() : minVal(0), maxVal(0) {}
 			std::string counter, units, startingEdge;
@@ -387,7 +386,7 @@ class HWDRIVERS_IMPEXP CNationalInstrumentsDAQ
 		/** Counter: measure the width of a digital pulse */
 		ci_pulse_width;
 
-		struct HWDRIVERS_IMPEXP desc_ci_lin_encoder_t
+		struct desc_ci_lin_encoder_t
 		{
 			desc_ci_lin_encoder_t()
 				: ZidxEnable(false),
@@ -406,7 +405,7 @@ class HWDRIVERS_IMPEXP CNationalInstrumentsDAQ
 		/** Counter: uses a linear encoder to measure linear position */
 		ci_lin_encoder;
 
-		struct HWDRIVERS_IMPEXP desc_ci_ang_encoder_t
+		struct desc_ci_ang_encoder_t
 		{
 			desc_ci_ang_encoder_t()
 				: ZidxEnable(false),
@@ -428,7 +427,7 @@ class HWDRIVERS_IMPEXP CNationalInstrumentsDAQ
 		/** Counter: uses an angular encoder to measure angular position */
 		ci_ang_encoder;
 
-		struct HWDRIVERS_IMPEXP desc_co_pulses_t
+		struct desc_co_pulses_t
 		{
 			desc_co_pulses_t()
 				: idleState("DAQmx_Val_Low"),

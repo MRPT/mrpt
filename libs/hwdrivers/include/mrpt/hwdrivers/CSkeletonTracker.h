@@ -47,7 +47,7 @@ namespace hwdrivers
   *  \endcode
   * \ingroup mrpt_hwdrivers_grp
   */  // clang-format on
-class HWDRIVERS_IMPEXP CSkeletonTracker : public hwdrivers::CGenericSensor
+class CSkeletonTracker : public hwdrivers::CGenericSensor
 {
 	enum JOINT
 	{

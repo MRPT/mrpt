@@ -20,7 +20,7 @@ namespace utils
 /**  This class implements the tables of databases.
  * \sa CSimpleDatabase \ingroup mrpt_base_grp
  */
-class BASE_IMPEXP CSimpleDatabaseTable : public mrpt::utils::CSerializable
+class CSimpleDatabaseTable : public mrpt::utils::CSerializable
 {
 	DEFINE_SERIALIZABLE(CSimpleDatabaseTable)
    public:
@@ -120,7 +120,7 @@ class BASE_IMPEXP CSimpleDatabaseTable : public mrpt::utils::CSerializable
   *
   * \sa CSimpleDatabaseTable
   */
-class BASE_IMPEXP CSimpleDatabase : public mrpt::utils::CSerializable
+class CSimpleDatabase : public mrpt::utils::CSerializable
 {
 	DEFINE_SERIALIZABLE(CSimpleDatabase)
 
@@ -194,12 +194,6 @@ class BASE_IMPEXP CSimpleDatabase : public mrpt::utils::CSerializable
 	TTableList m_tables;
 
 };  // end of class definition
-
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(
-	CSimpleDatabase, mrpt::utils::CSerializable)
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(
-	CSimpleDatabaseTable, mrpt::utils::CSerializable)
-
 }  // End of namespace
 }  // End of namespace
 

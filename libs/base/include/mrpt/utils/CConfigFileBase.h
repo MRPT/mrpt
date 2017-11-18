@@ -21,12 +21,11 @@ namespace mrpt
 namespace utils
 {
 // Frwd. decl:
-template <typename ENUMTYPE>
-struct TEnumType;
 class CConfigFilePrefixer;
 
 /** Default padding sizes for macros MRPT_SAVE_CONFIG_VAR_COMMENT(), etc. */
-extern int BASE_IMPEXP MRPT_SAVE_NAME_PADDING, MRPT_SAVE_VALUE_PADDING;
+int MRPT_SAVE_NAME_PADDING();
+int MRPT_SAVE_VALUE_PADDING();
 
 /** This class allows loading and storing values and vectors of different types
  * from a configuration text, which can be implemented as a ".ini" file, a
@@ -37,7 +36,7 @@ extern int BASE_IMPEXP MRPT_SAVE_NAME_PADDING, MRPT_SAVE_VALUE_PADDING;
   * See: \ref config_file_format
   * \ingroup mrpt_base_grp
   */
-class BASE_IMPEXP CConfigFileBase
+class CConfigFileBase
 {
 	friend class CConfigFilePrefixer;
 
@@ -460,16 +459,16 @@ class BASE_IMPEXP CConfigFileBase
 	{                                                         \
 		c.write(                                              \
 			s, #variableName, variableName,                   \
-			mrpt::utils::MRPT_SAVE_NAME_PADDING,              \
-			mrpt::utils::MRPT_SAVE_VALUE_PADDING, __comment); \
+			mrpt::utils::MRPT_SAVE_NAME_PADDING(),            \
+			mrpt::utils::MRPT_SAVE_VALUE_PADDING(), __comment); \
 	}
 #define MRPT_SAVE_CONFIG_VAR_DEGREES_COMMENT(                 \
 	__entryName, __variable, __comment)                       \
 	{                                                         \
 		c.write(                                              \
 			s, __entryName, mrpt::utils::RAD2DEG(__variable), \
-			mrpt::utils::MRPT_SAVE_NAME_PADDING,              \
-			mrpt::utils::MRPT_SAVE_VALUE_PADDING, __comment); \
+			mrpt::utils::MRPT_SAVE_NAME_PADDING(),              \
+			mrpt::utils::MRPT_SAVE_VALUE_PADDING(), __comment); \
 	}
 
 }  // End of namespace

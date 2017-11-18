@@ -104,7 +104,7 @@ char SCAN_VALID_1[] = {
 // ------------------------------------------------------
 void BenchmarkGridmaps()
 {
-	randomGenerator.randomize(333);
+	getRandomGenerator().randomize(333);
 
 	CMultiMetricMap metricMap;
 	TSetOfMetricMapInitializers mapInit;
@@ -257,9 +257,9 @@ void BenchmarkGridmaps()
 		{
 #if 1
 			CPose2D pose(
-				randomGenerator.drawUniform(-1.0, 1.0),
-				randomGenerator.drawUniform(-1.0, 1.0),
-				randomGenerator.drawUniform(-M_PI, M_PI));
+				getRandomGenerator().drawUniform(-1.0, 1.0),
+				getRandomGenerator().drawUniform(-1.0, 1.0),
+				getRandomGenerator().drawUniform(-M_PI, M_PI));
 			CPose3D pose3D(pose);
 #else
 			CPose3D pose3D;
@@ -290,9 +290,9 @@ void BenchmarkGridmaps()
 		{
 #if 1
 			CPose2D pose(
-				randomGenerator.drawUniform(-1.0, 1.0),
-				randomGenerator.drawUniform(-1.0, 1.0),
-				randomGenerator.drawUniform(-M_PI, M_PI));
+				getRandomGenerator().drawUniform(-1.0, 1.0),
+				getRandomGenerator().drawUniform(-1.0, 1.0),
+				getRandomGenerator().drawUniform(-M_PI, M_PI));
 			CPose3D pose3D(pose);
 #else
 			CPose3D pose3D;
@@ -343,9 +343,9 @@ void BenchmarkGridmaps()
 		for (i = 0; i < N; i++)
 		{
 			CPose2D pose(
-				randomGenerator.drawUniform(-1.0, 1.0),
-				randomGenerator.drawUniform(-1.0, 1.0),
-				randomGenerator.drawUniform(-M_PI, M_PI));
+				getRandomGenerator().drawUniform(-1.0, 1.0),
+				getRandomGenerator().drawUniform(-1.0, 1.0),
+				getRandomGenerator().drawUniform(-M_PI, M_PI));
 			R += gridMap->computeObservationLikelihood(&scan1, pose);
 		}
 		double T = tictac.Tac();

@@ -450,12 +450,18 @@ namespace mrpt
 namespace obs
 {
 // Tricky way to call to a library that depends on us, a sort of "run-time"
-// linking:
-//  ptr_internal_build_points_map_from_scan2D is a functor in "mrpt-obs", set by
-//  "mrpt-maps" at its startup.
-void OBS_IMPEXP (*ptr_internal_build_points_map_from_scan2D)(
+// linking: ptr_internal_build_points_map_from_scan2D is a functor in 
+// "mrpt-obs", set by "mrpt-maps" at its startup.
+using scan2pts_functor = void(*)(
 	const mrpt::obs::CObservation2DRangeScan& obs,
-	mrpt::maps::CMetricMap::Ptr& out_map, const void* insertOps) = nullptr;
+	mrpt::maps::CMetricMap::Ptr& out_map, const void* insertOps);
+
+scan2pts_functor ptr_internal_build_points_map_from_scan2D = nullptr;
+
+void internal_set_build_points_map_from_scan2D(scan2pts_functor fn)
+{
+	ptr_internal_build_points_map_from_scan2D = fn;
+}
 }
 }
 

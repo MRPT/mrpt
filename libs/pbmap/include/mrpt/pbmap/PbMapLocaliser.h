@@ -25,7 +25,6 @@
 #include <mrpt/pbmap/PbMap.h>
 #include <mrpt/pbmap/SubgraphMatcher.h>
 #include <mrpt/pbmap/ConsistencyTest.h>
-#include <mrpt/pbmap/link_pragmas.h>
 #include <thread>
 
 namespace mrpt
@@ -40,7 +39,7 @@ namespace pbmap
  *
  * \ingroup mrpt_pbmap_grp
  */
-class PBMAP_IMPEXP PbMapLocaliser
+class PbMapLocaliser
 {
    public:
 	/*!Constructor.*/

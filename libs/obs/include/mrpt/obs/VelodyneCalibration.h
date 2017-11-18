@@ -10,7 +10,6 @@
 #define VelodyneCalibration_H
 
 #include <mrpt/utils/core_defs.h>
-#include <mrpt/obs/link_pragmas.h>
 #include <string>
 #include <vector>
 
@@ -30,7 +29,7 @@ namespace obs
   * \sa CObservationVelodyneScan, CVelodyneScanner
   * \ingroup mrpt_obs_grp
   */
-struct OBS_IMPEXP VelodyneCalibration
+struct VelodyneCalibration
 {
 	/** Default ctor (leaves all empty) */
 	VelodyneCalibration();
@@ -59,7 +58,7 @@ struct OBS_IMPEXP VelodyneCalibration
 
 // Pragma to ensure we can safely serialize some of these structures
 #pragma pack(push, 1)
-	struct OBS_IMPEXP PerLaserCalib
+	struct PerLaserCalib
 	{
 		double azimuthCorrection, verticalCorrection, distanceCorrection;
 		double verticalOffsetCorrection, horizontalOffsetCorrection;

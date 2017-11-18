@@ -68,20 +68,20 @@ void project3DPointsFromDepthImageInto(
 		if (projectParams.PROJ3D_USE_LUT)
 		{
 			// Use LUT:
-			if (src_obs.m_3dproj_lut.prev_camParams != src_obs.cameraParams ||
-				WH != size_t(src_obs.m_3dproj_lut.Kys.size()))
+			if (src_obs.get_3dproj_lut().prev_camParams != src_obs.cameraParams ||
+				WH != size_t(src_obs.get_3dproj_lut().Kys.size()))
 			{
-				src_obs.m_3dproj_lut.prev_camParams = src_obs.cameraParams;
-				src_obs.m_3dproj_lut.Kys.resize(WH);
-				src_obs.m_3dproj_lut.Kzs.resize(WH);
+				src_obs.get_3dproj_lut().prev_camParams = src_obs.cameraParams;
+				src_obs.get_3dproj_lut().Kys.resize(WH);
+				src_obs.get_3dproj_lut().Kzs.resize(WH);
 
 				const float r_cx = src_obs.cameraParams.cx();
 				const float r_cy = src_obs.cameraParams.cy();
 				const float r_fx_inv = 1.0f / src_obs.cameraParams.fx();
 				const float r_fy_inv = 1.0f / src_obs.cameraParams.fy();
 
-				float* kys = &src_obs.m_3dproj_lut.Kys[0];
-				float* kzs = &src_obs.m_3dproj_lut.Kzs[0];
+				float* kys = &src_obs.get_3dproj_lut().Kys[0];
+				float* kzs = &src_obs.get_3dproj_lut().Kzs[0];
 				for (int r = 0; r < H; r++)
 					for (int c = 0; c < W; c++)
 					{
@@ -90,10 +90,10 @@ void project3DPointsFromDepthImageInto(
 					}
 			}  // end update LUT.
 
-			ASSERT_EQUAL_(WH, size_t(src_obs.m_3dproj_lut.Kys.size()))
-			ASSERT_EQUAL_(WH, size_t(src_obs.m_3dproj_lut.Kzs.size()))
-			float* kys = &src_obs.m_3dproj_lut.Kys[0];
-			float* kzs = &src_obs.m_3dproj_lut.Kzs[0];
+			ASSERT_EQUAL_(WH, size_t(src_obs.get_3dproj_lut().Kys.size()))
+			ASSERT_EQUAL_(WH, size_t(src_obs.get_3dproj_lut().Kzs.size()))
+			float* kys = &src_obs.get_3dproj_lut().Kys[0];
+			float* kzs = &src_obs.get_3dproj_lut().Kzs[0];
 
 			if (filterParams.rangeMask_min)
 			{  // sanity check:

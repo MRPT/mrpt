@@ -970,11 +970,11 @@ void CDisplayWindowPlots::plotEllipse(
 }
 
 // Explicit instantations:
-template void GUI_IMPEXP CDisplayWindowPlots::plotEllipse(
+template void CDisplayWindowPlots::plotEllipse(
 	const float mean_x, const float mean_y,
 	const CMatrixTemplateNumeric<float>& cov22, const float quantiles,
 	const std::string& lineFormat, const std::string& plotName, bool showName);
-template void GUI_IMPEXP CDisplayWindowPlots::plotEllipse(
+template void CDisplayWindowPlots::plotEllipse(
 	const double mean_x, const double mean_y,
 	const CMatrixTemplateNumeric<double>& cov22, const float quantiles,
 	const std::string& lineFormat, const std::string& plotName, bool showName);
@@ -1043,11 +1043,11 @@ void CDisplayWindowPlots::plotEllipse(
 }
 
 // Explicit instantations:
-template void GUI_IMPEXP CDisplayWindowPlots::plotEllipse(
+template void CDisplayWindowPlots::plotEllipse(
 	const float mean_x, const float mean_y,
 	const CMatrixFixedNumeric<float, 2, 2>& cov22, const float quantiles,
 	const std::string& lineFormat, const std::string& plotName, bool showName);
-template void GUI_IMPEXP CDisplayWindowPlots::plotEllipse(
+template void CDisplayWindowPlots::plotEllipse(
 	const double mean_x, const double mean_y,
 	const CMatrixFixedNumeric<double, 2, 2>& cov22, const float quantiles,
 	const std::string& lineFormat, const std::string& plotName, bool showName);

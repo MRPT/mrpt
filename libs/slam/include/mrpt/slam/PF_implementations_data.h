@@ -19,8 +19,6 @@
 #include <mrpt/slam/TKLDParams.h>
 #include <mrpt/utils/COutputLogger.h>
 
-#include <mrpt/slam/link_pragmas.h>
-
 namespace mrpt
 {
 namespace slam

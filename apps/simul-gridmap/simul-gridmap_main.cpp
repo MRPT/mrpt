@@ -237,13 +237,13 @@ void simulOdometry(
 
 	// Noise:
 	Apose.x_incr(
-		randomGenerator.drawGaussian1D_normalized() *
+		getRandomGenerator().drawGaussian1D_normalized() *
 		odo_opts.gaussianModel.minStdXY);
 	Apose.y_incr(
-		randomGenerator.drawGaussian1D_normalized() *
+		getRandomGenerator().drawGaussian1D_normalized() *
 		odo_opts.gaussianModel.minStdXY);
 	Apose.phi_incr(
-		randomGenerator.drawGaussian1D_normalized() *
+		getRandomGenerator().drawGaussian1D_normalized() *
 		odo_opts.gaussianModel.minStdPHI);
 	Apose.normalizePhi();
 }

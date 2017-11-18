@@ -25,7 +25,7 @@ namespace obs
  * \note Class introduced in MRPT 1.3.1
  * \ingroup mrpt_obs_grp
  */
-class OBS_IMPEXP CObservationSkeleton : public CObservation
+class CObservationSkeleton : public CObservation
 {
 	DEFINE_SERIALIZABLE(CObservationSkeleton)
 
@@ -59,7 +59,7 @@ class OBS_IMPEXP CObservationSkeleton : public CObservation
 	mrpt::poses::CPose3D sensorPose;
 
 	/** A generic joint for the skeleton observation */
-	struct OBS_IMPEXP TSkeletonJoint
+	struct TSkeletonJoint
 	{
 		/** Default constructor */
 		TSkeletonJoint() : x(.0), y(.0), z(.0), conf(.0) {}
@@ -86,8 +86,6 @@ class OBS_IMPEXP CObservationSkeleton : public CObservation
 	void getDescriptionAsText(std::ostream& o) const override;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CObservationSkeleton, CObservation, OBS_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

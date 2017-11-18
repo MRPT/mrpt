@@ -10,8 +10,6 @@
 #ifndef color_maps_H
 #define color_maps_H
 
-#include <mrpt/base/link_pragmas.h>
-
 namespace mrpt
 {
 namespace utils
@@ -23,13 +21,11 @@ namespace utils
 
 /** Transform HSV color components to RGB, all of them in the range [0,1]  \sa
  * rgb2hsv */
-void BASE_IMPEXP
-	hsv2rgb(float h, float s, float v, float& r, float& g, float& b);
+void hsv2rgb(float h, float s, float v, float& r, float& g, float& b);
 
 /** Transform RGB color components to HSV, all of them in the range [0,1] \sa
  * hsv2rgb */
-void BASE_IMPEXP
-	rgb2hsv(float r, float g, float b, float& h, float& s, float& v);
+void rgb2hsv(float r, float g, float b, float& h, float& s, float& v);
 
 /** Different colormaps for use in mrpt::utils::colormap() */
 enum TColormap
@@ -42,17 +38,17 @@ enum TColormap
 
 /** Transform a float number in the range [0,1] into RGB components. Different
  * colormaps are available. */
-void BASE_IMPEXP colormap(
+void colormap(
 	const TColormap& color_map, const float color_index, float& r, float& g,
 	float& b);
 
 /** Computes the RGB color components (range [0,1]) for the corresponding color
  * index in the range [0,1] using the MATLAB 'jet' colormap.  \sa colormap  */
-void BASE_IMPEXP jet2rgb(const float color_index, float& r, float& g, float& b);
+void jet2rgb(const float color_index, float& r, float& g, float& b);
 
 /** Computes the RGB color components (range [0,1]) for the corresponding color
  * index in the range [0,1] using the MATLAB 'hot' colormap.  \sa colormap  */
-void BASE_IMPEXP hot2rgb(const float color_index, float& r, float& g, float& b);
+void hot2rgb(const float color_index, float& r, float& g, float& b);
 
 /** @} */
 }

@@ -29,8 +29,7 @@ namespace poses
  * \ingroup poses_grp
  * \sa CPoseOrPoint,CPose, CPoint
  */
-class BASE_IMPEXP CPoint3D : public CPoint<CPoint3D>,
-							 public mrpt::utils::CSerializable
+class CPoint3D : public CPoint<CPoint3D>, public mrpt::utils::CSerializable
 {
 	DEFINE_SERIALIZABLE(CPoint3D)
 
@@ -122,7 +121,6 @@ class BASE_IMPEXP CPoint3D : public CPoint<CPoint3D>,
 	void setToNaN() override;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST(CPoint3D)
 
 }  // End of namespace
 }  // End of namespace

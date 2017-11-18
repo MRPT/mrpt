@@ -44,10 +44,10 @@ namespace opengl
   *
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CPointCloud : public CRenderizable,
-								  public COctreePointRenderer<CPointCloud>,
-								  public mrpt::utils::PLY_Importer,
-								  public mrpt::utils::PLY_Exporter
+class CPointCloud : public CRenderizable,
+					public COctreePointRenderer<CPointCloud>,
+					public mrpt::utils::PLY_Importer,
+					public mrpt::utils::PLY_Exporter
 {
 	DEFINE_SERIALIZABLE(CPointCloud)
    protected:
@@ -309,8 +309,6 @@ class OPENGL_IMPEXP CPointCloud : public CRenderizable,
 
 	inline void internal_render_one_point(size_t i) const;
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CPointCloud, CRenderizable, OPENGL_IMPEXP)
 
 }  // end namespace
 

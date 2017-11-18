@@ -12,7 +12,6 @@
 
 #include <mrpt/utils/TColor.h>
 #include <mrpt/utils/compiler_fixes.h>  // disable warnings
-#include <mrpt/opengl/link_pragmas.h>
 #include <string>
 
 namespace mrpt
@@ -47,7 +46,7 @@ enum TOpenGLFontStyle
   * \sa mrpt::opengl::gl_utils::glSetFont(),
  * mrpt::opengl::gl_utils::glDrawText()
   */
-struct OPENGL_IMPEXP TFontParams
+struct TFontParams
 {
 	TFontParams()
 		: draw_shadow(false),
@@ -92,7 +91,7 @@ struct OPENGL_IMPEXP TFontParams
   *  \sa mrpt::opengl::CTextMessageCapable
   * \ingroup mrpt_opengl_grp
   */
-struct OPENGL_IMPEXP T2DTextData : public TFontParams
+struct T2DTextData : public TFontParams
 {
 	T2DTextData() : x(0), y(0) {}
 	std::string text;

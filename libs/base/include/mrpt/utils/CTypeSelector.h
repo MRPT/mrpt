@@ -20,7 +20,7 @@ namespace utils
  * \sa CSerializable
  * \ingroup mrpt_base_grp
  */
-class BASE_IMPEXP CTypeSelector : public mrpt::utils::CSerializable
+class CTypeSelector : public mrpt::utils::CSerializable
 {
 	DEFINE_SERIALIZABLE(CTypeSelector)
    protected:
@@ -78,8 +78,6 @@ class BASE_IMPEXP CTypeSelector : public mrpt::utils::CSerializable
 	int checkTypeIndex(const std::string& type) const;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(CTypeSelector, mrpt::utils::CSerializable)
-
 }  // End of namespace
 }  // End of namespace
 #endif

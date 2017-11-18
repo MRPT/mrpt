@@ -17,9 +17,7 @@
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/color_maps.h>
 #include <mrpt/utils/TEnumType.h>
-#include <mrpt/maps/link_pragmas.h>
 #include <mrpt/poses/poses_frwds.h>
-#include <mrpt/maps/link_pragmas.h>
 #include <mrpt/obs/obs_frwds.h>
 
 namespace mrpt
@@ -27,7 +25,7 @@ namespace mrpt
 namespace maps
 {
 /** The contents of each cell in a CHeightGridMap2D map */
-struct MAPS_IMPEXP THeightGridmapCell
+struct THeightGridmapCell
 {
 	/** The current average height (in meters) */
 	float h;
@@ -62,10 +60,9 @@ struct MAPS_IMPEXP THeightGridmapCell
   *
   * \ingroup mrpt_maps_grp
   */
-class MAPS_IMPEXP CHeightGridMap2D
-	: public mrpt::maps::CMetricMap,
-	  public utils::CDynamicGrid<THeightGridmapCell>,
-	  public CHeightGridMap2D_Base
+class CHeightGridMap2D : public mrpt::maps::CMetricMap,
+						 public utils::CDynamicGrid<THeightGridmapCell>,
+						 public CHeightGridMap2D_Base
 {
 	DEFINE_SERIALIZABLE(CHeightGridMap2D)
    public:
@@ -97,7 +94,7 @@ class MAPS_IMPEXP CHeightGridMap2D
 	bool isEmpty() const override;
 
 	/** Parameters related with inserting observations into the map */
-	struct MAPS_IMPEXP TInsertionOptions : public utils::CLoadableOptions
+	struct TInsertionOptions : public utils::CLoadableOptions
 	{
 		/** Default values loader */
 		TInsertionOptions();
@@ -165,17 +162,15 @@ class MAPS_IMPEXP CHeightGridMap2D
 		const mrpt::obs::CObservation* obs,
 		const mrpt::poses::CPose3D& takenFrom) override;
 
-	MAP_DEFINITION_START(CHeightGridMap2D, MAPS_IMPEXP)
+	MAP_DEFINITION_START(CHeightGridMap2D)
 	/** See CHeightGridMap2D::CHeightGridMap2D */
 	double min_x, max_x, min_y, max_y, resolution;
 	/** The kind of map representation (see CHeightGridMap2D::CHeightGridMap2D)
 	 */
 	mrpt::maps::CHeightGridMap2D::TMapRepresentation mapType;
 	mrpt::maps::CHeightGridMap2D::TInsertionOptions insertionOpts;
-	MAP_DEFINITION_END(CHeightGridMap2D, MAPS_IMPEXP)
+	MAP_DEFINITION_END(CHeightGridMap2D, )
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CHeightGridMap2D, CMetricMap, MAPS_IMPEXP)
 
 }  // End of namespace
 
@@ -186,7 +181,8 @@ namespace global_settings
   * Affects to:
   *		- CHeightGridMap2D::getAs3DObject
   */
-extern MAPS_IMPEXP bool HEIGHTGRIDMAP_EXPORT3D_AS_MESH;
+void HEIGHTGRIDMAP_EXPORT3D_AS_MESH(bool value);
+bool HEIGHTGRIDMAP_EXPORT3D_AS_MESH();
 }
 
 // Specializations MUST occur at the same namespace:

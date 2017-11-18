@@ -27,7 +27,7 @@ class CCamera;
   *  \sa opengl::COpenGLScene
   * \ingroup mrpt_opengl_grp
   */
-class OPENGL_IMPEXP CCamera : public CRenderizable
+class CCamera : public CRenderizable
 {
 	friend class COpenGLViewport;
 
@@ -110,8 +110,6 @@ class OPENGL_IMPEXP CCamera : public CRenderizable
 	/** Private, virtual destructor: only can be deleted from smart pointers */
 	virtual ~CCamera() {}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CCamera, CRenderizable, OPENGL_IMPEXP)
 
 }  // end namespace opengl
 

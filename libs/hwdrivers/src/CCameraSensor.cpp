@@ -995,8 +995,8 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 				// We must convert externally stored images into "normal
 				// in-memory" images.
 				const std::string old_dir =
-					CImage::IMAGES_PATH_BASE;  // Save current
-				CImage::IMAGES_PATH_BASE = m_rawlog_detected_images_dir;
+					CImage::getImagesPathBase();  // Save current
+				CImage::setImagesPathBase(m_rawlog_detected_images_dir);
 
 				if (obs && obs->image.isExternallyStored())
 					obs->image.loadFromFile(
@@ -1023,7 +1023,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 						stObs->imageDisparity
 							.getExternalStorageFileAbsolutePath());
 
-				CImage::IMAGES_PATH_BASE = old_dir;  // Restore
+				CImage::setImagesPathBase(old_dir);  // Restore
 			}
 			else
 				continue;  // Keep reading
@@ -1458,7 +1458,7 @@ CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromUserSelection()
 	WxSubsystem::pushPendingWxRequest(REQ);
 
 	// Wait for the window to realize and signal it's alive:
-	if (!WxSubsystem::isConsoleApp)
+	if (!WxSubsystem::isConsoleApp())
 	{
 		std::this_thread::sleep_for(
 			20ms);  // Force at least 1-2 timer ticks for processing the event:

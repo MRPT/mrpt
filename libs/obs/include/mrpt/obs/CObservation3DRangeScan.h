@@ -28,7 +28,7 @@ namespace mrpt
 namespace obs
 {
 /** Used in CObservation3DRangeScan::project3DPointsFromDepthImageInto() */
-struct OBS_IMPEXP T3DPointsProjectionParams
+struct T3DPointsProjectionParams
 {
 	/** (Default: false) If false, local (sensor-centric) coordinates of points
 	 * are generated. Otherwise, points are transformed with \a sensorPose.
@@ -58,7 +58,7 @@ struct OBS_IMPEXP T3DPointsProjectionParams
 	}
 };
 /** Used in CObservation3DRangeScan::convertTo2DScan() */
-struct OBS_IMPEXP T3DPointsTo2DScanParams
+struct T3DPointsTo2DScanParams
 {
 	/** The sensor label that will have the newly created observation. */
 	std::string sensorLabel;
@@ -222,19 +222,19 @@ void project3DPointsFromDepthImageInto(
  *CObservation
  * \ingroup mrpt_obs_grp
  */
-class OBS_IMPEXP CObservation3DRangeScan : public CObservation
+class CObservation3DRangeScan : public CObservation
 {
 	DEFINE_SERIALIZABLE(CObservation3DRangeScan)
 
    protected:
 	/** If set to true, m_points3D_external_file is valid. */
 	bool m_points3D_external_stored;
-	/** 3D points are in CImage::IMAGES_PATH_BASE+<this_file_name> */
+	/** 3D points are in CImage::getImagesPathBase()+<this_file_name> */
 	std::string m_points3D_external_file;
 
 	/** If set to true, m_rangeImage_external_file is valid. */
 	bool m_rangeImage_external_stored;
-	/** rangeImage is in CImage::IMAGES_PATH_BASE+<this_file_name> */
+	/** rangeImage is in CImage::getImagesPathBase()+<this_file_name> */
 	std::string m_rangeImage_external_file;
 
    public:
@@ -388,7 +388,8 @@ class OBS_IMPEXP CObservation3DRangeScan : public CObservation
 	  * Loading always will determine the type by inspecting the file extension.
 	  * \note Default=false
 	  **/
-	static bool EXTERNALS_AS_TEXT;
+	static void EXTERNALS_AS_TEXT(bool value);
+	static bool EXTERNALS_AS_TEXT();
 
 	/** \name Point cloud
 	  * @{ */
@@ -524,7 +525,7 @@ class OBS_IMPEXP CObservation3DRangeScan : public CObservation
 	bool hasPixelLabels() const { return pixelLabels ? true : false; }
 	/** Virtual interface to all pixel-label information structs. See
 	 * CObservation3DRangeScan::pixelLabels */
-	struct OBS_IMPEXP TPixelLabelInfoBase
+	struct TPixelLabelInfoBase
 	{
 		/** Used in CObservation3DRangeScan::pixelLabels */
 		using Ptr = std::shared_ptr<TPixelLabelInfoBase>;
@@ -807,11 +808,9 @@ class OBS_IMPEXP CObservation3DRangeScan : public CObservation
 	};
 	/** 3D point cloud projection look-up-table \sa
 	 * project3DPointsFromDepthImage */
-	static TCached3DProjTables m_3dproj_lut;
+	static TCached3DProjTables & get_3dproj_lut();
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CObservation3DRangeScan, CObservation, OBS_IMPEXP)
 
 }  // End of namespace
 

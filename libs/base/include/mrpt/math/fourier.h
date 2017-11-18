@@ -27,7 +27,7 @@ namespace math
  * Re+Im+Magnitude parts.
   * \sa fft2_real
   */
-void BASE_IMPEXP fft_real(
+void fft_real(
 	CVectorFloat& in_realData, CVectorFloat& out_FFT_Re,
 	CVectorFloat& out_FFT_Im, CVectorFloat& out_FFT_Mag);
 
@@ -42,7 +42,7 @@ void BASE_IMPEXP fft_real(
   *  If the dimensions of the matrix are powers of two, the fast fourier
  * transform (FFT) is used instead of the general algorithm.
   */
-void BASE_IMPEXP dft2_real(
+void dft2_real(
 	const CMatrixFloat& in_data, CMatrixFloat& out_real,
 	CMatrixFloat& out_imag);
 
@@ -58,7 +58,7 @@ void BASE_IMPEXP dft2_real(
  * transform (FFT) is used instead of the general algorithm.
   * \sa fft_real, fft2_real
   */
-void BASE_IMPEXP idft2_real(
+void idft2_real(
 	const CMatrixFloat& in_real, const CMatrixFloat& in_imag,
 	CMatrixFloat& out_data);
 
@@ -74,7 +74,7 @@ void BASE_IMPEXP idft2_real(
  * transform (FFT) is used instead of the general algorithm.
   * \sa fft_real, idft2_complex,dft2_real
   */
-void BASE_IMPEXP dft2_complex(
+void dft2_complex(
 	const CMatrixFloat& in_real, const CMatrixFloat& in_imag,
 	CMatrixFloat& out_real, CMatrixFloat& out_imag);
 
@@ -91,13 +91,13 @@ void BASE_IMPEXP dft2_complex(
   *  If the dimensions of the matrix are powers of two, the fast fourier
  * transform (FFT) is used instead of the general algorithm.
   */
-void BASE_IMPEXP idft2_complex(
+void idft2_complex(
 	const CMatrixFloat& in_real, const CMatrixFloat& in_imag,
 	CMatrixFloat& out_real, CMatrixFloat& out_imag);
 
 /** Correlation of two matrixes using 2D FFT
   */
-void BASE_IMPEXP cross_correlation_FFT(
+void cross_correlation_FFT(
 	const CMatrixFloat& A, const CMatrixFloat& B, CMatrixFloat& out_corr);
 
 /** @} */

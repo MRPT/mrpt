@@ -46,14 +46,10 @@ namespace poses
   * \sa CPoseOrPoint
  * \ingroup interpolation_grp poses_grp
  */
-class BASE_IMPEXP CPose3DInterpolator
-	: public mrpt::utils::CSerializable,
-	  public mrpt::poses::CPoseInterpolatorBase<3>
+class CPose3DInterpolator : public mrpt::utils::CSerializable,
+							public mrpt::poses::CPoseInterpolatorBase<3>
 {
 	DEFINE_SERIALIZABLE(CPose3DInterpolator)
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(
-	CPose3DInterpolator, mrpt::utils::CSerializable)
-
 }  // End of namespace
 }  // End of namespace

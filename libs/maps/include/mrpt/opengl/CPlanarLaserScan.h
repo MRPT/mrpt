@@ -54,7 +54,7 @@ class CPlanarLaserScan;
   *  \sa mrpt::opengl::CPointCloud, opengl::COpenGLScene
   * \ingroup mrpt_maps_grp
   */
-class MAPS_IMPEXP CPlanarLaserScan : public CRenderizableDisplayList
+class CPlanarLaserScan : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CPlanarLaserScan)
    protected:
@@ -147,8 +147,6 @@ class MAPS_IMPEXP CPlanarLaserScan : public CRenderizableDisplayList
 	/** Private, virtual destructor: only can be deleted from smart pointers */
 	virtual ~CPlanarLaserScan() {}
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CPlanarLaserScan, CRenderizableDisplayList, MAPS_IMPEXP)
 
 }  // end namespace
 }  // End of namespace

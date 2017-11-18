@@ -67,7 +67,7 @@ namespace hwdrivers
   * \sa C2DRangeFinderAbstract
   * \ingroup mrpt_hwdrivers_grp
   */
-class HWDRIVERS_IMPEXP CSickLaserSerial : public C2DRangeFinderAbstract
+class CSickLaserSerial : public C2DRangeFinderAbstract
 {
 	DEFINE_GENERIC_SENSOR(CSickLaserSerial)
 

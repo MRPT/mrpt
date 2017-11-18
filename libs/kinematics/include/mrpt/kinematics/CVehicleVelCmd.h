@@ -8,7 +8,6 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/kinematics/link_pragmas.h>
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <string>
@@ -20,7 +19,7 @@ namespace kinematics
 /** Virtual base for velocity commands of different kinematic models of planar
  * mobile robot.
  * \ingroup mrpt_kinematics_grp */
-class KINEMATICS_IMPEXP CVehicleVelCmd : public mrpt::utils::CSerializable
+class CVehicleVelCmd : public mrpt::utils::CSerializable
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CVehicleVelCmd)
    public:
@@ -48,7 +47,7 @@ class KINEMATICS_IMPEXP CVehicleVelCmd : public mrpt::utils::CSerializable
 
 	/** Parameters that may be used by cmdVel_limits() in any derived classes.
 	 */
-	struct KINEMATICS_IMPEXP TVelCmdParams
+	struct TVelCmdParams
 	{
 		/** Max. linear speed (m/s) [Default=-1 (not set), will raise exception
 		 * if needed and not set] */
@@ -91,8 +90,6 @@ class KINEMATICS_IMPEXP CVehicleVelCmd : public mrpt::utils::CSerializable
 		const mrpt::kinematics::CVehicleVelCmd& prev_vel_cmd, const double beta,
 		const TVelCmdParams& params) = 0;
 };
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CVehicleVelCmd, mrpt::utils::CSerializable, KINEMATICS_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

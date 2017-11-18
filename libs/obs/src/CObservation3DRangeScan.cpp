@@ -36,10 +36,22 @@ using namespace mrpt::math;
 IMPLEMENTS_SERIALIZABLE(CObservation3DRangeScan, CObservation, mrpt::obs)
 
 // Static LUT:
-CObservation3DRangeScan::TCached3DProjTables
-	CObservation3DRangeScan::m_3dproj_lut;
+static CObservation3DRangeScan::TCached3DProjTables lut_3dproj;
+CObservation3DRangeScan::TCached3DProjTables & CObservation3DRangeScan::get_3dproj_lut()
+{
+	return lut_3dproj;
+}
 
-bool CObservation3DRangeScan::EXTERNALS_AS_TEXT = false;
+static bool EXTERNALS_AS_TEXT_value = false;
+void CObservation3DRangeScan::EXTERNALS_AS_TEXT(bool value)
+{
+	EXTERNALS_AS_TEXT_value = value;
+}
+bool CObservation3DRangeScan::EXTERNALS_AS_TEXT()
+{
+	return EXTERNALS_AS_TEXT_value;
+}
+
 
 // Whether to use a memory pool for 3D points:
 #define COBS3DRANGE_USE_MEMPOOL
@@ -507,10 +519,10 @@ void CObservation3DRangeScan::rangeImage_getExternalStorageFileAbsolutePath(
 	}
 	else
 	{
-		out_path = CImage::IMAGES_PATH_BASE;
-		size_t N = CImage::IMAGES_PATH_BASE.size() - 1;
-		if (CImage::IMAGES_PATH_BASE[N] != '/' &&
-			CImage::IMAGES_PATH_BASE[N] != '\\')
+		out_path = CImage::getImagesPathBase();
+		size_t N = CImage::getImagesPathBase().size() - 1;
+		if (CImage::getImagesPathBase()[N] != '/' &&
+			CImage::getImagesPathBase()[N] != '\\')
 			out_path += "/";
 		out_path += m_rangeImage_external_file;
 	}
@@ -527,10 +539,10 @@ void CObservation3DRangeScan::points3D_getExternalStorageFileAbsolutePath(
 	}
 	else
 	{
-		out_path = CImage::IMAGES_PATH_BASE;
-		size_t N = CImage::IMAGES_PATH_BASE.size() - 1;
-		if (CImage::IMAGES_PATH_BASE[N] != '/' &&
-			CImage::IMAGES_PATH_BASE[N] != '\\')
+		out_path = CImage::getImagesPathBase();
+		size_t N = CImage::getImagesPathBase().size() - 1;
+		if (CImage::getImagesPathBase()[N] != '/' &&
+			CImage::getImagesPathBase()[N] != '\\')
 			out_path += "/";
 		out_path += m_points3D_external_file;
 	}
@@ -544,7 +556,7 @@ void CObservation3DRangeScan::points3D_convertToExternalStorage(
 		points3D_x.size() == points3D_y.size() &&
 		points3D_x.size() == points3D_z.size())
 
-	if (EXTERNALS_AS_TEXT)
+	if (EXTERNALS_AS_TEXT_value)
 		m_points3D_external_file =
 			mrpt::system::fileNameChangeExtension(fileName_, "txt");
 	else
@@ -552,14 +564,14 @@ void CObservation3DRangeScan::points3D_convertToExternalStorage(
 			mrpt::system::fileNameChangeExtension(fileName_, "bin");
 
 	// Use "use_this_base_dir" in "*_getExternalStorageFileAbsolutePath()"
-	// instead of CImage::IMAGES_PATH_BASE
-	const string savedDir = CImage::IMAGES_PATH_BASE;
-	CImage::IMAGES_PATH_BASE = use_this_base_dir;
+	// instead of CImage::getImagesPathBase()
+	const string savedDir = CImage::getImagesPathBase();
+	CImage::setImagesPathBase(use_this_base_dir);
 	const string real_absolute_file_path =
 		points3D_getExternalStorageFileAbsolutePath();
-	CImage::IMAGES_PATH_BASE = savedDir;
+	CImage::setImagesPathBase(savedDir);
 
-	if (EXTERNALS_AS_TEXT)
+	if (EXTERNALS_AS_TEXT_value)
 	{
 		const size_t nPts = points3D_x.size();
 
@@ -589,7 +601,7 @@ void CObservation3DRangeScan::rangeImage_convertToExternalStorage(
 	const std::string& fileName_, const std::string& use_this_base_dir)
 {
 	ASSERT_(!rangeImage_isExternallyStored())
-	if (EXTERNALS_AS_TEXT)
+	if (EXTERNALS_AS_TEXT_value)
 		m_rangeImage_external_file =
 			mrpt::system::fileNameChangeExtension(fileName_, "txt");
 	else
@@ -597,14 +609,14 @@ void CObservation3DRangeScan::rangeImage_convertToExternalStorage(
 			mrpt::system::fileNameChangeExtension(fileName_, "bin");
 
 	// Use "use_this_base_dir" in "*_getExternalStorageFileAbsolutePath()"
-	// instead of CImage::IMAGES_PATH_BASE
-	const string savedDir = CImage::IMAGES_PATH_BASE;
-	CImage::IMAGES_PATH_BASE = use_this_base_dir;
+	// instead of CImage::getImagesPathBase()
+	const string savedDir = CImage::getImagesPathBase();
+	CImage::setImagesPathBase(use_this_base_dir);
 	const string real_absolute_file_path =
 		rangeImage_getExternalStorageFileAbsolutePath();
-	CImage::IMAGES_PATH_BASE = savedDir;
+	CImage::setImagesPathBase(savedDir);
 
-	if (EXTERNALS_AS_TEXT)
+	if (EXTERNALS_AS_TEXT_value)
 	{
 		rangeImage.saveToTextFile(real_absolute_file_path, MATRIX_FORMAT_FIXED);
 	}

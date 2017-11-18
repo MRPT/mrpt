@@ -16,8 +16,6 @@
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/obs/obs_frwds.h>
 
-#include <mrpt/maps/link_pragmas.h>
-
 namespace mrpt
 {
 namespace maps
@@ -45,7 +43,7 @@ namespace maps
   * \ingroup mrpt_maps_grp
  * \sa CMetricMap
  */
-class MAPS_IMPEXP CBeaconMap : public mrpt::maps::CMetricMap
+class CBeaconMap : public mrpt::maps::CMetricMap
 {
 	DEFINE_SERIALIZABLE(CBeaconMap)
 
@@ -112,7 +110,7 @@ class MAPS_IMPEXP CBeaconMap : public mrpt::maps::CMetricMap
 		const TMatchingRatioParams& params) const override;
 
 	/** With this struct options are provided to the likelihood computations */
-	struct MAPS_IMPEXP TLikelihoodOptions : public utils::CLoadableOptions
+	struct TLikelihoodOptions : public utils::CLoadableOptions
 	{
 	   public:
 		/** Initilization of default parameters
@@ -134,7 +132,7 @@ class MAPS_IMPEXP CBeaconMap : public mrpt::maps::CMetricMap
 	/** This struct contains data for choosing the method by which new beacons
 	 * are inserted in the map.
 	 */
-	struct MAPS_IMPEXP TInsertionOptions : public utils::CLoadableOptions
+	struct TInsertionOptions : public utils::CLoadableOptions
 	{
 	   public:
 		/** Initilization of default parameters */
@@ -316,16 +314,14 @@ class MAPS_IMPEXP CBeaconMap : public mrpt::maps::CMetricMap
 	 * not exist. */
 	CBeacon* getBeaconByID(CBeacon::TBeaconID id);
 
-	MAP_DEFINITION_START(CBeaconMap, MAPS_IMPEXP)
+	MAP_DEFINITION_START(CBeaconMap)
 	/** Observations insertion options */
 	mrpt::maps::CBeaconMap::TInsertionOptions insertionOpts;
 	/** Probabilistic observation likelihood options */
 	mrpt::maps::CBeaconMap::TLikelihoodOptions likelihoodOpts;
-	MAP_DEFINITION_END(CBeaconMap, MAPS_IMPEXP)
+	MAP_DEFINITION_END(CBeaconMap, )
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CBeaconMap, CMetricMap, MAPS_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace

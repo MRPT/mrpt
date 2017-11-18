@@ -105,7 +105,7 @@ enum TIMUDataIndex
  * \sa CObservation
  * \ingroup mrpt_obs_grp
  */
-class OBS_IMPEXP CObservationIMU : public CObservation
+class CObservationIMU : public CObservation
 {
 	DEFINE_SERIALIZABLE(CObservationIMU)
 
@@ -149,8 +149,6 @@ class OBS_IMPEXP CObservationIMU : public CObservation
 	void getDescriptionAsText(std::ostream& o) const override;
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
-	CObservationIMU, CObservation, OBS_IMPEXP)
 
 }  // End of namespace
 }  // End of namespace
