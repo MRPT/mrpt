@@ -53,7 +53,7 @@ void CLandmarksConfig::updateConfiguration(
 {
 	CLandmarksMap::TMapDefinition* mapDefination =
 		dynamic_cast<CLandmarksMap::TMapDefinition*>(options);
-	assert(mapDefination);
+	ASSERT_(mapDefination);
 
 	mapDefination->genericMapParams.enableSaveAs3DObject =
 		m_ui->enableSaveAs3DObject;

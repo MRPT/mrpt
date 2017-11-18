@@ -243,7 +243,7 @@ void CMainWindow::itemClicked(const QModelIndex& index)
 		case CNode::ObjectType::Pos:
 		{
 			CPosesNode* posesNode = dynamic_cast<CPosesNode*>(node);
-			assert(posesNode);
+			ASSERT_(posesNode);
 			m_ui->m_viewer->showRobotDirection(posesNode->getPose());
 			break;
 		}
@@ -252,7 +252,7 @@ void CMainWindow::itemClicked(const QModelIndex& index)
 			m_ui->m_dockWidgetNodeViewer->setVisible(true);
 			CObservationImageNode* imageNode =
 				dynamic_cast<CObservationImageNode*>(node);
-			assert(imageNode);
+			ASSERT_(imageNode);
 			mrpt::gui::CQtGlCanvasBase* gl = new mrpt::gui::CQtGlCanvasBase();
 			gl->mainViewport()->setImageView(imageNode->observation()->image);
 			m_ui->m_contentsNodeViewer->layout()->addWidget(gl);
@@ -264,7 +264,7 @@ void CMainWindow::itemClicked(const QModelIndex& index)
 			m_ui->m_dockWidgetNodeViewer->setVisible(true);
 			CObservationStereoImagesNode* stereoImageNode =
 				dynamic_cast<CObservationStereoImagesNode*>(node);
-			assert(stereoImageNode);
+			ASSERT_(stereoImageNode);
 
 			mrpt::obs::CObservationStereoImages::Ptr observation =
 				stereoImageNode->observation();

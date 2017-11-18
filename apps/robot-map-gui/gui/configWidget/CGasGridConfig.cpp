@@ -35,7 +35,7 @@ void CGasGridConfig::updateConfiguration(
 {
 	CGasConcentrationGridMap2D::TMapDefinition* mapDefination =
 		dynamic_cast<CGasConcentrationGridMap2D::TMapDefinition*>(options);
-	assert(mapDefination);
+	ASSERT_(mapDefination);
 
 	Q_UNUSED(options);
 	mapDefination->min_x = m_ui->min_x->value();

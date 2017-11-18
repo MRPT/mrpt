@@ -139,7 +139,7 @@ std::vector<size_t> CDocument::remove(const std::vector<size_t>& indexes)
 	std::vector<size_t> v;
 	for (auto it = idx.begin(); it != idx.end(); ++it)
 	{
-		int current = *it;
+		auto current = *it;
 		m_simplemap.remove(current);
 		v.push_back(current);
 		for (auto iter = it; iter != idx.end(); ++iter)
@@ -183,7 +183,7 @@ void CDocument::insert(
 	const std::vector<size_t>& idx,
 	CSimpleMap::TPosePDFSensFramePairList& posesObsPairs)
 {
-	assert(idx.size() == posesObsPairs.size());
+	ASSERT_(idx.size() == posesObsPairs.size());
 	for (size_t i = 0; i < idx.size(); ++i)
 		m_simplemap.insertToPos(
 			idx[i], posesObsPairs[i].first, posesObsPairs[i].second);
