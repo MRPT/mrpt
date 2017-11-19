@@ -226,7 +226,7 @@ void CAbstractNavigator::navigationStep()
 				if (m_lastNavigationState == NAVIGATING)
 				{
 					MRPT_LOG_ERROR(
-						"[CAbstractNavigator::navigationStep()] Stoping "
+						"[CAbstractNavigator::navigationStep()] Stopping "
 						"Navigation due to a NAV_ERROR state!");
 					this->stop(false /*not emergency*/);
 					m_robot.stopWatchdog();

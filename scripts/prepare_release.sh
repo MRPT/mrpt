@@ -44,6 +44,9 @@ then
 	echo "# Exporting git source tree to ${OUT_DIR}"
 	git archive --format=tar HEAD | tar -x -C ${OUT_DIR}
 
+	# Remove VCS control files:
+	find ${OUT_DIR} -name '.gitignore' | xargs rm
+
 	# Generate ./SOURCE_DATE_EPOCH with UNIX time_t
 	SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)
 else
