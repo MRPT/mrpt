@@ -13,7 +13,7 @@
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservationRange.h>
 #include <mrpt/utils/CStream.h>
-#include <mrpt/utils/round.h>  // round()
+#include <mrpt/macros/round.h>  // round()
 
 #if HAVE_ALLOCA_H
 #include <alloca.h>

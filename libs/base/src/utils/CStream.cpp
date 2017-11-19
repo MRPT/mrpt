@@ -134,9 +134,9 @@ CStream& utils::operator<<(mrpt::utils::CStream& out, const vector_bool& a)
 	out << n;
 	if (n)
 	{
-		vector_byte b(n);
+		std::vector<uint8_t> b(n);
 		vector_bool::const_iterator it;
-		vector_byte::iterator it2;
+		std::vector<uint8_t>::iterator it2;
 		for (it = a.begin(), it2 = b.begin(); it != a.end(); ++it, ++it2)
 			*it2 = *it ? 1 : 0;
 		out.WriteBuffer((void*)&b[0], (int)(sizeof(b[0]) * n));
@@ -286,7 +286,7 @@ CStream& utils::operator<<(mrpt::utils::CStream& s, const vector_long& a)
 {
 	return detail::writeStdVectorToStream(s, a);
 }
-CStream& utils::operator<<(mrpt::utils::CStream& s, const vector_byte& a)
+CStream& utils::operator<<(mrpt::utils::CStream& s, const std::vector<uint8_t>& a)
 {
 	return detail::writeStdVectorToStream(s, a);
 }
@@ -340,7 +340,7 @@ CStream& utils::operator>>(mrpt::utils::CStream& s, vector_long& a)
 {
 	return detail::readStdVectorToStream(s, a);
 }
-CStream& utils::operator>>(mrpt::utils::CStream& s, vector_byte& a)
+CStream& utils::operator>>(mrpt::utils::CStream& s, std::vector<uint8_t>& a)
 {
 	return detail::readStdVectorToStream(s, a);
 }
@@ -385,9 +385,9 @@ CStream& utils::operator>>(mrpt::utils::CStream& in, vector_bool& a)
 	a.resize(n);
 	if (n)
 	{
-		vector_byte b(n);
+		std::vector<uint8_t> b(n);
 		in.ReadBuffer((void*)&b[0], sizeof(b[0]) * n);
-		vector_byte::iterator it2;
+		std::vector<uint8_t>::iterator it2;
 		vector_bool::iterator it;
 		for (it = a.begin(), it2 = b.begin(); it != a.end(); ++it, ++it2)
 			*it = (*it2 != 0);

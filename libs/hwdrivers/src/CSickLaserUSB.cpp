@@ -15,7 +15,7 @@
 #include <mrpt/utils/crc.h>
 #include <mrpt/hwdrivers/CSickLaserUSB.h>
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 #include <windows.h>
 #endif
 
@@ -285,7 +285,7 @@ bool CSickLaserUSB::waitContinuousSampleFrame(
 	{
 // cerr << format("[CSickLaserUSB::waitContinuousSampleFrame] bad end flag") <<
 // endl;
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 		OutputDebugStringA(
 			"[CSickLaserUSB::waitContinuousSampleFrame] bad end flag\n");
 #endif
@@ -303,7 +303,7 @@ bool CSickLaserUSB::waitContinuousSampleFrame(
 			"nptns=%u: %i != %i\n",
 			unsigned(lenghtField), unsigned(n_points), CRC_packet, CRC);
 		cerr << s;
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 		OutputDebugStringA(s.c_str());
 #endif
 		return false;  // Bad CRC

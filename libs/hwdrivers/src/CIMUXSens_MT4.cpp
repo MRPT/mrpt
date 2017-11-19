@@ -312,13 +312,13 @@ class DeviceClass
 
 // Include libraries in linking:
 #if MRPT_HAS_xSENS_MT4
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 // WINDOWS:
 #if defined(_MSC_VER) || defined(__BORLANDC__)
 #pragma comment(lib, "SetupAPI.lib")
 #pragma comment(lib, "WinUsb.lib")
 #endif
-#endif  // MRPT_OS_WINDOWS
+#endif  // _WIN32
 #endif  // MRPT_HAS_xSENS_MT4
 
 /*-------------------------------------------------------------
@@ -780,7 +780,7 @@ void CIMUXSens_MT4::loadConfig_sensorSpecific(
 	m_port_bauds =
 		configSource.read_int(iniSection, "baudRate", m_port_bauds, false);
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	m_portname =
 		configSource.read_string(iniSection, "portname_WIN", m_portname, false);
 #else

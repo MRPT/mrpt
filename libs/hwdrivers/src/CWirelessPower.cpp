@@ -22,7 +22,7 @@ CWirelessPower::CWirelessPower() { m_sensorLabel = "WIRELESS_POWER"; }
 #include <sstream>
 #endif
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 #if defined(__GNUC__)
 // MinGW: Nothing to do here (yet)
 #else
@@ -39,7 +39,7 @@ CWirelessPower::CWirelessPower() { m_sensorLabel = "WIRELESS_POWER"; }
 
 using namespace mrpt::utils;
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 #if defined(__GNUC__)
 // MinGW: Nothing to do here (yet)
 #else
@@ -345,7 +345,7 @@ std::vector<std::string> CWirelessPower::ListInterfaces()
 	}
 #endif
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 #if defined(__GNUC__)
 	THROW_EXCEPTION("Sorry, method not available for MinGW")
 #else
@@ -409,7 +409,7 @@ std::vector<std::string> CWirelessPower::ListNetworks()
 
 #endif
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 #if defined(__GNUC__)
 	THROW_EXCEPTION("Sorry, method not available for MinGW")
 #else
@@ -491,7 +491,7 @@ int CWirelessPower::GetPower()
 
 	return atoi(level);
 
-#elif defined(MRPT_OS_WINDOWS)
+#elif defined(_WIN32)
 #if defined(__GNUC__)
 	THROW_EXCEPTION("Sorry, method not available for MinGW")
 #else
@@ -569,7 +569,7 @@ void CWirelessPower::loadConfig_sensorSpecific(
 		iniSection, "guid", "", true);  // in the case of Linux, the "GUID" is
 // the interface name (wlanX)
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 #if defined(__GNUC__)
 	THROW_EXCEPTION("Sorry, method not available for MinGW")
 #else

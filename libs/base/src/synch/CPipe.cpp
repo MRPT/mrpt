@@ -11,7 +11,7 @@
 
 #include <mrpt/synch/CPipe.h>
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 #include <windows.h>
 #else
 #include <sys/types.h>
@@ -30,7 +30,7 @@ using namespace mrpt::utils;
 void CPipe::initializePipe(
 	CPipeReadEndPoint& outReadPipe, CPipeWriteEndPoint& outWritePipe)
 {
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	// Win32 pipes
 	HANDLE hRead, hWrite;
 	if (!CreatePipe(&hRead, &hWrite, nullptr, 0))
@@ -60,7 +60,7 @@ void CPipeBaseEndPoint::close()
 {
 	if (m_pipe_file)
 	{
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 		// Win32 pipes
 
 		// Flush the pipe to allow the client to read the pipe's contents
@@ -85,7 +85,7 @@ CPipeBaseEndPoint::CPipeBaseEndPoint(const std::string& serialized)
 	std::istringstream ss;
 	ss.str(serialized);
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	// Win32 pipes
 	uint64_t val;
 	if (!(ss >> val))
@@ -108,7 +108,7 @@ std::string CPipeBaseEndPoint::serialize()
 {
 	ASSERTMSG_(m_pipe_file != 0, "Pipe is closed, can't serialize!")
 	std::stringstream ss;
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	// Win32 pipes
 	ss << reinterpret_cast<uint64_t>(m_pipe_file);
 #else
@@ -128,7 +128,7 @@ size_t CPipeBaseEndPoint::Read(void* Buffer, size_t Count)
 {
 	ASSERTMSG_(m_pipe_file != 0, "Pipe is closed, can't read!")
 
-#if defined(MRPT_OS_WINDOWS)
+#if defined(_WIN32)
 	// Win32 pipes
 	DWORD nActuallyRead;
 	if (!ReadFile((HANDLE)m_pipe_file, Buffer, Count, &nActuallyRead, nullptr))
@@ -227,7 +227,7 @@ size_t CPipeBaseEndPoint::Write(const void* Buffer, size_t Count)
 {
 	ASSERTMSG_(m_pipe_file != 0, "Pipe is closed, can't write!")
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	// Win32 pipes
 	DWORD nActuallyWritten;
 	if (!WriteFile(

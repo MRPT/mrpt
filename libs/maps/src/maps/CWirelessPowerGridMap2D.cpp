@@ -12,7 +12,7 @@
 #include <mrpt/maps/CWirelessPowerGridMap2D.h>
 #include <mrpt/obs/CObservationWirelessPower.h>
 #include <mrpt/system/os.h>
-#include <mrpt/utils/round.h>
+#include <mrpt/macros/round.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/color_maps.h>
 #include <mrpt/opengl/CSetOfObjects.h>

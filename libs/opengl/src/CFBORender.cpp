@@ -52,7 +52,7 @@ CFBORender::CFBORender(
 		THROW_EXCEPTION("Framebuffer Object extension unsupported");
 
 // In win32 we have to load the pointers to the functions:
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	glGenFramebuffersEXT =
 		(PFNGLGENFRAMEBUFFERSEXTPROC)wglGetProcAddress("glGenFramebuffersEXT");
 	glDeleteFramebuffersEXT = (PFNGLDELETEFRAMEBUFFERSEXTPROC)wglGetProcAddress(

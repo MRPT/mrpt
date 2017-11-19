@@ -42,7 +42,7 @@ class CClientTCPSocket : public mrpt::utils::CStream
 	static unsigned int DNS_LOOKUP_TIMEOUT_MS;
 
    protected:
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 /** The handle for the connected TCP socket, or INVALID_SOCKET
   */
 #if MRPT_WORD_SIZE == 64

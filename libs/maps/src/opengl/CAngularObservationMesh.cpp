@@ -15,12 +15,12 @@
 #include <mrpt/utils/CStream.h>
 
 #if MRPT_HAS_OPENGL_GLUT
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 // Windows:
 #include <windows.h>
 #endif
 
-#ifdef MRPT_OS_APPLE
+#ifdef __APPLE__
 #include <OpenGL/gl.h>
 #else
 #include <GL/gl.h>
@@ -28,7 +28,7 @@
 #endif
 
 // Include libraries in linking:
-#if MRPT_HAS_OPENGL_GLUT && defined(MRPT_OS_WINDOWS)
+#if MRPT_HAS_OPENGL_GLUT && defined(_WIN32)
 // WINDOWS:
 #if defined(_MSC_VER) || defined(__BORLANDC__)
 #pragma comment(lib, "opengl32.lib")

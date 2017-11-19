@@ -39,7 +39,7 @@ using namespace mrpt::poses;
 using namespace mrpt::obs;
 using namespace std;
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 #include <process.h>
 #include <windows.h>  // TODO: This is temporary!!!
 #endif

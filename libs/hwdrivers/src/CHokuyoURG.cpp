@@ -89,7 +89,7 @@ void CHokuyoURG::doProcessSimple(
 
 	// Wait for a message:
 	char rcv_status0, rcv_status1;
-	vector_byte rcv_data(10000);
+	std::vector<uint8_t> rcv_data(10000);
 	int rcv_dataLength;
 	int nRanges = m_lastRange - m_firstRange + 1;
 	int expectedSize = nRanges * 3 + 4;
@@ -230,7 +230,7 @@ void CHokuyoURG::loadConfig_sensorSpecific(
 	m_highSensMode =
 		configSource.read_bool(iniSection, "HOKUYO_HS_mode", m_highSensMode);
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	m_com_port =
 		configSource.read_string(iniSection, "COM_port_WIN", m_com_port);
 #else

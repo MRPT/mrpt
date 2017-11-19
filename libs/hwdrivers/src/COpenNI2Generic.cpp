@@ -22,7 +22,7 @@
 
 // This seems to be assumed by OpenNI.h and undefined for some reason in
 // GCC/Ubuntu
-#if !defined(MRPT_OS_WINDOWS)
+#if !defined(_WIN32)
 #define linux 1
 #endif
 

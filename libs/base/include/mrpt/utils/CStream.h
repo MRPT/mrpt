@@ -473,7 +473,7 @@ CStream& operator<<(mrpt::utils::CStream&, const vector_uint& a);
 CStream& operator<<(mrpt::utils::CStream&, const vector_word& a);
 CStream& operator<<(mrpt::utils::CStream&, const vector_signed_word& a);
 CStream& operator<<(mrpt::utils::CStream&, const vector_long& a);
-CStream& operator<<(mrpt::utils::CStream&, const vector_byte& a);
+CStream& operator<<(mrpt::utils::CStream&, const std::vector<uint8_t>& a);
 CStream& operator<<(mrpt::utils::CStream&, const vector_signed_byte& a);
 
 CStream& operator<<(mrpt::utils::CStream&, const vector_bool& a);
@@ -492,7 +492,7 @@ CStream& operator>>(mrpt::utils::CStream& in, vector_uint& a);
 CStream& operator>>(mrpt::utils::CStream& in, vector_word& a);
 CStream& operator>>(mrpt::utils::CStream& in, vector_signed_word& a);
 CStream& operator>>(mrpt::utils::CStream& in, vector_long& a);
-CStream& operator>>(mrpt::utils::CStream& in, vector_byte& a);
+CStream& operator>>(mrpt::utils::CStream& in, std::vector<uint8_t>& a);
 CStream& operator>>(mrpt::utils::CStream& in, vector_signed_byte& a);
 CStream& operator>>(mrpt::utils::CStream& in, vector_bool& a);
 

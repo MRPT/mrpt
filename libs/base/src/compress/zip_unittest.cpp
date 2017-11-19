@@ -21,13 +21,13 @@ TEST(Compress, DataBlockGZ)
 	const size_t N = 20000;
 
 	// Create a random "input" data vector
-	vector_byte in_data(N);
+	std::vector<uint8_t> in_data(N);
 	for (size_t i = 0; i < N; i++)
 		in_data[i] = static_cast<uint8_t>(
 			i);  // We need low entropy for compression to have something to do!
 
 	// Compress it:
-	vector_byte compress_data;
+	std::vector<uint8_t> compress_data;
 
 	//	cout << "[test_compress_main] Invoking compress_gz_data_block" << endl;
 
@@ -37,7 +37,7 @@ TEST(Compress, DataBlockGZ)
 	//	cout << "Compressed gz-data: " << N << " -> " << compress_data.size() <<
 	//" bytes." << endl;
 
-	vector_byte recovered_data;
+	std::vector<uint8_t> recovered_data;
 	if (!mrpt::compress::zip::decompress_gz_data_block(
 			compress_data, recovered_data))
 		GTEST_FAIL() << "Error in decompress_gz_data_block\n";

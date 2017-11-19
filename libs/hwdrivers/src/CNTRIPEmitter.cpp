@@ -49,7 +49,7 @@ CNTRIPEmitter::~CNTRIPEmitter()
 -------------------------------------------------------------*/
 void CNTRIPEmitter::doProcess()
 {
-	vector_byte buf;
+	std::vector<uint8_t> buf;
 	m_client.stream_data.readAndClear(buf);
 
 	if (!buf.empty())
@@ -159,7 +159,7 @@ void CNTRIPEmitter::initialize()
 void CNTRIPEmitter::loadConfig_sensorSpecific(
 	const mrpt::utils::CConfigFileBase& c, const std::string& s)
 {
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	m_com_port = c.read_string(s, "COM_port_WIN", "");
 #else
 	m_com_port = c.read_string(s, "COM_port_LIN", "");

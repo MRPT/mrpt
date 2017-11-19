@@ -165,7 +165,7 @@ void CNTRIPClient::private_ntrip_thread()
 			{
 				TConnResult connect_res = connError;
 
-				vector_byte buf;
+				std::vector<uint8_t> buf;
 				try
 				{
 					// Nope, it's the first time: get params and try open the
@@ -198,7 +198,7 @@ void CNTRIPClient::private_ntrip_thread()
 					{
 						string auth_str =
 							m_args.user + string(":") + m_args.password;
-						vector_byte v(auth_str.size());
+						std::vector<uint8_t> v(auth_str.size());
 						::memcpy(&v[0], &auth_str[0], auth_str.size());
 
 						string encoded_str;
@@ -274,7 +274,7 @@ void CNTRIPClient::private_ntrip_thread()
 
 			// Read data from the stream and accumulate it in a buffer:
 			// ----------------------------------------------------------------------
-			vector_byte buf;
+			std::vector<uint8_t> buf;
 			size_t to_read_now = 1000;
 			buf.resize(to_read_now);
 			size_t len = my_sock.readAsync(&buf[0], to_read_now, 10, 5);
@@ -293,7 +293,7 @@ void CNTRIPClient::private_ntrip_thread()
 
 			// Send back data to the server, if so requested:
 			// ------------------------------------------
-			mrpt::vector_byte upload_data;
+			std::vector<uint8_t> upload_data;
 			m_upload_data.readAndClear(upload_data);
 			if (!upload_data.empty())
 			{
@@ -387,7 +387,7 @@ void CNTRIPClient::sendBackToServer(const std::string& data)
 {
 	if (data.empty()) return;
 
-	mrpt::vector_byte d(data.size());
+	std::vector<uint8_t> d(data.size());
 	::memcpy(&d[0], &data[0], data.size());
 	m_upload_data.appendData(d);
 }

@@ -98,7 +98,7 @@ class CPipeBaseEndPoint : public mrpt::utils::CStream
 	void close();
 
    protected:
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	void* m_pipe_file;
 #else
 	int m_pipe_file;

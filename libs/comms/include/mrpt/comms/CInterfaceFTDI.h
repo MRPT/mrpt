@@ -32,7 +32,7 @@ struct TFTDIDevice
 	uint16_t usb_idProduct;
 	uint8_t usb_serialNumber;
 
-#if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
+#if defined(MRPT_OS_LINUX) || defined(__APPLE__)
 	/** Only for Linux: the corresponding libusb's `libusb_device*` (or
 	 * `usb_device*` for libftdi <1.2) */
 	void* usb_device_struct;
@@ -183,7 +183,7 @@ class CInterfaceFTDI : public utils::CStream
 		const void* lpvBuffer, unsigned long dwBuffSize,
 		unsigned long* lpdwBytes);
 
-#if defined(MRPT_OS_WINDOWS)
+#if defined(_WIN32)
    private:
 	void checkErrorAndRaise(int errorCode);
 

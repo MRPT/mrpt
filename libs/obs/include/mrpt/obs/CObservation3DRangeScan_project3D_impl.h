@@ -9,7 +9,7 @@
 #ifndef CObservation3DRangeScan_project3D_impl_H
 #define CObservation3DRangeScan_project3D_impl_H
 
-#include <mrpt/utils/round.h>  // round()
+#include <mrpt/macros/round.h>  // round()
 
 namespace mrpt
 {

@@ -10,7 +10,7 @@
 
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/utils/CSerializable.h>
-#include <mrpt/utils/round.h>
+#include <mrpt/macros/round.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/math/CPolygon.h>

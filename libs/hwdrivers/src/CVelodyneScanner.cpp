@@ -19,7 +19,7 @@
 #include <thread>
 
 // socket's hdrs:
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #if defined(_WIN32_WINNT) && (_WIN32_WINNT < 0x600)
 #undef _WIN32_WINNT
@@ -124,7 +124,7 @@ CVelodyneScanner::CVelodyneScanner()
 	m_pcap_bpf_program = new bpf_program[1];
 #endif
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	// Init the WinSock Library:
 	WORD wVersionRequested = MAKEWORD(2, 0);
 	WSADATA wsaData;
@@ -136,7 +136,7 @@ CVelodyneScanner::CVelodyneScanner()
 CVelodyneScanner::~CVelodyneScanner()
 {
 	this->close();
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	WSACleanup();
 #endif
 
@@ -452,7 +452,7 @@ void CVelodyneScanner::initialize()
 				m_hDataSock, (struct sockaddr*)(&bindAddr), sizeof(sockaddr)))
 			THROW_EXCEPTION(mrpt::comms::net::getLastSocketErrorStr());
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 		unsigned long non_block_mode = 1;
 		if (ioctlsocket(m_hDataSock, FIONBIO, &non_block_mode))
 			THROW_EXCEPTION(
@@ -483,7 +483,7 @@ void CVelodyneScanner::initialize()
 									   sizeof(sockaddr)))
 			THROW_EXCEPTION(mrpt::comms::net::getLastSocketErrorStr());
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 		if (ioctlsocket(m_hPositionSock, FIONBIO, &non_block_mode))
 			THROW_EXCEPTION(
 				"Error entering non-blocking mode with ioctlsocket().");
@@ -563,7 +563,7 @@ void CVelodyneScanner::close()
 	if (m_hDataSock != INVALID_SOCKET)
 	{
 		shutdown(m_hDataSock, 2);  // SD_BOTH  );
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 		closesocket(m_hDataSock);
 #else
 		::close(m_hDataSock);
@@ -574,7 +574,7 @@ void CVelodyneScanner::close()
 	if (m_hPositionSock != INVALID_SOCKET)
 	{
 		shutdown(m_hPositionSock, 2);  // SD_BOTH  );
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 		closesocket(m_hPositionSock);
 #else
 		::close(m_hPositionSock);
@@ -619,7 +619,7 @@ const uint16_t PositionPacketHeader[21] = {
 	0xffff, 0x7420, 0x7420, 0x0802, 0x0000};
 #endif
 
-#if defined(MRPT_OS_WINDOWS) && MRPT_HAS_LIBPCAP
+#if defined(_WIN32) && MRPT_HAS_LIBPCAP
 int gettimeofday(struct timeval* tp, void*)
 {
 	FILETIME ft;
@@ -843,7 +843,7 @@ mrpt::system::TTimeStamp CVelodyneScanner::internal_receive_UDP_packet(
 		do
 		{
 			int retval =
-#if !defined(MRPT_OS_WINDOWS)
+#if !defined(_WIN32)
 				poll
 #else
 				WSAPoll
@@ -1101,7 +1101,7 @@ bool CVelodyneScanner::internal_send_http_post(const std::string& post_data)
 
 	using namespace mrpt::comms::net;
 
-	vector_byte post_out;
+	std::vector<uint8_t> post_out;
 	string post_err_str;
 
 	int http_rep_code;
