@@ -232,10 +232,6 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
 
 			while (rawlogEntry < (rawlogEntries - 1) && !end)
 			{
-				// Finish if ESC is pushed:
-				if (os::kbhit())
-					if (os::getch() == 27) end = true;
-
 				// Load pose change from the rawlog:
 				// ----------------------------------------
 				if (!rawlog.getActionObservationPair(
