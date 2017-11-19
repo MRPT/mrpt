@@ -13,7 +13,7 @@
       <li> All cameras supported by OpenCV (webcams, firewire,…)</li>
       <li>  All cameras supported by FFmpeg (IP cameras,…)</li>
       <li>  Video files (in any format)</li>
-      
+
       <li>  The stereo Bumblebee camera, for calibration of the individual cameras one at a time.</li>
       <li>  The intensity channel of a SwisssRanger ToF 3D camera.</li>
       <li>  The RGB intensity and IR channels of Microsoft Kinect.</li>
@@ -25,6 +25,6 @@
   <screenshots>
     <screenshot type="default">http://static.mrpt.org/screenshots/cameracalib.png</screenshot>
   </screenshots>
-  <url type="homepage">http://www.mrpt.org/</url>
+  <url type="homepage">https://www.mrpt.org/</url>
   <update_contact>joseluisblancoc_at_gmail.com</update_contact>
 </component>

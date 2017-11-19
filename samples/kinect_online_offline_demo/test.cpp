@@ -12,7 +12,7 @@
   Web page :
   http://www.mrpt.org/Switching_between_reading_live_Kinect_RGBD_dataset_for_debugging
 
-  Purpose  : Demonstrate how to programatically switch between online Kinect
+  Purpose  : Demonstrate how to programmatically switch between online Kinect
 			  grabbing and offline parsing a Rawlog dataset. Refer to the launch
 			  of the grabbing thread in Test_KinectOnlineOffline()
 */

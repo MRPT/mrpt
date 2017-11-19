@@ -87,7 +87,7 @@ namespace hwdrivers
   *
   * Configuration includes setting the device IP (optional) and sensor model
  * (mandatory only if a calibration file is not provided).
-  * These parameters can be set programatically (see methods of this class), or
+  * These parameters can be set programmatically (see methods of this class), or
  * via a configuration file with CGenericSensor::loadConfig() (see example
  * config file section below).
   *

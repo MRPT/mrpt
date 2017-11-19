@@ -67,7 +67,7 @@ class TSetOfMetricMapInitializers;
  *"fusing").
  *
  * See CMultiMetricMap::setListOfMaps() for the method for initializing this
- *class programatically.
+ *class programmatically.
  * See also TSetOfMetricMapInitializers::loadFromConfigFile for a template of
  *".ini"-like configuration
  * file that can be used to define which maps to create and all their
