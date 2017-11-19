@@ -16,11 +16,14 @@ list_subdirectories(LIST_MRPT_LIB_DIRS "${MRPT_SOURCE_DIR}/libs")
 # 2) Auto detect which libs are header-only:
 # -----------------------------------------------
 foreach(dir ${LIST_MRPT_LIB_DIRS})
-	set(is_hdr "0")
-	if (EXISTS "${MRPT_SOURCE_DIR}/libs/${dir}/include/mrpt/${dir}.h" AND NOT EXISTS "${MRPT_SOURCE_DIR}/libs/${dir}/src/registerAllClasses.cpp")
+	# if "define_mrpt_lib_header_only()" is used, it's a hdr-only library.
+	FILE(READ "${MRPT_SOURCE_DIR}/libs/${dir}/CMakeLists.txt" TMP)
+	STRING(FIND "${TMP}" "define_mrpt_lib_header_only" fndpos)
+	if(${fndpos} EQUAL -1)
+		set(is_hdr "0")
+	else()
 		set(is_hdr "1")
-	endif (EXISTS "${MRPT_SOURCE_DIR}/libs/${dir}/include/mrpt/${dir}.h" AND NOT EXISTS "${MRPT_SOURCE_DIR}/libs/${dir}/src/registerAllClasses.cpp")
-
+	endif()
 	set_property(GLOBAL PROPERTY "mrpt-${dir}_LIB_IS_HEADERS_ONLY" "${is_hdr}")
 	#MESSAGE(STATUS "mrpt-${dir}_LIB_IS_HEADERS_ONLY = ${is_hdr}")
 endforeach(dir)
