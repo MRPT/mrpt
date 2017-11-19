@@ -27,12 +27,12 @@ using namespace mrpt::math;
 using namespace std;
 
 #if MRPT_HAS_OPENGL_GLUT
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 // Windows:
 #include <windows.h>
 #endif
 
-#ifdef MRPT_OS_APPLE
+#ifdef __APPLE__
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
 #include <GLUT/glut.h>

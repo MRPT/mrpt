@@ -179,7 +179,7 @@ void CRoboPeakLidar::loadConfig_sensorSpecific(
 		DEG2RAD(configSource.read_float(iniSection, "pose_pitch", 0)),
 		DEG2RAD(configSource.read_float(iniSection, "pose_roll", 0)));
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	m_com_port =
 		configSource.read_string(iniSection, "COM_port_WIN", m_com_port, true);
 #else

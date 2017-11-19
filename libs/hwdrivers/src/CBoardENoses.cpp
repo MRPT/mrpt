@@ -47,7 +47,7 @@ void CBoardENoses::loadConfig_sensorSpecific(
 	m_usbSerialNumber =
 		configSource.read_string(iniSection, "USB_serialname", "", false);
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	m_COM_port =
 		configSource.read_string(iniSection, "COM_port_WIN", m_COM_port);
 #else

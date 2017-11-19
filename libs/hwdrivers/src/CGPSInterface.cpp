@@ -89,7 +89,7 @@ void CGPSInterface::loadConfig_sensorSpecific(
 		iniSection, "raw_dump_file_prefix", m_raw_dump_file_prefix,
 		false /*Allow default values*/);
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	m_COMname =
 		configSource.read_string(iniSection, "COM_port_WIN", m_COMname, true);
 #else

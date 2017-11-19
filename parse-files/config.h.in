@@ -115,15 +115,9 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 /** The size of cells in mrpt::maps::COccupancyGridMap2D */
 #define	OCCUPANCY_GRIDMAP_CELL_SIZE_${MRPT_OCCUPANCY_GRID_CELLSIZE}BITS
 
-/** Set to 0 to disable MRPT_TRY_START/MRPT_TRY_END blocks. Not recommended but for intensively tested programs only. */
-#define MRPT_HAS_STACKED_EXCEPTIONS ${CMAKE_MRPT_HAS_STACKED_EXCEPTIONS}
-
 /** Enable Katakana, Hiragana & Kanji character sets in CMRPTCanvas.
   *  Disable this to save executable sizes if these fonts will be not used. */
 #define MRPT_HAS_ASIAN_FONTS ${CMAKE_MRPT_HAS_ASIAN_FONTS}
-
-/** Set to 0 to disable ASSERT_ statements. Not recommended but for intensively tested programs only. */
-#define MRPT_HAS_ASSERT ${CMAKE_MRPT_HAS_ASSERT}
 
 /** Only for Linux: the inotify kernel module has been found. Requires kernel 2.6.13.  */
 #define MRPT_HAS_INOTIFY ${CMAKE_MRPT_HAS_INOTIFY}
@@ -199,9 +193,6 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 
 /** Are we in a big-endian system? (Intel, amd, etc.. are little-endian) */
 #define MRPT_IS_BIG_ENDIAN ${CMAKE_MRPT_IS_BIG_ENDIAN}
-
-/** Use MRPT global profiler? */
-#define MRPT_ENABLE_EMBEDDED_GLOBAL_PROFILER ${CMAKE_MRPT_ENABLE_EMBEDDED_GLOBAL_PROFILER}
 
 /** Has SuiteSparse sublibs? */
 #define MRPT_HAS_SUITESPARSE ${CMAKE_MRPT_HAS_SUITESPARSE}

@@ -13,7 +13,7 @@
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/opengl/CMesh.h>
 #include <mrpt/utils/CStream.h>
-#include <mrpt/utils/round.h>
+#include <mrpt/macros/round.h>
 #include <mrpt/utils/stl_serialization.h>
 #include <limits>
 

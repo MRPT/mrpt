@@ -11,7 +11,7 @@
 #include <mrpt/nav/tpspace/CPTG_Holo_Blend.h>
 #include <mrpt/utils/types_math.h>
 #include <mrpt/utils/CStream.h>
-#include <mrpt/utils/round.h>
+#include <mrpt/macros/round.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/math/poly_roots.h>
 #include <mrpt/kinematics/CVehicleVelCmd_Holo.h>

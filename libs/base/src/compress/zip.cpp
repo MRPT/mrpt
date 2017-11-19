@@ -12,7 +12,7 @@
 #include "zlib.h"
 
 // For named pipes:
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #endif
@@ -209,7 +209,7 @@ void mrpt::compress::zip::decompress(
 					decompress_gz_file
 ---------------------------------------------------------------*/
 bool mrpt::compress::zip::decompress_gz_file(
-	const std::string& file_path, vector_byte& buffer)
+	const std::string& file_path, std::vector<uint8_t>& buffer)
 {
 	CFileGZInputStream iss(file_path);
 	if (!iss.fileOpenCorrectly()) return false;
@@ -237,7 +237,7 @@ bool mrpt::compress::zip::decompress_gz_file(
 					compress_gz_file
 ---------------------------------------------------------------*/
 bool mrpt::compress::zip::compress_gz_file(
-	const std::string& file_path, const vector_byte& buffer,
+	const std::string& file_path, const std::vector<uint8_t>& buffer,
 	const int compress_level)
 {
 #if MRPT_HAS_GZ_STREAMS
@@ -270,7 +270,7 @@ bool mrpt::compress::zip::compress_gz_file(
 					compress_gz_data_block
 ---------------------------------------------------------------*/
 bool mrpt::compress::zip::compress_gz_data_block(
-	const vector_byte& in_data, vector_byte& out_gz_data,
+	const std::vector<uint8_t>& in_data, std::vector<uint8_t>& out_gz_data,
 	const int compress_level)
 {
 	out_gz_data.clear();
@@ -283,7 +283,7 @@ bool mrpt::compress::zip::compress_gz_data_block(
 	std::string pipe_file_name;
 
 // Create an anonymous pipe for writing the data to:
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	// Windows:
 	pipe_file_name =
 		format("\\\\.\\pipe\\mrpt_compress_gz_data_block_%u", nPipeName);
@@ -322,7 +322,7 @@ bool mrpt::compress::zip::compress_gz_data_block(
 		// Read it all:
 		if (retVal)
 		{
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 			// Read (windows)
 			const size_t N = GetFileSize(hPipe, nullptr);
 			if (N)
@@ -360,7 +360,7 @@ bool mrpt::compress::zip::compress_gz_data_block(
 	}
 
 // Close the pipe:
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	CloseHandle(hPipe);
 #else
 	remove(pipe_file_name.c_str());
@@ -376,7 +376,7 @@ bool mrpt::compress::zip::compress_gz_data_block(
 					decompress_gz_data_block
 ---------------------------------------------------------------*/
 bool mrpt::compress::zip::decompress_gz_data_block(
-	const vector_byte& in_gz_data, vector_byte& out_data)
+	const std::vector<uint8_t>& in_gz_data, std::vector<uint8_t>& out_data)
 {
 	out_data.clear();
 	if (in_gz_data.empty()) return true;

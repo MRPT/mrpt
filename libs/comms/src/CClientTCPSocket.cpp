@@ -15,7 +15,7 @@
 #include <mrpt/system/os.h>
 #include <cstring>
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 // Windows
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include <winsock2.h>
@@ -50,7 +50,7 @@ CClientTCPSocket::CClientTCPSocket()
 {
 	MRPT_START
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	// Init the WinSock Library:
 	// ----------------------------
 	WORD wVersionRequested;
@@ -73,7 +73,7 @@ CClientTCPSocket::~CClientTCPSocket()
 {
 	// Close socket:
 	close();
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	WSACleanup();
 #else
 // Nothing else to do.
@@ -84,7 +84,7 @@ void CClientTCPSocket::close()
 {
 	MRPT_START
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	// Delete socket:
 	if (m_hSock != INVALID_SOCKET)
 	{
@@ -273,7 +273,7 @@ void CClientTCPSocket::connect(
 			"Invalid IP address provided: %s", solved_IP.c_str());
 
 // Set to NON-BLOCKING:
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	unsigned long non_block_mode = 1;
 	if (ioctlsocket(m_hSock, FIONBIO, &non_block_mode))
 		THROW_EXCEPTION("Error entering non-blocking mode with ioctlsocket().");
@@ -288,7 +288,7 @@ void CClientTCPSocket::connect(
 	// Try to connect:
 	int r = ::connect(
 		m_hSock, (struct sockaddr*)&otherAddress, sizeof(otherAddress));
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	int er = WSAGetLastError();
 	if (r < 0 && er != WSAEINPROGRESS && er != WSAEWOULDBLOCK)
 #else
@@ -332,7 +332,7 @@ void CClientTCPSocket::connect(
 
 	// Now, make sure it was not an error!
 	int valopt;
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	int lon = sizeof(int);
 	getsockopt(m_hSock, SOL_SOCKET, SO_ERROR, (char*)(&valopt), &lon);
 #else
@@ -340,7 +340,7 @@ void CClientTCPSocket::connect(
 	getsockopt(m_hSock, SOL_SOCKET, SO_ERROR, (void*)(&valopt), &lon);
 #endif
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	if (valopt)
 		THROW_EXCEPTION(
 			format(
@@ -357,7 +357,7 @@ void CClientTCPSocket::connect(
 // Connected!
 
 // If connected OK, remove the non-blocking flag:
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	non_block_mode = 0;
 	if (ioctlsocket(m_hSock, FIONBIO, &non_block_mode))
 		THROW_EXCEPTION("Error entering blocking mode with ioctlsocket().");
@@ -556,7 +556,7 @@ size_t CClientTCPSocket::getReadPendingBytes()
 	if (m_hSock == INVALID_SOCKET) return 0;  // The socket is not connected!
 	unsigned long ret = 0;
 	if (
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 		ioctlsocket(m_hSock, FIONREAD, &ret)
 #else
 		ioctl(m_hSock, FIONREAD, &ret)
@@ -586,7 +586,7 @@ int CClientTCPSocket::setTCPNoDelay(const int& newValue)
 int CClientTCPSocket::getTCPNoDelay()
 {
 	int value;
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	int length = sizeof(value);
 #else
 	unsigned int length = sizeof(value);
@@ -616,7 +616,7 @@ int CClientTCPSocket::setSOSendBufffer(const int& newValue)
 int CClientTCPSocket::getSOSendBufffer()
 {
 	int value;
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	int length = sizeof(value);
 #else
 	unsigned int length = sizeof(value);

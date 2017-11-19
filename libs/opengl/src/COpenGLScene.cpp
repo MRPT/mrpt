@@ -29,13 +29,13 @@ using namespace std;
 
 // Include libraries in linking:
 #if MRPT_HAS_OPENGL_GLUT
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 // WINDOWS:
 #if defined(_MSC_VER) || defined(__BORLANDC__)
 #pragma comment(lib, "opengl32.lib")
 #pragma comment(lib, "GlU32.lib")
 #endif
-#endif  // MRPT_OS_WINDOWS
+#endif  // _WIN32
 #endif  // MRPT_HAS_OPENGL_GLUT
 
 IMPLEMENTS_SERIALIZABLE(COpenGLScene, CRenderizableDisplayList, mrpt::opengl)

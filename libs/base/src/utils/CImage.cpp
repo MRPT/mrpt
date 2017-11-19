@@ -17,7 +17,7 @@
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/fourier.h>
 #include <mrpt/math/utils.h>  // for roundup()
-#include <mrpt/utils/round.h>  // for round()
+#include <mrpt/macros/round.h>  // for round()
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/system/memory.h>

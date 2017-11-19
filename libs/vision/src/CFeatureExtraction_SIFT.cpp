@@ -31,7 +31,7 @@
 #endif
 
 // TODO: Remove, it's just for GetTempPathA
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 #include <windows.h>
 #endif
 
@@ -106,7 +106,7 @@ void CFeatureExtraction::extractFeaturesSIFT(
 
 		case CSBinary:
 		{
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 
 			char filImg[2000], filOut[2000], filFeat[2000];
 			char paramImg[2000];
@@ -202,7 +202,7 @@ void CFeatureExtraction::extractFeaturesSIFT(
 // --------------------------------------------------------------------------------------
 //		Binary by Vedaldi: NOT IMPLEMENTED YET. Input in PGM format
 // --------------------------------------------------------------------------------------
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 			THROW_EXCEPTION(
 				"Usage of Vedaldi Binary not implemented yet, please, try "
 				"another one");
@@ -218,7 +218,7 @@ void CFeatureExtraction::extractFeaturesSIFT(
 		// --------------------------------------------------------------------------------------
 		case LoweBinary:  // Binary by Lowe
 		{
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 			char filImg[2000], filOut[2000];
 			char paramImg[2000];
 
@@ -575,7 +575,7 @@ void CFeatureExtraction::internal_computeSiftDescriptors(
 	{
 		case CSBinary:
 		{
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 			char filImg[2000], filOut[2000], filFeat[2000];
 			char paramImg[2000];
 

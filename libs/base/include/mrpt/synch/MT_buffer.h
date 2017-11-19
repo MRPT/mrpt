@@ -25,7 +25,7 @@ namespace synch
 class MT_buffer
 {
    private:
-	vector_byte m_data;
+	std::vector<uint8_t> m_data;
 	std::mutex m_cs;
 
    public:
@@ -52,7 +52,7 @@ class MT_buffer
 	}
 
 	/** Append new data to the stream */
-	void appendData(const vector_byte& d)
+	void appendData(const std::vector<uint8_t>& d)
 	{
 		m_cs.lock();
 		m_data.insert(m_data.begin(), d.begin(), d.end());
@@ -60,7 +60,7 @@ class MT_buffer
 	}
 
 	/** Read the whole buffer and empty it. */
-	void readAndClear(vector_byte& d)
+	void readAndClear(std::vector<uint8_t>& d)
 	{
 		m_cs.lock();
 		d.clear();
@@ -69,7 +69,7 @@ class MT_buffer
 	}
 
 	/** Read the whole buffer. */
-	void read(vector_byte& d)
+	void read(std::vector<uint8_t>& d)
 	{
 		m_cs.lock();
 		d = m_data;

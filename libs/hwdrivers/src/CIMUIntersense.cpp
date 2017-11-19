@@ -29,12 +29,12 @@ using namespace std;
 // Include libraries in linking:
 #if 0
 #if MRPT_HAS_INTERSENSE
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 		// WINDOWS:
 #if defined(_MSC_VER) || defined(__BORLANDC__)
 #pragma comment(lib, "isense.dll")
 #endif
-#endif  // MRPT_OS_WINDOWS
+#endif  // _WIN32
 #endif  // MRPT_HAS_INTERSENSE
 #endif
 /*-------------------------------------------------------------

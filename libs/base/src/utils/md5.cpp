@@ -443,7 +443,7 @@ std::string mrpt::utils::md5(const unsigned char* data, const size_t len)
 	return md5.hexdigest();
 }
 
-std::string mrpt::utils::md5(const mrpt::vector_byte& str)
+std::string mrpt::utils::md5(const std::vector<uint8_t>& str)
 {
 	return mrpt::utils::md5(&str[0], str.size());
 }

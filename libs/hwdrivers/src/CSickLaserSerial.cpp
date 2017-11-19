@@ -158,7 +158,7 @@ void CSickLaserSerial::loadConfig_sensorSpecific(
 
 	m_mm_mode = configSource.read_bool(iniSection, "mm_mode", m_mm_mode);
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	m_com_port =
 		configSource.read_string(iniSection, "COM_port_WIN", m_com_port, true);
 #else

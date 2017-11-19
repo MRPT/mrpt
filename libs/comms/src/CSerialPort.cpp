@@ -13,7 +13,7 @@
 #include <mrpt/system/os.h>
 #include <mrpt/utils/utils_defs.h>
 
-#if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
+#if defined(MRPT_OS_LINUX) || defined(__APPLE__)
 // Linux implementation: refer to
 //  http://www.easysw.com/~mike/serial/serial.html
 
@@ -37,7 +37,7 @@
 
 #endif  // Linux | Apple
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 #include <windows.h>
 #endif
 
@@ -54,7 +54,7 @@ CSerialPort::CSerialPort(const string& portName, bool openNow)
 	: m_serialName(portName),
 	  m_totalTimeout_ms(0),
 	  m_interBytesTimeout_ms(0),
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	  hCOM(nullptr)
 #else
 	  hCOM(-1)  // Not connected
@@ -68,7 +68,7 @@ CSerialPort::CSerialPort()
 	: m_serialName(),
 	  m_totalTimeout_ms(0),
 	  m_interBytesTimeout_ms(0),
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	  hCOM(nullptr)
 #else
 	  hCOM(-1)  // Not connected
@@ -88,7 +88,7 @@ CSerialPort::~CSerialPort()
 void CSerialPort::open()
 {
 	MRPT_START
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	// Check name:
 	if (!m_serialName.size()) THROW_EXCEPTION("Serial port name is empty!!")
 
@@ -184,7 +184,7 @@ void CSerialPort::open()
    ----------------------------------------------------- */
 bool CSerialPort::isOpen() const
 {
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	return hCOM != nullptr;
 #else
 	return hCOM != -1;
@@ -198,7 +198,7 @@ void CSerialPort::setConfig(
 	int baudRate, int parity, int bits, int nStopBits, bool enableFlowControl)
 {
 	MRPT_START
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 
 	DCB dcb_conf;
 	dcb_conf.DCBlength = sizeof(DCB);
@@ -562,7 +562,7 @@ void CSerialPort::setTimeouts(
 	int WriteTotalTimeoutConstant)
 {
 	MRPT_START
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	COMMTIMEOUTS timeouts;
 
 	// Port must be open!
@@ -620,7 +620,7 @@ void CSerialPort::setTimeouts(
 void CSerialPort::close()
 {
 	MRPT_START
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	if (hCOM) CloseHandle(hCOM);
 	hCOM = nullptr;
 #else
@@ -643,7 +643,7 @@ void CSerialPort::close()
 size_t CSerialPort::Read(void* Buffer, size_t Count)
 {
 	MRPT_START
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	// Port must be open!
 	if (!isOpen()) THROW_EXCEPTION("The port is not open yet!");
 
@@ -747,7 +747,7 @@ std::string CSerialPort::ReadString(
 
 	while (total_timeout_ms < 0 || (m_timer.Tac() * 1e3 < total_timeout_ms))
 	{
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 		// Read just 1 byte:
 		char buf[1];
 
@@ -829,7 +829,7 @@ size_t CSerialPort::Write(const void* Buffer, size_t Count)
 	// Port must be open!
 	if (!isOpen()) THROW_EXCEPTION("The port is not open yet!");
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	DWORD actuallyWritten;
 	if (!WriteFile(hCOM, Buffer, (DWORD)Count, &actuallyWritten, nullptr))
 		THROW_EXCEPTION("Error writing to port!");
@@ -895,7 +895,7 @@ void CSerialPort::purgeBuffers()
 	// Port must be open!
 	if (!isOpen()) THROW_EXCEPTION("The port is not open yet!");
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	if (!PurgeComm(
 			hCOM,
 			PURGE_RXABORT | PURGE_RXCLEAR | PURGE_TXABORT | PURGE_TXCLEAR))

@@ -50,7 +50,7 @@ bool CVideoFileWriter::open(
 #if MRPT_OPENCV_VERSION_NUM <= 0x100
 		cc = 0;  // Default
 #else
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 		cc = CV_FOURCC_DEFAULT;  // Default CV_FOURCC_PROMPT;
 #else
 		cc = CV_FOURCC_DEFAULT;  // Default

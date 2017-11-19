@@ -15,7 +15,7 @@
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/system/string_utils.h>
-#include <mrpt/utils/round.h>
+#include <mrpt/macros/round.h>
 
 #include <mrpt/compress/zip.h>
 #include <map>
@@ -45,7 +45,7 @@ using namespace mrpt::utils;
 using namespace std;
 
 // map<string,const uint32_t*>   list_registered_fonts;
-map<string, vector_byte> list_registered_fonts;  // Each vector is the target
+map<string, std::vector<uint8_t>> list_registered_fonts;  // Each vector is the target
 // place where to uncompress
 // each font.
 bool list_fonts_init = false;
@@ -89,7 +89,7 @@ void init_fonts_list()
 
 #define LOAD_FONT(FONTNAME)                                  \
 	{                                                        \
-		vector_byte tmpBuf(sizeof(mrpt_font_gz_##FONTNAME)); \
+		std::vector<uint8_t> tmpBuf(sizeof(mrpt_font_gz_##FONTNAME)); \
 		memcpy(                                              \
 			&tmpBuf[0], mrpt_font_gz_##FONTNAME,             \
 			sizeof(mrpt_font_gz_##FONTNAME));                \
@@ -233,7 +233,7 @@ void CCanvas::selectTextFont(const std::string& fontName)
 	init_fonts_list();
 
 	// Assure list name is in the list:
-	map<string, vector_byte>::const_iterator it =
+	map<string, std::vector<uint8_t>>::const_iterator it =
 		list_registered_fonts.find(fontName);
 	if (it == list_registered_fonts.end())
 	{

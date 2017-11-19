@@ -218,7 +218,7 @@ class CSerialPort : public mrpt::utils::CStream
 	/** Used only in \a ReadString */
 	mrpt::utils::CTicTac m_timer;
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	// WINDOWS
 	void* hCOM;
 #else

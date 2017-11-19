@@ -189,6 +189,9 @@ SET(MRPT_HAS_STACKED_EXCEPTIONS ON CACHE BOOL "Enable MRPT_TRY_START/END blocks 
 # Optional MRPT embedded profiler:
 # ===================================================
 SET(MRPT_ENABLE_EMBEDDED_GLOBAL_PROFILER OFF CACHE BOOL "Enable MRPT embedded profiler.")
+if (MRPT_ENABLE_EMBEDDED_GLOBAL_PROFILER)
+	add_definitions(-DMRPT_ENABLE_EMBEDDED_GLOBAL_PROFILER)
+endif()
 
 # ASSERT_ blocks
 # ===================================================

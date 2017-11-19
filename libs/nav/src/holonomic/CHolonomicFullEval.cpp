@@ -11,7 +11,7 @@
 
 #include <mrpt/nav/holonomic/CHolonomicFullEval.h>
 #include <mrpt/utils/CStream.h>
-#include <mrpt/utils/round.h>
+#include <mrpt/macros/round.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/utils/stl_serialization.h>

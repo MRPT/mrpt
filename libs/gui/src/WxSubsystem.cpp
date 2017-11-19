@@ -848,7 +848,7 @@ const char* mrpt_default_icon_xpm[] = {"32 32 2 1",
 wxBitmap WxSubsystem::getMRPTDefaultIcon()
 {
 // To avoid an error in wx, always resize the icon to the expected size:
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	const wxSize iconsSize(
 		::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON));
 	return wxBitmap(

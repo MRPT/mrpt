@@ -20,7 +20,7 @@
 #include <cstring>
 #include <stdio.h>
 
-#if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
+#if defined(MRPT_OS_LINUX) || defined(__APPLE__)
 #define INVALID_SOCKET (-1)
 #include <sys/socket.h>
 #include <unistd.h>
@@ -33,7 +33,7 @@
 #include <netinet/in.h>
 #endif
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 #include <winsock.h>
 #endif
 
@@ -53,7 +53,7 @@ ERRORCODE_HTTP mrpt::comms::net::http_get(
 	int* out_http_responsecode, mrpt::utils::TParameters<string>* extra_headers,
 	mrpt::utils::TParameters<string>* out_headers, int timeout_ms)
 {
-	vector_byte data;
+	std::vector<uint8_t> data;
 	ERRORCODE_HTTP ret = http_get(
 		url, data, out_errormsg, port, auth_user, auth_pass,
 		out_http_responsecode, extra_headers, out_headers, timeout_ms);
@@ -66,7 +66,7 @@ ERRORCODE_HTTP mrpt::comms::net::http_get(
 
 ERRORCODE_HTTP mrpt::comms::net::http_request(
 	const string& http_method, const string& http_send_content,
-	const string& url, vector_byte& out_content, string& out_errormsg, int port,
+	const string& url, std::vector<uint8_t>& out_content, string& out_errormsg, int port,
 	const string& auth_user, const string& auth_pass,
 	int* out_http_responsecode, mrpt::utils::TParameters<string>* extra_headers,
 	mrpt::utils::TParameters<string>* out_headers, int timeout_ms)
@@ -130,7 +130,7 @@ ERRORCODE_HTTP mrpt::comms::net::http_request(
 		if (!auth_user.empty())
 		{
 			string auth_str = auth_user + string(":") + auth_pass;
-			vector_byte v(auth_str.size());
+			std::vector<uint8_t> v(auth_str.size());
 			::memcpy(&v[0], &auth_str[0], auth_str.size());
 
 			string encoded_str;
@@ -173,7 +173,7 @@ ERRORCODE_HTTP mrpt::comms::net::http_request(
 		sock.sendString(req);
 
 		// Read answer:
-		vector_byte buf;
+		std::vector<uint8_t> buf;
 		buf.reserve(1 << 14);
 
 		size_t total_read = 0;
@@ -381,7 +381,7 @@ ERRORCODE_HTTP mrpt::comms::net::http_request(
 	http_get
 ---------------------------------------------------------------*/
 ERRORCODE_HTTP mrpt::comms::net::http_get(
-	const string& url, vector_byte& out_content, string& out_errormsg, int port,
+	const string& url, std::vector<uint8_t>& out_content, string& out_errormsg, int port,
 	const string& auth_user, const string& auth_pass,
 	int* out_http_responsecode, mrpt::utils::TParameters<string>* extra_headers,
 	mrpt::utils::TParameters<string>* out_headers, int timeout_ms)
@@ -416,7 +416,7 @@ bool net::DNS_resolve_async(
 	std::future<std::string> dns_result =
 		std::async(std::launch::async, [&]() {
 // Windows-specific stuff:
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 			{
 				// Init the WinSock Library:
 				WORD wVersionRequested = MAKEWORD(2, 0);
@@ -448,7 +448,7 @@ bool net::DNS_resolve_async(
 				dns_result = string(inet_ntoa(ADDR));
 			}
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 			WSACleanup();
 #endif
 			return dns_result;
@@ -474,7 +474,7 @@ bool net::DNS_resolve_async(
 /** Returns a description of the last Sockets error */
 std::string mrpt::comms::net::getLastSocketErrorStr()
 {
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	const int errnum = WSAGetLastError();
 	char* s = nullptr;
 	FormatMessageA(
@@ -501,7 +501,7 @@ bool mrpt::comms::net::Ping(
 	string cmd_str = "ping";
 
 // different "count" argument for Windows and *NIX  systems
-#if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
+#if defined(MRPT_OS_LINUX) || defined(__APPLE__)
 	string count_arg_str = "-c " + num2str(max_attempts);
 #else
 	THROW_EXCEPTION("Ping not implemented on Windows Yet.")

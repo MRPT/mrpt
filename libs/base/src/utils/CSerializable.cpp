@@ -152,7 +152,7 @@ void utils::StringToObject(const std::string& str, CSerializable::Ptr& obj)
 /* -----------------------------------------------------------------------
 				ObjectToOctetVector
    ----------------------------------------------------------------------- */
-void utils::ObjectToOctetVector(const CSerializable* o, vector_byte& out_vector)
+void utils::ObjectToOctetVector(const CSerializable* o, std::vector<uint8_t>& out_vector)
 {
 	try
 	{
@@ -184,7 +184,7 @@ void utils::ObjectToOctetVector(const CSerializable* o, vector_byte& out_vector)
 				OctetVectorToObject
    ----------------------------------------------------------------------- */
 void utils::OctetVectorToObject(
-	const vector_byte& in_data, CSerializable::Ptr& obj)
+	const std::vector<uint8_t>& in_data, CSerializable::Ptr& obj)
 {
 	try
 	{

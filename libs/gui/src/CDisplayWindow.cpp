@@ -12,7 +12,7 @@
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/system/os.h>
 #include <mrpt/utils/CImage.h>
-#include <mrpt/utils/round.h>
+#include <mrpt/macros/round.h>
 
 #include <mrpt/gui/WxSubsystem.h>
 #include <mrpt/gui/WxUtils.h>

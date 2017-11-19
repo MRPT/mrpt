@@ -1184,7 +1184,7 @@ void CGraphSlamEngine<GRAPH_T>::initResultsFile(const std::string& fname)
 	MRPT_LOG_INFO_STREAM("Setting up file: " << fname);
 
 // current time vars
-#if defined(MRPT_OS_APPLE)
+#if defined(__APPLE__)
 	mrpt::system::TTimeStamp cur_date(getCurrentTime());
 	std::string time_spec = "UTC Time";
 #else

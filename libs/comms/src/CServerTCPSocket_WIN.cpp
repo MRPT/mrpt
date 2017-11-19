@@ -11,7 +11,7 @@
 
 #include <MRPT/config.h>
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 
 #include <winsock.h>
 #if (__BORLANDC__) || (_MSC_VER)
@@ -63,4 +63,4 @@ CServerTCPSocket::~CServerTCPSocket()
 	WSACleanup();
 }
 
-#endif  // MRPT_OS_WINDOWS
+#endif  // _WIN32

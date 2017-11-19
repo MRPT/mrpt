@@ -103,7 +103,7 @@ struct Message_TOPCON_SATS : public gnss_message
 
 	/** The list of USI (Universal Sat ID) for the detected sats (See GRIL
 	 * Manual, pag 4-31). */
-	mrpt::vector_byte USIs;
+	std::vector<uint8_t> USIs;
 	/** Elevation (in degrees, 0-90) for each satellite in USIs. */
 	mrpt::vector_signed_byte ELs;
 	/** Azimuth (in degrees, 0-360) for each satellite in USIs. */

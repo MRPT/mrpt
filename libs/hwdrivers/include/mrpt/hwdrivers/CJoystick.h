@@ -91,7 +91,7 @@ class CJoystick
  *
  * \sa getJoystickPosition
  */
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	void setLimits(
 		int x_min = 0, int x_max = 0xFFFF, int y_min = 0, int y_max = 0xFFFF,
 		int z_min = 0, int z_max = 0xFFFF);

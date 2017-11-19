@@ -344,7 +344,7 @@ bool CRovio::captureImageAsync(CImage& picture, bool rectified)
 {
 	try
 	{
-		vector_byte resp;
+		std::vector<uint8_t> resp;
 		string errormsg;
 		string MF =
 			format("http://%s/Jpeg/CamImg[0000].jpg", options.IP.c_str());

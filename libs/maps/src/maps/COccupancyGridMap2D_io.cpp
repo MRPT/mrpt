@@ -13,7 +13,7 @@
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/CEnhancedMetaFile.h>
-#include <mrpt/utils/round.h>  // round()
+#include <mrpt/macros/round.h>  // round()
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/random.h>
 
@@ -450,7 +450,7 @@ bool COccupancyGridMap2D::saveAsEMFTwoMapsWithCorrespondences(
 
 // The individual maps:
 // ---------------------------------------------
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	m1->getAsImage(img1, true);
 	m2->getAsImage(img2, true);
 #else

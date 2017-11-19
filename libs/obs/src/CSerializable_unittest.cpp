@@ -112,7 +112,7 @@ TEST(SerializeTestObs, WriteReadToOctectVectors)
 	{
 		try
 		{
-			mrpt::vector_byte buf;
+			std::vector<uint8_t> buf;
 			{
 				CSerializable* o =
 					static_cast<CSerializable*>(lstClasses[i]->createObject());

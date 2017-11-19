@@ -38,7 +38,7 @@ enum ERRORCODE_HTTP
 };
 
 /** Perform an HTTP GET operation (version for retrieving the data as a
- * vector_byte)
+ * std::vector<uint8_t>)
  * \param url Must be a simple string of the form
  * "http://<servername>/<relative-address>".
  * \param port The server port, if different from 80.
@@ -58,7 +58,7 @@ enum ERRORCODE_HTTP
  * \sa mrpt::utils::vectorToBinaryFile
  */
 ERRORCODE_HTTP http_get(
-	const string& url, vector_byte& out_content, string& out_errormsg,
+	const string& url, std::vector<uint8_t>& out_content, string& out_errormsg,
 	int port = 80, const string& auth_user = string(),
 	const string& auth_pass = string(), int* out_http_responsecode = nullptr,
 	mrpt::utils::TParameters<string>* extra_headers = nullptr,
@@ -95,7 +95,7 @@ ERRORCODE_HTTP http_get(
 /** Generic function for HTTP GET & POST methods. \sa http_get */
 ERRORCODE_HTTP http_request(
 	const string& http_method, const string& http_send_content,
-	const string& url, vector_byte& out_content, string& out_errormsg,
+	const string& url, std::vector<uint8_t>& out_content, string& out_errormsg,
 	int port = 80, const string& auth_user = string(),
 	const string& auth_pass = string(), int* out_http_responsecode = nullptr,
 	mrpt::utils::TParameters<string>* extra_headers = nullptr,

@@ -11,7 +11,7 @@
 
 #include <mrpt/config.h>
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 #include <windows.h>
 #include <mrpt/utils/utils_defs.h>
 #else
@@ -22,7 +22,7 @@
 #include <cstring>
 
 // For Windows: get the common code out of CTicTac so it's only run once!
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 struct AuxWindowsTicTac
 {
 	static AuxWindowsTicTac& GetInstance()
@@ -50,7 +50,7 @@ struct AuxWindowsTicTac
 using namespace mrpt::utils;
 
 // Macros for easy access to memory with the correct types:
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 #define LARGE_INTEGER_NUMS reinterpret_cast<LARGE_INTEGER*>(largeInts)
 #else
 #define TIMEVAL_NUMS reinterpret_cast<struct timeval*>(largeInts)
@@ -63,7 +63,7 @@ CTicTac::CTicTac()
 {
 	::memset(largeInts, 0, sizeof(largeInts));
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	static_assert(
 		sizeof(largeInts) >= 2 * sizeof(LARGE_INTEGER),
 		"sizeof(LARGE_INTEGER) failed!");
@@ -81,7 +81,7 @@ CTicTac::CTicTac()
  ---------------------------------------------------------------*/
 void CTicTac::Tic()
 {
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	LARGE_INTEGER* l = LARGE_INTEGER_NUMS;
 	QueryPerformanceCounter(&l[0]);
 #else
@@ -96,7 +96,7 @@ void CTicTac::Tic()
  ---------------------------------------------------------------*/
 double CTicTac::Tac()
 {
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	LARGE_INTEGER* l = LARGE_INTEGER_NUMS;
 	QueryPerformanceCounter(&l[1]);
 	return (l[1].QuadPart - l[0].QuadPart) *

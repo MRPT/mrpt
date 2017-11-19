@@ -69,7 +69,7 @@ void decompress(
   * \return true on success, false on error.
   * \sa compress_gz_file, decompress_gz_data_block
   */
-bool decompress_gz_file(const std::string& file_path, vector_byte& buffer);
+bool decompress_gz_file(const std::string& file_path, std::vector<uint8_t>& buffer);
 
 /** Compress a memory buffer into a gzip file (xxxx.gz).
   *  compress_level: 0=no compression, 1=best speed, 9=maximum
@@ -77,7 +77,7 @@ bool decompress_gz_file(const std::string& file_path, vector_byte& buffer);
   * \sa decompress_gz_file, compress_gz_data_block
   */
 bool compress_gz_file(
-	const std::string& file_path, const vector_byte& buffer,
+	const std::string& file_path, const std::vector<uint8_t>& buffer,
 	const int compress_level = 9);
 
 /** Compress a memory buffer in gz-file format and return it as a block a
@@ -89,7 +89,7 @@ bool compress_gz_file(
   * \sa compress_gz_file, de
   */
 bool compress_gz_data_block(
-	const vector_byte& in_data, vector_byte& out_gz_data,
+	const std::vector<uint8_t>& in_data, std::vector<uint8_t>& out_gz_data,
 	const int compress_level = 9);
 
 /** Decompress an array of bytes storing a gz-compressed stream of data into a
@@ -99,7 +99,7 @@ bool compress_gz_data_block(
   * \sa decompress_gz_file, compress_gz_data_block
   */
 bool decompress_gz_data_block(
-	const vector_byte& in_gz_data, vector_byte& out_data);
+	const std::vector<uint8_t>& in_gz_data, std::vector<uint8_t>& out_data);
 
 }  // End of namespace
 }  // End of namespace

@@ -13,7 +13,6 @@ add_base_srcs(math)
 add_base_srcs(poses)
 add_base_srcs(random)
 add_base_srcs(synch)
-add_base_srcs(system)
 add_base_srcs(utils)
 
 LIST(APPEND base_EXTRA_SRCS       "${MRPT_LIBS_ROOT}/base/src/utils/simpleini/*.h")
@@ -74,7 +73,9 @@ endif()
 #---------------------------------------------
 define_mrpt_lib(
 	base 		# Lib name
-				# Dependencies: None
+	# Dependencies:
+	mrpt-macros
+	mrpt-system
 	)
 
 IF(BUILD_mrpt-base)
@@ -82,12 +83,6 @@ IF(BUILD_mrpt-base)
 	target_link_libraries(mrpt-base
 		PRIVATE
 		Threads::Threads)
-
-	IF(WIN32)
-		target_link_libraries(mrpt-base PRIVATE Dbghelp) # For mrpt::system::getCallStackBackTrace()
-	ELSE()
-		target_link_libraries(mrpt-base PRIVATE ${CMAKE_DL_LIBS}) # For mrpt::system::getCallStackBackTrace()
-	ENDIF()
 
 	# Ignore precompiled headers in some sources:
 	IF(MRPT_ENABLE_PRECOMPILED_HDRS)

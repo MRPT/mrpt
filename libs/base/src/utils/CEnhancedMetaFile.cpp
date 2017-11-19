@@ -26,7 +26,7 @@ void CEnhancedMetaFile::LINUX_IMG_HEIGHT(int value) { LINUX_IMG_HEIGHT_value = v
 int CEnhancedMetaFile::LINUX_IMG_HEIGHT() { return LINUX_IMG_HEIGHT_value; }
 
 #include <mrpt/config.h>
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 #include <windows.h>
 #endif
 
@@ -38,7 +38,7 @@ CEnhancedMetaFile::CEnhancedMetaFile(
 	const std::string& targetFileName, int scaleFactor)
 	: m_scale(scaleFactor), m_targetFile(targetFileName)
 {
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	m_hdc =
 		CreateEnhMetaFileA(nullptr, targetFileName.c_str(), nullptr, nullptr);
 	if (!m_hdc.get()) THROW_EXCEPTION("Can't create EMF file!!!");
@@ -55,7 +55,7 @@ CEnhancedMetaFile::CEnhancedMetaFile(
 ---------------------------------------------------------------*/
 CEnhancedMetaFile::~CEnhancedMetaFile()
 {
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	// Free objects:
 	if (m_hFont.get())
 	{
@@ -78,7 +78,7 @@ delete ((CImage*)m_hdc.get());
 ---------------------------------------------------------------*/
 void CEnhancedMetaFile::drawImage(int x, int y, const utils::CImage& img)
 {
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	try
 	{
 		LPBITMAPINFO pBmpInfo =
@@ -164,7 +164,7 @@ void CEnhancedMetaFile::line(
 	int x0, int y0, int x1, int y1, const mrpt::utils::TColor color,
 	unsigned int width, TPenStyle penStyle)
 {
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	x0 *= m_scale;
 	y0 *= m_scale;
 	x1 *= m_scale;
@@ -190,7 +190,7 @@ void CEnhancedMetaFile::line(
 void CEnhancedMetaFile::textOut(
 	int x0, int y0, const std::string& str, const mrpt::utils::TColor color)
 {
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	x0 *= m_scale;
 	y0 *= m_scale;
 
@@ -209,7 +209,7 @@ void CEnhancedMetaFile::textOut(
 void CEnhancedMetaFile::selectVectorTextFont(
 	const std::string& fontName, int fontSize, bool bold, bool italic)
 {
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	HFONT hFont, oldFont;
 	LOGFONTA lpf;
 
@@ -250,7 +250,7 @@ void CEnhancedMetaFile::selectVectorTextFont(
 ---------------------------------------------------------------*/
 void CEnhancedMetaFile::setPixel(int x, int y, size_t color)
 {
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	::SetPixel((HDC)m_hdc.get(), x * m_scale, y * m_scale, color);
 #else
 	((CImage*)m_hdc.get())->setPixel(x, y, color);

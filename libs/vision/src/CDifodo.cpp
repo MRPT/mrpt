@@ -12,7 +12,7 @@
 #include <mrpt/vision/CDifodo.h>
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/utils/CTicTac.h>
-#include <mrpt/utils/round.h>
+#include <mrpt/macros/round.h>
 
 using namespace mrpt;
 using namespace mrpt::vision;

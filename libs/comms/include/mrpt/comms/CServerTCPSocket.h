@@ -61,7 +61,7 @@ class CServerTCPSocket : public utils::COutputLogger
 
    private:
 /** The handle for the listening server TCP socket. */
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	unsigned int
 #else
 	int

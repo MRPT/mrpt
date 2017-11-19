@@ -11,7 +11,7 @@
 
 #include <mrpt/config.h>
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 #include <windows.h>
 #include <mmsystem.h>
 
@@ -20,7 +20,7 @@
 #endif
 #endif
 
-#if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
+#if defined(MRPT_OS_LINUX) || defined(__APPLE__)
 // Linux
 #include <sys/ioctl.h>
 #include <sys/time.h>
@@ -77,7 +77,7 @@ CJoystick::~CJoystick()
 int CJoystick::getJoysticksCount()
 {
 	MRPT_START
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	return joyGetNumDevs();
 #elif defined(MRPT_OS_LINUX) && defined(HAVE_LINUX_INPUT_H)
 	// Try to open several joy devs:
@@ -113,7 +113,7 @@ bool CJoystick::getJoystickPosition(
 	int* raw_x_pos, int* raw_y_pos, int* raw_z_pos)
 {
 	MRPT_START
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	JOYINFO jinfo;
 
 	int ID = JOYSTICKID1 + nJoy;

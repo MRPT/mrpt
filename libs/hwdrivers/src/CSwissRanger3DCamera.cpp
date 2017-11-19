@@ -21,7 +21,7 @@ using namespace std;
 IMPLEMENTS_GENERIC_SENSOR(CSwissRanger3DCamera, mrpt::hwdrivers)
 
 #if MRPT_HAS_SWISSRANGE
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #endif

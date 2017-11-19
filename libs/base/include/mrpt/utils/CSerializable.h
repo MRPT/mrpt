@@ -120,7 +120,7 @@ void StringToObject(const std::string& str, CSerializable::Ptr& obj);
  * be set automatically.
  * \sa OctetVectorToObject, ObjectToString
  */
-void ObjectToOctetVector(const CSerializable* o, vector_byte& out_vector);
+void ObjectToOctetVector(const CSerializable* o, std::vector<uint8_t>& out_vector);
 
 /** Converts back (de-serializes) a sequence of binary data into a MRPT object,
  * without prior information about the object's class.
@@ -130,7 +130,7 @@ void ObjectToOctetVector(const CSerializable* o, vector_byte& out_vector);
  * pointer.
  * \sa ObjectToOctetVector, StringToObject
  */
-void OctetVectorToObject(const vector_byte& in_data, CSerializable::Ptr& obj);
+void OctetVectorToObject(const std::vector<uint8_t>& in_data, CSerializable::Ptr& obj);
 
 /** Converts (serializes) an MRPT object into an array of bytes within a
  * std::string, without codifying to avoid nullptr characters.

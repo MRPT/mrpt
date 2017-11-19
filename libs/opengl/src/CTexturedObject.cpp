@@ -13,6 +13,7 @@
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/utils/CStream.h>
 #include "opengl_internals.h"
+#include <memory> // std::align
 
 using namespace mrpt;
 using namespace mrpt::opengl;
@@ -165,8 +166,9 @@ unsigned char* reserveDataBuffer(const size_t len, vector<unsigned char>& data)
 	}
 #endif
 	data.resize(len);
-	return ((unsigned char*)(((POINTER_TYPE)&data[0]) & (~((POINTER_TYPE)0x0F)))) +
-		   0x10;
+	void *ptr = &data[0];
+	size_t space = len;
+	return std::align(16,1 /*dummy size*/,ptr,space);
 }
 
 /*---------------------------------------------------------------

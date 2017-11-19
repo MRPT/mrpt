@@ -177,7 +177,7 @@ void CCANBusReader::loadConfig_sensorSpecific(
 	m_canreader_timestamp = configSource.read_bool(
 		iniSection, "useCANReaderTimestamp", m_canreader_timestamp);
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	m_com_port =
 		configSource.read_string(iniSection, "COM_port_WIN", m_com_port, true);
 #else

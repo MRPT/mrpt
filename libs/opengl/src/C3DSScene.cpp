@@ -615,7 +615,7 @@ void C3DSScene::loadFrom3DSFile(const std::string& filepath)
 	if (mrpt::system::extractFileExtension(filepath) == "gz")
 	{
 		// Load compressed file:
-		vector_byte out_data;
+		std::vector<uint8_t> out_data;
 		if (!mrpt::compress::zip::decompress_gz_file(filepath, out_data))
 			THROW_EXCEPTION_FMT(
 				"Error loading compressed file: %s", filepath.c_str())
