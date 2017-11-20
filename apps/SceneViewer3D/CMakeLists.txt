@@ -40,6 +40,10 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 	TARGET_LINK_LIBRARIES(${PROJECT_NAME} mrptwxthings)
 	ADD_DEPENDENCIES(${PROJECT_NAME} mrptwxthings)
 
+	IF(CMAKE_MRPT_HAS_LIBLAS)
+		target_link_libraries(${PROJECT_NAME} ${LAS_LIBS})
+	ENDIF()
+
 	# Dependencies on MRPT libraries:
 	#  Just mention the top-level dependency, the rest will be detected automatically,
 	#  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
