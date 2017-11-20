@@ -21,25 +21,30 @@ namespace slam
 /** Declares a class that represents a Probability Density Function (PDF) over a
  * 3D pose (x,y,phi,yaw,pitch,roll), using a set of weighted samples.
  *
- *  This class also implements particle filtering for robot localization. See
- * the MRPT
- *   application "app/pf-localization" for an example of usage.
+ * This class also implements particle filtering for robot localization. See
+ * the MRPT application "app/pf-localization" for an example of usage.
  *
  * \sa CMonteCarloLocalization2D, CPose2D, CPosePDF, CPoseGaussianPDF,
  * CParticleFilterCapable
  * \ingroup mrpt_slam_grp
  */
 class CMonteCarloLocalization3D
-	: public mrpt::poses::CPose3DPDFParticles,
-	  public PF_implementation<mrpt::poses::CPose3D, CMonteCarloLocalization3D>
+	: public PF_implementation<
+		 mrpt::poses::CPose3D, mrpt::poses::CPose3DPDFParticles>
 {
    public:
+	using CParticleDataContent =
+		mrpt::poses::CPose3DPDFParticles::CParticleDataContent;
+	using CParticleList = mrpt::poses::CPose3DPDFParticles::CParticleList;
+
+	mrpt::poses::CPose3DPDFParticles m_poseParticles;
+
 	/** MCL parameters */
 	TMonteCarloLocalizationParams options;
 
 	/** Constructor
-	  * \param M The number of m_particles.
-	  */
+	 * \param M The number of m_particles.
+	 */
 	CMonteCarloLocalization3D(size_t M = 1);
 
 	/** Destructor */
@@ -57,41 +62,8 @@ class CMonteCarloLocalization3D
 	 *
 	 * \sa options
 	 */
-	void prediction_and_update_pfStandardProposal(
-		const mrpt::obs::CActionCollection* action,
-		const mrpt::obs::CSensoryFrame* observation,
-		const bayes::CParticleFilter::TParticleFilterOptions& PF_options);
-
-	/** Update the m_particles, predicting the posterior of robot pose and map
-	 * after a movement command.
-	 *  This method has additional configuration parameters in "options".
-	 *  Performs the update stage of the RBPF, using the sensed CSensoryFrame:
-	 *
-	 *   \param Action This is a pointer to CActionCollection, containing the
-	 * pose change the robot has been commanded.
-	 *   \param observation This must be a pointer to a CSensoryFrame object,
-	 * with robot sensed observations.
-	 *
-	 * \sa options
-	 */
-	void prediction_and_update_pfAuxiliaryPFStandard(
-		const mrpt::obs::CActionCollection* action,
-		const mrpt::obs::CSensoryFrame* observation,
-		const bayes::CParticleFilter::TParticleFilterOptions& PF_options);
-
-	/** Update the m_particles, predicting the posterior of robot pose and map
-	 * after a movement command.
-	 *  This method has additional configuration parameters in "options".
-	 *  Performs the update stage of the RBPF, using the sensed CSensoryFrame:
-	 *
-	 *   \param Action This is a pointer to CActionCollection, containing the
-	 * pose change the robot has been commanded.
-	 *   \param observation This must be a pointer to a CSensoryFrame object,
-	 * with robot sensed observations.
-	 *
-	 * \sa options
-	 */
-	void prediction_and_update_pfAuxiliaryPFOptimal(
+	template <typename T>
+	void prediction_and_update(
 		const mrpt::obs::CActionCollection* action,
 		const mrpt::obs::CSensoryFrame* observation,
 		const bayes::CParticleFilter::TParticleFilterOptions& PF_options);

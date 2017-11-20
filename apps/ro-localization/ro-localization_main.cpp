@@ -35,6 +35,7 @@
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/bayes/CParticleFilter.h>
+#include <mrpt/bayes/CParticleFilter_impl.h>
 #include <mrpt/random.h>
 
 #include <mrpt/opengl/CSphere.h>
@@ -43,6 +44,8 @@
 #include <mrpt/opengl/CEllipsoid.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
+
+#include <mrpt/bayes/CParticleFilter_impl.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;
@@ -204,37 +207,37 @@ void TestParticlesLocalization()
 		for (int repetition = 0; repetition < NUM_REPS; repetition++)
 		{
 			unsigned int PARTICLE_COUNT = pfOptions.sampleSize;
-			CPosePDFParticlesExtended pdf(PARTICLE_COUNT);
+			CPosePDFParticlesExtendedPF pf(PARTICLE_COUNT);
 			// PDF Options:
 			// ------------------
-			pdf.options.KLD_binSize_PHI = DEG2RAD(
+			pf.options.KLD_binSize_PHI = DEG2RAD(
 				iniFile->read_float("KLD_options", "KLD_binSize_PHI_deg", 5));
-			pdf.options.KLD_binSize_XY =
+			pf.options.KLD_binSize_XY =
 				iniFile->read_float("KLD_options", "KLD_binSize_XY", 0.2f);
-			pdf.options.KLD_delta =
+			pf.options.KLD_delta =
 				iniFile->read_float("KLD_options", "KLD_delta", 0.01f);
-			pdf.options.KLD_epsilon =
+			pf.options.KLD_epsilon =
 				iniFile->read_float("KLD_options", "KLD_epsilon", 0.02f);
-			pdf.options.KLD_maxSampleSize =
+			pf.options.KLD_maxSampleSize =
 				iniFile->read_int("KLD_options", "KLD_maxSampleSize", 100000);
-			pdf.options.KLD_minSampleSize =
+			pf.options.KLD_minSampleSize =
 				iniFile->read_int("KLD_options", "KLD_minSampleSize", 250);
 
-			pdf.options.probabilityChangingBias = iniFile->read_float(
+			pf.options.probabilityChangingBias = iniFile->read_float(
 				"RO_MODEL", "probabilityChangingBias", 0.1f);
-			pdf.options.changingBiasUnifRange =
+			pf.options.changingBiasUnifRange =
 				iniFile->read_float("RO_MODEL", "changingBiasUnifRange", 2.0f);
-			pdf.options.mixtureProposalRatio =
+			pf.options.mixtureProposalRatio =
 				iniFile->read_float("RO_MODEL", "mixtureProposalRatio", 0.10f);
 
 			size_t real_offsets_rows = 0;
 			double accum_xy_err_sqr = 0;
 			if (Pc_range_ini != Pc_range_end)
 			{
-				pdf.options.probabilityChangingBias = range_Pc;
+				pf.options.probabilityChangingBias = range_Pc;
 			}
 
-			pdf.options.metricMap = &metricMap;
+			pf.options.metricMap = &metricMap;
 
 			// Create Directory
 			OUT_DIR = format(
@@ -255,9 +258,8 @@ void TestParticlesLocalization()
 			CPose2D odometryEstimation(
 				iniFile->read_float("OdometryEstimation", "odometry_X", 0),
 				iniFile->read_float("OdometryEstimation", "odometry_Y", 0),
-				DEG2RAD(
-					iniFile->read_float(
-						"OdometryEstimation", "odometry_PHI", 0)));
+				DEG2RAD(iniFile->read_float(
+					"OdometryEstimation", "odometry_PHI", 0)));
 
 			CPose2D initialPoseExperiment(odometryEstimation);
 
@@ -273,7 +275,7 @@ void TestParticlesLocalization()
 			CVectorFloat state_min(nBeaconsInMap, 0.0f);
 			CVectorFloat state_max(nBeaconsInMap, 0.0f);
 
-			pdf.resetUniform(
+			pf.m_poseParticles.resetUniform(
 				initialPoseExperiment.x() - 0.5,
 				initialPoseExperiment.x() + 0.5,
 				initialPoseExperiment.y() - 0.5,
@@ -429,24 +431,24 @@ void TestParticlesLocalization()
 				tictac.Tic();
 				printf(
 					"Executing ParticleFilter on %u particles....",
-					(unsigned int)pdf.particlesCount());
+					(unsigned int)pf.m_poseParticles.particlesCount());
 
 				PF.executeOn(
-					pdf,
+					pf,
 					action.get(),  // Action
 					observations.get(),  // Obs.
 					&PF_stats  // Output statistics
-					);
+				);
 				printf(
 					" Done! in %.03fms, ESS=%f\n", 1000.0f * tictac.Tac(),
-					pdf.ESS());
+					pf.m_poseParticles.ESS());
 
 				// Text output:
 				// ----------------------------------------
-				odometryEstimation = odometryEstimation +
-									 action->getBestMovementEstimation()
-										 ->poseChange->getMeanVal();
-				pdf.getMean(pdfEstimation);
+				odometryEstimation =
+					odometryEstimation + action->getBestMovementEstimation()
+											 ->poseChange->getMeanVal();
+				pf.m_poseParticles.getMean(pdfEstimation);
 
 				CPose2D GT_Pose;
 				if (groundTruth.getRowCount() > size_t(step))
@@ -508,7 +510,8 @@ void TestParticlesLocalization()
 
 				}  // end GT
 
-				TExtendedCPose2D meanState = pdf.getEstimatedPoseState();
+				TExtendedCPose2D meanState =
+					pf.m_poseParticles.getEstimatedPoseState();
 
 				// likelihood_acumulation += pdfEstimation.distanceTo(CPoint2D
 				// (groundTruth(step,1),groundTruth(step,2)));
@@ -519,7 +522,7 @@ void TestParticlesLocalization()
 						  << " Cov:\n";
 
 				CMatrixDouble cov;
-				pdf.getCovariance(cov);
+				pf.m_poseParticles.getCovariance(cov);
 
 				std::cout << cov << "\n sqrt(Det.Cov) = " << sqrt(cov.det())
 						  << "\n";
@@ -544,24 +547,25 @@ void TestParticlesLocalization()
 					size_t(meanState.state.size()), size_t(nBeaconsInMap));
 				for (size_t l = 0; l < nBeaconsInMap; l++)
 					particle_matrix(step, 12 + l) = meanState.state[l];
-//----------------------------------------------
+					//----------------------------------------------
 
-//// Generate text files for matlab:
-//// ------------------------------------
-// pdf.saveToTextFile(format("%s/particles_%03u.txt",OUT_DIR.c_str(),step));
+					//// Generate text files for matlab:
+					//// ------------------------------------
+					// pf.saveToTextFile(format("%s/particles_%03u.txt",OUT_DIR.c_str(),step));
 
-/*{
-	CObservation2DRangeScan		*o = (CObservation2DRangeScan*)
-observations->getObservationByClass( CLASS_ID(CObservation2DRangeScan));
-	if (o)
-	{
-		MRPT_OS::sprintf(auxDirStr,1000,"%s/observation_scan_%03u.txt",OUT_DIR,step);
-		FILE	*f=MRPT_OS::fopen(auxDirStr,"wt");
-		for (unsigned int i=0;i<o->scan.size();i++)
-			fprintf(f,"%.03f ",o->scan[i]);
-		fclose(f);
-	}
-}*/
+					/*{
+						CObservation2DRangeScan		*o =
+					(CObservation2DRangeScan*)
+					observations->getObservationByClass(
+					CLASS_ID(CObservation2DRangeScan)); if (o)
+						{
+							MRPT_OS::sprintf(auxDirStr,1000,"%s/observation_scan_%03u.txt",OUT_DIR,step);
+							FILE	*f=MRPT_OS::fopen(auxDirStr,"wt");
+							for (unsigned int i=0;i<o->scan.size();i++)
+								fprintf(f,"%.03f ",o->scan[i]);
+							fclose(f);
+						}
+					}*/
 
 #ifdef STORE_3D
 				// Generate 3D scene:
@@ -569,15 +573,16 @@ observations->getObservationByClass( CLASS_ID(CObservation2DRangeScan));
 				{
 					CPose2D meanPose;
 					CMatrixDouble33 cov;
-					pdf.getCovarianceAndMean(cov, meanPose);
+					pf.m_poseParticles.getCovarianceAndMean(cov, meanPose);
 
-//// The gridmap:
-// if (metricMap.m_gridMaps.size())
-//{
-//	opengl::CSetOfObjects	*plane = new opengl::CSetOfObjects();
-//	metricMap.m_gridMaps[0]->getAs3DObject( *plane );
-//	scene->insert( plane );
-//}
+					//// The gridmap:
+					// if (metricMap.m_gridMaps.size())
+					//{
+					//	opengl::CSetOfObjects	*plane = new
+					//opengl::CSetOfObjects();
+					//	metricMap.m_gridMaps[0]->getAs3DObject( *plane );
+					//	scene->insert( plane );
+					//}
 
 #ifdef SHOW_REAL_TIME_3D
 					sceneTR = window.get3DSceneAndLock();
@@ -603,12 +608,12 @@ observations->getObservationByClass( CLASS_ID(CObservation2DRangeScan));
 					parts->setName("part");
 					parts->enableColorFromZ(false);
 
-					parts->resize(pdf.size());
+					parts->resize(pf.m_poseParticles.size());
 
-					for (size_t i = 0; i < pdf.size(); i++)
+					for (size_t i = 0; i < pf.m_poseParticles.size(); i++)
 						parts->setPoint(
-							i, pdf.m_particles[i].d->pose.x(),
-							pdf.m_particles[i].d->pose.y(), 0);
+							i, pf.m_poseParticles.m_particles[i].d->pose.x(),
+							pf.m_poseParticles.m_particles[i].d->pose.y(), 0);
 
 					if (!obj)
 					{
@@ -990,9 +995,8 @@ observations->getObservationByClass( CLASS_ID(CObservation2DRangeScan));
 #endif
 
 				if ((step % SCENE3D_FREQ) == 0)
-					CFileGZOutputStream(
-						format(
-							"%s/3Dscene_%03u.3Dscene", OUT_DIR.c_str(), step))
+					CFileGZOutputStream(format(
+						"%s/3Dscene_%03u.3Dscene", OUT_DIR.c_str(), step))
 						<< *scene;
 
 				step++;

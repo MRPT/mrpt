@@ -89,7 +89,7 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 					opengl::CSetOfObjects::Ptr maps3D =
 						mrpt::make_aligned_shared<opengl::CSetOfObjects>();
 					maps3D->setName("metric-maps");
-					bestLMH->getMostLikelyParticle()
+					bestLMH->m_poseParticles.getMostLikelyParticle()
 						->d->metricMaps.getAs3DObject(maps3D);
 					sceneLSLAM->insert(maps3D);
 

@@ -20,6 +20,8 @@
 
 #include <mrpt/slam/PF_aux_structs.h>
 
+#include <mrpt/bayes/CParticleFilter_impl.h>
+
 using namespace mrpt;
 using namespace mrpt::bayes;
 using namespace mrpt::poses;
@@ -61,8 +63,8 @@ void KLF_loadBinFromParticle(
 		outBin.phi = round(currentParticleValue->phi() / opts.KLD_binSize_PHI);
 	}
 }
-}
-}
+}  // namespace slam
+}  // namespace mrpt
 
 #include <mrpt/slam/PF_implementations.h>
 
@@ -72,7 +74,7 @@ void KLF_loadBinFromParticle(
 // Passing a "this" pointer at this moment is not a problem since it will be NOT
 // access until the object is fully initialized
 CMonteCarloLocalization2D::CMonteCarloLocalization2D(size_t M)
-	: CPosePDFParticles(M)
+	: m_poseParticles(M)
 {
 	this->setLoggerName("CMonteCarloLocalization2D");
 }
@@ -84,88 +86,13 @@ CMonteCarloLocalization2D::~CMonteCarloLocalization2D() {}
 TPose3D CMonteCarloLocalization2D::getLastPose(
 	const size_t i, bool& is_valid_pose) const
 {
-	if (i >= m_particles.size())
+	if (i >= m_poseParticles.m_particles.size())
 		THROW_EXCEPTION("Particle index out of bounds!");
 	is_valid_pose = true;
-	ASSERTDEB_(m_particles[i].d);
-	return TPose3D(TPose2D(*m_particles[i].d));
+	ASSERTDEB_(m_poseParticles.m_particles[i].d);
+	return TPose3D(TPose2D(*m_poseParticles.m_particles[i].d));
 }
 
-/*---------------------------------------------------------------
-
-			prediction_and_update_pfStandardProposal
-
- ---------------------------------------------------------------*/
-void CMonteCarloLocalization2D::prediction_and_update_pfStandardProposal(
-	const mrpt::obs::CActionCollection* actions,
-	const mrpt::obs::CSensoryFrame* sf,
-	const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
-{
-	MRPT_START
-
-	if (sf)
-	{  // A map MUST be supplied!
-		ASSERT_(options.metricMap || options.metricMaps.size() > 0)
-		if (!options.metricMap)
-			ASSERT_(options.metricMaps.size() == m_particles.size())
-	}
-
-	PF_SLAM_implementation_pfStandardProposal<mrpt::slam::detail::TPoseBin2D>(
-		actions, sf, PF_options, options.KLD_params);
-
-	MRPT_END
-}
-
-/*---------------------------------------------------------------
-
-			prediction_and_update_pfAuxiliaryPFStandard
-
- ---------------------------------------------------------------*/
-void CMonteCarloLocalization2D::prediction_and_update_pfAuxiliaryPFStandard(
-	const mrpt::obs::CActionCollection* actions,
-	const mrpt::obs::CSensoryFrame* sf,
-	const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
-{
-	MRPT_START
-
-	if (sf)
-	{  // A map MUST be supplied!
-		ASSERT_(options.metricMap || options.metricMaps.size() > 0)
-		if (!options.metricMap)
-			ASSERT_(options.metricMaps.size() == m_particles.size())
-	}
-
-	PF_SLAM_implementation_pfAuxiliaryPFStandard<
-		mrpt::slam::detail::TPoseBin2D>(
-		actions, sf, PF_options, options.KLD_params);
-
-	MRPT_END
-}
-
-/*---------------------------------------------------------------
-
-			prediction_and_update_pfAuxiliaryPFOptimal
-
- ---------------------------------------------------------------*/
-void CMonteCarloLocalization2D::prediction_and_update_pfAuxiliaryPFOptimal(
-	const mrpt::obs::CActionCollection* actions,
-	const mrpt::obs::CSensoryFrame* sf,
-	const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
-{
-	MRPT_START
-
-	if (sf)
-	{  // A map MUST be supplied!
-		ASSERT_(options.metricMap || options.metricMaps.size() > 0)
-		if (!options.metricMap)
-			ASSERT_(options.metricMaps.size() == m_particles.size())
-	}
-
-	PF_SLAM_implementation_pfAuxiliaryPFOptimal<mrpt::slam::detail::TPoseBin2D>(
-		actions, sf, PF_options, options.KLD_params);
-
-	MRPT_END
-}
 
 /*---------------------------------------------------------------
 			PF_SLAM_computeObservationLikelihoodForParticle
@@ -283,26 +210,62 @@ void CMonteCarloLocalization2D::resetUniformFreeSpace(
 
 	if (particlesCount > 0)
 	{
-		clear();
-		m_particles.resize(particlesCount);
+		m_poseParticles.clear();
+		m_poseParticles.m_particles.resize(particlesCount);
 		for (int i = 0; i < particlesCount; i++)
-			m_particles[i].d.reset(new CPose2D());
+			m_poseParticles.m_particles[i].d.reset(new CPose2D());
 	}
 
-	const size_t M = m_particles.size();
+	const size_t M = m_poseParticles.m_particles.size();
 
 	// Generate pose m_particles:
 	for (size_t i = 0; i < M; i++)
 	{
 		int idx = round(getRandomGenerator().drawUniform(0.0, nFreeCells - 1.001));
 
-		m_particles[i].d->x(
+		m_poseParticles.m_particles[i].d->x(
 			freeCells_x[idx] + getRandomGenerator().drawUniform(-gridRes, gridRes));
-		m_particles[i].d->y(
+		m_poseParticles.m_particles[i].d->y(
 			freeCells_y[idx] + getRandomGenerator().drawUniform(-gridRes, gridRes));
-		m_particles[i].d->phi(getRandomGenerator().drawUniform(phi_min, phi_max));
-		m_particles[i].log_w = 0;
+		m_poseParticles.m_particles[i].d->phi(
+			getRandomGenerator().drawUniform(phi_min, phi_max));
+		m_poseParticles.m_particles[i].log_w = 0;
 	}
 
 	MRPT_END
+}
+
+namespace mrpt
+{
+namespace bayes
+{
+template <>
+void CParticleFilter::executeOn<CMonteCarloLocalization2D>(
+	CMonteCarloLocalization2D& obj, const mrpt::obs::CActionCollection* action,
+	const mrpt::obs::CSensoryFrame* observation, TParticleFilterStats* stats)
+{
+	switch (m_options.PF_algorithm)
+	{
+		case CParticleFilter::pfStandardProposal:
+			executeOn<CMonteCarloLocalization2D, mrpt::slam::StandardProposal>(
+				obj, action, observation, stats);
+			break;
+		case CParticleFilter::pfAuxiliaryPFStandard:
+			executeOn<CMonteCarloLocalization2D, mrpt::slam::AuxiliaryPFStandard>(
+				obj, action, observation, stats);
+			break;
+		case CParticleFilter::pfAuxiliaryPFOptimal:
+			executeOn<CMonteCarloLocalization2D, mrpt::slam::AuxiliaryPFOptimal>(
+				obj, action, observation, stats);
+			break;
+		default:
+		{
+			THROW_EXCEPTION("Invalid particle filter algorithm selection!");
+		}
+		break;
+	}
+
+}
+
+}
 }

@@ -50,61 +50,6 @@ class CPosePDFParticlesExtended
 	DEFINE_SERIALIZABLE(CPosePDFParticlesExtended)
 
    public:
-	/** The struct for passing extra simulation parameters to the prediction
-	 * stage
-	 *    when running a particle filter.
-	 * \sa prediction
-	 */
-	struct TPredictionParams
-	{
-		/** Default settings method.
-		  */
-		TPredictionParams();
-
-		/** [update stage] Must be set to a metric map used to estimate the
-		 * likelihood of observations
-		  */
-		mrpt::maps::CMetricMap* metricMap;
-
-		/** [update stage] Alternative way (if metricMap==nullptr): A metric map
-		 * is supplied for each particle: There must be the same maps here as
-		 * pose particles.
-		  */
-		mrpt::maps::TMetricMapList metricMaps;
-
-		/** Parameters for the KLD adaptive sample size algorithm (see Dieter
-		 * Fox's papers), which is used only if the CParticleFilter is created
-		 * with the "adaptiveSampleSize" flag set to true.
-		  */
-		float KLD_binSize_XY, KLD_binSize_PHI, KLD_delta, KLD_epsilon;
-
-		/** Parameters for the KLD adaptive sample size algorithm (see Dieter
-		 * Fox's papers), which is used only if the CParticleFilter is created
-		 * with the "adaptiveSampleSize" flag set to true.
-		  */
-		unsigned int KLD_minSampleSize, KLD_maxSampleSize;
-
-		/** In the algorithm "CParticleFilter::pfAuxiliaryPFOptimal", the number
-		 * of samples for searching the maximum likelihood value (see papers!)
-		  */
-		unsigned int pfAuxFilterOptimal_MaximumSearchSamples;
-
-		/** The probability [0,1] of changing the UWB bias (individual for each
-		 * beacon's bias).
-		  */
-		float probabilityChangingBias;
-
-		/** The bias of each beacon will be added a uniform random variable
-		 * [-changingBiasUnifRange/2,changingBiasUnifRange/2] with a probability
-		 * "probabilityChangingBias".
-		  */
-		float changingBiasUnifRange;
-
-		/** A number between 0 and 1 (0=standard proposal).
-		  */
-		float mixtureProposalRatio;
-
-	} options;
 
 	/** Free all the memory associated to particles, and set the number of parts
 	 * = 0 */
@@ -172,42 +117,6 @@ class CPosePDFParticlesExtended
 	/** Returns the pose of the i'th particle.
 	  */
 	CPose2D getParticlePose(int i) const;
-
-	/** Update the particles, predicting the posterior of robot pose and map
-	 * after a movement command.
-	 *  This method has additional configuration parameters in "options".
-	 *  Performs the update stage of the RBPF, using the sensed sensory Frame:
-	 *
-	 *   \param action This is a pointer to CActionCollection, containing the
-	 * pose change the robot has been commanded.
-	 *   \param observation This must be a pointer to a CsensoryFrame object,
-	 * with robot sensed observations.
-	 *
-	 * \sa options
-	 */
-	void prediction_and_update_pfStandardProposal(
-		const mrpt::obs::CActionCollection* action,
-		const mrpt::obs::CSensoryFrame* observation,
-		const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
-		override;
-
-	/** Update the particles, predicting the posterior of robot pose and map
-	 * after a movement command.
-	 *  This method has additional configuration parameters in "options".
-	 *  Performs the update stage of the RBPF, using the sensed sensory Frame:
-	 *
-	 *   \param action This is a pointer to CActionCollection, containing the
-	 * pose change the robot has been commanded.
-	 *   \param observation This must be a pointer to a CsensoryFrame object,
-	 * with robot sensed observations.
-	 *
-	 * \sa options
-	 */
-	void prediction_and_update_pfAuxiliaryPFOptimal(
-		const mrpt::obs::CActionCollection* actions,
-		const mrpt::obs::CSensoryFrame* sf,
-		const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
-		override;
 
 	/** Save PDF's particles to a text file. In each line it will go: "x y phi
 	 * weight"
@@ -278,30 +187,114 @@ class CPosePDFParticlesExtended
 		THROW_EXCEPTION("Not implemented");
 	}
 
-   private:
+
+};  // End of class def.
+
+class CPosePDFParticlesExtendedPF
+{
+public:
+	using CParticleList = CPosePDFParticlesExtended::CParticleList;
+	CPosePDFParticlesExtended m_poseParticles;
+	CPosePDFParticlesExtendedPF(size_t M = 1) : m_poseParticles(M) {}
+
+	/** The struct for passing extra simulation parameters to the prediction
+	 * stage
+	 *    when running a particle filter.
+	 * \sa prediction
+	 */
+	struct TPredictionParams
+	{
+		/** Default settings method.
+		  */
+		TPredictionParams();
+
+		/** [update stage] Must be set to a metric map used to estimate the
+		 * likelihood of observations
+		  */
+		mrpt::maps::CMetricMap* metricMap;
+
+		/** [update stage] Alternative way (if metricMap==nullptr): A metric map
+		 * is supplied for each particle: There must be the same maps here as
+		 * pose particles.
+		  */
+		mrpt::maps::TMetricMapList metricMaps;
+
+		/** Parameters for the KLD adaptive sample size algorithm (see Dieter
+		 * Fox's papers), which is used only if the CParticleFilter is created
+		 * with the "adaptiveSampleSize" flag set to true.
+		  */
+		float KLD_binSize_XY, KLD_binSize_PHI, KLD_delta, KLD_epsilon;
+
+		/** Parameters for the KLD adaptive sample size algorithm (see Dieter
+		 * Fox's papers), which is used only if the CParticleFilter is created
+		 * with the "adaptiveSampleSize" flag set to true.
+		  */
+		unsigned int KLD_minSampleSize, KLD_maxSampleSize;
+
+		/** In the algorithm "CParticleFilter::pfAuxiliaryPFOptimal", the number
+		 * of samples for searching the maximum likelihood value (see papers!)
+		  */
+		unsigned int pfAuxFilterOptimal_MaximumSearchSamples;
+
+		/** The probability [0,1] of changing the UWB bias (individual for each
+		 * beacon's bias).
+		  */
+		float probabilityChangingBias;
+
+		/** The bias of each beacon will be added a uniform random variable
+		 * [-changingBiasUnifRange/2,changingBiasUnifRange/2] with a probability
+		 * "probabilityChangingBias".
+		  */
+		float changingBiasUnifRange;
+
+		/** A number between 0 and 1 (0=standard proposal).
+		  */
+		float mixtureProposalRatio;
+
+	} options;
+
+	/** Update the particles, predicting the posterior of robot pose and map
+	 * after a movement command.
+	 *  This method has additional configuration parameters in "options".
+	 *  Performs the update stage of the RBPF, using the sensed sensory Frame:
+	 *
+	 *   \param action This is a pointer to CActionCollection, containing the
+	 * pose change the robot has been commanded.
+	 *   \param observation This must be a pointer to a CsensoryFrame object,
+	 * with robot sensed observations.
+	 *
+	 * \sa options
+	 */
+	template <typename PF_ALGORITHM>
+	void prediction_and_update(
+		const mrpt::obs::CActionCollection* action,
+		const mrpt::obs::CSensoryFrame* observation,
+		const bayes::CParticleFilter::TParticleFilterOptions& PF_options);
+
+private:
 	void offsetTransitionModel(double& val);
 
 	/** Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm.
 	  */
-	mutable mrpt::math::CVectorDouble m_pfAuxiliaryPFOptimal_estimatedProb;
+	mrpt::math::CVectorDouble m_pfAuxiliaryPFOptimal_estimatedProb;
 
 	/** Auxiliary function that evaluates the likelihood of an observation,
 	 * given a robot pose, and according to the options in
 	 * "CPosePDFParticlesExtended::options".
 	  */
-	static double auxiliarComputeObservationLikelihood(
+	double auxiliarComputeObservationLikelihood(
 		const bayes::CParticleFilter::TParticleFilterOptions& PF_options,
 		const bayes::CParticleFilterCapable* obj, size_t particleIndexForMap,
 		const mrpt::obs::CSensoryFrame* observation, const TExtendedCPose2D* x);
 
 	/** Auxiliary function used in "prediction_and_update_pfAuxiliaryPFOptimal"
 		*/
-	static double particlesEvaluator_AuxPFOptimal(
+	double particlesEvaluator_AuxPFOptimal(
 		const bayes::CParticleFilter::TParticleFilterOptions& PF_options,
 		const bayes::CParticleFilterCapable* obj, size_t index,
 		const void* action, const void* observation);
 
-};  // End of class def.
+};
 
 /** Auxiliary structure
   */
@@ -318,7 +311,6 @@ struct lt_TPoseBin
 		return s1.x < s2.x;
 	}
 };
-
 }  // End of namespace
 }  // End of namespace
 

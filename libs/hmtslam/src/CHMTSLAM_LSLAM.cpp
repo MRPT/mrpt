@@ -116,8 +116,8 @@ void CHMTSLAM::thread_LSLAM()
 				// -----------------------------------------
 				ASSERT_(!obj->m_LMHs.empty());
 
-				aligned_containers<THypothesisID,
-								   CLocalMetricHypothesis>::map_t::iterator it;
+				aligned_containers<
+					THypothesisID, CLocalMetricHypothesis>::map_t::iterator it;
 
 				ASSERT_(obj->m_LSLAM_method);
 
@@ -416,10 +416,9 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 		std::lock_guard<std::mutex> lock(m_map_cs);
 		utils::CStringList s;
 		m_map.dumpAsText(s);
-		s.saveToFile(
-			format(
-				"%s/HMAP_txt/HMAP_%05i_before.txt",
-				m_options.LOG_OUTPUT_DIR.c_str(), DEBUG_STEP));
+		s.saveToFile(format(
+			"%s/HMAP_txt/HMAP_%05i_before.txt",
+			m_options.LOG_OUTPUT_DIR.c_str(), DEBUG_STEP));
 		logFmt(
 			mrpt::utils::LVL_INFO,
 			"[LSLAM_proc_msg_AA] Saved HMAP_%05i_before.txt\n", DEBUG_STEP);
@@ -891,7 +890,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 									node_c,  // Target
 									LMH->m_ID,  // Hypos
 									&m_map  // The graph
-									);
+								);
 								newArc->m_arcType.setType("RelativePose");
 								arcDeltaIsInverted = false;
 							}
@@ -1339,10 +1338,8 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 					lstClosestDoubtfulNeigbors.end())
 				{
 					// Add link to closest area:
-					lstInternalArcsToCreate.insert(
-						TPairNodeIDs(
-							area_ID,
-							lstClosestDoubtfulNeigbors[area_ID].first));
+					lstInternalArcsToCreate.insert(TPairNodeIDs(
+						area_ID, lstClosestDoubtfulNeigbors[area_ID].first));
 
 					// Now they have a link:
 					areasWithLink.insert(area_ID);
@@ -1442,7 +1439,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 					area_b_ID,  // Target
 					theArcHypos,  // Hypos
 					&m_map  // The graph
-					);
+				);
 				newArc->m_arcType.setType("RelativePose");
 				arcDeltaIsInverted = false;
 			}
@@ -1568,10 +1565,9 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 		std::lock_guard<std::mutex> lock(m_map_cs);
 		utils::CStringList s;
 		m_map.dumpAsText(s);
-		s.saveToFile(
-			format(
-				"%s/HMAP_txt/HMAP_%05i_mid.txt",
-				m_options.LOG_OUTPUT_DIR.c_str(), DEBUG_STEP));
+		s.saveToFile(format(
+			"%s/HMAP_txt/HMAP_%05i_mid.txt", m_options.LOG_OUTPUT_DIR.c_str(),
+			DEBUG_STEP));
 		logFmt(
 			mrpt::utils::LVL_INFO,
 			"[LSLAM_proc_msg_AA] Saved HMAP_%05i_mid.txt\n", DEBUG_STEP);
@@ -1610,9 +1606,9 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 				pNei1 = mrpt::utils::erase_return_next(LMH->m_neighbors, pNei1);
 
 				// Now: this calls internally to "updateAreaFromLMH"
-				double ESS_bef = LMH->ESS();
+				double ESS_bef = LMH->m_poseParticles.ESS();
 				LMH->removeAreaFromLMH(id);
-				double ESS_aft = LMH->ESS();
+				double ESS_aft = LMH->m_poseParticles.ESS();
 				logFmt(
 					mrpt::utils::LVL_INFO,
 					"[LSLAM_proc_msg_AA] ESS: %f -> %f\n", ESS_bef, ESS_aft);
@@ -1760,14 +1756,14 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 					// Add the particles:
 					ASSERT_(
 						poseInfo.pdf.m_particles.size() ==
-						LMH->m_particles.size());
+						LMH->m_poseParticles.m_particles.size());
 
 					CPose3DPDFParticles::CParticleList::const_iterator itSrc;
 					CLocalMetricHypothesis::CParticleList::iterator itTrg;
 
 					for (itSrc = poseInfo.pdf.m_particles.begin(),
-						itTrg = LMH->m_particles.begin();
-						 itTrg != LMH->m_particles.end(); itSrc++, itTrg++)
+						itTrg = LMH->m_poseParticles.m_particles.begin();
+						 itTrg != LMH->m_poseParticles.m_particles.end(); itSrc++, itTrg++)
 					{
 						// log_w: not modified since diff. areas are
 						// independent...
@@ -1806,10 +1802,9 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 	{
 		utils::CStringList s;
 		LMH->dumpAsText(s);
-		s.saveToFile(
-			format(
-				"%s/HMAP_txt/HMAP_%05i_LMH_mid.txt",
-				m_options.LOG_OUTPUT_DIR.c_str(), DEBUG_STEP));
+		s.saveToFile(format(
+			"%s/HMAP_txt/HMAP_%05i_LMH_mid.txt",
+			m_options.LOG_OUTPUT_DIR.c_str(), DEBUG_STEP));
 		logFmt(
 			mrpt::utils::LVL_INFO,
 			"[LSLAM_proc_msg_AA] Saved HMAP_%05i_LMH_mid.txt\n", DEBUG_STEP);
@@ -1821,7 +1816,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 		opengl::CSetOfObjects::Ptr maps3D =
 			mrpt::make_aligned_shared<opengl::CSetOfObjects>();
 		maps3D->setName("metric-maps");
-		LMH->getMostLikelyParticle()->d->metricMaps.getAs3DObject(maps3D);
+		LMH->m_poseParticles.getMostLikelyParticle()->d->metricMaps.getAs3DObject(maps3D);
 		sceneLSLAM.insert(maps3D);
 
 		// ...and the robot poses, areas, etc:
@@ -1886,8 +1881,8 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 
 					// Process the poses in the list for each particle:
 					for (CLocalMetricHypothesis::CParticleList::iterator
-							 partIt = LMH->m_particles.begin();
-						 partIt != LMH->m_particles.end(); ++partIt)
+							 partIt = LMH->m_poseParticles.m_particles.begin();
+						 partIt != LMH->m_poseParticles.m_particles.end(); ++partIt)
 					{
 						TMapPoseID2Pose3D::const_iterator pose3D =
 							partIt->d->robotPoses.find(poseToAdd);
@@ -1910,10 +1905,9 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 		std::lock_guard<std::mutex> lock(m_map_cs);
 		utils::CStringList s;
 		m_map.dumpAsText(s);
-		s.saveToFile(
-			format(
-				"%s/HMAP_txt/HMAP_%05i_after.txt",
-				m_options.LOG_OUTPUT_DIR.c_str(), DEBUG_STEP));
+		s.saveToFile(format(
+			"%s/HMAP_txt/HMAP_%05i_after.txt", m_options.LOG_OUTPUT_DIR.c_str(),
+			DEBUG_STEP));
 		logFmt(
 			mrpt::utils::LVL_INFO,
 			"[LSLAM_proc_msg_AA] Saved HMAP_%05i_after.txt\n", DEBUG_STEP);
@@ -1922,10 +1916,9 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 	{
 		utils::CStringList s;
 		LMH->dumpAsText(s);
-		s.saveToFile(
-			format(
-				"%s/HMAP_txt/HMAP_%05i_LMH_after.txt",
-				m_options.LOG_OUTPUT_DIR.c_str(), DEBUG_STEP));
+		s.saveToFile(format(
+			"%s/HMAP_txt/HMAP_%05i_LMH_after.txt",
+			m_options.LOG_OUTPUT_DIR.c_str(), DEBUG_STEP));
 		logFmt(
 			mrpt::utils::LVL_INFO,
 			"[LSLAM_proc_msg_AA] Saved HMAP_%05i_LMH_after.txt\n", DEBUG_STEP);
@@ -1985,7 +1978,7 @@ void CHMTSLAM::LSLAM_process_message_from_TBI(const TMessageLSLAMfromTBI& myMsg)
 			// "currentArea" (The order is critical!!)
 			candidate->first, pdfPartsHMap, myMsg.hypothesisID, 100, 0.10f,
 			DEG2RAD(1.0f)  // Extra noise in each "arc"
-			);
+		);
 
 		CPose3DPDFGaussian pdfDeltaMap;
 		pdfDeltaMap.copyFrom(pdfPartsHMap);

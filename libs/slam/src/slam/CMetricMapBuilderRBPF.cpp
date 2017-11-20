@@ -14,6 +14,8 @@
 #include <mrpt/utils/CEnhancedMetaFile.h>
 #include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/math/utils.h>
+#include <mrpt/bayes/CParticleFilter_impl.h>
+#include <mrpt/slam/PF_implementations.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -240,7 +242,7 @@ void CMetricMapBuilderRBPF::processActionObservation(
 
 			MRPT_LOG_INFO_STREAM(
 				"New pose=" << estPos << std::endl
-							<< "New ESS:" << mapPDF.ESS() << std::endl);
+							<< "New ESS:" << mapPDF.m_poseParticles.ESS() << std::endl);
 			MRPT_LOG_INFO(
 				format(
 					"   STDs: x=%2.3f y=%2.3f z=%.03f yaw=%2.3fdeg\n",
@@ -275,8 +277,8 @@ void CMetricMapBuilderRBPF::processActionObservation(
 	// variables
 	//  (if any) since one PF cycle is over:
 	for (CMultiMetricMapPDF::CParticleList::iterator it =
-			 mapPDF.m_particles.begin();
-		 it != mapPDF.m_particles.end(); ++it)
+			 mapPDF.m_poseParticles.m_particles.begin();
+		 it != mapPDF.m_poseParticles.m_particles.end(); ++it)
 		it->d->mapTillNow.auxParticleFilterCleanUp();
 
 	MRPT_END;
@@ -342,9 +344,9 @@ void CMetricMapBuilderRBPF::getCurrentMostLikelyPath(
 {
 	double maxW = -1, w;
 	size_t mostLik = 0;
-	for (size_t i = 0; i < mapPDF.particlesCount(); i++)
+	for (size_t i = 0; i < mapPDF.m_poseParticles.particlesCount(); i++)
 	{
-		w = mapPDF.getW(i);
+		w = mapPDF.m_poseParticles.getW(i);
 		if (w > maxW)
 		{
 			maxW = w;
@@ -385,7 +387,7 @@ void CMetricMapBuilderRBPF::drawCurrentEstimationToImage(utils::CCanvas* img)
 {
 	using mrpt::utils::round;
 
-	unsigned int i, M = mapPDF.particlesCount();
+	unsigned int i, M = mapPDF.m_poseParticles.particlesCount();
 	std::deque<TPose3D> path;
 	unsigned int imgHeight = 0;
 
@@ -401,9 +403,9 @@ void CMetricMapBuilderRBPF::drawCurrentEstimationToImage(utils::CCanvas* img)
 	double bestPathLik = -1;
 	for (i = 0; i < M; i++)
 	{
-		if (mapPDF.getW(i) > bestPathLik)
+		if (mapPDF.m_poseParticles.getW(i) > bestPathLik)
 		{
-			bestPathLik = mapPDF.getW(i);
+			bestPathLik = mapPDF.m_poseParticles.getW(i);
 			bestPath = i;
 		}
 	}

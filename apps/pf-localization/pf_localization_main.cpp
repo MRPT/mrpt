@@ -24,6 +24,7 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/bayes/CParticleFilter.h>
+#include <mrpt/bayes/CParticleFilter_impl.h>
 #include <mrpt/random.h>
 
 #include <mrpt/obs/CActionRobotMovement2D.h>
@@ -441,7 +442,7 @@ void do_pf_localization(
 					DEG2RAD(cfg.read_float(sect, "init_PDF_min_phi_deg", -180)),
 					DEG2RAD(cfg.read_float(sect, "init_PDF_max_phi_deg", 180)));
 			else
-				pdf.resetUniform(
+				pdf.m_poseParticles.resetUniform(
 					init_PDF_min_x, init_PDF_max_x, init_PDF_min_y,
 					init_PDF_max_y,
 					DEG2RAD(cfg.read_float(sect, "init_PDF_min_phi_deg", -180)),
@@ -542,7 +543,7 @@ void do_pf_localization(
 						{
 							CPose2D meanPose;
 							CMatrixDouble33 cov;
-							pdf.getCovarianceAndMean(cov, meanPose);
+							pdf.m_poseParticles.getCovarianceAndMean(cov, meanPose);
 
 							if (rawlogEntry >= 2)
 								getGroundTruth(
@@ -568,7 +569,7 @@ void do_pf_localization(
 								10, 33,
 								mrpt::format(
 									"#particles= %7u",
-									static_cast<unsigned int>(pdf.size())),
+									static_cast<unsigned int>(pdf.m_poseParticles.size())),
 								mrpt::utils::TColorf(.8f, .8f, .8f), "mono", 15,
 								mrpt::opengl::NICE, 6002);
 
@@ -620,7 +621,7 @@ void do_pf_localization(
 								if (parts) ptrScene->removeObject(parts);
 
 								CSetOfObjects::Ptr p =
-									pdf.getAs3DObject<CSetOfObjects::Ptr>();
+									pdf.m_poseParticles.getAs3DObject<CSetOfObjects::Ptr>();
 								p->setName("particles");
 								ptrScene->insert(p);
 							}
@@ -734,7 +735,7 @@ void do_pf_localization(
 								"Step %u -- Executing ParticleFilter on %u "
 								"particles....",
 								(unsigned int)step,
-								(unsigned int)pdf.particlesCount());
+								(unsigned int)pdf.m_poseParticles.particlesCount());
 
 						PF.executeOn(
 							pdf,
@@ -746,7 +747,7 @@ void do_pf_localization(
 						if (!SAVE_STATS_ONLY)
 							printf(
 								" Done! in %.03fms, ESS=%f\n",
-								1000.0f * tictac.Tac(), pdf.ESS());
+								1000.0f * tictac.Tac(), pdf.m_poseParticles.ESS());
 					}
 
 					// Avrg. error:
@@ -758,7 +759,7 @@ void do_pf_localization(
 							odometryEstimation +
 							best_mov_estim->poseChange->getMeanVal();
 
-					pdf.getMean(pdfEstimation);
+					pdf.m_poseParticles.getMean(pdfEstimation);
 
 					getGroundTruth(
 						expectedPose, rawlogEntry, GT, cur_obs_timestamp);
@@ -769,12 +770,12 @@ void do_pf_localization(
 					{  // Averaged error to GT
 						double sumW = 0;
 						double locErr = 0;
-						for (size_t k = 0; k < pdf.size(); k++)
-							sumW += exp(pdf.getW(k));
-						for (size_t k = 0; k < pdf.size(); k++)
+						for (size_t k = 0; k < pdf.m_poseParticles.size(); k++)
+							sumW += exp(pdf.m_poseParticles.getW(k));
+						for (size_t k = 0; k < pdf.m_poseParticles.size(); k++)
 							locErr += expectedPose.distanceTo(
-										  pdf.getParticlePose(k)) *
-									  exp(pdf.getW(k)) / sumW;
+										  pdf.m_poseParticles.getParticlePose(k)) *
+									  exp(pdf.m_poseParticles.getW(k)) / sumW;
 						covergenceErrors.push_back(locErr);
 					}
 #else
@@ -784,7 +785,7 @@ void do_pf_localization(
 #endif
 
 					CPosePDFGaussian current_pdf_gaussian;
-					pdf.getCovarianceAndMean(
+					pdf.m_poseParticles.getCovarianceAndMean(
 						current_pdf_gaussian.cov, current_pdf_gaussian.mean);
 
 					// Text output:
@@ -904,7 +905,7 @@ void do_pf_localization(
 					{
 						f_cov_est.printf("%e\n", sqrt(cov.det()));
 						f_pf_stats.printf(
-							"%u %e %e %f %f\n", (unsigned int)pdf.size(),
+							"%u %e %e %f %f\n", (unsigned int)pdf.m_poseParticles.size(),
 							PF_stats.ESS_beforeResample,
 							PF_stats.weightsVariance_beforeResample,
 							obs_reliability_estim,
@@ -916,7 +917,7 @@ void do_pf_localization(
 
 					CPose2D meanPose;
 					CMatrixDouble33 cov;
-					pdf.getCovarianceAndMean(cov, meanPose);
+					pdf.m_poseParticles.getCovarianceAndMean(cov, meanPose);
 
 					if (!SAVE_STATS_ONLY && SCENE3D_FREQ > 0 &&
 						(step % SCENE3D_FREQ) == 0)
@@ -951,7 +952,7 @@ void do_pf_localization(
 							if (parts) scene.removeObject(parts);
 
 							CSetOfObjects::Ptr p =
-								pdf.getAs3DObject<CSetOfObjects::Ptr>();
+								pdf.m_poseParticles.getAs3DObject<CSetOfObjects::Ptr>();
 							p->setName("particles");
 							scene.insert(p);
 						}
@@ -1050,7 +1051,7 @@ void do_pf_localization(
 
 						// Generate text files for matlab:
 						// ------------------------------------
-						pdf.saveToTextFile(
+						pdf.m_poseParticles.saveToTextFile(
 							format(
 								"%s/particles_%05u.txt", sOUT_DIR_PARTS.c_str(),
 								(unsigned)step));

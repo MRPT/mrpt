@@ -20,8 +20,11 @@
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CFileStream.h>
 #include <mrpt/bayes/CParticleFilter.h>
+#include <mrpt/bayes/CParticleFilter_impl.h>
 #include <mrpt/system/os.h>
 #include <mrpt/utils/CTicTac.h>
+
+#include <functional>
 
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -34,6 +37,57 @@ using namespace mrpt::bayes;
 using namespace mrpt::poses;
 using namespace std;
 
+namespace mrpt
+{
+namespace hmtslam
+{
+class LSLAMAuxiliaryPFOptimal
+{
+public:
+	static constexpr bool DoesResampling = false;
+	MRPT_TODO("MOVE predicition_and_update code here");
+};
+
+class LSLAMOptimalProposal
+{
+   public:
+	static constexpr bool DoesResampling = true;
+	MRPT_TODO("MOVE prediction_and_update here");
+};
+
+}
+
+
+namespace bayes
+{
+template <>
+void CParticleFilter::executeOn<CLocalMetricHypothesis>(
+	CLocalMetricHypothesis& obj, const mrpt::obs::CActionCollection* action,
+	const mrpt::obs::CSensoryFrame* observation, TParticleFilterStats* stats)
+{
+	switch (m_options.PF_algorithm)
+	{
+		case CParticleFilter::pfOptimalProposal:
+			executeOn<
+				CLocalMetricHypothesis, mrpt::hmtslam::LSLAMOptimalProposal>(
+				obj, action, observation, stats);
+			break;
+		case CParticleFilter::pfAuxiliaryPFOptimal:
+			executeOn<
+				CLocalMetricHypothesis, mrpt::hmtslam::LSLAMAuxiliaryPFOptimal>(
+				obj, action, observation, stats);
+			break;
+		default:
+		{
+			THROW_EXCEPTION("Invalid particle filter algorithm selection!");
+		}
+		break;
+	}
+}
+}  // namespace bayes
+
+namespace hmtslam
+{
 // Constructor
 CLSLAM_RBPF_2DLASER::CLSLAM_RBPF_2DLASER(CHMTSLAM* parent)
 	: CLSLAMAlgorithmBase(parent)
@@ -75,10 +129,10 @@ void CLSLAM_RBPF_2DLASER::processOneLMH(
 		// Create a new robot pose:
 		CPose3D initPose(0, 0, 0);
 
-		ASSERT_(LMH->m_particles.size() > 0);
+		ASSERT_(LMH->m_poseParticles.m_particles.size() > 0);
 		for (CLocalMetricHypothesis::CParticleList::iterator it =
-				 LMH->m_particles.begin();
-			 it != LMH->m_particles.end(); ++it)
+				 LMH->m_poseParticles.m_particles.begin();
+			 it != LMH->m_poseParticles.m_particles.end(); ++it)
 			it->d->robotPoses[currentPoseID] = initPose;
 
 		ASSERT_(m_parent->m_map.nodeCount() == 1);
@@ -122,9 +176,8 @@ void CLSLAM_RBPF_2DLASER::processOneLMH(
 				if (it->first != currentPoseID)
 				{
 					float linDist = it->second.distanceTo(*currentRobotPose);
-					float angDist = fabs(
-						math::wrapToPi(
-							it->second.yaw() - currentRobotPose->yaw()));
+					float angDist = fabs(math::wrapToPi(
+						it->second.yaw() - currentRobotPose->yaw()));
 
 					minDistLin = min(minDistLin, linDist);
 
@@ -176,8 +229,8 @@ void CLSLAM_RBPF_2DLASER::processOneLMH(
 		//     and insert the observations into the metric maps:
 		// ----------------------------------------------------------------------------
 		for (CLocalMetricHypothesis::CParticleList::iterator partIt =
-				 LMH->m_particles.begin();
-			 partIt != LMH->m_particles.end(); partIt++)
+				 LMH->m_poseParticles.m_particles.begin();
+			 partIt != LMH->m_poseParticles.m_particles.end(); partIt++)
 		{
 			const CPose3D* curRobotPose = &partIt->d->robotPoses[currentPoseID];
 			partIt->d->robotPoses[newCurrentPoseID] = *curRobotPose;
@@ -225,18 +278,19 @@ void CLSLAM_RBPF_2DLASER::processOneLMH(
 
 /** The PF algorithm implementation for "optimal sampling for non-parametric
  * observation models"
-  */
-void CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
-	CLocalMetricHypothesis* LMH, const mrpt::obs::CActionCollection* actions,
+ */
+template <>
+void CLocalMetricHypothesis::prediction_and_update<LSLAMAuxiliaryPFOptimal>(
+	const mrpt::obs::CActionCollection* actions,
 	const mrpt::obs::CSensoryFrame* sf,
 	const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
 {
 	MRPT_START
 
 	// Get the current robot pose estimation:
-	TPoseID currentPoseID = LMH->m_currentRobotPose;
+	TPoseID currentPoseID = m_currentRobotPose;
 
-	size_t i, k, N, M = LMH->m_particles.size();
+	size_t i, k, N, M = m_poseParticles.m_particles.size();
 
 	// ----------------------------------------------------------------------
 	//	  We can execute optimal PF only when we have both, an action, and
@@ -258,31 +312,31 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 				"Action list does not contain any CActionRobotMovement2D "
 				"derived object!");
 
-		if (!LMH->m_accumRobotMovementIsValid)  // Reset accum.
+		if (!m_accumRobotMovementIsValid)  // Reset accum.
 		{
 			act->poseChange->getMean(
-				LMH->m_accumRobotMovement.rawOdometryIncrementReading);
-			LMH->m_accumRobotMovement.motionModelConfiguration =
+				m_accumRobotMovement.rawOdometryIncrementReading);
+			m_accumRobotMovement.motionModelConfiguration =
 				act->motionModelConfiguration;
 		}
 		else
-			LMH->m_accumRobotMovement.rawOdometryIncrementReading =
-				LMH->m_accumRobotMovement.rawOdometryIncrementReading +
+			m_accumRobotMovement.rawOdometryIncrementReading =
+				m_accumRobotMovement.rawOdometryIncrementReading +
 				act->poseChange->getMeanVal();
 
-		LMH->m_accumRobotMovementIsValid = true;
+		m_accumRobotMovementIsValid = true;
 	}
 
 	if (sf != nullptr)
 	{
-		ASSERT_(LMH->m_particles.size() > 0);
+		ASSERT_(m_poseParticles.m_particles.size() > 0);
 		SFhasValidObservations =
-			(*LMH->m_particles.begin())
+			(*m_poseParticles.m_particles.begin())
 				.d->metricMaps.canComputeObservationsLikelihood(*sf);
 	}
 
 	// All the needed things?
-	if (!LMH->m_accumRobotMovementIsValid || !SFhasValidObservations)
+	if (!m_accumRobotMovementIsValid || !SFhasValidObservations)
 		return;  // Nothing we can do here...
 
 	// OK, we have all we need, let's start!
@@ -292,59 +346,62 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 
 	// Over
 	keep_max(
-		LMH->m_accumRobotMovement.motionModelConfiguration.gaussianModel
+		m_accumRobotMovement.motionModelConfiguration.gaussianModel
 			.minStdXY,
-		LMH->m_parent->m_options.MIN_ODOMETRY_STD_XY);
+		m_parent->m_options.MIN_ODOMETRY_STD_XY);
 	keep_max(
-		LMH->m_accumRobotMovement.motionModelConfiguration.gaussianModel
+		m_accumRobotMovement.motionModelConfiguration.gaussianModel
 			.minStdPHI,
-		LMH->m_parent->m_options.MIN_ODOMETRY_STD_PHI);
+		m_parent->m_options.MIN_ODOMETRY_STD_PHI);
 
 	theResultingRobotMov.computeFromOdometry(
-		LMH->m_accumRobotMovement.rawOdometryIncrementReading,
-		LMH->m_accumRobotMovement.motionModelConfiguration);
+		m_accumRobotMovement.rawOdometryIncrementReading,
+		m_accumRobotMovement.motionModelConfiguration);
 
 	const CActionRobotMovement2D* robotMovement = &theResultingRobotMov;
 
-	LMH->m_accumRobotMovementIsValid =
+	m_accumRobotMovementIsValid =
 		false;  // To reset odometry at next iteration!
 
 	// ----------------------------------------------------------------------
-	//		0) Common part:  Prepare m_particles "draw" and compute
+	//		0) Common part:  Prepare m_poseParticles.m_particles "draw" and compute
 	// ----------------------------------------------------------------------
 	// Precompute a list of "random" samples from the movement model:
-	LMH->m_movementDraws.clear();
+	m_movementDraws.clear();
 
 	// Fast pseudorandom generator of poses...
 	// m_movementDraws.resize(
 	// max(2000,(int)(PF_options.pfAuxFilterOptimal_MaximumSearchSamples *
 	// 5.6574) ) );
-	LMH->m_movementDraws.resize(
+	m_movementDraws.resize(
 		PF_options.pfAuxFilterOptimal_MaximumSearchSamples * M);
-	size_t size_movementDraws = LMH->m_movementDraws.size();
-	LMH->m_movementDrawsIdx = (unsigned int)floor(
+	size_t size_movementDraws = m_movementDraws.size();
+	m_movementDrawsIdx = (unsigned int)floor(
 		getRandomGenerator().drawUniform(0.0f, ((float)size_movementDraws) - 0.01f));
 
 	robotMovement->prepareFastDrawSingleSamples();
-	for (size_t i = 0; i < LMH->m_movementDraws.size(); i++)
-		robotMovement->fastDrawSingleSample(LMH->m_movementDraws[i]);
+	for (size_t i = 0; i < m_movementDraws.size(); i++)
+		robotMovement->fastDrawSingleSample(m_movementDraws[i]);
 
-	LMH->m_pfAuxiliaryPFOptimal_estimatedProb.resize(M);
-	LMH->m_maxLikelihood.clear();
-	LMH->m_maxLikelihood.resize(M, 0);
-	LMH->m_movementDrawMaximumLikelihood.resize(M);
+	m_pfAuxiliaryPFOptimal_estimatedProb.resize(M);
+	m_maxLikelihood.clear();
+	m_maxLikelihood.resize(M, 0);
+	m_movementDrawMaximumLikelihood.resize(M);
 
 	// Prepare data for executing "fastDrawSample"
 	CTicTac tictac;
 	tictac.Tic();
-	LMH->prepareFastDrawSample(
-		PF_options, particlesEvaluator_AuxPFOptimal, robotMovement, sf);
+	using namespace std::placeholders;
+	m_poseParticles.prepareFastDrawSample(
+		PF_options, std::bind(&CLocalMetricHypothesis::particlesEvaluator_AuxPFOptimal, this,
+								_1,_2, _3, _4, _5),
+			 robotMovement, sf);
 	printf("[prepareFastDrawSample] Done in %.06f ms\n", tictac.Tac() * 1e3f);
 
 #if 0
-	printf("[prepareFastDrawSample] max      (log) = %10.06f\n",  math::maximum(LMH->m_pfAuxiliaryPFOptimal_estimatedProb) );
-	printf("[prepareFastDrawSample] max-mean (log) = %10.06f\n", -math::mean(LMH->m_pfAuxiliaryPFOptimal_estimatedProb) + math::maximum(LMH->m_pfAuxiliaryPFOptimal_estimatedProb) );
-	printf("[prepareFastDrawSample] max-min  (log) = %10.06f\n", -math::minimum(LMH->m_pfAuxiliaryPFOptimal_estimatedProb) + math::maximum(LMH->m_pfAuxiliaryPFOptimal_estimatedProb) );
+	printf("[prepareFastDrawSample] max      (log) = %10.06f\n",  math::maximum(m_poseParticles.m_pfAuxiliaryPFOptimal_estimatedProb) );
+	printf("[prepareFastDrawSample] max-mean (log) = %10.06f\n", -math::mean(m_poseParticles.m_pfAuxiliaryPFOptimal_estimatedProb) + math::maximum(m_poseParticles.m_pfAuxiliaryPFOptimal_estimatedProb) );
+	printf("[prepareFastDrawSample] max-min  (log) = %10.06f\n", -math::minimum(m_poseParticles.m_pfAuxiliaryPFOptimal_estimatedProb) + math::maximum(m_poseParticles.m_pfAuxiliaryPFOptimal_estimatedProb) );
 #endif
 
 	// Now we have the vector "m_fastDrawProbability" filled out with:
@@ -371,7 +428,7 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 	std::vector<bool> maxLikMovementDrawHasBeenUsed(M, false);
 	unsigned int statsWarningsAccProbAboveOne = 0;
 	// double							maxMeanLik = math::maximum(
-	// LMH->m_pfAuxiliaryPFOptimal_estimatedProb ); // For normalization
+	// m_poseParticles.m_pfAuxiliaryPFOptimal_estimatedProb ); // For normalization
 	// purposes only
 
 	ASSERT_(!PF_options.adaptiveSampleSize);
@@ -383,27 +440,27 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 	newParticlesWeight.resize(M);
 	newParticlesDerivedFromIdx.resize(M);
 
-	bool doResample = LMH->ESS() < 0.5;
+	bool doResample = m_poseParticles.ESS() < 0.5;
 
 	for (i = 0; i < M; i++)
 	{
 		// Generate a new particle:
-		//   (a) Draw a "t-1" m_particles' index:
+		//   (a) Draw a "t-1" m_poseParticles.m_particles' index:
 		// ----------------------------------------------------------------
 		if (doResample)
-			k = LMH->fastDrawSample(
+			k = m_poseParticles.fastDrawSample(
 				PF_options);  // Based on weights of last step only!
 		else
 			k = i;
 
-		oldPose = CPose2D(*LMH->getCurrentPose(k));
+		oldPose = CPose2D(*getCurrentPose(k));
 
 		//   (b) Rejection-sampling: Draw a new robot pose from x[k],
 		//       and accept it with probability p(zk|x) / maxLikelihood:
 		// ----------------------------------------------------------------
-		if (LMH->m_SFs.empty())
+		if (m_SFs.empty())
 		{
-			// The first robot pose in the SLAM execution: All m_particles start
+			// The first robot pose in the SLAM execution: All m_poseParticles.m_particles start
 			// at the same point (this is the lowest bound of subsequent
 			// uncertainty):
 			movementDraw = CPose2D(0, 0, 0);
@@ -420,7 +477,7 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 					// No! first take advantage of a good drawn value, but only
 					// once!!
 					maxLikMovementDrawHasBeenUsed[k] = true;
-					movementDraw = LMH->m_movementDrawMaximumLikelihood[k];
+					movementDraw = m_movementDrawMaximumLikelihood[k];
 #if 0
 					cout << "Drawn pose (max. lik): " << movementDraw << endl;
 #endif
@@ -431,8 +488,7 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 					// robotMovement->drawSingleSample( movementDraw );
 					// robotMovement->fastDrawSingleSample( movementDraw );
 					movementDraw =
-						LMH->m_movementDraws[LMH->m_movementDrawsIdx++ %
-											 size_movementDraws];
+						m_movementDraws[m_movementDrawsIdx++ % size_movementDraws];
 				}
 
 				newPose.composeFrom(
@@ -441,8 +497,8 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 
 				// Compute acceptance probability:
 				newPoseLikelihood = auxiliarComputeObservationLikelihood(
-					PF_options, LMH, k, sf, &newPose);
-				ratioLikLik = exp(newPoseLikelihood - LMH->m_maxLikelihood[k]);
+					PF_options, k, sf, &newPose);
+				ratioLikLik = exp(newPoseLikelihood - m_maxLikelihood[k]);
 				acceptanceProb = min(1.0, ratioLikLik);
 
 				if (ratioLikLik > 1)
@@ -454,7 +510,7 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 						// printf("[pfAuxiliaryPFOptimal] Warning!!
 						// p(z|x)/p(z|x*)=%f\n",ratioLikLik);
 					}
-					LMH->m_maxLikelihood[k] = newPoseLikelihood;  //  :'-( !!!
+					m_maxLikelihood[k] = newPoseLikelihood;  //  :'-( !!!
 					acceptanceProb = 0;  // Keep searching!!
 				}
 
@@ -471,16 +527,16 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 
 		// And its weight:
 		double weightFact =
-			LMH->m_pfAuxiliaryPFOptimal_estimatedProb[k] * PF_options.powFactor;
+			m_pfAuxiliaryPFOptimal_estimatedProb[k] * PF_options.powFactor;
 
 		// Add to historic record of log_w weights:
-		LMH->m_log_w_metric_history.resize(M);
-		LMH->m_log_w_metric_history[i][currentPoseID] += weightFact;
+		m_log_w_metric_history.resize(M);
+		m_log_w_metric_history[i][currentPoseID] += weightFact;
 
 		if (doResample)
 			newParticlesWeight[i] = 0;
 		else
-			newParticlesWeight[i] = LMH->m_particles[k].log_w + weightFact;
+			newParticlesWeight[i] = m_poseParticles.m_particles[k].log_w + weightFact;
 
 		// and its heritance:
 		newParticlesDerivedFromIdx[i] = (unsigned int)k;
@@ -489,7 +545,7 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 
 	// ---------------------------------------------------------------------------------
 	// Substitute old by new particle set:
-	//   Old are in "m_particles"
+	//   Old are in "m_poseParticles.m_particles"
 	//   New are in "newParticles",
 	//   "newParticlesWeight","newParticlesDerivedFromIdx"
 	// ---------------------------------------------------------------------------------
@@ -500,7 +556,7 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 	// For efficiency, just copy the "CRBPFParticleData" from the old particle
 	// into the
 	//  new one, but this can be done only once:
-	std::vector<bool> oldParticleAlreadyCopied(LMH->m_particles.size(), false);
+	std::vector<bool> oldParticleAlreadyCopied(m_poseParticles.m_particles.size(), false);
 	CLSLAMParticleData* newPartData;
 
 	for (newPartIt = newParticlesArray.begin(), i = 0;
@@ -514,14 +570,14 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 		{
 			// The first copy of this old particle:
 			newPartData =
-				LMH->m_particles[newParticlesDerivedFromIdx[i]].d.release();
+				m_poseParticles.m_particles[newParticlesDerivedFromIdx[i]].d.release();
 			oldParticleAlreadyCopied[newParticlesDerivedFromIdx[i]] = true;
 		}
 		else
 		{
 			// Make a copy:
 			newPartData = new CLSLAMParticleData(
-				*LMH->m_particles[newParticlesDerivedFromIdx[i]].d);
+				*m_poseParticles.m_particles[newParticlesDerivedFromIdx[i]].d);
 		}
 
 		newPartIt->d.reset(newPartData);
@@ -531,19 +587,19 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 	// above loop, separately):
 	for (newPartIt = newParticlesArray.begin(), i = 0;
 		 newPartIt != newParticlesArray.end(); newPartIt++, i++)
-		newPartIt->d->robotPoses[LMH->m_currentRobotPose] =
+		newPartIt->d->robotPoses[m_currentRobotPose] =
 			CPose3D(newParticles[i]);
 
-	// Free those old m_particles not being copied into the new ones:
-	for (i = 0; i < LMH->m_particles.size(); i++)
+	// Free those old m_poseParticles.m_particles not being copied into the new ones:
+	for (i = 0; i < m_poseParticles.m_particles.size(); i++)
 	{
-		LMH->m_particles[i].d.reset();
+		m_poseParticles.m_particles[i].d.reset();
 	}
 
-	// Copy into "m_particles":
-	LMH->m_particles.resize(newParticlesArray.size());
+	// Copy into "m_poseParticles.m_particles":
+	m_poseParticles.m_particles.resize(newParticlesArray.size());
 	for (newPartIt = newParticlesArray.begin(),
-		trgPartIt = LMH->m_particles.begin();
+		trgPartIt = m_poseParticles.m_particles.begin();
 		 newPartIt != newParticlesArray.end(); newPartIt++, trgPartIt++)
 	{
 		trgPartIt->log_w = newPartIt->log_w;
@@ -557,8 +613,8 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 	newParticlesDerivedFromIdx.clear();
 
 	double out_max_log_w;
-	LMH->normalizeWeights(&out_max_log_w);  // Normalize weights:
-	LMH->m_log_w += out_max_log_w;
+	m_poseParticles.normalizeWeights(&out_max_log_w);  // Normalize weights:
+	m_log_w += out_max_log_w;
 
 #if 0
 	printf("[REJ-SAMP.RATIO: \t%.03f%% \t %u out of %u with P(acep)>1]\n\n",
@@ -574,7 +630,7 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 /*---------------------------------------------------------------
 			particlesEvaluator_AuxPFOptimal
  ---------------------------------------------------------------*/
-double CLSLAM_RBPF_2DLASER::particlesEvaluator_AuxPFOptimal(
+double CLocalMetricHypothesis::particlesEvaluator_AuxPFOptimal(
 	const bayes::CParticleFilter::TParticleFilterOptions& PF_options,
 	const CParticleFilterCapable* obj, size_t index, const void* action,
 	const void* observation)
@@ -582,9 +638,6 @@ double CLSLAM_RBPF_2DLASER::particlesEvaluator_AuxPFOptimal(
 	MRPT_UNUSED_PARAM(action);
 
 	MRPT_START
-
-	const CLocalMetricHypothesis* myObj =
-		static_cast<const CLocalMetricHypothesis*>(obj);
 
 	// Compute the quantity:
 	//     w[i]p(zt|z^{t-1},x^{[i],t-1})
@@ -596,7 +649,7 @@ double CLSLAM_RBPF_2DLASER::particlesEvaluator_AuxPFOptimal(
 	double indivLik, maxLik = -std::numeric_limits<double>::max();
 	size_t maxLikDraw = 0;
 	size_t N;
-	size_t nDraws = myObj->m_movementDraws.size();
+	size_t nDraws = m_movementDraws.size();
 
 	ASSERT_(nDraws > 1);
 
@@ -605,7 +658,7 @@ double CLSLAM_RBPF_2DLASER::particlesEvaluator_AuxPFOptimal(
 	N = PF_options.pfAuxFilterOptimal_MaximumSearchSamples;
 	ASSERT_(N > 1);
 
-	CPose2D oldPose(*myObj->getCurrentPose(index));
+	CPose2D oldPose(*getCurrentPose(index));
 	//	CPose2D			drawnSample;
 	mrpt::math::CVectorDouble vectLiks(
 		N, 0);  // The vector with the individual log-likelihoods.
@@ -614,11 +667,11 @@ double CLSLAM_RBPF_2DLASER::particlesEvaluator_AuxPFOptimal(
 	{
 		CPose2D x_predict(
 			oldPose +
-			myObj->m_movementDraws[(++myObj->m_movementDrawsIdx) % nDraws]);
+			m_movementDraws[(++m_movementDrawsIdx) % nDraws]);
 
 		// Estimate the mean...
 		indivLik = auxiliarComputeObservationLikelihood(
-			PF_options, obj, index, ((CSensoryFrame*)observation), &x_predict);
+			PF_options, index, ((CSensoryFrame*)observation), &x_predict);
 
 		MRPT_CHECK_NORMAL_NUMBER(indivLik);
 		vectLiks[q] = indivLik;
@@ -626,7 +679,7 @@ double CLSLAM_RBPF_2DLASER::particlesEvaluator_AuxPFOptimal(
 		// and the maximum value:
 		if (indivLik > maxLik)
 		{
-			maxLikDraw = myObj->m_movementDrawsIdx % nDraws;
+			maxLikDraw = m_movementDrawsIdx % nDraws;
 			maxLik = indivLik;
 		}
 	}
@@ -642,21 +695,21 @@ double CLSLAM_RBPF_2DLASER::particlesEvaluator_AuxPFOptimal(
 		log(vectLiks.array().exp().sum()) + maxLogLik - log((double)N);
 
 	// Save into the object:
-	myObj->m_pfAuxiliaryPFOptimal_estimatedProb[index] =
+	m_pfAuxiliaryPFOptimal_estimatedProb[index] =
 		avrgLogLik;  // log( accum / N );
-	myObj->m_maxLikelihood[index] = maxLik;
-	myObj->m_movementDrawMaximumLikelihood[index] =
-		myObj->m_movementDraws[maxLikDraw];
+	m_maxLikelihood[index] = maxLik;
+	m_movementDrawMaximumLikelihood[index] =
+		m_movementDraws[maxLikDraw];
 
 	// and compute the resulting probability of this particle:
 	// ------------------------------------------------------------
 	//	if (myObj->m_adaptiveSampleSize)
-	//			return myObj->m_particles[index].w *
+	//			return myObj->m_poseParticles.m_particles[index].w *
 	// myObj->m_pfAuxiliaryPFOptimal_estimatedProb[index];
-	//	else	return myObj->m_particles[index].w;
+	//	else	return myObj->m_poseParticles.m_particles[index].w;
 
-	double ret = myObj->m_particles[index].log_w +
-				 myObj->m_pfAuxiliaryPFOptimal_estimatedProb[index];
+	double ret = m_poseParticles.m_particles[index].log_w +
+				 m_pfAuxiliaryPFOptimal_estimatedProb[index];
 
 	MRPT_CHECK_NORMAL_NUMBER(ret);
 
@@ -668,16 +721,14 @@ double CLSLAM_RBPF_2DLASER::particlesEvaluator_AuxPFOptimal(
 /*---------------------------------------------------------------
 				auxiliarComputeObservationLikelihood
  ---------------------------------------------------------------*/
-double CLSLAM_RBPF_2DLASER::auxiliarComputeObservationLikelihood(
+double CLocalMetricHypothesis::auxiliarComputeObservationLikelihood(
 	const bayes::CParticleFilter::TParticleFilterOptions& PF_options,
-	const CParticleFilterCapable* obj, size_t particleIndexForMap,
+	size_t particleIndexForMap,
 	const CSensoryFrame* observation, const CPose2D* x)
 {
 	MRPT_UNUSED_PARAM(PF_options);
-	const CLocalMetricHypothesis* theObj =
-		static_cast<const CLocalMetricHypothesis*>(obj);
 	CMultiMetricMap* map = const_cast<CMultiMetricMap*>(
-		&theObj->m_particles[particleIndexForMap].d->metricMaps);
+		&m_poseParticles.m_particles[particleIndexForMap].d->metricMaps);
 
 	return map->computeObservationsLikelihood(*observation, *x);
 }
@@ -780,9 +831,10 @@ int CLSLAM_RBPF_2DLASER::findTPathBinIntoSet(
 
 /** The PF algorithm implementation for "optimal sampling" approximated with
  * scan matching (Stachniss method)
-  */
-void CLSLAM_RBPF_2DLASER::prediction_and_update_pfOptimalProposal(
-	CLocalMetricHypothesis* LMH, const mrpt::obs::CActionCollection* actions,
+ */
+template <>
+void CLocalMetricHypothesis::prediction_and_update<LSLAMOptimalProposal>(
+	const mrpt::obs::CActionCollection* actions,
 	const mrpt::obs::CSensoryFrame* sf,
 	const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
 {
@@ -791,7 +843,7 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfOptimalProposal(
 	CTicTac tictac;
 
 	// Get the current robot pose estimation:
-	TPoseID currentPoseID = LMH->m_currentRobotPose;
+	TPoseID currentPoseID = m_currentRobotPose;
 
 	// ----------------------------------------------------------------------
 	//	  We can execute optimal PF only when we have both, an action, and
@@ -811,31 +863,31 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfOptimalProposal(
 				"Action list does not contain any CActionRobotMovement2D "
 				"derived object!");
 
-		if (!LMH->m_accumRobotMovementIsValid)  // Reset accum.
+		if (!m_accumRobotMovementIsValid)  // Reset accum.
 		{
 			act->poseChange->getMean(
-				LMH->m_accumRobotMovement.rawOdometryIncrementReading);
-			LMH->m_accumRobotMovement.motionModelConfiguration =
+				m_accumRobotMovement.rawOdometryIncrementReading);
+			m_accumRobotMovement.motionModelConfiguration =
 				act->motionModelConfiguration;
 		}
 		else
-			LMH->m_accumRobotMovement.rawOdometryIncrementReading =
-				LMH->m_accumRobotMovement.rawOdometryIncrementReading +
+			m_accumRobotMovement.rawOdometryIncrementReading =
+				m_accumRobotMovement.rawOdometryIncrementReading +
 				act->poseChange->getMeanVal();
 
-		LMH->m_accumRobotMovementIsValid = true;
+		m_accumRobotMovementIsValid = true;
 	}
 
 	if (sf != nullptr)
 	{
-		ASSERT_(LMH->m_particles.size() > 0);
+		ASSERT_(m_poseParticles.m_particles.size() > 0);
 		SFhasValidObservations =
-			(*LMH->m_particles.begin())
+			(*m_poseParticles.m_particles.begin())
 				.d->metricMaps.canComputeObservationsLikelihood(*sf);
 	}
 
 	// All the needed things?
-	if (!LMH->m_accumRobotMovementIsValid || !SFhasValidObservations)
+	if (!m_accumRobotMovementIsValid || !SFhasValidObservations)
 		return;  // Nothing we can do here...
 	ASSERT_(sf != nullptr);
 	ASSERT_(!PF_options.adaptiveSampleSize);
@@ -843,10 +895,10 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfOptimalProposal(
 	// OK, we have all we need, let's start!
 
 	// The odometry-based increment since last step is
-	// in:   LMH->m_accumRobotMovement.rawOdometryIncrementReading
+	// in:   m_accumRobotMovement.rawOdometryIncrementReading
 	const CPose2D initialPoseEstimation =
-		LMH->m_accumRobotMovement.rawOdometryIncrementReading;
-	LMH->m_accumRobotMovementIsValid =
+		m_accumRobotMovement.rawOdometryIncrementReading;
+	m_accumRobotMovementIsValid =
 		false;  // To reset odometry at next iteration!
 
 	// ----------------------------------------------------------------------
@@ -870,9 +922,9 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfOptimalProposal(
 	// Build the map of points to align:
 	CSimplePointsMap localMapPoints;
 
-	ASSERT_(LMH->m_particles[0].d->metricMaps.m_gridMaps.size() > 0);
+	ASSERT_(m_poseParticles.m_particles[0].d->metricMaps.m_gridMaps.size() > 0);
 	// float	minDistBetweenPointsInLocalMaps = 0.02f; //3.0f *
-	// m_particles[0].d->metricMaps.m_gridMaps[0]->getResolution();
+	// m_poseParticles.m_particles[0].d->metricMaps.m_gridMaps[0]->getResolution();
 
 	// Build local map:
 	localMapPoints.clear();
@@ -880,17 +932,17 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfOptimalProposal(
 	sf->insertObservationsInto(&localMapPoints);
 
 	// Process the particles
-	const size_t M = LMH->m_particles.size();
-	LMH->m_log_w_metric_history.resize(M);
+	const size_t M = m_poseParticles.m_particles.size();
+	m_log_w_metric_history.resize(M);
 
 	for (size_t i = 0; i < M; i++)
 	{
-		CLocalMetricHypothesis::CParticleData& part = LMH->m_particles[i];
-		CPose3D* part_pose = LMH->getCurrentPose(i);
+		CLocalMetricHypothesis::CParticleData& part = m_poseParticles.m_particles[i];
+		CPose3D* part_pose = getCurrentPose(i);
 
-		if (LMH->m_SFs.empty())
+		if (m_SFs.empty())
 		{
-			// The first robot pose in the SLAM execution: All m_particles start
+			// The first robot pose in the SLAM execution: All m_poseParticles.m_particles start
 			// at the same point (this is the lowest bound of subsequent
 			// uncertainty):
 			// New pose = old pose.
@@ -945,18 +997,18 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfOptimalProposal(
 			CPose2D new_pose2d = CPose2D(new_pose);
 
 			// Add the pose to the path:
-			part.d->robotPoses[LMH->m_currentRobotPose] = new_pose;
+			part.d->robotPoses[m_currentRobotPose] = new_pose;
 
 			// Update the weight:
 			// ---------------------------------------------------------------------------
 			const double log_lik =
 				PF_options.powFactor * auxiliarComputeObservationLikelihood(
-										   PF_options, LMH, i, sf, &new_pose2d);
+										   PF_options, i, sf, &new_pose2d);
 
 			part.log_w += log_lik;
 
 			// Add to historic record of log_w weights:
-			LMH->m_log_w_metric_history[i][currentPoseID] += log_lik;
+			m_log_w_metric_history[i][currentPoseID] += log_lik;
 
 		}  // end else we can do ICP
 
@@ -964,11 +1016,13 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfOptimalProposal(
 
 	// Accumulate the log likelihood of this LMH as a whole:
 	double out_max_log_w;
-	LMH->normalizeWeights(&out_max_log_w);  // Normalize weights:
-	LMH->m_log_w += out_max_log_w;
+	m_poseParticles.normalizeWeights(&out_max_log_w);  // Normalize weights:
+	m_log_w += out_max_log_w;
 
 	printf("[CLSLAM_RBPF_2DLASER] Overall likelihood = %.2e\n", out_max_log_w);
 	printf("[CLSLAM_RBPF_2DLASER] Done in %.03fms\n", 1e3 * tictac.Tac());
 
 	MRPT_END
 }
+}  // namespace hmtslam
+}  // namespace mrpt

@@ -264,8 +264,8 @@ void MapBuilding_RBPF()
 		mapBuilder.initialize(dummySimpleMap, &startPose);
 
 		for (CMultiMetricMapPDF::CParticleList::iterator it =
-				 mapBuilder.mapPDF.m_particles.begin();
-			 it != mapBuilder.mapPDF.m_particles.end(); ++it)
+				 mapBuilder.mapPDF.m_poseParticles.m_particles.begin();
+			 it != mapBuilder.mapPDF.m_poseParticles.m_particles.end(); ++it)
 		{
 			CRBPFParticleData* part_d = it->d.get();
 			CMultiMetricMap& mmap = part_d->mapTillNow;
@@ -519,7 +519,7 @@ void MapBuilding_RBPF()
 					scene->insert(objs);
 
 					// Draw the robot particles:
-					size_t M = mapBuilder.mapPDF.particlesCount();
+					size_t M = mapBuilder.mapPDF.m_poseParticles.particlesCount();
 					mrpt::opengl::CSetOfLines::Ptr objLines =
 						mrpt::make_aligned_shared<mrpt::opengl::CSetOfLines>();
 					objLines->setColor(0, 1, 1);
