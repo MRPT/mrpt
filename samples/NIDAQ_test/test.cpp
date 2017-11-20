@@ -28,7 +28,7 @@ void Test_NIDAQ()
 #if 0
 	//daq.loadConfig( CConfigFile( "./DAQ_example.ini") ,"DAQ1" );
 #else
-	// Or set params programatically:
+	// Or set params programmatically:
 
 	
 	if (1)

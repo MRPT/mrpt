@@ -1,6 +1,6 @@
 =head1 NAME
 
-hmt-slam-gui - Robotic Hybrid Metric Topological (HMT) mappping GUI
+hmt-slam-gui - Robotic Hybrid Metric Topological (HMT) mapping GUI
 
 =head1 SYNOPSIS
 

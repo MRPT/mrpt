@@ -24,15 +24,15 @@ namespace mrpt
 {
 	namespace hwdrivers
 	{
-		/** A class capable of reading GPS/GNSS/GNSS+IMU receiver data, from a serial port or from any input stream, 
+		/** A class capable of reading GPS/GNSS/GNSS+IMU receiver data, from a serial port or from any input stream,
 		  *  and \b parsing the ASCII/binary stream into indivual messages \b stored in mrpt::obs::CObservationGPS objects.
 		  *
 		  * Typical input streams are serial ports or raw GPS log files. By default, the serial port selected by CGPSInterface::setSerialPortName()
-		  * or as set in the configuration file will be open upon call to CGenericSensor::initialize(). 
-		  * Alternatively, an external stream can be bound with CGPSInterface::bindStream() before calling CGenericSensor::initialize(). 
+		  * or as set in the configuration file will be open upon call to CGenericSensor::initialize().
+		  * Alternatively, an external stream can be bound with CGPSInterface::bindStream() before calling CGenericSensor::initialize().
 		  * This feature can be used to parse commands from a file, a TCP/IP stream, a memory block, etc.
 		  *
-		  * The parsers in the enum type CGPSInterface::PARSERS are supported as parameter `parser` in the 
+		  * The parsers in the enum type CGPSInterface::PARSERS are supported as parameter `parser` in the
 		  * configuration file below or in method CGPSInterface::setParser():
 		  *  - `NONE`: Do not try to parse the messages into CObservation's. Only useful if combined with `raw_dump_file_prefix`
 		  *  - `AUTO`: Try to automatically identify the format of incomming data.
@@ -58,7 +58,7 @@ namespace mrpt
 		  *  # Up-to-date list of supported parsers available in http://reference.mrpt.org/devel/classmrpt_1_1hwdrivers_1_1_c_g_p_s_interface.html
 		  *  parser =  AUTO
 		  *
-		  *  # If uncommented and non-empty, raw binary/ascii data received from the serial port will be also dumped 
+		  *  # If uncommented and non-empty, raw binary/ascii data received from the serial port will be also dumped
 		  *  # into a file named after this prefix, plus date/time and extension `.gps`.
 		  *  #raw_dump_file_prefix = RAWGPS
 		  *
@@ -71,8 +71,8 @@ namespace mrpt
 		  *  pose_roll    = 0
 		  *
 		  *  # Optional: list of custom commands to be sent to the GNSS receiver to set it up.
-		  *  # An arbitrary number of commands can be defined, but their names must be "setup_cmd%d" starting at "1". 
-		  *  # Commands will be sent by index order. Binary commands instead of ASCII strings can be set programatically, not from a config file.
+		  *  # An arbitrary number of commands can be defined, but their names must be "setup_cmd%d" starting at "1".
+		  *  # Commands will be sent by index order. Binary commands instead of ASCII strings can be set programmatically, not from a config file.
 		  *  # custom_cmds_delay   = 0.1   // (Default=0.1) Delay in seconds between consecutive set-up commands
 		  *  # custom_cmds_append_CRLF = true    // (Default:true) Append "\r\n" to each command
 		  *  # setup_cmd1 = XXXXX
@@ -85,7 +85,7 @@ namespace mrpt
 		  *
 		  *  \endcode
 		  *
-		  * Note that the `customInit` field, supported in MRPT <1.4.0 will be still parsed and obeyed, but since it has been superseded 
+		  * Note that the `customInit` field, supported in MRPT <1.4.0 will be still parsed and obeyed, but since it has been superseded
 		  * by the new mechanism to establish set-up commands, it is no further documented here.
 		  *
 		  *  The next picture summarizes existing MRPT classes related to GPS / GNSS devices (CGPSInterface, CNTRIPEmitter, CGPS_NTRIP):
@@ -101,10 +101,10 @@ namespace mrpt
 		  * - 01/FEB/2016: API changed for MTPT 1.4.0
 		  *
 		  *  \note Verbose debug info will be dumped to cout if the environment variable "MRPT_HWDRIVERS_VERBOSE" is set to "1", or if you call CGenericSensor::enableVerbose(true)
-		  *  \note 
+		  *  \note
 		  *  \note <b>[API changed in MRPT 1.4.0]</b> mrpt::hwdrivers::CGPSInterface API clean-up and made more generic so any stream can be used to parse GNSS messages, not only serial ports.
 		  *
-		  * \sa CGPS_NTRIP, CNTRIPEmitter, mrpt::obs::CObservationGPS 
+		  * \sa CGPS_NTRIP, CNTRIPEmitter, mrpt::obs::CObservationGPS
 		  * \ingroup mrpt_hwdrivers_grp
 		  */
 		class HWDRIVERS_IMPEXP CGPSInterface : public mrpt::utils::COutputLogger, public CGenericSensor
@@ -129,7 +129,7 @@ namespace mrpt
 			bool  isGPS_connected(); //!< Returns true if communications work, i.e. if some message has been received.
 			bool  isGPS_signalAcquired(); //!< Returns true if the last message from the GPS indicates that the signal from sats has been acquired.
 
-			/** \name Set-up and configuration 
+			/** \name Set-up and configuration
 			  * @{ */
 			void  setSerialPortName(const std::string &COM_port);  //!< Set the serial port to use (COM1, ttyUSB0, etc).
 			std::string getSerialPortName() const;  //!< Get the serial port to use (COM1, ttyUSB0, etc).
@@ -167,7 +167,7 @@ namespace mrpt
 			void setRawDumpFilePrefix(const std::string &filePrefix) { m_raw_dump_file_prefix=filePrefix; }
 			std::string getRawDumpFilePrefix() const { return m_raw_dump_file_prefix; }
 
-			/** Send a custom data block to the GNSS device right now. Can be used to change its behavior online as needed. 
+			/** Send a custom data block to the GNSS device right now. Can be used to change its behavior online as needed.
 			  \return false on communication error */
 			bool sendCustomCommand(const void* data, const size_t datalen);
 			/** @} */
@@ -187,7 +187,7 @@ namespace mrpt
 
 			typedef bool (CGPSInterface::*ptr_parser_t)(size_t &out_minimum_rx_buf_to_decide);
 
-			/** @name Parser implementations: each method must try to parse the first bytes in the 
+			/** @name Parser implementations: each method must try to parse the first bytes in the
 			  *  incoming buffer, and return false if the available data does not match the expected format, so we must skip 1 byte and try again.
 			  * @{ */
 			bool implement_parser_NMEA(size_t &out_minimum_rx_buf_to_decide);

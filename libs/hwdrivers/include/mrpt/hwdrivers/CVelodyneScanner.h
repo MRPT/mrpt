@@ -20,13 +20,13 @@ namespace mrpt
 {
 	namespace hwdrivers
 	{
-		/** A C++ interface to Velodyne laser scanners (HDL-64, HDL-32, VLP-16), working on Linux and Windows. 
+		/** A C++ interface to Velodyne laser scanners (HDL-64, HDL-32, VLP-16), working on Linux and Windows.
 		  * (Using this class requires WinPCap as a run-time dependency in Windows).
 		  * It can receive data from real devices via an Ethernet connection or parse a WireShark PCAP file for offline processing.
 		  * The choice of online vs. offline operation is taken upon calling \a initialize(): if a PCAP input file has been defined,
 		  * offline operation takes place and network is not listened for incomming packets.
 		  *
-		  * Parsing dual return scans requires a VLP-16 with firmware version 3.0.23 or newer. While converting the scan into a 
+		  * Parsing dual return scans requires a VLP-16 with firmware version 3.0.23 or newer. While converting the scan into a
 		  * point cloud in mrpt::obs::CObservationVelodyneScan you can select whether to keep the strongest, the last or both laser returns.
 		  *
 		  * XML calibration files are not mandatory for VLP-16 and HDL-32, but they are for HDL-64.
@@ -36,19 +36,19 @@ namespace mrpt
 		  *  - Use [rawlog-grabber](http://www.mrpt.org/list-of-mrpt-apps/application-rawlog-grabber/) to record a dataset in MRPT's format together with any other set of sensors. See example config file: [MRPT\share\mrpt\config_files\rawlog-grabber\velodyne.ini](https://github.com/MRPT/mrpt/blob/master/share/mrpt/config_files/rawlog-grabber/velodyne.ini)
 		  *
 		  * <h2>Grabbing live data (programmatically)</h2> <hr>
-		  *  - See CGenericSensor for a general overview of the sequence of methods to be called: loadConfig(), initialize(), doProcess(). 
+		  *  - See CGenericSensor for a general overview of the sequence of methods to be called: loadConfig(), initialize(), doProcess().
 		  *  - Or use this class inside the application [rawlog-grabber](http://www.mrpt.org/list-of-mrpt-apps/application-rawlog-grabber/). See example config files:  [MRPT\share\mrpt\config_files\rawlog-grabber\velodyne.ini](https://github.com/MRPT/mrpt/blob/master/share/mrpt/config_files/rawlog-grabber/velodyne.ini)
 		  *
 		  * See the source code of the example application `[MRPT]/apps/velodyne-view` ([velodyne-view web page](http://www.mrpt.org/list-of-mrpt-apps/application-velodyne-view/)) for more details.
 		  *
 		  * <h2>Playing back a PCAP file:</h2><hr>
-		  *  It is common to save Velodyne datasets as Wireshark's PCAP files. 
-		  *  These files can be played back with tools like [bittwist](http://bittwist.sourceforge.net/), which emit all UDP packets in the PCAP log. 
+		  *  It is common to save Velodyne datasets as Wireshark's PCAP files.
+		  *  These files can be played back with tools like [bittwist](http://bittwist.sourceforge.net/), which emit all UDP packets in the PCAP log.
 		  *  Then, use this class to receive the packets as if they come from the real sensor.
 		  *
 		  *  Alternatively, if MRPT is linked against libpcap, this class can directly parse a PCAP file to simulate reading from a device offline.
 		  *  See method setPCAPInputFile() and config file parameter ``
-		  * 
+		  *
 		  *  To compile with PCAP support: In Debian/Ubuntu, install libpcap-dev. In Windows, install WinPCap developer packages + the regular WinPCap driver.
 		  *
 		  *  <h2>Configuration and usage:</h2> <hr>
@@ -58,7 +58,7 @@ namespace mrpt
 		  *  See those classes for documentation on their fields.
 		  *
 		  * Configuration includes setting the device IP (optional) and sensor model (mandatory only if a calibration file is not provided).
-		  * These parameters can be set programatically (see methods of this class), or via a configuration file with CGenericSensor::loadConfig() (see example config file section below).
+		  * These parameters can be set programmatically (see methods of this class), or via a configuration file with CGenericSensor::loadConfig() (see example config file section below).
 		  *
 		  * <h2>About timestamps:</h2><hr>
 		  *  Each gathered observation of type mrpt::obs::CObservationVelodyneScan is populated with two timestamps, one for the local PC timestamp and,
@@ -83,7 +83,7 @@ namespace mrpt
 		  *
 		  *   #rpm             = 600        // Sensor RPM (Default: unchanged). Requires setting `device_ip`
 		  *   #return_type     = STRONGEST  // Any of: 'STRONGEST', 'LAST', 'DUAL' (Default: unchanged). Requires setting `device_ip`
-		  * 
+		  *
 		  *   # ---- Offline operation ----
 		  *   # If uncommented, this class will read from the PCAP instead of connecting and listeling
 		  *   # for online network packets.
@@ -198,7 +198,7 @@ namespace mrpt
 
 			/** Set how long to wait, after loss of GPS signal, to report timestamps as "not based on satellite time". 30 secs, with typical velodyne clock drifts, means a ~1.7 ms typical drift. */
 			void setPosPacketsTimingTimeout(double timeout) { m_pos_packets_timing_timeout = timeout; }
-			double getPosPacketsTimingTimeout() const { return m_pos_packets_timing_timeout; }			
+			double getPosPacketsTimingTimeout() const { return m_pos_packets_timing_timeout; }
 
 			/** UDP packets from other IPs will be ignored. Default: empty string, means do not filter by IP */
 			void setDeviceIP(const std::string & ip) { m_device_ip = ip; }
@@ -242,7 +242,7 @@ namespace mrpt
 
 			/** @} */
 
-			/** Polls the UDP port for incoming data packets. The user *must* call this method in a timely fashion to grab data as it it generated by the device. 
+			/** Polls the UDP port for incoming data packets. The user *must* call this method in a timely fashion to grab data as it it generated by the device.
 			  *  The minimum call rate should be the expected number of data packets/second (!=scans/second). Checkout Velodyne user manual if in doubt.
 			  *
 			  * \param[out] outScan Upon return, an empty smart pointer will be found here if no new data was available. Otherwise, a valid scan.
@@ -267,8 +267,8 @@ namespace mrpt
 			void close();
 
 			/** Users normally would prefer calling \a getNextObservation() instead.
-			  * This method polls the UDP data port and returns one Velodyne DATA packet (1206 bytes) and/or one POSITION packet. Refer to Velodyne users manual. 
-			  * Approximate timestamps (based on this computer clock) are returned for each kind of packets, or INVALID_TIMESTAMP if timeout ocurred waiting for a packet. 
+			  * This method polls the UDP data port and returns one Velodyne DATA packet (1206 bytes) and/or one POSITION packet. Refer to Velodyne users manual.
+			  * Approximate timestamps (based on this computer clock) are returned for each kind of packets, or INVALID_TIMESTAMP if timeout ocurred waiting for a packet.
 			  * \return true on all ok. false only for pcap reading EOF
 			  */
 			bool receivePackets(
@@ -280,7 +280,7 @@ namespace mrpt
 
 		private:
 		/** Handles for the UDP sockets, or INVALID_SOCKET (-1) */
-			typedef 
+			typedef
 #ifdef MRPT_OS_WINDOWS
 #	if MRPT_WORD_SIZE==64
 			uint64_t
@@ -312,7 +312,7 @@ namespace mrpt
 
 		}; // end of class
 	} // end of namespace
-	
+
 	namespace utils // Specializations MUST occur at the same namespace:
 	{
 		template <>
@@ -344,5 +344,3 @@ namespace mrpt
 
 
 #endif
-
-

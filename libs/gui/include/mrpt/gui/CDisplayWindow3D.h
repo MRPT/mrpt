@@ -62,7 +62,7 @@ namespace mrpt
 		  *  advantageous is generating the 3D scene takes a long time, since while the window
 		  *  is locked it will not be responsive to the user input or window redraw.
 		  *
-		  * It is safer against exceptions to use the auxiliary class CDisplayWindow3DLocker. 
+		  * It is safer against exceptions to use the auxiliary class CDisplayWindow3DLocker.
 		  * \code
 		  *   mrpt::gui::CDisplayWindow3D	win("My window");
 		  *   // ...
@@ -70,12 +70,12 @@ namespace mrpt
 		  *      mrpt::opengl::COpenGLScenePtr ptrScene;
 		  *      mrpt::gui::CDisplayWindow3DLocker  locker(win,ptrScene);
 		  *      //...
-		  *      
+		  *
 		  *   } // scene is unlocked upon dtor of `locker`
 		  * \endcode
 		  *
-		  * Notice however that a copy of the smart pointer is made, so replacement of the entire scene 
-		  * via `operator =` is not possible if using this method. Still, in general it should be preferred because 
+		  * Notice however that a copy of the smart pointer is made, so replacement of the entire scene
+		  * via `operator =` is not possible if using this method. Still, in general it should be preferred because
 		  * the mutexes are automatically released in case of unexpected exceptions.
 		  *
 		  * The window can also display a set of 2D text messages overlapped to the 3D scene.
@@ -86,7 +86,7 @@ namespace mrpt
 		  *
 		  * ** CDisplayWindow3D mouse view navigation cheatsheet **
 		  *  - <b>Orbit camera</b>: Left-button pressed + move
-		  *  - <b>Zoom in / out</b>: 
+		  *  - <b>Zoom in / out</b>:
 		  *    - Mouse scroll wheel, or
 		  *    - SHIFT+Left-button pressed + move up/down
 		  *  - <b>Look around (pivot camera)</b>: CTRL+Left-button pressed + move up/down
@@ -145,7 +145,7 @@ namespace mrpt
 			virtual ~CDisplayWindow3D();
 
 			/** Gets a reference to the smart shared pointer that holds the internal scene (carefuly read introduction in gui::CDisplayWindow3D before use!)
-			  *  This also locks the critical section for accesing the scene, thus the window will not be repainted until it is unlocked. 
+			  *  This also locks the critical section for accesing the scene, thus the window will not be repainted until it is unlocked.
 			  * \note It is safer to use mrpt::gui::CDisplayWindow3DLocker instead.*/
 			mrpt::opengl::COpenGLScenePtr & get3DSceneAndLock( );
 
@@ -166,15 +166,15 @@ namespace mrpt
 			void resize( unsigned int width, unsigned int height) MRPT_OVERRIDE; //!< Resizes the window, stretching the image to fit into the display area.
 			void setPos( int x, int y ) MRPT_OVERRIDE;//!< Changes the position of the window on the screen.
 			void setWindowTitle( const std::string &str ) MRPT_OVERRIDE;//!<  Changes the window title.
-			void setCameraElevationDeg( float deg );//!< Changes the camera parameters programatically
-			void setCameraAzimuthDeg( float deg );//!< Changes the camera parameters programatically
-			void setCameraPointingToPoint( float x,float y, float z );//!< Changes the camera parameters programatically
-			void setCameraZoom( float zoom );//!< Changes the camera parameters programatically
+			void setCameraElevationDeg( float deg );//!< Changes the camera parameters programmatically
+			void setCameraAzimuthDeg( float deg );//!< Changes the camera parameters programmatically
+			void setCameraPointingToPoint( float x,float y, float z );//!< Changes the camera parameters programmatically
+			void setCameraZoom( float zoom );//!< Changes the camera parameters programmatically
 			void setCameraProjective( bool isProjective );//!< Sets the camera as projective, or orthogonal.
-			float getCameraElevationDeg() const;//!< Get camera parameters programatically
-			float getCameraAzimuthDeg() const;//!< Get camera parameters programatically
-			void getCameraPointingToPoint( float &x,float &y, float &z ) const;//!< Get camera parameters programatically
-			float getCameraZoom() const;//!< Get camera parameters programatically
+			float getCameraElevationDeg() const;//!< Get camera parameters programmatically
+			float getCameraAzimuthDeg() const;//!< Get camera parameters programmatically
+			void getCameraPointingToPoint( float &x,float &y, float &z ) const;//!< Get camera parameters programmatically
+			float getCameraZoom() const;//!< Get camera parameters programmatically
 			bool isCameraProjective() const;//!< Sets the camera as projective, or orthogonal
 			void useCameraFromScene(bool useIt = true);//!< If set to true (default = false), the mouse-based scene navigation will be disabled and the camera position will be determined by the opengl viewports in the 3D scene
 			bool getLastMousePositionRay(mrpt::math::TLine3D &ray) const;//!< Gets the 3D ray for the direction line of the pixel where the mouse cursor is at. \return False if the window is closed. \sa getLastMousePosition
@@ -340,8 +340,8 @@ namespace mrpt
 
 		/** @} */
 
-		/** Auxiliary class for safely claiming the 3DScene of a mrpt::gui::CDisplayWindow3D. 
-		  * The mutex will be hold between ctor and dtor calls of objects of this class, safely releasing 
+		/** Auxiliary class for safely claiming the 3DScene of a mrpt::gui::CDisplayWindow3D.
+		  * The mutex will be hold between ctor and dtor calls of objects of this class, safely releasing
 		  * the lock upon exceptions. See example usage code in docs of mrpt::gui::CDisplayWindow3D
 		  *
 		  * \ingroup mrpt_gui_grp
