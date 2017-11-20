@@ -14,7 +14,7 @@
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/color_maps.h>
-#include <mrpt/macros/round.h>  // round()
+#include <mrpt/core/round.h>  // round()
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/system/datetime.h>

@@ -8,9 +8,9 @@ PROJECT(tests)
 SET(EXECUTABLE_OUTPUT_PATH "${${PROJECT_NAME}_BINARY_DIR}")
 
 # Fix a "bug" in VS11 (MSVC 2012):
-if(MSVC)
-	add_definitions(-D_VARIADIC_MAX=10)
-endif()
+#if(MSVC)
+#	add_definitions(-D_VARIADIC_MAX=10)
+#endif()
 
 # -----------------------------
 # Add the "make test" target:
@@ -30,6 +30,8 @@ ADD_DEFINITIONS(-DCMAKE_MRPT_GLOBAL_UNITTEST_SRC_DIR="${MRPT_SOURCE_DIR}")
 
 # Allow tests to include sources from examples directory:
 INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}")
+# Include tests-specific hdrs:
+INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/tests/include")
 
 # Tests based on Google gtest:
 # -----------------------------

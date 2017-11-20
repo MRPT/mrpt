@@ -13,7 +13,7 @@
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/CEnhancedMetaFile.h>
-#include <mrpt/macros/round.h>  // round()
+#include <mrpt/core/round.h>  // round()
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/random.h>
 

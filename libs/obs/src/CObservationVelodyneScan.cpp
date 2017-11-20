@@ -11,7 +11,7 @@
 
 #include <mrpt/obs/CObservationVelodyneScan.h>
 #include <mrpt/poses/CPose3DInterpolator.h>
-#include <mrpt/macros/round.h>
+#include <mrpt/core/round.h>
 #include <mrpt/utils/CStream.h>
 
 using namespace std;

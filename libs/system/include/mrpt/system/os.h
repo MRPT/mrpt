@@ -13,7 +13,7 @@
 #include <cstdlib>
 #include <cstdarg>
 #include <cstdint>
-#include <mrpt/macros/common.h>
+#include <mrpt/core/common.h>
 
 namespace mrpt
 {

@@ -15,7 +15,7 @@
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/system/string_utils.h>
-#include <mrpt/macros/round.h>
+#include <mrpt/core/round.h>
 
 #include <mrpt/compress/zip.h>
 #include <map>

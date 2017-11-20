@@ -9,10 +9,10 @@
 
 #include <mrpt/poses/CPose2DInterpolator.h>
 #include <mrpt/system/datetime.h>
-#include <mrpt/utils/CTraitsTest.h>
+#include <CTraitsTest.h>
 #include <gtest/gtest.h>
 
-template class mrpt::utils::CTraitsTest<mrpt::poses::CPose2DInterpolator>;
+template class mrpt::CTraitsTest<mrpt::poses::CPose2DInterpolator>;
 
 TEST(CPose2DInterpolator, interp)
 {

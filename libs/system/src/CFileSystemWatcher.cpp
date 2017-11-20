@@ -30,7 +30,7 @@
 #include <cstring>  // for NULL, memcpy
 #include <mrpt/system/CFileSystemWatcher.h>
 #include <mrpt/system/filesystem.h>  // for directoryExists()
-#include <mrpt/macros/exceptions.h>  // for THROW_EXCEPTION, ASSERT_
+#include <mrpt/core/exceptions.h>  // for THROW_EXCEPTION, ASSERT_
 
 using namespace mrpt::system;
 using namespace std;

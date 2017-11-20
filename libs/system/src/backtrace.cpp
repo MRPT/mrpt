@@ -9,7 +9,7 @@
 
 #include "system-precomp.h"  // Precompiled headers
 
-#include <mrpt/macros/format.h>
+#include <mrpt/core/format.h>
 #include <mrpt/system/backtrace.h>
 #include <iostream>
 #include <sstream>

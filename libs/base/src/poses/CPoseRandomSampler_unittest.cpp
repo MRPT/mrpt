@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/poses/CPoseRandomSampler.h>
-#include <mrpt/utils/CTraitsTest.h>
+#include <CTraitsTest.h>
 #include <gtest/gtest.h>
 
-template class mrpt::utils::CTraitsTest<mrpt::poses::CPoseRandomSampler>;
+template class mrpt::CTraitsTest<mrpt::poses::CPoseRandomSampler>;

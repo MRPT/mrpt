@@ -14,7 +14,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/random.h>
-#include <mrpt/macros/round.h>
+#include <mrpt/core/round.h>
 #include <mrpt/math/utils.h>  // linspace()
 #include <numeric>
 

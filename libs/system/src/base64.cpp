@@ -9,13 +9,13 @@
 
 #include "system-precomp.h"  // Precompiled headers
 
-#include <mrpt/macros/common.h>
+#include <mrpt/core/common.h>
 #include <mrpt/system/string_utils.h>
-#include <mrpt/macros/round.h>  // round()
+#include <mrpt/core/round.h>  // round()
 #include <iostream>
 
 using namespace mrpt::system;
-using namespace mrpt::utils;
+//using namespace mrpt::utils;
 using namespace std;
 
 // This code is based on files in the public domain:

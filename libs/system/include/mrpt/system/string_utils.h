@@ -126,6 +126,9 @@ std::string sprintf_container(const char* fmt, const T& V)
 	return ret;
 }
 
+/** @brief Convert a string list to one single string with new-lines. */
+void stringListAsString(const std::vector<std::string> & lst, std::string &out, const std::string & newline = "\r\n" );
+
 /** Original code snippet found in http://stackoverflow.com/a/30357710 */
 /**\{*/
 

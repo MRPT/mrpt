@@ -10,7 +10,7 @@
 #pragma once
 
 #include <mrpt/utils/core_defs.h>
-#include <mrpt/macros/round.h>
+#include <mrpt/core/round.h>
 #include <mrpt/utils/CStream.h>
 #include <vector>
 #include <string>

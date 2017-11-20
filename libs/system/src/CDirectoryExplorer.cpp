@@ -36,7 +36,7 @@
 
 #include <mrpt/system/CDirectoryExplorer.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/macros/exceptions.h>
+#include <mrpt/core/exceptions.h>
 
 using namespace mrpt::system;
 using namespace std;

@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/utils/CTraitsTest.h>
+#include <CTraitsTest.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
@@ -16,12 +16,12 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
-template class mrpt::utils::CTraitsTest<mrpt::math::TPoint2D>;
-template class mrpt::utils::CTraitsTest<mrpt::math::TPoint3D>;
-template class mrpt::utils::CTraitsTest<mrpt::math::TPoint3Df>;
-template class mrpt::utils::CTraitsTest<mrpt::math::TPose2D>;
-template class mrpt::utils::CTraitsTest<mrpt::math::TPose3D>;
-template class mrpt::utils::CTraitsTest<mrpt::math::TPose3DQuat>;
+template class mrpt::CTraitsTest<mrpt::math::TPoint2D>;
+template class mrpt::CTraitsTest<mrpt::math::TPoint3D>;
+template class mrpt::CTraitsTest<mrpt::math::TPoint3Df>;
+template class mrpt::CTraitsTest<mrpt::math::TPose2D>;
+template class mrpt::CTraitsTest<mrpt::math::TPose3D>;
+template class mrpt::CTraitsTest<mrpt::math::TPose3DQuat>;
 
 TEST(LightGeomData, PragmaPack)
 {

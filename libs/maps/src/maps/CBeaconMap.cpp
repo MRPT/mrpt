@@ -14,7 +14,7 @@
 #include <mrpt/random.h>
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CConfigFileBase.h>
-#include <mrpt/macros/round.h>  // round()
+#include <mrpt/core/round.h>  // round()
 #include <mrpt/math/geometry.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/bayes/CParticleFilter.h>

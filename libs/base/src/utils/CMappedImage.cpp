@@ -10,7 +10,7 @@
 #include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/utils/CMappedImage.h>
-#include <mrpt/macros/round.h>
+#include <mrpt/core/round.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;

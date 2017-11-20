@@ -10,7 +10,7 @@
 #include "maps-precomp.h"  // Precomp header
 
 #include <mrpt/maps/COccupancyGridMap2D.h>
-#include <mrpt/macros/round.h>  // round()
+#include <mrpt/core/round.h>  // round()
 
 using namespace mrpt;
 using namespace mrpt::maps;

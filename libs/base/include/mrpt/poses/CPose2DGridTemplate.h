@@ -10,7 +10,7 @@
 #define CPose2DGridTemplate_H
 
 #include <mrpt/utils/CSerializable.h>
-#include <mrpt/macros/round.h>  // for round()
+#include <mrpt/core/round.h>  // for round()
 #include <mrpt/utils/bits.h>  // for DEG2RAD()
 
 namespace mrpt

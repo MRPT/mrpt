@@ -13,7 +13,7 @@
 #include <cstdlib>  // for free, posix_memalign, realloc
 #include <exception>  // for exception
 #include <mrpt/config.h>  // for HAVE_POSIX_MEMALIGN, MRPT_OS_LINUX
-#include <mrpt/macros/exceptions.h>  // for MRPT_END, MRPT_START, MRPT_UNUSE...
+#include <mrpt/core/exceptions.h>  // for MRPT_END, MRPT_START, MRPT_UNUSE...
 #include <mrpt/system/memory.h>
 
 #ifdef __APPLE__

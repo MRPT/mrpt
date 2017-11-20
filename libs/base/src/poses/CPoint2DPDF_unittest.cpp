@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/poses/CPoint2DPDF.h>
-//#include <mrpt/utils/CTraitsTest.h>  // can't run this on a virtual class
+//#include <CTraitsTest.h>  // can't run this on a virtual class
 
 using namespace mrpt;
 using namespace mrpt::poses;
