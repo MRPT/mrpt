@@ -32,27 +32,23 @@ void KLF_loadBinFromParticle(
 
 /** A set of common data shared by PF implementations for both SLAM and
  * localization
-  *   \ingroup mrpt_slam_grp
-  */
-template <class PARTICLE_TYPE, class MYSELF>
+ *   \ingroup mrpt_slam_grp
+ */
+template <
+	class PARTICLE_TYPE, class PDF_TYPE,
+	class CParticleList = typename PDF_TYPE::CParticleList>
 class PF_implementation : public mrpt::utils::COutputLogger
 {
    public:
-	PF_implementation()
-		: mrpt::utils::COutputLogger("PF_implementation"),
-		  m_accumRobotMovement2DIsValid(false),
-		  m_accumRobotMovement3DIsValid(false)
-	{
-	}
+	PF_implementation() : mrpt::utils::COutputLogger("PF_implementation") {}
 
-   protected:
 	/** \name Data members and methods used by generic PF implementations
 		@{ */
 
 	mrpt::obs::CActionRobotMovement2D m_accumRobotMovement2D;
-	bool m_accumRobotMovement2DIsValid;
+	bool m_accumRobotMovement2DIsValid = false;
 	mrpt::poses::CPose3DPDFGaussian m_accumRobotMovement3D;
-	bool m_accumRobotMovement3DIsValid;
+	bool m_accumRobotMovement3DIsValid = false;
 
 	/** Used in al PF implementations. \sa
 	 * PF_SLAM_implementation_gatherActionsCheckBothActObs */
@@ -69,91 +65,17 @@ class PF_implementation : public mrpt::utils::COutputLogger
 	std::vector<bool> m_pfAuxiliaryPFOptimal_maxLikMovementDrawHasBeenUsed;
 
 	/**  Compute w[i]*p(z_t | mu_t^i), with mu_t^i being
-	  *    the mean of the new robot pose
-	  *
-	  * \param action MUST be a "const CPose3D*"
-	  * \param observation MUST be a "const CSensoryFrame*"
-	  */
+	 *    the mean of the new robot pose
+	 *
+	 * \param action MUST be a "const CPose3D*"
+	 * \param observation MUST be a "const CSensoryFrame*"
+	 */
 	template <class BINTYPE>  // Template arg. actually not used, just to allow
 	// giving the definition in another file later on
 	static double PF_SLAM_particlesEvaluator_AuxPFStandard(
 		const mrpt::bayes::CParticleFilter::TParticleFilterOptions& PF_options,
 		const mrpt::bayes::CParticleFilterCapable* obj, size_t index,
 		const void* action, const void* observation);
-
-	template <class BINTYPE>  // Template arg. actually not used, just to allow
-	// giving the definition in another file later on
-	static double PF_SLAM_particlesEvaluator_AuxPFOptimal(
-		const mrpt::bayes::CParticleFilter::TParticleFilterOptions& PF_options,
-		const mrpt::bayes::CParticleFilterCapable* obj, size_t index,
-		const void* action, const void* observation);
-
-	/** @} */
-
-	/** \name The generic PF implementations for localization & SLAM.
-		@{ */
-
-	/** A generic implementation of the PF method
-	 * "prediction_and_update_pfAuxiliaryPFOptimal" (optimal sampling with
-	 * rejection sampling approximation),
-	  *  common to both localization and mapping.
-	  *
-	  * - BINTYPE: TPoseBin or whatever to discretize the sample space for
-	 * KLD-sampling.
-	  *
-	  *  This method implements optimal sampling with a rejection sampling-based
-	 * approximation of the true posterior.
-	  *  For details, see the papers:
-	  *
-	  *  J.L. Blanco, J. Gonzalez, and J.-A. Fernandez-Madrigal,
-	  *    "An Optimal Filtering Algorithm for Non-Parametric Observation Models
-	 * in
-	  *     Robot Localization," in Proc. IEEE International Conference on
-	 * Robotics
-	  *     and Automation (ICRA'08), 2008, pp. 461-466.
-	  */
-	template <class BINTYPE>
-	void PF_SLAM_implementation_pfAuxiliaryPFOptimal(
-		const mrpt::obs::CActionCollection* actions,
-		const mrpt::obs::CSensoryFrame* sf,
-		const mrpt::bayes::CParticleFilter::TParticleFilterOptions& PF_options,
-		const TKLDParams& KLD_options);
-
-	/** A generic implementation of the PF method
-	 * "prediction_and_update_pfAuxiliaryPFStandard" (Auxiliary particle filter
-	 * with the standard proposal),
-	  *  common to both localization and mapping.
-	  *
-	  * - BINTYPE: TPoseBin or whatever to discretize the sample space for
-	 * KLD-sampling.
-	  *
-	  *  This method is described in the paper:
-	  *   Pitt, M.K.; Shephard, N. (1999). "Filtering Via Simulation: Auxiliary
-	 * Particle Filters".
-	  *    Journal of the American Statistical Association 94 (446): 590-591.
-	 * doi:10.2307/2670179.
-	  *
-	  */
-	template <class BINTYPE>
-	void PF_SLAM_implementation_pfAuxiliaryPFStandard(
-		const mrpt::obs::CActionCollection* actions,
-		const mrpt::obs::CSensoryFrame* sf,
-		const mrpt::bayes::CParticleFilter::TParticleFilterOptions& PF_options,
-		const TKLDParams& KLD_options);
-
-	/** A generic implementation of the PF method "pfStandardProposal" (standard
-	 * proposal distribution, that is, a simple SIS particle filter),
-	  *  common to both localization and mapping.
-	  *
-	  * - BINTYPE: TPoseBin or whatever to discretize the sample space for
-	 * KLD-sampling.
-	  */
-	template <class BINTYPE>
-	void PF_SLAM_implementation_pfStandardProposal(
-		const mrpt::obs::CActionCollection* actions,
-		const mrpt::obs::CSensoryFrame* sf,
-		const mrpt::bayes::CParticleFilter::TParticleFilterOptions& PF_options,
-		const TKLDParams& KLD_options);
 
 	/** @} */
 
@@ -173,16 +95,15 @@ class PF_implementation : public mrpt::utils::COutputLogger
 
 	/** This is the default algorithm to efficiently replace one old set of
 	 * samples by another new set.
-	  *  The method uses pointers to make fast copies the first time each
+	 *  The method uses pointers to make fast copies the first time each
 	 * particle is duplicated, then
-	  *   makes real copies for the next ones.
-	  *
-	  *  Note that more efficient specializations might exist for specific
+	 *   makes real copies for the next ones.
+	 *
+	 *  Note that more efficient specializations might exist for specific
 	 * particle data structs.
-	  */
+	 */
 	virtual void PF_SLAM_implementation_replaceByNewParticleSet(
-		typename mrpt::bayes::CParticleFilterData<PARTICLE_TYPE>::CParticleList&
-			old_particles,
+		CParticleList& old_particles,
 		const std::vector<mrpt::math::TPose3D>& newParticles,
 		const std::vector<double>& newParticlesWeight,
 		const std::vector<size_t>& newParticlesDerivedFromIdx) const
@@ -194,7 +115,7 @@ class PF_implementation : public mrpt::utils::COutputLogger
 		//   "newParticlesWeight","newParticlesDerivedFromIdx"
 		// ---------------------------------------------------------------------------------
 		const size_t N = newParticles.size(), N_old = old_particles.size();
-		typename MYSELF::CParticleList newParticlesArray(N);
+		CParticleList newParticlesArray(N);
 
 		// For efficiency, just copy the "CParticleData" from the old particle
 		// into the
@@ -203,7 +124,7 @@ class PF_implementation : public mrpt::utils::COutputLogger
 		std::vector<PARTICLE_TYPE*> oldParticleFirstCopies(N_old, nullptr);
 
 		size_t i;
-		typename MYSELF::CParticleList::iterator newPartIt;
+		typename CParticleList::iterator newPartIt;
 		for (newPartIt = newParticlesArray.begin(), i = 0;
 			 newPartIt != newParticlesArray.end(); ++newPartIt, ++i)
 		{
@@ -245,7 +166,7 @@ class PF_implementation : public mrpt::utils::COutputLogger
 
 		// Copy into "m_particles"
 		old_particles.resize(newParticlesArray.size());
-		typename MYSELF::CParticleList::iterator trgPartIt;
+		typename CParticleList::iterator trgPartIt;
 		for (newPartIt = newParticlesArray.begin(),
 			trgPartIt = old_particles.begin();
 			 newPartIt != newParticlesArray.end(); ++newPartIt, ++trgPartIt)
@@ -280,43 +201,8 @@ class PF_implementation : public mrpt::utils::COutputLogger
 		const mrpt::poses::CPose3D& x) const = 0;
 
 	/** @} */
-
-	/** Auxiliary method called by PF implementations: return true if we have
-	 * both action & observation,
-	  *   otherwise, return false AND accumulate the odometry so when we have an
-	 * observation we didn't lose a thing.
-	  *   On return=true, the "m_movementDrawer" member is loaded and ready to
-	 * draw samples of the increment of pose since last step.
-	  *  This method is smart enough to accumulate CActionRobotMovement2D or
-	 * CActionRobotMovement3D, whatever comes in.
-	  */
-	template <class BINTYPE>  // Template arg. actually not used, just to allow
-	// giving the definition in another file later on
-	bool PF_SLAM_implementation_gatherActionsCheckBothActObs(
-		const mrpt::obs::CActionCollection* actions,
-		const mrpt::obs::CSensoryFrame* sf);
-
-   private:
-	/** The shared implementation body of two PF methods: APF and Optimal-APF,
-	 * depending on USE_OPTIMAL_SAMPLING */
-	template <class BINTYPE>
-	void PF_SLAM_implementation_pfAuxiliaryPFStandardAndOptimal(
-		const mrpt::obs::CActionCollection* actions,
-		const mrpt::obs::CSensoryFrame* sf,
-		const mrpt::bayes::CParticleFilter::TParticleFilterOptions& PF_options,
-		const TKLDParams& KLD_options, const bool USE_OPTIMAL_SAMPLING);
-
-	template <class BINTYPE>
-	void PF_SLAM_aux_perform_one_rejection_sampling_step(
-		const bool USE_OPTIMAL_SAMPLING, const bool doResample,
-		const double maxMeanLik,
-		size_t k,  // The particle from the old set "m_particles[]"
-		const mrpt::obs::CSensoryFrame* sf,
-		const mrpt::bayes::CParticleFilter::TParticleFilterOptions& PF_options,
-		mrpt::poses::CPose3D& out_newPose, double& out_newParticleLogWeight);
-
 };  // end PF_implementation
-}
-}
 
+}  // namespace slam
+}  // namespace mrpt
 #endif

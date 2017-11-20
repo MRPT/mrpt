@@ -24,11 +24,11 @@ class CParticleFilterCapable;
 
 /** A curiously recurring template pattern (CRTP) approach to providing the
  * basic functionality of any CParticleFilterData<> class.
-  *  Users should inherit from CParticleFilterData<>, which in turn will
+ *  Users should inherit from CParticleFilterData<>, which in turn will
  * automatically inhirit from this base class.
-  * \sa CParticleFilter, CParticleFilterCapable, CParticleFilterData
-  * \ingroup mrpt_base_grp
-  */
+ * \sa CParticleFilter, CParticleFilterCapable, CParticleFilterData
+ * \ingroup mrpt_base_grp
+ */
 template <class Derived, class particle_list_t>
 struct CParticleFilterDataImpl : public CParticleFilterCapable
 {
@@ -157,9 +157,8 @@ struct CParticleFilterDataImpl : public CParticleFilterCapable
 			{
 				/* Make a copy of the particle's data: */
 				ASSERT_(derived().m_particles[sorted_idx].d);
-				parts[i].d.reset(
-					new typename Derived::CParticleDataContent(
-						*derived().m_particles[sorted_idx].d));
+				parts[i].d.reset(new typename Derived::CParticleDataContent(
+					*derived().m_particles[sorted_idx].d));
 			}
 		}
 		/* Free memory of unused particles */
@@ -216,8 +215,8 @@ class CParticleFilterData
 	void clearParticles() { m_particles.clear(); }
 	/** Dumps the sequence of particles and their weights to a stream (requires
 	 * T implementing CSerializable).
-	  * \sa readParticlesFromStream
-	  */
+	 * \sa readParticlesFromStream
+	 */
 	template <class STREAM>
 	void writeParticlesToStream(STREAM& out) const
 	{
@@ -232,8 +231,8 @@ class CParticleFilterData
 
 	/** Reads the sequence of particles and their weights from a stream
 	 * (requires T implementing CSerializable).
-	  * \sa writeParticlesToStream
-	  */
+	 * \sa writeParticlesToStream
+	 */
 	template <class STREAM>
 	void readParticlesFromStream(STREAM& in)
 	{
@@ -254,7 +253,7 @@ class CParticleFilterData
 
 	/** Returns a vector with the sequence of the logaritmic weights of all the
 	 * samples.
-	  */
+	 */
 	void getWeights(std::vector<double>& out_logWeights) const
 	{
 		MRPT_START
@@ -268,7 +267,7 @@ class CParticleFilterData
 	}
 
 	/** Returns the particle with the highest weight.
-	  */
+	 */
 	const CParticleData* getMostLikelyParticle() const
 	{
 		MRPT_START
@@ -286,6 +285,6 @@ class CParticleFilterData
 
 };  // End of class def.
 
-}  // end namespace
-}  // end namespace
+}  // namespace bayes
+}  // namespace mrpt
 #endif

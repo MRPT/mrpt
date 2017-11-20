@@ -9,6 +9,7 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
+#include <mrpt/utils/bits.h>
 #include <mrpt/system/backtrace.h>
 
 #ifdef MRPT_OS_WINDOWS

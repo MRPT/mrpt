@@ -16,13 +16,13 @@ namespace mrpt
 namespace bayes
 {
 /** A template class for holding a the data and the weight of a particle.
-*    Particles are composed of two parts:
+ *    Particles are composed of two parts:
  *		- A state vector descritor, which in this case can be any user defined
-*CSerializable class
+ *CSerializable class
  *		- A (logarithmic) weight value.
  *
  *  This structure is used within CParticleFilterData, see that class for more
-*information.
+ *information.
  * \ingroup mrpt_base_grp
  */
 template <class T>
@@ -39,6 +39,6 @@ struct CProbabilityParticle
 	CProbabilityParticle() : d(), log_w(.0) {}
 };
 
-}  // end namespace
-}  // end namespace
+}  // namespace bayes
+}  // namespace mrpt
 #endif

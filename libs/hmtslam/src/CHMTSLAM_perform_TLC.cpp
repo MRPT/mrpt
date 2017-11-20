@@ -167,13 +167,13 @@ void CHMTSLAM::perform_TLC(
 		const TPoseInfo& pi = it->second;
 
 		//  Insert the observations into the metric maps:
-		ASSERT_(LMH.m_particles.size() == pi.pdf.size());
+		ASSERT_(LMH.m_poseParticles.m_particles.size() == pi.pdf.size());
 
 		for (size_t i = 0; i < pi.pdf.size(); i++)
 		{
 			// Transport coordinates:
 			const CPose3D& p = *pi.pdf.m_particles[i].d;
-			LMH.m_particles[i].d->robotPoses[poseId] = AeRefInLMH + p;
+			LMH.m_poseParticles.m_particles[i].d->robotPoses[poseId] = AeRefInLMH + p;
 			// pi.sf.insertObservationsInto( &LMH.m_particles[i].d->metricMaps,
 			// pi.pdf.m_particles[i].d );
 		}

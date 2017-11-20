@@ -50,7 +50,7 @@ CLocalMetricHypothesis::CLocalMetricHypothesis(CHMTSLAM* parent)
 /*---------------------------------------------------------------
 				Destructor
   ---------------------------------------------------------------*/
-CLocalMetricHypothesis::~CLocalMetricHypothesis() { clearParticles(); }
+CLocalMetricHypothesis::~CLocalMetricHypothesis() { m_poseParticles.clearParticles(); }
 /*---------------------------------------------------------------
 				   getAs3DScene
 
@@ -385,29 +385,6 @@ void CLocalMetricHypothesis::getAs3DScene(
 	}  // end of lock on map_cs
 }
 
-/** The PF algorithm implementation.  */
-void CLocalMetricHypothesis::prediction_and_update_pfAuxiliaryPFOptimal(
-	const mrpt::obs::CActionCollection* action,
-	const mrpt::obs::CSensoryFrame* observation,
-	const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
-{
-	ASSERT_(m_parent.get());
-	ASSERT_(m_parent->m_LSLAM_method);
-	m_parent->m_LSLAM_method->prediction_and_update_pfAuxiliaryPFOptimal(
-		this, action, observation, PF_options);
-}
-
-void CLocalMetricHypothesis::prediction_and_update_pfOptimalProposal(
-	const mrpt::obs::CActionCollection* action,
-	const mrpt::obs::CSensoryFrame* observation,
-	const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
-{
-	ASSERT_(m_parent.get());
-	ASSERT_(m_parent->m_LSLAM_method);
-	m_parent->m_LSLAM_method->prediction_and_update_pfOptimalProposal(
-		this, action, observation, PF_options);
-}
-
 /*---------------------------------------------------------------
 					getMeans
    Returns the mean of each robot pose in this LMH, as
@@ -441,18 +418,18 @@ void CLocalMetricHypothesis::getPathParticles(
 
 	outList.clear();
 
-	if (m_particles.empty()) return;
+	if (m_poseParticles.m_particles.empty()) return;
 
 	// For each poseID:
 	for (TMapPoseID2Pose3D::const_iterator itPoseID =
-			 m_particles.begin()->d->robotPoses.begin();
-		 itPoseID != m_particles.begin()->d->robotPoses.end(); ++itPoseID)
+			 m_poseParticles.m_particles.begin()->d->robotPoses.begin();
+		 itPoseID != m_poseParticles.m_particles.begin()->d->robotPoses.end(); ++itPoseID)
 	{
-		CPose3DPDFParticles auxPDF(m_particles.size());
+		CPose3DPDFParticles auxPDF(m_poseParticles.m_particles.size());
 		CParticleList::const_iterator it;
 		CPose3DPDFParticles::CParticleList::iterator itP;
-		for (it = m_particles.begin(), itP = auxPDF.m_particles.begin();
-			 it != m_particles.end(); it++, itP++)
+		for (it = m_poseParticles.m_particles.begin(), itP = auxPDF.m_particles.begin();
+			 it != m_poseParticles.m_particles.end(); it++, itP++)
 		{
 			itP->log_w = it->log_w;
 			*itP->d = it->d->robotPoses.find(itPoseID->first)->second;
@@ -473,13 +450,13 @@ void CLocalMetricHypothesis::getPoseParticles(
 {
 	MRPT_START
 
-	ASSERT_(!m_particles.empty());
+	ASSERT_(!m_poseParticles.m_particles.empty());
 
 	CParticleList::const_iterator it;
-	outPDF.resetDeterministic(CPose3D(), m_particles.size());
+	outPDF.resetDeterministic(CPose3D(), m_poseParticles.m_particles.size());
 	CPose3DPDFParticles::CParticleList::iterator itP;
-	for (it = m_particles.begin(), itP = outPDF.m_particles.begin();
-		 it != m_particles.end(); it++, itP++)
+	for (it = m_poseParticles.m_particles.begin(), itP = outPDF.m_particles.begin();
+		 it != m_poseParticles.m_particles.end(); it++, itP++)
 	{
 		itP->log_w = it->log_w;
 		TMapPoseID2Pose3D::const_iterator itPose =
@@ -496,10 +473,10 @@ void CLocalMetricHypothesis::getPoseParticles(
   ---------------------------------------------------------------*/
 void CLocalMetricHypothesis::clearRobotPoses()
 {
-	clearParticles();
-	m_particles.resize(m_parent->m_options.pf_options.sampleSize);
-	for (CParticleList::iterator it = m_particles.begin();
-		 it != m_particles.end(); ++it)
+	m_poseParticles.clearParticles();
+	m_poseParticles.m_particles.resize(m_parent->m_options.pf_options.sampleSize);
+	for (CParticleList::iterator it = m_poseParticles.m_particles.begin();
+		 it != m_poseParticles.m_particles.end(); ++it)
 	{
 		// Create particle:
 		it->log_w = 0;
@@ -518,12 +495,12 @@ void CLocalMetricHypothesis::clearRobotPoses()
 const CPose3D* CLocalMetricHypothesis::getCurrentPose(
 	const size_t& particleIdx) const
 {
-	if (particleIdx >= m_particles.size())
+	if (particleIdx >= m_poseParticles.m_particles.size())
 		THROW_EXCEPTION("Particle index out of bounds!");
 
 	TMapPoseID2Pose3D::const_iterator it =
-		m_particles[particleIdx].d->robotPoses.find(m_currentRobotPose);
-	ASSERT_(it != m_particles[particleIdx].d->robotPoses.end());
+		m_poseParticles.m_particles[particleIdx].d->robotPoses.find(m_currentRobotPose);
+	ASSERT_(it != m_poseParticles.m_particles[particleIdx].d->robotPoses.end());
 	return &it->second;
 }
 
@@ -532,12 +509,12 @@ const CPose3D* CLocalMetricHypothesis::getCurrentPose(
  ---------------------------------------------------------------*/
 CPose3D* CLocalMetricHypothesis::getCurrentPose(const size_t& particleIdx)
 {
-	if (particleIdx >= m_particles.size())
+	if (particleIdx >= m_poseParticles.m_particles.size())
 		THROW_EXCEPTION("Particle index out of bounds!");
 
 	TMapPoseID2Pose3D::iterator it =
-		m_particles[particleIdx].d->robotPoses.find(m_currentRobotPose);
-	ASSERT_(it != m_particles[particleIdx].d->robotPoses.end());
+		m_poseParticles.m_particles[particleIdx].d->robotPoses.find(m_currentRobotPose);
+	ASSERT_(it != m_poseParticles.m_particles[particleIdx].d->robotPoses.end());
 	return &it->second;
 }
 
@@ -551,12 +528,12 @@ void CLocalMetricHypothesis::getRelativePose(
 	MRPT_START
 
 	// Resize output:
-	outPDF.resetDeterministic(CPose3D(), m_particles.size());
+	outPDF.resetDeterministic(CPose3D(), m_poseParticles.m_particles.size());
 
 	CParticleList::const_iterator it;
 	CPose3DPDFParticles::CParticleList::iterator itP;
-	for (it = m_particles.begin(), itP = outPDF.m_particles.begin();
-		 it != m_particles.end(); it++, itP++)
+	for (it = m_poseParticles.m_particles.begin(), itP = outPDF.m_particles.begin();
+		 it != m_poseParticles.m_particles.end(); it++, itP++)
 	{
 		itP->log_w = it->log_w;
 
@@ -579,13 +556,13 @@ void CLocalMetricHypothesis::getRelativePose(
  ---------------------------------------------------------------*/
 void CLocalMetricHypothesis::changeCoordinateOrigin(const TPoseID& newOrigin)
 {
-	CPose3DPDFParticles originPDF(m_particles.size());
+	CPose3DPDFParticles originPDF(m_poseParticles.m_particles.size());
 
 	CParticleList::iterator it;
 	CPose3DPDFParticles::CParticleList::iterator itOrgPDF;
 
-	for (it = m_particles.begin(), itOrgPDF = originPDF.m_particles.begin();
-		 it != m_particles.end(); it++, itOrgPDF++)
+	for (it = m_poseParticles.m_particles.begin(), itOrgPDF = originPDF.m_particles.begin();
+		 it != m_poseParticles.m_particles.end(); it++, itOrgPDF++)
 	{
 		TMapPoseID2Pose3D::iterator refPoseIt =
 			it->d->robotPoses.find(newOrigin);
@@ -636,8 +613,8 @@ void CLocalMetricHypothesis::changeCoordinateOrigin(const TPoseID& newOrigin)
  ---------------------------------------------------------------*/
 void CLocalMetricHypothesis::rebuildMetricMaps()
 {
-	for (CParticleList::iterator it = m_particles.begin();
-		 it != m_particles.end(); ++it)
+	for (CParticleList::iterator it = m_poseParticles.m_particles.begin();
+		 it != m_poseParticles.m_particles.end(); ++it)
 	{
 		it->d->metricMaps.clear();
 
@@ -702,8 +679,8 @@ void CLocalMetricHypothesis::removeAreaFromLMH(
 	// ----------------------------------------------------------------------
 	for (TNodeIDList::const_iterator it = lstPoseIDs.begin();
 		 it != lstPoseIDs.end(); ++it)
-		for (CParticleList::iterator p = m_particles.begin();
-			 p != m_particles.end(); ++p)
+		for (CParticleList::iterator p = m_poseParticles.m_particles.begin();
+			 p != m_poseParticles.m_particles.end(); ++p)
 			p->d->robotPoses.erase(p->d->robotPoses.find(*it));
 
 	// - The weights of all particles are changed to remove the effects of the
@@ -712,10 +689,10 @@ void CLocalMetricHypothesis::removeAreaFromLMH(
 	{
 		CParticleList::iterator p;
 		vector<map<TPoseID, double>>::iterator ws_it;
-		ASSERT_(m_log_w_metric_history.size() == m_particles.size());
+		ASSERT_(m_log_w_metric_history.size() == m_poseParticles.m_particles.size());
 
-		for (ws_it = m_log_w_metric_history.begin(), p = m_particles.begin();
-			 p != m_particles.end(); ++p, ++ws_it)
+		for (ws_it = m_log_w_metric_history.begin(), p = m_poseParticles.m_particles.begin();
+			 p != m_poseParticles.m_particles.end(); ++p, ++ws_it)
 		{
 			for (TNodeIDList::const_iterator it = lstPoseIDs.begin();
 				 it != lstPoseIDs.end(); ++it)
@@ -787,7 +764,7 @@ void CLocalMetricHypothesis::removeAreaFromLMH(
 		m_nodeIDmemberships.erase(m_nodeIDmemberships.find(*it));
 
 	double out_max_log_w;
-	normalizeWeights(&out_max_log_w);  // Normalize weights:
+	m_poseParticles.normalizeWeights(&out_max_log_w);  // Normalize weights:
 
 	MRPT_END
 }
@@ -966,7 +943,7 @@ void CLocalMetricHypothesis::readFromStream(
 				m_robotPosesGraph.partitioner >> m_robotPosesGraph.idx2pose;
 
 			// particles:
-			readParticlesFromStream(in);
+			m_poseParticles.readParticlesFromStream(in);
 		}
 		break;
 		default:
@@ -992,7 +969,7 @@ void CLocalMetricHypothesis::writeToStream(
 			<< m_robotPosesGraph.partitioner << m_robotPosesGraph.idx2pose;
 
 		// particles:
-		writeParticlesToStream(out);
+		m_poseParticles.writeParticlesToStream(out);
 	}
 }
 

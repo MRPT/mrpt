@@ -20,11 +20,11 @@ namespace obs
 {
 class CSensoryFrame;
 class CActionCollection;
-}
+}  // namespace obs
 
 /** The namespace for Bayesian filtering algorithm: different particle filters
  * and Kalman filter algorithms. \ingroup mrpt_base_grp
-  */
+ */
 namespace bayes
 {
 class CParticleFilterCapable;
@@ -54,21 +54,21 @@ class CParticleFilter : public mrpt::utils::COutputLogger
 {
    public:
 	/** Defines different types of particle filter algorithms.
-	  *  The defined SIR implementations are:
-	  *		- pfStandardProposal: Standard proposal distribution + weights
-	  *according to likelihood function.
-	  *		- pfAuxiliaryPFStandard: An auxiliary PF using the standard proposal
-	  *distribution.
-	  *		- pfOptimalProposal: Use the optimal proposal distribution (where
-	  *available!, usually this will perform approximations)
-	  *		- pfAuxiliaryPFOptimal: Use the optimal proposal and a auxiliary
-	  *particle filter (see <a
-	  *href="http://www.mrpt.org/Paper:An_Optimal_Filtering_Algorithm_for_Non-Parametric_Observation_Models_in_Robot_Localization_(ICRA_2008)"
-	  *>paper</a>).
-	  *
-	  * See the theoretical discussion in <a
-	  *href="http://www.mrpt.org/Resampling_Schemes" >resampling schemes</a>.
-	  */
+	 *  The defined SIR implementations are:
+	 *		- pfStandardProposal: Standard proposal distribution + weights
+	 *according to likelihood function.
+	 *		- pfAuxiliaryPFStandard: An auxiliary PF using the standard proposal
+	 *distribution.
+	 *		- pfOptimalProposal: Use the optimal proposal distribution (where
+	 *available!, usually this will perform approximations)
+	 *		- pfAuxiliaryPFOptimal: Use the optimal proposal and a auxiliary
+	 *particle filter (see <a
+	 *href="http://www.mrpt.org/Paper:An_Optimal_Filtering_Algorithm_for_Non-Parametric_Observation_Models_in_Robot_Localization_(ICRA_2008)"
+	 *>paper</a>).
+	 *
+	 * See the theoretical discussion in <a
+	 *href="http://www.mrpt.org/Resampling_Schemes" >resampling schemes</a>.
+	 */
 	enum TParticleFilterAlgorithm
 	{
 		pfStandardProposal = 0,
@@ -78,19 +78,19 @@ class CParticleFilter : public mrpt::utils::COutputLogger
 	};
 
 	/** Defines the different resampling algorithms.
-	  *  The implemented resampling methods are:
-	  *		- prMultinomial (Default): Uses standard select with replacement
-	  *(draws
-	  *M random uniform numbers)
-	  *		- prResidual: The residual or "remainder" method.
-	  *		- prStratified: The stratified resampling, where a uniform sample is
-	  *drawn for each of M subdivisions of the range (0,1].
-	  *		- prSystematic: A single uniform sample is drawn in the range
-	  *(0,1/M].
-	  *
-	  * See the theoretical discussion in <a
-	  *href="http://www.mrpt.org/Resampling_Schemes" >resampling schemes</a>.
-	  */
+	 *  The implemented resampling methods are:
+	 *		- prMultinomial (Default): Uses standard select with replacement
+	 *(draws
+	 *M random uniform numbers)
+	 *		- prResidual: The residual or "remainder" method.
+	 *		- prStratified: The stratified resampling, where a uniform sample is
+	 *drawn for each of M subdivisions of the range (0,1].
+	 *		- prSystematic: A single uniform sample is drawn in the range
+	 *(0,1/M].
+	 *
+	 * See the theoretical discussion in <a
+	 *href="http://www.mrpt.org/Resampling_Schemes" >resampling schemes</a>.
+	 */
 	enum TParticleResamplingAlgorithm
 	{
 		prMultinomial = 0,
@@ -100,8 +100,9 @@ class CParticleFilter : public mrpt::utils::COutputLogger
 	};
 
 	/** The configuration of a particle filter.
-	  */
-	struct TParticleFilterOptions : public mrpt::utils::CLoadableOptions
+	 */
+	struct TParticleFilterOptions
+		: public mrpt::utils::CLoadableOptions
 	{
 	   public:
 		/** Initilization of default parameters */
@@ -129,7 +130,7 @@ class CParticleFilter : public mrpt::utils::COutputLogger
 		 * pfAuxFilterStandard_FirstStageWeightsMonteCarlo = true) the number of
 		 * samples for searching the maximum likelihood value and also to
 		 * estimate the "first stage weights" (see papers!) (default=100)
-		  */
+		 */
 		unsigned int pfAuxFilterOptimal_MaximumSearchSamples;
 		/** An optional step to "smooth" dramatic changes in the observation
 		 * model to affect the variance of the particle weights, eg
@@ -145,21 +146,21 @@ class CParticleFilter : public mrpt::utils::COutputLogger
 		 * a max_likelihood (from the a-priori estimate) below the maximum from
 		 * all the samples - max_loglikelihood_dyn_range, then the particle is
 		 * directly discarded.
-		  *  This is done to assure that the rejection sampling doesn't get
+		 *  This is done to assure that the rejection sampling doesn't get
 		 * stuck in an infinite loop trying to get an acceptable sample.
-		  *  Default = 15 (in logarithmic likelihood)
-		  */
+		 *  Default = 15 (in logarithmic likelihood)
+		 */
 		double max_loglikelihood_dyn_range;
 
 		/** Only for PF_algorithm==pfAuxiliaryPFStandard:
-		  * If false, the APF will predict the first stage weights just at the
+		 * If false, the APF will predict the first stage weights just at the
 		 * mean of the prior of the next time step.
-		  * If true, these weights will be estimated as described in the papers
+		 * If true, these weights will be estimated as described in the papers
 		 * for the "pfAuxiliaryPFOptimal" method, i.e. through a monte carlo
 		 * simulation.
-		  *  In that case, "pfAuxFilterOptimal_MaximumSearchSamples" is the
+		 *  In that case, "pfAuxFilterOptimal_MaximumSearchSamples" is the
 		 * number of MC samples used.
-		  */
+		 */
 		bool pfAuxFilterStandard_FirstStageWeightsMonteCarlo;
 
 		/** (Default=false) In the algorithm
@@ -206,19 +207,26 @@ class CParticleFilter : public mrpt::utils::COutputLogger
 	 *
 	 * \sa CParticleFilterCapable, executeOn
 	 */
+	template <class PARTICLEFILTERCAPABLE, class PF_ALGORITHM>
 	void executeOn(
-		CParticleFilterCapable& obj, const mrpt::obs::CActionCollection* action,
+		PARTICLEFILTERCAPABLE& obj, const mrpt::obs::CActionCollection* action,
+		const mrpt::obs::CSensoryFrame* observation,
+		TParticleFilterStats* stats = nullptr);
+
+	template <class PARTICLEFILTERCAPABLE>
+	void executeOn(
+		PARTICLEFILTERCAPABLE& obj, const mrpt::obs::CActionCollection* action,
 		const mrpt::obs::CSensoryFrame* observation,
 		TParticleFilterStats* stats = nullptr);
 
 	/** The options to be used in the PF, must be set before executing any step
 	 * of the particle filter.
-	  */
+	 */
 	CParticleFilter::TParticleFilterOptions m_options;
 
 };  // End of class def.
 
-}  // end namespace
+}  // namespace bayes
 // Specializations MUST occur at the same namespace:
 namespace utils
 {
@@ -251,6 +259,7 @@ struct TEnumTypeFiller<
 		m_map.insert(CParticleFilter::prSystematic, "prSystematic");
 	}
 };
-}
-}  // end namespace
+
+}  // namespace utils
+}  // namespace mrpt
 #endif

@@ -27,6 +27,8 @@ using namespace mrpt::maps;
 
 #include <mrpt/slam/PF_implementations_data.h>
 
+#include <mrpt/bayes/CParticleFilter_impl.h>
+
 namespace mrpt
 {
 namespace slam
@@ -65,8 +67,8 @@ void KLF_loadBinFromParticle(
 			round(currentParticleValue->roll() / opts.KLD_binSize_PHI);
 	}
 }
-}
-}
+}  // namespace slam
+}  // namespace mrpt
 
 #include <mrpt/slam/PF_implementations.h>
 
@@ -78,7 +80,7 @@ using namespace mrpt::slam;
 // Passing a "this" pointer at this moment is not a problem since it will be NOT
 // access until the object is fully initialized
 CMonteCarloLocalization3D::CMonteCarloLocalization3D(size_t M)
-	: CPose3DPDFParticles(M)
+	: m_poseParticles(M)
 {
 	this->setLoggerName("CMonteCarloLocalization3D");
 }
@@ -90,19 +92,20 @@ CMonteCarloLocalization3D::~CMonteCarloLocalization3D() {}
 TPose3D CMonteCarloLocalization3D::getLastPose(
 	const size_t i, bool& is_valid_pose) const
 {
-	if (i >= m_particles.size())
+	if (i >= m_poseParticles.m_particles.size())
 		THROW_EXCEPTION("Particle index out of bounds!");
 	is_valid_pose = true;
-	ASSERTDEB_(m_particles[i].d != NULL);
-	return TPose3D(*m_particles[i].d);
+	ASSERTDEB_(m_poseParticles.m_particles[i].d != NULL);
+	return TPose3D(*m_poseParticles.m_particles[i].d);
 }
 
 /*---------------------------------------------------------------
 
-			prediction_and_update_pfStandardProposal
+			prediction_and_update
 
  ---------------------------------------------------------------*/
-void CMonteCarloLocalization3D::prediction_and_update_pfStandardProposal(
+template <typename T>
+void CMonteCarloLocalization3D::prediction_and_update(
 	const mrpt::obs::CActionCollection* actions,
 	const mrpt::obs::CSensoryFrame* sf,
 	const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
@@ -113,62 +116,14 @@ void CMonteCarloLocalization3D::prediction_and_update_pfStandardProposal(
 	{  // A map MUST be supplied!
 		ASSERT_(options.metricMap || options.metricMaps.size() > 0)
 		if (!options.metricMap)
-			ASSERT_(options.metricMaps.size() == m_particles.size())
+			ASSERT_(
+				options.metricMaps.size() == m_poseParticles.m_particles.size())
 	}
 
-	PF_SLAM_implementation_pfStandardProposal<mrpt::slam::detail::TPoseBin3D>(
-		actions, sf, PF_options, options.KLD_params);
-
-	MRPT_END
-}
-
-/*---------------------------------------------------------------
-
-			prediction_and_update_pfAuxiliaryPFStandard
-
- ---------------------------------------------------------------*/
-void CMonteCarloLocalization3D::prediction_and_update_pfAuxiliaryPFStandard(
-	const mrpt::obs::CActionCollection* actions,
-	const mrpt::obs::CSensoryFrame* sf,
-	const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
-{
-	MRPT_START
-
-	if (sf)
-	{  // A map MUST be supplied!
-		ASSERT_(options.metricMap || options.metricMaps.size() > 0)
-		if (!options.metricMap)
-			ASSERT_(options.metricMaps.size() == m_particles.size())
-	}
-
-	PF_SLAM_implementation_pfAuxiliaryPFStandard<
+	T::template PF_SLAM_implementation<
+		mrpt::poses::CPose3D, CMonteCarloLocalization3D,
 		mrpt::slam::detail::TPoseBin3D>(
-		actions, sf, PF_options, options.KLD_params);
-
-	MRPT_END
-}
-
-/*---------------------------------------------------------------
-
-			prediction_and_update_pfAuxiliaryPFOptimal
-
- ---------------------------------------------------------------*/
-void CMonteCarloLocalization3D::prediction_and_update_pfAuxiliaryPFOptimal(
-	const mrpt::obs::CActionCollection* actions,
-	const mrpt::obs::CSensoryFrame* sf,
-	const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
-{
-	MRPT_START
-
-	if (sf)
-	{  // A map MUST be supplied!
-		ASSERT_(options.metricMap || options.metricMaps.size() > 0)
-		if (!options.metricMap)
-			ASSERT_(options.metricMaps.size() == m_particles.size())
-	}
-
-	PF_SLAM_implementation_pfAuxiliaryPFOptimal<mrpt::slam::detail::TPoseBin3D>(
-		actions, sf, PF_options, options.KLD_params);
+		actions, sf, PF_options, options.KLD_params, *this);
 
 	MRPT_END
 }
@@ -233,4 +188,39 @@ void CMonteCarloLocalization3D::PF_SLAM_implementation_replaceByNewParticleSet(
 		old_particles[i].log_w = newParticlesWeight[i];
 		old_particles[i].d.reset(new CPose3D(newParticles[i]));
 	}
+}
+
+namespace mrpt
+{
+namespace bayes
+{
+template <>
+void CParticleFilter::executeOn<CMonteCarloLocalization3D>(
+	CMonteCarloLocalization3D& obj, const mrpt::obs::CActionCollection* action,
+	const mrpt::obs::CSensoryFrame* observation, TParticleFilterStats* stats)
+{
+	switch (m_options.PF_algorithm)
+	{
+		case CParticleFilter::pfStandardProposal:
+			executeOn<CMonteCarloLocalization3D, mrpt::slam::StandardProposal>(
+				obj, action, observation, stats);
+			break;
+		case CParticleFilter::pfAuxiliaryPFStandard:
+			executeOn<CMonteCarloLocalization3D, mrpt::slam::AuxiliaryPFStandard>(
+				obj, action, observation, stats);
+			break;
+		case CParticleFilter::pfAuxiliaryPFOptimal:
+			executeOn<CMonteCarloLocalization3D, mrpt::slam::AuxiliaryPFOptimal>(
+				obj, action, observation, stats);
+			break;
+		default:
+		{
+			THROW_EXCEPTION("Invalid particle filter algorithm selection!");
+		}
+		break;
+	}
+
+}
+
+}
 }

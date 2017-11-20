@@ -54,9 +54,9 @@ CMultiMetricMapPDF::CMultiMetricMapPDF(
 	  options(),
 	  newInfoIndex(0)
 {
-	m_particles.resize(opts.sampleSize);
-	for (CParticleList::iterator it = m_particles.begin();
-		 it != m_particles.end(); ++it)
+	m_poseParticles.m_particles.resize(opts.sampleSize);
+	for (CParticleList::iterator it = m_poseParticles.m_particles.begin();
+		 it != m_poseParticles.m_particles.end(); ++it)
 	{
 		it->log_w = 0;
 		it->d.reset(new CRBPFParticleData(mapsInitializers));
@@ -84,15 +84,15 @@ void CMultiMetricMapPDF::clear(const CPose2D& initialPose)
   ---------------------------------------------------------------*/
 void CMultiMetricMapPDF::clear(const CPose3D& initialPose)
 {
-	const size_t M = m_particles.size();
+	const size_t M = m_poseParticles.m_particles.size();
 	for (size_t i = 0; i < M; i++)
 	{
-		m_particles[i].log_w = 0;
+		m_poseParticles.m_particles[i].log_w = 0;
 
-		m_particles[i].d->mapTillNow.clear();
+		m_poseParticles.m_particles[i].d->mapTillNow.clear();
 
-		m_particles[i].d->robotPath.resize(1);
-		m_particles[i].d->robotPath[0] = initialPose;
+		m_poseParticles.m_particles[i].d->robotPath.resize(1);
+		m_poseParticles.m_particles[i].d->robotPath[0] = initialPose;
 	}
 
 	SFs.clear();
@@ -105,7 +105,7 @@ void CMultiMetricMapPDF::clear(
 	const mrpt::maps::CSimpleMap& prevMap,
 	const mrpt::poses::CPose3D& currentPose)
 {
-	const size_t nParts = m_particles.size(), nOldKeyframes = prevMap.size();
+	const size_t nParts = m_poseParticles.m_particles.size(), nOldKeyframes = prevMap.size();
 	if (nOldKeyframes == 0)
 	{
 		// prevMap is empty, so reset the map
@@ -114,7 +114,7 @@ void CMultiMetricMapPDF::clear(
 	}
 	for (size_t idxPart = 0; idxPart < nParts; idxPart++)
 	{
-		auto& p = m_particles[idxPart];
+		auto& p = m_poseParticles.m_particles[idxPart];
 		p.log_w = 0;
 
 		p.d->mapTillNow.clear();
@@ -167,14 +167,14 @@ void CMultiMetricMapPDF::clear(
 						getEstimatedPosePDF
   Returns an estimate of the pose, (the mean, or mathematical expectation of the
  PDF), computed
-		as a weighted average over all m_particles.
+		as a weighted average over all m_poseParticles.m_particles.
  ---------------------------------------------------------------*/
 void CMultiMetricMapPDF::getEstimatedPosePDF(
 	CPose3DPDFParticles& out_estimation) const
 {
-	ASSERT_(m_particles[0].d->robotPath.size() > 0);
+	ASSERT_(m_poseParticles.m_particles[0].d->robotPath.size() > 0);
 	getEstimatedPosePDFAtTime(
-		m_particles[0].d->robotPath.size() - 1, out_estimation);
+		m_poseParticles.m_particles[0].d->robotPath.size() - 1, out_estimation);
 }
 
 /*---------------------------------------------------------------
@@ -184,18 +184,18 @@ void CMultiMetricMapPDF::getEstimatedPosePDFAtTime(
 	size_t timeStep, CPose3DPDFParticles& out_estimation) const
 {
 	// CPose3D	p;
-	size_t i, n = m_particles.size();
+	size_t i, n = m_poseParticles.m_particles.size();
 
 	// Delete current content of "out_estimation":
 	out_estimation.clearParticles();
 
-	// Create new m_particles:
+	// Create new m_poseParticles.m_particles:
 	out_estimation.m_particles.resize(n);
 	for (i = 0; i < n; i++)
 	{
 		out_estimation.m_particles[i].d.reset(
-			new CPose3D(m_particles[i].d->robotPath[timeStep]));
-		out_estimation.m_particles[i].log_w = m_particles[i].log_w;
+			new CPose3D(m_poseParticles.m_particles[i].d->robotPath[timeStep]));
+		out_estimation.m_particles[i].log_w = m_poseParticles.m_particles[i].log_w;
 	}
 }
 
@@ -233,14 +233,14 @@ void CMultiMetricMapPDF::writeToStream(
 		uint32_t i, n, j, m;
 
 		// The data
-		n = static_cast<uint32_t>(m_particles.size());
+		n = static_cast<uint32_t>(m_poseParticles.m_particles.size());
 		out << n;
 		for (i = 0; i < n; i++)
 		{
-			out << m_particles[i].log_w << m_particles[i].d->mapTillNow;
-			m = static_cast<uint32_t>(m_particles[i].d->robotPath.size());
+			out << m_poseParticles.m_particles[i].log_w << m_poseParticles.m_particles[i].d->mapTillNow;
+			m = static_cast<uint32_t>(m_poseParticles.m_particles[i].d->robotPath.size());
 			out << m;
-			for (j = 0; j < m; j++) out << m_particles[i].d->robotPath[j];
+			for (j = 0; j < m; j++) out << m_poseParticles.m_particles[i].d->robotPath[j];
 		}
 		out << SFs << SF2robotPath;
 	}
@@ -259,7 +259,7 @@ void CMultiMetricMapPDF::readFromStream(mrpt::utils::CStream& in, int version)
 
 			// Delete current contents:
 			// --------------------------
-			clearParticles();
+			m_poseParticles.clearParticles();
 			SFs.clear();
 			SF2robotPath.clear();
 
@@ -269,17 +269,17 @@ void CMultiMetricMapPDF::readFromStream(mrpt::utils::CStream& in, int version)
 			// --------------------
 			in >> n;
 
-			m_particles.resize(n);
+			m_poseParticles.m_particles.resize(n);
 			for (i = 0; i < n; i++)
 			{
-				m_particles[i].d.reset(new CRBPFParticleData());
+				m_poseParticles.m_particles[i].d.reset(new CRBPFParticleData());
 
 				// Load
-				in >> m_particles[i].log_w >> m_particles[i].d->mapTillNow;
+				in >> m_poseParticles.m_particles[i].log_w >> m_poseParticles.m_particles[i].d->mapTillNow;
 
 				in >> m;
-				m_particles[i].d->robotPath.resize(m);
-				for (j = 0; j < m; j++) in >> m_particles[i].d->robotPath[j];
+				m_poseParticles.m_particles[i].d->robotPath.resize(m);
+				for (j = 0; j < m; j++) in >> m_poseParticles.m_particles[i].d->robotPath[j];
 			}
 
 			in >> SFs >> SF2robotPath;
@@ -293,17 +293,17 @@ void CMultiMetricMapPDF::readFromStream(mrpt::utils::CStream& in, int version)
 TPose3D CMultiMetricMapPDF::getLastPose(
 	const size_t i, bool& is_valid_pose) const
 {
-	if (i >= m_particles.size())
+	if (i >= m_poseParticles.m_particles.size())
 		THROW_EXCEPTION("Particle index out of bounds!");
 
-	if (m_particles[i].d->robotPath.empty())
+	if (m_poseParticles.m_particles[i].d->robotPath.empty())
 	{
 		is_valid_pose = false;
 		return TPose3D(0, 0, 0, 0, 0, 0);
 	}
 	else
 	{
-		return *m_particles[i].d->robotPath.rbegin();
+		return *m_poseParticles.m_particles[i].d->robotPath.rbegin();
 	}
 }
 
@@ -326,7 +326,7 @@ void CMultiMetricMapPDF::rebuildAverageMap()
 	// ---------------------------------------------------------
 	//					GRID
 	// ---------------------------------------------------------
-	for (part = m_particles.begin(); part != m_particles.end(); ++part)
+	for (part = m_poseParticles.m_particles.begin(); part != m_poseParticles.m_particles.end(); ++part)
 	{
 		ASSERT_(part->d->mapTillNow.m_gridMaps.size() > 0);
 
@@ -337,11 +337,11 @@ void CMultiMetricMapPDF::rebuildAverageMap()
 	}
 
 	// Asure all maps have the same dimensions:
-	for (part = m_particles.begin(); part != m_particles.end(); ++part)
+	for (part = m_poseParticles.m_particles.begin(); part != m_poseParticles.m_particles.end(); ++part)
 		part->d->mapTillNow.m_gridMaps[0]->resizeGrid(
 			min_x, max_x, min_y, max_y, 0.5f, false);
 
-	for (part = m_particles.begin(); part != m_particles.end(); ++part)
+	for (part = m_poseParticles.m_particles.begin(); part != m_poseParticles.m_particles.end(); ++part)
 	{
 		min_x = min(min_x, part->d->mapTillNow.m_gridMaps[0]->getXMin());
 		max_x = max(max_x, part->d->mapTillNow.m_gridMaps[0]->getXMax());
@@ -353,15 +353,15 @@ void CMultiMetricMapPDF::rebuildAverageMap()
 	ASSERT_(averageMap.m_gridMaps.size() > 0);
 	averageMap.m_gridMaps[0]->setSize(
 		min_x, max_x, min_y, max_y,
-		m_particles[0].d->mapTillNow.m_gridMaps[0]->getResolution(), 0);
+		m_poseParticles.m_particles[0].d->mapTillNow.m_gridMaps[0]->getResolution(), 0);
 
 	// Compute the sum of weights:
 	double sumLinearWeights = 0;
-	for (part = m_particles.begin(); part != m_particles.end(); ++part)
+	for (part = m_poseParticles.m_particles.begin(); part != m_poseParticles.m_particles.end(); ++part)
 		sumLinearWeights += exp(part->log_w);
 
 	// CHECK:
-	for (part = m_particles.begin(); part != m_particles.end(); ++part)
+	for (part = m_poseParticles.m_particles.begin(); part != m_poseParticles.m_particles.end(); ++part)
 	{
 		ASSERT_(
 			part->d->mapTillNow.m_gridMaps[0]->getSizeX() ==
@@ -384,12 +384,12 @@ void CMultiMetricMapPDF::rebuildAverageMap()
 
 		// For each particle in the RBPF:
 		double sumW = 0;
-		for (part = m_particles.begin(); part != m_particles.end(); ++part)
+		for (part = m_poseParticles.m_particles.begin(); part != m_poseParticles.m_particles.end(); ++part)
 			sumW += exp(part->log_w);
 
 		if (sumW == 0) sumW = 1;
 
-		for (part = m_particles.begin(); part != m_particles.end(); ++part)
+		for (part = m_poseParticles.m_particles.begin(); part != m_poseParticles.m_particles.end(); ++part)
 		{
 			// Variables:
 			std::vector<COccupancyGridMap2D::cellType>::iterator srcCell;
@@ -435,7 +435,7 @@ void CMultiMetricMapPDF::rebuildAverageMap()
  ---------------------------------------------------------------*/
 bool CMultiMetricMapPDF::insertObservation(CSensoryFrame& sf)
 {
-	const size_t M = particlesCount();
+	const size_t M = m_poseParticles.particlesCount();
 
 	// Insert into SFs:
 	CPose3DPDFParticles::Ptr posePDF =
@@ -446,7 +446,7 @@ bool CMultiMetricMapPDF::insertObservation(CSensoryFrame& sf)
 	const uint32_t new_sf_id = SFs.size();
 	SFs.insert(posePDF, CSensoryFrame::Ptr(new CSensoryFrame(sf)));
 	SF2robotPath.resize(new_sf_id + 1);
-	SF2robotPath[new_sf_id] = m_particles[0].d->robotPath.size() - 1;
+	SF2robotPath[new_sf_id] = m_poseParticles.m_particles[0].d->robotPath.size() - 1;
 
 	bool anymap = false;
 	for (size_t i = 0; i < M; i++)
@@ -455,7 +455,7 @@ bool CMultiMetricMapPDF::insertObservation(CSensoryFrame& sf)
 		const CPose3D robotPose = CPose3D(getLastPose(i, pose_is_valid));
 		// ASSERT_(pose_is_valid); // if not, use the default (0,0,0)
 		const bool map_modified = sf.insertObservationsInto(
-			&m_particles[i].d->mapTillNow, &robotPose);
+			&m_poseParticles.m_particles[i].d->mapTillNow, &robotPose);
 		anymap = anymap || map_modified;
 	}
 
@@ -469,8 +469,8 @@ bool CMultiMetricMapPDF::insertObservation(CSensoryFrame& sf)
 void CMultiMetricMapPDF::getPath(
 	size_t i, std::deque<math::TPose3D>& out_path) const
 {
-	if (i >= m_particles.size()) THROW_EXCEPTION("Index out of bounds");
-	out_path = m_particles[i].d->robotPath;
+	if (i >= m_poseParticles.m_particles.size()) THROW_EXCEPTION("Index out of bounds");
+	out_path = m_poseParticles.m_particles[i].d->robotPath;
 }
 
 /*---------------------------------------------------------------
@@ -480,7 +480,7 @@ double CMultiMetricMapPDF::getCurrentEntropyOfPaths()
 {
 	size_t i;
 	size_t N =
-		m_particles[0].d->robotPath.size();  // The poses count along the paths
+		m_poseParticles.m_particles[0].d->robotPath.size();  // The poses count along the paths
 
 	// Compute paths entropy:
 	// ---------------------------
@@ -491,7 +491,7 @@ double CMultiMetricMapPDF::getCurrentEntropyOfPaths()
 		// For each pose along the path:
 		for (i = 0; i < N; i++)
 		{
-			// Get pose est. as m_particles:
+			// Get pose est. as m_poseParticles.m_particles:
 			CPose3DPDFParticles posePDFParts;
 			getEstimatedPosePDFAtTime(i, posePDFParts);
 
@@ -509,7 +509,7 @@ double CMultiMetricMapPDF::getCurrentEntropyOfPaths()
 double CMultiMetricMapPDF::getCurrentJointEntropy()
 {
 	double H_joint, H_paths, H_maps;
-	size_t i, M = m_particles.size();
+	size_t i, M = m_poseParticles.m_particles.size();
 	COccupancyGridMap2D::TEntropyInfo entropy;
 
 	// Entropy of the paths:
@@ -521,7 +521,7 @@ double CMultiMetricMapPDF::getCurrentJointEntropy()
 	// ---------------------------------------------------------
 	//			ASSURE ALL THE GRIDS ARE THE SAME SIZE!
 	// ---------------------------------------------------------
-	for (part = m_particles.begin(); part != m_particles.end(); ++part)
+	for (part = m_poseParticles.m_particles.begin(); part != m_poseParticles.m_particles.end(); ++part)
 	{
 		ASSERT_(part->d->mapTillNow.m_gridMaps.size() > 0);
 
@@ -532,23 +532,23 @@ double CMultiMetricMapPDF::getCurrentJointEntropy()
 	}
 
 	// Asure all maps have the same dimensions:
-	for (part = m_particles.begin(); part != m_particles.end(); ++part)
+	for (part = m_poseParticles.m_particles.begin(); part != m_poseParticles.m_particles.end(); ++part)
 		part->d->mapTillNow.m_gridMaps[0]->resizeGrid(
 			min_x, max_x, min_y, max_y, 0.5f, false);
 
 	// Sum of linear weights:
 	double sumLinearWeights = 0;
-	for (i = 0; i < M; i++) sumLinearWeights += exp(m_particles[i].log_w);
+	for (i = 0; i < M; i++) sumLinearWeights += exp(m_poseParticles.m_particles[i].log_w);
 
 	// Compute weighted maps entropy:
 	// --------------------------------
 	H_maps = 0;
 	for (i = 0; i < M; i++)
 	{
-		ASSERT_(m_particles[i].d->mapTillNow.m_gridMaps.size() > 0);
+		ASSERT_(m_poseParticles.m_particles[i].d->mapTillNow.m_gridMaps.size() > 0);
 
-		m_particles[i].d->mapTillNow.m_gridMaps[0]->computeEntropy(entropy);
-		H_maps += exp(m_particles[i].log_w) * entropy.H / sumLinearWeights;
+		m_poseParticles.m_particles[i].d->mapTillNow.m_gridMaps[0]->computeEntropy(entropy);
+		H_maps += exp(m_poseParticles.m_particles[i].log_w) * entropy.H / sumLinearWeights;
 	}
 
 	printf("H_paths=%e\n", H_paths);
@@ -560,20 +560,20 @@ double CMultiMetricMapPDF::getCurrentJointEntropy()
 
 const CMultiMetricMap* CMultiMetricMapPDF::getCurrentMostLikelyMetricMap() const
 {
-	size_t i, max_i = 0, n = m_particles.size();
-	double max_w = m_particles[0].log_w;
+	size_t i, max_i = 0, n = m_poseParticles.m_particles.size();
+	double max_w = m_poseParticles.m_particles[0].log_w;
 
 	for (i = 0; i < n; i++)
 	{
-		if (m_particles[i].log_w > max_w)
+		if (m_poseParticles.m_particles[i].log_w > max_w)
 		{
-			max_w = m_particles[i].log_w;
+			max_w = m_poseParticles.m_particles[i].log_w;
 			max_i = i;
 		}
 	}
 
 	// Return its map:
-	return &m_particles[max_i].d->mapTillNow;
+	return &m_poseParticles.m_particles[max_i].d->mapTillNow;
 }
 
 /*---------------------------------------------------------------
@@ -610,8 +610,8 @@ void CMultiMetricMapPDF::saveCurrentPathEstimationToTextFile(
 	FILE* f = os::fopen(fil.c_str(), "wt");
 	if (!f) return;
 
-	for (CParticleList::iterator it = m_particles.begin();
-		 it != m_particles.end(); ++it)
+	for (CParticleList::iterator it = m_poseParticles.m_particles.begin();
+		 it != m_poseParticles.m_particles.end(); ++it)
 	{
 		for (size_t i = 0; i < it->d->robotPath.size(); i++)
 		{
