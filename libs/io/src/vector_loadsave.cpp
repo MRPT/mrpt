@@ -17,7 +17,7 @@ using namespace mrpt;
 using namespace mrpt::io;
 using namespace std;
 
-bool mrpt::system::loadBinaryFile(
+bool mrpt::io::loadBinaryFile(
 	std::vector<uint8_t>& out_data, const std::string& fileName)
 {
 	try
@@ -40,7 +40,7 @@ bool mrpt::system::loadBinaryFile(
 	}
 }
 
-bool mrpt::system::vectorToBinaryFile(
+bool mrpt::io::vectorToBinaryFile(
 	const std::vector<uint8_t>& vec, const std::string& fileName)
 {
 	try

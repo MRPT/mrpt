@@ -6,16 +6,14 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CFILESTREAM_H
-#define CFILESTREAM_H
+#pragma once
 
-#include <mrpt/utils/CStream.h>
-
+#include <mrpt/io/CStream.h>
 #include <fstream>
 
 namespace mrpt
 {
-namespace utils
+namespace io
 {
 /** File open modes are used in CFileStream
   *  Posible values are:
@@ -113,4 +111,3 @@ static_assert(
 	"Copy Check");
 }  // End of namespace
 }  // end of namespace
-#endif

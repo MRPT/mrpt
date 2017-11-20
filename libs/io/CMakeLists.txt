@@ -6,6 +6,7 @@ define_mrpt_lib(
 	io 		# Lib name
 	# Dependencies:
 	mrpt-core
+	mrpt-system
 	)
 
 IF(BUILD_mrpt-io)
