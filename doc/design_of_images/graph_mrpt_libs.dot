@@ -6,6 +6,9 @@ digraph MRPT_LIBS {
 	
 	expr       [label="mrpt-expr",URL="group__mrpt__expr__grp.html"];
 	expr -> core;
+
+	random     [label="mrpt-random",URL="group__mrpt__random__grp.html"];
+	random -> core;
 	
 	system     [label="mrpt-system",URL="group__mrpt__system__grp.html"];
 	system -> core;

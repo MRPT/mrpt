@@ -6,18 +6,15 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef RandomGenerator_H
-#define RandomGenerator_H
+#pragma once
 
-#include <mrpt/utils/utils_defs.h>
-#include <mrpt/math/CMatrixTemplateNumeric.h>
-
+#include <mrpt/core/exceptions.h>
 #include <random>
 #include <limits>
+#include <vector>
 
 namespace mrpt
 {
-
 /** A namespace of pseudo-random numbers genrators of diferent distributions.
  * The central class in this namespace is mrpt::random::CRandomGenerator
  * \ingroup mrpt_base_grp
@@ -58,7 +55,7 @@ class CRandomGenerator
 	CRandomGenerator(const uint32_t seed) { randomize(seed); }
 	/** Initialize the PRNG from the given random seed */
 	void randomize(const uint32_t seed);
-	/** Randomize the generators, based on current time */
+	/** Randomize the generators, based on std::random_device */
 	void randomize();
 
 	/** @} */
@@ -131,9 +128,7 @@ class CRandomGenerator
 	{
 		const size_t N = v.size();
 		for (size_t c = 0; c < N; c++)
-			v[c] =
-				static_cast<typename mrpt::math::ContainerType<VEC>::element_t>(
-					drawUniform(unif_min, unif_max));
+			v[c] = static_cast<decltype(v[c])>(drawUniform(unif_min, unif_max));
 	}
 
 	/** @} */
@@ -177,9 +172,19 @@ class CRandomGenerator
 	 * formula C = v*v^t + epsilon*I, with "v" being a vector of gaussian random
 	 * samples.
 	  */
-	mrpt::math::CMatrixDouble drawDefinitePositiveMatrix(
+	template <class MATRIX>
+	MATRIX drawDefinitePositiveMatrix(
 		const size_t dim, const double std_scale = 1.0,
-		const double diagonal_epsilon = 1e-8);
+		const double diagonal_epsilon = 1e-8)
+	{
+		MATRIX r(dim, 1);
+		drawGaussian1DMatrix(r, 0, std_scale);
+		MATRIX cov(dim, dim);
+		cov.multiply_AAt(r);  // random semi-definite positive matrix:
+		for (size_t i = 0; i < dim; i++)
+			cov(i, i) += diagonal_epsilon;  // make sure it's definite-positive
+		return cov;
+	}
 
 	/** Fills the given vector with independent, 1D-normally distributed
 	 * samples.
@@ -191,9 +196,7 @@ class CRandomGenerator
 	{
 		const size_t N = v.size();
 		for (size_t c = 0; c < N; c++)
-			v[c] =
-				static_cast<typename mrpt::math::ContainerType<VEC>::element_t>(
-					drawGaussian1D(mean, std));
+			v[c] = static_cast<decltype(v[c])>(drawGaussian1D(mean, std));
 	}
 
 	/** Generate multidimensional random samples according to a given covariance
@@ -202,11 +205,37 @@ class CRandomGenerator
 	 * \exception std::exception On invalid covariance matrix
 	 * \sa drawGaussianMultivariateMany
 	 */
-	template <typename T>
+	template <typename T, typename MATRIX>
 	void drawGaussianMultivariate(
 		std::vector<T>& out_result,
-		const mrpt::math::CMatrixTemplateNumeric<T>& cov,
-		const std::vector<T>* mean = nullptr);
+		const MATRIX& cov,
+		const std::vector<T>* mean = nullptr)
+	{
+		ASSERT_(cov.getRowCount() == cov.getColCount());
+		const size_t dim = cov.getColCount();
+		if (mean) ASSERT_(mean->size() == dim);
+		MATRIX Z, D;
+		// Set size of output vector:
+		out_result.clear();
+		out_result.resize(dim, 0);
+		/** Computes the eigenvalues/eigenvector decomposition of this matrix,
+		*    so that: M = Z · D · Z<sup>T</sup>, where columns in Z are the
+		*	  eigenvectors and the diagonal matrix D contains the eigenvalues
+		*    as diagonal elements, sorted in <i>ascending</i> order.
+		*/
+		cov.eigenVectors(Z, D);
+		// Scale eigenvectors with eigenvalues:
+		D = D.array().sqrt().matrix();
+		Z.multiply(Z, D);
+		for (size_t i = 0; i < dim; i++)
+		{
+			T rnd = this->drawGaussian1D_normalized();
+			for (size_t d = 0; d < dim; d++)
+				out_result[d] += (Z.get_unsafe(d, i) * rnd);
+		}
+		if (mean)
+			for (size_t d = 0; d < dim; d++) out_result[d] += (*mean)[d];
+	}
 
 	/** Generate multidimensional random samples according to a given covariance
 	 * matrix.
@@ -404,19 +433,6 @@ void randomPermutation(
 	getRandomGenerator().permuteVector(in_vector, out_result);
 }
 
-/** Generate multidimensional random samples according to a given covariance
- * matrix.
- * \exception std::exception On invalid covariance matrix
- * \sa randomNormalMultiDimensionalMany
- */
-template <typename T>
-void randomNormalMultiDimensional(
-	const mrpt::math::CMatrixTemplateNumeric<T>& cov,
-	std::vector<T>& out_result)
-{
-	getRandomGenerator().drawGaussianMultivariate(out_result, cov);
-}
-
 /** Generate a given number of multidimensional random samples according to a
 * given covariance matrix.
 * \param cov The covariance matrix where to draw the samples from.
@@ -430,9 +446,9 @@ void randomNormalMultiDimensional(
 *
 * \sa randomNormalMultiDimensional
 */
-template <typename T>
+template <typename T, typename MATRIX>
 void randomNormalMultiDimensionalMany(
-	const mrpt::math::CMatrixTemplateNumeric<T>& cov, size_t desiredSamples,
+	const MATRIX& cov, size_t desiredSamples,
 	std::vector<std::vector<T>>& ret,
 	std::vector<T>* samplesLikelihoods = nullptr)
 {
@@ -459,15 +475,11 @@ void randomNormalMultiDimensionalMany(
  * \exception std::exception On invalid covariance matrix
  * \sa randomNormalMultiDimensionalMany
  */
-template <typename T, typename MATRIXLIKE>
-void randomNormalMultiDimensional(
-	const MATRIXLIKE& cov, std::vector<T>& out_result)
+template <typename T, typename MATRIX>
+void randomNormalMultiDimensional(const MATRIX& cov, std::vector<T>& out_result)
 {
 	getRandomGenerator().drawGaussianMultivariate(out_result, cov);
 }
 
 }  // End of namespace
-
 }  // End of namespace
-
-#endif

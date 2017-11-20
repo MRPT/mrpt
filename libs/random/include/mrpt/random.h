@@ -6,18 +6,6 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-
 #pragma once
 
-#include <mrpt/config.h>
-#if MRPT_ENABLE_PRECOMPILED_HDRS
-
-#include <mrpt/utils/utils_defs.h>
-#include <mrpt/utils/types_math.h>  // Include Eigen large headers here!
-//#include <mrpt/utils/CObject.h>
-//#include <mrpt/utils/CSerializable.h>
-//#include <mrpt/math/ops_containers.h>
-//#include <mrpt/math/ops_matrices.h>
-//#include <mrpt/math/ops_vectors.h>
-
-#endif
+#include "random/RandomGenerators.h"

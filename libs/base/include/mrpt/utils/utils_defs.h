@@ -10,7 +10,7 @@
 #define UTILSDEFS_H
 
 // ====== This header will be included in ALL mrpt libs and programs ========
-#include <mrpt/utils/core_defs.h>
+#include <mrpt/core/common.h>
 
 // Standard headers:
 #include <cstddef>
@@ -25,9 +25,6 @@
 #include <sstream>
 //
 // A few small functions and templates global to all mrpt libs:
-#include <mrpt/utils/bits.h>
-//
-// Standard elemental types:
-#include <mrpt/utils/types_simple.h>
-//
+#include <mrpt/core/bits_math.h>
+
 #endif

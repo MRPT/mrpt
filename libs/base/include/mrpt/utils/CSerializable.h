@@ -11,7 +11,6 @@
 
 #include <mrpt/utils/CObject.h>
 #include <mrpt/utils/TTypeName.h>
-#include <mrpt/utils/types_simple.h>
 
 #if MRPT_HAS_MATLAB
 /** Forward declaration for mxArray (avoid #including as much as possible to
