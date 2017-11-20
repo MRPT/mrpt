@@ -6,16 +6,14 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CFileOutputStream_H
-#define CFileOutputStream_H
+#pragma once
 
-#include <mrpt/utils/CStream.h>
-
+#include <mrpt/io/CStream.h>
 #include <fstream>
 
 namespace mrpt
 {
-namespace utils
+namespace io
 {
 /** This CStream derived class allow using a file as a write-only, binary
  * stream.
@@ -86,4 +84,3 @@ static_assert(
 	"Copy Check");
 }  // End of namespace
 }  // end of namespace
-#endif

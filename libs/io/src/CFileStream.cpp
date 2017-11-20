@@ -7,16 +7,14 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "base-precomp.h"  // Precompiled headers
+#include "io-precomp.h"  // Precompiled headers
 
-#ifdef _MSC_VER
-#define _SCL_SECURE_NO_WARNINGS
-#endif
+#include <mrpt/io/CFileStream.h>
+#include <iostream>
+#include <iomanip>
+#include <string> // std::getline()
 
-#include <mrpt/utils/CFileStream.h>
-#include <mrpt/system/os.h>
-
-using namespace mrpt::utils;
+using namespace mrpt::io;
 using namespace std;
 
 /*---------------------------------------------------------------
@@ -28,8 +26,6 @@ CFileStream::CFileStream() : m_f() {}
  ---------------------------------------------------------------*/
 CFileStream::CFileStream(const string& fileName, TFileOpenModes mode_) : m_f()
 {
-	MRPT_START
-
 	std::ios_base::openmode mode = std::ios_base::in;
 	if (mode_ == fomRead)
 		mode = std::ios_base::in;
@@ -45,8 +41,7 @@ CFileStream::CFileStream(const string& fileName, TFileOpenModes mode_) : m_f()
 	// Try to open the file:
 	m_f.open(fileName.c_str(), mode);
 	if (!m_f.is_open())
-		THROW_EXCEPTION_FMT("Error creating/opening: '%s'", fileName.c_str());
-	MRPT_END
+		throw std::runtime_error(std::string("CFileStream: Error creating/opening: ") + fileName);
 }
 
 /*---------------------------------------------------------------
@@ -54,8 +49,6 @@ CFileStream::CFileStream(const string& fileName, TFileOpenModes mode_) : m_f()
  ---------------------------------------------------------------*/
 bool CFileStream::open(const std::string& fileName, TFileOpenModes mode_)
 {
-	MRPT_START
-
 	std::ios_base::openmode mode = std::ios_base::in;
 	if (mode_ == fomRead)
 		mode = std::ios_base::in;
@@ -72,8 +65,6 @@ bool CFileStream::open(const std::string& fileName, TFileOpenModes mode_)
 
 	m_f.open(fileName.c_str(), ios_base::binary | mode);
 	return m_f.is_open();
-
-	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -131,7 +122,7 @@ uint64_t CFileStream::Seek(uint64_t Offset, CStream::TSeekOrigin Origin)
 			way = ios_base::end;
 			break;
 		default:
-			THROW_EXCEPTION("Invalid value for 'Origin'");
+			throw std::runtime_error("[CFileStream::Seek] Invalid value for 'Origin'");
 	}
 
 	m_f.seekp(offset, way);

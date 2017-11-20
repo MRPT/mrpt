@@ -6,21 +6,20 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef mrpt_synch_mt_buffer_H
-#define mrpt_synch_mt_buffer_H
+#pragma once
 
-#include <mrpt/utils/types_simple.h>
-
+#include <vector>
+#include <cstdint>
 #include <thread>
 #include <mutex>
 
 namespace mrpt
 {
-namespace synch
+namespace utils
 {
 /** This class is a bulk sequence of bytes with MultiThread (MT)-safe read and
  * write operations.
-  * \ingroup synch_grp
+  * \ingroup utils_grp
   */
 class MT_buffer
 {
@@ -80,5 +79,3 @@ class MT_buffer
 
 }  // End of namespace
 }  // End of namespace
-
-#endif

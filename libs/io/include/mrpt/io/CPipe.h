@@ -6,16 +6,15 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef mrpt_synch_pipe_H
-#define mrpt_synch_pipe_H
+#pragma once
 
-#include <mrpt/utils/CStream.h>
+#include <mrpt/io/CStream.h>
 #include <string>
 #include <memory>  // for unique_ptr<>
 
 namespace mrpt
 {
-namespace synch
+namespace io
 {
 class CPipeReadEndPoint;
 class CPipeWriteEndPoint;
@@ -166,7 +165,4 @@ void CPipe::createPipe(ReadPtr& outReadPipe, WritePtr& outWritePipe)
 }
 
 }  // End of namespace
-
 }  // End of namespace
-
-#endif

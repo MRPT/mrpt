@@ -7,9 +7,9 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "base-precomp.h"  // Precompiled headers
+#include "io-precomp.h"  // Precompiled headers
 
-#include <mrpt/synch/CPipe.h>
+#include <mrpt/io/CPipe.h>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -20,8 +20,7 @@
 #include <stdlib.h>
 #endif
 
-using namespace mrpt::synch;
-using namespace mrpt::utils;
+using namespace mrpt::io;
 
 // ------------------  CPipe ------------------
 

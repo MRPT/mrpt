@@ -6,26 +6,19 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CSTREAM_H
-#define CSTREAM_H
+#pragma once
 
-#include <mrpt/utils/core_defs.h>
-#include <mrpt/utils/types_simple.h>
-#include <mrpt/utils/exceptions.h>
-#include <mrpt/utils/bits.h>  // reverseBytesInPlace()
-#include <mrpt/utils/CSerializable.h>
-#include <mrpt/utils/variant.h>
-
-#include <mrpt/otherlibs/mapbox/variant.hpp>
+#include <mrpt/core/common.h> // MRPT_printf_format_check
+#include <mrpt/core/reverse_bytes.h>
 #include <vector>
 #include <type_traits>  // remove_reference_t
 
 namespace mrpt
 {
-namespace utils
+namespace io
 {
-class CSerializable;
-class CMessage;
+//class CSerializable;
+//class CMessage;
 
 /** This base class is used to provide a unified interface to
  *    files,memory buffers,..Please see the derived classes. This class is
@@ -35,7 +28,7 @@ class CMessage;
  *    can be directly written and read to and from any CStream easily.
  *  Please, it is recomendable to read CSerializable documentation also.
  *
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_io_grp
  * \sa CFileStream, CMemoryStream,CSerializable
  */
 class CStream
@@ -59,6 +52,7 @@ class CStream
 	 * number of bytes actually written. */
 	virtual size_t Write(const void* Buffer, size_t Count) = 0;
 
+#if 0
 	/** Read the object */
 	void internal_ReadObject(
 		CSerializable* newObj, const std::string& className, bool isOldFormat,
@@ -67,7 +61,7 @@ class CStream
 	/** Read the object Header*/
 	void internal_ReadObjectHeader(
 		std::string& className, bool& isOldFormat, int8_t& version);
-
+#endif
    public:
 	/* Constructor
 	 */
@@ -192,6 +186,7 @@ class CStream
 	 */
 	virtual uint64_t getPosition() = 0;
 
+#if 0
 	/** Writes an object to the stream.
 	 */
 	void WriteObject(const CSerializable* o);
@@ -238,8 +233,10 @@ class CStream
 			return std::dynamic_pointer_cast<T>(obj);
 		}
 	}
+#endif
 
    private:
+#if 0
 	template <typename RET>
 	RET ReadVariant_helper(CSerializable::Ptr& ptr)
 	{
@@ -313,6 +310,7 @@ class CStream
 	{
 		t.match([&](auto& o) { this->WriteObject(o); });
 	}
+#endif
 
 	/** Reads a simple POD type and returns by value. Useful when `stream >>
 	 * var;`
@@ -329,6 +327,7 @@ class CStream
 		return ret;
 	}
 
+#if 0
 	/** Reads an object from stream, where its class must be the same
 	 *    as the supplied object, where the loaded object will be stored in.
 	 * \exception std::exception On I/O error or different class found.
@@ -345,6 +344,7 @@ class CStream
 
 	CStream& operator>>(CSerializable::Ptr& pObj);
 	CStream& operator>>(CSerializable& obj);
+#endif
 
 	/** Read a value from a stream stored in a type different of the target
 	 * variable, making the conversion via static_cast. Useful for coding
@@ -380,6 +380,7 @@ class CStream
 		this->printf("]");
 	}
 
+#if 0
 	/** Send a message to the device.
 	 *  Note that only the low byte from the "type" field will be used.
 	 *
@@ -419,6 +420,7 @@ class CStream
 	  * \sa The frame format is described in sendMessage()
 	  */
 	bool receiveMessage(utils::CMessage& msg);
+#endif
 
 	/** Reads from the stream until a '\n' character is found ('\r' characters
 	 * are ignored).
@@ -431,8 +433,8 @@ class CStream
 // Note: write op accepts parameters by value on purpose, to avoid misaligned
 // reference binding errors.
 #define DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE(T)              \
-	CStream& operator<<(mrpt::utils::CStream& out, const T a); \
-	CStream& operator>>(mrpt::utils::CStream& in, T& a);
+	CStream& operator<<(CStream& out, const T a); \
+	CStream& operator>>(CStream& in, T& a);
 
 // Definitions:
 DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE(bool)
@@ -465,76 +467,77 @@ DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE(long double)
 // the ones listed here:
 
 // Write --------------------
-CStream& operator<<(mrpt::utils::CStream& s, const char* a);
-CStream& operator<<(mrpt::utils::CStream& s, const std::string& str);
+CStream& operator<<(CStream& s, const char* a);
+CStream& operator<<(CStream& s, const std::string& str);
 
-CStream& operator<<(mrpt::utils::CStream&, const vector_int& a);
-CStream& operator<<(mrpt::utils::CStream&, const vector_uint& a);
-CStream& operator<<(mrpt::utils::CStream&, const vector_word& a);
-CStream& operator<<(mrpt::utils::CStream&, const vector_signed_word& a);
-CStream& operator<<(mrpt::utils::CStream&, const vector_long& a);
-CStream& operator<<(mrpt::utils::CStream&, const std::vector<uint8_t>& a);
-CStream& operator<<(mrpt::utils::CStream&, const vector_signed_byte& a);
+CStream& operator<<(CStream&, const std::vector<int32_t>& a);
+CStream& operator<<(CStream&, const std::vector<uint32_t>& a);
+CStream& operator<<(CStream&, const std::vector<uint16_t>& a);
+CStream& operator<<(CStream&, const std::vector<int16_t>& a);
+CStream& operator<<(CStream&, const std::vector<uint32_t>& a);
+CStream& operator<<(CStream&, const std::vector<int64_t>& a);
+CStream& operator<<(CStream&, const std::vector<uint8_t>& a);
+CStream& operator<<(CStream&, const std::vector<int8_t>& a);
 
-CStream& operator<<(mrpt::utils::CStream&, const vector_bool& a);
-CStream& operator<<(mrpt::utils::CStream&, const std::vector<std::string>&);
+CStream& operator<<(CStream&, const std::vector<bool>& a);
+CStream& operator<<(CStream&, const std::vector<std::string>&);
 
 #if MRPT_WORD_SIZE != 32  // If it's 32 bit, size_t <=> uint32_t
-CStream& operator<<(mrpt::utils::CStream&, const std::vector<size_t>& a);
+CStream& operator<<(CStream&, const std::vector<size_t>& a);
 #endif
 
 // Read --------------------
-CStream& operator>>(mrpt::utils::CStream& in, char* a);
-CStream& operator>>(mrpt::utils::CStream& in, std::string& str);
+CStream& operator>>(CStream& in, char* a);
+CStream& operator>>(CStream& in, std::string& str);
 
-CStream& operator>>(mrpt::utils::CStream& in, vector_int& a);
-CStream& operator>>(mrpt::utils::CStream& in, vector_uint& a);
-CStream& operator>>(mrpt::utils::CStream& in, vector_word& a);
-CStream& operator>>(mrpt::utils::CStream& in, vector_signed_word& a);
-CStream& operator>>(mrpt::utils::CStream& in, vector_long& a);
-CStream& operator>>(mrpt::utils::CStream& in, std::vector<uint8_t>& a);
-CStream& operator>>(mrpt::utils::CStream& in, vector_signed_byte& a);
-CStream& operator>>(mrpt::utils::CStream& in, vector_bool& a);
+CStream& operator>>(CStream& in, std::vector<int32_t>& a);
+CStream& operator>>(CStream& in, std::vector<uint32_t>& a);
+CStream& operator>>(CStream& in, std::vector<uint16_t>& a);
+CStream& operator>>(CStream& in, std::vector<int16_t>& a);
+CStream& operator>>(CStream& in, std::vector<int64_t>& a);
+CStream& operator>>(CStream& in, std::vector<uint8_t>& a);
+CStream& operator>>(CStream& in, std::vector<int8_t>& a);
+CStream& operator>>(CStream& in, std::vector<bool>& a);
 
-CStream& operator>>(mrpt::utils::CStream& in, std::vector<std::string>& a);
+CStream& operator>>(CStream& in, std::vector<std::string>& a);
 
 // For backward compatibility, since in MRPT<0.8.1 vector_XXX and
 // std::vector<XXX> were exactly equivalent, now there're not.
-CStream& operator>>(mrpt::utils::CStream& s, std::vector<float>& a);
-CStream& operator>>(mrpt::utils::CStream& s, std::vector<double>& a);
-CStream& operator<<(mrpt::utils::CStream& s, const std::vector<float>& a);
-CStream& operator<<(mrpt::utils::CStream& s, const std::vector<double>& a);
+CStream& operator>>(CStream& s, std::vector<float>& a);
+CStream& operator>>(CStream& s, std::vector<double>& a);
+CStream& operator<<(CStream& s, const std::vector<float>& a);
+CStream& operator<<(CStream& s, const std::vector<double>& a);
 
 #if MRPT_WORD_SIZE != 32  // If it's 32 bit, size_t <=> uint32_t
-CStream& operator>>(mrpt::utils::CStream& s, std::vector<size_t>& a);
+CStream& operator>>(CStream& s, std::vector<size_t>& a);
 #endif
 //
+#if 0
 template <typename T, std::enable_if_t<std::is_base_of<
 						  mrpt::utils::CSerializable, T>::value>* = nullptr>
-mrpt::utils::CStream& operator>>(
-	mrpt::utils::CStream& in, typename std::shared_ptr<T>& pObj)
+CStream& operator>>(
+	CStream& in, typename std::shared_ptr<T>& pObj)
 {
 	pObj = in.ReadObject<T>();
 	return in;
 }
 
 template <typename... T>
-mrpt::utils::CStream& operator>>(
-	mrpt::utils::CStream& in, typename mrpt::utils::variant<T...>& pObj)
+CStream& operator>>(
+	CStream& in, typename mrpt::utils::variant<T...>& pObj)
 {
 	pObj = in.ReadVariant<T...>();
 	return in;
 }
 
 template <typename... T>
-mrpt::utils::CStream& operator<<(
-	mrpt::utils::CStream& out, const typename mrpt::utils::variant<T...>& pObj)
+CStream& operator<<(
+	CStream& out, const typename mrpt::utils::variant<T...>& pObj)
 {
 	pObj.match([&](auto& t) { out << t; });
 	return out;
 }
-
-}  // End of namespace
-}  // End of namespace
-
 #endif
+
+}  // End of namespace
+}  // End of namespace

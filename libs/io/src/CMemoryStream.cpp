@@ -7,15 +7,15 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "base-precomp.h"  // Precompiled headers
+#include "io-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/CMemoryStream.h>
-#include <mrpt/utils/CFileOutputStream.h>
-#include <mrpt/utils/CFileInputStream.h>
-#include <mrpt/system/os.h>
+#include <mrpt/io/CMemoryStream.h>
+#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/io/CFileInputStream.h>
+//#include <mrpt/system/os.h>
 #include <cstring>
 
-using namespace mrpt::utils;
+using namespace mrpt::io;
 using namespace std;
 
 /*---------------------------------------------------------------

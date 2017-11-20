@@ -7,31 +7,25 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "base-precomp.h"  // Precompiled headers
+#include "io-precomp.h"  // Precompiled headers
 
-#ifdef _MSC_VER
-#define _SCL_SECURE_NO_WARNINGS
-#endif
-
-#include <mrpt/utils/CFileInputStream.h>
-#include <mrpt/system/os.h>
+#include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/system/os.h>
 
-using namespace mrpt::utils;
+using namespace mrpt::io;
 using namespace std;
 
 /*---------------------------------------------------------------
 							Constructor
  ---------------------------------------------------------------*/
-CFileInputStream::CFileInputStream(const string& fileName) : m_if()
+CFileOutputStream::CFileOutputStream(const string& fileName, bool append)
+	: m_of()
 {
 	MRPT_START
 
-	// Try to open the file:
-	// Open for input:
-	if (!open(fileName))
+	if (!open(fileName, append))
 		THROW_EXCEPTION_FMT(
-			"Error trying to open file: '%s'", fileName.c_str());
+			"Error creating/opening for write file: '%s'", fileName.c_str());
 
 	MRPT_END
 }
@@ -39,51 +33,56 @@ CFileInputStream::CFileInputStream(const string& fileName) : m_if()
 /*---------------------------------------------------------------
 							Constructor
  ---------------------------------------------------------------*/
-CFileInputStream::CFileInputStream() : m_if() {}
+CFileOutputStream::CFileOutputStream() : m_of() {}
 /*---------------------------------------------------------------
 							open
  ---------------------------------------------------------------*/
-bool CFileInputStream::open(const string& fileName)
+bool CFileOutputStream::open(const string& fileName, bool append)
 {
-	// Try to open the file:
-	// Open for input:
-	m_if.open(fileName.c_str(), ios_base::binary | ios_base::in);
-	return m_if.is_open();
+	close();
+
+	// Open for write/append:
+	ios_base::openmode openMode = ios_base::binary | ios_base::out;
+	if (append) openMode |= ios_base::app;
+
+	m_of.open(fileName.c_str(), openMode);
+	return m_of.is_open();
 }
 
 /*---------------------------------------------------------------
 							close
  ---------------------------------------------------------------*/
-void CFileInputStream::close()
+void CFileOutputStream::close()
 {
-	if (m_if.is_open()) m_if.close();
+	if (m_of.is_open()) m_of.close();
 }
 
 /*---------------------------------------------------------------
 							Destructor
  ---------------------------------------------------------------*/
-CFileInputStream::~CFileInputStream() { close(); }
+CFileOutputStream::~CFileOutputStream() { close(); }
 /*---------------------------------------------------------------
 							Read
 			Reads bytes from the stream into Buffer
  ---------------------------------------------------------------*/
-size_t CFileInputStream::Read(void* Buffer, size_t Count)
-{
-	if (!m_if.is_open()) return 0;
 
-	m_if.read(static_cast<char*>(Buffer), Count);
-	return m_if.fail() ? 0 : Count;
+size_t CFileOutputStream::Read(void* Buffer, size_t Count)
+{
+	MRPT_UNUSED_PARAM(Buffer);
+	MRPT_UNUSED_PARAM(Count);
+	THROW_EXCEPTION("Trying to read from a write file stream.");
 }
 
 /*---------------------------------------------------------------
 							Write
 			Writes a block of bytes to the stream.
  ---------------------------------------------------------------*/
-size_t CFileInputStream::Write(const void* Buffer, size_t Count)
+size_t CFileOutputStream::Write(const void* Buffer, size_t Count)
 {
-	MRPT_UNUSED_PARAM(Buffer);
-	MRPT_UNUSED_PARAM(Count);
-	THROW_EXCEPTION("Trying to write to a read file stream.");
+	if (!m_of.is_open()) return 0;
+
+	m_of.write(static_cast<const char*>(Buffer), Count);
+	return m_of.fail() ? 0 : Count;
 }
 
 /*---------------------------------------------------------------
@@ -91,12 +90,12 @@ size_t CFileInputStream::Write(const void* Buffer, size_t Count)
 	Method for moving to a specified position in the streamed resource.
 	 See documentation of CStream::Seek
  ---------------------------------------------------------------*/
-uint64_t CFileInputStream::Seek(uint64_t Offset, CStream::TSeekOrigin Origin)
+uint64_t CFileOutputStream::Seek(uint64_t Offset, CStream::TSeekOrigin Origin)
 {
-	if (!m_if.is_open()) return 0;
+	if (!m_of.is_open()) return 0;
 
-	ifstream::off_type offset = Offset;
-	ifstream::seekdir way;
+	ofstream::off_type offset = Offset;
+	ofstream::seekdir way;
 
 	switch (Origin)
 	{
@@ -113,15 +112,14 @@ uint64_t CFileInputStream::Seek(uint64_t Offset, CStream::TSeekOrigin Origin)
 			THROW_EXCEPTION("Invalid value for 'Origin'");
 	}
 
-	m_if.seekg(offset, way);
-
+	m_of.seekp(offset, way);
 	return getPosition();
 }
 
 /*---------------------------------------------------------------
 						getTotalBytesCount
  ---------------------------------------------------------------*/
-uint64_t CFileInputStream::getTotalBytesCount()
+uint64_t CFileOutputStream::getTotalBytesCount()
 {
 	if (!fileOpenCorrectly()) return 0;
 
@@ -134,10 +132,10 @@ uint64_t CFileInputStream::getTotalBytesCount()
 /*---------------------------------------------------------------
 						getPosition
  ---------------------------------------------------------------*/
-uint64_t CFileInputStream::getPosition()
+uint64_t CFileOutputStream::getPosition()
 {
-	if (m_if.is_open())
-		return m_if.tellg();
+	if (m_of.is_open())
+		return m_of.tellp();
 	else
 		return 0;
 }
@@ -145,24 +143,4 @@ uint64_t CFileInputStream::getPosition()
 /*---------------------------------------------------------------
 						fileOpenCorrectly
  ---------------------------------------------------------------*/
-bool CFileInputStream::fileOpenCorrectly() { return m_if.is_open(); }
-/*---------------------------------------------------------------
-						readLine
- ---------------------------------------------------------------*/
-bool CFileInputStream::readLine(string& str)
-{
-	str = string();  // clear() is not defined in VC6
-	if (!m_if.is_open()) return false;
-
-	std::getline(m_if, str);
-	return !m_if.fail() && !m_if.eof();
-}
-
-/*---------------------------------------------------------------
-						checkEOF
- ---------------------------------------------------------------*/
-bool CFileInputStream::checkEOF()
-{
-	if (!m_if.is_open()) return true;
-	return m_if.eof();
-}
+bool CFileOutputStream::fileOpenCorrectly() { return m_of.is_open(); }

@@ -7,64 +7,57 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "base-precomp.h"  // Precompiled headers
+#include "io-precomp.h"  // Precompiled headers
 
-#ifdef _MSC_VER
-#define _SCL_SECURE_NO_WARNINGS
-#endif
-
-#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/system/os.h>
-
-#if MRPT_HAS_GZ_STREAMS
+#include <mrpt/system/filesystem.h>
 
 #include <zlib.h>
 
-#define THE_GZFILE reinterpret_cast<gzFile>(m_f)
-
-using namespace mrpt::utils;
+using namespace mrpt::io;
 using namespace std;
+
+#define THE_GZFILE reinterpret_cast<gzFile>(m_f)
 
 /*---------------------------------------------------------------
 							Constructor
  ---------------------------------------------------------------*/
-CFileGZOutputStream::CFileGZOutputStream(const string& fileName) : m_f(nullptr)
+CFileGZInputStream::CFileGZInputStream(const string& fileName) : m_f(nullptr)
 {
 	MRPT_START
-	if (!open(fileName))
-		THROW_EXCEPTION_FMT(
-			"Error trying to open file: '%s'", fileName.c_str());
+	open(fileName);
 	MRPT_END
 }
-
 /*---------------------------------------------------------------
-				Constructor
+							Constructor
  ---------------------------------------------------------------*/
-CFileGZOutputStream::CFileGZOutputStream() : m_f(nullptr) {}
+CFileGZInputStream::CFileGZInputStream() : m_f(nullptr) {}
 /*---------------------------------------------------------------
 							open
  ---------------------------------------------------------------*/
-bool CFileGZOutputStream::open(const string& fileName, int compress_level)
+bool CFileGZInputStream::open(const std::string& fileName)
 {
 	MRPT_START
 
 	if (m_f) gzclose(THE_GZFILE);
 
+	// Get compressed file size:
+	m_file_size = mrpt::system::getFileSize(fileName);
+	if (m_file_size == uint64_t(-1))
+		THROW_EXCEPTION_FMT("Couldn't access the file '%s'", fileName.c_str());
+
 	// Open gz stream:
-	m_f = gzopen(fileName.c_str(), format("wb%i", compress_level).c_str());
+	m_f = gzopen(fileName.c_str(), "rb");
 	return m_f != nullptr;
 
 	MRPT_END
 }
 
 /*---------------------------------------------------------------
-							Destructor
- ---------------------------------------------------------------*/
-CFileGZOutputStream::~CFileGZOutputStream() { close(); }
-/*---------------------------------------------------------------
 							close
  ---------------------------------------------------------------*/
-void CFileGZOutputStream::close()
+void CFileGZInputStream::close()
 {
 	if (m_f)
 	{
@@ -74,33 +67,50 @@ void CFileGZOutputStream::close()
 }
 
 /*---------------------------------------------------------------
+							Destructor
+ ---------------------------------------------------------------*/
+CFileGZInputStream::~CFileGZInputStream() { close(); }
+/*---------------------------------------------------------------
 							Read
 			Reads bytes from the stream into Buffer
  ---------------------------------------------------------------*/
-size_t CFileGZOutputStream::Read(void* Buffer, size_t Count)
+size_t CFileGZInputStream::Read(void* Buffer, size_t Count)
 {
-	MRPT_UNUSED_PARAM(Buffer);
-	MRPT_UNUSED_PARAM(Count);
-	THROW_EXCEPTION("Trying to read from an output file stream.");
+	if (!m_f)
+	{
+		THROW_EXCEPTION("File is not open.");
+	}
+
+	return gzread(THE_GZFILE, Buffer, Count);
 }
 
 /*---------------------------------------------------------------
 							Write
 			Writes a block of bytes to the stream.
  ---------------------------------------------------------------*/
-size_t CFileGZOutputStream::Write(const void* Buffer, size_t Count)
+size_t CFileGZInputStream::Write(const void* Buffer, size_t Count)
+{
+	MRPT_UNUSED_PARAM(Buffer);
+	MRPT_UNUSED_PARAM(Count);
+	THROW_EXCEPTION("Trying to write to an input file stream.");
+}
+
+/*---------------------------------------------------------------
+						getTotalBytesCount
+ ---------------------------------------------------------------*/
+uint64_t CFileGZInputStream::getTotalBytesCount()
 {
 	if (!m_f)
 	{
 		THROW_EXCEPTION("File is not open.");
 	}
-	return gzwrite(THE_GZFILE, const_cast<void*>(Buffer), Count);
+	return m_file_size;
 }
 
 /*---------------------------------------------------------------
 						getPosition
  ---------------------------------------------------------------*/
-uint64_t CFileGZOutputStream::getPosition()
+uint64_t CFileGZInputStream::getPosition()
 {
 	if (!m_f)
 	{
@@ -112,5 +122,14 @@ uint64_t CFileGZOutputStream::getPosition()
 /*---------------------------------------------------------------
 						fileOpenCorrectly
  ---------------------------------------------------------------*/
-bool CFileGZOutputStream::fileOpenCorrectly() { return m_f != nullptr; }
-#endif  // MRPT_HAS_GZ_STREAMS
+bool CFileGZInputStream::fileOpenCorrectly() { return m_f != nullptr; }
+/*---------------------------------------------------------------
+						checkEOF
+ ---------------------------------------------------------------*/
+bool CFileGZInputStream::checkEOF()
+{
+	if (!m_f)
+		return true;
+	else
+		return 0 != gzeof(THE_GZFILE);
+}
