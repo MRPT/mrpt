@@ -7,9 +7,4 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef _mrpt_random_H
-#define _mrpt_random_H
-
-#include "random/RandomGenerators.h"
-
-#endif
+#include "random-precomp.h"  // Precomp header

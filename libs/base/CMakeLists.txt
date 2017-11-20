@@ -11,8 +11,6 @@ add_base_srcs(bayes)
 add_base_srcs(compress)
 add_base_srcs(math)
 add_base_srcs(poses)
-add_base_srcs(random)
-add_base_srcs(synch)
 add_base_srcs(utils)
 
 LIST(APPEND base_EXTRA_SRCS			"${MRPT_LIBS_ROOT}/base/src/utils/xmlparser/*.cpp" "${MRPT_LIBS_ROOT}/base/src/utils/xmlparser/*.h")

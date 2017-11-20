@@ -10,8 +10,8 @@
 #define MRPT_COBJECT_H
 
 #include <mrpt/system/memory.h>
-#include <mrpt/utils/safe_pointers.h>
-#include <mrpt/utils/aligned_allocator.h>
+#include <mrpt/core/safe_pointers.h>
+#include <mrpt/core/aligned_allocator.h>
 #include <vector>
 #include <memory>
 
