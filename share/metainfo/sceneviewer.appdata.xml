@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>org.mrpt.sceneviewer.desktop</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <name>SceneViewer3D</name>
+  <summary>Viewer of MRPT 3D scene files</summary>
+  <description>
+    <p>Viewer of MRPT 3D scene files.</p>
+  </description>
+  <screenshots>
+    <screenshot type="default">http://static.mrpt.org/screenshots/sceneviewer.png</screenshot>
+  </screenshots>
+  <url type="homepage">https://www.mrpt.org/</url>
+  <update_contact>joseluisblancoc_at_gmail.com</update_contact>
+</component>

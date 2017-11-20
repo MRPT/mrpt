@@ -116,13 +116,16 @@ void CVehicleVelCmd_Holo::cmdVel_scale(double vel_scale)
 {
 	vel *= vel_scale; // |(vx,vy)|
 	// rot_speed *= vel_scale; // rot_speed
-	// Note: No need to scale "rot_speed" since a holonomic robot's path will be invariant 
+	// Note: No need to scale "rot_speed" since a holonomic robot's path will be invariant
 	// ramp_time: leave unchanged
 }
 
 double CVehicleVelCmd_Holo::cmdVel_limits(const mrpt::kinematics::CVehicleVelCmd &prev_vel_cmd, const double beta, const TVelCmdParams &params)
 {
-	ASSERTMSG_(params.robotMax_V_mps >= .0, "[CVehicleVelCmd_Holo] `robotMax_V_mps` must be set to valid values: either assign values programatically or call loadConfigFile()");
+	ASSERTMSG_(
+		params.robotMax_V_mps >= .0,
+		"[CVehicleVelCmd_Holo] `robotMax_V_mps` must be set to valid values: "
+		"either assign values programmatically or call loadConfigFile()");
 
 	double f = 1.0;
 	if (vel>params.robotMax_V_mps) f = params.robotMax_V_mps / vel;
@@ -134,4 +137,3 @@ double CVehicleVelCmd_Holo::cmdVel_limits(const mrpt::kinematics::CVehicleVelCmd
 
 	return f;
 }
-

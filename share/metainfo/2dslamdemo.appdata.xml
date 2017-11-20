@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>org.mrpt.2dslamdemo.desktop</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <name>2d-slam-demo</name>
+  <summary>A didactic robotic SLAM simulator</summary>
+  <description>
+    <p>This GUI application is an extension to a similar Matlab program developed by J. Neira and J. D. Tardós (University of Zaragoza). It allows extensive experimentation with data-association and the behavior of Kalman Filter-based 2D SLAM, in a didactic way.</p>
+    <p>At the core of this program is just one MRPT class: mrpt::slam::CRangeBearingKFSLAM2D. Check out its Doxygen documentation for more details.</p>
+    <p>Paper explaining the Matching Likelihood criteron for data association (one of the two choices offered in this program):</p>
+    <p>J.L. Blanco, J. Gonzalez-Jimenez, J.A. Fernandez-Madrigal, “An alternative to the Mahalanobis distance for determining optimal correspondences in data association“, IEEE Transactions on Robotics (T-RO), DOI: 10.1109/TRO.2012.2193706 (2012).</p>
+  </description>
+  <screenshots>
+    <screenshot type="default">http://static.mrpt.org/screenshots/2dslamdemo.png</screenshot>
+  </screenshots>
+  <url type="homepage">https://www.mrpt.org/</url>
+  <update_contact>joseluisblancoc_at_gmail.com</update_contact>
+</component>

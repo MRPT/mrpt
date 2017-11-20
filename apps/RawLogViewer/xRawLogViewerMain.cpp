@@ -1924,7 +1924,7 @@ void xRawLogViewerFrame::showNextTip(bool forceShow)
 
 
 //------------------------------------------------------------------------
-// Tabs can only be changed programatically.
+// Tabs can only be changed programmatically.
 //------------------------------------------------------------------------
 void xRawLogViewerFrame::OnNotebook1PageChanging(wxNotebookEvent& event)
 {

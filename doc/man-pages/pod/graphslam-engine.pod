@@ -189,7 +189,7 @@ true so that they are asked about this naming conflict during program execution.
 
 =head1 EXAMPLES
 
-Sample calls ot the graphslam-engine application are given below:
+Sample calls to the graphslam-engine application are given below:
 
     graphslam-engine --list-regs
 

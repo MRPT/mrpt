@@ -41,7 +41,7 @@ namespace maps
 
 	/** This class stores any customizable set of metric maps.
 	 * The internal metric maps can be accessed directly by the user as smart pointers with CMultiMetricMap::getMapByIndex() or via `iterator`s.
-	 * The utility of this container is to operate on several maps simultaneously: update them by inserting observations, 
+	 * The utility of this container is to operate on several maps simultaneously: update them by inserting observations,
 	 * evaluate the likelihood of one observation by fusing (multiplying) the likelihoods over the different maps, etc.
 	 *
 	 *  <b>These kinds of metric maps can be kept inside</b> (list may be incomplete, refer to classes derived from mrpt::maps::CMetricMap):
@@ -59,14 +59,14 @@ namespace maps
 	 *		- mrpt::maps::CColouredPointsMap: For point map with color.
 	 *		- mrpt::maps::CWeightedPointsMap: For point map with weights (capable of "fusing").
 	 *
-	 * See CMultiMetricMap::setListOfMaps() for the method for initializing this class programatically.
+	 * See CMultiMetricMap::setListOfMaps() for the method for initializing this class programmatically.
 	 * See also TSetOfMetricMapInitializers::loadFromConfigFile for a template of ".ini"-like configuration
 	 * file that can be used to define which maps to create and all their parameters.
 	 * Alternatively, the list of maps is public so it can be directly manipulated/accessed in CMultiMetricMap::maps
 	 *
 	 *  Configuring the list of maps: Alternatives
 	 * --------------------------------------------
-	 * 
+	 *
 	 *  **Method #1: Using map definition structures**
 	 * \code
 	 * mrpt::maps::TSetOfMetricMapInitializers map_inits;
@@ -84,7 +84,7 @@ namespace maps
 	 * mrpt::maps::CMultiMetricMap theMap;
 	 * theMap.setListOfMaps(map_inits);
 	 * \endcode
-	 * 
+	 *
 	 *  **Method #2: Using a configuration file**
 	 * See TSetOfMetricMapInitializers::loadFromConfigFile() for details on expected file format.
 	 *
@@ -107,18 +107,18 @@ namespace maps
 	 * }
 	 * \endcode
 	 *
-	 * \note [New in MRPT 1.3.0]: `likelihoodMapSelection`, which selected the map to be used when 
-	 *  computing the likelihood of an observation, has been removed. Use the `enableObservationLikelihood` 
-	 *  property of each individual map declaration. 
-	 * 
-	 * \note [New in MRPT 1.3.0]: `enableInsertion_{pointsMap,...}` have been also removed. 
+	 * \note [New in MRPT 1.3.0]: `likelihoodMapSelection`, which selected the map to be used when
+	 *  computing the likelihood of an observation, has been removed. Use the `enableObservationLikelihood`
+	 *  property of each individual map declaration.
+	 *
+	 * \note [New in MRPT 1.3.0]: `enableInsertion_{pointsMap,...}` have been also removed.
 	 *  Use the `enableObservationInsertion` property of each map declaration.
 	 *
-	 * \note [New in MRPT 1.3.0]: Plain list of maps is exposed in `maps` member. Proxies named `m_pointsMaps`,`m_gridMaps`, etc. 
+	 * \note [New in MRPT 1.3.0]: Plain list of maps is exposed in `maps` member. Proxies named `m_pointsMaps`,`m_gridMaps`, etc.
 	 *  are provided for backwards-compatibility and for their utility.
 	 *
 	 * \note This class belongs to [mrpt-slam] instead of [mrpt-maps] due to the dependency on map classes in mrpt-vision.
-	 * \sa CMetricMap  \ingroup mrpt_slam_grp 
+	 * \sa CMetricMap  \ingroup mrpt_slam_grp
 	 */
 	class SLAM_IMPEXP CMultiMetricMap : public mrpt::maps::CMetricMap
 	{
@@ -143,7 +143,7 @@ namespace maps
 		typedef std::deque< mrpt::utils::poly_ptr_ptr<mrpt::maps::CMetricMapPtr> > TListMaps;
 
 		/** The list of MRPT metric maps in this object. Use dynamic_cast or smart pointer-based downcast to access maps by their actual type.
-		  * You can directly manipulate this list. Helper methods to initialize it are described in the docs of CMultiMetricMap 
+		  * You can directly manipulate this list. Helper methods to initialize it are described in the docs of CMultiMetricMap
 		  */
 		TListMaps maps;
 
@@ -176,8 +176,8 @@ namespace maps
 			return typename T::Ptr();	// Not found: return empty smart pointer
 		}
 
-		/** Takes a const ref of a STL non-associative container of smart pointers at construction and exposes an interface 
-		  * mildly similar to that of another STL container containing only those elements 
+		/** Takes a const ref of a STL non-associative container of smart pointers at construction and exposes an interface
+		  * mildly similar to that of another STL container containing only those elements
 		  * in the original container that can be `dynamic_cast`ed to `SELECTED_CLASS_PTR` */
 		template <class SELECTED_CLASS_PTR, class CONTAINER>
 		struct ProxyFilterContainerByClass
@@ -203,7 +203,7 @@ namespace maps
 			SELECTED_CLASS_PTR operator [](size_t index) const {
 				size_t cnt=0;
 				for(typename CONTAINER::const_iterator it=m_source->begin();it!=m_source->end();++it)
-					if ( dynamic_cast<const_ptr_t>(it->pointer()) ) 
+					if ( dynamic_cast<const_ptr_t>(it->pointer()) )
 						if (cnt++ == index) { return SELECTED_CLASS_PTR(it->get_ptr()); }
 				throw std::out_of_range("Index is out of range");
 			}
@@ -213,7 +213,7 @@ namespace maps
 			CONTAINER * m_source;
 		}; // end ProxyFilterContainerByClass
 
-		/** A proxy like ProxyFilterContainerByClass, but it directly appears as if 
+		/** A proxy like ProxyFilterContainerByClass, but it directly appears as if
 		  * it was a single smart pointer (empty if no matching object is found in the container) */
 		template <class SELECTED_CLASS_PTR, class CONTAINER>
 		struct ProxySelectorContainerByClass
