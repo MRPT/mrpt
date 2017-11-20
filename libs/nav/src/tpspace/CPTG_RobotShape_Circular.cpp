@@ -12,7 +12,7 @@
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/utils/CStream.h>
-#include <mrpt/macros/round.h>
+#include <mrpt/core/round.h>
 
 using namespace mrpt::nav;
 

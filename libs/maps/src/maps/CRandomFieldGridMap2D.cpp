@@ -18,7 +18,7 @@
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/utils/color_maps.h>
-#include <mrpt/macros/round.h>
+#include <mrpt/core/round.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CSetOfTriangles.h>

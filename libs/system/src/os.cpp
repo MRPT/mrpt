@@ -10,8 +10,8 @@
 #include "system-precomp.h"  // Precompiled headers
 
 #include <mrpt/system/os.h>
-#include <mrpt/macros/format.h>
-#include <mrpt/macros/exceptions.h>
+#include <mrpt/core/format.h>
+#include <mrpt/core/exceptions.h>
 #include <mrpt/system/filesystem.h>
 
 #ifndef HAVE_TIMEGM

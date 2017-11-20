@@ -13,7 +13,7 @@
 #include <mrpt/obs/CSensoryFrame.h>
 
 #include <mrpt/math/utils.h>
-#include <mrpt/macros/round.h>
+#include <mrpt/core/round.h>
 #include <mrpt/slam/PF_aux_structs.h>
 
 using namespace std;

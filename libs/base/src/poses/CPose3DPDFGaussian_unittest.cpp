@@ -13,7 +13,7 @@
 #include <mrpt/random.h>
 #include <mrpt/math/transform_gaussian.h>
 #include <mrpt/math/jacobians.h>
-#include <mrpt/utils/CTraitsTest.h>
+#include <CTraitsTest.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
@@ -22,7 +22,7 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
-template class mrpt::utils::CTraitsTest<CPose3DPDFGaussian>;
+template class mrpt::CTraitsTest<CPose3DPDFGaussian>;
 
 class Pose3DPDFGaussTests : public ::testing::Test
 {

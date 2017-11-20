@@ -11,7 +11,7 @@
 
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/os.h>
-#include <mrpt/macros/exceptions.h>
+#include <mrpt/core/exceptions.h>
 
 #ifdef _WIN32
 #include <conio.h>

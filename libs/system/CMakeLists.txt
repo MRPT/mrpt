@@ -6,7 +6,7 @@ LIST(APPEND system_EXTRA_SRCS_NAME 	"system" "system")
 define_mrpt_lib(
 	system 		# Lib name
 	# Dependencies:
-	mrpt-macros
+	mrpt-core
 	)
 
 IF(BUILD_mrpt-system)

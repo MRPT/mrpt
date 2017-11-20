@@ -10,10 +10,10 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DInterpolator.h>
 #include <mrpt/system/datetime.h>
-#include <mrpt/utils/CTraitsTest.h>
+#include <CTraitsTest.h>
 #include <gtest/gtest.h>
 
-template class mrpt::utils::CTraitsTest<mrpt::poses::CPose3DInterpolator>;
+template class mrpt::CTraitsTest<mrpt::poses::CPose3DInterpolator>;
 
 TEST(CPose3DInterpolator, interp)
 {

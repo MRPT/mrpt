@@ -9,7 +9,7 @@
 
 #include <mrpt/math/CSparseMatrix.h>
 #include <mrpt/random.h>
-#include <mrpt/utils/CTraitsTest.h>
+#include <CTraitsTest.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
@@ -17,7 +17,7 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
-template class mrpt::utils::CTraitsTest<mrpt::math::CSparseMatrix>;
+template class mrpt::CTraitsTest<mrpt::math::CSparseMatrix>;
 
 void generateRandomSparseMatrix(
 	size_t N, size_t M, size_t nEntries, CSparseMatrix& MAT)

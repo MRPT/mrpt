@@ -10,7 +10,7 @@
 #include <mrpt/poses/CPose3DRotVec.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DQuat.h>
-#include <mrpt/utils/CTraitsTest.h>
+#include <CTraitsTest.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
@@ -19,7 +19,7 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
-template class mrpt::utils::CTraitsTest<CPose3DRotVec>;
+template class mrpt::CTraitsTest<CPose3DRotVec>;
 
 class Pose3DRotVecTests : public ::testing::Test
 {

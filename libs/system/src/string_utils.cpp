@@ -11,7 +11,7 @@
 
 #include <mrpt/system/string_utils.h>
 #include <mrpt/system/os.h>  // strncmp(),...
-#include <mrpt/macros/format.h>
+#include <mrpt/core/format.h>
 #include <cstring>
 #include <vector>
 #include <deque>
@@ -253,10 +253,15 @@ void mrpt::system::tokenize(
 	}
 }
 
+// Explicit instantiations, to be exported in the library:
 template
 void mrpt::system::tokenize<std::deque<std::string>>(
 	const std::string& inString, const std::string& inDelimiters,
 	std::deque<std::string>& outTokens, bool skipBlankTokens) noexcept;
+template
+void mrpt::system::tokenize<std::vector<std::string>>(
+	const std::string& inString, const std::string& inDelimiters,
+	std::vector<std::string>& outTokens, bool skipBlankTokens) noexcept;
 
 
 /*---------------------------------------------------------------
@@ -318,4 +323,26 @@ bool mrpt::system::strStartsI(const std::string& s1, const std::string& s2)
 	return !mrpt::system::os::_strnicmp(
 		s1.c_str(), s2.c_str(),
 		s2.size());  // if s1 is shorter it's not a problem
+}
+
+void mrpt::system::stringListAsString(const std::vector<std::string> & lst, std::string &outText, const std::string & newline)
+{
+	const size_t lenNL = newline.size();
+
+	// 1) Compute overall length, including 2 chars per new-line:
+	size_t totalLen = lst.size() * lenNL;
+	for (const auto &s: lst)
+		totalLen += s.size();
+
+	outText.resize(totalLen);
+
+	// 2) Copy the text out:
+	size_t curPos = 0;
+	for (const auto &s : lst)
+	{
+		os::memcpy(&outText[curPos], totalLen, s.c_str(), s.size());
+		curPos += s.size();
+		for (const auto &sNL : newline)
+			outText[curPos++] = sNL;
+	}
 }

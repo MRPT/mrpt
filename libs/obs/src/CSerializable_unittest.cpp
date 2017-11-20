@@ -12,7 +12,7 @@
 
 #include <mrpt/utils/CMemoryStream.h>
 #include <gtest/gtest.h>
-#include <mrpt/utils/CTraitsTest.h>
+#include <CTraitsTest.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;
@@ -21,7 +21,7 @@ using namespace mrpt::math;
 using namespace std;
 
 #define TEST_CLASS_MOVE_COPY_CTORS(_classname) \
-	template class mrpt::utils::CTraitsTest<_classname>
+	template class mrpt::CTraitsTest<_classname>
 
 TEST_CLASS_MOVE_COPY_CTORS(CObservation2DRangeScan);
 TEST_CLASS_MOVE_COPY_CTORS(CObservation3DRangeScan);

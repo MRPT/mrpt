@@ -10,7 +10,7 @@
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/random.h>
 #include <mrpt/math/transform_gaussian.h>
-#include <mrpt/utils/CTraitsTest.h>
+#include <CTraitsTest.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
@@ -19,7 +19,7 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
-template class mrpt::utils::CTraitsTest<CPosePDFGaussian>;
+template class mrpt::CTraitsTest<CPosePDFGaussian>;
 
 class PosePDFGaussTests : public ::testing::Test
 {

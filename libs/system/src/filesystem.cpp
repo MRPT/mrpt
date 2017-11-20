@@ -12,8 +12,8 @@
 #include <mrpt/system/CDirectoryExplorer.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>  // for sprintf
-#include <mrpt/macros/format.h>
-#include <mrpt/macros/exceptions.h>  // for MRPT_END, MRPT_START, e
+#include <mrpt/core/format.h>
+#include <mrpt/core/exceptions.h>  // for MRPT_END, MRPT_START, e
 
 #include <cstring>
 #include <string>

@@ -12,7 +12,7 @@
 #include <mrpt/maps/CReflectivityGridMap2D.h>
 #include <mrpt/obs/CObservationReflectivity.h>
 #include <mrpt/poses/CPose2D.h>
-#include <mrpt/macros/round.h>  // round()
+#include <mrpt/core/round.h>  // round()
 #include <mrpt/system/os.h>
 #include <mrpt/opengl/CTexturedPlane.h>
 #include <mrpt/opengl/CSetOfObjects.h>

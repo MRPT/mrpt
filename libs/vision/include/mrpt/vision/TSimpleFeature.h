@@ -10,12 +10,12 @@
 #define _mrpt_vision_TSimpleFeature_H
 
 #include <mrpt/utils/TPixelCoord.h>
-#include <mrpt/macros/round.h>
+#include <mrpt/core/round.h>
 #include <mrpt/math/KDTreeCapable.h>
 #include <mrpt/math/CMatrixTemplate.h>  // mrpt::math::CMatrixBool
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/vision/types.h>
-#include <mrpt/macros/round.h>
+#include <mrpt/core/round.h>
 
 namespace mrpt
 {

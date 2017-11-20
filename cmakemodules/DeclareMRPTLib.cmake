@@ -139,8 +139,6 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 	ENDIF ()
 
 	IF (NOT ${headers_only})
-		add_definitions(-DBUILDING_mrpt_${name})
-
 		# A libray target:
 		ADD_LIBRARY(mrpt-${name}
 			${all_${name}_srcs}      # sources
@@ -148,7 +146,7 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 			)
 
 		if(MSVC)  # Define math constants if built with MSVC
-			target_compile_definitions(mrpt-${name} INTERFACE _USE_MATH_DEFINES)
+			target_compile_definitions(mrpt-${name} PUBLIC _USE_MATH_DEFINES)
 		ENDIF()
 
 		if(ENABLE_SOLUTION_FOLDERS)
