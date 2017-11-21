@@ -6,23 +6,20 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-
 #pragma once
 
-#include <mrpt/utils/core_defs.h>
 #include <mrpt/core/round.h>
-#include <mrpt/utils/CStream.h>
 #include <vector>
-#include <string>
 #include <cmath>
 
 namespace mrpt
 {
-namespace utils
+namespace containers
 {
 /** A 3D rectangular grid of dynamic size which stores any kind of data at each
 * voxel.
 * \tparam T The type of each voxel in the grid.
+* \ingroup mrpt_containers_grp
 */
 template <class T>
 class CDynamicGrid3D

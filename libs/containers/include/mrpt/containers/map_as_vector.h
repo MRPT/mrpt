@@ -15,7 +15,7 @@
 
 namespace mrpt
 {
-namespace utils
+namespace containers
 {
 /** A STL-like container which looks and behaves (almost exactly) like a
  * std::map<> but is implemented as a linear std::vector<> indexed by KEY.
@@ -51,7 +51,7 @@ namespace utils
  * changing the template parameter \a VECTOR_T.
   *
   * \note Defined in #include <mrpt/utils/map_as_vector.h>
-  * \ingroup stlext_grp
+  * \ingroup mrpt_containers_grp
   */
 template <typename KEY, typename VALUE,
 		  typename VECTOR_T = typename mrpt::aligned_containers<

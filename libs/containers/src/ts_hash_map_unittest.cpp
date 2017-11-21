@@ -7,15 +7,15 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/utils/ts_hash_map.h>
+#include <mrpt/containers/ts_hash_map.h>
 #include <gtest/gtest.h>
 
 template <typename T>
 void simple_test_hash_string()
 {
 	T h1, h2;
-	mrpt::utils::reduced_hash("prueba1", h1);
-	mrpt::utils::reduced_hash("prueba2", h2);
+	mrpt::containers::reduced_hash("prueba1", h1);
+	mrpt::containers::reduced_hash("prueba2", h2);
 	EXPECT_NE(h1, h2);
 }
 
@@ -25,7 +25,7 @@ TEST(ts_hash_map, string_hash_u32) { simple_test_hash_string<uint32_t>(); }
 TEST(ts_hash_map, string_hash_u64) { simple_test_hash_string<uint64_t>(); }
 TEST(ts_hash_map, stdstring_key)
 {
-	mrpt::utils::ts_hash_map<std::string, double> m;
+	mrpt::containers::ts_hash_map<std::string, double> m;
 
 	EXPECT_TRUE(m.empty());
 

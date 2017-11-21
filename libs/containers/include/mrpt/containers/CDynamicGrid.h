@@ -6,19 +6,16 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CDynamicGrid_H
-#define CDynamicGrid_H
+#pragma once
 
-#include <mrpt/utils/core_defs.h>
 #include <mrpt/core/round.h>
-#include <mrpt/utils/CStream.h>
 #include <vector>
 #include <string>
 #include <cmath>
 
 namespace mrpt
 {
-namespace utils
+namespace containers
 {
 namespace internal
 {
@@ -34,7 +31,7 @@ struct dynamic_grid_txt_saver
 
 /** A 2D grid of dynamic size which stores any kind of data at each cell.
 	* \tparam T The type of each cell in the 2D grid.
-	* \ingroup mrpt_base_grp
+	* \ingroup mrpt_containers_grp
 	*/
 template <class T>
 class CDynamicGrid
@@ -319,9 +316,8 @@ class CDynamicGrid
 
 	/** The user must implement this in order to provide "saveToTextFile" a way
 	 * to convert each cell into a numeric value */
-	virtual float cell2float(const T& c) const
+	virtual float cell2float(const T& ) const
 	{
-		MRPT_UNUSED_PARAM(c);
 		return 0;
 	}
 	/** Saves a float representation of the grid (via "cell2float()") to a text
@@ -345,15 +341,17 @@ class CDynamicGrid
 	}
 
    protected:
-	void dyngridcommon_writeToStream(mrpt::utils::CStream& out) const
+	template <class STREAM>
+	void dyngridcommon_writeToStream(STREAM& out) const
 	{
 		out << m_x_min << m_x_max << m_y_min << m_y_max;
 		out << m_resolution;
 		out << static_cast<uint32_t>(m_size_x)
 			<< static_cast<uint32_t>(m_size_y);
 	}
+	template <class STREAM>
 	void dyngridcommon_readFromStream(
-		mrpt::utils::CStream& in, bool cast_from_float = false)
+		STREAM& in, bool cast_from_float = false)
 	{
 		if (!cast_from_float)
 		{
@@ -381,4 +379,3 @@ class CDynamicGrid
 
 }  // End of namespace
 }  // end of namespace
-#endif
