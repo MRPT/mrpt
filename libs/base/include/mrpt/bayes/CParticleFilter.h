@@ -27,8 +27,6 @@ class CActionCollection;
  */
 namespace bayes
 {
-class CParticleFilterCapable;
-
 /** This class acts as a common interface to the different interfaces (see
  *CParticleFilter::TParticleFilterAlgorithm) any bayes::CParticleFilterCapable
  *class can implement: it is the invoker of particle filter algorithms.

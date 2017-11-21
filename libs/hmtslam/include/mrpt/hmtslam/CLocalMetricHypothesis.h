@@ -9,8 +9,6 @@
 #ifndef CLocalMetricHypothesis_H
 #define CLocalMetricHypothesis_H
 
-#include <mrpt/bayes/CParticleFilterCapable.h>
-
 #include <mrpt/hmtslam/HMT_SLAM_common.h>
 #include <mrpt/hmtslam/CHMHMapNode.h>
 
@@ -265,8 +263,7 @@ class CLocalMetricHypothesis : public mrpt::utils::CSerializable
 	 */
 	double particlesEvaluator_AuxPFOptimal(
 		const mrpt::bayes::CParticleFilter::TParticleFilterOptions& PF_options,
-		const mrpt::bayes::CParticleFilterCapable* obj, size_t index,
-		const void* action, const void* observation);
+		size_t index, const mrpt::obs::CSensoryFrame* observation);
 
 	/** Auxiliary function that evaluates the likelihood of an observation,
 	 * given a robot pose, and according to the options in

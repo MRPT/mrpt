@@ -57,10 +57,7 @@ class CParticleFilterCapable
 	 * flexibility.
 	 * \sa prepareFastDrawSample
 	 */
-	using TParticleProbabilityEvaluator = std::function<double(
-		const bayes::CParticleFilter::TParticleFilterOptions& PF_options,
-		const CParticleFilterCapable* obj, size_t index, const void* action,
-		const void* observation)>;
+	using TParticleProbabilityEvaluator = std::function<double(size_t index)>;
 
 	/** The default evaluator function, which simply returns the particle
 	 * weight.
@@ -68,15 +65,10 @@ class CParticleFilterCapable
 	 * flexibility.
 	 * \sa prepareFastDrawSample
 	 */
-	static double defaultEvaluator(
-		const bayes::CParticleFilter::TParticleFilterOptions& PF_options,
-		const CParticleFilterCapable* obj, size_t index, const void* action,
-		const void* observation)
+	void prepareFastDrawSample(
+		const bayes::CParticleFilter::TParticleFilterOptions& PF_options) const
 	{
-		MRPT_UNUSED_PARAM(PF_options);
-		MRPT_UNUSED_PARAM(action);
-		MRPT_UNUSED_PARAM(observation);
-		return obj->getW(index);
+		prepareFastDrawSample(PF_options, [this](size_t i) { return getW(i); });
 	}
 
 	/** Prepares data structures for calling fastDrawSample method next.
@@ -121,8 +113,7 @@ class CParticleFilterCapable
 	 */
 	void prepareFastDrawSample(
 		const bayes::CParticleFilter::TParticleFilterOptions& PF_options,
-		TParticleProbabilityEvaluator partEvaluator = defaultEvaluator,
-		const void* action = nullptr, const void* observation = nullptr) const;
+		TParticleProbabilityEvaluator partEvaluator) const;
 
 	/** Draws a random sample from the particle filter, in such a way that each
 	 *particle has a probability proportional to its weight (in the standard PF

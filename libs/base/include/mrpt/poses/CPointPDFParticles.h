@@ -11,7 +11,6 @@
 
 #include <mrpt/poses/CPointPDF.h>
 #include <mrpt/math/CMatrix.h>
-#include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/bayes/CProbabilityParticle.h>
 #include <mrpt/bayes/CParticleFilterData.h>
 
