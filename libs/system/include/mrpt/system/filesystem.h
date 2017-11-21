@@ -22,6 +22,17 @@ namespace system
   * \ingroup mrpt_base_grp
   * @{ */
 
+#define ASSERT_FILE_EXISTS_(FIL)       \
+	ASSERTMSG_(                        \
+		mrpt::system::fileExists(FIL), \
+		std::string("Assert file existence failed: ") + ::std::string(FIL))
+
+#define ASSERT_DIRECTORY_EXISTS_(DIR)                        \
+	ASSERTMSG_(                                              \
+		mrpt::system::directoryExists(DIR),                  \
+		std::string("Assert directory existence failed: ") + \
+			::std::string(DIR))
+
 /** Returns the name of a proposed temporary file name */
 std::string getTempFileName();
 
@@ -152,5 +163,4 @@ bool copyFile(
 
 /** @} */
 }  // End of namespace
-
 }  // End of namespace
