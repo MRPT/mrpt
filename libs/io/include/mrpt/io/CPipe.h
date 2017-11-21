@@ -35,11 +35,15 @@ class CPipeWriteEndPoint;
   *
   * See also the example: MRPT/samples/threadsPipe/
   *
-  * \ingroup synch_grp
+  * \ingroup mrpt_io_grp
   */
 class CPipe
 {
    public:
+	/** Create via createPipe() instead */
+	CPipe() = delete;
+	~CPipe() = delete;
+
 	/** Creates a new pipe and returns the read & write end-points as newly
 	 * allocated objects.
 	  * \exception std::exception On any error during the pipe creation
@@ -51,15 +55,12 @@ class CPipe
 
 	static void initializePipe(
 		CPipeReadEndPoint& outReadPipe, CPipeWriteEndPoint& outWritePipe);
-
-   private:
-	/** No need to create any object of this class. */
-	CPipe();
-	~CPipe();
 };  // end of CPipe
 
-/** Common interface of read & write pipe end-points */
-class CPipeBaseEndPoint : public mrpt::utils::CStream
+/** Common interface of read & write pipe end-points 
+ * \ingroup mrpt_io_grp
+ */
+class CPipeBaseEndPoint : public mrpt::io::CStream
 {
 	friend class CPipe;
 
@@ -120,7 +121,9 @@ static_assert(
 
 /** The read end-point in a pipe created with mrpt::synch::CPipe.
   * Use the method mrpt::utils::CStream::ReadBuffer() of the base class CStream
- * for blocking reading. */
+ * for blocking reading. 
+ * \ingroup mrpt_io_grp
+ */
 class CPipeReadEndPoint : public CPipeBaseEndPoint
 {
 	friend class CPipe;

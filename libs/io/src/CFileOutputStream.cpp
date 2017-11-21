@@ -9,15 +9,12 @@
 
 #include "io-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/CFileOutputStream.h>
-#include <mrpt/system/os.h>
+#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/core/exceptions.h>
 
 using namespace mrpt::io;
 using namespace std;
 
-/*---------------------------------------------------------------
-							Constructor
- ---------------------------------------------------------------*/
 CFileOutputStream::CFileOutputStream(const string& fileName, bool append)
 	: m_of()
 {
@@ -30,13 +27,8 @@ CFileOutputStream::CFileOutputStream(const string& fileName, bool append)
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-							Constructor
- ---------------------------------------------------------------*/
 CFileOutputStream::CFileOutputStream() : m_of() {}
-/*---------------------------------------------------------------
-							open
- ---------------------------------------------------------------*/
+
 bool CFileOutputStream::open(const string& fileName, bool append)
 {
 	close();
@@ -49,22 +41,12 @@ bool CFileOutputStream::open(const string& fileName, bool append)
 	return m_of.is_open();
 }
 
-/*---------------------------------------------------------------
-							close
- ---------------------------------------------------------------*/
 void CFileOutputStream::close()
 {
 	if (m_of.is_open()) m_of.close();
 }
 
-/*---------------------------------------------------------------
-							Destructor
- ---------------------------------------------------------------*/
 CFileOutputStream::~CFileOutputStream() { close(); }
-/*---------------------------------------------------------------
-							Read
-			Reads bytes from the stream into Buffer
- ---------------------------------------------------------------*/
 
 size_t CFileOutputStream::Read(void* Buffer, size_t Count)
 {
@@ -73,10 +55,6 @@ size_t CFileOutputStream::Read(void* Buffer, size_t Count)
 	THROW_EXCEPTION("Trying to read from a write file stream.");
 }
 
-/*---------------------------------------------------------------
-							Write
-			Writes a block of bytes to the stream.
- ---------------------------------------------------------------*/
 size_t CFileOutputStream::Write(const void* Buffer, size_t Count)
 {
 	if (!m_of.is_open()) return 0;
@@ -85,11 +63,6 @@ size_t CFileOutputStream::Write(const void* Buffer, size_t Count)
 	return m_of.fail() ? 0 : Count;
 }
 
-/*---------------------------------------------------------------
-							Seek
-	Method for moving to a specified position in the streamed resource.
-	 See documentation of CStream::Seek
- ---------------------------------------------------------------*/
 uint64_t CFileOutputStream::Seek(uint64_t Offset, CStream::TSeekOrigin Origin)
 {
 	if (!m_of.is_open()) return 0;
@@ -116,9 +89,6 @@ uint64_t CFileOutputStream::Seek(uint64_t Offset, CStream::TSeekOrigin Origin)
 	return getPosition();
 }
 
-/*---------------------------------------------------------------
-						getTotalBytesCount
- ---------------------------------------------------------------*/
 uint64_t CFileOutputStream::getTotalBytesCount()
 {
 	if (!fileOpenCorrectly()) return 0;
@@ -129,9 +99,6 @@ uint64_t CFileOutputStream::getTotalBytesCount()
 	return fileSize;
 }
 
-/*---------------------------------------------------------------
-						getPosition
- ---------------------------------------------------------------*/
 uint64_t CFileOutputStream::getPosition()
 {
 	if (m_of.is_open())
@@ -140,7 +107,4 @@ uint64_t CFileOutputStream::getPosition()
 		return 0;
 }
 
-/*---------------------------------------------------------------
-						fileOpenCorrectly
- ---------------------------------------------------------------*/
 bool CFileOutputStream::fileOpenCorrectly() { return m_of.is_open(); }

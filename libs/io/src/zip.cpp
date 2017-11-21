@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "base-precomp.h"  // Precompiled headers
+#include "io-precomp.h"  // Precompiled headers
 
 #include "zlib.h"
 
@@ -17,23 +17,22 @@
 #include <windows.h>
 #endif
 
-#include <mrpt/compress/zip.h>
-#include <mrpt/system/datetime.h>
-#include <mrpt/system/filesystem.h>
-#include <mrpt/system/vector_loadsave.h>
+#include <mrpt/io/zip.h>
+#include <mrpt/core/exceptions.h>
+#include <mrpt/io/vector_loadsave.h>
 
-#include <mrpt/utils/CFileGZOutputStream.h>
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CFileInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileInputStream.h>
+#include <mrpt/system/filesystem.h>
+#include <chrono>
+#include <iostream>
 
 using namespace mrpt;
-using namespace mrpt::utils;
-using namespace mrpt::compress::zip;
+using namespace mrpt::io;
+using namespace mrpt::io::zip;
 
-/*---------------------------------------------------------------
-						compress
----------------------------------------------------------------*/
-void mrpt::compress::zip::compress(
+void mrpt::io::zip::compress(
 	void* inData, size_t inDataSize, std::vector<unsigned char>& outData)
 {
 	int ret = 0;
@@ -56,7 +55,7 @@ void mrpt::compress::zip::compress(
 /*---------------------------------------------------------------
 						compress
 ---------------------------------------------------------------*/
-void mrpt::compress::zip::compress(
+void mrpt::io::zip::compress(
 	const std::vector<unsigned char>& inData,
 	std::vector<unsigned char>& outData)
 {
@@ -79,7 +78,7 @@ void mrpt::compress::zip::compress(
 /*---------------------------------------------------------------
 						compress
 ---------------------------------------------------------------*/
-void mrpt::compress::zip::compress(
+void mrpt::io::zip::compress(
 	void* inData, size_t inDataSize, CStream& out)
 {
 	int ret = 0;
@@ -107,7 +106,7 @@ void mrpt::compress::zip::compress(
 /*---------------------------------------------------------------
 						compress
 ---------------------------------------------------------------*/
-void mrpt::compress::zip::compress(
+void mrpt::io::zip::compress(
 	const std::vector<unsigned char>& inData, CStream& out)
 {
 	int ret = 0;
@@ -134,7 +133,7 @@ void mrpt::compress::zip::compress(
 /*---------------------------------------------------------------
 						decompress
 ---------------------------------------------------------------*/
-void mrpt::compress::zip::decompress(
+void mrpt::io::zip::decompress(
 	void* inData, size_t inDataSize, std::vector<unsigned char>& outData,
 	size_t outDataEstimatedSize)
 {
@@ -158,7 +157,7 @@ void mrpt::compress::zip::decompress(
 /*---------------------------------------------------------------
 						decompress
 ---------------------------------------------------------------*/
-void mrpt::compress::zip::decompress(
+void mrpt::io::zip::decompress(
 	void* inData, size_t inDataSize, void* outData, size_t outDataBufferSize,
 	size_t& outDataActualSize)
 {
@@ -181,7 +180,7 @@ void mrpt::compress::zip::decompress(
 /*---------------------------------------------------------------
 						decompress
 ---------------------------------------------------------------*/
-void mrpt::compress::zip::decompress(
+void mrpt::io::zip::decompress(
 	CStream& inStream, size_t inDataSize, void* outData,
 	size_t outDataBufferSize, size_t& outDataActualSize)
 {
@@ -208,7 +207,7 @@ void mrpt::compress::zip::decompress(
 /*---------------------------------------------------------------
 					decompress_gz_file
 ---------------------------------------------------------------*/
-bool mrpt::compress::zip::decompress_gz_file(
+bool mrpt::io::zip::decompress_gz_file(
 	const std::string& file_path, std::vector<uint8_t>& buffer)
 {
 	CFileGZInputStream iss(file_path);
@@ -233,14 +232,10 @@ bool mrpt::compress::zip::decompress_gz_file(
 	return true;
 }
 
-/*---------------------------------------------------------------
-					compress_gz_file
----------------------------------------------------------------*/
-bool mrpt::compress::zip::compress_gz_file(
+bool mrpt::io::zip::compress_gz_file(
 	const std::string& file_path, const std::vector<uint8_t>& buffer,
 	const int compress_level)
 {
-#if MRPT_HAS_GZ_STREAMS
 	CFileGZOutputStream oss;
 	oss.open(file_path, compress_level);
 	if (!oss.fileOpenCorrectly()) return false;
@@ -261,25 +256,16 @@ bool mrpt::compress::zip::compress_gz_file(
 	{
 		return true;
 	}
-#else
-	THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_GZ_STREAMS=0");
-#endif
 }
 
-/*---------------------------------------------------------------
-					compress_gz_data_block
----------------------------------------------------------------*/
-bool mrpt::compress::zip::compress_gz_data_block(
+bool mrpt::io::zip::compress_gz_data_block(
 	const std::vector<uint8_t>& in_data, std::vector<uint8_t>& out_gz_data,
 	const int compress_level)
 {
 	out_gz_data.clear();
 	if (in_data.empty()) return true;
 
-#if MRPT_HAS_GZ_STREAMS
-
-	const unsigned int nPipeName =
-		static_cast<unsigned int>(mrpt::system::now());
+	const unsigned int nPipeName = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 	std::string pipe_file_name;
 
 // Create an anonymous pipe for writing the data to:
@@ -367,27 +353,20 @@ bool mrpt::compress::zip::compress_gz_data_block(
 #endif
 
 	return retVal;
-#else
-	THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_GZ_STREAMS=0");
-#endif
 }
 
-/*---------------------------------------------------------------
-					decompress_gz_data_block
----------------------------------------------------------------*/
-bool mrpt::compress::zip::decompress_gz_data_block(
+bool mrpt::io::zip::decompress_gz_data_block(
 	const std::vector<uint8_t>& in_gz_data, std::vector<uint8_t>& out_data)
 {
 	out_data.clear();
 	if (in_gz_data.empty()) return true;
 
 	// JL: I tried to do this with pipes but had no luck... :-(
-
 	const std::string tmp_file_name = mrpt::system::getTempFileName();
-	if (!mrpt::system::vectorToBinaryFile(in_gz_data, tmp_file_name))
+	if (!mrpt::io::vectorToBinaryFile(in_gz_data, tmp_file_name))
 		return false;
 	bool retVal =
-		mrpt::compress::zip::decompress_gz_file(tmp_file_name, out_data);
+		mrpt::io::zip::decompress_gz_file(tmp_file_name, out_data);
 
 	remove(tmp_file_name.c_str());  // Delete tmp file
 

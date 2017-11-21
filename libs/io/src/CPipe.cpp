@@ -10,6 +10,7 @@
 #include "io-precomp.h"  // Precompiled headers
 
 #include <mrpt/io/CPipe.h>
+#include <mrpt/core/exceptions.h>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -81,21 +82,19 @@ void CPipeBaseEndPoint::close()
  */
 CPipeBaseEndPoint::CPipeBaseEndPoint(const std::string& serialized)
 {
-	std::istringstream ss;
-	ss.str(serialized);
-
+	try
+	{
 #ifdef _WIN32
-	// Win32 pipes
-	uint64_t val;
-	if (!(ss >> val))
+		uint64_t val = std::stoull(serialized);
+		m_pipe_file = reinterpret_cast<void*>(val);
+#else
+		m_pipe_file = std::stoi(serialized);
+#endif
+	}
+	catch (std::invalid_argument &)
 	{
 		THROW_EXCEPTION("Error parsing PIPE handle!");
 	}
-	m_pipe_file = reinterpret_cast<void*>(val);
-#else
-	// UNIX pipes
-	ss >> m_pipe_file;
-#endif
 }
 
 /** Converts the end-point into a string suitable for reconstruction at a child
@@ -105,17 +104,12 @@ CPipeBaseEndPoint::CPipeBaseEndPoint(const std::string& serialized)
 */
 std::string CPipeBaseEndPoint::serialize()
 {
-	ASSERTMSG_(m_pipe_file != 0, "Pipe is closed, can't serialize!")
-	std::stringstream ss;
+	ASSERTMSG_(m_pipe_file != 0, "Pipe is closed, can't serialize!");
 #ifdef _WIN32
-	// Win32 pipes
-	ss << reinterpret_cast<uint64_t>(m_pipe_file);
+	return std::to_string(reinterpret_cast<uint64_t>(m_pipe_file));
 #else
-	// UNIX pipes
-	ss << m_pipe_file;
+	return std::to_string(m_pipe_file);
 #endif
-	m_pipe_file = 0;  // We don't own this file anymore...
-	return ss.str();
 }
 
 // Methods that don't make sense in pipes:
@@ -125,7 +119,7 @@ uint64_t CPipeBaseEndPoint::getPosition() { return 0; }
 /** Introduces a pure virtual method responsible for reading from the stream */
 size_t CPipeBaseEndPoint::Read(void* Buffer, size_t Count)
 {
-	ASSERTMSG_(m_pipe_file != 0, "Pipe is closed, can't read!")
+	ASSERTMSG_(m_pipe_file != 0, "Pipe is closed, can't read!");
 
 #if defined(_WIN32)
 	// Win32 pipes
@@ -224,7 +218,7 @@ size_t CPipeBaseEndPoint::Read(void* Buffer, size_t Count)
  * number of bytes actually written. */
 size_t CPipeBaseEndPoint::Write(const void* Buffer, size_t Count)
 {
-	ASSERTMSG_(m_pipe_file != 0, "Pipe is closed, can't write!")
+	ASSERTMSG_(m_pipe_file != 0, "Pipe is closed, can't write!");
 
 #ifdef _WIN32
 	// Win32 pipes

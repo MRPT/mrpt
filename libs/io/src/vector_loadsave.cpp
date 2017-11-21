@@ -45,7 +45,7 @@ bool mrpt::io::vectorToBinaryFile(
 {
 	try
 	{
-		mrpt::utils::CFileOutputStream of(fileName);
+		mrpt::io::CFileOutputStream of(fileName);
 		if (!vec.empty()) of.WriteBuffer(&vec[0], sizeof(vec[0]) * vec.size());
 		return true;
 	}

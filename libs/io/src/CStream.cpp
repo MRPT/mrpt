@@ -11,7 +11,7 @@
 
 #include <mrpt/io/CStream.h>
 #include <mrpt/core/exceptions.h>
-//#include <mrpt/system/os.h>
+#include <mrpt/core/reverse_bytes.h>
 #include <iostream>
 #include <cstdarg>
 
@@ -34,7 +34,7 @@ CStream::~CStream() {}
  ---------------------------------------------------------------*/
 size_t CStream::ReadBuffer(void* Buffer, size_t Count)
 {
-	ASSERT_(Buffer != nullptr)
+	ASSERT_(Buffer != nullptr);
 	if (Count)
 	{
 		size_t actuallyRead = Read(Buffer, Count);
@@ -58,7 +58,7 @@ size_t CStream::ReadBuffer(void* Buffer, size_t Count)
  ---------------------------------------------------------------*/
 void CStream::WriteBuffer(const void* Buffer, size_t Count)
 {
-	ASSERT_(Buffer != nullptr)
+	ASSERT_(Buffer != nullptr);
 	if (Count)
 		if (Count != Write(Buffer, Count))
 			THROW_EXCEPTION("Cannot write bytes to stream!");
@@ -72,7 +72,7 @@ void CStream::WriteBuffer(const void* Buffer, size_t Count)
 #define IMPLEMENT_CSTREAM_READ_WRITE_SIMPLE_TYPE(T)                  \
 	CStream& mrpt::io::operator<<(CStream& out, const T a) \
 	{                                                                \
-		mrpt::utils::reverseBytesInPlace(a);                         \
+		mrpt::reverseBytesInPlace(a);                         \
 		out.WriteBuffer((void*)&a, sizeof(a));                       \
 		return out;                                                  \
 	}                                                                \
@@ -80,7 +80,7 @@ void CStream::WriteBuffer(const void* Buffer, size_t Count)
 	{                                                                \
 		T b;                                                         \
 		in.ReadBuffer((void*)&b, sizeof(a));                         \
-		mrpt::utils::reverseBytesInPlace(b);                         \
+		mrpt::reverseBytesInPlace(b);                         \
 		::memcpy(&a, &b, sizeof(b));                                 \
 		return in;                                                   \
 	}
@@ -110,10 +110,7 @@ IMPLEMENT_CSTREAM_READ_WRITE_SIMPLE_TYPE(uint64_t)
 IMPLEMENT_CSTREAM_READ_WRITE_SIMPLE_TYPE(int64_t)
 IMPLEMENT_CSTREAM_READ_WRITE_SIMPLE_TYPE(float)
 IMPLEMENT_CSTREAM_READ_WRITE_SIMPLE_TYPE(double)
-
-#ifdef HAVE_LONG_DOUBLE
 IMPLEMENT_CSTREAM_READ_WRITE_SIMPLE_TYPE(long double)
-#endif
 
 CStream& mrpt::io::operator<<(CStream& out, const char* s)
 {
@@ -147,6 +144,7 @@ CStream& mrpt::io::operator<<(CStream& out, const std::string& str)
 	return out;
 }
 
+MRPT_TODO("Port to serialization module!");
 #if 0
 /*---------------------------------------------------------------
 			Writes an object to the stream.
@@ -370,7 +368,7 @@ CStream& mrpt::io::operator>>(CStream& in, std::string& str)
 
 CStream& mrpt::io::operator>>(CStream& in, char* s)
 {
-	ASSERT_(s != nullptr)
+	ASSERT_(s != nullptr);
 	uint32_t l;
 	in >> l;
 	if (l) in.ReadBuffer(s, l);

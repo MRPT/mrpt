@@ -37,17 +37,6 @@ IF (CMAKE_MRPT_HAS_JPEG AND NOT CMAKE_MRPT_HAS_JPEG_SYSTEM)
 	LIST(APPEND base_EXTRA_SRCS_NAME 	"utils/jpeglib" "utils/jpeglib")
 ENDIF ()
 
-# Embedded version of zlib, if really needed:
-# Only include zlib if not available as system library OR it's already in wxWidgets:
-IF(CMAKE_MRPT_HAS_ZLIB)
-	IF(CMAKE_MRPT_HAS_ZLIB_SYSTEM_IS_WX OR NOT CMAKE_MRPT_HAS_ZLIB_SYSTEM)
-		INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/base/src/compress/zlib/")
-		IF(NOT MSVC OR NOT CMAKE_MRPT_HAS_WXWIDGETS)
-			LIST(APPEND base_EXTRA_SRCS			"${MRPT_LIBS_ROOT}/base/src/compress/zlib/*.c" "${MRPT_LIBS_ROOT}/base/src/compress/zlib/*.h")
-			LIST(APPEND base_EXTRA_SRCS_NAME 	"compress/zlib" "compress/zlib")
-		ENDIF()
-	ENDIF()
-ENDIF()
 
 IF(CMAKE_MRPT_HAS_OPENCV)
 	INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${OPENCV_INCLUDE_DIRS} ${OPENCV_INCLUDEDIR})
@@ -87,7 +76,6 @@ IF(BUILD_mrpt-base)
 				${math/kmeans_FILES}
 				${utils/xmlparser_FILES}
 				${utils/jpeglib_FILES}
-				${compress/zlib_FILES}
 				PROPERTIES COMPILE_FLAGS "/Y-"
 				)
 
@@ -101,16 +89,6 @@ IF(BUILD_mrpt-base)
 	if (NOT "${SuiteSparse_LIBRARIES}" STREQUAL "")
 		target_link_libraries(mrpt-base PRIVATE ${SuiteSparse_LIBRARIES})
 	endif ()
-
-	IF(CMAKE_MRPT_HAS_WXWIDGETS)
-		target_link_libraries(mrpt-base PRIVATE ${wxWidgets_LIBRARIES})
-	ENDIF()
-
-	IF(CMAKE_MRPT_HAS_ZLIB)
-		IF(NOT CMAKE_MRPT_HAS_ZLIB_SYSTEM_IS_WX AND CMAKE_MRPT_HAS_ZLIB_SYSTEM)
-			target_link_libraries(mrpt-base PRIVATE ${MRPT_ZLIB_LIBS})
-		ENDIF()
-	ENDIF()
 
 	IF(CMAKE_MRPT_HAS_JPEG)
 		target_link_libraries(mrpt-base PRIVATE ${JPEG_LIBS})

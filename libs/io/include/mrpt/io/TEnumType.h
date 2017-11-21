@@ -16,7 +16,7 @@ namespace io
 {
 /** Only specializations of this class are defined for each enum type of
  * interest
-  * \sa TEnumType \ingroup mrpt_base_grp
+  * \sa TEnumType \ingroup mrpt_io_grp
   */
 template <typename ENUMTYPE>
 struct TEnumTypeFiller
@@ -31,7 +31,7 @@ struct TEnumTypeFiller
 	m_map.insert(_CLASS::_VALUE, #_VALUE)
 
 /** A helper class that can convert an enum value into its textual
- * representation, and viceversa. \ingroup mrpt_base_grp */
+ * representation, and viceversa. \ingroup mrpt_io_grp */
 template <typename ENUMTYPE>
 struct TEnumType
 {

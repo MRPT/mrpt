@@ -10,6 +10,7 @@
 
 #include <mrpt/core/common.h> // MRPT_printf_format_check
 #include <mrpt/core/reverse_bytes.h>
+#include <string>
 #include <vector>
 #include <type_traits>  // remove_reference_t
 
@@ -448,9 +449,7 @@ DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE(uint64_t)
 DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE(int64_t)
 DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE(float)
 DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE(double)
-#ifdef HAVE_LONG_DOUBLE
 DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE(long double)
-#endif
 
 #define MRPT_READ_POD(_STREAM, _VARIABLE)                                    \
 	do                                                                       \

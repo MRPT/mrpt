@@ -34,7 +34,7 @@ enum
  *   The default behavior can be change to open as read, write, read and
  * write,... in the constructor.
  * \sa CStream, CFileInputStream, CFileOutputStrea, CFileGZInputStream
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_io_grp
  */
 class CFileStream : public CStream
 {

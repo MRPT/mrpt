@@ -6,14 +6,13 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CFileGZOutputStream_H
-#define CFileGZOutputStream_H
+#pragma once
 
-#include <mrpt/utils/CStream.h>
+#include <mrpt/io/CStream.h>
 
 namespace mrpt
 {
-namespace utils
+namespace io
 {
 /** Saves data to a file and transparently compress the data using the given
  * compression level.
@@ -22,18 +21,13 @@ namespace utils
  * available then the class is actually mapped to the standard CFileOutputStream
  *
  * \sa CFileOutputStream
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_io_grp
  */
-#if !MRPT_HAS_GZ_STREAMS
-// We don't have wxwidgets:
-#define CFileGZOutputStream CFileOutputStream
-#else
 class CFileGZOutputStream : public CStream
 {
    protected:
 	size_t Read(void* Buffer, size_t Count) override;
 	size_t Write(const void* Buffer, size_t Count) override;
-	// DECLARE_UNCOPIABLE( CFileGZOutputStream )
    private:
 	void* m_f;
 
@@ -74,25 +68,13 @@ class CFileGZOutputStream : public CStream
 
 	/** This method is not implemented in this class */
 	uint64_t Seek(
-		uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) override
-	{
-		MRPT_UNUSED_PARAM(Offset);
-		MRPT_UNUSED_PARAM(Origin);
-		THROW_EXCEPTION("Seek is not implemented in this class");
-	}
-
+		uint64_t, CStream::TSeekOrigin = sFromBeginning) override;
 	/** This method is not implemented in this class */
-	uint64_t getTotalBytesCount() override
-	{
-		THROW_EXCEPTION("getTotalBytesCount is not implemented in this class");
-	}
+	uint64_t getTotalBytesCount() override;
 };  // End of class def.
 static_assert(
 	!std::is_copy_constructible<CFileGZOutputStream>::value &&
 		!std::is_copy_assignable<CFileGZOutputStream>::value,
 	"Copy Check");
-#endif
-
 }  // End of namespace
 }  // end of namespace
-#endif

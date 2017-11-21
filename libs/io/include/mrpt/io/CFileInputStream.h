@@ -18,7 +18,7 @@ namespace io
 /** This CStream derived class allow using a file as a read-only, binary stream.
  *
  * \sa CStream, CFileStream, CFileGZInputStream
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_io_grp
  */
 class CFileInputStream : public CStream
 {
