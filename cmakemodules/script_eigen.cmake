@@ -9,7 +9,7 @@ MARK_AS_ADVANCED(EIGEN_MATRIXBASE_PLUGIN_POST_IMPL)
 # By default: Use system version if pkg-config says it exists:
 SET(DEFAULT_EIGEN_USE_EMBEDDED_VERSION ON)
 IF(PKG_CONFIG_FOUND)
-	PKG_CHECK_MODULES(PKG_EIGEN3 ${_QUIET} eigen3)	# Find eigen3 with pkg-config:
+	PKG_CHECK_MODULES(PKG_EIGEN3 QUIET eigen3)	# Find eigen3 with pkg-config:
 	# We require Eigen 3.2 minimum:
 	IF(${PKG_EIGEN3_FOUND} AND ${PKG_EIGEN3_VERSION} VERSION_GREATER "3.1.9")
 		# Use system version:
@@ -42,7 +42,7 @@ ELSE(EIGEN_USE_EMBEDDED_VERSION)
 		MESSAGE(SEND_ERROR "pkg-config is required for this operation!")
 	ELSE(NOT PKG_CONFIG_FOUND)
 		# Find eigen3 with pkg-config:
-		PKG_CHECK_MODULES(PKG_EIGEN3 ${_QUIET} eigen3)
+		PKG_CHECK_MODULES(PKG_EIGEN3 QUIET eigen3)
 		IF(PKG_EIGEN3_FOUND)
 			SET(MRPT_EIGEN_INCLUDE_DIR "${PKG_EIGEN3_INCLUDE_DIRS}")
 		ELSE(PKG_EIGEN3_FOUND)

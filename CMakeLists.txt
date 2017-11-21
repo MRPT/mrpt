@@ -125,17 +125,10 @@ ENDIF()
 # Only for Unix: use pkg-config to find libraries
 # ===================================================
 INCLUDE(FindPkgConfig OPTIONAL)
-# "QUIET" was introduced in 2.8.2 for PKG_CHECK_MODULES
-if (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION} VERSION_GREATER 2.8.1)
-   set(_QUIET QUIET)
-endif()
-
 
 # Group projects in "folders"
 # ===================================================
-IF (CMAKE_VERSION VERSION_GREATER 2.8.0)
-	SET(ENABLE_SOLUTION_FOLDERS ON CACHE BOOL "Group projects under virtual folders of the compiler IDE (e.g. VisualStudio)")
-ENDIF (CMAKE_VERSION VERSION_GREATER 2.8.0)
+SET(ENABLE_SOLUTION_FOLDERS ON CACHE BOOL "Group projects under virtual folders of the compiler IDE (e.g. VisualStudio)")
 
 if (ENABLE_SOLUTION_FOLDERS)
   set_property(GLOBAL PROPERTY USE_FOLDERS ON)
