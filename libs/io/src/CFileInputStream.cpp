@@ -9,14 +9,12 @@
 
 #include "io-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/CFileInputStream.h>
+#include <mrpt/io/CFileInputStream.h>
+#include <mrpt/core/exceptions.h>
 
 using namespace mrpt::io;
 using namespace std;
 
-/*---------------------------------------------------------------
-							Constructor
- ---------------------------------------------------------------*/
 CFileInputStream::CFileInputStream(const string& fileName) : m_if()
 {
 	MRPT_START

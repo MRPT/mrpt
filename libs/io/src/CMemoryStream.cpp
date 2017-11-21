@@ -10,37 +10,15 @@
 #include "io-precomp.h"  // Precompiled headers
 
 #include <mrpt/io/CMemoryStream.h>
-#include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/io/CFileInputStream.h>
-//#include <mrpt/system/os.h>
-#include <cstring>
+#include <mrpt/io/CFileOutputStream.h>
+#include <algorithm> // min,max
 
 using namespace mrpt::io;
-using namespace std;
+using std::min;
+using std::max;
 
-/*---------------------------------------------------------------
-							Constructor
- ---------------------------------------------------------------*/
-CMemoryStream::CMemoryStream()
-	: m_memory(nullptr),
-	  m_size(0),
-	  m_position(0),
-	  m_bytesWritten(0),
-	  m_alloc_block_size(0x1000),
-	  m_read_only(false)
-{
-}
-
-/*---------------------------------------------------------------
-			Constructor with data
- ---------------------------------------------------------------*/
 CMemoryStream::CMemoryStream(const void* data, const uint64_t nBytesInData)
-	: m_memory(nullptr),
-	  m_size(0),
-	  m_position(0),
-	  m_bytesWritten(0),
-	  m_alloc_block_size(0x1000),
-	  m_read_only(false)
 {
 	MRPT_START
 	ASSERT_(data != nullptr);
@@ -54,9 +32,6 @@ CMemoryStream::CMemoryStream(const void* data, const uint64_t nBytesInData)
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-				assignMemoryNotOwn
- ---------------------------------------------------------------*/
 void CMemoryStream::assignMemoryNotOwn(
 	const void* data, const uint64_t nBytesInData)
 {
@@ -68,9 +43,6 @@ void CMemoryStream::assignMemoryNotOwn(
 	m_read_only = true;
 }
 
-/*---------------------------------------------------------------
-							Destructor
- ---------------------------------------------------------------*/
 CMemoryStream::~CMemoryStream()
 {
 	if (!m_read_only)
@@ -80,9 +52,6 @@ CMemoryStream::~CMemoryStream()
 	}
 }
 
-/*---------------------------------------------------------------
-							resize
- ---------------------------------------------------------------*/
 void CMemoryStream::resize(uint64_t newSize)
 {
 	if (m_read_only)
@@ -110,10 +79,6 @@ void CMemoryStream::resize(uint64_t newSize)
 	if (m_bytesWritten > m_size) m_bytesWritten = m_size;
 }
 
-/*---------------------------------------------------------------
-							Read
-			Reads bytes from the stream into Buffer
- ---------------------------------------------------------------*/
 size_t CMemoryStream::Read(void* Buffer, size_t Count)
 {
 	// Enought bytes?
@@ -129,10 +94,6 @@ size_t CMemoryStream::Read(void* Buffer, size_t Count)
 	return nToRead;
 }
 
-/*---------------------------------------------------------------
-							Write
-			Writes a block of bytes to the stream.
- ---------------------------------------------------------------*/
 size_t CMemoryStream::Write(const void* Buffer, size_t Count)
 {
 	// Enought space in current bufer?
@@ -155,11 +116,6 @@ size_t CMemoryStream::Write(const void* Buffer, size_t Count)
 	return Count;
 }
 
-/*---------------------------------------------------------------
-							Seek
-	Method for moving to a specified position in the streamed resource.
-	 See documentation of CStream::Seek
- ---------------------------------------------------------------*/
 uint64_t CMemoryStream::Seek(uint64_t Offset, CStream::TSeekOrigin Origin)
 {
 	switch (Origin)
@@ -180,17 +136,10 @@ uint64_t CMemoryStream::Seek(uint64_t Offset, CStream::TSeekOrigin Origin)
 	return m_position;
 }
 
-/*---------------------------------------------------------------
-						getTotalBytesCount
- ---------------------------------------------------------------*/
 uint64_t CMemoryStream::getTotalBytesCount() { return m_bytesWritten; }
-/*---------------------------------------------------------------
-						getPosition
- ---------------------------------------------------------------*/
+
 uint64_t CMemoryStream::getPosition() { return m_position; }
-/*---------------------------------------------------------------
-						Clear
- ---------------------------------------------------------------*/
+
 void CMemoryStream::Clear()
 {
 	if (!m_read_only)
@@ -207,21 +156,8 @@ void CMemoryStream::Clear()
 	}
 }
 
-/*---------------------------------------------------------------
-						getRawBufferData
-	Method for getting a pointer to the raw stored data. The
-	lenght in bytes is given by getTotalBytesCount
- ---------------------------------------------------------------*/
 void* CMemoryStream::getRawBufferData() { return m_memory.get(); }
-/*---------------------------------------------------------------
-						changeSize
-Change size. This would be rarely used
- Use ">>" operators for writing to stream.
- ---------------------------------------------------------------*/
 void CMemoryStream::changeSize(uint64_t newSize) { resize(newSize); }
-/*---------------------------------------------------------------
-					saveBufferToFile
- ---------------------------------------------------------------*/
 bool CMemoryStream::saveBufferToFile(const std::string& file_name)
 {
 	try
@@ -264,10 +200,10 @@ bool CMemoryStream::loadBufferFromFile(const std::string& file_name)
 
 // Used in mrpt_send_to_zmq(). `hint` points to a `TFreeFnDataForZMQ` struct, to
 // be freed here.
-void mrpt::utils::internal::free_fn_for_zmq(void* /* data*/, void* hint)
+void mrpt::io::internal::free_fn_for_zmq(void* /* data*/, void* hint)
 {
-	mrpt::utils::internal::TFreeFnDataForZMQ* fd =
-		reinterpret_cast<mrpt::utils::internal::TFreeFnDataForZMQ*>(hint);
+	auto* fd =
+		reinterpret_cast<mrpt::io::internal::TFreeFnDataForZMQ*>(hint);
 	if (fd->do_free) delete fd->buf;
 	delete fd;
 }

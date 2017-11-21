@@ -19,7 +19,7 @@ namespace io
  * stream.
  *
  * \sa CStream, CFileStream, CFileGZOutputStream
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_io_grp
  */
 class CFileOutputStream : public CStream
 {

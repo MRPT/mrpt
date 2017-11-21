@@ -10,8 +10,8 @@
 #include "io-precomp.h"  // Precompiled headers
 
 #include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/system/os.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/core/exceptions.h>
 
 #include <zlib.h>
 
@@ -20,22 +20,15 @@ using namespace std;
 
 #define THE_GZFILE reinterpret_cast<gzFile>(m_f)
 
-/*---------------------------------------------------------------
-							Constructor
- ---------------------------------------------------------------*/
 CFileGZInputStream::CFileGZInputStream(const string& fileName) : m_f(nullptr)
 {
 	MRPT_START
 	open(fileName);
 	MRPT_END
 }
-/*---------------------------------------------------------------
-							Constructor
- ---------------------------------------------------------------*/
+
 CFileGZInputStream::CFileGZInputStream() : m_f(nullptr) {}
-/*---------------------------------------------------------------
-							open
- ---------------------------------------------------------------*/
+
 bool CFileGZInputStream::open(const std::string& fileName)
 {
 	MRPT_START
@@ -54,9 +47,7 @@ bool CFileGZInputStream::open(const std::string& fileName)
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-							close
- ---------------------------------------------------------------*/
+
 void CFileGZInputStream::close()
 {
 	if (m_f)
@@ -66,14 +57,8 @@ void CFileGZInputStream::close()
 	}
 }
 
-/*---------------------------------------------------------------
-							Destructor
- ---------------------------------------------------------------*/
 CFileGZInputStream::~CFileGZInputStream() { close(); }
-/*---------------------------------------------------------------
-							Read
-			Reads bytes from the stream into Buffer
- ---------------------------------------------------------------*/
+
 size_t CFileGZInputStream::Read(void* Buffer, size_t Count)
 {
 	if (!m_f)
@@ -84,10 +69,6 @@ size_t CFileGZInputStream::Read(void* Buffer, size_t Count)
 	return gzread(THE_GZFILE, Buffer, Count);
 }
 
-/*---------------------------------------------------------------
-							Write
-			Writes a block of bytes to the stream.
- ---------------------------------------------------------------*/
 size_t CFileGZInputStream::Write(const void* Buffer, size_t Count)
 {
 	MRPT_UNUSED_PARAM(Buffer);
@@ -95,9 +76,6 @@ size_t CFileGZInputStream::Write(const void* Buffer, size_t Count)
 	THROW_EXCEPTION("Trying to write to an input file stream.");
 }
 
-/*---------------------------------------------------------------
-						getTotalBytesCount
- ---------------------------------------------------------------*/
 uint64_t CFileGZInputStream::getTotalBytesCount()
 {
 	if (!m_f)
@@ -107,9 +85,6 @@ uint64_t CFileGZInputStream::getTotalBytesCount()
 	return m_file_size;
 }
 
-/*---------------------------------------------------------------
-						getPosition
- ---------------------------------------------------------------*/
 uint64_t CFileGZInputStream::getPosition()
 {
 	if (!m_f)
@@ -119,17 +94,17 @@ uint64_t CFileGZInputStream::getPosition()
 	return gztell(THE_GZFILE);
 }
 
-/*---------------------------------------------------------------
-						fileOpenCorrectly
- ---------------------------------------------------------------*/
 bool CFileGZInputStream::fileOpenCorrectly() { return m_f != nullptr; }
-/*---------------------------------------------------------------
-						checkEOF
- ---------------------------------------------------------------*/
+
 bool CFileGZInputStream::checkEOF()
 {
 	if (!m_f)
 		return true;
 	else
 		return 0 != gzeof(THE_GZFILE);
+}
+
+uint64_t CFileGZInputStream::Seek(uint64_t, CStream::TSeekOrigin)
+{
+	THROW_EXCEPTION("Method not available in this class.");
 }

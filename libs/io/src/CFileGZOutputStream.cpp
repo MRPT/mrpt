@@ -10,10 +10,7 @@
 #include "io-precomp.h"  // Precompiled headers
 
 #include <mrpt/io/CFileGZOutputStream.h>
-#include <mrpt/system/os.h>
-
-#include <mrpt/config.h>
-#if MRPT_HAS_GZ_STREAMS
+#include <mrpt/core/exceptions.h>
 
 #include <zlib.h>
 
@@ -22,9 +19,7 @@
 using namespace mrpt::io;
 using namespace std;
 
-/*---------------------------------------------------------------
-							Constructor
- ---------------------------------------------------------------*/
+
 CFileGZOutputStream::CFileGZOutputStream(const string& fileName) : m_f(nullptr)
 {
 	MRPT_START
@@ -34,13 +29,8 @@ CFileGZOutputStream::CFileGZOutputStream(const string& fileName) : m_f(nullptr)
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-				Constructor
- ---------------------------------------------------------------*/
 CFileGZOutputStream::CFileGZOutputStream() : m_f(nullptr) {}
-/*---------------------------------------------------------------
-							open
- ---------------------------------------------------------------*/
+
 bool CFileGZOutputStream::open(const string& fileName, int compress_level)
 {
 	MRPT_START
@@ -54,13 +44,8 @@ bool CFileGZOutputStream::open(const string& fileName, int compress_level)
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-							Destructor
- ---------------------------------------------------------------*/
 CFileGZOutputStream::~CFileGZOutputStream() { close(); }
-/*---------------------------------------------------------------
-							close
- ---------------------------------------------------------------*/
+
 void CFileGZOutputStream::close()
 {
 	if (m_f)
@@ -70,21 +55,11 @@ void CFileGZOutputStream::close()
 	}
 }
 
-/*---------------------------------------------------------------
-							Read
-			Reads bytes from the stream into Buffer
- ---------------------------------------------------------------*/
-size_t CFileGZOutputStream::Read(void* Buffer, size_t Count)
+size_t CFileGZOutputStream::Read(void* , size_t )
 {
-	MRPT_UNUSED_PARAM(Buffer);
-	MRPT_UNUSED_PARAM(Count);
 	THROW_EXCEPTION("Trying to read from an output file stream.");
 }
 
-/*---------------------------------------------------------------
-							Write
-			Writes a block of bytes to the stream.
- ---------------------------------------------------------------*/
 size_t CFileGZOutputStream::Write(const void* Buffer, size_t Count)
 {
 	if (!m_f)
@@ -94,9 +69,6 @@ size_t CFileGZOutputStream::Write(const void* Buffer, size_t Count)
 	return gzwrite(THE_GZFILE, const_cast<void*>(Buffer), Count);
 }
 
-/*---------------------------------------------------------------
-						getPosition
- ---------------------------------------------------------------*/
 uint64_t CFileGZOutputStream::getPosition()
 {
 	if (!m_f)
@@ -106,8 +78,16 @@ uint64_t CFileGZOutputStream::getPosition()
 	return gztell(THE_GZFILE);
 }
 
-/*---------------------------------------------------------------
-						fileOpenCorrectly
- ---------------------------------------------------------------*/
 bool CFileGZOutputStream::fileOpenCorrectly() { return m_f != nullptr; }
-#endif  // MRPT_HAS_GZ_STREAMS
+
+uint64_t CFileGZOutputStream::Seek(uint64_t, CStream::TSeekOrigin)
+{
+	THROW_EXCEPTION("Method not available in this class.");
+}
+
+uint64_t CFileGZOutputStream::getTotalBytesCount()
+{
+	THROW_EXCEPTION("Method not available in this class.");
+}
+
+

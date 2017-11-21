@@ -7,13 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/compress.h>
-#include <mrpt/math/ops_vectors.h>
+#include <mrpt/io/zip.h>
+//#include <mrpt/math/ops_vectors.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
-using namespace mrpt::math;
+using namespace mrpt::io;
+//using namespace mrpt::math;
 using namespace std;
 
 TEST(Compress, DataBlockGZ)

@@ -6,23 +6,19 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef ZipCompression_H
-#define ZipCompression_H
+#pragma once
 
-#include <mrpt/utils/utils_defs.h>
+#include <string>
+#include <vector>
 
 namespace mrpt
 {
-namespace utils
+namespace io
 {
 class CStream;
-}
 
-/** Data compression/decompression algorithms.  \ingroup mrpt_base_grp */
-namespace compress
-{
 /** Compression using the "zip" algorithm and from/to gzip (gz) files. \ingroup
- * mrpt_base_grp */
+ * mrpt_io_grp */
 namespace zip
 {
 /** Compress an array of bytes into another one. */
@@ -35,11 +31,11 @@ void compress(
 	std::vector<unsigned char>& outData);
 
 /** Compress an array of bytes and write the result into a stream. */
-void compress(void* inData, size_t inDataSize, mrpt::utils::CStream& out);
+void compress(void* inData, size_t inDataSize, mrpt::io::CStream& out);
 
 /** Compress an array of bytes and write the result into a stream. */
 void compress(
-	const std::vector<unsigned char>& inData, mrpt::utils::CStream& out);
+	const std::vector<unsigned char>& inData, mrpt::io::CStream& out);
 
 /** Decompress an array of bytes into another one
   * \exception std::exception If the apriori estimated decompressed size is not
@@ -61,7 +57,7 @@ void decompress(
  * enought
   */
 void decompress(
-	mrpt::utils::CStream& inStream, size_t inDataSize, void* outData,
+	mrpt::io::CStream& inStream, size_t inDataSize, void* outData,
 	size_t outDataBufferSize, size_t& outDataActualSize);
 
 /** Decompress a gzip file (xxxx.gz) into a memory buffer. If the file is not a
@@ -103,7 +99,4 @@ bool decompress_gz_data_block(
 
 }  // End of namespace
 }  // End of namespace
-
 }  // End of namespace
-
-#endif

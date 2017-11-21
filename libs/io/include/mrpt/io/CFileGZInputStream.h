@@ -6,14 +6,13 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CFileGZInputStream_H
-#define CFileGZInputStream_H
+#pragma once
 
-#include <mrpt/utils/CStream.h>
+#include <mrpt/io/CStream.h>
 
 namespace mrpt
 {
-namespace utils
+namespace io
 {
 /** Transparently opens a compressed "gz" file and reads uncompressed data from
  * it.
@@ -22,7 +21,7 @@ namespace utils
  * available then the class is actually mapped to the standard CFileInputStream
  *
  * \sa CFileInputStream
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_io_grp
  */
 class CFileGZInputStream : public CStream
 {
@@ -74,12 +73,7 @@ class CFileGZInputStream : public CStream
 
 	/** This method is not implemented in this class */
 	uint64_t Seek(
-		uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) override
-	{
-		MRPT_UNUSED_PARAM(Offset);
-		MRPT_UNUSED_PARAM(Origin);
-		THROW_EXCEPTION("Seek is not implemented in this class");
-	}
+		uint64_t , CStream::TSeekOrigin = sFromBeginning) override;
 
 };  // End of class def.
 
@@ -89,4 +83,3 @@ static_assert(
 	"Copy Check");
 }  // End of namespace
 }  // end of namespace
-#endif

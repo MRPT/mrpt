@@ -10,11 +10,11 @@
 #define CMEMORYSTREAM_H
 
 #include <mrpt/utils/CStream.h>
-#include <mrpt/utils/safe_pointers.h>
+#include <mrpt/core/safe_pointers.h>
 
 namespace mrpt
 {
-namespace utils
+namespace io
 {
 /** This CStream derived class allow using a memory buffer as a CStream.
  *  This class is useful for storing any required set of variables or objects,
@@ -22,7 +22,7 @@ namespace utils
  * example.
  *
  * \sa CStream
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_io_grp
  */
 class CMemoryStream : public CStream
 {
@@ -31,17 +31,17 @@ class CMemoryStream : public CStream
 	size_t Write(const void* Buffer, size_t Count) override;
 
 	/** Internal data */
-	void_ptr_noncopy m_memory;
-	uint64_t m_size, m_position, m_bytesWritten;
-	uint64_t m_alloc_block_size;
+	void_ptr_noncopy m_memory {nullptr};
+	uint64_t m_size{ 0 }, m_position{ 0 }, m_bytesWritten{ 0 };
+	uint64_t m_alloc_block_size{ 0x1000 };
 	/** If the memory block does not belong to the object. */
-	bool m_read_only;
+	bool m_read_only{ false };
 	/** Resizes the internal buffer size. */
 	void resize(uint64_t newSize);
 
    public:
 	/** Default constructor */
-	CMemoryStream();
+	CMemoryStream() {}
 
 	/** Constructor to initilize the data in the stream from a block of memory
 	 * (which is copied), and sets the current stream position at the beginning
@@ -93,7 +93,7 @@ class CMemoryStream : public CStream
 	 * the current block runs too short (default=0x10000 bytes) */
 	void setAllocBlockSize(uint64_t alloc_block_size)
 	{
-		ASSERT_(alloc_block_size > 0)
+		ASSERT_(alloc_block_size > 0);
 		m_alloc_block_size = alloc_block_size;
 	}
 };  // End of class def.
