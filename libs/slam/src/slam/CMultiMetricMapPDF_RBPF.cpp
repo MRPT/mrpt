@@ -47,6 +47,8 @@ namespace slam
 
 class OptimalProposal
 {
+public:
+	static constexpr bool DoesResampling = true;
 };
 
 /** Fills out a "TPoseBin2D" variable, given a path hypotesis and (if not set to
@@ -1042,6 +1044,10 @@ void CParticleFilter::executeOn<CMultiMetricMapPDF>(
 			break;
 		case CParticleFilter::pfAuxiliaryPFOptimal:
 			executeOn<CMultiMetricMapPDF, mrpt::slam::AuxiliaryPFOptimal>(
+				obj, action, observation, stats);
+			break;
+		case CParticleFilter::pfOptimalProposal:
+			executeOn<CMultiMetricMapPDF, mrpt::slam::OptimalProposal>(
 				obj, action, observation, stats);
 			break;
 		default:
