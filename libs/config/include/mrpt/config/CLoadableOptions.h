@@ -6,20 +6,18 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CLoadableOptions_H
-#define CLoadableOptions_H
+#pragma once
 
-#include <mrpt/utils/core_defs.h>
 #include <string>
 #include <stdexcept>
+#include <iosfwd>
 
 namespace mrpt
 {
-namespace utils
+namespace config
 {
 // Frwd. decls:
 class CConfigFileBase;
-class CStream;
 
 /** This is a virtual base class for sets of options than can be loaded from
  * and/or saved to configuration plain-text files.
@@ -32,12 +30,12 @@ class CLoadableOptions
    protected:
 	/** Used to print variable info from dumpToTextStream with the macro
 	 * LOADABLEOPTS_DUMP_VAR */
-	static void dumpVar_int(CStream& out, const char* varName, int v);
-	static void dumpVar_float(CStream& out, const char* varName, float v);
-	static void dumpVar_double(CStream& out, const char* varName, double v);
-	static void dumpVar_bool(CStream& out, const char* varName, bool v);
+	static void dumpVar_int(std::ostream& out, const char* varName, int v);
+	static void dumpVar_float(std::ostream& out, const char* varName, float v);
+	static void dumpVar_double(std::ostream& out, const char* varName, double v);
+	static void dumpVar_bool(std::ostream& out, const char* varName, bool v);
 	static void dumpVar_string(
-		CStream& out, const char* varName, const std::string& v);
+		std::ostream& out, const char* varName, const std::string& v);
 
    public:
 	/** This method load the options from a ".ini"-like file or memory-stored
@@ -55,7 +53,7 @@ class CLoadableOptions
 	 * \sa loadFromConfigFileName, saveToConfigFile
 	 */
 	virtual void loadFromConfigFile(
-		const mrpt::utils::CConfigFileBase& source,
+		const mrpt::config::CConfigFileBase& source,
 		const std::string& section) = 0;
 
 	/** Behaves like loadFromConfigFile, but you can pass directly a file name
@@ -71,7 +69,7 @@ class CLoadableOptions
 	 * \sa loadFromConfigFile, saveToConfigFileName
 	 */
 	virtual void saveToConfigFile(
-		mrpt::utils::CConfigFileBase& target, const std::string& section) const;
+		mrpt::config::CConfigFileBase& target, const std::string& section) const;
 
 	/** Behaves like saveToConfigFile, but you can pass directly a file name and
 	 * a temporary CConfigFile object will be created automatically to save the
@@ -86,12 +84,12 @@ class CLoadableOptions
 	void dumpToConsole() const;
 
 	/** This method should clearly display all the contents of the structure in
-	 * textual form, sending it to a CStream.
+	 * textual form, sending it to a std::ostream.
 	  * The default implementation in this base class relies on \a
 	 * saveToConfigFile() to generate a plain text representation of all the
 	 * parameters.
 	  */
-	virtual void dumpToTextStream(mrpt::utils::CStream& out) const;
+	virtual void dumpToTextStream(std::ostream& out) const;
 
 	/** Virtual destructor */
 	virtual ~CLoadableOptions() {}
@@ -114,6 +112,5 @@ class CLoadableOptions
 			out, #variableName, RAD2DEG(static_cast<double>(variableName))); \
 	}
 
-}  // End of namespace
-}  // end of namespace
-#endif
+} // end NS config
+} // end NS mrpt
