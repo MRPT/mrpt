@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/core/exceptions.h>
+#include <stdexcept>
 #include <random>
 #include <limits>
 #include <vector>
@@ -211,9 +211,11 @@ class CRandomGenerator
 		const MATRIX& cov,
 		const std::vector<T>* mean = nullptr)
 	{
-		ASSERT_(cov.getRowCount() == cov.getColCount());
 		const size_t dim = cov.getColCount();
-		if (mean) ASSERT_(mean->size() == dim);
+		if (cov.getRowCount() != cov.getColCount())
+			throw std::runtime_error("drawGaussianMultivariate(): cov is not square.");
+		if (mean && mean->size() != dim)
+			throw std::runtime_error("drawGaussianMultivariate(): mean and cov sizes ");
 		MATRIX Z, D;
 		// Set size of output vector:
 		out_result.clear();
@@ -249,8 +251,10 @@ class CRandomGenerator
 		const VECTORLIKE* mean = nullptr)
 	{
 		const size_t N = cov.rows();
-		ASSERT_(cov.rows() == cov.cols())
-		if (mean) ASSERT_EQUAL_(size_t(mean->size()), N)
+		if (cov.getRowCount() != cov.getColCount())
+			throw std::runtime_error("drawGaussianMultivariate(): cov is not square.");
+		if (mean && size_t(mean->size()) != N)
+			throw std::runtime_error("drawGaussianMultivariate(): mean and cov sizes ");
 
 		// Compute eigenvalues/eigenvectors of cov:
 		Eigen::SelfAdjointEigenSolver<typename COVMATRIX::PlainObject>
@@ -294,6 +298,12 @@ class CRandomGenerator
 		VECTOR_OF_VECTORS& ret, size_t desiredSamples, const COVMATRIX& cov,
 		const typename VECTOR_OF_VECTORS::value_type* mean = nullptr)
 	{
+		const size_t N = cov.rows();
+		if (cov.getRowCount() != cov.getColCount())
+			throw std::runtime_error("drawGaussianMultivariateMany(): cov is not square.");
+		if (mean && size_t(mean->size()) != N)
+			throw std::runtime_error("drawGaussianMultivariateMany(): mean and cov sizes ");
+
 		ASSERT_EQUAL_(cov.cols(), cov.rows())
 		if (mean) ASSERT_EQUAL_(size_t(mean->size()), size_t(cov.cols()))
 
@@ -316,7 +326,6 @@ class CRandomGenerator
 
 		// Set size of output vector:
 		ret.resize(desiredSamples);
-		const size_t N = cov.cols();
 		for (size_t k = 0; k < desiredSamples; k++)
 		{
 			ret[k].assign(N, 0);
