@@ -44,7 +44,7 @@ CServerTCPSocket::CServerTCPSocket(
 	wVersionRequested = MAKEWORD(2, 0);
 
 	if (0 != WSAStartup(wVersionRequested, &wsaData))
-		THROW_EXCEPTION(getLastErrorStr());
+		THROW_EXCEPTION(getLastErrorStr();;
 
 	// Create the socket and put it listening:
 	setupSocket(listenPort, IPaddress, maxConnectionsWaiting);

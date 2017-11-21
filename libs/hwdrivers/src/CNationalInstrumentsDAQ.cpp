@@ -88,7 +88,7 @@
 		MRPT_DAQmxGetExtendedErrorInfo(errBuff, 2048);                 \
 		std::string sErr = mrpt::format(                               \
 			"DAQ error: '%s'\nCalling: '%s'", errBuff, #functionCall); \
-		THROW_EXCEPTION(sErr)                                          \
+		THROW_EXCEPTION(sErr);                                         \
 	}
 
 using namespace mrpt::hwdrivers;
@@ -649,7 +649,7 @@ void CNationalInstrumentsDAQ::initialize()
 	}  // end for each task_definitions[i]
 
 #else
-	THROW_EXCEPTION("MRPT was compiled without support for NI DAQmx!!")
+	THROW_EXCEPTION("MRPT was compiled without support for NI DAQmx!!");
 #endif
 }
 

@@ -567,7 +567,7 @@ void CGenericFeatureTracker::trackFeatures_impl(
 	MRPT_UNUSED_PARAM(old_img);
 	MRPT_UNUSED_PARAM(new_img);
 	MRPT_UNUSED_PARAM(inout_featureList);
-	THROW_EXCEPTION("Method not implemented by derived class!")
+	THROW_EXCEPTION("Method not implemented by derived class!");
 }
 
 /** Perform feature tracking from "old_img" to "new_img", with a (possibly

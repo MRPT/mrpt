@@ -372,7 +372,7 @@ void CMesh3D::render_dl() const
 void CMesh3D::writeToStream(mrpt::utils::CStream& out, int* version) const
 {
 	//********** To do **********
-	THROW_EXCEPTION("not implemented yet!")
+	THROW_EXCEPTION("not implemented yet!");
 
 	// if (version)
 	//	*version = 0;

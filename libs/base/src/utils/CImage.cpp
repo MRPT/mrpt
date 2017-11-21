@@ -182,7 +182,7 @@ void CImage::copyFastFrom(CImage& o)
 	else
 	{  // Normal copy
 #if MRPT_HAS_OPENCV
-		if (!o.img) THROW_EXCEPTION("Origin image is empty! (o.img==nullptr)")
+		if (!o.img) THROW_EXCEPTION("Origin image is empty! (o.img==nullptr)");
 #endif
 		// Erase current image:
 		releaseIpl();
@@ -486,7 +486,7 @@ unsigned char* CImage::operator()(
 #endif
 
 #else
-	THROW_EXCEPTION("MRPT was compiled without OpenCV")
+	THROW_EXCEPTION("MRPT was compiled without OpenCV");
 #endif
 }
 
@@ -943,7 +943,7 @@ bool CImage::isOriginTopLeft() const
 	ASSERT_(img != nullptr);
 	return ((IplImage*)img)->origin == 0;
 #else
-	THROW_EXCEPTION("MRPT compiled without OpenCV")
+	THROW_EXCEPTION("MRPT compiled without OpenCV");
 #endif
 }
 
@@ -1192,7 +1192,7 @@ const char* CImage::getChannelsOrder() const
 	ASSERT_(img);
 	return ((IplImage*)img)->channelSeq;
 #else
-	THROW_EXCEPTION("MRPT compiled without OpenCV")
+	THROW_EXCEPTION("MRPT compiled without OpenCV");
 #endif
 }
 
@@ -1349,7 +1349,7 @@ void CImage::update_patch(
 	if (row_ + ipl_ext->height > getHeight() ||
 		col_ + ipl_ext->width > getWidth())
 	{
-		THROW_EXCEPTION("Error : Patch jut out of image")
+		THROW_EXCEPTION("Error : Patch jut out of image");
 	}
 	for (unsigned int i = 0; i < patch.getHeight(); i++)
 	{
@@ -2034,7 +2034,7 @@ void CImage::rectifyImageInPlace(void* mapX, void* mapY)
 	ASSERT_(img != nullptr);
 
 #if MRPT_OPENCV_VERSION_NUM < 0x200
-	THROW_EXCEPTION("This method requires OpenCV 2.0.0 or above.")
+	THROW_EXCEPTION("This method requires OpenCV 2.0.0 or above.");
 #else
 
 	IplImage* srcImg = getAs<IplImage>();  // Source Image
@@ -2750,7 +2750,7 @@ void CImage::setChannelsOrder_RGB()
 	ASSERT_(img);
 	strcpy(((IplImage*)img)->channelSeq, "RGB");
 #else
-	THROW_EXCEPTION("MRPT compiled without OpenCV")
+	THROW_EXCEPTION("MRPT compiled without OpenCV");
 #endif
 }
 
@@ -2761,7 +2761,7 @@ void CImage::setChannelsOrder_BGR()
 	ASSERT_(img);
 	strcpy(((IplImage*)img)->channelSeq, "BGR");
 #else
-	THROW_EXCEPTION("MRPT compiled without OpenCV")
+	THROW_EXCEPTION("MRPT compiled without OpenCV");
 #endif
 }
 

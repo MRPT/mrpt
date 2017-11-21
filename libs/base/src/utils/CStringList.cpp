@@ -293,7 +293,7 @@ string CStringList::get_string(const string& keyName)
 		if (idx == 0) return it->substr(strToLookFor.size());
 	}
 
-	THROW_EXCEPTION(format("Key '%s' not found!", keyName.c_str()));
+	THROW_EXCEPTION(format("Key '%s' not found!", keyName.c_str());;
 
 	MRPT_END
 }

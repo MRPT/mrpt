@@ -35,7 +35,7 @@ void CFeatureExtraction::extractFeaturesFAST(
 
 #if MRPT_HAS_OPENCV
 #if MRPT_OPENCV_VERSION_NUM < 0x210
-	THROW_EXCEPTION("This function requires OpenCV > 2.1.0")
+	THROW_EXCEPTION("This function requires OpenCV > 2.1.0");
 #else
 
 	using namespace cv;

@@ -90,7 +90,7 @@ void CSerialPort::open()
 	MRPT_START
 #ifdef _WIN32
 	// Check name:
-	if (!m_serialName.size()) THROW_EXCEPTION("Serial port name is empty!!")
+	if (!m_serialName.size()) THROW_EXCEPTION("Serial port name is empty!!");
 
 	// Is it COMX, X>4? ->  "\\.\COMX"
 	if (tolower(m_serialName[0]) == 'c' && tolower(m_serialName[1]) == 'o' &&
@@ -117,7 +117,7 @@ void CSerialPort::open()
 
 #else
 	// Check name:
-	if (!m_serialName.size()) THROW_EXCEPTION("Serial port name is empty!!")
+	if (!m_serialName.size()) THROW_EXCEPTION("Serial port name is empty!!");
 	if (m_serialName[0] != '/') m_serialName = string("/dev/") + m_serialName;
 
 	// Open the serial port:
@@ -781,7 +781,7 @@ std::string CSerialPort::ReadString(
 			if (errno == EIO)
 			{  // The port has been disconnect (for USB ports)
 				this->close();
-				THROW_EXCEPTION("Error reading port before end of line")
+				THROW_EXCEPTION("Error reading port before end of line");
 			}
 		}
 

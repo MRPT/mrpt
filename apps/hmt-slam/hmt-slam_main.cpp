@@ -193,7 +193,7 @@ void Run_HMT_SLAM()
 				// class
 			}
 			else
-				THROW_EXCEPTION("Invalid object class from rawlog!!")
+				THROW_EXCEPTION("Invalid object class from rawlog!!");
 
 			// Wait for the mapping framework processed the data
 			// ---------------------------------------------------

@@ -276,13 +276,13 @@ void CClientTCPSocket::connect(
 #ifdef _WIN32
 	unsigned long non_block_mode = 1;
 	if (ioctlsocket(m_hSock, FIONBIO, &non_block_mode))
-		THROW_EXCEPTION("Error entering non-blocking mode with ioctlsocket().");
+		THROW_EXCEPTION("Error entering non-blocking mode with ioctlsocket();");
 #else
 	int oldflags = fcntl(m_hSock, F_GETFL, 0);
-	if (oldflags == -1) THROW_EXCEPTION("Error retrieving fcntl() of socket.");
+	if (oldflags == -1) THROW_EXCEPTION("Error retrieving fcntl();of socket.");
 	oldflags |= O_NONBLOCK;  // Set NON-BLOCKING
 	if (-1 == fcntl(m_hSock, F_SETFL, oldflags))
-		THROW_EXCEPTION("Error entering non-blocking mode with fcntl().");
+		THROW_EXCEPTION("Error entering non-blocking mode with fcntl();");
 #endif
 
 	// Try to connect:
@@ -360,11 +360,11 @@ void CClientTCPSocket::connect(
 #ifdef _WIN32
 	non_block_mode = 0;
 	if (ioctlsocket(m_hSock, FIONBIO, &non_block_mode))
-		THROW_EXCEPTION("Error entering blocking mode with ioctlsocket().");
+		THROW_EXCEPTION("Error entering blocking mode with ioctlsocket();");
 #else
 	oldflags &= ~O_NONBLOCK;  // Set BLOCKING
 	if (-1 == fcntl(m_hSock, F_SETFL, oldflags))
-		THROW_EXCEPTION("Error entering blocking mode with fcntl().");
+		THROW_EXCEPTION("Error entering blocking mode with fcntl();");
 #endif
 
 	// Save the IP of the other part.
@@ -563,7 +563,7 @@ size_t CClientTCPSocket::getReadPendingBytes()
 #endif
 			)
 	{
-		THROW_EXCEPTION("Error invoking ioctlsocket(FIONREAD)")
+		THROW_EXCEPTION("Error invoking ioctlsocket(FIONREAD)");
 	}
 	else
 		return ret;

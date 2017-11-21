@@ -156,7 +156,7 @@ void xRawLogViewerFrame::OnMenuCompactRawlog(wxCommandEvent& event)
 			}
 		}
 		else
-			THROW_EXCEPTION("Unexpected class found!")
+			THROW_EXCEPTION("Unexpected class found!");
 
 		if (deleteThis)
 		{

@@ -90,7 +90,7 @@ CActionCollection::Ptr CRawlog::getAsAction(size_t index) const
 {
 	MRPT_START
 
-	if (index >= m_seqOfActObs.size()) THROW_EXCEPTION("Index out of bounds")
+	if (index >= m_seqOfActObs.size()) THROW_EXCEPTION("Index out of bounds");
 
 	CSerializable::Ptr obj = m_seqOfActObs[index];
 
@@ -106,7 +106,7 @@ CObservation::Ptr CRawlog::getAsObservation(size_t index) const
 {
 	MRPT_START
 
-	if (index >= m_seqOfActObs.size()) THROW_EXCEPTION("Index out of bounds")
+	if (index >= m_seqOfActObs.size()) THROW_EXCEPTION("Index out of bounds");
 
 	CSerializable::Ptr obj = m_seqOfActObs[index];
 
@@ -121,7 +121,7 @@ CObservation::Ptr CRawlog::getAsObservation(size_t index) const
 CSerializable::Ptr CRawlog::getAsGeneric(size_t index) const
 {
 	MRPT_START
-	if (index >= m_seqOfActObs.size()) THROW_EXCEPTION("Index out of bounds")
+	if (index >= m_seqOfActObs.size()) THROW_EXCEPTION("Index out of bounds");
 
 	return m_seqOfActObs[index];
 	MRPT_END
@@ -130,7 +130,7 @@ CSerializable::Ptr CRawlog::getAsGeneric(size_t index) const
 CRawlog::TEntryType CRawlog::getType(size_t index) const
 {
 	MRPT_START
-	if (index >= m_seqOfActObs.size()) THROW_EXCEPTION("Index out of bounds")
+	if (index >= m_seqOfActObs.size()) THROW_EXCEPTION("Index out of bounds");
 
 	const CSerializable::Ptr& obj = m_seqOfActObs[index];
 
@@ -149,7 +149,7 @@ CRawlog::TEntryType CRawlog::getType(size_t index) const
 CSensoryFrame::Ptr CRawlog::getAsObservations(size_t index) const
 {
 	MRPT_START
-	if (index >= m_seqOfActObs.size()) THROW_EXCEPTION("Index out of bounds")
+	if (index >= m_seqOfActObs.size()) THROW_EXCEPTION("Index out of bounds");
 
 	CSerializable::Ptr obj = m_seqOfActObs[index];
 
@@ -285,7 +285,7 @@ bool CRawlog::loadFromRawLogFile(
 void CRawlog::remove(size_t index)
 {
 	MRPT_START
-	if (index >= m_seqOfActObs.size()) THROW_EXCEPTION("Index out of bounds")
+	if (index >= m_seqOfActObs.size()) THROW_EXCEPTION("Index out of bounds");
 	m_seqOfActObs.erase(m_seqOfActObs.begin() + index);
 	MRPT_END
 }
@@ -295,7 +295,7 @@ void CRawlog::remove(size_t first_index, size_t last_index)
 	MRPT_START
 	if (first_index >= m_seqOfActObs.size() ||
 		last_index >= m_seqOfActObs.size())
-		THROW_EXCEPTION("Index out of bounds")
+		THROW_EXCEPTION("Index out of bounds");
 	m_seqOfActObs.erase(
 		m_seqOfActObs.begin() + first_index,
 		m_seqOfActObs.begin() + last_index + 1);

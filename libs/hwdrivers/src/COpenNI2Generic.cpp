@@ -129,7 +129,7 @@ bool COpenNI2Generic::start()
 	numInstances++;
 	return true;
 #else
-	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
+	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
 #endif  // MRPT_HAS_OPENNI2
 }
 
@@ -226,7 +226,7 @@ int COpenNI2Generic::getConnectedDevices()
 	}
 	return getNumDevices();
 #else
-	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
+	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
 #endif  // MRPT_HAS_OPENNI2
 }
 
@@ -236,7 +236,7 @@ void COpenNI2Generic::kill()
 	vDevices.clear();
 	openni::OpenNI::shutdown();
 #else
-	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
+	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
 #endif  // MRPT_HAS_OPENNI2
 }
 
@@ -250,7 +250,7 @@ bool COpenNI2Generic::isOpen(const unsigned sensor_id) const
 	return vDevices[sensor_id]->isOpen();
 #else
 	MRPT_UNUSED_PARAM(sensor_id);
-	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
+	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
 #endif  // MRPT_HAS_OPENNI2
 }
 
@@ -260,7 +260,7 @@ void COpenNI2Generic::open(unsigned sensor_id)
 	// Sensor index validation.
 	if (!getNumDevices())
 	{
-		THROW_EXCEPTION("No OpenNI2 devices found.")
+		THROW_EXCEPTION("No OpenNI2 devices found.");
 	}
 	if ((int)sensor_id >= getNumDevices())
 	{
@@ -294,7 +294,7 @@ void COpenNI2Generic::open(unsigned sensor_id)
 	std::this_thread::sleep_for(1000ms);  // Sleep
 #else
 	MRPT_UNUSED_PARAM(sensor_id);
-	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
+	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
 #endif  // MRPT_HAS_OPENNI2
 }
 
@@ -349,7 +349,7 @@ unsigned int COpenNI2Generic::openDevicesBySerialNum(
 	return num_open_dev;
 #else
 	MRPT_UNUSED_PARAM(serial_required);
-	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
+	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
 #endif  // MRPT_HAS_OPENNI2
 }
 
@@ -382,7 +382,7 @@ bool COpenNI2Generic::getDeviceIDFromSerialNum(
 #else
 	MRPT_UNUSED_PARAM(SerialRequired);
 	MRPT_UNUSED_PARAM(sensor_id);
-	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
+	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
 #endif  // MRPT_HAS_OPENNI2
 }
 
@@ -392,7 +392,7 @@ void COpenNI2Generic::close(unsigned sensor_id)
 	// Sensor index validation.
 	if (!getNumDevices())
 	{
-		THROW_EXCEPTION("No OpenNI2 devices found.")
+		THROW_EXCEPTION("No OpenNI2 devices found.");
 	}
 	if ((int)sensor_id >= getNumDevices())
 	{
@@ -402,7 +402,7 @@ void COpenNI2Generic::close(unsigned sensor_id)
 	vDevices[sensor_id]->close();
 #else
 	MRPT_UNUSED_PARAM(sensor_id);
-	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
+	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
 #endif  // MRPT_HAS_OPENNI2
 }
 
@@ -423,7 +423,7 @@ void COpenNI2Generic::getNextFrameRGB(
 	// Sensor index validation.
 	if (!getNumDevices())
 	{
-		THROW_EXCEPTION("No OpenNI2 devices found.")
+		THROW_EXCEPTION("No OpenNI2 devices found.");
 	}
 	if ((int)sensor_id >= getNumDevices())
 	{
@@ -443,7 +443,7 @@ void COpenNI2Generic::getNextFrameRGB(
 	MRPT_UNUSED_PARAM(there_is_obs);
 	MRPT_UNUSED_PARAM(hardware_error);
 	MRPT_UNUSED_PARAM(sensor_id);
-	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
+	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
 #endif  // MRPT_HAS_OPENNI2
 }
 
@@ -465,7 +465,7 @@ void COpenNI2Generic::getNextFrameD(
 	// Sensor index validation.
 	if (getNumDevices() == 0)
 	{
-		THROW_EXCEPTION("No OpenNI2 devices found.")
+		THROW_EXCEPTION("No OpenNI2 devices found.");
 	}
 	if ((int)sensor_id >= getNumDevices())
 	{
@@ -485,7 +485,7 @@ void COpenNI2Generic::getNextFrameD(
 	MRPT_UNUSED_PARAM(there_is_obs);
 	MRPT_UNUSED_PARAM(hardware_error);
 	MRPT_UNUSED_PARAM(sensor_id);
-	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
+	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
 #endif  // MRPT_HAS_OPENNI2
 }
 
@@ -505,7 +505,7 @@ void COpenNI2Generic::getNextFrameRGBD(
 	// Sensor index validation.
 	if (!getNumDevices())
 	{
-		THROW_EXCEPTION("No OpenNI2 devices found.")
+		THROW_EXCEPTION("No OpenNI2 devices found.");
 	}
 	if ((int)sensor_id >= getNumDevices())
 	{
@@ -524,7 +524,7 @@ void COpenNI2Generic::getNextFrameRGBD(
 	MRPT_UNUSED_PARAM(there_is_obs);
 	MRPT_UNUSED_PARAM(hardware_error);
 	MRPT_UNUSED_PARAM(sensor_id);
-	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
+	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
 #endif  // MRPT_HAS_OPENNI2
 }
 
@@ -540,7 +540,7 @@ bool COpenNI2Generic::getColorSensorParam(
 #else
 	MRPT_UNUSED_PARAM(param);
 	MRPT_UNUSED_PARAM(sensor_id);
-	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
+	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
 #endif  // MRPT_HAS_OPENNI2
 }
 
@@ -556,7 +556,7 @@ bool COpenNI2Generic::getDepthSensorParam(
 #else
 	MRPT_UNUSED_PARAM(param);
 	MRPT_UNUSED_PARAM(sensor_id);
-	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
+	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
 #endif  // MRPT_HAS_OPENNI2
 }
 
@@ -839,7 +839,7 @@ bool COpenNI2Generic::CDevice::getNextFrameRGB(
 	MRPT_START
 	if (!hasColor())
 	{
-		THROW_EXCEPTION("This OpenNI2 device does not support color imaging")
+		THROW_EXCEPTION("This OpenNI2 device does not support color imaging");
 	}
 	openni::VideoFrameRef frame;
 	if (m_streams[COLOR_STREAM]->getFrame(
@@ -860,7 +860,7 @@ bool COpenNI2Generic::CDevice::getNextFrameD(
 	MRPT_START
 	if (!hasDepth())
 	{
-		THROW_EXCEPTION("This OpenNI2 device does not support depth imaging")
+		THROW_EXCEPTION("This OpenNI2 device does not support depth imaging");
 	}
 	openni::VideoFrameRef frame;
 	if (m_streams[DEPTH_STREAM]->getFrame(
@@ -885,11 +885,11 @@ bool COpenNI2Generic::CDevice::getNextFrameRGBD(
 
 	if (!hasColor())
 	{
-		THROW_EXCEPTION("This OpenNI2 device does not support color imaging")
+		THROW_EXCEPTION("This OpenNI2 device does not support color imaging");
 	}
 	if (!hasDepth())
 	{
-		THROW_EXCEPTION("This OpenNI2 device does not support depth imaging")
+		THROW_EXCEPTION("This OpenNI2 device does not support depth imaging");
 	}
 	// Read a frame (depth + rgb)
 	mrpt::system::TTimeStamp tm;
@@ -1044,7 +1044,7 @@ bool COpenNI2Generic::CDevice::CStream::isMirrorSupported() const
 {
 	if (isValid() == false)
 	{
-		THROW_EXCEPTION(getName() + " is not opened.");
+		THROW_EXCEPTION(getName();+ " is not opened.");
 	}
 	return m_stream.isPropertySupported(openni::STREAM_PROPERTY_MIRRORING);
 }

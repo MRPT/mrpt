@@ -623,7 +623,7 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
 				MRPT_LOG_ERROR_STREAM(
 					"Expected [2] new registered nodes"
 					<< " but got [" << m_graph.nodeCount() << "]");
-				THROW_EXCEPTION(format("Illegal node registration"));
+				THROW_EXCEPTION(format("Illegal node registration");;
 			}
 			m_is_first_time_node_reg = false;
 

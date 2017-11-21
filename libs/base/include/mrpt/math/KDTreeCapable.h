@@ -131,7 +131,7 @@ class KDTreeCapable
 		MRPT_START
 		rebuild_kdTree_2D();  // First: Create the 2D KD-Tree if required
 		if (!m_kdtree2d_data.m_num_points)
-			THROW_EXCEPTION("There are no points in the KD-tree.")
+			THROW_EXCEPTION("There are no points in the KD-tree.");
 
 		const size_t knn = 1;  // Number of points to retrieve
 		size_t ret_index;
@@ -159,7 +159,7 @@ class KDTreeCapable
 		MRPT_START
 		rebuild_kdTree_2D();  // First: Create the 2D KD-Tree if required
 		if (!m_kdtree2d_data.m_num_points)
-			THROW_EXCEPTION("There are no points in the KD-tree.")
+			THROW_EXCEPTION("There are no points in the KD-tree.");
 
 		const size_t knn = 1;  // Number of points to retrieve
 		size_t ret_index;
@@ -232,7 +232,7 @@ class KDTreeCapable
 		MRPT_START
 		rebuild_kdTree_2D();  // First: Create the 2D KD-Tree if required
 		if (!m_kdtree2d_data.m_num_points)
-			THROW_EXCEPTION("There are no points in the KD-tree.")
+			THROW_EXCEPTION("There are no points in the KD-tree.");
 
 		const size_t knn = 2;  // Number of points to retrieve
 		size_t ret_indexes[2];
@@ -299,7 +299,7 @@ class KDTreeCapable
 		MRPT_START
 		rebuild_kdTree_2D();  // First: Create the 2D KD-Tree if required
 		if (!m_kdtree2d_data.m_num_points)
-			THROW_EXCEPTION("There are no points in the KD-tree.")
+			THROW_EXCEPTION("There are no points in the KD-tree.");
 
 		std::vector<size_t> ret_indexes(knn);
 		out_x.resize(knn);
@@ -364,7 +364,7 @@ class KDTreeCapable
 		MRPT_START
 		rebuild_kdTree_2D();  // First: Create the 2D KD-Tree if required
 		if (!m_kdtree2d_data.m_num_points)
-			THROW_EXCEPTION("There are no points in the KD-tree.")
+			THROW_EXCEPTION("There are no points in the KD-tree.");
 
 		out_idx.resize(knn);
 		out_dist_sqr.resize(knn);
@@ -414,7 +414,7 @@ class KDTreeCapable
 		MRPT_START
 		rebuild_kdTree_3D();  // First: Create the 3D KD-Tree if required
 		if (!m_kdtree3d_data.m_num_points)
-			THROW_EXCEPTION("There are no points in the KD-tree.")
+			THROW_EXCEPTION("There are no points in the KD-tree.");
 
 		const size_t knn = 1;  // Number of points to retrieve
 		size_t ret_index;
@@ -444,7 +444,7 @@ class KDTreeCapable
 		MRPT_START
 		rebuild_kdTree_3D();  // First: Create the 3D KD-Tree if required
 		if (!m_kdtree3d_data.m_num_points)
-			THROW_EXCEPTION("There are no points in the KD-tree.")
+			THROW_EXCEPTION("There are no points in the KD-tree.");
 
 		const size_t knn = 1;  // Number of points to retrieve
 		size_t ret_index;
@@ -506,7 +506,7 @@ class KDTreeCapable
 		MRPT_START
 		rebuild_kdTree_3D();  // First: Create the 3D KD-Tree if required
 		if (!m_kdtree3d_data.m_num_points)
-			THROW_EXCEPTION("There are no points in the KD-tree.")
+			THROW_EXCEPTION("There are no points in the KD-tree.");
 
 		std::vector<size_t> ret_indexes(knn);
 		out_x.resize(knn);
@@ -564,7 +564,7 @@ class KDTreeCapable
 		MRPT_START
 		rebuild_kdTree_3D();  // First: Create the 3D KD-Tree if required
 		if (!m_kdtree3d_data.m_num_points)
-			THROW_EXCEPTION("There are no points in the KD-tree.")
+			THROW_EXCEPTION("There are no points in the KD-tree.");
 
 		out_x.resize(knn);
 		out_y.resize(knn);
@@ -702,7 +702,7 @@ class KDTreeCapable
 		MRPT_START
 		rebuild_kdTree_3D();  // First: Create the 3D KD-Tree if required
 		if (!m_kdtree3d_data.m_num_points)
-			THROW_EXCEPTION("There are no points in the KD-tree.")
+			THROW_EXCEPTION("There are no points in the KD-tree.");
 
 		out_idx.resize(knn);
 		out_dist_sqr.resize(knn);

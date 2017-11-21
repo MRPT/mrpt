@@ -260,7 +260,7 @@ validPixROI2=0 );
 	m_rectified_image_params.rightCameraPose = params.rightCameraPose;
 
 #else
-	THROW_EXCEPTION("MRPT built without OpenCV >=2.0.0!")
+	THROW_EXCEPTION("MRPT built without OpenCV >=2.0.0!");
 #endif
 	MRPT_END
 }
@@ -460,7 +460,7 @@ const mrpt::utils::TStereoCamera& CStereoRectifyMap::getRectifiedImageParams()
 	const
 {
 	if (!isSet())
-		THROW_EXCEPTION("Error: setFromCamParams() must be called before.")
+		THROW_EXCEPTION("Error: setFromCamParams() must be called before.");
 	return m_rectified_image_params;
 }
 
@@ -468,7 +468,7 @@ const mrpt::utils::TCamera& CStereoRectifyMap::getRectifiedLeftImageParams()
 	const
 {
 	if (!isSet())
-		THROW_EXCEPTION("Error: setFromCamParams() must be called before.")
+		THROW_EXCEPTION("Error: setFromCamParams() must be called before.");
 	return m_rectified_image_params.leftCamera;
 }
 
@@ -476,7 +476,7 @@ const mrpt::utils::TCamera& CStereoRectifyMap::getRectifiedRightImageParams()
 	const
 {
 	if (!isSet())
-		THROW_EXCEPTION("Error: setFromCamParams() must be called before.")
+		THROW_EXCEPTION("Error: setFromCamParams() must be called before.");
 	return m_rectified_image_params.rightCamera;
 }
 

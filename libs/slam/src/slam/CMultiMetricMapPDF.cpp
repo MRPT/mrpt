@@ -207,7 +207,7 @@ void CRBPFParticleData::writeToStream(
 {
 	MRPT_UNUSED_PARAM(out);
 	MRPT_UNUSED_PARAM(version);
-	THROW_EXCEPTION("Shouldn't arrive here")
+	THROW_EXCEPTION("Shouldn't arrive here");
 }
 
 /*---------------------------------------------------------------
@@ -217,7 +217,7 @@ void CRBPFParticleData::readFromStream(mrpt::utils::CStream& in, int version)
 {
 	MRPT_UNUSED_PARAM(in);
 	MRPT_UNUSED_PARAM(version);
-	THROW_EXCEPTION("Shouldn't arrive here")
+	THROW_EXCEPTION("Shouldn't arrive here");
 }
 
 /*---------------------------------------------------------------

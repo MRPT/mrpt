@@ -80,7 +80,7 @@ inline void jacob_yawpitchroll_from_quat(
 	mrpt::math::CMatrixFixedNumeric<double, 3, 4>& out_dr_dq)
 {
 	MRPT_UNUSED_PARAM(out_dr_dq);
-	THROW_EXCEPTION("TO DO")
+	THROW_EXCEPTION("TO DO");
 }
 
 /** Compute the Jacobian of the rotation composition operation \f$ p = f(\cdot)

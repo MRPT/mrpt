@@ -33,14 +33,14 @@ void CPipe::initializePipe(
 	// Win32 pipes
 	HANDLE hRead, hWrite;
 	if (!CreatePipe(&hRead, &hWrite, nullptr, 0))
-		THROW_EXCEPTION("Win32 error creating pipe endpoints!")
+		THROW_EXCEPTION("Win32 error creating pipe endpoints!");
 
 	outReadPipe.m_pipe_file = hRead;
 	outWritePipe.m_pipe_file = hWrite;
 #else
 	// UNIX pipes
 	int fds[2];
-	if (::pipe(fds)) THROW_EXCEPTION("Unix error creating pipe endpoints!")
+	if (::pipe(fds)) THROW_EXCEPTION("Unix error creating pipe endpoints!");
 
 	outReadPipe.m_pipe_file = fds[0];
 	outWritePipe.m_pipe_file = fds[1];
@@ -89,7 +89,7 @@ CPipeBaseEndPoint::CPipeBaseEndPoint(const std::string& serialized)
 	uint64_t val;
 	if (!(ss >> val))
 	{
-		THROW_EXCEPTION("Error parsing PIPE handle!")
+		THROW_EXCEPTION("Error parsing PIPE handle!");
 	}
 	m_pipe_file = reinterpret_cast<void*>(val);
 #else

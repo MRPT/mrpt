@@ -864,7 +864,7 @@ void CImageGrabber_dc1394::enumerateCameras(TCameraInfoList& out_list)
 		THROW_STACKED_EXCEPTION(e)
 	}
 #else
-	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_LIBDC1394_2=0 !")
+	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_LIBDC1394_2=0 !");
 #endif
 	MRPT_END
 }

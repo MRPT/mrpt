@@ -92,7 +92,7 @@ double image_saveload(int iFormat, int to_shm)
 			format = "jpg";
 			break;
 		default:
-			THROW_EXCEPTION("Wrong format")
+			THROW_EXCEPTION("Wrong format");
 	}
 
 	const int w = 800, h = 600;

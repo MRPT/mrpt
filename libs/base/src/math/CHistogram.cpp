@@ -54,7 +54,7 @@ void CHistogram::add(const double x)
  ---------------------------------------------------------------*/
 size_t CHistogram::getBinCount(const size_t index) const
 {
-	if (index >= m_bins.size()) THROW_EXCEPTION("Index out of bounds")
+	if (index >= m_bins.size()) THROW_EXCEPTION("Index out of bounds");
 
 	return m_bins[index];
 }
@@ -64,7 +64,7 @@ size_t CHistogram::getBinCount(const size_t index) const
  ---------------------------------------------------------------*/
 double CHistogram::getBinRatio(const size_t index) const
 {
-	if (index >= m_bins.size()) THROW_EXCEPTION("Index out of bounds")
+	if (index >= m_bins.size()) THROW_EXCEPTION("Index out of bounds");
 
 	if (m_count)
 		return m_bins[index] / double(m_count);

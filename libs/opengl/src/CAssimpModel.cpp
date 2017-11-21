@@ -112,9 +112,9 @@ void CAssimpModel::writeToStream(mrpt::utils::CStream& out, int* version) const
 		{
 #if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
 			// aiScene *scene = (aiScene *) m_assimp_scene->scene;
-			THROW_EXCEPTION("MRPT can't serialize Assimp objects yet!")
+			THROW_EXCEPTION("MRPT can't serialize Assimp objects yet!");
 #else
-			THROW_EXCEPTION("MRPT compiled without OpenGL and/or Assimp")
+			THROW_EXCEPTION("MRPT compiled without OpenGL and/or Assimp");
 #endif
 		}
 	}
@@ -126,7 +126,7 @@ void CAssimpModel::writeToStream(mrpt::utils::CStream& out, int* version) const
   ---------------------------------------------------------------*/
 void CAssimpModel::readFromStream(mrpt::utils::CStream& in, int version)
 {
-	THROW_EXCEPTION("MRPT can't serialize Assimp objects yet!")
+	THROW_EXCEPTION("MRPT can't serialize Assimp objects yet!");
 
 	switch (version)
 	{
@@ -196,7 +196,7 @@ void CAssimpModel::loadScene(const std::string& filepath)
 	}
 
 #else
-	THROW_EXCEPTION("MRPT compiled without OpenGL and/or Assimp")
+	THROW_EXCEPTION("MRPT compiled without OpenGL and/or Assimp");
 #endif
 }
 

@@ -146,7 +146,7 @@ void gl_utils::checkOpenGLError()
 		const std::string sErr = std::string("OpenGL error: ") +
 								 std::string((char*)gluErrorString(openglErr));
 		std::cerr << "[gl_utils::checkOpenGLError] " << sErr << std::endl;
-		// THROW_EXCEPTION(sErr)
+		// THROW_EXCEPTION(sErr);
 	}
 #endif
 }
@@ -633,7 +633,7 @@ const std::string& gl_utils::glGetFont()
 #if MRPT_HAS_OPENGL_GLUT
 	return Internal::data.currentFontName;
 #else
-	THROW_EXCEPTION("MRPT built without OpenGL")
+	THROW_EXCEPTION("MRPT built without OpenGL");
 #endif
 }
 
@@ -736,7 +736,7 @@ mrpt::utils::TPixelCoordf gl_utils::glDrawText(
 	MRPT_UNUSED_PARAM(style);
 	MRPT_UNUSED_PARAM(spacing);
 	MRPT_UNUSED_PARAM(kerning);
-	THROW_EXCEPTION("MRPT built without OpenGL")
+	THROW_EXCEPTION("MRPT built without OpenGL");
 #endif
 }
 
@@ -781,7 +781,7 @@ mrpt::utils::TPixelCoordf gl_utils::glGetExtends(
 	MRPT_UNUSED_PARAM(textScale);
 	MRPT_UNUSED_PARAM(spacing);
 	MRPT_UNUSED_PARAM(kerning);
-	THROW_EXCEPTION("MRPT built without OpenGL")
+	THROW_EXCEPTION("MRPT built without OpenGL");
 #endif
 }
 //  ===============  END OF CODE FROM "libcvd -> gltext.cpp" ===============

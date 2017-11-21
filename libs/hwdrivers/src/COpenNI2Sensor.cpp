@@ -128,7 +128,7 @@ void COpenNI2Sensor::initialize()
 			if (getDepthSensorParam(
 					m_cameraParamsDepth, m_user_device_number) == false)
 			{
-				THROW_EXCEPTION("Failed to get Depth camera parameters.")
+				THROW_EXCEPTION("Failed to get Depth camera parameters.");
 			}
 		}
 		if (isValidParameter(m_cameraParamsRGB) == false)
@@ -136,7 +136,7 @@ void COpenNI2Sensor::initialize()
 			if (getColorSensorParam(m_cameraParamsRGB, m_user_device_number) ==
 				false)
 			{
-				THROW_EXCEPTION("Failed to get RGB camera parameters.")
+				THROW_EXCEPTION("Failed to get RGB camera parameters.");
 			}
 		}
 	}
@@ -145,7 +145,7 @@ void COpenNI2Sensor::initialize()
 		throw(e);
 	}
 #else
-	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
+	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
 #endif  // MRPT_HAS_OPENNI2
 }
 
@@ -183,7 +183,7 @@ void COpenNI2Sensor::doProcess()
 		appendObservations(objs);
 	}
 #else
-	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
+	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
 #endif  // MRPT_HAS_OPENNI2
 }
 
@@ -363,7 +363,7 @@ void COpenNI2Sensor::getNextObservation(
 	MRPT_UNUSED_PARAM(out_obs);
 	MRPT_UNUSED_PARAM(there_is_obs);
 	MRPT_UNUSED_PARAM(hardware_error);
-	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
+	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
 #endif  // MRPT_HAS_OPENNI2
 }
 

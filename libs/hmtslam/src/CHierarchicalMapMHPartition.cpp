@@ -1003,7 +1003,7 @@ float CHierarchicalMapMHPartition::computeMatchProbabilityBetweenNodes(
 	MRPT_UNUSED_PARAM(hypothesisID);
 	MRPT_UNUSED_PARAM(monteCarloSamplesPose);
 	MRPT_START
-	THROW_EXCEPTION("TO DO")
+	THROW_EXCEPTION("TO DO");
 	MRPT_END
 }
 

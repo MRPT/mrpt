@@ -325,7 +325,7 @@ void CCanvas::cross(
 			line(x0, y0 + 2, x0, y0 + size, color, width);
 			break;
 		default:
-			THROW_EXCEPTION("Unexpected 'type' of cross to be drawn")
+			THROW_EXCEPTION("Unexpected 'type' of cross to be drawn");
 	}
 }
 

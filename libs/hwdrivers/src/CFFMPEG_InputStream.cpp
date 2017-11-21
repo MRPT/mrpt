@@ -79,7 +79,7 @@ CFFMPEG_InputStream::CFFMPEG_InputStream()
 	// Register all formats and codecs
 	av_register_all();
 #else
-	THROW_EXCEPTION("MRPT has been compiled without FFMPEG libraries.")
+	THROW_EXCEPTION("MRPT has been compiled without FFMPEG libraries.");
 #endif
 }
 

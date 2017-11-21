@@ -1499,7 +1499,7 @@ CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromUserSelection()
 
 	return cam;
 #else
-	THROW_EXCEPTION("MRPT compiled without wxWidgets")
+	THROW_EXCEPTION("MRPT compiled without wxWidgets");
 #endif  // MRPT_HAS_WXWIDGETS
 }
 
@@ -1531,7 +1531,7 @@ CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromPanel(void* _panel)
 		return CCameraSensor::Ptr();
 	}
 #else
-	THROW_EXCEPTION("MRPT compiled without wxWidgets")
+	THROW_EXCEPTION("MRPT compiled without wxWidgets");
 #endif  // MRPT_HAS_WXWIDGETS
 }
 
@@ -1552,7 +1552,7 @@ void mrpt::hwdrivers::writeConfigFromVideoSourcePanel(
 	panel->writeConfigFromVideoSourcePanel(sect, cfg);
 
 #else
-	THROW_EXCEPTION("MRPT compiled without wxWidgets")
+	THROW_EXCEPTION("MRPT compiled without wxWidgets");
 #endif  // MRPT_HAS_WXWIDGETS
 	MRPT_END
 }
@@ -1575,7 +1575,7 @@ void mrpt::hwdrivers::readConfigIntoVideoSourcePanel(
 	panel->readConfigIntoVideoSourcePanel(sect, cfg);
 
 #else
-	THROW_EXCEPTION("MRPT compiled without wxWidgets")
+	THROW_EXCEPTION("MRPT compiled without wxWidgets");
 #endif  // MRPT_HAS_WXWIDGETS
 	MRPT_END
 }

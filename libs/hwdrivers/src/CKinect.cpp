@@ -366,7 +366,7 @@ void rgb_cb(freenect_device* dev, void* img_data, uint32_t timestamp)
 		cv::cvtColor(src_img_bayer, dst_img_RGB, CV_BayerGB2BGR);
 #endif
 #else
-		THROW_EXCEPTION("Need building with OpenCV!")
+		THROW_EXCEPTION("Need building with OpenCV!");
 #endif
 	}
 	else
@@ -401,7 +401,7 @@ void CKinect::open()
 #if MRPT_HAS_KINECT_FREENECT  // ----> libfreenect
 	// Try to open the device:
 	if (freenect_init(f_ctx_ptr, nullptr) < 0)
-		THROW_EXCEPTION("freenect_init() failed")
+		THROW_EXCEPTION("freenect_init() failed");
 
 	freenect_set_log_level(
 		f_ctx,
@@ -415,7 +415,7 @@ void CKinect::open()
 	int nr_devices = freenect_num_devices(f_ctx);
 	// printf("[CKinect] Number of devices found: %d\n", nr_devices);
 
-	if (!nr_devices) THROW_EXCEPTION("No Kinect devices found.")
+	if (!nr_devices) THROW_EXCEPTION("No Kinect devices found.");
 
 	// Open the given device number:
 	if (freenect_open_device(f_ctx, f_dev_ptr, m_user_device_number) < 0)
@@ -440,7 +440,7 @@ void CKinect::open()
 
 	// Switch to that video mode:
 	if (freenect_set_video_mode(f_dev, desiredFrMode) < 0)
-		THROW_EXCEPTION("Error setting Kinect video mode.")
+		THROW_EXCEPTION("Error setting Kinect video mode.");
 
 	// Get video mode:
 	const freenect_frame_mode frMode = freenect_get_current_video_mode(f_dev);
@@ -467,10 +467,10 @@ void CKinect::open()
 	freenect_set_user(f_dev, this);
 
 	if (freenect_start_depth(f_dev) < 0)
-		THROW_EXCEPTION("Error starting depth streaming.")
+		THROW_EXCEPTION("Error starting depth streaming.");
 
 	if (freenect_start_video(f_dev) < 0)
-		THROW_EXCEPTION("Error starting video streaming.")
+		THROW_EXCEPTION("Error starting video streaming.");
 
 #endif  // MRPT_HAS_KINECT_FREENECT
 }
@@ -516,7 +516,7 @@ void CKinect::setVideoChannel(const TVideoChannel vch)
 
 	// Switch to that video mode:
 	if (freenect_set_video_mode(f_dev, desiredFrMode) < 0)
-		THROW_EXCEPTION("Error setting Kinect video mode.")
+		THROW_EXCEPTION("Error setting Kinect video mode.");
 
 	freenect_start_video(f_dev);
 

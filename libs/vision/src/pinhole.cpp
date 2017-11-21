@@ -121,7 +121,7 @@ void mrpt::vision::pinhole::projectPoints_with_distortion(
 	}
 
 #else
-	THROW_EXCEPTION("Function not available: MRPT was compiled without OpenCV")
+	THROW_EXCEPTION("Function not available: MRPT was compiled without OpenCV");
 #endif
 	MRPT_END
 }

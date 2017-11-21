@@ -50,7 +50,7 @@ void CReactiveNavigationSystem::changeRobotShape(const math::CPolygon& shape)
 	m_PTGsMustBeReInitialized = true;
 	if (shape.verticesCount() < 3)
 	{
-		THROW_EXCEPTION("The robot shape has less than 3 vertices!!")
+		THROW_EXCEPTION("The robot shape has less than 3 vertices!!");
 	}
 	m_robotShape = shape;
 }

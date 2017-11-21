@@ -421,7 +421,7 @@ class CPose3DQuat : public CPose<CPose3DQuat>, public mrpt::utils::CSerializable
 #ifdef _DEBUG
 			ASSERTMSG_(m_obj != nullptr, "non initialized iterator");
 			if (m_cur_idx > (allow_end ? 7u : 6u))
-				THROW_EXCEPTION("Index out of range in iterator.")
+				THROW_EXCEPTION("Index out of range in iterator.");
 #else
 			MRPT_UNUSED_PARAM(allow_end);
 #endif
@@ -531,7 +531,7 @@ class CPose3DQuat : public CPose<CPose3DQuat>, public mrpt::utils::CSerializable
 #ifdef _DEBUG
 			ASSERTMSG_(m_obj != nullptr, "non initialized iterator");
 			if (m_cur_idx > (allow_end ? 7u : 6u))
-				THROW_EXCEPTION("Index out of range in iterator.")
+				THROW_EXCEPTION("Index out of range in iterator.");
 #else
 			MRPT_UNUSED_PARAM(allow_end);
 #endif

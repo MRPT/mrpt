@@ -135,7 +135,7 @@ void CMetricMap::determineMatching2D(
 	MRPT_UNUSED_PARAM(params);
 	MRPT_UNUSED_PARAM(extraResults);
 	MRPT_START
-	THROW_EXCEPTION("Virtual method not implemented in derived class.")
+	THROW_EXCEPTION("Virtual method not implemented in derived class.");
 	MRPT_END
 }
 
@@ -150,7 +150,7 @@ void CMetricMap::determineMatching3D(
 	MRPT_UNUSED_PARAM(params);
 	MRPT_UNUSED_PARAM(extraResults);
 	MRPT_START
-	THROW_EXCEPTION("Virtual method not implemented in derived class.")
+	THROW_EXCEPTION("Virtual method not implemented in derived class.");
 	MRPT_END
 }
 
@@ -163,7 +163,7 @@ float CMetricMap::compute3DMatchingRatio(
 	MRPT_UNUSED_PARAM(otherMapPose);
 	MRPT_UNUSED_PARAM(params);
 	MRPT_START
-	THROW_EXCEPTION("Virtual method not implemented in derived class.")
+	THROW_EXCEPTION("Virtual method not implemented in derived class.");
 	MRPT_END
 }
 
@@ -173,7 +173,7 @@ float CMetricMap::squareDistanceToClosestCorrespondence(
 	MRPT_UNUSED_PARAM(x0);
 	MRPT_UNUSED_PARAM(y0);
 	MRPT_START
-	THROW_EXCEPTION("Virtual method not implemented in derived class.")
+	THROW_EXCEPTION("Virtual method not implemented in derived class.");
 	MRPT_END
 }
 

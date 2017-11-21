@@ -133,7 +133,7 @@ void renameDirContents()
 	}
 	else
 	{
-		THROW_EXCEPTION("Error while trying to rename directory: " << dir_name)
+		THROW_EXCEPTION("Error while trying to rename directory: " << dir_name);
 	}
 }
 

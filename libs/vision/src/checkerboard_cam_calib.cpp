@@ -468,6 +468,6 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 		return false;
 	}
 #else
-	THROW_EXCEPTION("Function not available: MRPT was compiled without OpenCV")
+	THROW_EXCEPTION("Function not available: MRPT was compiled without OpenCV");
 #endif
 }

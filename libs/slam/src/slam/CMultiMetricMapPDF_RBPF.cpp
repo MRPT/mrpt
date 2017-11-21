@@ -815,7 +815,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 											}
 											break;
 											default:
-												break;  // THROW_EXCEPTION("NO")
+												break;  // THROW_EXCEPTION("NO");
 										}
 
 										(*cell) *= lik;

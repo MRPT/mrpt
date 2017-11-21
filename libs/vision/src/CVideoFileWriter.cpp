@@ -114,7 +114,7 @@ bool CVideoFileWriter::isOpen() const
 const CVideoFileWriter& CVideoFileWriter::operator<<(
 	const mrpt::utils::CImage& img) const
 {
-	if (!m_video.get()) THROW_EXCEPTION("Call open first")
+	if (!m_video.get()) THROW_EXCEPTION("Call open first");
 
 	if ((size_t)m_img_size.x != img.getWidth() ||
 		(size_t)m_img_size.y != img.getHeight())
@@ -126,7 +126,7 @@ const CVideoFileWriter& CVideoFileWriter::operator<<(
 
 #if MRPT_HAS_OPENCV
 	if (!cvWriteFrame(M_WRITER, img.getAs<IplImage>()))
-		THROW_EXCEPTION("Error writing image frame to video file")
+		THROW_EXCEPTION("Error writing image frame to video file");
 #endif
 	return *this;
 }

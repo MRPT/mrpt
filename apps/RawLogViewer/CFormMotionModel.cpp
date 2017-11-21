@@ -803,9 +803,9 @@ void CFormMotionModel::applyToRawlogFile()
 	WX_START_TRY
 
 	if (!txtInputFile->GetValue().size())
-		THROW_EXCEPTION("An input rawlog file must be selected")
+		THROW_EXCEPTION("An input rawlog file must be selected");
 	if (!txtOutputFile->GetValue().size())
-		THROW_EXCEPTION("An output rawlog file must be selected")
+		THROW_EXCEPTION("An output rawlog file must be selected");
 
 	string fileName_IN(txtInputFile->GetValue().mbc_str());
 
@@ -814,7 +814,7 @@ void CFormMotionModel::applyToRawlogFile()
 	string fileName_OUT(txtOutputFile->GetValue().mbc_str());
 
 	if (!fileName_OUT.compare(fileName_IN))
-		THROW_EXCEPTION("Input and output files must be different!")
+		THROW_EXCEPTION("Input and output files must be different!");
 
 	CFileGZInputStream in_fil(fileName_IN);
 	CFileGZOutputStream out_fil(fileName_OUT);

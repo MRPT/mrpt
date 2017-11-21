@@ -35,7 +35,7 @@ void CFeatureExtraction::extractFeaturesAKAZE(
 	MRPT_START
 #if MRPT_HAS_OPENCV
 #if MRPT_OPENCV_VERSION_NUM < 0x300
-	THROW_EXCEPTION("This function requires OpenCV > 3.0.0")
+	THROW_EXCEPTION("This function requires OpenCV > 3.0.0");
 #else
 
 	using namespace cv;

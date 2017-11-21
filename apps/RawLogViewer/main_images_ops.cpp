@@ -459,7 +459,7 @@ void renameExternalImageFile(CObservationImage::Ptr o)
 	{  // Rename the actual file:
 		string strErr;
 		if (!mrpt::system::renameFile(img_file, new_img_fullpath, &strErr))
-			THROW_EXCEPTION(strErr)
+			THROW_EXCEPTION(strErr);
 	}
 
 	// Anyway, rename its reference in the image:
@@ -487,7 +487,7 @@ void renameExternalStereoImageFile(CObservationStereoImages::Ptr o)
 		{  // Rename the actual file:
 			string strErr;
 			if (!mrpt::system::renameFile(img_file, new_img_fullpath, &strErr))
-				THROW_EXCEPTION(strErr)
+				THROW_EXCEPTION(strErr);
 		}
 
 		// Anyway, rename its reference in the image:
@@ -513,7 +513,7 @@ void renameExternalStereoImageFile(CObservationStereoImages::Ptr o)
 		{  // Rename the actual file:
 			string strErr;
 			if (!mrpt::system::renameFile(img_file, new_img_fullpath, &strErr))
-				THROW_EXCEPTION(strErr)
+				THROW_EXCEPTION(strErr);
 		}
 
 		// Anyway, rename its reference in the image:

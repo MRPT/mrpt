@@ -425,12 +425,12 @@ void CVelodyneScanner::initialize()
 		if (m_lidar_rpm > 0)
 		{
 			if (!setLidarRPM(m_lidar_rpm))
-				THROW_EXCEPTION("Error in setLidarRPM()!");
+				THROW_EXCEPTION("Error in setLidarRPM();");
 		}
 		if (m_lidar_return != UNCHANGED)
 		{
 			if (!setLidarReturnType(m_lidar_return))
-				THROW_EXCEPTION("Error in setLidarReturnType()!");
+				THROW_EXCEPTION("Error in setLidarReturnType();");
 		}
 
 		// (1) Create LIDAR DATA socket
@@ -450,7 +450,7 @@ void CVelodyneScanner::initialize()
 		if (int(INVALID_SOCKET) ==
 			::bind(
 				m_hDataSock, (struct sockaddr*)(&bindAddr), sizeof(sockaddr)))
-			THROW_EXCEPTION(mrpt::comms::net::getLastSocketErrorStr());
+			THROW_EXCEPTION(mrpt::comms::net::getLastSocketErrorStr();;
 
 #ifdef _WIN32
 		unsigned long non_block_mode = 1;
@@ -463,7 +463,7 @@ void CVelodyneScanner::initialize()
 			THROW_EXCEPTION("Error retrieving fcntl() of socket.");
 		oldflags |= O_NONBLOCK | FASYNC;
 		if (-1 == fcntl(m_hDataSock, F_SETFL, oldflags))
-			THROW_EXCEPTION("Error entering non-blocking mode with fcntl().");
+			THROW_EXCEPTION("Error entering non-blocking mode with fcntl();");
 #endif
 
 		// (2) Create LIDAR POSITION socket
@@ -481,7 +481,7 @@ void CVelodyneScanner::initialize()
 									   m_hPositionSock,
 									   (struct sockaddr*)(&bindAddr),
 									   sizeof(sockaddr)))
-			THROW_EXCEPTION(mrpt::comms::net::getLastSocketErrorStr());
+			THROW_EXCEPTION(mrpt::comms::net::getLastSocketErrorStr();;
 
 #ifdef _WIN32
 		if (ioctlsocket(m_hPositionSock, FIONBIO, &non_block_mode))
@@ -493,7 +493,7 @@ void CVelodyneScanner::initialize()
 			THROW_EXCEPTION("Error retrieving fcntl() of socket.");
 		oldflags |= O_NONBLOCK | FASYNC;
 		if (-1 == fcntl(m_hPositionSock, F_SETFL, oldflags))
-			THROW_EXCEPTION("Error entering non-blocking mode with fcntl().");
+			THROW_EXCEPTION("Error entering non-blocking mode with fcntl();");
 #endif
 	}
 	else
@@ -877,7 +877,7 @@ mrpt::system::TTimeStamp CVelodyneScanner::internal_receive_UDP_packet(
 
 		if (nbytes < 0)
 		{
-			if (errno != EWOULDBLOCK) THROW_EXCEPTION("recvfrom() failed!?!")
+			if (errno != EWOULDBLOCK) THROW_EXCEPTION("recvfrom() failed!?!");
 		}
 		else if ((size_t)nbytes == expected_packet_size)
 		{

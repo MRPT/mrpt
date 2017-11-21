@@ -758,7 +758,7 @@ bool CColouredPointsMap::savePCDFile(
 #else
 	MRPT_UNUSED_PARAM(filename);
 	MRPT_UNUSED_PARAM(save_as_binary);
-	THROW_EXCEPTION("Operation not available: MRPT was built without PCL")
+	THROW_EXCEPTION("Operation not available: MRPT was built without PCL");
 #endif
 }
 

@@ -42,7 +42,7 @@ CFileSystemWatcher::CFileSystemWatcher(const std::string& path)
 	: m_watchedDirectory(path)
 {
 	MRPT_START
-	ASSERT_(!path.empty())
+	ASSERT_(!path.empty());
 
 	if (m_watchedDirectory[m_watchedDirectory.size() - 1] != '/' &&
 		m_watchedDirectory[m_watchedDirectory.size() - 1] != '\\')
@@ -121,7 +121,7 @@ void CFileSystemWatcher::getChanges(TFileSystemChangeList& out_list)
 	// Windows version:
 	ASSERTMSG_(
 		m_hNotif != nullptr,
-		"CFileSystemWatcher was not initialized correctly.")
+		"CFileSystemWatcher was not initialized correctly.");
 
 	// Work is done in thread_win32_watch().
 	// Just check for incoming mail:
@@ -276,7 +276,7 @@ void CFileSystemWatcher::thread_win32_watch()
 			// Extract the name (stored as a WCHAR*) into a UTF-8 std::string:
 			ASSERTMSG_(
 				fni->FileNameLength < 10000,
-				"Name length >10K... this is probably an error")
+				"Name length >10K... this is probably an error");
 
 			int reqLen = WideCharToMultiByte(
 				CP_UTF8, 0, fni->FileName, fni->FileNameLength >> 1, nullptr, 0,
@@ -286,7 +286,7 @@ void CFileSystemWatcher::thread_win32_watch()
 				CP_UTF8, 0, fni->FileName, fni->FileNameLength >> 1, &tmpBuf[0],
 				tmpBuf.size(), nullptr, nullptr);
 			ASSERTMSG_(
-				actLen > 0, "Error converting filename from WCHAR* to UTF8")
+				actLen > 0, "Error converting filename from WCHAR* to UTF8");
 
 			const std::string filName(&tmpBuf[0], actLen);
 

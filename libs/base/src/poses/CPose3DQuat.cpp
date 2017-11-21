@@ -403,7 +403,7 @@ void CPose3DQuat::sphericalCoordinates(
 	if (comp_jacobs)
 	{
 		if (out_range == 0)
-			THROW_EXCEPTION("Jacobians are undefined for range=0")
+			THROW_EXCEPTION("Jacobians are undefined for range=0");
 
 		/* MATLAB:
 			syms H h_range h_yaw h_pitch real;

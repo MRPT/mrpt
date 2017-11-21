@@ -435,7 +435,7 @@ static void velodyne_scan_to_pointcloud(
 						break;
 					default:
 					{
-						THROW_EXCEPTION("Error: unhandled LIDAR model!")
+						THROW_EXCEPTION("Error: unhandled LIDAR model!");
 					}
 				};
 

@@ -92,7 +92,7 @@ int CEdgeCounter::getNumForEdgeType(const std::string& name) const
 	}
 	else
 	{
-		THROW_EXCEPTION("No edge with such name exists")
+		THROW_EXCEPTION("No edge with such name exists");
 	}
 }
 
@@ -106,7 +106,7 @@ void CEdgeCounter::getNumForEdgeType(const std::string& name, int* total_num)
 	}
 	else
 	{
-		THROW_EXCEPTION("No edge with such name exists")
+		THROW_EXCEPTION("No edge with such name exists");
 	}
 }
 
@@ -121,7 +121,7 @@ void CEdgeCounter::setEdgesManually(const std::string& name, int num_of_edges)
 	else
 	{
 		std::string str_err = "No edge with such name exists.";
-		THROW_EXCEPTION(str_err)
+		THROW_EXCEPTION(str_err);
 	}
 	// Update the visualization if the user has already set the vizualization
 	// parameters
@@ -148,7 +148,7 @@ void CEdgeCounter::addEdge(
 				"Specified edge type [%s] already exists but is_new is also "
 				"specified!",
 				name.c_str());
-			THROW_EXCEPTION(str_err)
+			THROW_EXCEPTION(str_err);
 			// std::stringstream ss_warn;
 			// ss_warn << "Commencing with the increment normally" << std::endl;
 		}
@@ -160,7 +160,7 @@ void CEdgeCounter::addEdge(
 				std::string str_err =
 					"Both is_new and is_loop_closure flags are true. "
 					"Exiting...";
-				THROW_EXCEPTION(str_err)
+				THROW_EXCEPTION(str_err);
 			}
 			m_num_loop_closures++;
 		}
@@ -176,7 +176,7 @@ void CEdgeCounter::addEdge(
 			std::string str_err =
 				"No edge with such name exists. Specify is_new parameter if "
 				"you want to add it";
-			THROW_EXCEPTION(str_err)
+			THROW_EXCEPTION(str_err);
 		}
 	}
 
@@ -284,7 +284,7 @@ void CEdgeCounter::setTextMessageParams(
 			std::stringstream ss_err;
 			ss_err << "Name " << name << " is not recognized as an Edge type."
 				   << std::endl;
-			THROW_EXCEPTION(ss_err.str())
+			THROW_EXCEPTION(ss_err.str());
 		}
 		// name exists ...
 

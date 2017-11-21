@@ -177,7 +177,7 @@ DECLARE_OP_FUNCTION(op_rename_externals)
 				{
 					string strErr;
 					if (!mrpt::system::renameFile(prevFil, newFil, &strErr))
-						THROW_EXCEPTION(strErr)
+						THROW_EXCEPTION(strErr);
 				}
 				else
 				{

@@ -326,7 +326,7 @@ void CColouredOctoMap::updateVoxelColour(
 			m_octomap.averageNodeColor(x, y, z, r, g, b);
 			break;
 		default:
-			THROW_EXCEPTION("Invalid value found for 'm_colour_method'")
+			THROW_EXCEPTION("Invalid value found for 'm_colour_method'");
 	}
 }
 
