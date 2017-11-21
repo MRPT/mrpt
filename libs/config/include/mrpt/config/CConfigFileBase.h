@@ -10,8 +10,6 @@
 
 #include <string>
 #include <vector>
-#include <sstream>
-#include <iomanip>
 #include <type_traits>
 
 namespace mrpt
@@ -86,6 +84,14 @@ class CConfigFileBase
 			section, name, mrpt::io::TEnumType<enum_t>::value2name(value),
 			name_padding_width, value_padding_width, comment);
 	}
+	template <typename T>
+	static std::string data2str(T value) {
+		return std::to_string(value);
+	}
+	template <>
+	static std::string data2str<bool>(bool value) {
+		return value ? "true":"false";
+	}
 	/** @name Save a configuration parameter. Optionally pads with spaces up to
 	 * the desired width in number of characters (-1: no fill), and add a final
 	 * comment field at the end of the line (a "// " prefix is automatically
@@ -99,11 +105,8 @@ class CConfigFileBase
 		const int value_padding_width = -1,
 		const std::string& comment = std::string())
 	{
-		std::stringstream ss;
-		ss.flags(ss.flags() | std::ios::boolalpha);
-		ss << value;
 		writeString(
-			section, name, ss.str(), name_padding_width, value_padding_width,
+			section, name, data2str(value), name_padding_width, value_padding_width,
 			comment);
 	}
 	template <typename data_t>
@@ -113,14 +116,13 @@ class CConfigFileBase
 		const int value_padding_width = -1,
 		const std::string& comment = std::string())
 	{
-		std::stringstream ss;
-		ss.flags(ss.flags() | std::ios::boolalpha);
+		std::string s;
 		for (typename std::vector<data_t>::const_iterator it = value.begin();
-			 it != value.end(); ++it)
-			ss << *it << " ";
+			it != value.end(); ++it) {
+			s += data2str(*it); s += " ";
+		}
 		writeString(
-			section, name, ss.str(), name_padding_width, value_padding_width,
-			comment);
+			section, name, s, name_padding_width, value_padding_width,comment);
 	}
 	void write(
 		const std::string& section, const std::string& name, double value,
@@ -186,8 +188,8 @@ class CConfigFileBase
 			outValues.resize(N);
 			for (size_t i = 0; i < N; i++)
 			{
-				std::stringstream ss(tokens[i]);
-				ss >> outValues[i];
+				double val = std::stod(tokens[i]);
+				outValues[i] = val;
 			}
 		}
 	}
