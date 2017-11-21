@@ -7,16 +7,16 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "base-precomp.h"  // Precompiled headers
+#include "config-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/CStdOutStream.h>
-#include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CConfigFileMemory.h>
+#include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/config/CConfigFileMemory.h>
+#include <iostream>
+#include <mrpt/core/format.h>
 
-using namespace mrpt::utils;
+using namespace mrpt::config;
 
-CStdOutStream loadable_opts_my_cout;
 const int LOADABLEOPTS_COLUMN_WIDTH = 41;  // Until the "=" in each row.
 
 void CLoadableOptions::loadFromConfigFileName(
@@ -27,7 +27,7 @@ void CLoadableOptions::loadFromConfigFileName(
 }
 
 void CLoadableOptions::saveToConfigFile(
-	mrpt::utils::CConfigFileBase& target, const std::string& section) const
+	CConfigFileBase& target, const std::string& section) const
 {
 	MRPT_UNUSED_PARAM(target);
 	MRPT_UNUSED_PARAM(section);
@@ -43,46 +43,40 @@ void CLoadableOptions::saveToConfigFileName(
 
 void CLoadableOptions::dumpToConsole() const
 {
-	dumpToTextStream(loadable_opts_my_cout);
+	dumpToTextStream(std::cout);
 }
 
-void CLoadableOptions::dumpVar_int(CStream& out, const char* varName, int v)
+void CLoadableOptions::dumpVar_int(std::ostream& out, const char* varName, int v)
 {
-	out.printf("%-*s= %i\n", LOADABLEOPTS_COLUMN_WIDTH, varName, v);
+	out << mrpt::format("%-*s= %i\n", LOADABLEOPTS_COLUMN_WIDTH, varName, v);
 }
 
-void CLoadableOptions::dumpVar_float(CStream& out, const char* varName, float v)
+void CLoadableOptions::dumpVar_float(std::ostream& out, const char* varName, float v)
 {
-	out.printf("%-*s= %f\n", LOADABLEOPTS_COLUMN_WIDTH, varName, v);
+	out << mrpt::format("%-*s= %f\n", LOADABLEOPTS_COLUMN_WIDTH, varName, v);
 }
 
 void CLoadableOptions::dumpVar_double(
-	CStream& out, const char* varName, double v)
+	std::ostream& out, const char* varName, double v)
 {
-	out.printf("%-*s= %f\n", LOADABLEOPTS_COLUMN_WIDTH, varName, v);
+	out << mrpt::format("%-*s= %f\n", LOADABLEOPTS_COLUMN_WIDTH, varName, v);
 }
 
-void CLoadableOptions::dumpVar_bool(CStream& out, const char* varName, bool v)
+void CLoadableOptions::dumpVar_bool(std::ostream& out, const char* varName, bool v)
 {
-	out.printf(
+	out << mrpt::format(
 		"%-*s= %s\n", LOADABLEOPTS_COLUMN_WIDTH, varName, v ? "YES" : "NO");
 }
 
 void CLoadableOptions::dumpVar_string(
-	CStream& out, const char* varName, const std::string& v)
+	std::ostream& out, const char* varName, const std::string& v)
 {
-	out.printf("%-*s= %s\n", LOADABLEOPTS_COLUMN_WIDTH, varName, v.c_str());
+	out << mrpt::format("%-*s= %s\n", LOADABLEOPTS_COLUMN_WIDTH, varName, v.c_str());
 }
 
-/** This method should clearly display all the contents of the structure in
- * textual form, sending it to a CStream.
-  * The default implementation in this base class relies on \a
- * saveToConfigFile() to generate a plain text representation of all the
- * parameters.
-  */
-void CLoadableOptions::dumpToTextStream(mrpt::utils::CStream& out) const
+void CLoadableOptions::dumpToTextStream(std::ostream& out) const
 {
 	CConfigFileMemory cfg;
 	this->saveToConfigFile(cfg, "");
-	out.printf("%s", cfg.getContent().c_str());
+	out << cfg.getContent();
 }
