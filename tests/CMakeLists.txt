@@ -64,20 +64,23 @@ FOREACH(_TSTLIB ${LST_LIB_TESTS})
 	ADD_EXECUTABLE( test_${_TSTLIB} test_main.cpp ${lstfiles})
 
 	# Add the required libraries for linking:
-IF (CMAKE_MRPT_HAS_GTEST_SYSTEM)
-	# System vesion:
-	TARGET_LINK_LIBRARIES(test_${_TSTLIB} ${MRPT_LINKER_LIBS_RELorDEB} gtest ${CMAKE_THREAD_LIBS_INIT})
-ELSE ()
-	# Own version:
-	TARGET_LINK_LIBRARIES(test_${_TSTLIB} ${MRPT_LINKER_LIBS_RELorDEB} mrptgtest ${CMAKE_THREAD_LIBS_INIT})
-	ADD_DEPENDENCIES(test_${_TSTLIB} mrptgtest)  # Assure the MRPT library is updated:
-ENDIF ()
-
+	IF (CMAKE_MRPT_HAS_GTEST_SYSTEM)
+		# System vesion:
+		TARGET_LINK_LIBRARIES(test_${_TSTLIB} ${MRPT_LINKER_LIBS_RELorDEB} gtest ${CMAKE_THREAD_LIBS_INIT})
+	ELSE ()
+		# Own version:
+		TARGET_LINK_LIBRARIES(test_${_TSTLIB} ${MRPT_LINKER_LIBS_RELorDEB} mrptgtest ${CMAKE_THREAD_LIBS_INIT})
+		ADD_DEPENDENCIES(test_${_TSTLIB} mrptgtest)  # Assure the MRPT library is updated:
+	ENDIF ()
 
 	set_target_properties(test_${_TSTLIB} PROPERTIES "COMPILE_DEFINITIONS" "MRPT_TEST_LIB=${_TSTLIB}")
 
 	# Deps:
 	get_property(lst_deps GLOBAL PROPERTY "${_TSTLIB_DASH}_LIB_DEPS")
+	# extra deps:
+	get_property(extra_deps GLOBAL PROPERTY "${_TSTLIB}_UNIT_TEST_EXTRA_DEPS")
+	set(lst_deps ${lst_deps} ${extra_deps})
+
 	set(lst_deps ${_TSTLIB_DASH} ${lst_deps}) # The order in this list is very important for linking!
 	FOREACH(_DEPLIB ${lst_deps})
 		# Include dirs:
@@ -93,8 +96,6 @@ ENDIF ()
 		ENDIF(NOT _LIB_HDRONLY)
 	ENDFOREACH(_DEPLIB)
 
-
-
 	# Run it:
 	SET(GENERATED_EXE "$<TARGET_FILE:test_${_TSTLIB}>")
 	ADD_CUSTOM_TARGET(run_tests_${_TSTLIB} COMMAND "${GENERATED_EXE}")
@@ -102,17 +103,17 @@ ENDIF ()
 	ADD_DEPENDENCIES(test run_tests_${_TSTLIB})
 	ADD_DEPENDENCIES(tests_build_all test_${_TSTLIB})
 
-IF (UNIX)
-	# test_gdb
-	ADD_CUSTOM_TARGET(run_tests_${_TSTLIB}_gdb
-	COMMAND "gdb" "-batch" "-ex" "\"run\"" "-ex" "\"bt\"" "-return-child-result" "${GENERATED_EXE}")
-	ADD_DEPENDENCIES(run_tests_${_TSTLIB}_gdb test_${_TSTLIB})
-	ADD_DEPENDENCIES(test_gdb run_tests_${_TSTLIB}_gdb)
-ENDIF()
+	IF (UNIX)
+		# test_gdb
+		ADD_CUSTOM_TARGET(run_tests_${_TSTLIB}_gdb
+		COMMAND "gdb" "-batch" "-ex" "\"run\"" "-ex" "\"bt\"" "-return-child-result" "${GENERATED_EXE}")
+		ADD_DEPENDENCIES(run_tests_${_TSTLIB}_gdb test_${_TSTLIB})
+		ADD_DEPENDENCIES(test_gdb run_tests_${_TSTLIB}_gdb)
+	ENDIF()
 
-if(ENABLE_SOLUTION_FOLDERS)
-	set_target_properties(test_${_TSTLIB} PROPERTIES FOLDER "unit tests")
-	set_target_properties(run_tests_${_TSTLIB} PROPERTIES FOLDER "unit tests")
-endif()
+	if(ENABLE_SOLUTION_FOLDERS)
+		set_target_properties(test_${_TSTLIB} PROPERTIES FOLDER "unit tests")
+		set_target_properties(run_tests_${_TSTLIB} PROPERTIES FOLDER "unit tests")
+	endif()
 
 ENDFOREACH(_TSTLIB)
