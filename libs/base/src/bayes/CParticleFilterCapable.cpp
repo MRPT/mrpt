@@ -211,7 +211,8 @@ void CParticleFilterCapable::computeResampling(
 			double T_offset = 0;
 			for (i = 0; i < M; i++)
 			{
-				T[i] = T_offset + getRandomGenerator().drawUniform(0.0, _1_M_eps);
+				T[i] =
+					T_offset + getRandomGenerator().drawUniform(0.0, _1_M_eps);
 				T_offset += _1_M;
 			}
 			T[M] = 1;
@@ -262,9 +263,8 @@ void CParticleFilterCapable::computeResampling(
 		}
 		break;
 		default:
-			THROW_EXCEPTION(
-				format(
-					"ERROR: Unknown resampling method selected: %i", method));
+			THROW_EXCEPTION(format(
+				"ERROR: Unknown resampling method selected: %i", method));
 	};
 
 	MRPT_END
@@ -275,8 +275,7 @@ void CParticleFilterCapable::computeResampling(
  ---------------------------------------------------------------*/
 void CParticleFilterCapable::prepareFastDrawSample(
 	const bayes::CParticleFilter::TParticleFilterOptions& PF_options,
-	TParticleProbabilityEvaluator partEvaluator, const void* action,
-	const void* observation) const
+	TParticleProbabilityEvaluator partEvaluator) const
 {
 	MRPT_START
 
@@ -309,9 +308,7 @@ void CParticleFilterCapable::prepareFastDrawSample(
 		// -------------------------------------------------------------------
 		double SUM = 0;
 		// Save the log likelihoods:
-		for (i = 0; i < M; i++)
-			m_fastDrawAuxiliary.PDF[i] =
-				partEvaluator(PF_options, this, i, action, observation);
+		for (i = 0; i < M; i++) m_fastDrawAuxiliary.PDF[i] = partEvaluator(i);
 		// "Normalize":
 		m_fastDrawAuxiliary.PDF += -math::maximum(m_fastDrawAuxiliary.PDF);
 		for (i = 0; i < M; i++)
@@ -345,11 +342,12 @@ void CParticleFilterCapable::prepareFastDrawSample(
 
 // Done!
 #if !defined(_MSC_VER) || (_MSC_VER > 1400)  // <=VC2005 doesn't work with this!
-		MRPT_END_WITH_CLEAN_UP( \
-			/* Debug: */ \
-			cout << "j=" << j << "\nm_fastDrawAuxiliary.CDF_indexes:" << m_fastDrawAuxiliary.CDF_indexes << endl; \
-			cout << "m_fastDrawAuxiliary.CDF:" << m_fastDrawAuxiliary.CDF << endl; \
-			);
+		MRPT_END_WITH_CLEAN_UP(/* Debug: */
+							   cout << "j=" << j
+									<< "\nm_fastDrawAuxiliary.CDF_indexes:"
+									<< m_fastDrawAuxiliary.CDF_indexes << endl;
+							   cout << "m_fastDrawAuxiliary.CDF:"
+									<< m_fastDrawAuxiliary.CDF << endl;);
 #else
 		MRPT_END
 #endif
@@ -364,10 +362,7 @@ void CParticleFilterCapable::prepareFastDrawSample(
 		// selected:
 		size_t i, M = particlesCount();
 		vector<double> PDF(M, 0);
-		for (i = 0; i < M; i++)
-			PDF[i] = partEvaluator(
-				PF_options, this, i, action,
-				observation);  // Default evaluator: takes current weight.
+		for (i = 0; i < M; i++) PDF[i] = partEvaluator(i);
 
 		vector<size_t> idxs;
 

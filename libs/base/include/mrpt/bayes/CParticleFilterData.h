@@ -13,6 +13,7 @@
 #include <mrpt/bayes/CProbabilityParticle.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
 
+
 #include <deque>
 #include <algorithm>
 
@@ -20,8 +21,6 @@ namespace mrpt
 {
 namespace bayes
 {
-class CParticleFilterCapable;
-
 /** A curiously recurring template pattern (CRTP) approach to providing the
  * basic functionality of any CParticleFilterData<> class.
  *  Users should inherit from CParticleFilterData<>, which in turn will

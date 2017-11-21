@@ -16,7 +16,6 @@
 
 #include <mrpt/poses/CPoseRandomSampler.h>
 
-#include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/slam/CICP.h>
 
