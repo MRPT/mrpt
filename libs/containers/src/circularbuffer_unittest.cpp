@@ -7,19 +7,20 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/utils/circular_buffer.h>
+#include <mrpt/containers/circular_buffer.h>
 #include <mrpt/random.h>
+#include <mrpt/core/common.h>
 #include <CTraitsTest.h>
 
 #include <gtest/gtest.h>
 
-template class mrpt::CTraitsTest<mrpt::utils::circular_buffer<char>>;
+template class mrpt::CTraitsTest<mrpt::containers::circular_buffer<char>>;
 
 typedef int cb_t;
 
 TEST(circular_buffer_tests, EmptyPop)
 {
-	mrpt::utils::circular_buffer<cb_t> cb(10);
+	mrpt::containers::circular_buffer<cb_t> cb(10);
 	try
 	{
 		cb_t ret;
@@ -34,7 +35,7 @@ TEST(circular_buffer_tests, EmptyPop)
 TEST(circular_buffer_tests, EmptyPopAfterPushes)
 {
 	const size_t LEN = 20;
-	mrpt::utils::circular_buffer<cb_t> cb(LEN);
+	mrpt::containers::circular_buffer<cb_t> cb(LEN);
 	for (size_t nWr = 0; nWr < LEN; nWr++)
 	{
 		for (size_t i = 0; i < nWr; i++) cb.push(12);
@@ -56,7 +57,7 @@ TEST(circular_buffer_tests, EmptyPopAfterPushes)
 TEST(circular_buffer_tests, RandomWriteAndPeek)
 {
 	const size_t LEN = 20;
-	mrpt::utils::circular_buffer<cb_t> cb(LEN);
+	mrpt::containers::circular_buffer<cb_t> cb(LEN);
 
 	for (size_t iter = 0; iter < 1000; iter++)
 	{
@@ -79,7 +80,7 @@ TEST(circular_buffer_tests, RandomWriteAndPeek)
 TEST(circular_buffer_tests, RandomWriteManyAndPeek)
 {
 	const size_t LEN = 20;
-	mrpt::utils::circular_buffer<cb_t> cb(LEN);
+	mrpt::containers::circular_buffer<cb_t> cb(LEN);
 	std::vector<cb_t> dum_buf;
 
 	for (size_t iter = 0; iter < 1000; iter++)
@@ -104,7 +105,7 @@ TEST(circular_buffer_tests, RandomWriteManyAndPeek)
 TEST(circular_buffer_tests, RandomWriteAndPeekOverrun)
 {
 	const size_t LEN = 20;
-	mrpt::utils::circular_buffer<cb_t> cb(LEN);
+	mrpt::containers::circular_buffer<cb_t> cb(LEN);
 
 	for (size_t iter = 0; iter < 100; iter++)
 	{
