@@ -44,7 +44,7 @@ CTopLCDetector_FabMap::CTopLCDetector_FabMap(CHMTSLAM* hmtslam)
 	cout << "[CTopLCDetector_FabMap::constructor] Resetting FabMap" << endl;
 	THE_FABMAP->hmtslam_restart();
 #else
-	THROW_EXCEPTION("Please, recompile MRPT with FabMap to use this class.")
+	THROW_EXCEPTION("Please, recompile MRPT with FabMap to use this class.");
 #endif
 }
 

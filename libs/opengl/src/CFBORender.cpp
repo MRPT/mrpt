@@ -108,7 +108,7 @@ CFBORender::CFBORender(
 	MRPT_END
 
 //#else
-//	THROW_EXCEPTION("MRPT compiled without OpenCV and/or OpenGL support!!")
+//	THROW_EXCEPTION("MRPT compiled without OpenCV and/or OpenGL support!!");
 #endif
 }
 
@@ -268,7 +268,7 @@ void CFBORender::resize(unsigned int width, unsigned int height)
 	MRPT_END
 
 //#else
-//	THROW_EXCEPTION("MRPT compiled without OpenCV and/or OpenGL support!!")
+//	THROW_EXCEPTION("MRPT compiled without OpenCV and/or OpenGL support!!");
 #else
 	MRPT_UNUSED_PARAM(width);
 	MRPT_UNUSED_PARAM(height);
@@ -310,7 +310,7 @@ int CFBORender::isExtensionSupported(const char* extension)
 	MRPT_END
 
 //#else
-//	THROW_EXCEPTION("MRPT compiled without OpenGL support!!")
+//	THROW_EXCEPTION("MRPT compiled without OpenGL support!!");
 #else
 	MRPT_UNUSED_PARAM(extension);
 #endif

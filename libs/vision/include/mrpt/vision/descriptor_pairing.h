@@ -108,7 +108,7 @@ size_t find_descriptor_pairings(
 	}
 	else
 	{
-		THROW_EXCEPTION("This function only supports SIFT or SURFT descriptors")
+		THROW_EXCEPTION("This function only supports SIFT or SURFT descriptors");
 	}
 
 	std::vector<size_t> indices(max_neighbors);

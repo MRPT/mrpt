@@ -49,7 +49,7 @@ void CUndistortMap::setFromCamParams(const mrpt::utils::TCamera& campar)
 		inMat, distM, cv::Mat(), inMat, _mapx.size(), _mapx.type(), _mapx,
 		_mapy);
 #else
-	THROW_EXCEPTION("MRPT built without OpenCV >=2.0.0!")
+	THROW_EXCEPTION("MRPT built without OpenCV >=2.0.0!");
 #endif
 	MRPT_END
 }

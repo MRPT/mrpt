@@ -143,7 +143,7 @@ void CPose3DPDFSOG::readFromStream(mrpt::utils::CStream& in, int version)
 
 				if (version == 1)  // were floats
 				{
-					THROW_EXCEPTION("Unsupported serialized version: too old")
+					THROW_EXCEPTION("Unsupported serialized version: too old");
 				}
 				else
 				{

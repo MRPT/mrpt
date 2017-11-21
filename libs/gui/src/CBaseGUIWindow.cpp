@@ -90,7 +90,7 @@ void CBaseGUIWindow::createWxWindow(
 			 << endl;
 	}
 #else
-	THROW_EXCEPTION("MRPT compiled without wxWidgets!")
+	THROW_EXCEPTION("MRPT compiled without wxWidgets!");
 #endif
 	MRPT_END
 }

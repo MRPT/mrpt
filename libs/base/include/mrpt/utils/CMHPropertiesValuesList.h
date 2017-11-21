@@ -85,7 +85,7 @@ class CMHPropertiesValuesList : public mrpt::utils::CSerializable
 			if (allowNullPointer)
 				return typename T::Ptr();
 			else
-				THROW_EXCEPTION("Null pointer")
+				THROW_EXCEPTION("Null pointer");
 		}
 		const mrpt::utils::TRuntimeClassId* class_ID = &T::GetRuntimeClassIdStatic();
 		ASSERT_(class_ID == obj->GetRuntimeClass());

@@ -106,7 +106,7 @@ TCaptureOptions_DUO3D::TYMLReadResult
 
 	return yrr_OK;
 #else
-	THROW_EXCEPTION("This function requires building with OpenCV support")
+	THROW_EXCEPTION("This function requires building with OpenCV support");
 #endif
 }
 
@@ -168,7 +168,7 @@ TCaptureOptions_DUO3D::TYMLReadResult
 	m_stereo_camera.rightCameraPose = CPose3DQuat(CPose3D(M, t));
 	return yrr_OK;
 #else
-	THROW_EXCEPTION("This function requires building with OpenCV support")
+	THROW_EXCEPTION("This function requires building with OpenCV support");
 #endif
 }
 
@@ -243,7 +243,7 @@ TCaptureOptions_DUO3D::TYMLReadResult
 
 	return empty ? yrr_EMPTY : yrr_OK;
 #else
-	THROW_EXCEPTION("This function requires building with OpenCV support")
+	THROW_EXCEPTION("This function requires building with OpenCV support");
 #endif
 }
 
@@ -456,10 +456,10 @@ void CDUO3DCamera::open(
 	if (!EnumerateResolutions(
 			&ri, 1, this->m_options.m_img_width, this->m_options.m_img_height,
 			binning, this->m_options.m_fps))
-		THROW_EXCEPTION("[CDUO3DCamera] Error: Resolution not supported.")
+		THROW_EXCEPTION("[CDUO3DCamera] Error: Resolution not supported.");
 
 	if (!OpenDUO(&M_DUO_VALUE))  // was: m_duo
-		THROW_EXCEPTION("[CDUO3DCamera] Error: Camera could not be opened.")
+		THROW_EXCEPTION("[CDUO3DCamera] Error: Camera could not be opened.");
 
 	// Get and print some DUO parameter values
 	char name[260], version[260];

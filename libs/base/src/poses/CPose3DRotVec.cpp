@@ -205,7 +205,7 @@ void CPose3DRotVec::composePoint(
 	if (out_jacobian_df_dpoint || out_jacobian_df_dpose)
 	{
 		MRPT_TODO("Jacobians")
-		THROW_EXCEPTION("Jacobians not implemented yet")
+		THROW_EXCEPTION("Jacobians not implemented yet");
 	}
 }
 

@@ -254,7 +254,7 @@ void COctoMap::getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels& gl_obj) const
 						break;
 
 					default:
-						THROW_EXCEPTION("Unknown coloring scheme!")
+						THROW_EXCEPTION("Unknown coloring scheme!");
 				}
 
 				const size_t vx_set = (m_octomap.isNodeOccupied(*it))

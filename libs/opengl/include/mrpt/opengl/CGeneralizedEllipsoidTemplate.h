@@ -237,7 +237,7 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableDisplayList
 	{
 		MRPT_UNUSED_PARAM(o);
 		MRPT_UNUSED_PARAM(dist);
-		THROW_EXCEPTION("Not implemented ")
+		THROW_EXCEPTION("Not implemented ");
 	}
 
    protected:

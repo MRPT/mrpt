@@ -23,15 +23,15 @@
 		throw exceptionClass(s);                                               \
 	} while (0)
 
-/** \def THROW_EXCEPTION(msg)
+/** \def THROW_EXCEPTION(msg);
 * \param msg This can be a char*, a std::string, or a literal string.
 * Defines a unified way of reporting exceptions
 * \sa MRPT_TRY_START, MRPT_TRY_END, THROW_EXCEPTION_FMT
 */
-#define THROW_EXCEPTION(msg) THROW_TYPED_EXCEPTION(msg,std::logic_error)
+#define THROW_EXCEPTION(msg) THROW_TYPED_EXCEPTION(msg,std::logic_error);
 
 #define THROW_EXCEPTION_FMT(_FORMAT_STRING, ...) \
-	THROW_EXCEPTION(mrpt::format(_FORMAT_STRING, __VA_ARGS__))
+	THROW_EXCEPTION(mrpt::format(_FORMAT_STRING, __VA_ARGS__));
 
 #define THROW_TYPED_EXCEPTION_FMT(exceptionClass, _FORMAT_STRING, ...) \
 	THROW_TYPED_EXCEPTION(                                             \
@@ -107,7 +107,7 @@
 			s+= ","; s+= __BSTR; s+= ") failed with\n";            \
 			s+= __ASTR; s+= "="; s+= std::to_string(__A); s+="\n"; \
 			s+= __BSTR; s+= "="; s+= std::to_string(__B); s+="\n"; \
-			THROW_EXCEPTION(s)                                     \
+			THROW_EXCEPTION(s);                                    \
 		}                                                          \
 
 /** Assert comparing two values, reporting their actual values upon failure */

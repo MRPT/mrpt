@@ -68,7 +68,7 @@ void* ConnectWlanServerW()
 		excmsg << "WlanOpenHandle failed with error: " << dwResult << std::endl;
 
 		// You can use FormatMessage here to find out why the function failed
-		THROW_EXCEPTION(excmsg.str());
+		THROW_EXCEPTION(excmsg.str();;
 	}
 	return (void*)hClient;
 }
@@ -106,7 +106,7 @@ std::vector<PWLAN_INTERFACE_INFO> ListInterfacesW(HANDLE hClient)
 		excmsg << "WlanEnumInterfaces failed with error: " << dwResult
 			   << std::endl;
 
-		THROW_EXCEPTION(excmsg.str());
+		THROW_EXCEPTION(excmsg.str();;
 		// You can use FormatMessage here to find out why the function failed
 	}
 	else
@@ -252,7 +252,7 @@ std::vector<PWLAN_AVAILABLE_NETWORK> ListNetworksW(
 		std::stringstream excmsg;
 		excmsg << "WlanGetAvailableNetworkList failed with error: " << dwResult
 			   << std::endl;
-		//	THROW_EXCEPTION(excmsg.str());
+		//	THROW_EXCEPTION(excmsg.str();;
 	}
 	else
 	{
@@ -334,7 +334,7 @@ std::vector<std::string> CWirelessPower::ListInterfaces()
 		"cat /proc/net/wireless|grep \"wlan\"|cut -d\" \" -f2|cut -d\":\" -f1",
 		"r");
 	if (!fgets(ifaceread, 3, cmdoutput))  // read output
-		THROW_EXCEPTION("Error reading /proc/net/wireless")
+		THROW_EXCEPTION("Error reading /proc/net/wireless");
 
 	// iterate thrugh list and get each interface as a string
 	netname = ::strtok(ifaceread, "\n");
@@ -347,7 +347,7 @@ std::vector<std::string> CWirelessPower::ListInterfaces()
 
 #ifdef _WIN32
 #if defined(__GNUC__)
-	THROW_EXCEPTION("Sorry, method not available for MinGW")
+	THROW_EXCEPTION("Sorry, method not available for MinGW");
 #else
 	// In windows, this function is a wrapper to ListInterfacesW
 
@@ -398,7 +398,7 @@ std::vector<std::string> CWirelessPower::ListNetworks()
 			 << " scan|grep ESSID|cut -d\"\\\"\" -f2";
 	cmdoutput = popen(commandl.str().c_str(), "r");
 	if (!fgets(listread, 3, cmdoutput))
-		THROW_EXCEPTION("Error reading response from iwlist")
+		THROW_EXCEPTION("Error reading response from iwlist");
 
 	netname = ::strtok(listread, "\n");
 	while (netname)
@@ -411,7 +411,7 @@ std::vector<std::string> CWirelessPower::ListNetworks()
 
 #ifdef _WIN32
 #if defined(__GNUC__)
-	THROW_EXCEPTION("Sorry, method not available for MinGW")
+	THROW_EXCEPTION("Sorry, method not available for MinGW");
 #else
 
 	PWLAN_INTERFACE_INFO iface;  // Information element for an interface
@@ -459,13 +459,13 @@ int CWirelessPower::GetPower()
 
 	ssidLine << "ESSID:\"" << ssid << "\"";
 	if (getline(&powerReadL, &readBytes, cmdoutput) < 0)
-		THROW_EXCEPTION("Error reading response from iwlist")
+		THROW_EXCEPTION("Error reading response from iwlist");
 
 	while (!strstr(powerReadL, ssidLine.str().c_str()))
 	{
 		powerReadV.push_back(std::string(powerReadL));
 		if (getline(&powerReadL, &readBytes, cmdoutput))
-			THROW_EXCEPTION("Error reading response from iwlist")
+			THROW_EXCEPTION("Error reading response from iwlist");
 	}
 
 	std::vector<std::string>::iterator ssiter = powerReadV.end() - 2;
@@ -493,7 +493,7 @@ int CWirelessPower::GetPower()
 
 #elif defined(_WIN32)
 #if defined(__GNUC__)
-	THROW_EXCEPTION("Sorry, method not available for MinGW")
+	THROW_EXCEPTION("Sorry, method not available for MinGW");
 #else
 	PWLAN_AVAILABLE_NETWORK wlan;  // handler to the network
 
@@ -571,7 +571,7 @@ void CWirelessPower::loadConfig_sensorSpecific(
 
 #ifdef _WIN32
 #if defined(__GNUC__)
-	THROW_EXCEPTION("Sorry, method not available for MinGW")
+	THROW_EXCEPTION("Sorry, method not available for MinGW");
 #else
 	hClient = ConnectWlanServerW();
 #endif

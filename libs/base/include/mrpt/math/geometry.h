@@ -1134,7 +1134,7 @@ CMatrixTemplateNumeric<T> generateAxisBaseFromDirection(T dx, T dy, T dz)
 	MRPT_START
 
 	if (dx == 0 && dy == 0 && dz == 0)
-		THROW_EXCEPTION("Invalid input: Direction vector is (0,0,0)!");
+		THROW_EXCEPTION("Invalid input: Direction vector is (0,0,0);");
 
 	CMatrixTemplateNumeric<T> P(3, 3);
 

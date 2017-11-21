@@ -38,7 +38,7 @@ void CFeatureExtraction::detectFeatures_SSE2_FASTER9(
 	fast_corner_detect_9(
 		IPL, corners, threshold, octave, out_feats_index_by_row);
 #else
-	THROW_EXCEPTION("MRPT built without OpenCV support!")
+	THROW_EXCEPTION("MRPT built without OpenCV support!");
 #endif
 }
 void CFeatureExtraction::detectFeatures_SSE2_FASTER10(
@@ -54,7 +54,7 @@ void CFeatureExtraction::detectFeatures_SSE2_FASTER10(
 	fast_corner_detect_10(
 		IPL, corners, threshold, octave, out_feats_index_by_row);
 #else
-	THROW_EXCEPTION("MRPT built without OpenCV support!")
+	THROW_EXCEPTION("MRPT built without OpenCV support!");
 #endif
 }
 void CFeatureExtraction::detectFeatures_SSE2_FASTER12(
@@ -70,7 +70,7 @@ void CFeatureExtraction::detectFeatures_SSE2_FASTER12(
 	fast_corner_detect_12(
 		IPL, corners, threshold, octave, out_feats_index_by_row);
 #else
-	THROW_EXCEPTION("MRPT built without OpenCV support!")
+	THROW_EXCEPTION("MRPT built without OpenCV support!");
 #endif
 }
 

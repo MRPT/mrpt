@@ -1328,7 +1328,7 @@ void math::idft2_real(
 	size_t dim2 = in_real.getColCount();
 
 	if (math::round2up(dim1) != dim1 || math::round2up(dim2) != dim2)
-		THROW_EXCEPTION("Matrix sizes are not a power of two!")
+		THROW_EXCEPTION("Matrix sizes are not a power of two!");
 
 	// Transform to format compatible with C routines:
 	// ------------------------------------------------------------
@@ -1752,7 +1752,7 @@ double math::averageLogLikelihood(
 	ASSERT_(logWeights.size() == logLikelihoods.size());
 
 	if (!logWeights.size())
-		THROW_EXCEPTION("ERROR: logWeights vector is empty!")
+		THROW_EXCEPTION("ERROR: logWeights vector is empty!");
 
 	CVectorDouble::const_iterator itLW, itLL;
 	double lw_max = math::maximum(logWeights);
@@ -1781,7 +1781,7 @@ double math::averageLogLikelihood(const CVectorDouble& logLikelihoods)
 	// Explained in:
 	// http://www.mrpt.org/Averaging_Log-Likelihood_Values:Numerical_Stability
 	size_t N = logLikelihoods.size();
-	if (!N) THROW_EXCEPTION("ERROR: logLikelihoods vector is empty!")
+	if (!N) THROW_EXCEPTION("ERROR: logLikelihoods vector is empty!");
 
 	double ll_max = math::maximum(logLikelihoods);
 	double SUM1 = 0;

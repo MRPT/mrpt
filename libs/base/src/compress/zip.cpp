@@ -262,7 +262,7 @@ bool mrpt::compress::zip::compress_gz_file(
 		return true;
 	}
 #else
-	THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_GZ_STREAMS=0")
+	THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_GZ_STREAMS=0");
 #endif
 }
 
@@ -368,7 +368,7 @@ bool mrpt::compress::zip::compress_gz_data_block(
 
 	return retVal;
 #else
-	THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_GZ_STREAMS=0")
+	THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_GZ_STREAMS=0");
 #endif
 }
 

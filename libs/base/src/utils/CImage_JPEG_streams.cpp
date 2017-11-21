@@ -233,7 +233,7 @@ fill_input_buffer(j_decompress_ptr cinfo)
 	{
 		if (src->start_of_file) /* Treat empty input file as fatal error */
 		{
-			THROW_EXCEPTION("Error looking for JPEG start data!")
+			THROW_EXCEPTION("Error looking for JPEG start data!");
 		}
 
 		/* Insert a fake EOI marker */

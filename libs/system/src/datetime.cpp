@@ -181,7 +181,7 @@ mrpt::system::TTimeStamp mrpt::system::getCurrentLocalTime()
 #elif defined(__APPLE__)
 	// See:
 	// http://www.wand.net.nz/~smr26/wordpress/2009/01/19/monotonic-time-in-mac-os-x/
-	THROW_EXCEPTION("to do")
+	THROW_EXCEPTION("to do");
 #else
 	timespec tim;
 	clock_gettime(CLOCK_REALTIME, &tim);
@@ -209,8 +209,8 @@ double mrpt::system::timeDifference(
 	const mrpt::system::TTimeStamp t1, const mrpt::system::TTimeStamp t2)
 {
 	MRPT_START
-	ASSERT_(t1 != INVALID_TIMESTAMP)
-	ASSERT_(t2 != INVALID_TIMESTAMP)
+	ASSERT_(t1 != INVALID_TIMESTAMP);
+	ASSERT_(t2 != INVALID_TIMESTAMP);
 
 	return (int64_t(t2) - int64_t(t1)) / 10000000.0;
 
@@ -291,7 +291,7 @@ double mrpt::system::extractDayTimeFromTimestamp(
 	const mrpt::system::TTimeStamp t)
 {
 	MRPT_START
-	ASSERT_(t != INVALID_TIMESTAMP)
+	ASSERT_(t != INVALID_TIMESTAMP);
 
 #ifdef _WIN32
 	SYSTEMTIME sysT;

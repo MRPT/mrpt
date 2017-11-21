@@ -894,7 +894,7 @@ double TPolygon2D::distance(const TPoint2D& point) const
 	getAsSegmentList(sgs);
 
 	if (sgs.empty())
-		THROW_EXCEPTION("Cannot compute distance to an empty polygon.")
+		THROW_EXCEPTION("Cannot compute distance to an empty polygon.");
 
 	double distance = std::numeric_limits<double>::max();
 

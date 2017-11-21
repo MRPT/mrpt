@@ -241,7 +241,7 @@ void CRangeBearingKFSLAM2D::OnTransitionJacobian(KFMatrix_VxV& F) const
 	CActionRobotMovement3D::Ptr act3D =
 		m_action->getActionByClass<CActionRobotMovement3D>();
 
-	if (act3D && act2D) THROW_EXCEPTION("Both 2D & 3D odometry are present!?!?")
+	if (act3D && act2D) THROW_EXCEPTION("Both 2D & 3D odometry are present!?!?");
 
 	TPoint2D Ap;
 
@@ -286,7 +286,7 @@ void CRangeBearingKFSLAM2D::OnTransitionNoise(KFMatrix_VxV& Q) const
 	CActionRobotMovement3D::Ptr act3D =
 		m_action->getActionByClass<CActionRobotMovement3D>();
 
-	if (act3D && act2D) THROW_EXCEPTION("Both 2D & 3D odometry are present!?!?")
+	if (act3D && act2D) THROW_EXCEPTION("Both 2D & 3D odometry are present!?!?");
 
 	CPosePDFGaussian odoIncr;
 

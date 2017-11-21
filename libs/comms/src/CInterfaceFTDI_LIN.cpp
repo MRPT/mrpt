@@ -148,7 +148,7 @@ void CInterfaceFTDI::OpenBySerialNumber(const std::string& serialNumber)
 #endif
 		);
 
-	if (ret) THROW_EXCEPTION(string(ftdi_get_error_string(ctx)));
+	if (ret) THROW_EXCEPTION(string(ftdi_get_error_string(ctx));;
 
 	MRPT_TRY_END
 #else
@@ -360,7 +360,7 @@ void CInterfaceFTDI::ftdi_read(
 			*lpdwBytesRead = 0;
 			return;
 		}
-		THROW_EXCEPTION(string(ftdi_get_error_string(ctx)));
+		THROW_EXCEPTION(string(ftdi_get_error_string(ctx));;
 	}
 
 	MRPT_TRY_END
@@ -385,7 +385,7 @@ void CInterfaceFTDI::ftdi_write(
 	if (ret >= 0)
 		*lpdwBytes = ret;
 	else
-		THROW_EXCEPTION(string(ftdi_get_error_string(ctx)));
+		THROW_EXCEPTION(string(ftdi_get_error_string(ctx));;
 
 	MRPT_TRY_END
 #else

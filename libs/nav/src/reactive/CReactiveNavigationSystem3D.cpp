@@ -60,7 +60,7 @@ void CReactiveNavigationSystem3D::changeRobotShape(TRobotShape robotShape)
 	for (unsigned int i = 0; i < robotShape.size(); i++)
 	{
 		if (robotShape.polygon(i).verticesCount() < 3)
-			THROW_EXCEPTION("The robot shape has less than 3 vertices!!")
+			THROW_EXCEPTION("The robot shape has less than 3 vertices!!");
 	}
 
 	m_robotShape = robotShape;

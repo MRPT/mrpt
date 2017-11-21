@@ -1684,7 +1684,7 @@ bool CPointsMap::savePCDFile(
 #else
 	MRPT_UNUSED_PARAM(filename);
 	MRPT_UNUSED_PARAM(save_as_binary);
-	THROW_EXCEPTION("Operation not available: MRPT was built without PCL")
+	THROW_EXCEPTION("Operation not available: MRPT was built without PCL");
 #endif
 }
 
@@ -1701,7 +1701,7 @@ bool CPointsMap::loadPCDFile(const std::string& filename)
 	return true;
 #else
 	MRPT_UNUSED_PARAM(filename);
-	THROW_EXCEPTION("Operation not available: MRPT was built without PCL")
+	THROW_EXCEPTION("Operation not available: MRPT was built without PCL");
 #endif
 }
 

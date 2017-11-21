@@ -1820,7 +1820,7 @@ int vision::computeMoreDescriptors(
 	return 1;
 	MRPT_END
 #else
-	THROW_EXCEPTION("This function needs OpenCV 2.1+")
+	THROW_EXCEPTION("This function needs OpenCV 2.1+");
 	return 0;
 #endif
 }  // end-computeMoreDescriptors
@@ -2091,7 +2091,7 @@ void vision::computeMultiResolutionDescriptors(
 	}  // end matches for
 	MRPT_END
 #else
-	THROW_EXCEPTION("This function needs OpenCV 2.1+")
+	THROW_EXCEPTION("This function needs OpenCV 2.1+");
 #endif
 }  // end-vision::computeMultiResolutionDescriptors
 
@@ -2206,7 +2206,7 @@ bool vision::computeMultiResolutionDescriptors(
 	return true;
 	MRPT_END
 #else
-	THROW_EXCEPTION("This function needs OpenCV 2.1+")
+	THROW_EXCEPTION("This function needs OpenCV 2.1+");
 #endif
 }  // end-computeMultiResolutionDescriptors
 
@@ -2251,7 +2251,7 @@ vector<bool> vision::computeMultiResolutionDescriptors(
 	return st;
 	MRPT_END
 #else
-	THROW_EXCEPTION("This function needs OpenCV 2.1+")
+	THROW_EXCEPTION("This function needs OpenCV 2.1+");
 #endif
 
 }  // end computeMultiResolutionDescriptors
@@ -2362,6 +2362,6 @@ void vision::computeMultiOrientations(
 	}  // end matches for
 	MRPT_END
 #else
-	THROW_EXCEPTION("This function needs OpenCV 2.1+")
+	THROW_EXCEPTION("This function needs OpenCV 2.1+");
 #endif
 }  // end computeMultiOrientations

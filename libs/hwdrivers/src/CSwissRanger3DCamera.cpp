@@ -134,7 +134,7 @@ void do_init_table_16u_to_8u()
 */
 void CSwissRanger3DCamera::initialize()
 {
-	if (!open()) THROW_EXCEPTION("Error opening SwissRanger 3D camera.")
+	if (!open()) THROW_EXCEPTION("Error opening SwissRanger 3D camera.");
 }
 
 /** This method will be invoked at a minimum rate of "process_rate" (Hz)

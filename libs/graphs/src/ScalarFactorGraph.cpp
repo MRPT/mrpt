@@ -246,6 +246,6 @@ void ScalarFactorGraph::updateEstimation(
 	}  // end calc variances
 
 #else
-	THROW_EXCEPTION("This method requires Eigen 3.1.0 or above")
+	THROW_EXCEPTION("This method requires Eigen 3.1.0 or above");
 #endif
 }

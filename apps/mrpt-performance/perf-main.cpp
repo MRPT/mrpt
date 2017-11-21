@@ -127,7 +127,7 @@ void getTestImage(unsigned int img_index, mrpt::utils::CImage& out_img)
 			buf.assignMemoryNotOwn(sample_image2, sizeof(sample_image2));
 			break;
 		default:
-			THROW_EXCEPTION("Sample image index out of range!")
+			THROW_EXCEPTION("Sample image index out of range!");
 	}
 	buf >> out_img;
 }

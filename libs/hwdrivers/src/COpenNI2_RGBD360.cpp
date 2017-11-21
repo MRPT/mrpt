@@ -78,7 +78,7 @@ void COpenNI2_RGBD360::initialize()
 		 sensor_id++)
 		open(sensor_id);
 #else
-	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
+	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
 #endif  // MRPT_HAS_OPENNI2
 }
 
@@ -119,7 +119,7 @@ void COpenNI2_RGBD360::doProcess()
 		appendObservations(objs);
 	}
 #else
-	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
+	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
 #endif  // MRPT_HAS_OPENNI2
 }
 
@@ -256,7 +256,7 @@ void COpenNI2_RGBD360::getNextObservation(
 	MRPT_UNUSED_PARAM(there_is_obs);
 	MRPT_UNUSED_PARAM(hardware_error);
 	MRPT_UNUSED_PARAM(out_obs);
-	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
+	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
 #endif  // MRPT_HAS_OPENNI2
 }
 

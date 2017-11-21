@@ -272,7 +272,7 @@ FILE* os::fopen(const char* fileName, const char* mode) noexcept
 ---------------------------------------------------------------*/
 void os::fclose(FILE* f)
 {
-	if (!f) THROW_EXCEPTION("Trying to close a nullptr 'FILE*' descriptor")
+	if (!f) THROW_EXCEPTION("Trying to close a nullptr 'FILE*' descriptor");
 	::fclose(f);
 }
 

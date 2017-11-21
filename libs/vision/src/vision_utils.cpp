@@ -661,7 +661,7 @@ size_t vision::matchFeatures(
 							(*itList1)->patchSize > 0 &&
 							(*itList2)->patchSize == (*itList1)->patchSize);
 #if !MRPT_HAS_OPENCV
-						THROW_EXCEPTION("MRPT has been compiled without OpenCV")
+						THROW_EXCEPTION("MRPT has been compiled without OpenCV");
 #else
 						IplImage *aux1, *aux2;
 						if ((*itList1)->patch.isColor() &&

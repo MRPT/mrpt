@@ -229,7 +229,7 @@ wxBitmap* mrpt::gui::MRPTImage2wxBitmap(const CImage& img)
 	// create and return the object
 	return new wxBitmap(wxImage(w, h, data, false));
 #else
-	THROW_EXCEPTION("MRPT compiled without OpenCV")
+	THROW_EXCEPTION("MRPT compiled without OpenCV");
 #endif
 }
 
@@ -1028,7 +1028,7 @@ void CPanelCameraSelection::writeConfigFromVideoSourcePanel(
 		{
 			cerr << "[MRPT CPanelCameraSelection] ERROR: Unknown camera "
 					"selection tab!\n";
-			THROW_EXCEPTION("Unknown camera selection tab!")
+			THROW_EXCEPTION("Unknown camera selection tab!");
 		}
 	}
 

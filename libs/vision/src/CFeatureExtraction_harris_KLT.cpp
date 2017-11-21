@@ -243,7 +243,7 @@ void  CFeatureExtraction::findMoreFeatures( const mrpt::utils::CImage &img,
 	}
 	MRPT_END
 #else
-	THROW_EXCEPTION("MRPT was compiled without OpenCV")
+	THROW_EXCEPTION("MRPT was compiled without OpenCV");
 #endif
 } // end findMoreFeatures
 #endif
@@ -326,7 +326,7 @@ void  CFeatureExtraction::selectGoodFeaturesKLT(
 		selectGoodFeaturesKLT( img, feats, init_ID, nDesiredFeatures, &mask );
 	} // end if-else there exists a ROI
 #else
-	THROW_EXCEPTION("MRPT was compiled without OpenCV")
+	THROW_EXCEPTION("MRPT was compiled without OpenCV");
 #endif
 }
 

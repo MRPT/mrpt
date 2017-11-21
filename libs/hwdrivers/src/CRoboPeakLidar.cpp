@@ -201,7 +201,7 @@ bool CRoboPeakLidar::turnOn()
 	if (ret && RPLIDAR_DRV) RPLIDAR_DRV->startMotor();
 	return ret;
 #else
-	THROW_EXCEPTION("MRPT has been compiled without RPLidar support!")
+	THROW_EXCEPTION("MRPT has been compiled without RPLidar support!");
 #endif
 }
 
@@ -218,7 +218,7 @@ bool CRoboPeakLidar::turnOff()
 	}
 	return true;
 #else
-	THROW_EXCEPTION("MRPT has been compiled without RPLidar support!")
+	THROW_EXCEPTION("MRPT has been compiled without RPLidar support!");
 #endif
 }
 
@@ -255,7 +255,7 @@ bool CRoboPeakLidar::getDeviceHealth() const
 
 	return true;
 #else
-	THROW_EXCEPTION("MRPT has been compiled without RPLidar support!")
+	THROW_EXCEPTION("MRPT has been compiled without RPLidar support!");
 #endif
 }
 
@@ -334,7 +334,7 @@ bool CRoboPeakLidar::checkCOMMs()
 
 	return true;
 #else
-	THROW_EXCEPTION("MRPT has been compiled without RPLidar support!")
+	THROW_EXCEPTION("MRPT has been compiled without RPLidar support!");
 #endif
 	MRPT_END
 }
@@ -355,7 +355,7 @@ void CRoboPeakLidar::initialize()
 void CRoboPeakLidar::setSerialPort(const std::string& port_name)
 {
 	if (m_rplidar_drv)
-		THROW_EXCEPTION("Can't change serial port while connected!")
+		THROW_EXCEPTION("Can't change serial port while connected!");
 
 	m_com_port = port_name;
 }

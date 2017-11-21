@@ -3177,7 +3177,7 @@ void xRawLogViewerFrame::OnGenOdoLaser(wxCommandEvent& event)
 
 			// Error:
 			default:
-				THROW_EXCEPTION("Unknown element type in the rawlog")
+				THROW_EXCEPTION("Unknown element type in the rawlog");
 
 		}  // end switch.
 	}

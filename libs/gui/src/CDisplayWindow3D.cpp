@@ -315,7 +315,7 @@ C3DWindowDialog::C3DWindowDialog(
 	WxSubsystem::CWXMainFrame::notifyWindowCreation();
 // cout << "[C3DWindowDialog] Notifying new window: " << winCount << endl;
 #else
-	THROW_EXCEPTION("MRPT was compiled without OpenGL support")
+	THROW_EXCEPTION("MRPT was compiled without OpenGL support");
 #endif
 	// this->Iconize(false);
 }

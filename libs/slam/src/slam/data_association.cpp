@@ -566,7 +566,7 @@ void mrpt::slam::data_association_full_covariance(
 		break;
 
 		default:
-			THROW_EXCEPTION("Unknown value of 'method'")
+			THROW_EXCEPTION("Unknown value of 'method'");
 	};
 
 	// If a mapping of prediction indices to IDs was providen, apply it now:

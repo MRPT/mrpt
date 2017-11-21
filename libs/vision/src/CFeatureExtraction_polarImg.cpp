@@ -167,7 +167,7 @@ void CFeatureExtraction::internal_computePolarImageDescriptors(
 	}  // end for it
 
 #else
-	THROW_EXCEPTION("This method needs MRPT compiled with OpenCV support")
+	THROW_EXCEPTION("This method needs MRPT compiled with OpenCV support");
 #endif
 	MRPT_END
 }

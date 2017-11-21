@@ -374,7 +374,7 @@ void CRangeBearingKFSLAM::OnTransitionNoise(KFMatrix_VxV& Q) const
 	CActionRobotMovement3D::Ptr act3D =
 		m_action->getActionByClass<CActionRobotMovement3D>();
 
-	if (act3D && act2D) THROW_EXCEPTION("Both 2D & 3D odometry are present!?!?")
+	if (act3D && act2D) THROW_EXCEPTION("Both 2D & 3D odometry are present!?!?");
 
 	CPose3DQuatPDFGaussian odoIncr;
 

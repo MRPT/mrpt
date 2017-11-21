@@ -81,7 +81,7 @@ bool PF_implementation<PARTICLE_TYPE, MYSELF>::
 			if (robotMovement3D)
 			{
 				if (m_accumRobotMovement2DIsValid)
-					THROW_EXCEPTION("Mixing 2D and 3D actions is not allowed.")
+					THROW_EXCEPTION("Mixing 2D and 3D actions is not allowed.");
 
 				if (!m_accumRobotMovement3DIsValid)
 					m_accumRobotMovement3D = robotMovement3D->poseChange;

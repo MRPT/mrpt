@@ -1060,7 +1060,7 @@ CPose3DPDF::Ptr CICP::Align3DPDF(
 				ICP3D_Method_Classic(m1, mm2, initialEstimationPDF, outInfo);
 			break;
 		case icpLevenbergMarquardt:
-			THROW_EXCEPTION("Only icpClassic is implemented for ICP-3D")
+			THROW_EXCEPTION("Only icpClassic is implemented for ICP-3D");
 			break;
 		default:
 			THROW_EXCEPTION_FMT(

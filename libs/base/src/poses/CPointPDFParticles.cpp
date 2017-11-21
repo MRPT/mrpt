@@ -56,7 +56,7 @@ void CPointPDFParticles::getMean(CPoint3D& p) const
 {
 	MRPT_START
 	if (m_particles.empty())
-		THROW_EXCEPTION("Cannot compute mean since there are zero particles.")
+		THROW_EXCEPTION("Cannot compute mean since there are zero particles.");
 
 	CParticleList::const_iterator it;
 	double sumW = 0;
@@ -283,7 +283,7 @@ double CPointPDFParticles::computeKurtosis()
 void CPointPDFParticles::drawSingleSample(CPoint3D& outSample) const
 {
 	MRPT_UNUSED_PARAM(outSample);
-	THROW_EXCEPTION("TO DO!")
+	THROW_EXCEPTION("TO DO!");
 }
 
 /*---------------------------------------------------------------

@@ -34,7 +34,7 @@ void CFeatureExtraction::extractFeaturesORB(
 
 #if MRPT_HAS_OPENCV
 #if MRPT_OPENCV_VERSION_NUM < 0x240
-	THROW_EXCEPTION("This function requires OpenCV > 2.4.0")
+	THROW_EXCEPTION("This function requires OpenCV > 2.4.0");
 #else
 
 	using namespace cv;
@@ -239,7 +239,7 @@ void CFeatureExtraction::internal_computeORBDescriptors(
 {
 #if MRPT_HAS_OPENCV
 #if MRPT_OPENCV_VERSION_NUM < 0x240
-	THROW_EXCEPTION("This function requires OpenCV > 2.4.0")
+	THROW_EXCEPTION("This function requires OpenCV > 2.4.0");
 #else
 	using namespace cv;
 

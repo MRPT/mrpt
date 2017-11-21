@@ -396,7 +396,7 @@ void CStream::internal_ReadObjectHeader(
 		if (sizeof(lengthReadClassName) !=
 			ReadBuffer(
 				(void*)&lengthReadClassName, sizeof(lengthReadClassName)))
-			THROW_EXCEPTION("Cannot read object header from stream! (EOF?)");
+			THROW_EXCEPTION("Cannot read object header from stream! (EOF?););
 
 		// Is in old format (< MRPT 0.5.5)?
 		if (!(lengthReadClassName & 0x80))

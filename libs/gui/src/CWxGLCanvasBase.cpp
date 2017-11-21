@@ -241,7 +241,7 @@ void CWxGLCanvasBase::InitGL()
 
 void CWxGLCanvasBase::setCameraPose(const mrpt::poses::CPose3D& camPose)
 {
-	THROW_EXCEPTION("todo")
+	THROW_EXCEPTION("todo");
 }
 
 #endif  // MRPT_HAS_WXWIDGETS

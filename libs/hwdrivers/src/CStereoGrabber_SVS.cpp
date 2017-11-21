@@ -164,7 +164,7 @@ CStereoGrabber_SVS::CStereoGrabber_SVS(
 
 #else
 	MRPT_UNUSED_PARAM(cameraIndex);
-	THROW_EXCEPTION("This class requires MRPT built with Videre SVS library.")
+	THROW_EXCEPTION("This class requires MRPT built with Videre SVS library.");
 #endif
 }
 

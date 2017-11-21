@@ -246,7 +246,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 	// Security tests:
 	if (m_closing_navigator) return;  // Are we closing in the main thread?
 	if (!m_init_done)
-		THROW_EXCEPTION("Have you called loadConfigFile() before?")
+		THROW_EXCEPTION("Have you called loadConfigFile() before?");
 	ASSERT_(m_navigationParams)
 
 	const size_t nPTGs = this->getPTG_count();

@@ -627,7 +627,7 @@ void CPosePDFParticlesExtended::prediction_and_update_pfAuxiliaryPFOptimal(
 	}  // end fixed sample size
 	else
 	{
-		THROW_EXCEPTION("Not implemented for this class.")
+		THROW_EXCEPTION("Not implemented for this class.");
 	}  // end adaptive sample size
 
 	// Substitute old by new particle set:
