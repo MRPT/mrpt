@@ -11,7 +11,6 @@
 
 #include <cmath>  // for exp
 #include <mrpt/bayes/CParticleFilter.h>  // for CParticleFilter::TPar...
-#include <mrpt/bayes/CParticleFilterCapable.h>  // for CParticleFilterCapable
 #include <mrpt/utils/CConfigFileBase.h>  // for CConfigFileBase, MRPT...
 #include <mrpt/utils/CStream.h>  // for CStream
 #include <stddef.h>  // for size_t

@@ -39,19 +39,17 @@ namespace mrpt
 {
 namespace poses
 {
-
 class MyStandardProposal
 {
-public:
+   public:
 	static constexpr bool DoesResampling = true;
 };
 
 class MyAuxiliaryPfOptimal
 {
-public:
+   public:
 	static constexpr bool DoesResampling = false;
 };
-
 
 IMPLEMENTS_SERIALIZABLE(CPosePDFParticlesExtended, CPosePDF, mrpt::poses)
 
@@ -102,8 +100,7 @@ void CPosePDFParticlesExtended::copyFrom(const CPosePDF& o)
 		m_particles.clear();
 		m_particles.resize(M);
 
-		for (itDest = m_particles.begin(),
-			partsIt = parts.begin();
+		for (itDest = m_particles.begin(), partsIt = parts.begin();
 			 itDest != m_particles.end(); itDest++, partsIt++)
 		{
 			itDest->log_w = 0;
@@ -274,8 +271,7 @@ void CPosePDFParticlesExtended::getCovarianceAndMean(
 
 	double lin_w_sum = 0;
 
-	for (i = 0; i < n; i++)
-		lin_w_sum += exp(m_particles[i].log_w);
+	for (i = 0; i < n; i++) lin_w_sum += exp(m_particles[i].log_w);
 	if (lin_w_sum == 0) lin_w_sum = 1;
 
 	for (i = 0; i < n; i++)
@@ -285,8 +281,8 @@ void CPosePDFParticlesExtended::getCovarianceAndMean(
 		// Manage 1 PI range:
 		double err_x = m_particles[i].d->pose.x() - mean.x();
 		double err_y = m_particles[i].d->pose.y() - mean.y();
-		double err_phi = wrapToPi(
-			fabs(m_particles[i].d->pose.phi() - mean_phi));
+		double err_phi =
+			wrapToPi(fabs(m_particles[i].d->pose.phi() - mean_phi));
 
 		var_x += square(err_x) * w;
 		var_y += square(err_y) * w;
@@ -325,8 +321,7 @@ void CPosePDFParticlesExtended::writeToStream(
 		// The data
 		n = uint32_t(m_particles.size());
 		out << n;
-		for (it = m_particles.begin();
-			 it != m_particles.end(); it++)
+		for (it = m_particles.begin(); it != m_particles.end(); it++)
 			out << it->log_w << it->d->pose << it->d->state;
 	}
 }
@@ -350,8 +345,7 @@ void CPosePDFParticlesExtended::readFromStream(
 			// The data
 			in >> n;
 			m_particles.resize(n);
-			for (it = m_particles.begin();
-				 it != m_particles.end(); it++)
+			for (it = m_particles.begin(); it != m_particles.end(); it++)
 				in >> it->log_w >> it->d->pose >> it->d->state;
 		}
 		break;
@@ -365,9 +359,11 @@ void CPosePDFParticlesExtended::readFromStream(
  ---------------------------------------------------------------*/
 void CPosePDFParticlesExtendedPF::offsetTransitionModel(double& val)
 {
-	if (getRandomGenerator().drawUniform(0.0, 1.0) < options.probabilityChangingBias)
+	if (getRandomGenerator().drawUniform(0.0, 1.0) <
+		options.probabilityChangingBias)
 	{
-		val = getRandomGenerator().drawUniform(-options.changingBiasUnifRange, 1.0);
+		val = getRandomGenerator().drawUniform(
+			-options.changingBiasUnifRange, 1.0);
 		//		val = min( val, 0.5f*options.changingBiasUnifRange );
 		//		val = max( val,-0.5f*options.changingBiasUnifRange );
 	}
@@ -379,7 +375,8 @@ void CPosePDFParticlesExtendedPF::offsetTransitionModel(double& val)
 
  ---------------------------------------------------------------*/
 template <>
-void CPosePDFParticlesExtendedPF::prediction_and_update<mrpt::poses::MyStandardProposal>(
+void CPosePDFParticlesExtendedPF::prediction_and_update<
+	mrpt::poses::MyStandardProposal>(
 	const mrpt::obs::CActionCollection* actions,
 	const mrpt::obs::CSensoryFrame* sf,
 	const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
@@ -450,7 +447,7 @@ void CPosePDFParticlesExtendedPF::prediction_and_update<mrpt::poses::MyStandardP
 		for (it = m_poseParticles.m_particles.begin(), i = 0;
 			 it != m_poseParticles.m_particles.end(); it++, i++)
 			it->log_w += auxiliarComputeObservationLikelihood(
-							 PF_options, &m_poseParticles, i, sf, it->d.get()) *
+							 PF_options, i, sf, it->d.get()) *
 						 PF_options.powFactor;
 	};
 
@@ -463,7 +460,8 @@ void CPosePDFParticlesExtendedPF::prediction_and_update<mrpt::poses::MyStandardP
 
  ---------------------------------------------------------------*/
 template <>
-void CPosePDFParticlesExtendedPF::prediction_and_update<mrpt::poses::MyAuxiliaryPfOptimal>(
+void CPosePDFParticlesExtendedPF::prediction_and_update<
+	mrpt::poses::MyAuxiliaryPfOptimal>(
 	const mrpt::obs::CActionCollection* actions,
 	const mrpt::obs::CSensoryFrame* sf,
 	const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
@@ -495,7 +493,7 @@ void CPosePDFParticlesExtendedPF::prediction_and_update<mrpt::poses::MyAuxiliary
 
 	// ----------------------------------------------------------------------
 	//		0) Common part:  Prepare m_poseParticles.m_particles "draw" and
-	//compute
+	// compute
 	// ----------------------------------------------------------------------
 	// Initialize random sample generator:
 	mrpt::poses::CPoseRandomSampler m_movementDrawer;
@@ -512,14 +510,9 @@ void CPosePDFParticlesExtendedPF::prediction_and_update<mrpt::poses::MyAuxiliary
 	tictac.Tic();
 	m_poseParticles.prepareFastDrawSample(
 		PF_options,
-		[this](
-			const bayes::CParticleFilter::TParticleFilterOptions& PF_options,
-			const CParticleFilterCapable* obj, size_t index, const void* action,
-			const void* observation) {
-			return particlesEvaluator_AuxPFOptimal(
-				PF_options, obj, index, action, observation);
-		},
-		&mean_movement, sf);
+		std::bind(
+			&CPosePDFParticlesExtendedPF::particlesEvaluator_AuxPFOptimal, this,
+			std::ref(PF_options), std::placeholders::_1, &mean_movement, sf));
 	printf("Done! in %.06f ms\n", tictac.Tac() * 1e3f);
 
 #if 1 /** DEBUG **/
@@ -600,7 +593,7 @@ void CPosePDFParticlesExtendedPF::prediction_and_update<mrpt::poses::MyAuxiliary
 
 					// Likelihood:
 					double lik = auxiliarComputeObservationLikelihood(
-						PF_options, &m_poseParticles, k, sf, &newPose);
+						PF_options, k, sf, &newPose);
 					if (lik > maxLik_k)
 					{
 						maxLik_k = lik;
@@ -627,7 +620,7 @@ void CPosePDFParticlesExtendedPF::prediction_and_update<mrpt::poses::MyAuxiliary
 
 				// Compute acceptance probability:
 				newPoseLikelihood = auxiliarComputeObservationLikelihood(
-					PF_options, &m_poseParticles, k, sf, &newPose);
+					PF_options, k, sf, &newPose);
 				ratioLikLik = exp(newPoseLikelihood - maxLikelihood[k]);
 				acceptanceProb = min(1.0, ratioLikLik);
 
@@ -649,7 +642,8 @@ void CPosePDFParticlesExtendedPF::prediction_and_update<mrpt::poses::MyAuxiliary
 					maxLikelihood[k] = newPoseLikelihood;  //  :'-( !!!
 				}
 
-			} while (acceptanceProb < getRandomGenerator().drawUniform(0.0, 0.999) &&
+			} while (acceptanceProb <
+						 getRandomGenerator().drawUniform(0.0, 0.999) &&
 					 (++timeoutCount) < MAX_TIMEOUT);
 
 			if (timeoutCount >= MAX_TIMEOUT) newPose = bestNewPose;
@@ -703,13 +697,11 @@ void CPosePDFParticlesExtended::resetDeterministic(
 	{
 		clear();
 		m_particles.resize(particlesCount);
-		for (it = m_particles.begin();
-			 it != m_particles.end(); it++)
+		for (it = m_particles.begin(); it != m_particles.end(); it++)
 			it->d.reset(new TExtendedCPose2D());
 	}
 
-	for (it = m_particles.begin();
-		 it != m_particles.end(); it++)
+	for (it = m_particles.begin(); it != m_particles.end(); it++)
 	{
 		*it->d = location;
 		it->log_w = 0;
@@ -770,8 +762,7 @@ void CPosePDFParticlesExtended::saveToTextFile(const std::string& file) const
 	for (unsigned int i = 0; i < m_particles.size(); i++)
 		os::fprintf(
 			f, "%f %f %f %e\n", m_particles[i].d->pose.x(),
-			m_particles[i].d->pose.y(),
-			m_particles[i].d->pose.phi(),
+			m_particles[i].d->pose.y(), m_particles[i].d->pose.phi(),
 			m_particles[i].log_w);
 
 	os::fclose(f);
@@ -794,8 +785,7 @@ void CPosePDFParticlesExtended::changeCoordinatesReference(
 	CPose2D newReferenceBase = CPose2D(newReferenceBase_);
 	CParticleList::iterator it;
 
-	for (it = m_particles.begin();
-		 it != m_particles.end(); it++)
+	for (it = m_particles.begin(); it != m_particles.end(); it++)
 		it->d->pose = newReferenceBase + it->d->pose;
 }
 
@@ -808,8 +798,7 @@ void CPosePDFParticlesExtended::drawSingleSample(CPose2D& outPart) const
 	double cum = 0;
 	CParticleList::const_iterator it;
 
-	for (it = m_particles.begin();
-		 it != m_particles.end(); it++)
+	for (it = m_particles.begin(); it != m_particles.end(); it++)
 	{
 		cum += exp(it->log_w);
 		if (uni <= cum)
@@ -856,8 +845,7 @@ void CPosePDFParticlesExtended::operator+=(const CPose2D& Ap)
 {
 	CParticleList::iterator it;
 
-	for (it = m_particles.begin();
-		 it != m_particles.end(); it++)
+	for (it = m_particles.begin(); it != m_particles.end(); it++)
 		it->d->pose = it->d->pose + Ap;
 }
 
@@ -873,8 +861,7 @@ void CPosePDFParticlesExtended::inverse(CPosePDF& o) const
 	static CPose2D nullPose(0, 0, 0);
 
 	for (unsigned int i = 0; i < out->m_particles.size(); i++)
-		out->m_particles[i].d->pose =
-			nullPose - out->m_particles[i].d->pose;
+		out->m_particles[i].d->pose = nullPose - out->m_particles[i].d->pose;
 }
 
 /*---------------------------------------------------------------
@@ -882,12 +869,10 @@ void CPosePDFParticlesExtended::inverse(CPosePDF& o) const
  ---------------------------------------------------------------*/
 CPose2D CPosePDFParticlesExtended::getMostLikelyParticle() const
 {
-	CParticleList::const_iterator it,
-		itMax = m_particles.begin();
+	CParticleList::const_iterator it, itMax = m_particles.begin();
 	double max_w = -1e300;
 
-	for (it = m_particles.begin();
-		 it != m_particles.end(); it++)
+	for (it = m_particles.begin(); it != m_particles.end(); it++)
 	{
 		if (it->log_w > max_w)
 		{
@@ -984,8 +969,8 @@ CPosePDFParticlesExtendedPF::TPredictionParams::TPredictionParams()
  ---------------------------------------------------------------*/
 double CPosePDFParticlesExtendedPF::auxiliarComputeObservationLikelihood(
 	const bayes::CParticleFilter::TParticleFilterOptions& PF_options,
-	const CParticleFilterCapable* obj, size_t particleIndexForMap,
-	const CSensoryFrame* observation, const TExtendedCPose2D* x)
+	size_t particleIndexForMap, const CSensoryFrame* observation,
+	const TExtendedCPose2D* x)
 {
 	double ret = 1;
 	CMetricMap* map;  // The map:
@@ -1035,8 +1020,7 @@ double CPosePDFParticlesExtendedPF::auxiliarComputeObservationLikelihood(
  ---------------------------------------------------------------*/
 double CPosePDFParticlesExtendedPF::particlesEvaluator_AuxPFOptimal(
 	const bayes::CParticleFilter::TParticleFilterOptions& PF_options,
-	const CParticleFilterCapable* obj, size_t index, const void* action,
-	const void* observation)
+	size_t index, const CPose2D* action, const CSensoryFrame* observation)
 {
 	MRPT_START
 
@@ -1052,15 +1036,13 @@ double CPosePDFParticlesExtendedPF::particlesEvaluator_AuxPFOptimal(
 	// , take the mean of the posterior density:
 	// --------------------------------------------
 	TExtendedCPose2D x_predict = *m_poseParticles.m_particles[index].d;
-	x_predict.pose = x_predict.pose + *static_cast<const CPose2D*>(action);
+	x_predict.pose = x_predict.pose + *action;
 
 	// and compute the obs. likelihood:
 	// --------------------------------------------
 	return ret + (m_pfAuxiliaryPFOptimal_estimatedProb[index] =
 					  auxiliarComputeObservationLikelihood(
-						  PF_options, obj, index,
-						  static_cast<const CSensoryFrame*>(observation),
-						  &x_predict));
+						  PF_options, index, observation, &x_predict));
 
 	MRPT_END
 }
@@ -1078,12 +1060,14 @@ void CParticleFilter::executeOn<mrpt::poses::CPosePDFParticlesExtendedPF>(
 	{
 		case CParticleFilter::pfStandardProposal:
 			executeOn<
-				mrpt::poses::CPosePDFParticlesExtendedPF, mrpt::poses::MyStandardProposal>(
+				mrpt::poses::CPosePDFParticlesExtendedPF,
+				mrpt::poses::MyStandardProposal>(
 				obj, action, observation, stats);
 			break;
 		case CParticleFilter::pfAuxiliaryPFOptimal:
 			executeOn<
-				mrpt::poses::CPosePDFParticlesExtendedPF, mrpt::poses::MyAuxiliaryPfOptimal>(
+				mrpt::poses::CPosePDFParticlesExtendedPF,
+				mrpt::poses::MyAuxiliaryPfOptimal>(
 				obj, action, observation, stats);
 			break;
 		default:

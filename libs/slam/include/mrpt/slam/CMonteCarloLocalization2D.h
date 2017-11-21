@@ -34,13 +34,11 @@ namespace slam
  *   application "app/pf-localization" for an example of usage.
  *
  * \sa CMonteCarloLocalization3D, CPose2D, CPosePDF, CPoseGaussianPDF,
- * CParticleFilterCapable
  * \ingroup mrpt_slam_grp
  */
-class CMonteCarloLocalization2D :
-	//		public mrpt::bayes::CParticleFilterCapable,
-	public PF_implementation<
-		mrpt::poses::CPose2D, mrpt::poses::CPosePDFParticles>
+class CMonteCarloLocalization2D
+	: public PF_implementation<
+		  mrpt::poses::CPose2D, mrpt::poses::CPosePDFParticles>
 {
    public:
 	using CParticleDataContent =
@@ -152,7 +150,7 @@ class CMonteCarloLocalization2D :
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
+}  // namespace slam
+}  // namespace mrpt
 
 #endif

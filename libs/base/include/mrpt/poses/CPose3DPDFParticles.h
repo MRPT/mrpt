@@ -11,7 +11,6 @@
 
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/bayes/CProbabilityParticle.h>
-#include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/bayes/CParticleFilterData.h>
 
 namespace mrpt

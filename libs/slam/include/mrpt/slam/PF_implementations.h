@@ -254,8 +254,8 @@ class AuxPFOptimalEvaluator
 	template <class BINTYPE, class MYSELF>
 	static double evaluate(
 		const mrpt::bayes::CParticleFilter::TParticleFilterOptions& PF_options,
-		const mrpt::bayes::CParticleFilterCapable* obj, unsigned long index,
-		const void* action, const void* observation, const MYSELF& me)
+		unsigned long index, const mrpt::poses::CPose3D* action,
+		const mrpt::obs::CSensoryFrame* observation, const MYSELF& me)
 	{
 		MRPT_UNUSED_PARAM(action);
 		MRPT_START
@@ -283,9 +283,7 @@ class AuxPFOptimalEvaluator
 
 			// Estimate the mean...
 			indivLik = me.PF_SLAM_computeObservationLikelihoodForParticle(
-				PF_options, index,
-				*static_cast<const mrpt::obs::CSensoryFrame*>(observation),
-				x_predict);
+				PF_options, index, *observation, x_predict);
 
 			MRPT_CHECK_NORMAL_NUMBER(indivLik);
 			vectLiks[q] = indivLik;
@@ -330,8 +328,8 @@ class AuxPFStandardEvaluator
 	template <class BINTYPE, class MYSELF>
 	static double evaluate(
 		const mrpt::bayes::CParticleFilter::TParticleFilterOptions& PF_options,
-		const mrpt::bayes::CParticleFilterCapable* obj, unsigned long index,
-		const void* action, const void* observation, const MYSELF& me)
+		unsigned long index, const mrpt::poses::CPose3D* action,
+		const mrpt::obs::CSensoryFrame* observation, const MYSELF& me)
 	{
 		MRPT_START
 
@@ -347,16 +345,13 @@ class AuxPFStandardEvaluator
 			// Just use the mean:
 			// , take the mean of the posterior density:
 			mrpt::poses::CPose3D x_predict;
-			x_predict.composeFrom(
-				oldPose, *static_cast<const mrpt::poses::CPose3D*>(action));
+			x_predict.composeFrom(oldPose, *action);
 
 			// and compute the obs. likelihood:
 			// --------------------------------------------
 			me.m_pfAuxiliaryPFStandard_estimatedProb[index] =
 				me.PF_SLAM_computeObservationLikelihoodForParticle(
-					PF_options, index,
-					*static_cast<const mrpt::obs::CSensoryFrame*>(observation),
-					x_predict);
+					PF_options, index, *observation, x_predict);
 
 			// Combined log_likelihood: Previous weight * obs_likelihood:
 			return cur_logweight +
@@ -385,9 +380,7 @@ class AuxPFStandardEvaluator
 
 				// Estimate the mean...
 				indivLik = me.PF_SLAM_computeObservationLikelihoodForParticle(
-					PF_options, index,
-					*static_cast<const mrpt::obs::CSensoryFrame*>(observation),
-					x_predict);
+					PF_options, index, *observation, x_predict);
 
 				MRPT_CHECK_NORMAL_NUMBER(indivLik);
 				vectLiks[q] = indivLik;
@@ -478,18 +471,12 @@ class AuxiliaryPFStandardAndOptimal
 		me.m_movementDrawer.getSamplingMean3D(meanRobotMovement);
 
 		mrpt::bayes::CParticleFilterCapable::TParticleProbabilityEvaluator
-			func = [&me](
-					   const bayes::CParticleFilter::TParticleFilterOptions&
-						   PF_options,
-					   const mrpt::bayes::CParticleFilterCapable* obj,
-					   size_t index, const void* action,
-					   const void* observation) -> double {
-			return EVALUATOR::template evaluate<BINTYPE, MYSELF>(
-				PF_options, obj, index, action, observation, me);
-		};
+			func = [&](size_t i) {
+				return EVALUATOR::template evaluate<BINTYPE, MYSELF>(
+					PF_options, i, &meanRobotMovement, sf, me);
+			};
 
-		me.m_poseParticles.prepareFastDrawSample(
-			PF_options, func, &meanRobotMovement, sf);
+		me.m_poseParticles.prepareFastDrawSample(PF_options, func);
 
 		// For USE_OPTIMAL_SAMPLING=1,  m_pfAuxiliaryPFOptimal_maxLikelihood is
 		// now computed.
@@ -722,7 +709,8 @@ class AuxiliaryPFStandardAndOptimal
 							permutationPathsAuxVector.size() - 1);
 
 						const size_t idx =
-							mrpt::random::getRandomGenerator().drawUniform32bit() %
+							mrpt::random::getRandomGenerator()
+								.drawUniform32bit() %
 							stateSpaceBinsLastTimestepParticles[idxBinSpacePath]
 								.size();
 						k = stateSpaceBinsLastTimestepParticles[idxBinSpacePath]
@@ -1064,10 +1052,10 @@ class AuxiliaryPFStandardAndOptimal
 						// acceptanceProb = 0;		// Keep searching or keep
 						// this one?
 					}
-				} while (
-					++timeout < maxTries &&
-					acceptanceProb <
-						mrpt::random::getRandomGenerator().drawUniform(0.0, 0.999));
+				} while (++timeout < maxTries &&
+						 acceptanceProb <
+							 mrpt::random::getRandomGenerator().drawUniform(
+								 0.0, 0.999));
 
 				if (timeout >= maxTries)
 				{

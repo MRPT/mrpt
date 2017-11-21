@@ -393,9 +393,10 @@ void CLocalMetricHypothesis::prediction_and_update<LSLAMAuxiliaryPFOptimal>(
 	tictac.Tic();
 	using namespace std::placeholders;
 	m_poseParticles.prepareFastDrawSample(
-		PF_options, std::bind(&CLocalMetricHypothesis::particlesEvaluator_AuxPFOptimal, this,
-								_1,_2, _3, _4, _5),
-			 robotMovement, sf);
+		PF_options, [&](size_t i)
+		{
+			return this->particlesEvaluator_AuxPFOptimal(PF_options, i, sf);
+		});
 	printf("[prepareFastDrawSample] Done in %.06f ms\n", tictac.Tac() * 1e3f);
 
 #if 0
@@ -631,12 +632,9 @@ void CLocalMetricHypothesis::prediction_and_update<LSLAMAuxiliaryPFOptimal>(
 			particlesEvaluator_AuxPFOptimal
  ---------------------------------------------------------------*/
 double CLocalMetricHypothesis::particlesEvaluator_AuxPFOptimal(
-	const bayes::CParticleFilter::TParticleFilterOptions& PF_options,
-	const CParticleFilterCapable* obj, size_t index, const void* action,
-	const void* observation)
+	const bayes::CParticleFilter::TParticleFilterOptions& PF_options, size_t index,
+	const CSensoryFrame* observation)
 {
-	MRPT_UNUSED_PARAM(action);
-
 	MRPT_START
 
 	// Compute the quantity:
@@ -671,7 +669,7 @@ double CLocalMetricHypothesis::particlesEvaluator_AuxPFOptimal(
 
 		// Estimate the mean...
 		indivLik = auxiliarComputeObservationLikelihood(
-			PF_options, index, ((CSensoryFrame*)observation), &x_predict);
+			PF_options, index, observation, &x_predict);
 
 		MRPT_CHECK_NORMAL_NUMBER(indivLik);
 		vectLiks[q] = indivLik;
