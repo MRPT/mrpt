@@ -19,8 +19,8 @@ namespace utils
 {
 /** This class is a bulk sequence of bytes with MultiThread (MT)-safe read and
  * write operations.
-  * \ingroup utils_grp
-  */
+ * \ingroup stlext_grp
+ */
 class MT_buffer
 {
    private:

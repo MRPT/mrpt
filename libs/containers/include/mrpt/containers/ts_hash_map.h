@@ -8,15 +8,14 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/utils/compiler_fixes.h>
-#include <mrpt/utils/mrpt_macros.h>
-#include <mrpt/utils/integer_select.h>
-
+#include <mrpt/core/integer_select.h>
+#include <mrpt/core/common.h> // remove MSVC warnings
 #include <array>
+#include <stdexcept>
 
 namespace mrpt
 {
-namespace utils
+namespace containers
 {
 template <typename KEY, typename VALUE>
 struct ts_map_entry
@@ -52,8 +51,8 @@ void reduced_hash(const std::string& value, uint64_t& hash);
   *  standard vector<> or to a deque<> (to avoid memory reallocations) by
  * changing the template parameter \a VECTOR_T.
   *
-  * \note Defined in #include <mrpt/utils/ts_hash_map.h>
-  * \ingroup stlext_grp
+  * \note Defined in #include <mrpt/containers/ts_hash_map.h>
+	* \ingroup mrpt_containers_grp
   */
 template <
 	typename KEY, typename VALUE, unsigned int NUM_BYTES_HASH_TABLE = 1,
@@ -199,7 +198,7 @@ class ts_hash_map
 	 * already. */
 	VALUE& operator[](const KEY& key)
 	{
-		typename mrpt::utils::uint_select_by_bytecount<
+		typename mrpt::uint_select_by_bytecount<
 			NUM_BYTES_HASH_TABLE>::type hash;
 		reduced_hash(key, hash);
 		std::array<ts_map_entry<KEY, VALUE>, NUM_HAS_TABLE_COLLISIONS_ALLOWED>&
@@ -215,11 +214,11 @@ class ts_hash_map
 			}
 			if (match_arr[i].first == key) return match_arr[i].second;
 		}
-		THROW_EXCEPTION("ts_hash_map: too many hash collisions!");
+		throw std::runtime_error("ts_hash_map: too many hash collisions!");
 	}
 	const_iterator find(const KEY& key) const
 	{
-		typename mrpt::utils::uint_select_by_bytecount<
+		typename mrpt::uint_select_by_bytecount<
 			NUM_BYTES_HASH_TABLE>::type hash;
 		reduced_hash(key, hash);
 		const std::array<ts_map_entry<KEY, VALUE>,

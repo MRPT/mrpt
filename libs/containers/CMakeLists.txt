@@ -1,11 +1,11 @@
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":
 #---------------------------------------------
-define_mrpt_lib_header_only(
+define_mrpt_lib(
 	# Lib name
 	containers
 	# Dependencies
-	#mrpt-core
+	mrpt-core
 	)
 
 # extra dependencies required by unit tests in this module:

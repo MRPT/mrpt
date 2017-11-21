@@ -6,23 +6,19 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef list_searchable_H
-#define list_searchable_H
+#pragma once
 
 #include <list>
 #include <algorithm>
 
 namespace mrpt
 {
-namespace utils
+namespace containers
 {
-using std::for_each;
-using std::string;
-
 /** This class implements a STL container with features of both, a std::set and
  * a std::list.
- * \note Defined in #include <mrpt/utils/list_searchable.h>
- * \ingroup stlext_grp
+ * \note Defined in #include <mrpt/containers/list_searchable.h>
+ * \ingroup mrpt_containers_grp
   */
 template <class T>
 class list_searchable : public std::list<T>
@@ -61,7 +57,5 @@ class list_searchable : public std::list<T>
 		return std::list<T>::end();
 	}
 };
-
 }  // End of namespace
 }  // End of namespace
-#endif

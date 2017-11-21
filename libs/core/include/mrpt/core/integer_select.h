@@ -13,11 +13,9 @@
 
 namespace mrpt
 {
-namespace utils
-{
 /** \addtogroup mrpt_int_select Templates to declare integers by byte count (in
- * #include <mrpt/utils/integer_select.h>)
-  *  \ingroup mrpt_base_grp
+ * #include <mrpt/core/integer_select.h>)
+  *  \ingroup mrpt_core_grp
   * @{ */
 
 /** Usage: `int_select_by_bytecount<N>::type  var;` allows defining var as a
@@ -81,5 +79,4 @@ struct uint_select_by_bytecount<8>
 };
 
 /** @} */
-}  // End of namespace
 }  // end of namespace

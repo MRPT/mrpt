@@ -7,7 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/utils/generic_copier_ptr.h>
+#include <mrpt/containers/generic_copier_ptr.h>
+#include <mrpt/core/common.h> // TODO
+MRPT_TODO("Re-enable when mrpt-poses is ported!");
+#if 0
 
 #include <mrpt/poses/CPose2D.h>
 #include <gtest/gtest.h>
@@ -116,3 +119,4 @@ TEST(poly_ptr, StlContainer)
 	EXPECT_NEAR(v3->x(), 4.0, 1e-9);
 	EXPECT_NEAR(v[3]->x(), 3.0, 1e-9);
 }
+#endif

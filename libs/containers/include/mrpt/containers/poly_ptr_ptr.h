@@ -15,7 +15,7 @@ namespace mrpt
 {
 namespace utils
 {
-/** \addtogroup stlext_grp
+/** \addtogroup mrpt_containers_grp
   * @{ */
 
 /** Wrapper to a clone smart pointer to polymorphic classes, capable of handling

@@ -6,15 +6,13 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef mrpt_bimap_H
-#define mrpt_bimap_H
+#pragma once
 
-#include <mrpt/utils/utils_defs.h>
 #include <map>
 
 namespace mrpt
 {
-namespace utils
+namespace containers
 {
 /** A bidirectional version of std::map, declared as bimap<KEY,VALUE> and which
  * actually contains two std::map's, one for keys and another for values.
@@ -28,7 +26,7 @@ namespace utils
   * \note Both typenames KEY and VALUE must be suitable for being employed as
  * keys in a std::map, i.e. they must be comparable through a "< operator".
   * \note Defined in #include <mrpt/utils/bimap.h>
-  * \ingroup stlext_grp
+  * \ingroup mrpt_containers_grp
   */
 template <typename KEY, typename VALUE>
 class bimap
@@ -38,12 +36,10 @@ class bimap
 	std::map<VALUE, KEY> m_v2k;
 
    public:
-	typedef typename std::map<KEY, VALUE>::const_iterator const_iterator;
-	typedef typename std::map<KEY, VALUE>::iterator iterator;
-
-	typedef
-		typename std::map<VALUE, KEY>::const_iterator const_iterator_inverse;
-	typedef typename std::map<VALUE, KEY>::iterator iterator_inverse;
+	using const_iterator = typename std::map<KEY, VALUE>::const_iterator;
+	using iterator = std::map<KEY, VALUE>::iterator;
+  using const_iterator_inverse = typename std::map<VALUE, KEY>::const_iterator;
+  using iterator_inverse = typename std::map<VALUE, KEY>::iterator;
 
 	/** Default constructor - does nothing */
 	bimap() {}
@@ -152,4 +148,3 @@ class bimap
 
 }  // End of namespace
 }  // End of namespace
-#endif
