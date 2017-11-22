@@ -1047,28 +1047,26 @@ double CPosePDFParticlesExtendedPF::particlesEvaluator_AuxPFOptimal(
 	MRPT_END
 }
 
-}  // namespace poses
-namespace bayes
-{
-template <>
-void CParticleFilter::executeOn<mrpt::poses::CPosePDFParticlesExtendedPF>(
-	mrpt::poses::CPosePDFParticlesExtendedPF& obj,
+void CPosePDFParticlesExtendedPF::executeOn(
+	CParticleFilter &pf,
 	const mrpt::obs::CActionCollection* action,
-	const mrpt::obs::CSensoryFrame* observation, TParticleFilterStats* stats)
+	const mrpt::obs::CSensoryFrame* observation,
+	mrpt::bayes::CParticleFilter::TParticleFilterStats* stats,
+	mrpt::bayes::CParticleFilter::TParticleFilterAlgorithm PF_algorithm)
 {
-	switch (m_options.PF_algorithm)
+	switch (PF_algorithm)
 	{
 		case CParticleFilter::pfStandardProposal:
-			executeOn<
+			pf.executeOn<
 				mrpt::poses::CPosePDFParticlesExtendedPF,
 				mrpt::poses::MyStandardProposal>(
-				obj, action, observation, stats);
+				*this, action, observation, stats);
 			break;
 		case CParticleFilter::pfAuxiliaryPFOptimal:
-			executeOn<
+			pf.executeOn<
 				mrpt::poses::CPosePDFParticlesExtendedPF,
 				mrpt::poses::MyAuxiliaryPfOptimal>(
-				obj, action, observation, stats);
+				*this, action, observation, stats);
 			break;
 		default:
 		{

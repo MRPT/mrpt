@@ -28,6 +28,7 @@
 #include <mrpt/slam/PF_aux_structs.h>
 
 #include <mrpt/bayes/CParticleFilter_impl.h>
+#include <mrpt/slam/PF_implementations.h>
 
 using namespace mrpt;
 using namespace mrpt::bayes;
@@ -44,16 +45,15 @@ namespace mrpt
 {
 namespace slam
 {
-
 class OptimalProposal
 {
-public:
+   public:
 	static constexpr bool DoesResampling = true;
 };
 
 /** Fills out a "TPoseBin2D" variable, given a path hypotesis and (if not set to
  * nullptr) a new pose appended at the end, using the KLD params in "options".
-	*/
+ */
 template <>
 void KLF_loadBinFromParticle(
 	detail::TPoseBin2D& outBin, const TKLDParams& opts,
@@ -80,7 +80,7 @@ void KLF_loadBinFromParticle(
 
 /** Fills out a "TPathBin2D" variable, given a path hypotesis and (if not set to
  * nullptr) a new pose appended at the end, using the KLD params in "options".
-	*/
+ */
 template <>
 void KLF_loadBinFromParticle(
 	detail::TPathBin2D& outBin, const TKLDParams& opts,
@@ -121,9 +121,6 @@ void KLF_loadBinFromParticle(
 }
 }
 
-// Include this AFTER specializations:
-#include <mrpt/slam/PF_implementations.h>
-
 /** Auxiliary for optimal sampling in RO-SLAM */
 struct TAuxRangeMeasInfo
 {
@@ -152,7 +149,6 @@ namespace mrpt
 {
 namespace maps
 {
-
 /*----------------------------------------------------------------------------------
 			prediction_and_update<OptimalProposal>
 
@@ -239,7 +235,9 @@ void CMultiMetricMapPDF::prediction_and_update<mrpt::slam::OptimalProposal>(
 	// To be computed as an average from all m_poseParticles.m_particles:
 	size_t particleWithHighestW = 0;
 	for (size_t i = 0; i < M; i++)
-		if (m_poseParticles.getW(i) > m_poseParticles.getW(particleWithHighestW)) particleWithHighestW = i;
+		if (m_poseParticles.getW(i) >
+			m_poseParticles.getW(particleWithHighestW))
+			particleWithHighestW = i;
 
 	//   The paths MUST already contain the starting location for each particle:
 	ASSERT_(!m_poseParticles.m_particles[0].d->robotPath.empty())
@@ -252,8 +250,8 @@ void CMultiMetricMapPDF::prediction_and_update<mrpt::slam::OptimalProposal>(
 
 	// Update particle poses:
 	size_t i;
-	for (i = 0, partIt = m_poseParticles.m_particles.begin(); partIt != m_poseParticles.m_particles.end();
-		 partIt++, i++)
+	for (i = 0, partIt = m_poseParticles.m_particles.begin();
+		 partIt != m_poseParticles.m_particles.end(); partIt++, i++)
 	{
 		double extra_log_lik = 0;  // Used for the optimal_PF with ICP
 
@@ -362,21 +360,22 @@ void CMultiMetricMapPDF::prediction_and_update<mrpt::slam::OptimalProposal>(
 				icpEstimation.mean = CPose2D(initialPoseEstimation);
 			}
 
-// As a way to take into account the odometry / "prior", use
-//  a correcting factor in the likelihood from the mismatch
-//  prior<->icp_estimate:
-//			const double prior_dist_lin =
-// initialPoseEstimation.distanceTo(icpEstimation.mean);
-//			const double prior_dist_ang = std::abs( mrpt::math::wrapToPi(
-// initialPoseEstimation.yaw()-icpEstimation.mean.phi() ) );
-////			if (prior_dist_lin>0.10 || prior_dist_ang>DEG2RAD(3))
-////				printf(" >>>>>>>>>> %f
-///%f\n",prior_dist_lin,RAD2DEG(prior_dist_ang));
-//			extra_log_lik = -(prior_dist_lin/0.20) -
-//(prior_dist_ang/DEG2RAD(20));
+			// As a way to take into account the odometry / "prior", use
+			//  a correcting factor in the likelihood from the mismatch
+			//  prior<->icp_estimate:
+			//			const double prior_dist_lin =
+			// initialPoseEstimation.distanceTo(icpEstimation.mean);
+			//			const double prior_dist_ang = std::abs(
+			//mrpt::math::wrapToPi(
+			// initialPoseEstimation.yaw()-icpEstimation.mean.phi() ) );
+			////			if (prior_dist_lin>0.10 ||
+			///prior_dist_ang>DEG2RAD(3)) /				printf(" >>>>>>>>>> %f
+			///%f\n",prior_dist_lin,RAD2DEG(prior_dist_ang));
+			//			extra_log_lik = -(prior_dist_lin/0.20) -
+			//(prior_dist_ang/DEG2RAD(20));
 
-//				printf("gICP: %.02f%%,
-// Iters=%u\n",icpInfo.goodness,icpInfo.nIterations);
+			//				printf("gICP: %.02f%%,
+			// Iters=%u\n",icpInfo.goodness,icpInfo.nIterations);
 
 #if 0  // Use hacked ICP covariance:
 			CPose3D Ap = finalEstimatedPoseGauss.mean - ith_last_pose;
@@ -414,7 +413,7 @@ void CMultiMetricMapPDF::prediction_and_update<mrpt::slam::OptimalProposal>(
 			//  Described in paper...
 			// --------------------------------------------------------
 			/** \todo Add paper ref!
-			  */
+			 */
 			ASSERT_(partIt->d->mapTillNow.m_beaconMap);
 			CBeaconMap::Ptr beacMap = partIt->d->mapTillNow.m_beaconMap;
 
@@ -608,7 +607,7 @@ void CMultiMetricMapPDF::prediction_and_update<mrpt::slam::OptimalProposal>(
 								tempFused.bayesianFusion(
 									fusedObsModels, newObsModel,
 									3  // minMahalanobisDistToDrop
-									);
+								);
 								fusedObsModels = tempFused;
 							}
 
@@ -907,7 +906,7 @@ void CMultiMetricMapPDF::prediction_and_update<mrpt::slam::OptimalProposal>(
 					newDrawnPosition.z(), firstEstimateRobotHeading, 0, 0);
 			}
 			/** \todo If there are 2+ sensors on the robot, compute phi?
-			  */
+			 */
 
 			// 4. Update the weight:
 			//     In optimal sampling this is the expectation of the
@@ -965,17 +964,14 @@ void CMultiMetricMapPDF::prediction_and_update<mrpt::slam::StandardProposal>(
 {
 	MRPT_START
 
-	StandardProposal::PF_SLAM_implementation<CRBPFParticleData, CMultiMetricMapPDF,
-		mrpt::slam::detail::TPoseBin2D>(
+	StandardProposal::PF_SLAM_implementation<
+		CRBPFParticleData, CMultiMetricMapPDF, mrpt::slam::detail::TPoseBin2D>(
 		actions, sf, PF_options, options.KLD_params, *this);
 
 	// Average map will need to be updated after this:
 	averageMapIsUpdated = false;
 
 	MRPT_END
-}
-
-}
 }
 
 // Specialization for my kind of particles:
@@ -1023,32 +1019,29 @@ double CMultiMetricMapPDF::PF_SLAM_computeObservationLikelihoodForParticle(
 	return ret;
 }
 
-namespace mrpt
+void CMultiMetricMapPDF::executeOn(
+	mrpt::bayes::CParticleFilter& pf,
+	const mrpt::obs::CActionCollection* action,
+	const mrpt::obs::CSensoryFrame* observation, mrpt::bayes::CParticleFilter::TParticleFilterStats* stats,
+	mrpt::bayes::CParticleFilter::TParticleFilterAlgorithm PF_algorithm)
 {
-namespace bayes
-{
-template <>
-void CParticleFilter::executeOn<CMultiMetricMapPDF>(
-	CMultiMetricMapPDF& obj, const mrpt::obs::CActionCollection* action,
-	const mrpt::obs::CSensoryFrame* observation, TParticleFilterStats* stats)
-{
-	switch (m_options.PF_algorithm)
+	switch (PF_algorithm)
 	{
 		case CParticleFilter::pfStandardProposal:
-			executeOn<CMultiMetricMapPDF, mrpt::slam::StandardProposal>(
-				obj, action, observation, stats);
+			pf.executeOn<CMultiMetricMapPDF, mrpt::slam::StandardProposal>(
+				*this, action, observation, stats);
 			break;
 		case CParticleFilter::pfAuxiliaryPFStandard:
-			executeOn<CMultiMetricMapPDF, mrpt::slam::AuxiliaryPFStandard>(
-				obj, action, observation, stats);
+			pf.executeOn<CMultiMetricMapPDF, mrpt::slam::AuxiliaryPFStandard>(
+				*this, action, observation, stats);
 			break;
 		case CParticleFilter::pfAuxiliaryPFOptimal:
-			executeOn<CMultiMetricMapPDF, mrpt::slam::AuxiliaryPFOptimal>(
-				obj, action, observation, stats);
+			pf.executeOn<CMultiMetricMapPDF, mrpt::slam::AuxiliaryPFOptimal>(
+				*this, action, observation, stats);
 			break;
 		case CParticleFilter::pfOptimalProposal:
-			executeOn<CMultiMetricMapPDF, mrpt::slam::OptimalProposal>(
-				obj, action, observation, stats);
+			pf.executeOn<CMultiMetricMapPDF, mrpt::slam::OptimalProposal>(
+				*this, action, observation, stats);
 			break;
 		default:
 		{
@@ -1056,8 +1049,6 @@ void CParticleFilter::executeOn<CMultiMetricMapPDF>(
 		}
 		break;
 	}
-
 }
-
 }
 }

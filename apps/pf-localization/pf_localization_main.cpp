@@ -737,11 +737,12 @@ void do_pf_localization(
 								(unsigned int)step,
 								(unsigned int)pdf.m_poseParticles.particlesCount());
 
-						PF.executeOn(
-							pdf,
+						pdf.executeOn(
+							PF,
 							action.get(),  // Action
 							observations.get(),  // Obs.
-							&PF_stats  // Output statistics
+							&PF_stats,  // Output statistics
+							pfOptions.PF_algorithm
 							);
 
 						if (!SAVE_STATS_ONLY)

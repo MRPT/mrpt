@@ -433,11 +433,12 @@ void TestParticlesLocalization()
 					"Executing ParticleFilter on %u particles....",
 					(unsigned int)pf.m_poseParticles.particlesCount());
 
-				PF.executeOn(
-					pf,
+				pf.executeOn(
+					PF,
 					action.get(),  // Action
 					observations.get(),  // Obs.
-					&PF_stats  // Output statistics
+					&PF_stats,  // Output statistics
+					pfOptions.PF_algorithm	
 				);
 				printf(
 					" Done! in %.03fms, ESS=%f\n", 1000.0f * tictac.Tac(),

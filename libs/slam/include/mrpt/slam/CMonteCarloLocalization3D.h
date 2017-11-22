@@ -94,6 +94,13 @@ class CMonteCarloLocalization3D
 		const mrpt::poses::CPose3D& x) const;
 	/** @} */
 
+	void executeOn(
+		mrpt::bayes::CParticleFilter& pf,
+		const mrpt::obs::CActionCollection* action,
+		const mrpt::obs::CSensoryFrame* observation,
+		mrpt::bayes::CParticleFilter::TParticleFilterStats* stats,
+		mrpt::bayes::CParticleFilter::TParticleFilterAlgorithm PF_algorithm);
+
 };  // End of class def.
 
 }  // namespace slam
