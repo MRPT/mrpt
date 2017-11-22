@@ -54,7 +54,7 @@ namespace typemeta
 template <typename T>
 struct TTypeName
 {
-	constexpr static std::string get() { return std::string(T::className); }
+	static std::string get() { return std::string(T::className); }
 };
 
 /** Identical to MRPT_DECLARE_TTYPENAME but intended for user code.
@@ -73,28 +73,28 @@ struct TTypeName
 	template <>                                                  \
 	struct TTypeName<_TYPE>                                      \
 	{                                                            \
-		constexpr static std::string get() { return std::string(#_TYPE); } \
+		static std::string get() { return std::string(#_TYPE); } \
 	};
 
 #define MRPT_DECLARE_TTYPENAME_NAMESPACE(_TYPE, __NS)            \
 	template <>                                                  \
 	struct TTypeName<__NS::_TYPE>                                \
 	{                                                            \
-		constexpr static std::string get() { return std::string(#_TYPE); } \
+		static std::string get() { return std::string(#_TYPE); } \
 	};
 
 #define MRPT_DECLARE_TTYPENAME_PTR(_TYPE)                            \
 	template <>                                                      \
 	struct TTypeName<_TYPE::Ptr>                                     \
 	{                                                                \
-		constexpr static std::string get() { return TTypeName<_TYPE>::get(); } \
+		static std::string get() { return TTypeName<_TYPE>::get(); } \
 	};
 
 #define MRPT_DECLARE_TTYPENAME_PTR_NAMESPACE(_TYPE, __NS)                  \
 	template <>                                                            \
 	struct TTypeName<__NS::_TYPE::Ptr>                                     \
 	{                                                                      \
-		constexpr static std::string get() { return TTypeName<__NS::_TYPE>::get(); } \
+		static std::string get() { return TTypeName<__NS::_TYPE>::get(); } \
 	};
 
 MRPT_DECLARE_TTYPENAME(bool)
