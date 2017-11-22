@@ -26,6 +26,7 @@ using namespace mrpt::obs;
 using namespace mrpt::maps;
 
 #include <mrpt/slam/PF_implementations_data.h>
+#include <mrpt/slam/PF_implementations.h>
 
 #include <mrpt/bayes/CParticleFilter_impl.h>
 
@@ -67,12 +68,6 @@ void KLF_loadBinFromParticle(
 			round(currentParticleValue->roll() / opts.KLD_binSize_PHI);
 	}
 }
-}  // namespace slam
-}  // namespace mrpt
-
-#include <mrpt/slam/PF_implementations.h>
-
-using namespace mrpt::slam;
 
 /*---------------------------------------------------------------
 				ctor
@@ -190,28 +185,25 @@ void CMonteCarloLocalization3D::PF_SLAM_implementation_replaceByNewParticleSet(
 	}
 }
 
-namespace mrpt
+void CMonteCarloLocalization3D::executeOn(
+	mrpt::bayes::CParticleFilter& pf, const mrpt::obs::CActionCollection* action,
+	const mrpt::obs::CSensoryFrame* observation,
+	mrpt::bayes::CParticleFilter::TParticleFilterStats* stats,
+	mrpt::bayes::CParticleFilter::TParticleFilterAlgorithm PF_algorithm)
 {
-namespace bayes
-{
-template <>
-void CParticleFilter::executeOn<CMonteCarloLocalization3D>(
-	CMonteCarloLocalization3D& obj, const mrpt::obs::CActionCollection* action,
-	const mrpt::obs::CSensoryFrame* observation, TParticleFilterStats* stats)
-{
-	switch (m_options.PF_algorithm)
+	switch (PF_algorithm)
 	{
 		case CParticleFilter::pfStandardProposal:
-			executeOn<CMonteCarloLocalization3D, mrpt::slam::StandardProposal>(
-				obj, action, observation, stats);
+			pf.executeOn<CMonteCarloLocalization3D, mrpt::slam::StandardProposal>(
+				*this, action, observation, stats);
 			break;
 		case CParticleFilter::pfAuxiliaryPFStandard:
-			executeOn<CMonteCarloLocalization3D, mrpt::slam::AuxiliaryPFStandard>(
-				obj, action, observation, stats);
+			pf.executeOn<CMonteCarloLocalization3D, mrpt::slam::AuxiliaryPFStandard>(
+				*this, action, observation, stats);
 			break;
 		case CParticleFilter::pfAuxiliaryPFOptimal:
-			executeOn<CMonteCarloLocalization3D, mrpt::slam::AuxiliaryPFOptimal>(
-				obj, action, observation, stats);
+			pf.executeOn<CMonteCarloLocalization3D, mrpt::slam::AuxiliaryPFOptimal>(
+				*this, action, observation, stats);
 			break;
 		default:
 		{

@@ -63,10 +63,6 @@ void KLF_loadBinFromParticle(
 		outBin.phi = round(currentParticleValue->phi() / opts.KLD_binSize_PHI);
 	}
 }
-}  // namespace slam
-}  // namespace mrpt
-
-#include <mrpt/slam/PF_implementations.h>
 
 /*---------------------------------------------------------------
 				ctor
@@ -92,7 +88,6 @@ TPose3D CMonteCarloLocalization2D::getLastPose(
 	ASSERTDEB_(m_poseParticles.m_particles[i].d);
 	return TPose3D(TPose2D(*m_poseParticles.m_particles[i].d));
 }
-
 
 /*---------------------------------------------------------------
 			PF_SLAM_computeObservationLikelihoodForParticle
@@ -221,12 +216,15 @@ void CMonteCarloLocalization2D::resetUniformFreeSpace(
 	// Generate pose m_particles:
 	for (size_t i = 0; i < M; i++)
 	{
-		int idx = round(getRandomGenerator().drawUniform(0.0, nFreeCells - 1.001));
+		int idx =
+			round(getRandomGenerator().drawUniform(0.0, nFreeCells - 1.001));
 
 		m_poseParticles.m_particles[i].d->x(
-			freeCells_x[idx] + getRandomGenerator().drawUniform(-gridRes, gridRes));
+			freeCells_x[idx] +
+			getRandomGenerator().drawUniform(-gridRes, gridRes));
 		m_poseParticles.m_particles[i].d->y(
-			freeCells_y[idx] + getRandomGenerator().drawUniform(-gridRes, gridRes));
+			freeCells_y[idx] +
+			getRandomGenerator().drawUniform(-gridRes, gridRes));
 		m_poseParticles.m_particles[i].d->phi(
 			getRandomGenerator().drawUniform(phi_min, phi_max));
 		m_poseParticles.m_particles[i].log_w = 0;
@@ -235,28 +233,29 @@ void CMonteCarloLocalization2D::resetUniformFreeSpace(
 	MRPT_END
 }
 
-namespace mrpt
+void CMonteCarloLocalization2D::executeOn(
+	mrpt::bayes::CParticleFilter& pf,
+	const mrpt::obs::CActionCollection* action,
+	const mrpt::obs::CSensoryFrame* observation,
+	mrpt::bayes::CParticleFilter::TParticleFilterStats* stats,
+	mrpt::bayes::CParticleFilter::TParticleFilterAlgorithm PF_algorithm)
 {
-namespace bayes
-{
-template <>
-void CParticleFilter::executeOn<CMonteCarloLocalization2D>(
-	CMonteCarloLocalization2D& obj, const mrpt::obs::CActionCollection* action,
-	const mrpt::obs::CSensoryFrame* observation, TParticleFilterStats* stats)
-{
-	switch (m_options.PF_algorithm)
+	switch (PF_algorithm)
 	{
 		case CParticleFilter::pfStandardProposal:
-			executeOn<CMonteCarloLocalization2D, mrpt::slam::StandardProposal>(
-				obj, action, observation, stats);
+			pf.executeOn<
+				CMonteCarloLocalization2D, mrpt::slam::StandardProposal>(
+				*this, action, observation, stats);
 			break;
 		case CParticleFilter::pfAuxiliaryPFStandard:
-			executeOn<CMonteCarloLocalization2D, mrpt::slam::AuxiliaryPFStandard>(
-				obj, action, observation, stats);
+			pf.executeOn<
+				CMonteCarloLocalization2D, mrpt::slam::AuxiliaryPFStandard>(
+				*this, action, observation, stats);
 			break;
 		case CParticleFilter::pfAuxiliaryPFOptimal:
-			executeOn<CMonteCarloLocalization2D, mrpt::slam::AuxiliaryPFOptimal>(
-				obj, action, observation, stats);
+			pf.executeOn<
+				CMonteCarloLocalization2D, mrpt::slam::AuxiliaryPFOptimal>(
+				*this, action, observation, stats);
 			break;
 		default:
 		{
@@ -264,8 +263,6 @@ void CParticleFilter::executeOn<CMonteCarloLocalization2D>(
 		}
 		break;
 	}
-
 }
-
 }
 }

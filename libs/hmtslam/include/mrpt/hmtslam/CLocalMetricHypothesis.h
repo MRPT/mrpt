@@ -21,6 +21,10 @@
 
 namespace mrpt
 {
+namespace bayes
+{
+class CParticleFilter;
+}
 namespace poses
 {
 class CPose3DPDFParticles;
@@ -273,6 +277,13 @@ class CLocalMetricHypothesis : public mrpt::utils::CSerializable
 		const mrpt::bayes::CParticleFilter::TParticleFilterOptions& PF_options,
 		size_t particleIndexForMap, const mrpt::obs::CSensoryFrame* observation,
 		const mrpt::poses::CPose2D* x);
+
+	void executeOn(
+			mrpt::bayes::CParticleFilter& pf, const mrpt::obs::CActionCollection* action,
+			const mrpt::obs::CSensoryFrame* observation,
+			mrpt::bayes::CParticleFilter::TParticleFilterStats* stats,
+			mrpt::bayes::CParticleFilter::TParticleFilterAlgorithm PF_algorithm);
+
 
    protected:
 	/** @}
