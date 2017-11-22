@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cstdint>
-#include <string>
+#include <mrpt/typemeta/static_string.h>
 
 namespace mrpt
 {
@@ -52,13 +52,17 @@ namespace typemeta
   * \ingroup mrpt_comms_grp
   */
 template <typename T>
-struct TTypeName
+struct TTypeName;
+#if 0
 {
 	static std::string get() { return std::string(T::className); }
 };
+#endif
 
 /** Identical to MRPT_DECLARE_TTYPENAME but intended for user code.
-  * MUST be placed at the GLOBAL namespace.
+  * MUST be placed at the GLOBAL namespace. Can be used for types declared
+  * at the global or within some namespace. Just write the full namespace path
+  * as `_TYPE` argument here.
   */
 #define DECLARE_CUSTOM_TTYPENAME(_TYPE) \
 	namespace mrpt                      \
@@ -73,28 +77,28 @@ struct TTypeName
 	template <>                                                  \
 	struct TTypeName<_TYPE>                                      \
 	{                                                            \
-		static std::string get() { return std::string(#_TYPE); } \
+		constexpr static auto get() { return literal(#_TYPE); }  \
 	};
 
 #define MRPT_DECLARE_TTYPENAME_NAMESPACE(_TYPE, __NS)            \
 	template <>                                                  \
 	struct TTypeName<__NS::_TYPE>                                \
 	{                                                            \
-		static std::string get() { return std::string(#_TYPE); } \
+		constexpr static auto get() { return literal(#__NS "::" #_TYPE); } \
 	};
 
 #define MRPT_DECLARE_TTYPENAME_PTR(_TYPE)                            \
 	template <>                                                      \
 	struct TTypeName<_TYPE::Ptr>                                     \
 	{                                                                \
-		static std::string get() { return TTypeName<_TYPE>::get(); } \
+		static auto get() { return TTypeName<_TYPE>::get(); } \
 	};
 
 #define MRPT_DECLARE_TTYPENAME_PTR_NAMESPACE(_TYPE, __NS)                  \
 	template <>                                                            \
 	struct TTypeName<__NS::_TYPE::Ptr>                                     \
 	{                                                                      \
-		static std::string get() { return TTypeName<__NS::_TYPE>::get(); } \
+		static auto get() { return TTypeName<__NS::_TYPE>::get(); } \
 	};
 
 MRPT_DECLARE_TTYPENAME(bool)

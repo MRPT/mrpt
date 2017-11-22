@@ -13,7 +13,13 @@
 #include <iostream>
 
 struct MyFooClass {};
+namespace MyNS
+{
+struct MyBarClass {};
+}
+
 DECLARE_CUSTOM_TTYPENAME(MyFooClass);
+DECLARE_CUSTOM_TTYPENAME(MyNS::MyBarClass);
 
 TEST(TTypeName, types2str)
 {
@@ -38,7 +44,7 @@ TEST(TTypeName, types2str)
 
 	// templates with a "," in its name break all our and gtest macros:
 #define TST_FOR_TYPE2(__TSTTYPE,__TSTTYPE2ndpart) \
-	if (std::string(#__TSTTYPE","#__TSTTYPE2ndpart)!=TTypeName<__TSTTYPE,__TSTTYPE2ndpart>::get()) \
+	if (std::string(#__TSTTYPE","#__TSTTYPE2ndpart)!=TTypeName<__TSTTYPE,__TSTTYPE2ndpart>::get().c_str()) \
 		GTEST_FAIL() << "Failed: " << #__TSTTYPE","#__TSTTYPE2ndpart;
 
 	TST_FOR_TYPE2(std::pair<int32_t,int32_t>);
@@ -47,5 +53,7 @@ TEST(TTypeName, types2str)
 
 	// User-defined types:
 	TST_FOR_TYPE(MyFooClass);
+	TST_FOR_TYPE(MyNS::MyBarClass);
 	TST_FOR_TYPE(std::vector<MyFooClass>);
+	TST_FOR_TYPE(std::set<MyNS::MyBarClass>);
 }
