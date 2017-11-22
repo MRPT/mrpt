@@ -9,4 +9,4 @@
 
 #pragma once
 
-#include <mrpt/core/common.h>
+#include <string>

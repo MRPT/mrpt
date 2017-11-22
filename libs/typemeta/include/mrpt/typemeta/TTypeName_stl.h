@@ -8,7 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/io/TTypeName.h>
+#include <mrpt/typemeta/TTypeName.h>
+#include <mrpt/typemeta/num_to_string.h>
 #include <list>
 #include <vector>
 #include <deque>
@@ -16,11 +17,11 @@
 #include <map>
 #include <array>
 
-// This file extends TTypeName.h for STL C++ types.
+/** \file This file extends TTypeName.h for STL C++ types. */
 
 namespace mrpt
 {
-namespace io
+namespace typemeta
 {
 /** @name Conversion of type to string at compile time
 @{ */
@@ -31,18 +32,32 @@ MRPT_DECLARE_TTYPENAME(std::string)
 	template <typename V>                                               \
 	struct TTypeName<_CONTAINER<V>>                                     \
 	{                                                                   \
-		static std::string get()                                        \
+		constexpr static std::string get()                              \
 		{                                                               \
 			return std::string(#_CONTAINER) + std::string("<") +        \
 				   std::string(TTypeName<V>::get()) + std::string(">"); \
 		}                                                               \
 	};
 
-MRPT_DECLARE_TTYPENAME_CONTAINER(std::array)
 MRPT_DECLARE_TTYPENAME_CONTAINER(std::vector)
 MRPT_DECLARE_TTYPENAME_CONTAINER(std::deque)
 MRPT_DECLARE_TTYPENAME_CONTAINER(std::list)
 MRPT_DECLARE_TTYPENAME_CONTAINER(std::set)
+
+// array<T,N>
+#define MRPT_DECLARE_TTYPENAME_CONTAINER_FIX_SIZE(_CONTAINER)           \
+	template <typename V,std::size_t N>                                 \
+	struct TTypeName<_CONTAINER<V,N>>                                   \
+	{                                                                   \
+		static std::string get()                                        \
+		{                                                               \
+			return std::string(#_CONTAINER) + std::string("<") +        \
+				   std::string(TTypeName<V>::get()) + std::string(",")+ \
+				   std::string(num_to_string<N>::value) + std::string(">"); \
+		}                                                               \
+	};
+
+MRPT_DECLARE_TTYPENAME_CONTAINER_FIX_SIZE(std::array)
 
 #define MRPT_DECLARE_TTYPENAME_CONTAINER_ASSOC(_CONTAINER)               \
 	template <typename K, typename V>                                    \

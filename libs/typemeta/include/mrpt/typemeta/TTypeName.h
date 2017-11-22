@@ -13,15 +13,15 @@
 
 namespace mrpt
 {
-namespace io
+namespace typemeta
 {
 /** @name Conversion of type to string at compile time
-  * IMPORTANT: See also the implementation of Serialization for STL containers
-in <mrpt/io/stl_serialization.h>
+  * IMPORTANT: See also <mrpt/typemeta/TTypeName_stl.h> for definitions for STL
+  * containers, and <mrpt/serialization/stl_serialization.h> for serialization.
 @{ */
 
 /** A template to obtain the type of its argument as a string at compile time.
-  *  It works with all classes derived from  CSerializable, plus many
+  *  It works with all classes derived from  CObject, plus many
  * specializations for the plain data types (bool, double, uint8_t, etc...)
   *   For example:
   *  \code
@@ -49,11 +49,12 @@ in <mrpt/io/stl_serialization.h>
   *  - short, unsigned short
   *  - size_t
   *
+  * \ingroup mrpt_comms_grp
   */
 template <typename T>
 struct TTypeName
 {
-	static std::string get() { return std::string(T::className); }
+	constexpr static std::string get() { return std::string(T::className); }
 };
 
 /** Identical to MRPT_DECLARE_TTYPENAME but intended for user code.
@@ -62,7 +63,7 @@ struct TTypeName
 #define DECLARE_CUSTOM_TTYPENAME(_TYPE) \
 	namespace mrpt                      \
 	{                                   \
-	namespace io                     \
+	namespace typemeta                  \
 	{                                   \
 	MRPT_DECLARE_TTYPENAME(_TYPE)       \
 	}                                   \
@@ -72,28 +73,28 @@ struct TTypeName
 	template <>                                                  \
 	struct TTypeName<_TYPE>                                      \
 	{                                                            \
-		static std::string get() { return std::string(#_TYPE); } \
+		constexpr static std::string get() { return std::string(#_TYPE); } \
 	};
 
 #define MRPT_DECLARE_TTYPENAME_NAMESPACE(_TYPE, __NS)            \
 	template <>                                                  \
 	struct TTypeName<__NS::_TYPE>                                \
 	{                                                            \
-		static std::string get() { return std::string(#_TYPE); } \
+		constexpr static std::string get() { return std::string(#_TYPE); } \
 	};
 
 #define MRPT_DECLARE_TTYPENAME_PTR(_TYPE)                            \
 	template <>                                                      \
 	struct TTypeName<_TYPE::Ptr>                                     \
 	{                                                                \
-		static std::string get() { return TTypeName<_TYPE>::get(); } \
+		constexpr static std::string get() { return TTypeName<_TYPE>::get(); } \
 	};
 
 #define MRPT_DECLARE_TTYPENAME_PTR_NAMESPACE(_TYPE, __NS)                  \
 	template <>                                                            \
 	struct TTypeName<__NS::_TYPE::Ptr>                                     \
 	{                                                                      \
-		static std::string get() { return TTypeName<__NS::_TYPE>::get(); } \
+		constexpr static std::string get() { return TTypeName<__NS::_TYPE>::get(); } \
 	};
 
 MRPT_DECLARE_TTYPENAME(bool)

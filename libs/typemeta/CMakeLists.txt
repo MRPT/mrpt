@@ -1,14 +1,12 @@
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":
 #---------------------------------------------
-define_mrpt_lib(
+define_mrpt_lib_header_only(
 	# Lib name
-	comms
+	typemeta
 	# Dependencies
-	mrpt-io
-	mrpt-core
 	)
 
-IF(CMAKE_MRPT_HAS_FTDI_SYSTEM)
-	TARGET_LINK_LIBRARIES(mrpt-comms PRIVATE ${FTDI_LIBS})
-ENDIF()
+IF(BUILD_mrpt-typemeta)
+
+ENDIF( )

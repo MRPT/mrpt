@@ -3,12 +3,11 @@
 #---------------------------------------------
 define_mrpt_lib(
 	# Lib name
-	comms
+	serialization
 	# Dependencies
-	mrpt-io
-	mrpt-core
+	mrpt-typemeta
 	)
 
-IF(CMAKE_MRPT_HAS_FTDI_SYSTEM)
-	TARGET_LINK_LIBRARIES(mrpt-comms PRIVATE ${FTDI_LIBS})
-ENDIF()
+IF(BUILD_mrpt-serialization)
+
+ENDIF( )

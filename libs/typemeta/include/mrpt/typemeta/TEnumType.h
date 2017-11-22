@@ -8,12 +8,43 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-//#include <mrpt/utils/bimap.h>
+#include <map>
+#include <stdexcept>
 
 namespace mrpt
 {
-namespace io
+namespace typemeta
 {
+namespace internal
+{
+template <typename KEY, typename VALUE>
+struct bimap
+{
+	std::map<KEY, VALUE> m_k2v;
+	std::map<VALUE, KEY> m_v2k;
+
+	bool direct(const KEY& k, VALUE& out_v) const
+	{
+		auto i = m_k2v.find(k);
+		if (i == m_k2v.end()) return false;
+		out_v = i->second;
+		return true;
+	}
+	bool inverse(const VALUE& v, KEY& out_k) const
+	{
+		auto i = m_v2k.find(v);
+		if (i == m_v2k.end()) return false;
+		out_k = i->second;
+		return true;
+	}
+	void insert(const KEY& k, const VALUE& v)
+	{
+		m_k2v[k] = v;
+		m_v2k[v] = k;
+	}
+}; // end bimap
+} // NS internal
+
 /** Only specializations of this class are defined for each enum type of
  * interest
   * \sa TEnumType \ingroup mrpt_io_grp
@@ -21,8 +52,8 @@ namespace io
 template <typename ENUMTYPE>
 struct TEnumTypeFiller
 {
-	typedef ENUMTYPE enum_t;
-	static void fill(mrpt::utils::bimap<enum_t, std::string>& m_map);
+	using enum_t = ENUMTYPE;
+	static void fill(internal::bimap<enum_t, std::string>& m_map);
 };
 
 /** For use in specializations of TEnumTypeFiller */
@@ -31,33 +62,42 @@ struct TEnumTypeFiller
 	m_map.insert(_CLASS::_VALUE, #_VALUE)
 
 /** A helper class that can convert an enum value into its textual
- * representation, and viceversa. \ingroup mrpt_io_grp */
+ * representation, and viceversa. \ingroup mrpt_typename_grp */
 template <typename ENUMTYPE>
 struct TEnumType
 {
+#define _MRPT_AUXTOSTR(__AA) #__AA
+
 	/** Gives the numerical name for a given enum text name \exception
 	 * std::exception on unknown enum name */
 	static ENUMTYPE name2value(const std::string& name)
 	{
-		return getBimap().inverse(name);
+		ENUMTYPE val;
+		if (!getBimap().inverse(name, val)) {
+			throw std::runtime_error(std::string("TEnumType<" _MRPT_AUXTOSTR(TEnumType) ">::name2value(): Unknown name: ")+name);
+		}
+		return val;
 	}
 
 	/** Gives the textual name for a given enum value \exception std::exception
 	 * on unknown enum value name */
 	static std::string value2name(const ENUMTYPE val)
 	{
-		return getBimap().direct(val);
+		if (!getBimap().direct(val,s)) {
+			throw std::runtime_error(std::string("TEnumType<" _MRPT_AUXTOSTR(TEnumType) ">::value2name(): Unknown value: ") + std::to_string(static_cast<int>(val)));
+		}
+		return s;
 	}
 
 	/** Singleton access */
-	static inline bimap<ENUMTYPE, std::string>& getBimap()
+	static inline internal::bimap<ENUMTYPE, std::string>& getBimap()
 	{
-		static bimap<ENUMTYPE, std::string> data;
-		if (data.empty()) TEnumTypeFiller<ENUMTYPE>::fill(data);
+		static internal::bimap<ENUMTYPE, std::string> data;
+		if (data.m_k2v.empty()) TEnumTypeFiller<ENUMTYPE>::fill(data);
 		return data;
 	}
+#undef _MRPT_AUXTOSTR
 };
 
 }  // End of namespace
 }  // end of namespace
-#endif
