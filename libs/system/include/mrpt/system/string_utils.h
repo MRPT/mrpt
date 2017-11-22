@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 #include <cstdint>
+#include <sstream>
 
 namespace mrpt
 {
@@ -143,13 +144,23 @@ T str2num(std::string const& value)
 	return output;
 }
 
-/** @brief Convert number instance to string */
+/** @brief Convert number instance (or any other common types) to string */
 template <typename T>
-std::string num2str(T const& value)
+inline std::string num2str(T value)
 {
-	std::stringstream sin;
-	sin << value;
-	return sin.str();
+	return std::to_string(value);
+}
+template <>
+inline std::string num2str<bool>(bool value) {
+	return value ? "true":"false";
+}
+template <>
+inline std::string num2str<std::string>(std::string value) {
+	return value;
+}
+template <>
+inline std::string num2str<const char*>(const char* value) {
+	return value;
 }
 
 /**\}*/

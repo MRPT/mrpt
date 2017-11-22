@@ -12,6 +12,14 @@
 #include <random>
 #include <limits>
 #include <vector>
+#include <algorithm>
+
+// Frwd decl:
+namespace Eigen
+{
+template<typename _MatrixType>
+class SelfAdjointEigenSolver;
+}
 
 namespace mrpt
 {
@@ -221,7 +229,7 @@ class CRandomGenerator
 		out_result.clear();
 		out_result.resize(dim, 0);
 		/** Computes the eigenvalues/eigenvector decomposition of this matrix,
-		*    so that: M = Z · D · Z<sup>T</sup>, where columns in Z are the
+		*    so that: M = Z ï¿½ D ï¿½ Z<sup>T</sup>, where columns in Z are the
 		*	  eigenvectors and the diagonal matrix D contains the eigenvalues
 		*    as diagonal elements, sorted in <i>ascending</i> order.
 		*/
@@ -260,12 +268,8 @@ class CRandomGenerator
 		Eigen::SelfAdjointEigenSolver<typename COVMATRIX::PlainObject>
 			eigensolver(cov);
 
-		typename Eigen::SelfAdjointEigenSolver<
-			typename COVMATRIX::PlainObject>::MatrixType eigVecs =
-			eigensolver.eigenvectors();
-		typename Eigen::SelfAdjointEigenSolver<
-			typename COVMATRIX::PlainObject>::RealVectorType eigVals =
-			eigensolver.eigenvalues();
+		auto eigVecs = eigensolver.eigenvectors();
+		auto eigVals = eigensolver.eigenvalues();
 
 		// Scale eigenvectors with eigenvalues:
 		// D.Sqrt(); Z = Z * D; (for each column)
@@ -303,9 +307,6 @@ class CRandomGenerator
 			throw std::runtime_error("drawGaussianMultivariateMany(): cov is not square.");
 		if (mean && size_t(mean->size()) != N)
 			throw std::runtime_error("drawGaussianMultivariateMany(): mean and cov sizes ");
-
-		ASSERT_EQUAL_(cov.cols(), cov.rows())
-		if (mean) ASSERT_EQUAL_(size_t(mean->size()), size_t(cov.cols()))
 
 		// Compute eigenvalues/eigenvectors of cov:
 		Eigen::SelfAdjointEigenSolver<typename COVMATRIX::PlainObject>
