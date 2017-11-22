@@ -6,7 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#pragma
+#pragma once
 
 #include <mrpt/system/os.h>
 #include <thread>
@@ -33,33 +33,22 @@ class CFileSystemWatcher
 	  */
 	struct TFileSystemChange
 	{
-		TFileSystemChange()
-			: path(),
-			  isDir(false),
-			  eventModified(false),
-			  eventCloseWrite(false),
-			  eventDeleted(false),
-			  eventMovedTo(false),
-			  eventMovedFrom(false),
-			  eventCreated(false),
-			  eventAccessed(false)
-		{
-		}
+		TFileSystemChange() { }
 
 		/** Complete path of the file/directory that has changed. */
-		std::string path;
+		std::string path {};
 		/** Whether the event happened to a file or a directory. */
-		bool isDir;
-		bool eventModified;
-		bool eventCloseWrite;
-		bool eventDeleted;
-		bool eventMovedTo;
-		bool eventMovedFrom;
-		bool eventCreated;
-		bool eventAccessed;
+		bool isDir{false};
+		bool eventModified{false};
+		bool eventCloseWrite{false};
+		bool eventDeleted{false};
+		bool eventMovedTo{false};
+		bool eventMovedFrom{false};
+		bool eventCreated{false};
+		bool eventAccessed{false};
 	};
 
-	typedef std::deque<TFileSystemChange> TFileSystemChangeList;
+	using TFileSystemChangeList = std::deque<TFileSystemChange>;
 
 	/** Creates the subscription to a specified path.
 	  * \param path The file or directory to watch.
@@ -80,14 +69,12 @@ class CFileSystemWatcher
 	/** Ended in "/" */
 	std::string m_watchedDirectory;
 #ifdef _WIN32
-	void* m_hNotif;
+	void* m_hNotif {nullptr};
 	std::thread m_watchThread;
 	/** Watch thread; only needed in win32 */
 	void thread_win32_watch();
 	std::queue<TFileSystemChange*> m_queue_events_win32_msgs;
 	mutable std::mutex m_queue_events_win32_cs;
-
-
 #endif
 
 #if defined(MRPT_OS_LINUX) || defined(__APPLE__)

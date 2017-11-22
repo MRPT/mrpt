@@ -8,12 +8,10 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/io/zip.h>
-//#include <mrpt/math/ops_vectors.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
 using namespace mrpt::io;
-//using namespace mrpt::math;
 using namespace std;
 
 TEST(Compress, DataBlockGZ)
@@ -31,22 +29,27 @@ TEST(Compress, DataBlockGZ)
 
 	//	cout << "[test_compress_main] Invoking compress_gz_data_block" << endl;
 
-	if (!mrpt::compress::zip::compress_gz_data_block(in_data, compress_data))
+	if (!mrpt::io::zip::compress_gz_data_block(in_data, compress_data))
 		GTEST_FAIL() << "Error in compress_gz_data_block\n";
 
 	//	cout << "Compressed gz-data: " << N << " -> " << compress_data.size() <<
 	//" bytes." << endl;
 
 	std::vector<uint8_t> recovered_data;
-	if (!mrpt::compress::zip::decompress_gz_data_block(
+	if (!mrpt::io::zip::decompress_gz_data_block(
 			compress_data, recovered_data))
 		GTEST_FAIL() << "Error in decompress_gz_data_block\n";
 
 	//	cout << "Decompressed data: " << recovered_data.size() << " bytes." <<
 	// endl;
 
-	uint8_t err = mrpt::math::sum(recovered_data - in_data);
-
-	EXPECT_EQ(0, err)
-		<< "Differences after compressing & decompressing with GZ\n";
+	EXPECT_EQ(in_data.size(), recovered_data.size());
+	if (in_data.size()==recovered_data.size())
+	{
+		bool all_eq=true;
+		for (size_t i=0;i<in_data.size();i++)
+			if (in_data[i]!=recovered_data[i])
+				all_eq=false;
+		EXPECT_TRUE(all_eq) << "Mismatch after compressing/decompressing";
+	}
 }
