@@ -55,27 +55,23 @@ class LSLAMOptimalProposal
 	MRPT_TODO("MOVE prediction_and_update here");
 };
 
-}
-
-
-namespace bayes
+void CLocalMetricHypothesis::executeOn(
+	mrpt::bayes::CParticleFilter& pf, const mrpt::obs::CActionCollection* action,
+	const mrpt::obs::CSensoryFrame* observation,
+	mrpt::bayes::CParticleFilter::TParticleFilterStats* stats,
+	mrpt::bayes::CParticleFilter::TParticleFilterAlgorithm PF_algorithm)
 {
-template <>
-void CParticleFilter::executeOn<CLocalMetricHypothesis>(
-	CLocalMetricHypothesis& obj, const mrpt::obs::CActionCollection* action,
-	const mrpt::obs::CSensoryFrame* observation, TParticleFilterStats* stats)
-{
-	switch (m_options.PF_algorithm)
+	switch (PF_algorithm)
 	{
 		case CParticleFilter::pfOptimalProposal:
-			executeOn<
+			pf.executeOn<
 				CLocalMetricHypothesis, mrpt::hmtslam::LSLAMOptimalProposal>(
-				obj, action, observation, stats);
+				*this, action, observation, stats);
 			break;
 		case CParticleFilter::pfAuxiliaryPFOptimal:
-			executeOn<
+			pf.executeOn<
 				CLocalMetricHypothesis, mrpt::hmtslam::LSLAMAuxiliaryPFOptimal>(
-				obj, action, observation, stats);
+				*this, action, observation, stats);
 			break;
 		default:
 		{
@@ -203,9 +199,9 @@ void CLSLAM_RBPF_2DLASER::processOneLMH(
 	// 	1) PROCESS ACTION
 	// 	2) PROCESS OBSERVATIONS
 	// ------------------------------------------------
-	CParticleFilter pf;
+	mrpt::bayes::CParticleFilter pf;
 	pf.m_options = m_parent->m_options.pf_options;
-	pf.executeOn(*LMH, actions.get(), sf.get());
+	LMH->executeOn(pf, actions.get(), sf.get(), nullptr, pf.m_options.PF_algorithm);
 
 	// 3) The appearance observation: update the log likelihood
 	// ...

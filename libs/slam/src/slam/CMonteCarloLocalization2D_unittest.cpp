@@ -253,12 +253,13 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
 						// ----------------------------------------
 						tictac.Tic();
 
-						PF.executeOn(
-							pdf,
+						pdf.executeOn(
+							PF,
 							action.get(),  // Action
 							observations.get(),  // Obs.
-							&PF_stats  // Output statistics
-						);
+							&PF_stats,  // Output statistics
+							pfOptions.PF_algorithm
+							);
 					}
 
 					pdf.m_poseParticles.getCovarianceAndMean(cov, meanPose);

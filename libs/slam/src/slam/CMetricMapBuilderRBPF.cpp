@@ -226,7 +226,7 @@ void CMetricMapBuilderRBPF::processActionObservation(
 		pf.m_options = m_PF_options;
 		pf.setVerbosityLevel(this->getMinLoggingLevel());
 
-		pf.executeOn(mapPDF, &fakeActs, &observations);
+		mapPDF.executeOn(pf, &fakeActs, &observations, nullptr, m_PF_options.PF_algorithm);
 
 		if (isLoggingLevelVisible(LVL_INFO))
 		{

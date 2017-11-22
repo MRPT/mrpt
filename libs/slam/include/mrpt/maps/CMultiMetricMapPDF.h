@@ -64,10 +64,9 @@ class CMultiMetricMapPDFParticles
  * \sa mrpt::slam::CMetricMapBuilderRBPF
  * \ingroup metric_slam_grp
  */
-class CMultiMetricMapPDF
-	: public mrpt::utils::CSerializable,
-	  public mrpt::slam::PF_implementation<
-		  CRBPFParticleData, CMultiMetricMapPDFParticles>
+class CMultiMetricMapPDF : public mrpt::utils::CSerializable,
+						   public mrpt::slam::PF_implementation<
+							   CRBPFParticleData, CMultiMetricMapPDFParticles>
 {
    public:
 	using ParticleData = CMultiMetricMapPDFParticles;
@@ -282,6 +281,13 @@ class CMultiMetricMapPDF
 		const mrpt::obs::CSensoryFrame& observation,
 		const mrpt::poses::CPose3D& x) const override;
 	/** @} */
+
+	void executeOn(
+		mrpt::bayes::CParticleFilter& pf,
+		const mrpt::obs::CActionCollection* action,
+		const mrpt::obs::CSensoryFrame* observation,
+		mrpt::bayes::CParticleFilter::TParticleFilterStats* stats,
+		mrpt::bayes::CParticleFilter::TParticleFilterAlgorithm PF_algorithm);
 
 };  // End of class def.
 

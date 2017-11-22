@@ -21,6 +21,7 @@
 
 namespace mrpt
 {
+
 namespace poses
 {
 class TExtendedCPose2D
@@ -268,6 +269,12 @@ class CPosePDFParticlesExtendedPF
 		const mrpt::obs::CActionCollection* action,
 		const mrpt::obs::CSensoryFrame* observation,
 		const bayes::CParticleFilter::TParticleFilterOptions& PF_options);
+
+	void executeOn(
+		mrpt::bayes::CParticleFilter& pf, const mrpt::obs::CActionCollection* action,
+		const mrpt::obs::CSensoryFrame* observation,
+		mrpt::bayes::CParticleFilter::TParticleFilterStats* stats,
+		mrpt::bayes::CParticleFilter::TParticleFilterAlgorithm PF_algorithms);
 
    private:
 	void offsetTransitionModel(double& val);
