@@ -8,7 +8,12 @@ digraph MRPT_LIBS {
 	expr -> core;
 
 	random     [label="mrpt-random",URL="group__mrpt__random__grp.html"];
-	random -> core;
+
+	serialization [label="mrpt-serialization",URL="group__mrpt__serialization__grp.html"];
+	
+	typemeta [label="mrpt-typemeta",URL="group__mrpt__typemeta__grp.html"];
+
+	io [label="mrpt-io",URL="group__mrpt__io__grp.html"];
 	
 	system     [label="mrpt-system",URL="group__mrpt__system__grp.html"];
 	system -> core;

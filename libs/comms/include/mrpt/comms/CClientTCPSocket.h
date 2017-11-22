@@ -8,17 +8,14 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/utils/core_defs.h>
+#include <mrpt/config.h> // MRPT_WORD_SIZE
+#include <mrpt/io/CStream.h>
 #include <cstdint>
-#include <mrpt/utils/CStream.h>
 #include <string>
 
 namespace mrpt
 {
-namespace utils
-{
-class CMessage;
-}
+namespace serialization { class CMessage; }
 /** Serial and networking devices and utilities */
 namespace comms
 {
@@ -33,7 +30,7 @@ class CServerTCPSocket;
  * CClientTCPSocket::DNS_LOOKUP_TIMEOUT_MS
   * \ingroup mrpt_comms_grp
   */
-class CClientTCPSocket : public mrpt::utils::CStream
+class CClientTCPSocket : public mrpt::io::CStream
 {
 	friend class CServerTCPSocket;
 
@@ -51,7 +48,6 @@ class CClientTCPSocket : public mrpt::utils::CStream
 	uint32_t m_hSock;
 #endif
 #else
-
 	/** The handle for the connected TCP socket, or -1 */
 	int m_hSock;
 #endif
@@ -176,7 +172,7 @@ class CClientTCPSocket : public mrpt::utils::CStream
 	  * \return Returns false on any error, or true if everything goes fine.
 	  */
 	bool sendMessage(
-		const mrpt::utils::CMessage& outMsg, const int timeout_ms = -1);
+		const mrpt::serialization::CMessage& outMsg, const int timeout_ms = -1);
 
 	/** Waits for an incoming message through the TCP stream.
 	  * \param inMsg The received message is placed here.
@@ -188,7 +184,7 @@ class CClientTCPSocket : public mrpt::utils::CStream
 	 * goes fine.
 	  */
 	bool receiveMessage(
-		mrpt::utils::CMessage& inMsg, const unsigned int timeoutStart_ms = 100,
+		mrpt::serialization::CMessage& inMsg, const unsigned int timeoutStart_ms = 100,
 		const unsigned int timeoutBetween_ms = 1000);
 
 	/** Return the number of bytes already in the receive queue (they can be
