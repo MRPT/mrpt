@@ -10,7 +10,7 @@
 #define CHMTSLAM_H
 
 #include <mrpt/utils/COutputLogger.h>
-#include <mrpt/utils/CMessageQueue.h>
+#include <mrpt/utils/CThreadSafeQueue.h>
 
 #include <mrpt/hmtslam/HMT_SLAM_common.h>
 #include <mrpt/hmtslam/CLocalMetricHypothesis.h>
@@ -156,7 +156,9 @@ class CHMTSLAM : public mrpt::utils::COutputLogger,
 
 	/** LSLAM thread input queue, messages of type CHMTSLAM::TMessageLSLAMfromAA
 	 */
-	utils::CMessageQueue m_LSLAM_queue;
+	using CMessageQueue = mrpt::containers::CThreadSafeQueue<mrpt::io::CMessage>;
+
+	CMessageQueue m_LSLAM_queue;
 
 	/** @} */
 
