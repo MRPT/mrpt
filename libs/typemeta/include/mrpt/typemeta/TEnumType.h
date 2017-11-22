@@ -83,6 +83,7 @@ struct TEnumType
 	 * on unknown enum value name */
 	static std::string value2name(const ENUMTYPE val)
 	{
+		std::string s;
 		if (!getBimap().direct(val,s)) {
 			throw std::runtime_error(std::string("TEnumType<" _MRPT_AUXTOSTR(TEnumType) ">::value2name(): Unknown value: ") + std::to_string(static_cast<int>(val)));
 		}

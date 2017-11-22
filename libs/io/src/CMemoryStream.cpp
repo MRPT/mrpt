@@ -13,6 +13,7 @@
 #include <mrpt/io/CFileInputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
 #include <algorithm> // min,max
+#include <cstring> // memcpy
 
 using namespace mrpt::io;
 using std::min;

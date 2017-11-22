@@ -51,7 +51,7 @@ template <class T>
 T round_10power(T val, int power10)
 {
 	long double F = ::pow((long double)10.0, -(long double)power10);
-	long int t = mrpt::utils::round_long(val * F);
+	long int t = round_long(val * F);
 	return T(t / F);
 }
 

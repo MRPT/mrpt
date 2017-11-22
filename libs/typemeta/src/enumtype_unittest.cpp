@@ -38,7 +38,7 @@ TEST(TEnumType, str2value)
 	
 	try
 	{
-		auto v = mrpt::typemeta::TEnumType<TestColors>::name2value("Violet");
+		mrpt::typemeta::TEnumType<TestColors>::name2value("Violet");
 		EXPECT_FALSE(true) << "Expected exception but it didn't happen!";
 	}
 	catch (std::exception &)
