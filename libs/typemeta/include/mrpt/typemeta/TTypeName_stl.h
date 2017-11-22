@@ -32,7 +32,7 @@ MRPT_DECLARE_TTYPENAME(std::string)
 	template <typename V>                                               \
 	struct TTypeName<_CONTAINER<V>>                                     \
 	{                                                                   \
-		constexpr static std::string get()                              \
+		static std::string get()                                        \
 		{                                                               \
 			return std::string(#_CONTAINER) + std::string("<") +        \
 				   std::string(TTypeName<V>::get()) + std::string(">"); \
