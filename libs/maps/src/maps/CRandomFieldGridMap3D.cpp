@@ -83,7 +83,7 @@ void CRandomFieldGridMap3D::resize(
 
 void CRandomFieldGridMap3D::clear()
 {
-	mrpt::utils::CDynamicGrid3D<TRandomFieldVoxel>::clear();
+	mrpt::containers::CDynamicGrid3D<TRandomFieldVoxel>::clear();
 	internal_initialize();
 }
 

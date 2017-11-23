@@ -28,7 +28,7 @@ namespace maps
   * Update the map with insertIndividualReading() or insertObservation()
   *
   * \sa mrpt::maps::CRandomFieldGridMap2D, mrpt::maps::CMetricMap,
- * mrpt::utils::CDynamicGrid, The application icp-slam,
+ * mrpt::containers::CDynamicGrid, The application icp-slam,
  * mrpt::maps::CMultiMetricMap
   * \ingroup mrpt_maps_grp
   */
@@ -163,7 +163,7 @@ class CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
 	bool load_Gaussian_Wind_Grid_From_File();
 
 	/** Gridmaps of the wind Direction/Module */
-	mrpt::utils::CDynamicGrid<double> windGrid_module, windGrid_direction;
+	mrpt::containers::CDynamicGrid<double> windGrid_module, windGrid_direction;
 
 	/** The timestamp of the last time the advection simulation was executed */
 	mrpt::system::TTimeStamp timeLastSimulated;

@@ -29,21 +29,6 @@ namespace math
 using namespace mrpt::poses;  // For the +,- operators
 using namespace mrpt::utils;
 
-namespace detail
-{
-// Convert a pose into a light-weight structure (functional form, needed for
-// forward declarations)
-TPoint2D lightFromPose(const mrpt::poses::CPoint2D& p) { return TPoint2D(p); }
-TPoint3D lightFromPose(const mrpt::poses::CPoint3D& p) { return TPoint3D(p); }
-TPose2D lightFromPose(const mrpt::poses::CPose2D& p) { return TPose2D(p); }
-TPose3D lightFromPose(const mrpt::poses::CPose3D& p) { return TPose3D(p); }
-TPose3DQuat lightFromPose(const mrpt::poses::CPose3DQuat& p)
-{
-	return TPose3DQuat(p);
-}
-
-}  // end detail
-
 TPoint2D::TPoint2D(const TPose2D& p) : x(p.x), y(p.y) {}
 TPoint2D::TPoint2D(const TPoint3D& p) : x(p.x), y(p.y) {}
 TPoint2D::TPoint2D(const TPose3D& p) : x(p.x), y(p.y) {}

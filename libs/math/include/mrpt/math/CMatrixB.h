@@ -6,6 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
+#if 0
 #ifndef CMATRIXB_H
 #define CMATRIXB_H
 
@@ -40,4 +41,5 @@ class CMatrixB : public mrpt::utils::CSerializable, public CMatrixBool
 }  // End of namespace
 }  // End of namespace
 
+#endif
 #endif

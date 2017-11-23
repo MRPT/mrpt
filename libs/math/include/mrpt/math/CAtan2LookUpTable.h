@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/utils/CDynamicGrid.h>
+#include <mrpt/containers/CDynamicGrid.h>
 #include <map>
 
 namespace mrpt
@@ -43,7 +43,7 @@ class CAtan2LookUpTable
 	double getYMax() const { return m_grid.getYMax(); }
 	double getResolution() const { return m_grid.getResolution(); }
    private:
-	mrpt::utils::CDynamicGrid<double> m_grid;
+	mrpt::containers::CDynamicGrid<double> m_grid;
 };
 
 /** Like CAtan2LookUpTable but with a multiresolution grid for increasingly
@@ -79,7 +79,7 @@ class CAtan2LookUpTableMultiRes
    private:
 	/** Maps from maximum (X,Y) coordinates to LUT for [-L,L]x[-L,L] square
 	 * area. */
-	std::map<double, mrpt::utils::CDynamicGrid<double>> m_grids;
+	std::map<double, mrpt::containers::CDynamicGrid<double>> m_grids;
 };
 
 }  // end NS math

@@ -10,6 +10,7 @@
 #include "math-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/CMatrixB.h>
+#if 0
 #include <mrpt/utils/CStream.h>
 
 using namespace mrpt;
@@ -85,3 +86,4 @@ CMatrixBool& CMatrixBool::operator=(const CMatrixTemplate<bool>& m)
 	CMatrixTemplate<bool>::operator=(m);
 	return *this;
 }
+#endif

@@ -9,7 +9,7 @@
 
 #include "math-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/types_math.h>  // for dynamic_vector, CVector...
+#include <mrpt/math/types_math.h>  // for dynamic_vector, CVector...
 #include <mrpt/math/CSplineInterpolator1D.h>  // for CSplineInterpolator1D
 #include <mrpt/utils/CStream.h>  // for CStream, operator<<
 #include <mrpt/utils/stl_serialization.h>  // for operator<<, operator>>

@@ -50,7 +50,7 @@
 #include <mrpt/utils/CConfigFileMemory.h>
 #include <mrpt/utils/CThreadSafeQueue.h>
 #include <mrpt/utils/CMessageQueue.h>
-#include <mrpt/utils/CDynamicGrid.h>
+#include <mrpt/containers/CDynamicGrid.h>
 #include <mrpt/utils/CProbabilityDensityFunction.h>
 
 #include <mrpt/utils/CConsoleRedirector.h>

@@ -8,7 +8,6 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/utils/utils_defs.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/wrap2pi.h>
 

@@ -6,12 +6,10 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CMatrixTemplateNumeric_H
-#define CMatrixTemplateNumeric_H
+#pragma once
 
-#include <mrpt/utils/core_defs.h>
-#include <mrpt/utils/types_math.h>
-#include <mrpt/utils/TTypeName.h>
+#include <Eigen/Dense>
+#include <mrpt/typemeta/TTypeName.h>
 #include <mrpt/math/point_poses2vectors.h>  // MRPT_MATRIX_CONSTRUCTORS_FROM_POSES()
 
 namespace mrpt
@@ -186,19 +184,17 @@ class VicinityTraits<CMatrixTemplateNumeric<T>>
 	}
 };
 }  // End of detail namespace.
-
 }  // End of namespace
 
-namespace utils
+namespace typemeta
 {
 // Extensions to mrpt::utils::TTypeName for matrices:
 template <typename T>
 struct TTypeName<mrpt::math::CMatrixTemplateNumeric<T>>
 {
-	static std::string get()
+	const static auto get()
 	{
-		return std::string("CMatrixTemplateNumeric<") +
-			   std::string(TTypeName<T>::get()) + std::string(">");
+		return literal("CMatrixTemplateNumeric<") + TTypeName<T>::get() + literal(">");
 	}
 };
 }

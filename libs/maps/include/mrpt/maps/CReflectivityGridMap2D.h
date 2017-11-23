@@ -11,7 +11,7 @@
 #define CReflectivityGridMap2D_H
 
 #include <mrpt/utils/CImage.h>
-#include <mrpt/utils/CDynamicGrid.h>
+#include <mrpt/containers/CDynamicGrid.h>
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/maps/CMetricMap.h>

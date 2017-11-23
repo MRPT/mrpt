@@ -6,12 +6,10 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CHISTOGRAM_H
-#define CHISTOGRAM_H
+#pragma once
 
-#include <mrpt/utils/core_defs.h>
-#include <mrpt/utils/types_math.h>
 #include <vector>
+#include <mrpt/math/eigen_frwds.h>
 
 namespace mrpt
 {
@@ -55,14 +53,7 @@ class CHistogram
 	/** Constructor with a fixed bin width.
 	 * \exception std::exception On max<=min or width<=0
 	 */
-	static inline CHistogram createWithFixedWidth(
-		double min, double max, double binWidth)
-	{
-		ASSERT_(max > min);
-		ASSERT_(binWidth > 0);
-		return CHistogram(
-			min, max, static_cast<size_t>(ceil((max - min) / binWidth)));
-	}
+	inline CHistogram createWithFixedWidth(double min, double max, double binWidth);
 
 	/** Clear the histogram:
 	 */
@@ -120,4 +111,3 @@ class CHistogram
 
 }  // End of namespace
 }  // End of namespace
-#endif

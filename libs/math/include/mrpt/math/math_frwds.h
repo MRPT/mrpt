@@ -10,7 +10,6 @@
 #define mrpt_math_forwddecls_H
 
 #include <mrpt/config.h>
-#include <mrpt/poses/poses_frwds.h>
 #include <string>
 
 /*! \file math_frwds.h
@@ -160,23 +159,6 @@ void multiply_skew3_A(const SKEW_3VECTOR& v, const MAT_A& A, MAT_OUT& out);
 
 namespace detail
 {
-// Implemented in "lightweight_geom_data.cpp"
-/** Convert a pose into a light-weight structure (functional form, needed for
- * forward declarations) */
-TPoint2D lightFromPose(const mrpt::poses::CPoint2D& p);
-/** Convert a pose into a light-weight structure (functional form, needed for
- * forward declarations) */
-TPoint3D lightFromPose(const mrpt::poses::CPoint3D& p);
-/** Convert a pose into a light-weight structure (functional form, needed for
- * forward declarations) */
-TPose2D lightFromPose(const mrpt::poses::CPose2D& p);
-/** Convert a pose into a light-weight structure (functional form, needed for
- * forward declarations) */
-TPose3D lightFromPose(const mrpt::poses::CPose3D& p);
-/** Convert a pose into a light-weight structure (functional form, needed for
- * forward declarations) */
-TPose3DQuat lightFromPose(const mrpt::poses::CPose3DQuat& p);
-
 template <class MATORG, class MATDEST>
 void extractMatrix(
 	const MATORG& M, const size_t first_row, const size_t first_col,

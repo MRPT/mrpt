@@ -6,14 +6,13 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef MRPT_MATH_H
-#define MRPT_MATH_H
+#pragma once
 
-#include <mrpt/utils/utils_defs.h>
 #include <cstdarg>
 #include <cstdio>
+#include <iosfwd>
+#include <vector>
 #include <mrpt/math/eigen_frwds.h>
-#include <map>
 
 namespace mrpt
 {
@@ -61,13 +60,13 @@ T absDiff(const T& lhs, const T& rhs)
   * \return false on EOF or invalid format.
   * The body of the function is implemented in MATH.cpp
 	*/
-bool loadVector(utils::CFileStream& f, std::vector<int>& d);
+bool loadVector(std::istream& f, std::vector<int>& d);
 
 /** Loads one row of a text file as a numerical std::vector.
   * \return false on EOF or invalid format.
   * The body of the function is implemented in MATH.cpp
 	*/
-bool loadVector(utils::CFileStream& f, std::vector<double>& d);
+bool loadVector(std::istream& f, std::vector<double>& d);
 
 void medianFilter(
 	const std::vector<double>& inV, std::vector<double>& outV,
@@ -270,5 +269,3 @@ bool saveEigenSparseTripletsToFile(
 }  // End of MATH namespace
 
 }  // End of namespace
-
-#endif

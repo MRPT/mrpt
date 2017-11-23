@@ -6,10 +6,8 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CSparseMatrixTemplate_H
-#define CSparseMatrixTemplate_H
+#pragma once
 
-#include <mrpt/utils/utils_defs.h>
 #include <map>
 
 namespace mrpt
@@ -47,24 +45,23 @@ class CSparseMatrixTemplate
 	/**
 	  * Internal map type, used to store the actual matrix.
 	  */
-	typedef typename std::map<std::pair<size_t, size_t>, T> SparseMatrixMap;
+	using SparseMatrixMap = typename std::map<std::pair<size_t, size_t>, T>;
 	/**
 	  * Const iterator to move through the matrix.
 	  * \sa CSparseMatrixTemplate::const_reverse_iterator
 	  */
-	typedef typename SparseMatrixMap::const_iterator const_iterator;
+	using const_iterator = typename SparseMatrixMap::const_iterator;
 	/**
 	  * Const reverse iterator to move through the matrix.
 	  * \sa CSparseMatrixTemplate::const_iterator
 	  */
-	typedef
-		typename SparseMatrixMap::const_reverse_iterator const_reverse_iterator;
+	using const_reverse_iterator = typename SparseMatrixMap::const_reverse_iterator;
 
    protected:
 	/**
 	  * Size of the matrix.
 	  */
-	size_t mRows, mColumns;
+	   size_t mRows{ 0 }, mColumns{ 0 };
 	/**
 	  * Actual matrix.
 	  */
@@ -74,7 +71,7 @@ class CSparseMatrixTemplate
 	/**
 	  * Basic constructor with no data. Size is set to (0,0).
 	  */
-	CSparseMatrixTemplate() : mRows(0), mColumns(0) {}
+	CSparseMatrixTemplate() {}
 	/**
 	  * Constructor with default size.
 	  */
@@ -126,7 +123,8 @@ class CSparseMatrixTemplate
 	  * \sa getRowCount,getColumn,setRow
 	  * \throw std::logic_error on out of range.
 	  */
-	void getRow(size_t nRow, std::vector<T>& vec) const
+	template <typename VECTOR>
+	void getRow(size_t nRow, VECTOR& vec) const
 	{
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
 		if (nRow >= mRows) throw std::logic_error("Out of range");
@@ -157,7 +155,8 @@ class CSparseMatrixTemplate
 	  * \sa getColCount,getRow,setColumn
 	  * \throw std::logic_error on out of range.
 	  */
-	void getColumn(size_t nCol, std::vector<T>& vec) const
+	template <typename VECTOR>
+	void getColumn(size_t nCol, VECTOR& vec) const
 	{
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
 		if (nCol >= mColumns) throw std::logic_error("Out of range");
@@ -233,8 +232,9 @@ class CSparseMatrixTemplate
 	  * \sa getRow
 	  * \throw std::logic_error on out of range or wrong sized vector.
 	  */
+	template <typename VECTOR>
 	void setRow(
-		size_t nRow, const std::vector<T>& vec, const T& nullObject = T())
+		size_t nRow, const VECTOR& vec, const T& nullObject = T())
 	{
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
 		if (nRow >= mRows) throw std::logic_error("Out of range");
@@ -258,8 +258,9 @@ class CSparseMatrixTemplate
 	  * \sa getColumn
 	  * \throw std::logic_error on out of range or wrong sized vector.
 	  */
+	template <typename VECTOR>
 	void setColumn(
-		size_t nCol, const std::vector<T>& vec, const T& nullObject = T())
+		size_t nCol, const VECTOR& vec, const T& nullObject = T())
 	{
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
 		if (nCol >= mColumns) throw std::logic_error("Out of range");
@@ -330,7 +331,8 @@ class CSparseMatrixTemplate
 	  * Gets a vector containing all the elements of the matrix, ignoring their
 	 * position.
 	  */
-	void getAsVector(std::vector<T>& vec) const
+	template <typename VECTOR>
+	void getAsVector(VECTOR& vec) const
 	{
 		size_t N = objectList.size();
 		vec.resize(0);
@@ -446,4 +448,3 @@ class CSparseSymmetricalMatrix : public CSparseMatrixTemplate<T>
 };  // end of CSparseSymmetricalMatrix
 }
 }
-#endif

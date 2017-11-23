@@ -228,7 +228,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>New smart pointer templates: <code><a class="el" href="classmrpt_1_1utils_1_1copy__ptr.html" title="Smart pointer for non-polymorphic classes. ">mrpt::utils::copy_ptr</a>&lt;&gt;</code>, <code><a class="el" href="classmrpt_1_1utils_1_1poly__ptr.html" title="Smart pointer for polymorphic classes with a clone() method. ">mrpt::utils::poly_ptr</a>&lt;&gt;</code>.</li>
 <li>New colormap: <a class="el" href="group__color__maps.html#gae6814ce5647bddcb41ee0f28eed704c8" title="Computes the RGB color components (range [0,1]) for the corresponding color index in the range [0...">mrpt::utils::hot2rgb()</a></li>
 <li>New function <a class="el" href="group__mrpt__system__os.html#ga9cffbecbc42b050dddfc8a3ead0b0f8c" title="Finds the &quot;[MRPT]/share/mrpt/&quot; directory, if available in the system. ">mrpt::system::find_mrpt_shared_dir()</a></li>
-<li>New class mrpt::utils::CDynamicGrid3D&lt;&gt;</li>
+<li>New class mrpt::containers::CDynamicGrid3D&lt;&gt;</li>
 <li>New function <a class="el" href="group__mrpt__comms__grp.html#ga71806880d9203bc740dc46578ae1c56b" title="Generic function for HTTP GET &amp; POST methods. ">mrpt::comms::net::http_request()</a></li>
 <li>New function <a class="el" href="group__time__date.html#ga72f4b9190395bc9fc0a0b4a95c2fb089" title="Returns the current time, as a double (fractional version of time_t) instead of a TTimeStamp...">mrpt::system::now_double()</a></li>
 <li>New function <a class="el" href="namespacemrpt_1_1utils.html#a7868e13636e5b73b1ad92d0a1a63f34b" title="Like getAllRegisteredClasses(), but filters the list to only include children clases of a given base ...">mrpt::utils::getAllRegisteredClassesChildrenOf()</a></li>
@@ -412,7 +412,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li><a class="el" href="namespacemrpt_1_1utils.html#ab8931b22a9ed5c5a276a3c8638c48d9f" title="Saturate the value of var (the variable gets modified) so it does not get out of [min,max]. ">mrpt::utils::saturate&lt;&gt;()</a></li>
 </ul>
 </li>
-<li>mrpt::utils::CDynamicGrid&lt;&gt; now uses <code>double</code> instead of <code>float</code> for all dimensions and coordinate computations.</li>
+<li>mrpt::containers::CDynamicGrid&lt;&gt; now uses <code>double</code> instead of <code>float</code> for all dimensions and coordinate computations.</li>
 <li>Priority with these functions now work properly in GNU/Linux; though, see the notes in their documentation for required permissions:<ul>
 <li>mrpt::system::changeCurrentProcessPriority()</li>
 <li>mrpt::system::changeThreadPriority()</li>
@@ -1294,7 +1294,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </ul>
 </li>
 <li>mrpt::utils::map_as_vector&lt;&gt; can be now customized to use different underlying STL containers for storage - <a href="http://code.google.com/p/mrpt/source/detail?r=3001">r3001</a></li>
-<li><a class="el" href="classmrpt_1_1utils_1_1_c_dynamic_grid.html#a887450d9ec2a71bee96ec85a762b06b7" title="Changes the size of the grid, ERASING all previous contents. ">mrpt::utils::CDynamicGrid::setSize()</a> now also accepts a "fill_value" argument.</li>
+<li><a class="el" href="classmrpt_1_1utils_1_1_c_dynamic_grid.html#a887450d9ec2a71bee96ec85a762b06b7" title="Changes the size of the grid, ERASING all previous contents. ">mrpt::containers::CDynamicGrid::setSize()</a> now also accepts a "fill_value" argument.</li>
 <li>Added method <a class="el" href="structmrpt_1_1math_1_1_t_point2_d.html#a6510b36a4749d929bd90b6b7dfd98345" title="Point norm. ">mrpt::math::TPoint2D::norm()</a> for consistency with <a class="el" href="structmrpt_1_1math_1_1_t_point3_d.html" title="Lightweight 3D point. ">mrpt::math::TPoint3D</a></li>
 <li>Better support for saving (and not only loading) plain text configuration files, including commented files with default values of all existing parameters: - <a href="http://code.google.com/p/mrpt/source/detail?r=2954">r2954</a><ul>
 <li>All <a class="el" href="classmrpt_1_1utils_1_1_c_config_file_base.html#ac50eb32df91903cac3a863a77c6b98d9">mrpt::utils::CConfigFileBase::write()</a> now have an extended signature for formatting.</li>

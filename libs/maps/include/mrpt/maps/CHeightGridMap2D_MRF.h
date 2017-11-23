@@ -28,7 +28,7 @@ namespace maps
   * Update the map with insertIndividualReading() or insertObservation()
   *
   * \sa mrpt::maps::CRandomFieldGridMap2D, mrpt::maps::CMetricMap,
- * mrpt::utils::CDynamicGrid, The application icp-slam,
+ * mrpt::containers::CDynamicGrid, The application icp-slam,
  * mrpt::maps::CMultiMetricMap
   * \note New in MRPT 1.4.0
   * \ingroup mrpt_maps_grp

@@ -14,8 +14,10 @@
 // Minimum Eigen fwrd-decls:
 namespace Eigen
 {
-template <typename Derived>
+template <typename Derived> 
 struct EigenBase;
+template<typename Derived>
+class MatrixBase;
 }
 
 namespace mrpt
@@ -30,7 +32,7 @@ struct ContainerType;
 template <typename Derived>
 struct ContainerType<Eigen::EigenBase<Derived>>
 {
-	typedef typename Derived::Scalar element_t;
+	using element_t = typename Derived::Scalar;
 };
 
 // Dynamic size:

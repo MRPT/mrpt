@@ -10,11 +10,11 @@
 #include "math-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/CHistogram.h>
-#include <mrpt/math/utils.h>
+#include <mrpt/core/exceptions.h>
+#include <mrpt/math/utils.h>  // linspace()
 
 using namespace mrpt;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 
 /*---------------------------------------------------------------
 					Constructor
@@ -22,8 +22,8 @@ using namespace mrpt::utils;
 CHistogram::CHistogram(const double min, const double max, const size_t nBins)
 	: m_min(min), m_max(max), m_bins(nBins, 0), m_count(0)
 {
-	ASSERT_(nBins > 0)
-	ASSERT_(max > min)
+	ASSERT_(nBins > 0);
+	ASSERT_(max > min);
 	m_binSizeInv = nBins / (m_max - m_min);
 }
 
@@ -99,4 +99,13 @@ void CHistogram::getHistogramNormalized(
 	hits.resize(N);
 	const double K = m_binSizeInv / m_count;
 	for (size_t i = 0; i < N; i++) hits[i] = K * m_bins[i];
+}
+
+CHistogram CHistogram::createWithFixedWidth(
+	double min, double max, double binWidth)
+{
+	ASSERT_(max > min);
+	ASSERT_(binWidth > 0);
+	return CHistogram(
+		min, max, static_cast<size_t>(ceil((max - min) / binWidth)));
 }
