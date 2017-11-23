@@ -17,12 +17,9 @@
 #include <mrpt/math/fourier.h>
 
 #include <mrpt/system/string_utils.h>
-#include <mrpt/utils/CFileStream.h>
 #include <mrpt/math/CMatrixD.h>
-#include <mrpt/utils/types_math.h>
 #include <mrpt/math/ops_matrices.h>
 #include <cmath>  // erf(), ...
-
 #include <algorithm>
 
 using namespace mrpt;
@@ -1693,7 +1690,7 @@ void math::idft2_complex(
 }
 
 // Loads a vector from a text file:
-bool math::loadVector(CFileStream& f, ::std::vector<int>& d)
+bool math::loadVector(std::istream& f, ::std::vector<int>& d)
 {
 	MRPT_START
 
@@ -1717,7 +1714,7 @@ bool math::loadVector(CFileStream& f, ::std::vector<int>& d)
 	MRPT_END
 }
 
-bool math::loadVector(CFileStream& f, ::std::vector<double>& d)
+bool math::loadVector(std::istream& f, ::std::vector<double>& d)
 {
 	MRPT_START
 

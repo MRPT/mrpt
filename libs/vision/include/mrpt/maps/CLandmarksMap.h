@@ -18,7 +18,7 @@
 #include <mrpt/obs/CObservationBearingRange.h>
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/math/CMatrix.h>
-#include <mrpt/utils/CDynamicGrid.h>
+#include <mrpt/containers/CDynamicGrid.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/obs/obs_frwds.h>
 
@@ -141,7 +141,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 		/** A grid-map with the set of landmarks falling into each cell.
 		  *  \todo Use the KD-tree instead?
 		  */
-		mrpt::utils::CDynamicGrid<vector_int> m_grid;
+		mrpt::containers::CDynamicGrid<vector_int> m_grid;
 
 		/** Auxiliary variables used in "getLargestDistanceFromOrigin"
 		  * \sa getLargestDistanceFromOrigin
@@ -177,7 +177,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 		void hasBeenModifiedAll();
 		void erase(unsigned int indx);
 
-		mrpt::utils::CDynamicGrid<vector_int>* getGrid() { return &m_grid; }
+		mrpt::containers::CDynamicGrid<vector_int>* getGrid() { return &m_grid; }
 		/** Returns the landmark with a given landmrk ID, or nullptr if not
 		 * found
 		  */

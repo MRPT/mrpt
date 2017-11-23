@@ -10,7 +10,7 @@
 #ifndef CRandomFieldGridMap2D_H
 #define CRandomFieldGridMap2D_H
 
-#include <mrpt/utils/CDynamicGrid.h>
+#include <mrpt/containers/CDynamicGrid.h>
 #include <mrpt/utils/CImage.h>
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/math/CMatrixD.h>
@@ -145,13 +145,13 @@ struct TRandomFieldCell
   *
   * \sa mrpt::maps::CGasConcentrationGridMap2D,
   *mrpt::maps::CWirelessPowerGridMap2D, mrpt::maps::CMetricMap,
-  *mrpt::utils::CDynamicGrid, The application icp-slam,
+  *mrpt::containers::CDynamicGrid, The application icp-slam,
   *mrpt::maps::CMultiMetricMap
   * \ingroup mrpt_maps_grp
   */
 class CRandomFieldGridMap2D
 	: public mrpt::maps::CMetricMap,
-	  public mrpt::utils::CDynamicGrid<TRandomFieldCell>,
+	  public mrpt::containers::CDynamicGrid<TRandomFieldCell>,
 	  public mrpt::utils::COutputLogger
 {
 	typedef utils::CDynamicGrid<TRandomFieldCell> BASE;

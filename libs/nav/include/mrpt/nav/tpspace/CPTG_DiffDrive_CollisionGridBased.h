@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
-#include <mrpt/utils/CDynamicGrid.h>
+#include <mrpt/containers/CDynamicGrid.h>
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/utils/TEnumType.h>
 
@@ -164,7 +164,7 @@ class CPTG_DiffDrive_CollisionGridBased : public CPTG_RobotShape_Polygonal
 	typedef std::vector<std::pair<uint16_t, float>> TCollisionCell;
 
 	/** An internal class for storing the collision grid  */
-	class CCollisionGrid : public mrpt::utils::CDynamicGrid<TCollisionCell>
+	class CCollisionGrid : public mrpt::containers::CDynamicGrid<TCollisionCell>
 	{
 	   private:
 		CPTG_DiffDrive_CollisionGridBased const* m_parent;
@@ -173,7 +173,7 @@ class CPTG_DiffDrive_CollisionGridBased : public CPTG_RobotShape_Polygonal
 		CCollisionGrid(
 			float x_min, float x_max, float y_min, float y_max,
 			float resolution, CPTG_DiffDrive_CollisionGridBased* parent)
-			: mrpt::utils::CDynamicGrid<TCollisionCell>(
+			: mrpt::containers::CDynamicGrid<TCollisionCell>(
 				  x_min, x_max, y_min, y_max, resolution),
 			  m_parent(parent)
 		{
@@ -240,7 +240,7 @@ class CPTG_DiffDrive_CollisionGridBased : public CPTG_RobotShape_Polygonal
 
 	/** This grid will contain indexes data for speeding-up the default,
 	 * brute-force lambda function */
-	mrpt::utils::CDynamicGrid<TCellForLambdaFunction> m_lambdaFunctionOptimizer;
+	mrpt::containers::CDynamicGrid<TCellForLambdaFunction> m_lambdaFunctionOptimizer;
 };
 
 /** @} */

@@ -6,18 +6,14 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CSparseMatrix_H
-#define CSparseMatrix_H
-
-#include <mrpt/utils/utils_defs.h>
-#include <mrpt/utils/exceptions.h>
+#pragma once
 
 #include <mrpt/math/math_frwds.h>
-#include <mrpt/utils/types_math.h>
 #include <mrpt/math/CSparseMatrixTemplate.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <cstring>  // memcpy
+#include <stdexcept>
 
 // Include CSparse lib headers, either from the system or embedded:
 extern "C" {
@@ -37,10 +33,9 @@ namespace mrpt
 namespace math
 {
 /** Used in mrpt::math::CSparseMatrix */
-class CExceptionNotDefPos : public mrpt::utils::CMRPTException
+struct CExceptionNotDefPos : public std::exception
 {
-   public:
-	CExceptionNotDefPos(const std::string& s) : CMRPTException(s) {}
+	CExceptionNotDefPos(const char* s) : std::exception(s) {}
 };
 
 /** A sparse matrix structure, wrapping T. Davis' CSparse library (part of

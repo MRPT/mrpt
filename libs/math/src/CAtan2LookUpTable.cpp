@@ -80,8 +80,8 @@ void CAtan2LookUpTableMultiRes::resize(
 		const double res = it.first;
 		const double exten = it.second;
 
-		mrpt::utils::CDynamicGrid<double>& dg = m_grids[exten] =
-			mrpt::utils::CDynamicGrid<double>(
+		mrpt::containers::CDynamicGrid<double>& dg = m_grids[exten] =
+			mrpt::containers::CDynamicGrid<double>(
 				-exten, exten, -exten, exten, res);
 
 		const size_t nx = dg.getSizeX(), ny = dg.getSizeY();
@@ -109,7 +109,7 @@ bool CAtan2LookUpTableMultiRes::atan2(
 	for (const auto& it : m_grids)
 	{
 		const double exten = it.first;
-		const mrpt::utils::CDynamicGrid<double>& dg = it.second;
+		const mrpt::containers::CDynamicGrid<double>& dg = it.second;
 
 		if (std::abs(x) > exten || std::abs(y) > exten) continue;
 

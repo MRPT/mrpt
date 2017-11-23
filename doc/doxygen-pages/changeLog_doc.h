@@ -161,7 +161,7 @@
 			- New smart pointer templates: `mrpt::utils::copy_ptr<>`, `mrpt::utils::poly_ptr<>`.
 			- New colormap: mrpt::utils::hot2rgb()
 			- New function mrpt::system::find_mrpt_shared_dir()
-			- New class mrpt::utils::CDynamicGrid3D<>
+			- New class mrpt::containers::CDynamicGrid3D<>
 			- New function mrpt::comms::net::http_request()
 			- New function mrpt::system::now_double()
 			- New function mrpt::utils::getAllRegisteredClassesChildrenOf()
@@ -295,7 +295,7 @@
 					- mrpt::system::timestampAdd()
 					- mrpt::utils::compute_CRC32()
 					- mrpt::utils::saturate<>()
-				- mrpt::utils::CDynamicGrid<> now uses `double` instead of `float` for all dimensions and coordinate computations.
+				- mrpt::containers::CDynamicGrid<> now uses `double` instead of `float` for all dimensions and coordinate computations.
 				- Priority with these functions now work properly in GNU/Linux; though, see the notes in their documentation for required permissions:
 					- mrpt::system::changeCurrentProcessPriority()
 					- mrpt::system::changeThreadPriority()
@@ -850,7 +850,7 @@
 					- New method mrpt::utils::CTimeLogger::getStats() for programatic execution time stats analysis - <a href="http://code.google.com/p/mrpt/source/detail?r=2998" >r2998</a>
 					- New method mrpt::utils::CTimeLogger::registerUserMeasure() for making stats of user-providen values - <a href="http://code.google.com/p/mrpt/source/detail?r=3005" >r3005</a>
 				- mrpt::utils::map_as_vector<> can be now customized to use different underlying STL containers for storage - <a href="http://code.google.com/p/mrpt/source/detail?r=3001" >r3001</a>
-				- mrpt::utils::CDynamicGrid::setSize() now also accepts a "fill_value" argument.
+				- mrpt::containers::CDynamicGrid::setSize() now also accepts a "fill_value" argument.
 				- Added method mrpt::math::TPoint2D::norm() for consistency with mrpt::math::TPoint3D
 				- Better support for saving (and not only loading) plain text configuration files, including commented files with default values of all existing parameters: - <a href="http://code.google.com/p/mrpt/source/detail?r=2954" >r2954</a>
 					- All mrpt::utils::CConfigFileBase::write() now have an extended signature for formatting.

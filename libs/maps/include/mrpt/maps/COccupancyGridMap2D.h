@@ -13,7 +13,7 @@
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/CImage.h>
-#include <mrpt/utils/CDynamicGrid.h>
+#include <mrpt/containers/CDynamicGrid.h>
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/utils/TMatchingPair.h>
 #include <mrpt/maps/CLogOddsGridMap2D.h>
@@ -119,13 +119,13 @@ class COccupancyGridMap2D : public CMetricMap,
 
 	/** Used for Voronoi calculation.Same struct as "map", but contains a "0" if
 	 * not a basis point. */
-	mrpt::utils::CDynamicGrid<uint8_t> m_basis_map;
+	mrpt::containers::CDynamicGrid<uint8_t> m_basis_map;
 
 	/** Used to store the Voronoi diagram.
 	 *    Contains the distance of each cell to its closer obstacles
 	 *    in 1/100th distance units (i.e. in centimeters), or 0 if not into the
 	 * Voronoi diagram  */
-	mrpt::utils::CDynamicGrid<uint16_t> m_voronoi_diagram;
+	mrpt::containers::CDynamicGrid<uint16_t> m_voronoi_diagram;
 
 	/** True upon construction; used by isEmpty() */
 	bool m_is_empty;
@@ -723,7 +723,7 @@ class COccupancyGridMap2D : public CMetricMap,
    public:
 	/** Return the auxiliary "basis" map built while building the Voronoi
 	 * diagram \sa buildVoronoiDiagram */
-	inline const mrpt::utils::CDynamicGrid<uint8_t>& getBasisMap() const
+	inline const mrpt::containers::CDynamicGrid<uint8_t>& getBasisMap() const
 	{
 		return m_basis_map;
 	}
@@ -731,7 +731,7 @@ class COccupancyGridMap2D : public CMetricMap,
 	/** Return the Voronoi diagram; each cell contains the distance to its
 	 * closer obstacle, or 0 if not part of the Voronoi diagram \sa
 	 * buildVoronoiDiagram */
-	inline const mrpt::utils::CDynamicGrid<uint16_t>& getVoronoiDiagram() const
+	inline const mrpt::containers::CDynamicGrid<uint16_t>& getVoronoiDiagram() const
 	{
 		return m_voronoi_diagram;
 	}

@@ -23,6 +23,8 @@ define_mrpt_lib(
 	math 		# Lib name
 	# Dependencies:
 	mrpt-core
+	mrpt-containers
+	mrpt-typemeta
 	)
 
 IF(BUILD_mrpt-math)

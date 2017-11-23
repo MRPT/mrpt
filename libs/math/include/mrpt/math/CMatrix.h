@@ -6,6 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
+#if 0
 #ifndef CMATRIX_H
 #define CMATRIX_H
 
@@ -83,4 +84,5 @@ mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in, CMatrix::Ptr& pObj);
 }  // End of namespace
 }  // End of namespace
 
+#endif
 #endif

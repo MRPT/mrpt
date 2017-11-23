@@ -8,10 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #pragma once
-
 #include <cstdlib>
-#include <mrpt/utils/mrpt_macros.h>
-#include <mrpt/config.h>
 
 namespace mrpt
 {
@@ -36,13 +33,11 @@ double fresnel_sin_integral(double x) noexcept;
   *http://www.mymathlib.com/functions/fresnel_sin_cos_integrals.html */
 double fresnel_cos_integral(double x) noexcept;
 
-#ifdef HAVE_LONG_DOUBLE
 /** long double version of fresnel_sin_integral */
 long double lfresnel_sin_integral(long double x) noexcept;
 
 /** long double version of fresnel_cos_integral */
 long double lfresnel_cos_integral(long double x) noexcept;
-#endif
 
 /** @} */
 

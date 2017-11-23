@@ -6,10 +6,10 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CPOLYGON_H
-#define CPOLYGON_H
+#pragma once
 
-#include <mrpt/utils/CSerializable.h>
+#if 0
+//#include <mrpt/utils/CSerializable.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
 namespace mrpt

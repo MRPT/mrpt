@@ -76,7 +76,7 @@ struct TRandomFieldVoxel
   * \note [New in MRPT 1.5.0]
   */
 class CRandomFieldGridMap3D
-	: public mrpt::utils::CDynamicGrid3D<TRandomFieldVoxel>,
+	: public mrpt::containers::CDynamicGrid3D<TRandomFieldVoxel>,
 	  public mrpt::utils::CSerializable,
 	  public mrpt::utils::COutputLogger
 {
