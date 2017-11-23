@@ -13,7 +13,6 @@
 // Includes
 #include "KMeans.h"
 #include "KmTree.h"
-#include <mrpt/utils/mrpt_macros.h>
 #include <sstream>
 #include <time.h>
 #include <vector>
@@ -59,8 +58,8 @@ static void RunKMeansOnce(
 	double* min_time, double* max_time, double* total_time,
 	Scalar* best_centers, int* best_assignment)
 {
-	MRPT_UNUSED_PARAM(n);
-	MRPT_UNUSED_PARAM(points);
+	(void)(n);
+	(void)(points);
 	const Scalar kEpsilon =
 		Scalar(1e-8);  // Used to determine when to terminate k-means
 

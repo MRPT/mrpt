@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "base-precomp.h"  // Precompiled headers
+#include "math-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/fresnel.h>
 #include <cmath>

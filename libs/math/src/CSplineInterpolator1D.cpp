@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "base-precomp.h"  // Precompiled headers
+#include "math-precomp.h"  // Precompiled headers
 
 #include <mrpt/utils/types_math.h>  // for dynamic_vector, CVector...
 #include <mrpt/math/CSplineInterpolator1D.h>  // for CSplineInterpolator1D
