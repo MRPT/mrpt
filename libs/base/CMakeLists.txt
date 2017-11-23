@@ -9,27 +9,11 @@ endmacro(add_base_srcs)
 
 add_base_srcs(bayes)
 add_base_srcs(compress)
-add_base_srcs(math)
 add_base_srcs(poses)
 add_base_srcs(utils)
 
 LIST(APPEND base_EXTRA_SRCS			"${MRPT_LIBS_ROOT}/base/src/utils/xmlparser/*.cpp" "${MRPT_LIBS_ROOT}/base/src/utils/xmlparser/*.h")
 LIST(APPEND base_EXTRA_SRCS_NAME 	"utils/xmlparser" "utils/xmlparser")
-
-# CSparse
-IF(NOT CMAKE_MRPT_HAS_SUITESPARSE)
-	LIST(APPEND base_EXTRA_SRCS		"${MRPT_LIBS_ROOT}/base/src/math/CSparse/*.c" "${MRPT_LIBS_ROOT}/base/include/mrpt/otherlibs/CSparse/*.h")
-	LIST(APPEND base_EXTRA_SRCS_NAME 	"math/CSparse" "math/CSparse")
-	INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/base/include/mrpt/otherlibs/CSparse/")
-ENDIF()
-
-# Eigen library
-LIST(APPEND base_EXTRA_SRCS		"${MRPT_LIBS_ROOT}/base/include/Eigen/*")
-LIST(APPEND base_EXTRA_SRCS_NAME 	"eigen_lib")
-
-# kmeans++
-LIST(APPEND base_EXTRA_SRCS		"${MRPT_LIBS_ROOT}/base/src/math/kmeans++/*.cpp" "${MRPT_LIBS_ROOT}/base/src/math/kmeans++/*.h")
-LIST(APPEND base_EXTRA_SRCS_NAME 	"math/kmeans" "math/kmeans")
 
 # Embedded version of libjpeg for (mostly) Windows:
 IF (CMAKE_MRPT_HAS_JPEG AND NOT CMAKE_MRPT_HAS_JPEG_SYSTEM)
@@ -41,11 +25,6 @@ ENDIF ()
 IF(CMAKE_MRPT_HAS_OPENCV)
 	INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${OPENCV_INCLUDE_DIRS} ${OPENCV_INCLUDEDIR})
 ENDIF()
-
-if (MSVC AND MSVC_VERSION GREATER 1800) # VS>= 2013
-	LIST(APPEND base_EXTRA_SRCS			"${CMAKE_SOURCE_DIR}/debug/*.natvis")
-	LIST(APPEND base_EXTRA_SRCS_NAME 	"MSVC debug natvis")
-endif()
 
 # We need pthread's in C files:
 if ((${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX) AND NOT WIN32)
@@ -72,8 +51,6 @@ IF(BUILD_mrpt-base)
 	IF(MRPT_ENABLE_PRECOMPILED_HDRS)
 		IF (MSVC)
 			set_source_files_properties(
-				${math/CSparse_FILES}
-				${math/kmeans_FILES}
 				${utils/xmlparser_FILES}
 				${utils/jpeglib_FILES}
 				PROPERTIES COMPILE_FLAGS "/Y-"
@@ -85,10 +62,6 @@ IF(BUILD_mrpt-base)
 	IF(CMAKE_MRPT_HAS_OPENCV)
 		target_link_libraries(mrpt-base PRIVATE ${OpenCV_LIBRARIES})
 	ENDIF()
-
-	if (NOT "${SuiteSparse_LIBRARIES}" STREQUAL "")
-		target_link_libraries(mrpt-base PRIVATE ${SuiteSparse_LIBRARIES})
-	endif ()
 
 	IF(CMAKE_MRPT_HAS_JPEG)
 		target_link_libraries(mrpt-base PRIVATE ${JPEG_LIBS})

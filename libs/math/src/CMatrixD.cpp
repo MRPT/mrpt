@@ -7,9 +7,9 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "base-precomp.h"  // Precompiled headers
+#include "math-precomp.h"  // Precompiled headers
 
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/utils/CStream.h>
 
@@ -18,23 +18,23 @@ using namespace mrpt::math;
 using namespace mrpt::utils;
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CMatrix, CSerializable, mrpt::math)
+IMPLEMENTS_SERIALIZABLE(CMatrixD, CSerializable, mrpt::math)
 
 /** Constructor from a TPose2D, which generates a 3x1 matrix \f$ [x y \phi]^T
- * \f$ */
-CMatrix::CMatrix(const TPose2D& p) : CMatrixFloat(p) {}
-/** Constructor from a mrpt::poses::CPose6D, which generates a 6x1 matrix \f$ [x
- * y z yaw pitch roll]^T \f$  */
-CMatrix::CMatrix(const TPose3D& p) : CMatrixFloat(p) {}
+ * \f$  */
+CMatrixD::CMatrixD(const TPose2D& p) : CMatrixDouble(p) {}
+/** Constructor from a TPose3D, which generates a 6x1 matrix \f$ [x y z yaw
+ * pitch roll]^T \f$  */
+CMatrixD::CMatrixD(const TPose3D& p) : CMatrixDouble(p) {}
 /** Constructor from a TPoint2D, which generates a 2x1 matrix \f$ [x y]^T \f$ */
-CMatrix::CMatrix(const TPoint2D& p) : CMatrixFloat(p) {}
+CMatrixD::CMatrixD(const TPoint2D& p) : CMatrixDouble(p) {}
 /** Constructor from a TPoint3D, which generates a 3x1 matrix \f$ [x y z]^T \f$
  */
-CMatrix::CMatrix(const TPoint3D& p) : CMatrixFloat(p) {}
+CMatrixD::CMatrixD(const TPoint3D& p) : CMatrixDouble(p) {}
 /*---------------------------------------------------------------
 						writeToStream
  ---------------------------------------------------------------*/
-void CMatrix::writeToStream(mrpt::utils::CStream& out, int* out_Version) const
+void CMatrixD::writeToStream(mrpt::utils::CStream& out, int* out_Version) const
 {
 	if (out_Version)
 		*out_Version = 0;
@@ -52,7 +52,7 @@ void CMatrix::writeToStream(mrpt::utils::CStream& out, int* out_Version) const
 /*---------------------------------------------------------------
 						readFromStream
  ---------------------------------------------------------------*/
-void CMatrix::readFromStream(mrpt::utils::CStream& in, int version)
+void CMatrixD::readFromStream(mrpt::utils::CStream& in, int version)
 {
 	switch (version)
 	{
