@@ -45,7 +45,7 @@ TEST(TTypeName, types2str)
 	// templates with a "," in its name break all our and gtest macros:
 #define TST_FOR_TYPE2(__TSTTYPE,__TSTTYPE2ndpart) \
 	if (std::string(#__TSTTYPE","#__TSTTYPE2ndpart)!=TTypeName<__TSTTYPE,__TSTTYPE2ndpart>::get().c_str()) \
-		GTEST_FAIL() << "Failed: " << #__TSTTYPE","#__TSTTYPE2ndpart;
+		GTEST_FAIL() << "Failed: " << #__TSTTYPE","#__TSTTYPE2ndpart << "\n Computed type is: " << TTypeName<__TSTTYPE,__TSTTYPE2ndpart>::get().c_str() << endl;
 
 	TST_FOR_TYPE2(std::pair<int32_t,int32_t>);
 	TST_FOR_TYPE2(std::map<double, std::set<int32_t>>);
@@ -56,4 +56,5 @@ TEST(TTypeName, types2str)
 	TST_FOR_TYPE(MyNS::MyBarClass);
 	TST_FOR_TYPE(std::vector<MyFooClass>);
 	TST_FOR_TYPE(std::set<MyNS::MyBarClass>);
+	TST_FOR_TYPE2(std::vector<std::array<MyNS::MyBarClass,10>>);
 }

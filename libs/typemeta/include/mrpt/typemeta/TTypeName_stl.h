@@ -53,9 +53,10 @@ MRPT_DECLARE_TTYPENAME_CONTAINER(std::set)
 		constexpr static auto get()                              \
 		{                                                        \
 			return literal(#_CONTAINER) + literal("<") +         \
-				   TTypeName<V>::get() + literal(",") +             \
-				   literal(num_to_string<N>::value) + literal(">"); \
-		}                                                           \
+				   TTypeName<V>::get() + literal(",") +          \
+				   literal(num_to_string<N>::value) +            \
+				   literal(">");                                 \
+		}                                                        \
 	};
 
 MRPT_DECLARE_TTYPENAME_CONTAINER_FIX_SIZE(std::array)
