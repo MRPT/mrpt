@@ -13,6 +13,7 @@
 #include <limits>
 #include <vector>
 #include <algorithm>
+#include <cstddef> 
 
 // Frwd decl:
 namespace Eigen
