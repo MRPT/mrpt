@@ -15,7 +15,6 @@
 #include <iostream>
 
 using namespace mrpt::system;
-//using namespace mrpt::utils;
 using namespace std;
 
 // This code is based on files in the public domain:

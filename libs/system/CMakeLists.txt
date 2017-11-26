@@ -9,6 +9,9 @@ define_mrpt_lib(
 	mrpt-core
 	)
 
+# extra dependencies required by unit tests in this module:
+set_property(GLOBAL PROPERTY mrpt_system_UNIT_TEST_EXTRA_DEPS mrpt-random)
+
 IF(BUILD_mrpt-system)
 	IF(WIN32)
 		target_link_libraries(mrpt-system PRIVATE Dbghelp) # For mrpt::system::getCallStackBackTrace()
