@@ -15,8 +15,8 @@ LIST(APPEND math_EXTRA_SRCS_NAME 	"math/kmeans" "math/kmeans")
 
 # debug visualizer for Eigen matrices
 if (MSVC AND MSVC_VERSION GREATER 1800) # VS>= 2013
-	LIST(APPEND base_EXTRA_SRCS			"${CMAKE_SOURCE_DIR}/debug/*.natvis")
-	LIST(APPEND base_EXTRA_SRCS_NAME 	"MSVC debug natvis")
+	LIST(APPEND math_EXTRA_SRCS			"${CMAKE_SOURCE_DIR}/debug/*.natvis")
+	LIST(APPEND math_EXTRA_SRCS_NAME 	"MSVC debug natvis")
 endif()
 
 define_mrpt_lib(
@@ -38,6 +38,6 @@ IF(BUILD_mrpt-math)
 	ENDIF()
 
 	if (NOT "${SuiteSparse_LIBRARIES}" STREQUAL "")
-		target_link_libraries(mrpt-base PRIVATE ${SuiteSparse_LIBRARIES})
+		target_link_libraries(mrpt-math PRIVATE ${SuiteSparse_LIBRARIES})
 	endif ()
 ENDIF()

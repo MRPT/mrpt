@@ -27,7 +27,7 @@ TEST(StaticString, concat_literals)
 	constexpr auto a = literal("foo");
 	constexpr auto b = literal("bar");
 	// In GCC7 these ones can be "constexpr", but that fails in MSVC 2017 (!)
-	auto ab = literal("foo") + literal("bar");
+	auto ab = a+b;
 
 	static_assert(ab.size() == 6, "***");
 	EXPECT_EQ(ab[0],'f');
@@ -58,4 +58,3 @@ TEST(num_to_string, ctor)
 	constexpr auto a = num_to_string<13>::value;
 	(void)(a);
 }
-
