@@ -25,12 +25,8 @@ namespace typemeta
  * specializations for the plain data types (bool, double, uint8_t, etc...)
   *   For example:
   *  \code
-  *     cout << TTypeName<double>::get() << endl;                          //
- * "double"
-  *   	cout << TTypeName<CPose2D>::get() << endl;                         //
- * "CPose2D"
-  *   	cout << TTypeName<mrpt::maps::COccupancyGridMap2D>::get() << endl; //
- * "COccupancyGridMap2D"
+  *     cout << TTypeName<double>::get() << endl;  // "double"
+  *   	cout << TTypeName<CPose2D>::get() << endl; // "CPose2D"
   *  \endcode
   *
   *  Users can extend this for custom structs/classes with the macro
@@ -38,10 +34,17 @@ namespace typemeta
   *  \code
   *     class MyClass { ... };
   *     DECLARE_CUSTOM_TTYPENAME(MyClass)
-  *     cout << TTypeName<MyClass>::get() << endl;                          //
- * "MyClass"
+  *     cout << TTypeName<MyClass>::get() << endl;  // "MyClass"
   *  \endcode
-  *
+  * or alternatively, to avoid adding out-of-class macros:
+  *  \code
+  *     namespace MyNS {
+  *      class MyClass {
+  *        DECLARE_TTYPENAME_CLASSNAME(MyNS::MyClass)
+  *      };
+  *     }
+  *     cout << TTypeName<MyNS::MyClass>::get() << endl; // "MyNS::MyClass"
+  *  \endcode
   *  The following types are NOT ALLOWED since they have platform-dependant
  * sizes:
   *  - int, unsigned int
@@ -49,20 +52,19 @@ namespace typemeta
   *  - short, unsigned short
   *  - size_t
   *
-  * \ingroup mrpt_comms_grp
+  * \ingroup mrpt_typemeta_grp
   */
 template <typename T>
-struct TTypeName;
-#if 0
+struct TTypeName
 {
-	static std::string get() { return std::string(T::className); }
+	constexpr static auto get() { return T::getClassName(); }
 };
-#endif
 
 /** Identical to MRPT_DECLARE_TTYPENAME but intended for user code.
   * MUST be placed at the GLOBAL namespace. Can be used for types declared
   * at the global or within some namespace. Just write the full namespace path
   * as `_TYPE` argument here.
+  * \sa TTypeName, DECLARE_TTYPENAME_CLASSNAME
   */
 #define DECLARE_CUSTOM_TTYPENAME(_TYPE) \
 	namespace mrpt                      \
@@ -71,6 +73,17 @@ struct TTypeName;
 	{                                   \
 	MRPT_DECLARE_TTYPENAME(_TYPE)       \
 	}                                   \
+	}
+
+/** Like DECLARE_CUSTOM_TTYPENAME(), but for use within the class declaration 
+  * body. It has the advantage of not requiring macros/definitions out of the 
+  * original class namespace.
+  * \sa TTypeName
+  */
+#define DECLARE_TTYPENAME_CLASSNAME(_CLASSNAME)        \
+	public:                                            \
+	static constexpr auto getClassName() {             \
+		return mrpt::typemeta::literal(#_CLASSNAME);   \
 	}
 
 #define MRPT_DECLARE_TTYPENAME(_TYPE)                            \

@@ -16,6 +16,10 @@ struct MyFooClass {};
 namespace MyNS
 {
 struct MyBarClass {};
+struct MyBarClass2
+{
+	DECLARE_TTYPENAME_CLASSNAME(MyNS::MyBarClass2)
+};
 }
 
 DECLARE_CUSTOM_TTYPENAME(MyFooClass);
@@ -54,7 +58,9 @@ TEST(TTypeName, types2str)
 	// User-defined types:
 	TST_FOR_TYPE(MyFooClass);
 	TST_FOR_TYPE(MyNS::MyBarClass);
+	TST_FOR_TYPE(MyNS::MyBarClass2);
 	TST_FOR_TYPE(std::vector<MyFooClass>);
 	TST_FOR_TYPE(std::set<MyNS::MyBarClass>);
+	TST_FOR_TYPE(std::set<MyNS::MyBarClass2>);
 	TST_FOR_TYPE2(std::vector<std::array<MyNS::MyBarClass,10>>);
 }
