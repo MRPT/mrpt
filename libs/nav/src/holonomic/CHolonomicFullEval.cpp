@@ -94,13 +94,17 @@ void CHolonomicFullEval::evalSingleTarget(
 
 	// TP-Obstacles in 2D:
 	std::vector<mrpt::math::TPoint2D> obstacles_2d(nDirs);
-	std::vector<double> k2dir(nDirs);
+
+	mrpt::obs::T2DScanProperties sp;
+	sp.aperture = 2.0*M_PI;
+	sp.nRays = nDirs;
+	sp.rightToLeft = true;
+	const auto &sc_lut = m_sincos_lut.getSinCosForScan(sp);
 
 	for (unsigned int i = 0; i < nDirs; i++)
 	{
-		k2dir[i] = CParameterizedTrajectoryGenerator::index2alpha(i, nDirs);
-		obstacles_2d[i].x = ni.obstacles[i] * cos(k2dir[i]);
-		obstacles_2d[i].y = ni.obstacles[i] * sin(k2dir[i]);
+		obstacles_2d[i].x = ni.obstacles[i] * sc_lut.ccos[i];
+		obstacles_2d[i].y = ni.obstacles[i] * sc_lut.csin[i];
 	}
 
 	const int NUM_FACTORS = 5;
@@ -125,8 +129,8 @@ void CHolonomicFullEval::evalSingleTarget(
 		const double d = std::min(ni.obstacles[i], 0.95 * target_dist);
 
 		// The TP-Space representative coordinates for this direction:
-		const double x = d * cos(k2dir[i]);
-		const double y = d * sin(k2dir[i]);
+		const double x = d * sc_lut.ccos[i];
+		const double y = d * sc_lut.csin[i];
 
 		// Factor #1: collision-free distance
 		// -----------------------------------------------------
