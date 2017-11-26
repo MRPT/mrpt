@@ -18,7 +18,7 @@ using namespace std;
 // Load data from constant file and check for exact match.
 TEST(Base64, RandomEncDec)
 {
-	for (size_t seed = 0; seed < 500; seed++)
+	for (unsigned int seed = 0; seed < 500; seed++)
 	{
 		getRandomGenerator().randomize(seed);
 
