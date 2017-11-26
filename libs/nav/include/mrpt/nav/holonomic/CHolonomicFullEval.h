@@ -10,6 +10,7 @@
 
 #include "CAbstractHolonomicReactiveMethod.h"
 #include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/obs/CSinCosLookUpTableFor2DScans.h>
 
 namespace mrpt
 {
@@ -102,6 +103,7 @@ namespace mrpt
 		};
 
 		void evalSingleTarget(unsigned int target_idx, const NavInput & ni, EvalOutput &eo); //!< Evals one single target of the potentially many of them in NavInput
+		mrpt::obs::CSinCosLookUpTableFor2DScans m_sincos_lut;
 	}; // end of CHolonomicFullEval
 
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CHolonomicFullEval, CAbstractHolonomicReactiveMethod, NAV_IMPEXP )
