@@ -5,5 +5,3 @@ a+b=foobar
 (a+b).size()=6
 (a+b)[0]=f
 (a+b)[5]=r
-42 as string=42
-9999 as string=9999

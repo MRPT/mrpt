@@ -7,6 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
+//! [example]
 #include <mrpt/typemeta/TEnumType.h>
 #include <iostream>
 
@@ -40,6 +41,7 @@ void Test_EnumType()
 
 	cout << "7    <= " << TEnumType<TestColors>::value2name(TestColors(7)) << endl;
 }
+//! [example]
 
 int main(int argc, char** argv)
 {

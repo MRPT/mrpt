@@ -7,8 +7,8 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
+//! [example sstring]
 #include <mrpt/typemeta/static_string.h>
-#include <mrpt/typemeta/num_to_string.h>
 #include <iostream>
 
 void Test_StaticString()
@@ -31,12 +31,24 @@ void Test_StaticString()
 	cout << "(a+b).size()=" << ab.size() << endl;
 	cout << "(a+b)[0]=" << ab[0] << endl;
 	cout << "(a+b)[5]=" << ab[5] << endl;
+}
+//! [example sstring]
+
+//! [example num2str]
+#include <mrpt/typemeta/num_to_string.h>
+#include <iostream>
+
+void Test_StaticNum2Str()
+{
+	using namespace std;
+	using namespace mrpt::typemeta;
 
 	constexpr auto n42 = num_to_string<42>::value;
 	constexpr auto n9999 = num_to_string<9999>::value;
 	cout << "42 as string=" << n42 << endl;
 	cout << "9999 as string=" << n9999 << endl;
 }
+//! [example num2str]
 
 int main(int argc, char** argv)
 {
