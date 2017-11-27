@@ -75,42 +75,42 @@ struct TTypeName
 	}                                   \
 	}
 
-/** Like DECLARE_CUSTOM_TTYPENAME(), but for use within the class declaration 
-  * body. It has the advantage of not requiring macros/definitions out of the 
+/** Like DECLARE_CUSTOM_TTYPENAME(), but for use within the class declaration
+  * body. It has the advantage of not requiring macros/definitions out of the
   * original class namespace.
   * \sa TTypeName
   */
-#define DECLARE_TTYPENAME_CLASSNAME(_CLASSNAME)        \
-	public:                                            \
-	static constexpr auto getClassName() {             \
+#define DECLARE_TTYPENAME_CLASSNAME(_CLASSNAME)    \
+	public:                                          \
+	static constexpr auto getClassName() {           \
 		return mrpt::typemeta::literal(#_CLASSNAME);   \
 	}
 
-#define MRPT_DECLARE_TTYPENAME(_TYPE)                            \
+#define MRPT_DECLARE_TTYPENAME(_TYPE)                          \
 	template <>                                                  \
 	struct TTypeName<_TYPE>                                      \
 	{                                                            \
-		constexpr static auto get() { return literal(#_TYPE); }  \
+		constexpr static auto get() { return literal(#_TYPE); }    \
 	};
 
-#define MRPT_DECLARE_TTYPENAME_NAMESPACE(_TYPE, __NS)            \
+#define MRPT_DECLARE_TTYPENAME_NAMESPACE(_TYPE, __NS)          \
 	template <>                                                  \
 	struct TTypeName<__NS::_TYPE>                                \
 	{                                                            \
 		constexpr static auto get() { return literal(#__NS "::" #_TYPE); } \
 	};
 
-#define MRPT_DECLARE_TTYPENAME_PTR(_TYPE)                            \
-	template <>                                                      \
-	struct TTypeName<_TYPE::Ptr>                                     \
-	{                                                                \
+#define MRPT_DECLARE_TTYPENAME_PTR(_TYPE)                 \
+	template <>                                             \
+	struct TTypeName<_TYPE::Ptr>                            \
+	{                                                       \
 		static auto get() { return TTypeName<_TYPE>::get(); } \
 	};
 
-#define MRPT_DECLARE_TTYPENAME_PTR_NAMESPACE(_TYPE, __NS)                  \
-	template <>                                                            \
-	struct TTypeName<__NS::_TYPE::Ptr>                                     \
-	{                                                                      \
+#define MRPT_DECLARE_TTYPENAME_PTR_NAMESPACE(_TYPE, __NS)       \
+	template <>                                                   \
+	struct TTypeName<__NS::_TYPE::Ptr>                            \
+	{                                                             \
 		static auto get() { return TTypeName<__NS::_TYPE>::get(); } \
 	};
 
