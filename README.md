@@ -45,6 +45,7 @@ Supported distributions:
   * Ubuntu 16.04LTS Xenial.
   * Ubuntu 17.04 Zesty.
   * Ubuntu 17.10 Artful.
+  * Ubuntu 18.04 Bionic.
 
 ### 3.2. Build from sources
 
