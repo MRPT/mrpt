@@ -11,6 +11,7 @@
 #include <mrpt/typemeta/TEnumType.h>
 #include <iostream>
 
+// Example declaration of "enum class"
 enum class TestColors
 {
 	Black = 0,
@@ -18,17 +19,24 @@ enum class TestColors
 	White = 15
 };
 
-template <>
-struct mrpt::typemeta::TEnumTypeFiller<TestColors>
+MRPT_ENUM_TYPE_BEGIN(TestColors)
+MRPT_FILL_ENUM_MEMBER(TestColors,Black);
+MRPT_FILL_ENUM_MEMBER(TestColors,Gray);
+MRPT_FILL_ENUM_MEMBER(TestColors,White);
+MRPT_ENUM_TYPE_END()
+
+// Example declaration of plain enum
+enum Directions
 {
-	using enum_t = TestColors;
-	static void fill(mrpt::typemeta::internal::bimap<enum_t, std::string>& m_map)
-	{
-		m_map.insert(TestColors::Black, "Black");
-		m_map.insert(TestColors::Gray, "Gray");
-		m_map.insert(TestColors::White, "White");
-	}
+	North, East, South, West
 };
+// Example declaration of "enum class"
+MRPT_ENUM_TYPE_BEGIN(Directions)
+MRPT_FILL_ENUM(North);
+MRPT_FILL_ENUM(East);
+MRPT_FILL_ENUM(South);
+MRPT_FILL_ENUM(West);
+MRPT_ENUM_TYPE_END()
 
 void Test_EnumType()
 {

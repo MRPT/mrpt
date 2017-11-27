@@ -10,6 +10,7 @@
 #include <mrpt/typemeta/TEnumType.h>
 #include <gtest/gtest.h>
 
+// Example declaration of "enum class"
 enum class TestColors
 {
 	Black = 0,
@@ -17,28 +18,38 @@ enum class TestColors
 	White = 15
 };
 
-template <>
-struct mrpt::typemeta::TEnumTypeFiller<TestColors>
-{
-	using enum_t = TestColors;
-	static void fill(internal::bimap<enum_t, std::string>& m_map)
-	{
-		m_map.insert(TestColors::Black, "Black");
-		m_map.insert(TestColors::Gray, "Gray");
-		m_map.insert(TestColors::White, "White");
-	}
-};
+MRPT_ENUM_TYPE_BEGIN(TestColors)
+MRPT_FILL_ENUM_MEMBER(TestColors,Black);
+MRPT_FILL_ENUM_MEMBER(TestColors,Gray);
+MRPT_FILL_ENUM_MEMBER(TestColors,White);
+MRPT_ENUM_TYPE_END()
 
+// Example declaration of plain enum
+enum Directions
+{
+	North, East, South, West
+};
+// Example declaration of "enum class"
+MRPT_ENUM_TYPE_BEGIN(Directions)
+MRPT_FILL_ENUM(North);
+MRPT_FILL_ENUM(East);
+MRPT_FILL_ENUM(South);
+MRPT_FILL_ENUM(West);
+MRPT_ENUM_TYPE_END()
 
 TEST(TEnumType, str2value)
 {
-	EXPECT_EQ(mrpt::typemeta::TEnumType<TestColors>::name2value("White"), TestColors::White);
-	EXPECT_EQ(mrpt::typemeta::TEnumType<TestColors>::name2value("Black"), TestColors::Black);
-	EXPECT_EQ(mrpt::typemeta::TEnumType<TestColors>::name2value("Gray"), TestColors::Gray);
-	
+	using mrpt::typemeta::TEnumType;
+
+	EXPECT_EQ(TEnumType<TestColors>::name2value("White"), TestColors::White);
+	EXPECT_EQ(TEnumType<TestColors>::name2value("Black"), TestColors::Black);
+	EXPECT_EQ(TEnumType<TestColors>::name2value("Gray"), TestColors::Gray);
+
+	EXPECT_EQ(TEnumType<Directions>::name2value("East"), East);
+
 	try
 	{
-		mrpt::typemeta::TEnumType<TestColors>::name2value("Violet");
+		TEnumType<TestColors>::name2value("Violet");
 		EXPECT_FALSE(true) << "Expected exception but it didn't happen!";
 	}
 	catch (std::exception &)
