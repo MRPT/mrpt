@@ -7,6 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
+//! [example typename]
 #include <mrpt/typemeta/TTypeName.h>
 #include <mrpt/typemeta/TTypeName_stl.h>
 #include <iostream>
@@ -50,6 +51,7 @@ void Test_TypeName()
 	cout << TTypeName<map<double, set<int32_t>>>::get() << endl;
 	cout << TTypeName<set<multimap<double, pair<MyFooClass,MyNS::MyBarClass2>>>>::get() << endl;
 }
+//! [example typename]
 
 int main(int argc, char** argv)
 {
