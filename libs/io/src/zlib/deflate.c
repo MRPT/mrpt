@@ -114,7 +114,7 @@ local  void check_match OF((deflate_state *s, IPos start, IPos match,
 #endif
 /* Matches of length 3 are discarded if their distance exceeds TOO_FAR */
 
-#define MIN_LOOKAHEAD (MAX_MATCH+MIN_MATCH+1)
+#define MIN_LOOKAHEAD (MAX_MATCH + MIN_MATCH + 1)
 /* Minimum amount of lookahead, except at the end of the input file.
  * See deflate.c for comments about the MIN_MATCH+1.
  */

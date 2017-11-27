@@ -52,9 +52,26 @@ struct bimap
 template <typename ENUMTYPE>
 struct TEnumTypeFiller
 {
-	using enum_t = ENUMTYPE;
-	static void fill(internal::bimap<enum_t, std::string>& m_map);
+	static void fill(internal::bimap<ENUMTYPE, std::string>& m_map);
 };
+
+#define MRPT_ENUM_TYPE_BEGIN(_ENUM_TYPE_WITH_NS) \
+	namespace mrpt {                                  \
+	namespace typemeta {                              \
+	template <>                                       \
+	struct TEnumTypeFiller<_ENUM_TYPE_WITH_NS>        \
+	{                                                 \
+			static void fill(mrpt::typemeta::internal::bimap< \
+				_ENUM_TYPE_WITH_NS, std::string>& m_map)    \
+	{
+
+#define MRPT_ENUM_TYPE_BEGIN_NAMESPACE(_NAMESPACE,_ENUM_TYPE_WITH_NS) \
+	MRPT_ENUM_TYPE_BEGIN(_ENUM_TYPE_WITH_NS) \
+	using namespace _NAMESPACE;
+
+
+#define MRPT_ENUM_TYPE_END() \
+	} }; } }
 
 /** For use in specializations of TEnumTypeFiller */
 #define MRPT_FILL_ENUM(_X) m_map.insert(_X, #_X)
