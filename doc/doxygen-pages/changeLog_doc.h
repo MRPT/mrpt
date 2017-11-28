@@ -13,10 +13,12 @@
 <p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or [browse it on-line](http://www.mrpt.org/).</i></p>
 
 <a name="1.5.5">
-<h2>Version 1.5.5: (Under development) </h2></a>
+<h2>Version 1.5.5: Released 28/NOV/2017 </h2></a>
 - <b>Detailed list of changes:</b>
 	- \ref mrpt_nav_grp
 		- mrpt::nav::CHolonomicFullEval now uses an internal sin/cos LUT cache for improved performance.
+	- Build system:
+		- octomap is no longer exposed in public headers, avoiding the dependency propagation.
 	- BUG FIXES:
 		- Fix likelihood computation in mrpt::maps::CReflectivityGridMap2D (which led to crash)
 		- Fixed regression in particle resampling affecting RBPF-SLAM methods. Introduced in Dec. 2016 with [this commit](https://github.com/MRPT/mrpt/commit/691973813bdc53d3faa7088b092eb041aa80d0ce).
