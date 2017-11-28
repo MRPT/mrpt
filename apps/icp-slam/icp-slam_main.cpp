@@ -25,6 +25,7 @@
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/threads.h>
 #include <mrpt/system/filesystem.h>
