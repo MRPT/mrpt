@@ -9,6 +9,7 @@
 
 
 #include <mrpt/maps/COctoMap.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;

@@ -29,8 +29,7 @@ Build-Depends: debhelper (>= 10),
 	libsuitesparse-dev,
 	python-numpy,
 	libeigen3-dev,
-	libassimp-dev,
-	liboctomap-dev
+	libassimp-dev
 Standards-Version: 4.1.1
 Homepage: https://www.mrpt.org/
 
@@ -369,8 +368,7 @@ Depends: ${shlibs:Depends}, ${misc:Depends}, libeigen3-dev,
          libmrpt-topography@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-vision@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-graphs@MRPT_VER_MM@ (= ${binary:Version}),
-         libsuitesparse-dev,
-         liboctomap-dev
+         libsuitesparse-dev
 Description: Mobile Robot Programming Toolkit - Development headers
  The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
  and open source C++ library aimed to help robotics researchers to design and
