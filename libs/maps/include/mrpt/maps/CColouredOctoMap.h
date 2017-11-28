@@ -11,11 +11,12 @@
 #define MRPT_CColouredOctoMap_H
 
 #include <mrpt/maps/COctoMapBase.h>
-#include <octomap/octomap.h>
-#include <octomap/ColorOcTree.h>
 #include <mrpt/obs/obs_frwds.h>
 
 #include <mrpt/maps/link_pragmas.h>
+
+PIMPL_FORWARD_DECLARATION(namespace octomap { class ColorOcTree; })
+PIMPL_FORWARD_DECLARATION(namespace octomap { class ColorOcTreeNode; })
 
 namespace mrpt
 {
@@ -70,9 +71,68 @@ namespace mrpt
 				double resolution;	//!< The finest resolution of the octomap (default: 0.10 meters)
 				mrpt::maps::CColouredOctoMap::TInsertionOptions   insertionOpts;	//!< Observations insertion options
 				mrpt::maps::CColouredOctoMap::TLikelihoodOptions  likelihoodOpts;	//!< Probabilistic observation likelihood options
-			MAP_DEFINITION_END(CColouredOctoMap,MAPS_IMPEXP)
+				MAP_DEFINITION_END(CColouredOctoMap, MAPS_IMPEXP)
+
+			/** Returns true if the map is empty/no observation has been inserted */
+			virtual bool isEmpty() const MRPT_OVERRIDE { return size() == 1; }
+
+			/** @name Direct access to octomap library methods
+			@{ */
+
+			/** Just like insertPointCloud but with a single ray. */
+			void insertRay(const float end_x, const float end_y, const float end_z, const float sensor_x, const float sensor_y, const float sensor_z);
+			/** Manually updates the occupancy of the voxel at (x,y,z) as being occupied (true) or free (false), using the log-odds parameters in \a insertionOptions */
+			void updateVoxel(const double x, const double y, const double z, bool occupied);
+			/** Check whether the given point lies within the volume covered by the octomap (that is, whether it is "mapped") */
+			bool isPointWithinOctoMap(const float x, const float y, const float z) const;
+			double getResolution() const;
+			unsigned int getTreeDepth() const;
+			/// \return The number of nodes in the tree
+			size_t size() const;
+			/// \return Memory usage of the complete octree in bytes (may vary between architectures)
+			size_t memoryUsage() const;
+			/// \return Memory usage of the a single octree node
+			size_t memoryUsageNode() const;
+			/// \return Memory usage of a full grid of the same size as the OcTree in bytes (for comparison)
+			size_t memoryFullGrid() const;
+			double volume();
+			/// Size of OcTree (all known space) in meters for x, y and z dimension
+			void getMetricSize(double& x, double& y, double& z);
+			/// Size of OcTree (all known space) in meters for x, y and z dimension
+			void getMetricSize(double& x, double& y, double& z) const;
+			/// minimum value of the bounding box of all known space in x, y, z
+			void getMetricMin(double& x, double& y, double& z);
+			/// minimum value of the bounding box of all known space in x, y, z
+			void getMetricMin(double& x, double& y, double& z) const;
+			/// maximum value of the bounding box of all known space in x, y, z
+			void getMetricMax(double& x, double& y, double& z);
+			/// maximum value of the bounding box of all known space in x, y, z
+			void getMetricMax(double& x, double& y, double& z) const;
+			/// Traverses the tree to calculate the total number of nodes
+			size_t calcNumNodes() const;
+			/// Traverses the tree to calculate the total number of leaf nodes
+			size_t getNumLeafNodes() const;
+
+			void setOccupancyThres(double prob) MRPT_OVERRIDE;
+			void setProbHit(double prob) MRPT_OVERRIDE;
+			void setProbMiss(double prob) MRPT_OVERRIDE;
+			void setClampingThresMin(double thresProb) MRPT_OVERRIDE;
+			void setClampingThresMax(double thresProb) MRPT_OVERRIDE;
+			double getOccupancyThres() const MRPT_OVERRIDE;
+			float getOccupancyThresLog() const MRPT_OVERRIDE;
+			double getProbHit() const MRPT_OVERRIDE;
+			float getProbHitLog() const MRPT_OVERRIDE;
+			double getProbMiss() const MRPT_OVERRIDE;
+			float getProbMissLog() const MRPT_OVERRIDE;
+			double getClampingThresMin() const MRPT_OVERRIDE;
+			float getClampingThresMinLog() const MRPT_OVERRIDE;
+			double getClampingThresMax() const MRPT_OVERRIDE;
+			float getClampingThresMaxLog() const MRPT_OVERRIDE;
+			/** @} */
 
 		protected:
+			virtual void  internal_clear() MRPT_OVERRIDE;
+
 			bool internal_insertObservation(const mrpt::obs::CObservation *obs,const mrpt::poses::CPose3D *robotPose) MRPT_OVERRIDE;
 
 			TColourUpdate m_colour_method;		//!Method used to updated voxels colour.
