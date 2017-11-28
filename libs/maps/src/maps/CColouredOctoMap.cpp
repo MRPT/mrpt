@@ -26,6 +26,9 @@
 #include <octomap/ColorOcTree.h>
 #include "COctoMapBase_impl.h"
 
+// Explicit instantiation:
+template class mrpt::maps::COctoMapBase<octomap::ColorOcTree,octomap::ColorOcTreeNode>;
+
 PIMPL_IMPLEMENT(octomap::ColorOcTree);
 
 using namespace std;
@@ -224,7 +227,7 @@ bool CColouredOctoMap::internal_insertObservation(const mrpt::obs::CObservation 
 		CPose3D sensorPose(UNINITIALIZED_POSE);
 		sensorPose.composeFrom(robotPose3D,o->sensorPose);
 		sensorPt = octomap::point3d(sensorPose.x(),sensorPose.y(),sensorPose.z());
-		
+
 		const size_t sizeRangeScan = pts->size();
 		scan.reserve(sizeRangeScan);
 
@@ -233,14 +236,14 @@ bool CColouredOctoMap::internal_insertObservation(const mrpt::obs::CObservation 
 			const mrpt::opengl::CPointCloudColoured::TPointColour & pt = pts->getPoint(i);
 
 			// Add to this map:
-			if (pt.x!=0 || pt.y!=0 || pt.z!=0)			
+			if (pt.x!=0 || pt.y!=0 || pt.z!=0)
 				scan.push_back(pt.x,pt.y,pt.z);
 		}
 
 		// Insert rays:
 		octomap::KeySet free_cells, occupied_cells;
 		PIMPL_GET_REF(ColorOcTree, m_octomap).computeUpdate(scan, sensorPt, free_cells, occupied_cells, insertionOptions.maxrange);
-		
+
 		// insert data into tree  -----------------------
 		for (octomap::KeySet::iterator it = free_cells.begin(); it != free_cells.end(); ++it) {
 			PIMPL_GET_REF(ColorOcTree, m_octomap).updateNode(*it, false, false);
@@ -424,4 +427,3 @@ float CColouredOctoMap::getClampingThresMinLog() const { return PIMPL_GET_REF(Co
 double CColouredOctoMap::getClampingThresMax() const { return PIMPL_GET_REF(ColorOcTree, m_octomap).getClampingThresMax(); }
 float CColouredOctoMap::getClampingThresMaxLog() const { return PIMPL_GET_REF(ColorOcTree, m_octomap).getClampingThresMaxLog(); }
 void CColouredOctoMap::internal_clear() { PIMPL_GET_REF(ColorOcTree, m_octomap).clear(); }
-

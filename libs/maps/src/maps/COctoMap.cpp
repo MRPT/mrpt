@@ -21,6 +21,9 @@
 #include <octomap/OcTree.h>
 #include "COctoMapBase_impl.h"
 
+// Explicit instantiation:
+template class mrpt::maps::COctoMapBase<octomap::OcTree,octomap::OcTreeNode>;
+
 PIMPL_IMPLEMENT(octomap::OcTree);
 
 using namespace std;
@@ -313,7 +316,3 @@ float COctoMap::getClampingThresMinLog() const { return PIMPL_GET_REF(OcTree, m_
 double COctoMap::getClampingThresMax() const { return PIMPL_GET_REF(OcTree, m_octomap).getClampingThresMax(); }
 float COctoMap::getClampingThresMaxLog() const { return PIMPL_GET_REF(OcTree, m_octomap).getClampingThresMaxLog(); }
 void COctoMap::internal_clear() { PIMPL_GET_REF(OcTree, m_octomap).clear(); }
-
-
-
-
