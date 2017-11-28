@@ -11,7 +11,7 @@
 	APPLICATION: ICP-based SLAM, live version
 	FILE: icp-slam-live_main.cpp
 	AUTHOR: Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
-	See example config files in  
+	See example config files in
 	 https://github.com/MRPT/mrpt/tree/master/share/mrpt/config_files/icp-slam-live/
 	or docs in
 	 http://www.mrpt.org/list-of-mrpt-apps/application-icp-slam-live/
@@ -23,6 +23,7 @@
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/threads.h>
 #include <mrpt/system/filesystem.h>
@@ -128,7 +129,7 @@ void SensorThread(TThreadParams params)
 
 		ASSERTMSG_(sensor->getProcessRate()>0,"process_rate must be set to a valid value (>0 Hz).");
 		const int process_period_ms = mrpt::utils::round( 1000.0 / sensor->getProcessRate() );
-	
+
 		sensor->initialize(); // Init device:
 		while (! allThreadsMustExit )
 		{
@@ -299,7 +300,7 @@ void MapBuilding_ICP_Live(const string &INI_FILENAME)
 			if (c==27)
 				break;
 		}
-		if (win3D && !win3D->isOpen()) 
+		if (win3D && !win3D->isOpen())
 			break;
 
 		// Load sensor LIDAR data from live capture:

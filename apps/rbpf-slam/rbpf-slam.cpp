@@ -23,6 +23,7 @@
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/random.h>
@@ -99,7 +100,7 @@ int main(int argc, char **argv)
 		INI_FILENAME = std::string( argv[1] );
 		ASSERT_FILE_EXISTS_(INI_FILENAME)
 
-		string override_rawlog_file; 
+		string override_rawlog_file;
 		if (argc>=3)
 			override_rawlog_file = string(argv[2]);
 
