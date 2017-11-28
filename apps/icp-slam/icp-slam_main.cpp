@@ -25,6 +25,7 @@
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>  // This class lives in the lib [mrpt-maps] and must be included by hand
