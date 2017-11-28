@@ -91,9 +91,9 @@ double graphs_dijkstra(int nNodes, int _N)
 				if (k > 0)
 				{
 					while (dest == i && dest != i + 1)  // Avoid self-loops!
-						dest =
-							mrpt::random::getRandomGenerator().drawUniform32bit() %
-							nNodes;
+						dest = mrpt::random::getRandomGenerator()
+								   .drawUniform32bit() %
+							   nNodes;
 				}
 				gs.insertEdge(i, dest, EDGE_TYPE());
 			}

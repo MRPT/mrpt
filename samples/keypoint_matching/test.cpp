@@ -333,7 +333,8 @@ void TestMatchingComparative()
 		copyjoinimage.line(
 			(*it1)->x, 0, (*it1)->x, imH, TColor::green());  // Horiz
 		copyjoinimage.line(
-			(*it1)->x + imW, 0, (*it1)->x + imW, imH, TColor::green());  // Horiz
+			(*it1)->x + imW, 0, (*it1)->x + imW, imH,
+			TColor::green());  // Horiz
 		copyjoinimage.line(
 			0, (*it1)->y, imW + imW, (*it1)->y, TColor::green());  // Epipolar
 		copyjoinimage.drawCircle(
@@ -418,7 +419,8 @@ void TestMatchingComparative()
 				}
 				copyjoinimage.filledRectangle(
 					rx0, ry0, rx1, ry1, TColor(150, 150, 150));
-				copyjoinimage.textOut(tx, ty, format("%d", cnt), TColor::blue());
+				copyjoinimage.textOut(
+					tx, ty, format("%d", cnt), TColor::blue());
 
 				px = 80 + cnt * 50;
 				if (px + fExt.options.patchSize > imW2) continue;
@@ -440,9 +442,11 @@ void TestMatchingComparative()
 			}  // end if
 		}  // end for it2
 		copyInfoImage.textOut(
-			80 + idxsad * 50, imH2 - 53, format("%.2f", minsad), TColor::green());
+			80 + idxsad * 50, imH2 - 53, format("%.2f", minsad),
+			TColor::green());
 		copyInfoImage.textOut(
-			80 + idxncc * 50, imH2 - 41, format("%.2f", maxncc), TColor::green());
+			80 + idxncc * 50, imH2 - 41, format("%.2f", maxncc),
+			TColor::green());
 		copyInfoImage.textOut(
 			80 + idxsiftd * 50, imH2 - 29, format("%.2f", minsiftd),
 			TColor::green());

@@ -213,9 +213,10 @@ void CActionRobotMovement3D::computeFromOdometry_model6DOF(
 			Ayaw1 +
 			(o.mm6DOFModel.a1 * Ayaw1 + o.mm6DOFModel.a2 * Atrans) *
 				getRandomGenerator().drawGaussian1D_normalized();
-		float Apitch1_draw = Apitch1 +
-							 (o.mm6DOFModel.a3 * odometryIncrement.z()) *
-								 getRandomGenerator().drawGaussian1D_normalized();
+		float Apitch1_draw =
+			Apitch1 +
+			(o.mm6DOFModel.a3 * odometryIncrement.z()) *
+				getRandomGenerator().drawGaussian1D_normalized();
 		float Atrans_draw =
 			Atrans +
 			(o.mm6DOFModel.a4 * Atrans + o.mm6DOFModel.a5 * Ayaw2 +
@@ -225,9 +226,10 @@ void CActionRobotMovement3D::computeFromOdometry_model6DOF(
 		float Aroll_draw = Aroll +
 						   (o.mm6DOFModel.a7 * Aroll) *
 							   getRandomGenerator().drawGaussian1D_normalized();
-		float Apitch2_draw = Apitch2 +
-							 (o.mm6DOFModel.a8 * Apitch2) *
-								 getRandomGenerator().drawGaussian1D_normalized();
+		float Apitch2_draw =
+			Apitch2 +
+			(o.mm6DOFModel.a8 * Apitch2) *
+				getRandomGenerator().drawGaussian1D_normalized();
 		float Ayaw2_draw =
 			Ayaw2 +
 			(o.mm6DOFModel.a9 * Ayaw2 + o.mm6DOFModel.a10 * Atrans) *

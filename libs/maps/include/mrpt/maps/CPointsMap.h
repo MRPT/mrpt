@@ -936,7 +936,7 @@ class CPointsMap : public CMetricMap,
 	/** @} */
 
 	/** The color of points in getAs3DObject() (default=blue) */
-	static void COLOR_3DSCENE(const mrpt::utils::TColorf &value);
+	static void COLOR_3DSCENE(const mrpt::utils::TColorf& value);
 	static mrpt::utils::TColorf COLOR_3DSCENE();
 
 	// See docs in base class

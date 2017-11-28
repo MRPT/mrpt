@@ -211,7 +211,8 @@ void CParticleFilterCapable::computeResampling(
 			double T_offset = 0;
 			for (i = 0; i < M; i++)
 			{
-				T[i] = T_offset + getRandomGenerator().drawUniform(0.0, _1_M_eps);
+				T[i] =
+					T_offset + getRandomGenerator().drawUniform(0.0, _1_M_eps);
 				T_offset += _1_M;
 			}
 			T[M] = 1;

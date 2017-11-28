@@ -77,8 +77,10 @@ double matrix_test_chol_fix(int a1, int a2)
 template <size_t DIM1, size_t DIM2>
 double matrix_test_chol_sparse(int a1, int a2)
 {
-	CMatrixDouble A1 = getRandomGenerator().drawDefinitePositiveMatrix(DIM1, 0.2);
-	CMatrixDouble A2 = getRandomGenerator().drawDefinitePositiveMatrix(DIM2, 0.2);
+	CMatrixDouble A1 =
+		getRandomGenerator().drawDefinitePositiveMatrix(DIM1, 0.2);
+	CMatrixDouble A2 =
+		getRandomGenerator().drawDefinitePositiveMatrix(DIM2, 0.2);
 
 	CMatrixDouble A(DIM1 + DIM2, DIM1 + DIM2);
 	A.insertMatrix(0, 0, A1);

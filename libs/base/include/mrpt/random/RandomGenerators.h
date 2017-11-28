@@ -17,7 +17,6 @@
 
 namespace mrpt
 {
-
 /** A namespace of pseudo-random numbers genrators of diferent distributions.
  * The central class in this namespace is mrpt::random::CRandomGenerator
  * \ingroup mrpt_base_grp
@@ -325,7 +324,7 @@ class CRandomGenerator
 
 /** A static instance of a CRandomGenerator class, for use in single-thread
  * applications */
-CRandomGenerator &getRandomGenerator();
+CRandomGenerator& getRandomGenerator();
 
 /** A random number generator for usage in STL algorithms expecting a function
  * like this (eg, random_shuffle):
@@ -386,13 +385,17 @@ void vectorRandomNormal(
 {
 	size_t n = v_out.size();
 	for (size_t r = 0; r < n; r++)
-		v_out[r] = mean + std * getRandomGenerator().drawGaussian1D_normalized();
+		v_out[r] =
+			mean + std * getRandomGenerator().drawGaussian1D_normalized();
 }
 
 /** Randomize the generators.
  *   A seed can be providen, or a current-time based seed can be used (default)
  */
-inline void Randomize(const uint32_t seed) { getRandomGenerator().randomize(seed); }
+inline void Randomize(const uint32_t seed)
+{
+	getRandomGenerator().randomize(seed);
+}
 inline void Randomize() { getRandomGenerator().randomize(); }
 /** Returns a random permutation of a vector: all the elements of the input
  * vector are in the output but at random positions.

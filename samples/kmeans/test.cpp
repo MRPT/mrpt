@@ -38,7 +38,8 @@ void TestKMeans()
 	{
 		// Generate N clusters of random points:
 		mrpt::aligned_containers<CPointType>::vector_t points;
-		const size_t nClusters = 2 + (getRandomGenerator().drawUniform32bit() % 4);
+		const size_t nClusters =
+			2 + (getRandomGenerator().drawUniform32bit() % 4);
 
 		for (size_t cl = 0; cl < nClusters; cl++)
 		{

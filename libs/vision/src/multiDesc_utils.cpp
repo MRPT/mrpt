@@ -1481,7 +1481,8 @@ int vision::matchMultiResolutionFeatures(
 	//    for( int k = 0; k < leftIdx1.size(); ++k )
 	//        if( leftIdx1[k] != FEAT_FREE )
 	//        {
-	//            auxImg1.cross( baseList1[k]->x, baseList1[k]->y, TColor::red(),
+	//            auxImg1.cross( baseList1[k]->x, baseList1[k]->y,
+	//            TColor::red(),
 	//            '+' );
 	//            auxImg1.textOut( baseList1[k]->x, baseList1[k]->y,
 	//            format("%d", scales1[k]), TColor::red );
@@ -1503,7 +1504,8 @@ int vision::matchMultiResolutionFeatures(
 	//    for( int k = 0; k < rightIdx1.size(); ++k )
 	//        if( rightIdx1[k] != FEAT_FREE )
 	//        {
-	//            auxImg2.cross( baseList2[k]->x, baseList2[k]->y, TColor::red(),
+	//            auxImg2.cross( baseList2[k]->x, baseList2[k]->y,
+	//            TColor::red(),
 	//            '+' );
 	//            auxImg2.textOut( baseList2[k]->x, baseList2[k]->y,
 	//            format("%d", scales2[k]), TColor::red );

@@ -199,7 +199,8 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 	typename T::Ptr getMapByClass(const size_t& ith = 0) const
 	{
 		size_t foundCount = 0;
-		const mrpt::utils::TRuntimeClassId* class_ID = &T::GetRuntimeClassIdStatic();
+		const mrpt::utils::TRuntimeClassId* class_ID =
+			&T::GetRuntimeClassIdStatic();
 		for (const_iterator it = begin(); it != end(); ++it)
 			if ((*it)->GetRuntimeClass()->derivedFrom(class_ID))
 				if (foundCount++ == ith)

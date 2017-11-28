@@ -2222,7 +2222,8 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 		updateTitle();
 
 		// Typically, LAS scenes have millions of points:
-		mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL(1000);
+		mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL(
+			1000);
 
 		Refresh(false);
 

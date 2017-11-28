@@ -36,7 +36,6 @@ float OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL();
   */
 size_t OCTREE_RENDER_MAX_POINTS_PER_NODE();
 void OCTREE_RENDER_MAX_POINTS_PER_NODE(size_t value);
-
 }
 
 namespace opengl

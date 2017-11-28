@@ -969,7 +969,8 @@ void CPanelCameraSelection::writeConfigFromVideoSourcePanel(
 			if (!rawlog_lb.empty())
 				cfg->write(sect, "rawlog_camera_sensor_label", rawlog_lb);
 
-			CImage::setImagesPathBase(string(this->edRawlogImgDir->GetValue().mb_str()));
+			CImage::setImagesPathBase(
+				string(this->edRawlogImgDir->GetValue().mb_str()));
 		}
 		break;
 

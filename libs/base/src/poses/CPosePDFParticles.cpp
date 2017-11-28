@@ -250,7 +250,8 @@ void CPosePDFParticles::resetUniform(
 	{
 		m_particles[i].d->x(getRandomGenerator().drawUniform(x_min, x_max));
 		m_particles[i].d->y(getRandomGenerator().drawUniform(y_min, y_max));
-		m_particles[i].d->phi(getRandomGenerator().drawUniform(phi_min, phi_max));
+		m_particles[i].d->phi(
+			getRandomGenerator().drawUniform(phi_min, phi_max));
 		m_particles[i].log_w = 0;
 	}
 

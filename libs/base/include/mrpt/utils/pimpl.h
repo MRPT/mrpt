@@ -77,15 +77,13 @@ struct pimpl
 	pimpl<_TYPE>::pimpl(const pimpl<_TYPE>& op)                              \
 	{                                                                        \
 		if (op.ptr.get() == ptr.get()) return;                               \
-		ptr.reset(new _TYPE());                                              \
-		*ptr = *op.ptr;                                                      \
+		ptr.reset(new _TYPE(*op.ptr));                                       \
 	}                                                                        \
 	template <>                                                              \
 	pimpl<_TYPE>& pimpl<_TYPE>::operator=(const pimpl<_TYPE>& op)            \
 	{                                                                        \
 		if (op.ptr.get() == ptr.get()) return *this;                         \
-		ptr.reset(new _TYPE());                                              \
-		*ptr = *op.ptr;                                                      \
+		ptr.reset(new _TYPE(*op.ptr));                                       \
 		return *this;                                                        \
 	}                                                                        \
 	}                                                                        \

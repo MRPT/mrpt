@@ -26,7 +26,8 @@
 #pragma warning(disable : 4251)  // Visual C++ 2003+ warnings on STL classes
 // when exporting to DLL...
 #pragma warning(disable : 4275)  // DLL export class derived from STL
-#pragma warning(disable : 4251) // Warnings are emited even if a DLL export class 
+#pragma warning( \
+	disable : 4251)  // Warnings are emited even if a DLL export class
 // contains a *private* STL field (?)
 #if (_MSC_VER >= 1400)
 // MS believes they have the right to deprecate functions in the C++ Standard

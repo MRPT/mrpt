@@ -96,10 +96,10 @@ void CHolonomicFullEval::evalSingleTarget(
 	std::vector<mrpt::math::TPoint2D> obstacles_2d(nDirs);
 
 	mrpt::obs::T2DScanProperties sp;
-	sp.aperture = 2.0*M_PI;
+	sp.aperture = 2.0 * M_PI;
 	sp.nRays = nDirs;
 	sp.rightToLeft = true;
-	const auto &sc_lut = m_sincos_lut.getSinCosForScan(sp);
+	const auto& sc_lut = m_sincos_lut.getSinCosForScan(sp);
 
 	for (unsigned int i = 0; i < nDirs; i++)
 	{

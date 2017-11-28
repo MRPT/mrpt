@@ -52,11 +52,8 @@ int CImage::SERIALIZATION_JPEG_QUALITY = 95;
 
 static std::string IMAGES_PATH_BASE(".");
 
-const std::string &CImage::getImagesPathBase()
-{
-	return IMAGES_PATH_BASE;
-}
-void CImage::setImagesPathBase(const std::string &path)
+const std::string& CImage::getImagesPathBase() { return IMAGES_PATH_BASE; }
+void CImage::setImagesPathBase(const std::string& path)
 {
 	IMAGES_PATH_BASE = path;
 }

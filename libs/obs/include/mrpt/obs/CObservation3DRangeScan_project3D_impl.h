@@ -68,7 +68,8 @@ void project3DPointsFromDepthImageInto(
 		if (projectParams.PROJ3D_USE_LUT)
 		{
 			// Use LUT:
-			if (src_obs.get_3dproj_lut().prev_camParams != src_obs.cameraParams ||
+			if (src_obs.get_3dproj_lut().prev_camParams !=
+					src_obs.cameraParams ||
 				WH != size_t(src_obs.get_3dproj_lut().Kys.size()))
 			{
 				src_obs.get_3dproj_lut().prev_camParams = src_obs.cameraParams;

@@ -28,7 +28,7 @@ class CEnhancedMetaFile : public CCanvas
    private:
 	void_ptr_noncopy m_hdc;
 	int m_scale;
-	void_ptr_noncopy m_hFont{ nullptr };
+	void_ptr_noncopy m_hFont{nullptr};
 	std::string m_targetFile;
 
    public:
