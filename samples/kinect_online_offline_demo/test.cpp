@@ -127,7 +127,8 @@ void thread_grabbing(TThreadParam& p)
 					"Couldn't open rawlog dataset file for input...");
 
 			// Set external images directory:
-			CImage::setImagesPathBase(CRawlog::detectImagesDirectory(p.rawlog_file));
+			CImage::setImagesPathBase(
+				CRawlog::detectImagesDirectory(p.rawlog_file));
 		}
 
 		CTicTac tictac;

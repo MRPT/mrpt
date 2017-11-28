@@ -101,7 +101,8 @@ void hmt_slam_guiFrame::thread_HMTSLAM()
 						// rawlogs:
 						string rawlog_images_path = extractFileDirectory(fil);
 						rawlog_images_path += "/Images";
-						CImage::setImagesPathBase(rawlog_images_path);  // Set it.
+						CImage::setImagesPathBase(
+							rawlog_images_path);  // Set it.
 
 						rawlogEntry = 0;
 						// step = 0;

@@ -886,7 +886,8 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 					if (oldPartIdxsStillNotPropragated.size())
 					{
 						const size_t idx =
-							mrpt::random::getRandomGenerator().drawUniform32bit() %
+							mrpt::random::getRandomGenerator()
+								.drawUniform32bit() %
 							oldPartIdxsStillNotPropragated.size();
 						vector_size_t::iterator it =
 							oldPartIdxsStillNotPropragated.begin() +
@@ -897,7 +898,8 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 					else
 					{
 						// N>N_old -> Uniformly draw index:
-						k = mrpt::random::getRandomGenerator().drawUniform32bit() %
+						k = mrpt::random::getRandomGenerator()
+								.drawUniform32bit() %
 							me->m_particles.size();
 					}
 				}
@@ -1091,9 +1093,10 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 					// acceptanceProb = 0;		// Keep searching or keep this
 					// one?
 				}
-			} while (++timeout < maxTries &&
-					 acceptanceProb <
-						 mrpt::random::getRandomGenerator().drawUniform(0.0, 0.999));
+			} while (
+				++timeout < maxTries &&
+				acceptanceProb <
+					mrpt::random::getRandomGenerator().drawUniform(0.0, 0.999));
 
 			if (timeout >= maxTries)
 			{

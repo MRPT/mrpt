@@ -605,17 +605,21 @@ void CRangeBearingParticleFilter::prediction_and_update_pfStandardProposal(
 	// Transition model:
 	for (i = 0; i < N; i++)
 	{
-		m_particles[i].d->x += DELTA_TIME * m_particles[i].d->vx +
-							   TRANSITION_MODEL_STD_XY *
-								   getRandomGenerator().drawGaussian1D_normalized();
-		m_particles[i].d->y += DELTA_TIME * m_particles[i].d->vy +
-							   TRANSITION_MODEL_STD_XY *
-								   getRandomGenerator().drawGaussian1D_normalized();
+		m_particles[i].d->x +=
+			DELTA_TIME * m_particles[i].d->vx +
+			TRANSITION_MODEL_STD_XY *
+				getRandomGenerator().drawGaussian1D_normalized();
+		m_particles[i].d->y +=
+			DELTA_TIME * m_particles[i].d->vy +
+			TRANSITION_MODEL_STD_XY *
+				getRandomGenerator().drawGaussian1D_normalized();
 
-		m_particles[i].d->vx += TRANSITION_MODEL_STD_VXY *
-								getRandomGenerator().drawGaussian1D_normalized();
-		m_particles[i].d->vy += TRANSITION_MODEL_STD_VXY *
-								getRandomGenerator().drawGaussian1D_normalized();
+		m_particles[i].d->vx +=
+			TRANSITION_MODEL_STD_VXY *
+			getRandomGenerator().drawGaussian1D_normalized();
+		m_particles[i].d->vy +=
+			TRANSITION_MODEL_STD_VXY *
+			getRandomGenerator().drawGaussian1D_normalized();
 	}
 
 	CObservationBearingRange::Ptr obs =
@@ -660,7 +664,8 @@ void CRangeBearingParticleFilter::initializeParticles(size_t M)
 		(*it).d->y = getRandomGenerator().drawUniform(
 			VEHICLE_INITIAL_Y - 2.0f, VEHICLE_INITIAL_Y + 2.0f);
 
-		(*it).d->vx = getRandomGenerator().drawGaussian1D(-VEHICLE_INITIAL_V, 0.2f);
+		(*it).d->vx =
+			getRandomGenerator().drawGaussian1D(-VEHICLE_INITIAL_V, 0.2f);
 		(*it).d->vy = getRandomGenerator().drawGaussian1D(0, 0.2f);
 
 		it->log_w = 0;

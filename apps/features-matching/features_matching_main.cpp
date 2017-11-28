@@ -415,7 +415,8 @@ bool DemoFeatures()
 
 				img2_show_base.textOut(
 					feats2[i2]->x + 10, feats2[i2]->y - 10,
-					format("#%u, dist=%.02f", i2, distances[i2]), TColor::gray());
+					format("#%u, dist=%.02f", i2, distances[i2]),
+					TColor::gray());
 
 				xs_best.push_back(i2);
 				ys_best.push_back(distances[i2]);
@@ -437,7 +438,8 @@ bool DemoFeatures()
 		{
 			img1_show = img1;
 
-			img1_show.cross(feats1[i1]->x, feats1[i1]->y, TColor::red(), '+', 7);
+			img1_show.cross(
+				feats1[i1]->x, feats1[i1]->y, TColor::red(), '+', 7);
 			img1_show.drawCircle(
 				feats1[i1]->x, feats1[i1]->y, 7 + anim_loops, TColor::blue());
 

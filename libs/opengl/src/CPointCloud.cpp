@@ -25,11 +25,12 @@ using namespace std;
 float OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL_value = 0.10f;
 size_t OCTREE_RENDER_MAX_POINTS_PER_NODE_value = 1e6;
 
-float mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL() 
+float mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL()
 {
 	return OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL_value;
 }
-void mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL(float value)
+void mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL(
+	float value)
 {
 	OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL_value = value;
 }
@@ -42,7 +43,6 @@ void mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE(size_t value)
 {
 	OCTREE_RENDER_MAX_POINTS_PER_NODE_value = value;
 }
-
 
 IMPLEMENTS_SERIALIZABLE(CPointCloud, CRenderizable, mrpt::opengl)
 

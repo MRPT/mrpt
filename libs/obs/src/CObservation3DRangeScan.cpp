@@ -37,7 +37,8 @@ IMPLEMENTS_SERIALIZABLE(CObservation3DRangeScan, CObservation, mrpt::obs)
 
 // Static LUT:
 static CObservation3DRangeScan::TCached3DProjTables lut_3dproj;
-CObservation3DRangeScan::TCached3DProjTables & CObservation3DRangeScan::get_3dproj_lut()
+CObservation3DRangeScan::TCached3DProjTables&
+	CObservation3DRangeScan::get_3dproj_lut()
 {
 	return lut_3dproj;
 }
@@ -51,7 +52,6 @@ bool CObservation3DRangeScan::EXTERNALS_AS_TEXT()
 {
 	return EXTERNALS_AS_TEXT_value;
 }
-
 
 // Whether to use a memory pool for 3D points:
 #define COBS3DRANGE_USE_MEMPOOL

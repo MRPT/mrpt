@@ -87,7 +87,8 @@ class CMHPropertiesValuesList : public mrpt::utils::CSerializable
 			else
 				THROW_EXCEPTION("Null pointer")
 		}
-		const mrpt::utils::TRuntimeClassId* class_ID = &T::GetRuntimeClassIdStatic();
+		const mrpt::utils::TRuntimeClassId* class_ID =
+			&T::GetRuntimeClassIdStatic();
 		ASSERT_(class_ID == obj->GetRuntimeClass());
 		return std::dynamic_pointer_cast<T>(obj);
 		MRPT_END

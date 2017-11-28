@@ -133,7 +133,8 @@ class CActionCollection : public mrpt::utils::CSerializable
 	{
 		MRPT_START
 		size_t foundCount = 0;
-		const mrpt::utils::TRuntimeClassId* class_ID = &T::GetRuntimeClassIdStatic();
+		const mrpt::utils::TRuntimeClassId* class_ID =
+			&T::GetRuntimeClassIdStatic();
 		for (const_iterator it = begin(); it != end(); ++it)
 			if ((*it)->GetRuntimeClass()->derivedFrom(class_ID))
 				if (foundCount++ == ith)

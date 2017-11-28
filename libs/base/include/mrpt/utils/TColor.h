@@ -25,7 +25,8 @@ class CStream;
 struct TColor
 {
 	constexpr inline TColor() : R(0), G(0), B(0), A(255) {}
-	constexpr inline TColor(uint8_t r, uint8_t g, uint8_t b, uint8_t alpha = 255)
+	constexpr inline TColor(
+		uint8_t r, uint8_t g, uint8_t b, uint8_t alpha = 255)
 		: R(r), G(g), B(b), A(alpha)
 	{
 	}
@@ -38,7 +39,8 @@ struct TColor
 	{
 	}
 
-	constexpr inline TColor(const unsigned int color_RGB_24bit, const uint8_t alpha)
+	constexpr inline TColor(
+		const unsigned int color_RGB_24bit, const uint8_t alpha)
 		: R(uint8_t(color_RGB_24bit >> 16)),
 		  G(uint8_t(color_RGB_24bit >> 8)),
 		  B(uint8_t(color_RGB_24bit)),

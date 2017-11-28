@@ -2961,8 +2961,8 @@ void CLandmarksMap::simulateRangeBearingReadings(
 		}
 	}  // end for it
 
-	const double fSpurious =
-		getRandomGenerator().drawGaussian1D(spurious_count_mean, spurious_count_std);
+	const double fSpurious = getRandomGenerator().drawGaussian1D(
+		spurious_count_mean, spurious_count_std);
 	size_t nSpurious = 0;
 	if (spurious_count_std != 0 || spurious_count_mean != 0)
 		nSpurious = static_cast<size_t>(

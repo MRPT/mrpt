@@ -455,18 +455,18 @@ class CConfigFileBase
 			mrpt::utils::RAD2DEG(variableName));    \
 	}
 
-#define MRPT_SAVE_CONFIG_VAR_COMMENT(variableName, __comment) \
-	{                                                         \
-		c.write(                                              \
-			s, #variableName, variableName,                   \
-			mrpt::utils::MRPT_SAVE_NAME_PADDING(),            \
+#define MRPT_SAVE_CONFIG_VAR_COMMENT(variableName, __comment)   \
+	{                                                           \
+		c.write(                                                \
+			s, #variableName, variableName,                     \
+			mrpt::utils::MRPT_SAVE_NAME_PADDING(),              \
 			mrpt::utils::MRPT_SAVE_VALUE_PADDING(), __comment); \
 	}
-#define MRPT_SAVE_CONFIG_VAR_DEGREES_COMMENT(                 \
-	__entryName, __variable, __comment)                       \
-	{                                                         \
-		c.write(                                              \
-			s, __entryName, mrpt::utils::RAD2DEG(__variable), \
+#define MRPT_SAVE_CONFIG_VAR_DEGREES_COMMENT(                   \
+	__entryName, __variable, __comment)                         \
+	{                                                           \
+		c.write(                                                \
+			s, __entryName, mrpt::utils::RAD2DEG(__variable),   \
 			mrpt::utils::MRPT_SAVE_NAME_PADDING(),              \
 			mrpt::utils::MRPT_SAVE_VALUE_PADDING(), __comment); \
 	}

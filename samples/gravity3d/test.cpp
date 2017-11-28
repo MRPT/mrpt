@@ -82,13 +82,14 @@ void GravityDemo()
 
 		double a = atan2(masses[i].y, masses[i].x);
 
-		masses[i].vx =
-			-V0 * sin(a) + getRandomGenerator().drawUniform(-V0 * 0.01, V0 * 0.01);
-		masses[i].vy =
-			V0 * cos(a) + getRandomGenerator().drawUniform(-V0 * 0.01, V0 * 0.01);
+		masses[i].vx = -V0 * sin(a) +
+					   getRandomGenerator().drawUniform(-V0 * 0.01, V0 * 0.01);
+		masses[i].vy = V0 * cos(a) +
+					   getRandomGenerator().drawUniform(-V0 * 0.01, V0 * 0.01);
 		masses[i].vz = 0;  // getRandomGenerator().drawUniform(-V0,V0);
 
-		masses[i].mass = exp(getRandomGenerator().drawUniform(MASS_MIN, MASS_MAX));
+		masses[i].mass =
+			exp(getRandomGenerator().drawUniform(MASS_MIN, MASS_MAX));
 		opengl::CSphere::Ptr& obj = masses[i].obj3d =
 			mrpt::make_aligned_shared<opengl::CSphere>();
 

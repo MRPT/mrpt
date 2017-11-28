@@ -22,12 +22,7 @@ using namespace std;
 // The global instance of CRandomGenerator for single-thread programs:
 static CRandomGenerator randomGenerator;
 
-CRandomGenerator & mrpt::random::getRandomGenerator()
-{
-	return randomGenerator;
-}
-
-
+CRandomGenerator& mrpt::random::getRandomGenerator() { return randomGenerator; }
 // MT19937 algorithm
 // http://en.wikipedia.org/wiki/Mersenne_twister
 // Initialize the generator from a seed

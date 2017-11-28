@@ -100,7 +100,7 @@ class COccupancyGridMap2D : public CMetricMap,
 	/** Frees the dynamic memory buffers of map. */
 	void freeMap();
 	/** Lookup tables for log-odds */
-	static CLogOddsGridMapLUT<cellType> & get_logodd_lut();
+	static CLogOddsGridMapLUT<cellType>& get_logodd_lut();
 
 	/** Store of cell occupancy values. Order: row by row, from left to right */
 	std::vector<cellType> map;
@@ -350,7 +350,10 @@ class COccupancyGridMap2D : public CMetricMap,
 
 	/** Scales an integer representation of the log-odd into a real valued
 	 * probability in [0,1], using p=exp(l)/(1+exp(l))  */
-	static inline float l2p(const cellType l) { return get_logodd_lut().l2p(l); }
+	static inline float l2p(const cellType l)
+	{
+		return get_logodd_lut().l2p(l);
+	}
 	/** Scales an integer representation of the log-odd into a linear scale
 	 * [0,255], using p=exp(l)/(1+exp(l)) */
 	static inline uint8_t l2p_255(const cellType l)
@@ -359,7 +362,10 @@ class COccupancyGridMap2D : public CMetricMap,
 	}
 	/** Scales a real valued probability in [0,1] to an integer representation
 	 * of: log(p)-log(1-p)  in the valid range of cellType */
-	static inline cellType p2l(const float p) { return get_logodd_lut().p2l(p); }
+	static inline cellType p2l(const float p)
+	{
+		return get_logodd_lut().p2l(p);
+	}
 	/** Change the contents [0,1] of a cell, given its index */
 	inline void setCell(int x, int y, float value)
 	{

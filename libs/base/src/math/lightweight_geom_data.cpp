@@ -1086,12 +1086,9 @@ bool TPolygon3D::contains(const TPoint3D& point) const
 {
 	TPoint3D pMin, pMax;
 	getPrismBounds(*this, pMin, pMax);
-	if (point.x + getEpsilon() < pMin.x ||
-		point.y + getEpsilon() < pMin.y ||
-		point.z + getEpsilon() < pMin.z ||
-		point.x > pMax.x + getEpsilon() ||
-		point.y > pMax.y + getEpsilon() ||
-		point.z > pMax.z + getEpsilon())
+	if (point.x + getEpsilon() < pMin.x || point.y + getEpsilon() < pMin.y ||
+		point.z + getEpsilon() < pMin.z || point.x > pMax.x + getEpsilon() ||
+		point.y > pMax.y + getEpsilon() || point.z > pMax.z + getEpsilon())
 		return false;
 	TPlane plane;
 	if (!getPlane(plane))

@@ -808,7 +808,7 @@ class CObservation3DRangeScan : public CObservation
 	};
 	/** 3D point cloud projection look-up-table \sa
 	 * project3DPointsFromDepthImage */
-	static TCached3DProjTables & get_3dproj_lut();
+	static TCached3DProjTables& get_3dproj_lut();
 
 };  // End of class def.
 

@@ -323,7 +323,7 @@ void CMultiObjectiveMotionOptimizerBase::TParamsBase::saveToConfigFile(
 {
 	// Save: formula_score
 	const int WN = mrpt::utils::MRPT_SAVE_NAME_PADDING(),
-		WV = mrpt::utils::MRPT_SAVE_VALUE_PADDING();
+			  WV = mrpt::utils::MRPT_SAVE_VALUE_PADDING();
 
 	{
 		const std::string sComment =

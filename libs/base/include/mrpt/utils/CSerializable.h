@@ -156,14 +156,15 @@ void RawStringToObject(const std::string& in_str, CSerializable::Ptr& obj);
 
 /** This declaration must be inserted in all CSerializable classes definition,
 * within the class declaration. */
-#define DEFINE_SERIALIZABLE(class_name)                                           \
-	DEFINE_MRPT_OBJECT(class_name)                                                \
-   protected:                                                                     \
-	/*! @name CSerializable virtual methods */                                    \
-	/*! @{ */                                                                     \
-	void writeToStream(mrpt::utils::CStream& out, int* getVersion) const override;\
-	void readFromStream(mrpt::utils::CStream& in, int version) override;          \
-	/*! @} */
+#define DEFINE_SERIALIZABLE(class_name)                                  \
+	DEFINE_MRPT_OBJECT(class_name)                                       \
+   protected:                                                            \
+	/*! @name CSerializable virtual methods */                           \
+	/*! @{ */                                                            \
+	void writeToStream(mrpt::utils::CStream& out, int* getVersion)       \
+		const override;                                                  \
+	void readFromStream(mrpt::utils::CStream& in, int version) override; \
+/*! @} */
 
 /** This must be inserted in all CSerializable classes implementation files */
 #define IMPLEMENTS_SERIALIZABLE(class_name, base, NameSpace) \

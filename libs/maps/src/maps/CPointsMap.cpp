@@ -65,9 +65,11 @@ IMPLEMENTS_VIRTUAL_SERIALIZABLE(CPointsMap, CMetricMap, mrpt::maps)
 
 static mrpt::utils::TColorf COLOR_3DSCENE_value(0, 0, 1);
 
-void CPointsMap::COLOR_3DSCENE(const mrpt::utils::TColorf &value) { COLOR_3DSCENE_value = value; }
+void CPointsMap::COLOR_3DSCENE(const mrpt::utils::TColorf& value)
+{
+	COLOR_3DSCENE_value = value;
+}
 mrpt::utils::TColorf CPointsMap::COLOR_3DSCENE() { return COLOR_3DSCENE_value; }
-
 /*---------------------------------------------------------------
 						Constructor
   ---------------------------------------------------------------*/
@@ -810,7 +812,7 @@ void CPointsMap::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
 	obj->setPointSize(POINTSMAPS_3DOBJECT_POINTSIZE_value);
 	obj->enableColorFromZ(true);
 
-	obj->setGradientColors(TColorf(0.0, 0, 0),COLOR_3DSCENE_value);
+	obj->setGradientColors(TColorf(0.0, 0, 0), COLOR_3DSCENE_value);
 
 	outObj->insert(obj);
 }
@@ -1573,9 +1575,9 @@ namespace mrpt
 namespace obs
 {
 // Tricky way to call to a library that depends on us, a sort of "run-time"
-// linking: ptr_internal_build_points_map_from_scan2D is a functor in 
+// linking: ptr_internal_build_points_map_from_scan2D is a functor in
 // "mrpt-obs", set by "mrpt-maps" at its startup.
-using scan2pts_functor = void(*)(
+using scan2pts_functor = void (*)(
 	const mrpt::obs::CObservation2DRangeScan& obs,
 	mrpt::maps::CMetricMap::Ptr& out_map, const void* insertOps);
 

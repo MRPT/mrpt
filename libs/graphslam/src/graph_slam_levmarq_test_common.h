@@ -100,7 +100,8 @@ class GraphSlamLevMarqTest
 					getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_XYZ),
 					getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_ANG),
 					getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_ANG),
-					getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_ANG)));
+					getRandomGenerator().drawGaussian1D(
+						0, STD_NOISE_EDGE_ANG)));
 
 		for (typename my_graph_t::global_poses_t::iterator itNode =
 				 graph.nodes.begin();
@@ -108,11 +109,17 @@ class GraphSlamLevMarqTest
 			if (itNode->first != graph.root)
 				itNode->second += typename my_graph_t::edge_t::type_value(
 					CPose3D(
-						getRandomGenerator().drawGaussian1D(0, STD_NOISE_NODE_XYZ),
-						getRandomGenerator().drawGaussian1D(0, STD_NOISE_NODE_XYZ),
-						getRandomGenerator().drawGaussian1D(0, STD_NOISE_NODE_XYZ),
-						getRandomGenerator().drawGaussian1D(0, STD_NOISE_NODE_ANG),
-						getRandomGenerator().drawGaussian1D(0, STD_NOISE_NODE_ANG),
-						getRandomGenerator().drawGaussian1D(0, STD_NOISE_NODE_ANG)));
+						getRandomGenerator().drawGaussian1D(
+							0, STD_NOISE_NODE_XYZ),
+						getRandomGenerator().drawGaussian1D(
+							0, STD_NOISE_NODE_XYZ),
+						getRandomGenerator().drawGaussian1D(
+							0, STD_NOISE_NODE_XYZ),
+						getRandomGenerator().drawGaussian1D(
+							0, STD_NOISE_NODE_ANG),
+						getRandomGenerator().drawGaussian1D(
+							0, STD_NOISE_NODE_ANG),
+						getRandomGenerator().drawGaussian1D(
+							0, STD_NOISE_NODE_ANG)));
 	}
 };

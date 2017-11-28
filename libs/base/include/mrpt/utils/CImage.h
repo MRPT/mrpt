@@ -754,7 +754,8 @@ class CImage : public mrpt::utils::CSerializable, public CCanvas
 	  *   An image becomes of type "external storage" only through calling
 	 * setExternalStorage. This property remains after serializing the object.
 	  *   File names can be absolute, or relative to the
-	 * CImage::getImagesPathBase() directory. Filenames staring with "X:\" or "/"
+	 * CImage::getImagesPathBase() directory. Filenames staring with "X:\" or
+	 * "/"
 	 * are considered absolute paths.
 	  *   By calling this method the current contents of the image are NOT saved
 	 * to that file, because this method can be also called
@@ -773,8 +774,8 @@ class CImage : public mrpt::utils::CSerializable, public CCanvas
 	void setExternalStorage(const std::string& fileName) noexcept;
 
 	/** By default, "."  \sa setExternalStorage */
-	static const std::string &getImagesPathBase();
-	static void setImagesPathBase(const std::string &path);
+	static const std::string& getImagesPathBase();
+	static void setImagesPathBase(const std::string& path);
 
 	/** See setExternalStorage(). */
 	bool isExternallyStored() const noexcept { return m_imgIsExternalStorage; }

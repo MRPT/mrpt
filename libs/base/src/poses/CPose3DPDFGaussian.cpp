@@ -39,7 +39,6 @@ bool mrpt::global_settings::USE_SUT_QUAT2EULER_CONVERSION()
 	return USE_SUT_QUAT2EULER_CONVERSION_value;
 }
 
-
 IMPLEMENTS_SERIALIZABLE(CPose3DPDFGaussian, CPose3DPDF, mrpt::poses)
 
 /*---------------------------------------------------------------
