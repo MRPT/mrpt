@@ -12,7 +12,8 @@ function build ()
 {
   #env
   mkdir $BUILD_DIR && cd $BUILD_DIR
-
+  rm -fr *  # shouldn't be needed but... we might have a problem in our shippable docker img config and contents are not cleared?
+  
   # gcc is too slow and we have a time limit in Travis CI: exclude examples when building with gcc
   if [ "$CC" == "gcc" ]; then
     BUILD_EXAMPLES=FALSE
@@ -23,7 +24,7 @@ function build ()
   cmake $MRPT_DIR -DBUILD_EXAMPLES=$BUILD_EXAMPLES -DBUILD_APPLICATIONS=TRUE -DBUILD_TESTING=FALSE
   make -j2
 
-	cd $MRPT_DIR
+  cd $MRPT_DIR
 }
 
 command_exists () {
