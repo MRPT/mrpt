@@ -24,6 +24,7 @@ build:
     - sudo apt-get install -y build-essential
     - sudo apt-get install -y pkg-config
     - sudo apt-get install -y cmake
+    - sudo apt-get install -y git-core
     - sudo apt-get install -y libwxgtk3.0-dev
     - sudo apt-get install -y libftdi-dev
     - sudo apt-get install -y freeglut3-dev
