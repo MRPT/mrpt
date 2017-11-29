@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -e   # Make sure any error makes the script to return an error code
+set -x   # echo
 
 MRPT_DIR=`pwd`
 BUILD_DIR=build
@@ -11,8 +12,9 @@ CMAKE_CXX_FLAGS="-Wall -Wextra -Wabi -O2"
 function build ()
 {
   #env
+  git clean -fr || true
+  rm -fr $BUILD_DIR || true
   mkdir $BUILD_DIR && cd $BUILD_DIR
-  rm -fr *  # shouldn't be needed but... we might have a problem in our shippable docker img config and contents are not cleared?
   
   # gcc is too slow and we have a time limit in Travis CI: exclude examples when building with gcc
   if [ "$CC" == "gcc" ]; then
@@ -38,14 +40,17 @@ function test ()
 	return
   fi
 
+  git clean -fr || true
+  rm -fr $BUILD_DIR || true
   mkdir $BUILD_DIR && cd $BUILD_DIR
+
   cmake $MRPT_DIR -DBUILD_APPLICATIONS=FALSE -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
   # Remove gdb use for coverage test reports.
   # Use `test_gdb` to show stack traces of failing unit tests.
 #  if command_exists gdb ; then
 #    make test_gdb
 #  else
-    make test
+    make test -j2
 #  fi
 
   cd $MRPT_DIR
