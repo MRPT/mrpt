@@ -12,7 +12,7 @@ CMAKE_CXX_FLAGS="-Wall -Wextra -Wabi -O2"
 function build ()
 {
   #env
-  git clean -fr || true
+  git clean -fd || true
   rm -fr $BUILD_DIR || true
   mkdir $BUILD_DIR && cd $BUILD_DIR
   
@@ -40,7 +40,7 @@ function test ()
 	return
   fi
 
-  git clean -fr || true
+  git clean -fd || true
   rm -fr $BUILD_DIR || true
   mkdir $BUILD_DIR && cd $BUILD_DIR
 
