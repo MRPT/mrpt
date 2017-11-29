@@ -9,6 +9,11 @@
 
 #include "maps-precomp.h" // Precomp header
 
+#include <octomap/octomap.h>
+#include <octomap/ColorOcTree.h>
+#include <mrpt/utils/pimpl.h>
+PIMPL_IMPLEMENT(octomap::ColorOcTree);
+
 #include <mrpt/maps/CColouredOctoMap.h>
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
@@ -22,14 +27,11 @@
 #include <mrpt/utils/CMemoryChunk.h>
 #include <mrpt/utils/CFileOutputStream.h>
 
-#include <octomap/octomap.h>
-#include <octomap/ColorOcTree.h>
 #include "COctoMapBase_impl.h"
 
 // Explicit instantiation:
 template class mrpt::maps::COctoMapBase<octomap::ColorOcTree,octomap::ColorOcTreeNode>;
 
-PIMPL_IMPLEMENT(octomap::ColorOcTree);
 
 using namespace std;
 using namespace mrpt;
