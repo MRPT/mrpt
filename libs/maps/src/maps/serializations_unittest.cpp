@@ -20,7 +20,6 @@ using namespace mrpt::maps;
 using namespace mrpt::obs;
 using namespace std;
 
-
 // Create a set of classes, then serialize and deserialize to test possible bugs:
 TEST(SerializeTestMaps, WriteReadToMem)
 {
