@@ -33,7 +33,6 @@ PIMPL_IMPLEMENT(octomap::ColorOcTree);
 template class mrpt::maps::COctoMapBase<octomap::ColorOcTree,
 										octomap::ColorOcTreeNode>;
 
-
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::maps;

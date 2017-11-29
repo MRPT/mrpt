@@ -165,11 +165,11 @@ void TestOctoMap()
 		win.unlockAccess3DScene();
 	}
 
-	// Go through voxels:
+// Go through voxels:
 #ifdef HAS_SYSTEM_OCTOMAP
 	{
-		const auto &om = map.getOctomap<octomap::OcTree>();
-		for (auto it=om.begin_leafs();it!=om.end_leafs(); ++it)
+		const auto& om = map.getOctomap<octomap::OcTree>();
+		for (auto it = om.begin_leafs(); it != om.end_leafs(); ++it)
 		{
 			const octomap::point3d pt = it.getCoordinate();
 			cout << "pt: " << pt << " -> occupancy = " << it->getOccupancy()
