@@ -4,6 +4,9 @@
 
 export DEB_BUILD_MAINT_OPTIONS=hardening=+all,+fortify
 
+# default: dont build expensive caller graphs with dot in the documentation pkg
+export MRPT_genCALLERGRAPHS=NO
+
 # For multiarch support:
 DEB_HOST_ARCH ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
 DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
@@ -41,6 +44,9 @@ CMAKE_FLAGS = \
 
 %:
 	dh $@ --buildsystem=cmake
+
+override_dh_auto_build-arch:
+	dh_auto_build -O--buildsystem=cmake
 
 override_dh_auto_build-indep:
 	# Build doc targets:

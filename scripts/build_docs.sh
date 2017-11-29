@@ -13,14 +13,17 @@ genRTF="NO"
 includeCounter="NO"
 skipSVN="NO"
 MRPT_USE_SEARCHENGINE="YES"
+genCALLERGRAPHS=${MRPT_genCALLERGRAPHS:-YES}
 skipMAINMRPTDOCS=0
 
 emptyARGS=1
 errARGS=0
 
-while getopts 'chrlwsdo' OPTION
+while getopts 'gchrlwsdo' OPTION
 do
 	case "$OPTION" in
+	g)	genCALLERGRAPHS="NO"
+			;;
 	c) 	outCHM="YES"
 		genHTML="YES"
 		MRPT_USE_SEARCHENGINE="NO"
@@ -58,6 +61,7 @@ then
 	echo " -w: Include web visit counter & footer (select only for publishing the HTML files)" >&2
 	echo " -s: Skip the SVN number (if your copy of MRPT has not been obtained from Subversion)" >&2
 	echo " -d: Skip all .h files and just parse doc/* files" >&2
+	echo " -g: Skip generating caller/callee graphs using dot" >&2
 	exit 1
 fi
 
