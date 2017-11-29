@@ -52,14 +52,11 @@ namespace mrpt
 			/** Get a reference to the internal octomap object. Example:
 			   * \code
 			   *  mrpt::maps::COctoMap  map;
-			   *  ...
-			   *  octomap::OcTree &om = map.getOctomap();
-			   *
-			   *
+			   *  octomap::OcTree &om = map.getOctomap<octomap::OcTree>();
 			   * \endcode
 			   */
 			template <class OCTOMAP_CLASS>
-			inline OCTOMAP_CLASS & getOctomap() { return m_octomap; }
+			inline OCTOMAP_CLASS & getOctomap() { return *m_octomap.ptr.get(); }
 
 			/** With this struct options are provided to the observation insertion process.
 			* \sa CObservation::insertObservationInto()
