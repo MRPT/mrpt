@@ -290,9 +290,8 @@ namespace obs
 using scan2pts_functor = void (*)(
 	const mrpt::obs::CObservation2DRangeScan& obs,
 	mrpt::maps::CMetricMap::Ptr& out_map, const void* insertOps);
-extern scan2pts_functor
-	ptr_internal_build_points_map_from_scan2D;  // impl in
-												// CObservation2DRangeScan.cpp
+extern scan2pts_functor ptr_internal_build_points_map_from_scan2D;  // impl in
+// CObservation2DRangeScan.cpp
 }
 }
 
