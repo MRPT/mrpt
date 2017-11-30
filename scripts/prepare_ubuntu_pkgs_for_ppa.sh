@@ -67,7 +67,7 @@ do
 	cd ${MRPTSRC}
 	bash scripts/prepare_debian.sh -s -u -h -d ${DEBIAN_DIST} -c "${MRPT_PKG_CUSTOM_CMAKE_PARAMS}"
 
-	MRPT_SNAPSHOT_VERSION=`date +%Y%m%d-%H%M`
+	MRPT_SNAPSHOT_VERSION=`date +%Y%m%d`
 	MRPT_SNAPSHOT_VERSION+="-git-"
 	MRPT_SNAPSHOT_VERSION+=`git rev-parse --short=8 HEAD`
 	MRPT_SNAPSHOT_VERSION+="-"
