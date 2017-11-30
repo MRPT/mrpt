@@ -45,7 +45,7 @@ fi
 # Append snapshot?
 if [ $APPEND_SNAPSHOT_NUM == "1" ];
 then
-        MRPT_SNAPSHOT_VERSION=`date +%Y%m%d-%H%M`
+        MRPT_SNAPSHOT_VERSION=`date +%Y%m%d`
         MRPT_SNAPSHOT_VERSION+="-git-"
         MRPT_SNAPSHOT_VERSION+=`git rev-parse --short=8 HEAD`
         MRPT_SNAPSHOT_VERSION+="-"
