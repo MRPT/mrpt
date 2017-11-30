@@ -112,6 +112,11 @@ cp $HOME/mrpt_release/mrpt*.tar.gz $MRPT_DEB_DIR/mrpt_${MRPT_VERSION_STR}.orig.t
 cd ${MRPT_DEB_DIR}
 tar -xf mrpt_${MRPT_VERSION_STR}.orig.tar.gz
 
+if [ ! -d "${MRPT_DEBSRC_DIR}"];
+then
+  mv mrpt-* ${MRPT_DEBSRC_DIR}  # fix different dir names for Ubuntu PPA packages
+fi
+
 if [ ! -f "${MRPT_DEBSRC_DIR}/CMakeLists.txt" ];
 then
 	echo "*ERROR*: Seems there was a problem copying sources to ${MRPT_DEBSRC_DIR}... aborting script."
