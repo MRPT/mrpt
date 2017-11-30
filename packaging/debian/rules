@@ -45,10 +45,9 @@ CMAKE_FLAGS = \
 %:
 	dh $@ --buildsystem=cmake
 
-override_dh_auto_build-arch:
+override_dh_auto_build:
 	dh_auto_build -O--buildsystem=cmake
-
-override_dh_auto_build-indep:
+	#override_dh_auto_build-indep:
 	# Build doc targets:
 	dh_auto_build -O--buildsystem=cmake -- \
 		documentation_html \
