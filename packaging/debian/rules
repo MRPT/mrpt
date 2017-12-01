@@ -45,9 +45,10 @@ CMAKE_FLAGS = \
 %:
 	dh $@ --buildsystem=cmake
 
-override_dh_auto_build:
+override_dh_auto_build-arch:
 	dh_auto_build -O--buildsystem=cmake
-	#override_dh_auto_build-indep:
+
+override_dh_auto_build-indep:
 	# Build doc targets:
 	dh_auto_build -O--buildsystem=cmake -- \
 		documentation_html \
@@ -64,9 +65,12 @@ override_dh_auto_install:
 	# Do nothing?
 	echo "[override_dh_auto_install]"
 
-override_dh_auto_test:
-	# Tests:
-	echo "[override_dh_auto_test]"
+override_dh_auto_test-indep:
+	echo "[override_dh_auto_test-indep] Do nothing."
+
+override_dh_auto_test-arch:
+	# Tests for arch-dependent :
+	echo "[override_dh_auto_test-arch]"
 	dh_auto_build -O--buildsystem=cmake -- $(MRPT_TEST_TARGET) -j1
 
 override_dh_install:
