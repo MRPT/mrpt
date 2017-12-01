@@ -22,6 +22,7 @@
 	- BUG FIXES:
 		- Fix likelihood computation in mrpt::maps::CReflectivityGridMap2D (which led to crash)
 		- Fixed regression in particle resampling affecting RBPF-SLAM methods. Introduced in Dec. 2016 with [this commit](https://github.com/MRPT/mrpt/commit/691973813bdc53d3faa7088b092eb041aa80d0ce).
+		- Wrong argument type: CStream::Seek() must allow signed offsets.
 
 <hr>
 <a name="1.5.4">

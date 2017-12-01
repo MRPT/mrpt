@@ -63,7 +63,7 @@ size_t  CInterfaceFTDI::Write(const void *Buffer, size_t Count)
 /*-------------------------------------------------------------
 					Seek
 -------------------------------------------------------------*/
-uint64_t CInterfaceFTDI::Seek(uint64_t Offset, CStream::TSeekOrigin Origin)
+uint64_t CInterfaceFTDI::Seek(int64_t Offset, CStream::TSeekOrigin Origin)
 {
 	MRPT_UNUSED_PARAM(Offset);
 	MRPT_UNUSED_PARAM(Origin);

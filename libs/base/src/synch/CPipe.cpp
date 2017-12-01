@@ -122,7 +122,7 @@ std::string CPipeBaseEndPoint::serialize()
 }
 
 // Methods that don't make sense in pipes:
-uint64_t CPipeBaseEndPoint::Seek(uint64_t , CStream::TSeekOrigin ) {  return 0; }
+uint64_t CPipeBaseEndPoint::Seek(int64_t Offset , CStream::TSeekOrigin ) {  return 0; }
 uint64_t CPipeBaseEndPoint::getTotalBytesCount() { return 0; }
 uint64_t CPipeBaseEndPoint::getPosition() { return 0; }
 

@@ -38,7 +38,7 @@ namespace utils
 		CStdOutStream() { }
 		virtual ~CStdOutStream() { }
 		/** It has no efect in this class */
-		uint64_t Seek(uint64_t Offset, CStdOutStream::TSeekOrigin Origin = sFromBeginning) MRPT_OVERRIDE { MRPT_UNUSED_PARAM(Offset); MRPT_UNUSED_PARAM(Origin); THROW_EXCEPTION("Invalid operation for this kind of stream"); }
+		uint64_t Seek(int64_t Offset, CStdOutStream::TSeekOrigin Origin = sFromBeginning) MRPT_OVERRIDE { MRPT_UNUSED_PARAM(Offset); MRPT_UNUSED_PARAM(Origin); THROW_EXCEPTION("Invalid operation for this kind of stream"); }
 		/** It has no efect in this class */
 		uint64_t getTotalBytesCount() MRPT_OVERRIDE { THROW_EXCEPTION("Invalid operation for this kind of stream"); }
 		/** It has no efect in this class */

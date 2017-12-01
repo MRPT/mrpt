@@ -156,7 +156,7 @@ namespace mrpt
 
 			/** This virtual method does nothing in this class.
 			 */
-			uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning);
+			uint64_t Seek(int64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning);
 
 			/** This virtual method does nothing in this class.
 			 */

@@ -62,7 +62,7 @@ namespace utils
 		bool is_open() { return fileOpenCorrectly(); } //!< Returns true if the file was open without errors.
 
 		// See base class docs
-		uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) MRPT_OVERRIDE;
+		uint64_t Seek(int64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) MRPT_OVERRIDE;
 
 		/** Method for getting the total number of bytes writen to buffer */
 		uint64_t getTotalBytesCount() MRPT_OVERRIDE;

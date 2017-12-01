@@ -116,7 +116,7 @@ size_t  CFileStream::Write(const void *Buffer, size_t Count)
 	Method for moving to a specified position in the streamed resource.
 	 See documentation of CStream::Seek
  ---------------------------------------------------------------*/
-uint64_t CFileStream::Seek(uint64_t Offset, CStream::TSeekOrigin Origin)
+uint64_t CFileStream::Seek(int64_t Offset, CStream::TSeekOrigin Origin)
 {
 	if (!m_f.is_open()) return 0;
 
