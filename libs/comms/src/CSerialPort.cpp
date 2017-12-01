@@ -82,6 +82,23 @@ CSerialPort::~CSerialPort()
 	if (isOpen()) close();
 }
 
+void CSerialPort::open(const std::string& COM_name)
+{
+	if (isOpen() && m_serialName != COM_name)
+		THROW_EXCEPTION("Cannot change serial port while open");
+	if (!isOpen())
+	{
+		setSerialPortName(COM_name);
+		open();
+	}
+}
+
+void CSerialPort::setSerialPortName(const std::string& COM_name)
+{
+	if (isOpen()) THROW_EXCEPTION("Cannot change serial port while open");
+	m_serialName = COM_name;
+}
+
 /* -----------------------------------------------------
 				Open
    ----------------------------------------------------- */
@@ -906,5 +923,31 @@ void CSerialPort::purgeBuffers()
 		THROW_EXCEPTION_FMT("Cannot flush serial port: %s", strerror(errno));
 #endif
 
+	MRPT_END
+}
+
+uint64_t CSerialPort::Seek(uint64_t off, CStream::TSeekOrigin o = sFromBeginning)
+{
+	MRPT_START
+	MRPT_UNUSED_PARAM(Origin);
+	MRPT_UNUSED_PARAM(Offset);
+	THROW_EXCEPTION(
+		"Method not applicable to serial communications port CStream!");
+	MRPT_END
+}
+
+uint64_t CSerialPort::getTotalBytesCount() override
+{
+	MRPT_START
+	THROW_EXCEPTION(
+		"Method not applicable to serial communications port CStream!");
+	MRPT_END
+}
+
+uint64_t CSerialPort::getPosition() override
+{
+	MRPT_START
+	THROW_EXCEPTION(
+		"Method not applicable to serial communications port CStream!");
 	MRPT_END
 }
