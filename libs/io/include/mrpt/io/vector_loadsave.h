@@ -24,13 +24,15 @@ namespace io
 * \return Returns false on any error, true on everything OK.
 * \sa loadBinaryFile
 */
-bool vectorToBinaryFile(const std::vector<uint8_t>& vec, const std::string& fileName);
+bool vectorToBinaryFile(
+	const std::vector<uint8_t>& vec, const std::string& fileName);
 
 /** Loads a entire file as a vector of bytes.
 * \return Returns false on any error, true on everything OK.
 * \sa vectorToBinaryFile
 */
-bool loadBinaryFile(std::vector<uint8_t>& out_data, const std::string& fileName);
+bool loadBinaryFile(
+	std::vector<uint8_t>& out_data, const std::string& fileName);
 
 /** @} */
 

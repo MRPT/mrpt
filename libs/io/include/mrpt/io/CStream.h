@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/core/common.h> // MRPT_printf_format_check
+#include <mrpt/core/common.h>  // MRPT_printf_format_check
 #include <mrpt/core/reverse_bytes.h>
 #include <string>
 #include <vector>
@@ -18,8 +18,8 @@ namespace mrpt
 {
 namespace io
 {
-//class CSerializable;
-//class CMessage;
+// class CSerializable;
+// class CMessage;
 
 /** This base class is used to provide a unified interface to
  *    files,memory buffers,..Please see the derived classes. This class is
@@ -176,7 +176,7 @@ class CStream
 	 * \return Seek returns the new value of the Position property.
 	 */
 	virtual uint64_t Seek(
-		uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) = 0;
+		int64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) = 0;
 
 	/** Returns the total amount of bytes in the stream.
 	 */
@@ -433,7 +433,7 @@ class CStream
 
 // Note: write op accepts parameters by value on purpose, to avoid misaligned
 // reference binding errors.
-#define DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE(T)              \
+#define DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE(T) \
 	CStream& operator<<(CStream& out, const T a); \
 	CStream& operator>>(CStream& in, T& a);
 

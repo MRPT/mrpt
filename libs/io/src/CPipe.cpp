@@ -91,7 +91,7 @@ CPipeBaseEndPoint::CPipeBaseEndPoint(const std::string& serialized)
 		m_pipe_file = std::stoi(serialized);
 #endif
 	}
-	catch (std::invalid_argument &)
+	catch (std::invalid_argument&)
 	{
 		THROW_EXCEPTION("Error parsing PIPE handle!");
 	}
@@ -113,7 +113,7 @@ std::string CPipeBaseEndPoint::serialize()
 }
 
 // Methods that don't make sense in pipes:
-uint64_t CPipeBaseEndPoint::Seek(uint64_t, CStream::TSeekOrigin) { return 0; }
+uint64_t CPipeBaseEndPoint::Seek(int64_t, CStream::TSeekOrigin) { return 0; }
 uint64_t CPipeBaseEndPoint::getTotalBytesCount() { return 0; }
 uint64_t CPipeBaseEndPoint::getPosition() { return 0; }
 /** Introduces a pure virtual method responsible for reading from the stream */

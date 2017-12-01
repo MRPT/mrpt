@@ -12,7 +12,7 @@
 #include <mrpt/io/CFileStream.h>
 #include <iostream>
 #include <iomanip>
-#include <string> // std::getline()
+#include <string>  // std::getline()
 
 using namespace mrpt::io;
 using namespace std;
@@ -41,7 +41,8 @@ CFileStream::CFileStream(const string& fileName, TFileOpenModes mode_) : m_f()
 	// Try to open the file:
 	m_f.open(fileName.c_str(), mode);
 	if (!m_f.is_open())
-		throw std::runtime_error(std::string("CFileStream: Error creating/opening: ") + fileName);
+		throw std::runtime_error(
+			std::string("CFileStream: Error creating/opening: ") + fileName);
 }
 
 /*---------------------------------------------------------------
@@ -103,7 +104,7 @@ size_t CFileStream::Write(const void* Buffer, size_t Count)
 	Method for moving to a specified position in the streamed resource.
 	 See documentation of CStream::Seek
  ---------------------------------------------------------------*/
-uint64_t CFileStream::Seek(uint64_t Offset, CStream::TSeekOrigin Origin)
+uint64_t CFileStream::Seek(int64_t Offset, CStream::TSeekOrigin Origin)
 {
 	if (!m_f.is_open()) return 0;
 
@@ -122,7 +123,8 @@ uint64_t CFileStream::Seek(uint64_t Offset, CStream::TSeekOrigin Origin)
 			way = ios_base::end;
 			break;
 		default:
-			throw std::runtime_error("[CFileStream::Seek] Invalid value for 'Origin'");
+			throw std::runtime_error(
+				"[CFileStream::Seek] Invalid value for 'Origin'");
 	}
 
 	m_f.seekp(offset, way);

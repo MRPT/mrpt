@@ -28,6 +28,7 @@ class CFileGZOutputStream : public CStream
    protected:
 	size_t Read(void* Buffer, size_t Count) override;
 	size_t Write(const void* Buffer, size_t Count) override;
+
    private:
 	void* m_f;
 
@@ -67,8 +68,7 @@ class CFileGZOutputStream : public CStream
 	uint64_t getPosition() override;
 
 	/** This method is not implemented in this class */
-	uint64_t Seek(
-		uint64_t, CStream::TSeekOrigin = sFromBeginning) override;
+	uint64_t Seek(int64_t, CStream::TSeekOrigin = sFromBeginning) override;
 	/** This method is not implemented in this class */
 	uint64_t getTotalBytesCount() override;
 };  // End of class def.

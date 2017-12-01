@@ -57,7 +57,7 @@ class CPipe
 		CPipeReadEndPoint& outReadPipe, CPipeWriteEndPoint& outWritePipe);
 };  // end of CPipe
 
-/** Common interface of read & write pipe end-points 
+/** Common interface of read & write pipe end-points
  * \ingroup mrpt_io_grp
  */
 class CPipeBaseEndPoint : public mrpt::io::CStream
@@ -108,7 +108,7 @@ class CPipeBaseEndPoint : public mrpt::io::CStream
 
 	/** Without effect in this class */
 	virtual uint64_t Seek(
-		uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) override;
+		int64_t of, CStream::TSeekOrigin o = sFromBeginning) override;
 	/** Without effect in this class */
 	virtual uint64_t getTotalBytesCount() override;
 	/** Without effect in this class */
@@ -121,7 +121,7 @@ static_assert(
 
 /** The read end-point in a pipe created with mrpt::synch::CPipe.
   * Use the method mrpt::utils::CStream::ReadBuffer() of the base class CStream
- * for blocking reading. 
+ * for blocking reading.
  * \ingroup mrpt_io_grp
  */
 class CPipeReadEndPoint : public CPipeBaseEndPoint

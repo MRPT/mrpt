@@ -69,7 +69,7 @@ class CFileOutputStream : public CStream
 	bool is_open() { return fileOpenCorrectly(); }
 	// See base class docs
 	uint64_t Seek(
-		uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) override;
+		int64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) override;
 
 	/** Method for getting the total number of bytes writen to buffer */
 	uint64_t getTotalBytesCount() override;

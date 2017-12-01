@@ -78,8 +78,7 @@ void mrpt::io::zip::compress(
 /*---------------------------------------------------------------
 						compress
 ---------------------------------------------------------------*/
-void mrpt::io::zip::compress(
-	void* inData, size_t inDataSize, CStream& out)
+void mrpt::io::zip::compress(void* inData, size_t inDataSize, CStream& out)
 {
 	int ret = 0;
 	MRPT_START
@@ -265,7 +264,8 @@ bool mrpt::io::zip::compress_gz_data_block(
 	out_gz_data.clear();
 	if (in_data.empty()) return true;
 
-	const unsigned int nPipeName = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	const unsigned int nPipeName =
+		std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 	std::string pipe_file_name;
 
 // Create an anonymous pipe for writing the data to:
@@ -363,10 +363,8 @@ bool mrpt::io::zip::decompress_gz_data_block(
 
 	// JL: I tried to do this with pipes but had no luck... :-(
 	const std::string tmp_file_name = mrpt::system::getTempFileName();
-	if (!mrpt::io::vectorToBinaryFile(in_gz_data, tmp_file_name))
-		return false;
-	bool retVal =
-		mrpt::io::zip::decompress_gz_file(tmp_file_name, out_data);
+	if (!mrpt::io::vectorToBinaryFile(in_gz_data, tmp_file_name)) return false;
+	bool retVal = mrpt::io::zip::decompress_gz_file(tmp_file_name, out_data);
 
 	remove(tmp_file_name.c_str());  // Delete tmp file
 
