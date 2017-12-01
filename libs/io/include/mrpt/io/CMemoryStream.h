@@ -31,18 +31,17 @@ class CMemoryStream : public CStream
 	size_t Write(const void* Buffer, size_t Count) override;
 
 	/** Internal data */
-	void_ptr_noncopy m_memory {nullptr};
-	uint64_t m_size{ 0 }, m_position{ 0 }, m_bytesWritten{ 0 };
-	uint64_t m_alloc_block_size{ 0x1000 };
+	void_ptr_noncopy m_memory{nullptr};
+	uint64_t m_size{0}, m_position{0}, m_bytesWritten{0};
+	uint64_t m_alloc_block_size{0x1000};
 	/** If the memory block does not belong to the object. */
-	bool m_read_only{ false };
+	bool m_read_only{false};
 	/** Resizes the internal buffer size. */
 	void resize(uint64_t newSize);
 
    public:
 	/** Default constructor */
 	CMemoryStream() {}
-
 	/** Constructor to initilize the data in the stream from a block of memory
 	 * (which is copied), and sets the current stream position at the beginning
 	 * of the data.
@@ -70,7 +69,7 @@ class CMemoryStream : public CStream
 
 	// See docs in base class
 	uint64_t Seek(
-		uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) override;
+		int64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) override;
 	/** Returns the total size of the internal buffer  */
 	uint64_t getTotalBytesCount() override;
 	/** Method for getting the current cursor position, where 0 is the first

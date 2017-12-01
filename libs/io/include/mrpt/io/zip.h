@@ -34,8 +34,7 @@ void compress(
 void compress(void* inData, size_t inDataSize, mrpt::io::CStream& out);
 
 /** Compress an array of bytes and write the result into a stream. */
-void compress(
-	const std::vector<unsigned char>& inData, mrpt::io::CStream& out);
+void compress(const std::vector<unsigned char>& inData, mrpt::io::CStream& out);
 
 /** Decompress an array of bytes into another one
   * \exception std::exception If the apriori estimated decompressed size is not
@@ -65,7 +64,8 @@ void decompress(
   * \return true on success, false on error.
   * \sa compress_gz_file, decompress_gz_data_block
   */
-bool decompress_gz_file(const std::string& file_path, std::vector<uint8_t>& buffer);
+bool decompress_gz_file(
+	const std::string& file_path, std::vector<uint8_t>& buffer);
 
 /** Compress a memory buffer into a gzip file (xxxx.gz).
   *  compress_level: 0=no compression, 1=best speed, 9=maximum

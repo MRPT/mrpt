@@ -14,7 +14,7 @@
 #include <mrpt/core/reverse_bytes.h>
 #include <iostream>
 #include <cstdarg>
-#include <cstring> // strlen()
+#include <cstring>  // strlen()
 
 //#include "internal_class_registry.h"
 
@@ -70,33 +70,33 @@ void CStream::WriteBuffer(const void* Buffer, size_t Count)
  ---------------------------------------------------------------*/
 #if MRPT_IS_BIG_ENDIAN
 // Big endian system: Convert into little-endian for streaming
-#define IMPLEMENT_CSTREAM_READ_WRITE_SIMPLE_TYPE(T)                  \
+#define IMPLEMENT_CSTREAM_READ_WRITE_SIMPLE_TYPE(T)        \
 	CStream& mrpt::io::operator<<(CStream& out, const T a) \
-	{                                                                \
-		mrpt::reverseBytesInPlace(a);                         \
-		out.WriteBuffer((void*)&a, sizeof(a));                       \
-		return out;                                                  \
-	}                                                                \
+	{                                                      \
+		mrpt::reverseBytesInPlace(a);                      \
+		out.WriteBuffer((void*)&a, sizeof(a));             \
+		return out;                                        \
+	}                                                      \
 	CStream& mrpt::io::operator>>(CStream& in, T& a)       \
-	{                                                                \
-		T b;                                                         \
-		in.ReadBuffer((void*)&b, sizeof(a));                         \
-		mrpt::reverseBytesInPlace(b);                         \
-		::memcpy(&a, &b, sizeof(b));                                 \
-		return in;                                                   \
+	{                                                      \
+		T b;                                               \
+		in.ReadBuffer((void*)&b, sizeof(a));               \
+		mrpt::reverseBytesInPlace(b);                      \
+		::memcpy(&a, &b, sizeof(b));                       \
+		return in;                                         \
 	}
 #else
 // Little endian system:
-#define IMPLEMENT_CSTREAM_READ_WRITE_SIMPLE_TYPE(T)                  \
-	CStream& mrpt::io::operator<<(CStream& out, const T a)           \
-	{                                                                \
-		out.WriteBuffer((void*)&a, sizeof(a));                       \
-		return out;                                                  \
-	}                                                                \
-	CStream& mrpt::io::operator>>(CStream& in, T& a)                 \
-	{                                                                \
-		in.ReadBuffer((void*)&a, sizeof(a));                         \
-		return in;                                                   \
+#define IMPLEMENT_CSTREAM_READ_WRITE_SIMPLE_TYPE(T)        \
+	CStream& mrpt::io::operator<<(CStream& out, const T a) \
+	{                                                      \
+		out.WriteBuffer((void*)&a, sizeof(a));             \
+		return out;                                        \
+	}                                                      \
+	CStream& mrpt::io::operator>>(CStream& in, T& a)       \
+	{                                                      \
+		in.ReadBuffer((void*)&a, sizeof(a));               \
+		return in;                                         \
 	}
 #endif
 
@@ -217,7 +217,7 @@ CStream& CStream::operator>>(CSerializable& obj)
 	ReadObject(&obj);
 	return *this;
 }
-#endif 
+#endif
 
 /*---------------------------------------------------------------
 			Reads an elemental data type from the stream.
@@ -257,8 +257,7 @@ CStream& mrpt::io::operator<<(CStream& s, const std::vector<float>& a)
 {
 	return detail::writeStdVectorToStream(s, a);
 }
-CStream& mrpt::io::operator<<(
-	CStream& s, const std::vector<double>& a)
+CStream& mrpt::io::operator<<(CStream& s, const std::vector<double>& a)
 {
 	return detail::writeStdVectorToStream(s, a);
 }
@@ -330,8 +329,7 @@ CStream& mrpt::io::operator>>(CStream& s, std::vector<int8_t>& a)
 }
 
 #if MRPT_WORD_SIZE != 32  // If it's 32 bit, size_t <=> uint32_t
-CStream& mrpt::io::operator<<(
-	CStream& s, const std::vector<size_t>& a)
+CStream& mrpt::io::operator<<(CStream& s, const std::vector<size_t>& a)
 {
 	return detail::writeStdVectorToStream(s, a);
 }
@@ -593,8 +591,7 @@ int CStream::printf(const char* fmt, ...)
 	MRPT_END
 }
 
-CStream& mrpt::io::operator<<(
-	CStream& s, const std::vector<std::string>& vec)
+CStream& mrpt::io::operator<<(CStream& s, const std::vector<std::string>& vec)
 {
 	uint32_t N = static_cast<uint32_t>(vec.size());
 	s << N;
@@ -602,8 +599,7 @@ CStream& mrpt::io::operator<<(
 	return s;
 }
 
-CStream& mrpt::io::operator>>(
-	CStream& s, std::vector<std::string>& vec)
+CStream& mrpt::io::operator>>(CStream& s, std::vector<std::string>& vec)
 {
 	uint32_t N;
 	s >> N;

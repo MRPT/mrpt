@@ -28,7 +28,6 @@ CFileOutputStream::CFileOutputStream(const string& fileName, bool append)
 }
 
 CFileOutputStream::CFileOutputStream() : m_of() {}
-
 bool CFileOutputStream::open(const string& fileName, bool append)
 {
 	close();
@@ -47,7 +46,6 @@ void CFileOutputStream::close()
 }
 
 CFileOutputStream::~CFileOutputStream() { close(); }
-
 size_t CFileOutputStream::Read(void* Buffer, size_t Count)
 {
 	MRPT_UNUSED_PARAM(Buffer);
@@ -63,7 +61,7 @@ size_t CFileOutputStream::Write(const void* Buffer, size_t Count)
 	return m_of.fail() ? 0 : Count;
 }
 
-uint64_t CFileOutputStream::Seek(uint64_t Offset, CStream::TSeekOrigin Origin)
+uint64_t CFileOutputStream::Seek(int64_t Offset, CStream::TSeekOrigin Origin)
 {
 	if (!m_of.is_open()) return 0;
 

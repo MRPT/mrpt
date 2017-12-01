@@ -58,16 +58,12 @@ class CFileInputStream : public CStream
 	/** Will be true if EOF has been already reached. */
 	bool checkEOF();
 
-	/** Method for moving to a specified position in the streamed resource.
-	 *   See documentation of CStream::Seek */
+	// See docs in base class
 	uint64_t Seek(
-		uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) override;
-
-	/** Method for getting the total number of bytes in the buffer. */
+		int64_t off, CStream::TSeekOrigin Origin = sFromBeginning) override;
+	// See docs in base class
 	uint64_t getTotalBytesCount() override;
-
-	/** Method for getting the current cursor position, where 0 is the first
-	 * byte and TotalBytesCount-1 the last one. */
+	// See docs in base class
 	uint64_t getPosition() override;
 
 	/** Reads one string line from the file (until a new-line character)

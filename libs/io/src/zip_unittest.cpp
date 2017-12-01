@@ -36,20 +36,18 @@ TEST(Compress, DataBlockGZ)
 	//" bytes." << endl;
 
 	std::vector<uint8_t> recovered_data;
-	if (!mrpt::io::zip::decompress_gz_data_block(
-			compress_data, recovered_data))
+	if (!mrpt::io::zip::decompress_gz_data_block(compress_data, recovered_data))
 		GTEST_FAIL() << "Error in decompress_gz_data_block\n";
 
 	//	cout << "Decompressed data: " << recovered_data.size() << " bytes." <<
 	// endl;
 
 	EXPECT_EQ(in_data.size(), recovered_data.size());
-	if (in_data.size()==recovered_data.size())
+	if (in_data.size() == recovered_data.size())
 	{
-		bool all_eq=true;
-		for (size_t i=0;i<in_data.size();i++)
-			if (in_data[i]!=recovered_data[i])
-				all_eq=false;
+		bool all_eq = true;
+		for (size_t i = 0; i < in_data.size(); i++)
+			if (in_data[i] != recovered_data[i]) all_eq = false;
 		EXPECT_TRUE(all_eq) << "Mismatch after compressing/decompressing";
 	}
 }

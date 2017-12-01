@@ -19,7 +19,6 @@
 using namespace mrpt::io;
 using namespace std;
 
-
 CFileGZOutputStream::CFileGZOutputStream(const string& fileName) : m_f(nullptr)
 {
 	MRPT_START
@@ -30,7 +29,6 @@ CFileGZOutputStream::CFileGZOutputStream(const string& fileName) : m_f(nullptr)
 }
 
 CFileGZOutputStream::CFileGZOutputStream() : m_f(nullptr) {}
-
 bool CFileGZOutputStream::open(const string& fileName, int compress_level)
 {
 	MRPT_START
@@ -45,7 +43,6 @@ bool CFileGZOutputStream::open(const string& fileName, int compress_level)
 }
 
 CFileGZOutputStream::~CFileGZOutputStream() { close(); }
-
 void CFileGZOutputStream::close()
 {
 	if (m_f)
@@ -55,7 +52,7 @@ void CFileGZOutputStream::close()
 	}
 }
 
-size_t CFileGZOutputStream::Read(void* , size_t )
+size_t CFileGZOutputStream::Read(void*, size_t)
 {
 	THROW_EXCEPTION("Trying to read from an output file stream.");
 }
@@ -79,8 +76,7 @@ uint64_t CFileGZOutputStream::getPosition()
 }
 
 bool CFileGZOutputStream::fileOpenCorrectly() { return m_f != nullptr; }
-
-uint64_t CFileGZOutputStream::Seek(uint64_t, CStream::TSeekOrigin)
+uint64_t CFileGZOutputStream::Seek(int64_t, CStream::TSeekOrigin)
 {
 	THROW_EXCEPTION("Method not available in this class.");
 }
@@ -89,5 +85,3 @@ uint64_t CFileGZOutputStream::getTotalBytesCount()
 {
 	THROW_EXCEPTION("Method not available in this class.");
 }
-
-

@@ -72,8 +72,7 @@ class CFileGZInputStream : public CStream
 	uint64_t getPosition() override;
 
 	/** This method is not implemented in this class */
-	uint64_t Seek(
-		uint64_t , CStream::TSeekOrigin = sFromBeginning) override;
+	uint64_t Seek(int64_t, CStream::TSeekOrigin = sFromBeginning) override;
 
 };  // End of class def.
 

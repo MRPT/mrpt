@@ -28,7 +28,6 @@ CFileGZInputStream::CFileGZInputStream(const string& fileName) : m_f(nullptr)
 }
 
 CFileGZInputStream::CFileGZInputStream() : m_f(nullptr) {}
-
 bool CFileGZInputStream::open(const std::string& fileName)
 {
 	MRPT_START
@@ -47,7 +46,6 @@ bool CFileGZInputStream::open(const std::string& fileName)
 	MRPT_END
 }
 
-
 void CFileGZInputStream::close()
 {
 	if (m_f)
@@ -58,7 +56,6 @@ void CFileGZInputStream::close()
 }
 
 CFileGZInputStream::~CFileGZInputStream() { close(); }
-
 size_t CFileGZInputStream::Read(void* Buffer, size_t Count)
 {
 	if (!m_f)
@@ -95,7 +92,6 @@ uint64_t CFileGZInputStream::getPosition()
 }
 
 bool CFileGZInputStream::fileOpenCorrectly() { return m_f != nullptr; }
-
 bool CFileGZInputStream::checkEOF()
 {
 	if (!m_f)
@@ -104,7 +100,7 @@ bool CFileGZInputStream::checkEOF()
 		return 0 != gzeof(THE_GZFILE);
 }
 
-uint64_t CFileGZInputStream::Seek(uint64_t, CStream::TSeekOrigin)
+uint64_t CFileGZInputStream::Seek(int64_t, CStream::TSeekOrigin)
 {
 	THROW_EXCEPTION("Method not available in this class.");
 }

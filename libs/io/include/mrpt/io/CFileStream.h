@@ -84,16 +84,10 @@ class CFileStream : public CStream
 	/** Will be true if EOF has been already reached. */
 	bool checkEOF();
 
-	/** Method for moving to a specified position in the streamed resource.
-	 *   See documentation of CStream::Seek
-	 */
 	uint64_t Seek(
-		uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) override;
-
-	/** Method for getting the total number of bytes writen to buffer. */
+		int64_t off, CStream::TSeekOrigin org = sFromBeginning) override;
 	uint64_t getTotalBytesCount() override;
-	/** Method for getting the current cursor position, where 0 is the first
-	 * byte and TotalBytesCount-1 the last one */
+	// See docs in base class
 	uint64_t getPosition() override;
 	/** The current Input cursor position, where 0 is the first byte */
 	uint64_t getPositionI();

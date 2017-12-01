@@ -12,8 +12,8 @@
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/io/CFileInputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
-#include <algorithm> // min,max
-#include <cstring> // memcpy
+#include <algorithm>  // min,max
+#include <cstring>  // memcpy
 
 using namespace mrpt::io;
 using std::min;
@@ -117,7 +117,7 @@ size_t CMemoryStream::Write(const void* Buffer, size_t Count)
 	return Count;
 }
 
-uint64_t CMemoryStream::Seek(uint64_t Offset, CStream::TSeekOrigin Origin)
+uint64_t CMemoryStream::Seek(int64_t Offset, CStream::TSeekOrigin Origin)
 {
 	switch (Origin)
 	{
@@ -138,9 +138,7 @@ uint64_t CMemoryStream::Seek(uint64_t Offset, CStream::TSeekOrigin Origin)
 }
 
 uint64_t CMemoryStream::getTotalBytesCount() { return m_bytesWritten; }
-
 uint64_t CMemoryStream::getPosition() { return m_position; }
-
 void CMemoryStream::Clear()
 {
 	if (!m_read_only)
@@ -203,8 +201,7 @@ bool CMemoryStream::loadBufferFromFile(const std::string& file_name)
 // be freed here.
 void mrpt::io::internal::free_fn_for_zmq(void* /* data*/, void* hint)
 {
-	auto* fd =
-		reinterpret_cast<mrpt::io::internal::TFreeFnDataForZMQ*>(hint);
+	auto* fd = reinterpret_cast<mrpt::io::internal::TFreeFnDataForZMQ*>(hint);
 	if (fd->do_free) delete fd->buf;
 	delete fd;
 }
