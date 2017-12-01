@@ -50,7 +50,7 @@ namespace mrpt
 
 			/** Method for moving to a specified position in the streamed resource.
 			 *   See documentation of CStream::Seek */
-			uint64_t Seek( uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) MRPT_OVERRIDE;
+			uint64_t Seek(int64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) MRPT_OVERRIDE;
 
 			/** Method for getting the total number of bytes in the buffer. */
 			uint64_t getTotalBytesCount() MRPT_OVERRIDE;

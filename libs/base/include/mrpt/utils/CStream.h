@@ -154,7 +154,7 @@ namespace mrpt
 			 *	- sFromEnd			Offset is from the end of the resource. Offset must be <= 0 to indicate a number of bytes before the end of the file.
 			 * \return Seek returns the new value of the Position property.
 			 */
-			virtual uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) = 0;
+			virtual uint64_t Seek(int64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) = 0;
 
 			/** Returns the total amount of bytes in the stream.
 			 */

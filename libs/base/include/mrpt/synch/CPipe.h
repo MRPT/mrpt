@@ -92,7 +92,7 @@ namespace mrpt
 			virtual size_t  Read(void *Buffer, size_t Count) MRPT_OVERRIDE;
 			virtual size_t  Write(const void *Buffer, size_t Count) MRPT_OVERRIDE;
 
-			virtual uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) MRPT_OVERRIDE; //!< Without effect in this class
+			virtual uint64_t Seek(int64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) MRPT_OVERRIDE; //!< Without effect in this class
 			virtual uint64_t getTotalBytesCount() MRPT_OVERRIDE; //!< Without effect in this class
 			virtual uint64_t getPosition() MRPT_OVERRIDE; //!< Without effect in this class
 		}; // end of CPipeBaseEndPoint
