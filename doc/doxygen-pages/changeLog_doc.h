@@ -13,8 +13,10 @@
 <p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or [browse it on-line](http://www.mrpt.org/).</i></p>
 
 <a name="1.5.5">
-<h2>Version 1.5.5: Released 28/NOV/2017 </h2></a>
+<h2>Version 1.5.5: Released 2/DEC/2017 </h2></a>
 - <b>Detailed list of changes:</b>
+	- \ref mrpt_base_grp
+		- Added methods mrpt::utils::CFileStream::clearError() and mrpt::utils::CFileInputStream::clearError()
 	- \ref mrpt_nav_grp
 		- mrpt::nav::CHolonomicFullEval now uses an internal sin/cos LUT cache for improved performance.
 	- Build system:
