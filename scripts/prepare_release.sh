@@ -65,7 +65,7 @@ LST_GUIDES=`cat $MRPTSRC/doc/guide-list.txt`
 echo "# Building LaTeX documents..."
 for guide in $LST_GUIDES; do
 	echo "#  * Building $guide..."
-	make -C $MRPTSRC/doc/$guide/ > /dev/null 2>&1
+	make -C $MRPTSRC/doc/$guide/ > /tmp/mrpt_build_latex.log 2>&1
 	cp $MRPTSRC/doc/$guide/$guide.pdf ${OUT_DIR}/doc/
 done
 
