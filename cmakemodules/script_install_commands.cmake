@@ -22,8 +22,6 @@ ENDIF(WIN32)
 
 # Docs, examples and the rest of files:
 IF(WIN32)
-	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/doc" DESTINATION ./ )
-
 	IF (PACKAGE_INCLUDES_SOURCES)
 		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/cmakemodules" DESTINATION ./ )
 		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/otherlibs" DESTINATION ./ )
@@ -35,10 +33,6 @@ IF(WIN32)
 	ENDIF (PACKAGE_INCLUDES_SOURCES)
 
 	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/parse-files" DESTINATION ./ )
-	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/share"
-		DESTINATION ./
-		PATTERN ".gitignore" EXCLUDE
-	)
 
 	# Smart determination of the dependencies DLLs so they are also copied when installing:
 	# ---------------------------------------------------------------------------------------
@@ -58,12 +52,12 @@ IF(WIN32)
 		ENDFOREACH(F)
 	ENDIF (EXISTS "${OpenCV_DIR}/bin/Release")
 
-        # Intel TBB dlls
-        if(CMAKE_MRPT_HAS_TBB)
-            string(REGEX REPLACE "/lib" "/bin" TBB_DLL_DIR "${TBB_LIB_DIR}")
-            install(PROGRAMS "${TBB_DLL_DIR}/tbb.dll" DESTINATION bin COMPONENT main)
-            install(PROGRAMS "${TBB_DLL_DIR}/tbb_debug.dll" DESTINATION bin COMPONENT main)
-        endif(CMAKE_MRPT_HAS_TBB)
+	# Intel TBB dlls
+	if(CMAKE_MRPT_HAS_TBB)
+		string(REGEX REPLACE "/lib" "/bin" TBB_DLL_DIR "${TBB_LIB_DIR}")
+		install(PROGRAMS "${TBB_DLL_DIR}/tbb.dll" DESTINATION bin COMPONENT main)
+		install(PROGRAMS "${TBB_DLL_DIR}/tbb_debug.dll" DESTINATION bin COMPONENT main)
+	endif(CMAKE_MRPT_HAS_TBB)
 
 	# ffmpeg:
 	IF (EXISTS "${FFMPEG_WIN32_ROOT_DIR}/bin")
@@ -96,26 +90,7 @@ IF(WIN32)
 	ENDFOREACH(F)
 
 ELSE(WIN32)
-	IF (NOT IS_DEBIAN_DBG_PKG)
-		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/doc/html" DESTINATION ${mrpt_doc_INSTALL_PREFIX}share/doc/mrpt-doc/  )
-		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/samples" DESTINATION ${mrpt_doc_INSTALL_PREFIX}share/doc/mrpt-doc/  )
-		IF(EXISTS "${MRPT_SOURCE_DIR}/doc/mrpt-book.ps.gz")
-			INSTALL(FILES "${MRPT_SOURCE_DIR}/doc/mrpt-book.ps.gz" DESTINATION ${mrpt_doc_INSTALL_PREFIX}share/doc/mrpt-doc/ )
-		ENDIF(EXISTS "${MRPT_SOURCE_DIR}/doc/mrpt-book.ps.gz")
-
-		IF(EXISTS "${MRPT_SOURCE_DIR}/doc/pbmap-guide/pbmap-guide.ps.gz")
-			INSTALL(FILES "${MRPT_SOURCE_DIR}/doc/pbmap-guide/pbmap-guide.ps.gz" DESTINATION ${mrpt_doc_INSTALL_PREFIX}share/doc/mrpt-doc/ )
-		ENDIF(EXISTS "${MRPT_SOURCE_DIR}/doc/pbmap-guide/pbmap-guide.ps.gz")
-
-		# applications config files
-		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/share/applications" DESTINATION ${mrpt_apps_INSTALL_PREFIX}share)
-		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/share/mrpt" DESTINATION ${mrpt_common_INSTALL_PREFIX}share)
-		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/share/pixmaps" DESTINATION ${mrpt_apps_INSTALL_PREFIX}share)
-		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/share/metainfo" DESTINATION ${mrpt_apps_INSTALL_PREFIX}share)
-
-	 	# Mime types go to the mrpt-core package
-		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/share/mime" DESTINATION ${mrpt_apps_INSTALL_PREFIX}share )
-	ENDIF(NOT IS_DEBIAN_DBG_PKG)
+	# Linux: handled in share/CMakeLists.txt
 ENDIF(WIN32)
 
 # The headers of all the MRPT libs:
