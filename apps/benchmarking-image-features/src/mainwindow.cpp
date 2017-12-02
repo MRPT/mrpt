@@ -29,7 +29,6 @@
 /// using namespaces
 using namespace mrpt::obs;
 using namespace mrpt::system;
-using namespace cv::line_descriptor;
 using namespace mrpt::vision;
 using namespace mrpt::utils;
 using namespace mrpt::gui;
@@ -37,9 +36,6 @@ using namespace mrpt::math;
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace std;
-
-using namespace cv;
-using namespace cv::xfeatures2d;
 
 QImage qimage_1[MAX_DESC], qimage_2[MAX_DESC];  //!< qimage1 and qimage2 stores
 //! the descriptor visualizations

@@ -67,8 +67,8 @@
 #include <QtConcurrent/QtConcurrentRun>
 
 /// standard c++ includes
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <string>
 #include <sstream>
 #include <fstream>
@@ -89,8 +89,6 @@
 #include "visual_odometry.h"
 #include "place_recognition.h"
 
-using namespace cv;
-using namespace std;
 using namespace mrpt::vision;
 using namespace mrpt::utils;
 using namespace mrpt::math;
