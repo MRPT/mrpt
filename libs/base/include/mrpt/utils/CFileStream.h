@@ -65,6 +65,7 @@ namespace mrpt
 			bool fileOpenCorrectly(); //!< Returns true if the file was open without errors.
 			bool is_open() { return fileOpenCorrectly(); } //!< Returns true if the file was open without errors.
 			bool checkEOF(); //!< Will be true if EOF has been already reached.
+			void clearError(); //!< Resets stream error status bits (e.g. after an EOF)
 
 			/** Method for moving to a specified position in the streamed resource.
 			 *   See documentation of CStream::Seek

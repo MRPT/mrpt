@@ -169,3 +169,9 @@ bool CFileInputStream::checkEOF()
 		return true;
 	return m_if.eof();
 }
+
+void CFileInputStream::clearError()
+{
+	if (m_if.is_open())
+			m_if.clear();
+}
