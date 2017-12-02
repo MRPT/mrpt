@@ -20,15 +20,18 @@ enum class TestColors
 };
 
 MRPT_ENUM_TYPE_BEGIN(TestColors)
-MRPT_FILL_ENUM_MEMBER(TestColors,Black);
-MRPT_FILL_ENUM_MEMBER(TestColors,Gray);
-MRPT_FILL_ENUM_MEMBER(TestColors,White);
+MRPT_FILL_ENUM_MEMBER(TestColors, Black);
+MRPT_FILL_ENUM_MEMBER(TestColors, Gray);
+MRPT_FILL_ENUM_MEMBER(TestColors, White);
 MRPT_ENUM_TYPE_END()
 
 // Example declaration of plain enum
 enum Directions
 {
-	North, East, South, West
+	North,
+	East,
+	South,
+	West
 };
 // Example declaration of "enum class"
 MRPT_ENUM_TYPE_BEGIN(Directions)
@@ -43,11 +46,15 @@ void Test_EnumType()
 	using namespace std;
 	using namespace mrpt::typemeta;
 
-	cout << "White => " << (int)TEnumType<TestColors>::name2value("White") << endl;
-	cout << "Black => " << (int)TEnumType<TestColors>::name2value("Black") << endl;
-	cout << "Gray  => " << (int)TEnumType<TestColors>::name2value("Gray") << endl;
+	cout << "White => " << (int)TEnumType<TestColors>::name2value("White")
+		 << endl;
+	cout << "Black => " << (int)TEnumType<TestColors>::name2value("Black")
+		 << endl;
+	cout << "Gray  => " << (int)TEnumType<TestColors>::name2value("Gray")
+		 << endl;
 
-	cout << "7    <= " << TEnumType<TestColors>::value2name(TestColors(7)) << endl;
+	cout << "7    <= " << TEnumType<TestColors>::value2name(TestColors(7))
+		 << endl;
 }
 //! [example]
 

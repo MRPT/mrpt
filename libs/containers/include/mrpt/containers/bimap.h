@@ -38,8 +38,9 @@ class bimap
    public:
 	using const_iterator = typename std::map<KEY, VALUE>::const_iterator;
 	using iterator = std::map<KEY, VALUE>::iterator;
-  using const_iterator_inverse = typename std::map<VALUE, KEY>::const_iterator;
-  using iterator_inverse = typename std::map<VALUE, KEY>::iterator;
+	using const_iterator_inverse =
+		typename std::map<VALUE, KEY>::const_iterator;
+	using iterator_inverse = typename std::map<VALUE, KEY>::iterator;
 
 	/** Default constructor - does nothing */
 	bimap() {}

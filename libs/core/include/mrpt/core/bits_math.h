@@ -47,7 +47,6 @@ inline float DEG2RAD(const int x) { return x * M_PIf / 180.0f; }
 inline double RAD2DEG(const double x) { return x * 180.0 / M_PI; }
 /** Radians to degrees */
 inline float RAD2DEG(const float x) { return x * 180.0f / M_PIf; }
-
 #if !defined(M_PIl)
 #define M_PIl 3.14159265358979323846264338327950288L
 #define M_2PIl (2.0L * 3.14159265358979323846264338327950288L)
@@ -56,7 +55,6 @@ inline float RAD2DEG(const float x) { return x * 180.0f / M_PIf; }
 inline long double DEG2RAD(const long double x) { return x * M_PIl / 180.0; }
 /** Radians to degrees */
 inline long double RAD2DEG(const long double x) { return x * 180.0 / M_PIl; }
-
 #define DEG2RAD \
 	DEG2RAD  // This is required to avoid other libs (like PCL) to #define their
 // own versions of DEG2RAD
@@ -153,11 +151,15 @@ inline T saturate_val(const T& value, const T sat_min, const T sat_max)
 }
 
 // backward compat
-namespace math  { using mrpt::square; } 
-namespace utils { 
-	using mrpt::square;
-	using mrpt::DEG2RAD;
-	using mrpt::RAD2DEG;
+namespace math
+{
+using mrpt::square;
+}
+namespace utils
+{
+using mrpt::square;
+using mrpt::DEG2RAD;
+using mrpt::RAD2DEG;
 }
 
 }  // end of namespace

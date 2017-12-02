@@ -316,10 +316,7 @@ class CDynamicGrid
 
 	/** The user must implement this in order to provide "saveToTextFile" a way
 	 * to convert each cell into a numeric value */
-	virtual float cell2float(const T& ) const
-	{
-		return 0;
-	}
+	virtual float cell2float(const T&) const { return 0; }
 	/** Saves a float representation of the grid (via "cell2float()") to a text
 	 * file. \return false on error */
 	bool saveToTextFile(const std::string& fileName) const
@@ -350,8 +347,7 @@ class CDynamicGrid
 			<< static_cast<uint32_t>(m_size_y);
 	}
 	template <class STREAM>
-	void dyngridcommon_readFromStream(
-		STREAM& in, bool cast_from_float = false)
+	void dyngridcommon_readFromStream(STREAM& in, bool cast_from_float = false)
 	{
 		if (!cast_from_float)
 		{

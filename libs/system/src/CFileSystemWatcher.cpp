@@ -301,31 +301,36 @@ void CFileSystemWatcher::thread_win32_watch()
 				case FILE_ACTION_ADDED:
 				{
 					newEntry.eventCreated = true;
-					m_queue_events_win32_msgs.push(new TFileSystemChange(newEntry));
+					m_queue_events_win32_msgs.push(
+						new TFileSystemChange(newEntry));
 				}
 				break;
 				case FILE_ACTION_REMOVED:
 				{
 					newEntry.eventDeleted = true;
-					m_queue_events_win32_msgs.push(new TFileSystemChange(newEntry));
+					m_queue_events_win32_msgs.push(
+						new TFileSystemChange(newEntry));
 				}
 				break;
 				case FILE_ACTION_MODIFIED:
 				{
 					newEntry.eventModified = true;
-					m_queue_events_win32_msgs.push(new TFileSystemChange(newEntry));
+					m_queue_events_win32_msgs.push(
+						new TFileSystemChange(newEntry));
 				}
 				break;
 				case FILE_ACTION_RENAMED_OLD_NAME:
 				{
 					newEntry.eventMovedFrom = true;
-					m_queue_events_win32_msgs.push(new TFileSystemChange(newEntry));
+					m_queue_events_win32_msgs.push(
+						new TFileSystemChange(newEntry));
 				}
 				break;
 				case FILE_ACTION_RENAMED_NEW_NAME:
 				{
 					newEntry.eventMovedTo = true;
-					m_queue_events_win32_msgs.push(new TFileSystemChange(newEntry));
+					m_queue_events_win32_msgs.push(
+						new TFileSystemChange(newEntry));
 				}
 				break;
 			}

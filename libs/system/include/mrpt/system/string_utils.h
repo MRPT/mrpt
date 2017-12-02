@@ -76,7 +76,8 @@ void encodeUTF8(const std::vector<uint16_t>& input, std::string& output);
 
 /** Encode a sequence of bytes as a string in base-64.
  * \sa decodeBase64  */
-void encodeBase64(const std::vector<uint8_t>& inputData, std::string& outString);
+void encodeBase64(
+	const std::vector<uint8_t>& inputData, std::string& outString);
 
 /** Decode a base-64 string into the original sequence of bytes.
  * \sa encodeBase64
@@ -128,7 +129,9 @@ std::string sprintf_container(const char* fmt, const T& V)
 }
 
 /** @brief Convert a string list to one single string with new-lines. */
-void stringListAsString(const std::vector<std::string> & lst, std::string &out, const std::string & newline = "\r\n" );
+void stringListAsString(
+	const std::vector<std::string>& lst, std::string& out,
+	const std::string& newline = "\r\n");
 
 /** Original code snippet found in http://stackoverflow.com/a/30357710 */
 /**\{*/
@@ -151,15 +154,18 @@ inline std::string num2str(T value)
 	return std::to_string(value);
 }
 template <>
-inline std::string num2str<bool>(bool value) {
-	return value ? "true":"false";
+inline std::string num2str<bool>(bool value)
+{
+	return value ? "true" : "false";
 }
 template <>
-inline std::string num2str<std::string>(std::string value) {
+inline std::string num2str<std::string>(std::string value)
+{
 	return value;
 }
 template <>
-inline std::string num2str<const char*>(const char* value) {
+inline std::string num2str<const char*>(const char* value)
+{
 	return value;
 }
 

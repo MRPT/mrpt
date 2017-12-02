@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/core/integer_select.h>
-#include <mrpt/core/common.h> // remove MSVC warnings
+#include <mrpt/core/common.h>  // remove MSVC warnings
 #include <array>
 #include <stdexcept>
 
@@ -198,8 +198,8 @@ class ts_hash_map
 	 * already. */
 	VALUE& operator[](const KEY& key)
 	{
-		typename mrpt::uint_select_by_bytecount<
-			NUM_BYTES_HASH_TABLE>::type hash;
+		typename mrpt::uint_select_by_bytecount<NUM_BYTES_HASH_TABLE>::type
+			hash;
 		reduced_hash(key, hash);
 		std::array<ts_map_entry<KEY, VALUE>, NUM_HAS_TABLE_COLLISIONS_ALLOWED>&
 			match_arr = m_vec[hash];
@@ -218,8 +218,8 @@ class ts_hash_map
 	}
 	const_iterator find(const KEY& key) const
 	{
-		typename mrpt::uint_select_by_bytecount<
-			NUM_BYTES_HASH_TABLE>::type hash;
+		typename mrpt::uint_select_by_bytecount<NUM_BYTES_HASH_TABLE>::type
+			hash;
 		reduced_hash(key, hash);
 		const std::array<ts_map_entry<KEY, VALUE>,
 						 NUM_HAS_TABLE_COLLISIONS_ALLOWED>& match_arr =

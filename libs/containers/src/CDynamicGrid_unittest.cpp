@@ -19,7 +19,7 @@ using mrpt::containers::CDynamicGrid;
 
 TEST(CDynamicGrid, GetSetAndResize)
 {
-	CDynamicGrid<double> grid{ -10.0, 10.0, -10.0, 10.0, 0.1 };
+	CDynamicGrid<double> grid{-10.0, 10.0, -10.0, 10.0, 0.1};
 
 	*grid.cellByPos(3.0, 4.0) = 8.0;
 	*grid.cellByPos(-2.0, -7.0) = 9.0;

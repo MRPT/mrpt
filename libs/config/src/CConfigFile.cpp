@@ -157,7 +157,8 @@ void CConfigFile::getAllSections(std::vector<std::string>& sections) const
 /*---------------------------------------------------------------
 					  getAllKeys
  ---------------------------------------------------------------*/
-void CConfigFile::getAllKeys(const string& section, std::vector<std::string>& keys) const
+void CConfigFile::getAllKeys(
+	const string& section, std::vector<std::string>& keys) const
 {
 	MRPT_CSimpleIni::TNamesDepend names;
 	static_cast<const MRPT_CSimpleIni*>(m_ini.get())

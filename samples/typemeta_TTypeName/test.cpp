@@ -13,10 +13,14 @@
 #include <iostream>
 
 // Declare custom user types:
-struct MyFooClass {};
+struct MyFooClass
+{
+};
 namespace MyNS
 {
-struct MyBarClass {};
+struct MyBarClass
+{
+};
 struct MyBarClass2
 {
 	DECLARE_TTYPENAME_CLASSNAME(MyNS::MyBarClass2)
@@ -45,11 +49,13 @@ void Test_TypeName()
 	// STL typenames as strings:
 	cout << TTypeName<double>::get() << endl;
 	cout << TTypeName<vector<double>>::get() << endl;
-	cout << TTypeName<array<int32_t,5>>::get() << endl;
+	cout << TTypeName<array<int32_t, 5>>::get() << endl;
 	cout << TTypeName<set<double>>::get() << endl;
 	cout << TTypeName<pair<int32_t, pair<int32_t, int32_t>>>::get() << endl;
 	cout << TTypeName<map<double, set<int32_t>>>::get() << endl;
-	cout << TTypeName<set<multimap<double, pair<MyFooClass,MyNS::MyBarClass2>>>>::get() << endl;
+	cout << TTypeName<set<
+				multimap<double, pair<MyFooClass, MyNS::MyBarClass2>>>>::get()
+		 << endl;
 }
 //! [example typename]
 

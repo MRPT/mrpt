@@ -11,13 +11,17 @@
 #include <string>
 #include <vector>
 #include <type_traits>
-#include <mrpt/system/string_utils.h> // tokenize
+#include <mrpt/system/string_utils.h>  // tokenize
 #include <mrpt/core/exceptions.h>
 
 namespace mrpt
 {
 // Frd decl:
-namespace io { template <typename ENUMTYPE> struct TEnumType; }
+namespace io
+{
+template <typename ENUMTYPE>
+struct TEnumType;
+}
 namespace config
 {
 // Frwd. decl:
@@ -100,8 +104,8 @@ class CConfigFileBase
 		const std::string& comment = std::string())
 	{
 		writeString(
-			section, name, mrpt::system::num2str(value), name_padding_width, value_padding_width,
-			comment);
+			section, name, mrpt::system::num2str(value), name_padding_width,
+			value_padding_width, comment);
 	}
 	template <typename data_t>
 	void write(
@@ -112,11 +116,13 @@ class CConfigFileBase
 	{
 		std::string s;
 		for (typename std::vector<data_t>::const_iterator it = value.begin();
-			it != value.end(); ++it) {
-			s += mrpt::system::num2str(*it); s += " ";
+			 it != value.end(); ++it)
+		{
+			s += mrpt::system::num2str(*it);
+			s += " ";
 		}
 		writeString(
-			section, name, s, name_padding_width, value_padding_width,comment);
+			section, name, s, name_padding_width, value_padding_width, comment);
 	}
 	void write(
 		const std::string& section, const std::string& name, double value,
@@ -451,18 +457,18 @@ class CConfigFileBase
 			mrpt::utils::RAD2DEG(variableName));    \
 	}
 
-#define MRPT_SAVE_CONFIG_VAR_COMMENT(variableName, __comment) \
-	{                                                         \
-		c.write(                                              \
-			s, #variableName, variableName,                   \
-			mrpt::utils::MRPT_SAVE_NAME_PADDING(),            \
+#define MRPT_SAVE_CONFIG_VAR_COMMENT(variableName, __comment)   \
+	{                                                           \
+		c.write(                                                \
+			s, #variableName, variableName,                     \
+			mrpt::utils::MRPT_SAVE_NAME_PADDING(),              \
 			mrpt::utils::MRPT_SAVE_VALUE_PADDING(), __comment); \
 	}
-#define MRPT_SAVE_CONFIG_VAR_DEGREES_COMMENT(                 \
-	__entryName, __variable, __comment)                       \
-	{                                                         \
-		c.write(                                              \
-			s, __entryName, mrpt::utils::RAD2DEG(__variable), \
+#define MRPT_SAVE_CONFIG_VAR_DEGREES_COMMENT(                   \
+	__entryName, __variable, __comment)                         \
+	{                                                           \
+		c.write(                                                \
+			s, __entryName, mrpt::utils::RAD2DEG(__variable),   \
 			mrpt::utils::MRPT_SAVE_NAME_PADDING(),              \
 			mrpt::utils::MRPT_SAVE_VALUE_PADDING(), __comment); \
 	}

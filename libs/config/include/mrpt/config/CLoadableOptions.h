@@ -32,7 +32,8 @@ class CLoadableOptions
 	 * LOADABLEOPTS_DUMP_VAR */
 	static void dumpVar_int(std::ostream& out, const char* varName, int v);
 	static void dumpVar_float(std::ostream& out, const char* varName, float v);
-	static void dumpVar_double(std::ostream& out, const char* varName, double v);
+	static void dumpVar_double(
+		std::ostream& out, const char* varName, double v);
 	static void dumpVar_bool(std::ostream& out, const char* varName, bool v);
 	static void dumpVar_string(
 		std::ostream& out, const char* varName, const std::string& v);
@@ -69,7 +70,8 @@ class CLoadableOptions
 	 * \sa loadFromConfigFile, saveToConfigFileName
 	 */
 	virtual void saveToConfigFile(
-		mrpt::config::CConfigFileBase& target, const std::string& section) const;
+		mrpt::config::CConfigFileBase& target,
+		const std::string& section) const;
 
 	/** Behaves like saveToConfigFile, but you can pass directly a file name and
 	 * a temporary CConfigFile object will be created automatically to save the
@@ -112,5 +114,5 @@ class CLoadableOptions
 			out, #variableName, RAD2DEG(static_cast<double>(variableName))); \
 	}
 
-} // end NS config
-} // end NS mrpt
+}  // end NS config
+}  // end NS mrpt

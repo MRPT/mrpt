@@ -13,20 +13,20 @@
 #endif
 
 #if defined(MRPT_EXPR_STATIC_DEFINE) || !defined(_WIN32)
-#  define MRPT_EXPR_EXPORT
-#  define MRPT_EXPR_NO_EXPORT
+#define MRPT_EXPR_EXPORT
+#define MRPT_EXPR_NO_EXPORT
 #else
-#  ifndef MRPT_EXPR_EXPORT
-#    ifdef mrpt_expr_EXPORTS
-        /* We are building this library */
-#      define MRPT_EXPR_EXPORT __declspec(dllexport)
-#    else
-        /* We are using this library */
-#      define MRPT_EXPR_EXPORT __declspec(dllimport)
-#    endif
-#  endif
+#ifndef MRPT_EXPR_EXPORT
+#ifdef mrpt_expr_EXPORTS
+/* We are building this library */
+#define MRPT_EXPR_EXPORT __declspec(dllexport)
+#else
+/* We are using this library */
+#define MRPT_EXPR_EXPORT __declspec(dllimport)
+#endif
+#endif
 
-#  ifndef MRPT_EXPR_NO_EXPORT
-#    define MRPT_EXPR_NO_EXPORT 
-#  endif
+#ifndef MRPT_EXPR_NO_EXPORT
+#define MRPT_EXPR_NO_EXPORT
+#endif
 #endif

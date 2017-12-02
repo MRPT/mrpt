@@ -143,8 +143,9 @@ bool mrpt::system::decodeBase64(
 		if (char_count)
 		{
 			std::cerr << "[decodeBase64] ERROR: base64 encoding incomplete, at"
-				"least " << ((4 - char_count) * 6) << "bits truncated."
-				<< std::endl;
+						 "least "
+					  << ((4 - char_count) * 6) << "bits truncated."
+					  << std::endl;
 			errors++;
 		}
 	}

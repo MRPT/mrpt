@@ -62,8 +62,8 @@ class CConfigFileMemory : public CConfigFileBase
 	/** Returns a list with all the section names */
 	void getAllSections(std::vector<std::string>& sections) const override;
 	/** Returs a list with all the keys into a section */
-	void getAllKeys(
-		const std::string& section, std::vector<std::string>& keys) const override;
+	void getAllKeys(const std::string& section, std::vector<std::string>& keys)
+		const override;
 
    private:
 	/** The IniFile object */

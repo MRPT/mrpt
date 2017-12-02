@@ -56,5 +56,8 @@ T round_10power(T val, int power10)
 }
 
 /** @} */
-namespace utils { using mrpt::round; } // backward compat
+namespace utils
+{
+using mrpt::round;
+}  // backward compat
 }  // end of namespace
