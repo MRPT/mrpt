@@ -53,9 +53,12 @@ Minimum compiler requisites:
   * mrpt >=2.0 (`master` branch):
     * Ubuntu 16.04LTS Xenial: default gcc/clang versions
     * Windows: Visual Studio 2015/2017.
+    * cmake >= 3.1 required (>=3.4 for Windows).
   * mrpt 1.5.* and maintenance `mrpt-1.5` branch:
     * Ubuntu 14.04LTS Trusty: default gcc/clang versions
     * Windows: Visual Studio 2012
+    * cmake >= 3.1 required
+    * **EOL** for `mrpt-1.5.*`: April 2019.
 
 To build in Debian/Ubuntu follow the steps below. See [full build docs](http://www.mrpt.org/Building_and_Installing_Instructions) online
 for Windows instructions or to learn all the details.
