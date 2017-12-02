@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/containers/generic_copier_ptr.h>
-#include <mrpt/core/common.h> // TODO
+#include <mrpt/core/common.h>  // TODO
 MRPT_TODO("Re-enable when mrpt-poses is ported!");
 #if 0
 

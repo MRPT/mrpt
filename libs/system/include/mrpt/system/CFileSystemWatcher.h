@@ -33,10 +33,9 @@ class CFileSystemWatcher
 	  */
 	struct TFileSystemChange
 	{
-		TFileSystemChange() { }
-
+		TFileSystemChange() {}
 		/** Complete path of the file/directory that has changed. */
-		std::string path {};
+		std::string path{};
 		/** Whether the event happened to a file or a directory. */
 		bool isDir{false};
 		bool eventModified{false};
@@ -69,7 +68,7 @@ class CFileSystemWatcher
 	/** Ended in "/" */
 	std::string m_watchedDirectory;
 #ifdef _WIN32
-	void* m_hNotif {nullptr};
+	void* m_hNotif{nullptr};
 	std::thread m_watchThread;
 	/** Watch thread; only needed in win32 */
 	void thread_win32_watch();

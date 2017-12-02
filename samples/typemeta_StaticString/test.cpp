@@ -22,7 +22,7 @@ void Test_StaticString()
 	constexpr auto a = literal("foo");
 	constexpr auto b = literal("bar");
 	// In GCC7 this can be "constexpr", but it fails in MSVC 2017 (!)
-	auto ab = a+b;
+	auto ab = a + b;
 	cout << "a=" << a << endl;
 	cout << "b=" << b << endl;
 	cout << "a+b=" << ab << endl;

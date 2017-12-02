@@ -35,4 +35,3 @@ extern "C" {
 #include <smmintrin.h>
 #endif
 #endif
-

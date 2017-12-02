@@ -16,4 +16,3 @@
 	alignas(16) const unsigned long long _name[2] = {                       \
 		0x##B7##B6##B5##B4##B3##B2##B1##B0##ull,                            \
 		0x##B15##B14##B13##B12##B11##B10##B9##B8##ull};
-

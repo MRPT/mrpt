@@ -84,11 +84,13 @@ class CConfigFile : public CConfigFileBase
 	virtual ~CConfigFile();
 
 	/** Returns a list with all the section names. */
-	virtual void getAllSections(std::vector<std::string>& sections) const override;
+	virtual void getAllSections(
+		std::vector<std::string>& sections) const override;
 
 	/** Returs a list with all the keys into a section. */
 	virtual void getAllKeys(
-		const std::string& section, std::vector<std::string>& keys) const override;
+		const std::string& section,
+		std::vector<std::string>& keys) const override;
 
 };  // End of class def.
 

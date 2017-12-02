@@ -16,11 +16,7 @@ using namespace mrpt::random;
 // The global instance of CRandomGenerator for single-thread programs:
 static CRandomGenerator randomGenerator;
 
-CRandomGenerator & mrpt::random::getRandomGenerator()
-{
-	return randomGenerator;
-}
-
+CRandomGenerator& mrpt::random::getRandomGenerator() { return randomGenerator; }
 // MT19937 algorithm
 // http://en.wikipedia.org/wiki/Mersenne_twister
 // Initialize the generator from a seed
@@ -33,7 +29,6 @@ uint64_t CRandomGenerator::drawUniform64bit() { return m_uint64(m_MT19937); }
 // MT19937 algorithm
 // http://en.wikipedia.org/wiki/Mersenne_twister
 uint32_t CRandomGenerator::drawUniform32bit() { return m_uint32(m_MT19937); }
-
 void CRandomGenerator::randomize(const uint32_t seed)
 {
 	MT19937_initializeGenerator(seed);

@@ -27,11 +27,11 @@ TEST(StaticString, concat_literals)
 	constexpr auto a = literal("foo");
 	constexpr auto b = literal("bar");
 	// In GCC7 these ones can be "constexpr", but that fails in MSVC 2017 (!)
-	auto ab = a+b;
+	auto ab = a + b;
 
 	static_assert(ab.size() == 6, "***");
-	EXPECT_EQ(ab[0],'f');
-	EXPECT_EQ(ab[5],'r');
+	EXPECT_EQ(ab[0], 'f');
+	EXPECT_EQ(ab[5], 'r');
 }
 
 TEST(StaticString, concat_multi)
@@ -42,12 +42,12 @@ TEST(StaticString, concat_multi)
 	auto ba = b + a;
 
 	// test sstring + literal:
-	auto abc = ab+literal("more");
-	static_assert(abc.size() == (6+4), "***");
+	auto abc = ab + literal("more");
+	static_assert(abc.size() == (6 + 4), "***");
 
 	// test sstring + sstring:
-	auto abba = ab+ba;
-	static_assert(abba.size() == 2*6, "***");
+	auto abba = ab + ba;
+	static_assert(abba.size() == 2 * 6, "***");
 
 	const char* s = abba.c_str();
 	(void)(s);

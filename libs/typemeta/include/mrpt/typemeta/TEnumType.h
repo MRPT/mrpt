@@ -42,8 +42,8 @@ struct bimap
 		m_k2v[k] = v;
 		m_v2k[v] = k;
 	}
-}; // end bimap
-} // NS internal
+};  // end bimap
+}  // NS internal
 
 /** Only specializations of this class are defined for each enum type of
  * interest
@@ -55,23 +55,28 @@ struct TEnumTypeFiller
 	static void fill(internal::bimap<ENUMTYPE, std::string>& m_map);
 };
 
-#define MRPT_ENUM_TYPE_BEGIN(_ENUM_TYPE_WITH_NS) \
-	namespace mrpt {                                  \
-	namespace typemeta {                              \
-	template <>                                       \
-	struct TEnumTypeFiller<_ENUM_TYPE_WITH_NS>        \
-	{                                                 \
-			static void fill(mrpt::typemeta::internal::bimap< \
-				_ENUM_TYPE_WITH_NS, std::string>& m_map)    \
-	{
-
-#define MRPT_ENUM_TYPE_BEGIN_NAMESPACE(_NAMESPACE,_ENUM_TYPE_WITH_NS) \
-	MRPT_ENUM_TYPE_BEGIN(_ENUM_TYPE_WITH_NS) \
+#define MRPT_ENUM_TYPE_BEGIN(_ENUM_TYPE_WITH_NS)                              \
+	namespace mrpt                                                            \
+	{                                                                         \
+	namespace typemeta                                                        \
+	{                                                                         \
+	template <>                                                               \
+	struct TEnumTypeFiller<_ENUM_TYPE_WITH_NS>                                \
+	{                                                                         \
+		static void fill(                                                     \
+			mrpt::typemeta::internal::bimap<_ENUM_TYPE_WITH_NS, std::string>& \
+				m_map)                                                        \
+		{
+#define MRPT_ENUM_TYPE_BEGIN_NAMESPACE(_NAMESPACE, _ENUM_TYPE_WITH_NS) \
+	MRPT_ENUM_TYPE_BEGIN(_ENUM_TYPE_WITH_NS)                           \
 	using namespace _NAMESPACE;
 
-
 #define MRPT_ENUM_TYPE_END() \
-	} }; } }
+	}                        \
+	}                        \
+	;                        \
+	}                        \
+	}
 
 /** For use in specializations of TEnumTypeFiller */
 #define MRPT_FILL_ENUM(_X) m_map.insert(_X, #_X)
@@ -90,8 +95,13 @@ struct TEnumType
 	static ENUMTYPE name2value(const std::string& name)
 	{
 		ENUMTYPE val;
-		if (!getBimap().inverse(name, val)) {
-			throw std::runtime_error(std::string("TEnumType<" _MRPT_AUXTOSTR(TEnumType) ">::name2value(): Unknown name: ")+name);
+		if (!getBimap().inverse(name, val))
+		{
+			throw std::runtime_error(
+				std::string(
+					"TEnumType<" _MRPT_AUXTOSTR(
+						TEnumType) ">::name2value(): Unknown name: ") +
+				name);
 		}
 		return val;
 	}
@@ -101,8 +111,13 @@ struct TEnumType
 	static std::string value2name(const ENUMTYPE val)
 	{
 		std::string s;
-		if (!getBimap().direct(val,s)) {
-			throw std::runtime_error(std::string("TEnumType<" _MRPT_AUXTOSTR(TEnumType) ">::value2name(): Unknown value: ") + std::to_string(static_cast<int>(val)));
+		if (!getBimap().direct(val, s))
+		{
+			throw std::runtime_error(
+				std::string(
+					"TEnumType<" _MRPT_AUXTOSTR(
+						TEnumType) ">::value2name(): Unknown value: ") +
+				std::to_string(static_cast<int>(val)));
 		}
 		return s;
 	}

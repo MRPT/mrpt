@@ -16,7 +16,7 @@
 #include <vector>
 #include <deque>
 #include <algorithm>
-#include <cmath> // abs
+#include <cmath>  // abs
 
 using std::string;
 
@@ -61,7 +61,8 @@ string mrpt::system::upperCase(const string& str)
 #define MASK5BYTES 0xF8
 #define MASK6BYTES 0xFC
 
-void mrpt::system::encodeUTF8(const std::vector<uint16_t>& input, std::string& output)
+void mrpt::system::encodeUTF8(
+	const std::vector<uint16_t>& input, std::string& output)
 {
 	output = "";  // output.clear();  VC6...
 	output.reserve(input.size());
@@ -94,7 +95,8 @@ void mrpt::system::encodeUTF8(const std::vector<uint16_t>& input, std::string& o
 	Author: Marius Bancila
 	http://www.codeguru.com/cpp/misc/misc/multi-lingualsupport/article.php/c10451/
 ---------------------------------------------------------------*/
-void mrpt::system::decodeUTF8(const std::string& input, std::vector<uint16_t>& output)
+void mrpt::system::decodeUTF8(
+	const std::string& input, std::vector<uint16_t>& output)
 {
 	output.clear();
 	output.reserve(input.size());
@@ -255,15 +257,12 @@ void mrpt::system::tokenize(
 }
 
 // Explicit instantiations, to be exported in the library:
-template
-void mrpt::system::tokenize<std::deque<std::string>>(
+template void mrpt::system::tokenize<std::deque<std::string>>(
 	const std::string& inString, const std::string& inDelimiters,
 	std::deque<std::string>& outTokens, bool skipBlankTokens) noexcept;
-template
-void mrpt::system::tokenize<std::vector<std::string>>(
+template void mrpt::system::tokenize<std::vector<std::string>>(
 	const std::string& inString, const std::string& inDelimiters,
 	std::vector<std::string>& outTokens, bool skipBlankTokens) noexcept;
-
 
 /*---------------------------------------------------------------
 						trim
@@ -326,24 +325,24 @@ bool mrpt::system::strStartsI(const std::string& s1, const std::string& s2)
 		s2.size());  // if s1 is shorter it's not a problem
 }
 
-void mrpt::system::stringListAsString(const std::vector<std::string> & lst, std::string &outText, const std::string & newline)
+void mrpt::system::stringListAsString(
+	const std::vector<std::string>& lst, std::string& outText,
+	const std::string& newline)
 {
 	const size_t lenNL = newline.size();
 
 	// 1) Compute overall length, including 2 chars per new-line:
 	size_t totalLen = lst.size() * lenNL;
-	for (const auto &s: lst)
-		totalLen += s.size();
+	for (const auto& s : lst) totalLen += s.size();
 
 	outText.resize(totalLen);
 
 	// 2) Copy the text out:
 	size_t curPos = 0;
-	for (const auto &s : lst)
+	for (const auto& s : lst)
 	{
 		os::memcpy(&outText[curPos], totalLen, s.c_str(), s.size());
 		curPos += s.size();
-		for (const auto &sNL : newline)
-			outText[curPos++] = sNL;
+		for (const auto& sNL : newline) outText[curPos++] = sNL;
 	}
 }

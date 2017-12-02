@@ -201,7 +201,9 @@ void mrpt::system::deleteFiles(const string& s)
 	int res = ::system(aux);
 	if (res)
 	{
-		fprintf(stderr, "[mrpt::system::deleteFiles] Warning: error invoking: `%s`\n", aux);
+		fprintf(
+			stderr,
+			"[mrpt::system::deleteFiles] Warning: error invoking: `%s`\n", aux);
 	}
 	delete[] aux;
 	MRPT_END

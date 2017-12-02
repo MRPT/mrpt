@@ -13,12 +13,12 @@
 #include <limits>
 #include <vector>
 #include <algorithm>
-#include <cstddef> 
+#include <cstddef>
 
 // Frwd decl:
 namespace Eigen
 {
-template<typename _MatrixType>
+template <typename _MatrixType>
 class SelfAdjointEigenSolver;
 }
 
@@ -216,15 +216,16 @@ class CRandomGenerator
 	 */
 	template <typename T, typename MATRIX>
 	void drawGaussianMultivariate(
-		std::vector<T>& out_result,
-		const MATRIX& cov,
+		std::vector<T>& out_result, const MATRIX& cov,
 		const std::vector<T>* mean = nullptr)
 	{
 		const size_t dim = cov.getColCount();
 		if (cov.getRowCount() != cov.getColCount())
-			throw std::runtime_error("drawGaussianMultivariate(): cov is not square.");
+			throw std::runtime_error(
+				"drawGaussianMultivariate(): cov is not square.");
 		if (mean && mean->size() != dim)
-			throw std::runtime_error("drawGaussianMultivariate(): mean and cov sizes ");
+			throw std::runtime_error(
+				"drawGaussianMultivariate(): mean and cov sizes ");
 		MATRIX Z, D;
 		// Set size of output vector:
 		out_result.clear();
@@ -261,9 +262,11 @@ class CRandomGenerator
 	{
 		const size_t N = cov.rows();
 		if (cov.getRowCount() != cov.getColCount())
-			throw std::runtime_error("drawGaussianMultivariate(): cov is not square.");
+			throw std::runtime_error(
+				"drawGaussianMultivariate(): cov is not square.");
 		if (mean && size_t(mean->size()) != N)
-			throw std::runtime_error("drawGaussianMultivariate(): mean and cov sizes ");
+			throw std::runtime_error(
+				"drawGaussianMultivariate(): mean and cov sizes ");
 
 		// Compute eigenvalues/eigenvectors of cov:
 		Eigen::SelfAdjointEigenSolver<typename COVMATRIX::PlainObject>
@@ -305,9 +308,11 @@ class CRandomGenerator
 	{
 		const size_t N = cov.rows();
 		if (cov.getRowCount() != cov.getColCount())
-			throw std::runtime_error("drawGaussianMultivariateMany(): cov is not square.");
+			throw std::runtime_error(
+				"drawGaussianMultivariateMany(): cov is not square.");
 		if (mean && size_t(mean->size()) != N)
-			throw std::runtime_error("drawGaussianMultivariateMany(): mean and cov sizes ");
+			throw std::runtime_error(
+				"drawGaussianMultivariateMany(): mean and cov sizes ");
 
 		// Compute eigenvalues/eigenvectors of cov:
 		Eigen::SelfAdjointEigenSolver<typename COVMATRIX::PlainObject>
@@ -365,7 +370,7 @@ class CRandomGenerator
 
 /** A static instance of a CRandomGenerator class, for use in single-thread
  * applications */
-CRandomGenerator &getRandomGenerator();
+CRandomGenerator& getRandomGenerator();
 
 /** A random number generator for usage in STL algorithms expecting a function
  * like this (eg, random_shuffle):
@@ -426,13 +431,17 @@ void vectorRandomNormal(
 {
 	size_t n = v_out.size();
 	for (size_t r = 0; r < n; r++)
-		v_out[r] = mean + std * getRandomGenerator().drawGaussian1D_normalized();
+		v_out[r] =
+			mean + std * getRandomGenerator().drawGaussian1D_normalized();
 }
 
 /** Randomize the generators.
  *   A seed can be providen, or a current-time based seed can be used (default)
  */
-inline void Randomize(const uint32_t seed) { getRandomGenerator().randomize(seed); }
+inline void Randomize(const uint32_t seed)
+{
+	getRandomGenerator().randomize(seed);
+}
 inline void Randomize() { getRandomGenerator().randomize(); }
 /** Returns a random permutation of a vector: all the elements of the input
  * vector are in the output but at random positions.
@@ -459,8 +468,7 @@ void randomPermutation(
 */
 template <typename T, typename MATRIX>
 void randomNormalMultiDimensionalMany(
-	const MATRIX& cov, size_t desiredSamples,
-	std::vector<std::vector<T>>& ret,
+	const MATRIX& cov, size_t desiredSamples, std::vector<std::vector<T>>& ret,
 	std::vector<T>* samplesLikelihoods = nullptr)
 {
 	getRandomGenerator().drawGaussianMultivariateMany(

@@ -19,15 +19,18 @@ enum class TestColors
 };
 
 MRPT_ENUM_TYPE_BEGIN(TestColors)
-MRPT_FILL_ENUM_MEMBER(TestColors,Black);
-MRPT_FILL_ENUM_MEMBER(TestColors,Gray);
-MRPT_FILL_ENUM_MEMBER(TestColors,White);
+MRPT_FILL_ENUM_MEMBER(TestColors, Black);
+MRPT_FILL_ENUM_MEMBER(TestColors, Gray);
+MRPT_FILL_ENUM_MEMBER(TestColors, White);
 MRPT_ENUM_TYPE_END()
 
 // Example declaration of plain enum
 enum Directions
 {
-	North, East, South, West
+	North,
+	East,
+	South,
+	West
 };
 // Example declaration of "enum class"
 MRPT_ENUM_TYPE_BEGIN(Directions)
@@ -52,7 +55,7 @@ TEST(TEnumType, str2value)
 		TEnumType<TestColors>::name2value("Violet");
 		EXPECT_FALSE(true) << "Expected exception but it didn't happen!";
 	}
-	catch (std::exception &)
+	catch (std::exception&)
 	{
 		// All good
 	}

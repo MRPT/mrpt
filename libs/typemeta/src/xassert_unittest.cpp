@@ -10,17 +10,13 @@
 #include <mrpt/typemeta/xassert.h>
 #include <gtest/gtest.h>
 
-constexpr int foo_i_below_10(unsigned i)
-{
-return MRPT_X_ASSERT(i < 10), 0;
-}
-
+constexpr int foo_i_below_10(unsigned i) { return MRPT_X_ASSERT(i < 10), 0; }
 TEST(XAssert, build_time)
 {
 	// Builds:
 	constexpr int x = foo_i_below_10(0);
 	(void)(x);
-	
+
 	// Does not build
 	// constexpr int y = foo_i_below_10(11);
 
@@ -33,5 +29,7 @@ TEST(XAssert, build_time)
 		foo_i_below_10(11);
 		EXPECT_TRUE(false) << "Exception expected but did not happen";
 	}
-	catch (std::exception &) { } // OK
+	catch (std::exception&)
+	{
+	}  // OK
 }

@@ -23,7 +23,10 @@ using mrpt::format;
 static int MRPT_SAVE_NAME_PADDING = 50;
 static int MRPT_SAVE_VALUE_PADDING = 20;
 int mrpt::config::MRPT_SAVE_NAME_PADDING() { return ::MRPT_SAVE_NAME_PADDING; }
-int mrpt::config::MRPT_SAVE_VALUE_PADDING(){ return ::MRPT_SAVE_VALUE_PADDING;}
+int mrpt::config::MRPT_SAVE_VALUE_PADDING()
+{
+	return ::MRPT_SAVE_VALUE_PADDING;
+}
 
 CConfigFileBase::~CConfigFileBase() {}
 void CConfigFileBase::write(
@@ -202,7 +205,8 @@ bool CConfigFileBase::sectionExists(const std::string& section_name) const
 {
 	std::vector<std::string> sects;
 	getAllSections(sects);
-	for (std::vector<std::string>::iterator s = sects.begin(); s != sects.end(); ++s)
+	for (std::vector<std::string>::iterator s = sects.begin(); s != sects.end();
+		 ++s)
 		if (!mrpt::system::os::_strcmpi(section_name.c_str(), s->c_str()))
 			return true;
 	return false;

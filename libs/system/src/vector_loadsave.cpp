@@ -92,4 +92,3 @@ bool mrpt::system::vectorFromTextFile(
 
 	return true;
 }
-

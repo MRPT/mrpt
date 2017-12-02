@@ -86,7 +86,6 @@ void CConfigFileMemory::getContent(std::string& str) const
 }
 
 CConfigFileMemory::~CConfigFileMemory() { delete THE_INI; }
-
 void CConfigFileMemory::writeString(
 	const std::string& section, const std::string& name, const std::string& str)
 {

@@ -41,17 +41,15 @@ void CLoadableOptions::saveToConfigFileName(
 	this->saveToConfigFile(f, section);
 }
 
-void CLoadableOptions::dumpToConsole() const
-{
-	dumpToTextStream(std::cout);
-}
-
-void CLoadableOptions::dumpVar_int(std::ostream& out, const char* varName, int v)
+void CLoadableOptions::dumpToConsole() const { dumpToTextStream(std::cout); }
+void CLoadableOptions::dumpVar_int(
+	std::ostream& out, const char* varName, int v)
 {
 	out << mrpt::format("%-*s= %i\n", LOADABLEOPTS_COLUMN_WIDTH, varName, v);
 }
 
-void CLoadableOptions::dumpVar_float(std::ostream& out, const char* varName, float v)
+void CLoadableOptions::dumpVar_float(
+	std::ostream& out, const char* varName, float v)
 {
 	out << mrpt::format("%-*s= %f\n", LOADABLEOPTS_COLUMN_WIDTH, varName, v);
 }
@@ -62,7 +60,8 @@ void CLoadableOptions::dumpVar_double(
 	out << mrpt::format("%-*s= %f\n", LOADABLEOPTS_COLUMN_WIDTH, varName, v);
 }
 
-void CLoadableOptions::dumpVar_bool(std::ostream& out, const char* varName, bool v)
+void CLoadableOptions::dumpVar_bool(
+	std::ostream& out, const char* varName, bool v)
 {
 	out << mrpt::format(
 		"%-*s= %s\n", LOADABLEOPTS_COLUMN_WIDTH, varName, v ? "YES" : "NO");
@@ -71,7 +70,8 @@ void CLoadableOptions::dumpVar_bool(std::ostream& out, const char* varName, bool
 void CLoadableOptions::dumpVar_string(
 	std::ostream& out, const char* varName, const std::string& v)
 {
-	out << mrpt::format("%-*s= %s\n", LOADABLEOPTS_COLUMN_WIDTH, varName, v.c_str());
+	out << mrpt::format(
+		"%-*s= %s\n", LOADABLEOPTS_COLUMN_WIDTH, varName, v.c_str());
 }
 
 void CLoadableOptions::dumpToTextStream(std::ostream& out) const
