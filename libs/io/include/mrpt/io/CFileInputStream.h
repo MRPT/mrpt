@@ -57,6 +57,8 @@ class CFileInputStream : public CStream
 	bool is_open() { return fileOpenCorrectly(); }
 	/** Will be true if EOF has been already reached. */
 	bool checkEOF();
+	/** Resets stream error status bits (e.g. after an EOF) */
+	void clearError();
 
 	// See docs in base class
 	uint64_t Seek(
