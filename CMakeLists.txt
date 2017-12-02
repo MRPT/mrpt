@@ -101,7 +101,10 @@ if (${CMAKE_GENERATOR} MATCHES ".*Makefiles")
     endif()
 endif()
 
-include(cmakemodules/script_select_app_to_build.cmake REQUIRED)		# Build (or not) some apps:
+SET(IS_DEBIAN_DBG_PKG 0)
+IF (CMAKE_MRPT_USE_DEB_POSTFIXS AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+	SET(IS_DEBIAN_DBG_PKG 1)
+ENDIF ()
 
 # ----------------------------------------------------------------------------
 # 		CHECK FOR SYSTEM LIBRARIES, OPTIONS, ETC..
@@ -669,6 +672,9 @@ CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/parse-files/mrpt_paths_config.h.in" "${MRPT_
 # Documentation targets (must be AFTER "apps" because it uses the aux program "mrpt-perfdata2html")
 add_subdirectory(doc)
 
+# install targets of "share/*" files
+add_subdirectory(share)
+
 #   UNIT TESTS:
 # ----------------------------------------------------------------------------
 SET( BUILD_TESTING ON CACHE BOOL "Build MRPT tests")
@@ -709,11 +715,6 @@ MARK_AS_ADVANCED(FORCE
 add_definitions(-DMRPT_OPENCV_SRC_DIR="${MRPT_OPENCV_SRC_DIR}")
 SET(MRPT_DIR ${MRPT_BINARY_DIR})
 include(cmakemodules/DefineExamples.cmake REQUIRED)
-
-SET(IS_DEBIAN_DBG_PKG 0)
-IF (CMAKE_MRPT_USE_DEB_POSTFIXS AND CMAKE_BUILD_TYPE STREQUAL "Debug")
-	SET(IS_DEBIAN_DBG_PKG 1)
-ENDIF ()
 
 # Build list of files to install, packages, etc.
 include(cmakemodules/script_install_commands.cmake REQUIRED)

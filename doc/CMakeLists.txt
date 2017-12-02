@@ -123,3 +123,21 @@ IF(LATEXMK_PROGRAM)
 
 ENDIF()
 ENDIF()
+
+# Install:
+IF(WIN32)
+	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/doc" DESTINATION ./ )
+ELSE()
+	IF (NOT IS_DEBIAN_DBG_PKG)
+		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/doc/html" DESTINATION ${mrpt_doc_INSTALL_PREFIX}share/doc/mrpt-doc/  )
+		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/samples" DESTINATION ${mrpt_doc_INSTALL_PREFIX}share/doc/mrpt-doc/  )
+		IF(EXISTS "${MRPT_SOURCE_DIR}/doc/mrpt-book.ps.gz")
+			INSTALL(FILES "${MRPT_SOURCE_DIR}/doc/mrpt-book.ps.gz" DESTINATION ${mrpt_doc_INSTALL_PREFIX}share/doc/mrpt-doc/ )
+		ENDIF()
+
+		IF(EXISTS "${MRPT_SOURCE_DIR}/doc/pbmap-guide/pbmap-guide.ps.gz")
+			INSTALL(FILES "${MRPT_SOURCE_DIR}/doc/pbmap-guide/pbmap-guide.ps.gz" DESTINATION ${mrpt_doc_INSTALL_PREFIX}share/doc/mrpt-doc/ )
+		ENDIF()
+
+	ENDIF()
+ENDIF()
