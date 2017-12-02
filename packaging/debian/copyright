@@ -29,6 +29,16 @@ Files: otherlibs/wxThings/*
 Copyright: 2000-2002, John Labenki
 License: WXwindows
 
+Files: libs/base/include/mrpt/otherlibs/stlplus/*
+Copyright: 1999-2004, Southampton University
+           2004-2008, Andy Rushton
+License: BSD-3-clause
+Comment: Project website is http://stlplus.sourceforge.net/
+
+Files: libs/base/include/mrpt/utils/msvc_inttypes.h
+Copyright: 2006, Alexander Chemeris
+License: BSD-3-clause
+
 Files: libs/base/src/utils/simpleini/*
 Copyright: 2006, Brodie Thiesfield
 License: Expat
@@ -174,18 +184,7 @@ License: Expat
   SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 License: LGPL
-  This library is free software; you can redistribute it and/or modify it under
-  the terms of the GNU Library General Public License as published by the Free
-  Software Foundation; version 2.
-  .
-  This library is distributed in the hope that it will be useful, but WITHOUT
-  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-   FOR A PARTICULAR PURPOSE. See the GNU Library General Public License for
-   more details.
-  .
-  You should have received a copy of the GNU Library General Public License
-  along with this library; if not, write to the Free Software Foundation, Inc.,
-   51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+  See: /usr/share/common-licenses/LGPL
 
 License: mt-sdk-license
   This source code is provided under the MT SDK Software License Agreement
@@ -234,8 +233,8 @@ License: WXwindows
   details.
   You should have received a copy of the GNU Library General Public Licence
   along with this software, usually in a file named COPYING.LIB. If not, write
-  to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-  MA 02111-1307 USA.
+  to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+  MA 02110-1301, USA.
   EXCEPTION NOTICE
   1. As a special exception, the copyright holders of this library give
   permission for additional uses of the text contained in this release of the
