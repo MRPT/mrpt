@@ -7,11 +7,6 @@ PROJECT(tests)
 
 SET(EXECUTABLE_OUTPUT_PATH "${${PROJECT_NAME}_BINARY_DIR}")
 
-# Fix a "bug" in VS11 (MSVC 2012):
-#if(MSVC)
-#	add_definitions(-D_VARIADIC_MAX=10)
-#endif()
-
 # -----------------------------
 # Add the "make test" target:
 # -----------------------------

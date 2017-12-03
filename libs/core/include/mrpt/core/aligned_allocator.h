@@ -11,7 +11,6 @@
 
 #include <type_traits>
 #include <memory>
-#include <mrpt/system/memory.h>
 
 namespace mrpt
 {
@@ -71,4 +70,38 @@ std::shared_ptr<T> make_aligned_shared(Args&&... args)
 	return std::allocate_shared<T>(
 		mrpt::aligned_allocator_cpp11<T_nc>(), std::forward<Args>(args)...);
 }
+
+void * aligned_malloc(size_t size, size_t alignment);
+void aligned_free(void * ptr);
+
+
+/** Put this macro inside any class with members that require 16-byte memory
+ * alignment (e.g. Eigen matrices), to override default new()/delete().
+ * Obviously, this macro is only *required* if the class is to be instantiated
+ * in dynamic memory.
+ */
+#define MRPT_MAKE_ALIGNED_OPERATOR_NEW                                         \
+	void* operator new(size_t size) { return mrpt::aligned_malloc(size,16); }  \
+	void* operator new[](size_t size) { return mrpt::aligned_malloc(size,16); }\
+	void operator delete(void* ptr) noexcept { mrpt::aligned_free(ptr); }      \
+	void operator delete[](void* ptr) noexcept { mrpt::aligned_free(ptr); }    \
+	/* in-place new and delete. since (at least afaik) there is no actual   */ \
+	/* memory allocated we can safely let the default implementation handle */ \
+	/* this particular case. */                                                \
+	static void* operator new(size_t size, void* ptr) {                        \
+		return ::operator new(size, ptr);                                      \
+	}                                                                          \
+	void operator delete(void* memory, void* ptr) noexcept {                   \
+		return ::operator delete(memory, ptr);                                 \
+	}                                                                          \
+	/* nothrow-new (returns zero instead of std::bad_alloc) */                 \
+	void* operator new(size_t size, const std::nothrow_t&) noexcept            \
+	{                                                                          \
+		try { return mrpt::aligned_malloc(size,16);  }                         \
+		catch (...)  { return nullptr; }                                       \
+	}                                                                          \
+	void operator delete(void* ptr, const std::nothrow_t&) noexcept {          \
+		mrpt::aligned_free(ptr);                                               \
+	}
+
 }

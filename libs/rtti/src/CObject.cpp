@@ -7,31 +7,23 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "base-precomp.h"  // Precompiled headers
+#include "rtti-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/CObject.h>
-#include <mrpt/utils/CMemoryStream.h>
-#include <mrpt/system/os.h>
-
+#include <mrpt/rtti/CObject.h>
+#include <cstdio>
 #include "internal_class_registry.h"
 
 using namespace mrpt;
-using namespace mrpt::utils;
-using namespace mrpt::system;
+using namespace mrpt::rtti;
 
-#include <cstdio>
-
-const mrpt::utils::TRuntimeClassId& CObject::GetRuntimeClassIdStatic()
+const mrpt::rtti::TRuntimeClassId& CObject::GetRuntimeClassIdStatic()
 {
 	return CObject::runtimeClassId;
 }
 
-/*---------------------------------------------------------------
-					TRuntimeClassId::derivedFrom
- ---------------------------------------------------------------*/
 bool TRuntimeClassId::derivedFrom(const TRuntimeClassId* pBaseClass) const
 {
-	ASSERT_(pBaseClass != nullptr)
+	ASSERT_(pBaseClass != nullptr);
 
 	// The same class??
 	if (pBaseClass == this) return true;
@@ -55,9 +47,6 @@ bool TRuntimeClassId::derivedFrom(const TRuntimeClassId* pBaseClass) const
 	return false;
 }
 
-/*---------------------------------------------------------------
-					TRuntimeClassId::derivedFrom
- ---------------------------------------------------------------*/
 bool TRuntimeClassId::derivedFrom(const char* pBaseClass_name) const
 {
 	// Automatically register all pending classes, just in case:
@@ -66,7 +55,7 @@ bool TRuntimeClassId::derivedFrom(const char* pBaseClass_name) const
 	const TRuntimeClassId* pBaseClass = findRegisteredClass(pBaseClass_name);
 	ASSERTMSG_(
 		pBaseClass != nullptr,
-		format("Class %s not registered??", pBaseClass_name))
+		format("Class %s not registered??", pBaseClass_name));
 
 	// The same class??
 	if (pBaseClass == this) return true;
@@ -87,16 +76,14 @@ bool TRuntimeClassId::derivedFrom(const char* pBaseClass_name) const
 	return false;
 }
 
-/*---------------------------------------------------------------
-					TRuntimeClassId::createObject
- ---------------------------------------------------------------*/
 CObject* TRuntimeClassId::createObject() const
 {
 	if (!ptrCreateObject)
 	{
-		perror(
+		fprintf(stderr,
 			"[TRuntimeClassId::createObject] Trying to create an object with "
-			"not dynamic constructor\n");
+			"not dynamic constructor. classname=`%s`\n",
+			className!=nullptr ? className : "nullptr");
 		return nullptr;
 	}
 
@@ -111,11 +98,9 @@ CObject* TRuntimeClassId::createObject() const
 	}
 }
 
-/* -----------------------------------------------------------------------
-		For class CObject, special methods must be defined
-		 since it has no base class. These methods are defined
-		 automatically for derived classes.
-   ----------------------------------------------------------------------- */
+// For class CObject, special methods must be defined
+// since it has no base class. These methods are defined
+// automatically for derived classes.
 TRuntimeClassId* CObject::_GetBaseClass() { return nullptr; }
-const struct TRuntimeClassId CObject::runtimeClassId = {"CObject", nullptr,
-														NULL};
+const struct TRuntimeClassId CObject::runtimeClassId = {
+	"CObject", nullptr, nullptr };

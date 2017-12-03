@@ -3,10 +3,15 @@
 #---------------------------------------------
 define_mrpt_lib(
 	# Lib name
-	core
+	rtti
 	# Dependencies
+	mrpt-core
 	)
 
-IF(BUILD_mrpt-core)
+# extra dependencies required by unit tests in this module:
+#set_property(GLOBAL PROPERTY mrpt_rtti_UNIT_TEST_EXTRA_DEPS mrpt-random)
 
-ENDIF()
+IF(BUILD_mrpt-rtti)
+
+
+ENDIF( )

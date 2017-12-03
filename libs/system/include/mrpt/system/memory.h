@@ -127,52 +127,5 @@ inline bool is_aligned<16>(const void* ptr)
 }
 /** @} */
 
-// A version of MRPT_MAKE_ALIGNED_OPERATOR_NEW that doesn't force including the
-// entire Eigen lib:
-#define MRPT_MAKE_ALIGNED_OPERATOR_NEW                                         \
-	void* operator new(size_t size)                                            \
-	{                                                                          \
-		return mrpt::system::os::aligned_malloc(size, 16);                     \
-	}                                                                          \
-	void* operator new[](size_t size)                                          \
-	{                                                                          \
-		return mrpt::system::os::aligned_malloc(size, 16);                     \
-	}                                                                          \
-	void operator delete(void* ptr) noexcept                                   \
-	{                                                                          \
-		mrpt::system::os::aligned_free(ptr);                                   \
-	}                                                                          \
-	void operator delete[](void* ptr) noexcept                                 \
-	{                                                                          \
-		mrpt::system::os::aligned_free(ptr);                                   \
-	}                                                                          \
-	/* in-place new and delete. since (at least afaik) there is no actual   */ \
-	/* memory allocated we can safely let the default implementation handle */ \
-	/* this particular case. */                                                \
-	static void* operator new(size_t size, void* ptr)                          \
-	{                                                                          \
-		return ::operator new(size, ptr);                                      \
-	}                                                                          \
-	void operator delete(void* memory, void* ptr) noexcept                     \
-	{                                                                          \
-		return ::operator delete(memory, ptr);                                 \
-	}                                                                          \
-	/* nothrow-new (returns zero instead of std::bad_alloc) */                 \
-	void* operator new(size_t size, const std::nothrow_t&) noexcept            \
-	{                                                                          \
-		try                                                                    \
-		{                                                                      \
-			return mrpt::system::os::aligned_malloc(size, 16);                 \
-		}                                                                      \
-		catch (...)                                                            \
-		{                                                                      \
-			return 0;                                                          \
-		}                                                                      \
-	}                                                                          \
-	void operator delete(void* ptr, const std::nothrow_t&)noexcept             \
-	{                                                                          \
-		mrpt::system::os::aligned_free(ptr);                                   \
-	}
-
 }  // End of namespace
 }  // End of namespace
