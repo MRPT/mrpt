@@ -338,7 +338,7 @@ void TestMatchingComparative()
 		copyjoinimage.line(
 			0, (*it1)->y, imW + imW, (*it1)->y, TColor::green());  // Epipolar
 		copyjoinimage.drawCircle(
-			(*it1)->x, (*it1)->y, 4, TColor::green, 2);  // Keypoint
+			(*it1)->x, (*it1)->y, 4, TColor::green(), 2);  // Keypoint
 
 		copyInfoImage.update_patch((*it1)->patch, 0, 0);
 		bool firstMatch = true;

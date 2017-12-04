@@ -242,7 +242,8 @@ VisualOdometry::VisualOdometry()
 *					    Generate VO main funciton *
 ************************************************************************************************/
 Mat VisualOdometry::generateVO(
-	CFeatureExtraction fext, int numFeats, string file_paths[3], int feat_type)
+	CFeatureExtraction fext, int numFeats,
+	std::array<std::string, 3> file_paths, int feat_type)
 {
 	string dataset = file_paths[0];
 	string groundtruth = file_paths[1];
