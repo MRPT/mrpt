@@ -2434,10 +2434,6 @@ void MainWindow::on_generateVisualOdometry_clicked()
 
 	/// following creates an object of the visual odometry class and performs
 	/// the VO task on the monocular images dataset
-	string file_paths[3];
-	file_paths[0] = single_dataset_path;
-	file_paths[1] = file_path3;
-	file_paths[2] = calibration_file;
 
 	// Start the computation.
 	// QFuture<void> future = QtConcurrent::run(&this->visual_odom,
@@ -2457,7 +2453,9 @@ void MainWindow::on_generateVisualOdometry_clicked()
 	std::this_thread::sleep_for(4s);
 	QFuture<Mat> future = QtConcurrent::run(
 		&this->visual_odom, &VisualOdometry::generateVO, fext, numFeats,
-		file_paths, feat_type);
+		std::array<std::string, 3>{
+			{single_dataset_path, file_path3, calibration_file}},
+		feat_type);
 	Mat display_VO = future.result();
 	this->FutureWatcher.setFuture(future);
 

@@ -58,6 +58,7 @@ THE SOFTWARE.
 #include <sstream>
 #include <fstream>
 #include <string>
+#include <array>
 
 /// MRPT includes
 #include <mrpt/vision/CFeatureExtraction.h>
@@ -186,8 +187,8 @@ class VisualOdometry  //: public QDialog
 	// Mat generateVO(CFeatureExtraction fext, int numFeats, string dataset,
 	// string groundtruth, string calibration_file, int feat_type );
 	Mat generateVO(
-		CFeatureExtraction fext, int numFeats, string file_paths[3],
-		int feat_type);
+		CFeatureExtraction fext, int numFeats,
+		std::array<std::string, 3> file_paths, int feat_type);
 
 	/**
 	 * this function stores the ground truth in an appropriate arrat
