@@ -23,6 +23,7 @@ function prepare_install()
     apt-get install libsuitesparse-dev libopenni2-dev libudev-dev -y
     apt-get install libboost-python-dev libpython-dev python-numpy -y
     add-apt-repository ppa:v-launchpad-jochen-sprickerhof-de/pcl -y
+    apt-get update -qq
     apt-get install libpcl-all -y
     if [ "$DEPS" != "headless" ]; then
       apt-get install libwxgtk3.0-dev -y
