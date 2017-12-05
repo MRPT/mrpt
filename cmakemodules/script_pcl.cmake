@@ -11,9 +11,6 @@ IF(NOT DISABLE_PCL)
 	#set(BCK_wxWidgets_LIB_DIR ${wxWidgets_LIB_DIR})
 	#set(BCK_wxWidgets_LIBRARIES ${wxWidgets_LIBRARIES})
 
-	# See bug description in: https://stackoverflow.com/q/37369369
-	list(REMOVE_ITEM PCL_LIBRARIES "vtkproj4")
-
 	# PCL library:
 	# --------------------------------------------
 	find_package(PCL COMPONENTS io common registration visualization segmentation surface QUIET)
