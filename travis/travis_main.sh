@@ -1,5 +1,4 @@
 #!/bin/bash
-
 set -e   # Make sure any error makes the script to return an error code
 
 MRPT_DIR=`pwd`
@@ -7,6 +6,31 @@ BUILD_DIR=build
 
 CMAKE_C_FLAGS="-Wall -Wextra -Wabi -O2"
 CMAKE_CXX_FLAGS="-Wall -Wextra -Wabi -O2"
+
+function prepare_install()
+{
+  sudo apt-get install build-essential gcc g++ clang pkg-config cmake python-pip -y
+  sudo apt-get install git-core -y
+  sudo apt-get install ccache -y
+
+  if [ "$TASK" == "lint" ]; then
+    pip install -r travis/python_reqs.txt
+  fi
+
+  if [ "$DEPS" != "minimal" ]; then
+    sudo apt-get install libftdi-dev zlib1g-dev libusb-1.0-0-dev libdc1394-22-dev -y
+    sudo apt-get install libjpeg-dev libopencv-dev libgtest-dev libeigen3-dev -y
+    sudo apt-get install libsuitesparse-dev libpcl-all libopenni2-dev libudev-dev -y
+    sudo apt-get install libboost-python-dev libpython-dev python-numpy -y
+    if [ "$DEPS" != "headless" ]; then
+      sudo apt-get install libwxgtk3.0-dev -y
+      sudo apt-get install freeglut3-dev -y
+      sudo apt-get install libavformat-dev libswscale-dev -y
+      sudo apt-get install libassimp-dev -y
+      sudo apt-get install qtbase5-dev libqt5opengl5-dev -y
+    fi
+  fi
+}
 
 function prepare_build_dir()
 {
@@ -55,7 +79,7 @@ function test ()
 {
   # gcc is too slow and we have a time limit in Travis CI:
   if [ "$CC" == "gcc" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then
-	return
+    return
   fi
 
   prepare_build_dir
@@ -70,6 +94,8 @@ function test ()
 
   cd $MRPT_DIR
 }
+
+prepare_install
 
 case $TASK in
   build ) build;;
