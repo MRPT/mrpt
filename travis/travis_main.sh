@@ -20,8 +20,10 @@ function prepare_install()
   if [ "$DEPS" != "minimal" ]; then
     apt-get install libftdi-dev zlib1g-dev libusb-1.0-0-dev libdc1394-22-dev -y
     apt-get install libjpeg-dev libopencv-dev libgtest-dev libeigen3-dev -y
-    apt-get install libsuitesparse-dev libpcl-all libopenni2-dev libudev-dev -y
+    apt-get install libsuitesparse-dev libopenni2-dev libudev-dev -y
     apt-get install libboost-python-dev libpython-dev python-numpy -y
+    add-apt-repository ppa:v-launchpad-jochen-sprickerhof-de/pcl -y
+    apt-get install libpcl-all -y
     if [ "$DEPS" != "headless" ]; then
       apt-get install libwxgtk3.0-dev -y
       apt-get install freeglut3-dev -y
