@@ -22,9 +22,7 @@ function prepare_install()
     apt-get install libjpeg-dev libopencv-dev libgtest-dev libeigen3-dev -y
     apt-get install libsuitesparse-dev libopenni2-dev libudev-dev -y
     apt-get install libboost-python-dev libpython-dev python-numpy -y
-    add-apt-repository ppa:v-launchpad-jochen-sprickerhof-de/pcl -y
-    apt-get update -qq
-    apt-get install libpcl-all -y
+    apt-get install libpcl-dev -y
     if [ "$DEPS" != "headless" ]; then
       apt-get install libwxgtk3.0-dev -y
       apt-get install freeglut3-dev -y
