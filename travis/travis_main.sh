@@ -9,7 +9,7 @@ CMAKE_CXX_FLAGS="-Wall -Wextra -Wabi -O2"
 
 function prepare_install()
 {
-  sudo apt-get install build-essential gcc g++ clang pkg-config cmake python-pip -y
+  sudo apt-get install sudo build-essential gcc g++ clang pkg-config cmake python-pip -y
   sudo apt-get install git-core -y
   sudo apt-get install ccache -y
 
