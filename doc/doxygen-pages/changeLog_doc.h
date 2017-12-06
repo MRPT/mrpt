@@ -56,6 +56,12 @@
 - <b>Detailed list of changes:</b>
 	- \ref mrpt_nav_grp
 		- mrpt::nav::CHolonomicFullEval now uses an internal sin/cos LUT cache for improved performance.
+	- \ref mrpt_hwdrivers_grp
+		- A new class for SICK TIM561(TIM55x/TIM56x) lidar:
+			- A new source file named CSICKTim561Eth_2050101.cpp, which supports SICK TIM series lidar including Tim55x, Tim56x 
+			- mrpt::hwdrivers::CSICKTim561Eth
+		- A new test sample for SICK TIM561(TIM55x/TIM56x) lidar:
+			- sample/SICK_tim561eth_test/test.cpp
 	- BUG FIXES:
 		- Fix likelihood computation in mrpt::maps::CReflectivityGridMap2D (which led to crash)
 		- Fixed regression in particle resampling affecting RBPF-SLAM methods. Introduced in Dec. 2016 with [this commit](https://github.com/MRPT/mrpt/commit/691973813bdc53d3faa7088b092eb041aa80d0ce).
