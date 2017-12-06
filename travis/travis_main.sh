@@ -22,8 +22,11 @@ function prepare_install()
     apt-get install libjpeg-dev libopencv-dev libgtest-dev libeigen3-dev -y
     apt-get install libsuitesparse-dev libopenni2-dev libudev-dev -y
     apt-get install libboost-python-dev libpython-dev python-numpy -y
-    # libproj-dev & vtk have to be added due to a problem with PCL. See https://stackoverflow.com/q/37369369
-    apt-get install libpcl-dev libproj-dev libvtk5-dev -y
+
+    # We must use a custom PPA to solve errors in PCL official pkgs
+    add-apt-repository ppa:jolting/backport-mrpt
+    apt-get update -qq
+    apt-get install libpcl-dev -y
     if [ "$DEPS" != "headless" ]; then
       apt-get install libwxgtk3.0-dev -y
       apt-get install freeglut3-dev -y
