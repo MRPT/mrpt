@@ -53,7 +53,7 @@ Minimum compiler requisites:
   * mrpt >=2.0 (`master` branch):
     * Ubuntu 16.04LTS Xenial: default gcc/clang versions
     * Windows: Visual Studio 2015/2017.
-    * cmake >= 3.1 required (>=3.4 for Windows).
+    * cmake >= 3.3 required (>=3.4 for Windows).
   * mrpt 1.5.* and maintenance `mrpt-1.5` branch:
     * Ubuntu 14.04LTS Trusty: default gcc/clang versions
     * Windows: Visual Studio 2012
