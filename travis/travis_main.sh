@@ -6,6 +6,7 @@ BUILD_DIR=build
 
 CMAKE_C_FLAGS="-Wall -Wextra -Wabi -O2"
 CMAKE_CXX_FLAGS="-Wall -Wextra -Wabi -O2"
+EXTRA_CMAKE_ARGS="-DDISABLE_PCL=ON"  # PCL causes link errors (?!)
 
 function prepare_install()
 {
@@ -69,7 +70,8 @@ function build ()
     -DBUILD_EXAMPLES=$BUILD_EXAMPLES \
     -DBUILD_APPLICATIONS=TRUE \
     -DBUILD_TESTING=FALSE \
-    -DDISABLE_PYTHON_BINDINGS=$DISABLE_PYTHON_BINDINGS
+    -DDISABLE_PYTHON_BINDINGS=$DISABLE_PYTHON_BINDINGS \
+    $EXTRA_CMAKE_ARGS
 
   make -j3
 
@@ -88,7 +90,11 @@ function test ()
   fi
 
   prepare_build_dir
-  cmake $MRPT_DIR -DBUILD_APPLICATIONS=FALSE -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
+  cmake $MRPT_DIR \
+    -DBUILD_APPLICATIONS=FALSE \
+    -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+    $EXTRA_CMAKE_ARGS
+
   # Remove gdb use for coverage test reports.
   # Use `test_gdb` to show stack traces of failing unit tests.
 #  if command_exists gdb ; then
