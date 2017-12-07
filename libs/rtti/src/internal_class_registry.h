@@ -26,7 +26,7 @@ struct queue_register_functions_t
 	/** Retrieve the next message in the queue, or nullptr if there is no
 	* message. The user MUST call "delete" with the returned object after use.
 	*/
-	inline bool get(TRegisterFunction &ret)
+	inline bool get(TRegisterFunction& ret)
 	{
 		std::lock_guard<std::mutex> lock(funcs_cs);
 		if (funcs.empty())
@@ -38,7 +38,6 @@ struct queue_register_functions_t
 			return true;
 		}
 	}
-
 };
 
 // Use a queue for the pending register issues, but also an atomic counter,

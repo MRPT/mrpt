@@ -8,14 +8,17 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/config.h> // MRPT_WORD_SIZE
+#include <mrpt/config.h>  // MRPT_WORD_SIZE
 #include <mrpt/io/CStream.h>
 #include <cstdint>
 #include <string>
 
 namespace mrpt
 {
-namespace serialization { class CMessage; }
+namespace serialization
+{
+class CMessage;
+}
 /** Serial and networking devices and utilities */
 namespace comms
 {
@@ -184,7 +187,8 @@ class CClientTCPSocket : public mrpt::io::CStream
 	 * goes fine.
 	  */
 	bool receiveMessage(
-		mrpt::serialization::CMessage& inMsg, const unsigned int timeoutStart_ms = 100,
+		mrpt::serialization::CMessage& inMsg,
+		const unsigned int timeoutStart_ms = 100,
 		const unsigned int timeoutBetween_ms = 1000);
 
 	/** Return the number of bytes already in the receive queue (they can be

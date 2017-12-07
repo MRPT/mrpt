@@ -12,12 +12,12 @@
 
 namespace MyNS
 {
-	class MyDerived1 : public mrpt::rtti::CObject
-	{
-	public:
-		MyDerived1() {}
-		DEFINE_MRPT_OBJECT(MyDerived1);
-	};
+class MyDerived1 : public mrpt::rtti::CObject
+{
+   public:
+	MyDerived1() {}
+	DEFINE_MRPT_OBJECT(MyDerived1);
+};
 }
 
 IMPLEMENTS_MRPT_OBJECT(MyDerived1, mrpt::rtti::CObject, MyNS)
@@ -29,7 +29,9 @@ void do_register()
 
 TEST(rtti, CObject_CLASSID)
 {
-	EXPECT_TRUE(CLASS_ID(mrpt::rtti::CObject) == &mrpt::rtti::CObject::GetRuntimeClassIdStatic());	
+	EXPECT_TRUE(
+		CLASS_ID(mrpt::rtti::CObject) ==
+		&mrpt::rtti::CObject::GetRuntimeClassIdStatic());
 }
 
 TEST(rtti, MyDerived1_CLASSID)
@@ -39,7 +41,7 @@ TEST(rtti, MyDerived1_CLASSID)
 	EXPECT_TRUE(std::string(cid_myd1->className) == std::string("MyDerived1"));
 
 	const auto cid_cobj = CLASS_ID(mrpt::rtti::CObject);
-	EXPECT_TRUE(cid_myd1->getBaseClass()==cid_cobj);
+	EXPECT_TRUE(cid_myd1->getBaseClass() == cid_cobj);
 
 	// RTTI IS_DERIVED()
 	{

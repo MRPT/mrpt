@@ -141,7 +141,8 @@ class CSerialPort : public mrpt::utils::CStream
 	// See base class docs
 	size_t Write(const void* Buffer, size_t Count) override;
 	/** not applicable in a serial port */
-	uint64_t Seek(uint64_t off, CStream::TSeekOrigin o = sFromBeginning) override;
+	uint64_t Seek(
+		uint64_t off, CStream::TSeekOrigin o = sFromBeginning) override;
 	/** not applicable in a serial port */
 	uint64_t getTotalBytesCount() override;
 	/** not applicable in a serial port */

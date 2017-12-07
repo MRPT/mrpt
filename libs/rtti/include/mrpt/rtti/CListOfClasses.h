@@ -17,7 +17,7 @@ namespace mrpt
 namespace rtti
 {
 /** A list (actually based on a std::set) of MRPT classes, capable of keeping
- * any class registered by the mechanism of CObject classes. Access to "data" 
+ * any class registered by the mechanism of CObject classes. Access to "data"
  * for the actual content, or use any of the helper methods in this class.
  * \ingroup mrpt_rtti_grp
   */

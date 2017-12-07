@@ -926,7 +926,8 @@ void CSerialPort::purgeBuffers()
 	MRPT_END
 }
 
-uint64_t CSerialPort::Seek(uint64_t off, CStream::TSeekOrigin o = sFromBeginning)
+uint64_t CSerialPort::Seek(
+	uint64_t off, CStream::TSeekOrigin o = sFromBeginning)
 {
 	MRPT_START
 	MRPT_UNUSED_PARAM(Origin);
