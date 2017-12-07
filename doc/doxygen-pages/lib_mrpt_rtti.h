@@ -31,7 +31,7 @@ the module (if dynamically linked).
 
 ## Example #1: defining new user classes
 
-\file rtti_example1/test.cpp
+See: \ref rtti_example1/test.cpp
 \snippet rtti_example1/test.cpp example-define-class
 \snippet rtti_example1/test.cpp example-define-class-test
 Output:
@@ -39,7 +39,7 @@ Output:
 
 ## Example #2: using the class factory
 
-\file rtti_example1/test.cpp
+See: \ref rtti_example1/test.cpp
 \snippet rtti_example1/test.cpp example-define-class
 \snippet rtti_example1/test.cpp example-factory
 Output:

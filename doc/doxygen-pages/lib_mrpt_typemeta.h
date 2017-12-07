@@ -22,31 +22,31 @@ in Debian-based systems with:
 
         sudo apt install libmrpt-typemeta-dev
 
-## compile-time type/struct/class names to strings
+## Example #1: compile-time type/struct/class names to strings
 Use mrpt::typemeta::TTypeName to extract a `constexpr` string with a compiler-independent
 representation of arbitrarily-complex types and STL containers.
 Note that creating objects from a run-time string representation of its type
 is handled in a different library (\ref mrpt_serialization_grp).
 
-\file typemeta_TTypeName/test.cpp
+See: \ref typemeta_TTypeName/test.cpp
 \snippet typemeta_TTypeName/test.cpp example typename
 Output:
 \include typemeta_TTypeName/console.out
 
-## compile-time constexpr strings manipulation
-\file typemeta_StaticString/test.cpp
+## Example #2: compile-time constexpr strings manipulation
+See: \ref typemeta_StaticString/test.cpp
 \snippet typemeta_StaticString/test.cpp example sstring
 Output:
 \include typemeta_StaticString/console-sstring.out
 
-## compile-time numbers to strings
-\file typemeta_StaticString/test.cpp
+## Example #3: compile-time numbers to strings
+See: \ref typemeta_StaticString/test.cpp
 \snippet typemeta_StaticString/test.cpp example num2str
 Output:
 \include typemeta_StaticString/console-num2str.out
 
-## enum values to/from strings
-\file typemeta_TEnumType/test.cpp
+## Example #4: enum values to/from strings
+See: \ref typemeta_TEnumType/test.cpp
 \snippet typemeta_TEnumType/test.cpp example
 Output:
 \include typemeta_TEnumType/console.out

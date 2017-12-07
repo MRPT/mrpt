@@ -6,6 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
+/** \example typemeta_TEnumType/test.cpp */
 
 //! [example]
 #include <mrpt/typemeta/TEnumType.h>
