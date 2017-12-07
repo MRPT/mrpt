@@ -9,10 +9,10 @@
 
 #include "comms-precomp.h"  // Precompiled headers
 
+#include <mrpt/core/exceptions.h>
 #include <mrpt/comms/CClientTCPSocket.h>
 #include <mrpt/serialization/CMessage.h>
 #include <mrpt/comms/net_utils.h>
-//#include <mrpt/system/os.h>
 #include <cstring>
 
 #ifdef _WIN32

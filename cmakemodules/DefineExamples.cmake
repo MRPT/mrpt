@@ -58,6 +58,13 @@ IF(BUILD_EXAMPLES)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-typemeta)
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
+	# === Depending on: rtti ===
+	SET(LIST_EXAMPLES_IN_THIS_DIR
+		rtti_example1
+		)
+	SET(CMAKE_EXAMPLE_DEPS mrpt-rtti)
+	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
+
 	# === Depending on: mrpt-base ===
 	#  list of examples for each directory:
 	SET(LIST_EXAMPLES_IN_THIS_DIR

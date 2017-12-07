@@ -8,9 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/config.h>
-#include <mrpt/utils/CStream.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/io/CStream.h>
 
 namespace mrpt
 {
@@ -19,21 +17,18 @@ namespace comms
 /** A communications serial port built as an implementation of a utils::CStream.
  * On communication errors (eg. the given port number does not exist,
  * timeouts,...), most of the methods will
- * raise an exception of the class "std::exception"
+ * raise an exception of the class `std::exception`
  *
  *  The serial port to open is passed in the constructor in the form of a string
- * description,
- *   which is platform dependent.
+ * description, which is platform dependent.
  *
- *  In windows they are numbered "COM1"-"COM4" and "\\.\COMXXX" for numbers
- * above.
- *    It is recomended to always use the prefix "\\.\" despite the actual port
- * number.
+ *  In Windows they are numbered "COM1"-"COM4" and "\\.\COMXXX" for numbers
+ * above. It is recomended to always use the prefix "\\.\" despite the actual
+ * port number.
  *
  *  In Linux the name must refer to the device, for example: "ttyUSB0","ttyS0".
- * If the name string does not
- *   start with "/" (an absolute path), the constructor will assume the prefix
- * "/dev/".
+ * If the name string does not start with "/" (an absolute path), the
+ * constructor will assume the prefix "/dev/".
  *
  *  History:
  *    - 1/DEC/2005:  (JLBC) First version
@@ -159,9 +154,6 @@ class CSerialPort : public mrpt::utils::CStream
 	std::string m_serialName;
 	int m_baudRate;
 	int m_totalTimeout_ms, m_interBytesTimeout_ms;
-
-	/** Used only in \a ReadString */
-	mrpt::utils::CTicTac m_timer;
 
 #ifdef _WIN32
 	// WINDOWS
