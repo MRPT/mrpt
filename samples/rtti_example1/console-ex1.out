@@ -1,0 +1,7 @@
+RTTI Foo (static): Foo
+class: Bar
+class: Bar
+Is Foo?     => No
+Is BarBase? => Yes
+Is Bar?     => Yes
+specificBarMethod: reached.

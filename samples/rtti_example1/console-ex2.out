@@ -1,0 +1,6 @@
+Known class: Bar, children of BarBase
+Known class: BarBase, children of CObject
+Known class: CObject, children of (none)
+Known class: Foo, children of CObject
+Known class: Bar, children of BarBase
+specificBarMethod: reached.

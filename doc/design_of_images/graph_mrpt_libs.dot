@@ -4,97 +4,103 @@ digraph MRPT_LIBS {
 
 	base  [label="mrpt-base",URL="group__mrpt__base__grp.html"];
 	base -> core;
-	
+
 	bayes [label="mrpt-bayes (.h)",URL="group__mrpt__bayes__grp.html"];
 	bayes -> base;
-	
+
 	comms [label="mrpt-comms",URL="group__mrpt__comms__grp.html"];
-	comms -> base;
-	
+	comms -> io;
+	comms -> containers
+
 	config   [label="mrpt-config",URL="group__mrpt__config__grp.html"];
 	config -> expr;
 	config -> system;
-	
+
 	containers  [label="mrpt-containers",URL="group__mrpt__containers__grp.html"];
 	containers -> core;
-	
+
 	core       [label="mrpt-core",URL="group__mrpt__core__grp.html"];
-	
+
 	detectors  [label="mrpt-detectors",URL="group__mrpt__detectors__grp.html"];
 	detectors -> gui;
 	detectors -> maps;
 	detectors -> vision;
-	
+
 	expr       [label="mrpt-expr",URL="group__mrpt__expr__grp.html"];
 	expr -> core;
-	
+
 	graphs     [label="mrpt-graphs",URL="group__mrpt__graphs__grp.html"];
 	graphs -> base;
-	
+
 	graphslam  [label="mrpt-graphslam",URL="group__mrpt__graphslam__grp.html"];
 	graphslam -> gui;
 	graphslam -> slam;
-	
+
 	gui        [label="mrpt-gui",URL="group__mrpt__gui__grp.html"];
 	gui -> opengl;
-	
+
 	hmtslam    [label="mrpt-hmtslam",URL="group__mrpt__hmtslam__grp.html"];
 	hmtslam -> graphslam;
 	hmtslam -> slam;
-	
+
 	hwdrivers  [label="mrpt-hwdrivers",URL="group__mrpt__hwdrivers__grp.html"];
 	hwdrivers -> comms;
 	hwdrivers -> gui;
 	hwdrivers -> maps;
-	
+
 	io [label="mrpt-io",URL="group__mrpt__io__grp.html"];
 	io  -> core;
 	io  -> system;
-	
+
 	kinematics -> opengl;
 	kinematics [label="mrpt-kinematics",URL="group__mrpt__kinematics__grp.html"];
-	
+
 	maps       [label="mrpt-maps",URL="group__mrpt__maps__grp.html"];
 	maps -> graphs;
 	maps -> obs;
-	
+
 	nav        [label="mrpt-nav",URL="group__mrpt__nav__grp.html"];
 	nav -> graphs;
 	nav -> kinematics;
 	nav -> maps;
-	
+
 	obs        [label="mrpt-obs",URL="group__mrpt__obs__grp.html"];
 	obs -> opengl;
-	
+
 	opengl     [label="mrpt-opengl", URL="group__mrpt__opengl__grp.html"];
 	opengl -> base;
-	
+
 	pbmap      [label="mrpt-pbmap",URL="group__mrpt__pbmap__grp.html"];
 	pbmap -> graphs;
-	
+
 	random     [label="mrpt-random",URL="group__mrpt__random__grp.html"];
-	
+
+	rtti     [label="mrpt-rtti",URL="group__mrpt__rtti__grp.html"];
+	rtti -> core;
+
 	serialization [label="mrpt-serialization",URL="group__mrpt__serialization__grp.html"];
-	
+	serialization -> typemeta;
+	serialization -> rtti;
+
 	slam       [label="mrpt-slam",URL="group__mrpt__slam__grp.html"];
 	slam -> bayes;
 	slam -> graphs;
 	slam -> maps;
 	slam -> tfest;
 	slam -> vision;
-	
+
 	system     [label="mrpt-system",URL="group__mrpt__system__grp.html"];
 	system -> core;
-	
+
 	tfest      [label="mrpt-tfest",URL="group__mrpt__tfest__grp.html"];
 	tfest -> base;
-	
+
 	topography -> obs;
 	topography -> tfest;
 	topography [label="mrpt-topography",URL="group__mrpt__topography__grp.html"];
-	
+
 	typemeta [label="mrpt-typemeta (.h)",URL="group__mrpt__typemeta__grp.html"];
-	
+
 	vision     [label="mrpt-vision",URL="group__mrpt__vision__grp.html"];
 	vision -> obs;
 }

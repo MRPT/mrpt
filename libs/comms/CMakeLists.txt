@@ -6,6 +6,7 @@ define_mrpt_lib(
 	comms
 	# Dependencies
 	mrpt-io
+	mrpt-containers
 	mrpt-core
 	)
 

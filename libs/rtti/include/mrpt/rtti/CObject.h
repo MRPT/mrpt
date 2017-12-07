@@ -41,7 +41,7 @@ struct TRuntimeClassId
 	bool derivedFrom(const char* pBaseClass_name) const;
 };
 
-/** Register a class into the MRPT internal list of "CSerializable" descendents.
+/** Register a class into the MRPT internal list of "CObject" descendents.
   *  Used internally in the macros DEFINE_SERIALIZABLE, etc...
   * \sa getAllRegisteredClasses
   */
@@ -68,8 +68,8 @@ std::vector<const TRuntimeClassId*> getAllRegisteredClassesChildrenOf(
 
 /** Return info about a given class by its name, or nullptr if the class is not
  * registered
-  * \sa registerClass, getAllRegisteredClasses
-  */
+ * \sa registerClass, getAllRegisteredClasses
+ */
 const TRuntimeClassId* findRegisteredClass(const std::string& className);
 
 template <typename T>
@@ -90,19 +90,19 @@ template <typename T>
 struct IS_CLASS_impl
 {
 	template <typename PTR>
-	static bool check(const PTR p)
+	static bool check(const PTR &p)
 	{
 		return p->GetRuntimeClass() == CLASS_ID_impl<T>();
 	}
 };
 
 /** Evaluates to true if the given pointer to an object (derived from
- * mrpt::rtti::CSerializable) is of the given class. */
+ * mrpt::rtti::CObject) is of the given class. */
 #define IS_CLASS(ptrObj, class_name) \
 	mrpt::rtti::IS_CLASS_impl<class_name>::check(ptrObj)
 
-/** Evaluates to true if the given pointer to an object (derived from
- * mrpt::rtti::CSerializable) is an instance of the given class or any of its
+/** Evaluates to true if a pointer to an object (derived from
+ * mrpt::rtti::CObject) is an instance of the given class OR any of its
  * derived classes. */
 #define IS_DERIVED(ptrObj, class_name) \
 	((ptrObj)->GetRuntimeClass()->derivedFrom(CLASS_ID(class_name)))
@@ -139,7 +139,7 @@ struct is_shared_ptr<std::shared_ptr<T>> : std::true_type
  * \code
  * CFoo::Ptr o = mrpt::make_aligned_shared<CFoo>();
  * \endcode
- * \sa  mrpt::rtti::CSerializable
+ * \sa  mrpt::rtti::CObject
  * \ingroup mrpt_rtti_grp
  */
 class CObject
@@ -169,11 +169,6 @@ class CObject
 	virtual ~CObject() {}
 };  // End of class def.
 
-/** A smart pointer to a CObject object
-  * \note Declared as a class instead of a typedef to avoid multiple defined
- * symbols when linking dynamic libs.
-  * \ingroup mrpt_rtti_grp
-  */
 inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
 {
 	return mrpt::rtti::CObject::Ptr(this->clone());
@@ -188,7 +183,6 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
 	static const mrpt::rtti::TRuntimeClassId* _GetBaseClass();           \
 	static mrpt::rtti::CLASSINIT _init_##class_name;                     \
 	static const mrpt::rtti::TRuntimeClassId runtimeClassId;             \
-                                                                          \
    public:                                                                \
 	/*! A typedef for the associated smart pointer */                     \
 	using Ptr = std::shared_ptr<class_name>;                              \
@@ -241,7 +235,7 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
 			new NameSpace::class_name(*this));                                 \
 	}
 
-/** This declaration must be inserted in virtual CSerializable classes
+/** This declaration must be inserted in virtual CObject classes
  * definition:
   */
 #define DEFINE_VIRTUAL_MRPT_OBJECT(class_name)                            \
@@ -250,7 +244,6 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
    protected:                                                             \
 	static const mrpt::rtti::TRuntimeClassId* _GetBaseClass();           \
 	static const mrpt::rtti::TRuntimeClassId runtimeClassId;             \
-                                                                          \
    public:                                                                \
 	using Ptr = std::shared_ptr<class_name>;                              \
 	using ConstPtr = std::shared_ptr<const class_name>;                   \
@@ -260,26 +253,24 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
 /*! @}  */
 
 /** This must be inserted as implementation of some required members for
-  *  virtual CSerializable classes:
+  *  virtual CObject classes:
   */
 #define IMPLEMENTS_VIRTUAL_MRPT_OBJECT(class_name, base_class_name, NameSpace) \
-	const mrpt::rtti::TRuntimeClassId* class_name::_GetBaseClass()            \
+	const mrpt::rtti::TRuntimeClassId* NameSpace::class_name::_GetBaseClass()  \
 	{                                                                          \
 		return CLASS_ID(base_class_name);                                      \
 	}                                                                          \
-	const mrpt::rtti::TRuntimeClassId class_name::runtimeClassId = {          \
-		#class_name, nullptr, &class_name::_GetBaseClass};                     \
-	const mrpt::rtti::TRuntimeClassId* class_name::GetRuntimeClass() const    \
-	{                                                                          \
-		return CLASS_ID(class_name);                                           \
-	}                                                                          \
+	const mrpt::rtti::TRuntimeClassId NameSpace::class_name::runtimeClassId = { \
+		#class_name, nullptr, &NameSpace::class_name::_GetBaseClass};         \
+	const mrpt::rtti::TRuntimeClassId* NameSpace::class_name::GetRuntimeClass() const \
+	{                                                                         \
+		return CLASS_ID(class_name);                                          \
+	}                                                                         \
 	const mrpt::rtti::TRuntimeClassId&                                        \
-		NameSpace::class_name::GetRuntimeClassIdStatic()                       \
-	{                                                                          \
-		return NameSpace::class_name::runtimeClassId;                          \
+		NameSpace::class_name::GetRuntimeClassIdStatic()                      \
+	{                                                                         \
+		return NameSpace::class_name::runtimeClassId;                         \
 	}
-
-/** @}  */  // end of RTTI
 
 /** Register all pending classes - to be called just before de-serializing an
  * object, for example.
@@ -287,6 +278,15 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
  * until pending_class_registers() is invoked.
   */
 void registerAllPendingClasses();
+
+/** Creates an object given by its registered name.
+* \sa findRegisteredClass(), registerClass(), classFactoryPtr() */
+mrpt::rtti::CObject* classFactory(const std::string& className);
+
+/** Like classFactory() but returns a smart pointer */
+mrpt::rtti::CObject::Ptr classFactoryPtr(const std::string& className);
+
+/** @}  */  // end of RTTI
 
 }  // End of namespace
 

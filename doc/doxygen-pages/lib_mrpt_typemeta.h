@@ -28,21 +28,25 @@ representation of arbitrarily-complex types and STL containers.
 Note that creating objects from a run-time string representation of its type
 is handled in a different library (\ref mrpt_serialization_grp).
 
+\file typemeta_TTypeName/test.cpp
 \snippet typemeta_TTypeName/test.cpp example typename
 Output:
 \include typemeta_TTypeName/console.out
 
 ## compile-time constexpr strings manipulation
+\file typemeta_StaticString/test.cpp
 \snippet typemeta_StaticString/test.cpp example sstring
 Output:
 \include typemeta_StaticString/console-sstring.out
 
 ## compile-time numbers to strings
+\file typemeta_StaticString/test.cpp
 \snippet typemeta_StaticString/test.cpp example num2str
 Output:
 \include typemeta_StaticString/console-num2str.out
 
 ## enum values to/from strings
+\file typemeta_TEnumType/test.cpp
 \snippet typemeta_TEnumType/test.cpp example
 Output:
 \include typemeta_TEnumType/console.out

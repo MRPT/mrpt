@@ -9,8 +9,8 @@
 #pragma once
 
 #include <mrpt/config.h>
-#include <mrpt/utils/CStream.h>
-#include <mrpt/utils/circular_buffer.h>
+#include <mrpt/io/CStream.h>
+#include <mrpt/containers/circular_buffer.h>
 
 #include <deque>
 
