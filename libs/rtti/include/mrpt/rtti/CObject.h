@@ -90,7 +90,7 @@ template <typename T>
 struct IS_CLASS_impl
 {
 	template <typename PTR>
-	static bool check(const PTR &p)
+	static bool check(const PTR& p)
 	{
 		return p->GetRuntimeClass() == CLASS_ID_impl<T>();
 	}
@@ -129,15 +129,22 @@ struct is_shared_ptr<std::shared_ptr<T>> : std::true_type
 };
 
 /** The virtual base class of all MRPT classes with a unified RTTI system.
- *   For each class named <code>CMyClass</code>, a new type named
- * <code>CMyClass::Ptr</code> will be created as a smart pointer suitable for
- *    keeping referencing count smart pointers to objects of that class.
+ *   For each class named <code>CMyClass</code>, a new type
+ * <code>CMyClass::Ptr</code> is defined as a smart pointer (`std::shared_ptr`)
+ * suitable for keeping reference-counting smart pointers to objects of the
+ * class.
  *
  * It is recommended to use MRPT-defined `mrpt::make_aligned_shared<>` instead
  * of `std::make_shared<>` to create objects, to avoid memory alignment
  * problems caused by classes containing Eigen vectors or matrices. Example:
  * \code
  * CFoo::Ptr o = mrpt::make_aligned_shared<CFoo>();
+ * \endcode
+ * Or using the shorter auxiliary static method `::Create()` to keep
+ * compatibility
+ * with MRPT 1.5.* code bases:
+ * \code
+ * CFoo::Ptr o = CFoo::Create();
  * \endcode
  * \sa  mrpt::rtti::CObject
  * \ingroup mrpt_rtti_grp
@@ -176,79 +183,81 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
 
 /** This declaration must be inserted in all CObject classes definition, within
 * the class declaration. */
-#define DEFINE_MRPT_OBJECT(class_name)                                    \
-	/*! @name RTTI stuff  */                                              \
-	/*! @{  */                                                            \
-   protected:                                                             \
+#define DEFINE_MRPT_OBJECT(class_name)                                   \
+	/*! @name RTTI stuff  */                                             \
+	/*! @{  */                                                           \
+   protected:                                                            \
 	static const mrpt::rtti::TRuntimeClassId* _GetBaseClass();           \
 	static mrpt::rtti::CLASSINIT _init_##class_name;                     \
 	static const mrpt::rtti::TRuntimeClassId runtimeClassId;             \
-   public:                                                                \
-	/*! A typedef for the associated smart pointer */                     \
-	using Ptr = std::shared_ptr<class_name>;                              \
-	using ConstPtr = std::shared_ptr<const class_name>;                   \
-	static constexpr const char* className = #class_name;                 \
+                                                                         \
+   public:                                                               \
+	/*! A typedef for the associated smart pointer */                    \
+	using Ptr = std::shared_ptr<class_name>;                             \
+	using ConstPtr = std::shared_ptr<const class_name>;                  \
+	static constexpr const char* className = #class_name;                \
 	static const mrpt::rtti::TRuntimeClassId& GetRuntimeClassIdStatic(); \
 	virtual const mrpt::rtti::TRuntimeClassId* GetRuntimeClass()         \
-		const override;                                                   \
+		const override;                                                  \
 	static mrpt::rtti::CObject* CreateObject();                          \
 	virtual mrpt::rtti::CObject* clone() const override;                 \
-	template <typename... Args>                                           \
-	static Ptr Create(Args&&... args)                                     \
-	{                                                                     \
-		return mrpt::make_aligned_shared<class_name>(                     \
-			std::forward<Args>(args)...);                                 \
-	}                                                                     \
-	/*! @} */                                                             \
-   public:                                                                \
+	template <typename... Args>                                          \
+	static Ptr Create(Args&&... args)                                    \
+	{                                                                    \
+		return mrpt::make_aligned_shared<class_name>(                    \
+			std::forward<Args>(args)...);                                \
+	}                                                                    \
+	/*! @} */                                                            \
+   public:                                                               \
 	MRPT_MAKE_ALIGNED_OPERATOR_NEW
 
 /** This must be inserted in all CObject classes implementation files
   */
-#define IMPLEMENTS_MRPT_OBJECT(class_name, base, NameSpace)                    \
+#define IMPLEMENTS_MRPT_OBJECT(class_name, base, NameSpace)                   \
 	mrpt::rtti::CObject* NameSpace::class_name::CreateObject()                \
-	{                                                                          \
+	{                                                                         \
 		return static_cast<mrpt::rtti::CObject*>(new NameSpace::class_name);  \
-	}                                                                          \
+	}                                                                         \
 	const mrpt::rtti::TRuntimeClassId* NameSpace::class_name::_GetBaseClass() \
-	{                                                                          \
-		return CLASS_ID(base);                                                 \
-	}                                                                          \
+	{                                                                         \
+		return CLASS_ID(base);                                                \
+	}                                                                         \
 	const mrpt::rtti::TRuntimeClassId&                                        \
-		NameSpace::class_name::GetRuntimeClassIdStatic()                       \
-	{                                                                          \
-		return NameSpace::class_name::runtimeClassId;                          \
-	}                                                                          \
+		NameSpace::class_name::GetRuntimeClassIdStatic()                      \
+	{                                                                         \
+		return NameSpace::class_name::runtimeClassId;                         \
+	}                                                                         \
 	const mrpt::rtti::TRuntimeClassId NameSpace::class_name::runtimeClassId = \
-		{#class_name, NameSpace::class_name::CreateObject,                     \
-		 &class_name::_GetBaseClass};                                          \
+		{#class_name, NameSpace::class_name::CreateObject,                    \
+		 &class_name::_GetBaseClass};                                         \
 	const mrpt::rtti::TRuntimeClassId*                                        \
-		NameSpace::class_name::GetRuntimeClass() const                         \
-	{                                                                          \
-		return CLASS_ID_NAMESPACE(class_name, NameSpace);                      \
-	}                                                                          \
+		NameSpace::class_name::GetRuntimeClass() const                        \
+	{                                                                         \
+		return CLASS_ID_NAMESPACE(class_name, NameSpace);                     \
+	}                                                                         \
 	mrpt::rtti::CLASSINIT NameSpace::class_name::_init_##class_name(          \
-		CLASS_ID(base));                                                       \
+		CLASS_ID(base));                                                      \
 	mrpt::rtti::CObject* NameSpace::class_name::clone() const                 \
-	{                                                                          \
+	{                                                                         \
 		return static_cast<mrpt::rtti::CObject*>(                             \
-			new NameSpace::class_name(*this));                                 \
+			new NameSpace::class_name(*this));                                \
 	}
 
 /** This declaration must be inserted in virtual CObject classes
  * definition:
   */
-#define DEFINE_VIRTUAL_MRPT_OBJECT(class_name)                            \
-	/*! @name RTTI stuff  */                                              \
-	/*! @{  */                                                            \
-   protected:                                                             \
+#define DEFINE_VIRTUAL_MRPT_OBJECT(class_name)                           \
+	/*! @name RTTI stuff  */                                             \
+	/*! @{  */                                                           \
+   protected:                                                            \
 	static const mrpt::rtti::TRuntimeClassId* _GetBaseClass();           \
 	static const mrpt::rtti::TRuntimeClassId runtimeClassId;             \
-   public:                                                                \
-	using Ptr = std::shared_ptr<class_name>;                              \
-	using ConstPtr = std::shared_ptr<const class_name>;                   \
+                                                                         \
+   public:                                                               \
+	using Ptr = std::shared_ptr<class_name>;                             \
+	using ConstPtr = std::shared_ptr<const class_name>;                  \
 	virtual const mrpt::rtti::TRuntimeClassId* GetRuntimeClass()         \
-		const override;                                                   \
+		const override;                                                  \
 	static const mrpt::rtti::TRuntimeClassId& GetRuntimeClassIdStatic(); \
 /*! @}  */
 
@@ -260,16 +269,17 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
 	{                                                                          \
 		return CLASS_ID(base_class_name);                                      \
 	}                                                                          \
-	const mrpt::rtti::TRuntimeClassId NameSpace::class_name::runtimeClassId = { \
-		#class_name, nullptr, &NameSpace::class_name::_GetBaseClass};         \
-	const mrpt::rtti::TRuntimeClassId* NameSpace::class_name::GetRuntimeClass() const \
-	{                                                                         \
-		return CLASS_ID(class_name);                                          \
-	}                                                                         \
-	const mrpt::rtti::TRuntimeClassId&                                        \
-		NameSpace::class_name::GetRuntimeClassIdStatic()                      \
-	{                                                                         \
-		return NameSpace::class_name::runtimeClassId;                         \
+	const mrpt::rtti::TRuntimeClassId NameSpace::class_name::runtimeClassId =  \
+		{#class_name, nullptr, &NameSpace::class_name::_GetBaseClass};         \
+	const mrpt::rtti::TRuntimeClassId*                                         \
+		NameSpace::class_name::GetRuntimeClass() const                         \
+	{                                                                          \
+		return CLASS_ID(class_name);                                           \
+	}                                                                          \
+	const mrpt::rtti::TRuntimeClassId&                                         \
+		NameSpace::class_name::GetRuntimeClassIdStatic()                       \
+	{                                                                          \
+		return NameSpace::class_name::runtimeClassId;                          \
 	}
 
 /** Register all pending classes - to be called just before de-serializing an
@@ -290,7 +300,7 @@ mrpt::rtti::CObject::Ptr classFactoryPtr(const std::string& className);
 
 }  // End of namespace
 
-/** Converts a polymorphic smart pointer Base::Ptr to Derived::Ptr, in a way 
+/** Converts a polymorphic smart pointer Base::Ptr to Derived::Ptr, in a way
 * compatible with MRPT >=1.5.4 and MRPT 2.x series.
 * \ingroup mrpt_rtti_grp
 */

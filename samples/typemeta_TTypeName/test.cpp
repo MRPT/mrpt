@@ -6,6 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
+/** \example typemeta_TTypeName/test.cpp */
 
 //! [example typename]
 #include <mrpt/typemeta/TTypeName.h>

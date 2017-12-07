@@ -6,6 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
+/** \example rtti_example1/test.cpp */
 
 //! [example-define-class]
 #include <mrpt/rtti/CObject.h>
@@ -60,7 +61,7 @@ void Test_UserTypes()
 	Bar::Ptr     pBar  = std::make_shared<Bar>();
 	BarBase::Ptr pBase = mrpt::ptr_cast<BarBase>::from(pBar);
 	mrpt::rtti::CObject::Ptr pObj = mrpt::ptr_cast<mrpt::rtti::CObject>::from(pBar);
-	
+
 	pBar->printName();
 	pBase->printName();
 	std::cout << "Is Foo?     => " << (IS_DERIVED(pObj, Foo) ? "Yes" : "No") << std::endl;

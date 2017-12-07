@@ -6,6 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
+/** \example typemeta_StaticString/test.cpp */
 
 //! [example sstring]
 #include <mrpt/typemeta/static_string.h>
