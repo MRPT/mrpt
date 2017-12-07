@@ -15,7 +15,7 @@ using namespace mrpt::rtti;
 bool CListOfClasses::containsDerivedFrom(
 	const mrpt::rtti::TRuntimeClassId* id) const
 {
-	for (const auto &i: data)
+	for (const auto& i : data)
 		if (i->derivedFrom(id)) return true;
 	return false;
 }
@@ -24,11 +24,10 @@ std::string CListOfClasses::toString() const
 {
 	std::string s;
 	unsigned int cnt = 0;
-	for (const auto &i:data)
+	for (const auto& i : data)
 	{
-		if (cnt++!=0) s += ", ";
+		if (cnt++ != 0) s += ", ";
 		s += std::string(i->className);
 	}
 	return s;
 }
-

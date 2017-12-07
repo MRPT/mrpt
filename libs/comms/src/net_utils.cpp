@@ -66,8 +66,8 @@ ERRORCODE_HTTP mrpt::comms::net::http_get(
 
 ERRORCODE_HTTP mrpt::comms::net::http_request(
 	const string& http_method, const string& http_send_content,
-	const string& url, std::vector<uint8_t>& out_content, string& out_errormsg, int port,
-	const string& auth_user, const string& auth_pass,
+	const string& url, std::vector<uint8_t>& out_content, string& out_errormsg,
+	int port, const string& auth_user, const string& auth_pass,
 	int* out_http_responsecode, mrpt::utils::TParameters<string>* extra_headers,
 	mrpt::utils::TParameters<string>* out_headers, int timeout_ms)
 {
@@ -381,8 +381,8 @@ ERRORCODE_HTTP mrpt::comms::net::http_request(
 	http_get
 ---------------------------------------------------------------*/
 ERRORCODE_HTTP mrpt::comms::net::http_get(
-	const string& url, std::vector<uint8_t>& out_content, string& out_errormsg, int port,
-	const string& auth_user, const string& auth_pass,
+	const string& url, std::vector<uint8_t>& out_content, string& out_errormsg,
+	int port, const string& auth_user, const string& auth_pass,
 	int* out_http_responsecode, mrpt::utils::TParameters<string>* extra_headers,
 	mrpt::utils::TParameters<string>* out_headers, int timeout_ms)
 {

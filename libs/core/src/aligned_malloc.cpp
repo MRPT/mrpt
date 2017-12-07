@@ -13,10 +13,10 @@
 
 #include <cstdlib>  // for free, posix_memalign, realloc
 #if defined(_MSC_VER)
-#include <malloc.h> // _aligned_malloc()
+#include <malloc.h>  // _aligned_malloc()
 #endif
 
-void * mrpt::aligned_malloc(size_t size, size_t alignment)
+void* mrpt::aligned_malloc(size_t size, size_t alignment)
 {
 #if defined(__GNUC__) && !defined(__MINGW32__)
 	return ::aligned_malloc(size, alignment);
@@ -24,7 +24,7 @@ void * mrpt::aligned_malloc(size_t size, size_t alignment)
 	return _aligned_malloc(size, alignment);
 #endif
 }
-void mrpt::aligned_free(void * ptr)
+void mrpt::aligned_free(void* ptr)
 {
 #if defined(__GNUC__) && !defined(__MINGW32__)
 	return ::aligned_free(ptr);

@@ -175,13 +175,14 @@ void mrpt::rtti::registerClassCustomName(
 	registerAllPendingClasses();
 }
 
-std::vector<const TRuntimeClassId*>mrpt::rtti::getAllRegisteredClasses()
+std::vector<const TRuntimeClassId*> mrpt::rtti::getAllRegisteredClasses()
 {
 	return CClassRegistry::Instance().getListOfAllRegisteredClasses();
 }
 
-std::vector<const TRuntimeClassId*>mrpt::rtti::getAllRegisteredClassesChildrenOf(
-	const TRuntimeClassId* parent_id)
+std::vector<const TRuntimeClassId*>
+	mrpt::rtti::getAllRegisteredClassesChildrenOf(
+		const TRuntimeClassId* parent_id)
 {
 	std::vector<const TRuntimeClassId*> res;
 	const auto lst = mrpt::rtti::getAllRegisteredClasses();
