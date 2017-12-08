@@ -3,14 +3,14 @@
 # -------------------------------------------------
 
 LIST(APPEND obs_EXTRA_SRCS
-	"${MRPT_LIBS_ROOT}/obs/src/*.cpp" 
+	"${MRPT_LIBS_ROOT}/obs/src/*.cpp"
 	"${MRPT_LIBS_ROOT}/obs/include/mrpt/obs/*.h"
 	"${MRPT_LIBS_ROOT}/obs/include/mrpt/maps/*.h"
 	"${MRPT_LIBS_ROOT}/obs/include/mrpt/slam/*.h"
 	)
-	
-LIST(APPEND obs_EXTRA_SRCS_NAME 
-	"obs sources" 
+
+LIST(APPEND obs_EXTRA_SRCS_NAME
+	"obs sources"
 	"obs headers"
 	"maps headers"
 	"back-compat-hdrs")
@@ -31,12 +31,11 @@ define_mrpt_lib(
 	obs
 	# Dependencies
 	mrpt-opengl
-	mrpt-base
+	mrpt-poses
 	)
 
-IF(BUILD_mrpt-obs) 
+IF(BUILD_mrpt-obs)
 	IF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC AND OBS_HAS_LOCAL_XMLPARSER)
 			set_source_files_properties(${utils/xmlparser_FILES} PROPERTIES COMPILE_FLAGS "/Y-")
 	ENDIF()
-ENDIF(BUILD_mrpt-obs) 
-
+ENDIF(BUILD_mrpt-obs)

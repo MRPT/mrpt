@@ -814,7 +814,7 @@ void CRandomFieldGridMap2D::saveAsBitmapFile(const std::string& filName) const
 {
 	MRPT_START
 
-	mrpt::utils::CImage img;
+	mrpt::img::CImage img;
 	getAsBitmapFile(img);
 	img.saveToFile(filName);
 
@@ -867,7 +867,7 @@ void CRandomFieldGridMap2D::getAsMatrix(
 /*---------------------------------------------------------------
 					getAsBitmapFile
  ---------------------------------------------------------------*/
-void CRandomFieldGridMap2D::getAsBitmapFile(mrpt::utils::CImage& out_img) const
+void CRandomFieldGridMap2D::getAsBitmapFile(mrpt::img::CImage& out_img) const
 {
 	MRPT_START
 	mrpt::math::CMatrixDouble cells_mat;

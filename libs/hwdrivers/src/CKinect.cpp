@@ -651,7 +651,7 @@ void CKinect::getNextObservation(
 				}
 
 				// Normalize the image
-				mrpt::utils::CImage img;
+				mrpt::img::CImage img;
 				img.setFromMatrix(_out_obs.rangeImage);
 				CMatrixFloat r =
 					_out_obs.rangeImage * float(1.0 / this->m_maxRange);

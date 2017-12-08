@@ -165,8 +165,8 @@ void CPTG_DiffDrive_CollisionGridBased::simulateTrajectories(
 						fabs((last_vs[0] - last_vs[1]) / diferencial_t);
 					float acc_ang =
 						fabs((last_ws[0] - last_ws[1]) / diferencial_t);
-					mrpt::utils::keep_max(max_acc_lin, acc_lin);
-					mrpt::utils::keep_max(max_acc_ang, acc_ang);
+					mrpt::keep_max(max_acc_lin, acc_lin);
+					mrpt::keep_max(max_acc_ang, acc_ang);
 				}
 
 				// Compute new movement command (v,w):
@@ -253,10 +253,10 @@ void CPTG_DiffDrive_CollisionGridBased::simulateTrajectories(
 						m_trajectory[k][n].x, m_trajectory[k][n].y);
 				ASSERT_(cell)
 				// Keep limits:
-				mrpt::utils::keep_min(cell->k_min, k);
-				mrpt::utils::keep_max(cell->k_max, k);
-				mrpt::utils::keep_min(cell->n_min, n);
-				mrpt::utils::keep_max(cell->n_max, n);
+				mrpt::keep_min(cell->k_min, k);
+				mrpt::keep_max(cell->k_max, k);
+				mrpt::keep_min(cell->n_min, n);
+				mrpt::keep_max(cell->n_max, n);
 			}
 		}
 	}
@@ -576,11 +576,11 @@ bool CPTG_DiffDrive_CollisionGridBased::inverseMap_WS2TP(
 				}
 				else
 				{
-					mrpt::utils::keep_min(k_min, cell->k_min);
-					mrpt::utils::keep_max(k_max, cell->k_max);
+					mrpt::keep_min(k_min, cell->k_min);
+					mrpt::keep_max(k_max, cell->k_max);
 
-					mrpt::utils::keep_min(n_min, cell->n_min);
-					mrpt::utils::keep_max(n_max, cell->n_max);
+					mrpt::keep_min(n_min, cell->n_min);
+					mrpt::keep_max(n_max, cell->n_max);
 				}
 			}
 		}
@@ -777,10 +777,10 @@ void CPTG_DiffDrive_CollisionGridBased::internal_initialize(
 					transf_shape[m].y =
 						p.y + sin(p.phi) * m_robotShape.GetVertex_x(m) +
 						cos(p.phi) * m_robotShape.GetVertex_y(m);
-					mrpt::utils::keep_max(bb_max.x, transf_shape[m].x);
-					mrpt::utils::keep_max(bb_max.y, transf_shape[m].y);
-					mrpt::utils::keep_min(bb_min.x, transf_shape[m].x);
-					mrpt::utils::keep_min(bb_min.y, transf_shape[m].y);
+					mrpt::keep_max(bb_max.x, transf_shape[m].x);
+					mrpt::keep_max(bb_max.y, transf_shape[m].y);
+					mrpt::keep_min(bb_min.x, transf_shape[m].x);
+					mrpt::keep_min(bb_min.y, transf_shape[m].y);
 				}
 
 				// Robot shape polygon:

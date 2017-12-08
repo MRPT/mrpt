@@ -9,7 +9,7 @@
 
 #include <mrpt/opengl/CFBORender.h>
 #include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 
 using namespace std;
 using namespace mrpt;

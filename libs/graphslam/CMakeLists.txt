@@ -5,7 +5,7 @@ define_mrpt_lib(
 	# Lib name
 	graphslam
 	# Dependencies
-	mrpt-base
+	mrpt-poses
 	mrpt-graphs
 	mrpt-gui
 	mrpt-maps

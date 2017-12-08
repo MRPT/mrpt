@@ -266,10 +266,10 @@ validPixROI2=0 );
 }
 
 void CStereoRectifyMap::rectify(
-	const mrpt::utils::CImage& in_left_image,
-	const mrpt::utils::CImage& in_right_image,
-	mrpt::utils::CImage& out_left_image,
-	mrpt::utils::CImage& out_right_image) const
+	const mrpt::img::CImage& in_left_image,
+	const mrpt::img::CImage& in_right_image,
+	mrpt::img::CImage& out_left_image,
+	mrpt::img::CImage& out_right_image) const
 {
 	MRPT_START
 
@@ -303,7 +303,7 @@ void CStereoRectifyMap::rectify(
 
 // In place:
 void CStereoRectifyMap::rectify(
-	mrpt::utils::CImage& left_image, mrpt::utils::CImage& right_image,
+	mrpt::img::CImage& left_image, mrpt::img::CImage& right_image,
 	const bool use_internal_mem_cache) const
 {
 	MRPT_START

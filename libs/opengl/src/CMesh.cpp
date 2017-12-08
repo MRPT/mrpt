@@ -516,8 +516,8 @@ void CMesh::updateColorsMatrix() const
 					if (!mask(r, c)) continue;
 					any_valid = true;
 					const float val = C(r, c);
-					mrpt::utils::keep_max(val_max, val);
-					mrpt::utils::keep_min(val_min, val);
+					mrpt::keep_max(val_max, val);
+					mrpt::keep_min(val_min, val);
 				}
 
 			if (any_valid)

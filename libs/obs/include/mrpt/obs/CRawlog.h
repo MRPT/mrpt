@@ -437,7 +437,7 @@ class CRawlog : public mrpt::utils::CSerializable
 	  *choices actually exists).
 	  *
 	  *  The results from this function should be written into
-	  *mrpt::utils::CImage::getImagesPathBase() to enable automatic
+	  *mrpt::img::CImage::getImagesPathBase() to enable automatic
 	  *  loading of extenrnally-stored images in rawlogs.
 	  */
 	static std::string detectImagesDirectory(const std::string& rawlogFilename);

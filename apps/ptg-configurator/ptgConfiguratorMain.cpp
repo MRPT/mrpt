@@ -1189,7 +1189,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 						robotPath_w[j] = mrpt::utils::RAD2DEG(dphi / dt);
 					}
 
-					mrpt::utils::keep_max(maxRobotHeadErr, std::abs(head2dir));
+					mrpt::keep_max(maxRobotHeadErr, std::abs(head2dir));
 				}
 				prevPose = curPose;
 			}

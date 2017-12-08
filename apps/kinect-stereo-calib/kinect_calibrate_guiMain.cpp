@@ -1313,7 +1313,7 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(
 		mrpt::utils::CMemoryStream img1_jpeg_stream(
 			kinect_covered_projector_img_jpeg,
 			sizeof(kinect_covered_projector_img_jpeg));
-		mrpt::utils::CImage img1;
+		mrpt::img::CImage img1;
 		img1.loadFromStreamAsJPEG(img1_jpeg_stream);
 		m_imgStaticKinect->AssignImage(img1);
 		m_imgStaticKinect->Refresh(false);
@@ -1928,7 +1928,7 @@ void kinect_calibrate_guiDialog::ProcessNewSelectedImageListBox()
 
 		if (sel == wxNOT_FOUND || sel >= (int)m_calib_images.size())
 		{
-			mrpt::utils::CImage img(320, 240, CH_RGB);
+			mrpt::img::CImage img(320, 240, CH_RGB);
 			img.filledRectangle(0, 0, 319, 239, TColor(200, 200, 200));
 			img.textOut(100, 110, "(No image selected)", TColor::white());
 

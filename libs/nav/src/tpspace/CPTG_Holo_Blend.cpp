@@ -708,7 +708,7 @@ void CPTG_Holo_Blend::updateTPObstacleSingle(
 			if (sol_t < 0)
 				sol_t = roots[i];
 			else
-				mrpt::utils::keep_min(sol_t, roots[i]);
+				mrpt::keep_min(sol_t, roots[i]);
 		}
 	}
 

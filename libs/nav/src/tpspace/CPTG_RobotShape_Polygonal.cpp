@@ -28,7 +28,7 @@ void CPTG_RobotShape_Polygonal::setRobotShape(
 
 	m_robotMaxRadius = .0;  // Default minimum
 	for (const auto& v : m_robotShape)
-		mrpt::utils::keep_max(m_robotMaxRadius, v.norm());
+		mrpt::keep_max(m_robotMaxRadius, v.norm());
 
 	internal_processNewRobotShape();
 }
@@ -166,7 +166,7 @@ double CPTG_RobotShape_Polygonal::evalClearanceToRobotShape(
 
 	// if d<=0, we know from the isPointInsideRobotShape() above that
 	// it's a false positive: enforce a minimum "fake" clearance:
-	mrpt::utils::keep_max(d, 0.1 * m_robotMaxRadius);
+	mrpt::keep_max(d, 0.1 * m_robotMaxRadius);
 
 	return d;
 }

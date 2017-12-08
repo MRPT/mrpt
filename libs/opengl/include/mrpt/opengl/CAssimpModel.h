@@ -74,7 +74,7 @@ class CAssimpModel : public CRenderizableDisplayList
 		/** indices in \a m_textureIds. string::npos for non-initialized ones.
 		 */
 		size_t id_idx;
-		mrpt::utils::CImage::Ptr img_rgb, img_alpha;
+		mrpt::img::CImage::Ptr img_rgb, img_alpha;
 		TInfoPerTexture() : id_idx(std::string::npos) {}
 	};
 

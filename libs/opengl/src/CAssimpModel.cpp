@@ -579,10 +579,10 @@ void load_textures(
 		const std::string fileloc =
 			mrpt::system::filePathSeparatorsToNative(basepath + filename);
 
-		ipt.img_rgb = mrpt::make_aligned_shared<mrpt::utils::CImage>();
-		ipt.img_alpha = mrpt::make_aligned_shared<mrpt::utils::CImage>();
-		mrpt::utils::CImage* img_rgb = ipt.img_rgb.get();
-		mrpt::utils::CImage* img_a = ipt.img_alpha.get();
+		ipt.img_rgb = mrpt::make_aligned_shared<mrpt::img::CImage>();
+		ipt.img_alpha = mrpt::make_aligned_shared<mrpt::img::CImage>();
+		mrpt::img::CImage* img_rgb = ipt.img_rgb.get();
+		mrpt::img::CImage* img_a = ipt.img_alpha.get();
 
 		// Load images:
 		// TGA is handled specially since it's not supported by OpenCV:

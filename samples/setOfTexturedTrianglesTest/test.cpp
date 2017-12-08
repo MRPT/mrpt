@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CAxis.h>
 #include <mrpt/opengl/CSetOfTexturedTriangles.h>

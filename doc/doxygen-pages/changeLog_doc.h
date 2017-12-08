@@ -356,7 +356,7 @@
 			- Fix "gray images" grabbed in Windows when capturing the render output of 3D windows (Thanks Mariano J.T. & Christian Kerl from TUM!)
 			- Fix typos and wxWidgets align errors in RawLogViewer GUI (Closes #219)
 			- mrpt::nav::CHolonomicND & mrpt::nav::CHolonomicVFF didn't use the full range of output velocities.
-			- mrpt::utils::CImage::loadFromFile() now does not leave the image in undefined state if the load operation fails.
+			- mrpt::img::CImage::loadFromFile() now does not leave the image in undefined state if the load operation fails.
 			- mrpt::hwdrivers::CLMS100Eth failed to load "pose_yaw" parameter from config file.
 			- mrpt::obs::CObservation3DRangeScan::doDepthAndIntensityCamerasCoincide() did not correctly return `false` for negative offsets between the camera poses.
 
@@ -498,7 +498,7 @@
 	- Changes in classes:
 		- Consistency in all "laser scan" classes: angular increments between rays are now FOV/(N-1) instead of FOV/N.
 		- [mrpt-base]
-			- New method mrpt::utils::CImage::loadTGA()
+			- New method mrpt::img::CImage::loadTGA()
 			- *IMPORTANT*: Changed behavior of CSerializable/CObject macros (see bugfix below), introducing the new macros DEFINE_SERIALIZABLE_POST_*.
 			   May require changes in user code if serializable classes are defined:
 				- Previous version:
@@ -526,7 +526,7 @@
 		- [mrpt-srba]
 			- New method to recover the global coordinates graph-slam problem for a RBA map: mrpt::srba::RbaEngine::get_global_graphslam_problem() (see example [MRPT]\samples\srba-examples\srba-tutorials\tutorial-srba-how-to-recover-global-map.cpp)
 	- BUG FIXES:
-		- mrpt::utils::CImage constructor from a matrix crashed.
+		- mrpt::img::CImage constructor from a matrix crashed.
 		- Unit tests: Named semaphores are not tested anymore if it's detected that the kernel version doesn't support them (Fix Debian 758725).
 		- mrpt::synch::CSemaphore [Linux]: didn't call sem_unlink().
 		- mrpt::gui::CDisplayWindow3D didn't implement get/set FOV.
@@ -580,7 +580,7 @@
 				- Robust kernel templates moved from mrpt::vision to mrpt::math. See mrpt::math::RobustKernel<>. Added unit tests for robust kernels.
 				- mrpt::poses::CPose3D has new SE(3) methods: mrpt::poses::CPose3D::jacob_dexpeD_de(), mrpt::poses::CPose3D::jacob_dAexpeD_de()
 				- More efficient mrpt::utils::OctetVectorToObject() (avoid memory copy).
-				- Fixed const-correctness of mrpt::utils::CImage::forceLoad() and mrpt::utils::CImage::unload()
+				- Fixed const-correctness of mrpt::img::CImage::forceLoad() and mrpt::img::CImage::unload()
 			- [mrpt-hwdrivers]
 				- mrpt::hwdrivers::CCameraSensor: Added a hook for user code to run before saving external image files: mrpt::hwdrivers::CCameraSensor::addPreSaveHook()
 				- mrpt::hwdrivers::CNationalInstrumentsDAQ now supports analog and digital outputs.

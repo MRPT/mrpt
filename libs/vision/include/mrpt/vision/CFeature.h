@@ -10,7 +10,7 @@
 #ifndef CFeature_H
 #define CFeature_H
 
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/KDTreeCapable.h>
 
@@ -60,7 +60,7 @@ class CFeature : public mrpt::utils::CSerializable
    public:
 	float x, y;  //!< Coordinates in the image
 	TFeatureID ID;  //!< ID of the feature
-	mrpt::utils::CImage
+	mrpt::img::CImage
 		patch;  //!< A patch of the image surrounding the feature
 	uint16_t patchSize;  //!< Size of the patch (patchSize x patchSize) (it must
 	//! be an odd number)

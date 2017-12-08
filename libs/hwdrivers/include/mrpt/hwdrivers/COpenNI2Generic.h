@@ -45,7 +45,7 @@ class COpenNI2Generic
 	  *  \param hardware_error True on hardware/comms error.
 	  *  \param sensor_id The index of the sensor accessed.  */
 	void getNextFrameRGB(
-		mrpt::utils::CImage& rgb_img, uint64_t& timestamp, bool& there_is_obs,
+		mrpt::img::CImage& rgb_img, uint64_t& timestamp, bool& there_is_obs,
 		bool& hardware_error, unsigned sensor_id = 0);
 
 	/** The main data retrieving function, to be called after calling

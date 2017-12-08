@@ -26,7 +26,7 @@ using namespace std;
 **
 ************************************************************************************************/
 void CFeatureExtraction::extractFeaturesFAST(
-	const mrpt::utils::CImage& inImg, CFeatureList& feats, unsigned int init_ID,
+	const mrpt::img::CImage& inImg, CFeatureList& feats, unsigned int init_ID,
 	unsigned int nDesiredFeatures, const TImageROI& ROI,
 	const CMatrixBool* mask) const
 {

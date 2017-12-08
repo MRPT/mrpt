@@ -10,7 +10,7 @@
 #include "gui-precomp.h"  // Precompiled headers
 
 #include <mrpt/gui/WxUtils.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/system/filesystem.h>
 
 #if MRPT_HAS_WXWIDGETS
@@ -26,7 +26,7 @@ using namespace std;
 // An auxiliary function for passing MRPT images to wxWidgets images.
 //   The returned object MUST be deleted by hand!
 //------------------------------------------------------------------------
-wxImage* mrpt::gui::MRPTImage2wxImage(const mrpt::utils::CImage& img)
+wxImage* mrpt::gui::MRPTImage2wxImage(const mrpt::img::CImage& img)
 {
 #if MRPT_HAS_OPENCV
 	IplImage* image = const_cast<IplImage*>(img.getAs<IplImage>());
@@ -277,7 +277,7 @@ wxImage* mrpt::gui::IplImage2wxImage(void* img)
 //------------------------------------------------------------------------
 // Convert wxImage -> MRPTImage
 //------------------------------------------------------------------------
-mrpt::utils::CImage* mrpt::gui::wxImage2MRPTImage(const wxImage& img)
+mrpt::img::CImage* mrpt::gui::wxImage2MRPTImage(const wxImage& img)
 {
 	CImage* newImg = new CImage();
 
@@ -293,9 +293,9 @@ mrpt::utils::CImage* mrpt::gui::wxImage2MRPTImage(const wxImage& img)
 //------------------------------------------------------------------------
 // Convert wxImage -> MRPTImagePtr
 //------------------------------------------------------------------------
-mrpt::utils::CImage::Ptr mrpt::gui::wxImage2MRPTImagePtr(const wxImage& img)
+mrpt::img::CImage::Ptr mrpt::gui::wxImage2MRPTImagePtr(const wxImage& img)
 {
-	return mrpt::utils::CImage::Ptr(wxImage2MRPTImage(img));
+	return mrpt::img::CImage::Ptr(wxImage2MRPTImage(img));
 }
 
 //------------------------------------------------------------------------
@@ -350,7 +350,7 @@ void wxMRPTImageControl::AssignImage(wxBitmap* img)
 	m_img = img;
 }
 
-void wxMRPTImageControl::AssignImage(const mrpt::utils::CImage& img)
+void wxMRPTImageControl::AssignImage(const mrpt::img::CImage& img)
 {
 	wxBitmap* wxImg = MRPTImage2wxBitmap(img);
 

@@ -481,7 +481,7 @@ void optimize_graph_spa_levmarq(
 						if (i == j)
 						{
 							for (size_t k = 0; k < DIMS_POSE; k++)
-								mrpt::utils::keep_max(
+								mrpt::keep_max(
 									H_diagonal_max,
 									it->second.get_unsafe(k, k));
 						}

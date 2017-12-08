@@ -13,7 +13,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 #include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/utils/COutputLogger.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>
 #include <mrpt/poses/CPoses2DSequence.h>

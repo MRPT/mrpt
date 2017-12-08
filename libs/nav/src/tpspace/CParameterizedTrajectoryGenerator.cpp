@@ -70,7 +70,7 @@ void CParameterizedTrajectoryGenerator::loadFromConfigFile(
 		sSection);
 
 	// Ensure a minimum of resolution:
-	mrpt::utils::keep_max(m_clearance_num_points, refDistance / 1.0);
+	mrpt::keep_max(m_clearance_num_points, refDistance / 1.0);
 
 	// Optional params, for debugging only
 	MRPT_LOAD_HERE_CONFIG_VAR(
@@ -422,7 +422,7 @@ void CParameterizedTrajectoryGenerator::internal_TPObsDistancePostprocess(
 	const bool is_obs_inside_robot_shape = isPointInsideRobotShape(ox, oy);
 	if (!is_obs_inside_robot_shape)
 	{
-		mrpt::utils::keep_min(inout_tp_obs, new_tp_obs_dist);
+		mrpt::keep_min(inout_tp_obs, new_tp_obs_dist);
 		return;
 	}
 
@@ -559,7 +559,7 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(
 				this_clearance / this->refDistance;
 
 			// Update minimum in output structure
-			mrpt::utils::keep_min(inout_clearance, this_clearance_norm);
+			mrpt::keep_min(inout_clearance, this_clearance_norm);
 		}
 	}
 }

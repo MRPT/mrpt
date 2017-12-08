@@ -142,9 +142,7 @@ std::string getMapAsString(
 template <class T1, class T2>
 void printMap(const std::map<T1, T2>& m)
 {
-	using namespace std;
-
-	cout << getMapAsString(m) << endl;
+	std::cout << getMapAsString(m) << std::endl;
 }
 
 /** @} */  // end of grouping

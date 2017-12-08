@@ -2581,8 +2581,8 @@ void xRawLogViewerFrame::rebuildTreeView()
 			double this_min_t = 0.0, this_max_t = 1.0;
 			mrpt::math::minimum_maximum(
 				it->second.timOccurs, this_min_t, this_max_t);
-			mrpt::utils::keep_max(max_t, this_max_t);
-			mrpt::utils::keep_max(min_t, this_min_t);
+			mrpt::keep_max(max_t, this_max_t);
+			mrpt::keep_max(min_t, this_min_t);
 
 			mpFXYVector* lyRawlogInfo = new mpFXYVector();
 			lyRawlogInfo->SetPen(penBlue);
@@ -6177,11 +6177,11 @@ void xRawLogViewerFrame::OnMenuRegenerateTimestampBySF(wxCommandEvent& event)
 struct TImageToSaveData
 {
 	TImageToSaveData() : img(nullptr) {}
-	TImageToSaveData(mrpt::utils::CImage* _img, const char* str)
+	TImageToSaveData(mrpt::img::CImage* _img, const char* str)
 		: img(_img), channel_desc(str)
 	{
 	}
-	mrpt::utils::CImage* img;
+	mrpt::img::CImage* img;
 	std::string channel_desc;  // LEFT, RIGHT, etc...
 };
 

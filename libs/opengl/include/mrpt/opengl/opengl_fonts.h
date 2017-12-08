@@ -10,7 +10,7 @@
 #ifndef mrpt_opengl_fonts_H
 #define mrpt_opengl_fonts_H
 
-#include <mrpt/utils/TColor.h>
+#include <mrpt/img/TColor.h>
 #include <mrpt/utils/compiler_fixes.h>  // disable warnings
 #include <string>
 

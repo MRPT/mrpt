@@ -10,7 +10,7 @@
 #define mrpt_CStereoRectifyMap_H
 
 #include <mrpt/utils/TStereoCamera.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/poses/CPose3DQuat.h>
 
@@ -231,10 +231,10 @@ class CStereoRectifyMap
 	 * for in-place rectification)
 	  */
 	void rectify(
-		const mrpt::utils::CImage& in_left_image,
-		const mrpt::utils::CImage& in_right_image,
-		mrpt::utils::CImage& out_left_image,
-		mrpt::utils::CImage& out_right_image) const;
+		const mrpt::img::CImage& in_left_image,
+		const mrpt::img::CImage& in_right_image,
+		mrpt::img::CImage& out_left_image,
+		mrpt::img::CImage& out_right_image) const;
 
 	/** Overloaded version for in-place rectification: replace input images with
 	 * their rectified versions
@@ -246,7 +246,7 @@ class CStereoRectifyMap
 	 * invoke this method simultaneously.
 	  */
 	void rectify(
-		mrpt::utils::CImage& left_image, mrpt::utils::CImage& right_image,
+		mrpt::img::CImage& left_image, mrpt::img::CImage& right_image,
 		const bool use_internal_mem_cache = true) const;
 
 	/** Overloaded version for in-place rectification of image pairs stored in a
@@ -287,7 +287,7 @@ class CStereoRectifyMap
 	mrpt::utils::TInterpolationMethod m_interpolation_method;
 
 	/** Memory caches for in-place rectification speed-up. */
-	mutable mrpt::utils::CImage m_cache1, m_cache2;
+	mutable mrpt::img::CImage m_cache1, m_cache2;
 
 	std::vector<int16_t> m_dat_mapx_left, m_dat_mapx_right;
 	std::vector<uint16_t> m_dat_mapy_left, m_dat_mapy_right;

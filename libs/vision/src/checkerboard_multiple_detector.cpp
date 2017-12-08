@@ -31,14 +31,14 @@ using namespace std;
 
 // Return: true: found OK
 bool find_chessboard_corners_multiple(
-	const mrpt::utils::CImage& img_, CvSize pattern_size,
+	const mrpt::img::CImage& img_, CvSize pattern_size,
 	std::vector<std::vector<CvPoint2D32f>>& out_corners)
 {
 	// Assure it's a grayscale image:
-	const mrpt::utils::CImage img(img_, FAST_REF_OR_CONVERT_TO_GRAY);
+	const mrpt::img::CImage img(img_, FAST_REF_OR_CONVERT_TO_GRAY);
 
-	mrpt::utils::CImage thresh_img(img.getWidth(), img.getHeight(), CH_GRAY);
-	mrpt::utils::CImage thresh_img_save(
+	mrpt::img::CImage thresh_img(img.getWidth(), img.getHeight(), CH_GRAY);
+	mrpt::img::CImage thresh_img_save(
 		img.getWidth(), img.getHeight(), CH_GRAY);
 
 	out_corners.clear();  // for now, empty the output.
@@ -185,7 +185,7 @@ bool find_chessboard_corners_multiple(
 					format(
 						"All quads (%u) | %u clusters",
 						(unsigned)quad_centers.size(), (unsigned)nClusters));
-				mrpt::utils::CImage im;
+				mrpt::img::CImage im;
 				img.colorImage(im);
 				for (size_t i = 0; i < quad_centers.size(); i++)
 				{
@@ -250,7 +250,7 @@ bool find_chessboard_corners_multiple(
 								format(
 									"Candidate group #%i (%i)", (int)group_idx,
 									(int)quad_group.size()));
-							mrpt::utils::CImage im;
+							mrpt::img::CImage im;
 							img.colorImage(im);
 							for (size_t i = 0; i < quad_group.size(); i++)
 							{

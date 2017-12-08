@@ -180,7 +180,7 @@ class CRovio
 	  * \sa captureImageSync
 	  */
 	bool captureImageAsync(
-		mrpt::utils::CImage& out_img, bool recttified);  // string pict_name,
+		mrpt::img::CImage& out_img, bool recttified);  // string pict_name,
 
 	/** Return true if video is streaming correctly \sa retrieve_video */
 	bool isVideoStreamming() const;

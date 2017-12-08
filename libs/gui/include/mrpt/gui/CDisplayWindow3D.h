@@ -12,7 +12,7 @@
 #include <mrpt/gui/CBaseGUIWindow.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/opengl_fonts.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 
 #include <mutex>
 
@@ -140,7 +140,7 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 	unsigned int m_grab_imgs_idx;
 
 	bool m_is_capturing_imgs;
-	mrpt::utils::CImage::Ptr m_last_captured_img;
+	mrpt::img::CImage::Ptr m_last_captured_img;
 	mutable std::mutex m_last_captured_img_cs;
 
 	void doRender();
@@ -283,7 +283,7 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 	 * output image is undefined).
 	  * \sa captureImagesStart, getLastWindowImagePtr
 	  */
-	bool getLastWindowImage(mrpt::utils::CImage& out_img) const;
+	bool getLastWindowImage(mrpt::img::CImage& out_img) const;
 
 	/** Retrieve the last captured image from the window, as a smart pointer.
 	  *  This method is more efficient than getLastWindowImage since only a copy
@@ -295,7 +295,7 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 	 * pointer will be returned.
 	  * \sa captureImagesStart, getLastWindowImage
 	  */
-	mrpt::utils::CImage::Ptr getLastWindowImagePtr() const;
+	mrpt::img::CImage::Ptr getLastWindowImagePtr() const;
 
 	/** Increments by one the image counter and return the next image file name
 	 * (Users normally don't want to call this method).
@@ -378,7 +378,7 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 	 * the user must NOT call get3DSceneAndLock() / unlockAccess3DScene()
 	 * before/after calling it.
 	  */
-	void setImageView(const mrpt::utils::CImage& img);
+	void setImageView(const mrpt::img::CImage& img);
 
 	/** Just like \a setImageView but moves the internal image memory instead of
 	 * making a copy, so it's faster but empties the input image.
@@ -387,7 +387,7 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 	 * the user must NOT call get3DSceneAndLock() / unlockAccess3DScene()
 	 * before/after calling it.
 	  */
-	void setImageView_fast(mrpt::utils::CImage& img);
+	void setImageView_fast(mrpt::img::CImage& img);
 
    protected:
 	/** Set the rendering FPS (users don't call this, the method is for internal

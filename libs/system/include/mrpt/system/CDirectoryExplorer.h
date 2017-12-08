@@ -25,7 +25,7 @@ namespace system
   *  Refer to the example in /samples/UTILS/directoryExplorer
   *
   *  \sa CFileSystemWatcher
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_system_grp
   */
 class CDirectoryExplorer
 {

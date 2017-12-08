@@ -148,8 +148,8 @@ void CHolonomicND::gapsEstimator(
 		  overall_min_dist = std::numeric_limits<float>::max();
 	for (size_t i = 1; i < (n - 1); i++)
 	{
-		mrpt::utils::keep_max(overall_max_dist, obstacles[i]);
-		mrpt::utils::keep_min(overall_min_dist, obstacles[i]);
+		mrpt::keep_max(overall_max_dist, obstacles[i]);
+		mrpt::keep_min(overall_min_dist, obstacles[i]);
 	}
 	double max_depth = overall_max_dist - overall_min_dist;
 

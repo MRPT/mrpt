@@ -1711,7 +1711,7 @@ void CFaceDetection::experimental_segmentFace(
 	// int total = 0;  // JL: Unused var
 	// int numPoints = 0; // JL: Unused var
 
-	mrpt::utils::CImage img;
+	mrpt::img::CImage img;
 	// Normalize the image
 	CMatrixFloat range2D = m_lastFaceDetected.rangeImage;
 	range2D *= 1.0f / 5;

@@ -16,7 +16,7 @@ namespace system
 {
 /** \addtogroup mrpt_memory Memory utilities (in #include
  * <mrpt/system/memory.h>)
-  * \ingroup mrpt_base_grp
+  * \ingroup mrpt_system_grp
   *  @{ */
 
 /** Returns the memory occupied by this process, in bytes */

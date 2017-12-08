@@ -11,7 +11,7 @@
 
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/system/os.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/core/round.h>
 
 #include <mrpt/gui/WxSubsystem.h>

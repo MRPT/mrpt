@@ -57,8 +57,8 @@
 #include <mrpt/utils/mrpt_macros.h>
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/types_simple.h>
-#include <mrpt/utils/TColor.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/TColor.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/utils/COutputLogger.h>
 
 #include <mrpt/graphslam/misc/CEdgeCounter.h>

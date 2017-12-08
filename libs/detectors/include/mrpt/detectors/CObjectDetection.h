@@ -12,7 +12,7 @@
 
 #include <mrpt/detectors/CDetectableObject.h>
 #include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 
 namespace mrpt
 {
@@ -50,7 +50,7 @@ class CObjectDetection
 	};
 
 	void detectObjects(
-		const mrpt::utils::CImage* img, vector_detectable_object& detected);
+		const mrpt::img::CImage* img, vector_detectable_object& detected);
 
    protected:
 	virtual void detectObjects_Impl(

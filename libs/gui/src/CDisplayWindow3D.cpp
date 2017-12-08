@@ -12,7 +12,7 @@
 #include <mrpt/config.h>
 
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/utils/CTicTac.h>
 
 #include <mrpt/gui/WxSubsystem.h>
@@ -868,7 +868,7 @@ void CDisplayWindow3D::captureImagesStop() { m_is_capturing_imgs = false; }
 /*---------------------------------------------------------------
 					getLastWindowImage
  ---------------------------------------------------------------*/
-bool CDisplayWindow3D::getLastWindowImage(mrpt::utils::CImage& out_img) const
+bool CDisplayWindow3D::getLastWindowImage(mrpt::img::CImage& out_img) const
 {
 	bool ret;
 
@@ -1035,7 +1035,7 @@ mrpt::opengl::COpenGLViewport::Ptr CDisplayWindow3D::getDefaultViewport()
 	return view;
 }
 
-void CDisplayWindow3D::setImageView(const mrpt::utils::CImage& img)
+void CDisplayWindow3D::setImageView(const mrpt::img::CImage& img)
 {
 	m_csAccess3DScene.lock();
 	mrpt::opengl::COpenGLViewport::Ptr view = m_3Dscene->getViewport("main");
@@ -1043,7 +1043,7 @@ void CDisplayWindow3D::setImageView(const mrpt::utils::CImage& img)
 	m_csAccess3DScene.unlock();
 }
 
-void CDisplayWindow3D::setImageView_fast(mrpt::utils::CImage& img)
+void CDisplayWindow3D::setImageView_fast(mrpt::img::CImage& img)
 {
 	m_csAccess3DScene.lock();
 	mrpt::opengl::COpenGLViewport::Ptr view = m_3Dscene->getViewport("main");

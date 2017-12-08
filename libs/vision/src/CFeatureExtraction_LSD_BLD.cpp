@@ -40,7 +40,7 @@ using namespace std;
 #endif
 
 void CFeatureExtraction::extractFeaturesLSD(
-	const mrpt::utils::CImage& inImg, CFeatureList& feats, unsigned int init_ID,
+	const mrpt::img::CImage& inImg, CFeatureList& feats, unsigned int init_ID,
 	unsigned int nDesiredFeatures, const TImageROI& ROI) const
 {
 	MRPT_START
@@ -177,7 +177,7 @@ void CFeatureExtraction::extractFeaturesLSD(
 *						internal_computeBLDDescriptors
 ************************************************************************************************/
 void CFeatureExtraction::internal_computeBLDLineDescriptors(
-	const mrpt::utils::CImage& in_img, CFeatureList& in_features) const
+	const mrpt::img::CImage& in_img, CFeatureList& in_features) const
 {
 #if (!HAVE_OPENCV_WITH_LSD)
 	THROW_EXCEPTION(

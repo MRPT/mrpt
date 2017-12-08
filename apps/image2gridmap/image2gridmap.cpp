@@ -73,7 +73,7 @@ int main(int argc, char** argv)
 		const std::string inputFile = arg_input_file.getValue();
 		const double cell_res = arg_res.getValue();
 
-		mrpt::utils::CImage img;
+		mrpt::img::CImage img;
 		if (!img.loadFromFile(inputFile))
 			throw std::runtime_error(
 				mrpt::format(

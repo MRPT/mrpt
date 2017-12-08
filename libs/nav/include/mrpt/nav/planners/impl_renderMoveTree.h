@@ -48,7 +48,7 @@ void PlannerTPS_VirtualBase::renderMoveTree(
 			for (size_t i = 2; i <= params.robot_shape.size(); i++)
 			{
 				const size_t idx = i % params.robot_shape.size();
-				mrpt::utils::keep_max(
+				mrpt::keep_max(
 					max_veh_radius, params.robot_shape[idx].norm());
 				gl_veh_shape->appendLineStrip(
 					params.robot_shape[idx].x, params.robot_shape[idx].y, 0);
@@ -68,7 +68,7 @@ void PlannerTPS_VirtualBase::renderMoveTree(
 					R * cos(ang), R * sin(ang), 0, R * cos(angn), R * sin(angn),
 					0);
 			}
-			mrpt::utils::keep_max(max_veh_radius, R);
+			mrpt::keep_max(max_veh_radius, R);
 		}
 
 		xyzcorners_scale = max_veh_radius * 0.5;

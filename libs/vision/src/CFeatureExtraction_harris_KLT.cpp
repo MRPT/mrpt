@@ -24,7 +24,7 @@ using namespace std;
 *							extractFeaturesKLT
 ************************************************************************************************/
 void CFeatureExtraction::extractFeaturesKLT(
-	const mrpt::utils::CImage& inImg, CFeatureList& feats, unsigned int init_ID,
+	const mrpt::img::CImage& inImg, CFeatureList& feats, unsigned int init_ID,
 	unsigned int nDesiredFeatures, const TImageROI& ROI) const
 {
 //#define VERBOSE_TIMING
@@ -181,7 +181,7 @@ MRPT_TODO("Delete? Refactor / join to mrpt::vision::CGenericFeatureTracker?")
 /*------------------------------------------------------------
 					findMoreFeatures
 -------------------------------------------------------------*/
-void  CFeatureExtraction::findMoreFeatures( const mrpt::utils::CImage &img,
+void  CFeatureExtraction::findMoreFeatures( const mrpt::img::CImage &img,
 											const CFeatureList &inList,
 											CFeatureList &outList,
 											unsigned int nDesiredFeats) const
@@ -254,7 +254,7 @@ MRPT_TODO("Delete? Is not this a duplicate of extractFeaturesKLT ()???")
 *								selectGoodFeaturesKLT												*
 ************************************************************************************************/
 void  CFeatureExtraction::selectGoodFeaturesKLT(
-		const mrpt::utils::CImage			&img,
+		const mrpt::img::CImage			&img,
 		CFeatureList			&feats,
 		unsigned int			init_ID,
 		unsigned int			nDesiredFeatures) const

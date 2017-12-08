@@ -10,7 +10,7 @@
 #ifndef mrpt_vision_find_chessboard_H
 #define mrpt_vision_find_chessboard_H
 
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 
 #include <mrpt/vision/types.h>
 
@@ -60,7 +60,7 @@ namespace vision
   *mrpt::vision::checkerBoardCameraCalibration, drawChessboardCorners
   */
 bool findChessboardCorners(
-	const mrpt::utils::CImage& img,
+	const mrpt::img::CImage& img,
 	std::vector<mrpt::utils::TPixelCoordf>& cornerCoords,
 	unsigned int check_size_x, unsigned int check_size_y,
 	bool normalize_image = true, bool useScaramuzzaMethod = false);
@@ -99,7 +99,7 @@ bool findChessboardCorners(
   * \sa mrpt::vision::checkerBoardCameraCalibration, drawChessboardCorners
   */
 void findMultipleChessboardsCorners(
-	const mrpt::utils::CImage& img,
+	const mrpt::img::CImage& img,
 	std::vector<std::vector<mrpt::utils::TPixelCoordf>>& cornerCoords,
 	unsigned int check_size_x, unsigned int check_size_y);
 

@@ -10,7 +10,7 @@
 #define opengl_CTexturedObject_H
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/math/geometry.h>
 
 namespace mrpt
@@ -29,8 +29,8 @@ class CTexturedObject : public CRenderizableDisplayList
    protected:
 	mutable unsigned int m_glTextureName;
 	mutable bool m_texture_is_loaded;
-	mutable mrpt::utils::CImage m_textureImage;
-	mutable mrpt::utils::CImage m_textureImageAlpha;
+	mutable mrpt::img::CImage m_textureImage;
+	mutable mrpt::img::CImage m_textureImageAlpha;
 	/** Of the texture using "m_textureImageAlpha" */
 	mutable bool m_enableTransparency;
 	/** Size of the texture image, rounded up to next power of 2 */
@@ -59,20 +59,20 @@ class CTexturedObject : public CRenderizableDisplayList
 	  * \note Images are copied, the original ones can be deleted.
 	  */
 	void assignImage(
-		const mrpt::utils::CImage& img, const mrpt::utils::CImage& imgAlpha);
+		const mrpt::img::CImage& img, const mrpt::img::CImage& imgAlpha);
 
 	/** Assigns a texture image, and disable transparency.
 	  * \note Images are copied, the original ones can be deleted. */
-	void assignImage(const mrpt::utils::CImage& img);
+	void assignImage(const mrpt::img::CImage& img);
 
 	/** Similar to assignImage, but the passed images will be returned as empty:
 	 * it avoids making a copy of the whole image, just copies a pointer. */
 	void assignImage_fast(
-		mrpt::utils::CImage& img, mrpt::utils::CImage& imgAlpha);
+		mrpt::img::CImage& img, mrpt::img::CImage& imgAlpha);
 
 	/** Similar to assignImage, but the passed images will be returned as empty:
 	 * it avoids making a copy of the whole image, just copies a pointer.  */
-	void assignImage_fast(mrpt::utils::CImage& img);
+	void assignImage_fast(mrpt::img::CImage& img);
 
 	/** VERY IMPORTANT: If you use a multi-thread application, you MUST call
 	 * this from the same thread that will later destruct the object in order to

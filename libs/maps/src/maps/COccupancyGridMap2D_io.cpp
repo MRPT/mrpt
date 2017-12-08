@@ -300,7 +300,7 @@ bool COccupancyGridMap2D::loadFromBitmapFile(
 					loadFromBitmap
  ---------------------------------------------------------------*/
 bool COccupancyGridMap2D::loadFromBitmap(
-	const mrpt::utils::CImage& imgFl, float resolution, float xCentralPixel,
+	const mrpt::img::CImage& imgFl, float resolution, float xCentralPixel,
 	float yCentralPixel)
 {
 	MRPT_START

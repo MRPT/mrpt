@@ -11,7 +11,7 @@
 #define CRandomFieldGridMap2D_H
 
 #include <mrpt/containers/CDynamicGrid.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/utils/CLoadableOptions.h>
@@ -225,7 +225,7 @@ class CRandomFieldGridMap2D
 	virtual void saveAsBitmapFile(const std::string& filName) const;
 
 	/** Returns an image just as described in \a saveAsBitmapFile */
-	virtual void getAsBitmapFile(mrpt::utils::CImage& out_img) const;
+	virtual void getAsBitmapFile(mrpt::img::CImage& out_img) const;
 
 	/** Like saveAsBitmapFile(), but returns the data in matrix form (first row
 	 * in the matrix is the upper (y_max) part of the map) */

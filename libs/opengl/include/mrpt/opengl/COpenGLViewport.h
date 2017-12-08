@@ -11,7 +11,7 @@
 
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/safe_pointers.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/opengl/CCamera.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CLight.h>
@@ -90,13 +90,13 @@ class COpenGLViewport : public mrpt::utils::CSerializable,
 	 * calling setNormalMode()
 	  * \sa setImageView_fast
 	  */
-	void setImageView(const mrpt::utils::CImage& img);
+	void setImageView(const mrpt::img::CImage& img);
 
 	/** Just like \a setImageView but moves the internal image memory instead of
 	 * making a copy, so it's faster but empties the input image.
 	  * \sa setImageView
 	  */
-	void setImageView_fast(mrpt::utils::CImage& img);
+	void setImageView_fast(mrpt::img::CImage& img);
 
 	/** Reset the viewport to normal mode: rendering its own objects.
 	  * \sa setCloneView, setNormalMode
@@ -389,7 +389,7 @@ class COpenGLViewport : public mrpt::utils::CSerializable,
 	// CRenderizable::Ptr m_imageview_quad ; //!< A mrpt::opengl::CTexturedPlane
 	// used after setImageView() is called
 	/** The image to display, after calling \a setImageView() */
-	mrpt::utils::CImage::Ptr m_imageview_img;
+	mrpt::img::CImage::Ptr m_imageview_img;
 
 	struct TLastProjectiveMatrixInfo
 	{
@@ -431,7 +431,7 @@ class COpenGLViewport : public mrpt::utils::CSerializable,
 	opengl::CListOpenGLObjects m_objects;
 
 	void internal_setImageView_fast(
-		const mrpt::utils::CImage& img, bool is_fast);
+		const mrpt::img::CImage& img, bool is_fast);
 
 	// OpenGL global settings:
 	bool m_OpenGL_enablePolygonNicest;

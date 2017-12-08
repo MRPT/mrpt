@@ -251,7 +251,7 @@ void Test_Kinect()
 			// Show 2D ranges as a grayscale image:
 			if (last_obs->hasRangeImage)
 			{
-				mrpt::utils::CImage img;
+				mrpt::img::CImage img;
 
 				// Normalize the image
 				static CMatrixFloat range2D;  // Static to save time allocating

@@ -153,7 +153,7 @@ void CHolonomicFullEval::evalSingleTarget(
 			const double max_real_freespace_norm =
 				max_real_freespace / ptg->getRefDistance();
 
-			mrpt::utils::keep_min(scores[0], max_real_freespace_norm);
+			mrpt::keep_min(scores[0], max_real_freespace_norm);
 		}
 
 		// Factor #2: Closest approach to target along straight line (Euclidean)
@@ -307,8 +307,8 @@ void CHolonomicFullEval::evalSingleTarget(
 			}
 			phase_scores[phase_idx][i] = this_dir_eval;
 
-			mrpt::utils::keep_max(phase_max, phase_scores[phase_idx][i]);
-			mrpt::utils::keep_min(phase_min, phase_scores[phase_idx][i]);
+			mrpt::keep_max(phase_max, phase_scores[phase_idx][i]);
+			mrpt::keep_min(phase_min, phase_scores[phase_idx][i]);
 
 		}  // for each direction
 
@@ -333,8 +333,8 @@ void CHolonomicFullEval::evalSingleTarget(
 		double phase_min = std::numeric_limits<double>::max(), phase_max = .0;
 		for (unsigned int i = 0; i < nDirs; i++)
 		{
-			mrpt::utils::keep_max(phase_max, phase_scores[NUM_PHASES - 1][i]);
-			mrpt::utils::keep_min(phase_min, phase_scores[NUM_PHASES - 1][i]);
+			mrpt::keep_max(phase_max, phase_scores[NUM_PHASES - 1][i]);
+			mrpt::keep_min(phase_min, phase_scores[NUM_PHASES - 1][i]);
 		}
 		last_phase_threshold =
 			options.PHASE_THRESHOLDS[NUM_PHASES - 1] * phase_max +
@@ -385,8 +385,8 @@ void CHolonomicFullEval::evalSingleTarget(
 				{
 					active_gap.k_best_eval = i;
 				}
-				mrpt::utils::keep_max(active_gap.max_eval, val);
-				mrpt::utils::keep_min(active_gap.min_eval, val);
+				mrpt::keep_max(active_gap.max_eval, val);
+				mrpt::keep_min(active_gap.min_eval, val);
 
 				if (target_k == i)
 				{

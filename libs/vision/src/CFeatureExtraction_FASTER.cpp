@@ -80,7 +80,7 @@ void CFeatureExtraction::detectFeatures_SSE2_FASTER12(
 ************************************************************************************************/
 // N_fast = 9, 10, 12
 void CFeatureExtraction::extractFeaturesFASTER_N(
-	const int N_fast, const mrpt::utils::CImage& inImg, CFeatureList& feats,
+	const int N_fast, const mrpt::img::CImage& inImg, CFeatureList& feats,
 	unsigned int init_ID, unsigned int nDesiredFeatures,
 	const TImageROI& ROI) const
 {

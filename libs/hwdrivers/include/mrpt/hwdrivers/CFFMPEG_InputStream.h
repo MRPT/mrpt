@@ -11,7 +11,7 @@
 #define CFFMPEG_InputStream_H
 
 #include <mrpt/utils/utils_defs.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/utils/safe_pointers.h>
 
 /*---------------------------------------------------------------
@@ -91,7 +91,7 @@ class CFFMPEG_InputStream
 	  *  \return false on any error, true on success.
 	  *  \sa openURL, close, isOpen
 	  */
-	bool retrieveFrame(mrpt::utils::CImage& out_img);
+	bool retrieveFrame(mrpt::img::CImage& out_img);
 };
 }
 }

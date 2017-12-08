@@ -20,7 +20,7 @@
 
 #include <mrpt/math/CMatrix.h>
 
-// #include <mrpt/utils/TColor.h>
+// #include <mrpt/img/TColor.h>
 
 /* namespaces */
 using namespace boost::python;

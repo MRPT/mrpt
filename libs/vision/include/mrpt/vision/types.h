@@ -11,7 +11,7 @@
 #define mrpt_vision_types_H
 
 #include <mrpt/utils/aligned_containers.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/utils/aligned_containers.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/TMatchingPair.h>

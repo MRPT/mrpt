@@ -416,7 +416,7 @@ void COpenNI2Generic::close(unsigned sensor_id)
 *
 */
 void COpenNI2Generic::getNextFrameRGB(
-	mrpt::utils::CImage& rgb_img, uint64_t& timestamp, bool& there_is_obs,
+	mrpt::img::CImage& rgb_img, uint64_t& timestamp, bool& there_is_obs,
 	bool& hardware_error, unsigned sensor_id)
 {
 #if MRPT_HAS_OPENNI2
@@ -833,7 +833,7 @@ bool COpenNI2Generic::CDevice::open(int w, int h, int fps)
 }
 
 bool COpenNI2Generic::CDevice::getNextFrameRGB(
-	mrpt::utils::CImage& img, uint64_t& timestamp, bool& there_is_obs,
+	mrpt::img::CImage& img, uint64_t& timestamp, bool& there_is_obs,
 	bool& hardware_error)
 {
 	MRPT_START
@@ -847,7 +847,7 @@ bool COpenNI2Generic::CDevice::getNextFrameRGB(
 	{
 		return false;
 	}
-	copyFrame<openni::RGB888Pixel, mrpt::utils::CImage>(frame, img);
+	copyFrame<openni::RGB888Pixel, mrpt::img::CImage>(frame, img);
 
 	return true;
 	MRPT_END

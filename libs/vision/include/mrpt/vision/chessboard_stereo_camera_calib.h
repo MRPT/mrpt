@@ -10,7 +10,7 @@
 #ifndef mrpt_vision_chessboard_stereo_calib_H
 #define mrpt_vision_chessboard_stereo_calib_H
 
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/utils/TStereoCamera.h>
 #include <mrpt/vision/types.h>
 #include <mrpt/vision/chessboard_camera_calib.h>

@@ -1043,7 +1043,7 @@ void MainWindow::readRawlogFiles(string rawlog)
 
 						stringstream str;
 						str << getImageDir(rawlog) << "/Images";
-						mrpt::utils::CImage::setImagesPathBase(str.str());
+						mrpt::img::CImage::setImagesPathBase(str.str());
 						file_path1 = str.str();
 						flag_path2++;
 						inputFilePath->setText(
@@ -1061,7 +1061,7 @@ void MainWindow::readRawlogFiles(string rawlog)
 
 						stringstream str;
 						str << getImageDir(rawlog) << "/Images";
-						mrpt::utils::CImage::setImagesPathBase(str.str());
+						mrpt::img::CImage::setImagesPathBase(str.str());
 						file_path1 = str.str();
 						flag_path++;
 

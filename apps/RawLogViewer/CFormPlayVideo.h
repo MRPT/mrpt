@@ -24,7 +24,7 @@
 #include <wx/combobox.h>
 //*)
 
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 
 class CFormPlayVideo : public wxDialog
 {
@@ -89,7 +89,7 @@ class CFormPlayVideo : public wxDialog
 
 	bool showSensoryFrame(void* SF, size_t& nImgs);
 
-	void drawHorzRules(mrpt::utils::CImage& img);
+	void drawHorzRules(mrpt::img::CImage& img);
 
 	//(*Declarations(CFormPlayVideo)
 	wxBoxSizer* BoxSizer4;

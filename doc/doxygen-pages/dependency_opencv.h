@@ -19,7 +19,7 @@
 This optional library is used for almost everything related to computer vision in MRPT. Even MRPT-specific computer vision functions or classes cannot work without OpenCV since the basic structure for holding images is OpenCV's <code>IplImage</code>. 
 
 If not present, the following classes will raise an exception upon usage:
-- mrpt::utils::CImage. Note that creating mrpt::utils::CImage objects in the "external storage mode" will not raise an exception unless you really access the image contents.
+- mrpt::img::CImage. Note that creating mrpt::img::CImage objects in the "external storage mode" will not raise an exception unless you really access the image contents.
 - Everything needing access to an image (loading, saving, processing, etc.). 
 
 */

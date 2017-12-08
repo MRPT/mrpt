@@ -48,7 +48,7 @@ using namespace std;
 *						internal_computeLATCHDescriptors
 ************************************************************************************************/
 void CFeatureExtraction::internal_computeLATCHDescriptors(
-	const mrpt::utils::CImage& in_img, CFeatureList& in_features) const
+	const mrpt::img::CImage& in_img, CFeatureList& in_features) const
 {
 	MRPT_START
 #if (!HAVE_OPENCV_WITH_LATCH)
