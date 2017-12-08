@@ -12,7 +12,7 @@
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/math/CMatrix.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/utils/color_maps.h>
 
 namespace mrpt
@@ -43,7 +43,7 @@ class CMeshFast : public CRenderizableDisplayList
 	DEFINE_SERIALIZABLE(CMeshFast)
 
    protected:
-	mrpt::utils::CImage m_textureImage;
+	mrpt::img::CImage m_textureImage;
 
 	bool m_enableTransparency;
 	bool m_colorFromZ;
@@ -206,12 +206,12 @@ class CMeshFast : public CRenderizableDisplayList
 
 	/** Assigns a texture image, and disable transparency.
 	  */
-	void assignImage(const mrpt::utils::CImage& img);
+	void assignImage(const mrpt::img::CImage& img);
 
 	/** Assigns a texture image and Z simultaneously, and disable transparency.
 	  */
 	void assignImageAndZ(
-		const mrpt::utils::CImage& img,
+		const mrpt::img::CImage& img,
 		const mrpt::math::CMatrixTemplateNumeric<float>& in_Z);
 
 	/** Adjust grid limits according to the image aspect ratio, maintaining the

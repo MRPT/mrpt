@@ -19,12 +19,12 @@
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/types_simple.h>
-#include <mrpt/utils/TColor.h>
+#include <mrpt/img/TColor.h>
 #include <mrpt/opengl/graph_tools.h>
 #include <mrpt/opengl/CDisk.h>
 #include <mrpt/opengl/CSphere.h>
 #include <mrpt/opengl/CRenderizable.h>
-#include <mrpt/utils/TColor.h>
+#include <mrpt/img/TColor.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 

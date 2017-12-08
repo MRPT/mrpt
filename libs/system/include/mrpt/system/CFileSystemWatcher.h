@@ -24,7 +24,7 @@ namespace system
   *  Using this class in an old Linux or other unsoported system (Unix,etc...)
  * has no effect, i.e. no notification will be ever received.
   *  \sa CDirectoryExplorer
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_system_grp
   */
 class CFileSystemWatcher
 {

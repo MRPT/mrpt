@@ -28,7 +28,7 @@ class CMRPTException : public std::logic_error
 	CMRPTException(const std::string& s) : std::logic_error(s.c_str()) {}
 };
 
-/** Used in mrpt::utils::CImage */
+/** Used in mrpt::img::CImage */
 class CExceptionExternalImageNotFound : public mrpt::utils::CMRPTException
 {
    public:

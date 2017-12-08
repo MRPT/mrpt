@@ -11,7 +11,7 @@
 #include <mrpt/utils/serialization_zmq.h>
 #include <assert.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/utils/CTicTac.h>
 
 using mrpt::utils::DEG2RAD;
@@ -34,7 +34,7 @@ int main()
 			mrpt::utils::mrpt_send_to_zmq(pub_sock, my_pose);
 			std::this_thread::sleep_for(100ms);
 
-			mrpt::utils::CImage my_img(800,600, CH_RGB);
+			mrpt::img::CImage my_img(800,600, CH_RGB);
 			printf("Publishing img...\n");
 			mrpt::utils::mrpt_send_to_zmq(pub_sock, my_img, 0 /* max_packet_len: 0=no max size */);
 			std::this_thread::sleep_for(100ms);

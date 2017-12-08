@@ -1328,7 +1328,7 @@ TFeatureID CFeatureList::getMaxID() const
 	vision::TFeatureID maxID = (*begin())->ID;
 	for (CFeatureList::const_iterator itList = begin(); itList != end();
 		 itList++)
-		mrpt::utils::keep_max(maxID, (*itList)->ID);
+		mrpt::keep_max(maxID, (*itList)->ID);
 	return maxID;
 	MRPT_END
 
@@ -1394,9 +1394,9 @@ void CMatchedFeatureList::updateMaxID(const TListIdx& idx)
 		 itList++)
 	{
 		if (idx == firstList || idx == bothLists)
-			mrpt::utils::keep_max(maxID1, itList->first->ID);
+			mrpt::keep_max(maxID1, itList->first->ID);
 		if (idx == secondList || idx == bothLists)
-			mrpt::utils::keep_max(maxID2, itList->second->ID);
+			mrpt::keep_max(maxID2, itList->second->ID);
 	}
 	if (idx == firstList || idx == bothLists) m_leftMaxID = maxID1;
 	if (idx == secondList || idx == bothLists) m_rightMaxID = maxID2;

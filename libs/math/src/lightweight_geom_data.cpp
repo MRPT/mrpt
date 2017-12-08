@@ -900,10 +900,10 @@ void TPolygon2D::getBoundingBox(
 	max_coords.x = max_coords.y = -std::numeric_limits<double>::max();
 	for (size_t i = 0; i < size(); i++)
 	{
-		mrpt::utils::keep_min(min_coords.x, (*this)[i].x);
-		mrpt::utils::keep_min(min_coords.y, (*this)[i].y);
-		mrpt::utils::keep_max(max_coords.x, (*this)[i].x);
-		mrpt::utils::keep_max(max_coords.y, (*this)[i].y);
+		mrpt::keep_min(min_coords.x, (*this)[i].x);
+		mrpt::keep_min(min_coords.y, (*this)[i].y);
+		mrpt::keep_max(max_coords.x, (*this)[i].x);
+		mrpt::keep_max(max_coords.y, (*this)[i].y);
 	}
 }
 

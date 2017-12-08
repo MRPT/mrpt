@@ -1081,7 +1081,7 @@ void CObservation3DRangeScan::convertTo2DScan(
 				if (this_point_tan > tan_min && this_point_tan < tan_max)
 				{
 					any_valid = true;
-					mrpt::utils::keep_min(closest_range, D);
+					mrpt::keep_min(closest_range, D);
 				}
 			}
 

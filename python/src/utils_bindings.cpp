@@ -9,7 +9,7 @@
 #include "bindings.h"
 
 /* MRPT */
-#include <mrpt/utils/TColor.h>
+#include <mrpt/img/TColor.h>
 #include <mrpt/utils/CObject.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/CFileGZInputStream.h>

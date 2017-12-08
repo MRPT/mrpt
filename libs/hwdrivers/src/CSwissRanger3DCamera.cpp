@@ -567,7 +567,7 @@ void CSwissRanger3DCamera::getNextObservation(
 					m_win_range->setPos(5, 5);
 				}
 
-				mrpt::utils::CImage img;
+				mrpt::img::CImage img;
 				// Normalize the image
 				math::CMatrixFloat range2D = _out_obs.rangeImage;
 				range2D *= 1.0 / m_maxRange;

@@ -151,7 +151,7 @@ inline T maximum(const std::vector<T>& v)
 {
 	ASSERT_(!v.empty())
 	T m = v[0];
-	for (size_t i = 0; i < v.size(); i++) mrpt::utils::keep_max(m, v[i]);
+	for (size_t i = 0; i < v.size(); i++) mrpt::keep_max(m, v[i]);
 	return m;
 }
 template <typename T>
@@ -159,7 +159,7 @@ inline T minimum(const std::vector<T>& v)
 {
 	ASSERT_(!v.empty())
 	T m = v[0];
-	for (size_t i = 0; i < v.size(); i++) mrpt::utils::keep_min(m, v[i]);
+	for (size_t i = 0; i < v.size(); i++) mrpt::keep_min(m, v[i]);
 	return m;
 }
 
@@ -248,8 +248,8 @@ inline void minimum_maximum(const std::vector<T>& V, T& curMin, T& curMax)
 	curMin = curMax = V[0];
 	for (size_t i = 1; i < N; i++)
 	{
-		mrpt::utils::keep_min(curMin, V[i]);
-		mrpt::utils::keep_max(curMax, V[i]);
+		mrpt::keep_min(curMin, V[i]);
+		mrpt::keep_max(curMax, V[i]);
 	}
 }
 

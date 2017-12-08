@@ -253,7 +253,7 @@ void COpenGLViewport::render(
 				//  - PTAM, by Klein & Murray
 				//  http://www.robots.ox.ac.uk/~gk/PTAM/
 
-				const mrpt::utils::CImage* img = m_imageview_img.get();
+				const mrpt::img::CImage* img = m_imageview_img.get();
 
 				const int img_w = img->getWidth();
 				const int img_h = img->getHeight();
@@ -894,30 +894,30 @@ void COpenGLViewport::setNormalMode()
 	m_isImageView = false;
 }
 
-void COpenGLViewport::setImageView(const mrpt::utils::CImage& img)
+void COpenGLViewport::setImageView(const mrpt::img::CImage& img)
 {
 	internal_setImageView_fast(img, false);
 }
-void COpenGLViewport::setImageView_fast(mrpt::utils::CImage& img)
+void COpenGLViewport::setImageView_fast(mrpt::img::CImage& img)
 {
 	internal_setImageView_fast(img, true);
 }
 
 void COpenGLViewport::internal_setImageView_fast(
-	const mrpt::utils::CImage& img, bool is_fast)
+	const mrpt::img::CImage& img, bool is_fast)
 {
 	// If this is the first time, we have to create the quad object:
 	if (!m_isImageView || !m_imageview_img)
-		m_imageview_img = mrpt::make_aligned_shared<mrpt::utils::CImage>();
+		m_imageview_img = mrpt::make_aligned_shared<mrpt::img::CImage>();
 	m_isImageView = true;
 
 	// Update texture image:
-	mrpt::utils::CImage* my_img = m_imageview_img.get();
+	mrpt::img::CImage* my_img = m_imageview_img.get();
 
 	if (!is_fast)
 		*my_img = img;
 	else
-		my_img->copyFastFrom(*const_cast<mrpt::utils::CImage*>(&img));
+		my_img->copyFastFrom(*const_cast<mrpt::img::CImage*>(&img));
 }
 
 /** Evaluates the bounding box of this object (including possible children) in

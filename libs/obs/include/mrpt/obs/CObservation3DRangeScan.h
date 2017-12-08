@@ -10,7 +10,7 @@
 #define CObservation3DRangeScan_H
 
 #include <mrpt/utils/CSerializable.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/TRangeImageFilter.h>
@@ -104,10 +104,10 @@ void project3DPointsFromDepthImageInto(
  *    - 2D range image (as a matrix): Each entry in the matrix
  *"rangeImage(ROW,COLUMN)" contains a distance or a depth (in meters), depending
  *on \a range_is_depth.
- *    - 2D intensity (grayscale or RGB) image (as a mrpt::utils::CImage): For
+ *    - 2D intensity (grayscale or RGB) image (as a mrpt::img::CImage): For
  *SwissRanger cameras, a logarithmic A-law compression is used to convert the
  *original 16bit intensity to a more standard 8bit graylevel.
- *    - 2D confidence image (as a mrpt::utils::CImage): For each pixel, a 0x00
+ *    - 2D confidence image (as a mrpt::img::CImage): For each pixel, a 0x00
  *and a 0xFF mean the lowest and highest confidence levels, respectively.
  *    - Semantic labels: Stored as a matrix of bitfields, each bit having a
  *user-defined meaning.
@@ -500,7 +500,7 @@ class CObservation3DRangeScan : public CObservation
 	bool hasIntensityImage;
 	/** If hasIntensityImage=true, a color or gray-level intensity image of the
 	 * same size than "rangeImage" */
-	mrpt::utils::CImage intensityImage;
+	mrpt::img::CImage intensityImage;
 	/** The source of the intensityImage; typically the visible channel \sa
 	 * TIntensityChannelID */
 	TIntensityChannelID intensityImageChannel;
@@ -512,7 +512,7 @@ class CObservation3DRangeScan : public CObservation
 	bool hasConfidenceImage;
 	/** If hasConfidenceImage=true, an image with the "confidence" value [range
 	 * 0-255] as estimated by the capture drivers. */
-	mrpt::utils::CImage confidenceImage;
+	mrpt::img::CImage confidenceImage;
 	/** @} */
 
 	/** \name Pixel-wise classification labels (for semantic labeling, etc.)

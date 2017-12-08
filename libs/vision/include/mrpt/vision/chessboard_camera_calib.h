@@ -10,7 +10,7 @@
 #ifndef mrpt_vision_chessboard_camera_calib_H
 #define mrpt_vision_chessboard_camera_calib_H
 
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/vision/types.h>
@@ -31,12 +31,12 @@ struct TImageCalibData
 {
 	/** This image will be automatically loaded from the file name passed to
 	 * checkerBoardCameraCalibration */
-	mrpt::utils::CImage img_original;
+	mrpt::img::CImage img_original;
 	/** At output, this will contain the detected checkerboard overprinted to
 	 * the image. */
-	mrpt::utils::CImage img_checkboard;
+	mrpt::img::CImage img_checkboard;
 	/** At output, this will be the rectified image */
-	mrpt::utils::CImage img_rectified;
+	mrpt::img::CImage img_rectified;
 	/** At output, the detected corners (x,y) in pixel units. */
 	std::vector<mrpt::utils::TPixelCoordf> detected_corners;
 	/** At output, the reconstructed pose of the camera. */

@@ -1261,7 +1261,7 @@ void CGraphSlamEngine<GRAPH_T>::updateRangeImageViewport()
 		// TODO - make this a static class member - or at least a private member
 		// of the class
 		CMatrixFloat range2D;
-		mrpt::utils::CImage img;
+		mrpt::img::CImage img;
 
 		// load the image if not already loaded..
 		m_last_laser_scan3D->load();
@@ -1308,7 +1308,7 @@ void CGraphSlamEngine<GRAPH_T>::updateIntensityImageViewport()
 
 	if (m_last_laser_scan3D->hasIntensityImage)
 	{
-		mrpt::utils::CImage img;
+		mrpt::img::CImage img;
 
 		// load the image if not already loaded..
 		m_last_laser_scan3D->load();

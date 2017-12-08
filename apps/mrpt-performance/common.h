@@ -10,7 +10,7 @@
 #ifndef MRPTPERFAPP_COMMON_H
 #define MRPTPERFAPP_COMMON_H
 
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/utils/CTicTac.h>
 #include <list>
 #include <functional>
@@ -57,6 +57,6 @@ extern const float SCAN_RANGES_1[361];
 extern const char SCAN_VALID_1[361];
 
 void dummy_do_nothing_with_string(const std::string& s);
-void getTestImage(unsigned int img_index, mrpt::utils::CImage& out_img);
+void getTestImage(unsigned int img_index, mrpt::img::CImage& out_img);
 
 #endif

@@ -6,7 +6,7 @@ define_mrpt_lib(
 	graphs
 	# Dependencies
 	mrpt-opengl
-	mrpt-base
+	mrpt-poses
 	)
 
 

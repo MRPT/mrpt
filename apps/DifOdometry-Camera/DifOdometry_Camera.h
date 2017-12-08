@@ -9,7 +9,7 @@
 
 #include <mrpt/vision/CDifodo.h>
 #include <mrpt/utils/CConfigFileBase.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/round.h>
 #include <mrpt/opengl/COpenGLScene.h>

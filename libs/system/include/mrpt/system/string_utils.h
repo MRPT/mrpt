@@ -19,7 +19,7 @@ namespace system
 {
 /** \addtogroup string_manage String management and utilities (in #include
  * <mrpt/system/string_utils.h>)
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_system_grp
  * @{ */
 
 /** An OS-independent method for tokenizing a string.

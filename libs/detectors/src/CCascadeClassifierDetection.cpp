@@ -93,7 +93,7 @@ void CCascadeClassifierDetection::detectObjects_Impl(
 {
 #if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x200
 	// Obtain image from generic observation
-	const mrpt::utils::CImage* img = nullptr;
+	const mrpt::img::CImage* img = nullptr;
 
 	if (IS_CLASS(obs, CObservationImage))
 	{

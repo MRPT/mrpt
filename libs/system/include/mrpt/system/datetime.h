@@ -20,7 +20,7 @@ namespace system
 {
 /** @defgroup time_date Time and date functions (in #include
  * <mrpt/system/datetime.h>)
-  * \ingroup mrpt_base_grp
+  * \ingroup mrpt_system_grp
   * @{ */
 
 /** A system independent time type, it holds the the number of 100-nanosecond

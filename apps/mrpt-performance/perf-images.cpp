@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/utils/TStereoCamera.h>
 #include <mrpt/utils/CConfigFileMemory.h>
 #include <mrpt/system/filesystem.h>
@@ -23,7 +23,7 @@ using namespace mrpt::random;
 using namespace mrpt::vision;
 using namespace std;
 
-extern void getTestImage(unsigned int img_index, mrpt::utils::CImage& out_img);
+extern void getTestImage(unsigned int img_index, mrpt::img::CImage& out_img);
 
 // ------------------------------------------------------
 //				Benchmark: image loading/saving

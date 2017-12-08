@@ -12,7 +12,7 @@
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileOutputStream.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/obs/CObservation.h>
 #include "CRawlogProcessor.h"

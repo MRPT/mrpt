@@ -21,7 +21,7 @@
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/utils/round.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/filesystem.h>

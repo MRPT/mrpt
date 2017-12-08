@@ -205,8 +205,8 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableDisplayList
 			for (size_t i = 0; i < render_pts.size(); i++)
 				for (int k = 0; k < DIM; k++)
 				{
-					mrpt::utils::keep_min(m_bb_min[k], render_pts[i][k]);
-					mrpt::utils::keep_max(m_bb_max[k], render_pts[i][k]);
+					mrpt::keep_min(m_bb_min[k], render_pts[i][k]);
+					mrpt::keep_max(m_bb_max[k], render_pts[i][k]);
 				}
 			// Convert to coordinates of my parent:
 			m_pose.composePoint(m_bb_min, m_bb_min);

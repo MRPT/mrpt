@@ -1325,7 +1325,7 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 							desired_cmd->getVelCmdElement(i) -
 							m_last_vel_cmd->getVelCmdElement(i)) /
 						0.20);
-				mrpt::utils::keep_min(simil_score, scr);
+				mrpt::keep_min(simil_score, scr);
 			}
 			hysteresis = simil_score;
 		}

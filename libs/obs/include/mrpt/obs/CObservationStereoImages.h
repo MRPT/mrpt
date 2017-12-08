@@ -10,7 +10,7 @@
 #define CObservationStereoImages_H
 
 #include <mrpt/utils/CSerializable.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/utils/TStereoCamera.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/poses/CPose3D.h>
@@ -72,17 +72,17 @@ class CObservationStereoImages : public mrpt::obs::CObservation
 
 	/** Image from the left camera (this image will be ALWAYS present) \sa
 	 * areImagesRectified() */
-	mrpt::utils::CImage imageLeft;
+	mrpt::img::CImage imageLeft;
 
 	/** Image from the right camera, only contains a valid image if
 	 * hasImageRight == true. \sa areImagesRectified() */
-	mrpt::utils::CImage imageRight;
+	mrpt::img::CImage imageRight;
 
 	/** Disparity image, only contains a valid image if hasImageDisparity ==
 	 * true.
 	  *  The relation between the actual disparity and pixels and each value in
 	 * this image is... ???????????  */
-	mrpt::utils::CImage imageDisparity;
+	mrpt::img::CImage imageDisparity;
 
 	/** Whether imageDisparity actually contains data (Default upon
 	 * construction: false) */

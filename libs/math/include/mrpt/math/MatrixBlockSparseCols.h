@@ -175,7 +175,7 @@ struct MatrixBlockSparseCols
 		for (size_t j = 0; j < nCols; j++)
 			for (typename col_t::const_iterator itRow = cols[j].begin();
 				 itRow != cols[j].end(); ++itRow)
-				mrpt::utils::keep_max(nRows, itRow->first);
+				mrpt::keep_max(nRows, itRow->first);
 		return nRows +
 			   1;  // nRows was the max. row index, now it's the row count.
 	}

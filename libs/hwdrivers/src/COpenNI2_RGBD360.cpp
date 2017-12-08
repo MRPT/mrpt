@@ -221,7 +221,7 @@ void COpenNI2_RGBD360::getNextObservation(
 					}
 
 					// Normalize the image
-					mrpt::utils::CImage img;
+					mrpt::img::CImage img;
 					img.setFromMatrix(out_obs.rangeImages[sensor_id]);
 					CMatrixFloat r = out_obs.rangeImages[sensor_id] *
 									 float(1.0 / this->m_maxRange);

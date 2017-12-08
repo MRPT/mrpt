@@ -113,7 +113,7 @@ class COpenNI2Generic::CDevice
 	bool synchMirrorMode();
 	bool startStreams();
 
-	inline void resize(mrpt::utils::CImage& rgb, int w, int h)
+	inline void resize(mrpt::img::CImage& rgb, int w, int h)
 	{
 		rgb.resize(w, h, CH_RGB, true);
 	}
@@ -128,7 +128,7 @@ class COpenNI2Generic::CDevice
 	}
 
 	inline void setPixel(
-		const openni::RGB888Pixel& src, mrpt::utils::CImage& rgb, int x, int y)
+		const openni::RGB888Pixel& src, mrpt::img::CImage& rgb, int x, int y)
 	{
 		rgb.setPixel(x, y, (src.r << 16) + (src.g << 8) + src.b);
 	}
@@ -203,7 +203,7 @@ class COpenNI2Generic::CDevice
 	bool open(int w, int h, int fps);
 
 	bool getNextFrameRGB(
-		mrpt::utils::CImage& img, uint64_t& timestamp, bool& there_is_obs,
+		mrpt::img::CImage& img, uint64_t& timestamp, bool& there_is_obs,
 		bool& hardware_error);
 	bool getNextFrameD(
 		mrpt::math::CMatrix& img, uint64_t& timestamp, bool& there_is_obs,

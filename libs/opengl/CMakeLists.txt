@@ -50,7 +50,10 @@ define_mrpt_lib(
 	# Lib name
 	opengl
 	# Dependencies:
-	mrpt-base
+	mrpt-core
+	mrpt-poses
+	mrpt-serialization
+	mrpt-img
 	)
 
 IF(BUILD_mrpt-opengl)

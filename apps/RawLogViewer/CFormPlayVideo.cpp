@@ -652,7 +652,7 @@ void CFormPlayVideo::OnbtnCloseClick(wxCommandEvent& event)
 	Close();
 }
 
-void CFormPlayVideo::drawHorzRules(mrpt::utils::CImage& img)
+void CFormPlayVideo::drawHorzRules(mrpt::img::CImage& img)
 {
 	if (!cbDrawStereoRules->IsChecked()) return;
 

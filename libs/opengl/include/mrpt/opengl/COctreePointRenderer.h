@@ -174,12 +174,12 @@ class COctreePointRenderer
 		/** update bounding box with a new point: */
 		inline void update_bb(const mrpt::math::TPoint3Df& p)
 		{
-			mrpt::utils::keep_min(bb_min.x, p.x);
-			mrpt::utils::keep_min(bb_min.y, p.y);
-			mrpt::utils::keep_min(bb_min.z, p.z);
-			mrpt::utils::keep_max(bb_max.x, p.x);
-			mrpt::utils::keep_max(bb_max.y, p.y);
-			mrpt::utils::keep_max(bb_max.z, p.z);
+			mrpt::keep_min(bb_min.x, p.x);
+			mrpt::keep_min(bb_min.y, p.y);
+			mrpt::keep_min(bb_min.z, p.z);
+			mrpt::keep_max(bb_max.x, p.x);
+			mrpt::keep_max(bb_max.y, p.y);
+			mrpt::keep_max(bb_max.z, p.z);
 		}
 
 		inline float getCornerX(int i) const
@@ -321,10 +321,10 @@ class COctreePointRenderer
 			// Keep the on-screen bounding box of this node:
 			for (int i = 0; i < 8; i++)
 			{
-				mrpt::utils::keep_min(px_min.x, cr_px[i].x);
-				mrpt::utils::keep_min(px_min.y, cr_px[i].y);
-				mrpt::utils::keep_max(px_max.x, cr_px[i].x);
-				mrpt::utils::keep_max(px_max.y, cr_px[i].y);
+				mrpt::keep_min(px_min.x, cr_px[i].x);
+				mrpt::keep_min(px_min.y, cr_px[i].y);
+				mrpt::keep_max(px_max.x, cr_px[i].x);
+				mrpt::keep_max(px_max.y, cr_px[i].y);
 			}
 
 			const bool any_cr_zs_neg =

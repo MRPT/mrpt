@@ -33,7 +33,7 @@ using namespace std;
   * \return true on success
   */
 bool mrpt::vision::findChessboardCorners(
-	const mrpt::utils::CImage& in_img, std::vector<TPixelCoordf>& cornerCoords,
+	const mrpt::img::CImage& in_img, std::vector<TPixelCoordf>& cornerCoords,
 	unsigned int check_size_x, unsigned int check_size_y, bool normalize_image,
 	bool useScaramuzzaMethod)
 {
@@ -133,7 +133,7 @@ bool mrpt::vision::findChessboardCorners(
   * \sa mrpt::vision::checkerBoardCameraCalibration, drawChessboardCorners
   */
 void mrpt::vision::findMultipleChessboardsCorners(
-	const mrpt::utils::CImage& in_img,
+	const mrpt::img::CImage& in_img,
 	std::vector<std::vector<TPixelCoordf>>& cornerCoords,
 	unsigned int check_size_x, unsigned int check_size_y)
 {

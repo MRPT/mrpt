@@ -338,7 +338,7 @@ void CFFMPEG_InputStream::close()
 /* --------------------------------------------------------
 					retrieveFrame
    -------------------------------------------------------- */
-bool CFFMPEG_InputStream::retrieveFrame(mrpt::utils::CImage& out_img)
+bool CFFMPEG_InputStream::retrieveFrame(mrpt::img::CImage& out_img)
 {
 #if MRPT_HAS_FFMPEG
 	if (!this->isOpen()) return false;

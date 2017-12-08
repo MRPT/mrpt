@@ -273,7 +273,7 @@ inline void trackFeatures_addNewFeats_simple_list(
 					{
 						const TSimpleFeature &existing = featureList[j];
 						const int d = std::abs(existing.pt.x-feat.pt.x)+std::abs(existing.pt.y-feat.pt.y);
-						mrpt::utils::keep_min(manh_dist, d);
+						mrpt::keep_min(manh_dist, d);
 					}
 
 					if (manh_dist<max_manhatan_dist)

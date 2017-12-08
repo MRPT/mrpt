@@ -12,7 +12,7 @@
 
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/containers/CDynamicGrid.h>
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/utils/TMatchingPair.h>
@@ -1083,7 +1083,7 @@ class COccupancyGridMap2D : public CMetricMap,
 	 * by CImage::loadFromFile).
 	 *  See loadFromBitmapFile() for the meaning of parameters */
 	bool loadFromBitmap(
-		const mrpt::utils::CImage& img, float resolution,
+		const mrpt::img::CImage& img, float resolution,
 		float xCentralPixel = -1, float yCentralPixel = -1);
 
 	/** See the base class for more details: In this class it is implemented as

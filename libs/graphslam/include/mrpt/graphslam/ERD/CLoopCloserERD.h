@@ -19,7 +19,7 @@
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/types_simple.h>
-#include <mrpt/utils/TColor.h>
+#include <mrpt/img/TColor.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CSensoryFrame.h>

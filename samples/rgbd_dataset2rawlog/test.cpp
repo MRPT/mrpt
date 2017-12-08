@@ -202,7 +202,7 @@ void rgbd2rawlog(const string& src_path, const string& out_name)
 				// Depth:
 				obs.hasRangeImage = true;
 				obs.rangeImage_forceResetExternalStorage();
-				mrpt::utils::CImage depth_img;
+				mrpt::img::CImage depth_img;
 				if (!depth_img.loadFromFile(
 						src_path + string("/") + it_list_depth->second))
 					throw std::runtime_error(
@@ -265,7 +265,7 @@ void rgbd2rawlog(const string& src_path, const string& out_name)
 			// Depth:
 			obs.hasRangeImage = true;
 			obs.rangeImage_forceResetExternalStorage();
-			mrpt::utils::CImage depth_img;
+			mrpt::img::CImage depth_img;
 			if (!depth_img.loadFromFile(
 					src_path + string("/") + it_list_depth->second))
 				throw std::runtime_error(

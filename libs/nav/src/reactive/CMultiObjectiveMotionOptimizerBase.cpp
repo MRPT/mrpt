@@ -144,7 +144,7 @@ int CMultiObjectiveMotionOptimizerBase::decide(
 		for (const auto& s : score_values)
 		{
 			const auto it = s.find(sScoreName);
-			if (it != s.cend()) mrpt::utils::keep_max(maxScore, it->second);
+			if (it != s.cend()) mrpt::keep_max(maxScore, it->second);
 		}
 
 		// Normalize:

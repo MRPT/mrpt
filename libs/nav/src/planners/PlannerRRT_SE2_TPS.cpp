@@ -54,7 +54,7 @@ void PlannerRRT_SE2_TPS::solve(
 	// Calc maximum vehicle shape radius:
 	double max_veh_radius = 0.;
 	for (const auto& ptg : m_PTGs)
-		mrpt::utils::keep_max(max_veh_radius, ptg->getMaxRobotRadius());
+		mrpt::keep_max(max_veh_radius, ptg->getMaxRobotRadius());
 
 	// [Algo `tp_space_rrt`: Line 1]: Init tree adding the initial pose
 	if (result.move_tree.getAllNodes().empty())

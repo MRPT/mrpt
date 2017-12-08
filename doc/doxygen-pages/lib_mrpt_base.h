@@ -44,7 +44,7 @@ mrpt::utils::CObject.</li>
 pointers types CFoo::Ptr and CFoo::ConstPtr. MRPT implements advanced smart pointers capable of multi-thread safe usage and smart pointer typecasting with
 runtime check for correct castings ([tutorial](http://www.mrpt.org/Smart_pointers)]).</li>
 
-<li><b>Image handling:</b> The class mrpt::utils::CImage represents a wrapper around OpenCV IplImage's, plus extra functionality
+<li><b>Image handling:</b> The class mrpt::img::CImage represents a wrapper around OpenCV IplImage's, plus extra functionality
 such as on-the-fly loading of images stored in disk upon first usage. The internal IplImage is always available so OpenCV's functions can
 be still used to operate on MRPT images. </li>
 

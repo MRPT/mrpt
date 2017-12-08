@@ -7,6 +7,8 @@ define_mrpt_lib(
 	system 		# Lib name
 	# Dependencies:
 	mrpt-core
+	mrpt-typemeta
+	mrpt-containers
 	)
 
 # extra dependencies required by unit tests in this module:

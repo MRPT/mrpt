@@ -12,7 +12,7 @@
 #include <mrpt/gui/CBaseGUIWindow.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/gui/gui_frwds.h>
 
 namespace mrpt

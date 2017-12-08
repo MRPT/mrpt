@@ -132,7 +132,7 @@ int main(int argc, char **argv)
 			    win.setImageView( o->imageLeft ); // Use a 3D window to display a 2D image (exploits OpenGL acceleration)
 			    win.repaint();
 
-			    // Internally, mrpt::utils::CImage are stored in OpenCV's IPL format, so you can efficiently get
+			    // Internally, mrpt::img::CImage are stored in OpenCV's IPL format, so you can efficiently get
 			    // them as "IplImage*" and call OpenCV APIs:
 			    //
 			    // const IplImage * img_left  = o->imageLeft.getAs<IplImage>();

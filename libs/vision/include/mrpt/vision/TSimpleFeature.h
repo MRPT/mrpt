@@ -128,7 +128,7 @@ struct TSimpleFeatureList_templ
 		if (this->empty()) return 0;
 		TFeatureID maxID = m_feats[0].ID;
 		size_t N = m_feats.size() - 1;
-		for (; N; --N) mrpt::utils::keep_max(maxID, m_feats[N].ID);
+		for (; N; --N) mrpt::keep_max(maxID, m_feats[N].ID);
 		return maxID;
 	}
 

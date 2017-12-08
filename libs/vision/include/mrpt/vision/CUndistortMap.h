@@ -10,7 +10,7 @@
 #define mrpt_CUndistortMap_H
 
 #include <mrpt/utils/TCamera.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 
 namespace mrpt
 {
@@ -19,7 +19,7 @@ namespace vision
 /** Use this class to undistort monocular images if the same distortion map is
  * used over and over again.
   *  Using this class is much more efficient that calling
- * mrpt::utils::CImage::rectifyImage or OpenCV's cvUndistort2(), since
+ * mrpt::img::CImage::rectifyImage or OpenCV's cvUndistort2(), since
   *  the remapping data is computed only once for the camera parameters (typical
  * times: 640x480 image -> 70% build map / 30% actual undistort).
   *
@@ -32,7 +32,7 @@ namespace vision
   *
   *   unmap.setFromCamParams( cam_params );
   *
-  *   mrpt::utils::CImage  img, img_out;
+  *   mrpt::img::CImage  img, img_out;
   *
   *   while (true) {
   *     unmap.undistort(img, img_out);  // or:
@@ -61,12 +61,12 @@ class CUndistortMap
 	 * setFromCamParams() must have been set prior to calling this.
 	  */
 	void undistort(
-		const mrpt::utils::CImage& in_img, mrpt::utils::CImage& out_img) const;
+		const mrpt::img::CImage& in_img, mrpt::img::CImage& out_img) const;
 
 	/** Undistort the input image and saves the result in-place- \a
 	 * setFromCamParams() must have been set prior to calling this.
 	  */
-	void undistort(mrpt::utils::CImage& in_out_img) const;
+	void undistort(mrpt::img::CImage& in_out_img) const;
 
 	/** Returns the camera parameters which were used to generate the distortion
 	 * map, as passed by the user to \a setFromCamParams */

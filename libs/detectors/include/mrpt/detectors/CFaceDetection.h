@@ -197,7 +197,7 @@ class CFaceDetection : public CObjectDetection
 
 	// Histogram methods
 	void experimental_calcHist(
-		const mrpt::utils::CImage& face, const size_t& c1, const size_t& r1,
+		const mrpt::img::CImage& face, const size_t& c1, const size_t& r1,
 		const size_t& c2, const size_t& r2,
 		mrpt::math::CMatrixTemplate<unsigned int>& hist);
 

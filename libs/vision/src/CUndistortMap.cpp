@@ -58,7 +58,7 @@ void CUndistortMap::setFromCamParams(const mrpt::utils::TCamera& campar)
  * setFromCamParams() must have been set prior to calling this.
   */
 void CUndistortMap::undistort(
-	const mrpt::utils::CImage& in_img, mrpt::utils::CImage& out_img) const
+	const mrpt::img::CImage& in_img, mrpt::img::CImage& out_img) const
 {
 	MRPT_START
 	if (m_dat_mapx.empty())
@@ -88,7 +88,7 @@ void CUndistortMap::undistort(
 /** Undistort the input image and saves the result in-place- \a
  * setFromCamParams() must have been set prior to calling this.
   */
-void CUndistortMap::undistort(mrpt::utils::CImage& in_out_img) const
+void CUndistortMap::undistort(mrpt::img::CImage& in_out_img) const
 {
 	MRPT_START
 	if (m_dat_mapx.empty())

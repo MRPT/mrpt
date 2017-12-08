@@ -1527,7 +1527,7 @@ double CPointsMap::internal_computeObservationLikelihood(
 					);
 
 				// Put a limit:
-				mrpt::utils::keep_min(closest_err, max_sqr_err);
+				mrpt::keep_min(closest_err, max_sqr_err);
 
 				sumSqrDist += closest_err;
 			}
@@ -1552,7 +1552,7 @@ double CPointsMap::internal_computeObservationLikelihood(
 					);
 
 				// Put a limit:
-				mrpt::utils::keep_min(closest_err, max_sqr_err);
+				mrpt::keep_min(closest_err, max_sqr_err);
 
 				sumSqrDist += closest_err;
 			}

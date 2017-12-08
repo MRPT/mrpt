@@ -10,7 +10,7 @@
 #ifndef CReflectivityGridMap2D_H
 #define CReflectivityGridMap2D_H
 
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/containers/CDynamicGrid.h>
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CLoadableOptions.h>

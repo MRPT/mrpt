@@ -20,20 +20,20 @@ namespace mrpt
 /** This namespace provides a OS-independent interface to many useful functions:
  * filenames manipulation, time and date, string parsing, file I/O, threading,
  * memory allocation, etc.
- *  \sa mrpt::system::os \ingroup mrpt_base_grp
+ *  \sa mrpt::system::os \ingroup mrpt_system_grp
  */
 namespace system
 {
 /** \defgroup mrpt_system_os OS and compiler abstraction (in #include
  * <mrpt/system/os.h>)
-  * \ingroup mrpt_base_grp */
+  * \ingroup mrpt_system_grp */
 
 /** This namespace provides a OS-independent interface to low-level functions.
  *   Most of these functions are converted into calls to standard functions,
  * unless we are into Visual Studio 2005 (or newer). In that case the secure
  * version
  *     of the standard library functions (prefix "_s") are used instead.
- * \ingroup mrpt_base_grp mrpt_system_os
+ * \ingroup mrpt_system_grp mrpt_system_os
  */
 namespace os
 {

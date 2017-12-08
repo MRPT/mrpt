@@ -11,7 +11,7 @@
 #define mrpt_vision_utils_H
 
 #include <mrpt/vision/CFeature.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/utils/TStereoCamera.h>
 #include <mrpt/math/CMatrixTemplate.h>
 #include <mrpt/utils/CLoadableOptions.h>
@@ -62,14 +62,14 @@ namespace vision
 * \sa cross_correlation
 */
 void openCV_cross_correlation(
-	const mrpt::utils::CImage& img, const mrpt::utils::CImage& patch_img,
+	const mrpt::img::CImage& img, const mrpt::img::CImage& patch_img,
 	size_t& x_max, size_t& y_max, double& max_val, int x_search_ini = -1,
 	int y_search_ini = -1, int x_search_size = -1, int y_search_size = -1);
 
 /**	Invert an image using OpenCV function
 *
 */
-void flip(mrpt::utils::CImage& img);
+void flip(mrpt::img::CImage& img);
 
 /** Extract a UNITARY 3D vector in the direction of a 3D point, given from its
  * (x,y) pixels coordinates, and the camera intrinsic coordinates.
@@ -201,7 +201,7 @@ void cloudsToMatchedList(
   * \return The main orientation of the image point.
   */
 float computeMainOrientation(
-	const mrpt::utils::CImage& image, unsigned int x, unsigned int y);
+	const mrpt::img::CImage& image, unsigned int x, unsigned int y);
 
 /** Normalizes the brigthness and contrast of an image by setting its mean value
  * to zero and its standard deviation to unit.
@@ -209,7 +209,7 @@ float computeMainOrientation(
   * \param nimage       [OUTPUT]    The new normalized image.
   */
 void normalizeImage(
-	const mrpt::utils::CImage& image, mrpt::utils::CImage& nimage);
+	const mrpt::img::CImage& image, mrpt::img::CImage& nimage);
 
 /** Find the matches between two lists of features which must be of the same
  * type.
@@ -244,7 +244,7 @@ void generateMask(
   * \return The value of computed SAD normalized to [0,1]
   */
 double computeSAD(
-	const mrpt::utils::CImage& patch1, const mrpt::utils::CImage& patch2);
+	const mrpt::img::CImage& patch1, const mrpt::img::CImage& patch2);
 
 /** Draw rectangles around each of the features on a copy of the input image.
   * \param inImg    [IN]    The input image where to draw the features.
@@ -253,8 +253,8 @@ double computeSAD(
  * features.
   */
 void addFeaturesToImage(
-	const mrpt::utils::CImage& inImg, const CFeatureList& theList,
-	mrpt::utils::CImage& outImg);
+	const mrpt::img::CImage& inImg, const CFeatureList& theList,
+	mrpt::img::CImage& outImg);
 
 void projectMatchedFeatures(
 	const CMatchedFeatureList& matches,

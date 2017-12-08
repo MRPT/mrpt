@@ -19,7 +19,7 @@ namespace system
 {
 /** @defgroup filesystem Directories, files, and file names (in #include
  * <mrpt/system/filesystem.h>)
-  * \ingroup mrpt_base_grp
+  * \ingroup mrpt_system_grp
   * @{ */
 
 #define ASSERT_FILE_EXISTS_(FIL)       \

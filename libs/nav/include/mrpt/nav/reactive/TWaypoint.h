@@ -11,7 +11,7 @@
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/opengl/opengl_frwds.h>
-#include <mrpt/utils/TColor.h>
+#include <mrpt/img/TColor.h>
 #include <vector>
 #include <string>
 

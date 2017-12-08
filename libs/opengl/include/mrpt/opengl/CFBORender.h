@@ -10,7 +10,7 @@
 #ifndef opengl_CFBORender_H
 #define opengl_CFBORender_H
 
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CTextMessageCapable.h>
 
@@ -54,13 +54,13 @@ class CFBORender : public mrpt::opengl::CTextMessageCapable
 	   buffer if it
 		is necessary.
 	  */
-	void getFrame(const COpenGLScene& scene, mrpt::utils::CImage& image);
+	void getFrame(const COpenGLScene& scene, mrpt::img::CImage& image);
 
 	/** Render the scene and get the rendered rgb image. Does not resize the
 	   image buffer.
 		MANDATORY: The image origin must be bottom left.
 	  */
-	void getFrame2(const COpenGLScene& scene, mrpt::utils::CImage& image);
+	void getFrame2(const COpenGLScene& scene, mrpt::img::CImage& image);
 
 	/** Resize the rendering canvas size. */
 	void resize(unsigned int width, unsigned int height);

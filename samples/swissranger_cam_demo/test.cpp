@@ -167,7 +167,7 @@ void Test_SwissRanger()
 		// Show ranges as 2D:
 		if (there_is_obs && obs.hasRangeImage)
 		{
-			mrpt::utils::CImage img;
+			mrpt::img::CImage img;
 			// Normalize the image
 			CMatrixFloat range2D = obs.rangeImage;
 			range2D *= 1.0 / cam.getMaxRange();

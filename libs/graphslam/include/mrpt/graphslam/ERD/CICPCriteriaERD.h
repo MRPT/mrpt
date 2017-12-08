@@ -12,14 +12,14 @@
 
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/utils.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/types_simple.h>
-#include <mrpt/utils/TColor.h>
+#include <mrpt/img/TColor.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CActionCollection.h>

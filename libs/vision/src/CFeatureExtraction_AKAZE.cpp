@@ -28,7 +28,7 @@ using namespace mrpt;
 using namespace std;
 
 void CFeatureExtraction::extractFeaturesAKAZE(
-	const mrpt::utils::CImage& inImg, CFeatureList& feats, unsigned int init_ID,
+	const mrpt::img::CImage& inImg, CFeatureList& feats, unsigned int init_ID,
 	unsigned int nDesiredFeatures, const TImageROI& ROI) const
 {
 	MRPT_UNUSED_PARAM(ROI);

@@ -112,7 +112,7 @@ bool CVideoFileWriter::isOpen() const
 						operator <<
    ---------------------------------------------------------- */
 const CVideoFileWriter& CVideoFileWriter::operator<<(
-	const mrpt::utils::CImage& img) const
+	const mrpt::img::CImage& img) const
 {
 	if (!m_video.get()) THROW_EXCEPTION("Call open first");
 
@@ -134,7 +134,7 @@ const CVideoFileWriter& CVideoFileWriter::operator<<(
 /* ----------------------------------------------------------
 						writeImage
    ---------------------------------------------------------- */
-bool CVideoFileWriter::writeImage(const mrpt::utils::CImage& img) const
+bool CVideoFileWriter::writeImage(const mrpt::img::CImage& img) const
 {
 	if (!m_video.get()) return false;
 

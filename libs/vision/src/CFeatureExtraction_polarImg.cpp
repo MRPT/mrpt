@@ -127,7 +127,7 @@ void my_cvLinearPolar(
 								computePolarImageDescriptors
 ************************************************************************************************/
 void CFeatureExtraction::internal_computePolarImageDescriptors(
-	const mrpt::utils::CImage& in_img, CFeatureList& in_features) const
+	const mrpt::img::CImage& in_img, CFeatureList& in_features) const
 {
 	MRPT_START
 #if MRPT_HAS_OPENCV

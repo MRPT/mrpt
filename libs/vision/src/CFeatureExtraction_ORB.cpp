@@ -25,7 +25,7 @@ using namespace std;
 **
 ************************************************************************************************/
 void CFeatureExtraction::extractFeaturesORB(
-	const mrpt::utils::CImage& inImg, CFeatureList& feats,
+	const mrpt::img::CImage& inImg, CFeatureList& feats,
 	const unsigned int init_ID, const unsigned int nDesiredFeatures,
 	const TImageROI& ROI) const
 {

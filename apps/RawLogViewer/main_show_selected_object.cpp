@@ -487,7 +487,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 							mrpt::gui::MRPTImage2wxImage(obs->confidenceImage);
 					else
 					{
-						mrpt::utils::CImage dumm(10, 10);
+						mrpt::img::CImage dumm(10, 10);
 						img = mrpt::gui::MRPTImage2wxImage(dumm);
 					}
 					if (img->IsOk()) bmp3Dobs_conf->SetBitmap(wxBitmap(*img));
