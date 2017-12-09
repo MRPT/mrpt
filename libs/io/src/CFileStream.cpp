@@ -17,6 +17,11 @@
 using namespace mrpt::io;
 using namespace std;
 
+static_assert(
+	!std::is_copy_constructible<CFileStream>::value &&
+		!std::is_copy_assignable<CFileStream>::value,
+	"Copy Check");
+
 /*---------------------------------------------------------------
 							Constructor
  ---------------------------------------------------------------*/

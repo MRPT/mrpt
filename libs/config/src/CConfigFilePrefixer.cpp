@@ -7,12 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "base-precomp.h"  // Precompiled headers
+#include "config-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/CConfigFilePrefixer.h>
+#include <mrpt/config/CConfigFilePrefixer.h>
 
-using namespace mrpt;
-using namespace mrpt::utils;
+using namespace mrpt::config;
 using namespace std;
 
 CConfigFilePrefixer::CConfigFilePrefixer() : m_bound_object(nullptr) {}
@@ -51,22 +50,23 @@ CConfigFileBase* CConfigFilePrefixer::getBoundConfigFileBase() const
 	return m_bound_object;
 }
 
-void CConfigFilePrefixer::getAllSections(vector_string& sections) const
+void CConfigFilePrefixer::getAllSections(
+	std::vector<std::string>& sections) const
 {
 	ASSERTMSG_(
 		m_bound_object,
-		"You must first bind CConfigFilePrefixer to an existing object!")
+		"You must first bind CConfigFilePrefixer to an existing object!");
 	m_bound_object->getAllSections(sections);
 	for (size_t i = 0; i < sections.size(); i++)
 		sections[i] = m_prefix_sections + sections[i];
 }
 
 void CConfigFilePrefixer::getAllKeys(
-	const std::string& section, vector_string& keys) const
+	const std::string& section, std::vector<std::string>& keys) const
 {
 	ASSERTMSG_(
 		m_bound_object,
-		"You must first bind CConfigFilePrefixer to an existing object!")
+		"You must first bind CConfigFilePrefixer to an existing object!");
 	m_bound_object->getAllKeys(section, keys);
 	for (size_t i = 0; i < keys.size(); i++) keys[i] = m_prefix_keys + keys[i];
 }
@@ -76,7 +76,7 @@ void CConfigFilePrefixer::writeString(
 {
 	ASSERTMSG_(
 		m_bound_object,
-		"You must first bind CConfigFilePrefixer to an existing object!")
+		"You must first bind CConfigFilePrefixer to an existing object!");
 	m_bound_object->writeString(
 		m_prefix_sections + section, m_prefix_keys + name, str);
 }
@@ -87,7 +87,7 @@ std::string CConfigFilePrefixer::readString(
 {
 	ASSERTMSG_(
 		m_bound_object,
-		"You must first bind CConfigFilePrefixer to an existing object!")
+		"You must first bind CConfigFilePrefixer to an existing object!");
 	return m_bound_object->readString(
 		m_prefix_sections + section, m_prefix_keys + name, defaultStr,
 		failIfNotFound);

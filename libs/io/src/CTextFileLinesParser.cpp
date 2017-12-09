@@ -9,202 +9,83 @@
 
 #include "io-precomp.h"  // Precompiled headers
 
-#include <mrpt/io/CFileStream.h>
-#include <iostream>
-#include <iomanip>
-#include <string>  // std::getline()
+#include <mrpt/io/CTextFileLinesParser.h>
+#include <mrpt/system/string_utils.h>
+#include <mrpt/core/exceptions.h>
+#include <sstream>
 
 using namespace mrpt::io;
 using namespace std;
 
-/*---------------------------------------------------------------
-							Constructor
- ---------------------------------------------------------------*/
-CFileStream::CFileStream() : m_f() {}
-/*---------------------------------------------------------------
-							Constructor
- ---------------------------------------------------------------*/
-CFileStream::CFileStream(const string& fileName, TFileOpenModes mode_) : m_f()
+CTextFileLinesParser::CTextFileLinesParser(const std::string& fil)
 {
-	std::ios_base::openmode mode = std::ios_base::in;
-	if (mode_ == fomRead)
-		mode = std::ios_base::in;
-	else if (mode_ == fomWrite)
-		mode = std::ios_base::out | std::ios_base::trunc;
-	else if (mode_ == fomAppend)
-		mode = std::ios_base::app | std::ios_base::out;
-	else if (mode_ == (fomRead | fomWrite))
-		mode = std::ios_base::in | std::ios_base::out | std::ios_base::trunc;
-	else if (mode_ == (fomAppend | fomWrite))
-		mode = std::ios_base::in | std::ios_base::out | std::ios_base::app;
-
-	// Try to open the file:
-	m_f.open(fileName.c_str(), mode);
-	if (!m_f.is_open())
-		throw std::runtime_error(
-			std::string("CFileStream: Error creating/opening: ") + fileName);
+	open(fil);
 }
 
-/*---------------------------------------------------------------
-							open
- ---------------------------------------------------------------*/
-bool CFileStream::open(const std::string& fileName, TFileOpenModes mode_)
+void CTextFileLinesParser::open(const std::string& fil)
 {
-	std::ios_base::openmode mode = std::ios_base::in;
-	if (mode_ == fomRead)
-		mode = std::ios_base::in;
-	else if (mode_ == fomWrite)
-		mode = std::ios_base::out | std::ios_base::trunc;
-	else if (mode_ == fomAppend)
-		mode = std::ios_base::app | std::ios_base::out;
-	else if (mode_ == (fomRead | fomWrite))
-		mode = std::ios_base::in | std::ios_base::out | std::ios_base::trunc;
-	else if (mode_ == (fomAppend | fomWrite))
-		mode = std::ios_base::in | std::ios_base::out | std::ios_base::app;
-
-	if (m_f.is_open()) m_f.close();
-
-	m_f.open(fileName.c_str(), ios_base::binary | mode);
-	return m_f.is_open();
+	m_curLineNum = 0;
+	m_fileName = fil;
+	m_in.close();
+	m_in.clear();
+	m_in.open(fil.c_str());
+	if (!m_in.is_open())
+		THROW_EXCEPTION_FMT("Error opening file '%s' for reading", fil.c_str());
 }
 
-/*---------------------------------------------------------------
-							close
- ---------------------------------------------------------------*/
-void CFileStream::close() { m_f.close(); }
-/*---------------------------------------------------------------
-							Destructor
- ---------------------------------------------------------------*/
-CFileStream::~CFileStream() { m_f.close(); }
-/*---------------------------------------------------------------
-							Read
-			Reads bytes from the stream into Buffer
- ---------------------------------------------------------------*/
-size_t CFileStream::Read(void* Buffer, size_t Count)
+void CTextFileLinesParser::close() { m_in.close(); }
+void CTextFileLinesParser::rewind()
 {
-	if (!m_f.is_open()) return 0;
-	m_f.read(static_cast<char*>(Buffer), Count);
-	return m_f.fail() ? 0 : Count;
+	m_curLineNum = 0;
+	m_in.clear();
+	m_in.seekg(0);
 }
 
-/*---------------------------------------------------------------
-							Write
-			Writes a block of bytes to the stream.
- ---------------------------------------------------------------*/
-size_t CFileStream::Write(const void* Buffer, size_t Count)
+bool CTextFileLinesParser::getNextLine(std::string& out_str)
 {
-	if (!m_f.is_open()) return 0;
-
-	m_f.write(static_cast<const char*>(Buffer), Count);
-	return m_f.fail() ? 0 : Count;
-}
-
-/*---------------------------------------------------------------
-							Seek
-	Method for moving to a specified position in the streamed resource.
-	 See documentation of CStream::Seek
- ---------------------------------------------------------------*/
-uint64_t CFileStream::Seek(int64_t Offset, CStream::TSeekOrigin Origin)
-{
-	if (!m_f.is_open()) return 0;
-
-	fstream::off_type offset = Offset;
-	fstream::seekdir way;
-
-	switch (Origin)
+	std::istringstream buf;
+	if (getNextLine(buf))
 	{
-		case sFromBeginning:
-			way = ios_base::beg;
-			break;
-		case sFromCurrent:
-			way = ios_base::cur;
-			break;
-		case sFromEnd:
-			way = ios_base::end;
-			break;
-		default:
-			throw std::runtime_error(
-				"[CFileStream::Seek] Invalid value for 'Origin'");
+		out_str = buf.str();
+		return true;
 	}
 
-	m_f.seekp(offset, way);
-	m_f.seekg(offset, way);
-
-	return getPosition();
+	out_str.clear();
+	return false;
 }
 
-/*---------------------------------------------------------------
-						getTotalBytesCount
- ---------------------------------------------------------------*/
-uint64_t CFileStream::getTotalBytesCount()
+bool CTextFileLinesParser::getNextLine(std::istringstream& buf)
 {
-	if (!fileOpenCorrectly()) return 0;
-
-	uint64_t previousPos = getPosition();
-	uint64_t fileSize = Seek(0, sFromEnd);
-	Seek(previousPos);
-	return fileSize;
+	while (!m_in.fail())
+	{
+		std::string lin;
+		std::getline(m_in, lin);
+		m_curLineNum++;
+		lin = mrpt::system::trim(lin);
+		if (lin.empty()) continue;  // Ignore empty lines.
+		// Ignore comments lines, starting with "#" or "//".
+		if ((m_filter_SH_comments && mrpt::system::strStarts(lin, "#")) ||
+			(m_filter_C_comments && mrpt::system::strStarts(lin, "//")) ||
+			(m_filter_MATLAB_comments && mrpt::system::strStarts(lin, "%")))
+			continue;
+		// Parse the line as a string stream:
+		buf.str(lin);
+		buf.clear();
+		return true;
+	};
+	return false;
 }
 
-/*---------------------------------------------------------------
-						getPosition
- ---------------------------------------------------------------*/
-uint64_t CFileStream::getPosition()
+size_t CTextFileLinesParser::getCurrentLineNumber() const
 {
-	if (m_f.is_open())
-		return m_f.tellg();
-	else
-		return 0;
+	return m_curLineNum;
 }
 
-/*---------------------------------------------------------------
-						getPositionI
- ---------------------------------------------------------------*/
-uint64_t CFileStream::getPositionI()
+void CTextFileLinesParser::enableCommentFilters(
+	bool filter_MATLAB_comments, bool filter_C_comments,
+	bool filter_SH_comments)
 {
-	if (m_f.is_open())
-		return m_f.tellg();
-	else
-		return 0;
-}
-
-/*---------------------------------------------------------------
-						getPositionO
- ---------------------------------------------------------------*/
-uint64_t CFileStream::getPositionO()
-{
-	if (m_f.is_open())
-		return m_f.tellp();
-	else
-		return 0;
-}
-
-/*---------------------------------------------------------------
-						fileOpenCorrectly
- ---------------------------------------------------------------*/
-bool CFileStream::fileOpenCorrectly() { return m_f.is_open(); }
-/*---------------------------------------------------------------
-						readLine
- ---------------------------------------------------------------*/
-bool CFileStream::readLine(string& str)
-{
-	str = string();  // clear() is not defined in VC6
-	if (!m_f.is_open()) return false;
-
-	std::getline(m_f, str);
-	return !m_f.fail() && !m_f.eof();
-}
-
-/*---------------------------------------------------------------
-						checkEOF
- ---------------------------------------------------------------*/
-bool CFileStream::checkEOF()
-{
-	if (!m_f.is_open()) return true;
-	return m_f.eof();
-}
-
-void CFileStream::clearError()
-{
-	if (m_f.is_open()) m_f.clear();
+	m_filter_MATLAB_comments = filter_MATLAB_comments;
+	m_filter_C_comments = filter_C_comments;
+	m_filter_SH_comments = filter_SH_comments;
 }

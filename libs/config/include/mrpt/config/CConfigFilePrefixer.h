@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/config/CConfigFileBase.h>
 
 namespace mrpt
 {
@@ -34,7 +34,7 @@ namespace config
   *
   * See: \ref config_file_format
   * \sa CConfigFileBase
-  * \ingroup mrpt_base_grp
+  * \ingroup mrpt_config_grp
   */
 class CConfigFilePrefixer : public CConfigFileBase
 {
@@ -76,9 +76,9 @@ class CConfigFilePrefixer : public CConfigFileBase
 
 	virtual ~CConfigFilePrefixer();
 
-	void getAllSections(
-		vector_string& sections) const override;  // See base class docs
-	void getAllKeys(const std::string& section, vector_string& keys)
+	void getAllSections(std::vector<std::string>& sections)
+		const override;  // See base class docs
+	void getAllKeys(const std::string& section, std::vector<std::string>& keys)
 		const override;  // See base class docs
 
 };  // End of class def.
