@@ -6,10 +6,9 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CMEMORYSTREAM_H
-#define CMEMORYSTREAM_H
+#pragma once
 
-#include <mrpt/utils/CStream.h>
+#include <mrpt/io/CStream.h>
 #include <mrpt/core/safe_pointers.h>
 
 namespace mrpt
@@ -111,4 +110,3 @@ void free_fn_for_zmq(void* data, void* hint);
 }
 }  // End of namespace
 }  // end of namespace
-#endif

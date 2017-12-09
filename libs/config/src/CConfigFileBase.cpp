@@ -14,6 +14,7 @@
 #include <mrpt/system/os.h>
 #include <mrpt/core/format.h>
 #include <mrpt/core/exceptions.h>
+#include <cmath>  // abs()
 
 using namespace std;
 using namespace mrpt::config;

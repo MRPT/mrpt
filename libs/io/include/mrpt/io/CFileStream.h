@@ -101,9 +101,5 @@ class CFileStream : public CStream
 	bool readLine(std::string& str);
 
 };  // End of class def.
-static_assert(
-	!std::is_copy_constructible<CFileStream>::value &&
-		!std::is_copy_assignable<CFileStream>::value,
-	"Copy Check");
 }  // End of namespace
 }  // end of namespace

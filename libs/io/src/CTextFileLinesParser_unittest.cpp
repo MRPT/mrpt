@@ -11,7 +11,4 @@
 #include <gtest/gtest.h>
 
 MRPT_TODO("implement tests!");
-TEST(CTextFileLinesParser, parse) 
-{
-	
-}
+TEST(CTextFileLinesParser, parse) {}
