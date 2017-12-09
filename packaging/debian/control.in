@@ -396,7 +396,8 @@ Description: Mobile Robot Programming Toolkit - Example datasets and files
 
 Package: mrpt-apps
 Architecture: any
-Depends: mrpt-common (= ${source:Version}), ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Recommends: mrpt-common (= ${source:Version})
 Description: Mobile Robot Programming Toolkit - Console and GUI applications
  The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
  and open source C++ library aimed to help robotics researchers to design and
