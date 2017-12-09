@@ -15,6 +15,12 @@
 
 #define exprtk_disable_string_capabilities  // Workaround a bug in Ubuntu
 // precise's GCC+libstdc++
+
+// Disable some parts of exprtk to build faster and reduce lib size:
+#define exprtk_disable_enhanced_features
+#define exprtk_disable_superscalar_unroll
+#define exprtk_disable_rtl_vecops
+#define exprtk_disable_rtl_io_file
 #include <mrpt/otherlibs/exprtk.hpp>
 
 // We only need this to be on this translation unit, hence the advantage of
