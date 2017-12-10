@@ -9,23 +9,21 @@
 
 #include "serialization-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/CSerializable.h>
-#include <mrpt/utils/CMemoryStream.h>
-#include <mrpt/system/os.h>
+#include <mrpt/serialization/CSerializable.h>
+//#include <mrpt/io/CMemoryStream.h>
+//#include <mrpt/system/os.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
-using namespace mrpt::system;
+using namespace mrpt::serialization;
 
 #include <cstdio>
 
-IMPLEMENTS_VIRTUAL_MRPT_OBJECT(CSerializable, CObject, mrpt::utils)
+IMPLEMENTS_VIRTUAL_MRPT_OBJECT(CSerializable, CObject, mrpt::serialization)
 
-/* -----------------------------------------------------------------------
-	Used to pass MRPT objects into a CORBA-like object,
-		a string. See doc about "Integration with BABEL".
-   ----------------------------------------------------------------------- */
-std::string utils::ObjectToString(const CSerializable* o)
+
+MRPT_TODO("Implement these serialization functions!")
+#if 0
+std::string serialization::ObjectToString(const CSerializable* o)
 {
 	CMemoryStream tmp, tmpCoded;
 	std::string str;
@@ -270,3 +268,4 @@ void utils::RawStringToObject(
 		fprintf(stderr, "[RawStringToObject] Unknown exception\n");
 	}
 }
+#endif

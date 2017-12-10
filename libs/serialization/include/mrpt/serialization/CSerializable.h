@@ -6,91 +6,74 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CSERIALIZABLE_H
-#define CSERIALIZABLE_H
+#pragma once
 
-#include <mrpt/utils/CObject.h>
-#include <mrpt/utils/TTypeName.h>
+#include <mrpt/rtti/CObject.h>
+#include <mrpt/serialization/CArchive.h>
+#include <cstdint>
 
-#if MRPT_HAS_MATLAB
+// Make this frwd decl independent of MRPT_HAS_MATLAB in config.h:
 /** Forward declaration for mxArray (avoid #including as much as possible to
  * speed up compiling) */
 typedef struct mxArray_tag mxArray;
-#endif
 
 namespace mrpt
 {
-namespace serialization
+namespace io
 {
 class CStream;
 }
-
-/** Classes for serialization, sockets, ini-file manipulation, streams, list of
- * properties-values, timewatch, extensions to STL.
-  * \ingroup mrpt_serialization_grp
-  */
 namespace serialization
 {
 /** The virtual base class which provides a unified interface for all persistent
  *objects in MRPT.
  *  Many important properties of this class are inherited from
- *mrpt::utils::CObject. See that class for more details.
- *	 Refer to the tutorial about <a href="http://www.mrpt.org/Serialization"
- *>serialization</a> online.
+ *mrpt::rtti::CObject.
+ * Refer to the library tutorial: \ref mrpt_serialization_grp
  * \sa CStream
  * \ingroup mrpt_serialization_grp
  */
-class CSerializable : public mrpt::utils::CObject
+class CSerializable : public mrpt::rtti::CObject
 {
 	// This must be added to any CObject derived class:
 	DEFINE_VIRTUAL_MRPT_OBJECT(CSerializable)
 
 	virtual ~CSerializable() {}
    protected:
-	/** Introduces a pure virtual method responsible for writing to a CStream.
-	 *  This can not be used directly be users, instead use "stream << object;"
-	 *   for writing it to a stream.
-	 * \param out The output binary stream where object must be dumped.
-	 * \param getVersion If nullptr, the object must be dumped. If not, only the
-	 *		version of the object dump must be returned in this pointer. This
-	 *enables
-	 *     the versioning of objects dumping and backward compatibility with
-	 *previously
-	 *     stored data.
-	 *	\exception std::exception On any error, see CStream::WriteBuffer
-	 * \sa CStream
+	/** @name CSerializable virtual methods
+	  *  @{ */
+	/** Must return the current versioning number of the object. Start in zero
+	* for new classes, and increments each time there is a change in the stored
+	* format.
+	*/
+	virtual uint8_t serializeGetVersion() const = 0;
+	/** Pure virtual method for writing (serializing) to an abstract archive.
+	 *  Users don't call this method directly. Instead, use `stream << object;`.
+	 *	\exception std::exception On any I/O error
 	 */
-	virtual void writeToStream(
-		mrpt::utils::CStream& out, int* getVersion) const = 0;
-
-	/** Introduces a pure virtual method responsible for loading from a CStream
-	 *  This can not be used directly be users, instead use "stream >> object;"
-	 *   for reading it from a stream or "stream >> object_ptr;" if the class is
-	 *   unknown apriori.
-	 * \param in The input binary stream where the object data must read from.
-	 * \param version The version of the object stored in the stream: use this
-	 *version
-	 *                number in your code to know how to read the incoming data.
-	 *	\exception std::exception On any error, see CStream::ReadBuffer
-	 * \sa CStream
-	 */
-	virtual void readFromStream(mrpt::utils::CStream& in, int version) = 0;
+	virtual void serializeTo(CArchive& out) const = 0;
+	/** Pure virtual method for reading (deserializing) from an abstract archive.
+	*  Users don't call this method directly. Instead, use `stream >> object;`.
+	* \param in The input binary stream where the object data must read from.
+	* \param version The version of the object stored in the stream: use this
+	* version number in your code to know how to read the incoming data.
+	*	\exception std::exception On any I/O error
+	*/
+	virtual void serializeFrom(CArchive& in, uint8_t serial_version) = 0;
+	/** @} */
 
    public:
-/** Introduces a pure virtual method responsible for writing to a `mxArray`
- * Matlab object,
-  * typically a MATLAB `struct` whose contents are documented in each derived
- * class.
-  * \return A new `mxArray` (caller is responsible of memory freeing) or nullptr
- * is class does not support conversion to MATLAB.
-  */
-#if MRPT_HAS_MATLAB
+	/** Introduces a pure virtual method responsible for writing to a `mxArray`
+	* Matlab object, typically a MATLAB `struct` whose contents are documented in
+	* each derived class.
+	* \return A new `mxArray` (caller is responsible of memory freeing) or nullptr
+	* is class does not support conversion to MATLAB.
+	*/
 	virtual mxArray* writeToMatlab() const { return nullptr; }
-#endif
 };  // End of class def.
 
 /** \addtogroup noncstream_serialization Non-CStream serialization functions (in
- * #include <mrpt/utils/CSerializable.h>)
+ * #include <mrpt/serializatin/CSerializable.h>)
   * \ingroup mrpt_serialization_grp
   * @{ */
 
@@ -160,8 +143,9 @@ void RawStringToObject(const std::string& in_str, CSerializable::Ptr& obj);
    protected:                                                                     \
 	/*! @name CSerializable virtual methods */                                    \
 	/*! @{ */                                                                     \
-	void writeToStream(mrpt::utils::CStream& out, int* getVersion) const override;\
-	void readFromStream(mrpt::utils::CStream& in, int version) override;          \
+	uint8_t serializeGetVersion() const override;                                 \
+	void serializeTo(CArchive& out) const override;                               \
+	void serializeFrom(CArchive& in, uint8_t serial_version) override;            \
 	/*! @} */
 
 /** This must be inserted in all CSerializable classes implementation files */
@@ -182,20 +166,15 @@ void RawStringToObject(const std::string& in_str, CSerializable::Ptr& obj);
 
 /** This must be inserted if a custom conversion method for MEX API is
  * implemented in the class */
-#if MRPT_HAS_MATLAB
 #define DECLARE_MEX_CONVERSION                           \
 	/*! @name Virtual methods for MRPT-MEX conversion */ \
 	/*! @{ */                                            \
    public:                                               \
 	virtual mxArray* writeToMatlab() const;              \
 /*! @} */
-#else
-#define DECLARE_MEX_CONVERSION  // Empty
-#endif
 
 /** This must be inserted if a custom conversion method for MEX API is
  * implemented in the class */
-#if MRPT_HAS_MATLAB
 #define DECLARE_MEXPLUS_FROM(complete_type)    \
 	namespace mexplus                          \
 	{                                          \
@@ -214,11 +193,6 @@ void RawStringToObject(const std::string& in_str, CSerializable::Ptr& obj);
 		return var.writeToMatlab();            \
 	}                                          \
 	}
-#else
-#define DECLARE_MEXPLUS_FROM(complete_type)  // Empty
-#define IMPLEMENTS_MEXPLUS_FROM(complete_type)  // Empty
-#endif
-}  // End of namespace
-}  // End of namespace
 
-#endif
+}  // End of namespace
+}  // End of namespace
