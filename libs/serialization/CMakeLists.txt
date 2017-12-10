@@ -7,6 +7,7 @@ define_mrpt_lib(
 	# Dependencies
 	mrpt-typemeta
 	mrpt-rtti
+	mrpt-core
 	)
 
 IF(BUILD_mrpt-serialization)
