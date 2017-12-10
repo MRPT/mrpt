@@ -145,58 +145,51 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 			${MRPT_VERSION_RC_FILE}  # Only !="" in Win32: the .rc file with version info
 			)
 
+		# private include dirs for this lib:
+		target_include_directories(mrpt-${name} PRIVATE
+				"${CMAKE_SOURCE_DIR}/libs/${name}/src/" # To include ${name}-precomp.h
+			)
 		if(MSVC)  # Define math constants if built with MSVC
 			target_compile_definitions(mrpt-${name} PUBLIC _USE_MATH_DEFINES)
 		ENDIF()
 
-		if(ENABLE_SOLUTION_FOLDERS)
-			set_target_properties(mrpt-${name} PROPERTIES FOLDER "modules")
-		else(ENABLE_SOLUTION_FOLDERS)
-			SET_TARGET_PROPERTIES(mrpt-${name} PROPERTIES PROJECT_LABEL "(LIB) mrpt-${name}")
-		endif(ENABLE_SOLUTION_FOLDERS)
+		set_target_properties(mrpt-${name} PROPERTIES FOLDER "modules")
+		set(iftype PUBLIC)
 	ELSE()
 		# A hdr-only library: needs no real compiling
 		add_library(mrpt-${name} INTERFACE)
-		# deps:
-		target_link_libraries(mrpt-${name} INTERFACE ${all_${name}_srcs})
 		# List of hdr files (for editing in IDEs,etc.):
 		target_sources(mrpt-${name} INTERFACE ${all_${name}_srcs})
+		set(iftype INTERFACE)
 	ENDIF ()
+
+	target_include_directories(mrpt-${name} ${iftype}
+		$<BUILD_INTERFACE:${MRPT_SOURCE_DIR}/libs/${name}/include>
+		$<INSTALL_INTERFACE:${name}/include>
+	)
 
 	add_dependencies(all_mrpt_libs mrpt-${name}) # for target: all_mrpt_libs
 
 	# Append to list of all mrpt-* libraries:
 	if("${ALL_MRPT_LIBS}" STREQUAL "")  # first one is different to avoid an empty first list element ";mrpt-xxx"
 		SET(ALL_MRPT_LIBS "mrpt-${name}" CACHE INTERNAL "")  # This emulates global vars
-	else("${ALL_MRPT_LIBS}" STREQUAL "")
+	else()
 		SET(ALL_MRPT_LIBS "${ALL_MRPT_LIBS};mrpt-${name}" CACHE INTERNAL "")  # This emulates global vars
-	endif("${ALL_MRPT_LIBS}" STREQUAL "")
+	endif()
 
-	# Include dir for this lib:
-	INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/libs/${name}/include")
-
-	# Include dirs for mrpt-XXX libs:
+	# Dependencies:
 	set(AUX_DEPS_LIST "")
-	set(AUX_EXTRA_LINK_LIBS "")
 	set(AUX_ALL_DEPS_BUILD 1)  # Will be set to "0" if any dependency if not built
 	FOREACH(DEP ${ARGN})
 		# Only for "mrpt-XXX" libs:
 		IF (${DEP} MATCHES "mrpt-")
 			STRING(REGEX REPLACE "mrpt-(.*)" "\\1" DEP_MRPT_NAME ${DEP})
 			IF(NOT "${DEP_MRPT_NAME}" STREQUAL "")
-				# Include dir:
-				INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/libs/${DEP_MRPT_NAME}/include")
+				# Include dirs are automatically imported via target_include_directories()
+				#INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/libs/${DEP_MRPT_NAME}/include")
 
-				# Link "-lmrpt-name", only for GCC/CLang and if both THIS and the dependence are non-header-only:
-				IF(NOT ${headers_only})
-					get_property(_LIB_HDRONLY GLOBAL PROPERTY "${DEP}_LIB_IS_HEADERS_ONLY")
-					IF(NOT _LIB_HDRONLY)
-						#MESSAGE(STATUS "adding link dep: mrpt-${name} -> ${DEP}")
-						LIST(APPEND AUX_EXTRA_LINK_LIBS
-							optimized ${MRPT_LIB_PREFIX}${DEP}${MRPT_DLL_VERSION_POSTFIX}
-							debug     ${MRPT_LIB_PREFIX}${DEP}${MRPT_DLL_VERSION_POSTFIX}${CMAKE_DEBUG_POSTFIX})
-					ENDIF(NOT _LIB_HDRONLY)
-				ENDIF(NOT ${headers_only})
+				TARGET_LINK_LIBRARIES(mrpt-${name} PRIVATE ${DEP})
+				#add_dependencies() implicit with above link dep
 
 				# Append to list of mrpt-* lib dependences:
 				LIST(APPEND AUX_DEPS_LIST ${DEP})
@@ -206,35 +199,29 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 					SET(AUX_ALL_DEPS_BUILD 0)
 					MESSAGE(STATUS "*Warning*: Lib mrpt-${name} cannot be built because dependency mrpt-${DEP_MRPT_NAME} has been disabled!")
 				endif ()
-
-			ENDIF(NOT "${DEP_MRPT_NAME}" STREQUAL "")
-		ENDIF (${DEP} MATCHES "mrpt-")
-	ENDFOREACH(DEP)
+			ENDIF()
+		ENDIF ()
+	ENDFOREACH()
 
 	# Impossible to build?
 	if (NOT AUX_ALL_DEPS_BUILD)
 		MESSAGE(STATUS "*Warning* ==> Disabling compilation of lib mrpt-${name} for missing dependencies listed above.")
 		SET(BUILD_mrpt-${name} OFF CACHE BOOL "Build the library mrpt-${name}" FORCE)
-	endif (NOT AUX_ALL_DEPS_BUILD)
-
+	endif ()
 
 	# Emulates a global variable:
 	set_property(GLOBAL PROPERTY "mrpt-${name}_LIB_DEPS" "${AUX_DEPS_LIST}")
 	set_property(GLOBAL PROPERTY "mrpt-${name}_LIB_IS_HEADERS_ONLY" "${headers_only}")
 	set_property(GLOBAL PROPERTY "mrpt-${name}_LIB_IS_METALIB" "${is_metalib}")
 
-	# Dependencies between projects:
-	IF(NOT "${ARGN}" STREQUAL "")
-		ADD_DEPENDENCIES(mrpt-${name} ${ARGN} "DocumentationFiles")
-	ENDIF(NOT "${ARGN}" STREQUAL "")
+	ADD_DEPENDENCIES(mrpt-${name} "DocumentationFiles")  # docs files target (useful for IDE editing)
 
 	IF (NOT ${headers_only})
 		TARGET_LINK_LIBRARIES(mrpt-${name}
 			PRIVATE
 			${MRPTLIB_LINKER_LIBS}
-			${AUX_EXTRA_LINK_LIBS}
 			)
-	ENDIF (NOT ${headers_only})
+	ENDIF ()
 
 	# Special case: embedded eigen3 as dep of "mrpt-base"
 	IF (EIGEN_USE_EMBEDDED_VERSION AND ${name} STREQUAL "base")
@@ -259,7 +246,6 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 		KEEP_MATCHING_FILES_FROM_LIST("^.*h$" AUX_LIST_TO_IGNORE)
 		set_source_files_properties(${AUX_LIST_TO_IGNORE} PROPERTIES HEADER_FILE_ONLY true)
 
-		INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/libs/${name}/src/") # For include "${name}-precomp.h"
 		IF(MRPT_ENABLE_PRECOMPILED_HDRS)
 			IF (MSVC)
 				# Precompiled hdrs for MSVC:

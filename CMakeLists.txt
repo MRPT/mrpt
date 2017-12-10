@@ -127,13 +127,8 @@ ENDIF()
 INCLUDE(FindPkgConfig OPTIONAL)
 
 # Group projects in "folders"
-# ===================================================
-SET(ENABLE_SOLUTION_FOLDERS ON CACHE BOOL "Group projects under virtual folders of the compiler IDE (e.g. VisualStudio)")
-
-if (ENABLE_SOLUTION_FOLDERS)
-  set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-  set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMakeTargets")
-endif ()
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMakeTargets")
 
 # Build the RoboPeak Lidar library?
 SET(DEFAULT_BUILD_ROBOPEAK_LIDAR ON) # Default: Yes
@@ -212,9 +207,7 @@ CONFIGURE_FILE(
 ADD_CUSTOM_TARGET(uninstall
   "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
 
-if(ENABLE_SOLUTION_FOLDERS)
-	set_target_properties(uninstall PROPERTIES FOLDER "CMakeTargets")
-endif()
+set_target_properties(uninstall PROPERTIES FOLDER "CMakeTargets")
 
 # See docs for CMake FindThreads()
 SET(THREADS_PREFER_PTHREAD_FLAG ON)
