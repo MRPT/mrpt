@@ -22,10 +22,6 @@ namespace io
  */
 class CFileInputStream : public CStream
 {
-   protected:
-	size_t Read(void* Buffer, size_t Count) override;
-	size_t Write(const void* Buffer, size_t Count) override;
-
    private:
 	/** The actual input file stream. */
 	std::ifstream m_if;
@@ -72,10 +68,8 @@ class CFileInputStream : public CStream
 	  * \return true if a line has been read, false on EOF or error. */
 	bool readLine(std::string& str);
 
+	size_t Read(void* Buffer, size_t Count) override;
+	size_t Write(const void* Buffer, size_t Count) override;
 };  // End of class def.
-static_assert(
-	!std::is_copy_constructible<CFileInputStream>::value &&
-		!std::is_copy_assignable<CFileInputStream>::value,
-	"Copy Check");
 }  // End of namespace
 }  // end of namespace

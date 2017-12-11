@@ -6,16 +6,14 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef VARIANT_H
-#define VARIANT_H
+#pragma once
 
 #include <mrpt/otherlibs/mapbox/variant.hpp>
 namespace mrpt
 {
-namespace utils
+namespace rtti
 {
 template <typename... T>
 using variant = mapbox::util::variant<T...>;
 }
 }
-#endif

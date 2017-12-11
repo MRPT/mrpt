@@ -9,7 +9,6 @@
 #pragma once
 
 #include <mrpt/rtti/CObject.h>
-#include <mrpt/serialization/CArchive.h>
 #include <cstdint>
 
 // Make this frwd decl independent of MRPT_HAS_MATLAB in config.h:
@@ -19,22 +18,22 @@ typedef struct mxArray_tag mxArray;
 
 namespace mrpt
 {
-namespace io
-{
-class CStream;
-}
 namespace serialization
 {
+class CArchive; // frwd decl
+
 /** The virtual base class which provides a unified interface for all persistent
  *objects in MRPT.
  *  Many important properties of this class are inherited from
  *mrpt::rtti::CObject.
  * Refer to the library tutorial: \ref mrpt_serialization_grp
- * \sa CStream
+ * \sa CArchive
  * \ingroup mrpt_serialization_grp
  */
 class CSerializable : public mrpt::rtti::CObject
 {
+	friend class CArchive;
+
 	// This must be added to any CObject derived class:
 	DEFINE_VIRTUAL_MRPT_OBJECT(CSerializable)
 

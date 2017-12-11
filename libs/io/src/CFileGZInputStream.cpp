@@ -18,6 +18,11 @@
 using namespace mrpt::io;
 using namespace std;
 
+static_assert(
+	!std::is_copy_constructible<CFileGZInputStream>::value &&
+	!std::is_copy_assignable<CFileGZInputStream>::value,
+	"Copy Check");
+
 #define THE_GZFILE reinterpret_cast<gzFile>(m_f)
 
 CFileGZInputStream::CFileGZInputStream(const string& fileName) : m_f(nullptr)

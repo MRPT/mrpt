@@ -23,10 +23,6 @@ namespace io
  */
 class CFileOutputStream : public CStream
 {
-   protected:
-	size_t Read(void* Buffer, size_t Count) override;
-	size_t Write(const void* Buffer, size_t Count) override;
-
    private:
 	/** The actual output file stream. */
 	std::ofstream m_of;
@@ -77,6 +73,9 @@ class CFileOutputStream : public CStream
 	/** Method for getting the current cursor position, where 0 is the first
 	 * byte and TotalBytesCount-1 the last one */
 	uint64_t getPosition() override;
+
+	size_t Read(void* Buffer, size_t Count) override;
+	size_t Write(const void* Buffer, size_t Count) override;
 };  // End of class def.
 static_assert(
 	!std::is_copy_constructible<CFileOutputStream>::value &&

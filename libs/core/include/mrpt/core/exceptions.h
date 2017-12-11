@@ -70,7 +70,7 @@
 		std::string s = e.what();                             \
 		s += mrpt::format(stuff, param1);                     \
 		s += "\n";                                            \
-		throw std::logic_error(s.str());                      \
+		throw std::logic_error(s);                            \
 	} while (0)
 
 /** For use in CSerializable implementations */

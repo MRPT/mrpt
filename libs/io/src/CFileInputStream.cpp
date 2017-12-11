@@ -15,6 +15,11 @@
 using namespace mrpt::io;
 using namespace std;
 
+static_assert(
+	!std::is_copy_constructible<CFileInputStream>::value &&
+	!std::is_copy_assignable<CFileInputStream>::value,
+	"Copy Check");
+
 CFileInputStream::CFileInputStream(const string& fileName) : m_if()
 {
 	MRPT_START

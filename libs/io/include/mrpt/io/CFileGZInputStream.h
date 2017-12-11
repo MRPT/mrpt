@@ -25,10 +25,6 @@ namespace io
  */
 class CFileGZInputStream : public CStream
 {
-   protected:
-	size_t Read(void* Buffer, size_t Count) override;
-	size_t Write(const void* Buffer, size_t Count) override;
-
    private:
 	void* m_f;
 	/** Compressed file size */
@@ -73,12 +69,8 @@ class CFileGZInputStream : public CStream
 
 	/** This method is not implemented in this class */
 	uint64_t Seek(int64_t, CStream::TSeekOrigin = sFromBeginning) override;
-
+	size_t Read(void* Buffer, size_t Count) override;
+	size_t Write(const void* Buffer, size_t Count) override;
 };  // End of class def.
-
-static_assert(
-	!std::is_copy_constructible<CFileGZInputStream>::value &&
-		!std::is_copy_assignable<CFileGZInputStream>::value,
-	"Copy Check");
 }  // End of namespace
 }  // end of namespace

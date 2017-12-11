@@ -162,7 +162,7 @@ bool CMemoryStream::saveBufferToFile(const std::string& file_name)
 	try
 	{
 		CFileOutputStream fo(file_name);
-		fo.WriteBuffer(m_memory.get(), getTotalBytesCount());
+		fo.Write(m_memory.get(), getTotalBytesCount());
 		return true;
 	}
 	catch (...)
@@ -184,7 +184,7 @@ bool CMemoryStream::loadBufferFromFile(const std::string& file_name)
 		// Read into the buffer:
 		Clear();
 		resize(N + 100);
-		uint64_t N_read = fi.ReadBuffer(m_memory.get(), N);
+		uint64_t N_read = fi.Read(m_memory.get(), N);
 
 		m_position = N_read;
 		m_bytesWritten = max(m_bytesWritten, m_position);

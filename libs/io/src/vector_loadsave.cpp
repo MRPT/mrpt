@@ -28,7 +28,7 @@ bool mrpt::io::loadBinaryFile(
 		out_data.resize(N);
 		if (N)
 		{
-			size_t NN = fi.ReadBuffer(&out_data[0], N);
+			size_t NN = fi.Read(&out_data[0], N);
 			return NN == N;
 		}
 		else
@@ -46,7 +46,7 @@ bool mrpt::io::vectorToBinaryFile(
 	try
 	{
 		mrpt::io::CFileOutputStream of(fileName);
-		if (!vec.empty()) of.WriteBuffer(&vec[0], sizeof(vec[0]) * vec.size());
+		if (!vec.empty()) of.Write(&vec[0], sizeof(vec[0]) * vec.size());
 		return true;
 	}
 	catch (...)
