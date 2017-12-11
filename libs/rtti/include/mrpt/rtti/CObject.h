@@ -116,18 +116,6 @@ struct CLASSINIT
 	}
 };
 
-/** This is useful for checking ::Ptr types.
-  * I'm surprised it's not defined in <memory>
-  */
-template <class T>
-struct is_shared_ptr : std::false_type
-{
-};
-template <class T>
-struct is_shared_ptr<std::shared_ptr<T>> : std::true_type
-{
-};
-
 /** The virtual base class of all MRPT classes with a unified RTTI system.
  *   For each class named <code>CMyClass</code>, a new type
  * <code>CMyClass::Ptr</code> is defined as a smart pointer (`std::shared_ptr`)

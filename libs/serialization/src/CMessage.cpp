@@ -9,6 +9,10 @@
 
 #include "serialization-precomp.h"  // Precompiled headers
 
+#include <mrpt/core/common.h>
+MRPT_TODO("end port");
+
+#if 0
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CMessage.h>
 #include <mrpt/system/os.h>
@@ -119,3 +123,4 @@ void* CMessage::getContentAsPointer() const
 
 	MRPT_END
 }
+#endif

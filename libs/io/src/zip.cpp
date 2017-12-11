@@ -97,7 +97,7 @@ void mrpt::io::zip::compress(void* inData, size_t inDataSize, CStream& out)
 	outData.resize(resSize);
 
 	// Write to stream:
-	out.WriteBuffer(&outData[0], resSize);
+	out.Write(&outData[0], resSize);
 
 	MRPT_END_WITH_CLEAN_UP(printf("[zlib] Error code=%i\n", ret););
 }
@@ -124,7 +124,7 @@ void mrpt::io::zip::compress(
 	outData.resize(resSize);
 
 	// Write to stream:
-	out.WriteBuffer(&outData[0], resSize);
+	out.Write(&outData[0], resSize);
 
 	MRPT_END_WITH_CLEAN_UP(printf("[zlib] Error code=%i\n", ret););
 }
@@ -190,7 +190,7 @@ void mrpt::io::zip::decompress(
 	std::vector<unsigned char> inData;
 
 	inData.resize(inDataSize);
-	inStream.ReadBuffer(&inData[0], inDataSize);
+	inStream.Read(&inData[0], inDataSize);
 
 	ret = ::uncompress(
 		(unsigned char*)outData, &actualOutSize, &inData[0],
@@ -223,7 +223,7 @@ bool mrpt::io::zip::decompress_gz_file(
 	do
 	{
 		buffer.resize(1000 + bytes2read + buffer.size());
-		act_read = iss.ReadBuffer(&buffer[total_bytes], bytes2read);
+		act_read = iss.Read(&buffer[total_bytes], bytes2read);
 		total_bytes += act_read;
 	} while (act_read == bytes2read);
 
@@ -243,7 +243,7 @@ bool mrpt::io::zip::compress_gz_file(
 	{
 		try
 		{
-			oss.WriteBuffer(&buffer[0], buffer.size());
+			oss.Write(&buffer[0], buffer.size());
 			return true;
 		}
 		catch (...)
@@ -334,7 +334,7 @@ bool mrpt::io::zip::compress_gz_data_block(
 				{
 					const size_t M = iss.getTotalBytesCount();
 					out_gz_data.resize(M);
-					if (M) retVal = M == iss.ReadBuffer(&out_gz_data[0], M);
+					if (M) retVal = M == iss.Read(&out_gz_data[0], M);
 				}
 			}
 #endif

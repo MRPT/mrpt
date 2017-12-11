@@ -25,9 +25,10 @@ namespace io
  */
 class CMemoryStream : public CStream
 {
-   protected:
+   public:
 	size_t Read(void* Buffer, size_t Count) override;
 	size_t Write(const void* Buffer, size_t Count) override;
+   protected:
 
 	/** Internal data */
 	void_ptr_noncopy m_memory{nullptr};

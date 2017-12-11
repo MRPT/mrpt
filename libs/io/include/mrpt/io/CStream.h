@@ -9,18 +9,13 @@
 #pragma once
 
 #include <mrpt/core/common.h>  // MRPT_printf_format_check
-#include <mrpt/core/reverse_bytes.h>
+#include <cstdint>
 #include <string>
-#include <vector>
-#include <type_traits>  // remove_reference_t
 
 namespace mrpt
 {
 namespace io
 {
-// class CSerializable;
-// class CMessage;
-
 /** This base class is used to provide a unified interface to
  *    files,memory buffers,..Please see the derived classes. This class is
  *    largely inspired by Borland VCL "TStream" class. <br><br>
@@ -43,7 +38,6 @@ class CStream
 		sFromEnd = 2
 	};
 
-   protected:
 	/** Introduces a pure virtual method responsible for reading from the
 	 * stream. */
 	virtual size_t Read(void* Buffer, size_t Count) = 0;
@@ -53,66 +47,12 @@ class CStream
 	 * number of bytes actually written. */
 	virtual size_t Write(const void* Buffer, size_t Count) = 0;
 
-#if 0
-	/** Read the object */
-	void internal_ReadObject(
-		CSerializable* newObj, const std::string& className, bool isOldFormat,
-		int8_t version);
-
-	/** Read the object Header*/
-	void internal_ReadObjectHeader(
-		std::string& className, bool& isOldFormat, int8_t& version);
-#endif
-   public:
 	/* Constructor
 	 */
 	CStream() {}
 	/* Destructor
 	 */
 	virtual ~CStream();
-
-	/** Reads a block of bytes from the stream into Buffer
-	 *	\exception std::exception On any error, or if ZERO bytes are read.
-	 *  \return The amound of bytes actually read.
-	 * \note This method is endianness-dependent.
-	 * \sa ReadBufferImmediate ; Important, see: ReadBufferFixEndianness,
-	 */
-	size_t ReadBuffer(void* Buffer, size_t Count);
-
-	/** Reads a sequence of elemental datatypes, taking care of reordering their
-	 *bytes from the MRPT stream standard (little endianness) to the format of
-	 *the running architecture.
-	 *  \param ElementCount The number of elements (not bytes) to read.
-	 *  \param ptr A pointer to the first output element in an array (or
-	 *std::vector<>, etc...).
-	 *  \return The amound of *bytes* (not elements) actually read (under error
-	 *situations, the last element may be invalid if the data stream abruptly
-	 *ends).
-	 *  Example of usage:
-	 *  \code
-	 *   uint32_t  N;
-	 *   s >> N;
-	 *   vector<float>  vec(N);
-	 *   if (N)
-	 *     s.ReadBufferFixEndianness<float>(&vec[0],N);
-	 *  \endcode
-	 *	\exception std::exception On any error, or if ZERO bytes are read.
-	 * \sa ReadBufferFixEndianness, ReadBuffer
-	 */
-	template <typename T>
-	size_t ReadBufferFixEndianness(T* ptr, size_t ElementCount)
-	{
-#if !MRPT_IS_BIG_ENDIAN
-		// little endian: no conversion needed.
-		return ReadBuffer(ptr, ElementCount * sizeof(T));
-#else
-		// big endian: convert.
-		const size_t nread = ReadBuffer(ptr, ElementCount * sizeof(T));
-		for (size_t i = 0; i < ElementCount; i++)
-			mrpt::utils::reverseBytesInPlace(ptr[i]);
-		return nread;
-#endif
-	}
 
 	/** Reads a block of bytes from the stream into Buffer, and returns the
 	 *amound of bytes actually read, without waiting for more extra bytes to
@@ -123,43 +63,7 @@ class CStream
 	 */
 	virtual size_t ReadBufferImmediate(void* Buffer, size_t Count)
 	{
-		return ReadBuffer(Buffer, Count);
-	}
-
-	/** Writes a block of bytes to the stream from Buffer.
-	 *	\exception std::exception On any error
-	 *  \sa Important, see: WriteBufferFixEndianness
-	 * \note This method is endianness-dependent.
-	 */
-	void WriteBuffer(const void* Buffer, size_t Count);
-
-	/** Writes a sequence of elemental datatypes, taking care of reordering
-	 * their bytes from the running architecture to MRPT stream standard (little
-	 * endianness).
-	 *  \param ElementCount The number of elements (not bytes) to write.
-	 *  \param ptr A pointer to the first input element in an array (or
-	 * std::vector<>, etc...).
-	 *  Example of usage:
-	 *  \code
-	 *   vector<float>  vec = ...
-	 *   uint32_t N = vec.size();
-	 *   s << N
-	 *   if (N)
-	 *     s.WriteBufferFixEndianness<float>(&vec[0],N);
-	 *  \endcode
-	 *  \exception std::exception On any error
-	 *  \sa WriteBuffer
-	 */
-	template <typename T>
-	void WriteBufferFixEndianness(const T* ptr, size_t ElementCount)
-	{
-#if !MRPT_IS_BIG_ENDIAN
-		// little endian: no conversion needed.
-		return WriteBuffer(ptr, ElementCount * sizeof(T));
-#else
-		// big endian: the individual "<<" functions already convert endiannes
-		for (size_t i = 0; i < ElementCount; i++) (*this) << ptr[i];
-#endif
+		return Read(Buffer, Count);
 	}
 
 	/** Introduces a pure virtual method for moving to a specified position in
@@ -186,166 +90,6 @@ class CStream
 	 * byte and TotalBytesCount-1 the last one.
 	 */
 	virtual uint64_t getPosition() = 0;
-
-#if 0
-	/** Writes an object to the stream.
-	 */
-	void WriteObject(const CSerializable* o);
-	void WriteObject(const CSerializable& o) { WriteObject(&o); }
-	/** Reads an object from stream, its class determined at runtime, and
-	 * returns a smart pointer to the object.
-	 * \exception std::exception On I/O error or undefined class.
-	 * \exception mrpt::utils::CExceptionEOF On an End-Of-File condition found
-	 * at a correct place: an EOF that abruptly finishes in the middle of one
-	 * object raises a plain std::exception instead.
-	 */
-
-	CSerializable::Ptr ReadObject() { return ReadObject<CSerializable>(); }
-	/** Reads an object from stream, its class determined at runtime, and
-	 * returns a smart pointer to the object. This version is similar to
-	 * mrpt::make_aligned_shared<T>.
-	 * \exception std::exception On I/O error or undefined class.
-	 * \exception mrpt::utils::CExceptionEOF On an End-Of-File condition found
-	 * at a correct place: an EOF that abruptly finishes in the middle of one
-	 * object raises a plain std::exception instead.
-	 */
-	template <typename T>
-	typename T::Ptr ReadObject()
-	{
-		CSerializable::Ptr obj;
-		std::string strClassName;
-		bool isOldFormat;
-		int8_t version;
-		internal_ReadObjectHeader(strClassName, isOldFormat, version);
-		if (strClassName != "nullptr")
-		{
-			const TRuntimeClassId* classId = findRegisteredClass(strClassName);
-			obj.reset(dynamic_cast<CSerializable*>(classId->createObject()));
-		}
-		internal_ReadObject(
-			obj.get() /* may be nullptr */, strClassName, isOldFormat,
-			version);  // must be called to read the END FLAG byte
-		if (!obj)
-		{
-			return typename T::Ptr();
-		}
-		else
-		{
-			return std::dynamic_pointer_cast<T>(obj);
-		}
-	}
-#endif
-
-   private:
-#if 0
-	template <typename RET>
-	RET ReadVariant_helper(CSerializable::Ptr& ptr)
-	{
-		THROW_EXCEPTION("Can't match variant type");
-		return RET();
-	}
-
-	template <typename RET, typename T, typename... R>
-	RET ReadVariant_helper(
-		CSerializable::Ptr& ptr,
-		std::enable_if_t<is_shared_ptr<T>::value>* = nullptr)
-	{
-		if (IS_CLASS(ptr, typename T::element_type))
-			return std::dynamic_pointer_cast<typename T::element_type>(ptr);
-		return ReadVariant_helper<RET, R...>(ptr);
-	}
-
-	template <typename RET, typename T, typename... R>
-	RET ReadVariant_helper(
-		CSerializable::Ptr& ptr,
-		std::enable_if_t<!is_shared_ptr<T>::value>* = nullptr)
-	{
-		if (IS_CLASS(ptr, T)) return dynamic_cast<T&>(*ptr);
-		return ReadVariant_helper<RET, R...>(ptr);
-	}
-
-   public:
-	/** Reads a variant from stream, its class determined at runtime, and
-	 * returns a variant to the object.
-	 * To be compatible with the current polymorphic system this support smart
-	 * pointer types.
-	 * For pointer types, This will bind to the first possible pointer type.
-	 * variant<CSerializable::Ptr, CRenderizable::Ptr>
-	 * \exception std::exception On I/O error or undefined class.
-	 * \exception mrpt::utils::CExceptionEOF On an End-Of-File condition found
-	 * at a correct place: an EOF that abruptly finishes in the middle of one
-	 * object raises a plain std::exception instead.
-	 */
-	template <typename... T>
-	typename mrpt::utils::variant<T...> ReadVariant()
-	{
-		CSerializable::Ptr obj;
-		std::string strClassName;
-		bool isOldFormat;
-		int8_t version;
-		internal_ReadObjectHeader(strClassName, isOldFormat, version);
-		const TRuntimeClassId* classId = findRegisteredClass(strClassName);
-		if (!classId)
-			THROW_EXCEPTION_FMT(
-				"Stored object has class '%s' which is not registered!",
-				strClassName.c_str())
-		if (strClassName != "nullptr")
-		{
-			obj.reset(dynamic_cast<CSerializable*>(classId->createObject()));
-		}
-		internal_ReadObject(obj.get(), strClassName, isOldFormat, version);
-		if (!obj)
-		{
-			return mrpt::utils::variant<T...>();
-		}
-		else
-		{
-			return ReadVariant_helper<mrpt::utils::variant<T...>, T...>(obj);
-		}
-	}
-
-	/** Writes a Variant to the stream.
-	 */
-	template <typename T>
-	void WriteVariant(T t)
-	{
-		t.match([&](auto& o) { this->WriteObject(o); });
-	}
-#endif
-
-	/** Reads a simple POD type and returns by value. Useful when `stream >>
-	 * var;`
-	  * cannot be used becuase of errors of misaligned reference binding.
-	  * Use with macro `MRPT_READ_POD` to avoid typing the type T yourself.
-	  * \note [New in MRPT 2.0.0]
-	  * \note Write operator `s << var;` is safe for misaligned variables.
-	  */
-	template <typename T>
-	T ReadPOD()
-	{
-		T ret;
-		ReadBufferFixEndianness(&ret, 1);
-		return ret;
-	}
-
-#if 0
-	/** Reads an object from stream, where its class must be the same
-	 *    as the supplied object, where the loaded object will be stored in.
-	 * \exception std::exception On I/O error or different class found.
-	 * \exception mrpt::utils::CExceptionEOF On an End-Of-File condition found
-	 * at a correct place: an EOF that abruptly finishes in the middle of one
-	 * object raises a plain std::exception instead.
-	 */
-	void ReadObject(CSerializable* existingObj);
-
-	/** Write an object to a stream in the binary MRPT format. */
-	CStream& operator<<(const CSerializable::Ptr& pObj);
-	/** Write an object to a stream in the binary MRPT format. */
-	CStream& operator<<(const CSerializable& obj);
-
-	CStream& operator>>(CSerializable::Ptr& pObj);
-	CStream& operator>>(CSerializable& obj);
-#endif
 
 	/** Read a value from a stream stored in a type different of the target
 	 * variable, making the conversion via static_cast. Useful for coding
@@ -430,113 +174,6 @@ class CStream
 	bool getline(std::string& out_str);
 
 };  // End of class def.
-
-// Note: write op accepts parameters by value on purpose, to avoid misaligned
-// reference binding errors.
-#define DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE(T) \
-	CStream& operator<<(CStream& out, const T a); \
-	CStream& operator>>(CStream& in, T& a);
-
-// Definitions:
-DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE(bool)
-DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE(uint8_t)
-DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE(int8_t)
-DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE(uint16_t)
-DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE(int16_t)
-DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE(uint32_t)
-DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE(int32_t)
-DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE(uint64_t)
-DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE(int64_t)
-DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE(float)
-DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE(double)
-DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE(long double)
-
-#define MRPT_READ_POD(_STREAM, _VARIABLE)                                    \
-	do                                                                       \
-	{                                                                        \
-		const std::remove_cv_t<std::remove_reference_t<decltype(_VARIABLE)>> \
-			val = _STREAM.ReadPOD<std::remove_cv_t<                          \
-				std::remove_reference_t<decltype(_VARIABLE)>>>();            \
-		::memcpy(&_VARIABLE, &val, sizeof(val));                             \
-	} while (0)
-
-// Why this shouldn't be templatized?: There's a more modern system
-// in MRPT that serializes any kind of vector<T>, deque<T>, etc... but
-// to keep COMPATIBILITY with old serialized objects we must preserve
-// the ones listed here:
-
-// Write --------------------
-CStream& operator<<(CStream& s, const char* a);
-CStream& operator<<(CStream& s, const std::string& str);
-
-CStream& operator<<(CStream&, const std::vector<int32_t>& a);
-CStream& operator<<(CStream&, const std::vector<uint32_t>& a);
-CStream& operator<<(CStream&, const std::vector<uint16_t>& a);
-CStream& operator<<(CStream&, const std::vector<int16_t>& a);
-CStream& operator<<(CStream&, const std::vector<uint32_t>& a);
-CStream& operator<<(CStream&, const std::vector<int64_t>& a);
-CStream& operator<<(CStream&, const std::vector<uint8_t>& a);
-CStream& operator<<(CStream&, const std::vector<int8_t>& a);
-
-CStream& operator<<(CStream&, const std::vector<bool>& a);
-CStream& operator<<(CStream&, const std::vector<std::string>&);
-
-#if MRPT_WORD_SIZE != 32  // If it's 32 bit, size_t <=> uint32_t
-CStream& operator<<(CStream&, const std::vector<size_t>& a);
-#endif
-
-// Read --------------------
-CStream& operator>>(CStream& in, char* a);
-CStream& operator>>(CStream& in, std::string& str);
-
-CStream& operator>>(CStream& in, std::vector<int32_t>& a);
-CStream& operator>>(CStream& in, std::vector<uint32_t>& a);
-CStream& operator>>(CStream& in, std::vector<uint16_t>& a);
-CStream& operator>>(CStream& in, std::vector<int16_t>& a);
-CStream& operator>>(CStream& in, std::vector<int64_t>& a);
-CStream& operator>>(CStream& in, std::vector<uint8_t>& a);
-CStream& operator>>(CStream& in, std::vector<int8_t>& a);
-CStream& operator>>(CStream& in, std::vector<bool>& a);
-
-CStream& operator>>(CStream& in, std::vector<std::string>& a);
-
-// For backward compatibility, since in MRPT<0.8.1 vector_XXX and
-// std::vector<XXX> were exactly equivalent, now there're not.
-CStream& operator>>(CStream& s, std::vector<float>& a);
-CStream& operator>>(CStream& s, std::vector<double>& a);
-CStream& operator<<(CStream& s, const std::vector<float>& a);
-CStream& operator<<(CStream& s, const std::vector<double>& a);
-
-#if MRPT_WORD_SIZE != 32  // If it's 32 bit, size_t <=> uint32_t
-CStream& operator>>(CStream& s, std::vector<size_t>& a);
-#endif
-//
-#if 0
-template <typename T, std::enable_if_t<std::is_base_of<
-						  mrpt::utils::CSerializable, T>::value>* = nullptr>
-CStream& operator>>(
-	CStream& in, typename std::shared_ptr<T>& pObj)
-{
-	pObj = in.ReadObject<T>();
-	return in;
-}
-
-template <typename... T>
-CStream& operator>>(
-	CStream& in, typename mrpt::utils::variant<T...>& pObj)
-{
-	pObj = in.ReadVariant<T...>();
-	return in;
-}
-
-template <typename... T>
-CStream& operator<<(
-	CStream& out, const typename mrpt::utils::variant<T...>& pObj)
-{
-	pObj.match([&](auto& t) { out << t; });
-	return out;
-}
-#endif
 
 }  // End of namespace
 }  // End of namespace

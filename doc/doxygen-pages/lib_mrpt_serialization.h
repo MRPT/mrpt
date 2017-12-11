@@ -21,5 +21,12 @@ This library is part of MRPT and can be installed in Debian-based systems with:
 
         sudo apt install libmrpt-serialization-dev
 
+Main classes and concepts associated with this library:
+ - mrpt::serialization::CArchive provides:
+	- An abstraction of I/O streams (e.g. std::stream's, MRPT's mrpt::io::CStream's, sockets)
+	- A portable API (endianness aware) for serialization of data structures on those streams.
+- mrpt::serialization::CSerializable provides:
+	- A generic way to define persistent C++ classes.
+	- Versioning: if class fields are added or removed, you'll still be able to read old data files.
 
 */
