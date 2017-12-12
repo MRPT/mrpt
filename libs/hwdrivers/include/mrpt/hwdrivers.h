@@ -76,4 +76,6 @@ MRPT_WARNING(
 #include <mrpt/hwdrivers/CSkeletonTracker.h>
 #include <mrpt/hwdrivers/CVelodyneScanner.h>
 
+#include <mrpt/hwdrivers/CSICKTim561Eth_2050101.h>
+
 #endif
