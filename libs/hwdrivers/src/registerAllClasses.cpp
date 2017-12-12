@@ -49,5 +49,6 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_hwdrivers)
 	CIMUIntersense::doRegister();
 	CSkeletonTracker::doRegister();
 	CVelodyneScanner::doRegister();
+	CSICKTim561Eth::doRegister();
 #endif
 }
