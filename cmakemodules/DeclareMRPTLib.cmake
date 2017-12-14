@@ -185,10 +185,7 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 		IF (${DEP} MATCHES "mrpt-")
 			STRING(REGEX REPLACE "mrpt-(.*)" "\\1" DEP_MRPT_NAME ${DEP})
 			IF(NOT "${DEP_MRPT_NAME}" STREQUAL "")
-				# Include dirs are automatically imported via target_include_directories()
-				#INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/libs/${DEP_MRPT_NAME}/include")
-
-				TARGET_LINK_LIBRARIES(mrpt-${name} PRIVATE ${DEP})
+				TARGET_LINK_LIBRARIES(mrpt-${name} PUBLIC ${DEP})
 				#add_dependencies() implicit with above link dep
 
 				# Append to list of mrpt-* lib dependences:

@@ -7,9 +7,7 @@ define_mrpt_lib(
 	# Dependencies
 	mrpt-io
 	mrpt-containers
-	mrpt-core
 	mrpt-system
-	mrpt-typemeta
 	)
 
 IF(CMAKE_MRPT_HAS_FTDI_SYSTEM)
