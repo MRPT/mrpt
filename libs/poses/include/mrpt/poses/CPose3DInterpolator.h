@@ -46,7 +46,7 @@ namespace poses
   * \sa CPoseOrPoint
  * \ingroup interpolation_grp poses_grp
  */
-class CPose3DInterpolator : public mrpt::utils::CSerializable,
+class CPose3DInterpolator : public mrpt::serialization::CSerializable,
 							public mrpt::poses::CPoseInterpolatorBase<3>
 {
 	DEFINE_SERIALIZABLE(CPose3DInterpolator)

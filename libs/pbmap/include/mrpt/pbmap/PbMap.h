@@ -46,7 +46,7 @@ namespace pbmap
 *
 *\ingroup mrpt_pbmap_grp
 */
-class PbMap : public mrpt::utils::CSerializable
+class PbMap : public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(PbMap)
 

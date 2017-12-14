@@ -11,11 +11,11 @@
 
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/utils/CStream.h>
 
 using namespace mrpt;
 using namespace mrpt::math;
 using namespace mrpt::utils;
+using namespace mrpt::serialization;
 
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CMatrix, CSerializable, mrpt::math)
@@ -31,28 +31,19 @@ CMatrix::CMatrix(const TPoint2D& p) : CMatrixFloat(p) {}
 /** Constructor from a TPoint3D, which generates a 3x1 matrix \f$ [x y z]^T \f$
  */
 CMatrix::CMatrix(const TPoint3D& p) : CMatrixFloat(p) {}
-/*---------------------------------------------------------------
-						writeToStream
- ---------------------------------------------------------------*/
-void CMatrix::writeToStream(mrpt::utils::CStream& out, int* out_Version) const
-{
-	if (out_Version)
-		*out_Version = 0;
-	else
-	{
-		// First, write the number of rows and columns:
-		out << (uint32_t)rows() << (uint32_t)cols();
 
-		if (rows() > 0 && cols() > 0)
-			for (Index i = 0; i < rows(); i++)
-				out.WriteBufferFixEndianness<Scalar>(&coeff(i, 0), cols());
-	}
+uint8_t CMatrix::serializeGetVersion() const { return 0; }
+void CMatrix::serializeTo(mrpt::serialization::CArchive& out) const
+{
+	// First, write the number of rows and columns:
+	out << (uint32_t)rows() << (uint32_t)cols();
+
+	if (rows() > 0 && cols() > 0)
+		for (Index i = 0; i < rows(); i++)
+			out.WriteBufferFixEndianness<Scalar>(&coeff(i, 0), cols());
 }
 
-/*---------------------------------------------------------------
-						readFromStream
- ---------------------------------------------------------------*/
-void CMatrix::readFromStream(mrpt::utils::CStream& in, int version)
+void CMatrix::serializeFrom(mrpt::serialization::CArchive& in, uint8_t serial_version)
 {
 	switch (version)
 	{

@@ -13,7 +13,6 @@
 #include <mrpt/math/eigen_frwds.h>
 #include <mrpt/utils/types_math.h>
 #include <mrpt/serialization/CSerializable.h>
-#include <mrpt/math/point_poses2vectors.h>  // MRPT_MATRIX_CONSTRUCTORS_FROM_POSES()
 
 namespace mrpt
 {
@@ -55,7 +54,6 @@ class CMatrixFixedNumeric
 	MRPT_EIGEN_DERIVED_CLASS_CTOR_OPERATOR_EQUAL(
 		CMatrixFixedNumeric)  // Implements ctor and "operator =" for any other
 	// Eigen class
-	MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(CMatrixFixedNumeric)
 
 	/** Default constructor, initializes all elements to zero */
 	inline CMatrixFixedNumeric() : Base() { Base::setZero(); }

@@ -73,7 +73,7 @@ enum PTG_collision_behavior_t
  *
  *  \ingroup nav_tpspace
  */
-class CParameterizedTrajectoryGenerator : public mrpt::utils::CSerializable,
+class CParameterizedTrajectoryGenerator : public mrpt::serialization::CSerializable,
 										  public mrpt::utils::CLoadableOptions
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CParameterizedTrajectoryGenerator)
@@ -92,7 +92,7 @@ class CParameterizedTrajectoryGenerator : public mrpt::utils::CSerializable,
 	  *
 	  * `ptgClassName` can be any PTG class name which has been registered as
 	  *any other
-	  * mrpt::utils::CSerializable class.
+	  * mrpt::serialization::CSerializable class.
 	  *
 	  * \exception std::logic_error On invalid or missing parameters.
 	  */

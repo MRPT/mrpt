@@ -41,7 +41,7 @@ void CGPS_NTRIP::doProcess()
 		TListObservations lst;
 		gps.getObservations(lst);
 
-		std::vector<mrpt::utils::CSerializable::Ptr> vect;
+		std::vector<mrpt::serialization::CSerializable::Ptr> vect;
 		vect.reserve(lst.size());
 		for (TListObservations::const_iterator it = lst.begin();
 			 it != lst.end(); ++it)

@@ -67,7 +67,7 @@ mrpt::utils::CStream& operator<<(
   * \sa CPose3D
   * \ingroup kinematics_grp
   */
-class CKinematicChain : public mrpt::utils::CSerializable
+class CKinematicChain : public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(CKinematicChain)
 

@@ -24,7 +24,7 @@ namespace maps
  *    This class stores the coordinates (x,y,z) and a "weight", or counter of
  * how many times that point has been seen, used only if points fusion is
  * enabled in the options structure.
- * \sa CMetricMap, CPoint, mrpt::utils::CSerializable, CSimplePointsMap
+ * \sa CMetricMap, CPoint, mrpt::serialization::CSerializable, CSimplePointsMap
  * \ingroup mrpt_maps_grp
  */
 class CWeightedPointsMap : public CPointsMap

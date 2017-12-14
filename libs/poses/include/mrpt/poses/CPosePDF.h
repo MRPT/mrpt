@@ -38,7 +38,7 @@ class CPosePDFGaussian;  // frd decl.
  * \sa CPose2D, CPose3DPDF, CPoseRandomSampler
  * \ingroup poses_pdf_grp
  */
-class CPosePDF : public mrpt::utils::CSerializable,
+class CPosePDF : public mrpt::serialization::CSerializable,
 				 public mrpt::utils::CProbabilityDensityFunction<CPose2D, 3>
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CPosePDF)

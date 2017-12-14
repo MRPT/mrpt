@@ -29,7 +29,7 @@ namespace poses
  * \ingroup poses_grp
  * \sa CPoseOrPoint,CPose, CPoint
  */
-class CPoint3D : public CPoint<CPoint3D>, public mrpt::utils::CSerializable
+class CPoint3D : public CPoint<CPoint3D>, public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(CPoint3D)
 

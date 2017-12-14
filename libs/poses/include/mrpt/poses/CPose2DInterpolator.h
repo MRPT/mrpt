@@ -47,7 +47,7 @@ namespace poses
   * \sa CPoseOrPoint
  * \ingroup interpolation_grp poses_grp
  */
-class CPose2DInterpolator : public mrpt::utils::CSerializable,
+class CPose2DInterpolator : public mrpt::serialization::CSerializable,
 							public mrpt::poses::CPoseInterpolatorBase<2>
 {
 	// This must be added to any CSerializable derived class:

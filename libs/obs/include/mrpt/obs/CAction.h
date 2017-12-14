@@ -25,7 +25,7 @@ namespace obs
  * \sa CActionCollection, CRawlog
  * \ingroup mrpt_obs_grp
  */
-class CAction : public mrpt::utils::CSerializable
+class CAction : public mrpt::serialization::CSerializable
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CAction)
 

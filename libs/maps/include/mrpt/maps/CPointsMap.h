@@ -57,7 +57,7 @@ struct pointmap_traits;
  * there is no need to build MRPT against libLAS to use this feature.
  * See LAS functions in \ref mrpt_maps_liblas_grp.
  *
- * \sa CMetricMap, CPoint, mrpt::utils::CSerializable
+ * \sa CMetricMap, CPoint, mrpt::serialization::CSerializable
   * \ingroup mrpt_maps_grp
  */
 class CPointsMap : public CMetricMap,

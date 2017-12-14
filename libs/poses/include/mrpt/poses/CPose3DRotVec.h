@@ -42,7 +42,7 @@ namespace poses
  * \sa CPose3DRotVec, CPoseOrPoint,CPoint3D, mrpt::math::CQuaternion
  */
 class CPose3DRotVec : public CPose<CPose3DRotVec>,
-					  public mrpt::utils::CSerializable
+					  public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(CPose3DRotVec)
 

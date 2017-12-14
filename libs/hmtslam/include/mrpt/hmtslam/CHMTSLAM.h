@@ -53,7 +53,7 @@ class CLSLAM_RBPF_2DLASER;
  *
  *  The complete state of the SLAM framework is serializable, so it can be saved
  *and restore to/from a binary dump. This class implements
- *mrpt::utils::CSerializable, so
+ *mrpt::serialization::CSerializable, so
  *    it can be saved with "stream << slam_object;" and restored with "stream >>
  *slam_object;". Alternatively, the methods CHMTSLAM::saveState and
  *CHMTSLAM::loadState
@@ -64,7 +64,7 @@ class CLSLAM_RBPF_2DLASER;
   * \ingroup mrpt_hmtslam_grp
  */
 class CHMTSLAM : public mrpt::utils::COutputLogger,
-				 public mrpt::utils::CSerializable
+				 public mrpt::serialization::CSerializable
 {
 	friend class CLocalMetricHypothesis;
 	friend class CLSLAM_RBPF_2DLASER;
@@ -233,11 +233,11 @@ class CHMTSLAM : public mrpt::utils::COutputLogger,
 	/** Used from the LSLAM thread to retrieve the next object from the queue.
 	  * \return The object, or nullptr if empty.
 	  */
-	mrpt::utils::CSerializable::Ptr getNextObjectFromInputQueue();
+	mrpt::serialization::CSerializable::Ptr getNextObjectFromInputQueue();
 
 	/** The queue of pending actions/observations supplied by the user waiting
 	 * for being processed. */
-	std::queue<mrpt::utils::CSerializable::Ptr> m_inputQueue;
+	std::queue<mrpt::serialization::CSerializable::Ptr> m_inputQueue;
 
 	/** Critical section for accessing  m_inputQueue */
 	mutable std::mutex m_inputQueue_cs;

@@ -65,12 +65,12 @@ typedef std::multimap<mrpt::system::TTimeStamp, CObservation::Ptr>
  *RawLog file format</a>.
  * \ingroup mrpt_obs_grp
  */
-class CRawlog : public mrpt::utils::CSerializable
+class CRawlog : public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(CRawlog)
 
    private:
-	typedef std::vector<mrpt::utils::CSerializable::Ptr> TListObjects;
+	typedef std::vector<mrpt::serialization::CSerializable::Ptr> TListObjects;
 	/** The list where the objects really are in. */
 	TListObjects m_seqOfActObs;
 
@@ -152,7 +152,7 @@ class CRawlog : public mrpt::utils::CSerializable
 	  * \sa addObservations, addActionsMemoryReference,
 	 * addObservationMemoryReference
 	  */
-	void addGenericObject(const mrpt::utils::CSerializable::Ptr& obj);
+	void addGenericObject(const mrpt::serialization::CSerializable::Ptr& obj);
 
 	/** Load the contents from a file containing one of these possibilities:
 	  *  - A "CRawlog" object.
@@ -216,7 +216,7 @@ class CRawlog : public mrpt::utils::CSerializable
 	  * \sa size, isAction, getAsAction, getAsObservations
 	  * \exception std::exception If index is out of bounds
 	  */
-	mrpt::utils::CSerializable::Ptr getAsGeneric(size_t index) const;
+	mrpt::serialization::CSerializable::Ptr getAsGeneric(size_t index) const;
 
 	/** Returns the i'th element in the sequence, as being an observation, where
 	 * index=0 is the first object.
@@ -248,7 +248,7 @@ class CRawlog : public mrpt::utils::CSerializable
 
 		bool operator==(const iterator& o) { return m_it == o.m_it; }
 		bool operator!=(const iterator& o) { return m_it != o.m_it; }
-		mrpt::utils::CSerializable::Ptr operator*() { return *m_it; }
+		mrpt::serialization::CSerializable::Ptr operator*() { return *m_it; }
 		inline iterator operator++(int)
 		{
 			iterator aux = *this;
@@ -303,7 +303,7 @@ class CRawlog : public mrpt::utils::CSerializable
 		virtual ~const_iterator() {}
 		bool operator==(const const_iterator& o) { return m_it == o.m_it; }
 		bool operator!=(const const_iterator& o) { return m_it != o.m_it; }
-		const mrpt::utils::CSerializable::Ptr operator*() const
+		const mrpt::serialization::CSerializable::Ptr operator*() const
 		{
 			return *m_it;
 		}

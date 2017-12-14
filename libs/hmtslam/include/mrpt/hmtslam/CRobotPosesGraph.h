@@ -36,7 +36,7 @@ struct TPoseInfo
  * NODE_ANNOTATION_POSES_GRAPH.
   * \ingroup mrpt_hmtslam_grp
   */
-class CRobotPosesGraph : public mrpt::utils::CSerializable,
+class CRobotPosesGraph : public mrpt::serialization::CSerializable,
 						 public std::map<TPoseID, TPoseInfo>
 {
 	DEFINE_SERIALIZABLE(CRobotPosesGraph)

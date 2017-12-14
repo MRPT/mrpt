@@ -75,7 +75,7 @@ typedef std::set<TPoseID> TPoseIDSet;
   *  \sa THypothesisID, CHierarchicalMHMap
   * \ingroup mrpt_hmtslam_grp
   */
-class THypothesisIDSet : public mrpt::utils::CSerializable,
+class THypothesisIDSet : public mrpt::serialization::CSerializable,
 						 public std::set<THypothesisID>
 {
 	DEFINE_SERIALIZABLE(THypothesisIDSet)

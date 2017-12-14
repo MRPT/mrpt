@@ -85,7 +85,7 @@ class CPose3DRotVec;
  * \ingroup poses_grp
  * \sa CPoseOrPoint,CPoint3D, mrpt::math::CQuaternion
  */
-class CPose3D : public CPose<CPose3D>, public mrpt::utils::CSerializable
+class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(CPose3D)
 

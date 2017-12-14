@@ -49,7 +49,7 @@ such as on-the-fly loading of images stored in disk upon first usage. The intern
 be still used to operate on MRPT images. </li>
 
 <li><b>Serialization/Persistence:</b> Object serialization in a simple but powerful (including versioning) format
-is supported by dozens of MRPT classes, all based on mrpt::utils::CSerializable. </li>
+is supported by dozens of MRPT classes, all based on mrpt::serialization::CSerializable. </li>
 
 <li><b>Streams:</b> Stream classes (see the base mrpt::utils::CStream) allow serialization of MRPT objects. There are classes
 for tranparent GZ-compressed files, sockets, serial ports, etc.  </li>

@@ -51,7 +51,7 @@ namespace obs
   * \sa CObservation
   * \ingroup mrpt_obs_grp
   */
-class CSensoryFrame : public mrpt::utils::CSerializable
+class CSensoryFrame : public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(CSensoryFrame)
 

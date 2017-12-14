@@ -52,7 +52,7 @@ namespace maps
  * \sa CObservation, CSensoryFrame, CMultiMetricMap
  * \ingroup mrpt_obs_grp
  */
-class CMetricMap : public mrpt::utils::CSerializable,
+class CMetricMap : public mrpt::serialization::CSerializable,
 				   public mrpt::utils::CObservable
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CMetricMap)

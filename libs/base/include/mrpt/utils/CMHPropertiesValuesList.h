@@ -35,7 +35,7 @@ struct TPropertyValueIDTriplet
  * \sa CSerializable, CPropertiesValuesList
 * \ingroup mrpt_base_grp
  */
-class CMHPropertiesValuesList : public mrpt::utils::CSerializable
+class CMHPropertiesValuesList : public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(CMHPropertiesValuesList)
 

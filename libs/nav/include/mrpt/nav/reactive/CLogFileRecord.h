@@ -28,7 +28,7 @@ namespace nav
  * \sa CReactiveNavigationSystem, CHolonomicLogFileRecord
  *  \ingroup nav_reactive
  */
-class CLogFileRecord : public mrpt::utils::CSerializable
+class CLogFileRecord : public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(CLogFileRecord)
 

@@ -39,7 +39,7 @@ namespace serialization
  */
 template <typename ZMQ_SOCKET_TYPE>
 void mrpt_send_to_zmq(
-	ZMQ_SOCKET_TYPE zmq_socket, const mrpt::utils::CSerializable& obj,
+	ZMQ_SOCKET_TYPE zmq_socket, const mrpt::serialization::CSerializable& obj,
 	const size_t max_packet_len = 0)
 {
 	mrpt::utils::CMemoryStream* buf = new mrpt::utils::CMemoryStream();
@@ -172,12 +172,12 @@ void free_zmq_msg_lst(VECTOR_MSG_T& lst_msgs)
  * https://github.com/MRPT/mrpt/tree/master/doc/mrpt-zeromq-example
  */
 template <typename ZMQ_SOCKET_TYPE>
-mrpt::utils::CSerializable::Ptr mrpt_recv_from_zmq(
+mrpt::serialization::CSerializable::Ptr mrpt_recv_from_zmq(
 	ZMQ_SOCKET_TYPE zmq_socket, bool dont_wait = false,
 	size_t* rx_obj_length_in_bytes = nullptr)
 {
 	CMemoryStream target_buf;
-	mrpt::utils::CSerializable::Ptr obj;
+	mrpt::serialization::CSerializable::Ptr obj;
 	std::vector<zmq_msg_t*> lst_msgs_to_close;
 	if (!mrpt_recv_from_zmq_buf(
 			zmq_socket, lst_msgs_to_close, target_buf, dont_wait,
@@ -201,7 +201,7 @@ mrpt::utils::CSerializable::Ptr mrpt_recv_from_zmq(
   */
 template <typename ZMQ_SOCKET_TYPE>
 bool mrpt_recv_from_zmq_into(
-	ZMQ_SOCKET_TYPE zmq_socket, mrpt::utils::CSerializable& target_object,
+	ZMQ_SOCKET_TYPE zmq_socket, mrpt::serialization::CSerializable& target_object,
 	bool dont_wait = false, size_t* rx_obj_length_in_bytes = nullptr)
 {
 	CMemoryStream target_buf;

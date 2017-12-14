@@ -12,7 +12,6 @@
 #include <mrpt/utils/core_defs.h>
 #include <mrpt/utils/types_math.h>  // Eigen
 #include <mrpt/utils/TTypeName.h>
-#include <mrpt/math/point_poses2vectors.h>  // MRPT_MATRIX_CONSTRUCTORS_FROM_POSES()
 
 namespace mrpt
 {
@@ -33,7 +32,6 @@ class CArrayNumeric : public Eigen::Matrix<T, N, 1>
 	CArrayNumeric() {}
 	/** Constructor from initial values ptr[0]-ptr[N-1] */
 	CArrayNumeric(const T* ptr) : Eigen::Matrix<T, N, 1>(ptr) {}
-	MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(CArrayNumeric)
 
 	/** Initialization from a vector-like source, that is, anything implementing
 	 * operator[]. */
@@ -66,7 +64,6 @@ class CArrayFloat : public CArrayNumeric<float, N>
 	CArrayFloat() {}
 	/** Constructor from initial values ptr[0]-ptr[N-1] */
 	CArrayFloat(const float* ptr) : CArrayNumeric<float, N>(ptr) {}
-	MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(CArrayFloat)
 
 	/** Initialization from a vector-like source, that is, anything implementing
 	 * operator[]. */
@@ -94,7 +91,6 @@ class CArrayDouble : public CArrayNumeric<double, N>
 	CArrayDouble() {}
 	/** Constructor from initial values ptr[0]-ptr[N-1] */
 	CArrayDouble(const double* ptr) : CArrayNumeric<double, N>(ptr) {}
-	MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(CArrayDouble)
 
 	/** Initialization from a vector-like source, that is, anything implementing
 	 * operator[]. */

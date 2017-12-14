@@ -45,7 +45,7 @@ namespace poses
  * version of this class,  mrpt::math::CQuaternion, CPoseOrPoint
  * \ingroup poses_grp
  */
-class CPose3DQuat : public CPose<CPose3DQuat>, public mrpt::utils::CSerializable
+class CPose3DQuat : public CPose<CPose3DQuat>, public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(CPose3DQuat)
 

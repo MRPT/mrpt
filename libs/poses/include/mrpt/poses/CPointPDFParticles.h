@@ -22,7 +22,7 @@ namespace poses
 /** Data within each particle
  * \ingroup poses_pdf_grp
   */
-class TSimple3DPoint : public mrpt::utils::CSerializable
+class TSimple3DPoint : public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(TSimple3DPoint)
    public:
