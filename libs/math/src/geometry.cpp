@@ -13,14 +13,12 @@
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/math/CSparseMatrixTemplate.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
-#include <mrpt/math/data_utils.h>
+//#include <mrpt/math/data_utils.h>
 #include <mrpt/math/ops_containers.h>
-#include <mrpt/math/lightweight_geom_data.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace std;
-using namespace mrpt::poses;
 using namespace mrpt::math;
 
 static double geometryEpsilon = 1e-5;
@@ -456,9 +454,9 @@ bool intersectInCommonPlane(
 	T3D proj1;
 	U3D proj2;
 	// Project into 3D plane, ignoring Z coordinate.
-	CPose3D pose;
+	TPose3D pose;
 	TPlane(p).getAsPose3D(pose);
-	CPose3D poseNeg = CPose3D(0, 0, 0, 0, 0, 0) - pose;
+	TPose3D poseNeg = TPose3D(0, 0, 0, 0, 0, 0) - pose;
 	project3D(o1, poseNeg, proj1);
 	project3D(o2, poseNeg, proj2);
 	T2D proj1_2D;
@@ -526,13 +524,13 @@ bool intersectInCommonLine(
 	}
 }
 inline void unsafeProjectPoint(
-	const TPoint3D& point, const CPose3D& pose, TPoint2D& newPoint)
+	const TPoint3D& point, const TPose3D& pose, TPoint2D& newPoint)
 {
 	double dummy;
 	pose.composePoint(point.x, point.y, point.z, newPoint.x, newPoint.y, dummy);
 }
 void unsafeProjectPolygon(
-	const TPolygon3D& poly, const CPose3D& pose, TPolygon2D& newPoly)
+	const TPolygon3D& poly, const TPose3D& pose, TPolygon2D& newPoly)
 {
 	size_t N = poly.size();
 	newPoly.resize(N);
@@ -927,7 +925,7 @@ double math::getAngle(const TLine2D& r1, const TLine2D& r2)
 }
 
 // Auxiliary method
-void createFromPoseAndAxis(const CPose3D& p, TLine3D& r, size_t axis)
+void createFromPoseAndAxis(const TPose3D& p, TLine3D& r, size_t axis)
 {
 	CMatrixDouble44 m = p.getHomogeneousMatrixVal();
 	for (size_t i = 0; i < 3; i++)
@@ -938,23 +936,23 @@ void createFromPoseAndAxis(const CPose3D& p, TLine3D& r, size_t axis)
 }
 // End of auxiliary method
 
-void math::createFromPoseX(const CPose3D& p, TLine3D& r)
+void math::createFromPoseX(const TPose3D& p, TLine3D& r)
 {
 	createFromPoseAndAxis(p, r, 0);
 }
 
-void math::createFromPoseY(const CPose3D& p, TLine3D& r)
+void math::createFromPoseY(const TPose3D& p, TLine3D& r)
 {
 	createFromPoseAndAxis(p, r, 1);
 }
 
-void math::createFromPoseZ(const CPose3D& p, TLine3D& r)
+void math::createFromPoseZ(const TPose3D& p, TLine3D& r)
 {
 	createFromPoseAndAxis(p, r, 2);
 }
 
 void math::createFromPoseAndVector(
-	const CPose3D& p, const double (&vector)[3], TLine3D& r)
+	const TPose3D& p, const double (&vector)[3], TLine3D& r)
 {
 	CMatrixDouble44 m = p.getHomogeneousMatrixVal();
 	for (size_t i = 0; i < 3; i++)
@@ -1071,7 +1069,7 @@ bool math::areAligned(const std::vector<TPoint3D>& points, TLine3D& r)
 }
 
 void math::project3D(
-	const TLine3D& line, const CPose3D& newXYpose, TLine3D& newLine)
+	const TLine3D& line, const TPose3D& newXYpose, TLine3D& newLine)
 {
 	newXYpose.composePoint(
 		line.pBase.x, line.pBase.y, line.pBase.z, newLine.pBase.x,
@@ -1087,7 +1085,7 @@ void math::project3D(
 }
 
 void math::project3D(
-	const TPlane& plane, const CPose3D& newXYpose, TPlane& newPlane)
+	const TPlane& plane, const TPose3D& newXYpose, TPlane& newPlane)
 {
 	CMatrixDouble44 mat = newXYpose.getHomogeneousMatrixVal();
 	for (size_t i = 0; i < 3; i++)
@@ -1100,7 +1098,7 @@ void math::project3D(
 	// más tarde)
 	// La idea es mantener la distancia al nuevo origen igual a la distancia del
 	// punto original antes de proyectar.
-	// newPlane.coefs[3]=plane.evaluatePoint(TPoint3D(CPose3D(0,0,0,0,0,0)-newXYpose))*sqrt((newPlane.coefs[0]*newPlane.coefs[0]+newPlane.coefs[1]*newPlane.coefs[1]+newPlane.coefs[2]*newPlane.coefs[2])/(plane.coefs[0]*plane.coefs[0]+plane.coefs[1]*plane.coefs[1]+plane.coefs[2]*plane.coefs[2]));
+	// newPlane.coefs[3]=plane.evaluatePoint(TPoint3D(TPose3D(0,0,0,0,0,0)-newXYpose))*sqrt((newPlane.coefs[0]*newPlane.coefs[0]+newPlane.coefs[1]*newPlane.coefs[1]+newPlane.coefs[2]*newPlane.coefs[2])/(plane.coefs[0]*plane.coefs[0]+plane.coefs[1]*plane.coefs[1]+plane.coefs[2]*plane.coefs[2]));
 	newPlane.coefs[3] = plane.evaluatePoint(TPoint3D(-newXYpose)) *
 						sqrt(
 							squareNorm<3, double>(newPlane.coefs) /
@@ -1109,7 +1107,7 @@ void math::project3D(
 }
 
 void math::project3D(
-	const TPolygon3D& polygon, const CPose3D& newXYpose, TPolygon3D& newPolygon)
+	const TPolygon3D& polygon, const TPose3D& newXYpose, TPolygon3D& newPolygon)
 {
 	size_t N = polygon.size();
 	newPolygon.resize(N);
@@ -1118,7 +1116,7 @@ void math::project3D(
 }
 
 void math::project3D(
-	const TObject3D& object, const CPose3D& newXYpose, TObject3D& newObject)
+	const TObject3D& object, const TPose3D& newXYpose, TObject3D& newObject)
 {
 	switch (object.getType())
 	{
@@ -1168,26 +1166,26 @@ void math::project3D(
 }
 
 void math::project2D(
-	const TPoint2D& point, const mrpt::poses::CPose2D& newXpose,
+	const TPoint2D& point, const TPose2D& newXpose,
 	TPoint2D& newPoint)
 {
-	newPoint = newXpose + mrpt::poses::CPoint2D(point);
+	newXpose.composePoint(point, newPoint);
 }
 
 void math::project2D(
-	const TLine2D& line, const CPose2D& newXpose, TLine2D& newLine)
+	const TLine2D& line, const TPose2D& newXpose, TLine2D& newLine)
 {
-	double c = cos(newXpose.phi());
-	double s = sin(newXpose.phi());
+	double c = cos(newXpose.phi);
+	double s = sin(newXpose.phi);
 	newLine.coefs[0] = line.coefs[0] * c - line.coefs[1] * s;
 	newLine.coefs[1] = line.coefs[1] * c + line.coefs[0] * s;
-	newLine.coefs[2] = line.coefs[2] - (newLine.coefs[0] * newXpose.x() +
-										newLine.coefs[1] * newXpose.y());
+	newLine.coefs[2] = line.coefs[2] - (newLine.coefs[0] * newXpose.x +
+										newLine.coefs[1] * newXpose.y);
 	return;
 }
 
 void math::project2D(
-	const TPolygon2D& line, const CPose2D& newXpose, TPolygon2D& newLine)
+	const TPolygon2D& line, const TPose2D& newXpose, TPolygon2D& newLine)
 {
 	size_t N = line.size();
 	newLine.resize(N);
@@ -1196,7 +1194,7 @@ void math::project2D(
 }
 
 void math::project2D(
-	const TObject2D& obj, const CPose2D& newXpose, TObject2D& newObject)
+	const TObject2D& obj, const TPose2D& newXpose, TObject2D& newObject)
 {
 	switch (obj.getType())
 	{
@@ -1256,9 +1254,9 @@ bool math::intersect(const TPolygon2D& p1, const TLine2D& r2, TObject2D& obj)
 	// Then, search this new polygons for intersections with the X axis (very
 	// simple).
 	if (p1.size() < 3) return false;
-	CPose2D pose, poseNeg;
+	TPose2D pose, poseNeg;
 	r2.getAsPose2D(pose);
-	poseNeg = CPose2D(0, 0, 0) - pose;
+	poseNeg = TPose2D(0, 0, 0) - pose;
 	TPolygon2D projPoly;
 	project2D(p1, poseNeg, projPoly);
 	size_t N = projPoly.size();
@@ -1516,9 +1514,9 @@ bool math::intersect(const TPolygon3D& p1, const TSegment3D& s2, TObject3D& obj)
 	TSegment3D sgm;
 	if (obj.getPoint(pnt))
 	{
-		CPose3D pose;
+		TPose3D pose;
 		p.getAsPose3DForcingOrigin(p1[0], pose);
-		CPose3D poseNeg = CPose3D(0, 0, 0, 0, 0, 0) - pose;
+		TPose3D poseNeg = TPose3D(0, 0, 0, 0, 0, 0) - pose;
 		TPolygon3D projPoly;
 		TPoint3D projPnt;
 		project3D(p1, poseNeg, projPoly);
@@ -1538,9 +1536,9 @@ bool math::intersect(const TPolygon3D& p1, const TLine3D& r2, TObject3D& obj)
 	TPoint3D pnt;
 	if (obj.getPoint(pnt))
 	{
-		CPose3D pose;
+		TPose3D pose;
 		p.getAsPose3DForcingOrigin(p1[0], pose);
-		CPose3D poseNeg = CPose3D(0, 0, 0, 0, 0, 0) - pose;
+		TPose3D poseNeg = TPose3D(0, 0, 0, 0, 0, 0) - pose;
 		TPolygon3D projPoly;
 		TPoint3D projPnt;
 		project3D(p1, poseNeg, projPoly);
@@ -2028,7 +2026,7 @@ void math::getPrismBounds(
 	}
 }
 
-void createPlaneFromPoseAndAxis(const CPose3D& pose, TPlane& plane, size_t axis)
+void createPlaneFromPoseAndAxis(const TPose3D& pose, TPlane& plane, size_t axis)
 {
 	plane.coefs[3] = 0;
 	CMatrixDouble44 m = pose.getHomogeneousMatrixVal();
@@ -2039,23 +2037,23 @@ void createPlaneFromPoseAndAxis(const CPose3D& pose, TPlane& plane, size_t axis)
 	}
 }
 
-void math::createPlaneFromPoseXY(const CPose3D& pose, TPlane& plane)
+void math::createPlaneFromPoseXY(const TPose3D& pose, TPlane& plane)
 {
 	createPlaneFromPoseAndAxis(pose, plane, 2);
 }
 
-void math::createPlaneFromPoseXZ(const CPose3D& pose, TPlane& plane)
+void math::createPlaneFromPoseXZ(const TPose3D& pose, TPlane& plane)
 {
 	createPlaneFromPoseAndAxis(pose, plane, 1);
 }
 
-void math::createPlaneFromPoseYZ(const CPose3D& pose, TPlane& plane)
+void math::createPlaneFromPoseYZ(const TPose3D& pose, TPlane& plane)
 {
 	createPlaneFromPoseAndAxis(pose, plane, 0);
 }
 
 void math::createPlaneFromPoseAndNormal(
-	const CPose3D& pose, const double (&normal)[3], TPlane& plane)
+	const TPose3D& pose, const double (&normal)[3], TPlane& plane)
 {
 	plane.coefs[3] = 0;
 	CMatrixDouble44 m = pose.getHomogeneousMatrixVal();
@@ -2069,13 +2067,13 @@ void math::createPlaneFromPoseAndNormal(
 }
 
 void math::generateAxisBaseFromDirectionAndAxis(
-	const double (&vec)[3], char coord, CMatrixDouble& matrix)
+	const double (&vec)[3], char coord, CMatrixDouble44& matrix)
 {
 	// Assumes vector is unitary.
 	// coord: 0=x, 1=y, 2=z.
 	char coord1 = (coord + 1) % 3;
 	char coord2 = (coord + 2) % 3;
-	matrix.setSize(4, 4);
+	matrix.setZero();
 	matrix(3, 3) = 1.0;
 	for (size_t i = 0; i < 3; i++) matrix.set_unsafe(i, coord, vec[i]);
 	matrix.set_unsafe(0, coord1, 0);
@@ -2469,9 +2467,9 @@ bool math::splitInConvexComponents(
 class FUnprojectPolygon2D
 {
    public:
-	const CPose3D& pose;
+	const TPose3D& pose;
 	TPolygon3D tmp1, tmp2;
-	FUnprojectPolygon2D(const CPose3D& p) : pose(p), tmp1(0), tmp2(0) {}
+	FUnprojectPolygon2D(const TPose3D& p) : pose(p), tmp1(0), tmp2(0) {}
 	TPolygon3D operator()(const TPolygon2D& poly2D)
 	{
 		tmp1 = TPolygon3D(poly2D);
@@ -2484,7 +2482,7 @@ bool math::splitInConvexComponents(
 {
 	TPlane p;
 	if (!poly.getPlane(p)) throw std::logic_error("Polygon is skew");
-	CPose3D pose1, pose2;
+	TPose3D pose1, pose2;
 	p.getAsPose3DForcingOrigin(poly[0], pose1);
 	pose2 = -pose1;
 	TPolygon3D polyTmp;
@@ -2568,7 +2566,7 @@ void math::getAngleBisector(const TLine3D& l1, const TLine3D& l2, TLine3D& bis)
 	TPlane p = TPlane(l1, l2);  // May throw an exception
 	TLine3D l1P, l2P;
 	TLine2D bis2D;
-	CPose3D pose, pose2;
+	TPose3D pose, pose2;
 	p.getAsPose3D(pose);
 	pose2 = -pose;
 	project3D(l1, pose2, l1P);
@@ -2578,7 +2576,7 @@ void math::getAngleBisector(const TLine3D& l1, const TLine3D& l2, TLine3D& bis)
 }
 
 bool math::traceRay(
-	const vector<TPolygonWithPlane>& vec, const CPose3D& pose, double& dist)
+	const vector<TPolygonWithPlane>& vec, const TPose3D& pose, double& dist)
 {
 	dist = HUGE_VAL;
 	double nDist = 0;

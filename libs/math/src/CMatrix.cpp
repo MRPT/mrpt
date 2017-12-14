@@ -11,6 +11,7 @@
 
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -43,7 +44,7 @@ void CMatrix::serializeTo(mrpt::serialization::CArchive& out) const
 			out.WriteBufferFixEndianness<Scalar>(&coeff(i, 0), cols());
 }
 
-void CMatrix::serializeFrom(mrpt::serialization::CArchive& in, uint8_t serial_version)
+void CMatrix::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

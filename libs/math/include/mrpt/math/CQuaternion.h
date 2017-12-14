@@ -7,12 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CQuaternion_H
-#define CQuaternion_H
+#pragma once
 
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/CArrayNumeric.h>
-#include <mrpt/utils/bits.h>
 
 namespace mrpt
 {
@@ -506,7 +504,4 @@ typedef CQuaternion<double> CQuaternionDouble;
 typedef CQuaternion<float> CQuaternionFloat;
 
 }  // end namespace
-
 }  // end namespace mrpt
-
-#endif

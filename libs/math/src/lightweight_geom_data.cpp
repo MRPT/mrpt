@@ -9,30 +9,28 @@
 
 #include "math-precomp.h"  // Precompiled headers
 
+#include <mrpt/core/exceptions.h>
 #include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/poses/CPoint2D.h>
-#include <mrpt/poses/CPoint3D.h>
-#include <mrpt/poses/CPose2D.h>
-#include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/math/CQuaternion.h>
-#include <mrpt/math/geometry.h>
+#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/geometry.h> // distance()
 #include <mrpt/math/ops_containers.h>
-#include <mrpt/utils/CStream.h>
-#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/math/homog_matrices.h>
+#include <mrpt/serialization/stl_serialization.h>
+#include <mrpt/serialization/CArchive.h> // impl of << operator
 
 using namespace std;  // For min/max, etc...
+using namespace mrpt::serialization; // CArchive, << operator for STL
 
 namespace mrpt
 {
 namespace math
 {
-using namespace mrpt::poses;  // For the +,- operators
 using namespace mrpt::utils;
 
 TPoint2D::TPoint2D(const TPose2D& p) : x(p.x), y(p.y) {}
 TPoint2D::TPoint2D(const TPoint3D& p) : x(p.x), y(p.y) {}
 TPoint2D::TPoint2D(const TPose3D& p) : x(p.x), y(p.y) {}
-TPoint2D::TPoint2D(const mrpt::poses::CPoint2D& p) : x(p.x()), y(p.y()) {}
 bool TPoint2D::operator<(const TPoint2D& p) const
 {
 	if (x < p.x)
@@ -47,8 +45,7 @@ void TPoint2D::fromString(const std::string& s)
 	CMatrixDouble m;
 	if (!m.fromMatlabStringFormat(s))
 		THROW_EXCEPTION("Malformed expression in ::fromString");
-	ASSERTMSG_(
-		mrpt::math::size(m, 1) == 1 && mrpt::math::size(m, 2) == 2,
+	ASSERTMSG_(m.rows() == 1 && m.cols() == 2,
 		"Wrong size of vector in ::fromString");
 	x = m.get_unsafe(0, 0);
 	y = m.get_unsafe(0, 1);
@@ -57,10 +54,6 @@ void TPoint2D::fromString(const std::string& s)
 TPose2D::TPose2D(const TPoint2D& p) : x(p.x), y(p.y), phi(0.0) {}
 TPose2D::TPose2D(const TPoint3D& p) : x(p.x), y(p.y), phi(0.0) {}
 TPose2D::TPose2D(const TPose3D& p) : x(p.x), y(p.y), phi(p.yaw) {}
-TPose2D::TPose2D(const mrpt::poses::CPose2D& p)
-	: x(p.x()), y(p.y()), phi(p.phi())
-{
-}
 void TPose2D::asString(std::string& s) const
 {
 	s = mrpt::format("[%f %f %f]", x, y, mrpt::utils::RAD2DEG(phi));
@@ -71,7 +64,7 @@ void TPose2D::fromString(const std::string& s)
 	if (!m.fromMatlabStringFormat(s))
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(
-		mrpt::math::size(m, 1) == 1 && mrpt::math::size(m, 2) == 3,
+		m.rows() == 1 && m.cols() == 3,
 		"Wrong size of vector in ::fromString");
 	x = m.get_unsafe(0, 0);
 	y = m.get_unsafe(0, 1);
@@ -114,7 +107,7 @@ void TTwist2D::fromString(const std::string& s)
 	if (!m.fromMatlabStringFormat(s))
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(
-		mrpt::math::size(m, 1) == 1 && mrpt::math::size(m, 2) == 3,
+		m.rows() == 1 && m.cols() == 3,
 		"Wrong size of vector in ::fromString");
 	vx = m.get_unsafe(0, 0);
 	vy = m.get_unsafe(0, 1);
@@ -152,7 +145,7 @@ void TTwist3D::fromString(const std::string& s)
 	if (!m.fromMatlabStringFormat(s))
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(
-		mrpt::math::size(m, 1) == 1 && mrpt::math::size(m, 2) == 6,
+		m.rows() == 1 && m.cols() == 6,
 		"Wrong size of vector in ::fromString");
 	for (int i = 0; i < 3; i++) (*this)[i] = m.get_unsafe(0, i);
 	for (int i = 0; i < 3; i++)
@@ -161,10 +154,11 @@ void TTwist3D::fromString(const std::string& s)
 // Transform all 6 components for a change of reference frame from "A" to
 // another frame "B" whose rotation with respect to "A" is given by `rot`. The
 // translational part of the pose is ignored
-void TTwist3D::rotate(const mrpt::poses::CPose3D& rot)
+void TTwist3D::rotate(const TPose3D& rot)
 {
 	const TTwist3D t = *this;
-	const mrpt::math::CMatrixDouble33& R = rot.getRotationMatrix();
+	mrpt::math::CMatrixDouble33 R;
+	rot.getRotationMatrix(R);
 	vx = R(0, 0) * t.vx + R(0, 1) * t.vy + R(0, 2) * t.vz;
 	vy = R(1, 0) * t.vx + R(1, 1) * t.vy + R(1, 2) * t.vz;
 	vz = R(2, 0) * t.vx + R(2, 1) * t.vy + R(2, 2) * t.vz;
@@ -182,13 +176,6 @@ bool TTwist3D::operator!=(const TTwist3D& o) const { return !(*this == o); }
 TPoint3D::TPoint3D(const TPoint2D& p) : x(p.x), y(p.y), z(0.0) {}
 TPoint3D::TPoint3D(const TPose2D& p) : x(p.x), y(p.y), z(0.0) {}
 TPoint3D::TPoint3D(const TPose3D& p) : x(p.x), y(p.y), z(p.z) {}
-TPoint3D::TPoint3D(const mrpt::poses::CPoint3D& p)
-	: x(p.x()), y(p.y()), z(p.z())
-{
-}
-TPoint3D::TPoint3D(const mrpt::poses::CPose3D& p) : x(p.x()), y(p.y()), z(p.z())
-{
-}
 bool TPoint3D::operator<(const TPoint3D& p) const
 {
 	if (x < p.x)
@@ -208,7 +195,7 @@ void TPoint3D::fromString(const std::string& s)
 	if (!m.fromMatlabStringFormat(s))
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(
-		mrpt::math::size(m, 1) == 1 && mrpt::math::size(m, 2) == 3,
+		m.rows() == 1 && m.cols() == 3,
 		"Wrong size of vector in ::fromString");
 	x = m.get_unsafe(0, 0);
 	y = m.get_unsafe(0, 1);
@@ -225,15 +212,6 @@ TPose3D::TPose3D(const TPose2D& p)
 }
 TPose3D::TPose3D(const TPoint3D& p)
 	: x(p.x), y(p.y), z(p.z), yaw(0.0), pitch(0.0), roll(0.0)
-{
-}
-TPose3D::TPose3D(const mrpt::poses::CPose3D& p)
-	: x(p.x()),
-	  y(p.y()),
-	  z(p.z()),
-	  yaw(p.yaw()),
-	  pitch(p.pitch()),
-	  roll(p.roll())
 {
 }
 void TPose3D::asString(std::string& s) const
@@ -280,13 +258,46 @@ void TPose3D::getAsQuaternion(
 		out_dq_dr->loadFromArray(nums);
 	}
 }
+void TPose3D::composePoint(const TPoint3D l, TPoint3D& g) const
+{
+	MRPT_TODO("XXX");
+}
+void TPose3D::inverseComposePoint(const TPoint3D g, TPoint3D& l) const
+{
+	MRPT_TODO("XXX");
+}
+void TPose3D::getRotationMatrix(mrpt::math::CMatrixDouble33 &R) const
+{
+	MRPT_TODO("XXX");
+}
+void TPose3D::fromHomogeneousMatrix(mrpt::math::CMatrixDouble44 &HG)
+{
+	MRPT_TODO("XXX");
+}
+void TPose3D::getHomogeneousMatrix(mrpt::math::CMatrixDouble44 &HG) const
+{
+	CMatrixDouble33 R;
+	getRotationMatrix(R);
+	HG.block<3, 3>(0, 0) = R;
+	HG(0, 3) = x;
+	HG(1, 3) = y;
+	HG(2, 3) = z;
+	HG(3, 0) = HG(3, 1) = HG(3, 2) = 0.;
+	HG(3, 3) = 1.;
+}
+void TPose3D::getInverseHomogeneousMatrix(mrpt::math::CMatrixDouble44 &HG) const
+{  // Get current HM & inverse in-place:
+	this->getHomogeneousMatrix(HG);
+	mrpt::math::homogeneousMatrixInverse(HG);
+}
+
 void TPose3D::fromString(const std::string& s)
 {
 	CMatrixDouble m;
 	if (!m.fromMatlabStringFormat(s))
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(
-		mrpt::math::size(m, 1) == 1 && mrpt::math::size(m, 2) == 6,
+		m.rows() == 1 && m.cols() == 6,
 		"Wrong size of vector in ::fromString");
 	x = m.get_unsafe(0, 0);
 	y = m.get_unsafe(0, 1);
@@ -296,23 +307,13 @@ void TPose3D::fromString(const std::string& s)
 	roll = DEG2RAD(m.get_unsafe(0, 5));
 }
 
-TPose3DQuat::TPose3DQuat(const mrpt::poses::CPose3DQuat& p)
-	: x(p.x()),
-	  y(p.y()),
-	  z(p.z()),
-	  qr(p.quat().r()),
-	  qx(p.quat().x()),
-	  qy(p.quat().y()),
-	  qz(p.quat().z())
-{
-}
 void TPose3DQuat::fromString(const std::string& s)
 {
 	CMatrixDouble m;
 	if (!m.fromMatlabStringFormat(s))
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(
-		mrpt::math::size(m, 1) == 1 && mrpt::math::size(m, 2) == 7,
+		m.rows() == 1 && m.cols() == 7,
 		"Wrong size of vector in ::fromString");
 	for (size_t i = 0; i < m.getColCount(); i++)
 		(*this)[i] = m.get_unsafe(0, i);
@@ -321,69 +322,69 @@ void TPose3DQuat::fromString(const std::string& s)
 // Text streaming:
 std::ostream& operator<<(std::ostream& o, const TPoint2D& p)
 {
-	return (o << CPoint2D(p));
+	return (o << p.asString());
 }
 std::ostream& operator<<(std::ostream& o, const TPoint3D& p)
 {
-	return (o << CPoint3D(p));
+	return (o << p.asString());
 }
 std::ostream& operator<<(std::ostream& o, const TPose2D& p)
 {
-	return (o << CPose2D(p));
+	return (o << p.asString());
 }
 std::ostream& operator<<(std::ostream& o, const TPose3D& p)
 {
-	return (o << CPose3D(p));
+	return (o << p.asString());
 }
 std::ostream& operator<<(std::ostream& o, const TPose3DQuat& p)
 {
-	return (o << CPose3DQuat(p));
+	return (o << p.asString());
 }
 
-CStream& operator>>(mrpt::utils::CStream& in, mrpt::math::TSegment2D& s)
+CArchive& operator>>(CArchive& in, mrpt::math::TSegment2D& s)
 {
 	return in >> s.point1 >> s.point2;
 }
-CStream& operator<<(mrpt::utils::CStream& out, const mrpt::math::TSegment2D& s)
+CArchive& operator<<(CArchive& out, const mrpt::math::TSegment2D& s)
 {
 	return out << s.point1 << s.point2;
 }
-CStream& operator>>(mrpt::utils::CStream& in, mrpt::math::TLine2D& l)
+CArchive& operator>>(CArchive& in, mrpt::math::TLine2D& l)
 {
 	return in >> l.coefs[0] >> l.coefs[1] >> l.coefs[2];
 }
-CStream& operator<<(mrpt::utils::CStream& out, const mrpt::math::TLine2D& l)
+CArchive& operator<<(CArchive& out, const mrpt::math::TLine2D& l)
 {
 	return out << l.coefs[0] << l.coefs[1] << l.coefs[2];
 }
 
-mrpt::utils::CStream& operator>>(
-	mrpt::utils::CStream& in, mrpt::math::TSegment3D& s)
+CArchive& operator>>(
+	CArchive& in, mrpt::math::TSegment3D& s)
 {
 	return in >> s.point1 >> s.point2;
 }
-mrpt::utils::CStream& operator<<(
-	mrpt::utils::CStream& out, const mrpt::math::TSegment3D& s)
+CArchive& operator<<(
+	CArchive& out, const mrpt::math::TSegment3D& s)
 {
 	return out << s.point1 << s.point2;
 }
-mrpt::utils::CStream& operator>>(
-	mrpt::utils::CStream& in, mrpt::math::TLine3D& l)
+CArchive& operator>>(
+	CArchive& in, mrpt::math::TLine3D& l)
 {
 	return in >> l.pBase >> l.director[0] >> l.director[1] >> l.director[2];
 }
-mrpt::utils::CStream& operator<<(
-	mrpt::utils::CStream& out, const mrpt::math::TLine3D& l)
+CArchive& operator<<(
+	CArchive& out, const mrpt::math::TLine3D& l)
 {
 	return out << l.pBase << l.director[0] << l.director[1] << l.director[2];
 }
-mrpt::utils::CStream& operator>>(
-	mrpt::utils::CStream& in, mrpt::math::TPlane& p)
+CArchive& operator>>(
+	CArchive& in, mrpt::math::TPlane& p)
 {
 	return in >> p.coefs[0] >> p.coefs[1] >> p.coefs[2] >> p.coefs[3];
 }
-mrpt::utils::CStream& operator<<(
-	mrpt::utils::CStream& out, const mrpt::math::TPlane& p)
+CArchive& operator<<(
+	CArchive& out, const mrpt::math::TPlane& p)
 {
 	return out << p.coefs[0] << p.coefs[1] << p.coefs[2] << p.coefs[3];
 }
@@ -581,31 +582,30 @@ void TLine2D::getDirectorVector(double (&vector)[2]) const
 	vector[1] = coefs[0];
 }
 void TLine2D::generate3DObject(TLine3D& l) const { l = TLine3D(*this); }
-void TLine2D::getAsPose2D(mrpt::poses::CPose2D& outPose) const
+void TLine2D::getAsPose2D(TPose2D& outPose) const
 {
 	// Line's director vector is (-coefs[1],coefs[0]).
 	// If line is horizontal, force x=0. Else, force y=0. In both cases, we'll
 	// find a suitable point.
-	outPose.phi(atan2(coefs[0], -coefs[1]));
+	outPose.phi = atan2(coefs[0], -coefs[1]);
 	if (abs(coefs[0]) < getEpsilon())
 	{
-		outPose.x(0);
-		outPose.y(-coefs[2] / coefs[1]);
+		outPose.x=0;
+		outPose.y=-coefs[2] / coefs[1];
 	}
 	else
 	{
-		outPose.x(-coefs[2] / coefs[0]);
-		outPose.y(0);
+		outPose.x=-coefs[2] / coefs[0];
+		outPose.y=0;
 	}
 }
-void TLine2D::getAsPose2DForcingOrigin(
-	const TPoint2D& origin, mrpt::poses::CPose2D& outPose) const
+void TLine2D::getAsPose2DForcingOrigin(const TPoint2D& origin, TPose2D& outPose) const
 {
 	if (!contains(origin))
 		throw std::logic_error("Base point is not contained in the line");
-	outPose = mrpt::poses::CPose2D(TPose2D(origin));
+	outPose = origin;
 	// Line's director vector is (-coefs[1],coefs[0]).
-	outPose.phi(atan2(coefs[0], -coefs[1]));
+	outPose.phi = atan2(coefs[0], -coefs[1]);
 }
 TLine2D::TLine2D(const TPoint2D& p1, const TPoint2D& p2)
 {
@@ -741,11 +741,11 @@ void TPlane::unitarize()
 }
 
 // Returns a 6D pose such as its XY plane coincides with the plane
-void TPlane::getAsPose3D(mrpt::poses::CPose3D& outPose)
+void TPlane::getAsPose3D(mrpt::math::TPose3D& outPose)
 {
 	double normal[3];
 	getUnitaryNormalVector(normal);
-	CMatrixDouble AXIS;
+	CMatrixDouble44 AXIS;
 	generateAxisBaseFromDirectionAndAxis(normal, 2, AXIS);
 	for (size_t i = 0; i < 3; i++)
 		if (abs(coefs[i]) >= getEpsilon())
@@ -753,19 +753,19 @@ void TPlane::getAsPose3D(mrpt::poses::CPose3D& outPose)
 			AXIS.set_unsafe(i, 3, -coefs[3] / coefs[i]);
 			break;
 		}
-	outPose = mrpt::poses::CPose3D(AXIS);
+	outPose.fromHomogeneousMatrix(AXIS);
 }
 void TPlane::getAsPose3DForcingOrigin(
-	const TPoint3D& newOrigin, mrpt::poses::CPose3D& pose)
+	const TPoint3D& newOrigin, TPose3D& pose)
 {
 	if (!contains(newOrigin))
 		throw std::logic_error("Base point is not in the plane.");
 	double normal[3];
 	getUnitaryNormalVector(normal);
-	CMatrixDouble AXIS;
+	CMatrixDouble44 AXIS;
 	generateAxisBaseFromDirectionAndAxis(normal, 2, AXIS);
 	for (size_t i = 0; i < 3; i++) AXIS.set_unsafe(i, 3, newOrigin[i]);
-	pose = mrpt::poses::CPose3D(AXIS);
+	pose.fromHomogeneousMatrix(AXIS);
 }
 TPlane::TPlane(const TPoint3D& p1, const TPoint3D& p2, const TPoint3D& p3)
 {
@@ -1047,10 +1047,10 @@ void TPolygon2D::createRegularPolygon(
 }
 inline void TPolygon2D::createRegularPolygon(
 	size_t numEdges, double radius, TPolygon2D& poly,
-	const mrpt::poses::CPose2D& pose)
+	const TPose2D& pose)
 {
 	createRegularPolygon(numEdges, radius, poly);
-	for (size_t i = 0; i < numEdges; i++) poly[i] = pose + poly[i];
+	for (size_t i = 0; i < numEdges; i++) pose.composePoint(poly[i], poly[i]);
 }
 
 double TPolygon3D::distance(const TPoint3D& point) const
@@ -1060,7 +1060,7 @@ double TPolygon3D::distance(const TPoint3D& point) const
 		throw std::logic_error("Polygon does not conform a plane");
 	TPoint3D newPoint;
 	TPolygon3D newPoly;
-	mrpt::poses::CPose3D pose;
+	TPose3D pose;
 	pl.getAsPose3DForcingOrigin(operator[](0), pose);
 	project3D(point, pose, newPoint);
 	project3D(*this, pose, newPoly);
@@ -1083,10 +1083,10 @@ bool TPolygon3D::contains(const TPoint3D& point) const
 		throw std::logic_error("Polygon does not conform a plane");
 	TPolygon3D projectedPoly;
 	TPoint3D projectedPoint;
-	mrpt::poses::CPose3D pose;
+	TPose3D pose;
 	// plane.getAsPose3DForcingOrigin(operator[](0),pose);
 	plane.getAsPose3D(pose);
-	pose = mrpt::poses::CPose3D(0, 0, 0, 0, 0, 0) - pose;
+	pose = TPose3D(0, 0, 0, 0, 0, 0) - pose;
 	project3D(point, pose, projectedPoint);
 	if (abs(projectedPoint.z) >= getEpsilon())
 		return false;  // Point is not inside the polygon's plane.
@@ -1142,13 +1142,11 @@ void TPolygon3D::createRegularPolygon(
 }
 inline void TPolygon3D::createRegularPolygon(
 	size_t numEdges, double radius, TPolygon3D& poly,
-	const mrpt::poses::CPose3D& pose)
+	const TPose3D& pose)
 {
 	createRegularPolygon(numEdges, radius, poly);
 	for (size_t i = 0; i < numEdges; i++)
-		pose.composePoint(
-			poly[i][0], poly[i][1], poly[i][2], poly[i][0], poly[i][1],
-			poly[i][2]);
+		pose.composePoint(poly[i], poly[i]);
 }
 
 void TObject2D::generate3DObject(TObject3D& obj) const
@@ -1335,96 +1333,96 @@ void TObject3D::getPolygons(
 			remainder.push_back(*it);
 }
 
-mrpt::utils::CStream& operator>>(
-	mrpt::utils::CStream& in, mrpt::math::TPoint2D& o)
+CArchive& operator>>(
+	CArchive& in, mrpt::math::TPoint2D& o)
 {
 	in >> o.x >> o.y;
 	return in;
 }
-mrpt::utils::CStream& operator<<(
-	mrpt::utils::CStream& out, const mrpt::math::TPoint2D& o)
+CArchive& operator<<(
+	CArchive& out, const mrpt::math::TPoint2D& o)
 {
 	out << o.x << o.y;
 	return out;
 }
 
-mrpt::utils::CStream& operator>>(
-	mrpt::utils::CStream& in, mrpt::math::TPoint3D& o)
+CArchive& operator>>(
+	CArchive& in, mrpt::math::TPoint3D& o)
 {
 	in >> o.x >> o.y >> o.z;
 	return in;
 }
-mrpt::utils::CStream& operator<<(
-	mrpt::utils::CStream& out, const mrpt::math::TPoint3D& o)
+CArchive& operator<<(
+	CArchive& out, const mrpt::math::TPoint3D& o)
 {
 	out << o.x << o.y << o.z;
 	return out;
 }
 
-mrpt::utils::CStream& operator>>(
-	mrpt::utils::CStream& in, mrpt::math::TPose2D& o)
+CArchive& operator>>(
+	CArchive& in, mrpt::math::TPose2D& o)
 {
 	in >> o.x >> o.y >> o.phi;
 	return in;
 }
-mrpt::utils::CStream& operator<<(
-	mrpt::utils::CStream& out, const mrpt::math::TPose2D& o)
+CArchive& operator<<(
+	CArchive& out, const mrpt::math::TPose2D& o)
 {
 	out << o.x << o.y << o.phi;
 	return out;
 }
 
-mrpt::utils::CStream& operator>>(
-	mrpt::utils::CStream& in, mrpt::math::TTwist2D& o)
+CArchive& operator>>(
+	CArchive& in, mrpt::math::TTwist2D& o)
 {
 	for (unsigned int i = 0; i < o.size(); i++) in >> o[i];
 	return in;
 }
-mrpt::utils::CStream& operator<<(
-	mrpt::utils::CStream& out, const mrpt::math::TTwist2D& o)
+CArchive& operator<<(
+	CArchive& out, const mrpt::math::TTwist2D& o)
 {
 	for (unsigned int i = 0; i < o.size(); i++) out << o[i];
 	return out;
 }
 
-mrpt::utils::CStream& operator>>(
-	mrpt::utils::CStream& in, mrpt::math::TTwist3D& o)
+CArchive& operator>>(
+	CArchive& in, mrpt::math::TTwist3D& o)
 {
 	for (unsigned int i = 0; i < o.size(); i++) in >> o[i];
 	return in;
 }
-mrpt::utils::CStream& operator<<(
-	mrpt::utils::CStream& out, const mrpt::math::TTwist3D& o)
+CArchive& operator<<(
+	CArchive& out, const mrpt::math::TTwist3D& o)
 {
 	for (unsigned int i = 0; i < o.size(); i++) out << o[i];
 	return out;
 }
 
-mrpt::utils::CStream& operator>>(
-	mrpt::utils::CStream& in, mrpt::math::TTwist2D& o);
-mrpt::utils::CStream& operator<<(
-	mrpt::utils::CStream& out, const mrpt::math::TTwist2D& o);
+CArchive& operator>>(
+	CArchive& in, mrpt::math::TTwist2D& o);
+CArchive& operator<<(
+	CArchive& out, const mrpt::math::TTwist2D& o);
 
-mrpt::utils::CStream& operator>>(
-	mrpt::utils::CStream& in, mrpt::math::TTwist3D& o);
-mrpt::utils::CStream& operator<<(
-	mrpt::utils::CStream& out, const mrpt::math::TTwist3D& o);
+CArchive& operator>>(
+	CArchive& in, mrpt::math::TTwist3D& o);
+CArchive& operator<<(
+	CArchive& out, const mrpt::math::TTwist3D& o);
 
-mrpt::utils::CStream& operator>>(
-	mrpt::utils::CStream& in, mrpt::math::TPose3D& o)
+CArchive& operator>>(
+	CArchive& in, mrpt::math::TPose3D& o)
 {
 	in >> o.x >> o.y >> o.z >> o.yaw >> o.pitch >> o.roll;
 	return in;
 }
-mrpt::utils::CStream& operator<<(
-	mrpt::utils::CStream& out, const mrpt::math::TPose3D& o)
+CArchive& operator<<(
+	CArchive& out, const mrpt::math::TPose3D& o)
 {
 	out << o.x << o.y << o.z << o.yaw << o.pitch << o.roll;
 	return out;
 }
 
-mrpt::utils::CStream& operator>>(
-	mrpt::utils::CStream& in, mrpt::math::TObject2D& o)
+CArchive& operator>>(
+	CArchive& in, mrpt::math::TObject2D& o)
 {
 	uint16_t type;
 	in >> type;
@@ -1469,8 +1467,8 @@ mrpt::utils::CStream& operator>>(
 	}
 	return in;
 }
-mrpt::utils::CStream& operator<<(
-	mrpt::utils::CStream& out, const mrpt::math::TObject2D& o)
+CArchive& operator<<(
+	CArchive& out, const mrpt::math::TObject2D& o)
 {
 	out << static_cast<uint16_t>(o.getType());
 	switch (o.getType())
@@ -1503,8 +1501,8 @@ mrpt::utils::CStream& operator<<(
 	return out;
 }
 
-mrpt::utils::CStream& operator>>(
-	mrpt::utils::CStream& in, mrpt::math::TObject3D& o)
+CArchive& operator>>(
+	CArchive& in, mrpt::math::TObject3D& o)
 {
 	uint16_t type;
 	in >> type;
@@ -1556,8 +1554,8 @@ mrpt::utils::CStream& operator>>(
 	}
 	return in;
 }
-mrpt::utils::CStream& operator<<(
-	mrpt::utils::CStream& out, const mrpt::math::TObject3D& o)
+CArchive& operator<<(
+	CArchive& out, const mrpt::math::TObject3D& o)
 {
 	out << static_cast<uint16_t>(o.getType());
 	switch (o.getType())

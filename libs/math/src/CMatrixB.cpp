@@ -10,40 +10,29 @@
 #include "math-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/CMatrixB.h>
-#if 0
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CMatrixB, CSerializable, mrpt::math)
 
-/*---------------------------------------------------------------
-						writeToStream
- ---------------------------------------------------------------*/
-void CMatrixB::writeToStream(mrpt::utils::CStream& out, int* out_Version) const
+uint8_t CMatrixB::serializeGetVersion() const { return 0; }
+
+void CMatrixB::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (out_Version)
-		*out_Version = 0;
-	else
-	{
-		out << (uint32_t)sizeof(m_Val[0][0]);
+	out << (uint32_t)sizeof(m_Val[0][0]);
 
-		// First, write the number of rows and columns:
-		out << (uint32_t)m_Rows << (uint32_t)m_Cols;
+	// First, write the number of rows and columns:
+	out << (uint32_t)m_Rows << (uint32_t)m_Cols;
 
-		if (m_Rows > 0 && m_Cols > 0)
-			for (unsigned int i = 0; i < m_Rows; i++)
-				out.WriteBuffer(m_Val[i], sizeof(m_Val[0][0]) * m_Cols);
-	}
+	if (m_Rows > 0 && m_Cols > 0)
+		for (unsigned int i = 0; i < m_Rows; i++)
+			out.WriteBuffer(m_Val[i], sizeof(m_Val[0][0]) * m_Cols);
 }
 
-/*---------------------------------------------------------------
-						readFromStream
- ---------------------------------------------------------------*/
-void CMatrixB::readFromStream(mrpt::utils::CStream& in, int version)
+void CMatrixB::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -86,4 +75,3 @@ CMatrixBool& CMatrixBool::operator=(const CMatrixTemplate<bool>& m)
 	CMatrixTemplate<bool>::operator=(m);
 	return *this;
 }
-#endif

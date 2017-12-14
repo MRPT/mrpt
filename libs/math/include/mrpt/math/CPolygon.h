@@ -8,8 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#if 0
-//#include <mrpt/serialization/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
 namespace mrpt
@@ -71,4 +70,3 @@ class CPolygon : public mrpt::serialization::CSerializable,
 
 }  // End of namespace
 }  // End of namespace
-#endif

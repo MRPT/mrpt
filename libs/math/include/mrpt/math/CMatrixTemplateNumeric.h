@@ -11,6 +11,7 @@
 #include <mrpt/math/types_math.h>
 #include <Eigen/Dense>
 #include <mrpt/typemeta/TTypeName.h>
+#include <mrpt/math/point_poses2vectors.h>  // MRPT_MATRIX_CONSTRUCTORS_FROM_POSES()
 
 namespace mrpt
 {
@@ -60,7 +61,7 @@ class CMatrixTemplateNumeric
 	{
 		Base::setZero();
 	}
-
+	MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(CMatrixTemplateNumeric)
 	MRPT_EIGEN_DERIVED_CLASS_CTOR_OPERATOR_EQUAL(
 		CMatrixTemplateNumeric)  // Implements ctor and "operator =" for any
 	// other Eigen class
@@ -186,7 +187,7 @@ class VicinityTraits<CMatrixTemplateNumeric<T>>
 
 namespace typemeta
 {
-// Extensions to mrpt::utils::TTypeName for matrices:
+// Extensions to mrpt::typemeta::TTypeName for matrices:
 template <typename T>
 struct TTypeName<mrpt::math::CMatrixTemplateNumeric<T>>
 {

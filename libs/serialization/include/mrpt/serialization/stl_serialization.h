@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/utils/TTypeName_impl.h>  // TTypeName<> for STL templates, needed for serialization of STL templates
-#include <mrpt/utils/metaprogramming_serialization.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/typemeta/TTypeName_stl.h>  // TTypeName<> for STL templates, needed for serialization of STL templates
+#include <mrpt/serialization/metaprogramming_serialization.h>
+#include <mrpt/serialization/CArchive.h>
 #include <vector>
 #include <deque>
 #include <set>
@@ -28,10 +28,10 @@ namespace serialization
 #define MRPTSTL_SERIALIZABLE_SEQ_CONTAINER(CONTAINER)                       \
 	/** Template method to serialize a sequential STL container  */         \
 	template <class T, class _Ax>                                           \
-	CStream& operator<<(                                                    \
-		mrpt::utils::CStream& out, const CONTAINER<T, _Ax>& obj)            \
+	CArchive& operator<<(                                                    \
+		mrpt::utils::CArchive& out, const CONTAINER<T, _Ax>& obj)            \
 	{                                                                       \
-		out << std::string(#CONTAINER) << mrpt::utils::TTypeName<T>::get(); \
+		out << std::string(#CONTAINER) << mrpt::typemeta::TTypeName<T>::get(); \
 		out << static_cast<uint32_t>(obj.size());                           \
 		std::for_each(                                                      \
 			obj.begin(), obj.end(),                                         \
@@ -40,7 +40,7 @@ namespace serialization
 	}                                                                       \
 	/** Template method to deserialize a sequential STL container */        \
 	template <class T, class _Ax>                                           \
-	CStream& operator>>(mrpt::utils::CStream& in, CONTAINER<T, _Ax>& obj)   \
+	CArchive& operator>>(mrpt::utils::CArchive& in, CONTAINER<T, _Ax>& obj)   \
 	{                                                                       \
 		obj.clear();                                                        \
 		std::string pref, stored_T;                                         \
@@ -51,7 +51,7 @@ namespace serialization
 				"'%s'",                                                     \
 				#CONTAINER, TTypeName<T>::get().c_str(), pref.c_str())      \
 		in >> stored_T;                                                     \
-		if (stored_T != mrpt::utils::TTypeName<T>::get())                   \
+		if (stored_T != mrpt::typemeta::TTypeName<T>::get())                   \
 			THROW_EXCEPTION_FMT(                                            \
 				"Error: serialized container %s< %s != %s >", #CONTAINER,   \
 				stored_T.c_str(), TTypeName<T>::get().c_str())              \
@@ -67,8 +67,8 @@ namespace serialization
 #define MRPTSTL_SERIALIZABLE_ASSOC_CONTAINER(CONTAINER)                     \
 	/** Template method to serialize an associative STL container  */       \
 	template <class K, class V, class _Pr, class _Alloc>                    \
-	CStream& operator<<(                                                    \
-		mrpt::utils::CStream& out, const CONTAINER<K, V, _Pr, _Alloc>& obj) \
+	CArchive& operator<<(                                                    \
+		mrpt::utils::CArchive& out, const CONTAINER<K, V, _Pr, _Alloc>& obj) \
 	{                                                                       \
 		out << std::string(#CONTAINER) << TTypeName<K>::get()               \
 			<< TTypeName<V>::get();                                         \
@@ -81,8 +81,8 @@ namespace serialization
 	}                                                                       \
 	/** Template method to deserialize an associative STL container */      \
 	template <class K, class V, class _Pr, class _Alloc>                    \
-	CStream& operator>>(                                                    \
-		mrpt::utils::CStream& in, CONTAINER<K, V, _Pr, _Alloc>& obj)        \
+	CArchive& operator>>(                                                    \
+		mrpt::utils::CArchive& in, CONTAINER<K, V, _Pr, _Alloc>& obj)        \
 	{                                                                       \
 		obj.clear();                                                        \
 		std::string pref, stored_K, stored_V;                               \
@@ -135,8 +135,8 @@ MRPTSTL_SERIALIZABLE_ASSOC_CONTAINER(
 #define MRPTSTL_SERIALIZABLE_SIMPLE_ASSOC_CONTAINER(CONTAINER)                 \
 	/** Template method to serialize an associative STL container  */          \
 	template <class K, class _Pr, class _Alloc>                                \
-	CStream& operator<<(                                                       \
-		mrpt::utils::CStream& out, const CONTAINER<K, _Pr, _Alloc>& obj)       \
+	CArchive& operator<<(                                                       \
+		mrpt::utils::CArchive& out, const CONTAINER<K, _Pr, _Alloc>& obj)       \
 	{                                                                          \
 		out << std::string(#CONTAINER) << TTypeName<K>::get();                 \
 		out << static_cast<uint32_t>(obj.size());                              \
@@ -148,8 +148,8 @@ MRPTSTL_SERIALIZABLE_ASSOC_CONTAINER(
 	}                                                                          \
 	/** Template method to deserialize an associative STL container */         \
 	template <class K, class _Pr, class _Alloc>                                \
-	CStream& operator>>(                                                       \
-		mrpt::utils::CStream& in, CONTAINER<K, _Pr, _Alloc>& obj)              \
+	CArchive& operator>>(                                                       \
+		mrpt::utils::CArchive& in, CONTAINER<K, _Pr, _Alloc>& obj)              \
 	{                                                                          \
 		obj.clear();                                                           \
 		std::string pref, stored_K;                                            \
@@ -185,7 +185,7 @@ MRPTSTL_SERIALIZABLE_SIMPLE_ASSOC_CONTAINER(
 
 /** Template method to serialize a STL pair */
 template <class T1, class T2>
-CStream& operator<<(mrpt::utils::CStream& out, const std::pair<T1, T2>& obj)
+CArchive& operator<<(mrpt::utils::CArchive& out, const std::pair<T1, T2>& obj)
 {
 	out << std::string("std::pair") << TTypeName<T1>::get()
 		<< TTypeName<T2>::get();
@@ -194,7 +194,7 @@ CStream& operator<<(mrpt::utils::CStream& out, const std::pair<T1, T2>& obj)
 }
 /** Template method to deserialize a STL pair */
 template <class T1, class T2>
-CStream& operator>>(mrpt::utils::CStream& in, std::pair<T1, T2>& obj)
+CArchive& operator>>(mrpt::utils::CArchive& in, std::pair<T1, T2>& obj)
 {
 	std::string pref, stored_K, stored_V;
 	in >> pref;

@@ -1023,7 +1023,7 @@ typedef CNetworkOfPoses<mrpt::poses::CPose3DPDFGaussianInf,
 // Specialization of TTypeName must occur in the same namespace:
 namespace utils
 {
-// Extensions to mrpt::utils::TTypeName for matrices:
+// Extensions to mrpt::typemeta::TTypeName for matrices:
 template <class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
 		  class EDGE_ANNOTATIONS>
 struct TTypeName<mrpt::graphs::CNetworkOfPoses<
