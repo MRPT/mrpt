@@ -6,13 +6,14 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CMatrixFixedNumeric_H
-#define CMatrixFixedNumeric_H
+#pragma once
 
 #include <mrpt/math/math_frwds.h>  // Forward declarations
 #include <mrpt/math/eigen_frwds.h>
 #include <mrpt/math/types_math.h>
 #include <mrpt/serialization/CSerializable.h>
+#include <mrpt/typemeta/TTypeName.h>
+#include <mrpt/math/point_poses2vectors.h>  // MRPT_MATRIX_CONSTRUCTORS_FROM_POSES()
 
 namespace mrpt
 {
@@ -50,7 +51,7 @@ class CMatrixFixedNumeric
 														  : Eigen::RowMajor)>
 		Base;
 	typedef CMatrixFixedNumeric<T, NROWS, NCOLS> mrpt_autotype;
-
+	MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(CMatrixFixedNumeric)
 	MRPT_EIGEN_DERIVED_CLASS_CTOR_OPERATOR_EQUAL(
 		CMatrixFixedNumeric)  // Implements ctor and "operator =" for any other
 	// Eigen class
@@ -121,21 +122,20 @@ class VicinityTraits<CMatrixFixedNumeric<T, D, D>>
 
 }  // End of namespace
 
-namespace utils
+namespace typemeta
 {
-// Extensions to mrpt::utils::TTypeName for matrices:
+// Extensions to mrpt::typemeta::TTypeName for matrices:
 template <typename T, size_t N, size_t M>
 struct TTypeName<mrpt::math::CMatrixFixedNumeric<T, N, M>>
 {
-	static std::string get()
+	constexpr static auto get()
 	{
-		return mrpt::format(
-			"CMatrixFixedNumeric<%s,%u,%u>", TTypeName<T>::get().c_str(),
-			(unsigned int)N, (unsigned int)M);
+		return literal("CMatrixFixedNumeric<") + TTypeName<T>::get() +
+			literal(",") + literal(num_to_string<N>::value) +
+			literal(",") + literal(num_to_string<M>::value) +
+			literal(">");
 	}
 };
 }
 
 }  // End of namespace
-
-#endif

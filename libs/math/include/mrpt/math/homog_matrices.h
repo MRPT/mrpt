@@ -6,12 +6,9 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef MRPT_HOMOG_MATRICES_H
-#define MRPT_HOMOG_MATRICES_H
+#pragma once
 
-#include <mrpt/config.h>
-#include <mrpt/utils/compiler_fixes.h>
-#include <mrpt/utils/mrpt_macros.h>
+#include <mrpt/core/exceptions.h>
 
 namespace mrpt
 {
@@ -132,4 +129,3 @@ inline void homogeneousMatrixInverse(MATRIXLIKE& M)
 }
 }
 }
-#endif

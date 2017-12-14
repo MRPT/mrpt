@@ -6,11 +6,9 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CMatrixTemplate_H
-#define CMatrixTemplate_H
+#pragma once
 
-#include <mrpt/utils/utils_defs.h>
-#include <mrpt/system/memory.h>
+#include <mrpt/core/aligned_allocator.h>
 #include <mrpt/math/math_frwds.h>  // forward declarations
 #include <algorithm>  // swap()
 #include <array>
@@ -98,17 +96,17 @@ class CMatrixTemplate
 
 			// If we are reducing rows, free that memory:
 			for (r = row; r < m_Rows; r++)
-				mrpt::system::os::aligned_free(m_Val[r]);
+				mrpt::aligned_free(m_Val[r]);
 
 			// Realloc the vector of pointers:
 			if (!row)
 			{
-				mrpt::system::os::aligned_free(m_Val);
+				mrpt::aligned_free(m_Val);
 				m_Val = nullptr;
 			}
 			else
 				m_Val = static_cast<T**>(
-					mrpt::system::os::aligned_realloc(
+					mrpt::aligned_realloc(
 						m_Val, sizeof(T*) * row, 16));
 
 			// How many new rows/cols?
@@ -122,7 +120,7 @@ class CMatrixTemplate
 				{
 					// This was an existing row: Resize the memory:
 					m_Val[r] = static_cast<T*>(
-						mrpt::system::os::aligned_realloc(
+						mrpt::aligned_realloc(
 							m_Val[r], row_size, 16));
 
 					if (doZeroColumns)
@@ -135,7 +133,8 @@ class CMatrixTemplate
 				{
 					// This is a new row, alloc the memory for the first time:
 					m_Val[r] = static_cast<T*>(
-						mrpt::system::os::aligned_calloc(row_size, 16));
+						mrpt::aligned_malloc(row_size, 16));
+					::memset(m_Val[r], 0, row_size);
 				}
 			}
 			// Done!
@@ -711,5 +710,3 @@ class CMatrixBool : public CMatrixTemplate<bool>
 
 }  // End of namespace
 }  // End of namespace
-
-#endif

@@ -10,9 +10,9 @@
 
 namespace mrpt
 {
-namespace utils
+namespace serialization
 {
-class CStream;
+class CArchive;
 
 namespace metaprogramming
 {
@@ -24,10 +24,10 @@ namespace metaprogramming
 struct ObjectReadFromStream
 {
    private:
-	CStream* m_stream;
+	mrpt::serialization::CArchive* m_stream;
 
    public:
-	inline ObjectReadFromStream(mrpt::utils::CStream* stream) : m_stream(stream)
+	inline ObjectReadFromStream(mrpt::serialization::CArchive* stream) : m_stream(stream)
 	{
 	}
 	// T can be CSerializable::Ptr, CSerializable, or any other class
@@ -43,10 +43,10 @@ template <typename ptr_t>
 struct ObjectReadFromStreamToPtrs
 {
    private:
-	CStream* m_stream;
+	mrpt::serialization::CArchive* m_stream;
 
    public:
-	inline ObjectReadFromStreamToPtrs(mrpt::utils::CStream* stream)
+	inline ObjectReadFromStreamToPtrs(mrpt::serialization::CArchive* stream)
 		: m_stream(stream)
 	{
 	}
@@ -64,10 +64,10 @@ struct ObjectReadFromStreamToPtrs
 struct ObjectWriteToStream
 {
    private:
-	CStream* m_stream;
+	mrpt::serialization::CArchive* m_stream;
 
    public:
-	inline ObjectWriteToStream(mrpt::utils::CStream* stream) : m_stream(stream)
+	inline ObjectWriteToStream(mrpt::serialization::CArchive* stream) : m_stream(stream)
 	{
 	}
 

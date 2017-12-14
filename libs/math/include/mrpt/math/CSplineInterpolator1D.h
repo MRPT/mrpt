@@ -6,10 +6,8 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CSplineInterpolator1D_H
-#define CSplineInterpolator1D_H
+#pragma once
 
-#include <mrpt/utils/utils_defs.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <map>
 
@@ -103,4 +101,3 @@ class CSplineInterpolator1D : public mrpt::serialization::CSerializable
 
 }  // End of namespace
 }  // End of namespace
-#endif

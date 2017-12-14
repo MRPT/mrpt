@@ -856,7 +856,7 @@
 					- All mrpt::utils::CConfigFileBase::write() now have an extended signature for formatting.
 					- mrpt::utils::CLoadableOptions::dumpToTextStream() is no longer pure virtual: it now relies on mrpt::utils::CLoadableOptions::saveToConfigFile()
 				- mrpt::utils::CStream::Seek() now supports files larger than 2GB by using uint64_t instead of long (still see issue report for another patch required for MSVC2010) - (Closes <a href="http://code.google.com/p/mrpt/issues/detail?id=39" >issue 39</a>, thanks Robert Schattschneider) - <a href="http://code.google.com/p/mrpt/source/detail?r=3042" >r3042</a>
-				- mrpt::utils::TTypeName<> moved to its own header <mrpt/utils/TTypeName.h> while refactoring <mrpt/serialization/CSerializable.h> - <a href="http://code.google.com/p/mrpt/source/detail?r=3044" >r3044</a>
+				- mrpt::typemeta::TTypeName<> moved to its own header <mrpt/utils/TTypeName.h> while refactoring <mrpt/serialization/CSerializable.h> - <a href="http://code.google.com/p/mrpt/source/detail?r=3044" >r3044</a>
 				- mrpt::utils::CConfigFileBase::write() now has signatures for "uint32_t" and "uint64_t" in both 32 and 64bit builds, instead of relying of the "size_t" type. This was done to fix build errors in some GCC versions under 32bits.
 				- mrpt::poses::CPose2D now caches the cos() and sin() of phi, with a huge performance improvement in most common operations.
 			- [mrpt-bayes]

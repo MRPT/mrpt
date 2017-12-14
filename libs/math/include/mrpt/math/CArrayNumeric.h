@@ -6,12 +6,10 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef _MRPT_CArrayNumeric_H
-#define _MRPT_CArrayNumeric_H
+#pragma once
 
-#include <mrpt/utils/core_defs.h>
 #include <mrpt/math/types_math.h>  // Eigen
-#include <mrpt/utils/TTypeName.h>
+#include <mrpt/typemeta/TTypeName.h>
 
 namespace mrpt
 {
@@ -146,39 +144,33 @@ class CArrayUInt : public CArrayNumeric<unsigned int, N>
 
 }  // End of namespace
 
-namespace utils
+namespace typemeta
 {
-// Extensions to mrpt::utils::TTypeName for matrices:
+// Extensions to mrpt::typemeta::TTypeName for matrices:
 template <typename T, size_t N>
 struct TTypeName<mrpt::math::CArrayNumeric<T, N>>
 {
-	static std::string get()
+	constexpr static auto get()
 	{
-		return mrpt::format(
-			"CArrayNumeric<%s,%u>", TTypeName<T>::get().c_str(),
-			static_cast<unsigned int>(N));
+		return literal("CArrayNumeric<") + TTypeName<T>::get() +
+			literal(",") + literal(num_to_string<N>::value) + literal(">");
 	}
 };
 template <size_t N>
 struct TTypeName<mrpt::math::CArrayDouble<N>>
 {
-	static std::string get()
+	constexpr static auto get()
 	{
-		return mrpt::format(
-			"CArrayNumeric<double,%u>", static_cast<unsigned int>(N));
+		return literal("CArrayDouble<") + literal(num_to_string<N>::value) + literal(">");
 	}
 };
 template <size_t N>
 struct TTypeName<mrpt::math::CArrayFloat<N>>
 {
-	static std::string get()
+	constexpr static auto get()
 	{
-		return mrpt::format(
-			"CArrayNumeric<float,%u>", static_cast<unsigned int>(N));
+		return literal("CArrayFloat<") + literal(num_to_string<N>::value) + literal(">");
 	}
 };
 }
-
 }  // End of namespace
-
-#endif

@@ -9,14 +9,12 @@
 
 #include "math-precomp.h"  // Precompiled headers
 
-#if 0
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CMatrixD, CSerializable, mrpt::math)
@@ -32,28 +30,18 @@ CMatrixD::CMatrixD(const TPoint2D& p) : CMatrixDouble(p) {}
 /** Constructor from a TPoint3D, which generates a 3x1 matrix \f$ [x y z]^T \f$
  */
 CMatrixD::CMatrixD(const TPoint3D& p) : CMatrixDouble(p) {}
-/*---------------------------------------------------------------
-						writeToStream
- ---------------------------------------------------------------*/
-void CMatrixD::writeToStream(mrpt::utils::CStream& out, int* out_Version) const
+
+uint8_t CMatrixD::serializeGetVersion() const { return 0; }
+void CMatrixD::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (out_Version)
-		*out_Version = 0;
-	else
-	{
-		// First, write the number of rows and columns:
-		out << (uint32_t)rows() << (uint32_t)cols();
+	// First, write the number of rows and columns:
+	out << (uint32_t)rows() << (uint32_t)cols();
 
-		if (rows() > 0 && cols() > 0)
-			for (Index i = 0; i < rows(); i++)
-				out.WriteBufferFixEndianness<Scalar>(&coeff(i, 0), cols());
-	}
+	if (rows() > 0 && cols() > 0)
+		for (Index i = 0; i < rows(); i++)
+			out.WriteBufferFixEndianness<Scalar>(&coeff(i, 0), cols());
 }
-
-/*---------------------------------------------------------------
-						readFromStream
- ---------------------------------------------------------------*/
-void CMatrixD::readFromStream(mrpt::utils::CStream& in, int version)
+void CMatrixD::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -75,4 +63,3 @@ void CMatrixD::readFromStream(mrpt::utils::CStream& in, int version)
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	};
 }
-#endif

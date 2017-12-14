@@ -6,11 +6,8 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef mrpt_math_vector_ops_H
-#define mrpt_math_vector_ops_H
+#pragma once
 
-#include <mrpt/utils/utils_defs.h>
-#include <mrpt/utils/CStream.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <iomanip>  // for setprecision(), etc.
 #include <iterator>  // std::ostream_iterator
@@ -147,7 +144,7 @@ template <typename T, size_t N>
 mrpt::utils::CStream& operator<<(
 	mrpt::utils::CStream& ostrm, const CArrayNumeric<T, N>& a)
 {
-	ostrm << mrpt::utils::TTypeName<CArrayNumeric<T, N>>::get();
+	ostrm << mrpt::typemeta::TTypeName<CArrayNumeric<T, N>>::get();
 	if (N) ostrm.WriteBufferFixEndianness<T>(&a[0], N);
 	return ostrm;
 }
@@ -158,7 +155,7 @@ mrpt::utils::CStream& operator>>(
 	mrpt::utils::CStream& istrm, CArrayNumeric<T, N>& a)
 {
 	static const std::string namExpect =
-		mrpt::utils::TTypeName<CArrayNumeric<T, N>>::get();
+		mrpt::typemeta::TTypeName<CArrayNumeric<T, N>>::get();
 	std::string nam;
 	istrm >> nam;
 	ASSERTMSG_(
@@ -172,7 +169,4 @@ mrpt::utils::CStream& operator>>(
 /**  @} */  // end of grouping
 
 }  // End of math namespace
-
 }  // End of mrpt namespace
-
-#endif

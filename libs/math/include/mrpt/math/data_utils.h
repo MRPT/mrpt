@@ -6,10 +6,8 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef MRPT_DATA_UTILS_MATH_H
-#define MRPT_DATA_UTILS_MATH_H
+#pragma once
 
-#include <mrpt/utils/utils_defs.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/ops_matrices.h>
@@ -548,5 +546,3 @@ double averageLogLikelihood(
 
 }  // End of MATH namespace
 }  // End of namespace
-
-#endif

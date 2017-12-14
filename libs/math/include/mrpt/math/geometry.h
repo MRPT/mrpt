@@ -6,12 +6,10 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef GEO_H
-#define GEO_H
+#pragma once
 
-#include <mrpt/utils/utils_defs.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
-#include <mrpt/poses/CPose3D.h>
+#include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/math/CSparseMatrixTemplate.h>
 
 #include <mrpt/math/math_frwds.h>  // forward declarations
@@ -37,9 +35,9 @@ class TPolygonWithPlane
 	/** Plane containing the polygon. */
 	TPlane plane;
 	/** Plane's pose.  \sa inversePose */
-	mrpt::poses::CPose3D pose;
+	mrpt::math::TPose3D pose;
 	/** Plane's inverse pose. \sa pose */
-	mrpt::poses::CPose3D inversePose;
+	mrpt::math::TPose3D inversePose;
 	/** Polygon, after being projected to the plane using inversePose. \sa
 	 * inversePose */
 	TPolygon2D poly2D;
@@ -246,26 +244,26 @@ double getAngle(const TLine2D& r1, const TLine2D& r2);
  * constructor is used if a TPose3D is given.
   * \sa createFromPoseY,createFromPoseZ,createFromPoseAndVector
   */
-void createFromPoseX(const mrpt::poses::CPose3D& p, TLine3D& r);
+void createFromPoseX(const mrpt::math::TPose3D& p, TLine3D& r);
 /**
   * Gets a 3D line corresponding to the Y axis in a given pose. An implicit
  * constructor is used if a TPose3D is given.
   * \sa createFromPoseX,createFromPoseZ,createFromPoseAndVector
   */
-void createFromPoseY(const mrpt::poses::CPose3D& p, TLine3D& r);
+void createFromPoseY(const mrpt::math::TPose3D& p, TLine3D& r);
 /**
   * Gets a 3D line corresponding to the Z axis in a given pose. An implicit
  * constructor is used if a TPose3D is given.
   * \sa createFromPoseX,createFromPoseY,createFromPoseAndVector
   */
-void createFromPoseZ(const mrpt::poses::CPose3D& p, TLine3D& r);
+void createFromPoseZ(const mrpt::math::TPose3D& p, TLine3D& r);
 /**
   * Gets a 3D line corresponding to any arbitrary vector, in the base given by
  * the pose. An implicit constructor is used if a TPose3D is given.
   * \sa createFromPoseX,createFromPoseY,createFromPoseZ
   */
 void createFromPoseAndVector(
-	const mrpt::poses::CPose3D& p, const double (&vector)[3], TLine3D& r);
+	const mrpt::math::TPose3D& p, const double (&vector)[3], TLine3D& r);
 /**
   * Gets a 2D line corresponding to the X axis in a given pose. An implicit
  * constructor is used if a CPose2D is given.
@@ -331,15 +329,14 @@ bool areAligned(const std::vector<TPoint3D>& points, TLine3D& r);
  */
 /** Uses the given pose 3D to project a point into a new base */
 inline void project3D(
-	const TPoint3D& point, const mrpt::poses::CPose3D& newXYpose,
+	const TPoint3D& point, const mrpt::math::TPose3D& newXYpose,
 	TPoint3D& newPoint)
 {
-	newXYpose.composePoint(
-		point.x, point.y, point.z, newPoint.x, newPoint.y, newPoint.z);
+	newXYpose.composePoint(point, newPoint);
 }
 /** Uses the given pose 3D to project a segment into a new base  */
 inline void project3D(
-	const TSegment3D& segment, const mrpt::poses::CPose3D& newXYpose,
+	const TSegment3D& segment, const mrpt::math::TPose3D& newXYpose,
 	TSegment3D& newSegment)
 {
 	project3D(segment.point1, newXYpose, newSegment.point1);
@@ -348,19 +345,19 @@ inline void project3D(
 
 /** Uses the given pose 3D to project a line into a new base */
 void project3D(
-	const TLine3D& line, const mrpt::poses::CPose3D& newXYpose,
+	const TLine3D& line, const mrpt::math::TPose3D& newXYpose,
 	TLine3D& newLine);
 /** Uses the given pose 3D to project a plane into a new base */
 void project3D(
-	const TPlane& plane, const mrpt::poses::CPose3D& newXYpose,
+	const TPlane& plane, const mrpt::math::TPose3D& newXYpose,
 	TPlane& newPlane);
 /** Uses the given pose 3D to project a polygon into a new base */
 void project3D(
-	const TPolygon3D& polygon, const mrpt::poses::CPose3D& newXYpose,
+	const TPolygon3D& polygon, const mrpt::math::TPose3D& newXYpose,
 	TPolygon3D& newPolygon);
 /** Uses the given pose 3D to project any 3D object into a new base. */
 void project3D(
-	const TObject3D& object, const mrpt::poses::CPose3D& newXYPose,
+	const TObject3D& object, const mrpt::math::TPose3D& newXYPose,
 	TObject3D& newObject);
 
 /** Projects any 3D object into the plane's base, using its inverse pose. If the
@@ -369,7 +366,7 @@ void project3D(
 template <class T>
 void project3D(const T& obj, const TPlane& newXYPlane, T& newObj)
 {
-	mrpt::poses::CPose3D pose;
+	mrpt::math::TPose3D pose;
 	TPlane(newXYPlane).getAsPose3D(pose);
 	project3D(obj, -pose, newObj);
 }
@@ -382,7 +379,7 @@ void project3D(
 	const T& obj, const TPlane& newXYPlane, const TPoint3D& newOrigin,
 	T& newObj)
 {
-	mrpt::poses::CPose3D pose;
+	mrpt::math::TPose3D pose;
 	// TPlane(newXYPlane).getAsPose3DForcingOrigin(newOrigin,pose);
 	TPlane(newXYPlane).getAsPose3D(pose);
 	project3D(obj, -pose, newObj);
@@ -391,7 +388,7 @@ void project3D(
 /** Projects a set of 3D objects into the plane's base. */
 template <class T>
 void project3D(
-	const std::vector<T>& objs, const mrpt::poses::CPose3D& newXYpose,
+	const std::vector<T>& objs, const mrpt::math::TPose3D& newXYpose,
 	std::vector<T>& newObjs)
 {
 	size_t N = objs.size();
@@ -401,12 +398,12 @@ void project3D(
 
 /** Uses the given pose 2D to project a point into a new base. */
 void project2D(
-	const TPoint2D& point, const mrpt::poses::CPose2D& newXpose,
+	const TPoint2D& point, const TPose2D& newXpose,
 	TPoint2D& newPoint);
 
 /** Uses the given pose 2D to project a segment into a new base  */
 inline void project2D(
-	const TSegment2D& segment, const mrpt::poses::CPose2D& newXpose,
+	const TSegment2D& segment, const TPose2D& newXpose,
 	TSegment2D& newSegment)
 {
 	project2D(segment.point1, newXpose, newSegment.point1);
@@ -415,21 +412,21 @@ inline void project2D(
 
 /** Uses the given pose 2D to project a line into a new base */
 void project2D(
-	const TLine2D& line, const mrpt::poses::CPose2D& newXpose,
+	const TLine2D& line, const TPose2D& newXpose,
 	TLine2D& newLine);
 /** Uses the given pose 2D to project a polygon into a new base. */
 void project2D(
-	const TPolygon2D& polygon, const mrpt::poses::CPose2D& newXpose,
+	const TPolygon2D& polygon, const TPose2D& newXpose,
 	TPolygon2D& newPolygon);
 /** Uses the given pose 2D to project any 2D object into a new base */
 void project2D(
-	const TObject2D& object, const mrpt::poses::CPose2D& newXpose,
+	const TObject2D& object, const TPose2D& newXpose,
 	TObject2D& newObject);
 
 /** Projects any 2D object into the line's base, using its inverse pose. If the
  * object is exactly inside the line, this projection will zero its Y
  * coordinate.
-  * \tparam CPOSE2D set to mrpt::poses::CPose2D
+  * \tparam CPOSE2D set to TPose2D
   */
 template <class T, class CPOSE2D>
 void project2D(const T& obj, const TLine2D& newXLine, T& newObj)
@@ -442,7 +439,7 @@ void project2D(const T& obj, const TLine2D& newXLine, T& newObj)
 /** Projects any 2D object into the line's base, using its inverse pose and
  * forcing the position of the new coordinate origin. If the object is exactly
  * inside the line, this projection will zero its Y coordinate.
-  * \tparam CPOSE2D set to mrpt::poses::CPose2D
+  * \tparam CPOSE2D set to TPose2D
   */
 template <class T, class CPOSE2D>
 void project2D(
@@ -456,7 +453,7 @@ void project2D(
 /** Projects a set of 2D objects into the line's base */
 template <class T>
 void project2D(
-	const std::vector<T>& objs, const mrpt::poses::CPose2D& newXpose,
+	const std::vector<T>& objs, const TPose2D& newXpose,
 	std::vector<T>& newObjs)
 {
 	size_t N = objs.size();
@@ -655,24 +652,24 @@ void getPrismBounds(
   * Given a pose, creates a plane orthogonal to its Z vector.
   * \sa createPlaneFromPoseXZ,createPlaneFromPoseYZ,createPlaneFromPoseAndNormal
   */
-void createPlaneFromPoseXY(const mrpt::poses::CPose3D& pose, TPlane& plane);
+void createPlaneFromPoseXY(const mrpt::math::TPose3D& pose, TPlane& plane);
 /**
   * Given a pose, creates a plane orthogonal to its Y vector.
   * \sa createPlaneFromPoseXY,createPlaneFromPoseYZ,createPlaneFromPoseAndNormal
   */
-void createPlaneFromPoseXZ(const mrpt::poses::CPose3D& pose, TPlane& plane);
+void createPlaneFromPoseXZ(const mrpt::math::TPose3D& pose, TPlane& plane);
 /**
   * Given a pose, creates a plane orthogonal to its X vector.
   * \sa createPlaneFromPoseXY,createPlaneFromPoseXZ,createPlaneFromPoseAndNormal
   */
-void createPlaneFromPoseYZ(const mrpt::poses::CPose3D& pose, TPlane& plane);
+void createPlaneFromPoseYZ(const mrpt::math::TPose3D& pose, TPlane& plane);
 /**
   * Given a pose and any vector, creates a plane orthogonal to that vector in
  * the pose's coordinates.
   * \sa createPlaneFromPoseXY,createPlaneFromPoseXZ,createPlaneFromPoseYZ
   */
 void createPlaneFromPoseAndNormal(
-	const mrpt::poses::CPose3D& pose, const double (&normal)[3], TPlane& plane);
+	const mrpt::math::TPose3D& pose, const double (&normal)[3], TPlane& plane);
 /**
   * Creates a homogeneus matrix (4x4) such that the coordinate given (0 for x, 1
  * for y, 2 for z) corresponds to the provided vector.
@@ -680,7 +677,7 @@ void createPlaneFromPoseAndNormal(
 	* \sa generateAxisBaseFromDirectionAndAxis()
   */
 void generateAxisBaseFromDirectionAndAxis(
-	const double (&vec)[3], char coord, CMatrixDouble& matrix);
+	const double (&vec)[3], char coord, CMatrixDouble44& matrix);
 /** @}
  */
 
@@ -791,14 +788,14 @@ void getAngleBisector(const TLine3D& l1, const TLine3D& l2, TLine3D& bis);
   * \sa CRenderizable::rayTrace
   */
 bool traceRay(
-	const std::vector<TPolygonWithPlane>& vec, const mrpt::poses::CPose3D& pose,
+	const std::vector<TPolygonWithPlane>& vec, const mrpt::math::TPose3D& pose,
 	double& dist);
 /**
   * Fast ray tracing method using polygons' properties.
   * \sa CRenderizable::rayTrace
   */
 inline bool traceRay(
-	const std::vector<TPolygon3D>& vec, const mrpt::poses::CPose3D& pose,
+	const std::vector<TPolygon3D>& vec, const mrpt::math::TPose3D& pose,
 	double& dist)
 {
 	std::vector<TPolygonWithPlane> pwp;
@@ -1173,6 +1170,4 @@ CMatrixTemplateNumeric<T> generateAxisBaseFromDirection(T dx, T dy, T dz)
 /** @} */  // end of grouping
 
 }  // End of namespace
-
 }  // End of namespace
-#endif

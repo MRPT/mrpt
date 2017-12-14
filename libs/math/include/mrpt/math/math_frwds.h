@@ -21,11 +21,10 @@
 
 namespace mrpt
 {
-namespace utils
+namespace serialization
 {
-class CStream;
+class CArchive;
 }
-
 namespace system
 {
 std::string MRPT_getVersion();
@@ -123,26 +122,6 @@ struct ContainerType
 	{                                                          \
 		mrpt::math::containerFromPoseOrPoint(*this, p);        \
 	}                                                          \
-	explicit inline _CLASS_(const mrpt::poses::CPose2D& p)     \
-	{                                                          \
-		mrpt::math::containerFromPoseOrPoint(*this, p);        \
-	}                                                          \
-	explicit inline _CLASS_(const mrpt::poses::CPose3D& p)     \
-	{                                                          \
-		mrpt::math::containerFromPoseOrPoint(*this, p);        \
-	}                                                          \
-	explicit inline _CLASS_(const mrpt::poses::CPose3DQuat& p) \
-	{                                                          \
-		mrpt::math::containerFromPoseOrPoint(*this, p);        \
-	}                                                          \
-	explicit inline _CLASS_(const mrpt::poses::CPoint2D& p)    \
-	{                                                          \
-		mrpt::math::containerFromPoseOrPoint(*this, p);        \
-	}                                                          \
-	explicit inline _CLASS_(const mrpt::poses::CPoint3D& p)    \
-	{                                                          \
-		mrpt::math::containerFromPoseOrPoint(*this, p);        \
-	}
 
 template <class CONTAINER1, class CONTAINER2>
 void cumsum(const CONTAINER1& in_data, CONTAINER2& out_cumsum);
