@@ -72,3 +72,14 @@ TEST(TTypeName, types2str)
 	TST_FOR_TYPE(std::set<MyNS::MyBarClass2>);
 	TST_FOR_TYPE2(std::vector<std::array<MyNS::MyBarClass, 10>>);
 }
+
+TEST(TTypeName, types2stdstring)
+{
+	using namespace mrpt::typemeta;
+	using namespace std;
+
+	auto st1 = TTypeName<uint8_t>::get();
+	const std::string s1(st1.c_str());
+	const std::string s2("uint8_t");
+	EXPECT_STREQ(s1.c_str(),s2.c_str());
+}

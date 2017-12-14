@@ -29,4 +29,6 @@ Main classes and concepts associated with this library:
 	- A generic way to define persistent C++ classes.
 	- Versioning: if class fields are added or removed, you'll still be able to read old data files.
 
+Write me: example for mrpt::serialization::CArchiveStream()
+
 */

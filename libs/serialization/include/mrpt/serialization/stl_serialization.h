@@ -12,6 +12,7 @@
 #include <mrpt/serialization/metaprogramming_serialization.h>
 #include <mrpt/serialization/CArchive.h>
 #include <vector>
+#include <array>
 #include <deque>
 #include <set>
 #include <map>
@@ -28,19 +29,19 @@ namespace serialization
 #define MRPTSTL_SERIALIZABLE_SEQ_CONTAINER(CONTAINER)                       \
 	/** Template method to serialize a sequential STL container  */         \
 	template <class T, class _Ax>                                           \
-	CArchive& operator<<(                                                    \
-		mrpt::utils::CArchive& out, const CONTAINER<T, _Ax>& obj)            \
+	CArchive& operator<<(                                                   \
+		CArchive& out, const CONTAINER<T, _Ax>& obj)                        \
 	{                                                                       \
 		out << std::string(#CONTAINER) << mrpt::typemeta::TTypeName<T>::get(); \
 		out << static_cast<uint32_t>(obj.size());                           \
 		std::for_each(                                                      \
 			obj.begin(), obj.end(),                                         \
-			mrpt::utils::metaprogramming::ObjectWriteToStream(&out));       \
+			metaprogramming::ObjectWriteToStream(&out));       \
 		return out;                                                         \
 	}                                                                       \
 	/** Template method to deserialize a sequential STL container */        \
 	template <class T, class _Ax>                                           \
-	CArchive& operator>>(mrpt::utils::CArchive& in, CONTAINER<T, _Ax>& obj)   \
+	CArchive& operator>>(CArchive& in, CONTAINER<T, _Ax>& obj)              \
 	{                                                                       \
 		obj.clear();                                                        \
 		std::string pref, stored_T;                                         \
@@ -49,29 +50,29 @@ namespace serialization
 			THROW_EXCEPTION_FMT(                                            \
 				"Error: serialized container %s<%s>'s preambles is wrong: " \
 				"'%s'",                                                     \
-				#CONTAINER, TTypeName<T>::get().c_str(), pref.c_str())      \
+				#CONTAINER, mrpt::typemeta::TTypeName<T>::get().c_str(), pref.c_str())      \
 		in >> stored_T;                                                     \
-		if (stored_T != mrpt::typemeta::TTypeName<T>::get())                   \
+		if (stored_T != std::string(mrpt::typemeta::TTypeName<T>::get().c_str())) \
 			THROW_EXCEPTION_FMT(                                            \
 				"Error: serialized container %s< %s != %s >", #CONTAINER,   \
-				stored_T.c_str(), TTypeName<T>::get().c_str())              \
+				stored_T.c_str(), mrpt::typemeta::TTypeName<T>::get().c_str())              \
 		uint32_t n;                                                         \
 		in >> n;                                                            \
 		obj.resize(n);                                                      \
 		std::for_each(                                                      \
 			obj.begin(), obj.end(),                                         \
-			mrpt::utils::metaprogramming::ObjectReadFromStream(&in));       \
+			metaprogramming::ObjectReadFromStream(&in));       \
 		return in;                                                          \
 	}
 
 #define MRPTSTL_SERIALIZABLE_ASSOC_CONTAINER(CONTAINER)                     \
 	/** Template method to serialize an associative STL container  */       \
 	template <class K, class V, class _Pr, class _Alloc>                    \
-	CArchive& operator<<(                                                    \
-		mrpt::utils::CArchive& out, const CONTAINER<K, V, _Pr, _Alloc>& obj) \
+	CArchive& operator<<(                                                   \
+		CArchive& out, const CONTAINER<K, V, _Pr, _Alloc>& obj)             \
 	{                                                                       \
-		out << std::string(#CONTAINER) << TTypeName<K>::get()               \
-			<< TTypeName<V>::get();                                         \
+		out << std::string(#CONTAINER) << mrpt::typemeta::TTypeName<K>::get()\
+			<< mrpt::typemeta::TTypeName<V>::get();                         \
 		out << static_cast<uint32_t>(obj.size());                           \
 		for (typename CONTAINER<K, V, _Pr, _Alloc>::const_iterator it =     \
 				 obj.begin();                                               \
@@ -81,8 +82,8 @@ namespace serialization
 	}                                                                       \
 	/** Template method to deserialize an associative STL container */      \
 	template <class K, class V, class _Pr, class _Alloc>                    \
-	CArchive& operator>>(                                                    \
-		mrpt::utils::CArchive& in, CONTAINER<K, V, _Pr, _Alloc>& obj)        \
+	CArchive& operator>>(                                                   \
+		CArchive& in, CONTAINER<K, V, _Pr, _Alloc>& obj)                    \
 	{                                                                       \
 		obj.clear();                                                        \
 		std::string pref, stored_K, stored_V;                               \
@@ -92,22 +93,22 @@ namespace serialization
 				format(                                                     \
 					"Error: serialized container %s<%s,%s>'s preamble is "  \
 					"wrong: '%s'",                                          \
-					#CONTAINER, TTypeName<K>::get().c_str(),                \
-					TTypeName<V>::get().c_str(), pref.c_str()))             \
+					#CONTAINER, mrpt::typemeta::TTypeName<K>::get().c_str(),\
+					mrpt::typemeta::TTypeName<V>::get().c_str(), pref.c_str()))             \
 		in >> stored_K;                                                     \
-		if (stored_K != TTypeName<K>::get())                                \
+		if (stored_K != std::string(mrpt::typemeta::TTypeName<K>::get().c_str())) \
 			THROW_EXCEPTION(                                                \
 				format(                                                     \
 					"Error: serialized container %s key type %s != %s",     \
 					#CONTAINER, stored_K.c_str(),                           \
-					TTypeName<K>::get().c_str()))                           \
+					mrpt::typemeta::TTypeName<K>::get().c_str()))           \
 		in >> stored_V;                                                     \
-		if (stored_V != TTypeName<V>::get())                                \
+		if (stored_V != std::string(mrpt::typemeta::TTypeName<V>::get().c_str()))  \
 			THROW_EXCEPTION(                                                \
 				format(                                                     \
 					"Error: serialized container %s value type %s != %s",   \
 					#CONTAINER, stored_V.c_str(),                           \
-					TTypeName<V>::get().c_str()))                           \
+					mrpt::typemeta::TTypeName<V>::get().c_str()))           \
 		uint32_t n;                                                         \
 		in >> n;                                                            \
 		for (uint32_t i = 0; i < n; i++)                                    \
@@ -123,22 +124,13 @@ namespace serialization
 		return in;                                                          \
 	}
 
-MRPTSTL_SERIALIZABLE_SEQ_CONTAINER(
-	std::vector)  // Serialization for std::vector
-MRPTSTL_SERIALIZABLE_SEQ_CONTAINER(std::deque)  // Serialization for std::deque
-MRPTSTL_SERIALIZABLE_SEQ_CONTAINER(std::list)  // Serialization for std::list
-
-MRPTSTL_SERIALIZABLE_ASSOC_CONTAINER(std::map)  // Serialization for std::map
-MRPTSTL_SERIALIZABLE_ASSOC_CONTAINER(
-	std::multimap)  // Serialization for std::multimap
-
 #define MRPTSTL_SERIALIZABLE_SIMPLE_ASSOC_CONTAINER(CONTAINER)                 \
 	/** Template method to serialize an associative STL container  */          \
 	template <class K, class _Pr, class _Alloc>                                \
-	CArchive& operator<<(                                                       \
-		mrpt::utils::CArchive& out, const CONTAINER<K, _Pr, _Alloc>& obj)       \
+	CArchive& operator<<(                                                      \
+		CArchive& out, const CONTAINER<K, _Pr, _Alloc>& obj)                   \
 	{                                                                          \
-		out << std::string(#CONTAINER) << TTypeName<K>::get();                 \
+		out << std::string(#CONTAINER) << mrpt::typemeta::TTypeName<K>::get(); \
 		out << static_cast<uint32_t>(obj.size());                              \
 		for (typename CONTAINER<K, _Pr, _Alloc>::const_iterator it =           \
 				 obj.begin();                                                  \
@@ -148,8 +140,8 @@ MRPTSTL_SERIALIZABLE_ASSOC_CONTAINER(
 	}                                                                          \
 	/** Template method to deserialize an associative STL container */         \
 	template <class K, class _Pr, class _Alloc>                                \
-	CArchive& operator>>(                                                       \
-		mrpt::utils::CArchive& in, CONTAINER<K, _Pr, _Alloc>& obj)              \
+	CArchive& operator>>(                                                      \
+		CArchive& in, CONTAINER<K, _Pr, _Alloc>& obj)                          \
 	{                                                                          \
 		obj.clear();                                                           \
 		std::string pref, stored_K;                                            \
@@ -159,14 +151,14 @@ MRPTSTL_SERIALIZABLE_ASSOC_CONTAINER(
 				format(                                                        \
 					"Error: serialized container %s<%s>'s preamble is wrong: " \
 					"'%s'",                                                    \
-					#CONTAINER, TTypeName<K>::get().c_str(), pref.c_str()))    \
+					#CONTAINER, mrpt::typemeta::TTypeName<K>::get().c_str(), pref.c_str()))    \
 		in >> stored_K;                                                        \
-		if (stored_K != TTypeName<K>::get())                                   \
+		if (stored_K != std::string(mrpt::typemeta::TTypeName<K>::get().c_str()))\
 			THROW_EXCEPTION(                                                   \
 				format(                                                        \
 					"Error: serialized container %s key type %s != %s",        \
 					#CONTAINER, stored_K.c_str(),                              \
-					TTypeName<K>::get().c_str()))                              \
+					mrpt::typemeta::TTypeName<K>::get().c_str()))              \
 		uint32_t n;                                                            \
 		in >> n;                                                               \
 		for (uint32_t i = 0; i < n; i++)                                       \
@@ -178,23 +170,63 @@ MRPTSTL_SERIALIZABLE_ASSOC_CONTAINER(
 		return in;                                                             \
 	}
 
-MRPTSTL_SERIALIZABLE_SIMPLE_ASSOC_CONTAINER(
-	std::set)  // Serialization for std::set
-MRPTSTL_SERIALIZABLE_SIMPLE_ASSOC_CONTAINER(
-	std::multiset)  // Serialization for std::multiset
+MRPTSTL_SERIALIZABLE_SEQ_CONTAINER(std::vector)
+MRPTSTL_SERIALIZABLE_SEQ_CONTAINER(std::deque)
+MRPTSTL_SERIALIZABLE_SEQ_CONTAINER(std::list)
+
+MRPTSTL_SERIALIZABLE_ASSOC_CONTAINER(std::map)
+MRPTSTL_SERIALIZABLE_ASSOC_CONTAINER(std::multimap)
+
+MRPTSTL_SERIALIZABLE_SIMPLE_ASSOC_CONTAINER(std::set)
+MRPTSTL_SERIALIZABLE_SIMPLE_ASSOC_CONTAINER(std::multiset)
+
+/** Template method to serialize a std::array<T,N> */
+template <class T, size_t N>
+CArchive& operator<<(CArchive& out, const std::array<T,N>& obj)
+{
+	out << std::string("std::array") << static_cast<uint32_t>(N) << mrpt::typemeta::TTypeName<T>::get();
+	std::for_each(
+		obj.begin(), obj.end(),
+		metaprogramming::ObjectWriteToStream(&out));
+	return out;
+}
+
+/** Template method to deserialize a std::array<T,N>  */
+template <class T, size_t N>
+CArchive& operator>>(CArchive& in, std::array<T, N>& obj)
+{
+	std::string pref, stored_T;
+	uint32_t stored_N;
+	in >> pref >> stored_N;
+	if (pref != "std::array" || stored_N != N)
+		THROW_EXCEPTION_FMT(\
+			"Error: serialized container %s's preambles is wrong: " \
+			"'%s'", \
+			mrpt::typemeta::TTypeName<std::array<T, N>>::get().c_str(), pref.c_str());
+	in >> stored_T;
+	if (stored_T != std::string(mrpt::typemeta::TTypeName<T>::get().c_str()))
+		THROW_EXCEPTION_FMT(\
+			"Error: serialized container std::array< %s != %s >", \
+			stored_T.c_str(), mrpt::typemeta::TTypeName<T>::get().c_str());
+	std::for_each(
+		obj.begin(), obj.end(),
+		metaprogramming::ObjectReadFromStream(&in));
+	return in;
+}
+
 
 /** Template method to serialize a STL pair */
 template <class T1, class T2>
-CArchive& operator<<(mrpt::utils::CArchive& out, const std::pair<T1, T2>& obj)
+CArchive& operator<<(CArchive& out, const std::pair<T1, T2>& obj)
 {
-	out << std::string("std::pair") << TTypeName<T1>::get()
-		<< TTypeName<T2>::get();
+	out << std::string("std::pair") << mrpt::typemeta::TTypeName<T1>::get()
+		<< mrpt::typemeta::TTypeName<T2>::get();
 	out << obj.first << obj.second;
 	return out;
 }
 /** Template method to deserialize a STL pair */
 template <class T1, class T2>
-CArchive& operator>>(mrpt::utils::CArchive& in, std::pair<T1, T2>& obj)
+CArchive& operator>>(CArchive& in, std::pair<T1, T2>& obj)
 {
 	std::string pref, stored_K, stored_V;
 	in >> pref;
@@ -202,20 +234,20 @@ CArchive& operator>>(mrpt::utils::CArchive& in, std::pair<T1, T2>& obj)
 		THROW_EXCEPTION(
 			format(
 				"Error: serialized std::pair<%s,%s>'s preamble is wrong: '%s'",
-				TTypeName<T1>::get().c_str(), TTypeName<T2>::get().c_str(),
+				mrpt::typemeta::TTypeName<T1>::get().c_str(), mrpt::typemeta::TTypeName<T2>::get().c_str(),
 				pref.c_str()))
 	in >> stored_K;
-	if (stored_K != TTypeName<T1>::get())
+	if (stored_K != std::string(mrpt::typemeta::TTypeName<T1>::get().c_str()))
 		THROW_EXCEPTION(
 			format(
 				"Error: serialized std::pair first type %s != %s",
-				stored_K.c_str(), TTypeName<T1>::get().c_str()))
+				stored_K.c_str(), mrpt::typemeta::TTypeName<T1>::get().c_str()))
 	in >> stored_V;
-	if (stored_V != TTypeName<T2>::get())
+	if (stored_V != std::string(mrpt::typemeta::TTypeName<T2>::get().c_str()))
 		THROW_EXCEPTION(
 			format(
 				"Error: serialized std::pair second type %s != %s",
-				stored_V.c_str(), TTypeName<T2>::get().c_str()))
+				stored_V.c_str(), mrpt::typemeta::TTypeName<T2>::get().c_str()))
 	in >> obj.first >> obj.second;
 	return in;
 }
