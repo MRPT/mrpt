@@ -103,7 +103,7 @@ class CMetricMapBuilderRBPF : public mrpt::slam::CMetricMapBuilder
 
 		mrpt::maps::TSetOfMetricMapInitializers mapsInitializers;
 		mrpt::maps::CMultiMetricMapPDF::TPredictionParams predictionOptions;
-		mrpt::utils::VerbosityLevel verbosity_level;
+		mrpt::system::VerbosityLevel verbosity_level;
 	};
 
 	/** Constructor. */

@@ -15,8 +15,8 @@
 #include <mrpt/vision/CFeature.h>
 #include <mrpt/vision/TSimpleFeature.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/utils/CTimeLogger.h>
-#include <mrpt/utils/TParameters.h>
+#include <mrpt/system/CTimeLogger.h>
+#include <mrpt/system/TParameters.h>
 
 #include <mrpt/utils/metaprogramming.h>
 
@@ -148,7 +148,7 @@ namespace vision
 struct CGenericFeatureTracker
 {
 	/** Optional list of extra parameters to the algorithm. */
-	mrpt::utils::TParametersDouble extra_params;
+	mrpt::system::TParametersDouble extra_params;
 
 	/** Default ctor */
 	inline CGenericFeatureTracker()
@@ -159,7 +159,7 @@ struct CGenericFeatureTracker
 	{
 	}
 	/** Ctor with extra parameters */
-	inline CGenericFeatureTracker(mrpt::utils::TParametersDouble extraParams)
+	inline CGenericFeatureTracker(mrpt::system::TParametersDouble extraParams)
 		: extra_params(extraParams),
 		  m_timlog(false),
 		  m_update_patches_counter(0),
@@ -324,7 +324,7 @@ struct CFeatureTracker_KL : public CGenericFeatureTracker
 	/** Default ctor */
 	inline CFeatureTracker_KL() {}
 	/** Ctor with extra parameters */
-	inline CFeatureTracker_KL(mrpt::utils::TParametersDouble extraParams)
+	inline CFeatureTracker_KL(mrpt::system::TParametersDouble extraParams)
 		: CGenericFeatureTracker(extraParams)
 	{
 	}

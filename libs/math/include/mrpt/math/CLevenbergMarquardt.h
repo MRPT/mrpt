@@ -103,7 +103,7 @@ class CLevenbergMarquardtTempl : public mrpt::utils::COutputLogger
 		VECTORTYPE& out_optimal_x, const VECTORTYPE& x0, TFunctorEval functor,
 		const VECTORTYPE& increments, const USERPARAM& userParam,
 		TResultInfo& out_info,
-		mrpt::utils::VerbosityLevel verbosity = mrpt::utils::LVL_INFO,
+		mrpt::system::VerbosityLevel verbosity = mrpt::system::LVL_INFO,
 		const size_t maxIter = 200, const NUMTYPE tau = 1e-3,
 		const NUMTYPE e1 = 1e-8, const NUMTYPE e2 = 1e-8,
 		bool returnPath = true, TFunctorIncrement x_increment_adder = nullptr)
@@ -142,7 +142,7 @@ class CLevenbergMarquardtTempl : public mrpt::utils::COutputLogger
 		bool found = math::norm_inf(g) <= e1;
 		if (found)
 			logFmt(
-				mrpt::utils::LVL_INFO,
+				mrpt::system::LVL_INFO,
 				"End condition: math::norm_inf(g)<=e1 :%f\n",
 				math::norm_inf(g));
 
@@ -179,7 +179,7 @@ class CLevenbergMarquardtTempl : public mrpt::utils::COutputLogger
 			double x_n2 = math::norm(x);
 
 			logFmt(
-				mrpt::utils::LVL_DEBUG, "Iter:%u x=%s\n", (unsigned)iter,
+				mrpt::system::LVL_DEBUG, "Iter:%u x=%s\n", (unsigned)iter,
 				sprintf_vector(" %f", x).c_str());
 
 			if (h_lm_n2 < e2 * (x_n2 + e2))
@@ -187,7 +187,7 @@ class CLevenbergMarquardtTempl : public mrpt::utils::COutputLogger
 				// Done:
 				found = true;
 				logFmt(
-					mrpt::utils::LVL_INFO, "End condition: %e < %e\n", h_lm_n2,
+					mrpt::system::LVL_INFO, "End condition: %e < %e\n", h_lm_n2,
 					e2 * (x_n2 + e2));
 			}
 			else
@@ -224,7 +224,7 @@ class CLevenbergMarquardtTempl : public mrpt::utils::COutputLogger
 					found = math::norm_inf(g) <= e1;
 					if (found)
 						logFmt(
-							mrpt::utils::LVL_INFO,
+							mrpt::system::LVL_INFO,
 							"End condition: math::norm_inf(g)<=e1 : %e\n",
 							math::norm_inf(g));
 

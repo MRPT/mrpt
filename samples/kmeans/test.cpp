@@ -10,7 +10,7 @@
 #include <mrpt/random.h>
 #include <mrpt/math/kmeans.h>
 #include <mrpt/utils/aligned_containers.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
 
 using namespace mrpt::utils;

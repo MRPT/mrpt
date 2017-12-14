@@ -13,7 +13,7 @@
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/system/os.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::hmtslam;

@@ -18,7 +18,7 @@
 #include <mrpt/gui.h>
 #include <mrpt/random.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/opengl/CAngularObservationMesh.h>
 #include <mrpt/opengl/CAxis.h>
 #include <mrpt/opengl/CDisk.h>

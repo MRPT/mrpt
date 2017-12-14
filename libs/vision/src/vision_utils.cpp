@@ -20,7 +20,7 @@
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/obs/CObservationBearingRange.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/math/ops_vectors.h>
 #include <mrpt/math/lightweight_geom_data.h>

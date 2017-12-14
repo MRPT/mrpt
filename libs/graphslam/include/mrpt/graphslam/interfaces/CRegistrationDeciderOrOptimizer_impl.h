@@ -84,7 +84,7 @@ void CRegistrationDeciderOrOptimizer<GRAPH_T>::setCriticalSectionPtr(
 {
 	m_graph_section = graph_section;
 	this->logFmt(
-		mrpt::utils::LVL_DEBUG, "Fetched the CCRiticalSection successfully");
+		mrpt::system::LVL_DEBUG, "Fetched the CCRiticalSection successfully");
 }
 
 template <class GRAPH_T>

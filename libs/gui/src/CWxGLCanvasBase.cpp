@@ -11,7 +11,7 @@
 
 #include <mrpt/gui/CWxGLCanvasBase.h>
 #include <mrpt/gui/WxSubsystem.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 

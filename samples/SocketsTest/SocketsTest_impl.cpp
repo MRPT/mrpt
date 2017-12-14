@@ -34,9 +34,9 @@ void thread_server()
 		CServerTCPSocket server(
 			15000, "127.0.0.1", 10,
 #ifdef SOCKET_TEST_VERBOSE
-			mrpt::utils::LVL_DEBUG
+			mrpt::system::LVL_DEBUG
 #else
-			mrpt::utils::LVL_ERROR
+			mrpt::system::LVL_ERROR
 #endif
 			);
 		std::unique_ptr<CClientTCPSocket> client = server.accept(2000);

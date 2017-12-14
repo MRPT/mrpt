@@ -136,7 +136,7 @@ void mrpt::math::ransac_detect_3D_planes(
 		CMatrixTemplateNumeric<NUMTYPE> this_best_model;
 
 		math::RANSAC_Template<NUMTYPE> ransac;
-		ransac.setVerbosityLevel(mrpt::utils::LVL_INFO);
+		ransac.setVerbosityLevel(mrpt::system::LVL_INFO);
 		ransac.execute(
 			remainingPoints, mrpt::math::ransac3Dplane_fit<NUMTYPE>,
 			mrpt::math::ransac3Dplane_distance<NUMTYPE>,
@@ -305,7 +305,7 @@ void mrpt::math::ransac_detect_2D_lines(
 		CMatrixTemplateNumeric<NUMTYPE> this_best_model;
 
 		math::RANSAC_Template<NUMTYPE> ransac;
-		ransac.setVerbosityLevel(mrpt::utils::LVL_INFO);
+		ransac.setVerbosityLevel(mrpt::system::LVL_INFO);
 		ransac.execute(
 			remainingPoints, ransac2Dline_fit<NUMTYPE>,
 			ransac2Dline_distance<NUMTYPE>, ransac2Dline_degenerate<NUMTYPE>,

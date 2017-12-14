@@ -11,7 +11,7 @@
 #define MRPTPERFAPP_COMMON_H
 
 #include <mrpt/img/CImage.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <list>
 #include <functional>
 

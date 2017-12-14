@@ -45,7 +45,7 @@
 #include <mrpt/opengl/CPlanarLaserScan.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/CTimeLogger.h>
 
 //#define DO_SCAN_LIKELIHOOD_DEBUG
 
@@ -99,7 +99,7 @@ wxBitmap MyArtProvider::CreateBitmap(
 
 #include <mrpt/gui/CWxGLCanvasBase.h>
 
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/kinematics/CVehicleSimul_DiffDriven.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>

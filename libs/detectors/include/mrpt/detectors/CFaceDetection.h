@@ -12,7 +12,7 @@
 
 #include <mrpt/detectors/CObjectDetection.h>
 #include <mrpt/detectors/CCascadeClassifierDetection.h>
-#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/CTimeLogger.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/obs_frwds.h>
 

@@ -83,7 +83,7 @@ double icp_test_1(int a1, int a2)
 	// ---------------------------------
 	//   CMetricMapBuilder::TOptions
 	// ---------------------------------
-	mapBuilder.setVerbosityLevel(mrpt::utils::LVL_ERROR);
+	mapBuilder.setVerbosityLevel(mrpt::system::LVL_ERROR);
 	mapBuilder.options.enableMapUpdating = true;
 
 	// ----------------------------------------------------------

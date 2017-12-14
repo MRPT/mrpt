@@ -231,7 +231,7 @@
 				- Old classes `CPTG%d` have been renamed to describe each path type. Old PTGs #6 and #7 have been removed for lack of practical use.
 				- New separate classes for PTGs based on numerically-integrated paths and on closed-form formulations.
 				- Old deprecated method of PTGs `lambdaFunction()` removed.
-				- Parameters are no longer passed via a mrpt::utils::TParameters class, but via a mrpt::utils::CConfigFileBase which makes parameter passing to PTGs much more maintainable and consistent.
+				- Parameters are no longer passed via a mrpt::system::TParameters class, but via a mrpt::utils::CConfigFileBase which makes parameter passing to PTGs much more maintainable and consistent.
 				- PTGs now have a score_priority field to manually set hints about preferences for path planning.
 				- PTGs are now mrpt::utils::CLoadableOptions classes
 			- New classes:

@@ -11,7 +11,7 @@
 #include "vision-precomp.h"  // Precompiled headers
 
 #include <mrpt/vision/CFeatureExtraction.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/utils/CStream.h>
 
 using namespace mrpt;

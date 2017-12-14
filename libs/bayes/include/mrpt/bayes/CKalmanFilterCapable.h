@@ -16,13 +16,13 @@
 #include <mrpt/math/utils.h>
 #include <mrpt/math/num_jacobian.h>
 #include <mrpt/utils/CConfigFileBase.h>
-#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/CTimeLogger.h>
 #include <mrpt/utils/aligned_containers.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/stl_containers_utils.h>
 #include <mrpt/utils/COutputLogger.h>
 #include <mrpt/utils/stl_containers_utils.h>  // find_in_vector
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/TEnumType.h>
 #include <mrpt/system/vector_loadsave.h>
@@ -55,7 +55,7 @@ class CKalmanFilterCapable;
   */
 struct TKF_options : public mrpt::utils::CLoadableOptions
 {
-	TKF_options(mrpt::utils::VerbosityLevel& verb_level_ref)
+	TKF_options(mrpt::system::VerbosityLevel& verb_level_ref)
 		: method(kfEKFNaive),
 		  verbosity_level(verb_level_ref),
 		  IKF_iterations(5),
@@ -72,7 +72,7 @@ struct TKF_options : public mrpt::utils::CLoadableOptions
 		const std::string& section) override
 	{
 		method = iniFile.read_enum<TKFMethod>(section, "method", method);
-		verbosity_level = iniFile.read_enum<mrpt::utils::VerbosityLevel>(
+		verbosity_level = iniFile.read_enum<mrpt::system::VerbosityLevel>(
 			section, "verbosity_level", verbosity_level);
 		MRPT_LOAD_CONFIG_VAR(IKF_iterations, int, iniFile, section);
 		MRPT_LOAD_CONFIG_VAR(enable_profiler, bool, iniFile, section);
@@ -97,7 +97,7 @@ struct TKF_options : public mrpt::utils::CLoadableOptions
 			mrpt::utils::TEnumType<TKFMethod>::value2name(method).c_str());
 		out.printf(
 			"verbosity_level                         = %s\n",
-			mrpt::utils::TEnumType<mrpt::utils::VerbosityLevel>::value2name(
+			mrpt::utils::TEnumType<mrpt::system::VerbosityLevel>::value2name(
 				verbosity_level)
 				.c_str());
 		out.printf(
@@ -110,7 +110,7 @@ struct TKF_options : public mrpt::utils::CLoadableOptions
 
 	/** The method to employ (default: kfEKFNaive) */
 	TKFMethod method;
-	mrpt::utils::VerbosityLevel& verbosity_level;
+	mrpt::system::VerbosityLevel& verbosity_level;
 	/** Number of refinement iterations, only for the IKF method. */
 	int IKF_iterations;
 	/** If enabled (default=false), detailed timing information will be dumped

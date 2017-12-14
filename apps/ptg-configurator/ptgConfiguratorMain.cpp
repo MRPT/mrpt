@@ -57,7 +57,7 @@ wxBitmap MyArtProvider::CreateBitmap(
 #include <mrpt/utils/CConfigFilePrefixer.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/system/os.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 
 mrpt::nav::CParameterizedTrajectoryGenerator* ptg = nullptr;
 

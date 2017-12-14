@@ -532,7 +532,7 @@ CMetricMapBuilderRBPF::TConstructionOptions::TConstructionOptions()
 	  PF_options(),
 	  mapsInitializers(),
 	  predictionOptions(),
-	  verbosity_level(mrpt::utils::LVL_INFO)
+	  verbosity_level(mrpt::system::LVL_INFO)
 {
 }
 
@@ -560,7 +560,7 @@ void CMetricMapBuilderRBPF::TConstructionOptions::dumpToTextStream(
 		RAD2DEG(localizeAngDistance));
 	out.printf(
 		"verbosity_level                         = %s\n",
-		mrpt::utils::TEnumType<mrpt::utils::VerbosityLevel>::value2name(
+		mrpt::utils::TEnumType<mrpt::system::VerbosityLevel>::value2name(
 			verbosity_level)
 			.c_str());
 
@@ -591,7 +591,7 @@ void CMetricMapBuilderRBPF::TConstructionOptions::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR(localizeLinDistance, float, iniFile, section);
 	MRPT_LOAD_HERE_CONFIG_VAR_DEGREES_NO_DEFAULT(
 		localizeAngDistance_deg, double, localizeAngDistance, iniFile, section);
-	verbosity_level = iniFile.read_enum<mrpt::utils::VerbosityLevel>(
+	verbosity_level = iniFile.read_enum<mrpt::system::VerbosityLevel>(
 		section, "verbosity_level", verbosity_level);
 
 	mapsInitializers.loadFromConfigFile(iniFile, section);

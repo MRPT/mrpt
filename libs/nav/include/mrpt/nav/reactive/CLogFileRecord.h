@@ -12,7 +12,7 @@
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/utils/CMemoryStream.h>
-#include <mrpt/utils/TParameters.h>
+#include <mrpt/system/TParameters.h>
 
 #include <mrpt/nav/holonomic/CHolonomicLogFileRecord.h>
 #include <mrpt/nav/holonomic/ClearanceDiagram.h>
@@ -58,7 +58,7 @@ class CLogFileRecord : public mrpt::utils::CSerializable
 		/** Final score of this candidate */
 		double evaluation;
 		/** Evaluation factors */
-		mrpt::utils::TParametersDouble evalFactors;
+		mrpt::system::TParametersDouble evalFactors;
 		/** Other useful info about holonomic method execution. */
 		CHolonomicLogFileRecord::Ptr HLFR;
 		/** Only for the FIRST entry in a log file, this will contain a copy of

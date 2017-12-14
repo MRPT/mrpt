@@ -17,7 +17,7 @@
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CStream.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/utils/types_simple.h>
 #include <mrpt/img/TColor.h>
 #include <mrpt/opengl/graph_tools.h>
@@ -176,7 +176,7 @@ class CLevMarqGSO
 			const std::string& section);
 		void dumpToTextStream(mrpt::utils::CStream& out) const;
 
-		mrpt::utils::TParametersDouble cfg;
+		mrpt::system::TParametersDouble cfg;
 		// True if optimization procedure is to run in a multithreading fashion
 		bool optimization_on_second_thread;
 
@@ -214,7 +214,7 @@ class CLevMarqGSO
 			const std::string& section);
 		void dumpToTextStream(mrpt::utils::CStream& out) const;
 
-		mrpt::utils::TParametersDouble cfg;
+		mrpt::system::TParametersDouble cfg;
 		bool visualize_optimized_graph;
 		// textMessage parameters
 		std::string keystroke_graph_toggle;  // see Ctor for initialization

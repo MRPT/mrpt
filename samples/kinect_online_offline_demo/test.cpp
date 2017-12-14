@@ -20,7 +20,7 @@
 #include <mrpt/hwdrivers/CKinect.h>
 #include <mrpt/gui.h>
 #include <mrpt/maps/CColouredPointsMap.h>
-#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/CTimeLogger.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/opengl/CPointCloudColoured.h>

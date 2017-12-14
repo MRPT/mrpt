@@ -10,7 +10,7 @@
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/graphs/dijkstra.h>
 #include <mrpt/random.h>
-#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/CTimeLogger.h>
 
 #include "common.h"
 

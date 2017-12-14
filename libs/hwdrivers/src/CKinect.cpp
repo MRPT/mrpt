@@ -10,7 +10,7 @@
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
 #include <mrpt/hwdrivers/CKinect.h>
-#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/CTimeLogger.h>
 #include <mrpt/utils/TStereoCamera.h>
 
 // Universal include for all versions of OpenCV

@@ -10,7 +10,7 @@
 #define GRAPH_SLAM_LEVMARQ_H
 
 #include <mrpt/graphslam/types.h>
-#include <mrpt/utils/TParameters.h>
+#include <mrpt/system/TParameters.h>
 #include <mrpt/utils/stl_containers_utils.h>  // find_in_vector()
 #include <mrpt/graphslam/levmarq_impl.h>  // Aux classes
 
@@ -79,8 +79,8 @@ template <class GRAPH_T>
 void optimize_graph_spa_levmarq(
 	GRAPH_T& graph, TResultInfoSpaLevMarq& out_info,
 	const std::set<mrpt::utils::TNodeID>* in_nodes_to_optimize = nullptr,
-	const mrpt::utils::TParametersDouble& extra_params =
-		mrpt::utils::TParametersDouble(),
+	const mrpt::system::TParametersDouble& extra_params =
+		mrpt::system::TParametersDouble(),
 	typename graphslam_traits<GRAPH_T>::TFunctorFeedback functor_feedback =
 		typename graphslam_traits<GRAPH_T>::TFunctorFeedback())
 {

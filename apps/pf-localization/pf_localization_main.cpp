@@ -37,7 +37,7 @@
 #include <mrpt/system/vector_loadsave.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/utils.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/utils/CFileGZInputStream.h>

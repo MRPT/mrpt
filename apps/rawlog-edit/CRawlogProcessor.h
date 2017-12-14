@@ -12,7 +12,7 @@
 
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
 
 // Aparently, TCLAP headers can't be included in more than one source file

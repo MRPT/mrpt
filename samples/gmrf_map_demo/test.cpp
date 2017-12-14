@@ -59,7 +59,7 @@ void Example_GMRF()
 	mrpt::maps::CGasConcentrationGridMap2D::ConnectivityDescriptor::Ptr conn =
 		mrpt::maps::CGasConcentrationGridMap2D::ConnectivityDescriptor::Ptr(
 			new MyConnectivityVisitor);
-	gasmap.setMinLoggingLevel(mrpt::utils::LVL_DEBUG);
+	gasmap.setMinLoggingLevel(mrpt::system::LVL_DEBUG);
 	gasmap.setCellsConnectivity(conn);
 	gasmap.clear();  // for the connectivity to be taken into account.
 

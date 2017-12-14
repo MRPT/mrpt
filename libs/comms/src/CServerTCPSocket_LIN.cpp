@@ -39,7 +39,7 @@ using namespace mrpt::comms;
  ---------------------------------------------------------------*/
 CServerTCPSocket::CServerTCPSocket(
 	unsigned short listenPort, const std::string& IPaddress,
-	int maxConnectionsWaiting, mrpt::utils::VerbosityLevel verbosityLevel)
+	int maxConnectionsWaiting, mrpt::system::VerbosityLevel verbosityLevel)
 	: COutputLogger("CServerTCPSocket")
 {
 	MRPT_TRY_START;

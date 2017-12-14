@@ -108,7 +108,7 @@ void Run_HMT_SLAM()
 		cfgFile.read_int("HMT-SLAM", "rawlog_offset", 0);
 
 	mapping.logFmt(
-		mrpt::utils::LVL_INFO, "RAWLOG FILE: \n%s\n", rawlogFileName.c_str());
+		mrpt::system::LVL_INFO, "RAWLOG FILE: \n%s\n", rawlogFileName.c_str());
 
 	const std::string OUT_DIR =
 		cfgFile.read_string("HMT-SLAM", "LOG_OUTPUT_DIR", "HMT_SLAM_OUTPUT");
@@ -117,7 +117,7 @@ void Run_HMT_SLAM()
 	CFileGZInputStream rawlogFile(rawlogFileName);
 
 	mapping.logFmt(
-		mrpt::utils::LVL_INFO,
+		mrpt::system::LVL_INFO,
 		"---------------------------------------------------\n\n");
 
 	// Set relative path for externally-stored images in rawlogs:
@@ -206,7 +206,7 @@ void Run_HMT_SLAM()
 		}  // (rawlogEntry>=rawlog_offset)
 
 		mapping.logFmt(
-			mrpt::utils::LVL_INFO,
+			mrpt::system::LVL_INFO,
 			"======== Rawlog entries processed: %i ========\n", rawlogEntry);
 
 		step++;
@@ -214,22 +214,22 @@ void Run_HMT_SLAM()
 	};  // end "while(1)"
 
 	mapping.logFmt(
-		mrpt::utils::LVL_INFO,
+		mrpt::system::LVL_INFO,
 		"********* Application finished!! 3 seconds to exit... **********\n");
 	std::this_thread::sleep_for(1000ms);
 	mapping.logFmt(
-		mrpt::utils::LVL_INFO,
+		mrpt::system::LVL_INFO,
 		"********* Application finished!! 2 seconds to exit... **********\n");
 	std::this_thread::sleep_for(1000ms);
 	mapping.logFmt(
-		mrpt::utils::LVL_INFO,
+		mrpt::system::LVL_INFO,
 		"********* Application finished!! 1 second to exit... **********\n");
 	std::this_thread::sleep_for(1000ms);
 
 	{
 		string final_file = OUT_DIR + string("/final_map.hmtslam");
 		mapping.logFmt(
-			mrpt::utils::LVL_WARN, "\n Saving FINAL HMT-MAP to file: %s\n",
+			mrpt::system::LVL_WARN, "\n Saving FINAL HMT-MAP to file: %s\n",
 			final_file.c_str());
 		CFileGZOutputStream fil(final_file);
 		mapping.saveState(fil);

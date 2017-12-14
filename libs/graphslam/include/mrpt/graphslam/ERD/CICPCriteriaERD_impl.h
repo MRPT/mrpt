@@ -377,7 +377,7 @@ void CICPCriteriaERD<GRAPH_T>::toggleLaserScansVisualization()
 
 	using namespace mrpt::opengl;
 
-	this->logFmt(mrpt::utils::LVL_INFO, "Toggling LaserScans visualization...");
+	this->logFmt(mrpt::system::LVL_INFO, "Toggling LaserScans visualization...");
 
 	COpenGLScene::Ptr scene = this->m_win->get3DSceneAndLock();
 
@@ -413,7 +413,7 @@ void CICPCriteriaERD<GRAPH_T>::initializeVisuals()
 {
 	MRPT_START;
 	using namespace mrpt::opengl;
-	this->logFmt(mrpt::utils::LVL_DEBUG, "Initializing visuals");
+	this->logFmt(mrpt::system::LVL_DEBUG, "Initializing visuals");
 	this->m_time_logger.enter("CICPCriteriaERD::Visuals");
 	parent_t::initializeVisuals();
 

@@ -14,7 +14,7 @@
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CTexturedPlane.h>
 #include <mrpt/utils/CStringList.h>
-#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/CTimeLogger.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/stl_serialization.h>
 #include <mrpt/opengl/gl_utils.h>

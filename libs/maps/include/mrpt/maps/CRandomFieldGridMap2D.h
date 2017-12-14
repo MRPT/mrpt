@@ -471,11 +471,11 @@ class CRandomFieldGridMap2D
 
 	void enableVerbose(bool enable_verbose)
 	{
-		this->setMinLoggingLevel(mrpt::utils::LVL_DEBUG);
+		this->setMinLoggingLevel(mrpt::system::LVL_DEBUG);
 	}
 	bool isEnabledVerbose() const
 	{
-		return this->getMinLoggingLevel() == mrpt::utils::LVL_DEBUG;
+		return this->getMinLoggingLevel() == mrpt::system::LVL_DEBUG;
 	}
 
 	void enableProfiler(bool enable = true)

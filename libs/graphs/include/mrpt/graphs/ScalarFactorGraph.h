@@ -11,7 +11,7 @@
 #include <mrpt/utils/core_defs.h>
 #include <mrpt/utils/types_math.h>
 #include <mrpt/utils/COutputLogger.h>
-#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/CTimeLogger.h>
 #include <deque>
 
 namespace mrpt

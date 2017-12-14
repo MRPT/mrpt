@@ -43,7 +43,7 @@ using namespace std::literals;
 #if MRPT_HAS_xSENS_MT3
 #ifdef _WIN32
 // WINDOWS:
-#if defined(_MSC_VER) || defined(__BORLANDC__)
+#if defined(_MSC_VER)
 #pragma comment(lib, "SetupAPI.lib")
 #endif
 #endif  // _WIN32

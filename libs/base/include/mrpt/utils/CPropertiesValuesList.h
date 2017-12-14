@@ -18,7 +18,7 @@ namespace utils
 /** An arbitrary list of "annotations", or named attributes, each being an
  * instance of any CSerializable object.
  *  A multi-hypotheses version exists in CMHPropertiesValuesList.
- * \sa CSerializable, CMHPropertiesValuesList, mrpt::utils::TParameters
+ * \sa CSerializable, CMHPropertiesValuesList, mrpt::system::TParameters
  * \ingroup mrpt_base_grp
  */
 class CPropertiesValuesList : public mrpt::utils::CSerializable

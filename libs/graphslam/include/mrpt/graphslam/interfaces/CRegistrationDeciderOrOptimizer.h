@@ -15,7 +15,7 @@
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/utils/COutputLogger.h>
-#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/CTimeLogger.h>
 #include <mrpt/graphslam/misc/CWindowManager.h>
 
 #include <string>

@@ -9,7 +9,7 @@
 
 #include <mrpt/hwdrivers/CImageGrabber_OpenCV.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/gui/CDisplayWindow.h>
 
 using namespace mrpt::utils;

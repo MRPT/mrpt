@@ -13,7 +13,7 @@
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
 #include <mrpt/utils/crc.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
 
 #include <mrpt/hwdrivers/CSickLaserSerial.h>

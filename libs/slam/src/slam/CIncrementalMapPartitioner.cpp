@@ -15,7 +15,7 @@
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/graphs/CGraphPartitioner.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/utils/stl_serialization.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CSetOfObjects.h>

@@ -10,7 +10,7 @@
 #include "slam-precomp.h"  // Precompiled headers
 
 #include <mrpt/random.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/utils/CFileStream.h>
 #include <mrpt/system/os.h>
 

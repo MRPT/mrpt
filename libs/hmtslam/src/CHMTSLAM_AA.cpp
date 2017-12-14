@@ -9,7 +9,7 @@
 
 #include "hmtslam-precomp.h"  // Precomp header
 
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/random.h>
 #include <mrpt/utils/CFileStream.h>
 #include <mrpt/utils/printf_vector.h>
@@ -53,7 +53,7 @@ CHMTSLAM::TMessageLSLAMfromAA::Ptr CHMTSLAM::areaAbstraction(
 	{
 		// Add a new node to the graph:
 		obj->logFmt(
-			mrpt::utils::LVL_DEBUG, "[thread_AA] Processing new pose ID: %u\n",
+			mrpt::system::LVL_DEBUG, "[thread_AA] Processing new pose ID: %u\n",
 			static_cast<unsigned>(*newID));
 
 		// Get SF & pose pdf for the new pose.

@@ -20,7 +20,7 @@
 #include <mrpt/hwdrivers/CKinect.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>

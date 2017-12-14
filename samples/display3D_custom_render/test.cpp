@@ -9,7 +9,7 @@
 
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/system/os.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/utils/CObserver.h>
 #include <mrpt/opengl/gl_utils.h>
 #include <mrpt/opengl/stock_objects.h>

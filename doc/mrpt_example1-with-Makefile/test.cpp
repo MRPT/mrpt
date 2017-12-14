@@ -10,7 +10,7 @@
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::poses;

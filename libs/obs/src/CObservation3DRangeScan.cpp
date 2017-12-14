@@ -19,7 +19,7 @@
 #include <mrpt/math/ops_containers.h>  // norm(), etc.
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
-#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/CTimeLogger.h>
 #include <mrpt/utils/CConfigFileMemory.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/string_utils.h>
@@ -776,7 +776,7 @@ double CObservation3DRangeScan::recoverCameraCalibrationParameters(
 	lm.execute(
 		optimal_x, initial_x, &mrpt::obs::detail::cost_func, increments_x,
 		detail::TLevMarData(obs, camera_offset), info,
-		mrpt::utils::LVL_INFO, /* verbose */
+		mrpt::system::LVL_INFO, /* verbose */
 		1000, /* max iter */
 		1e-3, 1e-9, 1e-9, false);
 

@@ -14,8 +14,8 @@
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/utils/TParameters.h>
-#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/TParameters.h>
+#include <mrpt/system/CTimeLogger.h>
 #include <mrpt/utils/CProbabilityDensityFunction.h>
 
 #include <mrpt/graphslam/misc/CWindowManager.h>

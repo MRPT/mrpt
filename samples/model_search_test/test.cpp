@@ -10,7 +10,7 @@
 #include <mrpt/math/ransac.h>
 #include <mrpt/math/model_search.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/opengl/CPointCloud.h>

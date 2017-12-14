@@ -39,7 +39,7 @@ CLMS100Eth::CLMS100Eth(string _ip, unsigned int _port)
 	  m_maxRange(20.0),
 	  m_beamApperture(.25 * M_PI / 180.0)
 {
-	setVerbosityLevel(mrpt::utils::LVL_DEBUG);
+	setVerbosityLevel(mrpt::system::LVL_DEBUG);
 }
 
 CLMS100Eth::~CLMS100Eth()

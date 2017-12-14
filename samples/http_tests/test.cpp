@@ -24,7 +24,7 @@ void Test_HTTP_get()
 {
 	string content;
 	string errmsg;
-	mrpt::utils::TParameters<string> out_headers;
+	mrpt::system::TParameters<string> out_headers;
 
 	cout << "Retrieving " << url << "..." << endl;
 

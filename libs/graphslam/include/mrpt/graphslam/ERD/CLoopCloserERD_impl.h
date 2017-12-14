@@ -2372,7 +2372,7 @@ void CLoopCloserERD<GRAPH_T>::dumpVisibilityErrorMsg(
 	MRPT_START;
 
 	this->logFmt(
-		mrpt::utils::LVL_ERROR,
+		mrpt::system::LVL_ERROR,
 		"Cannot toggle visibility of specified object.\n "
 		"Make sure that the corresponding visualization flag ( %s "
 		") is set to true in the .ini file.\n",
@@ -2408,7 +2408,7 @@ void CLoopCloserERD<GRAPH_T>::loadParams(const std::string& source_fname)
 	int min_verbosity_level = source.read_int(
 		"EdgeRegistrationDeciderParameters", "class_verbosity", 1, false);
 
-	this->setMinLoggingLevel(mrpt::utils::VerbosityLevel(min_verbosity_level));
+	this->setMinLoggingLevel(mrpt::system::VerbosityLevel(min_verbosity_level));
 	MRPT_END;
 }
 template <class GRAPH_T>

@@ -10,7 +10,7 @@
 
 #include <mrpt/nav/reactive/CRobot2NavInterface.h>
 #include <mrpt/utils/COutputLogger.h>
-#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/CTimeLogger.h>
 #include <mrpt/utils/TEnumType.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/poses/CPose2DInterpolator.h>

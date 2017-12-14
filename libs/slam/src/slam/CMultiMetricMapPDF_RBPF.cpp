@@ -11,7 +11,7 @@
 
 #include <mrpt/random.h>
 #include <mrpt/math/utils.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/utils/CFileStream.h>
 
 #include <mrpt/maps/CMultiMetricMapPDF.h>

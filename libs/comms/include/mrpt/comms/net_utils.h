@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/utils/core_defs.h>
-#include <mrpt/utils/types_simple.h>
-#include <mrpt/utils/TParameters.h>
+#include <string>
+#include <vector>
+#include <mrpt/system/TParameters.h>
 
 namespace mrpt
 {
@@ -61,8 +61,8 @@ ERRORCODE_HTTP http_get(
 	const string& url, std::vector<uint8_t>& out_content, string& out_errormsg,
 	int port = 80, const string& auth_user = string(),
 	const string& auth_pass = string(), int* out_http_responsecode = nullptr,
-	mrpt::utils::TParameters<string>* extra_headers = nullptr,
-	mrpt::utils::TParameters<string>* out_headers = nullptr,
+	mrpt::system::TParameters<string>* extra_headers = nullptr,
+	mrpt::system::TParameters<string>* out_headers = nullptr,
 	int timeout_ms = 1000);
 
 /** Perform an HTTP GET operation (version for retrieving the data as text)
@@ -88,8 +88,8 @@ ERRORCODE_HTTP http_get(
 	const string& url, string& out_content, string& out_errormsg, int port = 80,
 	const string& auth_user = string(), const string& auth_pass = string(),
 	int* out_http_responsecode = nullptr,
-	mrpt::utils::TParameters<string>* extra_headers = nullptr,
-	mrpt::utils::TParameters<string>* out_headers = nullptr,
+	mrpt::system::TParameters<string>* extra_headers = nullptr,
+	mrpt::system::TParameters<string>* out_headers = nullptr,
 	int timeout_ms = 1000);
 
 /** Generic function for HTTP GET & POST methods. \sa http_get */
@@ -98,8 +98,8 @@ ERRORCODE_HTTP http_request(
 	const string& url, std::vector<uint8_t>& out_content, string& out_errormsg,
 	int port = 80, const string& auth_user = string(),
 	const string& auth_pass = string(), int* out_http_responsecode = nullptr,
-	mrpt::utils::TParameters<string>* extra_headers = nullptr,
-	mrpt::utils::TParameters<string>* out_headers = nullptr,
+	mrpt::system::TParameters<string>* extra_headers = nullptr,
+	mrpt::system::TParameters<string>* out_headers = nullptr,
 	int timeout_ms = 1000);
 
 /** Resolve a server address by its name, returning its IP address as a

@@ -105,7 +105,7 @@ CAbstractNavigator::CAbstractNavigator(CRobot2NavInterface& react_iterf_impl)
 {
 	m_latestPoses.setInterpolationMethod(mrpt::poses::imLinear2Neig);
 	m_latestOdomPoses.setInterpolationMethod(mrpt::poses::imLinear2Neig);
-	this->setVerbosityLevel(mrpt::utils::LVL_DEBUG);
+	this->setVerbosityLevel(mrpt::system::LVL_DEBUG);
 }
 
 // Dtor:
@@ -562,7 +562,7 @@ void CAbstractNavigator::performNavigationStepNavigating(
 			{
 				m_navigationState = IDLE;
 				logFmt(
-					mrpt::utils::LVL_WARN,
+					mrpt::system::LVL_WARN,
 					"Navigation target (%.03f,%.03f) was reached\n",
 					m_navigationParams->target.target_coords.x,
 					m_navigationParams->target.target_coords.y);

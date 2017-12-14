@@ -14,15 +14,15 @@
 #ifdef _WIN32
 
 #include <winsock.h>
-#if (__BORLANDC__) || (_MSC_VER)
+#if defined(_MSC_VER)
 #pragma comment(lib, "WS2_32.LIB")
 #endif
 
 #include <mrpt/comms/CServerTCPSocket.h>
 #include <mrpt/comms/CClientTCPSocket.h>
 #include <mrpt/system/os.h>
+#include <mrpt/core/exceptions.h>
 
-using namespace mrpt::utils;
 using namespace mrpt::comms;
 
 /*---------------------------------------------------------------
@@ -30,7 +30,7 @@ using namespace mrpt::comms;
  ---------------------------------------------------------------*/
 CServerTCPSocket::CServerTCPSocket(
 	unsigned short listenPort, const std::string& IPaddress,
-	int maxConnectionsWaiting, mrpt::utils::VerbosityLevel verbosityLevel)
+	int maxConnectionsWaiting, mrpt::system::VerbosityLevel verbosityLevel)
 	: COutputLogger("CServerTCPSocket")
 {
 	MRPT_START
@@ -44,7 +44,7 @@ CServerTCPSocket::CServerTCPSocket(
 	wVersionRequested = MAKEWORD(2, 0);
 
 	if (0 != WSAStartup(wVersionRequested, &wsaData))
-		THROW_EXCEPTION(getLastErrorStr();;
+		THROW_EXCEPTION(getLastErrorStr());
 
 	// Create the socket and put it listening:
 	setupSocket(listenPort, IPaddress, maxConnectionsWaiting);

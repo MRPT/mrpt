@@ -36,7 +36,7 @@
 #include <mrpt/gui/about_box.h>
 #include <mrpt/vision/CVideoFileWriter.h>
 #include <mrpt/utils/stl_containers_utils.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/system/filesystem.h>

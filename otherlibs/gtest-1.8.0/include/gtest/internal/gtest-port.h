@@ -453,7 +453,7 @@ struct _RTL_CRITICAL_SECTION;
 #ifndef GTEST_HAS_EXCEPTIONS
 // The user didn't tell us whether exceptions are enabled, so we need
 // to figure it out.
-# if defined(_MSC_VER) || defined(__BORLANDC__)
+# if defined(_MSC_VER)
 // MSVC's and C++Builder's implementations of the STL use the _HAS_EXCEPTIONS
 // macro to enable exceptions, so we'll do the same.
 // Assumes that exceptions are enabled by default.
@@ -489,7 +489,7 @@ struct _RTL_CRITICAL_SECTION;
 // For other compilers, we assume exceptions are disabled to be
 // conservative.
 #  define GTEST_HAS_EXCEPTIONS 0
-# endif  // defined(_MSC_VER) || defined(__BORLANDC__)
+# endif  // defined(_MSC_VER)
 #endif  // GTEST_HAS_EXCEPTIONS
 
 #if !defined(GTEST_HAS_STD_STRING)
@@ -905,7 +905,7 @@ using ::std::tuple_size;
 #ifndef GTEST_HAS_SEH
 // The user didn't tell us, so we need to figure it out.
 
-# if defined(_MSC_VER) || defined(__BORLANDC__)
+# if defined(_MSC_VER)
 // These two compilers are known to support SEH.
 #  define GTEST_HAS_SEH 1
 # else

@@ -79,7 +79,7 @@ void run_rnav_test(
 			: CRobot2NavInterfaceForSimulator_DiffDriven(sim), m_grid(grid)
 		{
 			this->setMinLoggingLevel(
-				mrpt::utils::LVL_ERROR);  // less verbose output for tests
+				mrpt::system::LVL_ERROR);  // less verbose output for tests
 		}
 
 		void sendNavigationStartEvent() override {}
@@ -122,9 +122,9 @@ void run_rnav_test(
 	{
 		rnav.enableTimeLog(false);
 #ifdef _DEBUG
-		rnav.setMinLoggingLevel(mrpt::utils::LVL_DEBUG);
+		rnav.setMinLoggingLevel(mrpt::system::LVL_DEBUG);
 #else
-		rnav.setMinLoggingLevel(mrpt::utils::LVL_ERROR);  // quiet
+		rnav.setMinLoggingLevel(mrpt::system::LVL_ERROR);  // quiet
 #endif
 		const std::string sTmpFil = mrpt::system::getTempFileName();
 		const std::string sTmpDir = mrpt::system::extractFileDirectory(sTmpFil);

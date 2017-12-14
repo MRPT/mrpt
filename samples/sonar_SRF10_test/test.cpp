@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/hwdrivers/CBoardSonars.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/filesystem.h>

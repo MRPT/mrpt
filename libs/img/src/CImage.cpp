@@ -18,8 +18,8 @@
 #include <mrpt/math/fourier.h>
 #include <mrpt/math/utils.h>  // for roundup()
 #include <mrpt/core/round.h>  // for round()
-#include <mrpt/utils/CTicTac.h>
-#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/memory.h>
 #include <mrpt/system/filesystem.h>
 

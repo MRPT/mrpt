@@ -47,7 +47,7 @@ void CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 				   EDGE_ANNOTATIONS>::
 	drawNodePoints(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::utils::TParametersDouble* viz_params /*=NULL*/) const
+		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
 {
 }
 
@@ -57,7 +57,7 @@ void CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 				   EDGE_ANNOTATIONS>::
 	drawEdges(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::utils::TParametersDouble* viz_params /*=NULL*/) const
+		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
 {
 }
 
@@ -86,7 +86,7 @@ void CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations,
 				   EDGE_ANNOTATIONS>::
 	drawNodePoints(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::utils::TParametersDouble* viz_params /*=NULL*/) const
+		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
 {
 	using namespace mrpt::opengl;
 	using namespace mrpt::utils;
@@ -172,7 +172,7 @@ void CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations,
 				   EDGE_ANNOTATIONS>::
 	drawEdges(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::utils::TParametersDouble* viz_params /*=NULL*/) const
+		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
 {
 	using namespace mrpt::opengl;
 	using namespace mrpt::utils;
