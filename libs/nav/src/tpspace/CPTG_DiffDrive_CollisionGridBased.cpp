@@ -13,7 +13,7 @@
 
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/utils/stl_serialization.h>
 #include <mrpt/kinematics/CVehicleVelCmd_DiffDriven.h>

@@ -21,7 +21,7 @@
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
-#include <mrpt/utils/TParameters.h>
+#include <mrpt/system/TParameters.h>
 #include <mrpt/utils/traits_map.h>
 #include <mrpt/utils/stl_serialization.h>
 #include <mrpt/math/utils.h>
@@ -296,7 +296,7 @@ class CNetworkOfPoses
 	 */
 	inline void getAs3DObject(
 		mrpt::opengl::CSetOfObjects::Ptr object,
-		const mrpt::utils::TParametersDouble& viz_params) const
+		const mrpt::system::TParametersDouble& viz_params) const
 	{
 		using visualizer_t = mrpt::graphs::detail::CVisualizer<
 			CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>;

@@ -10,7 +10,7 @@
 #include "graphs-precomp.h"  // Precompiled headers
 
 #include <mrpt/graphs/ScalarFactorGraph.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 
 using namespace mrpt;
 using namespace mrpt::graphs;

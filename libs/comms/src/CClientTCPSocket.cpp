@@ -11,7 +11,6 @@
 
 #include <mrpt/core/exceptions.h>
 #include <mrpt/comms/CClientTCPSocket.h>
-#include <mrpt/serialization/CMessage.h>
 #include <mrpt/comms/net_utils.h>
 #include <cstring>
 
@@ -20,7 +19,7 @@
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include <winsock2.h>
 #include <winerror.h>
-#if defined(__BORLANDC__) || defined(_MSC_VER)
+#if defined(_MSC_VER)
 #pragma comment(lib, "WS2_32.LIB")
 #endif
 #else
@@ -38,7 +37,6 @@
 #include <netinet/tcp.h>
 #endif
 
-using namespace mrpt::utils;
 using namespace mrpt::comms;
 using namespace mrpt::system;
 using namespace mrpt;
@@ -128,111 +126,9 @@ size_t CClientTCPSocket::Write(const void* Buffer, size_t Count)
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-						sendString
- ---------------------------------------------------------------*/
 void CClientTCPSocket::sendString(const std::string& str)
 {
 	Write(str.c_str(), str.size());
-}
-
-/*---------------------------------------------------------------
-						sendMessage
- ---------------------------------------------------------------*/
-bool CClientTCPSocket::sendMessage(const CMessage& outMsg, const int timeout_ms)
-{
-	uint32_t contentLen, toWrite, written;
-
-	// --------------------------------
-	// (1) Send a "magic word":
-	// --------------------------------
-	const char* magic = "MRPTMessage";
-	toWrite = strlen(magic);
-
-	written = writeAsync(magic, toWrite, timeout_ms);
-	if (written != toWrite) return false;  // Error!
-
-	// --------------------------------
-	// (2) Send the message type:
-	// --------------------------------
-	toWrite = sizeof(outMsg.type);
-
-	written = writeAsync(&outMsg.type, toWrite, timeout_ms);
-	if (written != toWrite) return false;  // Error!
-
-	// ---------------------------------------
-	// (3) Send the message's content length:
-	// ---------------------------------------
-	contentLen = outMsg.content.size();
-	toWrite = sizeof(contentLen);
-
-	written = writeAsync(&contentLen, toWrite, timeout_ms);
-	if (written != toWrite) return false;  // Error!
-
-	// ---------------------------------------
-	// (4) Send the message's contents:
-	// ---------------------------------------
-	toWrite = contentLen;
-
-	written = writeAsync(&outMsg.content[0], toWrite, timeout_ms);
-	if (written != toWrite) return false;  // Error!
-
-	return true;
-}
-
-/*---------------------------------------------------------------
-						receiveMessage
- ---------------------------------------------------------------*/
-bool CClientTCPSocket::receiveMessage(
-	CMessage& inMsg, unsigned int timeoutStart_ms,
-	unsigned int timeoutBetween_ms)
-{
-	uint32_t contentLen, toRead, actRead;
-
-	// --------------------------------
-	// (1) Read the "magic word":
-	// --------------------------------
-	char magic[20];  // ;
-	toRead = 11;
-
-	actRead = readAsync(magic, toRead, timeoutStart_ms, timeoutBetween_ms);
-	if (actRead != toRead) return false;  // Error!
-	magic[actRead] = 0;  // Null-term string
-
-	// Check magic:
-	if (0 != os::_strcmpi("MRPTMessage", magic)) return false;
-
-	// --------------------------------
-	// (2) Read the message type:
-	// --------------------------------
-	toRead = sizeof(inMsg.type);
-
-	actRead =
-		readAsync(&inMsg.type, toRead, timeoutBetween_ms, timeoutBetween_ms);
-	if (actRead != toRead) return false;  // Error!
-
-	// ---------------------------------------
-	// (3) Read the message's content length:
-	// ---------------------------------------
-	toRead = sizeof(contentLen);
-
-	actRead =
-		readAsync(&contentLen, toRead, timeoutBetween_ms, timeoutBetween_ms);
-	if (actRead != toRead) return false;  // Error!
-
-	// Reserve memory:
-	inMsg.content.resize(contentLen);
-
-	// ---------------------------------------
-	// (4) Read the message's contents:
-	// ---------------------------------------
-	toRead = contentLen;
-
-	actRead = readAsync(
-		&inMsg.content[0], toRead, timeoutBetween_ms, timeoutBetween_ms);
-	if (actRead != toRead) return false;  // Error!
-
-	return true;
 }
 
 /*---------------------------------------------------------------
@@ -629,4 +525,27 @@ int CClientTCPSocket::getSOSendBufffer()
 std::string CClientTCPSocket::getLastErrorStr()
 {
 	return mrpt::comms::net::getLastSocketErrorStr();
+}
+
+uint64_t CClientTCPSocket::Seek(int64_t off, CStream::TSeekOrigin org)
+{
+	MRPT_START
+	MRPT_UNUSED_PARAM(off);
+	MRPT_UNUSED_PARAM(org);
+	THROW_EXCEPTION("This method has no effect in this class!");
+	MRPT_END
+}
+
+uint64_t CClientTCPSocket::getTotalBytesCount()
+{
+	MRPT_START
+	THROW_EXCEPTION("This method has no effect in this class!");
+	MRPT_END
+}
+
+uint64_t CClientTCPSocket::getPosition()
+{
+	MRPT_START
+	THROW_EXCEPTION("This method has no effect in this class!");
+	MRPT_END
 }

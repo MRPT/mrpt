@@ -11,7 +11,7 @@
 
 #include <mrpt/hwdrivers/COpenNI2_RGBD360.h>
 #include <mrpt/obs/CObservationRGBD360.h>
-#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/CTimeLogger.h>
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>

@@ -141,9 +141,9 @@ typedef void (*PFT_EVENT_HANDLER)(unsigned long, unsigned long);
 #include <windows.h>
 
 #include <mrpt/comms/CInterfaceFTDI.h>
+#include <mrpt/core/exceptions.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::comms;
 using namespace std;
 

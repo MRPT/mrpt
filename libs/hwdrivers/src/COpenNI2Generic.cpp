@@ -10,7 +10,7 @@
 #include "hwdrivers-precomp.h"  // Precompiled header
 
 #include <mrpt/hwdrivers/COpenNI2Generic.h>
-#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/CTimeLogger.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 
 // Universal include for all versions of OpenCV

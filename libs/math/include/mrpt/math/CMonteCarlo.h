@@ -16,7 +16,7 @@
 #include <stdexcept>
 #include <functional>
 #include <mrpt/random.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 
 namespace mrpt
 {

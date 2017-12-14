@@ -15,7 +15,7 @@
 #include <mrpt/random.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/distributions.h>
-#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/CTimeLogger.h>
 
 using namespace mrpt;
 using namespace mrpt::tfest;

@@ -10,8 +10,8 @@
 #include "comms-precomp.h"  // Precompiled headers
 
 #include <mrpt/comms/CSerialPort.h>
+#include <mrpt/core/exceptions.h>
 #include <mrpt/system/os.h>
-#include <mrpt/utils/utils_defs.h>
 
 #if defined(MRPT_OS_LINUX) || defined(__APPLE__)
 // Linux implementation: refer to
@@ -45,7 +45,7 @@
 
 using namespace mrpt;
 using namespace mrpt::comms;
-using namespace mrpt::utils;
+using namespace mrpt::io;
 using namespace std;
 using namespace std::literals;
 
@@ -311,7 +311,7 @@ void CSerialPort::setConfig(
 	// Port must be open!
 	if (!isOpen()) THROW_EXCEPTION("The serial port is not open!");
 
-	ASSERT_(baudRate > 0)
+	ASSERT_(baudRate > 0);
 
 	//
 	// Apply baud rate
@@ -752,7 +752,7 @@ std::string CSerialPort::ReadString(
 	// Calling ::ReadBuffer() many times would be even worse, so replicate its
 	// code here:
 
-	ASSERT_(eol_chars != nullptr)
+	ASSERT_(eol_chars != nullptr);
 
 	// Port must be open!
 	if (!isOpen()) THROW_EXCEPTION("The port is not open yet!");
@@ -926,8 +926,7 @@ void CSerialPort::purgeBuffers()
 	MRPT_END
 }
 
-uint64_t CSerialPort::Seek(
-	uint64_t off, CStream::TSeekOrigin o = sFromBeginning)
+uint64_t CSerialPort::Seek(int64_t Offset, CStream::TSeekOrigin Origin)
 {
 	MRPT_START
 	MRPT_UNUSED_PARAM(Origin);
@@ -937,7 +936,7 @@ uint64_t CSerialPort::Seek(
 	MRPT_END
 }
 
-uint64_t CSerialPort::getTotalBytesCount() override
+uint64_t CSerialPort::getTotalBytesCount()
 {
 	MRPT_START
 	THROW_EXCEPTION(
@@ -945,7 +944,7 @@ uint64_t CSerialPort::getTotalBytesCount() override
 	MRPT_END
 }
 
-uint64_t CSerialPort::getPosition() override
+uint64_t CSerialPort::getPosition()
 {
 	MRPT_START
 	THROW_EXCEPTION(

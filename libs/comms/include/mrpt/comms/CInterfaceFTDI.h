@@ -72,7 +72,7 @@ typedef std::deque<TFTDIDevice> TFTDIDeviceList;
  * \sa CStream
  * \ingroup mrpt_comms_grp
  */
-class CInterfaceFTDI : public utils::CStream
+class CInterfaceFTDI : public mrpt::io::CStream
 {
    public:
 	/** Constructor, which loads driver interface (the DLL under Windows).
@@ -155,7 +155,7 @@ class CInterfaceFTDI : public utils::CStream
 	size_t Read(void* Buffer, size_t Count);
 
 	/** Used in Read */
-	mrpt::utils::circular_buffer<uint8_t> m_readBuffer;
+	mrpt::containers::circular_buffer<uint8_t> m_readBuffer;
 
 	/** Introduces a pure virtual method responsible for writing to the stream.
 	 *  Write attempts to write up to Count bytes to Buffer, and returns the

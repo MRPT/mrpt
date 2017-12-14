@@ -11,7 +11,7 @@
 
 #include <mrpt/nav/planners/PlannerRRT_SE2_TPS.h>
 #include <mrpt/nav/tpspace/CPTG_DiffDrive_CollisionGridBased.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/random.h>
 #include <mrpt/system/filesystem.h>
 

@@ -14,9 +14,7 @@ using namespace Eigen;
 using namespace std;
 
 /** A macro for obtaining the name of the current function:  */
-#if defined(__BORLANDC__)
-#define __CURRENT_FUNCTION_NAME__ __FUNC__
-#elif defined(_MSC_VER) && (_MSC_VER >= 1300)
+#if defined(_MSC_VER) && (_MSC_VER >= 1300)
 #define __CURRENT_FUNCTION_NAME__ __FUNCTION__
 #elif defined(_MSC_VER) && (_MSC_VER < 1300)
 // Visual C++ 6 HAS NOT A __FUNCTION__ equivalent.

@@ -147,7 +147,7 @@ void CReactiveNavigationSystem::STEP1_InitPTGs()
 			PTGs[i]->deinitialize();
 
 			logFmt(
-				mrpt::utils::LVL_INFO,
+				mrpt::system::LVL_INFO,
 				"[CReactiveNavigationSystem::STEP1_InitPTGs] Initializing "
 				"PTG#%u (`%s`)...",
 				i, PTGs[i]->getDescription().c_str());
@@ -175,7 +175,7 @@ void CReactiveNavigationSystem::STEP1_InitPTGs()
 					i),
 				m_enableConsoleOutput /*verbose*/
 				);
-			logStr(mrpt::utils::LVL_INFO, "Done!");
+			logStr(mrpt::system::LVL_INFO, "Done!");
 		}
 	}
 }

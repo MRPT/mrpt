@@ -86,7 +86,7 @@
 #define GLEW_APIENTRY_DEFINED
 #if defined(__MINGW32__)
 #define APIENTRY __stdcall
-#elif (_MSC_VER >= 800) || defined(_STDCALL_SUPPORTED) || defined(__BORLANDC__)
+#elif (_MSC_VER >= 800) || defined(_STDCALL_SUPPORTED)
 #define APIENTRY __stdcall
 #else
 #define APIENTRY
@@ -117,7 +117,7 @@
 #define WINGDIAPI __declspec(dllimport)
 #endif
 /* <ctype.h> */
-#if (defined(_MSC_VER) || defined(__BORLANDC__)) && !defined(_WCHAR_T_DEFINED)
+#if (defined(_MSC_VER)) && !defined(_WCHAR_T_DEFINED)
 typedef unsigned short wchar_t;
 #define _WCHAR_T_DEFINED
 #endif

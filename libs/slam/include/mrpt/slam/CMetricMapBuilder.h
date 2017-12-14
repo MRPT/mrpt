@@ -114,7 +114,7 @@ class CMetricMapBuilder : public mrpt::utils::COutputLogger
 	/** Options for the algorithm */
 	struct TOptions
 	{
-		TOptions(mrpt::utils::VerbosityLevel& verb_level_ref)
+		TOptions(mrpt::system::VerbosityLevel& verb_level_ref)
 			: verbosity_level(verb_level_ref),
 			  enableMapUpdating(true),
 			  debugForceInsertion(false),
@@ -122,7 +122,7 @@ class CMetricMapBuilder : public mrpt::utils::COutputLogger
 		{
 		}
 
-		mrpt::utils::VerbosityLevel& verbosity_level;
+		mrpt::system::VerbosityLevel& verbosity_level;
 		/** Enable map updating, default is true. */
 		bool enableMapUpdating;
 		/** Always insert into map. Default is false: detect if necesary. */

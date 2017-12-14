@@ -585,7 +585,7 @@ void export_slam()
 
 		// TConfigParams
 		class_<CMetricMapBuilderICP::TConfigParams, bases<CLoadableOptions>>(
-			"TConfigParams", init<mrpt::utils::VerbosityLevel&>())
+			"TConfigParams", init<mrpt::system::VerbosityLevel&>())
 			.def_readwrite(
 				"matchAgainstTheGrid",
 				&CMetricMapBuilderICP::TConfigParams::matchAgainstTheGrid)

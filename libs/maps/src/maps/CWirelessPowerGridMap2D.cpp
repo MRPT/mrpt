@@ -13,7 +13,7 @@
 #include <mrpt/obs/CObservationWirelessPower.h>
 #include <mrpt/system/os.h>
 #include <mrpt/core/round.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/utils/color_maps.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/utils/CStream.h>

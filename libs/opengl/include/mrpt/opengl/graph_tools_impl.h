@@ -24,7 +24,7 @@ namespace graph_tools
 {
 template <class GRAPH_T>
 CSetOfObjects::Ptr graph_visualize(
-	const GRAPH_T& g, const mrpt::utils::TParametersDouble& extra_params)
+	const GRAPH_T& g, const mrpt::system::TParametersDouble& extra_params)
 {
 	MRPT_TRY_START
 

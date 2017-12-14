@@ -10,7 +10,7 @@
 #include <mrpt/graphs/dijkstra.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/random.h>
 
 using namespace mrpt;

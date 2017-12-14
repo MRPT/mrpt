@@ -10,7 +10,7 @@
 #include "hmtslam-precomp.h"  // Precomp header
 
 #include <mrpt/hmtslam/CRobotPosesGraph.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/random.h>
 #include <mrpt/utils/CFileStream.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
@@ -44,7 +44,7 @@ void CHMTSLAM::perform_TLC(
 	std::lock_guard<std::mutex> locker(LMH.m_robotPosesGraph.lock);
 
 	logFmt(
-		mrpt::utils::LVL_DEBUG, "[perform_TLC] TLC of areas: %u <-> %u \n",
+		mrpt::system::LVL_DEBUG, "[perform_TLC] TLC of areas: %u <-> %u \n",
 		(unsigned)Ai, (unsigned)Ae);
 
 	// * Verify a1 \in LMH & a2 \notin LMH

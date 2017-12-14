@@ -9,7 +9,7 @@
 
 #include "hmtslam-precomp.h"  // Precomp header
 
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/random.h>
 #include <mrpt/utils/CFileStream.h>
 #include <mrpt/system/os.h>
@@ -45,7 +45,7 @@ void CHMTSLAM::thread_TBI()
 		// Start thread:
 		// -------------------------
 		obj->logFmt(
-			mrpt::utils::LVL_DEBUG,
+			mrpt::system::LVL_DEBUG,
 			"[thread_TBI] Thread started (ID=0x%08lX)\n",
 			std::this_thread::get_id());
 
@@ -66,7 +66,7 @@ void CHMTSLAM::thread_TBI()
 		//		try { mrpt::system::getCurrentThreadTimes(
 		// timCreat,timExit,timCPU); } catch(...) {};
 		obj->logFmt(
-			mrpt::utils::LVL_DEBUG,
+			mrpt::system::LVL_DEBUG,
 			"[thread_TBI] Thread finished. CPU time used:%.06f secs \n",
 			timCPU);
 		obj->m_terminationFlag_TBI = true;
@@ -77,7 +77,7 @@ void CHMTSLAM::thread_TBI()
 
 		// Release semaphores:
 
-		obj->logFmt(mrpt::utils::LVL_ERROR, "%s", e.what());
+		obj->logFmt(mrpt::system::LVL_ERROR, "%s", e.what());
 
 		// DEBUG: Terminate application:
 		obj->m_terminateThreads = true;
@@ -87,7 +87,7 @@ void CHMTSLAM::thread_TBI()
 		obj->m_terminationFlag_TBI = true;
 
 		obj->logFmt(
-			mrpt::utils::LVL_ERROR,
+			mrpt::system::LVL_ERROR,
 			"\n---------------------- EXCEPTION CAUGHT! ---------------------\n"
 			" In CHierarchicalMappingFramework::thread_TBI. Unexpected runtime "
 			"error!!\n");
@@ -130,7 +130,7 @@ CHMTSLAM::TMessageLSLAMfromTBI::Ptr CHMTSLAM::TBI_main_method(
 	ASSERT_(currentArea);
 
 	obj->logFmt(
-		mrpt::utils::LVL_DEBUG, "[TBI] Request for area id=%i\n", (int)areaID);
+		mrpt::system::LVL_DEBUG, "[TBI] Request for area id=%i\n", (int)areaID);
 
 	// --------------------------------------------------------
 	// 1) Use bounding-boxes to get a first list of candidates
@@ -172,7 +172,7 @@ CHMTSLAM::TMessageLSLAMfromTBI::Ptr CHMTSLAM::TBI_main_method(
 				LMH_ID);
 
 			obj->logFmt(
-				mrpt::utils::LVL_DEBUG, "[TBI] %i-%i -> overlap prob=%f\n",
+				mrpt::system::LVL_DEBUG, "[TBI] %i-%i -> overlap prob=%f\n",
 				(int)areaID, (int)a->first, match);
 
 			if (match > 0.9)
@@ -248,7 +248,7 @@ CHMTSLAM::TMessageLSLAMfromTBI::Ptr CHMTSLAM::TBI_main_method(
 		msg->loopClosureData.erase(*it);
 
 	obj->logFmt(
-		mrpt::utils::LVL_DEBUG, "[TBI_main] Done. %u candidates found.\n",
+		mrpt::system::LVL_DEBUG, "[TBI_main] Done. %u candidates found.\n",
 		(unsigned int)msg->loopClosureData.size());
 
 	return msg;

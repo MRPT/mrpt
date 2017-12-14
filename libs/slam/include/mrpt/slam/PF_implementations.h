@@ -637,21 +637,21 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 	// computed.
 
 	if (USE_OPTIMAL_SAMPLING &&
-		me->isLoggingLevelVisible(mrpt::utils::LVL_DEBUG))
+		me->isLoggingLevelVisible(mrpt::system::LVL_DEBUG))
 	{
 		me->logStr(
-			mrpt::utils::LVL_DEBUG,
+			mrpt::system::LVL_DEBUG,
 			mrpt::format(
 				"[prepareFastDrawSample] max      (log) = %10.06f\n",
 				math::maximum(m_pfAuxiliaryPFOptimal_estimatedProb)));
 		me->logStr(
-			mrpt::utils::LVL_DEBUG,
+			mrpt::system::LVL_DEBUG,
 			mrpt::format(
 				"[prepareFastDrawSample] max-mean (log) = %10.06f\n",
 				-math::mean(m_pfAuxiliaryPFOptimal_estimatedProb) +
 					math::maximum(m_pfAuxiliaryPFOptimal_estimatedProb)));
 		me->logStr(
-			mrpt::utils::LVL_DEBUG,
+			mrpt::system::LVL_DEBUG,
 			mrpt::format(
 				"[prepareFastDrawSample] max-min  (log) = %10.06f\n",
 				-math::minimum(m_pfAuxiliaryPFOptimal_estimatedProb) +
@@ -757,7 +757,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 		typename MYSELF::CParticleList::iterator partIt;
 		unsigned int partIndex;
 
-		me->logStr(mrpt::utils::LVL_DEBUG, "[FIXED_SAMPLING] Computing...");
+		me->logStr(mrpt::system::LVL_DEBUG, "[FIXED_SAMPLING] Computing...");
 		for (partIt = me->m_particles.begin(), partIndex = 0;
 			 partIt != me->m_particles.end(); ++partIt, ++partIndex)
 		{
@@ -783,7 +783,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 			}
 		}
 		me->logStr(
-			mrpt::utils::LVL_DEBUG,
+			mrpt::system::LVL_DEBUG,
 			mrpt::format(
 				"[FIXED_SAMPLING] done (%u bins in t-1)\n",
 				(unsigned int)stateSpaceBinsLastTimestep.size()));
@@ -955,7 +955,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 				 (permutationPathsAuxVector.size() && !doResample));
 
 		me->logStr(
-			mrpt::utils::LVL_DEBUG,
+			mrpt::system::LVL_DEBUG,
 			mrpt::format(
 				"[ADAPTIVE SAMPLE SIZE]  #Bins: %u \t #Particles: %u \t "
 				"Nx=%u\n",
@@ -1006,7 +1006,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 		k = mrpt::random::getRandomGenerator().drawUniform32bit() %
 			me->m_particles.size();
 		me->logStr(
-			mrpt::utils::LVL_DEBUG,
+			mrpt::system::LVL_DEBUG,
 			"[PF_SLAM_aux_perform_one_rejection_sampling_step] Warning: "
 			"Discarding very unlikely particle.");
 	}
@@ -1100,7 +1100,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 				out_newPose = mrpt::poses::CPose3D(bestTryByNow_pose);
 				poseLogLik = bestTryByNow_loglik;
 				me->logStr(
-					mrpt::utils::LVL_WARN,
+					mrpt::system::LVL_WARN,
 					"[PF_implementation] Warning: timeout in rejection "
 					"sampling.");
 			}

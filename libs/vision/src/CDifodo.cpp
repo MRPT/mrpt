@@ -11,7 +11,7 @@
 
 #include <mrpt/vision/CDifodo.h>
 #include <mrpt/utils/utils_defs.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/core/round.h>
 
 using namespace mrpt;

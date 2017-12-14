@@ -6,9 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-
-#ifndef mrpt_utils_parameters_H
-#define mrpt_utils_parameters_H
+#pragma once
 
 #include <cstdarg>
 #include <cstdio>
@@ -18,11 +16,11 @@
 #include <iostream>
 #include <stdexcept>
 #include <mrpt/config.h>
-#include <mrpt/utils/compiler_fixes.h>  // Disable MSVC warning 4251 in this class
+#include <mrpt/core/common.h>  // Disable MSVC warning 4251 in this class
 
 namespace mrpt
 {
-namespace utils
+namespace system
 {
 /** For usage when passing a dynamic number of (numeric) arguments to a
  * function, by name.
@@ -60,7 +58,7 @@ struct TParameters : public std::map<std::string, T>
 	/** Default constructor (initializes empty) */
 	TParameters() : BASE() {}
 	/** Constructor with a list of initial values (see the description and use
-	 * example in mrpt::utils::TParameters) */
+	 * example in mrpt::system::TParameters) */
 	TParameters(const char* nam1, ...) : BASE()
 	{
 		if (!nam1) return;  // No parameters
@@ -146,12 +144,10 @@ struct TParameters : public std::map<std::string, T>
 	}
 };
 
-/** See the generic template mrpt::utils::TParameters */
+/** See the generic template mrpt::system::TParameters */
 typedef TParameters<double> TParametersDouble;
-/** See the generic template mrpt::utils::TParameters */
+/** See the generic template mrpt::system::TParameters */
 typedef TParameters<std::string> TParametersString;
 
 }  // end namespace
 }
-
-#endif

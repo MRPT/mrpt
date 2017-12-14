@@ -245,7 +245,7 @@ void TestBayesianTracking()
 	CRangeBearing EKF;
 	EKF.KF_options.method = kfEKFNaive;
 
-	EKF.KF_options.verbosity_level = mrpt::utils::LVL_DEBUG;
+	EKF.KF_options.verbosity_level = mrpt::system::LVL_DEBUG;
 	EKF.KF_options.enable_profiler = true;
 
 	// Create PF

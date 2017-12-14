@@ -12,7 +12,7 @@
 #include <assert.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 
 using mrpt::utils::DEG2RAD;
 

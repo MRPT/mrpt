@@ -91,7 +91,7 @@ void hmt_slam_guiFrame::thread_HMTSLAM()
 					{
 						fInRawlog.reset(new CFileGZInputStream(fil));
 						m_hmtslam->logFmt(
-							mrpt::utils::LVL_INFO, "RAWLOG FILE: \n%s\n",
+							mrpt::system::LVL_INFO, "RAWLOG FILE: \n%s\n",
 							fil.c_str());
 						OUT_DIR =
 							"HMT_SLAM_OUTPUT";  // cfg.read_string("HMT-SLAM","LOG_OUTPUT_DIR",

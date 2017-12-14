@@ -12,7 +12,7 @@
 #include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/ops_containers.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/utils/color_maps.h>
 #include <mrpt/core/round.h>  // round()
 #include <mrpt/utils/CFileGZOutputStream.h>

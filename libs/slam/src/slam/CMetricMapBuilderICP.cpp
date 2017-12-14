@@ -15,7 +15,7 @@
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/utils/CEnhancedMetaFile.h>
 
 using namespace std;
@@ -53,7 +53,7 @@ CMetricMapBuilderICP::~CMetricMapBuilderICP()
 							Options
   ---------------------------------------------------------------*/
 CMetricMapBuilderICP::TConfigParams::TConfigParams(
-	mrpt::utils::VerbosityLevel& parent_verbosity_level)
+	mrpt::system::VerbosityLevel& parent_verbosity_level)
 	: matchAgainstTheGrid(false),
 	  insertionLinDistance(1.0),
 	  insertionAngDistance(DEG2RAD(30)),
@@ -88,7 +88,7 @@ void CMetricMapBuilderICP::TConfigParams::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR_DEGREES(insertionAngDistance, source, section)
 	MRPT_LOAD_CONFIG_VAR(localizationLinDistance, double, source, section)
 	MRPT_LOAD_CONFIG_VAR_DEGREES(localizationAngDistance, source, section)
-	verbosity_level = source.read_enum<mrpt::utils::VerbosityLevel>(
+	verbosity_level = source.read_enum<mrpt::system::VerbosityLevel>(
 		section, "verbosity_level", verbosity_level);
 
 	MRPT_LOAD_CONFIG_VAR(minICPgoodnessToAccept, double, source, section)
@@ -116,7 +116,7 @@ void CMetricMapBuilderICP::TConfigParams::dumpToTextStream(CStream& out) const
 		RAD2DEG(localizationAngDistance));
 	out.printf(
 		"verbosity_level                         = %s\n",
-		mrpt::utils::TEnumType<mrpt::utils::VerbosityLevel>::value2name(
+		mrpt::utils::TEnumType<mrpt::system::VerbosityLevel>::value2name(
 			verbosity_level)
 			.c_str());
 

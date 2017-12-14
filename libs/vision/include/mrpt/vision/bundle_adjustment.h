@@ -12,7 +12,7 @@
 
 #include <mrpt/vision/types.h>
 #include <mrpt/utils/TCamera.h>
-#include <mrpt/utils/TParameters.h>
+#include <mrpt/system/TParameters.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
 #include <array>
@@ -101,8 +101,8 @@ double bundle_adj_full(
 	const mrpt::utils::TCamera& camera_params,
 	mrpt::vision::TFramePosesVec& frame_poses,
 	mrpt::vision::TLandmarkLocationsVec& landmark_points,
-	const mrpt::utils::TParametersDouble& extra_params =
-		mrpt::utils::TParametersDouble(),
+	const mrpt::system::TParametersDouble& extra_params =
+		mrpt::system::TParametersDouble(),
 	const mrpt::vision::TBundleAdjustmentFeedbackFunctor user_feedback =
 		mrpt::vision::TBundleAdjustmentFeedbackFunctor());
 

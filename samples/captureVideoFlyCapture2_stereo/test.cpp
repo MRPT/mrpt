@@ -9,7 +9,7 @@
 
 #include <mrpt/hwdrivers/CImageGrabber_FlyCapture2.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/system/os.h>

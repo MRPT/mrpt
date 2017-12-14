@@ -16,7 +16,7 @@
 #include <mrpt/nav/holonomic/ClearanceDiagram.h>
 #include <mrpt/nav/reactive/TCandidateMovementPTG.h>
 #include <mrpt/nav/reactive/CMultiObjectiveMotionOptimizerBase.h>
-#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/math/filters.h>
 #include <mrpt/math/CPolygon.h>

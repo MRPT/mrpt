@@ -16,7 +16,7 @@
 #include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/math/wrap2pi.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
 
 #include <mrpt/opengl/stock_objects.h>

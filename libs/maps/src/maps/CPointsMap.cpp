@@ -10,8 +10,8 @@
 #include "maps-precomp.h"  // Precomp header
 
 #include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CTicTac.h>
-#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/os.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/utils/CStream.h>

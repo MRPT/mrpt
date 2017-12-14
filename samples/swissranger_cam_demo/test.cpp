@@ -15,7 +15,7 @@
 #include <mrpt/opengl/CTexturedPlane.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;

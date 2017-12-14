@@ -11,7 +11,7 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/random.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/utils/metaprogramming.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>

@@ -13,6 +13,7 @@
 #include <mrpt/comms/CClientTCPSocket.h>
 #include <mrpt/comms/net_utils.h>
 #include <mrpt/system/os.h>
+#include <mrpt/core/exceptions.h>
 #include <cstdio>  // stderr
 using namespace mrpt::comms;
 
@@ -49,7 +50,7 @@ void CServerTCPSocket::setupSocket(
 	// Create the socket:
 	// ----------------------------
 	m_serverSock = socket(AF_INET, SOCK_STREAM, 0);
-	if (INVALID_SOCKET == m_serverSock) THROW_EXCEPTION(getLastErrorStr();;
+	if (INVALID_SOCKET == m_serverSock) THROW_EXCEPTION(getLastErrorStr());
 
 	// Bind it:
 	// ----------------------------
@@ -61,12 +62,12 @@ void CServerTCPSocket::setupSocket(
 
 	if (INVALID_SOCKET ==
 		::bind(m_serverSock, (struct sockaddr*)(&desiredIP), sizeof(desiredIP)))
-		THROW_EXCEPTION(getLastErrorStr();;
+		THROW_EXCEPTION(getLastErrorStr());
 
 	// Put in listen mode:
 	// ----------------------------
 	if (INVALID_SOCKET == listen(m_serverSock, maxConnectionsWaiting))
-		THROW_EXCEPTION(getLastErrorStr();;
+		THROW_EXCEPTION(getLastErrorStr());
 
 	MRPT_LOG_DEBUG(
 		format(

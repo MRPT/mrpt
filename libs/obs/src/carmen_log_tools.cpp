@@ -11,7 +11,7 @@
 
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservationOdometry.h>
-#include <mrpt/utils/TParameters.h>
+#include <mrpt/system/TParameters.h>
 
 #include <mrpt/system/string_utils.h>
 

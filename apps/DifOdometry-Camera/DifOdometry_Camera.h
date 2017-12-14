@@ -10,7 +10,7 @@
 #include <mrpt/vision/CDifodo.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/utils/round.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/gui/CDisplayWindow3D.h>

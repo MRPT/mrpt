@@ -10,7 +10,7 @@
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/random.h>
-#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/filesystem.h>
 
 #include "common.h"

@@ -56,7 +56,7 @@ for tranparent GZ-compressed files, sockets, serial ports, etc.  </li>
 
 <li><b>XML-based databases:</b> Simple databases can be mantained, loaded and saved to files with mrpt::utils::CSimpleDatabase. </li>
 
-<li><b>Name-based argument passing:</b> See the structure mrpt::utils::TParameters </li>
+<li><b>Name-based argument passing:</b> See the structure mrpt::system::TParameters </li>
 
 <li><b>Configuration files:</b> There is one base virtual class (mrpt::utils::CConfigFileBase) which can be used to read/write configuration
 files (including basic types, vectors, matrices,...) from any "configuration source" transparently (an actual configuration file, a text block

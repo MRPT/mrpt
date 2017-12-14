@@ -95,7 +95,7 @@ void CNavigatorManualSequence::navigationStep()
 		const TVelCmd& krc = programmed_orders.begin()->second;
 		// Send cmd:
 		logFmt(
-			mrpt::utils::LVL_DEBUG,
+			mrpt::system::LVL_DEBUG,
 			"[CNavigatorManualSequence] Sending cmd: t=%f\n",
 			programmed_orders.begin()->first);
 
@@ -103,7 +103,7 @@ void CNavigatorManualSequence::navigationStep()
 		{
 			this->stop(true /*not emergency*/);
 			logFmt(
-				mrpt::utils::LVL_ERROR,
+				mrpt::system::LVL_ERROR,
 				"[CNavigatorManualSequence] **ERROR** sending cmd to robot.");
 			return;
 		}

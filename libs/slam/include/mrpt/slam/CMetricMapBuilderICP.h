@@ -41,7 +41,7 @@ class CMetricMapBuilderICP : public mrpt::slam::CMetricMapBuilder
 	struct TConfigParams : public mrpt::utils::CLoadableOptions
 	{
 		/** Initializer */
-		TConfigParams(mrpt::utils::VerbosityLevel& parent_verbosity_level);
+		TConfigParams(mrpt::system::VerbosityLevel& parent_verbosity_level);
 		TConfigParams& operator=(const TConfigParams& other);  // Copy
 		// assignment
 
@@ -73,7 +73,7 @@ class CMetricMapBuilderICP : public mrpt::slam::CMetricMapBuilder
 		 * position (default: 0.40) */
 		double minICPgoodnessToAccept;
 
-		mrpt::utils::VerbosityLevel& verbosity_level;
+		mrpt::system::VerbosityLevel& verbosity_level;
 
 		/** What maps to create (at least one points map and/or a grid map are
 		 * needed).

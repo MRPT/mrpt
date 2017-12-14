@@ -9,7 +9,7 @@
 
 #include <mrpt/hwdrivers/COpenNI2Sensor.h>
 #include <mrpt/gui.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/opengl.h>
 
 using namespace mrpt;

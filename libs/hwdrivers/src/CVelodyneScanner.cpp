@@ -29,7 +29,7 @@
 #include <winsock2.h>
 typedef int socklen_t;
 
-#if defined(__BORLANDC__) || defined(_MSC_VER)
+#if defined(_MSC_VER)
 #pragma comment(lib, "WS2_32.LIB")
 #endif
 
@@ -1105,7 +1105,7 @@ bool CVelodyneScanner::internal_send_http_post(const std::string& post_data)
 	string post_err_str;
 
 	int http_rep_code;
-	mrpt::utils::TParameters<string> extra_headers, out_headers;
+	mrpt::system::TParameters<string> extra_headers, out_headers;
 
 	extra_headers["Origin"] = mrpt::format("http://%s", m_device_ip.c_str());
 	extra_headers["Referer"] = mrpt::format("http://%s", m_device_ip.c_str());

@@ -11,7 +11,7 @@
 #define CFeatureExtraction_H
 
 #include <mrpt/img/CImage.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/vision/utils.h>
 #include <mrpt/vision/CFeature.h>
 #include <mrpt/vision/TSimpleFeature.h>

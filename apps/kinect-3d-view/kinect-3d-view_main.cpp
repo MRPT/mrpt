@@ -18,7 +18,7 @@
 #include <mrpt/hwdrivers/CKinect.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/maps/CColouredOctoMap.h>
 #include <mrpt/opengl/CGridPlaneXY.h>

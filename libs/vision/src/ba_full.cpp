@@ -10,7 +10,7 @@
 #include "vision-precomp.h"  // Precompiled headers
 
 #include <mrpt/vision/bundle_adjustment.h>
-#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/CTimeLogger.h>
 #include <mrpt/math/CSparseMatrix.h>
 #include <mrpt/math/ops_containers.h>
 
@@ -53,7 +53,7 @@ double mrpt::vision::bundle_adj_full(
 	const TSequenceFeatureObservations& observations,
 	const TCamera& camera_params, TFramePosesVec& frame_poses,
 	TLandmarkLocationsVec& landmark_points,
-	const mrpt::utils::TParametersDouble& extra_params,
+	const mrpt::system::TParametersDouble& extra_params,
 	const TBundleAdjustmentFeedbackFunctor user_feedback)
 {
 	MRPT_START

@@ -133,7 +133,7 @@ class CSimpleIniTempl
 			return *this;
 		}
 
-#if (defined(_MSC_VER) && _MSC_VER <= 1200) || defined(__BORLANDC__)
+#if (defined(_MSC_VER) && _MSC_VER <= 1200)
 		/** STL of VC6 doesn't allow me to specify my own comparator for
 		 * list::sort() */
 		bool operator<(const Entry& rhs) const
@@ -1670,7 +1670,7 @@ SI_Error CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::Save(
 	// get all of the sections sorted in load order
 	TNamesDepend oSections;
 	GetAllSections(oSections);
-#if (defined(_MSC_VER) && _MSC_VER <= 1200) || defined(__BORLANDC__)
+#if (defined(_MSC_VER) && _MSC_VER <= 1200)
 	oSections.sort();
 #else
 	oSections.sort(typename Entry::LoadOrder());
@@ -1731,7 +1731,7 @@ SI_Error CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::Save(
 		// get all of the keys sorted in load order
 		TNamesDepend oKeys;
 		GetAllKeys(iSection->pItem, oKeys);
-#if (defined(_MSC_VER) && _MSC_VER <= 1200) || defined(__BORLANDC__)
+#if (defined(_MSC_VER) && _MSC_VER <= 1200)
 		oKeys.sort();
 #else
 		oKeys.sort(typename Entry::LoadOrder());

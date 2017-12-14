@@ -12,7 +12,7 @@
 #include <mrpt/hwdrivers/COpenNI2Generic.h>
 #include <mrpt/hwdrivers/COpenNI2Sensor.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
-#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/CTimeLogger.h>
 #include <mrpt/utils/TStereoCamera.h>
 
 // Universal include for all versions of OpenCV

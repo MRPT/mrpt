@@ -12,7 +12,7 @@
 #include <mrpt/slam/CICP.h>
 #include <mrpt/tfest.h>
 #include <mrpt/poses/CPosePDFSOG.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/CConfigFileBase.h>  // MRPT_LOAD_*()
 #include <mrpt/math/wrap2pi.h>

@@ -12,7 +12,7 @@
 #include <mrpt/utils/types_math.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/core/round.h>
-#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/CTimeLogger.h>
 #include <mrpt/math/poly_roots.h>
 #include <mrpt/kinematics/CVehicleVelCmd_Holo.h>
 

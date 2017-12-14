@@ -31,7 +31,7 @@ using namespace std;
 #if MRPT_HAS_INTERSENSE
 #ifdef _WIN32
 		// WINDOWS:
-#if defined(_MSC_VER) || defined(__BORLANDC__)
+#if defined(_MSC_VER)
 #pragma comment(lib, "isense.dll")
 #endif
 #endif  // _WIN32

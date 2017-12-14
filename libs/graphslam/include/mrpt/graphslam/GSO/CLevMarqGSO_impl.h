@@ -192,7 +192,7 @@ inline void CLevMarqGSO<GRAPH_T>::updateGraphVisualization()
 	using namespace mrpt::utils;
 
 	this->logFmt(
-		mrpt::utils::LVL_DEBUG, "In the updateGraphVisualization function");
+		mrpt::system::LVL_DEBUG, "In the updateGraphVisualization function");
 
 	// update the graph (clear and rewrite..)
 	COpenGLScene::Ptr& scene = this->m_win->get3DSceneAndLock();
@@ -417,7 +417,7 @@ void CLevMarqGSO<GRAPH_T>::optimizeGraph()
 	std::lock_guard<std::mutex> m_graph_lock(*this->m_graph_section);
 	this->_optimizeGraph();
 
-	this->logFmt(mrpt::utils::LVL_DEBUG, "2nd thread grabbed the lock..");
+	this->logFmt(mrpt::system::LVL_DEBUG, "2nd thread grabbed the lock..");
 
 	MRPT_END;
 }
@@ -483,7 +483,7 @@ void CLevMarqGSO<GRAPH_T>::_optimizeGraph(bool is_full_update /*=false*/)
 
 	double elapsed_time = optimization_timer.Tac();
 	this->logFmt(
-		mrpt::utils::LVL_DEBUG, "Optimization of graph took: %fs",
+		mrpt::system::LVL_DEBUG, "Optimization of graph took: %fs",
 		elapsed_time);
 
 	// deleting the nodes_to_optimize set
@@ -527,7 +527,7 @@ bool CLevMarqGSO<GRAPH_T>::checkForLoopClosures()
 				opt_params.LC_min_nodeid_diff)
 			{
 				this->logFmt(
-					mrpt::utils::LVL_DEBUG, "Registering loop closure... ");
+					mrpt::system::LVL_DEBUG, "Registering loop closure... ");
 				is_loop_closure = true;
 				break;  // no need for more iterations
 			}
@@ -697,7 +697,7 @@ void CLevMarqGSO<GRAPH_T>::loadParams(const std::string& source_fname)
 		source.read_int("OptimizerParameters", "class_verbosity", 1, false);
 	this->setMinLoggingLevel(VerbosityLevel(min_verbosity_level));
 
-	this->logFmt(mrpt::utils::LVL_DEBUG, "Successfully loaded Params. ");
+	this->logFmt(mrpt::system::LVL_DEBUG, "Successfully loaded Params. ");
 	m_has_read_config = true;
 
 	MRPT_END;

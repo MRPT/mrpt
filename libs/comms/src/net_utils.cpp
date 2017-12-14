@@ -12,8 +12,10 @@
 #include <mrpt/comms/net_utils.h>
 #include <mrpt/comms/CClientTCPSocket.h>
 #include <mrpt/comms/CServerTCPSocket.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/system/string_utils.h>
+#include <mrpt/core/format.h>
+#include <mrpt/core/exceptions.h>
 
 #include <thread>
 #include <future>
@@ -39,7 +41,6 @@
 
 using namespace mrpt;
 using namespace mrpt::system;
-using namespace mrpt::utils;
 using namespace mrpt::comms;
 using namespace mrpt::comms::net;
 using namespace std;
@@ -50,8 +51,8 @@ using namespace std;
 ERRORCODE_HTTP mrpt::comms::net::http_get(
 	const string& url, string& out_content, string& out_errormsg, int port,
 	const string& auth_user, const string& auth_pass,
-	int* out_http_responsecode, mrpt::utils::TParameters<string>* extra_headers,
-	mrpt::utils::TParameters<string>* out_headers, int timeout_ms)
+	int* out_http_responsecode, mrpt::system::TParameters<string>* extra_headers,
+	mrpt::system::TParameters<string>* out_headers, int timeout_ms)
 {
 	std::vector<uint8_t> data;
 	ERRORCODE_HTTP ret = http_get(
@@ -68,8 +69,8 @@ ERRORCODE_HTTP mrpt::comms::net::http_request(
 	const string& http_method, const string& http_send_content,
 	const string& url, std::vector<uint8_t>& out_content, string& out_errormsg,
 	int port, const string& auth_user, const string& auth_pass,
-	int* out_http_responsecode, mrpt::utils::TParameters<string>* extra_headers,
-	mrpt::utils::TParameters<string>* out_headers, int timeout_ms)
+	int* out_http_responsecode, mrpt::system::TParameters<string>* extra_headers,
+	mrpt::system::TParameters<string>* out_headers, int timeout_ms)
 {
 	// Reset output data:
 	out_content.clear();
@@ -182,7 +183,7 @@ ERRORCODE_HTTP mrpt::comms::net::http_request(
 		size_t content_length = 0;
 		size_t content_offset = 0;
 		int http_code = 0;
-		mrpt::utils::TParameters<string> rx_headers;
+		mrpt::system::TParameters<string> rx_headers;
 
 		CTicTac watchdog;
 		watchdog.Tic();
@@ -383,8 +384,8 @@ ERRORCODE_HTTP mrpt::comms::net::http_request(
 ERRORCODE_HTTP mrpt::comms::net::http_get(
 	const string& url, std::vector<uint8_t>& out_content, string& out_errormsg,
 	int port, const string& auth_user, const string& auth_pass,
-	int* out_http_responsecode, mrpt::utils::TParameters<string>* extra_headers,
-	mrpt::utils::TParameters<string>* out_headers, int timeout_ms)
+	int* out_http_responsecode, mrpt::system::TParameters<string>* extra_headers,
+	mrpt::system::TParameters<string>* out_headers, int timeout_ms)
 {
 	return http_request(
 		"GET", "", url, out_content, out_errormsg, port, auth_user, auth_pass,

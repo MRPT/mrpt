@@ -109,7 +109,7 @@
 #if !defined(STDC) && (defined(__STDC__) || defined(__cplusplus))
 #define STDC
 #endif
-#if !defined(STDC) && (defined(__GNUC__) || defined(__BORLANDC__))
+#if !defined(STDC) && (defined(__GNUC__))
 #define STDC
 #endif
 #if !defined(STDC) && (defined(MSDOS) || defined(WINDOWS) || defined(WIN32))

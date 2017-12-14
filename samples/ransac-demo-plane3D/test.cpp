@@ -10,7 +10,7 @@
 #include <mrpt/math/ransac.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/random.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CPointCloud.h>
@@ -144,8 +144,8 @@ void TestRANSAC()
 			ransac3Dplane_degenerate, DIST_THRESHOLD,
 			3,  // Minimum set of points
 			best_inliers, best_model,
-			iters == 0 ? mrpt::utils::LVL_DEBUG
-					   : mrpt::utils::LVL_INFO  // Verbose
+			iters == 0 ? mrpt::system::LVL_DEBUG
+					   : mrpt::system::LVL_INFO  // Verbose
 			);
 
 	cout << "Computation time: " << tictac.Tac() * 1000.0 / TIMES << " ms"

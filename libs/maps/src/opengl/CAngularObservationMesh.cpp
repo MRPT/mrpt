@@ -30,7 +30,7 @@
 // Include libraries in linking:
 #if MRPT_HAS_OPENGL_GLUT && defined(_WIN32)
 // WINDOWS:
-#if defined(_MSC_VER) || defined(__BORLANDC__)
+#if defined(_MSC_VER)
 #pragma comment(lib, "opengl32.lib")
 #pragma comment(lib, "GlU32.lib")
 #endif

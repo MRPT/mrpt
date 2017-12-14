@@ -804,7 +804,7 @@ std::string UnitTestImpl::CurrentOsStackTraceExceptTop(int skip_count) {
 
 // Returns the current time in milliseconds.
 TimeInMillis GetTimeInMillis() {
-#if GTEST_OS_WINDOWS_MOBILE || defined(__BORLANDC__)
+#if GTEST_OS_WINDOWS_MOBILE
   // Difference between 1970-01-01 and 1601-01-01 in milliseconds.
   // http://analogous.blogspot.com/2005/04/epoch.html
   const TimeInMillis kJavaEpochToWinFileTimeDelta =
@@ -3981,13 +3981,13 @@ UnitTest* UnitTest::GetInstance() {
   // default implementation.  Use this implementation to keep good OO
   // design with private destructor.
 
-#if (_MSC_VER == 1310 && !defined(_DEBUG)) || defined(__BORLANDC__)
+#if (_MSC_VER == 1310 && !defined(_DEBUG))
   static UnitTest* const instance = new UnitTest;
   return instance;
 #else
   static UnitTest instance;
   return &instance;
-#endif  // (_MSC_VER == 1310 && !defined(_DEBUG)) || defined(__BORLANDC__)
+#endif  // (_MSC_VER == 1310 && !defined(_DEBUG))
 }
 
 // Gets the number of successful test cases.

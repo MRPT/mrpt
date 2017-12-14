@@ -11,7 +11,7 @@
 
 #include <mrpt/maps/CRandomFieldGridMap3D.h>
 #include <mrpt/utils/CConfigFileBase.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/utils/CFileOutputStream.h>
 
 #include <mrpt/config.h>

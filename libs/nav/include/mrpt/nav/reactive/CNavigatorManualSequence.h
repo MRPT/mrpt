@@ -10,7 +10,7 @@
 
 #include <mrpt/nav/reactive/CAbstractNavigator.h>
 #include <map>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 
 namespace mrpt
 {

@@ -109,13 +109,13 @@ CPose3DPDF::Ptr CTopLCDetector_GridMatching::computeTopologicalObservationModel(
 						  (int)currentArea->getID(), (int)refArea->getID());
 
 		m_hmtslam->logFmt(
-			mrpt::utils::LVL_DEBUG, "[TLCD_gridmatch] DEBUG: Saving %s\n",
+			mrpt::system::LVL_DEBUG, "[TLCD_gridmatch] DEBUG: Saving %s\n",
 			filStat.c_str());
 		CFileGZOutputStream f(filStat);
 		this->m_hmtslam->saveState(f);
 
 		m_hmtslam->logFmt(
-			mrpt::utils::LVL_DEBUG, "[TLCD_gridmatch] DEBUG: Saving %s\n",
+			mrpt::system::LVL_DEBUG, "[TLCD_gridmatch] DEBUG: Saving %s\n",
 			filRes.c_str());
 		CFileOutputStream f_res(filRes);
 		f_res.printf(

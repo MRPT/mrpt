@@ -15,7 +15,7 @@
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/stock_objects.h>
-#include <mrpt/utils/TParameters.h>
+#include <mrpt/system/TParameters.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
 
 namespace mrpt
@@ -54,7 +54,7 @@ class CVisualizer
 	 */
 	virtual void getAs3DObject(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		mrpt::utils::TParametersDouble viz_params) const;
+		mrpt::system::TParametersDouble viz_params) const;
 
    protected:
 	/**\name Work-splitting methods
@@ -69,19 +69,19 @@ class CVisualizer
 	/**\{ */
 	virtual void drawGroundGrid(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::utils::TParametersDouble* viz_params = NULL) const;
+		const mrpt::system::TParametersDouble* viz_params = NULL) const;
 	virtual void drawNodeCorners(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::utils::TParametersDouble* viz_params = NULL) const;
+		const mrpt::system::TParametersDouble* viz_params = NULL) const;
 	virtual void drawNodePoints(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::utils::TParametersDouble* viz_params = NULL) const;
+		const mrpt::system::TParametersDouble* viz_params = NULL) const;
 	virtual void drawEdgeRelPoses(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::utils::TParametersDouble* viz_params = NULL) const;
+		const mrpt::system::TParametersDouble* viz_params = NULL) const;
 	virtual void drawEdges(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::utils::TParametersDouble* viz_params = NULL) const;
+		const mrpt::system::TParametersDouble* viz_params = NULL) const;
 
 	/**\} */
 

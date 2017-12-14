@@ -9,7 +9,7 @@
 
 #include "gui-precomp.h"  // Precompiled headers
 #include <mrpt/gui/CGlCanvasBase.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;

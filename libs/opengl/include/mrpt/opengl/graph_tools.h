@@ -10,7 +10,7 @@
 #define opengl_graph_tools_H
 
 #include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/utils/TParameters.h>
+#include <mrpt/system/TParameters.h>
 
 namespace mrpt
 {
@@ -123,8 +123,8 @@ namespace graph_tools
   */
 template <class GRAPH_T>
 CSetOfObjects::Ptr graph_visualize(
-	const GRAPH_T& g, const mrpt::utils::TParametersDouble& extra_params =
-						  mrpt::utils::TParametersDouble());
+	const GRAPH_T& g, const mrpt::system::TParametersDouble& extra_params =
+						  mrpt::system::TParametersDouble());
 
 /** @} */
 }

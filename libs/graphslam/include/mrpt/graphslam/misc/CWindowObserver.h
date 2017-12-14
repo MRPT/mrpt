@@ -11,8 +11,8 @@
 #define CWINDOWOBSERVER_H
 
 #include <mrpt/gui/CBaseGUIWindow.h>
-#include <mrpt/utils/CTicTac.h>
-#include <mrpt/utils/TParameters.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/system/TParameters.h>
 #include <mrpt/utils/CObserver.h>
 #include <mrpt/opengl/gl_utils.h>
 #include <mrpt/system/string_utils.h>

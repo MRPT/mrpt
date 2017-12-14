@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/io/CStream.h>
+#include <mrpt/system/CTicTac.h>
 
 namespace mrpt
 {
@@ -39,7 +40,7 @@ namespace comms
  * \todo Add the internal buffer to the Windows implementation also
  * \ingroup mrpt_comms_grp
  */
-class CSerialPort : public mrpt::utils::CStream
+class CSerialPort : public mrpt::io::CStream
 {
 	friend class PosixSignalDispatcherImpl;
 
@@ -141,8 +142,7 @@ class CSerialPort : public mrpt::utils::CStream
 	// See base class docs
 	size_t Write(const void* Buffer, size_t Count) override;
 	/** not applicable in a serial port */
-	uint64_t Seek(
-		uint64_t off, CStream::TSeekOrigin o = sFromBeginning) override;
+	uint64_t Seek(int64_t off, CStream::TSeekOrigin o = sFromBeginning) override;
 	/** not applicable in a serial port */
 	uint64_t getTotalBytesCount() override;
 	/** not applicable in a serial port */
@@ -155,7 +155,7 @@ class CSerialPort : public mrpt::utils::CStream
 	std::string m_serialName;
 	int m_baudRate;
 	int m_totalTimeout_ms, m_interBytesTimeout_ms;
-
+	mrpt::system::CTicTac m_timer;
 #ifdef _WIN32
 	// WINDOWS
 	void* hCOM;
