@@ -25,6 +25,7 @@ define_mrpt_lib(
 	mrpt-core
 	mrpt-containers
 	mrpt-typemeta
+	mrpt-serialization
 	)
 
 IF(BUILD_mrpt-math)

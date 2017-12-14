@@ -6,11 +6,9 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#if 0
-#ifndef CMATRIX_H
-#define CMATRIX_H
+#pragma once
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/seriali/CSerializable.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
 
@@ -83,6 +81,3 @@ mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in, CMatrix::Ptr& pObj);
 
 }  // End of namespace
 }  // End of namespace
-
-#endif
-#endif

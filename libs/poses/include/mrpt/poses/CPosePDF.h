@@ -9,7 +9,7 @@
 #ifndef CPOSEPDF_H
 #define CPOSEPDF_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/utils/CProbabilityDensityFunction.h>

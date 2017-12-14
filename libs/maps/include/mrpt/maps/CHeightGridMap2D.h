@@ -13,7 +13,7 @@
 #include <mrpt/maps/CHeightGridMap2D_Base.h>
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/containers/CDynamicGrid.h>
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/color_maps.h>
 #include <mrpt/utils/TEnumType.h>

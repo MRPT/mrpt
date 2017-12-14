@@ -10,7 +10,7 @@
 #ifndef CDetectableObject_H
 #define CDetectableObject_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/obs/CObservation.h>
 #include <cmath>
 

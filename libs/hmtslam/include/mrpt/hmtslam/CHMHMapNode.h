@@ -13,7 +13,7 @@
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/hmtslam/HMT_SLAM_common.h>
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/utils/CMHPropertiesValuesList.h>
 #include <mrpt/utils/CTypeSelector.h>
 #include <map>

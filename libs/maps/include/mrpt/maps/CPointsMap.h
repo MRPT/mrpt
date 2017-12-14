@@ -10,7 +10,7 @@
 #define CPOINTSMAP_H
 
 #include <mrpt/maps/CMetricMap.h>
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/safe_pointers.h>
 #include <mrpt/math/KDTreeCapable.h>

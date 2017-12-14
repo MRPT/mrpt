@@ -9,7 +9,6 @@
 
 #include "math-precomp.h"  // Precompiled headers
 
-#if 0
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/utils/CStream.h>
@@ -75,4 +74,3 @@ void CMatrix::readFromStream(mrpt::utils::CStream& in, int version)
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	};
 }
-#endif

@@ -9,7 +9,7 @@
 #ifndef CPoint2DPDF_H
 #define CPoint2DPDF_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/utils/CProbabilityDensityFunction.h>
 #include <mrpt/poses/CPoint2D.h>
 

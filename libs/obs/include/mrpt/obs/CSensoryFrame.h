@@ -9,7 +9,7 @@
 #ifndef CSENSORYFRAME_H
 #define CSENSORYFRAME_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/obs/CObservation.h>
 

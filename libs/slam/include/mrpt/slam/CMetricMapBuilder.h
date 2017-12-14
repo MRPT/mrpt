@@ -9,7 +9,7 @@
 #ifndef CMetricMapBuilder_H
 #define CMetricMapBuilder_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/utils/CListOfClasses.h>
 #include <mrpt/utils/COutputLogger.h>
 #include <mrpt/maps/CMultiMetricMap.h>

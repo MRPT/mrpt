@@ -9,7 +9,7 @@
 #ifndef CObservation2DRangeScan_H
 #define CObservation2DRangeScan_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/T2DScanProperties.h>
 #include <mrpt/poses/CPose3D.h>

@@ -10,7 +10,7 @@
 #ifndef COccupancyGridMap2D_H
 #define COccupancyGridMap2D_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/containers/CDynamicGrid.h>

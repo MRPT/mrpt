@@ -9,7 +9,7 @@
 #ifndef CPose2DGridTemplate_H
 #define CPose2DGridTemplate_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/core/round.h>  // for round()
 #include <mrpt/utils/bits.h>  // for DEG2RAD()
 

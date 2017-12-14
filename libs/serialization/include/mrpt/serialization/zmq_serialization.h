@@ -9,7 +9,7 @@
 #ifndef SERIALIZATION_ZMQ_H
 #define SERIALIZATION_ZMQ_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/utils/CMemoryStream.h>
 #include <cmath>  // ceil()
 

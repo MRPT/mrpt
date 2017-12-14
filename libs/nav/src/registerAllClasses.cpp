@@ -10,7 +10,7 @@
 #include "nav-precomp.h"  // Precomp header
 
 #include <mrpt/nav.h>
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/utils/initializer.h>
 
 using namespace mrpt;

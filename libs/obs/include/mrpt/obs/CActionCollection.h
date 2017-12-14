@@ -11,7 +11,7 @@
 
 #include <mrpt/obs/CAction.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/utils/poly_ptr_ptr.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 

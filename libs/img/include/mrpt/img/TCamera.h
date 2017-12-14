@@ -13,7 +13,7 @@
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/CConfigFileBase.h>
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/poses/CPose3DQuat.h>
 
 namespace mrpt

@@ -11,7 +11,7 @@
 
 #define MRPT_NO_WARN_BIG_HDR
 #include <mrpt/vision.h>
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 
 #include <mrpt/utils/initializer.h>
 

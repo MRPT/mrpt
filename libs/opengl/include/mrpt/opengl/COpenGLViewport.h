@@ -9,7 +9,7 @@
 #ifndef opengl_COpenGLViewport_H
 #define opengl_COpenGLViewport_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/utils/safe_pointers.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/opengl/CCamera.h>

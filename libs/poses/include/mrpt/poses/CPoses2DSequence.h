@@ -10,7 +10,7 @@
 #define CPoses2DSequence_H
 
 #include <mrpt/poses/CPose2D.h>
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 
 namespace mrpt
 {

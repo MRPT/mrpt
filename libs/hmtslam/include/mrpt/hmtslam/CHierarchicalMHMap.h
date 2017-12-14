@@ -14,7 +14,7 @@
 #include <mrpt/hmtslam/CHierarchicalMapMHPartition.h>
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/maps/CMultiMetricMap.h>
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 
 namespace mrpt
 {

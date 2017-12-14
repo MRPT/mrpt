@@ -23,7 +23,7 @@
 #include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/maps/CBeaconMap.h>
 #include <mrpt/maps/CMetricMap.h>
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/TEnumType.h>
 #include <mrpt/utils/poly_ptr_ptr.h>

@@ -9,7 +9,7 @@
 #ifndef CLogFileRecord_H
 #define CLogFileRecord_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/utils/CMemoryStream.h>
 #include <mrpt/system/TParameters.h>

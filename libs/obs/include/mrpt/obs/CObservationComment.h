@@ -9,7 +9,7 @@
 #ifndef CObservationComment_H
 #define CObservationComment_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/obs/CObservation.h>
 
 namespace mrpt

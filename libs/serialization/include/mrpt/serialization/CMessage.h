@@ -11,7 +11,7 @@
 
 #include <mrpt/utils/core_defs.h>
 #include <cstdint>
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <vector>
 
 namespace mrpt

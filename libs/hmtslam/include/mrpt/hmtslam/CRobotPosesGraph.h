@@ -9,7 +9,7 @@
 #ifndef CRobotPosesGraph_H
 #define CRobotPosesGraph_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 
 #include <mrpt/hmtslam/HMT_SLAM_common.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>

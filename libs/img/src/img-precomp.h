@@ -9,4 +9,4 @@
 
 #pragma once
 
-#include <string>
+#include <mrpt/img/CImage.h>

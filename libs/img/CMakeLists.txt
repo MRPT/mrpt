@@ -13,6 +13,7 @@ define_mrpt_lib(
 	# Dependencies:
 	mrpt-core
 	mrpt-serialization
+	mrpt-math
 	)
 
 IF(BUILD_mrpt-img)
