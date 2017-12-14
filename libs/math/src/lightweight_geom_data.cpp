@@ -260,19 +260,127 @@ void TPose3D::getAsQuaternion(
 }
 void TPose3D::composePoint(const TPoint3D l, TPoint3D& g) const
 {
-	MRPT_TODO("XXX");
+	CMatrixDouble33 R;
+	this->getRotationMatrix(R);
+	TPoint3D res;
+	res.x = R(0, 0)*l.x + R(0, 1)*l.y + R(0, 2)*l.z + this->x;
+	res.y = R(1, 0)*l.x + R(1, 1)*l.y + R(1, 2)*l.z + this->y;
+	res.z = R(2, 0)*l.x + R(2, 1)*l.y + R(2, 2)*l.z + this->z;
+
+	g = res;
 }
 void TPose3D::inverseComposePoint(const TPoint3D g, TPoint3D& l) const
 {
-	MRPT_TODO("XXX");
+	CMatrixDouble44 H;
+	this->getInverseHomogeneousMatrix(H);
+	TPoint3D res;
+	res.x = H(0, 0)*g.x + H(0, 1)*g.y + H(0, 2)*g.z + H(0, 3);
+	res.y = H(1, 0)*g.x + H(1, 1)*g.y + H(1, 2)*g.z + H(1, 3);
+	res.z = H(2, 0)*g.x + H(2, 1)*g.y + H(2, 2)*g.z + H(2, 3);
+
+	l = res;
 }
 void TPose3D::getRotationMatrix(mrpt::math::CMatrixDouble33 &R) const
 {
-	MRPT_TODO("XXX");
+	const double cy = cos(yaw);
+	const double sy = sin(yaw);
+	const double cp = cos(pitch);
+	const double sp = sin(pitch);
+	const double cr = cos(roll);
+	const double sr = sin(roll);
+
+	alignas(16) const double rot_vals[] = { cy * cp,
+		cy * sp * sr - sy * cr,
+		cy * sp * cr + sy * sr,
+		sy * cp,
+		sy * sp * sr + cy * cr,
+		sy * sp * cr - cy * sr,
+		-sp,
+		cp * sr,
+		cp * cr };
+	R.loadFromArray(rot_vals);
 }
-void TPose3D::fromHomogeneousMatrix(mrpt::math::CMatrixDouble44 &HG)
+void TPose3D::SO3_to_yaw_pitch_roll(const mrpt::math::CMatrixDouble33 &R, double &yaw, double &pitch, double &roll)
 {
-	MRPT_TODO("XXX");
+	ASSERTDEBMSG_(
+		std::abs(
+			sqrt(
+				square(R(0, 0)) + square(R(1, 0)) +
+				square(R(2, 0))) -
+			1) < 3e-3,
+		"Homogeneous matrix is not orthogonal & normalized!: " +
+		R.inMatlabFormat());
+	ASSERTDEBMSG_(
+		std::abs(
+			sqrt(
+				square(R(0, 1)) + square(R(1, 1)) +
+				square(R(2, 1))) -
+			1) < 3e-3,
+		"Homogeneous matrix is not orthogonal & normalized!: " +
+		R.inMatlabFormat());
+	ASSERTDEBMSG_(
+		std::abs(
+			sqrt(
+				square(R(0, 2)) + square(R(1, 2)) +
+				square(R(2, 2))) -
+			1) < 3e-3,
+		"Homogeneous matrix is not orthogonal & normalized!: " +
+		R.inMatlabFormat());
+
+	// Pitch is in the range [-pi/2, pi/2 ], so this calculation is enough:
+	pitch = atan2(-R(2, 0),hypot(R(0, 0), R(1, 0)));
+
+	// Roll:
+	if ((fabs(R(2, 1)) + fabs(R(2, 2))) <
+		10 * std::numeric_limits<double>::epsilon())
+	{
+		// Gimbal lock between yaw and roll. This one is arbitrarily forced to
+		// be zero.
+		// Check
+		// http://reference.mrpt.org/devel/classmrpt_1_1poses_1_1_c_pose3_d.html.
+		// If cos(pitch)==0, the homogeneous matrix is:
+		// When sin(pitch)==1:
+		//  /0  cysr-sycr cycr+sysr x\   /0  sin(r-y) cos(r-y)  x\.
+		//  |0  sysr+cycr sycr-cysr y| = |0  cos(r-y) -sin(r-y) y|
+		//  |-1     0         0     z|   |-1    0         0     z|
+		//  \0      0         0     1/   \0     0         0     1/
+		//
+		// And when sin(pitch)=-1:
+		//  /0 -cysr-sycr -cycr+sysr x\   /0 -sin(r+y) -cos(r+y) x\.
+		//  |0 -sysr+cycr -sycr-cysr y| = |0 cos(r+y)  -sin(r+y) y|
+		//  |1      0          0     z|   |1    0          0     z|
+		//  \0      0          0     1/   \0    0          0     1/
+		//
+		// Both cases are in a "gimbal lock" status. This happens because pitch
+		// is vertical.
+
+		roll = 0.0;
+		if (pitch > 0)
+			yaw = atan2(R(1, 2), R(0, 2));
+		else
+			yaw = atan2(-R(1, 2), -R(0, 2));
+	}
+	else
+	{
+		roll = atan2(R(2, 1), R(2, 2));
+		// Yaw:
+		yaw = atan2(R(1, 0), R(0, 0));
+	}
+}
+
+void TPose3D::fromHomogeneousMatrix(const mrpt::math::CMatrixDouble44 &HG)
+{
+	SO3_to_yaw_pitch_roll(HG.block<3, 3>(0, 0), yaw, pitch, roll);
+	x = HG(0, 3);
+	y = HG(1, 3);
+	z = HG(2, 3);
+}
+void TPose3D::composePose(const TPose3D other, TPose3D& result) const
+{
+	CMatrixDouble44 me_H, o_H;
+	this->getHomogeneousMatrix(me_H);
+	other.getHomogeneousMatrix(o_H);
+	result.fromHomogeneousMatrix(me_H*o_H);
 }
 void TPose3D::getHomogeneousMatrix(mrpt::math::CMatrixDouble44 &HG) const
 {
@@ -1086,7 +1194,9 @@ bool TPolygon3D::contains(const TPoint3D& point) const
 	TPose3D pose;
 	// plane.getAsPose3DForcingOrigin(operator[](0),pose);
 	plane.getAsPose3D(pose);
-	pose = TPose3D(0, 0, 0, 0, 0, 0) - pose;
+	CMatrixDouble44 P_inv;
+	pose.getInverseHomogeneousMatrix(P_inv);
+	pose.fromHomogeneousMatrix(P_inv);
 	project3D(point, pose, projectedPoint);
 	if (abs(projectedPoint.z) >= getEpsilon())
 		return false;  // Point is not inside the polygon's plane.
