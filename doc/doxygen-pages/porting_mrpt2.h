@@ -61,6 +61,16 @@
 *  - Static variables have been dropped in favor of global getter/setter functions. This allowed removing all DLL import/export macros for Windows compilers. Important changes are:
 *    - `mrpt::math::randomGenerator` --> `mrpt::math::getRandomGenerator()`
 *    - `mrpt::global_settings` old static variables have been replaced by getter/setter functions.
+*  - Serialization: See tutorial of the new module \ref mrpt_serialization_grp
+*    - To serialize an object to/from a CStream, you must now use CArchive:
+*        \code
+*          CStreamXXXX f;  // Any mrpt::io::CStream type
+*          auto arch = mrpt::serialization::CArchiveStream(f);
+*          arch << object;
+*          arch >> object;
+*        \endcode
+
+*
 *
 * **Optional changes**
 *   - Use the `Foo::ConstPtr` smart pointers when possible instead of its non-const counterpart.
