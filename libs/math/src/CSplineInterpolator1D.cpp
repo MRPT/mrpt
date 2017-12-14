@@ -11,7 +11,6 @@
 
 #include <mrpt/math/types_math.h>  // for dynamic_vector, CVector...
 #include <mrpt/math/CSplineInterpolator1D.h>  // for CSplineInterpolator1D
-#include <mrpt/utils/CStream.h>  // for CStream, operator<<
 #include <mrpt/utils/stl_serialization.h>  // for operator<<, operator>>
 #include <map>  // for _Rb_tree_const_iterator
 #include <mrpt/math/interp_fit.hpp>  // for spline

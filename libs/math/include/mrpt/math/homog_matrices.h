@@ -107,7 +107,7 @@ void homogeneousMatrixInverse(
 template <class MATRIXLIKE>
 inline void homogeneousMatrixInverse(MATRIXLIKE& M)
 {
-	ASSERTDEB_(M.isSquare() && size(M, 1) == 4);
+	ASSERTDEB_(M.cols()==M.rows() && M.rows()==4);
 	// translation:
 	const double tx = -M(0, 3);
 	const double ty = -M(1, 3);
