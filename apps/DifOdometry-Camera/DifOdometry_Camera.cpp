@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "DifOdometry_Camera.h"
-#include <mrpt/utils/types_math.h>  // Eigen (with MRPT "plugin" in BaseMatrix<>)
+#include <mrpt/math/types_math.h>  // Eigen (with MRPT "plugin" in BaseMatrix<>)
 #include <mrpt/system/filesystem.h>
 #include <mrpt/opengl/CFrustum.h>
 #include <mrpt/opengl/CGridPlaneXY.h>

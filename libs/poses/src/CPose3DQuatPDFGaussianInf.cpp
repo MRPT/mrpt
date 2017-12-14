@@ -10,7 +10,7 @@
 #include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/poses/CPose3DQuatPDFGaussianInf.h>
-#include <mrpt/utils/types_math.h>  // for CMatrixF...
+#include <mrpt/math/types_math.h>  // for CMatrixF...
 #include <stdio.h>  // for size_t
 #include <algorithm>  // for move, max
 #include <exception>  // for exception

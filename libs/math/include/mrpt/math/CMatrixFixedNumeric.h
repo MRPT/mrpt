@@ -11,7 +11,7 @@
 
 #include <mrpt/math/math_frwds.h>  // Forward declarations
 #include <mrpt/math/eigen_frwds.h>
-#include <mrpt/utils/types_math.h>
+#include <mrpt/math/types_math.h>
 #include <mrpt/serialization/CSerializable.h>
 
 namespace mrpt

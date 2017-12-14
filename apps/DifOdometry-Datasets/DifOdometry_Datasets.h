@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/vision/CDifodo.h>
-#include <mrpt/utils/types_math.h>  // Eigen (with MRPT "plugin" in BaseMatrix<>)
+#include <mrpt/math/types_math.h>  // Eigen (with MRPT "plugin" in BaseMatrix<>)
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/obs/CRawlog.h>

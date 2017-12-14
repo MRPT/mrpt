@@ -9,4 +9,4 @@
 #pragma once
 
 #include <mrpt/utils/types_simple.h>
-#include <mrpt/utils/types_math.h>
+#include <mrpt/math/types_math.h>

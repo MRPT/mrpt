@@ -11,7 +11,7 @@
 
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose2D.h>
-#include <mrpt/utils/types_math.h>
+#include <mrpt/math/types_math.h>
 
 namespace mrpt
 {

@@ -143,8 +143,8 @@ void RawStringToObject(const std::string& in_str, CSerializable::Ptr& obj);
 	/*! @name CSerializable virtual methods */                                    \
 	/*! @{ */                                                                     \
 	uint8_t serializeGetVersion() const override;                                 \
-	void serializeTo(CArchive& out) const override;                               \
-	void serializeFrom(CArchive& in, uint8_t serial_version) override;            \
+	void serializeTo(mrpt::serialization::CArchive& out) const override;          \
+	void serializeFrom(mrpt::serialization::CArchive& in, uint8_t serial_version) override;  \
 	/*! @} */
 
 /** This must be inserted in all CSerializable classes implementation files */

@@ -10,7 +10,7 @@
 #define _MRPT_CArrayNumeric_H
 
 #include <mrpt/utils/core_defs.h>
-#include <mrpt/utils/types_math.h>  // Eigen
+#include <mrpt/math/types_math.h>  // Eigen
 #include <mrpt/utils/TTypeName.h>
 
 namespace mrpt
