@@ -12,7 +12,7 @@
 
 #include <mrpt/containers/CDynamicGrid.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/TEnumType.h>

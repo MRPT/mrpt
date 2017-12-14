@@ -9,7 +9,7 @@
 #ifndef CSimpleMap_H
 #define CSimpleMap_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPose3DPDF.h>

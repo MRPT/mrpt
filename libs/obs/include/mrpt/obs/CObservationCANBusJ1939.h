@@ -9,7 +9,7 @@
 #ifndef CObservationCANBusJ1939_H
 #define CObservationCANBusJ1939_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/obs/CObservation.h>
 
 namespace mrpt

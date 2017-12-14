@@ -9,7 +9,7 @@
 #ifndef CLandmark_H
 #define CLandmark_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/poses/CPointPDFGaussian.h>

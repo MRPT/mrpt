@@ -9,7 +9,7 @@
 #ifndef CBeacon_H
 #define CBeacon_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPointPDFParticles.h>

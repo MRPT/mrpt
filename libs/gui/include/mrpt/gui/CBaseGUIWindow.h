@@ -9,7 +9,7 @@
 #ifndef CBaseGUIWindow_H
 #define CBaseGUIWindow_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/utils/mrptEvent.h>
 #include <mrpt/utils/CObservable.h>
 #include <mrpt/utils/safe_pointers.h>

@@ -9,7 +9,7 @@
 #ifndef CAction_H
 #define CAction_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/datetime.h>
 
 namespace mrpt

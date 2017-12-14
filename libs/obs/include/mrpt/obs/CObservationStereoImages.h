@@ -9,7 +9,7 @@
 #ifndef CObservationStereoImages_H
 #define CObservationStereoImages_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/utils/TStereoCamera.h>
 #include <mrpt/obs/CObservation.h>

@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/poses/CPoseInterpolatorBase.h>
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 
 namespace mrpt
 {

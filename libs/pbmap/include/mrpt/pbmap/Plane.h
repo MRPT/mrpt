@@ -22,7 +22,7 @@
 
 #include <mrpt/utils/utils_defs.h>
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <pcl/point_types.h>
 #include <pcl/common/pca.h>
 #include <set>

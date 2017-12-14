@@ -10,7 +10,7 @@
 #define CSimplePointsMap_H
 
 #include <mrpt/maps/CPointsMap.h>
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/obs/obs_frwds.h>
 

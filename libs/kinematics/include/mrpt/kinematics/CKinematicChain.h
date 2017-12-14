@@ -10,7 +10,7 @@
 #define mrpt_CKinematicChain_H
 
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/utils/aligned_containers.h>
 

@@ -11,7 +11,7 @@
 
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/maps/CBeacon.h>
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/obs/obs_frwds.h>

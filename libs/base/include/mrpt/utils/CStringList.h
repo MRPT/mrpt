@@ -9,7 +9,7 @@
 #ifndef CStringList_H
 #define CStringList_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <deque>
 #include <iterator>
 

@@ -9,7 +9,7 @@
 #ifndef CObservation6DFeatures_H
 #define CObservation6DFeatures_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/utils/aligned_containers.h>

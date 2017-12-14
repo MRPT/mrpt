@@ -9,7 +9,7 @@
 #ifndef CHolonomicLogFileRecord_H
 #define CHolonomicLogFileRecord_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/math/CMatrixD.h>
 
 namespace mrpt

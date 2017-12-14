@@ -9,7 +9,7 @@
 #ifndef CMHPropertiesValuesList_H
 #define CMHPropertiesValuesList_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/utils/CMemoryChunk.h>
 #include <mrpt/system/string_utils.h>
 #include <cstdio>

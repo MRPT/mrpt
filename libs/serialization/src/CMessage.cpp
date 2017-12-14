@@ -13,7 +13,7 @@
 MRPT_TODO("end port");
 
 #if 0
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/utils/CMessage.h>
 #include <mrpt/system/os.h>
 #include <mrpt/utils/CMemoryStream.h>

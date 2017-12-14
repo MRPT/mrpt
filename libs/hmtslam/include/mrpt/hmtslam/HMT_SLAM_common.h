@@ -9,7 +9,7 @@
 #ifndef HMT_SLAM_common_H
 #define HMT_SLAM_common_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/utils/list_searchable.h>
 #include <set>
 

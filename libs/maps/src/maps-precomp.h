@@ -16,7 +16,7 @@
 #if MRPT_ENABLE_PRECOMPILED_HDRS
 
 #include <mrpt/maps/CMetricMap.h>
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/utils/CStream.h>  // For serializable maps
 
 #endif

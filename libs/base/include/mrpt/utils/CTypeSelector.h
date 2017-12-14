@@ -9,7 +9,7 @@
 #ifndef CTypeSelector_H
 #define CTypeSelector_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 
 namespace mrpt
 {

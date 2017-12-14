@@ -9,7 +9,7 @@
 #ifndef CPropertiesValuesList_H
 #define CPropertiesValuesList_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 
 namespace mrpt
 {

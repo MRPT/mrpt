@@ -9,7 +9,7 @@
 #pragma once
 
 #if 0
-//#include <mrpt/utils/CSerializable.h>
+//#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
 namespace mrpt

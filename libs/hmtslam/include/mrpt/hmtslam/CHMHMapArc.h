@@ -11,7 +11,7 @@
 
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/hmtslam/CHMHMapNode.h>
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 
 namespace mrpt
 {

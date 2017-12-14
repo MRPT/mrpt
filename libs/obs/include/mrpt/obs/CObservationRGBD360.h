@@ -9,7 +9,7 @@
 #ifndef CObservationRGBD360_H
 #define CObservationRGBD360_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>

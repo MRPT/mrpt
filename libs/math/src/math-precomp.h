@@ -10,3 +10,4 @@
 #pragma once
 
 #include <mrpt/core/common.h>
+#include <mrpt/math/CMatrixD.h>

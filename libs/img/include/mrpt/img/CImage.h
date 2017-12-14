@@ -6,15 +6,12 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CImage_H
-#define CImage_H
+#pragma once
 
-#include <mrpt/utils/utils_defs.h>
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/math/eigen_frwds.h>
-#include <mrpt/utils/CCanvas.h>
-#include <mrpt/utils/TCamera.h>
-#include <mrpt/utils/exceptions.h>
+#include <mrpt/img/CCanvas.h>
+#include <mrpt/img/TCamera.h>
 
 // Add for declaration of mexplus::from template specialization
 DECLARE_MEXPLUS_FROM(mrpt::img::CImage)

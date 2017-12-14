@@ -9,7 +9,7 @@
 #ifndef opengl_CRenderizable_H
 #define opengl_CRenderizable_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/img/TColor.h>
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/poses/CPose3D.h>

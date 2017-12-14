@@ -9,7 +9,7 @@
 #ifndef COBSERVATION_H
 #define COBSERVATION_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/math/math_frwds.h>
 

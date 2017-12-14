@@ -9,7 +9,7 @@
 #ifndef CMetricMap_H
 #define CMetricMap_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/utils/TMatchingPair.h>
 #include <mrpt/utils/CObservable.h>
 #include <mrpt/math/math_frwds.h>

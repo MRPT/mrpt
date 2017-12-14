@@ -21,7 +21,7 @@
 
 #include <mrpt/utils/utils_defs.h>
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 
 #include <mrpt/pbmap/Plane.h>
 #include <mrpt/pbmap/Miscellaneous.h>  // For typedef PointT;
