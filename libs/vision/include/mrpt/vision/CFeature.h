@@ -50,7 +50,7 @@ enum TListIdx
   *
   *  \sa CFeatureList, TSimpleFeature, TSimpleFeatureList
   */
-class CFeature : public mrpt::utils::CSerializable
+class CFeature : public mrpt::serialization::CSerializable
 {
 	friend class CFeatureList;
 	friend class CMatchedFeatureList;

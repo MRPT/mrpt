@@ -34,7 +34,7 @@ namespace poses
  * \ingroup poses_pdf_grp
  * \sa CPoint2D, CPointPDF
  */
-class CPoint2DPDF : public mrpt::utils::CSerializable,
+class CPoint2DPDF : public mrpt::serialization::CSerializable,
 					public mrpt::utils::CProbabilityDensityFunction<CPoint2D, 2>
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CPoint2DPDF)

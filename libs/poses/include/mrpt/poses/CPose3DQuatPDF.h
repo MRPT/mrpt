@@ -44,7 +44,7 @@ class CPose3DPDF;
  * \ingroup poses_pdf_grp
  */
 class CPose3DQuatPDF
-	: public mrpt::utils::CSerializable,
+	: public mrpt::serialization::CSerializable,
 	  public mrpt::utils::CProbabilityDensityFunction<CPose3DQuat, 7>
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CPose3DQuatPDF)

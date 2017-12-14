@@ -41,7 +41,7 @@ class CLSLAM_RBPF_2DLASER;
  * metric path hypothesis" and its associated metric map).
   * \ingroup mrpt_hmtslam_grp
   */
-class CLSLAMParticleData : public mrpt::utils::CSerializable
+class CLSLAMParticleData : public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(CLSLAMParticleData)
 
@@ -67,7 +67,7 @@ class CLocalMetricHypothesis
 	  public mrpt::bayes::CParticleFilterDataImpl<
 		  CLocalMetricHypothesis,
 		  mrpt::bayes::CParticleFilterData<CLSLAMParticleData>::CParticleList>,
-	  public mrpt::utils::CSerializable
+	  public mrpt::serialization::CSerializable
 {
 	friend class CLSLAM_RBPF_2DLASER;
 

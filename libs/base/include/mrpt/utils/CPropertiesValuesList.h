@@ -21,7 +21,7 @@ namespace utils
  * \sa CSerializable, CMHPropertiesValuesList, mrpt::system::TParameters
  * \ingroup mrpt_base_grp
  */
-class CPropertiesValuesList : public mrpt::utils::CSerializable
+class CPropertiesValuesList : public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(CPropertiesValuesList)
    protected:

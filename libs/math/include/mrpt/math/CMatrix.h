@@ -21,7 +21,7 @@ namespace math
  * http://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes
  * \ingroup mrpt_base_grp
  */
-class CMatrix : public mrpt::utils::CSerializable, public CMatrixFloat
+class CMatrix : public mrpt::serialization::CSerializable, public CMatrixFloat
 {
 	DEFINE_SERIALIZABLE(CMatrix)
 

@@ -32,7 +32,7 @@ namespace maps
  * \sa CSensoryFrame, CPosePDF
  * \ingroup mrpt_obs_grp
  */
-class CSimpleMap : public mrpt::utils::CSerializable
+class CSimpleMap : public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(CSimpleMap)
    public:

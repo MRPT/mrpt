@@ -40,7 +40,7 @@ class CSetOfObjects;
   *  \sa opengl::COpenGLScene, mrpt::opengl
   * \ingroup mrpt_opengl_grp
   */
-class CRenderizable : public mrpt::utils::CSerializable
+class CRenderizable : public mrpt::serialization::CSerializable
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CRenderizable)
 

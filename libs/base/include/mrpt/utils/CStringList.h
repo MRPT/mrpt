@@ -29,7 +29,7 @@ namespace utils
  * as "key=value" lines.
  * \ingroup mrpt_base_grp
  */
-class CStringList : public mrpt::utils::CSerializable
+class CStringList : public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(CStringList)
 

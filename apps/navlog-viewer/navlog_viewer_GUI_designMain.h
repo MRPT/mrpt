@@ -33,7 +33,7 @@ class navlog_viewer_GUI_designDialog : public wxFrame  // wxDialog
 {
    private:
 	// App data:
-	std::vector<mrpt::utils::CSerializable::Ptr> m_logdata;
+	std::vector<mrpt::serialization::CSerializable::Ptr> m_logdata;
 	std::vector<mrpt::nav::CParameterizedTrajectoryGenerator::Ptr>
 		m_logdata_ptg_paths;  // Retrieved from the first entry in m_logdata
 	// when loading

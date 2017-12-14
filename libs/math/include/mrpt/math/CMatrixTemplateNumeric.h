@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/math/types_math.h>
 #include <Eigen/Dense>
 #include <mrpt/typemeta/TTypeName.h>
-#include <mrpt/math/point_poses2vectors.h>  // MRPT_MATRIX_CONSTRUCTORS_FROM_POSES()
 
 namespace mrpt
 {
@@ -44,8 +44,6 @@ class CMatrixTemplateNumeric
 						  Eigen::AutoAlign | Eigen::RowMajor>
 		Base;
 	typedef CMatrixTemplateNumeric<T> mrpt_autotype;
-
-	MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(CMatrixTemplateNumeric)
 
 	/** Default constructor, builds a 1x1 matrix */
 	inline CMatrixTemplateNumeric() : Base(1, 1) { Base::setZero(); }
@@ -200,5 +198,3 @@ struct TTypeName<mrpt::math::CMatrixTemplateNumeric<T>>
 }
 
 }  // End of namespace
-
-#endif

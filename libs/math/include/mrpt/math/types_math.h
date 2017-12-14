@@ -72,7 +72,6 @@ class dynamic_vector : public Eigen::Matrix<T, Eigen::Dynamic, 1>
 	typedef Eigen::Matrix<T, Eigen::Dynamic, 1> Base;
 	typedef dynamic_vector<T> mrpt_autotype;
 	typedef T value_type;
-	MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(dynamic_vector)
 	MRPT_EIGEN_DERIVED_CLASS_CTOR_OPERATOR_EQUAL(dynamic_vector)
 
 	/** Default constructor (vector of given size set to zero) */

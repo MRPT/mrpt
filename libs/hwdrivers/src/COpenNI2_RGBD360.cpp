@@ -112,7 +112,7 @@ void COpenNI2_RGBD360::doProcess()
 	{
 		m_state = ssWorking;
 
-		std::vector<mrpt::utils::CSerializable::Ptr> objs;
+		std::vector<mrpt::serialization::CSerializable::Ptr> objs;
 		if (m_grab_rgb || m_grab_depth || m_grab_3D_points)
 			objs.push_back(newObs);
 

@@ -29,7 +29,7 @@ namespace img
  * for calibrating a camera
  * \ingroup mrpt_img_grp
  */
-class TCamera : public mrpt::utils::CSerializable
+class TCamera : public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(TCamera)
 

@@ -23,7 +23,7 @@ namespace poses
  * \sa CPose3D, CMultiMetricMap
  * \ingroup poses_grp
  */
-class CPoses3DSequence : public mrpt::utils::CSerializable
+class CPoses3DSequence : public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(CPoses3DSequence)
    public:

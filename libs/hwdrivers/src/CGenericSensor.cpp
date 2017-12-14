@@ -51,7 +51,7 @@ CGenericSensor::~CGenericSensor()
 						appendObservations
 -------------------------------------------------------------*/
 void CGenericSensor::appendObservations(
-	const std::vector<mrpt::utils::CSerializable::Ptr>& objs)
+	const std::vector<mrpt::serialization::CSerializable::Ptr>& objs)
 {
 	if (++m_grab_decimation_counter >= m_grab_decimation)
 	{

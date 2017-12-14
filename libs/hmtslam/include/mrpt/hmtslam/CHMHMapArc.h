@@ -28,7 +28,7 @@ class CHierarchicalMHMap;
  * \sa CHierarchicalMHMap,CHMHMapNode
   * \ingroup mrpt_hmtslam_grp
  */
-class CHMHMapArc : public mrpt::utils::CSerializable
+class CHMHMapArc : public mrpt::serialization::CSerializable
 {
 	friend class CHierarchicalMHMap;
 	friend class CHMHMapNode;

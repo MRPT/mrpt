@@ -39,7 +39,7 @@ class CPosePDF;
  * \sa CPose3D, CPosePDF, CPointPDF
  * \ingroup poses_pdf_grp
  */
-class CPose3DPDF : public mrpt::utils::CSerializable,
+class CPose3DPDF : public mrpt::serialization::CSerializable,
 				   public mrpt::utils::CProbabilityDensityFunction<CPose3D, 6>
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CPose3DPDF)

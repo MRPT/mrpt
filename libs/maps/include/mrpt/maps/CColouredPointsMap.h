@@ -24,7 +24,7 @@ namespace maps
  *  For different color schemes, see CColouredPointsMap::colorScheme
  *  Colors are defined in the range [0,1].
  * \sa mrpt::maps::CPointsMap, mrpt::maps::CMetricMap,
- * mrpt::utils::CSerializable
+ * mrpt::serialization::CSerializable
  * \ingroup mrpt_maps_grp
  */
 class CColouredPointsMap : public CPointsMap

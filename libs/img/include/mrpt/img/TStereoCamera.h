@@ -22,7 +22,7 @@ namespace img
   * \sa mrpt::vision, the application stereo-calib-gui for calibrating a stereo
  * camera
  */
-class TStereoCamera : public mrpt::utils::CSerializable
+class TStereoCamera : public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(TStereoCamera)
    public:

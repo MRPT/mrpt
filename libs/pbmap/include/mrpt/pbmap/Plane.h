@@ -45,7 +45,7 @@ namespace pbmap
  *
  * \ingroup mrpt_pbmap_grp
  */
-class Plane : public mrpt::utils::CSerializable
+class Plane : public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(Plane)
 

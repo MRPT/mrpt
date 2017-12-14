@@ -2607,7 +2607,7 @@ void xRawLogViewerFrame::rebuildTreeView()
 // Selection has changed:
 void xRawLogViewerFrame::OntreeViewSelectionChanged(
 	wxWindow* me, CRawlogTreeView* the_tree, TRawlogTreeViewEvent ev,
-	int item_index, const mrpt::utils::CSerializable::Ptr& item_data)
+	int item_index, const mrpt::serialization::CSerializable::Ptr& item_data)
 {
 	xRawLogViewerFrame* win = (xRawLogViewerFrame*)me;
 	win->SelectObjectInTreeView(item_data);
