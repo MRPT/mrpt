@@ -13,7 +13,7 @@
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/config.h>
 #include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/utils/types_math.h>
+#include <mrpt/math/types_math.h>
 #include <mrpt/gui/gui_frwds.h>
 
 #include <queue>

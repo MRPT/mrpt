@@ -17,7 +17,7 @@
 
 #if MRPT_HAS_PCL
 
-#include <mrpt/utils/types_math.h>  // Eigen
+#include <mrpt/math/types_math.h>  // Eigen
 
 //#include <pcl/io/io.h>
 //#include <pcl/io/pcd_io.h>

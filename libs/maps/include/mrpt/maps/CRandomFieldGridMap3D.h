@@ -10,7 +10,7 @@
 #pragma once
 
 #include <mrpt/utils/CDynamicGrid3D.h>
-#include <mrpt/utils/types_math.h>
+#include <mrpt/math/types_math.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/COutputLogger.h>

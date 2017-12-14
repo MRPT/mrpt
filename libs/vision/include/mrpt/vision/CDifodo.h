@@ -10,7 +10,7 @@
 #ifndef CDifodo_H
 #define CDifodo_H
 
-#include <mrpt/utils/types_math.h>  // Eigen
+#include <mrpt/math/types_math.h>  // Eigen
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/poses/CPose3D.h>
 //#include <unsupported/Eigen/MatrixFunctions>

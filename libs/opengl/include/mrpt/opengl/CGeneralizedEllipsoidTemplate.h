@@ -11,7 +11,7 @@
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/utils/types_math.h>
+#include <mrpt/math/types_math.h>
 #include <mrpt/utils/CStream.h>  // for >> ops
 #include <mrpt/math/matrix_serialization.h>  // for >> ops
 

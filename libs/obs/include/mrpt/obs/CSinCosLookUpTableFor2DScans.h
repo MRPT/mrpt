@@ -9,7 +9,7 @@
 #ifndef CSinCosLookUpTableFor2DScans_H
 #define CSinCosLookUpTableFor2DScans_H
 
-#include <mrpt/utils/types_math.h>
+#include <mrpt/math/types_math.h>
 #include <mrpt/obs/T2DScanProperties.h>
 #include <map>
 

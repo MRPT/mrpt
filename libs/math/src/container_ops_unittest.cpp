@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/utils/types_math.h>
+#include <mrpt/math/types_math.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
