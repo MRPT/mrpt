@@ -18,3 +18,10 @@ Session.vim
 # common results directories
 graphslam_results/
 
+# idea
+.idea/*
+cmake-build-debug/*
+
+# VIM
+*.swo
+*.swp
