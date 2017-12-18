@@ -65,6 +65,13 @@ IF(BUILD_EXAMPLES)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-rtti)
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
+	# === Depending on: serialization, io ===
+	SET(LIST_EXAMPLES_IN_THIS_DIR
+		serialization_stl
+		)
+	SET(CMAKE_EXAMPLE_DEPS mrpt-serialization mrpt-io)
+	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
+
 	# === Depending on: mrpt-base ===
 	#  list of examples for each directory:
 	SET(LIST_EXAMPLES_IN_THIS_DIR
@@ -156,7 +163,6 @@ IF(BUILD_EXAMPLES)
 		polyhedronIntersection
 		observer_pattern
 		smart_pointers_test
-		stl_containers_serialize
 		polygonSplit
 		setOfTexturedTrianglesTest
 		gui_windows_events
