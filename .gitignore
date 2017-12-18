@@ -18,3 +18,9 @@ Session.vim
 # common results directories
 graphslam_results/
 
+# Ignore IDE directories
+.idea/*
+
+# Ignore swap file
+*.swo
+*.swp
