@@ -36,7 +36,7 @@ public:
 * CSerializable) and data storage (CArchive children: files, sockets,...).
 *
 * Two main sets of implementations are provided:
-* - CArchiveStream: for MRPT mrpt::io::CArchive objects, and
+* - archiveFrom: for MRPT mrpt::io::CArchive objects, and
 * - CArchiveStdIStream and CArchiveStdOStream: for std::istream and std::ostream, respectively.
 *
 * \sa mrpt::io::CArchive, mrpt::serialization::CSerializable
@@ -416,7 +416,7 @@ CArchive& operator<<(
 
 
 /** CArchive for mrpt::io::CStream classes (use as template argument).
- * \sa Easier to use via function CArchiveStream() */
+ * \sa Easier to use via function archiveFrom() */
 template <class STREAM>
 class CArchiveStreamBase : public CArchive
 {
@@ -471,7 +471,7 @@ protected:
 /** Helper function to create a templatized wrapper CArchive object for a:
 * MRPT's `CStream`, `std::istream`, `std::ostream` */
 template <class STREAM>
-CArchiveStreamBase<STREAM> CArchiveStream(STREAM &s) 
+CArchiveStreamBase<STREAM> archiveFrom(STREAM &s)
 {
 	return CArchiveStreamBase<STREAM>(s);
 }

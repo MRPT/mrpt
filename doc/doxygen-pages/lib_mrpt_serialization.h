@@ -37,7 +37,7 @@ Serialization happens via `archive << object` operators in all cases but, undern
 	- Pros: Allows polymorphic classes to be (de)serialized. Allows versioning.
 	- Cons: Requires adding macros to class definitions. Requires **registering** the class with \ref mrpt_rtti_grp.
 
-Support for STL containers is provided via this "direct mechanism" for the container structure itself, but contained 
+Support for STL containers is provided via this "direct mechanism" for the container structure itself, but contained
 elements can use any of the serialization mechanisms.
 
 ## Example #1: serialize STL container via MRPT `CStream`s
@@ -53,5 +53,13 @@ See: \ref serialization_stl/test.cpp
 \snippet serialization_stl/test.cpp example_stdio
 Output:
 \include serialization_stl/console.out
+
+## Example #3: Serialization of existing MRPT classes
+
+Write me!
+
+## Example #4: Polymorphic serialization of user classes
+
+Write me!
 
 */
