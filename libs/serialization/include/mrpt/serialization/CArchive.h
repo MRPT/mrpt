@@ -17,6 +17,7 @@
 #include <string>
 #include <type_traits>  // remove_reference_t
 #include <stdexcept>
+#include <iosfwd>
 #include <mrpt/rtti/variant.h>
 
 namespace mrpt
@@ -414,7 +415,8 @@ CArchive& operator<<(
 }
 
 
-/** CArchive for mrpt::io::CStream classes (use as template argument) */
+/** CArchive for mrpt::io::CStream classes (use as template argument).
+ * \sa Easier to use via function CArchiveStream() */
 template <class STREAM>
 class CArchiveStreamBase : public CArchive
 {
@@ -426,13 +428,54 @@ protected:
 	size_t read(void* d, size_t n) override { return m_s.Read(d, n); }
 };
 
-/** Helper function to create a templatized wrapper CArchive object for 
-* an MRPT's CStream */
+/** Specialization for std::istream */
+template <>
+class CArchiveStreamBase<std::istream> : public CArchive
+{
+	std::istream &m_s;
+public:
+	CArchiveStreamBase(std::istream &s) : m_s(s) {}
+protected:
+	size_t write(const void* d, size_t n) override
+	{
+		throw std::runtime_error(
+			"CArchiveStreamBase<std::istream>:"
+			"cannot write to an input stream.");
+	}
+	size_t read(void* d, size_t n) override
+	{
+		if (m_s.read(reinterpret_cast<char*>(d), n)) return n; else return 0;
+	}
+};
+
+/** Specialization for std::ostream */
+template <>
+class CArchiveStreamBase<std::ostream> : public CArchive
+{
+	std::ostream &m_s;
+public:
+	CArchiveStreamBase(std::ostream &s) : m_s(s) {}
+protected:
+	size_t write(const void* d, size_t n) override
+	{
+		if (m_s.write(reinterpret_cast<const char*>(d), n)) return n; else return 0;
+	}
+	size_t read(void* d, size_t n) override
+	{
+		throw std::runtime_error(
+			"CArchiveStreamBase<std::ostream>:"
+			"cannot read from output stream.");
+	}
+};
+
+/** Helper function to create a templatized wrapper CArchive object for a:
+* MRPT's `CStream`, `std::istream`, `std::ostream` */
 template <class STREAM>
 CArchiveStreamBase<STREAM> CArchiveStream(STREAM &s) 
 {
 	return CArchiveStreamBase<STREAM>(s);
 }
+
 
 }  // End of namespace
 }  // End of namespace
