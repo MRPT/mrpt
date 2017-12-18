@@ -39,7 +39,7 @@ TEST(Serialization, CustomClassSerialize)
 	a.value = 123;
 
 	mrpt::io::CMemoryStream buf;
-	auto arch = mrpt::serialization::CArchiveStream(buf);
+	auto arch = mrpt::serialization::archiveFrom(buf);
 	arch << a;
 
 	buf.Seek(0);

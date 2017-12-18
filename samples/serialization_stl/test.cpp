@@ -8,6 +8,16 @@
    +------------------------------------------------------------------------+ */
 /** \example serialization_stl/test.cpp */
 
+#include <iostream> // cout
+
+template <class CONTAINER>
+void printMap(const CONTAINER &m)
+{
+	for (const auto &e : m)
+		std::cout << e.first << "=" << e.second << ", ";
+	std::cout << std::endl;
+}
+
 //! [example]
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/serialization/CArchive.h>
@@ -15,38 +25,33 @@
 #include <mrpt/io/CFileOutputStream.h>
 
 #include <iostream> // cout
-#include <algorithm> // for copy
-#include <iterator> // for ostream_iterator
 
 void WriteAndReadExample()
 {
 	// Declare data to be serialized:
-	std::vector<uint32_t>  m1 { 1,2,3 };
+	std::map<std::string, uint32_t>  m1{ {"one",1}, {"two",2} };
 
 	// === Write ===
 	{
 		// CStream output:
 		mrpt::io::CFileOutputStream  ofs("file.bin");
-		auto arch_out = mrpt::serialization::CArchiveStream(ofs);
+		auto arch_out = mrpt::serialization::archiveFrom(ofs);
 		// Use << to serialize in binary form:
 		arch_out << m1;
 	}
 
 	// === Read ===
-	std::vector<uint32_t>  m2;
+	std::map<std::string, uint32_t>  m2;
 	{
 		// CStream output:
 		mrpt::io::CFileInputStream  ifs("file.bin");
-		auto arch_in = mrpt::serialization::CArchiveStream(ifs);
+		auto arch_in = mrpt::serialization::archiveFrom(ifs);
 		// Use >> to deserialize:
 		arch_in >> m2;
 	}
 
-	std::cout << "Wrote: ";
-	std::copy(m1.begin(), m1.end(), std::ostream_iterator<uint32_t>(std::cout, " "));
-	std::cout << std::endl << "Read: ";
-	std::copy(m2.begin(), m2.end(), std::ostream_iterator<uint32_t>(std::cout, " "));
-	std::cout << std::endl;
+	std::cout << "Wrote: "; printMap(m1);
+	std::cout << "Read : "; printMap(m2);
 }
 //! [example]
 
@@ -56,38 +61,33 @@ void WriteAndReadExample()
 #include <fstream> // io std streams
 
 #include <iostream> // cout
-#include <algorithm> // for copy
-#include <iterator> // for ostream_iterator
 
 void WriteAndReadExampleStdIO()
 {
 	// Declare data to be serialized:
-	std::vector<uint32_t>  m1{ 1,2,3 };
+	std::map<std::string, uint32_t>  m1{ { "one",1 },{ "two",2 } };
 
 	// === Write ===
 	{
 		// CStream output:
 		std::ofstream ofs("file.bin");
-		auto arch_out = mrpt::serialization::CArchiveStream<std::ostream>(ofs);
+		auto arch_out = mrpt::serialization::archiveFrom<std::ostream>(ofs);
 		// Use << to serialize in binary form:
 		arch_out << m1;
 	}
 
 	// === Read ===
-	std::vector<uint32_t>  m2;
+	std::map<std::string, uint32_t>  m2;
 	{
 		// CStream output:
 		std::ifstream ifs("file.bin");
-		auto arch_in = mrpt::serialization::CArchiveStream<std::istream>(ifs);
+		auto arch_in = mrpt::serialization::archiveFrom<std::istream>(ifs);
 		// Use >> to deserialize:
 		arch_in >> m2;
 	}
 
-	std::cout << "Wrote: ";
-	std::copy(m1.begin(), m1.end(), std::ostream_iterator<uint32_t>(std::cout, " "));
-	std::cout << std::endl << "Read: ";
-	std::copy(m2.begin(), m2.end(), std::ostream_iterator<uint32_t>(std::cout, " "));
-	std::cout << std::endl;
+	std::cout << "Wrote: "; printMap(m1);
+	std::cout << "Read : "; printMap(m2);
 }
 //! [example_stdio]
 

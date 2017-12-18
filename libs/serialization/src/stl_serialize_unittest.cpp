@@ -20,7 +20,7 @@ TEST(Serialization, STL_stdvector)
 	std::vector<uint32_t> m2, m1 { 1,2,3 };
 
 	mrpt::io::CMemoryStream f;
-	auto arch = mrpt::serialization::CArchiveStream(f);
+	auto arch = mrpt::serialization::archiveFrom(f);
 	arch << m1;
 
 	f.Seek(0);
@@ -36,7 +36,7 @@ TEST(Serialization, STL_stdmap)
 	m1[9] = 91;
 
 	mrpt::io::CMemoryStream f;
-	auto arch = mrpt::serialization::CArchiveStream(f);
+	auto arch = mrpt::serialization::archiveFrom(f);
 	arch << m1;
 
 	f.Seek(0);
@@ -52,7 +52,7 @@ TEST(Serialization, STL_complex_error_type)
 	v1[0.4].fill(2);
 
 	mrpt::io::CMemoryStream f;
-	auto arch = mrpt::serialization::CArchiveStream(f);
+	auto arch = mrpt::serialization::archiveFrom(f);
 	arch << v1;
 
 	// Trying to read to a different variable raises an exception:

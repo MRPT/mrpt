@@ -65,7 +65,7 @@
 *    - To serialize an object to/from a CStream, you must now use CArchive:
 *        \code
 *          CStreamXXXX f;  // Any mrpt::io::CStream type
-*          auto arch = mrpt::serialization::CArchiveStream(f);
+*          auto arch = mrpt::serialization::archiveFrom(f);
 *          arch << object;
 *          arch >> object;
 *        \endcode
