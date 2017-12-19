@@ -808,13 +808,13 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 		size_t Nx = minNumSamples_KLD;
 
 		const size_t Np1 = me->m_particles.size();
-		vector_size_t oldPartIdxsStillNotPropragated(
+		std::vector<size_t> oldPartIdxsStillNotPropragated(
 			Np1);  // Use a list since we'll use "erase" a lot here.
 		for (size_t k = 0; k < Np1; k++)
 			oldPartIdxsStillNotPropragated[k] = k;  //.push_back(k);
 
 		const size_t Np = stateSpaceBinsLastTimestepParticles.size();
-		vector_size_t permutationPathsAuxVector(Np);
+		std::vector<size_t> permutationPathsAuxVector(Np);
 		for (size_t k = 0; k < Np; k++) permutationPathsAuxVector[k] = k;
 
 		// Instead of picking randomly from "permutationPathsAuxVector", we can
@@ -888,7 +888,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 						const size_t idx =
 							mrpt::random::getRandomGenerator().drawUniform32bit() %
 							oldPartIdxsStillNotPropragated.size();
-						vector_size_t::iterator it =
+						std::vector<size_t>::iterator it =
 							oldPartIdxsStillNotPropragated.begin() +
 							idx;  // advance(it,idx);
 						k = *it;

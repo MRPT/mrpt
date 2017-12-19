@@ -10,7 +10,6 @@
 #pragma once
 
 #include <cstdlib>
-#include <mrpt/utils/mrpt_macros.h>
 
 namespace mrpt
 {

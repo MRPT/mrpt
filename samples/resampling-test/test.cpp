@@ -62,7 +62,7 @@ map<string, CVectorDouble> results;
 void TestResampling()
 {
 	vector<double> log_ws;
-	mrpt::vector_size_t out_indxs;
+	mrpt::std::vector<size_t> out_indxs;
 
 	const size_t M = N_PARTICLES;
 

@@ -96,7 +96,7 @@ class ConsistencyTest
 	//// Ransac functions to detect outliers in the plane matching
 	// void ransacPlaneAlignment_fit( const mrpt::math::CMatrixFloat
 	// &planeCorresp,
-	//                                const vector_size_t  &useIndices,
+	//                                const std::vector<size_t>  &useIndices,
 	////                                vector< Eigen::Matrix4f > &fitModels );
 	//                                vector< mrpt::math::CMatrixFloat44 >
 	//                                &fitModels );
@@ -107,11 +107,11 @@ class ConsistencyTest
 	//                              testModels,
 	//                              const double distanceThreshold,
 	//                              unsigned int & out_bestModelIndex,
-	//                              vector_size_t & out_inlierIndices );
+	//                              std::vector<size_t> & out_inlierIndices );
 	//
 	// bool ransac3Dplane_degenerate( const mrpt::math::CMatrixFloat
 	// &planeCorresp,
-	//                                const mrpt::vector_size_t &useIndices );
+	//                                const mrpt::std::vector<size_t> &useIndices );
 	//
 	// void TestRANSAC();
 };

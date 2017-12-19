@@ -11,17 +11,13 @@
 
 #include <mrpt/math/types_math.h>  // for dynamic_vector, CVector...
 #include <mrpt/math/CSplineInterpolator1D.h>  // for CSplineInterpolator1D
-#include <mrpt/utils/stl_serialization.h>  // for operator<<, operator>>
+#include <mrpt/serialization/stl_serialization.h>  // for operator<<, operator>>
 #include <map>  // for _Rb_tree_const_iterator
 #include <mrpt/math/interp_fit.hpp>  // for spline
-#include <mrpt/utils/CObject.h>  // for CSplineInterpolator1D::...
 #include <mrpt/serialization/CSerializable.h>  // for CSerializable, CSeriali...
-#include <mrpt/utils/bits.h>  // for format
-#include <mrpt/utils/mrpt_macros.h>  // for MRPT_THROW_UNKNOWN_SERI...
 
 using namespace mrpt;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace std;
 
 // This must be added to any CSerializable class implementation file.
@@ -102,27 +98,14 @@ double& CSplineInterpolator1D::query(double x, double& y, bool& out_valid) const
 	return y = math::spline(x, xs, ys, m_wrap2pi);
 }
 
-/*---------------------------------------------------------------
-	Implements the writing to a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CSplineInterpolator1D::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CSplineInterpolator1D::serializeGetVersion() const { return 0; }
+void CSplineInterpolator1D::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		out << m_x2y << m_wrap2pi;
-	}
+	out << m_x2y << m_wrap2pi;
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CSplineInterpolator1D::readFromStream(
-	mrpt::utils::CStream& in, int version)
+void CSplineInterpolator1D::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

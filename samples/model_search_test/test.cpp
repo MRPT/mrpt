@@ -35,7 +35,7 @@ struct Fit3DPlane
 
 	Fit3DPlane(const std::vector<TPoint3D>& _allData) : allData(_allData) {}
 	size_t getSampleCount(void) const { return allData.size(); }
-	bool fitModel(const vector_size_t& useIndices, TPlane3D& model) const
+	bool fitModel(const std::vector<size_t>& useIndices, TPlane3D& model) const
 	{
 		ASSERT_(useIndices.size() == 3);
 		TPoint3D p1(allData[useIndices[0]]);
@@ -96,7 +96,7 @@ void TestRANSAC()
 	// Run RANSAC
 	// ------------------------------------
 	TPlane3D best_model;
-	vector_size_t best_inliers;
+	std::vector<size_t> best_inliers;
 	const double DIST_THRESHOLD = 0.2;
 
 	CTicTac tictac;

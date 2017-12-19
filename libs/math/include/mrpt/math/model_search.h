@@ -7,10 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef math_modelsearch_h
-#define math_modelsearch_h
+#pragma once
 
-#include <mrpt/utils/utils_defs.h>
+#include <cstdint>
+#include <set>
 #include <set>
 
 namespace mrpt
@@ -28,7 +28,7 @@ namespace math
   *  - Methods:
   *    - size_t getSampleCount() const : return the number of samples. This
  * should not change during a model search.
-  *    - bool fitModel( const vector_size_t& useIndices, Model& model ) const :
+  *    - bool fitModel( const std::vector<size_t>& useIndices, Model& model ) const :
  * This function fits a model to the data selected by the indices. The return
  * value indicates the success, hence false means a degenerate case, where no
  * model was found.
@@ -66,27 +66,27 @@ class ModelSearch
 {
    private:
 	//! Select random (unique) indices from the 0..p_size sequence
-	void pickRandomIndex(size_t p_size, size_t p_pick, vector_size_t& p_ind);
+	void pickRandomIndex(size_t p_size, size_t p_pick, std::vector<size_t>& p_ind);
 
 	/** Select random (unique) indices from the set.
 	  *  The set is destroyed during pick */
 	void pickRandomIndex(
-		std::set<size_t> p_set, size_t p_pick, vector_size_t& p_ind);
+		std::set<size_t> p_set, size_t p_pick, std::vector<size_t>& p_ind);
 
    public:
 	template <typename TModelFit>
 	bool ransacSingleModel(
 		const TModelFit& p_state, size_t p_kernelSize,
 		const typename TModelFit::Real& p_fitnessThreshold,
-		typename TModelFit::Model& p_bestModel, vector_size_t& p_inliers);
+		typename TModelFit::Model& p_bestModel, std::vector<size_t>& p_inliers);
 
    private:
 	template <typename TModelFit>
 	struct TSpecies
 	{
 		typename TModelFit::Model model;
-		vector_size_t sample;
-		vector_size_t inliers;
+		std::vector<size_t> sample;
+		std::vector<size_t> inliers;
 		typename TModelFit::Real fitness;
 
 		static bool compare(const TSpecies* p_a, const TSpecies* p_b)
@@ -101,7 +101,7 @@ class ModelSearch
 		const TModelFit& p_state, size_t p_kernelSize,
 		const typename TModelFit::Real& p_fitnessThreshold,
 		size_t p_populationSize, size_t p_maxIteration,
-		typename TModelFit::Model& p_bestModel, vector_size_t& p_inliers);
+		typename TModelFit::Model& p_bestModel, std::vector<size_t>& p_inliers);
 };  // end of class
 
 }  // namespace math
@@ -109,5 +109,3 @@ class ModelSearch
 
 // Template implementations:
 #include "model_search_impl.h"
-
-#endif  // math_modelsearch_h

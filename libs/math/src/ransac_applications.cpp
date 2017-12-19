@@ -25,7 +25,7 @@ namespace math
 {
 template <typename T>
 void ransac3Dplane_fit(
-	const CMatrixTemplateNumeric<T>& allData, const vector_size_t& useIndices,
+	const CMatrixTemplateNumeric<T>& allData, const std::vector<size_t>& useIndices,
 	vector<CMatrixTemplateNumeric<T>>& fitModels)
 {
 	ASSERT_(useIndices.size() == 3);
@@ -61,7 +61,7 @@ void ransac3Dplane_distance(
 	const CMatrixTemplateNumeric<T>& allData,
 	const vector<CMatrixTemplateNumeric<T>>& testModels,
 	const T distanceThreshold, unsigned int& out_bestModelIndex,
-	vector_size_t& out_inlierIndices)
+	std::vector<size_t>& out_inlierIndices)
 {
 	ASSERT_(testModels.size() == 1)
 	out_bestModelIndex = 0;
@@ -93,7 +93,7 @@ void ransac3Dplane_distance(
 template <typename T>
 bool ransac3Dplane_degenerate(
 	const CMatrixTemplateNumeric<T>& allData,
-	const mrpt::vector_size_t& useIndices)
+	const std::vector<size_t>& useIndices)
 {
 	MRPT_UNUSED_PARAM(allData);
 	MRPT_UNUSED_PARAM(useIndices);
@@ -132,7 +132,7 @@ void mrpt::math::ransac_detect_3D_planes(
 	// ---------------------------------------------
 	for (;;)
 	{
-		mrpt::vector_size_t this_best_inliers;
+		std::vector<size_t> this_best_inliers;
 		CMatrixTemplateNumeric<NUMTYPE> this_best_model;
 
 		math::RANSAC_Template<NUMTYPE> ransac;
@@ -199,7 +199,7 @@ EXPLICIT_INST_ransac_detect_3D_planes(float)
 	template <typename T>
 	void ransac2Dline_fit(
 		const CMatrixTemplateNumeric<T>& allData,
-		const vector_size_t& useIndices,
+		const std::vector<size_t>& useIndices,
 		vector<CMatrixTemplateNumeric<T>>& fitModels)
 	{
 		ASSERT_(useIndices.size() == 2);
@@ -228,7 +228,7 @@ EXPLICIT_INST_ransac_detect_3D_planes(float)
 		const CMatrixTemplateNumeric<T>& allData,
 		const vector<CMatrixTemplateNumeric<T>>& testModels,
 		const T distanceThreshold, unsigned int& out_bestModelIndex,
-		vector_size_t& out_inlierIndices)
+		std::vector<size_t>& out_inlierIndices)
 	{
 		out_inlierIndices.clear();
 		out_bestModelIndex = 0;
@@ -264,7 +264,7 @@ EXPLICIT_INST_ransac_detect_3D_planes(float)
 	template <typename T>
 	bool ransac2Dline_degenerate(
 		const CMatrixTemplateNumeric<T>& allData,
-		const mrpt::vector_size_t& useIndices)
+		const std::vector<size_t>& useIndices)
 	{
 		MRPT_UNUSED_PARAM(allData);
 		MRPT_UNUSED_PARAM(useIndices);
@@ -301,7 +301,7 @@ void mrpt::math::ransac_detect_2D_lines(
 	// ---------------------------------------------
 	while (size(remainingPoints, 2) >= 2)
 	{
-		mrpt::vector_size_t this_best_inliers;
+		std::vector<size_t> this_best_inliers;
 		CMatrixTemplateNumeric<NUMTYPE> this_best_model;
 
 		math::RANSAC_Template<NUMTYPE> ransac;

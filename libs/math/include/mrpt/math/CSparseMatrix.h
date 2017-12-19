@@ -509,4 +509,3 @@ class CSparseMatrix
 };  // end class CSparseMatrix
 }
 }
-#endif

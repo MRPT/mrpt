@@ -13,6 +13,7 @@
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/math/CSparseMatrixTemplate.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/CMatrixFixedNumeric.h>
 //#include <mrpt/math/data_utils.h>
 #include <mrpt/math/ops_containers.h>
 
@@ -526,8 +527,10 @@ bool intersectInCommonLine(
 inline void unsafeProjectPoint(
 	const TPoint3D& point, const TPose3D& pose, TPoint2D& newPoint)
 {
-	double dummy;
-	pose.composePoint(point.x, point.y, point.z, newPoint.x, newPoint.y, dummy);
+	TPoint3D dummy;
+	pose.composePoint(point, dummy);
+	newPoint.x = dummy.x;
+	newPoint.y = dummy.y;
 }
 void unsafeProjectPolygon(
 	const TPolygon3D& poly, const TPose3D& pose, TPolygon2D& newPoly)
@@ -617,7 +620,11 @@ math::TPolygonWithPlane::TPolygonWithPlane(const TPolygon3D& p) : poly(p)
 {
 	poly.getBestFittingPlane(plane);
 	plane.getAsPose3D(pose);
-	inversePose = -pose;
+	//inversePose = -pose;
+	CMatrixDouble44 P_inv;
+	pose.getInverseHomogeneousMatrix(P_inv);
+	inversePose.fromHomogeneousMatrix(P_inv);
+
 	unsafeProjectPolygon(poly, inversePose, poly2D);
 }
 void math::TPolygonWithPlane::getPlanes(
@@ -927,7 +934,8 @@ double math::getAngle(const TLine2D& r1, const TLine2D& r2)
 // Auxiliary method
 void createFromPoseAndAxis(const TPose3D& p, TLine3D& r, size_t axis)
 {
-	CMatrixDouble44 m = p.getHomogeneousMatrixVal();
+	CMatrixDouble44 m;
+	p.getHomogeneousMatrix(m);
 	for (size_t i = 0; i < 3; i++)
 	{
 		r.pBase[i] = m.get_unsafe(i, 3);
@@ -954,7 +962,8 @@ void math::createFromPoseZ(const TPose3D& p, TLine3D& r)
 void math::createFromPoseAndVector(
 	const TPose3D& p, const double (&vector)[3], TLine3D& r)
 {
-	CMatrixDouble44 m = p.getHomogeneousMatrixVal();
+	CMatrixDouble44 m;
+	p.getHomogeneousMatrix(m);
 	for (size_t i = 0; i < 3; i++)
 	{
 		r.pBase[i] = m.get_unsafe(i, 3);
@@ -1071,10 +1080,9 @@ bool math::areAligned(const std::vector<TPoint3D>& points, TLine3D& r)
 void math::project3D(
 	const TLine3D& line, const TPose3D& newXYpose, TLine3D& newLine)
 {
-	newXYpose.composePoint(
-		line.pBase.x, line.pBase.y, line.pBase.z, newLine.pBase.x,
-		newLine.pBase.y, newLine.pBase.z);
-	CMatrixDouble44 mat = newXYpose.getHomogeneousMatrixVal();
+	newXYpose.composePoint(line.pBase, newLine.pBase);
+	CMatrixDouble44 mat;
+	newXYpose.getHomogeneousMatrix(mat);
 	for (size_t i = 0; i < 3; i++)
 	{
 		newLine.director[i] = 0;
@@ -1087,7 +1095,8 @@ void math::project3D(
 void math::project3D(
 	const TPlane& plane, const TPose3D& newXYpose, TPlane& newPlane)
 {
-	CMatrixDouble44 mat = newXYpose.getHomogeneousMatrixVal();
+	CMatrixDouble44 mat;
+	newXYpose.getHomogeneousMatrix(mat);
 	for (size_t i = 0; i < 3; i++)
 	{
 		newPlane.coefs[i] = 0;
@@ -1099,7 +1108,9 @@ void math::project3D(
 	// La idea es mantener la distancia al nuevo origen igual a la distancia del
 	// punto original antes de proyectar.
 	// newPlane.coefs[3]=plane.evaluatePoint(TPoint3D(TPose3D(0,0,0,0,0,0)-newXYpose))*sqrt((newPlane.coefs[0]*newPlane.coefs[0]+newPlane.coefs[1]*newPlane.coefs[1]+newPlane.coefs[2]*newPlane.coefs[2])/(plane.coefs[0]*plane.coefs[0]+plane.coefs[1]*plane.coefs[1]+plane.coefs[2]*plane.coefs[2]));
-	newPlane.coefs[3] = plane.evaluatePoint(TPoint3D(-newXYpose)) *
+	CMatrixDouble44 HMinv;
+	newXYpose.getInverseHomogeneousMatrix(HMinv);
+	newPlane.coefs[3] = plane.evaluatePoint(TPoint3D(HMinv(0, 3), HMinv(1, 3), HMinv(2, 3)) ) *
 						sqrt(
 							squareNorm<3, double>(newPlane.coefs) /
 							squareNorm<3, double>(plane.coefs));
@@ -1516,7 +1527,10 @@ bool math::intersect(const TPolygon3D& p1, const TSegment3D& s2, TObject3D& obj)
 	{
 		TPose3D pose;
 		p.getAsPose3DForcingOrigin(p1[0], pose);
-		TPose3D poseNeg = TPose3D(0, 0, 0, 0, 0, 0) - pose;
+		CMatrixDouble44 HMinv;
+		pose.getInverseHomogeneousMatrix(HMinv);
+		TPose3D poseNeg;
+		poseNeg.fromHomogeneousMatrix(HMinv);
 		TPolygon3D projPoly;
 		TPoint3D projPnt;
 		project3D(p1, poseNeg, projPoly);
@@ -1538,7 +1552,10 @@ bool math::intersect(const TPolygon3D& p1, const TLine3D& r2, TObject3D& obj)
 	{
 		TPose3D pose;
 		p.getAsPose3DForcingOrigin(p1[0], pose);
-		TPose3D poseNeg = TPose3D(0, 0, 0, 0, 0, 0) - pose;
+		CMatrixDouble44 HMinv;
+		pose.getInverseHomogeneousMatrix(HMinv);
+		TPose3D poseNeg;
+		poseNeg.fromHomogeneousMatrix(HMinv);
 		TPolygon3D projPoly;
 		TPoint3D projPnt;
 		project3D(p1, poseNeg, projPoly);
@@ -2029,7 +2046,8 @@ void math::getPrismBounds(
 void createPlaneFromPoseAndAxis(const TPose3D& pose, TPlane& plane, size_t axis)
 {
 	plane.coefs[3] = 0;
-	CMatrixDouble44 m = pose.getHomogeneousMatrixVal();
+	CMatrixDouble44 m;
+	pose.getHomogeneousMatrix(m);
 	for (size_t i = 0; i < 3; i++)
 	{
 		plane.coefs[i] = m.get_unsafe(i, axis);
@@ -2056,7 +2074,8 @@ void math::createPlaneFromPoseAndNormal(
 	const TPose3D& pose, const double (&normal)[3], TPlane& plane)
 {
 	plane.coefs[3] = 0;
-	CMatrixDouble44 m = pose.getHomogeneousMatrixVal();
+	CMatrixDouble44 m;
+	pose.getHomogeneousMatrix(m);
 	for (size_t i = 0; i < 3; i++)
 	{
 		plane.coefs[i] = 0;

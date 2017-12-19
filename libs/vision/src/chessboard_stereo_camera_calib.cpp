@@ -278,7 +278,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 		size_t nUnknownsCamParams = 0;
 		size_t iter = 0;
 		double err = 0;
-		vector_size_t vars_to_optimize;
+		std::vector<size_t> vars_to_optimize;
 		Eigen::MatrixXd H;  // Hessian matrix  (Declared here so it's accessible
 		// as the final uncertainty measure)
 
@@ -752,7 +752,7 @@ void project_point(
 //  * Left-cam-params (<=9)
 //  * Right-cam-params (<=9)
 void mrpt::vision::build_linear_system(
-	const TResidualJacobianList& res_jac, const vector_size_t& var_indxs,
+	const TResidualJacobianList& res_jac, const std::vector<size_t>& var_indxs,
 	Eigen::VectorXd& minus_g, Eigen::MatrixXd& H)
 {
 	const size_t N = res_jac.size();  // Number of stereo image pairs
@@ -866,7 +866,7 @@ void mrpt::vision::build_linear_system(
 //  * Left-cam-params (<=9)
 //  * Right-cam-params (<=9)
 void mrpt::vision::add_lm_increment(
-	const Eigen::VectorXd& eps, const vector_size_t& var_indxs,
+	const Eigen::VectorXd& eps, const std::vector<size_t>& var_indxs,
 	lm_stat_t& lm_stat)
 {
 	// Increment of the N cam poses

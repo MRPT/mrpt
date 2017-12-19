@@ -77,10 +77,10 @@ double recompute_errors_and_Jacobians(
 	const lm_stat_t& lm_stat, TResidualJacobianList& res_jac,
 	bool use_robust_kernel, double kernel_param);
 void build_linear_system(
-	const TResidualJacobianList& res_jac, const vector_size_t& var_indxs,
+	const TResidualJacobianList& res_jac, const std::vector<size_t>& var_indxs,
 	Eigen::VectorXd& minus_g, Eigen::MatrixXd& H);
 void add_lm_increment(
-	const Eigen::VectorXd& eps, const vector_size_t& var_indxs,
+	const Eigen::VectorXd& eps, const std::vector<size_t>& var_indxs,
 	lm_stat_t& new_lm_stat);
 }
 }

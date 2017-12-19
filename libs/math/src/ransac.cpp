@@ -10,10 +10,9 @@
 #include "math-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/ransac.h>
-#include <mrpt/random.h>
+#include <mrpt/random/RandomGenerators.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::random;
 using namespace mrpt::math;
 using namespace std;
@@ -27,18 +26,17 @@ bool RANSAC_Template<NUMTYPE>::execute(
 	const TRansacFitFunctor& fit_func, const TRansacDistanceFunctor& dist_func,
 	const TRansacDegenerateFunctor& degen_func, const double distanceThreshold,
 	const unsigned int minimumSizeSamplesToFit,
-	mrpt::vector_size_t& out_best_inliers,
+	std::vector<size_t>& out_best_inliers,
 	CMatrixTemplateNumeric<NUMTYPE>& out_best_model, const double p,
 	const size_t maxIter) const
 {
 	MRPT_START
 
-	ASSERT_(minimumSizeSamplesToFit >= 1)
+	ASSERT_(minimumSizeSamplesToFit >= 1);
 
 	// Highly inspired on http://www.csse.uwa.edu.au/~pk/
-
-	const size_t D = size(data, 1);  //  dimensionality
-	const size_t Npts = size(data, 2);
+	const size_t D = data.rows();  //  dimensionality
+	const size_t Npts = data.cols();
 
 	ASSERT_(D >= 1);
 	ASSERT_(Npts > 1);
@@ -54,7 +52,7 @@ bool RANSAC_Template<NUMTYPE>::execute(
 	size_t bestscore = std::string::npos;  // npos will mean "none"
 	size_t N = 1;  // Dummy initialisation for number of trials.
 
-	vector_size_t ind(minimumSizeSamplesToFit);
+	std::vector<size_t> ind(minimumSizeSamplesToFit);
 
 	while (N > trialcount)
 	{
@@ -105,7 +103,7 @@ bool RANSAC_Template<NUMTYPE>::execute(
 		// the most inliers.  After this call M will be a non-cell objec
 		// representing only one model.
 		unsigned int bestModelIdx = 1000;
-		mrpt::vector_size_t inliers;
+		std::vector<size_t> inliers;
 		if (!degenerate)
 		{
 			dist_func(
@@ -174,7 +172,7 @@ bool RANSAC_Template<NUMTYPE>::execute(
 		}
 	}
 
-	if (size(out_best_model, 1) > 0)
+	if (out_best_model.rows() > 0)
 	{  // We got a solution
 		MRPT_LOG_INFO(
 			format("Finished in %u iterations.\n", (unsigned)trialcount));

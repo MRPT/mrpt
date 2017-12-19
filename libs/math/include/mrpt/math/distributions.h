@@ -6,19 +6,14 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef mrpt_math_distributions_H
-#define mrpt_math_distributions_H
+#pragma once
 
-#include <mrpt/utils/utils_defs.h>
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/ops_vectors.h>
 
-/*---------------------------------------------------------------
-		Namespace
-  ---------------------------------------------------------------*/
 namespace mrpt
 {
 namespace math
@@ -264,7 +259,4 @@ void confidenceIntervals(
 /** @} */
 
 }  // End of MATH namespace
-
 }  // End of namespace
-
-#endif
