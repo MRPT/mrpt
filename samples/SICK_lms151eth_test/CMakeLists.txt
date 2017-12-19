@@ -1,10 +1,10 @@
 #-----------------------------------------------------------------------------------------------
-# CMake file for the MRPT example:  /SICK_tim100eth_test
+# CMake file for the MRPT example:  /SICK_lms151eth_test
 #
 #  Run with "ccmake ." at the root directory, or use it as a template for 
 #   starting your own programs
 #-----------------------------------------------------------------------------------------------
-SET(sampleName SICK_tim561eth_test)
+SET(sampleName SICK_lms151eth_test)
 SET(PRJ_NAME "EXAMPLE_${sampleName}")
 
 # ---------------------------------------

@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
    mrpt::make_aligned_shared<opengl::CPlanarLaserScan>();
   obj->clear();
   obj->setColor(0, 0, 1);
-  obj->setName("scan_TIM561");
+  obj->setName("scan_lms151");
   obj->setScan(outObs);
   ptr_scene->insert(obj);
 
@@ -74,7 +74,7 @@ int main(int argc, char* argv[])
    ptr_scene = win3D.get3DSceneAndLock();
    opengl::CPlanarLaserScan::Ptr obj =
     std::dynamic_pointer_cast<opengl::CPlanarLaserScan>(
-     ptr_scene->getByName("scan_TIM561"));
+     ptr_scene->getByName("scan_lms151"));
    obj->clear();
    obj->setScan(outObs);
    win3D.unlockAccess3DScene();

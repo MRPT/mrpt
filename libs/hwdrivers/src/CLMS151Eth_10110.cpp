@@ -38,8 +38,7 @@ IMPLEMENTS_GENERIC_SENSOR(CLMS151Eth, mrpt::hwdrivers)
 CLMS151Eth::CLMS151Eth(string _ip, unsigned int _port)
     : m_ip(_ip),
       m_port(_port),
-      m_client(),
-      m_turnedOn(false),
+      m_client(), m_turnedOn(false),
       m_cmd(),
       m_connected(false),
       m_sensorPose(0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
@@ -182,11 +181,10 @@ bool CLMS151Eth::turnOn()
   {
     try
     {
-      /** Init scanner
-       */
       {
-        // Read 'DeviceIdent'
-        char msg[] = {"sRIO"};
+        /** Login LMS151 
+         */
+        char msg[] = {"sMN SetAccessMode 03 F4724744"};
         char msgIn[100];
         sendCommand(msg);
 
@@ -197,14 +195,13 @@ bool CLMS151Eth::turnOn()
 
         if (!read )
         {
-          MRPT_LOG_ERROR("SOPAS - Error reading variable 'DeviceIdent'.");
           return false;
         }
       }
-
       {
-        // Read 'SerialNumber'
-        char msg[] = {"sRN SerialNumber"};
+        /** getScanCfg
+         */
+        char msg[] = {"sRN LMPscancfg"};
         char msgIn[100];
         sendCommand(msg);
 
@@ -215,14 +212,14 @@ bool CLMS151Eth::turnOn()
 
         if (!read )
         {
-          MRPT_LOG_ERROR("SOPAS - Error reading variable 'SerialNumber'.");
           return false;
         }
       }
-
+      
       {
-        // Read 'FirmwareVersion'
-        char msg[] = {"sRN FirmwareVersion"};
+        /** getScanOutRange
+         */
+        char msg[] = {"sRN LMPoutputRange"};
         char msgIn[100];
         sendCommand(msg);
 
@@ -233,14 +230,14 @@ bool CLMS151Eth::turnOn()
 
         if (!read )
         {
-          MRPT_LOG_ERROR("SOPAS - Error reading variable 'FirmwareVersion'.");
           return false;
         }
       }
 
       {
-        // Read 'Device state'
-        char msg[] = {"sRN SCdevicestate"};
+        /** queryStatus
+         */
+        char msg[] = {"sRN STlms"};
         char msgIn[100];
         sendCommand(msg);
 
@@ -251,13 +248,45 @@ bool CLMS151Eth::turnOn()
 
         if (!read )
         {
-          MRPT_LOG_ERROR("SOPAS - Error reading variable 'devicestate'.");
+          return false;
+        }
+      }
+      {
+        /** startDevice
+         */
+        char msg[] = {"sMN Run"};
+        char msgIn[100];
+        sendCommand(msg);
+
+        size_t  read = m_client.readAsync(msgIn, 100, 1000, 1000);
+        msgIn[read - 1] = 0;
+        MRPT_LOG_DEBUG_FMT("read : %u\n", (unsigned int)read);
+        MRPT_LOG_DEBUG_FMT("message : %s\n", string(&msgIn[1]).c_str());
+
+        if (!read )
+        {
+          return false;
+        }
+      }
+      {
+        /** scanContinue
+         */
+        char msg[] = {"sEN LMDscandata 1"};
+        char msgIn[100];
+        sendCommand(msg);
+
+        size_t  read = m_client.readAsync(msgIn, 100, 1000, 1000);
+        msgIn[read - 1] = 0;
+        MRPT_LOG_DEBUG_FMT("read : %u\n", (unsigned int)read);
+        MRPT_LOG_DEBUG_FMT("message : %s\n", string(&msgIn[1]).c_str());
+
+        if (!read )
+        {
           return false;
         }
       }
 
-      /** End Init Scanner
-       */
+
      // {
      //   /** Login LMS151 
      //    */
@@ -309,23 +338,6 @@ bool CLMS151Eth::turnOn()
      //     return false;
      //   }
      // }
-
-        /** Set send data permanently
-         */
-      {
-        char msg[] = {"sEN LMDscandata 1"};
-        char msgIn[100];
-        sendCommand(msg);
-        size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);
-        msgIn[read - 1] = 0;
-        MRPT_LOG_DEBUG_FMT("read : %u\n", (unsigned int)read);
-        MRPT_LOG_DEBUG_FMT("message : %s\n", string(&msgIn[1]).c_str());
-        if (!read)
-        {
-          MRPT_LOG_DEBUG("No LMSDATA");
-          return false;
-        }
-      }
 
      // {
      //    /** Start measurement
@@ -466,8 +478,8 @@ void CLMS151Eth::doProcessSimple(
   }
   hardwareError = false;
 
-  char msg[] = {"sRN LMDscandata"};
-  sendCommand(msg);
+  //char msg[] = {"sRN LMDscandata"};
+  //sendCommand(msg);
   char buffIn[16 * 1024];
 
   m_client.readAsync(buffIn, sizeof(buffIn), 40, 40);
