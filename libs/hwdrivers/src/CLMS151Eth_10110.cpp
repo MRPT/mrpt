@@ -268,23 +268,23 @@ bool CLMS151Eth::turnOn()
           return false;
         }
       }
-      {
-        /** scanContinue
-         */
-        char msg[] = {"sEN LMDscandata 1"};
-        char msgIn[100];
-        sendCommand(msg);
+      //{
+      //  /** scanContinue
+      //   */
+      //  char msg[] = {"sEN LMDscandata 1"};
+      //  char msgIn[100];
+      //  sendCommand(msg);
 
-        size_t  read = m_client.readAsync(msgIn, 100, 1000, 1000);
-        msgIn[read - 1] = 0;
-        MRPT_LOG_DEBUG_FMT("read : %u\n", (unsigned int)read);
-        MRPT_LOG_DEBUG_FMT("message : %s\n", string(&msgIn[1]).c_str());
+      //  size_t  read = m_client.readAsync(msgIn, 100, 1000, 1000);
+      //  msgIn[read - 1] = 0;
+      //  MRPT_LOG_DEBUG_FMT("read : %u\n", (unsigned int)read);
+      //  MRPT_LOG_DEBUG_FMT("message : %s\n", string(&msgIn[1]).c_str());
 
-        if (!read )
-        {
-          return false;
-        }
-      }
+      //  if (!read )
+      //  {
+      //    return false;
+      //  }
+      //}
 
 
      // {
