@@ -406,12 +406,14 @@ bool CLMS151Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservation)
         // If no "sRA" and also no "sSN", return false reading
         if (strncmp(&next[1], "sRA", 3) && strncmp(&next[1], "sSN", 3))
         {
+          MRPT_LOG_DEBUG("No sRA or sSN");
           return false;
         }
         break;
       case 2:
         if (strcmp(next, "LMDscandata"))
         {
+          MRPT_LOG_DEBUG("No LMDscandata");
           return false;
         }
         break;
@@ -478,8 +480,8 @@ void CLMS151Eth::doProcessSimple(
   }
   hardwareError = false;
 
-  //char msg[] = {"sRN LMDscandata"};
-  //sendCommand(msg);
+  char msg[] = {"sRN LMDscandata"};
+  sendCommand(msg);
   char buffIn[16 * 1024];
 
   m_client.readAsync(buffIn, sizeof(buffIn), 40, 40);
