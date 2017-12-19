@@ -26,7 +26,7 @@ template <typename TModelFit>
 bool ModelSearch::ransacSingleModel(
 	const TModelFit& p_state, size_t p_kernelSize,
 	const typename TModelFit::Real& p_fitnessThreshold,
-	typename TModelFit::Model& p_bestModel, vector_size_t& p_inliers)
+	typename TModelFit::Model& p_bestModel, std::vector<size_t>& p_inliers)
 {
 	size_t bestScore = std::string::npos;  // npos will mean "none"
 	size_t iter = 0;
@@ -34,7 +34,7 @@ bool ModelSearch::ransacSingleModel(
 	size_t hardIterLimit = 100;  // a fixed iteration step
 	p_inliers.clear();
 	size_t nSamples = p_state.getSampleCount();
-	vector_size_t ind(p_kernelSize);
+	std::vector<size_t> ind(p_kernelSize);
 
 	while (iter < softIterLimit && iter < hardIterLimit)
 	{
@@ -49,7 +49,7 @@ bool ModelSearch::ransacSingleModel(
 			if (i > 100) return false;
 		}
 
-		vector_size_t inliers;
+		std::vector<size_t> inliers;
 
 		for (size_t i = 0; i < nSamples; i++)
 		{
@@ -98,7 +98,7 @@ bool ModelSearch::geneticSingleModel(
 	const TModelFit& p_state, size_t p_kernelSize,
 	const typename TModelFit::Real& p_fitnessThreshold, size_t p_populationSize,
 	size_t p_maxIteration, typename TModelFit::Model& p_bestModel,
-	vector_size_t& p_inliers)
+	std::vector<size_t>& p_inliers)
 {
 	// a single specie of the population
 	typedef TSpecies<TModelFit> Species;

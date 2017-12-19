@@ -10,44 +10,31 @@
 #include "math-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/CPolygon.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace std;
 
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CPolygon, CSerializable, mrpt::math)
 
-/*---------------------------------------------------------------
-	Implements the writing to a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CPolygon::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CPolygon::serializeGetVersion() const { return 2; }
+void CPolygon::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 2;
-	else
-	{
-		// The number of vertexs:
-		const uint32_t n = (uint32_t)TPolygon2D::size();
+	// The number of vertexs:
+	const uint32_t n = (uint32_t)TPolygon2D::size();
 
-		// Size:
-		out << n;
+	// Size:
+	out << n;
 
-		// Vertices:
-		if (n)
-			out.WriteBufferFixEndianness<double>(
-				(double*)&TPolygon2D::operator[](0), 2 * n);
-	}
+	// Vertices:
+	if (n)
+		out.WriteBufferFixEndianness<double>(
+			(double*)&TPolygon2D::operator[](0), 2 * n);
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CPolygon::readFromStream(mrpt::utils::CStream& in, int version)
+void CPolygon::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

@@ -34,7 +34,7 @@ namespace vision
   *  TSIFTDescriptorsKDTreeIndex<double>  feats2_kdtree(feats2);
   *
   *  // Search correspondences:
-  *  std::vector<vector_size_t>             pairings_1_to_multi_2;
+  *  std::vector<std::vector<size_t>>             pairings_1_to_multi_2;
   *  std::vector<std::pair<size_t,size_t> > pairings_1_to_2;
   *  mrpt::vision::find_descriptor_pairings(
   *     &pairings_1_to_multi_2,   // Can be set to nullptr if not needed
@@ -49,7 +49,7 @@ namespace vision
   */
 template <class DESCRIPTOR_KDTREE>
 size_t find_descriptor_pairings(
-	std::vector<vector_size_t>* pairings_1_to_multi_2,
+	std::vector<std::vector<size_t>>* pairings_1_to_multi_2,
 	std::vector<std::pair<size_t, size_t>>* pairings_1_to_2,
 	const CFeatureList& feats_img1, const DESCRIPTOR_KDTREE& feats_img2_kdtree,
 	const mrpt::vision::TDescriptorType descriptor = descSIFT,
@@ -71,7 +71,7 @@ size_t find_descriptor_pairings(
 	const size_t N = feats_img1.size();
 	if (pairings_1_to_multi_2)
 		pairings_1_to_multi_2->assign(
-			N, vector_size_t());  // Reset output container
+			N, std::vector<size_t>());  // Reset output container
 	if (pairings_1_to_2)
 	{
 		pairings_1_to_2->clear();

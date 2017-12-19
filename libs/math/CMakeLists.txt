@@ -26,6 +26,8 @@ define_mrpt_lib(
 	mrpt-containers
 	mrpt-typemeta
 	mrpt-serialization
+	mrpt-random
+	mrpt-system
 	)
 
 IF(BUILD_mrpt-math)

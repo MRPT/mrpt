@@ -174,7 +174,7 @@ class CRangeBearingKFSLAM2D
 
 		// Predictions from the map:
 		mrpt::math::CMatrixTemplateNumeric<kftype> Y_pred_means, Y_pred_covs;
-		mrpt::vector_size_t predictions_IDs;
+		std::vector<size_t> predictions_IDs;
 
 		/** Map from the 0-based index within the last observation and the
 		   landmark 0-based index in the map (the robot-map state vector)
@@ -263,10 +263,10 @@ class CRangeBearingKFSLAM2D
 	void OnGetObservationsAndDataAssociation(
 		vector_KFArray_OBS& out_z, vector_int& out_data_association,
 		const vector_KFArray_OBS& in_all_predictions, const KFMatrix& in_S,
-		const vector_size_t& in_lm_indices_in_S, const KFMatrix_OxO& in_R);
+		const std::vector<size_t>& in_lm_indices_in_S, const KFMatrix_OxO& in_R);
 
 	void OnObservationModel(
-		const vector_size_t& idx_landmarks_to_predict,
+		const std::vector<size_t>& idx_landmarks_to_predict,
 		vector_KFArray_OBS& out_predictions) const;
 
 	/** Implements the observation Jacobians \f$ \frac{\partial h_i}{\partial x}
@@ -320,7 +320,7 @@ class CRangeBearingKFSLAM2D
 	  */
 	void OnPreComputingPredictions(
 		const vector_KFArray_OBS& in_all_prediction_means,
-		vector_size_t& out_LM_indices_to_predict) const;
+		std::vector<size_t>& out_LM_indices_to_predict) const;
 
 	/** If applicable to the given problem, this method implements the inverse
 	 * observation model needed to extend the "map" with a new "element".

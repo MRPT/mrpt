@@ -26,7 +26,7 @@ using namespace mrpt::poses;
 using namespace std;
 
 void ransac3Dplane_fit(
-	const CMatrixDouble& allData, const vector_size_t& useIndices,
+	const CMatrixDouble& allData, const std::vector<size_t>& useIndices,
 	vector<CMatrixDouble>& fitModels)
 {
 	ASSERT_(useIndices.size() == 3);
@@ -60,7 +60,7 @@ void ransac3Dplane_fit(
 void ransac3Dplane_distance(
 	const CMatrixDouble& allData, const vector<CMatrixDouble>& testModels,
 	const double distanceThreshold, unsigned int& out_bestModelIndex,
-	vector_size_t& out_inlierIndices)
+	std::vector<size_t>& out_inlierIndices)
 {
 	ASSERT_(testModels.size() == 1)
 	out_bestModelIndex = 0;
@@ -90,7 +90,7 @@ void ransac3Dplane_distance(
 /** Return "true" if the selected points are a degenerate (invalid) case.
   */
 bool ransac3Dplane_degenerate(
-	const CMatrixDouble& allData, const mrpt::vector_size_t& useIndices)
+	const CMatrixDouble& allData, const mrpt::std::vector<size_t>& useIndices)
 {
 	return false;
 }
@@ -131,7 +131,7 @@ void TestRANSAC()
 	// Run RANSAC
 	// ------------------------------------
 	CMatrixDouble best_model;
-	vector_size_t best_inliers;
+	std::vector<size_t> best_inliers;
 	const double DIST_THRESHOLD = 0.2;
 
 	CTicTac tictac;

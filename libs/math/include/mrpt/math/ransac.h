@@ -6,11 +6,10 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef mrpt_ransac_H
-#define mrpt_ransac_H
+#pragma once
 
-#include <mrpt/utils/COutputLogger.h>
-#include <mrpt/math/CMatrixD.h>
+#include <mrpt/system/COutputLogger.h>
+#include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <set>
 #include <functional>
 
@@ -28,15 +27,15 @@ namespace math
  * models can be anything else, not only matrices.
   */
 template <typename NUMTYPE = double>
-class RANSAC_Template : public mrpt::utils::COutputLogger
+class RANSAC_Template : public mrpt::system::COutputLogger
 {
    public:
-	RANSAC_Template() : mrpt::utils::COutputLogger("RANSAC_Template") {}
+	RANSAC_Template() : mrpt::system::COutputLogger("RANSAC_Template") {}
 	/** The type of the function passed to mrpt::math::ransac - See the
 	 * documentation for that method for more info. */
 	using TRansacFitFunctor = std::function<void(
 		const CMatrixTemplateNumeric<NUMTYPE>& allData,
-		const mrpt::vector_size_t& useIndices,
+		const std::vector<size_t>& useIndices,
 		std::vector<CMatrixTemplateNumeric<NUMTYPE>>& fitModels)>;
 
 	/** The type of the function passed to mrpt::math::ransac  - See the
@@ -45,13 +44,13 @@ class RANSAC_Template : public mrpt::utils::COutputLogger
 		const CMatrixTemplateNumeric<NUMTYPE>& allData,
 		const std::vector<CMatrixTemplateNumeric<NUMTYPE>>& testModels,
 		const NUMTYPE distanceThreshold, unsigned int& out_bestModelIndex,
-		mrpt::vector_size_t& out_inlierIndices)>;
+		std::vector<size_t>& out_inlierIndices)>;
 
 	/** The type of the function passed to mrpt::math::ransac  - See the
 	 * documentation for that method for more info. */
 	using TRansacDegenerateFunctor = std::function<bool(
 		const CMatrixTemplateNumeric<NUMTYPE>& allData,
-		const mrpt::vector_size_t& useIndices)>;
+		const std::vector<size_t>& useIndices)>;
 
 	/** An implementation of the RANSAC algorithm for robust fitting of models
 	 * to data.
@@ -73,7 +72,7 @@ class RANSAC_Template : public mrpt::utils::COutputLogger
 		const TRansacDegenerateFunctor& degen_func,
 		const double distanceThreshold,
 		const unsigned int minimumSizeSamplesToFit,
-		mrpt::vector_size_t& out_best_inliers,
+		std::vector<size_t>& out_best_inliers,
 		CMatrixTemplateNumeric<NUMTYPE>& out_best_model,
 		const double prob_good_sample = 0.999,
 		const size_t maxIter = 2000) const;
@@ -87,5 +86,3 @@ typedef RANSAC_Template<double> RANSAC;
 
 }  // End of namespace
 }  // End of namespace
-
-#endif

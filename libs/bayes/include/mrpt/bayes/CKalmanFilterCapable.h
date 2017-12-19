@@ -382,7 +382,7 @@ class CKalmanFilterCapable : public mrpt::utils::COutputLogger
 	  */
 	virtual void OnPreComputingPredictions(
 		const vector_KFArray_OBS& in_all_prediction_means,
-		mrpt::vector_size_t& out_LM_indices_to_predict) const
+		std::vector<size_t>& out_LM_indices_to_predict) const
 	{
 		MRPT_UNUSED_PARAM(in_all_prediction_means);
 		// Default: all of them:
@@ -429,7 +429,7 @@ class CKalmanFilterCapable : public mrpt::utils::COutputLogger
 	virtual void OnGetObservationsAndDataAssociation(
 		vector_KFArray_OBS& out_z, mrpt::vector_int& out_data_association,
 		const vector_KFArray_OBS& in_all_predictions, const KFMatrix& in_S,
-		const vector_size_t& in_lm_indices_in_S, const KFMatrix_OxO& in_R) = 0;
+		const std::vector<size_t>& in_lm_indices_in_S, const KFMatrix_OxO& in_R) = 0;
 
 	/** Implements the observation prediction \f$ h_i(x) \f$.
 	  * \param idx_landmark_to_predict The indices of the landmarks in the map
@@ -439,7 +439,7 @@ class CKalmanFilterCapable : public mrpt::utils::COutputLogger
 	  * \param out_predictions The predicted observations.
 	  */
 	virtual void OnObservationModel(
-		const mrpt::vector_size_t& idx_landmarks_to_predict,
+		const std::vector<size_t>& idx_landmarks_to_predict,
 		vector_KFArray_OBS& out_predictions) const = 0;
 
 	/** Implements the observation Jacobians \f$ \frac{\partial h_i}{\partial x}
@@ -626,7 +626,7 @@ class CKalmanFilterCapable : public mrpt::utils::COutputLogger
 	//   allocating them over and over again with each call.
 	//  (The variables that go into the stack remains in the function body)
 	vector_KFArray_OBS all_predictions;
-	vector_size_t predictLMidxs;
+	std::vector<size_t> predictLMidxs;
 	/** The vector of all partial Jacobians dh[i]_dx for each prediction */
 	typename mrpt::aligned_containers<KFMatrix_OxV>::vector_t Hxs;
 	/** The vector of all partial Jacobians dh[i]_dy[i] for each prediction */

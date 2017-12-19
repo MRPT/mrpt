@@ -322,7 +322,7 @@ void CRangeBearingKFSLAM2D::OnTransitionNoise(KFMatrix_VxV& Q) const
 }
 
 void CRangeBearingKFSLAM2D::OnObservationModel(
-	const vector_size_t& idx_landmarks_to_predict,
+	const std::vector<size_t>& idx_landmarks_to_predict,
 	vector_KFArray_OBS& out_predictions) const
 {
 	MRPT_START
@@ -526,7 +526,7 @@ void CRangeBearingKFSLAM2D::OnObservationJacobians(
 void CRangeBearingKFSLAM2D::OnGetObservationsAndDataAssociation(
 	vector_KFArray_OBS& Z, vector_int& data_association,
 	const vector_KFArray_OBS& all_predictions, const KFMatrix& S,
-	const vector_size_t& lm_indices_in_S, const KFMatrix_OxO& R)
+	const std::vector<size_t>& lm_indices_in_S, const KFMatrix_OxO& R)
 {
 	MRPT_START
 
@@ -563,7 +563,7 @@ void CRangeBearingKFSLAM2D::OnGetObservationsAndDataAssociation(
 	data_association.assign(N, -1);  // Initially, all new landmarks
 
 	// For each observed LM:
-	vector_size_t obs_idxs_needing_data_assoc;
+	std::vector<size_t> obs_idxs_needing_data_assoc;
 	obs_idxs_needing_data_assoc.reserve(N);
 
 	{
@@ -1140,7 +1140,7 @@ void CRangeBearingKFSLAM2D::OnGetObservationNoise(KFMatrix_OxO& out_R) const
   */
 void CRangeBearingKFSLAM2D::OnPreComputingPredictions(
 	const vector_KFArray_OBS& prediction_means,
-	vector_size_t& out_LM_indices_to_predict) const
+	std::vector<size_t>& out_LM_indices_to_predict) const
 {
 	CObservationBearingRange::Ptr obs =
 		m_SF->getObservationByClass<CObservationBearingRange>();

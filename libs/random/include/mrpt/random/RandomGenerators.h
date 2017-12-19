@@ -14,6 +14,7 @@
 #include <vector>
 #include <algorithm>
 #include <cstddef>
+#include <type_traits> // remove_reference
 
 // Frwd decl:
 namespace Eigen
@@ -137,7 +138,7 @@ class CRandomGenerator
 	{
 		const size_t N = v.size();
 		for (size_t c = 0; c < N; c++)
-			v[c] = static_cast<decltype(v[c])>(drawUniform(unif_min, unif_max));
+			v[c] = static_cast<std::decay<decltype(v[c])>::type>(drawUniform(unif_min, unif_max));
 	}
 
 	/** @} */

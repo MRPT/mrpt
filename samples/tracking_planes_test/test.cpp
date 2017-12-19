@@ -486,7 +486,7 @@ namespace math
 {
 template <typename T>
 void ransacHomography_fit(
-	const CMatrixTemplateNumeric<T>& allData, const vector_size_t& useIndices,
+	const CMatrixTemplateNumeric<T>& allData, const std::vector<size_t>& useIndices,
 	vector<CMatrixTemplateNumeric<T>>& fitModels)
 {
 	ASSERT_(useIndices.size() == 3);
@@ -571,7 +571,7 @@ void ransacHomography_distance(
 	const CMatrixTemplateNumeric<T>& allData,
 	const vector<CMatrixTemplateNumeric<T>>& testModels,
 	const T distanceThreshold, unsigned int& out_bestModelIndex,
-	vector_size_t& out_inlierIndices)
+	std::vector<size_t>& out_inlierIndices)
 {
 	ASSERT_(testModels.size() == 1)
 	out_bestModelIndex = 0;
@@ -602,7 +602,7 @@ void ransacHomography_distance(
 	{
 		// A)Search and store natural vertices in clockwise direction (greatest
 		// and smallest x & y coordinates)
-		vector_size_t vertices(4, out_inlierIndices[0]);
+		std::vector<size_t> vertices(4, out_inlierIndices[0]);
 		for (size_t i = 1; i < out_inlierIndices.size(); i++)
 		{
 			if (allData(3, out_inlierIndices[i]) > allData(3, vertices[0]))
@@ -620,11 +620,11 @@ void ransacHomography_distance(
 		// v.insert( vertices.begin(), vertices.end() );
 		////ESTA FORMA DE BORRAR REPETICIONES GENERA ERRORES "ALEATORIOS" -> HAY
 		/// QUE CAMBIARLA
-		// for (vector_size_t::iterator it1=vertices.begin();
+		// for (std::vector<size_t>::iterator it1=vertices.begin();
 		// it1!=(vertices.end()-1); ++it1)	//Erase repeated vertex
 		// //poly.removeRepeatedVertices();
 		//{
-		//	for (vector_size_t::iterator it2=it1+1; it2!=vertices.end(); ++it2)
+		//	for (std::vector<size_t>::iterator it2=it1+1; it2!=vertices.end(); ++it2)
 		//	{
 		//		if( (*it1)==(*it2) )
 		//		{
@@ -633,7 +633,7 @@ void ransacHomography_distance(
 		//		}
 		//	}
 		//}
-		vector_size_t::iterator it1;
+		std::vector<size_t>::iterator it1;
 		for (size_t i = 0; i < vertices.size() - 1;
 			 ++i)  // Erase repeated vertex		//poly.removeRepeatedVertices();
 		{
@@ -815,7 +815,7 @@ void ransacHomography_distance(
 		// Check the rest of points inside the polygon
 		size_t k = 0;
 		size_t outliers = 0;
-		vector_size_t more_inlierIndices;
+		std::vector<size_t> more_inlierIndices;
 		dist = 0;  // dist is now used to check how consistent are the rest of
 		// inside points with the homography
 		for (size_t i = 0; i < N; i++)
@@ -862,7 +862,7 @@ void ransacHomography_distance(
 template <typename T>
 bool ransacHomography_degenerate(
 	const CMatrixTemplateNumeric<T>& allData,
-	const mrpt::vector_size_t& useIndices)
+	const mrpt::std::vector<size_t>& useIndices)
 {
 	// double r_a, r_b, r_c, dist;
 	// r_a = ( allData.get_unsafe( 3, useIndices[0] ) - allData.get_unsafe( 3,
@@ -911,10 +911,10 @@ void ransac_homographies(
 	// ---------------------------------------------
 	// For each plane:
 	// ---------------------------------------------
-	mrpt::vector_size_t other_inliers, other_inliers2;
+	mrpt::std::vector<size_t> other_inliers, other_inliers2;
 	for (;;)
 	{
-		mrpt::vector_size_t this_best_inliers;
+		mrpt::std::vector<size_t> this_best_inliers;
 		CMatrixTemplateNumeric<double> this_best_model;
 
 		math::RANSAC_Template<double>::execute(
@@ -940,7 +940,7 @@ void ransac_homographies(
 			}
 			else
 			{
-				mrpt::vector_size_t
+				mrpt::std::vector<size_t>
 					this_best_inliers_r;  // Restored Index of Inliers
 				this_best_inliers_r.resize(this_best_inliers.size());
 				unsigned int j = 0;

@@ -522,7 +522,7 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
 
 						if (FEAT_SIZE != 0)
 						{  // SLAM problems:
-							vector_size_t S_idxs;
+							std::vector<size_t> S_idxs;
 							S_idxs.reserve(OBS_SIZE * N_upd);
 
 							// const size_t row_len = VEH_SIZE + FEAT_SIZE *
@@ -726,7 +726,7 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
 						// using the current updated m_xkk:
 						vector_KFArray_OBS pred_obs;
 						OnObservationModel(
-							vector_size_t(1, idxInTheFilter), pred_obs);
+							std::vector<size_t>(1, idxInTheFilter), pred_obs);
 						ASSERTDEB_(pred_obs.size() == 1);
 
 						// ytilde = observation - prediction
@@ -1210,7 +1210,7 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::
 		const KFArray_VEH& x, const std::pair<KFCLASS*, size_t>& dat,
 		KFArray_OBS& out_x)
 {
-	vector_size_t idxs_to_predict(1, dat.second);
+	std::vector<size_t> idxs_to_predict(1, dat.second);
 	vector_KFArray_OBS prediction;
 	// Overwrite (temporarily!) the affected part of the state vector:
 	::memcpy(&dat.first->m_xkk[0], &x[0], sizeof(x[0]) * VEH_SIZE);
@@ -1226,7 +1226,7 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::
 		const KFArray_FEAT& x, const std::pair<KFCLASS*, size_t>& dat,
 		KFArray_OBS& out_x)
 {
-	vector_size_t idxs_to_predict(1, dat.second);
+	std::vector<size_t> idxs_to_predict(1, dat.second);
 	vector_KFArray_OBS prediction;
 	const size_t lm_idx_in_statevector = VEH_SIZE + FEAT_SIZE * dat.second;
 	// Overwrite (temporarily!) the affected part of the state vector:

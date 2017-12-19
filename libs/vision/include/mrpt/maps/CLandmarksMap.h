@@ -674,7 +674,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 		bool sensorDetectsIDs = true, const float stdRange = 0.01f,
 		const float stdYaw = mrpt::utils::DEG2RAD(0.1f),
 		const float stdPitch = mrpt::utils::DEG2RAD(0.1f),
-		vector_size_t* real_associations = nullptr,
+		std::vector<size_t>* real_associations = nullptr,
 		const double spurious_count_mean = 0,
 		const double spurious_count_std = 0) const;
 

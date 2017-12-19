@@ -2895,7 +2895,7 @@ void CLandmarksMap::simulateRangeBearingReadings(
 	const CPose3D& in_robotPose, const CPose3D& in_sensorLocationOnRobot,
 	CObservationBearingRange& out_Observations, bool sensorDetectsIDs,
 	const float in_stdRange, const float in_stdYaw, const float in_stdPitch,
-	vector_size_t* out_real_associations, const double spurious_count_mean,
+	std::vector<size_t>* out_real_associations, const double spurious_count_mean,
 	const double spurious_count_std) const
 {
 	TSequenceLandmarks::const_iterator it;

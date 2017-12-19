@@ -55,7 +55,7 @@ void TestRandomGenerators()
 	win1.resize(400, 400);
 	{
 		// CVectorDouble v1(100000);
-		vector_size_t v1(100000);
+		std::vector<size_t> v1(100000);
 		getRandomGenerator().drawUniformVector(v1, 0, 5.999);
 
 		CHistogram hist(-2, 15, 100);

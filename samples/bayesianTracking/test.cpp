@@ -147,7 +147,7 @@ class CRangeBearing : public mrpt::bayes::CKalmanFilterCapable<
 	void OnGetObservationsAndDataAssociation(
 		vector_KFArray_OBS& out_z, mrpt::vector_int& out_data_association,
 		const vector_KFArray_OBS& in_all_predictions, const KFMatrix& in_S,
-		const vector_size_t& in_lm_indices_in_S, const KFMatrix_OxO& in_R);
+		const std::vector<size_t>& in_lm_indices_in_S, const KFMatrix_OxO& in_R);
 
 	/** Implements the observation prediction \f$ h_i(x) \f$.
 	  * \param idx_landmark_to_predict The indices of the landmarks in the map
@@ -157,7 +157,7 @@ class CRangeBearing : public mrpt::bayes::CKalmanFilterCapable<
 	  * \param out_predictions The predicted observations.
 	  */
 	void OnObservationModel(
-		const vector_size_t& idx_landmarks_to_predict,
+		const std::vector<size_t>& idx_landmarks_to_predict,
 		vector_KFArray_OBS& out_predictions) const;
 
 	/** Implements the observation Jacobians \f$ \frac{\partial h_i}{\partial x}
@@ -514,7 +514,7 @@ void CRangeBearing::OnGetObservationNoise(KFMatrix_OxO& R) const
 void CRangeBearing::OnGetObservationsAndDataAssociation(
 	vector_KFArray_OBS& out_z, mrpt::vector_int& out_data_association,
 	const vector_KFArray_OBS& in_all_predictions, const KFMatrix& in_S,
-	const vector_size_t& in_lm_indices_in_S, const KFMatrix_OxO& in_R)
+	const std::vector<size_t>& in_lm_indices_in_S, const KFMatrix_OxO& in_R)
 {
 	out_z.resize(1);
 	out_z[0][0] = m_obsBearing;
@@ -531,7 +531,7 @@ void CRangeBearing::OnGetObservationsAndDataAssociation(
   * \param out_predictions The predicted observations.
   */
 void CRangeBearing::OnObservationModel(
-	const vector_size_t& idx_landmarks_to_predict,
+	const std::vector<size_t>& idx_landmarks_to_predict,
 	vector_KFArray_OBS& out_predictions) const
 {
 	// predicted bearing:
