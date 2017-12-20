@@ -159,8 +159,8 @@ the GitHub contributors page (https://github.com/MRPT/mrpt/graphs/contributors).
   - added files in the mrpt/libs/vision (detectors: AKAZE, LSD line detectors; descriptors: LATCH, BLD)
 
 * Aliben - (Github: http://github.com/alibenD).
-  - Driver for SICK TIM561/55x/56x via ethernet (mrpt::hwdrivers::CSICKTim561Eth)
-  - A testing sample for SICK TIM55x/TIM56x series
+  - Driver for SICK TIM561/55x/56x, LMS151 via ethernet (mrpt::hwdrivers::CSICKTim561Eth and mrpt::hwdrivers::CLMS151Eth)
+  - A testing sample for SICK TIM55x/TIM56x series and SICK LMS151
 
 Several bug reports have been provided from MRPT users world-wide. We kindly thank all of
 them for this valuable feedback, and they are usually mentioned in changelogs.
