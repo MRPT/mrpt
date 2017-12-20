@@ -40,7 +40,7 @@ namespace mrpt
          * \exception This method throw exception if the frame received from the
          * LMS151 contain the following bad parameters:
          * * Status is not OK
-         * * Data in the scan aren't DIST1(may be RSSIx or DIST2).
+         * * Data in the scan are DIST1(may be RSSIx or DIST2).
          */
         void doProcessSimple(bool& outThereIsObservation,
                              mrpt::obs::CObservation2DRangeScan& outObservation,
@@ -111,4 +111,3 @@ namespace mrpt
 }
 
 #endif // _CLMS151ETH_10110_H__
-
