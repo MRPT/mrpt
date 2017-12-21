@@ -697,10 +697,12 @@ size_t CSerialPort::Read(void* Buffer, size_t Count)
 			if ((nRead = ::read(hCOM, ((char*)Buffer) + alreadyRead, nToRead)) <
 				0)
 			{
-				cerr << "[CSerialPort] Error reading from port..." << endl;
+				cerr << "[CSerialPort] read() returned " << nRead << ", errno=" << errno << endl;
 			}
-
-			alreadyRead += nRead;
+			else
+			{
+				alreadyRead += nRead;
+			}
 		}
 		else
 		{
