@@ -554,8 +554,8 @@ bool CFaceDetection::checkIfFaceRegions(CObservation3DRangeScan* face)
 
 	size_t start = faceWidth, end = 0;
 
-	for (size_t r = 0; r < region.getRowCount(); r++)
-		for (size_t c = 1; c < region.getColCount(); c++)
+	for (size_t r = 0; r < region.rows(); r++)
+		for (size_t c = 1; c < region.cols(); c++)
 		{
 			if ((!(region.get_unsafe(r, c - 1))) && (region.get_unsafe(r, c)))
 			{

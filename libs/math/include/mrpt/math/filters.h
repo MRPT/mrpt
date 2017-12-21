@@ -16,7 +16,7 @@ namespace mrpt
 namespace math
 {
 /** @addtogroup filtering_grp Filtering algorithms
-  * \ingroup mrpt_base_grp
+  * \ingroup mrpt_math_grp
   *  @{ */
 
 /** 1-order low-pass IIR filter.

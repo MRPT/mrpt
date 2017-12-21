@@ -11,7 +11,6 @@
 #include <gtest/gtest.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 

@@ -25,7 +25,7 @@ namespace math
 {
 #if MRPT_HAS_MATLAB
 /** \addtogroup matlab_grp Helper functions for MEX & MATLAB
-  *  \ingroup mrpt_base_grp
+  *  \ingroup mrpt_math_grp
   * @{ */
 
 /** Convert vectors, arrays and matrices into Matlab vectors/matrices.

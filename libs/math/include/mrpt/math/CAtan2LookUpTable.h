@@ -20,7 +20,7 @@ namespace math
   *
   * \sa mrpt::math::CAtan2LookUpTableMultiRes,
  * mrpt::obs::CSinCosLookUpTableFor2DScans
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_math_grp
   */
 class CAtan2LookUpTable
 {
@@ -59,7 +59,7 @@ class CAtan2LookUpTable
  *  res2extension[0.10]  = 12.0; // 10 cm resolution up to  12 m
  *  atan2lut.resize(res2extension);
  * \endcode
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_math_grp
   */
 class CAtan2LookUpTableMultiRes
 {

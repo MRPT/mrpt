@@ -25,7 +25,7 @@
 //#define COMPARE_NUMERIC_JACOBIANS
 
 #ifdef USE_NUMERIC_JACOBIANS
-#include <mrpt/math/jacobians.h>
+#include <mrpt/math/num_jacobian.h>
 #endif
 
 using namespace mrpt;

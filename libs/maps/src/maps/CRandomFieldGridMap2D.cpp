@@ -128,12 +128,12 @@ void CRandomFieldGridMap2D::internal_clear()
 			const double std0sqr =
 				square(m_insertOptions_common->KF_initialCellStd);
 
-			for (size_t i = 0; i < m_cov.getRowCount(); i++)
+			for (size_t i = 0; i < m_cov.rows(); i++)
 			{
 				int cx1 = (i % m_size_x);
 				int cy1 = (i / m_size_x);
 
-				for (size_t j = i; j < m_cov.getColCount(); j++)
+				for (size_t j = i; j < m_cov.cols(); j++)
 				{
 					int cx2 = (j % m_size_x);
 					int cy2 = (j / m_size_x);
@@ -1116,8 +1116,8 @@ void CRandomFieldGridMap2D::resize(
 			const signed W = m_insertOptions_common->KF_W_size;
 			const size_t N = m_map.size();
 			const size_t K = 2 * W * (W + 1) + 1;
-			ASSERT_(K == m_stackedCov.getColCount());
-			ASSERT_(old_sizeX * old_sizeY == m_stackedCov.getRowCount());
+			ASSERT_(K == m_stackedCov.cols());
+			ASSERT_(old_sizeX * old_sizeY == m_stackedCov.rows());
 
 			// Compute the new cells at the left and the bottom:
 			size_t Acx_left = round((old_x_min - m_x_min) / m_resolution);
@@ -1182,7 +1182,7 @@ void CRandomFieldGridMap2D::resize(
 				{
 					// "i" is an existing old cell: just copy the "m_stackedCov"
 					// row:
-					ASSERT_(old_idx_of_i < m_stackedCov.getRowCount());
+					ASSERT_(old_idx_of_i < m_stackedCov.rows());
 					if (old_idx_of_i != i)  // Copy row only if it's moved
 					{
 						const double* ptr_old =
@@ -1256,7 +1256,7 @@ void CRandomFieldGridMap2D::insertObservation_KF(
 
 	// Update covariance matrix values:
 	// ---------------------------------------------------------
-	N = m_cov.getRowCount();
+	N = m_cov.rows();
 
 	MRPT_LOG_DEBUG("[insertObservation_KF] Updating covariance matrix...");
 	tictac.Tic();
@@ -1271,8 +1271,8 @@ void CRandomFieldGridMap2D::insertObservation_KF(
 	}
 
 	MRPT_LOG_DEBUG_FMT(
-		"Copy matrix %ux%u: %.06fms\n", (unsigned)m_cov.getRowCount(),
-		(unsigned)m_cov.getColCount(), tictac.Tac() * 1000);
+		"Copy matrix %ux%u: %.06fms\n", (unsigned)m_cov.rows(),
+		(unsigned)m_cov.cols(), tictac.Tac() * 1000);
 
 	// The following follows from the expansion of Kalman Filter matrix
 	// equations
@@ -2226,8 +2226,8 @@ void CRandomFieldGridMap2D::insertObservation_KF2(
 	// --------------------------------------------------------
 	const size_t N = m_map.size();
 
-	ASSERT_(K == m_stackedCov.getColCount());
-	ASSERT_(N == m_stackedCov.getRowCount());
+	ASSERT_(K == m_stackedCov.cols());
+	ASSERT_(N == m_stackedCov.rows());
 
 	// Prediction stage of KF:
 	// ------------------------------------
@@ -2659,8 +2659,8 @@ bool CRandomFieldGridMap2D::exist_relation_between2cells(
 	// Create Matrix for region growing (row,col)
 	mrpt::math::CMatrixUInt matExp(
 		cxo_max - cxo_min + 1, cyo_max - cyo_min + 1);
-	// cout << "Matrix creted with dimension:" << matExp.getRowCount() << " x "
-	// << matExp.getColCount() << endl;
+	// cout << "Matrix creted with dimension:" << matExp.rows() << " x "
+	// << matExp.cols() << endl;
 	// CMatrix matExp(cxo_max-cxo_min+1, cyo_max-cyo_min+1);
 	matExp.fill(0);
 
@@ -2674,9 +2674,9 @@ bool CRandomFieldGridMap2D::exist_relation_between2cells(
 	{
 		seedsOld = seedsNew;
 
-		for (size_t col = 0; col < matExp.getColCount(); col++)
+		for (size_t col = 0; col < matExp.cols(); col++)
 		{
-			for (size_t row = 0; row < matExp.getRowCount(); row++)
+			for (size_t row = 0; row < matExp.rows(); row++)
 			{
 				// test if cell needs to be expanded
 				if (matExp(row, col) == 1)
@@ -2690,9 +2690,9 @@ bool CRandomFieldGridMap2D::exist_relation_between2cells(
 							// check that neighbour is inside the map
 							if ((int(row) + j >= 0) &&
 								(int(row) + j <=
-								 int(matExp.getRowCount() - 1)) &&
+								 int(matExp.rows() - 1)) &&
 								(int(col) + i >= 0) &&
-								(int(col) + i <= int(matExp.getColCount()) - 1))
+								(int(col) + i <= int(matExp.cols()) - 1))
 							{
 								if (!((i == 0 && j == 0) ||
 									  !(matExp(row + j, col + i) == 0)))

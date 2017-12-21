@@ -17,7 +17,7 @@ namespace math
 {
 /** @addtogroup  polynomial_roots Find polynomial roots (`#include
  * <mrpt/math/poly_roots.h>`)
-  *  \ingroup mrpt_base_grp
+  *  \ingroup mrpt_math_grp
   * @{ */
 
 /** Solves cubic equation `x^3 + a*x^2 + b*x + c = 0`. Returns the number of

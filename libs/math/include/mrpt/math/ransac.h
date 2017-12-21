@@ -18,7 +18,7 @@ namespace mrpt
 namespace math
 {
 /** @addtogroup ransac_grp RANSAC and other model fitting algorithms
-  * \ingroup mrpt_base_grp
+  * \ingroup mrpt_math_grp
   * @{ */
 
 /** A generic RANSAC implementation with models as matrices.

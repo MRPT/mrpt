@@ -63,11 +63,11 @@ void ransac3Dplane_distance(
 	const T distanceThreshold, unsigned int& out_bestModelIndex,
 	std::vector<size_t>& out_inlierIndices)
 {
-	ASSERT_(testModels.size() == 1)
+	ASSERT_(testModels.size() == 1);
 	out_bestModelIndex = 0;
 	const CMatrixTemplateNumeric<T>& M = testModels[0];
 
-	ASSERT_(size(M, 1) == 1 && size(M, 2) == 4)
+	ASSERT_(M.rows() == 1 && M.cols() == 4);
 
 	TPlane plane;
 	plane.coefs[0] = M(0, 0);
@@ -75,7 +75,7 @@ void ransac3Dplane_distance(
 	plane.coefs[2] = M(0, 2);
 	plane.coefs[3] = M(0, 3);
 
-	const size_t N = size(allData, 2);
+	const size_t N = allData.cols();
 	out_inlierIndices.clear();
 	out_inlierIndices.reserve(100);
 	for (size_t i = 0; i < N; i++)
@@ -115,7 +115,7 @@ void mrpt::math::ransac_detect_3D_planes(
 {
 	MRPT_START
 
-	ASSERT_(x.size() == y.size() && x.size() == z.size())
+	ASSERT_(x.size() == y.size() && x.size() == z.size());
 
 	out_detected_planes.clear();
 
@@ -239,17 +239,17 @@ EXPLICIT_INST_ransac_detect_3D_planes(float)
 			testModels.size() == 1,
 			format(
 				"Expected testModels.size()=1, but it's = %u",
-				static_cast<unsigned int>(testModels.size())))
+				static_cast<unsigned int>(testModels.size())));
 		const CMatrixTemplateNumeric<T>& M = testModels[0];
 
-		ASSERT_(size(M, 1) == 1 && size(M, 2) == 3)
+		ASSERT_(M.rows() == 1 && M.cols() == 3);
 
 		TLine2D line;
 		line.coefs[0] = M(0, 0);
 		line.coefs[1] = M(0, 1);
 		line.coefs[2] = M(0, 2);
 
-		const size_t N = size(allData, 2);
+		const size_t N = allData.cols();
 		out_inlierIndices.reserve(100);
 		for (size_t i = 0; i < N; i++)
 		{
@@ -284,9 +284,7 @@ void mrpt::math::ransac_detect_2D_lines(
 	const double threshold, const size_t min_inliers_for_valid_line)
 {
 	MRPT_START
-
-	ASSERT_(x.size() == y.size())
-
+	ASSERT_(x.size() == y.size());
 	out_detected_lines.clear();
 
 	if (x.empty()) return;
@@ -299,7 +297,7 @@ void mrpt::math::ransac_detect_2D_lines(
 	// ---------------------------------------------
 	// For each line:
 	// ---------------------------------------------
-	while (size(remainingPoints, 2) >= 2)
+	while (remainingPoints.cols() >= 2)
 	{
 		std::vector<size_t> this_best_inliers;
 		CMatrixTemplateNumeric<NUMTYPE> this_best_model;

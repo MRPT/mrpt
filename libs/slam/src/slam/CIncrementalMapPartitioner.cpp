@@ -221,7 +221,7 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 
 	// Expand the adjacency matrix
 	// -----------------------------------------------------------------
-	n = m_A.getColCount();
+	n = m_A.cols();
 	n++;
 	m_A.setSize(n, n);
 
@@ -491,7 +491,7 @@ void CIncrementalMapPartitioner::removeSetOfNodes(
 {
 	MRPT_START
 
-	size_t nOld = m_A.getColCount();
+	size_t nOld = m_A.cols();
 	size_t nNew = nOld - indexesToRemove.size();
 	size_t i, j;
 
@@ -621,7 +621,7 @@ void CIncrementalMapPartitioner::getAs3DScene(
 	const std::map<uint32_t, int64_t>* renameIndexes) const
 {
 	objs->clear();
-	ASSERT_(m_individualFrames.size() == m_A.getColCount());
+	ASSERT_(m_individualFrames.size() == m_A.cols());
 
 	objs->insert(
 		mrpt::make_aligned_shared<opengl::CGridPlaneXY>(

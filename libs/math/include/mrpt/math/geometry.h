@@ -21,7 +21,7 @@ namespace math
 {
 /** \addtogroup geometry_grp Geometry: lines, planes, intersections, SLERP,
  * "lightweight" point & pose classes
-  *  \ingroup mrpt_base_grp
+  *  \ingroup mrpt_math_grp
   * @{ */
 
 /** Slightly heavyweight type to speed-up calculations with polygons in 3D
@@ -828,7 +828,7 @@ template <class T>
 inline void crossProduct3D(
 	const std::vector<T>& v0, const std::vector<T>& v1, std::vector<T>& v_out)
 {
-	ASSERT_(v0.size() == 3)
+	ASSERT_(v0.size() == 3);
 	ASSERT_(v1.size() == 3);
 	v_out.resize(3);
 	v_out[0] = v0[1] * v1[2] - v0[2] * v1[1];
@@ -860,7 +860,7 @@ inline Eigen::Matrix<double, 3, 1> crossProduct3D(
 template <class VECTOR, class MATRIX>
 inline void skew_symmetric3(const VECTOR& v, MATRIX& M)
 {
-	ASSERT_(v.size() == 3)
+	ASSERT_(v.size() == 3);
 	M.setSize(3, 3);
 	M.set_unsafe(0, 0, 0);
 	M.set_unsafe(0, 1, -v[2]);
@@ -894,7 +894,7 @@ inline mrpt::math::CMatrixDouble33 skew_symmetric3(const VECTOR& v)
 template <class VECTOR, class MATRIX>
 inline void skew_symmetric3_neg(const VECTOR& v, MATRIX& M)
 {
-	ASSERT_(v.size() == 3)
+	ASSERT_(v.size() == 3);
 	M.setSize(3, 3);
 	M.set_unsafe(0, 0, 0);
 	M.set_unsafe(0, 1, v[2]);

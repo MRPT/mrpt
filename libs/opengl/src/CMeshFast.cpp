@@ -30,8 +30,8 @@ void CMeshFast::updatePoints() const
 {
 	CRenderizableDisplayList::notifyChange();
 
-	const size_t cols = Z.getColCount();
-	const size_t rows = Z.getRowCount();
+	const size_t cols = Z.cols();
+	const size_t rows = Z.rows();
 
 	if ((m_colorFromZ) || (m_isImage)) updateColorsMatrix();
 
@@ -82,8 +82,8 @@ void CMeshFast::render_dl() const
 	glDisable(GL_LIGHTING);
 
 	glBegin(GL_POINTS);
-	for (unsigned int i = 0; i < X.getRowCount(); i++)
-		for (unsigned int j = 0; j < X.getColCount(); j++)
+	for (unsigned int i = 0; i < X.rows(); i++)
+		for (unsigned int j = 0; j < X.cols(); j++)
 		{
 			if (m_isImage && m_textureImage.isColor())
 				glColor4f(C_r(i, j), C_g(i, j), C_b(i, j), m_color.A / 255.f);
@@ -250,7 +250,7 @@ void CMeshFast::updateColorsMatrix() const
 		const size_t cols = m_textureImage.getWidth();
 		const size_t rows = m_textureImage.getHeight();
 
-		if ((cols != Z.getColCount()) || (rows != Z.getRowCount()))
+		if ((cols != Z.cols()) || (rows != Z.rows()))
 		{
 			printf("\nTexture Image and Z sizes have to be equal");
 		}
@@ -269,8 +269,8 @@ void CMeshFast::updateColorsMatrix() const
 	}
 	else
 	{
-		const size_t cols = Z.getColCount();
-		const size_t rows = Z.getRowCount();
+		const size_t cols = Z.cols();
+		const size_t rows = Z.rows();
 
 		C.setSize(rows, cols);
 

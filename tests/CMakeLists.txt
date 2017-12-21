@@ -73,20 +73,14 @@ FOREACH(_TSTLIB ${LST_LIB_TESTS})
 	# extra deps:
 	get_property(extra_deps GLOBAL PROPERTY "${_TSTLIB}_UNIT_TEST_EXTRA_DEPS")
 	set(lst_deps ${lst_deps} ${extra_deps})
-
+	
 	set(lst_deps ${_TSTLIB_DASH} ${lst_deps}) # The order in this list is very important for linking!
 	FOREACH(_DEPLIB ${lst_deps})
 		# Include dirs:
 		STRING(REGEX REPLACE "mrpt-(.*)" "\\1" _DEPLIB_DASH ${_DEPLIB})
-		include_directories("${MRPT_LIBS_ROOT}/${_DEPLIB_DASH}/include")
-
-		# Deps:
-		ADD_DEPENDENCIES(test_${_TSTLIB} ${_DEPLIB})
-		# Linking deps:
-		get_property(_LIB_HDRONLY GLOBAL PROPERTY "${_DEPLIB}_LIB_IS_HEADERS_ONLY")
-		IF(NOT _LIB_HDRONLY)
-			TARGET_LINK_LIBRARIES(test_${_TSTLIB} ${_DEPLIB})
-		ENDIF(NOT _LIB_HDRONLY)
+		# This link command automatically imports all required "include directories"
+		# and other PUBLIC dependencies of the linked target:
+		TARGET_LINK_LIBRARIES(test_${_TSTLIB} ${_DEPLIB})
 	ENDFOREACH(_DEPLIB)
 
 	# Run it:

@@ -596,7 +596,7 @@ void do_pf_localization(
 							}
 
 							// The Ground Truth (GT):
-							if (GT.getRowCount() > 0)
+							if (GT.rows() > 0)
 							{
 								CRenderizable::Ptr GTpt =
 									ptrScene->getByName("GT");
@@ -798,7 +798,7 @@ void do_pf_localization(
 							 << " tr(cov): "
 							 << std::sqrt(current_pdf_gaussian.cov.trace())
 							 << "\n";
-						if (GT.getRowCount() > 0)
+						if (GT.rows() > 0)
 							cout << "    Ground truth: " << expectedPose
 								 << "\n";
 					}
@@ -927,7 +927,7 @@ void do_pf_localization(
 						// two different 3D scenes are built -> refactor code")
 
 						// The Ground Truth (GT):
-						if (GT.getRowCount() > 0)
+						if (GT.rows() > 0)
 						{
 							CRenderizable::Ptr GTpt = scene.getByName("GT");
 							if (!GTpt)
@@ -1115,14 +1115,14 @@ void getGroundTruth(
 	CPose2D& expectedPose, size_t rawlogEntry, const CMatrixDouble& GT,
 	const TTimeStamp& cur_time)
 {
-	if (GT.getColCount() == 4)
+	if (GT.cols() == 4)
 	{
 		static bool first_step = true;
 		static bool GT_index_is_time;
 
 		// First column can be: timestamps, or rawlogentries:
 		//  Auto-figure it out:
-		if (GT.getRowCount() > 2)
+		if (GT.rows() > 2)
 		{
 			GT_index_is_time =
 				floor(GT(0, 0)) != GT(0, 0) && floor(GT(1, 0)) != GT(1, 0);
@@ -1139,7 +1139,7 @@ void getGroundTruth(
 			mrpt::aligned_containers<double, CPose2D>::map_t::iterator it;
 			if (first_step)
 			{
-				for (size_t i = 0; i < GT.getRowCount(); i++)
+				for (size_t i = 0; i < GT.rows(); i++)
 					GT_path[mrpt::utils::round_10power(GT(i, 0), -4)] =
 						CPose2D(GT(i, 1), GT(i, 2), GT(i, 3));
 			}
@@ -1158,7 +1158,7 @@ void getGroundTruth(
 		else
 		{
 			// Look for the rawlogEntry:
-			size_t k, N = GT.getRowCount();
+			size_t k, N = GT.rows();
 			for (k = 0; k < N; k++)
 			{
 				if (GT(k, 0) == rawlogEntry) break;
@@ -1173,15 +1173,15 @@ void getGroundTruth(
 		}
 		first_step = false;
 	}
-	else if (GT.getColCount() == 3)
+	else if (GT.cols() == 3)
 	{
-		if (rawlogEntry < GT.getRowCount())
+		if (rawlogEntry < GT.rows())
 		{
 			expectedPose.x(GT(rawlogEntry, 0));
 			expectedPose.y(GT(rawlogEntry, 1));
 			expectedPose.phi(GT(rawlogEntry, 2));
 		}
 	}
-	else if (GT.getColCount() > 0)
+	else if (GT.cols() > 0)
 		THROW_EXCEPTION("Unexpected number of columns in ground truth file");
 }

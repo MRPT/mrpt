@@ -40,7 +40,7 @@ namespace math
  *"setSize", thus please call ""CMatrixTemplateObjects<T>::freeAllObjects" or
  *manually delete objects before shrinking.
  *
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_math_grp
  * \sa CMatrixTemplate
  */
 template <class T>
@@ -62,8 +62,8 @@ class CMatrixTemplateObjects : public CMatrixTemplate<T*>
 	CMatrixTemplateObjects(size_t row = 3, size_t col = 3)
 		: CMatrixTemplate<T*>(row, col), m_freeObjects(true)
 	{
-		for (size_t i = 0; i < CMatrixTemplate<T*>::getRowCount(); i++)
-			for (size_t j = 0; j < CMatrixTemplate<T*>::getColCount(); j++)
+		for (size_t i = 0; i < CMatrixTemplate<T*>::rows(); i++)
+			for (size_t j = 0; j < CMatrixTemplate<T*>::cols(); j++)
 				CMatrixTemplate<T*>::m_Val[i][j] = nullptr;
 	}
 
@@ -86,8 +86,8 @@ class CMatrixTemplateObjects : public CMatrixTemplate<T*>
 	  */
 	void freeAllObjects()
 	{
-		for (size_t i = 0; i < CMatrixTemplate<T*>::getRowCount(); i++)
-			for (size_t j = 0; j < CMatrixTemplate<T*>::getColCount(); j++)
+		for (size_t i = 0; i < CMatrixTemplate<T*>::rows(); i++)
+			for (size_t j = 0; j < CMatrixTemplate<T*>::cols(); j++)
 				if (CMatrixTemplate<T*>::m_Val[i][j] != nullptr)
 				{
 					delete CMatrixTemplate<T*>::m_Val[i][j];
@@ -99,10 +99,10 @@ class CMatrixTemplateObjects : public CMatrixTemplate<T*>
 	*/
 	CMatrixTemplateObjects& operator=(const CMatrixTemplateObjects& m)
 	{
-		CMatrixTemplate<T*>::realloc(m.getRowCount(), m.getColCount());
+		CMatrixTemplate<T*>::realloc(m.rows(), m.cols());
 
-		for (size_t i = 0; i < CMatrixTemplate<T*>::getRowCount(); i++)
-			for (size_t j = 0; j < CMatrixTemplate<T*>::getColCount(); j++)
+		for (size_t i = 0; i < CMatrixTemplate<T*>::rows(); i++)
+			for (size_t j = 0; j < CMatrixTemplate<T*>::cols(); j++)
 				CMatrixTemplate<T*>::m_Val[i][j] = m.m_Val[i][j];
 		return *this;
 	}
@@ -120,8 +120,8 @@ class CMatrixTemplateObjects : public CMatrixTemplate<T*>
 	  */
 	void allocAllObjects()
 	{
-		for (size_t i = 0; i < CMatrixTemplate<T*>::getRowCount(); i++)
-			for (size_t j = 0; j < CMatrixTemplate<T*>::getColCount(); j++)
+		for (size_t i = 0; i < CMatrixTemplate<T*>::rows(); i++)
+			for (size_t j = 0; j < CMatrixTemplate<T*>::cols(); j++)
 				if (nullptr == CMatrixTemplate<T*>::m_Val[i][j])
 					CMatrixTemplate<T*>::m_Val[i][j] = new T();
 	}

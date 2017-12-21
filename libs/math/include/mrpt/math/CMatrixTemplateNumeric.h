@@ -30,7 +30,7 @@ namespace math
  * objects, not only numerical types).
  * \note For a complete introduction to Matrices and vectors in MRPT, see:
  * http://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_math_grp
   */
 template <class T>
 class CMatrixTemplateNumeric
@@ -71,10 +71,10 @@ class CMatrixTemplateNumeric
 	template <class R>
 	inline CMatrixTemplateNumeric<T>& operator=(const CMatrixTemplate<R>& m)
 	{
-		Base::resize(m.getRowCount(), m.getColCount());
+		Base::resize(m.rows(), m.cols());
 
-		for (size_t i = 0; i < CMatrixTemplate<T>::getRowCount(); i++)
-			for (size_t j = 0; j < CMatrixTemplate<T>::getColCount(); j++)
+		for (size_t i = 0; i < CMatrixTemplate<T>::rows(); i++)
+			for (size_t j = 0; j < CMatrixTemplate<T>::cols(); j++)
 				Base::coeffRef(i, j) = static_cast<T>(m.get_unsafe(i, j));
 		return *this;
 	}
@@ -101,8 +101,8 @@ class CMatrixTemplateNumeric
 	inline CMatrixTemplateNumeric(size_t row, size_t col, V (&theArray)[N])
 		: Base(row, col)
 	{
-		ASSERT_EQUAL_(row * col, N)
-		ASSERT_EQUAL_(sizeof(theArray[0]), sizeof(T))
+		ASSERT_EQUAL_(row * col, N);
+		ASSERT_EQUAL_(sizeof(theArray[0]), sizeof(T));
 		::memcpy(
 			Base::data(), &theArray[0],
 			sizeof(T) * N);  // Remember, row-major order!

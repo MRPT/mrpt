@@ -35,7 +35,7 @@ namespace math
   *  \note Methods marked as "Doesn't check bounds" mean that if an access to an
  * element out of the matrix size is tried, an empty element will be assumed,
  * but this will not raise any invalid memory access.
-  * \ingroup mrpt_base_grp
+  * \ingroup mrpt_math_grp
   */
 template <class T>
 class CSparseMatrixTemplate
@@ -112,15 +112,15 @@ class CSparseMatrixTemplate
 	  * Returns the amount of rows in this matrix.
 	  * \sa getColCount,getRow
 	  */
-	inline size_t getRowCount() const { return mRows; }
+	inline size_t rows() const { return mRows; }
 	/**
 	  * Returns the amount of columns in this matrix.
-	  * \sa getRowCount
+	  * \sa rows()
 	  */
-	inline size_t getColCount() const { return mColumns; }
+	inline size_t cols() const { return mColumns; }
 	/**
 	  * Extracts a full row from the matrix.
-	  * \sa getRowCount,getColumn,setRow
+	  * \sa rows(),getColumn,setRow
 	  * \throw std::logic_error on out of range.
 	  */
 	template <typename VECTOR>
@@ -189,8 +189,8 @@ class CSparseMatrixTemplate
 	template <class MATRIX_LIKE>
 	inline void insertMatrix(size_t row, size_t column, const MATRIX_LIKE& mat)
 	{
-		for (size_t nr = 0; nr < mat.getRowCount(); nr++)
-			for (size_t nc = 0; nc < mat.getColCount(); nc++)
+		for (size_t nr = 0; nr < mat.rows(); nr++)
+			for (size_t nc = 0; nc < mat.cols(); nc++)
 				operator()(row + nr, column + nc) = mat(nr, nc);
 	}
 

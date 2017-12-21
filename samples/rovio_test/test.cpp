@@ -802,7 +802,7 @@ void getFMat_from_txt(data_st* data)
 
 	// HARRIS
 	A.loadFromTextFile("Harris_matches.txt");
-	point_count = A.getRowCount();
+	point_count = A.rows();
 	if (point_count < 8)
 		cout << "WARNING->Less than 8 elements...\n";
 	else
@@ -851,7 +851,7 @@ void getFMat_from_txt(data_st* data)
 
 	// SIFT
 	A.loadFromTextFile("SIFT_matches.txt");
-	point_count = A.getRowCount();
+	point_count = A.rows();
 
 	if (point_count < 8)
 		cout << "WARNING->Less than 8 elements...\n";
@@ -898,7 +898,7 @@ void getFMat_from_txt(data_st* data)
 
 	// SURF
 	A.loadFromTextFile("SURF_matches.txt");
-	point_count = A.getRowCount();
+	point_count = A.rows();
 
 	if (point_count < 8)
 		cout << "WARNING->Less than 8 elements...\n";

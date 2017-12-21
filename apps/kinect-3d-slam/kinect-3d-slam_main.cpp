@@ -245,7 +245,7 @@ void Test_Kinect()
 
 	const double aspect_ratio =
 		480.0 /
-		640.0;  // kinect.getRowCount() / double( kinect.getColCount() );
+		640.0;  // kinect.rows() / double( kinect.cols() );
 
 	mrpt::opengl::CSetOfObjects::Ptr gl_cur_cam_corner =
 		mrpt::opengl::stock_objects::CornerXYZSimple(0.4f, 4);

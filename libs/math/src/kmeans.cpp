@@ -20,7 +20,6 @@
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 
 namespace mrpt
 {

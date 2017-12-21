@@ -679,8 +679,8 @@ void cost_func(
 	TCamera params;
 	vec2cam(par, params);
 
-	const size_t nC = obs.rangeImage.getColCount();
-	const size_t nR = obs.rangeImage.getRowCount();
+	const size_t nC = obs.rangeImage.cols();
+	const size_t nR = obs.rangeImage.rows();
 
 	err = CVectorDouble();  // .resize( nC*nR/square(CALIB_DECIMAT) );
 
@@ -752,8 +752,8 @@ double CObservation3DRangeScan::recoverCameraCalibrationParameters(
 		TMyLevMar;
 	TMyLevMar::TResultInfo info;
 
-	const size_t nR = obs.rangeImage.getRowCount();
-	const size_t nC = obs.rangeImage.getColCount();
+	const size_t nR = obs.rangeImage.rows();
+	const size_t nC = obs.rangeImage.cols();
 
 	TCamera camInit;
 	camInit.ncols = nC;

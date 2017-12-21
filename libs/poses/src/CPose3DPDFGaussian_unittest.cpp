@@ -12,7 +12,6 @@
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
 #include <mrpt/random.h>
 #include <mrpt/math/transform_gaussian.h>
-#include <mrpt/math/jacobians.h>
 #include <CTraitsTest.h>
 #include <gtest/gtest.h>
 

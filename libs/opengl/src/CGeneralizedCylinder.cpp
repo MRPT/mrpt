@@ -115,8 +115,8 @@ inline void createMesh(
 
 /*void transformMesh(const CPose3D &pose,const CMatrixTemplate<TPoint3D>
 &in,CMatrixTemplate<TPoint3D> &out)	{
-	size_t R=in.getRowCount();
-	size_t C=in.getColCount();
+	size_t R=in.rows();
+	size_t C=in.cols();
 	out.setSize(R,C);
 	for (size_t i=0;i<R;i++) for (size_t j=0;j<C;j++)	{
 		TPoint3D pIn=in.get_unsafe(i,j);
@@ -257,8 +257,8 @@ void CGeneralizedCylinder::getClosedSection(
 	}
 	vector<TPoint3D> vertices;
 	ROIpoints.getAsVector(vertices);
-	size_t nr = ROIpoints.getRowCount() - 1;
-	size_t nc = ROIpoints.getColCount() - 1;
+	size_t nr = ROIpoints.rows() - 1;
+	size_t nc = ROIpoints.cols() - 1;
 	vector<vector<uint32_t>> faces;
 	faces.reserve(nr * nc + 2);
 	vector<uint32_t> tmp(4);

@@ -394,10 +394,10 @@ class CKinect : public mrpt::hwdrivers::CGenericSensor
 	inline double getMaxRange() const { return m_maxRange; }
 	/** Get the row count in the camera images, loaded automatically upon camera
 	 * open(). */
-	inline size_t getRowCount() const { return m_cameraParamsRGB.nrows; }
+	inline size_t rows() const { return m_cameraParamsRGB.nrows; }
 	/** Get the col count in the camera images, loaded automatically upon camera
 	 * open(). */
-	inline size_t getColCount() const { return m_cameraParamsRGB.ncols; }
+	inline size_t cols() const { return m_cameraParamsRGB.ncols; }
 	/** Get a const reference to the depth camera calibration parameters */
 	inline const mrpt::utils::TCamera& getCameraParamsIntensity() const
 	{

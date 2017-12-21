@@ -62,7 +62,7 @@ void CFeatureExtraction::extractFeaturesFAST(
 	if (options.useMask)
 	{
 		cout << "using mask" << endl;
-		size_t maskW = mask->getColCount(), maskH = mask->getRowCount();
+		size_t maskW = mask->cols(), maskH = mask->rows();
 		ASSERT_(
 			maskW == inImg_gray.getWidth() && maskH == inImg_gray.getHeight());
 

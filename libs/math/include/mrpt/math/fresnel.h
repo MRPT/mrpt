@@ -16,7 +16,7 @@ namespace math
 {
 /** @addtogroup  fresnel_integrals_grp Fresnel integrals (`#include
  * <mrpt/math/fresnel.h>`)
-  *  \ingroup mrpt_base_grp
+  *  \ingroup mrpt_math_grp
   * @{ */
 
 /** Evaluates the integral from 0 to x of sqrt(2/pi) sin(t^2) dt. Equivalent to

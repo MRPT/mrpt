@@ -1732,7 +1732,7 @@ void navlog_viewer_GUI_designDialog::OnmnuSaveScoreMatrixSelected(
 
 			const mrpt::math::CMatrixD* dirs_scores =
 				hlog->getDirectionScores();
-			if (!dirs_scores || dirs_scores->getRowCount() < 2) continue;
+			if (!dirs_scores || dirs_scores->rows() < 2) continue;
 
 			const std::string sFil = mrpt::system::fileNameChangeExtension(
 				filName, mrpt::format(

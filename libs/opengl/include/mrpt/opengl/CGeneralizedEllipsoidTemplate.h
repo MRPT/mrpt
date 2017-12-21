@@ -91,8 +91,8 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableDisplayList
 	{
 		MRPT_START
 		ASSERT_(
-			new_cov.getColCount() == new_cov.getRowCount() &&
-			new_cov.getColCount() == DIM)
+			new_cov.cols() == new_cov.rows() &&
+			new_cov.cols() == DIM)
 		m_cov = new_cov;
 		m_mean = new_mean;
 		m_needToRecomputeEigenVals = true;

@@ -29,7 +29,7 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
 	m_timLogger.enable(KF_options.enable_profiler);
 	m_timLogger.enter("KF:complete_step");
 
-	ASSERT_(size_t(m_xkk.size()) == m_pkk.getColCount())
+	ASSERT_(size_t(m_xkk.size()) == m_pkk.cols())
 	ASSERT_(size_t(m_xkk.size()) >= VEH_SIZE)
 
 	// =============================================================
@@ -412,7 +412,7 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
 		else
 		{  // Not SLAM-like problem: simply S=H*Pkk*H^t + R
 			ASSERTDEB_(N_pred == 1)
-			ASSERTDEB_(S.getColCount() == OBS_SIZE)
+			ASSERTDEB_(S.cols() == OBS_SIZE)
 
 			S = Hxs[0] * m_pkk * Hxs[0].transpose() + R;
 		}
@@ -588,8 +588,8 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
 							ASSERT_(
 								Z.size() == 1 && all_predictions.size() == 1)
 							ASSERT_(
-								dh_dx_full_obs.getRowCount() == OBS_SIZE &&
-								dh_dx_full_obs.getColCount() == VEH_SIZE)
+								dh_dx_full_obs.rows() == OBS_SIZE &&
+								dh_dx_full_obs.cols() == VEH_SIZE)
 							ASSERT_(Hxs.size() == 1)
 
 							dh_dx_full_obs = Hxs[0];  // Was: dh_dx_full
@@ -608,7 +608,7 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
 						m_timLogger.enter("KF:8.update stage:1.FULLKF:build K");
 
 						K.setSize(
-							m_pkk.getRowCount(), S_observed.getColCount());
+							m_pkk.rows(), S_observed.cols());
 
 						// K = m_pkk * (~dh_dx) * S.inv() );
 						K.multiply_ABt(m_pkk, dh_dx_full_obs);
@@ -663,7 +663,7 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
 							aux_K_dh_dx.multiply(K, dh_dx_full_obs);
 
 							// aux_K_dh_dx  <-- I-aux_K_dh_dx
-							const size_t stat_len = aux_K_dh_dx.getColCount();
+							const size_t stat_len = aux_K_dh_dx.cols();
 							for (size_t r = 0; r < stat_len; r++)
 							{
 								for (size_t c = 0; c < stat_len; c++)
@@ -830,7 +830,7 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
 							// Compute the Kalman gain "Kij" for this
 							// observation element:
 							// -->  K = m_pkk * (~dh_dx) * S.inv() );
-							size_t N = m_pkk.getColCount();
+							size_t N = m_pkk.cols();
 							vector<KFTYPE> Kij(N);
 
 							for (size_t k = 0; k < N; k++)
@@ -925,7 +925,7 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
 							}
 
 							// For each observed landmark/whole system state:
-							for (size_t obsIdx=0;obsIdx<Z.getRowCount();obsIdx++)
+							for (size_t obsIdx=0;obsIdx<Z.rows();obsIdx++)
 							{
 								// Known & mapped landmark?
 								bool   doit;
@@ -960,13 +960,13 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
 										Hy );
 
 									ASSERTDEB_(ytilde.size() == OBS_SIZE )
-										ASSERTDEB_(Hx.getRowCount() == OBS_SIZE )
-										ASSERTDEB_(Hx.getColCount() == VEH_SIZE )
+										ASSERTDEB_(Hx.rows() == OBS_SIZE )
+										ASSERTDEB_(Hx.cols() == VEH_SIZE )
 
 										if (FEAT_SIZE>0)
 										{
-											ASSERTDEB_(Hy.getRowCount() == OBS_SIZE )
-												ASSERTDEB_(Hy.getColCount() == FEAT_SIZE )
+											ASSERTDEB_(Hy.rows() == OBS_SIZE )
+												ASSERTDEB_(Hy.cols() == FEAT_SIZE )
 										}
 
 										// Compute the OxO matrix S_i for each observation:
@@ -1026,7 +1026,7 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
 
 										// Compute the Kalman gain "Ki" for this i'th observation:
 										// -->  Ki = m_pkk * (~dh_dx) * S.inv();
-										size_t N = m_pkk.getColCount();
+										size_t N = m_pkk.cols();
 
 										KFMatrix Ki( N, OBS_SIZE );
 
@@ -1303,8 +1303,8 @@ void addNewLandmarks(
 			// Append to Pkk:
 			// --------------------
 			ASSERTDEB_(
-				obj.internal_getPkk().getColCount() == idx &&
-				obj.internal_getPkk().getRowCount() == idx);
+				obj.internal_getPkk().cols() == idx &&
+				obj.internal_getPkk().rows() == idx);
 
 			obj.internal_getPkk().setSize(idx + FEAT_SIZE, idx + FEAT_SIZE);
 

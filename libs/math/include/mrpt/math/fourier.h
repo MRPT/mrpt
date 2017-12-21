@@ -6,21 +6,16 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef mrpt_math_fourier_H
-#define mrpt_math_fourier_H
+#pragma once
 
-#include <mrpt/utils/utils_defs.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 
-/*---------------------------------------------------------------
-		Namespace
-  ---------------------------------------------------------------*/
 namespace mrpt
 {
 namespace math
 {
 /** \addtogroup fourier_grp Fourier transform functions
-  *  \ingroup mrpt_base_grp
+  *  \ingroup mrpt_math_grp
   * @{ */
 
 /** Computes the FFT of a 2^N-size vector of real numbers, and returns the
@@ -103,7 +98,4 @@ void cross_correlation_FFT(
 /** @} */
 
 }  // End of MATH namespace
-
 }  // End of namespace
-
-#endif

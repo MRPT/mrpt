@@ -27,7 +27,7 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::SpectralBisection(
 	GRAPH_MATRIX Adj, eigenVectors, eigenValues;
 
 	// Check matrix is square:
-	if (in_A.getColCount() != (nodeCount = in_A.getRowCount()))
+	if (in_A.cols() != (nodeCount = in_A.rows()))
 		THROW_EXCEPTION("Weights matrix is not square!!");
 
 	// Shi & Malik's method
@@ -55,9 +55,9 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::SpectralBisection(
 	// Second smallest eigen-vector
 	double mean = 0;
 	size_t colNo = 1;  // second smallest
-	size_t nRows = eigenVectors.getRowCount();
+	size_t nRows = eigenVectors.rows();
 
-	// for (i=0;i<eigenVectors.getColCount();i++) mean+=eigenVectors(colNo,i);
+	// for (i=0;i<eigenVectors.cols();i++) mean+=eigenVectors(colNo,i);
 	for (size_t i = 0; i < nRows; i++) mean += eigenVectors(i, colNo);
 	mean /= nRows;
 
@@ -80,8 +80,8 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::SpectralBisection(
 		out_part1.clear();
 		out_part2.clear();
 		// Assign 50%-50%:
-		for (size_t i = 0; i < Adj.getColCount(); i++)
-			if (i <= Adj.getColCount() / 2)
+		for (size_t i = 0; i < Adj.cols(); i++)
+			if (i <= Adj.cols() / 2)
 				out_part1.push_back(i);
 			else
 				out_part2.push_back(i);
@@ -111,7 +111,7 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::RecursiveSpectralPartition(
 	out_parts.clear();
 
 	// Check matrix is square:
-	if (in_A.getColCount() != (nodeCount = in_A.getRowCount()))
+	if (in_A.cols() != (nodeCount = in_A.rows()))
 		THROW_EXCEPTION("Weights matrix is not square!!");
 
 	if (nodeCount == 1)
@@ -272,7 +272,7 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::exactBisection(
 	bool end = false;
 
 	// Check matrix is square:
-	if (in_A.getColCount() != (nodeCount = in_A.getRowCount()))
+	if (in_A.cols() != (nodeCount = in_A.rows()))
 		THROW_EXCEPTION("Weights matrix is not square!!");
 
 	ASSERT_(nodeCount >= 2);

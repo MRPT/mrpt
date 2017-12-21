@@ -17,7 +17,7 @@
 namespace mrpt
 {
 /** This base provides a set of functions for maths stuff.
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_math_grp
  */
 namespace math
 {
@@ -155,20 +155,6 @@ uint64_t factorial64(unsigned int n);
   */
 double factorial(unsigned int n);
 
-/** Round up to the nearest power of two of a given number
-  */
-template <class T>
-T round2up(T val)
-{
-	T n = 1;
-	while (n < val)
-	{
-		n <<= 1;
-		if (n <= 1) THROW_EXCEPTION("Overflow!");
-	}
-	return n;
-}
-
 /** Generates a string with the MATLAB commands required to plot an confidence
  * interval (ellipse) for a 2D Gaussian ('float' version)..
   *  \param cov22 The 2x2 covariance matrix
@@ -231,7 +217,7 @@ std::vector<T>& loadVector(std::vector<T>& v, At (&theArray)[N])
 /**  @} */  // end of grouping container_ops_grp
 
 /** \defgroup mrpt_math_io Custom I/O for math containers
-  * \ingroup mrpt_base_grp */
+  * \ingroup mrpt_math_grp */
 /** \addtogroup mrpt_math_io
   * @{ */
 

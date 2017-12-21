@@ -1307,9 +1307,9 @@ void gridmapSimulFrame::OnbtnResimulateClick(wxCommandEvent& event)
 
 	// Assert sizes:
 	ASSERT_(rawlog.size() > 0);
-	ASSERT_(GT.getColCount() >= 4);
+	ASSERT_(GT.cols() >= 4);
 	ASSERT_(rawlog.getType(0) == CRawlog::etActionCollection);
-	ASSERT_(rawlog.size() / 2 == GT.getRowCount());
+	ASSERT_(rawlog.size() / 2 == GT.rows());
 
 	// Ask for the output:
 	string out_raw_file, out_GT_file;

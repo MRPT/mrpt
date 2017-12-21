@@ -9,7 +9,7 @@
 
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/SE_traits.h>
-#include <mrpt/math/jacobians.h>
+#include <mrpt/math/num_jacobian.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;

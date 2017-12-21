@@ -33,7 +33,7 @@ void CEllipsoid::render_dl() const
 #if MRPT_HAS_OPENGL_GLUT
 	MRPT_START
 
-	const size_t dim = m_cov.getColCount();
+	const size_t dim = m_cov.cols();
 
 	if (m_eigVal(0, 0) != 0.0 && m_eigVal(1, 1) != 0.0 &&
 		(dim == 2 || m_eigVal(2, 2) != 0.0) && m_quantiles != 0.0)
@@ -249,7 +249,7 @@ bool quickSolveEqn(double a, double b_2, double c, double& t)
 
 bool CEllipsoid::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 {
-	if (m_cov.getRowCount() != 3) return false;
+	if (m_cov.rows() != 3) return false;
 	TLine3D lin, lin2;
 	createFromPoseX(o - this->m_pose, lin);
 	lin.unitarize();  // By adding this line, distance from any point of the
@@ -281,7 +281,7 @@ void CEllipsoid::setCovMatrix(
 {
 	MRPT_START
 
-	ASSERT_(m.getColCount() == m.getRowCount());
+	ASSERT_(m.cols() == m.rows());
 	ASSERT_(
 		size(m, 1) == 2 || size(m, 1) == 3 ||
 		(resizeToSize > 0 && (resizeToSize == 2 || resizeToSize == 3)));

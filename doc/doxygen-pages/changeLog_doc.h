@@ -24,13 +24,16 @@
 	- Using a variant type from the mapbox variant library, and added serialization with variants(To be replaced by std::variant eventually).
 - <b>Detailed list of changes:</b>
 	- Changes in libraries:
-		- \ref mrpt_base_grp
+		- \ref mrpt_base_grp => Refactored into several smaller libraries, one per namespace.
+		- \ref mrpt_math_grp  [NEW IN MRPT 2.0.0]
 			- Removed functions (replaced by C++11/14 standard library):
 				- mrpt::math::erf, mrpt::math::erfc, std::isfinite, mrpt::math::std::isnan
 				- `mrpt::math::make_vector<>` => `std::vector<>{...}` braced initializator
-			- Added: mrpt::make_aligned_shared<> template
-			- mrpt::utils::CConfigFileBase::write() now supports enum types.
-			- New method mrpt::utils::CStream::ReadPOD() and macro `MRPT_READ_POD()` for reading unaligned POD variables.-
+			- Removed the include file: `<mrpt/math/jacobians.h>`. Replace by `<mrpt/math/num_jacobian.h>` or individual methods in \ref mrpt_poses_grp classes.
+		- \ref mrpt_config_grp  [NEW IN MRPT 2.0.0]
+			- mrpt::config::CConfigFileBase::write() now supports enum types.
+		- \ref mrpt_serialization_grp  [NEW IN MRPT 2.0.0]
+			- New method mrpt::serialization::CArchive::ReadPOD() and macro `MRPT_READ_POD()` for reading unaligned POD variables.-
 		- \ref mrpt_slam_grp
 			- rbpf-slam: Add support for simplemap continuation.
 		- \ref mrpt_nav_grp

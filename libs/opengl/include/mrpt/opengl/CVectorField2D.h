@@ -137,10 +137,10 @@ class CVectorField2D : public CRenderizableDisplayList
 		const float center_x, const float center_y, const float cellsize_x,
 		const float cellsize_y)
 	{
-		xMin = center_x - 0.5 * cellsize_x * (xcomp.getColCount() - 1);
-		xMax = center_x + 0.5 * cellsize_x * (xcomp.getColCount() - 1);
-		yMin = center_y - 0.5 * cellsize_y * (xcomp.getRowCount() - 1);
-		yMax = center_y + 0.5 * cellsize_y * (xcomp.getRowCount() - 1);
+		xMin = center_x - 0.5 * cellsize_x * (xcomp.cols() - 1);
+		xMax = center_x + 0.5 * cellsize_x * (xcomp.cols() - 1);
+		yMin = center_y - 0.5 * cellsize_y * (xcomp.rows() - 1);
+		yMax = center_y + 0.5 * cellsize_y * (xcomp.rows() - 1);
 		CRenderizableDisplayList::notifyChange();
 	}
 
@@ -206,8 +206,8 @@ class CVectorField2D : public CRenderizableDisplayList
 		mrpt::math::CMatrixFloat& Matrix_x, mrpt::math::CMatrixFloat& Matrix_y)
 	{
 		ASSERT_(
-			(Matrix_x.getRowCount() == Matrix_y.getRowCount()) &&
-			(Matrix_x.getColCount() == Matrix_y.getColCount()))
+			(Matrix_x.rows() == Matrix_y.rows()) &&
+			(Matrix_x.cols() == Matrix_y.cols()))
 		xcomp = Matrix_x;
 		ycomp = Matrix_y;
 		CRenderizableDisplayList::notifyChange();
@@ -229,10 +229,10 @@ class CVectorField2D : public CRenderizableDisplayList
 	}
 
 	/** Returns the total count of rows used to represent the vector field. */
-	inline size_t getColCount() const { return xcomp.getColCount(); }
+	inline size_t cols() const { return xcomp.cols(); }
 	/** Returns the total count of columns used to represent the vector field.
 	 */
-	inline size_t getRowCount() const { return xcomp.getRowCount(); }
+	inline size_t rows() const { return xcomp.rows(); }
 	/**
 	  * Class factory
 	  */

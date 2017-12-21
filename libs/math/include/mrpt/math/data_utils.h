@@ -15,7 +15,7 @@
 namespace mrpt
 {
 /** This base provides a set of functions for maths stuff. \ingroup
- * mrpt_base_grp
+ * mrpt_math_grp
  */
 namespace math
 {
@@ -110,8 +110,8 @@ template <class VECTORLIKE, class MATRIXLIKE>
 inline typename MATRIXLIKE::Scalar mahalanobisDistance2(
 	const VECTORLIKE& delta_mu, const MATRIXLIKE& cov)
 {
-	ASSERTDEB_(cov.isSquare())
-	ASSERTDEB_(size_t(cov.getColCount()) == size_t(delta_mu.size()))
+	ASSERTDEB_(cov.isSquare());
+	ASSERTDEB_(size_t(cov.cols()) == size_t(delta_mu.size()));
 	return multiply_HCHt_scalar(delta_mu, cov.inverse());
 }
 
@@ -138,7 +138,7 @@ T productIntegralTwoGaussians(
 	const CMatrixTemplateNumeric<T>& COV2)
 {
 	const size_t vector_dim = mean_diffs.size();
-	ASSERT_(vector_dim >= 1)
+	ASSERT_(vector_dim >= 1);
 
 	CMatrixTemplateNumeric<T> C = COV1;
 	C += COV2;  // Sum of covs:
@@ -183,7 +183,7 @@ void productIntegralAndMahalanobisTwoGaussians(
 	T& maha2_out, T& intprod_out, const MATLIKE1* CROSS_COV12 = nullptr)
 {
 	const size_t vector_dim = mean_diffs.size();
-	ASSERT_(vector_dim >= 1)
+	ASSERT_(vector_dim >= 1);
 
 	MATLIKE1 C = COV1;
 	C += COV2;  // Sum of covs:
@@ -212,14 +212,14 @@ void mahalanobisDistance2AndLogPDF(
 	T& log_pdf_out)
 {
 	MRPT_START
-	ASSERTDEB_(cov.isSquare())
-	ASSERTDEB_(size_t(cov.getColCount()) == size_t(diff_mean.size()))
+	ASSERTDEB_(cov.isSquare());
+	ASSERTDEB_(size_t(cov.cols()) == size_t(diff_mean.size()));
 	MATRIXLIKE C_inv;
 	cov.inv(C_inv);
 	maha2_out = multiply_HCHt_scalar(diff_mean, C_inv);
 	log_pdf_out = static_cast<typename MATRIXLIKE::Scalar>(-0.5) *
 				  (maha2_out +
-				   static_cast<typename MATRIXLIKE::Scalar>(cov.getColCount()) *
+				   static_cast<typename MATRIXLIKE::Scalar>(cov.cols()) *
 					   ::log(static_cast<typename MATRIXLIKE::Scalar>(M_2PI)) +
 				   ::log(cov.det()));
 	MRPT_END
@@ -264,12 +264,12 @@ template<class VECTOR_OF_VECTORS, class MATRIXLIKE,class VECTORLIKE,class VECTOR
 			VECTORLIKE &means,
 			const VECTORLIKE2 *weights_mean,
 			const VECTORLIKE3 *weights_cov,
-            const bool *elem_do_wrap2pi = nullptr
+			const bool *elem_do_wrap2pi = nullptr
 			)
 {
 	ASSERTMSG_(
 		elements.size() != 0,
-		"No samples provided, so there is no way to deduce the output size.")
+		"No samples provided, so there is no way to deduce the output size.");
 	typedef typename MATRIXLIKE::Scalar T;
 	const size_t DIM = elements[0].size();
 	means.resize(DIM);
@@ -278,7 +278,7 @@ template<class VECTOR_OF_VECTORS, class MATRIXLIKE,class VECTORLIKE,class VECTOR
 	const T NORM = 1.0 / nElms;
 	if (weights_mean)
 	{
-		ASSERTDEB_(size_t(weights_mean->size()) == size_t(nElms))
+		ASSERTDEB_(size_t(weights_mean->size()) == size_t(nElms));
 	}
 	// The mean goes first:
 	for (size_t i = 0; i < DIM; i++)
@@ -336,7 +336,7 @@ template<class VECTOR_OF_VECTORS, class MATRIXLIKE,class VECTORLIKE,class VECTOR
 			typename MATRIXLIKE::Scalar elem = 0;
 			if (weights_cov)
 			{
-				ASSERTDEB_(size_t(weights_cov->size()) == size_t(nElms))
+				ASSERTDEB_(size_t(weights_cov->size()) == size_t(nElms));
 				for (size_t k = 0; k < nElms; k++)
 				{
 					const T Ai = (elements[k][i] - means[i]);

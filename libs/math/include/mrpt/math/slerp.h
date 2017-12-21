@@ -6,11 +6,10 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef mrpt_math_slerp_H
-#define mrpt_math_slerp_H
+#pragma once
 
 #include <mrpt/math/CQuaternion.h>
-#include <mrpt/poses/poses_frwds.h>
+#include <mrpt/math/lightweight_geom_data.h>
 
 namespace mrpt
 {
@@ -36,7 +35,7 @@ void slerp(
 	const CQuaternion<T>& q0, const CQuaternion<T>& q1, const double t,
 	CQuaternion<T>& q)
 {
-	ASSERTDEB_(t >= 0 && t <= 1)
+	ASSERTDEB_(t >= 0 && t <= 1);
 	// See:
 	// http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/slerp/index.htm
 	// Angle between q0-q1:
@@ -84,14 +83,7 @@ void slerp(
   * \param[out] p The output, interpolated pose.
   * \exception std::exception Only in Debug, if t is not in the valid range.
   */
-void slerp(
-	const mrpt::poses::CPose3D& q0, const mrpt::poses::CPose3D& q1,
-	const double t, mrpt::poses::CPose3D& p);
-
-//! \overload
-void slerp(
-	const mrpt::poses::CPose3DQuat& q0, const mrpt::poses::CPose3DQuat& q1,
-	const double t, mrpt::poses::CPose3DQuat& p);
+void slerp(const TPose3D& q0, const TPose3D& q1,const double t, TPose3D& p);
 
 /** \overload Interpolates two SO(3) elements (the rotational part only), given
  * as mrpt::math::TPose3D
@@ -106,4 +98,3 @@ void slerp_ypr(
 /** @} */  // grouping
 }
 }
-#endif

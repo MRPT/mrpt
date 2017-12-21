@@ -141,8 +141,8 @@ std::ostream& operator<<(std::ostream& out, std::vector<T>* d)
 
 /** Binary dump of a CArrayNumeric<T,N> to a stream. */
 template <typename T, size_t N>
-mrpt::utils::CStream& operator<<(
-	mrpt::utils::CStream& ostrm, const CArrayNumeric<T, N>& a)
+mrpt::serialization::CArchive& operator<<(
+	mrpt::serialization::CArchive& ostrm, const CArrayNumeric<T, N>& a)
 {
 	ostrm << mrpt::typemeta::TTypeName<CArrayNumeric<T, N>>::get();
 	if (N) ostrm.WriteBufferFixEndianness<T>(&a[0], N);
@@ -151,8 +151,8 @@ mrpt::utils::CStream& operator<<(
 
 /** Binary read of a CArrayNumeric<T,N> from a stream. */
 template <typename T, size_t N>
-mrpt::utils::CStream& operator>>(
-	mrpt::utils::CStream& istrm, CArrayNumeric<T, N>& a)
+mrpt::serialization::CArchive& operator>>(
+	mrpt::serialization::CArchive& istrm, CArrayNumeric<T, N>& a)
 {
 	static const std::string namExpect =
 		mrpt::typemeta::TTypeName<CArrayNumeric<T, N>>::get();

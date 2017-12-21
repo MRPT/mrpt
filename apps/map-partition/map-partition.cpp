@@ -172,7 +172,7 @@ void Test()
 
 	std::sort(parts.begin(), parts.end());
 
-	CMatrix B(A.getRowCount(), A.getColCount());
+	CMatrix B(A.rows(), A.cols());
 	vector_uint rearrIndexes;
 	vector_uint separations;
 	for (size_t i = 0; i < parts.size(); i++)
@@ -201,7 +201,7 @@ void Test()
 		win.showImage(img);
 		win2.showImage(img2);
 		win.setPos(20, 20);
-		win2.setPos((int)(40 + A.getColCount()), 20);
+		win2.setPos((int)(40 + A.cols()), 20);
 		cout << "Press any key to continue..." << endl;
 		win2.waitForKey();
 	}
