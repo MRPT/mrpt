@@ -39,7 +39,7 @@ namespace math
  whom with the experimental function is compared, refill "intermediateFun" and
  "errorFun2".
 		- Refill only on of the alternatives.
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_math_grp
 */
 template <typename T, typename NUM, typename OTHER>
 class CMonteCarlo

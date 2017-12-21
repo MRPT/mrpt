@@ -14,11 +14,11 @@
 #include <mrpt/math/CSparseMatrixTemplate.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
-//#include <mrpt/math/data_utils.h>
+#include <mrpt/math/CArrayNumeric.h>
+#include <mrpt/math/data_utils.h>
 #include <mrpt/math/ops_containers.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace std;
 using namespace mrpt::math;
 
@@ -457,7 +457,7 @@ bool intersectInCommonPlane(
 	// Project into 3D plane, ignoring Z coordinate.
 	TPose3D pose;
 	TPlane(p).getAsPose3D(pose);
-	TPose3D poseNeg = TPose3D(0, 0, 0, 0, 0, 0) - pose;
+	TPose3D poseNeg = -pose;
 	project3D(o1, poseNeg, proj1);
 	project3D(o2, poseNeg, proj2);
 	T2D proj1_2D;
@@ -1487,8 +1487,8 @@ bool math::intersect(
 			hmInters++;
 		}
 	}
-	for (size_t i=0;i<intersections.getRowCount();i++)	{
-		for (size_t j=0;j<intersections.getColCount();j++) cout<<fromObject(intersections(i,j));
+	for (size_t i=0;i<intersections.rows();i++)	{
+		for (size_t j=0;j<intersections.cols();j++) cout<<fromObject(intersections(i,j));
 		cout<<'\n';
 	}
 	if (hmInters==0)	{
@@ -2243,7 +2243,7 @@ bool depthFirstSearch(
 	std::vector<std::vector<MatchingVertex>>& res, std::vector<bool>& used,
 	size_t searching, unsigned char mask, std::vector<MatchingVertex>& current)
 {
-	for (size_t i = 0; i < mat.getColCount(); i++)
+	for (size_t i = 0; i < mat.cols(); i++)
 		if (!used[i] && mat.isNotNull(searching, i))
 		{
 			unsigned char match = mat(searching, i) & mask;
@@ -2501,9 +2501,9 @@ bool math::splitInConvexComponents(
 {
 	TPlane p;
 	if (!poly.getPlane(p)) throw std::logic_error("Polygon is skew");
-	TPose3D pose1, pose2;
+	TPose3D pose1;
 	p.getAsPose3DForcingOrigin(poly[0], pose1);
-	pose2 = -pose1;
+	const TPose3D pose2 = -pose1;
 	TPolygon3D polyTmp;
 	project3D(poly, pose2, polyTmp);
 	TPolygon2D poly2D = TPolygon2D(polyTmp);

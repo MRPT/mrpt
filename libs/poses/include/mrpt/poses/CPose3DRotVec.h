@@ -474,9 +474,7 @@ class CPose3DRotVec : public CPose<CPose3DRotVec>,
 		mrpt::math::CMatrixDouble m;
 		if (!m.fromMatlabStringFormat(s))
 			THROW_EXCEPTION("Malformed expression in ::fromString");
-		ASSERTMSG_(
-			mrpt::math::size(m, 1) == 1 && mrpt::math::size(m, 2) == 6,
-			"Wrong size of vector in ::fromString");
+		ASSERTMSG_(m.rows() == 1 && m.cols() == 6, "Expected vector length=6");
 		for (int i = 0; i < 3; i++) m_coords[i] = m.get_unsafe(0, i);
 		for (int i = 0; i < 3; i++) m_rotvec[i] = m.get_unsafe(0, 3 + i);
 	}

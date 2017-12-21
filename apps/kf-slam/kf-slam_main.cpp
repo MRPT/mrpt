@@ -195,7 +195,7 @@ struct kfslam_traits<CRangeBearingKFSLAM>
 			vector<vector_uint> landmarksMembership, partsInObsSpace;
 			CMatrix ERRS(50, 3);
 
-			for (size_t i = 0; i < ERRS.getRowCount(); i++)
+			for (size_t i = 0; i < ERRS.rows(); i++)
 			{
 				size_t K;
 
@@ -341,10 +341,10 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 	{
 		CMatrixDouble mGT_DA;
 		mGT_DA.loadFromTextFile(ground_truth_data_association);
-		ASSERT_ABOVEEQ_(mGT_DA.getColCount(), 3)
+		ASSERT_ABOVEEQ_(mGT_DA.cols(), 3)
 
 		// Convert the loaded matrix into a std::map in GT_DA:
-		for (size_t i = 0; i < mGT_DA.getRowCount(); i++)
+		for (size_t i = 0; i < mGT_DA.rows(); i++)
 		{
 			std::vector<int>& v = GT_DA[mGT_DA(i, 0)];
 			if (v.size() <= mGT_DA(i, 1)) v.resize(mGT_DA(i, 1) + 1);
@@ -855,7 +855,7 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 				 << e.what() << endl;
 		}
 
-		if (GT.getRowCount() > 0 && !LMs.empty())
+		if (GT.rows() > 0 && !LMs.empty())
 		{
 			// Each row has:
 			//   [0] [1] [2]  [6]
@@ -865,7 +865,7 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 			{
 				// Find the entry in the GT for this mapped LM:
 				bool found = false;
-				for (size_t r = 0; r < GT.getRowCount(); r++)
+				for (size_t r = 0; r < GT.rows(); r++)
 				{
 					if (LM_IDs[i] == GT(r, 6))
 					{

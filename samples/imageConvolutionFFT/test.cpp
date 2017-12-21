@@ -50,8 +50,8 @@ void TestImageConvolutionFFT()
 		size_t x, y;
 		size_t actual_lx = img.getWidth();
 		size_t actual_ly = img.getHeight();
-		size_t lx = math::round2up(actual_lx);
-		size_t ly = math::round2up(actual_ly);
+		size_t lx = mrpt::round2up(actual_lx);
+		size_t ly = mrpt::round2up(actual_ly);
 
 		CMatrix i1(ly, lx), i2;
 		// Get as matrixes, padded with zeros up to power-of-two sizes:

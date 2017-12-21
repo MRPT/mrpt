@@ -22,12 +22,14 @@
 using namespace std;  // For min/max, etc...
 using namespace mrpt::serialization; // CArchive, << operator for STL
 
+using mrpt::DEG2RAD;
+using mrpt::RAD2DEG;
+
+
 namespace mrpt
 {
 namespace math
 {
-using namespace mrpt::utils;
-
 TPoint2D::TPoint2D(const TPose2D& p) : x(p.x), y(p.y) {}
 TPoint2D::TPoint2D(const TPoint3D& p) : x(p.x), y(p.y) {}
 TPoint2D::TPoint2D(const TPose3D& p) : x(p.x), y(p.y) {}
@@ -56,7 +58,7 @@ TPose2D::TPose2D(const TPoint3D& p) : x(p.x), y(p.y), phi(0.0) {}
 TPose2D::TPose2D(const TPose3D& p) : x(p.x), y(p.y), phi(p.yaw) {}
 void TPose2D::asString(std::string& s) const
 {
-	s = mrpt::format("[%f %f %f]", x, y, mrpt::utils::RAD2DEG(phi));
+	s = mrpt::format("[%f %f %f]", x, y, RAD2DEG(phi));
 }
 void TPose2D::fromString(const std::string& s)
 {
@@ -99,7 +101,7 @@ mrpt::math::TPose2D mrpt::math::TPose2D::operator-(
 // ----
 void TTwist2D::asString(std::string& s) const
 {
-	s = mrpt::format("[%f %f %f]", vx, vy, mrpt::utils::RAD2DEG(omega));
+	s = mrpt::format("[%f %f %f]", vx, vy, RAD2DEG(omega));
 }
 void TTwist2D::fromString(const std::string& s)
 {
@@ -136,8 +138,8 @@ mrpt::math::TPose2D TTwist2D::operator*(const double dt) const
 void TTwist3D::asString(std::string& s) const
 {
 	s = mrpt::format(
-		"[%f %f %f  %f %f %f]", vx, vy, vz, mrpt::utils::RAD2DEG(wx),
-		mrpt::utils::RAD2DEG(wy), mrpt::utils::RAD2DEG(wz));
+		"[%f %f %f  %f %f %f]", vx, vy, vz, RAD2DEG(wx),
+		RAD2DEG(wy), RAD2DEG(wz));
 }
 void TTwist3D::fromString(const std::string& s)
 {
@@ -423,8 +425,26 @@ void TPose3DQuat::fromString(const std::string& s)
 	ASSERTMSG_(
 		m.rows() == 1 && m.cols() == 7,
 		"Wrong size of vector in ::fromString");
-	for (size_t i = 0; i < m.getColCount(); i++)
+	for (int i = 0; i < m.cols(); i++)
 		(*this)[i] = m.get_unsafe(0, i);
+}
+TPose3D mrpt::math::operator -(const TPose3D &p)
+{
+	CMatrixDouble44 H;
+	p.getInverseHomogeneousMatrix(H);
+	TPose3D ret;
+	ret.fromHomogeneousMatrix(H);
+	return ret;
+}
+TPose3D mrpt::math::operator -(const TPose3D &b, const TPose3D &a)
+{
+	// b - a = A^{-1} * B
+	CMatrixDouble44 Hainv, Hb;
+	a.getInverseHomogeneousMatrix(Hainv);
+	b.getHomogeneousMatrix(Hb);
+	TPose3D ret;
+	ret.fromHomogeneousMatrix(Hainv * Hb);
+	return ret;
 }
 
 // Text streaming:

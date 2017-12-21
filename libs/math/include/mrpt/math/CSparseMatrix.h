@@ -92,7 +92,7 @@ struct CExceptionNotDefPos : public std::exception
   *
   * \sa mrpt::math::MatrixBlockSparseCols, mrpt::math::CMatrixFixedNumeric,
   *mrpt::math::CMatrixTemplateNumeric, etc.
-  * \ingroup mrpt_base_grp
+  * \ingroup mrpt_math_grp
   */
 class CSparseMatrix
 {
@@ -106,8 +106,8 @@ class CSparseMatrix
 		std::vector<int> row_list, col_list;  // Use "int" for convenience so we
 		// can do a memcpy below...
 		std::vector<double> content_list;
-		const int nCol = C.getColCount();
-		const int nRow = C.getRowCount();
+		const int nCol = C.cols();
+		const int nRow = C.rows();
 		for (int c = 0; c < nCol; ++c)
 		{
 			col_list.push_back(row_list.size());
@@ -181,14 +181,14 @@ class CSparseMatrix
 	{
 		ASSERTMSG_(
 			!data.empty(),
-			"Input data must contain at least one non-zero element.")
+			"Input data must contain at least one non-zero element.");
 		sparse_matrix.i =
 			nullptr;  // This is to know they shouldn't be tried to free()
 		sparse_matrix.p = nullptr;
 		sparse_matrix.x = nullptr;
 
 		// 1) Create triplet matrix
-		CSparseMatrix triplet(data.getRowCount(), data.getColCount());
+		CSparseMatrix triplet(data.rows(), data.cols());
 		// 2) Put data in:
 		for (typename CSparseMatrixTemplate<T>::const_iterator it =
 				 data.begin();
@@ -322,8 +322,8 @@ class CSparseMatrix
 			THROW_EXCEPTION(
 				"insert_entry() is only available for sparse matrix in "
 				"'triplet' format.")
-		const size_t nR = M.getRowCount();
-		const size_t nC = M.getColCount();
+		const size_t nR = M.rows();
+		const size_t nC = M.cols();
 		for (size_t r = 0; r < nR; r++)
 			for (size_t c = 0; c < nC; c++)
 				insert_entry_fast(row + r, col + c, M.get_unsafe(r, c));
@@ -380,8 +380,8 @@ class CSparseMatrix
 	bool saveToTextFile_sparse(const std::string& filName);
 
 	// Very basic, standard methods that MRPT methods expect for any matrix:
-	inline size_t getRowCount() const { return sparse_matrix.m; }
-	inline size_t getColCount() const { return sparse_matrix.n; }
+	inline size_t rows() const { return sparse_matrix.m; }
+	inline size_t cols() const { return sparse_matrix.n; }
 	/** Change the number of rows in the matrix (can't be lower than current
 	 * size) */
 	inline void setRowCount(const size_t nRows)

@@ -394,9 +394,7 @@ void CPose2D::fromString(const std::string& s)
 	CMatrixDouble m;
 	if (!m.fromMatlabStringFormat(s))
 		THROW_EXCEPTION("Malformed expression in ::fromString");
-	ASSERTMSG_(
-		mrpt::math::size(m, 1) == 1 && mrpt::math::size(m, 2) == 3,
-		"Wrong size of vector in ::fromString");
+	ASSERTMSG_(m.rows() == 1 && m.cols() == 3,"Expected vector length=3");
 	x(m.get_unsafe(0, 0));
 	y(m.get_unsafe(0, 1));
 	phi(DEG2RAD(m.get_unsafe(0, 2)));

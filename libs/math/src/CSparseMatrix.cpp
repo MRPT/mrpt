@@ -10,13 +10,14 @@
 #include "math-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/CSparseMatrix.h>
+#include <string>
+#include <iostream>
 
 using std::string;
 using std::cout;
 using std::endl;
 using namespace mrpt;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 
 /** Copy constructor */
 CSparseMatrix::CSparseMatrix(const CSparseMatrix& other)
@@ -37,7 +38,7 @@ void CSparseMatrix::copy(const cs* const sm)
 {
 	ASSERTMSG_(
 		sm->nz == -1,
-		"I expected a column-compressed sparse matrix, not a triplet form.")
+		"I expected a column-compressed sparse matrix, not a triplet form.");
 
 	sparse_matrix.m = sm->m;
 	sparse_matrix.n = sm->n;
@@ -133,7 +134,7 @@ void CSparseMatrix::construct_from_existing_cs(const cs& sm)
 {
 	ASSERTMSG_(
 		sm.nz == -1,
-		"I expected a column-compressed sparse matrix, not a triplet form.")
+		"I expected a column-compressed sparse matrix, not a triplet form.");
 	sparse_matrix.i = (int*)malloc(sizeof(int) * sm.nzmax);
 	sparse_matrix.p = (int*)malloc(sizeof(int) * (sm.n + 1));
 	sparse_matrix.x = (double*)malloc(sizeof(double) * sm.nzmax);
@@ -188,21 +189,21 @@ void CSparseMatrix::operator=(const CSparseMatrix& other)
 void CSparseMatrix::add_AB(const CSparseMatrix& A, const CSparseMatrix& B)
 {
 	ASSERT_(
-		A.getColCount() == B.getColCount() &&
-		A.getRowCount() == B.getRowCount())
+		A.cols() == B.cols() &&
+		A.rows() == B.rows());
 
 	cs* sm = cs_add(&(A.sparse_matrix), &(B.sparse_matrix), 1, 1);
-	ASSERT_(sm)
+	ASSERT_(sm);
 	this->copy_fast(sm);
 	cs_spfree(sm);
 }
 
 void CSparseMatrix::multiply_AB(const CSparseMatrix& A, const CSparseMatrix& B)
 {
-	ASSERT_(A.getColCount() == B.getRowCount())
+	ASSERT_(A.cols() == B.rows());
 
 	cs* sm = cs_multiply(&(A.sparse_matrix), &(B.sparse_matrix));
-	ASSERT_(sm)
+	ASSERT_(sm);
 	this->copy_fast(sm);
 	cs_spfree(sm);
 }
@@ -211,8 +212,8 @@ void CSparseMatrix::multiply_Ab(
 	const mrpt::math::CVectorDouble& b,
 	mrpt::math::CVectorDouble& out_res) const
 {
-	ASSERT_EQUAL_(int(b.size()), int(getColCount()))
-	out_res.resize(getRowCount());
+	ASSERT_EQUAL_(int(b.size()), int(cols()));
+	out_res.resize(rows());
 	const double* y = &(b[0]);
 	double* x = &(out_res[0]);
 	cs_gaxpy(&sparse_matrix, y, x);
@@ -221,7 +222,7 @@ void CSparseMatrix::multiply_Ab(
 CSparseMatrix CSparseMatrix::transpose() const
 {
 	cs* sm = cs_transpose(&sparse_matrix, 1);
-	ASSERT_(sm)
+	ASSERT_(sm);
 	CSparseMatrix SM(sm);
 	cs_spfree(sm);
 	return SM;
@@ -242,7 +243,7 @@ void CSparseMatrix::cs2dense(const cs& SM, CMatrixDouble& d_M)
 	}
 	else
 	{  // Column compressed format:
-		ASSERT_(SM.x)  // JL: Could it be nullptr and be OK???
+		ASSERT_(SM.x);  // JL: Could it be nullptr and be OK???
 
 		for (int j = 0; j < SM.n; j++)
 		{
@@ -328,7 +329,7 @@ bool CSparseMatrix::saveToTextFile_sparse(const std::string& filName)
 	}
 	else
 	{  // Column compressed format:
-		ASSERT_(sparse_matrix.x)  // JL: Could it be nullptr and be OK???
+		ASSERT_(sparse_matrix.x);  // JL: Could it be nullptr and be OK???
 
 		for (int j = 0; j < sparse_matrix.n; j++)
 		{
@@ -359,8 +360,8 @@ CSparseMatrix::CholeskyDecomp::CholeskyDecomp(const CSparseMatrix& SM)
 	  m_numeric_structure(nullptr),
 	  m_originalSM(&SM)
 {
-	ASSERT_(SM.getColCount() == SM.getRowCount())
-	ASSERT_(SM.isColumnCompressed())
+	ASSERT_(SM.cols() == SM.rows());
+	ASSERT_(SM.isColumnCompressed());
 
 	// symbolic decomposition:
 	m_symbolic_structure =
@@ -392,7 +393,7 @@ void CSparseMatrix::CholeskyDecomp::get_L(CMatrixDouble& L) const
 void CSparseMatrix::CholeskyDecomp::backsub(
 	const Eigen::VectorXd& b, Eigen::VectorXd& sol) const
 {
-	ASSERT_(b.size() > 0)
+	ASSERT_(b.size() > 0);
 	sol.resize(b.size());
 	this->backsub(&b[0], &sol[0], b.size());
 }
@@ -401,7 +402,7 @@ void CSparseMatrix::CholeskyDecomp::backsub(
 void CSparseMatrix::CholeskyDecomp::backsub(
 	const double* b, double* sol, const size_t N) const
 {
-	ASSERT_(N > 0)
+	ASSERT_(N > 0);
 	std::vector<double> tmp(N);
 
 	cs_ipvec(

@@ -33,7 +33,7 @@ namespace math
  * \sa CMatrixTemplateNumeric (for dynamic-size matrices)
  * \note For a complete introduction to Matrices and vectors in MRPT, see:
  * http://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_math_grp
  */
 template <typename T, size_t NROWS, size_t NCOLS>
 class CMatrixFixedNumeric

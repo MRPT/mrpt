@@ -34,7 +34,7 @@ namespace math
  * "std::map<size_t,size_t>" in very sparse systems to save memory at the cost
  * of a O(log N) access time when using the remap indices.
   *
-  * \ingroup mrpt_base_grp
+  * \ingroup mrpt_math_grp
   */
 template <typename Scalar, int NROWS, int NCOLS, typename INFO, bool HAS_REMAP,
 		  typename INDEX_REMAP_MAP_IMPL =
@@ -102,7 +102,7 @@ struct MatrixBlockSparseCols
 	/** Change the number of columns (keep old contents) */
 	inline void setColCount(const size_t nCols) { cols.resize(nCols); }
 	/** Get current number of cols. \sa findCurrentNumberOfRows */
-	inline size_t getColCount() const { return cols.size(); }
+	inline size_t cols() const { return cols.size(); }
 	/** Clear all the entries in each column (do not change the number of
 	 * columns, though!) \sa getColCount */
 	inline void clearColEntries()
@@ -167,7 +167,7 @@ struct MatrixBlockSparseCols
 	}
 
 	/** Goes over all the columns and keep the largest column length. \sa
-	 * getColCount() */
+	 * cols() */
 	size_t findCurrentNumberOfRows() const
 	{
 		size_t nRows = 0;

@@ -14,7 +14,7 @@
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/ops_matrices.h>
-#include <mrpt/math/jacobians.h>
+#include <mrpt/math/num_jacobian.h>
 #include <mrpt/math/data_utils.h>
 #include <mrpt/random.h>
 #include <functional>
@@ -24,7 +24,7 @@ namespace mrpt
 namespace math
 {
 /** @addtogroup  gausspdf_transform_grp Gaussian PDF transformation functions
-  *  \ingroup mrpt_base_grp
+  *  \ingroup mrpt_math_grp
   * @{ */
 
 /** Scaled unscented transformation (SUT) for estimating the Gaussian

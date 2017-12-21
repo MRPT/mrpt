@@ -273,11 +273,11 @@ class CVectorField3D : public CRenderizableDisplayList
 		mrpt::math::CMatrixFloat& Matrix_z)
 	{
 		ASSERT_(
-			(Matrix_x.getRowCount() == Matrix_y.getRowCount()) &&
-			(Matrix_x.getRowCount() == Matrix_z.getRowCount()))
+			(Matrix_x.rows() == Matrix_y.rows()) &&
+			(Matrix_x.rows() == Matrix_z.rows()))
 		ASSERT_(
-			(Matrix_x.getColCount() == Matrix_y.getColCount()) &&
-			(Matrix_x.getColCount() == Matrix_z.getColCount()))
+			(Matrix_x.cols() == Matrix_y.cols()) &&
+			(Matrix_x.cols() == Matrix_z.cols()))
 		x_vf = Matrix_x;
 		y_vf = Matrix_y;
 		z_vf = Matrix_z;
@@ -289,11 +289,11 @@ class CVectorField3D : public CRenderizableDisplayList
 		Eigen::MatrixXf& Matrix_z)
 	{
 		ASSERT_(
-			(Matrix_x.getRowCount() == Matrix_y.getRowCount()) &&
-			(Matrix_x.getRowCount() == Matrix_z.getRowCount()))
+			(Matrix_x.rows() == Matrix_y.rows()) &&
+			(Matrix_x.rows() == Matrix_z.rows()))
 		ASSERT_(
-			(Matrix_x.getColCount() == Matrix_y.getColCount()) &&
-			(Matrix_x.getColCount() == Matrix_z.getColCount()))
+			(Matrix_x.cols() == Matrix_y.cols()) &&
+			(Matrix_x.cols() == Matrix_z.cols()))
 		x_vf = Matrix_x;
 		y_vf = Matrix_y;
 		z_vf = Matrix_z;
@@ -309,11 +309,11 @@ class CVectorField3D : public CRenderizableDisplayList
 		mrpt::math::CMatrixFloat& Matrix_z)
 	{
 		ASSERT_(
-			(Matrix_x.getRowCount() == Matrix_y.getRowCount()) &&
-			(Matrix_x.getRowCount() == Matrix_z.getRowCount()))
+			(Matrix_x.rows() == Matrix_y.rows()) &&
+			(Matrix_x.rows() == Matrix_z.rows()))
 		ASSERT_(
-			(Matrix_x.getColCount() == Matrix_y.getColCount()) &&
-			(Matrix_x.getColCount() == Matrix_z.getColCount()))
+			(Matrix_x.cols() == Matrix_y.cols()) &&
+			(Matrix_x.cols() == Matrix_z.cols()))
 		x_p = Matrix_x;
 		y_p = Matrix_y;
 		z_p = Matrix_z;
@@ -325,11 +325,11 @@ class CVectorField3D : public CRenderizableDisplayList
 		Eigen::MatrixXf& Matrix_z)
 	{
 		ASSERT_(
-			(Matrix_x.getRowCount() == Matrix_y.getRowCount()) &&
-			(Matrix_x.getRowCount() == Matrix_z.getRowCount()))
+			(Matrix_x.rows() == Matrix_y.rows()) &&
+			(Matrix_x.rows() == Matrix_z.rows()))
 		ASSERT_(
-			(Matrix_x.getColCount() == Matrix_y.getColCount()) &&
-			(Matrix_x.getColCount() == Matrix_z.getColCount()))
+			(Matrix_x.cols() == Matrix_y.cols()) &&
+			(Matrix_x.cols() == Matrix_z.cols()))
 		x_p = Matrix_x;
 		y_p = Matrix_y;
 		z_p = Matrix_z;
@@ -351,10 +351,10 @@ class CVectorField3D : public CRenderizableDisplayList
 	}
 
 	/** Returns the total count of rows used to represent the vector field. */
-	inline size_t getColCount() const { return x_vf.getColCount(); }
+	inline size_t cols() const { return x_vf.cols(); }
 	/** Returns the total count of columns used to represent the vector field.
 	 */
-	inline size_t getRowCount() const { return x_vf.getRowCount(); }
+	inline size_t rows() const { return x_vf.rows(); }
 	/**
 		* Class factory
 		*/

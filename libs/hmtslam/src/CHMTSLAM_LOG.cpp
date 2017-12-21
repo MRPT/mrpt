@@ -121,7 +121,7 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 					{
 						CMatrix  A;
 						bestLMH->m_robotPosesGraph.partitioner.getAdjacencyMatrix( A );
-						if (A.getColCount()>0)
+						if (A.cols()>0)
 						{
 							A.adjustRange();
 							A.saveToTextFile( format("%s/ASSO/mostLikelyLMH_ASSO_%05u.txt", m_options.LOG_OUTPUT_DIR.c_str(), nIteration ) );

@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/math/jacobians.h>
+#include <mrpt/math/num_jacobian.h>
 #include <CTraitsTest.h>
 #include <gtest/gtest.h>
 

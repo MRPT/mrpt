@@ -7,16 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef mrpt_robust_kernels_H
-#define mrpt_robust_kernels_H
-
-#include <mrpt/utils/types.h>
+#pragma once
 
 namespace mrpt
 {
 namespace math
 {
-/** \addtogroup mrpt_base_grp
+/** \addtogroup mrpt_math_grp
   *  @{ */
 
 /** The different types of kernels for usage within a robustified least-squares
@@ -80,5 +77,3 @@ struct RobustKernel<rkPseudoHuber, T>
 /** @} */  // end of grouping
 }
 }
-
-#endif

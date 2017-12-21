@@ -65,7 +65,7 @@ struct CMatrixTemplateSize : public std::array<size_t, 2>
  * \note For a complete introduction to Matrices and vectors in MRPT, see:
  *http://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes
  * \sa CMatrixTemplateNumeric
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_math_grp
  */
 template <class T>
 class CMatrixTemplate
@@ -153,8 +153,8 @@ class CMatrixTemplate
 	{
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
 		ASSERT_(
-			(r >= N) && (r + N < getRowCount()) && (c >= N) &&
-			(c + N < getColCount()));
+			(r >= N) && (r + N < rows()) && (c >= N) &&
+			(c + N < cols()));
 #endif
 	}
 	/*! Fill all the elements with a given value (Note: named "fillAll" since
@@ -297,13 +297,13 @@ class CMatrixTemplate
 	}
 
 	/** Number of rows in the matrix
-	  * \sa getRowCount, getColCount, nr, nc
+	  * \sa rows(), getColCount, nr, nc
 	  */
-	inline size_t getRowCount() const { return m_Rows; }
+	inline size_t rows() const { return m_Rows; }
 	/** Number of columns in the matrix
-	  * \sa getRowCount, getColCount, nr, nc
+	  * \sa rows(), getColCount, nr, nc
 	 */
-	inline size_t getColCount() const { return m_Cols; }
+	inline size_t cols() const { return m_Cols; }
 	/** Get a 2-vector with [NROWS NCOLS] (as in MATLAB command size(x)) */
 	inline CMatrixTemplateSize size() const
 	{

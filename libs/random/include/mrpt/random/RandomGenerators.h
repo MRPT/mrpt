@@ -123,8 +123,8 @@ class CRandomGenerator
 	void drawUniformMatrix(
 		MAT& matrix, const double unif_min = 0, const double unif_max = 1)
 	{
-		for (size_t r = 0; r < matrix.getRowCount(); r++)
-			for (size_t c = 0; c < matrix.getColCount(); c++)
+		for (size_t r = 0; r < matrix.rows(); r++)
+			for (size_t c = 0; c < matrix.cols(); c++)
 				matrix.get_unsafe(r, c) = static_cast<typename MAT::Scalar>(
 					drawUniform(unif_min, unif_max));
 	}
@@ -172,8 +172,8 @@ class CRandomGenerator
 	void drawGaussian1DMatrix(
 		MAT& matrix, const double mean = 0, const double std = 1)
 	{
-		for (size_t r = 0; r < matrix.getRowCount(); r++)
-			for (size_t c = 0; c < matrix.getColCount(); c++)
+		for (decltype(matrix.rows()) r = 0; r < matrix.rows(); r++)
+			for (decltype(matrix.cols()) c = 0; c < matrix.cols(); c++)
 				matrix.get_unsafe(r, c) = static_cast<typename MAT::Scalar>(
 					drawGaussian1D(mean, std));
 	}
@@ -220,8 +220,8 @@ class CRandomGenerator
 		std::vector<T>& out_result, const MATRIX& cov,
 		const std::vector<T>* mean = nullptr)
 	{
-		const size_t dim = cov.getColCount();
-		if (cov.getRowCount() != cov.getColCount())
+		const size_t dim = cov.cols();
+		if (cov.rows() != cov.cols())
 			throw std::runtime_error(
 				"drawGaussianMultivariate(): cov is not square.");
 		if (mean && mean->size() != dim)
@@ -262,7 +262,7 @@ class CRandomGenerator
 		const VECTORLIKE* mean = nullptr)
 	{
 		const size_t N = cov.rows();
-		if (cov.getRowCount() != cov.getColCount())
+		if (cov.rows() != cov.cols())
 			throw std::runtime_error(
 				"drawGaussianMultivariate(): cov is not square.");
 		if (mean && size_t(mean->size()) != N)
@@ -308,7 +308,7 @@ class CRandomGenerator
 		const typename VECTOR_OF_VECTORS::value_type* mean = nullptr)
 	{
 		const size_t N = cov.rows();
-		if (cov.getRowCount() != cov.getColCount())
+		if (cov.rows() != cov.cols())
 			throw std::runtime_error(
 				"drawGaussianMultivariateMany(): cov is not square.");
 		if (mean && size_t(mean->size()) != N)
@@ -390,8 +390,8 @@ template <class MAT>
 void matrixRandomUni(
 	MAT& matrix, const double unif_min = 0, const double unif_max = 1)
 {
-	for (size_t r = 0; r < matrix.getRowCount(); r++)
-		for (size_t c = 0; c < matrix.getColCount(); c++)
+	for (size_t r = 0; r < matrix.rows(); r++)
+		for (size_t c = 0; c < matrix.cols(); c++)
 			matrix.get_unsafe(r, c) = static_cast<typename MAT::Scalar>(
 				getRandomGenerator().drawUniform(unif_min, unif_max));
 }
@@ -417,8 +417,8 @@ template <class MAT>
 void matrixRandomNormal(
 	MAT& matrix, const double mean = 0, const double std = 1)
 {
-	for (size_t r = 0; r < matrix.getRowCount(); r++)
-		for (size_t c = 0; c < matrix.getColCount(); c++)
+	for (size_t r = 0; r < matrix.rows(); r++)
+		for (size_t c = 0; c < matrix.cols(); c++)
 			matrix.get_unsafe(r, c) = static_cast<typename MAT::Scalar>(
 				mean + std * getRandomGenerator().drawGaussian1D_normalized());
 }

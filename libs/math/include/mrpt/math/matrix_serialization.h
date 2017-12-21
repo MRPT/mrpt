@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/CMatrixD.h>
 
@@ -30,8 +30,8 @@ namespace math
 /** Read operator from a CStream. The format is compatible with that of CMatrix
  * & CMatrixD */
 template <size_t NROWS, size_t NCOLS>
-mrpt::utils::CStream& operator>>(
-	mrpt::utils::CStream& in, CMatrixFixedNumeric<float, NROWS, NCOLS>& M)
+mrpt::serialization::CArchive& operator>>(
+	mrpt::serialization::CArchive& in, CMatrixFixedNumeric<float, NROWS, NCOLS>& M)
 {
 	CMatrix aux;
 	in.ReadObject(&aux);
@@ -39,16 +39,16 @@ mrpt::utils::CStream& operator>>(
 		M.cols() == aux.cols() && M.rows() == aux.rows(),
 		format(
 			"Size mismatch: deserialized is %ux%u, expected is %ux%u",
-			(unsigned)aux.getRowCount(), (unsigned)aux.getColCount(),
-			(unsigned)NROWS, (unsigned)NCOLS))
+			(unsigned)aux.rows(), (unsigned)aux.cols(),
+			(unsigned)NROWS, (unsigned)NCOLS));
 	M = aux;
 	return in;
 }
 /** Read operator from a CStream. The format is compatible with that of CMatrix
  * & CMatrixD */
 template <size_t NROWS, size_t NCOLS>
-mrpt::utils::CStream& operator>>(
-	mrpt::utils::CStream& in, CMatrixFixedNumeric<double, NROWS, NCOLS>& M)
+mrpt::serialization::CArchive& operator>>(
+	mrpt::serialization::CArchive& in, CMatrixFixedNumeric<double, NROWS, NCOLS>& M)
 {
 	CMatrixD aux;
 	in.ReadObject(&aux);
@@ -56,8 +56,8 @@ mrpt::utils::CStream& operator>>(
 		M.cols() == aux.cols() && M.rows() == aux.rows(),
 		format(
 			"Size mismatch: deserialized is %ux%u, expected is %ux%u",
-			(unsigned)aux.getRowCount(), (unsigned)aux.getColCount(),
-			(unsigned)NROWS, (unsigned)NCOLS))
+			(unsigned)aux.rows(), (unsigned)aux.cols(),
+			(unsigned)NROWS, (unsigned)NCOLS));
 	M = aux;
 	return in;
 }
@@ -65,8 +65,8 @@ mrpt::utils::CStream& operator>>(
 /** Write operator for writing into a CStream. The format is compatible with
  * that of CMatrix & CMatrixD */
 template <size_t NROWS, size_t NCOLS>
-mrpt::utils::CStream& operator<<(
-	mrpt::utils::CStream& out,
+mrpt::serialization::CArchive& operator<<(
+	mrpt::serialization::CArchive& out,
 	const CMatrixFixedNumeric<float, NROWS, NCOLS>& M)
 {
 	CMatrix aux = CMatrixFloat(M);
@@ -76,8 +76,8 @@ mrpt::utils::CStream& operator<<(
 /** Write operator for writing into a CStream. The format is compatible with
  * that of CMatrix & CMatrixD */
 template <size_t NROWS, size_t NCOLS>
-mrpt::utils::CStream& operator<<(
-	mrpt::utils::CStream& out,
+mrpt::serialization::CArchive& operator<<(
+	mrpt::serialization::CArchive& out,
 	const CMatrixFixedNumeric<double, NROWS, NCOLS>& M)
 {
 	CMatrixD aux = CMatrixDouble(M);

@@ -71,8 +71,8 @@ void CMesh::updateTriangles() const
 	// mutable std::vector<std::pair<mrpt::math::TPoint3D,size_t> >
 	// vertex_normals;
 
-	const size_t cols = Z.getColCount();
-	const size_t rows = Z.getRowCount();
+	const size_t cols = Z.cols();
+	const size_t rows = Z.rows();
 
 	actualMesh.clear();
 	if (cols == 0 && rows == 0) return;  // empty mesh
@@ -100,9 +100,9 @@ void CMesh::updateTriangles() const
 	}
 
 	bool useMask = false;
-	if (mask.getColCount() != 0 && mask.getRowCount() != 0)
+	if (mask.cols() != 0 && mask.rows() != 0)
 	{
-		ASSERT_(mask.getColCount() == cols && mask.getRowCount() == rows);
+		ASSERT_(mask.cols() == cols && mask.rows() == rows);
 		useMask = true;
 	}
 	const float sCellX = (xMax - xMin) / (rows - 1);
@@ -475,7 +475,7 @@ void CMesh::updateColorsMatrix() const
 		const size_t cols = m_textureImage.getWidth();
 		const size_t rows = m_textureImage.getHeight();
 
-		if ((cols != Z.getColCount()) || (rows != Z.getRowCount()))
+		if ((cols != Z.cols()) || (rows != Z.rows()))
 			printf("\nTexture Image and Z sizes have to be equal");
 
 		else if (m_textureImage.isColor())
@@ -493,8 +493,8 @@ void CMesh::updateColorsMatrix() const
 	}
 	else
 	{
-		const size_t cols = Z.getColCount();
-		const size_t rows = Z.getRowCount();
+		const size_t cols = Z.cols();
+		const size_t rows = Z.rows();
 		C.setSize(rows, cols);
 
 		// Color is proportional to height:

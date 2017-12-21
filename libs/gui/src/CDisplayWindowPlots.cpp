@@ -918,7 +918,7 @@ void CDisplayWindowPlots::plotEllipse(
 	MRPT_START
 	if (!isOpen()) return;
 
-	ASSERT_(cov22.getColCount() == 2 && cov22.getRowCount() == 2);
+	ASSERT_(cov22.cols() == 2 && cov22.rows() == 2);
 	ASSERT_(cov22(0, 0) >= 0);
 	ASSERT_(cov22(1, 1) >= 0);
 	ASSERT_(cov22(0, 1) == cov22(1, 0));

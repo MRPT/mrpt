@@ -181,7 +181,7 @@ void Test_Kinect()
 
 	const double aspect_ratio =
 		480.0 /
-		640.0;  // kinect.getRowCount() / double( kinect.getColCount() );
+		640.0;  // kinect.rows() / double( kinect.cols() );
 
 	opengl::COpenGLViewport::Ptr viewRange,
 		viewInt;  // Extra viewports for the RGB & D images.

@@ -146,14 +146,14 @@ void do_simulation()
 		rawlog.loadFromRawLogFile(in_rawlog_file);
 		ASSERT_(rawlog.size() > 0);
 		ASSERT_(rawlog.getType(0) == CRawlog::etActionCollection);
-		ASSERT_(rawlog.size() / 2 == GT.getRowCount());
+		ASSERT_(rawlog.size() / 2 == GT.rows());
 	}
 
 	// # of simulation steps:
-	size_t N = GT.getRowCount();
+	size_t N = GT.rows();
 
 	// Assert sizes:
-	ASSERT_(GT.getColCount() >= 4);
+	ASSERT_(GT.cols() >= 4);
 
 	// ------------------------------------------
 	// Resimulate scans:

@@ -19,7 +19,7 @@ namespace math
  * "CMatrixTemplateNumeric<double>".
  * \note For a complete introduction to Matrices and vectors in MRPT, see:
  * http://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_math_grp
  */
 class CMatrixD : public mrpt::serialization::CSerializable,
 				 public CMatrixTemplateNumeric<double>
@@ -73,7 +73,7 @@ class CMatrixD : public mrpt::serialization::CSerializable,
 	explicit CMatrixD(const TPoint3D& p);
 
 };  // end of class definition
-mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in, CMatrixD::Ptr& pObj);
+mrpt::serialization::CArchive& operator>>(mrpt::serialization::CArchive& in, CMatrixD::Ptr& pObj);
 
 }  // End of namespace
 }  // End of namespace

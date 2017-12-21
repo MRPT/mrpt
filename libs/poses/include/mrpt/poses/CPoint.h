@@ -113,10 +113,10 @@ class CPoint : public CPoseOrPoint<DERIVEDCLASS>
 		mrpt::math::CMatrixDouble m;
 		if (!m.fromMatlabStringFormat(s))
 			THROW_EXCEPTION("Malformed expression in ::fromString");
-		ASSERT_EQUAL_(mrpt::math::size(m, 1), 1)
-		ASSERT_EQUAL_(mrpt::math::size(m, 2), DERIVEDCLASS::static_size)
+		ASSERT_EQUAL_(m.rows(),1);
+		ASSERT_EQUAL_(m.cols(), DERIVEDCLASS::static_size);
 		for (int i = 0; i < DERIVEDCLASS::static_size; i++)
-			static_cast<DERIVEDCLASS*>(this)->m_coords[i] = m.get_unsafe(0, i);
+			static_cast<DERIVEDCLASS*>(this)->m_coords[i] = m(0, i);
 	}
 
 	inline const double& operator[](unsigned int i) const

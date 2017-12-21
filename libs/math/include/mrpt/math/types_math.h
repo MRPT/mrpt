@@ -61,6 +61,10 @@
 
 namespace mrpt
 {
+namespace serialization
+{
+	class CArchive;
+}
 namespace math
 {
 /** Column vector, like Eigen::MatrixX*, but automatically initialized to zeros
@@ -90,16 +94,14 @@ typedef dynamic_vector<float> CVectorFloat;
 /** Column vector, like Eigen::MatrixXd, but automatically initialized to zeros
  * since construction */
 typedef dynamic_vector<double> CVectorDouble;
-}
 
-namespace utils
-{
-class CStream;
-
-CStream& operator<<(mrpt::utils::CStream& s, const mrpt::math::CVectorFloat& a);
-CStream& operator<<(
-	mrpt::utils::CStream& s, const mrpt::math::CVectorDouble& a);
-CStream& operator>>(mrpt::utils::CStream& in, mrpt::math::CVectorDouble& a);
-CStream& operator>>(mrpt::utils::CStream& in, mrpt::math::CVectorFloat& a);
+mrpt::serialization::CArchive& operator<<(
+	mrpt::serialization::CArchive& s, const mrpt::math::CVectorFloat& a);
+mrpt::serialization::CArchive& operator<<(
+	mrpt::serialization::CArchive& s, const mrpt::math::CVectorDouble& a);
+mrpt::serialization::CArchive& operator>>(
+	mrpt::serialization::CArchive& in, mrpt::math::CVectorDouble& a);
+mrpt::serialization::CArchive& operator>>(
+	mrpt::serialization::CArchive& in, mrpt::math::CVectorFloat& a);
 }
 }

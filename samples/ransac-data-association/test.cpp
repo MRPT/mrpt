@@ -83,9 +83,9 @@ void TestRANSAC()
 	{
 		CMatrixDouble M;
 		M.loadFromTextFile(sMAP_FILE);  // Launch except. on error
-		ASSERT_(M.getColCount() == 3 && M.getRowCount() > 2)
+		ASSERT_(M.cols() == 3 && M.rows() > 2)
 
-		const size_t nPts = M.getRowCount();
+		const size_t nPts = M.rows();
 		the_map.resize(nPts);
 		for (size_t i = 0; i < nPts; i++) the_map.setPoint(i, M(i, 1), M(i, 2));
 	}

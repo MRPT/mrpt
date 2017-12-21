@@ -50,10 +50,10 @@ void Test_SwissRanger()
 	if (cam.isOpen())
 		cout << "[Test_SwissRanger] Camera open, serial #"
 			 << cam.getCameraSerialNumber()
-			 << " resolution: " << cam.getColCount() << "x" << cam.getRowCount()
+			 << " resolution: " << cam.cols() << "x" << cam.rows()
 			 << " max. range: " << cam.getMaxRange() << endl;
 
-	const double aspect_ratio = cam.getRowCount() / double(cam.getColCount());
+	const double aspect_ratio = cam.rows() / double(cam.cols());
 
 	{
 		std::string ver;

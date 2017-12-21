@@ -19,7 +19,7 @@ namespace math
 /**  This class is a "CSerializable" wrapper for "CMatrixFloat".
  * \note For a complete introduction to Matrices and vectors in MRPT, see:
  * http://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_math_grp
  */
 class CMatrix : public mrpt::serialization::CSerializable, public CMatrixFloat
 {
@@ -43,7 +43,7 @@ class CMatrix : public mrpt::serialization::CSerializable, public CMatrixFloat
 	/** Constructor from a TPose2D, which generates a 3x1 matrix \f$ [x y
 	 * \phi]^T \f$ */
 	explicit CMatrix(const TPose2D& p);
-	/** Constructor from a mrpt::poses::CPose6D, which generates a 6x1 matrix
+	/** Constructor from a TPose3D, which generates a 6x1 matrix
 	 * \f$ [x y z yaw pitch roll]^T \f$  */
 	explicit CMatrix(const TPose3D& p);
 	/** Constructor from a TPoint2D, which generates a 2x1 matrix \f$ [x y]^T
@@ -77,7 +77,7 @@ class CMatrix : public mrpt::serialization::CSerializable, public CMatrixFloat
 	}
 
 };  // end of class definition
-mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in, CMatrix::Ptr& pObj);
+mrpt::serialization::CArchive& operator>>(mrpt::serialization::CArchive& in, CMatrix::Ptr& pObj);
 
 }  // End of namespace
 }  // End of namespace

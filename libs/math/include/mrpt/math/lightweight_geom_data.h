@@ -13,6 +13,8 @@
 #include <mrpt/math/math_frwds.h>  // forward declarations
 #include <mrpt/math/eigen_frwds.h>  // forward declarations
 #include <mrpt/math/wrap2pi.h>
+#include <mrpt/core/format.h>
+#include <mrpt/core/exceptions.h>
 #include <vector>
 #include <stdexcept>
 
@@ -741,6 +743,11 @@ struct TPose3D
 	void fromString(const std::string& s);
 	static size_t size() { return 6; }
 };
+
+/** Unary $\ominus\$ operator: computes inverse SE(3) element */
+TPose3D operator -(const TPose3D &p);
+/** Binary $\ominus\$ operator: \$b \ominus a\$ computes the relative SE(3) pose of `b` "as seen from" `a` */
+TPose3D operator -(const TPose3D &b, const TPose3D &a);
 
 /** Lightweight 3D pose (three spatial coordinates, plus a quaternion ). Allows
  * coordinate access using [] operator.

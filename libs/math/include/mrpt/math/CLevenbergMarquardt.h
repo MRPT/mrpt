@@ -31,7 +31,7 @@ namespace math
  * long double)
  * \tparam USERPARAM The type of the "y" input to the user supplied evaluation
  * functor. Default type is a vector of NUMTYPE.
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_math_grp
  */
 template <typename VECTORTYPE = Eigen::VectorXd, class USERPARAM = VECTORTYPE>
 class CLevenbergMarquardtTempl : public mrpt::utils::COutputLogger
@@ -132,7 +132,7 @@ class CLevenbergMarquardtTempl : public mrpt::utils::COutputLogger
 		mrpt::math::estimateJacobian(x, functor, increments, userParam, J);
 		out_info.H.multiply_AtA(J);
 
-		const size_t H_len = out_info.H.getColCount();
+		const size_t H_len = out_info.H.cols();
 
 		// Compute the gradient:
 		functor(x, userParam, f_x);

@@ -361,12 +361,12 @@ void CAngularObservationMesh::getTracedRays(CSetOfLines::Ptr& res) const
 {
 	if (!meshUpToDate) updateMesh();
 	size_t count = 0;
-	for (size_t i = 0; i < validityMatrix.getRowCount(); i++)
-		for (size_t j = 0; j < validityMatrix.getColCount(); j++)
+	for (size_t i = 0; i < validityMatrix.rows(); i++)
+		for (size_t j = 0; j < validityMatrix.cols(); j++)
 			if (validityMatrix(i, j)) count++;
 	res->reserve(count);
-	for (size_t i = 0; i < actualMesh.getRowCount(); i++)
-		for (size_t j = 0; j < actualMesh.getColCount(); j++)
+	for (size_t i = 0; i < actualMesh.rows(); i++)
+		for (size_t j = 0; j < actualMesh.cols(); j++)
 			if (validityMatrix(i, j))
 				res->appendLine(
 					TPose3D(scanSet[i].sensorPose), actualMesh(i, j));

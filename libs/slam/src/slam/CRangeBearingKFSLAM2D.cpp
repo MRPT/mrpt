@@ -294,7 +294,7 @@ void CRangeBearingKFSLAM2D::OnTransitionNoise(KFMatrix_VxV& Q) const
 	{
 		// Use constant Q:
 		Q.zeros();
-		ASSERT_(size_t(options.stds_Q_no_odo.size()) == Q.getColCount())
+		ASSERT_(size_t(options.stds_Q_no_odo.size()) == Q.cols())
 
 		for (size_t i = 0; i < 3; i++)
 			Q.get_unsafe(i, i) = square(options.stds_Q_no_odo[i]);

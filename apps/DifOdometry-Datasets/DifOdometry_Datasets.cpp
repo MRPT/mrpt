@@ -369,8 +369,8 @@ void CDifodoDatasets::loadFrame()
 		std::dynamic_pointer_cast<CObservation3DRangeScan>(alfa);
 	obs3D->load();
 	const CMatrix range = obs3D->rangeImage;
-	const unsigned int height = range.getRowCount();
-	const unsigned int width = range.getColCount();
+	const unsigned int height = range.rows();
+	const unsigned int width = range.cols();
 
 	for (unsigned int j = 0; j < cols; j++)
 		for (unsigned int i = 0; i < rows; i++)

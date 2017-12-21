@@ -12,16 +12,12 @@
 // compiling in small systems.
 
 #include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/utils/metaprogramming.h>
-#include <mrpt/utils/CMemoryStream.h>
 #include <mrpt/random.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::random;
-using namespace mrpt::utils::metaprogramming;
 using namespace std;
 
 TEST(Matrices, loadFromArray)

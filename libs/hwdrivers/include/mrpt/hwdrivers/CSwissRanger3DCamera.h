@@ -160,10 +160,10 @@ class CSwissRanger3DCamera : public mrpt::hwdrivers::CGenericSensor
 
 	/** Get the row count in the camera images, loaded automatically upon camera
 	 * open(). */
-	size_t getRowCount() const { return m_rows; }
+	size_t rows() const { return m_rows; }
 	/** Get the col count in the camera images, loaded automatically upon camera
 	 * open(). */
-	size_t getColCount() const { return m_cols; }
+	size_t cols() const { return m_cols; }
 	/** Get the camera serial number, loaded automatically upon camera open().
 	 */
 	unsigned int getCameraSerialNumber() const { return m_cam_serial_num; }

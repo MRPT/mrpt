@@ -151,11 +151,11 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 	inline CPose3D(const MATRIX33& rot, const VECTOR3& xyz)
 		: m_ROT(mrpt::math::UNINITIALIZED_MATRIX), m_ypr_uptodate(false)
 	{
-		ASSERT_EQUAL_(mrpt::math::size(rot, 1), 3);
-		ASSERT_EQUAL_(mrpt::math::size(rot, 2), 3);
+		ASSERT_EQUAL_(rot.rows(), 3);
+		ASSERT_EQUAL_(rot.cols(), 3);
 		ASSERT_EQUAL_(xyz.size(), 3)
 		for (int r = 0; r < 3; r++)
-			for (int c = 0; c < 3; c++) m_ROT(r, c) = rot.get_unsafe(r, c);
+			for (int c = 0; c < 3; c++) m_ROT(r, c) = rot(r, c);
 		for (int r = 0; r < 3; r++) m_coords[r] = xyz[r];
 	}
 	//! \overload
@@ -630,9 +630,7 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 		mrpt::math::CMatrixDouble m;
 		if (!m.fromMatlabStringFormat(s))
 			THROW_EXCEPTION("Malformed expression in ::fromString");
-		ASSERTMSG_(
-			mrpt::math::size(m, 1) == 1 && mrpt::math::size(m, 2) == 6,
-			"Wrong size of vector in ::fromString");
+		ASSERTMSG_(m.rows() == 1 && m.cols() == 6, "Expected vector length=6");
 		this->setFromValues(
 			m.get_unsafe(0, 0), m.get_unsafe(0, 1), m.get_unsafe(0, 2),
 			DEG2RAD(m.get_unsafe(0, 3)), DEG2RAD(m.get_unsafe(0, 4)),

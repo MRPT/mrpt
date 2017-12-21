@@ -53,10 +53,6 @@ EIGEN_STRONG_INLINE void assign(size_t N, const Scalar v)
 	derived().setConstant(v);
 }
 
-/** Get number of rows */
-EIGEN_STRONG_INLINE size_t getRowCount() const { return rows(); }
-/** Get number of columns */
-EIGEN_STRONG_INLINE size_t getColCount() const { return cols(); }
 /** Make the matrix an identity matrix (the diagonal values can be 1.0 or any
  * other value) */
 EIGEN_STRONG_INLINE void unit(const size_t nRows, const Scalar diag_vals)
@@ -453,7 +449,7 @@ void meanAndStd(
 		unbiased_variance ? (N > 1 ? 1.0 / (N - 1) : 1.0) : 1.0 / N;
 	outMeanVector.resize(cols());
 	outStdVector.resize(cols());
-	for (Index i = 0; i < cols(); i++)
+	for (decltype(cols()) i = 0; i < cols(); i++)
 	{
 		outMeanVector[i] = this->col(i).array().sum() * N_inv;
 		outStdVector[i] = std::sqrt(
@@ -510,7 +506,7 @@ void insertRow(size_t nRow, const std::vector<R>& aRow)
 	if (static_cast<Index>(aRow.size()) != cols())
 		throw std::runtime_error(
 			"insertRow: Row size doesn't fit the size of this matrix.");
-	for (Index j = 0; j < cols(); j++) coeffRef(nRow, j) = aRow[j];
+	for (decltype(cols()) j = 0; j < cols(); j++) coeffRef(nRow, j) = aRow[j];
 }
 template <typename R>
 void insertCol(size_t nCol, const std::vector<R>& aCol)
@@ -518,7 +514,7 @@ void insertCol(size_t nCol, const std::vector<R>& aCol)
 	if (static_cast<Index>(aCol.size()) != rows())
 		throw std::runtime_error(
 			"insertRow: Row size doesn't fit the size of this matrix.");
-	for (Index j = 0; j < rows(); j++) coeffRef(j, nCol) = aCol[j];
+	for (decltype(cols()) j = 0; j < rows(); j++) coeffRef(j, nCol) = aCol[j];
 }
 
 /** Remove columns of the matrix.*/
@@ -604,7 +600,7 @@ EIGEN_STRONG_INLINE Scalar det() const { return derived().determinant(); }
 
 EIGEN_STRONG_INLINE bool empty() const
 {
-	return this->getColCount() == 0 || this->getRowCount() == 0;
+	return this->cols() == 0 || this->rows() == 0;
 }
 
 /*! Add c (scalar) times A to this matrix: this += A * c  */

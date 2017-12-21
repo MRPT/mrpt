@@ -19,7 +19,7 @@
 
 /** \addtogroup container_ops_grp Vector and matrices mathematical operations
  * and other utilities
-  *  \ingroup mrpt_base_grp
+  *  \ingroup mrpt_math_grp
   *  @{ */
 
 /** \file ops_containers.h

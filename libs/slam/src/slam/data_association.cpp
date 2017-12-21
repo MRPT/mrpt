@@ -198,7 +198,7 @@ void JCBB_recursive(
 		// Iterate for all compatible landmarsk of "curObsIdx"
 		const observation_index_t obsIdx = curObsIdx;
 
-		const size_t nPreds = results.indiv_compatibility.getRowCount();
+		const size_t nPreds = results.indiv_compatibility.rows();
 
 		// Can we do it better than the current "results.associations"?
 		// This can be checked by counting the potential new pairings+the so-far

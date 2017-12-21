@@ -84,11 +84,11 @@ void CVectorField2D::render_dl() const
 	glColor4ub(
 		m_point_color.R, m_point_color.G, m_point_color.B, m_point_color.A);
 
-	const float x_cell_size = (xMax - xMin) / (xcomp.getColCount() - 1);
-	const float y_cell_size = (yMax - yMin) / (ycomp.getRowCount() - 1);
+	const float x_cell_size = (xMax - xMin) / (xcomp.cols() - 1);
+	const float y_cell_size = (yMax - yMin) / (ycomp.rows() - 1);
 
-	for (unsigned int i = 0; i < xcomp.getColCount(); i++)
-		for (unsigned int j = 0; j < xcomp.getRowCount(); j++)
+	for (unsigned int i = 0; i < xcomp.cols(); i++)
+		for (unsigned int j = 0; j < xcomp.rows(); j++)
 		{
 			glVertex3f(xMin + i * x_cell_size, yMin + j * y_cell_size, 0);
 		}
@@ -98,8 +98,8 @@ void CVectorField2D::render_dl() const
 	glBegin(GL_LINES);
 	glColor4ub(
 		m_field_color.R, m_field_color.G, m_field_color.B, m_field_color.A);
-	for (unsigned int i = 0; i < xcomp.getColCount(); i++)
-		for (unsigned int j = 0; j < xcomp.getRowCount(); j++)
+	for (unsigned int i = 0; i < xcomp.cols(); i++)
+		for (unsigned int j = 0; j < xcomp.rows(); j++)
 		{
 			glVertex3f(xMin + i * x_cell_size, yMin + j * y_cell_size, 0);
 			glVertex3f(
@@ -111,8 +111,8 @@ void CVectorField2D::render_dl() const
 	glBegin(GL_TRIANGLES);
 	glColor4ub(
 		m_field_color.R, m_field_color.G, m_field_color.B, m_field_color.A);
-	for (unsigned int i = 0; i < xcomp.getColCount(); i++)
-		for (unsigned int j = 0; j < xcomp.getRowCount(); j++)
+	for (unsigned int i = 0; i < xcomp.cols(); i++)
+		for (unsigned int j = 0; j < xcomp.rows(); j++)
 		{
 			const float tri_side =
 				0.25 *
@@ -209,11 +209,11 @@ void CVectorField2D::getBoundingBox(
 	bb_max.y = yMax;
 	bb_max.z = 0;
 
-	const float x_cell_size = (xMax - xMin) / (xcomp.getColCount() - 1);
-	const float y_cell_size = (yMax - yMin) / (ycomp.getRowCount() - 1);
+	const float x_cell_size = (xMax - xMin) / (xcomp.cols() - 1);
+	const float y_cell_size = (yMax - yMin) / (ycomp.rows() - 1);
 
-	for (unsigned int i = 0; i < xcomp.getColCount(); i++)
-		for (unsigned int j = 0; j < xcomp.getRowCount(); j++)
+	for (unsigned int i = 0; i < xcomp.cols(); i++)
+		for (unsigned int j = 0; j < xcomp.rows(); j++)
 		{
 			const float tri_side =
 				0.25 *
@@ -255,13 +255,13 @@ void CVectorField2D::adjustVectorFieldToGrid()
 	ASSERT_(xcomp.size() > 0)
 
 	const float ratio_xp =
-		xcomp.maxCoeff() * (xcomp.getColCount() - 1) / (xMax - xMin);
+		xcomp.maxCoeff() * (xcomp.cols() - 1) / (xMax - xMin);
 	const float ratio_xn =
-		xcomp.minCoeff() * (xcomp.getColCount() - 1) / (xMax - xMin);
+		xcomp.minCoeff() * (xcomp.cols() - 1) / (xMax - xMin);
 	const float ratio_yp =
-		ycomp.maxCoeff() * (ycomp.getRowCount() - 1) / (yMax - yMin);
+		ycomp.maxCoeff() * (ycomp.rows() - 1) / (yMax - yMin);
 	const float ratio_yn =
-		ycomp.minCoeff() * (ycomp.getRowCount() - 1) / (yMax - yMin);
+		ycomp.minCoeff() * (ycomp.rows() - 1) / (yMax - yMin);
 	const float norm_factor =
 		0.85 / max(max(ratio_xp, abs(ratio_xn)), max(ratio_yp, abs(ratio_yn)));
 

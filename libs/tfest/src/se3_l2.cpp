@@ -148,7 +148,7 @@ bool se3_l2_internal(
 	vector<double> v;
 
 	N.eigenVectors(Z, D);
-	Z.extractCol(Z.getColCount() - 1, v);
+	Z.extractCol(Z.cols() - 1, v);
 
 	ASSERTDEB_(
 		fabs(

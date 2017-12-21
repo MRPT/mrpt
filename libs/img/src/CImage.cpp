@@ -1641,8 +1641,8 @@ void CImage::getAsMatrix(
 	int lx = (x_max - x_min + 1);
 	int ly = (y_max - y_min + 1);
 
-	if (doResize || (int)outMatrix.getRowCount() < ly ||
-		(int)outMatrix.getColCount() < lx)
+	if (doResize || (int)outMatrix.rows() < ly ||
+		(int)outMatrix.cols() < lx)
 		outMatrix.setSize(y_max - y_min + 1, x_max - x_min + 1);
 
 	if (isColor())
@@ -1699,14 +1699,14 @@ void CImage::getAsRGBMatrices(
 	int lx = (x_max - x_min + 1);
 	int ly = (y_max - y_min + 1);
 
-	if (doResize || (int)outMatrixR.getRowCount() < ly ||
-		(int)outMatrixR.getColCount() < lx)
+	if (doResize || (int)outMatrixR.rows() < ly ||
+		(int)outMatrixR.cols() < lx)
 		outMatrixR.setSize(y_max - y_min + 1, x_max - x_min + 1);
-	if (doResize || (int)outMatrixG.getRowCount() < ly ||
-		(int)outMatrixG.getColCount() < lx)
+	if (doResize || (int)outMatrixG.rows() < ly ||
+		(int)outMatrixG.cols() < lx)
 		outMatrixG.setSize(y_max - y_min + 1, x_max - x_min + 1);
-	if (doResize || (int)outMatrixB.getRowCount() < ly ||
-		(int)outMatrixB.getColCount() < lx)
+	if (doResize || (int)outMatrixB.rows() < ly ||
+		(int)outMatrixB.cols() < lx)
 		outMatrixB.setSize(y_max - y_min + 1, x_max - x_min + 1);
 
 	if (isColor())
@@ -1773,8 +1773,8 @@ void CImage::cross_correlation_FFT(
 	size_t x, y;
 	size_t actual_lx = max(u_search_size, (int)in_img.getWidth());
 	size_t actual_ly = max(v_search_size, (int)in_img.getHeight());
-	size_t lx = math::round2up(actual_lx);
-	size_t ly = math::round2up(actual_ly);
+	size_t lx = mrpt::round2up(actual_lx);
+	size_t ly = mrpt::round2up(actual_ly);
 
 	//	printf("ly=%u lx=%u\n",ly,lx);
 
@@ -1849,8 +1849,8 @@ void CImage::getAsMatrixTiled(CMatrix& outMatrix) const
 	ASSERT_(img);
 
 	// The size of the matrix:
-	size_t matrix_lx = outMatrix.getColCount();
-	size_t matrix_ly = outMatrix.getRowCount();
+	size_t matrix_lx = outMatrix.cols();
+	size_t matrix_ly = outMatrix.rows();
 
 	if (isColor())
 	{
@@ -2077,7 +2077,7 @@ void CImage::rectifyImageInPlace(const mrpt::utils::TCamera& cameraParams)
 	for (int i = 0; i < 5; i++) aux2[0][i] = cameraParams.dist[i];
 
 	CvMat inMat = cvMat(
-		cameraMatrix.getRowCount(), cameraMatrix.getColCount(), CV_64F, aux1);
+		cameraMatrix.rows(), cameraMatrix.cols(), CV_64F, aux1);
 	CvMat distM = cvMat(1, 5, CV_64F, aux2);
 
 	// Remove distortion
@@ -2111,7 +2111,7 @@ void CImage::rectifyImage(
 	for (int i = 0; i < 5; i++) aux2[0][i] = cameraParams.dist[i];
 
 	CvMat inMat = cvMat(
-		cameraMatrix.getRowCount(), cameraMatrix.getColCount(), CV_64F, aux1);
+		cameraMatrix.rows(), cameraMatrix.cols(), CV_64F, aux1);
 	CvMat distM = cvMat(1, 5, CV_64F, aux2);
 
 	// Remove distortion

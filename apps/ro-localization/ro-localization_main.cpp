@@ -449,7 +449,7 @@ void TestParticlesLocalization()
 				pdf.getMean(pdfEstimation);
 
 				CPose2D GT_Pose;
-				if (groundTruth.getRowCount() > size_t(step))
+				if (groundTruth.rows() > size_t(step))
 				{
 					GT_Pose = CPose2D(
 						groundTruth(step, 1), groundTruth(step, 2),
@@ -812,7 +812,7 @@ observations->getObservationByClass( CLASS_ID(CObservation2DRangeScan));
 					}
 
 					// groundTruth
-					if (groundTruth.getRowCount() > size_t(step))
+					if (groundTruth.rows() > size_t(step))
 					{
 #ifdef SHOW_REAL_TIME_3D
 						opengl::CRenderizable::Ptr obj =
@@ -1005,17 +1005,17 @@ observations->getObservationByClass( CLASS_ID(CObservation2DRangeScan));
 			franco_matrix.saveToTextFile(
 				format("%s/franco_matrix.txt", OUT_DIR.c_str()));
 
-			particle_matrix.setSize(step, particle_matrix.getColCount());
+			particle_matrix.setSize(step, particle_matrix.cols());
 			particle_matrix.saveToTextFile(
 				format("%s/particle_matrix.txt", OUT_DIR.c_str()),
 				MATRIX_FORMAT_FIXED);
 
-			real_ranges.setSize(step, real_ranges.getColCount());
+			real_ranges.setSize(step, real_ranges.cols());
 			real_ranges.saveToTextFile(
 				format("%s/GT_ranges.txt", OUT_DIR.c_str()),
 				MATRIX_FORMAT_FIXED);
 
-			real_offsets.setSize(real_offsets_rows, real_offsets.getColCount());
+			real_offsets.setSize(real_offsets_rows, real_offsets.cols());
 			real_offsets.saveToTextFile(
 				format("%s/GT_offsets.txt", OUT_DIR.c_str()),
 				MATRIX_FORMAT_FIXED);

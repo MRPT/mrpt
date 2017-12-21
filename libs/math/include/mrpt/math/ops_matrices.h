@@ -166,9 +166,9 @@ template <class MAT_A, class SKEW_3VECTOR, class MAT_OUT>
 void multiply_A_skew3(const MAT_A& A, const SKEW_3VECTOR& v, MAT_OUT& out)
 {
 	MRPT_START
-	ASSERT_EQUAL_(size(A, 2), 3)
-	ASSERT_EQUAL_(v.size(), 3)
-	const size_t N = size(A, 1);
+	ASSERT_EQUAL_(A.cols(), 3);
+	ASSERT_EQUAL_(v.size(), 3);
+	const size_t N = A.rows();
 	out.setSize(N, 3);
 	for (size_t i = 0; i < N; i++)
 	{
@@ -190,9 +190,9 @@ template <class SKEW_3VECTOR, class MAT_A, class MAT_OUT>
 void multiply_skew3_A(const SKEW_3VECTOR& v, const MAT_A& A, MAT_OUT& out)
 {
 	MRPT_START
-	ASSERT_EQUAL_(size(A, 1), 3)
-	ASSERT_EQUAL_(v.size(), 3)
-	const size_t N = size(A, 2);
+	ASSERT_EQUAL_(A.rows(), 3);
+	ASSERT_EQUAL_(v.size(), 3);
+	const size_t N = A.cols();
 	out.setSize(3, N);
 	for (size_t i = 0; i < N; i++)
 	{
@@ -216,10 +216,10 @@ void extractMatrix(
 	const MATORG& M, const size_t first_row, const size_t first_col,
 	MATDEST& outMat)
 {
-	const size_t NR = outMat.getRowCount();
-	const size_t NC = outMat.getColCount();
-	ASSERT_BELOWEQ_(first_row + NR, M.getRowCount())
-	ASSERT_BELOWEQ_(first_col + NC, M.getColCount())
+	const size_t NR = outMat.rows();
+	const size_t NC = outMat.cols();
+	ASSERT_BELOWEQ_(first_row + NR, M.rows());
+	ASSERT_BELOWEQ_(first_col + NC, M.cols());
 	for (size_t r = 0; r < NR; r++)
 		for (size_t c = 0; c < NC; c++)
 			outMat.get_unsafe(r, c) =

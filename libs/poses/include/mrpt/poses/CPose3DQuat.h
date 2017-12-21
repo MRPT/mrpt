@@ -269,9 +269,7 @@ class CPose3DQuat : public CPose<CPose3DQuat>, public mrpt::serialization::CSeri
 		mrpt::math::CMatrixDouble m;
 		if (!m.fromMatlabStringFormat(s))
 			THROW_EXCEPTION("Malformed expression in ::fromString");
-		ASSERTMSG_(
-			mrpt::math::size(m, 1) == 1 && mrpt::math::size(m, 2) == 7,
-			"Wrong size of vector in ::fromString");
+		ASSERTMSG_(m.rows() == 1 && m.cols() == 7, "Expected vector length=7");
 		m_coords[0] = m.get_unsafe(0, 0);
 		m_coords[1] = m.get_unsafe(0, 1);
 		m_coords[2] = m.get_unsafe(0, 2);

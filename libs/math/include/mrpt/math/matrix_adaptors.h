@@ -231,7 +231,7 @@ class CMatrixRowAccessor
 	inline CMatrixRowAccessor(MAT& mat, size_t rowIdx)
 		: m_mat(&mat), m_rowInd(rowIdx)
 	{
-		ASSERT_(rowIdx < mat.getRowCount())
+		ASSERT_(rowIdx < mat.rows())
 	}
 	inline CMatrixRowAccessor() {}
 	inline value_type& operator[](const size_t i)
@@ -254,25 +254,25 @@ class CMatrixRowAccessor
 		const_reverse_iterator;
 	inline iterator begin() { return iterator(*this, 0); }
 	inline const_iterator begin() const { return const_iterator(*this, 0); }
-	inline iterator end() { return iterator(*this, m_mat->getColCount()); }
+	inline iterator end() { return iterator(*this, m_mat->cols()); }
 	inline const_iterator end() const
 	{
-		return const_iterator(*this, m_mat->getColCount());
+		return const_iterator(*this, m_mat->cols());
 	}
 	inline reverse_iterator rbegin()
 	{
-		return reverse_iterator(*this, m_mat->getColCount() - 1);
+		return reverse_iterator(*this, m_mat->cols() - 1);
 	}
 	inline const_reverse_iterator rbegin() const
 	{
-		return const_reverse_iterator(*this, m_mat->getColCount() - 1);
+		return const_reverse_iterator(*this, m_mat->cols() - 1);
 	}
 	inline reverse_iterator rend() { return reverse_iterator(*this, -1); }
 	inline const_reverse_iterator rend() const
 	{
 		return const_reverse_iterator(*this, -1);
 	}
-	inline size_t size() const { return m_mat->getColCount(); }
+	inline size_t size() const { return m_mat->cols(); }
 	inline void resize(size_t N)
 	{
 		if (N != size())
@@ -312,8 +312,8 @@ class CMatrixRowAccessorExtended
 		  m_colOffset(offset),
 		  m_elementsSpace(space)
 	{
-		ASSERT_(row < mat.getRowCount());
-		howMany = (mat.getColCount() - m_colOffset) / m_elementsSpace;
+		ASSERT_(row < mat.rows());
+		howMany = (mat.cols() - m_colOffset) / m_elementsSpace;
 	}
 	inline CMatrixRowAccessorExtended() {}
 	inline value_type& operator[](size_t i)
@@ -387,7 +387,7 @@ class CConstMatrixRowAccessor
 	inline CConstMatrixRowAccessor(const MAT& mat, size_t row)
 		: m_mat(&mat), m_rowInd(row)
 	{
-		ASSERT_(row < mat.getRowCount());
+		ASSERT_(row < mat.rows());
 	}
 	inline CConstMatrixRowAccessor() {}
 	inline value_type operator[](size_t i) const
@@ -403,17 +403,17 @@ class CConstMatrixRowAccessor
 	inline const_iterator begin() const { return const_iterator(*this, 0); }
 	inline const_iterator end() const
 	{
-		return const_iterator(*this, m_mat->getColCount());
+		return const_iterator(*this, m_mat->cols());
 	}
 	inline const_reverse_iterator rbegin() const
 	{
-		return const_reverse_iterator(*this, m_mat->getColCount() - 1);
+		return const_reverse_iterator(*this, m_mat->cols() - 1);
 	}
 	inline const_reverse_iterator rend() const
 	{
 		return const_reverse_iterator(*this, -1);
 	}
-	inline size_t size() const { return m_mat->getColCount(); }
+	inline size_t size() const { return m_mat->cols(); }
 	inline void resize(size_t N)
 	{
 		if (N != size())
@@ -453,8 +453,8 @@ class CConstMatrixRowAccessorExtended
 		  m_colOffset(offset),
 		  m_elementsSpace(space)
 	{
-		ASSERT_(row < mat.getRowCount());
-		howMany = (mat.getColCount() - m_colOffset) / m_elementsSpace;
+		ASSERT_(row < mat.rows());
+		howMany = (mat.cols() - m_colOffset) / m_elementsSpace;
 	}
 	inline CConstMatrixRowAccessorExtended() {}
 	inline value_type operator[](size_t i) const
@@ -509,7 +509,7 @@ class CMatrixColumnAccessor
 	inline CMatrixColumnAccessor(MAT& mat, size_t colIdx)
 		: m_mat(&mat), m_colInd(colIdx)
 	{
-		ASSERT_(colIdx < mat.getColCount())
+		ASSERT_(colIdx < mat.cols())
 	}
 	inline CMatrixColumnAccessor() {}
 	inline value_type& operator[](const size_t i)
@@ -533,25 +533,25 @@ class CMatrixColumnAccessor
 		const_reverse_iterator;
 	inline iterator begin() { return iterator(*this, 0); }
 	inline const_iterator begin() const { return const_iterator(*this, 0); }
-	inline iterator end() { return iterator(*this, m_mat->getRowCount()); }
+	inline iterator end() { return iterator(*this, m_mat->rows()); }
 	inline const_iterator end() const
 	{
-		return const_iterator(*this, m_mat->getRowCount());
+		return const_iterator(*this, m_mat->rows());
 	}
 	inline reverse_iterator rbegin()
 	{
-		return reverse_iterator(*this, m_mat->getRowCount() - 1);
+		return reverse_iterator(*this, m_mat->rows() - 1);
 	}
 	inline const_reverse_iterator rbegin() const
 	{
-		return const_reverse_iterator(*this, m_mat->getRowCount() - 1);
+		return const_reverse_iterator(*this, m_mat->rows() - 1);
 	}
 	inline reverse_iterator rend() { return reverse_iterator(*this, -1); }
 	inline const_reverse_iterator rend() const
 	{
 		return const_reverse_iterator(*this, -1);
 	}
-	inline size_t size() const { return m_mat->getRowCount(); }
+	inline size_t size() const { return m_mat->rows(); }
 	inline void resize(size_t N)
 	{
 		if (N != size())
@@ -589,8 +589,8 @@ class CMatrixColumnAccessorExtended
 		  m_rowOffset(offset),
 		  m_elementsSpace(space)
 	{
-		ASSERT_(col < mat.getColCount());
-		howMany = (mat.getRowCount() - m_rowOffset) / m_elementsSpace;
+		ASSERT_(col < mat.cols());
+		howMany = (mat.rows() - m_rowOffset) / m_elementsSpace;
 	}
 	inline CMatrixColumnAccessorExtended() {}
 	inline value_type& operator[](size_t i)
@@ -662,7 +662,7 @@ class CConstMatrixColumnAccessor
 	inline CConstMatrixColumnAccessor(const MAT& mat, size_t colIdx)
 		: m_mat(&mat), m_colInd(colIdx)
 	{
-		ASSERT_(colIdx < mat.getColCount());
+		ASSERT_(colIdx < mat.cols());
 	}
 	inline CConstMatrixColumnAccessor() {}
 	inline value_type operator[](size_t i) const
@@ -678,17 +678,17 @@ class CConstMatrixColumnAccessor
 	inline const_iterator begin() const { return const_iterator(*this, 0); }
 	inline const_iterator end() const
 	{
-		return const_iterator(*this, m_mat->getRowCount());
+		return const_iterator(*this, m_mat->rows());
 	}
 	inline const_reverse_iterator rbegin() const
 	{
-		return const_reverse_iterator(*this, m_mat->getRowCount() - 1);
+		return const_reverse_iterator(*this, m_mat->rows() - 1);
 	}
 	inline const_reverse_iterator rend() const
 	{
 		return const_reverse_iterator(*this, -1);
 	}
-	inline size_t size() const { return m_mat->getRowCount(); }
+	inline size_t size() const { return m_mat->rows(); }
 	inline void resize(size_t N)
 	{
 		if (N != size())
@@ -727,8 +727,8 @@ class CConstMatrixColumnAccessorExtended
 		  m_rowOffset(offset),
 		  m_elementsSpace(space)
 	{
-		ASSERT_(col < mat.getColCount());
-		howMany = (mat.getRowCount() - m_rowOffset) / m_elementsSpace;
+		ASSERT_(col < mat.cols());
+		howMany = (mat.rows() - m_rowOffset) / m_elementsSpace;
 	}
 	inline CConstMatrixColumnAccessorExtended() {}
 	inline value_type operator[](size_t i) const

@@ -21,7 +21,7 @@ namespace mrpt
 namespace math
 {
 /** \addtogroup kdtree_grp KD-Trees
-  *  \ingroup mrpt_base_grp
+  *  \ingroup mrpt_math_grp
   *  @{ */
 
 /** A generic adaptor class for providing Nearest Neighbor (NN) lookup via the
@@ -74,7 +74,7 @@ namespace math
  *
  *  \sa See some of the derived classes for example implementations. See also
  * the documentation of nanoflann
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_math_grp
  */
 template <class Derived, typename num_t = float,
 		  typename metric_t = nanoflann::L2_Simple_Adaptor<num_t, Derived>>

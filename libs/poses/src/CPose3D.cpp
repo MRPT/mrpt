@@ -84,8 +84,8 @@ CPose3D::CPose3D(const CPoint3D& p)
 CPose3D::CPose3D(const math::CMatrixDouble& m)
 	: m_ROT(UNINITIALIZED_MATRIX), m_ypr_uptodate(false)
 {
-	ASSERT_ABOVEEQ_(mrpt::math::size(m, 1), 3);
-	ASSERT_ABOVEEQ_(mrpt::math::size(m, 2), 4);
+	ASSERT_ABOVEEQ_(m.rows(), 3);
+	ASSERT_ABOVEEQ_(m.cols(), 4);
 	for (int r = 0; r < 3; r++)
 		for (int c = 0; c < 3; c++) m_ROT(r, c) = m.get_unsafe(r, c);
 	for (int r = 0; r < 3; r++) m_coords[r] = m.get_unsafe(r, 3);
@@ -162,7 +162,7 @@ void CPose3D::readFromStream(mrpt::utils::CStream& in, int version)
 			// The coordinates:
 			CMatrix HM2;
 			in >> HM2;
-			ASSERT_(mrpt::math::size(HM2, 1) == 4 && HM2.isSquare())
+			ASSERT_(HM2.rows() == 4 && HM2.isSquare());
 
 			m_ROT = HM2.block(0, 0, 3, 3).cast<double>();
 

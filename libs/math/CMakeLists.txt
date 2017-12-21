@@ -19,6 +19,9 @@ if (MSVC AND MSVC_VERSION GREATER 1800) # VS>= 2013
 	LIST(APPEND math_EXTRA_SRCS_NAME 	"MSVC debug natvis")
 endif()
 
+# extra dependencies required by unit tests in this module:
+set_property(GLOBAL PROPERTY mrpt_math_UNIT_TEST_EXTRA_DEPS mrpt-io)
+
 define_mrpt_lib(
 	math 		# Lib name
 	# Dependencies:

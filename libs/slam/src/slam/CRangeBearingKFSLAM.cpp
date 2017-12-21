@@ -197,7 +197,7 @@ void CRangeBearingKFSLAM::processActionObservation(
 	// Sanity check:
 	ASSERT_(
 		m_IDs.size() ==
-		(m_pkk.getColCount() - get_vehicle_size()) / get_feature_size());
+		(m_pkk.cols() - get_vehicle_size()) / get_feature_size());
 
 	// ===================================================================================================================
 	// Here's the meat!: Call the main method for the KF algorithm, which will
@@ -382,7 +382,7 @@ void CRangeBearingKFSLAM::OnTransitionNoise(KFMatrix_VxV& Q) const
 	{
 		// Use constant Q:
 		Q.zeros();
-		ASSERT_(size_t(options.stds_Q_no_odo.size()) == size_t(Q.getColCount()))
+		ASSERT_(size_t(options.stds_Q_no_odo.size()) == size_t(Q.cols()))
 
 		for (size_t i = 0; i < get_vehicle_size(); i++)
 			Q.set_unsafe(i, i, square(options.stds_Q_no_odo[i]));
@@ -1213,7 +1213,7 @@ double CRangeBearingKFSLAM::computeOffDiagonalBlocksApproximationError(
 
 	ASSERT_(
 		(get_vehicle_size() + nLMs * get_feature_size()) ==
-		fullCov.getColCount());
+		fullCov.cols());
 
 	for (i = 0; i < nLMs; i++)
 	{

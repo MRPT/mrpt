@@ -937,9 +937,9 @@ bool CLoopCloserERD<GRAPH_T>::computeDominantEigenVector(
 				static_cast<unsigned long>(eigvals.size()),
 				static_cast<unsigned long>(consist_matrix.size())));
 
-		eigvecs.extractCol(eigvecs.getColCount() - 1, *eigvec);
-		lambda1 = eigvals(eigvals.getRowCount() - 1, eigvals.getColCount() - 1);
-		lambda2 = eigvals(eigvals.getRowCount() - 2, eigvals.getColCount() - 2);
+		eigvecs.extractCol(eigvecs.cols() - 1, *eigvec);
+		lambda1 = eigvals(eigvals.rows() - 1, eigvals.cols() - 1);
+		lambda2 = eigvals(eigvals.rows() - 2, eigvals.cols() - 2);
 	}
 
 	// I don't care about the sign of the eigenvector element

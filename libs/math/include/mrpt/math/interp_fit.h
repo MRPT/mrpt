@@ -16,7 +16,7 @@ namespace mrpt
 namespace math
 {
 /** @addtogroup interpolation_grp Interpolation, least-squares fit, splines
-  * \ingroup mrpt_base_grp
+  * \ingroup mrpt_math_grp
   *  @{ */
 
 /** Interpolate a data sequence "ys" ranging from "x0" to "x1" (equally spaced),

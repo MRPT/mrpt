@@ -1628,10 +1628,10 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 
 			cov->SetQuantiles(2);
 			cov->SetCoordinateBase(RAD2DEG(ha), hr);
-			if (da.Y_pred_covs.getColCount() == obs_size)
+			if (da.Y_pred_covs.cols() == obs_size)
 			{  // Independent predictions:
 				ASSERT_(
-					da.Y_pred_covs.getRowCount() ==
+					da.Y_pred_covs.rows() ==
 					obs_size * da.predictions_IDs.size());
 				cov->SetCovarianceMatrix(
 					RAD2DEGSQ * da.Y_pred_covs(obs_size * i + 1, 1),
@@ -1642,7 +1642,7 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 			{  // Full cov. predictions:
 				ASSERT_(
 					da.Y_pred_covs.isSquare() &&
-					da.Y_pred_covs.getColCount() ==
+					da.Y_pred_covs.cols() ==
 						obs_size * da.predictions_IDs.size());
 				cov->SetCovarianceMatrix(
 					RAD2DEGSQ *

@@ -311,7 +311,7 @@ void loadPatches(
 
 	int idx1, idx2, idx3;
 	CvPoint2D32f p1, p2, p3;
-	int num_facets = mesh.getRowCount();
+	int num_facets = mesh.rows();
 
 	for (int i = 1; i <= num_facets; i++)  // CAMBIAR ESTRUCTURA, A UN UNICO FOR
 	// PARA EL RECORRIDO DE LA IMAGEN
@@ -1372,8 +1372,8 @@ int main()
 		// flow_klt = ExtractFeaturesFrame1(im1);
 
 		//// CREATE AND ALLOCATE ALL THE BUFFERS FOR SINGLE PATCHES//
-		//	//std::vector<IplImage> tri_ref( mesh.getRowCount() );
-		//	//std::vector<IplImage> tri_vid( mesh.getRowCount() );
+		//	//std::vector<IplImage> tri_ref( mesh.rows() );
+		//	//std::vector<IplImage> tri_vid( mesh.rows() );
 		//	//tri_ref = (IplImage*)cvAlloc(numTri*sizeof(tri_ref[0]));
 		//	int numFeatTri = 5;
 		//	IplImage* tri_ref[ 9 ];
@@ -1417,10 +1417,10 @@ int main()
 		//	fclose(file);
 
 		////VERTEX OF REFERENCE TRIANGLE:
-		// po1.resize( mesh.getRowCount() );
-		// po2.resize( mesh.getRowCount() );
-		// po3.resize( mesh.getRowCount() );
-		// for(t=0; t<mesh.getRowCount(); t++)
+		// po1.resize( mesh.rows() );
+		// po2.resize( mesh.rows() );
+		// po3.resize( mesh.rows() );
+		// for(t=0; t<mesh.rows(); t++)
 		//{
 		//	po1[t][0] = boot[mesh(t,0)-1]->x; po1[t][1] = boot[mesh(t,0)-1]->y;
 		// po1[t][2] = 1;
@@ -1430,18 +1430,18 @@ int main()
 		// po3[t][2] = 1;
 		//}
 
-		// aux1.tri_list.resize( mesh.getRowCount() );
-		// aux1.ind_list.resize( mesh.getRowCount() );
+		// aux1.tri_list.resize( mesh.rows() );
+		// aux1.ind_list.resize( mesh.rows() );
 		// loadPatches(boot, mesh, &(aux1.mask), aux1.tri_list, aux1.ind_list,
 		// aux1.img);			//LOAD PATCHES
 
 		// data_img.push_back( aux1 );
 
-		// correlations.resize( 400, mesh.getRowCount() );		//->PASARLO A LA
+		// correlations.resize( 400, mesh.rows() );		//->PASARLO A LA
 		// ESTRUCTURA DE DATOS	!!!!!!!!!!!!!!!!
 		// correlations.fill(0);
 
-		// for( i=0; i<mesh.getRowCount(); i++ )
+		// for( i=0; i<mesh.rows(); i++ )
 		//{
 		//	pt1 = cvPoint( boot[mesh(i,0)-1]->x, boot[mesh(i,0)-1]->y);
 		//	pt2 = cvPoint( boot[mesh(i,1)-1]->x, boot[mesh(i,1)-1]->y);
@@ -1456,7 +1456,7 @@ int main()
 
 		////NCC STATISTICS (HISTOGRAM)
 		//	char* cstr = new char [20];
-		//	for( j=0; j<mesh.getRowCount(); j++ )
+		//	for( j=0; j<mesh.rows(); j++ )
 		//	{
 		//		vector_double hist = aux1.tri_list[j].histogram( 0, 255, 256,
 		// false);
@@ -1490,14 +1490,14 @@ int main()
 
 		////PATCH FEATURES
 		// CFeatureExtraction	fExt;
-		// std::vector<CFeatureList> feat_patch_ref( mesh.getRowCount() );
-		// std::vector<CFeatureList> feat_patch_vid( mesh.getRowCount() );
+		// std::vector<CFeatureList> feat_patch_ref( mesh.rows() );
+		// std::vector<CFeatureList> feat_patch_vid( mesh.rows() );
 		// fExt.options.featsType = featKLT;
 		// fExt.options.harrisOptions.tile_image = false;
 		// fExt.options.patchSize=0;
 
 		//// DRAW patch_ref
-		// for( t=0; t<mesh.getRowCount(); t++ )
+		// for( t=0; t<mesh.rows(); t++ )
 		//{
 		//	//vector_float xx(3); xx[0] = pt1.x; xx[1] = pt2.x; xx[2] = pt3.x;
 		//	//vector_float yy(3); yy[0] = pt1.y; yy[1] = pt2.y; yy[2] = pt3.y;
@@ -1856,7 +1856,7 @@ int main()
 					CV_SWAP( prev_grey, grey, swap_temp );
 
 					img_seq_data aux;
-					//data_img[f].tri.resize(mesh.getRowCount);
+					//data_img[f].tri.resize(mesh.rows());
 					//data_img[f].img = (IplImage*) im2->getAsIplImage();
 
 					frame = cvQueryFrame(video); frame = cvQueryFrame(video);
@@ -1952,7 +1952,7 @@ int main()
 
 
 					//// Draw Image and mesh.	//frame_aux
-					//for( i=0; i<mesh.getRowCount(); i++ )
+					//for( i=0; i<mesh.rows(); i++ )
 					//{
 					//	pt1 = cvPoint( flow_klt[mesh(i,0)-1]->x,
 		   flow_klt[mesh(i,0)-1]->y );
@@ -1981,8 +1981,8 @@ int main()
 							mrpt::system::pause();
 						}
 					}
-					aux.tri_list.resize( mesh.getRowCount() );
-					aux.ind_list.resize( mesh.getRowCount() );
+					aux.tri_list.resize( mesh.rows() );
+					aux.ind_list.resize( mesh.rows() );
 					//loadPatches(flow_klt, mesh, &(aux.mask), aux.tri_list,
 		   aux.ind_list, aux.img);
 
@@ -1992,7 +1992,7 @@ int main()
 		   data_img[0].img->height), data_img[0].img->depth, 1);
 
 
-					for(t=0; t<mesh.getRowCount(); t++)
+					for(t=0; t<mesh.rows(); t++)
 					{
 						//if(f==1)	//HISTOGRAM CALCULATION
 						//{
@@ -2018,7 +2018,7 @@ int main()
 
 
 				////TRANSFORM DATA TYPE TO PERFORM CORRELATION MEASUREMENT
-						//for(t=0; t<mesh.getRowCount; t++)
+						//for(t=0; t<mesh.rows(); t++)
 						//{
 						//	image = cvCreateMatHeader(1,
 		   data_img[f].tri_list[t].size(), CV_8UC1 );
@@ -2143,10 +2143,10 @@ int main()
 						cvLine(patch_tform, pt1, pt3, color, 1, 8, 0);
 						cvLine(patch_tform, pt3, pt2, color, 1, 8, 0);
 
-						if( t==(mesh.getRowCount()-1) )
+						if( t==(mesh.rows()-1) )
 						{
 							im2.loadFromIplImage(patch_tform);
-							for( i=0; i<mesh.getRowCount(); i++ )
+							for( i=0; i<mesh.rows(); i++ )
 								im2.textOut( (boot[mesh(i,0)-1]->x +
 		   boot[mesh(i,1)-1]->x + boot[mesh(i,2)-1]->x)/3-20,
 		   (boot[mesh(i,0)-1]->y + boot[mesh(i,1)-1]->y +
@@ -2321,10 +2321,10 @@ int main()
 						//	//cvLine(patch_LM, pt1, pt3, color, 1, 8, 0);
 						//	//cvLine(patch_LM, pt3, pt2, color, 1, 8, 0);
 						//	//
-						//	//if( t==(mesh.getRowCount()-1) )
+						//	//if( t==(mesh.rows()-1) )
 						//	//{
 						//	//	im2.loadFromIplImage(patch_LM);
-						//	//	for( i=0; i<mesh.getRowCount(); i++ )
+						//	//	for( i=0; i<mesh.rows(); i++ )
 						//	//	{
 						//	//		char* cstr = new char [20];
 						//	//		sprintf( cstr, "%.2f",

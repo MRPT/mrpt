@@ -682,8 +682,8 @@ void TestOpenGLObjects()
 			obj->setLocation(off_x, 0, 0);
 
 			CMatrixFloat x(16, 16), y(16, 16);
-			for (unsigned int i = 0; i < x.getRowCount(); i++)
-				for (unsigned int j = 0; j < x.getColCount(); j++)
+			for (unsigned int i = 0; i < x.rows(); i++)
+				for (unsigned int j = 0; j < x.cols(); j++)
 				{
 					x(i, j) = sin(0.3 * i);
 					y(i, j) = cos(0.3 * i);
@@ -716,8 +716,8 @@ void TestOpenGLObjects()
 
 			CMatrixFloat x(num, num), y(num, num), z(num, num);
 			CMatrixFloat vx(num, num), vy(num, num), vz(num, num);
-			for (unsigned int i = 0; i < x.getRowCount(); i++)
-				for (unsigned int j = 0; j < x.getColCount(); j++)
+			for (unsigned int i = 0; i < x.rows(); i++)
+				for (unsigned int j = 0; j < x.cols(); j++)
 				{
 					x(i, j) = (i - 0.5 * num) * scale;
 					y(i, j) = j * scale;

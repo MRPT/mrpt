@@ -14,17 +14,15 @@
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/matrix_serialization.h>  // serialization of matrices
-#include <mrpt/math/ops_matrices.h>
-#include <mrpt/utils/metaprogramming.h>
-#include <mrpt/utils/CMemoryStream.h>
+//#include <mrpt/math/ops_matrices.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/io/CMemoryStream.h>
 #include <mrpt/random.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::random;
-using namespace mrpt::utils::metaprogramming;
 using namespace std;
 
 const double dat_A[] = {4, 5, 8, -2, 1, 3};
@@ -66,10 +64,11 @@ TEST(Matrices, SerializeCMatrixD)
 
 	CMatrixD As = A;
 
-	CMemoryStream membuf;
-	membuf << As;
+	mrpt::io::CMemoryStream membuf;
+	auto arch = mrpt::serialization::archiveFrom(membuf);
+	arch << As;
 	membuf.Seek(0);
-	membuf >> fA;
+	arch >> fA;
 
 	EXPECT_NEAR(0, fabs((CMatrixDouble(fA) - A).sum()), 1e-9);
 
@@ -79,7 +78,7 @@ TEST(Matrices, SerializeCMatrixD)
 		// exception:
 		membuf.Seek(0);
 		CMatrixFixedNumeric<double, 2, 2> fB;
-		membuf >> fB;  // Wrong size!
+		arch >> fB;  // Wrong size!
 
 		GTEST_FAIL() << "Exception not launched when it was expected!";
 	}
@@ -120,7 +119,7 @@ TEST(Matrices, EigenVal2x2fix)
 	Eigen::Matrix2d C1_V, C1_D;
 	C1.eigenVectors(C1_V, C1_D);
 
-	CMatrixDouble22 C1_RR = C1_V * C1_D * (~C1_V);
+	CMatrixDouble22 C1_RR = C1_V * C1_D * C1_V.transpose();
 	EXPECT_NEAR((C1_RR - C1).array().abs().sum(), 0, 1e-4);
 }
 
@@ -132,7 +131,7 @@ TEST(Matrices, EigenVal3x3fix)
 	CMatrixDouble33 C1_V, C1_D;
 	C1.eigenVectors(C1_V, C1_D);
 
-	CMatrixDouble33 C1_RR = C1_V * C1_D * (~C1_V);
+	CMatrixDouble33 C1_RR = C1_V * C1_D * C1_V.transpose();
 	EXPECT_NEAR((C1_RR - C1).array().abs().sum(), 0, 1e-4);
 }
 

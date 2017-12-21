@@ -36,7 +36,7 @@ using std::vector;
  * it's
   * reccomended to use only basic types for the parameter U. The parameter T may
  * be any complex object, however, like a smart pointer.
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_math_grp
   */
 template <typename T, typename U, bool UIsObject = false>
 class CBinaryRelation

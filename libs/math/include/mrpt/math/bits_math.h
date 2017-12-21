@@ -24,9 +24,9 @@ template <class MATRIXLIKE>
 inline size_t size(const MATRIXLIKE& m, const int dim)
 {
 	if (dim == 1)
-		return m.getRowCount();
+		return m.rows();
 	else if (dim == 2)
-		return m.getColCount();
+		return m.cols();
 	else
 		THROW_EXCEPTION_FMT(
 			"size: Queried matrix dimension must be 1 or 2. Called with i=%i",

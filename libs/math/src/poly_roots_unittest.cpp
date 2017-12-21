@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/math/poly_roots.h>
-#include <mrpt/system/os.h>
+#include <mrpt/core/format.h>
 #include <gtest/gtest.h>
 #include <cmath>
 

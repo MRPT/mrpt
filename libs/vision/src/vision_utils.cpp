@@ -917,7 +917,7 @@ void vision::generateMask(
 	//    cv::Mat *mask2 = static_cast<cv::Mat*>(_mask2);
 
 	int hwsize = (int)(0.5 * wSize);
-	int mx = mask1.getColCount(), my = mask1.getRowCount();
+	int mx = mask1.cols(), my = mask1.rows();
 
 	int idx, idy;
 	CMatchedFeatureList::const_iterator it;

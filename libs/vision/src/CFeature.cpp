@@ -669,8 +669,8 @@ float CFeature::internal_distanceBetweenPolarImages(
 	MRPT_START
 
 	// Find the smallest distance:
-	unsigned int delta, i, j, ii, height = desc1.getRowCount(),
-								  width = desc1.getColCount();
+	unsigned int delta, i, j, ii, height = desc1.rows(),
+								  width = desc1.cols();
 	float dist, minDist = 0;
 
 //#define LM_CORR_BIAS_MEAN

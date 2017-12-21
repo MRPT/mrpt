@@ -19,7 +19,7 @@ namespace mrpt
 namespace math
 {
 /** \addtogroup stats_grp Statistics functions, probability distributions
-  *  \ingroup mrpt_base_grp
+  *  \ingroup mrpt_math_grp
   * @{ */
 
 /** Evaluates the univariate normal (Gaussian) distribution at a given point
@@ -44,10 +44,10 @@ inline typename MATRIXLIKE::Scalar normalPDFInf(
 {
 	MRPT_START
 	typedef typename MATRIXLIKE::Scalar T;
-	ASSERTDEB_(cov_inv.isSquare())
+	ASSERTDEB_(cov_inv.isSquare());
 	ASSERTDEB_(
-		size_t(cov_inv.getColCount()) == size_t(x.size()) &&
-		size_t(cov_inv.getColCount()) == size_t(mu.size()))
+		size_t(cov_inv.cols()) == size_t(x.size()) &&
+		size_t(cov_inv.cols()) == size_t(mu.size()));
 	T ret = ::exp(
 		static_cast<T>(-0.5) *
 		mrpt::math::multiply_HCHt_scalar((x - mu).eval(), cov_inv));
@@ -55,7 +55,7 @@ inline typename MATRIXLIKE::Scalar normalPDFInf(
 										cov_inv.det() /
 										::pow(
 											static_cast<T>(M_2PI),
-											static_cast<T>(size(cov_inv, 1))));
+											static_cast<T>(cov_inv.rows())));
 	MRPT_END
 }
 
@@ -84,15 +84,15 @@ typename MATRIXLIKE::Scalar normalPDF(
 	const VECTORLIKE& d, const MATRIXLIKE& cov)
 {
 	MRPT_START
-	ASSERTDEB_(cov.isSquare())
-	ASSERTDEB_(size_t(cov.getColCount()) == size_t(d.size()))
+	ASSERTDEB_(cov.isSquare());
+	ASSERTDEB_(size_t(cov.cols()) == size_t(d.size()));
 	return std::exp(
 			   static_cast<typename MATRIXLIKE::Scalar>(-0.5) *
 			   mrpt::math::multiply_HCHt_scalar(d, cov.inverse())) /
 		   (::pow(
 				static_cast<typename MATRIXLIKE::Scalar>(M_2PI),
 				static_cast<typename MATRIXLIKE::Scalar>(
-					0.5 * cov.getColCount())) *
+					0.5 * cov.cols())) *
 			::sqrt(cov.det()));
 	MRPT_END
 }
@@ -113,9 +113,9 @@ double KLD_Gaussians(
 	MRPT_START
 	ASSERT_(
 		size_t(mu0.size()) == size_t(mu1.size()) &&
-		size_t(mu0.size()) == size_t(size(cov0, 1)) &&
-		size_t(mu0.size()) == size_t(size(cov1, 1)) && cov0.isSquare() &&
-		cov1.isSquare())
+		size_t(mu0.size()) == size_t(cov0.rows()) &&
+		size_t(mu0.size()) == size_t(cov1.cols()) && cov0.isSquare() &&
+		cov1.isSquare());
 	const size_t N = mu0.size();
 	MATRIXLIKE2 cov1_inv;
 	cov1.inv(cov1_inv);
@@ -226,8 +226,8 @@ void confidenceIntervals(
 {
 	MRPT_START
 	ASSERT_(
-		data.size() != 0)  // don't use .empty() here to allow using matrices
-	ASSERT_(confidenceInterval > 0 && confidenceInterval < 1)
+		data.size() != 0);  // don't use .empty() here to allow using matrices
+	ASSERT_(confidenceInterval > 0 && confidenceInterval < 1);
 
 	out_mean = mean(data);
 	typename mrpt::math::ContainerType<CONTAINER>::element_t x_min, x_max;
@@ -244,10 +244,10 @@ void confidenceIntervals(
 
 	std::vector<double>::iterator it_low =
 		std::lower_bound(Hc.begin(), Hc.end(), confidenceInterval);
-	ASSERT_(it_low != Hc.end())
+	ASSERT_(it_low != Hc.end());
 	std::vector<double>::iterator it_high =
 		std::upper_bound(Hc.begin(), Hc.end(), 1 - confidenceInterval);
-	ASSERT_(it_high != Hc.end())
+	ASSERT_(it_high != Hc.end());
 	const size_t idx_low = std::distance(Hc.begin(), it_low);
 	const size_t idx_high = std::distance(Hc.begin(), it_high);
 	out_lower_conf_interval = x_min + idx_low * binWidth;

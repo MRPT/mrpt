@@ -12,19 +12,16 @@
 // compiling in small systems.
 
 #include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/CArrayNumeric.h>
 #include <mrpt/math/ops_matrices.h>
-#include <mrpt/math/utils.h>
+//#include <mrpt/math/utils.h>
 #include <mrpt/math/geometry.h>
-#include <mrpt/utils/metaprogramming.h>
-#include <mrpt/utils/CMemoryStream.h>
 #include <mrpt/random.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::random;
-using namespace mrpt::utils::metaprogramming;
 using namespace std;
 
 #define CHECK_AND_RET_ERROR(_COND_, _MSG_) EXPECT_FALSE(_COND_) << _MSG_;
@@ -281,8 +278,7 @@ TEST(Matrices, fromMatlabStringFormat)
 	if (M4.fromMatlabStringFormat(mat4, nullptr /*dont dump errors to cerr*/))
 		GTEST_FAIL() << mat4;
 
-	if (!M5.fromMatlabStringFormat(mat5) || size(M5, 1) != 0 ||
-		size(M5, 2) != 0)
+	if (!M5.fromMatlabStringFormat(mat5) || M5.rows() != 0 || M5.cols() != 0)
 		GTEST_FAIL() << mat5;
 
 	if (!M6.fromMatlabStringFormat(mat6)) GTEST_FAIL() << mat6;

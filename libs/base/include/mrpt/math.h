@@ -45,7 +45,6 @@
 
 #include <mrpt/math/CBinaryRelation.h>
 #include <mrpt/math/CMonteCarlo.h>
-#include <mrpt/math/jacobians.h>
 
 #include <mrpt/math/KDTreeCapable.h>
 #include <mrpt/math/kmeans.h>
