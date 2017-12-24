@@ -27,7 +27,7 @@ class CParticleFilterCapable;
   *  Users should inherit from CParticleFilterData<>, which in turn will
  * automatically inhirit from this base class.
   * \sa CParticleFilter, CParticleFilterCapable, CParticleFilterData
-  * \ingroup mrpt_base_grp
+  * \ingroup mrpt_bayes_grp
   */
 template <class Derived, class particle_list_t>
 struct CParticleFilterDataImpl : public CParticleFilterCapable
@@ -193,7 +193,7 @@ struct CParticleFilterDataImpl : public CParticleFilterCapable
  * pointers, which would lead to memory corruption.
  *
  * \sa CParticleFilter, CParticleFilterCapable, CParticleFilterDataImpl
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_bayes_grp
  */
 template <class T>
 class CParticleFilterData

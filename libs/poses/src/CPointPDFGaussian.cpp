@@ -7,14 +7,14 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "base-precomp.h"  // Precompiled headers
+#include "poses-precomp.h"  // Precompiled headers
 
 #include <mrpt/poses/CPointPDFGaussian.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/math/matrix_serialization.h>
 #include <mrpt/random/RandomGenerators.h>
 #include <mrpt/system/os.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::poses;
 using namespace mrpt::utils;

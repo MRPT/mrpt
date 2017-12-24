@@ -6,11 +6,12 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CPARTICLEFILTERCAPABLE_H
-#define CPARTICLEFILTERCAPABLE_H
+#pragma once
 
-#include <mrpt/utils/utils_defs.h>
 #include <mrpt/bayes/CParticleFilter.h>
+#include <vector>
+#include <cstdlib>
+#include <cstdint>
 
 namespace mrpt
 {
@@ -27,7 +28,7 @@ namespace bayes
  * Filter tutorial</a> explaining how to use the particle filter-related
  * classes.
  * \sa CParticleFilter, CParticleFilterData
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_bayes_grp
  */
 class CParticleFilterCapable
 {
@@ -295,4 +296,3 @@ class CParticleFilterCapable
 
 }  // end namespace
 }  // end namespace
-#endif

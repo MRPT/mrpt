@@ -12,7 +12,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/math/CMatrixD.h>
-#include <mrpt/utils/CProbabilityDensityFunction.h>
+#include <mrpt/math/CProbabilityDensityFunction.h>
 
 namespace mrpt
 {
@@ -45,7 +45,7 @@ class CPose3DPDF;
  */
 class CPose3DQuatPDF
 	: public mrpt::serialization::CSerializable,
-	  public mrpt::utils::CProbabilityDensityFunction<CPose3DQuat, 7>
+	  public mrpt::math::CProbabilityDensityFunction<CPose3DQuat, 7>
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CPose3DQuatPDF)
 

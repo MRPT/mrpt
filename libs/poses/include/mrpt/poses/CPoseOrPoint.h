@@ -6,23 +6,23 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CPOSEORPOINT_H
-#define CPOSEORPOINT_H
+#pragma once
 
-#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/math_frwds.h> // matrices frwd decls
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/math/homog_matrices.h>
 #include <mrpt/math/CArrayNumeric.h>
+#include <mrpt/serialization/CSerializable.h>
 
 #include <mrpt/poses/CPoseOrPoint_detail.h>
 
 namespace mrpt
 {
 /** \defgroup poses_grp 2D/3D points and poses
-  *  \ingroup mrpt_base_grp */
+  *  \ingroup mrpt_poses_grp */
 
 /** \defgroup poses_pdf_grp 2D/3D point and pose PDFs
-  *  \ingroup mrpt_base_grp */
+  *  \ingroup mrpt_poses_grp */
 
 /** Classes for 2D/3D geometry representation, both of single values and
  * probability density distributions (PDFs) in many forms.
@@ -128,44 +128,50 @@ class CPoseOrPoint
 		  mrpt::poses::detail::T3DTypeHelper<DERIVEDCLASS>::is_3D_val>
 {
    public:
+	const DERIVEDCLASS & derived() const
+	{
+		return *static_cast<const DERIVEDCLASS*>(this);
+	}
+	DERIVEDCLASS & derived() { return *static_cast<DERIVEDCLASS*>(this); }
+
 	/** Common members of all points & poses classes.
 		@{ */
 	// Note: the access to "z" is implemented (only for 3D data types), in
 	// detail::pose_point_impl<>
 	inline double x() const /*!< Get X coord. */
 	{
-		return static_cast<const DERIVEDCLASS*>(this)->m_coords[0];
+		return derived().m_coords[0];
 	}
 	inline double y() const /*!< Get Y coord. */
 	{
-		return static_cast<const DERIVEDCLASS*>(this)->m_coords[1];
+		return derived().m_coords[1];
 	}
 
 	inline double& x() /*!< Get ref to X coord. */
 	{
-		return static_cast<DERIVEDCLASS*>(this)->m_coords[0];
+		return derived().m_coords[0];
 	}
 	inline double& y() /*!< Get ref to Y coord. */
 	{
-		return static_cast<DERIVEDCLASS*>(this)->m_coords[1];
+		return derived().m_coords[1];
 	}
 
 	inline void x(const double v) /*!< Set X coord. */
 	{
-		static_cast<DERIVEDCLASS*>(this)->m_coords[0] = v;
+		derived().m_coords[0] = v;
 	}
 	inline void y(const double v) /*!< Set Y coord. */
 	{
-		static_cast<DERIVEDCLASS*>(this)->m_coords[1] = v;
+		derived().m_coords[1] = v;
 	}
 
 	inline void x_incr(const double v) /*!< X+=v */
 	{
-		static_cast<DERIVEDCLASS*>(this)->m_coords[0] += v;
+		derived().m_coords[0] += v;
 	}
 	inline void y_incr(const double v) /*!< Y+=v */
 	{
-		static_cast<DERIVEDCLASS*>(this)->m_coords[1] += v;
+		derived().m_coords[1] += v;
 	}
 
 	/** Return true for poses or points with a Z component, false otherwise. */
@@ -185,7 +191,7 @@ class CPoseOrPoint
 			if (is3DPoseOrPoint())
 				return square(x() - b.x()) + square(y() - b.y()) +
 					   square(
-						   static_cast<const DERIVEDCLASS*>(this)->m_coords[2] -
+						   derived().m_coords[2] -
 						   static_cast<const OTHERCLASS*>(&b)->m_coords[2]);
 			else
 				return square(x() - b.x()) + square(y() - b.y()) +
@@ -224,7 +230,7 @@ class CPoseOrPoint
 			   square(
 				   az -
 				   (is3DPoseOrPoint()
-						? static_cast<const DERIVEDCLASS*>(this)->m_coords[2]
+						? derived().m_coords[2]
 						: 0));
 	}
 
@@ -257,7 +263,7 @@ class CPoseOrPoint
 			(!is3DPoseOrPoint()
 				 ? 0
 				 : square(
-					   static_cast<const DERIVEDCLASS*>(this)->m_coords[2])));
+					   derived().m_coords[2])));
 	}
 
 	/** Return the pose or point as a 1xN vector with all the components (see
@@ -265,7 +271,7 @@ class CPoseOrPoint
 	inline mrpt::math::CVectorDouble getAsVectorVal() const
 	{
 		mrpt::math::CVectorDouble v;
-		static_cast<const DERIVEDCLASS*>(this)->getAsVector(v);
+		derived().getAsVector(v);
 		return v;
 	}
 
@@ -273,10 +279,11 @@ class CPoseOrPoint
 	* point(translation) or pose (translation+orientation).
 	* \sa getInverseHomogeneousMatrix
 	*/
-	inline mrpt::math::CMatrixDouble44 getHomogeneousMatrixVal() const
+	template <class MATRIX44>
+	inline MATRIX44 getHomogeneousMatrixVal() const
 	{
-		mrpt::math::CMatrixDouble44 m(mrpt::math::UNINITIALIZED_MATRIX);
-		static_cast<const DERIVEDCLASS*>(this)->getHomogeneousMatrix(m);
+		MATRIX44 m;
+		derived().getHomogeneousMatrix(m);
 		return m;
 	}
 
@@ -287,14 +294,15 @@ class CPoseOrPoint
 	inline void getInverseHomogeneousMatrix(
 		mrpt::math::CMatrixDouble44& out_HM) const
 	{  // Get current HM & inverse in-place:
-		static_cast<const DERIVEDCLASS*>(this)->getHomogeneousMatrix(out_HM);
+		derived().getHomogeneousMatrix(out_HM);
 		mrpt::math::homogeneousMatrixInverse(out_HM);
 	}
 
 	//! \overload
-	inline mrpt::math::CMatrixDouble44 getInverseHomogeneousMatrix() const
+	template <class MATRIX44>
+	inline MATRIX44 getInverseHomogeneousMatrix() const
 	{
-		mrpt::math::CMatrixDouble44 M(mrpt::math::UNINITIALIZED_MATRIX);
+		MATRIX44 M;
 		getInverseHomogeneousMatrix(M);
 		return M;
 	}
@@ -307,5 +315,3 @@ class CPoseOrPoint
 
 }  // End of namespace
 }  // End of namespace
-
-#endif

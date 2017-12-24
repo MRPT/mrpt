@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CProbabilityDensityFunction_H
-#define CProbabilityDensityFunction_H
+#pragma once
 
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
@@ -15,7 +14,7 @@
 
 namespace mrpt
 {
-namespace utils
+namespace math
 {
 /** A generic template for probability density distributions (PDFs).
  * This template is used as base for many classes in mrpt::poses
@@ -23,7 +22,7 @@ namespace utils
  *  Other methods such as \a getMean() or \a getCovariance() are implemented
  * here for convenience.
  * \sa mprt::poses::CPosePDF, mprt::poses::CPose3DPDF, mprt::poses::CPointPDF
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_math_grp
  */
 template <class TDATA, size_t STATE_LEN>
 class CProbabilityDensityFunction
@@ -188,5 +187,3 @@ class CProbabilityDensityFunction
 
 }  // End of namespace
 }  // End of namespace
-
-#endif

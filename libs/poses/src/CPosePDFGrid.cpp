@@ -7,12 +7,12 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "base-precomp.h"  // Precompiled headers
+#include "poses-precomp.h"  // Precompiled headers
 
 #include <mrpt/poses/CPosePDFGrid.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPosePDFParticles.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/random.h>
 #include <mrpt/system/os.h>
 #include <mrpt/poses/SO_SE_average.h>

@@ -10,7 +10,7 @@
 #define CPointPDF_H
 
 #include <mrpt/serialization/CSerializable.h>
-#include <mrpt/utils/CProbabilityDensityFunction.h>
+#include <mrpt/math/CProbabilityDensityFunction.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPosePDF.h>
 
@@ -37,7 +37,7 @@ namespace poses
  * \ingroup poses_pdf_grp
  */
 class CPointPDF : public mrpt::serialization::CSerializable,
-				  public mrpt::utils::CProbabilityDensityFunction<CPoint3D, 3>
+				  public mrpt::math::CProbabilityDensityFunction<CPoint3D, 3>
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CPointPDF)
 

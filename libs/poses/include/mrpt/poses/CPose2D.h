@@ -6,11 +6,10 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CPOSE2D_H
-#define CPOSE2D_H
+#pragma once
 
 #include <mrpt/poses/CPose.h>
-#include <mrpt/utils/aligned_containers.h>
+#include <mrpt/serialization/CSerializable.h>
 
 namespace mrpt
 {
@@ -52,19 +51,7 @@ class CPose2D : public CPose<CPose2D>, public mrpt::serialization::CSerializable
 	/** Precomputed cos() & sin() of phi. */
 	mutable double m_cosphi, m_sinphi;
 	mutable bool m_cossin_uptodate;
-
-	inline void update_cached_cos_sin() const
-	{
-		if (m_cossin_uptodate) return;
-#ifdef HAVE_SINCOS
-		::sincos(m_phi, &m_sinphi, &m_cosphi);
-#else
-		m_cosphi = ::cos(m_phi);
-		m_sinphi = ::sin(m_phi);
-#endif
-		m_cossin_uptodate = true;
-	}
-
+	void update_cached_cos_sin() const;
    public:
 	/** Default constructor (all coordinates to 0) */
 	CPose2D();
@@ -142,9 +129,10 @@ class CPose2D : public CPose<CPose2D>, public mrpt::serialization::CSerializable
 	/** Returns the equivalent SE(3) 3x3 rotation matrix, with (2,2)=1. */
 	void getRotationMatrix(mrpt::math::CMatrixDouble33& R) const;
 
-	inline mrpt::math::CMatrixDouble22 getRotationMatrix() const
+	template <class MATRIX22>
+	inline MATRIX22 getRotationMatrix() const
 	{
-		mrpt::math::CMatrixDouble22 R(mrpt::math::UNINITIALIZED_MATRIX);
+		MATRIX22 R;
 		getRotationMatrix(R);
 		return R;
 	}
@@ -370,12 +358,5 @@ mrpt::math::TPoint2D operator+(
 bool operator==(const CPose2D& p1, const CPose2D& p2);
 bool operator!=(const CPose2D& p1, const CPose2D& p2);
 
-/** Eigen aligment-compatible container */
-typedef mrpt::aligned_containers<CPose2D>::vector_t StdVector_CPose2D;
-/** Eigen aligment-compatible container */
-typedef mrpt::aligned_containers<CPose2D>::deque_t StdDeque_CPose2D;
-
 }  // End of namespace
 }  // End of namespace
-
-#endif

@@ -6,11 +6,9 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CPoint2DPDF_H
-#define CPoint2DPDF_H
+#pragma once
 
-#include <mrpt/serialization/CSerializable.h>
-#include <mrpt/utils/CProbabilityDensityFunction.h>
+#include <mrpt/math/CProbabilityDensityFunction.h>
 #include <mrpt/poses/CPoint2D.h>
 
 namespace mrpt
@@ -35,7 +33,7 @@ namespace poses
  * \sa CPoint2D, CPointPDF
  */
 class CPoint2DPDF : public mrpt::serialization::CSerializable,
-					public mrpt::utils::CProbabilityDensityFunction<CPoint2D, 2>
+					public mrpt::math::CProbabilityDensityFunction<CPoint2D, 2>
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CPoint2DPDF)
 
@@ -73,5 +71,3 @@ class CPoint2DPDF : public mrpt::serialization::CSerializable,
 
 }  // End of namespace
 }  // End of namespace
-
-#endif

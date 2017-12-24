@@ -7,11 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "base-precomp.h"  // Precompiled headers
+#include "poses-precomp.h"  // Precompiled headers
 
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPose2D.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <limits>
 
 using namespace mrpt::poses;
@@ -20,26 +20,12 @@ using namespace mrpt::math;
 
 IMPLEMENTS_SERIALIZABLE(CPoint2D, CSerializable, mrpt::poses)
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CPoint2D::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CPoint2D::serializeGetVersion() const { return 1; }
+void CPoint2D::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		// The coordinates:
-		out << m_coords[0] << m_coords[1];
-	}
+	out << m_coords[0] << m_coords[1];
 }
-
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CPoint2D::readFromStream(mrpt::utils::CStream& in, int version)
+void CPoint2D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

@@ -8,6 +8,7 @@ define_mrpt_lib(
 	mrpt-core
 	mrpt-math
 	mrpt-random
+	mrpt-config
 	)
 
 IF(BUILD_mrpt-bayes)

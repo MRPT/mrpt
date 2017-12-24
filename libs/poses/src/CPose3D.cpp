@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "base-precomp.h"  // Precompiled headers
+#include "poses-precomp.h"  // Precompiled headers
 
 #include <mrpt/config.h>  // for HAVE_SINCOS
 #include <mrpt/math/types_math.h>  // for CVectorD...
@@ -21,7 +21,7 @@
 #include <mrpt/poses/CPose3D.h>  // for CPose3D
 #include <mrpt/poses/CPose3DQuat.h>  // for CPose3DQuat
 #include <mrpt/poses/CPose3DRotVec.h>  // for CPose3DR...
-#include <mrpt/utils/CStream.h>  // for CStream
+#include <mrpt/serialization/CArchive.h>
 #include <algorithm>  // for move
 #include <cmath>  // for fabs
 #include <iomanip>  // for operator<<
@@ -36,7 +36,7 @@
 #include <mrpt/math/lightweight_geom_data.h>  // for TPoint3D
 #include <mrpt/math/ops_containers.h>  // for dotProduct
 #include <mrpt/serialization/CSerializable.h>  // for CSeriali...
-#include <mrpt/utils/bits.h>  // for square
+#include <mrpt/core/bits_math.h>  // for square
 #include <mrpt/math/utils_matlab.h>
 #include <mrpt/otherlibs/sophus/so3.hpp>
 #include <mrpt/otherlibs/sophus/se3.hpp>
@@ -133,27 +133,15 @@ CPose3D::CPose3D(const CPose3DRotVec& p)
 	this->setRotationMatrix(this->exp_rotation(p.m_rotvec));
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CPose3D::writeToStream(mrpt::utils::CStream& out, int* version) const
-{
-	if (version)
-		*version = 2;
-	else
-	{
-		const CPose3DQuat q(*this);
-		// The coordinates:
-		out << q[0] << q[1] << q[2] << q[3] << q[4] << q[5] << q[6];
-	}
-}
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CPose3D::readFromStream(mrpt::utils::CStream& in, int version)
+uint8_t CPose3D::serializeGetVersion() const { return 2; }
+void CPose3D::serializeTo(mrpt::serialization::CArchive& out) const
+{
+	const CPose3DQuat q(*this);
+	// The coordinates:
+	out << q[0] << q[1] << q[2] << q[3] << q[4] << q[5] << q[6];
+}
+void CPose3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

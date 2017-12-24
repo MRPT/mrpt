@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/io/CTextFileLinesParser.h>
+#include <mrpt/core/common.h>
 #include <gtest/gtest.h>
 
 MRPT_TODO("implement tests!");

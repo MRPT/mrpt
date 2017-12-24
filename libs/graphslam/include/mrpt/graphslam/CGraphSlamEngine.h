@@ -36,7 +36,7 @@
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/obs_utils.h>
-#include <mrpt/utils/CProbabilityDensityFunction.h>
+#include <mrpt/math/CProbabilityDensityFunction.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>

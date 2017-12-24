@@ -23,7 +23,7 @@ namespace bayes
  *
  *  This structure is used within CParticleFilterData, see that class for more
 *information.
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_bayes_grp
  */
 template <class T>
 struct CProbabilityParticle
