@@ -370,7 +370,7 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 	{
 		double lz;
 		inverseComposePoint(g.x, g.y, 0, l.x, l.y, lz);
-		ASSERT_BELOW_(std::abs(lz), eps)
+		ASSERT_BELOW_(std::abs(lz), eps);
 	}
 
 	/**  Makes "this = A (+) B"; this method is slightly more efficient than

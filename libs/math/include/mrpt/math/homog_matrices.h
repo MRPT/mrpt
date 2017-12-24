@@ -81,7 +81,7 @@ void homogeneousMatrixInverse(
 	OUT_XYZ& out_xyz)
 {
 	MRPT_START
-	ASSERT_(in_R.isSquare() && size(in_R, 1) == 3 && in_xyz.size() == 3)
+	ASSERT_(in_R.isSquare() && in_R.rows() == 3 && in_xyz.size() == 3);
 	out_R.setSize(3, 3);
 	out_xyz.resize(3);
 

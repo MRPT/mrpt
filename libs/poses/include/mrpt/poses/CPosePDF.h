@@ -12,7 +12,7 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
-#include <mrpt/utils/CProbabilityDensityFunction.h>
+#include <mrpt/math/CProbabilityDensityFunction.h>
 
 namespace mrpt
 {
@@ -39,7 +39,7 @@ class CPosePDFGaussian;  // frd decl.
  * \ingroup poses_pdf_grp
  */
 class CPosePDF : public mrpt::serialization::CSerializable,
-				 public mrpt::utils::CProbabilityDensityFunction<CPose2D, 3>
+				 public mrpt::math::CProbabilityDensityFunction<CPose2D, 3>
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CPosePDF)
 

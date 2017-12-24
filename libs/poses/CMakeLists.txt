@@ -3,6 +3,7 @@ define_mrpt_lib(
 	# Dependencies:
 	mrpt-math
 	mrpt-serialization
+	mrpt-bayes
 	)
 
 IF(BUILD_mrpt-poses)

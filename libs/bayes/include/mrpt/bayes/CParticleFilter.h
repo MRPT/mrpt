@@ -6,13 +6,11 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CPARTICLEFILTER_H
-#define CPARTICLEFILTER_H
+#pragma once
 
-#include <mrpt/utils/core_defs.h>
-#include <mrpt/utils/COutputLogger.h>
-#include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/TEnumType.h>
+#include <mrpt/system/COutputLogger.h>
+#include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/typemeta/TEnumType.h>
 
 namespace mrpt
 {
@@ -23,7 +21,7 @@ class CActionCollection;
 }
 
 /** The namespace for Bayesian filtering algorithm: different particle filters
- * and Kalman filter algorithms. \ingroup mrpt_base_grp
+ * and Kalman filter algorithms. \ingroup mrpt_bayes_grp
   */
 namespace bayes
 {
@@ -47,7 +45,7 @@ class CParticleFilterCapable;
  *		- Normalize weights.
  *		- Perform resampling if the ESS is below the threshold options.BETA.
  *
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_bayes_grp
  * \sa mrpt::poses::CPoseParticlesPDF
  */
 class CParticleFilter : public mrpt::utils::COutputLogger
@@ -219,38 +217,18 @@ class CParticleFilter : public mrpt::utils::COutputLogger
 };  // End of class def.
 
 }  // end namespace
-// Specializations MUST occur at the same namespace:
-namespace utils
-{
-template <>
-struct TEnumTypeFiller<mrpt::bayes::CParticleFilter::TParticleFilterAlgorithm>
-{
-	typedef mrpt::bayes::CParticleFilter::TParticleFilterAlgorithm enum_t;
-	static void fill(bimap<enum_t, std::string>& m_map)
-	{
-		using namespace mrpt::bayes;
-		m_map.insert(CParticleFilter::pfStandardProposal, "pfStandardProposal");
-		m_map.insert(
-			CParticleFilter::pfAuxiliaryPFOptimal, "pfAuxiliaryPFOptimal");
-		m_map.insert(
-			CParticleFilter::pfAuxiliaryPFStandard, "pfAuxiliaryPFStandard");
-		m_map.insert(CParticleFilter::pfOptimalProposal, "pfOptimalProposal");
-	}
-};
-template <>
-struct TEnumTypeFiller<
-	mrpt::bayes::CParticleFilter::TParticleResamplingAlgorithm>
-{
-	typedef mrpt::bayes::CParticleFilter::TParticleResamplingAlgorithm enum_t;
-	static void fill(bimap<enum_t, std::string>& m_map)
-	{
-		using namespace mrpt::bayes;
-		m_map.insert(CParticleFilter::prMultinomial, "prMultinomial");
-		m_map.insert(CParticleFilter::prResidual, "prResidual");
-		m_map.insert(CParticleFilter::prStratified, "prStratified");
-		m_map.insert(CParticleFilter::prSystematic, "prSystematic");
-	}
-};
-}
 }  // end namespace
-#endif
+
+MRPT_ENUM_TYPE_BEGIN(mrpt::bayes::CParticleFilter::TParticleFilterAlgorithm)
+MRPT_FILL_ENUM_MEMBER(mrpt::bayes::CParticleFilter, pfStandardProposal);
+MRPT_FILL_ENUM_MEMBER(mrpt::bayes::CParticleFilter, pfAuxiliaryPFOptimal);
+MRPT_FILL_ENUM_MEMBER(mrpt::bayes::CParticleFilter, pfAuxiliaryPFStandard);
+MRPT_FILL_ENUM_MEMBER(mrpt::bayes::CParticleFilter, pfOptimalProposal);
+MRPT_ENUM_TYPE_END()
+
+MRPT_ENUM_TYPE_BEGIN(mrpt::bayes::CParticleFilter::TParticleResamplingAlgorithm)
+MRPT_FILL_ENUM_MEMBER(mrpt::bayes::CParticleFilter, prMultinomial);
+MRPT_FILL_ENUM_MEMBER(mrpt::bayes::CParticleFilter, prResidual);
+MRPT_FILL_ENUM_MEMBER(mrpt::bayes::CParticleFilter, prStratified);
+MRPT_FILL_ENUM_MEMBER(mrpt::bayes::CParticleFilter, prSystematic);
+MRPT_ENUM_TYPE_END()

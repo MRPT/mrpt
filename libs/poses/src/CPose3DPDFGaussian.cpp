@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "base-precomp.h"  // Precompiled headers
+#include "poses-precomp.h"  // Precompiled headers
 
 #include <mrpt/random.h>
 #include <mrpt/math/transform_gaussian.h>
@@ -16,7 +16,7 @@
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/system/os.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include <sstream>
 

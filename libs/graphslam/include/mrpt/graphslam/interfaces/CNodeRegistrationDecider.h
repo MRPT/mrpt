@@ -16,7 +16,7 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/system/TParameters.h>
 #include <mrpt/system/CTimeLogger.h>
-#include <mrpt/utils/CProbabilityDensityFunction.h>
+#include <mrpt/math/CProbabilityDensityFunction.h>
 
 #include <mrpt/graphslam/misc/CWindowManager.h>
 #include "CRegistrationDeciderOrOptimizer.h"

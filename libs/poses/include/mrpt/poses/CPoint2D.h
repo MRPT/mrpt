@@ -9,7 +9,6 @@
 #ifndef CPOINT2D_H
 #define CPOINT2D_H
 
-#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/poses/CPoint.h>
 #include <mrpt/math/CArrayNumeric.h>
 

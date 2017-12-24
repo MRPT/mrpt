@@ -7,14 +7,15 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "base-precomp.h"  // Precompiled headers
+#include "poses-precomp.h"  // Precompiled headers
 
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPoint3D.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/math/wrap2pi.h>
+#include <mrpt/config.h> // HAVE_SINCOS
 #include <limits>
 
 using namespace mrpt;
@@ -52,26 +53,13 @@ CPose2D::CPose2D(const CPose3D& p) : m_phi(p.yaw()), m_cossin_uptodate(false)
 	m_coords[1] = p.y();
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CPose2D::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CPose2D::serializeGetVersion() const { return 1; }
+void CPose2D::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		// The coordinates:
-		out << m_coords[0] << m_coords[1] << m_phi;
-	}
+	// The coordinates:
+	out << m_coords[0] << m_coords[1] << m_phi;
 }
-
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CPose2D::readFromStream(mrpt::utils::CStream& in, int version)
+void CPose2D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -437,4 +425,16 @@ void CPose2D::setToNaN()
 {
 	for (int i = 0; i < 3; i++)
 		(*this)[i] = std::numeric_limits<double>::quiet_NaN();
+}
+
+void CPose2D::update_cached_cos_sin() const
+{
+	if (m_cossin_uptodate) return;
+#ifdef HAVE_SINCOS
+	::sincos(m_phi, &m_sinphi, &m_cosphi);
+#else
+	m_cosphi = ::cos(m_phi);
+	m_sinphi = ::sin(m_phi);
+#endif
+	m_cossin_uptodate = true;
 }

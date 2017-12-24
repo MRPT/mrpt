@@ -7,14 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "base-precomp.h"  // Precompiled headers
+#include "bayes-precomp.h"  // Precompiled headers
 
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/random.h>
 #include <mrpt/math/ops_vectors.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::bayes;
 using namespace mrpt::random;
 using namespace mrpt::math;

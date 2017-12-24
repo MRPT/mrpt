@@ -10,6 +10,7 @@
 #define CPOINT3D_H
 
 #include <mrpt/poses/CPoint.h>
+#include <mrpt/serialization/CSerializable.h>
 
 namespace mrpt
 {

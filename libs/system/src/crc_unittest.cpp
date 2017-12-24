@@ -7,12 +7,8 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/utils/crc.h>
+#include <mrpt/system/crc.h>
 #include <gtest/gtest.h>
-
-using namespace mrpt;
-using namespace mrpt::utils;
-using namespace std;
 
 // Load data from constant file and check for exact match.
 TEST(crc, crc32)
@@ -29,7 +25,7 @@ TEST(crc, crc32)
 		0x00, 0x06, 0x00, 0x03};
 
 	uint32_t crc =
-		mrpt::utils::compute_CRC32(buffer, sizeof(buffer), 0xEDB88320L);
+		mrpt::system::compute_CRC32(buffer, sizeof(buffer), 0xEDB88320L);
 
 	EXPECT_EQ(crc, 0x484cdc42u);
 }

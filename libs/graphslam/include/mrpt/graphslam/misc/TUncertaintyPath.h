@@ -18,7 +18,7 @@
 #include <mrpt/utils/types_simple.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/utils/CProbabilityDensityFunction.h>
+#include <mrpt/math/CProbabilityDensityFunction.h>
 
 #include <string>
 #include <sstream>
