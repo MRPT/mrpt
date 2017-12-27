@@ -16,6 +16,7 @@
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/wrap2pi.h>
+#include <mrpt/math/matrix_serialization.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/poses/SO_SE_average.h>
 #include <iostream>
@@ -23,7 +24,6 @@
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::math;
-
 using namespace mrpt::system;
 using namespace std;
 
@@ -108,12 +108,10 @@ void CPosePDFSOG::serializeTo(mrpt::serialization::CArchive& out) const
 	uint32_t N = m_modes.size();
 	out << N;
 
-	for (const_iterator it = m_modes.begin(); it != m_modes.end(); ++it)
+	for (const auto m : m_modes)
 	{
-		out << (it)->log_w;
-		out << (it)->mean;
-		out << (it)->cov(0, 0) << (it)->cov(1, 1) << (it)->cov(2, 2);
-		out << (it)->cov(0, 1) << (it)->cov(0, 2) << (it)->cov(1, 2);
+		out << m.log_w << m.mean;
+		mrpt::math::serializeSymmetricMatrixTo(m.cov, out);
 	}
 }
 void CPosePDFSOG::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -125,59 +123,26 @@ void CPosePDFSOG::serializeFrom(mrpt::serialization::CArchive& in, uint8_t versi
 		case 2:
 		{
 			uint32_t N;
-			float x;
-			double x0;
-
 			in >> N;
-
 			resize(N);
-
-			for (iterator it = m_modes.begin(); it != m_modes.end(); ++it)
+			for (auto & m : m_modes)
 			{
-				in >> (it)->log_w;
+				in >> m.log_w;
 
 				// In version 0, weights were linear!!
-				if (version == 0) (it)->log_w = log(max(1e-300, (it)->log_w));
+				if (version == 0) m.log_w = log(max(1e-300, m.log_w));
 
-				in >> (it)->mean;
+				in >> m.mean;
 
 				if (version == 1)  // float's
 				{
-					in >> x;
-					(it)->cov(0, 0) = x;
-					in >> x;
-					(it)->cov(1, 1) = x;
-					in >> x;
-					(it)->cov(2, 2) = x;
-
-					in >> x;
-					(it)->cov(1, 0) = x;
-					(it)->cov(0, 1) = x;
-					in >> x;
-					(it)->cov(2, 0) = x;
-					(it)->cov(0, 2) = x;
-					in >> x;
-					(it)->cov(1, 2) = x;
-					(it)->cov(2, 1) = x;
+					CMatrixFloat33 mf;
+					mrpt::math::deserializeSymmetricMatrixFrom(mf, in);
+					m.cov = mf.cast<double>();
 				}
 				else
 				{
-					in >> x0;
-					(it)->cov(0, 0) = x0;
-					in >> x0;
-					(it)->cov(1, 1) = x0;
-					in >> x0;
-					(it)->cov(2, 2) = x0;
-
-					in >> x0;
-					(it)->cov(1, 0) = x0;
-					(it)->cov(0, 1) = x0;
-					in >> x0;
-					(it)->cov(2, 0) = x0;
-					(it)->cov(0, 2) = x0;
-					in >> x0;
-					(it)->cov(1, 2) = x0;
-					(it)->cov(2, 1) = x0;
+					mrpt::math::deserializeSymmetricMatrixFrom(m.cov, in);
 				}
 			}
 		}

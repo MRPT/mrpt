@@ -17,6 +17,7 @@
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/system/os.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/math/matrix_serialization.h>
 
 #include <sstream>
 
@@ -230,43 +231,16 @@ uint8_t CPose3DPDFGaussian::serializeGetVersion() const { return 1; }
 void CPose3DPDFGaussian::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	out << mean;
-	for (int r = 0; r < cov.rows(); r++) out << cov.get_unsafe(r, r);
-	for (int r = 0; r < cov.rows(); r++)
-		for (int c = r + 1; c < cov.cols(); c++)
-			out << cov.get_unsafe(r, c);
+	mrpt::math::serializeSymmetricMatrixTo(cov, out);
 }
 void CPose3DPDFGaussian::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
-		case 0:
-		{
-			in >> mean;
-
-			for (int r = 0; r < cov.rows(); r++)
-				in >> cov.get_unsafe(r, r);
-			for (int r = 0; r < cov.rows(); r++)
-				for (int c = r + 1; c < cov.cols(); c++)
-				{
-					float x;
-					in >> x;
-					cov.get_unsafe(r, c) = cov.get_unsafe(c, r) = x;
-				}
-		}
-		break;
 		case 1:
 		{
 			in >> mean;
-
-			for (int r = 0; r < cov.rows(); r++)
-				in >> cov.get_unsafe(r, r);
-			for (int r = 0; r < cov.rows(); r++)
-				for (int c = r + 1; c < cov.cols(); c++)
-				{
-					double x;
-					in >> x;
-					cov.get_unsafe(r, c) = cov.get_unsafe(c, r) = x;
-				}
+			mrpt::math::deserializeSymmetricMatrixFrom(cov, in);
 		}
 		break;
 		default:
