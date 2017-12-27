@@ -429,7 +429,7 @@ void CCameraSensor::close()
 				loadConfig_sensorSpecific
    ----------------------------------------------------- */
 void CCameraSensor::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 	// At this point, my parent class CGenericSensor has already loaded its
@@ -1539,7 +1539,7 @@ CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromPanel(void* _panel)
 						writeConfigFromVideoSourcePanel
    ------------------------------------------------------------------------ */
 void mrpt::hwdrivers::writeConfigFromVideoSourcePanel(
-	void* _panel, const std::string& sect, mrpt::utils::CConfigFileBase* cfg)
+	void* _panel, const std::string& sect, mrpt::config::CConfigFileBase* cfg)
 {
 	MRPT_START
 #if MRPT_HAS_WXWIDGETS
@@ -1562,7 +1562,7 @@ void mrpt::hwdrivers::writeConfigFromVideoSourcePanel(
    ------------------------------------------------------------------------ */
 void mrpt::hwdrivers::readConfigIntoVideoSourcePanel(
 	void* _panel, const std::string& sect,
-	const mrpt::utils::CConfigFileBase* cfg)
+	const mrpt::config::CConfigFileBase* cfg)
 {
 	MRPT_START
 #if MRPT_HAS_WXWIDGETS

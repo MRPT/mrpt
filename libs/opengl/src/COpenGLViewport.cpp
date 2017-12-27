@@ -16,7 +16,7 @@
 #include <mrpt/utils/CStringList.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/utils/CStream.h>
-#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/opengl/gl_utils.h>
 
 #include "opengl_internals.h"

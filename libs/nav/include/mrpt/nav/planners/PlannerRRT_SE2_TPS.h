@@ -91,7 +91,7 @@ class PlannerRRT_SE2_TPS : public PlannerTPS_VirtualBase
 
 	/** Load all params from a config file source */
 	void loadConfig(
-		const mrpt::utils::CConfigFileBase& cfgSource,
+		const mrpt::config::CConfigFileBase& cfgSource,
 		const std::string& sSectionName = std::string("PTG_CONFIG"));
 
 	/** Must be called after setting all params (see `loadConfig()`) and before

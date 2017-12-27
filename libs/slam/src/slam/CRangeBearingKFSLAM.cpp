@@ -228,15 +228,15 @@ void CRangeBearingKFSLAM::processActionObservation(
 			// Use spectral-graph technique:
 			mapPartitioner.addMapFrame(SF, auxPosePDF);
 
-			vector<vector_uint> partitions;
+			vector<std::vector<uint32_t>> partitions;
 			mapPartitioner.updatePartitions(partitions);
 			m_lastPartitionSet = partitions;
 		}
 		else
 		{
 			// Fixed partitions every K observations:
-			vector<vector_uint> partitions;
-			vector_uint tmpCluster;
+			vector<std::vector<uint32_t>> partitions;
+			std::vector<uint32_t> tmpCluster;
 
 			ASSERT_(options.partitioningMethod > 1);
 			size_t K = options.partitioningMethod;
@@ -738,7 +738,7 @@ void CRangeBearingKFSLAM::OnNormalizeStateVector()
 /*---------------------------------------------------------------
 						loadOptions
   ---------------------------------------------------------------*/
-void CRangeBearingKFSLAM::loadOptions(const mrpt::utils::CConfigFileBase& ini)
+void CRangeBearingKFSLAM::loadOptions(const mrpt::config::CConfigFileBase& ini)
 {
 	// Main
 	options.loadFromConfigFile(ini, "RangeBearingKFSLAM");
@@ -751,7 +751,7 @@ void CRangeBearingKFSLAM::loadOptions(const mrpt::utils::CConfigFileBase& ini)
 						loadOptions
   ---------------------------------------------------------------*/
 void CRangeBearingKFSLAM::TOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& source, const std::string& section)
+	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {
 	source.read_vector(section, "stds_Q_no_odo", stds_Q_no_odo, stds_Q_no_odo);
 	ASSERT_(stds_Q_no_odo.size() == 7)
@@ -1103,16 +1103,16 @@ void CRangeBearingKFSLAM::getAs3DObject(
 						getLastPartitionLandmarks
   ---------------------------------------------------------------*/
 void CRangeBearingKFSLAM::getLastPartitionLandmarksAsIfFixedSubmaps(
-	size_t K, std::vector<vector_uint>& landmarksMembership)
+	size_t K, std::vector<std::vector<uint32_t>>& landmarksMembership)
 {
 	// temporary copy:
-	std::vector<vector_uint> tmpParts = m_lastPartitionSet;
+	std::vector<std::vector<uint32_t>> tmpParts = m_lastPartitionSet;
 
 	// Fake "m_lastPartitionSet":
 
 	// Fixed partitions every K observations:
-	vector<vector_uint> partitions;
-	vector_uint tmpCluster;
+	vector<std::vector<uint32_t>> partitions;
+	std::vector<uint32_t> tmpCluster;
 
 	for (size_t i = 0; i < m_SFs.size(); i++)
 	{
@@ -1138,7 +1138,7 @@ void CRangeBearingKFSLAM::getLastPartitionLandmarksAsIfFixedSubmaps(
 						getLastPartitionLandmarks
   ---------------------------------------------------------------*/
 void CRangeBearingKFSLAM::getLastPartitionLandmarks(
-	std::vector<vector_uint>& landmarksMembership) const
+	std::vector<std::vector<uint32_t>>& landmarksMembership) const
 {
 	landmarksMembership.clear();
 
@@ -1181,7 +1181,7 @@ void CRangeBearingKFSLAM::getLastPartitionLandmarks(
 		}  // end for p
 
 		// Build membership list:
-		vector_uint membershipOfThisLM;
+		std::vector<uint32_t> membershipOfThisLM;
 
 		for (map<int, bool>::iterator it = belongToPartition.begin();
 			 it != belongToPartition.end(); ++it)
@@ -1195,7 +1195,7 @@ void CRangeBearingKFSLAM::getLastPartitionLandmarks(
 			computeOffDiagonalBlocksApproximationError
   ---------------------------------------------------------------*/
 double CRangeBearingKFSLAM::computeOffDiagonalBlocksApproximationError(
-	const std::vector<vector_uint>& landmarksMembership) const
+	const std::vector<std::vector<uint32_t>>& landmarksMembership) const
 {
 	MRPT_START
 
@@ -1246,7 +1246,7 @@ void CRangeBearingKFSLAM::reconsiderPartitionsNow()
 {
 	mapPartitioner.markAllNodesForReconsideration();
 
-	vector<vector_uint> partitions;  // A different buffer for making this
+	vector<std::vector<uint32_t>> partitions;  // A different buffer for making this
 	// thread-safe some day...
 
 	mapPartitioner.updatePartitions(partitions);

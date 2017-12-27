@@ -11,25 +11,18 @@
 
 #include <mrpt/poses/CPose2DInterpolator.h>
 #include "CPoseInterpolatorBase.hpp"  // templ impl
-#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/serialization/stl_serialization.h>
 
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 IMPLEMENTS_SERIALIZABLE(CPose2DInterpolator, CSerializable, mrpt::poses)
 
-void CPose2DInterpolator::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CPose2DInterpolator::serializeGetVersion() const { return 0; }
+void CPose2DInterpolator::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		out << m_path;
-	}
+	out << m_path;
 }
-
-void CPose2DInterpolator::readFromStream(mrpt::utils::CStream& in, int version)
+void CPose2DInterpolator::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

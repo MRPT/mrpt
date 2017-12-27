@@ -37,7 +37,7 @@ MAP_DEFINITION_REGISTER(
 
 CColouredOctoMap::TMapDefinition::TMapDefinition() : resolution(0.10) {}
 void CColouredOctoMap::TMapDefinition::loadFromConfigFile_map_specific(
-	const mrpt::utils::CConfigFileBase& source,
+	const mrpt::config::CConfigFileBase& source,
 	const std::string& sectionNamePrefix)
 {
 	// [<sectionNamePrefix>+"_creationOpts"]

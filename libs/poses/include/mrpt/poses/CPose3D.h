@@ -178,6 +178,8 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 	*/
 	explicit CPose3D(const mrpt::math::TPose3D&);
 
+	mrpt::math::TPose3D CPose3D::asTPose() const;
+
 	/** Constructor from a quaternion (which only represents the 3D rotation
 	 * part) and a 3D displacement. */
 	CPose3D(

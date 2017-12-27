@@ -13,7 +13,7 @@
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/ops_matrices.h>  // for extract*()
 #include <mrpt/utils/CStream.h>
-#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/serialization/stl_serialization.h>
 
 #include "opengl_internals.h"
 

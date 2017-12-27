@@ -20,7 +20,7 @@ namespace graphs
   ---------------------------------------------------------------*/
 template <class GRAPH_MATRIX, typename num_t>
 void CGraphPartitioner<GRAPH_MATRIX, num_t>::SpectralBisection(
-	GRAPH_MATRIX& in_A, vector_uint& out_part1, vector_uint& out_part2,
+	GRAPH_MATRIX& in_A, std::vector<uint32_t>& out_part1, std::vector<uint32_t>& out_part2,
 	num_t& out_cut_value, bool forceSimetry)
 {
 	size_t nodeCount;  // Nodes count
@@ -96,14 +96,14 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::SpectralBisection(
   ---------------------------------------------------------------*/
 template <class GRAPH_MATRIX, typename num_t>
 void CGraphPartitioner<GRAPH_MATRIX, num_t>::RecursiveSpectralPartition(
-	GRAPH_MATRIX& in_A, std::vector<vector_uint>& out_parts,
+	GRAPH_MATRIX& in_A, std::vector<std::vector<uint32_t>>& out_parts,
 	num_t threshold_Ncut, bool forceSimetry, bool useSpectralBisection,
 	bool recursive, unsigned minSizeClusters, const bool verbose)
 {
 	MRPT_START
 
 	size_t nodeCount;
-	vector_uint p1, p2;
+	std::vector<uint32_t> p1, p2;
 	num_t cut_value;
 	size_t i, j;
 	GRAPH_MATRIX Adj;
@@ -160,7 +160,7 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::RecursiveSpectralPartition(
 		if (verbose) std::cout << "->YES!" << std::endl;
 
 		// Yes:
-		std::vector<vector_uint> p1_parts, p2_parts;
+		std::vector<std::vector<uint32_t>> p1_parts, p2_parts;
 
 		if (recursive)
 		{
@@ -223,8 +223,8 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::RecursiveSpectralPartition(
   ---------------------------------------------------------------*/
 template <class GRAPH_MATRIX, typename num_t>
 num_t CGraphPartitioner<GRAPH_MATRIX, num_t>::nCut(
-	const GRAPH_MATRIX& in_A, const vector_uint& in_part1,
-	const vector_uint& in_part2)
+	const GRAPH_MATRIX& in_A, const std::vector<uint32_t>& in_part1,
+	const std::vector<uint32_t>& in_part2)
 {
 	unsigned int i, j;
 	size_t size1 = in_part1.size();
@@ -260,14 +260,14 @@ num_t CGraphPartitioner<GRAPH_MATRIX, num_t>::nCut(
   ---------------------------------------------------------------*/
 template <class GRAPH_MATRIX, typename num_t>
 void CGraphPartitioner<GRAPH_MATRIX, num_t>::exactBisection(
-	GRAPH_MATRIX& in_A, vector_uint& out_part1, vector_uint& out_part2,
+	GRAPH_MATRIX& in_A, std::vector<uint32_t>& out_part1, std::vector<uint32_t>& out_part2,
 	num_t& out_cut_value, bool forceSimetry)
 {
 	size_t nodeCount;  // Nodes count
 	size_t i, j;
 	GRAPH_MATRIX Adj;
 	vector_bool partition, bestPartition;
-	vector_uint part1, part2;
+	std::vector<uint32_t> part1, part2;
 	num_t partCutValue, bestCutValue = std::numeric_limits<num_t>::max();
 	bool end = false;
 

@@ -47,7 +47,7 @@ class CDifodoDatasets : public mrpt::vision::CDifodo
 	}
 
 	/** Initialize the visual odometry method and loads the rawlog file */
-	void loadConfiguration(const mrpt::utils::CConfigFileBase& ini);
+	void loadConfiguration(const mrpt::config::CConfigFileBase& ini);
 
 	/** Load the depth image and the corresponding groundtruth pose */
 	void loadFrame();

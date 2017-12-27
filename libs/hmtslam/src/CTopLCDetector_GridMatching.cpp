@@ -145,7 +145,7 @@ void CTopLCDetector_GridMatching::OnNewPose(
 CTopLCDetector_GridMatching::TOptions::TOptions() : matchingOptions() {}
 //  Load parameters from configuration source
 void CTopLCDetector_GridMatching::TOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& source, const std::string& section)
+	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {
 	matchingOptions.loadFromConfigFile(source, section);
 }

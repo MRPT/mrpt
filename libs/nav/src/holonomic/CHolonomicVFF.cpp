@@ -25,17 +25,17 @@ IMPLEMENTS_SERIALIZABLE(
 /*---------------------------------------------------------------
 						initialize
   ---------------------------------------------------------------*/
-CHolonomicVFF::CHolonomicVFF(const mrpt::utils::CConfigFileBase* INI_FILE)
+CHolonomicVFF::CHolonomicVFF(const mrpt::config::CConfigFileBase* INI_FILE)
 	: CAbstractHolonomicReactiveMethod("CHolonomicVFF")
 {
 	if (INI_FILE != nullptr) initialize(*INI_FILE);
 }
 
-void CHolonomicVFF::initialize(const mrpt::utils::CConfigFileBase& INI_FILE)
+void CHolonomicVFF::initialize(const mrpt::config::CConfigFileBase& INI_FILE)
 {
 	options.loadFromConfigFile(INI_FILE, getConfigFileSectionName());
 }
-void CHolonomicVFF::saveConfigFile(mrpt::utils::CConfigFileBase& c) const
+void CHolonomicVFF::saveConfigFile(mrpt::config::CConfigFileBase& c) const
 {
 	options.saveToConfigFile(c, getConfigFileSectionName());
 }
@@ -171,7 +171,7 @@ CHolonomicVFF::TOptions::TOptions()
 }
 
 void CHolonomicVFF::TOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& source, const std::string& section)
+	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {
 	MRPT_START
 
@@ -184,7 +184,7 @@ void CHolonomicVFF::TOptions::loadFromConfigFile(
 }
 
 void CHolonomicVFF::TOptions::saveToConfigFile(
-	mrpt::utils::CConfigFileBase& c, const std::string& s) const
+	mrpt::config::CConfigFileBase& c, const std::string& s) const
 {
 	MRPT_START;
 

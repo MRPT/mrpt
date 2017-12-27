@@ -11,7 +11,7 @@
 
 #include <mrpt/opengl/CAngularObservationMesh.h>
 #include <mrpt/poses/CPoint3D.h>
-#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/utils/CStream.h>
 
 #if MRPT_HAS_OPENGL_GLUT

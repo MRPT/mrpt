@@ -55,7 +55,7 @@ void TKLDParams::dumpToTextStream(mrpt::utils::CStream& out) const
 					loadFromConfigFile
   ---------------------------------------------------------------*/
 void TKLDParams::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
 {
 	MRPT_LOAD_CONFIG_VAR(KLD_minSampleSize, int, iniFile, section);
 	MRPT_LOAD_CONFIG_VAR(KLD_maxSampleSize, int, iniFile, section);

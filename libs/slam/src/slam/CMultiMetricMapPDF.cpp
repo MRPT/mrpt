@@ -665,7 +665,7 @@ void CMultiMetricMapPDF::TPredictionParams::dumpToTextStream(
 					loadFromConfigFile
   ---------------------------------------------------------------*/
 void CMultiMetricMapPDF::TPredictionParams::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
 {
 	pfOptimalProposal_mapSelection = iniFile.read_int(
 		section, "pfOptimalProposal_mapSelection",

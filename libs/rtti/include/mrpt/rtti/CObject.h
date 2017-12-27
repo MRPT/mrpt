@@ -184,6 +184,9 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
 	using Ptr = std::shared_ptr<class_name>;                             \
 	using ConstPtr = std::shared_ptr<const class_name>;                  \
 	static constexpr const char* className = #class_name;                \
+	static constexpr auto getClassName() {                               \
+		return mrpt::typemeta::literal(#class_name);                     \
+		}                                                                \
 	static const mrpt::rtti::TRuntimeClassId& GetRuntimeClassIdStatic(); \
 	virtual const mrpt::rtti::TRuntimeClassId* GetRuntimeClass()         \
 		const override;                                                  \

@@ -11,25 +11,18 @@
 
 #include <mrpt/poses/CPose3DInterpolator.h>
 #include "CPoseInterpolatorBase.hpp"  // templ impl
-#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/serialization/stl_serialization.h>
 
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 IMPLEMENTS_SERIALIZABLE(CPose3DInterpolator, CSerializable, mrpt::poses)
 
-void CPose3DInterpolator::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CPose3DInterpolator::serializeGetVersion() const { return 1; }
+void CPose3DInterpolator::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		out << m_path;  // v1: change container element CPose3D->TPose3D
-	}
+	out << m_path;  // v1: change container element CPose3D->TPose3D
 }
-
-void CPose3DInterpolator::readFromStream(mrpt::utils::CStream& in, int version)
+void CPose3DInterpolator::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -40,7 +33,7 @@ void CPose3DInterpolator::readFromStream(mrpt::utils::CStream& in, int version)
 			m_path.clear();
 			for (const auto& p : old_path)
 			{
-				m_path[p.first] = mrpt::math::TPose3D(p.second);
+				m_path[p.first] = p.second.asTPose();
 			}
 		}
 		break;

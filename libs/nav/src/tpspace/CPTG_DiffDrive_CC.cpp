@@ -20,7 +20,7 @@ IMPLEMENTS_SERIALIZABLE(
 	CPTG_DiffDrive_CC, CParameterizedTrajectoryGenerator, mrpt::nav)
 
 void CPTG_DiffDrive_CC::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& cfg, const std::string& sSection)
+	const mrpt::config::CConfigFileBase& cfg, const std::string& sSection)
 {
 	CPTG_DiffDrive_CollisionGridBased::loadFromConfigFile(cfg, sSection);
 
@@ -30,7 +30,7 @@ void CPTG_DiffDrive_CC::loadFromConfigFile(
 	R = V_MAX / W_MAX;
 }
 void CPTG_DiffDrive_CC::saveToConfigFile(
-	mrpt::utils::CConfigFileBase& cfg, const std::string& sSection) const
+	mrpt::config::CConfigFileBase& cfg, const std::string& sSection) const
 {
 	MRPT_START
 	const int WN = 25, WV = 30;

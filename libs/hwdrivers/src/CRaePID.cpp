@@ -30,7 +30,7 @@ CRaePID::CRaePID() { m_sensorLabel = "RAE_PID"; }
 				loadConfig_sensorSpecific
    ----------------------------------------------------- */
 void CRaePID::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 #ifdef _WIN32

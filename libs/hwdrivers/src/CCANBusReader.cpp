@@ -160,7 +160,7 @@ void CCANBusReader::doProcessSimple(
 						loadConfig_sensorSpecific
 -------------------------------------------------------------*/
 void CCANBusReader::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 	//	m_sensorPose = CPose3D(

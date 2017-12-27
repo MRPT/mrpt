@@ -130,7 +130,7 @@ void COpenNI2_RGBD360::doProcess()
 * some critical parameter is missing or has an invalid value.
 */
 void COpenNI2_RGBD360::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 	cout << "COpenNI2_RGBD360::loadConfig_sensorSpecific...\n";

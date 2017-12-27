@@ -12,7 +12,7 @@
 #include <mrpt/utils/CStream.h>
 #include <mrpt/maps/CLandmark.h>
 #include <mrpt/obs/CObservation.h>
-#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/serialization/stl_serialization.h>
 
 using namespace mrpt::obs;
 using namespace mrpt::maps;

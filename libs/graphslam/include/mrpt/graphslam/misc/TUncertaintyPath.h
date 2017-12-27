@@ -71,7 +71,7 @@ struct TUncertaintyPath : public mrpt::utils::CLoadableOptions
 
 	// no need to load anything..
 	void loadFromConfigFile(
-		const mrpt::utils::CConfigFileBase& source, const std::string& section);
+		const mrpt::config::CConfigFileBase& source, const std::string& section);
 	void dumpToTextStream(mrpt::utils::CStream& out) const;
 	std::string getAsString() const;
 	void getAsString(std::string* str) const;

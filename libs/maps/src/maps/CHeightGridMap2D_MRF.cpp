@@ -36,7 +36,7 @@ CHeightGridMap2D_MRF::TMapDefinition::TMapDefinition()
 }
 
 void CHeightGridMap2D_MRF::TMapDefinition::loadFromConfigFile_map_specific(
-	const mrpt::utils::CConfigFileBase& source,
+	const mrpt::config::CConfigFileBase& source,
 	const std::string& sectionNamePrefix)
 {
 	// [<sectionNamePrefix>+"_creationOpts"]
@@ -308,7 +308,7 @@ void CHeightGridMap2D_MRF::TInsertionOptions::dumpToTextStream(
 					loadFromConfigFile
   ---------------------------------------------------------------*/
 void CHeightGridMap2D_MRF::TInsertionOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
 {
 	// Common data fields for all random fields maps:
 	internal_loadFromConfigFile_common(iniFile, section);

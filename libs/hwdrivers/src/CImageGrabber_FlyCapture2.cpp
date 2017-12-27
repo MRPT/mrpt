@@ -177,7 +177,7 @@ TCaptureOptions_FlyCapture2::TCaptureOptions_FlyCapture2()
 }
 
 void TCaptureOptions_FlyCapture2::loadOptionsFrom(
-	const mrpt::utils::CConfigFileBase& cfg, const std::string& sect,
+	const mrpt::config::CConfigFileBase& cfg, const std::string& sect,
 	const std::string& prefix)
 {
 	camera_index =

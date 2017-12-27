@@ -49,7 +49,7 @@ CGasConcentrationGridMap2D::TMapDefinition::TMapDefinition()
 
 void CGasConcentrationGridMap2D::TMapDefinition::
 	loadFromConfigFile_map_specific(
-		const mrpt::utils::CConfigFileBase& source,
+		const mrpt::config::CConfigFileBase& source,
 		const std::string& sectionNamePrefix)
 {
 	// [<sectionNamePrefix>+"_creationOpts"]
@@ -514,7 +514,7 @@ void CGasConcentrationGridMap2D::TInsertionOptions::dumpToTextStream(
 					loadFromConfigFile
   ---------------------------------------------------------------*/
 void CGasConcentrationGridMap2D::TInsertionOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
 {
 	// Common data fields for all random fields maps:
 	internal_loadFromConfigFile_common(iniFile, section);

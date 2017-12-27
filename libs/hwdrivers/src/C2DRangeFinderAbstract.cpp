@@ -96,7 +96,7 @@ void C2DRangeFinderAbstract::doProcess()
 						loadExclusionAreas
 -------------------------------------------------------------*/
 void C2DRangeFinderAbstract::loadCommonParams(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 	// Params:

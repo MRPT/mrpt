@@ -6,10 +6,8 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CParticleFilterData_H
-#define CParticleFilterData_H
+#pragma once
 
-#include <mrpt/utils/core_defs.h>
 #include <mrpt/bayes/CProbabilityParticle.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
 
@@ -288,4 +286,3 @@ class CParticleFilterData
 
 }  // end namespace
 }  // end namespace
-#endif

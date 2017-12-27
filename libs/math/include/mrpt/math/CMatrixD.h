@@ -59,18 +59,7 @@ class CMatrixD : public mrpt::serialization::CSerializable,
 	{
 	}
 
-	/** Constructor from a TPose2D, which generates a 3x1 matrix \f$ [x y
-	 * \phi]^T \f$  */
-	explicit CMatrixD(const TPose2D& p);
-	/** Constructor from a TPose3D, which generates a 6x1 matrix \f$ [x y z yaw
-	 * pitch roll]^T \f$  */
-	explicit CMatrixD(const TPose3D& p);
-	/** Constructor from a TPoint2D, which generates a 2x1 matrix \f$ [x y]^T
-	 * \f$ */
-	explicit CMatrixD(const TPoint2D& p);
-	/** Constructor from a TPoint3D, which generates a 3x1 matrix \f$ [x y z]^T
-	 * \f$ */
-	explicit CMatrixD(const TPoint3D& p);
+	MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(CMatrixD)
 
 };  // end of class definition
 mrpt::serialization::CArchive& operator>>(mrpt::serialization::CArchive& in, CMatrixD::Ptr& pObj);

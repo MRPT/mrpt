@@ -983,7 +983,7 @@ holonomic_navigator_demoFrame::TOptions::TOptions()
 {
 }
 void holonomic_navigator_demoFrame::TOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& source, const std::string& section)
+	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {
 	MRPT_START
 
@@ -997,7 +997,7 @@ void holonomic_navigator_demoFrame::TOptions::loadFromConfigFile(
 }
 
 void holonomic_navigator_demoFrame::TOptions::saveToConfigFile(
-	mrpt::utils::CConfigFileBase& cfg, const std::string& section) const
+	mrpt::config::CConfigFileBase& cfg, const std::string& section) const
 {
 	MRPT_START
 	const int WN = 40, WV = 20;

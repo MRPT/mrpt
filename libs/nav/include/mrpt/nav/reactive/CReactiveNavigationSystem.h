@@ -104,19 +104,19 @@ class CReactiveNavigationSystem : public CAbstractPTGBasedReactive
 		// to be considered
 
 		virtual void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& c,
+			const mrpt::config::CConfigFileBase& c,
 			const std::string& s) override;
 		virtual void saveToConfigFile(
-			mrpt::utils::CConfigFileBase& c,
+			mrpt::config::CConfigFileBase& c,
 			const std::string& s) const override;
 		TReactiveNavigatorParams();
 	};
 
 	TReactiveNavigatorParams params_reactive_nav;
 
-	virtual void loadConfigFile(const mrpt::utils::CConfigFileBase& c)
+	virtual void loadConfigFile(const mrpt::config::CConfigFileBase& c)
 		override;  // See base class docs!
-	virtual void saveConfigFile(mrpt::utils::CConfigFileBase& c)
+	virtual void saveConfigFile(mrpt::config::CConfigFileBase& c)
 		const override;  // See base class docs!
 
    private:

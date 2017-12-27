@@ -43,7 +43,7 @@
 
 using namespace mrpt;
 using namespace mrpt::math;
-using namespace mrpt::utils;
+
 using namespace mrpt::poses;
 
 IMPLEMENTS_SERIALIZABLE(CPose3D, CSerializable, mrpt::poses)
@@ -1035,4 +1035,9 @@ void CPose3D::setToNaN()
 
 	for (int i = 0; i < 3; i++)
 		m_coords[i] = std::numeric_limits<double>::quiet_NaN();
+}
+
+mrpt::math::TPose3D CPose3D::asTPose() const
+{
+	return mrpt::math::TPose3D(x(), y(),z(), yaw(), pitch(), roll());
 }

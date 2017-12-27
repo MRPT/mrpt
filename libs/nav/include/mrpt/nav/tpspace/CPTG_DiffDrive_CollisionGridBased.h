@@ -131,10 +131,10 @@ class CPTG_DiffDrive_CollisionGridBased : public CPTG_RobotShape_Polygonal
 	 * See docs of derived classes for additional parameters in setParams()
 	 */
 	virtual void loadFromConfigFile(
-		const mrpt::utils::CConfigFileBase& cfg,
+		const mrpt::config::CConfigFileBase& cfg,
 		const std::string& sSection) override;
 	virtual void saveToConfigFile(
-		mrpt::utils::CConfigFileBase& cfg,
+		mrpt::config::CConfigFileBase& cfg,
 		const std::string& sSection) const override;
 
 	virtual void loadDefaultParams() override;

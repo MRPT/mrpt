@@ -67,7 +67,7 @@ void CReactiveNavigationSystem3D::changeRobotShape(TRobotShape robotShape)
 }
 
 void CReactiveNavigationSystem3D::saveConfigFile(
-	mrpt::utils::CConfigFileBase& c) const
+	mrpt::config::CConfigFileBase& c) const
 {
 	const std::string s = "CReactiveNavigationSystem3D";
 
@@ -80,7 +80,7 @@ void CReactiveNavigationSystem3D::saveConfigFile(
 }
 
 void CReactiveNavigationSystem3D::loadConfigFile(
-	const mrpt::utils::CConfigFileBase& c)
+	const mrpt::config::CConfigFileBase& c)
 {
 	MRPT_START
 

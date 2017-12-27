@@ -189,7 +189,7 @@ void TSlidingWindow::resizeWindow(size_t new_size)
 	MRPT_END;
 }
 void TSlidingWindow::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& source, const std::string& section)
+	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {
 	MRPT_START;
 

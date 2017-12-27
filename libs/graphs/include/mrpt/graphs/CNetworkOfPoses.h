@@ -23,7 +23,7 @@
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/system/TParameters.h>
 #include <mrpt/utils/traits_map.h>
-#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/poses/poses_frwds.h>
 #include <mrpt/system/os.h>

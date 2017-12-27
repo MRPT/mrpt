@@ -14,10 +14,10 @@
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CFileInputStream.h>
 #include <mrpt/utils/CStdOutStream.h>
-#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/vision/CFeature.h>
 #include <mrpt/vision/types.h>
-#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/math/data_utils.h>
 #include <mrpt/system/os.h>
 
@@ -37,7 +37,7 @@ IMPLEMENTS_SERIALIZABLE(CFeature, CSerializable, mrpt::vision)
  * saveToConfigFile()
   */
 void TMultiResDescMatchOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& cfg, const std::string& section)
+	const mrpt::config::CConfigFileBase& cfg, const std::string& section)
 {
 	useOriFilter = cfg.read_bool(section, "useOriFilter", true, false);
 	oriThreshold = cfg.read_double(section, "oriThreshold", 0.2, false);
@@ -66,7 +66,7 @@ void TMultiResDescMatchOptions::loadFromConfigFile(
 //			saveToConfigFile
 // --------------------------------------------------
 void TMultiResDescMatchOptions::saveToConfigFile(
-	mrpt::utils::CConfigFileBase& cfg, const std::string& section) const
+	mrpt::config::CConfigFileBase& cfg, const std::string& section) const
 {
 	if (useOriFilter)
 	{
@@ -142,7 +142,7 @@ void TMultiResDescMatchOptions::dumpToTextStream(
  * saveToConfigFile()
   */
 void TMultiResDescOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& cfg, const std::string& section)
+	const mrpt::config::CConfigFileBase& cfg, const std::string& section)
 {
 	basePSize = cfg.read_double(section, "basePSize", 23, false);
 	comLScl = cfg.read_int(section, "comLScl", 0, false);
@@ -177,7 +177,7 @@ void TMultiResDescOptions::loadFromConfigFile(
 //			saveToConfigFile
 // --------------------------------------------------
 void TMultiResDescOptions::saveToConfigFile(
-	mrpt::utils::CConfigFileBase& cfg, const std::string& section) const
+	mrpt::config::CConfigFileBase& cfg, const std::string& section) const
 {
 	cfg.write(section, "basePSize", basePSize);
 	cfg.write(section, "comLScl", comLScl);

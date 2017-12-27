@@ -104,7 +104,7 @@ class CRangeBearingKFSLAM2D
 
 	/** Load options from a ini-like file/text
 	  */
-	void loadOptions(const mrpt::utils::CConfigFileBase& ini);
+	void loadOptions(const mrpt::config::CConfigFileBase& ini);
 
 	/** The options for the algorithm
 	  */
@@ -114,7 +114,7 @@ class CRangeBearingKFSLAM2D
 		TOptions();
 
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		void dumpToTextStream(
 			mrpt::utils::CStream& out) const override;  // See base docs

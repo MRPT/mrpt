@@ -117,7 +117,7 @@ CTopLCDetector_FabMap::TOptions::TOptions()
 
 //  Load parameters from configuration source
 void CTopLCDetector_FabMap::TOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
 {
 	MRPT_LOAD_CONFIG_VAR(vocab_path, string, iniFile, section);
 	MRPT_LOAD_CONFIG_VAR(vocabName, string, iniFile, section);

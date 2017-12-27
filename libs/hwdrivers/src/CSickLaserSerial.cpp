@@ -145,7 +145,7 @@ void CSickLaserSerial::doProcessSimple(
 						loadConfig_sensorSpecific
 -------------------------------------------------------------*/
 void CSickLaserSerial::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 	m_sensorPose = CPose3D(

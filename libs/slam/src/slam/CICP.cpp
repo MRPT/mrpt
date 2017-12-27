@@ -138,7 +138,7 @@ CICP::TConfigParams::TConfigParams()
 					loadFromConfigFile
   ---------------------------------------------------------------*/
 void CICP::TConfigParams::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
 {
 	MRPT_LOAD_CONFIG_VAR(maxIterations, int, iniFile, section);
 	MRPT_LOAD_CONFIG_VAR(minAbsStep_trans, float, iniFile, section);

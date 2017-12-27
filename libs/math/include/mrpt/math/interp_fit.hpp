@@ -132,7 +132,7 @@ NUMTYPE leastSquareLinearFit(const NUMTYPE t, const VECTORLIKE &x, const VECTORL
 	}
 
 	const auto B = ((Xt*Xt.transpose()).inv().eval()*Xt*y).eval();
-	ASSERT_(B.size()==2)
+	ASSERT_(B.size() == 2);
 
 	NUMTYPE ret = B[0] + B[1]*(t-x_min);
 
@@ -171,7 +171,7 @@ void leastSquareLinearFit( const VECTORLIKE1 &ts,
 	}
 
 	const auto B = ((Xt*Xt.transpose()).inv().eval()*Xt*y).eval();
-	ASSERT_(B.size() == 2)
+	ASSERT_(B.size() == 2);
 
 	const size_t tsN = size_t(ts.size());
 	outs.resize(tsN);

@@ -6,10 +6,9 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CPROBABILITYPARTICLE_H
-#define CPROBABILITYPARTICLE_H
+#pragma once
 
-#include <mrpt/utils/generic_copier_ptr.h>
+#include <mrpt/containers/generic_copier_ptr.h>  // copy_ptr<>
 
 namespace mrpt
 {
@@ -31,14 +30,10 @@ struct CProbabilityParticle
    public:
 	/** The data associated with this particle. The use of copy_ptr<> allows
 	 * relying on compiler-generated copy ctor, etc. */
-	mrpt::utils::copy_ptr<T> d;
+	mrpt::containers::copy_ptr<T> d{};
 	/** The (logarithmic) weight value for this particle. */
-	double log_w;
-
-	/** Default constructor */
-	CProbabilityParticle() : d(), log_w(.0) {}
+	double log_w{ .0 };
 };
 
 }  // end namespace
 }  // end namespace
-#endif

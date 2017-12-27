@@ -62,7 +62,7 @@ void CReactiveNavigationSystem::changeRobotCircularShapeRadius(const double R)
 }
 
 void CReactiveNavigationSystem::saveConfigFile(
-	mrpt::utils::CConfigFileBase& c) const
+	mrpt::config::CConfigFileBase& c) const
 {
 	CAbstractPTGBasedReactive::saveConfigFile(c);
 
@@ -74,7 +74,7 @@ void CReactiveNavigationSystem::saveConfigFile(
 }
 
 void CReactiveNavigationSystem::loadConfigFile(
-	const mrpt::utils::CConfigFileBase& c)
+	const mrpt::config::CConfigFileBase& c)
 {
 	MRPT_START
 
@@ -280,14 +280,14 @@ void CReactiveNavigationSystem::loggingGetWSObstaclesAndShape(
 }
 
 void CReactiveNavigationSystem::TReactiveNavigatorParams::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& c, const std::string& s)
+	const mrpt::config::CConfigFileBase& c, const std::string& s)
 {
 	MRPT_LOAD_CONFIG_VAR_REQUIRED_CS(min_obstacles_height, double);
 	MRPT_LOAD_CONFIG_VAR_REQUIRED_CS(max_obstacles_height, double);
 }
 
 void CReactiveNavigationSystem::TReactiveNavigatorParams::saveToConfigFile(
-	mrpt::utils::CConfigFileBase& c, const std::string& s) const
+	mrpt::config::CConfigFileBase& c, const std::string& s) const
 {
 	MRPT_SAVE_CONFIG_VAR_COMMENT(
 		min_obstacles_height,

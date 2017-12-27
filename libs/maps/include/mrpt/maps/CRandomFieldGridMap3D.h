@@ -132,7 +132,7 @@ class CRandomFieldGridMap3D
 
 		/** See utils::CLoadableOptions */
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section);
 
 		/** See utils::CLoadableOptions */

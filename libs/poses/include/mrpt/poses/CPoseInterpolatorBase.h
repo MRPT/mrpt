@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/system/datetime.h>
-#include <mrpt/utils/TEnumType.h>
+#include <mrpt/typemeta/TEnumType.h>
 #include <mrpt/poses/SE_traits.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/poses/poses_frwds.h>
@@ -213,25 +213,14 @@ class CPoseInterpolatorBase
 		const TInterpolatorMethod method, double td, pose_t& out_interp) const;
 
 };  // End of class def.
+}  // End of namespace
+}
 
-}  // End of namespace
-
-// Specializations MUST occur at the same namespace:
-namespace utils
-{
-template <>
-struct TEnumTypeFiller<mrpt::poses::TInterpolatorMethod>
-{
-	typedef mrpt::poses::TInterpolatorMethod enum_t;
-	static void fill(bimap<enum_t, std::string>& m_map)
-	{
-		m_map.insert(poses::imSpline, "imSpline");
-		m_map.insert(poses::imLinear2Neig, "imLinear2Neig");
-		m_map.insert(poses::imLinear4Neig, "imLinear4Neig");
-		m_map.insert(poses::imSSLLLL, "imSSLLLL");
-		m_map.insert(poses::imLinearSlerp, "imLinearSlerp");
-		m_map.insert(poses::imSplineSlerp, "imSplineSlerp");
-	}
-};
-}  // End of namespace
-}  // End of namespace
+MRPT_ENUM_TYPE_BEGIN(mrpt::poses::TInterpolatorMethod)
+MRPT_FILL_ENUM_MEMBER(mrpt::poses, imSpline);
+MRPT_FILL_ENUM_MEMBER(mrpt::poses, imLinear2Neig);
+MRPT_FILL_ENUM_MEMBER(mrpt::poses, imLinear4Neig);
+MRPT_FILL_ENUM_MEMBER(mrpt::poses, imSSLLLL);
+MRPT_FILL_ENUM_MEMBER(mrpt::poses, imLinearSlerp);
+MRPT_FILL_ENUM_MEMBER(mrpt::poses, imSplineSlerp);
+MRPT_ENUM_TYPE_END()

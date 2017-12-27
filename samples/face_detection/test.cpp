@@ -41,8 +41,8 @@ bool showEachDetectedFace;  // If using a 3D face detection (actually with
 // detected for analize it.
 bool batchMode;
 vector<string> rawlogs;
-vector<vector_uint> falsePositives;
-vector<vector_uint> ignored;
+vector<std::vector<uint32_t>> falsePositives;
+vector<std::vector<uint32_t>> ignored;
 string rawlogsDir;
 
 #ifdef MRPT_OPENCV_SRC_DIR
@@ -494,8 +494,8 @@ void TestPrepareDetector()
 		for (size_t i = 0; i < numRawlogs; i++)
 		{
 			cfg.read_vector(
-				rawlogs[i], "falsePositives", vector_uint(), falsePositives[i]);
-			cfg.read_vector(rawlogs[i], "ignored", vector_uint(), ignored[i]);
+				rawlogs[i], "falsePositives", std::vector<uint32_t>(), falsePositives[i]);
+			cfg.read_vector(rawlogs[i], "ignored", std::vector<uint32_t>(), ignored[i]);
 		}
 
 		rawlogsDir = cfg.read_string("Example", "rawlogsDir", "");

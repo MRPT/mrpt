@@ -32,8 +32,8 @@ class CMultiObjMotionOpt_Scalarization
    public:
 	CMultiObjMotionOpt_Scalarization();
 
-	void loadConfigFile(const mrpt::utils::CConfigFileBase& c) override;
-	void saveConfigFile(mrpt::utils::CConfigFileBase& c) const override;
+	void loadConfigFile(const mrpt::config::CConfigFileBase& c) override;
+	void saveConfigFile(mrpt::config::CConfigFileBase& c) const override;
 
 	struct TParams
 		: public mrpt::nav::CMultiObjectiveMotionOptimizerBase::TParamsBase
@@ -44,10 +44,10 @@ class CMultiObjMotionOpt_Scalarization
 
 		TParams();
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		void saveToConfigFile(
-			mrpt::utils::CConfigFileBase& cfg,
+			mrpt::config::CConfigFileBase& cfg,
 			const std::string& section) const override;  // See base docs
 	};
 

@@ -200,7 +200,7 @@ class CGenericSensor
 	 * message if some critical parameter is missing or has an invalid value.
 	  */
 	virtual void loadConfig_sensorSpecific(
-		const mrpt::utils::CConfigFileBase& configSource,
+		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& section) = 0;
 
    public:
@@ -238,7 +238,7 @@ class CGenericSensor
 	 * if some critical parameter is missing or has an invalid value.
 	  */
 	void loadConfig(
-		const mrpt::utils::CConfigFileBase& configSource,
+		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& section);
 
 	/** This method can or cannot be implemented in the derived class, depending

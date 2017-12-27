@@ -389,7 +389,7 @@ void CIMUXSens::initialize()
 					loadConfig_sensorSpecific
 -------------------------------------------------------------*/
 void CIMUXSens::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 	m_sensorPose.setFromValues(

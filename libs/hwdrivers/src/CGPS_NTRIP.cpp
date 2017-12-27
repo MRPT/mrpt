@@ -65,7 +65,7 @@ void CGPS_NTRIP::doProcess()
 }
 
 void CGPS_NTRIP::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& cfg, const std::string& section)
+	const mrpt::config::CConfigFileBase& cfg, const std::string& section)
 {
 	// Load GPS params:
 	gps.loadConfig(mrpt::utils::CConfigFilePrefixer(cfg, "", "gps_"), section);

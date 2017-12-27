@@ -149,7 +149,7 @@ inline typename CONTAINER::Scalar minimum(const CONTAINER& v)
 template <typename T>
 inline T maximum(const std::vector<T>& v)
 {
-	ASSERT_(!v.empty())
+	ASSERT_(!v.empty());
 	T m = v[0];
 	for (size_t i = 0; i < v.size(); i++) mrpt::keep_max(m, v[i]);
 	return m;
@@ -157,7 +157,7 @@ inline T maximum(const std::vector<T>& v)
 template <typename T>
 inline T minimum(const std::vector<T>& v)
 {
-	ASSERT_(!v.empty())
+	ASSERT_(!v.empty());
 	T m = v[0];
 	for (size_t i = 0; i < v.size(); i++) mrpt::keep_min(m, v[i]);
 	return m;
@@ -243,7 +243,7 @@ inline double mean(const CONTAINER& v)
 template <typename T>
 inline void minimum_maximum(const std::vector<T>& V, T& curMin, T& curMax)
 {
-	ASSERT_(V.size() != 0)
+	ASSERT_(V.size() != 0);
 	const size_t N = V.size();
 	curMin = curMax = V[0];
 	for (size_t i = 1; i < N; i++)
@@ -409,7 +409,7 @@ inline RETURN_MATRIX covVector(const VECTOR_OF_VECTOR& v)
 template <class CONT1, class CONT2>
 double ncc_vector(const CONT1& patch1, const CONT2& patch2)
 {
-	ASSERT_(patch1.size() == patch2.size())
+	ASSERT_(patch1.size() == patch2.size());
 
 	double numerator = 0, sum_a = 0, sum_b = 0, result, a_mean, b_mean;
 	a_mean = patch1.mean();

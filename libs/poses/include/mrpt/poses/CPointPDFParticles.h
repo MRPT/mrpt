@@ -11,6 +11,7 @@
 
 #include <mrpt/poses/CPointPDF.h>
 #include <mrpt/math/CMatrix.h>
+#include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/bayes/CProbabilityParticle.h>
 #include <mrpt/bayes/CParticleFilterData.h>
@@ -19,18 +20,6 @@ namespace mrpt
 {
 namespace poses
 {
-/** Data within each particle
- * \ingroup poses_pdf_grp
-  */
-class TSimple3DPoint : public mrpt::serialization::CSerializable
-{
-	DEFINE_SERIALIZABLE(TSimple3DPoint)
-   public:
-	TSimple3DPoint(const TSimple3DPoint& o) : x(o.x), y(o.y), z(o.z) {}
-	TSimple3DPoint() : x(0), y(0), z(0) {}
-	TSimple3DPoint(const CPoint3D& v) : x(v.x()), y(v.y()), z(v.z()) {}
-	float x, y, z;
-};
 
 /** A probability distribution of a 2D/3D point, represented as a set of random
  * samples (particles).
@@ -39,10 +28,10 @@ class TSimple3DPoint : public mrpt::serialization::CSerializable
  */
 class CPointPDFParticles
 	: public CPointPDF,
-	  public mrpt::bayes::CParticleFilterData<TSimple3DPoint>,
+	  public mrpt::bayes::CParticleFilterData<mrpt::math::TPoint3Df>,
 	  public mrpt::bayes::CParticleFilterDataImpl<
 		  CPointPDFParticles,
-		  mrpt::bayes::CParticleFilterData<TSimple3DPoint>::CParticleList>
+		  mrpt::bayes::CParticleFilterData<mrpt::math::TPoint3Df>::CParticleList>
 {
 	DEFINE_SERIALIZABLE(CPointPDFParticles)
 
@@ -57,7 +46,7 @@ class CPointPDFParticles
 	 * with a given initial value  */
 	void setSize(
 		size_t numberParticles,
-		const CPoint3D& defaultValue = CPoint3D(0, 0, 0));
+		const mrpt::math::TPoint3Df& defaultValue = mrpt::math::TPoint3Df{ 0, 0, 0 });
 
 	/** Returns the number of particles */
 	size_t size() const { return m_particles.size(); }

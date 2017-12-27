@@ -481,7 +481,7 @@ bool CWaypointsNavigator::isRelativePointReachable(
 	return impl_waypoint_is_reachable(wp_local_wrt_robot);
 }
 
-void CWaypointsNavigator::loadConfigFile(const mrpt::utils::CConfigFileBase& c)
+void CWaypointsNavigator::loadConfigFile(const mrpt::config::CConfigFileBase& c)
 {
 	MRPT_START
 
@@ -491,7 +491,7 @@ void CWaypointsNavigator::loadConfigFile(const mrpt::utils::CConfigFileBase& c)
 	MRPT_END
 }
 
-void CWaypointsNavigator::saveConfigFile(mrpt::utils::CConfigFileBase& c) const
+void CWaypointsNavigator::saveConfigFile(mrpt::config::CConfigFileBase& c) const
 {
 	CAbstractNavigator::saveConfigFile(c);
 	params_waypoints_navigator.saveToConfigFile(c, "CWaypointsNavigator");
@@ -499,7 +499,7 @@ void CWaypointsNavigator::saveConfigFile(mrpt::utils::CConfigFileBase& c) const
 
 void mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams::
 	loadFromConfigFile(
-		const mrpt::utils::CConfigFileBase& c, const std::string& s)
+		const mrpt::config::CConfigFileBase& c, const std::string& s)
 {
 	MRPT_LOAD_CONFIG_VAR(max_distance_to_allow_skip_waypoint, double, c, s);
 	MRPT_LOAD_CONFIG_VAR(min_timesteps_confirm_skip_waypoints, int, c, s);
@@ -510,7 +510,7 @@ void mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams::
 
 void mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams::
 	saveToConfigFile(
-		mrpt::utils::CConfigFileBase& c, const std::string& s) const
+		mrpt::config::CConfigFileBase& c, const std::string& s) const
 {
 	MRPT_SAVE_CONFIG_VAR_COMMENT(
 		max_distance_to_allow_skip_waypoint,

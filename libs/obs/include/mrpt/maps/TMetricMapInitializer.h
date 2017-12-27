@@ -49,7 +49,7 @@ struct TMetricMapInitializer : public mrpt::utils::CLoadableOptions
 	  *  - `<sectionNamePrefix>_likelihoodOpts`
 	  */
 	void loadFromConfigFile(
-		const mrpt::utils::CConfigFileBase& source,
+		const mrpt::config::CConfigFileBase& source,
 		const std::string& sectionNamePrefix) override;  // See base docs
 	void dumpToTextStream(
 		mrpt::utils::CStream& out) const override;  // See base docs
@@ -73,7 +73,7 @@ struct TMetricMapInitializer : public mrpt::utils::CLoadableOptions
 
 	/** Load all map-specific params*/
 	virtual void loadFromConfigFile_map_specific(
-		const mrpt::utils::CConfigFileBase& source,
+		const mrpt::config::CConfigFileBase& source,
 		const std::string& sectionNamePrefix) = 0;
 	virtual void dumpToTextStream_map_specific(
 		mrpt::utils::CStream& out) const = 0;
@@ -318,7 +318,7 @@ class TSetOfMetricMapInitializers : public mrpt::utils::CLoadableOptions
 	  *provided in the demo directories: "share/mrpt/config-files/"
 	  */
 	void loadFromConfigFile(
-		const mrpt::utils::CConfigFileBase& source,
+		const mrpt::config::CConfigFileBase& source,
 		const std::string& sectionName) override;
 
 	/** This method dumps the options of the multi-metric map AND those of every

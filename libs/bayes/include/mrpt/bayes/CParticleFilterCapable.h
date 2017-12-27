@@ -280,10 +280,10 @@ class CParticleFilterCapable
 		}
 
 		std::vector<double> CDF;
-		vector_uint CDF_indexes;
+		std::vector<uint32_t> CDF_indexes;
 		std::vector<double> PDF;
 
-		vector_uint alreadyDrawnIndexes;
+		std::vector<uint32_t> alreadyDrawnIndexes;
 		size_t alreadyDrawnNextOne;
 	};
 

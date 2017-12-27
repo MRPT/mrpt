@@ -38,7 +38,7 @@ CEnoseModular::CEnoseModular()
 					loadConfig_sensorSpecific
 -------------------------------------------------------------*/
 void CEnoseModular::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 	MRPT_START

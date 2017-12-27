@@ -72,7 +72,7 @@ CFaceDetection::~CFaceDetection()
 //------------------------------------------------------------------------
 //								init
 //------------------------------------------------------------------------
-void CFaceDetection::init(const mrpt::utils::CConfigFileBase& cfg)
+void CFaceDetection::init(const mrpt::config::CConfigFileBase& cfg)
 {
 	m_options.confidenceThreshold =
 		cfg.read_int("FaceDetection", "confidenceThreshold", 240);
@@ -2021,7 +2021,7 @@ void CFaceDetection::experimental_showMeasurements()
 //------------------------------------------------------------------------
 
 void CFaceDetection::debug_returnResults(
-	const vector_uint& falsePositives, const vector_uint& ignore,
+	const std::vector<uint32_t>& falsePositives, const std::vector<uint32_t>& ignore,
 	unsigned int& falsePositivesDeleted, unsigned int& realFacesDeleted)
 {
 	const unsigned int numDeleted = m_measure.deletedRegions.size();

@@ -74,7 +74,7 @@ class CGraphPartitioner : public mrpt::utils::COutputLogger
 	 * \exception Throws a std::logic_error if an invalid matrix is passed.
 	 */
 	static void RecursiveSpectralPartition(
-		GRAPH_MATRIX& in_A, std::vector<vector_uint>& out_parts,
+		GRAPH_MATRIX& in_A, std::vector<std::vector<uint32_t>>& out_parts,
 		num_t threshold_Ncut = 1, bool forceSimetry = true,
 		bool useSpectralBisection = true, bool recursive = true,
 		unsigned minSizeClusters = 1, const bool verbose = false);
@@ -104,7 +104,7 @@ class CGraphPartitioner : public mrpt::utils::COutputLogger
 	 * \exception Throws a std::logic_error if an invalid matrix is passed.
 	 */
 	static void SpectralBisection(
-		GRAPH_MATRIX& in_A, vector_uint& out_part1, vector_uint& out_part2,
+		GRAPH_MATRIX& in_A, std::vector<uint32_t>& out_part1, std::vector<uint32_t>& out_part2,
 		num_t& out_cut_value, bool forceSimetry = true);
 
 	/** Performs an EXACT minimum n-Cut graph bisection, (Use
@@ -132,15 +132,15 @@ class CGraphPartitioner : public mrpt::utils::COutputLogger
 	 * \exception Throws a std::logic_error if an invalid matrix is passed.
 	 */
 	static void exactBisection(
-		GRAPH_MATRIX& in_A, vector_uint& out_part1, vector_uint& out_part2,
+		GRAPH_MATRIX& in_A, std::vector<uint32_t>& out_part1, std::vector<uint32_t>& out_part2,
 		num_t& out_cut_value, bool forceSimetry = true);
 
 	/** Returns the normaliced cut of a graph, given its adjacency matrix A and
 	 * a bisection:
 	 */
 	static num_t nCut(
-		const GRAPH_MATRIX& in_A, const vector_uint& in_part1,
-		const vector_uint& in_part2);
+		const GRAPH_MATRIX& in_A, const std::vector<uint32_t>& in_part1,
+		const std::vector<uint32_t>& in_part2);
 
 };  // End of class def.
 

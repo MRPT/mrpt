@@ -30,7 +30,7 @@ CGillAnemometer::CGillAnemometer() { m_sensorLabel = "WINDSONIC"; }
 				loadConfig_sensorSpecific
    ----------------------------------------------------- */
 void CGillAnemometer::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 #ifdef _WIN32

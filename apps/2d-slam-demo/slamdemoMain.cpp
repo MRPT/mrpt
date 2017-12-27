@@ -1845,7 +1845,7 @@ slamdemoFrame::TSimulationOptions::TSimulationOptions()
 }
 
 void slamdemoFrame::TSimulationOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& f, const std::string& c)
+	const mrpt::config::CConfigFileBase& f, const std::string& c)
 {
 	MRPT_LOAD_CONFIG_VAR(random_seed, int, f, c)
 	MRPT_LOAD_CONFIG_VAR(map_generator, string, f, c)
@@ -1882,7 +1882,7 @@ void slamdemoFrame::TSimulationOptions::loadFromConfigFile(
 }
 
 void slamdemoFrame::TSimulationOptions::saveToConfigFile(
-	mrpt::utils::CConfigFileBase& f, const std::string& c) const
+	mrpt::config::CConfigFileBase& f, const std::string& c) const
 {
 	MRPT_SAVE_CONFIG_VAR(random_seed, f, c)
 	MRPT_SAVE_CONFIG_VAR(map_generator, f, c)

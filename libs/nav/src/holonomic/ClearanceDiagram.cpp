@@ -14,7 +14,7 @@
 #include <mrpt/opengl/CMesh.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/core/round.h>
-#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/serialization/stl_serialization.h>
 #include <limits>
 
 using namespace mrpt::nav;

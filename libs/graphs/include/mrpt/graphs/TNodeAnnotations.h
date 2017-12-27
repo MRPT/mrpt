@@ -9,7 +9,7 @@
 #ifndef TNODEANNOTATIONS_H
 #define TNODEANNOTATIONS_H
 
-#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/utils/types_simple.h>
 #include <mrpt/utils/mrpt_macros.h>

@@ -26,7 +26,7 @@ void CPTG_RobotShape_Circular::setRobotShapeRadius(const double robot_radius)
 
 void CPTG_RobotShape_Circular::loadDefaultParams() { m_robotRadius = 0.2; }
 void CPTG_RobotShape_Circular::loadShapeFromConfigFile(
-	const mrpt::utils::CConfigFileBase& cfg, const std::string& sSection)
+	const mrpt::config::CConfigFileBase& cfg, const std::string& sSection)
 {
 	const double old_R = m_robotRadius;
 	MRPT_LOAD_HERE_CONFIG_VAR(
@@ -35,7 +35,7 @@ void CPTG_RobotShape_Circular::loadShapeFromConfigFile(
 	if (m_robotRadius != old_R) internal_processNewRobotShape();
 }
 void CPTG_RobotShape_Circular::saveToConfigFile(
-	mrpt::utils::CConfigFileBase& cfg, const std::string& sSection) const
+	mrpt::config::CConfigFileBase& cfg, const std::string& sSection) const
 {
 	const int WN = 25, WV = 30;
 

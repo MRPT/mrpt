@@ -21,7 +21,7 @@
 #include <mrpt/utils/TEnumType.h>
 #include <mrpt/utils/adapters.h>
 #include <mrpt/utils/integer_select.h>
-#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/serialization/stl_serialization.h>
 
 namespace mrpt
 {

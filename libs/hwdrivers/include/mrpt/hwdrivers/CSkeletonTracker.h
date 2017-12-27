@@ -100,7 +100,7 @@ class CSkeletonTracker : public hwdrivers::CGenericSensor
 
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(
-		const mrpt::utils::CConfigFileBase& configSource,
+		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& iniSection);
 
 	/** Displays real-time info for the captured skeleton */

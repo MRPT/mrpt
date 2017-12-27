@@ -68,6 +68,8 @@ class CPose2D : public CPose<CPose2D>, public mrpt::serialization::CSerializable
 	/** Constructor from lightweight object. */
 	explicit CPose2D(const mrpt::math::TPose2D&);
 
+	mrpt::math::TPose2D asTPose() const;
+
 	/** Constructor from CPoint3D with information loss. */
 	explicit CPose2D(const CPoint3D&);
 

@@ -876,7 +876,7 @@ CPanelCameraSelection::~CPanelCameraSelection()
 						writeConfigFromVideoSourcePanel
    ------------------------------------------------------------------------ */
 void CPanelCameraSelection::writeConfigFromVideoSourcePanel(
-	const std::string& sect, mrpt::utils::CConfigFileBase* cfg) const
+	const std::string& sect, mrpt::config::CConfigFileBase* cfg) const
 {
 	MRPT_START
 
@@ -1042,7 +1042,7 @@ void CPanelCameraSelection::writeConfigFromVideoSourcePanel(
 						readConfigIntoVideoSourcePanel
    ------------------------------------------------------------------------ */
 void CPanelCameraSelection::readConfigIntoVideoSourcePanel(
-	const std::string& sect, const mrpt::utils::CConfigFileBase* cfg) const
+	const std::string& sect, const mrpt::config::CConfigFileBase* cfg) const
 {
 	MRPT_START
 

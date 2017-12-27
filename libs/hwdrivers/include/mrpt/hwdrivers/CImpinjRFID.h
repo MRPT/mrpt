@@ -88,7 +88,7 @@ class CImpinjRFID : public mrpt::hwdrivers::CGenericSensor
 	void initialize();
 
 	void loadConfig_sensorSpecific(
-		const mrpt::utils::CConfigFileBase& configSource,
+		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& section);
 
 	/** Gets the information of the tags as a timestamped observation

@@ -47,7 +47,7 @@ MAP_DEFINITION_REGISTER("CLandmarksMap,landmarksMap", mrpt::maps::CLandmarksMap)
 
 CLandmarksMap::TMapDefinition::TMapDefinition() {}
 void CLandmarksMap::TMapDefinition::loadFromConfigFile_map_specific(
-	const mrpt::utils::CConfigFileBase& source,
+	const mrpt::config::CConfigFileBase& source,
 	const std::string& sectionNamePrefix)
 {
 	// [<sectionNamePrefix>+"_creationOpts"]
@@ -2379,7 +2379,7 @@ void CLandmarksMap::TInsertionOptions::dumpToTextStream(
 					loadFromConfigFile
   ---------------------------------------------------------------*/
 void CLandmarksMap::TInsertionOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
 {
 	insert_SIFTs_from_monocular_images = iniFile.read_bool(
 		section.c_str(), "insert_SIFTs_from_monocular_images",
@@ -2510,7 +2510,7 @@ void CLandmarksMap::TLikelihoodOptions::dumpToTextStream(
 					loadFromConfigFile
   ---------------------------------------------------------------*/
 void CLandmarksMap::TLikelihoodOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
 {
 	rangeScan2D_decimation = iniFile.read_int(
 		section.c_str(), "rangeScan2D_decimation", rangeScan2D_decimation);

@@ -298,7 +298,7 @@ void CCamModel::jacobian_unproject_with_distortion(
 }
 
 void CCamModel::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& source, const std::string& section)
+	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {
 	MRPT_START
 

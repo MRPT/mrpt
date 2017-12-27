@@ -20,11 +20,6 @@ using namespace mrpt::serialization;
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CMatrix, CSerializable, mrpt::math)
 
-CMatrix::CMatrix(const TPose2D& p) : CMatrixFloat(p) {}
-CMatrix::CMatrix(const TPose3D& p) : CMatrixFloat(p) {}
-CMatrix::CMatrix(const TPoint2D& p) : CMatrixFloat(p) {}
-CMatrix::CMatrix(const TPoint3D& p) : CMatrixFloat(p) {}
-
 uint8_t CMatrix::serializeGetVersion() const { return 0; }
 void CMatrix::serializeTo(mrpt::serialization::CArchive& out) const
 {

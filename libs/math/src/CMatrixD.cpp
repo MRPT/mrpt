@@ -19,18 +19,6 @@ using namespace mrpt::math;
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CMatrixD, CSerializable, mrpt::math)
 
-/** Constructor from a TPose2D, which generates a 3x1 matrix \f$ [x y \phi]^T
- * \f$  */
-CMatrixD::CMatrixD(const TPose2D& p) : CMatrixDouble(p) {}
-/** Constructor from a TPose3D, which generates a 6x1 matrix \f$ [x y z yaw
- * pitch roll]^T \f$  */
-CMatrixD::CMatrixD(const TPose3D& p) : CMatrixDouble(p) {}
-/** Constructor from a TPoint2D, which generates a 2x1 matrix \f$ [x y]^T \f$ */
-CMatrixD::CMatrixD(const TPoint2D& p) : CMatrixDouble(p) {}
-/** Constructor from a TPoint3D, which generates a 3x1 matrix \f$ [x y z]^T \f$
- */
-CMatrixD::CMatrixD(const TPoint3D& p) : CMatrixDouble(p) {}
-
 uint8_t CMatrixD::serializeGetVersion() const { return 0; }
 void CMatrixD::serializeTo(mrpt::serialization::CArchive& out) const
 {

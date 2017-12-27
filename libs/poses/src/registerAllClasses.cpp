@@ -19,7 +19,7 @@
 #include "poses-precomp.h"
 #endif
 
-using namespace mrpt::utils;
+
 using namespace mrpt::math;
 using namespace mrpt::poses;
 

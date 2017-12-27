@@ -198,7 +198,7 @@ bool CRovio::goHome(bool dock, int speed)
 				  CAMERA FUNCTIONS
   -----------------------------------------------*/
 void CRovio::loadConfig(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& section)
 {
 	options.cameraParams.loadFromConfigFile(section, configSource);

@@ -137,11 +137,11 @@ class CAbstractNavigator : public mrpt::utils::COutputLogger
 	/** Loads all params from a file. To be called before initialize().
 	  * Each derived class *MUST* load its own parameters, and then call *ITS
 	 * PARENT'S* overriden method to ensure all params are loaded. */
-	virtual void loadConfigFile(const mrpt::utils::CConfigFileBase& c);
+	virtual void loadConfigFile(const mrpt::config::CConfigFileBase& c);
 	/** Saves all current options to a config file.
 	  * Each derived class *MUST* save its own parameters, and then call *ITS
 	 * PARENT'S* overriden method to ensure all params are saved. */
-	virtual void saveConfigFile(mrpt::utils::CConfigFileBase& c) const;
+	virtual void saveConfigFile(mrpt::config::CConfigFileBase& c) const;
 
 	/**  Must be called before any other navigation command */
 	virtual void initialize() = 0;
@@ -214,10 +214,10 @@ class CAbstractNavigator : public mrpt::utils::COutputLogger
 		int hysteresis_check_target_is_blocked;
 
 		virtual void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& c,
+			const mrpt::config::CConfigFileBase& c,
 			const std::string& s) override;
 		virtual void saveToConfigFile(
-			mrpt::utils::CConfigFileBase& c,
+			mrpt::config::CConfigFileBase& c,
 			const std::string& s) const override;
 		TAbstractNavigatorParams();
 	};

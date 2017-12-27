@@ -154,7 +154,7 @@ class CICPCriteriaERD
 		~TParams();
 
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section);
 		void dumpToTextStream(mrpt::utils::CStream& out) const;
 

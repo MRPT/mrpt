@@ -509,7 +509,7 @@ class COccupancyGridMap2D : public CMetricMap,
 		 *  \endcode
 		 */
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		void dumpToTextStream(
 			mrpt::utils::CStream& out) const override;  // See base docs
@@ -585,7 +585,7 @@ class COccupancyGridMap2D : public CMetricMap,
 		 *  \endcode
 		 */
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		void dumpToTextStream(
 			mrpt::utils::CStream& out) const override;  // See base docs

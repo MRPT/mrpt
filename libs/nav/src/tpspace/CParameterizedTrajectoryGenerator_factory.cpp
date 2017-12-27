@@ -19,7 +19,7 @@ using namespace mrpt::nav;
 					Class factory
   ---------------------------------------------------------------*/
 CParameterizedTrajectoryGenerator* CParameterizedTrajectoryGenerator::CreatePTG(
-	const std::string& ptgClassName_, const mrpt::utils::CConfigFileBase& cfg,
+	const std::string& ptgClassName_, const mrpt::config::CConfigFileBase& cfg,
 	const std::string& sSection, const std::string& sKeyPrefix)
 {
 	MRPT_START

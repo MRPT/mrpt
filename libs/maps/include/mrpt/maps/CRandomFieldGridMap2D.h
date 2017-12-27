@@ -246,7 +246,7 @@ class CRandomFieldGridMap2D
 
 		/** See utils::CLoadableOptions */
 		void internal_loadFromConfigFile_common(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section);
 
 		/** See utils::CLoadableOptions */

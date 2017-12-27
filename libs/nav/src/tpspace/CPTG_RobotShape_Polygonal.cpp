@@ -43,7 +43,7 @@ void CPTG_RobotShape_Polygonal::loadDefaultParams()
 }
 
 void CPTG_RobotShape_Polygonal::loadShapeFromConfigFile(
-	const mrpt::utils::CConfigFileBase& cfg, const std::string& sSection)
+	const mrpt::config::CConfigFileBase& cfg, const std::string& sSection)
 {
 	bool any_pt = false;
 	const double BADNUM = std::numeric_limits<double>::max();
@@ -74,7 +74,7 @@ void CPTG_RobotShape_Polygonal::loadShapeFromConfigFile(
 }
 
 void CPTG_RobotShape_Polygonal::saveToConfigFile(
-	mrpt::utils::CConfigFileBase& cfg, const std::string& sSection) const
+	mrpt::config::CConfigFileBase& cfg, const std::string& sSection) const
 {
 	const int WN = 25, WV = 30;
 

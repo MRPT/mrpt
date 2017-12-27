@@ -34,7 +34,7 @@ MAP_DEFINITION_REGISTER(
 
 CColouredPointsMap::TMapDefinition::TMapDefinition() {}
 void CColouredPointsMap::TMapDefinition::loadFromConfigFile_map_specific(
-	const mrpt::utils::CConfigFileBase& source,
+	const mrpt::config::CConfigFileBase& source,
 	const std::string& sectionNamePrefix)
 {
 	insertionOpts.loadFromConfigFile(
@@ -437,7 +437,7 @@ CColouredPointsMap::TColourOptions::TColourOptions()
 }
 
 void CColouredPointsMap::TColourOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& source, const std::string& section)
+	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {
 	scheme = source.read_enum(section, "scheme", scheme);
 	MRPT_LOAD_CONFIG_VAR(z_min, float, source, section)

@@ -28,18 +28,18 @@ IMPLEMENTS_SERIALIZABLE(
 /**  Initialize the parameters of the navigator, from some
 *    configuration file, or default values if filename is set to NULL.
 */
-CHolonomicND::CHolonomicND(const mrpt::utils::CConfigFileBase* INI_FILE)
+CHolonomicND::CHolonomicND(const mrpt::config::CConfigFileBase* INI_FILE)
 	: CAbstractHolonomicReactiveMethod("CHolonomicND"),
 	  m_last_selected_sector(std::numeric_limits<unsigned int>::max())
 {
 	if (INI_FILE != nullptr) initialize(*INI_FILE);
 }
 
-void CHolonomicND::initialize(const mrpt::utils::CConfigFileBase& INI_FILE)
+void CHolonomicND::initialize(const mrpt::config::CConfigFileBase& INI_FILE)
 {
 	options.loadFromConfigFile(INI_FILE, getConfigFileSectionName());
 }
-void CHolonomicND::saveConfigFile(mrpt::utils::CConfigFileBase& c) const
+void CHolonomicND::saveConfigFile(mrpt::config::CConfigFileBase& c) const
 {
 	options.saveToConfigFile(c, getConfigFileSectionName());
 }
@@ -690,7 +690,7 @@ CHolonomicND::TOptions::TOptions()
 }
 
 void CHolonomicND::TOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& source, const std::string& section)
+	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {
 	MRPT_START
 
@@ -713,7 +713,7 @@ void CHolonomicND::TOptions::loadFromConfigFile(
 }
 
 void CHolonomicND::TOptions::saveToConfigFile(
-	mrpt::utils::CConfigFileBase& c, const std::string& s) const
+	mrpt::config::CConfigFileBase& c, const std::string& s) const
 {
 	MRPT_START;
 	const int WN = mrpt::utils::MRPT_SAVE_NAME_PADDING(),

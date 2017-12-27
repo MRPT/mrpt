@@ -177,7 +177,7 @@ class CICPCriteriaNRD
 		decider_t& decider; /**< Reference to outer decider class */
 
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section);
 		void dumpToTextStream(mrpt::utils::CStream& out) const;
 

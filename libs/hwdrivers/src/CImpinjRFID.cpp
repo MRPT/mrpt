@@ -65,7 +65,7 @@ void CImpinjRFID::startDriver()
 }
 
 void CImpinjRFID::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 	MRPT_START

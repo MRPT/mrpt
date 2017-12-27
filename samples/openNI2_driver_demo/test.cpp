@@ -37,7 +37,7 @@ int main(int argc, char** argv)
 		// const unsigned sensor_id = 0;
 		COpenNI2Sensor rgbd_sensor;
 		//    rgbd_sensor.loadConfig_sensorSpecific(const
-		//    mrpt::utils::CConfigFileBase &configSource,	const std::string
+		//    mrpt::config::CConfigFileBase &configSource,	const std::string
 		//    &iniSection );
 
 		unsigned sensor_id_or_serial = 0;

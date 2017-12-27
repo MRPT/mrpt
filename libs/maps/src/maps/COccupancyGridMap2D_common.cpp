@@ -39,7 +39,7 @@ COccupancyGridMap2D::TMapDefinition::TMapDefinition()
 }
 
 void COccupancyGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(
-	const mrpt::utils::CConfigFileBase& source,
+	const mrpt::config::CConfigFileBase& source,
 	const std::string& sectionNamePrefix)
 {
 	// [<sectionNamePrefix>+"_creationOpts"]

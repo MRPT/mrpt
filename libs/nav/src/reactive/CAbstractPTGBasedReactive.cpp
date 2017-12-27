@@ -215,7 +215,7 @@ void CAbstractPTGBasedReactive::deleteHolonomicObjects()
 }
 
 void CAbstractPTGBasedReactive::setHolonomicMethod(
-	const std::string& method, const mrpt::utils::CConfigFileBase& ini)
+	const std::string& method, const mrpt::config::CConfigFileBase& ini)
 {
 	std::lock_guard<std::recursive_mutex> csl(m_nav_cs);
 
@@ -1751,7 +1751,7 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 }
 
 void CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& c, const std::string& s)
+	const mrpt::config::CConfigFileBase& c, const std::string& s)
 {
 	MRPT_START;
 
@@ -1775,7 +1775,7 @@ void CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::loadFromConfigFile(
 }
 
 void CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::saveToConfigFile(
-	mrpt::utils::CConfigFileBase& c, const std::string& s) const
+	mrpt::config::CConfigFileBase& c, const std::string& s) const
 {
 	robot_absolute_speed_limits.saveToConfigFile(c, s);
 
@@ -1868,7 +1868,7 @@ CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::
 }
 
 void CAbstractPTGBasedReactive::loadConfigFile(
-	const mrpt::utils::CConfigFileBase& c)
+	const mrpt::config::CConfigFileBase& c)
 {
 	MRPT_START;
 	m_PTGsMustBeReInitialized = true;
@@ -1915,7 +1915,7 @@ void CAbstractPTGBasedReactive::loadConfigFile(
 }
 
 void CAbstractPTGBasedReactive::saveConfigFile(
-	mrpt::utils::CConfigFileBase& c) const
+	mrpt::config::CConfigFileBase& c) const
 {
 	CWaypointsNavigator::saveConfigFile(c);
 	params_abstract_ptg_navigator.saveToConfigFile(

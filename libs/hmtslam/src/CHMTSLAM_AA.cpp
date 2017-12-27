@@ -89,7 +89,7 @@ CHMTSLAM::TMessageLSLAMfromAA::Ptr CHMTSLAM::areaAbstraction(
 		}  // end of critical section lock on "m_robotPosesGraph.lock"
 	}  // end for each new ID
 
-	vector<vector_uint> partitions;
+	vector<std::vector<uint32_t>> partitions;
 	{
 		std::lock_guard<std::mutex> locker(LMH->m_robotPosesGraph.lock);
 		// Recompute partitions:
@@ -102,12 +102,12 @@ CHMTSLAM::TMessageLSLAMfromAA::Ptr CHMTSLAM::areaAbstraction(
 	// Send result to LSLAM
 	resMsg->partitions.resize(partitions.size());
 	vector<TPoseIDList>::iterator itDest;
-	vector<vector_uint>::const_iterator itSrc;
+	vector<std::vector<uint32_t>>::const_iterator itSrc;
 	for (itDest = resMsg->partitions.begin(), itSrc = partitions.begin();
 		 itSrc != partitions.end(); itSrc++, itDest++)
 	{
 		itDest->resize(itSrc->size());
-		vector_uint::const_iterator it1;
+		std::vector<uint32_t>::const_iterator it1;
 		TPoseIDList::iterator it2;
 		for (it1 = itSrc->begin(), it2 = itDest->begin(); it1 != itSrc->end();
 			 it1++, it2++)

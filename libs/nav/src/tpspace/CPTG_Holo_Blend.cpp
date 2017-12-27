@@ -198,7 +198,7 @@ void CPTG_Holo_Blend::loadDefaultParams()
 }
 
 void CPTG_Holo_Blend::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& cfg, const std::string& sSection)
+	const mrpt::config::CConfigFileBase& cfg, const std::string& sSection)
 {
 	CParameterizedTrajectoryGenerator::loadFromConfigFile(cfg, sSection);
 	CPTG_RobotShape_Circular::loadShapeFromConfigFile(cfg, sSection);
@@ -216,7 +216,7 @@ void CPTG_Holo_Blend::loadFromConfigFile(
 	MRPT_LOAD_HERE_CONFIG_VAR(expr_T_ramp, string, expr_T_ramp, cfg, sSection);
 }
 void CPTG_Holo_Blend::saveToConfigFile(
-	mrpt::utils::CConfigFileBase& cfg, const std::string& sSection) const
+	mrpt::config::CConfigFileBase& cfg, const std::string& sSection) const
 {
 	MRPT_START
 	const int WN = 25, WV = 30;
@@ -803,7 +803,7 @@ CPTG_Holo_Blend::CPTG_Holo_Blend()
 }
 
 CPTG_Holo_Blend::CPTG_Holo_Blend(
-	const mrpt::utils::CConfigFileBase& cfg, const std::string& sSection)
+	const mrpt::config::CConfigFileBase& cfg, const std::string& sSection)
 	: turningRadiusReference(0.30)
 {
 	internal_construct_exprs();

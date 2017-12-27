@@ -509,7 +509,7 @@ class CCameraSensor : public mrpt::utils::COutputLogger, public CGenericSensor
 
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(
-		const mrpt::utils::CConfigFileBase& configSource,
+		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& iniSection);
 
    private:
@@ -585,7 +585,7 @@ CCameraSensor::Ptr prepareVideoSourceFromPanel(void* panel);
   */
 void writeConfigFromVideoSourcePanel(
 	void* panel, const std::string& in_cfgfile_section_name,
-	mrpt::utils::CConfigFileBase* out_cfgfile);
+	mrpt::config::CConfigFileBase* out_cfgfile);
 
 /** Parse the given section of the given configuration file and set accordingly
  * the controls of the wxWidgets "panel".
@@ -596,7 +596,7 @@ void writeConfigFromVideoSourcePanel(
   */
 void readConfigIntoVideoSourcePanel(
 	void* panel, const std::string& in_cfgfile_section_name,
-	const mrpt::utils::CConfigFileBase* in_cfgfile);
+	const mrpt::config::CConfigFileBase* in_cfgfile);
 
 /** Show to the user a list of possible camera drivers and creates and open the
  * selected camera.

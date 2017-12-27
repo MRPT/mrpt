@@ -31,7 +31,7 @@ void CMultiObjMotionOpt_Scalarization::clear()
 }
 
 void CMultiObjMotionOpt_Scalarization::loadConfigFile(
-	const mrpt::utils::CConfigFileBase& c)
+	const mrpt::config::CConfigFileBase& c)
 {
 	parameters
 		.CMultiObjectiveMotionOptimizerBase::TParamsBase::loadFromConfigFile(
@@ -41,7 +41,7 @@ void CMultiObjMotionOpt_Scalarization::loadConfigFile(
 }
 
 void CMultiObjMotionOpt_Scalarization::saveConfigFile(
-	mrpt::utils::CConfigFileBase& c) const
+	mrpt::config::CConfigFileBase& c) const
 {
 	parameters
 		.CMultiObjectiveMotionOptimizerBase::TParamsBase::saveToConfigFile(
@@ -126,14 +126,14 @@ int CMultiObjMotionOpt_Scalarization::impl_decide(
 
 CMultiObjMotionOpt_Scalarization::TParams::TParams() {}
 void CMultiObjMotionOpt_Scalarization::TParams::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& c, const std::string& s)
+	const mrpt::config::CConfigFileBase& c, const std::string& s)
 {
 	// TParamsBase members are already dealt elsewhere.
 	MRPT_LOAD_CONFIG_VAR_REQUIRED_CS(scalar_score_formula, string);
 }
 
 void CMultiObjMotionOpt_Scalarization::TParams::saveToConfigFile(
-	mrpt::utils::CConfigFileBase& c, const std::string& s) const
+	mrpt::config::CConfigFileBase& c, const std::string& s) const
 {
 	// TParamsBase members are already dealt elsewhere.
 	MRPT_SAVE_CONFIG_VAR_COMMENT(

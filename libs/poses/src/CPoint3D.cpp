@@ -19,7 +19,7 @@
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::math;
-using namespace mrpt::utils;
+
 
 IMPLEMENTS_SERIALIZABLE(CPoint3D, CSerializable, mrpt::poses)
 
@@ -47,26 +47,12 @@ CPoint3D::CPoint3D(const CPose3D& p)
 	m_coords[2] = p.z();
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CPoint3D::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CPoint3D::serializeGetVersion() const { return 1; }
+void CPoint3D::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		// The coordinates:
-		out << m_coords[0] << m_coords[1] << m_coords[2];
-	}
+	out << m_coords[0] << m_coords[1] << m_coords[2];
 }
-
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CPoint3D::readFromStream(mrpt::utils::CStream& in, int version)
+void CPoint3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

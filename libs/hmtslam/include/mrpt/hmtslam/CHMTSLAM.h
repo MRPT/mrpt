@@ -385,7 +385,7 @@ class CHMTSLAM : public mrpt::utils::COutputLogger,
 	/** Loads the options from a config file. */
 	void loadOptions(const std::string& configFile);
 	/** Loads the options from a config source */
-	void loadOptions(const mrpt::utils::CConfigFileBase& cfgSource);
+	void loadOptions(const mrpt::config::CConfigFileBase& cfgSource);
 
 	/** Initializes the whole HMT-SLAM framework, reseting to an empty map (It
 	 * also clears the logs directory) - this must be called AFTER loading the
@@ -435,7 +435,7 @@ class CHMTSLAM : public mrpt::utils::COutputLogger,
 		TOptions();
 
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		void dumpToTextStream(
 			mrpt::utils::CStream& out) const override;  // See base docs

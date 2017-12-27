@@ -68,7 +68,7 @@ struct TKF_options : public mrpt::utils::CLoadableOptions
 	}
 
 	void loadFromConfigFile(
-		const mrpt::utils::CConfigFileBase& iniFile,
+		const mrpt::config::CConfigFileBase& iniFile,
 		const std::string& section) override
 	{
 		method = iniFile.read_enum<TKFMethod>(section, "method", method);

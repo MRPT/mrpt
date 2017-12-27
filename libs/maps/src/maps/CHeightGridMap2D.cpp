@@ -12,7 +12,7 @@
 #include <mrpt/maps/CHeightGridMap2D.h>
 #include <mrpt/utils/CConfigFileBase.h>  // MRPT_LOAD_CONFIG_VAR()
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/opengl/CMesh.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
 
@@ -43,7 +43,7 @@ CHeightGridMap2D::TMapDefinition::TMapDefinition()
 }
 
 void CHeightGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(
-	const mrpt::utils::CConfigFileBase& source,
+	const mrpt::config::CConfigFileBase& source,
 	const std::string& sectionNamePrefix)
 {
 	// [<sectionNamePrefix>+"_creationOpts"]
@@ -286,7 +286,7 @@ void CHeightGridMap2D::TInsertionOptions::dumpToTextStream(
 					loadFromConfigFile
   ---------------------------------------------------------------*/
 void CHeightGridMap2D::TInsertionOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
 {
 	MRPT_LOAD_CONFIG_VAR(filterByHeight, bool, iniFile, section)
 	MRPT_LOAD_CONFIG_VAR(z_min, float, iniFile, section)

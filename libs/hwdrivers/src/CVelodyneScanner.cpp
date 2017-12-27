@@ -153,7 +153,7 @@ bool CVelodyneScanner::loadCalibrationFile(
 }
 
 void CVelodyneScanner::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& cfg, const std::string& sect)
+	const mrpt::config::CConfigFileBase& cfg, const std::string& sect)
 {
 	MRPT_START
 

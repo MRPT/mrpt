@@ -36,7 +36,7 @@ TMetricMapInitializer::TMetricMapInitializer(
 /** Load all params from a config file/source. For examples and format, read the
  * docs of mrpt::maps::CMultiMetricMap */
 void TMetricMapInitializer::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& source,
+	const mrpt::config::CConfigFileBase& source,
 	const std::string& sectionNamePrefix)
 {
 	// Common:
@@ -67,7 +67,7 @@ void TMetricMapInitializer::dumpToTextStream(mrpt::utils::CStream& out) const
 		TSetOfMetricMapInitializers::loadFromConfigFile
  ---------------------------------------------------------------*/
 void TSetOfMetricMapInitializers::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& ini, const std::string& sectionName)
+	const mrpt::config::CConfigFileBase& ini, const std::string& sectionName)
 {
 	MRPT_START
 	using internal::TMetricMapTypesRegistry;

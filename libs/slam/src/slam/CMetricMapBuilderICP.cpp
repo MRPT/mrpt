@@ -81,7 +81,7 @@ CMetricMapBuilderICP::TConfigParams& CMetricMapBuilderICP::TConfigParams::
 }
 
 void CMetricMapBuilderICP::TConfigParams::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& source, const std::string& section)
+	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {
 	MRPT_LOAD_CONFIG_VAR(matchAgainstTheGrid, bool, source, section)
 	MRPT_LOAD_CONFIG_VAR(insertionLinDistance, double, source, section)

@@ -96,7 +96,7 @@ void PlannerTPS_VirtualBase::internal_initialize_PTG()
 }
 
 void PlannerTPS_VirtualBase::internal_loadConfig_PTG(
-	const mrpt::utils::CConfigFileBase& ini, const std::string& sSect)
+	const mrpt::config::CConfigFileBase& ini, const std::string& sSect)
 {
 	// Robot shape:
 	// ==========================

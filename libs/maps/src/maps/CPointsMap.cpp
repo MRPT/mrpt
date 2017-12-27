@@ -771,7 +771,7 @@ void CPointsMap::TLikelihoodOptions::dumpToTextStream(
 					loadFromConfigFile
   ---------------------------------------------------------------*/
 void CPointsMap::TInsertionOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const string& section)
 {
 	MRPT_LOAD_CONFIG_VAR(minDistBetweenLaserPoints, float, iniFile, section);
 	MRPT_LOAD_CONFIG_VAR_DEGREES(horizontalTolerance, iniFile, section);
@@ -788,7 +788,7 @@ void CPointsMap::TInsertionOptions::loadFromConfigFile(
 }
 
 void CPointsMap::TLikelihoodOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const string& section)
 {
 	MRPT_LOAD_CONFIG_VAR(sigma_dist, double, iniFile, section);
 	MRPT_LOAD_CONFIG_VAR(max_corr_distance, double, iniFile, section);

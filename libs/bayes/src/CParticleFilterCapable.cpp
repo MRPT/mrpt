@@ -12,6 +12,7 @@
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/random.h>
 #include <mrpt/math/ops_vectors.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::bayes;
@@ -33,7 +34,7 @@ void CParticleFilterCapable::performResampling(
 
 	// Make a vector with the particles' log. weights:
 	const size_t in_particle_count = particlesCount();
-	ASSERT_(in_particle_count > 0)
+	ASSERT_(in_particle_count > 0);
 
 	vector<size_t> indxs;
 	vector<double> log_ws;
@@ -68,7 +69,7 @@ void CParticleFilterCapable::computeResampling(
 	//  The array "linW" will be the input to the actual
 	//  resampling algorithms.
 	size_t i, j, M = in_logWeights.size();
-	ASSERT_(M > 0)
+	ASSERT_(M > 0);
 
 	if (!out_particle_count) out_particle_count = M;
 
@@ -131,7 +132,7 @@ void CParticleFilterCapable::computeResampling(
 			//   prResidual
 			// ==============================================
 			// Repetition counts:
-			vector_uint N(M);
+			std::vector<uint32_t> N(M);
 			size_t R = 0;  // Remainder or residual count
 			for (i = 0; i < M; i++)
 			{
@@ -468,7 +469,7 @@ void CParticleFilterCapable::prepareFastDrawSample(
 		computeResampling(PF_options.resamplingMethod, PDF, idxs);
 
 		vector<size_t>::iterator it;
-		vector_uint::iterator it2;
+		std::vector<uint32_t>::iterator it2;
 		m_fastDrawAuxiliary.alreadyDrawnIndexes.resize(idxs.size());
 		for (it = idxs.begin(),
 			it2 = m_fastDrawAuxiliary.alreadyDrawnIndexes.begin();
@@ -565,7 +566,7 @@ void CParticleFilterCapable::log2linearWeights(
 	size_t i;
 	for (i = 0; i < N; i++) sumW += out_linWeights[i] = exp(in_logWeights[i]);
 
-	ASSERT_(sumW > 0)
+	ASSERT_(sumW > 0);
 
 	for (i = 0; i < N; i++) out_linWeights[i] /= sumW;
 

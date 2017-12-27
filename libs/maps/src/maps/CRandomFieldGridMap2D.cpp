@@ -767,7 +767,7 @@ void CRandomFieldGridMap2D::TInsertionOptionsCommon::
   ---------------------------------------------------------------*/
 void CRandomFieldGridMap2D::TInsertionOptionsCommon::
 	internal_loadFromConfigFile_common(
-		const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
+		const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
 {
 	sigma = iniFile.read_float(section.c_str(), "sigma", sigma);
 	cutoffRadius =

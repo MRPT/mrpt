@@ -21,7 +21,7 @@
 
 using namespace mrpt;
 using namespace mrpt::math;
-using namespace mrpt::utils;
+
 using namespace mrpt::poses;
 
 IMPLEMENTS_SERIALIZABLE(CPose3DRotVec, CSerializable, mrpt::poses)

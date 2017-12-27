@@ -553,7 +553,7 @@ void CWirelessPower::doProcess()
 }
 
 void CWirelessPower::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 	MRPT_START

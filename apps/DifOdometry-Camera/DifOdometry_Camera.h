@@ -33,7 +33,7 @@ class CDifodoCamera : public mrpt::vision::CDifodo
 	/** Constructor. */
 	CDifodoCamera() : mrpt::vision::CDifodo() { save_results = 0; }
 	/** Initialize the visual odometry method */
-	void loadConfiguration(const mrpt::utils::CConfigFileBase& ini);
+	void loadConfiguration(const mrpt::config::CConfigFileBase& ini);
 
 	/** Open camera */
 	bool openCamera();

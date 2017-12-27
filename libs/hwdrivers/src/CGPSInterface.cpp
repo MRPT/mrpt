@@ -80,7 +80,7 @@ CGPSInterface::CGPSInterface()
 				loadConfig_sensorSpecific
    ----------------------------------------------------- */
 void CGPSInterface::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 	m_parser = configSource.read_enum<CGPSInterface::PARSERS>(

@@ -145,7 +145,7 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 	 * CAbstractHolonomicReactiveMethod
 		*/
 	void setHolonomicMethod(
-		const std::string& method, const mrpt::utils::CConfigFileBase& cfgBase);
+		const std::string& method, const mrpt::config::CConfigFileBase& cfgBase);
 
 	/** Provides a copy of the last log record with information about execution.
 		* \param o An object where the log will be stored into.
@@ -224,19 +224,19 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 		double max_dist_for_timebased_path_prediction;
 
 		virtual void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& c,
+			const mrpt::config::CConfigFileBase& c,
 			const std::string& s) override;
 		virtual void saveToConfigFile(
-			mrpt::utils::CConfigFileBase& c,
+			mrpt::config::CConfigFileBase& c,
 			const std::string& s) const override;
 		TAbstractPTGNavigatorParams();
 	};
 
 	TAbstractPTGNavigatorParams params_abstract_ptg_navigator;
 
-	virtual void loadConfigFile(const mrpt::utils::CConfigFileBase& c)
+	virtual void loadConfigFile(const mrpt::config::CConfigFileBase& c)
 		override;  // See base class docs!
-	virtual void saveConfigFile(mrpt::utils::CConfigFileBase& c)
+	virtual void saveConfigFile(mrpt::config::CConfigFileBase& c)
 		const override;  // See base class docs!
 
 	/** Enables/disables the detailed time logger (default:disabled upon

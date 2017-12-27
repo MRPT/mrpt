@@ -188,7 +188,7 @@ void CKinect::doProcess()
 * some critical parameter is missing or has an invalid value.
 */
 void CKinect::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 	m_sensorPoseOnRobot.setFromValues(

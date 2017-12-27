@@ -256,7 +256,7 @@ class PlannerTPS_VirtualBase
 
 	/** Load all PTG params from a config file source */
 	void internal_loadConfig_PTG(
-		const mrpt::utils::CConfigFileBase& cfgSource,
+		const mrpt::config::CConfigFileBase& cfgSource,
 		const std::string& sSectionName = std::string("PTG_CONFIG"));
 
 	/** Must be called after setting all params (see
