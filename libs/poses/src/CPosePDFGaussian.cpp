@@ -18,6 +18,7 @@
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/system/os.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/math/matrix_serialization.h>
 
 #include <mrpt/random.h>
 
@@ -58,8 +59,7 @@ uint8_t CPosePDFGaussian::serializeGetVersion() const { return 2; }
 void CPosePDFGaussian::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	out << mean;
-	out << cov(0, 0) << cov(1, 1) << cov(2, 2);
-	out << cov(0, 1) << cov(0, 2) << cov(1, 2);
+	mrpt::math::serializeSymmetricMatrixTo(cov, out);
 }
 void CPosePDFGaussian::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
@@ -67,48 +67,16 @@ void CPosePDFGaussian::serializeFrom(mrpt::serialization::CArchive& in, uint8_t 
 	{
 		case 2:
 		{
-			double x;
 			in >> mean;
-
-			in >> x;
-			cov(0, 0) = x;
-			in >> x;
-			cov(1, 1) = x;
-			in >> x;
-			cov(2, 2) = x;
-
-			in >> x;
-			cov(1, 0) = x;
-			cov(0, 1) = x;
-			in >> x;
-			cov(2, 0) = x;
-			cov(0, 2) = x;
-			in >> x;
-			cov(1, 2) = x;
-			cov(2, 1) = x;
+			mrpt::math::deserializeSymmetricMatrixFrom(cov, in);
 		}
 		break;
 		case 1:
 		{
-			float x;
 			in >> mean;
-
-			in >> x;
-			cov(0, 0) = x;
-			in >> x;
-			cov(1, 1) = x;
-			in >> x;
-			cov(2, 2) = x;
-
-			in >> x;
-			cov(1, 0) = x;
-			cov(0, 1) = x;
-			in >> x;
-			cov(2, 0) = x;
-			cov(0, 2) = x;
-			in >> x;
-			cov(1, 2) = x;
-			cov(2, 1) = x;
+			CMatrixFloat33 m;
+			mrpt::math::deserializeSymmetricMatrixFrom(m, in);
+			cov = m;
 		}
 		break;
 		case 0:

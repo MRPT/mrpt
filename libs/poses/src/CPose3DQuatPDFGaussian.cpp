@@ -12,6 +12,7 @@
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
 #include <mrpt/math/transform_gaussian.h>
 #include <mrpt/math/distributions.h>
+#include <mrpt/math/matrix_serialization.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include "mrpt/poses/CPose3D.h"  // for CPose3D
 #include "mrpt/poses/CPose3DQuat.h"  // for CPose3D...
@@ -106,11 +107,7 @@ void CPose3DQuatPDFGaussian::writeToStream(
 	else
 	{
 		out << mean;
-
-		for (size_t r = 0; r < size(cov, 1); r++) out << cov.get_unsafe(r, r);
-		for (size_t r = 0; r < size(cov, 1); r++)
-			for (size_t c = r + 1; c < size(cov, 2); c++)
-				out << cov.get_unsafe(r, c);
+		mrpt::math::serializeSymmetricMatrixTo(cov, out);
 	}
 }
 
@@ -125,16 +122,7 @@ void CPose3DQuatPDFGaussian::readFromStream(
 		case 0:
 		{
 			in >> mean;
-
-			for (size_t r = 0; r < size(cov, 1); r++)
-				in >> cov.get_unsafe(r, r);
-			for (size_t r = 0; r < size(cov, 1); r++)
-				for (size_t c = r + 1; c < size(cov, 2); c++)
-				{
-					double x;
-					in >> x;
-					cov.get_unsafe(r, c) = cov.get_unsafe(c, r) = x;
-				}
+			mrpt::math::deserializeSymmetricMatrixFrom(cov, in);
 		}
 		break;
 		default:

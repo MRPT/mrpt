@@ -11,6 +11,7 @@
 
 #include <mrpt/random.h>
 #include <mrpt/math/wrap2pi.h>
+#include <mrpt/math/matrix_serialization.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DPDFGaussianInf.h>
@@ -82,11 +83,7 @@ uint8_t CPose3DPDFGaussianInf::serializeGetVersion() const { return 0; }
 void CPose3DPDFGaussianInf::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	out << mean;
-	for (int r = 0; r < cov_inv.rows(); r++)
-		out << cov_inv.get_unsafe(r, r);
-	for (int r = 0; r < cov_inv.rows(); r++)
-		for (int c = r + 1; c < cov_inv.cols(); c++)
-			out << cov_inv.get_unsafe(r, c);
+	mrpt::math::serializeSymmetricMatrixTo(cov_inv, in);
 }
 void CPose3DPDFGaussianInf::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
@@ -95,16 +92,7 @@ void CPose3DPDFGaussianInf::serializeFrom(mrpt::serialization::CArchive& in, uin
 		case 0:
 		{
 			in >> mean;
-
-			for (int  r = 0; r < cov_inv.rows(); r++)
-				in >> cov_inv.get_unsafe(r, r);
-			for (int  r = 0; r < cov_inv.rows(); r++)
-				for (int  c = r + 1; c < cov_inv.cols(); c++)
-				{
-					double x;
-					in >> x;
-					cov_inv.get_unsafe(r, c) = cov_inv.get_unsafe(c, r) = x;
-				}
+			mrpt::math::deserializeSymmetricMatrixFrom(cov_inv, in);
 		}
 		break;
 		default:
