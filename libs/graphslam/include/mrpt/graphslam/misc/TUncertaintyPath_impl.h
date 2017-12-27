@@ -172,7 +172,7 @@ void TUncertaintyPath<GRAPH_T>::addToPath(
 
 template <class GRAPH_T>
 void TUncertaintyPath<GRAPH_T>::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& source, const std::string& section)
+	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {
 }
 

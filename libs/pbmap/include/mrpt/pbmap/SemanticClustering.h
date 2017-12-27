@@ -189,7 +189,7 @@ class SemanticClustering
 	/*!
 	* Arrange the semantic groups
 	*/
-	void arrangeNewGroups(std::vector<mrpt::vector_uint>& parts)
+	void arrangeNewGroups(std::vector<std::vector<uint32_t>>& parts)
 	{
 		using namespace std;
 		int group_diff = parts.size() - neighborGroups.size();
@@ -404,7 +404,7 @@ class SemanticClustering
 
 		//      buildCoVisibilityMatrix();
 		buildProximityMatrix();
-		std::vector<mrpt::vector_uint> parts;  // Vector of vectors to keep the
+		std::vector<std::vector<uint32_t>> parts;  // Vector of vectors to keep the
 		// KFs index of the different
 		// partitions (submaps)
 		mrpt::graphs::CGraphPartitioner<mrpt::math::CMatrix>::

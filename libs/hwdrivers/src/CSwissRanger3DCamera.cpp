@@ -173,7 +173,7 @@ void CSwissRanger3DCamera::doProcess()
 * some critical parameter is missing or has an invalid value.
 */
 void CSwissRanger3DCamera::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 	using mrpt::utils::DEG2RAD;

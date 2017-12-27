@@ -54,8 +54,8 @@ class CMultiObjectiveMotionOptimizerBase : public mrpt::utils::CObject
 		const std::vector<mrpt::nav::TCandidateMovementPTG>& movs,
 		TResultInfo& extra_info);
 
-	virtual void loadConfigFile(const mrpt::utils::CConfigFileBase& c) = 0;
-	virtual void saveConfigFile(mrpt::utils::CConfigFileBase& c) const = 0;
+	virtual void loadConfigFile(const mrpt::config::CConfigFileBase& c) = 0;
+	virtual void saveConfigFile(mrpt::config::CConfigFileBase& c) const = 0;
 
 	/** Common params for all children */
 	struct TParamsBase : public mrpt::utils::CLoadableOptions
@@ -81,10 +81,10 @@ class CMultiObjectiveMotionOptimizerBase : public mrpt::utils::CObject
 		std::vector<std::string> scores_to_normalize;
 
 		virtual void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		virtual void saveToConfigFile(
-			mrpt::utils::CConfigFileBase& cfg,
+			mrpt::config::CConfigFileBase& cfg,
 			const std::string& section) const override;  // See base docs
 	};
 

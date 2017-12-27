@@ -63,7 +63,7 @@ class CRaePID : public mrpt::hwdrivers::CGenericSensor
 	void doProcess();
 
 	void loadConfig_sensorSpecific(
-		const mrpt::utils::CConfigFileBase& configSource,
+		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& section);
 
 	/** Get firmware version string.

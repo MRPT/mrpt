@@ -48,7 +48,7 @@ class CParticleFilterCapable;
  * \ingroup mrpt_bayes_grp
  * \sa mrpt::poses::CPoseParticlesPDF
  */
-class CParticleFilter : public mrpt::utils::COutputLogger
+class CParticleFilter : public mrpt::system::COutputLogger
 {
    public:
 	/** Defines different types of particle filter algorithms.
@@ -99,17 +99,17 @@ class CParticleFilter : public mrpt::utils::COutputLogger
 
 	/** The configuration of a particle filter.
 	  */
-	struct TParticleFilterOptions : public mrpt::utils::CLoadableOptions
+	struct TParticleFilterOptions : public mrpt::config::CLoadableOptions
 	{
 	   public:
 		/** Initilization of default parameters */
 		TParticleFilterOptions();
 		// See base docs:
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;
 		virtual void saveToConfigFile(
-			mrpt::utils::CConfigFileBase& target,
+			mrpt::config::CConfigFileBase& target,
 			const std::string& section) const override;
 
 		/** A flag that indicates whether the CParticleFilterCapable object

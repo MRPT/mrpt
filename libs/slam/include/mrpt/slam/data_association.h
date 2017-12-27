@@ -114,7 +114,7 @@ struct TDataAssociationResults
 	mrpt::math::CMatrixBool indiv_compatibility;
 	/** The sum of each column of indiv_compatibility, that is, the number of
 	 * compatible pairings for each observation. */
-	vector_uint indiv_compatibility_counts;
+	std::vector<uint32_t> indiv_compatibility_counts;
 
 	/** Only for the JCBB method,the number of recursive calls expent in the
 	 * algorithm. */

@@ -56,7 +56,7 @@ CPhidgetInterfaceKitProximitySensors::CPhidgetInterfaceKitProximitySensors()
 				loadConfig_sensorSpecific
    ----------------------------------------------------- */
 void CPhidgetInterfaceKitProximitySensors::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 #if MRPT_HAS_PHIDGET

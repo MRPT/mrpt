@@ -14,7 +14,7 @@
 #include <mrpt/core/round.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/ops_containers.h>
-#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/serialization/stl_serialization.h>
 #include <cmath>
 
 using namespace mrpt;
@@ -31,19 +31,19 @@ IMPLEMENTS_SERIALIZABLE(
 const unsigned int INVALID_K = std::numeric_limits<unsigned int>::max();
 
 CHolonomicFullEval::CHolonomicFullEval(
-	const mrpt::utils::CConfigFileBase* INI_FILE)
+	const mrpt::config::CConfigFileBase* INI_FILE)
 	: CAbstractHolonomicReactiveMethod("CHolonomicFullEval"),
 	  m_last_selected_sector(std::numeric_limits<unsigned int>::max())
 {
 	if (INI_FILE != nullptr) initialize(*INI_FILE);
 }
 
-void CHolonomicFullEval::saveConfigFile(mrpt::utils::CConfigFileBase& c) const
+void CHolonomicFullEval::saveConfigFile(mrpt::config::CConfigFileBase& c) const
 {
 	options.saveToConfigFile(c, getConfigFileSectionName());
 }
 
-void CHolonomicFullEval::initialize(const mrpt::utils::CConfigFileBase& c)
+void CHolonomicFullEval::initialize(const mrpt::config::CConfigFileBase& c)
 {
 	options.loadFromConfigFile(c, getConfigFileSectionName());
 }
@@ -664,7 +664,7 @@ CHolonomicFullEval::TOptions::TOptions()
 }
 
 void CHolonomicFullEval::TOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& c, const std::string& s)
+	const mrpt::config::CConfigFileBase& c, const std::string& s)
 {
 	MRPT_START
 
@@ -707,7 +707,7 @@ void CHolonomicFullEval::TOptions::loadFromConfigFile(
 }
 
 void CHolonomicFullEval::TOptions::saveToConfigFile(
-	mrpt::utils::CConfigFileBase& c, const std::string& s) const
+	mrpt::config::CConfigFileBase& c, const std::string& s) const
 {
 	MRPT_START;
 

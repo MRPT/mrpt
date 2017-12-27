@@ -161,7 +161,7 @@ class CRangeBearingKFSLAM
 
 	/** Load options from a ini-like file/text
 	  */
-	void loadOptions(const mrpt::utils::CConfigFileBase& ini);
+	void loadOptions(const mrpt::config::CConfigFileBase& ini);
 
 	/** The options for the algorithm
 	  */
@@ -171,7 +171,7 @@ class CRangeBearingKFSLAM
 		TOptions();
 
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		void dumpToTextStream(
 			mrpt::utils::CStream& out) const override;  // See base docs
@@ -263,7 +263,7 @@ class CRangeBearingKFSLAM
 	  *  Only if options.doPartitioningExperiment = true
 	  * \sa getLastPartitionLandmarks
 	  */
-	void getLastPartition(std::vector<vector_uint>& parts)
+	void getLastPartition(std::vector<std::vector<uint32_t>>& parts)
 	{
 		parts = m_lastPartitionSet;
 	}
@@ -279,21 +279,21 @@ class CRangeBearingKFSLAM
 	  * \sa getLastPartition
 	  */
 	void getLastPartitionLandmarks(
-		std::vector<vector_uint>& landmarksMembership) const;
+		std::vector<std::vector<uint32_t>>& landmarksMembership) const;
 
 	/** For testing only: returns the partitioning as
 	 * "getLastPartitionLandmarks" but as if a fixed-size submaps (size K) were
 	 * have been used.
 	  */
 	void getLastPartitionLandmarksAsIfFixedSubmaps(
-		size_t K, std::vector<vector_uint>& landmarksMembership);
+		size_t K, std::vector<std::vector<uint32_t>>& landmarksMembership);
 
 	/** Computes the ratio of the missing information matrix elements which are
 	 * ignored under a certain partitioning of the landmarks.
 	  * \sa getLastPartitionLandmarks, getLastPartitionLandmarksAsIfFixedSubmaps
 	  */
 	double computeOffDiagonalBlocksApproximationError(
-		const std::vector<vector_uint>& landmarksMembership) const;
+		const std::vector<std::vector<uint32_t>>& landmarksMembership) const;
 
 	/** The partitioning of the entire map is recomputed again.
 	  *  Only when options.doPartitioningExperiment = true.
@@ -498,7 +498,7 @@ class CRangeBearingKFSLAM
 	  */
 	mrpt::maps::CSimpleMap m_SFs;
 
-	std::vector<vector_uint> m_lastPartitionSet;
+	std::vector<std::vector<uint32_t>> m_lastPartitionSet;
 
 	/** Last data association */
 	TDataAssocInfo m_last_data_association;

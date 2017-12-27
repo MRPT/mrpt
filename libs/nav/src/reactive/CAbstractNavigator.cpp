@@ -156,7 +156,7 @@ void CAbstractNavigator::setFrameTF(mrpt::poses::FrameTransformer<2>* frame_tf)
 	m_frame_tf = frame_tf;
 }
 
-void CAbstractNavigator::loadConfigFile(const mrpt::utils::CConfigFileBase& c)
+void CAbstractNavigator::loadConfigFile(const mrpt::config::CConfigFileBase& c)
 {
 	MRPT_START
 
@@ -173,7 +173,7 @@ void CAbstractNavigator::loadConfigFile(const mrpt::utils::CConfigFileBase& c)
 	MRPT_END
 }
 
-void CAbstractNavigator::saveConfigFile(mrpt::utils::CConfigFileBase& c) const
+void CAbstractNavigator::saveConfigFile(mrpt::config::CConfigFileBase& c) const
 {
 	params_abstract_navigator.saveToConfigFile(c, "CAbstractNavigator");
 }
@@ -432,7 +432,7 @@ CAbstractNavigator::TAbstractNavigatorParams::TAbstractNavigatorParams()
 {
 }
 void CAbstractNavigator::TAbstractNavigatorParams::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& c, const std::string& s)
+	const mrpt::config::CConfigFileBase& c, const std::string& s)
 {
 	MRPT_LOAD_CONFIG_VAR_CS(dist_to_target_for_sending_event, double);
 	MRPT_LOAD_CONFIG_VAR_CS(alarm_seems_not_approaching_target_timeout, double);
@@ -440,7 +440,7 @@ void CAbstractNavigator::TAbstractNavigatorParams::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR_CS(hysteresis_check_target_is_blocked, int);
 }
 void CAbstractNavigator::TAbstractNavigatorParams::saveToConfigFile(
-	mrpt::utils::CConfigFileBase& c, const std::string& s) const
+	mrpt::config::CConfigFileBase& c, const std::string& s) const
 {
 	MRPT_SAVE_CONFIG_VAR_COMMENT(
 		dist_to_target_for_sending_event,

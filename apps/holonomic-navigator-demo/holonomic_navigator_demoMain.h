@@ -147,10 +147,10 @@ class holonomic_navigator_demoFrame : public wxFrame
 
 		TOptions();
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		void saveToConfigFile(
-			mrpt::utils::CConfigFileBase& source,
+			mrpt::config::CConfigFileBase& source,
 			const std::string& section) const override;  // See base docs
 	};
 

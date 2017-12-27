@@ -17,7 +17,7 @@
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::math;
-using namespace mrpt::utils;
+
 using namespace mrpt::poses;
 
 IMPLEMENTS_SERIALIZABLE(CPose3DQuat, CSerializable, mrpt::poses)

@@ -11,7 +11,7 @@
 
 #include <mrpt/kinematics/CKinematicChain.h>
 #include <mrpt/utils/CStream.h>
-#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CCylinder.h>
 #include <mrpt/opengl/stock_objects.h>

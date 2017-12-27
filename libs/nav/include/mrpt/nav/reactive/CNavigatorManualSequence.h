@@ -28,9 +28,9 @@ class CNavigatorManualSequence : public mrpt::nav::CAbstractNavigator
 
 	/** @name Initialization API
 	  * @{ */
-	virtual void loadConfigFile(const mrpt::utils::CConfigFileBase& c)
+	virtual void loadConfigFile(const mrpt::config::CConfigFileBase& c)
 		override;  // See base class docs!
-	virtual void saveConfigFile(mrpt::utils::CConfigFileBase& c)
+	virtual void saveConfigFile(mrpt::config::CConfigFileBase& c)
 		const override;  // See base class docs!
 	/** Must be called for loading collision grids, etc. before invoking any
 	 * navigation command */

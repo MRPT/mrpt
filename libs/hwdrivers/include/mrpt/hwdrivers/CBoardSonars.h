@@ -143,7 +143,7 @@ class CBoardSonars : public mrpt::comms::CInterfaceFTDI, public CGenericSensor
 	  *  See hwdrivers::CBoardSonars for the possible parameters
 	  */
 	void loadConfig_sensorSpecific(
-		const mrpt::utils::CConfigFileBase& configSource,
+		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& iniSection);
 
 };  // End of class

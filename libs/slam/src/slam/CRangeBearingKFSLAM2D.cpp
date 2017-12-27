@@ -729,7 +729,7 @@ void CRangeBearingKFSLAM2D::OnNormalizeStateVector()
 /*---------------------------------------------------------------
 						loadOptions
   ---------------------------------------------------------------*/
-void CRangeBearingKFSLAM2D::loadOptions(const mrpt::utils::CConfigFileBase& ini)
+void CRangeBearingKFSLAM2D::loadOptions(const mrpt::config::CConfigFileBase& ini)
 {
 	// Main
 	options.loadFromConfigFile(ini, "RangeBearingKFSLAM");
@@ -740,7 +740,7 @@ void CRangeBearingKFSLAM2D::loadOptions(const mrpt::utils::CConfigFileBase& ini)
 						loadOptions
   ---------------------------------------------------------------*/
 void CRangeBearingKFSLAM2D::TOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& source, const std::string& section)
+	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {
 	stds_Q_no_odo[2] = RAD2DEG(stds_Q_no_odo[2]);
 

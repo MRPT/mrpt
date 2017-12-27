@@ -258,7 +258,7 @@ struct TStereoSystemParams : public mrpt::utils::CLoadableOptions
 	TStereoSystemParams();
 
 	void loadFromConfigFile(
-		const mrpt::utils::CConfigFileBase& source,
+		const mrpt::config::CConfigFileBase& source,
 		const std::string& section) override;  // See base docs
 	void dumpToTextStream(
 		mrpt::utils::CStream& out) const override;  // See base docs
@@ -460,7 +460,7 @@ struct TMatchingOptions : public mrpt::utils::CLoadableOptions
 	TMatchingOptions();
 
 	void loadFromConfigFile(
-		const mrpt::utils::CConfigFileBase& source,
+		const mrpt::config::CConfigFileBase& source,
 		const std::string& section) override;  // See base docs
 	void dumpToTextStream(
 		mrpt::utils::CStream& out) const override;  // See base docs
@@ -633,10 +633,10 @@ struct TMultiResDescMatchOptions : public mrpt::utils::CLoadableOptions
 	}
 
 	void loadFromConfigFile(
-		const mrpt::utils::CConfigFileBase& cfg,
+		const mrpt::config::CConfigFileBase& cfg,
 		const std::string& section) override;
 	void saveToConfigFile(
-		mrpt::utils::CConfigFileBase& cfg,
+		mrpt::config::CConfigFileBase& cfg,
 		const std::string& section) const override;
 	void dumpToTextStream(mrpt::utils::CStream& out) const override;
 
@@ -727,10 +727,10 @@ struct TMultiResDescOptions : public mrpt::utils::CLoadableOptions
 	}
 
 	void loadFromConfigFile(
-		const mrpt::utils::CConfigFileBase& source,
+		const mrpt::config::CConfigFileBase& source,
 		const std::string& section) override;  // See base docs
 	void saveToConfigFile(
-		mrpt::utils::CConfigFileBase& cfg,
+		mrpt::config::CConfigFileBase& cfg,
 		const std::string& section) const override;  // See base docs
 	void dumpToTextStream(
 		mrpt::utils::CStream& out) const override;  // See base docs

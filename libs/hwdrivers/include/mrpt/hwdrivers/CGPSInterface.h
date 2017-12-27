@@ -281,7 +281,7 @@ class CGPSInterface : public mrpt::utils::COutputLogger, public CGenericSensor
 
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(
-		const mrpt::utils::CConfigFileBase& configSource,
+		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& iniSection);
 
 	/** If not empty, will send a cmd "set,/par/pos/pd/port,...". Example value:

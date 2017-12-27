@@ -24,7 +24,7 @@ TStereoCamera::TStereoCamera() {}
 /**  Save as a config block:
   */
 void TStereoCamera::saveToConfigFile(
-	const std::string& section, mrpt::utils::CConfigFileBase& cfg) const
+	const std::string& section, mrpt::config::CConfigFileBase& cfg) const
 {
 	// [<SECTION>_LEFT]
 	//   ...
@@ -48,7 +48,7 @@ void TStereoCamera::saveToConfigFile(
  * saveToConfigFile()
   */
 void TStereoCamera::loadFromConfigFile(
-	const std::string& section, const mrpt::utils::CConfigFileBase& cfg)
+	const std::string& section, const mrpt::config::CConfigFileBase& cfg)
 {
 	// [<SECTION>_LEFT]
 	//   ...

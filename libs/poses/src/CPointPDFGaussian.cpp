@@ -17,7 +17,7 @@
 #include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::poses;
-using namespace mrpt::utils;
+
 using namespace mrpt::math;
 using namespace mrpt::random;
 using namespace mrpt::system;

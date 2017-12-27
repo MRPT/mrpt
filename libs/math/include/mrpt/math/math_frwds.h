@@ -11,6 +11,7 @@
 
 #include <mrpt/config.h>
 #include <string>
+#include <type_traits>
 
 /*! \file math_frwds.h
   * Forward declarations of all mrpt::math classes related to vectors, arrays
@@ -21,23 +22,13 @@
 
 namespace mrpt
 {
-namespace serialization
-{
-class CArchive;
-}
 namespace system
 {
 std::string MRPT_getVersion();
 }
-
 namespace math
 {
-struct TPoint2D;
-struct TPoint3D;
-struct TPose2D;
-struct TPose3D;
-struct TPose3DQuat;
-
+struct TPoseOrPoint;
 class CMatrix;  // mrpt-binary-serializable matrix
 class CMatrixD;  // mrpt-binary-serializable matrix
 
@@ -98,28 +89,18 @@ class CQuaternion;
 template <typename CONTAINER>
 struct ContainerType
 {
-	typedef typename CONTAINER::value_type element_t;
+	using element_t = typename CONTAINER::value_type;
 };
 
 #define MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(_CLASS_)           \
-	explicit inline _CLASS_(const mrpt::math::TPose2D& p)      \
-	{                                                          \
+	template <class TPOSE,                             \
+		typename = std::enable_if_t<                           \
+			std::is_base_of<mrpt::math::TPoseOrPoint,TPOSE>::value>> \
+	explicit inline _CLASS_(const TPOSE& p) {                  \
 		mrpt::math::containerFromPoseOrPoint(*this, p);        \
 	}                                                          \
-	explicit inline _CLASS_(const mrpt::math::TPose3D& p)      \
-	{                                                          \
-		mrpt::math::containerFromPoseOrPoint(*this, p);        \
-	}                                                          \
-	explicit inline _CLASS_(const mrpt::math::TPose3DQuat& p)  \
-	{                                                          \
-		mrpt::math::containerFromPoseOrPoint(*this, p);        \
-	}                                                          \
-	explicit inline _CLASS_(const mrpt::math::TPoint2D& p)     \
-	{                                                          \
-		mrpt::math::containerFromPoseOrPoint(*this, p);        \
-	}                                                          \
-	explicit inline _CLASS_(const mrpt::math::TPoint3D& p)     \
-	{                                                          \
+	template <class CPOSE, int = CPOSE::is_3D_val>             \
+	explicit inline _CLASS_(const CPOSE& p) {          \
 		mrpt::math::containerFromPoseOrPoint(*this, p);        \
 	}                                                          \
 

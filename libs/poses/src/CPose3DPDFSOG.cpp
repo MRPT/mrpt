@@ -18,7 +18,6 @@
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
 
@@ -97,30 +96,19 @@ void CPose3DPDFSOG::getCovarianceAndMean(
 	estCovOut = estCov;
 }
 
-/*---------------------------------------------------------------
-						writeToStream
-  ---------------------------------------------------------------*/
-void CPose3DPDFSOG::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CPose3DPDFSOG::serializeGetVersion() const { return 2; }
+void CPose3DPDFSOG::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 2;
-	else
+	uint32_t N = m_modes.size();
+	out << N;
+	for (const_iterator it = m_modes.begin(); it != m_modes.end(); ++it)
 	{
-		uint32_t N = m_modes.size();
-		out << N;
-		for (const_iterator it = m_modes.begin(); it != m_modes.end(); ++it)
-		{
-			out << (it)->log_w;
-			out << (it)->val.mean;
-			out << (it)->val.cov;
-		}
+		out << (it)->log_w;
+		out << (it)->val.mean;
+		out << (it)->val.cov;
 	}
 }
-
-/*---------------------------------------------------------------
-						readFromStream
-  ---------------------------------------------------------------*/
-void CPose3DPDFSOG::readFromStream(mrpt::utils::CStream& in, int version)
+void CPose3DPDFSOG::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

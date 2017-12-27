@@ -773,7 +773,7 @@ void CLevMarqGSO<GRAPH_T>::OptimizationParams::dumpToTextStream(
 }
 template <class GRAPH_T>
 void CLevMarqGSO<GRAPH_T>::OptimizationParams::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& source, const std::string& section)
+	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {
 	MRPT_START;
 	optimization_on_second_thread = source.read_bool(
@@ -831,7 +831,7 @@ void CLevMarqGSO<GRAPH_T>::GraphVisualizationParams::dumpToTextStream(
 }
 template <class GRAPH_T>
 void CLevMarqGSO<GRAPH_T>::GraphVisualizationParams::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& source, const std::string& section)
+	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {
 	MRPT_START;
 	using namespace utils;

@@ -59,7 +59,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </ul>
 </li>
 <li>Added: <a class="el" href="group__mrpt__base__grp.html#gaaf536467693323fc78ea75af2beb5103" title="Creates a shared_ptr with 16-byte aligned memory. ">mrpt::make_aligned_shared&lt;&gt;</a> template</li>
-<li><a class="el" href="classmrpt_1_1config_1_1_c_config_file_base.html#a6ea26ce517f1f4e5652b65071f201b73">mrpt::utils::CConfigFileBase::write()</a> now supports enum types.</li>
+<li><a class="el" href="classmrpt_1_1config_1_1_c_config_file_base.html#a6ea26ce517f1f4e5652b65071f201b73">mrpt::config::CConfigFileBase::write()</a> now supports enum types.</li>
 <li>New method <a class="el" href="classmrpt_1_1io_1_1_c_stream.html#afd0570c43fb2e7ac8702f05485315722" title="Reads a simple POD type and returns by value. ">mrpt::utils::CStream::ReadPOD()</a> and macro <code><a class="el" href="io_2_c_stream_8h.html#af92053eb32041113809b36842ccaa7c3">MRPT_READ_POD()</a></code> for reading unaligned POD variables.-</li>
 </ul>
 </li>
@@ -353,7 +353,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>Old classes <code>CPTGd</code> have been renamed to describe each path type. Old PTGs #6 and #7 have been removed for lack of practical use.</li>
 <li>New separate classes for PTGs based on numerically-integrated paths and on closed-form formulations.</li>
 <li>Old deprecated method of PTGs <code>lambdaFunction()</code> removed.</li>
-<li>Parameters are no longer passed via a <a class="el" href="structmrpt_1_1utils_1_1_t_parameters.html" title="For usage when passing a dynamic number of (numeric) arguments to a function, by name. ">mrpt::system::TParameters</a> class, but via a <a class="el" href="namespacemrpt_1_1utils.html#ade2456f96469f34977367b13048558b7">mrpt::utils::CConfigFileBase</a> which makes parameter passing to PTGs much more maintainable and consistent.</li>
+<li>Parameters are no longer passed via a <a class="el" href="structmrpt_1_1utils_1_1_t_parameters.html" title="For usage when passing a dynamic number of (numeric) arguments to a function, by name. ">mrpt::system::TParameters</a> class, but via a <a class="el" href="namespacemrpt_1_1utils.html#ade2456f96469f34977367b13048558b7">mrpt::config::CConfigFileBase</a> which makes parameter passing to PTGs much more maintainable and consistent.</li>
 <li>PTGs now have a score_priority field to manually set hints about preferences for path planning.</li>
 <li>PTGs are now <a class="el" href="namespacemrpt_1_1utils.html#a04ec3a7c261b3eccea00eecde443e19b">mrpt::utils::CLoadableOptions</a> classes</li>
 </ul>
@@ -1297,13 +1297,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li><a class="el" href="classmrpt_1_1containers_1_1_c_dynamic_grid.html#a0f4a9f7763248830759f5de2f04f2ca9" title="Changes the size of the grid, ERASING all previous contents. ">mrpt::containers::CDynamicGrid::setSize()</a> now also accepts a "fill_value" argument.</li>
 <li>Added method <a class="el" href="structmrpt_1_1math_1_1_t_point2_d.html#a6510b36a4749d929bd90b6b7dfd98345" title="Point norm. ">mrpt::math::TPoint2D::norm()</a> for consistency with <a class="el" href="structmrpt_1_1math_1_1_t_point3_d.html" title="Lightweight 3D point. ">mrpt::math::TPoint3D</a></li>
 <li>Better support for saving (and not only loading) plain text configuration files, including commented files with default values of all existing parameters: - <a href="http://code.google.com/p/mrpt/source/detail?r=2954">r2954</a><ul>
-<li>All <a class="el" href="classmrpt_1_1config_1_1_c_config_file_base.html#a6ea26ce517f1f4e5652b65071f201b73">mrpt::utils::CConfigFileBase::write()</a> now have an extended signature for formatting.</li>
+<li>All <a class="el" href="classmrpt_1_1config_1_1_c_config_file_base.html#a6ea26ce517f1f4e5652b65071f201b73">mrpt::config::CConfigFileBase::write()</a> now have an extended signature for formatting.</li>
 <li><a class="el" href="classmrpt_1_1config_1_1_c_loadable_options.html#a8256f5aee41c619eefdc5a766a272eec" title="This method should clearly display all the contents of the structure in textual form, sending it to a std::ostream. ">mrpt::utils::CLoadableOptions::dumpToTextStream()</a> is no longer pure virtual: it now relies on <a class="el" href="classmrpt_1_1config_1_1_c_loadable_options.html#a2ca85b8b24e743a4a62e37bb347ee7aa" title="This method saves the options to a &quot;.ini&quot;-like file or memory-stored string list. ...">mrpt::utils::CLoadableOptions::saveToConfigFile()</a></li>
 </ul>
 </li>
 <li><a class="el" href="classmrpt_1_1io_1_1_c_stream.html#a6a7b838e99ca77554fc556b86ef7cbb1" title="Introduces a pure virtual method for moving to a specified position in the streamed resource...">mrpt::utils::CStream::Seek()</a> now supports files larger than 2GB by using uint64_t instead of long (still see issue report for another patch required for MSVC2010) - (Closes <a href="http://code.google.com/p/mrpt/issues/detail?id=39">issue 39</a>, thanks Robert Schattschneider) - <a href="http://code.google.com/p/mrpt/source/detail?r=3042">r3042</a></li>
 <li>mrpt::typemeta::TTypeName&lt;&gt; moved to its own header &lt;mrpt/utils/TTypeName.h&gt; while refactoring &lt;<a class="el" href="_c_serializable_8h.html">mrpt/serialization/CSerializable.h</a>&gt; - <a href="http://code.google.com/p/mrpt/source/detail?r=3044">r3044</a></li>
-<li><a class="el" href="classmrpt_1_1config_1_1_c_config_file_base.html#a6ea26ce517f1f4e5652b65071f201b73">mrpt::utils::CConfigFileBase::write()</a> now has signatures for "uint32_t" and "uint64_t" in both 32 and 64bit builds, instead of relying of the "size_t" type. This was done to fix build errors in some GCC versions under 32bits.</li>
+<li><a class="el" href="classmrpt_1_1config_1_1_c_config_file_base.html#a6ea26ce517f1f4e5652b65071f201b73">mrpt::config::CConfigFileBase::write()</a> now has signatures for "uint32_t" and "uint64_t" in both 32 and 64bit builds, instead of relying of the "size_t" type. This was done to fix build errors in some GCC versions under 32bits.</li>
 <li><a class="el" href="classmrpt_1_1poses_1_1_c_pose2_d.html" title="A class used to store a 2D pose, including the 2D coordinate point and a heading (phi) angle...">mrpt::poses::CPose2D</a> now caches the cos() and sin() of phi, with a huge performance improvement in most common operations.</li>
 </ul>
 </li>

@@ -31,7 +31,7 @@ MAP_DEFINITION_REGISTER("COctoMap,octoMap", mrpt::maps::COctoMap)
 
 COctoMap::TMapDefinition::TMapDefinition() : resolution(0.10) {}
 void COctoMap::TMapDefinition::loadFromConfigFile_map_specific(
-	const mrpt::utils::CConfigFileBase& source,
+	const mrpt::config::CConfigFileBase& source,
 	const std::string& sectionNamePrefix)
 {
 	// [<sectionNamePrefix>+"_creationOpts"]

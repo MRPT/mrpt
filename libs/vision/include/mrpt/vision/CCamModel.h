@@ -43,14 +43,14 @@ class CCamModel : public mrpt::utils::CLoadableOptions
 	CCamModel();
 
 	void loadFromConfigFile(
-		const mrpt::utils::CConfigFileBase& source,
+		const mrpt::config::CConfigFileBase& source,
 		const std::string& section) override;  // See base docs
 	void dumpToTextStream(
 		mrpt::utils::CStream& out) const override;  // See base docs
 
 	/** Constructor from a ini file
 	 */
-	CCamModel(const mrpt::utils::CConfigFileBase& cfgIni);
+	CCamModel(const mrpt::config::CConfigFileBase& cfgIni);
 
 	/** Jacobian for undistortion the image coordinates */
 	void jacob_undistor_fm(

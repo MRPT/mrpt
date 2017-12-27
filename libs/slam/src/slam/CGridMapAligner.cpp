@@ -1241,7 +1241,7 @@ void CGridMapAligner::TConfigParams::dumpToTextStream(
 					loadFromConfigFile
   ---------------------------------------------------------------*/
 void CGridMapAligner::TConfigParams::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
 {
 	methodSelection =
 		iniFile.read_enum(section, "methodSelection", methodSelection);

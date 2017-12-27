@@ -51,7 +51,7 @@ class CIncrementalMapPartitioner : public mrpt::utils::COutputLogger,
 		TOptions();
 
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		void dumpToTextStream(
 			mrpt::utils::CStream& out) const override;  // See base docs
@@ -126,7 +126,7 @@ class CIncrementalMapPartitioner : public mrpt::utils::COutputLogger,
 	 *
 	 * \sa addMapFrame
 	 */
-	void updatePartitions(std::vector<vector_uint>& partitions);
+	void updatePartitions(std::vector<std::vector<uint32_t>>& partitions);
 
 	/**\brief Get the total node count currently in the internal map/graph.
 	 *
@@ -140,7 +140,7 @@ class CIncrementalMapPartitioner : public mrpt::utils::COutputLogger,
 	 * node at (0,0,0).
 	 */
 	void removeSetOfNodes(
-		vector_uint indexesToRemove, bool changeCoordsRef = true);
+		std::vector<uint32_t> indexesToRemove, bool changeCoordsRef = true);
 
 	/**\brief Return a copy of the internal adjacency matrix.  */
 	template <class MATRIX>
@@ -202,7 +202,7 @@ class CIncrementalMapPartitioner : public mrpt::utils::COutputLogger,
 	mrpt::math::CMatrixD m_A;
 
 	/** The last partition */
-	std::vector<vector_uint> m_last_partition;
+	std::vector<std::vector<uint32_t>> m_last_partition;
 
 	/** This will be true after adding new observations, and before an
 	 * "updatePartitions" is invoked. */

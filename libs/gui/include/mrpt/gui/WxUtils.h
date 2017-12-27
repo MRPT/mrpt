@@ -177,10 +177,10 @@ class CPanelCameraSelection : public wxPanel
 	virtual ~CPanelCameraSelection();
 
 	void readConfigIntoVideoSourcePanel(
-		const std::string& sect, const mrpt::utils::CConfigFileBase* cfg) const;
+		const std::string& sect, const mrpt::config::CConfigFileBase* cfg) const;
 
 	void writeConfigFromVideoSourcePanel(
-		const std::string& sect, mrpt::utils::CConfigFileBase* cfg) const;
+		const std::string& sect, mrpt::config::CConfigFileBase* cfg) const;
 
 	//(*Declarations(CPanelCameraSelection)
 	wxTextCtrl* edRawlogLabel;

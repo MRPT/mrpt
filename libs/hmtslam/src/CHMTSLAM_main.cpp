@@ -28,7 +28,7 @@
 
 #include <mrpt/utils/CFileStream.h>
 #include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/utils/CMemoryStream.h>
 
@@ -228,7 +228,7 @@ void CHMTSLAM::pushObservation(const CObservation::Ptr& obs)
 /*---------------------------------------------------------------
 						loadOptions
   ---------------------------------------------------------------*/
-void CHMTSLAM::loadOptions(const mrpt::utils::CConfigFileBase& cfg)
+void CHMTSLAM::loadOptions(const mrpt::config::CConfigFileBase& cfg)
 {
 	m_options.loadFromConfigFile(cfg, "HMT-SLAM");
 
@@ -289,7 +289,7 @@ CHMTSLAM::TOptions::TOptions()
 						loadFromConfigFile
   ---------------------------------------------------------------*/
 void CHMTSLAM::TOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& source, const std::string& section)
+	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {
 	MRPT_LOAD_CONFIG_VAR(LOG_OUTPUT_DIR, string, source, section);
 	MRPT_LOAD_CONFIG_VAR(LOG_FREQUENCY, int, source, section);

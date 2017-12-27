@@ -20,8 +20,24 @@
 
 namespace mrpt
 {
+namespace serialization 
+{
+class CArchive;
+}
 namespace math
 {
+struct TPoint2D;
+struct TPoint3D;
+struct TPose2D;
+struct TPose3D;
+struct TPose3DQuat;
+
+/** Base type of all TPoseXX and TPointXX classes in mrpt::math. 
+  * Useful for type traits. No virtual methods at all. */
+struct TPoseOrPoint
+{
+};
+
 /** \addtogroup geometry_grp
   * @{ */
 
@@ -30,7 +46,7 @@ namespace math
   * Lightweight 2D point. Allows coordinate access using [] operator.
   * \sa mrpt::poses::CPoint2D
   */
-struct TPoint2D
+struct TPoint2D : public TPoseOrPoint
 {
 	enum
 	{
@@ -177,7 +193,7 @@ struct TPoint2D
   * Lightweight 2D pose. Allows coordinate access using [] operator.
   * \sa mrpt::poses::CPose2D
   */
-struct TPose2D
+struct TPose2D : public TPoseOrPoint
 {
 	enum
 	{
@@ -306,7 +322,7 @@ struct TPose2D
 /** Lightweight 3D point (float version).
   * \sa mrpt::poses::CPoint3D, mrpt::math::TPoint3D
   */
-struct TPoint3Df
+struct TPoint3Df : public TPoseOrPoint
 {
 	enum
 	{
@@ -369,7 +385,7 @@ struct TPoint3Df
   * Lightweight 3D point. Allows coordinate access using [] operator.
   * \sa mrpt::poses::CPoint3D, mrpt::math::TPoint3Df
   */
-struct TPoint3D
+struct TPoint3D : public TPoseOrPoint
 {
 	enum
 	{
@@ -594,7 +610,7 @@ struct TPointXYZfRGBu8
  * coordinates). Allows coordinate access using [] operator.
   * \sa mrpt::poses::CPose3D
   */
-struct TPose3D
+struct TPose3D : public TPoseOrPoint
 {
 	enum
 	{
@@ -753,7 +769,7 @@ TPose3D operator -(const TPose3D &b, const TPose3D &a);
  * coordinate access using [] operator.
   * \sa mrpt::poses::CPose3DQuat
   */
-struct TPose3DQuat
+struct TPose3DQuat : public TPoseOrPoint
 {
 	enum
 	{

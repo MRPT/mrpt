@@ -234,7 +234,7 @@
 				- Old classes `CPTG%d` have been renamed to describe each path type. Old PTGs #6 and #7 have been removed for lack of practical use.
 				- New separate classes for PTGs based on numerically-integrated paths and on closed-form formulations.
 				- Old deprecated method of PTGs `lambdaFunction()` removed.
-				- Parameters are no longer passed via a mrpt::system::TParameters class, but via a mrpt::utils::CConfigFileBase which makes parameter passing to PTGs much more maintainable and consistent.
+				- Parameters are no longer passed via a mrpt::system::TParameters class, but via a mrpt::config::CConfigFileBase which makes parameter passing to PTGs much more maintainable and consistent.
 				- PTGs now have a score_priority field to manually set hints about preferences for path planning.
 				- PTGs are now mrpt::utils::CLoadableOptions classes
 			- New classes:
@@ -600,13 +600,13 @@
 			- Removed most "using namespace" from public headers, as good practice.
 			- Refactoring of MRPT headers.
 				- <mrpt/utils/stl_extensions.h> has been split into:
-					- <mrpt/utils/stl_serialization.h>
+					- <mrpt/serialization/stl_serialization.h>
 					- <mrpt/utils/circular_buffer.h>
 					- <mrpt/utils/list_searchable.h>
 					- <mrpt/utils/bimap.h>
 					- <mrpt/utils/map_as_vector.h>
 					- <mrpt/utils/traits_map.h>
-					- <mrpt/utils/stl_serialization.h>
+					- <mrpt/serialization/stl_serialization.h>
 					- <mrpt/utils/printf_vector.h>
 					- <mrpt/utils/stl_containers_utils.h>
 					- <mrpt/utils/ci_less.h>
@@ -856,11 +856,11 @@
 				- mrpt::containers::CDynamicGrid::setSize() now also accepts a "fill_value" argument.
 				- Added method mrpt::math::TPoint2D::norm() for consistency with mrpt::math::TPoint3D
 				- Better support for saving (and not only loading) plain text configuration files, including commented files with default values of all existing parameters: - <a href="http://code.google.com/p/mrpt/source/detail?r=2954" >r2954</a>
-					- All mrpt::utils::CConfigFileBase::write() now have an extended signature for formatting.
+					- All mrpt::config::CConfigFileBase::write() now have an extended signature for formatting.
 					- mrpt::utils::CLoadableOptions::dumpToTextStream() is no longer pure virtual: it now relies on mrpt::utils::CLoadableOptions::saveToConfigFile()
 				- mrpt::utils::CStream::Seek() now supports files larger than 2GB by using uint64_t instead of long (still see issue report for another patch required for MSVC2010) - (Closes <a href="http://code.google.com/p/mrpt/issues/detail?id=39" >issue 39</a>, thanks Robert Schattschneider) - <a href="http://code.google.com/p/mrpt/source/detail?r=3042" >r3042</a>
 				- mrpt::typemeta::TTypeName<> moved to its own header <mrpt/utils/TTypeName.h> while refactoring <mrpt/serialization/CSerializable.h> - <a href="http://code.google.com/p/mrpt/source/detail?r=3044" >r3044</a>
-				- mrpt::utils::CConfigFileBase::write() now has signatures for "uint32_t" and "uint64_t" in both 32 and 64bit builds, instead of relying of the "size_t" type. This was done to fix build errors in some GCC versions under 32bits.
+				- mrpt::config::CConfigFileBase::write() now has signatures for "uint32_t" and "uint64_t" in both 32 and 64bit builds, instead of relying of the "size_t" type. This was done to fix build errors in some GCC versions under 32bits.
 				- mrpt::poses::CPose2D now caches the cos() and sin() of phi, with a huge performance improvement in most common operations.
 			- [mrpt-bayes]
 				- mrpt::bayes::CKalmanFilterCapable (and all EKF-SLAM methods based on it) are now much faster. The implementation now exploits the sparsity of the Jacobian (~25% faster in a test 6D EKF-SLAM dataset) - <a href="http://code.google.com/p/mrpt/source/detail?r=3059" >r3059</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3060" >r3060</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3061" >r3061</a>

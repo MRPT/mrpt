@@ -248,7 +248,7 @@ TCaptureOptions_DUO3D::TYMLReadResult
 }
 
 void TCaptureOptions_DUO3D::loadOptionsFrom(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection, const std::string& prefix)
 {
 	m_img_width = configSource.read_int(iniSection, "image_width", m_img_width);

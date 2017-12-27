@@ -146,7 +146,7 @@ class CRovio
 	 * if some critical parameter is missing or has an invalid value.
 	  */
 	void loadConfig(
-		const mrpt::utils::CConfigFileBase& configSource,
+		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& section);
 
 	/** This function launchs a thread with the function "thread_video()" which

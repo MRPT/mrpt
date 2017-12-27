@@ -49,7 +49,7 @@ void Test()
 	CSimpleMap in_map, out_map;
 	CTicTac tictac;
 	CIncrementalMapPartitioner imp;
-	std::vector<vector_uint> parts;
+	std::vector<std::vector<uint32_t>> parts;
 
 	deleteFilesInDirectory("./MAP-PARTITION_RESULTS");
 	createDirectory("./MAP-PARTITION_RESULTS");
@@ -173,8 +173,8 @@ void Test()
 	std::sort(parts.begin(), parts.end());
 
 	CMatrix B(A.rows(), A.cols());
-	vector_uint rearrIndexes;
-	vector_uint separations;
+	std::vector<uint32_t> rearrIndexes;
+	std::vector<uint32_t> separations;
 	for (size_t i = 0; i < parts.size(); i++)
 	{
 		uint32_t maxIdx = 0;

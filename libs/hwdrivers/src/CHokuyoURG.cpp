@@ -211,7 +211,7 @@ void CHokuyoURG::doProcessSimple(
 						loadConfig_sensorSpecific
 -------------------------------------------------------------*/
 void CHokuyoURG::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 	m_reduced_fov =

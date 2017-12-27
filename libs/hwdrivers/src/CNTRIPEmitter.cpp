@@ -157,7 +157,7 @@ void CNTRIPEmitter::initialize()
 				loadConfig_sensorSpecific
    ----------------------------------------------------- */
 void CNTRIPEmitter::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& c, const std::string& s)
+	const mrpt::config::CConfigFileBase& c, const std::string& s)
 {
 #ifdef _WIN32
 	m_com_port = c.read_string(s, "COM_port_WIN", "");

@@ -132,7 +132,7 @@ void CSickLaserUSB::doProcessSimple(
 						loadConfig_sensorSpecific
 -------------------------------------------------------------*/
 void CSickLaserUSB::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 	m_serialNumber = configSource.read_string(

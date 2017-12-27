@@ -82,7 +82,7 @@ class TCamera : public mrpt::serialization::CSerializable
 	  *  \endcode
 	  */
 	void saveToConfigFile(
-		const std::string& section, mrpt::utils::CConfigFileBase& cfg) const;
+		const std::string& section, mrpt::config::CConfigFileBase& cfg) const;
 
 	/**  Load all the params from a config source, in the format used in
 	 * saveToConfigFile(), that is:
@@ -100,10 +100,10 @@ class TCamera : public mrpt::serialization::CSerializable
 	  *  \exception std::exception on missing fields
 	  */
 	void loadFromConfigFile(
-		const std::string& section, const mrpt::utils::CConfigFileBase& cfg);
+		const std::string& section, const mrpt::config::CConfigFileBase& cfg);
 	/** overload This signature is consistent with the rest of MRPT APIs */
 	inline void loadFromConfigFile(
-		const mrpt::utils::CConfigFileBase& cfg, const std::string& section)
+		const mrpt::config::CConfigFileBase& cfg, const std::string& section)
 	{
 		loadFromConfigFile(section, cfg);
 	}

@@ -1937,7 +1937,7 @@ reactive_navigator_demoframe::TOptions::TOptions()
 {
 }
 void reactive_navigator_demoframe::TOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& source, const std::string& section)
+	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {
 	MRPT_START
 
@@ -1953,7 +1953,7 @@ void reactive_navigator_demoframe::TOptions::loadFromConfigFile(
 }
 
 void reactive_navigator_demoframe::TOptions::saveToConfigFile(
-	mrpt::utils::CConfigFileBase& cfg, const std::string& section) const
+	mrpt::config::CConfigFileBase& cfg, const std::string& section) const
 {
 	MRPT_START
 	const int WN = 40, WV = 20;

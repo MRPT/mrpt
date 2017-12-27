@@ -98,7 +98,7 @@ class CParameterizedTrajectoryGenerator : public mrpt::serialization::CSerializa
 	  */
 	static CParameterizedTrajectoryGenerator* CreatePTG(
 		const std::string& ptgClassName,
-		const mrpt::utils::CConfigFileBase& cfg, const std::string& sSection,
+		const mrpt::config::CConfigFileBase& cfg, const std::string& sSection,
 		const std::string& sKeyPrefix);
 
 	/** @name Virtual interface of each PTG implementation
@@ -410,10 +410,10 @@ class CParameterizedTrajectoryGenerator : public mrpt::serialization::CSerializa
 	 * values <1 to PTGs with low priority.
 	 */
 	virtual void loadFromConfigFile(
-		const mrpt::utils::CConfigFileBase& cfg,
+		const mrpt::config::CConfigFileBase& cfg,
 		const std::string& sSection) override;
 	virtual void saveToConfigFile(
-		mrpt::utils::CConfigFileBase& cfg,
+		mrpt::config::CConfigFileBase& cfg,
 		const std::string& sSection) const override;
 
 	/** Auxiliary function for rendering */
@@ -528,9 +528,9 @@ class CPTG_RobotShape_Polygonal : public CParameterizedTrajectoryGenerator
 	mrpt::math::CPolygon m_robotShape;
 	double m_robotMaxRadius;
 	void loadShapeFromConfigFile(
-		const mrpt::utils::CConfigFileBase& source, const std::string& section);
+		const mrpt::config::CConfigFileBase& source, const std::string& section);
 	void saveToConfigFile(
-		mrpt::utils::CConfigFileBase& cfg,
+		mrpt::config::CConfigFileBase& cfg,
 		const std::string& sSection) const override;
 	void internal_shape_loadFromStream(mrpt::utils::CStream& in);
 	void internal_shape_saveToStream(mrpt::utils::CStream& out) const;
@@ -569,9 +569,9 @@ class CPTG_RobotShape_Circular : public CParameterizedTrajectoryGenerator
 	virtual void internal_processNewRobotShape() = 0;
 	double m_robotRadius;
 	void loadShapeFromConfigFile(
-		const mrpt::utils::CConfigFileBase& source, const std::string& section);
+		const mrpt::config::CConfigFileBase& source, const std::string& section);
 	void saveToConfigFile(
-		mrpt::utils::CConfigFileBase& cfg,
+		mrpt::config::CConfigFileBase& cfg,
 		const std::string& sSection) const override;
 	void internal_shape_loadFromStream(mrpt::utils::CStream& in);
 	void internal_shape_saveToStream(mrpt::utils::CStream& out) const;

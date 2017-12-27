@@ -43,7 +43,7 @@ CVehicleVelCmd& CVehicleVelCmd::operator=(const CVehicleVelCmd& other)
 }
 
 void CVehicleVelCmd::TVelCmdParams::loadConfigFile(
-	const mrpt::utils::CConfigFileBase& cfg, const std::string& section)
+	const mrpt::config::CConfigFileBase& cfg, const std::string& section)
 {
 	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(robotMax_V_mps, double, cfg, section);
 	MRPT_LOAD_HERE_CONFIG_VAR_DEGREES_NO_DEFAULT(
@@ -52,7 +52,7 @@ void CVehicleVelCmd::TVelCmdParams::loadConfigFile(
 }
 
 void CVehicleVelCmd::TVelCmdParams::saveToConfigFile(
-	mrpt::utils::CConfigFileBase& c, const std::string& s) const
+	mrpt::config::CConfigFileBase& c, const std::string& s) const
 {
 	MRPT_SAVE_CONFIG_VAR_COMMENT(
 		robotMax_V_mps,

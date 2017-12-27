@@ -577,7 +577,7 @@ void CMetricMapBuilderRBPF::TConstructionOptions::dumpToTextStream(
 					loadFromConfigFile
   ---------------------------------------------------------------*/
 void CMetricMapBuilderRBPF::TConstructionOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
 {
 	MRPT_START
 

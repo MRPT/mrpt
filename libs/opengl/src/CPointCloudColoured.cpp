@@ -13,7 +13,7 @@
 #include <mrpt/core/round.h>  // round()
 #include <mrpt/utils/CStream.h>
 #include <mrpt/math/ops_containers.h>  // for << ops
-#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/serialization/stl_serialization.h>
 
 #include "opengl_internals.h"
 

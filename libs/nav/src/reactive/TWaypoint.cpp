@@ -241,7 +241,7 @@ void TWaypointStatusSequence::getAsOpenglVisualization(
 }
 
 void TWaypointSequence::save(
-	mrpt::utils::CConfigFileBase& c, const std::string& s) const
+	mrpt::config::CConfigFileBase& c, const std::string& s) const
 {
 	const unsigned int N = waypoints.size();
 	c.write(s, "waypoint_count", N);
@@ -267,7 +267,7 @@ void TWaypointSequence::save(
 }
 
 void TWaypointSequence::load(
-	const mrpt::utils::CConfigFileBase& c, const std::string& s)
+	const mrpt::config::CConfigFileBase& c, const std::string& s)
 {
 	this->clear();
 

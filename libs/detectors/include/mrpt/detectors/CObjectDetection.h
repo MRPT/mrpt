@@ -34,7 +34,7 @@ class CObjectDetection
 
 	/** Initialize the object with parameters loaded from the given config
 	 * source. */
-	virtual void init(const mrpt::utils::CConfigFileBase& cfg) = 0;
+	virtual void init(const mrpt::config::CConfigFileBase& cfg) = 0;
 
 	inline void detectObjects(
 		const mrpt::obs::CObservation::Ptr obs,

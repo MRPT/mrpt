@@ -62,10 +62,10 @@ class CVehicleVelCmd : public mrpt::serialization::CSerializable
 		TVelCmdParams();
 		/** Load any parameter required by a CVehicleVelCmd derived class. */
 		void loadConfigFile(
-			const mrpt::utils::CConfigFileBase& cfg,
+			const mrpt::config::CConfigFileBase& cfg,
 			const std::string& section);
 		void saveToConfigFile(
-			mrpt::utils::CConfigFileBase& c, const std::string& s) const;
+			mrpt::config::CConfigFileBase& c, const std::string& s) const;
 	};
 
 	/** Scale the velocity command encoded in this object.

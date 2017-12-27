@@ -214,7 +214,7 @@ void CRangeScanOps<GRAPH_T>::TParams::dumpToTextStream(
 }
 template <class GRAPH_T>
 void CRangeScanOps<GRAPH_T>::TParams::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& source, const std::string& section)
+	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {
 	MRPT_START;
 

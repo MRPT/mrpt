@@ -27,7 +27,7 @@ class CCascadeClassifierDetection : virtual public CObjectDetection
 	virtual ~CCascadeClassifierDetection();
 
 	/** Initialize cascade classifier detection */
-	virtual void init(const mrpt::utils::CConfigFileBase& cfg);
+	virtual void init(const mrpt::config::CConfigFileBase& cfg);
 
    protected:
 	/** Detect objects in a *CObservation

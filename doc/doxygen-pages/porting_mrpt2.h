@@ -69,7 +69,14 @@
 *          arch << object;
 *          arch >> object;
 *        \endcode
-
+*  - Implicit constructor to convert from mrpt::poses::CPose3D to mrpt::math::TPose3D has been removed, due to the refactoring of mrpt::math and mrpt::poses into separate libraries. 
+*    To convert CPose3D -> TPose3D, use the new method mrpt::poses::CPose3D::asTPose()
+*        \code
+*          mrpt::poses::CPose3D p1;
+*          mrpt::math::TPose3D p2 = p1;  // ERROR in mrpt 2.0 (built in MRPT 1.*)
+*          mrpt::math::TPose3D p3 = p1.asTPose(); // OK for mrpt 2.0
+*        \endcode
+*
 *
 *
 * **Optional changes**

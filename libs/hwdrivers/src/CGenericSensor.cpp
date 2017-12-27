@@ -130,7 +130,7 @@ void CGenericSensor::registerClass(const TSensorClassId* pNewClass)
  * some critical parameter is missing or has an invalid value.
   */
 void CGenericSensor::loadConfig(
-	const mrpt::utils::CConfigFileBase& cfg, const std::string& sect)
+	const mrpt::config::CConfigFileBase& cfg, const std::string& sect)
 {
 	MRPT_START
 

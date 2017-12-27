@@ -12,14 +12,13 @@
 #include <cmath>  // for exp
 #include <mrpt/bayes/CParticleFilter.h>  // for CParticleFilter::TPar...
 #include <mrpt/bayes/CParticleFilterCapable.h>  // for CParticleFilterCapable
-#include <mrpt/utils/CConfigFileBase.h>  // for CConfigFileBase, MRPT...
-#include <mrpt/utils/CStream.h>  // for CStream
-#include <stddef.h>  // for size_t
+#include <mrpt/config/CConfigFileBase.h>  // for CConfigFileBase, MRPT...
+#include <cstddef>  // for size_t
 #include <exception>  // for exception
 #include <string>  // for string, allocator
-#include <mrpt/utils/COutputLogger.h>  // for COutputLogger, MRPT_L...
-#include <mrpt/utils/bits.h>  // for format, square
-#include <mrpt/utils/mrpt_macros.h>  // for MRPT_END, MRPT_START, e
+#include <mrpt/system/COutputLogger.h>  // for COutputLogger, MRPT_L...
+#include <mrpt/core/bits_math.h> // square()
+
 namespace mrpt
 {
 namespace obs
@@ -36,10 +35,10 @@ class CSensoryFrame;
 }
 
 using namespace mrpt::bayes;
-using namespace mrpt::utils;
+using mrpt::square;
 
 CParticleFilter::CParticleFilter()
-	: mrpt::utils::COutputLogger("CParticleFilter"), m_options()
+	: mrpt::system::COutputLogger("CParticleFilter"), m_options()
 {
 }
 
@@ -116,7 +115,7 @@ CParticleFilter::TParticleFilterOptions::TParticleFilterOptions()
 }
 
 void CParticleFilter::TParticleFilterOptions::saveToConfigFile(
-	mrpt::utils::CConfigFileBase& c, const std::string& s) const
+	mrpt::config::CConfigFileBase& c, const std::string& s) const
 {
 	MRPT_SAVE_CONFIG_VAR_COMMENT(
 		PF_algorithm, "The PF algorithm to use. See TParticleFilterAlgorithm");
@@ -155,7 +154,7 @@ void CParticleFilter::TParticleFilterOptions::saveToConfigFile(
 					loadFromConfigFile
   ---------------------------------------------------------------*/
 void CParticleFilter::TParticleFilterOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
 {
 	MRPT_START
 

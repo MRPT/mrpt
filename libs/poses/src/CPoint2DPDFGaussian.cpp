@@ -19,7 +19,7 @@
 #include <mrpt/system/os.h>
 
 using namespace mrpt::poses;
-using namespace mrpt::utils;
+
 using namespace mrpt::math;
 using namespace mrpt::random;
 using namespace mrpt::system;
@@ -47,24 +47,12 @@ CPoint2DPDFGaussian::CPoint2DPDFGaussian(const CPoint2D& init_Mean)
 {
 }
 
-/*---------------------------------------------------------------
-						writeToStream
-  ---------------------------------------------------------------*/
-void CPoint2DPDFGaussian::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CPoint2DPDFGaussian::serializeGetVersion() const { return 0; }
+void CPoint2DPDFGaussian::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		out << CPoint2D(mean) << cov;
-	}
+	out << CPoint2D(mean) << cov;
 }
-
-/*---------------------------------------------------------------
-						readFromStream
-  ---------------------------------------------------------------*/
-void CPoint2DPDFGaussian::readFromStream(mrpt::utils::CStream& in, int version)
+void CPoint2DPDFGaussian::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -142,16 +130,12 @@ void CPoint2DPDFGaussian::bayesianFusion(
 
 	L.inv(cov);  // The new cov.
 
-	CMatrixDouble21 x1 = CMatrixDouble21(p1.mean);
-	CMatrixDouble21 x2 = CMatrixDouble21(p2.mean);
+	const Eigen::Vector2d x1{ p1.mean.x(), p1.mean.y() };
+	const Eigen::Vector2d x2{ p2.mean.x(), p2.mean.y() };
 	CMatrixDouble21 x = cov * (C1_inv * x1 + C2_inv * x2);
 
 	mean.x(x.get_unsafe(0, 0));
 	mean.y(x.get_unsafe(1, 0));
-
-	std::cout << "IN1: " << p1.mean << "\n" << p1.cov << "\n";
-	std::cout << "IN2: " << p2.mean << "\n" << p2.cov << "\n";
-	std::cout << "OUT: " << mean << "\n" << cov << "\n";
 
 	MRPT_END
 }

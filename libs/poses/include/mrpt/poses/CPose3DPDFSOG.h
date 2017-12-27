@@ -6,12 +6,11 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CPose3DPDFSOG_H
-#define CPose3DPDFSOG_H
+#pragma once
 
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
-#include <mrpt/utils/aligned_containers.h>
+#include <mrpt/core/aligned_allocator.h>
 
 namespace mrpt
 {
@@ -49,9 +48,9 @@ class CPose3DPDFSOG : public CPose3DPDF
 		double log_w;
 	};
 
-	typedef mrpt::aligned_containers<TGaussianMode>::vector_t TModesList;
-	typedef TModesList::const_iterator const_iterator;
-	typedef TModesList::iterator iterator;
+	using TModesList = std::vector<TGaussianMode, mrpt::aligned_allocator_cpp11<TGaussianMode>>;
+	using const_iterator = TModesList::const_iterator;
+	using iterator = TModesList::iterator;
 
    protected:
 	/** Assures the symmetry of the covariance matrix (eventually certain
@@ -149,4 +148,3 @@ class CPose3DPDFSOG : public CPose3DPDF
 };  // End of class def.
 }  // End of namespace
 }  // End of namespace
-#endif

@@ -21,7 +21,7 @@
 using namespace mrpt;
 using namespace mrpt::math;
 using namespace mrpt::poses;
-using namespace mrpt::utils;
+
 
 IMPLEMENTS_SERIALIZABLE(CPose2D, CSerializable, mrpt::poses)
 
@@ -437,4 +437,9 @@ void CPose2D::update_cached_cos_sin() const
 	m_sinphi = ::sin(m_phi);
 #endif
 	m_cossin_uptodate = true;
+}
+
+mrpt::math::TPose2D CPose2D::asTPose() const
+{
+	return mrpt::math::TPose2D(x(), y(),phi());
 }

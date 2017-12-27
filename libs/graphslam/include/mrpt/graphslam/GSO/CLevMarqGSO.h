@@ -172,7 +172,7 @@ class CLevMarqGSO
 		~OptimizationParams();
 
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section);
 		void dumpToTextStream(mrpt::utils::CStream& out) const;
 
@@ -210,7 +210,7 @@ class CLevMarqGSO
 		~GraphVisualizationParams();
 
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section);
 		void dumpToTextStream(mrpt::utils::CStream& out) const;
 

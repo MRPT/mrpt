@@ -44,7 +44,7 @@ using namespace mrpt::utils;
 using namespace mrpt::gui;
 using namespace std;
 
-typedef vector_uint patch_ind;
+typedef std::vector<uint32_t> patch_ind;
 typedef vector<patch_ind> indices_list;
 typedef vector_byte triangle;
 typedef vector<triangle> triangle_list;

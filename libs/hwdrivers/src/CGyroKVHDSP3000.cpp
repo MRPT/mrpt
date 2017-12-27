@@ -121,7 +121,7 @@ void CGyroKVHDSP3000::initialize()
 					loadConfig_sensorSpecific
 -------------------------------------------------------------*/
 void CGyroKVHDSP3000::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 	m_sensorPose.setFromValues(

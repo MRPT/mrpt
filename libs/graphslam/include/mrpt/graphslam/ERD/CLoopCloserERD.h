@@ -258,7 +258,7 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	typedef typename parent_t::range_ops_t range_ops_t;
 	typedef typename parent_t::nodes_to_scans2D_t nodes_to_scans2D_t;
 	/**\brief Typedef for referring to a list of partitions */
-	typedef std::vector<mrpt::vector_uint> partitions_t;
+	typedef std::vector<std::vector<uint32_t>> partitions_t;
 	typedef typename GRAPH_T::edges_map_t::const_iterator edges_citerator;
 	typedef typename GRAPH_T::edges_map_t::iterator edges_iterator;
 	typedef typename mrpt::graphs::detail::THypothesis<GRAPH_T> hypot_t;
@@ -370,7 +370,7 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	 * calling \a delete.
 	 */
 	void generateHypotsPool(
-		const vector_uint& groupA, const vector_uint& groupB,
+		const std::vector<uint32_t>& groupA, const std::vector<uint32_t>& groupB,
 		hypotsp_t* generated_hypots,
 		const TGenerateHypotsPoolAdParams* ad_params = NULL);
 	/**\brief Compute the pair-wise consistencies Matrix.
@@ -392,7 +392,7 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	 * \sa evalPWConsistenciesMatrix
 	 */
 	void generatePWConsistenciesMatrix(
-		const vector_uint& groupA, const vector_uint& groupB,
+		const std::vector<uint32_t>& groupA, const std::vector<uint32_t>& groupB,
 		const hypotsp_t& hypots_pool, mrpt::math::CMatrixDouble* consist_matrix,
 		const paths_t* groupA_opt_paths = NULL,
 		const paths_t* groupB_opt_paths = NULL);
@@ -449,7 +449,7 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 		~TLaserParams();
 
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section);
 		void dumpToTextStream(mrpt::utils::CStream& out) const;
 
@@ -496,7 +496,7 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 		~TLoopClosureParams();
 
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section);
 		void dumpToTextStream(mrpt::utils::CStream& out) const;
 
@@ -613,7 +613,7 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	 * \note Method is used during the visualization of the map partitions.
 	 */
 	void computeCentroidOfNodesVector(
-		const vector_uint& nodes_list,
+		const std::vector<uint32_t>& nodes_list,
 		std::pair<double, double>* centroid_coords) const;
 	/**\brief Check the registered so far partitions for potential loop
 	 * closures.
@@ -811,7 +811,7 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	 *	 each group (Use -1 to disable this threshold).
 	 */
 	void splitPartitionToGroups(
-		vector_uint& partition, vector_uint* groupA, vector_uint* groupB,
+		std::vector<uint32_t>& partition, std::vector<uint32_t>* groupA, std::vector<uint32_t>* groupB,
 		int max_nodes_in_group = 5);
 	/**\brief Assign the last recorded 2D Laser scan
 	 *
@@ -852,7 +852,7 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	/**\brief Keep track of the evaluated partitions so they are not checked
 	 * again if nothing changed in them.
 	 */
-	std::map<int, vector_uint> m_partitionID_to_prev_nodes_list;
+	std::map<int, std::vector<uint32_t>> m_partitionID_to_prev_nodes_list;
 	/**\brief Map that stores the lowest uncertainty path towards a node.
 	 * Starting node depends on the starting node as used in the
 	 * execDijkstraProjection method

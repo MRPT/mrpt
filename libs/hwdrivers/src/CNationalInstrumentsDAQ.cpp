@@ -147,7 +147,7 @@ CNationalInstrumentsDAQ::CNationalInstrumentsDAQ()
 				loadConfig_sensorSpecific
    ----------------------------------------------------- */
 void CNationalInstrumentsDAQ::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& cfg, const std::string& sect)
+	const mrpt::config::CConfigFileBase& cfg, const std::string& sect)
 {
 	// std::vector<TaskDescription>  task_definitions;
 	task_definitions.clear();

@@ -192,7 +192,7 @@ struct kfslam_traits<CRangeBearingKFSLAM>
 			// Compute the "approximation error factor" E:
 			//  E = SUM() / SUM(ALL ELEMENTS IN MATRIX)
 			// ----------------------------------------
-			vector<vector_uint> landmarksMembership, partsInObsSpace;
+			vector<std::vector<uint32_t>> landmarksMembership, partsInObsSpace;
 			CMatrix ERRS(50, 3);
 
 			for (size_t i = 0; i < ERRS.rows(); i++)

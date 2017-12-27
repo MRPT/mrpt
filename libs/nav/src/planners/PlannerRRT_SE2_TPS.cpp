@@ -26,7 +26,7 @@ MRPT_TODO("Optimize getNearestNode() with KD-tree!")
 PlannerRRT_SE2_TPS::PlannerRRT_SE2_TPS() : m_initialized(false) {}
 /** Load all params from a config file source */
 void PlannerRRT_SE2_TPS::loadConfig(
-	const mrpt::utils::CConfigFileBase& ini, const std::string& sSect)
+	const mrpt::config::CConfigFileBase& ini, const std::string& sSect)
 {
 	PlannerTPS_VirtualBase::internal_loadConfig_PTG(ini, sSect);
 }

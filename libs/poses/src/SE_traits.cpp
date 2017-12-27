@@ -13,7 +13,7 @@
 
 using namespace mrpt;
 using namespace mrpt::math;
-using namespace mrpt::utils;
+
 using namespace mrpt::poses;
 
 /** A pseudo-Logarithm map in SE(3), where the output = [X,Y,Z, Ln(ROT)], that

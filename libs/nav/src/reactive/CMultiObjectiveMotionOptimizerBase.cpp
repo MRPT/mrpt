@@ -260,7 +260,7 @@ CMultiObjectiveMotionOptimizerBase::TParamsBase::TParamsBase()
 }
 
 void CMultiObjectiveMotionOptimizerBase::TParamsBase::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& c, const std::string& s)
+	const mrpt::config::CConfigFileBase& c, const std::string& s)
 {
 	// Load: formula_score
 	{
@@ -319,7 +319,7 @@ void CMultiObjectiveMotionOptimizerBase::TParamsBase::loadFromConfigFile(
 }
 
 void CMultiObjectiveMotionOptimizerBase::TParamsBase::saveToConfigFile(
-	mrpt::utils::CConfigFileBase& c, const std::string& s) const
+	mrpt::config::CConfigFileBase& c, const std::string& s) const
 {
 	// Save: formula_score
 	const int WN = mrpt::utils::MRPT_SAVE_NAME_PADDING(),

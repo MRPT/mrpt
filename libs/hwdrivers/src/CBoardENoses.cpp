@@ -39,7 +39,7 @@ CBoardENoses::CBoardENoses()
 					loadConfig_sensorSpecific
 -------------------------------------------------------------*/
 void CBoardENoses::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 	MRPT_START

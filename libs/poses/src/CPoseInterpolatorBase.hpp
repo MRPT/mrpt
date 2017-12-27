@@ -9,13 +9,13 @@
 
 #include <mrpt/poses/CPoseInterpolatorBase.h>
 
-#include <mrpt/utils/CFileOutputStream.h>
-#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/math/slerp.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/math/interp_fit.hpp>
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
+#include <fstream>
 
 namespace mrpt {
 namespace poses {
@@ -35,7 +35,7 @@ void CPoseInterpolatorBase<DIM>::clear()
 template <int DIM>
 void CPoseInterpolatorBase<DIM>::insert( mrpt::system::TTimeStamp t, const cpose_t &p)
 {
-	m_path[t] = pose_t(p);
+	m_path[t] = p.asTPose();
 }
 template <int DIM>
 void CPoseInterpolatorBase<DIM>::insert(mrpt::system::TTimeStamp t, const pose_t &p)
@@ -226,7 +226,9 @@ bool CPoseInterpolatorBase<DIM>::saveToTextFile(const std::string &s) const
 {
 	try
 	{
-		mrpt::utils::CFileOutputStream f(s);
+		std::ofstream f;
+		f.open(s);
+		if (!f.is_open()) return false;
 		std::string str;
 		for (const_iterator i=m_path.begin();i!=m_path.end();++i)
 		{
@@ -238,7 +240,7 @@ bool CPoseInterpolatorBase<DIM>::saveToTextFile(const std::string &s) const
 				str+= mrpt::format("%.06f ",p[k]);
 			str+= std::string("\n");
 
-			f.printf("%s",str.c_str());
+			f << str;
 		}
 		return true;
 	}
@@ -254,7 +256,9 @@ bool CPoseInterpolatorBase<DIM>::saveInterpolatedToTextFile(const std::string &s
 	using mrpt::system::TTimeStamp;
 	try
 	{
-		mrpt::utils::CFileOutputStream f(s);
+		std::ofstream f;
+		f.open(s);
+		if (!f.is_open()) return false;
 		if (m_path.empty()) return true;
 
 		std::string str;
@@ -275,7 +279,7 @@ bool CPoseInterpolatorBase<DIM>::saveInterpolatedToTextFile(const std::string &s
 			for (unsigned int k=0;k<p.size();k++)
 				str+= mrpt::format("%.06f ",p[k]);
 			str+= std::string("\n");
-			f.printf("%s",str.c_str());
+			f << str;
 		}
 		return true;
 	}
@@ -405,7 +409,7 @@ void CPoseInterpolatorBase<DIM>::filter( unsigned int component, unsigned int sa
 
 		mrpt::poses::CPose3D auxPose;
 		particles.getMean( auxPose );
-		aux[it1->first] = pose_t(auxPose);
+		aux[it1->first] = pose_t(auxPose.asTPose());
 	} // end for it1
 	m_path = aux;
 } // end filter

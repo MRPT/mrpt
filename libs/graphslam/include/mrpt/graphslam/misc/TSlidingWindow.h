@@ -84,7 +84,7 @@ struct TSlidingWindow : public mrpt::utils::CLoadableOptions
 	 */
 	void resizeWindow(size_t new_size);
 	void loadFromConfigFile(
-		const mrpt::utils::CConfigFileBase& source, const std::string& section);
+		const mrpt::config::CConfigFileBase& source, const std::string& section);
 	// TODO - make it use the boundaries
 	void dumpToTextStream(mrpt::utils::CStream& out) const;
 

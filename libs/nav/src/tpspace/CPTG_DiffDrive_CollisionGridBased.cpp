@@ -15,7 +15,7 @@
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/math/geometry.h>
-#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/kinematics/CVehicleVelCmd_DiffDriven.h>
 
 using namespace mrpt::nav;
@@ -46,7 +46,7 @@ void CPTG_DiffDrive_CollisionGridBased::loadDefaultParams()
 }
 
 void CPTG_DiffDrive_CollisionGridBased::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& cfg, const std::string& sSection)
+	const mrpt::config::CConfigFileBase& cfg, const std::string& sSection)
 {
 	CParameterizedTrajectoryGenerator::loadFromConfigFile(cfg, sSection);
 	CPTG_RobotShape_Polygonal::loadShapeFromConfigFile(cfg, sSection);
@@ -60,7 +60,7 @@ void CPTG_DiffDrive_CollisionGridBased::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR(turningRadiusReference, double, cfg, sSection);
 }
 void CPTG_DiffDrive_CollisionGridBased::saveToConfigFile(
-	mrpt::utils::CConfigFileBase& cfg, const std::string& sSection) const
+	mrpt::config::CConfigFileBase& cfg, const std::string& sSection) const
 {
 	MRPT_START
 	const int WN = 25, WV = 30;

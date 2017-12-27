@@ -28,7 +28,7 @@ MAP_DEFINITION_REGISTER(
 
 CWeightedPointsMap::TMapDefinition::TMapDefinition() {}
 void CWeightedPointsMap::TMapDefinition::loadFromConfigFile_map_specific(
-	const mrpt::utils::CConfigFileBase& source,
+	const mrpt::config::CConfigFileBase& source,
 	const std::string& sectionNamePrefix)
 {
 	insertionOpts.loadFromConfigFile(

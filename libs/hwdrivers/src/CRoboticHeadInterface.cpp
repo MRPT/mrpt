@@ -38,7 +38,7 @@ CRoboticHeadInterface::CRoboticHeadInterface()
 						loadConfig_sensorSpecific
 -------------------------------------------------------------*/
 void CRoboticHeadInterface::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase* configSource,
+	const mrpt::config::CConfigFileBase* configSource,
 	const std::string& iniSection)
 {
 	configSource->read_vector(iniSection.c_str(), "gain0", gain, gain);

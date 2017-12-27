@@ -26,12 +26,12 @@ CNavigatorManualSequence::CNavigatorManualSequence(
 // Dtor:
 CNavigatorManualSequence::~CNavigatorManualSequence() {}
 void CNavigatorManualSequence::saveConfigFile(
-	mrpt::utils::CConfigFileBase& c) const
+	mrpt::config::CConfigFileBase& c) const
 {
 }
 
 void CNavigatorManualSequence::loadConfigFile(
-	const mrpt::utils::CConfigFileBase& c)
+	const mrpt::config::CConfigFileBase& c)
 {
 	const std::string s = "CNavigatorManualSequence";
 

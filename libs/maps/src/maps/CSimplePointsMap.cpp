@@ -28,7 +28,7 @@ MAP_DEFINITION_REGISTER(
 
 CSimplePointsMap::TMapDefinition::TMapDefinition() {}
 void CSimplePointsMap::TMapDefinition::loadFromConfigFile_map_specific(
-	const mrpt::utils::CConfigFileBase& source,
+	const mrpt::config::CConfigFileBase& source,
 	const std::string& sectionNamePrefix)
 {
 	insertionOpts.loadFromConfigFile(

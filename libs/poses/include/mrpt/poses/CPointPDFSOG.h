@@ -75,26 +75,26 @@ class CPointPDFSOG : public CPointPDF
 	/** Access to individual beacons */
 	const TGaussianMode& operator[](size_t i) const
 	{
-		ASSERT_(i < m_modes.size())
+		ASSERT_(i < m_modes.size());
 		return m_modes[i];
 	}
 	/** Access to individual beacons */
 	TGaussianMode& operator[](size_t i)
 	{
-		ASSERT_(i < m_modes.size())
+		ASSERT_(i < m_modes.size());
 		return m_modes[i];
 	}
 
 	/** Access to individual beacons */
 	const TGaussianMode& get(size_t i) const
 	{
-		ASSERT_(i < m_modes.size())
+		ASSERT_(i < m_modes.size());
 		return m_modes[i];
 	}
 	/** Access to individual beacons */
 	TGaussianMode& get(size_t i)
 	{
-		ASSERT_(i < m_modes.size())
+		ASSERT_(i < m_modes.size());
 		return m_modes[i];
 	}
 

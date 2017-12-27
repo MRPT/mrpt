@@ -62,7 +62,7 @@ class CGillAnemometer : public mrpt::hwdrivers::CGenericSensor
 	void doProcess();
 
 	void loadConfig_sensorSpecific(
-		const mrpt::utils::CConfigFileBase& configSource,
+		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& section);
 };  // End of class def.
 

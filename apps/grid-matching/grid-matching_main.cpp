@@ -225,7 +225,7 @@ void do_grid_align()
 		CVectorFloat stats_errorXY, stats_errorPhi;
 		CVectorFloat stats_bruteErrorXY, stats_bruteErrorPhi;
 		CVectorFloat stats_GT_likelihood;
-		vector_uint overallGTcorrsFound;
+		std::vector<uint32_t> overallGTcorrsFound;
 
 		for (unsigned int iter = 0; iter < N_ITERS; iter++)
 		{

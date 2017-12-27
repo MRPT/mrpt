@@ -20,7 +20,7 @@ The following C++ classes are provided to read and write such files:
 - mrpt::utils::CConfigFileMemory: Wrapper around a configuration file "in memory", without an associated physical file.
 
 See also:
-- mrpt::utils::CConfigFileBase: The base, virtual class underlying the two classes above. Users normally
+- mrpt::config::CConfigFileBase: The base, virtual class underlying the two classes above. Users normally
    inkove the API exposed in this base class.
 - mrpt::utils::CConfigFilePrefixer: A proxy class to manipulate an object of the two classes above such
    that all accesses to sections and/or properties are *mapped* to modified versions of their names.

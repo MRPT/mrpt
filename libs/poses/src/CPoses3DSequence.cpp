@@ -15,7 +15,7 @@
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::math;
-using namespace mrpt::utils;
+
 
 IMPLEMENTS_SERIALIZABLE(CPoses3DSequence, CSerializable, mrpt::poses)
 

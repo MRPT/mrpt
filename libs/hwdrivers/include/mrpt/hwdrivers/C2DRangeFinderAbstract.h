@@ -92,7 +92,7 @@ class C2DRangeFinderAbstract : public mrpt::utils::COutputLogger,
 	  * \sa filterByExclusionAreas
 	  */
 	void loadCommonParams(
-		const mrpt::utils::CConfigFileBase& configSource,
+		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& iniSection);
 
 	/** Mark as invalid those points which (x,y) coordinates fall within the

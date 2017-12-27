@@ -91,9 +91,9 @@ class CAbstractHolonomicReactiveMethod : public mrpt::serialization::CSerializab
 	/** Initialize the parameters of the navigator, reading from the default
 	 * section name (see derived classes) or the one set via
 	 * setConfigFileSectionName() */
-	virtual void initialize(const mrpt::utils::CConfigFileBase& c) = 0;
+	virtual void initialize(const mrpt::config::CConfigFileBase& c) = 0;
 	/** saves all available parameters, in a forma loadable by `initialize()` */
-	virtual void saveConfigFile(mrpt::utils::CConfigFileBase& c) const = 0;
+	virtual void saveConfigFile(mrpt::config::CConfigFileBase& c) const = 0;
 	/** Defines the name of the section used in initialize() */
 	void setConfigFileSectionName(const std::string& sectName);
 	/** Gets the name of the section used in initialize() */

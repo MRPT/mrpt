@@ -104,7 +104,7 @@ class CIbeoLuxETH : public mrpt::hwdrivers::CGenericSensor
 	/** Load sensor pose on the robot, or keep the default sensor pose.
 		*/
 	void loadConfig_sensorSpecific(
-		const mrpt::utils::CConfigFileBase& configSource,
+		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& iniSection);
 };
 }

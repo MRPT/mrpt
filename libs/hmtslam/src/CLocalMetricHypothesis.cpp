@@ -9,7 +9,7 @@
 
 #include "hmtslam-precomp.h"  // Precomp header
 
-#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/system/os.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
@@ -739,7 +739,7 @@ void CLocalMetricHypothesis::removeAreaFromLMH(
 	{
 		std::lock_guard<std::mutex> locker(m_robotPosesGraph.lock);
 
-		vector_uint indexesToRemove;
+		std::vector<uint32_t> indexesToRemove;
 		indexesToRemove.reserve(lstPoseIDs.size());
 
 		for (std::map<uint32_t, TPoseID>::iterator it =

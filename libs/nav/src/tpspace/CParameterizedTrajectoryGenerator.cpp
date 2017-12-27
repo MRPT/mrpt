@@ -56,7 +56,7 @@ double CParameterizedTrajectoryGenerator::maxTimeInVelCmdNOP(int path_k) const
 }
 
 void CParameterizedTrajectoryGenerator::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& cfg, const std::string& sSection)
+	const mrpt::config::CConfigFileBase& cfg, const std::string& sSection)
 {
 	MRPT_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(
 		num_paths, uint64_t, m_alphaValuesCount, cfg, sSection);
@@ -92,7 +92,7 @@ void CParameterizedTrajectoryGenerator::loadFromConfigFile(
 		sSection);
 }
 void CParameterizedTrajectoryGenerator::saveToConfigFile(
-	mrpt::utils::CConfigFileBase& cfg, const std::string& sSection) const
+	mrpt::config::CConfigFileBase& cfg, const std::string& sSection) const
 {
 	MRPT_START
 	const int WN = 25, WV = 30;

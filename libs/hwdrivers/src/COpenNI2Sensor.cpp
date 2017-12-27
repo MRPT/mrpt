@@ -194,7 +194,7 @@ void COpenNI2Sensor::doProcess()
 * some critical parameter is missing or has an invalid value.
 */
 void COpenNI2Sensor::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 	cout << "COpenNI2Sensor::loadConfig_sensorSpecific...\n";

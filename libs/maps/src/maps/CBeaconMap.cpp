@@ -43,7 +43,7 @@ MAP_DEFINITION_REGISTER("CBeaconMap,beaconMap", mrpt::maps::CBeaconMap)
 
 CBeaconMap::TMapDefinition::TMapDefinition() {}
 void CBeaconMap::TMapDefinition::loadFromConfigFile_map_specific(
-	const mrpt::utils::CConfigFileBase& source,
+	const mrpt::config::CConfigFileBase& source,
 	const std::string& sectionNamePrefix)
 {
 	// [<sectionNamePrefix>+"_creationOpts"]
@@ -1015,7 +1015,7 @@ void CBeaconMap::TLikelihoodOptions::dumpToTextStream(
 					loadFromConfigFile
   ---------------------------------------------------------------*/
 void CBeaconMap::TLikelihoodOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const string& section)
 {
 	rangeStd = iniFile.read_float(section.c_str(), "rangeStd", rangeStd);
 }
@@ -1085,7 +1085,7 @@ void CBeaconMap::TInsertionOptions::dumpToTextStream(
 					loadFromConfigFile
   ---------------------------------------------------------------*/
 void CBeaconMap::TInsertionOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const string& section)
 {
 	MRPT_LOAD_CONFIG_VAR(insertAsMonteCarlo, bool, iniFile, section.c_str());
 	MRPT_LOAD_CONFIG_VAR(maxElevation_deg, float, iniFile, section.c_str());

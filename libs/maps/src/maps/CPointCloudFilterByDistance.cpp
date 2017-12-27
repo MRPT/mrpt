@@ -212,7 +212,7 @@ CPointCloudFilterByDistance::TOptions::TOptions()
 }
 
 void CPointCloudFilterByDistance::TOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& c, const std::string& s)
+	const mrpt::config::CConfigFileBase& c, const std::string& s)
 {
 	MRPT_LOAD_CONFIG_VAR(min_dist, double, c, s);
 	MRPT_LOAD_CONFIG_VAR_DEGREES(angle_tolerance, c, s);
@@ -222,7 +222,7 @@ void CPointCloudFilterByDistance::TOptions::loadFromConfigFile(
 }
 
 void CPointCloudFilterByDistance::TOptions::saveToConfigFile(
-	mrpt::utils::CConfigFileBase& c, const std::string& s) const
+	mrpt::config::CConfigFileBase& c, const std::string& s) const
 {
 	MRPT_SAVE_CONFIG_VAR_COMMENT(min_dist, "");
 	MRPT_SAVE_CONFIG_VAR_DEGREES_COMMENT(

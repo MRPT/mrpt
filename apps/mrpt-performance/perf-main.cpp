@@ -17,7 +17,7 @@
 #include <mrpt/utils/CMemoryStream.h>
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CFileInputStream.h>
-#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/serialization/stl_serialization.h>
 
 #include "common.h"
 

@@ -168,7 +168,7 @@ void CRoboPeakLidar::doProcessSimple(
 						loadConfig_sensorSpecific
 -------------------------------------------------------------*/
 void CRoboPeakLidar::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 	m_sensorPose.setFromValues(

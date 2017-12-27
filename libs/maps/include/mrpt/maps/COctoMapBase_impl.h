@@ -354,7 +354,7 @@ void COctoMapBase<OCTREE, OCTREE_NODE>::TLikelihoodOptions::dumpToTextStream(
   ---------------------------------------------------------------*/
 template <class OCTREE, class OCTREE_NODE>
 void COctoMapBase<OCTREE, OCTREE_NODE>::TInsertionOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
 {
 	MRPT_LOAD_CONFIG_VAR(maxrange, double, iniFile, section);
 	MRPT_LOAD_CONFIG_VAR(pruning, bool, iniFile, section);
@@ -375,7 +375,7 @@ void COctoMapBase<OCTREE, OCTREE_NODE>::TInsertionOptions::loadFromConfigFile(
 
 template <class OCTREE, class OCTREE_NODE>
 void COctoMapBase<OCTREE, OCTREE_NODE>::TLikelihoodOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
 {
 	MRPT_LOAD_CONFIG_VAR(decimation, int, iniFile, section);
 }

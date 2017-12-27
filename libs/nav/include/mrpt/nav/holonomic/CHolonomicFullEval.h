@@ -59,15 +59,15 @@ class CHolonomicFullEval : public CAbstractHolonomicReactiveMethod
    public:
 	/**  Initialize the parameters of the navigator, from some configuration
 	 * file, or default values if set to nullptr */
-	CHolonomicFullEval(const mrpt::utils::CConfigFileBase* INI_FILE = nullptr);
+	CHolonomicFullEval(const mrpt::config::CConfigFileBase* INI_FILE = nullptr);
 
 	// See base class docs
 	void navigate(const NavInput& ni, NavOutput& no) override;
 
-	virtual void initialize(const mrpt::utils::CConfigFileBase& INI_FILE)
+	virtual void initialize(const mrpt::config::CConfigFileBase& INI_FILE)
 		override;  // See base class docs
 	virtual void saveConfigFile(
-		mrpt::utils::CConfigFileBase& c) const override;  // See base class docs
+		mrpt::config::CConfigFileBase& c) const override;  // See base class docs
 
 	/** Algorithm options */
 	struct TOptions : public mrpt::utils::CLoadableOptions
@@ -108,10 +108,10 @@ class CHolonomicFullEval : public CAbstractHolonomicReactiveMethod
 
 		TOptions();
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		void saveToConfigFile(
-			mrpt::utils::CConfigFileBase& cfg,
+			mrpt::config::CConfigFileBase& cfg,
 			const std::string& section) const override;  // See base docs
 	};
 

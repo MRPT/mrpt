@@ -115,7 +115,7 @@ mxArray* TCamera::writeToMatlab() const
   *  \endcode
   */
 void TCamera::saveToConfigFile(
-	const std::string& section, mrpt::utils::CConfigFileBase& cfg) const
+	const std::string& section, mrpt::config::CConfigFileBase& cfg) const
 {
 	cfg.write(
 		section, "resolution",
@@ -136,7 +136,7 @@ void TCamera::saveToConfigFile(
  * saveToConfigFile()
   */
 void TCamera::loadFromConfigFile(
-	const std::string& section, const mrpt::utils::CConfigFileBase& cfg)
+	const std::string& section, const mrpt::config::CConfigFileBase& cfg)
 {
 	vector<uint64_t> out_res;
 	cfg.read_vector(section, "resolution", vector<uint64_t>(), out_res, true);

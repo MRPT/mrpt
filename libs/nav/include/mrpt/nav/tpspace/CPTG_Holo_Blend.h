@@ -31,14 +31,14 @@ class CPTG_Holo_Blend : public CPTG_RobotShape_Circular
    public:
 	CPTG_Holo_Blend();
 	CPTG_Holo_Blend(
-		const mrpt::utils::CConfigFileBase& cfg, const std::string& sSection);
+		const mrpt::config::CConfigFileBase& cfg, const std::string& sSection);
 	virtual ~CPTG_Holo_Blend();
 
 	virtual void loadFromConfigFile(
-		const mrpt::utils::CConfigFileBase& cfg,
+		const mrpt::config::CConfigFileBase& cfg,
 		const std::string& sSection) override;
 	virtual void saveToConfigFile(
-		mrpt::utils::CConfigFileBase& cfg,
+		mrpt::config::CConfigFileBase& cfg,
 		const std::string& sSection) const override;
 	virtual void loadDefaultParams() override;
 	virtual bool supportVelCmdNOP() const override;

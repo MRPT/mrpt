@@ -15,7 +15,7 @@
 #include <limits>
 
 using namespace mrpt::poses;
-using namespace mrpt::utils;
+
 using namespace mrpt::math;
 
 IMPLEMENTS_SERIALIZABLE(CPoint2D, CSerializable, mrpt::poses)

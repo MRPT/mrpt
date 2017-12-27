@@ -122,9 +122,9 @@ class CReactiveNavigationSystem3D : public CAbstractPTGBasedReactive
 		// are replicated at each level)
 	}
 
-	virtual void loadConfigFile(const mrpt::utils::CConfigFileBase& c)
+	virtual void loadConfigFile(const mrpt::config::CConfigFileBase& c)
 		override;  // See base class docs!
-	virtual void saveConfigFile(mrpt::utils::CConfigFileBase& c)
+	virtual void saveConfigFile(mrpt::config::CConfigFileBase& c)
 		const override;  // See base class docs!
 
    private:

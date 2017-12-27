@@ -210,7 +210,7 @@ void CRandomFieldGridMap3D::TInsertionOptions::dumpToTextStream(
 }
 
 void CRandomFieldGridMap3D::TInsertionOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
 {
 	GMRF_lambdaPrior = iniFile.read_double(
 		section.c_str(), "GMRF_lambdaPrior", GMRF_lambdaPrior);

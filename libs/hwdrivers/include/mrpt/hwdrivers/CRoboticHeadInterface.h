@@ -64,7 +64,7 @@ class CRoboticHeadInterface : public mrpt::utils::COutputLogger
 	  *  See hwdrivers::CSonarSRF10 for the possible parameters
 	  */
 	void loadConfig_sensorSpecific(
-		const mrpt::utils::CConfigFileBase* configSource,
+		const mrpt::config::CConfigFileBase* configSource,
 		const std::string& iniSection);
 
    public:

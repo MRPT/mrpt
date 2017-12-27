@@ -61,7 +61,7 @@ void CLMS100Eth::initialize()
 }
 
 void CLMS100Eth::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 	C2DRangeFinderAbstract::loadCommonParams(configSource, iniSection);

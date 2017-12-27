@@ -43,7 +43,7 @@ CBoardSonars::CBoardSonars()
 						loadConfig_sensorSpecific
 -------------------------------------------------------------*/
 void CBoardSonars::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 	MRPT_START

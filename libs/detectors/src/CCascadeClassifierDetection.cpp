@@ -61,7 +61,7 @@ CCascadeClassifierDetection::~CCascadeClassifierDetection()
 // ------------------------------------------------------
 
 void CCascadeClassifierDetection::init(
-	const mrpt::utils::CConfigFileBase& config)
+	const mrpt::config::CConfigFileBase& config)
 {
 #if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x200
 	// load configuration values

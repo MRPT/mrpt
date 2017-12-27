@@ -58,7 +58,7 @@ class CWirelessPower : public mrpt::hwdrivers::CGenericSensor
 
 	void doProcess();
 	void loadConfig_sensorSpecific(
-		const mrpt::utils::CConfigFileBase& configSource,
+		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& section);
 
 	/** Gets a list of the interfaces

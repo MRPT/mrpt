@@ -438,7 +438,7 @@ void CLoopCloserERD<GRAPH_T>::checkPartitionsForLC(
 
 	// keep track of the previous nodes list of every partition. If this is not
 	// changed - do not mark it as potential for loop closure
-	map<int, vector_uint>::iterator finder;
+	map<int, std::vector<uint32_t>>::iterator finder;
 	// reset the previous list if full partitioning was issued
 	if (m_partitions_full_update)
 	{
@@ -492,7 +492,7 @@ void CLoopCloserERD<GRAPH_T>::checkPartitionsForLC(
 		// investigate each partition
 		int curr_node_index = 1;
 		size_t prev_nodeID = *(partitions_it->begin());
-		for (vector_uint::const_iterator it = partitions_it->begin() + 1;
+		for (std::vector<uint32_t>::const_iterator it = partitions_it->begin() + 1;
 			 it != partitions_it->end(); ++it, ++curr_node_index)
 		{
 			size_t curr_nodeID = *it;
@@ -556,10 +556,10 @@ void CLoopCloserERD<GRAPH_T>::evaluatePartitionsForLC(
 	for (partitions_t::const_iterator p_it = partitions.begin();
 		 p_it != partitions.end(); ++p_it)
 	{
-		vector_uint partition(*p_it);
+		std::vector<uint32_t> partition(*p_it);
 
 		// split the partition to groups
-		vector_uint groupA, groupB;
+		std::vector<uint32_t> groupA, groupB;
 		this->splitPartitionToGroups(
 			partition, &groupA, &groupB,
 			/*max_nodes_in_group=*/5);
@@ -680,7 +680,7 @@ void CLoopCloserERD<GRAPH_T>::evalPWConsistenciesMatrix(
 
 template <class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::splitPartitionToGroups(
-	vector_uint& partition, vector_uint* groupA, vector_uint* groupB,
+	std::vector<uint32_t>& partition, std::vector<uint32_t>* groupA, std::vector<uint32_t>* groupB,
 	int max_nodes_in_group /*=5*/)
 {
 	MRPT_START;
@@ -704,7 +704,7 @@ void CLoopCloserERD<GRAPH_T>::splitPartitionToGroups(
 	// is going to be
 	TNodeID prev_nodeID = 0;
 	size_t index_to_split = 1;
-	for (vector_uint::const_iterator it = partition.begin() + 1;
+	for (std::vector<uint32_t>::const_iterator it = partition.begin() + 1;
 		 it != partition.end(); ++it, ++index_to_split)
 	{
 		TNodeID curr_nodeID = *it;
@@ -720,22 +720,22 @@ void CLoopCloserERD<GRAPH_T>::splitPartitionToGroups(
 
 	// Fill the groups
 	*groupA =
-		vector_uint(partition.begin(), partition.begin() + index_to_split);
-	*groupB = vector_uint(partition.begin() + index_to_split, partition.end());
+		std::vector<uint32_t>(partition.begin(), partition.begin() + index_to_split);
+	*groupB = std::vector<uint32_t>(partition.begin() + index_to_split, partition.end());
 	// limit the number of nodes in each group
 	if (max_nodes_in_group != -1)
 	{
 		// groupA
 		if (groupA->size() > static_cast<size_t>(max_nodes_in_group))
 		{
-			*groupA = vector_uint(
+			*groupA = std::vector<uint32_t>(
 				groupA->begin(), groupA->begin() + max_nodes_in_group);
 		}
 		// groupB
 		if (groupB->size() > static_cast<size_t>(max_nodes_in_group))
 		{
 			*groupB =
-				vector_uint(groupB->end() - max_nodes_in_group, groupB->end());
+				std::vector<uint32_t>(groupB->end() - max_nodes_in_group, groupB->end());
 		}
 	}
 
@@ -745,7 +745,7 @@ void CLoopCloserERD<GRAPH_T>::splitPartitionToGroups(
 
 template <class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::generateHypotsPool(
-	const vector_uint& groupA, const vector_uint& groupB,
+	const std::vector<uint32_t>& groupA, const std::vector<uint32_t>& groupB,
 	hypotsp_t* generated_hypots,
 	const TGenerateHypotsPoolAdParams* ad_params /*=NULL*/)
 {
@@ -769,7 +769,7 @@ void CLoopCloserERD<GRAPH_T>::generateHypotsPool(
 	// verify that the number of laserScans is the same as the number of poses
 	// if
 	// the TGenerateHyptsPoolAdParams is used
-	// formulate into function and pass vector_uint and ad_params->group
+	// formulate into function and pass std::vector<uint32_t> and ad_params->group
 	// TODO
 	if (ad_params)
 	{
@@ -795,11 +795,11 @@ void CLoopCloserERD<GRAPH_T>::generateHypotsPool(
 	int invalid_hypots = 0;  // just for keeping track of them.
 	{
 		// iterate over all the nodes in both groups
-		for (vector_uint::const_iterator  // B - from
+		for (std::vector<uint32_t>::const_iterator  // B - from
 			 b_it = groupB.begin();
 			 b_it != groupB.end(); ++b_it)
 		{
-			for (vector_uint::const_iterator  // A - to
+			for (std::vector<uint32_t>::const_iterator  // A - to
 				 a_it = groupA.begin();
 				 a_it != groupA.end(); ++a_it)
 			{
@@ -973,7 +973,7 @@ bool CLoopCloserERD<GRAPH_T>::computeDominantEigenVector(
 
 template <class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::generatePWConsistenciesMatrix(
-	const vector_uint& groupA, const vector_uint& groupB,
+	const std::vector<uint32_t>& groupA, const std::vector<uint32_t>& groupB,
 	const hypotsp_t& hypots_pool, mrpt::math::CMatrixDouble* consist_matrix,
 	const paths_t* groupA_opt_paths /*=NULL*/,
 	const paths_t* groupB_opt_paths /*=NULL*/)
@@ -1003,19 +1003,19 @@ void CLoopCloserERD<GRAPH_T>::generatePWConsistenciesMatrix(
 		<< "\tHypots pool Size: " << hypots_pool.size());
 
 	// b1
-	for (vector_uint::const_iterator b1_it = groupB.begin();
+	for (std::vector<uint32_t>::const_iterator b1_it = groupB.begin();
 		 b1_it != groupB.end(); ++b1_it)
 	{
 		TNodeID b1 = *b1_it;
 
 		// b2
-		for (vector_uint::const_iterator b2_it = b1_it + 1;
+		for (std::vector<uint32_t>::const_iterator b2_it = b1_it + 1;
 			 b2_it != groupB.end(); ++b2_it)
 		{
 			TNodeID b2 = *b2_it;
 
 			// a1
-			for (vector_uint::const_iterator a1_it = groupA.begin();
+			for (std::vector<uint32_t>::const_iterator a1_it = groupA.begin();
 				 a1_it != groupA.end(); ++a1_it)
 			{
 				TNodeID a1 = *a1_it;
@@ -1025,7 +1025,7 @@ void CLoopCloserERD<GRAPH_T>::generatePWConsistenciesMatrix(
 				// hypot_b2_a1->getAsString());
 
 				// a2
-				for (vector_uint::const_iterator a2_it = a1_it + 1;
+				for (std::vector<uint32_t>::const_iterator a2_it = a1_it + 1;
 					 a2_it != groupA.end(); ++a2_it)
 				{
 					TNodeID a2 = *a2_it;
@@ -1891,7 +1891,7 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitionsVisualization()
 		 p_it != m_curr_partitions.end(); ++p_it, ++partitionID)
 	{
 		// MRPT_LOG_DEBUG_STREAM("Working on Partition #" << partitionID);
-		vector_uint nodes_list = *p_it;
+		std::vector<uint32_t> nodes_list = *p_it;
 
 		// finding the partition in which the last node is in
 		if (std::find(
@@ -2010,7 +2010,7 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitionsVisualization()
 
 			connecting_lines_obj->clear();
 
-			for (vector_uint::const_iterator it = nodes_list.begin();
+			for (std::vector<uint32_t>::const_iterator it = nodes_list.begin();
 				 it != nodes_list.end(); ++it)
 			{
 				CPose3D curr_pose(this->m_graph->nodes.at(*it));
@@ -2096,7 +2096,7 @@ void CLoopCloserERD<GRAPH_T>::toggleMapPartitionsVisualization()
 
 template <class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::computeCentroidOfNodesVector(
-	const vector_uint& nodes_list,
+	const std::vector<uint32_t>& nodes_list,
 	std::pair<double, double>* centroid_coords) const
 {
 	MRPT_START;
@@ -2105,7 +2105,7 @@ void CLoopCloserERD<GRAPH_T>::computeCentroidOfNodesVector(
 	// and at their center
 	double centroid_x = 0;
 	double centroid_y = 0;
-	for (vector_uint::const_iterator node_it = nodes_list.begin();
+	for (std::vector<uint32_t>::const_iterator node_it = nodes_list.begin();
 		 node_it != nodes_list.end(); ++node_it)
 	{
 		pose_t curr_node_pos = this->m_graph->nodes.at(*node_it);
@@ -2477,7 +2477,7 @@ void CLoopCloserERD<GRAPH_T>::getCurrPartitions(
 }
 
 template <class GRAPH_T>
-const std::vector<mrpt::vector_uint>&
+const std::vector<std::vector<uint32_t>>&
 	CLoopCloserERD<GRAPH_T>::getCurrPartitions() const
 {
 	return m_curr_partitions;
@@ -2617,7 +2617,7 @@ void CLoopCloserERD<GRAPH_T>::TLaserParams::dumpToTextStream(
 }
 template <class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::TLaserParams::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& source, const std::string& section)
+	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {
 	MRPT_START;
 
@@ -2680,7 +2680,7 @@ void CLoopCloserERD<GRAPH_T>::TLoopClosureParams::dumpToTextStream(
 }
 template <class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::TLoopClosureParams::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& source, const std::string& section)
+	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {
 	MRPT_START;
 

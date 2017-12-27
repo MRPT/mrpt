@@ -38,7 +38,7 @@ class CFaceDetection : public CObjectDetection
 
 	~CFaceDetection();
 
-	virtual void init(const mrpt::utils::CConfigFileBase& cfg);
+	virtual void init(const mrpt::config::CConfigFileBase& cfg);
 
 	virtual void detectObjects_Impl(
 		const mrpt::obs::CObservation* obs, vector_detectable_object& detected);
@@ -71,7 +71,7 @@ class CFaceDetection : public CObjectDetection
 	void experimental_showMeasurements();
 
 	void debug_returnResults(
-		const vector_uint& falsePositives, const vector_uint& ignore,
+		const std::vector<uint32_t>& falsePositives, const std::vector<uint32_t>& ignore,
 		unsigned int& falsePositivesDeleted, unsigned int& realFacesDeleted);
 
    private:
@@ -126,7 +126,7 @@ class CFaceDetection : public CObjectDetection
 		mrpt::math::CVectorDouble sumDistances;
 
 		int faceNum;
-		vector_uint deletedRegions;
+		std::vector<uint32_t> deletedRegions;
 		int numPossibleFacesDetected;
 		int numRealFacesDetected;
 

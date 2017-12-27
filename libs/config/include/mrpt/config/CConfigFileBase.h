@@ -13,11 +13,12 @@
 #include <type_traits>
 #include <mrpt/system/string_utils.h>  // tokenize
 #include <mrpt/core/exceptions.h>
+#include <mrpt/core/bits_math.h> // DEG2RAD()
 
 namespace mrpt
 {
 // Frd decl:
-namespace io
+namespace typemeta
 {
 template <typename ENUMTYPE>
 struct TEnumType;
@@ -87,7 +88,7 @@ class CConfigFileBase
 		const std::string& comment = std::string())
 	{
 		this->write(
-			section, name, mrpt::io::TEnumType<enum_t>::value2name(value),
+			section, name, mrpt::typemeta::TEnumType<enum_t>::value2name(value),
 			name_padding_width, value_padding_width, comment);
 	}
 	/** @name Save a configuration parameter. Optionally pads with spaces up to
@@ -238,7 +239,7 @@ class CConfigFileBase
 	  *  \endcode
 	  *
 	  *  \note For an enum type to work with this template it is required that
-	 * it defines a specialization of mrpt::io::TEnumType
+	 * it defines a specialization of mrpt::typemeta::TEnumType
 	  */
 	template <typename ENUMTYPE>
 	ENUMTYPE read_enum(
@@ -258,7 +259,7 @@ class CConfigFileBase
 		{  // Name look-up:
 			try
 			{
-				return mrpt::io::TEnumType<ENUMTYPE>::name2value(sVal);
+				return mrpt::typemeta::TEnumType<ENUMTYPE>::name2value(sVal);
 			}
 			catch (std::exception&)
 			{
@@ -295,10 +296,10 @@ class CConfigFileBase
 #define MRPT_LOAD_CONFIG_VAR_DEGREES(                 \
 	variableName, configFileObject, sectionNameStr)   \
 	{                                                 \
-		variableName = mrpt::utils::DEG2RAD(          \
+		variableName = mrpt::DEG2RAD(                 \
 			configFileObject.read_double(             \
 				sectionNameStr, #variableName,        \
-				mrpt::utils::RAD2DEG(variableName))); \
+				mrpt::RAD2DEG(variableName)));        \
 	}
 
 /** Loads a double, required, variable, stored as radians but entered in the
@@ -306,10 +307,10 @@ class CConfigFileBase
 #define MRPT_LOAD_CONFIG_VAR_DEGREES_NO_DEFAULT(            \
 	variableName, configFileObject, sectionNameStr)         \
 	{                                                       \
-		variableName = mrpt::utils::DEG2RAD(                \
+		variableName = mrpt::DEG2RAD(                       \
 			configFileObject.read_double(                   \
 				sectionNameStr, #variableName,              \
-				mrpt::utils::RAD2DEG(variableName), true)); \
+				mrpt::RAD2DEG(variableName), true));        \
 	}
 
 #define MRPT_LOAD_CONFIG_VAR_CAST(                                  \
@@ -349,10 +350,10 @@ class CConfigFileBase
 #define MRPT_LOAD_HERE_CONFIG_VAR_DEGREES(                        \
 	variableName, variableType, targetVariable, configFileObject, \
 	sectionNameStr)                                               \
-	targetVariable = mrpt::utils::DEG2RAD(                        \
+	targetVariable = mrpt::DEG2RAD(                               \
 		configFileObject.read_##variableType(                     \
 			sectionNameStr, #variableName,                        \
-			mrpt::utils::RAD2DEG(targetVariable), false));
+			mrpt::RAD2DEG(targetVariable), false));
 
 #define MRPT_LOAD_HERE_CONFIG_VAR_DEGREES_NO_DEFAULT(                          \
 	variableName, variableType, targetVariable, configFileObject,              \
@@ -360,7 +361,7 @@ class CConfigFileBase
 	{                                                                          \
 		try                                                                    \
 		{                                                                      \
-			targetVariable = mrpt::utils::DEG2RAD(                             \
+			targetVariable = mrpt::DEG2RAD(                                    \
 				configFileObject.read_##variableType(                          \
 					sectionNameStr, #variableName, targetVariable, true));     \
 		}                                                                      \
@@ -454,23 +455,23 @@ class CConfigFileBase
 	{                                               \
 		configFileObject.write(                     \
 			sectionNameStr, #variableName,          \
-			mrpt::utils::RAD2DEG(variableName));    \
+			mrpt::RAD2DEG(variableName));           \
 	}
 
 #define MRPT_SAVE_CONFIG_VAR_COMMENT(variableName, __comment)   \
 	{                                                           \
 		c.write(                                                \
 			s, #variableName, variableName,                     \
-			mrpt::utils::MRPT_SAVE_NAME_PADDING(),              \
-			mrpt::utils::MRPT_SAVE_VALUE_PADDING(), __comment); \
+			mrpt::config::MRPT_SAVE_NAME_PADDING(),             \
+			mrpt::config::MRPT_SAVE_VALUE_PADDING(), __comment);\
 	}
 #define MRPT_SAVE_CONFIG_VAR_DEGREES_COMMENT(                   \
 	__entryName, __variable, __comment)                         \
 	{                                                           \
 		c.write(                                                \
-			s, __entryName, mrpt::utils::RAD2DEG(__variable),   \
-			mrpt::utils::MRPT_SAVE_NAME_PADDING(),              \
-			mrpt::utils::MRPT_SAVE_VALUE_PADDING(), __comment); \
+			s, __entryName, mrpt::RAD2DEG(__variable),          \
+			mrpt::config::MRPT_SAVE_NAME_PADDING(),             \
+			mrpt::config::MRPT_SAVE_VALUE_PADDING(), __comment);\
 	}
 
 }  // End of namespace

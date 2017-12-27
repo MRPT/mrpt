@@ -42,7 +42,7 @@ CReflectivityGridMap2D::TMapDefinition::TMapDefinition()
 }
 
 void CReflectivityGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(
-	const mrpt::utils::CConfigFileBase& source,
+	const mrpt::config::CConfigFileBase& source,
 	const std::string& sectionNamePrefix)
 {
 	// [<sectionNamePrefix>+"_creationOpts"]
@@ -309,7 +309,7 @@ void CReflectivityGridMap2D::TInsertionOptions::dumpToTextStream(
 					loadFromConfigFile
   ---------------------------------------------------------------*/
 void CReflectivityGridMap2D::TInsertionOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
 {
 	MRPT_UNUSED_PARAM(iniFile);
 	MRPT_UNUSED_PARAM(section);

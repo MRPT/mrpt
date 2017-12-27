@@ -742,7 +742,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 		newParticlesDerivedFromIdx.clear();
 
 		// ------------------------------------------------------------------------------
-		// 2.1) PRELIMINARY STAGE: Build a list of pairs<TPathBin,vector_uint>
+		// 2.1) PRELIMINARY STAGE: Build a list of pairs<TPathBin,std::vector<uint32_t>>
 		// with the
 		//      indexes of m_particles that fall into each
 		//      multi-dimensional-path bins
@@ -753,7 +753,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 		//  - Added JLBC (01/DEC/2006)
 		// ------------------------------------------------------------------------------
 		TSetStateSpaceBins stateSpaceBinsLastTimestep;
-		std::vector<vector_uint> stateSpaceBinsLastTimestepParticles;
+		std::vector<std::vector<uint32_t>> stateSpaceBinsLastTimestepParticles;
 		typename MYSELF::CParticleList::iterator partIt;
 		unsigned int partIndex;
 
@@ -773,7 +773,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 			{  // Yes, create a new pair <bin,index_list> in the list:
 				stateSpaceBinsLastTimestep.insert(p);
 				stateSpaceBinsLastTimestepParticles.push_back(
-					vector_uint(1, partIndex));
+					std::vector<uint32_t>(1, partIndex));
 			}
 			else
 			{  // No, add the particle's index to the existing entry:

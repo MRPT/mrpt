@@ -283,7 +283,7 @@ class COpenNI2_RGBD360 : public mrpt::hwdrivers::CGenericSensor,
 
    protected:
 	virtual void loadConfig_sensorSpecific(
-		const mrpt::utils::CConfigFileBase& configSource,
+		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& section);
 
 	mrpt::poses::CPose3D m_sensorPoseOnRobot;
