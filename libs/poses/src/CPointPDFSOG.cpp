@@ -15,6 +15,7 @@
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/random.h>
 #include <mrpt/math/distributions.h>
+#include <mrpt/math/matrix_serialization.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
 
@@ -116,34 +117,19 @@ void CPointPDFSOG::getCovarianceAndMean(
 	}
 }
 
-/*---------------------------------------------------------------
-						writeToStream
-  ---------------------------------------------------------------*/
-void CPointPDFSOG::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CPointPDFSOG::serializeGetVersion() const { return 1; }
+void CPointPDFSOG::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
+	uint32_t N = m_modes.size();
+	out << N;
+	for (const auto & m: m_modes)
 	{
-		uint32_t N = m_modes.size();
-		CListGaussianModes::const_iterator it;
-
-		out << N;
-
-		for (it = m_modes.begin(); it != m_modes.end(); ++it)
-		{
-			out << it->log_w;
-			out << it->val.mean;
-			out << it->val.cov(0, 0) << it->val.cov(1, 1) << it->val.cov(2, 2);
-			out << it->val.cov(0, 1) << it->val.cov(0, 2) << it->val.cov(1, 2);
-		}
+		out << m.log_w;
+		out << m.val.mean;
+		mrpt::math::serializeSymmetricMatrixTo(m.val.cov, out);
 	}
 }
-
-/*---------------------------------------------------------------
-						readFromStream
-  ---------------------------------------------------------------*/
-void CPointPDFSOG::readFromStream(mrpt::utils::CStream& in, int version)
+void CPointPDFSOG::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -151,38 +137,17 @@ void CPointPDFSOG::readFromStream(mrpt::utils::CStream& in, int version)
 		case 1:
 		{
 			uint32_t N;
-			CListGaussianModes::iterator it;
-			double x;
-
 			in >> N;
-
 			this->resize(N);
-
-			for (it = m_modes.begin(); it != m_modes.end(); ++it)
+			for (auto & m : m_modes)
 			{
-				in >> it->log_w;
+				in >> m.log_w;
 
 				// In version 0, weights were linear!!
-				if (version == 0) it->log_w = log(max(1e-300, it->log_w));
+				if (version == 0) m.log_w = log(max(1e-300, m.log_w));
 
-				in >> it->val.mean;
-
-				in >> x;
-				it->val.cov(0, 0) = x;
-				in >> x;
-				it->val.cov(1, 1) = x;
-				in >> x;
-				it->val.cov(2, 2) = x;
-
-				in >> x;
-				it->val.cov(1, 0) = x;
-				it->val.cov(0, 1) = x;
-				in >> x;
-				it->val.cov(2, 0) = x;
-				it->val.cov(0, 2) = x;
-				in >> x;
-				it->val.cov(1, 2) = x;
-				it->val.cov(2, 1) = x;
+				in >> m.val.mean;
+				mrpt::math::deserializeSymmetricMatrixFrom(m.val.cov, in);
 			}
 		}
 		break;
@@ -320,7 +285,7 @@ void CPointPDFSOG::bayesianFusion(
 			c.set_unsafe(2, 2, 1);
 		}
 
-		ASSERT_(c(0, 0) != 0 && c(0, 0) != 0)
+		ASSERT_(c(0, 0) != 0 && c(0, 0) != 0);
 
 		CMatrixDouble33 covInv(UNINITIALIZED_MATRIX);
 		c.inv(covInv);
@@ -343,7 +308,7 @@ void CPointPDFSOG::bayesianFusion(
 				is2D = true;
 			}
 			ASSERT_(
-				auxSOG_Kernel_i.cov(0, 0) > 0 && auxSOG_Kernel_i.cov(1, 1) > 0)
+				auxSOG_Kernel_i.cov(0, 0) > 0 && auxSOG_Kernel_i.cov(1, 1) > 0);
 
 			// Should we drop this product term??
 			bool reallyComputeThisOne = true;

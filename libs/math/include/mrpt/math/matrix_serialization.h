@@ -112,6 +112,41 @@ inline std::ostream& operator<<(
 	return s << m.format(fmt);
 }
 
+/** Binary serialization of symmetric matrices, saving the space of duplicated values.
+ * \sa serializeSymmetricMatrixTo() */
+template <typename MAT>
+void deserializeSymmetricMatrixFrom(MAT & m, mrpt::serialization::CArchive& in)
+{
+	ASSERT_EQUAL_(m.rows(), m.cols());
+	auto N = m.cols();
+	for (decltype(N) i = 0; i < N; i++)
+		in >> m(i, i);
+	for (decltype(N) r = 0; r < N - 1; r++)
+	{
+		for (decltype(N) c = r + 1; c < N; c++)
+		{
+			typename MAT::Scalar x;
+			in >> x;
+			m(r, c) = m(c, r) = x;
+		}
+	}
+}
+
+/** Binary serialization of symmetric matrices, saving the space of duplicated values.
+ * \sa deserializeSymmetricMatrixFrom() */
+template <typename MAT>
+void mrpt::math::serializeSymmetricMatrixTo(
+	MAT & m, mrpt::serialization::CArchive& out)
+{
+	ASSERT_EQUAL_(m.rows(), m.cols());
+	auto N = m.cols();
+	for (decltype(N) i = 0; i < N; i++)
+		out << m(i, i);
+	for (decltype(N) r = 0; r < N - 1; r++)
+		for (decltype(N) c = r + 1; c < N; c++)
+			out << m(r, c);
+}
+
 /** @} */  // end MRPT matrices stream operators
 
 /**  @} */  // end of grouping
