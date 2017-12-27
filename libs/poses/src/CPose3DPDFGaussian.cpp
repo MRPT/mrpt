@@ -226,28 +226,16 @@ void CPose3DPDFGaussian::copyFrom(const CPose3DQuatPDFGaussian& o)
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-						writeToStream
-  ---------------------------------------------------------------*/
-void CPose3DPDFGaussian::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CPose3DPDFGaussian::serializeGetVersion() const { return 1; }
+void CPose3DPDFGaussian::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		out << mean;
-		for (size_t r = 0; r < size(cov, 1); r++) out << cov.get_unsafe(r, r);
-		for (size_t r = 0; r < size(cov, 1); r++)
-			for (size_t c = r + 1; c < size(cov, 2); c++)
-				out << cov.get_unsafe(r, c);
-	}
+	out << mean;
+	for (int r = 0; r < cov.rows(); r++) out << cov.get_unsafe(r, r);
+	for (int r = 0; r < cov.rows(); r++)
+		for (int c = r + 1; c < cov.cols(); c++)
+			out << cov.get_unsafe(r, c);
 }
-
-/*---------------------------------------------------------------
-						readFromStream
-  ---------------------------------------------------------------*/
-void CPose3DPDFGaussian::readFromStream(mrpt::utils::CStream& in, int version)
+void CPose3DPDFGaussian::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -255,10 +243,10 @@ void CPose3DPDFGaussian::readFromStream(mrpt::utils::CStream& in, int version)
 		{
 			in >> mean;
 
-			for (size_t r = 0; r < size(cov, 1); r++)
+			for (int r = 0; r < cov.rows(); r++)
 				in >> cov.get_unsafe(r, r);
-			for (size_t r = 0; r < size(cov, 1); r++)
-				for (size_t c = r + 1; c < size(cov, 2); c++)
+			for (int r = 0; r < cov.rows(); r++)
+				for (int c = r + 1; c < cov.cols(); c++)
 				{
 					float x;
 					in >> x;
@@ -270,10 +258,10 @@ void CPose3DPDFGaussian::readFromStream(mrpt::utils::CStream& in, int version)
 		{
 			in >> mean;
 
-			for (size_t r = 0; r < size(cov, 1); r++)
+			for (int r = 0; r < cov.rows(); r++)
 				in >> cov.get_unsafe(r, r);
-			for (size_t r = 0; r < size(cov, 1); r++)
-				for (size_t c = r + 1; c < size(cov, 2); c++)
+			for (int r = 0; r < cov.rows(); r++)
+				for (int c = r + 1; c < cov.cols(); c++)
 				{
 					double x;
 					in >> x;
@@ -594,8 +582,8 @@ void CPose3DPDFGaussian::assureSymmetry()
 {
 	// Differences, when they exist, appear in the ~15'th significant
 	//  digit, so... just take one of them arbitrarily!
-	for (unsigned int i = 0; i < size(cov, 1) - 1; i++)
-		for (unsigned int j = i + 1; j < size(cov, 1); j++)
+	for (unsigned int i = 0; i < cov.rows() - 1; i++)
+		for (unsigned int j = i + 1; j < cov.rows(); j++)
 			cov.get_unsafe(i, j) = cov.get_unsafe(j, i);
 }
 

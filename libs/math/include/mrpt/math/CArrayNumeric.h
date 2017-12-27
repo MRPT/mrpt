@@ -10,6 +10,7 @@
 
 #include <mrpt/math/types_math.h>  // Eigen
 #include <mrpt/typemeta/TTypeName.h>
+#include <mrpt/math/point_poses2vectors.h>  // MRPT_MATRIX_CONSTRUCTORS_FROM_POSES()
 
 namespace mrpt
 {
@@ -33,10 +34,12 @@ class CArrayNumeric : public Eigen::Matrix<T, N, 1>
 
 	/** Initialization from a vector-like source, that is, anything implementing
 	 * operator[]. */
-	template <class ARRAYLIKE>
+/*	template <class ARRAYLIKE>
 	explicit CArrayNumeric(const ARRAYLIKE& obj) : Eigen::Matrix<T, N, 1>(obj)
 	{
-	}
+	}*/
+
+	MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(CArrayNumeric)
 
 	template <typename OtherDerived>
 	inline CArrayNumeric<T, N>& operator=(
@@ -50,99 +53,26 @@ class CArrayNumeric : public Eigen::Matrix<T, N, 1>
 // --------------  Partial specializations of CArrayNumeric -----------
 
 /** A partial specialization of CArrayNumeric for float numbers.
-  * \sa CArrayNumeric, CArray */
+* \sa CArrayNumeric, CArray */
 template <std::size_t N>
-class CArrayFloat : public CArrayNumeric<float, N>
-{
-   public:
-	typedef CArrayNumeric<float, N> Base;
-	typedef CArrayFloat<N> mrpt_autotype;
-
-	/** Default constructor */
-	CArrayFloat() {}
-	/** Constructor from initial values ptr[0]-ptr[N-1] */
-	CArrayFloat(const float* ptr) : CArrayNumeric<float, N>(ptr) {}
-
-	/** Initialization from a vector-like source, that is, anything implementing
-	 * operator[]. */
-	template <class ARRAYLIKE>
-	explicit CArrayFloat(const ARRAYLIKE& obj) : CArrayNumeric<float, N>(obj)
-	{
-	}
-	MRPT_EIGEN_DERIVED_CLASS_CTOR_OPERATOR_EQUAL(CArrayFloat)  // Implements
-	// ctor and
-	// "operator ="
-	// for any other
-	// Eigen class
-};
+using CArrayFloat = CArrayNumeric<float, N>;
 
 /** A partial specialization of CArrayNumeric for double numbers.
   * \sa CArrayNumeric, CArray */
 template <std::size_t N>
-class CArrayDouble : public CArrayNumeric<double, N>
-{
-   public:
-	typedef CArrayNumeric<double, N> Base;
-	typedef CArrayDouble<N> mrpt_autotype;
-
-	/** Default constructor */
-	CArrayDouble() {}
-	/** Constructor from initial values ptr[0]-ptr[N-1] */
-	CArrayDouble(const double* ptr) : CArrayNumeric<double, N>(ptr) {}
-
-	/** Initialization from a vector-like source, that is, anything implementing
-	 * operator[]. */
-	template <class ARRAYLIKE>
-	explicit CArrayDouble(const ARRAYLIKE& obj) : CArrayNumeric<double, N>(obj)
-	{
-	}
-	MRPT_EIGEN_DERIVED_CLASS_CTOR_OPERATOR_EQUAL(CArrayDouble)  // Implements
-	// ctor and
-	// "operator ="
-	// for any other
-	// Eigen class
-};
+using CArrayDouble = CArrayNumeric<double, N>;
 
 /** A partial specialization of CArrayNumeric for int numbers.
   * \sa CArrayNumeric, CArray */
 template <std::size_t N>
-class CArrayInt : public CArrayNumeric<int, N>
-{
-   public:
-	typedef CArrayNumeric<int, N> Base;
-	typedef CArrayInt<N> mrpt_autotype;
-
-	/** Default constructor */
-	CArrayInt() {}
-	/** Constructor from initial values ptr[0]-ptr[N-1] */
-	CArrayInt(const int* ptr) : CArrayNumeric<int, N>(ptr) {}
-	MRPT_EIGEN_DERIVED_CLASS_CTOR_OPERATOR_EQUAL(CArrayInt)  // Implements ctor
-	// and "operator ="
-	// for any other
-	// Eigen class
-};
+using CArrayInt = CArrayNumeric<int, N>;
 
 /** A partial specialization of CArrayNumeric for unsigned int numbers.
   * \sa CArrayNumeric, CArray */
 template <std::size_t N>
-class CArrayUInt : public CArrayNumeric<unsigned int, N>
-{
-   public:
-	typedef CArrayNumeric<unsigned int, N> Base;
-	typedef CArrayUInt<N> mrpt_autotype;
+using CArrayUInt = CArrayNumeric<unsigned int, N>;
 
-	/** Default constructor */
-	CArrayUInt() {}
-	/** Constructor from initial values ptr[0]-ptr[N-1] */
-	CArrayUInt(const unsigned int* ptr) : CArrayNumeric<unsigned int, N>(ptr) {}
-	MRPT_EIGEN_DERIVED_CLASS_CTOR_OPERATOR_EQUAL(CArrayUInt)  // Implements ctor
-	// and "operator
-	// =" for any
-	// other Eigen
-	// class
-};
-
-}  // End of namespace
+}
 
 namespace typemeta
 {

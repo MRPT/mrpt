@@ -62,24 +62,12 @@ void CPointPDFGaussian::getCovarianceAndMean(
 	C = cov;
 }
 
-/*---------------------------------------------------------------
-						writeToStream
-  ---------------------------------------------------------------*/
-void CPointPDFGaussian::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CPointPDFGaussian::serializeGetVersion() const { return 1; }
+void CPointPDFGaussian::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		out << CPoint3D(mean) << cov;
-	}
+	out << CPoint3D(mean) << cov;
 }
-
-/*---------------------------------------------------------------
-						readFromStream
-  ---------------------------------------------------------------*/
-void CPointPDFGaussian::readFromStream(mrpt::utils::CStream& in, int version)
+void CPointPDFGaussian::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

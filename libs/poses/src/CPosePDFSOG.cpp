@@ -18,6 +18,7 @@
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/poses/SO_SE_average.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -101,32 +102,21 @@ void CPosePDFSOG::getCovarianceAndMean(
 	}
 }
 
-/*---------------------------------------------------------------
-						writeToStream
-  ---------------------------------------------------------------*/
-void CPosePDFSOG::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CPosePDFSOG::serializeGetVersion() const { return 2; }
+void CPosePDFSOG::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 2;
-	else
-	{
-		uint32_t N = m_modes.size();
-		out << N;
+	uint32_t N = m_modes.size();
+	out << N;
 
-		for (const_iterator it = m_modes.begin(); it != m_modes.end(); ++it)
-		{
-			out << (it)->log_w;
-			out << (it)->mean;
-			out << (it)->cov(0, 0) << (it)->cov(1, 1) << (it)->cov(2, 2);
-			out << (it)->cov(0, 1) << (it)->cov(0, 2) << (it)->cov(1, 2);
-		}
+	for (const_iterator it = m_modes.begin(); it != m_modes.end(); ++it)
+	{
+		out << (it)->log_w;
+		out << (it)->mean;
+		out << (it)->cov(0, 0) << (it)->cov(1, 1) << (it)->cov(2, 2);
+		out << (it)->cov(0, 1) << (it)->cov(0, 2) << (it)->cov(1, 2);
 	}
 }
-
-/*---------------------------------------------------------------
-						readFromStream
-  ---------------------------------------------------------------*/
-void CPosePDFSOG::readFromStream(mrpt::utils::CStream& in, int version)
+void CPosePDFSOG::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

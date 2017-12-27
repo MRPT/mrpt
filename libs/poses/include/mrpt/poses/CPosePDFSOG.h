@@ -12,6 +12,7 @@
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/math_frwds.h>
+#include <mrpt/core/aligned_std_vector.h>
 #include <ostream>
 
 namespace mrpt
@@ -64,10 +65,9 @@ class CPosePDFSOG : public CPosePDF
 		}
 	};
 
-	typedef mrpt::aligned_containers<TGaussianMode>::vector_t
-		CListGaussianModes;
-	typedef CListGaussianModes::const_iterator const_iterator;
-	typedef CListGaussianModes::iterator iterator;
+	using CListGaussianModes = mrpt::aligned_std_vector<TGaussianMode>;
+	using const_iterator = CListGaussianModes::const_iterator;
+	using iterator = CListGaussianModes::iterator;
 
 	const CListGaussianModes& getSOGModes() const { return m_modes; }
    protected:
@@ -93,26 +93,26 @@ class CPosePDFSOG : public CPosePDF
 	/** Access to individual beacons */
 	const TGaussianMode& operator[](size_t i) const
 	{
-		ASSERT_(i < m_modes.size())
+		ASSERT_(i < m_modes.size());
 		return m_modes[i];
 	}
 	/** Access to individual beacons */
 	TGaussianMode& operator[](size_t i)
 	{
-		ASSERT_(i < m_modes.size())
+		ASSERT_(i < m_modes.size());
 		return m_modes[i];
 	}
 
 	/** Access to individual beacons */
 	const TGaussianMode& get(size_t i) const
 	{
-		ASSERT_(i < m_modes.size())
+		ASSERT_(i < m_modes.size());
 		return m_modes[i];
 	}
 	/** Access to individual beacons */
 	TGaussianMode& get(size_t i)
 	{
-		ASSERT_(i < m_modes.size())
+		ASSERT_(i < m_modes.size());
 		return m_modes[i];
 	}
 

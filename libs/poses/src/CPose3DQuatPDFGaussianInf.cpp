@@ -24,12 +24,10 @@
 #include <mrpt/poses/CPose3DQuat.h>  // for CPose3DQuat
 #include <mrpt/poses/CPose3DQuatPDF.h>  // for CPose3DQ...
 #include <mrpt/random/RandomGenerators.h>  // for CRandomG...
-#include <mrpt/utils/CObject.h>  // for CPose3DQ...
 #include <mrpt/serialization/CSerializable.h>  // for CSeriali...
-#include <mrpt/utils/bits.h>  // for size
-#include <mrpt/utils/mrpt_macros.h>  // for MRPT_END
 #include <mrpt/system/os.h>  // for fopen
 #include <mrpt/math/distributions.h>
+#include <mrpt/serialization/stl_serialization.h>
 
 using namespace mrpt;
 using namespace mrpt::system;
@@ -65,31 +63,18 @@ CPose3DQuatPDFGaussianInf::CPose3DQuatPDFGaussianInf(
 {
 }
 
-/*---------------------------------------------------------------
-						writeToStream
-  ---------------------------------------------------------------*/
-void CPose3DQuatPDFGaussianInf::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CPose3DQuatPDFGaussianInf::serializeGetVersion() const { return 0; }
+void CPose3DQuatPDFGaussianInf::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		out << mean;
+	out << mean;
 
-		for (size_t r = 0; r < size(cov_inv, 1); r++)
-			out << cov_inv.get_unsafe(r, r);
-		for (size_t r = 0; r < size(cov_inv, 1); r++)
-			for (size_t c = r + 1; c < size(cov_inv, 2); c++)
-				out << cov_inv.get_unsafe(r, c);
-	}
+	for (int r = 0; r < cov_inv.rows(); r++)
+		out << cov_inv.get_unsafe(r, r);
+	for (int r = 0; r < cov_inv.rows(); r++)
+		for (int c = r + 1; c < cov_inv.cols(); c++)
+			out << cov_inv.get_unsafe(r, c);
 }
-
-/*---------------------------------------------------------------
-						readFromStream
-  ---------------------------------------------------------------*/
-void CPose3DQuatPDFGaussianInf::readFromStream(
-	mrpt::utils::CStream& in, int version)
+void CPose3DQuatPDFGaussianInf::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -97,10 +82,10 @@ void CPose3DQuatPDFGaussianInf::readFromStream(
 		{
 			in >> mean;
 
-			for (size_t r = 0; r < size(cov_inv, 1); r++)
+			for (int r = 0; r < cov_inv.rows(); r++)
 				in >> cov_inv.get_unsafe(r, r);
-			for (size_t r = 0; r < size(cov_inv, 1); r++)
-				for (size_t c = r + 1; c < size(cov_inv, 2); c++)
+			for (int r = 0; r < cov_inv.rows(); r++)
+				for (int c = r + 1; c < cov_inv.cols(); c++)
 				{
 					double x;
 					in >> x;
