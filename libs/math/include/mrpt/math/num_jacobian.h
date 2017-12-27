@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/utils/core_defs.h>
+#include <mrpt/core/exceptions.h>
 #include <functional>
 
 namespace mrpt

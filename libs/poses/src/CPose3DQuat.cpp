@@ -326,26 +326,13 @@ void CPose3DQuat::operator*=(const double s)
 	m_quat[3] *= s;
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CPose3DQuat::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CPose3DQuat::serializeGetVersion() const { return 0; }
+void CPose3DQuat::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		out << m_coords[0] << m_coords[1] << m_coords[2] << m_quat[0]
-			<< m_quat[1] << m_quat[2] << m_quat[3];
-	}
+	out << m_coords[0] << m_coords[1] << m_coords[2] << m_quat[0]
+		<< m_quat[1] << m_quat[2] << m_quat[3];
 }
-
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CPose3DQuat::readFromStream(mrpt::utils::CStream& in, int version)
+void CPose3DQuat::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

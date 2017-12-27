@@ -54,26 +54,14 @@ CPosePDFGaussian::CPosePDFGaussian(const CPose2D& init_Mean)
 	cov.zeros();
 }
 
-/*---------------------------------------------------------------
-						writeToStream
-  ---------------------------------------------------------------*/
-void CPosePDFGaussian::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CPosePDFGaussian::serializeGetVersion() const { return 2; }
+void CPosePDFGaussian::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 2;
-	else
-	{
-		out << mean;
-		out << cov(0, 0) << cov(1, 1) << cov(2, 2);
-		out << cov(0, 1) << cov(0, 2) << cov(1, 2);
-	}
+	out << mean;
+	out << cov(0, 0) << cov(1, 1) << cov(2, 2);
+	out << cov(0, 1) << cov(0, 2) << cov(1, 2);
 }
-
-/*---------------------------------------------------------------
-						readFromStream
-  ---------------------------------------------------------------*/
-void CPosePDFGaussian::readFromStream(mrpt::utils::CStream& in, int version)
+void CPosePDFGaussian::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

@@ -78,30 +78,17 @@ void CPose3DPDFGaussianInf::copyFrom(const CPose3DQuatPDFGaussian& o)
 	this->copyFrom(p);
 }
 
-/*---------------------------------------------------------------
-						writeToStream
-  ---------------------------------------------------------------*/
-void CPose3DPDFGaussianInf::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CPose3DPDFGaussianInf::serializeGetVersion() const { return 0; }
+void CPose3DPDFGaussianInf::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		out << mean;
-		for (size_t r = 0; r < size(cov_inv, 1); r++)
-			out << cov_inv.get_unsafe(r, r);
-		for (size_t r = 0; r < size(cov_inv, 1); r++)
-			for (size_t c = r + 1; c < size(cov_inv, 2); c++)
-				out << cov_inv.get_unsafe(r, c);
-	}
+	out << mean;
+	for (int r = 0; r < cov_inv.rows(); r++)
+		out << cov_inv.get_unsafe(r, r);
+	for (int r = 0; r < cov_inv.rows(); r++)
+		for (int c = r + 1; c < cov_inv.cols(); c++)
+			out << cov_inv.get_unsafe(r, c);
 }
-
-/*---------------------------------------------------------------
-						readFromStream
-  ---------------------------------------------------------------*/
-void CPose3DPDFGaussianInf::readFromStream(
-	mrpt::utils::CStream& in, int version)
+void CPose3DPDFGaussianInf::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -109,10 +96,10 @@ void CPose3DPDFGaussianInf::readFromStream(
 		{
 			in >> mean;
 
-			for (size_t r = 0; r < size(cov_inv, 1); r++)
+			for (int  r = 0; r < cov_inv.rows(); r++)
 				in >> cov_inv.get_unsafe(r, r);
-			for (size_t r = 0; r < size(cov_inv, 1); r++)
-				for (size_t c = r + 1; c < size(cov_inv, 2); c++)
+			for (int  r = 0; r < cov_inv.rows(); r++)
+				for (int  c = r + 1; c < cov_inv.cols(); c++)
 				{
 					double x;
 					in >> x;
@@ -364,8 +351,8 @@ void CPose3DPDFGaussianInf::assureSymmetry()
 {
 	// Differences, when they exist, appear in the ~15'th significant
 	//  digit, so... just take one of them arbitrarily!
-	for (unsigned int i = 0; i < size(cov_inv, 1) - 1; i++)
-		for (unsigned int j = i + 1; j < size(cov_inv, 1); j++)
+	for (int i = 0; i < cov_inv.rows() - 1; i++)
+		for (int j = i + 1; j < cov_inv.rows(); j++)
 			cov_inv.get_unsafe(i, j) = cov_inv.get_unsafe(j, i);
 }
 

@@ -211,24 +211,12 @@ void CPose3DPDFParticles::getCovarianceAndMean(
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-						writeToStream
-  ---------------------------------------------------------------*/
-void CPose3DPDFParticles::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CPose3DPDFParticles::serializeGetVersion() const { return 0; }
+void CPose3DPDFParticles::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		writeParticlesToStream(out);
-	}
+	writeParticlesToStream(out);
 }
-
-/*---------------------------------------------------------------
-						readFromStream
-  ---------------------------------------------------------------*/
-void CPose3DPDFParticles::readFromStream(mrpt::utils::CStream& in, int version)
+void CPose3DPDFParticles::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

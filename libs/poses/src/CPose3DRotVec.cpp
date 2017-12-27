@@ -67,26 +67,13 @@ CPose3DRotVec::CPose3DRotVec(
 	m_rotvec[2] = k * q.z();
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CPose3DRotVec::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CPose3DRotVec::serializeGetVersion() const { return 0; }
+void CPose3DRotVec::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		out << m_coords[0] << m_coords[1] << m_coords[2] << m_rotvec[0]
-			<< m_rotvec[1] << m_rotvec[2];
-	}
+	out << m_coords[0] << m_coords[1] << m_coords[2] << m_rotvec[0]
+		<< m_rotvec[1] << m_rotvec[2];
 }
-
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CPose3DRotVec::readFromStream(mrpt::utils::CStream& in, int version)
+void CPose3DRotVec::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
