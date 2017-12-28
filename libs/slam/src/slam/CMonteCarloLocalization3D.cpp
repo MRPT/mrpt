@@ -113,7 +113,7 @@ void CMonteCarloLocalization3D::prediction_and_update_pfStandardProposal(
 	{  // A map MUST be supplied!
 		ASSERT_(options.metricMap || options.metricMaps.size() > 0)
 		if (!options.metricMap)
-			ASSERT_(options.metricMaps.size() == m_particles.size())
+			ASSERT_(options.metricMaps.size() == m_particles.size();
 	}
 
 	PF_SLAM_implementation_pfStandardProposal<mrpt::slam::detail::TPoseBin3D>(
@@ -138,7 +138,7 @@ void CMonteCarloLocalization3D::prediction_and_update_pfAuxiliaryPFStandard(
 	{  // A map MUST be supplied!
 		ASSERT_(options.metricMap || options.metricMaps.size() > 0)
 		if (!options.metricMap)
-			ASSERT_(options.metricMaps.size() == m_particles.size())
+			ASSERT_(options.metricMaps.size() == m_particles.size();
 	}
 
 	PF_SLAM_implementation_pfAuxiliaryPFStandard<
@@ -164,7 +164,7 @@ void CMonteCarloLocalization3D::prediction_and_update_pfAuxiliaryPFOptimal(
 	{  // A map MUST be supplied!
 		ASSERT_(options.metricMap || options.metricMaps.size() > 0)
 		if (!options.metricMap)
-			ASSERT_(options.metricMaps.size() == m_particles.size())
+			ASSERT_(options.metricMaps.size() == m_particles.size();
 	}
 
 	PF_SLAM_implementation_pfAuxiliaryPFOptimal<mrpt::slam::detail::TPoseBin3D>(
@@ -215,8 +215,7 @@ void CMonteCarloLocalization3D::PF_SLAM_implementation_replaceByNewParticleSet(
 	const vector<size_t>& newParticlesDerivedFromIdx) const
 {
 	MRPT_UNUSED_PARAM(newParticlesDerivedFromIdx);
-	ASSERT_(size_t(newParticlesWeight.size()) == newParticles.size())
-
+	ASSERT_(size_t(newParticlesWeight.size()) == newParticles.size());
 	// ---------------------------------------------------------------------------------
 	// Substitute old by new particle set:
 	//   Old are in "m_particles"

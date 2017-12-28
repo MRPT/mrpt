@@ -35,9 +35,8 @@ void CMeshFast::updatePoints() const
 
 	if ((m_colorFromZ) || (m_isImage)) updateColorsMatrix();
 
-	ASSERT_((cols > 0) && (rows > 0))
-	ASSERT_((xMax > xMin) && (yMax > yMin))
-
+	ASSERT_((cols > 0) && (rows > 0);
+	ASSERT_((xMax > xMin) && (yMax > yMin));
 	X.setSize(rows, cols);
 	Y.setSize(rows, cols);
 	const float sCellX = (xMax - xMin) / (rows - 1);

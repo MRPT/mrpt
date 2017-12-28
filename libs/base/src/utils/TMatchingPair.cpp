@@ -29,8 +29,7 @@ using namespace std;
 void TMatchingPairList::dumpToFile(const std::string& fileName) const
 {
 	CFileOutputStream f(fileName);
-	ASSERT_(f.fileOpenCorrectly())
-
+	ASSERT_(f.fileOpenCorrectly());
 	for (const_iterator it = begin(); it != end(); ++it)
 	{
 		f.printf(

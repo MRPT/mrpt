@@ -31,7 +31,7 @@ void CPointCloudFilterByDistance::filter(
 {
 	using namespace mrpt::poses;
 	using namespace mrpt::math;
-	using mrpt::math::square;
+	using mrpt::square;
 
 	MRPT_START;
 	ASSERT_(pc_timestamp != INVALID_TIMESTAMP);

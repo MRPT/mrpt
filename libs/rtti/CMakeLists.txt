@@ -6,6 +6,7 @@ define_mrpt_lib(
 	rtti
 	# Dependencies
 	mrpt-core
+	mrpt-typemeta
 	)
 
 # extra dependencies required by unit tests in this module:

@@ -551,7 +551,7 @@ void CObservation3DRangeScan::points3D_getExternalStorageFileAbsolutePath(
 void CObservation3DRangeScan::points3D_convertToExternalStorage(
 	const std::string& fileName_, const std::string& use_this_base_dir)
 {
-	ASSERT_(!points3D_isExternallyStored())
+	ASSERT_(!points3D_isExternallyStored();
 	ASSERT_(
 		points3D_x.size() == points3D_y.size() &&
 		points3D_x.size() == points3D_z.size())
@@ -600,7 +600,7 @@ void CObservation3DRangeScan::points3D_convertToExternalStorage(
 void CObservation3DRangeScan::rangeImage_convertToExternalStorage(
 	const std::string& fileName_, const std::string& use_this_base_dir)
 {
-	ASSERT_(!rangeImage_isExternallyStored())
+	ASSERT_(!rangeImage_isExternallyStored();
 	if (EXTERNALS_AS_TEXT_value)
 		m_rangeImage_external_file =
 			mrpt::system::fileNameChangeExtension(fileName_, "txt");
@@ -800,9 +800,8 @@ void CObservation3DRangeScan::getZoneAsObs(
 	unsigned int cols = cameraParams.ncols;
 	unsigned int rows = cameraParams.nrows;
 
-	ASSERT_((r1 < r2) && (c1 < c2))
-	ASSERT_((r2 < rows) && (c2 < cols))
-
+	ASSERT_((r1 < r2) && (c1 < c2);
+	ASSERT_((r2 < rows) && (c2 < cols));
 	// Maybe we needed to copy more base obs atributes
 
 	// Copy zone of range image

@@ -143,7 +143,7 @@ class CKinematicChain : public mrpt::serialization::CSerializable
 	template <class VECTOR>
 	void setConfiguration(const VECTOR& v)
 	{
-		ASSERT_EQUAL_(v.size(), this->size())
+		ASSERT_EQUAL_(v.size(), this->size();
 		const size_t N = m_links.size();
 		for (size_t i = 0; i < N; i++)
 		{

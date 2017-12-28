@@ -71,7 +71,7 @@ void frameJac(
 	const mrpt::math::TPoint3D& landmark_global,
 	mrpt::math::CMatrixFixedNumeric<double, 2, 6>& out_J)
 {
-	using mrpt::math::square;
+	using mrpt::square;
 
 	double x, y, z;  // wrt cam (local coords)
 	if (POSES_ARE_INVERSE)
@@ -81,8 +81,7 @@ void frameJac(
 		cam_pose.inverseComposePoint(
 			landmark_global.x, landmark_global.y, landmark_global.z, x, y, z);
 
-	ASSERT_(z != 0)
-
+	ASSERT_(z != 0);
 	const double _z = 1.0 / z;
 	const double fx_z = camera_params.fx() * _z;
 	const double fy_z = camera_params.fy() * _z;
@@ -175,8 +174,7 @@ void pointJac(
 			landmark_global.x, landmark_global.y, landmark_global.z, l.x, l.y,
 			l.z, &dp_point);
 
-	ASSERT_(l.z != 0)
-
+	ASSERT_(l.z != 0);
 	const double _z = 1.0 / l.z;
 	const double _z2 = square(_z);
 
@@ -206,8 +204,7 @@ void ba_compute_Jacobians(
 
 	// num_fix_frames & num_fix_points: Are relative to the order in frame_poses
 	// & landmark_points
-	ASSERT_(!frame_poses.empty() && !landmark_points.empty())
-
+	ASSERT_(!frame_poses.empty() && !landmark_points.empty());
 	const size_t N = jac_data_vec.size();
 
 	for (size_t i = 0; i < N; i++)

@@ -382,8 +382,7 @@ void CRangeBearingKFSLAM::OnTransitionNoise(KFMatrix_VxV& Q) const
 	{
 		// Use constant Q:
 		Q.zeros();
-		ASSERT_(size_t(options.stds_Q_no_odo.size()) == size_t(Q.cols()))
-
+		ASSERT_(size_t(options.stds_Q_no_odo.size()) == size_t(Q.cols()));
 		for (size_t i = 0; i < get_vehicle_size(); i++)
 			Q.set_unsafe(i, i, square(options.stds_Q_no_odo[i]));
 		return;
@@ -754,8 +753,7 @@ void CRangeBearingKFSLAM::TOptions::loadFromConfigFile(
 	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {
 	source.read_vector(section, "stds_Q_no_odo", stds_Q_no_odo, stds_Q_no_odo);
-	ASSERT_(stds_Q_no_odo.size() == 7)
-
+	ASSERT_(stds_Q_no_odo.size() == 7);
 	std_sensor_range =
 		source.read_float(section, "std_sensor_range", std_sensor_range);
 	std_sensor_yaw = DEG2RAD(
@@ -966,8 +964,7 @@ void CRangeBearingKFSLAM::OnNewLandmarkAddedToMap(
 	// ----------------------------------------------
 	// introduce in the lists of ID<->index in map:
 	// ----------------------------------------------
-	ASSERT_(in_obsIdx < obs->sensedData.size())
-
+	ASSERT_(in_obsIdx < obs->sensedData.size());
 	if (obs->sensedData[in_obsIdx].landmarkID >= 0)
 	{
 		// The sensor provides us a LM ID... use it:

@@ -211,9 +211,8 @@ double mrpt::vision::reprojectionResiduals(
 		const TFeatureID i_p = OBS.id_feature;
 		const TCameraPoseID i_f = OBS.id_frame;
 
-		ASSERT_BELOW_(i_p, landmark_points.size())
-		ASSERT_BELOW_(i_f, frame_poses.size())
-
+		ASSERT_BELOW_(i_p, landmark_points.size();
+		ASSERT_BELOW_(i_f, frame_poses.size());
 		const TFramePosesVec::value_type& frame = frame_poses[i_f];
 		const TLandmarkLocationsVec::value_type& point = landmark_points[i_p];
 
@@ -266,8 +265,7 @@ void mrpt::vision::ba_build_gradient_Hessians(
 		{
 			const size_t frame_id = i_f - num_fix_frames;
 			ASSERTDEB_(JACOB.J_frame_valid)
-			ASSERT_BELOW_(frame_id, U.size())
-
+			ASSERT_BELOW_(frame_id, U.size());
 			CMatrixDouble66 JtJ(UNINITIALIZED_MATRIX);
 			JtJ.multiply_AtA(JACOB.J_frame);
 
@@ -289,8 +287,7 @@ void mrpt::vision::ba_build_gradient_Hessians(
 		{
 			const size_t point_id = i_p - num_fix_points;
 			ASSERTDEB_(JACOB.J_point_valid)
-			ASSERT_BELOW_(point_id, V.size())
-
+			ASSERT_BELOW_(point_id, V.size());
 			CMatrixDouble33 JtJ(UNINITIALIZED_MATRIX);
 			JtJ.multiply_AtA(JACOB.J_point);
 
@@ -347,8 +344,7 @@ void mrpt::vision::add_se3_deltas_to_frames(
 		delta_used_vals += 6;
 	}
 
-	ASSERT_(delta_used_vals == delta_num_vals)
-
+	ASSERT_(delta_used_vals == delta_num_vals);
 	MRPT_END
 }
 void mrpt::vision::add_3d_deltas_to_points(
@@ -379,7 +375,6 @@ void mrpt::vision::add_3d_deltas_to_points(
 		delta_used_vals += 3;
 	}
 
-	ASSERT_(delta_used_vals == delta_num_vals)
-
+	ASSERT_(delta_used_vals == delta_num_vals);
 	MRPT_END
 }

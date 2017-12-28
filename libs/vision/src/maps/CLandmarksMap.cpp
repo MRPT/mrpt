@@ -1356,9 +1356,8 @@ void CLandmarksMap::computeMatchingWith3DLandmarks(
 
 			// 1.- COMPUTE EDD
 
-			ASSERT_(!anotherMap->landmarks.begin()->features.empty())
-			ASSERT_(!landmarks.begin()->features.empty())
-
+			ASSERT_(!anotherMap->landmarks.begin()->features.empty();
+			ASSERT_(!landmarks.begin()->features.empty());
 			unsigned int dLen = anotherMap->landmarks.begin()
 									->features[0]
 									->descriptors.SIFT.size();
@@ -1462,8 +1461,7 @@ bool CLandmarksMap::saveToTextFile(std::string file)
 
 		if (it->getType() == featSIFT)
 		{
-			ASSERT_(!it->features.empty() && it->features[0])
-
+			ASSERT_(!it->features.empty() && it->features[0]);
 			for (unsigned int i = 0;
 				 i < it->features[0]->descriptors.SIFT.size(); i++)
 				os::fprintf(f, " %u ", it->features[0]->descriptors.SIFT[i]);

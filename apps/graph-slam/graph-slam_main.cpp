@@ -310,8 +310,7 @@ IMPLEMENT_OP_FUNCTION(op_dijkstra)
 	set<TNodeID> lstNodeIDs;
 	g.getAllNodes(lstNodeIDs);
 
-	ASSERT_(!lstNodeIDs.empty())
-
+	ASSERT_(!lstNodeIDs.empty());
 	const TNodeID id_root = *lstNodeIDs.begin();
 	VERBOSE_COUT << "Using root node ID=" << id_root << endl;
 
@@ -365,8 +364,7 @@ IMPLEMENT_OP_FUNCTION(op_levmarq)
 	set<TNodeID> lstNodeIDs;
 	g.getAllNodes(lstNodeIDs);
 
-	ASSERT_(!lstNodeIDs.empty())
-
+	ASSERT_(!lstNodeIDs.empty());
 	const TNodeID id_root = *lstNodeIDs.begin();
 	VERBOSE_COUT << "Using root node ID=" << id_root << endl;
 

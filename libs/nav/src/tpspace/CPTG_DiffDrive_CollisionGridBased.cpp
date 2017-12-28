@@ -107,7 +107,7 @@ void CPTG_DiffDrive_CollisionGridBased::simulateTrajectories(
 	float max_time, float max_dist, unsigned int max_n, float diferencial_t,
 	float min_dist, float* out_max_acc_v, float* out_max_acc_w)
 {
-	using mrpt::math::square;
+	using mrpt::square;
 
 	internal_deinitialize();  // Free previous paths
 
@@ -538,7 +538,7 @@ bool CPTG_DiffDrive_CollisionGridBased::CCollisionGrid::loadFromFile(
 bool CPTG_DiffDrive_CollisionGridBased::inverseMap_WS2TP(
 	double x, double y, int& out_k, double& out_d, double tolerance_dist) const
 {
-	using mrpt::math::square;
+	using mrpt::square;
 
 	ASSERTMSG_(
 		m_alphaValuesCount > 0, "Have you called simulateTrajectories() first?")
@@ -594,7 +594,7 @@ bool CPTG_DiffDrive_CollisionGridBased::inverseMap_WS2TP(
 
 	if (at_least_one)  // Otherwise, don't even lose time checking...
 	{
-		ASSERT_BELOW_(k_max, m_trajectory.size())
+		ASSERT_BELOW_(k_max, m_trajectory.size();
 		for (int k = k_min; k <= k_max; k++)
 		{
 			const size_t n_real = m_trajectory[k].size();
@@ -754,8 +754,7 @@ void CPTG_DiffDrive_CollisionGridBased::internal_initialize(
 		for (size_t k = 0; k < Ki; k++)
 		{
 			const size_t nPoints = getPathStepCount(k);
-			ASSERT_(nPoints > 1)
-
+			ASSERT_(nPoints > 1);
 			for (size_t n = 0; n < (nPoints - 1); n++)
 			{
 				// Translate and rotate the robot shape at this C-Space pose:

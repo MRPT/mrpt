@@ -16,13 +16,13 @@
 #include <mrpt/math/CMatrixFixedNumeric.h>
 
 /** \file matrix_serialization.h
-  * This file implements matrix/vector text and binary serialization */
+ * This file implements matrix/vector text and binary serialization */
 namespace mrpt
 {
 namespace math
 {
 /** \addtogroup container_ops_grp
-  *  @{ */
+ *  @{ */
 
 /** @name Operators for binary streaming of MRPT matrices
 	@{ */
@@ -31,7 +31,8 @@ namespace math
  * & CMatrixD */
 template <size_t NROWS, size_t NCOLS>
 mrpt::serialization::CArchive& operator>>(
-	mrpt::serialization::CArchive& in, CMatrixFixedNumeric<float, NROWS, NCOLS>& M)
+	mrpt::serialization::CArchive& in,
+	CMatrixFixedNumeric<float, NROWS, NCOLS>& M)
 {
 	CMatrix aux;
 	in.ReadObject(&aux);
@@ -39,8 +40,8 @@ mrpt::serialization::CArchive& operator>>(
 		M.cols() == aux.cols() && M.rows() == aux.rows(),
 		format(
 			"Size mismatch: deserialized is %ux%u, expected is %ux%u",
-			(unsigned)aux.rows(), (unsigned)aux.cols(),
-			(unsigned)NROWS, (unsigned)NCOLS));
+			(unsigned)aux.rows(), (unsigned)aux.cols(), (unsigned)NROWS,
+			(unsigned)NCOLS));
 	M = aux;
 	return in;
 }
@@ -48,7 +49,8 @@ mrpt::serialization::CArchive& operator>>(
  * & CMatrixD */
 template <size_t NROWS, size_t NCOLS>
 mrpt::serialization::CArchive& operator>>(
-	mrpt::serialization::CArchive& in, CMatrixFixedNumeric<double, NROWS, NCOLS>& M)
+	mrpt::serialization::CArchive& in,
+	CMatrixFixedNumeric<double, NROWS, NCOLS>& M)
 {
 	CMatrixD aux;
 	in.ReadObject(&aux);
@@ -56,8 +58,8 @@ mrpt::serialization::CArchive& operator>>(
 		M.cols() == aux.cols() && M.rows() == aux.rows(),
 		format(
 			"Size mismatch: deserialized is %ux%u, expected is %ux%u",
-			(unsigned)aux.rows(), (unsigned)aux.cols(),
-			(unsigned)NROWS, (unsigned)NCOLS));
+			(unsigned)aux.rows(), (unsigned)aux.cols(), (unsigned)NROWS,
+			(unsigned)NCOLS));
 	M = aux;
 	return in;
 }
@@ -112,15 +114,14 @@ inline std::ostream& operator<<(
 	return s << m.format(fmt);
 }
 
-/** Binary serialization of symmetric matrices, saving the space of duplicated values.
- * \sa serializeSymmetricMatrixTo() */
+/** Binary serialization of symmetric matrices, saving the space of duplicated
+ * values. \sa serializeSymmetricMatrixTo() */
 template <typename MAT>
-void deserializeSymmetricMatrixFrom(MAT & m, mrpt::serialization::CArchive& in)
+void deserializeSymmetricMatrixFrom(MAT& m, mrpt::serialization::CArchive& in)
 {
 	ASSERT_EQUAL_(m.rows(), m.cols());
 	auto N = m.cols();
-	for (decltype(N) i = 0; i < N; i++)
-		in >> m(i, i);
+	for (decltype(N) i = 0; i < N; i++) in >> m(i, i);
 	for (decltype(N) r = 0; r < N - 1; r++)
 	{
 		for (decltype(N) c = r + 1; c < N; c++)
@@ -132,23 +133,20 @@ void deserializeSymmetricMatrixFrom(MAT & m, mrpt::serialization::CArchive& in)
 	}
 }
 
-/** Binary serialization of symmetric matrices, saving the space of duplicated values.
- * \sa deserializeSymmetricMatrixFrom() */
+/** Binary serialization of symmetric matrices, saving the space of duplicated
+ * values. \sa deserializeSymmetricMatrixFrom() */
 template <typename MAT>
-void mrpt::math::serializeSymmetricMatrixTo(
-	MAT & m, mrpt::serialization::CArchive& out)
+void serializeSymmetricMatrixTo(MAT& m, mrpt::serialization::CArchive& out)
 {
 	ASSERT_EQUAL_(m.rows(), m.cols());
 	auto N = m.cols();
-	for (decltype(N) i = 0; i < N; i++)
-		out << m(i, i);
+	for (decltype(N) i = 0; i < N; i++) out << m(i, i);
 	for (decltype(N) r = 0; r < N - 1; r++)
-		for (decltype(N) c = r + 1; c < N; c++)
-			out << m(r, c);
+		for (decltype(N) c = r + 1; c < N; c++) out << m(r, c);
 }
 
 /** @} */  // end MRPT matrices stream operators
 
 /**  @} */  // end of grouping
-}  // End of math namespace
-}  // End of mrpt namespace
+}  // namespace math
+}  // namespace mrpt

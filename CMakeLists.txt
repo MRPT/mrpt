@@ -163,7 +163,14 @@ ENDIF()
 
 # Enable precompiled headers:
 # ===================================================
-SET(MRPT_ENABLE_PRECOMPILED_HDRS ON CACHE BOOL "Enable precompiled headers (thru 'mrpt/LIB.h')")
+IF (MSVC)
+	set(default_use_precomp ON)
+ELSE()
+	# JLBC 28th Dec 2017: It seems cotire does not work well with imported -I
+	# directories via target_include_directories(... PUBLIC/INTERFACE ...)
+	set(default_use_precomp OFF)
+ENDIF()
+SET(MRPT_ENABLE_PRECOMPILED_HDRS ${default_use_precomp} CACHE BOOL "Enable precompiled headers")
 MARK_AS_ADVANCED(MRPT_ENABLE_PRECOMPILED_HDRS)
 
 # Eigen library plugins:

@@ -143,7 +143,7 @@ class CColouredPointsMap : public CPointsMap
 	/// \overload
 	inline void setPoint(size_t index, float x, float y, float z)
 	{
-		ASSERT_BELOW_(index, this->size())
+		ASSERT_BELOW_(index, this->size();
 		setPointFast(index, x, y, z);
 		mark_as_modified();
 	}

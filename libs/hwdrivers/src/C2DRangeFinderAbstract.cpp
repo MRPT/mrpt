@@ -121,8 +121,7 @@ void C2DRangeFinderAbstract::loadCommonParams(
 
 		if (!x.empty() && !y.empty())
 		{
-			ASSERT_(x.size() == y.size())
-
+			ASSERT_(x.size() == y.size());
 			CObservation2DRangeScan::TListExclusionAreasWithRanges::value_type
 				dat;
 

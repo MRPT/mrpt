@@ -11,17 +11,13 @@
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <iomanip>  // for setprecision(), etc.
 #include <iterator>  // std::ostream_iterator
+#include <mrpt/serialization/CArchive.h>
 
 // Many of the functions originally in this file are now in ops_containers.h
 #include <mrpt/math/ops_containers.h>
 
 namespace mrpt
 {
-namespace utils
-{
-class CFileStream;
-}
-
 namespace math
 {
 // Frwd. decl.
@@ -29,17 +25,17 @@ template <typename T, std::size_t N>
 class CArrayNumeric;
 
 /** \addtogroup container_ops_grp
-  *  @{ */
+ *  @{ */
 
 /** \name Generic std::vector element-wise operations
-  * @{
-  */
+ * @{
+ */
 
 /** a*=b (element-wise multiplication) */
 template <typename T1, typename T2>
 inline std::vector<T1>& operator*=(std::vector<T1>& a, const std::vector<T2>& b)
 {
-	ASSERT_EQUAL_(a.size(), b.size())
+	ASSERT_EQUAL_(a.size(), b.size());
 	const size_t N = a.size();
 	for (size_t i = 0; i < N; i++) a[i] *= b[i];
 	return a;
@@ -59,7 +55,7 @@ template <typename T1, typename T2>
 inline std::vector<T1> operator*(
 	const std::vector<T1>& a, const std::vector<T2>& b)
 {
-	ASSERT_EQUAL_(a.size(), b.size())
+	ASSERT_EQUAL_(a.size(), b.size());
 	const size_t N = a.size();
 	std::vector<T1> ret(N);
 	for (size_t i = 0; i < N; i++) ret[i] = a[i] * b[i];
@@ -70,7 +66,7 @@ inline std::vector<T1> operator*(
 template <typename T1, typename T2>
 inline std::vector<T1>& operator+=(std::vector<T1>& a, const std::vector<T2>& b)
 {
-	ASSERT_EQUAL_(a.size(), b.size())
+	ASSERT_EQUAL_(a.size(), b.size());
 	const size_t N = a.size();
 	for (size_t i = 0; i < N; i++) a[i] += b[i];
 	return a;
@@ -90,7 +86,7 @@ template <typename T1, typename T2>
 inline std::vector<T1> operator+(
 	const std::vector<T1>& a, const std::vector<T2>& b)
 {
-	ASSERT_EQUAL_(a.size(), b.size())
+	ASSERT_EQUAL_(a.size(), b.size());
 	const size_t N = a.size();
 	std::vector<T1> ret(N);
 	for (size_t i = 0; i < N; i++) ret[i] = a[i] + b[i];
@@ -101,7 +97,7 @@ template <typename T1, typename T2>
 inline std::vector<T1> operator-(
 	const std::vector<T1>& v1, const std::vector<T2>& v2)
 {
-	ASSERT_EQUAL_(v1.size(), v2.size())
+	ASSERT_EQUAL_(v1.size(), v2.size());
 	std::vector<T1> res(v1.size());
 	for (size_t i = 0; i < v1.size(); i++) res[i] = v1[i] - v2[i];
 	return res;
@@ -110,7 +106,7 @@ inline std::vector<T1> operator-(
 /** @} */
 
 /** A template function for printing out the contents of a std::vector variable.
-	*/
+ */
 template <class T>
 std::ostream& operator<<(std::ostream& out, const std::vector<T>& d)
 {
@@ -125,7 +121,7 @@ std::ostream& operator<<(std::ostream& out, const std::vector<T>& d)
 }
 
 /** A template function for printing out the contents of a std::vector variable.
-	*/
+ */
 template <class T>
 std::ostream& operator<<(std::ostream& out, std::vector<T>* d)
 {
@@ -161,12 +157,12 @@ mrpt::serialization::CArchive& operator>>(
 	ASSERTMSG_(
 		nam == namExpect, format(
 							  "Error deserializing: expected '%s', got '%s'",
-							  namExpect.c_str(), nam.c_str()))
+							  namExpect.c_str(), nam.c_str()));
 	if (N) istrm.ReadBufferFixEndianness<T>(&a[0], N);
 	return istrm;
 }
 
 /**  @} */  // end of grouping
 
-}  // End of math namespace
-}  // End of mrpt namespace
+}  // namespace math
+}  // namespace mrpt

@@ -7,6 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
+#include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/SE_traits.h>
@@ -15,7 +16,6 @@
 
 using namespace mrpt;
 using namespace mrpt::poses;
-
 using namespace mrpt::math;
 using namespace std;
 
@@ -51,10 +51,12 @@ class SE_traits_tests : public ::testing::Test
 		const POSE_TYPE P2 = incr2 + params.P2;
 		const POSE_TYPE& Pd = params.D;
 
-		const CPose3D P1DP2inv_(
-			CMatrixDouble44(
-				P1.getHomogeneousMatrixVal<CMatrixDouble44>() * Pd.getHomogeneousMatrixVal<CMatrixDouble44>() *
-				P2.getInverseHomogeneousMatrix<CMatrixDouble44>()));
+		CMatrixDouble44 HM_P2inv, P1hm, Pdhm;
+		P1.getHomogeneousMatrix(P1hm);
+		Pd.getHomogeneousMatrix(Pdhm);
+		P2.getInverseHomogeneousMatrix(HM_P2inv);
+
+		const CPose3D P1DP2inv_(CMatrixDouble44(P1hm * Pdhm * HM_P2inv));
 		const POSE_TYPE P1DP2inv(P1DP2inv_);
 
 		// Pseudo-logarithm:
@@ -75,10 +77,11 @@ class SE_traits_tests : public ::testing::Test
 		const POSE_TYPE Pd(Pd_);
 		const POSE_TYPE P2(P2_);
 
-		const CPose3D P1DP2inv_(
-			mrpt::math::CMatrixDouble44(
-				P1.getHomogeneousMatrixVal<CMatrixDouble44>() * Pd.getHomogeneousMatrixVal<CMatrixDouble44>() *
-				P2.getInverseHomogeneousMatrix<CMatrixDouble44>()));
+		CMatrixDouble44 HM_P2inv, P1hm, Pdhm;
+		P1.getHomogeneousMatrix(P1hm);
+		Pd.getHomogeneousMatrix(Pdhm);
+		P2.getInverseHomogeneousMatrix(HM_P2inv);
+		const CPose3D P1DP2inv_(CMatrixDouble44((P1hm * Pdhm) * HM_P2inv));
 		const POSE_TYPE P1DP2inv(P1DP2inv_);  // Convert to 2D if needed
 
 		static const int DIMS = SE_TYPE::VECTOR_SIZE;

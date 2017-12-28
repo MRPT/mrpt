@@ -153,7 +153,7 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 	{
 		ASSERT_EQUAL_(rot.rows(), 3);
 		ASSERT_EQUAL_(rot.cols(), 3);
-		ASSERT_EQUAL_(xyz.size(), 3)
+		ASSERT_EQUAL_(xyz.size(), 3);
 		for (int r = 0; r < 3; r++)
 			for (int c = 0; c < 3; c++) m_ROT(r, c) = rot(r, c);
 		for (int r = 0; r < 3; r++) m_coords[r] = xyz[r];
@@ -167,18 +167,18 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 	}
 
 	/** Constructor from a CPose2D object.
-	*/
+	 */
 	explicit CPose3D(const CPose2D&);
 
 	/** Constructor from a CPoint3D object.
-	*/
+	 */
 	explicit CPose3D(const CPoint3D&);
 
 	/** Constructor from lightweight object.
-	*/
+	 */
 	explicit CPose3D(const mrpt::math::TPose3D&);
 
-	mrpt::math::TPose3D CPose3D::asTPose() const;
+	mrpt::math::TPose3D asTPose() const;
 
 	/** Constructor from a quaternion (which only represents the 3D rotation
 	 * part) and a 3D displacement. */
@@ -201,10 +201,10 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 
 	/** Constructor from an array with these 12 elements: [r11 r21 r31 r12 r22
 	 * r32 r13 r23 r33 tx ty tz]
-	  *  where r{ij} are the entries of the 3x3 rotation matrix and t{x,y,z} are
+	 *  where r{ij} are the entries of the 3x3 rotation matrix and t{x,y,z} are
 	 * the 3D translation of the pose
-	  *  \sa setFrom12Vector, getAs12Vector
-	  */
+	 *  \sa setFrom12Vector, getAs12Vector
+	 */
 	inline explicit CPose3D(const mrpt::math::CArrayDouble<12>& vec12)
 		: m_ROT(mrpt::math::UNINITIALIZED_MATRIX), m_ypr_uptodate(false)
 	{
@@ -218,8 +218,8 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 
 	/** Returns the corresponding 4x4 homogeneous transformation matrix for the
 	 * point(translation) or pose (translation+orientation).
-	  * \sa getInverseHomogeneousMatrix, getRotationMatrix
-	  */
+	 * \sa getInverseHomogeneousMatrix, getRotationMatrix
+	 */
 	inline void getHomogeneousMatrix(mrpt::math::CMatrixDouble44& out_HM) const
 	{
 		out_HM.insertMatrix(0, 0, m_ROT);
@@ -275,15 +275,15 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 
 	/** An alternative, slightly more efficient way of doing \f$ G = P \oplus L
 	 * \f$ with G and L being 3D points and P this 6D pose.
-	  *  If pointers are provided, the corresponding Jacobians are returned.
-	  *  "out_jacobian_df_dse3" stands for the Jacobian with respect to the 6D
+	 *  If pointers are provided, the corresponding Jacobians are returned.
+	 *  "out_jacobian_df_dse3" stands for the Jacobian with respect to the 6D
 	 * locally Euclidean vector in the tangent space of SE(3).
-	  *  See [this
+	 *  See [this
 	 * report](http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf)
 	 * for mathematical details.
-	  *  \param  If set to true, the Jacobian "out_jacobian_df_dpose" uses a
+	 *  \param  If set to true, the Jacobian "out_jacobian_df_dpose" uses a
 	 * fastest linearized appoximation (valid only for small rotations!).
-	  */
+	 */
 	void composePoint(
 		double lx, double ly, double lz, double& gx, double& gy, double& gz,
 		mrpt::math::CMatrixFixedNumeric<double, 3, 3>* out_jacobian_df_dpoint =
@@ -296,9 +296,9 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 
 	/** An alternative, slightly more efficient way of doing \f$ G = P \oplus L
 	 * \f$ with G and L being 3D points and P this 6D pose.
-	  * \note local_point is passed by value to allow global and local point to
+	 * \note local_point is passed by value to allow global and local point to
 	 * be the same variable
-	  */
+	 */
 	inline void composePoint(
 		const mrpt::math::TPoint3D& local_point,
 		mrpt::math::TPoint3D& global_point) const
@@ -332,14 +332,14 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 	}
 
 	/**  Computes the 3D point L such as \f$ L = G \ominus this \f$.
-	  *  If pointers are provided, the corresponding Jacobians are returned.
-	  *  "out_jacobian_df_dse3" stands for the Jacobian with respect to the 6D
+	 *  If pointers are provided, the corresponding Jacobians are returned.
+	 *  "out_jacobian_df_dse3" stands for the Jacobian with respect to the 6D
 	 * locally Euclidean vector in the tangent space of SE(3).
-	  *  See [this
+	 *  See [this
 	 * report](http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf)
 	 * for mathematical details.
-	  * \sa composePoint, composeFrom
-	  */
+	 * \sa composePoint, composeFrom
+	 */
 	void inverseComposePoint(
 		const double gx, const double gy, const double gz, double& lx,
 		double& ly, double& lz,
@@ -370,8 +370,8 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 
 	/**  Makes "this = A (+) B"; this method is slightly more efficient than
 	 * "this= A + B;" since it avoids the temporary object.
-	  *  \note A or B can be "this" without problems.
-	  */
+	 *  \note A or B can be "this" without problems.
+	 */
 	void composeFrom(const CPose3D& A, const CPose3D& B);
 
 	/** Make \f$ this = this \oplus b \f$  (\a b can be "this" without problems)
@@ -384,9 +384,9 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 
 	/**  Makes \f$ this = A \ominus B \f$ this method is slightly more efficient
 	 * than "this= A - B;" since it avoids the temporary object.
-	  *  \note A or B can be "this" without problems.
-	  * \sa composeFrom, composePoint
-	  */
+	 *  \note A or B can be "this" without problems.
+	 * \sa composeFrom, composePoint
+	 */
 	void inverseComposeFrom(const CPose3D& A, const CPose3D& B);
 
 	/** Compute \f$ RET = this \oplus b \f$  */
@@ -419,14 +419,14 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 
 	/** Scalar sum of all 6 components: This is diferent from poses composition,
 	 * which is implemented as "+" operators.
-	  * \sa normalizeAngles
-	  */
+	 * \sa normalizeAngles
+	 */
 	void addComponents(const CPose3D& p);
 
 	/** Rebuild the internal matrix & update the yaw/pitch/roll angles within
 	 * the ]-PI,PI] range (Must be called after using addComponents)
-	  * \sa addComponents
-	  */
+	 * \sa addComponents
+	 */
 	void normalizeAngles();
 
 	/** Scalar multiplication of x,y,z,yaw,pitch & roll (angles will be wrapped
@@ -435,21 +435,21 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 
 	/** Set the pose from a 3D position (meters) and yaw/pitch/roll angles
 	 * (radians) - This method recomputes the internal rotation matrix.
-	  * \sa getYawPitchRoll, setYawPitchRoll
-	  */
+	 * \sa getYawPitchRoll, setYawPitchRoll
+	 */
 	void setFromValues(
 		const double x0, const double y0, const double z0, const double yaw = 0,
 		const double pitch = 0, const double roll = 0);
 
 	/** Set the pose from a 3D position (meters) and a quaternion, stored as [x
 	 * y z qr qx qy qz] in a 7-element vector.
-	  * \sa setFromValues, getYawPitchRoll, setYawPitchRoll, CQuaternion,
+	 * \sa setFromValues, getYawPitchRoll, setYawPitchRoll, CQuaternion,
 	 * getAsQuaternion
-	  */
+	 */
 	template <typename VECTORLIKE>
 	inline void setFromXYZQ(const VECTORLIKE& v, const size_t index_offset = 0)
 	{
-		ASSERT_ABOVEEQ_(v.size(), 7 + index_offset)
+		ASSERT_ABOVEEQ_(v.size(), 7 + index_offset);
 		// The 3x3 rotation part:
 		mrpt::math::CQuaternion<typename VECTORLIKE::value_type> q(
 			v[index_offset + 3], v[index_offset + 4], v[index_offset + 5],
@@ -463,8 +463,8 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 
 	/** Set the 3 angles of the 3D pose (in radians) - This method recomputes
 	 * the internal rotation coordinates matrix.
-	  * \sa getYawPitchRoll, setFromValues
-	  */
+	 * \sa getYawPitchRoll, setFromValues
+	 */
 	inline void setYawPitchRoll(
 		const double yaw_, const double pitch_, const double roll_)
 	{
@@ -473,10 +473,10 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 
 	/** Set pose from an array with these 12 elements: [r11 r21 r31 r12 r22 r32
 	 * r13 r23 r33 tx ty tz]
-	  *  where r{ij} are the entries of the 3x3 rotation matrix and t{x,y,z} are
+	 *  where r{ij} are the entries of the 3x3 rotation matrix and t{x,y,z} are
 	 * the 3D translation of the pose
-	  *  \sa getAs12Vector
-	  */
+	 *  \sa getAs12Vector
+	 */
 	template <class ARRAYORVECTOR>
 	inline void setFrom12Vector(const ARRAYORVECTOR& vec12)
 	{
@@ -497,10 +497,10 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 
 	/** Get the pose representation as an array with these 12 elements: [r11 r21
 	 * r31 r12 r22 r32 r13 r23 r33 tx ty tz]
-	  *  where r{ij} are the entries of the 3x3 rotation matrix and t{x,y,z} are
+	 *  where r{ij} are the entries of the 3x3 rotation matrix and t{x,y,z} are
 	 * the 3D translation of the pose
-	  *  \sa setFrom12Vector
-	  */
+	 *  \sa setFrom12Vector
+	 */
 	template <class ARRAYORVECTOR>
 	inline void getAs12Vector(ARRAYORVECTOR& vec12) const
 	{
@@ -520,8 +520,8 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 
 	/** Returns the three angles (yaw, pitch, roll), in radians, from the
 	 * rotation matrix.
-	  * \sa setFromValues, yaw, pitch, roll
-	  */
+	 * \sa setFromValues, yaw, pitch, roll
+	 */
 	void getYawPitchRoll(double& yaw, double& pitch, double& roll) const;
 
 	/** Get the YAW angle (in radians)  \sa setFromValues */
@@ -550,19 +550,19 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 
 	/** Returns the quaternion associated to the rotation of this object (NOTE:
 	 * XYZ translation is ignored)
-	  * \f[ \mathbf{q} = \left( \begin{array}{c} \cos (\phi /2) \cos (\theta /2)
+	 * \f[ \mathbf{q} = \left( \begin{array}{c} \cos (\phi /2) \cos (\theta /2)
 	 * \cos (\psi /2) +  \sin (\phi /2) \sin (\theta /2) \sin (\psi /2) \\ \sin
 	 * (\phi /2) \cos (\theta /2) \cos (\psi /2) -  \cos (\phi /2) \sin (\theta
 	 * /2) \sin (\psi /2) \\ \cos (\phi /2) \sin (\theta /2) \cos (\psi /2) +
 	 * \sin (\phi /2) \cos (\theta /2) \sin (\psi /2) \\ \cos (\phi /2) \cos
 	 * (\theta /2) \sin (\psi /2) -  \sin (\phi /2) \sin (\theta /2) \cos (\psi
 	 * /2) \\ \end{array}\right) \f]
-	  * With : \f$ \phi = roll \f$,  \f$ \theta = pitch \f$ and \f$ \psi = yaw
+	 * With : \f$ \phi = roll \f$,  \f$ \theta = pitch \f$ and \f$ \psi = yaw
 	 * \f$.
-	  * \param out_dq_dr  If provided, the 4x3 Jacobian of the transformation
+	 * \param out_dq_dr  If provided, the 4x3 Jacobian of the transformation
 	 * will be computed and stored here. It's the Jacobian of the transformation
 	 * from (yaw pitch roll) to (qr qx qy qz).
-	  */
+	 */
 	void getAsQuaternion(
 		mrpt::math::CQuaternionDouble& q,
 		mrpt::math::CMatrixFixedNumeric<double, 4, 3>* out_dq_dr =
@@ -597,8 +597,8 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 
 	/** Returns a human-readable textual representation of the object (eg: "[x y
 	 * z yaw pitch roll]", angles in degrees.)
-	  * \sa fromString
-	  */
+	 * \sa fromString
+	 */
 	void asString(std::string& s) const
 	{
 		using mrpt::utils::RAD2DEG;
@@ -616,9 +616,9 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 
 	/** Set the current object value from a string generated by 'asString' (eg:
 	 * "[x y z yaw pitch roll]", angles in deg. )
-	  * \sa asString
-	  * \exception std::exception On invalid format
-	  */
+	 * \sa asString
+	 * \exception std::exception On invalid format
+	 */
 	void fromString(const std::string& s)
 	{
 		using mrpt::utils::DEG2RAD;
@@ -654,7 +654,7 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 
 	/** Exponentiate a Vector in the SE(3) Lie Algebra to generate a new CPose3D
 	 * (static method).
-	  * \param pseudo_exponential If set to true, XYZ are copied from the first
+	 * \param pseudo_exponential If set to true, XYZ are copied from the first
 	 * three elements in the vector instead of using the proper Lie Algebra
 	 * formulas (this is actually the common practice in robotics literature).
 	 */
@@ -674,8 +674,8 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 
 	/** Take the logarithm of the 3x4 matrix defined by this pose, generating
 	 * the corresponding vector in the SE(3) Lie Algebra.
-	  * \sa ln_jacob
-	  */
+	 * \sa ln_jacob
+	 */
 	void ln(mrpt::math::CArrayDouble<6>& out_ln) const;
 
 	/// \overload
@@ -687,14 +687,14 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 	}
 
 	/** Jacobian of the logarithm of the 3x4 matrix defined by this pose.
-	  * \sa ln
-	  */
+	 * \sa ln
+	 */
 	void ln_jacob(mrpt::math::CMatrixFixedNumeric<double, 6, 12>& J) const;
 
 	/** Static function to compute the Jacobian of the SO(3) Logarithm function,
 	 * evaluated at a given 3x3 rotation matrix R.
-	  * \sa ln, ln_jacob
-	  */
+	 * \sa ln, ln_jacob
+	 */
 	static void ln_rot_jacob(
 		const mrpt::math::CMatrixDouble33& R,
 		mrpt::math::CMatrixFixedNumeric<double, 3, 9>& M);
@@ -704,7 +704,7 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 	mrpt::math::CArrayDouble<3> ln_rotation() const;
 
 	/** The Jacobian d (e^eps * D) / d eps , with eps=increment in Lie Algebra.
-	  * \note Eq. 10.3.5 in tech report
+	 * \note Eq. 10.3.5 in tech report
 	 * http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
 	 */
 	static void jacob_dexpeD_de(
@@ -712,7 +712,7 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 
 	/** The Jacobian d (A * e^eps * D) / d eps , with eps=increment in Lie
 	 * Algebra.
-	  * \note Eq. 10.3.7 in tech report
+	 * \note Eq. 10.3.7 in tech report
 	 * http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
 	 */
 	static void jacob_dAexpeD_de(
@@ -762,10 +762,9 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 	static inline void resize(const size_t n)
 	{
 		if (n != static_size)
-			throw std::logic_error(
-				format(
-					"Try to change the size of CPose3D to %u.",
-					static_cast<unsigned>(n)));
+			throw std::logic_error(format(
+				"Try to change the size of CPose3D to %u.",
+				static_cast<unsigned>(n)));
 	}
 	/** @} */
 
@@ -780,7 +779,7 @@ CPose3D operator-(const CPose3D& p);
 bool operator==(const CPose3D& p1, const CPose3D& p2);
 bool operator!=(const CPose3D& p1, const CPose3D& p2);
 
-}  // End of namespace
-}  // End of namespace
+}  // namespace poses
+}  // namespace mrpt
 
 #endif

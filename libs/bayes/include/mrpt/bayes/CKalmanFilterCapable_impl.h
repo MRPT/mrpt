@@ -29,9 +29,8 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
 	m_timLogger.enable(KF_options.enable_profiler);
 	m_timLogger.enter("KF:complete_step");
 
-	ASSERT_(size_t(m_xkk.size()) == m_pkk.cols())
-	ASSERT_(size_t(m_xkk.size()) >= VEH_SIZE)
-
+	ASSERT_(size_t(m_xkk.size()) == m_pkk.cols();
+	ASSERT_(size_t(m_xkk.size()) >= VEH_SIZE);
 	// =============================================================
 	//  1. CREATE ACTION MATRIX u FROM ODOMETRY
 	// =============================================================
@@ -590,8 +589,7 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
 							ASSERT_(
 								dh_dx_full_obs.rows() == OBS_SIZE &&
 								dh_dx_full_obs.cols() == VEH_SIZE)
-							ASSERT_(Hxs.size() == 1)
-
+							ASSERT_(Hxs.size() == 1);
 							dh_dx_full_obs = Hxs[0];  // Was: dh_dx_full
 							KFArray_OBS ytilde_i = Z[0];
 							OnSubstractObservationVectors(

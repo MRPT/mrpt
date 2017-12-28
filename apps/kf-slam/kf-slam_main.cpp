@@ -341,8 +341,7 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 	{
 		CMatrixDouble mGT_DA;
 		mGT_DA.loadFromTextFile(ground_truth_data_association);
-		ASSERT_ABOVEEQ_(mGT_DA.cols(), 3)
-
+		ASSERT_ABOVEEQ_(mGT_DA.cols(), 3);
 		// Convert the loaded matrix into a std::map in GT_DA:
 		for (size_t i = 0; i < mGT_DA.rows(); i++)
 		{
@@ -538,7 +537,7 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 						if (itDA != GT_DA.end())
 						{
 							const std::vector<int>& vDA = itDA->second;
-							ASSERT_BELOW_(i, vDA.size())
+							ASSERT_BELOW_(i, vDA.size();
 							const int GT_ASSOC = vDA[i];
 
 							std::map<observation_index_t,

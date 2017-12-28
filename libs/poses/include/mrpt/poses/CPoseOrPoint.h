@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/math_frwds.h> // matrices frwd decls
+#include <mrpt/math/math_frwds.h>  // matrices frwd decls
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/math/homog_matrices.h>
 #include <mrpt/math/CArrayNumeric.h>
@@ -19,15 +19,15 @@
 namespace mrpt
 {
 /** \defgroup poses_grp 2D/3D points and poses
-  *  \ingroup mrpt_poses_grp */
+ *  \ingroup mrpt_poses_grp */
 
 /** \defgroup poses_pdf_grp 2D/3D point and pose PDFs
-  *  \ingroup mrpt_poses_grp */
+ *  \ingroup mrpt_poses_grp */
 
 /** Classes for 2D/3D geometry representation, both of single values and
  * probability density distributions (PDFs) in many forms.
  * \ingroup poses_grp poses_pdf_grp
-  */
+ */
 namespace poses
 {
 // For use in some constructors (eg. CPose3D)
@@ -128,11 +128,11 @@ class CPoseOrPoint
 		  mrpt::poses::detail::T3DTypeHelper<DERIVEDCLASS>::is_3D_val>
 {
    public:
-	const DERIVEDCLASS & derived() const
+	const DERIVEDCLASS& derived() const
 	{
 		return *static_cast<const DERIVEDCLASS*>(this);
 	}
-	DERIVEDCLASS & derived() { return *static_cast<DERIVEDCLASS*>(this); }
+	DERIVEDCLASS& derived() { return *static_cast<DERIVEDCLASS*>(this); }
 
 	/** Common members of all points & poses classes.
 		@{ */
@@ -184,7 +184,7 @@ class CPoseOrPoint
 	template <class OTHERCLASS>
 	inline double sqrDistanceTo(const CPoseOrPoint<OTHERCLASS>& b) const
 	{
-		using mrpt::math::square;
+		using mrpt::square;
 
 		if (b.is3DPoseOrPoint())
 		{
@@ -218,20 +218,16 @@ class CPoseOrPoint
 	 * (ignores Z, if it exists). */
 	inline double distance2DToSquare(double ax, double ay) const
 	{
-		using mrpt::math::square;
+		using mrpt::square;
 		return square(ax - x()) + square(ay - y());
 	}
 
 	/** Returns the squared 3D distance from this pose/point to a 3D point */
 	inline double distance3DToSquare(double ax, double ay, double az) const
 	{
-		using mrpt::math::square;
+		using mrpt::square;
 		return square(ax - x()) + square(ay - y()) +
-			   square(
-				   az -
-				   (is3DPoseOrPoint()
-						? derived().m_coords[2]
-						: 0));
+			   square(az - (is3DPoseOrPoint() ? derived().m_coords[2] : 0));
 	}
 
 	/** Returns the 2D distance from this pose/point to a 2D point (ignores Z,
@@ -257,13 +253,10 @@ class CPoseOrPoint
 	 * \sqrt{x^2+y^2+z^2} \f$ */
 	inline double norm() const
 	{
-		using mrpt::math::square;
+		using mrpt::square;
 		return std::sqrt(
 			square(x()) + square(y()) +
-			(!is3DPoseOrPoint()
-				 ? 0
-				 : square(
-					   derived().m_coords[2])));
+			(!is3DPoseOrPoint() ? 0 : square(derived().m_coords[2])));
 	}
 
 	/** Return the pose or point as a 1xN vector with all the components (see
@@ -276,9 +269,9 @@ class CPoseOrPoint
 	}
 
 	/** Returns the corresponding 4x4 homogeneous transformation matrix for the
-	* point(translation) or pose (translation+orientation).
-	* \sa getInverseHomogeneousMatrix
-	*/
+	 * point(translation) or pose (translation+orientation).
+	 * \sa getInverseHomogeneousMatrix
+	 */
 	template <class MATRIX44>
 	inline MATRIX44 getHomogeneousMatrixVal() const
 	{
@@ -288,9 +281,9 @@ class CPoseOrPoint
 	}
 
 	/** Returns the corresponding 4x4 inverse homogeneous transformation matrix
-	* for this point or pose.
-	* \sa getHomogeneousMatrix
-	*/
+	 * for this point or pose.
+	 * \sa getHomogeneousMatrix
+	 */
 	template <class MATRIX44>
 	inline void getInverseHomogeneousMatrix(MATRIX44& out_HM) const
 	{  // Get current HM & inverse in-place:
@@ -300,7 +293,7 @@ class CPoseOrPoint
 
 	//! \overload
 	template <class MATRIX44>
-	inline MATRIX44 getInverseHomogeneousMatrix() const
+	inline MATRIX44 getInverseHomogeneousMatrixVal() const
 	{
 		MATRIX44 M;
 		getInverseHomogeneousMatrix(M);
@@ -313,5 +306,5 @@ class CPoseOrPoint
 	/** @} */
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
+}  // namespace poses
+}  // namespace mrpt

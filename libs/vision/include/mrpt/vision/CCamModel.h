@@ -289,7 +289,7 @@ class CCamModel : public mrpt::utils::CLoadableOptions
 		// method somewhat
 		// faster, but makes it incapable of being used in more than one thread
 		// simultaneously!
-		using mrpt::math::square;
+		using mrpt::square;
 		static mrpt::math::CMatrixFixedNumeric<double, 2, 2> J1(
 			firstInverseJacobian());
 		static mrpt::math::CMatrixFixedNumeric<double, 4, 2> J2(

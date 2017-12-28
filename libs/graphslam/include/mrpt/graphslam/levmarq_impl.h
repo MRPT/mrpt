@@ -244,7 +244,7 @@ double computeJacobiansAndErrors(
 	}
 
 	// return overall square error:  (Was:
-	// std::accumulate(...,mrpt::math::squareNorm_accum<>), but led to GCC
+	// std::accumulate(...,mrpt::squareNorm_accum<>), but led to GCC
 	// errors when enabling parallelization)
 	double ret_err = 0.0;
 	for (size_t i = 0; i < errs.size(); i++) ret_err += errs[i].squaredNorm();

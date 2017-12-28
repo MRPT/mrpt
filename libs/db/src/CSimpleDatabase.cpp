@@ -171,8 +171,7 @@ CSimpleDatabaseTable::Ptr CSimpleDatabase::getTable(size_t tableIndex)
 {
 	MRPT_START
 
-	ASSERT_(tableIndex < tablesCount())
-
+	ASSERT_(tableIndex < tablesCount());
 	iterator it = m_tables.begin();
 	std::advance(it, tableIndex);
 	return it->second;
@@ -191,7 +190,7 @@ string CSimpleDatabase::tablesName(size_t tableIndex) const
 {
 	MRPT_START
 
-	ASSERT_(tableIndex < tablesCount())
+	ASSERT_(tableIndex < tablesCount();
 	const_iterator it = m_tables.begin();
 	std::advance(it, tableIndex);
 	return it->first;
@@ -360,8 +359,7 @@ size_t CSimpleDatabaseTable::appendRecord()
 void CSimpleDatabaseTable::deleteRecord(size_t recordIndex)
 {
 	MRPT_START
-	ASSERT_(recordIndex < getRecordCount())
-
+	ASSERT_(recordIndex < getRecordCount());
 	std::vector<vector_string>::iterator it = data.begin();
 	std::advance(it, recordIndex);
 	data.erase(it);
@@ -461,16 +459,14 @@ bool CSimpleDatabase::loadFromXML(const string& fileName)
 		for (i = 0; i < nTables; i++)
 		{
 			XMLNode tabNod = root.getChildNode("table", (int)i);
-			ASSERT_(!tabNod.isEmpty())
-
+			ASSERT_(!tabNod.isEmpty());
 			// Create table:
 			CSimpleDatabaseTable::Ptr t =
 				createTable(tabNod.getAttribute("name"));
 
 			// Create fields:
 			XMLNode fNod = tabNod.getChildNode("fields");
-			ASSERT_(!fNod.isEmpty())
-
+			ASSERT_(!fNod.isEmpty());
 			size_t nFields = fNod.nChildNode();
 			for (j = 0; j < nFields; j++)
 			{
@@ -484,8 +480,7 @@ bool CSimpleDatabase::loadFromXML(const string& fileName)
 				size_t recIdx = t->appendRecord();
 
 				XMLNode recNod = tabNod.getChildNode("record", (int)k);
-				ASSERT_(!recNod.isEmpty())
-
+				ASSERT_(!recNod.isEmpty());
 				for (j = 0; j < nFields; j++)
 				{
 					XMLCSTR str =

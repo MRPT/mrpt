@@ -75,25 +75,25 @@ class CBeaconMap : public mrpt::maps::CMetricMap
 	/** Access to individual beacons */
 	const CBeacon& operator[](size_t i) const
 	{
-		ASSERT_(i < m_beacons.size())
+		ASSERT_(i < m_beacons.size();
 		return m_beacons[i];
 	}
 	/** Access to individual beacons */
 	const CBeacon& get(size_t i) const
 	{
-		ASSERT_(i < m_beacons.size())
+		ASSERT_(i < m_beacons.size();
 		return m_beacons[i];
 	}
 	/** Access to individual beacons */
 	CBeacon& operator[](size_t i)
 	{
-		ASSERT_(i < m_beacons.size())
+		ASSERT_(i < m_beacons.size();
 		return m_beacons[i];
 	}
 	/** Access to individual beacons */
 	CBeacon& get(size_t i)
 	{
-		ASSERT_(i < m_beacons.size())
+		ASSERT_(i < m_beacons.size();
 		return m_beacons[i];
 	}
 

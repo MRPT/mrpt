@@ -110,14 +110,14 @@ class CReactiveNavigationSystem3D : public CAbstractPTGBasedReactive
 	}
 	virtual CParameterizedTrajectoryGenerator* getPTG(size_t i) override
 	{
-		ASSERT_(!m_ptgmultilevel.empty() && !m_ptgmultilevel[i].PTGs.empty())
+		ASSERT_(!m_ptgmultilevel.empty() && !m_ptgmultilevel[i].PTGs.empty();
 		return m_ptgmultilevel[i].PTGs[0];  // Return for the 0'th level (ptgs
 		// are replicated at each level)
 	}
 	virtual const CParameterizedTrajectoryGenerator* getPTG(
 		size_t i) const override
 	{
-		ASSERT_(!m_ptgmultilevel.empty() && !m_ptgmultilevel[i].PTGs.empty())
+		ASSERT_(!m_ptgmultilevel.empty() && !m_ptgmultilevel[i].PTGs.empty();
 		return m_ptgmultilevel[i].PTGs[0];  // Return for the 0'th level (ptgs
 		// are replicated at each level)
 	}

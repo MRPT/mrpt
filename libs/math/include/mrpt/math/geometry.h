@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/math/CSparseMatrixTemplate.h>
 
@@ -21,12 +22,12 @@ namespace math
 {
 /** \addtogroup geometry_grp Geometry: lines, planes, intersections, SLERP,
  * "lightweight" point & pose classes
-  *  \ingroup mrpt_math_grp
-  * @{ */
+ *  \ingroup mrpt_math_grp
+ * @{ */
 
 /** Slightly heavyweight type to speed-up calculations with polygons in 3D
-  * \sa TPolygon3D,TPlane
-  */
+ * \sa TPolygon3D,TPlane
+ */
 class TPolygonWithPlane
 {
    public:
@@ -58,145 +59,145 @@ class TPolygonWithPlane
 	@{
  */
 /** Gets the intersection between two 3D segments. Possible outcomes:
-  *		- Segments intersect: Return=true, obj.getType()=GEOMETRIC_TYPE_POINT
-  *		- Segments don't intersect & are parallel: Return=true,
-  *obj.getType()=GEOMETRIC_TYPE_SEGMENT, obj is the segment "in between" both
-  *segments.
-  *		- Segments don't intersect & aren't parallel: Return=false.
-  * \sa TObject3D
-  */
+ *		- Segments intersect: Return=true, obj.getType()=GEOMETRIC_TYPE_POINT
+ *		- Segments don't intersect & are parallel: Return=true,
+ *obj.getType()=GEOMETRIC_TYPE_SEGMENT, obj is the segment "in between" both
+ *segments.
+ *		- Segments don't intersect & aren't parallel: Return=false.
+ * \sa TObject3D
+ */
 bool intersect(const TSegment3D& s1, const TSegment3D& s2, TObject3D& obj);
 
 /** Gets the intersection between a 3D segment and a plane. Possible outcomes:
-  *		- Don't intersect: Return=false
-  *		- s1 is within the plane: Return=true,
-  *obj.getType()=GEOMETRIC_TYPE_SEGMENT
-  *		- s1 intersects the plane at one point: Return=true,
-  *obj.getType()=GEOMETRIC_TYPE_POINT
-  * \sa TObject3D
-  */
+ *		- Don't intersect: Return=false
+ *		- s1 is within the plane: Return=true,
+ *obj.getType()=GEOMETRIC_TYPE_SEGMENT
+ *		- s1 intersects the plane at one point: Return=true,
+ *obj.getType()=GEOMETRIC_TYPE_POINT
+ * \sa TObject3D
+ */
 bool intersect(const TSegment3D& s1, const TPlane& p2, TObject3D& obj);
 
 /** Gets the intersection between a 3D segment and a 3D line. Possible outcomes:
-  *		- They don't intersect : Return=false
-  *		- s1 lies within the line: Return=true,
-  *obj.getType()=GEOMETRIC_TYPE_SEGMENT
-  *		- s1 intersects the line at a point: Return=true,
-  *obj.getType()=GEOMETRIC_TYPE_POINT
-  * \sa TObject3D
-  */
+ *		- They don't intersect : Return=false
+ *		- s1 lies within the line: Return=true,
+ *obj.getType()=GEOMETRIC_TYPE_SEGMENT
+ *		- s1 intersects the line at a point: Return=true,
+ *obj.getType()=GEOMETRIC_TYPE_POINT
+ * \sa TObject3D
+ */
 bool intersect(const TSegment3D& s1, const TLine3D& r2, TObject3D& obj);
 
 /** Gets the intersection between a plane and a 3D segment. Possible outcomes:
-  *		- Don't intersect: Return=false
-  *		- s2 is within the plane: Return=true,
-  *obj.getType()=GEOMETRIC_TYPE_SEGMENT
-  *		- s2 intersects the plane at one point: Return=true,
-  *obj.getType()=GEOMETRIC_TYPE_POINT
-  * \sa TObject3D
-  */
+ *		- Don't intersect: Return=false
+ *		- s2 is within the plane: Return=true,
+ *obj.getType()=GEOMETRIC_TYPE_SEGMENT
+ *		- s2 intersects the plane at one point: Return=true,
+ *obj.getType()=GEOMETRIC_TYPE_POINT
+ * \sa TObject3D
+ */
 inline bool intersect(const TPlane& p1, const TSegment3D& s2, TObject3D& obj)
 {
 	return intersect(s2, p1, obj);
 }
 
 /** Gets the intersection between two planes. Possible outcomes:
-  *		- Planes are parallel: Return=false
-  *		- Planes intersect into a line: Return=true,
-  *obj.getType()=GEOMETRIC_TYPE_LINE
-  * \sa TObject3D
-  */
+ *		- Planes are parallel: Return=false
+ *		- Planes intersect into a line: Return=true,
+ *obj.getType()=GEOMETRIC_TYPE_LINE
+ * \sa TObject3D
+ */
 bool intersect(const TPlane& p1, const TPlane& p2, TObject3D& obj);
 
 /** Gets the intersection between a plane and a 3D line. Possible outcomes:
-  *		- Line is parallel to plane but not within it: Return=false
-  *		- Line is contained in the plane: Return=true,
-  *obj.getType()=GEOMETRIC_TYPE_LINE
-  *		- Line intersects the plane at one point: Return=true,
-  *obj.getType()=GEOMETRIC_TYPE_POINT
-  * \sa TObject3D
-  */
+ *		- Line is parallel to plane but not within it: Return=false
+ *		- Line is contained in the plane: Return=true,
+ *obj.getType()=GEOMETRIC_TYPE_LINE
+ *		- Line intersects the plane at one point: Return=true,
+ *obj.getType()=GEOMETRIC_TYPE_POINT
+ * \sa TObject3D
+ */
 bool intersect(const TPlane& p1, const TLine3D& p2, TObject3D& obj);
 
 /** Gets the intersection between a 3D line and a 3D segment. Possible outcomes:
-  *		- They don't intersect : Return=false
-  *		- s2 lies within the line: Return=true,
-  *obj.getType()=GEOMETRIC_TYPE_SEGMENT
-  *		- s2 intersects the line at a point: Return=true,
-  *obj.getType()=GEOMETRIC_TYPE_POINT
-  * \sa TObject3D
-  */
+ *		- They don't intersect : Return=false
+ *		- s2 lies within the line: Return=true,
+ *obj.getType()=GEOMETRIC_TYPE_SEGMENT
+ *		- s2 intersects the line at a point: Return=true,
+ *obj.getType()=GEOMETRIC_TYPE_POINT
+ * \sa TObject3D
+ */
 inline bool intersect(const TLine3D& r1, const TSegment3D& s2, TObject3D& obj)
 {
 	return intersect(s2, r1, obj);
 }
 
 /** Gets the intersection between a 3D line and a plane. Possible outcomes:
-  *		- Line is parallel to plane but not within it: Return=false
-  *		- Line is contained in the plane: Return=true,
-  *obj.getType()=GEOMETRIC_TYPE_LINE
-  *		- Line intersects the plane at one point: Return=true,
-  *obj.getType()=GEOMETRIC_TYPE_POINT
-  * \sa TObject3D
-  */
+ *		- Line is parallel to plane but not within it: Return=false
+ *		- Line is contained in the plane: Return=true,
+ *obj.getType()=GEOMETRIC_TYPE_LINE
+ *		- Line intersects the plane at one point: Return=true,
+ *obj.getType()=GEOMETRIC_TYPE_POINT
+ * \sa TObject3D
+ */
 inline bool intersect(const TLine3D& r1, const TPlane& p2, TObject3D& obj)
 {
 	return intersect(p2, r1, obj);
 }
 
 /** Gets the intersection between two 3D lines. Possible outcomes:
-  *		- Lines do not intersect: Return=false
-  *		- Lines are parallel and do not coincide: Return=false
-  *		- Lines coincide (are the same): Return=true,
-  *obj.getType()=GEOMETRIC_TYPE_LINE
-  *		- Lines intesect in a point: Return=true,
-  *obj.getType()=GEOMETRIC_TYPE_POINT
-  * \sa TObject3D
-  */
+ *		- Lines do not intersect: Return=false
+ *		- Lines are parallel and do not coincide: Return=false
+ *		- Lines coincide (are the same): Return=true,
+ *obj.getType()=GEOMETRIC_TYPE_LINE
+ *		- Lines intesect in a point: Return=true,
+ *obj.getType()=GEOMETRIC_TYPE_POINT
+ * \sa TObject3D
+ */
 bool intersect(const TLine3D& r1, const TLine3D& r2, TObject3D& obj);
 
 /** Gets the intersection between two 2D lines. Possible outcomes:
-  *		- Lines do not intersect: Return=false
-  *		- Lines are parallel and do not coincide: Return=false
-  *		- Lines coincide (are the same): Return=true,
-  *obj.getType()=GEOMETRIC_TYPE_LINE
-  *		- Lines intesect in a point: Return=true,
-  *obj.getType()=GEOMETRIC_TYPE_POINT
-  * \sa TObject2D
-  */
+ *		- Lines do not intersect: Return=false
+ *		- Lines are parallel and do not coincide: Return=false
+ *		- Lines coincide (are the same): Return=true,
+ *obj.getType()=GEOMETRIC_TYPE_LINE
+ *		- Lines intesect in a point: Return=true,
+ *obj.getType()=GEOMETRIC_TYPE_POINT
+ * \sa TObject2D
+ */
 bool intersect(const TLine2D& r1, const TLine2D& r2, TObject2D& obj);
 
 /** Gets the intersection between a 2D line and a 2D segment. Possible outcomes:
-  *		- They don't intersect: Return=false
-  *		- s2 lies within the line: Return=true,
-  *obj.getType()=GEOMETRIC_TYPE_SEGMENT
-  *		- Both intersects in one point: Return=true,
-  *obj.getType()=GEOMETRIC_TYPE_POINT
-  * \sa TObject2D
-  */
+ *		- They don't intersect: Return=false
+ *		- s2 lies within the line: Return=true,
+ *obj.getType()=GEOMETRIC_TYPE_SEGMENT
+ *		- Both intersects in one point: Return=true,
+ *obj.getType()=GEOMETRIC_TYPE_POINT
+ * \sa TObject2D
+ */
 bool intersect(const TLine2D& r1, const TSegment2D& s2, TObject2D& obj);
 
 /** Gets the intersection between a 2D line and a 2D segment. Possible outcomes:
-  *		- They don't intersect: Return=false
-  *		- s1 lies within the line: Return=true,
-  *obj.getType()=GEOMETRIC_TYPE_SEGMENT
-  *		- Both intersects in one point: Return=true,
-  *obj.getType()=GEOMETRIC_TYPE_POINT
-  * \sa TObject2D
-  */
+ *		- They don't intersect: Return=false
+ *		- s1 lies within the line: Return=true,
+ *obj.getType()=GEOMETRIC_TYPE_SEGMENT
+ *		- Both intersects in one point: Return=true,
+ *obj.getType()=GEOMETRIC_TYPE_POINT
+ * \sa TObject2D
+ */
 inline bool intersect(const TSegment2D& s1, const TLine2D& r2, TObject2D& obj)
 {
 	return intersect(r2, s1, obj);
 }
 
 /** Gets the intersection between two 2D segments. Possible outcomes:
-  *		- Segments intersect: Return=true, obj.getType()=GEOMETRIC_TYPE_POINT
-  *		- Segments don't intersect & are parallel: Return=true,
-  *obj.getType()=GEOMETRIC_TYPE_SEGMENT, obj is the segment "in between" both
-  *segments.
-  *		- Segments don't intersect & aren't parallel: Return=false.
-  * \sa TObject2D
-  */
+ *		- Segments intersect: Return=true, obj.getType()=GEOMETRIC_TYPE_POINT
+ *		- Segments don't intersect & are parallel: Return=true,
+ *obj.getType()=GEOMETRIC_TYPE_SEGMENT, obj is the segment "in between" both
+ *segments.
+ *		- Segments don't intersect & aren't parallel: Return=false.
+ * \sa TObject2D
+ */
 bool intersect(const TSegment2D& s1, const TSegment2D& s2, TObject2D& obj);
 
 /** @}
@@ -207,31 +208,31 @@ bool intersect(const TSegment2D& s1, const TSegment2D& s2, TObject2D& obj);
 	@{
  */
 /**
-  * Computes the angle between two planes.
-  */
+ * Computes the angle between two planes.
+ */
 double getAngle(const TPlane& p1, const TPlane& p2);
 /**
-  * Computes the angle between a plane and a 3D line or segment (implicit
+ * Computes the angle between a plane and a 3D line or segment (implicit
  * constructor will be used if passing a segment instead of a line).
-  */
+ */
 double getAngle(const TPlane& p1, const TLine3D& r2);
 /**
-  * Computes the angle between a 3D line or segment and a plane (implicit
+ * Computes the angle between a 3D line or segment and a plane (implicit
  * constructor will be used if passing a segment instead of a line).
-  */
+ */
 inline double getAngle(const TLine3D& r1, const TPlane& p2)
 {
 	return getAngle(p2, r1);
 }
 /**
-  * Computes the angle between two 3D lines or segments (implicit constructor
+ * Computes the angle between two 3D lines or segments (implicit constructor
  * will be used if passing a segment instead of a line).
-  */
+ */
 double getAngle(const TLine3D& r1, const TLine3D& r2);
 /**
-  * Computes the angle between two 2D lines or segments (implicit constructor
+ * Computes the angle between two 2D lines or segments (implicit constructor
  * will be used if passing a segment instead of a line).
-  */
+ */
 double getAngle(const TLine2D& r1, const TLine2D& r2);
 /** @}
  */
@@ -240,47 +241,47 @@ double getAngle(const TLine2D& r1, const TLine2D& r2);
 	@{
  */
 /**
-  * Gets a 3D line corresponding to the X axis in a given pose. An implicit
+ * Gets a 3D line corresponding to the X axis in a given pose. An implicit
  * constructor is used if a TPose3D is given.
-  * \sa createFromPoseY,createFromPoseZ,createFromPoseAndVector
-  */
+ * \sa createFromPoseY,createFromPoseZ,createFromPoseAndVector
+ */
 void createFromPoseX(const mrpt::math::TPose3D& p, TLine3D& r);
 /**
-  * Gets a 3D line corresponding to the Y axis in a given pose. An implicit
+ * Gets a 3D line corresponding to the Y axis in a given pose. An implicit
  * constructor is used if a TPose3D is given.
-  * \sa createFromPoseX,createFromPoseZ,createFromPoseAndVector
-  */
+ * \sa createFromPoseX,createFromPoseZ,createFromPoseAndVector
+ */
 void createFromPoseY(const mrpt::math::TPose3D& p, TLine3D& r);
 /**
-  * Gets a 3D line corresponding to the Z axis in a given pose. An implicit
+ * Gets a 3D line corresponding to the Z axis in a given pose. An implicit
  * constructor is used if a TPose3D is given.
-  * \sa createFromPoseX,createFromPoseY,createFromPoseAndVector
-  */
+ * \sa createFromPoseX,createFromPoseY,createFromPoseAndVector
+ */
 void createFromPoseZ(const mrpt::math::TPose3D& p, TLine3D& r);
 /**
-  * Gets a 3D line corresponding to any arbitrary vector, in the base given by
+ * Gets a 3D line corresponding to any arbitrary vector, in the base given by
  * the pose. An implicit constructor is used if a TPose3D is given.
-  * \sa createFromPoseX,createFromPoseY,createFromPoseZ
-  */
+ * \sa createFromPoseX,createFromPoseY,createFromPoseZ
+ */
 void createFromPoseAndVector(
 	const mrpt::math::TPose3D& p, const double (&vector)[3], TLine3D& r);
 /**
-  * Gets a 2D line corresponding to the X axis in a given pose. An implicit
+ * Gets a 2D line corresponding to the X axis in a given pose. An implicit
  * constructor is used if a CPose2D is given.
-  * \sa createFromPoseY,createFromPoseAndVector
-  */
+ * \sa createFromPoseY,createFromPoseAndVector
+ */
 void createFromPoseX(const TPose2D& p, TLine2D& r);
 /**
-  * Gets a 2D line corresponding to the Y axis in a given pose. An implicit
+ * Gets a 2D line corresponding to the Y axis in a given pose. An implicit
  * constructor is used if a CPose2D is given.
-  * \sa createFromPoseX,createFromPoseAndVector
-  */
+ * \sa createFromPoseX,createFromPoseAndVector
+ */
 void createFromPoseY(const TPose2D& p, TLine2D& r);
 /**
-  * Gets a 2D line corresponding to any arbitrary vector, in the base given the
+ * Gets a 2D line corresponding to any arbitrary vector, in the base given the
  * given pose. An implicit constructor is used if a CPose2D is given.
-  * \sa createFromPoseY,createFromPoseAndVector
-  */
+ * \sa createFromPoseY,createFromPoseAndVector
+ */
 void createFromPoseAndVector(
 	const TPose2D& p, const double (&vector)[2], TLine2D& r);
 /** @}
@@ -290,36 +291,36 @@ void createFromPoseAndVector(
 	@{
  */
 /**
-  * Checks whether this polygon or set of points acceptably fits a plane.
-  * \sa TPolygon3D,getEpsilon
-  */
+ * Checks whether this polygon or set of points acceptably fits a plane.
+ * \sa TPolygon3D,getEpsilon
+ */
 bool conformAPlane(const std::vector<TPoint3D>& points);
 /**
-  * Checks whether this polygon or set of points acceptably fits a plane, and if
+ * Checks whether this polygon or set of points acceptably fits a plane, and if
  * it's the case returns it in the second argument.
-  * \sa TPolygon3D,getEpsilon
-  */
+ * \sa TPolygon3D,getEpsilon
+ */
 bool conformAPlane(const std::vector<TPoint3D>& points, TPlane& p);
 /**
-  * Checks whether this set of points acceptably fits a 2D line.
-  * \sa getEpsilon
-  */
+ * Checks whether this set of points acceptably fits a 2D line.
+ * \sa getEpsilon
+ */
 bool areAligned(const std::vector<TPoint2D>& points);
 /**
-  * Checks whether this set of points acceptably fits a 2D line, and if it's the
+ * Checks whether this set of points acceptably fits a 2D line, and if it's the
  * case returns it in the second argument.
-  * \sa getEpsilon
-  */
+ * \sa getEpsilon
+ */
 bool areAligned(const std::vector<TPoint2D>& points, TLine2D& r);
 /**
-  * Checks whether this set of points acceptably fits a 3D line.
-  * \sa getEpsilon
-  */
+ * Checks whether this set of points acceptably fits a 3D line.
+ * \sa getEpsilon
+ */
 bool areAligned(const std::vector<TPoint3D>& points);
 /**
-  * Checks whether this set of points acceptably fits a 3D line, and if it's the
+ * Checks whether this set of points acceptably fits a 3D line, and if it's the
  * case returns it in the second argument.
-  */
+ */
 bool areAligned(const std::vector<TPoint3D>& points, TLine3D& r);
 /** @}
  */
@@ -398,36 +399,30 @@ void project3D(
 
 /** Uses the given pose 2D to project a point into a new base. */
 void project2D(
-	const TPoint2D& point, const TPose2D& newXpose,
-	TPoint2D& newPoint);
+	const TPoint2D& point, const TPose2D& newXpose, TPoint2D& newPoint);
 
 /** Uses the given pose 2D to project a segment into a new base  */
 inline void project2D(
-	const TSegment2D& segment, const TPose2D& newXpose,
-	TSegment2D& newSegment)
+	const TSegment2D& segment, const TPose2D& newXpose, TSegment2D& newSegment)
 {
 	project2D(segment.point1, newXpose, newSegment.point1);
 	project2D(segment.point2, newXpose, newSegment.point2);
 }
 
 /** Uses the given pose 2D to project a line into a new base */
-void project2D(
-	const TLine2D& line, const TPose2D& newXpose,
-	TLine2D& newLine);
+void project2D(const TLine2D& line, const TPose2D& newXpose, TLine2D& newLine);
 /** Uses the given pose 2D to project a polygon into a new base. */
 void project2D(
-	const TPolygon2D& polygon, const TPose2D& newXpose,
-	TPolygon2D& newPolygon);
+	const TPolygon2D& polygon, const TPose2D& newXpose, TPolygon2D& newPolygon);
 /** Uses the given pose 2D to project any 2D object into a new base */
 void project2D(
-	const TObject2D& object, const TPose2D& newXpose,
-	TObject2D& newObject);
+	const TObject2D& object, const TPose2D& newXpose, TObject2D& newObject);
 
 /** Projects any 2D object into the line's base, using its inverse pose. If the
  * object is exactly inside the line, this projection will zero its Y
  * coordinate.
-  * \tparam CPOSE2D set to TPose2D
-  */
+ * \tparam CPOSE2D set to TPose2D
+ */
 template <class T, class CPOSE2D>
 void project2D(const T& obj, const TLine2D& newXLine, T& newObj)
 {
@@ -439,8 +434,8 @@ void project2D(const T& obj, const TLine2D& newXLine, T& newObj)
 /** Projects any 2D object into the line's base, using its inverse pose and
  * forcing the position of the new coordinate origin. If the object is exactly
  * inside the line, this projection will zero its Y coordinate.
-  * \tparam CPOSE2D set to TPose2D
-  */
+ * \tparam CPOSE2D set to TPose2D
+ */
 template <class T, class CPOSE2D>
 void project2D(
 	const T& obj, const TLine2D& newXLine, const TPoint2D& newOrigin, T& newObj)
@@ -516,14 +511,14 @@ inline bool intersect(const TPlane& p1, const TPolygon3D& p2, TObject3D& obj)
 /** Gets the intersection between two sets of 3D polygons. The intersection is
  * returned as an sparse matrix with each pair of polygons' intersections, and
  * the return value is the amount of intersections found.
-  * \sa TObject3D,CSparseMatrixTemplate */
+ * \sa TObject3D,CSparseMatrixTemplate */
 size_t intersect(
 	const std::vector<TPolygon3D>& v1, const std::vector<TPolygon3D>& v2,
 	CSparseMatrixTemplate<TObject3D>& objs);
 /** Gets the intersection between two sets of 3D polygons. The intersection is
  * returned as a vector with every intersection found, and the return value is
  * the amount of intersections found.
-  * \sa TObject3D */
+ * \sa TObject3D */
 size_t intersect(
 	const std::vector<TPolygon3D>& v1, const std::vector<TPolygon3D>& v2,
 	std::vector<TObject3D>& objs);
@@ -535,7 +530,7 @@ size_t intersect(
  */
 /** Gets the intersection between vectors of geometric objects and returns it in
  * a sparse matrix of either TObject2D or TObject3D.
-  * \sa TObject2D,TObject3D,CSparseMatrix */
+ * \sa TObject2D,TObject3D,CSparseMatrix */
 template <class T, class U, class O>
 size_t intersect(
 	const std::vector<T>& v1, const std::vector<U>& v2,
@@ -553,7 +548,7 @@ size_t intersect(
 
 /** Gets the intersection between vectors of geometric objects and returns it in
  * a vector of either TObject2D or TObject3D.
-  * \sa TObject2D,TObject3D */
+ * \sa TObject2D,TObject3D */
 template <class T, class U, class O>
 size_t intersect(
 	const std::vector<T>& v1, const std::vector<U>& v2, std::vector<O> objs)
@@ -649,33 +644,33 @@ void getPrismBounds(
 	@{
  */
 /**
-  * Given a pose, creates a plane orthogonal to its Z vector.
-  * \sa createPlaneFromPoseXZ,createPlaneFromPoseYZ,createPlaneFromPoseAndNormal
-  */
+ * Given a pose, creates a plane orthogonal to its Z vector.
+ * \sa createPlaneFromPoseXZ,createPlaneFromPoseYZ,createPlaneFromPoseAndNormal
+ */
 void createPlaneFromPoseXY(const mrpt::math::TPose3D& pose, TPlane& plane);
 /**
-  * Given a pose, creates a plane orthogonal to its Y vector.
-  * \sa createPlaneFromPoseXY,createPlaneFromPoseYZ,createPlaneFromPoseAndNormal
-  */
+ * Given a pose, creates a plane orthogonal to its Y vector.
+ * \sa createPlaneFromPoseXY,createPlaneFromPoseYZ,createPlaneFromPoseAndNormal
+ */
 void createPlaneFromPoseXZ(const mrpt::math::TPose3D& pose, TPlane& plane);
 /**
-  * Given a pose, creates a plane orthogonal to its X vector.
-  * \sa createPlaneFromPoseXY,createPlaneFromPoseXZ,createPlaneFromPoseAndNormal
-  */
+ * Given a pose, creates a plane orthogonal to its X vector.
+ * \sa createPlaneFromPoseXY,createPlaneFromPoseXZ,createPlaneFromPoseAndNormal
+ */
 void createPlaneFromPoseYZ(const mrpt::math::TPose3D& pose, TPlane& plane);
 /**
-  * Given a pose and any vector, creates a plane orthogonal to that vector in
+ * Given a pose and any vector, creates a plane orthogonal to that vector in
  * the pose's coordinates.
-  * \sa createPlaneFromPoseXY,createPlaneFromPoseXZ,createPlaneFromPoseYZ
-  */
+ * \sa createPlaneFromPoseXY,createPlaneFromPoseXZ,createPlaneFromPoseYZ
+ */
 void createPlaneFromPoseAndNormal(
 	const mrpt::math::TPose3D& pose, const double (&normal)[3], TPlane& plane);
 /**
-  * Creates a homogeneus matrix (4x4) such that the coordinate given (0 for x, 1
+ * Creates a homogeneus matrix (4x4) such that the coordinate given (0 for x, 1
  * for y, 2 for z) corresponds to the provided vector.
-	* \param[in] vec must be a *unitary* vector
-	* \sa generateAxisBaseFromDirectionAndAxis()
-  */
+ * \param[in] vec must be a *unitary* vector
+ * \sa generateAxisBaseFromDirectionAndAxis()
+ */
 void generateAxisBaseFromDirectionAndAxis(
 	const double (&vec)[3], char coord, CMatrixDouble44& matrix);
 /** @}
@@ -685,22 +680,22 @@ void generateAxisBaseFromDirectionAndAxis(
 	@{
  */
 /**
-  * Using eigenvalues, gets the best fitting line for a set of 2D points.
+ * Using eigenvalues, gets the best fitting line for a set of 2D points.
  * Returns an estimation of the error.
-  * \sa spline, leastSquareLinearFit
-  */
+ * \sa spline, leastSquareLinearFit
+ */
 double getRegressionLine(const std::vector<TPoint2D>& points, TLine2D& line);
 /**
-  * Using eigenvalues, gets the best fitting line for a set of 3D points.
+ * Using eigenvalues, gets the best fitting line for a set of 3D points.
  * Returns an estimation of the error.
-  * \sa spline, leastSquareLinearFit
-  */
+ * \sa spline, leastSquareLinearFit
+ */
 double getRegressionLine(const std::vector<TPoint3D>& points, TLine3D& line);
 /**
-  * Using eigenvalues, gets the best fitting plane for a set of 3D points.
+ * Using eigenvalues, gets the best fitting plane for a set of 3D points.
  * Returns an estimation of the error.
-  * \sa spline, leastSquareLinearFit
-  */
+ * \sa spline, leastSquareLinearFit
+ */
 double getRegressionPlane(const std::vector<TPoint3D>& points, TPlane& plane);
 /** @}
  */
@@ -709,91 +704,91 @@ double getRegressionPlane(const std::vector<TPoint3D>& points, TPlane& plane);
 	@{
  */
 /**
-  * Tries to assemble a set of segments into a set of closed polygons.
-  */
+ * Tries to assemble a set of segments into a set of closed polygons.
+ */
 void assemblePolygons(
 	const std::vector<TSegment3D>& segms, std::vector<TPolygon3D>& polys);
 /**
-  * Tries to assemble a set of segments into a set of closed polygons, returning
+ * Tries to assemble a set of segments into a set of closed polygons, returning
  * the unused segments as another out parameter.
-  */
+ */
 void assemblePolygons(
 	const std::vector<TSegment3D>& segms, std::vector<TPolygon3D>& polys,
 	std::vector<TSegment3D>& remainder);
 /**
-  * Extracts all the polygons, including those formed from segments, from the
+ * Extracts all the polygons, including those formed from segments, from the
  * set of objects.
-  */
+ */
 void assemblePolygons(
 	const std::vector<TObject3D>& objs, std::vector<TPolygon3D>& polys);
 /**
-  * Extracts all the polygons, including those formed from segments, from the
+ * Extracts all the polygons, including those formed from segments, from the
  * set of objects.
-  */
+ */
 void assemblePolygons(
 	const std::vector<TObject3D>& objs, std::vector<TPolygon3D>& polys,
 	std::vector<TObject3D>& remainder);
 /**
-  * Extracts all the polygons, including those formed from segments, from the
+ * Extracts all the polygons, including those formed from segments, from the
  * set of objects.
-  */
+ */
 void assemblePolygons(
 	const std::vector<TObject3D>& objs, std::vector<TPolygon3D>& polys,
 	std::vector<TSegment3D>& remainder1, std::vector<TObject3D>& remainder2);
 
 /**
-  * Changes the value of the geometric epsilon (default = 1e-5)
-  * \sa geometryEpsilon,getEpsilon
-  */
+ * Changes the value of the geometric epsilon (default = 1e-5)
+ * \sa geometryEpsilon,getEpsilon
+ */
 void setEpsilon(double nE);
 /**
-  * Gets the value of the geometric epsilon  (default = 1e-5)
-  * \sa setEpsilon
-  */
+ * Gets the value of the geometric epsilon  (default = 1e-5)
+ * \sa setEpsilon
+ */
 double getEpsilon();
 /**
-  * Splits a 2D polygon into convex components.
-  */
+ * Splits a 2D polygon into convex components.
+ */
 bool splitInConvexComponents(
 	const TPolygon2D& poly, std::vector<TPolygon2D>& components);
 /**
-  * Splits a 3D polygon into convex components.
-  * \throw std::logic_error if the polygon can't be fit into a plane.
-  */
+ * Splits a 3D polygon into convex components.
+ * \throw std::logic_error if the polygon can't be fit into a plane.
+ */
 bool splitInConvexComponents(
 	const TPolygon3D& poly, std::vector<TPolygon3D>& components);
 
 /**
-  * Gets the bisector of a 2D segment.
-  */
+ * Gets the bisector of a 2D segment.
+ */
 void getSegmentBisector(const TSegment2D& sgm, TLine2D& bis);
 /**
-  * Gets the bisector of a 3D segment.
-  */
+ * Gets the bisector of a 3D segment.
+ */
 void getSegmentBisector(const TSegment3D& sgm, TPlane& bis);
 /**
-  * Gets the bisector of two lines or segments (implicit constructor will be
+ * Gets the bisector of two lines or segments (implicit constructor will be
  * used if necessary)
-  */
+ */
 void getAngleBisector(const TLine2D& l1, const TLine2D& l2, TLine2D& bis);
 /**
-  * Gets the bisector of two lines or segments (implicit constructor will be
+ * Gets the bisector of two lines or segments (implicit constructor will be
  * used if necessary)
-  * \throw std::logic_error if the lines do not fit in a single plane.
-  */
+ * \throw std::logic_error if the lines do not fit in a single plane.
+ */
 void getAngleBisector(const TLine3D& l1, const TLine3D& l2, TLine3D& bis);
 
 /**
-  * Fast ray tracing method using polygons' properties.
-  * \sa CRenderizable::rayTrace
-  */
+ * Fast ray tracing method using polygons' properties.
+ * \sa CRenderizable::rayTrace
+ */
 bool traceRay(
 	const std::vector<TPolygonWithPlane>& vec, const mrpt::math::TPose3D& pose,
 	double& dist);
 /**
-  * Fast ray tracing method using polygons' properties.
-  * \sa CRenderizable::rayTrace
-  */
+ * Fast ray tracing method using polygons' properties.
+ * \sa CRenderizable::rayTrace
+ */
 inline bool traceRay(
 	const std::vector<TPolygon3D>& vec, const mrpt::math::TPose3D& pose,
 	double& dist)
@@ -849,14 +844,14 @@ inline Eigen::Matrix<double, 3, 1> crossProduct3D(
 }
 
 /** Computes the 3x3 skew symmetric matrix from a 3-vector or 3-array:
-  * \f[  M([x ~ y ~ z]^\top) = \left(
-  * 	\begin{array}{c c c}
-  * 	0 & -z & y \\
-  * 	z & 0 & -x \\
-  * 	-y & x & 0
-  * 	\end{array} \right)
-  * \f]
-  */
+ * \f[  M([x ~ y ~ z]^\top) = \left(
+ * 	\begin{array}{c c c}
+ * 	0 & -z & y \\
+ * 	z & 0 & -x \\
+ * 	-y & x & 0
+ * 	\end{array} \right)
+ * \f]
+ */
 template <class VECTOR, class MATRIX>
 inline void skew_symmetric3(const VECTOR& v, MATRIX& M)
 {
@@ -883,14 +878,14 @@ inline mrpt::math::CMatrixDouble33 skew_symmetric3(const VECTOR& v)
 
 /** Computes the negative version of a 3x3 skew symmetric matrix from a 3-vector
  * or 3-array:
-  * \f[  -M([x ~ y ~ z]^\top) = \left(
-  * 	\begin{array}{c c c}
-  * 	0 & z & -y \\
-  * 	-z & 0 & x \\
-  * 	y & -x & 0
-  * 	\end{array} \right)
-  * \f]
-  */
+ * \f[  -M([x ~ y ~ z]^\top) = \left(
+ * 	\begin{array}{c c c}
+ * 	0 & z & -y \\
+ * 	-z & 0 & x \\
+ * 	y & -x & 0
+ * 	\end{array} \right)
+ * \f]
+ */
 template <class VECTOR, class MATRIX>
 inline void skew_symmetric3_neg(const VECTOR& v, MATRIX& M)
 {
@@ -916,9 +911,9 @@ inline mrpt::math::CMatrixDouble33 skew_symmetric3_neg(const VECTOR& v)
 }
 
 /**
-  * Returns true if two 2D vectors are parallel. The arguments may be points,
+ * Returns true if two 2D vectors are parallel. The arguments may be points,
  * arrays, etc.
-  */
+ */
 template <class T, class U>
 inline bool vectorsAreParallel2D(const T& v1, const U& v2)
 {
@@ -926,9 +921,9 @@ inline bool vectorsAreParallel2D(const T& v1, const U& v2)
 }
 
 /**
-  * Returns true if two 3D vectors are parallel. The arguments may be points,
+ * Returns true if two 3D vectors are parallel. The arguments may be points,
  * arrays, etc.
-  */
+ */
 template <class T, class U>
 inline bool vectorsAreParallel3D(const T& v1, const U& v2)
 {
@@ -938,21 +933,21 @@ inline bool vectorsAreParallel3D(const T& v1, const U& v2)
 }
 
 /** Computes the closest point from a given point to a segment.
-  * \sa closestFromPointToLine
-  */
+ * \sa closestFromPointToLine
+ */
 void closestFromPointToSegment(
 	const double& Px, const double& Py, const double& x1, const double& y1,
 	const double& x2, const double& y2, double& out_x, double& out_y);
 
 /** Computes the closest point from a given point to a (infinite) line.
-  * \sa closestFromPointToSegment
-  */
+ * \sa closestFromPointToSegment
+ */
 void closestFromPointToLine(
 	const double& Px, const double& Py, const double& x1, const double& y1,
 	const double& x2, const double& y2, double& out_x, double& out_y);
 
 /** Returns the square distance from a point to a line.
-  */
+ */
 double closestSquareDistanceFromPointToLine(
 	const double& Px, const double& Py, const double& x1, const double& y1,
 	const double& x2, const double& y2);
@@ -989,7 +984,7 @@ T distanceSqrBetweenPoints(
 
 /** Computes the closest point from a given point to a segment, and returns that
  * minimum distance.
-  */
+ */
 template <typename T>
 double minimumDistanceFromPointToSegment(
 	const double Px, const double Py, const double x1, const double y1,
@@ -1003,34 +998,34 @@ double minimumDistanceFromPointToSegment(
 }
 
 /** Returns the intersection point, and if it exists, between two segments.
-  */
+ */
 bool SegmentsIntersection(
 	const double x1, const double y1, const double x2, const double y2,
 	const double x3, const double y3, const double x4, const double y4,
 	double& ix, double& iy);
 
 /** Returns the intersection point, and if it exists, between two segments.
-  */
+ */
 bool SegmentsIntersection(
 	const double x1, const double y1, const double x2, const double y2,
 	const double x3, const double y3, const double x4, const double y4,
 	float& ix, float& iy);
 
 /** Returns true if the 2D point (px,py) falls INTO the given polygon.
-  * \sa pointIntoQuadrangle
-  */
+ * \sa pointIntoQuadrangle
+ */
 bool pointIntoPolygon2D(
 	const double& px, const double& py, unsigned int polyEdges,
 	const double* poly_xs, const double* poly_ys);
 
 /** Specialized method to check whether a point (x,y) falls into a quadrangle.
-  * \sa pointIntoPolygon2D
-  */
+ * \sa pointIntoPolygon2D
+ */
 template <typename T>
 bool pointIntoQuadrangle(
 	T x, T y, T v1x, T v1y, T v2x, T v2y, T v3x, T v3y, T v4x, T v4y)
 {
-	using mrpt::utils::sign;
+	using mrpt::sign;
 
 	const T a1 = atan2(v1y - y, v1x - x);
 	const T a2 = atan2(v2y - y, v2x - x);
@@ -1052,7 +1047,7 @@ bool pointIntoQuadrangle(
 
 /** Returns the closest distance of a given 2D point to a polygon, or "0" if the
  * point is INTO the polygon or its perimeter.
-  */
+ */
 double distancePointToPolygon2D(
 	const double& px, const double& py, unsigned int polyEdges,
 	const double* poly_xs, const double* poly_ys);
@@ -1169,5 +1164,5 @@ CMatrixTemplateNumeric<T> generateAxisBaseFromDirection(T dx, T dy, T dz)
 
 /** @} */  // end of grouping
 
-}  // End of namespace
-}  // End of namespace
+}  // namespace math
+}  // namespace mrpt

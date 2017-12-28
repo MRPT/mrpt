@@ -13,6 +13,7 @@
 #include <mrpt/math/types_math.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/typemeta/TTypeName.h>
+#include <mrpt/typemeta/num_to_string.h>
 #include <mrpt/math/point_poses2vectors.h>  // MRPT_MATRIX_CONSTRUCTORS_FROM_POSES()
 
 namespace mrpt
@@ -50,7 +51,7 @@ class CMatrixFixedNumeric
 							  ((NCOLS == 1 && NROWS != 1) ? Eigen::ColMajor
 														  : Eigen::RowMajor)>
 		Base;
-	typedef CMatrixFixedNumeric<T, NROWS, NCOLS> mrpt_autotype;
+	using mrpt_autotype = CMatrixFixedNumeric<T, NROWS, NCOLS>;
 	MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(CMatrixFixedNumeric)
 	MRPT_EIGEN_DERIVED_CLASS_CTOR_OPERATOR_EQUAL(
 		CMatrixFixedNumeric)  // Implements ctor and "operator =" for any other

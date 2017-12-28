@@ -92,14 +92,14 @@ class CSetOfLines : public CRenderizableDisplayList
 	  *  \exception std::exception If there is no previous segment */
 	inline void appendLineStrip(float x, float y, float z)
 	{
-		ASSERT_(!this->empty())
+		ASSERT_(!this->empty();
 		this->appendLine(this->rbegin()->point2, mrpt::math::TPoint3D(x, y, z));
 	}
 	//! \overload
 	template <class U>
 	inline void appendLineStrip(const U& point)
 	{
-		ASSERT_(!this->empty())
+		ASSERT_(!this->empty();
 		this->appendLine(this->rbegin()->point2, point);
 	}
 

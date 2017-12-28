@@ -247,8 +247,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 	if (m_closing_navigator) return;  // Are we closing in the main thread?
 	if (!m_init_done)
 		THROW_EXCEPTION("Have you called loadConfigFile() before?");
-	ASSERT_(m_navigationParams)
-
+	ASSERT_(m_navigationParams);
 	const size_t nPTGs = this->getPTG_count();
 
 	// Whether to worry about log files:
@@ -1039,8 +1038,7 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	const double d = std::min(in_TPObstacles[move_k], 0.99 * target_d_norm);
 	uint32_t nStep;
 	bool pt_in_range = cm.PTG->getPathStepForDist(move_k, d, nStep);
-	ASSERT_(pt_in_range)
-
+	ASSERT_(pt_in_range);
 	mrpt::math::TPose2D pose;
 	cm.PTG->getPathPose(move_k, nStep, pose);
 
@@ -1905,8 +1903,7 @@ void CAbstractPTGBasedReactive::loadConfigFile(
 
 	// Holo method:
 	this->setHolonomicMethod(params_abstract_ptg_navigator.holonomic_method, c);
-	ASSERT_(!m_holonomicMethod.empty())
-
+	ASSERT_(!m_holonomicMethod.empty());
 	CWaypointsNavigator::loadConfigFile(c);  // Load parent params
 
 	m_init_done =

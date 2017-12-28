@@ -89,8 +89,7 @@ class TMoveTree : public mrpt::graphs::CDirectedTree<EDGE_TYPE>
 		double* out_distance = NULL,
 		const std::set<mrpt::utils::TNodeID>* ignored_nodes = NULL) const
 	{
-		ASSERT_(!m_nodes.empty())
-
+		ASSERT_(!m_nodes.empty());
 		double min_d = std::numeric_limits<double>::max();
 		mrpt::utils::TNodeID min_id = INVALID_NODEID;
 		for (typename node_map_t::const_iterator it = m_nodes.begin();
@@ -239,9 +238,9 @@ struct PoseDistanceMetric<TNodeSE2>
 
 	double distance(const TNodeSE2& a, const TNodeSE2& b) const
 	{
-		return mrpt::math::square(a.state.x - b.state.x) +
-			   mrpt::math::square(a.state.y - b.state.y) +
-			   mrpt::math::square(
+		return mrpt::square(a.state.x - b.state.x) +
+			   mrpt::square(a.state.y - b.state.y) +
+			   mrpt::square(
 				   mrpt::math::angDistance(a.state.phi, b.state.phi));
 	}
 	PoseDistanceMetric() {}

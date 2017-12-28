@@ -291,7 +291,7 @@ class COccupancyGridMap2D : public CMetricMap,
 	/** Returns the area of the gridmap, in square meters */
 	inline double getArea() const
 	{
-		return size_x * size_y * mrpt::math::square(resolution);
+		return size_x * size_y * mrpt::square(resolution);
 	}
 
 	/** Returns the horizontal size of grid map in cells count */
@@ -432,8 +432,8 @@ class COccupancyGridMap2D : public CMetricMap,
 #ifdef _DEBUG
 		ASSERT_ABOVEEQ_(x, 0)
 		ASSERT_ABOVEEQ_(y, 0)
-		ASSERT_BELOWEQ_(x, int(m_basis_map.getSizeX()))
-		ASSERT_BELOWEQ_(y, int(m_basis_map.getSizeY()))
+		ASSERT_BELOWEQ_(x, int(m_basis_map.getSizeX());
+		ASSERT_BELOWEQ_(y, int(m_basis_map.getSizeY());
 #endif
 		*cell = value;
 	}
@@ -445,8 +445,8 @@ class COccupancyGridMap2D : public CMetricMap,
 #ifdef _DEBUG
 		ASSERT_ABOVEEQ_(x, 0)
 		ASSERT_ABOVEEQ_(y, 0)
-		ASSERT_BELOWEQ_(x, int(m_basis_map.getSizeX()))
-		ASSERT_BELOWEQ_(y, int(m_basis_map.getSizeY()))
+		ASSERT_BELOWEQ_(x, int(m_basis_map.getSizeX());
+		ASSERT_BELOWEQ_(y, int(m_basis_map.getSizeY());
 #endif
 		return *cell;
 	}
@@ -698,8 +698,8 @@ class COccupancyGridMap2D : public CMetricMap,
 #ifdef _DEBUG
 		ASSERT_ABOVEEQ_(cx, 0)
 		ASSERT_ABOVEEQ_(cy, 0)
-		ASSERT_BELOWEQ_(cx, int(m_voronoi_diagram.getSizeX()))
-		ASSERT_BELOWEQ_(cy, int(m_voronoi_diagram.getSizeY()))
+		ASSERT_BELOWEQ_(cx, int(m_voronoi_diagram.getSizeX());
+		ASSERT_BELOWEQ_(cy, int(m_voronoi_diagram.getSizeY());
 #endif
 		const uint16_t* cell = m_voronoi_diagram.cellByIndex(cx, cy);
 		return *cell;
@@ -714,8 +714,8 @@ class COccupancyGridMap2D : public CMetricMap,
 #ifdef _DEBUG
 		ASSERT_ABOVEEQ_(cx, 0)
 		ASSERT_ABOVEEQ_(cy, 0)
-		ASSERT_BELOWEQ_(cx, int(m_voronoi_diagram.getSizeX()))
-		ASSERT_BELOWEQ_(cy, int(m_voronoi_diagram.getSizeY()))
+		ASSERT_BELOWEQ_(cx, int(m_voronoi_diagram.getSizeX());
+		ASSERT_BELOWEQ_(cy, int(m_voronoi_diagram.getSizeY());
 #endif
 		*cell = dist;
 	}

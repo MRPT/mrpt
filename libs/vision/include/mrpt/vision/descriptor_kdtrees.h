@@ -60,7 +60,7 @@ struct TSIFTDescriptorsKDTreeIndex
 	TSIFTDescriptorsKDTreeIndex(const CFeatureList& feats)
 		: m_adaptor(feats), m_kdtree(nullptr), m_feats(feats)
 	{
-		ASSERT_(!feats.empty() && feats[0]->descriptors.hasDescriptorSIFT())
+		ASSERT_(!feats.empty() && feats[0]->descriptors.hasDescriptorSIFT();
 		this->regenerate_kdtreee();
 	}
 
@@ -118,7 +118,7 @@ struct TSURFDescriptorsKDTreeIndex
 	TSURFDescriptorsKDTreeIndex(const CFeatureList& feats)
 		: m_adaptor(feats), m_kdtree(nullptr), m_feats(feats)
 	{
-		ASSERT_(!feats.empty() && feats[0]->descriptors.hasDescriptorSIFT())
+		ASSERT_(!feats.empty() && feats[0]->descriptors.hasDescriptorSIFT();
 		this->regenerate_kdtreee();
 	}
 

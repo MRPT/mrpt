@@ -148,8 +148,7 @@ void optimize_graph_spa_levmarq(
 
 	// Number of nodes to optimize, or free variables:
 	const size_t nFreeNodes = nodes_to_optimize->size();
-	ASSERT_ABOVE_(nFreeNodes, 0)
-
+	ASSERT_ABOVE_(nFreeNodes, 0);
 	if (verbose)
 	{
 		cout << "[" << __CURRENT_FUNCTION_NAME__ << "] " << nFreeNodes
@@ -210,8 +209,7 @@ void optimize_graph_spa_levmarq(
 	// The number of constraints, or observations actually implied in this
 	// problem:
 	const size_t nObservations = lstObservationData.size();
-	ASSERT_ABOVE_(nObservations, 0)
-
+	ASSERT_ABOVE_(nObservations, 0);
 	// Cholesky object, as a pointer to reuse it between iterations:
 
 	typedef std::unique_ptr<CSparseMatrix::CholeskyDecomp>
@@ -306,8 +304,7 @@ void optimize_graph_spa_levmarq(
 
 			// "lstJacobians" is sorted in the same order than
 			// "lstObservationData":
-			ASSERT_EQUAL_(lstJacobians.size(), lstObservationData.size())
-
+			ASSERT_EQUAL_(lstJacobians.size(), lstObservationData.size());
 			{
 				size_t idx_obs;
 				typename gst::map_pairIDs_pairJacobs_t::const_iterator itJ;

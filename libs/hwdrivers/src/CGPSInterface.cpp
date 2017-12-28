@@ -736,7 +736,7 @@ bool CGPSInterface::setJAVAD_AIM_mode()
 		// be treated
 		// as normal
 
-		ASSERT_(!m_JAVAD_rtk_format.empty())
+		ASSERT_(!m_JAVAD_rtk_format.empty();
 		cout << "Formato de correcciones para GR3: " << m_JAVAD_rtk_format
 			 << endl;
 		if (m_JAVAD_rtk_format == "cmr")

@@ -16,7 +16,8 @@
 #include <stdexcept>
 
 // Include CSparse lib headers, either from the system or embedded:
-extern "C" {
+extern "C"
+{
 #if MRPT_HAS_SUITESPARSE
 #define NCOMPLEX  // In MRPT we don't need complex numbers, so avoid the
 // annoying warning: 'cs_ci_house' has C-linkage specified,
@@ -33,67 +34,67 @@ namespace mrpt
 namespace math
 {
 /** Used in mrpt::math::CSparseMatrix */
-struct CExceptionNotDefPos : public std::exception
+struct CExceptionNotDefPos : public std::runtime_error
 {
-	CExceptionNotDefPos(const char* s) : std::exception(s) {}
+	CExceptionNotDefPos(const char* s) : std::runtime_error(s) {}
 };
 
 /** A sparse matrix structure, wrapping T. Davis' CSparse library (part of
-  *suitesparse)
-  *  The type of the matrix entries is fixed to "double".
-  *
-  *  There are two formats for the non-zero entries in this matrix:
-  *		- A "triplet" matrix: a set of (r,c)=val triplet entries.
-  *		- A column-compressed sparse (CCS) matrix.
-  *
-  *  The latter is the "normal" format, which is expected by all mathematical
-  *operations defined
-  *   in this class. There're three ways of initializing and populating a sparse
-  *matrix:
-  *
-  *   <ol>
-  *    <li> <b>As a triplet (empty), then add entries, then compress:</b>
-  *         \code
-  *             CSparseMatrix  SM(100,100);
-  *             SM.insert_entry(i,j, val);  // or
-  *             SM.insert_submatrix(i,j, MAT); //  ...
-  *             SM.compressFromTriplet();
-  *         \endcode
-  *    </li>
-  *    <li> <b>As a triplet from a CSparseMatrixTemplate<double>:</b>
-  *         \code
-  *             CSparseMatrixTemplate<double>  data;
-  *             data(row,col) = val;
-  *             ...
-  *             CSparseMatrix  SM(data);
-  *         \endcode
-  *    </li>
-  *    <li> <b>From an existing dense matrix:</b>
-  *         \code
-  *             CMatrixDouble data(100,100); // or
-  *             CMatrixFloat  data(100,100); // or
-  *             CMatrixFixedNumeric<double,4,6>  data; // etc...
-  *             CSparseMatrix  SM(data);
-  *         \endcode
-  *    </li>
-  *
-  *   </ol>
-  *
-  *  Due to its practical utility, there is a special inner class
-  *CSparseMatrix::CholeskyDecomp to handle Cholesky-related methods and data.
-  *
-  * \note This class was initially adapted from "robotvision", by Hauke
-  *Strasdat, Steven Lovegrove and Andrew J. Davison. See
-  *http://www.openslam.org/robotvision.html
-  * \note CSparse is maintained by Timothy Davis:
-  *http://people.sc.fsu.edu/~jburkardt/c_src/csparse/csparse.html .
-  * \note See also his book "Direct methods for sparse linear systems".
-  *http://books.google.es/books?id=TvwiyF8vy3EC&pg=PA12&lpg=PA12&dq=cs_compress&source=bl&ots=od9uGJ793j&sig=Wa-fBk4sZkZv3Y0Op8FNH8PvCUs&hl=es&ei=UjA0TJf-EoSmsQay3aXPAw&sa=X&oi=book_result&ct=result&resnum=8&ved=0CEQQ6AEwBw#v=onepage&q&f=false
-  *
-  * \sa mrpt::math::MatrixBlockSparseCols, mrpt::math::CMatrixFixedNumeric,
-  *mrpt::math::CMatrixTemplateNumeric, etc.
-  * \ingroup mrpt_math_grp
-  */
+ *suitesparse)
+ *  The type of the matrix entries is fixed to "double".
+ *
+ *  There are two formats for the non-zero entries in this matrix:
+ *		- A "triplet" matrix: a set of (r,c)=val triplet entries.
+ *		- A column-compressed sparse (CCS) matrix.
+ *
+ *  The latter is the "normal" format, which is expected by all mathematical
+ *operations defined
+ *   in this class. There're three ways of initializing and populating a sparse
+ *matrix:
+ *
+ *   <ol>
+ *    <li> <b>As a triplet (empty), then add entries, then compress:</b>
+ *         \code
+ *             CSparseMatrix  SM(100,100);
+ *             SM.insert_entry(i,j, val);  // or
+ *             SM.insert_submatrix(i,j, MAT); //  ...
+ *             SM.compressFromTriplet();
+ *         \endcode
+ *    </li>
+ *    <li> <b>As a triplet from a CSparseMatrixTemplate<double>:</b>
+ *         \code
+ *             CSparseMatrixTemplate<double>  data;
+ *             data(row,col) = val;
+ *             ...
+ *             CSparseMatrix  SM(data);
+ *         \endcode
+ *    </li>
+ *    <li> <b>From an existing dense matrix:</b>
+ *         \code
+ *             CMatrixDouble data(100,100); // or
+ *             CMatrixFloat  data(100,100); // or
+ *             CMatrixFixedNumeric<double,4,6>  data; // etc...
+ *             CSparseMatrix  SM(data);
+ *         \endcode
+ *    </li>
+ *
+ *   </ol>
+ *
+ *  Due to its practical utility, there is a special inner class
+ *CSparseMatrix::CholeskyDecomp to handle Cholesky-related methods and data.
+ *
+ * \note This class was initially adapted from "robotvision", by Hauke
+ *Strasdat, Steven Lovegrove and Andrew J. Davison. See
+ *http://www.openslam.org/robotvision.html
+ * \note CSparse is maintained by Timothy Davis:
+ *http://people.sc.fsu.edu/~jburkardt/c_src/csparse/csparse.html .
+ * \note See also his book "Direct methods for sparse linear systems".
+ *http://books.google.es/books?id=TvwiyF8vy3EC&pg=PA12&lpg=PA12&dq=cs_compress&source=bl&ots=od9uGJ793j&sig=Wa-fBk4sZkZv3Y0Op8FNH8PvCUs&hl=es&ei=UjA0TJf-EoSmsQay3aXPAw&sa=X&oi=book_result&ct=result&resnum=8&ved=0CEQQ6AEwBw#v=onepage&q&f=false
+ *
+ * \sa mrpt::math::MatrixBlockSparseCols, mrpt::math::CMatrixFixedNumeric,
+ *mrpt::math::CMatrixTemplateNumeric, etc.
+ * \ingroup mrpt_math_grp
+ */
 class CSparseMatrix
 {
    private:
@@ -163,19 +164,19 @@ class CSparseMatrix
 		@{  */
 
 	/** Create an initially empty sparse matrix, in the "triplet" form.
-	  *  Notice that you must call "compressFromTriplet" after populating the
+	 *  Notice that you must call "compressFromTriplet" after populating the
 	 * matrix and before using the math operatons on this matrix.
-	  *  The initial size can be later on extended with insert_entry() or
+	 *  The initial size can be later on extended with insert_entry() or
 	 * setRowCount() & setColCount().
-	  * \sa insert_entry, setRowCount, setColCount
-	  */
+	 * \sa insert_entry, setRowCount, setColCount
+	 */
 	CSparseMatrix(const size_t nRows = 0, const size_t nCols = 0);
 
 	/** A good way to initialize a sparse matrix from a list of non nullptr
 	 * elements.
-	  *  This constructor takes all the non-zero entries in "data" and builds a
+	 *  This constructor takes all the non-zero entries in "data" and builds a
 	 * column-compressed sparse representation.
-	  */
+	 */
 	template <typename T>
 	inline CSparseMatrix(const CSparseMatrixTemplate<T>& data)
 	{
@@ -287,12 +288,12 @@ class CSparseMatrix
 		@{ */
 
 	/** ONLY for TRIPLET matrices: insert a new non-zero entry in the matrix.
-	  *  This method cannot be used once the matrix is in column-compressed
+	 *  This method cannot be used once the matrix is in column-compressed
 	 * form.
-	  *  The size of the matrix will be automatically extended if the indices
+	 *  The size of the matrix will be automatically extended if the indices
 	 * are out of the current limits.
-	  * \sa isTriplet, compressFromTriplet
-	  */
+	 * \sa isTriplet, compressFromTriplet
+	 */
 	void insert_entry(const size_t row, const size_t col, const double val);
 
 	/** This was an optimized version, but is now equivalent to insert_entry()
@@ -306,14 +307,14 @@ class CSparseMatrix
 
 	/** ONLY for TRIPLET matrices: insert a given matrix (in any of the MRPT
 	 * formats) at a given location of the sparse matrix.
-	  *  This method cannot be used once the matrix is in column-compressed
+	 *  This method cannot be used once the matrix is in column-compressed
 	 * form.
-	  *  The size of the matrix will be automatically extended if the indices
+	 *  The size of the matrix will be automatically extended if the indices
 	 * are out of the current limits.
-	  *  Since this is inline, it can be very efficient for fixed-size MRPT
+	 *  Since this is inline, it can be very efficient for fixed-size MRPT
 	 * matrices.
-	  * \sa isTriplet, compressFromTriplet, insert_entry
-	  */
+	 * \sa isTriplet, compressFromTriplet, insert_entry
+	 */
 	template <class MATRIX>
 	inline void insert_submatrix(
 		const size_t row, const size_t col, const MATRIX& M)
@@ -334,49 +335,49 @@ class CSparseMatrix
 
 	/** ONLY for TRIPLET matrices: convert the matrix in a column-compressed
 	 * form.
-	  * \sa insert_entry
-	  */
+	 * \sa insert_entry
+	 */
 	void compressFromTriplet();
 
 	/** Return a dense representation of the sparse matrix.
-	  * \sa saveToTextFile_dense
-	  */
+	 * \sa saveToTextFile_dense
+	 */
 	void get_dense(CMatrixDouble& outMat) const;
 
 	/** Static method to convert a "cs" structure into a dense representation of
 	 * the sparse matrix.
-	  */
+	 */
 	static void cs2dense(const cs& SM, CMatrixDouble& outMat);
 
 	/** save as a dense matrix to a text file \return False on any error.
-	  */
+	 */
 	bool saveToTextFile_dense(const std::string& filName);
 
 	/** Save sparse structure to a text file loadable from MATLAB (can be called
 	 * on triplet or CCS matrices).
-	  *
-	  *  The format of the text file is:
-	  *  \code
-	  *   NUM_ROWS   NUM_COLS   NUM_NON_ZERO_MAX
-	  *   row_1   col_1   value_1
-	  *   row_2   col_2   value_2
-	  *   ...
-	  *  \endcode
-	  *
-	  *  Instructions for loading from MATLAB in triplet form will be
+	 *
+	 *  The format of the text file is:
+	 *  \code
+	 *   NUM_ROWS   NUM_COLS   NUM_NON_ZERO_MAX
+	 *   row_1   col_1   value_1
+	 *   row_2   col_2   value_2
+	 *   ...
+	 *  \endcode
+	 *
+	 *  Instructions for loading from MATLAB in triplet form will be
 	 * automatically writen to the
-	  *  output file as comments in th first lines:
-	  *
-	  *   \code
-	  *      D=load('file.txt');
-	  *      SM=spconvert(D(2:end,:));
-	  *        or, to always preserve the actual matrix size m x n:
-		 *      m=D(1,1); n=D(1,2); nzmax=D(1,3);
-	  *      Di=D(2:end,1); Dj=D(2:end,2); Ds=D(2:end,3);
-	  *      M=sparse(Di,Dj,Ds, m,n, nzmax);
-	  *   \endcode
-	  * \return False on any error.
-	  */
+	 *  output file as comments in th first lines:
+	 *
+	 *   \code
+	 *      D=load('file.txt');
+	 *      SM=spconvert(D(2:end,:));
+	 *        or, to always preserve the actual matrix size m x n:
+	 *      m=D(1,1); n=D(1,2); nzmax=D(1,3);
+	 *      Di=D(2:end,1); Dj=D(2:end,2); Ds=D(2:end,3);
+	 *      M=sparse(Di,Dj,Ds, m,n, nzmax);
+	 *   \endcode
+	 * \return False on any error.
+	 */
 	bool saveToTextFile_sparse(const std::string& filName);
 
 	// Very basic, standard methods that MRPT methods expect for any matrix:
@@ -415,28 +416,28 @@ class CSparseMatrix
 		@{  */
 
 	/** Auxiliary class to hold the results of a Cholesky factorization of a
-	  *sparse matrix.
-	  *  This implementation does not allow updating/downdating.
-	  *
-	  *  Usage example:
-	  *   \code
-	  *     CSparseMatrix  SM(100,100);
-	  *     SM.insert_entry(i,j, val); ...
-	  *     SM.compressFromTriplet();
-	  *
-	  *     // Do Cholesky decomposition:
-	  *		CSparseMatrix::CholeskyDecomp  CD(SM);
-	  *     CD.get_inverse();
-	  *     ...
-	  *   \endcode
-	  *
-	  * \note Only the upper triangular part of the input matrix is accessed.
-	  * \note This class was initially adapted from "robotvision", by Hauke
-	  *Strasdat, Steven Lovegrove and Andrew J. Davison. See
-	  *http://www.openslam.org/robotvision.html
-	  * \note This class designed to be "uncopiable".
-	  * \sa The main class: CSparseMatrix
-	  */
+	 *sparse matrix.
+	 *  This implementation does not allow updating/downdating.
+	 *
+	 *  Usage example:
+	 *   \code
+	 *     CSparseMatrix  SM(100,100);
+	 *     SM.insert_entry(i,j, val); ...
+	 *     SM.compressFromTriplet();
+	 *
+	 *     // Do Cholesky decomposition:
+	 *		CSparseMatrix::CholeskyDecomp  CD(SM);
+	 *     CD.get_inverse();
+	 *     ...
+	 *   \endcode
+	 *
+	 * \note Only the upper triangular part of the input matrix is accessed.
+	 * \note This class was initially adapted from "robotvision", by Hauke
+	 *Strasdat, Steven Lovegrove and Andrew J. Davison. See
+	 *http://www.openslam.org/robotvision.html
+	 * \note This class designed to be "uncopiable".
+	 * \sa The main class: CSparseMatrix
+	 */
 	class CholeskyDecomp
 	{
 	   private:
@@ -449,13 +450,13 @@ class CSparseMatrix
 	   public:
 		/** Constructor from a square definite-positive sparse matrix A, which
 		 * can be use to solve Ax=b
-		  *   The actual Cholesky decomposition takes places in this
+		 *   The actual Cholesky decomposition takes places in this
 		 * constructor.
-		  *  \note Only the upper triangular part of the matrix is accessed.
-		  *  \exception std::runtime_error On non-square input matrix.
-		  *  \exception mrpt::math::CExceptionNotDefPos On non-definite-positive
+		 *  \note Only the upper triangular part of the matrix is accessed.
+		 *  \exception std::runtime_error On non-square input matrix.
+		 *  \exception mrpt::math::CExceptionNotDefPos On non-definite-positive
 		 * matrix as input.
-		  */
+		 */
 		CholeskyDecomp(const CSparseMatrix& A);
 		CholeskyDecomp(const CholeskyDecomp& A) = delete;
 
@@ -494,9 +495,9 @@ class CSparseMatrix
 
 		/** Update the Cholesky factorization from an updated vesion of the
 		 * original input, square definite-positive sparse matrix.
-		  *  NOTE: This new matrix MUST HAVE exactly the same sparse structure
+		 *  NOTE: This new matrix MUST HAVE exactly the same sparse structure
 		 * than the original one.
-		  */
+		 */
 		void update(const CSparseMatrix& new_SM);
 	};
 	static_assert(
@@ -507,5 +508,5 @@ class CSparseMatrix
 	/** @} */
 
 };  // end class CSparseMatrix
-}
-}
+}  // namespace math
+}  // namespace mrpt

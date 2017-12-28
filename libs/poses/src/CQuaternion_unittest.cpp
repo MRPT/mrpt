@@ -35,14 +35,11 @@ class QuaternionTests : public ::testing::Test
 		p1.getAsQuaternion(q1);
 		CPose3D(q1, 0, 0, 0).getAsQuaternion(q1r);
 
-		TPose3D t1 = CPose3D(q1, 0, 0, 0).asTPose();
-		TPose3D t2 = CPose3D(q1r, 0, 0, 0).asTPose();
-
 		EXPECT_NEAR(
-			0, std::abs(
-				   (CPose3D(q1, 0, 0, 0).getAsVectorVal() -
-					CPose3D(q1r, 0, 0, 0).getAsVectorVal())
-					   .sum()),
+			0,
+			std::abs((CPose3D(q1, 0, 0, 0).getAsVectorVal() -
+					  CPose3D(q1r, 0, 0, 0).getAsVectorVal())
+						 .sum()),
 			1e-6);
 	}
 
@@ -53,10 +50,11 @@ class QuaternionTests : public ::testing::Test
 		CPose3D p2 = CPose3D(q1);
 
 		EXPECT_NEAR(
-			0, (p1.getRotationMatrix() - p2.getRotationMatrix())
-				   .array()
-				   .abs()
-				   .sum(),
+			0,
+			(p1.getRotationMatrix() - p2.getRotationMatrix())
+				.array()
+				.abs()
+				.sum(),
 			1e-4)
 			<< "ypr->quat->ypr failed with:" << endl
 			<< "  p1:" << p1 << endl
@@ -65,10 +63,11 @@ class QuaternionTests : public ::testing::Test
 
 		CPose3D p3(q1.quat(), q1[0], q1[1], q1[2]);
 		EXPECT_NEAR(
-			0, (p1.getRotationMatrix() - p3.getRotationMatrix())
-				   .array()
-				   .abs()
-				   .sum(),
+			0,
+			(p1.getRotationMatrix() - p3.getRotationMatrix())
+				.array()
+				.abs()
+				.sum(),
 			1e-4)
 			<< "pose constructor from quat failed with:" << endl
 			<< "  p1:" << p1 << endl
@@ -86,13 +85,13 @@ class QuaternionTests : public ::testing::Test
 		const CQuaternionDouble q2 = CQuaternionDouble::exp(q1_ln);
 
 		// q2 should be == q1
-		EXPECT_NEAR(0, (q1 - q2).array().abs().sum(), 1e-10) << "q1:\n"
-															 << q1 << endl
-															 << "q2:\n"
-															 << q2 << endl
-															 << "Error:\n"
-															 << (q1 - q2)
-															 << endl;
+		EXPECT_NEAR(0, (q1 - q2).array().abs().sum(), 1e-10)
+			<< "q1:\n"
+			<< q1 << endl
+			<< "q2:\n"
+			<< q2 << endl
+			<< "Error:\n"
+			<< (q1 - q2) << endl;
 	}
 
 	void test_ExpAndLnMatches(double v0, double v1, double v2)
@@ -106,13 +105,13 @@ class QuaternionTests : public ::testing::Test
 		CArrayDouble<3> q1_ln = q1.ln<CArrayDouble<3>>();
 
 		// q1_ln should be == v
-		EXPECT_NEAR(0, (q1_ln - v).array().abs().sum(), 1e-10) << "v:\n"
-															   << v << endl
-															   << "q1_ln:\n"
-															   << q1_ln << endl
-															   << "Error:\n"
-															   << (q1_ln - v)
-															   << endl;
+		EXPECT_NEAR(0, (q1_ln - v).array().abs().sum(), 1e-10)
+			<< "v:\n"
+			<< v << endl
+			<< "q1_ln:\n"
+			<< q1_ln << endl
+			<< "Error:\n"
+			<< (q1_ln - v) << endl;
 	}
 };
 
@@ -133,9 +132,9 @@ TEST_F(QuaternionTests, crossProduct)
 	const CPose3D p3 = p1 + p2;
 
 	EXPECT_NEAR(
-		0, std::abs(
-			   (p3.getAsVectorVal() - CPose3D(q3, 0, 0, 0).getAsVectorVal())
-				   .sum()),
+		0,
+		std::abs((p3.getAsVectorVal() - CPose3D(q3, 0, 0, 0).getAsVectorVal())
+					 .sum()),
 		1e-6)
 		<< "q1 = " << q1 << endl
 		<< "q1 as CPose3D = " << CPose3D(q1, 0, 0, 0) << endl

@@ -579,8 +579,7 @@ void ransacHomography_distance(
 
 	const CMatrixDouble& M = testModels[0];
 
-	ASSERT_(size(M, 1) == 3 && size(M, 2) == 3)
-
+	ASSERT_(size(M, 1) == 3 && size(M, 2) == 3);
 	CArrayDouble<3> pt, pt_r;
 
 	const size_t N = size(allData, 2);
@@ -894,7 +893,7 @@ void ransac_homographies(
 {
 	MRPT_START
 
-	ASSERT_(ref.size() == vid.size())
+	ASSERT_(ref.size() == vid.size();
 	if (ref.empty()) return;
 
 	out_detected_planes.clear();
