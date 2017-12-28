@@ -161,7 +161,7 @@ void transform_gaussian_linear(
 	Eigen::Matrix<double, VECTORLIKE3::RowsAtCompileTime,
 				  VECTORLIKE1::RowsAtCompileTime>
 		H;
-	mrpt::math::jacobians::jacob_numeric_estimate(
+	mrpt::math::estimateJacobian(
 		x_mean, std::function<void(
 					const VECTORLIKE1& x, const USERPARAM& fixed_param,
 					VECTORLIKE3& y)>(functor),

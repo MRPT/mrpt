@@ -279,10 +279,10 @@ void CPose3DPDFGaussian::copyFrom(const CPosePDF& o)
 /*---------------------------------------------------------------
 
   ---------------------------------------------------------------*/
-void CPose3DPDFGaussian::saveToTextFile(const string& file) const
+bool CPose3DPDFGaussian::saveToTextFile(const string& file) const
 {
 	FILE* f = os::fopen(file.c_str(), "wt");
-	if (!f) return;
+	if (!f) return false;
 
 	os::fprintf(
 		f, "%e %e %e %e %e %e\n", mean.x(), mean.y(), mean.z(), mean.yaw(),
@@ -294,6 +294,7 @@ void CPose3DPDFGaussian::saveToTextFile(const string& file) const
 			cov(i, 3), cov(i, 4), cov(i, 5));
 
 	os::fclose(f);
+	return true;
 }
 
 /*---------------------------------------------------------------

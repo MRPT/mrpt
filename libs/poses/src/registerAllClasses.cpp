@@ -9,41 +9,44 @@
 
 #include "poses-precomp.h"
 
-#define MRPT_NO_WARN_BIG_HDR
-#include <mrpt/base.h>
-#include <mrpt/utils/initializer.h>
+#include <mrpt/poses/CPoint2D.h>
+#include <mrpt/poses/CPoint3D.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPose3DQuat.h>
+#include <mrpt/poses/CPoses2DSequence.h>
+#include <mrpt/poses/CPoses3DSequence.h>
+#include <mrpt/poses/CPose2DInterpolator.h>
+#include <mrpt/poses/CPose3DInterpolator.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/poses/CPosePDFGaussianInf.h>
+#include <mrpt/poses/CPosePDFParticles.h>
+#include <mrpt/poses/CPosePDFGrid.h>
+#include <mrpt/poses/CPosePDFSOG.h>
+#include <mrpt/poses/CPointPDF.h>
+#include <mrpt/poses/CPointPDFGaussian.h>
+#include <mrpt/poses/CPointPDFParticles.h>
+#include <mrpt/poses/CPointPDFSOG.h>
+#include <mrpt/poses/CPosePDF.h>
+#include <mrpt/poses/CPose3DPDF.h>
+#include <mrpt/poses/CPose3DQuatPDF.h>
+#include <mrpt/poses/CPose3DPDFGaussian.h>
+#include <mrpt/poses/CPose3DPDFGaussianInf.h>
+#include <mrpt/poses/CPose3DPDFParticles.h>
+#include <mrpt/poses/CPose3DPDFSOG.h>
+#include <mrpt/poses/CPose3DQuatPDF.h>
+#include <mrpt/poses/CPose3DQuatPDFGaussian.h>
+#include <mrpt/poses/CPose3DQuatPDFGaussianInf.h>
+#include <mrpt/poses/CPose2DInterpolator.h>
+#include <mrpt/poses/CPose3DInterpolator.h>
 
-#ifndef MRPT_ENABLE_PRECOMPILED_HDRS
-#define MRPT_ALWAYS_INCLUDE_ALL_HEADERS
-#undef mrpt_base_H
-#include "poses-precomp.h"
-#endif
+#include <mrpt/core/initializer.h>
 
-
-using namespace mrpt::math;
 using namespace mrpt::poses;
 
-MRPT_INITIALIZER(registerAllClasses_mrpt_base)
+MRPT_INITIALIZER(registerAllClasses_mrpt_poses)
 {
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
-	// Abstract classes are not registered since they can not be
-	//   instanciated, nor loaded from streams.
-	registerClass(CLASS_ID(CMatrix));
-	registerClass(CLASS_ID(CMatrixD));
-	registerClass(CLASS_ID(CMatrixB));
-	registerClass(CLASS_ID(CPolygon));
-
-	//   Hack to enable compatibility with an older name of this class:
-	registerClass(CLASS_ID(CImage));
-	registerClassCustomName("CMRPTImage", CLASS_ID(CImage));
-
-	registerClass(CLASS_ID(CSimpleDatabase));
-	registerClass(CLASS_ID(CSimpleDatabaseTable));
-	registerClass(CLASS_ID(CPropertiesValuesList));
-	registerClass(CLASS_ID(CMHPropertiesValuesList));
-	registerClass(CLASS_ID(CTypeSelector));
-	registerClass(CLASS_ID(CMemoryChunk));
-
 	registerClass(CLASS_ID(CPoint2D));
 	registerClass(CLASS_ID(CPoint3D));
 	registerClass(CLASS_ID(CPose2D));
@@ -76,11 +79,7 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_base)
 	registerClass(CLASS_ID(CPose3DQuatPDFGaussian));
 	registerClass(CLASS_ID(CPose3DQuatPDFGaussianInf));
 
+	registerClass(CLASS_ID(CPose2DInterpolator));
 	registerClass(CLASS_ID(CPose3DInterpolator));
-
-	registerClass(CLASS_ID(TCamera));
-	registerClass(CLASS_ID(TStereoCamera));
-	registerClass(CLASS_ID(CSplineInterpolator1D));
-	registerClass(CLASS_ID(CStringList));
 #endif
 }

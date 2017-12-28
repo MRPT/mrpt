@@ -9,8 +9,7 @@
 #pragma once
 
 #include <mrpt/system/datetime.h>
-#include <mrpt/utils/aligned_containers.h>
-//#include <mrpt/poses/CPose3DInterpolator.h>
+#include <mrpt/core/aligned_std_map.h>
 #include <mrpt/poses/SE_traits.h>
 #include <string>
 #include <map>
@@ -146,9 +145,10 @@ class FrameTransformer : public FrameTransformerInterface<DIM>
 	};
 
 	// map: [parent] -> { [child] -> relPoseChildWRTParent }
-	typedef std::map<std::string, typename mrpt::aligned_containers<
-									  std::string, TF_TreeEdge>::map_t>
-		pose_tree_t;
+	using pose_tree_t = mrpt::aligned_std_map<
+		std::string,
+		mrpt::aligned_std_map<std::string, TF_TreeEdge>
+		>;
 	pose_tree_t m_pose_edges_buffer;
 };
 

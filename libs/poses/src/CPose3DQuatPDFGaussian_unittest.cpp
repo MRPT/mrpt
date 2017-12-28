@@ -173,7 +173,7 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
 			CArrayDouble<2 * 7> x_incrs;
 			x_incrs.assign(1e-7);
 			CMatrixDouble numJacobs;
-			mrpt::math::jacobians::jacob_numeric_estimate(
+			mrpt::math::estimateJacobian(
 				x_mean, std::function<void(
 							const CArrayDouble<2 * 7>& x, const double& dummy,
 							CArrayDouble<7>& Y)>(&func_compose),

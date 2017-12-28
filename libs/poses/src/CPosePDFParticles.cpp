@@ -23,7 +23,6 @@ using namespace mrpt::bayes;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::random;
-
 using namespace mrpt::system;
 using namespace std;
 
@@ -175,24 +174,12 @@ void CPosePDFParticles::getCovarianceAndMean(
 	}
 }
 
-/*---------------------------------------------------------------
-						writeToStream
-  ---------------------------------------------------------------*/
-void CPosePDFParticles::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CPosePDFParticles::serializeGetVersion() const { return 0; }
+void CPosePDFParticles::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		writeParticlesToStream(out);
-	}
+	writeParticlesToStream(out);
 }
-
-/*---------------------------------------------------------------
-						readFromStream
-  ---------------------------------------------------------------*/
-void CPosePDFParticles::readFromStream(mrpt::utils::CStream& in, int version)
+void CPosePDFParticles::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -301,10 +288,10 @@ void CPosePDFParticles::resetAroundSetOfPoses(
    Save PDF's m_particles to a text file. In each line it
 	  will go: "x y phi weight"
  ---------------------------------------------------------------*/
-void CPosePDFParticles::saveToTextFile(const std::string& file) const
+bool CPosePDFParticles::saveToTextFile(const std::string& file) const
 {
 	FILE* f = os::fopen(file.c_str(), "wt");
-	if (!f) return;
+	if (!f) return false;
 	os::fprintf(f, "%% x  y  yaw[rad] log_weight\n");
 
 	for (unsigned int i = 0; i < m_particles.size(); i++)
@@ -313,6 +300,7 @@ void CPosePDFParticles::saveToTextFile(const std::string& file) const
 			m_particles[i].d->phi(), m_particles[i].log_w);
 
 	os::fclose(f);
+	return true;
 }
 
 /*---------------------------------------------------------------

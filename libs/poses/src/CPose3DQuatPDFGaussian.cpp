@@ -14,9 +14,9 @@
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/matrix_serialization.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
-#include "mrpt/poses/CPose3D.h"  // for CPose3D
-#include "mrpt/poses/CPose3DQuat.h"  // for CPose3D...
-#include "mrpt/poses/CPose3DQuatPDF.h"  // for CPose3D...
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPose3DQuat.h>
+#include <mrpt/poses/CPose3DQuatPDF.h>
 #include <mrpt/system/os.h>
 #include <mrpt/serialization/CArchive.h>
 
@@ -24,7 +24,6 @@ using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::random;
-
 using namespace mrpt::system;
 using namespace std;
 
@@ -96,26 +95,13 @@ void CPose3DQuatPDFGaussian::getCovarianceAndMean(
 	p = mean;
 }
 
-/*---------------------------------------------------------------
-						writeToStream
-  ---------------------------------------------------------------*/
-void CPose3DQuatPDFGaussian::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CPose3DQuatPDFGaussian::serializeGetVersion() const { return 0; }
+void CPose3DQuatPDFGaussian::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		out << mean;
-		mrpt::math::serializeSymmetricMatrixTo(cov, out);
-	}
+	out << mean;
+	mrpt::math::serializeSymmetricMatrixTo(cov, out);
 }
-
-/*---------------------------------------------------------------
-						readFromStream
-  ---------------------------------------------------------------*/
-void CPose3DQuatPDFGaussian::readFromStream(
-	mrpt::utils::CStream& in, int version)
+void CPose3DQuatPDFGaussian::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -225,10 +211,10 @@ void CPose3DQuatPDFGaussian::copyFrom(const CPose3DPDFGaussian& o)
 /*---------------------------------------------------------------
 					saveToTextFile
   ---------------------------------------------------------------*/
-void CPose3DQuatPDFGaussian::saveToTextFile(const string& file) const
+bool CPose3DQuatPDFGaussian::saveToTextFile(const string& file) const
 {
 	FILE* f = os::fopen(file.c_str(), "wt");
-	if (!f) return;
+	if (!f) return false;
 
 	os::fprintf(
 		f, "%e %e %e %e %e %e %e\n", mean.x(), mean.y(), mean.z(),
@@ -240,6 +226,7 @@ void CPose3DQuatPDFGaussian::saveToTextFile(const string& file) const
 			cov(i, 3), cov(i, 4), cov(i, 5), cov(i, 6));
 
 	os::fclose(f);
+	return true;
 }
 
 /*---------------------------------------------------------------
@@ -415,8 +402,8 @@ void CPose3DQuatPDFGaussian::assureSymmetry()
 {
 	// Differences, when they exist, appear in the ~15'th significant
 	//  digit, so... just take one of them arbitrarily!
-	for (unsigned int i = 0; i < size(cov, 1) - 1; i++)
-		for (unsigned int j = i + 1; j < size(cov, 1); j++)
+	for (int i = 0; i < cov.rows() - 1; i++)
+		for (int j = i + 1; j < cov.rows(); j++)
 			cov.get_unsafe(i, j) = cov.get_unsafe(j, i);
 }
 

@@ -137,8 +137,9 @@ class CProbabilityDensityFunction
 
 	/** Save PDF's particles to a text file. See derived classes for more
 	 * information about the format of generated files.
-	*/
-	virtual void saveToTextFile(const std::string& file) const = 0;
+	 * \return false on error
+	 */
+	virtual bool saveToTextFile(const std::string& file) const = 0;
 
 	/** Draws a single sample from the distribution
 	  */
@@ -162,19 +163,11 @@ class CProbabilityDensityFunction
 		}
 	}
 
-	/** this = p (+) this. This can be used to convert a PDF from local
-	 * coordinates to global, providing the point (newReferenceBase) from which
-	  *   "to project" the current pdf. Result PDF substituted the currently
-	 * stored one in the object.
-	  */
-	virtual void changeCoordinatesReference(
-		const mrpt::poses::CPose3D& newReferenceBase) = 0;
-
 	/** Compute the entropy of the estimated covariance matrix.
 	  * \sa
 	 * http://en.wikipedia.org/wiki/Multivariate_normal_distribution#Entropy
 	  */
-	inline double getCovarianceEntropy() const
+	double getCovarianceEntropy() const
 	{
 		static const double ln_2PI = 1.8378770664093454835606594728112;
 		return 0.5 * (STATE_LEN + STATE_LEN * ln_2PI +

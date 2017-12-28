@@ -291,8 +291,8 @@ class CPoseOrPoint
 	* for this point or pose.
 	* \sa getHomogeneousMatrix
 	*/
-	inline void getInverseHomogeneousMatrix(
-		mrpt::math::CMatrixDouble44& out_HM) const
+	template <class MATRIX44>
+	inline void getInverseHomogeneousMatrix(MATRIX44& out_HM) const
 	{  // Get current HM & inverse in-place:
 		derived().getHomogeneousMatrix(out_HM);
 		mrpt::math::homogeneousMatrixInverse(out_HM);

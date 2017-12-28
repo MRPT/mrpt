@@ -6,12 +6,11 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CPose2DGridTemplate_H
-#define CPose2DGridTemplate_H
+#pragma once
 
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/core/round.h>  // for round()
-#include <mrpt/utils/bits.h>  // for DEG2RAD()
+#include <mrpt/core/bits_math.h>  // for DEG2RAD()
 
 namespace mrpt
 {
@@ -99,8 +98,8 @@ class CPose2DGridTemplate
 	CPose2DGridTemplate(
 		double xMin = -1.0f, double xMax = 1.0f, double yMin = -1.0f,
 		double yMax = 1.0f, double resolutionXY = 0.5f,
-		double resolutionPhi = mrpt::utils::DEG2RAD(180),
-		double phiMin = -M_PIf, double phiMax = M_PIf)
+		double resolutionPhi = mrpt::DEG2RAD(180.0),
+		double phiMin = -M_PI, double phiMax = M_PI)
 		: m_xMin(),
 		  m_xMax(),
 		  m_yMin(),
@@ -128,7 +127,7 @@ class CPose2DGridTemplate
 	  */
 	void setSize(
 		double xMin, double xMax, double yMin, double yMax, double resolutionXY,
-		double resolutionPhi, double phiMin = -M_PIf, double phiMax = M_PIf)
+		double resolutionPhi, double phiMin = -M_PI, double phiMax = M_PI)
 	{
 		// Checks
 		ASSERT_(xMax > xMin);
@@ -182,7 +181,7 @@ class CPose2DGridTemplate
 	  */
 	const T* getByIndex(size_t x, size_t y, size_t phi) const
 	{
-		ASSERT_(x < m_sizeX && y < m_sizeY && phi < m_sizePhi)
+		ASSERT_(x < m_sizeX && y < m_sizeY && phi < m_sizePhi);
 		return &m_data[phi * m_sizeXY + y * m_sizeX + x];
 	}
 
@@ -190,7 +189,7 @@ class CPose2DGridTemplate
 	  */
 	T* getByIndex(size_t x, size_t y, size_t phi)
 	{
-		ASSERT_(x < m_sizeX && y < m_sizeY && phi < m_sizePhi)
+		ASSERT_(x < m_sizeX && y < m_sizeY && phi < m_sizePhi);
 		return &m_data[phi * m_sizeXY + y * m_sizeX + x];
 	}
 
@@ -227,5 +226,3 @@ class CPose2DGridTemplate
 
 }  // End of namespace
 }  // End of namespace
-
-#endif

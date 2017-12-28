@@ -70,7 +70,7 @@ class CPose3DPDFParticles
 
 	/** Save PDF's m_particles to a text file. In each line it will go: "x y z"
 	 */
-	void saveToTextFile(const std::string& file) const override;
+	bool saveToTextFile(const std::string& file) const override;
 
 	/** Get the m_particles count (equivalent to "particlesCount") */
 	size_t size() const { return m_particles.size(); }

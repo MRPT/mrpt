@@ -150,13 +150,6 @@ class CPose3DRotVec : public CPose<CPose3DRotVec>,
 		out_HM.set_unsafe(3, 3, 1);
 	}
 
-	inline mrpt::math::CMatrixDouble44 getHomogeneousMatrixVal() const
-	{
-		mrpt::math::CMatrixDouble44 M;
-		getHomogeneousMatrix(M);
-		return M;
-	}
-
 	/** Get the 3x3 rotation matrix \sa getHomogeneousMatrix  */
 	void getRotationMatrix(mrpt::math::CMatrixDouble33& ROT) const;
 	//! \overload

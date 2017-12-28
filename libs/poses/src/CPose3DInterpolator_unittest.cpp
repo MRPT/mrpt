@@ -19,6 +19,7 @@ TEST(CPose3DInterpolator, interp)
 {
 	using namespace mrpt::poses;
 	using mrpt::math::TPose3D;
+	using mrpt::math::CMatrixDouble44;
 	using mrpt::utils::DEG2RAD;
 
 	const mrpt::system::TTimeStamp t0 = mrpt::system::now();
@@ -42,8 +43,8 @@ TEST(CPose3DInterpolator, interp)
 		1. + 1.5, 2. + 2.0, 3. + 2.5, DEG2RAD(30.0 + 10.0), DEG2RAD(.0),
 		DEG2RAD(.0));
 	EXPECT_NEAR(
-		.0, (CPose3D(interp_good).getHomogeneousMatrixVal() -
-			 CPose3D(interp).getHomogeneousMatrixVal())
+		.0, (CPose3D(interp_good).getHomogeneousMatrixVal<CMatrixDouble44>() -
+			 CPose3D(interp).getHomogeneousMatrixVal<CMatrixDouble44>())
 				.array()
 				.abs()
 				.sum(),

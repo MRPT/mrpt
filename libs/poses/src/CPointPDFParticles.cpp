@@ -171,12 +171,12 @@ void CPointPDFParticles::copyFrom(const CPointPDF& o)
 /*---------------------------------------------------------------
 
   ---------------------------------------------------------------*/
-void CPointPDFParticles::saveToTextFile(const std::string& file) const
+bool CPointPDFParticles::saveToTextFile(const std::string& file) const
 {
 	MRPT_START
 
 	FILE* f = os::fopen(file.c_str(), "wt");
-	if (!f) return;
+	if (!f) return false;
 
 	size_t i, N = m_particles.size();
 	for (i = 0; i < N; i++)
@@ -185,7 +185,7 @@ void CPointPDFParticles::saveToTextFile(const std::string& file) const
 			m_particles[i].d->z, m_particles[i].log_w);
 
 	os::fclose(f);
-
+	return true;
 	MRPT_END
 }
 

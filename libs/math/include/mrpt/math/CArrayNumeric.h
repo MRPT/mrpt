@@ -34,10 +34,10 @@ class CArrayNumeric : public Eigen::Matrix<T, N, 1>
 
 	/** Initialization from a vector-like source, that is, anything implementing
 	 * operator[]. */
-/*	template <class ARRAYLIKE>
-	explicit CArrayNumeric(const ARRAYLIKE& obj) : Eigen::Matrix<T, N, 1>(obj)
+	template <class Derived>
+	explicit CArrayNumeric(const Eigen::MatrixBase<Derived>& obj) : Eigen::Matrix<T, N, 1>(obj)
 	{
-	}*/
+	}
 
 	MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(CArrayNumeric)
 

@@ -77,12 +77,12 @@ void CPoint2DPDFGaussian::copyFrom(const CPoint2DPDF& o)
 /*---------------------------------------------------------------
 
   ---------------------------------------------------------------*/
-void CPoint2DPDFGaussian::saveToTextFile(const std::string& file) const
+bool CPoint2DPDFGaussian::saveToTextFile(const std::string& file) const
 {
 	MRPT_START
 
 	FILE* f = os::fopen(file.c_str(), "wt");
-	if (!f) return;
+	if (!f) return false;
 
 	os::fprintf(f, "%f %f\n", mean.x(), mean.y());
 
@@ -90,7 +90,7 @@ void CPoint2DPDFGaussian::saveToTextFile(const std::string& file) const
 	os::fprintf(f, "%f %f\n", cov(1, 0), cov(1, 1));
 
 	os::fclose(f);
-
+	return true;
 	MRPT_END
 }
 

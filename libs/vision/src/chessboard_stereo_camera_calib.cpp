@@ -1161,12 +1161,12 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 				x_incrs.setConstant(1e-6);
 
 				Eigen::Matrix<double,2,2> num_dhl_dbl, num_dhr_dbr;
-				mrpt::math::jacobians::jacob_numeric_estimate(x0, &eval_h_b, x_incrs, camparam_l, num_dhl_dbl );
+				mrpt::math::estimateJacobian(x0, &eval_h_b, x_incrs, camparam_l, num_dhl_dbl );
 
 				nP = pt_wrt_right;
 				x0[0] = nP.x/nP.z;
 				x0[1] = nP.y/nP.z;
-				mrpt::math::jacobians::jacob_numeric_estimate(x0, &eval_h_b, x_incrs, camparam_r, num_dhr_dbr );
+				mrpt::math::estimateJacobian(x0, &eval_h_b, x_incrs, camparam_r, num_dhr_dbr );
 
 				cout << "num_dhl_dbl:\n" << num_dhl_dbl << "\ndiff dhl_dbl:\n" << dhl_dbl-num_dhl_dbl << endl << endl;
 				cout << "num_dhr_dbr:\n" << num_dhr_dbr << "\ndiff dhr_dbr:\n" << dhr_dbr-num_dhr_dbr << endl << endl;
@@ -1191,12 +1191,12 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 
 				Eigen::Matrix<double,2,3> num_dbl_dpl, num_dbr_dpr;
 				const int dumm=0;
-				mrpt::math::jacobians::jacob_numeric_estimate(x0, &eval_b_p, x_incrs, dumm, num_dbl_dpl );
+				mrpt::math::estimateJacobian(x0, &eval_b_p, x_incrs, dumm, num_dbl_dpl );
 
 				x0[0]=pt_wrt_right.x;
 				x0[1]=pt_wrt_right.y;
 				x0[2]=pt_wrt_right.z;
-				mrpt::math::jacobians::jacob_numeric_estimate(x0, &eval_b_p, x_incrs, dumm, num_dbr_dpr );
+				mrpt::math::estimateJacobian(x0, &eval_b_p, x_incrs, dumm, num_dbr_dpr );
 
 				cout << "num_dbl_dpl:\n" << num_dbl_dpl << "\ndbl_dpl:\n" << dbl_dpl << endl << endl;
 				cout << "num_dbr_dpr:\n" << num_dbr_dpr << "\ndbr_dpr:\n" << dbr_dpr << endl << endl;
@@ -1225,8 +1225,8 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 				x_incrs.setConstant(1e-8);
 
 				Eigen::Matrix<double,3,6> num_dpl_del, num_dpr_der;
-				mrpt::math::jacobians::jacob_numeric_estimate(x0, &eval_deps_D_p, x_incrs, pt_wrt_left , num_dpl_del );
-				mrpt::math::jacobians::jacob_numeric_estimate(x0, &eval_deps_D_p, x_incrs, pt_wrt_right, num_dpr_der );
+				mrpt::math::estimateJacobian(x0, &eval_deps_D_p, x_incrs, pt_wrt_left , num_dpl_del );
+				mrpt::math::estimateJacobian(x0, &eval_deps_D_p, x_incrs, pt_wrt_right, num_dpr_der );
 
 				cout << "num_dpl_del:\n" << num_dpl_del << "\ndiff dpl_del:\n" << dpl_del-num_dpl_del << endl << endl;
 				cout << "num_dpr_der:\n" << num_dpr_der << "\ndiff dpr_der:\n" << dpr_der-num_dpr_der << endl << endl;
@@ -1249,7 +1249,7 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 				dat.p = lm_stat.obj_points[i];
 
 				Eigen::Matrix<double,3,6> num_dpr_del;
-				mrpt::math::jacobians::jacob_numeric_estimate(x0, &eval_dA_eps_D_p, x_incrs,dat , num_dpr_del );
+				mrpt::math::estimateJacobian(x0, &eval_dA_eps_D_p, x_incrs,dat , num_dpr_del );
 
 				cout << "num_dpr_del:\n" << num_dpr_del << "\ndiff dpr_del:\n" << num_dpr_del-dpr_del << endl << endl;
 			}
@@ -1293,7 +1293,7 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 				lm_stat, lm_stat.obj_points[i], lm_stat.left_cam_poses[k_idx],
 				lm_stat.right2left_pose, obs);
 
-			mrpt::math::jacobians::jacob_numeric_estimate(
+			mrpt::math::estimateJacobian(
 				x0, &numeric_jacob_eval_function, x_incrs, dat, rje.J);
 
 #if defined(COMPARE_NUMERIC_JACOBIANS)

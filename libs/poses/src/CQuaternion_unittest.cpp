@@ -35,8 +35,8 @@ class QuaternionTests : public ::testing::Test
 		p1.getAsQuaternion(q1);
 		CPose3D(q1, 0, 0, 0).getAsQuaternion(q1r);
 
-		TPose3D t1(CPose3D(q1, 0, 0, 0));
-		TPose3D t2(CPose3D(q1r, 0, 0, 0));
+		TPose3D t1 = CPose3D(q1, 0, 0, 0).asTPose();
+		TPose3D t2 = CPose3D(q1r, 0, 0, 0).asTPose();
 
 		EXPECT_NEAR(
 			0, std::abs(

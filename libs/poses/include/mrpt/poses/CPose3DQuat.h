@@ -118,7 +118,6 @@ class CPose3DQuat : public CPose<CPose3DQuat>, public mrpt::serialization::CSeri
 	  * \sa getInverseHomogeneousMatrix
 	  */
 	void getHomogeneousMatrix(mrpt::math::CMatrixDouble44& out_HM) const;
-
 	/** Returns a 1x7 vector with [x y z qr qx qy qz] */
 	void getAsVector(mrpt::math::CVectorDouble& v) const;
 	/// \overload

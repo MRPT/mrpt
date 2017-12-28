@@ -18,11 +18,9 @@
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/system/os.h>
 #include <mrpt/serialization/CArchive.h>
-
 #include <mrpt/random.h>
 
 using namespace mrpt;
-
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::random;
@@ -53,26 +51,14 @@ CPosePDFGaussianInf::CPosePDFGaussianInf(const CPose2D& init_Mean)
 {
 }
 
-/*---------------------------------------------------------------
-						writeToStream
-  ---------------------------------------------------------------*/
-void CPosePDFGaussianInf::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CPosePDFGaussianInf::serializeGetVersion() const { return 0; }
+void CPosePDFGaussianInf::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		out << mean.x() << mean.y() << mean.phi();
-		out << cov_inv(0, 0) << cov_inv(1, 1) << cov_inv(2, 2);
-		out << cov_inv(0, 1) << cov_inv(0, 2) << cov_inv(1, 2);
-	}
+	out << mean.x() << mean.y() << mean.phi();
+	out << cov_inv(0, 0) << cov_inv(1, 1) << cov_inv(2, 2);
+	out << cov_inv(0, 1) << cov_inv(0, 2) << cov_inv(1, 2);
 }
-
-/*---------------------------------------------------------------
-						readFromStream
-  ---------------------------------------------------------------*/
-void CPosePDFGaussianInf::readFromStream(mrpt::utils::CStream& in, int version)
+void CPosePDFGaussianInf::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -155,10 +141,10 @@ void CPosePDFGaussianInf::copyFrom(const CPose3DPDF& o)
 /*---------------------------------------------------------------
 
   ---------------------------------------------------------------*/
-void CPosePDFGaussianInf::saveToTextFile(const std::string& file) const
+bool CPosePDFGaussianInf::saveToTextFile(const std::string& file) const
 {
 	FILE* f = os::fopen(file.c_str(), "wt");
-	if (!f) return;
+	if (!f) return false;
 
 	os::fprintf(f, "%f %f %f\n", mean.x(), mean.y(), mean.phi());
 
@@ -167,6 +153,7 @@ void CPosePDFGaussianInf::saveToTextFile(const std::string& file) const
 			f, "%f %f %f\n", cov_inv(i, 0), cov_inv(i, 1), cov_inv(i, 2));
 
 	os::fclose(f);
+	return true;
 }
 
 /*---------------------------------------------------------------

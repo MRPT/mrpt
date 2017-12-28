@@ -100,7 +100,7 @@ class CPose3DQuatPDFGaussianInf : public CPose3DQuatPDF
 
 	/** Save the PDF to a text file, containing the 3D pose in the first line (x
 	 * y z qr qx qy qz), then the information matrix in the next 7 lines. */
-	void saveToTextFile(const std::string& file) const override;
+	bool saveToTextFile(const std::string& file) const override;
 
 	/** this = p (+) this. This can be used to convert a PDF from local
 	 * coordinates to global, providing the point (newReferenceBase) from which

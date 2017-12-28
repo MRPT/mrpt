@@ -235,12 +235,12 @@ void CPose3DPDFParticles::serializeFrom(mrpt::serialization::CArchive& in, uint8
    Save PDF's m_particles to a text file. In each line it
 	  will go: "x y phi weight"
  ---------------------------------------------------------------*/
-void CPose3DPDFParticles::saveToTextFile(const std::string& file) const
+bool CPose3DPDFParticles::saveToTextFile(const std::string& file) const
 {
 	using namespace mrpt::system;
 
 	FILE* f = os::fopen(file.c_str(), "wt");
-	if (!f) return;
+	if (!f) return false;
 
 	os::fprintf(f, "%% x  y  z  yaw[rad] pitch[rad] roll[rad] log_weight\n");
 
@@ -250,6 +250,7 @@ void CPose3DPDFParticles::saveToTextFile(const std::string& file) const
 			p.d->yaw(), p.d->pitch(), p.d->roll(), p.log_w);
 
 	os::fclose(f);
+	return true;
 }
 
 /*---------------------------------------------------------------

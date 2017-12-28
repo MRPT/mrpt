@@ -91,17 +91,6 @@ class CStream
 	 */
 	virtual uint64_t getPosition() = 0;
 
-	/** Read a value from a stream stored in a type different of the target
-	 * variable, making the conversion via static_cast. Useful for coding
-	 * backwards compatible de-serialization blocks */
-	template <typename STORED_TYPE, typename CAST_TO_TYPE>
-	void ReadAsAndCastTo(CAST_TO_TYPE& read_here)
-	{
-		STORED_TYPE var;
-		(*this) >> var;
-		read_here = static_cast<CAST_TO_TYPE>(var);
-	}
-
 	/** Writes a string to the stream in a textual form.
 	  * \sa CStdOutStream
 	  */

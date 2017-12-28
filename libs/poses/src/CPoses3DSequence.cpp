@@ -19,50 +19,23 @@ using namespace mrpt::math;
 
 IMPLEMENTS_SERIALIZABLE(CPoses3DSequence, CSerializable, mrpt::poses)
 
-/*---------------------------------------------------------------
-			Default constructor
-  ---------------------------------------------------------------*/
-CPoses3DSequence::CPoses3DSequence() : m_poses() {}
-/*---------------------------------------------------------------
-			Returns the poses count in the sequence:
-  ---------------------------------------------------------------*/
 size_t CPoses3DSequence::posesCount() { return m_poses.size(); }
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CPoses3DSequence::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+
+
+uint8_t CPoses3DSequence::serializeGetVersion() const { return 0; }
+void CPoses3DSequence::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		uint32_t i, n;
-
-		// The poses:
-		n = m_poses.size();
-		out << n;
-		for (i = 0; i < n; i++) out << m_poses[i];
-	}
+	out.WriteAs<uint32_t>(m_poses.size());
+	for (const auto & p : m_poses) out << p;
 }
-
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CPoses3DSequence::readFromStream(mrpt::utils::CStream& in, int version)
+void CPoses3DSequence::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
 		case 0:
 		{
-			uint32_t i, n;
-
-			// The poses:
-			in >> n;
-			m_poses.resize(n);
-			for (i = 0; i < n; i++) in >> m_poses[i];
+			m_poses.resize(in.ReadAs<uint32_t>());
+			for (auto & p : m_poses) in >> p;
 		}
 		break;
 		default:
@@ -88,7 +61,7 @@ Changes the stored pose at index "ind", where the first one is 0, the last
 void CPoses3DSequence::changePose(unsigned int ind, CPose3D& inPose)
 {
 	if (ind >= m_poses.size()) THROW_EXCEPTION("getPose: Index out of range!!");
-	m_poses[ind] = inPose;
+	m_poses[ind] = inPose.asTPose();
 }
 
 /*---------------------------------------------------------------
@@ -97,7 +70,7 @@ void CPoses3DSequence::changePose(unsigned int ind, CPose3D& inPose)
  ---------------------------------------------------------------*/
 void CPoses3DSequence::appendPose(CPose3D& newPose)
 {
-	m_poses.push_back(newPose);
+	m_poses.push_back(newPose.asTPose());
 }
 
 /*---------------------------------------------------------------

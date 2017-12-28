@@ -336,10 +336,8 @@ void CPose3DRotVec::composeFrom(
 	B.getRotationMatrix(RB);
 
 	// Translation part
-	CArrayDouble<3> coords = RA * B.m_coords + A.m_coords;
-	this->m_coords[0] = coords[0];
-	this->m_coords[1] = coords[1];
-	this->m_coords[2] = coords[2];
+	const auto coords = RA * B.m_coords + A.m_coords;
+	m_coords = coords;
 
 // Rotation part:
 #if 0

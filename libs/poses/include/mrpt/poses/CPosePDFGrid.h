@@ -11,7 +11,7 @@
 
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPose2DGridTemplate.h>
-#include <mrpt/utils/bits.h>  // DEG2RAD()
+#include <mrpt/core/bits_math.h>  // DEG2RAD()
 
 namespace mrpt
 {
@@ -36,8 +36,8 @@ class CPosePDFGrid : public CPosePDF, public CPose2DGridTemplate<double>
 	CPosePDFGrid(
 		double xMin = -1.0f, double xMax = 1.0f, double yMin = -1.0f,
 		double yMax = 1.0f, double resolutionXY = 0.5f,
-		double resolutionPhi = mrpt::utils::DEG2RAD(180),
-		double phiMin = -M_PIf, double phiMax = M_PIf);
+		double resolutionPhi = mrpt::DEG2RAD(180.0),
+		double phiMin = -M_PI, double phiMax = M_PI);
 
 	/** Destructor */
 	virtual ~CPosePDFGrid();
@@ -60,8 +60,8 @@ class CPosePDFGrid : public CPosePDF, public CPose2DGridTemplate<double>
 	/** Save the contents of the 3D grid in one file, as a vertical
 	 * concatenation of rectangular matrix for the different "PHI" discrete
 	 * levels, and the size in X,Y,and PHI in another file named
-	 * "<filename>_dims.txt" */
-	void saveToTextFile(const std::string& dataFile) const override;
+	 * "<filename>_dims.txt". \return false on error */
+	bool saveToTextFile(const std::string& dataFile) const override;
 
 	/** this = p (+) this. This can be used to convert a PDF from local
 	 * coordinates to global, providing the point (newReferenceBase) from which

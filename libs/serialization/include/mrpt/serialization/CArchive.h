@@ -128,6 +128,29 @@ class CArchive
 		for (size_t i = 0; i < ElementCount; i++) (*this) << ptr[i];
 #endif
 	}
+	/** Read a value from a stream stored in a type different of the target
+	* variable, making the conversion via static_cast. Useful for coding
+	* backwards compatible de-serialization blocks */
+	template <typename STORED_TYPE, typename CAST_TO_TYPE>
+	void ReadAsAndCastTo(CAST_TO_TYPE& read_here)
+	{
+		STORED_TYPE var;
+		(*this) >> var;
+		read_here = static_cast<CAST_TO_TYPE>(var);
+	}
+	/** De-serialize a variable and returns it by value. */
+	template <typename STORED_TYPE>
+	STORED_TYPE ReadAs()
+	{
+		STORED_TYPE var;
+		(*this) >> var;
+		return var;
+	}
+	template <typename TYPE_TO_STORE, typename TYPE_FROM_ACTUAL>
+	void WriteAs(const TYPE_FROM_ACTUAL& value)
+	{
+		(*this) << static_cast<TYPE_TO_STORE>(value);
+	}
 	/** Writes an object to the stream.
 	*/
 	void WriteObject(const CSerializable* o);

@@ -7,14 +7,15 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
+#include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPoint3D.h>
 #include <mrpt/math/num_jacobian.h>
 #include <CTraitsTest.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
 using namespace mrpt::poses;
-
 using namespace mrpt::math;
 using namespace std;
 
@@ -31,8 +32,9 @@ class Pose3DTests : public ::testing::Test
 	{
 		const CPose3D p1(x1, y1, z1, yaw1, pitch1, roll1);
 
-		const CMatrixDouble44 HM = p1.getHomogeneousMatrixVal();
-		const CMatrixDouble44 HMi = p1.getInverseHomogeneousMatrix();
+		const CMatrixDouble44 HM = p1.getHomogeneousMatrixVal<CMatrixDouble44>();
+		CMatrixDouble44 HMi;
+		p1.getInverseHomogeneousMatrix(HMi);
 
 		CMatrixDouble44 I4;
 		I4.unit(4, 1.0);
@@ -47,7 +49,7 @@ class Pose3DTests : public ::testing::Test
 
 		p1_inv_inv.inverse();
 		const CMatrixDouble44 HMi_from_p1_inv =
-			p1_inv_inv.getHomogeneousMatrixVal();
+			p1_inv_inv.getHomogeneousMatrixVal<CMatrixDouble44>();
 
 		p1_inv_inv.inverse();
 
@@ -97,10 +99,10 @@ class Pose3DTests : public ::testing::Test
 			<< "p1          : " << p1 << endl
 			<< "p2          : " << p2 << endl
 			<< "p2 matrix   : " << endl
-			<< p2.getHomogeneousMatrixVal() << endl
+			<< p2.getHomogeneousMatrixVal<CMatrixDouble44>() << endl
 			<< "p1_i_p2     : " << p1_i_p2 << endl
 			<< "p1_i_p2 matrix: " << endl
-			<< p1_i_p2.getHomogeneousMatrixVal() << endl
+			<< p1_i_p2.getHomogeneousMatrixVal<CMatrixDouble44>() << endl
 			<< "p2_c_p1_i_p2: " << p2_c_p1_i_p2 << endl;
 
 		// Test + operator: trg new var
@@ -318,7 +320,7 @@ class Pose3DTests : public ::testing::Test
 			CArrayDouble<6 + 3> x_incrs;
 			x_incrs.assign(1e-7);
 			CMatrixDouble numJacobs;
-			mrpt::math::jacobians::jacob_numeric_estimate(
+			mrpt::math::estimateJacobian(
 				x_mean, std::function<void(
 							const CArrayDouble<6 + 3>& x, const double& dummy,
 							CArrayDouble<3>& Y)>(&func_compose_point),
@@ -393,7 +395,7 @@ class Pose3DTests : public ::testing::Test
 			CArrayDouble<6 + 3> x_incrs;
 			x_incrs.assign(1e-7);
 			CMatrixDouble numJacobs;
-			mrpt::math::jacobians::jacob_numeric_estimate(
+			mrpt::math::estimateJacobian(
 				x_mean, std::function<void(
 							const CArrayDouble<6 + 3>& x, const double& dummy,
 							CArrayDouble<3>& Y)>(&func_inv_compose_point),
@@ -435,10 +437,10 @@ class Pose3DTests : public ::testing::Test
 		for (size_t i = 0; i < 4; i++)
 			for (size_t j = 0; j < 4; j++)
 				EXPECT_NEAR(
-					p.getHomogeneousMatrixVal()(i, j), i == j ? 1.0 : 0.0, 1e-8)
+					p.getHomogeneousMatrixVal<CMatrixDouble44>()(i, j), i == j ? 1.0 : 0.0, 1e-8)
 					<< "Failed for (i,j)=" << i << "," << j << endl
 					<< "Matrix is: " << endl
-					<< p.getHomogeneousMatrixVal() << endl
+					<< p.getHomogeneousMatrixVal<CMatrixDouble44>() << endl
 					<< "case was: " << label << endl;
 	}
 
@@ -479,7 +481,7 @@ class Pose3DTests : public ::testing::Test
 
 			CArrayDouble<6> x_incrs;
 			x_incrs.assign(1e-9);
-			mrpt::math::jacobians::jacob_numeric_estimate(
+			mrpt::math::estimateJacobian(
 				x_mean, std::function<void(
 							const CArrayDouble<6>& x, const CArrayDouble<3>& P,
 							CArrayDouble<3>& Y)>(&func_compose_point_se3),
@@ -516,7 +518,7 @@ class Pose3DTests : public ::testing::Test
 
 			CArrayDouble<6> x_incrs;
 			x_incrs.assign(1e-9);
-			mrpt::math::jacobians::jacob_numeric_estimate(
+			mrpt::math::estimateJacobian(
 				x_mean, std::function<void(
 							const CArrayDouble<6>& x, const CArrayDouble<3>& P,
 							CArrayDouble<3>& Y)>(&func_invcompose_point_se3),
@@ -539,7 +541,7 @@ class Pose3DTests : public ::testing::Test
 	{
 		MRPT_UNUSED_PARAM(dummy);
 		const CPose3D p = CPose3D::exp(x);
-		// const CMatrixDouble44 R = p.getHomogeneousMatrixVal();
+		// const CMatrixDouble44 R = p.getHomogeneousMatrixVal<CMatrixDouble44>();
 		p.getAs12Vector(Y);
 	}
 
@@ -553,7 +555,7 @@ class Pose3DTests : public ::testing::Test
 		CArrayDouble<6> x_incrs;
 		x_incrs.assign(1e-9);
 		CMatrixDouble numJacobs;
-		mrpt::math::jacobians::jacob_numeric_estimate(
+		mrpt::math::estimateJacobian(
 			x_mean, std::function<void(
 						const CArrayDouble<6>& x, const double& dummy,
 						CArrayDouble<12>& Y)>(&func_jacob_expe_e),
@@ -615,7 +617,7 @@ class Pose3DTests : public ::testing::Test
 			double dummy = 0.;
 			CArrayDouble<12> x_incrs;
 			x_incrs.assign(1e-6);
-			mrpt::math::jacobians::jacob_numeric_estimate(
+			mrpt::math::estimateJacobian(
 				x_mean, std::function<void(
 							const CArrayDouble<12>& x, const double& dummy,
 							CArrayDouble<6>& Y)>(&func_jacob_LnT_T),
@@ -625,7 +627,7 @@ class Pose3DTests : public ::testing::Test
 		EXPECT_NEAR((numJacobs - theor_jacob).array().abs().sum(), 0, 1e-3)
 			<< "Pose: " << p << endl
 			<< "Pose matrix:\n"
-			<< p.getHomogeneousMatrixVal() << "Num. Jacob:\n"
+			<< p.getHomogeneousMatrixVal<CMatrixDouble44>() << "Num. Jacob:\n"
 			<< numJacobs << endl
 			<< "Theor. Jacob:\n"
 			<< theor_jacob << endl
@@ -662,7 +664,7 @@ class Pose3DTests : public ::testing::Test
 
 			CArrayDouble<6> x_incrs;
 			x_incrs.assign(1e-6);
-			mrpt::math::jacobians::jacob_numeric_estimate(
+			mrpt::math::estimateJacobian(
 				x_mean, std::function<void(
 							const CArrayDouble<6>& eps, const CPose3D& D,
 							CArrayDouble<12>& Y)>(&func_jacob_expe_D),
@@ -672,7 +674,7 @@ class Pose3DTests : public ::testing::Test
 		EXPECT_NEAR((numJacobs - theor_jacob).array().abs().maxCoeff(), 0, 1e-3)
 			<< "Pose: " << p << endl
 			<< "Pose matrix:\n"
-			<< p.getHomogeneousMatrixVal() << "Num. Jacob:\n"
+			<< p.getHomogeneousMatrixVal<CMatrixDouble44>() << "Num. Jacob:\n"
 			<< numJacobs << endl
 			<< "Theor. Jacob:\n"
 			<< theor_jacob << endl
@@ -719,7 +721,7 @@ class Pose3DTests : public ::testing::Test
 			params.D = D;
 			CArrayDouble<6> x_incrs;
 			x_incrs.assign(1e-6);
-			mrpt::math::jacobians::jacob_numeric_estimate(
+			mrpt::math::estimateJacobian(
 				x_mean, std::function<void(
 							const CArrayDouble<6>& eps,
 							const TParams_func_jacob_Aexpe_D& params,
