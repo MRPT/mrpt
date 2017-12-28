@@ -650,7 +650,7 @@ class CPose3DQuat : public CPose<CPose3DQuat>, public mrpt::serialization::CSeri
 
 	/** @} */
 	//! See ops_containers.h
-	typedef CPose3DQuat mrpt_autotype;
+	using mrpt_autotype = CPose3DQuat;
 	// DECLARE_MRPT_CONTAINER_TYPES
 
 	void setToNaN() override;

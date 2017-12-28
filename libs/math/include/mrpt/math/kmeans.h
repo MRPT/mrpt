@@ -35,7 +35,7 @@ double stub_kmeans(
 {
 	MRPT_UNUSED_PARAM(use_kmeansplusplus_method);
 	MRPT_START
-	ASSERT_(k >= 1)
+	ASSERT_(k >= 1);
 	const size_t N = points.size();
 	assignments.resize(N);
 	if (out_centers) out_centers->clear();
@@ -54,7 +54,7 @@ double stub_kmeans(
 		if (it == it_first)
 		{
 			dims = it->size();
-			ASSERTMSG_(dims > 0, "Dimensionality of points can't be zero.")
+			ASSERTMSG_(dims > 0, "Dimensionality of points can't be zero.");
 			raw_vals.resize(N * dims);
 			trg_ptr = &raw_vals[0];
 		}
@@ -62,7 +62,7 @@ double stub_kmeans(
 		{
 			ASSERTMSG_(
 				size_t(dims) == size_t(it->size()),
-				"All points must have the same dimensionality.")
+				"All points must have the same dimensionality.");
 		}
 
 		::memcpy(
@@ -91,35 +91,35 @@ double stub_kmeans(
 	return ret;
 	MRPT_END
 }
-}  // end detail namespace
+}  // namespace detail
 
 /** @name k-means algorithms
 @{ */
 
 /** k-means algorithm to cluster a list of N points of arbitrary dimensionality
-  *into exactly K clusters.
-  *   The list of input points can be any template CONTAINER<POINT> with:
-  *		- CONTAINER can be: Any STL container:
-  *std::vector,std::list,std::deque,...
-  *		- POINT can be:
-  *			- std::vector<double/float>
-  *			- CArrayDouble<N> / CArrayFloat<N>
-  *
-  *  \param k [IN] Number of cluster to look for.
-  *  \param points [IN] The list of N input points. It can be any STL-like
-  *containers of std::vector<float/double>, for example a
-  *std::vector<mrpt::math::CVectorDouble>, a std::list<CVectorFloat>, etc...
-  *  \param assignments [OUT] At output it will have a number [0,k-1] for each
-  *of the N input points.
-  *  \param out_centers [OUT] If not nullptr, at output will have the centers of
-  *each group. Can be of any of the supported types of "points", but the basic
-  *coordinates should be float or double exactly as in "points".
-  *  \param attempts [IN] Number of attempts.
-  *
-  * \sa A more advanced algorithm, see: kmeanspp
-  * \note Uses the kmeans++ implementation by David Arthur (2009,
-  *http://www.stanford.edu/~darthur/kmpp.zip).
-  */
+ *into exactly K clusters.
+ *   The list of input points can be any template CONTAINER<POINT> with:
+ *		- CONTAINER can be: Any STL container:
+ *std::vector,std::list,std::deque,...
+ *		- POINT can be:
+ *			- std::vector<double/float>
+ *			- CArrayDouble<N> / CArrayFloat<N>
+ *
+ *  \param k [IN] Number of cluster to look for.
+ *  \param points [IN] The list of N input points. It can be any STL-like
+ *containers of std::vector<float/double>, for example a
+ *std::vector<mrpt::math::CVectorDouble>, a std::list<CVectorFloat>, etc...
+ *  \param assignments [OUT] At output it will have a number [0,k-1] for each
+ *of the N input points.
+ *  \param out_centers [OUT] If not nullptr, at output will have the centers of
+ *each group. Can be of any of the supported types of "points", but the basic
+ *coordinates should be float or double exactly as in "points".
+ *  \param attempts [IN] Number of attempts.
+ *
+ * \sa A more advanced algorithm, see: kmeanspp
+ * \note Uses the kmeans++ implementation by David Arthur (2009,
+ *http://www.stanford.edu/~darthur/kmpp.zip).
+ */
 template <class LIST_OF_VECTORS1, class LIST_OF_VECTORS2>
 inline double kmeans(
 	const size_t k, const LIST_OF_VECTORS1& points,
@@ -132,29 +132,29 @@ inline double kmeans(
 }
 
 /** k-means++ algorithm to cluster a list of N points of arbitrary
-  *dimensionality into exactly K clusters.
-  *   The list of input points can be any template CONTAINER<POINT> with:
-  *		- CONTAINER can be: Any STL container:
-  *std::vector,std::list,std::deque,...
-  *		- POINT can be:
-  *			- std::vector<double/float>
-  *			- CArrayDouble<N> / CArrayFloat<N>
-  *
-  *  \param k [IN] Number of cluster to look for.
-  *  \param points [IN] The list of N input points. It can be any STL-like
-  *containers of std::vector<float/double>, for example a
-  *std::vector<mrpt::math::CVectorDouble>, a std::list<CVectorFloat>, etc...
-  *  \param assignments [OUT] At output it will have a number [0,k-1] for each
-  *of the N input points.
-  *  \param out_centers [OUT] If not nullptr, at output will have the centers of
-  *each group. Can be of any of the supported types of "points", but the basic
-  *coordinates should be float or double exactly as in "points".
-  *  \param attempts [IN] Number of attempts.
-  *
-  * \sa The standard kmeans algorithm, see: kmeans
-  * \note Uses the kmeans++ implementation by David Arthur (2009,
-  *http://www.stanford.edu/~darthur/kmpp.zip).
-  */
+ *dimensionality into exactly K clusters.
+ *   The list of input points can be any template CONTAINER<POINT> with:
+ *		- CONTAINER can be: Any STL container:
+ *std::vector,std::list,std::deque,...
+ *		- POINT can be:
+ *			- std::vector<double/float>
+ *			- CArrayDouble<N> / CArrayFloat<N>
+ *
+ *  \param k [IN] Number of cluster to look for.
+ *  \param points [IN] The list of N input points. It can be any STL-like
+ *containers of std::vector<float/double>, for example a
+ *std::vector<mrpt::math::CVectorDouble>, a std::list<CVectorFloat>, etc...
+ *  \param assignments [OUT] At output it will have a number [0,k-1] for each
+ *of the N input points.
+ *  \param out_centers [OUT] If not nullptr, at output will have the centers of
+ *each group. Can be of any of the supported types of "points", but the basic
+ *coordinates should be float or double exactly as in "points".
+ *  \param attempts [IN] Number of attempts.
+ *
+ * \sa The standard kmeans algorithm, see: kmeans
+ * \note Uses the kmeans++ implementation by David Arthur (2009,
+ *http://www.stanford.edu/~darthur/kmpp.zip).
+ */
 template <class LIST_OF_VECTORS1, class LIST_OF_VECTORS2>
 inline double kmeanspp(
 	const size_t k, const LIST_OF_VECTORS1& points,
@@ -168,6 +168,6 @@ inline double kmeanspp(
 
 /** @} */
 
-}  // End of MATH namespace
-}  // End of namespace
+}  // namespace math
+}  // namespace mrpt
 #endif

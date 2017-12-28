@@ -116,7 +116,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 {
 	MRPT_START
 
-	using mrpt::math::square;
+	using mrpt::square;
 
 	// --------------------------------------
 	//     Waypoint navigation algorithm

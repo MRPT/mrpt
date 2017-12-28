@@ -76,8 +76,7 @@ void vision::openCV_cross_correlation(
 	}
 	else
 	{
-		ASSERT_(!img.isColor() && !patch_img.isColor())
-
+		ASSERT_(!img.isColor() && !patch_img.isColor());
 		im.setFromIplImageReadOnly(
 			const_cast<IplImage*>(img.getAs<IplImage>()));
 		patch_im.setFromIplImageReadOnly(
@@ -103,8 +102,7 @@ void vision::openCV_cross_correlation(
 		y_search_size -= (y_search_ini + y_search_size + patch_h) - im_h;
 
 	ASSERT_((x_search_ini + x_search_size + patch_w) <= im_w)
-	ASSERT_((y_search_ini + y_search_size + patch_h) <= im_h)
-
+	ASSERT_((y_search_ini + y_search_size + patch_h) <= im_h);
 	IplImage* result = cvCreateImage(
 		cvSize(x_search_size + 1, y_search_size + 1), IPL_DEPTH_32F, 1);
 

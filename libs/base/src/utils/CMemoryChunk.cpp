@@ -29,7 +29,7 @@ void CMemoryChunk::writeToStream(
 		out << static_cast<uint64_t>(m_bytesWritten);
 		if (m_bytesWritten)
 		{
-			ASSERT_(m_memory.get())
+			ASSERT_(m_memory.get();
 			out.WriteBuffer(m_memory.get(), m_bytesWritten);
 		}
 	}

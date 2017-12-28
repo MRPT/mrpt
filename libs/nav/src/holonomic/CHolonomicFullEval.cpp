@@ -77,7 +77,7 @@ void CHolonomicFullEval::evalSingleTarget(
 	ASSERT_(target_idx < ni.targets.size());
 	const auto target = ni.targets[target_idx];
 
-	using mrpt::math::square;
+	using mrpt::square;
 
 	eo = EvalOutput();
 
@@ -481,7 +481,7 @@ void CHolonomicFullEval::evalSingleTarget(
 
 void CHolonomicFullEval::navigate(const NavInput& ni, NavOutput& no)
 {
-	using mrpt::math::square;
+	using mrpt::square;
 
 	ASSERT_(ni.clearance != nullptr);
 	ASSERT_(!ni.targets.empty());

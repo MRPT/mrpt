@@ -19,28 +19,28 @@
 
 /** \addtogroup container_ops_grp Vector and matrices mathematical operations
  * and other utilities
-  *  \ingroup mrpt_math_grp
-  *  @{ */
+ *  \ingroup mrpt_math_grp
+ *  @{ */
 
 /** \file ops_containers.h
-  * This file implements several operations that operate element-wise on
+ * This file implements several operations that operate element-wise on
  * individual or pairs of containers.
-  *  Containers here means any of: mrpt::math::CVectorTemplace,
+ *  Containers here means any of: mrpt::math::CVectorTemplace,
  * mrpt::math::CArray, mrpt::math::CMatrixFixedNumeric,
  * mrpt::math::CMatrixTemplate.
-  *
-  *  In general, any container having a type "mrpt_autotype" self-referencing to
+ *
+ *  In general, any container having a type "mrpt_autotype" self-referencing to
  * the type itself, and a dummy struct mrpt_container<>
-  *   which is only used as a way to force the compiler to assure that BOTH
+ *   which is only used as a way to force the compiler to assure that BOTH
  * containers are valid ones in binary operators.
-  *   This restrictions
-  *   have been designed as a way to provide "polymorphism" at a template level,
+ *   This restrictions
+ *   have been designed as a way to provide "polymorphism" at a template level,
  * so the "+,-,..." operators do not
-  *   generate ambiguities for ANY type, and limiting them to MRPT containers.
-  *
-  *   In some cases, the containers provide specializations of some operations,
+ *   generate ambiguities for ANY type, and limiting them to MRPT containers.
+ *
+ *   In some cases, the containers provide specializations of some operations,
  * for increased performance.
-  */
+ */
 
 #include <algorithm>
 #include <numeric>
@@ -56,11 +56,11 @@ namespace math
 {
 /** Computes the normalized or normal histogram of a sequence of numbers given
  * the number of bins and the limits.
-  *  In any case this is a "linear" histogram, i.e. for matrices, all the
+ *  In any case this is a "linear" histogram, i.e. for matrices, all the
  * elements are taken as if they were a plain sequence, not taking into account
  * they were in columns or rows.
-  *  If desired, out_bin_centers can be set to receive the bins centers.
-  */
+ *  If desired, out_bin_centers can be set to receive the bins centers.
+ */
 template <class CONTAINER>
 std::vector<double> histogram(
 	const CONTAINER& v, double limit_min, double limit_max, size_t number_bins,
@@ -93,11 +93,11 @@ void resizeLike(std::vector<T>& trg, const std::vector<T>& src)
 
 /** Computes the cumulative sum of all the elements, saving the result in
  * another container.
-  *  This works for both matrices (even mixing their types) and vectores/arrays
+ *  This works for both matrices (even mixing their types) and vectores/arrays
  * (even mixing types),
-  *  and even to store the cumsum of any matrix into any vector/array, but not
+ *  and even to store the cumsum of any matrix into any vector/array, but not
  * in opposite direction.
-  * \sa sum */
+ * \sa sum */
 template <class CONTAINER1, class CONTAINER2, typename VALUE>
 inline void cumsum_tmpl(const CONTAINER1& in_data, CONTAINER2& out_cumsum)
 {
@@ -110,13 +110,14 @@ inline void cumsum_tmpl(const CONTAINER1& in_data, CONTAINER2& out_cumsum)
 template <class CONTAINER1, class CONTAINER2>
 inline void cumsum(const CONTAINER1& in_data, CONTAINER2& out_cumsum)
 {
-	cumsum_tmpl<CONTAINER1, CONTAINER2,
-				typename mrpt::math::ContainerType<CONTAINER2>::element_t>(
+	cumsum_tmpl<
+		CONTAINER1, CONTAINER2,
+		typename mrpt::math::ContainerType<CONTAINER2>::element_t>(
 		in_data, out_cumsum);
 }
 
 /** Computes the cumulative sum of all the elements
-  * \sa sum  */
+ * \sa sum  */
 template <class CONTAINER>
 inline CONTAINER cumsum(const CONTAINER& in_data)
 {
@@ -164,8 +165,8 @@ inline T minimum(const std::vector<T>& v)
 }
 
 /** \name Generic container element-wise operations - Miscelaneous
-  * @{
-  */
+ * @{
+ */
 
 /** Accumulate the squared-norm of a vector/array/matrix into "total" (this
  * function is compatible with std::accumulate). */
@@ -229,7 +230,7 @@ inline RET sumRetType(const CONTAINER& v)
 }
 
 /** Computes the mean value of a vector  \return The mean, as a double number.
-  * \sa math::stddev,math::meanAndStd  */
+ * \sa math::stddev,math::meanAndStd  */
 template <class CONTAINER>
 inline double mean(const CONTAINER& v)
 {
@@ -265,7 +266,7 @@ inline void minimum_maximum(
 
 /** Counts the number of elements that appear in both STL-like containers
  * (comparison through the == operator)
-  *  It is assumed that no repeated elements appear within each of the
+ *  It is assumed that no repeated elements appear within each of the
  * containers.  */
 template <class CONTAINER1, class CONTAINER2>
 size_t countCommonElements(const CONTAINER1& a, const CONTAINER2& b)
@@ -295,13 +296,13 @@ void adjustRange(
 }
 
 /** Computes the standard deviation of a vector
-  * \param v The set of data
-  * \param out_mean The output for the estimated mean
-  * \param out_std The output for the estimated standard deviation
-  * \param unbiased If set to true or false the std is normalized by "N-1" or
+ * \param v The set of data
+ * \param out_mean The output for the estimated mean
+ * \param out_std The output for the estimated standard deviation
+ * \param unbiased If set to true or false the std is normalized by "N-1" or
  * "N", respectively.
-  * \sa math::mean,math::stddev
-  */
+ * \sa math::mean,math::stddev
+ */
 template <class VECTORLIKE>
 void meanAndStd(
 	const VECTORLIKE& v, double& out_mean, double& out_std,
@@ -320,18 +321,18 @@ void meanAndStd(
 		// Compute the std:
 		double vector_std = 0;
 		for (size_t i = 0; i < N; i++)
-			vector_std += mrpt::math::square(v[i] - out_mean);
+			vector_std += mrpt::square(v[i] - out_mean);
 		out_std =
 			std::sqrt(vector_std / static_cast<double>(N - (unbiased ? 1 : 0)));
 	}
 }
 
 /** Computes the standard deviation of a vector
-  * \param v The set of data
-  * \param unbiased If set to true or false the std is normalized by "N-1" or
+ * \param v The set of data
+ * \param unbiased If set to true or false the std is normalized by "N-1" or
  * "N", respectively.
-  * \sa math::mean,math::meanAndStd
-  */
+ * \sa math::mean,math::meanAndStd
+ */
 template <class VECTORLIKE>
 inline double stddev(const VECTORLIKE& v, bool unbiased = true)
 {
@@ -342,11 +343,11 @@ inline double stddev(const VECTORLIKE& v, bool unbiased = true)
 
 /** Computes the mean vector and covariance from a list of values given as a
  * vector of vectors, where each row is a sample.
-  * \param v The set of data, as a vector of N vectors of M elements.
-  * \param out_mean The output M-vector for the estimated mean.
-  * \param out_cov The output MxM matrix for the estimated covariance matrix.
-  * \sa mrpt::math::meanAndCovMat, math::mean,math::stddev, math::cov
-  */
+ * \param v The set of data, as a vector of N vectors of M elements.
+ * \param out_mean The output M-vector for the estimated mean.
+ * \param out_cov The output MxM matrix for the estimated covariance matrix.
+ * \sa mrpt::math::meanAndCovMat, math::mean,math::stddev, math::cov
+ */
 template <class VECTOR_OF_VECTOR, class VECTORLIKE, class MATRIXLIKE>
 void meanAndCovVec(
 	const VECTOR_OF_VECTOR& v, VECTORLIKE& out_mean, MATRIXLIKE& out_cov)
@@ -386,11 +387,11 @@ void meanAndCovVec(
 
 /** Computes the covariance matrix from a list of values given as a vector of
  * vectors, where each row is a sample.
-  * \param v The set of data, as a vector of N vectors of M elements.
-  * \param out_cov The output MxM matrix for the estimated covariance matrix.
-  * \tparam RETURN_MATRIX The type of the returned matrix, e.g. Eigen::MatrixXd
-  * \sa math::mean,math::stddev, math::cov, meanAndCovVec
-  */
+ * \param v The set of data, as a vector of N vectors of M elements.
+ * \param out_cov The output MxM matrix for the estimated covariance matrix.
+ * \tparam RETURN_MATRIX The type of the returned matrix, e.g. Eigen::MatrixXd
+ * \sa math::mean,math::stddev, math::cov, meanAndCovVec
+ */
 template <class VECTOR_OF_VECTOR, class RETURN_MATRIX>
 inline RETURN_MATRIX covVector(const VECTOR_OF_VECTOR& v)
 {
@@ -401,11 +402,11 @@ inline RETURN_MATRIX covVector(const VECTOR_OF_VECTOR& v)
 }
 
 /** Normalised Cross Correlation between two vector patches
-  * The Matlab code for this is
-  * a = a - mean2(a);
-  * b = b - mean2(b);
-  * r = sum(sum(a.*b))/sqrt(sum(sum(a.*a))*sum(sum(b.*b)));
-  */
+ * The Matlab code for this is
+ * a = a - mean2(a);
+ * b = b - mean2(b);
+ * r = sum(sum(a.*b))/sqrt(sum(sum(a.*a))*sum(sum(b.*b)));
+ */
 template <class CONT1, class CONT2>
 double ncc_vector(const CONT1& patch1, const CONT2& patch2)
 {
@@ -419,18 +420,18 @@ double ncc_vector(const CONT1& patch1, const CONT2& patch2)
 	for (size_t i = 0; i < N; ++i)
 	{
 		numerator += (patch1[i] - a_mean) * (patch2[i] - b_mean);
-		sum_a += mrpt::math::square(patch1[i] - a_mean);
-		sum_b += mrpt::math::square(patch2[i] - b_mean);
+		sum_a += mrpt::square(patch1[i] - a_mean);
+		sum_b += mrpt::square(patch2[i] - b_mean);
 	}
-	ASSERTMSG_(sum_a * sum_b != 0, "Divide by zero when normalizing.")
+	ASSERTMSG_(sum_a * sum_b != 0, "Divide by zero when normalizing.");
 	result = numerator / std::sqrt(sum_a * sum_b);
 	return result;
 }
 
 /** @} Misc ops */
 
-}  // End of math namespace
-}  // End of mrpt namespace
+}  // namespace math
+}  // namespace mrpt
 
 /**  @} */  // end of grouping
 

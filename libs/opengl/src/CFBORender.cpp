@@ -189,11 +189,10 @@ void CFBORender::getFrame2(const COpenGLScene& scene, CImage& buffer)
 	MRPT_START
 
 	// check the buffer size
-	ASSERT_EQUAL_(buffer.getWidth(), static_cast<size_t>(m_width))
-	ASSERT_EQUAL_(buffer.getHeight(), static_cast<size_t>(m_height))
+	ASSERT_EQUAL_(buffer.getWidth(), static_cast<size_t>(m_width);
+	ASSERT_EQUAL_(buffer.getHeight(), static_cast<size_t>(m_height);
 	ASSERT_EQUAL_(buffer.getChannelCount(), 3)
-	ASSERT_EQUAL_(buffer.isOriginTopLeft(), false)
-
+	ASSERT_EQUAL_(buffer.isOriginTopLeft(), false);
 	// bind the framebuffer, fbo, so operations will now occur on it
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_fbo);
 

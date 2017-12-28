@@ -2936,8 +2936,7 @@ void xRawLogViewerFrame::OnGenOdoLaser(wxCommandEvent& event)
 			  "time files will not be generated."));
 
 	FILE* f_odo = os::fopen(fil_odo, "wt");
-	ASSERT_(f_odo)
-
+	ASSERT_(f_odo);
 	FILE* f_odo_times = nullptr;
 	if (genTimes)
 	{
@@ -3641,8 +3640,7 @@ void xRawLogViewerFrame::OnDecimateRecords(wxCommandEvent& event)
 	long DECIMATE_RATIO;
 	strDecimation.ToLong(&DECIMATE_RATIO);
 
-	ASSERT_(DECIMATE_RATIO >= 1)
-
+	ASSERT_(DECIMATE_RATIO >= 1);
 	wxBusyCursor busyCursor;
 	wxTheApp->Yield();  // Let the app. process messages
 
@@ -5703,8 +5701,7 @@ void xRawLogViewerFrame::OnMenuBatchLaserExclusionZones(wxCommandEvent& event)
 
 				if (!x.empty() && !y.empty())
 				{
-					ASSERT_(x.size() == y.size())
-
+					ASSERT_(x.size() == y.size());
 					mrpt::math::CPolygon p;
 					p.setAllVertices(x, y);
 					lstExclusions[label].push_back(p);

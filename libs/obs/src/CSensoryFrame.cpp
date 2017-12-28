@@ -216,8 +216,7 @@ CObservation::Ptr CSensoryFrame::getObservationByIndex(const size_t& idx) const
 CSensoryFrame::iterator CSensoryFrame::erase(const iterator& it)
 {
 	MRPT_START
-	ASSERT_(it != end())
-
+	ASSERT_(it != end());
 	m_cachedMap.reset();
 
 	return m_observations.erase(it);

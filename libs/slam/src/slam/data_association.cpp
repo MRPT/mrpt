@@ -73,8 +73,7 @@ double joint_pdf_metric(
 	// Make a list of the indices of the predictions that appear in
 	// "currentAssociation":
 	const size_t N = info.currentAssociation.size();
-	ASSERT_(N > 0)
-
+	ASSERT_(N > 0);
 	std::vector<size_t> indices_pred(N);  // Appearance order indices in the std::maps
 	std::vector<size_t> indices_obs(N);
 
@@ -329,13 +328,11 @@ void mrpt::slam::data_association_full_covariance(
 
 	ASSERT_(nPredictions != 0)
 	ASSERT_(nObservations != 0)
-	ASSERT_(length_O == size(Y_predictions_mean, 2))
-	ASSERT_(length_O * nPredictions == size(Y_predictions_cov, 1))
-	ASSERT_(Y_predictions_cov.isSquare())
-
+	ASSERT_(length_O == size(Y_predictions_mean, 2);
+	ASSERT_(length_O * nPredictions == size(Y_predictions_cov, 1);
+	ASSERT_(Y_predictions_cov.isSquare());
 	ASSERT_(chi2quantile > 0 && chi2quantile < 1)
-	ASSERT_(metric == metricMaha || metric == metricML)
-
+	ASSERT_(metric == metricMaha || metric == metricML);
 	const double chi2thres = mrpt::math::chi2inv(chi2quantile, length_O);
 
 	// ------------------------------------------------------------
@@ -609,12 +606,10 @@ void mrpt::slam::data_association_independent_predictions(
 
 	ASSERT_(nPredictions != 0)
 	ASSERT_(nObservations != 0)
-	ASSERT_(length_O == size(Y_predictions_mean, 2))
-	ASSERT_(length_O * nPredictions == size(Y_predictions_cov_stacked, 1))
-
+	ASSERT_(length_O == size(Y_predictions_mean, 2);
+	ASSERT_(length_O * nPredictions == size(Y_predictions_cov_stacked, 1));
 	ASSERT_(chi2quantile > 0 && chi2quantile < 1)
-	ASSERT_(metric == metricMaha || metric == metricML)
-
+	ASSERT_(metric == metricMaha || metric == metricML);
 	// const double chi2thres = mrpt::math::chi2inv( chi2quantile, length_O );
 
 	// TODO: Optimized version!!

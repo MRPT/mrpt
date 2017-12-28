@@ -37,7 +37,7 @@ DECLARE_OP_FUNCTION(op_remove_label)
 				  in_rawlog, cmdline, verbose, out_rawlog)
 		{
 			mrpt::system::tokenize(filter_label, " ,", m_filter_labels);
-			ASSERT_(!m_filter_labels.empty())
+			ASSERT_(!m_filter_labels.empty();
 			if (verbose)
 				for (size_t i = 0; i < m_filter_labels.size(); i++)
 					cout << "Removing label: '" << m_filter_labels[i] << "'\n";
@@ -98,7 +98,7 @@ DECLARE_OP_FUNCTION(op_keep_label)
 				  in_rawlog, cmdline, verbose, out_rawlog)
 		{
 			mrpt::system::tokenize(filter_label, " ,", m_filter_labels);
-			ASSERT_(!m_filter_labels.empty())
+			ASSERT_(!m_filter_labels.empty();
 			if (verbose)
 				for (size_t i = 0; i < m_filter_labels.size(); i++)
 					cout << "Keeping label: '" << m_filter_labels[i] << "'\n";

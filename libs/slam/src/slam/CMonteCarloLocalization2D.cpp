@@ -107,7 +107,7 @@ void CMonteCarloLocalization2D::prediction_and_update_pfStandardProposal(
 	{  // A map MUST be supplied!
 		ASSERT_(options.metricMap || options.metricMaps.size() > 0)
 		if (!options.metricMap)
-			ASSERT_(options.metricMaps.size() == m_particles.size())
+			ASSERT_(options.metricMaps.size() == m_particles.size();
 	}
 
 	PF_SLAM_implementation_pfStandardProposal<mrpt::slam::detail::TPoseBin2D>(
@@ -132,7 +132,7 @@ void CMonteCarloLocalization2D::prediction_and_update_pfAuxiliaryPFStandard(
 	{  // A map MUST be supplied!
 		ASSERT_(options.metricMap || options.metricMaps.size() > 0)
 		if (!options.metricMap)
-			ASSERT_(options.metricMaps.size() == m_particles.size())
+			ASSERT_(options.metricMaps.size() == m_particles.size();
 	}
 
 	PF_SLAM_implementation_pfAuxiliaryPFStandard<
@@ -158,7 +158,7 @@ void CMonteCarloLocalization2D::prediction_and_update_pfAuxiliaryPFOptimal(
 	{  // A map MUST be supplied!
 		ASSERT_(options.metricMap || options.metricMaps.size() > 0)
 		if (!options.metricMap)
-			ASSERT_(options.metricMaps.size() == m_particles.size())
+			ASSERT_(options.metricMaps.size() == m_particles.size();
 	}
 
 	PF_SLAM_implementation_pfAuxiliaryPFOptimal<mrpt::slam::detail::TPoseBin2D>(
@@ -238,8 +238,7 @@ void CMonteCarloLocalization2D::resetUniformFreeSpace(
 {
 	MRPT_START
 
-	ASSERT_(theMap != nullptr)
-
+	ASSERT_(theMap != nullptr);
 	int sizeX = theMap->getSizeX();
 	int sizeY = theMap->getSizeY();
 	double gridRes = theMap->getResolution();

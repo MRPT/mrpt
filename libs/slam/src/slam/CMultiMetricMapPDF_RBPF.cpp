@@ -211,8 +211,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 
 	CParticleList::iterator partIt;
 
-	ASSERT_(sf != nullptr)
-
+	ASSERT_(sf != nullptr);
 	// Find a robot movement estimation:
 	CPose3D motionModelMeanIncr;  // The mean motion increment:
 	CPoseRandomSampler robotActionSampler;
@@ -262,8 +261,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 		if (getW(i) > getW(particleWithHighestW)) particleWithHighestW = i;
 
 	//   The paths MUST already contain the starting location for each particle:
-	ASSERT_(!m_particles[0].d->robotPath.empty())
-
+	ASSERT_(!m_particles[0].d->robotPath.empty());
 	// Build the local map of points for ICP:
 	CSimplePointsMap localMapPoints;
 	CLandmarksMap localMapLandmarks;
@@ -484,8 +482,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 						cerr << "[RO-SLAM] Optimal filtering without map & "
 								"odometry->FIXING ONE BEACON!"
 							 << endl;
-						ASSERT_(beacMap->get(0).m_locationSOG.size() > 0)
-
+						ASSERT_(beacMap->get(0).m_locationSOG.size() > 0);
 						CPoint3D fixedBeacon(
 							beacMap->get(0).m_locationSOG[0].val.mean);
 
@@ -1007,7 +1004,7 @@ bool CMultiMetricMapPDF::PF_SLAM_implementation_doWeHaveValidObservations(
 	const CSensoryFrame* sf) const
 {
 	if (sf == nullptr) return false;
-	ASSERT_(!particles.empty())
+	ASSERT_(!particles.empty();
 	return particles.begin()
 		->d.get()
 		->mapTillNow.canComputeObservationsLikelihood(*sf);

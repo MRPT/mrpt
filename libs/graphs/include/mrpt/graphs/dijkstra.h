@@ -436,8 +436,7 @@ class CDijkstra
 		do
 		{
 			typename id2pairIDs_map_t::const_iterator it = m_prev_arc.find(nod);
-			ASSERT_(it != m_prev_arc.end())
-
+			ASSERT_(it != m_prev_arc.end());
 			out_path.push_front(it->second);
 			nod = m_prev_node.find(nod)->second.id;
 		} while (nod != m_source_node_ID);

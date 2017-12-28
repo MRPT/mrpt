@@ -495,10 +495,9 @@ bool CFeature::isPointFeature() const
 float CFeature::patchCorrelationTo(const CFeature& oFeature) const
 {
 	MRPT_START
-	ASSERT_(patch.getWidth() == oFeature.patch.getWidth())
-	ASSERT_(patch.getHeight() == oFeature.patch.getHeight())
-	ASSERT_(patch.getHeight() > 0 && patch.getWidth() > 0)
-
+	ASSERT_(patch.getWidth() == oFeature.patch.getWidth();
+	ASSERT_(patch.getHeight() == oFeature.patch.getHeight();
+	ASSERT_(patch.getHeight() > 0 && patch.getWidth() > 0);
 	size_t x_max, y_max;
 	double max_val;
 	patch.cross_correlation(oFeature.patch, x_max, y_max, max_val);
@@ -643,8 +642,7 @@ float CFeature::descriptorSpinImgDistanceTo(
 	ASSERT_(
 		this->descriptors.hasDescriptorSpinImg() &&
 		oFeature.descriptors.hasDescriptorSpinImg())
-	ASSERT_(!this->descriptors.SpinImg.empty())
-
+	ASSERT_(!this->descriptors.SpinImg.empty());
 	float dist = 0.0f;
 	std::vector<float>::const_iterator itDesc1, itDesc2;
 	for (itDesc1 = this->descriptors.SpinImg.begin(),
@@ -843,8 +841,7 @@ uint8_t CFeature::descriptorORBDistanceTo(const CFeature& oFeature) const
 	ASSERT_(
 		this->descriptors.hasDescriptorORB() &&
 		oFeature.descriptors.hasDescriptorORB())
-	ASSERT_(this->descriptors.ORB.size() == oFeature.descriptors.ORB.size())
-
+	ASSERT_(this->descriptors.ORB.size() == oFeature.descriptors.ORB.size());
 	const std::vector<uint8_t>& t_desc = this->descriptors.ORB;
 	const std::vector<uint8_t>& o_desc = oFeature.descriptors.ORB;
 
@@ -1324,7 +1321,7 @@ CFeature::Ptr CFeatureList::nearest(
 TFeatureID CFeatureList::getMaxID() const
 {
 	MRPT_START
-	ASSERT_(!empty())
+	ASSERT_(!empty();
 	vision::TFeatureID maxID = (*begin())->ID;
 	for (CFeatureList::const_iterator itList = begin(); itList != end();
 		 itList++)

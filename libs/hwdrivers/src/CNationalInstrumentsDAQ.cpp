@@ -885,8 +885,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask& ipt)
 				}
 				else if (pointsReadPerChan > 0)
 				{
-					ASSERT_EQUAL_(totalSamplesToRead, pointsReadPerChan)
-
+					ASSERT_EQUAL_(totalSamplesToRead, pointsReadPerChan);
 					// Decimate?
 					if (++ipt.task.ci_ang_encoder.decimate_cnt >=
 						ipt.task.ci_ang_encoder.decimate)
@@ -940,8 +939,7 @@ void CNationalInstrumentsDAQ::writeAnalogOutputTask(
 	double timeout, bool groupedByChannel)
 {
 #if MRPT_HAS_SOME_NIDAQMX
-	ASSERT_(task_index < m_running_tasks.size())
-
+	ASSERT_(task_index < m_running_tasks.size());
 	std::list<TInfoPerTask>::iterator it = m_running_tasks.begin();
 	std::advance(it, task_index);
 	TInfoPerTask& ipt = *it;
@@ -970,8 +968,7 @@ void CNationalInstrumentsDAQ::writeDigitalOutputTask(
 	size_t task_index, bool line_value, double timeout)
 {
 #if MRPT_HAS_SOME_NIDAQMX
-	ASSERT_(task_index < m_running_tasks.size())
-
+	ASSERT_(task_index < m_running_tasks.size());
 	std::list<TInfoPerTask>::iterator it = m_running_tasks.begin();
 	std::advance(it, task_index);
 	TInfoPerTask& ipt = *it;

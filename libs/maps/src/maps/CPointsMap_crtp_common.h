@@ -27,7 +27,7 @@ struct loadFromRangeImpl
 		const mrpt::poses::CPose3D* robotPose)
 	{
 		using namespace mrpt::poses;
-		using mrpt::math::square;
+		using mrpt::square;
 		using mrpt::utils::DEG2RAD;
 		obj.mark_as_modified();
 
@@ -373,7 +373,7 @@ struct loadFromRangeImpl
 		const mrpt::poses::CPose3D* robotPose)
 	{
 		using namespace mrpt::poses;
-		using mrpt::math::square;
+		using mrpt::square;
 		obj.mark_as_modified();
 
 		// If robot pose is supplied, compute sensor pose relative to it.

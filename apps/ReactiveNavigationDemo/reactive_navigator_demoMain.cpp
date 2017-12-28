@@ -1327,8 +1327,7 @@ bool reactive_navigator_demoframe::reinitSimulator()
 		default:
 			throw std::runtime_error("Invalid nav method selected!");
 	};
-	ASSERT_(m_navMethod.get())
-
+	ASSERT_(m_navMethod.get());
 	// Load params:
 	std::string sKinPrefix;
 	switch (rbKinType->GetSelection())

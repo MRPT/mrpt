@@ -240,7 +240,7 @@ class CBinaryRelation
 	  */
 	T operator[](size_t i) const
 	{
-		ASSERT_BELOW_(i, elements.size())
+		ASSERT_BELOW_(i, elements.size();
 		typename std::set<T>::const_iterator it = elements.begin();
 		std::advance(it, i);
 		return *it;

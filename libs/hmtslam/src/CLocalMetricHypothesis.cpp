@@ -565,9 +565,8 @@ void CLocalMetricHypothesis::getRelativePose(
 		TMapPoseID2Pose3D::const_iterator trgPose =
 			it->d->robotPoses.find(pose);
 
-		ASSERT_(srcPose != it->d->robotPoses.end())
-		ASSERT_(trgPose != it->d->robotPoses.end())
-
+		ASSERT_(srcPose != it->d->robotPoses.end();
+		ASSERT_(trgPose != it->d->robotPoses.end());
 		*itP->d = trgPose->second - srcPose->second;
 	}
 
@@ -589,7 +588,7 @@ void CLocalMetricHypothesis::changeCoordinateOrigin(const TPoseID& newOrigin)
 	{
 		TMapPoseID2Pose3D::iterator refPoseIt =
 			it->d->robotPoses.find(newOrigin);
-		ASSERT_(refPoseIt != it->d->robotPoses.end())
+		ASSERT_(refPoseIt != it->d->robotPoses.end();
 		const CPose3D& refPose = refPoseIt->second;
 
 		// Save in pdf to compute mean:

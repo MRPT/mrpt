@@ -152,9 +152,6 @@ static void makewt(int nw, int* ip, FFT_TYPE* w);
 static void bitrv2(int n, int* ip, FFT_TYPE* a);
 static void cftbsub(int n, FFT_TYPE* a, FFT_TYPE* w);
 static void cftfsub(int n, FFT_TYPE* a, FFT_TYPE* w);
-static void dctsub(int n, FFT_TYPE* a, int nc, FFT_TYPE* c);
-static void dstsub(int n, FFT_TYPE* a, int nc, FFT_TYPE* c);
-static void dctsub(int n, FFT_TYPE* a, int nc, FFT_TYPE* c);
 static void rftfsub(int n, FFT_TYPE* a, int nc, FFT_TYPE* c);
 static void rftbsub(int n, FFT_TYPE* a, int nc, FFT_TYPE* c);
 
@@ -568,48 +565,6 @@ static void rftfsub(int n, FFT_TYPE* a, int nc, FFT_TYPE* c)
 	}
 }
 
-static void dctsub(int n, FFT_TYPE* a, int nc, FFT_TYPE* c)
-{
-	int j, k, kk, ks, m;
-	FFT_TYPE wkr, wki, xr;
-
-	ks = nc / n;
-	kk = ks;
-	m = n >> 1;
-	for (k = 1; k <= m - 1; k++)
-	{
-		j = n - k;
-		wkr = c[kk] - c[nc - kk];
-		wki = c[kk] + c[nc - kk];
-		kk += ks;
-		xr = wki * a[k] - wkr * a[j];
-		a[k] = wkr * a[k] + wki * a[j];
-		a[j] = xr;
-	}
-	a[m] *= 2 * c[kk];
-}
-
-static void dstsub(int n, FFT_TYPE* a, int nc, FFT_TYPE* c)
-{
-	int j, k, kk, ks, m;
-	FFT_TYPE wkr, wki, xr;
-
-	ks = nc / n;
-	kk = ks;
-	m = n >> 1;
-	for (k = 1; k <= m - 1; k++)
-	{
-		j = n - k;
-		wkr = c[kk] - c[nc - kk];
-		wki = c[kk] + c[nc - kk];
-		kk += ks;
-		xr = wki * a[j] - wkr * a[k];
-		a[j] = wkr * a[j] + wki * a[k];
-		a[k] = xr;
-	}
-	a[m] *= 2 * c[kk];
-}
-
 static void rdft(int n, int isgn, FFT_TYPE* a, int* ip, FFT_TYPE* w)
 {
 	int nw, nc;
@@ -968,9 +923,8 @@ static void cdft2d(
 	}
 }
 
-}  // end namespace
-}  // end namespace
-
+}  // namespace math
+}  // namespace mrpt
 
 void mrpt::math::fft_real(
 	CVectorFloat& in_realData, CVectorFloat& out_FFT_Re,
@@ -1006,7 +960,8 @@ void mrpt::math::fft_real(
 		else
 			out_FFT_Im[i] = auxVect[1 + i * 2 + 1];
 
-		out_FFT_Mag[i] = std::sqrt(square(out_FFT_Re[i]) + square(out_FFT_Im[i]));
+		out_FFT_Mag[i] =
+			std::sqrt(square(out_FFT_Re[i]) + square(out_FFT_Im[i]));
 	}
 
 	MRPT_END
@@ -1492,7 +1447,6 @@ void math::idft2_complex(
 
 	MRPT_END
 }
-
 
 void mrpt::math::cross_correlation_FFT(
 	const CMatrixFloat& A, const CMatrixFloat& B, CMatrixFloat& out_corr)

@@ -284,7 +284,7 @@ class CKalmanFilterCapable : public mrpt::utils::COutputLogger
 	  */
 	inline void getLandmarkMean(size_t idx, KFArray_FEAT& feat) const
 	{
-		ASSERT_(idx < getNumberOfLandmarksInTheMap())
+		ASSERT_(idx < getNumberOfLandmarksInTheMap();
 		::memcpy(
 			&feat[0], &m_xkk[VEH_SIZE + idx * FEAT_SIZE],
 			FEAT_SIZE * sizeof(m_xkk[0]));

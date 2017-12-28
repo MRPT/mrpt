@@ -18,6 +18,8 @@
 #include <type_traits>  // remove_reference_t
 #include <stdexcept>
 #include <iosfwd>
+#include <istream>
+#include <ostream>
 #include <mrpt/rtti/variant.h>
 
 namespace mrpt

@@ -10,6 +10,7 @@
 
 #include <mrpt/math/types_math.h>  // Eigen
 #include <mrpt/typemeta/TTypeName.h>
+#include <mrpt/typemeta/num_to_string.h>
 #include <mrpt/math/point_poses2vectors.h>  // MRPT_MATRIX_CONSTRUCTORS_FROM_POSES()
 
 namespace mrpt

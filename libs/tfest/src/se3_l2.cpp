@@ -75,8 +75,7 @@ bool se3_l2_internal(
 {
 	MRPT_START
 
-	ASSERT_EQUAL_(points_this.size(), points_other.size())
-
+	ASSERT_EQUAL_(points_this.size(), points_other.size());
 	// Compute the centroids
 	TPoint3D ct_others(0, 0, 0), ct_this(0, 0, 0);
 	const size_t nMatches = points_this.size();

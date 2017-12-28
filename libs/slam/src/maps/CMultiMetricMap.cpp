@@ -238,8 +238,7 @@ void CMultiMetricMap::setListOfMaps(
 			// Create map from the list of all params:
 			mrpt::maps::CMetricMap* theMap =
 				mmr.factoryMapObjectFromDefinition(*it->get());
-			ASSERT_(theMap)
-
+			ASSERT_(theMap);
 			// Add to the list of maps:
 			this->maps.push_back(mrpt::maps::CMetricMap::Ptr(theMap));
 		}
@@ -394,8 +393,7 @@ void CMultiMetricMap::saveMetricMapRepresentationToFile(
 	for (size_t idx = 0; idx < maps.size(); idx++)
 	{
 		const mrpt::maps::CMetricMap* m = maps[idx].get();
-		ASSERT_(m)
-
+		ASSERT_(m);
 		std::string fil = filNamePrefix;
 		fil += format(
 			"_%s_%02u", m->GetRuntimeClass()->className,
@@ -483,6 +481,6 @@ CSimplePointsMap* CMultiMetricMap::getAsSimplePointsMap()
 /** Gets the i-th map \exception std::runtime_error On out-of-bounds */
 mrpt::maps::CMetricMap::Ptr CMultiMetricMap::getMapByIndex(size_t idx) const
 {
-	ASSERT_BELOW_(idx, maps.size())
+	ASSERT_BELOW_(idx, maps.size();
 	return maps[idx].get_ptr();
 }

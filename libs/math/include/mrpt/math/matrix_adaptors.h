@@ -227,11 +227,11 @@ class CMatrixRowAccessor
 
    public:
 	typedef typename MAT::Scalar value_type;
-	typedef CMatrixRowAccessor<MAT> mrpt_autotype;
+	using mrpt_autotype = CMatrixRowAccessor<MAT>;
 	inline CMatrixRowAccessor(MAT& mat, size_t rowIdx)
 		: m_mat(&mat), m_rowInd(rowIdx)
 	{
-		ASSERT_(rowIdx < mat.rows())
+		ASSERT_(rowIdx < mat.rows();
 	}
 	inline CMatrixRowAccessor() {}
 	inline value_type& operator[](const size_t i)
@@ -304,7 +304,7 @@ class CMatrixRowAccessorExtended
 
    public:
 	typedef typename MAT::Scalar value_type;
-	typedef CMatrixRowAccessorExtended<MAT> mrpt_autotype;
+	using mrpt_autotype = CMatrixRowAccessorExtended<MAT>;
 	inline CMatrixRowAccessorExtended(
 		MAT& mat, size_t row, size_t offset, size_t space)
 		: m_mat(&mat),
@@ -383,7 +383,7 @@ class CConstMatrixRowAccessor
 
    public:
 	typedef typename MAT::Scalar value_type;
-	typedef CConstMatrixRowAccessor<MAT> mrpt_autotype;
+	using mrpt_autotype = CConstMatrixRowAccessor<MAT>;
 	inline CConstMatrixRowAccessor(const MAT& mat, size_t row)
 		: m_mat(&mat), m_rowInd(row)
 	{
@@ -445,7 +445,7 @@ class CConstMatrixRowAccessorExtended
 
    public:
 	typedef typename MAT::Scalar value_type;
-	typedef CConstMatrixRowAccessorExtended<MAT> mrpt_autotype;
+	using mrpt_autotype = CConstMatrixRowAccessorExtended<MAT>;
 	inline CConstMatrixRowAccessorExtended(
 		const MAT& mat, size_t row, size_t offset, size_t space)
 		: m_mat(&mat),
@@ -505,11 +505,11 @@ class CMatrixColumnAccessor
 
    public:
 	typedef typename MAT::Scalar value_type;
-	typedef CMatrixColumnAccessor<MAT> mrpt_autotype;
+	using mrpt_autotype = CMatrixColumnAccessor<MAT>;
 	inline CMatrixColumnAccessor(MAT& mat, size_t colIdx)
 		: m_mat(&mat), m_colInd(colIdx)
 	{
-		ASSERT_(colIdx < mat.cols())
+		ASSERT_(colIdx < mat.cols();
 	}
 	inline CMatrixColumnAccessor() {}
 	inline value_type& operator[](const size_t i)
@@ -581,7 +581,7 @@ class CMatrixColumnAccessorExtended
 
    public:
 	typedef typename MAT::Scalar value_type;
-	typedef CMatrixColumnAccessorExtended<MAT> mrpt_autotype;
+	using mrpt_autotype = CMatrixColumnAccessorExtended<MAT>;
 	inline CMatrixColumnAccessorExtended(
 		MAT& mat, size_t col, size_t offset, size_t space)
 		: m_mat(&mat),
@@ -658,7 +658,7 @@ class CConstMatrixColumnAccessor
 
    public:
 	typedef typename MAT::Scalar value_type;
-	typedef CConstMatrixColumnAccessor<MAT> mrpt_autotype;
+	using mrpt_autotype = CConstMatrixColumnAccessor<MAT>;
 	inline CConstMatrixColumnAccessor(const MAT& mat, size_t colIdx)
 		: m_mat(&mat), m_colInd(colIdx)
 	{
@@ -719,7 +719,7 @@ class CConstMatrixColumnAccessorExtended
 
    public:
 	typedef typename MAT::Scalar value_type;
-	typedef CMatrixColumnAccessorExtended<MAT> mrpt_autotype;
+	using mrpt_autotype = CMatrixColumnAccessorExtended<MAT>;
 	inline CConstMatrixColumnAccessorExtended(
 		const MAT& mat, size_t col, size_t offset, size_t space)
 		: m_mat(&mat),

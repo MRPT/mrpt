@@ -22,8 +22,8 @@ namespace math
  * behavior of STL-containers */
 struct CMatrixTemplateSize : public std::array<size_t, 2>
 {
-	typedef std::array<size_t, 2> Base;
-	typedef CMatrixTemplateSize mrpt_autotype;
+	using Base = std::array<size_t, 2>;
+	using mrpt_autotype = CMatrixTemplateSize;
 
 	inline CMatrixTemplateSize() : std::array<size_t, 2>() {}
 	inline CMatrixTemplateSize(const size_t* d)
@@ -85,7 +85,7 @@ class CMatrixTemplate
 
 	/** Internal use only: It reallocs the memory for the 2D matrix, maintaining
 	 * the previous contents if posible.
-	  */
+	 */
 	void realloc(size_t row, size_t col, bool newElementsToZero = false)
 	{
 		if (row != m_Rows || col != m_Cols || m_Val == nullptr)
@@ -95,8 +95,7 @@ class CMatrixTemplate
 			size_t sizeZeroColumns = sizeof(T) * (col - m_Cols);
 
 			// If we are reducing rows, free that memory:
-			for (r = row; r < m_Rows; r++)
-				mrpt::aligned_free(m_Val[r]);
+			for (r = row; r < m_Rows; r++) mrpt::aligned_free(m_Val[r]);
 
 			// Realloc the vector of pointers:
 			if (!row)
@@ -106,8 +105,7 @@ class CMatrixTemplate
 			}
 			else
 				m_Val = static_cast<T**>(
-					mrpt::aligned_realloc(
-						m_Val, sizeof(T*) * row, 16));
+					mrpt::aligned_realloc(m_Val, sizeof(T*) * row, 16));
 
 			// How many new rows/cols?
 			size_t row_size = col * sizeof(T);
@@ -120,8 +118,7 @@ class CMatrixTemplate
 				{
 					// This was an existing row: Resize the memory:
 					m_Val[r] = static_cast<T*>(
-						mrpt::aligned_realloc(
-							m_Val[r], row_size, 16));
+						mrpt::aligned_realloc(m_Val[r], row_size, 16));
 
 					if (doZeroColumns)
 					{
@@ -132,8 +129,8 @@ class CMatrixTemplate
 				else
 				{
 					// This is a new row, alloc the memory for the first time:
-					m_Val[r] = static_cast<T*>(
-						mrpt::aligned_malloc(row_size, 16));
+					m_Val[r] =
+						static_cast<T*>(mrpt::aligned_malloc(row_size, 16));
 					::memset(m_Val[r], 0, row_size);
 				}
 			}
@@ -145,16 +142,14 @@ class CMatrixTemplate
 
    public:
 	/**
-	  * Checks whether the rows [r-N,r+N] and the columns [c-N,c+N] are present
+	 * Checks whether the rows [r-N,r+N] and the columns [c-N,c+N] are present
 	 * in the matrix.
-	  */
+	 */
 	template <size_t N>
 	inline void ASSERT_ENOUGHROOM(size_t r, size_t c) const
 	{
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
-		ASSERT_(
-			(r >= N) && (r + N < rows()) && (c >= N) &&
-			(c + N < cols()));
+		ASSERT_((r >= N) && (r + N < rows()) && (c >= N) && (c + N < cols()));
 #endif
 	}
 	/*! Fill all the elements with a given value (Note: named "fillAll" since
@@ -188,42 +183,41 @@ class CMatrixTemplate
 	}
 
 	/** Copy constructor & crop from another matrix
-	*/
+	 */
 	CMatrixTemplate(
 		const CMatrixTemplate& m, const size_t cropRowCount,
 		const size_t cropColCount)
 		: m_Val(nullptr), m_Rows(0), m_Cols(0)
 	{
-		ASSERT_(m.m_Rows >= cropRowCount)
-		ASSERT_(m.m_Cols >= cropColCount)
+		ASSERT_(m.m_Rows >= cropRowCount);
+		ASSERT_(m.m_Cols >= cropColCount);
 		realloc(cropRowCount, cropColCount);
 		for (size_t i = 0; i < m_Rows; i++)
 			for (size_t j = 0; j < m_Cols; j++) m_Val[i][j] = m.m_Val[i][j];
 	}
 
 	/** Constructor from a given size and a C array. The array length must match
-	  *cols x row.
-	  * \code
-	  *  const double numbers[] = {
-	  *    1,2,3,
-	  *    4,5,6 };
-	  *	 CMatrixDouble   M(3,2, numbers);
-	  * \endcode
-	  */
+	 *cols x row.
+	 * \code
+	 *  const double numbers[] = {
+	 *    1,2,3,
+	 *    4,5,6 };
+	 *	 CMatrixDouble   M(3,2, numbers);
+	 * \endcode
+	 */
 	template <typename V, size_t N>
 	CMatrixTemplate(size_t row, size_t col, V (&theArray)[N])
 		: m_Val(nullptr), m_Rows(0), m_Cols(0)
 	{
-		MRPT_COMPILE_TIME_ASSERT(N != 0)
+		MRPT_COMPILE_TIME_ASSERT(N != 0);
 		realloc(row, col);
 		if (m_Rows * m_Cols != N)
-			THROW_EXCEPTION(
-				format(
-					"Mismatch between matrix size %lu x %lu and array of "
-					"length %lu",
-					static_cast<long unsigned>(m_Rows),
-					static_cast<long unsigned>(m_Cols),
-					static_cast<long unsigned>(N)))
+			THROW_EXCEPTION(format(
+				"Mismatch between matrix size %lu x %lu and array of "
+				"length %lu",
+				static_cast<long unsigned>(m_Rows),
+				static_cast<long unsigned>(m_Cols),
+				static_cast<long unsigned>(N)))
 		size_t idx = 0;
 		for (size_t i = 0; i < m_Rows; i++)
 			for (size_t j = 0; j < m_Cols; j++)
@@ -233,7 +227,7 @@ class CMatrixTemplate
 	/** Constructor from a given size and a STL container (std::vector,
 	 * std::list,...) with the initial values. The vector length must match cols
 	 * x row.
-	*/
+	 */
 	template <typename V>
 	CMatrixTemplate(size_t row, size_t col, const V& theVector)
 		: m_Val(nullptr), m_Rows(0), m_Cols(0)
@@ -241,13 +235,12 @@ class CMatrixTemplate
 		const size_t N = theVector.size();
 		realloc(row, col);
 		if (m_Rows * m_Cols != N)
-			THROW_EXCEPTION(
-				format(
-					"Mismatch between matrix size %lu x %lu and array of "
-					"length %lu",
-					static_cast<long unsigned>(m_Rows),
-					static_cast<long unsigned>(m_Cols),
-					static_cast<long unsigned>(N)))
+			THROW_EXCEPTION(format(
+				"Mismatch between matrix size %lu x %lu and array of "
+				"length %lu",
+				static_cast<long unsigned>(m_Rows),
+				static_cast<long unsigned>(m_Cols),
+				static_cast<long unsigned>(N)))
 		typename V::const_iterator it = theVector.begin();
 		for (size_t i = 0; i < m_Rows; i++)
 			for (size_t j = 0; j < m_Cols; j++)
@@ -266,28 +259,27 @@ class CMatrixTemplate
 	}
 
 	/** Assignment operator for initializing from a C array (The matrix must be
-	  *set to the correct size before invoking this asignament)
-	  * \code
-	  *	 CMatrixDouble   M(3,2);
-	  *  const double numbers[] = {
-	  *    1,2,3,
-	  *    4,5,6 };
-	  *  M = numbers;
-	  * \endcode
-	  *  Refer also to the constructor with initialization data
-	  *CMatrixTemplate::CMatrixTemplate
-	  */
+	 *set to the correct size before invoking this asignament)
+	 * \code
+	 *	 CMatrixDouble   M(3,2);
+	 *  const double numbers[] = {
+	 *    1,2,3,
+	 *    4,5,6 };
+	 *  M = numbers;
+	 * \endcode
+	 *  Refer also to the constructor with initialization data
+	 *CMatrixTemplate::CMatrixTemplate
+	 */
 	template <typename V, size_t N>
 	CMatrixTemplate& operator=(V (&theArray)[N])
 	{
-		MRPT_COMPILE_TIME_ASSERT(N != 0)
+		MRPT_COMPILE_TIME_ASSERT(N != 0);
 		if (m_Rows * m_Cols != N)
 		{
-			THROW_EXCEPTION(
-				format(
-					"Mismatch between matrix size %lu x %lu and array of "
-					"length %lu",
-					m_Rows, m_Cols, N))
+			THROW_EXCEPTION(format(
+				"Mismatch between matrix size %lu x %lu and array of "
+				"length %lu",
+				m_Rows, m_Cols, N))
 		}
 		size_t idx = 0;
 		for (size_t i = 0; i < m_Rows; i++)
@@ -297,11 +289,11 @@ class CMatrixTemplate
 	}
 
 	/** Number of rows in the matrix
-	  * \sa rows(), getColCount, nr, nc
-	  */
+	 * \sa rows(), getColCount, nr, nc
+	 */
 	inline size_t rows() const { return m_Rows; }
 	/** Number of columns in the matrix
-	  * \sa rows(), getColCount, nr, nc
+	 * \sa rows(), getColCount, nr, nc
 	 */
 	inline size_t cols() const { return m_Cols; }
 	/** Get a 2-vector with [NROWS NCOLS] (as in MATLAB command size(x)) */
@@ -328,43 +320,41 @@ class CMatrixTemplate
 	}
 
 	/** Subscript operator to get/set individual elements
-		*/
+	 */
 	inline T& operator()(size_t row, size_t col)
 	{
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
 		if (row >= m_Rows || col >= m_Cols)
-			THROW_EXCEPTION(
-				format(
-					"Indexes (%lu,%lu) out of range. Matrix is %lux%lu",
-					static_cast<unsigned long>(row),
-					static_cast<unsigned long>(col),
-					static_cast<unsigned long>(m_Rows),
-					static_cast<unsigned long>(m_Cols)));
+			THROW_EXCEPTION(format(
+				"Indexes (%lu,%lu) out of range. Matrix is %lux%lu",
+				static_cast<unsigned long>(row),
+				static_cast<unsigned long>(col),
+				static_cast<unsigned long>(m_Rows),
+				static_cast<unsigned long>(m_Cols)));
 #endif
 		return m_Val[row][col];
 	}
 
 	/** Subscript operator to get individual elements
-		*/
+	 */
 	inline const T& operator()(size_t row, size_t col) const
 	{
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
 		if (row >= m_Rows || col >= m_Cols)
-			THROW_EXCEPTION(
-				format(
-					"Indexes (%lu,%lu) out of range. Matrix is %lux%lu",
-					static_cast<unsigned long>(row),
-					static_cast<unsigned long>(col),
-					static_cast<unsigned long>(m_Rows),
-					static_cast<unsigned long>(m_Cols)));
+			THROW_EXCEPTION(format(
+				"Indexes (%lu,%lu) out of range. Matrix is %lux%lu",
+				static_cast<unsigned long>(row),
+				static_cast<unsigned long>(col),
+				static_cast<unsigned long>(m_Rows),
+				static_cast<unsigned long>(m_Cols)));
 #endif
 		return m_Val[row][col];
 	}
 
 	/** Subscript operator to get/set an individual element from a row or column
 	 * matrix.
-	  * \exception std::exception If the object is not a column or row matrix.
-	  */
+	 * \exception std::exception If the object is not a column or row matrix.
+	 */
 	inline T& operator()(size_t ith)
 	{
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
@@ -394,8 +384,8 @@ class CMatrixTemplate
 
 	/** Subscript operator to get/set an individual element from a row or column
 	 * matrix.
-	  * \exception std::exception If the object is not a column or row matrix.
-	  */
+	 * \exception std::exception If the object is not a column or row matrix.
+	 */
 	inline T operator()(size_t ith) const
 	{
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
@@ -424,79 +414,75 @@ class CMatrixTemplate
 	}
 
 	/** Fast but unsafe method to write a value in the matrix
-		*/
+	 */
 	inline void set_unsafe(size_t row, size_t col, const T& v)
 	{
 #ifdef _DEBUG
 		if (row >= m_Rows || col >= m_Cols)
-			THROW_EXCEPTION(
-				format(
-					"Indexes (%lu,%lu) out of range. Matrix is %lux%lu",
-					static_cast<unsigned long>(row),
-					static_cast<unsigned long>(col),
-					static_cast<unsigned long>(m_Rows),
-					static_cast<unsigned long>(m_Cols)));
+			THROW_EXCEPTION(format(
+				"Indexes (%lu,%lu) out of range. Matrix is %lux%lu",
+				static_cast<unsigned long>(row),
+				static_cast<unsigned long>(col),
+				static_cast<unsigned long>(m_Rows),
+				static_cast<unsigned long>(m_Cols)));
 #endif
 		m_Val[row][col] = v;
 	}
 
 	/** Fast but unsafe method to read a value from the matrix
-		*/
+	 */
 	inline const T& get_unsafe(size_t row, size_t col) const
 	{
 #ifdef _DEBUG
 		if (row >= m_Rows || col >= m_Cols)
-			THROW_EXCEPTION(
-				format(
-					"Indexes (%lu,%lu) out of range. Matrix is %lux%lu",
-					static_cast<unsigned long>(row),
-					static_cast<unsigned long>(col),
-					static_cast<unsigned long>(m_Rows),
-					static_cast<unsigned long>(m_Cols)));
+			THROW_EXCEPTION(format(
+				"Indexes (%lu,%lu) out of range. Matrix is %lux%lu",
+				static_cast<unsigned long>(row),
+				static_cast<unsigned long>(col),
+				static_cast<unsigned long>(m_Rows),
+				static_cast<unsigned long>(m_Cols)));
 #endif
 		return m_Val[row][col];
 	}
 
 	/** Fast but unsafe method to get a reference from the matrix
-		*/
+	 */
 	inline T& get_unsafe(size_t row, size_t col)
 	{
 #ifdef _DEBUG
 		if (row >= m_Rows || col >= m_Cols)
-			THROW_EXCEPTION(
-				format(
-					"Indexes (%lu,%lu) out of range. Matrix is %lux%lu",
-					static_cast<unsigned long>(row),
-					static_cast<unsigned long>(col),
-					static_cast<unsigned long>(m_Rows),
-					static_cast<unsigned long>(m_Cols)));
+			THROW_EXCEPTION(format(
+				"Indexes (%lu,%lu) out of range. Matrix is %lux%lu",
+				static_cast<unsigned long>(row),
+				static_cast<unsigned long>(col),
+				static_cast<unsigned long>(m_Rows),
+				static_cast<unsigned long>(m_Cols)));
 #endif
 		return m_Val[row][col];
 	}
 
 	/** Fast but unsafe method to obtain a pointer to a given row of the matrix
 	 * (Use only in time critical applications)
-		*/
+	 */
 	inline T* get_unsafe_row(size_t row)
 	{
 #ifdef _DEBUG
 		if (row >= m_Rows)
-			THROW_EXCEPTION(
-				format(
-					"Row index %lu out of range. Matrix is %lux%lu",
-					static_cast<unsigned long>(row),
-					static_cast<unsigned long>(m_Rows),
-					static_cast<unsigned long>(m_Cols)));
+			THROW_EXCEPTION(format(
+				"Row index %lu out of range. Matrix is %lux%lu",
+				static_cast<unsigned long>(row),
+				static_cast<unsigned long>(m_Rows),
+				static_cast<unsigned long>(m_Cols)));
 #endif
 		return m_Val[row];
 	}
 
 	/** Fast but unsafe method to obtain a pointer to a given row of the matrix
 	 * (Use only in critical applications)
-		*/
+	 */
 	inline const T* get_unsafe_row(size_t row) const { return m_Val[row]; }
 	/** Subscript operator to get a submatrix
-	  */
+	 */
 	inline CMatrixTemplate<T> operator()(
 		const size_t row1, const size_t row2, const size_t col1,
 		const size_t col2) const
@@ -507,8 +493,8 @@ class CMatrixTemplate
 	}
 
 	/** Get a submatrix, given its bounds
-	  * \sa extractSubmatrixSymmetricalBlocks
-	  */
+	 * \sa extractSubmatrixSymmetricalBlocks
+	 */
 	void extractSubmatrix(
 		const size_t row1, const size_t row2, const size_t col1,
 		const size_t col2, CMatrixTemplate<T>& out) const
@@ -549,10 +535,10 @@ class CMatrixTemplate
 	}
 
 	/** Gets a series of contiguous rows.
-		* \exception std::logic_error On index out of bounds
-		* \sa extractRow
-		* \sa extractColumns
-		*/
+	 * \exception std::logic_error On index out of bounds
+	 * \sa extractRow
+	 * \sa extractColumns
+	 */
 	inline void extractRows(
 		size_t firstRow, size_t lastRow, CMatrixTemplate<T>& out) const
 	{
@@ -561,10 +547,10 @@ class CMatrixTemplate
 	}
 
 	/** Gets a series of contiguous columns.
-		* \exception std::logic_error On index out of bounds
-		* \sa extractColumn
-		* \sa extractRows
-		*/
+	 * \exception std::logic_error On index out of bounds
+	 * \sa extractColumn
+	 * \sa extractRows
+	 */
 	inline void extractColumns(
 		size_t firstCol, size_t lastCol, CMatrixTemplate<T>& out) const
 	{
@@ -573,8 +559,8 @@ class CMatrixTemplate
 	}
 
 	/** Returns a given column to a vector (without modifying the matrix)
-		* \exception std::exception On index out of bounds
-		*/
+	 * \exception std::exception On index out of bounds
+	 */
 	void extractCol(size_t nCol, std::vector<T>& out, int startingRow = 0) const
 	{
 		size_t i, n;
@@ -590,8 +576,8 @@ class CMatrixTemplate
 	}
 
 	/** Gets a given column to a vector (without modifying the matrix)
-		* \exception std::exception On index out of bounds
-		*/
+	 * \exception std::exception On index out of bounds
+	 */
 	void extractCol(
 		size_t nCol, CMatrixTemplate<T>& out, int startingRow = 0) const
 	{
@@ -608,19 +594,19 @@ class CMatrixTemplate
 	}
 
 	/** Appends a new row to the MxN matrix from a 1xN vector.
-		*  The lenght of the vector must match the width of the matrix, unless
+	 *  The lenght of the vector must match the width of the matrix, unless
 	 * it's empty: in that case the matrix is resized to 1xN.
-		*  \code
-		*    CMatrixDouble  M(0,0);
-		*    CVectorDouble  v(7),w(7);
-		*    // ...
-		*    M.appendRow(v);
-		*    M.appendRow(w);
-		*  \endcode
-		* \exception std::exception On incorrect vector length.
-		* \sa extractRow
-		* \sa appendCol
-		*/
+	 *  \code
+	 *    CMatrixDouble  M(0,0);
+	 *    CVectorDouble  v(7),w(7);
+	 *    // ...
+	 *    M.appendRow(v);
+	 *    M.appendRow(w);
+	 *  \endcode
+	 * \exception std::exception On incorrect vector length.
+	 * \sa extractRow
+	 * \sa appendCol
+	 */
 	void appendRow(const std::vector<T>& in)
 	{
 		size_t i, n, row;
@@ -644,12 +630,12 @@ class CMatrixTemplate
 	}
 
 	/** Appends a new column to the matrix from a vector.
-		* The length of the vector must match the number of rows of the matrix,
+	 * The length of the vector must match the number of rows of the matrix,
 	 * unless it is (0,0).
-		* \exception std::exception On size mismatch.
-		* \sa extractCol
-		* \sa appendRow
-		*/
+	 * \exception std::exception On size mismatch.
+	 * \sa extractCol
+	 * \sa appendRow
+	 */
 	void appendCol(const std::vector<T>& in)
 	{
 		size_t r = m_Rows, c = m_Cols;
@@ -667,9 +653,9 @@ class CMatrixTemplate
 
 	/** Inserts a column from a vector, replacing the current contents of that
 	 * column.
-		* \exception std::exception On index out of bounds
-		* \sa extractCol
-		*/
+	 * \exception std::exception On index out of bounds
+	 * \sa extractCol
+	 */
 	void insertCol(size_t nCol, const std::vector<T>& in)
 	{
 		if (nCol >= m_Cols)
@@ -682,7 +668,7 @@ class CMatrixTemplate
 	}
 
 	/** Returns a vector containing the matrix's values.
-	  */
+	 */
 	void getAsVector(std::vector<T>& out) const
 	{
 		out.clear();
@@ -694,8 +680,8 @@ class CMatrixTemplate
 };  // end of class CMatrixTemplate
 
 /** Declares a matrix of booleans (non serializable).
-  *  \sa CMatrixDouble, CMatrixFloat, CMatrixB
-  */
+ *  \sa CMatrixDouble, CMatrixFloat, CMatrixB
+ */
 // typedef CMatrixTemplate<bool> CMatrixBool;
 class CMatrixBool : public CMatrixTemplate<bool>
 {
@@ -708,5 +694,5 @@ class CMatrixBool : public CMatrixTemplate<bool>
 	CMatrixBool& operator=(const CMatrixTemplate<bool>& m);
 };
 
-}  // End of namespace
-}  // End of namespace
+}  // namespace math
+}  // namespace mrpt

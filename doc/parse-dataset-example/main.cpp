@@ -57,8 +57,7 @@ int main(int argc, char **argv)
 		}
 
 		const string rawlog_file = string(argv[1]);
-		ASSERT_(mrpt::system::fileExists(rawlog_file))
-
+		ASSERT_(mrpt::system::fileExists(rawlog_file));
 		const TTimeStamp start_timestamp =
 			(argc==3) ?
 			mrpt::system::time_tToTimestamp(atof(argv[2])) :

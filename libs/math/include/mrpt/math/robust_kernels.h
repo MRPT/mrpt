@@ -9,17 +9,19 @@
 
 #pragma once
 
+#include <cmath>  // std::sqrt()
+
 namespace mrpt
 {
 namespace math
 {
 /** \addtogroup mrpt_math_grp
-  *  @{ */
+ *  @{ */
 
 /** The different types of kernels for usage within a robustified least-squares
  * estimator.
-  * \sa Use these types as arguments of the template RobustKernel<>
-  */
+ * \sa Use these types as arguments of the template RobustKernel<>
+ */
 enum TRobustKernelType
 {
 	/** No robust kernel, use standard least squares: rho(r)= 1/2 * r^2 */
@@ -75,5 +77,5 @@ struct RobustKernel<rkPseudoHuber, T>
 };
 
 /** @} */  // end of grouping
-}
-}
+}  // namespace math
+}  // namespace mrpt

@@ -1017,7 +1017,7 @@ IplImage* ipl_to_grayscale(const IplImage* img_src)
 		img_src->widthStep == img_src->width * img_src->nChannels &&
 		img_dest->widthStep == img_dest->width * img_dest->nChannels)
 	{
-		ASSERT_(is_aligned<16>(img_dest->imageData))
+		ASSERT_(is_aligned<16>(img_dest->imageData);
 		image_SSSE3_bgr_to_gray_8u(
 			(const uint8_t*)img_src->imageData, (uint8_t*)img_dest->imageData,
 			img_src->width, img_src->height);
@@ -1040,8 +1040,7 @@ void CImage::grayscale(CImage& ret) const
 	// The image is already grayscale??
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
 	const IplImage* ipl = this->getAs<const IplImage>();
-	ASSERT_(ipl)
-
+	ASSERT_(ipl);
 	if (ipl->nChannels == 1)
 	{
 		ret = *this;
@@ -1077,8 +1076,7 @@ void CImage::scaleHalf(CImage& out) const
 {
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	ASSERT_(img != nullptr)
-
+	ASSERT_(img != nullptr);
 	// Get this image size:
 	const IplImage* img_src = ((IplImage*)img);
 	const int w = img_src->width;
@@ -1135,8 +1133,7 @@ void CImage::scaleHalfSmooth(CImage& out) const
 {
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	ASSERT_(img != nullptr)
-
+	ASSERT_(img != nullptr);
 	// Get this image size:
 	const IplImage* img_src = ((IplImage*)img);
 	const int w = img_src->width;
@@ -1512,8 +1509,7 @@ void CImage::cross_correlation(
 			(y_search_ini + y_search_size + patch_im->height - 1) - im->height;
 
 	ASSERT_((x_search_ini + x_search_size + patch_im->width - 1) <= im->width)
-	ASSERT_((y_search_ini + y_search_size + patch_im->height - 1) <= im->height)
-
+	ASSERT_((y_search_ini + y_search_size + patch_im->height - 1) <= im->height);
 	IplImage* result = cvCreateImage(
 		cvSize(x_search_size + 1, y_search_size + 1), IPL_DEPTH_32F, 1);
 
@@ -2494,8 +2490,7 @@ void CImage::equalizeHist(CImage& outImg) const
 #if MRPT_HAS_OPENCV
 	// Convert to a single luminance channel image
 	const IplImage* srcImg = getAs<IplImage>();  // Source Image
-	ASSERT_(srcImg != nullptr)
-
+	ASSERT_(srcImg != nullptr);
 	outImg.changeSize(srcImg->width, srcImg->height, 1, isOriginTopLeft());
 
 	if (srcImg->nChannels == 1)

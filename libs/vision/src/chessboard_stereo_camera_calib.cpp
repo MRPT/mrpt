@@ -47,8 +47,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 		ASSERT_(p.check_size_x > 2)
 		ASSERT_(p.check_size_y > 2)
 		ASSERT_(p.check_squares_length_X_meters > 0)
-		ASSERT_(p.check_squares_length_Y_meters > 0)
-
+		ASSERT_(p.check_squares_length_Y_meters > 0);
 		const bool user_wants_use_robust = p.use_robust_kernel;
 
 		if (images.size() < 1)
@@ -328,8 +327,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 			Eigen::VectorXd minus_g;  // minus gradient
 			build_linear_system(res_jacob, vars_to_optimize, minus_g, H);
 
-			ASSERT_EQUAL_(nUnknowns, (size_t)H.cols())
-
+			ASSERT_EQUAL_(nUnknowns, (size_t)H.cols());
 			// Lev-Marq. parameters:
 			double nu = 2;
 			double lambda = tau * H.diagonal().array().maxCoeff();

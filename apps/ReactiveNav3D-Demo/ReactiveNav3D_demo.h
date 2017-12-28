@@ -95,7 +95,7 @@ class CRobotKinects
 				p1.z = z[i];
 				ray.point1 = p1;
 				intersect(ray, ground, pintobj);
-				ASSERT_(pintobj.isPoint())
+				ASSERT_(pintobj.isPoint();
 				pintobj.getPoint(pint);
 				x[i] = pint.x;
 				y[i] = pint.y;
@@ -130,7 +130,7 @@ class CRobotKinects
 				p1.z = z[i];
 				ray.point1 = p1;
 				intersect(ray, ceiling, pintobj);
-				ASSERT_(pintobj.isPoint())
+				ASSERT_(pintobj.isPoint();
 				pintobj.getPoint(pint);
 				x[i] = pint.x;
 				y[i] = pint.y;
@@ -279,7 +279,7 @@ class CShortTermMemory
 		const std::vector<double>& heights)
 	{
 		using namespace std;
-		using mrpt::math::square;
+		using mrpt::square;
 		// First, move the robot respect to the grid and adjust the likelihood
 		// values in the grid according to that movement
 		//-----------------------------------------------------------------------------------------------------------------

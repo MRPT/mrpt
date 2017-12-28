@@ -12,6 +12,7 @@
 #include <mrpt/core/exceptions.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/serialization/CArchive.h>
+#include <cstring> // strlen()
 
 using namespace mrpt::serialization;
 
@@ -670,4 +671,3 @@ bool CArchive::receiveMessage(utils::CMessage& msg)
 	MRPT_END
 }
 #endif
-

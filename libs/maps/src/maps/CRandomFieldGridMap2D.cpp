@@ -264,7 +264,7 @@ void CRandomFieldGridMap2D::internal_clear()
 					CFileGZInputStream(
 						this->m_insertOptions_common->GMRF_simplemap_file) >>
 						simpleMap;
-					ASSERT_(!simpleMap.empty())
+					ASSERT_(!simpleMap.empty();
 					m_Ocgridmap.loadFromSimpleMap(simpleMap);
 					res_coef =
 						this->getResolution() / m_Ocgridmap.getResolution();
@@ -655,8 +655,7 @@ void CRandomFieldGridMap2D::insertObservation_KernelDM_DMV(
 			if (windowValue > minWinValueAtCutOff)
 			{
 				cell = cellByIndex(sensor_cx + Acx, sensor_cy + Acy);
-				ASSERT_(cell != nullptr)
-
+				ASSERT_(cell != nullptr);
 				cell->dm_mean_w += windowValue;
 				cell->dm_mean += windowValue * normReading;
 				if (is_DMV)
@@ -2518,7 +2517,7 @@ void CRandomFieldGridMap2D::insertIndividualReading(
 				reading_stddev == .0
 					? m_insertOptions_common
 						  ->GMRF_lambdaObs  // default information
-					: 1.0 / mrpt::math::square(reading_stddev));
+					: 1.0 / mrpt::square(reading_stddev));
 			break;
 		default:
 			THROW_EXCEPTION(

@@ -438,7 +438,7 @@ class CPointsMap : public CMetricMap,
 	 */
 	inline void setPoint(size_t index, float x, float y, float z)
 	{
-		ASSERT_BELOW_(index, this->size())
+		ASSERT_BELOW_(index, this->size();
 		setPointFast(index, x, y, z);
 		mark_as_modified();
 	}
@@ -608,8 +608,8 @@ class CPointsMap : public CMetricMap,
 		const VECTOR& X, const VECTOR& Y, const VECTOR& Z = VECTOR())
 	{
 		const size_t N = X.size();
-		ASSERT_EQUAL_(X.size(), Y.size())
-		ASSERT_(Z.size() == 0 || Z.size() == X.size())
+		ASSERT_EQUAL_(X.size(), Y.size();
+		ASSERT_(Z.size() == 0 || Z.size() == X.size();
 		this->setSize(N);
 		const bool z_valid = !Z.empty();
 		if (z_valid)
@@ -649,7 +649,7 @@ class CPointsMap : public CMetricMap,
 	void getPointAllFields(
 		const size_t index, std::vector<float>& point_data) const
 	{
-		ASSERT_BELOW_(index, this->size())
+		ASSERT_BELOW_(index, this->size();
 		getPointAllFieldsFast(index, point_data);
 	}
 
@@ -662,7 +662,7 @@ class CPointsMap : public CMetricMap,
 	void setPointAllFields(
 		const size_t index, const std::vector<float>& point_data)
 	{
-		ASSERT_BELOW_(index, this->size())
+		ASSERT_BELOW_(index, this->size();
 		setPointAllFieldsFast(index, point_data);
 	}
 

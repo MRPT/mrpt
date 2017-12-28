@@ -20,7 +20,7 @@ using namespace mrpt::math;
 using namespace std;
 using namespace Eigen;
 using mrpt::utils::round;
-using mrpt::math::square;
+using mrpt::square;
 
 CDifodo::CDifodo()
 {

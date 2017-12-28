@@ -65,8 +65,7 @@ int run_build_tables()
 	std::sort(
 		lstConfigurations.begin(), lstConfigurations.end(), func_comp_entries);
 
-	ASSERT_(directoryExists(PERF_DATA_DIR + string("/perf-html/")))
-
+	ASSERT_(directoryExists(PERF_DATA_DIR + string("/perf-html/")));
 	CFileOutputStream fo;
 	// ====================================================
 	//                  index.html

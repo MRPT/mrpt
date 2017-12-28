@@ -195,13 +195,13 @@ class COctoMapVoxels : public CRenderizableDisplayList
 	 * voxels to modify, e.g. VOXEL_SET_OCCUPIED, VOXEL_SET_FREESPACE) */
 	inline void showVoxels(unsigned int voxel_set, bool show)
 	{
-		ASSERT_(voxel_set < m_voxel_sets.size())
+		ASSERT_(voxel_set < m_voxel_sets.size();
 		m_voxel_sets[voxel_set].visible = show;
 		CRenderizableDisplayList::notifyChange();
 	}
 	inline bool areVoxelsVisible(unsigned int voxel_set) const
 	{
-		ASSERT_(voxel_set < m_voxel_sets.size())
+		ASSERT_(voxel_set < m_voxel_sets.size();
 		return m_voxel_sets[voxel_set].visible;
 	}
 
@@ -249,7 +249,7 @@ class COctoMapVoxels : public CRenderizableDisplayList
 	/** Returns the total count of voxels in one voxel set. */
 	inline size_t getVoxelCount(const size_t set_index) const
 	{
-		ASSERT_(set_index < m_voxel_sets.size())
+		ASSERT_(set_index < m_voxel_sets.size();
 		return m_voxel_sets[set_index].voxels.size();
 	}
 
@@ -270,7 +270,7 @@ class COctoMapVoxels : public CRenderizableDisplayList
 	}
 	inline void resizeVoxels(const size_t set_index, const size_t nVoxels)
 	{
-		ASSERT_(set_index < m_voxel_sets.size())
+		ASSERT_(set_index < m_voxel_sets.size();
 		m_voxel_sets[set_index].voxels.resize(nVoxels);
 		CRenderizableDisplayList::notifyChange();
 	}
@@ -281,7 +281,7 @@ class COctoMapVoxels : public CRenderizableDisplayList
 	}
 	inline void reserveVoxels(const size_t set_index, const size_t nVoxels)
 	{
-		ASSERT_(set_index < m_voxel_sets.size())
+		ASSERT_(set_index < m_voxel_sets.size();
 		m_voxel_sets[set_index].voxels.reserve(nVoxels);
 		CRenderizableDisplayList::notifyChange();
 	}

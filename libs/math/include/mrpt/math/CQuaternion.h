@@ -12,6 +12,7 @@
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/CArrayNumeric.h>
 #include <mrpt/core/exceptions.h>
+#include <mrpt/core/bits_math.h>  // square()
 
 namespace mrpt
 {
@@ -101,18 +102,18 @@ class CQuaternion : public CArrayNumeric<T, 4>
 	inline void z(const T z) { (*this)[3] = z; }
 	/**	Set this quaternion to the rotation described by a 3D (Rodrigues)
 	 * rotation vector \f$ \mathbf{v} \f$:
-	  *   If \f$ \mathbf{v}=0 \f$, then the quaternion is \f$ \mathbf{q} = [1 ~
+	 *   If \f$ \mathbf{v}=0 \f$, then the quaternion is \f$ \mathbf{q} = [1 ~
 	 * 0 ~ 0 ~ 0]^\top \f$, otherwise:
-	  *    \f[ \mathbf{q} = \left[ \begin{array}{c}
-	  *       \cos(\frac{\theta}{2}) \\
-	  *       v_x \frac{\sin(\frac{\theta}{2})}{\theta} \\
-	  *       v_y \frac{\sin(\frac{\theta}{2})}{\theta} \\
-	  *       v_z \frac{\sin(\frac{\theta}{2})}{\theta}
-	  *    \end{array} \right] \f]
-	  *    where \f$ \theta = |\mathbf{v}| = \sqrt{v_x^2+v_y^2+v_z^2} \f$.
-	  *  \sa "Representing Attitude: Euler Angles, Unit Quaternions, and
+	 *    \f[ \mathbf{q} = \left[ \begin{array}{c}
+	 *       \cos(\frac{\theta}{2}) \\
+	 *       v_x \frac{\sin(\frac{\theta}{2})}{\theta} \\
+	 *       v_y \frac{\sin(\frac{\theta}{2})}{\theta} \\
+	 *       v_z \frac{\sin(\frac{\theta}{2})}{\theta}
+	 *    \end{array} \right] \f]
+	 *    where \f$ \theta = |\mathbf{v}| = \sqrt{v_x^2+v_y^2+v_z^2} \f$.
+	 *  \sa "Representing Attitude: Euler Angles, Unit Quaternions, and
 	 * Rotation Vectors (2006)", James Diebel.
-	  */
+	 */
 	template <class ARRAYLIKE3>
 	void fromRodriguesVector(const ARRAYLIKE3& v)
 	{
@@ -145,11 +146,11 @@ class CQuaternion : public CArrayNumeric<T, 4>
 
 	/** Logarithm of the 3x3 matrix defined by this pose, generating the
 	 * corresponding vector in the SO(3) Lie Algebra,
-	  *  which coincides with the so-called "rotation vector" (I don't have
+	 *  which coincides with the so-called "rotation vector" (I don't have
 	 * space here for the proof ;-).
-	  *  \param[out] out_ln The target vector, which can be: std::vector<>, or
+	 *  \param[out] out_ln The target vector, which can be: std::vector<>, or
 	 * mrpt::math::CVectorDouble or any row or column Eigen::Matrix<>.
-	  *  \sa exp,  mrpt::poses::SE_traits  */
+	 *  \sa exp,  mrpt::poses::SE_traits  */
 	template <class ARRAYLIKE3>
 	inline void ln(ARRAYLIKE3& out_ln) const
 	{
@@ -168,7 +169,7 @@ class CQuaternion : public CArrayNumeric<T, 4>
 	template <class ARRAYLIKE3>
 	void ln_noresize(ARRAYLIKE3& out_ln) const
 	{
-		using mrpt::math::square;
+		using mrpt::square;
 		const T xyz_norm = std::sqrt(square(x()) + square(y()) + square(z()));
 		const T K = (xyz_norm < 1e-7) ? 2 : 2 * ::acos(r()) / xyz_norm;
 		out_ln[0] = K * x();
@@ -177,7 +178,7 @@ class CQuaternion : public CArrayNumeric<T, 4>
 	}
 
 	/** Exponential map from the SO(3) Lie Algebra to unit quaternions.
-	  *  \sa ln,  mrpt::poses::SE_traits  */
+	 *  \sa ln,  mrpt::poses::SE_traits  */
 	template <class ARRAYLIKE3>
 	inline static CQuaternion<T> exp(const ARRAYLIKE3& v)
 	{
@@ -196,9 +197,9 @@ class CQuaternion : public CArrayNumeric<T, 4>
 
 	/**	Calculate the "cross" product (or "composed rotation") of two
 	 * quaternion: this = q1 x q2
-	  *   After the operation, "this" will represent the composed rotations of
+	 *   After the operation, "this" will represent the composed rotations of
 	 * q1 and q2 (q2 applied "after" q1).
-	  */
+	 */
 	inline void crossProduct(const CQuaternion& q1, const CQuaternion& q2)
 	{
 		// First: compute result, then save in this object. In this way we avoid
@@ -220,7 +221,7 @@ class CQuaternion : public CArrayNumeric<T, 4>
 
 	/** Rotate a 3D point (lx,ly,lz) -> (gx,gy,gz) as described by this
 	 * quaternion
-	  */
+	 */
 	void rotatePoint(
 		const double lx, const double ly, const double lz, double& gx,
 		double& gy, double& gz) const
@@ -241,7 +242,7 @@ class CQuaternion : public CArrayNumeric<T, 4>
 
 	/** Rotate a 3D point (lx,ly,lz) -> (gx,gy,gz) as described by the inverse
 	 * (conjugate) of this quaternion
-	  */
+	 */
 	void inverseRotatePoint(
 		const double lx, const double ly, const double lz, double& gx,
 		double& gy, double& gz) const
@@ -263,12 +264,12 @@ class CQuaternion : public CArrayNumeric<T, 4>
 	/** Return the squared norm of the quaternion */
 	inline double normSqr() const
 	{
-		using mrpt::math::square;
+		using mrpt::square;
 		return square(r()) + square(x()) + square(y()) + square(z());
 	}
 
 	/**	Normalize this quaternion, so its norm becomes the unitity.
-	  */
+	 */
 	inline void normalize()
 	{
 		const T qq = 1.0 / std::sqrt(normSqr());
@@ -277,8 +278,8 @@ class CQuaternion : public CArrayNumeric<T, 4>
 
 	/** Calculate the 4x4 Jacobian of the normalization operation of this
 	 * quaternion.
-	  *  The output matrix can be a dynamic or fixed size (4x4) matrix.
-	  */
+	 *  The output matrix can be a dynamic or fixed size (4x4) matrix.
+	 */
 	template <class MATRIXLIKE>
 	void normalizationJacobian(MATRIXLIKE& J) const
 	{
@@ -309,8 +310,8 @@ class CQuaternion : public CArrayNumeric<T, 4>
 	/** Compute the Jacobian of the rotation composition operation \f$ p =
 	 * f(\cdot) = q_{this} \times r \f$, that is the 4x4 matrix \f$
 	 * \frac{\partial f}{\partial q_{this} }  \f$.
-	  *  The output matrix can be a dynamic or fixed size (4x4) matrix.
-	  */
+	 *  The output matrix can be a dynamic or fixed size (4x4) matrix.
+	 */
 	template <class MATRIXLIKE>
 	inline void rotationJacobian(MATRIXLIKE& J) const
 	{
@@ -335,17 +336,17 @@ class CQuaternion : public CArrayNumeric<T, 4>
 
 	/** Calculate the 3x3 rotation matrix associated to this quaternion: \f[
 	 * \mathbf{R} = \left(
-	  *    \begin{array}{ccc}
-	  *     q_r^2+q_x^2-q_y^2-q_z^2 	&  2(q_x q_y - q_r q_z)	&  	2(q_z
+	 *    \begin{array}{ccc}
+	 *     q_r^2+q_x^2-q_y^2-q_z^2 	&  2(q_x q_y - q_r q_z)	&  	2(q_z
 	 * q_x+q_r q_y) \\
-	  *     2(q_x q_y+q_r q_z) 		& q_r^2-q_x^2+q_y^2-q_z^2 	& 2(q_y
+	 *     2(q_x q_y+q_r q_z) 		& q_r^2-q_x^2+q_y^2-q_z^2 	& 2(q_y
 	 * q_z-q_r q_x) \\
-	  *     2(q_z q_x-q_r q_y) & 2(q_y q_z+q_r q_x)  & q_r^2- q_x^2 - q_y^2 +
+	 *     2(q_z q_x-q_r q_y) & 2(q_y q_z+q_r q_x)  & q_r^2- q_x^2 - q_y^2 +
 	 * q_z^2
-	  *    \end{array}
-	  *  \right)\f]
-	  *
-	  */
+	 *    \end{array}
+	 *  \right)\f]
+	 *
+	 */
 	template <class MATRIXLIKE>
 	inline void rotationMatrix(MATRIXLIKE& M) const
 	{
@@ -388,10 +389,10 @@ class CQuaternion : public CArrayNumeric<T, 4>
 	}
 
 	/**	Return the yaw, pitch & roll angles associated to quaternion
-	  *  \sa For the equations, see The MRPT Book, or see
+	 *  \sa For the equations, see The MRPT Book, or see
 	 * http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/Quaternions.pdf
-	  *  \sa rpy_and_jacobian
-	*/
+	 *  \sa rpy_and_jacobian
+	 */
 	inline void rpy(T& roll, T& pitch, T& yaw) const
 	{
 		rpy_and_jacobian(
@@ -400,19 +401,19 @@ class CQuaternion : public CArrayNumeric<T, 4>
 
 	/**	Return the yaw, pitch & roll angles associated to quaternion, and
 	 * (optionally) the 3x4 Jacobian of the transformation.
-	  *  Note that both the angles and the Jacobian have one set of normal
+	 *  Note that both the angles and the Jacobian have one set of normal
 	 * equations, plus other special formulas for the degenerated cases of
 	 * |pitch|=90 degrees.
-	  *  \sa For the equations, see The MRPT Book, or
+	 *  \sa For the equations, see The MRPT Book, or
 	 * http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/Quaternions.pdf
-	  * \sa rpy
-	*/
+	 * \sa rpy
+	 */
 	template <class MATRIXLIKE>
 	void rpy_and_jacobian(
 		T& roll, T& pitch, T& yaw, MATRIXLIKE* out_dr_dq = nullptr,
 		bool resize_out_dr_dq_to3x4 = true) const
 	{
-		using mrpt::math::square;
+		using mrpt::square;
 		using std::sqrt;
 
 		if (out_dr_dq && resize_out_dr_dq_to3x4) out_dr_dq->setSize(3, 4);
@@ -504,5 +505,5 @@ typedef CQuaternion<double> CQuaternionDouble;
 /** A quaternion of data type "float" */
 typedef CQuaternion<float> CQuaternionFloat;
 
-}  // end namespace
+}  // namespace math
 }  // end namespace mrpt

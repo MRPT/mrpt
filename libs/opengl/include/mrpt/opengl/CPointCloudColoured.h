@@ -125,7 +125,7 @@ class CPointCloudColoured : public CRenderizable,
 	inline const TPointColour& operator[](size_t i) const
 	{
 #ifdef _DEBUG
-		ASSERT_BELOW_(i, size())
+		ASSERT_BELOW_(i, size();
 #endif
 		return m_points[i];
 	}
@@ -135,7 +135,7 @@ class CPointCloudColoured : public CRenderizable,
 	inline const TPointColour& getPoint(size_t i) const
 	{
 #ifdef _DEBUG
-		ASSERT_BELOW_(i, size())
+		ASSERT_BELOW_(i, size();
 #endif
 		return m_points[i];
 	}
@@ -145,7 +145,7 @@ class CPointCloudColoured : public CRenderizable,
 	inline mrpt::math::TPoint3Df getPointf(size_t i) const
 	{
 #ifdef _DEBUG
-		ASSERT_BELOW_(i, size())
+		ASSERT_BELOW_(i, size();
 #endif
 		return mrpt::math::TPoint3Df(
 			m_points[i].x, m_points[i].y, m_points[i].z);

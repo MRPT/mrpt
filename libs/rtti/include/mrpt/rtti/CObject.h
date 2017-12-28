@@ -10,6 +10,7 @@
 
 #include <mrpt/core/safe_pointers.h>
 #include <mrpt/core/aligned_allocator.h>
+#include <mrpt/typemeta/static_string.h>  // literal()
 #include <vector>
 #include <memory>
 
@@ -42,27 +43,27 @@ struct TRuntimeClassId
 };
 
 /** Register a class into the MRPT internal list of "CObject" descendents.
-  *  Used internally in the macros DEFINE_SERIALIZABLE, etc...
-  * \sa getAllRegisteredClasses
-  */
+ *  Used internally in the macros DEFINE_SERIALIZABLE, etc...
+ * \sa getAllRegisteredClasses
+ */
 void registerClass(const mrpt::rtti::TRuntimeClassId* pNewClass);
 
 /** Mostly for internal use within mrpt sources, to handle exceptional cases
  * with multiple serialization names for backward compatibility
  * (CMultiMetricMaps, CImage,...)
-  */
+ */
 void registerClassCustomName(
 	const char* customName, const TRuntimeClassId* pNewClass);
 
 /** Returns a list with all the classes registered in the system through
  * mrpt::rtti::registerClass.
-  * \sa registerClass, findRegisteredClass
-  */
+ * \sa registerClass, findRegisteredClass
+ */
 std::vector<const mrpt::rtti::TRuntimeClassId*> getAllRegisteredClasses();
 
 /** Like getAllRegisteredClasses(), but filters the list to only include
  * children clases of a given base one.
-  * \sa getAllRegisteredClasses(), getAllRegisteredClassesChildrenOf()  */
+ * \sa getAllRegisteredClasses(), getAllRegisteredClassesChildrenOf()  */
 std::vector<const TRuntimeClassId*> getAllRegisteredClassesChildrenOf(
 	const TRuntimeClassId* parent_id);
 
@@ -170,7 +171,7 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
 }
 
 /** This declaration must be inserted in all CObject classes definition, within
-* the class declaration. */
+ * the class declaration. */
 #define DEFINE_MRPT_OBJECT(class_name)                                   \
 	/*! @name RTTI stuff  */                                             \
 	/*! @{  */                                                           \
@@ -184,9 +185,10 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
 	using Ptr = std::shared_ptr<class_name>;                             \
 	using ConstPtr = std::shared_ptr<const class_name>;                  \
 	static constexpr const char* className = #class_name;                \
-	static constexpr auto getClassName() {                               \
+	static constexpr auto getClassName()                                 \
+	{                                                                    \
 		return mrpt::typemeta::literal(#class_name);                     \
-		}                                                                \
+	}                                                                    \
 	static const mrpt::rtti::TRuntimeClassId& GetRuntimeClassIdStatic(); \
 	virtual const mrpt::rtti::TRuntimeClassId* GetRuntimeClass()         \
 		const override;                                                  \
@@ -203,7 +205,7 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
 	MRPT_MAKE_ALIGNED_OPERATOR_NEW
 
 /** This must be inserted in all CObject classes implementation files
-  */
+ */
 #define IMPLEMENTS_MRPT_OBJECT(class_name, base, NameSpace)                   \
 	mrpt::rtti::CObject* NameSpace::class_name::CreateObject()                \
 	{                                                                         \
@@ -236,7 +238,7 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
 
 /** This declaration must be inserted in virtual CObject classes
  * definition:
-  */
+ */
 #define DEFINE_VIRTUAL_MRPT_OBJECT(class_name)                           \
 	/*! @name RTTI stuff  */                                             \
 	/*! @{  */                                                           \
@@ -253,8 +255,8 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
 /*! @}  */
 
 /** This must be inserted as implementation of some required members for
-  *  virtual CObject classes:
-  */
+ *  virtual CObject classes:
+ */
 #define IMPLEMENTS_VIRTUAL_MRPT_OBJECT(class_name, base_class_name, NameSpace) \
 	const mrpt::rtti::TRuntimeClassId* NameSpace::class_name::_GetBaseClass()  \
 	{                                                                          \
@@ -275,13 +277,13 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
 
 /** Register all pending classes - to be called just before de-serializing an
  * object, for example.
-  * After calling this method, pending_class_registers_modified is set to false
+ * After calling this method, pending_class_registers_modified is set to false
  * until pending_class_registers() is invoked.
-  */
+ */
 void registerAllPendingClasses();
 
 /** Creates an object given by its registered name.
-* \sa findRegisteredClass(), registerClass(), classFactoryPtr() */
+ * \sa findRegisteredClass(), registerClass(), classFactoryPtr() */
 mrpt::rtti::CObject* classFactory(const std::string& className);
 
 /** Like classFactory() but returns a smart pointer */
@@ -289,12 +291,12 @@ mrpt::rtti::CObject::Ptr classFactoryPtr(const std::string& className);
 
 /** @}  */  // end of RTTI
 
-}  // End of namespace
+}  // namespace rtti
 
 /** Converts a polymorphic smart pointer Base::Ptr to Derived::Ptr, in a way
-* compatible with MRPT >=1.5.4 and MRPT 2.x series.
-* \ingroup mrpt_rtti_grp
-*/
+ * compatible with MRPT >=1.5.4 and MRPT 2.x series.
+ * \ingroup mrpt_rtti_grp
+ */
 template <typename CAST_TO>
 struct ptr_cast
 {
@@ -305,4 +307,4 @@ struct ptr_cast
 	}
 };
 
-}  // End of namespace
+}  // namespace mrpt

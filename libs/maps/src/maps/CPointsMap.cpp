@@ -212,8 +212,7 @@ mxArray* CPointsMap::writeToMatlab() const
   ---------------------------------------------------------------*/
 unsigned long CPointsMap::getPoint(size_t index, float& x, float& y) const
 {
-	ASSERT_BELOW_(index, this->x.size())
-
+	ASSERT_BELOW_(index, this->x.size());
 	x = this->x[index];
 	y = this->y[index];
 
@@ -222,8 +221,7 @@ unsigned long CPointsMap::getPoint(size_t index, float& x, float& y) const
 unsigned long CPointsMap::getPoint(
 	size_t index, float& x, float& y, float& z) const
 {
-	ASSERT_BELOW_(index, this->x.size())
-
+	ASSERT_BELOW_(index, this->x.size());
 	x = this->x[index];
 	y = this->y[index];
 	z = this->z[index];
@@ -232,8 +230,7 @@ unsigned long CPointsMap::getPoint(
 }
 unsigned long CPointsMap::getPoint(size_t index, double& x, double& y) const
 {
-	ASSERT_BELOW_(index, this->x.size())
-
+	ASSERT_BELOW_(index, this->x.size());
 	x = this->x[index];
 	y = this->y[index];
 
@@ -243,8 +240,7 @@ unsigned long CPointsMap::getPoint(size_t index, double& x, double& y) const
 unsigned long CPointsMap::getPoint(
 	size_t index, double& x, double& y, double& z) const
 {
-	ASSERT_BELOW_(index, this->x.size())
-
+	ASSERT_BELOW_(index, this->x.size());
 	x = this->x[index];
 	y = this->y[index];
 	z = this->z[index];
@@ -864,8 +860,7 @@ void CPointsMap::getAllPoints(
 	vector<float>& xs, vector<float>& ys, size_t decimation) const
 {
 	MRPT_START
-	ASSERT_(decimation > 0)
-
+	ASSERT_(decimation > 0);
 	if (decimation == 1)
 	{
 		xs = x;
@@ -1710,8 +1705,7 @@ bool CPointsMap::loadPCDFile(const std::string& filename)
  ---------------------------------------------------------------*/
 void CPointsMap::applyDeletionMask(const std::vector<bool>& mask)
 {
-	ASSERT_EQUAL_(size(), mask.size())
-
+	ASSERT_EQUAL_(size(), mask.size());
 	// Remove marked points:
 	const size_t n = mask.size();
 	vector<float> Pt;
