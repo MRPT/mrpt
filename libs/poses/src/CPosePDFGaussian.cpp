@@ -76,7 +76,7 @@ void CPosePDFGaussian::serializeFrom(mrpt::serialization::CArchive& in, uint8_t 
 			in >> mean;
 			CMatrixFloat33 m;
 			mrpt::math::deserializeSymmetricMatrixFrom(m, in);
-			cov = m;
+			cov = m.cast<double>();
 		}
 		break;
 		case 0:
@@ -123,10 +123,10 @@ void CPosePDFGaussian::copyFrom(const CPose3DPDF& o)
 /*---------------------------------------------------------------
 
   ---------------------------------------------------------------*/
-void CPosePDFGaussian::saveToTextFile(const std::string& file) const
+bool CPosePDFGaussian::saveToTextFile(const std::string& file) const
 {
 	FILE* f = os::fopen(file.c_str(), "wt");
-	if (!f) return;
+	if (!f) return false;
 
 	os::fprintf(f, "%f %f %f\n", mean.x(), mean.y(), mean.phi());
 
@@ -135,6 +135,7 @@ void CPosePDFGaussian::saveToTextFile(const std::string& file) const
 	os::fprintf(f, "%f %f %f\n", cov(2, 0), cov(2, 1), cov(2, 2));
 
 	os::fclose(f);
+	return true;
 }
 
 /*---------------------------------------------------------------

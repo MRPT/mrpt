@@ -111,10 +111,10 @@ void CPose3DQuatPDFGaussianInf::copyFrom(const CPose3DQuatPDF& o)
 /*---------------------------------------------------------------
 					saveToTextFile
   ---------------------------------------------------------------*/
-void CPose3DQuatPDFGaussianInf::saveToTextFile(const string& file) const
+bool CPose3DQuatPDFGaussianInf::saveToTextFile(const string& file) const
 {
 	FILE* f = os::fopen(file.c_str(), "wt");
-	if (!f) return;
+	if (!f) return false;
 
 	os::fprintf(
 		f, "%e %e %e %e %e %e %e\n", mean.x(), mean.y(), mean.z(),
@@ -127,6 +127,7 @@ void CPose3DQuatPDFGaussianInf::saveToTextFile(const string& file) const
 			cov_inv(i, 6));
 
 	os::fclose(f);
+	return true;
 }
 
 /*---------------------------------------------------------------

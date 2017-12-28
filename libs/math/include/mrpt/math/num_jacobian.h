@@ -43,7 +43,7 @@ void estimateJacobian(
 
 	for (size_t j = 0; j < n; j++)
 	{
-		ASSERT_(increments[j] > 0)
+		ASSERT_(increments[j] > 0);
 	}  // Who knows...
 
 	VECTORLIKE3 f_minus, f_plus;

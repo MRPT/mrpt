@@ -69,6 +69,8 @@ class CPose3DQuatPDF
 	/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF */
 	virtual void inverse(CPose3DQuatPDF& o) const = 0;
 
+	virtual void changeCoordinatesReference(const CPose3D& newReferenceBase) = 0;
+
 	/** This static method computes the two Jacobians of a pose composition
 	 * operation $f(x,u)= x \oplus u$
 	  *  \param out_x_oplus_u If set to !=nullptr, the result of "x+u" will be

@@ -19,50 +19,22 @@ using namespace mrpt::math;
 
 IMPLEMENTS_SERIALIZABLE(CPoses2DSequence, CSerializable, mrpt::poses)
 
-/*---------------------------------------------------------------
-			Default constructor
-  ---------------------------------------------------------------*/
-CPoses2DSequence::CPoses2DSequence() : poses() {}
-/*---------------------------------------------------------------
-			Returns the poses count in the sequence:
-  ---------------------------------------------------------------*/
 size_t CPoses2DSequence::posesCount() { return poses.size(); }
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CPoses2DSequence::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+
+uint8_t CPoses2DSequence::serializeGetVersion() const { return 0; }
+void CPoses2DSequence::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		uint32_t i, n;
-
-		// The poses:
-		n = poses.size();
-		out << n;
-		for (i = 0; i < n; i++) out << poses[i];
-	}
+	out.WriteAs<uint32_t>(poses.size());
+	for (const auto & p : poses) out << p;
 }
-
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CPoses2DSequence::readFromStream(mrpt::utils::CStream& in, int version)
+void CPoses2DSequence::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
 		case 0:
 		{
-			uint32_t i, n;
-
-			// The poses:
-			in >> n;
-			poses.resize(n);
-			for (i = 0; i < n; i++) in >> poses[i];
+			poses.resize(in.ReadAs<uint32_t>());
+			for (auto & p : poses) in >> p;
 		}
 		break;
 		default:

@@ -12,7 +12,7 @@
 #include <mrpt/poses/FrameTransformer.h>  // for FrameTransformer, FrameTran...
 #include <string>  // for string
 #include <mrpt/system/datetime.h>  // for TTimeStamp, INVALID_TIMESTAMP
-#include <mrpt/utils/mrpt_macros.h>  // for ASSERTMSG_
+#include <mrpt/core/exceptions.h>  // for ASSERTMSG_
 
 using namespace mrpt::poses;
 
@@ -86,7 +86,7 @@ FrameLookUpStatus FrameTransformer<DIM>::lookupTransform(
 	}
 
 	const TF_TreeEdge& te = it_dst->second;
-	child_wrt_parent = te.pose;
+	child_wrt_parent = te.pose.asTPose();
 
 	return LKUP_GOOD;
 }

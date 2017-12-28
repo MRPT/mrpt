@@ -102,7 +102,7 @@ class CPose3DQuatPDFGaussian : public CPose3DQuatPDF
 	void copyFrom(const CPose3DPDFGaussian& o);
 	/** Save the PDF to a text file, containing the 3D pose in the first line (x
 	 * y z qr qx qy qz), then the covariance matrix in the next 7 lines. */
-	void saveToTextFile(const std::string& file) const override;
+	bool saveToTextFile(const std::string& file) const override;
 
 	/** this = p (+) this. This can be used to convert a PDF from local
 	 * coordinates to global, providing the point (newReferenceBase) from which

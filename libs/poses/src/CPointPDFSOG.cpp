@@ -180,10 +180,10 @@ void CPointPDFSOG::copyFrom(const CPointPDF& o)
 /*---------------------------------------------------------------
 						saveToTextFile
   ---------------------------------------------------------------*/
-void CPointPDFSOG::saveToTextFile(const std::string& file) const
+bool CPointPDFSOG::saveToTextFile(const std::string& file) const
 {
 	FILE* f = os::fopen(file.c_str(), "wt");
-	if (!f) return;
+	if (!f) return false;
 
 	for (CListGaussianModes::const_iterator it = m_modes.begin();
 		 it != m_modes.end(); ++it)
@@ -193,6 +193,7 @@ void CPointPDFSOG::saveToTextFile(const std::string& file) const
 			it->val.cov(0, 0), it->val.cov(1, 1), it->val.cov(2, 2),
 			it->val.cov(0, 1), it->val.cov(0, 2), it->val.cov(1, 2));
 	os::fclose(f);
+	return true;
 }
 
 /*---------------------------------------------------------------
@@ -200,9 +201,8 @@ void CPointPDFSOG::saveToTextFile(const std::string& file) const
  ---------------------------------------------------------------*/
 void CPointPDFSOG::changeCoordinatesReference(const CPose3D& newReferenceBase)
 {
-	for (CListGaussianModes::iterator it = m_modes.begin(); it != m_modes.end();
-		 ++it)
-		it->val.changeCoordinatesReference(newReferenceBase);
+	for (auto & m: m_modes)
+		m.val.changeCoordinatesReference(newReferenceBase);
 }
 
 /*---------------------------------------------------------------

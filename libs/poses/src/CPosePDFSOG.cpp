@@ -177,18 +177,19 @@ void CPosePDFSOG::copyFrom(const CPosePDF& o)
 /*---------------------------------------------------------------
 						saveToTextFile
   ---------------------------------------------------------------*/
-void CPosePDFSOG::saveToTextFile(const std::string& file) const
+bool CPosePDFSOG::saveToTextFile(const std::string& file) const
 {
 	FILE* f = os::fopen(file.c_str(), "wt");
-	if (!f) return;
+	if (!f) return false;
 
-	for (const_iterator it = m_modes.begin(); it != m_modes.end(); ++it)
+	for (const auto & m : m_modes)
 		os::fprintf(
-			f, "%e %e %e %e %e %e %e %e %e %e\n", exp((it)->log_w),
-			(it)->mean.x(), (it)->mean.y(), (it)->mean.phi(), (it)->cov(0, 0),
-			(it)->cov(1, 1), (it)->cov(2, 2), (it)->cov(0, 1), (it)->cov(0, 2),
-			(it)->cov(1, 2));
+			f, "%e %e %e %e %e %e %e %e %e %e\n", exp(m.log_w),
+			m.mean.x(), m.mean.y(), m.mean.phi(), m.cov(0, 0),
+			m.cov(1, 1), m.cov(2, 2), m.cov(0, 1), m.cov(0, 2),
+			m.cov(1, 2));
 	os::fclose(f);
+	return true;
 }
 
 /*---------------------------------------------------------------

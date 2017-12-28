@@ -16,10 +16,10 @@
 #include <mrpt/random.h>
 #include <mrpt/system/os.h>
 #include <mrpt/poses/SO_SE_average.h>
+#include <fstream>
 
 using namespace std;
 using namespace mrpt;
-
 using namespace mrpt::math;
 using namespace mrpt::poses;
 using namespace mrpt::system;
@@ -93,33 +93,22 @@ void CPosePDFGrid::getCovarianceAndMean(CMatrixDouble33& cov, CPose2D& p) const
 	auxParts.getCovarianceAndMean(cov, p);
 }
 
-/*---------------------------------------------------------------
-						writeToStream
-  ---------------------------------------------------------------*/
-void CPosePDFGrid::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CPosePDFGrid::serializeGetVersion() const { return 0; }
+void CPosePDFGrid::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		// The size:
-		out << m_xMin << m_xMax << m_yMin << m_yMax << m_phiMin << m_phiMax
-			<< m_resolutionXY << m_resolutionPhi
-			<< static_cast<int32_t>(m_sizeX) << static_cast<int32_t>(m_sizeY)
-			<< static_cast<int32_t>(m_sizePhi) << static_cast<int32_t>(m_sizeXY)
-			<< static_cast<int32_t>(m_idxLeftX)
-			<< static_cast<int32_t>(m_idxLeftY)
-			<< static_cast<int32_t>(m_idxLeftPhi);
+	// The size:
+	out << m_xMin << m_xMax << m_yMin << m_yMax << m_phiMin << m_phiMax
+		<< m_resolutionXY << m_resolutionPhi
+		<< static_cast<int32_t>(m_sizeX) << static_cast<int32_t>(m_sizeY)
+		<< static_cast<int32_t>(m_sizePhi) << static_cast<int32_t>(m_sizeXY)
+		<< static_cast<int32_t>(m_idxLeftX)
+		<< static_cast<int32_t>(m_idxLeftY)
+		<< static_cast<int32_t>(m_idxLeftPhi);
 
-		// The data:
-		out << m_data;
-	}
+	// The data:
+	out << m_data;
 }
-
-/*---------------------------------------------------------------
-						readFromStream
-  ---------------------------------------------------------------*/
-void CPosePDFGrid::readFromStream(mrpt::utils::CStream& in, int version)
+void CPosePDFGrid::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -152,27 +141,17 @@ void CPosePDFGrid::readFromStream(mrpt::utils::CStream& in, int version)
 	};
 }
 
-/*---------------------------------------------------------------
-						saveToTextFile
-  ---------------------------------------------------------------*/
-void CPosePDFGrid::saveToTextFile(const std::string& dataFile) const
+bool CPosePDFGrid::saveToTextFile(const std::string& dataFile) const
 {
-	char dimsFile[1000];
-	os::sprintf(dimsFile, 1000, "%s_dims.txt", dataFile.c_str());
+	const auto dimsFile = dataFile + std::string("_dims.txt");
 
-	FILE* f_d = os::fopen(dataFile.c_str(), "wt");
-	if (!f_d) return;
-
-	FILE* f_s = os::fopen(dimsFile, "wt");
-	if (!f_s)
-	{
-		os::fclose(f_d);
-		return;
-	}
+	std::ofstream f_d(dataFile), f_s(dimsFile);
+	if (!f_d.is_open() || !f_s.is_open())
+		return false;
 
 	// Save dims:
-	os::fprintf(
-		f_s, "%u %u %u %f %f %f %f %f %f\n", (unsigned)m_sizeX,
+	f_s << mrpt::format(
+		"%u %u %u %f %f %f %f %f %f\n", (unsigned)m_sizeX,
 		(unsigned)m_sizeY, (unsigned)m_sizePhi, m_xMin, m_xMax, m_yMin, m_yMax,
 		m_phiMin, m_phiMax);
 
@@ -182,14 +161,12 @@ void CPosePDFGrid::saveToTextFile(const std::string& dataFile) const
 		for (unsigned int y = 0; y < m_sizeY; y++)
 		{
 			for (unsigned int x = 0; x < m_sizeX; x++)
-				os::fprintf(f_d, "%.5e ", *getByIndex(x, y, phiInd));
-			os::fprintf(f_d, "\n");
+				f_d << mrpt::format("%.5e ", *getByIndex(x, y, phiInd));
+			f_d << std::endl;
 		}
 	}
 
-	os::fclose(f_s);
-	os::fclose(f_d);
-	return;  // Done!
+	return true;  // Done!
 }
 
 /*---------------------------------------------------------------

@@ -60,6 +60,8 @@ class CPose3DPDF : public mrpt::serialization::CSerializable,
 	  */
 	static CPose3DPDF* createFrom2D(const CPosePDF& o);
 
+	virtual void changeCoordinatesReference(const CPose3D& newReferenceBase) = 0;
+
 	/** Bayesian fusion of two pose distributions, then save the result in this
 	 * object (WARNING: Currently only distributions of the same class can be
 	 * fused! eg, gaussian with gaussian,etc) */

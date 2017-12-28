@@ -170,10 +170,10 @@ void CPose3DPDFSOG::copyFrom(const CPose3DPDF& o)
 /*---------------------------------------------------------------
 						saveToTextFile
   ---------------------------------------------------------------*/
-void CPose3DPDFSOG::saveToTextFile(const std::string& file) const
+bool CPose3DPDFSOG::saveToTextFile(const std::string& file) const
 {
 	FILE* f = os::fopen(file.c_str(), "wt");
-	if (!f) return;
+	if (!f) return false;
 
 	for (const_iterator it = m_modes.begin(); it != m_modes.end(); ++it)
 		os::fprintf(
@@ -182,6 +182,7 @@ void CPose3DPDFSOG::saveToTextFile(const std::string& file) const
 			(it)->val.cov(0, 0), (it)->val.cov(1, 1), (it)->val.cov(2, 2),
 			(it)->val.cov(0, 1), (it)->val.cov(0, 2), (it)->val.cov(1, 2));
 	os::fclose(f);
+	return true;
 }
 
 /*---------------------------------------------------------------

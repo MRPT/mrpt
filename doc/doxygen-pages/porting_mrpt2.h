@@ -76,7 +76,17 @@
 *          mrpt::math::TPose3D p2 = p1;  // ERROR in mrpt 2.0 (built in MRPT 1.*)
 *          mrpt::math::TPose3D p3 = p1.asTPose(); // OK for mrpt 2.0
 *        \endcode
+*  - 16-bytes memory-aligned STL containers are now defined in separate headers, one for each container type, and based on templatized `using`. Example:
+*       \code
+*       // Old: MRPT 1.* code
+*       #include <mrpt/utils/aligned_containers.h>
+*       mrpt::aligned_containers<Foo>::vector_t  v;
 *
+*       // New: MRPT 2.* code
+*       #include <mrpt/core/aligned_std_vector.h>
+*       mrpt::aligned_std_vector<Foo> v;
+*       \endcode
+* 
 *
 *
 * **Optional changes**

@@ -6,11 +6,11 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CPoses2DSequence_H
-#define CPoses2DSequence_H
+#pragma once
 
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/serialization/CSerializable.h>
+#include <mrpt/core/aligned_std_vector.h>
 
 namespace mrpt
 {
@@ -27,10 +27,6 @@ class CPoses2DSequence : public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(CPoses2DSequence)
    public:
-	/** Default constructor
-	 */
-	CPoses2DSequence();
-
 	/** Returns the poses count in the sequence:
 	 */
 	size_t posesCount();
@@ -91,10 +87,8 @@ class CPoses2DSequence : public mrpt::serialization::CSerializable
 	 * thus each one is situated just at the end point of last one, where the
 	 * first one is referenced to (0,0,0deg)
 	 */
-	mrpt::aligned_containers<CPose2D>::vector_t poses;
+	mrpt::aligned_std_vector<CPose2D> poses;
 
 };  // End of class def.
 }  // End of namespace
 }  // End of namespace
-
-#endif

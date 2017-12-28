@@ -64,7 +64,7 @@ class CPointPDFParticles
 	void copyFrom(const CPointPDF& o) override;
 
 	/** Save PDF's particles to a text file, where each line is: X Y Z LOG_W */
-	void saveToTextFile(const std::string& file) const override;
+	bool saveToTextFile(const std::string& file) const override;
 
 	/** this = p (+) this. This can be used to convert a PDF from local
 	 * coordinates to global, providing the point (newReferenceBase) from which

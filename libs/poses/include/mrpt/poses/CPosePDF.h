@@ -67,6 +67,8 @@ class CPosePDF : public mrpt::serialization::CSerializable,
 	  */
 	virtual void inverse(CPosePDF& o) const = 0;
 
+	virtual void changeCoordinatesReference(const CPose3D& newReferenceBase) = 0;
+
 	/** This static method computes the pose composition Jacobians, with these
 	   formulas:
 		\code

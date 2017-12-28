@@ -152,7 +152,7 @@ class CPointPDFSOG : public CPointPDF
 	  *   - C23 (Covariance elements)
 	  *
 	 */
-	void saveToTextFile(const std::string& file) const override;
+	bool saveToTextFile(const std::string& file) const override;
 
 	/** this = p (+) this. This can be used to convert a PDF from local
 	 * coordinates to global, providing the point (newReferenceBase) from which

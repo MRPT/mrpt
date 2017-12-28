@@ -83,7 +83,7 @@ uint8_t CPose3DPDFGaussianInf::serializeGetVersion() const { return 0; }
 void CPose3DPDFGaussianInf::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	out << mean;
-	mrpt::math::serializeSymmetricMatrixTo(cov_inv, in);
+	mrpt::math::serializeSymmetricMatrixTo(cov_inv, out);
 }
 void CPose3DPDFGaussianInf::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
@@ -150,10 +150,10 @@ void CPose3DPDFGaussianInf::copyFrom(const CPosePDF& o)
 /*---------------------------------------------------------------
 
   ---------------------------------------------------------------*/
-void CPose3DPDFGaussianInf::saveToTextFile(const string& file) const
+bool CPose3DPDFGaussianInf::saveToTextFile(const string& file) const
 {
 	FILE* f = os::fopen(file.c_str(), "wt");
-	if (!f) return;
+	if (!f) return false;
 
 	os::fprintf(
 		f, "%e %e %e %e %e %e\n", mean.x(), mean.y(), mean.z(), mean.yaw(),
@@ -165,6 +165,7 @@ void CPose3DPDFGaussianInf::saveToTextFile(const string& file) const
 			cov_inv(i, 2), cov_inv(i, 3), cov_inv(i, 4), cov_inv(i, 5));
 
 	os::fclose(f);
+	return true;
 }
 
 /*---------------------------------------------------------------

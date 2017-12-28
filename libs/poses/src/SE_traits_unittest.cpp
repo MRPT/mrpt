@@ -7,6 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
+#include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/SE_traits.h>
 #include <mrpt/math/num_jacobian.h>
@@ -52,8 +53,8 @@ class SE_traits_tests : public ::testing::Test
 
 		const CPose3D P1DP2inv_(
 			CMatrixDouble44(
-				P1.getHomogeneousMatrixVal() * Pd.getHomogeneousMatrixVal() *
-				P2.getInverseHomogeneousMatrix()));
+				P1.getHomogeneousMatrixVal<CMatrixDouble44>() * Pd.getHomogeneousMatrixVal<CMatrixDouble44>() *
+				P2.getInverseHomogeneousMatrix<CMatrixDouble44>()));
 		const POSE_TYPE P1DP2inv(P1DP2inv_);
 
 		// Pseudo-logarithm:
@@ -75,9 +76,9 @@ class SE_traits_tests : public ::testing::Test
 		const POSE_TYPE P2(P2_);
 
 		const CPose3D P1DP2inv_(
-			CMatrixDouble44(
-				P1.getHomogeneousMatrixVal() * Pd.getHomogeneousMatrixVal() *
-				P2.getInverseHomogeneousMatrix()));
+			mrpt::math::CMatrixDouble44(
+				P1.getHomogeneousMatrixVal<CMatrixDouble44>() * Pd.getHomogeneousMatrixVal<CMatrixDouble44>() *
+				P2.getInverseHomogeneousMatrix<CMatrixDouble44>()));
 		const POSE_TYPE P1DP2inv(P1DP2inv_);  // Convert to 2D if needed
 
 		static const int DIMS = SE_TYPE::VECTOR_SIZE;
@@ -100,7 +101,7 @@ class SE_traits_tests : public ::testing::Test
 			CArrayDouble<DIMS + DIMS> x_incrs;
 			x_incrs.assign(1e-4);
 			CMatrixDouble numJacobs;
-			mrpt::math::jacobians::jacob_numeric_estimate(
+			mrpt::math::estimateJacobian(
 				x_mean,
 				std::function<void(
 					const CArrayDouble<2 * SE_TYPE::VECTOR_SIZE>& x,

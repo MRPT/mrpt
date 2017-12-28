@@ -27,10 +27,6 @@ class CPoses3DSequence : public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(CPoses3DSequence)
    public:
-	/** Default constructor
-	 */
-	CPoses3DSequence();
-
 	/** Returns the poses count in the sequence:
 	 */
 	size_t posesCount();

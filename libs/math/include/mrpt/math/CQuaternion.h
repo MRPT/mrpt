@@ -11,6 +11,7 @@
 
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/CArrayNumeric.h>
+#include <mrpt/core/exceptions.h>
 
 namespace mrpt
 {

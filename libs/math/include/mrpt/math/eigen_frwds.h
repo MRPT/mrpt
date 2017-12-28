@@ -55,7 +55,7 @@ typedef CMatrixFixedNumeric<double, 2, 2> CMatrixDouble22;
 typedef CMatrixFixedNumeric<double, 2, 3> CMatrixDouble23;
 typedef CMatrixFixedNumeric<double, 3, 2> CMatrixDouble32;
 typedef CMatrixFixedNumeric<double, 3, 3> CMatrixDouble33;
-typedef CMatrixFixedNumeric<double, 4, 4> CMatrixDouble44;
+using CMatrixDouble44 = CMatrixFixedNumeric<double, 4, 4>;
 typedef CMatrixFixedNumeric<double, 6, 6> CMatrixDouble66;
 typedef CMatrixFixedNumeric<double, 7, 7> CMatrixDouble77;
 typedef CMatrixFixedNumeric<double, 1, 3> CMatrixDouble13;

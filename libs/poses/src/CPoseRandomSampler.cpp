@@ -367,7 +367,7 @@ bool CPoseRandomSampler::isPrepared() const { return m_pdf2D || m_pdf3D; }
 void CPoseRandomSampler::getOriginalPDFCov2D(CMatrixDouble33& cov3x3) const
 {
 	MRPT_START
-	ASSERT_(this->isPrepared())
+	ASSERT_(this->isPrepared());
 
 	if (m_pdf2D)
 	{
@@ -391,7 +391,7 @@ void CPoseRandomSampler::getOriginalPDFCov2D(CMatrixDouble33& cov3x3) const
 void CPoseRandomSampler::getOriginalPDFCov3D(CMatrixDouble66& cov6x6) const
 {
 	MRPT_START
-	ASSERT_(this->isPrepared())
+	ASSERT_(this->isPrepared());
 
 	if (m_pdf2D)
 	{
@@ -414,7 +414,7 @@ void CPoseRandomSampler::getOriginalPDFCov3D(CMatrixDouble66& cov6x6) const
 CPose2D& CPoseRandomSampler::getSamplingMean2D(CPose2D& out_mean) const
 {
 	MRPT_START
-	ASSERT_(this->isPrepared())
+	ASSERT_(this->isPrepared());
 
 	if (m_pdf2D)
 		out_mean = m_fastdraw_gauss_M_2D;
@@ -431,7 +431,7 @@ CPose2D& CPoseRandomSampler::getSamplingMean2D(CPose2D& out_mean) const
 CPose3D& CPoseRandomSampler::getSamplingMean3D(CPose3D& out_mean) const
 {
 	MRPT_START
-	ASSERT_(this->isPrepared())
+	ASSERT_(this->isPrepared());
 
 	if (m_pdf3D)
 		out_mean = m_fastdraw_gauss_M_3D;

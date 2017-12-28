@@ -69,7 +69,7 @@ class Pose3DRotVecTests : public ::testing::Test
 		EXPECT_EQ(p.rz(), 0);
 
 #if 0
-		CMatrixDouble44 HM = p.getHomogeneousMatrixVal();
+		CMatrixDouble44 HM = p.getHomogeneousMatrixVal<CMatrixDouble44>();
 		for (size_t i=0;i<4;i++)
 			for (size_t j=0;j<4;j++)
 				EXPECT_NEAR(HM(i,j), i==j ? 1.0 : 0.0, 1e-8 )
@@ -132,10 +132,10 @@ class Pose3DRotVecTests : public ::testing::Test
 			<< "p1          : " << p1 << endl
 			<< "p2          : " << p2 << endl
 			<< "p2 matrix   : " << endl
-			<< p2.getHomogeneousMatrixVal() << endl
+			<< p2.getHomogeneousMatrixVal<CMatrixDouble44>() << endl
 			<< "p1_i_p2     : " << p1_i_p2 << endl
 			<< "p1_i_p2 matrix: " << endl
-			<< p1_i_p2.getHomogeneousMatrixVal() << endl
+			<< p1_i_p2.getHomogeneousMatrixVal<CMatrixDouble44>() << endl
 			<< "p2_c_p1_i_p2: " << p2_c_p1_i_p2 << endl;
 
 		EXPECT_NEAR(

@@ -206,7 +206,7 @@ class CRandomGenerator
 	{
 		const size_t N = v.size();
 		for (size_t c = 0; c < N; c++)
-			v[c] = static_cast<decltype(v[c])>(drawGaussian1D(mean, std));
+			v[c] = static_cast<std::remove_reference_t<decltype(v[c])>>(drawGaussian1D(mean, std));
 	}
 
 	/** Generate multidimensional random samples according to a given covariance

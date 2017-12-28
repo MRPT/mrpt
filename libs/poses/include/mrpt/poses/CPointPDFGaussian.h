@@ -60,7 +60,7 @@ class CPointPDFGaussian : public CPointPDF
 
 	/** Save PDF's particles to a text file, containing the 2D pose in the first
 	 * line, then the covariance matrix in next 3 lines. */
-	void saveToTextFile(const std::string& file) const override;
+	bool saveToTextFile(const std::string& file) const override;
 
 	/** this = p (+) this. This can be used to convert a PDF from local
 	 * coordinates to global, providing the point (newReferenceBase) from which

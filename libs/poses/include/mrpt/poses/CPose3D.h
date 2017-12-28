@@ -228,13 +228,6 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 		out_HM(3, 3) = 1.;
 	}
 
-	inline mrpt::math::CMatrixDouble44 getHomogeneousMatrixVal() const
-	{
-		mrpt::math::CMatrixDouble44 M;
-		getHomogeneousMatrix(M);
-		return M;
-	}
-
 	/** Get the 3x3 rotation matrix \sa getHomogeneousMatrix  */
 	inline void getRotationMatrix(mrpt::math::CMatrixDouble33& ROT) const
 	{

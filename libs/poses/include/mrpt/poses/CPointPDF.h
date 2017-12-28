@@ -61,6 +61,8 @@ class CPointPDF : public mrpt::serialization::CSerializable,
 		const CPointPDF& p1, const CPointPDF& p2,
 		const double& minMahalanobisDistToDrop = 0) = 0;
 
+	virtual void changeCoordinatesReference(const CPose3D& newReferenceBase) = 0;
+
 	enum
 	{
 		is_3D_val = 1
