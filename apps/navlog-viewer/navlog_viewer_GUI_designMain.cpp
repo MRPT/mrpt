@@ -56,7 +56,7 @@ const double fy = 9,
 		unique_id++);
 
 #define ADD_WIN_TEXTMSG(__MSG) \
-	ADD_WIN_TEXTMSG_COL(__MSG, mrpt::utils::TColorf(1, 1, 1))
+	ADD_WIN_TEXTMSG_COL(__MSG, mrpt::img::TColorf(1, 1, 1))
 
 using namespace std;
 using namespace mrpt;
@@ -710,7 +710,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 				mrpt::opengl::CGridPlaneXY::Ptr gl_grid =
 					mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>(
 						-20, 20, -20, 20, 0, 1, 0.75f);
-				gl_grid->setColor_u8(mrpt::utils::TColor(0xa0a0a0, 0x90));
+				gl_grid->setColor_u8(mrpt::img::TColor(0xa0a0a0, 0x90));
 				scene->insert(gl_grid);
 
 				// XYZ corner at origin:
@@ -824,7 +824,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 						mrpt::make_aligned_shared<mrpt::opengl::CPointCloud>();
 					gl_obs->setName("obs-raw");
 					gl_obs->setPointSize(3);
-					gl_obs->setColor_u8(mrpt::utils::TColor(0xff, 0xff, 0x00));
+					gl_obs->setColor_u8(mrpt::img::TColor(0xff, 0xff, 0x00));
 					gl_robot_frame->insert(gl_obs);
 				}
 				else
@@ -849,7 +849,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 						mrpt::make_aligned_shared<mrpt::opengl::CPointCloud>();
 					gl_obs->setName("obs");
 					gl_obs->setPointSize(3.0);
-					gl_obs->setColor_u8(mrpt::utils::TColor(0x00, 0x00, 0xff));
+					gl_obs->setColor_u8(mrpt::img::TColor(0x00, 0x00, 0xff));
 					gl_robot_frame->insert(gl_obs);
 				}
 				else
@@ -876,7 +876,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 						mrpt::make_aligned_shared<mrpt::opengl::CSetOfLines>();
 					gl_path->setName("path");
 					gl_path->setLineWidth(2.0);
-					gl_path->setColor_u8(mrpt::utils::TColor(0x00, 0x00, 0xff));
+					gl_path->setColor_u8(mrpt::img::TColor(0x00, 0x00, 0xff));
 					gl_robot_frame->insert(gl_path);
 				}
 				gl_path->clear();
@@ -907,7 +907,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 						ptg->renderPathAsSimpleLine(
 							selected_k, *gl_path, 0.10, max_dist);
 						gl_path->setColor_u8(
-							mrpt::utils::TColor(0xff, 0x00, 0x00));
+							mrpt::img::TColor(0xff, 0x00, 0x00));
 
 						// PTG origin:
 						// enable delays model?
@@ -958,7 +958,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 								gl_shape->setName("shape");
 								gl_shape->setLineWidth(4.0);
 								gl_shape->setColor_u8(
-									mrpt::utils::TColor(0xff, 0x00, 0x00));
+									mrpt::img::TColor(0xff, 0x00, 0x00));
 								gl_robot_frame->insert(gl_shape);
 							}
 							else
@@ -981,7 +981,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 								gl_shape->setName("velocity");
 								gl_shape->setLineWidth(4.0);
 								gl_shape->setColor_u8(
-									mrpt::utils::TColor(0x00, 0xff, 0xff));
+									mrpt::img::TColor(0x00, 0xff, 0xff));
 								gl_robot_frame->insert(gl_shape);
 							}
 							else
@@ -1011,7 +1011,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					gl_trg->setName("target");
 					gl_trg->enableShowName(true);
 					gl_trg->setPointSize(9.0);
-					gl_trg->setColor_u8(mrpt::utils::TColor(0x00, 0x00, 0x00));
+					gl_trg->setColor_u8(mrpt::img::TColor(0x00, 0x00, 0x00));
 					gl_robot_frame->insert(gl_trg);
 				}
 				else
@@ -1133,11 +1133,11 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 		{
 			const CLogFileRecord::TInfoPerPTG& pI = log.infoPerPTG[nPTG];
 
-			mrpt::utils::TColorf col;
+			mrpt::img::TColorf col;
 			if (((int)nPTG) == log.nSelectedPTG)
-				col = mrpt::utils::TColorf(1, 1, 1);
+				col = mrpt::img::TColorf(1, 1, 1);
 			else
-				col = mrpt::utils::TColorf(.8f, .8f, .8f);
+				col = mrpt::img::TColorf(.8f, .8f, .8f);
 
 			auto sFactors = pI.evalFactors.getAsString();
 			std::replace(sFactors.begin(), sFactors.end(), '\r', ' ');
@@ -1217,7 +1217,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					gl_obj->setDiskRadius(1.01f, 1.0);
 					gl_obj->setSlicesCount(30);
 					gl_obj->setColor_u8(
-						mrpt::utils::TColor(0x30, 0x30, 0x30, 0xff));
+						mrpt::img::TColor(0x30, 0x30, 0x30, 0xff));
 					scene->insert(gl_obj);
 				}
 				{
@@ -1227,7 +1227,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					gl_obj->setLineWidth(1.0f);
 					gl_obj->setVerticesPointSize(4.0f);
 					gl_obj->setColor_u8(
-						mrpt::utils::TColor(0x00, 0x00, 0xff, 0xff));
+						mrpt::img::TColor(0x00, 0x00, 0xff, 0xff));
 					scene->insert(gl_obj);
 				}
 				{
@@ -1237,7 +1237,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					gl_obj->setLineWidth(1.0f);
 					gl_obj->setVerticesPointSize(2.0f);
 					gl_obj->setColor_u8(
-						mrpt::utils::TColor(0xff, 0xff, 0x00, 0xff));
+						mrpt::img::TColor(0xff, 0xff, 0x00, 0xff));
 					scene->insert(gl_obj);
 				}
 				{
@@ -1247,7 +1247,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					gl_obj->setLineWidth(1.0f);
 					gl_obj->setVerticesPointSize(2.0f);
 					gl_obj->setColor_u8(
-						mrpt::utils::TColor(0xff, 0xff, 0xff, 0xff));
+						mrpt::img::TColor(0xff, 0xff, 0xff, 0xff));
 					scene->insert(gl_obj);
 				}
 				{
@@ -1256,7 +1256,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					gl_obj->setName("tp_selected_dir");
 					gl_obj->setLineWidth(3.0f);
 					gl_obj->setColor_u8(
-						mrpt::utils::TColor(0x00, 0xff, 0x00, 0xd0));
+						mrpt::img::TColor(0x00, 0xff, 0x00, 0xd0));
 					scene->insert(gl_obj);
 				}
 				{
@@ -1265,7 +1265,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					gl_obj->setName("tp_target");
 					gl_obj->setPointSize(5.0f);
 					gl_obj->setColor_u8(
-						mrpt::utils::TColor(0x30, 0x30, 0x30, 0xff));
+						mrpt::img::TColor(0x30, 0x30, 0x30, 0xff));
 					gl_obj->setLocation(0, 0, 0.02f);
 					scene->insert(gl_obj);
 				}
@@ -1275,7 +1275,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					gl_obj->setName("tp_robot");
 					gl_obj->setPointSize(4.0f);
 					gl_obj->setColor_u8(
-						mrpt::utils::TColor(0xff, 0x00, 0x00, 0xa0));
+						mrpt::img::TColor(0xff, 0x00, 0x00, 0xa0));
 					gl_obj->setLocation(0, 0, 0.02f);
 					scene->insert(gl_obj);
 				}
@@ -1395,7 +1395,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					win->addTextMessage(
 						4, 5 + (lineY++) * 11,
 						mrpt::format("%20s=%6.03f", e.first.c_str(), e.second),
-						mrpt::utils::TColorf(1, 1, 1), "mono", 9,
+						mrpt::img::TColorf(1, 1, 1), "mono", 9,
 						mrpt::opengl::NICE, unique_id++, 1.5, 0.1, true);
 				}
 			}

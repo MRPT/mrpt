@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 
 #include "img-precomp.h"  // Precompiled headers
-#include <mrpt/utils/TColorManager.h>
+#include <mrpt/img/TColorManager.h>
 
-using namespace mrpt::utils;
+using namespace mrpt::img;
 using namespace std;
 
 TColorManager::TColorManager(bool use_standard_colors_first /* = true */)

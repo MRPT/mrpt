@@ -13,7 +13,7 @@
 #include <mrpt/hwdrivers/COpenNI2Sensor.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/system/CTimeLogger.h>
-#include <mrpt/utils/TStereoCamera.h>
+#include <mrpt/img/TStereoCamera.h>
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>
@@ -25,7 +25,7 @@ using namespace mrpt::math;
 using namespace std;
 using mrpt::utils::DEG2RAD;
 
-bool isValidParameter(const mrpt::utils::TCamera& param)
+bool isValidParameter(const mrpt::img::TCamera& param)
 {
 	return param.ncols > 0 && param.nrows > 0;
 }
@@ -223,7 +223,7 @@ void COpenNI2Sensor::loadConfig_sensorSpecific(
 	bool hasLeft2RightPose =
 		configSource.sectionExists(iniSection + string("_LEFT2RIGHT_POSE"));
 
-	mrpt::utils::TStereoCamera sc;
+	mrpt::img::TStereoCamera sc;
 
 	try
 	{

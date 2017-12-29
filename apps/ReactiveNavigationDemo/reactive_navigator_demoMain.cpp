@@ -1065,7 +1065,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 		mrpt::opengl::CCylinder::Ptr obj =
 			mrpt::make_aligned_shared<mrpt::opengl::CCylinder>(
 				0.05f, 0.10f, 1.0f);
-		obj->setColor_u8(mrpt::utils::TColor(0xff, 0x00, 0x00, 0x70));
+		obj->setColor_u8(mrpt::img::TColor(0xff, 0x00, 0x00, 0x70));
 		m_gl_drawing_obs->insert(obj);
 
 		m_gl_drawing_obs->setVisibility(false);  // Start invisible.
@@ -1078,7 +1078,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 		mrpt::make_aligned_shared<mrpt::opengl::CSetOfLines>();
 	gl_robot_ptg_prediction->setName("ptg_prediction");
 	gl_robot_ptg_prediction->setLineWidth(2.0);
-	gl_robot_ptg_prediction->setColor_u8(mrpt::utils::TColor(0x00, 0x00, 0xff));
+	gl_robot_ptg_prediction->setColor_u8(mrpt::img::TColor(0x00, 0x00, 0xff));
 	gl_robot->insert(gl_robot_ptg_prediction);
 
 	// Set camera:
@@ -1609,7 +1609,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 				ptg->renderPathAsSimpleLine(
 					selected_k, *gl_robot_ptg_prediction, 0.10, max_dist);
 				gl_robot_ptg_prediction->setColor_u8(
-					mrpt::utils::TColor(0xff, 0x00, 0x00));
+					mrpt::img::TColor(0xff, 0x00, 0x00));
 
 				// Place it:
 				if (is_NOP_op)

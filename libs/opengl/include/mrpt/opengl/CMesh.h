@@ -13,7 +13,7 @@
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/utils/color_maps.h>
+#include <mrpt/img/color_maps.h>
 #include <mrpt/opengl/CSetOfTriangles.h>
 
 namespace mrpt
@@ -71,7 +71,7 @@ class CMesh : public CRenderizableDisplayList
 	mutable math::CMatrix C_b;
 
 	/** Used when m_colorFromZ is true */
-	mrpt::utils::TColormap m_colorMap;
+	mrpt::img::TColormap m_colorMap;
 
 	/** Whether C is not up-to-date wrt to Z */
 	mutable bool m_modified_Z;
@@ -130,7 +130,7 @@ class CMesh : public CRenderizableDisplayList
 		CRenderizableDisplayList::notifyChange();
 	}
 	void enableColorFromZ(
-		bool v, mrpt::utils::TColormap colorMap = mrpt::utils::cmHOT)
+		bool v, mrpt::img::TColormap colorMap = mrpt::utils::cmHOT)
 	{
 		m_colorFromZ = v;
 		m_colorMap = colorMap;

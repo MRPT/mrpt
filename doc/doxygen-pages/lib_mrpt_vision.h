@@ -41,8 +41,8 @@ patch, with or without a set of descriptors.
   and a new type of map (mrpt::maps::CLandmarksMap).
 
 - Notice that sets of parameters for monocular and stereo cameras are defined in [mrpt-base] for convenience, in the classes:
-	- mrpt::utils::TCamera
-	- mrpt::utils::TStereoCamera
+	- mrpt::img::TCamera
+	- mrpt::img::TStereoCamera
 	
 - mrpt::vision::CDifodo: A class which implements a Visual Odometry algorithm based on depth images and the "range flow constraint equation".
 

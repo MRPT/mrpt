@@ -472,7 +472,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger
 		if (m_enable_visuals)
 		{
 			this->m_win->addTextMessage(
-				0.3, 0.8, "", mrpt::utils::TColorf(1.0, 0, 0),
+				0.3, 0.8, "", mrpt::img::TColorf(1.0, 0, 0),
 				m_text_index_paused_message);
 		}
 	}
@@ -492,7 +492,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger
 		if (m_enable_visuals)
 		{
 			this->m_win->addTextMessage(
-				0.3, 0.8, m_paused_message, mrpt::utils::TColorf(1.0, 0, 0),
+				0.3, 0.8, m_paused_message, mrpt::img::TColorf(1.0, 0, 0),
 				m_text_index_paused_message);
 		}
 
@@ -740,7 +740,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger
 	 */
 	mrpt::opengl::CSetOfObjects::Ptr setCurrentPositionModel(
 		const std::string& model_name,
-		const mrpt::utils::TColor& model_color = mrpt::utils::TColor(0, 0, 0),
+		const mrpt::img::TColor& model_color = mrpt::img::TColor(0, 0, 0),
 		const size_t model_size = 1, const pose_t& init_pose = pose_t());
 
 	/**\brief Assert that the given nodes number matches the registered graph
@@ -913,11 +913,11 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger
 
 	/**\name Trajectories colors */
 	/**\{*/
-	mrpt::utils::TColor m_odometry_color;
-	mrpt::utils::TColor m_GT_color;
-	mrpt::utils::TColor m_estimated_traj_color;
-	mrpt::utils::TColor m_optimized_map_color;
-	mrpt::utils::TColor m_current_constraint_type_color;
+	mrpt::img::TColor m_odometry_color;
+	mrpt::img::TColor m_GT_color;
+	mrpt::img::TColor m_estimated_traj_color;
+	mrpt::img::TColor m_optimized_map_color;
+	mrpt::img::TColor m_current_constraint_type_color;
 	/**\}*/
 
 	// frame transformation from the RGBD_TUM GrountTruth to the MRPT

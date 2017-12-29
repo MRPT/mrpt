@@ -70,13 +70,13 @@ class CDisplayWindow : public mrpt::gui::CBaseGUIWindow
 	void showImageAndPoints(
 		const mrpt::img::CImage& img, const mrpt::math::CVectorFloat& x,
 		const mrpt::math::CVectorFloat& y,
-		const mrpt::utils::TColor& color = mrpt::utils::TColor::red(),
+		const mrpt::img::TColor& color = mrpt::img::TColor::red(),
 		const bool& showNumbers = false);
 	/** \overload */
 	void showImageAndPoints(
 		const mrpt::img::CImage& img, const std::vector<float>& x,
 		const std::vector<float>& y,
-		const mrpt::utils::TColor& color = mrpt::utils::TColor::red(),
+		const mrpt::img::TColor& color = mrpt::img::TColor::red(),
 		const bool& showNumbers = false);
 
 	/** Show a given color or grayscale image on the window and print a set of
@@ -88,7 +88,7 @@ class CDisplayWindow : public mrpt::gui::CBaseGUIWindow
 	template <class FEATURELIST>
 	void showImageAndPoints(
 		const mrpt::img::CImage& img, const FEATURELIST& list,
-		const mrpt::utils::TColor& color = mrpt::utils::TColor::red(),
+		const mrpt::img::TColor& color = mrpt::img::TColor::red(),
 		const bool& showIDs = false)
 	{
 		MRPT_START
@@ -107,10 +107,10 @@ class CDisplayWindow : public mrpt::gui::CBaseGUIWindow
 	template <class FEATURELIST>
 	void showTiledImageAndPoints(
 		const mrpt::img::CImage& img, const FEATURELIST& list,
-		const mrpt::utils::TColor& color = mrpt::utils::TColor::red())
+		const mrpt::img::TColor& color = mrpt::img::TColor::red())
 	{
 		MRPT_START
-		using mrpt::utils::TColor;
+		using mrpt::img::TColor;
 		mrpt::img::CImage imgColor(1, 1, 3);
 		img.colorImage(imgColor);  // Create a colorimage
 
@@ -138,7 +138,7 @@ class CDisplayWindow : public mrpt::gui::CBaseGUIWindow
 	void showImagesAndMatchedPoints(
 		const mrpt::img::CImage& img1, const mrpt::img::CImage& img2,
 		const MATCHEDLIST& mList,
-		const mrpt::utils::TColor& color = mrpt::utils::TColor::red(),
+		const mrpt::img::TColor& color = mrpt::img::TColor::red(),
 		bool showNumbers = false)
 	{
 		MRPT_START
@@ -188,7 +188,7 @@ class CDisplayWindow : public mrpt::gui::CBaseGUIWindow
 	void showImagesAndMatchedPoints(
 		const mrpt::img::CImage& img1, const mrpt::img::CImage& img2,
 		const FEATURELIST& leftList, const FEATURELIST& rightList,
-		const mrpt::utils::TColor& color = mrpt::utils::TColor::red())
+		const mrpt::img::TColor& color = mrpt::img::TColor::red())
 	{
 		MRPT_START
 

@@ -716,7 +716,7 @@ void jacob_dA_eps_D_p_deps(
 }
 
 void project_point(
-	const mrpt::math::TPoint3D& P, const mrpt::utils::TCamera& params,
+	const mrpt::math::TPoint3D& P, const mrpt::img::TCamera& params,
 	const CPose3D& cameraPose, mrpt::utils::TPixelCoordf& px)
 {
 	// Change the reference system to that wrt the camera

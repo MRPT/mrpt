@@ -662,7 +662,7 @@ void CFormPlayVideo::drawHorzRules(mrpt::img::CImage& img)
 	const size_t w = img.getWidth();
 
 	for (size_t y = Ay; y < h; y += Ay)
-		img.line(0, y, w - 1, y, mrpt::utils::TColor::white());
+		img.line(0, y, w - 1, y, mrpt::img::TColor::white());
 }
 
 bool CFormPlayVideo::showSensoryFrame(void* SF, size_t& nImgs)

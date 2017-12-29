@@ -76,10 +76,10 @@ struct TMyExtraRenderingStuff : public mrpt::utils::CObserver
 					" - 'Alt+Enter': Toogle fullscreen\n"
 					" - 'ESC': Quit",
 					0.05f,  // text size
-					mrpt::utils::TColor(
+					mrpt::img::TColor(
 						190, 190, 190, 200 * tranparency),  // background
-					mrpt::utils::TColor(0, 0, 0, 200 * tranparency),  // border
-					mrpt::utils::TColor(200, 0, 0, 150 * tranparency),  // text
+					mrpt::img::TColor(0, 0, 0, 200 * tranparency),  // border
+					mrpt::img::TColor(200, 0, 0, 150 * tranparency),  // text
 					6.0f,  // border width
 					"serif",  // text font
 					mrpt::opengl::NICE  // text style

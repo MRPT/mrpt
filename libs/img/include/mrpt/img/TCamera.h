@@ -6,25 +6,22 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef TCamera_H
-#define TCamera_H
+#pragma once
 
-#include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/serialization/CSerializable.h>
-#include <mrpt/poses/CPose3DQuat.h>
+#include <array>
 
 namespace mrpt
 {
 namespace img
 {
 /** Structure to hold the parameters of a pinhole camera model.
-  *  The parameters obtained for one camera resolution can be used for any other
+ *  The parameters obtained for one camera resolution can be used for any other
  * resolution by means of the method TCamera::scaleToResolution()
-  *
-  * \sa mrpt::vision::CCamModel, the application <a
+ *
+ * \sa mrpt::vision::CCamModel, the application <a
  * href="http://www.mrpt.org/Application:camera-calib-gui" >camera-calib-gui</a>
  * for calibrating a camera
  * \ingroup mrpt_img_grp
@@ -37,68 +34,58 @@ class TCamera : public mrpt::serialization::CSerializable
 	DECLARE_MEX_CONVERSION
 
    public:
-	TCamera() : ncols(640), nrows(480), focalLengthMeters(0)
-	{
-		intrinsicParams.set_unsafe(0, 0, 507.808);
-		intrinsicParams.set_unsafe(1, 1, 507.808);
-		intrinsicParams.set_unsafe(0, 2, 356.2368);
-		intrinsicParams.set_unsafe(1, 2, 252.9216);
-		intrinsicParams.set_unsafe(2, 2, 1);
-		for (size_t i = 0; i < dist.SizeAtCompileTime; i++) dist[i] = 0;
-	}
-
 	/** @name Camera parameters
 		@{ */
 
 	/** Camera resolution */
-	uint32_t ncols, nrows;
+	uint32_t ncols{640}, nrows{480};
 	/** Matrix of intrinsic parameters (containing the focal length and
 	 * principal point coordinates) */
 	mrpt::math::CMatrixDouble33 intrinsicParams;
 	/** [k1 k2 t1 t2 k3] -> k_i: parameters of radial distortion, t_i:
 	 * parameters of tangential distortion (default=0) */
-	mrpt::math::CArrayDouble<5> dist;
+	std::array<double, 5> dist{.0, .0, .0, .0, .0};
 	/** The focal length of the camera, in meters (can be used among
 	 * 'intrinsicParams' to determine the pixel size). */
-	double focalLengthMeters;
+	double focalLengthMeters{.0};
 
 	/** @} */
 
 	/** Rescale all the parameters for a new camera resolution (it raises an
 	 * exception if the aspect ratio is modified, which is not permitted).
-	  */
+	 */
 	void scaleToResolution(unsigned int new_ncols, unsigned int new_nrows);
 
 	/**  Save as a config block:
-	  *  \code
-	  *  [SECTION]
-	  *  resolution = [NCOLS NROWS]
-	  *  cx         = CX
-	  *  cy         = CY
-	  *  fx         = FX
-	  *  fy         = FY
-	  *  dist       = [K1 K2 T1 T2 K3]
-	  *  focal_length = FOCAL_LENGTH
-	  *  \endcode
-	  */
+	 *  \code
+	 *  [SECTION]
+	 *  resolution = [NCOLS NROWS]
+	 *  cx         = CX
+	 *  cy         = CY
+	 *  fx         = FX
+	 *  fy         = FY
+	 *  dist       = [K1 K2 T1 T2 K3]
+	 *  focal_length = FOCAL_LENGTH
+	 *  \endcode
+	 */
 	void saveToConfigFile(
 		const std::string& section, mrpt::config::CConfigFileBase& cfg) const;
 
 	/**  Load all the params from a config source, in the format used in
 	 * saveToConfigFile(), that is:
-	  *
-	  *  \code
-	  *  [SECTION]
-	  *  resolution = [NCOLS NROWS]
-	  *  cx         = CX
-	  *  cy         = CY
-	  *  fx         = FX
-	  *  fy         = FY
-	  *  dist       = [K1 K2 T1 T2 K3]
-	  *  focal_length = FOCAL_LENGTH  [optional field]
-	  *  \endcode
-	  *  \exception std::exception on missing fields
-	  */
+	 *
+	 *  \code
+	 *  [SECTION]
+	 *  resolution = [NCOLS NROWS]
+	 *  cx         = CX
+	 *  cy         = CY
+	 *  fx         = FX
+	 *  fy         = FY
+	 *  dist       = [K1 K2 T1 T2 K3]
+	 *  focal_length = FOCAL_LENGTH  [optional field]
+	 *  \endcode
+	 *  \exception std::exception on missing fields
+	 */
 	void loadFromConfigFile(
 		const std::string& section, const mrpt::config::CConfigFileBase& cfg);
 	/** overload This signature is consistent with the rest of MRPT APIs */
@@ -114,7 +101,7 @@ class TCamera : public mrpt::serialization::CSerializable
 
 	/** Set the matrix of intrinsic params of the camera from the individual
 	 * values of focal length and principal point coordinates (in pixels)
-	  */
+	 */
 	inline void setIntrinsicParamsFromValues(
 		double fx, double fy, double cx, double cy)
 	{
@@ -152,14 +139,14 @@ class TCamera : public mrpt::serialization::CSerializable
 	void setDistortionParamsVector(const VECTORLIKE& distParVector)
 	{
 		size_t N = static_cast<size_t>(distParVector.size());
-		ASSERT_(N == 4 || N == 5)
+		ASSERT_(N == 4 || N == 5);
 		dist[4] = 0;  // Default value
 		for (size_t i = 0; i < N; i++) dist[i] = distParVector[i];
 	}
 
 	/** Set the vector of distortion params of the camera from the individual
 	 * values of the distortion coefficients
-	  */
+	 */
 	inline void setDistortionParamsFromValues(
 		double k1, double k2, double p1, double p2, double k3 = 0)
 	{
@@ -208,12 +195,11 @@ class TCamera : public mrpt::serialization::CSerializable
 	inline void k3(double val) { dist[4] = val; }
 };  // end class TCamera
 
-bool operator==(const mrpt::utils::TCamera& a, const mrpt::utils::TCamera& b);
-bool operator!=(const mrpt::utils::TCamera& a, const mrpt::utils::TCamera& b);
+bool operator==(const mrpt::img::TCamera& a, const mrpt::img::TCamera& b);
+bool operator!=(const mrpt::img::TCamera& a, const mrpt::img::TCamera& b);
 
-}  // End of namespace
-}  // end of namespace
+}  // namespace img
+}  // namespace mrpt
 
 // Add for declaration of mexplus::from template specialization
-DECLARE_MEXPLUS_FROM(mrpt::utils::TCamera)  // Not working at the beginning?
-#endif
+DECLARE_MEXPLUS_FROM(mrpt::img::TCamera)  // Not working at the beginning?

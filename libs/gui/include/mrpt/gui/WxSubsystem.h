@@ -413,15 +413,15 @@ class C3DWindowDialog : public wxFrame
 	void clearTextMessages();
 	void addTextMessage(
 		const double x_frac, const double y_frac, const std::string& text,
-		const mrpt::utils::TColorf& color, const size_t unique_index,
+		const mrpt::img::TColorf& color, const size_t unique_index,
 		const mrpt::opengl::TOpenGLFont font);
 	void addTextMessage(
 		const double x_frac, const double y_frac, const std::string& text,
-		const mrpt::utils::TColorf& color, const std::string& font_name,
+		const mrpt::img::TColorf& color, const std::string& font_name,
 		const double font_size, const mrpt::opengl::TOpenGLFontStyle font_style,
 		const size_t unique_index, const double font_spacing,
 		const double font_kerning, const bool has_shadow,
-		const mrpt::utils::TColorf& shadow_color);
+		const mrpt::img::TColorf& shadow_color);
 
    private:
 	void OnClose(wxCloseEvent& event);

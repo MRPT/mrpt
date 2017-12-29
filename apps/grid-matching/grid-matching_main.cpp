@@ -499,12 +499,12 @@ void do_grid_align()
 
 							// Save as 3D scene:
 							COpenGLScene scene;
-							CPointsMap::COLOR_3DSCENE(mrpt::utils::TColorf(0,0,1));
+							CPointsMap::COLOR_3DSCENE(mrpt::img::TColorf(0,0,1));
 							CSetOfObjects::Ptr obj1 =
 								mrpt::make_aligned_shared<CSetOfObjects>();
 							the_map1.getAs3DObject(obj1);
 
-							CPointsMap::COLOR_3DSCENE(mrpt::utils::TColorf(1, 0, 0));
+							CPointsMap::COLOR_3DSCENE(mrpt::img::TColorf(1, 0, 0));
 							CSetOfObjects::Ptr obj2 =
 								mrpt::make_aligned_shared<CSetOfObjects>();
 							the_map2.getAs3DObject(obj2);

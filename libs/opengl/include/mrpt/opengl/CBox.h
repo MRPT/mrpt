@@ -54,7 +54,7 @@ class CBox : public CRenderizableDisplayList
 	 */
 	bool m_draw_border;
 	/** Color of the solid box borders. */
-	mrpt::utils::TColor m_solidborder_color;
+	mrpt::img::TColor m_solidborder_color;
 
    public:
 	/** Constructor returning a smart pointer to the newly created object. */
@@ -98,12 +98,12 @@ class CBox : public CRenderizableDisplayList
 		CRenderizableDisplayList::notifyChange();
 	}
 	inline bool isBoxBorderEnabled() const { return m_draw_border; }
-	inline void setBoxBorderColor(const mrpt::utils::TColor& c)
+	inline void setBoxBorderColor(const mrpt::img::TColor& c)
 	{
 		m_solidborder_color = c;
 		CRenderizableDisplayList::notifyChange();
 	}
-	inline mrpt::utils::TColor getBoxBorderColor() const
+	inline mrpt::img::TColor getBoxBorderColor() const
 	{
 		return m_solidborder_color;
 	}

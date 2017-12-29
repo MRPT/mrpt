@@ -21,7 +21,7 @@ CUndistortMap::CUndistortMap() {}
 /** Prepares the mapping from the distortion parameters of a camera.
   * Must be called before invoking \a undistort().
   */
-void CUndistortMap::setFromCamParams(const mrpt::utils::TCamera& campar)
+void CUndistortMap::setFromCamParams(const mrpt::img::TCamera& campar)
 {
 	MRPT_START
 #if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x200

@@ -9,20 +9,18 @@
 
 #include "img-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/TStereoCamera.h>
-#include <mrpt/utils/CConfigFileMemory.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/img/TStereoCamera.h>
+#include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/serialization/CArchive.h>
 
-using namespace mrpt::utils;
-using namespace mrpt::poses;
+using namespace mrpt::img;
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(TStereoCamera, CSerializable, mrpt::utils)
+IMPLEMENTS_SERIALIZABLE(TStereoCamera, CSerializable, mrpt::img)
 
-TStereoCamera::TStereoCamera() {}
 /**  Save as a config block:
-  */
+ */
 void TStereoCamera::saveToConfigFile(
 	const std::string& section, mrpt::config::CConfigFileBase& cfg) const
 {
@@ -36,17 +34,14 @@ void TStereoCamera::saveToConfigFile(
 	leftCamera.saveToConfigFile(section + string("_LEFT"), cfg);
 	rightCamera.saveToConfigFile(section + string("_RIGHT"), cfg);
 
-	const CPose3DQuat q =
-		CPose3DQuat(rightCameraPose);  // Don't remove this line, it's a safe
-	// against future possible bugs if
-	// rightCameraPose changes!
 	cfg.write(
-		section + string("_LEFT2RIGHT_POSE"), "pose_quaternion", q.asString());
+		section + string("_LEFT2RIGHT_POSE"), "pose_quaternion",
+		rightCameraPose.asString());
 }
 
 /**  Load all the params from a config source, in the format described in
  * saveToConfigFile()
-  */
+ */
 void TStereoCamera::loadFromConfigFile(
 	const std::string& section, const mrpt::config::CConfigFileBase& cfg)
 {
@@ -59,36 +54,38 @@ void TStereoCamera::loadFromConfigFile(
 
 	leftCamera.loadFromConfigFile(section + string("_LEFT"), cfg);
 	rightCamera.loadFromConfigFile(section + string("_RIGHT"), cfg);
-	rightCameraPose.fromString(
-		cfg.read_string(
-			section + string("_LEFT2RIGHT_POSE"), "pose_quaternion", ""));
+	rightCameraPose.fromString(cfg.read_string(
+		section + string("_LEFT2RIGHT_POSE"), "pose_quaternion", ""));
 }
 
-// WriteToStream
-void TStereoCamera::writeToStream(CStream& out, int* version) const
+uint8_t TStereoCamera::serializeGetVersion() const { return 2; }
+void TStereoCamera::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		out << leftCamera << rightCamera << rightCameraPose;
-	}  // end else
+	// v1->v2: rightCameraPose changed from mrpt::poses::CPose3DQuat to
+	// mrpt::math::TPose3DQuat
+	out << leftCamera << rightCamera << rightCameraPose;
 }
-
-// ReadFromStream
-void TStereoCamera::readFromStream(CStream& in, int version)
+void TStereoCamera::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
 		case 0:
 		case 1:
+		case 2:
 		{
 			if (version == 0)
 			{
 				uint8_t _model;
 				in >> _model;  // unused now
 			}
-
+			if (version == 1)
+			{
+				// Emulate reading a CPose3DQuat object:
+				THROW_EXCEPTION(
+					"backwards compatibility de-serialization not implemented "
+					"yet!");
+			}
 			in >> leftCamera >> rightCamera >> rightCameraPose;
 		}
 		break;
@@ -99,7 +96,7 @@ void TStereoCamera::readFromStream(CStream& in, int version)
 
 std::string TStereoCamera::dumpAsText() const
 {
-	mrpt::utils::CConfigFileMemory cfg;
+	mrpt::config::CConfigFileMemory cfg;
 	saveToConfigFile("", cfg);
 	return cfg.getContent();
 }

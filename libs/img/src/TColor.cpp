@@ -12,10 +12,12 @@
 #include <mrpt/utils/CStream.h>
 #include <mrpt/img/TColor.h>
 #include <mrpt/system/os.h>
+#include <mrpt/serialization/CArchive.h>
 
-using namespace mrpt::utils;
+using namespace mrpt::img;
+using mrpt::serialization::CArchive;
 
-TColor mrpt::utils::operator+(const TColor& first, const TColor& second)
+TColor mrpt::img::operator+(const TColor& first, const TColor& second)
 {
 	TColor ret;
 	ret.R = first.R + second.R;
@@ -26,7 +28,7 @@ TColor mrpt::utils::operator+(const TColor& first, const TColor& second)
 	return ret;
 }
 
-TColor mrpt::utils::operator-(const TColor& first, const TColor& second)
+TColor mrpt::img::operator-(const TColor& first, const TColor& second)
 {
 	TColor ret;
 	ret.R = first.R - second.R;
@@ -67,7 +69,7 @@ TColor& TColor::operator=(const TColor& other)
 	return *this;
 }
 
-bool mrpt::utils::operator==(const TColor& first, const TColor& second)
+bool mrpt::img::operator==(const TColor& first, const TColor& second)
 {
 	bool ret = first.R == second.R && first.G == second.G &&
 			   first.B == second.B && first.A == second.A;
@@ -80,7 +82,7 @@ bool mrpt::utils::operator==(const TColor& first, const TColor& second)
 //}
 
 // Text streaming:
-std::ostream& mrpt::utils::operator<<(std::ostream& o, const TColor& c)
+std::ostream& mrpt::img::operator<<(std::ostream& o, const TColor& c)
 {
 	char buf[200];
 	mrpt::system::os::sprintf(
@@ -92,20 +94,20 @@ std::ostream& mrpt::utils::operator<<(std::ostream& o, const TColor& c)
 }
 
 // Binary streaming:
-CStream& mrpt::utils::operator<<(mrpt::utils::CStream& o, const TColor& c)
+CArchive& mrpt::img::operator<<(CArchive& o, const TColor& c)
 {
 	o << c.R << c.G << c.B << c.A;
 	return o;
 }
 
-CStream& mrpt::utils::operator>>(mrpt::utils::CStream& i, TColor& c)
+CArchive& mrpt::img::operator>>(CArchive& i, TColor& c)
 {
 	i >> c.R >> c.G >> c.B >> c.A;
 	return i;
 }
 
 // Text streaming:
-std::ostream& mrpt::utils::operator<<(std::ostream& o, const TColorf& c)
+std::ostream& mrpt::img::operator<<(std::ostream& o, const TColorf& c)
 {
 	char buf[200];
 	mrpt::system::os::sprintf(
@@ -115,13 +117,13 @@ std::ostream& mrpt::utils::operator<<(std::ostream& o, const TColorf& c)
 }
 
 // Binary streaming:
-CStream& mrpt::utils::operator<<(mrpt::utils::CStream& o, const TColorf& c)
+CArchive& mrpt::img::operator<<(CArchive& o, const TColorf& c)
 {
 	o << c.R << c.G << c.B << c.A;
 	return o;
 }
 
-CStream& mrpt::utils::operator>>(mrpt::utils::CStream& i, TColorf& c)
+CArchive& mrpt::img::operator>>(CArchive& i, TColorf& c)
 {
 	i >> c.R >> c.G >> c.B >> c.A;
 	return i;

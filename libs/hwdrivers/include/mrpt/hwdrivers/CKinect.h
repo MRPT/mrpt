@@ -399,21 +399,21 @@ class CKinect : public mrpt::hwdrivers::CGenericSensor
 	 * open(). */
 	inline size_t cols() const { return m_cameraParamsRGB.ncols; }
 	/** Get a const reference to the depth camera calibration parameters */
-	inline const mrpt::utils::TCamera& getCameraParamsIntensity() const
+	inline const mrpt::img::TCamera& getCameraParamsIntensity() const
 	{
 		return m_cameraParamsRGB;
 	}
-	inline void setCameraParamsIntensity(const mrpt::utils::TCamera& p)
+	inline void setCameraParamsIntensity(const mrpt::img::TCamera& p)
 	{
 		m_cameraParamsRGB = p;
 	}
 
 	/** Get a const reference to the depth camera calibration parameters */
-	inline const mrpt::utils::TCamera& getCameraParamsDepth() const
+	inline const mrpt::img::TCamera& getCameraParamsDepth() const
 	{
 		return m_cameraParamsDepth;
 	}
-	inline void setCameraParamsDepth(const mrpt::utils::TCamera& p)
+	inline void setCameraParamsDepth(const mrpt::img::TCamera& p)
 	{
 		m_cameraParamsDepth = p;
 	}
@@ -511,9 +511,9 @@ class CKinect : public mrpt::hwdrivers::CGenericSensor
 #endif
 
 	/** Params for the RGB camera */
-	mrpt::utils::TCamera m_cameraParamsRGB;
+	mrpt::img::TCamera m_cameraParamsRGB;
 	/** Params for the Depth camera */
-	mrpt::utils::TCamera m_cameraParamsDepth;
+	mrpt::img::TCamera m_cameraParamsDepth;
 	/** See mrpt::obs::CObservation3DRangeScan for a diagram of this pose */
 	mrpt::poses::CPose3D m_relativePoseIntensityWRTDepth;
 

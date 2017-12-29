@@ -202,7 +202,7 @@ void COctoMap::getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels& gl_obj) const
 			if ((occ >= 0.5 && renderingOptions.generateOccupiedVoxels) ||
 				(occ < 0.5 && renderingOptions.generateFreeVoxels))
 			{
-				mrpt::utils::TColor vx_color;
+				mrpt::img::TColor vx_color;
 				double coefc, coeft;
 				switch (gl_obj.getVisualizationMode())
 				{

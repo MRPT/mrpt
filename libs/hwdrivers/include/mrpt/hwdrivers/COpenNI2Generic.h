@@ -128,9 +128,9 @@ class COpenNI2Generic
 	bool isVerbose() const;
 
 	bool getColorSensorParam(
-		mrpt::utils::TCamera& param, unsigned sensor_id = 0) const;
+		mrpt::img::TCamera& param, unsigned sensor_id = 0) const;
 	bool getDepthSensorParam(
-		mrpt::utils::TCamera& param, unsigned sensor_id = 0) const;
+		mrpt::img::TCamera& param, unsigned sensor_id = 0) const;
 
    protected:
 	/** The list of available devices */

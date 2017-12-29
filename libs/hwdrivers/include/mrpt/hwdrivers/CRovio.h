@@ -10,7 +10,7 @@
 #ifndef CROVIO_H
 #define CROVIO_H
 
-#include <mrpt/utils/TCamera.h>
+#include <mrpt/img/TCamera.h>
 #include <mrpt/obs/CObservationImage.h>
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
@@ -57,7 +57,7 @@ class CRovio
 		std::string user;
 		std::string password;
 
-		mrpt::utils::TCamera cameraParams;  // Mat. cam. preguntar paco
+		mrpt::img::TCamera cameraParams;  // Mat. cam. preguntar paco
 
 		TOptions();
 	} options;

@@ -186,7 +186,7 @@ class CLevMarqGSO
 		double optimization_distance;
 		double offset_y_optimization_distance;
 		int text_index_optimization_distance;
-		mrpt::utils::TColor optimization_distance_color;
+		mrpt::img::TColor optimization_distance_color;
 		/**\brief Keystroke to toggle the optimization distance on/off */
 		std::string keystroke_optimization_distance;
 		/**\brief Keystroke to manually trigger a full graph optimization */

@@ -33,7 +33,7 @@ Output files:
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
-#include <mrpt/utils/TCamera.h>
+#include <mrpt/img/TCamera.h>
 #include <mrpt/utils/CTextFileLinesParser.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 
@@ -94,7 +94,7 @@ void stereo2rawlog(
 	if (!p1_ok || !p2_ok)
 		throw std::runtime_error("Couldn't load P*_ROI calib matrices!");
 
-	mrpt::utils::TCamera cam_params_l;
+	mrpt::img::TCamera cam_params_l;
 	cam_params_l.ncols = 1344;
 	cam_params_l.nrows = 391;
 	cam_params_l.fx(P2_roi(0, 0));
@@ -102,7 +102,7 @@ void stereo2rawlog(
 	cam_params_l.cx(P2_roi(0, 2));
 	cam_params_l.cy(P2_roi(0, 6));
 
-	mrpt::utils::TCamera cam_params_r = cam_params_l;
+	mrpt::img::TCamera cam_params_r = cam_params_l;
 
 	// base = -P2_roi(1,4)/P2_roi(1,1)
 	const double baseline = -P2_roi(0, 3) / P2_roi(0, 0);

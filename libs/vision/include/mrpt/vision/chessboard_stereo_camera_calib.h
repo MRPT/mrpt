@@ -11,7 +11,7 @@
 #define mrpt_vision_chessboard_stereo_calib_H
 
 #include <mrpt/img/CImage.h>
-#include <mrpt/utils/TStereoCamera.h>
+#include <mrpt/img/TStereoCamera.h>
 #include <mrpt/vision/types.h>
 #include <mrpt/vision/chessboard_camera_calib.h>
 
@@ -71,7 +71,7 @@ struct TStereoCalibParams
 	 * optimzed:
 	 *  k1,k2,k3 are the r^2, r^4 and r^6 radial distorion coeficients, and t1
 	 * and t2 are the tangential distortion coeficients (see
-	 * mrpt::utils::TCamera).
+	 * mrpt::img::TCamera).
 	 * Those set to false will be assumed to be fixed to zero (no distortion).
 	 * \note Default values are to only assume distortion via k1 and k2 (the
 	 * rest are zeros).
@@ -101,7 +101,7 @@ struct TStereoCalibResults
 	TStereoCalibResults();
 
 	/** Recovered parameters of the stereo camera */
-	mrpt::utils::TStereoCamera cam_params;
+	mrpt::img::TStereoCamera cam_params;
 	/** The pose of the left camera as seen from the right camera */
 	mrpt::poses::CPose3D right2left_camera_pose;
 

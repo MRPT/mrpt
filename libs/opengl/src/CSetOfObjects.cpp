@@ -199,7 +199,7 @@ class FSetColor
 	~FSetColor() {}
 };
 
-CRenderizable& CSetOfObjects::setColor_u8(const mrpt::utils::TColor& c)
+CRenderizable& CSetOfObjects::setColor_u8(const mrpt::img::TColor& c)
 {
 	for_each(
 		m_objects.begin(), m_objects.end(),

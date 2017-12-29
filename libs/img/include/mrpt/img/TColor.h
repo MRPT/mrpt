@@ -6,9 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-
-#ifndef mrpt_utils_tcolor_H
-#define mrpt_utils_tcolor_H
+#pragma once
 
 #include <cstdint>
 #include <iosfwd>
@@ -16,16 +14,19 @@
 
 namespace mrpt
 {
+namespace serialization
+{
+class CArchive;
+}
 namespace img
 {
-class CStream;
-
 /** A RGB color - 8bit
  * \ingroup mrpt_img_grp */
 struct TColor
 {
 	constexpr inline TColor() : R(0), G(0), B(0), A(255) {}
-	constexpr inline TColor(uint8_t r, uint8_t g, uint8_t b, uint8_t alpha = 255)
+	constexpr inline TColor(
+		uint8_t r, uint8_t g, uint8_t b, uint8_t alpha = 255)
 		: R(r), G(g), B(b), A(alpha)
 	{
 	}
@@ -38,7 +39,8 @@ struct TColor
 	{
 	}
 
-	constexpr inline TColor(const unsigned int color_RGB_24bit, const uint8_t alpha)
+	constexpr inline TColor(
+		const unsigned int color_RGB_24bit, const uint8_t alpha)
 		: R(uint8_t(color_RGB_24bit >> 16)),
 		  G(uint8_t(color_RGB_24bit >> 8)),
 		  B(uint8_t(color_RGB_24bit)),
@@ -70,8 +72,10 @@ struct TColor
 // Text streaming:
 std::ostream& operator<<(std::ostream& o, const TColor& c);
 // Binary streaming:
-CStream& operator<<(mrpt::utils::CStream& o, const TColor& c);
-CStream& operator>>(mrpt::utils::CStream& i, TColor& c);
+mrpt::serialization::CArchive& operator<<(
+	mrpt::serialization::CArchive& o, const TColor& c);
+mrpt::serialization::CArchive& operator>>(
+	mrpt::serialization::CArchive& i, TColor& c);
 
 /** A RGB color - floats in the range [0,1]
  * \ingroup mrpt_img_grp */
@@ -105,10 +109,10 @@ bool operator==(const TColor& first, const TColor& second);
 // Text streaming:
 std::ostream& operator<<(std::ostream& o, const TColorf& c);
 // Binary streaming:
-CStream& operator<<(mrpt::utils::CStream& o, const TColorf& c);
-CStream& operator>>(mrpt::utils::CStream& i, TColorf& c);
+mrpt::serialization::CArchive& operator<<(
+	mrpt::serialization::CArchive& o, const TColorf& c);
+mrpt::serialization::CArchive& operator>>(
+	mrpt::serialization::CArchive& i, TColorf& c);
 
-}  // end namespace
-}  // end of namespace
-
-#endif
+}  // namespace img
+}  // namespace mrpt

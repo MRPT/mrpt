@@ -9,18 +9,17 @@
 
 #include "img-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/color_maps.h>
+#include <mrpt/img/color_maps.h>
 #include <mrpt/math/interp_fit.hpp>
 
 using namespace mrpt;
-using namespace mrpt::utils;
+using namespace mrpt::img;
 using namespace std;
 
 /*-------------------------------------------------------------
 					hsv2rgb
 -------------------------------------------------------------*/
-void mrpt::utils::hsv2rgb(
-	float h, float s, float v, float& r, float& g, float& b)
+void mrpt::img::hsv2rgb(float h, float s, float v, float& r, float& g, float& b)
 {
 	// See: http://en.wikipedia.org/wiki/HSV_color_space
 	h = max(0.0f, min(1.0f, h));
@@ -71,8 +70,7 @@ void mrpt::utils::hsv2rgb(
 /*-------------------------------------------------------------
 					rgb2hsv
 -------------------------------------------------------------*/
-void mrpt::utils::rgb2hsv(
-	float r, float g, float b, float& h, float& s, float& v)
+void mrpt::img::rgb2hsv(float r, float g, float b, float& h, float& s, float& v)
 {
 	// See: http://en.wikipedia.org/wiki/HSV_color_space
 	r = max(0.0f, min(1.0f, r));
@@ -112,7 +110,7 @@ void mrpt::utils::rgb2hsv(
 /*-------------------------------------------------------------
 					colormap
 -------------------------------------------------------------*/
-void mrpt::utils::colormap(
+void mrpt::img::colormap(
 	const TColormap& color_map, const float color_index, float& r, float& g,
 	float& b)
 {
@@ -137,7 +135,7 @@ void mrpt::utils::colormap(
 /*-------------------------------------------------------------
 					jet2rgb
 -------------------------------------------------------------*/
-void mrpt::utils::jet2rgb(const float color_index, float& r, float& g, float& b)
+void mrpt::img::jet2rgb(const float color_index, float& r, float& g, float& b)
 {
 	static bool jet_table_done = false;
 	static Eigen::VectorXf jet_r, jet_g, jet_b;
@@ -203,7 +201,7 @@ void mrpt::utils::jet2rgb(const float color_index, float& r, float& g, float& b)
 	b = math::interpolate(color_index, jet_b, 0.0f, 1.0f);
 }
 
-void mrpt::utils::hot2rgb(const float color_index, float& r, float& g, float& b)
+void mrpt::img::hot2rgb(const float color_index, float& r, float& g, float& b)
 {
 	static bool table_done = false;
 	static Eigen::VectorXf hot_r, hot_g, hot_b;

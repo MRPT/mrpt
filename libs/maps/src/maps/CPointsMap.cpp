@@ -63,10 +63,10 @@ float mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE()
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CPointsMap, CMetricMap, mrpt::maps)
 
-static mrpt::utils::TColorf COLOR_3DSCENE_value(0, 0, 1);
+static mrpt::img::TColorf COLOR_3DSCENE_value(0, 0, 1);
 
-void CPointsMap::COLOR_3DSCENE(const mrpt::utils::TColorf &value) { COLOR_3DSCENE_value = value; }
-mrpt::utils::TColorf CPointsMap::COLOR_3DSCENE() { return COLOR_3DSCENE_value; }
+void CPointsMap::COLOR_3DSCENE(const mrpt::img::TColorf &value) { COLOR_3DSCENE_value = value; }
+mrpt::img::TColorf CPointsMap::COLOR_3DSCENE() { return COLOR_3DSCENE_value; }
 
 /*---------------------------------------------------------------
 						Constructor
@@ -1616,7 +1616,7 @@ TAuxLoadFunctor dummy_loader;  // used just to set
   */
 void CPointsMap::PLY_import_set_vertex(
 	const size_t idx, const mrpt::math::TPoint3Df& pt,
-	const mrpt::utils::TColorf* pt_color)
+	const mrpt::img::TColorf* pt_color)
 {
 	MRPT_UNUSED_PARAM(pt_color);
 	this->setPoint(idx, pt.x, pt.y, pt.z);
@@ -1631,7 +1631,7 @@ size_t CPointsMap::PLY_export_get_vertex_count() const { return this->size(); }
   */
 void CPointsMap::PLY_export_get_vertex(
 	const size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
-	mrpt::utils::TColorf& pt_color) const
+	mrpt::img::TColorf& pt_color) const
 {
 	MRPT_UNUSED_PARAM(pt_color);
 	pt_has_color = false;

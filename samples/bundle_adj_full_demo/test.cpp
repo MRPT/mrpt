@@ -17,7 +17,7 @@
 
 			  Where <feats.txt> is a "TSequenceFeatureObservations" saved as
 			  a text file, and <cam_model.cfg> is a .ini-like file with a
-			  section named "CAMERA" loadable by mrpt::utils::TCamera.
+			  section named "CAMERA" loadable by mrpt::img::TCamera.
 
 	DATE: 20-Aug-2010
    ===========================================================================

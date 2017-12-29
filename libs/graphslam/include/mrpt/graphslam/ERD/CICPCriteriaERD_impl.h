@@ -470,7 +470,7 @@ void CICPCriteriaERD<GRAPH_T>::initializeVisuals()
 
 		this->m_win_manager->addTextMessage(
 			5, -m_offset_y_search_disk, mrpt::format("ICP Edges search radius"),
-			mrpt::utils::TColorf(m_search_disk_color),
+			mrpt::img::TColorf(m_search_disk_color),
 			/* unique_index = */ m_text_index_search_disk);
 	}
 

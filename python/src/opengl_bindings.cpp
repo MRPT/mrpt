@@ -44,7 +44,7 @@ void CRenderizable_setLocation2(CRenderizable& self, float x, float y, float z)
 	self.setLocation(x, y, z);
 }
 
-void CRenderizable_setColor1(CRenderizable& self, mrpt::utils::TColorf& c)
+void CRenderizable_setColor1(CRenderizable& self, mrpt::img::TColorf& c)
 {
 	self.setColor(c);
 }

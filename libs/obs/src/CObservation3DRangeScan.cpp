@@ -738,7 +738,7 @@ void cost_func(
   * \return The final average reprojection error per pixel (typ <0.05 px)
   */
 double CObservation3DRangeScan::recoverCameraCalibrationParameters(
-	const CObservation3DRangeScan& obs, mrpt::utils::TCamera& out_camParams,
+	const CObservation3DRangeScan& obs, mrpt::img::TCamera& out_camParams,
 	const double camera_offset)
 {
 	MRPT_START

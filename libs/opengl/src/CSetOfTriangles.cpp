@@ -293,11 +293,11 @@ return false;
 }
 */
 
-CRenderizable& CSetOfTriangles::setColor_u8(const mrpt::utils::TColor& c)
+CRenderizable& CSetOfTriangles::setColor_u8(const mrpt::img::TColor& c)
 {
 	CRenderizableDisplayList::notifyChange();
 	m_color = c;
-	mrpt::utils::TColorf col(c);
+	mrpt::img::TColorf col(c);
 	for (std::vector<TTriangle>::iterator it = m_triangles.begin();
 		 it != m_triangles.end(); ++it)
 		for (size_t i = 0; i < 3; i++)

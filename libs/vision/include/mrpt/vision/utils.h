@@ -12,7 +12,7 @@
 
 #include <mrpt/vision/CFeature.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/utils/TStereoCamera.h>
+#include <mrpt/img/TStereoCamera.h>
 #include <mrpt/math/CMatrixTemplate.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/TMatchingPair.h>
@@ -258,7 +258,7 @@ void addFeaturesToImage(
 
 void projectMatchedFeatures(
 	const CMatchedFeatureList& matches,
-	const mrpt::utils::TStereoCamera& stereo_camera,
+	const mrpt::img::TStereoCamera& stereo_camera,
 	std::vector<mrpt::math::TPoint3D>& out_points);
 
 /** Computes the 3D position of a set of matched features from their coordinates
@@ -378,7 +378,7 @@ wrt the first one
 mrpt::vision::CStereoRectifyMap
 */
 void computeStereoRectificationMaps(
-	const mrpt::utils::TCamera& cam1, const mrpt::utils::TCamera& cam2,
+	const mrpt::img::TCamera& cam1, const mrpt::img::TCamera& cam2,
 	const mrpt::poses::CPose3D& rightCameraPose, void* outMap1x, void* outMap1y,
 	void* outMap2x, void* outMap2y);
 

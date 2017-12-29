@@ -514,7 +514,7 @@ void CGraphSlamEngine<GRAPH_T>::initClass()
 	if (m_enable_visuals)
 	{
 		this->m_win->addTextMessage(
-			0.5, 0.3, "", mrpt::utils::TColorf(1.0, 0, 0),
+			0.5, 0.3, "", mrpt::img::TColorf(1.0, 0, 0),
 			m_text_index_paused_message);
 	}
 
@@ -2848,7 +2848,7 @@ void CGraphSlamEngine<GRAPH_T>::generateReportFiles(
 template <class GRAPH_T>
 mrpt::opengl::CSetOfObjects::Ptr
 	CGraphSlamEngine<GRAPH_T>::setCurrentPositionModel(
-		const std::string& model_name, const mrpt::utils::TColor& model_color,
+		const std::string& model_name, const mrpt::img::TColor& model_color,
 		const size_t model_size, const pose_t& init_pose)
 {
 	using namespace mrpt::poses;

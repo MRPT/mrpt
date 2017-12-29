@@ -10,7 +10,7 @@
 #ifndef mrpt_vision_pinhole_H
 #define mrpt_vision_pinhole_H
 
-#include <mrpt/utils/TCamera.h>
+#include <mrpt/img/TCamera.h>
 #include <mrpt/vision/utils.h>
 #include <mrpt/poses/poses_frwds.h>
 
@@ -62,7 +62,7 @@ void projectPoints_no_distortion(
   */
 template <bool INVERSE_CAM_POSE>
 inline mrpt::utils::TPixelCoordf projectPoint_no_distortion(
-	const mrpt::utils::TCamera& cam_params, const mrpt::poses::CPose3D& F,
+	const mrpt::img::TCamera& cam_params, const mrpt::poses::CPose3D& F,
 	const mrpt::math::TPoint3D& P)
 {
 	double x, y, z;  // wrt cam (local coords)
@@ -80,7 +80,7 @@ inline mrpt::utils::TPixelCoordf projectPoint_no_distortion(
 //! \overload
 template <typename POINT>
 inline void projectPoint_no_distortion(
-	const POINT& in_point_wrt_cam, const mrpt::utils::TCamera& cam_params,
+	const POINT& in_point_wrt_cam, const mrpt::img::TCamera& cam_params,
 	mrpt::utils::TPixelCoordf& out_projectedPoints)
 {
 	ASSERT_(in_point_wrt_cam.z != 0)
@@ -142,14 +142,14 @@ void projectPoints_with_distortion(
   */
 void projectPoint_with_distortion(
 	const mrpt::math::TPoint3D& in_point_wrt_cam,
-	const mrpt::utils::TCamera& in_cam_params,
+	const mrpt::img::TCamera& in_cam_params,
 	mrpt::utils::TPixelCoordf& out_projectedPoints,
 	bool accept_points_behind = false);
 
 //! \overload
 void projectPoints_with_distortion(
 	const std::vector<mrpt::math::TPoint3D>& P,
-	const mrpt::utils::TCamera& params,
+	const mrpt::img::TCamera& params,
 	const mrpt::poses::CPose3DQuat& cameraPose,
 	std::vector<mrpt::utils::TPixelCoordf>& pixels,
 	bool accept_points_behind = false);
@@ -184,7 +184,7 @@ void undistort_points(
 void undistort_points(
 	const std::vector<mrpt::utils::TPixelCoordf>& srcDistortedPixels,
 	std::vector<mrpt::utils::TPixelCoordf>& dstUndistortedPixels,
-	const mrpt::utils::TCamera& cameraModel);
+	const mrpt::img::TCamera& cameraModel);
 
 /** Undistort one point given by its pixel coordinates and the camera
  * parameters.
@@ -192,7 +192,7 @@ void undistort_points(
   */
 void undistort_point(
 	const mrpt::utils::TPixelCoordf& inPt, mrpt::utils::TPixelCoordf& outPt,
-	const mrpt::utils::TCamera& cameraModel);
+	const mrpt::img::TCamera& cameraModel);
 
 /** @} */  // end of grouping
 }

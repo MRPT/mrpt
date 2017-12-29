@@ -83,7 +83,7 @@ namespace hwdrivers
   *(default:
   *true)
   *
-  *    // Camera calibration parameters: See mrpt::utils::TCamera
+  *    // Camera calibration parameters: See mrpt::img::TCamera
   *    //  If not provided, a set of default parameters for a SR4000 camera will
   *be loaded.
   *    resolution = [176 144]
@@ -289,7 +289,7 @@ class CSwissRanger3DCamera : public mrpt::hwdrivers::CGenericSensor
 	/** opaque handler to SRCAM. nullptr means it's not open yet. */
 	void* m_cam;
 
-	mrpt::utils::TCamera m_cameraParams;
+	mrpt::img::TCamera m_cameraParams;
 
    private:
 };  // End of class

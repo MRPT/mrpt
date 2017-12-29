@@ -209,9 +209,9 @@ class CICPCriteriaERD
 	//////////////////////////////////////////////////////////////
 
 	/** see Constructor for initialization */
-	mrpt::utils::TColor m_search_disk_color;
+	mrpt::img::TColor m_search_disk_color;
 	/** see Constructor for initialization */
-	mrpt::utils::TColor m_laser_scans_color;
+	mrpt::img::TColor m_laser_scans_color;
 	double m_offset_y_search_disk;
 	int m_text_index_search_disk;
 

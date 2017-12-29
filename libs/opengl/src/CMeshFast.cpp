@@ -12,7 +12,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/opengl/CMeshFast.h>
 #include <mrpt/opengl/CSetOfTriangles.h>
-#include <mrpt/utils/color_maps.h>
+#include <mrpt/img/color_maps.h>
 #include <mrpt/utils/CStream.h>
 
 #include "opengl_internals.h"

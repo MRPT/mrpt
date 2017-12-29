@@ -53,7 +53,7 @@ using namespace std;
 // VARIABLES  ================================
 
 TCalibrationImageList lst_images;  // Here are all the images: file_name -> data
-mrpt::utils::TCamera camera_params;
+mrpt::img::TCamera camera_params;
 
 // END VARIABLES  ============================
 

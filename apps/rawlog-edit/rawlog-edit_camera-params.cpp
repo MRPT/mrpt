@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 
 #include "rawlog-edit-declarations.h"
-#include <mrpt/utils/TCamera.h>
-#include <mrpt/utils/TStereoCamera.h>
+#include <mrpt/img/TCamera.h>
+#include <mrpt/img/TStereoCamera.h>
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
@@ -33,8 +33,8 @@ DECLARE_OP_FUNCTION(op_camera_params)
 		TOutputRawlogCreator outrawlog;
 
 		string target_label;
-		mrpt::utils::TCamera new_cam_params;
-		mrpt::utils::TStereoCamera new_stereo_cam_params;
+		mrpt::img::TCamera new_cam_params;
+		mrpt::img::TStereoCamera new_stereo_cam_params;
 		bool is_stereo;
 
 	   public:

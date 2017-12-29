@@ -384,8 +384,8 @@ void CRenderizable::renderTextBitmap(
 void gl_utils::renderMessageBox(
 	const float msg_x, const float msg_y, const float msg_w, const float msg_h,
 	const std::string& text, float text_scale,
-	const mrpt::utils::TColor& back_col, const mrpt::utils::TColor& border_col,
-	const mrpt::utils::TColor& text_col, const float border_width,
+	const mrpt::img::TColor& back_col, const mrpt::img::TColor& border_col,
+	const mrpt::img::TColor& text_col, const float border_width,
 	const std::string& text_font, mrpt::opengl::TOpenGLFontStyle text_style,
 	const double text_spacing, const double text_kerning)
 {

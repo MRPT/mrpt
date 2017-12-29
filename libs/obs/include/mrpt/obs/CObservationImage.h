@@ -11,7 +11,7 @@
 
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/utils/TCamera.h>
+#include <mrpt/img/TCamera.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/poses/CPose3D.h>
@@ -54,7 +54,7 @@ class CObservationImage : public CObservation
 	  * See the <a href="http://www.mrpt.org/Camera_Parameters" >tutorial</a>
 	 * for a discussion of these parameters.
 	  */
-	mrpt::utils::TCamera cameraParams;
+	mrpt::img::TCamera cameraParams;
 
 	/** The image captured by the camera, that is, the main piece of information
 	 * of this observation. */

@@ -733,7 +733,7 @@ class COctreePointRenderer
 	  */
 	void octree_get_graphics_boundingboxes(
 		mrpt::opengl::CSetOfObjects& gl_bb, const double lines_width = 1,
-		const mrpt::utils::TColorf& lines_color = mrpt::utils::TColorf(1, 1, 1),
+		const mrpt::img::TColorf& lines_color = mrpt::img::TColorf(1, 1, 1),
 		const bool draw_solid_boxes = false) const
 	{
 		octree_assure_uptodate();

@@ -459,7 +459,7 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 		int prev_nodes_for_ICP;
 
 		/** see Constructor for initialization */
-		const mrpt::utils::TColor laser_scans_color;
+		const mrpt::img::TColor laser_scans_color;
 		bool visualize_laser_scans;
 		// keystroke to be used by the user to toggle the LaserScans from
 		// the CDisplayWindow
@@ -534,9 +534,9 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 		// map partitioning  - visualization window parameters
 		const double balloon_elevation;
 		const double balloon_radius;
-		const mrpt::utils::TColor balloon_std_color;
-		const mrpt::utils::TColor balloon_curr_color;
-		const mrpt::utils::TColor connecting_lines_color;
+		const mrpt::img::TColor balloon_std_color;
+		const mrpt::img::TColor balloon_curr_color;
+		const mrpt::img::TColor connecting_lines_color;
 
 		bool has_read_config;
 	};
@@ -829,7 +829,7 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	mrpt::slam::CIncrementalMapPartitioner m_partitioner;
 
 	bool m_visualize_curr_node_covariance;
-	const mrpt::utils::TColor m_curr_node_covariance_color;
+	const mrpt::img::TColor m_curr_node_covariance_color;
 	double m_offset_y_curr_node_covariance;
 	int m_text_index_curr_node_covariance;
 

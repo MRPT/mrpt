@@ -2765,7 +2765,7 @@ void kinect_calibrate_guiDialog::LiveCalibUpdateToGrid()
 	for (int lr = 0; lr < 2; lr++)
 	{
 		const char* sN = (lr == 0 ? "Left" : "Right");
-		const mrpt::utils::TCamera& c =
+		const mrpt::img::TCamera& c =
 			(lr == 0 ? m_calib_result.cam_params.leftCamera
 					 : m_calib_result.cam_params.rightCamera);
 
@@ -2816,7 +2816,7 @@ void kinect_calibrate_guiDialog::LiveCalibUpdateFromGrid()
 	int r = 0;
 	for (int lr = 0; lr < 2; lr++)
 	{
-		mrpt::utils::TCamera& c =
+		mrpt::img::TCamera& c =
 			(lr == 0 ? m_calib_result.cam_params.leftCamera
 					 : m_calib_result.cam_params.rightCamera);
 

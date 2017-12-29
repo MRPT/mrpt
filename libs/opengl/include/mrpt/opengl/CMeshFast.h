@@ -13,7 +13,7 @@
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/utils/color_maps.h>
+#include <mrpt/img/color_maps.h>
 
 namespace mrpt
 {
@@ -69,7 +69,7 @@ class CMeshFast : public CRenderizableDisplayList
 	mutable math::CMatrix C_b;
 
 	/** Used when m_colorFromZ is true */
-	mrpt::utils::TColormap m_colorMap;
+	mrpt::img::TColormap m_colorMap;
 	/** By default is 1.0 */
 	float m_pointSize;
 	/** Default: false */
@@ -122,7 +122,7 @@ class CMeshFast : public CRenderizableDisplayList
 		CRenderizableDisplayList::notifyChange();
 	}
 	void enableColorFromZ(
-		bool v, mrpt::utils::TColormap colorMap = mrpt::utils::cmJET)
+		bool v, mrpt::img::TColormap colorMap = mrpt::utils::cmJET)
 	{
 		m_colorFromZ = v;
 		m_colorMap = colorMap;

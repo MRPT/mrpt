@@ -736,9 +736,9 @@ class CObservation3DRangeScan : public CObservation
 	/** \name Sensor parameters
 	  * @{ */
 	/** Projection parameters of the depth camera. */
-	mrpt::utils::TCamera cameraParams;
+	mrpt::img::TCamera cameraParams;
 	/** Projection parameters of the intensity (graylevel or RGB) camera. */
-	mrpt::utils::TCamera cameraParamsIntensity;
+	mrpt::img::TCamera cameraParamsIntensity;
 
 	/** Relative pose of the intensity camera wrt the depth camera (which is the
 	 * coordinates origin for this observation).
@@ -798,13 +798,13 @@ class CObservation3DRangeScan : public CObservation
 	  */
 	static double recoverCameraCalibrationParameters(
 		const CObservation3DRangeScan& in_obs,
-		mrpt::utils::TCamera& out_camParams, const double camera_offset = 0.01);
+		mrpt::img::TCamera& out_camParams, const double camera_offset = 0.01);
 
 	/** Look-up-table struct for project3DPointsFromDepthImageInto() */
 	struct TCached3DProjTables
 	{
 		mrpt::math::CVectorFloat Kzs, Kys;
-		mrpt::utils::TCamera prev_camParams;
+		mrpt::img::TCamera prev_camParams;
 	};
 	/** 3D point cloud projection look-up-table \sa
 	 * project3DPointsFromDepthImage */

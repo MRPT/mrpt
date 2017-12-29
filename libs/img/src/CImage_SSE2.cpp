@@ -21,8 +21,8 @@
 // ---------------------------------------------------------------------------
 
 #include <mrpt/img/CImage.h>
-#include <mrpt/utils/SSE_types.h>
-#include <mrpt/utils/SSE_macros.h>
+#include <mrpt/core/SSE_types.h>
+#include <mrpt/core/SSE_macros.h>
 #include "CImage_SSEx.h"
 
 /** \addtogroup sse_optimizations
@@ -32,14 +32,14 @@
 
 /** Subsample each 2x2 pixel block into 1x1 pixel, taking the first pixel &
  * ignoring the other 3
-  *  - <b>Input format:</b> uint8_t, 1 channel
-  *  - <b>Output format:</b> uint8_t, 1 channel
-  *  - <b>Preconditions:</b> in & out aligned to 16bytes, w = k*16 (w=width in
+ *  - <b>Input format:</b> uint8_t, 1 channel
+ *  - <b>Output format:</b> uint8_t, 1 channel
+ *  - <b>Preconditions:</b> in & out aligned to 16bytes, w = k*16 (w=width in
  * pixels), widthStep=w*1
-  *  - <b>Notes:</b>
-  *  - <b>Requires:</b> SSE2
-  *  - <b>Invoked from:</b> mrpt::img::CImage::scaleHalf()
-  */
+ *  - <b>Notes:</b>
+ *  - <b>Requires:</b> SSE2
+ *  - <b>Invoked from:</b> mrpt::img::CImage::scaleHalf()
+ */
 void image_SSE2_scale_half_1c8u(const uint8_t* in, uint8_t* out, int w, int h)
 {
 	alignas(32) const unsigned long long mask[2] = {0x00FF00FF00FF00FFull,
@@ -65,14 +65,14 @@ void image_SSE2_scale_half_1c8u(const uint8_t* in, uint8_t* out, int w, int h)
 }
 
 /** Average each 2x2 pixels into 1x1 pixel (arithmetic average)
-  *  - <b>Input format:</b> uint8_t, 1 channel
-  *  - <b>Output format:</b> uint8_t, 1 channel
-  *  - <b>Preconditions:</b> in & out aligned to 16bytes, w = k*16 (w=width in
+ *  - <b>Input format:</b> uint8_t, 1 channel
+ *  - <b>Output format:</b> uint8_t, 1 channel
+ *  - <b>Preconditions:</b> in & out aligned to 16bytes, w = k*16 (w=width in
  * pixels), widthStep=w*1
-  *  - <b>Notes:</b>
-  *  - <b>Requires:</b> SSE2
-  *  - <b>Invoked from:</b> mrpt::img::CImage::scaleHalfSmooth()
-  */
+ *  - <b>Notes:</b>
+ *  - <b>Requires:</b> SSE2
+ *  - <b>Invoked from:</b> mrpt::img::CImage::scaleHalfSmooth()
+ */
 void image_SSE2_scale_half_smooth_1c8u(
 	const uint8_t* in, uint8_t* out, int w, int h)
 {
@@ -105,25 +105,25 @@ void image_SSE2_scale_half_smooth_1c8u(
 }
 
 /** KLT score at a given point of a grayscale image.
-  *  - <b>Requires:</b> SSE2
-  *  - <b>Invoked from:</b> mrpt::img::CImage::KLT_response()
-  *
-  *  This function is not manually optimized for SSE2 but templatized for
+ *  - <b>Requires:</b> SSE2
+ *  - <b>Invoked from:</b> mrpt::img::CImage::KLT_response()
+ *
+ *  This function is not manually optimized for SSE2 but templatized for
  * different
-  *   window sizes such as the compiler can optimize automatically for that
+ *   window sizes such as the compiler can optimize automatically for that
  * size.
-  *
-  *  Only for the most common window sizes this templates are instantiated
+ *
+ *  Only for the most common window sizes this templates are instantiated
  * (W=[2-16] and W=32 ),
-  *   falling back to
-  *   a generic implementation otherwise. The next figure shows the performance
+ *   falling back to
+ *   a generic implementation otherwise. The next figure shows the performance
  * (time for
-  *   KLT_response() to compute the score for one single pixel) for different
+ *   KLT_response() to compute the score for one single pixel) for different
  * window sizes.
-  *
-  *  <img src="KLT_response_performance_SSE2.png" >
-  *
-  */
+ *
+ *  <img src="KLT_response_performance_SSE2.png" >
+ *
+ */
 float KLT_response_optimized();
 
 // TODO:

@@ -1439,39 +1439,6 @@ void TObject3D::getPolygons(
 			remainder.push_back(*it);
 }
 
-CArchive& operator>>(CArchive& in, mrpt::math::TPoint2D& o)
-{
-	in >> o.x >> o.y;
-	return in;
-}
-CArchive& operator<<(CArchive& out, const mrpt::math::TPoint2D& o)
-{
-	out << o.x << o.y;
-	return out;
-}
-
-CArchive& operator>>(CArchive& in, mrpt::math::TPoint3D& o)
-{
-	in >> o.x >> o.y >> o.z;
-	return in;
-}
-CArchive& operator<<(CArchive& out, const mrpt::math::TPoint3D& o)
-{
-	out << o.x << o.y << o.z;
-	return out;
-}
-
-CArchive& operator>>(CArchive& in, mrpt::math::TPose2D& o)
-{
-	in >> o.x >> o.y >> o.phi;
-	return in;
-}
-CArchive& operator<<(CArchive& out, const mrpt::math::TPose2D& o)
-{
-	out << o.x << o.y << o.phi;
-	return out;
-}
-
 CArchive& operator>>(CArchive& in, mrpt::math::TTwist2D& o)
 {
 	for (unsigned int i = 0; i < o.size(); i++) in >> o[i];
@@ -1491,23 +1458,6 @@ CArchive& operator>>(CArchive& in, mrpt::math::TTwist3D& o)
 CArchive& operator<<(CArchive& out, const mrpt::math::TTwist3D& o)
 {
 	for (unsigned int i = 0; i < o.size(); i++) out << o[i];
-	return out;
-}
-
-CArchive& operator>>(CArchive& in, mrpt::math::TTwist2D& o);
-CArchive& operator<<(CArchive& out, const mrpt::math::TTwist2D& o);
-
-CArchive& operator>>(CArchive& in, mrpt::math::TTwist3D& o);
-CArchive& operator<<(CArchive& out, const mrpt::math::TTwist3D& o);
-
-CArchive& operator>>(CArchive& in, mrpt::math::TPose3D& o)
-{
-	in >> o.x >> o.y >> o.z >> o.yaw >> o.pitch >> o.roll;
-	return in;
-}
-CArchive& operator<<(CArchive& out, const mrpt::math::TPose3D& o)
-{
-	out << o.x << o.y << o.z << o.yaw << o.pitch << o.roll;
 	return out;
 }
 

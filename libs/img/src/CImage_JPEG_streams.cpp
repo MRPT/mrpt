@@ -10,13 +10,13 @@
 #include "img-precomp.h"  // Precompiled headers
 
 #include <mrpt/img/CImage.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/io/CStream.h>
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
+using namespace mrpt::img;
 
 // ---------------------------------------------------------------------------------------
 //							START OF JPEG FUNCTIONS PART
@@ -44,6 +44,8 @@ using namespace mrpt::utils;
 #include "jpeglib/mrpt_jpeglib.h"
 #define mrpt_jpeg_source_mgr jpeg_source_mgr
 #endif
+
+using mrpt::io::CStream;
 
 typedef struct
 {
@@ -104,7 +106,7 @@ empty_output_buffer(j_compress_ptr cinfo)
 {
 	mrpt_dest_ptr dest = (mrpt_dest_ptr)cinfo->dest;
 
-	dest->out->WriteBuffer(dest->buffer, OUTPUT_BUF_SIZE);
+	dest->out->Write(dest->buffer, OUTPUT_BUF_SIZE);
 
 	dest->pub.next_output_byte = dest->buffer;
 	dest->pub.free_in_buffer = OUTPUT_BUF_SIZE;
@@ -128,7 +130,7 @@ term_destination(j_compress_ptr cinfo)
 	size_t datacount = OUTPUT_BUF_SIZE - dest->pub.free_in_buffer;
 
 	/* Write any data remaining in the buffer */
-	if (datacount > 0) dest->out->WriteBuffer(dest->buffer, (int)datacount);
+	if (datacount > 0) dest->out->Write(dest->buffer, (int)datacount);
 }
 
 GLOBAL(void)
@@ -227,7 +229,7 @@ fill_input_buffer(j_decompress_ptr cinfo)
 	my_src_ptr src = (my_src_ptr)cinfo->src;
 	size_t nbytes;
 
-	nbytes = src->in->ReadBuffer(src->buffer, INPUT_BUF_SIZE);
+	nbytes = src->in->Read(src->buffer, INPUT_BUF_SIZE);
 
 	if (nbytes <= 0)
 	{
@@ -373,9 +375,9 @@ void CImage::saveToStreamAsJPEG(CStream& out, const int jpeg_quality) const
 	const bool is_color = (ipl->nChannels == 3);
 
 	// Some previous verification:
-	ASSERT_(nCols >= 1 && nRows >= 1)
-	ASSERT_(ipl)
-	ASSERT_(ipl->nChannels == 1 || ipl->nChannels == 3)
+	ASSERT_(nCols >= 1 && nRows >= 1);
+	ASSERT_(ipl);
+	ASSERT_(ipl->nChannels == 1 || ipl->nChannels == 3);
 
 	// 1) Initialization of the JPEG compresion object:
 	// --------------------------------------------------
@@ -396,8 +398,8 @@ void CImage::saveToStreamAsJPEG(CStream& out, const int jpeg_quality) const
 	jpeg_set_defaults(&cinfo);
 	/* Make optional parameter settings here */
 	/* Now you can set any non-default parameters you wish to.
-	* Here we just illustrate the use of quality (quantization table) scaling:
-	*/
+	 * Here we just illustrate the use of quality (quantization table) scaling:
+	 */
 	jpeg_set_quality(
 		&cinfo, jpeg_quality /* quality per cent */,
 		TRUE /* limit to baseline-JPEG values */);
@@ -503,11 +505,11 @@ void CImage::loadFromStreamAsJPEG(CStream& in)
 	jpeg_start_decompress(&cinfo);
 
 	/* We may need to do some setup of our own at this point before reading
-	* the data.  After jpeg_start_decompress() we have the correct scaled
-	* output image dimensions available, as well as the output colormap
-	* if we asked for color quantization.
-	* In this example, we need to make an output work buffer of the right size.
-	*/
+	 * the data.  After jpeg_start_decompress() we have the correct scaled
+	 * output image dimensions available, as well as the output colormap
+	 * if we asked for color quantization.
+	 * In this example, we need to make an output work buffer of the right size.
+	 */
 	/* JSAMPLEs per row in output buffer */
 	/* physical row width in output buffer */
 	const int row_stride = cinfo.output_width * cinfo.output_components;
@@ -527,17 +529,17 @@ void CImage::loadFromStreamAsJPEG(CStream& in)
 	/*           jpeg_read_scanlines(...); */
 
 	/* Here we use the library's state variable cinfo.output_scanline as the
-	* loop counter, so that we don't have to keep track ourselves.
-	*/
+	 * loop counter, so that we don't have to keep track ourselves.
+	 */
 	const unsigned int nCols = cinfo.output_width;
 	const unsigned int nRows = cinfo.output_height;
 
 	for (unsigned int row = 0; row < nRows; row++)
 	{
 		/* jpeg_read_scanlines expects an array of pointers to scanlines.
-		* Here the array is only one element long, but you could ask for
-		* more than one scanline at a time if that's more convenient.
-		*/
+		 * Here the array is only one element long, but you could ask for
+		 * more than one scanline at a time if that's more convenient.
+		 */
 		jpeg_read_scanlines(&cinfo, buffer, 1);
 
 		/* Copy into the CImage object */
@@ -568,8 +570,8 @@ void CImage::loadFromStreamAsJPEG(CStream& in)
 
 	jpeg_finish_decompress(&cinfo);
 	/* We can ignore the return value since suspension is not possible
-	* with the stdio data source.
-	*/
+	 * with the stdio data source.
+	 */
 
 	/* Step 8: Release JPEG decompression object */
 

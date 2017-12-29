@@ -162,7 +162,7 @@ void COctoMapVoxels::render_dl() const
 		const size_t N = voxels.size();
 		for (size_t j = 0; j < N; j++)
 		{
-			const mrpt::utils::TColor& vx_j_col = voxels[j].color;
+			const mrpt::img::TColor& vx_j_col = voxels[j].color;
 			glColor4ub(vx_j_col.R, vx_j_col.G, vx_j_col.B, vx_j_col.A);
 
 			const mrpt::math::TPoint3D& c = voxels[j].coords;

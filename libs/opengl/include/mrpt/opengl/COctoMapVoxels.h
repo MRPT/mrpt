@@ -100,12 +100,12 @@ class COctoMapVoxels : public CRenderizableDisplayList
 	{
 		mrpt::math::TPoint3D coords;
 		double side_length;
-		mrpt::utils::TColor color;
+		mrpt::img::TColor color;
 
 		TVoxel() {}
 		TVoxel(
 			const mrpt::math::TPoint3D& coords_, const double side_length_,
-			mrpt::utils::TColor color_)
+			mrpt::img::TColor color_)
 			: coords(coords_), side_length(side_length_), color(color_)
 		{
 		}
@@ -146,7 +146,7 @@ class COctoMapVoxels : public CRenderizableDisplayList
 	float m_showVoxelsAsPointsSize;
 	bool m_show_grids;
 	float m_grid_width;
-	mrpt::utils::TColor m_grid_color;
+	mrpt::img::TColor m_grid_color;
 	visualization_mode_t m_visual_mode;
 
    public:
@@ -232,12 +232,12 @@ class COctoMapVoxels : public CRenderizableDisplayList
 	}
 	/** Gets the width of grid lines */
 	inline float getGridLinesWidth() const { return m_grid_width; }
-	inline void setGridLinesColor(const mrpt::utils::TColor& color)
+	inline void setGridLinesColor(const mrpt::img::TColor& color)
 	{
 		m_grid_color = color;
 		CRenderizableDisplayList::notifyChange();
 	}
-	inline const mrpt::utils::TColor& getGridLinesColor() const
+	inline const mrpt::img::TColor& getGridLinesColor() const
 	{
 		return m_grid_color;
 	}

@@ -66,7 +66,7 @@ struct JacData
   */
 template <bool POSES_ARE_INVERSE>
 void frameJac(
-	const mrpt::utils::TCamera& camera_params,
+	const mrpt::img::TCamera& camera_params,
 	const mrpt::poses::CPose3D& cam_pose,
 	const mrpt::math::TPoint3D& landmark_global,
 	mrpt::math::CMatrixFixedNumeric<double, 2, 6>& out_J)
@@ -154,7 +154,7 @@ void frameJac(
 */
 template <bool POSES_ARE_INVERSE>
 void pointJac(
-	const mrpt::utils::TCamera& camera_params,
+	const mrpt::img::TCamera& camera_params,
 	const mrpt::poses::CPose3D& cam_pose,
 	const mrpt::math::TPoint3D& landmark_global,
 	mrpt::math::CMatrixFixedNumeric<double, 2, 3>& out_J)
@@ -196,7 +196,7 @@ template <bool POSES_ARE_INVERSE>
 void ba_compute_Jacobians(
 	const TFramePosesVec& frame_poses,
 	const TLandmarkLocationsVec& landmark_points,
-	const mrpt::utils::TCamera& camera_params,
+	const mrpt::img::TCamera& camera_params,
 	mrpt::aligned_containers<JacData<6, 3, 2>>::vector_t& jac_data_vec,
 	const size_t num_fix_frames, const size_t num_fix_points)
 {

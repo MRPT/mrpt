@@ -17,7 +17,7 @@
 #include <mrpt/opengl/CPointCloudColoured.h>
 
 //#include <mrpt/system/os.h>
-//#include <mrpt/utils/color_maps.h>
+//#include <mrpt/img/color_maps.h>
 #include <mrpt/utils/CStream.h>
 
 using namespace mrpt::maps;

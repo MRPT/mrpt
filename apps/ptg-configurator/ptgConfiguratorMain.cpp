@@ -744,10 +744,10 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	gl_view_TPSpace->insert(gl_TPSpace_clearance_interp);
 
 	m_plot->addTextMessage(
-		0.01, 5, "Workspace", mrpt::utils::TColorf(1, 1, 1, 0.75), "sans", 15,
+		0.01, 5, "Workspace", mrpt::img::TColorf(1, 1, 1, 0.75), "sans", 15,
 		mrpt::opengl::NICE, 1);
 	m_plotTPSpace->addTextMessage(
-		0.01, 5, "TP-Space", mrpt::utils::TColorf(1, 1, 1, 0.75), "sans", 15,
+		0.01, 5, "TP-Space", mrpt::img::TColorf(1, 1, 1, 0.75), "sans", 15,
 		mrpt::opengl::NICE, 2);
 
 	gl_robot_ptg_prediction =
@@ -755,7 +755,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	gl_robot_ptg_prediction->setName("ptg_prediction");
 	gl_robot_ptg_prediction->setLineWidth(1.0);
 	gl_robot_ptg_prediction->setColor_u8(
-		mrpt::utils::TColor(0x00, 0x00, 0xff, 0x90));
+		mrpt::img::TColor(0x00, 0x00, 0xff, 0x90));
 	gl_view_WS->insert(gl_robot_ptg_prediction);
 
 	gl_robot_ptg_prediction_highlight =
@@ -763,7 +763,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	gl_robot_ptg_prediction_highlight->setName("ptg_prediction_highlight");
 	gl_robot_ptg_prediction_highlight->setLineWidth(3.0);
 	gl_robot_ptg_prediction_highlight->setColor_u8(
-		mrpt::utils::TColor(0xff, 0x00, 0x00, 0xff));
+		mrpt::img::TColor(0xff, 0x00, 0x00, 0xff));
 	gl_view_WS->insert(gl_robot_ptg_prediction_highlight);
 
 	gl_WS_obs = mrpt::make_aligned_shared<mrpt::opengl::CPointCloud>();
@@ -801,7 +801,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 			-10.0, -10.0, 0, 10.0, 10.0, 0.0, 1.0, 2.0);
 		gl_axis_WS->setTextScale(0.20f);
 		gl_axis_WS->enableTickMarks(true, true, true);
-		gl_axis_WS->setColor_u8(mrpt::utils::TColor(30, 30, 30, 50));
+		gl_axis_WS->setColor_u8(mrpt::img::TColor(30, 30, 30, 50));
 		gl_axis_WS->setTextLabelOrientation(0, 0, 0, 0);
 		gl_axis_WS->setTextLabelOrientation(1, 0, 0, 0);
 
@@ -812,7 +812,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 			-1.0, -1.0, 0, 1.0, 1.0, 0.0, 0.25, 2.0);
 		gl_axis_TPS->setTextScale(0.04f);
 		gl_axis_TPS->enableTickMarks(true, true, false);
-		gl_axis_TPS->setColor_u8(mrpt::utils::TColor(30, 30, 30, 50));
+		gl_axis_TPS->setColor_u8(mrpt::img::TColor(30, 30, 30, 50));
 		gl_axis_TPS->setTextLabelOrientation(0, 0, 0, 0);
 		gl_axis_TPS->setTextLabelOrientation(1, 0, 0, 0);
 		gl_view_TPSpace->insert(gl_axis_TPS);
@@ -821,7 +821,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	gl_tp_obstacles = mrpt::make_aligned_shared<mrpt::opengl::CSetOfLines>();
 	gl_tp_obstacles->setName("tp_obstacles");
 	gl_tp_obstacles->setLineWidth(2.0f);
-	gl_tp_obstacles->setColor_u8(mrpt::utils::TColor(0x00, 0x00, 0x00, 0xff));
+	gl_tp_obstacles->setColor_u8(mrpt::img::TColor(0x00, 0x00, 0x00, 0xff));
 
 	gl_TPSpace_TP_obstacles->insert(gl_tp_obstacles);
 
