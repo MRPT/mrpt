@@ -9,34 +9,30 @@
 
 #include "serialization-precomp.h"  // Precompiled headers
 
-#include <mrpt/core/common.h>
-MRPT_TODO("end port");
-
-#if 0
+#include <mrpt/core/exceptions.h>
 #include <mrpt/serialization/CSerializable.h>
-#include <mrpt/utils/CMessage.h>
-#include <mrpt/system/os.h>
-#include <mrpt/utils/CMemoryStream.h>
-#include <cstring>
+#include <mrpt/serialization/CMessage.h>
+#include <mrpt/serialization/CArchive.h>
+#include <sstream>
+#include <cstring>  // memcpy()
 
-using namespace mrpt::utils;
+using namespace mrpt::serialization;
 
-/*---------------------------------------------------------------
-					serializeObject
- ---------------------------------------------------------------*/
 void CMessage::serializeObject(const CSerializable* obj)
 {
 	MRPT_START
-	CMemoryStream auxStream;
+	std::stringstream auxStream;
+	auto arch = mrpt::serialization::archiveFrom<std::iostream>(auxStream);
 
 	// Dump the object in the memory stream:
-	auxStream.WriteObject(obj);
+	arch.WriteObject(obj);
 
 	// Copy data to message:
-	content.resize(auxStream.getTotalBytesCount());
+	const auto& data = auxStream.str();
+	content.resize(data.size());
 	memcpy(
 		&content[0],  // Dest
-		auxStream.getRawBufferData(),  // Src
+		&data[0],  // Src
 		content.size());
 
 	MRPT_END
@@ -48,14 +44,15 @@ void CMessage::serializeObject(const CSerializable* obj)
 void CMessage::deserializeIntoExistingObject(CSerializable* obj)
 {
 	MRPT_START
-	CMemoryStream auxStream;
+	std::stringstream auxStream;
+	auto arch = mrpt::serialization::archiveFrom<std::iostream>(auxStream);
 
 	// Copy data into the stream:
-	auxStream.WriteBuffer(&content[0], content.size());
-	auxStream.Seek(0);
+	arch.WriteBuffer(&content[0], content.size());
+	auxStream.seekg(0);
 
 	// Try to parse data into existing object:
-	auxStream.ReadObject(obj);
+	arch.ReadObject(obj);
 
 	MRPT_END
 }
@@ -66,16 +63,17 @@ void CMessage::deserializeIntoExistingObject(CSerializable* obj)
 void CMessage::deserializeIntoNewObject(CSerializable::Ptr& obj)
 {
 	MRPT_START
-	CMemoryStream auxStream;
+	std::stringstream auxStream;
+	auto arch = mrpt::serialization::archiveFrom<std::iostream>(auxStream);
 
 	// Copy data into the stream:
 	if (!content.empty())
 	{
-		auxStream.WriteBuffer(&content[0], content.size());
-		auxStream.Seek(0);
+		arch.WriteBuffer(&content[0], content.size());
+		auxStream.seekg(0);
 
 		// Try to parse data into a new object:
-		obj = auxStream.ReadObject();
+		obj = arch.ReadObject();
 	}
 	else
 		obj.reset();
@@ -123,4 +121,3 @@ void* CMessage::getContentAsPointer() const
 
 	MRPT_END
 }
-#endif

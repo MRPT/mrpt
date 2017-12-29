@@ -19,9 +19,9 @@ namespace mrpt
 namespace comms
 {
 /** A list of FTDI devices and their descriptors.
-  * \sa CInterfaceFTDI::ListAllDevices
-  * \ingroup mrpt_comms_grp
-  */
+ * \sa CInterfaceFTDI::ListAllDevices
+ * \ingroup mrpt_comms_grp
+ */
 struct TFTDIDevice
 {
 	std::string ftdi_manufacturer;
@@ -76,31 +76,31 @@ class CInterfaceFTDI : public mrpt::io::CStream
 {
    public:
 	/** Constructor, which loads driver interface (the DLL under Windows).
-	  */
+	 */
 	CInterfaceFTDI();
 
 	/** Destructor, which closes the connection with the chip and unloads the
 	 * driver interface.
-	  */
+	 */
 	virtual ~CInterfaceFTDI();
 
 	/** This object cannot be copied */
-	CInterfaceFTDI(const CInterfaceFTDI& o);
+	CInterfaceFTDI(const CInterfaceFTDI& o) = delete;
 
 	/** This object cannot be copied */
-	CInterfaceFTDI& operator=(const CInterfaceFTDI& o);
+	CInterfaceFTDI& operator=(const CInterfaceFTDI& o) = delete;
 
 	/** Checks whether the chip has been successfully open.
-	  * \sa OpenBySerialNumber, OpenByDescription
-	  */
+	 * \sa OpenBySerialNumber, OpenByDescription
+	 */
 	bool isOpen();
 
 	/** Open by device serial number
-	  */
+	 */
 	void OpenBySerialNumber(const std::string& serialNumber);
 
 	/** Open by device description
-	  */
+	 */
 	void OpenByDescription(const std::string& description);
 
 	/** Close the USB device */
@@ -122,7 +122,7 @@ class CInterfaceFTDI : public mrpt::io::CStream
 		unsigned long dwReadTimeout_ms, unsigned long dwWriteTimeout_ms);
 
 	/** Generates a list with all FTDI devices connected right now.
-	  */
+	 */
 	void ListAllDevices(TFTDIDeviceList& outList);
 
 	/** Tries to read, raising no exception if not all the bytes are available,
@@ -149,9 +149,9 @@ class CInterfaceFTDI : public mrpt::io::CStream
    protected:
 	/** Introduces a pure virtual method responsible for reading from the
 	 * stream.
-	  *  It integrates a cache buffer to speed-up sequences of many, small
+	 *  It integrates a cache buffer to speed-up sequences of many, small
 	 * readings.
-	  */
+	 */
 	size_t Read(void* Buffer, size_t Count);
 
 	/** Used in Read */
@@ -250,5 +250,5 @@ class CInterfaceFTDI : public mrpt::io::CStream
 
 };  // end of class
 
-}  // end of namespace
-}  // end of namespace
+}  // namespace comms
+}  // namespace mrpt

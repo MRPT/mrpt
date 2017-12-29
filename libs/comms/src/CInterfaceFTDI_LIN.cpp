@@ -8,12 +8,9 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/config.h>
+#include <mrpt/core/exceptions.h>
 
-#include <mrpt/utils/utils_defs.h>
 #include <cstring>
-
-using namespace mrpt;
-using namespace mrpt::utils;
 
 #if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
 
@@ -54,7 +51,7 @@ CInterfaceFTDI::CInterfaceFTDI() : m_readBuffer(4096)
 #else
 	THROW_EXCEPTION(
 		"MRPT has been compiled without FTDI support. Please, reconfigure and "
-		"recompile MRPT.")
+		"recompile MRPT.");
 #endif
 
 #if MRPT_FTDI_VERSION >= 0x120
@@ -85,23 +82,6 @@ CInterfaceFTDI::~CInterfaceFTDI()
 #endif
 }
 
-/** This object cannot be copied */
-CInterfaceFTDI::CInterfaceFTDI(const CInterfaceFTDI&) : m_readBuffer(4096)
-{
-	MRPT_TRY_START
-	THROW_EXCEPTION("This object cannot be copied");
-	MRPT_TRY_END
-}
-CInterfaceFTDI& CInterfaceFTDI::operator=(const CInterfaceFTDI&)
-{
-	MRPT_TRY_START
-	THROW_EXCEPTION("This object cannot be copied");
-	MRPT_TRY_END
-}
-
-/*-------------------------------------------------------------
-					OpenBySerialNumber
--------------------------------------------------------------*/
 void CInterfaceFTDI::OpenBySerialNumber(const std::string& serialNumber)
 {
 #if MRPT_HAS_FTDI
@@ -146,9 +126,9 @@ void CInterfaceFTDI::OpenBySerialNumber(const std::string& serialNumber)
 #else
 		(struct usb_device*)myDev
 #endif
-		);
+	);
 
-	if (ret) THROW_EXCEPTION(string(ftdi_get_error_string(ctx));;
+	if (ret) THROW_EXCEPTION(string(ftdi_get_error_string(ctx)));
 
 	MRPT_TRY_END
 #else
@@ -360,7 +340,7 @@ void CInterfaceFTDI::ftdi_read(
 			*lpdwBytesRead = 0;
 			return;
 		}
-		THROW_EXCEPTION(string(ftdi_get_error_string(ctx));;
+		THROW_EXCEPTION(string(ftdi_get_error_string(ctx)));
 	}
 
 	MRPT_TRY_END
@@ -385,7 +365,7 @@ void CInterfaceFTDI::ftdi_write(
 	if (ret >= 0)
 		*lpdwBytes = ret;
 	else
-		THROW_EXCEPTION(string(ftdi_get_error_string(ctx));;
+		THROW_EXCEPTION(string(ftdi_get_error_string(ctx)));
 
 	MRPT_TRY_END
 #else
