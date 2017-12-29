@@ -6,11 +6,10 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef opengl_COpenGLViewport_H
-#define opengl_COpenGLViewport_H
+#pragma once
 
 #include <mrpt/serialization/CSerializable.h>
-#include <mrpt/utils/safe_pointers.h>
+#include <mrpt/core/safe_pointers.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/opengl/CCamera.h>
 #include <mrpt/opengl/CSetOfObjects.h>
@@ -528,5 +527,3 @@ class mrptEventGLPostRender : public mrpt::utils::mrptEvent
 }  // end namespace
 
 }  // End of namespace
-
-#endif

@@ -31,6 +31,7 @@ define_mrpt_lib(
 	mrpt-serialization
 	mrpt-random
 	mrpt-system
+	mrpt-nanoflann
 	)
 
 IF(BUILD_mrpt-math)
