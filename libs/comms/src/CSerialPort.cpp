@@ -42,6 +42,7 @@
 #endif
 
 #include <thread>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::comms;
@@ -175,14 +176,14 @@ void CSerialPort::open()
 	port_settings.c_cc[VTIME] = 0;
 
 	/*
-		* Flush the input buffer associated with the port.
-		*/
+	 * Flush the input buffer associated with the port.
+	 */
 	if (tcflush(hCOM, TCIFLUSH) < 0)
 		THROW_EXCEPTION_FMT("Cannot flush serial port: %s", strerror(errno));
 
 	/*
-		* Write the new settings to the port.
-		*/
+	 * Write the new settings to the port.
+	 */
 	if (tcsetattr(hCOM, TCSANOW, &port_settings) < 0)
 		THROW_EXCEPTION_FMT(
 			"Cannot set the new config to the serial port: %s",
@@ -545,7 +546,7 @@ void CSerialPort::setConfig(
 	}
 
 	/* Write the new settings to the port.
-		*/
+	 */
 	if (tcsetattr(hCOM, TCSANOW, &port_settings) < 0)
 		THROW_EXCEPTION_FMT("Cannot set the new settings: %s", strerror(errno));
 
@@ -624,7 +625,7 @@ void CSerialPort::setTimeouts(
 	port_settings.c_cc[VTIME] = max(1, ReadTotalTimeoutConstant / 100);
 
 	/* Write the new settings to the port.
-	*/
+	 */
 	if (tcsetattr(hCOM, TCSANOW, &port_settings) < 0)
 		THROW_EXCEPTION_FMT("Cannot set the new settings: %s", strerror(errno));
 #endif
@@ -742,9 +743,9 @@ size_t CSerialPort::Read(void* Buffer, size_t Count)
 }
 
 /** Reads one text line from the serial port in POSIX "canonical mode".
-  *  This method reads from the serial port until one of the characters in \a
+ *  This method reads from the serial port until one of the characters in \a
  * eol are found.
-  */
+ */
 std::string CSerialPort::ReadString(
 	const int total_timeout_ms, bool* out_timeout, const char* eol_chars)
 {

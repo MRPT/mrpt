@@ -6,13 +6,11 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CMessage_H
-#define CMessage_H
+#pragma once
 
-#include <mrpt/utils/core_defs.h>
 #include <cstdint>
-#include <mrpt/serialization/CSerializable.h>
 #include <vector>
+#include <mrpt/serialization/CSerializable.h>
 
 namespace mrpt
 {
@@ -20,14 +18,14 @@ namespace serialization
 {
 /** A class that contain generic messages, that can be sent and received from a
  * "CClientTCPSocket" object.
-  *  A message consists of a "header" (or type), and a "body" (or content).
-  *  Apart from arbitrary data, specific methods are provided for easing the
+ *  A message consists of a "header" (or type), and a "body" (or content).
+ *  Apart from arbitrary data, specific methods are provided for easing the
  * serialization of MRPT's "CSerializable" objects.
-  *  This class is also used for passing data to hardware interfaces (see
+ *  This class is also used for passing data to hardware interfaces (see
  * mrpt::comms::CSerialPort)
-  * \sa CClientTCPSocket
+ * \sa CClientTCPSocket
  * \ingroup mrpt_serialization_grp
-  */
+ */
 class CMessage
 {
    public:
@@ -39,59 +37,59 @@ class CMessage
 	std::vector<uint8_t> content;
 
 	/** A method for serializing a MRPT's object into the content.
-	  *  Any modification to data in "content" after this will corrupt the
+	 *  Any modification to data in "content" after this will corrupt the
 	 * object serialization.
-	  *  Member "type" is unmodified in this method.
-	  */
+	 *  Member "type" is unmodified in this method.
+	 */
 	void serializeObject(const CSerializable* obj);
 
 	/** A method that parse the data in the message into an existing object.
-	  *  Note that the class of the object must be known and must match the one
+	 *  Note that the class of the object must be known and must match the one
 	 * of the serialized object.
-	  * \except std::exception On corrupt data, unknown serialized objects,
+	 * \except std::exception On corrupt data, unknown serialized objects,
 	 * unknown serialized object version, non-matching classes,...
-	  */
+	 */
 	void deserializeIntoExistingObject(CSerializable* obj);
 
 	/** A method that parse the data in the message into a new object of (a
 	 * priori) unknown class.
-	  *  The pointer will contain on return a copy of the reconstructed object.
+	 *  The pointer will contain on return a copy of the reconstructed object.
 	 * Deleting this object when
-	  *   no longer required is the responsability of the user. Note that
+	 *   no longer required is the responsability of the user. Note that
 	 * previous contents of the pointer
-	  *   will be ignored (it should be nullptr).
-	  * \except std::exception On corrupt data, unknown serialized objects,
+	 *   will be ignored (it should be nullptr).
+	 * \except std::exception On corrupt data, unknown serialized objects,
 	 * unknown serialized object version,...
-	  */
+	 */
 	void deserializeIntoNewObject(CSerializable::Ptr& obj);
 
 	/** Sets the contents of the message from a string
-	  * \sa getContentAsString
-	  */
+	 * \sa getContentAsString
+	 */
 	void setContentFromString(const std::string& str);
 
 	/** Gets the contents of the message as a string
-	  * \sa setContentFromString
-	  */
+	 * \sa setContentFromString
+	 */
 	void getContentAsString(std::string& str);
 
 	/** Sets the contents of the message from a "void*" (the pointer itself
 	 * becomes the message) - This is intended for inter-thread comms only.
-	  * \sa getContentAsPointer
-	  */
+	 * \sa getContentAsPointer
+	 */
 	void setContentFromPointer(void* ptr);
 
 	/** Gets the contents of the message as a "void*" (the pointer itself is the
 	 * message) - This is intended for inter-thread comms only.
-	  * \sa setContentFromPointer
-	  */
+	 * \sa setContentFromPointer
+	 */
 	void* getContentAsPointer() const;
 
 	/** Sets the contents of the message from an arbitary structure - This is
 	 * intended for inter-thread comms only, the message will be not
 	 * cross-platform.
-	  * \sa getContentAsStruct
-	  */
+	 * \sa getContentAsStruct
+	 */
 	template <class T>
 	void setContentFromStruct(const T& data)
 	{
@@ -103,8 +101,8 @@ class CMessage
 	/** Gets the contents of the message as an arbitary structure - This is
 	 * intended for inter-thread comms only, the message will be not
 	 * cross-platform.
-	  * \sa setContentFromStruct
-	  */
+	 * \sa setContentFromStruct
+	 */
 	template <class T>
 	void getContentAsStruct(T& data) const
 	{
@@ -116,7 +114,5 @@ class CMessage
 
 };  // End of class
 
-}  // End of namespace
-}  // End of namespace
-
-#endif
+}  // namespace serialization
+}  // namespace mrpt

@@ -1,3 +1,6 @@
+# extra dependencies required by unit tests in this module:
+set_property(GLOBAL PROPERTY mrpt_comms_UNIT_TEST_EXTRA_DEPS mrpt-poses)
+
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":
 #---------------------------------------------
