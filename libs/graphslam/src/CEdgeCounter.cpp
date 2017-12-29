@@ -334,7 +334,7 @@ void CEdgeCounter::updateTextMessages() const
 	{
 		m_win_manager->addTextMessage(
 			5, -m_offset_y_total_edges, title.str(),
-			mrpt::utils::TColorf(1.0, 1.0, 1.0),
+			mrpt::img::TColorf(1.0, 1.0, 1.0),
 			/* unique_index = */ m_text_index_total_edges);
 	}
 
@@ -351,7 +351,7 @@ void CEdgeCounter::updateTextMessages() const
 		std::stringstream title;
 		title << "  " << name << ": " << edges_num << std::endl;
 		m_win_manager->addTextMessage(
-			5, -offset_y, title.str(), mrpt::utils::TColorf(1.0, 1.0, 1.0),
+			5, -offset_y, title.str(), mrpt::img::TColorf(1.0, 1.0, 1.0),
 			/* unique_index = */ text_index);
 	}
 
@@ -363,7 +363,7 @@ void CEdgeCounter::updateTextMessages() const
 			  << "Loop closures: " << m_num_loop_closures << std::endl;
 		m_win_manager->addTextMessage(
 			5, -m_offset_y_loop_closures, title.str(),
-			mrpt::utils::TColorf(1.0, 1.0, 1.0),
+			mrpt::img::TColorf(1.0, 1.0, 1.0),
 			/* unique_index = */ m_text_index_loop_closures);
 	}
 

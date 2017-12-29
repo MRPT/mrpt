@@ -48,7 +48,7 @@ void CGeneralizedCylinder::TQuadrilateral::calculateNormal()
 class FQuadrilateralRenderer
 {
    private:
-	const mrpt::utils::TColor& color;
+	const mrpt::img::TColor& color;
 
    public:
 	void operator()(const CGeneralizedCylinder::TQuadrilateral& t) const
@@ -57,7 +57,7 @@ class FQuadrilateralRenderer
 		for (int i = 0; i < 4; i++)
 			glVertex3d(t.points[i].x, t.points[i].y, t.points[i].z);
 	}
-	FQuadrilateralRenderer(const mrpt::utils::TColor& c) : color(c) {}
+	FQuadrilateralRenderer(const mrpt::img::TColor& c) : color(c) {}
 	~FQuadrilateralRenderer() {}
 };
 #endif

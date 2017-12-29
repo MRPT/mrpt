@@ -356,7 +356,7 @@ void CPointCloud::setPoint(
 					setGradientColors
 ---------------------------------------------------------------*/
 void CPointCloud::setGradientColors(
-	const mrpt::utils::TColorf& colorMin, const mrpt::utils::TColorf& colorMax)
+	const mrpt::img::TColorf& colorMin, const mrpt::img::TColorf& colorMax)
 {
 	m_colorFromDepth_min = colorMin;
 	m_colorFromDepth_max = colorMax;
@@ -383,7 +383,7 @@ void CPointCloud::PLY_import_set_vertex_count(const size_t N)
   */
 void CPointCloud::PLY_import_set_vertex(
 	const size_t idx, const mrpt::math::TPoint3Df& pt,
-	const mrpt::utils::TColorf* pt_color)
+	const mrpt::img::TColorf* pt_color)
 {
 	MRPT_UNUSED_PARAM(pt_color);
 	this->setPoint(idx, pt.x, pt.y, pt.z);
@@ -398,7 +398,7 @@ size_t CPointCloud::PLY_export_get_vertex_count() const { return this->size(); }
   */
 void CPointCloud::PLY_export_get_vertex(
 	const size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
-	mrpt::utils::TColorf& pt_color) const
+	mrpt::img::TColorf& pt_color) const
 {
 	MRPT_UNUSED_PARAM(pt_color);
 	pt_has_color = false;

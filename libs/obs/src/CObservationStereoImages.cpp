@@ -217,7 +217,7 @@ mxArray* CObservationStereoImages::writeToMatlab() const
 /** Populates a TStereoCamera structure with the parameters in \a leftCamera, \a
  * rightCamera and \a rightCameraPose */
 void CObservationStereoImages::getStereoCameraParams(
-	mrpt::utils::TStereoCamera& out_params) const
+	mrpt::img::TStereoCamera& out_params) const
 {
 	out_params.leftCamera = this->leftCamera;
 	out_params.rightCamera = this->rightCamera;
@@ -227,7 +227,7 @@ void CObservationStereoImages::getStereoCameraParams(
 /** Sets \a leftCamera, \a rightCamera and \a rightCameraPose from a
  * TStereoCamera structure */
 void CObservationStereoImages::setStereoCameraParams(
-	const mrpt::utils::TStereoCamera& in_params)
+	const mrpt::img::TStereoCamera& in_params)
 {
 	this->leftCamera = in_params.leftCamera;
 	this->rightCamera = in_params.rightCamera;
@@ -275,7 +275,7 @@ void CObservationStereoImages::getDescriptionAsText(std::ostream& o) const
 	  << "Camera pose (YPR): " << CPose3D(cameraPose) << endl
 	  << endl;
 
-	mrpt::utils::TStereoCamera stParams;
+	mrpt::img::TStereoCamera stParams;
 	getStereoCameraParams(stParams);
 	o << stParams.dumpAsText() << endl;
 

@@ -12,7 +12,7 @@
 #include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/utils/color_maps.h>
+#include <mrpt/img/color_maps.h>
 #include <mrpt/system/os.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/utils/CStream.h>
@@ -507,7 +507,7 @@ void CColouredPointsMap::getPointColor(
 // "mrpt::vision::pinhole::projectPoint_with_distortion", to avoid
 //  a dependency on mrpt-vision.
 void aux_projectPoint_with_distortion(
-	const mrpt::math::TPoint3D& P, const mrpt::utils::TCamera& params,
+	const mrpt::math::TPoint3D& P, const mrpt::img::TCamera& params,
 	mrpt::utils::TPixelCoordf& pixel, bool accept_points_behind)
 {
 	MRPT_UNUSED_PARAM(accept_points_behind);
@@ -665,7 +665,7 @@ void CColouredPointsMap::PLY_import_set_vertex_count(const size_t N)
   */
 void CColouredPointsMap::PLY_import_set_vertex(
 	const size_t idx, const mrpt::math::TPoint3Df& pt,
-	const mrpt::utils::TColorf* pt_color)
+	const mrpt::img::TColorf* pt_color)
 {
 	if (pt_color)
 		this->setPoint(
@@ -681,7 +681,7 @@ void CColouredPointsMap::PLY_import_set_vertex(
   */
 void CColouredPointsMap::PLY_export_get_vertex(
 	const size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
-	mrpt::utils::TColorf& pt_color) const
+	mrpt::img::TColorf& pt_color) const
 {
 	pt_has_color = true;
 

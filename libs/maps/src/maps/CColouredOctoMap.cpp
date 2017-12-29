@@ -378,7 +378,7 @@ void CColouredOctoMap::getAsOctoMapVoxels(
 			if ((occ >= 0.5 && renderingOptions.generateOccupiedVoxels) ||
 				(occ < 0.5 && renderingOptions.generateFreeVoxels))
 			{
-				mrpt::utils::TColor vx_color;
+				mrpt::img::TColor vx_color;
 				octomap::ColorOcTreeNode::Color node_color = it->getColor();
 				vx_color = TColor(node_color.r, node_color.g, node_color.b);
 

@@ -66,12 +66,12 @@ void CStereoRectifyMap::enableBothCentersCoincide(bool enable)
   * Must be called before invoking \a undistort().
   */
 void CStereoRectifyMap::setFromCamParams(
-	const mrpt::utils::TStereoCamera& params)
+	const mrpt::img::TStereoCamera& params)
 {
 	MRPT_START
 #if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x200
-	const mrpt::utils::TCamera& cam1 = params.leftCamera;
-	const mrpt::utils::TCamera& cam2 = params.rightCamera;
+	const mrpt::img::TCamera& cam1 = params.leftCamera;
+	const mrpt::img::TCamera& cam2 = params.rightCamera;
 
 	ASSERT_(cam1.ncols == cam2.ncols && cam1.nrows == cam2.nrows)
 
@@ -456,7 +456,7 @@ void CStereoRectifyMap::rectify_IPL(
 	MRPT_END
 }
 
-const mrpt::utils::TStereoCamera& CStereoRectifyMap::getRectifiedImageParams()
+const mrpt::img::TStereoCamera& CStereoRectifyMap::getRectifiedImageParams()
 	const
 {
 	if (!isSet())
@@ -464,7 +464,7 @@ const mrpt::utils::TStereoCamera& CStereoRectifyMap::getRectifiedImageParams()
 	return m_rectified_image_params;
 }
 
-const mrpt::utils::TCamera& CStereoRectifyMap::getRectifiedLeftImageParams()
+const mrpt::img::TCamera& CStereoRectifyMap::getRectifiedLeftImageParams()
 	const
 {
 	if (!isSet())
@@ -472,7 +472,7 @@ const mrpt::utils::TCamera& CStereoRectifyMap::getRectifiedLeftImageParams()
 	return m_rectified_image_params.leftCamera;
 }
 
-const mrpt::utils::TCamera& CStereoRectifyMap::getRectifiedRightImageParams()
+const mrpt::img::TCamera& CStereoRectifyMap::getRectifiedRightImageParams()
 	const
 {
 	if (!isSet())

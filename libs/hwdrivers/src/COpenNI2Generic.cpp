@@ -529,7 +529,7 @@ void COpenNI2Generic::getNextFrameRGBD(
 }
 
 bool COpenNI2Generic::getColorSensorParam(
-	mrpt::utils::TCamera& param, unsigned sensor_id) const
+	mrpt::img::TCamera& param, unsigned sensor_id) const
 {
 #if MRPT_HAS_OPENNI2
 	if (isOpen(sensor_id) == false)
@@ -545,7 +545,7 @@ bool COpenNI2Generic::getColorSensorParam(
 }
 
 bool COpenNI2Generic::getDepthSensorParam(
-	mrpt::utils::TCamera& param, unsigned sensor_id) const
+	mrpt::img::TCamera& param, unsigned sensor_id) const
 {
 #if MRPT_HAS_OPENNI2
 	if (isOpen(sensor_id) == false)

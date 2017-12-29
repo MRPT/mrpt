@@ -13,7 +13,7 @@
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/system/CTicTac.h>
-#include <mrpt/utils/color_maps.h>
+#include <mrpt/img/color_maps.h>
 #include <mrpt/core/round.h>  // round()
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/utils/CFileGZInputStream.h>

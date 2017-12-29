@@ -15,7 +15,7 @@
 #include <mrpt/containers/CDynamicGrid.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/color_maps.h>
+#include <mrpt/img/color_maps.h>
 #include <mrpt/utils/TEnumType.h>
 #include <mrpt/poses/poses_frwds.h>
 #include <mrpt/obs/obs_frwds.h>
@@ -112,7 +112,7 @@ class CHeightGridMap2D : public mrpt::maps::CMetricMap,
 		 * the robot for this filter. */
 		float z_min, z_max;
 
-		mrpt::utils::TColormap colorMap;
+		mrpt::img::TColormap colorMap;
 	} insertionOptions;
 
 	/** See docs in base class: in this class it always returns 0 */

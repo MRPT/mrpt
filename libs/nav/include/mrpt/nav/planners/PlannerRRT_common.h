@@ -173,19 +173,19 @@ class PlannerTPS_VirtualBase
 		double ground_xy_grid_frequency;
 
 		/** Robot color  */
-		mrpt::utils::TColor color_vehicle;
+		mrpt::img::TColor color_vehicle;
 		/** obstacles color  */
-		mrpt::utils::TColor color_obstacles;
+		mrpt::img::TColor color_obstacles;
 		/** local obstacles color  */
-		mrpt::utils::TColor color_local_obstacles;
+		mrpt::img::TColor color_local_obstacles;
 		/** START indication color  */
-		mrpt::utils::TColor color_start;
+		mrpt::img::TColor color_start;
 		/** END indication color  */
-		mrpt::utils::TColor color_goal;
-		mrpt::utils::TColor color_ground_xy_grid;
-		mrpt::utils::TColor color_normal_edge;
-		mrpt::utils::TColor color_last_edge;
-		mrpt::utils::TColor color_optimal_edge;
+		mrpt::img::TColor color_goal;
+		mrpt::img::TColor color_ground_xy_grid;
+		mrpt::img::TColor color_normal_edge;
+		mrpt::img::TColor color_last_edge;
+		mrpt::img::TColor color_optimal_edge;
 		float width_last_edge;
 		float width_normal_edge;
 		float width_optimal_edge;

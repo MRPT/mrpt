@@ -11,7 +11,7 @@
 #define opengl_CMesh3D_H
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
-#include <mrpt/utils/color_maps.h>
+#include <mrpt/img/color_maps.h>
 #include <Eigen/Dense>
 
 using Eigen::Array;
@@ -75,7 +75,7 @@ class CMesh3D : public CRenderizableDisplayList
 	float face_color[4];
 	/** Color of the vertices (when shown) */
 	float vert_color[4];
-	mrpt::utils::TColormap m_colorMap;  // Not used yet. I leave it here in case
+	mrpt::img::TColormap m_colorMap;  // Not used yet. I leave it here in case
 	// I want to use it in the future
 
    public:

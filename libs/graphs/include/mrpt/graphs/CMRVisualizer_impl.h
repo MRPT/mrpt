@@ -9,7 +9,7 @@
 #ifndef CMRVISUALIZER_IMPL_H
 #define CMRVISUALIZER_IMPL_H
 
-#include <mrpt/utils/TColorManager.h>
+#include <mrpt/img/TColorManager.h>
 
 namespace mrpt
 {

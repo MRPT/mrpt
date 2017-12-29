@@ -9,7 +9,7 @@
 #ifndef mrpt_CUndistortMap_H
 #define mrpt_CUndistortMap_H
 
-#include <mrpt/utils/TCamera.h>
+#include <mrpt/img/TCamera.h>
 #include <mrpt/img/CImage.h>
 
 namespace mrpt
@@ -28,7 +28,7 @@ namespace vision
   * Example of usage:
   * \code
   *   CUndistortMap   unmap;
-  *   mrpt::utils::TCamera  cam_params;
+  *   mrpt::img::TCamera  cam_params;
   *
   *   unmap.setFromCamParams( cam_params );
   *
@@ -41,7 +41,7 @@ namespace vision
   *
   * \endcode
   *
-  * \sa CStereoRectifyMap, mrpt::utils::TCamera, the application <a
+  * \sa CStereoRectifyMap, mrpt::img::TCamera, the application <a
  * href="http://www.mrpt.org/Application:camera-calib" >camera-calib</a> for
  * calibrating a camera.
   * \ingroup mrpt_vision_grp
@@ -55,7 +55,7 @@ class CUndistortMap
 	/** Prepares the mapping from the distortion parameters of a camera.
 	  * Must be called before invoking \a undistort().
 	  */
-	void setFromCamParams(const mrpt::utils::TCamera& params);
+	void setFromCamParams(const mrpt::img::TCamera& params);
 
 	/** Undistort the input image and saves the result in the output one - \a
 	 * setFromCamParams() must have been set prior to calling this.
@@ -70,7 +70,7 @@ class CUndistortMap
 
 	/** Returns the camera parameters which were used to generate the distortion
 	 * map, as passed by the user to \a setFromCamParams */
-	inline const mrpt::utils::TCamera& getCameraParams() const
+	inline const mrpt::img::TCamera& getCameraParams() const
 	{
 		return m_camera_params;
 	}
@@ -86,7 +86,7 @@ class CUndistortMap
 	std::vector<uint16_t> m_dat_mapy;
 
 	/** A copy of the data provided by the user */
-	mrpt::utils::TCamera m_camera_params;
+	mrpt::img::TCamera m_camera_params;
 
 };  // end class
 }  // end namespace

@@ -18,21 +18,14 @@ namespace utils
 {
 /** \addtogroup mrpt_exceptions Exception base classes (in #include
  * <mrpt/utils/exceptions.h>)
-  *  \ingroup mrpt_base_grp
-  * @{ */
+ *  \ingroup mrpt_base_grp
+ * @{ */
 
 /** The base for MRPT-especific exceptions \ingroup mrpt_base_grp */
 class CMRPTException : public std::logic_error
 {
    public:
 	CMRPTException(const std::string& s) : std::logic_error(s.c_str()) {}
-};
-
-/** Used in mrpt::img::CImage */
-class CExceptionExternalImageNotFound : public mrpt::utils::CMRPTException
-{
-   public:
-	CExceptionExternalImageNotFound(const std::string& s) : CMRPTException(s) {}
 };
 
 /** Used in mrpt::utils::CStream */
@@ -43,6 +36,6 @@ class CExceptionEOF : public mrpt::utils::CMRPTException
 };
 
 /** @} */
-}  // End of namespace
-}  // End of namespace
+}  // namespace utils
+}  // namespace mrpt
 #endif

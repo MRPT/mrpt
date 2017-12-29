@@ -254,11 +254,11 @@ void display_graph(const GRAPHTYPE& g)
 						0.50f, 0.50f,  // width, height (in screen "ratios")
 						MSG_HELP_WINDOW,
 						0.02f,  // text size
-						mrpt::utils::TColor(
+						mrpt::img::TColor(
 							190, 190, 190, 200 * transparency),  // background
-						mrpt::utils::TColor(
+						mrpt::img::TColor(
 							0, 0, 0, 200 * transparency),  // border
-						mrpt::utils::TColor(
+						mrpt::img::TColor(
 							200, 0, 0, 150 * transparency),  // text
 						5.0f,  // border width
 						"serif",  // text font

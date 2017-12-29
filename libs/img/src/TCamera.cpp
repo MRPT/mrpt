@@ -9,45 +9,38 @@
 
 #include "img-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/TCamera.h>
-#include <mrpt/utils/CConfigFileMemory.h>
+#include <mrpt/img/TCamera.h>
+#include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/math/matrix_serialization.h>  // For "<<" ">>" operators.
 #include <mrpt/math/utils_matlab.h>
 
-using namespace mrpt::utils;
+using namespace mrpt::img;
 using namespace mrpt::math;
 using namespace std;
 
 /* Implements serialization for the TCamera struct as it will be included within
  * CObservations objects */
-IMPLEMENTS_SERIALIZABLE(TCamera, CSerializable, mrpt::utils)
+IMPLEMENTS_SERIALIZABLE(TCamera, CSerializable, mrpt::img)
 
 /** Dumps all the parameters as a multi-line string, with the same format than
  * \a saveToConfigFile.  \sa saveToConfigFile */
 std::string TCamera::dumpAsText() const
 {
-	mrpt::utils::CConfigFileMemory cfg;
+	mrpt::config::CConfigFileMemory cfg;
 	saveToConfigFile("", cfg);
 	return cfg.getContent();
 }
 
-// WriteToStream
-void TCamera::writeToStream(CStream& out, int* version) const
+uint8_t TCamera::serializeGetVersion() const { return 2; }
+void TCamera::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 2;
-	else
-	{
-		out << focalLengthMeters;
-		for (unsigned int k = 0; k < 5; k++) out << dist[k];
-		out << intrinsicParams;
-		// version 0 did serialize here a "CMatrixDouble15"
-		out << nrows << ncols;  // New in v2
-	}  // end else
+	out << focalLengthMeters;
+	for (unsigned int k = 0; k < 5; k++) out << dist[k];
+	out << intrinsicParams;
+	// version 0 did serialize here a "CMatrixDouble15"
+	out << nrows << ncols;  // New in v2
 }
-
-// ReadFromStream
-void TCamera::readFromStream(CStream& in, int version)
+void TCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -86,7 +79,7 @@ void TCamera::readFromStream(CStream& in, int version)
  ---------------------------------------------------------------*/
 #if MRPT_HAS_MATLAB
 // Add to implement mexplus::from template specialization
-IMPLEMENTS_MEXPLUS_FROM(mrpt::utils::TCamera)
+IMPLEMENTS_MEXPLUS_FROM(mrpt::img::TCamera)
 
 mxArray* TCamera::writeToMatlab() const
 {
@@ -103,17 +96,17 @@ mxArray* TCamera::writeToMatlab() const
 #endif
 
 /**  Save as a config block:
-  *  \code
-  *  [SECTION]
-  *  resolution = NCOLS NROWS
-  *  cx         = CX
-  *  cy         = CY
-  *  fx         = FX
-  *  fy         = FY
-  *  dist       = K1 K2 T1 T2 T3
-  *  focal_length = FOCAL_LENGTH
-  *  \endcode
-  */
+ *  \code
+ *  [SECTION]
+ *  resolution = NCOLS NROWS
+ *  cx         = CX
+ *  cy         = CY
+ *  fx         = FX
+ *  fy         = FY
+ *  dist       = K1 K2 T1 T2 T3
+ *  focal_length = FOCAL_LENGTH
+ *  \endcode
+ */
 void TCamera::saveToConfigFile(
 	const std::string& section, mrpt::config::CConfigFileBase& cfg) const
 {
@@ -134,7 +127,7 @@ void TCamera::saveToConfigFile(
 
 /**  Load all the params from a config source, in the format described in
  * saveToConfigFile()
-  */
+ */
 void TCamera::loadFromConfigFile(
 	const std::string& section, const mrpt::config::CConfigFileBase& cfg)
 {
@@ -163,7 +156,7 @@ void TCamera::loadFromConfigFile(
 	if (dists.size() != 4 && dists.size() != 5)
 		THROW_EXCEPTION("Expected 4 or 5-length vector in field 'dist'");
 
-	dist.Constant(0);
+	dist.fill(0);
 	for (CVectorDouble::Index i = 0; i < dists.size(); i++) dist[i] = dists[i];
 
 	focalLengthMeters =
@@ -172,12 +165,12 @@ void TCamera::loadFromConfigFile(
 
 /** Rescale all the parameters for a new camera resolution (it raises an
  * exception if the aspect ratio is modified, which is not permitted).
-  */
+ */
 void TCamera::scaleToResolution(unsigned int new_ncols, unsigned int new_nrows)
 {
 	if (ncols == new_ncols && nrows == new_nrows) return;  // already done
 
-	ASSERT_(new_nrows > 0 && new_ncols > 0)
+	ASSERT_(new_nrows > 0 && new_ncols > 0);
 
 	const double prev_aspect_ratio = ncols / double(nrows);
 	const double new_aspect_ratio = new_ncols / double(new_nrows);
@@ -185,7 +178,7 @@ void TCamera::scaleToResolution(unsigned int new_ncols, unsigned int new_nrows)
 	ASSERTMSG_(
 		std::abs(prev_aspect_ratio - new_aspect_ratio) < 1e-3,
 		"TCamera: Trying to scale camera parameters for a resolution of "
-		"different aspect ratio.")
+		"different aspect ratio.");
 
 	const double K = new_ncols / double(ncols);
 
@@ -201,15 +194,15 @@ void TCamera::scaleToResolution(unsigned int new_ncols, unsigned int new_nrows)
 	// distortion params: unmodified.
 }
 
-bool mrpt::utils::operator==(
-	const mrpt::utils::TCamera& a, const mrpt::utils::TCamera& b)
+bool mrpt::img::operator==(
+	const mrpt::img::TCamera& a, const mrpt::img::TCamera& b)
 {
 	return a.ncols == b.ncols && a.nrows == b.nrows &&
 		   a.intrinsicParams == b.intrinsicParams && a.dist == b.dist &&
 		   a.focalLengthMeters == b.focalLengthMeters;
 }
-bool mrpt::utils::operator!=(
-	const mrpt::utils::TCamera& a, const mrpt::utils::TCamera& b)
+bool mrpt::img::operator!=(
+	const mrpt::img::TCamera& a, const mrpt::img::TCamera& b)
 {
 	return !(a == b);
 }

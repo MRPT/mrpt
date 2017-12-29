@@ -561,7 +561,7 @@ void do_pf_localization(
 											mrpt::system::dateTimeLocalToString(
 												cur_obs_timestamp)
 												.c_str()),
-								mrpt::utils::TColorf(.8f, .8f, .8f), "mono", 15,
+								mrpt::img::TColorf(.8f, .8f, .8f), "mono", 15,
 								mrpt::opengl::NICE, 6001);
 
 							win3D->addTextMessage(
@@ -569,14 +569,14 @@ void do_pf_localization(
 								mrpt::format(
 									"#particles= %7u",
 									static_cast<unsigned int>(pdf.size())),
-								mrpt::utils::TColorf(.8f, .8f, .8f), "mono", 15,
+								mrpt::img::TColorf(.8f, .8f, .8f), "mono", 15,
 								mrpt::opengl::NICE, 6002);
 
 							win3D->addTextMessage(
 								10, 55, mrpt::format(
 											"mean pose (x y phi_deg)= %s",
 											meanPose.asString().c_str()),
-								mrpt::utils::TColorf(.8f, .8f, .8f), "mono", 15,
+								mrpt::img::TColorf(.8f, .8f, .8f), "mono", 15,
 								mrpt::opengl::NICE, 6003);
 
 							{

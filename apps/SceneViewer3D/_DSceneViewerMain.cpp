@@ -1941,7 +1941,7 @@ void _DSceneViewerFrame::OnMenuItemHighResRender(wxCommandEvent& event)
 			CImage frame(width, height, 3, false);
 
 			render.setBackgroundColor(
-				mrpt::utils::TColorf(
+				mrpt::img::TColorf(
 					m_canvas->getClearColorR(), m_canvas->getClearColorG(),
 					m_canvas->getClearColorB(), 1.0));
 

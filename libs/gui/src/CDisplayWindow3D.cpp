@@ -402,7 +402,7 @@ void C3DWindowDialog::clearTextMessages()
 
 void C3DWindowDialog::addTextMessage(
 	const double x_frac, const double y_frac, const std::string& text,
-	const mrpt::utils::TColorf& color, const size_t unique_index,
+	const mrpt::img::TColorf& color, const size_t unique_index,
 	const mrpt::opengl::TOpenGLFont font)
 {
 #if MRPT_HAS_OPENGL_GLUT
@@ -413,11 +413,11 @@ void C3DWindowDialog::addTextMessage(
 
 void C3DWindowDialog::addTextMessage(
 	const double x_frac, const double y_frac, const std::string& text,
-	const mrpt::utils::TColorf& color, const std::string& font_name,
+	const mrpt::img::TColorf& color, const std::string& font_name,
 	const double font_size, const mrpt::opengl::TOpenGLFontStyle font_style,
 	const size_t unique_index, const double font_spacing,
 	const double font_kerning, const bool has_shadow,
-	const mrpt::utils::TColorf& shadow_color)
+	const mrpt::img::TColorf& shadow_color)
 {
 #if MRPT_HAS_OPENGL_GLUT
 	m_canvas->m_text_msgs.addTextMessage(
@@ -899,7 +899,7 @@ CImage::Ptr CDisplayWindow3D::getLastWindowImagePtr() const
  ---------------------------------------------------------------*/
 void CDisplayWindow3D::addTextMessage(
 	const double x_frac, const double y_frac, const std::string& text,
-	const mrpt::utils::TColorf& color, const size_t unique_index,
+	const mrpt::img::TColorf& color, const size_t unique_index,
 	const TOpenGLFont font)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
@@ -941,11 +941,11 @@ void CDisplayWindow3D::addTextMessage(
  ---------------------------------------------------------------*/
 void CDisplayWindow3D::addTextMessage(
 	const double x_frac, const double y_frac, const std::string& text,
-	const mrpt::utils::TColorf& color, const std::string& font_name,
+	const mrpt::img::TColorf& color, const std::string& font_name,
 	const double font_size, const mrpt::opengl::TOpenGLFontStyle font_style,
 	const size_t unique_index, const double font_spacing,
 	const double font_kerning, const bool draw_shadow,
-	const mrpt::utils::TColorf& shadow_color)
+	const mrpt::img::TColorf& shadow_color)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	C3DWindowDialog* win = (C3DWindowDialog*)m_hwnd.get();

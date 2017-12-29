@@ -252,9 +252,9 @@ void CRenderizable::readFromStreamRender(mrpt::utils::CStream& in)
 		float f;
 		float yaw_deg, pitch_deg, roll_deg;
 
-		mrpt::utils::TColorf col;
+		mrpt::img::TColorf col;
 		in >> col.R >> col.G >> col.B >> col.A;
-		m_color = mrpt::utils::TColor(
+		m_color = mrpt::img::TColor(
 			col.R / 255, col.G / 255, col.B / 255,
 			col.A / 255);  // For some stupid reason, colors were saved
 		// multiplied by 255... (facepalm)
@@ -366,7 +366,7 @@ CRenderizable::Ptr& mrpt::opengl::operator<<(
 	return r;
 }
 
-CRenderizable& CRenderizable::setColor_u8(const mrpt::utils::TColor& c)
+CRenderizable& CRenderizable::setColor_u8(const mrpt::img::TColor& c)
 {
 	m_color.R = c.R;
 	m_color.G = c.G;

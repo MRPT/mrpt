@@ -75,7 +75,7 @@ struct TCaptureOptions_DUO3D
 
 	/** @name Others
 	  * @{ */
-	mrpt::utils::TStereoCamera m_stereo_camera;
+	mrpt::img::TStereoCamera m_stereo_camera;
 	/** @} */
 
 	// clang-format off

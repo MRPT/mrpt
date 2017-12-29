@@ -11,7 +11,7 @@
 
 #include <mrpt/hwdrivers/CKinect.h>
 #include <mrpt/system/CTimeLogger.h>
-#include <mrpt/utils/TStereoCamera.h>
+#include <mrpt/img/TStereoCamera.h>
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>
@@ -213,7 +213,7 @@ void CKinect::loadConfig_sensorSpecific(
 	const mrpt::poses::CPose3D twist(
 		0, 0, 0, DEG2RAD(-90), DEG2RAD(0), DEG2RAD(-90));
 
-	mrpt::utils::TStereoCamera sc;
+	mrpt::img::TStereoCamera sc;
 	sc.leftCamera = m_cameraParamsDepth;  // Load default values so that if we
 	// fail to load from cfg at least we
 	// have some reasonable numbers.

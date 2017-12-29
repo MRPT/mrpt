@@ -6,12 +6,9 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-
-#ifndef TCOLORMANAGER_H
-#define TCOLORMANAGER_H
+#pragma once
 
 #include <mrpt/img/TColor.h>
-#include <mrpt/utils/mrpt_macros.h>
 #include <utility>
 #include <set>
 #include <cstdlib>
@@ -36,14 +33,14 @@ struct TColorManager
 	 *
 	 * Method automatically advances the current counters for RGB.
 	 */
-	mrpt::utils::TColorf getNextTColorf();
+	mrpt::img::TColorf getNextTColorf();
 	/**\brief Get the next RGB triad in TColor form.
 	 *
 	 * Method automatically advances the current counters for RGB.
 	 */
-	mrpt::utils::TColor getNextTColor();
-	mrpt::utils::TColor curr_color;
-	std::set<mrpt::utils::TColor> used_colors;
+	mrpt::img::TColor getNextTColor();
+	mrpt::img::TColor curr_color;
+	std::set<mrpt::img::TColor> used_colors;
 	/** Indicates if the standard colors are to be returned first.
 	 */
 	bool use_standard_colors_first;
@@ -70,7 +67,7 @@ struct TColorManager
 
    private:
 	// color triad with which to advance the current TColor instance
-	mrpt::utils::TColor color_step_triad;
+	mrpt::img::TColor color_step_triad;
 
 	/**\brief Reset all class properties to their default values
 	 *
@@ -79,9 +76,7 @@ struct TColorManager
 	void reset();
 	void advanceRGBCounters();
 	/**\brief Mark the given color as used. */
-	void markColorAsUsed(mrpt::utils::TColor color);
+	void markColorAsUsed(mrpt::img::TColor color);
 };
-}
-}  // end of namespaces
-
-#endif /* end of include guard: TCOLORMANAGER_H */
+}  // namespace img
+}  // namespace mrpt

@@ -144,7 +144,7 @@ void mrpt::vision::pinhole::undistort_points(
 void mrpt::vision::pinhole::undistort_points(
 	const std::vector<mrpt::utils::TPixelCoordf>& in_dist_pixels,
 	std::vector<mrpt::utils::TPixelCoordf>& out_pixels,
-	const mrpt::utils::TCamera& cameraModel)
+	const mrpt::img::TCamera& cameraModel)
 {
 	MRPT_START
 
@@ -202,7 +202,7 @@ void mrpt::vision::pinhole::undistort_points(
   */
 void mrpt::vision::pinhole::undistort_point(
 	const TPixelCoordf& inPt, TPixelCoordf& outPt,
-	const mrpt::utils::TCamera& cameraModel)
+	const mrpt::img::TCamera& cameraModel)
 {
 	MRPT_START
 
@@ -249,7 +249,7 @@ void mrpt::vision::pinhole::undistort_point(
 
 void mrpt::vision::pinhole::projectPoints_with_distortion(
 	const std::vector<mrpt::math::TPoint3D>& P,
-	const mrpt::utils::TCamera& params,
+	const mrpt::img::TCamera& params,
 	const mrpt::poses::CPose3DQuat& cameraPose,
 	std::vector<mrpt::utils::TPixelCoordf>& pixels, bool accept_points_behind)
 {
@@ -301,7 +301,7 @@ void mrpt::vision::pinhole::projectPoints_with_distortion(
 				projectPoint_with_distortion
    ------------------------------------------------------- */
 void mrpt::vision::pinhole::projectPoint_with_distortion(
-	const mrpt::math::TPoint3D& P, const mrpt::utils::TCamera& params,
+	const mrpt::math::TPoint3D& P, const mrpt::img::TCamera& params,
 	mrpt::utils::TPixelCoordf& pixel, bool accept_points_behind)
 {
 	MRPT_UNUSED_PARAM(accept_points_behind);

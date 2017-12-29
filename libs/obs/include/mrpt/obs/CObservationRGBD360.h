@@ -123,7 +123,7 @@ class CObservationRGBD360 : public CObservation
 	 * same size than "rangeImage" */
 	mrpt::img::CImage intensityImages[NUM_SENSORS];
 	/** Projection parameters of the 8 RGBD sensor. */
-	mrpt::utils::TCamera sensorParamss[NUM_SENSORS];
+	mrpt::img::TCamera sensorParamss[NUM_SENSORS];
 
 	/** The maximum range allowed by the device, in meters (e.g. 8.0m, 5.0m,...)
 	 */

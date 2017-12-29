@@ -240,7 +240,7 @@ void project3DPointsFromDepthImageInto(
 		Eigen::Matrix<float, 4, 1> pt_wrt_color, pt_wrt_depth;
 		pt_wrt_depth[3] = 1;
 
-		mrpt::utils::TColor pCol;
+		mrpt::img::TColor pCol;
 
 		// For each local point:
 		const size_t nPts = pca.size();

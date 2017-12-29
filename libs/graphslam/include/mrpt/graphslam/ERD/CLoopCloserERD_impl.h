@@ -1862,7 +1862,7 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitionsVisualization()
 		title << "# Partitions: " << m_curr_partitions.size();
 		this->m_win_manager->addTextMessage(
 			5, -m_lc_params.offset_y_map_partitions, title.str(),
-			mrpt::utils::TColorf(m_lc_params.balloon_std_color),
+			mrpt::img::TColorf(m_lc_params.balloon_std_color),
 			/* unique_index = */ m_lc_params.text_index_map_partitions);
 	}
 
@@ -2301,7 +2301,7 @@ void CLoopCloserERD<GRAPH_T>::initCurrCovarianceVisualization()
 	std::string title("Position uncertainty");
 	this->m_win_manager->addTextMessage(
 		5, -m_offset_y_curr_node_covariance, title,
-		mrpt::utils::TColorf(m_curr_node_covariance_color),
+		mrpt::img::TColorf(m_curr_node_covariance_color),
 		/* unique_index = */ m_text_index_curr_node_covariance);
 
 	// covariance ellipsis

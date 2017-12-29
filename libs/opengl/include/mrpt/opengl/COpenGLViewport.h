@@ -217,13 +217,13 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	  */
 	inline void setTransparent(bool trans) { m_isTransparent = trans; }
 	/** Set a background color different from that of the parent GUI window */
-	inline void setCustomBackgroundColor(const mrpt::utils::TColorf& color)
+	inline void setCustomBackgroundColor(const mrpt::img::TColorf& color)
 	{
 		m_custom_backgb_color = true;
 		m_background_color = color;
 	}
 
-	inline mrpt::utils::TColorf getCustomBackgroundColor() const
+	inline mrpt::img::TColorf getCustomBackgroundColor() const
 	{
 		return m_background_color;
 	}
@@ -383,7 +383,7 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	double m_clip_min, m_clip_max;
 	bool m_custom_backgb_color;
 	/** used only if m_custom_backgb_color */
-	mrpt::utils::TColorf m_background_color;
+	mrpt::img::TColorf m_background_color;
 	/** Set by setImageView */
 	bool m_isImageView;
 	// CRenderizable::Ptr m_imageview_quad ; //!< A mrpt::opengl::CTexturedPlane

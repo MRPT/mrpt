@@ -125,7 +125,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 		const mrpt::poses::CPose3D& takenFrom) override;
 
 	/** The color of landmark ellipsoids in CLandmarksMap::getAs3DObject */
-	static mrpt::utils::TColorf COLOR_LANDMARKS_IN_3DSCENES;
+	static mrpt::img::TColorf COLOR_LANDMARKS_IN_3DSCENES;
 
 	typedef mrpt::maps::CLandmark landmark_type;
 

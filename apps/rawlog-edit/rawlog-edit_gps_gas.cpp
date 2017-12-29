@@ -12,7 +12,7 @@
 #include <mrpt/topography.h>
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/obs/CObservationGasSensors.h>
-#include <mrpt/utils/color_maps.h>
+#include <mrpt/img/color_maps.h>
 #include <mrpt/math/interp_fit.h>
 
 using namespace mrpt;

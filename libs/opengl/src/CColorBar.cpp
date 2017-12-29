@@ -24,7 +24,7 @@ IMPLEMENTS_SERIALIZABLE(CColorBar, CRenderizableDisplayList, mrpt::opengl)
 
 CColorBar::CColorBar(
 	/** The colormap to represent. */
-	const mrpt::utils::TColormap colormap,
+	const mrpt::img::TColormap colormap,
 	/** size of the color bar */
 	double width, double height,
 	/** limits for [0,1] colormap indices */
@@ -50,7 +50,7 @@ CColorBar::CColorBar(
 
 CColorBar::Ptr CColorBar::Create(
 	/** The colormap to represent. */
-	const mrpt::utils::TColormap colormap,
+	const mrpt::img::TColormap colormap,
 	/** size of the color bar */
 	double width, double height,
 	/** limits for [0,1] colormap indices */
@@ -68,7 +68,7 @@ CColorBar::Ptr CColorBar::Create(
 			label_format, label_font_size));
 }
 
-void CColorBar::setColormap(const mrpt::utils::TColormap colormap)
+void CColorBar::setColormap(const mrpt::img::TColormap colormap)
 {
 	m_colormap = colormap;
 	CRenderizableDisplayList::notifyChange();
@@ -111,7 +111,7 @@ void CColorBar::render_dl() const
 	const double x0 = .0, x1 = m_width, x2 = m_width * 1.3;
 	const double Ay = m_height / (num_divisions - 1);
 
-	std::vector<mrpt::utils::TColorf> cols(num_divisions);
+	std::vector<mrpt::img::TColorf> cols(num_divisions);
 	for (unsigned int i = 0; i < num_divisions; i++)
 	{
 		const double col_idx =
@@ -211,7 +211,7 @@ void CColorBar::readFromStream(mrpt::utils::CStream& in, int version)
 		case 0:
 			readFromStreamRender(in);
 
-			in.ReadAsAndCastTo<uint32_t, mrpt::utils::TColormap>(m_colormap);
+			in.ReadAsAndCastTo<uint32_t, mrpt::img::TColormap>(m_colormap);
 			in >> m_min_col >> m_max_col >> m_min_value >> m_max_value >>
 				m_label_format >> m_label_font_size >> m_disable_depth_test;
 			break;

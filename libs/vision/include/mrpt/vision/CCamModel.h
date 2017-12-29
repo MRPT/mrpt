@@ -9,7 +9,7 @@
 #ifndef CCamModel_H
 #define CCamModel_H
 
-#include <mrpt/utils/TCamera.h>
+#include <mrpt/img/TCamera.h>
 #include <mrpt/system/os.h>
 #include <mrpt/vision/utils.h>
 #include <mrpt/math/lightweight_geom_data.h>
@@ -28,7 +28,7 @@ namespace vision
  *    - First version: By Antonio J. Ortiz de Galistea.
  *    - 2009-2010: Rewritten by various authors.
  *
- * \sa mrpt::utils::TCamera, CMonoSlam, the application <a
+ * \sa mrpt::img::TCamera, CMonoSlam, the application <a
  * href="http://www.mrpt.org/Application:camera-calib-gui" >camera-calib-gui</a>
  * for calibrating a camera
  * \ingroup mrpt_vision_grp
@@ -37,7 +37,7 @@ class CCamModel : public mrpt::utils::CLoadableOptions
 {
    public:
 	/** The parameters of a camera */
-	mrpt::utils::TCamera cam;
+	mrpt::img::TCamera cam;
 
 	/** Default Constructor */
 	CCamModel();

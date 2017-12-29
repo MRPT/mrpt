@@ -64,7 +64,7 @@ class CFrustum : public CRenderizableDisplayList
 	float m_fov_vert_down, m_fov_vert_up;
 	bool m_draw_lines, m_draw_planes;
 	float m_lineWidth;
-	mrpt::utils::TColor m_planes_color;
+	mrpt::img::TColor m_planes_color;
 
    public:
 	/** Constructor returning a smart pointer to the newly created object. */
@@ -81,12 +81,12 @@ class CFrustum : public CRenderizableDisplayList
 	inline float getLineWidth() const { return m_lineWidth; }
 	/** Changes the color of the planes; to change color of lines, use
 	 * CRenderizable base methods. */
-	inline void setPlaneColor(const mrpt::utils::TColor& c)
+	inline void setPlaneColor(const mrpt::img::TColor& c)
 	{
 		m_planes_color = c;
 		CRenderizableDisplayList::notifyChange();
 	}
-	inline const mrpt::utils::TColor& getPlaneColor() const
+	inline const mrpt::img::TColor& getPlaneColor() const
 	{
 		return m_planes_color;
 	}

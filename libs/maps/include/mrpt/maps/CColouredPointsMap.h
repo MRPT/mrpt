@@ -347,7 +347,7 @@ class CColouredPointsMap : public CPointsMap
 	  */
 	virtual void PLY_import_set_vertex(
 		const size_t idx, const mrpt::math::TPoint3Df& pt,
-		const mrpt::utils::TColorf* pt_color = nullptr) override;
+		const mrpt::img::TColorf* pt_color = nullptr) override;
 
 	/** In a base class, reserve memory to prepare subsequent calls to
 	 * PLY_import_set_vertex */
@@ -358,7 +358,7 @@ class CColouredPointsMap : public CPointsMap
 		@{ */
 	void PLY_export_get_vertex(
 		const size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
-		mrpt::utils::TColorf& pt_color) const override;
+		mrpt::img::TColorf& pt_color) const override;
 	/** @} */
 
 	MAP_DEFINITION_START(CColouredPointsMap)

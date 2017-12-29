@@ -133,7 +133,7 @@ void TestDisplay3D()
 			0.02, 0.98, format(
 							"ball#1 pos: %.02f %.02f %.02f ", obj1->getPoseX(),
 							obj1->getPoseY(), obj1->getPoseZ()),
-			mrpt::utils::TColorf(0, 0, 1),
+			mrpt::img::TColorf(0, 0, 1),
 			10,  // An arbitrary ID to always overwrite the same, previous 2D
 			// text message
 			MRPT_GLUT_BITMAP_HELVETICA_12);

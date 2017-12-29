@@ -109,7 +109,7 @@ class CSetOfObjects : public CRenderizable
 	virtual bool traceRay(
 		const mrpt::poses::CPose3D& o, double& dist) const override;
 
-	virtual CRenderizable& setColor_u8(const mrpt::utils::TColor& c) override;
+	virtual CRenderizable& setColor_u8(const mrpt::img::TColor& c) override;
 	virtual CRenderizable& setColorR_u8(const uint8_t r) override;
 	virtual CRenderizable& setColorG_u8(const uint8_t g) override;
 	virtual CRenderizable& setColorB_u8(const uint8_t b) override;

@@ -58,7 +58,7 @@ class CTextMessageCapable
 	  */
 	void addTextMessage(
 		const double x_frac, const double y_frac, const std::string& text,
-		const mrpt::utils::TColorf& color = mrpt::utils::TColorf(1.0, 1.0, 1.0),
+		const mrpt::img::TColorf& color = mrpt::img::TColorf(1.0, 1.0, 1.0),
 		const size_t unique_index = 0,
 		const mrpt::opengl::TOpenGLFont font =
 			mrpt::opengl::MRPT_GLUT_BITMAP_TIMES_ROMAN_24);
@@ -67,13 +67,13 @@ class CTextMessageCapable
 	/// mrpt::opengl::gl_utils::glDrawText()
 	void addTextMessage(
 		const double x_frac, const double y_frac, const std::string& text,
-		const mrpt::utils::TColorf& color, const std::string& font_name,
+		const mrpt::img::TColorf& color, const std::string& font_name,
 		const double font_size,
 		const mrpt::opengl::TOpenGLFontStyle font_style = mrpt::opengl::NICE,
 		const size_t unique_index = 0, const double font_spacing = 1.5,
 		const double font_kerning = 0.1, const bool has_shadow = false,
-		const mrpt::utils::TColorf& shadow_color =
-			mrpt::utils::TColorf(0, 0, 0));
+		const mrpt::img::TColorf& shadow_color =
+			mrpt::img::TColorf(0, 0, 0));
 
 	/** Just updates the text of a given text message, without touching the
 	 * other parameters.

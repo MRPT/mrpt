@@ -6,9 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-
-#ifndef mrpt_utils_tpixelcoord_H
-#define mrpt_utils_tpixelcoord_H
+#pragma once
 
 #include <iosfwd>
 
@@ -32,7 +30,11 @@ struct TPixelCoordf
 };
 
 /** Prints TPixelCoordf as "(x,y)" */
-std::ostream& operator<<(std::ostream& o, const TPixelCoordf& p);
+inline std::ostream& operator<<(std::ostream& o, const TPixelCoordf& p)
+{
+	o << "(" << p.x << "," << p.y << ")";
+	return o;
+}
 
 /** A pair (x,y) of pixel coordinates (integer resolution). */
 struct TPixelCoord
@@ -46,12 +48,14 @@ struct TPixelCoord
 };
 
 /** Prints TPixelCoord as "(x,y)" */
-std::ostream& operator<<(std::ostream& o, const TPixelCoord& p);
-
-/** A type for image sizes. */
-typedef TPixelCoord TImageSize;
-
-}  // end namespace
+inline std::ostream& operator<<(std::ostream& o, const TPixelCoord& p)
+{
+	o << "(" << p.x << "," << p.y << ")";
+	return o;
 }
 
-#endif
+/** A type for image sizes. */
+using TImageSize = TPixelCoord;
+
+}  // namespace img
+}  // namespace mrpt

@@ -11,7 +11,7 @@
 
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/utils/TStereoCamera.h>
+#include <mrpt/img/TStereoCamera.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DQuat.h>
@@ -97,7 +97,7 @@ class CObservationStereoImages : public mrpt::obs::CObservation
 	 * for a discussion of these parameters.
 	  * \sa areImagesRectified(), getStereoCameraParams()
 	  */
-	mrpt::utils::TCamera leftCamera, rightCamera;
+	mrpt::img::TCamera leftCamera, rightCamera;
 
 	/** The pose of the LEFT camera, relative to the robot. */
 	mrpt::poses::CPose3DQuat cameraPose;
@@ -113,11 +113,11 @@ class CObservationStereoImages : public mrpt::obs::CObservation
 	/** Populates a TStereoCamera structure with the parameters in \a
 	 * leftCamera, \a rightCamera and \a rightCameraPose \sa
 	 * areImagesRectified() */
-	void getStereoCameraParams(mrpt::utils::TStereoCamera& out_params) const;
+	void getStereoCameraParams(mrpt::img::TStereoCamera& out_params) const;
 
 	/** Sets \a leftCamera, \a rightCamera and \a rightCameraPose from a
 	 * TStereoCamera structure */
-	void setStereoCameraParams(const mrpt::utils::TStereoCamera& in_params);
+	void setStereoCameraParams(const mrpt::img::TStereoCamera& in_params);
 
 	/** This method only checks whether ALL the distortion parameters in \a
 	 * leftCamera are set to zero, which is

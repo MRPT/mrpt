@@ -9,7 +9,7 @@
 #ifndef mrpt_CStereoRectifyMap_H
 #define mrpt_CStereoRectifyMap_H
 
-#include <mrpt/utils/TStereoCamera.h>
+#include <mrpt/img/TStereoCamera.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/poses/CPose3DQuat.h>
@@ -65,7 +65,7 @@ namespace vision
  * http://www.mrpt.org/Rectifying_stereo_images
   *
   * \sa CUndistortMap, mrpt::obs::CObservationStereoImages,
- * mrpt::utils::TCamera, the application <a
+ * mrpt::img::TCamera, the application <a
  * href="http://www.mrpt.org/Application:camera-calib" >camera-calib</a> for
  * calibrating a camera.
   *
@@ -96,20 +96,20 @@ class CStereoRectifyMap
 	 * invalid and should be prepared again.
 	  * \sa setAlpha()
 	  */
-	void setFromCamParams(const mrpt::utils::TStereoCamera& params);
+	void setFromCamParams(const mrpt::img::TStereoCamera& params);
 
 	/** A wrapper to \a setFromCamParams() which takes the parameters from an
 	 * stereo observation object */
 	void setFromCamParams(const mrpt::obs::CObservationStereoImages& stereo_obs)
 	{
-		mrpt::utils::TStereoCamera params;
+		mrpt::img::TStereoCamera params;
 		stereo_obs.getStereoCameraParams(params);
 		setFromCamParams(params);
 	}
 
 	/** Returns the camera parameters which were used to generate the distortion
 	 * map, as passed by the user to \a setFromCamParams */
-	inline const mrpt::utils::TStereoCamera& getCameraParams() const
+	inline const mrpt::img::TStereoCamera& getCameraParams() const
 	{
 		return m_camera_params;
 	}
@@ -120,12 +120,12 @@ class CStereoRectifyMap
 	  * \exception std::exception If the rectification maps have not been
 	 * computed.
 	  */
-	const mrpt::utils::TStereoCamera& getRectifiedImageParams() const;
+	const mrpt::img::TStereoCamera& getRectifiedImageParams() const;
 
 	/** Just like \a getRectifiedImageParams() but for the left camera only */
-	const mrpt::utils::TCamera& getRectifiedLeftImageParams() const;
+	const mrpt::img::TCamera& getRectifiedLeftImageParams() const;
 	/** Just like \a getRectifiedImageParams() but for the right camera only */
-	const mrpt::utils::TCamera& getRectifiedRightImageParams() const;
+	const mrpt::img::TCamera& getRectifiedRightImageParams() const;
 
 	/** Sets the \a alpha parameter which controls the zoom in/out of the
 	 * rectified images, such that:
@@ -293,9 +293,9 @@ class CStereoRectifyMap
 	std::vector<uint16_t> m_dat_mapy_left, m_dat_mapy_right;
 
 	/** A copy of the data provided by the user */
-	mrpt::utils::TStereoCamera m_camera_params;
+	mrpt::img::TStereoCamera m_camera_params;
 	/** Resulting images params */
-	mrpt::utils::TStereoCamera m_rectified_image_params;
+	mrpt::img::TStereoCamera m_rectified_image_params;
 
 	/** The rotation applied to the left/right camera so their virtual image
 	 * plane is the same after rectification. */

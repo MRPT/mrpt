@@ -468,7 +468,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 						{
 							wnd->addTextMessage(
 								msg->vector_x[0], msg->vector_x[1], msg->str,
-								mrpt::utils::TColorf(
+								mrpt::img::TColorf(
 									msg->vector_x[2], msg->vector_x[3],
 									msg->vector_x[4]),
 								size_t(msg->y),
@@ -499,14 +499,14 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 						{
 							wnd->addTextMessage(
 								msg->vector_x[0], msg->vector_x[1], msg->str,
-								mrpt::utils::TColorf(
+								mrpt::img::TColorf(
 									msg->vector_x[2], msg->vector_x[3],
 									msg->vector_x[4]),
 								msg->plotName, msg->vector_x[5],
 								mrpt::opengl::TOpenGLFontStyle(msg->x),
 								size_t(msg->y), msg->vector_x[6],
 								msg->vector_x[7], msg->vector_x[8] != 0,
-								mrpt::utils::TColorf(
+								mrpt::img::TColorf(
 									msg->vector_x[9], msg->vector_x[10],
 									msg->vector_x[11]));
 						}

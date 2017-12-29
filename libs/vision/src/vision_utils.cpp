@@ -985,7 +985,7 @@ void vision::addFeaturesToImage(
 -------------------------------------------------------------*/
 void vision::projectMatchedFeatures(
 	const CMatchedFeatureList& matches,
-	const mrpt::utils::TStereoCamera& stereo_camera,
+	const mrpt::img::TStereoCamera& stereo_camera,
 	vector<TPoint3D>& out_points)
 {
 	out_points.clear();

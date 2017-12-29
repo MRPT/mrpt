@@ -89,7 +89,7 @@ class COpenNI2Generic::CDevice
 			m_stream.getCameraSettings()->setAutoExposureEnabled(true);
 		}
 
-		void getCameraParam(mrpt::utils::TCamera& param) const
+		void getCameraParam(mrpt::img::TCamera& param) const
 		{
 			param.ncols = getFrameWidth();
 			param.nrows = getFrameHeight();
@@ -212,7 +212,7 @@ class COpenNI2Generic::CDevice
 		mrpt::obs::CObservation3DRangeScan& obs, bool& there_is_obs,
 		bool& hardware_error);
 
-	bool getCameraParam(int streamType, mrpt::utils::TCamera& param) const
+	bool getCameraParam(int streamType, mrpt::img::TCamera& param) const
 	{
 		if (streamType < 0 || streamType >= STREAM_TYPE_SIZE)
 		{

@@ -91,7 +91,7 @@ class CPointCloud : public CRenderizable,
 	  */
 	virtual void PLY_import_set_vertex(
 		const size_t idx, const mrpt::math::TPoint3Df& pt,
-		const mrpt::utils::TColorf* pt_color = nullptr) override;
+		const mrpt::img::TColorf* pt_color = nullptr) override;
 	/** @} */
 
 	/** @name PLY Export virtual methods to implement in base classes
@@ -100,7 +100,7 @@ class CPointCloud : public CRenderizable,
 	size_t PLY_export_get_face_count() const override { return 0; }
 	void PLY_export_get_vertex(
 		const size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
-		mrpt::utils::TColorf& pt_color) const override;
+		mrpt::img::TColorf& pt_color) const override;
 	/** @} */
 
    public:
@@ -279,8 +279,8 @@ class CPointCloud : public CRenderizable,
 	inline bool isPointSmoothEnabled() const { return m_pointSmooth; }
 	/** Sets the colors used as extremes when colorFromDepth is enabled. */
 	void setGradientColors(
-		const mrpt::utils::TColorf& colorMin,
-		const mrpt::utils::TColorf& colorMax);
+		const mrpt::img::TColorf& colorMin,
+		const mrpt::img::TColorf& colorMax);
 
 	/** @} */
 
@@ -301,11 +301,11 @@ class CPointCloud : public CRenderizable,
 	/** Buffer for min/max coords when m_colorFromDepth is true. */
 	mutable float m_min, m_max, m_max_m_min, m_max_m_min_inv;
 	/** Color linear function slope */
-	mutable mrpt::utils::TColorf m_col_slop, m_col_slop_inv;
+	mutable mrpt::img::TColorf m_col_slop, m_col_slop_inv;
 	mutable bool m_minmax_valid;
 
 	/** The colors used to interpolate when m_colorFromDepth is true. */
-	mrpt::utils::TColorf m_colorFromDepth_min, m_colorFromDepth_max;
+	mrpt::img::TColorf m_colorFromDepth_min, m_colorFromDepth_max;
 
 	inline void internal_render_one_point(size_t i) const;
 };

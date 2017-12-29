@@ -697,8 +697,8 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(
 			mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>(
 				-5, 5, -5, 5, 0.001f, 1);
 
-		grid_10cm->setColor_u8(mrpt::utils::TColor(0xC0, 0xC0, 0xC0, 0xA0));
-		grid_1m->setColor_u8(mrpt::utils::TColor(0xFF, 0xFF, 0xFF));
+		grid_10cm->setColor_u8(mrpt::img::TColor(0xC0, 0xC0, 0xC0, 0xA0));
+		grid_1m->setColor_u8(mrpt::img::TColor(0xFF, 0xFF, 0xFF));
 
 		openGLSceneRef->insert(grid_10cm);
 		openGLSceneRef->insert(grid_1m);

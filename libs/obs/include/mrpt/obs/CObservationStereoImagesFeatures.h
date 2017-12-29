@@ -11,7 +11,7 @@
 
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/utils/TCamera.h>
+#include <mrpt/img/TCamera.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DQuat.h>
@@ -58,8 +58,8 @@ class CObservationStereoImagesFeatures : public CObservation
 	/** Other constructor providing members initialization.
 	 */
 	CObservationStereoImagesFeatures(
-		const mrpt::utils::TCamera& cLeft /*left camera*/,
-		const mrpt::utils::TCamera& cRight /*right camera*/,
+		const mrpt::img::TCamera& cLeft /*left camera*/,
+		const mrpt::img::TCamera& cRight /*right camera*/,
 		const mrpt::poses::CPose3DQuat& rCPose /*rightCameraPose*/,
 		const mrpt::poses::CPose3DQuat& cPORobot /*cameraPoseOnRobot*/);
 
@@ -78,7 +78,7 @@ class CObservationStereoImagesFeatures : public CObservation
 	// ------------------
 	// Class Members
 	// ------------------
-	mrpt::utils::TCamera cameraLeft, cameraRight;
+	mrpt::img::TCamera cameraLeft, cameraRight;
 
 	/** The pose of the right camera, relative to the left one:
 	  *  Note that for the Bumblebee stereo camera and using the conventional

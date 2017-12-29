@@ -110,7 +110,7 @@ class CRenderizableDisplayList : public mrpt::opengl::CRenderizable
 		return *this;
 	}
 	/** Changes the default object color \return a ref to this */
-	CRenderizable& setColor_u8(const mrpt::utils::TColor& c) override
+	CRenderizable& setColor_u8(const mrpt::img::TColor& c) override
 	{
 		CRenderizable::setColor_u8(c);
 		notifyChange();

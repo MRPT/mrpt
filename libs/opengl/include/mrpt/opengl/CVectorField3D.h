@@ -71,14 +71,14 @@ class CVectorField3D : public CRenderizableDisplayList
 	/** By default it is true */
 	bool m_showPoints;
 
-	mrpt::utils::TColor m_point_color;
-	mrpt::utils::TColor m_field_color;
+	mrpt::img::TColor m_point_color;
+	mrpt::img::TColor m_field_color;
 
 	/** Color associated to fields with null module */
-	mrpt::utils::TColor m_still_color;
+	mrpt::img::TColor m_still_color;
 	/** Color associated to fields whose module is equal or larger than
 	 * 'm_maxspeed' */
-	mrpt::utils::TColor m_maxspeed_color;
+	mrpt::img::TColor m_maxspeed_color;
 	/** Value of the module of the motion field which will correspond to
 	 * 'm_maxspeed_color' */
 	float m_maxspeed;
@@ -105,16 +105,16 @@ class CVectorField3D : public CRenderizableDisplayList
 	inline void setPointColor(
 		const float R, const float G, const float B, const float A = 1)
 	{
-		m_point_color = mrpt::utils::TColor(R * 255, G * 255, B * 255, A * 255);
+		m_point_color = mrpt::img::TColor(R * 255, G * 255, B * 255, A * 255);
 		CRenderizableDisplayList::notifyChange();
 	}
 
 	/**
 		* Get the point color in the range [0,1]
 		*/
-	inline mrpt::utils::TColorf getPointColor() const
+	inline mrpt::img::TColorf getPointColor() const
 	{
-		return mrpt::utils::TColorf(m_point_color);
+		return mrpt::img::TColorf(m_point_color);
 	}
 
 	/**
@@ -123,7 +123,7 @@ class CVectorField3D : public CRenderizableDisplayList
 	inline void setVectorFieldColor(
 		const float R, const float G, const float B, const float A = 1)
 	{
-		m_field_color = mrpt::utils::TColor(R * 255, G * 255, B * 255, A * 255);
+		m_field_color = mrpt::img::TColor(R * 255, G * 255, B * 255, A * 255);
 		CRenderizableDisplayList::notifyChange();
 	}
 
@@ -131,7 +131,7 @@ class CVectorField3D : public CRenderizableDisplayList
 		* Get the motion field min and max colors (colormap) in the range [0,1]
 		*/
 	inline void getVectorFieldColor(
-		mrpt::utils::TColorf Cmin, mrpt::utils::TColorf Cmax) const
+		mrpt::img::TColorf Cmin, mrpt::img::TColorf Cmax) const
 	{
 		Cmin = m_still_color / 255;
 		Cmax = m_maxspeed_color / 255;
@@ -146,18 +146,18 @@ class CVectorField3D : public CRenderizableDisplayList
 		const float Amax = 1)
 	{
 		m_still_color =
-			mrpt::utils::TColor(Rmin * 255, Gmin * 255, Bmin * 255, Amin * 255);
+			mrpt::img::TColor(Rmin * 255, Gmin * 255, Bmin * 255, Amin * 255);
 		m_maxspeed_color =
-			mrpt::utils::TColor(Rmax * 255, Gmax * 255, Bmax * 255, Amax * 255);
+			mrpt::img::TColor(Rmax * 255, Gmax * 255, Bmax * 255, Amax * 255);
 		CRenderizableDisplayList::notifyChange();
 	}
 
 	/**
 		* Get the arrow color in the range [0,1]
 		*/
-	inline mrpt::utils::TColorf getVectorFieldColor() const
+	inline mrpt::img::TColorf getVectorFieldColor() const
 	{
-		return mrpt::utils::TColorf(m_field_color);
+		return mrpt::img::TColorf(m_field_color);
 	}
 
 	/**

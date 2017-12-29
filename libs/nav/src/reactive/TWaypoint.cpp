@@ -147,9 +147,9 @@ TWaypointsRenderingParams::TWaypointsRenderingParams()
 	  outter_radius_reached(.2),
 	  inner_radius_reached(.1),
 	  heading_arrow_len(1.0),
-	  color_regular(mrpt::utils::TColor(0x00, 0x00, 0xff)),
-	  color_current_goal(mrpt::utils::TColor(0xff, 0x00, 0x20)),
-	  color_reached(mrpt::utils::TColor(0x00, 0x00, 0xc0, 0xd0)),
+	  color_regular(mrpt::img::TColor(0x00, 0x00, 0xff)),
+	  color_current_goal(mrpt::img::TColor(0xff, 0x00, 0x20)),
+	  color_reached(mrpt::img::TColor(0x00, 0x00, 0xc0, 0xd0)),
 	  show_labels(true)
 {
 }

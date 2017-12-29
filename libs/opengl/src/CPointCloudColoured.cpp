@@ -228,7 +228,7 @@ void CPointCloudColoured::PLY_import_set_vertex_count(const size_t N)
   */
 void CPointCloudColoured::PLY_import_set_vertex(
 	const size_t idx, const mrpt::math::TPoint3Df& pt,
-	const mrpt::utils::TColorf* pt_color)
+	const mrpt::img::TColorf* pt_color)
 {
 	if (!pt_color)
 		this->setPoint(idx, TPointColour(pt.x, pt.y, pt.z, 1, 1, 1));
@@ -251,7 +251,7 @@ size_t CPointCloudColoured::PLY_export_get_vertex_count() const
   */
 void CPointCloudColoured::PLY_export_get_vertex(
 	const size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
-	mrpt::utils::TColorf& pt_color) const
+	mrpt::img::TColorf& pt_color) const
 {
 	const TPointColour& p = m_points[idx];
 	pt.x = p.x;
@@ -265,7 +265,7 @@ void CPointCloudColoured::PLY_export_get_vertex(
 
 void CPointCloudColoured::recolorizeByCoordinate(
 	const float coord_min, const float coord_max, const int coord_index,
-	const mrpt::utils::TColormap color_map)
+	const mrpt::img::TColormap color_map)
 {
 	ASSERT_ABOVEEQ_(coord_index, 0);
 	ASSERT_BELOW_(coord_index, 3);

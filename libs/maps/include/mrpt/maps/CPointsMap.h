@@ -936,8 +936,8 @@ class CPointsMap : public CMetricMap,
 	/** @} */
 
 	/** The color of points in getAs3DObject() (default=blue) */
-	static void COLOR_3DSCENE(const mrpt::utils::TColorf &value);
-	static mrpt::utils::TColorf COLOR_3DSCENE();
+	static void COLOR_3DSCENE(const mrpt::img::TColorf &value);
+	static mrpt::img::TColorf COLOR_3DSCENE();
 
 	// See docs in base class
 	virtual double internal_computeObservationLikelihood(
@@ -1121,7 +1121,7 @@ class CPointsMap : public CMetricMap,
 	  */
 	virtual void PLY_import_set_vertex(
 		const size_t idx, const mrpt::math::TPoint3Df& pt,
-		const mrpt::utils::TColorf* pt_color = nullptr) override;
+		const mrpt::img::TColorf* pt_color = nullptr) override;
 	/** @} */
 
 	/** @name PLY Export virtual methods to implement in base classes
@@ -1130,7 +1130,7 @@ class CPointsMap : public CMetricMap,
 	size_t PLY_export_get_face_count() const override { return 0; }
 	virtual void PLY_export_get_vertex(
 		const size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
-		mrpt::utils::TColorf& pt_color) const override;
+		mrpt::img::TColorf& pt_color) const override;
 	/** @} */
 
 	/** The minimum and maximum height for a certain laser scan to be inserted

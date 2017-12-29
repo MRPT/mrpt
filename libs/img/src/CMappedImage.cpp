@@ -9,11 +9,11 @@
 
 #include "img-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/CMappedImage.h>
+#include <mrpt/img/CMappedImage.h>
 #include <mrpt/core/round.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
+using namespace mrpt::img;
 using namespace mrpt::math;
 
 /*---------------------------------------------------------------
@@ -90,8 +90,8 @@ double CMappedImage::getPixel(double x, double y) const
 		case IMG_INTERP_NN:
 		{
 			// The closest pixel:
-			const int px0 = mrpt::utils::round(px);
-			const int py0 = mrpt::utils::round(py);
+			const int px0 = mrpt::round(px);
+			const int py0 = mrpt::round(py);
 			return static_cast<double>(*m_img->get_unsafe(px0, py0));
 		}
 		break;

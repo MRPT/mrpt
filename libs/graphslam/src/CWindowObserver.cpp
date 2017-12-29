@@ -179,10 +179,10 @@ void CWindowObserver::OnEvent(const mrpt::utils::mrptEvent& e)
 				0.50f, 0.50f,  // width, height (in screen "ratios")
 				m_help_msg.c_str(),
 				0.02f,  // text size
-				mrpt::utils::TColor(
+				mrpt::img::TColor(
 					190, 190, 190, 200 * tranparency),  // background
-				mrpt::utils::TColor(0, 0, 0, 200 * tranparency),  // border
-				mrpt::utils::TColor(200, 0, 0, 150 * tranparency),  // text
+				mrpt::img::TColor(0, 0, 0, 200 * tranparency),  // border
+				mrpt::img::TColor(200, 0, 0, 150 * tranparency),  // text
 				6.0f,  // border width
 				"serif",  // text font
 				mrpt::opengl::NICE  // text style

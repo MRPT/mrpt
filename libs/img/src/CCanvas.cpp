@@ -9,13 +9,12 @@
 
 #include "img-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/CCanvas.h>
-#include <mrpt/system/os.h>
+#include <mrpt/img/CCanvas.h>
 #include <mrpt/img/CImage.h>
+#include <mrpt/system/os.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/core/round.h>
-
-#include <mrpt/compress/zip.h>
+#include <mrpt/io/zip.h>
 #include <map>
 
 // Include the MRPT bitmap fonts:
@@ -39,11 +38,12 @@
 //	0x0000,0x00FF, /* UNICODE characters range: */
 
 using namespace mrpt;
-using namespace mrpt::utils;
+using namespace mrpt::img;
 using namespace std;
 
 // map<string,const uint32_t*>   list_registered_fonts;
-map<string, std::vector<uint8_t>> list_registered_fonts;  // Each vector is the target
+map<string, std::vector<uint8_t>>
+	list_registered_fonts;  // Each vector is the target
 // place where to uncompress
 // each font.
 bool list_fonts_init = false;
@@ -85,14 +85,14 @@ void init_fonts_list()
 
 #if 1  // Normal operation: Load fonts and uncompress them:
 
-#define LOAD_FONT(FONTNAME)                                  \
-	{                                                        \
+#define LOAD_FONT(FONTNAME)                                           \
+	{                                                                 \
 		std::vector<uint8_t> tmpBuf(sizeof(mrpt_font_gz_##FONTNAME)); \
-		memcpy(                                              \
-			&tmpBuf[0], mrpt_font_gz_##FONTNAME,             \
-			sizeof(mrpt_font_gz_##FONTNAME));                \
-		mrpt::compress::zip::decompress_gz_data_block(       \
-			tmpBuf, list_registered_fonts[#FONTNAME]);       \
+		memcpy(                                                       \
+			&tmpBuf[0], mrpt_font_gz_##FONTNAME,                      \
+			sizeof(mrpt_font_gz_##FONTNAME));                         \
+		mrpt::io::zip::decompress_gz_data_block(                      \
+			tmpBuf, list_registered_fonts[#FONTNAME]);                \
 	}
 
 		LOAD_FONT(5x7)
@@ -120,7 +120,7 @@ CCanvas::CCanvas() : m_selectedFont("9x15"), m_selectedFontBitmaps(nullptr) {}
 						line
 ---------------------------------------------------------------*/
 void CCanvas::line(
-	int x0, int y0, int x1, int y1, const mrpt::utils::TColor color,
+	int x0, int y0, int x1, int y1, const mrpt::img::TColor color,
 	unsigned int width, TPenStyle penStyle)
 {
 	MRPT_UNUSED_PARAM(width);
@@ -168,7 +168,7 @@ void CCanvas::line(
 						rectangle
 ---------------------------------------------------------------*/
 void CCanvas::rectangle(
-	int x0, int y0, int x1, int y1, const mrpt::utils::TColor color,
+	int x0, int y0, int x1, int y1, const mrpt::img::TColor color,
 	unsigned int width)
 {
 	int w_min = (int)-ceil(((float)width) / 2);
@@ -188,7 +188,7 @@ void CCanvas::rectangle(
 						triangle
 ---------------------------------------------------------------*/
 void CCanvas::triangle(
-	int x0, int y0, int size, const mrpt::utils::TColor color, bool inferior,
+	int x0, int y0, int size, const mrpt::img::TColor color, bool inferior,
 	unsigned int width)
 {
 	int ts = round(0.866 * size);
@@ -212,7 +212,7 @@ void CCanvas::triangle(
 						filledRectangle
 ---------------------------------------------------------------*/
 void CCanvas::filledRectangle(
-	int x0, int y0, int x1, int y1, const mrpt::utils::TColor color)
+	int x0, int y0, int x1, int y1, const mrpt::img::TColor color)
 {
 	int x_min = max(x0, 0);
 	int x_max = min(x1, (int)getWidth() - 1);
@@ -251,7 +251,7 @@ void CCanvas::selectTextFont(const std::string& fontName)
 /*---------------------------------------------------------------
 						drawImage
 ---------------------------------------------------------------*/
-void CCanvas::drawImage(int x, int y, const utils::CImage& img)
+void CCanvas::drawImage(int x, int y, const mrpt::img::CImage& img)
 {
 	MRPT_START
 
@@ -284,7 +284,7 @@ void CCanvas::drawImage(int x, int y, const utils::CImage& img)
 						drawImage
 ---------------------------------------------------------------*/
 void CCanvas::drawImage(
-	int x, int y, const utils::CImage& img, float rotation, float scale)
+	int x, int y, const mrpt::img::CImage& img, float rotation, float scale)
 {
 	MRPT_UNUSED_PARAM(x);
 	MRPT_UNUSED_PARAM(y);
@@ -303,8 +303,8 @@ void CCanvas::drawImage(
 						cross
 ---------------------------------------------------------------*/
 void CCanvas::cross(
-	int x0, int y0, const mrpt::utils::TColor color, char type,
-	unsigned int size, unsigned int width)
+	int x0, int y0, const mrpt::img::TColor color, char type, unsigned int size,
+	unsigned int width)
 {
 	switch (type)
 	{
@@ -331,7 +331,7 @@ void CCanvas::cross(
 						drawCircle
 ---------------------------------------------------------------*/
 void CCanvas::drawCircle(
-	int x, int y, int radius, const mrpt::utils::TColor& color,
+	int x, int y, int radius, const mrpt::img::TColor& color,
 	unsigned int width)
 {
 	if (radius < 0) radius = -radius;
@@ -367,7 +367,7 @@ void CCanvas::drawCircle(
 						textOut
 ---------------------------------------------------------------*/
 void CCanvas::textOut(
-	int x0, int y0, const std::string& str, const mrpt::utils::TColor color)
+	int x0, int y0, const std::string& str, const mrpt::img::TColor color)
 {
 	MRPT_START
 
@@ -380,7 +380,7 @@ void CCanvas::textOut(
 	if (im_image) y_axis_reversed = !im_image->isOriginTopLeft();
 
 	// Decode UNICODE string:
-	vector_word uniStr;
+	std::vector<uint16_t> uniStr;
 	mrpt::system::decodeUTF8(str, uniStr);
 
 	int px = x0;

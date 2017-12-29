@@ -14,7 +14,7 @@
 #include <mrpt/opengl/COctreePointRenderer.h>
 #include <mrpt/utils/PLY_import_export.h>
 #include <mrpt/utils/adapters.h>
-#include <mrpt/utils/color_maps.h>
+#include <mrpt/img/color_maps.h>
 
 namespace mrpt
 {
@@ -224,7 +224,7 @@ class CPointCloudColoured : public CRenderizable,
 	 * (coord_index:0,1,2 for X,Y,Z) and the given color map. */
 	void recolorizeByCoordinate(
 		const float coord_min, const float coord_max, const int coord_index = 2,
-		const mrpt::utils::TColormap color_map = mrpt::utils::cmJET);
+		const mrpt::img::TColormap color_map = mrpt::utils::cmJET);
 	/** @} */
 
 	/** Render */
@@ -254,7 +254,7 @@ class CPointCloudColoured : public CRenderizable,
 	  */
 	virtual void PLY_import_set_vertex(
 		const size_t idx, const mrpt::math::TPoint3Df& pt,
-		const mrpt::utils::TColorf* pt_color = nullptr) override;
+		const mrpt::img::TColorf* pt_color = nullptr) override;
 	/** @} */
 
 	/** @name PLY Export virtual methods to implement in base classes
@@ -263,7 +263,7 @@ class CPointCloudColoured : public CRenderizable,
 	size_t PLY_export_get_face_count() const override { return 0; }
 	void PLY_export_get_vertex(
 		const size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
-		mrpt::utils::TColorf& pt_color) const override;
+		mrpt::img::TColorf& pt_color) const override;
 	/** @} */
 };
 

@@ -14,7 +14,7 @@
 #include <mrpt/system/os.h>
 #include <mrpt/core/round.h>
 #include <mrpt/system/CTicTac.h>
-#include <mrpt/utils/color_maps.h>
+#include <mrpt/img/color_maps.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/utils/CStream.h>
 

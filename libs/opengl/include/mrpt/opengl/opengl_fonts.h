@@ -59,10 +59,10 @@ struct TFontParams
 	{
 	}
 
-	mrpt::utils::TColorf color;
+	mrpt::img::TColorf color;
 
 	bool draw_shadow;
-	mrpt::utils::TColorf shadow_color;
+	mrpt::img::TColorf shadow_color;
 
 	/** @name Bitmapped font params
 		@{ */

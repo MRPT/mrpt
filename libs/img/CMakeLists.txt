@@ -13,7 +13,9 @@ define_mrpt_lib(
 	# Dependencies:
 	mrpt-core
 	mrpt-serialization
+	mrpt-io
 	mrpt-math
+	mrpt-config
 	)
 
 IF(BUILD_mrpt-img)

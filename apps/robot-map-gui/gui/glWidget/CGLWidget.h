@@ -87,7 +87,7 @@ class CGlWidget : public mrpt::gui::CQtGlCanvasBase
 	virtual void keyPressEvent(QKeyEvent* event) override;
 
    private:
-	mrpt::utils::TColorf typeToColor(int type) const;
+	mrpt::img::TColorf typeToColor(int type) const;
 	std::pair<bool, mrpt::math::TPoint3D> sceneToWorld(const QPoint& pos) const;
 	double maximumSizeObservation(const QPoint& pos) const;
 
@@ -117,9 +117,9 @@ class CGlWidget : public mrpt::gui::CQtGlCanvasBase
 	float m_miniMapSize;
 	const float m_minimapPercentSize;
 	double m_observationSize;
-	mrpt::utils::TColorf m_observationColor;
+	mrpt::img::TColorf m_observationColor;
 	double m_selectedObsSize;
-	mrpt::utils::TColorf m_selectedColor;
+	mrpt::img::TColorf m_selectedColor;
 
 	bool m_isShowObs;
 	mrpt::opengl::CSetOfObjects::Ptr m_visiblePoints;

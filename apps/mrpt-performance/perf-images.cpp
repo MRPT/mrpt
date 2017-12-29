@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/img/CImage.h>
-#include <mrpt/utils/TStereoCamera.h>
+#include <mrpt/img/TStereoCamera.h>
 #include <mrpt/utils/CConfigFileMemory.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/vision/CImagePyramid.h>
@@ -311,7 +311,7 @@ const char* EXAMPLE_STEREO_CALIB =
 template <int IMG_CHANNELS, int w, int h, int w2, int h2>
 double stereoimage_rectify_prepare_map(int, int)
 {
-	mrpt::utils::TStereoCamera params;
+	mrpt::img::TStereoCamera params;
 	params.loadFromConfigFile(
 		"CAMERA_PARAMS",
 		mrpt::utils::CConfigFileMemory(std::string(EXAMPLE_STEREO_CALIB)));
@@ -340,7 +340,7 @@ double stereoimage_rectify(int, int)
 	const CImage imgL(w, h, IMG_CHANNELS), imgR(w, h, IMG_CHANNELS);
 	CImage imgL2, imgR2;
 
-	mrpt::utils::TStereoCamera params;
+	mrpt::img::TStereoCamera params;
 	params.loadFromConfigFile(
 		"CAMERA_PARAMS",
 		mrpt::utils::CConfigFileMemory(std::string(EXAMPLE_STEREO_CALIB)));

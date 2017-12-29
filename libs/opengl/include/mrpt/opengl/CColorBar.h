@@ -10,7 +10,7 @@
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/utils/color_maps.h>
+#include <mrpt/img/color_maps.h>
 
 namespace mrpt
 {
@@ -38,7 +38,7 @@ class CColorBar : public CRenderizableDisplayList
 	DEFINE_SERIALIZABLE(CColorBar)
 
    protected:
-	mrpt::utils::TColormap m_colormap;
+	mrpt::img::TColormap m_colormap;
 	double m_width, m_height;
 	std::string m_label_format;
 	double m_min_col, m_max_col, m_min_value, m_max_value;
@@ -49,7 +49,7 @@ class CColorBar : public CRenderizableDisplayList
 	/** Constructor returning a smart pointer to the newly created object. */
 	static CColorBar::Ptr Create(
 		/** The colormap to represent. */
-		const mrpt::utils::TColormap colormap,
+		const mrpt::img::TColormap colormap,
 		/** size of the color bar */
 		double width, double height,
 		/** limits for [0,1] colormap indices */
@@ -66,7 +66,7 @@ class CColorBar : public CRenderizableDisplayList
 	  */
 	void render_dl() const override;
 
-	void setColormap(const mrpt::utils::TColormap colormap);
+	void setColormap(const mrpt::img::TColormap colormap);
 	void setColorAndValueLimits(
 		double col_min, double col_max, double value_min, double value_max);
 	void enableDepthTest(bool enable);
@@ -80,7 +80,7 @@ class CColorBar : public CRenderizableDisplayList
 	/** Basic empty constructor. Set all parameters to default. */
 	CColorBar(
 		/** The colormap to represent. */
-		const mrpt::utils::TColormap colormap = mrpt::utils::cmGRAYSCALE,
+		const mrpt::img::TColormap colormap = mrpt::utils::cmGRAYSCALE,
 		/** size of the color bar */
 		double width = 0.2, double height = 1.0,
 		/** limits for [0,1] colormap indices */

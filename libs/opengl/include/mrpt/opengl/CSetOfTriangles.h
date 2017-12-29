@@ -150,7 +150,7 @@ class CSetOfTriangles : public CRenderizableDisplayList
 		CRenderizableDisplayList::notifyChange();
 	}
 
-	CRenderizable& setColor_u8(const mrpt::utils::TColor& c) override;
+	CRenderizable& setColor_u8(const mrpt::img::TColor& c) override;
 	CRenderizable& setColorR_u8(const uint8_t r) override;
 	CRenderizable& setColorG_u8(const uint8_t g) override;
 	CRenderizable& setColorB_u8(const uint8_t b) override;

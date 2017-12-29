@@ -92,11 +92,11 @@ bool checkerBoardCameraCalibration(
 	TCalibrationImageList& images, unsigned int check_size_x,
 	unsigned int check_size_y, double check_squares_length_X_meters,
 	double check_squares_length_Y_meters,
-	mrpt::utils::TCamera& out_camera_params, bool normalize_image = true,
+	mrpt::img::TCamera& out_camera_params, bool normalize_image = true,
 	double* out_MSE = nullptr, bool skipDrawDetectedImgs = false,
 	bool useScaramuzzaAlternativeDetector = false);
 
-/** \overload with matrix of intrinsic params instead of mrpt::utils::TCamera
+/** \overload with matrix of intrinsic params instead of mrpt::img::TCamera
  */
 bool checkerBoardCameraCalibration(
 	TCalibrationImageList& images, unsigned int check_size_x,

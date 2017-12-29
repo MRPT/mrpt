@@ -51,7 +51,7 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	std::string m_name;
 	bool m_show_name;
 	/** Color components in the range [0,255] */
-	mrpt::utils::TColor m_color;
+	mrpt::img::TColor m_color;
 	/** 6D pose wrt the parent coordinate reference. This class automatically
 	 * holds the cached 3x3 rotation matrix for quick load into opengl stack. */
 	mrpt::poses::CPose3D m_pose;
@@ -240,15 +240,15 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	/** Get the current scaling factor in one axis */
 	inline float getScaleZ() const { return m_scale_z; }
 	/** Returns the object color property as a TColorf */
-	inline mrpt::utils::TColorf getColor() const
+	inline mrpt::img::TColorf getColor() const
 	{
-		return mrpt::utils::TColorf(m_color);
+		return mrpt::img::TColorf(m_color);
 	}
 	/** Changes the default object color \return a ref to this */
-	CRenderizable& setColor(const mrpt::utils::TColorf& c)
+	CRenderizable& setColor(const mrpt::img::TColorf& c)
 	{
 		return setColor_u8(
-			mrpt::utils::TColor(
+			mrpt::img::TColor(
 				c.R * 255.f, c.G * 255.f, c.B * 255.f, c.A * 255.f));
 	}
 
@@ -260,15 +260,15 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	}
 
 	/** Returns the object color property as a TColor */
-	inline const mrpt::utils::TColor& getColor_u8() const { return m_color; }
+	inline const mrpt::img::TColor& getColor_u8() const { return m_color; }
 	/*** Changes the default object color \return a ref to this */
-	virtual CRenderizable& setColor_u8(const mrpt::utils::TColor& c);
+	virtual CRenderizable& setColor_u8(const mrpt::img::TColor& c);
 
 	/** Set the color components of this object (R,G,B,Alpha, in the range
 	 * 0-255)  \return a ref to this */
 	CRenderizable& setColor_u8(uint8_t R, uint8_t G, uint8_t B, uint8_t A = 255)
 	{
-		return setColor_u8(mrpt::utils::TColor(R, G, B, A));
+		return setColor_u8(mrpt::img::TColor(R, G, B, A));
 	}
 
 	/** @} */

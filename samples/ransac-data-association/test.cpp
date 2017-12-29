@@ -312,7 +312,7 @@ void TestRANSAC()
 				5, 5,
 				"Blue: map landmarks | Red: Observations | White lines: Found "
 				"correspondences",
-				mrpt::utils::TColorf(0, 0, 0), "mono", 12, mrpt::opengl::NICE,
+				mrpt::img::TColorf(0, 0, 0), "mono", 12, mrpt::opengl::NICE,
 				0);
 
 			//
@@ -364,13 +364,13 @@ void TestRANSAC()
 
 			win.addTextMessage(
 				5, 20, "Ground truth pose    : " + GT_pose.asString(),
-				mrpt::utils::TColorf(0, 0, 0), "mono", 12, mrpt::opengl::NICE,
+				mrpt::img::TColorf(0, 0, 0), "mono", 12, mrpt::opengl::NICE,
 				1);
 			win.addTextMessage(
 				5, 35,
 				"RANSAC estimated pose: " + solution_pose.mean.asString() +
 					mrpt::format(" | RMSE=%f", (nPairs ? sqerr / nPairs : 0.0)),
-				mrpt::utils::TColorf(0, 0, 0), "mono", 12, mrpt::opengl::NICE,
+				mrpt::img::TColorf(0, 0, 0), "mono", 12, mrpt::opengl::NICE,
 				2);
 
 			win.unlockAccess3DScene();

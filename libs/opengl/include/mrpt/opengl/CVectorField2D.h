@@ -51,8 +51,8 @@ class CVectorField2D : public CRenderizableDisplayList
 	/** By default is true */
 	bool m_antiAliasing;
 
-	mrpt::utils::TColor m_point_color;
-	mrpt::utils::TColor m_field_color;
+	mrpt::img::TColor m_point_color;
+	mrpt::img::TColor m_field_color;
 
    public:
 	/**
@@ -71,16 +71,16 @@ class CVectorField2D : public CRenderizableDisplayList
 	inline void setPointColor(
 		const float R, const float G, const float B, const float A = 1)
 	{
-		m_point_color = mrpt::utils::TColor(R * 255, G * 255, B * 255, A * 255);
+		m_point_color = mrpt::img::TColor(R * 255, G * 255, B * 255, A * 255);
 		CRenderizableDisplayList::notifyChange();
 	}
 
 	/**
 	  * Get the point color in the range [0,1]
 	  */
-	inline mrpt::utils::TColorf getPointColor() const
+	inline mrpt::img::TColorf getPointColor() const
 	{
-		return mrpt::utils::TColorf(m_point_color);
+		return mrpt::img::TColorf(m_point_color);
 	}
 
 	/**
@@ -89,16 +89,16 @@ class CVectorField2D : public CRenderizableDisplayList
 	inline void setVectorFieldColor(
 		const float R, const float G, const float B, const float A = 1)
 	{
-		m_field_color = mrpt::utils::TColor(R * 255, G * 255, B * 255, A * 255);
+		m_field_color = mrpt::img::TColor(R * 255, G * 255, B * 255, A * 255);
 		CRenderizableDisplayList::notifyChange();
 	}
 
 	/**
 	  * Get the arrow color in the range [0,1]
 	  */
-	inline mrpt::utils::TColorf getVectorFieldColor() const
+	inline mrpt::img::TColorf getVectorFieldColor() const
 	{
-		return mrpt::utils::TColorf(m_field_color);
+		return mrpt::img::TColorf(m_field_color);
 	}
 
 	/**
