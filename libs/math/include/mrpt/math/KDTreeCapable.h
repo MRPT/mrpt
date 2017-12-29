@@ -6,13 +6,12 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef KDTreeCapable_H
-#define KDTreeCapable_H
+#pragma once
 
 #include <mrpt/utils/utils_defs.h>
 
 // nanoflann library:
-#include <mrpt/otherlibs/nanoflann/nanoflann.hpp>
+#include <nanoflann.hpp>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <memory>  // unique_ptr
 
@@ -850,4 +849,3 @@ class KDTreeCapable
 
 }  // End of namespace
 }  // End of namespace
-#endif
