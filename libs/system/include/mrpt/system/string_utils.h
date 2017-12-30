@@ -10,6 +10,7 @@
 
 #include <string>
 #include <vector>
+#include <deque>
 #include <cstdint>
 #include <sstream>
 
@@ -65,13 +66,13 @@ std::string lowerCase(const std::string& str);
 /** Decodes a UTF-8 string into an UNICODE string.
  *  See http://en.wikipedia.org/wiki/UTF-8  and
  * http://www.codeguru.com/cpp/misc/misc/multi-lingualsupport/article.php/c10451/.
-  */
+ */
 void decodeUTF8(const std::string& strUTF8, std::vector<uint16_t>& out_uniStr);
 
 /** Encodes a 2-bytes UNICODE string into a UTF-8 string.
  *  See http://en.wikipedia.org/wiki/UTF-8 and
  * http://www.codeguru.com/cpp/misc/misc/multi-lingualsupport/article.php/c10451/.
-  */
+ */
 void encodeUTF8(const std::vector<uint16_t>& input, std::string& output);
 
 /** Encode a sequence of bytes as a string in base-64.
@@ -132,6 +133,10 @@ std::string sprintf_container(const char* fmt, const T& V)
 void stringListAsString(
 	const std::vector<std::string>& lst, std::string& out,
 	const std::string& newline = "\r\n");
+/** \overload */
+void stringListAsString(
+	const std::deque<std::string>& lst, std::string& out,
+	const std::string& newline = "\r\n");
 
 /** Original code snippet found in http://stackoverflow.com/a/30357710 */
 /**\{*/
@@ -172,5 +177,5 @@ inline std::string num2str<const char*>(const char* value)
 /**\}*/
 
 /** @} */
-}  // End of namespace
-}  // End of namespace
+}  // namespace system
+}  // namespace mrpt
