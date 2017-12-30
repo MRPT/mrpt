@@ -11,7 +11,7 @@
 #define mrpt_opengl_fonts_H
 
 #include <mrpt/img/TColor.h>
-#include <mrpt/utils/compiler_fixes.h>  // disable warnings
+#include <mrpt/core/common.h>  // disable warnings
 #include <string>
 
 namespace mrpt

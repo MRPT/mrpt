@@ -325,9 +325,9 @@ bool mrpt::system::strStartsI(const std::string& s1, const std::string& s2)
 		s2.size());  // if s1 is shorter it's not a problem
 }
 
-void mrpt::system::stringListAsString(
-	const std::vector<std::string>& lst, std::string& outText,
-	const std::string& newline)
+template <typename STRING_LIST>
+static void impl_stringListAsString(
+	const STRING_LIST& lst, std::string& outText, const std::string& newline)
 {
 	const size_t lenNL = newline.size();
 
@@ -341,8 +341,23 @@ void mrpt::system::stringListAsString(
 	size_t curPos = 0;
 	for (const auto& s : lst)
 	{
-		os::memcpy(&outText[curPos], totalLen, s.c_str(), s.size());
+		mrpt::system::os::memcpy(
+			&outText[curPos], totalLen, s.c_str(), s.size());
 		curPos += s.size();
 		for (const auto& sNL : newline) outText[curPos++] = sNL;
 	}
+}
+
+void mrpt::system::stringListAsString(
+	const std::vector<std::string>& lst, std::string& outText,
+	const std::string& newLine)
+{
+	impl_stringListAsString(lst, outText, newLine);
+}
+
+void mrpt::system::stringListAsString(
+	const std::deque<std::string>& lst, std::string& outText,
+	const std::string& newLine)
+{
+	impl_stringListAsString(lst, outText, newLine);
 }
