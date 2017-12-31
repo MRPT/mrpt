@@ -80,10 +80,10 @@ struct TSimpleFeature_templ
  * nor patch).
   *  \sa TSimpleFeaturef, CFeature, TSimpleFeatureList
   */
-typedef TSimpleFeature_templ<mrpt::utils::TPixelCoord> TSimpleFeature;
+typedef TSimpleFeature_templ<mrpt::img::TPixelCoord> TSimpleFeature;
 
 /** A version of  TSimpleFeature with subpixel precision */
-typedef TSimpleFeature_templ<mrpt::utils::TPixelCoordf> TSimpleFeaturef;
+typedef TSimpleFeature_templ<mrpt::img::TPixelCoordf> TSimpleFeaturef;
 
 template <typename FEATURE>
 struct TSimpleFeatureTraits;

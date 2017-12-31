@@ -26,7 +26,7 @@ using namespace mrpt::opengl;
 using namespace mrpt::utils;
 
 // This is my custom class to handle the pre/post render events:
-struct TMyExtraRenderingStuff : public mrpt::utils::CObserver
+struct TMyExtraRenderingStuff : public mrpt::system::CObserver
 {
 	opengl::CSphere::Ptr ball_obj;  // The ball moving in the scene
 	bool showing_help, hiding_help;

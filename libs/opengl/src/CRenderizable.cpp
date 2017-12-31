@@ -16,7 +16,7 @@
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include <mutex>
 
@@ -109,7 +109,7 @@ void CRenderizable::releaseTextureName(unsigned int i)
 	// of texture names by our own.
 }
 
-void CRenderizable::writeToStreamRender(mrpt::utils::CStream& out) const
+void CRenderizable::writeToStreamRender(mrpt::serialization::CArchive& out) const
 {
 	// MRPT 0.9.5 svn 2774 (Dec 14th 2011):
 	// Added support of versioning at this level of serialization too.
@@ -162,7 +162,7 @@ void CRenderizable::writeToStreamRender(mrpt::utils::CStream& out) const
 	out << m_show_name << m_visible;
 }
 
-void CRenderizable::readFromStreamRender(mrpt::utils::CStream& in)
+void CRenderizable::readFromStreamRender(mrpt::serialization::CArchive& in)
 {
 	// MRPT 0.9.5 svn 2774 (Dec 14th 2011):
 	// See comments in CRenderizable::writeToStreamRender() for the employed

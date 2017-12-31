@@ -452,7 +452,7 @@ void gl_utils::renderMessageBox(
 
 	// Draw text (centered):
 	gl_utils::glSetFont(text_font);
-	mrpt::utils::TPixelCoordf txtSize =
+	mrpt::img::TPixelCoordf txtSize =
 		gl_utils::glGetExtends(text, text_scale, text_spacing, text_kerning);
 
 	// Adjust text size if it doesn't fit into the box:
@@ -637,7 +637,7 @@ const std::string& gl_utils::glGetFont()
 #endif
 }
 
-mrpt::utils::TPixelCoordf gl_utils::glDrawText(
+mrpt::img::TPixelCoordf gl_utils::glDrawText(
 	const std::string& text, const double textScale,
 	enum TOpenGLFontStyle style, double spacing, double kerning)
 {
@@ -728,7 +728,7 @@ mrpt::utils::TPixelCoordf gl_utils::glDrawText(
 
 	max_total = std::max(total, max_total);
 
-	return mrpt::utils::TPixelCoordf(
+	return mrpt::img::TPixelCoordf(
 		textScale * max_total, textScale * (lines + 1) * spacing);
 #else
 	MRPT_UNUSED_PARAM(text);
@@ -740,7 +740,7 @@ mrpt::utils::TPixelCoordf gl_utils::glDrawText(
 #endif
 }
 
-mrpt::utils::TPixelCoordf gl_utils::glGetExtends(
+mrpt::img::TPixelCoordf gl_utils::glGetExtends(
 	const std::string& text, const double textScale, double spacing,
 	double kerning)
 {
@@ -774,7 +774,7 @@ mrpt::utils::TPixelCoordf gl_utils::glGetExtends(
 		total += ch->advance + kerning;
 	}
 	max_total = std::max(total, max_total);
-	return mrpt::utils::TPixelCoordf(
+	return mrpt::img::TPixelCoordf(
 		textScale * max_total, textScale * (lines + 1) * spacing);
 #else
 	MRPT_UNUSED_PARAM(text);

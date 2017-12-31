@@ -80,7 +80,7 @@ void flip(mrpt::img::CImage& img);
   * \sa buildIntrinsicParamsMatrix, defaultIntrinsicParamsMatrix, TPixelCoordf
   */
 mrpt::math::TPoint3D pixelTo3D(
-	const mrpt::utils::TPixelCoordf& xy, const mrpt::math::CMatrixDouble33& A);
+	const mrpt::img::TPixelCoordf& xy, const mrpt::math::CMatrixDouble33& A);
 
 /** Builds the intrinsic parameters matrix A from parameters:
   * \param focalLengthX [IN]   The focal length, in X (horizontal) pixels

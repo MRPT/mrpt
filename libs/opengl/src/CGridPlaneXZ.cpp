@@ -10,7 +10,7 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CGridPlaneXZ.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include "opengl_internals.h"
 
@@ -96,7 +96,7 @@ void CGridPlaneXZ::render_dl() const
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void CGridPlaneXZ::writeToStream(mrpt::utils::CStream& out, int* version) const
+void CGridPlaneXZ::writeToStream(mrpt::serialization::CArchive& out, int* version) const
 {
 	if (version)
 		*version = 1;
@@ -114,7 +114,7 @@ void CGridPlaneXZ::writeToStream(mrpt::utils::CStream& out, int* version) const
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void CGridPlaneXZ::readFromStream(mrpt::utils::CStream& in, int version)
+void CGridPlaneXZ::readFromStream(mrpt::serialization::CArchive& in, int version)
 {
 	switch (version)
 	{

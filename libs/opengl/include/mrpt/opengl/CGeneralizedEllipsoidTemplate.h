@@ -12,7 +12,7 @@
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/types_math.h>
-#include <mrpt/utils/CStream.h>  // for >> ops
+#include <mrpt/serialization/CArchive.h>  // for >> ops
 #include <mrpt/math/matrix_serialization.h>  // for >> ops
 
 namespace mrpt
@@ -264,7 +264,7 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableDisplayList
 	/** Cholesky U triangular matrix cache. */
 	mutable cov_matrix_t m_U;
 
-	void thisclass_writeToStream(mrpt::utils::CStream& out) const
+	void thisclass_writeToStream(mrpt::serialization::CArchive& out) const
 	{
 		using namespace mrpt::math;
 		using namespace mrpt::utils;
@@ -272,7 +272,7 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableDisplayList
 		out << version << m_cov << m_mean << m_quantiles << m_lineWidth
 			<< m_numSegments;
 	}
-	void thisclass_readFromStream(mrpt::utils::CStream& in)
+	void thisclass_readFromStream(mrpt::serialization::CArchive& in)
 	{
 		uint8_t version;
 		in >> version;

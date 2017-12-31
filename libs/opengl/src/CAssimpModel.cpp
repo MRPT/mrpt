@@ -97,7 +97,7 @@ void CAssimpModel::render_dl() const
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void CAssimpModel::writeToStream(mrpt::utils::CStream& out, int* version) const
+void CAssimpModel::writeToStream(mrpt::serialization::CArchive& out, int* version) const
 {
 	if (version)
 		*version = 0;
@@ -124,7 +124,7 @@ void CAssimpModel::writeToStream(mrpt::utils::CStream& out, int* version) const
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void CAssimpModel::readFromStream(mrpt::utils::CStream& in, int version)
+void CAssimpModel::readFromStream(mrpt::serialization::CArchive& in, int version)
 {
 	THROW_EXCEPTION("MRPT can't serialize Assimp objects yet!");
 

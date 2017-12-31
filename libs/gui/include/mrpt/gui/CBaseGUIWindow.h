@@ -27,8 +27,8 @@ namespace gui
 {
 /** The base class for GUI window classes.
   *
-  *   This class can be observed (see mrpt::utils::CObserver) for the following
- * events (see mrpt::utils::mrptEvent):
+  *   This class can be observed (see mrpt::system::CObserver) for the following
+ * events (see mrpt::system::mrptEvent):
   *   - mrpt::gui::mrptEventWindowChar
   *   - mrpt::gui::mrptEventWindowResize
   *   - mrpt::gui::mrptEventMouseDown
@@ -41,7 +41,7 @@ namespace gui
   *    so all your code in the handler must be thread safe.
   * \ingroup mrpt_gui_grp
   */
-class CBaseGUIWindow : public mrpt::utils::CObservable
+class CBaseGUIWindow : public mrpt::system::CObservable
 {
 	friend class CWindowDialog;
 	friend class C3DWindowDialog;
@@ -166,7 +166,7 @@ class CBaseGUIWindow : public mrpt::utils::CObservable
  * from the wxWidgets internal MRPT thread,
   *    so all your code in the handler must be thread safe.
   */
-class mrptEventWindowChar : public mrpt::utils::mrptEvent
+class mrptEventWindowChar : public mrpt::system::mrptEvent
 {
    protected:
 	/** Just to allow this class to be polymorphic */
@@ -192,7 +192,7 @@ class mrptEventWindowChar : public mrpt::utils::mrptEvent
  * from the wxWidgets internal MRPT thread,
   *    so all your code in the handler must be thread safe.
   */
-class mrptEventWindowResize : public mrpt::utils::mrptEvent
+class mrptEventWindowResize : public mrpt::system::mrptEvent
 {
    protected:
 	/** Just to allow this class to be polymorphic */
@@ -217,14 +217,14 @@ class mrptEventWindowResize : public mrpt::utils::mrptEvent
   *
   * \sa mrptEventMouseMove
   */
-class mrptEventMouseDown : public mrpt::utils::mrptEvent
+class mrptEventMouseDown : public mrpt::system::mrptEvent
 {
    protected:
 	/** Just to allow this class to be polymorphic */
 	virtual void do_nothing() override {}
    public:
 	inline mrptEventMouseDown(
-		CBaseGUIWindow* obj, mrpt::utils::TPixelCoord _coords, bool _leftButton,
+		CBaseGUIWindow* obj, mrpt::img::TPixelCoord _coords, bool _leftButton,
 		bool _rightButton)
 		: source_object(obj),
 		  coords(_coords),
@@ -234,7 +234,7 @@ class mrptEventMouseDown : public mrpt::utils::mrptEvent
 	}
 
 	CBaseGUIWindow* source_object;
-	mrpt::utils::TPixelCoord coords;
+	mrpt::img::TPixelCoord coords;
 	bool leftButton;
 	bool rightButton;
 };  // End of class def.
@@ -245,14 +245,14 @@ class mrptEventMouseDown : public mrpt::utils::mrptEvent
 *    so all your code in the handler must be thread safe.
 * \sa mrptEventMouseDown
 */
-class mrptEventMouseMove : public mrpt::utils::mrptEvent
+class mrptEventMouseMove : public mrpt::system::mrptEvent
 {
    protected:
 	/** Just to allow this class to be polymorphic */
 	virtual void do_nothing() override {}
    public:
 	inline mrptEventMouseMove(
-		CBaseGUIWindow* obj, mrpt::utils::TPixelCoord _coords, bool _leftButton,
+		CBaseGUIWindow* obj, mrpt::img::TPixelCoord _coords, bool _leftButton,
 		bool _rightButton)
 		: source_object(obj),
 		  coords(_coords),
@@ -262,7 +262,7 @@ class mrptEventMouseMove : public mrpt::utils::mrptEvent
 	}
 
 	CBaseGUIWindow* source_object;
-	mrpt::utils::TPixelCoord coords;
+	mrpt::img::TPixelCoord coords;
 	bool leftButton;
 	bool rightButton;
 };  // End of class def.
@@ -280,7 +280,7 @@ class mrptEventMouseMove : public mrpt::utils::mrptEvent
   *
   * \sa CBaseGUIWindow
   */
-class mrptEventWindowClosed : public mrpt::utils::mrptEvent
+class mrptEventWindowClosed : public mrpt::system::mrptEvent
 {
    protected:
 	/** Just to allow this class to be polymorphic */

@@ -25,21 +25,21 @@ class COpenGLViewport;
 class CSetOfObjects;
 
 /** The base class of 3D objects that can be directly rendered through OpenGL.
-  *  In this class there are a set of common properties to all 3D objects,
-  *mainly:
-  *		- A name (m_name): A name that can be optionally asigned to objects for
-  *easing its reference.
-  *		- 6D coordinates (x,y,z,yaw,pitch,roll), relative to the "current"
-  *reference framework. By default, any object is referenced to global scene
-  *coordinates.
-  *		- A RGB color: This field will be used in simple elements (points,
-  *lines,
-  *text,...) but is ignored in more complex objects that carry their own color
-  *information (triangle sets,...)
-  *  See the main class opengl::COpenGLScene
-  *  \sa opengl::COpenGLScene, mrpt::opengl
-  * \ingroup mrpt_opengl_grp
-  */
+ *  In this class there are a set of common properties to all 3D objects,
+ *mainly:
+ *		- A name (m_name): A name that can be optionally asigned to objects for
+ *easing its reference.
+ *		- 6D coordinates (x,y,z,yaw,pitch,roll), relative to the "current"
+ *reference framework. By default, any object is referenced to global scene
+ *coordinates.
+ *		- A RGB color: This field will be used in simple elements (points,
+ *lines,
+ *text,...) but is ignored in more complex objects that carry their own color
+ *information (triangle sets,...)
+ *  See the main class opengl::COpenGLScene
+ *  \sa opengl::COpenGLScene, mrpt::opengl
+ * \ingroup mrpt_opengl_grp
+ */
 class CRenderizable : public mrpt::serialization::CSerializable
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CRenderizable)
@@ -247,9 +247,8 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	/** Changes the default object color \return a ref to this */
 	CRenderizable& setColor(const mrpt::img::TColorf& c)
 	{
-		return setColor_u8(
-			mrpt::img::TColor(
-				c.R * 255.f, c.G * 255.f, c.B * 255.f, c.A * 255.f));
+		return setColor_u8(mrpt::img::TColor(
+			c.R * 255.f, c.G * 255.f, c.B * 255.f, c.A * 255.f));
 	}
 
 	/** Set the color components of this object (R,G,B,Alpha, in the range 0-1)
@@ -279,14 +278,14 @@ class CRenderizable : public mrpt::serialization::CSerializable
 
 	/** Implements the rendering of 3D objects in each class derived from
 	 * CRenderizable.
-	  */
+	 */
 	virtual void render() const = 0;
 
 	/** Simulation of ray-trace, given a pose. Returns true if the ray
 	 * effectively collisions with the object (returning the distance to the
 	 * origin of the ray in "dist"), or false in other case. "dist" variable
 	 * yields undefined behaviour when false is returned
-	  */
+	 */
 	virtual bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const;
 
 	/** This method is safe for calling from within ::render() methods \sa
@@ -295,8 +294,8 @@ class CRenderizable : public mrpt::serialization::CSerializable
 
 	/** Return the exact width in pixels for a given string, as will be rendered
 	 * by renderTextBitmap().
-	  * \sa renderTextBitmap, mrpt::opengl::gl_utils
-	  */
+	 * \sa renderTextBitmap, mrpt::opengl::gl_utils
+	 */
 	static int textBitmapWidth(
 		const std::string& str,
 		mrpt::opengl::TOpenGLFont font =
@@ -304,13 +303,13 @@ class CRenderizable : public mrpt::serialization::CSerializable
 
 	/** Render a text message in the current rendering context, creating a
 	 * glViewport in the way (do not call within ::render() methods)
-	  *   - Coordinates (x,y) are 2D pixels, starting at bottom-left of the
+	 *   - Coordinates (x,y) are 2D pixels, starting at bottom-left of the
 	 * viewport. Negative numbers will wrap to the opposite side of the viewport
 	 * (e.g. x=-10 means 10px fromt the right).
-	  *   - The text color is defined by (color_r,color_g,color_b), each float
+	 *   - The text color is defined by (color_r,color_g,color_b), each float
 	 * numbers in the range [0,1].
-	  *  \sa renderTextBitmap, textBitmapWidth, mrpt::opengl::gl_utils
-	  */
+	 *  \sa renderTextBitmap, textBitmapWidth, mrpt::opengl::gl_utils
+	 */
 	static void renderTextBitmap(
 		int screen_x, int screen_y, const std::string& str, float color_r = 1,
 		float color_g = 1, float color_b = 1,
@@ -327,8 +326,8 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	 */
 	static void checkOpenGLError();
 
-	void writeToStreamRender(utils::CStream& out) const;
-	void readFromStreamRender(utils::CStream& in);
+	void writeToStreamRender(mrpt::serialization::CArchive& out) const;
+	void readFromStreamRender(mrpt::serialization::CArchive& in);
 
 	/** Returns the lowest next free texture name (avoid using OpenGL's own
 	 * function since we may call them from different threads and seem it's not
@@ -343,11 +342,11 @@ using CListOpenGLObjects = std::deque<CRenderizable::Ptr>;
 /** Applies a mrpt::poses::CPose3D transformation to the object. Note that this
  * method doesn't <i>set</i> the pose to the given value, but <i>combines</i> it
  * with the existing one.
-  * \sa setPose */
+ * \sa setPose */
 CRenderizable::Ptr& operator<<(
 	CRenderizable::Ptr& r, const mrpt::poses::CPose3D& p);
 
-}  // end namespace
-}  // End of namespace
+}  // namespace opengl
+}  // namespace mrpt
 
 #endif

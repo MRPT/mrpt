@@ -128,7 +128,7 @@ class CDlgPoseEst : public wxDialog
 	/** Close signal */
 	bool m_threadMustClose;
 	/** The detected corners, if threadResultsComputed=true */
-	std::vector<mrpt::utils::TPixelCoordf> m_threadResults;
+	std::vector<mrpt::img::TPixelCoordf> m_threadResults;
 	/** Put to true by the thread when done with an image */
 	bool m_threadResultsComputed;
 	bool m_threadIsClosed;

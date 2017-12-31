@@ -12,7 +12,7 @@
 #include <mrpt/opengl/CArrow.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/geometry.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include "opengl_internals.h"
 
@@ -176,7 +176,7 @@ void CArrow::render_dl() const
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void CArrow::writeToStream(mrpt::utils::CStream& out, int* version) const
+void CArrow::writeToStream(mrpt::serialization::CArchive& out, int* version) const
 {
 	if (version)
 		*version = 1;
@@ -194,7 +194,7 @@ void CArrow::writeToStream(mrpt::utils::CStream& out, int* version) const
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void CArrow::readFromStream(mrpt::utils::CStream& in, int version)
+void CArrow::readFromStream(mrpt::serialization::CArchive& in, int version)
 {
 	switch (version)
 	{

@@ -10,7 +10,7 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/COpenGLStandardObject.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
 #include "opengl_internals.h"
 
@@ -77,7 +77,7 @@ void COpenGLStandardObject::render_dl() const
 	 CSerializable objects
   ---------------------------------------------------------------*/
 void COpenGLStandardObject::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+	mrpt::serialization::CArchive& out, int* version) const
 {
 	if (version)
 		*version = 1;
@@ -93,7 +93,7 @@ void COpenGLStandardObject::writeToStream(
 		CSerializable objects
   ---------------------------------------------------------------*/
 void COpenGLStandardObject::readFromStream(
-	mrpt::utils::CStream& in, int version)
+	mrpt::serialization::CArchive& in, int version)
 {
 	switch (version)
 	{

@@ -405,7 +405,7 @@ void TestOpenGLObjects()
 		obj->setGridLimits(-10, 10, -10, 10);
 		obj->setZ(Zs);
 		// obj->enableWireFrame(true);
-		obj->enableColorFromZ(true, mrpt::utils::cmJET);
+		obj->enableColorFromZ(true, mrpt::img::cmJET);
 		theScene->insert(obj);
 
 		opengl::CText::Ptr gl_txt =
@@ -610,7 +610,7 @@ void TestOpenGLObjects()
 		{
 			opengl::CColorBar::Ptr obj =
 				mrpt::make_aligned_shared<opengl::CColorBar>(
-					mrpt::utils::cmHOT, 0.2, 1.0, 0.0, 1.0, -50.0, 100.0,
+					mrpt::img::cmHOT, 0.2, 1.0, 0.0, 1.0, -50.0, 100.0,
 					"%7.02f m/s");
 			obj->setLocation(off_x, 0, 0);
 			theScene->insert(obj);

@@ -12,7 +12,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/ops_matrices.h>  // for extract*()
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
 
 #include "opengl_internals.h"
@@ -153,7 +153,7 @@ void CGeneralizedCylinder::updateMesh() const
 }
 
 void CGeneralizedCylinder::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+	mrpt::serialization::CArchive& out, int* version) const
 {
 	if (version)
 		*version = 1;
@@ -166,7 +166,7 @@ void CGeneralizedCylinder::writeToStream(
 	}
 }
 
-void CGeneralizedCylinder::readFromStream(mrpt::utils::CStream& in, int version)
+void CGeneralizedCylinder::readFromStream(mrpt::serialization::CArchive& in, int version)
 {
 	switch (version)
 	{

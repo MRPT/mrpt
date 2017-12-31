@@ -38,16 +38,16 @@ struct TImageCalibData
 	/** At output, this will be the rectified image */
 	mrpt::img::CImage img_rectified;
 	/** At output, the detected corners (x,y) in pixel units. */
-	std::vector<mrpt::utils::TPixelCoordf> detected_corners;
+	std::vector<mrpt::img::TPixelCoordf> detected_corners;
 	/** At output, the reconstructed pose of the camera. */
 	mrpt::poses::CPose3D reconstructed_camera_pose;
 	/** At output, only will have an empty vector if the checkerboard was not
 	 * found in this image, or the predicted (reprojected) corners, which were
 	 * used to estimate the average square error. */
-	std::vector<mrpt::utils::TPixelCoordf> projectedPoints_distorted;
+	std::vector<mrpt::img::TPixelCoordf> projectedPoints_distorted;
 	/** At output, like projectedPoints_distorted but for the undistorted image.
 	 */
-	std::vector<mrpt::utils::TPixelCoordf> projectedPoints_undistorted;
+	std::vector<mrpt::img::TPixelCoordf> projectedPoints_undistorted;
 
 	/** Empty all the data */
 	void clear() { *this = TImageCalibData(); }

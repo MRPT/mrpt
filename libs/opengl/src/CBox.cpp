@@ -10,7 +10,7 @@
 #include "opengl-precomp.h"  // Precompiled header
 #include <mrpt/opengl/CBox.h>
 #include <mrpt/math/geometry.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/opengl/gl_utils.h>
 
 #include "opengl_internals.h"
@@ -205,7 +205,7 @@ void CBox::render_dl() const
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void CBox::writeToStream(mrpt::utils::CStream& out, int* version) const
+void CBox::writeToStream(mrpt::serialization::CArchive& out, int* version) const
 {
 	if (version)
 		*version = 1;
@@ -225,7 +225,7 @@ void CBox::writeToStream(mrpt::utils::CStream& out, int* version) const
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void CBox::readFromStream(mrpt::utils::CStream& in, int version)
+void CBox::readFromStream(mrpt::serialization::CArchive& in, int version)
 {
 	switch (version)
 	{

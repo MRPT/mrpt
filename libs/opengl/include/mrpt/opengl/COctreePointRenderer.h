@@ -99,7 +99,7 @@ class COctreePointRenderer
 		m_render_queue.clear();
 		m_render_queue.reserve(m_octree_nodes.size());
 
-		mrpt::utils::TPixelCoordf cr_px[8];
+		mrpt::img::TPixelCoordf cr_px[8];
 		float cr_z[8];
 		octree_recursive_render(
 			OCTREE_ROOT_NODE, ri, cr_px, cr_z,
@@ -292,7 +292,7 @@ class COctreePointRenderer
 	/** Render a given node. */
 	void octree_recursive_render(
 		size_t node_idx, const mrpt::opengl::gl_utils::TRenderInfo& ri,
-		mrpt::utils::TPixelCoordf cr_px[8], float cr_z[8],
+		mrpt::img::TPixelCoordf cr_px[8], float cr_z[8],
 		bool corners_are_all_computed = true,
 		bool trust_me_youre_visible = false,
 		float approx_area_sqpixels = 0) const
@@ -310,7 +310,7 @@ class COctreePointRenderer
 			}
 		}
 
-		mrpt::utils::TPixelCoordf px_min(
+		mrpt::img::TPixelCoordf px_min(
 			std::numeric_limits<float>::max(),
 			std::numeric_limits<float>::max()),
 			px_max(
@@ -388,7 +388,7 @@ class COctreePointRenderer
 			// If all children are visible, it's easy:
 			if (children_are_all_visible_for_sure)
 			{
-				mrpt::utils::TPixelCoordf
+				mrpt::img::TPixelCoordf
 					child_cr_px[8];  // No need to initialize
 				float child_cr_z[8];  // No need to initialize
 
@@ -473,14 +473,14 @@ class COctreePointRenderer
 
 // Project all these points:
 #define PROJ_SUB_NODE(POSTFIX)                                       \
-	mrpt::utils::TPixelCoordf px_##POSTFIX;                          \
+	mrpt::img::TPixelCoordf px_##POSTFIX;                          \
 	float depth_##POSTFIX;                                           \
 	ri.projectPointPixels(                                           \
 		p_##POSTFIX.x, p_##POSTFIX.y, p_##POSTFIX.z, px_##POSTFIX.x, \
 		px_##POSTFIX.y, depth_##POSTFIX);
 
 #define PROJ_SUB_NODE_ALREADY_DONE(INDEX, POSTFIX)               \
-	const mrpt::utils::TPixelCoordf px_##POSTFIX = cr_px[INDEX]; \
+	const mrpt::img::TPixelCoordf px_##POSTFIX = cr_px[INDEX]; \
 	float depth_##POSTFIX = cr_z[INDEX];
 
 				PROJ_SUB_NODE_ALREADY_DONE(0, Xm_Ym_Zm)
@@ -521,7 +521,7 @@ class COctreePointRenderer
 #define DO_RECURSE_CHILD(                                                \
 	INDEX, SEQ0, SEQ1, SEQ2, SEQ3, SEQ4, SEQ5, SEQ6, SEQ7)               \
 	{                                                                    \
-		mrpt::utils::TPixelCoordf child_cr_px[8] = {                     \
+		mrpt::img::TPixelCoordf child_cr_px[8] = {                     \
 			px_##SEQ0, px_##SEQ1, px_##SEQ2, px_##SEQ3,                  \
 			px_##SEQ4, px_##SEQ5, px_##SEQ6, px_##SEQ7};                 \
 		float child_cr_z[8] = {depth_##SEQ0, depth_##SEQ1, depth_##SEQ2, \

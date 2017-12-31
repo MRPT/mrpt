@@ -6,35 +6,33 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CObserver_H
-#define CObserver_H
+#pragma once
 
-#include <mrpt/utils/utils_defs.h>
-#include <mrpt/utils/mrptEvent.h>
+#include <mrpt/system/mrptEvent.h>
 #include <set>
 
 namespace mrpt
 {
-namespace utils
+namespace system
 {
 class CObservable;
 
 /** Inherit from this class to get notified about events from any CObservable
  * object after subscribing to it.
-  *
-  *  The main methods in this class are:
-  *   - observeBegin(): To be called to start listening at a given object.
-  *   - OnEvent(): Virtual functions to be implemented in your child class to
+ *
+ *  The main methods in this class are:
+ *   - observeBegin(): To be called to start listening at a given object.
+ *   - OnEvent(): Virtual functions to be implemented in your child class to
  * receive all the notifications.
-  *
-  *  Note that if custom (child) mrptEvent classes are used, you can tell
+ *
+ *  Note that if custom (child) mrptEvent classes are used, you can tell
  * between them in runtime with "dynamic_cast<>()".
-  *
-  * \note The pairs CObservable / CObserver automatically notify each other the
+ *
+ * \note The pairs CObservable / CObserver automatically notify each other the
  * destruction of any of them, effectively ending the subscription of events.
-  * \ingroup mrpt_base_grp
-  *  \sa CObservable, mrptEvent
-  */
+ * \ingroup mrpt_system_grp
+ *  \sa CObservable, mrptEvent
+ */
 class CObserver
 {
 	friend class CObservable;
@@ -60,11 +58,10 @@ class CObserver
    protected:
 	/** This virtual function will be called upon receive of any event after
 	 * starting listening at any CObservable object.
-	  */
+	 */
 	virtual void OnEvent(const mrptEvent& e) = 0;
 
 };  // End of class def.
 
-}  // End of namespace
-}  // end of namespace
-#endif
+}  // namespace system
+}  // namespace mrpt

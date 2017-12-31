@@ -10,7 +10,7 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/COctoMapVoxels.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
 #include "opengl_internals.h"
 
@@ -216,36 +216,36 @@ namespace mrpt
 namespace utils
 {
 CStream& operator<<(
-	mrpt::utils::CStream& out, const COctoMapVoxels::TInfoPerVoxelSet& a)
+	mrpt::serialization::CArchive& out, const COctoMapVoxels::TInfoPerVoxelSet& a)
 {
 	out << a.visible << a.voxels;
 	return out;
 }
 CStream& operator>>(
-	mrpt::utils::CStream& in, COctoMapVoxels::TInfoPerVoxelSet& a)
+	mrpt::serialization::CArchive& in, COctoMapVoxels::TInfoPerVoxelSet& a)
 {
 	in >> a.visible >> a.voxels;
 	return in;
 }
 
 CStream& operator<<(
-	mrpt::utils::CStream& out, const COctoMapVoxels::TGridCube& a)
+	mrpt::serialization::CArchive& out, const COctoMapVoxels::TGridCube& a)
 {
 	out << a.min << a.max;
 	return out;
 }
-CStream& operator>>(mrpt::utils::CStream& in, COctoMapVoxels::TGridCube& a)
+CStream& operator>>(mrpt::serialization::CArchive& in, COctoMapVoxels::TGridCube& a)
 {
 	in >> a.min >> a.max;
 	return in;
 }
 
-CStream& operator<<(mrpt::utils::CStream& out, const COctoMapVoxels::TVoxel& a)
+CStream& operator<<(mrpt::serialization::CArchive& out, const COctoMapVoxels::TVoxel& a)
 {
 	out << a.coords << a.side_length << a.color;
 	return out;
 }
-CStream& operator>>(mrpt::utils::CStream& in, COctoMapVoxels::TVoxel& a)
+CStream& operator>>(mrpt::serialization::CArchive& in, COctoMapVoxels::TVoxel& a)
 {
 	in >> a.coords >> a.side_length >> a.color;
 	return in;
@@ -258,7 +258,7 @@ CStream& operator>>(mrpt::utils::CStream& in, COctoMapVoxels::TVoxel& a)
 	 CSerializable objects
   ---------------------------------------------------------------*/
 void COctoMapVoxels::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+	mrpt::serialization::CArchive& out, int* version) const
 {
 	if (version)
 		*version = 2;
@@ -278,7 +278,7 @@ void COctoMapVoxels::writeToStream(
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void COctoMapVoxels::readFromStream(mrpt::utils::CStream& in, int version)
+void COctoMapVoxels::readFromStream(mrpt::serialization::CArchive& in, int version)
 {
 	switch (version)
 	{

@@ -9,7 +9,7 @@
 
 #include "opengl-precomp.h"  // Precompiled header
 #include <mrpt/opengl/CFrustum.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/opengl/gl_utils.h>
 
 #include "opengl_internals.h"
@@ -143,7 +143,7 @@ CFrustum::CFrustum(
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void CFrustum::writeToStream(mrpt::utils::CStream& out, int* version) const
+void CFrustum::writeToStream(mrpt::serialization::CArchive& out, int* version) const
 {
 	if (version)
 		*version = 0;
@@ -162,7 +162,7 @@ void CFrustum::writeToStream(mrpt::utils::CStream& out, int* version) const
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void CFrustum::readFromStream(mrpt::utils::CStream& in, int version)
+void CFrustum::readFromStream(mrpt::serialization::CArchive& in, int version)
 {
 	switch (version)
 	{
