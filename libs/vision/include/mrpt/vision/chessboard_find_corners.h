@@ -61,7 +61,7 @@ namespace vision
   */
 bool findChessboardCorners(
 	const mrpt::img::CImage& img,
-	std::vector<mrpt::utils::TPixelCoordf>& cornerCoords,
+	std::vector<mrpt::img::TPixelCoordf>& cornerCoords,
 	unsigned int check_size_x, unsigned int check_size_y,
 	bool normalize_image = true, bool useScaramuzzaMethod = false);
 
@@ -100,7 +100,7 @@ bool findChessboardCorners(
   */
 void findMultipleChessboardsCorners(
 	const mrpt::img::CImage& img,
-	std::vector<std::vector<mrpt::utils::TPixelCoordf>>& cornerCoords,
+	std::vector<std::vector<mrpt::img::TPixelCoordf>>& cornerCoords,
 	unsigned int check_size_x, unsigned int check_size_y);
 
 /** @} */

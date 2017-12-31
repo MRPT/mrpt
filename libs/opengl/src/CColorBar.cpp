@@ -9,7 +9,7 @@
 
 #include "opengl-precomp.h"  // Precompiled header
 #include <mrpt/opengl/CColorBar.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/opengl/gl_utils.h>
 
 #include "opengl_internals.h"
@@ -116,7 +116,7 @@ void CColorBar::render_dl() const
 	{
 		const double col_idx =
 			m_min_col + i * (m_max_col - m_min_col) / (num_divisions - 1);
-		mrpt::utils::colormap(
+		mrpt::img::colormap(
 			m_colormap, col_idx, cols[i].R, cols[i].G, cols[i].B);
 	}
 
@@ -186,7 +186,7 @@ void CColorBar::render_dl() const
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void CColorBar::writeToStream(mrpt::utils::CStream& out, int* version) const
+void CColorBar::writeToStream(mrpt::serialization::CArchive& out, int* version) const
 {
 	if (version)
 		*version = 0;
@@ -204,7 +204,7 @@ void CColorBar::writeToStream(mrpt::utils::CStream& out, int* version) const
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void CColorBar::readFromStream(mrpt::utils::CStream& in, int version)
+void CColorBar::readFromStream(mrpt::serialization::CArchive& in, int version)
 {
 	switch (version)
 	{

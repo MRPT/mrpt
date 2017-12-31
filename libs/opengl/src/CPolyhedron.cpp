@@ -15,7 +15,7 @@
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/ops_containers.h>  // dotProduct()
 #include <mrpt/random.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
 
 #include "opengl_internals.h"
@@ -1992,34 +1992,34 @@ size_t CPolyhedron::facesInVertex(size_t vertex) const
 }
 
 CStream& mrpt::opengl::operator>>(
-	mrpt::utils::CStream& in, CPolyhedron::TPolyhedronEdge& o)
+	mrpt::serialization::CArchive& in, CPolyhedron::TPolyhedronEdge& o)
 {
 	in >> o.v1 >> o.v2;
 	return in;
 }
 
 CStream& mrpt::opengl::operator<<(
-	mrpt::utils::CStream& out, const CPolyhedron::TPolyhedronEdge& o)
+	mrpt::serialization::CArchive& out, const CPolyhedron::TPolyhedronEdge& o)
 {
 	out << o.v1 << o.v2;
 	return out;
 }
 
 CStream& mrpt::opengl::operator>>(
-	mrpt::utils::CStream& in, CPolyhedron::TPolyhedronFace& o)
+	mrpt::serialization::CArchive& in, CPolyhedron::TPolyhedronFace& o)
 {
 	in >> o.vertices >> o.normal[0] >> o.normal[1] >> o.normal[2];
 	return in;
 }
 
 CStream& mrpt::opengl::operator<<(
-	mrpt::utils::CStream& out, const CPolyhedron::TPolyhedronFace& o)
+	mrpt::serialization::CArchive& out, const CPolyhedron::TPolyhedronFace& o)
 {
 	out << o.vertices << o.normal[0] << o.normal[1] << o.normal[2];
 	return out;
 }
 
-void CPolyhedron::writeToStream(mrpt::utils::CStream& out, int* version) const
+void CPolyhedron::writeToStream(mrpt::serialization::CArchive& out, int* version) const
 {
 	if (version)
 		*version = 0;
@@ -2031,7 +2031,7 @@ void CPolyhedron::writeToStream(mrpt::utils::CStream& out, int* version) const
 	}
 }
 
-void CPolyhedron::readFromStream(mrpt::utils::CStream& in, int version)
+void CPolyhedron::readFromStream(mrpt::serialization::CArchive& in, int version)
 {
 	switch (version)
 	{

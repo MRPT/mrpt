@@ -11,7 +11,7 @@
 
 #include <mrpt/opengl/CEllipsoidInverseDepth2D.h>
 #include <mrpt/math/matrix_serialization.h>  // for << >> ops of matrices
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::opengl;
@@ -53,7 +53,7 @@ void CEllipsoidInverseDepth2D::transformFromParameterSpace(
 	 CSerializable objects
   ---------------------------------------------------------------*/
 void CEllipsoidInverseDepth2D::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+	mrpt::serialization::CArchive& out, int* version) const
 {
 	if (version)
 		*version = 0;
@@ -71,7 +71,7 @@ void CEllipsoidInverseDepth2D::writeToStream(
 		CSerializable objects
   ---------------------------------------------------------------*/
 void CEllipsoidInverseDepth2D::readFromStream(
-	mrpt::utils::CStream& in, int version)
+	mrpt::serialization::CArchive& in, int version)
 {
 	switch (version)
 	{

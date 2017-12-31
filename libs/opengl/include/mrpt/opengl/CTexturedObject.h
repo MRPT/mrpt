@@ -49,8 +49,8 @@ class CTexturedObject : public CRenderizableDisplayList
 	/** Must be implemented by derived classes */
 	virtual void render_texturedobj() const = 0;
 
-	void writeToStreamTexturedObject(mrpt::utils::CStream& out) const;
-	void readFromStreamTexturedObject(mrpt::utils::CStream& in);
+	void writeToStreamTexturedObject(mrpt::serialization::CArchive& out) const;
+	void readFromStreamTexturedObject(mrpt::serialization::CArchive& in);
 
    public:
 	/** Assigns a texture and a transparency image, and enables transparency (If

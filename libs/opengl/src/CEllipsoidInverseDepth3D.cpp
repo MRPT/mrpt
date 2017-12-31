@@ -10,7 +10,7 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CEllipsoidInverseDepth3D.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::opengl;
@@ -56,7 +56,7 @@ void CEllipsoidInverseDepth3D::transformFromParameterSpace(
 	 CSerializable objects
   ---------------------------------------------------------------*/
 void CEllipsoidInverseDepth3D::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+	mrpt::serialization::CArchive& out, int* version) const
 {
 	if (version)
 		*version = 0;
@@ -74,7 +74,7 @@ void CEllipsoidInverseDepth3D::writeToStream(
 		CSerializable objects
   ---------------------------------------------------------------*/
 void CEllipsoidInverseDepth3D::readFromStream(
-	mrpt::utils::CStream& in, int version)
+	mrpt::serialization::CArchive& in, int version)
 {
 	switch (version)
 	{

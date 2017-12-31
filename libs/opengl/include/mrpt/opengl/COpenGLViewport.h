@@ -15,9 +15,8 @@
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CLight.h>
 #include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/utils/CObservable.h>
-#include <mrpt/utils/CStringList.h>
-#include <mrpt/utils/mrptEvent.h>
+#include <mrpt/system/CObservable.h>
+#include <mrpt/system/mrptEvent.h>
 
 namespace mrpt
 {
@@ -32,37 +31,37 @@ class COpenGLScene;
 class CRenderizable;
 
 /** A viewport within a COpenGLScene, containing a set of OpenGL objects to
-  *render.
-  *   This class has protected constuctor, thus it cannot be created by users.
-  *Use COpenGLScene::createViewport instead.
-  *  A viewport has these "operation modes":
-  *		- Normal (default): It renders the contained objects.
-  *		- Cloned: It clones the objects from another viewport. See \a
-  *setCloneView()
-  *		- Image mode: It renders an image (e.g. from a video stream) efficiently
-  *using a textued quad. See \a setImageView().
-  *
-  * In any case, the viewport can be resized to only fit a part of the entire
-  *parent viewport.
-  *  There will be always at least one viewport in a COpenGLScene named "main".
-  *
-  * This class can be observed (see mrpt::utils::CObserver) for the following
-  *events (see mrpt::utils::mrptEvent):
-  *   - mrpt::opengl::mrptEventGLPreRender
-  *   - mrpt::opengl::mrptEventGLPostRender
-  *
-  * Two directional light sources at infinity are created by default, with
-  *directions (-1,-1,-1) and (1,2,1), respectively.
-  * All OpenGL properties of light sources are accesible via the methods:
-  *setNumberOfLights(), lightsClearAll(), addLight(), and getLight().
-  * Please, refer to mrpt::opengl::CLight and the standard OpenGL documentation
-  *for the meaning of all light properties.
-  *
-  *  Refer to mrpt::opengl::COpenGLScene for further details.
-  * \ingroup mrpt_opengl_grp
-  */
+ *render.
+ *   This class has protected constuctor, thus it cannot be created by users.
+ *Use COpenGLScene::createViewport instead.
+ *  A viewport has these "operation modes":
+ *		- Normal (default): It renders the contained objects.
+ *		- Cloned: It clones the objects from another viewport. See \a
+ *setCloneView()
+ *		- Image mode: It renders an image (e.g. from a video stream) efficiently
+ *using a textued quad. See \a setImageView().
+ *
+ * In any case, the viewport can be resized to only fit a part of the entire
+ *parent viewport.
+ *  There will be always at least one viewport in a COpenGLScene named "main".
+ *
+ * This class can be observed (see mrpt::system::CObserver) for the following
+ *events (see mrpt::system::mrptEvent):
+ *   - mrpt::opengl::mrptEventGLPreRender
+ *   - mrpt::opengl::mrptEventGLPostRender
+ *
+ * Two directional light sources at infinity are created by default, with
+ *directions (-1,-1,-1) and (1,2,1), respectively.
+ * All OpenGL properties of light sources are accesible via the methods:
+ *setNumberOfLights(), lightsClearAll(), addLight(), and getLight().
+ * Please, refer to mrpt::opengl::CLight and the standard OpenGL documentation
+ *for the meaning of all light properties.
+ *
+ *  Refer to mrpt::opengl::COpenGLScene for further details.
+ * \ingroup mrpt_opengl_grp
+ */
 class COpenGLViewport : public mrpt::serialization::CSerializable,
-						public mrpt::utils::CObservable
+						public mrpt::system::CObservable
 {
 	DEFINE_SERIALIZABLE(COpenGLViewport)
 	friend class COpenGLScene;
@@ -74,36 +73,36 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 
 	/** Set this viewport as a clone of some other viewport, given its name - as
 	 * a side effect, current list of internal OpenGL objects is cleared.
-	  *  By default, only the objects are cloned, not the camera. See
-	  * \sa resetCloneView
-	  */
+	 *  By default, only the objects are cloned, not the camera. See
+	 * \sa resetCloneView
+	 */
 	void setCloneView(const std::string& clonedViewport);
 
 	/** Set this viewport into "image view"-mode, where an image is efficiently
 	 * drawn (fitting the viewport area) using an OpenGL textured quad.
-	  *  Call this method with the new image to update the displayed image (but
+	 *  Call this method with the new image to update the displayed image (but
 	 * recall to first lock the parent openglscene's critical section, then do
 	 * the update, then release the lock, and then issue a window repaint).
-	  *  Internally, the texture is drawn using a mrpt::opengl::CTexturedPlane
-	  *  The viewport can be reverted to behave like a normal viewport by
+	 *  Internally, the texture is drawn using a mrpt::opengl::CTexturedPlane
+	 *  The viewport can be reverted to behave like a normal viewport by
 	 * calling setNormalMode()
-	  * \sa setImageView_fast
-	  */
+	 * \sa setImageView_fast
+	 */
 	void setImageView(const mrpt::img::CImage& img);
 
 	/** Just like \a setImageView but moves the internal image memory instead of
 	 * making a copy, so it's faster but empties the input image.
-	  * \sa setImageView
-	  */
+	 * \sa setImageView
+	 */
 	void setImageView_fast(mrpt::img::CImage& img);
 
 	/** Reset the viewport to normal mode: rendering its own objects.
-	  * \sa setCloneView, setNormalMode
-	  */
+	 * \sa setCloneView, setNormalMode
+	 */
 	inline void resetCloneView() { setNormalMode(); }
 	/** If set to true, and setCloneView() has been called, this viewport will
 	 * be rendered using the camera of the cloned viewport.
-	  */
+	 */
 	inline void setCloneCamera(bool enable) { m_isClonedCamera = enable; }
 	/** Resets the viewport to a normal 3D viewport \sa setCloneView,
 	 * setImageView */
@@ -133,11 +132,13 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	void setNumberOfLights(const size_t N) { m_lights.resize(N); }
 	CLight& getLight(const size_t i)
 	{
-		ASSERT_BELOW_(i, m_lights.size()) return m_lights[i];
+		ASSERT_BELOW_(i, m_lights.size());
+		return m_lights[i];
 	}
 	const CLight& getLight(const size_t i) const
 	{
-		ASSERT_BELOW_(i, m_lights.size()) return m_lights[i];
+		ASSERT_BELOW_(i, m_lights.size());
+		return m_lights[i];
 	}
 
 	/** @} */  // end of OpenGL settings
@@ -149,59 +150,59 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	/** Returns the name of the viewport */
 	inline std::string getName() { return m_name; }
 	/** Change the viewport position and dimension on the rendering window.
-	  *  X & Y coordinates here can have two interpretations:
-	  *    - If in the range [0,1], they are factors with respect to the actual
-	  *window sizes (i.e. width=1 means the entire width of the rendering
-	  *window).
-	  *    - If >1, they are interpreted as pixels.
-	  *
-	  *  width & height can be interpreted as:
-	  *		- If >1, they are the size of the viewport in that dimension, in
-	  *pixels.
-	  *		- If in [0,1], they are the size of the viewport in that dimension,
-	  *in
-	  *a factor of the width/height.
-	  *		- If in [-1,0[, the size is computed such as the right/top border
-	  *ends
-	  *up in the given coordinate, interpreted as a factor (e.g. -1: up to the
-	  *end of the viewport, -0.5: up to the middle of it).
-	  *		- If <-1 the size is computed such as the right/top border ends up
-	  *in
-	  *the given absolute coordinate (e.g. -200: up to the row/column 200px).
-	  *
-	  * \note (x,y) specify the lower left corner of the viewport rectangle.
-	  * \sa getViewportPosition
-	  */
+	 *  X & Y coordinates here can have two interpretations:
+	 *    - If in the range [0,1], they are factors with respect to the actual
+	 *window sizes (i.e. width=1 means the entire width of the rendering
+	 *window).
+	 *    - If >1, they are interpreted as pixels.
+	 *
+	 *  width & height can be interpreted as:
+	 *		- If >1, they are the size of the viewport in that dimension, in
+	 *pixels.
+	 *		- If in [0,1], they are the size of the viewport in that dimension,
+	 *in
+	 *a factor of the width/height.
+	 *		- If in [-1,0[, the size is computed such as the right/top border
+	 *ends
+	 *up in the given coordinate, interpreted as a factor (e.g. -1: up to the
+	 *end of the viewport, -0.5: up to the middle of it).
+	 *		- If <-1 the size is computed such as the right/top border ends up
+	 *in
+	 *the given absolute coordinate (e.g. -200: up to the row/column 200px).
+	 *
+	 * \note (x,y) specify the lower left corner of the viewport rectangle.
+	 * \sa getViewportPosition
+	 */
 	void setViewportPosition(
 		const double x, const double y, const double width,
 		const double height);
 
 	/** Get the current viewport position and dimension on the rendering window.
-	  *  X & Y coordinates here can have two interpretations:
-	  *    - If in the range [0,1], they are factors with respect to the actual
+	 *  X & Y coordinates here can have two interpretations:
+	 *    - If in the range [0,1], they are factors with respect to the actual
 	 * window sizes (i.e. width=1 means the entire width of the rendering
 	 * window).
-	  *    - If >1, they are interpreted as pixels.
-	  * \note (x,y) specify the lower left corner of the viewport rectangle.
-	  * \sa setViewportPosition
-	  */
+	 *    - If >1, they are interpreted as pixels.
+	 * \note (x,y) specify the lower left corner of the viewport rectangle.
+	 * \sa setViewportPosition
+	 */
 	void getViewportPosition(
 		double& x, double& y, double& width, double& height);
 
 	/** Set the min/max clip depth distances of the rendering frustum (default:
 	 * 0.1 - 10000)
-	  * \sa getViewportClipDistances
-	  */
+	 * \sa getViewportClipDistances
+	 */
 	void setViewportClipDistances(const double clip_min, const double clip_max);
 
 	/** Get the current min/max clip depth distances of the rendering frustum
 	 * (default: 0.1 - 10000)
-	  * \sa setViewportClipDistances
-	  */
+	 * \sa setViewportClipDistances
+	 */
 	void getViewportClipDistances(double& clip_min, double& clip_max) const;
 
 	/** Set the border size ("frame") of the viewport (default=0).
-	  */
+	 */
 	inline void setBorderSize(unsigned int lineWidth)
 	{
 		m_borderWidth = lineWidth;
@@ -209,11 +210,11 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 
 	/** Return whether the viewport will be rendered transparent over previous
 	 * viewports.
-	  */
+	 */
 	inline bool isTransparent() { return m_isTransparent; }
 	/** Set the transparency, that is, whether the viewport will be rendered
 	 * transparent over previous viewports (default=false).
-	  */
+	 */
 	inline void setTransparent(bool trans) { m_isTransparent = trans; }
 	/** Set a background color different from that of the parent GUI window */
 	inline void setCustomBackgroundColor(const mrpt::img::TColorf& color)
@@ -230,18 +231,18 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	/** Compute the 3D ray corresponding to a given pixel; this can be used to
 	 * allow the user to pick and select 3D objects by clicking onto the 2D
 	 * image.
-	  *  \param x_coord Horizontal coordinate with the usual meaning (0:left of
+	 *  \param x_coord Horizontal coordinate with the usual meaning (0:left of
 	 * the viewport, W-1: right border).
-	  *  \param y_coord Horizontal coordinate with the usual meaning (0:top of
+	 *  \param y_coord Horizontal coordinate with the usual meaning (0:top of
 	 * the viewport, H-1: right border).
-	  * \param out_cameraPose If not nullptr, will have the camera 3D pose as a
+	 * \param out_cameraPose If not nullptr, will have the camera 3D pose as a
 	 * mrpt::poses::CPose3D. See also
-	  * \note (x,y) refer to VIEWPORT coordinates. Take into account this when
+	 * \note (x,y) refer to VIEWPORT coordinates. Take into account this when
 	 * viewports do not extend to the whole window size.
-	  * \note x and y are double instead of integers to allow sub-pixel
+	 * \note x and y are double instead of integers to allow sub-pixel
 	 * precision.
-	  * \sa getCurrentCameraPose
-	  */
+	 * \sa getCurrentCameraPose
+	 */
 	void get3DRayForPixelCoord(
 		const double x_coord, const double y_coord,
 		mrpt::math::TLine3D& out_ray,
@@ -262,22 +263,22 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	inline iterator begin() { return m_objects.begin(); }
 	inline iterator end() { return m_objects.end(); }
 	/** Delete all internal obejcts
-	  * \sa insert */
+	 * \sa insert */
 	void clear();
 
 	/** Insert a new object into the list.
-	  *  The object MUST NOT be deleted, it will be deleted automatically by
+	 *  The object MUST NOT be deleted, it will be deleted automatically by
 	 * this object when not required anymore.
-	  */
+	 */
 	void insert(const CRenderizable::Ptr& newObject);
 
 	/** Compute the current 3D camera pose.
-	  * \sa get3DRayForPixelCoord
-	  */
+	 * \sa get3DRayForPixelCoord
+	 */
 	void getCurrentCameraPose(mrpt::poses::CPose3D& out_cameraPose) const;
 
 	/** Returns the first object with a given name, or nullptr if not found.
-	  */
+	 */
 	CRenderizable::Ptr getByName(const std::string& str);
 
 	/** Returns the i'th object of a given class (or of a descendant class), or
@@ -293,25 +294,21 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	{
 		MRPT_START
 		size_t foundCount = 0;
-		const mrpt::utils::TRuntimeClassId* class_ID = &T::GetRuntimeClassIdStatic();
-		for (CListOpenGLObjects::const_iterator it = m_objects.begin();
-			 it != m_objects.end(); ++it)
-			if (*it && (*it)->GetRuntimeClass()->derivedFrom(class_ID))
-				if (foundCount++ == ith)
-					return std::dynamic_pointer_cast<T>(*it);
+		const auto* class_ID = &T::GetRuntimeClassIdStatic();
+		for (const auto& o : m_objects)
+			if (o && o->GetRuntimeClass()->derivedFrom(class_ID))
+				if (foundCount++ == ith) return std::dynamic_pointer_cast<T>(o);
 
 		// If not found directly, search recursively:
-		for (CListOpenGLObjects::const_iterator it = m_objects.begin();
-			 it != m_objects.end(); ++it)
+		for (const auto& o : m_objects)
 		{
-			if (*it &&
-				(*it)->GetRuntimeClass() ==
-					CLASS_ID_NAMESPACE(CSetOfObjects, mrpt::opengl))
+			if (o && o->GetRuntimeClass() ==
+						 CLASS_ID_NAMESPACE(CSetOfObjects, mrpt::opengl))
 			{
-				typename T::Ptr o = std::dynamic_pointer_cast<T>(
-					std::dynamic_pointer_cast<CSetOfObjects>(*it)
-						->getByClass<T>(ith));
-				if (o) return o;
+				typename T::Ptr obj = std::dynamic_pointer_cast<T>(
+					std::dynamic_pointer_cast<CSetOfObjects>(o)
+						->template getByClass<T>(ith));
+				if (obj) return obj;
 			}
 		}
 		return typename T::Ptr();  // Not found: return empty smart pointer
@@ -320,7 +317,7 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 
 	/** Removes the given object from the scene (it also deletes the object to
 	 * free its memory).
-	  */
+	 */
 	void removeObject(const CRenderizable::Ptr& obj);
 
 	/** Number of objects contained. */
@@ -343,19 +340,19 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 
    protected:
 	/** Constructor, invoked from COpenGLScene only.
-	  */
+	 */
 	COpenGLViewport(
 		COpenGLScene* parent = nullptr,
 		const std::string& name = std::string(""));
 
 	/** Initializes all textures in the scene (See
 	 * opengl::CTexturedPlane::loadTextureInOpenGL)
-	  */
+	 */
 	void initializeAllTextures();
 
 	/** Retrieves a list of all objects in text form.
-	  */
-	void dumpListOfObjects(mrpt::utils::CStringList& lst);
+	 */
+	void dumpListOfObjects(std::vector<std::string>& lst);
 
 	/** Render the objects in this viewport (called from COpenGLScene only) */
 	void render(const int render_width, const int render_height) const;
@@ -363,7 +360,7 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	/** The camera associated to the viewport */
 	opengl::CCamera m_camera;
 	/** The scene that contains this viewport. */
-	utils::safe_ptr<COpenGLScene> m_parent;
+	mrpt::safe_ptr<COpenGLScene> m_parent;
 	/** Set by setCloneView */
 	bool m_isCloned;
 	/** Set by setCloneCamera */
@@ -424,13 +421,12 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	mutable TLastProjectiveMatrixInfo m_lastProjMat;
 
 	/** The list of objects that comprise the 3D scene.
-	  *  Objects are automatically deleted when calling "clear" or in the
+	 *  Objects are automatically deleted when calling "clear" or in the
 	 * destructor.
-	  */
+	 */
 	opengl::CListOpenGLObjects m_objects;
 
-	void internal_setImageView_fast(
-		const mrpt::img::CImage& img, bool is_fast);
+	void internal_setImageView_fast(const mrpt::img::CImage& img, bool is_fast);
 
 	// OpenGL global settings:
 	bool m_OpenGL_enablePolygonNicest;
@@ -438,9 +434,9 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	std::vector<CLight> m_lights;
 };
 /**
-  * Inserts an openGL object into a viewport. Allows call chaining.
-  * \sa mrpt::opengl::COpenGLViewport::insert
-  */
+ * Inserts an openGL object into a viewport. Allows call chaining.
+ * \sa mrpt::opengl::COpenGLViewport::insert
+ */
 inline COpenGLViewport::Ptr& operator<<(
 	COpenGLViewport::Ptr& s, const CRenderizable::Ptr& r)
 {
@@ -448,10 +444,10 @@ inline COpenGLViewport::Ptr& operator<<(
 	return s;
 }
 /**
-  * Inserts any iterable set of openGL objects into a viewport. Allows call
+ * Inserts any iterable set of openGL objects into a viewport. Allows call
  * chaining.
-  * \sa mrpt::opengl::COpenGLViewport::insert
-  */
+ * \sa mrpt::opengl::COpenGLViewport::insert
+ */
 inline COpenGLViewport::Ptr& operator<<(
 	COpenGLViewport::Ptr& s, const std::vector<CRenderizable::Ptr>& v)
 {
@@ -467,28 +463,29 @@ inline COpenGLViewport::Ptr& operator<<(
 /**  An event sent by an mrpt::opengl::COpenGLViewport just after clearing the
  * viewport and setting the GL_PROJECTION matrix, and before calling the scene
  * OpenGL drawing primitives.
-  *
-  *  While handling this event you can call OpenGL glBegin(),glEnd(),gl*
+ *
+ *  While handling this event you can call OpenGL glBegin(),glEnd(),gl*
  * functions or those in mrpt::opengl::gl_utils to draw stuff *in the back* of
  * the normal
-  *   objects contained in the COpenGLScene.
-  *
-  *  After processing this event, COpenGLViewport will change the OpenGL matrix
+ *   objects contained in the COpenGLScene.
+ *
+ *  After processing this event, COpenGLViewport will change the OpenGL matrix
  * mode into "GL_MODELVIEW" and load an identity matrix to continue
-  *   rendering the scene objects as usual. Any change done to the GL_PROJECTION
+ *   rendering the scene objects as usual. Any change done to the GL_PROJECTION
  * will have effects, so do a glPushMatrix()/glPopMatrix() if that is not your
  * intention.
-  *
-  *
-  *  IMPORTANTE NOTICE: Event handlers in your observer class will most likely
+ *
+ *
+ *  IMPORTANTE NOTICE: Event handlers in your observer class will most likely
  * be invoked from an internal GUI thread of MRPT,
-  *    so all your code in the handler must be thread safe.
-  */
-class mrptEventGLPreRender : public mrpt::utils::mrptEvent
+ *    so all your code in the handler must be thread safe.
+ */
+class mrptEventGLPreRender : public mrpt::system::mrptEvent
 {
    protected:
 	/** Just to allow this class to be polymorphic */
 	void do_nothing() override {}
+
    public:
 	inline mrptEventGLPreRender(const COpenGLViewport* obj)
 		: source_viewport(obj)
@@ -499,21 +496,22 @@ class mrptEventGLPreRender : public mrpt::utils::mrptEvent
 
 /**  An event sent by an mrpt::opengl::COpenGLViewport after calling the scene
  * OpenGL drawing primitives and before doing a glSwapBuffers
-  *
-  *  While handling this event you can call OpenGL glBegin(),glEnd(),gl*
+ *
+ *  While handling this event you can call OpenGL glBegin(),glEnd(),gl*
  * functions or those in mrpt::opengl::gl_utils to draw stuff *on the top* of
  * the normal
-  *   objects contained in the COpenGLScene.
-  *
-  *  IMPORTANTE NOTICE: Event handlers in your observer class will most likely
+ *   objects contained in the COpenGLScene.
+ *
+ *  IMPORTANTE NOTICE: Event handlers in your observer class will most likely
  * be invoked from an internal GUI thread of MRPT,
-  *    so all your code in the handler must be thread safe.
-  */
-class mrptEventGLPostRender : public mrpt::utils::mrptEvent
+ *    so all your code in the handler must be thread safe.
+ */
+class mrptEventGLPostRender : public mrpt::system::mrptEvent
 {
    protected:
 	/** Just to allow this class to be polymorphic */
 	void do_nothing() override {}
+
    public:
 	inline mrptEventGLPostRender(const COpenGLViewport* obj)
 		: source_viewport(obj)
@@ -524,6 +522,6 @@ class mrptEventGLPostRender : public mrpt::utils::mrptEvent
 
 /** @} */
 
-}  // end namespace
+}  // namespace opengl
 
-}  // End of namespace
+}  // namespace mrpt

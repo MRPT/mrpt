@@ -122,7 +122,7 @@ class CMeshFast : public CRenderizableDisplayList
 		CRenderizableDisplayList::notifyChange();
 	}
 	void enableColorFromZ(
-		bool v, mrpt::img::TColormap colorMap = mrpt::utils::cmJET)
+		bool v, mrpt::img::TColormap colorMap = mrpt::img::cmJET)
 	{
 		m_colorFromZ = v;
 		m_colorMap = colorMap;
@@ -245,7 +245,7 @@ class CMeshFast : public CRenderizableDisplayList
 		  C_r(0, 0),
 		  C_g(0, 0),
 		  C_b(0, 0),
-		  m_colorMap(mrpt::utils::cmJET),
+		  m_colorMap(mrpt::img::cmJET),
 		  m_modified_Z(true),
 		  m_modified_Image(false),
 		  xMin(xMin),

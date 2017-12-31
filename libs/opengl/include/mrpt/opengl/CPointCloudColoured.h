@@ -224,7 +224,7 @@ class CPointCloudColoured : public CRenderizable,
 	 * (coord_index:0,1,2 for X,Y,Z) and the given color map. */
 	void recolorizeByCoordinate(
 		const float coord_min, const float coord_max, const int coord_index = 2,
-		const mrpt::img::TColormap color_map = mrpt::utils::cmJET);
+		const mrpt::img::TColormap color_map = mrpt::img::cmJET);
 	/** @} */
 
 	/** Render */
@@ -267,10 +267,10 @@ class CPointCloudColoured : public CRenderizable,
 	/** @} */
 };
 
-mrpt::utils::CStream& operator>>(
-	mrpt::utils::CStream& in, CPointCloudColoured::TPointColour& o);
-mrpt::utils::CStream& operator<<(
-	mrpt::utils::CStream& out, const CPointCloudColoured::TPointColour& o);
+mrpt::serialization::CArchive& operator>>(
+	mrpt::serialization::CArchive& in, CPointCloudColoured::TPointColour& o);
+mrpt::serialization::CArchive& operator<<(
+	mrpt::serialization::CArchive& out, const CPointCloudColoured::TPointColour& o);
 
 }  // end namespace
 

@@ -12,7 +12,7 @@
 #include <mrpt/opengl/CSetOfTriangles.h>
 #include "opengl_internals.h"
 #include <mrpt/math/CMatrixTemplateNumeric.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::opengl;
@@ -79,7 +79,7 @@ void CSetOfTriangles::render_dl() const
 }
 
 static void triangle_writeToStream(
-	mrpt::utils::CStream& o, const CSetOfTriangles::TTriangle& t)
+	mrpt::serialization::CArchive& o, const CSetOfTriangles::TTriangle& t)
 {
 	o.WriteBufferFixEndianness(t.x, 3);
 	o.WriteBufferFixEndianness(t.y, 3);
@@ -91,7 +91,7 @@ static void triangle_writeToStream(
 	o.WriteBufferFixEndianness(t.a, 3);
 }
 static void triangle_readFromStream(
-	mrpt::utils::CStream& i, CSetOfTriangles::TTriangle& t)
+	mrpt::serialization::CArchive& i, CSetOfTriangles::TTriangle& t)
 {
 	i.ReadBufferFixEndianness(t.x, 3);
 	i.ReadBufferFixEndianness(t.y, 3);
@@ -108,7 +108,7 @@ static void triangle_readFromStream(
 	 CSerializable objects
   ---------------------------------------------------------------*/
 void CSetOfTriangles::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+	mrpt::serialization::CArchive& out, int* version) const
 {
 	if (version)
 		*version = 1;
@@ -129,7 +129,7 @@ void CSetOfTriangles::writeToStream(
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void CSetOfTriangles::readFromStream(mrpt::utils::CStream& in, int version)
+void CSetOfTriangles::readFromStream(mrpt::serialization::CArchive& in, int version)
 {
 	switch (version)
 	{

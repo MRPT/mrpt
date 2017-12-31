@@ -10,7 +10,7 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CLight.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include "opengl_internals.h"
 
@@ -48,7 +48,7 @@ CLight::CLight()
 	setDirection(0, 0, -1);
 }
 
-void CLight::writeToStream(mrpt::utils::CStream& out) const
+void CLight::writeToStream(mrpt::serialization::CArchive& out) const
 {
 	const uint8_t version = 0;
 	out << version;
@@ -63,7 +63,7 @@ void CLight::writeToStream(mrpt::utils::CStream& out) const
 		<< spot_cutoff;
 }
 
-void CLight::readFromStream(mrpt::utils::CStream& in)
+void CLight::readFromStream(mrpt::serialization::CArchive& in)
 {
 	uint8_t version;
 	in >> version;
@@ -123,14 +123,14 @@ namespace mrpt
 {
 namespace opengl
 {
-mrpt::utils::CStream& operator>>(
-	mrpt::utils::CStream& in, mrpt::opengl::CLight& o)
+mrpt::serialization::CArchive& operator>>(
+	mrpt::serialization::CArchive& in, mrpt::opengl::CLight& o)
 {
 	o.readFromStream(in);
 	return in;
 }
-mrpt::utils::CStream& operator<<(
-	mrpt::utils::CStream& out, const mrpt::opengl::CLight& o)
+mrpt::serialization::CArchive& operator<<(
+	mrpt::serialization::CArchive& out, const mrpt::opengl::CLight& o)
 {
 	o.writeToStream(out);
 	return out;

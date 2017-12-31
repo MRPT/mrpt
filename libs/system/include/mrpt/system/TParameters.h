@@ -48,7 +48,7 @@ namespace system
  * values must be double's, so
   *    if you type "10" the compiler will make it an "int". Instead, write
  * "10.0".
-  * \ingroup mrpt_base_grp
+  * \ingroup mrpt_system_grp
   * \sa the example in MRPT/samples/params-by-name
   */
 template <typename T>

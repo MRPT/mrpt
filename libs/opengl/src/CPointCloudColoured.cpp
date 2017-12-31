@@ -11,7 +11,7 @@
 
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/core/round.h>  // round()
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/math/ops_containers.h>  // for << ops
 #include <mrpt/serialization/stl_serialization.h>
 
@@ -121,7 +121,7 @@ void CPointCloudColoured::render_subset(
 	 CSerializable objects
   ---------------------------------------------------------------*/
 void CPointCloudColoured::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+	mrpt::serialization::CArchive& out, int* version) const
 {
 	if (version)
 		*version = 2;
@@ -138,7 +138,7 @@ void CPointCloudColoured::writeToStream(
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void CPointCloudColoured::readFromStream(mrpt::utils::CStream& in, int version)
+void CPointCloudColoured::readFromStream(mrpt::serialization::CArchive& in, int version)
 {
 	switch (version)
 	{
@@ -174,14 +174,14 @@ void CPointCloudColoured::readFromStream(mrpt::utils::CStream& in, int version)
 }
 
 CStream& mrpt::opengl::operator>>(
-	mrpt::utils::CStream& in, CPointCloudColoured::TPointColour& o)
+	mrpt::serialization::CArchive& in, CPointCloudColoured::TPointColour& o)
 {
 	in >> o.x >> o.y >> o.z >> o.R >> o.G >> o.B;
 	return in;
 }
 
 CStream& mrpt::opengl::operator<<(
-	mrpt::utils::CStream& out, const CPointCloudColoured::TPointColour& o)
+	mrpt::serialization::CArchive& out, const CPointCloudColoured::TPointColour& o)
 {
 	out << o.x << o.y << o.z << o.R << o.G << o.B;
 	return out;
@@ -290,7 +290,7 @@ void CPointCloudColoured::recolorizeByCoordinate(
 		const float col_idx =
 			std::max(0.0f, std::min(1.0f, (coord - coord_min) * coord_range_1));
 		float r, g, b;
-		mrpt::utils::colormap(color_map, col_idx, r, g, b);
+		mrpt::img::colormap(color_map, col_idx, r, g, b);
 		this->setPointColor_fast(i, r, g, b);
 	}
 }

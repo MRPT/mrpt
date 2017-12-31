@@ -11,7 +11,7 @@
 
 #include <mrpt/opengl/CTexturedObject.h>
 #include <mrpt/system/CTimeLogger.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include "opengl_internals.h"
 #include <memory> // std::align
 
@@ -491,7 +491,7 @@ void CTexturedObject::unloadTexture()
 	 CSerializable objects
   ---------------------------------------------------------------*/
 void CTexturedObject::writeToStreamTexturedObject(
-	mrpt::utils::CStream& out) const
+	mrpt::serialization::CArchive& out) const
 {
 	uint8_t ver = 0;
 
@@ -569,7 +569,7 @@ void CTexturedObject::render_post() const
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void CTexturedObject::readFromStreamTexturedObject(mrpt::utils::CStream& in)
+void CTexturedObject::readFromStreamTexturedObject(mrpt::serialization::CArchive& in)
 {
 	uint8_t version;
 	in >> version;

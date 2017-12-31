@@ -23,7 +23,7 @@ using namespace mrpt::utils;
 CCamModel::CCamModel() : cam() {}
 /**********************************************************************************************************************/
 void CCamModel::jacob_undistor_fm(
-	const mrpt::utils::TPixelCoordf& p, math::CMatrixDouble& J_undist)
+	const mrpt::img::TPixelCoordf& p, math::CMatrixDouble& J_undist)
 {
 	// JL: CHECK!!!!
 	const double Cx = cam.cx();
@@ -54,7 +54,7 @@ void CCamModel::jacob_undistor_fm(
 /******************************************************************************************************************************/
 
 void CCamModel::jacob_undistor(
-	const mrpt::utils::TPixelCoordf& p, mrpt::math::CMatrixDouble& J_undistor)
+	const mrpt::img::TPixelCoordf& p, mrpt::math::CMatrixDouble& J_undistor)
 {
 	// J_undistor.setSize(2,2);
 	const double dx = p.x - cam.cx();
@@ -101,7 +101,7 @@ void CCamModel::jacob_undistor(
 /**********************************************************************************************************************/
 
 void CCamModel::distort_a_point(
-	const mrpt::utils::TPixelCoordf& p, mrpt::utils::TPixelCoordf& distorted_p)
+	const mrpt::img::TPixelCoordf& p, mrpt::img::TPixelCoordf& distorted_p)
 {
 	// JLBC: Added from Davison's SceneLib:
 	//
@@ -123,8 +123,8 @@ void CCamModel::distort_a_point(
 /*************************************************************************************************************************/
 // Removes distortion of a pair of pixel coordinates x,y.
 void CCamModel::undistort_point(
-	const mrpt::utils::TPixelCoordf& p,
-	mrpt::utils::TPixelCoordf& undistorted_p)
+	const mrpt::img::TPixelCoordf& p,
+	mrpt::img::TPixelCoordf& undistorted_p)
 {
 	std::vector<TPixelCoordf> in_p(1), out_p;
 	in_p[0] = p;
@@ -149,7 +149,7 @@ void CCamModel::undistort_point(
  */
 void CCamModel::project_3D_point(
 	const mrpt::math::TPoint3D& p3D,
-	mrpt::utils::TPixelCoordf& distorted_p) const
+	mrpt::img::TPixelCoordf& distorted_p) const
 {
 	// JLBC: From Davison's SceneLib:
 	//
@@ -177,7 +177,7 @@ void CCamModel::project_3D_point(
  * (distorted) pixel position
   */
 void CCamModel::unproject_3D_point(
-	const mrpt::utils::TPixelCoordf& distorted_p,
+	const mrpt::img::TPixelCoordf& distorted_p,
 	mrpt::math::TPoint3D& p3D) const
 {
 	// JLBC: From Davison's SceneLib:
@@ -263,7 +263,7 @@ WideCamera::ProjectionJacobian
 \sa unproject_3D_point
 */
 void CCamModel::jacobian_unproject_with_distortion(
-	const mrpt::utils::TPixelCoordf& p, math::CMatrixDouble& dy_dh) const
+	const mrpt::img::TPixelCoordf& p, math::CMatrixDouble& dy_dh) const
 {
 	// dy/du
 	CMatrixDouble dy_du(3, 2);  // Default is all zeroes

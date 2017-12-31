@@ -21,7 +21,7 @@ using namespace std;
 string myExampleImage(
 	MRPT_EXAMPLES_BASE_DIRECTORY + string("imageBasics/frame_color.jpg"));
 
-class MyObserver : public mrpt::utils::CObserver
+class MyObserver : public mrpt::system::CObserver
 {
    protected:
 	void OnEvent(const mrptEvent& e)

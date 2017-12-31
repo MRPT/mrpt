@@ -11,7 +11,7 @@
 
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/math/ops_containers.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/core/round.h>  // round()
 
 #include "opengl_internals.h"
@@ -218,7 +218,7 @@ void CPointCloud::render_subset(
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void CPointCloud::writeToStream(mrpt::utils::CStream& out, int* version) const
+void CPointCloud::writeToStream(mrpt::serialization::CArchive& out, int* version) const
 {
 	if (version)
 		*version = 4;
@@ -247,7 +247,7 @@ void CPointCloud::writeToStream(mrpt::utils::CStream& out, int* version) const
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void CPointCloud::readFromStream(mrpt::utils::CStream& in, int version)
+void CPointCloud::readFromStream(mrpt::serialization::CArchive& in, int version)
 {
 	switch (version)
 	{

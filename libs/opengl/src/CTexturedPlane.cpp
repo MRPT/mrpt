@@ -10,7 +10,7 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CTexturedPlane.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/opengl/CSetOfTriangles.h>
 
 #include "opengl_internals.h"
@@ -88,7 +88,7 @@ void CTexturedPlane::render_texturedobj() const
 	 CSerializable objects
   ---------------------------------------------------------------*/
 void CTexturedPlane::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+	mrpt::serialization::CArchive& out, int* version) const
 {
 	if (version)
 		*version = 2;
@@ -107,7 +107,7 @@ void CTexturedPlane::writeToStream(
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void CTexturedPlane::readFromStream(mrpt::utils::CStream& in, int version)
+void CTexturedPlane::readFromStream(mrpt::serialization::CArchive& in, int version)
 {
 	switch (version)
 	{

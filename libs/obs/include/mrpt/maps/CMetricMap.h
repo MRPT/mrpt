@@ -35,7 +35,7 @@ namespace maps
  *  robot pose, just the raw observation and information about
  *  the sensor pose relative to the robot mobile base coordinates origin.
  *
- *  Note that all metric maps implement this mrpt::utils::CObservable interface,
+ *  Note that all metric maps implement this mrpt::system::CObservable interface,
  *   emitting the following events:
  *	  - mrpt::obs::mrptEventMetricMapClear: Upon call of the ::clear() method.
  *    - mrpt::obs::mrptEventMetricMapInsert: Upon insertion of an observation
@@ -53,7 +53,7 @@ namespace maps
  * \ingroup mrpt_obs_grp
  */
 class CMetricMap : public mrpt::serialization::CSerializable,
-				   public mrpt::utils::CObservable
+				   public mrpt::system::CObservable
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CMetricMap)
 

@@ -23,7 +23,7 @@ namespace obs
 {
 struct TStereoImageFeatures
 {
-	std::pair<mrpt::utils::TPixelCoordf, mrpt::utils::TPixelCoordf> pixels;
+	std::pair<mrpt::img::TPixelCoordf, mrpt::img::TPixelCoordf> pixels;
 	unsigned int ID;
 };
 
