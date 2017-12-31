@@ -10,7 +10,7 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CVectorField3D.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include "opengl_internals.h"
 
 using namespace mrpt;
@@ -194,7 +194,7 @@ void CVectorField3D::render_dl() const
 	 CSerializable objects
   ---------------------------------------------------------------*/
 void CVectorField3D::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+	mrpt::serialization::CArchive& out, int* version) const
 {
 	if (version)
 		*version = 0;
@@ -216,7 +216,7 @@ void CVectorField3D::writeToStream(
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void CVectorField3D::readFromStream(mrpt::utils::CStream& in, int version)
+void CVectorField3D::readFromStream(mrpt::serialization::CArchive& in, int version)
 {
 	switch (version)
 	{

@@ -10,7 +10,7 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CEllipsoidRangeBearing2D.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::opengl;
@@ -49,7 +49,7 @@ void CEllipsoidRangeBearing2D::transformFromParameterSpace(
 	 CSerializable objects
   ---------------------------------------------------------------*/
 void CEllipsoidRangeBearing2D::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+	mrpt::serialization::CArchive& out, int* version) const
 {
 	if (version)
 		*version = 0;
@@ -65,7 +65,7 @@ void CEllipsoidRangeBearing2D::writeToStream(
 		CSerializable objects
   ---------------------------------------------------------------*/
 void CEllipsoidRangeBearing2D::readFromStream(
-	mrpt::utils::CStream& in, int version)
+	mrpt::serialization::CArchive& in, int version)
 {
 	switch (version)
 	{

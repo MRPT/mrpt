@@ -29,7 +29,7 @@ namespace graphslam
  *
  * \ingroup mrpt_graphslam_grp
  */
-class CWindowObserver : public mrpt::utils::CObserver
+class CWindowObserver : public mrpt::system::CObserver
 {
    public:
 	CWindowObserver();
@@ -51,7 +51,7 @@ class CWindowObserver : public mrpt::utils::CObserver
 		const std::string key_str, const std::string key_desc);
 
    protected:
-	void OnEvent(const mrpt::utils::mrptEvent& e);
+	void OnEvent(const mrpt::system::mrptEvent& e);
 
    private:
 	bool m_showing_help, m_hiding_help;

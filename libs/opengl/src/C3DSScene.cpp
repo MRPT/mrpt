@@ -32,7 +32,7 @@
 #include <mrpt/system/vector_loadsave.h>
 
 #include <mrpt/utils/CStringList.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CFileInputStream.h>
 
@@ -487,7 +487,7 @@ static void light_update(Lib3dsLight* l, Lib3dsFile* file)
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void C3DSScene::writeToStream(mrpt::utils::CStream& out, int* version) const
+void C3DSScene::writeToStream(mrpt::serialization::CArchive& out, int* version) const
 {
 #if MRPT_HAS_LIB3DS
 	if (version)
@@ -519,7 +519,7 @@ void C3DSScene::writeToStream(mrpt::utils::CStream& out, int* version) const
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void C3DSScene::readFromStream(mrpt::utils::CStream& in, int version)
+void C3DSScene::readFromStream(mrpt::serialization::CArchive& in, int version)
 {
 #if MRPT_HAS_LIB3DS
 	switch (version)

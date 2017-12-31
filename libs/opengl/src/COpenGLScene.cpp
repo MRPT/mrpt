@@ -14,7 +14,7 @@
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/utils/CStringList.h>
 #include <mrpt/utils/metaprogramming.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/utils/CFileGZInputStream.h>
@@ -116,7 +116,7 @@ void COpenGLScene::render() const
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void COpenGLScene::writeToStream(mrpt::utils::CStream& out, int* version) const
+void COpenGLScene::writeToStream(mrpt::serialization::CArchive& out, int* version) const
 {
 	if (version)
 		*version = 1;
@@ -137,7 +137,7 @@ void COpenGLScene::writeToStream(mrpt::utils::CStream& out, int* version) const
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void COpenGLScene::readFromStream(mrpt::utils::CStream& in, int version)
+void COpenGLScene::readFromStream(mrpt::serialization::CArchive& in, int version)
 {
 	switch (version)
 	{

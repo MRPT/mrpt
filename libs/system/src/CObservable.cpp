@@ -7,12 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "base-precomp.h"  // Precompiled headers
+#include "system-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/CObserver.h>
-#include <mrpt/utils/CObservable.h>
+#include <mrpt/system/CObserver.h>
+#include <mrpt/system/CObservable.h>
+#include <mrpt/core/exceptions.h>
 
-using namespace mrpt::utils;
+using namespace mrpt::system;
 using namespace std;
 
 CObservable::CObservable() {}
@@ -36,14 +37,14 @@ void CObservable::internal_observer_end(CObserver* o)
 	auto it = m_subscribers.find(o);
 	ASSERTMSG_(
 		it != m_subscribers.end(),
-		"Ending subscription from an observer not subscribed to this object!")
+		"Ending subscription from an observer not subscribed to this object!");
 	m_subscribers.erase(it);
 	MRPT_END
 }
 
 /** Called when you want this object to emit an event to all the observers
  * currently subscribed to this object.
-*/
+ */
 void CObservable::publishEvent(const mrptEvent& e) const
 {
 	MRPT_START

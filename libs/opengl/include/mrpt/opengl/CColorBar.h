@@ -18,21 +18,21 @@ namespace opengl
 {
 /** A colorbar indicator. This class renders a colorbar as a 3D object, in the
  * XY plane.
-  * For an overlay indicator that can be easily added to any display, see
+ * For an overlay indicator that can be easily added to any display, see
  * COpenGLScene::addColorBar()
-  *
-  * \sa opengl::COpenGLScene,opengl::CRenderizable, COpenGLScene::addColorBar()
-  *
-  *  <div align="center">
-  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
+ *
+ * \sa opengl::COpenGLScene,opengl::CRenderizable, COpenGLScene::addColorBar()
+ *
+ *  <div align="center">
+ *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
  * border-style: solid;">
-  *   <tr> <td> mrpt::opengl::CColorBar </td> <td> \image html
+ *   <tr> <td> mrpt::opengl::CColorBar </td> <td> \image html
  * preview_CColorBar.png </td> </tr>
-  *  </table>
-  *  </div>
-  *
-  * \ingroup mrpt_opengl_grp
-  */
+ *  </table>
+ *  </div>
+ *
+ * \ingroup mrpt_opengl_grp
+ */
 class CColorBar : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CColorBar)
@@ -62,8 +62,8 @@ class CColorBar : public CRenderizableDisplayList
 		double label_font_size = .05);
 
 	/** Render
-	  * \sa mrpt::opengl::CRenderizable
-	  */
+	 * \sa mrpt::opengl::CRenderizable
+	 */
 	void render_dl() const override;
 
 	void setColormap(const mrpt::img::TColormap colormap);
@@ -80,7 +80,7 @@ class CColorBar : public CRenderizableDisplayList
 	/** Basic empty constructor. Set all parameters to default. */
 	CColorBar(
 		/** The colormap to represent. */
-		const mrpt::img::TColormap colormap = mrpt::utils::cmGRAYSCALE,
+		const mrpt::img::TColormap colormap = mrpt::img::cmGRAYSCALE,
 		/** size of the color bar */
 		double width = 0.2, double height = 1.0,
 		/** limits for [0,1] colormap indices */
@@ -92,5 +92,5 @@ class CColorBar : public CRenderizableDisplayList
 		/** Label text font size */
 		double label_font_size = .05);
 };
-}
-}
+}  // namespace opengl
+}  // namespace mrpt

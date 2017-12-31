@@ -13,9 +13,8 @@
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CTexturedPlane.h>
-#include <mrpt/utils/CStringList.h>
 #include <mrpt/system/CTimeLogger.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/opengl/gl_utils.h>
 
@@ -28,8 +27,8 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
-#include <mrpt/utils/metaprogramming.h>
-using namespace mrpt::utils::metaprogramming;
+//#include <mrpt/utils/metaprogramming.h>
+// using namespace mrpt::utils::metaprogramming;
 
 IMPLEMENTS_SERIALIZABLE(COpenGLViewport, CSerializable, mrpt::opengl)
 
@@ -282,10 +281,9 @@ void COpenGLViewport::render(
 					// Prepare image data types:
 					const GLenum img_type = GL_UNSIGNED_BYTE;
 					const int nBytesPerPixel = img->isColor() ? 3 : 1;
-					const bool is_RGB_order =
-						(!::strcmp(
-							img->getChannelsOrder(),
-							"RGB"));  // Reverse RGB <-> BGR order?
+					const bool is_RGB_order = (!::strcmp(
+						img->getChannelsOrder(),
+						"RGB"));  // Reverse RGB <-> BGR order?
 					const GLenum img_format =
 						nBytesPerPixel == 3 ? (is_RGB_order ? GL_RGB : GL_BGR)
 											: GL_LUMINANCE;
@@ -544,7 +542,7 @@ void COpenGLViewport::render(
 	 CSerializable objects
   ---------------------------------------------------------------*/
 void COpenGLViewport::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+	mrpt::serialization::CArchive& out, int* version) const
 {
 	if (version)
 		*version = 3;
@@ -580,7 +578,7 @@ void COpenGLViewport::writeToStream(
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void COpenGLViewport::readFromStream(mrpt::utils::CStream& in, int version)
+void COpenGLViewport::readFromStream(mrpt::serialization::CArchive& in, int version)
 {
 	switch (version)
 	{

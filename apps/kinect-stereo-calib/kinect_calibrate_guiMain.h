@@ -95,7 +95,7 @@ struct TThreadDetectCornerParam
 	volatile bool ready_for_new_images;
 	mrpt::img::CImage image;
 	volatile mrpt::system::TTimeStamp image_timestamp;
-	std::vector<mrpt::utils::TPixelCoordf> detected_corners;
+	std::vector<mrpt::img::TPixelCoordf> detected_corners;
 	volatile bool detected_corners_done;
 };
 

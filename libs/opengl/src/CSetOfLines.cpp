@@ -10,7 +10,7 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CSetOfLines.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
 #include "opengl_internals.h"
 
@@ -127,7 +127,7 @@ void CSetOfLines::render_dl() const
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void CSetOfLines::writeToStream(mrpt::utils::CStream& out, int* version) const
+void CSetOfLines::writeToStream(mrpt::serialization::CArchive& out, int* version) const
 {
 	if (version)
 		*version = 4;
@@ -144,7 +144,7 @@ void CSetOfLines::writeToStream(mrpt::utils::CStream& out, int* version) const
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void CSetOfLines::readFromStream(mrpt::utils::CStream& in, int version)
+void CSetOfLines::readFromStream(mrpt::serialization::CArchive& in, int version)
 {
 	switch (version)
 	{

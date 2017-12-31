@@ -7,12 +7,12 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "base-precomp.h"  // Precompiled headers
+#include "system-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/CObserver.h>
-#include <mrpt/utils/CObservable.h>
+#include <mrpt/system/CObserver.h>
+#include <mrpt/system/CObservable.h>
 
-using namespace mrpt::utils;
+using namespace mrpt::system;
 using namespace std;
 
 CObserver::CObserver() {}

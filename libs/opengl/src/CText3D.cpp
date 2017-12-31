@@ -10,7 +10,7 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CText3D.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/opengl/gl_utils.h>
 #include "opengl_internals.h"
 
@@ -71,7 +71,7 @@ void CText3D::render_dl() const
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void CText3D::writeToStream(mrpt::utils::CStream& out, int* version) const
+void CText3D::writeToStream(mrpt::serialization::CArchive& out, int* version) const
 {
 	if (version)
 		*version = 0;
@@ -87,7 +87,7 @@ void CText3D::writeToStream(mrpt::utils::CStream& out, int* version) const
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void CText3D::readFromStream(mrpt::utils::CStream& in, int version)
+void CText3D::readFromStream(mrpt::serialization::CArchive& in, int version)
 {
 	switch (version)
 	{

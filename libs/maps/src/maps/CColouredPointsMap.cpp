@@ -508,7 +508,7 @@ void CColouredPointsMap::getPointColor(
 //  a dependency on mrpt-vision.
 void aux_projectPoint_with_distortion(
 	const mrpt::math::TPoint3D& P, const mrpt::img::TCamera& params,
-	mrpt::utils::TPixelCoordf& pixel, bool accept_points_behind)
+	mrpt::img::TPixelCoordf& pixel, bool accept_points_behind)
 {
 	MRPT_UNUSED_PARAM(accept_points_behind);
 	// Pinhole model:
