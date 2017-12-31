@@ -60,12 +60,12 @@ void CWindowObserver::registerKeystroke(
 	m_key_codes_to_pressed[key_str] = false;
 }
 
-void CWindowObserver::OnEvent(const mrpt::utils::mrptEvent& e)
+void CWindowObserver::OnEvent(const mrpt::system::mrptEvent& e)
 {
-	if (e.isOfType<mrpt::utils::mrptEventOnDestroy>())
+	if (e.isOfType<mrpt::system::mrptEventOnDestroy>())
 	{
-		const mrpt::utils::mrptEventOnDestroy& ev =
-			static_cast<const mrpt::utils::mrptEventOnDestroy&>(e);
+		const mrpt::system::mrptEventOnDestroy& ev =
+			static_cast<const mrpt::system::mrptEventOnDestroy&>(e);
 		MRPT_UNUSED_PARAM(ev);
 		std::cout << "Event received: mrptEventOnDestroy" << std::endl;
 	}

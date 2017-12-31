@@ -10,7 +10,7 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CSetOfTexturedTriangles.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include "opengl_internals.h"
 
@@ -78,7 +78,7 @@ void CSetOfTexturedTriangles::render_texturedobj() const
 	 CSerializable objects
   ---------------------------------------------------------------*/
 void CSetOfTexturedTriangles::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+	mrpt::serialization::CArchive& out, int* version) const
 {
 	if (version)
 		*version = 2;
@@ -102,7 +102,7 @@ void CSetOfTexturedTriangles::writeToStream(
 		CSerializable objects
   ---------------------------------------------------------------*/
 void CSetOfTexturedTriangles::readFromStream(
-	mrpt::utils::CStream& in, int version)
+	mrpt::serialization::CArchive& in, int version)
 {
 	switch (version)
 	{
@@ -206,11 +206,11 @@ CSetOfTexturedTriangles::TVertex::TVertex(
 }
 
 void CSetOfTexturedTriangles::TVertex::writeToStream(
-	mrpt::utils::CStream& out) const
+	mrpt::serialization::CArchive& out) const
 {
 	out << m_x << m_y << m_z << m_u << m_v;
 }
-void CSetOfTexturedTriangles::TVertex::readFromStream(mrpt::utils::CStream& in)
+void CSetOfTexturedTriangles::TVertex::readFromStream(mrpt::serialization::CArchive& in)
 {
 	in >> m_x >> m_y >> m_z >> m_u >> m_v;
 }
@@ -223,14 +223,14 @@ CSetOfTexturedTriangles::TTriangle::TTriangle(
 }
 
 void CSetOfTexturedTriangles::TTriangle::writeToStream(
-	mrpt::utils::CStream& out) const
+	mrpt::serialization::CArchive& out) const
 {
 	m_v1.writeToStream(out);
 	m_v2.writeToStream(out);
 	m_v3.writeToStream(out);
 }
 void CSetOfTexturedTriangles::TTriangle::readFromStream(
-	mrpt::utils::CStream& in)
+	mrpt::serialization::CArchive& in)
 {
 	m_v1.readFromStream(in);
 	m_v2.readFromStream(in);

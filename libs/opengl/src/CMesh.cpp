@@ -13,7 +13,7 @@
 #include <mrpt/opengl/CMesh.h>
 #include <mrpt/opengl/CSetOfTriangles.h>
 #include <mrpt/img/color_maps.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include "opengl_internals.h"
 
@@ -41,7 +41,7 @@ CMesh::CMesh(
 	  C_r(0, 0),
 	  C_g(0, 0),
 	  C_b(0, 0),
-	  m_colorMap(mrpt::utils::cmHOT),
+	  m_colorMap(mrpt::img::cmHOT),
 	  m_modified_Z(true),
 	  m_modified_Image(false),
 	  xMin(xMin),
@@ -398,7 +398,7 @@ void CMesh::assignImageAndZ(
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void CMesh::writeToStream(mrpt::utils::CStream& out, int* version) const
+void CMesh::writeToStream(mrpt::serialization::CArchive& out, int* version) const
 {
 	if (version)
 		*version = 1;
@@ -423,7 +423,7 @@ void CMesh::writeToStream(mrpt::utils::CStream& out, int* version) const
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void CMesh::readFromStream(mrpt::utils::CStream& in, int version)
+void CMesh::readFromStream(mrpt::serialization::CArchive& in, int version)
 {
 	switch (version)
 	{

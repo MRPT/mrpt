@@ -32,7 +32,7 @@ namespace slam
   *
   * \ingroup mrpt_slam_grp
   */
-class COccupancyGridMapFeatureExtractor : public mrpt::utils::CObserver
+class COccupancyGridMapFeatureExtractor : public mrpt::system::CObserver
 {
    public:
 	/** Default ctor */
@@ -72,7 +72,7 @@ class COccupancyGridMapFeatureExtractor : public mrpt::utils::CObserver
 
    protected:
 	/** This will receive the events from maps in order to purge the cache. */
-	void OnEvent(const mrpt::utils::mrptEvent& e);
+	void OnEvent(const mrpt::system::mrptEvent& e);
 	typedef std::map<const mrpt::maps::COccupancyGridMap2D*,
 					 mrpt::maps::CLandmarksMap::Ptr>
 		TCache;

@@ -962,23 +962,23 @@ size_t CPolyhedron::getIntersection(
 /**
   * Reads a polyhedron edge from a binary stream.
   */
-mrpt::utils::CStream& operator>>(
-	mrpt::utils::CStream& in, CPolyhedron::TPolyhedronEdge& o);
+mrpt::serialization::CArchive& operator>>(
+	mrpt::serialization::CArchive& in, CPolyhedron::TPolyhedronEdge& o);
 /**
   * Writes a polyhedron edge to a binary stream.
   */
-mrpt::utils::CStream& operator<<(
-	mrpt::utils::CStream& out, const CPolyhedron::TPolyhedronEdge& o);
+mrpt::serialization::CArchive& operator<<(
+	mrpt::serialization::CArchive& out, const CPolyhedron::TPolyhedronEdge& o);
 /**
   * Reads a polyhedron face from a binary stream.
   */
-mrpt::utils::CStream& operator>>(
-	mrpt::utils::CStream& in, CPolyhedron::TPolyhedronFace& o);
+mrpt::serialization::CArchive& operator>>(
+	mrpt::serialization::CArchive& in, CPolyhedron::TPolyhedronFace& o);
 /**
   * Writes a polyhedron face to a binary stream.
   */
-mrpt::utils::CStream& operator<<(
-	mrpt::utils::CStream& out, const CPolyhedron::TPolyhedronFace& o);
+mrpt::serialization::CArchive& operator<<(
+	mrpt::serialization::CArchive& out, const CPolyhedron::TPolyhedronFace& o);
 }
 namespace utils
 {

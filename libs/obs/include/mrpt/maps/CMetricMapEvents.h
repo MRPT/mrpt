@@ -26,7 +26,7 @@ class CMetricMap;
   * \sa CMetricMap
   * \ingroup mrpt_obs_grp
   */
-class mrptEventMetricMapClear : public mrpt::utils::mrptEvent
+class mrptEventMetricMapClear : public mrpt::system::mrptEvent
 {
    protected:
 	/** Just to allow this class to be polymorphic */
@@ -44,7 +44,7 @@ class mrptEventMetricMapClear : public mrpt::utils::mrptEvent
   * \sa CMetricMap
   * \ingroup mrpt_obs_grp
   */
-class mrptEventMetricMapInsert : public mrpt::utils::mrptEvent
+class mrptEventMetricMapInsert : public mrpt::system::mrptEvent
 {
    protected:
 	/** Just to allow this class to be polymorphic */

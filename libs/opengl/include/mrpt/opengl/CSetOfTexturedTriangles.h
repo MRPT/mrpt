@@ -44,8 +44,8 @@ class CSetOfTexturedTriangles : public CTexturedObject
 		/** 2D texture coordinates. Notice that the texture coordinates are 2D
 		 * pixels!!! */
 		uint32_t m_u, m_v;
-		void writeToStream(mrpt::utils::CStream& out) const;
-		void readFromStream(mrpt::utils::CStream& in);
+		void writeToStream(mrpt::serialization::CArchive& out) const;
+		void readFromStream(mrpt::serialization::CArchive& in);
 	};
 
 	/** Triangle. This structure encapsulates the triangle vertices.
@@ -57,8 +57,8 @@ class CSetOfTexturedTriangles : public CTexturedObject
 		TTriangle(TVertex v1, TVertex v2, TVertex v3);
 		/** vertices */
 		TVertex m_v1, m_v2, m_v3;
-		void writeToStream(mrpt::utils::CStream& out) const;
-		void readFromStream(mrpt::utils::CStream& in);
+		void writeToStream(mrpt::serialization::CArchive& out) const;
+		void readFromStream(mrpt::serialization::CArchive& in);
 	};
 
 	/** Evaluates the bounding box of this object (including possible children)

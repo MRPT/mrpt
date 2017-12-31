@@ -11,7 +11,7 @@
 
 #include <mrpt/opengl/CMesh3D.h>
 #include <mrpt/img/color_maps.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include "opengl_internals.h"
 
@@ -35,7 +35,7 @@ CMesh3D::CMesh3D(
 	  m_computeNormals(true),
 	  m_lineWidth(2.f),
 	  m_pointSize(6.f),
-	  m_colorMap(mrpt::utils::cmHOT)
+	  m_colorMap(mrpt::img::cmHOT)
 {
 	m_color.R = 1.f;
 	m_color.G = 0.f;
@@ -369,7 +369,7 @@ void CMesh3D::render_dl() const
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void CMesh3D::writeToStream(mrpt::utils::CStream& out, int* version) const
+void CMesh3D::writeToStream(mrpt::serialization::CArchive& out, int* version) const
 {
 	//********** To do **********
 	THROW_EXCEPTION("not implemented yet!");
@@ -400,7 +400,7 @@ void CMesh3D::writeToStream(mrpt::utils::CStream& out, int* version) const
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void CMesh3D::readFromStream(mrpt::utils::CStream& in, int version)
+void CMesh3D::readFromStream(mrpt::serialization::CArchive& in, int version)
 {
 	//********** To do ************
 

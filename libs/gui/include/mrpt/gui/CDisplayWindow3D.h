@@ -408,7 +408,7 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
  * from the wxWidgets internal MRPT thread,
   *    so all your code in the handler must be thread safe.
   */
-class mrptEvent3DWindowGrabImageFile : public mrpt::utils::mrptEvent
+class mrptEvent3DWindowGrabImageFile : public mrpt::system::mrptEvent
 {
    protected:
 	/** Just to allow this class to be polymorphic */

@@ -94,7 +94,7 @@ CObservation2DRangeScan getScan()
 	return scan1;
 }
 
-class MyObserver : public mrpt::utils::CObserver
+class MyObserver : public mrpt::system::CObserver
 {
    protected:
 	void OnEvent(const mrptEvent& e)

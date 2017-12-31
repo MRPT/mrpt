@@ -130,7 +130,7 @@ class CMesh : public CRenderizableDisplayList
 		CRenderizableDisplayList::notifyChange();
 	}
 	void enableColorFromZ(
-		bool v, mrpt::img::TColormap colorMap = mrpt::utils::cmHOT)
+		bool v, mrpt::img::TColormap colorMap = mrpt::img::cmHOT)
 	{
 		m_colorFromZ = v;
 		m_colorMap = colorMap;

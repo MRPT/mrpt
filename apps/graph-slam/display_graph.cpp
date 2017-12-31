@@ -89,7 +89,7 @@ void display_graph(const GRAPHTYPE& g)
 	win.repaint();
 
 	// Create a feedback class for keystrokes:
-	struct Win3D_observer : public mrpt::utils::CObserver
+	struct Win3D_observer : public mrpt::system::CObserver
 	{
 		const GRAPHTYPE& m_graph;
 		CSetOfObjects::Ptr m_new_3dobj;

@@ -141,7 +141,7 @@ struct TFeatureObservation
 	inline TFeatureObservation() {}
 	inline TFeatureObservation(
 		const TLandmarkID _id_feature, const TCameraPoseID _id_frame,
-		const mrpt::utils::TPixelCoordf& _px)
+		const mrpt::img::TPixelCoordf& _px)
 		: id_feature(_id_feature), id_frame(_id_frame), px(_px)
 	{
 	}
@@ -152,7 +152,7 @@ struct TFeatureObservation
 	 * observed. */
 	TCameraPoseID id_frame;
 	/** The pixel coordinates of the observed feature */
-	mrpt::utils::TPixelCoordf px;
+	mrpt::img::TPixelCoordf px;
 };
 
 /** One relative feature observation entry, used with some relative

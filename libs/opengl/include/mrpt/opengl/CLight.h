@@ -6,29 +6,26 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
+#pragma once
 
-#ifndef opengl_CLight_H
-#define opengl_CLight_H
-
-#include <mrpt/utils/utils_defs.h>
-#include <mrpt/utils/TTypeName.h>
+#include <mrpt/typemeta/TTypeName.h>
 
 namespace mrpt
 {
-namespace utils
+namespace serialization
 {
-class CStream;
+class CArchive;
 }
 
 namespace opengl
 {
 /** Each of the possible lights of a 3D scene \sa COpenGLViewport
-  * *IMPORTANT NOTE*: It's the user responsibility to define unique light IDs
+ * *IMPORTANT NOTE*: It's the user responsibility to define unique light IDs
  * for each light.
-  *  The OpenGL standard only assures that valid IDs are 0,1,..7
-  * Refer to standard OpenGL literature and tutorials for the meaning of each
+ *  The OpenGL standard only assures that valid IDs are 0,1,..7
+ * Refer to standard OpenGL literature and tutorials for the meaning of each
  * field.
-  */
+ */
 struct CLight
 {
 	/** Default constructor, sets default values */
@@ -55,31 +52,21 @@ struct CLight
 	float spot_exponent;
 	float spot_cutoff;
 
-	void writeToStream(mrpt::utils::CStream& out) const;
-	void readFromStream(mrpt::utils::CStream& in);
+	void writeToStream(mrpt::serialization::CArchive& out) const;
+	void readFromStream(mrpt::serialization::CArchive& in);
 
 	/** Define the light in the current OpenGL rendering context (users normally
 	 * don't need to call this explicitly, it's done from within a \sa
 	 * COpenGLViewport) */
 	void sendToOpenGL() const;
+
+	DECLARE_TTYPENAME_CLASSNAME(mrpt::opengl::CLight)
 };
 
-mrpt::utils::CStream& operator>>(
-	mrpt::utils::CStream& in, mrpt::opengl::CLight& o);
-mrpt::utils::CStream& operator<<(
-	mrpt::utils::CStream& out, const mrpt::opengl::CLight& o);
+mrpt::serialization::CArchive& operator>>(
+	mrpt::serialization::CArchive& in, mrpt::opengl::CLight& o);
+mrpt::serialization::CArchive& operator<<(
+	mrpt::serialization::CArchive& out, const mrpt::opengl::CLight& o);
 
-}  // end namespace
-
-namespace utils
-{
-template <>
-struct TTypeName<mrpt::opengl::CLight>
-{
-	static std::string get() { return std::string("mrpt::opengl::CLight"); }
-};
-}
-
-}  // End of namespace
-
-#endif
+}  // namespace opengl
+}  // namespace mrpt

@@ -6,15 +6,11 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef opengl_glutils_H
-#define opengl_glutils_H
+#pragma once
 
-#include <mrpt/utils/utils_defs.h>
 #include <mrpt/opengl/opengl_fonts.h>
-
-#ifndef opengl_CRenderizable_H
 #include <mrpt/opengl/CRenderizable.h>
-#endif
+#include <mrpt/img/TPixelCoord.h>
 
 namespace mrpt
 {
@@ -22,8 +18,8 @@ namespace opengl
 {
 /** A set of auxiliary functions that can be called to render OpenGL primitives
  * from MRPT or user code
-  * \ingroup mrpt_opengl_grp
-  */
+ * \ingroup mrpt_opengl_grp
+ */
 namespace gl_utils
 {
 /** @name Data types for mrpt::opengl::gl_utils
@@ -46,10 +42,10 @@ struct TRenderInfo
 
 	/** Computes the normalized coordinates (range=[0,1]) on the current
 	 * rendering viewport of a
-	  * point with local coordinates (wrt to the current model matrix) of
+	 * point with local coordinates (wrt to the current model matrix) of
 	 * (x,y,z).
-	  *  The output proj_z_depth is the real distance from the eye to the point.
-	  */
+	 *  The output proj_z_depth is the real distance from the eye to the point.
+	 */
 	void projectPoint(
 		float x, float y, float z, float& proj_x, float& proj_y,
 		float& proj_z_depth) const
@@ -80,13 +76,13 @@ struct TRenderInfo
 	@{ */
 
 /** For each object in the list:
-  *   - checks visibility of each object
-  *   - prepare the GL_MODELVIEW matrix according to its coordinates
-  *   - call its ::render()
-  *   - shows its name (if enabled).
-  *
-  *  \note Used by  COpenGLViewport, CSetOfObjects
-  */
+ *   - checks visibility of each object
+ *   - prepare the GL_MODELVIEW matrix according to its coordinates
+ *   - call its ::render()
+ *   - shows its name (if enabled).
+ *
+ *  \note Used by  COpenGLViewport, CSetOfObjects
+ */
 void renderSetOfObjects(const mrpt::opengl::CListOpenGLObjects& objs);
 
 /** Checks glGetError and throws an exception if an error situation is found */
@@ -108,60 +104,59 @@ void renderQuadWithNormal(
 	const mrpt::math::TPoint3Df& p3, const mrpt::math::TPoint3Df& p4);
 
 /** Gather useful information on the render parameters.
-  *  It can be called from within the render() method of CRenderizable-derived
+ *  It can be called from within the render() method of CRenderizable-derived
  * classes, and
-  *   the returned matrices can be used to determine whether a given point
+ *   the returned matrices can be used to determine whether a given point
  * (lx,ly,lz)
-  *   in local coordinates wrt the object being rendered falls within the screen
+ *   in local coordinates wrt the object being rendered falls within the screen
  * or not:
-  * \code
-  *  TRenderInfo ri;
-  *  getCurrentRenderingInfo(ri);
-  *  Eigen::Matrix<float,4,4> M= ri.proj_matrix * ri.model_matrix *
+ * \code
+ *  TRenderInfo ri;
+ *  getCurrentRenderingInfo(ri);
+ *  Eigen::Matrix<float,4,4> M= ri.proj_matrix * ri.model_matrix *
  * HomogeneousMatrix(lx,ly,lz);
-  *  const float rend_x = M(0,3)/M(3,3);
-  *  const float rend_y = M(1,3)/M(3,3);
-  * \endcode
-  *  where (rend_x,rend_y) are both in the range [-1,1].
-  */
+ *  const float rend_x = M(0,3)/M(3,3);
+ *  const float rend_y = M(1,3)/M(3,3);
+ * \endcode
+ *  where (rend_x,rend_y) are both in the range [-1,1].
+ */
 void getCurrentRenderingInfo(TRenderInfo& ri);
 
 /** Draws a message box with a centered (possibly multi-lined) text.
-  *  It consists of a filled rectangle with a frame around and the centered text
+ *  It consists of a filled rectangle with a frame around and the centered text
  * in the middle.
-  *
-  *  The appearance of the box is highly configurable via parameters.
-  *
-  *   \param[in] msg_x, msg_y The left-lower corner coordinates, in ratio [0,1]
+ *
+ *  The appearance of the box is highly configurable via parameters.
+ *
+ *   \param[in] msg_x, msg_y The left-lower corner coordinates, in ratio [0,1]
  * of the viewport size. (0,0) if the left-bottom corner of the viewport.
-  *   \param[in] msg_w, msg_h The width & height, in ratio [0,1] of the viewport
+ *   \param[in] msg_w, msg_h The width & height, in ratio [0,1] of the viewport
  * size.
-  *   \param[in] text  The text to display. Multiple lines can be drawn with the
+ *   \param[in] text  The text to display. Multiple lines can be drawn with the
  * '\n' character.
-  *   \param[in] text_scale Size of characters, in ration [0,1] of the viewport
+ *   \param[in] text_scale Size of characters, in ration [0,1] of the viewport
  * size. Note that this size may be scaled automatically reduced to fit the text
  * withtin the rectangle of the message box.
-  *   \param[in] back_col Color of the rectangle background. Alpha can be <255
+ *   \param[in] back_col Color of the rectangle background. Alpha can be <255
  * to enable transparency.
-  *   \param[in] border_col Color of the rectangle frame. Alpha can be <255 to
+ *   \param[in] border_col Color of the rectangle frame. Alpha can be <255 to
  * enable transparency.
-  *   \param[in] text_col Color of the text background. Alpha can be <255 to
+ *   \param[in] text_col Color of the text background. Alpha can be <255 to
  * enable transparency.
-  *   \param[in] border_width Width of the border, in pixels
-  *   \param[in] text_font, text_style, text_spacing, text_kerning See
+ *   \param[in] border_width Width of the border, in pixels
+ *   \param[in] text_font, text_style, text_spacing, text_kerning See
  * mrpt::opengl::gl_utils::glDrawText()
-  *
-  *  Example (see directory: 'samples/display3D_custom_render'):
-  *
-  *  <img src="gl_utils_message_box.jpg" >
-  */
+ *
+ *  Example (see directory: 'samples/display3D_custom_render'):
+ *
+ *  <img src="gl_utils_message_box.jpg" >
+ */
 void renderMessageBox(
 	const float msg_x, const float msg_y, const float msg_w, const float msg_h,
 	const std::string& text, float text_scale,
 	const mrpt::img::TColor& back_col = mrpt::img::TColor(0, 0, 50, 150),
 	const mrpt::img::TColor& border_col = mrpt::img::TColor(0, 0, 0, 140),
-	const mrpt::img::TColor& text_col =
-		mrpt::img::TColor(255, 255, 255, 220),
+	const mrpt::img::TColor& text_col = mrpt::img::TColor(255, 255, 255, 220),
 	const float border_width = 4.0f,
 	const std::string& text_font = std::string("sans"),
 	mrpt::opengl::TOpenGLFontStyle text_style = mrpt::opengl::FILL,
@@ -178,8 +173,8 @@ void renderTextBitmap(const char* str, void* fontStyle);
 
 /** Return the exact width in pixels for a given string, as will be rendered by
  * renderTextBitmap().
-  * \sa renderTextBitmap
-  */
+ * \sa renderTextBitmap
+ */
 int textBitmapWidth(
 	const std::string& str, mrpt::opengl::TOpenGLFont font =
 								mrpt::opengl::MRPT_GLUT_BITMAP_TIMES_ROMAN_24);
@@ -212,7 +207,7 @@ const std::string& glGetFont();
 /// @param kerning distance between characters
 /// \note This functions comes from libcvd (LGPL,
 /// http://www.edwardrosten.com/cvd/ )
-mrpt::utils::TPixelCoordf glDrawText(
+mrpt::img::TPixelCoordf glDrawText(
 	const std::string& text, const double textScale,
 	enum TOpenGLFontStyle style = NICE, double spacing = 1.5,
 	double kerning = 0.1);
@@ -221,13 +216,11 @@ mrpt::utils::TPixelCoordf glDrawText(
 /// @ref glDrawText but without any visual output
 /// \note This functions comes from libcvd (LGPL,
 /// http://www.edwardrosten.com/cvd/ )
-mrpt::utils::TPixelCoordf glGetExtends(
+mrpt::img::TPixelCoordf glGetExtends(
 	const std::string& text, const double textScale, double spacing = 1.5,
 	double kerning = 0.1);
 
 /** @} */  // --------------------------------------------------
-}
-}
-}
-
-#endif
+}  // namespace gl_utils
+}  // namespace opengl
+}  // namespace mrpt

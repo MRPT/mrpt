@@ -54,27 +54,27 @@ class CCamModel : public mrpt::utils::CLoadableOptions
 
 	/** Jacobian for undistortion the image coordinates */
 	void jacob_undistor_fm(
-		const mrpt::utils::TPixelCoordf& uvd, math::CMatrixDouble& J_undist);
+		const mrpt::img::TPixelCoordf& uvd, math::CMatrixDouble& J_undist);
 
 	/** Calculate the image coordinates undistorted
 	 */
 	void jacob_undistor(
-		const mrpt::utils::TPixelCoordf& p,
+		const mrpt::img::TPixelCoordf& p,
 		mrpt::math::CMatrixDouble& J_undist);
 
 	/**	Return the pixel position distorted by the camera
 	 */
 	void distort_a_point(
-		const mrpt::utils::TPixelCoordf& p,
-		mrpt::utils::TPixelCoordf& distorted_p);
+		const mrpt::img::TPixelCoordf& p,
+		mrpt::img::TPixelCoordf& distorted_p);
 
 	/**	Return the pixel position undistorted by the camera
 	 *	The input values 'col' and 'row' will be replace for the new values
 	 *(undistorted)
 	 */
 	void undistort_point(
-		const mrpt::utils::TPixelCoordf& p,
-		mrpt::utils::TPixelCoordf& undistorted_p);
+		const mrpt::img::TPixelCoordf& p,
+		mrpt::img::TPixelCoordf& undistorted_p);
 
 	/**	Return the (distorted) pixel position of a 3D point given in
 	 * coordinates relative to the camera (+Z pointing forward, +X to the right)
@@ -82,7 +82,7 @@ class CCamModel : public mrpt::utils::CLoadableOptions
 	 */
 	void project_3D_point(
 		const mrpt::math::TPoint3D& p3D,
-		mrpt::utils::TPixelCoordf& distorted_p) const;
+		mrpt::img::TPixelCoordf& distorted_p) const;
 
 	/**	Return the 3D location of a point (at a fixed distance z=1), for the
 	 * given (distorted) pixel position
@@ -92,7 +92,7 @@ class CCamModel : public mrpt::utils::CLoadableOptions
 	 * than a meaninful physical point.
 	 */
 	void unproject_3D_point(
-		const mrpt::utils::TPixelCoordf& distorted_p,
+		const mrpt::img::TPixelCoordf& distorted_p,
 		mrpt::math::TPoint3D& p3D) const;
 
 	/** Jacobian of the projection of 3D points (with distortion), as done in
@@ -154,7 +154,7 @@ class CCamModel : public mrpt::utils::CLoadableOptions
 	\sa unproject_3D_point
 	*/
 	void jacobian_unproject_with_distortion(
-		const mrpt::utils::TPixelCoordf& p, math::CMatrixDouble& dy_dh) const;
+		const mrpt::img::TPixelCoordf& p, math::CMatrixDouble& dy_dh) const;
 
 	template <typename T>
 	struct CameraTempVariables
