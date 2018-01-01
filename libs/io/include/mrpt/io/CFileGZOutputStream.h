@@ -56,17 +56,17 @@ class CFileGZOutputStream : public CStream
 	/** Close the file */
 	void close();
 	/** Returns true if the file was open without errors. */
-	bool fileOpenCorrectly();
+	bool fileOpenCorrectly() const;
 	/** Returns true if the file was open without errors. */
 	bool is_open() { return fileOpenCorrectly(); }
 	/** Method for getting the current cursor position, where 0 is the first
 	 * byte and TotalBytesCount-1 the last one. */
-	uint64_t getPosition() override;
+	uint64_t getPosition() const override;
 
 	/** This method is not implemented in this class */
 	uint64_t Seek(int64_t, CStream::TSeekOrigin = sFromBeginning) override;
 	/** This method is not implemented in this class */
-	uint64_t getTotalBytesCount() override;
+	uint64_t getTotalBytesCount() const override;
 	size_t Read(void* Buffer, size_t Count) override;
 	size_t Write(const void* Buffer, size_t Count) override;
 };  // End of class def.

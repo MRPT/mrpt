@@ -15,10 +15,16 @@
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/stock_objects.h>
 
-#include <mrpt/poses.h>
+#include <mrpt/poses/CPosePDFSOG.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/poses/CPosePDFParticles.h>
+#include <mrpt/poses/CPointPDFSOG.h>
+#include <mrpt/poses/CPointPDFParticles.h>
+#include <mrpt/poses/CPose3DPDFSOG.h>
+#include <mrpt/poses/CPose3DPDFParticles.h>
+#include <mrpt/poses/CPose3DQuatPDFGaussian.h>
 
 using namespace mrpt;
-
 using namespace mrpt::math;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;
@@ -33,7 +39,7 @@ const double POSE_AXIS_SCALE = 0.1;
 
 /** Returns a representation of a the PDF - this is just an auxiliary function,
  * it's more natural to call
-	*    mrpt::poses::CPosePDF::getAs3DObject     */
+ *    mrpt::poses::CPosePDF::getAs3DObject     */
 CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPosePDF& o)
 {
 	CSetOfObjects::Ptr outObj = mrpt::make_aligned_shared<CSetOfObjects>();
@@ -127,7 +133,7 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPosePDF& o)
 
 /** Returns a representation of a the PDF - this is just an auxiliary function,
  * it's more natural to call
-	*    mrpt::poses::CPointPDF::getAs3DObject     */
+ *    mrpt::poses::CPointPDF::getAs3DObject     */
 CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPointPDF& o)
 {
 	CSetOfObjects::Ptr outObj = mrpt::make_aligned_shared<CSetOfObjects>();
@@ -158,7 +164,7 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPointPDF& o)
 		const CPointPDFGaussian* p = static_cast<const CPointPDFGaussian*>(&o);
 
 		CEllipsoid::Ptr obj = mrpt::make_aligned_shared<CEllipsoid>();
-		obj->setLocation(p->mean);
+		obj->setLocation(p->mean.x(), p->mean.y(), p->mean.z());
 		obj->setCovMatrix(p->cov, p->cov(2, 2) == 0 ? 2 : 3);
 		obj->setColor(POINT_COLOR);
 		obj->setQuantiles(3);
@@ -188,7 +194,7 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPointPDF& o)
 
 /** Returns a representation of a the PDF - this is just an auxiliary function,
  * it's more natural to call
-	*    mrpt::poses::CPose3DPDF::getAs3DObject     */
+ *    mrpt::poses::CPose3DPDF::getAs3DObject     */
 CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPose3DPDF& o)
 {
 	CSetOfObjects::Ptr outObj = mrpt::make_aligned_shared<CSetOfObjects>();
@@ -262,7 +268,7 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPose3DPDF& o)
 
 /** Returns a representation of a the PDF - this is just an auxiliary function,
  * it's more natural to call
-	*    mrpt::poses::CPose3DQuatPDF::getAs3DObject     */
+ *    mrpt::poses::CPose3DQuatPDF::getAs3DObject     */
 CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPose3DQuatPDF& o)
 {
 	CSetOfObjects::Ptr outObj = mrpt::make_aligned_shared<CSetOfObjects>();

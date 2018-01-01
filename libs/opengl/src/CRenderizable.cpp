@@ -107,8 +107,8 @@ void CRenderizable::releaseTextureName(unsigned int i)
 	// of texture names by our own.
 }
 
-uint8_t CRenderizable::serializeGetVersion() const { return XX; }
-void CRenderizable::serializeToRender(mrpt::serialization::CArchive& out) const
+void CRenderizable::writeToStreamRender(
+	mrpt::serialization::CArchive& out) const
 {
 	// MRPT 0.9.5 svn 2774 (Dec 14th 2011):
 	// Added support of versioning at this level of serialization too.
@@ -161,8 +161,7 @@ void CRenderizable::serializeToRender(mrpt::serialization::CArchive& out) const
 	out << m_show_name << m_visible;
 }
 
-void CRenderizable::serializeFrom(
-	mrpt::serialization::CArchive& in, uint8_t version)
+void CRenderizable::readFromStreamRender(mrpt::serialization::CArchive& in)
 {
 	// MRPT 0.9.5 svn 2774 (Dec 14th 2011):
 	// See comments in CRenderizable::writeToStreamRender() for the employed
@@ -341,21 +340,10 @@ CRenderizable& CRenderizable::setPose(const mrpt::poses::CPoint2D& o)
 	return *this;
 }
 
-/*--------------------------------------------------------------
-					getPose
-  ---------------------------------------------------------------*/
-mrpt::math::TPose3D CRenderizable::getPose() const
-{
-	return mrpt::math::TPose3D(m_pose);
-}
+mrpt::math::TPose3D CRenderizable::getPose() const { return m_pose.asTPose(); }
 
-/*--------------------------------------------------------------
-					traceRay
-  ---------------------------------------------------------------*/
-bool CRenderizable::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
+bool CRenderizable::traceRay(const mrpt::poses::CPose3D&, double&) const
 {
-	MRPT_UNUSED_PARAM(o);
-	MRPT_UNUSED_PARAM(dist);
 	return false;
 }
 

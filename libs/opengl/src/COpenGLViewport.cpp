@@ -688,7 +688,7 @@ void COpenGLViewport::dumpListOfObjects(std::vector<std::string>& lst)
 			dynamic_cast<CSetOfObjects*>(it->get())->dumpListOfObjects(auxLst);
 
 			for (size_t i = 0; i < auxLst.size(); i++)
-				lst.push_back(string(" ") + auxLst(i));
+				lst.emplace_back(string(" ") + auxLst[i]);
 		}
 	}
 }
@@ -708,7 +708,7 @@ void COpenGLViewport::removeObject(const CRenderizable::Ptr& obj)
 		else if (
 			(*it)->GetRuntimeClass() ==
 			CLASS_ID_NAMESPACE(CSetOfObjects, opengl))
-			dynamic_cast<CSetOfObjects>(it->get())->removeObject(obj);
+			dynamic_cast<CSetOfObjects*>(it->get())->removeObject(obj);
 }
 
 /*--------------------------------------------------------------

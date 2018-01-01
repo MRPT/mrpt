@@ -54,7 +54,7 @@ class CFileGZInputStream : public CStream
 	/** Closes the file */
 	void close();
 	/** Returns true if the file was open without errors. */
-	bool fileOpenCorrectly();
+	bool fileOpenCorrectly() const;
 	/** Returns true if the file was open without errors. */
 	bool is_open() { return fileOpenCorrectly(); }
 	/** Will be true if EOF has been already reached. */
@@ -62,10 +62,10 @@ class CFileGZInputStream : public CStream
 
 	/** Method for getting the total number of <b>compressed</b> bytes of in the
 	 * file (the physical size of the compressed file). */
-	uint64_t getTotalBytesCount() override;
+	uint64_t getTotalBytesCount() const override;
 	/** Method for getting the current cursor position in the <b>compressed</b>,
 	 * where 0 is the first byte and TotalBytesCount-1 the last one. */
-	uint64_t getPosition() override;
+	uint64_t getPosition() const override;
 
 	/** This method is not implemented in this class */
 	uint64_t Seek(int64_t, CStream::TSeekOrigin = sFromBeginning) override;

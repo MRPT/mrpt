@@ -536,14 +536,14 @@ uint64_t CClientTCPSocket::Seek(int64_t off, CStream::TSeekOrigin org)
 	MRPT_END
 }
 
-uint64_t CClientTCPSocket::getTotalBytesCount()
+uint64_t CClientTCPSocket::getTotalBytesCount() const
 {
 	MRPT_START
 	THROW_EXCEPTION("This method has no effect in this class!");
 	MRPT_END
 }
 
-uint64_t CClientTCPSocket::getPosition()
+uint64_t CClientTCPSocket::getPosition() const
 {
 	MRPT_START
 	THROW_EXCEPTION("This method has no effect in this class!");

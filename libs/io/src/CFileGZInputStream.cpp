@@ -78,7 +78,7 @@ size_t CFileGZInputStream::Write(const void* Buffer, size_t Count)
 	THROW_EXCEPTION("Trying to write to an input file stream.");
 }
 
-uint64_t CFileGZInputStream::getTotalBytesCount()
+uint64_t CFileGZInputStream::getTotalBytesCount() const
 {
 	if (!m_f)
 	{
@@ -87,7 +87,7 @@ uint64_t CFileGZInputStream::getTotalBytesCount()
 	return m_file_size;
 }
 
-uint64_t CFileGZInputStream::getPosition()
+uint64_t CFileGZInputStream::getPosition() const
 {
 	if (!m_f)
 	{
@@ -96,7 +96,7 @@ uint64_t CFileGZInputStream::getPosition()
 	return gztell(THE_GZFILE);
 }
 
-bool CFileGZInputStream::fileOpenCorrectly() { return m_f != nullptr; }
+bool CFileGZInputStream::fileOpenCorrectly() const { return m_f != nullptr; }
 bool CFileGZInputStream::checkEOF()
 {
 	if (!m_f)

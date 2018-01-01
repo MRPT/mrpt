@@ -24,8 +24,8 @@ using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace std;
 
-#include <mrpt/utils/metaprogramming.h>
-using namespace mrpt::utils::metaprogramming;
+#include <mrpt/serialization/metaprogramming_serialization.h>
+using namespace mrpt::serialization::metaprogramming;
 
 IMPLEMENTS_SERIALIZABLE(CSetOfObjects, CRenderizable, mrpt::opengl)
 
@@ -47,26 +47,15 @@ void CSetOfObjects::render() const
 	mrpt::opengl::gl_utils::renderSetOfObjects(m_objects);
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-uint8_t CSetOfObjects::serializeGetVersion() const { return XX; }
+uint8_t CSetOfObjects::serializeGetVersion() const { return 0; }
 void CSetOfObjects::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		writeToStreamRender(out);
+	writeToStreamRender(out);
 
-		uint32_t n;
-		n = (uint32_t)m_objects.size();
-		out << n;
-		for (CListOpenGLObjects::const_iterator it = m_objects.begin();
-			 it != m_objects.end(); ++it)
-			out << **it;
-	}
+	out.WriteAs<uint32_t>(m_objects.size());
+	for (CListOpenGLObjects::const_iterator it = m_objects.begin();
+		 it != m_objects.end(); ++it)
+		out << **it;
 }
 
 /*---------------------------------------------------------------
@@ -106,9 +95,9 @@ void CSetOfObjects::initializeAllTextures()
 	for (it = m_objects.begin(); it != m_objects.end(); ++it++)
 	{
 		if (IS_DERIVED(*it, CTexturedObject))
-			getAs<CTexturedObject>(*it)->loadTextureInOpenGL();
+			dynamic_cast<CTexturedObject*>(it->get())->loadTextureInOpenGL();
 		else if (IS_CLASS(*it, CSetOfObjects))
-			getAs<CSetOfObjects>(*it)->initializeAllTextures();
+			dynamic_cast<CSetOfObjects*>(it->get())->initializeAllTextures();
 	}
 #endif
 }
@@ -135,17 +124,17 @@ void CSetOfObjects::dumpListOfObjects(std::vector<std::string>& lst)
 		string s((*it)->GetRuntimeClass()->className);
 		if ((*it)->m_name.size())
 			s += string(" (") + (*it)->m_name + string(")");
-		lst.add(s);
+		lst.emplace_back(s);
 
 		if ((*it)->GetRuntimeClass() ==
 			CLASS_ID_NAMESPACE(CSetOfObjects, mrpt::opengl))
 		{
-			CSetOfObjects* objs = getAs<CSetOfObjects>(*it);
+			CSetOfObjects* objs = dynamic_cast<CSetOfObjects*>(it->get());
 
 			std::vector<std::string> auxLst;
 			objs->dumpListOfObjects(auxLst);
 			for (size_t i = 0; i < auxLst.size(); i++)
-				lst.add(string(" ") + auxLst(i));
+				lst.emplace_back(string(" ") + auxLst[i]);
 		}
 	}
 }
@@ -165,7 +154,7 @@ void CSetOfObjects::removeObject(const CRenderizable::Ptr& obj)
 		else if (
 			(*it)->GetRuntimeClass() ==
 			CLASS_ID_NAMESPACE(CSetOfObjects, opengl))
-			getAs<CSetOfObjects>(*it)->removeObject(obj);
+			dynamic_cast<CSetOfObjects*>(it->get())->removeObject(obj);
 }
 
 bool CSetOfObjects::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
@@ -261,7 +250,8 @@ CRenderizable::Ptr CSetOfObjects::getByName(const string& str)
 			(*it)->GetRuntimeClass() ==
 			CLASS_ID_NAMESPACE(CSetOfObjects, opengl))
 		{
-			CRenderizable::Ptr ret = getAs<CSetOfObjects>(*it)->getByName(str);
+			CRenderizable::Ptr ret =
+				dynamic_cast<CSetOfObjects*>(it->get())->getByName(str);
 			if (ret) return ret;
 		}
 	}

@@ -937,7 +937,7 @@ uint64_t CSerialPort::Seek(int64_t Offset, CStream::TSeekOrigin Origin)
 	MRPT_END
 }
 
-uint64_t CSerialPort::getTotalBytesCount()
+uint64_t CSerialPort::getTotalBytesCount() const
 {
 	MRPT_START
 	THROW_EXCEPTION(
@@ -945,7 +945,7 @@ uint64_t CSerialPort::getTotalBytesCount()
 	MRPT_END
 }
 
-uint64_t CSerialPort::getPosition()
+uint64_t CSerialPort::getPosition() const
 {
 	MRPT_START
 	THROW_EXCEPTION(

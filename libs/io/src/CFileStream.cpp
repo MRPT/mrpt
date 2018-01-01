@@ -138,26 +138,24 @@ uint64_t CFileStream::Seek(int64_t Offset, CStream::TSeekOrigin Origin)
 	return getPosition();
 }
 
-/*---------------------------------------------------------------
-						getTotalBytesCount
- ---------------------------------------------------------------*/
-uint64_t CFileStream::getTotalBytesCount()
+uint64_t CFileStream::getTotalBytesCount() const
 {
 	if (!fileOpenCorrectly()) return 0;
 
-	uint64_t previousPos = getPosition();
-	uint64_t fileSize = Seek(0, sFromEnd);
-	Seek(previousPos);
+	auto& f = const_cast<std::fstream&>(m_f);
+
+	const uint64_t previousPos = f.tellg();
+	f.seekg(0, ios_base::end);
+	uint64_t fileSize = f.tellg();
+	f.seekg(previousPos, ios_base::beg);
 	return fileSize;
 }
 
-/*---------------------------------------------------------------
-						getPosition
- ---------------------------------------------------------------*/
-uint64_t CFileStream::getPosition()
+uint64_t CFileStream::getPosition() const
 {
+	auto& f = const_cast<std::fstream&>(m_f);
 	if (m_f.is_open())
-		return m_f.tellg();
+		return f.tellg();
 	else
 		return 0;
 }
@@ -187,7 +185,7 @@ uint64_t CFileStream::getPositionO()
 /*---------------------------------------------------------------
 						fileOpenCorrectly
  ---------------------------------------------------------------*/
-bool CFileStream::fileOpenCorrectly() { return m_f.is_open(); }
+bool CFileStream::fileOpenCorrectly() const { return m_f.is_open(); }
 /*---------------------------------------------------------------
 						readLine
  ---------------------------------------------------------------*/

@@ -15,6 +15,8 @@
 #include <mrpt/opengl/CSimpleLine.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/stock_objects.h>
+#include <mrpt/poses/CPoint3D.h>
+#include <mrpt/img/TColor.h>
 
 namespace mrpt
 {
@@ -28,9 +30,8 @@ CSetOfObjects::Ptr graph_visualize(
 {
 	MRPT_TRY_START
 
-	using mrpt::poses::CPose3D;
 	using mrpt::math::TPose3D;
-	
+	using mrpt::poses::CPose3D;
 
 	// Is a 2D or 3D graph network?
 	typedef typename GRAPH_T::constraint_t constraint_t;
@@ -98,7 +99,8 @@ CSetOfObjects::Ptr graph_visualize(
 	if (nodes_point_size > 0)
 	{
 		CPointCloud::Ptr pnts = mrpt::make_aligned_shared<CPointCloud>();
-		pnts->setColor(TColorf(TColor(nodes_point_color)));
+		pnts->setColor(
+			mrpt::img::TColorf(mrpt::img::TColor(nodes_point_color)));
 		pnts->setPointSize(nodes_point_size);
 
 		// Add nodes:
@@ -146,35 +148,30 @@ CSetOfObjects::Ptr graph_visualize(
 
 	if (show_edge_rel_poses)
 	{
-		const TColor col8bit(
+		const mrpt::img::TColor col8bit(
 			edge_rel_poses_color & 0xffffff, edge_rel_poses_color >> 24);
 
-		for (typename GRAPH_T::const_iterator itEd = g.begin(); itEd != g.end();
-			 ++itEd)
+		for (const auto& edge : g)
 		{
 			// Node ID of the source pose:
-			const TNodeID node_id_start = g.edges_store_inverse_poses
-											  ? itEd->first.second
-											  : itEd->first.first;
+			const auto node_id_start = g.edges_store_inverse_poses
+										   ? edge.first.second
+										   : edge.first.first;
 
 			// Draw only if we have the global coords of starting nodes:
-			typename GRAPH_T::global_poses_t::const_iterator itNod =
-				g.nodes.find(node_id_start);
+			auto itNod = g.nodes.find(node_id_start);
 			if (itNod != g.nodes.end())
 			{
 				const CPose3D pSource = CPose3D(itNod->second);
 				// Create a set of objects at that pose and do the rest in
 				// relative coords:
-				mrpt::opengl::CSetOfObjects::Ptr gl_rel_edge =
-					mrpt::make_aligned_shared<mrpt::opengl::CSetOfObjects>();
+				auto gl_rel_edge = mrpt::opengl::CSetOfObjects::Create();
 				gl_rel_edge->setPose(pSource);
 
-				const typename GRAPH_T::constraint_no_pdf_t& edge_pose =
-					itEd->second.getPoseMean();
-				const mrpt::poses::CPoint3D edge_pose_pt =
-					mrpt::poses::CPoint3D(edge_pose);
+				const auto& edge_pose = edge.second.getPoseMean();
+				const auto edge_pose_pt = mrpt::poses::CPoint3D(edge_pose);
 
-				mrpt::opengl::CSetOfObjects::Ptr gl_edge_corner =
+				auto gl_edge_corner =
 					(is_3D_graph
 						 ? stock_objects::CornerXYZSimple(
 							   nodes_edges_corner_scale, 1.0 /*line width*/)
@@ -184,10 +181,9 @@ CSetOfObjects::Ptr graph_visualize(
 				gl_edge_corner->setPose(edge_pose);
 				gl_rel_edge->insert(gl_edge_corner);
 
-				mrpt::opengl::CSimpleLine::Ptr gl_line =
-					mrpt::make_aligned_shared<mrpt::opengl::CSimpleLine>(
-						0, 0, 0, edge_pose_pt.x(), edge_pose_pt.y(),
-						edge_pose_pt.z());
+				auto gl_line = mrpt::opengl::CSimpleLine::Create(
+					0, 0, 0, edge_pose_pt.x(), edge_pose_pt.y(),
+					edge_pose_pt.z());
 				gl_line->setColor_u8(col8bit);
 				gl_line->setLineWidth(edge_width);
 				gl_rel_edge->insert(gl_line);
@@ -200,22 +196,20 @@ CSetOfObjects::Ptr graph_visualize(
 	if (show_edges)
 	{
 		CSetOfLines::Ptr gl_edges = mrpt::make_aligned_shared<CSetOfLines>();
-		const TColor col8bit(edge_color & 0xffffff, edge_color >> 24);
+		const mrpt::img::TColor col8bit(
+			edge_color & 0xffffff, edge_color >> 24);
 
 		gl_edges->setColor_u8(col8bit);
 		gl_edges->setLineWidth(edge_width);
 
-		for (typename GRAPH_T::const_iterator itEd = g.begin(); itEd != g.end();
-			 ++itEd)
+		for (const auto& edge : g)
 		{
-			const TNodeID id1 = itEd->first.first;
-			const TNodeID id2 = itEd->first.second;
+			const auto id1 = edge.first.first;
+			const auto id2 = edge.first.second;
 
 			// Draw only if we have the global coords of both nodes:
-			typename GRAPH_T::global_poses_t::const_iterator itNod1 =
-				g.nodes.find(id1);
-			typename GRAPH_T::global_poses_t::const_iterator itNod2 =
-				g.nodes.find(id2);
+			auto itNod1 = g.nodes.find(id1);
+			auto itNod2 = g.nodes.find(id2);
 			if (itNod1 != g.nodes.end() && itNod2 != g.nodes.end())
 			{
 				const CPose3D p1 = CPose3D(itNod1->second);
@@ -234,8 +228,8 @@ CSetOfObjects::Ptr graph_visualize(
 	MRPT_TRY_END
 }
 
-}  // end of graph_tools namespace
-}  // end of opengl namespace
-}  // end of mrpt namespace
+}  // namespace graph_tools
+}  // namespace opengl
+}  // namespace mrpt
 
 #endif

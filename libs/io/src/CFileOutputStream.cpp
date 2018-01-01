@@ -87,22 +87,26 @@ uint64_t CFileOutputStream::Seek(int64_t Offset, CStream::TSeekOrigin Origin)
 	return getPosition();
 }
 
-uint64_t CFileOutputStream::getTotalBytesCount()
+uint64_t CFileOutputStream::getTotalBytesCount() const
 {
 	if (!fileOpenCorrectly()) return 0;
 
-	uint64_t previousPos = getPosition();
-	uint64_t fileSize = Seek(0, sFromEnd);
-	Seek(previousPos);
+	auto& f = const_cast<std::ofstream&>(m_of);
+
+	const uint64_t previousPos = f.tellp();
+	f.seekp(0, ios_base::end);
+	uint64_t fileSize = f.tellp();
+	f.seekp(previousPos, ios_base::beg);
 	return fileSize;
 }
 
-uint64_t CFileOutputStream::getPosition()
+uint64_t CFileOutputStream::getPosition() const
 {
+	auto& f = const_cast<std::ofstream&>(m_of);
 	if (m_of.is_open())
-		return m_of.tellp();
+		return f.tellp();
 	else
 		return 0;
 }
 
-bool CFileOutputStream::fileOpenCorrectly() { return m_of.is_open(); }
+bool CFileOutputStream::fileOpenCorrectly() const { return m_of.is_open(); }

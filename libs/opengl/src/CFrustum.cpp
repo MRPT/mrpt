@@ -139,29 +139,17 @@ CFrustum::CFrustum(
 {
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-uint8_t CFrustum::serializeGetVersion() const { return XX; } void CFrustum::serializeTo(mrpt::serialization::CArchive& out) const
+uint8_t CFrustum::serializeGetVersion() const { return 0; }
+void CFrustum::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		writeToStreamRender(out);
-		// version 0
-		out << m_min_distance << m_max_distance << m_fov_horz_left
-			<< m_fov_horz_right << m_fov_vert_down << m_fov_vert_up
-			<< m_draw_lines << m_draw_planes << m_lineWidth << m_planes_color.R
-			<< m_planes_color.G << m_planes_color.B << m_planes_color.A;
-	}
+	writeToStreamRender(out);
+	// version 0
+	out << m_min_distance << m_max_distance << m_fov_horz_left
+		<< m_fov_horz_right << m_fov_vert_down << m_fov_vert_up << m_draw_lines
+		<< m_draw_planes << m_lineWidth << m_planes_color.R << m_planes_color.G
+		<< m_planes_color.B << m_planes_color.A;
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
 void CFrustum::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)

@@ -28,8 +28,8 @@ class CMemoryStream : public CStream
    public:
 	size_t Read(void* Buffer, size_t Count) override;
 	size_t Write(const void* Buffer, size_t Count) override;
-   protected:
 
+   protected:
 	/** Internal data */
 	void_ptr_noncopy m_memory{nullptr};
 	uint64_t m_size{0}, m_position{0}, m_bytesWritten{0};
@@ -51,10 +51,10 @@ class CMemoryStream : public CStream
 	/** Initilize the data in the stream from a block of memory which is NEITHER
 	 * OWNED NOR COPIED by the object, so it must exist during the whole live of
 	 * the object.
-	  *  After assigning a block of data with this method, the object becomes
+	 *  After assigning a block of data with this method, the object becomes
 	 * "read-only", so further attempts to change the size of the buffer will
 	 * raise an exception.
-	  *  This method resets the write and read positions to the beginning. */
+	 *  This method resets the write and read positions to the beginning. */
 	void assignMemoryNotOwn(const void* data, const uint64_t nBytesInData);
 
 	/** Destructor */
@@ -71,14 +71,15 @@ class CMemoryStream : public CStream
 	uint64_t Seek(
 		int64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) override;
 	/** Returns the total size of the internal buffer  */
-	uint64_t getTotalBytesCount() override;
+	uint64_t getTotalBytesCount() const override;
 	/** Method for getting the current cursor position, where 0 is the first
 	 * byte and TotalBytesCount-1 the last one */
-	uint64_t getPosition() override;
+	uint64_t getPosition() const override;
 
 	/** Method for getting a pointer to the raw stored data. The lenght in bytes
 	 * is given by getTotalBytesCount */
 	void* getRawBufferData();
+	const void* getRawBufferData() const;
 
 	/** Saves the entire buffer to a file \return true on success, false on
 	 * error */
@@ -108,6 +109,6 @@ struct TFreeFnDataForZMQ
 /** Used in mrpt_send_to_zmq(). `hint` points to a `TFreeFnDataForZMQ` struct,
  * to be freed here. */
 void free_fn_for_zmq(void* data, void* hint);
-}
-}  // End of namespace
-}  // end of namespace
+}  // namespace internal
+}  // namespace io
+}  // namespace mrpt

@@ -17,7 +17,7 @@ using namespace std;
 
 static_assert(
 	!std::is_copy_constructible<CFileInputStream>::value &&
-	!std::is_copy_assignable<CFileInputStream>::value,
+		!std::is_copy_assignable<CFileInputStream>::value,
 	"Copy Check");
 
 CFileInputStream::CFileInputStream(const string& fileName) : m_if()
@@ -118,23 +118,27 @@ uint64_t CFileInputStream::Seek(int64_t Offset, CStream::TSeekOrigin Origin)
 /*---------------------------------------------------------------
 						getTotalBytesCount
  ---------------------------------------------------------------*/
-uint64_t CFileInputStream::getTotalBytesCount()
+uint64_t CFileInputStream::getTotalBytesCount() const
 {
 	if (!fileOpenCorrectly()) return 0;
 
-	uint64_t previousPos = getPosition();
-	uint64_t fileSize = Seek(0, sFromEnd);
-	Seek(previousPos);
+	auto& f = const_cast<std::ifstream&>(m_if);
+
+	const uint64_t previousPos = f.tellg();
+	f.seekg(0, ios_base::end);
+	uint64_t fileSize = f.tellg();
+	f.seekg(previousPos, ios_base::beg);
 	return fileSize;
 }
 
 /*---------------------------------------------------------------
 						getPosition
  ---------------------------------------------------------------*/
-uint64_t CFileInputStream::getPosition()
+uint64_t CFileInputStream::getPosition() const
 {
+	auto& f = const_cast<std::ifstream&>(m_if);
 	if (m_if.is_open())
-		return m_if.tellg();
+		return f.tellg();
 	else
 		return 0;
 }
@@ -142,7 +146,7 @@ uint64_t CFileInputStream::getPosition()
 /*---------------------------------------------------------------
 						fileOpenCorrectly
  ---------------------------------------------------------------*/
-bool CFileInputStream::fileOpenCorrectly() { return m_if.is_open(); }
+bool CFileInputStream::fileOpenCorrectly() const { return m_if.is_open(); }
 /*---------------------------------------------------------------
 						readLine
  ---------------------------------------------------------------*/

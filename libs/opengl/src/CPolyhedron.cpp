@@ -23,9 +23,9 @@
 using namespace mrpt;
 using namespace mrpt::math;
 using namespace mrpt::opengl;
-
 using namespace mrpt::poses;
 using namespace std;
+using mrpt::serialization::CArchive;
 
 IMPLEMENTS_SERIALIZABLE(CPolyhedron, CRenderizableDisplayList, mrpt::opengl)
 
@@ -453,8 +453,7 @@ double getHeight(const TPolygon3D& p, const TPoint3D& c)
 	double r = mrpt::math::distance(p[0], c);
 	double l = mrpt::math::distance(p[0], p[1]);
 	for (size_t i = 1; i < N; i++)
-		if (abs(mrpt::math::distance(p[i], c) - r) >=
-			mrpt::math::getEpsilon())
+		if (abs(mrpt::math::distance(p[i], c) - r) >= mrpt::math::getEpsilon())
 			throw std::logic_error("There is a non-regular polygon.");
 		else if (
 			abs(mrpt::math::distance(p[i], p[(i + 1) % N]) - l) >=
@@ -1263,30 +1262,36 @@ CPolyhedron::Ptr CPolyhedron::CreateRandomPolyhedron(double radius)
 			return CreateDeltoidalHexecontahedron(radius);
 		case 23:
 			return CreateArchimedeanRegularPrism(
-				(mrpt::random::getRandomGenerator().drawUniform32bit() % 10) + 3,
+				(mrpt::random::getRandomGenerator().drawUniform32bit() % 10) +
+					3,
 				radius);
 		case 24:
 			return CreateArchimedeanRegularAntiprism(
-				(mrpt::random::getRandomGenerator().drawUniform32bit() % 10) + 3,
+				(mrpt::random::getRandomGenerator().drawUniform32bit() % 10) +
+					3,
 				radius);
 		case 25:
 			return CreateJohnsonSolidWithConstantBase(
-				((mrpt::random::getRandomGenerator().drawUniform32bit() % 4) << 1) +
+				((mrpt::random::getRandomGenerator().drawUniform32bit() % 4)
+				 << 1) +
 					4,
 				radius, "C+");
 		case 26:
 			return CreateJohnsonSolidWithConstantBase(
-				((mrpt::random::getRandomGenerator().drawUniform32bit() % 4) << 1) +
+				((mrpt::random::getRandomGenerator().drawUniform32bit() % 4)
+				 << 1) +
 					4,
 				radius, "C-C+");
 		case 27:
 			return CreateJohnsonSolidWithConstantBase(
-				((mrpt::random::getRandomGenerator().drawUniform32bit() % 4) << 1) +
+				((mrpt::random::getRandomGenerator().drawUniform32bit() % 4)
+				 << 1) +
 					4,
 				radius, "C-PRC+");
 		case 28:
 			return CreateJohnsonSolidWithConstantBase(
-				((mrpt::random::getRandomGenerator().drawUniform32bit() % 4) << 1) +
+				((mrpt::random::getRandomGenerator().drawUniform32bit() % 4)
+				 << 1) +
 					4,
 				radius, "C-AC+");
 		case 29:
@@ -1991,47 +1996,44 @@ size_t CPolyhedron::facesInVertex(size_t vertex) const
 	return res;
 }
 
-CStream& mrpt::opengl::operator>>(
-	mrpt::serialization::CArchive& in, CPolyhedron::TPolyhedronEdge& o)
+CArchive& mrpt::opengl::operator>>(
+	CArchive& in, CPolyhedron::TPolyhedronEdge& o)
 {
 	in >> o.v1 >> o.v2;
 	return in;
 }
 
-CStream& mrpt::opengl::operator<<(
-	mrpt::serialization::CArchive& out, const CPolyhedron::TPolyhedronEdge& o)
+CArchive& mrpt::opengl::operator<<(
+	CArchive& out, const CPolyhedron::TPolyhedronEdge& o)
 {
 	out << o.v1 << o.v2;
 	return out;
 }
 
-CStream& mrpt::opengl::operator>>(
-	mrpt::serialization::CArchive& in, CPolyhedron::TPolyhedronFace& o)
+CArchive& mrpt::opengl::operator>>(
+	CArchive& in, CPolyhedron::TPolyhedronFace& o)
 {
 	in >> o.vertices >> o.normal[0] >> o.normal[1] >> o.normal[2];
 	return in;
 }
 
-CStream& mrpt::opengl::operator<<(
-	mrpt::serialization::CArchive& out, const CPolyhedron::TPolyhedronFace& o)
+CArchive& mrpt::opengl::operator<<(
+	CArchive& out, const CPolyhedron::TPolyhedronFace& o)
 {
 	out << o.vertices << o.normal[0] << o.normal[1] << o.normal[2];
 	return out;
 }
 
-uint8_t CPolyhedron::serializeGetVersion() const { return XX; } void CPolyhedron::serializeTo(mrpt::serialization::CArchive& out) const
+uint8_t CPolyhedron::serializeGetVersion() const { return 0; }
+void CPolyhedron::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		writeToStreamRender(out);
-		// version 0
-		out << mVertices << mFaces << mWireframe << mLineWidth;
-	}
+	writeToStreamRender(out);
+	// version 0
+	out << mVertices << mFaces << mWireframe << mLineWidth;
 }
 
-void CPolyhedron::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CPolyhedron::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

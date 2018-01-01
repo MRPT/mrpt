@@ -114,8 +114,8 @@ std::string CPipeBaseEndPoint::serialize()
 
 // Methods that don't make sense in pipes:
 uint64_t CPipeBaseEndPoint::Seek(int64_t, CStream::TSeekOrigin) { return 0; }
-uint64_t CPipeBaseEndPoint::getTotalBytesCount() { return 0; }
-uint64_t CPipeBaseEndPoint::getPosition() { return 0; }
+uint64_t CPipeBaseEndPoint::getTotalBytesCount() const { return 0; }
+uint64_t CPipeBaseEndPoint::getPosition() const { return 0; }
 /** Introduces a pure virtual method responsible for reading from the stream */
 size_t CPipeBaseEndPoint::Read(void* Buffer, size_t Count)
 {

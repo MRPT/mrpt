@@ -110,9 +110,9 @@ class CPipeBaseEndPoint : public mrpt::io::CStream
 	virtual uint64_t Seek(
 		int64_t of, CStream::TSeekOrigin o = sFromBeginning) override;
 	/** Without effect in this class */
-	virtual uint64_t getTotalBytesCount() override;
+	virtual uint64_t getTotalBytesCount() const override;
 	/** Without effect in this class */
-	virtual uint64_t getPosition() override;
+	virtual uint64_t getPosition() const override;
 };  // end of CPipeBaseEndPoint
 static_assert(
 	!std::is_copy_constructible<CPipeBaseEndPoint>::value &&

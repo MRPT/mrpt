@@ -66,7 +66,7 @@ size_t CFileGZOutputStream::Write(const void* Buffer, size_t Count)
 	return gzwrite(THE_GZFILE, const_cast<void*>(Buffer), Count);
 }
 
-uint64_t CFileGZOutputStream::getPosition()
+uint64_t CFileGZOutputStream::getPosition() const
 {
 	if (!m_f)
 	{
@@ -75,13 +75,13 @@ uint64_t CFileGZOutputStream::getPosition()
 	return gztell(THE_GZFILE);
 }
 
-bool CFileGZOutputStream::fileOpenCorrectly() { return m_f != nullptr; }
+bool CFileGZOutputStream::fileOpenCorrectly() const { return m_f != nullptr; }
 uint64_t CFileGZOutputStream::Seek(int64_t, CStream::TSeekOrigin)
 {
 	THROW_EXCEPTION("Method not available in this class.");
 }
 
-uint64_t CFileGZOutputStream::getTotalBytesCount()
+uint64_t CFileGZOutputStream::getTotalBytesCount() const
 {
 	THROW_EXCEPTION("Method not available in this class.");
 }

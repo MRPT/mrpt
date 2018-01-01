@@ -83,31 +83,19 @@ void CTexturedPlane::render_texturedobj() const
 #endif
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-uint8_t CTexturedPlane::serializeGetVersion() const { return XX; } void CTexturedPlane::serializeTo(
-	mrpt::serialization::CArchive& out) const
+uint8_t CTexturedPlane::serializeGetVersion() const { return 2; }
+void CTexturedPlane::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 2;
-	else
-	{
-		writeToStreamRender(out);
+	writeToStreamRender(out);
 
-		out << m_xMin << m_xMax;
-		out << m_yMin << m_yMax;
+	out << m_xMin << m_xMax;
+	out << m_yMin << m_yMax;
 
-		writeToStreamTexturedObject(out);
-	}
+	writeToStreamTexturedObject(out);
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CTexturedPlane::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CTexturedPlane::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

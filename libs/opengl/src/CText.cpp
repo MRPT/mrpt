@@ -58,27 +58,15 @@ void CText::render() const
 #endif
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-uint8_t CText::serializeGetVersion() const { return XX; } void CText::serializeTo(mrpt::serialization::CArchive& out) const
+uint8_t CText::serializeGetVersion() const { return 1; }
+void CText::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		writeToStreamRender(out);
-		out << m_str;
-		out << m_fontName;
-		out << (uint32_t)m_fontHeight << (uint32_t)m_fontWidth;
-	}
+	writeToStreamRender(out);
+	out << m_str;
+	out << m_fontName;
+	out << (uint32_t)m_fontHeight << (uint32_t)m_fontWidth;
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
 void CText::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)

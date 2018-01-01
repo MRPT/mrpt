@@ -12,17 +12,16 @@
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CRenderizableDisplayList.h>
-#include <mrpt/utils/metaprogramming.h>
 #include <mrpt/serialization/CArchive.h>
-
-#include <mrpt/utils/CFileGZOutputStream.h>
-#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/serialization/metaprogramming_serialization.h>
 
 #include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-
+using namespace mrpt::serialization::metaprogramming;
 using namespace mrpt::math;
 using namespace std;
 
@@ -76,9 +75,11 @@ COpenGLScene& COpenGLScene::operator=(const COpenGLScene& obj)
 
 		clear();
 		m_viewports = obj.m_viewports;
-		for_each(
-			m_viewports.begin(), m_viewports.end(),
-			metaprogramming::ObjectMakeUnique());
+		for_each(m_viewports.begin(), m_viewports.end(), [](auto& ptr) {
+			// make a unique copy of each object (copied as a shared ptr)
+			ptr.reset(
+				dynamic_cast<mrpt::opengl::COpenGLViewport*>(ptr->clone()));
+		});
 	}
 	return *this;
 }
@@ -111,32 +112,19 @@ void COpenGLScene::render() const
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-uint8_t COpenGLScene::serializeGetVersion() const { return XX; }
+uint8_t COpenGLScene::serializeGetVersion() const { return 1; }
 void COpenGLScene::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		out << m_followCamera;
+	out << m_followCamera;
 
-		uint32_t n;
-		n = (uint32_t)m_viewports.size();
-		out << n;
-		for (TListViewports::const_iterator it = m_viewports.begin();
-			 it != m_viewports.end(); ++it)
-			out << **it;
-	}
+	uint32_t n;
+	n = (uint32_t)m_viewports.size();
+	out << n;
+	for (TListViewports::const_iterator it = m_viewports.begin();
+		 it != m_viewports.end(); ++it)
+		out << **it;
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
 void COpenGLScene::serializeFrom(
 	mrpt::serialization::CArchive& in, uint8_t version)
 {
@@ -156,7 +144,7 @@ void COpenGLScene::serializeFrom(
 			view->m_objects.resize(n);
 			for_each(
 				view->m_objects.begin(), view->m_objects.end(),
-				metaprogramming::ObjectReadFromStream(&in));
+				ObjectReadFromStream(&in));
 		}
 		break;
 		case 1:
@@ -236,12 +224,11 @@ void COpenGLScene::dumpListOfObjects(std::vector<std::string>& lst)
 {
 	lst.clear();
 
-	for (TListViewports::iterator it = m_viewports.begin();
-		 it != m_viewports.end(); ++it)
+	for (auto& v : m_viewports)
 	{
-		lst.add(string("VIEWPORT: ") + (*it)->m_name);
-		lst.add("============================================");
-		(*it)->dumpListOfObjects(lst);
+		lst.emplace_back(string("VIEWPORT: ") + v->m_name);
+		lst.emplace_back("============================================");
+		v->dumpListOfObjects(lst);
 	}
 }
 
@@ -320,7 +307,8 @@ bool COpenGLScene::saveToFile(const std::string& fil) const
 {
 	try
 	{
-		CFileGZOutputStream(fil) << *this;
+		mrpt::io::CFileGZOutputStream f(fil);
+		mrpt::serialization::archiveFrom(f) << *this;
 		return true;
 	}
 	catch (...)
@@ -333,7 +321,8 @@ bool COpenGLScene::loadFromFile(const std::string& fil)
 {
 	try
 	{
-		CFileGZInputStream(fil) >> *this;
+		mrpt::io::CFileGZInputStream f(fil);
+		mrpt::serialization::archiveFrom(f) >> *this;
 		return true;
 	}
 	catch (...)
@@ -349,7 +338,7 @@ void COpenGLScene::getBoundingBox(
 	const std::string& vpn) const
 {
 	COpenGLViewport::Ptr vp = this->getViewport(vpn);
-	ASSERTMSG_(vp, "No opengl viewport exists with the given name")
+	ASSERTMSG_(vp, "No opengl viewport exists with the given name");
 
 	return vp->getBoundingBox(bb_min, bb_max);
 }

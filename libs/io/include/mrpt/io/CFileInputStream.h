@@ -48,7 +48,7 @@ class CFileInputStream : public CStream
 	/** Close the stream */
 	void close();
 	/** Returns true if the file was open without errors. */
-	bool fileOpenCorrectly();
+	bool fileOpenCorrectly() const;
 	/** Returns true if the file was open without errors. */
 	bool is_open() { return fileOpenCorrectly(); }
 	/** Will be true if EOF has been already reached. */
@@ -60,9 +60,9 @@ class CFileInputStream : public CStream
 	uint64_t Seek(
 		int64_t off, CStream::TSeekOrigin Origin = sFromBeginning) override;
 	// See docs in base class
-	uint64_t getTotalBytesCount() override;
+	uint64_t getTotalBytesCount() const override;
 	// See docs in base class
-	uint64_t getPosition() override;
+	uint64_t getPosition() const override;
 
 	/** Reads one string line from the file (until a new-line character)
 	  * \return true if a line has been read, false on EOF or error. */
