@@ -63,10 +63,10 @@ CFBORender::CFBORender(
 		(PFNGLFRAMEBUFFERTEXTURE2DEXTPROC)wglGetProcAddress(
 			"glFramebufferTexture2DEXT");
 
-	ASSERT_(glGenFramebuffersEXT != nullptr)
-	ASSERT_(glDeleteFramebuffersEXT != nullptr)
-	ASSERT_(glBindFramebufferEXT != nullptr)
-	ASSERT_(glFramebufferTexture2DEXT != nullptr)
+	ASSERT_(glGenFramebuffersEXT != nullptr);
+	ASSERT_(glDeleteFramebuffersEXT != nullptr);
+	ASSERT_(glBindFramebufferEXT != nullptr);
+	ASSERT_(glFramebufferTexture2DEXT != nullptr);
 #endif
 
 	// gen the frambuffer object (FBO), similar manner as a texture

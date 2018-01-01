@@ -176,7 +176,7 @@ class CPointCloud : public CRenderizable,
 	inline mrpt::math::TPoint3D operator[](size_t i) const
 	{
 #ifdef _DEBUG
-		ASSERT_BELOW_(i, size();
+		ASSERT_BELOW_(i, size());
 #endif
 		return mrpt::math::TPoint3D(m_xs[i], m_ys[i], m_zs[i]);
 	}
@@ -186,7 +186,7 @@ class CPointCloud : public CRenderizable,
 	inline mrpt::math::TPoint3D getPoint(size_t i) const
 	{
 #ifdef _DEBUG
-		ASSERT_BELOW_(i, size();
+		ASSERT_BELOW_(i, size());
 #endif
 		return mrpt::math::TPoint3D(m_xs[i], m_ys[i], m_zs[i]);
 	}
@@ -196,7 +196,7 @@ class CPointCloud : public CRenderizable,
 	inline mrpt::math::TPoint3Df getPointf(size_t i) const
 	{
 #ifdef _DEBUG
-		ASSERT_BELOW_(i, size();
+		ASSERT_BELOW_(i, size());
 #endif
 		return mrpt::math::TPoint3Df(m_xs[i], m_ys[i], m_zs[i]);
 	}

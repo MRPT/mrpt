@@ -10,7 +10,7 @@
 #define JPEG_INTERNALS
 #include "jinclude.h"
 #include "mrpt_jpeglib.h"
-#include <mrpt/utils/mrpt_macros.h>
+#include <mrpt/core/exceptions.h>
 
 #ifdef QUANT_2PASS_SUPPORTED
 

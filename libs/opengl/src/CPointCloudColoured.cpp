@@ -178,7 +178,7 @@ CArchive& mrpt::opengl::operator<<(
 void CPointCloudColoured::setPoint(size_t i, const TPointColour& p)
 {
 #ifdef _DEBUG
-	ASSERT_BELOW_(i, size();
+	ASSERT_BELOW_(i, size());
 #endif
 	m_points[i] = p;
 

@@ -191,9 +191,11 @@ bool CPointsMap::load2Dor3D_from_text_file(
 #if MRPT_HAS_MATLAB
 // Add to implement mexplus::from template specialization
 IMPLEMENTS_MEXPLUS_FROM(mrpt::maps::CPointsMap)
+#endif
 
 mxArray* CPointsMap::writeToMatlab() const
 {
+#if MRPT_HAS_MATLAB
 	MRPT_TODO("Create 3xN array xyz of points coordinates")
 	const char* fields[] = {"x", "y", "z"};
 	mexplus::MxArray map_struct(
@@ -203,8 +205,10 @@ mxArray* CPointsMap::writeToMatlab() const
 	map_struct.set("y", this->y);
 	map_struct.set("z", this->z);
 	return map_struct.release();
-}
+#else
+	THROW_EXCEPTION("MRPT built without MATLAB/Mex support");
 #endif
+}
 
 /*---------------------------------------------------------------
 					getPoint

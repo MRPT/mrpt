@@ -76,7 +76,7 @@ typename MAT1::Scalar mahalanobisDistance2(
 	ASSERT_(!mean_diffs.empty());
 	ASSERT_(mean_diffs.size() == COV1.rows());
 	ASSERT_(COV1.isSquare() && COV2.isSquare());
-	ASSERT_(COV1, 1) == size(COV2.rows());
+	ASSERT_(COV1.rows() == COV2.rows());
 #endif
 	MAT1 COV = COV1;
 	COV += COV2;
