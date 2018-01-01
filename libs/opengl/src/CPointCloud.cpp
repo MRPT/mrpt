@@ -327,7 +327,7 @@ void CPointCloud::setPoint(
 	size_t i, const float x, const float y, const float z)
 {
 #ifdef _DEBUG
-	ASSERT_BELOW_(i, size();
+	ASSERT_BELOW_(i, size());
 #endif
 	m_xs[i] = x;
 	m_ys[i] = y;

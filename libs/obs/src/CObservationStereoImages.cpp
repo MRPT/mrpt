@@ -191,9 +191,11 @@ void CObservationStereoImages::serializeFrom(mrpt::serialization::CArchive& in, 
 #if MRPT_HAS_MATLAB
 // Add to implement mexplus::from template specialization
 IMPLEMENTS_MEXPLUS_FROM(mrpt::obs::CObservationStereoImages)
+#endif
 
 mxArray* CObservationStereoImages::writeToMatlab() const
 {
+#if MRPT_HAS_MATLAB
 	const char* fields[] = {"class",   "ts",	 "sensorLabel", "imageL",
 							"imageR",  "poseL",  "poseLR",		"poseR",
 							"paramsL", "paramsR"};
@@ -211,8 +213,10 @@ mxArray* CObservationStereoImages::writeToMatlab() const
 	obs_struct.set("paramsL", this->leftCamera);
 	obs_struct.set("paramsR", this->rightCamera);
 	return obs_struct.release();
-}
+#else
+	THROW_EXCEPTION("MRPT was built without MEX (Matlab) support!");
 #endif
+}
 
 /** Populates a TStereoCamera structure with the parameters in \a leftCamera, \a
  * rightCamera and \a rightCameraPose */

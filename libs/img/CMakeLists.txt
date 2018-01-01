@@ -26,15 +26,16 @@ IF(BUILD_mrpt-img)
 				${img/jpeglib_FILES}
 				PROPERTIES COMPILE_FLAGS "/Y-"
 				)
-
 		ENDIF ()
 	ENDIF()
 
 	IF(CMAKE_MRPT_HAS_OPENCV)
 		target_link_libraries(mrpt-img PRIVATE ${OpenCV_LIBRARIES})
 	ENDIF()
-
 	IF(CMAKE_MRPT_HAS_JPEG)
 		target_link_libraries(mrpt-img PRIVATE ${JPEG_LIBS})
+	ENDIF()
+	IF(CMAKE_MRPT_HAS_WXWIDGETS)
+		target_link_libraries(mrpt-img PRIVATE ${wxWidgets_LIBRARIES})
 	ENDIF()
 ENDIF()

@@ -112,9 +112,11 @@ void CObservationImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t
 #if MRPT_HAS_MATLAB
 // Add to implement mexplus::from template specialization
 IMPLEMENTS_MEXPLUS_FROM(mrpt::obs::CObservationImage)
+#endif
 
 mxArray* CObservationImage::writeToMatlab() const
 {
+#if MRPT_HAS_MATLAB
 	const char* fields[] = {"class", "ts",   "sensorLabel",
 							"image", "pose", "params"};
 	mexplus::MxArray obs_struct(
@@ -127,8 +129,10 @@ mxArray* CObservationImage::writeToMatlab() const
 	obs_struct.set("pose", this->cameraPose);
 	obs_struct.set("params", this->cameraParams);
 	return obs_struct.release();
-}
+#else
+	THROW_EXCEPTION("MRPT built without MATLAB/Mex support");
 #endif
+}
 
 /*---------------------------------------------------------------
 						getRectifiedImage

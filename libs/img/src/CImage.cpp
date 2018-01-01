@@ -832,13 +832,17 @@ Implements the writing to a mxArray for Matlab
 #if MRPT_HAS_MATLAB
 // Add to implement mexplus::from template specialization
 IMPLEMENTS_MEXPLUS_FROM(mrpt::img::CImage)
+#endif
 
 mxArray* CImage::writeToMatlab() const
 {
+#if MRPT_HAS_MATLAB
 cv::Mat cvImg = cv::cvarrToMat(this->getAs<IplImage>());
 return mexplus::from(cvImg);
-}
+#else
+	THROW_EXCEPTION("MRPT built without MATLAB/Mex support");
 #endif
+}
 
 /*---------------------------------------------------------------
 					getSize

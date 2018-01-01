@@ -80,9 +80,11 @@ void TCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 #if MRPT_HAS_MATLAB
 // Add to implement mexplus::from template specialization
 IMPLEMENTS_MEXPLUS_FROM(mrpt::img::TCamera)
+#endif
 
 mxArray* TCamera::writeToMatlab() const
 {
+#if MRPT_HAS_MATLAB
 	const char* fields[] = {"K", "dist", "f", "ncols", "nrows"};
 	mexplus::MxArray params_struct(
 		mexplus::MxArray::Struct(sizeof(fields) / sizeof(fields[0]), fields));
@@ -92,8 +94,10 @@ mxArray* TCamera::writeToMatlab() const
 	params_struct.set("ncols", this->ncols);
 	params_struct.set("nrows", this->nrows);
 	return params_struct.release();
-}
+#else
+	THROW_EXCEPTION("MRPT built without MATLAB/Mex support");
 #endif
+}
 
 /**  Save as a config block:
  *  \code

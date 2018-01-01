@@ -245,9 +245,11 @@ void CObservation2DRangeScan::serializeFrom(mrpt::serialization::CArchive& in, u
 #if MRPT_HAS_MATLAB
 // Add to implement mexplus::from template specialization
 IMPLEMENTS_MEXPLUS_FROM(mrpt::obs::CObservation2DRangeScan)
+#endif
 
 mxArray* CObservation2DRangeScan::writeToMatlab() const
 {
+#if MRPT_HAS_MATLAB
 	const char* fields[] = {
 		"class",  // Data common to any MRPT class
 		"ts", "sensorLabel",  // Data common to any observation
@@ -281,8 +283,10 @@ mxArray* CObservation2DRangeScan::writeToMatlab() const
 	obs_struct.set("pose", this->sensorPose);
 	// TODO: obs_struct.set("map", ...)
 	return obs_struct.release();
-}
+#else
+	THROW_EXCEPTION("MRPT built without MATLAB/Mex support");
 #endif
+}
 
 /*---------------------------------------------------------------
 						isPlanarScan

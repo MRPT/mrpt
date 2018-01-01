@@ -741,7 +741,7 @@ void COpenGLViewport::get3DRayForPixelCoord(
 	mrpt::poses::CPose3D* out_cameraPose) const
 {
 	ASSERTDEB_(
-		m_lastProjMat.viewport_height > 0 && m_lastProjMat.viewport_width > 0)
+		m_lastProjMat.viewport_height > 0 && m_lastProjMat.viewport_width > 0);
 
 	const double ASPECT =
 		m_lastProjMat.viewport_width / double(m_lastProjMat.viewport_height);
