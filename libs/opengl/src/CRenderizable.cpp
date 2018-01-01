@@ -25,7 +25,7 @@
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
+
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CRenderizable, CSerializable, mrpt::opengl)
 

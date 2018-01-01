@@ -207,7 +207,7 @@ class CVectorField2D : public CRenderizableDisplayList
 	{
 		ASSERT_(
 			(Matrix_x.rows() == Matrix_y.rows()) &&
-			(Matrix_x.cols() == Matrix_y.cols()))
+			(Matrix_x.cols() == Matrix_y.cols()));
 		xcomp = Matrix_x;
 		ycomp = Matrix_y;
 		CRenderizableDisplayList::notifyChange();

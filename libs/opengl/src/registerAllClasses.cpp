@@ -14,7 +14,7 @@
 #include <mrpt/utils/initializer.h>
 
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
+
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_opengl)
 {

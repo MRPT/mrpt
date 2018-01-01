@@ -21,7 +21,7 @@ using namespace mrpt::math;
 using namespace mrpt::poses;
 using namespace mrpt::system;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
+
 
 /** For each object in the list:
 *   - checks visibility of each object

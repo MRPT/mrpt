@@ -17,7 +17,7 @@
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
+
 using namespace mrpt::math;
 
 IMPLEMENTS_SERIALIZABLE(

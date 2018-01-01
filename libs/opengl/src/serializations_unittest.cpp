@@ -14,7 +14,7 @@
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
+
 using namespace std;
 
 // Defined in tests/test_main.cpp

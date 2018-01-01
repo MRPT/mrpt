@@ -10,36 +10,37 @@
 
 #include <list>
 #include <mutex>
+#include <utility>  // std::pair
 
 namespace mrpt
 {
 namespace system
 {
 /** A generic system for versatile memory pooling.
-  *   This class implements the singleton pattern so a unique instance exists
-  *for each combination of template parameters.
-  *   All methods are thread-safe.
-  *
-  *   Basic usage:
-  *     - When needed, call \a request_memory() to check the availability of
-  *memory in the pool.
-  *		- At your class destructor, donate the memory to the pool with \a
-  *dump_to_pool().
-  *
-  *   Notice that memory requests are checked against memory blocks in the pool
-  *via a user-defined function:
-  *
-  *    bool POOLABLE_DATA::isSuitable(const POOLABLE_DATA & req) const { ... }
-  *
-  *   For an example of how to handle a memory pool, see the class
-  *mrpt::obs::CObservation3DRangeScan
-  *
-  *  \tparam POOLABLE_DATA A struct with user-defined objects which actually
-  *contain the memory blocks (e.g. one or more std::vector).
-  *  \tparam DATA_PARAMS A struct with user information about each memory block
-  *(e.g. size of a std::vector)
-  * \ingroup mrpt_memory
-  */
+ *   This class implements the singleton pattern so a unique instance exists
+ *for each combination of template parameters.
+ *   All methods are thread-safe.
+ *
+ *   Basic usage:
+ *     - When needed, call \a request_memory() to check the availability of
+ *memory in the pool.
+ *		- At your class destructor, donate the memory to the pool with \a
+ *dump_to_pool().
+ *
+ *   Notice that memory requests are checked against memory blocks in the pool
+ *via a user-defined function:
+ *
+ *    bool POOLABLE_DATA::isSuitable(const POOLABLE_DATA & req) const { ... }
+ *
+ *   For an example of how to handle a memory pool, see the class
+ *mrpt::obs::CObservation3DRangeScan
+ *
+ *  \tparam POOLABLE_DATA A struct with user-defined objects which actually
+ *contain the memory blocks (e.g. one or more std::vector).
+ *  \tparam DATA_PARAMS A struct with user information about each memory block
+ *(e.g. size of a std::vector)
+ * \ingroup mrpt_memory
+ */
 template <class DATA_PARAMS, class POOLABLE_DATA>
 class CGenericMemoryPool
 {
@@ -67,9 +68,9 @@ class CGenericMemoryPool
 
 	/** Construct-on-first-use (~singleton) pattern: Return the unique instance
 	 * of this class for a given template arguments,
-	  *  or nullptr if it was once created but it's been destroyed (which means
+	 *  or nullptr if it was once created but it's been destroyed (which means
 	 * we're in the program global destruction phase).
-	  */
+	 */
 	static CGenericMemoryPool<DATA_PARAMS, POOLABLE_DATA>* getInstance(
 		const size_t max_pool_entries = 5)
 	{
@@ -81,14 +82,14 @@ class CGenericMemoryPool
 
 	/** Request a block of data which fulfils the size requirements stated in \a
 	 * params.
-	  *  Notice that the decision on the suitability of each pool'ed block is
+	 *  Notice that the decision on the suitability of each pool'ed block is
 	 * done by DATA_PARAMS::isSuitable().
-	  *  \return The block of data, or nullptr if none suitable was found in the
+	 *  \return The block of data, or nullptr if none suitable was found in the
 	 * pool.
-	  *  \note It is a responsibility of the user to free with "delete" the
+	 *  \note It is a responsibility of the user to free with "delete" the
 	 * "POOLABLE_DATA" object itself once the memory has been extracted from its
 	 * elements.
-	  */
+	 */
 	POOLABLE_DATA* request_memory(const DATA_PARAMS& params)
 	{
 		// A quick check first:
@@ -109,11 +110,11 @@ class CGenericMemoryPool
 	}
 
 	/** Saves the passed data block (characterized by \a params) to the pool.
-	  *  If the overall size of the pool is above the limit, the oldest entry is
+	 *  If the overall size of the pool is above the limit, the oldest entry is
 	 * removed.
-	  *  \note It is a responsibility of the user to allocate in dynamic memory
+	 *  \note It is a responsibility of the user to allocate in dynamic memory
 	 * the "POOLABLE_DATA" object with "new".
-	  */
+	 */
 	void dump_to_pool(const DATA_PARAMS& params, POOLABLE_DATA* block)
 	{
 		std::lock_guard<std::mutex> lock(m_pool_cs);
@@ -139,7 +140,5 @@ class CGenericMemoryPool
 	}
 };
 
-}  // End of namespace
-}  // End of namespace
-
-#endif
+}  // namespace system
+}  // namespace mrpt

@@ -15,7 +15,6 @@
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
@@ -189,34 +188,21 @@ void CVectorField3D::render_dl() const
 #endif
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CVectorField3D::writeToStream(
-	mrpt::serialization::CArchive& out, int* version) const
+uint8_t CVectorField3D::serializeGetVersion() const { return 0; }
+void CVectorField3D::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		writeToStreamRender(out);
+	writeToStreamRender(out);
 
-		out << x_vf << y_vf << z_vf;
-		out << x_p << y_p << z_p;
-		out << m_LineWidth;
-		out << m_pointSize;
-		out << m_antiAliasing;
-		out << m_point_color;
-		out << m_field_color;
-	}
+	out << x_vf << y_vf << z_vf;
+	out << x_p << y_p << z_p;
+	out << m_LineWidth;
+	out << m_pointSize;
+	out << m_antiAliasing;
+	out << m_point_color;
+	out << m_field_color;
 }
-
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CVectorField3D::readFromStream(mrpt::serialization::CArchive& in, int version)
+void CVectorField3D::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

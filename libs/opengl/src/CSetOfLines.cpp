@@ -16,7 +16,7 @@
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
+
 using namespace mrpt::math;
 using namespace std;
 
@@ -127,7 +127,8 @@ void CSetOfLines::render_dl() const
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void CSetOfLines::writeToStream(mrpt::serialization::CArchive& out, int* version) const
+void CSetOfLines::writeToStream(
+	mrpt::serialization::CArchive& out, int* version) const
 {
 	if (version)
 		*version = 4;
@@ -228,7 +229,7 @@ void CSetOfLines::getLineByIndex(
 	size_t index, double& x0, double& y0, double& z0, double& x1, double& y1,
 	double& z1) const
 {
-	ASSERT_(index < mSegments.size();
+	ASSERT_(index < mSegments.size());
 	const mrpt::math::TPoint3D& p0 = mSegments[index].point1;
 	const mrpt::math::TPoint3D& p1 = mSegments[index].point2;
 	x0 = p0.x;

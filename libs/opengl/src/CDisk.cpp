@@ -16,7 +16,7 @@
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
+
 using mrpt::poses::CPose3D;
 using namespace std;
 
