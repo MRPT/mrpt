@@ -19,7 +19,7 @@ IMPLEMENTS_SERIALIZABLE(THypothesisIDSet, CSerializable, mrpt::hmtslam)
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void THypothesisIDSet::writeToStream(
+uint8_t THypothesisIDSet::serializeGetVersion() const { return XX; } void THypothesisIDSet::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
@@ -37,7 +37,7 @@ void THypothesisIDSet::writeToStream(
    Implements the reading from a CStream capability of
 	  CSerializable objects
   ---------------------------------------------------------------*/
-void THypothesisIDSet::readFromStream(mrpt::utils::CStream& in, int version)
+void THypothesisIDSet::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

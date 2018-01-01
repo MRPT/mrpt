@@ -116,7 +116,7 @@ void xRawLogViewerFrame::OnImportCARMEN(wxCommandEvent& event)
 
 	unsigned int i, n;
 
-	CStringList sl;
+	std::vector<std::string> sl;
 	sl.loadFromFile(fil);
 	n = (int)sl.size();
 

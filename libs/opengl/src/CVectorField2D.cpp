@@ -152,30 +152,22 @@ void CVectorField2D::render_dl() const
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void CVectorField2D::writeToStream(
-	mrpt::serialization::CArchive& out, int* version) const
+uint8_t CVectorField2D::serializeGetVersion() const { return 0; }
+void CVectorField2D::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		writeToStreamRender(out);
+	writeToStreamRender(out);
 
-		out << xcomp << ycomp;
-		out << xMin << xMax << yMin << yMax;
-		out << m_LineWidth;
-		out << m_pointSize;
-		out << m_antiAliasing;
-		out << m_point_color;
-		out << m_field_color;
-	}
+	out << xcomp << ycomp;
+	out << xMin << xMax << yMin << yMax;
+	out << m_LineWidth;
+	out << m_pointSize;
+	out << m_antiAliasing;
+	out << m_point_color;
+	out << m_field_color;
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CVectorField2D::readFromStream(mrpt::serialization::CArchive& in, int version)
+void CVectorField2D::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -252,7 +244,7 @@ void CVectorField2D::getBoundingBox(
 
 void CVectorField2D::adjustVectorFieldToGrid()
 {
-	ASSERT_(xcomp.size() > 0)
+	ASSERT_(xcomp.size() > 0);
 
 	const float ratio_xp =
 		xcomp.maxCoeff() * (xcomp.cols() - 1) / (xMax - xMin);

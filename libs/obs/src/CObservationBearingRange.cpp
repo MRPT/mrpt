@@ -43,7 +43,7 @@ CObservationBearingRange::CObservationBearingRange()
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void CObservationBearingRange::writeToStream(
+uint8_t CObservationBearingRange::serializeGetVersion() const { return XX; } void CObservationBearingRange::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
@@ -89,7 +89,7 @@ void CObservationBearingRange::writeToStream(
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void CObservationBearingRange::readFromStream(
+void CObservationBearingRange::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	mrpt::utils::CStream& in, int version)
 {
 	switch (version)

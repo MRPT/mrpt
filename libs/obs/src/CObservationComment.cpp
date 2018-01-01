@@ -22,7 +22,7 @@ IMPLEMENTS_SERIALIZABLE(CObservationComment, CObservation, mrpt::obs)
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void CObservationComment::writeToStream(
+uint8_t CObservationComment::serializeGetVersion() const { return XX; } void CObservationComment::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
@@ -36,7 +36,7 @@ void CObservationComment::writeToStream(
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void CObservationComment::readFromStream(mrpt::utils::CStream& in, int version)
+void CObservationComment::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

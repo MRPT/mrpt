@@ -116,7 +116,7 @@ void CSimplePointsMap::copyFrom(const CPointsMap& obj)
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void CSimplePointsMap::writeToStream(
+uint8_t CSimplePointsMap::serializeGetVersion() const { return XX; } void CSimplePointsMap::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
@@ -147,7 +147,7 @@ void CSimplePointsMap::writeToStream(
    Implements the reading from a CStream capability of
 	  CSerializable objects
   ---------------------------------------------------------------*/
-void CSimplePointsMap::readFromStream(mrpt::utils::CStream& in, int version)
+void CSimplePointsMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

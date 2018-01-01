@@ -120,8 +120,8 @@ void CPointCloudColoured::render_subset(
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void CPointCloudColoured::writeToStream(
-	mrpt::serialization::CArchive& out, int* version) const
+uint8_t CPointCloudColoured::serializeGetVersion() const { return XX; } void CPointCloudColoured::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 2;
@@ -138,7 +138,7 @@ void CPointCloudColoured::writeToStream(
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void CPointCloudColoured::readFromStream(mrpt::serialization::CArchive& in, int version)
+void CPointCloudColoured::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

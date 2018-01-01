@@ -22,7 +22,7 @@ IMPLEMENTS_SERIALIZABLE(CRobotPosesGraph, CSerializable, mrpt::hmtslam)
 /*---------------------------------------------------------------
 						writeToStream
   ---------------------------------------------------------------*/
-void CRobotPosesGraph::writeToStream(
+uint8_t CRobotPosesGraph::serializeGetVersion() const { return XX; } void CRobotPosesGraph::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
@@ -43,7 +43,7 @@ void CRobotPosesGraph::writeToStream(
 /*---------------------------------------------------------------
 						readFromStream
   ---------------------------------------------------------------*/
-void CRobotPosesGraph::readFromStream(mrpt::utils::CStream& in, int version)
+void CRobotPosesGraph::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

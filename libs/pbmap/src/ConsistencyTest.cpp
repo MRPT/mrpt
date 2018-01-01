@@ -579,7 +579,7 @@ Eigen::Matrix4f ConsistencyTest::getRTwithModel(
 // Obtain the rigid transformation from 3 matched planes
 CMatrixDouble getAlignment(const CMatrixDouble& matched_planes)
 {
-	assert(size(matched_planes, 1) == 8 && size(matched_planes, 2) == 3);
+	assert(matched_planes.rows() == 8 && matched_planes.cols() == 3);
 
 	// Calculate rotation
 	Matrix3f normalCovariances = Matrix3f::Zero();
@@ -709,9 +709,9 @@ void ransac3Dplane_distance(
 	Eigen::Vector3f translation;
 	translation << M(0, 3), M(1, 3), M(2, 3);
 
-	ASSERT_(size(M, 1) == 4 && size(M, 2) == 4)
+	ASSERT_(M.rows() == 4 && M.cols() == 4)
 
-	const size_t N = size(planeCorresp, 2);
+	const size_t N = planeCorresp.cols();
 	out_inlierIndices.clear();
 	out_inlierIndices.reserve(100);
 	for (size_t i = 0; i < N; i++)
@@ -804,7 +804,7 @@ Eigen::Matrix4f ConsistencyTest::estimatePoseRANSAC(
 	//  cout << "Computation time: " << tictac.Tac()*1000.0/TIMES << " ms" <<
 	//  endl;
 
-	cout << "Size planeCorresp: " << size(planeCorresp, 2) << endl;
+	cout << "Size planeCorresp: " << planeCorresp.cols() << endl;
 	cout << "RANSAC finished: " << inliers.size() << " inliers: " << inliers
 		 << " . \nBest model: \n"
 		 << best_model << endl;

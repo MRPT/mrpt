@@ -42,7 +42,7 @@ CCamera::CCamera()
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void CCamera::writeToStream(mrpt::serialization::CArchive& out, int* version) const
+uint8_t CCamera::serializeGetVersion() const { return XX; } void CCamera::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 1;
@@ -59,7 +59,7 @@ void CCamera::writeToStream(mrpt::serialization::CArchive& out, int* version) co
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void CCamera::readFromStream(mrpt::serialization::CArchive& in, int version)
+void CCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

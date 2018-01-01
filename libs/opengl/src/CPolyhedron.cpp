@@ -1106,7 +1106,7 @@ void CPolyhedron::render_dl() const
 bool CPolyhedron::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 {
 	if (!polygonsUpToDate) updatePolygons();
-	return math::traceRay(tempPolygons, o - this->m_pose, dist);
+	return math::traceRay(tempPolygons, (o - this->m_pose).asTPose(), dist);
 }
 
 void CPolyhedron::getEdgesLength(std::vector<double>& lengths) const
@@ -2019,7 +2019,7 @@ CStream& mrpt::opengl::operator<<(
 	return out;
 }
 
-void CPolyhedron::writeToStream(mrpt::serialization::CArchive& out, int* version) const
+uint8_t CPolyhedron::serializeGetVersion() const { return XX; } void CPolyhedron::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 0;
@@ -2031,7 +2031,7 @@ void CPolyhedron::writeToStream(mrpt::serialization::CArchive& out, int* version
 	}
 }
 
-void CPolyhedron::readFromStream(mrpt::serialization::CArchive& in, int version)
+void CPolyhedron::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

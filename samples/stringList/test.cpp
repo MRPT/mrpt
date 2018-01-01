@@ -23,7 +23,7 @@ string myDataDir(MRPT_EXAMPLES_BASE_DIRECTORY + string("stringList/"));
 // ------------------------------------------------------
 void TestStringList()
 {
-	CStringList strings, strings2;
+	std::vector<std::string> strings, strings2;
 
 	std::string wholeStr;
 
@@ -64,7 +64,7 @@ void TestStringList()
 
 void Test2()
 {
-	utils::CStringList strings;
+	std::vector<std::string> strings;
 
 	strings.loadFromFile(myDataDir + string("test.ini"));
 

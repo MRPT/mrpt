@@ -42,7 +42,7 @@ void TMapGenericParams::dumpToTextStream(mrpt::utils::CStream& out) const
 	LOADABLEOPTS_DUMP_VAR(enableObservationInsertion, bool);
 }
 
-void TMapGenericParams::writeToStream(
+uint8_t TMapGenericParams::serializeGetVersion() const { return XX; } void TMapGenericParams::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
@@ -54,7 +54,7 @@ void TMapGenericParams::writeToStream(
 	}
 }
 
-void TMapGenericParams::readFromStream(mrpt::utils::CStream& in, int version)
+void TMapGenericParams::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

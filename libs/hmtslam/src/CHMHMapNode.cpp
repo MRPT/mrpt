@@ -64,7 +64,7 @@ CHMHMapNode::~CHMHMapNode()
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void CHMHMapNode::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CHMHMapNode::serializeGetVersion() const { return XX; } void CHMHMapNode::serializeTo(mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
 		*version = 0;
@@ -82,7 +82,7 @@ void CHMHMapNode::writeToStream(mrpt::utils::CStream& out, int* version) const
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void CHMHMapNode::readFromStream(mrpt::utils::CStream& in, int version)
+void CHMHMapNode::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

@@ -371,11 +371,11 @@ class CColouredPointsMap : public CPointsMap
 
 }  // End of namespace
 
-#include <mrpt/utils/adapters.h>
+#include <mrpt/opengl/pointcloud_adapters.h>
 namespace utils
 {
 /** Specialization
- * mrpt::utils::PointCloudAdapter<mrpt::maps::CColouredPointsMap> \ingroup
+ * mrpt::opengl::PointCloudAdapter<mrpt::maps::CColouredPointsMap> \ingroup
  * mrpt_adapters_grp */
 template <>
 class PointCloudAdapter<mrpt::maps::CColouredPointsMap>

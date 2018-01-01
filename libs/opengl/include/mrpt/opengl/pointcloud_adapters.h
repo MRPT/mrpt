@@ -6,37 +6,35 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef mrpt_utils_adapters_H
-#define mrpt_utils_adapters_H
+#pragma once
 
-#include <mrpt/utils/utils_defs.h>
+#include <cstdint>
 
 namespace mrpt
 {
-namespace utils
+namespace opengl
 {
-/** \defgroup mrpt_adapters_grp Adapter (wrapper) template classes (in #include
-   <mrpt/utils/adapters.h>)
-	\addtogroup mrpt_base_grp
+/** \defgroup mrpt_adapters_grp Pointcloud adapter (wrapper) template classes
+   (in #include <mrpt/opengl/pointcloud_adapters.h>) \addtogroup mrpt_opengl_grp
 */
 
 /** \addtogroup mrpt_adapters_grp
-  * @{ */
+ * @{ */
 
 /** An adapter to different kinds of point cloud object.
-  *  Implemented as a pure C++ template with specializations for the highest
+ *  Implemented as a pure C++ template with specializations for the highest
  * flexibility and efficiency in compiler-generated implementations.
-  *  Usage:
-  *   \code
-  *     PC  my_obj;
-  *     my_obj.specific_methods();
-  *     // ...
-  *     PointCloudAdapter<PC> pca(my_obj);
-  *     pca.unified_interface_methods();
-  *     // ...
-  *   \endcode
-  *  See specializations for details on the exposed API.
-  */
+ *  Usage:
+ *   \code
+ *     PC  my_obj;
+ *     my_obj.specific_methods();
+ *     // ...
+ *     PointCloudAdapter<PC> pca(my_obj);
+ *     pca.unified_interface_methods();
+ *     // ...
+ *   \endcode
+ *  See specializations for details on the exposed API.
+ */
 template <class POINTCLOUD>
 class PointCloudAdapter;
 
@@ -134,6 +132,5 @@ class PointCloudAdapterHelperNoRGB
 };  // end of PointCloudAdapterHelperNoRGB
 }  // End of namespace detail
 
-}  // End of namespace
-}  // end of namespace
-#endif
+}  // namespace opengl
+}  // namespace mrpt

@@ -160,7 +160,7 @@ class robotic_arm_kinematicsFrame : public wxFrame
 
 	mrpt::opengl::CSetOfObjects::Ptr m_gl_robot;
 
-	mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t m_all_poses;
+	mrpt::aligned_std_vector<mrpt::poses::CPose3D> m_all_poses;
 
 	/** Regenerate the left list from m_robot */
 	void UpdateListLinks();

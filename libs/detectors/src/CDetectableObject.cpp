@@ -21,10 +21,10 @@ IMPLEMENTS_VIRTUAL_SERIALIZABLE(
 IMPLEMENTS_SERIALIZABLE(CDetectable2D, CDetectableObject, mrpt::detectors)
 IMPLEMENTS_SERIALIZABLE(CDetectable3D, CDetectable2D, mrpt::detectors)
 
-void CDetectable2D::readFromStream(mrpt::utils::CStream&, int) {}
-void CDetectable2D::writeToStream(mrpt::utils::CStream&, int*) const {}
-void CDetectable3D::readFromStream(mrpt::utils::CStream&, int) {}
-void CDetectable3D::writeToStream(mrpt::utils::CStream&, int*) const {}
+void CDetectable2D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+uint8_t CDetectable2D::serializeGetVersion() const { return XX; } void CDetectable2D::serializeTo(mrpt::utils::CStream&, int*) const {}
+void CDetectable3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+uint8_t CDetectable3D::serializeGetVersion() const { return XX; } void CDetectable3D::serializeTo(mrpt::utils::CStream&, int*) const {}
 CDetectable3D::CDetectable3D(const CDetectable2D::Ptr& object2d)
 	: CDetectable2D(object2d.get()), m_z(0)
 {

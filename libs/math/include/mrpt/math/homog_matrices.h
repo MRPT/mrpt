@@ -24,7 +24,7 @@ template <class MATRIXLIKE1, class MATRIXLIKE2>
 void homogeneousMatrixInverse(const MATRIXLIKE1& M, MATRIXLIKE2& out_inverse_M)
 {
 	MRPT_START
-	ASSERT_(M.isSquare() && size(M, 1) == 4);
+	ASSERT_(M.isSquare() && M.rows() == 4);
 
 	/* Instead of performing a generic 4x4 matrix inversion, we only need to
 	  transpose the rotation part, then replace the translation part by

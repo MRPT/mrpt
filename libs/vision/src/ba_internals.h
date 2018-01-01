@@ -197,7 +197,7 @@ void ba_compute_Jacobians(
 	const TFramePosesVec& frame_poses,
 	const TLandmarkLocationsVec& landmark_points,
 	const mrpt::img::TCamera& camera_params,
-	mrpt::aligned_containers<JacData<6, 3, 2>>::vector_t& jac_data_vec,
+	mrpt::aligned_std_vector<JacData<6, 3, 2>>& jac_data_vec,
 	const size_t num_fix_frames, const size_t num_fix_points)
 {
 	MRPT_START
@@ -242,13 +242,13 @@ void ba_compute_Jacobians(
 void ba_build_gradient_Hessians(
 	const TSequenceFeatureObservations& observations,
 	const std::vector<std::array<double, 2>>& residual_vec,
-	const mrpt::aligned_containers<JacData<6, 3, 2>>::vector_t& jac_data_vec,
+	const mrpt::aligned_std_vector<JacData<6, 3, 2>>& jac_data_vec,
 	mrpt::aligned_containers<
 		mrpt::math::CMatrixFixedNumeric<double, 6, 6>>::vector_t& U,
-	mrpt::aligned_containers<CArrayDouble<6>>::vector_t& eps_frame,
+	mrpt::aligned_std_vector<CArrayDouble<6>>& eps_frame,
 	mrpt::aligned_containers<
 		mrpt::math::CMatrixFixedNumeric<double, 3, 3>>::vector_t& V,
-	mrpt::aligned_containers<CArrayDouble<3>>::vector_t& eps_point,
+	mrpt::aligned_std_vector<CArrayDouble<3>>& eps_point,
 	const size_t num_fix_frames, const size_t num_fix_points,
 	const vector<double>* kernel_1st_deriv);
 }

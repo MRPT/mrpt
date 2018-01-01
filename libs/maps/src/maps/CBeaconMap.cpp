@@ -104,7 +104,7 @@ void CBeaconMap::resize(const size_t N) { m_beacons.resize(N); }
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void CBeaconMap::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CBeaconMap::serializeGetVersion() const { return XX; } void CBeaconMap::serializeTo(mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
 		*version = 1;
@@ -125,7 +125,7 @@ void CBeaconMap::writeToStream(mrpt::utils::CStream& out, int* version) const
    Implements the reading from a CStream capability of
 	  CSerializable objects
   ---------------------------------------------------------------*/
-void CBeaconMap::readFromStream(mrpt::utils::CStream& in, int version)
+void CBeaconMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -977,7 +977,7 @@ bool CBeaconMap::saveToMATLABScript3D(
 
 	// Main code:
 	os::fprintf(f, "hold on;\n\n");
-	utils::CStringList strs;
+	std::vector<std::string> strs;
 	string s;
 
 	for (const_iterator it = m_beacons.begin(); it != m_beacons.end(); ++it)

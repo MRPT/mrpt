@@ -57,9 +57,8 @@ CAxis::Ptr CAxis::Create(
 	float xmin, float ymin, float zmin, float xmax, float ymax, float zmax,
 	float frecuency, float lineWidth, bool marks)
 {
-	return CAxis::Ptr(
-		new CAxis(
-			xmin, ymin, zmin, xmax, ymax, zmax, frecuency, lineWidth, marks));
+	return CAxis::Ptr(new CAxis(
+		xmin, ymin, zmin, xmax, ymax, zmax, frecuency, lineWidth, marks));
 }
 
 void CAxis::render_dl() const
@@ -191,32 +190,20 @@ void CAxis::render_dl() const
 #endif
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CAxis::writeToStream(mrpt::serialization::CArchive& out, int* version) const
+uint8_t CAxis::serializeGetVersion() const { return 1; }
+void CAxis::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		writeToStreamRender(out);
-		out << m_xmin << m_ymin << m_zmin;
-		out << m_xmax << m_ymax << m_zmax;
-		out << m_frequency << m_lineWidth;
-		// v1:
-		out << m_marks[0] << m_marks[1] << m_marks[2] << m_textScale;
-		for (int i = 0; i < 3; i++)
-			for (int j = 0; j < 3; j++) out << m_textRot[i][j];
-	}
+	writeToStreamRender(out);
+	out << m_xmin << m_ymin << m_zmin;
+	out << m_xmax << m_ymax << m_zmax;
+	out << m_frequency << m_lineWidth;
+	// v1:
+	out << m_marks[0] << m_marks[1] << m_marks[2] << m_textScale;
+	for (int i = 0; i < 3; i++)
+		for (int j = 0; j < 3; j++) out << m_textRot[i][j];
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CAxis::readFromStream(mrpt::serialization::CArchive& in, int version)
+void CAxis::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

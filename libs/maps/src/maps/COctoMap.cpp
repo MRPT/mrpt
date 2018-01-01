@@ -85,7 +85,7 @@ COctoMap::~COctoMap() {}
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void COctoMap::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t COctoMap::serializeGetVersion() const { return XX; } void COctoMap::serializeTo(mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
 		*version = 2;
@@ -110,7 +110,7 @@ void COctoMap::writeToStream(mrpt::utils::CStream& out, int* version) const
    Implements the reading from a CStream capability of
 	  CSerializable objects
   ---------------------------------------------------------------*/
-void COctoMap::readFromStream(mrpt::utils::CStream& in, int version)
+void COctoMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

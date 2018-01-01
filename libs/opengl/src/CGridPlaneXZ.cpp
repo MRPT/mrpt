@@ -96,7 +96,7 @@ void CGridPlaneXZ::render_dl() const
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void CGridPlaneXZ::writeToStream(mrpt::serialization::CArchive& out, int* version) const
+uint8_t CGridPlaneXZ::serializeGetVersion() const { return XX; } void CGridPlaneXZ::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 1;
@@ -114,7 +114,7 @@ void CGridPlaneXZ::writeToStream(mrpt::serialization::CArchive& out, int* versio
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void CGridPlaneXZ::readFromStream(mrpt::serialization::CArchive& in, int version)
+void CGridPlaneXZ::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

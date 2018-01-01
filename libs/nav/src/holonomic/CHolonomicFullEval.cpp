@@ -590,7 +590,7 @@ CLogFileRecord_FullEval::CLogFileRecord_FullEval()
 {
 }
 
-void CLogFileRecord_FullEval::writeToStream(
+uint8_t CLogFileRecord_FullEval::serializeGetVersion() const { return XX; } void CLogFileRecord_FullEval::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
@@ -605,7 +605,7 @@ void CLogFileRecord_FullEval::writeToStream(
 /*---------------------------------------------------------------
 					readFromStream
   ---------------------------------------------------------------*/
-void CLogFileRecord_FullEval::readFromStream(
+void CLogFileRecord_FullEval::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	mrpt::utils::CStream& in, int version)
 {
 	switch (version)
@@ -771,7 +771,7 @@ void CHolonomicFullEval::TOptions::saveToConfigFile(
 	MRPT_END;
 }
 
-void CHolonomicFullEval::writeToStream(
+uint8_t CHolonomicFullEval::serializeGetVersion() const { return XX; } void CHolonomicFullEval::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
@@ -792,7 +792,7 @@ void CHolonomicFullEval::writeToStream(
 		out << m_last_selected_sector;
 	}
 }
-void CHolonomicFullEval::readFromStream(mrpt::utils::CStream& in, int version)
+void CHolonomicFullEval::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

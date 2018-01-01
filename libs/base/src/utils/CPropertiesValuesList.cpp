@@ -24,35 +24,31 @@ IMPLEMENTS_SERIALIZABLE(CPropertiesValuesList, CSerializable, mrpt::utils)
 /*---------------------------------------------------------------
 						writeToStream
  ---------------------------------------------------------------*/
-void CPropertiesValuesList::writeToStream(
+uint8_t CPropertiesValuesList::serializeGetVersion() const { return 0; }
+void CPropertiesValuesList::serializeTo(
 	mrpt::utils::CStream& out, int* out_Version) const
 {
-	if (out_Version)
-		*out_Version = 0;
-	else
+	uint32_t i, n = (uint32_t)size();
+	uint8_t isNull;
+	out << n;
+
+	for (i = 0; i < n; i++)
 	{
-		uint32_t i, n = (uint32_t)size();
-		uint8_t isNull;
-		out << n;
+		// Name:
+		out << m_properties[i].name.c_str();
 
-		for (i = 0; i < n; i++)
-		{
-			// Name:
-			out << m_properties[i].name.c_str();
+		// Object:
+		isNull = m_properties[i].value ? 1 : 0;
+		out << isNull;
 
-			// Object:
-			isNull = m_properties[i].value ? 1 : 0;
-			out << isNull;
-
-			if (m_properties[i].value) out << *m_properties[i].value;
-		}
+		if (m_properties[i].value) out << *m_properties[i].value;
 	}
 }
 
 /*---------------------------------------------------------------
 						readFromStream
  ---------------------------------------------------------------*/
-void CPropertiesValuesList::readFromStream(
+void CPropertiesValuesList::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	mrpt::utils::CStream& in, int version)
 {
 	switch (version)

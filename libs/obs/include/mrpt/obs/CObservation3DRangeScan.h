@@ -19,7 +19,7 @@
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/utils/TEnumType.h>
-#include <mrpt/utils/adapters.h>
+#include <mrpt/opengl/pointcloud_adapters.h>
 #include <mrpt/utils/integer_select.h>
 #include <mrpt/serialization/stl_serialization.h>
 
@@ -306,7 +306,7 @@ class CObservation3DRangeScan : public CObservation
 	 * provided, those coordinates are transformed with \a robotPoseInTheWorld
 	  *
 	  * \tparam POINTMAP Supported maps are all those covered by
-	 * mrpt::utils::PointCloudAdapter (mrpt::maps::CPointsMap and derived,
+	 * mrpt::opengl::PointCloudAdapter (mrpt::maps::CPointsMap and derived,
 	 * mrpt::opengl::CPointCloudColoured, PCL point clouds,...)
 	  *
 	  * \note In MRPT < 0.9.5, this method always assumes that ranges were in
@@ -835,7 +835,7 @@ struct TEnumTypeFiller<mrpt::obs::CObservation3DRangeScan::TIntensityChannelID>
 
 namespace utils
 {
-/** Specialization mrpt::utils::PointCloudAdapter<CObservation3DRangeScan>
+/** Specialization mrpt::opengl::PointCloudAdapter<CObservation3DRangeScan>
  * \ingroup mrpt_adapters_grp */
 template <>
 class PointCloudAdapter<mrpt::obs::CObservation3DRangeScan>

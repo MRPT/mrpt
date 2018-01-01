@@ -16,6 +16,7 @@
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
+#include <mrpt/serialization/metaprogramming_serialization.h>
 #include <mrpt/opengl/gl_utils.h>
 
 #include "opengl_internals.h"
@@ -23,8 +24,8 @@
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::opengl;
-
 using namespace mrpt::math;
+using namespace mrpt::serialization::metaprogramming;
 using namespace std;
 
 //#include <mrpt/utils/metaprogramming.h>
@@ -346,7 +347,7 @@ void COpenGLViewport::render(
 			CCamera* myCamera = nullptr;
 			if (cam_ptr)
 			{
-				myCamera = this->template getAs<CCamera>(cam_ptr);
+				myCamera = dynamic_cast<CCamera*>(cam_ptr.get());
 			}
 
 			// 2nd: the internal camera of all viewports:
@@ -537,49 +538,35 @@ void COpenGLViewport::render(
 #endif
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void COpenGLViewport::writeToStream(
-	mrpt::serialization::CArchive& out, int* version) const
+uint8_t COpenGLViewport::serializeGetVersion() const { return 3; }
+void COpenGLViewport::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 3;
-	else
-	{
-		// Save data:
-		out << m_camera << m_isCloned << m_isClonedCamera << m_clonedViewport
-			<< m_name << m_isTransparent << m_borderWidth << m_view_x
-			<< m_view_y << m_view_width << m_view_height;
+	// Save data:
+	out << m_camera << m_isCloned << m_isClonedCamera << m_clonedViewport
+		<< m_name << m_isTransparent << m_borderWidth << m_view_x << m_view_y
+		<< m_view_width << m_view_height;
 
-		// Added in v1:
-		out << m_custom_backgb_color << m_background_color.R
-			<< m_background_color.G << m_background_color.B
-			<< m_background_color.A;
+	// Added in v1:
+	out << m_custom_backgb_color << m_background_color.R << m_background_color.G
+		<< m_background_color.B << m_background_color.A;
 
-		// Save objects:
-		uint32_t n;
-		n = (uint32_t)m_objects.size();
-		out << n;
-		for (CListOpenGLObjects::const_iterator it = m_objects.begin();
-			 it != m_objects.end(); ++it)
-			out << **it;
+	// Save objects:
+	uint32_t n;
+	n = (uint32_t)m_objects.size();
+	out << n;
+	for (CListOpenGLObjects::const_iterator it = m_objects.begin();
+		 it != m_objects.end(); ++it)
+		out << **it;
 
-		// Added in v2: Global OpenGL settings:
-		out << m_OpenGL_enablePolygonNicest;
+	// Added in v2: Global OpenGL settings:
+	out << m_OpenGL_enablePolygonNicest;
 
-		// Added in v3: Lights
-		out << m_lights;
-	}
+	// Added in v3: Lights
+	out << m_lights;
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void COpenGLViewport::readFromStream(
-	mrpt::serialization::CArchive& in, int version)
+void COpenGLViewport::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -655,7 +642,8 @@ CRenderizable::Ptr COpenGLViewport::getByName(const string& str)
 			(*it)->GetRuntimeClass() ==
 			CLASS_ID_NAMESPACE(CSetOfObjects, opengl))
 		{
-			CRenderizable::Ptr ret = getAs<CSetOfObjects>(*it)->getByName(str);
+			CRenderizable::Ptr ret =
+				std::dynamic_pointer_cast<CSetOfObjects>(*it)->getByName(str);
 			if (ret) return ret;
 		}
 	}
@@ -672,17 +660,16 @@ void COpenGLViewport::initializeAllTextures()
 		 it != m_objects.end(); ++it)
 	{
 		if (IS_DERIVED(*it, CTexturedObject))
-			getAs<CTexturedObject>(*it)->loadTextureInOpenGL();
+			std::dynamic_pointer_cast<CTexturedObject>(*it)
+				->loadTextureInOpenGL();
 		else if (IS_CLASS(*it, CSetOfObjects))
-			getAs<CSetOfObjects>(*it)->initializeAllTextures();
+			std::dynamic_pointer_cast<CSetOfObjects>(*it)
+				->initializeAllTextures();
 	}
 #endif
 }
 
-/*--------------------------------------------------------------
-					dumpListOfObjects
-  ---------------------------------------------------------------*/
-void COpenGLViewport::dumpListOfObjects(utils::CStringList& lst)
+void COpenGLViewport::dumpListOfObjects(std::vector<std::string>& lst)
 {
 	for (CListOpenGLObjects::iterator it = m_objects.begin();
 		 it != m_objects.end(); ++it)
@@ -691,17 +678,17 @@ void COpenGLViewport::dumpListOfObjects(utils::CStringList& lst)
 		string s((*it)->GetRuntimeClass()->className);
 		if ((*it)->m_name.size())
 			s += string(" (") + (*it)->m_name + string(")");
-		lst.add(s);
+		lst.emplace_back(s);
 
 		if ((*it)->GetRuntimeClass() ==
 			CLASS_ID_NAMESPACE(CSetOfObjects, mrpt::opengl))
 		{
-			utils::CStringList auxLst;
+			std::vector<std::string> auxLst;
 
-			getAs<CSetOfObjects>(*it)->dumpListOfObjects(auxLst);
+			dynamic_cast<CSetOfObjects*>(it->get())->dumpListOfObjects(auxLst);
 
 			for (size_t i = 0; i < auxLst.size(); i++)
-				lst.add(string(" ") + auxLst(i));
+				lst.push_back(string(" ") + auxLst(i));
 		}
 	}
 }
@@ -721,7 +708,7 @@ void COpenGLViewport::removeObject(const CRenderizable::Ptr& obj)
 		else if (
 			(*it)->GetRuntimeClass() ==
 			CLASS_ID_NAMESPACE(CSetOfObjects, opengl))
-			getAs<CSetOfObjects>(*it)->removeObject(obj);
+			dynamic_cast<CSetOfObjects>(it->get())->removeObject(obj);
 }
 
 /*--------------------------------------------------------------

@@ -11,7 +11,6 @@
 
 #include <mrpt/opengl/CRenderizable.h>  // Include these before windows.h!!
 #include <mrpt/opengl/gl_utils.h>
-#include <mrpt/utils/CStringList.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPoint2D.h>
@@ -25,7 +24,6 @@
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::opengl;
-
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CRenderizable, CSerializable, mrpt::opengl)
 
@@ -69,7 +67,7 @@ CRenderizable::CRenderizable()
 // Destructor:
 CRenderizable::~CRenderizable() {}
 /** Returns the lowest, free texture name.
-  */
+ */
 unsigned int CRenderizable::getNewTextureNumber()
 {
 	MRPT_START
@@ -109,7 +107,8 @@ void CRenderizable::releaseTextureName(unsigned int i)
 	// of texture names by our own.
 }
 
-void CRenderizable::writeToStreamRender(mrpt::serialization::CArchive& out) const
+uint8_t CRenderizable::serializeGetVersion() const { return XX; }
+void CRenderizable::serializeToRender(mrpt::serialization::CArchive& out) const
 {
 	// MRPT 0.9.5 svn 2774 (Dec 14th 2011):
 	// Added support of versioning at this level of serialization too.
@@ -162,7 +161,8 @@ void CRenderizable::writeToStreamRender(mrpt::serialization::CArchive& out) cons
 	out << m_show_name << m_visible;
 }
 
-void CRenderizable::readFromStreamRender(mrpt::serialization::CArchive& in)
+void CRenderizable::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	// MRPT 0.9.5 svn 2774 (Dec 14th 2011):
 	// See comments in CRenderizable::writeToStreamRender() for the employed
@@ -384,8 +384,8 @@ void CRenderizable::renderTextBitmap(const char* str, void* fontStyle)
 
 /** Return the exact width in pixels for a given string, as will be rendered by
  * renderTextBitmap().
-  * \sa renderTextBitmap
-  */
+ * \sa renderTextBitmap
+ */
 int CRenderizable::textBitmapWidth(
 	const std::string& str, mrpt::opengl::TOpenGLFont font)
 {

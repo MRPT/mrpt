@@ -72,7 +72,7 @@ void ClearanceDiagram::renderAs3DObject(
 	mesh.enableWireFrame(false);
 }
 
-void mrpt::nav::ClearanceDiagram::readFromStream(mrpt::utils::CStream& in)
+void mrpt::nav::ClearanceDiagram::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	uint8_t version;
 	in >> version;
@@ -90,7 +90,7 @@ void mrpt::nav::ClearanceDiagram::readFromStream(mrpt::utils::CStream& in)
 	};
 }
 
-void mrpt::nav::ClearanceDiagram::writeToStream(mrpt::utils::CStream& out) const
+uint8_t mrpt::nav::ClearanceDiagram::serializeGetVersion() const { return XX; } void mrpt::nav::ClearanceDiagram::serializeTo(mrpt::utils::CStream& out) const
 {
 	const uint8_t version = 0;
 	out << version;

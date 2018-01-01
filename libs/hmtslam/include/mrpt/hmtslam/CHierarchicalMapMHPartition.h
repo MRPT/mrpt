@@ -263,7 +263,7 @@ class CHierarchicalMapMHPartition : public mrpt::utils::COutputLogger
 		const bool& showRobotPoseIDs = true) const;
 
 	/** Return a textual description of the whole graph */
-	void dumpAsText(utils::CStringList& s) const;
+	void dumpAsText(std::vector<std::string>& s) const;
 
 	/** Computes the probability [0,1] of two areas' gridmaps to overlap, via a
 	 * Monte Carlo aproximation.

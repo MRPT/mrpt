@@ -1723,7 +1723,7 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 
 		opengl::CPointCloud::Ptr gl_points;
 		opengl::CPointCloudColoured::Ptr gl_points_col;
-		mrpt::utils::PLY_Importer* ply_obj = nullptr;
+		mrpt::opengl::PLY_Importer* ply_obj = nullptr;
 
 		if (dlgPLY.rbClass->GetSelection() == 0)
 		{
@@ -1737,7 +1737,7 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 			ply_obj = gl_points_col.get();
 		}
 
-		CStringList file_comments, file_info;
+		std::vector<std::string> file_comments, file_info;
 
 		bool res;
 		{

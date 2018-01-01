@@ -16,8 +16,6 @@
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-
-using namespace mrpt::math;
 using namespace std;
 
 // Ctor:
@@ -135,5 +133,5 @@ mrpt::serialization::CArchive& operator<<(
 	o.writeToStream(out);
 	return out;
 }
-}
-}
+}  // namespace opengl
+}  // namespace mrpt

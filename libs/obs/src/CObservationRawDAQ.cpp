@@ -24,7 +24,7 @@ IMPLEMENTS_SERIALIZABLE(CObservationRawDAQ, CObservation, mrpt::obs)
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void CObservationRawDAQ::writeToStream(
+uint8_t CObservationRawDAQ::serializeGetVersion() const { return XX; } void CObservationRawDAQ::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
@@ -42,7 +42,7 @@ void CObservationRawDAQ::writeToStream(
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void CObservationRawDAQ::readFromStream(mrpt::utils::CStream& in, int version)
+void CObservationRawDAQ::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

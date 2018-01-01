@@ -22,7 +22,7 @@ IMPLEMENTS_SERIALIZABLE(CMHPropertiesValuesList, CSerializable, mrpt::utils)
 /*---------------------------------------------------------------
 						writeToStream
  ---------------------------------------------------------------*/
-void CMHPropertiesValuesList::writeToStream(
+uint8_t CMHPropertiesValuesList::serializeGetVersion() const { return XX; } void CMHPropertiesValuesList::serializeTo(
 	mrpt::utils::CStream& out, int* out_Version) const
 {
 	if (out_Version)
@@ -53,7 +53,7 @@ void CMHPropertiesValuesList::writeToStream(
 /*---------------------------------------------------------------
 						readFromStream
  ---------------------------------------------------------------*/
-void CMHPropertiesValuesList::readFromStream(
+void CMHPropertiesValuesList::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	mrpt::utils::CStream& in, int version)
 {
 	switch (version)

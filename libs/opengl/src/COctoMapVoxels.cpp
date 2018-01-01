@@ -16,7 +16,6 @@
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-
 using namespace mrpt::math;
 using namespace std;
 
@@ -213,72 +212,57 @@ DECLARE_CUSTOM_TTYPENAME(COctoMapVoxels::TVoxel)
 
 namespace mrpt
 {
-namespace utils
+namespace opengl
 {
-CStream& operator<<(
-	mrpt::serialization::CArchive& out, const COctoMapVoxels::TInfoPerVoxelSet& a)
+using mrpt::serialization::CArchive;
+CArchive& operator<<(CArchive& out, const COctoMapVoxels::TInfoPerVoxelSet& a)
 {
 	out << a.visible << a.voxels;
 	return out;
 }
-CStream& operator>>(
-	mrpt::serialization::CArchive& in, COctoMapVoxels::TInfoPerVoxelSet& a)
+CArchive& operator>>(CArchive& in, COctoMapVoxels::TInfoPerVoxelSet& a)
 {
 	in >> a.visible >> a.voxels;
 	return in;
 }
 
-CStream& operator<<(
-	mrpt::serialization::CArchive& out, const COctoMapVoxels::TGridCube& a)
+CArchive& operator<<(CArchive& out, const COctoMapVoxels::TGridCube& a)
 {
 	out << a.min << a.max;
 	return out;
 }
-CStream& operator>>(mrpt::serialization::CArchive& in, COctoMapVoxels::TGridCube& a)
+CArchive& operator>>(CArchive& in, COctoMapVoxels::TGridCube& a)
 {
 	in >> a.min >> a.max;
 	return in;
 }
 
-CStream& operator<<(mrpt::serialization::CArchive& out, const COctoMapVoxels::TVoxel& a)
+CArchive& operator<<(CArchive& out, const COctoMapVoxels::TVoxel& a)
 {
 	out << a.coords << a.side_length << a.color;
 	return out;
 }
-CStream& operator>>(mrpt::serialization::CArchive& in, COctoMapVoxels::TVoxel& a)
+CArchive& operator>>(CArchive& in, COctoMapVoxels::TVoxel& a)
 {
 	in >> a.coords >> a.side_length >> a.color;
 	return in;
 }
-}
-}
+}  // namespace opengl
+}  // namespace mrpt
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void COctoMapVoxels::writeToStream(
-	mrpt::serialization::CArchive& out, int* version) const
+uint8_t COctoMapVoxels::serializeGetVersion() const { return 2; }
+void COctoMapVoxels::serializeTo(CArchive& out) const
 {
-	if (version)
-		*version = 2;
-	else
-	{
-		writeToStreamRender(out);
+	writeToStreamRender(out);
 
-		out << m_voxel_sets << m_grid_cubes << m_bb_min << m_bb_max
-			<< m_enable_lighting << m_showVoxelsAsPoints
-			<< m_showVoxelsAsPointsSize << m_show_grids << m_grid_width
-			<< m_grid_color << m_enable_cube_transparency  // added in v1
-			<< uint32_t(m_visual_mode);  // added in v2
-	}
+	out << m_voxel_sets << m_grid_cubes << m_bb_min << m_bb_max
+		<< m_enable_lighting << m_showVoxelsAsPoints << m_showVoxelsAsPointsSize
+		<< m_show_grids << m_grid_width << m_grid_color
+		<< m_enable_cube_transparency  // added in v1
+		<< uint32_t(m_visual_mode);  // added in v2
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void COctoMapVoxels::readFromStream(mrpt::serialization::CArchive& in, int version)
+void COctoMapVoxels::serializeFrom(CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

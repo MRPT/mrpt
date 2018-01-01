@@ -376,7 +376,7 @@ bool CRandomFieldGridMap3D::insertIndividualReading(
 	MRPT_END;
 }
 
-void CRandomFieldGridMap3D::writeToStream(
+uint8_t CRandomFieldGridMap3D::serializeGetVersion() const { return XX; } void CRandomFieldGridMap3D::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
@@ -409,7 +409,7 @@ void CRandomFieldGridMap3D::writeToStream(
 	}
 }
 
-void CRandomFieldGridMap3D::readFromStream(
+void CRandomFieldGridMap3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	mrpt::utils::CStream& in, int version)
 {
 	switch (version)

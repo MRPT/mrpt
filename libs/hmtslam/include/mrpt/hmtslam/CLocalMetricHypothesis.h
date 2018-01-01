@@ -30,7 +30,7 @@ class CPose3DPDFParticles;
 
 namespace hmtslam
 {
-typedef mrpt::aligned_containers<TPoseID, mrpt::poses::CPose3D>::map_t
+typedef mrpt::aligned_std_map<TPoseID, mrpt::poses::CPose3D>
 	TMapPoseID2Pose3D;
 
 class CHMTSLAM;
@@ -187,7 +187,7 @@ class CLocalMetricHypothesis
 
 	/** Describes the LMH in text.
 	  */
-	void dumpAsText(utils::CStringList& st) const;
+	void dumpAsText(std::vector<std::string>& st) const;
 
 	/** Change all coordinates to set a given robot pose as the new coordinate
 	 * origin, and rebuild metric maps and change coords in the partitioning

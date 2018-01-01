@@ -570,7 +570,7 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
 	// Load ICP options:
 	// ------------------------------------------
 	CConfigFileMemory icpCfg(
-		CStringList(string(edOptICP->GetValue().mb_str())));
+		std::vector<std::string>(string(edOptICP->GetValue().mb_str())));
 	icp.options.loadFromConfigFile(icpCfg, "ICP");
 
 	// EXTRA options:
@@ -594,7 +594,7 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
 	if (!useGridMap)
 	{
 		CConfigFileMemory refCfg(
-			CStringList(string(edOptRefPnt->GetValue().mb_str())));
+			std::vector<std::string>(string(edOptRefPnt->GetValue().mb_str())));
 		refMapPt.insertionOptions.loadFromConfigFile(
 			refCfg, "InsertionOptions");
 		cout << "REFERENCE MAP FOR THE ICP:" << endl;
@@ -603,7 +603,7 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
 	else
 	{
 		CConfigFileMemory refCfg(
-			CStringList(string(edOptRefGrid->GetValue().mb_str())));
+			std::vector<std::string>(string(edOptRefGrid->GetValue().mb_str())));
 		float gridRes = refCfg.read_float("Construction", "resolution", 0.05f);
 		refMapGrid.setSize(-10, 10, -10, 10, gridRes);
 		refMapGrid.insertionOptions.loadFromConfigFile(
@@ -620,7 +620,7 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
 	// ----------------------------
 	{
 		CConfigFileMemory refCfg(
-			CStringList(string(edOptAlignMap->GetValue().mb_str())));
+			std::vector<std::string>(string(edOptAlignMap->GetValue().mb_str())));
 		newMapPt.insertionOptions.loadFromConfigFile(
 			refCfg, "InsertionOptions");
 

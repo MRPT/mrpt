@@ -65,7 +65,7 @@ const mrpt::poses::CPose3D& CKinematicChain::getOriginPose() const
 /*---------------------------------------------------------------
    Implements the writing to a CStream capability of CSerializable objects
   ---------------------------------------------------------------*/
-void CKinematicChain::writeToStream(
+uint8_t CKinematicChain::serializeGetVersion() const { return XX; } void CKinematicChain::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
@@ -79,7 +79,7 @@ void CKinematicChain::writeToStream(
 /*---------------------------------------------------------------
 	Implements the reading from a CStream capability of CSerializable objects
   ---------------------------------------------------------------*/
-void CKinematicChain::readFromStream(mrpt::utils::CStream& in, int version)
+void CKinematicChain::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -104,7 +104,7 @@ void CKinematicChain::readFromStream(mrpt::utils::CStream& in, int version)
  * The "ground" link pose "pose0" defaults to the origin of coordinates,
 	* but anything else can be passed as the optional argument. */
 void CKinematicChain::recomputeAllPoses(
-	mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t& poses,
+	mrpt::aligned_std_vector<mrpt::poses::CPose3D>& poses,
 	const mrpt::poses::CPose3D& pose0) const
 {
 	MRPT_UNUSED_PARAM(pose0);
@@ -171,14 +171,14 @@ void addBar_A(mrpt::opengl::CSetOfObjects::Ptr& objs, const double a)
 
 void CKinematicChain::getAs3DObject(
 	mrpt::opengl::CSetOfObjects::Ptr& obj,
-	mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t* out_all_poses)
+	mrpt::aligned_std_vector<mrpt::poses::CPose3D>* out_all_poses)
 	const
 {
 	ASSERT_(obj)
 	const size_t N = m_links.size();
 
 	// Recompute current poses:
-	mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t all_poses;
+	mrpt::aligned_std_vector<mrpt::poses::CPose3D> all_poses;
 	recomputeAllPoses(all_poses);
 
 	m_last_gl_objects.resize(N + 1);
@@ -204,7 +204,7 @@ void CKinematicChain::getAs3DObject(
 }
 
 void CKinematicChain::update3DObject(
-	mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t* out_all_poses)
+	mrpt::aligned_std_vector<mrpt::poses::CPose3D>* out_all_poses)
 	const
 {
 	ASSERTMSG_(
@@ -215,7 +215,7 @@ void CKinematicChain::update3DObject(
 	const size_t N = m_links.size();
 
 	// Recompute current poses:
-	mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t all_poses;
+	mrpt::aligned_std_vector<mrpt::poses::CPose3D> all_poses;
 	recomputeAllPoses(all_poses);
 
 	for (size_t i = 0; i <= N; i++)

@@ -105,9 +105,9 @@ void mrpt::topography::path_from_rtk_gps(
 
 	// Do we have the "reference uncertainty" matrix W^\star ??
 	memFil.read_matrix("UNCERTAINTY", "W_star", outInfoTemp.W_star);
-	const bool doUncertaintyCovs = size(outInfoTemp.W_star, 1) != 0;
+	const bool doUncertaintyCovs = outInfoTemp.W_star.rows() != 0;
 	if (doUncertaintyCovs &&
-		(size(outInfoTemp.W_star, 1) != 6 || size(outInfoTemp.W_star, 2) != 6))
+		(outInfoTemp.W_star.rows() != 6 || outInfoTemp.W_star.cols() != 6))
 		THROW_EXCEPTION(
 			"ERROR: W_star matrix for uncertainty estimation is provided but "
 			"it's not a 6x6 matrix.");

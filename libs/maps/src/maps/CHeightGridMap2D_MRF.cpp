@@ -169,7 +169,7 @@ double CHeightGridMap2D_MRF::internal_computeObservationLikelihood(
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void CHeightGridMap2D_MRF::writeToStream(
+uint8_t CHeightGridMap2D_MRF::serializeGetVersion() const { return XX; } void CHeightGridMap2D_MRF::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
@@ -219,7 +219,7 @@ void CHeightGridMap2D_MRF::writeToStream(
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void CHeightGridMap2D_MRF::readFromStream(mrpt::utils::CStream& in, int version)
+void CHeightGridMap2D_MRF::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

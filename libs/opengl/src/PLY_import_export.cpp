@@ -45,15 +45,15 @@ WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
 
 */
 
-#include "base-precomp.h"  // Precompiled headers
+#include "opengl-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/PLY_import_export.h>
+#include <mrpt/opengl/PLY_import_export.h>
 #include <mrpt/system/string_utils.h>
-#include <stdio.h>
+#include <cstdio>
 
 using namespace std;
 using namespace mrpt;
-using namespace mrpt::utils;
+using namespace mrpt::opengl;
 using namespace mrpt::math;
 
 #define PLY_ASCII 1 /* ascii PLY file */
@@ -285,10 +285,9 @@ void ply_describe_element(
 	/* look for appropriate element */
 	PlyElement* elem = find_element(plyfile, elem_name);
 	if (elem == nullptr)
-		throw std::runtime_error(
-			format(
-				"ply_describe_element: can't find element '%s'",
-				elem_name.c_str()));
+		throw std::runtime_error(format(
+			"ply_describe_element: can't find element '%s'",
+			elem_name.c_str()));
 
 	elem->num = nelems;
 
@@ -350,10 +349,8 @@ void ply_element_count(PlyFile* plyfile, const string& elem_name, int nelems)
 	/* look for appropriate element */
 	elem = find_element(plyfile, elem_name);
 	if (elem == nullptr)
-		throw std::runtime_error(
-			format(
-				"ply_element_count: can't find element '%s'",
-				elem_name.c_str()));
+		throw std::runtime_error(format(
+			"ply_element_count: can't find element '%s'", elem_name.c_str()));
 
 	elem->num = nelems;
 }
@@ -384,10 +381,8 @@ void ply_header_complete(PlyFile* plyfile)
 			fprintf(fp, "format binary_little_endian 1.0\n");
 			break;
 		default:
-			throw std::runtime_error(
-				format(
-					"ply_header_complete: bad file type = %d",
-					plyfile->file_type));
+			throw std::runtime_error(format(
+				"ply_header_complete: bad file type = %d", plyfile->file_type));
 	}
 
 	/* write out the comments */
@@ -446,10 +441,8 @@ void ply_put_element_setup(PlyFile* plyfile, const string& elem_name)
 
 	elem = find_element(plyfile, elem_name);
 	if (elem == nullptr)
-		throw std::runtime_error(
-			format(
-				"ply_elements_setup: can't find element '%s'",
-				elem_name.c_str()));
+		throw std::runtime_error(format(
+			"ply_elements_setup: can't find element '%s'", elem_name.c_str()));
 
 	plyfile->which_elem = elem;
 }
@@ -1853,8 +1846,8 @@ const PlyProperty face_props[] =
 		Loads from a PLY file.
 */
 bool PLY_Importer::loadFromPlyFile(
-	const std::string& filename, CStringList* file_comments,
-	CStringList* file_obj_info)
+	const std::string& filename, std::vector<std::string>* file_comments,
+	std::vector<std::string>* file_obj_info)
 {
 	try
 	{
@@ -1929,7 +1922,7 @@ bool PLY_Importer::loadFromPlyFile(
 		{
 			vector<string> strs;
 			ply_get_comments(ply, strs);
-			*file_comments = CStringList(strs);
+			*file_comments = std::vector<std::string>(strs);
 		}
 
 		// grab and print out the object information
@@ -1937,7 +1930,7 @@ bool PLY_Importer::loadFromPlyFile(
 		{
 			vector<string> strs;
 			ply_get_obj_info(ply, strs);
-			*file_obj_info = CStringList(strs);
+			*file_obj_info = std::vector<std::string>(strs);
 		}
 
 		/* close the PLY file */
@@ -1957,7 +1950,7 @@ bool PLY_Importer::loadFromPlyFile(
 
 bool PLY_Exporter::saveToPlyFile(
 	const std::string& filename, bool save_in_binary,
-	const CStringList& file_comments, const CStringList& file_obj_info) const
+	const std::vector<std::string>& file_comments, const std::vector<std::string>& file_obj_info) const
 {
 	try
 	{
@@ -1976,13 +1969,14 @@ bool PLY_Exporter::saveToPlyFile(
 
 		float version;
 		PlyFile* ply = ply_open_for_writing(
-			filename.c_str(), elem_names, save_in_binary ?
+			filename.c_str(), elem_names,
+			save_in_binary ?
 #if MRPT_IS_BIG_ENDIAN
-														 PLY_BINARY_BE
+						   PLY_BINARY_BE
 #else
-														 PLY_BINARY_LE
+						   PLY_BINARY_LE
 #endif
-														 : PLY_ASCII,
+						   : PLY_ASCII,
 			&version);
 
 		/* describe what properties go into the vertex and face elements */

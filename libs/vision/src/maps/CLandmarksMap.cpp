@@ -173,7 +173,7 @@ size_t CLandmarksMap::size() const { return landmarks.size(); }
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void CLandmarksMap::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CLandmarksMap::serializeGetVersion() const { return XX; } void CLandmarksMap::serializeTo(mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
 		*version = 0;
@@ -196,7 +196,7 @@ void CLandmarksMap::writeToStream(mrpt::utils::CStream& out, int* version) const
    Implements the reading from a CStream capability of
 	  CSerializable objects
   ---------------------------------------------------------------*/
-void CLandmarksMap::readFromStream(mrpt::utils::CStream& in, int version)
+void CLandmarksMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

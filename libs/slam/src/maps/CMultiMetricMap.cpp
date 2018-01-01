@@ -274,7 +274,7 @@ void CMultiMetricMap::deleteAllMaps()
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void CMultiMetricMap::writeToStream(
+uint8_t CMultiMetricMap::serializeGetVersion() const { return XX; } void CMultiMetricMap::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
@@ -292,7 +292,7 @@ void CMultiMetricMap::writeToStream(
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void CMultiMetricMap::readFromStream(mrpt::utils::CStream& in, int version)
+void CMultiMetricMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

@@ -83,7 +83,7 @@
 *       \code
 *       // Old: MRPT 1.* code
 *       #include <mrpt/utils/aligned_containers.h>
-*       mrpt::aligned_containers<Foo>::vector_t  v;
+*       mrpt::aligned_std_vector<Foo>  v;
 *
 *       // New: MRPT 2.* code
 *       #include <mrpt/core/aligned_std_vector.h>

@@ -40,7 +40,7 @@ PbMap::PbMap()
 /*---------------------------------------------------------------
 						writeToStream
  ---------------------------------------------------------------*/
-void PbMap::writeToStream(mrpt::utils::CStream& out, int* out_Version) const
+uint8_t PbMap::serializeGetVersion() const { return XX; } void PbMap::serializeTo(mrpt::utils::CStream& out, int* out_Version) const
 {
 	// cout << "Write PbMap. Version " << *out_Version << endl;
 	if (out_Version)
@@ -64,7 +64,7 @@ void PbMap::writeToStream(mrpt::utils::CStream& out, int* out_Version) const
 /*---------------------------------------------------------------
 						readFromStream
  ---------------------------------------------------------------*/
-void PbMap::readFromStream(mrpt::utils::CStream& in, int version)
+void PbMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

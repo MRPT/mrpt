@@ -43,27 +43,15 @@ void CDisk::render_dl() const
 #endif
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CDisk::writeToStream(mrpt::serialization::CArchive& out, int* version) const
+uint8_t CDisk::serializeGetVersion() const { return 0; }
+void CDisk::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		writeToStreamRender(out);
-		out << m_radiusIn << m_radiusOut;
-		out << m_nSlices << m_nLoops;
-	}
+	writeToStreamRender(out);
+	out << m_radiusIn << m_radiusOut;
+	out << m_nSlices << m_nLoops;
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CDisk::readFromStream(mrpt::serialization::CArchive& in, int version)
+void CDisk::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -103,10 +91,9 @@ bool CDisk::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 	// The following expression yields the collision point between the plane and
 	// the beam (the y and z
 	// coordinates are zero).
-	dist = x +
-		   (y * (sin(p) * sin(w) * cos(r) - cos(w) * sin(r)) +
-			z * cos(p) * cos(r)) /
-			   coef;
+	dist = x + (y * (sin(p) * sin(w) * cos(r) - cos(w) * sin(r)) +
+				z * cos(p) * cos(r)) /
+				   coef;
 	if (dist < 0) return false;
 	// Euclidean distance is invariant to rotations...
 	double d2 = (x - dist) * (x - dist) + y * y + z * z;

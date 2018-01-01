@@ -177,7 +177,7 @@ void CMeshFast::assignImageAndZ(
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void CMeshFast::writeToStream(mrpt::serialization::CArchive& out, int* version) const
+uint8_t CMeshFast::serializeGetVersion() const { return XX; } void CMeshFast::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 0;
@@ -201,7 +201,7 @@ void CMeshFast::writeToStream(mrpt::serialization::CArchive& out, int* version) 
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void CMeshFast::readFromStream(mrpt::serialization::CArchive& in, int version)
+void CMeshFast::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

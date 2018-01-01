@@ -405,7 +405,7 @@ int main(int argc, char** argv)
 				<< endl;
 
 		// Optionally, display in 3D:
-		if (show_in_3d && size(GT_path, 1) > 1)
+		if (show_in_3d && GT_path.rows() > 1)
 		{
 #if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_WXWIDGETS
 			mrpt::gui::CDisplayWindow3D win("Final simulation", 400, 300);
@@ -433,7 +433,7 @@ int main(int argc, char** argv)
 			}
 
 			// Insert all robot poses:
-			const size_t N = size(GT_path, 1);
+			const size_t N = GT_path.rows();
 			mrpt::opengl::CSetOfLines::Ptr pathLines =
 				mrpt::make_aligned_shared<mrpt::opengl::CSetOfLines>();
 			pathLines->setColor(0, 0, 1, 0.5);

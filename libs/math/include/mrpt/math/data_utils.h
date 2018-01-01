@@ -38,7 +38,7 @@ typename MAT::Scalar mahalanobisDistance2(
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
 	ASSERT_(!X.empty());
 	ASSERT_(X.size() == MU.size());
-	ASSERT_(X.size() == size(COV, 1) && COV.isSquare());
+	ASSERT_(X.size() == COV.rows() && COV.isSquare());
 #endif
 	const size_t N = X.size();
 	Eigen::Matrix<typename MAT::Scalar, Eigen::Dynamic, 1> X_MU(N);
@@ -74,9 +74,9 @@ typename MAT1::Scalar mahalanobisDistance2(
 	MRPT_START
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
 	ASSERT_(!mean_diffs.empty());
-	ASSERT_(mean_diffs.size() == size(COV1, 1));
+	ASSERT_(mean_diffs.size() == COV1.rows());
 	ASSERT_(COV1.isSquare() && COV2.isSquare());
-	ASSERT_(size(COV1, 1) == size(COV2, 1));
+	ASSERT_(COV1, 1) == size(COV2.rows());
 #endif
 	MAT1 COV = COV1;
 	COV += COV2;

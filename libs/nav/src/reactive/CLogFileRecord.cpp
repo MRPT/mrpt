@@ -46,7 +46,7 @@ CLogFileRecord::CLogFileRecord()
 /*---------------------------------------------------------------
 						writeToStream
  ---------------------------------------------------------------*/
-void CLogFileRecord::writeToStream(
+uint8_t CLogFileRecord::serializeGetVersion() const { return XX; } void CLogFileRecord::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
@@ -150,7 +150,7 @@ void CLogFileRecord::writeToStream(
 /*---------------------------------------------------------------
 						readFromStream
  ---------------------------------------------------------------*/
-void CLogFileRecord::readFromStream(mrpt::utils::CStream& in, int version)
+void CLogFileRecord::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

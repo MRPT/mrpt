@@ -13,14 +13,14 @@
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/serialization/CArchive.h>
 #include "opengl_internals.h"
-#include <memory> // std::align
+#include <memory>  // std::align
 
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;
-
 using namespace mrpt::math;
 using namespace std;
+using mrpt::img::CImage;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(
 	CTexturedObject, CRenderizableDisplayList, mrpt::opengl)
@@ -51,24 +51,11 @@ struct CTexturedObject_MemPoolData
 	vector<unsigned char> data;
 };
 
-typedef mrpt::system::CGenericMemoryPool<CTexturedObject_MemPoolParams,
-										 CTexturedObject_MemPoolData>
+typedef mrpt::system::CGenericMemoryPool<
+	CTexturedObject_MemPoolParams, CTexturedObject_MemPoolData>
 	TMyMemPool;
 #endif
 
-/*---------------------------------------------------------------
-							CTexturedObject
-  ---------------------------------------------------------------*/
-CTexturedObject::CTexturedObject()
-	: m_glTextureName(0),
-	  m_texture_is_loaded(false),
-	  m_enableTransparency(false)
-{
-}
-
-/*---------------------------------------------------------------
-							assignImage
-  ---------------------------------------------------------------*/
 void CTexturedObject::assignImage(const CImage& img, const CImage& imgAlpha)
 {
 	MRPT_START
@@ -166,9 +153,10 @@ unsigned char* reserveDataBuffer(const size_t len, vector<unsigned char>& data)
 	}
 #endif
 	data.resize(len);
-	void *ptr = &data[0];
+	void* ptr = &data[0];
 	size_t space = len;
-	return std::align(16,1 /*dummy size*/,ptr,space);
+	return reinterpret_cast<unsigned char*>(
+		std::align(16, 1 /*dummy size*/, ptr, space));
 }
 
 /*---------------------------------------------------------------
@@ -302,10 +290,9 @@ void CTexturedObject::loadTextureInOpenGL() const
 
 				// Prepare image data types:
 				const GLenum img_type = GL_UNSIGNED_BYTE;
-				const bool is_RGB_order =
-					(!::strcmp(
-						m_textureImage.getChannelsOrder(),
-						"RGB"));  // Reverse RGB <-> BGR order?
+				const bool is_RGB_order = (!::strcmp(
+					m_textureImage.getChannelsOrder(),
+					"RGB"));  // Reverse RGB <-> BGR order?
 				const GLenum img_format = (is_RGB_order ? GL_RGBA : GL_BGRA);
 
 				// Send image data to OpenGL:
@@ -329,10 +316,9 @@ void CTexturedObject::loadTextureInOpenGL() const
 				// Prepare image data types:
 				const GLenum img_type = GL_UNSIGNED_BYTE;
 				const int nBytesPerPixel = m_textureImage.isColor() ? 3 : 1;
-				const bool is_RGB_order =
-					(!::strcmp(
-						m_textureImage.getChannelsOrder(),
-						"RGB"));  // Reverse RGB <-> BGR order?
+				const bool is_RGB_order = (!::strcmp(
+					m_textureImage.getChannelsOrder(),
+					"RGB"));  // Reverse RGB <-> BGR order?
 				const GLenum img_format = nBytesPerPixel == 3
 											  ? (is_RGB_order ? GL_RGB : GL_BGR)
 											  : GL_LUMINANCE;
@@ -486,10 +472,6 @@ void CTexturedObject::unloadTexture()
 	}
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
 void CTexturedObject::writeToStreamTexturedObject(
 	mrpt::serialization::CArchive& out) const
 {
@@ -565,11 +547,8 @@ void CTexturedObject::render_post() const
 #endif
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CTexturedObject::readFromStreamTexturedObject(mrpt::serialization::CArchive& in)
+void CTexturedObject::readFromStreamTexturedObject(
+	mrpt::serialization::CArchive& in)
 {
 	uint8_t version;
 	in >> version;

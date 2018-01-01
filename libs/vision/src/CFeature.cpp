@@ -384,7 +384,7 @@ void CFeature::dumpToConsole() const
 	dumpToTextStream(myOut);
 }
 
-void CFeature::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CFeature::serializeGetVersion() const { return XX; } void CFeature::serializeTo(mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
 		*version = 2;
@@ -405,7 +405,7 @@ void CFeature::writeToStream(mrpt::utils::CStream& out, int* version) const
 	}
 }
 
-void CFeature::readFromStream(mrpt::utils::CStream& in, int version)
+void CFeature::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -786,14 +786,14 @@ float CFeature::descriptorPolarImgDistanceTo(
 	MRPT_START
 
 	ASSERT_(
-		size(descriptors.PolarImg, 1) == size(oFeature.descriptors.PolarImg, 1))
+		size(descriptors.PolarImg, 1) == oFeature.descriptors.PolarImg.rows())
 	ASSERT_(
-		size(descriptors.PolarImg, 2) == size(oFeature.descriptors.PolarImg, 2))
+		size(descriptors.PolarImg, 2) == oFeature.descriptors.PolarImg.cols())
 	ASSERT_(
 		this->descriptors.hasDescriptorPolarImg() &&
 		oFeature.descriptors.hasDescriptorPolarImg())
 	ASSERT_(
-		size(descriptors.PolarImg, 1) > 1 && size(descriptors.PolarImg, 2) > 1)
+		size(descriptors.PolarImg, 1) > 1 && descriptors.PolarImg.cols() > 1)
 
 	// Call the common method for computing these distances:
 	return internal_distanceBetweenPolarImages(

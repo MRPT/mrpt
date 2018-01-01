@@ -905,7 +905,7 @@ void hmtMapViewerFrame::updateGlobalMapView()
 		edLog->Clear();
 		CMyRedirector redir(edLog);
 
-		CStringList strLst;
+		std::vector<std::string> strLst;
 		hmt_map->m_map.dumpAsText(strLst);
 		string str;
 		strLst.getText(str);

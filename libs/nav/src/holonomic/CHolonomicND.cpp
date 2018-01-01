@@ -622,7 +622,7 @@ unsigned int CHolonomicND::direction2sector(
 	Implements the writing to a CStream capability of
 	  CSerializable objects
   ---------------------------------------------------------------*/
-void CLogFileRecord_ND::writeToStream(
+uint8_t CLogFileRecord_ND::serializeGetVersion() const { return XX; } void CLogFileRecord_ND::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
@@ -638,7 +638,7 @@ void CLogFileRecord_ND::writeToStream(
 /*---------------------------------------------------------------
 					readFromStream
   ---------------------------------------------------------------*/
-void CLogFileRecord_ND::readFromStream(mrpt::utils::CStream& in, int version)
+void CLogFileRecord_ND::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -741,7 +741,7 @@ void CHolonomicND::TOptions::saveToConfigFile(
 	MRPT_END
 }
 
-void CHolonomicND::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CHolonomicND::serializeGetVersion() const { return XX; } void CHolonomicND::serializeTo(mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
 		*version = 0;
@@ -757,7 +757,7 @@ void CHolonomicND::writeToStream(mrpt::utils::CStream& out, int* version) const
 		out << m_last_selected_sector;
 	}
 }
-void CHolonomicND::readFromStream(mrpt::utils::CStream& in, int version)
+void CHolonomicND::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

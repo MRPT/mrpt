@@ -73,7 +73,7 @@ class CLogFileRecord : public mrpt::serialization::CSerializable
 	uint32_t nPTGs;
 	/** The info for each applied PTG: must contain "nPTGs * nSecDistances"
 	 * elements */
-	mrpt::aligned_containers<TInfoPerPTG>::vector_t infoPerPTG;
+	mrpt::aligned_std_vector<TInfoPerPTG> infoPerPTG;
 	/** The selected PTG. */
 	int32_t nSelectedPTG;
 

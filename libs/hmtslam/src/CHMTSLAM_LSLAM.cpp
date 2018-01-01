@@ -414,7 +414,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 	if (0)
 	{
 		std::lock_guard<std::mutex> lock(m_map_cs);
-		utils::CStringList s;
+		std::vector<std::string> s;
 		m_map.dumpAsText(s);
 		s.saveToFile(
 			format(
@@ -1566,7 +1566,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 	if (0)
 	{
 		std::lock_guard<std::mutex> lock(m_map_cs);
-		utils::CStringList s;
+		std::vector<std::string> s;
 		m_map.dumpAsText(s);
 		s.saveToFile(
 			format(
@@ -1804,7 +1804,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 
 	if (0)
 	{
-		utils::CStringList s;
+		std::vector<std::string> s;
 		LMH->dumpAsText(s);
 		s.saveToFile(
 			format(
@@ -1908,7 +1908,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 	if (0)
 	{
 		std::lock_guard<std::mutex> lock(m_map_cs);
-		utils::CStringList s;
+		std::vector<std::string> s;
 		m_map.dumpAsText(s);
 		s.saveToFile(
 			format(
@@ -1920,7 +1920,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 	}
 	if (0)
 	{
-		utils::CStringList s;
+		std::vector<std::string> s;
 		LMH->dumpAsText(s);
 		s.saveToFile(
 			format(

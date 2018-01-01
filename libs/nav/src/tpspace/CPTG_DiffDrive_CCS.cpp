@@ -43,7 +43,7 @@ void CPTG_DiffDrive_CCS::saveToConfigFile(
 	MRPT_END
 }
 
-void CPTG_DiffDrive_CCS::readFromStream(mrpt::utils::CStream& in, int version)
+void CPTG_DiffDrive_CCS::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	CPTG_DiffDrive_CollisionGridBased::internal_readFromStream(in);
 
@@ -57,7 +57,7 @@ void CPTG_DiffDrive_CCS::readFromStream(mrpt::utils::CStream& in, int version)
 	};
 }
 
-void CPTG_DiffDrive_CCS::writeToStream(
+uint8_t CPTG_DiffDrive_CCS::serializeGetVersion() const { return XX; } void CPTG_DiffDrive_CCS::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
 	if (version)

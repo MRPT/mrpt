@@ -32,11 +32,11 @@ typedef uint64_t TLandmarkID;
 typedef uint64_t TCameraPoseID;
 
 /** A list of camera frames (6D poses) indexed by unique IDs. */
-typedef mrpt::aligned_containers<TCameraPoseID, mrpt::poses::CPose3D>::map_t
+typedef mrpt::aligned_std_map<TCameraPoseID, mrpt::poses::CPose3D>
 	TFramePosesMap;
 /** A list of camera frames (6D poses), which assumes indexes are unique,
  * consecutive IDs. */
-typedef mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t TFramePosesVec;
+typedef mrpt::aligned_std_vector<mrpt::poses::CPose3D> TFramePosesVec;
 
 /** A list of landmarks (3D points) indexed by unique IDs. */
 typedef std::map<TLandmarkID, mrpt::math::TPoint3D> TLandmarkLocationsMap;

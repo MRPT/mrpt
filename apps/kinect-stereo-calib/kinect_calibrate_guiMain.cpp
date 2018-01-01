@@ -2505,7 +2505,7 @@ void kinect_calibrate_guiDialog::OnbtnLoadImageListClick(wxCommandEvent& event)
 		startPath = _U(fil_dir.c_str());
 		m_config.Write(_("last_path"), startPath);
 
-		mrpt::utils::CStringList lst;
+		std::vector<std::string> lst;
 		lst.loadFromFile(file_list);
 
 		if (lst.size() == 0)

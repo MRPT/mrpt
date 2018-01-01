@@ -156,7 +156,7 @@ class CWeightedPointsMap : public CPointsMap
 namespace utils
 {
 /** Specialization
- * mrpt::utils::PointCloudAdapter<mrpt::maps::CWeightedPointsMap>  \ingroup
+ * mrpt::opengl::PointCloudAdapter<mrpt::maps::CWeightedPointsMap>  \ingroup
  * mrpt_adapters_grp*/
 template <>
 class PointCloudAdapter<mrpt::maps::CWeightedPointsMap>

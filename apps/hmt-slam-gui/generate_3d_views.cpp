@@ -248,7 +248,7 @@ void hmt_slam_guiFrame::updateGlobalMapView()
 
 	// Dump text representation to log window:
 	{
-		CStringList strLst;
+		std::vector<std::string> strLst;
 		m_hmtslam->m_map.dumpAsText(strLst);
 		string str;
 		strLst.getText(str);

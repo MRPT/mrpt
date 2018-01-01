@@ -161,7 +161,7 @@ CSensoryFrame::Ptr CRawlog::getAsObservations(size_t index) const
 	MRPT_END
 }
 
-void CRawlog::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CRawlog::serializeGetVersion() const { return XX; } void CRawlog::serializeTo(mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
 		*version = 1;
@@ -179,7 +179,7 @@ void CRawlog::writeToStream(mrpt::utils::CStream& out, int* version) const
 /*---------------------------------------------------------------
 					readFromStream
   ---------------------------------------------------------------*/
-void CRawlog::readFromStream(mrpt::utils::CStream& in, int version)
+void CRawlog::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

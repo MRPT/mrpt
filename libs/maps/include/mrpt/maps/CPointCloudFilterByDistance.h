@@ -79,7 +79,7 @@ class CPointCloudFilterByDistance : public mrpt::maps::CPointCloudFilterBase
 		MRPT_MAKE_ALIGNED_OPERATOR_NEW
 	};
 
-	mrpt::aligned_containers<mrpt::system::TTimeStamp, FrameInfo>::map_t
+	mrpt::aligned_std_map<mrpt::system::TTimeStamp, FrameInfo>
 		m_last_frames;
 };
 }

@@ -11,7 +11,6 @@
 
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CTexturedPlane.h>
-#include <mrpt/utils/CStringList.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/opengl/gl_utils.h>
 
@@ -52,7 +51,8 @@ void CSetOfObjects::render() const
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void CSetOfObjects::writeToStream(mrpt::serialization::CArchive& out, int* version) const
+uint8_t CSetOfObjects::serializeGetVersion() const { return XX; }
+void CSetOfObjects::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 0;
@@ -73,7 +73,8 @@ void CSetOfObjects::writeToStream(mrpt::serialization::CArchive& out, int* versi
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void CSetOfObjects::readFromStream(mrpt::serialization::CArchive& in, int version)
+void CSetOfObjects::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -125,7 +126,7 @@ void CSetOfObjects::insert(const CRenderizable::Ptr& newObject)
 /*--------------------------------------------------------------
 					dumpListOfObjects
   ---------------------------------------------------------------*/
-void CSetOfObjects::dumpListOfObjects(utils::CStringList& lst)
+void CSetOfObjects::dumpListOfObjects(std::vector<std::string>& lst)
 {
 	for (CListOpenGLObjects::iterator it = m_objects.begin();
 		 it != m_objects.end(); ++it)
@@ -141,7 +142,7 @@ void CSetOfObjects::dumpListOfObjects(utils::CStringList& lst)
 		{
 			CSetOfObjects* objs = getAs<CSetOfObjects>(*it);
 
-			utils::CStringList auxLst;
+			std::vector<std::string> auxLst;
 			objs->dumpListOfObjects(auxLst);
 			for (size_t i = 0; i < auxLst.size(); i++)
 				lst.add(string(" ") + auxLst(i));

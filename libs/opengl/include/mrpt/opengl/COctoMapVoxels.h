@@ -6,9 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-
-#ifndef opengl_COctoMapVoxels_H
-#define opengl_COctoMapVoxels_H
+#pragma once
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/math/lightweight_geom_data.h>
@@ -24,50 +22,50 @@ enum predefined_voxel_sets_t
 };
 
 /** A flexible renderer of voxels, typically from a 3D octo map (see
-  *mrpt::maps::COctoMap).
-  *  This class is sort of equivalent to octovis::OcTreeDrawer from the octomap
-  *package, but
-  *  relying on MRPT's CRenderizableDisplayList so there's no need to manually
-  *cache the rendering of OpenGL primitives.
-  *
-  *  Normally users call mrpt::maps::COctoMap::getAs3DObject() to obtain a
-  *generic mrpt::opengl::CSetOfObjects which insides holds an instance of
-  *COctoMapVoxels.
-  *  You can also alternativelly call COctoMapVoxels::setFromOctoMap(), so you
-  *can tune the display parameters, colors, etc.
-  *  As with any other mrpt::opengl class, all object coordinates refer to some
-  *frame of reference which is relative to the object parent and can be changed
-  *with mrpt::opengl::CRenderizable::setPose()
-  *
-  *  This class draws these separate elements to represent an OctoMap:
-  *		- A grid representation of all cubes, as simple lines (occupied/free,
-  *leafs/nodes,... whatever). See:
-  *			- showGridLines()
-  *			- setGridLinesColor()
-  *			- setGridLinesWidth()
-  *			- push_back_GridCube()
-  *		- A number of <b>voxel collections</b>, drawn as cubes each having a
-  *different color (e.g. depending on the color scheme in the original
-  *mrpt::maps::COctoMap object).
-  *       The meanning of each collection is user-defined, but you can use the
-  *constants VOXEL_SET_OCCUPIED, VOXEL_SET_FREESPACE for predefined meanings.
-  *			- showVoxels()
-  *			- push_back_Voxel()
-  *
-  *  Several coloring schemes can be selected with setVisualizationMode(). See
-  *COctoMapVoxels::visualization_mode_t
-  *
-  *  <div align="center">
-  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
-  *border-style: solid;">
-  *   <tr> <td> mrpt::opengl::COctoMapVoxels </td> <td> \image html
-  *preview_COctoMapVoxels.png </td> </tr>
-  *  </table>
-  *  </div>
-  *
-  *  \sa opengl::COpenGLScene
-  * \ingroup mrpt_opengl_grp
-  */
+ *mrpt::maps::COctoMap).
+ *  This class is sort of equivalent to octovis::OcTreeDrawer from the octomap
+ *package, but
+ *  relying on MRPT's CRenderizableDisplayList so there's no need to manually
+ *cache the rendering of OpenGL primitives.
+ *
+ *  Normally users call mrpt::maps::COctoMap::getAs3DObject() to obtain a
+ *generic mrpt::opengl::CSetOfObjects which insides holds an instance of
+ *COctoMapVoxels.
+ *  You can also alternativelly call COctoMapVoxels::setFromOctoMap(), so you
+ *can tune the display parameters, colors, etc.
+ *  As with any other mrpt::opengl class, all object coordinates refer to some
+ *frame of reference which is relative to the object parent and can be changed
+ *with mrpt::opengl::CRenderizable::setPose()
+ *
+ *  This class draws these separate elements to represent an OctoMap:
+ *		- A grid representation of all cubes, as simple lines (occupied/free,
+ *leafs/nodes,... whatever). See:
+ *			- showGridLines()
+ *			- setGridLinesColor()
+ *			- setGridLinesWidth()
+ *			- push_back_GridCube()
+ *		- A number of <b>voxel collections</b>, drawn as cubes each having a
+ *different color (e.g. depending on the color scheme in the original
+ *mrpt::maps::COctoMap object).
+ *       The meanning of each collection is user-defined, but you can use the
+ *constants VOXEL_SET_OCCUPIED, VOXEL_SET_FREESPACE for predefined meanings.
+ *			- showVoxels()
+ *			- push_back_Voxel()
+ *
+ *  Several coloring schemes can be selected with setVisualizationMode(). See
+ *COctoMapVoxels::visualization_mode_t
+ *
+ *  <div align="center">
+ *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
+ *border-style: solid;">
+ *   <tr> <td> mrpt::opengl::COctoMapVoxels </td> <td> \image html
+ *preview_COctoMapVoxels.png </td> </tr>
+ *  </table>
+ *  </div>
+ *
+ *  \sa opengl::COpenGLScene
+ * \ingroup mrpt_opengl_grp
+ */
 class COctoMapVoxels : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(COctoMapVoxels)
@@ -195,13 +193,13 @@ class COctoMapVoxels : public CRenderizableDisplayList
 	 * voxels to modify, e.g. VOXEL_SET_OCCUPIED, VOXEL_SET_FREESPACE) */
 	inline void showVoxels(unsigned int voxel_set, bool show)
 	{
-		ASSERT_(voxel_set < m_voxel_sets.size();
+		ASSERT_(voxel_set < m_voxel_sets.size());
 		m_voxel_sets[voxel_set].visible = show;
 		CRenderizableDisplayList::notifyChange();
 	}
 	inline bool areVoxelsVisible(unsigned int voxel_set) const
 	{
-		ASSERT_(voxel_set < m_voxel_sets.size();
+		ASSERT_(voxel_set < m_voxel_sets.size());
 		return m_voxel_sets[voxel_set].visible;
 	}
 
@@ -249,7 +247,7 @@ class COctoMapVoxels : public CRenderizableDisplayList
 	/** Returns the total count of voxels in one voxel set. */
 	inline size_t getVoxelCount(const size_t set_index) const
 	{
-		ASSERT_(set_index < m_voxel_sets.size();
+		ASSERT_(set_index < m_voxel_sets.size());
 		return m_voxel_sets[set_index].voxels.size();
 	}
 
@@ -270,7 +268,7 @@ class COctoMapVoxels : public CRenderizableDisplayList
 	}
 	inline void resizeVoxels(const size_t set_index, const size_t nVoxels)
 	{
-		ASSERT_(set_index < m_voxel_sets.size();
+		ASSERT_(set_index < m_voxel_sets.size());
 		m_voxel_sets[set_index].voxels.resize(nVoxels);
 		CRenderizableDisplayList::notifyChange();
 	}
@@ -281,27 +279,28 @@ class COctoMapVoxels : public CRenderizableDisplayList
 	}
 	inline void reserveVoxels(const size_t set_index, const size_t nVoxels)
 	{
-		ASSERT_(set_index < m_voxel_sets.size();
+		ASSERT_(set_index < m_voxel_sets.size());
 		m_voxel_sets[set_index].voxels.reserve(nVoxels);
 		CRenderizableDisplayList::notifyChange();
 	}
 
 	inline TGridCube& getGridCubeRef(const size_t idx)
 	{
-		ASSERTDEB_(idx < m_grid_cubes.size())
+		ASSERTDEB_(idx < m_grid_cubes.size());
 		CRenderizableDisplayList::notifyChange();
 		return m_grid_cubes[idx];
 	}
 	inline const TGridCube& getGridCube(const size_t idx) const
 	{
-		ASSERTDEB_(idx < m_grid_cubes.size()) return m_grid_cubes[idx];
+		ASSERTDEB_(idx < m_grid_cubes.size());
+		return m_grid_cubes[idx];
 	}
 
 	inline TVoxel& getVoxelRef(const size_t set_index, const size_t idx)
 	{
 		ASSERTDEB_(
 			set_index < m_voxel_sets.size() &&
-			idx < m_voxel_sets[set_index].voxels.size())
+			idx < m_voxel_sets[set_index].voxels.size());
 		CRenderizableDisplayList::notifyChange();
 		return m_voxel_sets[set_index].voxels[idx];
 	}
@@ -310,7 +309,7 @@ class COctoMapVoxels : public CRenderizableDisplayList
 	{
 		ASSERTDEB_(
 			set_index < m_voxel_sets.size() &&
-			idx < m_voxel_sets[set_index].voxels.size())
+			idx < m_voxel_sets[set_index].voxels.size());
 		CRenderizableDisplayList::notifyChange();
 		return m_voxel_sets[set_index].voxels[idx];
 	}
@@ -322,7 +321,7 @@ class COctoMapVoxels : public CRenderizableDisplayList
 	}
 	inline void push_back_Voxel(const size_t set_index, const TVoxel& v)
 	{
-		ASSERTDEB_(set_index < m_voxel_sets.size())
+		ASSERTDEB_(set_index < m_voxel_sets.size());
 		CRenderizableDisplayList::notifyChange();
 		m_voxel_sets[set_index].voxels.push_back(v);
 	}
@@ -339,11 +338,11 @@ class COctoMapVoxels : public CRenderizableDisplayList
 		mrpt::math::TPoint3D& bb_max) const override;
 
 	/** Sets the contents of the object from a mrpt::maps::COctoMap object.
-	  * \tparam Typically, an mrpt::maps::COctoMap object
-	  *
-	  * \note Declared as a template because in the library [mrpt-opengl] we
+	 * \tparam Typically, an mrpt::maps::COctoMap object
+	 *
+	 * \note Declared as a template because in the library [mrpt-opengl] we
 	 * don't have access to the library [mrpt-maps].
-	  */
+	 */
 	template <class OCTOMAP>
 	void setFromOctoMap(OCTOMAP& m)
 	{
@@ -356,7 +355,5 @@ class COctoMapVoxels : public CRenderizableDisplayList
 	virtual ~COctoMapVoxels() {}
 };
 
-}  // end namespace
-}  // End of namespace
-
-#endif
+}  // namespace opengl
+}  // namespace mrpt
