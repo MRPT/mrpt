@@ -17,7 +17,7 @@
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;
-using namespace mrpt::utils;
+
 using namespace mrpt::math;
 using namespace std;
 
@@ -103,33 +103,19 @@ static void triangle_readFromStream(
 	i.ReadBufferFixEndianness(t.a, 3);
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CSetOfTriangles::writeToStream(
-	mrpt::serialization::CArchive& out, int* version) const
+uint8_t CSetOfTriangles::serializeGetVersion() const { return 1; }
+void CSetOfTriangles::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		writeToStreamRender(out);
-		uint32_t n = (uint32_t)m_triangles.size();
-		out << n;
-		for (size_t i = 0; i < n; i++)
-			triangle_writeToStream(out, m_triangles[i]);
+	writeToStreamRender(out);
+	uint32_t n = (uint32_t)m_triangles.size();
+	out << n;
+	for (size_t i = 0; i < n; i++) triangle_writeToStream(out, m_triangles[i]);
 
-		// Version 1:
-		out << m_enableTransparency;
-	}
+	// Version 1:
+	out << m_enableTransparency;
 }
-
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CSetOfTriangles::readFromStream(mrpt::serialization::CArchive& in, int version)
+void CSetOfTriangles::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -160,7 +146,8 @@ bool CSetOfTriangles::traceRay(
 	const mrpt::poses::CPose3D& o, double& dist) const
 {
 	if (!polygonsUpToDate) updatePolygons();
-	return mrpt::math::traceRay(tmpPolygons, o - this->m_pose, dist);
+	return mrpt::math::traceRay(
+		tmpPolygons, (o - this->m_pose).asTPose(), dist);
 }
 
 // Helper function. Given two 2D points (y1,z1) and (y2,z2), returns three

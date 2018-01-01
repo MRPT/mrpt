@@ -69,7 +69,10 @@
 *          arch << object;
 *          arch >> object;
 *        \endcode
-*  - Implicit constructor to convert from mrpt::poses::CPose3D to mrpt::math::TPose3D has been removed, due to the refactoring of mrpt::math and mrpt::poses into separate libraries. 
+*    - The two methods `writeToStream()` and `readFromStream()` of old `CSerializable` classes
+*      must be replaced by the three methods: `serializeGetVersion()`, `serializeTo()`, and `serializeTo()`.
+*      See tutorials in \ref mrpt_serialization_grp. 
+*  - Implicit constructor to convert from mrpt::poses::CPose3D to mrpt::math::TPose3D has been removed, due to the refactoring of mrpt::math and mrpt::poses into separate libraries.
 *    To convert CPose3D -> TPose3D, use the new method mrpt::poses::CPose3D::asTPose()
 *        \code
 *          mrpt::poses::CPose3D p1;
@@ -86,7 +89,7 @@
 *       #include <mrpt/core/aligned_std_vector.h>
 *       mrpt::aligned_std_vector<Foo> v;
 *       \endcode
-* 
+*
 *
 *
 * **Optional changes**

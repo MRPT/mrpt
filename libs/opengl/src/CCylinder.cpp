@@ -17,7 +17,7 @@
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
-using namespace mrpt::utils;
+
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CCylinder, CRenderizableDisplayList, mrpt::opengl)
@@ -60,28 +60,16 @@ void CCylinder::render_dl() const
 #endif
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CCylinder::writeToStream(mrpt::serialization::CArchive& out, int* version) const
+uint8_t CCylinder::serializeGetVersion() const { return 0; }
+void CCylinder::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		writeToStreamRender(out);
-		// version 0
-		out << mBaseRadius << mTopRadius << mHeight << mSlices << mStacks
-			<< mHasBottomBase << mHasTopBase;
-	}
+	writeToStreamRender(out);
+	// version 0
+	out << mBaseRadius << mTopRadius << mHeight << mSlices << mStacks
+		<< mHasBottomBase << mHasTopBase;
 }
-
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CCylinder::readFromStream(mrpt::serialization::CArchive& in, int version)
+void CCylinder::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -136,7 +124,7 @@ bool solveEqn(double a, double b, double c, double& t)
 bool CCylinder::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 {
 	TLine3D lin;
-	createFromPoseX(o - this->m_pose, lin);
+	mrpt::math::createFromPoseX((o - this->m_pose).asTPose(), lin);
 	lin.unitarize();  // By adding this line, distance from any point of the
 	// line to its base is exactly equal to the "t".
 	if (abs(lin.director[2]) < getEpsilon())

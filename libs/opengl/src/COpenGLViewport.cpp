@@ -23,7 +23,7 @@
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
+
 using namespace mrpt::math;
 using namespace std;
 
@@ -112,8 +112,8 @@ void COpenGLViewport::setViewportPosition(
 	const double x, const double y, const double width, const double height)
 {
 	MRPT_START
-	ASSERT_(m_view_width > 0)
-	ASSERT_(m_view_height > 0)
+	ASSERT_(m_view_width > 0);
+	ASSERT_(m_view_height > 0);
 
 	m_view_x = x;
 	m_view_y = y;
@@ -346,7 +346,7 @@ void COpenGLViewport::render(
 			CCamera* myCamera = nullptr;
 			if (cam_ptr)
 			{
-				myCamera = getAs<CCamera>(cam_ptr);
+				myCamera = this->template getAs<CCamera>(cam_ptr);
 			}
 
 			// 2nd: the internal camera of all viewports:
@@ -578,7 +578,8 @@ void COpenGLViewport::writeToStream(
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void COpenGLViewport::readFromStream(mrpt::serialization::CArchive& in, int version)
+void COpenGLViewport::readFromStream(
+	mrpt::serialization::CArchive& in, int version)
 {
 	switch (version)
 	{

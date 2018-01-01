@@ -18,7 +18,7 @@
 #include <mrpt/poses.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
+
 using namespace mrpt::math;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;

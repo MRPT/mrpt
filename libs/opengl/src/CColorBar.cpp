@@ -16,7 +16,7 @@
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
+
 using namespace mrpt::math;
 using namespace std;
 
@@ -62,10 +62,9 @@ CColorBar::Ptr CColorBar::Create(
 	/** Label text font size */
 	double label_font_size)
 {
-	return CColorBar::Ptr(
-		new CColorBar(
-			colormap, width, height, min_col, max_col, min_value, max_value,
-			label_format, label_font_size));
+	return CColorBar::Ptr(new CColorBar(
+		colormap, width, height, min_col, max_col, min_value, max_value,
+		label_format, label_font_size));
 }
 
 void CColorBar::setColormap(const mrpt::img::TColormap colormap)
@@ -182,29 +181,17 @@ void CColorBar::render_dl() const
 #endif
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CColorBar::writeToStream(mrpt::serialization::CArchive& out, int* version) const
+uint8_t CColorBar::serializeGetVersion() const { return 0; }
+void CColorBar::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		writeToStreamRender(out);
-		// version 0
-		out << uint32_t(m_colormap) << m_min_col << m_max_col << m_min_value
-			<< m_max_value << m_label_format << m_label_font_size
-			<< m_disable_depth_test;
-	}
+	writeToStreamRender(out);
+	// version 0
+	out << uint32_t(m_colormap) << m_min_col << m_max_col << m_min_value
+		<< m_max_value << m_label_format << m_label_font_size
+		<< m_disable_depth_test;
 }
-
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CColorBar::readFromStream(mrpt::serialization::CArchive& in, int version)
+void CColorBar::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

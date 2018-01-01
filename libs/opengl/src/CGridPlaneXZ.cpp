@@ -16,7 +16,7 @@
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
+
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CGridPlaneXZ, CRenderizableDisplayList, mrpt::opengl)

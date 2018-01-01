@@ -13,34 +13,30 @@
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/math/CMatrix.h>
-#include <mrpt/utils/stl_extensions.h>
-#include <Eigen/Dense>
 
 namespace mrpt
 {
 namespace opengl
 {
-class CVectorField3D;
-
 /** A 3D vector field representation, consisting of points and arrows drawn at
  * any spatial position.
-	*  This opengl object has been created to represent scene flow, and hence
+ *  This opengl object has been created to represent scene flow, and hence
  * both the vector field and
-	*  the coordinates of the points at which the vector field is represented
+ *  the coordinates of the points at which the vector field is represented
  * are stored in matrices because
-	*  they are computed from intensity and depth images.
-	*  \sa opengl::COpenGLScene
-	*
-	*  <div align="center">
-	*  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
+ *  they are computed from intensity and depth images.
+ *  \sa opengl::COpenGLScene
+ *
+ *  <div align="center">
+ *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
  * border-style: solid;">
-	*   <tr> <td> mrpt::opengl::CVectorField2D </td> <td> \image html
+ *   <tr> <td> mrpt::opengl::CVectorField2D </td> <td> \image html
  * preview_CVectorField2D.png </td> </tr>
-	*  </table>
-	*  </div>
-	*
-	* \ingroup mrpt_opengl_grp
-	*/
+ *  </table>
+ *  </div>
+ *
+ * \ingroup mrpt_opengl_grp
+ */
 
 class CVectorField3D : public CRenderizableDisplayList
 {
@@ -85,8 +81,8 @@ class CVectorField3D : public CRenderizableDisplayList
 
    public:
 	/**
-		* Clear the matrices
-		*/
+	 * Clear the matrices
+	 */
 	inline void clear()
 	{
 		x_vf.resize(0, 0);
@@ -100,8 +96,8 @@ class CVectorField3D : public CRenderizableDisplayList
 	}
 
 	/**
-		* Set the point color in the range [0,1]
-		*/
+	 * Set the point color in the range [0,1]
+	 */
 	inline void setPointColor(
 		const float R, const float G, const float B, const float A = 1)
 	{
@@ -110,16 +106,16 @@ class CVectorField3D : public CRenderizableDisplayList
 	}
 
 	/**
-		* Get the point color in the range [0,1]
-		*/
+	 * Get the point color in the range [0,1]
+	 */
 	inline mrpt::img::TColorf getPointColor() const
 	{
 		return mrpt::img::TColorf(m_point_color);
 	}
 
 	/**
-		* Set the arrow color in the range [0,1]
-		*/
+	 * Set the arrow color in the range [0,1]
+	 */
 	inline void setVectorFieldColor(
 		const float R, const float G, const float B, const float A = 1)
 	{
@@ -128,8 +124,8 @@ class CVectorField3D : public CRenderizableDisplayList
 	}
 
 	/**
-		* Get the motion field min and max colors (colormap) in the range [0,1]
-		*/
+	 * Get the motion field min and max colors (colormap) in the range [0,1]
+	 */
 	inline void getVectorFieldColor(
 		mrpt::img::TColorf Cmin, mrpt::img::TColorf Cmax) const
 	{
@@ -138,8 +134,8 @@ class CVectorField3D : public CRenderizableDisplayList
 	}
 
 	/**
-		* Set the motion field min and max colors (colormap) in the range [0,1]
-		*/
+	 * Set the motion field min and max colors (colormap) in the range [0,1]
+	 */
 	inline void setMotionFieldColormap(
 		const float Rmin, const float Gmin, const float Bmin, const float Rmax,
 		const float Gmax, const float Bmax, const float Amin = 1,
@@ -153,16 +149,16 @@ class CVectorField3D : public CRenderizableDisplayList
 	}
 
 	/**
-		* Get the arrow color in the range [0,1]
-		*/
+	 * Get the arrow color in the range [0,1]
+	 */
 	inline mrpt::img::TColorf getVectorFieldColor() const
 	{
 		return mrpt::img::TColorf(m_field_color);
 	}
 
 	/**
-		* Set the size with which points will be drawn. By default 1.0
-		*/
+	 * Set the size with which points will be drawn. By default 1.0
+	 */
 	inline void setPointSize(const float p)
 	{
 		m_pointSize = p;
@@ -170,12 +166,12 @@ class CVectorField3D : public CRenderizableDisplayList
 	}
 
 	/**
-		* Get the size with which points are drawn. By default 1.0
-		*/
+	 * Get the size with which points are drawn. By default 1.0
+	 */
 	inline float getPointSize() const { return m_pointSize; }
 	/**
-		* Set the width with which lines will be drawn.
-		*/
+	 * Set the width with which lines will be drawn.
+	 */
 	inline void setLineWidth(const float w)
 	{
 		m_LineWidth = w;
@@ -183,13 +179,13 @@ class CVectorField3D : public CRenderizableDisplayList
 	}
 
 	/**
-		* Get the width with which lines are drawn.
-		*/
+	 * Get the width with which lines are drawn.
+	 */
 	float getLineWidth() const { return m_LineWidth; }
 	/**
-		* Set the max speed associated for the color map ( m_still_color,
+	 * Set the max speed associated for the color map ( m_still_color,
 	 * m_maxspeed_color)
-		*/
+	 */
 	inline void setMaxSpeedForColor(const float s)
 	{
 		m_maxspeed = s;
@@ -197,13 +193,13 @@ class CVectorField3D : public CRenderizableDisplayList
 	}
 
 	/**
-		* Get the max_speed  with which lines are drawn.
-		*/
+	 * Get the max_speed  with which lines are drawn.
+	 */
 	float getMaxSpeedForColor() const { return m_maxspeed; }
 	/**
-		* Get the vector field in three independent matrices: Matrix_x, Matrix_y
+	 * Get the vector field in three independent matrices: Matrix_x, Matrix_y
 	 * and Matrix_z.
-		*/
+	 */
 	void getVectorField(
 		mrpt::math::CMatrixFloat& Matrix_x, mrpt::math::CMatrixFloat& Matrix_y,
 		mrpt::math::CMatrixFloat& Matrix_z) const
@@ -213,9 +209,9 @@ class CVectorField3D : public CRenderizableDisplayList
 		Matrix_z = z_vf;
 	}
 
+	template <class MATRIX>
 	void getVectorField(
-		Eigen::MatrixXf& Matrix_x, Eigen::MatrixXf& Matrix_y,
-		Eigen::MatrixXf& Matrix_z) const
+		MATRIX& Matrix_x, MATRIX& Matrix_y, MATRIX& Matrix_z) const
 	{
 		Matrix_x = x_vf;
 		Matrix_y = y_vf;
@@ -223,9 +219,9 @@ class CVectorField3D : public CRenderizableDisplayList
 	}
 
 	/**
-		* Get the coordiantes of the points at which the vector field is
+	 * Get the coordiantes of the points at which the vector field is
 	 * plotted: Coord_x, Coord_y and Coord_z.
-		*/
+	 */
 	void getPointCoordinates(
 		mrpt::math::CMatrixFloat& Coord_x, mrpt::math::CMatrixFloat& Coord_y,
 		mrpt::math::CMatrixFloat& Coord_z) const
@@ -235,9 +231,9 @@ class CVectorField3D : public CRenderizableDisplayList
 		Coord_z = z_p;
 	}
 
+	template <class MATRIX>
 	void getPointCoordinates(
-		Eigen::MatrixXf& Coord_x, Eigen::MatrixXf& Coord_y,
-		Eigen::MatrixXf& Coord_z) const
+		MATRIX& Coord_x, MATRIX& Coord_y, MATRIX& Coord_z) const
 	{
 		Coord_x = x_p;
 		Coord_y = y_p;
@@ -266,34 +262,33 @@ class CVectorField3D : public CRenderizableDisplayList
 	/** \overload */
 	inline mrpt::math::CMatrixFloat& getVectorField_z() { return z_vf; }
 	/**
-		* Set the vector field with Matrix_x, Matrix_y and Matrix_z.
-		*/
+	 * Set the vector field with Matrix_x, Matrix_y and Matrix_z.
+	 */
 	void setVectorField(
 		mrpt::math::CMatrixFloat& Matrix_x, mrpt::math::CMatrixFloat& Matrix_y,
 		mrpt::math::CMatrixFloat& Matrix_z)
 	{
 		ASSERT_(
 			(Matrix_x.rows() == Matrix_y.rows()) &&
-			(Matrix_x.rows() == Matrix_z.rows()))
+			(Matrix_x.rows() == Matrix_z.rows()));
 		ASSERT_(
 			(Matrix_x.cols() == Matrix_y.cols()) &&
-			(Matrix_x.cols() == Matrix_z.cols()))
+			(Matrix_x.cols() == Matrix_z.cols()));
 		x_vf = Matrix_x;
 		y_vf = Matrix_y;
 		z_vf = Matrix_z;
 		CRenderizableDisplayList::notifyChange();
 	}
 
-	void setVectorField(
-		Eigen::MatrixXf& Matrix_x, Eigen::MatrixXf& Matrix_y,
-		Eigen::MatrixXf& Matrix_z)
+	template <class MATRIX>
+	void setVectorField(MATRIX& Matrix_x, MATRIX& Matrix_y, MATRIX& Matrix_z)
 	{
 		ASSERT_(
 			(Matrix_x.rows() == Matrix_y.rows()) &&
-			(Matrix_x.rows() == Matrix_z.rows()))
+			(Matrix_x.rows() == Matrix_z.rows()));
 		ASSERT_(
 			(Matrix_x.cols() == Matrix_y.cols()) &&
-			(Matrix_x.cols() == Matrix_z.cols()))
+			(Matrix_x.cols() == Matrix_z.cols()));
 		x_vf = Matrix_x;
 		y_vf = Matrix_y;
 		z_vf = Matrix_z;
@@ -301,35 +296,35 @@ class CVectorField3D : public CRenderizableDisplayList
 	}
 
 	/**
-		* Set the coordinates of the points at which the vector field is plotted
+	 * Set the coordinates of the points at which the vector field is plotted
 	 * with Matrix_x, Matrix_y and Matrix_z.
-		*/
+	 */
 	void setPointCoordinates(
 		mrpt::math::CMatrixFloat& Matrix_x, mrpt::math::CMatrixFloat& Matrix_y,
 		mrpt::math::CMatrixFloat& Matrix_z)
 	{
 		ASSERT_(
 			(Matrix_x.rows() == Matrix_y.rows()) &&
-			(Matrix_x.rows() == Matrix_z.rows()))
+			(Matrix_x.rows() == Matrix_z.rows()));
 		ASSERT_(
 			(Matrix_x.cols() == Matrix_y.cols()) &&
-			(Matrix_x.cols() == Matrix_z.cols()))
+			(Matrix_x.cols() == Matrix_z.cols()));
 		x_p = Matrix_x;
 		y_p = Matrix_y;
 		z_p = Matrix_z;
 		CRenderizableDisplayList::notifyChange();
 	}
 
+	template <class MATRIX>
 	void setPointCoordinates(
-		Eigen::MatrixXf& Matrix_x, Eigen::MatrixXf& Matrix_y,
-		Eigen::MatrixXf& Matrix_z)
+		MATRIX& Matrix_x, MATRIX& Matrix_y, MATRIX& Matrix_z)
 	{
 		ASSERT_(
 			(Matrix_x.rows() == Matrix_y.rows()) &&
-			(Matrix_x.rows() == Matrix_z.rows()))
+			(Matrix_x.rows() == Matrix_z.rows()));
 		ASSERT_(
 			(Matrix_x.cols() == Matrix_y.cols()) &&
-			(Matrix_x.cols() == Matrix_z.cols()))
+			(Matrix_x.cols() == Matrix_z.cols()));
 		x_p = Matrix_x;
 		y_p = Matrix_y;
 		z_p = Matrix_z;
@@ -337,8 +332,8 @@ class CVectorField3D : public CRenderizableDisplayList
 	}
 
 	/**
-		* Resizes the set.
-		*/
+	 * Resizes the set.
+	 */
 	void resize(size_t rows, size_t cols)
 	{
 		x_vf.resize(rows, cols);
@@ -356,8 +351,8 @@ class CVectorField3D : public CRenderizableDisplayList
 	 */
 	inline size_t rows() const { return x_vf.rows(); }
 	/**
-		* Class factory
-		*/
+	 * Class factory
+	 */
 	static CVectorField3D::Ptr Create(
 		const mrpt::math::CMatrixFloat x_vf_ini,
 		const mrpt::math::CMatrixFloat y_vf_ini,
@@ -366,7 +361,7 @@ class CVectorField3D : public CRenderizableDisplayList
 		const mrpt::math::CMatrixFloat y_p_ini,
 		const mrpt::math::CMatrixFloat z_p_ini);
 	/** Render
-		*/
+	 */
 	void render_dl() const override;
 
 	/** Evaluates the bounding box of this object (including possible children)
@@ -403,8 +398,8 @@ class CVectorField3D : public CRenderizableDisplayList
 	virtual ~CVectorField3D() {}
 };
 
-}  // end namespace
+}  // namespace opengl
 
-}  // End of namespace
+}  // namespace mrpt
 
 #endif

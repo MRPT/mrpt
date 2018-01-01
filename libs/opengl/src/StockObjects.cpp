@@ -20,7 +20,7 @@
 #include <mrpt/opengl/C3DSScene.h>
 #include <mrpt/utils/CFileOutputStream.h>
 
-using namespace mrpt::utils;
+
 using namespace mrpt::opengl;
 using namespace mrpt::poses;
 using namespace mrpt::math;

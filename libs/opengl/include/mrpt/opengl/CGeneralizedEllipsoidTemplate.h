@@ -52,23 +52,23 @@ void generalizedEllipsoidPoints<3>(
 	const mrpt::math::CMatrixFixedNumeric<double, 3, 1>& mean,
 	std::vector<mrpt::math::CMatrixFixedNumeric<float, 3, 1>>& out_params_pts,
 	const uint32_t slices, const uint32_t stacks);
-}
+}  // namespace detail
 
 /** A class that generalizes the concept of an ellipsoid to arbitrary
  * parameterizations of
-  *  uncertainty shapes in either 2D or 3D. See derived classes for examples.
-  *
-  * Please read the documentation of
+ *  uncertainty shapes in either 2D or 3D. See derived classes for examples.
+ *
+ * Please read the documentation of
  * CGeneralizedEllipsoidTemplate::setQuantiles() for learning
-  *  the mathematical details about setting the desired confidence interval.
-  *
-  *  The main method to set the modeled uncertainty is \a setCovMatrixAndMean()
-  *
-  * \tparam DIM The dimensionality of the parameter space, which must coincide
+ *  the mathematical details about setting the desired confidence interval.
+ *
+ *  The main method to set the modeled uncertainty is \a setCovMatrixAndMean()
+ *
+ * \tparam DIM The dimensionality of the parameter space, which must coincide
  * with that of the rendering space (2 or 3)
-  *
-  * \ingroup mrpt_opengl_grp
-  */
+ *
+ * \ingroup mrpt_opengl_grp
+ */
 template <int DIM>
 class CGeneralizedEllipsoidTemplate : public CRenderizableDisplayList
 {
@@ -83,16 +83,14 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableDisplayList
 
 	/**  Set the NxN covariance matrix that will determine the aspect of the
 	 * ellipsoid - Notice that the
-	  *  covariance determines the uncertainty in the parameter space, which
+	 *  covariance determines the uncertainty in the parameter space, which
 	 * would be transformed by derived function
-	  */
+	 */
 	template <typename MATRIX, typename VECTOR>
 	void setCovMatrixAndMean(const MATRIX& new_cov, const VECTOR& new_mean)
 	{
 		MRPT_START
-		ASSERT_(
-			new_cov.cols() == new_cov.rows() &&
-			new_cov.cols() == DIM)
+		ASSERT_(new_cov.cols() == new_cov.rows() && new_cov.cols() == DIM);
 		m_cov = new_cov;
 		m_mean = new_mean;
 		m_needToRecomputeEigenVals = true;
@@ -103,32 +101,32 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableDisplayList
 	/** Gets the current uncertainty covariance of parameter space */
 	const cov_matrix_t& getCovMatrix() const { return m_cov; }
 	/** Changes the scale of the "sigmas" for drawing the ellipse/ellipsoid
-	  *(default=3, ~97 or ~98% CI); the exact mathematical meaning is:
-	  *   This value of "quantiles" \a q should be set to the square root of the
-	  *chi-squared inverse cdf corresponding to
-	  *   the desired confidence interval.
-	  *   <b>Note that this value depends on the dimensionality</b>.
-	  *   Refer to the MATLAB functions \a chi2inv() and \a chi2cdf().
-	  *
-	  *  Some common values follow here for the convenience of users:
-	  *		- Dimensionality=3 (3D ellipsoids):
-	  *			- 19.8748% CI -> q=1
-	  *			- 73.8536% CI -> q=2
-	  *			- 97.0709% CI -> q=3
-	  *			- 99.8866% CI -> q=4
-	  *		- Dimensionality=2 (2D ellipses):
-	  *			- 39.347% CI -> q=1
-	  *			- 86.466% CI -> q=2
-	  *			- 98.8891% CI -> q=3
-	  *			- 99.9664% CI -> q=4
-	  *		- Dimensionality=1 (Not aplicable to this class but provided for
-	  *reference):
-	  *			- 68.27% CI -> q=1
-	  *			- 95.45% CI -> q=2
-	  *			- 99.73% CI -> q=3
-	  *			- 99.9937% CI -> q=4
-	  *
-	  */
+	 *(default=3, ~97 or ~98% CI); the exact mathematical meaning is:
+	 *   This value of "quantiles" \a q should be set to the square root of the
+	 *chi-squared inverse cdf corresponding to
+	 *   the desired confidence interval.
+	 *   <b>Note that this value depends on the dimensionality</b>.
+	 *   Refer to the MATLAB functions \a chi2inv() and \a chi2cdf().
+	 *
+	 *  Some common values follow here for the convenience of users:
+	 *		- Dimensionality=3 (3D ellipsoids):
+	 *			- 19.8748% CI -> q=1
+	 *			- 73.8536% CI -> q=2
+	 *			- 97.0709% CI -> q=3
+	 *			- 99.8866% CI -> q=4
+	 *		- Dimensionality=2 (2D ellipses):
+	 *			- 39.347% CI -> q=1
+	 *			- 86.466% CI -> q=2
+	 *			- 98.8891% CI -> q=3
+	 *			- 99.9664% CI -> q=4
+	 *		- Dimensionality=1 (Not aplicable to this class but provided for
+	 *reference):
+	 *			- 68.27% CI -> q=1
+	 *			- 95.45% CI -> q=2
+	 *			- 99.73% CI -> q=3
+	 *			- 99.9937% CI -> q=4
+	 *
+	 */
 	void setQuantiles(float q)
 	{
 		m_quantiles = q;
@@ -152,10 +150,10 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableDisplayList
 	}
 	uint32_t getNumberOfSegments() { return m_numSegments; }
 	/** Render
-	  *	If one of the eigen value of the covariance matrix of the ellipsoid is
-	  *null, ellipsoid will not
-	  * be rendered to ensure stability in the rendering process.
-	  */
+	 *	If one of the eigen value of the covariance matrix of the ellipsoid is
+	 *null, ellipsoid will not
+	 * be rendered to ensure stability in the rendering process.
+	 */
 	void render_dl() const override
 	{
 		MRPT_START
@@ -231,7 +229,7 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableDisplayList
 	}
 
 	/** Ray tracing
-	  */
+	 */
 	virtual bool traceRay(
 		const mrpt::poses::CPose3D& o, double& dist) const override
 	{
@@ -243,9 +241,9 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableDisplayList
    protected:
 	/** To be implemented by derived classes: maps, using some arbitrary space
 	 * transformation, a list of points
-	  *  defining an ellipsoid in parameter space into their corresponding
+	 *  defining an ellipsoid in parameter space into their corresponding
 	 * points in 2D/3D space.
-	  */
+	 */
 	virtual void transformFromParameterSpace(
 		const std::vector<array_point_t>& params_pts,
 		std::vector<array_point_t>& out_pts) const = 0;
@@ -267,7 +265,7 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableDisplayList
 	void thisclass_writeToStream(mrpt::serialization::CArchive& out) const
 	{
 		using namespace mrpt::math;
-		using namespace mrpt::utils;
+
 		const uint8_t version = 0;
 		out << version << m_cov << m_mean << m_quantiles << m_lineWidth
 			<< m_numSegments;
@@ -303,8 +301,8 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableDisplayList
 	virtual ~CGeneralizedEllipsoidTemplate() {}
 };
 
-}  // end namespace
+}  // namespace opengl
 
-}  // End of namespace
+}  // namespace mrpt
 
 #endif

@@ -18,7 +18,7 @@ using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
 using namespace mrpt::poses;
-using namespace mrpt::utils;
+
 
 IMPLEMENTS_SERIALIZABLE(
 	COpenGLStandardObject, CRenderizableDisplayList, mrpt::opengl)
