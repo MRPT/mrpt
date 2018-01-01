@@ -144,9 +144,9 @@ class CSerialPort : public mrpt::io::CStream
 	/** not applicable in a serial port */
 	uint64_t Seek(int64_t off, CStream::TSeekOrigin o = sFromBeginning) override;
 	/** not applicable in a serial port */
-	uint64_t getTotalBytesCount() override;
+	uint64_t getTotalBytesCount() const override;
 	/** not applicable in a serial port */
-	uint64_t getPosition() override;
+	uint64_t getPosition() const override;
 
    protected:
 	/** The complete name of the serial port device (i.e.

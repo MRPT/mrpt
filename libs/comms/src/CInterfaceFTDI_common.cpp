@@ -77,11 +77,11 @@ uint64_t CInterfaceFTDI::Seek(uint64_t Offset, CStream::TSeekOrigin Origin)
 /*-------------------------------------------------------------
 					getTotalBytesCount
 -------------------------------------------------------------*/
-uint64_t CInterfaceFTDI::getTotalBytesCount() { return 0; }
+uint64_t CInterfaceFTDI::getTotalBytesCount() const { return 0; }
 /*-------------------------------------------------------------
 					getPosition
 -------------------------------------------------------------*/
-uint64_t CInterfaceFTDI::getPosition() { return 0; }
+uint64_t CInterfaceFTDI::getPosition() const { return 0; }
 /*-------------------------------------------------------------
 					ReadBufferImmediate
 -------------------------------------------------------------*/

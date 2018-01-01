@@ -189,7 +189,7 @@ void mpInfoLayer::Plot(wxDC& dc, mpWindow& w)
 	}
 }
 
-wxPoint mpInfoLayer::GetPosition() { return m_dim.GetPosition(); }
+wxPoint mpInfoLayer::getPosition() const { return m_dim.GetPosition(); }
 wxSize mpInfoLayer::GetSize() { return m_dim.GetSize(); }
 mpInfoCoords::mpInfoCoords() : mpInfoLayer() {}
 mpInfoCoords::mpInfoCoords(wxRect rect, const wxBrush* brush)

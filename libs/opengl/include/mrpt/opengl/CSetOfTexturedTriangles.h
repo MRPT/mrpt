@@ -6,26 +6,20 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef opengl_CSetOfTexturedTriangles_H
-#define opengl_CSetOfTexturedTriangles_H
+#pragma once
 
 #include <mrpt/opengl/CTexturedObject.h>
 
 namespace mrpt
 {
-namespace utils
-{
-class CStream;
-}
-
 namespace opengl
 {
 /** A set of textured triangles.
-  *  This class can be used to draw any solid, arbitrarily complex object with
+ *  This class can be used to draw any solid, arbitrarily complex object with
  * textures.
-  *  \sa opengl::COpenGLScene
-  * \ingroup mrpt_opengl_grp
-  */
+ *  \sa opengl::COpenGLScene
+ * \ingroup mrpt_opengl_grp
+ */
 class CSetOfTexturedTriangles : public CTexturedObject
 {
 	DEFINE_SERIALIZABLE(CSetOfTexturedTriangles)
@@ -33,7 +27,7 @@ class CSetOfTexturedTriangles : public CTexturedObject
    public:
 	/** Triangle vertex. This structure encapsulates the vertex coordinates and
 	 * the image pixels.
-	  */
+	 */
 	struct TVertex
 	{
 		/** Default constructor			 */
@@ -49,7 +43,7 @@ class CSetOfTexturedTriangles : public CTexturedObject
 	};
 
 	/** Triangle. This structure encapsulates the triangle vertices.
-	  */
+	 */
 	struct TTriangle
 	{
 		/** Default constructor */
@@ -101,14 +95,11 @@ class CSetOfTexturedTriangles : public CTexturedObject
 		const mrpt::poses::CPose3D& o, double& dist) const override;
 
 	/** Constructor
-	  */
+	 */
 	CSetOfTexturedTriangles() : m_triangles() {}
 	/** Private, virtual destructor: only can be deleted from smart pointers */
 	virtual ~CSetOfTexturedTriangles();
 };
 
-}  // end namespace
-
-}  // End of namespace
-
-#endif
+}  // namespace opengl
+}  // namespace mrpt

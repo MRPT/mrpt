@@ -199,7 +199,7 @@ void generalizedEllipsoidPoints<3>(
 	const uint32_t slices, const uint32_t stacks)
 {
 	MRPT_START
-	ASSERT_ABOVEEQ_(slices, 3)
+	ASSERT_ABOVEEQ_(slices, 3);
 	ASSERT_ABOVEEQ_(stacks, 3);
 	// sin/cos cache --------
 	// Slices: [0,pi]

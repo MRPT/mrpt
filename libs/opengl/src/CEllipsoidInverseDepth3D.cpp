@@ -51,30 +51,18 @@ void CEllipsoidInverseDepth3D::transformFromParameterSpace(
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-uint8_t CEllipsoidInverseDepth3D::serializeGetVersion() const { return XX; } void CEllipsoidInverseDepth3D::serializeTo(
+uint8_t CEllipsoidInverseDepth3D::serializeGetVersion() const { return 0; }
+void CEllipsoidInverseDepth3D::serializeTo(
 	mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		writeToStreamRender(out);
-		BASE::thisclass_writeToStream(out);
+	writeToStreamRender(out);
+	BASE::thisclass_writeToStream(out);
 
-		out << m_underflowMaxRange;
-	}
+	out << m_underflowMaxRange;
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CEllipsoidInverseDepth3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
-	mrpt::serialization::CArchive& in, int version)
+void CEllipsoidInverseDepth3D::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

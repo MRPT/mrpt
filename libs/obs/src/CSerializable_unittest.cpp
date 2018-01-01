@@ -49,15 +49,6 @@ TEST_CLASS_MOVE_COPY_CTORS(CObservationVelodyneScan);
 TEST_CLASS_MOVE_COPY_CTORS(CActionRobotMovement2D);
 TEST_CLASS_MOVE_COPY_CTORS(CActionRobotMovement3D);
 
-// Defined in tests/test_main.cpp
-namespace mrpt
-{
-namespace utils
-{
-extern std::string MRPT_GLOBAL_UNITTEST_SRC_DIR;
-}
-}
-
 const mrpt::utils::TRuntimeClassId* lstClasses[] = {
 	// Observations:
 	CLASS_ID(CObservation2DRangeScan), CLASS_ID(CObservation3DRangeScan),

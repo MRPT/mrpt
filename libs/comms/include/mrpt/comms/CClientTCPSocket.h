@@ -114,11 +114,11 @@ class CClientTCPSocket : public mrpt::io::CStream
 
 	/** This virtual method has no effect in this implementation over a TCP
 	 * socket, and its use raises an exception */
-	uint64_t getTotalBytesCount() override;
+	uint64_t getTotalBytesCount() const override;
 
 	/** This virtual method has no effect in this implementation over a TCP
 	 * socket, and its use raises an exception */
-	uint64_t getPosition() override;
+	uint64_t getPosition() const override;
 
 	/** A method for reading from the socket with an optional timeout.
 	 * \param Buffer The destination of data.

@@ -16,8 +16,8 @@
 #include <cstring>  // memcpy
 
 using namespace mrpt::io;
-using std::min;
 using std::max;
+using std::min;
 
 CMemoryStream::CMemoryStream(const void* data, const uint64_t nBytesInData)
 {
@@ -137,8 +137,8 @@ uint64_t CMemoryStream::Seek(int64_t Offset, CStream::TSeekOrigin Origin)
 	return m_position;
 }
 
-uint64_t CMemoryStream::getTotalBytesCount() { return m_bytesWritten; }
-uint64_t CMemoryStream::getPosition() { return m_position; }
+uint64_t CMemoryStream::getTotalBytesCount() const { return m_bytesWritten; }
+uint64_t CMemoryStream::getPosition() const { return m_position; }
 void CMemoryStream::Clear()
 {
 	if (!m_read_only)
@@ -156,6 +156,7 @@ void CMemoryStream::Clear()
 }
 
 void* CMemoryStream::getRawBufferData() { return m_memory.get(); }
+const void* CMemoryStream::getRawBufferData() const { return m_memory.get(); }
 void CMemoryStream::changeSize(uint64_t newSize) { resize(newSize); }
 bool CMemoryStream::saveBufferToFile(const std::string& file_name)
 {

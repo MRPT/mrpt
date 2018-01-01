@@ -49,12 +49,14 @@ WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
 
 #include <mrpt/opengl/PLY_import_export.h>
 #include <mrpt/system/string_utils.h>
+#include <mrpt/core/reverse_bytes.h>
 #include <cstdio>
 
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
+using namespace mrpt::img;
 
 #define PLY_ASCII 1 /* ascii PLY file */
 #define PLY_BINARY_BE 2 /* binary PLY file, big endian */
@@ -1247,7 +1249,7 @@ vector<string> get_words(FILE* fp, string& orig_line)
 
 	vector<string> words;
 
-	ASSERT_(fp != nullptr)
+	ASSERT_(fp != nullptr);
 
 	/* read in a line */
 	char* result = fgets(str, BIG_STRING, fp);
@@ -1581,9 +1583,9 @@ int get_binary_item(
 		int int_val2 = *int_val;
 		unsigned int uint_val2 = *uint_val;
 		double double_val2 = *double_val;
-		mrpt::utils::reverseBytes(int_val2, *int_val);
-		mrpt::utils::reverseBytes(uint_val2, *uint_val);
-		mrpt::utils::reverseBytes(double_val2, *double_val);
+		mrpt::reverseBytes(int_val2, *int_val);
+		mrpt::reverseBytes(uint_val2, *uint_val);
+		mrpt::reverseBytes(double_val2, *double_val);
 	}
 
 	return 1;
@@ -1950,7 +1952,8 @@ bool PLY_Importer::loadFromPlyFile(
 
 bool PLY_Exporter::saveToPlyFile(
 	const std::string& filename, bool save_in_binary,
-	const std::vector<std::string>& file_comments, const std::vector<std::string>& file_obj_info) const
+	const std::vector<std::string>& file_comments,
+	const std::vector<std::string>& file_obj_info) const
 {
 	try
 	{
@@ -2008,10 +2011,10 @@ bool PLY_Exporter::saveToPlyFile(
 
 		/* write a comment and an object information field */
 		for (size_t k = 0; k < file_comments.size(); k++)
-			ply_put_comment(ply, file_comments(k).c_str());
+			ply_put_comment(ply, file_comments[k].c_str());
 
 		for (size_t k = 0; k < file_obj_info.size(); k++)
-			ply_put_obj_info(ply, file_obj_info(k).c_str());
+			ply_put_obj_info(ply, file_obj_info[k].c_str());
 
 		/* we have described exactly what we will put in the file, so */
 		/* we are now done with the header info */

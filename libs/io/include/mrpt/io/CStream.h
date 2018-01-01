@@ -84,22 +84,22 @@ class CStream
 
 	/** Returns the total amount of bytes in the stream.
 	 */
-	virtual uint64_t getTotalBytesCount() = 0;
+	virtual uint64_t getTotalBytesCount() const = 0;
 
 	/** Method for getting the current cursor position, where 0 is the first
 	 * byte and TotalBytesCount-1 the last one.
 	 */
-	virtual uint64_t getPosition() = 0;
+	virtual uint64_t getPosition() const = 0;
 
 	/** Writes a string to the stream in a textual form.
-	  * \sa CStdOutStream
-	  */
+	 * \sa CStdOutStream
+	 */
 	virtual int printf(const char* fmt, ...)
 		MRPT_printf_format_check(2, 3);  // The first argument (1) is "this" !!!
 
 	/** Prints a vector in the format [A,B,C,...] using CStream::printf, and the
 	 * fmt string for <b>each</b> vector element `T`.
-	  * \tparam CONTAINER_TYPE can be any vector<T>, deque<T> or alike. */
+	 * \tparam CONTAINER_TYPE can be any vector<T>, deque<T> or alike. */
 	template <typename CONTAINER_TYPE>
 	void printf_vector(
 		const char* fmt, const CONTAINER_TYPE& V, char separator = ',')
@@ -158,11 +158,11 @@ class CStream
 
 	/** Reads from the stream until a '\n' character is found ('\r' characters
 	 * are ignored).
-	  * \return false on EOF or any other read error.
-	  */
+	 * \return false on EOF or any other read error.
+	 */
 	bool getline(std::string& out_str);
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
+}  // namespace io
+}  // namespace mrpt

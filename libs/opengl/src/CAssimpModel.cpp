@@ -30,12 +30,13 @@
 
 #include "opengl_internals.h"
 #include <mrpt/system/filesystem.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-
 using namespace mrpt::math;
 using namespace std;
+using mrpt::img::CImage;
 
 IMPLEMENTS_SERIALIZABLE(CAssimpModel, CRenderizableDisplayList, mrpt::opengl)
 
@@ -93,38 +94,27 @@ void CAssimpModel::render_dl() const
 #endif
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-uint8_t CAssimpModel::serializeGetVersion() const { return XX; } void CAssimpModel::serializeTo(mrpt::serialization::CArchive& out) const
+uint8_t CAssimpModel::serializeGetVersion() const { return 0; }
+void CAssimpModel::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
+	writeToStreamRender(out);
+
+	const bool empty = m_assimp_scene->scene != nullptr;
+	out << empty;
+
+	if (!empty)
 	{
-		writeToStreamRender(out);
-
-		const bool empty = m_assimp_scene->scene != nullptr;
-		out << empty;
-
-		if (!empty)
-		{
 #if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
-			// aiScene *scene = (aiScene *) m_assimp_scene->scene;
-			THROW_EXCEPTION("MRPT can't serialize Assimp objects yet!");
+		// aiScene *scene = (aiScene *) m_assimp_scene->scene;
+		THROW_EXCEPTION("MRPT can't serialize Assimp objects yet!");
 #else
-			THROW_EXCEPTION("MRPT compiled without OpenGL and/or Assimp");
+		THROW_EXCEPTION("MRPT compiled without OpenGL and/or Assimp");
 #endif
-		}
 	}
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CAssimpModel::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CAssimpModel::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	THROW_EXCEPTION("MRPT can't serialize Assimp objects yet!");
 
@@ -484,8 +474,7 @@ void recursive_render(
 				{
 					glTexCoord2f(
 						mesh->mTextureCoords[0][vertexIndex].x,
-						1 -
-							mesh->mTextureCoords[0][vertexIndex]
+						1 - mesh->mTextureCoords[0][vertexIndex]
 								.y);  // mTextureCoords[channel][vertex]
 				}
 
@@ -606,13 +595,13 @@ void load_textures(
 				GL_TEXTURE_2D, textureIds[i]); /* Binding of texture name */
 			// redefine standard texture values
 			glTexParameteri(
-				GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
-				GL_LINEAR); /* We will use linear
-interpolation for magnification filter */
+				GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); /* We will use
+									  linear interpolation for magnification
+									  filter */
 			glTexParameteri(
-				GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-				GL_LINEAR); /* We will use linear
-interpolation for minifying filter */
+				GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); /* We will use
+									  linear interpolation for minifying filter
+									*/
 			// glTexImage2D(
 			//	GL_TEXTURE_2D,
 			//	0,
@@ -630,10 +619,9 @@ interpolation for minifying filter */
 			// Prepare image data types:
 			const GLenum img_type = GL_UNSIGNED_BYTE;
 			const int nBytesPerPixel = img_rgb->isColor() ? 3 : 1;
-			const bool is_RGB_order =
-				(!::strcmp(
-					img_rgb->getChannelsOrder(),
-					"RGB"));  // Reverse RGB <-> BGR order?
+			const bool is_RGB_order = (!::strcmp(
+				img_rgb->getChannelsOrder(),
+				"RGB"));  // Reverse RGB <-> BGR order?
 			const GLenum img_format = nBytesPerPixel == 3
 										  ? (is_RGB_order ? GL_RGB : GL_BGR)
 										  : GL_LUMINANCE;

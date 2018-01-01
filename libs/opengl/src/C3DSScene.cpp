@@ -28,19 +28,23 @@
 #include <mrpt/opengl/CTexturedPlane.h>
 
 #include <mrpt/io/zip.h>
+#include <mrpt/io/vector_loadsave.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/vector_loadsave.h>
-#include <mrpt/system/CMemoryChunk.h>
-
+#include <mrpt/serialization/CMemoryChunk.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CFileInputStream.h>
 
 #include "opengl_internals.h"
 
+#include <mrpt/io/CMemoryStream.h>
+// Test refactoring CMemoryChunk:
+// IMPLEMENTS_SERIALIZABLE(CMemoryChunk, CSerializable, mrpt::serialization)
+using mrpt::serialization::CMemoryChunk;
+
 using namespace mrpt;
 using namespace mrpt::opengl;
-
 using namespace mrpt::math;
 using namespace std;
 
@@ -620,7 +624,7 @@ void C3DSScene::loadFrom3DSFile(const std::string& filepath)
 		// Save to tmp file & load:
 		string tmpFil = mrpt::system::getTempFileName();
 
-		mrpt::system::vectorToBinaryFile(out_data, tmpFil);
+		mrpt::io::vectorToBinaryFile(out_data, tmpFil);
 		out_data.clear();
 
 		file = lib3ds_file_load(tmpFil.c_str());

@@ -52,12 +52,12 @@ class CStdOutStream : public CStream
 		THROW_EXCEPTION("Invalid operation for this kind of stream");
 	}
 	/** It has no efect in this class */
-	uint64_t getTotalBytesCount() override
+	uint64_t getTotalBytesCount() const override
 	{
 		THROW_EXCEPTION("Invalid operation for this kind of stream");
 	}
 	/** It has no efect in this class */
-	uint64_t getPosition() override
+	uint64_t getPosition() const override
 	{
 		THROW_EXCEPTION("Invalid operation for this kind of stream");
 	}
