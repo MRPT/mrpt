@@ -125,12 +125,12 @@ void CPose3D_from_ROS_Pose_msg(CPose3D& self, object pose_msg)
 //     return this->get_override("duplicate")();
 // }
 //
-// void CPosePDFWrap::writeToStream(CStream& stream, int32_t* pos) const
+// uint8_t CPosePDFWrap::serializeGetVersion() const { return XX; } void CPosePDFWrap::serializeTo(CStream& stream, int32_t* pos) const
 // {
 //     this->get_override("writeToStream")(stream, pos);
 // }
 //
-// void CPosePDFWrap::readFromStream(CStream& stream, int32_t pos)
+// void CPosePDFWrap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 // {
 //     this->get_override("readFromStream")(stream, pos);
 // }

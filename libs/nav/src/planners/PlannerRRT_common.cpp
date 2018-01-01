@@ -111,10 +111,10 @@ void PlannerTPS_VirtualBase::internal_loadConfig_PTG(
 			if (!mShape.fromMatlabStringFormat(sShape))
 				THROW_EXCEPTION_FMT(
 					"Error parsing robot_shape matrix: '%s'", sShape.c_str());
-			ASSERT_(size(mShape, 1) == 2);
-			ASSERT_(size(mShape, 2) >= 3);
+			ASSERT_(mShape.rows() == 2);
+			ASSERT_(mShape.cols() >= 3);
 
-			for (size_t i = 0; i < size(mShape, 2); i++)
+			for (size_t i = 0; i < mShape.cols(); i++)
 				params.robot_shape.push_back(
 					TPoint2D(mShape(0, i), mShape(1, i)));
 		}

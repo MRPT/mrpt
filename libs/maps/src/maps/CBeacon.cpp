@@ -53,7 +53,7 @@ CBeacon::~CBeacon() {}
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void CBeacon::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CBeacon::serializeGetVersion() const { return XX; } void CBeacon::serializeTo(mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
 		*version = 0;
@@ -70,7 +70,7 @@ void CBeacon::writeToStream(mrpt::utils::CStream& out, int* version) const
    Implements the reading from a CStream capability of
 	  CSerializable objects
   ---------------------------------------------------------------*/
-void CBeacon::readFromStream(mrpt::utils::CStream& in, int version)
+void CBeacon::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -321,7 +321,7 @@ void CBeacon::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
 /*---------------------------------------------------------------
 					getAsMatlabDrawCommands
   ---------------------------------------------------------------*/
-void CBeacon::getAsMatlabDrawCommands(utils::CStringList& out_Str) const
+void CBeacon::getAsMatlabDrawCommands(std::vector<std::string>& out_Str) const
 {
 	MRPT_START
 

@@ -53,7 +53,7 @@ class CObservation6DFeatures : public CObservation
 		// matrices
 	};
 	/** The list of observed features */
-	mrpt::aligned_containers<TMeasurement>::deque_t sensedFeatures;
+	mrpt::aligned_std_deque<TMeasurement> sensedFeatures;
 
 	/** The pose of the sensor on the robot/vehicle */
 	mrpt::poses::CPose3D sensorPose;

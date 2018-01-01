@@ -87,8 +87,8 @@ void CTexturedPlane::render_texturedobj() const
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void CTexturedPlane::writeToStream(
-	mrpt::serialization::CArchive& out, int* version) const
+uint8_t CTexturedPlane::serializeGetVersion() const { return XX; } void CTexturedPlane::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 2;
@@ -107,7 +107,7 @@ void CTexturedPlane::writeToStream(
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void CTexturedPlane::readFromStream(mrpt::serialization::CArchive& in, int version)
+void CTexturedPlane::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -158,7 +158,7 @@ void CTexturedPlane::readFromStream(mrpt::serialization::CArchive& in, int versi
 bool CTexturedPlane::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 {
 	if (!polygonUpToDate) updatePoly();
-	return math::traceRay(tmpPoly, o - this->m_pose, dist);
+	return math::traceRay(tmpPoly, (o - this->m_pose).asTPose(), dist);
 }
 
 void CTexturedPlane::updatePoly() const

@@ -167,7 +167,7 @@ class CKinematicChain : public mrpt::serialization::CSerializable
 	  */
 	void getAs3DObject(
 		mrpt::opengl::CSetOfObjects::Ptr& inout_gl_obj,
-		mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t*
+		mrpt::aligned_std_vector<mrpt::poses::CPose3D>*
 			out_all_poses = nullptr) const;
 
 	/** Read getAs3DObject() for a description.
@@ -175,7 +175,7 @@ class CKinematicChain : public mrpt::serialization::CSerializable
 	 * in the format of recomputeAllPoses()
 	  */
 	void update3DObject(
-		mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t*
+		mrpt::aligned_std_vector<mrpt::poses::CPose3D>*
 			out_all_poses = nullptr) const;
 
 	/** Go thru all the links of the chain and compute the global pose of each
@@ -186,7 +186,7 @@ class CKinematicChain : public mrpt::serialization::CSerializable
 	 * contains the base frame, [1] the pose after the first link, and so on.
 	   */
 	void recomputeAllPoses(
-		mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t& poses,
+		mrpt::aligned_std_vector<mrpt::poses::CPose3D>& poses,
 		const mrpt::poses::CPose3D& pose0 = mrpt::poses::CPose3D()) const;
 
 };  // End of class def.

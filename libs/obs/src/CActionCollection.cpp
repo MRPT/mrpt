@@ -40,7 +40,7 @@ CActionCollection::CActionCollection(CAction& a) : m_actions()
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void CActionCollection::writeToStream(
+uint8_t CActionCollection::serializeGetVersion() const { return XX; } void CActionCollection::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
@@ -58,7 +58,7 @@ void CActionCollection::writeToStream(
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void CActionCollection::readFromStream(mrpt::utils::CStream& in, int version)
+void CActionCollection::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

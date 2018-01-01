@@ -34,7 +34,7 @@ CObservation6DFeatures::TMeasurement::TMeasurement() : id(INVALID_LANDMARK_ID)
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void CObservation6DFeatures::writeToStream(
+uint8_t CObservation6DFeatures::serializeGetVersion() const { return XX; } void CObservation6DFeatures::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
@@ -58,7 +58,7 @@ void CObservation6DFeatures::writeToStream(
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void CObservation6DFeatures::readFromStream(
+void CObservation6DFeatures::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	mrpt::utils::CStream& in, int version)
 {
 	switch (version)

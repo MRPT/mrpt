@@ -12,7 +12,6 @@
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CRenderizableDisplayList.h>
-#include <mrpt/utils/CStringList.h>
 #include <mrpt/utils/metaprogramming.h>
 #include <mrpt/serialization/CArchive.h>
 
@@ -116,7 +115,8 @@ void COpenGLScene::render() const
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void COpenGLScene::writeToStream(mrpt::serialization::CArchive& out, int* version) const
+uint8_t COpenGLScene::serializeGetVersion() const { return XX; }
+void COpenGLScene::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 1;
@@ -137,7 +137,8 @@ void COpenGLScene::writeToStream(mrpt::serialization::CArchive& out, int* versio
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void COpenGLScene::readFromStream(mrpt::serialization::CArchive& in, int version)
+void COpenGLScene::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -231,7 +232,7 @@ void COpenGLScene::initializeAllTextures()
 /*--------------------------------------------------------------
 					dumpListOfObjects
   ---------------------------------------------------------------*/
-void COpenGLScene::dumpListOfObjects(utils::CStringList& lst)
+void COpenGLScene::dumpListOfObjects(std::vector<std::string>& lst)
 {
 	lst.clear();
 

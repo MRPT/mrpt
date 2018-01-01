@@ -327,7 +327,7 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 	if (ground_truth_file_robot.size() && fileExists(ground_truth_file_robot))
 	{
 		GT_PATH.loadFromTextFile(ground_truth_file_robot);
-		ASSERT_(size(GT_PATH, 1) > 0 && size(GT_PATH, 2) == 6)
+		ASSERT_(GT_PATH.rows() > 0 && GT_PATH.cols() == 6)
 	}
 
 	// Is there a ground truth file of the data association?
@@ -686,14 +686,14 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 				}
 
 				// Do we have a ground truth?
-				if (size(GT_PATH, 2) == 6 || size(GT_PATH, 2) == 3)
+				if (GT_PATH, 2) == 6 || size(GT_PATH.cols() == 3)
 				{
 					opengl::CSetOfLines::Ptr GT_path =
 						mrpt::make_aligned_shared<opengl::CSetOfLines>();
 					GT_path->setColor(0, 0, 0);
-					size_t N = std::min(size(GT_PATH, 1), meanPath.size());
+					size_t N = std::min(GT_PATH.rows(), meanPath.size());
 
-					if (size(GT_PATH, 2) == 6)
+					if (GT_PATH.cols() == 6)
 					{
 						double gtx0 = 0, gty0 = 0, gtz0 = 0;
 						for (size_t i = 0; i < N; i++)
@@ -709,7 +709,7 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 							gtz0 = p.z();
 						}
 					}
-					else if (size(GT_PATH, 2) == 3)
+					else if (GT_PATH.cols() == 3)
 					{
 						double gtx0 = 0, gty0 = 0;
 						for (size_t i = 0; i < N; i++)

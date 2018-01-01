@@ -74,7 +74,7 @@ void CSensoryFrame::clear()
 /*---------------------------------------------------------------
 						writeToStream
   ---------------------------------------------------------------*/
-void CSensoryFrame::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CSensoryFrame::serializeGetVersion() const { return XX; } void CSensoryFrame::serializeTo(mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
 		*version = 2;
@@ -91,7 +91,7 @@ void CSensoryFrame::writeToStream(mrpt::utils::CStream& out, int* version) const
 /*---------------------------------------------------------------
 						readFromStream
   ---------------------------------------------------------------*/
-void CSensoryFrame::readFromStream(mrpt::utils::CStream& in, int version)
+void CSensoryFrame::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	MRPT_START
 

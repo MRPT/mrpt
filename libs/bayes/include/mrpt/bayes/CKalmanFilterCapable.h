@@ -271,7 +271,7 @@ class CKalmanFilterCapable : public mrpt::utils::COutputLogger
 	typedef mrpt::math::CArrayNumeric<KFTYPE, VEH_SIZE> KFArray_VEH;
 	typedef mrpt::math::CArrayNumeric<KFTYPE, ACT_SIZE> KFArray_ACT;
 	typedef mrpt::math::CArrayNumeric<KFTYPE, OBS_SIZE> KFArray_OBS;
-	typedef typename mrpt::aligned_containers<KFArray_OBS>::vector_t
+	typedef mrpt::aligned_std_vector<KFArray_OBS>
 		vector_KFArray_OBS;
 	typedef mrpt::math::CArrayNumeric<KFTYPE, FEAT_SIZE> KFArray_FEAT;
 
@@ -628,9 +628,9 @@ class CKalmanFilterCapable : public mrpt::utils::COutputLogger
 	vector_KFArray_OBS all_predictions;
 	std::vector<size_t> predictLMidxs;
 	/** The vector of all partial Jacobians dh[i]_dx for each prediction */
-	typename mrpt::aligned_containers<KFMatrix_OxV>::vector_t Hxs;
+	mrpt::aligned_std_vector<KFMatrix_OxV> Hxs;
 	/** The vector of all partial Jacobians dh[i]_dy[i] for each prediction */
-	typename mrpt::aligned_containers<KFMatrix_OxF>::vector_t Hys;
+	mrpt::aligned_std_vector<KFMatrix_OxF> Hys;
 	KFMatrix S;
 	KFMatrix Pkk_subset;
 	vector_KFArray_OBS Z;  // Each entry is one observation:

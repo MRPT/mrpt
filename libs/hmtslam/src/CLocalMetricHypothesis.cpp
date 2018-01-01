@@ -919,7 +919,7 @@ void CLocalMetricHypothesis::updateAreaFromLMH(
 /*---------------------------------------------------------------
 				dumpAsText
   ---------------------------------------------------------------*/
-void CLocalMetricHypothesis::dumpAsText(utils::CStringList& st) const
+void CLocalMetricHypothesis::dumpAsText(std::vector<std::string>& st) const
 {
 	st.clear();
 	st << "LIST OF POSES IN LMH";
@@ -952,7 +952,7 @@ void CLocalMetricHypothesis::dumpAsText(utils::CStringList& st) const
 /*---------------------------------------------------------------
 					readFromStream
   ---------------------------------------------------------------*/
-void CLocalMetricHypothesis::readFromStream(
+void CLocalMetricHypothesis::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	mrpt::utils::CStream& in, int version)
 {
 	switch (version)
@@ -978,7 +978,7 @@ void CLocalMetricHypothesis::readFromStream(
 	Implements the writing to a CStream capability of
 	  CSerializable objects
   ---------------------------------------------------------------*/
-void CLocalMetricHypothesis::writeToStream(
+uint8_t CLocalMetricHypothesis::serializeGetVersion() const { return XX; } void CLocalMetricHypothesis::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
@@ -998,7 +998,7 @@ void CLocalMetricHypothesis::writeToStream(
 /*---------------------------------------------------------------
 					readFromStream
   ---------------------------------------------------------------*/
-void CLSLAMParticleData::readFromStream(mrpt::utils::CStream& in, int version)
+void CLSLAMParticleData::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -1017,7 +1017,7 @@ void CLSLAMParticleData::readFromStream(mrpt::utils::CStream& in, int version)
 	Implements the writing to a CStream capability of
 	  CSerializable objects
   ---------------------------------------------------------------*/
-void CLSLAMParticleData::writeToStream(
+uint8_t CLSLAMParticleData::serializeGetVersion() const { return XX; } void CLSLAMParticleData::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
 	if (version)

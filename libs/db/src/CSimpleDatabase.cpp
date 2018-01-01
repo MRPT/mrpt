@@ -30,7 +30,7 @@ IMPLEMENTS_SERIALIZABLE(CSimpleDatabaseTable, CSerializable, mrpt::utils)
 /*---------------------------------------------------------------
 						writeToStream
  ---------------------------------------------------------------*/
-void CSimpleDatabase::writeToStream(
+uint8_t CSimpleDatabase::serializeGetVersion() const { return XX; } void CSimpleDatabase::serializeTo(
 	mrpt::utils::CStream& out, int* out_Version) const
 {
 	if (out_Version)
@@ -51,7 +51,7 @@ void CSimpleDatabase::writeToStream(
 /*---------------------------------------------------------------
 						readFromStream
  ---------------------------------------------------------------*/
-void CSimpleDatabase::readFromStream(mrpt::utils::CStream& in, int version)
+void CSimpleDatabase::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -86,7 +86,7 @@ void CSimpleDatabase::readFromStream(mrpt::utils::CStream& in, int version)
 /*---------------------------------------------------------------
 						writeToStream
  ---------------------------------------------------------------*/
-void CSimpleDatabaseTable::writeToStream(
+uint8_t CSimpleDatabaseTable::serializeGetVersion() const { return XX; } void CSimpleDatabaseTable::serializeTo(
 	mrpt::utils::CStream& out, int* out_Version) const
 {
 	if (out_Version)
@@ -107,7 +107,7 @@ void CSimpleDatabaseTable::writeToStream(
 /*---------------------------------------------------------------
 						readFromStream
  ---------------------------------------------------------------*/
-void CSimpleDatabaseTable::readFromStream(mrpt::utils::CStream& in, int version)
+void CSimpleDatabaseTable::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

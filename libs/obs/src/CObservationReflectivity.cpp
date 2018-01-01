@@ -30,7 +30,7 @@ CObservationReflectivity::~CObservationReflectivity() {}
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void CObservationReflectivity::writeToStream(
+uint8_t CObservationReflectivity::serializeGetVersion() const { return XX; } void CObservationReflectivity::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
@@ -45,7 +45,7 @@ void CObservationReflectivity::writeToStream(
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void CObservationReflectivity::readFromStream(
+void CObservationReflectivity::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	mrpt::utils::CStream& in, int version)
 {
 	switch (version)

@@ -291,7 +291,7 @@ COctoMapBase<OCTREE, OCTREE_NODE>::TLikelihoodOptions::TLikelihoodOptions()
 }
 
 template <class OCTREE, class OCTREE_NODE>
-void COctoMapBase<OCTREE, OCTREE_NODE>::TLikelihoodOptions::writeToStream(
+uint8_t COctoMapBase<OCTREE, OCTREE_NODE>::TLikelihoodOptions::serializeGetVersion() const { return XX; } void COctoMapBase<OCTREE, OCTREE_NODE>::TLikelihoodOptions::serializeTo(
 	mrpt::utils::CStream& out) const
 {
 	const int8_t version = 0;
@@ -300,7 +300,7 @@ void COctoMapBase<OCTREE, OCTREE_NODE>::TLikelihoodOptions::writeToStream(
 }
 
 template <class OCTREE, class OCTREE_NODE>
-void COctoMapBase<OCTREE, OCTREE_NODE>::TLikelihoodOptions::readFromStream(
+void COctoMapBase<OCTREE, OCTREE_NODE>::TLikelihoodOptions::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	mrpt::utils::CStream& in)
 {
 	int8_t version;
@@ -382,7 +382,7 @@ void COctoMapBase<OCTREE, OCTREE_NODE>::TLikelihoodOptions::loadFromConfigFile(
 
 /*  COctoMapColoured */
 template <class OCTREE, class OCTREE_NODE>
-void COctoMapBase<OCTREE, OCTREE_NODE>::TRenderingOptions::writeToStream(
+uint8_t COctoMapBase<OCTREE, OCTREE_NODE>::TRenderingOptions::serializeGetVersion() const { return XX; } void COctoMapBase<OCTREE, OCTREE_NODE>::TRenderingOptions::serializeTo(
 	mrpt::utils::CStream& out) const
 {
 	const int8_t version = 0;
@@ -392,7 +392,7 @@ void COctoMapBase<OCTREE, OCTREE_NODE>::TRenderingOptions::writeToStream(
 }
 
 template <class OCTREE, class OCTREE_NODE>
-void COctoMapBase<OCTREE, OCTREE_NODE>::TRenderingOptions::readFromStream(
+void COctoMapBase<OCTREE, OCTREE_NODE>::TRenderingOptions::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	mrpt::utils::CStream& in)
 {
 	int8_t version;

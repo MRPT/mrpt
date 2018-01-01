@@ -1135,8 +1135,8 @@ void getGroundTruth(
 		if (GT_index_is_time)
 		{
 			// Look for the timestamp:
-			static mrpt::aligned_containers<double, CPose2D>::map_t GT_path;
-			mrpt::aligned_containers<double, CPose2D>::map_t::iterator it;
+			static mrpt::aligned_std_map<double, CPose2D> GT_path;
+			mrpt::aligned_std_map<double, CPose2D>::iterator it;
 			if (first_step)
 			{
 				for (size_t i = 0; i < GT.rows(); i++)

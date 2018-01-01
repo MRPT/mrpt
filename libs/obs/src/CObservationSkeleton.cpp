@@ -27,7 +27,7 @@ IMPLEMENTS_SERIALIZABLE(CObservationSkeleton, CObservation, mrpt::obs)
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void CObservationSkeleton::writeToStream(CStream& out, int* version) const
+uint8_t CObservationSkeleton::serializeGetVersion() const { return XX; } void CObservationSkeleton::serializeTo(CStream& out, int* version) const
 {
 	if (version)
 		*version = 2;
@@ -58,7 +58,7 @@ void CObservationSkeleton::writeToStream(CStream& out, int* version) const
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void CObservationSkeleton::readFromStream(CStream& in, int version)
+void CObservationSkeleton::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

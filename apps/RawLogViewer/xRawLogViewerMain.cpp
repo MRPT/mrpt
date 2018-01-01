@@ -4519,7 +4519,7 @@ void xRawLogViewerFrame::OnRecalculateActionsICP(wxCommandEvent& event)
 	// Load ICP options:
 	// ------------------------------------------
 	CConfigFileMemory icpCfg(
-		CStringList(string(scanMatchingDialog->edOptICP->GetValue().mb_str())));
+		std::vector<std::string>(string(scanMatchingDialog->edOptICP->GetValue().mb_str())));
 	icp.options.loadFromConfigFile(icpCfg, "ICP");
 
 	// EXTRA options:
@@ -4531,7 +4531,7 @@ void xRawLogViewerFrame::OnRecalculateActionsICP(wxCommandEvent& event)
 	if (!useGridMap)
 	{
 		CConfigFileMemory refCfg(
-			CStringList(
+			std::vector<std::string>(
 				string(scanMatchingDialog->edOptRefPnt->GetValue().mb_str())));
 		refMapPt.insertionOptions.loadFromConfigFile(
 			refCfg, "InsertionOptions");
@@ -4539,7 +4539,7 @@ void xRawLogViewerFrame::OnRecalculateActionsICP(wxCommandEvent& event)
 	else
 	{
 		CConfigFileMemory refCfg(
-			CStringList(
+			std::vector<std::string>(
 				string(scanMatchingDialog->edOptRefGrid->GetValue().mb_str())));
 		float gridRes = refCfg.read_float("Construction", "resolution", 0.05f);
 		refMapGrid.setSize(-10, 10, -10, 10, gridRes);
@@ -4554,7 +4554,7 @@ void xRawLogViewerFrame::OnRecalculateActionsICP(wxCommandEvent& event)
 	// ----------------------------
 	{
 		CConfigFileMemory refCfg(
-			CStringList(
+			std::vector<std::string>(
 				string(
 					scanMatchingDialog->edOptAlignMap->GetValue().mb_str())));
 		newMapPt.insertionOptions.loadFromConfigFile(
@@ -5298,7 +5298,7 @@ void xRawLogViewerFrame::OnMenuChangePosesBatch(wxCommandEvent& event)
 
 		// Load the "ini-file" from the text control:
 		CConfigFileMemory cfg(
-			CStringList(string(dialog.edText->GetValue().mb_str())));
+			std::vector<std::string>(string(dialog.edText->GetValue().mb_str())));
 
 		// make a list  "sensor_label -> sensor_pose" by parsing the ini-file:
 		typedef mrpt::aligned_containers<
@@ -5667,7 +5667,7 @@ void xRawLogViewerFrame::OnMenuBatchLaserExclusionZones(wxCommandEvent& event)
 
 		// Load the "ini-file" from the text control:
 		CConfigFileMemory cfg(
-			CStringList(string(dialog.edText->GetValue().mb_str())));
+			std::vector<std::string>(string(dialog.edText->GetValue().mb_str())));
 
 		// make a list  "sensor_label -> list of exclusion polygons" by parsing
 		// the ini-file:
@@ -5850,7 +5850,7 @@ void xRawLogViewerFrame::OnLaserFilterAngles(wxCommandEvent& event)
 
 		// Load the "ini-file" from the text control:
 		CConfigFileMemory cfg(
-			CStringList(string(dialog.edText->GetValue().mb_str())));
+			std::vector<std::string>(string(dialog.edText->GetValue().mb_str())));
 
 		// make a list  "sensor_label -> list of exclusion polygons" by parsing
 		// the ini-file:

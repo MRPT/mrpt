@@ -202,7 +202,7 @@ void CMultiMetricMapPDF::getEstimatedPosePDFAtTime(
 /*---------------------------------------------------------------
 						writeToStream
   ---------------------------------------------------------------*/
-void CRBPFParticleData::writeToStream(
+uint8_t CRBPFParticleData::serializeGetVersion() const { return XX; } void CRBPFParticleData::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
 	MRPT_UNUSED_PARAM(out);
@@ -213,7 +213,7 @@ void CRBPFParticleData::writeToStream(
 /*---------------------------------------------------------------
 						readFromStream
   ---------------------------------------------------------------*/
-void CRBPFParticleData::readFromStream(mrpt::utils::CStream& in, int version)
+void CRBPFParticleData::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	MRPT_UNUSED_PARAM(in);
 	MRPT_UNUSED_PARAM(version);
@@ -223,7 +223,7 @@ void CRBPFParticleData::readFromStream(mrpt::utils::CStream& in, int version)
 /*---------------------------------------------------------------
 						writeToStream
   ---------------------------------------------------------------*/
-void CMultiMetricMapPDF::writeToStream(
+uint8_t CMultiMetricMapPDF::serializeGetVersion() const { return XX; } void CMultiMetricMapPDF::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
@@ -249,7 +249,7 @@ void CMultiMetricMapPDF::writeToStream(
 /*---------------------------------------------------------------
 						readFromStream
   ---------------------------------------------------------------*/
-void CMultiMetricMapPDF::readFromStream(mrpt::utils::CStream& in, int version)
+void CMultiMetricMapPDF::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

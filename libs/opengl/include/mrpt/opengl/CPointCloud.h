@@ -6,14 +6,12 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-
-#ifndef opengl_CPointCloud_H
-#define opengl_CPointCloud_H
+#pragma once
 
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/COctreePointRenderer.h>
-#include <mrpt/utils/PLY_import_export.h>
-#include <mrpt/utils/adapters.h>
+#include <mrpt/opengl/PLY_import_export.h>
+#include <mrpt/opengl/pointcloud_adapters.h>
 
 namespace mrpt
 {
@@ -21,33 +19,33 @@ namespace opengl
 {
 /** A cloud of points, all with the same color or each depending on its value
  * along a particular coordinate axis.
-  *  This class is just an OpenGL representation of a point cloud. For operating
+ *  This class is just an OpenGL representation of a point cloud. For operating
  * with maps of points, see mrpt::maps::CPointsMap and derived classes.
-  *
-  *  To load from a points-map, CPointCloud::loadFromPointsMap().
-  *
-  *   This class uses smart optimizations while rendering to efficiently draw
+ *
+ *  To load from a points-map, CPointCloud::loadFromPointsMap().
+ *
+ *   This class uses smart optimizations while rendering to efficiently draw
  * clouds of millions of points,
-  *   as described in this page:
+ *   as described in this page:
  * http://www.mrpt.org/Efficiently_rendering_point_clouds_of_millions_of_points
-  *
-  *  \sa opengl::CPlanarLaserScan, opengl::COpenGLScene,
+ *
+ *  \sa opengl::CPlanarLaserScan, opengl::COpenGLScene,
  * opengl::CPointCloudColoured, mrpt::maps::CPointsMap
-  *
-  *  <div align="center">
-  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
+ *
+ *  <div align="center">
+ *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
  * border-style: solid;">
-  *   <tr> <td> mrpt::opengl::CPointCloud </td> <td> \image html
+ *   <tr> <td> mrpt::opengl::CPointCloud </td> <td> \image html
  * preview_CPointCloud.png </td> </tr>
-  *  </table>
-  *  </div>
-  *
-  * \ingroup mrpt_opengl_grp
-  */
+ *  </table>
+ *  </div>
+ *
+ * \ingroup mrpt_opengl_grp
+ */
 class CPointCloud : public CRenderizable,
 					public COctreePointRenderer<CPointCloud>,
-					public mrpt::utils::PLY_Importer,
-					public mrpt::utils::PLY_Exporter
+					public mrpt::opengl::PLY_Importer,
+					public mrpt::opengl::PLY_Exporter
 {
 	DEFINE_SERIALIZABLE(CPointCloud)
    protected:
@@ -86,9 +84,9 @@ class CPointCloud : public CRenderizable,
 
 	/** In a base class, will be called after PLY_import_set_vertex_count() once
 	 * for each loaded point.
-	  *  \param pt_color Will be nullptr if the loaded file does not provide
+	 *  \param pt_color Will be nullptr if the loaded file does not provide
 	 * color info.
-	  */
+	 */
 	virtual void PLY_import_set_vertex(
 		const size_t idx, const mrpt::math::TPoint3Df& pt,
 		const mrpt::img::TColorf* pt_color = nullptr) override;
@@ -219,13 +217,13 @@ class CPointCloud : public CRenderizable,
 	}
 
 	/** Load the points from any other point map class supported by the adapter
-	 * mrpt::utils::PointCloudAdapter. */
+	 * mrpt::opengl::PointCloudAdapter. */
 	template <class POINTSMAP>
 	void loadFromPointsMap(const POINTSMAP* themap);
 	// Must be implemented at the end of the header.
 
 	/** Load the points from a list of mrpt::math::TPoint3D
-	  */
+	 */
 	template <class LISTOFPOINTS>
 	void loadFromPointsList(LISTOFPOINTS& pointsList)
 	{
@@ -279,8 +277,7 @@ class CPointCloud : public CRenderizable,
 	inline bool isPointSmoothEnabled() const { return m_pointSmooth; }
 	/** Sets the colors used as extremes when colorFromDepth is enabled. */
 	void setGradientColors(
-		const mrpt::img::TColorf& colorMin,
-		const mrpt::img::TColorf& colorMax);
+		const mrpt::img::TColorf& colorMin, const mrpt::img::TColorf& colorMax);
 
 	/** @} */
 
@@ -297,6 +294,7 @@ class CPointCloud : public CRenderizable,
 
 	/** Private, virtual destructor: only can be deleted from smart pointers */
 	virtual ~CPointCloud() {}
+
    private:
 	/** Buffer for min/max coords when m_colorFromDepth is true. */
 	mutable float m_min, m_max, m_max_m_min, m_max_m_min_inv;
@@ -310,16 +308,12 @@ class CPointCloud : public CRenderizable,
 	inline void internal_render_one_point(size_t i) const;
 };
 
-}  // end namespace
-
-namespace utils
-{
-/** Specialization mrpt::utils::PointCloudAdapter<mrpt::opengl::CPointCloud>
+/** Specialization mrpt::opengl::PointCloudAdapter<mrpt::opengl::CPointCloud>
  * \ingroup mrpt_adapters_grp */
 template <>
 class PointCloudAdapter<mrpt::opengl::CPointCloud>
-	: public detail::PointCloudAdapterHelperNoRGB<mrpt::opengl::CPointCloud,
-												  float>
+	: public detail::PointCloudAdapterHelperNoRGB<
+		  mrpt::opengl::CPointCloud, float>
 {
    private:
 	mrpt::opengl::CPointCloud& m_obj;
@@ -365,17 +359,14 @@ class PointCloudAdapter<mrpt::opengl::CPointCloud>
 	}
 
 };  // end of PointCloudAdapter<mrpt::opengl::CPointCloud>
-}
 
-namespace opengl
-{
 // After declaring the adapter we can here implement this method:
 template <class POINTSMAP>
 void CPointCloud::loadFromPointsMap(const POINTSMAP* themap)
 {
-	ASSERT_(themap != nullptr)
-	mrpt::utils::PointCloudAdapter<CPointCloud> pc_dst(*this);
-	const mrpt::utils::PointCloudAdapter<POINTSMAP> pc_src(*themap);
+	ASSERT_(themap != nullptr);
+	mrpt::opengl::PointCloudAdapter<CPointCloud> pc_dst(*this);
+	const mrpt::opengl::PointCloudAdapter<POINTSMAP> pc_src(*themap);
 	const size_t N = pc_src.size();
 	pc_dst.resize(N);
 	for (size_t i = 0; i < N; i++)
@@ -385,8 +376,5 @@ void CPointCloud::loadFromPointsMap(const POINTSMAP* themap)
 		pc_dst.setPointXYZ(i, x, y, z);
 	}
 }
-}
-
-}  // End of namespace
-
-#endif
+}  // namespace opengl
+}  // namespace mrpt

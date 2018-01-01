@@ -189,7 +189,7 @@ class CMetricMapBuilderICP : public mrpt::slam::CMetricMapBuilder
 	};
 	TDist m_distSinceLastICP;
 	/** Indexed by sensor label. */
-	mrpt::aligned_containers<std::string, TDist>::map_t
+	mrpt::aligned_std_map<std::string, TDist>
 		m_distSinceLastInsertion;
 	bool m_there_has_been_an_odometry;
 

@@ -153,7 +153,7 @@ void CColouredPointsMap::copyFrom(const CPointsMap& obj)
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void CColouredPointsMap::writeToStream(
+uint8_t CColouredPointsMap::serializeGetVersion() const { return XX; } void CColouredPointsMap::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
@@ -185,7 +185,7 @@ void CColouredPointsMap::writeToStream(
    Implements the reading from a CStream capability of
 	  CSerializable objects
   ---------------------------------------------------------------*/
-void CColouredPointsMap::readFromStream(mrpt::utils::CStream& in, int version)
+void CColouredPointsMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

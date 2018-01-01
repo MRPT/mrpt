@@ -17,9 +17,9 @@
 #include <mrpt/obs/CSinCosLookUpTableFor2DScans.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/utils/PLY_import_export.h>
+#include <mrpt/opengl/PLY_import_export.h>
 #include <mrpt/obs/obs_frwds.h>
-#include <mrpt/utils/adapters.h>
+#include <mrpt/opengl/pointcloud_adapters.h>
 
 // Add for declaration of mexplus::from template specialization
 DECLARE_MEXPLUS_FROM(mrpt::maps::CPointsMap)
@@ -62,8 +62,8 @@ struct pointmap_traits;
  */
 class CPointsMap : public CMetricMap,
 				   public mrpt::math::KDTreeCapable<CPointsMap>,
-				   public mrpt::utils::PLY_Importer,
-				   public mrpt::utils::PLY_Exporter
+				   public mrpt::opengl::PLY_Importer,
+				   public mrpt::opengl::PLY_Exporter
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CPointsMap)
 	// This must be added for declaration of MEX-related functions
@@ -1164,7 +1164,7 @@ float POINTSMAPS_3DOBJECT_POINTSIZE();
 
 namespace utils
 {
-/** Specialization mrpt::utils::PointCloudAdapter<mrpt::maps::CPointsMap>
+/** Specialization mrpt::opengl::PointCloudAdapter<mrpt::maps::CPointsMap>
  * \ingroup mrpt_adapters_grp*/
 template <>
 class PointCloudAdapter<mrpt::maps::CPointsMap>

@@ -13,40 +13,40 @@
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CBox.h>
 #include <mrpt/opengl/gl_utils.h>
-#include <mrpt/utils/aligned_containers.h>
+#include <mrpt/core/aligned_std_deque.h>
 
 namespace mrpt
 {
 namespace global_settings
 {
 /** Default value = 0.01 points/px^2. Affects to these classes (read their docs
-  *for further details):
-  *		- mrpt::opengl::CPointCloud
-  *		- mrpt::opengl::CPointCloudColoured
-  * \ingroup mrpt_opengl_grp
-  */
+ *for further details):
+ *		- mrpt::opengl::CPointCloud
+ *		- mrpt::opengl::CPointCloudColoured
+ * \ingroup mrpt_opengl_grp
+ */
 void OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL(float value);
 float OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL();
 
 /** Default value = 1e5. Maximum number of elements in each octree node before
-  *spliting. Affects to these classes (read their docs for further details):
-  *		- mrpt::opengl::CPointCloud
-  *		- mrpt::opengl::CPointCloudColoured
-  * \ingroup mrpt_opengl_grp
-  */
+ *spliting. Affects to these classes (read their docs for further details):
+ *		- mrpt::opengl::CPointCloud
+ *		- mrpt::opengl::CPointCloudColoured
+ * \ingroup mrpt_opengl_grp
+ */
 size_t OCTREE_RENDER_MAX_POINTS_PER_NODE();
 void OCTREE_RENDER_MAX_POINTS_PER_NODE(size_t value);
 
-}
+}  // namespace global_settings
 
 namespace opengl
 {
 /** Template class that implements the data structure and algorithms for
  * Octree-based efficient rendering.
-  *  \sa mrpt::opengl::CPointCloud, mrpt::opengl::CPointCloudColoured,
+ *  \sa mrpt::opengl::CPointCloud, mrpt::opengl::CPointCloudColoured,
  * http://www.mrpt.org/Efficiently_rendering_point_clouds_of_millions_of_points
-  * \ingroup mrpt_opengl_grp
-  */
+ * \ingroup mrpt_opengl_grp
+ */
 template <class Derived>
 class COctreePointRenderer
 {
@@ -89,8 +89,8 @@ class COctreePointRenderer
 	}
 
 	/** Render the entire octree recursively.
-	  * Should be called from children's render() method.
-	  */
+	 * Should be called from children's render() method.
+	 */
 	void octree_render(const mrpt::opengl::gl_utils::TRenderInfo& ri) const
 	{
 		m_visible_octree_nodes_ongoing = 0;
@@ -130,9 +130,9 @@ class COctreePointRenderer
    private:
 	/** The structure for each octree spatial node. Each node can either be a
 	 * leaf of has 8 children nodes.
-	  *  Instead of pointers, children are referenced by their indices in \a
+	 *  Instead of pointers, children are referenced by their indices in \a
 	 * m_octree_nodes
-	  */
+	 */
 	struct TNode
 	{
 		TNode()
@@ -283,7 +283,7 @@ class COctreePointRenderer
 
 	bool m_octree_has_to_rebuild_all;
 	/** First one [0] is always the root node */
-	typename mrpt::aligned_containers<TNode>::deque_t m_octree_nodes;
+	mrpt::aligned_std_deque<TNode> m_octree_nodes;
 
 	// Counters of visible octrees for each render:
 	volatile mutable size_t m_visible_octree_nodes,
@@ -473,13 +473,13 @@ class COctreePointRenderer
 
 // Project all these points:
 #define PROJ_SUB_NODE(POSTFIX)                                       \
-	mrpt::img::TPixelCoordf px_##POSTFIX;                          \
+	mrpt::img::TPixelCoordf px_##POSTFIX;                            \
 	float depth_##POSTFIX;                                           \
 	ri.projectPointPixels(                                           \
 		p_##POSTFIX.x, p_##POSTFIX.y, p_##POSTFIX.z, px_##POSTFIX.x, \
 		px_##POSTFIX.y, depth_##POSTFIX);
 
-#define PROJ_SUB_NODE_ALREADY_DONE(INDEX, POSTFIX)               \
+#define PROJ_SUB_NODE_ALREADY_DONE(INDEX, POSTFIX)             \
 	const mrpt::img::TPixelCoordf px_##POSTFIX = cr_px[INDEX]; \
 	float depth_##POSTFIX = cr_z[INDEX];
 
@@ -521,7 +521,7 @@ class COctreePointRenderer
 #define DO_RECURSE_CHILD(                                                \
 	INDEX, SEQ0, SEQ1, SEQ2, SEQ3, SEQ4, SEQ5, SEQ6, SEQ7)               \
 	{                                                                    \
-		mrpt::img::TPixelCoordf child_cr_px[8] = {                     \
+		mrpt::img::TPixelCoordf child_cr_px[8] = {                       \
 			px_##SEQ0, px_##SEQ1, px_##SEQ2, px_##SEQ3,                  \
 			px_##SEQ4, px_##SEQ5, px_##SEQ6, px_##SEQ7};                 \
 		float child_cr_z[8] = {depth_##SEQ0, depth_##SEQ1, depth_##SEQ2, \
@@ -728,9 +728,9 @@ class COctreePointRenderer
 
 	/** Returns a graphical representation of all the bounding boxes of the
 	 * octree (leaf) nodes.
-	  * \param[in] draw_solid_boxes If false, will draw solid boxes of color \a
+	 * \param[in] draw_solid_boxes If false, will draw solid boxes of color \a
 	 * lines_color. Otherwise, wireframe boxes will be drawn.
-	  */
+	 */
 	void octree_get_graphics_boundingboxes(
 		mrpt::opengl::CSetOfObjects& gl_bb, const double lines_width = 1,
 		const mrpt::img::TColorf& lines_color = mrpt::img::TColorf(1, 1, 1),
@@ -796,6 +796,6 @@ class COctreePointRenderer
 
 };  // end of class COctreePointRenderer
 
-}  // end namespace
-}  // End of namespace
+}  // namespace opengl
+}  // namespace mrpt
 #endif

@@ -35,7 +35,7 @@ CObservationImage::CObservationImage(void* iplImage)
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void CObservationImage::writeToStream(
+uint8_t CObservationImage::serializeGetVersion() const { return XX; } void CObservationImage::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
@@ -50,7 +50,7 @@ void CObservationImage::writeToStream(
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void CObservationImage::readFromStream(mrpt::utils::CStream& in, int version)
+void CObservationImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -71,7 +71,7 @@ void CObservationImage::readFromStream(mrpt::utils::CStream& in, int version)
 				CMatrix intrinsicParams, distortionParams;
 				in >> distortionParams >> intrinsicParams;
 
-				if (size(distortionParams, 1) == 1 &&
+				if (distortionParams.rows() == 1 &&
 					size(distortionParams, 2) == 5)
 				{
 					const CMatrixDouble15 p = distortionParams.cast<double>();

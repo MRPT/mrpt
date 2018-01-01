@@ -66,7 +66,7 @@ void ransac3Dplane_distance(
 	out_bestModelIndex = 0;
 	const CMatrixDouble& M = testModels[0];
 
-	ASSERT_(size(M, 1) == 1 && size(M, 2) == 4)
+	ASSERT_(M.rows() == 1 && M.cols() == 4)
 
 	TPlane plane;
 	plane.coefs[0] = M(0, 0);
@@ -74,7 +74,7 @@ void ransac3Dplane_distance(
 	plane.coefs[2] = M(0, 2);
 	plane.coefs[3] = M(0, 3);
 
-	const size_t N = size(allData, 2);
+	const size_t N = allData.cols();
 	out_inlierIndices.clear();
 	out_inlierIndices.reserve(100);
 	for (size_t i = 0; i < N; i++)
@@ -151,7 +151,7 @@ void TestRANSAC()
 	cout << "Computation time: " << tictac.Tac() * 1000.0 / TIMES << " ms"
 		 << endl;
 
-	ASSERT_(size(best_model, 1) == 1 && size(best_model, 2) == 4)
+	ASSERT_(best_model.rows() == 1 && best_model.cols() == 4)
 
 	cout << "RANSAC finished: Best model: " << best_model << endl;
 	//	cout << "Best inliers: " << best_inliers << endl;

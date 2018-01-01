@@ -459,7 +459,7 @@ void mySplit(const string& str)
 // ------------------------------------------------------
 void TestPrepareDetector()
 {
-	CStringList lst;
+	std::vector<std::string> lst;
 	CConfigFileMemory cfg;
 
 	lst.loadFromFile(myInitFile);

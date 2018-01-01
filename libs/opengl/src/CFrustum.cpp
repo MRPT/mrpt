@@ -143,7 +143,7 @@ CFrustum::CFrustum(
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void CFrustum::writeToStream(mrpt::serialization::CArchive& out, int* version) const
+uint8_t CFrustum::serializeGetVersion() const { return XX; } void CFrustum::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 0;
@@ -162,7 +162,7 @@ void CFrustum::writeToStream(mrpt::serialization::CArchive& out, int* version) c
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void CFrustum::readFromStream(mrpt::serialization::CArchive& in, int version)
+void CFrustum::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

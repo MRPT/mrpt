@@ -618,7 +618,7 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent&)
 
 	// Create a memory "ini file" with the text in the window:
 	CConfigFileMemory configSrc(
-		CStringList(std::string(edOpts->GetValue().mb_str())));
+		std::vector<std::string>(std::string(edOpts->GetValue().mb_str())));
 
 	TSetOfMetricMapInitializers lstMaps;
 	lstMaps.loadFromConfigFile(configSrc, "map");
@@ -1070,7 +1070,7 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent&)
 
 	// Create a memory "ini file" with the text in the window:
 	CConfigFileMemory configSrc(
-		CStringList(std::string(edOpts->GetValue().mb_str())));
+		std::vector<std::string>(std::string(edOpts->GetValue().mb_str())));
 
 	TSetOfMetricMapInitializers lstMaps;
 	lstMaps.loadFromConfigFile(configSrc, "map");
@@ -1404,7 +1404,7 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
 					cfg.read_double("ERROR_SENSOR_POSES", "std_roll", 1e-3)));
 		}
 
-		ASSERT_(size(COV_sensor_local, 1) == 6 && COV_sensor_local.isSquare());
+		ASSERT_(COV_sensor_local.rows() == 6 && COV_sensor_local.isSquare());
 
 		vector_string::iterator itStr;
 		std::vector<FILE*> outFiles(the_labels.size());
@@ -1442,7 +1442,7 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
 
 						CPose3DPDFGaussian veh_pose;
 						veh_pose.mean.setFromValues(0, 0, 0, 0, 0, 0);
-						if (size(rtk_path_info.W_star, 1) == 6 &&
+						if (rtk_path_info.W_star.rows() == 6 &&
 							size(rtk_path_info.W_star, 2) == 6)
 						{
 							// Uncertainty estimation:

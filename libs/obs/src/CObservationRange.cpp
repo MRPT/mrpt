@@ -32,7 +32,7 @@ CObservationRange::CObservationRange()
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void CObservationRange::writeToStream(
+uint8_t CObservationRange::serializeGetVersion() const { return XX; } void CObservationRange::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
@@ -57,7 +57,7 @@ void CObservationRange::writeToStream(
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void CObservationRange::readFromStream(mrpt::utils::CStream& in, int version)
+void CObservationRange::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

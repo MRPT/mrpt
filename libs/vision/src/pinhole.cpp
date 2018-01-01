@@ -58,8 +58,8 @@ void mrpt::vision::pinhole::projectPoints_with_distortion(
 	MRPT_START
 #if MRPT_HAS_OPENCV
 
-	ASSERT_(size(intrinsicParams, 1) == 3);
-	ASSERT_(size(intrinsicParams, 2) == 3);
+	ASSERT_(intrinsicParams.rows() == 3);
+	ASSERT_(intrinsicParams.cols() == 3);
 	ASSERT_(distortionParams.size() == 4 || distortionParams.size() == 5);
 
 	const size_t N = in_points_3D.size();

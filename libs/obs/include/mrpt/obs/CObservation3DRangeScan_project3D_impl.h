@@ -23,14 +23,14 @@ template <class POINTMAP>
 void do_project_3d_pointcloud(
 	const int H, const int W, const float* kys, const float* kzs,
 	const mrpt::math::CMatrix& rangeImage,
-	mrpt::utils::PointCloudAdapter<POINTMAP>& pca,
+	mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
 	std::vector<uint16_t>& idxs_x, std::vector<uint16_t>& idxs_y,
 	const mrpt::obs::TRangeImageFilterParams& filterParams, bool MAKE_DENSE);
 template <class POINTMAP>
 void do_project_3d_pointcloud_SSE2(
 	const int H, const int W, const float* kys, const float* kzs,
 	const mrpt::math::CMatrix& rangeImage,
-	mrpt::utils::PointCloudAdapter<POINTMAP>& pca,
+	mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
 	std::vector<uint16_t>& idxs_x, std::vector<uint16_t>& idxs_y,
 	const mrpt::obs::TRangeImageFilterParams& filterParams, bool MAKE_DENSE);
 
@@ -44,7 +44,7 @@ void project3DPointsFromDepthImageInto(
 
 	if (!src_obs.hasRangeImage) return;
 
-	mrpt::utils::PointCloudAdapter<POINTMAP> pca(dest_pointcloud);
+	mrpt::opengl::PointCloudAdapter<POINTMAP> pca(dest_pointcloud);
 
 	// ------------------------------------------------------------
 	// Stage 1/3: Create 3D point cloud local coordinates
@@ -339,7 +339,7 @@ template <class POINTMAP>
 inline void do_project_3d_pointcloud(
 	const int H, const int W, const float* kys, const float* kzs,
 	const mrpt::math::CMatrix& rangeImage,
-	mrpt::utils::PointCloudAdapter<POINTMAP>& pca,
+	mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
 	std::vector<uint16_t>& idxs_x, std::vector<uint16_t>& idxs_y,
 	const mrpt::obs::TRangeImageFilterParams& fp, bool MAKE_DENSE)
 {
@@ -373,7 +373,7 @@ template <class POINTMAP>
 inline void do_project_3d_pointcloud_SSE2(
 	const int H, const int W, const float* kys, const float* kzs,
 	const mrpt::math::CMatrix& rangeImage,
-	mrpt::utils::PointCloudAdapter<POINTMAP>& pca,
+	mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
 	std::vector<uint16_t>& idxs_x, std::vector<uint16_t>& idxs_y,
 	const mrpt::obs::TRangeImageFilterParams& filterParams, bool MAKE_DENSE)
 {

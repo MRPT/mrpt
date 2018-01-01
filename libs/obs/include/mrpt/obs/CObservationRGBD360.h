@@ -17,7 +17,7 @@
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/math/CMatrix.h>
-#include <mrpt/utils/adapters.h>
+#include <mrpt/opengl/pointcloud_adapters.h>
 
 namespace mrpt
 {

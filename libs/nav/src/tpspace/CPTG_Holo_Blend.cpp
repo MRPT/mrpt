@@ -263,7 +263,7 @@ std::string CPTG_Holo_Blend::getDescription() const
 		W_MAX);
 }
 
-void CPTG_Holo_Blend::readFromStream(mrpt::utils::CStream& in, int version)
+void CPTG_Holo_Blend::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	CParameterizedTrajectoryGenerator::internal_readFromStream(in);
 
@@ -295,7 +295,7 @@ void CPTG_Holo_Blend::readFromStream(mrpt::utils::CStream& in, int version)
 	};
 }
 
-void CPTG_Holo_Blend::writeToStream(
+uint8_t CPTG_Holo_Blend::serializeGetVersion() const { return XX; } void CPTG_Holo_Blend::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
 	if (version)

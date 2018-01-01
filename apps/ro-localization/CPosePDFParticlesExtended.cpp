@@ -291,7 +291,8 @@ void CPosePDFParticlesExtended::getCovarianceAndMean(
 /*---------------------------------------------------------------
 						writeToStream
   ---------------------------------------------------------------*/
-void CPosePDFParticlesExtended::writeToStream(
+uint8_t CPosePDFParticlesExtended::serializeGetVersion() const { return XX; }
+void CPosePDFParticlesExtended::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
@@ -312,7 +313,7 @@ void CPosePDFParticlesExtended::writeToStream(
 /*---------------------------------------------------------------
 						readFromStream
   ---------------------------------------------------------------*/
-void CPosePDFParticlesExtended::readFromStream(
+void CPosePDFParticlesExtended::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	mrpt::utils::CStream& in, int version)
 {
 	switch (version)
@@ -342,9 +343,11 @@ void CPosePDFParticlesExtended::readFromStream(
  ---------------------------------------------------------------*/
 void CPosePDFParticlesExtended::offsetTransitionModel(double& val)
 {
-	if (getRandomGenerator().drawUniform(0.0, 1.0) < options.probabilityChangingBias)
+	if (getRandomGenerator().drawUniform(0.0, 1.0) <
+		options.probabilityChangingBias)
 	{
-		val = getRandomGenerator().drawUniform(-options.changingBiasUnifRange, 1.0);
+		val = getRandomGenerator().drawUniform(
+			-options.changingBiasUnifRange, 1.0);
 		//		val = min( val, 0.5f*options.changingBiasUnifRange );
 		//		val = max( val,-0.5f*options.changingBiasUnifRange );
 	}
@@ -612,7 +615,8 @@ void CPosePDFParticlesExtended::prediction_and_update_pfAuxiliaryPFOptimal(
 					maxLikelihood[k] = newPoseLikelihood;  //  :'-( !!!
 				}
 
-			} while (acceptanceProb < getRandomGenerator().drawUniform(0.0, 0.999) &&
+			} while (acceptanceProb <
+						 getRandomGenerator().drawUniform(0.0, 0.999) &&
 					 (++timeoutCount) < MAX_TIMEOUT);
 
 			if (timeoutCount >= MAX_TIMEOUT) newPose = bestNewPose;
@@ -699,8 +703,10 @@ void CPosePDFParticlesExtended::resetUniform(
 	size_t i, M = m_particles.size();
 	for (i = 0; i < M; i++)
 	{
-		m_particles[i].d->pose.x(getRandomGenerator().drawUniform(x_min, x_max));
-		m_particles[i].d->pose.y(getRandomGenerator().drawUniform(y_min, y_max));
+		m_particles[i].d->pose.x(
+			getRandomGenerator().drawUniform(x_min, x_max));
+		m_particles[i].d->pose.y(
+			getRandomGenerator().drawUniform(y_min, y_max));
 		m_particles[i].d->pose.phi(
 			getRandomGenerator().drawUniform(phi_min, phi_max));
 		m_particles[i].d->state.resize(state_min.size());

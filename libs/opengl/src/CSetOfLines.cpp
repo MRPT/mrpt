@@ -123,29 +123,17 @@ void CSetOfLines::render_dl() const
 #endif
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CSetOfLines::writeToStream(
-	mrpt::serialization::CArchive& out, int* version) const
+uint8_t CSetOfLines::serializeGetVersion() const { return 4; }
+void CSetOfLines::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 4;
-	else
-	{
-		writeToStreamRender(out);
-		out << mSegments << mLineWidth;
-		out << m_antiAliasing;  // Added in v3
-		out << m_verticesPointSize;  // v4
-	}
+	writeToStreamRender(out);
+	out << mSegments << mLineWidth;
+	out << m_antiAliasing;  // Added in v3
+	out << m_verticesPointSize;  // v4
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CSetOfLines::readFromStream(mrpt::serialization::CArchive& in, int version)
+void CSetOfLines::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

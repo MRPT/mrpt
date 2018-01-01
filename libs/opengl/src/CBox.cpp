@@ -201,31 +201,18 @@ void CBox::render_dl() const
 #endif
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CBox::writeToStream(mrpt::serialization::CArchive& out, int* version) const
+uint8_t CBox::serializeGetVersion() const { return 1; }
+void CBox::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		writeToStreamRender(out);
-		// version 0
-		out << m_corner_min.x << m_corner_min.y << m_corner_min.z
-			<< m_corner_max.x << m_corner_max.y << m_corner_max.z << m_wireframe
-			<< m_lineWidth;
-		// Version 1:
-		out << m_draw_border << m_solidborder_color;
-	}
+	writeToStreamRender(out);
+	// version 0
+	out << m_corner_min.x << m_corner_min.y << m_corner_min.z << m_corner_max.x
+		<< m_corner_max.y << m_corner_max.z << m_wireframe << m_lineWidth;
+	// Version 1:
+	out << m_draw_border << m_solidborder_color;
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CBox::readFromStream(mrpt::serialization::CArchive& in, int version)
+void CBox::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

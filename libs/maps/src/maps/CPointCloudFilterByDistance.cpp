@@ -85,7 +85,7 @@ void CPointCloudFilterByDistance::filter(
 	{
 		// Reference poses of each PC:
 		// Previous: prev_pc.pose
-		mrpt::aligned_containers<CPose3D>::vector_t rel_poses;
+		mrpt::aligned_std_vector<CPose3D> rel_poses;
 		for (int k = 0; k < options.previous_keyframes; ++k)
 		{
 			const CPose3D rel_pose = cur_pc_pose - prev_pc[k]->pose;

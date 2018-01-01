@@ -53,7 +53,7 @@ struct MatrixBlockSparseCols
 	};
 
 	/** Each compressed sparse column */
-	typedef typename mrpt::aligned_containers<size_t, TEntry>::map_t col_t;
+	typedef mrpt::aligned_std_map<size_t, TEntry> col_t;
 
    private:
 	/** -> cols[i]: i'th column.

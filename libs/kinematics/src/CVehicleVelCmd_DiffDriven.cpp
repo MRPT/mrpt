@@ -76,7 +76,7 @@ bool CVehicleVelCmd_DiffDriven::isStopCmd() const
 }
 
 void CVehicleVelCmd_DiffDriven::setToStop() { lin_vel = ang_vel = .0; }
-void CVehicleVelCmd_DiffDriven::readFromStream(
+void CVehicleVelCmd_DiffDriven::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	mrpt::utils::CStream& in, int version)
 {
 	switch (version)
@@ -89,7 +89,7 @@ void CVehicleVelCmd_DiffDriven::readFromStream(
 	};
 }
 
-void CVehicleVelCmd_DiffDriven::writeToStream(
+uint8_t CVehicleVelCmd_DiffDriven::serializeGetVersion() const { return XX; } void CVehicleVelCmd_DiffDriven::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
 	if (version)

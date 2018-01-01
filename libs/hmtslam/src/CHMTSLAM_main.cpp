@@ -610,7 +610,7 @@ bool CHMTSLAM::loadState(CStream& in)
 /*---------------------------------------------------------------
 					readFromStream
   ---------------------------------------------------------------*/
-void CHMTSLAM::readFromStream(mrpt::utils::CStream& in, int version)
+void CHMTSLAM::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -653,7 +653,7 @@ void CHMTSLAM::readFromStream(mrpt::utils::CStream& in, int version)
 	Implements the writing to a CStream capability of
 	  CSerializable objects
   ---------------------------------------------------------------*/
-void CHMTSLAM::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CHMTSLAM::serializeGetVersion() const { return XX; } void CHMTSLAM::serializeTo(mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
 		*version = 0;

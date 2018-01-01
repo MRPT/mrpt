@@ -71,7 +71,7 @@ void CText3D::render_dl() const
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void CText3D::writeToStream(mrpt::serialization::CArchive& out, int* version) const
+uint8_t CText3D::serializeGetVersion() const { return XX; } void CText3D::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 0;
@@ -87,7 +87,7 @@ void CText3D::writeToStream(mrpt::serialization::CArchive& out, int* version) co
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void CText3D::readFromStream(mrpt::serialization::CArchive& in, int version)
+void CText3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

@@ -321,15 +321,15 @@ void mrpt::slam::data_association_full_covariance(
 
 	results.clear();
 
-	const size_t nPredictions = size(Y_predictions_mean, 1);
-	const size_t nObservations = size(Z_observations_mean, 1);
+	const size_t nPredictions = Y_predictions_mean.rows();
+	const size_t nObservations = Z_observations_mean.rows();
 
-	const size_t length_O = size(Z_observations_mean, 2);
+	const size_t length_O = Z_observations_mean.cols();
 
 	ASSERT_(nPredictions != 0)
 	ASSERT_(nObservations != 0)
-	ASSERT_(length_O == size(Y_predictions_mean, 2);
-	ASSERT_(length_O * nPredictions == size(Y_predictions_cov, 1);
+	ASSERT_(length_O == Y_predictions_mean.cols();
+	ASSERT_(length_O * nPredictions == Y_predictions_cov.rows();
 	ASSERT_(Y_predictions_cov.isSquare());
 	ASSERT_(chi2quantile > 0 && chi2quantile < 1)
 	ASSERT_(metric == metricMaha || metric == metricML);
@@ -599,15 +599,15 @@ void mrpt::slam::data_association_independent_predictions(
 
 	results.clear();
 
-	const size_t nPredictions = size(Y_predictions_mean, 1);
-	const size_t nObservations = size(Z_observations_mean, 1);
+	const size_t nPredictions = Y_predictions_mean.rows();
+	const size_t nObservations = Z_observations_mean.rows();
 
-	const size_t length_O = size(Z_observations_mean, 2);
+	const size_t length_O = Z_observations_mean.cols();
 
 	ASSERT_(nPredictions != 0)
 	ASSERT_(nObservations != 0)
-	ASSERT_(length_O == size(Y_predictions_mean, 2);
-	ASSERT_(length_O * nPredictions == size(Y_predictions_cov_stacked, 1));
+	ASSERT_(length_O == Y_predictions_mean.cols();
+	ASSERT_(length_O * nPredictions == Y_predictions_cov_stacked.rows());
 	ASSERT_(chi2quantile > 0 && chi2quantile < 1)
 	ASSERT_(metric == metricMaha || metric == metricML);
 	// const double chi2thres = mrpt::math::chi2inv( chi2quantile, length_O );

@@ -160,7 +160,7 @@ void CWeightedPointsMap::addFrom_classSpecific(
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void CWeightedPointsMap::writeToStream(
+uint8_t CWeightedPointsMap::serializeGetVersion() const { return XX; } void CWeightedPointsMap::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
@@ -192,7 +192,7 @@ void CWeightedPointsMap::writeToStream(
    Implements the reading from a CStream capability of
 	  CSerializable objects
   ---------------------------------------------------------------*/
-void CWeightedPointsMap::readFromStream(mrpt::utils::CStream& in, int version)
+void CWeightedPointsMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

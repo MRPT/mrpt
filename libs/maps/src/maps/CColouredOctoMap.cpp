@@ -92,7 +92,7 @@ CColouredOctoMap::~CColouredOctoMap() {}
    Implements the writing to a CStream capability of
 				CSerializable objects
   ---------------------------------------------------------------*/
-void CColouredOctoMap::writeToStream(
+uint8_t CColouredOctoMap::serializeGetVersion() const { return XX; } void CColouredOctoMap::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
@@ -117,7 +117,7 @@ void CColouredOctoMap::writeToStream(
    Implements the reading from a CStream capability of
 	  CSerializable objects
   ---------------------------------------------------------------*/
-void CColouredOctoMap::readFromStream(mrpt::utils::CStream& in, int version)
+void CColouredOctoMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

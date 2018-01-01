@@ -89,7 +89,7 @@ void CLandmark::setPose(const CPointPDFGaussian& pose)
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void CLandmark::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CLandmark::serializeGetVersion() const { return XX; } void CLandmark::serializeTo(mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
 		*version = 4;
@@ -106,7 +106,7 @@ void CLandmark::writeToStream(mrpt::utils::CStream& out, int* version) const
    Implements the reading from a CStream capability of
 	  CSerializable objects
   ---------------------------------------------------------------*/
-void CLandmark::readFromStream(mrpt::utils::CStream& in, int version)
+void CLandmark::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

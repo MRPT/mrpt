@@ -579,10 +579,10 @@ void ransacHomography_distance(
 
 	const CMatrixDouble& M = testModels[0];
 
-	ASSERT_(size(M, 1) == 3 && size(M, 2) == 3);
+	ASSERT_(M.rows() == 3 && M.cols() == 3);
 	CArrayDouble<3> pt, pt_r;
 
-	const size_t N = size(allData, 2);
+	const size_t N = allData.cols();
 	out_inlierIndices.clear();
 	out_inlierIndices.reserve(100);
 	for (size_t i = 0; i < N; i++)

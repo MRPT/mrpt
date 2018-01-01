@@ -668,7 +668,7 @@ CPointsMap::TInsertionOptions::TInsertionOptions()
 }
 
 // Binary dump to/read from stream - for usage in derived classes' serialization
-void CPointsMap::TInsertionOptions::writeToStream(
+uint8_t CPointsMap::TInsertionOptions::serializeGetVersion() const { return XX; } void CPointsMap::TInsertionOptions::serializeTo(
 	mrpt::utils::CStream& out) const
 {
 	const int8_t version = 0;
@@ -680,7 +680,7 @@ void CPointsMap::TInsertionOptions::writeToStream(
 		<< insertInvalidPoints;  // v0
 }
 
-void CPointsMap::TInsertionOptions::readFromStream(mrpt::utils::CStream& in)
+void CPointsMap::TInsertionOptions::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	int8_t version;
 	in >> version;
@@ -704,7 +704,7 @@ CPointsMap::TLikelihoodOptions::TLikelihoodOptions()
 {
 }
 
-void CPointsMap::TLikelihoodOptions::writeToStream(
+uint8_t CPointsMap::TLikelihoodOptions::serializeGetVersion() const { return XX; } void CPointsMap::TLikelihoodOptions::serializeTo(
 	mrpt::utils::CStream& out) const
 {
 	const int8_t version = 0;
@@ -712,7 +712,7 @@ void CPointsMap::TLikelihoodOptions::writeToStream(
 	out << sigma_dist << max_corr_distance << decimation;
 }
 
-void CPointsMap::TLikelihoodOptions::readFromStream(mrpt::utils::CStream& in)
+void CPointsMap::TLikelihoodOptions::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	int8_t version;
 	in >> version;

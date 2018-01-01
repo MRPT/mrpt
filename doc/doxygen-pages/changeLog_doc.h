@@ -32,7 +32,7 @@ serialization with variants(To be replaced by std::variant eventually).
 	- Changes in libraries:
 		- \ref mrpt_base_grp => Refactored into several smaller libraries, one
 per namespace.
-			- Removed class CStringList. Replace by STL containers of
+			- Removed class std::vector<std::string>. Replace by STL containers of
 `std::string` and functions mrpt::system::stringListAsString() in \ref
 string_manage.
 		- \ref mrpt_math_grp  [NEW IN MRPT 2.0.0]

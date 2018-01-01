@@ -107,10 +107,9 @@ inline void createMesh(
 	mesh.reserve(R * C);
 	for (size_t i = 0; i < R; i++)
 		for (size_t j = 0; j < C; j++)
-			mesh.push_back(
-				CGeneralizedCylinder::TQuadrilateral(
-					pointsMesh(i, j), pointsMesh(i, j + 1),
-					pointsMesh(i + 1, j + 1), pointsMesh(i + 1, j)));
+			mesh.push_back(CGeneralizedCylinder::TQuadrilateral(
+				pointsMesh(i, j), pointsMesh(i, j + 1),
+				pointsMesh(i + 1, j + 1), pointsMesh(i + 1, j)));
 }
 
 /*void transformMesh(const CPose3D &pose,const CMatrixTemplate<TPoint3D>
@@ -128,7 +127,7 @@ inline void createMesh(
 bool CGeneralizedCylinder::traceRay(const CPose3D& o, double& dist) const
 {
 	if (!meshUpToDate || !polysUpToDate) updatePolys();
-	return math::traceRay(polys, o - this->m_pose, dist);
+	return math::traceRay(polys, (o - this->m_pose).asTPose(), dist);
 }
 
 void CGeneralizedCylinder::updateMesh() const
@@ -152,21 +151,16 @@ void CGeneralizedCylinder::updateMesh() const
 	polysUpToDate = false;
 }
 
-void CGeneralizedCylinder::writeToStream(
-	mrpt::serialization::CArchive& out, int* version) const
+uint8_t CGeneralizedCylinder::serializeGetVersion() const { return 1; }
+void CGeneralizedCylinder::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		writeToStreamRender(out);
-		out << axis << generatrix;  // In version 0, axis was a
-		// vector<TPoint3D>. In version 1, it is a
-		// vector<CPose3D>.
-	}
+	writeToStreamRender(out);
+	out << axis << generatrix;  // In version 0, axis was a vector<TPoint3D>. In
+								// version 1, it is a vector<CPose3D>.
 }
 
-void CGeneralizedCylinder::readFromStream(mrpt::serialization::CArchive& in, int version)
+void CGeneralizedCylinder::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -328,7 +322,7 @@ void CGeneralizedCylinder::updatePolys() const
 
 void CGeneralizedCylinder::generatePoses(
 	const vector<TPoint3D>& pIn,
-	mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t& pOut)
+	mrpt::aligned_std_vector<mrpt::poses::CPose3D>& pOut)
 {
 	size_t N = pIn.size();
 	if (N == 0)

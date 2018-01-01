@@ -218,7 +218,7 @@ void CPointCloud::render_subset(
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void CPointCloud::writeToStream(mrpt::serialization::CArchive& out, int* version) const
+uint8_t CPointCloud::serializeGetVersion() const { return XX; } void CPointCloud::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 4;
@@ -247,7 +247,7 @@ void CPointCloud::writeToStream(mrpt::serialization::CArchive& out, int* version
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void CPointCloud::readFromStream(mrpt::serialization::CArchive& in, int version)
+void CPointCloud::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

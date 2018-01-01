@@ -1821,7 +1821,7 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabExportPaths(
 
 	const int MAX_CMDVEL_COMPONENTS = 15;
 	typedef Eigen::Matrix<double, 1, MAX_CMDVEL_COMPONENTS> cmdvel_vector_t;
-	mrpt::aligned_containers<double, cmdvel_vector_t>::map_t
+	mrpt::aligned_std_map<double, cmdvel_vector_t>
 		cmdvels;  // time: tim_send_cmd_vel
 
 	double tim_start_iteration = .0;

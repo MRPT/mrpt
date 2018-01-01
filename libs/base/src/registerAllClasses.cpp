@@ -81,6 +81,6 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_base)
 	registerClass(CLASS_ID(TCamera));
 	registerClass(CLASS_ID(TStereoCamera));
 	registerClass(CLASS_ID(CSplineInterpolator1D));
-	registerClass(CLASS_ID(CStringList));
+	registerClass(CLASS_ID(std::vector<std::string>));
 #endif
 }

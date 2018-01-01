@@ -369,7 +369,7 @@ void CMesh3D::render_dl() const
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void CMesh3D::writeToStream(mrpt::serialization::CArchive& out, int* version) const
+uint8_t CMesh3D::serializeGetVersion() const { return XX; } void CMesh3D::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	//********** To do **********
 	THROW_EXCEPTION("not implemented yet!");
@@ -400,7 +400,7 @@ void CMesh3D::writeToStream(mrpt::serialization::CArchive& out, int* version) co
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void CMesh3D::readFromStream(mrpt::serialization::CArchive& in, int version)
+void CMesh3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	//********** To do ************
 

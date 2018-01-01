@@ -12,7 +12,6 @@
 #include <mrpt/hwdrivers/CNTRIPClient.h>
 #include <mrpt/comms/CClientTCPSocket.h>
 #include <mrpt/comms/net_utils.h>
-#include <mrpt/utils/CStringList.h>
 #include <mrpt/math/wrap2pi.h>
 
 #include <mrpt/system/string_utils.h>
@@ -341,7 +340,7 @@ bool CNTRIPClient::retrieveListOfMountpoints(
 	// Parse contents:
 	if (ret != net::erOk) return false;
 
-	CStringList lstLines(content);
+	std::vector<std::string> lstLines(content);
 
 	for (size_t i = 0; i < lstLines.size(); i++)
 	{

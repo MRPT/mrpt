@@ -32,7 +32,7 @@ IMPLEMENTS_SERIALIZABLE(Plane, CSerializable, mrpt::pbmap)
 ///*---------------------------------------------------------------
 //						writeToStream
 // ---------------------------------------------------------------*/
-// void  Plane::writeToStream(mrpt::utils::CStream &out, int *out_Version) const
+// uint8_t  Plane::serializeGetVersion() const { return XX; } void  Plane::serializeTo(mrpt::utils::CStream &out, int *out_Version) const
 //{
 //	if (out_Version)
 //		*out_Version = 0;
@@ -77,7 +77,7 @@ IMPLEMENTS_SERIALIZABLE(Plane, CSerializable, mrpt::pbmap)
 ///*---------------------------------------------------------------
 //						readFromStream
 // ---------------------------------------------------------------*/
-// void  Plane::readFromStream(mrpt::utils::CStream &in, int version)
+// void  Plane::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 //{
 //	switch(version)
 //	{
@@ -135,7 +135,7 @@ IMPLEMENTS_SERIALIZABLE(Plane, CSerializable, mrpt::pbmap)
 /*---------------------------------------------------------------
 						writeToStream
  ---------------------------------------------------------------*/
-void Plane::writeToStream(mrpt::utils::CStream& out, int* out_Version) const
+uint8_t Plane::serializeGetVersion() const { return XX; } void Plane::serializeTo(mrpt::utils::CStream& out, int* out_Version) const
 {
 	// cout << "Write plane. Version " << *out_Version << endl;
 	if (out_Version) *out_Version = 0;
@@ -234,7 +234,7 @@ void Plane::writeToStream(mrpt::utils::CStream& out, int* out_Version) const
 /*---------------------------------------------------------------
 						readFromStream
  ---------------------------------------------------------------*/
-void Plane::readFromStream(mrpt::utils::CStream& in, int version)
+void Plane::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

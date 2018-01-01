@@ -77,8 +77,8 @@ void CSetOfTexturedTriangles::render_texturedobj() const
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void CSetOfTexturedTriangles::writeToStream(
-	mrpt::serialization::CArchive& out, int* version) const
+uint8_t CSetOfTexturedTriangles::serializeGetVersion() const { return XX; } void CSetOfTexturedTriangles::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 2;
@@ -101,7 +101,7 @@ void CSetOfTexturedTriangles::writeToStream(
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void CSetOfTexturedTriangles::readFromStream(
+void CSetOfTexturedTriangles::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	mrpt::serialization::CArchive& in, int version)
 {
 	switch (version)
@@ -205,12 +205,12 @@ CSetOfTexturedTriangles::TVertex::TVertex(
 {
 }
 
-void CSetOfTexturedTriangles::TVertex::writeToStream(
+uint8_t CSetOfTexturedTriangles::TVertex::serializeGetVersion() const { return XX; } void CSetOfTexturedTriangles::TVertex::serializeTo(
 	mrpt::serialization::CArchive& out) const
 {
 	out << m_x << m_y << m_z << m_u << m_v;
 }
-void CSetOfTexturedTriangles::TVertex::readFromStream(mrpt::serialization::CArchive& in)
+void CSetOfTexturedTriangles::TVertex::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	in >> m_x >> m_y >> m_z >> m_u >> m_v;
 }
@@ -222,14 +222,14 @@ CSetOfTexturedTriangles::TTriangle::TTriangle(
 {
 }
 
-void CSetOfTexturedTriangles::TTriangle::writeToStream(
+uint8_t CSetOfTexturedTriangles::TTriangle::serializeGetVersion() const { return XX; } void CSetOfTexturedTriangles::TTriangle::serializeTo(
 	mrpt::serialization::CArchive& out) const
 {
 	m_v1.writeToStream(out);
 	m_v2.writeToStream(out);
 	m_v3.writeToStream(out);
 }
-void CSetOfTexturedTriangles::TTriangle::readFromStream(
+void CSetOfTexturedTriangles::TTriangle::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	mrpt::serialization::CArchive& in)
 {
 	m_v1.readFromStream(in);

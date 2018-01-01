@@ -876,7 +876,7 @@ void CHierarchicalMapMHPartition::computeCoordinatesTransformationBetweenNodes(
 	CHMHMapNode::TNodeID lastNode, nextNode;
 	size_t pathLength;
 
-	typedef mrpt::aligned_containers<CPose3D>::vector_t TPose3DList;
+	typedef mrpt::aligned_std_vector<CPose3D> TPose3DList;
 	std::vector<TPose3DList> listSamples;
 	std::vector<TPose3DList>::iterator lstIt;
 	TPose3DList dummyList;
@@ -1405,7 +1405,7 @@ void CHierarchicalMapMHPartition::computeGloballyConsistentNodeCoordinates(
 /*---------------------------------------------------------------
 				dumpAsText
   ---------------------------------------------------------------*/
-void CHierarchicalMapMHPartition::dumpAsText(utils::CStringList& st) const
+void CHierarchicalMapMHPartition::dumpAsText(std::vector<std::string>& st) const
 {
 	st.clear();
 	st << "LIST OF NODES";

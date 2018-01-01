@@ -85,7 +85,7 @@ void CHMHMapArc::onNodeDestruction(CHMHMapNode* node)
 /*---------------------------------------------------------------
 						writeToStream
   ---------------------------------------------------------------*/
-void CHMHMapArc::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CHMHMapArc::serializeGetVersion() const { return XX; } void CHMHMapArc::serializeTo(mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
 		*version = 0;
@@ -99,7 +99,7 @@ void CHMHMapArc::writeToStream(mrpt::utils::CStream& out, int* version) const
 /*---------------------------------------------------------------
 						readFromStream
   ---------------------------------------------------------------*/
-void CHMHMapArc::readFromStream(mrpt::utils::CStream& in, int version)
+void CHMHMapArc::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

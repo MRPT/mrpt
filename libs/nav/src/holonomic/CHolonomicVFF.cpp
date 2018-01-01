@@ -104,7 +104,7 @@ void CHolonomicVFF::navigate(const NavInput& ni, NavOutput& no)
 	}
 }
 
-void CHolonomicVFF::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CHolonomicVFF::serializeGetVersion() const { return XX; } void CHolonomicVFF::serializeTo(mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
 		*version = 0;
@@ -114,7 +114,7 @@ void CHolonomicVFF::writeToStream(mrpt::utils::CStream& out, int* version) const
 			<< options.TARGET_SLOW_APPROACHING_DISTANCE;
 	}
 }
-void CHolonomicVFF::readFromStream(mrpt::utils::CStream& in, int version)
+void CHolonomicVFF::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -134,7 +134,7 @@ void CHolonomicVFF::readFromStream(mrpt::utils::CStream& in, int version)
 	Implements the writing to a CStream capability of
 	  CSerializable objects
   ---------------------------------------------------------------*/
-void CLogFileRecord_VFF::writeToStream(
+uint8_t CLogFileRecord_VFF::serializeGetVersion() const { return XX; } void CLogFileRecord_VFF::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
 	MRPT_UNUSED_PARAM(out);
@@ -148,7 +148,7 @@ void CLogFileRecord_VFF::writeToStream(
 /*---------------------------------------------------------------
 					readFromStream
   ---------------------------------------------------------------*/
-void CLogFileRecord_VFF::readFromStream(mrpt::utils::CStream& in, int version)
+void CLogFileRecord_VFF::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	MRPT_UNUSED_PARAM(in);
 	switch (version)

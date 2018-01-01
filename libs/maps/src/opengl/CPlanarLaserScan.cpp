@@ -173,7 +173,7 @@ void CPlanarLaserScan::render_dl() const
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void CPlanarLaserScan::writeToStream(
+uint8_t CPlanarLaserScan::serializeGetVersion() const { return XX; } void CPlanarLaserScan::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
@@ -194,7 +194,7 @@ void CPlanarLaserScan::writeToStream(
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void CPlanarLaserScan::readFromStream(mrpt::utils::CStream& in, int version)
+void CPlanarLaserScan::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

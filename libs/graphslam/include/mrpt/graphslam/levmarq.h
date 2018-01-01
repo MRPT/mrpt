@@ -223,7 +223,7 @@ void optimize_graph_spa_levmarq(
 	typename gst::map_pairIDs_pairJacobs_t lstJacobians;
 	// The vector of errors: err_k = SE(2/3)::pseudo_Ln( P_i * EDGE_ij *
 	// inv(P_j) )
-	typename mrpt::aligned_containers<typename gst::Array_O>::vector_t
+	mrpt::aligned_std_vector<typename gst::Array_O>
 		errs;  // Separated vectors for each edge. i \in [0,nObservations-1], in
 	// same order than lstObservationData
 
@@ -299,7 +299,7 @@ void optimize_graph_spa_levmarq(
 			// that is: g_i is the "dot-product" of the i'th (transposed)
 			// block-column of J and the vector of errors "errs"
 			profiler.enter("optimize_graph_spa_levmarq.grad");
-			typename mrpt::aligned_containers<typename gst::Array_O>::vector_t
+			mrpt::aligned_std_vector<typename gst::Array_O>
 				grad_parts(nFreeNodes, array_O_zeros);
 
 			// "lstJacobians" is sorted in the same order than
@@ -671,7 +671,7 @@ void optimize_graph_spa_levmarq(
 			// Compute Jacobians & errors with the new "graph.nodes" info:
 			// =============================================================
 			typename gst::map_pairIDs_pairJacobs_t new_lstJacobians;
-			typename mrpt::aligned_containers<typename gst::Array_O>::vector_t
+			mrpt::aligned_std_vector<typename gst::Array_O>
 				new_errs;
 
 			profiler.enter("optimize_graph_spa_levmarq.Jacobians&err");

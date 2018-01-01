@@ -24,7 +24,7 @@ IMPLEMENTS_SERIALIZABLE(CTypeSelector, CSerializable, mrpt::utils)
 /*---------------------------------------------------------------
 						writeToStream
  ---------------------------------------------------------------*/
-void CTypeSelector::writeToStream(
+uint8_t CTypeSelector::serializeGetVersion() const { return XX; } void CTypeSelector::serializeTo(
 	mrpt::utils::CStream& out, int* out_Version) const
 {
 	if (out_Version)
@@ -47,7 +47,7 @@ void CTypeSelector::writeToStream(
 /*---------------------------------------------------------------
 						readFromStream
  ---------------------------------------------------------------*/
-void CTypeSelector::readFromStream(mrpt::utils::CStream& in, int version)
+void CTypeSelector::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

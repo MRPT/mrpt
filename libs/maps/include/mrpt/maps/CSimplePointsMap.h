@@ -149,7 +149,7 @@ class CSimplePointsMap : public CPointsMap
 
 namespace utils
 {
-/** Specialization mrpt::utils::PointCloudAdapter<mrpt::maps::CSimplePointsMap>
+/** Specialization mrpt::opengl::PointCloudAdapter<mrpt::maps::CSimplePointsMap>
  * \ingroup mrpt_adapters_grp*/
 template <>
 class PointCloudAdapter<mrpt::maps::CSimplePointsMap>

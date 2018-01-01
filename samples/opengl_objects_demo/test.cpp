@@ -393,8 +393,8 @@ void TestOpenGLObjects()
 		//		Us.resize(Zs.size());
 		//		Vs.resize(Zs.size());
 
-		for (size_t i = 0; i < size(Zs, 1); i++)
-			for (size_t j = 0; j < size(Zs, 2); j++)
+		for (size_t i = 0; i < Zs.rows(); i++)
+			for (size_t j = 0; j < Zs.cols(); j++)
 			{
 				double x = i * 0.25;
 				double y = j * 0.25;

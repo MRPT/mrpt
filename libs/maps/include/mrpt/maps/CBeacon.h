@@ -22,7 +22,7 @@ namespace mrpt
 {
 namespace utils
 {
-class CStringList;
+class std::vector<std::string>;
 }
 
 namespace maps
@@ -140,7 +140,7 @@ class CBeacon : public mrpt::poses::CPointPDF
 
 	/** Gets a set of MATLAB commands which draw the current state of the
 	 * beacon: */
-	void getAsMatlabDrawCommands(utils::CStringList& out_Str) const;
+	void getAsMatlabDrawCommands(std::vector<std::string>& out_Str) const;
 
 	/** Draw a sample from the pdf. */
 	void drawSingleSample(mrpt::poses::CPoint3D& outSample) const override;
