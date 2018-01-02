@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "base-precomp.h"  // Precompiled headers
+#include "containers-precomp.h"  // Precompiled headers
 
 #include <mrpt/utils/CMHPropertiesValuesList.h>
 #include <mrpt/system/os.h>
@@ -22,7 +22,8 @@ IMPLEMENTS_SERIALIZABLE(CMHPropertiesValuesList, CSerializable, mrpt::utils)
 /*---------------------------------------------------------------
 						writeToStream
  ---------------------------------------------------------------*/
-uint8_t CMHPropertiesValuesList::serializeGetVersion() const { return XX; } void CMHPropertiesValuesList::serializeTo(
+uint8_t CMHPropertiesValuesList::serializeGetVersion() const { return XX; }
+void CMHPropertiesValuesList::serializeTo(
 	mrpt::utils::CStream& out, int* out_Version) const
 {
 	if (out_Version)
