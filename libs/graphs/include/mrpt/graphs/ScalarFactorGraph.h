@@ -10,7 +10,7 @@
 
 #include <mrpt/utils/core_defs.h>
 #include <mrpt/math/types_math.h>
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/system/COutputLogger.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <deque>
 

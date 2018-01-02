@@ -11,7 +11,7 @@
 #include "ui_COccupancyConfig.h"
 #include "TypeOfConfig.h"
 
-#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
 
 using namespace mrpt;
 using namespace maps;

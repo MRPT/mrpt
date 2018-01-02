@@ -11,7 +11,7 @@
 #define MRPT_COctoMapBase_H
 
 #include <mrpt/maps/CMetricMap.h>
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/utils/safe_pointers.h>
 #include <octomap/octomap.h>
 #include <mrpt/opengl/COctoMapVoxels.h>

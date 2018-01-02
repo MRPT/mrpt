@@ -20,7 +20,6 @@
 
 #if MRPT_HAS_PCL
 
-#include <mrpt/utils/utils_defs.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <mrpt/pbmap/Plane.h>

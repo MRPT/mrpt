@@ -11,7 +11,7 @@
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/system/CTicTac.h>
-#include <mrpt/utils/round.h>
+#include <mrpt/core/round.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <iostream>

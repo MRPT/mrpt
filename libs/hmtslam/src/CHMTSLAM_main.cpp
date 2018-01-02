@@ -26,11 +26,11 @@
 
 #include "hmtslam-precomp.h"  // Precomp header
 
-#include <mrpt/utils/CFileStream.h>
+#include <mrpt/io/CFileStream.h>
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/utils/CMemoryStream.h>
+#include <mrpt/io/CMemoryStream.h>
 
 #include <mrpt/system/os.h>
 

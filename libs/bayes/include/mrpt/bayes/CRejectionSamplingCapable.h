@@ -9,7 +9,6 @@
 #ifndef CRejectionSamplingCapable_H
 #define CRejectionSamplingCapable_H
 
-#include <mrpt/utils/utils_defs.h>
 #include <mrpt/bayes/CProbabilityParticle.h>
 #include <mrpt/random.h>
 

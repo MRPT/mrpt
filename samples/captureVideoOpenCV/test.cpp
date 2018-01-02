@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/hwdrivers/CImageGrabber_OpenCV.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/gui/CDisplayWindow.h>
 

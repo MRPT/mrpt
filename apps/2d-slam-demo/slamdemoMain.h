@@ -25,7 +25,7 @@
 //*)
 
 #include <mrpt/slam/CRangeBearingKFSLAM2D.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 
 class slamdemoApp;
 

@@ -32,7 +32,7 @@ Output files:
 
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/string_utils.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/img/TCamera.h>
 #include <mrpt/utils/CTextFileLinesParser.h>
 #include <mrpt/obs/CObservationStereoImages.h>

@@ -15,8 +15,8 @@
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/img/color_maps.h>
 #include <mrpt/core/round.h>  // round()
-#include <mrpt/utils/CFileGZOutputStream.h>
-#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>

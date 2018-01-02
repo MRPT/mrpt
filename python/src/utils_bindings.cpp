@@ -12,12 +12,12 @@
 #include <mrpt/img/TColor.h>
 #include <mrpt/utils/CObject.h>
 #include <mrpt/utils/CStream.h>
-#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/utils/CStdOutStream.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/config/CConfigFile.h>
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/config/CLoadableOptions.h>
 
 /* STD */
 #include <cstdint>

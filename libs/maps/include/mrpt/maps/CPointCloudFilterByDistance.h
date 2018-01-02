@@ -12,7 +12,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/utils/aligned_containers.h>
 #include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/config/CLoadableOptions.h>
 
 namespace mrpt
 {

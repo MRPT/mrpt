@@ -15,7 +15,7 @@
 
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/utils/safe_pointers.h>
 
 namespace mrpt

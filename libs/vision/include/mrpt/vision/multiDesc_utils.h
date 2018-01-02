@@ -13,7 +13,7 @@
 #include <mrpt/vision/CFeature.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/math/utils.h>
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/tfest/TMatchingPair.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/maps/CLandmarksMap.h>

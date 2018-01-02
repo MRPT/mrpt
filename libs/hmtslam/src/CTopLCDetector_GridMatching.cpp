@@ -9,8 +9,8 @@
 
 #include "hmtslam-precomp.h"  // Precomp header
 
-#include <mrpt/utils/CFileGZOutputStream.h>
-#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/system/filesystem.h>
 
 using namespace mrpt::slam;

@@ -12,7 +12,7 @@
 #include <mrpt/maps/CBeaconMap.h>
 #include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/random.h>
-#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/core/round.h>  // round()
 #include <mrpt/math/geometry.h>

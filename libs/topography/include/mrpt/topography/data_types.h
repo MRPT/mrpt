@@ -9,7 +9,6 @@
 #ifndef data_types_H
 #define data_types_H
 
-#include <mrpt/utils/utils_defs.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
 namespace mrpt

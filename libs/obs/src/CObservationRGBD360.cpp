@@ -12,8 +12,8 @@
 #include <mrpt/obs/CObservationRGBD360.h>
 #include <mrpt/poses/CPosePDF.h>
 
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/system/CTimeLogger.h>
 
 using namespace std;

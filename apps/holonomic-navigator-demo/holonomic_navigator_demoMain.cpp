@@ -25,7 +25,7 @@
 #include <mrpt/gui/WxUtils.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPose2D.h>
-#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
 #include "imgs/main_icon.xpm"
 #include "../wx-common/mrpt_logo.xpm"
 

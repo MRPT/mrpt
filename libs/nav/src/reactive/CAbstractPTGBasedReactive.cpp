@@ -16,8 +16,8 @@
 #include <mrpt/math/ops_containers.h>  // sum()
 #include <mrpt/utils/printf_vector.h>
 #include <mrpt/containers/copy_container_typecasting.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
-#include <mrpt/utils/CMemoryStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CMemoryStream.h>
 #include <mrpt/maps/CPointCloudFilterByDistance.h>
 #include <limits>
 #include <iomanip>

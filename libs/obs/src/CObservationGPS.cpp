@@ -12,7 +12,7 @@
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/math/matrix_serialization.h>  // for << of matrices
-#include <mrpt/utils/CMemoryStream.h>
+#include <mrpt/io/CMemoryStream.h>
 #include <iomanip>
 
 using namespace std;

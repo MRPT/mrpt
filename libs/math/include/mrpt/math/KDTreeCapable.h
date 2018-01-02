@@ -8,7 +8,6 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/utils/utils_defs.h>
 
 // nanoflann library:
 #include <nanoflann.hpp>

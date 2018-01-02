@@ -22,8 +22,8 @@
 #include <wx/app.h>
 
 // General global variables:
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/utils/stl_containers_utils.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/obs/CObservationImage.h>

@@ -19,8 +19,8 @@
 #include <mrpt/graphs/CDirectedGraph.h>
 #include <mrpt/graphs/CDirectedTree.h>
 #include <mrpt/serialization/CSerializable.h>
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/system/TParameters.h>
 #include <mrpt/utils/traits_map.h>
 #include <mrpt/serialization/stl_serialization.h>

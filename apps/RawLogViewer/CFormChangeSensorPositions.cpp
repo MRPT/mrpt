@@ -22,8 +22,8 @@
 #include "xRawLogViewerMain.h"
 // General global variables:
 
-#include <mrpt/utils/CFileGZOutputStream.h>
-#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CActionCollection.h>

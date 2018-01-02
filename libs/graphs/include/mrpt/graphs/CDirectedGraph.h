@@ -9,7 +9,6 @@
 #ifndef MRPT_DIRECTEDGRAPH_H
 #define MRPT_DIRECTEDGRAPH_H
 
-#include <mrpt/utils/utils_defs.h>
 #include <mrpt/utils/TTypeName.h>
 #include <mrpt/utils/aligned_containers.h>
 #include <set>

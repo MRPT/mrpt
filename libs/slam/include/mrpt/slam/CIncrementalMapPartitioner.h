@@ -10,8 +10,8 @@
 #ifndef CINCREMENTALMAPPARTITIONER_H
 #define CINCREMENTALMAPPARTITIONER_H
 
-#include <mrpt/utils/COutputLogger.h>
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/system/COutputLogger.h>
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/maps/CSimpleMap.h>

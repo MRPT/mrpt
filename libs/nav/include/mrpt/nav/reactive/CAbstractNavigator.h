@@ -9,10 +9,10 @@
 #pragma once
 
 #include <mrpt/nav/reactive/CRobot2NavInterface.h>
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/system/COutputLogger.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/utils/TEnumType.h>
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/poses/CPose2DInterpolator.h>
 #include <mrpt/poses/FrameTransformer.h>
 #include <mrpt/obs/obs_frwds.h>

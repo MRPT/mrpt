@@ -10,7 +10,7 @@
 #include "obs-precomp.h"  // Precompiled headers
 #include <mrpt/obs/CObservationStereoImagesFeatures.h>
 
-#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/utils/CStream.h>
 
 using namespace mrpt::obs;

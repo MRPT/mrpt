@@ -14,7 +14,7 @@
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPose3DPDF.h>
 
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/system/COutputLogger.h>
 
 namespace mrpt
 {

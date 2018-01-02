@@ -10,7 +10,6 @@
 #ifndef CNTRIPClient_H
 #define CNTRIPClient_H
 
-#include <mrpt/utils/utils_defs.h>
 #include <mrpt/synch/MT_buffer.h>
 
 #include <future>

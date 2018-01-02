@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/utils/CObject.h>  // For TRuntimeClassId
 #include <mrpt/maps/TMetricMapTypesRegistry.h>
 #include <mrpt/maps/metric_map_types.h>

@@ -9,7 +9,7 @@
 #ifndef CDetectorDoorCrossing_H
 #define CDetectorDoorCrossing_H
 
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/system/COutputLogger.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/obs/CSensoryFrame.h>

@@ -9,8 +9,7 @@
 #ifndef CGRAPHPARTITIONER_H
 #define CGRAPHPARTITIONER_H
 
-#include <mrpt/utils/utils_defs.h>
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/system/COutputLogger.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/ops_matrices.h>
 

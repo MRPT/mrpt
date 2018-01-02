@@ -10,7 +10,6 @@
 #ifndef CFFMPEG_InputStream_H
 #define CFFMPEG_InputStream_H
 
-#include <mrpt/utils/utils_defs.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/utils/safe_pointers.h>
 

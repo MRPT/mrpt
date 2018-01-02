@@ -9,7 +9,6 @@
 #ifndef CJOYSTICK_H
 #define CJOYSTICK_H
 
-#include <mrpt/utils/utils_defs.h>
 
 /*---------------------------------------------------------------
 	Class

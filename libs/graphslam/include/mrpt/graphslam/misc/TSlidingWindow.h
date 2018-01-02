@@ -10,7 +10,7 @@
 #ifndef TSLIDINGWINDOW_H
 #define TSLIDINGWINDOW_H
 
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/config/CLoadableOptions.h>
 
 #include <algorithm>  // std::transform
 #include <cmath>  // sqrt

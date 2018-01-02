@@ -14,7 +14,7 @@
 #include <mrpt/img/CImage.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/math/CMatrixD.h>
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/utils/TEnumType.h>
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/graphs/ScalarFactorGraph.h>

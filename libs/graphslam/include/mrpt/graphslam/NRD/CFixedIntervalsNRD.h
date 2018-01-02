@@ -14,7 +14,7 @@
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CRawlog.h>
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/utils/CStream.h>

@@ -10,7 +10,7 @@
 #include "vision-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/geometry.h>
-#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
 
 #include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/maps/CLandmark.h>

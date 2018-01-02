@@ -10,8 +10,8 @@
 #include <mrpt/system/os.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/config/CConfigFile.h>
-#include <mrpt/utils/CFileOutputStream.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/maps/CBeaconMap.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CActionCollection.h>

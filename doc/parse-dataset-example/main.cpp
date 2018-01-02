@@ -16,7 +16,7 @@
 // This program requires the MRPT libraries ( http://www.mrpt.org/ )
 
 // Serialization, etc.
-#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/filesystem.h>
 

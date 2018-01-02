@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/poses/CPosePDFSOG.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/system/os.h>

@@ -25,7 +25,7 @@
 //*)
 #include <mrpt/gui/wx28-fixes.h>
 
-#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/system/vector_loadsave.h>
 #include <mrpt/random.h>

@@ -11,7 +11,7 @@
 
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/random.h>
-#include <mrpt/utils/CFileStream.h>
+#include <mrpt/io/CFileStream.h>
 #include <mrpt/system/os.h>
 
 #include <thread>

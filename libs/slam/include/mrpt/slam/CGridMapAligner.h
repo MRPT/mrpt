@@ -11,7 +11,7 @@
 
 #include <mrpt/slam/CMetricMapsAlignmentAlgorithm.h>
 #include <mrpt/maps/CLandmarksMap.h>
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/utils/TEnumType.h>
 #include <mrpt/utils/poly_ptr_ptr.h>
 #include <mrpt/poses/CPosePDFSOG.h>

@@ -19,7 +19,7 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/containers/CDynamicGrid.h>
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/obs/obs_frwds.h>
 
 namespace mrpt

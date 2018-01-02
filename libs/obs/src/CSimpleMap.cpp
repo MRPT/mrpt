@@ -10,8 +10,8 @@
 #include "obs-precomp.h"  // Precompiled headers
 
 #include <mrpt/maps/CSimpleMap.h>
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/utils/CStream.h>
 
 using namespace mrpt::obs;

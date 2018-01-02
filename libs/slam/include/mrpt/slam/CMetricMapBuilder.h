@@ -11,7 +11,7 @@
 
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/utils/CListOfClasses.h>
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/system/COutputLogger.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/maps/CSimpleMap.h>

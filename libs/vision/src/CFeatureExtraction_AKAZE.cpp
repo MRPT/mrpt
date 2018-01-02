@@ -19,7 +19,7 @@
 
 #include <mrpt/system/os.h>
 #include <mrpt/vision/CFeatureExtraction.h>  // important import
-#include <mrpt/utils/CMemoryStream.h>
+#include <mrpt/io/CMemoryStream.h>
 
 using namespace mrpt::vision;
 using namespace mrpt::utils;

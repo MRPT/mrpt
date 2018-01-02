@@ -12,7 +12,7 @@
 
 #include <mrpt/comms/CSerialPort.h>
 #include <mrpt/hwdrivers/CPtuBase.h>
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/system/COutputLogger.h>
 
 namespace mrpt
 {

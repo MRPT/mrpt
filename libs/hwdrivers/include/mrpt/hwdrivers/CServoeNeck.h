@@ -10,7 +10,6 @@
 #ifndef CServoeNeck_H
 #define CServoeNeck_H
 
-#include <mrpt/utils/utils_defs.h>
 #include <mrpt/comms/CInterfaceFTDI.h>
 
 namespace mrpt

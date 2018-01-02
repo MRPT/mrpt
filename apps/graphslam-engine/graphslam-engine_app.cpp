@@ -12,9 +12,9 @@
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/system/COutputLogger.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>
 #include <mrpt/poses/CPoses2DSequence.h>
 #include <mrpt/poses/CPosePDF.h>

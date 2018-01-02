@@ -11,7 +11,7 @@
 
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/utils/CMemoryStream.h>
+#include <mrpt/io/CMemoryStream.h>
 #include <mrpt/system/TParameters.h>
 
 #include <mrpt/nav/holonomic/CHolonomicLogFileRecord.h>

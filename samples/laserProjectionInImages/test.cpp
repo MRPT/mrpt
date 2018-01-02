@@ -15,7 +15,7 @@
 // and access to the contained "image" instead of "imageLeft".
 // -----------------------------------------------------------------------------------------------------------------------
 
-#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 #include <mrpt/obs/CRawlog.h>

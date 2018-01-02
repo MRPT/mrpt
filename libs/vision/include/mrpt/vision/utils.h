@@ -14,7 +14,7 @@
 #include <mrpt/img/CImage.h>
 #include <mrpt/img/TStereoCamera.h>
 #include <mrpt/math/CMatrixTemplate.h>
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/tfest/TMatchingPair.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/vision/types.h>

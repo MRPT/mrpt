@@ -9,8 +9,8 @@
 
 #include <mrpt/system/os.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/system/filesystem.h>
 
 #include <mrpt/otherlibs/tclap/CmdLine.h>

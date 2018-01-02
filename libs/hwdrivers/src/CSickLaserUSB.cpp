@@ -10,7 +10,6 @@
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
 #include <mrpt/utils/CStream.h>
-#include <mrpt/utils/utils_defs.h>
 #include <mrpt/system/os.h>
 #include <mrpt/utils/crc.h>
 #include <mrpt/hwdrivers/CSickLaserUSB.h>

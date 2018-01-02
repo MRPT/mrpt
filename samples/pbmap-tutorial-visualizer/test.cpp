@@ -14,7 +14,7 @@
  */
 #include <mrpt/pbmap.h>  // precomp. hdr
 
-#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/io/io.h>

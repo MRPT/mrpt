@@ -61,7 +61,7 @@ THE SOFTWARE.
 
 /// MRPT includes
 #include <mrpt/vision/CFeatureExtraction.h>
-#include <mrpt/utils/CMemoryStream.h>
+#include <mrpt/io/CMemoryStream.h>
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/utils/metaprogramming.h>

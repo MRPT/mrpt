@@ -13,7 +13,7 @@
 #include <mrpt/maps/COctoMapBase.h>
 
 #include <mrpt/maps/CMetricMap.h>
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/utils/safe_pointers.h>
 #include <octomap/octomap.h>
 #include <mrpt/obs/obs_frwds.h>

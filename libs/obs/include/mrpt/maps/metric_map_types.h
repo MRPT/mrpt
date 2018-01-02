@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/obs/obs_frwds.h>

@@ -49,9 +49,9 @@
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/string_utils.h>
-#include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/CFileOutputStream.h>
-#include <mrpt/utils/CFileInputStream.h>
+#include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/io/CFileInputStream.h>
 #include <mrpt/system/CTicTac.h>
 #include <cstdint>
 #include <mrpt/utils/mrpt_macros.h>
@@ -59,7 +59,7 @@
 #include <mrpt/utils/types_simple.h>
 #include <mrpt/img/TColor.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/system/COutputLogger.h>
 
 #include <mrpt/graphslam/misc/CEdgeCounter.h>
 #include <mrpt/graphslam/interfaces/CNodeRegistrationDecider.h>

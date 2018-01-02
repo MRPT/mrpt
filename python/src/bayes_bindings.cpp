@@ -9,7 +9,7 @@
 #include "bindings.h"
 
 /* MRPT */
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/config/CLoadableOptions.h>
 
 #include <mrpt/bayes/CProbabilityParticle.h>
 #include <mrpt/bayes/CParticleFilter.h>

@@ -9,9 +9,9 @@
 #ifndef RAWLOG_EDIT_DECLS_H
 #define RAWLOG_EDIT_DECLS_H
 
-#include <mrpt/utils/CFileGZOutputStream.h>
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/obs/CObservation.h>

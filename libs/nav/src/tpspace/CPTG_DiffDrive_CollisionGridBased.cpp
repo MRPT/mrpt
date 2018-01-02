@@ -11,8 +11,8 @@
 
 #include <mrpt/nav/tpspace/CPTG_DiffDrive_CollisionGridBased.h>
 
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/serialization/stl_serialization.h>

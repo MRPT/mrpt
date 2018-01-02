@@ -21,7 +21,7 @@
 #include <mrpt/gui.h>
 #include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/system/CTimeLogger.h>
-#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>

@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "nav-precomp.h"  // Precomp header
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/system/COutputLogger.h>
 #include <mrpt/nav/reactive/CRobot2NavInterface.h>
 
 using namespace mrpt::nav;
