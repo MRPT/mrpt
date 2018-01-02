@@ -97,10 +97,8 @@ wxBitmap MyArtProvider::CreateBitmap(
 // Used for feedback from the glcanvas component to its parent.
 _DSceneViewerFrame* theWindow = nullptr;
 
-#include <mrpt/utils.h>
 #include <mrpt/system.h>
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace mrpt::poses;
 using namespace mrpt::math;
@@ -2016,7 +2014,7 @@ void _DSceneViewerFrame::OnmnuSelectByClassSelected(wxCommandEvent& event)
 	{
 		init_list = false;
 		vector<const TRuntimeClassId*> all_mrpt_classes =
-			mrpt::utils::getAllRegisteredClasses();
+			mrpt::rtti::getAllRegisteredClasses();
 		for (size_t i = 0; i < all_mrpt_classes.size(); i++)
 			if (all_mrpt_classes[i]->derivedFrom(CLASS_ID(CRenderizable)))
 				glClassNames.Add(_U(all_mrpt_classes[i]->className));
@@ -2039,7 +2037,7 @@ void _DSceneViewerFrame::OnmnuSelectByClassSelected(wxCommandEvent& event)
 	{
 		const std::string sName =
 			std::string(glClassNames[selections[i]].mb_str());
-		selected_classes.push_back(mrpt::utils::findRegisteredClass(sName));
+		selected_classes.push_back(mrpt::rtti::findRegisteredClass(sName));
 	}
 
 	// Go thru objects and do filter:

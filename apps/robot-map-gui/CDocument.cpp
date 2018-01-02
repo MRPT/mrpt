@@ -9,9 +9,9 @@
    */
 #include "CDocument.h"
 
-#include "mrpt/utils/CFileGZInputStream.h"
-#include "mrpt/utils/CFileGZOutputStream.h"
-#include "mrpt/utils/CFileOutputStream.h"
+#include "mrpt/io/CFileGZInputStream.h"
+#include "mrpt/io/CFileGZOutputStream.h"
+#include "mrpt/io/CFileOutputStream.h"
 #include "mrpt/config/CConfigFile.h"
 
 const std::string METRIC_MAP_CONFIG_SECTION = "MappingApplication";
@@ -19,7 +19,6 @@ const std::string METRIC_MAP_CONFIG_SECTION = "MappingApplication";
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::maps;
-using namespace mrpt::utils;
 
 CDocument::CDocument()
 	: m_simplemap(CSimpleMap()),
@@ -73,7 +72,7 @@ void CDocument::saveMetricmapInBinaryFormat(
 
 	auto mapIter = iter->second.begin() + index;
 
-	mrpt::utils::CFileGZOutputStream fil(fileName);
+	mrpt::io::CFileGZOutputStream fil(fileName);
 	fil << *mapIter->get_ptr();
 }
 
@@ -110,7 +109,7 @@ void CDocument::setConfig(const std::string& config)
 	mapCfg.loadFromConfigFile(CConfigFile(config), METRIC_MAP_CONFIG_SECTION);
 	setListOfMaps(mapCfg);
 
-	//	mrpt::utils::CFileOutputStream f("/home/lisgein/tmp/test.ini");
+	//	mrpt::io::CFileOutputStream f("/home/lisgein/tmp/test.ini");
 	//	mapCfg.dumpToTextStream(f);
 }
 

@@ -16,7 +16,6 @@
 #include <mrpt/math/interp_fit.hpp>
 #include <mrpt/math/utils.h>  // normalize()
 
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::gui;
 using namespace std;

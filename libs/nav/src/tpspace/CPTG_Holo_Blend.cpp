@@ -10,14 +10,13 @@
 #include "nav-precomp.h"  // Precomp header
 #include <mrpt/nav/tpspace/CPTG_Holo_Blend.h>
 #include <mrpt/math/types_math.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 #include <mrpt/core/round.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/math/poly_roots.h>
 #include <mrpt/kinematics/CVehicleVelCmd_Holo.h>
 
 using namespace mrpt::nav;
-using namespace mrpt::utils;
 using namespace mrpt::system;
 
 IMPLEMENTS_SERIALIZABLE(
@@ -40,7 +39,7 @@ Number of steps "d" for each PTG path "k":
 //#define DO_PERFORMANCE_BENCHMARK
 
 #ifdef DO_PERFORMANCE_BENCHMARK
-mrpt::utils::CTimeLogger tl_holo("CPTG_Holo_Blend");
+mrpt::system::CTimeLogger tl_holo("CPTG_Holo_Blend");
 #define PERFORMANCE_BENCHMARK \
 	CTimeLoggerEntry tle(tl_holo, __CURRENT_FUNCTION_NAME__);
 #else

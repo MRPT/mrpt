@@ -22,7 +22,6 @@
 using namespace mrpt;
 using namespace mrpt::vision;
 using namespace mrpt::system;
-using namespace mrpt::utils;
 
 /* ----------------------------------------------------------
 						Ctor
@@ -37,7 +36,7 @@ CVideoFileWriter::~CVideoFileWriter() { close(); }
    ---------------------------------------------------------- */
 bool CVideoFileWriter::open(
 	const std::string& out_file, double fps,
-	const mrpt::utils::TImageSize& frameSize, const std::string& fourcc,
+	const mrpt::img::TImageSize& frameSize, const std::string& fourcc,
 	bool isColor)
 {
 #if MRPT_HAS_OPENCV

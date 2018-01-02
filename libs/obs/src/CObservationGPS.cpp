@@ -10,14 +10,13 @@
 #include "obs-precomp.h"  // Precompiled headers
 
 #include <mrpt/obs/CObservationGPS.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 #include <mrpt/math/matrix_serialization.h>  // for << of matrices
 #include <mrpt/io/CMemoryStream.h>
 #include <iomanip>
 
 using namespace std;
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::math;
 
@@ -292,7 +291,7 @@ void CObservationGPS::dumpToStream(CStream& out) const
 
 void CObservationGPS::dumpToConsole(std::ostream& o) const
 {
-	mrpt::utils::CMemoryStream memStr;
+	mrpt::io::CMemoryStream memStr;
 	this->dumpToStream(memStr);
 	if (memStr.getTotalBytesCount())
 	{

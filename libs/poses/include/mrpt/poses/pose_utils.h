@@ -15,7 +15,7 @@
 #include <mrpt/system/string_utils.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
-#include <mrpt/utils/mrpt_macros.h>
+#include <mrpt/core/exceptions.h>
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/io/CFileInputStream.h>
 
@@ -143,8 +143,7 @@ void readFileWithPoses(
 	MRPT_START;
 
 	using namespace std;
-	using namespace mrpt::utils;
-	using namespace mrpt::system;
+		using namespace mrpt::system;
 	using namespace mrpt::poses;
 	using namespace internal;
 

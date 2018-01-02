@@ -11,17 +11,15 @@
 
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
 #include <iterator>
 
 using namespace mrpt::obs;
 using namespace mrpt::poses;
-using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
 
-#include <mrpt/utils/metaprogramming.h>
 using namespace mrpt::utils::metaprogramming;
 
 IMPLEMENTS_SERIALIZABLE(CSensoryFrame, CSerializable, mrpt::obs)

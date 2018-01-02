@@ -42,7 +42,6 @@ using namespace mrpt::obs;
 using namespace mrpt::opengl;
 using namespace mrpt::gui;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace mrpt::random;
 using namespace mrpt::poses;
@@ -256,7 +255,7 @@ void MapBuilding_RBPF()
 
 		mrpt::maps::COccupancyGridMap2D gridmap;
 		{
-			mrpt::utils::CFileGZInputStream f(
+			mrpt::io::CFileGZInputStream f(
 				METRIC_MAP_CONTINUATION_GRIDMAP_FILE);
 			f >> gridmap;
 		}
@@ -281,7 +280,7 @@ void MapBuilding_RBPF()
 	if (!SIMPLEMAP_CONTINUATION.empty())
 	{
 		mrpt::maps::CSimpleMap init_map;
-		mrpt::utils::CFileGZInputStream(SIMPLEMAP_CONTINUATION) >> init_map;
+		mrpt::io::CFileGZInputStream(SIMPLEMAP_CONTINUATION) >> init_map;
 		mapBuilder.initialize(init_map);
 	}
 

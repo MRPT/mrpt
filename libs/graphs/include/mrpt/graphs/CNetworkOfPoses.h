@@ -22,7 +22,7 @@
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/system/TParameters.h>
-#include <mrpt/utils/traits_map.h>
+#include <mrpt/containers/traits_map.h>
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/poses/poses_frwds.h>
@@ -62,7 +62,7 @@ class CMRVisualizer;
 
 /** A directed graph of pose constraints, with edges being the relative poses
  *between pairs of nodes identified by their numeric IDs (of type
- *mrpt::utils::TNodeID).
+ *mrpt::graphs::TNodeID).
  *  A link or edge between two nodes "i" and "j", that is, the pose \f$ p_{ij}
  *\f$, holds the relative position of "j" with respect to "i".
  *   These poses are stored in the edges in the format specified by the template
@@ -105,8 +105,8 @@ class CMRVisualizer;
  *		- CPOSE: The type of the edges, which hold a relative pose (2D/3D, just
  *a
  *value or a Gaussian, etc.)
- *		- MAPS_IMPLEMENTATION: Can be either mrpt::utils::map_traits_stdmap or
- *mrpt::utils::map_traits_map_as_vector. Determines the type of the list of
+ *		- MAPS_IMPLEMENTATION: Can be either mrpt::containers::map_traits_stdmap or
+ *mrpt::containers::map_traits_map_as_vector. Determines the type of the list of
  *global poses (member \a nodes).
  *
  * \sa mrpt::graphslam
@@ -115,7 +115,7 @@ class CMRVisualizer;
 template <
 	class CPOSE,  // Type of edges
 	class MAPS_IMPLEMENTATION =
-		mrpt::utils::map_traits_stdmap,  // Use std::map<> vs. std::vector<>
+		mrpt::containers::map_traits_stdmap,  // Use std::map<> vs. std::vector<>
 	class NODE_ANNOTATIONS = mrpt::graphs::detail::TNodeAnnotationsEmpty,
 	class EDGE_ANNOTATIONS = mrpt::graphs::detail::edge_annotations_empty>
 class CNetworkOfPoses
@@ -204,12 +204,12 @@ class CNetworkOfPoses
 	/** A map from pose IDs to their global coordinate estimates, with
 	 * uncertainty */
 	typedef
-		typename MAPS_IMPLEMENTATION::template map<mrpt::utils::TNodeID, CPOSE>
+		typename MAPS_IMPLEMENTATION::template map<mrpt::graphs::TNodeID, CPOSE>
 			global_poses_pdf_t;
 
 	/** A map from pose IDs to their global coordinate estimates, without
 	 * uncertainty (the "most-likely value") */
-	typedef typename MAPS_IMPLEMENTATION::template map<mrpt::utils::TNodeID,
+	typedef typename MAPS_IMPLEMENTATION::template map<mrpt::graphs::TNodeID,
 													   global_pose_t>
 		global_poses_t;
 
@@ -227,7 +227,7 @@ class CNetworkOfPoses
 	/** The ID of the node that is the origin of coordinates, used as
 	 * reference by all coordinates in \a nodes. By default, root is the ID
 	 * "0". */
-	mrpt::utils::TNodeID root{0};
+	mrpt::graphs::TNodeID root{0};
 
 	/** False (default) if an edge i->j stores the normal relative pose of j
 	 * as seen from i: \f$ \Delta_i^j = j \ominus i \f$ True if an edge i->j
@@ -703,8 +703,7 @@ class CNetworkOfPoses
 	{
 		MRPT_START;
 		using namespace mrpt::graphs;
-		using namespace mrpt::utils;
-		using namespace mrpt::graphs::detail;
+				using namespace mrpt::graphs::detail;
 		using namespace std;
 
 		typedef
@@ -889,7 +888,7 @@ class CNetworkOfPoses
 	 * \a nodes
 	 */
 	double getEdgeSquareError(
-		const mrpt::utils::TNodeID from_id, const mrpt::utils::TNodeID to_id,
+		const mrpt::graphs::TNodeID from_id, const mrpt::graphs::TNodeID to_id,
 		bool ignoreCovariances = true) const
 	{
 		const typename BASE::edges_map_t::const_iterator itEdge =
@@ -976,42 +975,42 @@ mrpt::utils::CStream& operator>>(
 
 /** The specialization of CNetworkOfPoses for poses of type CPose2D (not a
  * PDF!), also implementing serialization. */
-typedef CNetworkOfPoses<mrpt::poses::CPose2D, mrpt::utils::map_traits_stdmap>
+typedef CNetworkOfPoses<mrpt::poses::CPose2D, mrpt::containers::map_traits_stdmap>
 	CNetworkOfPoses2D;
 /** The specialization of CNetworkOfPoses for poses of type mrpt::poses::CPose3D
  * (not a PDF!), also implementing serialization. */
-typedef CNetworkOfPoses<mrpt::poses::CPose3D, mrpt::utils::map_traits_stdmap>
+typedef CNetworkOfPoses<mrpt::poses::CPose3D, mrpt::containers::map_traits_stdmap>
 	CNetworkOfPoses3D;
 /** The specialization of CNetworkOfPoses for poses of type CPosePDFGaussian,
  * also implementing serialization. */
 typedef CNetworkOfPoses<mrpt::poses::CPosePDFGaussian,
-						mrpt::utils::map_traits_stdmap>
+						mrpt::containers::map_traits_stdmap>
 	CNetworkOfPoses2DCov;
 /** The specialization of CNetworkOfPoses for poses of type CPose3DPDFGaussian,
  * also implementing serialization. */
 typedef CNetworkOfPoses<mrpt::poses::CPose3DPDFGaussian,
-						mrpt::utils::map_traits_stdmap>
+						mrpt::containers::map_traits_stdmap>
 	CNetworkOfPoses3DCov;
 /** The specialization of CNetworkOfPoses for poses of type CPosePDFGaussianInf,
  * also implementing serialization. */
 typedef CNetworkOfPoses<mrpt::poses::CPosePDFGaussianInf,
-						mrpt::utils::map_traits_stdmap>
+						mrpt::containers::map_traits_stdmap>
 	CNetworkOfPoses2DInf;
 /** The specialization of CNetworkOfPoses for poses of type
  * CPose3DPDFGaussianInf, also implementing serialization. */
 typedef CNetworkOfPoses<mrpt::poses::CPose3DPDFGaussianInf,
-						mrpt::utils::map_traits_stdmap>
+						mrpt::containers::map_traits_stdmap>
 	CNetworkOfPoses3DInf;
 
 /**\brief Specializations of CNetworkOfPoses for graphs whose nodes inherit from
  * TMRSlamNodeAnnotations struct */
 /**\{ */
 typedef CNetworkOfPoses<mrpt::poses::CPosePDFGaussianInf,
-						mrpt::utils::map_traits_stdmap,
+						mrpt::containers::map_traits_stdmap,
 						mrpt::graphs::detail::TMRSlamNodeAnnotations>
 	CNetworkOfPoses2DInf_NA;
 typedef CNetworkOfPoses<mrpt::poses::CPose3DPDFGaussianInf,
-						mrpt::utils::map_traits_stdmap,
+						mrpt::containers::map_traits_stdmap,
 						mrpt::graphs::detail::TMRSlamNodeAnnotations>
 	CNetworkOfPoses3DInf_NA;
 /**\} */
@@ -1039,8 +1038,8 @@ struct TTypeName<mrpt::graphs::CNetworkOfPoses<
 	}
 };
 
-MRPT_DECLARE_TTYPENAME(mrpt::utils::map_traits_stdmap)
-MRPT_DECLARE_TTYPENAME(mrpt::utils::map_traits_map_as_vector)
+MRPT_DECLARE_TTYPENAME(mrpt::containers::map_traits_stdmap)
+MRPT_DECLARE_TTYPENAME(mrpt::containers::map_traits_map_as_vector)
 }
 
 }  // End of namespace

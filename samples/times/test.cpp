@@ -12,11 +12,9 @@
  * Prints current time instances in UTC format
  */
 
-#include <mrpt/utils.h>
 
 using namespace mrpt;
 using namespace mrpt::system;
-using namespace mrpt::utils;
 
 // ------------------------------------------------------
 //				TestTypes

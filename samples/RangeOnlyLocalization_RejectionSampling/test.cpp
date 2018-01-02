@@ -15,7 +15,6 @@
 #include <mrpt/system/os.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::slam;
 using namespace mrpt::maps;
 using namespace mrpt::system;

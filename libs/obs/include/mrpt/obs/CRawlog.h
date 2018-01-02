@@ -362,7 +362,7 @@ class CRawlog : public mrpt::serialization::CSerializable
 	  */
 	void findObservationsByClassInRange(
 		mrpt::system::TTimeStamp time_start, mrpt::system::TTimeStamp time_end,
-		const mrpt::utils::TRuntimeClassId* class_type,
+		const mrpt::rtti::TRuntimeClassId* class_type,
 		TListTimeAndObservations& out_found,
 		size_t guess_start_position = 0) const;
 

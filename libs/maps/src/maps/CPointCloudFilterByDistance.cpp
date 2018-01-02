@@ -11,10 +11,9 @@
 
 #include <mrpt/maps/CPointCloudFilterByDistance.h>
 #include <mrpt/config/CConfigFileBase.h>
-#include <mrpt/utils/aligned_containers.h>
+#include <mrpt/core/aligned_std_vector.h>
 
 using namespace mrpt::maps;
-using namespace mrpt::utils;
 
 void CPointCloudFilterByDistance::filter(
 	/** [in,out] The input pointcloud, which will be modified upon return after

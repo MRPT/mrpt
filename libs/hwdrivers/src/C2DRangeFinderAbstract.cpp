@@ -15,7 +15,6 @@
 #include <mrpt/system/os.h>
 
 using namespace std;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
 
@@ -23,7 +22,7 @@ using namespace mrpt::hwdrivers;
 						Constructor
 -------------------------------------------------------------*/
 C2DRangeFinderAbstract::C2DRangeFinderAbstract()
-	: mrpt::utils::COutputLogger("C2DRangeFinderAbstract"),
+	: mrpt::system::COutputLogger("C2DRangeFinderAbstract"),
 	  m_lastObservation(),
 	  m_lastObservationIsNew(false),
 	  m_hardwareError(false),

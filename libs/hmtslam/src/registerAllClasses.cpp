@@ -12,7 +12,6 @@
 #include <mrpt/hmtslam.h>
 #include <mrpt/core/initializer.h>
 
-using namespace mrpt::utils;
 using namespace mrpt::hmtslam;
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_hmtslam)

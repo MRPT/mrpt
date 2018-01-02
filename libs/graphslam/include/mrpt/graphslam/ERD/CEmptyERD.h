@@ -44,7 +44,7 @@ class CEmptyERD
 
    private:
 	void registerNewEdge(
-		const mrpt::utils::TNodeID& from, const mrpt::utils::TNodeID& to,
+		const mrpt::graphs::TNodeID& from, const mrpt::graphs::TNodeID& to,
 		const constraint_t& rel_edge);
 };
 
@@ -70,7 +70,7 @@ bool CEmptyERD<GRAPH_T>::updateState(
 
 template <class GRAPH_T>
 void CEmptyERD<GRAPH_T>::registerNewEdge(
-	const mrpt::utils::TNodeID& from, const mrpt::utils::TNodeID& to,
+	const mrpt::graphs::TNodeID& from, const mrpt::graphs::TNodeID& to,
 	const constraint_t& rel_edge)
 {
 }

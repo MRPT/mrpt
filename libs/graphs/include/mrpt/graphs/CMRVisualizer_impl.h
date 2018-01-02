@@ -89,8 +89,7 @@ void CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations,
 		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
 {
 	using namespace mrpt::opengl;
-	using namespace mrpt::utils;
-	using namespace mrpt::graphs;
+		using namespace mrpt::graphs;
 	using namespace std;
 
 	const double nodes_point_size =
@@ -175,8 +174,7 @@ void CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations,
 		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
 {
 	using namespace mrpt::opengl;
-	using namespace mrpt::utils;
-
+	
 	ASSERTMSG_(viz_params, "Pointer to viz_params was not provided.");
 	typedef map<pair<string, bool>, CSetOfLines::Ptr> PairToSetOfLines_t;
 

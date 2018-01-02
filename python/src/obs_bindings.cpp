@@ -23,7 +23,7 @@
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/maps/CSimpleMap.h>
 
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 
 /* STD */
 #include <cstdint>
@@ -31,7 +31,6 @@
 using namespace boost::python;
 
 using namespace mrpt::poses;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::math;

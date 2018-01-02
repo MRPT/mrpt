@@ -61,7 +61,6 @@ using namespace mrpt::obs;
 using namespace mrpt::opengl;
 using namespace mrpt::system;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace std;
 
 CScanAnimation::CScanAnimation(

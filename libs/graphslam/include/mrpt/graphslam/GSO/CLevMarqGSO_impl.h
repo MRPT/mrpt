@@ -32,8 +32,7 @@ CLevMarqGSO<GRAPH_T>::CLevMarqGSO()
 	  m_min_nodes_for_optimization(3)
 {
 	MRPT_START;
-	using namespace mrpt::utils;
-	this->initializeLoggers("CLevMarqGSO");
+		this->initializeLoggers("CLevMarqGSO");
 
 	MRPT_END;
 }
@@ -53,8 +52,7 @@ bool CLevMarqGSO<GRAPH_T>::updateState(
 	mrpt::obs::CObservation::Ptr observation)
 {
 	MRPT_START;
-	using namespace mrpt::utils;
-	this->logFmt(LVL_DEBUG, "In updateOptimizerState... ");
+		this->logFmt(LVL_DEBUG, "In updateOptimizerState... ");
 
 	if (this->m_graph->nodeCount() > m_last_total_num_of_nodes)
 	{
@@ -189,8 +187,7 @@ inline void CLevMarqGSO<GRAPH_T>::updateGraphVisualization()
 	MRPT_START;
 	ASSERTMSG_(this->m_win_manager, "No CWindowManager* is given");
 	using namespace mrpt::opengl;
-	using namespace mrpt::utils;
-
+	
 	this->logFmt(
 		mrpt::system::LVL_DEBUG, "In the updateGraphVisualization function");
 
@@ -428,8 +425,7 @@ void CLevMarqGSO<GRAPH_T>::_optimizeGraph(bool is_full_update /*=false*/)
 	MRPT_START;
 	this->m_time_logger.enter("CLevMarqGSO::_optimizeGraph");
 
-	using namespace mrpt::utils;
-
+	
 	// if less than X nodes exist overall, do not try optimizing
 	if (m_min_nodes_for_optimization > this->m_graph->nodes.size())
 	{
@@ -440,7 +436,7 @@ void CLevMarqGSO<GRAPH_T>::_optimizeGraph(bool is_full_update /*=false*/)
 	optimization_timer.Tic();
 
 	// set of nodes for which the optimization procedure will take place
-	std::set<mrpt::utils::TNodeID>* nodes_to_optimize;
+	std::set<mrpt::graphs::TNodeID>* nodes_to_optimize;
 
 	// fill in the nodes in certain distance to the current node, only if
 	// is_full_update is not instructed
@@ -453,7 +449,7 @@ void CLevMarqGSO<GRAPH_T>::_optimizeGraph(bool is_full_update /*=false*/)
 	}
 	else
 	{
-		nodes_to_optimize = new std::set<mrpt::utils::TNodeID>;
+		nodes_to_optimize = new std::set<mrpt::graphs::TNodeID>;
 
 		// I am certain that this shall not be called when nodeCount = 0, since
 		// the
@@ -636,15 +632,15 @@ void CLevMarqGSO<GRAPH_T>::levMarqFeedback(
 
 template <class GRAPH_T>
 void CLevMarqGSO<GRAPH_T>::getNearbyNodesOf(
-	std::set<mrpt::utils::TNodeID>* nodes_set,
-	const mrpt::utils::TNodeID& cur_nodeID, double distance)
+	std::set<mrpt::graphs::TNodeID>* nodes_set,
+	const mrpt::graphs::TNodeID& cur_nodeID, double distance)
 {
 	MRPT_START;
 
 	if (distance > 0)
 	{
 		// check all but the last node.
-		for (mrpt::utils::TNodeID nodeID = 0;
+		for (mrpt::graphs::TNodeID nodeID = 0;
 			 nodeID < this->m_graph->nodeCount() - 1; ++nodeID)
 		{
 			double curr_distance = this->m_graph->nodes[nodeID].distanceTo(
@@ -675,8 +671,7 @@ template <class GRAPH_T>
 void CLevMarqGSO<GRAPH_T>::loadParams(const std::string& source_fname)
 {
 	MRPT_START;
-	using namespace mrpt::utils;
-	parent::loadParams(source_fname);
+		parent::loadParams(source_fname);
 
 	opt_params.loadFromConfigFileName(source_fname, "OptimizerParameters");
 	viz_params.loadFromConfigFileName(source_fname, "VisualizationParameters");
@@ -751,70 +746,7 @@ CLevMarqGSO<GRAPH_T>::OptimizationParams::~OptimizationParams()
 {
 }
 template <class GRAPH_T>
-void CLevMarqGSO<GRAPH_T>::OptimizationParams::dumpToTextStream(
-	mrpt::utils::CStream& out) const
-{
-	MRPT_START;
-
-	out.printf(
-		"------------------[ Levenberg-Marquardt Optimization "
-		"]------------------\n");
-	out.printf(
-		"Optimization on second thread  = %s\n",
-		optimization_on_second_thread ? "TRUE" : "FALSE");
-	out.printf(
-		"Optimize nodes in distance     = %.2f\n", optimization_distance);
-	out.printf("Min. node difference for LC    = %d\n", LC_min_nodeid_diff);
-
-	out.printf("%s", cfg.getAsString().c_str());
-	std::cout << std::endl;
-
-	MRPT_END;
-}
-template <class GRAPH_T>
-void CLevMarqGSO<GRAPH_T>::OptimizationParams::loadFromConfigFile(
-	const mrpt::config::CConfigFileBase& source, const std::string& section)
-{
-	MRPT_START;
-	optimization_on_second_thread = source.read_bool(
-		section, "optimization_on_second_thread", false, false);
-	LC_min_nodeid_diff = source.read_int(
-		"GeneralConfiguration", "LC_min_nodeid_diff", 30, false);
-	optimization_distance =
-		source.read_double(section, "optimization_distance", 5, false);
-	// asert the previous value
-	ASSERTMSG_(
-		optimization_distance == -1 || optimization_distance > 0,
-		format(
-			"Invalid value for optimization distance: %.2f",
-			optimization_distance));
-
-	// optimization parameters
-	cfg["verbose"] = source.read_bool(section, "verbose", 0, false);
-	cfg["profiler"] = source.read_bool(section, "profiler", 0, false);
-	cfg["max_iterations"] =
-		source.read_double(section, "max_iterations", 100, false);
-	cfg["scale_hessian"] =
-		source.read_double("Optimization", "scale_hessian", 0.2, false);
-	cfg["tau"] = source.read_double(section, "tau", 1e-3, false);
-
-	MRPT_END;
-}
-
-// GraphVisualizationParams
-//////////////////////////////////////////////////////////////
-template <class GRAPH_T>
-CLevMarqGSO<GRAPH_T>::GraphVisualizationParams::GraphVisualizationParams()
-	: keystroke_graph_toggle("s"), keystroke_graph_autofit("a")
-{
-}
-template <class GRAPH_T>
-CLevMarqGSO<GRAPH_T>::GraphVisualizationParams::~GraphVisualizationParams()
-{
-}
-template <class GRAPH_T>
-void CLevMarqGSO<GRAPH_T>::GraphVisualizationParams::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+void CLevMarqGSO<GRAPH_T>::OptimizationParams::dumpToTextStream(std::ostream& out) const
 {
 	MRPT_START;
 

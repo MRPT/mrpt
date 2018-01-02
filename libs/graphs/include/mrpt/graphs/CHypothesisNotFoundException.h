@@ -10,8 +10,8 @@
 #ifndef CHYPOTHESISNOTFOUNDEXCEPTION_H
 #define CHYPOTHESISNOTFOUNDEXCEPTION_H
 
-#include <mrpt/utils/types_simple.h>
-#include <mrpt/utils/mrpt_macros.h>
+#include <cstdint>
+#include <mrpt/core/exceptions.h>
 
 #include <stdexcept>
 #include <iostream>
@@ -23,7 +23,7 @@ class HypothesisNotFoundException : public std::runtime_error
 {
    public:
 	HypothesisNotFoundException(
-		mrpt::utils::TNodeID from, mrpt::utils::TNodeID to);
+		mrpt::graphs::TNodeID from, mrpt::graphs::TNodeID to);
 	HypothesisNotFoundException(size_t id);
 	~HypothesisNotFoundException() throw();
 	void clear();
@@ -31,8 +31,8 @@ class HypothesisNotFoundException : public std::runtime_error
 	const char* what() const throw();
 
    private:
-	mrpt::utils::TNodeID m_from;
-	mrpt::utils::TNodeID m_to;
+	mrpt::graphs::TNodeID m_from;
+	mrpt::graphs::TNodeID m_to;
 
 	/**\brief Hypothesis ID */
 	size_t m_id;

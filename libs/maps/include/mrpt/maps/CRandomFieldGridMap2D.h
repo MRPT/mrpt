@@ -15,7 +15,7 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/utils/TEnumType.h>
+#include <mrpt/typemeta/TEnumType.h>
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/graphs/ScalarFactorGraph.h>
 
@@ -152,7 +152,7 @@ struct TRandomFieldCell
 class CRandomFieldGridMap2D
 	: public mrpt::maps::CMetricMap,
 	  public mrpt::containers::CDynamicGrid<TRandomFieldCell>,
-	  public mrpt::utils::COutputLogger
+	  public mrpt::system::COutputLogger
 {
 	typedef utils::CDynamicGrid<TRandomFieldCell> BASE;
 

@@ -24,7 +24,6 @@ using namespace mrpt::math;
 using namespace mrpt::gui;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;
-using namespace mrpt::utils;
 
 // ------------------------------------------------------
 //				TestSLERP
@@ -82,7 +81,7 @@ void TestSLERP()
 
 	cout << "\n Close the window to exit.\n";
 
-	mrpt::utils::CTicTac tic;
+	mrpt::system::CTicTac tic;
 	static const double MOVE_PERIOD = 1.0;
 	static const double MOVE_PERIOD2 = 2 * MOVE_PERIOD;
 

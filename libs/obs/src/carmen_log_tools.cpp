@@ -18,7 +18,6 @@
 #include <mrpt/obs/carmen_log_tools.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::poses;
 using namespace mrpt::system;

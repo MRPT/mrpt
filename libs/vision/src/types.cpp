@@ -11,15 +11,14 @@
 
 #include <mrpt/vision/types.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/utils/stl_containers_utils.h>
+#include <mrpt/containers/stl_containers_utils.h>
 #include <mrpt/system/string_utils.h>
-#include <mrpt/utils/stl_containers_utils.h>
+#include <mrpt/containers/stl_containers_utils.h>
 #include <iostream>
 #include <iomanip>
 
 using namespace std;
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::vision;
 using namespace mrpt::system;
 

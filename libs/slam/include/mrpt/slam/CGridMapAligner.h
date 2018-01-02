@@ -12,8 +12,8 @@
 #include <mrpt/slam/CMetricMapsAlignmentAlgorithm.h>
 #include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/utils/TEnumType.h>
-#include <mrpt/utils/poly_ptr_ptr.h>
+#include <mrpt/typemeta/TEnumType.h>
+#include <mrpt/core/poly_ptr_ptr.h>
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/poses/poses_frwds.h>
 #include <mrpt/vision/CFeatureExtraction.h>
@@ -84,8 +84,7 @@ class CGridMapAligner : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+		void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
 		/** The aligner method: */
 		TAlignerMethod methodSelection;

@@ -11,10 +11,8 @@
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/io/CMemoryStream.h>
-#include <mrpt/utils/metaprogramming.h>
 #include <mrpt/math/data_utils.h>
 
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::gui;
 using namespace mrpt::vision;
@@ -373,9 +371,9 @@ bool DemoFeatures()
 			case descSIFT:
 			{
 				vector<float> v1, v2;
-				mrpt::utils::metaprogramming::copy_container_typecasting(
+				mrpt::containers::metaprogramming::copy_container_typecasting(
 					feats1[i1]->descriptors.SIFT, v1);
-				mrpt::utils::metaprogramming::copy_container_typecasting(
+				mrpt::containers::metaprogramming::copy_container_typecasting(
 					feats2[min_dist_idx]->descriptors.SIFT, v2);
 				winptrPlot_descr1->plot(v1);
 				winptrPlot_descr2->plot(v2);

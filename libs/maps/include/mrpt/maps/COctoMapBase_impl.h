@@ -161,7 +161,7 @@ void COctoMapBase<OCTREE, OCTREE_NODE>::saveMetricMapRepresentationToFile(
 		scene.insert(obj3D);
 
 		const std::string fil = filNamePrefix + std::string("_3D.3Dscene");
-		mrpt::utils::CFileOutputStream f(fil);
+		mrpt::io::CFileOutputStream f(fil);
 		f << scene;
 	}
 
@@ -321,79 +321,7 @@ void COctoMapBase<OCTREE, OCTREE_NODE>::TLikelihoodOptions::serializeFrom(mrpt::
 					dumpToTextStream
   ---------------------------------------------------------------*/
 template <class OCTREE, class OCTREE_NODE>
-void COctoMapBase<OCTREE, OCTREE_NODE>::TInsertionOptions::dumpToTextStream(
-	mrpt::utils::CStream& out) const
-{
-	out.printf(
-		"\n----------- [COctoMapBase<>::TInsertionOptions] ------------ \n\n");
-
-	LOADABLEOPTS_DUMP_VAR(maxrange, double);
-	LOADABLEOPTS_DUMP_VAR(pruning, bool);
-
-	LOADABLEOPTS_DUMP_VAR(getOccupancyThres(), double);
-	LOADABLEOPTS_DUMP_VAR(getProbHit(), double);
-	LOADABLEOPTS_DUMP_VAR(getProbMiss(), double);
-	LOADABLEOPTS_DUMP_VAR(getClampingThresMin(), double);
-	LOADABLEOPTS_DUMP_VAR(getClampingThresMax(), double);
-
-	out.printf("\n");
-}
-
-template <class OCTREE, class OCTREE_NODE>
-void COctoMapBase<OCTREE, OCTREE_NODE>::TLikelihoodOptions::dumpToTextStream(
-	mrpt::utils::CStream& out) const
-{
-	out.printf(
-		"\n----------- [COctoMapBase<>::TLikelihoodOptions] ------------ \n\n");
-
-	LOADABLEOPTS_DUMP_VAR(decimation, int);
-}
-
-/*---------------------------------------------------------------
-					loadFromConfigFile
-  ---------------------------------------------------------------*/
-template <class OCTREE, class OCTREE_NODE>
-void COctoMapBase<OCTREE, OCTREE_NODE>::TInsertionOptions::loadFromConfigFile(
-	const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
-{
-	MRPT_LOAD_CONFIG_VAR(maxrange, double, iniFile, section);
-	MRPT_LOAD_CONFIG_VAR(pruning, bool, iniFile, section);
-
-	MRPT_LOAD_CONFIG_VAR(occupancyThres, double, iniFile, section);
-	MRPT_LOAD_CONFIG_VAR(probHit, double, iniFile, section);
-	MRPT_LOAD_CONFIG_VAR(probMiss, double, iniFile, section);
-	MRPT_LOAD_CONFIG_VAR(clampingThresMin, double, iniFile, section);
-	MRPT_LOAD_CONFIG_VAR(clampingThresMax, double, iniFile, section);
-
-	// Set loaded options into the actual octomap object, if any:
-	this->setOccupancyThres(occupancyThres);
-	this->setProbHit(probHit);
-	this->setProbMiss(probMiss);
-	this->setClampingThresMin(clampingThresMin);
-	this->setClampingThresMax(clampingThresMax);
-}
-
-template <class OCTREE, class OCTREE_NODE>
-void COctoMapBase<OCTREE, OCTREE_NODE>::TLikelihoodOptions::loadFromConfigFile(
-	const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
-{
-	MRPT_LOAD_CONFIG_VAR(decimation, int, iniFile, section);
-}
-
-/*  COctoMapColoured */
-template <class OCTREE, class OCTREE_NODE>
-uint8_t COctoMapBase<OCTREE, OCTREE_NODE>::TRenderingOptions::serializeGetVersion() const { return XX; } void COctoMapBase<OCTREE, OCTREE_NODE>::TRenderingOptions::serializeTo(
-	mrpt::utils::CStream& out) const
-{
-	const int8_t version = 0;
-	out << version;
-	out << generateGridLines << generateOccupiedVoxels << visibleOccupiedVoxels
-		<< generateFreeVoxels << visibleFreeVoxels;
-}
-
-template <class OCTREE, class OCTREE_NODE>
-void COctoMapBase<OCTREE, OCTREE_NODE>::TRenderingOptions::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
-	mrpt::utils::CStream& in)
+void COctoMapBase<OCTREE, OCTREE_NODE>::TInsertionOptions::dumpToTextStreamstd::ostream& in)
 {
 	int8_t version;
 	in >> version;

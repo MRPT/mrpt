@@ -16,7 +16,6 @@
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <map>
 
-using namespace mrpt::utils;
 using namespace mrpt::bayes;
 using namespace mrpt::math;
 using namespace mrpt::random;

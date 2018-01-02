@@ -12,7 +12,6 @@
 #include <mrpt/math/CMatrixD.h>
 #include <iomanip>
 
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::topography;
 using namespace mrpt::system;

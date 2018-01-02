@@ -28,7 +28,6 @@
 #include <mrpt/gui/CDisplayWindow.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::gui;

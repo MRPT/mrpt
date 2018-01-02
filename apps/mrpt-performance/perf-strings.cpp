@@ -13,7 +13,7 @@
 double format_test1(int, int)
 {
 	const unsigned int step = 10000;
-	mrpt::utils::CTicTac tictac;
+	mrpt::system::CTicTac tictac;
 	std::string s;
 	tictac.Tic();
 	for (unsigned int i = 0; i < step; i++)
@@ -26,7 +26,7 @@ double format_test1(int, int)
 double format_test2(int a, int b)
 {
 	const unsigned int step = 10000;
-	mrpt::utils::CTicTac tictac;
+	mrpt::system::CTicTac tictac;
 	std::string s;
 	tictac.Tic();
 	for (unsigned int i = 0; i < step; i++)

@@ -128,7 +128,7 @@ class CNodeRegistrationDecider
 	 * the
 	 * graph-optimization procedure / dijkstra_node_estimation
 	 */
-	mrpt::utils::TNodeID m_prev_registered_nodeID;
+	mrpt::graphs::TNodeID m_prev_registered_nodeID;
 	/**\brief Tracking the PDF of the current position of the robot with
 	 * regards to the <b previous registered node</b>.
 	 */

@@ -116,7 +116,7 @@ class CRawlogTreeView : public wxScrolledWindow
 	/** Returns an icon index depending on the class of the object in the tree
 	 * view
 	  */
-	static int iconIndexFromClass(const mrpt::utils::TRuntimeClassId* class_ID);
+	static int iconIndexFromClass(const mrpt::rtti::TRuntimeClassId* class_ID);
 
 	static const int ROW_HEIGHT;
 	static const int TREE_HORZ_STEPS;

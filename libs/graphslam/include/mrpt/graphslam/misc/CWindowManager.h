@@ -28,7 +28,7 @@ namespace graphslam
  *
  * \ingroup mrpt_graphslam_grp
  */
-class CWindowManager : public mrpt::utils::COutputLogger
+class CWindowManager : public mrpt::system::COutputLogger
 {
    public:
 	/**\brief Default class constructor */

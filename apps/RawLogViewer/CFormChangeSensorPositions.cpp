@@ -24,7 +24,7 @@
 
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CSensoryFrame.h>
@@ -37,7 +37,6 @@ using namespace mrpt::opengl;
 using namespace mrpt::poses;
 using namespace mrpt::system;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace std;
 
 // The index within the SF to process:

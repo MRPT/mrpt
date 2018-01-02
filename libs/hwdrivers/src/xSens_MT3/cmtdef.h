@@ -11,7 +11,7 @@
 #define _CMTDEF_H_2006_05_01
 
 #include <cstdint>
-#include <mrpt/utils/mrpt_macros.h>
+#include <mrpt/core/exceptions.h>
 #include <time.h>
 
 #ifdef _WIN32

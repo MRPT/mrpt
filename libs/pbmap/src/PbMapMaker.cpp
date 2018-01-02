@@ -360,7 +360,7 @@ void PbMapMaker::watchProperties(
 		 << configPbMap.hue_threshold << "\n";
 	// Watch properties
 	//  double tCondition;
-	//  mrpt::utils::CTicTac clock;
+	//  mrpt::system::CTicTac clock;
 	//  colorDev_THRESHOLD=configPbMap.color_threshold/10;
 
 	if (observedPlane.numObservations > 2)

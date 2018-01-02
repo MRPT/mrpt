@@ -13,7 +13,6 @@
 #include <mrpt/vision/chessboard_stereo_camera_calib.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::gui;
 using namespace mrpt::opengl;
 using namespace mrpt::vision;

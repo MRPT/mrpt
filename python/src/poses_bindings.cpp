@@ -18,7 +18,7 @@
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 
 /* STD */
 #include "math.h"
@@ -26,7 +26,6 @@
 
 using namespace boost::python;
 using namespace mrpt::poses;
-using namespace mrpt::utils;
 
 // prototypes
 #ifdef ROS_EXTENSIONS

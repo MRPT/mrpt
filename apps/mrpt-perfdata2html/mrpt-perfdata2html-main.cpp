@@ -28,7 +28,6 @@
 using namespace mrpt;
 using namespace mrpt::system;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace std;
 
 std::list<TestData> lstTests;
@@ -55,8 +54,7 @@ int run_build_tables(const std::string& PERF_DATA_DIR)
 	using namespace std;
 	using namespace mrpt;
 	using namespace mrpt::system;
-	using namespace mrpt::utils;
-
+	
 	// Perf. results are in:
 	//  PERF_DATA_DIR + mrpt::format("/perf-results-%i.%i.%i%s-%s-%ibit.dat"
 	// Data is serializations of: vector<pair<string,double> >  all_perf_data;

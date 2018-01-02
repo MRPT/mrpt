@@ -14,14 +14,13 @@
 
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 #include <mrpt/poses/CPose3D.h>
 
 using namespace mrpt;
 using namespace mrpt::math;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace std;
 

@@ -10,7 +10,7 @@
 #define CONSTRAINED_POSE_NETWORK_IMPL_H
 
 #include <mrpt/graphs/dijkstra.h>
-#include <mrpt/utils/CTextFileLinesParser.h>
+#include <mrpt/system/CTextFileLinesParser.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/math/CArrayNumeric.h>
 #include <mrpt/math/wrap2pi.h>
@@ -34,7 +34,6 @@ namespace detail
 {
 using namespace std;
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::graphs;
 

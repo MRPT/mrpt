@@ -25,7 +25,7 @@ namespace containers
  * only.
   * \note Both typenames KEY and VALUE must be suitable for being employed as
  * keys in a std::map, i.e. they must be comparable through a "< operator".
-  * \note Defined in #include <mrpt/utils/bimap.h>
+  * \note Defined in #include <mrpt/containers/bimap.h>
   * \ingroup mrpt_containers_grp
   */
 template <typename KEY, typename VALUE>

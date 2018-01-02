@@ -10,7 +10,7 @@
 #pragma once
 
 #include <mrpt/graphs/CDirectedTree.h>
-#include <mrpt/utils/traits_map.h>
+#include <mrpt/containers/traits_map.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/poses/CPose2D.h>
 
@@ -55,13 +55,13 @@ class TMoveTree : public mrpt::graphs::CDirectedTree<EDGE_TYPE>
 	{
 		/** Duplicated ID (it's also in the map::iterator->first), but put here
 		 * to make it available in path_t */
-		mrpt::utils::TNodeID node_id;
+		mrpt::graphs::TNodeID node_id;
 		/** INVALID_NODEID for the root, a valid ID otherwise */
-		mrpt::utils::TNodeID parent_id;
+		mrpt::graphs::TNodeID parent_id;
 		/** NULL for root, a valid edge otherwise */
 		EDGE_TYPE* edge_to_parent;
 		node_t(
-			mrpt::utils::TNodeID node_id_, mrpt::utils::TNodeID parent_id_,
+			mrpt::graphs::TNodeID node_id_, mrpt::graphs::TNodeID parent_id_,
 			EDGE_TYPE* edge_to_parent_, const NODE_TYPE_DATA& data)
 			: NODE_TYPE_DATA(data),
 			  node_id(node_id_),
@@ -76,22 +76,22 @@ class TMoveTree : public mrpt::graphs::CDirectedTree<EDGE_TYPE>
 	typedef EDGE_TYPE edge_t;
 	/** Map: TNode_ID => Node info */
 	typedef
-		typename MAPS_IMPLEMENTATION::template map<mrpt::utils::TNodeID, node_t>
+		typename MAPS_IMPLEMENTATION::template map<mrpt::graphs::TNodeID, node_t>
 			node_map_t;
 	/** A topological path up-tree */
 	typedef std::list<node_t> path_t;
 
 	/** Finds the nearest node to a given pose, using the given metric */
 	template <class NODE_TYPE_FOR_METRIC>
-	mrpt::utils::TNodeID getNearestNode(
+	mrpt::graphs::TNodeID getNearestNode(
 		const NODE_TYPE_FOR_METRIC& query_pt,
 		const PoseDistanceMetric<NODE_TYPE_FOR_METRIC>& distanceMetricEvaluator,
 		double* out_distance = NULL,
-		const std::set<mrpt::utils::TNodeID>* ignored_nodes = NULL) const
+		const std::set<mrpt::graphs::TNodeID>* ignored_nodes = NULL) const
 	{
 		ASSERT_(!m_nodes.empty());
 		double min_d = std::numeric_limits<double>::max();
-		mrpt::utils::TNodeID min_id = INVALID_NODEID;
+		mrpt::graphs::TNodeID min_id = INVALID_NODEID;
 		for (typename node_map_t::const_iterator it = m_nodes.begin();
 			 it != m_nodes.end(); ++it)
 		{
@@ -115,8 +115,8 @@ class TMoveTree : public mrpt::graphs::CDirectedTree<EDGE_TYPE>
 	}
 
 	void insertNodeAndEdge(
-		const mrpt::utils::TNodeID parent_id,
-		const mrpt::utils::TNodeID new_child_id,
+		const mrpt::graphs::TNodeID parent_id,
+		const mrpt::graphs::TNodeID new_child_id,
 		const NODE_TYPE_DATA& new_child_node_data,
 		const EDGE_TYPE& new_edge_data)
 	{
@@ -136,19 +136,19 @@ class TMoveTree : public mrpt::graphs::CDirectedTree<EDGE_TYPE>
 	/** Insert a node without edges (should be used only for a tree root node)
 	 */
 	void insertNode(
-		const mrpt::utils::TNodeID node_id, const NODE_TYPE_DATA& node_data)
+		const mrpt::graphs::TNodeID node_id, const NODE_TYPE_DATA& node_data)
 	{
 		m_nodes[node_id] = node_t(node_id, INVALID_NODEID, NULL, node_data);
 	}
 
-	mrpt::utils::TNodeID getNextFreeNodeID() const { return m_nodes.size(); }
+	mrpt::graphs::TNodeID getNextFreeNodeID() const { return m_nodes.size(); }
 	const node_map_t& getAllNodes() const { return m_nodes; }
 	/** Builds the path (sequence of nodes, with info about next edge) up-tree
 	 * from a `target_node` towards the root
 	  * Nodes are ordered in the direction ROOT -> start_node
 	  */
 	void backtrackPath(
-		const mrpt::utils::TNodeID target_node, path_t& out_path) const
+		const mrpt::graphs::TNodeID target_node, path_t& out_path) const
 	{
 		out_path.clear();
 		typename node_map_t::const_iterator it_src = m_nodes.find(target_node);
@@ -160,7 +160,7 @@ class TMoveTree : public mrpt::graphs::CDirectedTree<EDGE_TYPE>
 		{
 			out_path.push_front(*node);
 
-			mrpt::utils::TNodeID next_node_id = node->parent_id;
+			mrpt::graphs::TNodeID next_node_id = node->parent_id;
 			if (next_node_id == INVALID_NODEID)
 			{
 				break;  // finished
@@ -188,7 +188,7 @@ class TMoveTree : public mrpt::graphs::CDirectedTree<EDGE_TYPE>
 struct TMoveEdgeSE2_TP
 {
 	/** The ID of the parent node in the tree */
-	mrpt::utils::TNodeID parent_id;
+	mrpt::graphs::TNodeID parent_id;
 	/** state in SE2 as 2D pose (x, y, phi)  - \note: it is not possible to
 	 * initialize a motion without a state */
 	mrpt::math::TPose2D end_state;
@@ -203,7 +203,7 @@ struct TMoveEdgeSE2_TP
 	double ptg_dist;
 
 	TMoveEdgeSE2_TP(
-		const mrpt::utils::TNodeID parent_id_,
+		const mrpt::graphs::TNodeID parent_id_,
 		const mrpt::math::TPose2D end_pose_)
 		: parent_id(parent_id_),
 		  end_state(end_pose_),

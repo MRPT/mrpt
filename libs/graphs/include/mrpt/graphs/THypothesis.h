@@ -12,7 +12,7 @@
 
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/utils/types_simple.h>
+#include <cstdint>
 
 #include <iostream>
 #include <string>
@@ -88,9 +88,9 @@ struct THypothesis
 	/**\brief ID of the current hypothesis */
 	size_t id;
 	/**\brief Starting node of the hypothesis */
-	mrpt::utils::TNodeID from;
+	mrpt::graphs::TNodeID from;
 	/**\brief Ending node of the hypothesis */
-	mrpt::utils::TNodeID to;
+	mrpt::graphs::TNodeID to;
 	/**\brief Field that specifies if the hypothesis is to be considered */
 	bool is_valid;
 	/**\brief Goodness value corresponding to the hypothesis edge
@@ -111,7 +111,7 @@ struct THypothesis
 	 * \return True if ends are the given ones
 	 */
 	bool hasEnds(
-		const mrpt::utils::TNodeID from, const mrpt::utils::TNodeID to) const;
+		const mrpt::graphs::TNodeID from, const mrpt::graphs::TNodeID to) const;
 
 	/**\brief Handy operator for using THypothesis in std::set
 	 */

@@ -10,7 +10,7 @@
 #ifndef CEDGECOUNTER_H
 #define CEDGECOUNTER_H
 
-#include <mrpt/utils/mrpt_macros.h>
+#include <mrpt/core/exceptions.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 
 #include "CWindowManager.h"

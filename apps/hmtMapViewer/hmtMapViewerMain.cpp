@@ -63,7 +63,6 @@ using namespace mrpt::opengl;
 using namespace mrpt::gui;
 using namespace mrpt::system;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::maps;
 using namespace std;

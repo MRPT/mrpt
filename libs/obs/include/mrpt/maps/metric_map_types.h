@@ -85,7 +85,7 @@ struct TMatchingRatioParams
 };
 
 /** Common params to all maps derived from mrpt::maps::CMetricMap  */
-class TMapGenericParams : public mrpt::utils::CLoadableOptions,
+class TMapGenericParams : public mrpt::config::CLoadableOptions,
 						  public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(TMapGenericParams)
@@ -102,8 +102,7 @@ class TMapGenericParams : public mrpt::utils::CLoadableOptions,
 	void loadFromConfigFile(
 		const mrpt::config::CConfigFileBase& source,
 		const std::string& sectionNamePrefix) override;  // See base docs
-	void dumpToTextStream(
-		mrpt::utils::CStream& out) const override;  // See base docs
+	void dumpToTextStream(std::ostream& out) const override;  // See base docs
 };
 
 }  // End of namespace

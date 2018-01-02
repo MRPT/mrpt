@@ -9,12 +9,10 @@
 
 #include <mrpt/random.h>
 #include <mrpt/core/round.h>
-#include <mrpt/utils/bits.h>
 
 #include "common.h"
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::random;
 using namespace std;

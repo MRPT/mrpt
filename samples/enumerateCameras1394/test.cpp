@@ -9,7 +9,6 @@
 
 #include <mrpt/hwdrivers/CImageGrabber_dc1394.h>
 
-using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::obs;
 using namespace std;

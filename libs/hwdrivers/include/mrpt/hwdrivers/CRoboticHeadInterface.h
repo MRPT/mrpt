@@ -11,7 +11,7 @@
 #define CRoboticHeadInterface_H
 
 #include <mrpt/comms/CInterfaceFTDI.h>
-#include <mrpt/utils/CMessage.h>
+#include <mrpt/serialization/CMessage.h>
 #include <mrpt/math/CMatrixTemplate.h>
 #include <mrpt/system/COutputLogger.h>
 #include <mrpt/config/CConfigFileBase.h>
@@ -45,7 +45,7 @@ namespace hwdrivers
   *  \endcode
   * \ingroup mrpt_hwdrivers_grp
   */
-class CRoboticHeadInterface : public mrpt::utils::COutputLogger
+class CRoboticHeadInterface : public mrpt::system::COutputLogger
 {
    private:
 	mrpt::comms::CInterfaceFTDI m_usbConnection;

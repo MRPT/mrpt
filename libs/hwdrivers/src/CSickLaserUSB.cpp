@@ -9,9 +9,9 @@
 
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
-#include <mrpt/utils/crc.h>
+#include <mrpt/system/crc.h>
 #include <mrpt/hwdrivers/CSickLaserUSB.h>
 
 #ifdef _WIN32
@@ -22,7 +22,6 @@ IMPLEMENTS_GENERIC_SENSOR(CSickLaserUSB, mrpt::hwdrivers)
 
 using namespace std;
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::comms;
 using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;

@@ -17,7 +17,6 @@
 
 #include <thread>
 
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::comms::net;

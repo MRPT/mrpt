@@ -19,7 +19,6 @@
 #include <mrpt/config.h>
 #if MRPT_HAS_PCL
 
-#include <mrpt/utils.h>
 #include <mrpt/graphs/CGraphPartitioner.h>
 
 #include <mrpt/pbmap/PbMap.h>
@@ -380,7 +379,7 @@ class SemanticClustering
 	int evalPartition(std::set<unsigned>& observedPlanes)
 	{
 		using namespace std;
-		//      mrpt::utils::CTicTac time;
+		//      mrpt::system::CTicTac time;
 		//      time.Tic();
 		//
 

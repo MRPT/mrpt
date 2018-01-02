@@ -12,7 +12,7 @@
 #include <mrpt/obs/CAction.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/serialization/CSerializable.h>
-#include <mrpt/utils/poly_ptr_ptr.h>
+#include <mrpt/core/poly_ptr_ptr.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 
 namespace mrpt
@@ -133,7 +133,7 @@ class CActionCollection : public mrpt::serialization::CSerializable
 	{
 		MRPT_START
 		size_t foundCount = 0;
-		const mrpt::utils::TRuntimeClassId* class_ID = &T::GetRuntimeClassIdStatic();
+		const mrpt::rtti::TRuntimeClassId* class_ID = &T::GetRuntimeClassIdStatic();
 		for (const_iterator it = begin(); it != end(); ++it)
 			if ((*it)->GetRuntimeClass()->derivedFrom(class_ID))
 				if (foundCount++ == ith)

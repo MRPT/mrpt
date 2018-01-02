@@ -14,7 +14,7 @@
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/math/CMatrix.h>
-#include <mrpt/utils/TEnumType.h>
+#include <mrpt/typemeta/TEnumType.h>
 
 namespace mrpt
 {
@@ -262,8 +262,7 @@ class CColouredPointsMap : public CPointsMap
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+		void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
 		TColouringMethod scheme;
 		float z_min, z_max;

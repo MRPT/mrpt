@@ -11,7 +11,7 @@
 
 #include <mrpt/vision/utils.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/utils/safe_pointers.h>
+#include <mrpt/core/safe_pointers.h>
 
 namespace mrpt
 {
@@ -46,7 +46,7 @@ class CVideoFileWriter
 	/** A pointer to CvVideoWriter */
 	mrpt::void_ptr_noncopy m_video;
 	/** A copy of the video size */
-	mrpt::utils::TImageSize m_img_size;
+	mrpt::img::TImageSize m_img_size;
 
    public:
 	/** Default constructor, which does not open any file */
@@ -71,7 +71,7 @@ class CVideoFileWriter
 	  */
 	bool open(
 		const std::string& out_file, double fps,
-		const mrpt::utils::TImageSize& frameSize,
+		const mrpt::img::TImageSize& frameSize,
 		const std::string& fourcc = std::string(""), bool isColor = true);
 
 	/** Finish the file writing and close the file output

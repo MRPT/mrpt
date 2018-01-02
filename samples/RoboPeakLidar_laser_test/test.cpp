@@ -18,7 +18,6 @@ using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::obs;
 using namespace mrpt::gui;
-using namespace mrpt::utils;
 using namespace std;
 
 string SERIAL_NAME;  // Name of the serial port to open

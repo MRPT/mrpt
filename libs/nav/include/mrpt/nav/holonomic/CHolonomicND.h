@@ -91,7 +91,7 @@ class CHolonomicND : public CAbstractHolonomicReactiveMethod
 		mrpt::config::CConfigFileBase& c) const override;  // See base class docs
 
 	/** Algorithm options */
-	struct TOptions : public mrpt::utils::CLoadableOptions
+	struct TOptions : public mrpt::config::CLoadableOptions
 	{
 		double TOO_CLOSE_OBSTACLE, WIDE_GAP_SIZE_PERCENT,
 			RISK_EVALUATION_SECTORS_PERCENT;

@@ -24,7 +24,7 @@
 // General global variables:
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
-#include <mrpt/utils/stl_containers_utils.h>
+#include <mrpt/containers/stl_containers_utils.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
@@ -35,7 +35,6 @@ using namespace mrpt::obs;
 using namespace mrpt::opengl;
 using namespace mrpt::system;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
 

@@ -11,11 +11,10 @@
 
 #include <mrpt/comms/net_utils.h>
 #include <mrpt/hwdrivers/CServoeNeck.h>
-#include <mrpt/utils/CMessage.h>
+#include <mrpt/serialization/CMessage.h>
 
 #include <thread>
 
-using namespace mrpt::utils;
 using namespace mrpt::comms;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::math;

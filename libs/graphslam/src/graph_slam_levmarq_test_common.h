@@ -15,7 +15,6 @@
 
 using namespace mrpt;
 using namespace mrpt::random;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::graphs;
 using namespace mrpt::math;

@@ -11,7 +11,7 @@
 
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/config/CConfigFile.h>
-#include <mrpt/utils/mrpt_macros.h>
+#include <mrpt/core/exceptions.h>
 #include <mrpt/system/COutputLogger.h>
 #include <mrpt/system/filesystem.h>
 
@@ -38,7 +38,7 @@ class CGraphSlamHandler
    public:
 	/**\brief Constructor */
 	CGraphSlamHandler(
-		mrpt::utils::COutputLogger* logger,
+		mrpt::system::COutputLogger* logger,
 		mrpt::graphslam::apps::TUserOptionsChecker<GRAPH_T>* options_checker,
 		const bool enable_visuals /*=true*/);
 	/**\brief Destructor */
@@ -132,7 +132,7 @@ class CGraphSlamHandler
 	mrpt::graphslam::CWindowObserver* m_win_observer;
 	mrpt::gui::CDisplayWindow3D* m_win;
 
-	mrpt::utils::COutputLogger* m_logger;
+	mrpt::system::COutputLogger* m_logger;
 
 	/**\brief Pointer to the engine instance
 	*/

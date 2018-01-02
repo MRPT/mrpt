@@ -14,7 +14,6 @@
 
 using namespace std;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 
 /** Return two vectors with the cos and the sin of the angles for each of the
   * rays in a scan, computing them only the first time and returning a cached

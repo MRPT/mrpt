@@ -137,7 +137,7 @@ class CFaceDetection : public CObjectDetection
 	} m_measure;
 
 	// To take measures abaout execution time
-	mrpt::utils::CTimeLogger m_timeLog;
+	mrpt::system::CTimeLogger m_timeLog;
 
 	std::vector<double> m_meanHist;
 

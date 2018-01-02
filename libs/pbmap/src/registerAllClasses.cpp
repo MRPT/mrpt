@@ -11,7 +11,6 @@
 #include <mrpt/pbmap.h>
 #include <mrpt/core/initializer.h>
 
-using namespace mrpt::utils;
 using namespace mrpt::pbmap;
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_pbmap)

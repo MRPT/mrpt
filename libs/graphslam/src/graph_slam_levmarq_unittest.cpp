@@ -13,7 +13,6 @@
 
 using namespace mrpt;
 using namespace mrpt::random;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::graphs;
 using namespace mrpt::math;
@@ -59,7 +58,7 @@ class GraphSlamLevMarqTester : public GraphSlamLevMarqTest<my_graph_t>,
 		GraphSlamLevMarqTest<my_graph_t>::create_ring_path(graph);
 
 		// binary dump:
-		mrpt::utils::CMemoryStream mem;
+		mrpt::io::CMemoryStream mem;
 		mem << graph;
 
 		{

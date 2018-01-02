@@ -10,10 +10,9 @@
 #include "obs-precomp.h"  // Precompiled headers
 
 #include <mrpt/obs/CObservationSkeleton.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace std;
 

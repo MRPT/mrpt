@@ -10,12 +10,10 @@
 #include "hmtslam-precomp.h"  // Precomp header
 
 #include <mrpt/db/CSimpleDatabase.h>
-#include <mrpt/utils/metaprogramming.h>
 #include <mrpt/poses/CPoint2D.h>
 
 using namespace mrpt::poses;
 using namespace mrpt::slam;
-using namespace mrpt::utils;
 using namespace mrpt::hmtslam;
 
 IMPLEMENTS_SERIALIZABLE(CHierarchicalMHMap, CSerializable, mrpt::hmtslam)

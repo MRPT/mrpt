@@ -39,7 +39,6 @@
 using namespace mrpt;
 using namespace mrpt::system;
 using namespace mrpt::hwdrivers;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::poses;
 using namespace std;

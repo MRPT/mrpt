@@ -16,7 +16,6 @@ MRPT_TODO("Re-enable when mrpt-poses is ported!");
 #include <gtest/gtest.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace std;
 
 TEST(copy_ptr, SimpleOps)

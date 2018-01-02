@@ -170,7 +170,7 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 		m_navlogfiles_dir = sDir;
 	}
 	std::string getLogFileDirectory() const { return m_navlogfiles_dir; }
-	struct TAbstractPTGNavigatorParams : public mrpt::utils::CLoadableOptions
+	struct TAbstractPTGNavigatorParams : public mrpt::config::CLoadableOptions
 	{
 		/** C++ class name of the holonomic navigation method to run in the
 		 * transformed TP-Space */
@@ -247,7 +247,7 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 	void enableTimeLog(bool enable = true) { m_timelogger.enable(enable); }
 	/** Gives access to a const-ref to the internal time logger \sa
 	 * enableTimeLog */
-	const mrpt::utils::CTimeLogger& getTimeLogger() const
+	const mrpt::system::CTimeLogger& getTimeLogger() const
 	{
 		return m_timelogger;
 	}
@@ -305,15 +305,15 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 	bool m_enableConsoleOutput;
 	/** Whether \a loadConfigFile() has been called or not. */
 	bool m_init_done;
-	mrpt::utils::CTicTac timerForExecutionPeriod;
+	mrpt::system::CTicTac timerForExecutionPeriod;
 
 	/** A complete time logger \sa enableTimeLog() */
-	mrpt::utils::CTimeLogger m_timelogger;
+	mrpt::system::CTimeLogger m_timelogger;
 	bool m_PTGsMustBeReInitialized;
 
 	/** @name Variables for CReactiveNavigationSystem::performNavigationStep
 		@{ */
-	mrpt::utils::CTicTac totalExecutionTime, executionTime, tictac;
+	mrpt::system::CTicTac totalExecutionTime, executionTime, tictac;
 	mrpt::math::LowPassFilter_IIR1 meanExecutionTime;
 	mrpt::math::LowPassFilter_IIR1 meanTotalExecutionTime;
 	/** Runtime estimation of execution period of the method. */

@@ -26,7 +26,6 @@ using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::graphslam;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace std;
 
 // An auxiliary struct to compute the pseudo-ln of a pose error, possibly

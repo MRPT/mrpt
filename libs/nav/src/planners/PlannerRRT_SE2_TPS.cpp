@@ -16,7 +16,6 @@
 #include <mrpt/system/filesystem.h>
 
 using namespace mrpt::nav;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::poses;
 using namespace std;
@@ -46,7 +45,7 @@ void PlannerRRT_SE2_TPS::solve(
 	const PlannerRRT_SE2_TPS::TPlannerInput& pi,
 	PlannerRRT_SE2_TPS::TPlannerResult& result)
 {
-	mrpt::utils::CTimeLoggerEntry tle(m_timelogger, "PT_RRT::solve");
+	mrpt::system::CTimeLoggerEntry tle(m_timelogger, "PT_RRT::solve");
 
 	// Sanity checks:
 	ASSERTMSG_(m_initialized, "initialize() must be called before!");
@@ -64,7 +63,7 @@ void PlannerRRT_SE2_TPS::solve(
 			result.move_tree.root, TNodeSE2_TP(pi.start_pose));
 	}
 
-	mrpt::utils::CTicTac working_time;
+	mrpt::system::CTicTac working_time;
 	working_time.Tic();
 	size_t rrt_iter_counter = 0;
 
@@ -143,7 +142,7 @@ void PlannerRRT_SE2_TPS::solve(
 			const TNodeSE2_TP query_node(x_rand);
 
 			m_timelogger.enter("TMoveTree::getNearestNode");
-			mrpt::utils::TNodeID x_nearest_id =
+			mrpt::graphs::TNodeID x_nearest_id =
 				result.move_tree.getNearestNode(query_node, distance_evaluator);
 			m_timelogger.leave("TMoveTree::getNearestNode");
 
@@ -303,7 +302,7 @@ void PlannerRRT_SE2_TPS::solve(
 					(goal_dist < end_criteria.acceptedDistToTarget) &&
 					(goal_ang < end_criteria.acceptedAngToTarget);
 
-				mrpt::utils::TNodeID new_nearest_id = INVALID_NODEID;
+				mrpt::graphs::TNodeID new_nearest_id = INVALID_NODEID;
 				if (!is_acceptable_goal)  // Only check for nearby nodes if this
 				// is not a solution!
 				{
@@ -379,7 +378,7 @@ void PlannerRRT_SE2_TPS::solve(
 			const TNodeSE2_TP new_state_node(best_edge.end_state);
 
 			// Insert into the tree:
-			const mrpt::utils::TNodeID new_child_id =
+			const mrpt::graphs::TNodeID new_child_id =
 				result.move_tree.getNextFreeNodeID();
 			result.move_tree.insertNodeAndEdge(
 				best_edge.parent_id, new_child_id, new_state_node, best_edge);

@@ -21,7 +21,6 @@
 using namespace mrpt::hwdrivers;
 using namespace mrpt::obs;
 using namespace mrpt::system;
-using namespace mrpt::utils;
 using namespace mrpt::comms;
 using namespace std;
 
@@ -49,7 +48,7 @@ struct TParsersRegistry
 				Constructor
    ----------------------------------------------------- */
 CGPSInterface::CGPSInterface()
-	: mrpt::utils::COutputLogger("CGPSInterface"),
+	: mrpt::system::COutputLogger("CGPSInterface"),
 	  m_data_stream(nullptr),  // Typically a CSerialPort created by this class,
 	  // but may be set externally.
 	  m_data_stream_cs(nullptr),

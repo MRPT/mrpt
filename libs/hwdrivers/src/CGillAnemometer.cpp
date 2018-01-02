@@ -17,7 +17,6 @@
 #include <thread>
 
 using namespace std;
-using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
 
 IMPLEMENTS_GENERIC_SENSOR(CGillAnemometer, mrpt::hwdrivers)

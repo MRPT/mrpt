@@ -56,8 +56,7 @@ class CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+		void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
 		/** @name For all mapping methods
 			@{ */

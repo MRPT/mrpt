@@ -18,7 +18,7 @@ namespace mrpt
 namespace serialization
 {
 /** \addtogroup noncstream_serialization_zmq Serialization functions for ZMQ (v3
- * or above) (in #include <mrpt/utils/serialization_zmq.h>)
+ * or above) (in #include <mrpt/serialization/serialization_zmq.h>)
   * \ingroup noncstream_serialization
   * @{ */
 
@@ -28,7 +28,7 @@ namespace serialization
  * \param[in] max_packet_len The object will be split into a series of ZMQ
  * "message parts" of this maximum length (in bytes). Default=0, which means do
  * not split in parts.
- * \note Including `<mrpt/utils/serialization_zmq.h>` requires libzmq to be
+ * \note Including `<mrpt/serialization/serialization_zmq.h>` requires libzmq to be
  * available in your system and linked
  *  to your user code. This function can be used even if MRPT was built without
  * ZMQ support, thanks to the use of templates.
@@ -42,7 +42,7 @@ void mrpt_send_to_zmq(
 	ZMQ_SOCKET_TYPE zmq_socket, const mrpt::serialization::CSerializable& obj,
 	const size_t max_packet_len = 0)
 {
-	mrpt::utils::CMemoryStream* buf = new mrpt::utils::CMemoryStream();
+	mrpt::io::CMemoryStream* buf = new mrpt::io::CMemoryStream();
 	if (!buf) throw std::bad_alloc();
 
 	buf->WriteObject(&obj);
@@ -96,7 +96,7 @@ void mrpt_send_to_zmq(
 template <typename ZMQ_SOCKET_TYPE, typename VECTOR_MSG_T>
 bool mrpt_recv_from_zmq_buf(
 	ZMQ_SOCKET_TYPE zmq_socket, VECTOR_MSG_T& out_lst_msgs,
-	mrpt::utils::CMemoryStream& target_buf, bool dont_wait,
+	mrpt::io::CMemoryStream& target_buf, bool dont_wait,
 	size_t* rx_obj_length_in_bytes)
 {
 	if (rx_obj_length_in_bytes) *rx_obj_length_in_bytes = 0;
@@ -161,7 +161,7 @@ void free_zmq_msg_lst(VECTOR_MSG_T& lst_msgs)
  * stored here.
  * \return An empty smart pointer if there was any error. The received
  *  object if all went OK.
- * \note Including `<mrpt/utils/serialization_zmq.h>` requires libzmq to be
+ * \note Including `<mrpt/serialization/serialization_zmq.h>` requires libzmq to be
  *  available in your system and linked to your user code. This function
  *  can be used even if MRPT was built without ZMQ support, thanks to the
  *  use of templates.

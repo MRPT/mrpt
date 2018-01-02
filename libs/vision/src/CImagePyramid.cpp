@@ -11,7 +11,6 @@
 #include <mrpt/vision/CImagePyramid.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::vision;
 
 CImagePyramid::CImagePyramid() {}

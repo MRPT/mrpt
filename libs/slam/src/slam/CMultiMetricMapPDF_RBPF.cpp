@@ -35,7 +35,6 @@ using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::poses;
 using namespace mrpt::random;
-using namespace mrpt::utils;
 using namespace std;
 
 namespace mrpt

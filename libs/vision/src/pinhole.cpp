@@ -17,7 +17,6 @@
 using namespace mrpt;
 using namespace mrpt::vision;
 using namespace mrpt::vision::pinhole;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::math;

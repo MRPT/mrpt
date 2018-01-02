@@ -12,7 +12,7 @@
 #include <mrpt/config.h>
 
 #include <mrpt/obs/CObservationImage.h>
-#include <mrpt/utils/safe_pointers.h>
+#include <mrpt/core/safe_pointers.h>
 
 namespace mrpt
 {

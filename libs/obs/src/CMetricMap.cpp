@@ -9,7 +9,7 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPoint3D.h>
@@ -20,7 +20,6 @@
 
 using namespace mrpt::obs;
 using namespace mrpt::maps;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 

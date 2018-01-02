@@ -14,7 +14,6 @@
 
 #include <mrpt/core/initializer.h>
 
-using namespace mrpt::utils;
 using namespace mrpt::slam;
 using namespace mrpt::maps;
 using namespace mrpt::opengl;

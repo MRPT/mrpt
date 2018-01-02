@@ -120,7 +120,6 @@ using namespace mrpt::opengl;
 using namespace mrpt::gui;
 using namespace mrpt::system;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace std;
 
@@ -899,7 +898,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 		the_scan.aperture = LASER_APERTURE;
 		the_scan.stdError = LASER_STD_ERROR;
 
-		static mrpt::utils::CTimeLogger timlog;
+		static mrpt::system::CTimeLogger timlog;
 
 		timlog.enter("laserScanSimulator");
 		the_grid.laserScanSimulator(

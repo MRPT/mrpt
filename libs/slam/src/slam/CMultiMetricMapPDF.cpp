@@ -33,7 +33,6 @@ using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::poses;
 using namespace mrpt::random;
-using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
 
@@ -642,8 +641,7 @@ CMultiMetricMapPDF::TPredictionParams::TPredictionParams()
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void CMultiMetricMapPDF::TPredictionParams::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+void CMultiMetricMapPDF::TPredictionParams::dumpToTextStream(std::ostream& out) const
 {
 	out.printf(
 		"\n----------- [CMultiMetricMapPDF::TPredictionParams] ------------ "

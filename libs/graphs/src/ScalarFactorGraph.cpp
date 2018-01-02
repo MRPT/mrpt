@@ -14,7 +14,6 @@
 
 using namespace mrpt;
 using namespace mrpt::graphs;
-using namespace mrpt::utils;
 using namespace std;
 
 #if EIGEN_VERSION_AT_LEAST(3, 1, 0)  // Requires Eigen>=3.1
@@ -152,7 +151,7 @@ void ScalarFactorGraph::updateEstimation(
 	// -----------------------
 	Eigen::SparseMatrix<double> A(m, n);
 	{
-		mrpt::utils::CTimeLoggerEntry tle(
+		mrpt::system::CTimeLoggerEntry tle(
 			m_timelogger, "GMRF.build_A_compress");
 
 		A.setFromTriplets(A_tri.begin(), A_tri.end());
@@ -164,7 +163,7 @@ void ScalarFactorGraph::updateEstimation(
 	Eigen::SparseQR<Eigen::SparseMatrix<double>, Eigen::COLAMDOrdering<int>>
 		solver;
 	{
-		mrpt::utils::CTimeLoggerEntry tle(m_timelogger, "GMRF.solve");
+		mrpt::system::CTimeLoggerEntry tle(m_timelogger, "GMRF.solve");
 
 		solver.compute(A);
 		solved_x_inc = solver.solve(g);
@@ -174,7 +173,7 @@ void ScalarFactorGraph::updateEstimation(
 	// -----------------------
 	if (solved_variances)
 	{
-		mrpt::utils::CTimeLoggerEntry tle(m_timelogger, "GMRF.variance");
+		mrpt::system::CTimeLoggerEntry tle(m_timelogger, "GMRF.variance");
 
 		solved_variances->resize(n);
 

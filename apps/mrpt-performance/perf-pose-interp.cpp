@@ -28,7 +28,7 @@ template <typename PATH_T, typename pose_t, bool INSERT_AT_END,
 double pose_interp_test(int a1, int a2)
 {
 	const long N = 400000;
-	mrpt::utils::CTicTac tictac;
+	mrpt::system::CTicTac tictac;
 
 	pose_t a = pose_t(mrpt::poses::CPose3D(1.0, 2.0, 0, DEG2RAD(10), .0, .0));
 

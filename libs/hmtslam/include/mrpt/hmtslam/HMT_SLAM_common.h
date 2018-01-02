@@ -10,7 +10,7 @@
 #define HMT_SLAM_common_H
 
 #include <mrpt/serialization/CSerializable.h>
-#include <mrpt/utils/list_searchable.h>
+#include <mrpt/containers/list_searchable.h>
 #include <set>
 
 #define COMMON_TOPOLOG_HYP static_cast<THypothesisID>(0)

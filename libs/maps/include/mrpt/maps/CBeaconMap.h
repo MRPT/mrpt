@@ -120,28 +120,7 @@ class CBeaconMap : public mrpt::maps::CMetricMap
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
-
-		/** The standard deviation used for Beacon ranges likelihood
-		 * (default=0.08m).
-		  */
-		float rangeStd;
-	} likelihoodOptions;
-
-	/** This struct contains data for choosing the method by which new beacons
-	 * are inserted in the map.
-	 */
-	struct TInsertionOptions : public utils::CLoadableOptions
-	{
-	   public:
-		/** Initilization of default parameters */
-		TInsertionOptions();
-		void loadFromConfigFile(
-			const mrpt::config::CConfigFileBase& source,
-			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+		void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
 		/** Insert a new beacon as a set of montecarlo samples (default=true),
 		 * or, if false, as a sum of gaussians (see mrpt::maps::CBeacon).

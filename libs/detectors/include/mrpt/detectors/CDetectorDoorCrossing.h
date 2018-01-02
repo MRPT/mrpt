@@ -25,7 +25,7 @@ namespace detectors
  *
  * \sa CPointsMap   \ingroup mrpt_slam_grp
  */
-class CDetectorDoorCrossing : public mrpt::utils::COutputLogger
+class CDetectorDoorCrossing : public mrpt::system::COutputLogger
 {
    public:
 	/** The constructor. See options for customizing the default parameters.

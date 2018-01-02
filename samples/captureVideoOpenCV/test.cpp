@@ -12,7 +12,6 @@
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/gui/CDisplayWindow.h>
 
-using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::gui;
 using namespace mrpt::obs;

@@ -13,7 +13,6 @@
 #include <mrpt/system/string_utils.h>
 
 using namespace mrpt::nav;
-using namespace mrpt::utils;
 
 IMPLEMENTS_VIRTUAL_MRPT_OBJECT(
 	CMultiObjectiveMotionOptimizerBase, CObject, mrpt::nav)
@@ -229,8 +228,8 @@ CMultiObjectiveMotionOptimizerBase::Ptr
 		mrpt::utils::registerAllPendingClasses();
 
 		// Factory:
-		const mrpt::utils::TRuntimeClassId* classId =
-			mrpt::utils::findRegisteredClass(className);
+		const mrpt::rtti::TRuntimeClassId* classId =
+			mrpt::rtti::findRegisteredClass(className);
 		if (!classId) return nullptr;
 
 		return CMultiObjectiveMotionOptimizerBase::Ptr(

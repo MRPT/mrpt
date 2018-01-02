@@ -24,7 +24,6 @@
 #include <cassert>
 
 using namespace mrpt::pbmap;
-using namespace mrpt::utils;
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(Plane, CSerializable, mrpt::pbmap)

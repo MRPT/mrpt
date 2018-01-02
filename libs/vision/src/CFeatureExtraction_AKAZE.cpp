@@ -22,7 +22,6 @@
 #include <mrpt/io/CMemoryStream.h>
 
 using namespace mrpt::vision;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt;
 using namespace std;

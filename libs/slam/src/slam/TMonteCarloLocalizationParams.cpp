@@ -12,7 +12,6 @@
 #include <mrpt/slam/TMonteCarloLocalizationParams.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::slam;
 using namespace std;
 

@@ -8,9 +8,6 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-//#include <mrpt/config.h>
-//#include <mrpt/utils/compiler_fixes.h>
-//#include <mrpt/utils/types_simple.h>
 #include <string>
 
 namespace mrpt

@@ -22,7 +22,6 @@
 
 using namespace std;
 using namespace mrpt;
-using namespace mrpt::utils;
 
 #if MRPT_HAS_SSE2 && MRPT_HAS_OPENCV
 

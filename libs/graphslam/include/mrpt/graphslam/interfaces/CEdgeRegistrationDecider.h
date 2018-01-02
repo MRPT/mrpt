@@ -15,7 +15,7 @@
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
-#include <mrpt/utils/types_simple.h>
+#include <cstdint>
 #include <mrpt/system/TParameters.h>
 
 #include <mrpt/graphslam/misc/CWindowManager.h>
@@ -93,11 +93,11 @@ class CEdgeRegistrationDecider
 		 */
 	/**\{*/
 	virtual void checkRegistrationCondition(
-		mrpt::utils::TNodeID from, mrpt::utils::TNodeID to)
+		mrpt::graphs::TNodeID from, mrpt::graphs::TNodeID to)
 	{
 	}
 	virtual void checkRegistrationCondition(
-		const std::set<mrpt::utils::TNodeID>&)
+		const std::set<mrpt::graphs::TNodeID>&)
 	{
 	}
 	/**\}*/
@@ -107,7 +107,7 @@ class CEdgeRegistrationDecider
 	 * GRAPH_T::insertEdge method.
  */
 	virtual void registerNewEdge(
-		const mrpt::utils::TNodeID& from, const mrpt::utils::TNodeID& to,
+		const mrpt::graphs::TNodeID& from, const mrpt::graphs::TNodeID& to,
 		const constraint_t& rel_edge);
 
 	bool m_just_inserted_lc;

@@ -10,7 +10,7 @@
 #include "nav-precomp.h"  // Precomp header
 
 #include <mrpt/nav/holonomic/CHolonomicFullEval.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 #include <mrpt/core/round.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/ops_containers.h>
@@ -18,7 +18,6 @@
 #include <cmath>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::nav;
 using namespace std;

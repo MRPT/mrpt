@@ -18,9 +18,9 @@
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/math/CMatrix.h>
-#include <mrpt/utils/TEnumType.h>
+#include <mrpt/typemeta/TEnumType.h>
 #include <mrpt/opengl/pointcloud_adapters.h>
-#include <mrpt/utils/integer_select.h>
+#include <mrpt/core/integer_select.h>
 #include <mrpt/serialization/stl_serialization.h>
 
 namespace mrpt

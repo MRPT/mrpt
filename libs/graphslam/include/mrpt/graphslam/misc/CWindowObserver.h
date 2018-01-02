@@ -64,7 +64,7 @@ class CWindowObserver : public mrpt::system::CObserver
 	 * checked
 	 */
 	std::map<std::string, bool> m_key_codes_to_pressed;
-	mrpt::utils::CTicTac m_tim_show_start, m_tim_show_end;
+	mrpt::system::CTicTac m_tim_show_start, m_tim_show_end;
 };
 }
 }  // END OF NAMESPACES

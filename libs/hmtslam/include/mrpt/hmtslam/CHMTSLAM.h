@@ -63,7 +63,7 @@ class CLSLAM_RBPF_2DLASER;
  * \sa CHierarchicalMHMap
   * \ingroup mrpt_hmtslam_grp
  */
-class CHMTSLAM : public mrpt::utils::COutputLogger,
+class CHMTSLAM : public mrpt::system::COutputLogger,
 				 public mrpt::serialization::CSerializable
 {
 	friend class CLocalMetricHypothesis;
@@ -360,7 +360,7 @@ class CHMTSLAM : public mrpt::utils::COutputLogger,
 	  */
 	CHMTSLAM();
 
-	CHMTSLAM(const CHMTSLAM&) : mrpt::utils::COutputLogger()
+	CHMTSLAM(const CHMTSLAM&) : mrpt::system::COutputLogger()
 	{
 		THROW_EXCEPTION("This object cannot be copied.");
 	}
@@ -437,8 +437,7 @@ class CHMTSLAM : public mrpt::utils::COutputLogger,
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+		void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
 		/** [LOGGING] If it is not an empty string (""), a directory with that
 		 * name will be created and log files save there. */

@@ -30,7 +30,6 @@ using namespace mrpt::poses;
 using namespace mrpt::slam;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 
 // CMetricMap
 bool CMetricMap_insertObservation(

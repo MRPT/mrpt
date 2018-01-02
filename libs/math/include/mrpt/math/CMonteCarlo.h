@@ -111,7 +111,7 @@ class CMonteCarlo
 			throw std::logic_error("Value generator function is not set.");
 		std::vector<T> baseData(N);
 		std::vector<NUM> errorData(N);
-		mrpt::utils::CTicTac meter;
+		mrpt::system::CTicTac meter;
 		for (size_t i = 0; i < N; ++i) baseData[i] = valueGenerator(gen);
 		if (errorFun1)
 		{

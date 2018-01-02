@@ -21,7 +21,6 @@
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::vision;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 
 using mrpt::aligned_containers;
@@ -91,7 +90,7 @@ double mrpt::vision::bundle_adj_full(
 	const bool enable_profiler =
 		0 != extra_params.getWithDefaultVal("profiler", 0);
 
-	mrpt::utils::CTimeLogger profiler(enable_profiler);
+	mrpt::system::CTimeLogger profiler(enable_profiler);
 
 	profiler.enter("bundle_adj_full (complete run)");
 

@@ -64,7 +64,7 @@ class CHolonomicVFF : public CAbstractHolonomicReactiveMethod
 		mrpt::config::CConfigFileBase& c) const override;  // See base class docs
 
 	/** Algorithm options */
-	struct TOptions : public mrpt::utils::CLoadableOptions
+	struct TOptions : public mrpt::config::CLoadableOptions
 	{
 		/** For stopping gradually (Default: 0.10) */
 		double TARGET_SLOW_APPROACHING_DISTANCE;

@@ -11,7 +11,7 @@
 
 #include <mrpt/graphslam/types.h>
 #include <mrpt/system/TParameters.h>
-#include <mrpt/utils/stl_containers_utils.h>  // find_in_vector()
+#include <mrpt/containers/stl_containers_utils.h>  // find_in_vector()
 #include <mrpt/graphslam/levmarq_impl.h>  // Aux classes
 
 #include <iterator>  // ostream_iterator
@@ -78,7 +78,7 @@ namespace graphslam
 template <class GRAPH_T>
 void optimize_graph_spa_levmarq(
 	GRAPH_T& graph, TResultInfoSpaLevMarq& out_info,
-	const std::set<mrpt::utils::TNodeID>* in_nodes_to_optimize = nullptr,
+	const std::set<mrpt::graphs::TNodeID>* in_nodes_to_optimize = nullptr,
 	const mrpt::system::TParametersDouble& extra_params =
 		mrpt::system::TParametersDouble(),
 	typename graphslam_traits<GRAPH_T>::TFunctorFeedback functor_feedback =
@@ -88,8 +88,7 @@ void optimize_graph_spa_levmarq(
 	using namespace mrpt::poses;
 	using namespace mrpt::graphslam;
 	using namespace mrpt::math;
-	using namespace mrpt::utils;
-	using namespace std;
+		using namespace std;
 
 	MRPT_START
 
@@ -118,7 +117,7 @@ void optimize_graph_spa_levmarq(
 	const double SCALE_HESSIAN =
 		extra_params.getWithDefaultVal("scale_hessian", 1);
 
-	mrpt::utils::CTimeLogger profiler(enable_profiler);
+	mrpt::system::CTimeLogger profiler(enable_profiler);
 	profiler.enter("optimize_graph_spa_levmarq (entire)");
 
 	// Make list of node IDs to optimize, since the user may want only a subset

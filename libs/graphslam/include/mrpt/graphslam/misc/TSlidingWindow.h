@@ -46,7 +46,7 @@ namespace graphslam
  *
  * \ingroup mrpt_graphslam_grp
  */
-struct TSlidingWindow : public mrpt::utils::CLoadableOptions
+struct TSlidingWindow : public mrpt::config::CLoadableOptions
 {
    public:
 	TSlidingWindow(std::string name = "window");
@@ -86,7 +86,7 @@ struct TSlidingWindow : public mrpt::utils::CLoadableOptions
 	void loadFromConfigFile(
 		const mrpt::config::CConfigFileBase& source, const std::string& section);
 	// TODO - make it use the boundaries
-	void dumpToTextStream(mrpt::utils::CStream& out) const;
+	void dumpToTextStream(std::ostream& out) const;
 
 	/**\brief Return the size of the window
 	 */

@@ -13,7 +13,6 @@
 
 using namespace mrpt;
 using namespace mrpt::nav;
-using namespace mrpt::utils;
 using namespace mrpt::system;
 
 IMPLEMENTS_SERIALIZABLE(

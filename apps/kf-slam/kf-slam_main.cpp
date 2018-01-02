@@ -37,7 +37,6 @@ using namespace mrpt::opengl;
 using namespace mrpt::system;
 using namespace mrpt::math;
 using namespace mrpt::poses;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace std;
 
@@ -333,7 +332,7 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 	// Is there a ground truth file of the data association?
 	std::map<double, std::vector<int>>
 		GT_DA;  // Map: timestamp -> vector(index in observation -> real index)
-	mrpt::utils::bimap<int, int> DA2GTDA_indices;  // Landmark indices
+	mrpt::containers::bimap<int, int> DA2GTDA_indices;  // Landmark indices
 	// bimapping: SLAM DA <--->
 	// GROUND TRUTH DA
 	if (!ground_truth_data_association.empty() &&
@@ -550,7 +549,7 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 								// TruePos -> If that LM index corresponds to
 								// that in the GT (with index mapping):
 
-								// mrpt::utils::bimap<int,int>  DA2GTDA_indices;
+								// mrpt::containers::bimap<int,int>  DA2GTDA_indices;
 								// // Landmark indices bimapping: SLAM DA <--->
 								// GROUND TRUTH DA
 								if (DA2GTDA_indices.hasKey(it->second))

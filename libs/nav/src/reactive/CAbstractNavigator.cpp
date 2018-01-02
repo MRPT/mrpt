@@ -90,7 +90,7 @@ CAbstractNavigator::TRobotPoseVel::TRobotPoseVel()
 							Constructor
   ---------------------------------------------------------------*/
 CAbstractNavigator::CAbstractNavigator(CRobot2NavInterface& react_iterf_impl)
-	: mrpt::utils::COutputLogger("MRPT_navigator"),
+	: mrpt::system::COutputLogger("MRPT_navigator"),
 	  m_lastNavigationState(IDLE),
 	  m_navigationEndEventSent(false),
 	  m_counter_check_target_is_blocked(0),
@@ -182,7 +182,7 @@ void CAbstractNavigator::saveConfigFile(mrpt::config::CConfigFileBase& c) const
 void CAbstractNavigator::navigationStep()
 {
 	std::lock_guard<std::recursive_mutex> csl(m_nav_cs);
-	mrpt::utils::CTimeLoggerEntry tle(
+	mrpt::system::CTimeLoggerEntry tle(
 		m_timlog_delays, "CAbstractNavigator::navigationStep()");
 
 	const TState prevState = m_navigationState;
@@ -348,7 +348,7 @@ void CAbstractNavigator::updateCurrentPoseAndSpeeds()
 	}
 
 	{
-		mrpt::utils::CTimeLoggerEntry tle(
+		mrpt::system::CTimeLoggerEntry tle(
 			m_timlog_delays, "getCurrentPoseAndSpeeds()");
 		m_curPoseVel.pose_frame_id = std::string("map");  // default
 		if (!m_robot.getCurrentPoseAndSpeeds(

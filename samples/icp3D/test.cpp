@@ -32,7 +32,6 @@ using namespace mrpt::poses;
 using namespace mrpt::slam;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 
 // Increase this values to get more precision. It will also increase run time.
 const size_t HOW_MANY_YAWS = 120;

@@ -125,7 +125,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 		false;  // the robot is aligning into a waypoint with a desired heading
 
 	{
-		mrpt::utils::CTimeLoggerEntry tle(
+		mrpt::system::CTimeLoggerEntry tle(
 			m_timlog_delays, "CWaypointsNavigator::navigationStep()");
 		std::lock_guard<std::recursive_mutex> csl(m_nav_waypoints_cs);
 

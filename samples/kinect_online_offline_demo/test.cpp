@@ -39,7 +39,6 @@ using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::gui;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace std;
 
 // Thread for online/offline capturing: This should be done in another thread
@@ -355,7 +354,7 @@ void Test_KinectOnlineOffline(
 			// -------------------------------------------------------
 			if (newObs->hasRangeImage)
 			{
-				static mrpt::utils::CTimeLogger logger;
+				static mrpt::system::CTimeLogger logger;
 				logger.enter("RGBD->3D");
 
 // Pathway: RGB+D --> PCL <PointXYZ> --> XYZ opengl

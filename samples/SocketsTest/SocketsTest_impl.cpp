@@ -24,8 +24,7 @@ using mrpt::serialization::CMessage;
 void thread_server()
 {
 	using namespace mrpt::comms;
-	using namespace mrpt::utils;
-	using namespace std;
+		using namespace std;
 
 	try
 	{
@@ -75,8 +74,7 @@ void thread_server()
 void thread_client()
 {
 	using namespace mrpt::comms;
-	using namespace mrpt::utils;
-	using namespace std;
+		using namespace std;
 
 	try
 	{

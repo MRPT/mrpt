@@ -8,14 +8,13 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/hwdrivers/CTuMicos.h>
-#include <mrpt/utils/utils_defs.h>  // DEG2RAD
+#include <mrpt/core/bits_math.h>  // DEG2RAD
 
 #include <iostream>
 #include <cstdlib>
 #include <cstdio>
 
 using namespace std;
-using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
 
 void showMenu();

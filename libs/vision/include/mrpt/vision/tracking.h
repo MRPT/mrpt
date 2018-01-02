@@ -211,12 +211,12 @@ struct CGenericFeatureTracker
 	}
 
 	/** Returns a read-only reference to the internal time logger */
-	inline const mrpt::utils::CTimeLogger& getProfiler() const
+	inline const mrpt::system::CTimeLogger& getProfiler() const
 	{
 		return m_timlog;
 	}
 	/** Returns a reference to the internal time logger */
-	inline mrpt::utils::CTimeLogger& getProfiler() { return m_timlog; }
+	inline mrpt::system::CTimeLogger& getProfiler() { return m_timlog; }
 	/** Returns a read-only reference to the internal time logger */
 	inline void enableTimeLogger(bool enable = true)
 	{
@@ -262,7 +262,7 @@ struct CGenericFeatureTracker
 		CFeatureList& inout_featureList) = 0;
 
 	/** the internal time logger, disabled by default. */
-	mrpt::utils::CTimeLogger m_timlog;
+	mrpt::system::CTimeLogger m_timlog;
 
 	/** This field is clared by \a trackFeatures() before calling \a
 	 * trackFeatures_impl(), and

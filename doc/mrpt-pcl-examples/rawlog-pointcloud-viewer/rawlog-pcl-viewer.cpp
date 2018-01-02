@@ -124,7 +124,7 @@ int main(int argc, char**argv)
 
 
 		std::cout << "Opening: " << argv[1] << std::endl;
-		mrpt::utils::CFileGZInputStream  fil(argv[1]);
+		mrpt::io::CFileGZInputStream  fil(argv[1]);
 		bool rawlog_eof = false;
 
 		pcl::visualization::CloudViewer viewer("Cloud Viewer from MRPT's rawlog");

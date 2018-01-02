@@ -37,7 +37,6 @@
 #include <mrpt/gui/WxUtils.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
 using namespace std;
@@ -1310,7 +1309,7 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(
 	// Load image from embedded JPEG image in .h:
 	try
 	{
-		mrpt::utils::CMemoryStream img1_jpeg_stream(
+		mrpt::io::CMemoryStream img1_jpeg_stream(
 			kinect_covered_projector_img_jpeg,
 			sizeof(kinect_covered_projector_img_jpeg));
 		mrpt::img::CImage img1;
@@ -2013,15 +2012,15 @@ void kinect_calibrate_guiDialog::ProcessNewSelectedImageListBox()
 					->GetSize();  // In theory, right&left will be always equal.
 			const double szRatio = static_cast<double>(szView.x) / szView.y;
 
-			const mrpt::utils::TImageSize szL = il.getSize();
-			const mrpt::utils::TImageSize szR = ir.getSize();
+			const mrpt::img::TImageSize szL = il.getSize();
+			const mrpt::img::TImageSize szR = ir.getSize();
 
 			const double lRatio =
 				static_cast<double>(szL.x) /
 				szL.y;  // Don't assume both images have equal size
 			const double rRatio = static_cast<double>(szR.x) / szR.y;
 
-			mrpt::utils::TImageSize trg_sz_l, trg_sz_r;
+			mrpt::img::TImageSize trg_sz_l, trg_sz_r;
 
 			if (szRatio < lRatio)
 			{  // Fill y

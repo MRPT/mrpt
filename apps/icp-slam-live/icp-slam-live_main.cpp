@@ -185,8 +185,7 @@ void MapBuilding_ICP_Live(const string& INI_FILENAME)
 
 	using namespace mrpt::slam;
 	using namespace mrpt::obs;
-	using namespace mrpt::utils;
-	using namespace mrpt::opengl;
+		using namespace mrpt::opengl;
 	using namespace mrpt::poses;
 	using namespace mrpt::maps;
 

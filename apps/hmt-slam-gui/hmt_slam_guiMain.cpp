@@ -25,7 +25,6 @@
 #include <wx/artprov.h>
 //*)
 
-#include <mrpt/utils.h>
 #include <mrpt/system/filesystem.h>
 
 using namespace std;
@@ -34,7 +33,6 @@ using namespace mrpt::hmtslam;
 using namespace mrpt::slam;
 using namespace mrpt::system;
 using namespace mrpt::poses;
-using namespace mrpt::utils;
 
 //(*IdInit(hmt_slam_guiFrame)
 const long hmt_slam_guiFrame::ID_BUTTON1 = wxNewId();

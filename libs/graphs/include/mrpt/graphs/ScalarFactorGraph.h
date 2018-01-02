@@ -8,7 +8,6 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/utils/core_defs.h>
 #include <mrpt/math/types_math.h>
 #include <mrpt/system/COutputLogger.h>
 #include <mrpt/system/CTimeLogger.h>
@@ -41,7 +40,7 @@ namespace graphs
  * \ingroup mrpt_graph_grp
  * \note [New in MRPT 1.5.0] Requires Eigen>=3.1
  */
-class ScalarFactorGraph : public mrpt::utils::COutputLogger
+class ScalarFactorGraph : public mrpt::system::COutputLogger
 {
    public:
 	ScalarFactorGraph();
@@ -110,7 +109,7 @@ class ScalarFactorGraph : public mrpt::utils::COutputLogger
 	std::deque<const UnaryFactorVirtualBase*> m_factors_unary;
 	std::deque<const BinaryFactorVirtualBase*> m_factors_binary;
 
-	mrpt::utils::CTimeLogger m_timelogger;
+	mrpt::system::CTimeLogger m_timelogger;
 	bool m_enable_profiler;
 
 };  // End of class def.

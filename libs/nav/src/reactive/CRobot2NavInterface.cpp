@@ -14,7 +14,7 @@
 using namespace mrpt::nav;
 
 CRobot2NavInterface::CRobot2NavInterface()
-	: mrpt::utils::COutputLogger("CRobot2NavInterface")
+	: mrpt::system::COutputLogger("CRobot2NavInterface")
 {
 }
 CRobot2NavInterface::~CRobot2NavInterface() {}

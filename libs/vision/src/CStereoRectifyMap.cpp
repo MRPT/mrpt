@@ -16,7 +16,6 @@
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::vision;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 
 // Ctor: Leave all vectors empty

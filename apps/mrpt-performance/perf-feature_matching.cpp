@@ -13,7 +13,6 @@
 #include "common.h"
 
 using namespace mrpt::vision;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::system;
 using namespace std;

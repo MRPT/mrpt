@@ -31,7 +31,6 @@ using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace cv::line_descriptor;
 using namespace mrpt::vision;
-using namespace mrpt::utils;
 using namespace mrpt::gui;
 using namespace mrpt::math;
 using namespace mrpt;
@@ -975,7 +974,7 @@ void MainWindow::makeVisionOptionsVisible(bool flag)
 void MainWindow::readRawlogFiles(string rawlog)
 {
 	/// APPROACH 1: not required
-	/*mrpt::utils::CFileGZInputStream rawlog_stream_;// = new CFileGZInputStream
+	/*mrpt::io::CFileGZInputStream rawlog_stream_;// = new CFileGZInputStream
 	rawlog_stream_.open(rawlog);
 	CSensoryFrame frames;
 	CActionCollection actions;

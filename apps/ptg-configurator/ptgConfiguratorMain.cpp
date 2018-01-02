@@ -852,8 +852,8 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	// Populate list of existing PTGs:
 	{
 		// mrpt::nav::registerAllNavigationClasses();
-		const std::vector<const mrpt::utils::TRuntimeClassId*>& lstClasses =
-			mrpt::utils::getAllRegisteredClasses();
+		const std::vector<const mrpt::rtti::TRuntimeClassId*>& lstClasses =
+			mrpt::rtti::getAllRegisteredClasses();
 		for (size_t i = 0; i < lstClasses.size(); i++)
 		{
 			if (!lstClasses[i]->derivedFrom(
@@ -957,8 +957,8 @@ void ptgConfiguratorframe::OncbPTGClassSelect(wxCommandEvent& event)
 	}
 
 	// Factory:
-	const mrpt::utils::TRuntimeClassId* classId =
-		mrpt::utils::findRegisteredClass(sSelPTG);
+	const mrpt::rtti::TRuntimeClassId* classId =
+		mrpt::rtti::findRegisteredClass(sSelPTG);
 	if (!classId)
 	{
 		THROW_EXCEPTION_FMT(
@@ -988,7 +988,7 @@ void ptgConfiguratorframe::OncbPTGClassSelect(wxCommandEvent& event)
 void ptgConfiguratorframe::rebuild3Dview()
 {
 	WX_START_TRY;
-	static mrpt::utils::CTicTac timer;
+	static mrpt::system::CTicTac timer;
 	const double refDist = ptg ? ptg->getRefDistance() : 10.0;
 	ASSERT_(refDist > 0);
 
@@ -1311,8 +1311,8 @@ void ptgConfiguratorframe::loadPlugin()
 	// Populate list of existing PTGs:
 	{
 		cbPTGClass->Clear();
-		const std::vector<const mrpt::utils::TRuntimeClassId*>& lstClasses =
-			mrpt::utils::getAllRegisteredClasses();
+		const std::vector<const mrpt::rtti::TRuntimeClassId*>& lstClasses =
+			mrpt::rtti::getAllRegisteredClasses();
 		for (size_t i = 0; i < lstClasses.size(); i++)
 		{
 			if (!lstClasses[i]->derivedFrom(

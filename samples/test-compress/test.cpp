@@ -13,7 +13,6 @@
 #include <cstdio>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::system;
 using namespace std;

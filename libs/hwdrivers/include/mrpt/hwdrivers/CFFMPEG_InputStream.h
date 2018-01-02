@@ -11,7 +11,7 @@
 #define CFFMPEG_InputStream_H
 
 #include <mrpt/img/CImage.h>
-#include <mrpt/utils/safe_pointers.h>
+#include <mrpt/core/safe_pointers.h>
 
 /*---------------------------------------------------------------
 	Class

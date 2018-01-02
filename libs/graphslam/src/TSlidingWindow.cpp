@@ -11,7 +11,7 @@
 #include "graphslam-precomp.h"  // Precompiled headers
 
 #include <mrpt/config/CConfigFileBase.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 #include <mrpt/graphslam/misc/TSlidingWindow.h>
 
 using namespace mrpt::graphslam;
@@ -199,7 +199,7 @@ void TSlidingWindow::loadFromConfigFile(
 
 	MRPT_END;
 }
-void TSlidingWindow::dumpToTextStream(mrpt::utils::CStream& out) const
+void TSlidingWindow::dumpToTextStream(std::ostream& out) const
 {
 	MRPT_START;
 

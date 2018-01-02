@@ -38,7 +38,7 @@ class CMetricMapBuilderICP : public mrpt::slam::CMetricMapBuilder
 
 	/** Algorithm configuration params
 	  */
-	struct TConfigParams : public mrpt::utils::CLoadableOptions
+	struct TConfigParams : public mrpt::config::CLoadableOptions
 	{
 		/** Initializer */
 		TConfigParams(mrpt::system::VerbosityLevel& parent_verbosity_level);
@@ -48,8 +48,7 @@ class CMetricMapBuilderICP : public mrpt::slam::CMetricMapBuilder
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+		void dumpToTextStream(std::ostream& out) const override;  // See base docs
 		/** (default:false) Match against the occupancy grid or the points map?
 		 * The former is quicker but less precise. */
 		bool matchAgainstTheGrid;

@@ -10,10 +10,9 @@
 #include "obs-precomp.h"  // Precompiled headers
 
 #include <mrpt/obs/CObservationWirelessPower.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 // This must be added to any CSerializable class implementation file.

@@ -9,13 +9,12 @@
 
 #include "containers-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/CPropertiesValuesList.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/hmtslam/CPropertiesValuesList.h>
+//#include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
 #include <stdio.h>
 #include <iostream>
 
-using namespace mrpt::utils;
 using namespace mrpt::system;
 
 // This must be added to any CSerializable class implementation file.

@@ -80,5 +80,5 @@ class CDifodoCamera : public mrpt::vision::CDifodo
 	openni::VideoStream depth_ch;
 
 	/** Clock used to save the timestamp */
-	mrpt::utils::CTicTac clock;
+	mrpt::system::CTicTac clock;
 };

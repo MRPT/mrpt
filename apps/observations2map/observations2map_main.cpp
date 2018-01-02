@@ -27,7 +27,6 @@ using namespace mrpt::maps;
 using namespace mrpt::opengl;
 using namespace mrpt::system;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace std;
 
 string METRIC_MAP_CONFIG_SECTION = "MappingApplication";

@@ -15,7 +15,6 @@
 #include <mrpt/system/os.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::bayes;
 using namespace mrpt::poses;
 using namespace mrpt::random;

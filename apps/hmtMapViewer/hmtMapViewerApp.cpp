@@ -31,7 +31,6 @@ using namespace mrpt::slam;
 using namespace mrpt::opengl;
 using namespace mrpt::system;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace std;
 
 // The configuration file:

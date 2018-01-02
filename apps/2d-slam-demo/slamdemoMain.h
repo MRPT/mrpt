@@ -274,7 +274,7 @@ class slamdemoFrame : public wxFrame
 	std::set<size_t> m_realIDX_already_mapped;
 
 	/** The output rawlog file to save simulated sensor obs (if enabled) */
-	mrpt::utils::CFileGZOutputStream m_rawlog_out_file;
+	mrpt::io::CFileGZOutputStream m_rawlog_out_file;
 
 	/** Historic data */
 	struct THistoric
@@ -314,7 +314,7 @@ class slamdemoFrame : public wxFrame
 	  */
 	void updateAllGraphs(bool alsoGTMap = false);
 
-	struct TSimulationOptions : public mrpt::utils::CLoadableOptions
+	struct TSimulationOptions : public mrpt::config::CLoadableOptions
 	{
 		TSimulationOptions();
 
@@ -324,8 +324,7 @@ class slamdemoFrame : public wxFrame
 		void saveToConfigFile(
 			mrpt::config::CConfigFileBase& source,
 			const std::string& section) const override;  // See base docs
-		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+		void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
 		/** -1: random, other, use as seed */
 		int random_seed;

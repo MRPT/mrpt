@@ -77,8 +77,7 @@ class CReflectivityGridMap2D : public CMetricMap,
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+		void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
 		int16_t channel;  //!< The reflectivity channel for this map. If
 						  //!channel=-1, then any channel will be accepted.

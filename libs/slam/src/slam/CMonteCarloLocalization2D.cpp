@@ -28,7 +28,6 @@ using namespace mrpt::maps;
 using namespace mrpt::obs;
 using namespace mrpt::slam;
 using namespace mrpt::random;
-using namespace mrpt::utils;
 using namespace std;
 
 #include <mrpt/slam/PF_implementations_data.h>

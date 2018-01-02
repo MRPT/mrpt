@@ -9,12 +9,11 @@
 
 #include "slam-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/slam/TKLDParams.h>
 
 using namespace mrpt::slam;
-using namespace mrpt::utils;
 
 /*---------------------------------------------------------------
 					TKLDParams
@@ -33,7 +32,7 @@ TKLDParams::TKLDParams()
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void TKLDParams::dumpToTextStream(mrpt::utils::CStream& out) const
+void TKLDParams::dumpToTextStream(std::ostream& out) const
 {
 	out.printf("\n----------- [TKLDParams] ------------ \n\n");
 

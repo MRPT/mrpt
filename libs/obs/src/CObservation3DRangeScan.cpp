@@ -11,7 +11,7 @@
 
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/poses/CPosePDF.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 #include <mrpt/opengl/CPointCloud.h>
 
 #include <mrpt/math/CMatrix.h>
@@ -28,7 +28,6 @@
 
 using namespace std;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 
@@ -469,7 +468,7 @@ void CObservation3DRangeScan::load() const
 		}
 		else
 		{
-			mrpt::utils::CFileGZInputStream f(fil);
+			mrpt::io::CFileGZInputStream f(fil);
 			f >> const_cast<std::vector<float>&>(points3D_x) >>
 				const_cast<std::vector<float>&>(points3D_y) >>
 				const_cast<std::vector<float>&>(points3D_z);
@@ -486,7 +485,7 @@ void CObservation3DRangeScan::load() const
 		}
 		else
 		{
-			mrpt::utils::CFileGZInputStream f(fil);
+			mrpt::io::CFileGZInputStream f(fil);
 			f >> const_cast<CMatrix&>(rangeImage);
 		}
 	}
@@ -584,7 +583,7 @@ void CObservation3DRangeScan::points3D_convertToExternalStorage(
 	}
 	else
 	{
-		mrpt::utils::CFileGZOutputStream f(real_absolute_file_path);
+		mrpt::io::CFileGZOutputStream f(real_absolute_file_path);
 		f << points3D_x << points3D_y << points3D_z;
 	}
 
@@ -622,7 +621,7 @@ void CObservation3DRangeScan::rangeImage_convertToExternalStorage(
 	}
 	else
 	{
-		mrpt::utils::CFileGZOutputStream f(real_absolute_file_path);
+		mrpt::io::CFileGZOutputStream f(real_absolute_file_path);
 		f << rangeImage;
 	}
 

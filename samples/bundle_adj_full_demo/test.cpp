@@ -31,14 +31,13 @@
 #include <mrpt/math/geometry.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/config/CConfigFile.h>
-#include <mrpt/utils/CTextFileLinesParser.h>
+#include <mrpt/system/CTextFileLinesParser.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/stock_objects.h>
 
 using namespace mrpt;
 using namespace mrpt::gui;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;

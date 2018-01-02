@@ -9,7 +9,7 @@
 #ifndef C2DRangeFinderAbstract_H
 #define C2DRangeFinderAbstract_H
 
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/COutputLogger.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/config/CConfigFileBase.h>
@@ -40,7 +40,7 @@ namespace hwdrivers
   * \sa comms::CSerialPort
   * \ingroup mrpt_hwdrivers_grp
   */
-class C2DRangeFinderAbstract : public mrpt::utils::COutputLogger,
+class C2DRangeFinderAbstract : public mrpt::system::COutputLogger,
 							   public mrpt::hwdrivers::CGenericSensor
 {
    private:

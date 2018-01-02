@@ -35,7 +35,6 @@ using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::math;
 using namespace mrpt::poses;
-using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace mrpt;
 using namespace std;
@@ -620,7 +619,7 @@ void CRangeBearingKFSLAM::OnGetObservationsAndDataAssociation(
 				obs_idxs_needing_data_assoc.push_back(row);
 			else
 			{
-				mrpt::utils::bimap<CLandmark::TLandmarkID,
+				mrpt::containers::bimap<CLandmark::TLandmarkID,
 								   unsigned int>::iterator itID;
 				if ((itID = m_IDs.find_key(itObs->landmarkID)) != m_IDs.end())
 					*itDA = itID->second;  // This row in Z corresponds to the

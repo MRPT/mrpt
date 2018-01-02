@@ -25,7 +25,7 @@
 #include <mrpt/system/string_utils.h>
 #include <mrpt/system/os.h>
 #include <mrpt/math/data_utils.h>
-#include <mrpt/utils/CTextFileLinesParser.h>
+#include <mrpt/system/CTextFileLinesParser.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
@@ -45,7 +45,6 @@ using namespace mrpt::opengl;
 using namespace mrpt::system;
 using namespace mrpt::math;
 using namespace mrpt::gui;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace std;
 

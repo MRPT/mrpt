@@ -14,7 +14,6 @@
 
 using namespace std;
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::gui;
 
 #include <mrpt/examples_config.h>

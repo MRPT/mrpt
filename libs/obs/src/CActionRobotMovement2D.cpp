@@ -10,7 +10,7 @@
 #include "obs-precomp.h"  // Precompiled headers
 
 #include <mrpt/obs/CActionRobotMovement2D.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/random.h>
@@ -18,7 +18,6 @@
 #include <mrpt/math/wrap2pi.h>
 
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::random;

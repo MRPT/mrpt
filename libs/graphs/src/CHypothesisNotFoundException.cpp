@@ -14,7 +14,7 @@
 std::ostringstream HypothesisNotFoundException::m_cnvt;
 
 HypothesisNotFoundException::HypothesisNotFoundException(
-	mrpt::utils::TNodeID from, mrpt::utils::TNodeID to)
+	mrpt::graphs::TNodeID from, mrpt::graphs::TNodeID to)
 	: runtime_error("Hypothesis between set of nodes was not found")
 {
 	using namespace mrpt;

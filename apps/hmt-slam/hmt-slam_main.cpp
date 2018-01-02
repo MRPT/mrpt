@@ -16,7 +16,7 @@
   ---------------------------------------------------------------*/
 
 #include <mrpt/hmtslam/CHMTSLAM.h>
-#include <mrpt/utils/CConsoleRedirector.h>
+#include <mrpt/system/CConsoleRedirector.h>
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
@@ -30,7 +30,6 @@ using namespace mrpt::hmtslam;
 using namespace mrpt::opengl;
 using namespace mrpt::system;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
 

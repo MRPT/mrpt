@@ -13,7 +13,6 @@
 #include "common.h"
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::graphs;
 using namespace mrpt::poses;

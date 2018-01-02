@@ -27,7 +27,6 @@ std::string global_fileToOpen;
 #include <mrpt/system/filesystem.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
 

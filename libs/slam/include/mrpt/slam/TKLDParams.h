@@ -25,8 +25,7 @@ class TKLDParams : public utils::CLoadableOptions
 	void loadFromConfigFile(
 		const mrpt::config::CConfigFileBase& source,
 		const std::string& section) override;  // See base docs
-	void dumpToTextStream(
-		mrpt::utils::CStream& out) const override;  // See base docs
+	void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
 	/** Parameters for the KLD adaptive sample size algorithm (see Dieter Fox's
 	 * papers), which is used only if the CParticleFilter is created with the

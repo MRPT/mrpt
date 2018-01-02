@@ -15,7 +15,7 @@
 
 template <class GRAPH_T>
 CGraphSlamHandler<GRAPH_T>::CGraphSlamHandler(
-	mrpt::utils::COutputLogger* logger,
+	mrpt::system::COutputLogger* logger,
 	mrpt::graphslam::apps::TUserOptionsChecker<GRAPH_T>* options_checker,
 	const bool enable_visuals /*=true*/)
 	: m_logger(logger),
@@ -44,8 +44,7 @@ CGraphSlamHandler<GRAPH_T>::CGraphSlamHandler(
 template <class GRAPH_T>
 CGraphSlamHandler<GRAPH_T>::~CGraphSlamHandler()
 {
-	using namespace mrpt::utils;
-
+	
 	m_logger->logFmt(LVL_WARN, "graphslam-engine has finished.");
 
 	// keep the window open until user closes it.
@@ -108,8 +107,7 @@ void CGraphSlamHandler<GRAPH_T>::initOutputDir(
 {
 	MRPT_START;
 	using namespace std;
-	using namespace mrpt::utils;
-	using namespace mrpt::system;
+		using namespace mrpt::system;
 	using namespace mrpt;
 
 	m_logger->logFmt(
@@ -218,8 +216,7 @@ void CGraphSlamHandler<GRAPH_T>::setFNames(
 template <class GRAPH_T>
 void CGraphSlamHandler<GRAPH_T>::readConfigFname(const std::string& fname)
 {
-	using namespace mrpt::utils;
-
+	
 	ASSERTMSG_(
 		mrpt::system::fileExists(fname),
 		mrpt::format("\nConfiguration file not found: \n%s\n", fname.c_str()));
@@ -337,8 +334,7 @@ std::string CGraphSlamHandler<GRAPH_T>::getParamsAsString() const
 template <class GRAPH_T>
 void CGraphSlamHandler<GRAPH_T>::setResultsDirName(const std::string& dirname)
 {
-	using namespace mrpt::utils;
-
+	
 	m_output_dir_fname = mrpt::system::fileNameStripInvalidChars(dirname);
 	m_logger->logFmt(
 		LVL_WARN, "Overriding .ini Results directory -> %s...",
@@ -349,8 +345,7 @@ template <class GRAPH_T>
 void CGraphSlamHandler<GRAPH_T>::saveResults(
 	const std::string& output_dir_fname)
 {
-	using namespace mrpt::utils;
-	ASSERT_(m_engine);
+		ASSERT_(m_engine);
 
 	m_logger->logFmt(LVL_INFO, "Generating overall report...");
 	m_engine->generateReportFiles(output_dir_fname);
@@ -391,8 +386,7 @@ template <class GRAPH_T>
 void CGraphSlamHandler<GRAPH_T>::execute()
 {
 	using namespace mrpt::obs;
-	using namespace mrpt::utils;
-	ASSERT_(m_engine);
+		ASSERT_(m_engine);
 
 	// Variables initialization
 	CFileGZInputStream rawlog_stream(m_rawlog_fname);
@@ -422,8 +416,7 @@ void CGraphSlamHandler<GRAPH_T>::initVisualization()
 {
 	using namespace mrpt::opengl;
 	using namespace mrpt::gui;
-	using namespace mrpt::utils;
-	using namespace mrpt::graphslam;
+		using namespace mrpt::graphslam;
 
 	m_win_observer = new CWindowObserver();
 	m_win = new CDisplayWindow3D("GraphSlam building procedure", 800, 600);

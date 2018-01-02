@@ -16,7 +16,6 @@
 #include <mrpt/core/initializer.h>
 
 using namespace mrpt::vision;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
 

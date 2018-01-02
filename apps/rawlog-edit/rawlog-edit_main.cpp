@@ -28,11 +28,10 @@
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 
 typedef void (*TOperationFunctor)(
-	mrpt::utils::CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
+	mrpt::io::CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
 	bool verbose);
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::rawlogtools;

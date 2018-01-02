@@ -15,7 +15,6 @@
 #include <CTraitsTest.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
 using namespace std;
@@ -43,7 +42,7 @@ MRPT_TODO("liboctomap doesn't work nice with move ctors...");
 // bugs:
 TEST(SerializeTestMaps, WriteReadToMem)
 {
-	const mrpt::utils::TRuntimeClassId* lstClasses[] = {
+	const mrpt::rtti::TRuntimeClassId* lstClasses[] = {
 		CLASS_ID(CBeacon),
 		CLASS_ID(CBeaconMap),
 		CLASS_ID(CColouredPointsMap),

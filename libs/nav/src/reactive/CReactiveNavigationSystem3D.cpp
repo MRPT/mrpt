@@ -15,7 +15,6 @@
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace mrpt::nav;
 using namespace std;
 
@@ -152,7 +151,7 @@ void CReactiveNavigationSystem3D::STEP1_InitPTGs()
 	{
 		m_PTGsMustBeReInitialized = false;
 
-		mrpt::utils::CTimeLoggerEntry tle(m_timelogger, "STEP1_InitPTGs");
+		mrpt::system::CTimeLoggerEntry tle(m_timelogger, "STEP1_InitPTGs");
 
 		for (unsigned int j = 0; j < m_ptgmultilevel.size(); j++)
 		{

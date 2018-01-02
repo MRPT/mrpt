@@ -23,7 +23,6 @@
 #include <iostream>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 using mrpt::serialization::CArchive;

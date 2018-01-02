@@ -50,7 +50,6 @@ const std::string sMAP_FILE = string("./DLRMap.txt");
 // ==============================================
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::random;
 using namespace mrpt::maps;
@@ -70,8 +69,8 @@ void TestRANSAC()
 	mrpt::gui::CDisplayWindow3D win(
 		"MRPT example: ransac-data-association", 800, 600);
 
-	mrpt::utils::CTimeLogger timelog;  // For dumping stats at the end
-	mrpt::utils::CTicTac timer;
+	mrpt::system::CTimeLogger timelog;  // For dumping stats at the end
+	mrpt::system::CTicTac timer;
 
 	getRandomGenerator().randomize();  // randomize with time
 

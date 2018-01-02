@@ -14,7 +14,7 @@
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/config/CConfigFileBase.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/poses/CPosePDF.h>
@@ -139,7 +139,7 @@ class CRangeScanOps
 		/*to   = */ mrpt::obs::CObservation2DRangeScan::Ptr* scan2D_out =
 			nullptr);
 
-	struct TParams : public mrpt::utils::CLoadableOptions
+	struct TParams : public mrpt::config::CLoadableOptions
 	{
 	   public:
 		TParams();
@@ -148,7 +148,7 @@ class CRangeScanOps
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section);
-		void dumpToTextStream(mrpt::utils::CStream& out) const;
+		void dumpToTextStream(std::ostream& out) const;
 
 		mrpt::slam::CICP icp;
 

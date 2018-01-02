@@ -12,16 +12,14 @@
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::obs;
 using namespace mrpt::maps;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::poses;
 using namespace std;
 
-#include <mrpt/utils/metaprogramming.h>
 using namespace mrpt::utils::metaprogramming;
 
 IMPLEMENTS_SERIALIZABLE(CSimpleMap, CSerializable, mrpt::maps)
@@ -314,7 +312,7 @@ bool CSimpleMap::saveToFile(const std::string& filName) const
 {
 	try
 	{
-		mrpt::utils::CFileGZOutputStream f(filName);
+		mrpt::io::CFileGZOutputStream f(filName);
 		f << *this;
 		return true;
 	}
@@ -333,7 +331,7 @@ bool CSimpleMap::loadFromFile(const std::string& filName)
 {
 	try
 	{
-		mrpt::utils::CFileGZInputStream f(filName);
+		mrpt::io::CFileGZInputStream f(filName);
 		f >> *this;
 		return true;
 	}

@@ -47,10 +47,10 @@ struct TPlannerResultTempl
 	/** Total cost of the best found path (cost ~~ Euclidean distance) */
 	double path_cost;
 	/** The ID of the best target node in the tree */
-	mrpt::utils::TNodeID best_goal_node_id;
+	mrpt::graphs::TNodeID best_goal_node_id;
 	/** The set of target nodes within an acceptable distance to target
 	 * (including `best_goal_node_id` and others) */
-	std::set<mrpt::utils::TNodeID> acceptable_goal_node_ids;
+	std::set<mrpt::graphs::TNodeID> acceptable_goal_node_ids;
 	/** The generated motion tree that explores free space starting at "start"
 	 */
 	tree_t move_tree;
@@ -147,14 +147,14 @@ class PlannerTPS_VirtualBase
 	/** ctor */
 	PlannerTPS_VirtualBase();
 
-	mrpt::utils::CTimeLogger& getProfiler() { return m_timelogger; }
+	mrpt::system::CTimeLogger& getProfiler() { return m_timelogger; }
 	const mrpt::nav::TListPTGPtr& getPTGs() const { return m_PTGs; }
 	/** Options for renderMoveTree()  */
 	struct TRenderPlannedPathOptions
 	{
 		/** Highlight the path from root towards this node (usually, the target)
 		 */
-		mrpt::utils::TNodeID highlight_path_to_node_id;
+		mrpt::graphs::TNodeID highlight_path_to_node_id;
 		/** (Default=1) Draw one out of N vehicle shapes along the highlighted
 		 * path */
 		size_t draw_shape_decimation;
@@ -247,7 +247,7 @@ class PlannerTPS_VirtualBase
 		const TRenderPlannedPathOptions& options);
 
    protected:
-	mrpt::utils::CTimeLogger m_timelogger;
+	mrpt::system::CTimeLogger m_timelogger;
 	bool m_initialized_PTG;
 	mrpt::nav::TListPTGPtr m_PTGs;
 	mrpt::maps::CSimplePointsMap m_local_obs;  // Temporary map. Defined as a

@@ -12,7 +12,7 @@
 
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/crc.h>
+#include <mrpt/system/crc.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
 #include <cstdio>  // printf
@@ -30,7 +30,6 @@ IMPLEMENTS_GENERIC_SENSOR(CCANBusReader, mrpt::hwdrivers)
 
 using namespace std;
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
 
@@ -50,7 +49,7 @@ char hexCharToInt(char n)
 						CCANBusReader
 -------------------------------------------------------------*/
 CCANBusReader::CCANBusReader()
-	: mrpt::utils::COutputLogger("CCANBusReader"),
+	: mrpt::system::COutputLogger("CCANBusReader"),
 	  m_com_port(),
 	  m_mySerialPort(nullptr),
 	  m_com_baudRate(57600),

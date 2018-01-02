@@ -12,7 +12,7 @@
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/random.h>
 #include <mrpt/io/CFileStream.h>
-#include <mrpt/utils/printf_vector.h>
+#include <mrpt/containers/printf_vector.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/system/os.h>
 
@@ -20,7 +20,6 @@ using namespace mrpt::slam;
 using namespace mrpt::hmtslam;
 using namespace mrpt::poses;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace std;
 
 /*---------------------------------------------------------------
