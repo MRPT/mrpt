@@ -1008,7 +1008,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	 * be always needed, so it's enabled by default.
 	 * \sa loadFromFile
 	 * \return false on any error */
-	bool loadFromXPM(const char** xpm_array, bool swap_rb = true);
+	bool loadFromXPM(const char* const* xpm_array, bool swap_rb = true);
 
 	/** Save the image to a file, whose format is determined from the extension
 	 * (internally uses OpenCV).
