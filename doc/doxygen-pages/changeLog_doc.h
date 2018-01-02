@@ -200,7 +200,7 @@ mrpt::math::TTwist2D, mrpt::math::TTwist3D
 			- Added missing method mrpt::poses::CPose2D::inverseComposePoint()
 for consistency with CPose3D
 			- New class std::recursive_mutex
-			- New class mrpt::utils::COutputLogger replaces the classes
+			- New class mrpt::system::COutputLogger replaces the classes
 mrpt::utils::CDebugOutputCapable (deprecated) and mrpt::utils::CLog (removed).
 			- New macros for much more versatily logging:
 				- MRPT_LOG_DEBUG(), MRPT_LOG_INFO(), MRPT_LOG_WARN(),
@@ -214,14 +214,14 @@ MRPT_LOG_WARN_STREAM, MRPT_LOG_ERROR_STREAM
 mrpt::math::CAtan2LookUpTableMultiRes
 			- [API change] The following functions are no longer static methods:
 (since their classes are now derived from the state-aware
-mrpt::utils::COutputLogger)
+mrpt::system::COutputLogger)
 				- mrpt::math::RANSAC_Template::execute()
 				- mrpt::math::CLevenbergMarquardtTempl::execute()
 			- Deleted methods in Eigen-extensions: leftDivideSquare(),
 rightDivideSquare()
 			- Removed support for **named** semaphores in
 mrpt::synch::CSemaphore
-			- new method mrpt::utils::CTimeLogger::getLastTime()
+			- new method mrpt::system::CTimeLogger::getLastTime()
 			- Removed mrpt::utils::CStartUpClassesRegister, replaced by the new
 macro MRPT_INITIALIZER()
 			- New class mrpt::utils::CRateTimer
@@ -238,7 +238,7 @@ evaluation of mathematical expressions, under `<mrpt/otherlibs/exprtk.hpp>`
 			- New class mrpt::containers::CDynamicGrid3D<>
 			- New function mrpt::comms::net::http_request()
 			- New function mrpt::system::now_double()
-			- New function mrpt::utils::getAllRegisteredClassesChildrenOf()
+			- New function mrpt::rtti::getAllRegisteredClassesChildrenOf()
 			- Safer CClassRegistry: detect and warn on attempts to duplicated
 class registration.
 			- New class mrpt::math::CRuntimeCompiledExpression
@@ -359,7 +359,7 @@ mrpt::system::TParameters class, but via a mrpt::config::CConfigFileBase which
 makes parameter passing to PTGs much more maintainable and consistent.
 				- PTGs now have a score_priority field to manually set hints
 about preferences for path planning.
-				- PTGs are now mrpt::utils::CLoadableOptions classes
+				- PTGs are now mrpt::config::CLoadableOptions classes
 			- New classes:
 				- mrpt::nav::CMultiObjectiveMotionOptimizerBase
 		- \ref mrpt_graphslam_grp
@@ -399,7 +399,7 @@ valid ranges.
 will re-generate (Closes [GitHub #243](https://github.com/MRPT/mrpt/issues/243))
 		- Fix mrpt::maps::COccupancyGridMap2D::simulateScanRay() fails to mark
 out-of-range ranges as "invalid".
-		- Fix mrpt::utils::CMemoryStream::Clear() after assigning read-only
+		- Fix mrpt::io::CMemoryStream::Clear() after assigning read-only
 memory blocks.
 		- Fix point into polygon checking not working for concave polygons. Now,
 mrpt::math::TPolygon2D::contains() uses the winding number test which works for
@@ -937,14 +937,14 @@ practice.
 			- Refactoring of MRPT headers.
 				- <mrpt/utils/stl_extensions.h> has been split into:
 					- <mrpt/serialization/stl_serialization.h>
-					- <mrpt/utils/circular_buffer.h>
+					- <mrpt/containers/circular_buffer.h>
 					- <mrpt/utils/list_searchable.h>
-					- <mrpt/utils/bimap.h>
+					- <mrpt/containers/bimap.h>
 					- <mrpt/utils/map_as_vector.h>
-					- <mrpt/utils/traits_map.h>
+					- <mrpt/containers/traits_map.h>
 					- <mrpt/serialization/stl_serialization.h>
-					- <mrpt/utils/printf_vector.h>
-					- <mrpt/utils/stl_containers_utils.h>
+					- <mrpt/containers/printf_vector.h>
+					- <mrpt/containers/stl_containers_utils.h>
 					- <mrpt/utils/ci_less.h>
 			- Deleted methods and functions:
 				- mrpt::system::breakpoint()
@@ -1312,7 +1312,7 @@ efficient storage of block-sparse Jacobian or Hessian matrices, together with
 other arbitrary information - <a
 href="http://code.google.com/p/mrpt/source/detail?r=2995" >r2995</a>
 				- mrpt::utils::ignored_copy_ptr<>
-				- mrpt::utils::CTimeLoggerEntry
+				- mrpt::system::CTimeLoggerEntry
 			- [mrpt-obs]
 				- mrpt::obs::CObservationWindSensor - <a
 href="http://code.google.com/p/mrpt/source/detail?r=3050" >r3050</a>
@@ -1362,11 +1362,11 @@ Eigen's sparse classes. Use Matrix::Scalar instead - <a
 href="http://code.google.com/p/mrpt/source/detail?r=3065" >r3065</a>
 				- New method mrpt::poses::CPose3DQuat::inverse()
 				- New methods mrpt::poses::SE_traits::pseudo_exp()
-				- mrpt::utils::CTimeLogger:
-					- New method mrpt::utils::CTimeLogger::getStats() for
+				- mrpt::system::CTimeLogger:
+					- New method mrpt::system::CTimeLogger::getStats() for
 programatic execution time stats analysis - <a
 href="http://code.google.com/p/mrpt/source/detail?r=2998" >r2998</a>
-					- New method mrpt::utils::CTimeLogger::registerUserMeasure()
+					- New method mrpt::system::CTimeLogger::registerUserMeasure()
 for making stats of user-providen values - <a
 href="http://code.google.com/p/mrpt/source/detail?r=3005" >r3005</a>
 				- mrpt::utils::map_as_vector<> can be now customized to use
@@ -1382,17 +1382,14 @@ existing parameters: - <a
 href="http://code.google.com/p/mrpt/source/detail?r=2954" >r2954</a>
 					- All mrpt::config::CConfigFileBase::write() now have an
 extended signature for formatting.
-					- mrpt::utils::CLoadableOptions::dumpToTextStream() is no
-longer pure virtual: it now relies on
-mrpt::utils::CLoadableOptions::saveToConfigFile()
-				- mrpt::utils::CStream::Seek() now supports files larger than
+					- mrpt::config::CLoadableOptions::dumpToTextStreamstd::ostream::Seek() now supports files larger than
 2GB by using uint64_t instead of long (still see issue report for another patch
 required for MSVC2010) - (Closes <a
 href="http://code.google.com/p/mrpt/issues/detail?id=39" >issue 39</a>, thanks
 Robert Schattschneider) - <a
 href="http://code.google.com/p/mrpt/source/detail?r=3042" >r3042</a>
 				- mrpt::typemeta::TTypeName<> moved to its own header
-<mrpt/utils/TTypeName.h> while refactoring <mrpt/serialization/CSerializable.h>
+<mrpt/typemeta/TTypeName.h> while refactoring <mrpt/serialization/CSerializable.h>
 - <a href="http://code.google.com/p/mrpt/source/detail?r=3044" >r3044</a>
 				- mrpt::config::CConfigFileBase::write() now has signatures for
 "uint32_t" and "uint64_t" in both 32 and 64bit builds, instead of relying of the

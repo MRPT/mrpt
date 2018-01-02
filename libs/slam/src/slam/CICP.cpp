@@ -13,7 +13,7 @@
 #include <mrpt/tfest.h>
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/system/CTicTac.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 #include <mrpt/config/CConfigFileBase.h>  // MRPT_LOAD_*()
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/math/ops_containers.h>
@@ -27,7 +27,6 @@ using namespace mrpt::slam;
 using namespace mrpt::maps;
 using namespace mrpt::math;
 using namespace mrpt::poses;
-using namespace mrpt::utils;
 using namespace std;
 
 /*---------------------------------------------------------------
@@ -189,7 +188,7 @@ void CICP::TConfigParams::loadFromConfigFile(
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void CICP::TConfigParams::dumpToTextStream(mrpt::utils::CStream& out) const
+void CICP::TConfigParams::dumpToTextStream(std::ostream& out) const
 {
 	out.printf("\n----------- [CICP::TConfigParams] ------------ \n\n");
 

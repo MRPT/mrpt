@@ -7,14 +7,12 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/utils.h>
 #include <mrpt/gui.h>
 #include <mrpt/math.h>
 
 using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace std;
 
 #include <mrpt/examples_config.h>

@@ -64,7 +64,6 @@ THE SOFTWARE.
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
-#include <mrpt/utils/metaprogramming.h>
 #include <mrpt/math/data_utils.h>
 
 /// Qt includes
@@ -75,7 +74,6 @@ THE SOFTWARE.
 #include <QString>
 
 using namespace mrpt::vision;
-using namespace mrpt::utils;
 using namespace mrpt::gui;
 using namespace mrpt::math;
 using namespace mrpt;

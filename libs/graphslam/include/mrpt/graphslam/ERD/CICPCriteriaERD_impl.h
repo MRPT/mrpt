@@ -27,8 +27,7 @@ CICPCriteriaERD<GRAPH_T>::CICPCriteriaERD()
 	  m_is_using_3DScan(false)
 {
 	MRPT_START;
-	using namespace mrpt::utils;
-
+	
 	this->initializeLoggers("CICPCriteriaERD");
 
 	// start ICP constraint registration only when
@@ -59,8 +58,7 @@ bool CICPCriteriaERD<GRAPH_T>::updateState(
 	MRPT_START;
 	MRPT_UNUSED_PARAM(action);
 	using namespace mrpt::obs;
-	using namespace mrpt::utils;
-
+	
 	// check possible prior node registration
 	bool registered_new_node = false;
 
@@ -136,7 +134,7 @@ bool CICPCriteriaERD<GRAPH_T>::updateState(
 	if (registered_new_node)
 	{
 		// get set of nodes within predefined distance for ICP
-		std::set<mrpt::utils::TNodeID> nodes_to_check_ICP;
+		std::set<mrpt::graphs::TNodeID> nodes_to_check_ICP;
 		this->getNearbyNodesOf(
 			&nodes_to_check_ICP, this->m_graph->nodeCount() - 1,
 			params.ICP_max_distance);
@@ -164,14 +162,14 @@ bool CICPCriteriaERD<GRAPH_T>::updateState(
 
 template <class GRAPH_T>
 void CICPCriteriaERD<GRAPH_T>::checkRegistrationCondition2D(
-	const std::set<mrpt::utils::TNodeID>& nodes_set)
+	const std::set<mrpt::graphs::TNodeID>& nodes_set)
 {
 	MRPT_START;
 	using namespace mrpt;
 	using namespace mrpt::obs;
 	using namespace mrpt::math;
 
-	mrpt::utils::TNodeID curr_nodeID = this->m_graph->nodeCount() - 1;
+	mrpt::graphs::TNodeID curr_nodeID = this->m_graph->nodeCount() - 1;
 	CObservation2DRangeScan::Ptr curr_laser_scan;
 	typename nodes_to_scans2D_t::const_iterator search;
 
@@ -186,7 +184,7 @@ void CICPCriteriaERD<GRAPH_T>::checkRegistrationCondition2D(
 	if (curr_laser_scan)
 	{
 		// try adding ICP constraints with each node in the previous set
-		for (std::set<mrpt::utils::TNodeID>::const_iterator node_it =
+		for (std::set<mrpt::graphs::TNodeID>::const_iterator node_it =
 				 nodes_set.begin();
 			 node_it != nodes_set.end(); ++node_it)
 		{
@@ -247,16 +245,16 @@ void CICPCriteriaERD<GRAPH_T>::checkRegistrationCondition2D(
 }
 template <class GRAPH_T>
 void CICPCriteriaERD<GRAPH_T>::checkRegistrationCondition3D(
-	const std::set<mrpt::utils::TNodeID>& nodes_set)
+	const std::set<mrpt::graphs::TNodeID>& nodes_set)
 {
 	MRPT_START;
 	using namespace std;
 	using namespace mrpt::obs;
 	using namespace mrpt::math;
 
-	mrpt::utils::TNodeID curr_nodeID = this->m_graph->nodeCount() - 1;
+	mrpt::graphs::TNodeID curr_nodeID = this->m_graph->nodeCount() - 1;
 	CObservation3DRangeScan::Ptr curr_laser_scan;
-	std::map<mrpt::utils::TNodeID,
+	std::map<mrpt::graphs::TNodeID,
 			 mrpt::obs::CObservation3DRangeScan::Ptr>::const_iterator search;
 	// search for curr_laser_scan
 	search = m_nodes_to_laser_scans3D.find(curr_nodeID);
@@ -269,7 +267,7 @@ void CICPCriteriaERD<GRAPH_T>::checkRegistrationCondition3D(
 	if (curr_laser_scan)
 	{
 		// try adding ICP constraints with each node in the previous set
-		for (set<mrpt::utils::TNodeID>::const_iterator node_it =
+		for (set<mrpt::graphs::TNodeID>::const_iterator node_it =
 				 nodes_set.begin();
 			 node_it != nodes_set.end(); ++node_it)
 		{
@@ -313,23 +311,21 @@ void CICPCriteriaERD<GRAPH_T>::checkRegistrationCondition3D(
 
 template <class GRAPH_T>
 void CICPCriteriaERD<GRAPH_T>::registerNewEdge(
-	const mrpt::utils::TNodeID& from, const mrpt::utils::TNodeID& to,
+	const mrpt::graphs::TNodeID& from, const mrpt::graphs::TNodeID& to,
 	const constraint_t& rel_edge)
 {
-	using namespace mrpt::utils;
-	parent_t::registerNewEdge(from, to, rel_edge);
+		parent_t::registerNewEdge(from, to, rel_edge);
 
 	this->m_graph->insertEdge(from, to, rel_edge);
 }
 
 template <class GRAPH_T>
 void CICPCriteriaERD<GRAPH_T>::getNearbyNodesOf(
-	std::set<mrpt::utils::TNodeID>* nodes_set,
-	const mrpt::utils::TNodeID& cur_nodeID, double distance)
+	std::set<mrpt::graphs::TNodeID>* nodes_set,
+	const mrpt::graphs::TNodeID& cur_nodeID, double distance)
 {
 	MRPT_START;
-	using namespace mrpt::utils;
-
+	
 	if (distance > 0)
 	{
 		// check all but the last node.
@@ -483,8 +479,7 @@ void CICPCriteriaERD<GRAPH_T>::updateVisuals()
 	MRPT_START;
 	this->m_time_logger.enter("CICPCriteriaERD::Visuals");
 	using namespace mrpt::opengl;
-	using namespace mrpt::utils;
-	using namespace mrpt::math;
+		using namespace mrpt::math;
 	using namespace mrpt::poses;
 	parent_t::updateVisuals();
 
@@ -552,8 +547,7 @@ void CICPCriteriaERD<GRAPH_T>::dumpVisibilityErrorMsg(
 	std::string viz_flag, int sleep_time /* = 500 milliseconds */)
 {
 	MRPT_START;
-	using namespace mrpt::utils;
-	using namespace mrpt;
+		using namespace mrpt;
 
 	this->logFmt(
 		LVL_ERROR,
@@ -570,8 +564,7 @@ template <class GRAPH_T>
 void CICPCriteriaERD<GRAPH_T>::loadParams(const std::string& source_fname)
 {
 	MRPT_START;
-	using namespace mrpt::utils;
-	parent_t::loadParams(source_fname);
+		parent_t::loadParams(source_fname);
 
 	params.loadFromConfigFileName(
 		source_fname, "EdgeRegistrationDeciderParameters");
@@ -646,8 +639,7 @@ CICPCriteriaERD<GRAPH_T>::TParams::~TParams()
 }
 
 template <class GRAPH_T>
-void CICPCriteriaERD<GRAPH_T>::TParams::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+void CICPCriteriaERD<GRAPH_T>::TParams::dumpToTextStream(std::ostream& out) const
 {
 	MRPT_START;
 

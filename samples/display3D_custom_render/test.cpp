@@ -23,14 +23,13 @@ using namespace std;
 using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
 
 // This is my custom class to handle the pre/post render events:
 struct TMyExtraRenderingStuff : public mrpt::system::CObserver
 {
 	opengl::CSphere::Ptr ball_obj;  // The ball moving in the scene
 	bool showing_help, hiding_help;
-	mrpt::utils::CTicTac tim_show_start, tim_show_end;
+	mrpt::system::CTicTac tim_show_start, tim_show_end;
 
 	TMyExtraRenderingStuff() : showing_help(false), hiding_help(false) {}
 	virtual void OnEvent(const mrptEvent& e)

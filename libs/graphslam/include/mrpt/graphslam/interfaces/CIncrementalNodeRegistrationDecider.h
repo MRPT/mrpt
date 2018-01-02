@@ -6,7 +6,7 @@
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/config/CConfigFileBase.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 
 #include <mrpt/graphslam/interfaces/CNodeRegistrationDecider.h>
 
@@ -90,7 +90,7 @@ class CIncrementalNodeRegistrationDecider
 	/**\brief Parameters structure for managing the relevant to the decider
 	 * variables in a compact manner
 	 */
-	struct TParams : public mrpt::utils::CLoadableOptions
+	struct TParams : public mrpt::config::CLoadableOptions
 	{
 	   public:
 		TParams();
@@ -99,7 +99,7 @@ class CIncrementalNodeRegistrationDecider
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section);
-		void dumpToTextStream(mrpt::utils::CStream& out) const;
+		void dumpToTextStream(std::ostream& out) const;
 		/**\brief Return a string with the configuration parameters
 		*/
 		void getAsString(std::string* params_out) const;

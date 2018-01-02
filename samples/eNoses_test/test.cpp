@@ -19,7 +19,6 @@ using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace std;
 
 int main()

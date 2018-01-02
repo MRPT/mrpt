@@ -11,7 +11,7 @@
 
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/poses/CPosePDF.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/wrap2pi.h>
 #if MRPT_HAS_MATLAB
@@ -20,7 +20,6 @@
 
 using namespace std;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 

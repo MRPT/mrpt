@@ -16,9 +16,9 @@
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/config/CConfigFileBase.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CTicTac.h>
-#include <mrpt/utils/types_simple.h>
+#include <cstdint>
 #include <mrpt/img/TColor.h>
 #include <mrpt/opengl/graph_tools.h>
 #include <mrpt/opengl/CDisk.h>
@@ -165,7 +165,7 @@ class CLevMarqGSO
 	/**\brief Struct for holding the optimization-related variables in a
 	 * compact form
 	 */
-	struct OptimizationParams : public mrpt::utils::CLoadableOptions
+	struct OptimizationParams : public mrpt::config::CLoadableOptions
 	{
 	   public:
 		OptimizationParams();
@@ -174,45 +174,7 @@ class CLevMarqGSO
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section);
-		void dumpToTextStream(mrpt::utils::CStream& out) const;
-
-		mrpt::system::TParametersDouble cfg;
-		// True if optimization procedure is to run in a multithreading fashion
-		bool optimization_on_second_thread;
-
-		/**\brief optimize only for the nodes found in a certain distance from
-		 * the current position. Optimize for the entire graph if set to -1
-		 */
-		double optimization_distance;
-		double offset_y_optimization_distance;
-		int text_index_optimization_distance;
-		mrpt::img::TColor optimization_distance_color;
-		/**\brief Keystroke to toggle the optimization distance on/off */
-		std::string keystroke_optimization_distance;
-		/**\brief Keystroke to manually trigger a full graph optimization */
-		std::string keystroke_optimize_graph;
-
-		// nodeID difference for an edge to be considered loop closure
-		int LC_min_nodeid_diff;
-
-		// Map of TPairNodesID to their corresponding edge as recorded in the
-		// last update of the optimizer state
-		typename GRAPH_T::edges_map_t last_pair_nodes_to_edge;
-	};
-
-	/**\brief struct for holding the graph visualization-related variables in a
-	 * compact form
-	 */
-	struct GraphVisualizationParams : public mrpt::utils::CLoadableOptions
-	{
-	   public:
-		GraphVisualizationParams();
-		~GraphVisualizationParams();
-
-		void loadFromConfigFile(
-			const mrpt::config::CConfigFileBase& source,
-			const std::string& section);
-		void dumpToTextStream(mrpt::utils::CStream& out) const;
+		void dumpToTextStream(std::ostream& out) const;
 
 		mrpt::system::TParametersDouble cfg;
 		bool visualize_optimized_graph;
@@ -337,8 +299,8 @@ class CLevMarqGSO
 	 * distance to the specified nodeID
 	 */
 	void getNearbyNodesOf(
-		std::set<mrpt::utils::TNodeID>* nodes_set,
-		const mrpt::utils::TNodeID& cur_nodeID, double distance);
+		std::set<mrpt::graphs::TNodeID>* nodes_set,
+		const mrpt::graphs::TNodeID& cur_nodeID, double distance);
 
 	// protected members
 	//////////////////////////////////////////////////////////////

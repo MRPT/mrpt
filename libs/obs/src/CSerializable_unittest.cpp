@@ -16,7 +16,6 @@
 
 using namespace mrpt;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
@@ -49,7 +48,7 @@ TEST_CLASS_MOVE_COPY_CTORS(CObservationVelodyneScan);
 TEST_CLASS_MOVE_COPY_CTORS(CActionRobotMovement2D);
 TEST_CLASS_MOVE_COPY_CTORS(CActionRobotMovement3D);
 
-const mrpt::utils::TRuntimeClassId* lstClasses[] = {
+const mrpt::rtti::TRuntimeClassId* lstClasses[] = {
 	// Observations:
 	CLASS_ID(CObservation2DRangeScan), CLASS_ID(CObservation3DRangeScan),
 	CLASS_ID(CObservationRGBD360), CLASS_ID(CObservationBearingRange),

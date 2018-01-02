@@ -11,7 +11,7 @@
 #include <mrpt/nav/reactive/TCandidateMovementPTG.h>
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/config/CConfigFileBase.h>
-#include <mrpt/utils/CObject.h>
+#include <mrpt/rtti/CObject.h>
 #include <mrpt/math/CRuntimeCompiledExpression.h>
 
 namespace mrpt
@@ -58,7 +58,7 @@ class CMultiObjectiveMotionOptimizerBase : public mrpt::utils::CObject
 	virtual void saveConfigFile(mrpt::config::CConfigFileBase& c) const = 0;
 
 	/** Common params for all children */
-	struct TParamsBase : public mrpt::utils::CLoadableOptions
+	struct TParamsBase : public mrpt::config::CLoadableOptions
 	{
 		TParamsBase();
 

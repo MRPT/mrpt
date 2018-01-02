@@ -9,7 +9,6 @@
 #ifndef CConsoleRedirector_H
 #define CConsoleRedirector_H
 
-#include <mrpt/utils/core_defs.h>
 #include <streambuf>
 #include <iostream>
 #include <fstream>

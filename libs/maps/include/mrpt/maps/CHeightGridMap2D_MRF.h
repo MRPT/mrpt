@@ -57,8 +57,7 @@ class CHeightGridMap2D_MRF : public CRandomFieldGridMap2D,
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+		void dumpToTextStream(std::ostream& out) const override;  // See base docs
 	} insertionOptions;
 
 	/** Returns a 3D object representing the map */

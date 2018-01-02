@@ -11,7 +11,6 @@
 #include <mrpt/vision/CVideoFileWriter.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::vision;
 using namespace std;
 

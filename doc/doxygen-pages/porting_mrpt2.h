@@ -82,7 +82,7 @@
 *  - 16-bytes memory-aligned STL containers are now defined in separate headers, one for each container type, and based on templatized `using`. Example:
 *       \code
 *       // Old: MRPT 1.* code
-*       #include <mrpt/utils/aligned_containers.h>
+*       #include <mrpt/core/aligned_std_vector.h>
 *       mrpt::aligned_std_vector<Foo>  v;
 *
 *       // New: MRPT 2.* code

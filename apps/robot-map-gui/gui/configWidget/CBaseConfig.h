@@ -20,7 +20,7 @@ namespace maps
 class TMapGenericParams;
 struct TMetricMapInitializer;
 }
-namespace utils
+namespace config
 {
 class CLoadableOptions;
 }

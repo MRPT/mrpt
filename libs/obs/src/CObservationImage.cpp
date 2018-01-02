@@ -10,7 +10,7 @@
 #include "obs-precomp.h"  // Precompiled headers
 
 #include <mrpt/obs/CObservationImage.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 #include <mrpt/math/ops_vectors.h>  // << of std::vector()
 #include <iostream>
 #if MRPT_HAS_MATLAB
@@ -18,7 +18,6 @@
 #endif
 
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::poses;
 

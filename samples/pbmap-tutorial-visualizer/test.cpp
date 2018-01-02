@@ -261,7 +261,7 @@ int main(int argc, char** argv)
 		 << mapViewer.pbmap.globalMapPtr->empty() << endl;
 
 	// Load Previous Map
-	mrpt::utils::CFileGZInputStream serialized_pbmap;
+	mrpt::io::CFileGZInputStream serialized_pbmap;
 	if (serialized_pbmap.open(PbMapFile))
 	{
 		serialized_pbmap >> mapViewer.pbmap;

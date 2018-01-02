@@ -13,7 +13,6 @@
 #include <gtest/gtest.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::nav;
 using namespace std;
 
@@ -23,7 +22,7 @@ namespace mrpt
 extern std::string MRPT_GLOBAL_UNITTEST_SRC_DIR;
 }
 
-const mrpt::utils::TRuntimeClassId* lstClasses[] = {
+const mrpt::rtti::TRuntimeClassId* lstClasses[] = {
 	CLASS_ID(CLogFileRecord),
 };
 

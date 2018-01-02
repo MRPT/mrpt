@@ -11,7 +11,6 @@
 #include <mrpt/system/string_utils.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::rawlogtools;

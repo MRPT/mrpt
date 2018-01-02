@@ -18,7 +18,6 @@
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 bool mrpt::topography::operator==(const TCoords& a, const TCoords& o)

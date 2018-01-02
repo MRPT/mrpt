@@ -45,8 +45,7 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 		mrpt::system::TParametersDouble viz_params) const
 {
 	using namespace mrpt::opengl;
-	using namespace mrpt::utils;
-
+	
 	// graph visualization parameters
 	const bool show_ID_labels =
 		0 != viz_params.getWithDefaultVal("show_ID_labels", 0);
@@ -95,8 +94,7 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
 {
 	using namespace mrpt::opengl;
-	using namespace mrpt::utils;
-	ASSERTMSG_(viz_params, "Pointer to viz_params was not provided.");
+		ASSERTMSG_(viz_params, "Pointer to viz_params was not provided.");
 
 	// Estimate bounding box.
 	mrpt::math::TPoint3D BB_min(-10., -10., 0.), BB_max(10., 10., 0.);
@@ -136,8 +134,7 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 	ASSERTMSG_(viz_params, "Pointer to viz_params was not provided.");
 
 	using namespace mrpt::opengl;
-	using namespace mrpt::utils;
-
+	
 	const double nodes_point_size =
 		viz_params->getWithDefaultVal("nodes_point_size", 0.);
 	const unsigned int nodes_point_color = viz_params->getWithDefaultVal(
@@ -170,8 +167,7 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
 {
 	using namespace mrpt::opengl;
-	using namespace mrpt::utils;
-	using mrpt::poses::CPose3D;
+		using mrpt::poses::CPose3D;
 
 	ASSERTMSG_(viz_params, "Pointer to viz_params was not provided.");
 
@@ -216,8 +212,7 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
 {
 	using namespace mrpt::opengl;
-	using namespace mrpt::utils;
-	ASSERTMSG_(viz_params, "Pointer to viz_params was not provided.");
+		ASSERTMSG_(viz_params, "Pointer to viz_params was not provided.");
 
 	const double nodes_edges_corner_scale =
 		viz_params->getWithDefaultVal("nodes_edges_corner_scale", 0.4);
@@ -285,8 +280,7 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
 {
 	using namespace mrpt::opengl;
-	using namespace mrpt::utils;
-	ASSERTMSG_(viz_params, "Pointer to viz_params was not provided.");
+		ASSERTMSG_(viz_params, "Pointer to viz_params was not provided.");
 
 	CSetOfLines::Ptr gl_edges = mrpt::make_aligned_shared<CSetOfLines>();
 	const unsigned int edge_color =

@@ -12,10 +12,9 @@
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/maps/CMultiMetricMap.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::maps;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::obs;
 

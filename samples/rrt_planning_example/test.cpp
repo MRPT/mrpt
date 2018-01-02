@@ -18,7 +18,6 @@
 #include <iostream>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::nav;
 using namespace mrpt::maps;
 using namespace std;

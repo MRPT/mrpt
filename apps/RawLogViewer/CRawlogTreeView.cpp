@@ -35,7 +35,6 @@ END_EVENT_TABLE()
 #include <mrpt/obs.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace mrpt::obs;
 using namespace std;

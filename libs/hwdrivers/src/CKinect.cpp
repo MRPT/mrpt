@@ -18,7 +18,6 @@
 
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::obs;
 using namespace mrpt::poses;
@@ -49,7 +48,7 @@ IMPLEMENTS_GENERIC_SENSOR(CKinect, mrpt::hwdrivers)
 #endif  // MRPT_HAS_KINECT_FREENECT
 
 #ifdef KINECT_PROFILE_MEM_ALLOC
-mrpt::utils::CTimeLogger alloc_tim;
+mrpt::system::CTimeLogger alloc_tim;
 #endif
 // int int a;
 

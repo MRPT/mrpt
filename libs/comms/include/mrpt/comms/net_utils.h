@@ -55,7 +55,7 @@ enum ERRORCODE_HTTP
  * & password.
  *
  * \return The error or success code.
- * \sa mrpt::utils::vectorToBinaryFile
+ * \sa http_request()
  */
 ERRORCODE_HTTP http_get(
 	const string& url, std::vector<uint8_t>& out_content, string& out_errormsg,
@@ -82,7 +82,7 @@ ERRORCODE_HTTP http_get(
  * & password.
  *
  * \return The error or success code.
- * \sa mrpt::utils::vectorToBinaryFile
+ * \sa http_request()
  */
 ERRORCODE_HTTP http_get(
 	const string& url, string& out_content, string& out_errormsg, int port = 80,

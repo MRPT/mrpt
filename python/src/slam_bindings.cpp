@@ -41,7 +41,6 @@ using namespace boost::python;
 
 using namespace mrpt::poses;
 using namespace mrpt::bayes;
-using namespace mrpt::utils;
 using namespace mrpt::slam;
 using namespace mrpt::maps;
 using namespace mrpt::obs;

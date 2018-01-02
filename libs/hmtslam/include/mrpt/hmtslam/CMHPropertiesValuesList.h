@@ -10,7 +10,7 @@
 #define CMHPropertiesValuesList_H
 
 #include <mrpt/serialization/CSerializable.h>
-#include <mrpt/utils/CMemoryChunk.h>
+//#include <mrpt/utils/CMemoryChunk.h>
 #include <mrpt/system/string_utils.h>
 #include <cstdio>
 
@@ -87,7 +87,7 @@ class CMHPropertiesValuesList : public mrpt::serialization::CSerializable
 			else
 				THROW_EXCEPTION("Null pointer");
 		}
-		const mrpt::utils::TRuntimeClassId* class_ID = &T::GetRuntimeClassIdStatic();
+		const mrpt::rtti::TRuntimeClassId* class_ID = &T::GetRuntimeClassIdStatic();
 		ASSERT_(class_ID == obj->GetRuntimeClass());
 		return std::dynamic_pointer_cast<T>(obj);
 		MRPT_END

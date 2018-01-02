@@ -59,8 +59,7 @@ bool CNodeRegistrationDecider<GRAPH_T>::registerNewNodeAtEnd(
 	const typename GRAPH_T::constraint_t& constraint)
 {
 	MRPT_START;
-	using namespace mrpt::utils;
-	using namespace std;
+		using namespace std;
 
 	// register the initial node if it doesn't exist.
 	// Runs only once.

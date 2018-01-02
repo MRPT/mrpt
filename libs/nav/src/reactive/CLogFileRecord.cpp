@@ -11,7 +11,7 @@
 
 #include <mrpt/nav/reactive/CLogFileRecord.h>
 #include <mrpt/poses/CPoint2D.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/kinematics/CVehicleVelCmd_DiffDriven.h>
 #include <mrpt/kinematics/CVehicleVelCmd_Holo.h>

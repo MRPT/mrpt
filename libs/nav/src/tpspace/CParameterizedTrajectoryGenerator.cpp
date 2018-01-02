@@ -9,7 +9,7 @@
 
 #include "nav-precomp.h"  // Precomp header
 
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>

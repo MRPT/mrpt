@@ -16,7 +16,6 @@
 
 using namespace mrpt::slam;
 using namespace mrpt::hmtslam;
-using namespace mrpt::utils;
 using namespace mrpt::random;
 using namespace mrpt::poses;
 using namespace mrpt::system;

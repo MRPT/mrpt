@@ -21,7 +21,6 @@
 
 using namespace std;
 using namespace mrpt;
-using namespace mrpt::utils;
 
 template <int I, int N>
 struct BitCheck

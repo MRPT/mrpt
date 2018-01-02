@@ -10,7 +10,7 @@
 #include "kinematics-precomp.h"  // Precompiled headers
 
 #include <mrpt/kinematics/CKinematicChain.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CCylinder.h>
@@ -18,7 +18,6 @@
 
 using namespace mrpt;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::kinematics;
 using namespace std;

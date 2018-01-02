@@ -17,7 +17,6 @@ using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 
 void insertRandomPoints_uniform(
 	const size_t N, opengl::CPointCloud::Ptr& gl, const TPoint3D& p_min,

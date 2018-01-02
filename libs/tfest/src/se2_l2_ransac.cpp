@@ -21,7 +21,6 @@
 using namespace mrpt;
 using namespace mrpt::tfest;
 using namespace mrpt::random;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace std;

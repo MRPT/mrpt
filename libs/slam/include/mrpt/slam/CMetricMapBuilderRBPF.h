@@ -16,7 +16,7 @@
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/utils/safe_pointers.h>
+#include <mrpt/core/safe_pointers.h>
 
 namespace mrpt
 {
@@ -90,8 +90,7 @@ class CMetricMapBuilderRBPF : public mrpt::slam::CMetricMapBuilder
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+		void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
 		float insertionLinDistance;
 		float insertionAngDistance;

@@ -9,7 +9,6 @@
 #ifndef T2DScanProperties_H
 #define T2DScanProperties_H
 
-#include <mrpt/utils/core_defs.h>
 
 namespace mrpt
 {

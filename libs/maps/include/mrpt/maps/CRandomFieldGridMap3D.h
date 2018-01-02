@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <mrpt/utils/CDynamicGrid3D.h>
+#include <mrpt/containers/CDynamicGrid3D.h>
 #include <mrpt/math/types_math.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/config/CLoadableOptions.h>
@@ -78,7 +78,7 @@ struct TRandomFieldVoxel
 class CRandomFieldGridMap3D
 	: public mrpt::containers::CDynamicGrid3D<TRandomFieldVoxel>,
 	  public mrpt::serialization::CSerializable,
-	  public mrpt::utils::COutputLogger
+	  public mrpt::system::COutputLogger
 {
 	typedef utils::CDynamicGrid3D<TRandomFieldVoxel> BASE;
 
@@ -125,7 +125,7 @@ class CRandomFieldGridMap3D
 	  *  Derived classes instantions of their "TInsertionOptions" MUST set the
 	 * pointer "m_insertOptions_common" upon construction.
 	  */
-	struct TInsertionOptions : public mrpt::utils::CLoadableOptions
+	struct TInsertionOptions : public mrpt::config::CLoadableOptions
 	{
 		/** Default values loader */
 		TInsertionOptions();
@@ -136,7 +136,7 @@ class CRandomFieldGridMap3D
 			const std::string& section);
 
 		/** See utils::CLoadableOptions */
-		void dumpToTextStream(mrpt::utils::CStream& out) const;
+		void dumpToTextStream(std::ostream& out) const;
 
 		/** @name Gaussian Markov Random Fields method
 			@{ */

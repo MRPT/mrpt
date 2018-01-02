@@ -42,7 +42,7 @@ void CEdgeRegistrationDecider<GRAPH_T>::getDescriptiveReport(
 
 template <class GRAPH_T>
 void CEdgeRegistrationDecider<GRAPH_T>::registerNewEdge(
-	const mrpt::utils::TNodeID& from, const mrpt::utils::TNodeID& to,
+	const mrpt::graphs::TNodeID& from, const mrpt::graphs::TNodeID& to,
 	const constraint_t& rel_edge)
 {
 	using namespace std;

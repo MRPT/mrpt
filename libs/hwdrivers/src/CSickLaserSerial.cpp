@@ -12,7 +12,7 @@
 
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/crc.h>
+#include <mrpt/system/crc.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
 
@@ -28,7 +28,6 @@ IMPLEMENTS_GENERIC_SENSOR(CSickLaserSerial, mrpt::hwdrivers)
 
 using namespace std;
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::comms;
 using namespace mrpt::obs;
 using namespace mrpt::poses;

@@ -35,7 +35,6 @@
 #include <map>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::math;
 using namespace mrpt::system;
@@ -102,7 +101,7 @@ int main(int argc, char** argv)
 			throw runtime_error(
 				format("Error opening for read: '%s'", input_log.c_str()));
 
-		mrpt::utils::CFileGZOutputStream out_rawlog;
+		mrpt::io::CFileGZOutputStream out_rawlog;
 		if (!out_rawlog.open(output_rawlog, compress_level))
 			throw runtime_error(
 				format("Error opening for write: '%s'", output_rawlog.c_str()));

@@ -221,7 +221,7 @@ class reactive_navigator_demoframe : public wxFrame
 	void Onplot3DMouseMove(wxMouseEvent& event);
 
 	/* Vars: */
-	struct TOptions : public mrpt::utils::CLoadableOptions
+	struct TOptions : public mrpt::config::CLoadableOptions
 	{
 		double MAX_SENSOR_RADIUS;
 		double SENSOR_FOV;
@@ -318,14 +318,14 @@ class reactive_navigator_demoframe : public wxFrame
 	std::unique_ptr<mrpt::nav::CRobot2NavInterface> m_robotSimul2NavInterface;
 	std::unique_ptr<mrpt::kinematics::CVehicleSimulVirtualBase> m_robotSimul;
 
-	mrpt::utils::CTicTac
+	mrpt::system::CTicTac
 		m_runtime;  // just for animations, this is not robot time
 	/** Of the cursor on the 3D view (in world coordinates at Z=0) */
 	mrpt::math::TPoint2D m_curCursorPos;
 	/** The state of the cursor onto the 3D view: */
 	TCursorPickState m_cursorPickState;
 
-	mrpt::utils::CFileOutputStream m_log_trajectory_file;
+	mrpt::io::CFileOutputStream m_log_trajectory_file;
 
 	CMyRedirector* m_myRedirector;
 

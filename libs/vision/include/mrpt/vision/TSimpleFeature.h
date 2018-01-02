@@ -9,7 +9,7 @@
 #ifndef _mrpt_vision_TSimpleFeature_H
 #define _mrpt_vision_TSimpleFeature_H
 
-#include <mrpt/utils/TPixelCoord.h>
+#include <mrpt/img/TPixelCoord.h>
 #include <mrpt/core/round.h>
 #include <mrpt/math/KDTreeCapable.h>
 #include <mrpt/math/CMatrixTemplate.h>  // mrpt::math::CMatrixBool

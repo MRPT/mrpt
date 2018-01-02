@@ -13,7 +13,7 @@
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/CArrayNumeric.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/utils/aligned_containers.h>
+#include <mrpt/core/aligned_std_vector.h>
 #include <mrpt/vision/types.h>
 
 #include <array>

@@ -11,7 +11,7 @@
 #include <mrpt/nav/reactive/CRobot2NavInterface.h>
 #include <mrpt/system/COutputLogger.h>
 #include <mrpt/system/CTimeLogger.h>
-#include <mrpt/utils/TEnumType.h>
+#include <mrpt/typemeta/TEnumType.h>
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/poses/CPose2DInterpolator.h>
 #include <mrpt/poses/FrameTransformer.h>
@@ -56,7 +56,7 @@ namespace nav
  * children classes
  *  \ingroup nav_reactive
  */
-class CAbstractNavigator : public mrpt::utils::COutputLogger
+class CAbstractNavigator : public mrpt::system::COutputLogger
 {
    public:
 	/** ctor */
@@ -199,7 +199,7 @@ class CAbstractNavigator : public mrpt::utils::COutputLogger
 
 	/** @}*/
 
-	struct TAbstractNavigatorParams : public mrpt::utils::CLoadableOptions
+	struct TAbstractNavigatorParams : public mrpt::config::CLoadableOptions
 	{
 		/** Default value=0, means use the "targetAllowedDistance" passed by the
 		 * user in the navigation request. */
@@ -226,7 +226,7 @@ class CAbstractNavigator : public mrpt::utils::COutputLogger
 
 	/** Gives access to a const-ref to the internal time logger used to estimate
 	 * delays \sa getTimeLogger() in derived classes */
-	const mrpt::utils::CTimeLogger& getDelaysTimeLogger() const
+	const mrpt::system::CTimeLogger& getDelaysTimeLogger() const
 	{
 		return m_timlog_delays;
 	}
@@ -341,7 +341,7 @@ class CAbstractNavigator : public mrpt::utils::COutputLogger
 	mrpt::poses::CPose2DInterpolator m_latestPoses, m_latestOdomPoses;
 
 	/** Time logger to collect delay-related stats */
-	mrpt::utils::CTimeLogger m_timlog_delays;
+	mrpt::system::CTimeLogger m_timlog_delays;
 
 	/** For sending an alarm (error event) when it seems that we are not
 	 * approaching toward the target in a while... */

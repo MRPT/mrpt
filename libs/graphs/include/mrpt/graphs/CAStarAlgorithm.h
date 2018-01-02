@@ -96,7 +96,7 @@ class CAStarAlgorithm
 		double maxComputationTime = HUGE_VAL)
 	{
 		// Time measuring object is defined.
-		mrpt::utils::CTicTac time;
+		mrpt::system::CTicTac time;
 		time.Tic();
 		// The partial solution set is initialized with a single element (the
 		// starting solution).

@@ -24,7 +24,6 @@
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::obs;
 using namespace mrpt::system;

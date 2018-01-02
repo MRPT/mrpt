@@ -27,7 +27,6 @@ using namespace mrpt::poses;
 using namespace mrpt::opengl;
 using namespace mrpt::system;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace std;
 
 const char* MSG_HELP_WINDOW =
@@ -99,7 +98,7 @@ void display_graph(const GRAPHTYPE& g)
 		bool request_to_quit;
 
 		bool showing_help, hiding_help;
-		mrpt::utils::CTicTac tim_show_start, tim_show_end;
+		mrpt::system::CTicTac tim_show_start, tim_show_end;
 
 		Win3D_observer(const GRAPHTYPE& g)
 			: m_graph(g),
@@ -173,7 +172,7 @@ void display_graph(const GRAPHTYPE& g)
 
 						mrpt::opengl::COpenGLScene scene;
 						scene.insert(m_new_3dobj);
-						mrpt::utils::CFileGZOutputStream f(sFil);
+						mrpt::io::CFileGZOutputStream f(sFil);
 						f << scene;
 					}
 					break;

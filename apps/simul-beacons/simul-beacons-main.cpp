@@ -21,7 +21,6 @@
 #include <mrpt/random.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace mrpt::poses;
 using namespace mrpt::obs;

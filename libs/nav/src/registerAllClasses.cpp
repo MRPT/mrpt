@@ -14,7 +14,6 @@
 #include <mrpt/core/initializer.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::nav;
 using namespace std;
 

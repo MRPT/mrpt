@@ -12,7 +12,7 @@
 #include <mrpt/opengl/CAngularObservationMesh.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/serialization/stl_serialization.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 
 #if MRPT_HAS_OPENGL_GLUT
 #ifdef _WIN32
@@ -41,7 +41,6 @@ using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::math;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 

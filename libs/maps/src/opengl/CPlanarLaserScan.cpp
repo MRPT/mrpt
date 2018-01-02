@@ -10,7 +10,7 @@
 #include "maps-precomp.h"  // Precomp header
 
 #include <mrpt/opengl/CPlanarLaserScan.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 
 #if MRPT_HAS_OPENGL_GLUT
 #ifdef _WIN32
@@ -36,7 +36,6 @@
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 

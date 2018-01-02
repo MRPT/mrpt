@@ -34,14 +34,12 @@
 #include <cerrno>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::graphs;
 using namespace mrpt::math;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
 using namespace mrpt::graphslam;
 using namespace mrpt::graphslam::deciders;
 using namespace mrpt::graphslam::optimizers;
@@ -111,7 +109,7 @@ TCLAP::SwitchArg dim_3d(
 	"", "3d", "Construct 3D graph of constraints (use CPose3DPDFGaussianInf)");
 
 template <class GRAPH_T>
-void execGraphSlamEngine(mrpt::utils::COutputLogger* logger)
+void execGraphSlamEngine(mrpt::system::COutputLogger* logger)
 {
 	// Instance for managing the available graphslam deciders optimizers
 	TUserOptionsChecker<GRAPH_T> options_checker;

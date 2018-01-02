@@ -22,7 +22,6 @@ using namespace mrpt::maps;
 using namespace mrpt::obs;
 using namespace mrpt::gui;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::detectors;
 using namespace std;
@@ -106,7 +105,7 @@ void TestCamera3DFaceDetection(CCameraSensor::Ptr cam)
 	}
 
 	double counter = 0;
-	mrpt::utils::CTicTac tictac;
+	mrpt::system::CTicTac tictac;
 
 	CVectorDouble fps;
 
@@ -263,7 +262,7 @@ void TestCameraFaceDetection()
 	cout << "Close the window to exit." << endl;
 
 	double counter = 0;
-	mrpt::utils::CTicTac tictac;
+	mrpt::system::CTicTac tictac;
 
 	while (win.isOpen())
 	{
@@ -339,7 +338,7 @@ void TestImagesFaceDetection(int argc, char* argv[])
 {
 	CImage img;
 	CDisplayWindow win("Result");
-	mrpt::utils::CTicTac tictac;
+	mrpt::system::CTicTac tictac;
 
 	// For each aditional argument, tty to load an image and detect faces
 	for (int i = 1; i < argc; i++)
@@ -391,7 +390,7 @@ void BatchMode()
 
 		const unsigned int size = rawlog.size();
 
-		mrpt::utils::CTicTac tictac;
+		mrpt::system::CTicTac tictac;
 		size_t counter = 0;
 
 		// PROCESS RAWLOG

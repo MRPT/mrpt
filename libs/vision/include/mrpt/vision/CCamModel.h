@@ -33,7 +33,7 @@ namespace vision
  * for calibrating a camera
  * \ingroup mrpt_vision_grp
  */
-class CCamModel : public mrpt::utils::CLoadableOptions
+class CCamModel : public mrpt::config::CLoadableOptions
 {
    public:
 	/** The parameters of a camera */
@@ -45,8 +45,7 @@ class CCamModel : public mrpt::utils::CLoadableOptions
 	void loadFromConfigFile(
 		const mrpt::config::CConfigFileBase& source,
 		const std::string& section) override;  // See base docs
-	void dumpToTextStream(
-		mrpt::utils::CStream& out) const override;  // See base docs
+	void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
 	/** Constructor from a ini file
 	 */

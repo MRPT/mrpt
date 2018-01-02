@@ -10,12 +10,11 @@
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
 #include <mrpt/hwdrivers/CVelodyneScanner.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 #include <mrpt/comms/net_utils.h>
 #include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/utils/bits.h>  // for reverseBytesInPlace()
-
+#include <mrpt/core/reverse_bytes.h>
 #include <thread>
 
 // socket's hdrs:

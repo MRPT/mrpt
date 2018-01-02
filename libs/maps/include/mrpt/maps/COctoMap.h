@@ -14,7 +14,7 @@
 
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/utils/safe_pointers.h>
+#include <mrpt/core/safe_pointers.h>
 #include <octomap/octomap.h>
 #include <mrpt/obs/obs_frwds.h>
 

@@ -276,7 +276,7 @@ class CFeature : public mrpt::serialization::CSerializable
 	*/
 	TFeatureType get_type() const { return type; }
 	/** Dump feature information into a text stream */
-	void dumpToTextStream(mrpt::utils::CStream& out) const;
+	void dumpToTextStream(std::ostream& out) const;
 
 	void dumpToConsole() const;
 

@@ -20,7 +20,6 @@
 
 using namespace mrpt;
 using namespace mrpt::system;
-using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::poses;
 using namespace mrpt::obs;

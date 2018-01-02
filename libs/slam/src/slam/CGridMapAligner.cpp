@@ -18,7 +18,7 @@
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/utils/CEnhancedMetaFile.h>
+#include <mrpt/img/CEnhancedMetaFile.h>
 
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CMultiMetricMap.h>
@@ -29,7 +29,6 @@
 using namespace mrpt::math;
 using namespace mrpt::slam;
 using namespace mrpt::maps;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::random;
 using namespace mrpt::vision;
@@ -1208,8 +1207,7 @@ CGridMapAligner::TConfigParams::TConfigParams()
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void CGridMapAligner::TConfigParams::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+void CGridMapAligner::TConfigParams::dumpToTextStream(std::ostream& out) const
 {
 	out.printf(
 		"\n----------- [CGridMapAligner::TConfigParams] ------------ \n\n");

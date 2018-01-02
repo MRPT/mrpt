@@ -108,7 +108,7 @@ class CWaypointsNavigator : public mrpt::nav::CAbstractNavigator
 	bool isRelativePointReachable(
 		const mrpt::math::TPoint2D& wp_local_wrt_robot) const;
 
-	struct TWaypointsNavigatorParams : public mrpt::utils::CLoadableOptions
+	struct TWaypointsNavigatorParams : public mrpt::config::CLoadableOptions
 	{
 		/** In meters. <0: unlimited */
 		double max_distance_to_allow_skip_waypoint;

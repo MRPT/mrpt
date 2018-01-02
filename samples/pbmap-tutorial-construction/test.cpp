@@ -56,7 +56,7 @@ void testPbMapConstruction(const string& config_file)
 		reader.read(path + cloudFile, *cloudAndPose.cloudPtr);
 
 		// Read pose
-		mrpt::utils::CFileGZInputStream serialized_pose;
+		mrpt::io::CFileGZInputStream serialized_pose;
 		poseFile = path + mrpt::format("pose%i.mat", i);
 
 		if (serialized_pose.open(poseFile))
@@ -83,7 +83,7 @@ void testPbMapConstruction(const string& config_file)
 	}
 
 	// Serialize PbMap
-	mrpt::utils::CFileGZOutputStream serialize_pbmap("test.pbmap");
+	mrpt::io::CFileGZOutputStream serialize_pbmap("test.pbmap");
 	serialize_pbmap << pbmap_maker.getPbMap();
 	serialize_pbmap.close();
 

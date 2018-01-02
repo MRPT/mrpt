@@ -9,7 +9,7 @@
 #ifndef mrpt_map_as_vector_H
 #define mrpt_map_as_vector_H
 
-#include <mrpt/utils/aligned_containers.h>
+#include <mrpt/core/aligned_std_vector.h>
 #include <map>
 #include <vector>
 
@@ -50,7 +50,7 @@ namespace containers
   *  standard vector<> or to a deque<> (to avoid memory reallocations) by
  * changing the template parameter \a VECTOR_T.
   *
-  * \note Defined in #include <mrpt/utils/map_as_vector.h>
+  * \note Defined in #include <mrpt/containers/map_as_vector.h>
   * \ingroup mrpt_containers_grp
   */
 template <typename KEY, typename VALUE,

@@ -23,7 +23,7 @@
 
 #define DECLARE_OP_FUNCTION(_NAME)                                           \
 	void _NAME(                                                              \
-		mrpt::utils::CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline, \
+		mrpt::io::CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline, \
 		bool verbose)
 
 /** Auxiliary struct that performs all the checks and create the
@@ -31,7 +31,7 @@
 */
 struct TOutputRawlogCreator
 {
-	mrpt::utils::CFileGZOutputStream out_rawlog;
+	mrpt::io::CFileGZOutputStream out_rawlog;
 	std::string out_rawlog_filename;
 
 	TOutputRawlogCreator();

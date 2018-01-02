@@ -25,8 +25,8 @@
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/utils/TEnumType.h>
-#include <mrpt/utils/poly_ptr_ptr.h>
+#include <mrpt/typemeta/TEnumType.h>
+#include <mrpt/core/poly_ptr_ptr.h>
 #include <mrpt/obs/obs_frwds.h>
 
 namespace mrpt
@@ -199,7 +199,7 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 	typename T::Ptr getMapByClass(const size_t& ith = 0) const
 	{
 		size_t foundCount = 0;
-		const mrpt::utils::TRuntimeClassId* class_ID = &T::GetRuntimeClassIdStatic();
+		const mrpt::rtti::TRuntimeClassId* class_ID = &T::GetRuntimeClassIdStatic();
 		for (const_iterator it = begin(); it != end(); ++it)
 			if ((*it)->GetRuntimeClass()->derivedFrom(class_ID))
 				if (foundCount++ == ith)

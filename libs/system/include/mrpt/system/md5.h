@@ -16,7 +16,7 @@ namespace mrpt
 {
 namespace system
 {
-/** \addtogroup mrpt_md5 MD5 functions (in #include <mrpt/utils/md5.h>)
+/** \addtogroup mrpt_md5 MD5 functions (in #include <mrpt/system/md5.h>)
   *  \ingroup mrpt_system_grp
   * @{ */
 /** Computes the md5 of a block of data. */

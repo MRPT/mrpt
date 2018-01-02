@@ -22,7 +22,6 @@
 
 using namespace mrpt;
 using namespace mrpt::vision;
-using namespace mrpt::utils;
 using namespace std;
 
 /** Track a set of features from old_img -> new_img using sparse optimal flow

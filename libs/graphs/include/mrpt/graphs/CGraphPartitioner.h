@@ -38,7 +38,7 @@ namespace graphs
  * variables for debugging, which were removed since that version.
  */
 template <class GRAPH_MATRIX, typename num_t = typename GRAPH_MATRIX::Scalar>
-class CGraphPartitioner : public mrpt::utils::COutputLogger
+class CGraphPartitioner : public mrpt::system::COutputLogger
 {
    public:
 	/** Performs the spectral recursive partition into K-parts for a given

@@ -14,13 +14,11 @@
 #include <mrpt/io/CFileInputStream.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
-using namespace mrpt::utils;
 using namespace mrpt::system;
 
 IMPLEMENTS_SERIALIZABLE(CRawlog, CSerializable, mrpt::obs)
@@ -463,7 +461,7 @@ bool CRawlog::getActionObservationPairOrObservation(
 
 void CRawlog::findObservationsByClassInRange(
 	mrpt::system::TTimeStamp time_start, mrpt::system::TTimeStamp time_end,
-	const mrpt::utils::TRuntimeClassId* class_type,
+	const mrpt::rtti::TRuntimeClassId* class_type,
 	TListTimeAndObservations& out_found, size_t guess_start_position) const
 {
 	MRPT_UNUSED_PARAM(guess_start_position);

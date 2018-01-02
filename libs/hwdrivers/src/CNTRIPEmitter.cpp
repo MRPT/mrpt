@@ -18,7 +18,6 @@ IMPLEMENTS_GENERIC_SENSOR(CNTRIPEmitter, mrpt::hwdrivers)
 
 using namespace std;
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
 

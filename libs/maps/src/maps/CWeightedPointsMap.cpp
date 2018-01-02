@@ -10,7 +10,7 @@
 #include "maps-precomp.h"  // Precomp header
 
 #include <mrpt/maps/CWeightedPointsMap.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 
 #include "CPointsMap_crtp_common.h"
 
@@ -18,7 +18,6 @@ using namespace std;
 using namespace mrpt;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 
@@ -40,128 +39,7 @@ void CWeightedPointsMap::TMapDefinition::loadFromConfigFile_map_specific(
 void CWeightedPointsMap::TMapDefinition::dumpToTextStream_map_specific(
 	mrpt::utils::CStream& out) const
 {
-	this->insertionOpts.dumpToTextStream(out);
-	this->likelihoodOpts.dumpToTextStream(out);
-}
-
-mrpt::maps::CMetricMap* CWeightedPointsMap::internal_CreateFromMapDefinition(
-	const mrpt::maps::TMetricMapInitializer& _def)
-{
-	const CWeightedPointsMap::TMapDefinition& def =
-		*dynamic_cast<const CWeightedPointsMap::TMapDefinition*>(&_def);
-	CWeightedPointsMap* obj = new CWeightedPointsMap();
-	obj->insertionOptions = def.insertionOpts;
-	obj->likelihoodOptions = def.likelihoodOpts;
-	return obj;
-}
-//  =========== End of Map definition Block =========
-
-IMPLEMENTS_SERIALIZABLE(CWeightedPointsMap, CPointsMap, mrpt::maps)
-
-/*---------------------------------------------------------------
-						Constructor
-  ---------------------------------------------------------------*/
-CWeightedPointsMap::CWeightedPointsMap() { reserve(400); }
-/*---------------------------------------------------------------
-						Destructor
-  ---------------------------------------------------------------*/
-CWeightedPointsMap::~CWeightedPointsMap() {}
-/*---------------------------------------------------------------
-				reserve & resize methods
- ---------------------------------------------------------------*/
-void CWeightedPointsMap::reserve(size_t newLength)
-{
-	newLength = mrpt::utils::length2length4N(newLength);
-	x.reserve(newLength);
-	y.reserve(newLength);
-	z.reserve(newLength);
-	pointWeight.reserve(newLength);
-}
-
-// Resizes all point buffers so they can hold the given number of points: newly
-// created points are set to default values,
-//  and old contents are not changed.
-void CWeightedPointsMap::resize(size_t newLength)
-{
-	this->reserve(newLength);  // to ensure 4N capacity
-	x.resize(newLength, 0);
-	y.resize(newLength, 0);
-	z.resize(newLength, 0);
-	pointWeight.resize(newLength, 1);
-}
-
-// Resizes all point buffers so they can hold the given number of points,
-// *erasing* all previous contents
-//  and leaving all points to default values.
-void CWeightedPointsMap::setSize(size_t newLength)
-{
-	this->reserve(newLength);  // to ensure 4N capacity
-	x.assign(newLength, 0);
-	y.assign(newLength, 0);
-	z.assign(newLength, 0);
-	pointWeight.assign(newLength, 1);
-}
-
-void CWeightedPointsMap::setPointFast(size_t index, float x, float y, float z)
-{
-	this->x[index] = x;
-	this->y[index] = y;
-	this->z[index] = z;
-	// this->pointWeight: Unmodified
-	// mark_as_modified(); -> Fast
-}
-
-void CWeightedPointsMap::insertPointFast(float x, float y, float z)
-{
-	this->x.push_back(x);
-	this->y.push_back(y);
-	this->z.push_back(z);
-	this->pointWeight.push_back(1);
-	// mark_as_modified(); -> Fast
-}
-
-/*---------------------------------------------------------------
-						Copy constructor
-  ---------------------------------------------------------------*/
-void CWeightedPointsMap::copyFrom(const CPointsMap& obj)
-{
-	CPointsMap::base_copyFrom(
-		obj);  // This also does a ::resize(N) of all data fields.
-
-	const CWeightedPointsMap* pW =
-		dynamic_cast<const CWeightedPointsMap*>(&obj);
-	if (pW)
-	{
-		pointWeight = pW->pointWeight;
-	}
-}
-
-/*---------------------------------------------------------------
-						addFrom_classSpecific
- ---------------------------------------------------------------*/
-void CWeightedPointsMap::addFrom_classSpecific(
-	const CPointsMap& anotherMap, const size_t nPreviousPoints)
-{
-	const size_t nOther = anotherMap.size();
-
-	// Specific data for this class:
-	const CWeightedPointsMap* anotheMap_w =
-		dynamic_cast<const CWeightedPointsMap*>(&anotherMap);
-
-	if (anotheMap_w)
-	{
-		for (size_t i = 0, j = nPreviousPoints; i < nOther; i++, j++)
-			pointWeight[j] = anotheMap_w->pointWeight[i];
-	}
-}
-
-/*---------------------------------------------------------------
-					writeToStream
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-uint8_t CWeightedPointsMap::serializeGetVersion() const { return XX; } void CWeightedPointsMap::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+	this->insertionOpts.dumpToTextStreamstd::ostream& out, int* version) const
 {
 	if (version)
 		*version = 2;

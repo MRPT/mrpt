@@ -22,7 +22,6 @@ using namespace rp::standalone::rplidar;
 #define RPLIDAR_DRV static_cast<RPlidarDriver*>(m_rplidar_drv)
 #endif
 
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;

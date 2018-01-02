@@ -11,8 +11,8 @@
 
 #include "mrpt/maps/TMetricMapInitializer.h"
 #include "mrpt/config/CConfigFile.h"
-#include "mrpt/utils/CFileGZOutputStream.h"
-#include "mrpt/utils/CFileGZInputStream.h"
+#include "mrpt/io/CFileGZOutputStream.h"
+#include "mrpt/io/CFileGZInputStream.h"
 #include "mrpt/opengl/CPointCloud.h"
 #include "mrpt/opengl/CTexturedPlane.h"
 #include "mrpt/gui/CGlCanvasBase.h"

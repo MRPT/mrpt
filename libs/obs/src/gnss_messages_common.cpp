@@ -129,7 +129,7 @@ gnss_message_ptr::gnss_message_ptr(const gnss_message_ptr& o)
 	}
 	else
 	{
-		mrpt::utils::CMemoryStream buf;
+		mrpt::io::CMemoryStream buf;
 		o->writeToStream(buf);
 		buf.Seek(0);
 		ptr = gnss_message::readAndBuildFromStream(buf);
@@ -152,7 +152,7 @@ void gnss_message_ptr::set(gnss_message* p)
 // Makes a copy of the pointee
 gnss_message_ptr& gnss_message_ptr::operator=(const gnss_message_ptr& o)
 {
-	mrpt::utils::CMemoryStream buf;
+	mrpt::io::CMemoryStream buf;
 	o->writeToStream(buf);
 	buf.Seek(0);
 	ptr = gnss_message::readAndBuildFromStream(buf);

@@ -343,7 +343,7 @@ namespace hwdrivers
  * prepareVideoSourceFromUserSelection()
   * \ingroup mrpt_hwdrivers_grp
   */
-class CCameraSensor : public mrpt::utils::COutputLogger, public CGenericSensor
+class CCameraSensor : public mrpt::system::COutputLogger, public CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CCameraSensor)
 
@@ -529,7 +529,7 @@ class CCameraSensor : public mrpt::utils::COutputLogger, public CGenericSensor
 	/** The FFMPEG capture object */
 	std::unique_ptr<CFFMPEG_InputStream> m_cap_ffmpeg;
 	/** The input file for rawlogs */
-	std::unique_ptr<mrpt::utils::CFileGZInputStream> m_cap_rawlog;
+	std::unique_ptr<mrpt::io::CFileGZInputStream> m_cap_rawlog;
 	/** SR 3D camera object. */
 	std::unique_ptr<CSwissRanger3DCamera> m_cap_swissranger;
 	/** Kinect camera object. */

@@ -51,8 +51,8 @@ CParameterizedTrajectoryGenerator* CParameterizedTrajectoryGenerator::CreatePTG(
 	}
 
 	// Factory:
-	const mrpt::utils::TRuntimeClassId* classId =
-		mrpt::utils::findRegisteredClass(ptgClassName);
+	const mrpt::rtti::TRuntimeClassId* classId =
+		mrpt::rtti::findRegisteredClass(ptgClassName);
 	if (!classId)
 	{
 		THROW_EXCEPTION_FMT(

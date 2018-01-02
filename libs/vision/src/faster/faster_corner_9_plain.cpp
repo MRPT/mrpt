@@ -20,7 +20,6 @@
 
 using namespace std;
 using namespace mrpt;
-using namespace mrpt::utils;
 
 #if MRPT_HAS_OPENCV
 

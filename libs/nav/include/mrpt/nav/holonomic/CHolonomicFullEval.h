@@ -70,7 +70,7 @@ class CHolonomicFullEval : public CAbstractHolonomicReactiveMethod
 		mrpt::config::CConfigFileBase& c) const override;  // See base class docs
 
 	/** Algorithm options */
-	struct TOptions : public mrpt::utils::CLoadableOptions
+	struct TOptions : public mrpt::config::CLoadableOptions
 	{
 		/** Directions with collision-free distances below this threshold are
 		 * not elegible. */

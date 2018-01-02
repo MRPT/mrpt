@@ -23,7 +23,7 @@
 #include <mrpt/opengl/CAxis.h>
 #include <mrpt/system/os.h>
 #include <mrpt/topography.h>
-#include <mrpt/utils/stl_containers_utils.h>
+#include <mrpt/containers/stl_containers_utils.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/system/filesystem.h>
@@ -35,7 +35,6 @@ using namespace mrpt::opengl;
 using namespace mrpt::system;
 using namespace mrpt::math;
 using namespace mrpt::gui;
-using namespace mrpt::utils;
 using namespace mrpt::topography;
 using namespace mrpt::poses;
 using namespace std;

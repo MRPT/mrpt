@@ -113,7 +113,7 @@ CNationalInstrumentsDAQ::TInfoPerTask::TInfoPerTask()
 				Constructor
    ----------------------------------------------------- */
 CNationalInstrumentsDAQ::CNationalInstrumentsDAQ()
-	: mrpt::utils::COutputLogger("CNationalInstrumentsDAQ")
+	: mrpt::system::COutputLogger("CNationalInstrumentsDAQ")
 {
 	m_sensorLabel = "NIDAQ";
 }

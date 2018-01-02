@@ -213,7 +213,7 @@ namespace hwdrivers
 *
 * \ingroup mrpt_hwdrivers_grp
 */
-class CNationalInstrumentsDAQ : public mrpt::utils::COutputLogger,
+class CNationalInstrumentsDAQ : public mrpt::system::COutputLogger,
 								public CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CNationalInstrumentsDAQ)

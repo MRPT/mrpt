@@ -8,7 +8,7 @@
    +---------------------------------------------------------------------------+ */
 
 #include <zmq.h>
-#include <mrpt/utils/serialization_zmq.h>
+#include <mrpt/serialization/serialization_zmq.h>
 #include <assert.h>
 #include <stdio.h>
 #include <mrpt/poses/CPose3D.h>

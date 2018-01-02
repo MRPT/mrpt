@@ -10,7 +10,6 @@
 #include "rawlog-edit-declarations.h"
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::rawlogtools;
@@ -31,7 +30,7 @@ DECLARE_OP_FUNCTION(op_cut)
 
 	   public:
 		CRawlogProcessor_Cut(
-			mrpt::utils::CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
+			mrpt::io::CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
 			bool verbose, CFileGZOutputStream& out_rawlog)
 			: CRawlogProcessorFilterObservations(
 				  in_rawlog, cmdline, verbose, out_rawlog),

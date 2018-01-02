@@ -13,7 +13,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/io/CMemoryStream.h>
-#include <mrpt/utils/crc.h>
+#include <mrpt/system/crc.h>
 
 using namespace mrpt::hwdrivers;
 using namespace mrpt::obs;
@@ -96,7 +96,7 @@ bool CGPSInterface::implement_parser_NOVATEL_OEM6(
 		// static_cast<uint32_t>(DATA_LEN); out.WriteBuffer(DATA_PTR,DATA_LEN);
 		// }
 		// ------
-		mrpt::utils::CMemoryStream tmpStream;
+		mrpt::io::CMemoryStream tmpStream;
 		const uint32_t msg_id = use_generic_container
 									? (uint32_t)(NV_OEM6_GENERIC_SHORT_FRAME)
 									: (uint32_t)hdr.msg_id + NV_OEM6_MSG2ENUM;
@@ -173,7 +173,7 @@ bool CGPSInterface::implement_parser_NOVATEL_OEM6(
 		// static_cast<uint32_t>(DATA_LEN); out.WriteBuffer(DATA_PTR,DATA_LEN);
 		// }
 		// ------
-		mrpt::utils::CMemoryStream tmpStream;
+		mrpt::io::CMemoryStream tmpStream;
 		const int32_t msg_id = use_generic_container
 								   ? (uint32_t)(NV_OEM6_GENERIC_FRAME)
 								   : (uint32_t)hdr.msg_id + NV_OEM6_MSG2ENUM;

@@ -47,7 +47,6 @@ using namespace mrpt::obs;
 using namespace mrpt;
 using namespace mrpt::system;
 using namespace mrpt::hwdrivers;
-using namespace mrpt::utils;
 using namespace std;
 using namespace mexplus;
 

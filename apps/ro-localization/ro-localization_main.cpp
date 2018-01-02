@@ -54,7 +54,6 @@ using namespace mrpt::gui;
 using namespace mrpt::math;
 using namespace mrpt::random;
 using namespace mrpt::system;
-using namespace mrpt::utils;
 using namespace std;
 
 #include "CPosePDFParticlesExtended.h"

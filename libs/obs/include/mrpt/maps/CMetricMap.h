@@ -11,7 +11,7 @@
 
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/tfest/TMatchingPair.h>
-#include <mrpt/utils/CObservable.h>
+#include <mrpt/system/CObservable.h>
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/obs/CObservation.h>

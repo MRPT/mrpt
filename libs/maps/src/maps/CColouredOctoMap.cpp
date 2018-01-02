@@ -26,7 +26,6 @@ using namespace std;
 using namespace mrpt;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
@@ -56,44 +55,7 @@ void CColouredOctoMap::TMapDefinition::dumpToTextStream_map_specific(
 {
 	LOADABLEOPTS_DUMP_VAR(resolution, double);
 
-	this->insertionOpts.dumpToTextStream(out);
-	this->likelihoodOpts.dumpToTextStream(out);
-}
-
-mrpt::maps::CMetricMap* CColouredOctoMap::internal_CreateFromMapDefinition(
-	const mrpt::maps::TMetricMapInitializer& _def)
-{
-	const CColouredOctoMap::TMapDefinition& def =
-		*dynamic_cast<const CColouredOctoMap::TMapDefinition*>(&_def);
-	CColouredOctoMap* obj = new CColouredOctoMap(def.resolution);
-	obj->insertionOptions = def.insertionOpts;
-	obj->likelihoodOptions = def.likelihoodOpts;
-	return obj;
-}
-//  =========== End of Map definition Block =========
-
-IMPLEMENTS_SERIALIZABLE(CColouredOctoMap, CMetricMap, mrpt::maps)
-
-/*---------------------------------------------------------------
-						Constructor
-  ---------------------------------------------------------------*/
-CColouredOctoMap::CColouredOctoMap(const double resolution)
-	: COctoMapBase<octomap::ColorOcTree, octomap::ColorOcTreeNode>(resolution),
-	  m_colour_method(INTEGRATE)
-{
-}
-
-/*---------------------------------------------------------------
-						Destructor
-  ---------------------------------------------------------------*/
-CColouredOctoMap::~CColouredOctoMap() {}
-/*---------------------------------------------------------------
-					writeToStream
-   Implements the writing to a CStream capability of
-				CSerializable objects
-  ---------------------------------------------------------------*/
-uint8_t CColouredOctoMap::serializeGetVersion() const { return XX; } void CColouredOctoMap::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+	this->insertionOpts.dumpToTextStreamstd::ostream& out, int* version) const
 {
 	if (version)
 		*version = 2;

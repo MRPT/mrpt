@@ -16,7 +16,6 @@
 
 IMPLEMENTS_GENERIC_SENSOR(CGyroKVHDSP3000, mrpt::hwdrivers)
 
-using namespace mrpt::utils;
 using namespace mrpt::comms;
 using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;

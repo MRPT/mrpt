@@ -12,7 +12,7 @@
 #include <mrpt/maps/CBeacon.h>
 #include <mrpt/maps/CBeaconMap.h>
 #include <mrpt/obs/CObservation.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 
 #include <mrpt/system/os.h>
 #include <mrpt/math/geometry.h>
@@ -27,7 +27,6 @@ using namespace mrpt::obs;
 using namespace mrpt::math;
 using namespace mrpt::system;
 using namespace mrpt::poses;
-using namespace mrpt::utils;
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CBeacon, CSerializable, mrpt::maps)

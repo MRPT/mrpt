@@ -12,7 +12,7 @@
 #include <mrpt/poses/CPoint2DPDFGaussian.h>
 #include <mrpt/poses/CPointPDFGaussian.h>
 #include <mrpt/math/CMatrixTemplate.h>  // mrpt::math::CMatrixBool
-#include <mrpt/utils/TEnumType.h>
+#include <mrpt/typemeta/TEnumType.h>
 
 namespace mrpt
 {

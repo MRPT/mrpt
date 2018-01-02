@@ -10,7 +10,6 @@
 #include <mrpt/system/TParameters.h>
 
 using namespace std;
-using namespace mrpt::utils;
 
 void MyCoolFunction(const TParametersDouble& params)
 {

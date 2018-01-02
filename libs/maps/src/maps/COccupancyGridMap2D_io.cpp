@@ -11,8 +11,8 @@
 
 #include <mrpt/system/os.h>
 #include <mrpt/math/CMatrix.h>
-#include <mrpt/utils/CStream.h>
-#include <mrpt/utils/CEnhancedMetaFile.h>
+//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/img/CEnhancedMetaFile.h>
 #include <mrpt/core/round.h>  // round()
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/random.h>
@@ -22,7 +22,6 @@ using namespace mrpt::maps;
 using namespace mrpt::math;
 using namespace mrpt::obs;
 using namespace mrpt::random;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::system;
 using namespace std;

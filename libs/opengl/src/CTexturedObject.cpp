@@ -169,7 +169,7 @@ void CTexturedObject::loadTextureInOpenGL() const
 	vector<unsigned char> data;
 
 #ifdef TEXTUREOBJ_PROFILE_MEM_ALLOC
-	static mrpt::utils::CTimeLogger tim;
+	static mrpt::system::CTimeLogger tim;
 #endif
 
 	try

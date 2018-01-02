@@ -12,7 +12,6 @@
 #define __mrpt_vision_H
 
 #ifndef MRPT_NO_WARN_BIG_HDR
-#include <mrpt/utils/core_defs.h>
 MRPT_WARNING(
 	"Including <mrpt/vision.h> makes compilation much slower, consider "
 	"including only what you need (define MRPT_NO_WARN_BIG_HDR to disable this "

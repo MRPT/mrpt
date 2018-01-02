@@ -11,10 +11,9 @@
 #include <mrpt/obs/CObservationStereoImagesFeatures.h>
 
 #include <mrpt/io/CFileOutputStream.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace std;

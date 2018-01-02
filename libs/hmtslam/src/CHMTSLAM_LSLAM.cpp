@@ -10,7 +10,7 @@
 #include "hmtslam-precomp.h"  // Precomp header
 
 #include <mrpt/system/CTicTac.h>
-#include <mrpt/utils/stl_containers_utils.h>
+#include <mrpt/containers/stl_containers_utils.h>
 #include <mrpt/random.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/hmtslam/CRobotPosesGraph.h>
@@ -24,7 +24,6 @@
 
 using namespace mrpt::slam;
 using namespace mrpt::hmtslam;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::opengl;

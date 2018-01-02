@@ -34,11 +34,11 @@ namespace rawlogtools
 class CRawlogProcessor
 {
    protected:
-	mrpt::utils::CFileGZInputStream& m_in_rawlog;
+	mrpt::io::CFileGZInputStream& m_in_rawlog;
 	TCLAP::CmdLine& m_cmdline;
 	bool verbose;
 	mrpt::system::TTimeStamp m_last_console_update;
-	mrpt::utils::CTicTac m_timParse;
+	mrpt::system::CTicTac m_timParse;
 
    public:
 	uint64_t m_filSize;
@@ -47,7 +47,7 @@ class CRawlogProcessor
 
 	// Ctor
 	CRawlogProcessor(
-		mrpt::utils::CFileGZInputStream& _in_rawlog, TCLAP::CmdLine& _cmdline,
+		mrpt::io::CFileGZInputStream& _in_rawlog, TCLAP::CmdLine& _cmdline,
 		bool _verbose)
 		: m_in_rawlog(_in_rawlog),
 		  m_cmdline(_cmdline),
@@ -157,7 +157,7 @@ class CRawlogProcessorOnEachObservation : public CRawlogProcessor
 {
    public:
 	CRawlogProcessorOnEachObservation(
-		mrpt::utils::CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
+		mrpt::io::CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
 		bool verbose)
 		: CRawlogProcessor(in_rawlog, cmdline, verbose)
 	{
@@ -209,15 +209,15 @@ class CRawlogProcessorFilterObservations
 	: public CRawlogProcessorOnEachObservation
 {
    public:
-	mrpt::utils::CFileGZOutputStream& m_out_rawlog;
+	mrpt::io::CFileGZOutputStream& m_out_rawlog;
 	size_t m_entries_removed, m_entries_parsed;
 	/** Set to true to indicate that we are sure we don't have to keep on
 	 * reading. */
 	bool m_we_are_done_with_this_rawlog;
 
 	CRawlogProcessorFilterObservations(
-		mrpt::utils::CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
-		bool verbose, mrpt::utils::CFileGZOutputStream& out_rawlog)
+		mrpt::io::CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
+		bool verbose, mrpt::io::CFileGZOutputStream& out_rawlog)
 		: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, verbose),
 		  m_out_rawlog(out_rawlog),
 		  m_entries_removed(0),

@@ -10,10 +10,9 @@
 
 /* MRPT */
 #include <mrpt/img/TColor.h>
-#include <mrpt/utils/CObject.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/rtti/CObject.h>
+//#include <mrpt/serialization/CArchive.h>
 #include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/utils/CStdOutStream.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/config/CConfigFile.h>
@@ -23,7 +22,6 @@
 #include <cstdint>
 
 using namespace boost::python;
-using namespace mrpt::utils;
 
 // CStream
 void CStream_ReadObject(CStream& self, CSerializable::Ptr& obj)

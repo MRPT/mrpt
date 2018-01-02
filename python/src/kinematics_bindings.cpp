@@ -15,7 +15,6 @@
 #include <cstdint>
 
 using namespace boost::python;
-using namespace mrpt::utils;
 using namespace mrpt::kinematics;
 using namespace mrpt::poses;
 using namespace mrpt::math;

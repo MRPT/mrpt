@@ -11,14 +11,13 @@
 
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/math/CMatrix.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 #if MRPT_HAS_MATLAB
 #include <mexplus/mxarray.h>
 #endif
 
 using namespace mrpt::obs;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 // This must be added to any CSerializable class implementation file.

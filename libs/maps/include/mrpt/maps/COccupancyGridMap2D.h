@@ -17,12 +17,12 @@
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/tfest/TMatchingPair.h>
 #include <mrpt/maps/CLogOddsGridMap2D.h>
-#include <mrpt/utils/safe_pointers.h>
+#include <mrpt/core/safe_pointers.h>
 #include <mrpt/poses/poses_frwds.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/obs/CObservation2DRangeScanWithUncertainty.h>
 #include <mrpt/obs/obs_frwds.h>
-#include <mrpt/utils/TEnumType.h>
+#include <mrpt/typemeta/TEnumType.h>
 
 #include <mrpt/config.h>
 #if (                                                \
@@ -490,7 +490,7 @@ class COccupancyGridMap2D : public CMetricMap,
 	/** With this struct options are provided to the observation insertion
 	* process.
 	* \sa CObservation::insertIntoGridMap */
-	class TInsertionOptions : public mrpt::utils::CLoadableOptions
+	class TInsertionOptions : public mrpt::config::CLoadableOptions
 	{
 	   public:
 		/** Initilization of default parameters
@@ -511,84 +511,7 @@ class COccupancyGridMap2D : public CMetricMap,
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
-
-		/** The altitude (z-axis) of 2D scans (within a 0.01m tolerance) for
-		 * they to be inserted in this map! */
-		float mapAltitude;
-		/** The parameter "mapAltitude" has effect while inserting observations
-		 * in the grid only if this is true. */
-		bool useMapAltitude;
-		/** The largest distance at which cells will be updated (Default 15
-		 * meters) */
-		float maxDistanceInsertion;
-		/** A value in the range [0.5,1] used for updating cell with a bayesian
-		 * approach (default 0.8) */
-		float maxOccupancyUpdateCertainty;
-		/** If set to true (default), invalid range values (no echo rays) as
-		 * consider as free space until "maxOccupancyUpdateCertainty", but ONLY
-		 * when the previous and next rays are also an invalid ray. */
-		bool considerInvalidRangesAsFreeSpace;
-		/** Specify the decimation of the range scan (default=1 : take all the
-		 * range values!) */
-		uint16_t decimation;
-		/** The tolerance in rads in pitch & roll for a laser scan to be
-		 * considered horizontal, then processed by calls to this class
-		 * (default=0). */
-		float horizontalTolerance;
-		/** Gaussian sigma of the filter used in getAsImageFiltered (for
-		 * features detection) (Default=1) (0:Disabled)  */
-		float CFD_features_gaussian_size;
-		/** Size of the Median filter used in getAsImageFiltered (for features
-		 * detection) (Default=3) (0:Disabled) */
-		float CFD_features_median_size;
-		/** Enabled: Rays widen with distance to approximate the real behavior
-		 * of lasers, disabled: insert rays as simple lines (Default=false) */
-		bool wideningBeamsWithDistance;
-	};
-
-	/** With this struct options are provided to the observation insertion
-	 * process \sa CObservation::insertIntoGridMap */
-	TInsertionOptions insertionOptions;
-
-	/** The type for selecting a likelihood computation method */
-	enum TLikelihoodMethod
-	{
-		lmMeanInformation = 0,
-		lmRayTracing,
-		lmConsensus,
-		lmCellsDifference,
-		lmLikelihoodField_Thrun,
-		lmLikelihoodField_II,
-		lmConsensusOWA
-		// Remember: Update TEnumType below if new values are added here!
-	};
-
-	/** With this struct options are provided to the observation likelihood
-	 * computation process */
-	class TLikelihoodOptions : public mrpt::utils::CLoadableOptions
-	{
-	   public:
-		/** Initilization of default parameters */
-		TLikelihoodOptions();
-
-		/** This method load the options from a ".ini" file.
-		 *   Only those parameters found in the given "section" and having
-		 *   the same name that the variable are loaded. Those not found in
-		 *   the file will stay with their previous values (usually the default
-		 *   values loaded at initialization). An example of an ".ini" file:
-		 *  \code
-		 *  [section]
-		 *	resolution=0.10		; blah blah...
-		 *	modeSelection=1		; 0=blah, 1=blah,...
-		 *  \endcode
-		 */
-		void loadFromConfigFile(
-			const mrpt::config::CConfigFileBase& source,
-			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+		void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
 		/** The selected method to compute an observation likelihood */
 		TLikelihoodMethod likelihoodMethod;
@@ -1001,8 +924,7 @@ class COccupancyGridMap2D : public CMetricMap,
 										mrpt::img::TColor(0, 0, 255)) const
 	{
 		MRPT_START
-		using namespace mrpt::utils;
-		CImage img(1, 1, 3);
+				CImage img(1, 1, 3);
 		getAsImageFiltered(img, false, true);  // in RGB
 		const bool topleft = img.isOriginTopLeft();
 		for (unsigned int i = 0; i < landmarks->landmarks.size(); i++)

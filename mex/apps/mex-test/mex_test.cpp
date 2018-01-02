@@ -23,7 +23,6 @@
 using namespace mrpt;
 using namespace mrpt::system;
 using namespace mrpt::hwdrivers;
-using namespace mrpt::utils;
 using namespace mrpt::slam;
 using namespace std;
 using namespace mexplus;

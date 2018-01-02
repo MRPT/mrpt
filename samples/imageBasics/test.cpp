@@ -8,12 +8,10 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/gui.h>
-#include <mrpt/utils.h>
 
 using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace std;
 
 #include <mrpt/examples_config.h>

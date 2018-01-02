@@ -9,14 +9,13 @@
 
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/CMessage.h>
+#include <mrpt/serialization/CMessage.h>
 #include <mrpt/system/os.h>
 
 #include <mrpt/hwdrivers/CBoardSonars.h>
 
 #include <thread>
 
-using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
 using namespace std;
 

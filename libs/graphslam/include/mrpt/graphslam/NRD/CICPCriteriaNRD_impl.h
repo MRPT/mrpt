@@ -24,8 +24,7 @@ CICPCriteriaNRD<GRAPH_T>::CICPCriteriaNRD()
 	: params(*this)  // pass reference to self when initializing the parameters
 // m_mahal_distance_ICP_odom("Mahalanobis dist (ICP - odom)")
 {
-	using namespace mrpt::utils;
-	using namespace mrpt::math;
+		using namespace mrpt::math;
 	this->initializeLoggers("CICPCriteriaNRD");
 
 	m_is_using_3DScan = false;
@@ -156,8 +155,7 @@ bool CICPCriteriaNRD<GRAPH_T>::checkRegistrationCondition2D()
 	MRPT_START;
 
 	using namespace mrpt::math;
-	using namespace mrpt::utils;
-
+	
 	bool registered_new_node = false;
 
 	// Constraint that *may* update incrementally the m_since_prev_node_PDF.
@@ -257,8 +255,7 @@ template <class GRAPH_T>
 bool CICPCriteriaNRD<GRAPH_T>::checkRegistrationCondition()
 {
 	MRPT_START;
-	using namespace mrpt::utils;
-	this->logFmt(LVL_DEBUG, "In checkRegistrationCondition");
+		this->logFmt(LVL_DEBUG, "In checkRegistrationCondition");
 	using namespace mrpt::math;
 
 	// Criterions for adding a new node
@@ -296,8 +293,7 @@ void CICPCriteriaNRD<GRAPH_T>::loadParams(const std::string& source_fname)
 	MRPT_START;
 	parent_t::loadParams(source_fname);
 
-	using namespace mrpt::utils;
-
+	
 	params.loadFromConfigFileName(
 		source_fname, "NodeRegistrationDeciderParameters");
 	// m_mahal_distance_ICP_odom.loadFromConfigFileName(source_fname,
@@ -373,13 +369,11 @@ CICPCriteriaNRD<GRAPH_T>::TParams::~TParams()
 {
 }
 template <class GRAPH_T>
-void CICPCriteriaNRD<GRAPH_T>::TParams::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+void CICPCriteriaNRD<GRAPH_T>::TParams::dumpToTextStream(std::ostream& out) const
 {
 	MRPT_START;
 
-	using namespace mrpt::utils;
-	using namespace mrpt::math;
+		using namespace mrpt::math;
 
 	out.printf(
 		"------------------[ ICP Fixed Intervals Node Registration "
@@ -400,8 +394,7 @@ void CICPCriteriaNRD<GRAPH_T>::TParams::loadFromConfigFile(
 {
 	MRPT_START;
 
-	using namespace mrpt::utils;
-	using namespace mrpt::math;
+		using namespace mrpt::math;
 
 	registration_max_distance = source.read_double(
 		section, "registration_max_distance", 0.5 /* meter */, false);

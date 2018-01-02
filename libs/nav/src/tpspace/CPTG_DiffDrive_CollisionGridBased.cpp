@@ -336,7 +336,7 @@ bool CPTG_DiffDrive_CollisionGridBased::saveColGridsToFile(
 {
 	try
 	{
-		mrpt::utils::CFileGZOutputStream fo(filename);
+		mrpt::io::CFileGZOutputStream fo(filename);
 		if (!fo.fileOpenCorrectly()) return false;
 
 		const uint32_t n = 1;  // for backwards compatibility...
@@ -357,7 +357,7 @@ bool CPTG_DiffDrive_CollisionGridBased::loadColGridsFromFile(
 {
 	try
 	{
-		mrpt::utils::CFileGZInputStream fi(filename);
+		mrpt::io::CFileGZInputStream fi(filename);
 		if (!fi.fileOpenCorrectly()) return false;
 
 		uint32_t n;
@@ -701,7 +701,7 @@ void CPTG_DiffDrive_CollisionGridBased::internal_initialize(
 	ASSERT_(W_MAX > 0);
 	ASSERT_(m_resolution > 0);
 
-	mrpt::utils::CTicTac tictac;
+	mrpt::system::CTicTac tictac;
 	tictac.Tic();
 
 	if (verbose) cout << "Initializing PTG '" << cacheFilename << "'...";

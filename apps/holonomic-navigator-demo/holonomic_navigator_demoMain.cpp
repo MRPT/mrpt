@@ -62,7 +62,6 @@ using namespace mrpt::obs;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
 using namespace mrpt::system;
-using namespace mrpt::utils;
 using namespace mrpt::nav;
 using namespace mrpt::poses;
 using namespace std;

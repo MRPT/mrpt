@@ -10,16 +10,14 @@
 #include "obs-precomp.h"  // Precompiled headers
 
 #include <mrpt/random.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 #include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::random;
-using namespace mrpt::utils;
 
 IMPLEMENTS_SERIALIZABLE(CActionRobotMovement3D, CAction, mrpt::obs)
 

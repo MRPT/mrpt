@@ -14,7 +14,6 @@
 #include <mrpt/system.h>
 
 using namespace mrpt::hwdrivers;
-using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace mrpt::obs;
 using namespace std;

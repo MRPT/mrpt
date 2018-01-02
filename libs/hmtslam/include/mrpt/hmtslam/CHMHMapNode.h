@@ -9,12 +9,12 @@
 #ifndef CHMHMapNode_H
 #define CHMHMapNode_H
 
-#include <mrpt/utils/safe_pointers.h>
+#include <mrpt/core/safe_pointers.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/hmtslam/HMT_SLAM_common.h>
 
 #include <mrpt/serialization/CSerializable.h>
-#include <mrpt/utils/CMHPropertiesValuesList.h>
+#include <mrpt/hmtslam/CMHPropertiesValuesList.h>
 #include <mrpt/containers/CTypeSelector.h>
 #include <map>
 
@@ -44,7 +44,7 @@ class CHMHMapNode : public mrpt::serialization::CSerializable
    public:
 	/** The type of the IDs of nodes.
 	  */
-	typedef mrpt::utils::TNodeID TNodeID;
+	typedef mrpt::graphs::TNodeID TNodeID;
 
 	/** The hypothesis IDs under which this node exists.
 	  */

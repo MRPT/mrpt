@@ -11,7 +11,6 @@
 #include <mrpt/img/CImage.h>
 #include <mrpt/gui/CDisplayWindow.h>
 
-using namespace mrpt::utils;
 using namespace mrpt::gui;
 using namespace std;
 

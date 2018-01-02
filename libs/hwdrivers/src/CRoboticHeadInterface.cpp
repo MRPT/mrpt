@@ -11,7 +11,6 @@
 
 #include <mrpt/hwdrivers/CRoboticHeadInterface.h>
 
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::hwdrivers;
 
@@ -19,7 +18,7 @@ using namespace mrpt::hwdrivers;
 						CRoboticHeadInterface
 -------------------------------------------------------------*/
 CRoboticHeadInterface::CRoboticHeadInterface()
-	: mrpt::utils::COutputLogger("CRoboticHeadInterface")
+	: mrpt::system::COutputLogger("CRoboticHeadInterface")
 {
 	MRPT_START
 

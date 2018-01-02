@@ -13,7 +13,6 @@
 #include <algorithm>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 

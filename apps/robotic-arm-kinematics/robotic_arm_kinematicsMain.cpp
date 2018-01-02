@@ -59,7 +59,6 @@ wxBitmap MyArtProvider::CreateBitmap(
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::kinematics;
 using namespace std;
@@ -1055,7 +1054,7 @@ void robotic_arm_kinematicsFrame::OnLoadBinary(wxCommandEvent& event)
 	const wxString sFil = dlg.GetPath();
 	const std::string fil = std::string(sFil.mb_str());
 
-	mrpt::utils::CFileGZInputStream f(fil);
+	mrpt::io::CFileGZInputStream f(fil);
 	f >> m_robot;
 
 	this->RegenerateDOFPanels();
@@ -1084,7 +1083,7 @@ void robotic_arm_kinematicsFrame::OnSaveBinary(wxCommandEvent& event)
 	const wxString sFil = dlg.GetPath();
 	const std::string fil = std::string(sFil.mb_str());
 
-	mrpt::utils::CFileOutputStream f(fil);
+	mrpt::io::CFileOutputStream f(fil);
 	f << m_robot;
 
 	WX_END_TRY

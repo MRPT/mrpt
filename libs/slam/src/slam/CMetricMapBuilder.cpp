@@ -20,10 +20,9 @@
 using namespace mrpt::slam;
 using namespace mrpt::maps;
 using namespace mrpt::poses;
-using namespace mrpt::utils;
 
 CMetricMapBuilder::CMetricMapBuilder()
-	: mrpt::utils::COutputLogger("CMetricMapBuilder"),
+	: mrpt::system::COutputLogger("CMetricMapBuilder"),
 	  options(this->m_min_verbosity_level)
 {
 	MRPT_LOG_DEBUG("CMetricMapBuilder ctor.");

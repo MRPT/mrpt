@@ -12,7 +12,7 @@
 #include <mrpt/hwdrivers/COpenNI2Generic.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/obs/CObservationRGBD360.h>
-#include <mrpt/utils/TEnumType.h>
+#include <mrpt/typemeta/TEnumType.h>
 #include <mrpt/gui/CDisplayWindow.h>
 
 namespace mrpt

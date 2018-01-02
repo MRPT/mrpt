@@ -21,7 +21,6 @@
 extern double time1, time2;
 
 using namespace std;
-using namespace mrpt::utils;
 using namespace mrpt::pbmap;
 
 // Bhattacharyya histogram distance function

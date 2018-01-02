@@ -35,7 +35,6 @@
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::bayes;
-using namespace mrpt::utils;
 using namespace mrpt::random;
 using namespace mrpt::slam;
 using namespace mrpt::obs;

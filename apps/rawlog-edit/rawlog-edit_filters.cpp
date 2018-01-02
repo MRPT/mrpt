@@ -10,7 +10,6 @@
 #include "rawlog-edit-declarations.h"
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::rawlogtools;
@@ -30,7 +29,7 @@ DECLARE_OP_FUNCTION(op_remove_label)
 
 	   public:
 		CRawlogProcessor_RemoveLabel(
-			mrpt::utils::CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
+			mrpt::io::CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
 			bool verbose, CFileGZOutputStream& out_rawlog,
 			const std::string& filter_label)
 			: CRawlogProcessorFilterObservations(
@@ -91,7 +90,7 @@ DECLARE_OP_FUNCTION(op_keep_label)
 
 	   public:
 		CRawlogProcessor_KeepLabel(
-			mrpt::utils::CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
+			mrpt::io::CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
 			bool verbose, CFileGZOutputStream& out_rawlog,
 			const std::string& filter_label)
 			: CRawlogProcessorFilterObservations(

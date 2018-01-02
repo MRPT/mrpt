@@ -14,7 +14,6 @@
 #include <mrpt/math/CPolygon.h>
 
 using namespace mrpt::nav;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::poses;
 using namespace std;
@@ -54,7 +53,7 @@ void PlannerTPS_VirtualBase::internal_initialize_PTG()
 
 	for (size_t i = 0; i < m_PTGs.size(); i++)
 	{
-		mrpt::utils::CTimeLoggerEntry tle(m_timelogger, "PTG_initialization");
+		mrpt::system::CTimeLoggerEntry tle(m_timelogger, "PTG_initialization");
 
 		// Polygonal robot shape?
 		{

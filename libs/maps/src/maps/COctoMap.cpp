@@ -13,7 +13,7 @@
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/utils/CMemoryChunk.h>
 
@@ -21,7 +21,6 @@ using namespace std;
 using namespace mrpt;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::opengl;
@@ -50,42 +49,7 @@ void COctoMap::TMapDefinition::dumpToTextStream_map_specific(
 {
 	LOADABLEOPTS_DUMP_VAR(resolution, double);
 
-	this->insertionOpts.dumpToTextStream(out);
-	this->likelihoodOpts.dumpToTextStream(out);
-}
-
-mrpt::maps::CMetricMap* COctoMap::internal_CreateFromMapDefinition(
-	const mrpt::maps::TMetricMapInitializer& _def)
-{
-	const COctoMap::TMapDefinition& def =
-		*dynamic_cast<const COctoMap::TMapDefinition*>(&_def);
-	COctoMap* obj = new COctoMap(def.resolution);
-	obj->insertionOptions = def.insertionOpts;
-	obj->likelihoodOptions = def.likelihoodOpts;
-	return obj;
-}
-//  =========== End of Map definition Block =========
-
-IMPLEMENTS_SERIALIZABLE(COctoMap, CMetricMap, mrpt::maps)
-
-/*---------------------------------------------------------------
-						Constructor
-  ---------------------------------------------------------------*/
-COctoMap::COctoMap(const double resolution)
-	: COctoMapBase<octomap::OcTree, octomap::OcTreeNode>(resolution)
-{
-}
-
-/*---------------------------------------------------------------
-						Destructor
-  ---------------------------------------------------------------*/
-COctoMap::~COctoMap() {}
-/*---------------------------------------------------------------
-					writeToStream
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-uint8_t COctoMap::serializeGetVersion() const { return XX; } void COctoMap::serializeTo(mrpt::utils::CStream& out, int* version) const
+	this->insertionOpts.dumpToTextStreamstd::ostream& out, int* version) const
 {
 	if (version)
 		*version = 2;

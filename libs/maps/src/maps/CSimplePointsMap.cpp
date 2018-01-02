@@ -10,7 +10,7 @@
 #include "maps-precomp.h"  // Precomp header
 
 #include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 
 #include "CPointsMap_crtp_common.h"
 
@@ -18,7 +18,6 @@ using namespace std;
 using namespace mrpt;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 
@@ -40,84 +39,7 @@ void CSimplePointsMap::TMapDefinition::loadFromConfigFile_map_specific(
 void CSimplePointsMap::TMapDefinition::dumpToTextStream_map_specific(
 	mrpt::utils::CStream& out) const
 {
-	this->insertionOpts.dumpToTextStream(out);
-	this->likelihoodOpts.dumpToTextStream(out);
-}
-
-mrpt::maps::CMetricMap* CSimplePointsMap::internal_CreateFromMapDefinition(
-	const mrpt::maps::TMetricMapInitializer& _def)
-{
-	const CSimplePointsMap::TMapDefinition& def =
-		*dynamic_cast<const CSimplePointsMap::TMapDefinition*>(&_def);
-	CSimplePointsMap* obj = new CSimplePointsMap();
-	obj->insertionOptions = def.insertionOpts;
-	obj->likelihoodOptions = def.likelihoodOpts;
-	return obj;
-}
-//  =========== End of Map definition Block =========
-
-IMPLEMENTS_SERIALIZABLE(CSimplePointsMap, CPointsMap, mrpt::maps)
-
-/*---------------------------------------------------------------
-						Constructor
-  ---------------------------------------------------------------*/
-CSimplePointsMap::CSimplePointsMap() { reserve(400); }
-/*---------------------------------------------------------------
-						Destructor
-  ---------------------------------------------------------------*/
-CSimplePointsMap::~CSimplePointsMap() {}
-/*---------------------------------------------------------------
-				reserve & resize methods
- ---------------------------------------------------------------*/
-void CSimplePointsMap::reserve(size_t newLength)
-{
-	newLength = mrpt::utils::length2length4N(newLength);
-
-	x.reserve(newLength);
-	y.reserve(newLength);
-	z.reserve(newLength);
-}
-
-// Resizes all point buffers so they can hold the given number of points: newly
-// created points are set to default values,
-//  and old contents are not changed.
-void CSimplePointsMap::resize(size_t newLength)
-{
-	this->reserve(newLength);  // to ensure 4N capacity
-	x.resize(newLength, 0);
-	y.resize(newLength, 0);
-	z.resize(newLength, 0);
-	mark_as_modified();
-}
-
-// Resizes all point buffers so they can hold the given number of points,
-// *erasing* all previous contents
-//  and leaving all points to default values.
-void CSimplePointsMap::setSize(size_t newLength)
-{
-	this->reserve(newLength);  // to ensure 4N capacity
-	x.assign(newLength, 0);
-	y.assign(newLength, 0);
-	z.assign(newLength, 0);
-	mark_as_modified();
-}
-
-/*---------------------------------------------------------------
-						Copy constructor
-  ---------------------------------------------------------------*/
-void CSimplePointsMap::copyFrom(const CPointsMap& obj)
-{
-	CPointsMap::base_copyFrom(
-		obj);  // This also does a ::resize(N) of all data fields.
-}
-
-/*---------------------------------------------------------------
-					writeToStream
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-uint8_t CSimplePointsMap::serializeGetVersion() const { return XX; } void CSimplePointsMap::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+	this->insertionOpts.dumpToTextStreamstd::ostream& out, int* version) const
 {
 	if (version)
 		*version = 9;

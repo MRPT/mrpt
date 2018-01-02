@@ -13,9 +13,9 @@
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/data_utils.h>
-#include <mrpt/utils/stl_containers_utils.h>
+#include <mrpt/containers/stl_containers_utils.h>
 #include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/utils/types_simple.h>
+#include <cstdint>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/math/CProbabilityDensityFunction.h>
@@ -36,7 +36,7 @@ namespace graphslam
  * \ingroup mrpt_graphslam_grp
  */
 template <class GRAPH_T = typename mrpt::graphs::CNetworkOfPoses2DInf>
-struct TUncertaintyPath : public mrpt::utils::CLoadableOptions
+struct TUncertaintyPath : public mrpt::config::CLoadableOptions
 {
 	/**\brief Handy typedefs */
 	/**\{*/
@@ -50,10 +50,10 @@ struct TUncertaintyPath : public mrpt::utils::CLoadableOptions
 	// methods
 	// ////////////////////////////
 	TUncertaintyPath();
-	TUncertaintyPath(const mrpt::utils::TNodeID& starting_node);
+	TUncertaintyPath(const mrpt::graphs::TNodeID& starting_node);
 	TUncertaintyPath(
-		const mrpt::utils::TNodeID& starting_node,
-		const mrpt::utils::TNodeID& ending_node, const constraint_t& edge);
+		const mrpt::graphs::TNodeID& starting_node,
+		const mrpt::graphs::TNodeID& ending_node, const constraint_t& edge);
 	~TUncertaintyPath();
 	void clear();
 	/**\return True if it is indeed empty.
@@ -67,19 +67,19 @@ struct TUncertaintyPath : public mrpt::utils::CLoadableOptions
 	 * \exception std::runtime_error in case the conditions don't hold
 	 */
 	void assertIsBetweenNodeIDs(
-		const mrpt::utils::TNodeID& from, const mrpt::utils::TNodeID& to) const;
+		const mrpt::graphs::TNodeID& from, const mrpt::graphs::TNodeID& to) const;
 
 	// no need to load anything..
 	void loadFromConfigFile(
 		const mrpt::config::CConfigFileBase& source, const std::string& section);
-	void dumpToTextStream(mrpt::utils::CStream& out) const;
+	void dumpToTextStream(std::ostream& out) const;
 	std::string getAsString() const;
 	void getAsString(std::string* str) const;
 
 	/**\brief Return the source node of this path */
-	const mrpt::utils::TNodeID& getSource() const;
+	const mrpt::graphs::TNodeID& getSource() const;
 	/**\brief Return the Destination node of this path */
-	const mrpt::utils::TNodeID& getDestination() const;
+	const mrpt::graphs::TNodeID& getDestination() const;
 	double getDeterminant();
 	/**\brief Test if the current path has a lower uncertainty than the other
 	 * path.
@@ -92,7 +92,7 @@ struct TUncertaintyPath : public mrpt::utils::CLoadableOptions
 	 * Add the node that the path traverses and the information matrix of
 	 * the extra link
 	 */
-	void addToPath(const mrpt::utils::TNodeID& node, const constraint_t& edge);
+	void addToPath(const mrpt::graphs::TNodeID& node, const constraint_t& edge);
 	self_t& operator+=(const self_t& other);
 	// results...
 	bool operator==(const self_t& other) const;
@@ -108,7 +108,7 @@ struct TUncertaintyPath : public mrpt::utils::CLoadableOptions
 	 *
 	 * Nodes in the path are added to the end of the vector.
 	 */
-	std::vector<mrpt::utils::TNodeID> nodes_traversed;
+	std::vector<mrpt::graphs::TNodeID> nodes_traversed;
 	/**\brief Current path position + corresponding covariance */
 	constraint_t curr_pose_pdf;
 

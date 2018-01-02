@@ -9,11 +9,10 @@
 
 #include <mrpt/random.h>
 #include <mrpt/math/kmeans.h>
-#include <mrpt/utils/aligned_containers.h>
+#include <mrpt/core/aligned_std_vector.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
 
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::gui;
 using namespace mrpt::random;

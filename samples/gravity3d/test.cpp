@@ -19,7 +19,6 @@ using namespace std;
 using namespace mrpt::gui;
 using namespace mrpt::random;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
 
 const size_t N_MASSES = 750;
 
@@ -107,7 +106,7 @@ void GravityDemo()
 	// IMPORTANT!!! IF NOT UNLOCKED, THE WINDOW WILL NOT BE UPDATED!
 	win.unlockAccess3DScene();
 
-	mrpt::utils::CTicTac tictac;
+	mrpt::system::CTicTac tictac;
 	tictac.Tic();
 
 	double t0 = tictac.Tac();

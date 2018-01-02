@@ -122,7 +122,7 @@ int main(int argc, char** argv)
 		}
 
 		{
-			mrpt::utils::CFileGZOutputStream f(sOutFile);
+			mrpt::io::CFileGZOutputStream f(sOutFile);
 			f << grid;
 		}
 

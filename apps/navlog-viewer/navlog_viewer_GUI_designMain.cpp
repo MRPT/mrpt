@@ -36,7 +36,7 @@
 #include <mrpt/system/string_utils.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/math/geometry.h>  // intersect()
-#include <mrpt/utils/printf_vector.h>
+#include <mrpt/containers/printf_vector.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CMesh.h>
@@ -61,7 +61,6 @@ const double fy = 9,
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace mrpt::maps;
 using namespace mrpt::poses;
 using namespace mrpt::gui;

@@ -9,7 +9,7 @@
 #ifndef mrpt_traits_maps_H
 #define mrpt_traits_maps_H
 
-#include <mrpt/utils/map_as_vector.h>
+#include <mrpt/containers/map_as_vector.h>
 
 namespace mrpt
 {

@@ -9,11 +9,10 @@
 
 #include "containers-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/CMHPropertiesValuesList.h>
+#include <mrpt/hmtslam/CMHPropertiesValuesList.h>
 #include <mrpt/system/os.h>
 #include <stdio.h>
 
-using namespace mrpt::utils;
 using namespace mrpt::system;
 
 // This must be added to any CSerializable class implementation file.

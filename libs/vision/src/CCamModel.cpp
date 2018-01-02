@@ -17,7 +17,6 @@ using namespace mrpt;
 using namespace mrpt::vision;
 using namespace mrpt::poses;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 
 /**	Constructor */
 CCamModel::CCamModel() : cam() {}

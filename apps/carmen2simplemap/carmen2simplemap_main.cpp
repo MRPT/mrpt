@@ -36,7 +36,6 @@
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
@@ -185,7 +184,7 @@ int main(int argc, char** argv)
 
 		// Save final map object:
 		{
-			mrpt::utils::CFileGZOutputStream out_map;
+			mrpt::io::CFileGZOutputStream out_map;
 			if (!out_map.open(output_file, compress_level))
 				throw runtime_error(
 					format(

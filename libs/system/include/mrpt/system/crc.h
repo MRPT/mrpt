@@ -15,7 +15,7 @@ namespace mrpt
 {
 namespace system
 {
-/** \addtogroup mrpt_crc CRC functions (in #include <mrpt/utils/crc.h>)
+/** \addtogroup mrpt_crc CRC functions (in #include <mrpt/system/crc.h>)
   *  \ingroup mrpt_system_grp
   * @{ */
 

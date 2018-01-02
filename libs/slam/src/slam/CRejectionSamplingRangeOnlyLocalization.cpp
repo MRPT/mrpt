@@ -15,7 +15,6 @@
 #include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/math/utils.h>
 
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::slam;
 using namespace mrpt::maps;

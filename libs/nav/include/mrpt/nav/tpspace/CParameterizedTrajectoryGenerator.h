@@ -74,7 +74,7 @@ enum PTG_collision_behavior_t
  *  \ingroup nav_tpspace
  */
 class CParameterizedTrajectoryGenerator : public mrpt::serialization::CSerializable,
-										  public mrpt::utils::CLoadableOptions
+										  public mrpt::config::CLoadableOptions
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CParameterizedTrajectoryGenerator)
    public:

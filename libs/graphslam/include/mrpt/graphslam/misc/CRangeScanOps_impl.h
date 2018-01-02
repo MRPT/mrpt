@@ -187,8 +187,7 @@ CRangeScanOps<GRAPH_T>::TParams::~TParams()
 }
 
 template <class GRAPH_T>
-void CRangeScanOps<GRAPH_T>::TParams::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+void CRangeScanOps<GRAPH_T>::TParams::dumpToTextStream(std::ostream& out) const
 {
 	MRPT_START;
 

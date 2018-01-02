@@ -26,7 +26,6 @@ using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::math;
 using namespace mrpt::system;
-using namespace mrpt::utils;
 using namespace mrpt::bayes;
 using namespace mrpt::random;
 using namespace mrpt::poses;

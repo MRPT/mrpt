@@ -138,7 +138,7 @@ class holonomic_navigator_demoFrame : public wxFrame
 	void Onplot3DMouseMove(wxMouseEvent& event);
 
 	/* Vars: */
-	struct TOptions : public mrpt::utils::CLoadableOptions
+	struct TOptions : public mrpt::config::CLoadableOptions
 	{
 		double ROBOT_MAX_SPEED;
 		double MAX_SENSOR_RADIUS;
@@ -171,7 +171,7 @@ class holonomic_navigator_demoFrame : public wxFrame
 	mrpt::math::TPoint2D m_targetPoint;
 	mrpt::math::TPose2D m_robotPose;
 
-	mrpt::utils::CTicTac m_runtime;
+	mrpt::system::CTicTac m_runtime;
 	/** Of the cursor on the 3D view (in world coordinates at Z=0) */
 	mrpt::math::TPoint2D m_curCursorPos;
 	/** The state of the cursor onto the 3D view: */

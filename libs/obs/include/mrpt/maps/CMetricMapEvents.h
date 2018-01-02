@@ -9,7 +9,7 @@
 #ifndef CMetricMapEvents_H
 #define CMetricMapEvents_H
 
-#include <mrpt/utils/mrptEvent.h>
+#include <mrpt/system/mrptEvent.h>
 #include <mrpt/poses/poses_frwds.h>
 
 namespace mrpt

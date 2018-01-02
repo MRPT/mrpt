@@ -9,10 +9,9 @@
 
 #include "kinematics-precomp.h"  // Precompiled header
 #include <mrpt/kinematics/CVehicleVelCmd_DiffDriven.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::kinematics;
-using namespace mrpt::utils;
 
 IMPLEMENTS_SERIALIZABLE(
 	CVehicleVelCmd_DiffDriven, CVehicleVelCmd, mrpt::kinematics)

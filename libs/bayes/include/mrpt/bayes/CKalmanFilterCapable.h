@@ -17,14 +17,14 @@
 #include <mrpt/math/num_jacobian.h>
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/system/CTimeLogger.h>
-#include <mrpt/utils/aligned_containers.h>
+#include <mrpt/core/aligned_std_vector.h>
 #include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/utils/stl_containers_utils.h>
+#include <mrpt/containers/stl_containers_utils.h>
 #include <mrpt/system/COutputLogger.h>
-#include <mrpt/utils/stl_containers_utils.h>  // find_in_vector
+#include <mrpt/containers/stl_containers_utils.h>  // find_in_vector
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/io/CFileOutputStream.h>
-#include <mrpt/utils/TEnumType.h>
+#include <mrpt/typemeta/TEnumType.h>
 #include <mrpt/system/vector_loadsave.h>
 
 namespace mrpt
@@ -53,7 +53,7 @@ class CKalmanFilterCapable;
 /** Generic options for the Kalman Filter algorithm in itself.
   * \ingroup mrpt_bayes_grp
   */
-struct TKF_options : public mrpt::utils::CLoadableOptions
+struct TKF_options : public mrpt::config::CLoadableOptions
 {
 	TKF_options(mrpt::system::VerbosityLevel& verb_level_ref)
 		: method(kfEKFNaive),
@@ -89,7 +89,7 @@ struct TKF_options : public mrpt::utils::CLoadableOptions
 
 	/** This method must display clearly all the contents of the structure in
 	 * textual form, sending it to a CStream. */
-	void dumpToTextStream(mrpt::utils::CStream& out) const override
+	void dumpToTextStream(std::ostream& out) const override
 	{
 		out.printf("\n----------- [TKF_options] ------------ \n\n");
 		out.printf(
@@ -221,7 +221,7 @@ void addNewLandmarks(
  */
 template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
 		  typename KFTYPE = double>
-class CKalmanFilterCapable : public mrpt::utils::COutputLogger
+class CKalmanFilterCapable : public mrpt::system::COutputLogger
 {
    public:
 	static inline size_t get_vehicle_size() { return VEH_SIZE; }
@@ -310,7 +310,7 @@ class CKalmanFilterCapable : public mrpt::utils::COutputLogger
 
 	/** @} */
 
-	mrpt::utils::CTimeLogger m_timLogger;
+	mrpt::system::CTimeLogger m_timLogger;
 
 	/** @name Virtual methods for Kalman Filter implementation
 		@{
@@ -611,13 +611,13 @@ class CKalmanFilterCapable : public mrpt::utils::COutputLogger
 
    public:
 	CKalmanFilterCapable()
-		: mrpt::utils::COutputLogger("CKalmanFilterCapable"),
+		: mrpt::system::COutputLogger("CKalmanFilterCapable"),
 		  KF_options(this->m_min_verbosity_level),
 		  m_user_didnt_implement_jacobian(true)
 	/** Default constructor */ {}
 	/** Destructor */
 	virtual ~CKalmanFilterCapable() {}
-	mrpt::utils::CTimeLogger& getProfiler() { return m_timLogger; }
+	mrpt::system::CTimeLogger& getProfiler() { return m_timLogger; }
 	/** Generic options for the Kalman Filter algorithm itself. */
 	TKF_options KF_options;
 

@@ -11,7 +11,7 @@
 
 #include <mrpt/slam/CMetricMapsAlignmentAlgorithm.h>
 #include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/utils/TEnumType.h>
+#include <mrpt/typemeta/TEnumType.h>
 
 namespace mrpt
 {
@@ -78,8 +78,7 @@ class CICP : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+		void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
 		/** @name Algorithms selection
 			@{ */

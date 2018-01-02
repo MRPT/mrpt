@@ -14,7 +14,7 @@
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/os.h>
 #include <mrpt/math/geometry.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
@@ -35,7 +35,7 @@
 
 #if MRPT_HAS_SSE2
 #include <mrpt/core/SSE_types.h>
-#include <mrpt/utils/SSE_macros.h>
+#include <mrpt/core/SSE_macros.h>
 #endif
 
 #if MRPT_HAS_MATLAB
@@ -44,7 +44,6 @@
 
 using namespace mrpt::poses;
 using namespace mrpt::maps;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::obs;
 using namespace mrpt::system;
@@ -735,29 +734,7 @@ void CPointsMap::TLikelihoodOptions::serializeFrom(mrpt::serialization::CArchive
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void CPointsMap::TInsertionOptions::dumpToTextStream(
-	mrpt::utils::CStream& out) const
-{
-	out.printf(
-		"\n----------- [CPointsMap::TInsertionOptions] ------------ \n\n");
-
-	LOADABLEOPTS_DUMP_VAR(minDistBetweenLaserPoints, double);
-	LOADABLEOPTS_DUMP_VAR(maxDistForInterpolatePoints, double);
-	LOADABLEOPTS_DUMP_VAR_DEG(horizontalTolerance);
-
-	LOADABLEOPTS_DUMP_VAR(addToExistingPointsMap, bool);
-	LOADABLEOPTS_DUMP_VAR(also_interpolate, bool);
-	LOADABLEOPTS_DUMP_VAR(disableDeletion, bool);
-	LOADABLEOPTS_DUMP_VAR(fuseWithExisting, bool);
-	LOADABLEOPTS_DUMP_VAR(isPlanarMap, bool);
-
-	LOADABLEOPTS_DUMP_VAR(insertInvalidPoints, bool);
-
-	out.printf("\n");
-}
-
-void CPointsMap::TLikelihoodOptions::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+void CPointsMap::TInsertionOptions::dumpToTextStream(std::ostream& out) const
 {
 	out.printf(
 		"\n----------- [CPointsMap::TLikelihoodOptions] ------------ \n\n");

@@ -37,7 +37,6 @@ CWirelessPower::CWirelessPower() { m_sensorLabel = "WIRELESS_POWER"; }
 
 #endif
 
-using namespace mrpt::utils;
 
 #ifdef _WIN32
 #if defined(__GNUC__)

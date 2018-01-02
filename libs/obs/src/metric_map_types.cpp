@@ -9,14 +9,13 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/maps/metric_map_types.h>
 
 using namespace mrpt::obs;
 using namespace mrpt::maps;
-using namespace mrpt::utils;
 
 IMPLEMENTS_SERIALIZABLE(TMapGenericParams, CSerializable, mrpt::maps)
 
@@ -34,16 +33,7 @@ void TMapGenericParams::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR(enableObservationLikelihood, bool, source, sct);
 	MRPT_LOAD_CONFIG_VAR(enableObservationInsertion, bool, source, sct);
 }
-void TMapGenericParams::dumpToTextStream(mrpt::utils::CStream& out) const
-{
-	// Common:
-	LOADABLEOPTS_DUMP_VAR(enableSaveAs3DObject, bool);
-	LOADABLEOPTS_DUMP_VAR(enableObservationLikelihood, bool);
-	LOADABLEOPTS_DUMP_VAR(enableObservationInsertion, bool);
-}
-
-uint8_t TMapGenericParams::serializeGetVersion() const { return XX; } void TMapGenericParams::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+void TMapGenericParams::dumpToTextStreamstd::ostream& out, int* version) const
 {
 	if (version)
 		*version = 0;

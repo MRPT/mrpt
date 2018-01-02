@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cstdlib>  // size_t
-#include <mrpt/utils/mrpt_macros.h>
+#include <mrpt/core/exceptions.h>
 
 namespace mrpt
 {

@@ -14,8 +14,8 @@
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/bayes/CKalmanFilterCapable.h>
 
-#include <mrpt/utils/safe_pointers.h>
-#include <mrpt/utils/bimap.h>
+#include <mrpt/core/safe_pointers.h>
+#include <mrpt/containers/bimap.h>
 
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CActionCollection.h>
@@ -173,8 +173,7 @@ class CRangeBearingKFSLAM
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+		void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
 		/** A 7-length vector with the std. deviation of the transition model in
 		 * (x,y,z, qr,qx,qy,qz) used only when there is no odometry (if there is
@@ -488,7 +487,7 @@ class CRangeBearingKFSLAM
 	mrpt::obs::CSensoryFrame::Ptr m_SF;
 
 	/** The mapping between landmark IDs and indexes in the Pkk cov. matrix: */
-	mrpt::utils::bimap<mrpt::maps::CLandmark::TLandmarkID, unsigned int> m_IDs;
+	mrpt::containers::bimap<mrpt::maps::CLandmark::TLandmarkID, unsigned int> m_IDs;
 
 	/** Used for map partitioning experiments */
 	CIncrementalMapPartitioner mapPartitioner;

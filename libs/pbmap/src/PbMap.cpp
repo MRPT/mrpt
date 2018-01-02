@@ -16,12 +16,11 @@
 
 #include <mrpt/pbmap.h>
 
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 #include <pcl/io/io.h>
 #include <pcl/io/pcd_io.h>
 
 using namespace std;
-using namespace mrpt::utils;
 using namespace mrpt::pbmap;
 
 IMPLEMENTS_SERIALIZABLE(PbMap, CSerializable, mrpt::pbmap)
@@ -107,7 +106,7 @@ void PbMap::savePbMap(string filePath)
 
 	// cout << "PbMap::savePbMap\n";
 	// Serialize PbMap
-	mrpt::utils::CFileGZOutputStream serialize_pbmap(
+	mrpt::io::CFileGZOutputStream serialize_pbmap(
 		filePath + "/planes.pbmap");
 	serialize_pbmap << *this;
 	serialize_pbmap.close();
@@ -128,7 +127,7 @@ void PbMap::loadPbMap(std::string filePath)
 
 	// Load Previous Map
 	PbMapFile = filePath;
-	mrpt::utils::CFileGZInputStream serialized_pbmap;
+	mrpt::io::CFileGZInputStream serialized_pbmap;
 	if (serialized_pbmap.open(PbMapFile.append("/planes.pbmap")))
 	{
 		serialized_pbmap >> *this;

@@ -10,7 +10,6 @@
 #include "obs-precomp.h"  // Precompiled headers
 
 #include <mrpt/obs/VelodyneCalibration.h>
-#include <mrpt/utils/bits.h>
 #include <iostream>
 #include <map>
 

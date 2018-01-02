@@ -26,7 +26,7 @@ namespace slam
   *   observations taken at some poses/nodes.
   * \ingroup mrpt_slam_grp
   */
-class CIncrementalMapPartitioner : public mrpt::utils::COutputLogger,
+class CIncrementalMapPartitioner : public mrpt::system::COutputLogger,
 								   public mrpt::serialization::CSerializable
 {
 	// This must be added to any CSerializable derived class:
@@ -53,8 +53,7 @@ class CIncrementalMapPartitioner : public mrpt::utils::COutputLogger,
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+		void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
 		/**\brief The partition threshold for bisection in range [0,2],
 		 * default=1.0

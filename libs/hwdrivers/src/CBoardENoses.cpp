@@ -11,12 +11,11 @@
 
 #include <mrpt/system/os.h>
 #include <mrpt/hwdrivers/CBoardENoses.h>
-#include <mrpt/utils/CMessage.h>
+#include <mrpt/serialization/CMessage.h>
 #include <mrpt/math/ops_vectors.h>
 
 #include <thread>
 
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::obs;
 using namespace mrpt::poses;

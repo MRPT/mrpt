@@ -7,12 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/utils.h>
 #include <mrpt/system.h>
 
 using namespace mrpt;
 using namespace mrpt::system;
-using namespace mrpt::utils;
 using namespace std;
 
 // ------------------------------------------------------

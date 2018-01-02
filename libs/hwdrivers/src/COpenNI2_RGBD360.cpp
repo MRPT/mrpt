@@ -21,7 +21,7 @@ using namespace mrpt::system;
 using namespace mrpt::obs;
 using namespace mrpt::math;
 using namespace std;
-using mrpt::utils::CTicTac;
+using mrpt::system::CTicTac;
 using mrpt::DEG2RAD;
 using mrpt::obs::CObservationRGBD360;
 

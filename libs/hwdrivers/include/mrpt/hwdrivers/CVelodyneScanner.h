@@ -14,7 +14,7 @@
 #include <mrpt/obs/CObservationVelodyneScan.h>
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/config/CConfigFileBase.h>
-#include <mrpt/utils/TEnumType.h>
+#include <mrpt/typemeta/TEnumType.h>
 
 namespace mrpt
 {

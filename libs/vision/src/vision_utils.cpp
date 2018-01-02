@@ -31,7 +31,6 @@
 
 using namespace mrpt;
 using namespace mrpt::vision;
-using namespace mrpt::utils;
 using namespace mrpt::maps;
 using namespace mrpt::math;
 using namespace mrpt::system;

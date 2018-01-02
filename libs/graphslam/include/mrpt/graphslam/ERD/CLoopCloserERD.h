@@ -10,15 +10,15 @@
 #ifndef CLOOPCLOSERERD_H
 #define CLOOPCLOSERERD_H
 
-#include <mrpt/utils/mrpt_macros.h>
+#include <mrpt/core/exceptions.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/data_utils.h>
 #include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/utils/stl_containers_utils.h>
+#include <mrpt/containers/stl_containers_utils.h>
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/config/CConfigFileBase.h>
-#include <mrpt/utils/types_simple.h>
+#include <cstdint>
 #include <mrpt/img/TColor.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CActionCollection.h>
@@ -351,7 +351,7 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	 */
 	struct TGenerateHypotsPoolAdParams
 	{
-		typedef std::map<mrpt::utils::TNodeID, node_props_t> group_t;
+		typedef std::map<mrpt::graphs::TNodeID, node_props_t> group_t;
 
 		/**\brief  Ad. params for groupA */
 		group_t groupA_params;
@@ -424,8 +424,8 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	 * \return True if operation was successful, false otherwise.
 	 */
 	bool fillNodePropsFromGroupParams(
-		const mrpt::utils::TNodeID& nodeID,
-		const std::map<mrpt::utils::TNodeID, node_props_t>& group_params,
+		const mrpt::graphs::TNodeID& nodeID,
+		const std::map<mrpt::graphs::TNodeID, node_props_t>& group_params,
 		node_props_t* node_props);
 	/**\brief Fill the pose and LaserScan for the given nodeID.
 	 * Pose and LaserScan are either fetched from the TNodeProps struct if it
@@ -435,14 +435,14 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	 * data.
 	 */
 	bool getPropsOfNodeID(
-		const mrpt::utils::TNodeID& nodeID, global_pose_t* pose,
+		const mrpt::graphs::TNodeID& nodeID, global_pose_t* pose,
 		mrpt::obs::CObservation2DRangeScan::Ptr& scan,
 		const node_props_t* node_props = NULL) const;
 
 	/**\brief Struct for storing together the parameters needed for ICP
 	 * matching, laser scans visualization etc.
 	 */
-	struct TLaserParams : public mrpt::utils::CLoadableOptions
+	struct TLaserParams : public mrpt::config::CLoadableOptions
 	{
 	   public:
 		TLaserParams();
@@ -451,54 +451,7 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section);
-		void dumpToTextStream(mrpt::utils::CStream& out) const;
-
-		mrpt::slam::CICP icp;
-		/**\brief How many nodes back to check ICP against?
-		 */
-		int prev_nodes_for_ICP;
-
-		/** see Constructor for initialization */
-		const mrpt::img::TColor laser_scans_color;
-		bool visualize_laser_scans;
-		// keystroke to be used by the user to toggle the LaserScans from
-		// the CDisplayWindow
-		std::string keystroke_laser_scans;
-
-		/**\brief Indicate whethet to use scan-matching at all during
-		 * graphSLAM [on by default].
-		 *
-		 * \warning It is strongly recomended that the user does not set this
-		 * to false (via the .ini file). graphSLAM may diverge significantly if
-		 * no scan-matching is not used.
-		 */
-		bool use_scan_matching;
-		bool has_read_config;
-		/**\brief Keep track of the mahalanobis distance between the initial
-		 * pose
-		 * difference and the suggested new edge for the pairs of checked
-		 * nodes.
-		 */
-		TSlidingWindow mahal_distance_ICP_odom_win;
-		/**\brief Keep track of ICP Goodness values for ICP between nearby
-		 * nodes and adapt the Goodness threshold based on the median of the
-		 * recorded Goodness values.
-		 */
-		TSlidingWindow goodness_threshold_win;
-	};
-
-	/**\brief Struct for storing together the loop-closing related parameters.
-	 */
-	struct TLoopClosureParams : public mrpt::utils::CLoadableOptions
-	{
-	   public:
-		TLoopClosureParams();
-		~TLoopClosureParams();
-
-		void loadFromConfigFile(
-			const mrpt::config::CConfigFileBase& source,
-			const std::string& section);
-		void dumpToTextStream(mrpt::utils::CStream& out) const;
+		void dumpToTextStream(std::ostream& out) const;
 
 		/**\brief flag indicating whether to check only the partition of the
 		 * last
@@ -555,14 +508,14 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	 * \sa getICPEdge
 	 */
 	bool mahalanobisDistanceOdometryToICPEdge(
-		const mrpt::utils::TNodeID& from, const mrpt::utils::TNodeID& to,
+		const mrpt::graphs::TNodeID& from, const mrpt::graphs::TNodeID& to,
 		const constraint_t& rel_edge);
 	/**\brief Wrapper around the registerNewEdge method which accepts a
 	 * THypothesis object instead.
 	 */
 	void registerHypothesis(const hypot_t& h);
 	void registerNewEdge(
-		const mrpt::utils::TNodeID& from, const mrpt::utils::TNodeID& to,
+		const mrpt::graphs::TNodeID& from, const mrpt::graphs::TNodeID& to,
 		const constraint_t& rel_edge);
 	/**\brief Fetch a list of nodes with regards prior to the given nodeID for
 	 * which to try and add scan matching edges
@@ -570,8 +523,8 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	 * \sa addScanMatchingEdges
 	 */
 	virtual void fetchNodeIDsForScanMatching(
-		const mrpt::utils::TNodeID& curr_nodeID,
-		std::set<mrpt::utils::TNodeID>* nodes_set);
+		const mrpt::graphs::TNodeID& curr_nodeID,
+		std::set<mrpt::graphs::TNodeID>* nodes_set);
 	/**\brief Addd ICP constraints from X previous nodeIDs up to the given
 	 * nodeID.
 	 *
@@ -580,7 +533,7 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	 *
 	 * \sa fetchNodeIDsForScanMatching
 	 */
-	virtual void addScanMatchingEdges(const mrpt::utils::TNodeID& curr_nodeID);
+	virtual void addScanMatchingEdges(const mrpt::graphs::TNodeID& curr_nodeID);
 	void initLaserScansVisualization();
 	void updateLaserScansVisualization();
 	/**\brief togle the LaserScans visualization on and off
@@ -669,8 +622,8 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	 * \sa generatePWConsistenciesMatrix
 	 */
 	double generatePWConsistencyElement(
-		const mrpt::utils::TNodeID& a1, const mrpt::utils::TNodeID& a2,
-		const mrpt::utils::TNodeID& b1, const mrpt::utils::TNodeID& b2,
+		const mrpt::graphs::TNodeID& a1, const mrpt::graphs::TNodeID& a2,
+		const mrpt::graphs::TNodeID& b1, const mrpt::graphs::TNodeID& b2,
 		const hypotsp_t& hypots, const paths_t* opt_paths = NULL);
 	/**\brief Given a vector of THypothesis objects, find the one that
 	 * has the given start and end nodes.
@@ -688,8 +641,8 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	 *
 	 */
 	static hypot_t* findHypotByEnds(
-		const hypotsp_t& vec_hypots, const mrpt::utils::TNodeID& from,
-		const mrpt::utils::TNodeID& to, bool throw_exc = true);
+		const hypotsp_t& vec_hypots, const mrpt::graphs::TNodeID& from,
+		const mrpt::graphs::TNodeID& to, bool throw_exc = true);
 	/**\brief Given a vector of TUncertaintyPath objects, find the one that has
 	 * the given source and destination nodeIDs.
 	 *
@@ -703,8 +656,8 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	 * to true
 	 */
 	static const path_t* findPathByEnds(
-		const paths_t& vec_paths, const mrpt::utils::TNodeID& src,
-		const mrpt::utils::TNodeID& dst, bool throw_exc = true);
+		const paths_t& vec_paths, const mrpt::graphs::TNodeID& src,
+		const mrpt::graphs::TNodeID& dst, bool throw_exc = true);
 	/**\brief Given a vector of THypothesis objects, find the one that
 	 * has the given ID.
 	 *
@@ -737,7 +690,7 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	 * valid data.
 	 */
 	virtual bool getICPEdge(
-		const mrpt::utils::TNodeID& from, const mrpt::utils::TNodeID& to,
+		const mrpt::graphs::TNodeID& from, const mrpt::graphs::TNodeID& to,
 		constraint_t* rel_edge, mrpt::slam::CICP::TReturnInfo* icp_info = NULL,
 		const TGetICPEdgeAdParams* ad_params = NULL);
 	/**\brief compute the minimum uncertainty of each node position with
@@ -750,15 +703,15 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	 * execution ends when this path is computed.
 	 */
 	void execDijkstraProjection(
-		mrpt::utils::TNodeID starting_node = 0,
-		mrpt::utils::TNodeID ending_node = INVALID_NODEID);
+		mrpt::graphs::TNodeID starting_node = 0,
+		mrpt::graphs::TNodeID ending_node = INVALID_NODEID);
 	/**\brief Given two nodeIDs compute and return the path connecting them.
 	 *
 	 * Method takes care of multiple edges, as well as edges with 0 covariance
 	 * matrices
 	 */
 	void getMinUncertaintyPath(
-		const mrpt::utils::TNodeID from, const mrpt::utils::TNodeID to,
+		const mrpt::graphs::TNodeID from, const mrpt::graphs::TNodeID to,
 		path_t* path) const;
 	/**\brief Find the minimum uncertainty path from te given pool of
 	 * TUncertaintyPath instances.
@@ -779,7 +732,7 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	 */
 	void addToPaths(
 		std::set<path_t*>* pool_of_paths, const path_t& curr_path,
-		const std::set<mrpt::utils::TNodeID>& neibors) const;
+		const std::set<mrpt::graphs::TNodeID>& neibors) const;
 	/**\brief Query for the optimal path of a nodeID.
 	 *
 	 * Method handles calls to out-of-bounds nodes as well as nodes whose paths
@@ -791,7 +744,7 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	 * former is not found.
 	 */
 	typename mrpt::graphslam::TUncertaintyPath<GRAPH_T>* queryOptimalPath(
-		const mrpt::utils::TNodeID node) const;
+		const mrpt::graphs::TNodeID node) const;
 	/**\brief Split an existing partition to Groups
 	 *
 	 *	 Have two groups A, B.
@@ -857,7 +810,7 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	 * Starting node depends on the starting node as used in the
 	 * execDijkstraProjection method
 	 */
-	typename std::map<mrpt::utils::TNodeID, path_t*> m_node_optimal_paths;
+	typename std::map<mrpt::graphs::TNodeID, path_t*> m_node_optimal_paths;
 	/**\brief Keep track of the first recorded laser scan so that it can be
 	 * assigned to the root node when the NRD adds the first *two* nodes to the
 	 * graph.

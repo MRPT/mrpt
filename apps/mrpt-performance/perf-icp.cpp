@@ -7,7 +7,6 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/utils.h>
 #include <mrpt/random.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/slam/CMetricMapBuilderICP.h>
@@ -17,7 +16,6 @@
 #include "common.h"
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::slam;
 using namespace mrpt::maps;
 using namespace mrpt::obs;

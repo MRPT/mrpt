@@ -10,7 +10,7 @@
 
 #include <mrpt/maps/CPointCloudFilterBase.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/utils/aligned_containers.h>
+#include <mrpt/core/aligned_std_vector.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/config/CLoadableOptions.h>
 
@@ -42,7 +42,7 @@ class CPointCloudFilterByDistance : public mrpt::maps::CPointCloudFilterBase
 		/** [in,out] additional in/out parameters */
 		TExtraFilterParams* params = nullptr) override;
 
-	struct TOptions : public mrpt::utils::CLoadableOptions
+	struct TOptions : public mrpt::config::CLoadableOptions
 	{
 		/** (Default: 0.05 m) */
 		double min_dist;

@@ -28,7 +28,6 @@
 using namespace boost::python;
 using namespace mrpt::poses;
 using namespace mrpt::bayes;
-using namespace mrpt::utils;
 
 // aux typedefs
 namespace mrpt

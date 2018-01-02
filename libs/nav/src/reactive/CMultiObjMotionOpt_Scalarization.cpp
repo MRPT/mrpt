@@ -12,7 +12,6 @@
 #include <mrpt/nav/reactive/CMultiObjMotionOpt_Scalarization.h>
 
 using namespace mrpt::nav;
-using namespace mrpt::utils;
 
 IMPLEMENTS_MRPT_OBJECT(
 	CMultiObjMotionOpt_Scalarization, CMultiObjectiveMotionOptimizerBase,

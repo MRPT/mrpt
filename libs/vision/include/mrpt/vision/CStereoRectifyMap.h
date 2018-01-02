@@ -156,7 +156,7 @@ class CStereoRectifyMap
 	bool isEnabledResizeOutput() const { return m_resize_output; }
 	/** Only when \a isEnabledResizeOutput() returns true, this gets the target
 	 * size  \sa enableResizeOutput */
-	mrpt::utils::TImageSize getResizeOutputSize() const
+	mrpt::img::TImageSize getResizeOutputSize() const
 	{
 		return m_resize_output_value;
 	}
@@ -283,7 +283,7 @@ class CStereoRectifyMap
 	double m_alpha;
 	bool m_resize_output;
 	bool m_enable_both_centers_coincide;
-	mrpt::utils::TImageSize m_resize_output_value;
+	mrpt::img::TImageSize m_resize_output_value;
 	mrpt::utils::TInterpolationMethod m_interpolation_method;
 
 	/** Memory caches for in-place rectification speed-up. */

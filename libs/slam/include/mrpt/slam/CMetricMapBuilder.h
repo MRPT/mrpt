@@ -10,7 +10,7 @@
 #define CMetricMapBuilder_H
 
 #include <mrpt/serialization/CSerializable.h>
-#include <mrpt/utils/CListOfClasses.h>
+#include <mrpt/rtti/CListOfClasses.h>
 #include <mrpt/system/COutputLogger.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/obs/CSensoryFrame.h>
@@ -32,7 +32,7 @@ namespace slam
  *
  * \sa CMetricMap  \ingroup metric_slam_grp
  */
-class CMetricMapBuilder : public mrpt::utils::COutputLogger
+class CMetricMapBuilder : public mrpt::system::COutputLogger
 {
    protected:
 	/** Critical zones */

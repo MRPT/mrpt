@@ -35,7 +35,7 @@
 #include <mrpt/gui/WxUtils.h>
 #include <mrpt/gui/about_box.h>
 #include <mrpt/vision/CVideoFileWriter.h>
-#include <mrpt/utils/stl_containers_utils.h>
+#include <mrpt/containers/stl_containers_utils.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
@@ -137,7 +137,6 @@ using namespace mrpt::opengl;
 using namespace mrpt::system;
 using namespace mrpt::math;
 using namespace mrpt::gui;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::vision;
 using namespace std;

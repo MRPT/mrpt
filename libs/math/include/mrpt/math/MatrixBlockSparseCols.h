@@ -10,7 +10,7 @@
 #ifndef _mrpt_math_MatrixBlockSparseCols_H
 #define _mrpt_math_MatrixBlockSparseCols_H
 
-#include <mrpt/utils/map_as_vector.h>
+#include <mrpt/containers/map_as_vector.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>  // For mrpt::math::CMatrixDouble
 
 namespace mrpt

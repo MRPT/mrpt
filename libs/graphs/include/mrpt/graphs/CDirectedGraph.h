@@ -9,8 +9,8 @@
 #ifndef MRPT_DIRECTEDGRAPH_H
 #define MRPT_DIRECTEDGRAPH_H
 
-#include <mrpt/utils/TTypeName.h>
-#include <mrpt/utils/aligned_containers.h>
+#include <mrpt/typemeta/TTypeName.h>
+#include <mrpt/core/aligned_std_vector.h>
 #include <set>
 #include <map>
 #include <fstream>
@@ -20,7 +20,7 @@ namespace mrpt
 namespace graphs
 {
 /** Make available this typedef in this namespace too */
-using mrpt::utils::TNodeID;
+using mrpt::graphs::TNodeID;
 /** Make available this typedef in this namespace too */
 using mrpt::utils::TPairNodeIDs;
 

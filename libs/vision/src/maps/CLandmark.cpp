@@ -9,14 +9,13 @@
 
 #include "vision-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 #include <mrpt/maps/CLandmark.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/serialization/stl_serialization.h>
 
 using namespace mrpt::obs;
 using namespace mrpt::maps;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 IMPLEMENTS_SERIALIZABLE(CLandmark, CSerializable, mrpt::maps)

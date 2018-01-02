@@ -24,7 +24,6 @@
 using namespace mrpt;
 using namespace mrpt::system;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace std;
 
 std::list<TestData> lstTests;

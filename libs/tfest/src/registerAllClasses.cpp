@@ -13,7 +13,6 @@
 #include <mrpt/core/initializer.h>
 
 using namespace mrpt::tfest;
-using namespace mrpt::utils;
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_tfest)
 {

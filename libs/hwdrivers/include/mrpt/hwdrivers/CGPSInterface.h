@@ -15,9 +15,9 @@
 #include <mrpt/comms/CSerialPort.h>
 #include <mrpt/system/COutputLogger.h>
 #include <mrpt/io/CFileOutputStream.h>
-#include <mrpt/utils/TEnumType.h>
+#include <mrpt/typemeta/TEnumType.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/utils/circular_buffer.h>
+#include <mrpt/containers/circular_buffer.h>
 #include <mrpt/obs/obs_frwds.h>
 
 namespace mrpt
@@ -142,7 +142,7 @@ namespace hwdrivers
   * \sa CGPS_NTRIP, CNTRIPEmitter, mrpt::obs::CObservationGPS
   * \ingroup mrpt_hwdrivers_grp
   */
-class CGPSInterface : public mrpt::utils::COutputLogger, public CGenericSensor
+class CGPSInterface : public mrpt::system::COutputLogger, public CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CGPSInterface)
 
@@ -321,7 +321,7 @@ class CGPSInterface : public mrpt::utils::COutputLogger, public CGenericSensor
 	bool m_sensorLabelAppendMsgType;
 	bool m_GPS_comsWork;
 	mrpt::system::TTimeStamp m_last_timestamp;
-	mrpt::utils::CFileOutputStream m_raw_output_file;
+	mrpt::io::CFileOutputStream m_raw_output_file;
 	double m_custom_cmds_delay;
 	bool m_custom_cmds_append_CRLF;
 	std::vector<std::string> m_setup_cmds;

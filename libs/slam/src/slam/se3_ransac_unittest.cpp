@@ -23,7 +23,6 @@
 #include <gtest/gtest.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::random;
 using namespace mrpt::maps;

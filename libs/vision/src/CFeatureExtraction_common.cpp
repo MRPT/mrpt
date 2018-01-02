@@ -12,11 +12,10 @@
 
 #include <mrpt/vision/CFeatureExtraction.h>
 #include <mrpt/system/CTicTac.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::vision;
-using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
 
@@ -53,7 +52,7 @@ void CFeatureExtraction::detectFeatures(
 				"called to save space here?")
 			if (options.harrisOptions.tile_image)
 			{
-				mrpt::utils::CTicTac tictac;
+				mrpt::system::CTicTac tictac;
 
 				if (!(ROI.xMax == 0 && ROI.xMin == 0 && ROI.yMax == 0 &&
 					  ROI.yMin == 0))  // ROI must be not active for this option
@@ -406,8 +405,7 @@ CFeatureExtraction::TOptions::TOptions(const TFeatureType _featsType)
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void CFeatureExtraction::TOptions::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+void CFeatureExtraction::TOptions::dumpToTextStream(std::ostream& out) const
 {
 	out.printf(
 		"\n----------- [CFeatureExtraction::TOptions] ------------ \n\n");

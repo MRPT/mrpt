@@ -12,7 +12,6 @@
 #include <mrpt/obs/CObservation2DRangeScan.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::rawlogtools;

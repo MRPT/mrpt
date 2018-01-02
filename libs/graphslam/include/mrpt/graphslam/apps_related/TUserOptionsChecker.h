@@ -11,7 +11,7 @@
 #define TUSEROPTIONSCHECKER_H
 
 #include <mrpt/system/filesystem.h>
-#include <mrpt/utils/mrpt_macros.h>
+#include <mrpt/core/exceptions.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/poses/CPosePDFGaussianInf.h>
 #include <mrpt/poses/CPose3DPDFGaussianInf.h>

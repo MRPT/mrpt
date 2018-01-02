@@ -12,7 +12,7 @@
 #include <mrpt/system/COutputLogger.h>
 #include <mrpt/math/types_math.h>
 #include <mrpt/math/num_jacobian.h>
-#include <mrpt/utils/printf_vector.h>
+#include <mrpt/containers/printf_vector.h>
 #include <mrpt/math/ops_containers.h>
 #include <functional>
 
@@ -34,7 +34,7 @@ namespace math
  * \ingroup mrpt_math_grp
  */
 template <typename VECTORTYPE = Eigen::VectorXd, class USERPARAM = VECTORTYPE>
-class CLevenbergMarquardtTempl : public mrpt::utils::COutputLogger
+class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
 {
    public:
 	typedef typename VECTORTYPE::Scalar NUMTYPE;
@@ -42,7 +42,7 @@ class CLevenbergMarquardtTempl : public mrpt::utils::COutputLogger
 	typedef VECTORTYPE vector_t;
 
 	CLevenbergMarquardtTempl()
-		: mrpt::utils::COutputLogger("CLevenbergMarquardt")
+		: mrpt::system::COutputLogger("CLevenbergMarquardt")
 	{
 	}
 
@@ -109,8 +109,7 @@ class CLevenbergMarquardtTempl : public mrpt::utils::COutputLogger
 		bool returnPath = true, TFunctorIncrement x_increment_adder = nullptr)
 	{
 		using namespace mrpt;
-		using namespace mrpt::utils;
-		using namespace mrpt::math;
+				using namespace mrpt::math;
 		using namespace std;
 
 		MRPT_START

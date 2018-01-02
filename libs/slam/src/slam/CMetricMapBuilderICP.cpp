@@ -16,13 +16,12 @@
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/system/CTicTac.h>
-#include <mrpt/utils/CEnhancedMetaFile.h>
+#include <mrpt/img/CEnhancedMetaFile.h>
 
 using namespace std;
 using namespace mrpt::slam;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 

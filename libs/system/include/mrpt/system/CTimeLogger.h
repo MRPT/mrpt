@@ -129,7 +129,7 @@ class CTimeLogger : public mrpt::system::COutputLogger
 	double getLastTime(const std::string& name) const;
 };  // End of class def.
 
-/** A safe way to call enter() and leave() of a mrpt::utils::CTimeLogger upon
+/** A safe way to call enter() and leave() of a mrpt::system::CTimeLogger upon
  * construction and destruction of
  * this auxiliary object, making sure that leave() will be called upon
  * exceptions, etc.

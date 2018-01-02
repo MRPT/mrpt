@@ -13,7 +13,6 @@
 #include <mrpt/core/initializer.h>
 
 using namespace mrpt::kinematics;
-using namespace mrpt::utils;
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_kinematics)
 {

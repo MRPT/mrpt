@@ -13,7 +13,6 @@
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/system/os.h>
 
-using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::obs;
 using namespace mrpt::gui;

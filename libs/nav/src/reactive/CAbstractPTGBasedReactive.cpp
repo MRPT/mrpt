@@ -14,7 +14,7 @@
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/ops_containers.h>  // sum()
-#include <mrpt/utils/printf_vector.h>
+#include <mrpt/containers/printf_vector.h>
 #include <mrpt/containers/copy_container_typecasting.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/io/CMemoryStream.h>
@@ -26,7 +26,6 @@
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace mrpt::nav;
 using namespace std;
 
@@ -271,7 +270,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				// Let's just store the parameters of each PTG by serializing
 				// it, so paths can be reconstructed
 				// by invoking initialize()
-				mrpt::utils::CMemoryStream buf;
+				mrpt::io::CMemoryStream buf;
 				buf << *this->getPTG(i);
 				buf.Seek(0);
 				newLogRec.infoPerPTG[i].ptg = std::dynamic_pointer_cast<
@@ -795,7 +794,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			{
 				mrpt::system::TTimeStamp tim_send_cmd_vel;
 				{
-					mrpt::utils::CTimeLoggerEntry tle(
+					mrpt::system::CTimeLoggerEntry tle(
 						m_timlog_delays, "changeSpeeds()");
 					tim_send_cmd_vel = mrpt::system::now();
 					newLogRec.timestamps["tim_send_cmd_vel"] = tim_send_cmd_vel;
@@ -970,7 +969,7 @@ void CAbstractPTGBasedReactive::STEP8_GenerateLogRecord(
 	//  Save to log file:
 	// --------------------------------------
 	{
-		mrpt::utils::CTimeLoggerEntry tle(
+		mrpt::system::CTimeLoggerEntry tle(
 			m_timelogger, "navigationStep.write_log_file");
 		if (m_logFile) (*m_logFile) << newLogRec;
 	}
@@ -1385,7 +1384,7 @@ double CAbstractPTGBasedReactive::generate_vel_cmd(
 	const TCandidateMovementPTG& in_movement,
 	mrpt::kinematics::CVehicleVelCmd::Ptr& new_vel_cmd)
 {
-	mrpt::utils::CTimeLoggerEntry tle(m_timelogger, "generate_vel_cmd");
+	mrpt::system::CTimeLoggerEntry tle(m_timelogger, "generate_vel_cmd");
 	double cmdvel_speed_scale = 1.0;
 	try
 	{
@@ -1780,7 +1779,7 @@ void CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::saveToConfigFile(
 	// Build list of known holo methods:
 	string lstHoloStr = "# List of known classes:\n";
 	{
-		const auto lst = mrpt::utils::getAllRegisteredClassesChildrenOf(
+		const auto lst = mrpt::rtti::getAllRegisteredClassesChildrenOf(
 			CLASS_ID(CAbstractHolonomicReactiveMethod));
 		for (const auto& c : lst)
 			lstHoloStr +=
@@ -1796,7 +1795,7 @@ void CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::saveToConfigFile(
 	// Build list of known decider methods:
 	string lstDecidersStr = "# List of known classes:\n";
 	{
-		const auto lst = mrpt::utils::getAllRegisteredClassesChildrenOf(
+		const auto lst = mrpt::rtti::getAllRegisteredClassesChildrenOf(
 			CLASS_ID(CMultiObjectiveMotionOptimizerBase));
 		for (const auto& c : lst)
 			lstDecidersStr +=
@@ -1933,7 +1932,7 @@ void CAbstractPTGBasedReactive::saveConfigFile(
 	else
 	{
 		// save options of ALL known methods:
-		const auto lst = mrpt::utils::getAllRegisteredClassesChildrenOf(
+		const auto lst = mrpt::rtti::getAllRegisteredClassesChildrenOf(
 			CLASS_ID(CAbstractHolonomicReactiveMethod));
 		for (const auto& cl : lst)
 		{
@@ -1957,7 +1956,7 @@ void CAbstractPTGBasedReactive::saveConfigFile(
 	else
 	{
 		// save options of ALL known methods:
-		const auto lst = mrpt::utils::getAllRegisteredClassesChildrenOf(
+		const auto lst = mrpt::rtti::getAllRegisteredClassesChildrenOf(
 			CLASS_ID(CMultiObjectiveMotionOptimizerBase));
 		for (const auto& cl : lst)
 		{

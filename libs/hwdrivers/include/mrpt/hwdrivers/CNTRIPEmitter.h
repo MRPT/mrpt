@@ -81,7 +81,7 @@ class CNTRIPEmitter : public CGenericSensor
 	bool m_transmit_to_server;
 	std::string m_raw_output_file_prefix;
 	std::ofstream m_raw_output_file_stream;
-	mrpt::utils::CTicTac m_rate_timer;
+	mrpt::system::CTicTac m_rate_timer;
 	size_t m_rate_count;
 
    protected:

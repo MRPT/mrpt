@@ -67,7 +67,6 @@ France, September 2008.
 #if MRPT_HAS_OPENCV
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 

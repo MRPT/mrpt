@@ -13,13 +13,12 @@
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservationRange.h>
 #include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::math;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace std;
 
@@ -892,8 +891,7 @@ void COccupancyGridMap2D::TLikelihoodOptions::loadFromConfigFile(
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void COccupancyGridMap2D::TLikelihoodOptions::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+void COccupancyGridMap2D::TLikelihoodOptions::dumpToTextStream(std::ostream& out) const
 {
 	out.printf(
 		"\n----------- [COccupancyGridMap2D::TLikelihoodOptions] ------------ "

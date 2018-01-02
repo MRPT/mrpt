@@ -11,7 +11,7 @@
 
 #include <mrpt/graphs/CDirectedGraph.h>
 #include <mrpt/graphs/CDirectedTree.h>
-#include <mrpt/utils/traits_map.h>
+#include <mrpt/containers/traits_map.h>
 #include <mrpt/math/utils.h>
 
 #include <limits>
@@ -34,7 +34,7 @@ class NotConnectedGraph : public std::exception
 {
    public:
 	explicit NotConnectedGraph(
-		const std::set<mrpt::utils::TNodeID>& unconnected_nodeIDs,
+		const std::set<mrpt::graphs::TNodeID>& unconnected_nodeIDs,
 		std::string err)
 		: m_unconnected_nodeIDs(unconnected_nodeIDs), m_err(err + "\n\n")
 	{
@@ -47,13 +47,13 @@ class NotConnectedGraph : public std::exception
 	 * starting from the root node.
 	 */
 	void getUnconnectedNodeIDs(
-		std::set<mrpt::utils::TNodeID>* set_nodeIDs) const
+		std::set<mrpt::graphs::TNodeID>* set_nodeIDs) const
 	{
 		ASSERTMSG_(set_nodeIDs, "\nSet of nodes pointer is invalid\n");
 
 		// fil the given set
 		set_nodeIDs->clear();
-		for (std::set<mrpt::utils::TNodeID>::iterator it =
+		for (std::set<mrpt::graphs::TNodeID>::iterator it =
 				 m_unconnected_nodeIDs.begin();
 			 it != m_unconnected_nodeIDs.end(); ++it)
 		{
@@ -62,7 +62,7 @@ class NotConnectedGraph : public std::exception
 	}
 
    private:
-	std::set<mrpt::utils::TNodeID> m_unconnected_nodeIDs;
+	std::set<mrpt::graphs::TNodeID> m_unconnected_nodeIDs;
 	std::string m_err;
 };
 }  // end of namespace - detail
@@ -79,14 +79,14 @@ class NotConnectedGraph : public std::exception
  *
  *  Input graphs are represented by instances of (or classes derived from)
  *  mrpt::graphs::CDirectedGraph, and node's IDs are uint64_t values,
- *  although the type mrpt::utils::TNodeID is also provided for clarity in
+ *  although the type mrpt::graphs::TNodeID is also provided for clarity in
  *  the code.
  *
  *  The second template argument MAPS_IMPLEMENTATION allows choosing
  *  between a sparse std::map<> representation (using *
- *  mrpt::utils::map_traits_stdmap) for several intermediary and final
+ *  mrpt::containers::map_traits_stdmap) for several intermediary and final
  *  results, and an alternative (using
- *  mrpt::utils::map_traits_map_as_vector as argument) dense
+ *  mrpt::containers::map_traits_map_as_vector as argument) dense
  *  implementation which is much faster, but can be only used if the
  *  TNodeID's start in 0 or a low value.
  *
@@ -97,7 +97,7 @@ class NotConnectedGraph : public std::exception
  * \ingroup mrpt_graphs_grp
  */
 template <class TYPE_GRAPH,
-		  class MAPS_IMPLEMENTATION = mrpt::utils::map_traits_stdmap>
+		  class MAPS_IMPLEMENTATION = mrpt::containers::map_traits_stdmap>
 class CDijkstra
 {
    protected:

@@ -12,14 +12,12 @@
  * The example demonstrates the use of the random library.
  */
 
-#include <mrpt/utils.h>
 #include <mrpt/gui.h>
 #include <mrpt/math.h>
 #include <mrpt/system.h>
 #include <mrpt/random.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::gui;
 using namespace mrpt::math;
 using namespace mrpt::random;

@@ -12,7 +12,7 @@
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservationRange.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/serialization/CArchive.h>
 #include <mrpt/core/round.h>  // round()
 
 #if HAVE_ALLOCA_H
@@ -22,7 +22,6 @@
 using namespace mrpt;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace std;
 
@@ -1350,8 +1349,7 @@ void COccupancyGridMap2D::TInsertionOptions::loadFromConfigFile(
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void COccupancyGridMap2D::TInsertionOptions::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+void COccupancyGridMap2D::TInsertionOptions::dumpToTextStream(std::ostream& out) const
 {
 	out.printf(
 		"\n----------- [COccupancyGridMap2D::TInsertionOptions] ------------ "

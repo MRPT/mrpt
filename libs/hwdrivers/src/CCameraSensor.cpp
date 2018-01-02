@@ -26,7 +26,6 @@
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::gui;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace std;
@@ -38,7 +37,7 @@ IMPLEMENTS_GENERIC_SENSOR(CCameraSensor, mrpt::hwdrivers)
 				Constructor
    ----------------------------------------------------- */
 CCameraSensor::CCameraSensor()
-	: mrpt::utils::COutputLogger("CCameraSensor"),
+	: mrpt::system::COutputLogger("CCameraSensor"),
 	  m_sensorPose(),
 	  m_grabber_type("opencv"),
 	  m_capture_grayscale(false),
