@@ -9,7 +9,7 @@
 
 #include "hmtslam-precomp.h"  // Precomp header
 
-#include <mrpt/utils/CSimpleDatabase.h>
+#include <mrpt/db/CSimpleDatabase.h>
 #include <mrpt/utils/metaprogramming.h>
 #include <mrpt/poses/CPoint2D.h>
 

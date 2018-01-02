@@ -7,13 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "base-precomp.h"  // Precompiled headers
+#include "db-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/CSimpleDatabase.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/db/CSimpleDatabase.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
 
-using namespace mrpt::utils;
+using namespace mrpt::db;
 using namespace mrpt::system;
 using namespace std;
 
@@ -24,34 +24,24 @@ using namespace std;
 #include <iostream>
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CSimpleDatabase, CSerializable, mrpt::utils)
-IMPLEMENTS_SERIALIZABLE(CSimpleDatabaseTable, CSerializable, mrpt::utils)
+IMPLEMENTS_SERIALIZABLE(CSimpleDatabase, CSerializable, mrpt::db)
+IMPLEMENTS_SERIALIZABLE(CSimpleDatabaseTable, CSerializable, mrpt::db)
 
-/*---------------------------------------------------------------
-						writeToStream
- ---------------------------------------------------------------*/
-uint8_t CSimpleDatabase::serializeGetVersion() const { return XX; } void CSimpleDatabase::serializeTo(
-	mrpt::utils::CStream& out, int* out_Version) const
+uint8_t CSimpleDatabase::serializeGetVersion() const { return 0; }
+void CSimpleDatabase::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (out_Version)
-		*out_Version = 0;
-	else
-	{
-		// Save all tables in DB:
-		uint32_t n = (uint32_t)m_tables.size();
-		out << n;
+	// Save all tables in DB:
+	uint32_t n = (uint32_t)m_tables.size();
+	out << n;
 
-		for (const_iterator i = m_tables.begin(); i != m_tables.end(); ++i)
-		{
-			out << i->first;  //.c_str();
-			out << *i->second;
-		}
+	for (const_iterator i = m_tables.begin(); i != m_tables.end(); ++i)
+	{
+		out << i->first;  //.c_str();
+		out << *i->second;
 	}
 }
-/*---------------------------------------------------------------
-						readFromStream
- ---------------------------------------------------------------*/
-void CSimpleDatabase::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CSimpleDatabase::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -83,31 +73,21 @@ void CSimpleDatabase::serializeFrom(mrpt::serialization::CArchive& in, uint8_t v
 	};
 }
 
-/*---------------------------------------------------------------
-						writeToStream
- ---------------------------------------------------------------*/
-uint8_t CSimpleDatabaseTable::serializeGetVersion() const { return XX; } void CSimpleDatabaseTable::serializeTo(
-	mrpt::utils::CStream& out, int* out_Version) const
+uint8_t CSimpleDatabaseTable::serializeGetVersion() const { return 0; }
+void CSimpleDatabaseTable::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (out_Version)
-		*out_Version = 0;
-	else
-	{
-		uint32_t row, col, nRec = (uint32_t)getRecordCount(),
-						   nFie = (uint32_t)fieldsCount();
+	uint32_t row, col, nRec = (uint32_t)getRecordCount(),
+					   nFie = (uint32_t)fieldsCount();
 
-		out << nRec << nFie;
+	out << nRec << nFie;
 
-		for (col = 0; col < nFie; col++) out << field_names[col];  //.c_str();
+	for (col = 0; col < nFie; col++) out << field_names[col];  //.c_str();
 
-		for (row = 0; row < nRec; row++)
-			for (col = 0; col < nFie; col++) out << data[row][col];  //.c_str();
-	}
+	for (row = 0; row < nRec; row++)
+		for (col = 0; col < nFie; col++) out << data[row][col];  //.c_str();
 }
-/*---------------------------------------------------------------
-						readFromStream
- ---------------------------------------------------------------*/
-void CSimpleDatabaseTable::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CSimpleDatabaseTable::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -190,7 +170,7 @@ string CSimpleDatabase::tablesName(size_t tableIndex) const
 {
 	MRPT_START
 
-	ASSERT_(tableIndex < tablesCount();
+	ASSERT_(tableIndex < tablesCount());
 	const_iterator it = m_tables.begin();
 	std::advance(it, tableIndex);
 	return it->first;

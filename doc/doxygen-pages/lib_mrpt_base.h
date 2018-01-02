@@ -61,7 +61,7 @@ serialization of MRPT objects. There are classes for tranparent GZ-compressed
 files, sockets, serial ports, etc.  </li>
 
 <li><b>XML-based databases:</b> Simple databases can be mantained, loaded and
-saved to files with mrpt::utils::CSimpleDatabase. </li>
+saved to files with mrpt::db::CSimpleDatabase. </li>
 
 <li><b>Name-based argument passing:</b> See the structure
 mrpt::system::TParameters </li>

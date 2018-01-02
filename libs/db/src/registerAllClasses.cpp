@@ -10,6 +10,7 @@
 #include "db-precomp.h"
 
 #include <mrpt/db/CSimpleDatabase.h>
+#include <mrpt/core/initializer.h>
 using namespace mrpt::db;
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_db)
@@ -17,9 +18,5 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_db)
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 	registerClass(CLASS_ID(CSimpleDatabase));
 	registerClass(CLASS_ID(CSimpleDatabaseTable));
-//	registerClass(CLASS_ID(CPropertiesValuesList));
-//	registerClass(CLASS_ID(CMHPropertiesValuesList));
-//	registerClass(CLASS_ID(CTypeSelector));
-//	registerClass(CLASS_ID(CMemoryChunk));
 #endif
 }
