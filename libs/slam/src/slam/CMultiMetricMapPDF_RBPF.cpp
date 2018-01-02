@@ -12,7 +12,7 @@
 #include <mrpt/random.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/system/CTicTac.h>
-#include <mrpt/utils/CFileStream.h>
+#include <mrpt/io/CFileStream.h>
 
 #include <mrpt/maps/CMultiMetricMapPDF.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>

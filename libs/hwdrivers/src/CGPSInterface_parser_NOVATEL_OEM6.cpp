@@ -12,7 +12,7 @@
 #include <mrpt/system/os.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/hwdrivers/CGPSInterface.h>
-#include <mrpt/utils/CMemoryStream.h>
+#include <mrpt/io/CMemoryStream.h>
 #include <mrpt/utils/crc.h>
 
 using namespace mrpt::hwdrivers;

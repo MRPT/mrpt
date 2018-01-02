@@ -18,7 +18,7 @@
 #include <mrpt/math/utils.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/system/CTicTac.h>
-#include <mrpt/utils/CFileStream.h>
+#include <mrpt/io/CFileStream.h>
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/CTicTac.h>

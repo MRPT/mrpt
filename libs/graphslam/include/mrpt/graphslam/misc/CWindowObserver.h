@@ -13,7 +13,7 @@
 #include <mrpt/gui/CBaseGUIWindow.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/TParameters.h>
-#include <mrpt/utils/CObserver.h>
+#include <mrpt/system/CObserver.h>
 #include <mrpt/opengl/gl_utils.h>
 #include <mrpt/system/string_utils.h>
 

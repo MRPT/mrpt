@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/random.h>
-#include <mrpt/utils/round.h>
+#include <mrpt/core/round.h>
 #include <mrpt/utils/bits.h>
 
 #include "common.h"

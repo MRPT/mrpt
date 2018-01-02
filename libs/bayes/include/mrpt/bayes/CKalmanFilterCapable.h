@@ -18,12 +18,12 @@
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/utils/aligned_containers.h>
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/utils/stl_containers_utils.h>
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/system/COutputLogger.h>
 #include <mrpt/utils/stl_containers_utils.h>  // find_in_vector
 #include <mrpt/system/CTicTac.h>
-#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/utils/TEnumType.h>
 #include <mrpt/system/vector_loadsave.h>
 

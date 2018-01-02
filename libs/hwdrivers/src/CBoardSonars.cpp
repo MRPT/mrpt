@@ -9,7 +9,6 @@
 
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/utils_defs.h>
 #include <mrpt/utils/CMessage.h>
 #include <mrpt/system/os.h>
 

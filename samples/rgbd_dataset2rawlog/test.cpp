@@ -33,7 +33,7 @@ Output files:
 
 #include <mrpt/system/filesystem.h>
 #include <mrpt/utils/CTextFileLinesParser.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationIMU.h>
 

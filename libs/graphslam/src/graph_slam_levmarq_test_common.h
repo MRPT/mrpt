@@ -11,7 +11,7 @@
 #include <mrpt/graphslam/levmarq.h>
 #include <mrpt/graphs.h>
 #include <mrpt/random.h>
-#include <mrpt/utils/CMemoryStream.h>
+#include <mrpt/io/CMemoryStream.h>
 
 using namespace mrpt;
 using namespace mrpt::random;

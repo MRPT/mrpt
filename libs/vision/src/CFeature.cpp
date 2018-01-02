@@ -11,8 +11,8 @@
 #include "vision-precomp.h"  // Precompiled headers
 
 #include <mrpt/utils/CTextFileLinesParser.h>
-#include <mrpt/utils/CFileOutputStream.h>
-#include <mrpt/utils/CFileInputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/io/CFileInputStream.h>
 #include <mrpt/utils/CStdOutStream.h>
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/vision/CFeature.h>

@@ -11,7 +11,7 @@
 
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/serialization/CSerializable.h>
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/utils/safe_pointers.h>
 #include <mrpt/math/KDTreeCapable.h>
 #include <mrpt/obs/CSinCosLookUpTableFor2DScans.h>

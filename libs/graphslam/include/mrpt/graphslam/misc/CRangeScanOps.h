@@ -12,7 +12,7 @@
 
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/maps/CSimplePointsMap.h>

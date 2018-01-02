@@ -14,9 +14,9 @@
 
 #include <mrpt/version.h>
 #include <mrpt/otherlibs/tclap/CmdLine.h>
-#include <mrpt/utils/CMemoryStream.h>
-#include <mrpt/utils/CFileOutputStream.h>
-#include <mrpt/utils/CFileInputStream.h>
+#include <mrpt/io/CMemoryStream.h>
+#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/io/CFileInputStream.h>
 #include <mrpt/serialization/stl_serialization.h>
 
 #include "common.h"

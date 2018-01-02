@@ -13,7 +13,7 @@
 #include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/vision/CFeatureExtraction.h>
 
-#include <mrpt/utils/CObserver.h>
+#include <mrpt/system/CObserver.h>
 
 namespace mrpt
 {

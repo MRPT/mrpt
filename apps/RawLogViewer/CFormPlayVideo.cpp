@@ -68,7 +68,7 @@ BEGIN_EVENT_TABLE(CFormPlayVideo, wxDialog)
 END_EVENT_TABLE()
 
 // Global variables:
-#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>

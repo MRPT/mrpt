@@ -21,7 +21,6 @@
 #include <mrpt/gui/CMyRedirector.h>
 
 #include <mrpt/system/os.h>
-#include <mrpt/utils/utils_defs.h>
 
 #ifdef Button1
 #undef Button1

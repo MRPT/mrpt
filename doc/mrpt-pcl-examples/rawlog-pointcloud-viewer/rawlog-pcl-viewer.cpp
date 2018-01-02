@@ -35,7 +35,7 @@
 
 #include <mrpt/obs.h>    // For loading from the rawlog
 #include <mrpt/maps.h>   // For converting into point maps
-#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/system.h>
 #include <mrpt/synch.h>
 

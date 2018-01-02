@@ -9,7 +9,7 @@
 #ifndef cpointsmap_crtp_common_H
 #define cpointsmap_crtp_common_H
 
-#include <mrpt/utils/round.h>
+#include <mrpt/core/round.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 

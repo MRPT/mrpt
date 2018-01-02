@@ -9,7 +9,6 @@
 #ifndef conversions_H
 #define conversions_H
 
-#include <mrpt/utils/utils_defs.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
 #include <mrpt/topography/data_types.h>

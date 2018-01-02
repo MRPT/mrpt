@@ -20,7 +20,7 @@
 
 #include <mrpt/system/filesystem.h>
 #include <mrpt/utils/CMemoryChunk.h>
-#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
 
 using namespace std;
 using namespace mrpt;

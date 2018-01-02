@@ -12,7 +12,7 @@
 
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/obs/CObservation.h>
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/system/COutputLogger.h>
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 
@@ -26,7 +26,7 @@
 #include <mrpt/hwdrivers/COpenNI2Sensor.h>
 #include <mrpt/hwdrivers/CDUO3DCamera.h>
 
-#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/hwdrivers/CStereoGrabber_SVS.h>
 
 #include <mrpt/gui/CDisplayWindow.h>

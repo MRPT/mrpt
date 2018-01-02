@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/nav/reactive/CLogFileRecord.h>
 #include <mrpt/system/filesystem.h>
 #include <gtest/gtest.h>

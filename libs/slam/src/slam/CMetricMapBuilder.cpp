@@ -12,10 +12,10 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/slam/CMetricMapBuilder.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/utils/CFileInputStream.h>
-#include <mrpt/utils/CFileOutputStream.h>
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/io/CFileInputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::maps;

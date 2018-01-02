@@ -11,9 +11,9 @@
 
 #include <mrpt/system/filesystem.h>
 #include <mrpt/obs/CRawlog.h>
-#include <mrpt/utils/CFileInputStream.h>
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/io/CFileInputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/utils/CStream.h>
 
 using namespace mrpt;

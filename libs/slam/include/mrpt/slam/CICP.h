@@ -10,7 +10,7 @@
 #define CICP_H
 
 #include <mrpt/slam/CMetricMapsAlignmentAlgorithm.h>
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/utils/TEnumType.h>
 
 namespace mrpt

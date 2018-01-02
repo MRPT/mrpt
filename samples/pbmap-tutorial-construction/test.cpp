@@ -14,8 +14,8 @@
  */
 #include <mrpt/pbmap.h>  // precomp. hdr
 
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/system/os.h>
 #include <pcl/io/io.h>
 #include <pcl/io/pcd_io.h>

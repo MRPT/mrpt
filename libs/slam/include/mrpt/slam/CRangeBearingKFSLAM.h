@@ -11,7 +11,7 @@
 
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/config/CConfigFileBase.h>
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/bayes/CKalmanFilterCapable.h>
 
 #include <mrpt/utils/safe_pointers.h>

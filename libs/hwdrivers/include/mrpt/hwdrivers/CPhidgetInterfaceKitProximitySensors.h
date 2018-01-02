@@ -12,7 +12,7 @@
 
 #include <mrpt/obs/CObservationRange.h>
 #include <mrpt/poses/CPoint3D.h>
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/system/COutputLogger.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 
 namespace mrpt

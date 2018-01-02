@@ -20,7 +20,6 @@
 
 #if MRPT_HAS_PCL
 
-#include <mrpt/utils/utils_defs.h>
 
 #include <mrpt/serialization/CSerializable.h>
 #include <pcl/point_types.h>

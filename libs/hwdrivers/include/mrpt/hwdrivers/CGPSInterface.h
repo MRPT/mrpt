@@ -13,8 +13,8 @@
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/comms/CSerialPort.h>
-#include <mrpt/utils/COutputLogger.h>
-#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/system/COutputLogger.h>
+#include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/utils/TEnumType.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/utils/circular_buffer.h>

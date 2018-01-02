@@ -15,7 +15,7 @@
 
 #include <mrpt/poses/CPose3DPDFSOG.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/system/COutputLogger.h>
 #include <mrpt/opengl/opengl_frwds.h>
 
 #include <map>

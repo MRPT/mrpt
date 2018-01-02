@@ -15,7 +15,7 @@
 #include <mrpt/math/distributions.h>
 #include <mrpt/hmtslam/CRobotPosesGraph.h>
 
-#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
 
 #include <mrpt/system/os.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>

@@ -9,7 +9,6 @@
 #ifndef mrpt_matrix_adaptors_H
 #define mrpt_matrix_adaptors_H
 
-#include <mrpt/utils/utils_defs.h>
 #include <mrpt/math/math_frwds.h>  // forward declarations
 
 namespace mrpt

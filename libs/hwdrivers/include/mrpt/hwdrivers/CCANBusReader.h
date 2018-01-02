@@ -10,7 +10,7 @@
 #define CCANBusReader_H
 
 #include <mrpt/obs/CObservationCANBusJ1939.h>
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/system/COutputLogger.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/comms/CSerialPort.h>
 

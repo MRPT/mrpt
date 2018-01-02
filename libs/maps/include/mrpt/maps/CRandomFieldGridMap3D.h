@@ -12,8 +12,8 @@
 #include <mrpt/utils/CDynamicGrid3D.h>
 #include <mrpt/math/types_math.h>
 #include <mrpt/serialization/CSerializable.h>
-#include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/system/COutputLogger.h>
 #include <mrpt/graphs/ScalarFactorGraph.h>
 #include <mrpt/math/lightweight_geom_data.h>
 

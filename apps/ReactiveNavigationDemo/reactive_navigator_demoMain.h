@@ -37,7 +37,7 @@
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>  // It's in the lib mrpt-maps
 #include <mrpt/maps/COccupancyGridMap2D.h>
-#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
 
 #include <memory>  // unique_ptr<>
 

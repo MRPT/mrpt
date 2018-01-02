@@ -10,7 +10,7 @@
 #define SERIALIZATION_ZMQ_H
 
 #include <mrpt/serialization/CSerializable.h>
-#include <mrpt/utils/CMemoryStream.h>
+#include <mrpt/io/CMemoryStream.h>
 #include <cmath>  // ceil()
 
 namespace mrpt

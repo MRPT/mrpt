@@ -19,7 +19,7 @@
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/img/color_maps.h>
 #include <mrpt/core/round.h>
-#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CSetOfTriangles.h>
 

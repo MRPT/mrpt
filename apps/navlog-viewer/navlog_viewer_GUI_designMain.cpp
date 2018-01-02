@@ -30,7 +30,7 @@
 #include <wx/statbox.h>
 
 #include <mrpt/system.h>
-#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/config/CConfigFilePrefixer.h>
 #include <mrpt/system/string_utils.h>

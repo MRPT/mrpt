@@ -12,7 +12,7 @@
 #include <mrpt/maps/CRandomFieldGridMap3D.h>
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/system/CTicTac.h>
-#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
 
 #include <mrpt/config.h>
 

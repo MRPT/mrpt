@@ -12,7 +12,7 @@
 #include <mrpt/hmtslam/CRobotPosesGraph.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/random.h>
-#include <mrpt/utils/CFileStream.h>
+#include <mrpt/io/CFileStream.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/system/os.h>
 

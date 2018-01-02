@@ -10,7 +10,7 @@
 #include <mrpt/graphs.h>
 //#include <mrpt/graphslam/levmarq.h>
 #include <mrpt/gui.h>
-#include <mrpt/utils/CObserver.h>
+#include <mrpt/system/CObserver.h>
 #include <mrpt/opengl/gl_utils.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CSetOfObjects.h>

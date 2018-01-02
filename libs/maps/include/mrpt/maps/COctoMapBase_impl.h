@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 // This file is to be included from <mrpt/maps/COctoMapBase.h>
-#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/maps/CPointsMap.h>

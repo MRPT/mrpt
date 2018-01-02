@@ -9,7 +9,6 @@
 #ifndef PF_aux_structs_H
 #define PF_aux_structs_H
 
-#include <mrpt/utils/utils_defs.h>
 #include <vector>
 #include <iostream>
 #include <iterator>

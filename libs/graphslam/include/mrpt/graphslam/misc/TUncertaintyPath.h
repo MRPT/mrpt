@@ -14,7 +14,7 @@
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/data_utils.h>
 #include <mrpt/utils/stl_containers_utils.h>
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/utils/types_simple.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>

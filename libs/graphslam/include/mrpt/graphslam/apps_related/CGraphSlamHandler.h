@@ -12,7 +12,7 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/utils/mrpt_macros.h>
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/system/COutputLogger.h>
 #include <mrpt/system/filesystem.h>
 
 #include <mrpt/graphslam/misc/CWindowObserver.h>

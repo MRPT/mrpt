@@ -14,7 +14,7 @@
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/containers/CDynamicGrid.h>
 #include <mrpt/serialization/CSerializable.h>
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/img/color_maps.h>
 #include <mrpt/utils/TEnumType.h>
 #include <mrpt/poses/poses_frwds.h>

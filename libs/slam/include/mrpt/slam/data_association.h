@@ -9,7 +9,6 @@
 #ifndef data_association_H
 #define data_association_H
 
-#include <mrpt/utils/utils_defs.h>
 #include <mrpt/poses/CPoint2DPDFGaussian.h>
 #include <mrpt/poses/CPointPDFGaussian.h>
 #include <mrpt/math/CMatrixTemplate.h>  // mrpt::math::CMatrixBool

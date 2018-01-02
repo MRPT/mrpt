@@ -15,7 +15,7 @@
 #include <mrpt/math/data_utils.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/utils/stl_containers_utils.h>
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/utils/types_simple.h>

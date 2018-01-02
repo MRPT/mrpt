@@ -11,7 +11,7 @@
 #define COccupancyGridMap2D_H
 
 #include <mrpt/serialization/CSerializable.h>
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/containers/CDynamicGrid.h>
 #include <mrpt/maps/CMetricMap.h>

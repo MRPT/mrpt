@@ -9,7 +9,7 @@
 #ifndef CHMTSLAM_H
 #define CHMTSLAM_H
 
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/system/COutputLogger.h>
 #include <mrpt/utils/CThreadSafeQueue.h>
 
 #include <mrpt/hmtslam/HMT_SLAM_common.h>

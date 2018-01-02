@@ -9,7 +9,6 @@
 #ifndef MRPT_DIRECTED_TREE_H
 #define MRPT_DIRECTED_TREE_H
 
-#include <mrpt/utils/utils_defs.h>
 #include <list>
 
 namespace mrpt

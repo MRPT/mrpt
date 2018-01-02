@@ -19,7 +19,6 @@
 #include <mrpt/config.h>
 #if MRPT_HAS_PCL
 
-#include <mrpt/utils/utils_defs.h>
 
 #include <mrpt/serialization/CSerializable.h>
 

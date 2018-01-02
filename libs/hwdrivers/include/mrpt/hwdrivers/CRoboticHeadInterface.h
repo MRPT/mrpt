@@ -13,7 +13,7 @@
 #include <mrpt/comms/CInterfaceFTDI.h>
 #include <mrpt/utils/CMessage.h>
 #include <mrpt/math/CMatrixTemplate.h>
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/system/COutputLogger.h>
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/obs/CObservationRange.h>
 

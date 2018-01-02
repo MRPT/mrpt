@@ -11,7 +11,7 @@
 #define CNationalInstrumentsDAQ_H
 
 #include <mrpt/obs/CObservationRawDAQ.h>
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/system/COutputLogger.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/synch/CPipe.h>
 

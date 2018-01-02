@@ -9,7 +9,6 @@
 
 #include <mrpt/hwdrivers/CRovio.h>
 #include <mrpt/hwdrivers/CJoystick.h>
-#include <mrpt/utils/utils_defs.h>
 #include <mrpt/slam.h>
 
 #include <fstream>

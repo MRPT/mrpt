@@ -10,7 +10,7 @@
 #define C2DRangeFinderAbstract_H
 
 #include <mrpt/utils/CStream.h>
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/system/COutputLogger.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>

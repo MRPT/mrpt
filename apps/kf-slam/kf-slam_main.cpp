@@ -16,8 +16,8 @@
  ---------------------------------------------------------------*/
 
 #include <mrpt/config/CConfigFile.h>
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/system/filesystem.h>

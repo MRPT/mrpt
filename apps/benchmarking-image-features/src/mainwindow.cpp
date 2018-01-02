@@ -17,7 +17,7 @@
 #include "mainwindow.h"
 
 /// MRPT includes
-#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>

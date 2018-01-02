@@ -12,7 +12,7 @@
 #include <mrpt/hwdrivers/CRovio.h>
 #include <mrpt/hwdrivers/CFFMPEG_InputStream.h>
 #include <mrpt/comms/net_utils.h>
-#include <mrpt/utils/CMemoryStream.h>
+#include <mrpt/io/CMemoryStream.h>
 #include <mrpt/obs/CObservationImage.h>
 
 #include <thread>

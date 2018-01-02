@@ -10,7 +10,7 @@
 #include "vision-precomp.h"  // Precompiled headers
 #include <mrpt/vision/CCamModel.h>
 #include <mrpt/vision/pinhole.h>
-#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/math/types_math.h>
 
 using namespace mrpt;

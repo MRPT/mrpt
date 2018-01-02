@@ -17,7 +17,7 @@
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPoseRandomSampler.h>
 #include <mrpt/slam/TKLDParams.h>
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/system/COutputLogger.h>
 
 namespace mrpt
 {

@@ -28,8 +28,8 @@
 #include <wx/numdlg.h>
 
 // General global variables:
-#include <mrpt/utils/CFileOutputStream.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/system/os.h>
