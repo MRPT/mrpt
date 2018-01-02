@@ -11,7 +11,7 @@
 
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/system/string_utils.h>
-#include <mrpt/utils/CConfigFilePrefixer.h>
+#include <mrpt/config/CConfigFilePrefixer.h>
 
 using namespace mrpt::nav;
 
@@ -71,7 +71,7 @@ CParameterizedTrajectoryGenerator* CParameterizedTrajectoryGenerator::CreatePTG(
 	}
 
 	// Wrapper to transparently add prefixes to all config keys:
-	mrpt::utils::CConfigFilePrefixer cfp;
+	mrpt::config::CConfigFilePrefixer cfp;
 	cfp.bind(cfg);
 	cfp.setPrefixes("", sKeyPrefix);
 

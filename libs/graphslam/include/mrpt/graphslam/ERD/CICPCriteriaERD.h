@@ -14,8 +14,8 @@
 #include <mrpt/math/utils.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/types_simple.h>

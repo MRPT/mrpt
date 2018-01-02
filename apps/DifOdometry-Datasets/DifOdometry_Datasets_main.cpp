@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "DifOdometry_Datasets.h"
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 
 using namespace std;
 using namespace mrpt;

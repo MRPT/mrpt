@@ -42,7 +42,7 @@
 
 // General global variables:
 #include <mrpt/serialization/CSerializable.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
 
@@ -634,7 +634,7 @@ class xRawLogViewerFrame : public wxFrame
 	}
 
 extern std::string iniFileSect;
-extern mrpt::utils::CConfigFile* iniFile;
+extern mrpt::config::CConfigFile* iniFile;
 extern std::string loadedFileName;
 extern mrpt::obs::CRawlog rawlog;
 

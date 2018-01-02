@@ -9,7 +9,7 @@
 
 #include "maps-precomp.h"  // Precomp header
 
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/os.h>

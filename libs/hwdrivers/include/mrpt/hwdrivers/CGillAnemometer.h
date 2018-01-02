@@ -12,7 +12,7 @@
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/comms/CSerialPort.h>
 #include <mrpt/obs/CObservationWindSensor.h>
-#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/config/CConfigFileBase.h>
 
 namespace mrpt
 {

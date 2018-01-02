@@ -498,7 +498,7 @@ class CHMTSLAM : public mrpt::utils::COutputLogger,
 		  *  'gridmaps': Occupancy Grid matching.
 		  *  'fabmap': Mark Cummins' image matching framework.
 		  */
-		vector_string TLC_detectors;
+		std::vector<std::string> TLC_detectors;
 
 		/** Options passed to this TLC constructor */
 		CTopLCDetector_GridMatching::TOptions TLC_grid_options;

@@ -13,7 +13,7 @@
 #include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/random.h>
 #include <mrpt/utils/CFileOutputStream.h>
-#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/core/round.h>  // round()
 #include <mrpt/math/geometry.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>

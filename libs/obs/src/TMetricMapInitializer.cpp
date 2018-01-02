@@ -10,7 +10,7 @@
 #include "obs-precomp.h"  // Precomp header
 
 #include <mrpt/maps/TMetricMapInitializer.h>
-#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/utils/CStream.h>
 
 using namespace std;

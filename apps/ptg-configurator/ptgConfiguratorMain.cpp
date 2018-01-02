@@ -53,8 +53,8 @@ wxBitmap MyArtProvider::CreateBitmap(
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CAxis.h>
-#include <mrpt/utils/CConfigFileMemory.h>
-#include <mrpt/utils/CConfigFilePrefixer.h>
+#include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/config/CConfigFilePrefixer.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/CTicTac.h>
@@ -916,8 +916,8 @@ void ptgConfiguratorframe::OnbtnReloadParamsClick(wxCommandEvent& event)
 		mrpt::format("PTG%d_", (int)edPTGIndex->GetValue());
 	const std::string sSection = "PTG_PARAMS";
 
-	mrpt::utils::CConfigFileMemory cfg;
-	mrpt::utils::CConfigFilePrefixer cfp;
+	mrpt::config::CConfigFileMemory cfg;
+	mrpt::config::CConfigFilePrefixer cfp;
 	cfp.bind(cfg);
 	cfp.setPrefixes("", sKeyPrefix);
 
@@ -1350,8 +1350,8 @@ void ptgConfiguratorframe::dumpPTGcfgToTextBox()
 		mrpt::format("PTG%d_", (int)edPTGIndex->GetValue());
 	const std::string sSection = "PTG_PARAMS";
 
-	mrpt::utils::CConfigFileMemory cfg;
-	mrpt::utils::CConfigFilePrefixer cfp;
+	mrpt::config::CConfigFileMemory cfg;
+	mrpt::config::CConfigFilePrefixer cfp;
 	cfp.bind(cfg);
 	cfp.setPrefixes("", sKeyPrefix);
 

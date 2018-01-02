@@ -30,7 +30,7 @@
 #include <mrpt/random.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/utils/CTextFileLinesParser.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CPointCloud.h>

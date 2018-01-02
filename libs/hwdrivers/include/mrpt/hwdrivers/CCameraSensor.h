@@ -13,7 +13,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/utils/COutputLogger.h>
-#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 
 #include <mrpt/hwdrivers/CFFMPEG_InputStream.h>

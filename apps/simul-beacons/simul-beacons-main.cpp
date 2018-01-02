@@ -9,7 +9,7 @@
 
 #include <mrpt/system/os.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/maps/CBeaconMap.h>

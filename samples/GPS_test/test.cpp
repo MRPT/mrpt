@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/hwdrivers/CGPSInterface.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 

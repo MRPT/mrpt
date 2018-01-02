@@ -11,7 +11,7 @@
 #include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/slam/CRejectionSamplingRangeOnlyLocalization.h>
 #include <mrpt/random.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/system/os.h>
 
 using namespace mrpt;

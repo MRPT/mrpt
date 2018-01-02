@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/serialization/CSerializable.h>
-#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/config/CConfigFileBase.h>
 #include <string>
 
 namespace mrpt

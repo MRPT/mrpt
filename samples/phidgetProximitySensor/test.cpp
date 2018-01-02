@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/hwdrivers/CPhidgetInterfaceKitProximitySensors.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/obs/CObservationRange.h>
 #include <mrpt/system.h>

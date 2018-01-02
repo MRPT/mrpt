@@ -10,7 +10,7 @@
 #include "maps-precomp.h"  // Precomp header
 
 #include <mrpt/maps/CRandomFieldGridMap3D.h>
-#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/utils/CFileOutputStream.h>
 

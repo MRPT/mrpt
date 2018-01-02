@@ -16,20 +16,20 @@ Plain text configuration files in MRPT follows a custom version of the [INI file
 standard format, comprising "sections", "properties" (or "keys") with associated "values" and, optionally, comments.
 
 The following C++ classes are provided to read and write such files:
-- mrpt::utils::CConfigFile: Access to physical files.
-- mrpt::utils::CConfigFileMemory: Wrapper around a configuration file "in memory", without an associated physical file.
+- mrpt::config::CConfigFile: Access to physical files.
+- mrpt::config::CConfigFileMemory: Wrapper around a configuration file "in memory", without an associated physical file.
 
 See also:
 - mrpt::config::CConfigFileBase: The base, virtual class underlying the two classes above. Users normally
    inkove the API exposed in this base class.
-- mrpt::utils::CConfigFilePrefixer: A proxy class to manipulate an object of the two classes above such
+- mrpt::config::CConfigFilePrefixer: A proxy class to manipulate an object of the two classes above such
    that all accesses to sections and/or properties are *mapped* to modified versions of their names.
 
 
 # Format specifications
 
 - There exists only one level of hierarchy, i.e. only "toplevel" sections exist, there is no support for nested sections.
-  A possible workaround to this limitation is using  mrpt::utils::CConfigFilePrefixer.
+  A possible workaround to this limitation is using  mrpt::config::CConfigFilePrefixer.
 - Sections are formatted like: `[section_name]`
 - Key/values pair follow the format: `key = value`. Whitespaces are ignored before and after the `=` sign, up to the 
 first non-blank character of the value.

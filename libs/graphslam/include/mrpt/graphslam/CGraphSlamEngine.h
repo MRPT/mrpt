@@ -55,7 +55,7 @@
 #include <mrpt/system/CTicTac.h>
 #include <cstdint>
 #include <mrpt/utils/mrpt_macros.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/utils/types_simple.h>
 #include <mrpt/img/TColor.h>
 #include <mrpt/img/CImage.h>

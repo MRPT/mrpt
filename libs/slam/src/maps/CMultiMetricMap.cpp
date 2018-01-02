@@ -9,7 +9,7 @@
 
 #include "slam-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/utils/CStream.h>

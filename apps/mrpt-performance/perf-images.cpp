@@ -9,7 +9,7 @@
 
 #include <mrpt/img/CImage.h>
 #include <mrpt/img/TStereoCamera.h>
-#include <mrpt/utils/CConfigFileMemory.h>
+#include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/vision/CImagePyramid.h>
 #include <mrpt/vision/CStereoRectifyMap.h>
@@ -314,7 +314,7 @@ double stereoimage_rectify_prepare_map(int, int)
 	mrpt::img::TStereoCamera params;
 	params.loadFromConfigFile(
 		"CAMERA_PARAMS",
-		mrpt::utils::CConfigFileMemory(std::string(EXAMPLE_STEREO_CALIB)));
+		mrpt::config::CConfigFileMemory(std::string(EXAMPLE_STEREO_CALIB)));
 	params.scaleToResolution(w, h);
 
 	mrpt::vision::CStereoRectifyMap rectify_map;
@@ -343,7 +343,7 @@ double stereoimage_rectify(int, int)
 	mrpt::img::TStereoCamera params;
 	params.loadFromConfigFile(
 		"CAMERA_PARAMS",
-		mrpt::utils::CConfigFileMemory(std::string(EXAMPLE_STEREO_CALIB)));
+		mrpt::config::CConfigFileMemory(std::string(EXAMPLE_STEREO_CALIB)));
 	params.scaleToResolution(w, h);
 
 	mrpt::vision::CStereoRectifyMap rectify_map;

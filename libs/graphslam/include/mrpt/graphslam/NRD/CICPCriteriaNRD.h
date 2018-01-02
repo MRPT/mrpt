@@ -23,8 +23,8 @@
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/types_simple.h>
 #include <mrpt/slam/CICP.h>

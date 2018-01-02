@@ -14,8 +14,8 @@
 #include <mrpt/system/string_utils.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/utils/CTypeSelector.h>
-#include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CConfigFileMemory.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/obs/CObservationImage.h>

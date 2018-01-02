@@ -21,7 +21,7 @@ IMPLEMENT_APP(_DSceneViewerApp)
 std::string global_fileToOpen;
 
 #include <mrpt/gui/WxUtils.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/system/filesystem.h>
 using namespace mrpt;
 using namespace mrpt::utils;

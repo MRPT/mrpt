@@ -597,7 +597,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(
 	// Retrieve default parameters for holonomic methods:
 	// ------------------------------------------------------
 	{
-		mrpt::utils::CConfigFileMemory cfg;
+		mrpt::config::CConfigFileMemory cfg;
 
 		m_simul_options.saveToConfigFile(cfg, "SIMULATOR");
 

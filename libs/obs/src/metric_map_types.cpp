@@ -11,7 +11,7 @@
 
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/maps/metric_map_types.h>
 
 using namespace mrpt::obs;

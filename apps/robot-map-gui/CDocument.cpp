@@ -12,7 +12,7 @@
 #include "mrpt/utils/CFileGZInputStream.h"
 #include "mrpt/utils/CFileGZOutputStream.h"
 #include "mrpt/utils/CFileOutputStream.h"
-#include "mrpt/utils/CConfigFile.h"
+#include "mrpt/config/CConfigFile.h"
 
 const std::string METRIC_MAP_CONFIG_SECTION = "MappingApplication";
 

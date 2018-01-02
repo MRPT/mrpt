@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/vision/CDifodo.h>
-#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/utils/round.h>

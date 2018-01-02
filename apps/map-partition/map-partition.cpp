@@ -17,7 +17,7 @@
 
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
 #include <mrpt/maps/CSimpleMap.h>

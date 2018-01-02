@@ -17,7 +17,7 @@
 
 #include <mrpt/hmtslam/CHMTSLAM.h>
 #include <mrpt/utils/CConsoleRedirector.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/system/filesystem.h>

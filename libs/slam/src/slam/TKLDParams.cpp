@@ -10,7 +10,7 @@
 #include "slam-precomp.h"  // Precompiled headers
 
 #include <mrpt/utils/CStream.h>
-#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/slam/TKLDParams.h>
 
 using namespace mrpt::slam;

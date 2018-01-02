@@ -11,7 +11,7 @@
 
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/utils/TEnumType.h>
-#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/nav/holonomic/ClearanceDiagram.h>

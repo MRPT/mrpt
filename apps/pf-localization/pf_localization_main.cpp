@@ -18,7 +18,7 @@
 
 #include <mrpt/slam/CMonteCarloLocalization2D.h>
 
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/math/ops_vectors.h>  // << for vector<>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/gui/CDisplayWindow3D.h>

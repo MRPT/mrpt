@@ -19,7 +19,7 @@
   -----------------------------------------------------------------------------*/
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/utils/round.h>
@@ -129,10 +129,10 @@ MEX_DEFINE(new)(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 	// ----------------------------------------------
 	// Launch threads:
 	// ----------------------------------------------
-	vector_string sections;
+	std::vector<std::string> sections;
 	iniFile.getAllSections(sections);
 
-	for (vector_string::iterator it = sections.begin(); it != sections.end();
+	for (std::vector<std::string>::iterator it = sections.begin(); it != sections.end();
 		 ++it)
 	{
 		if (*it == GLOBAL_SECTION_NAME || it->empty() ||

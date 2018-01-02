@@ -16,7 +16,6 @@
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::gui;
 using namespace mrpt::opengl;
 using namespace std;
@@ -159,7 +158,10 @@ CWxGLCanvasBase::CWxGLCanvasBase(
 #endif
 }
 
-CWxGLCanvasBase::~CWxGLCanvasBase() { delete_safe(m_gl_context); }
+CWxGLCanvasBase::~CWxGLCanvasBase()
+{
+	if (m_gl_context) delete m_gl_context;
+}
 void CWxGLCanvasBase::OnChar(wxKeyEvent& event) { OnCharCustom(event); }
 void CWxGLCanvasBase::Render()
 {

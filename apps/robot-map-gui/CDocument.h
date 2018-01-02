@@ -13,7 +13,7 @@
 #include "mrpt/maps/CSimpleMap.h"
 #include "mrpt/maps/CMultiMetricMap.h"
 #include "mrpt/opengl/CRenderizable.h"
-#include "mrpt/utils/CConfigFile.h"
+#include "mrpt/config/CConfigFile.h"
 
 #include "gui/configWidget/CConfigWidget.h"
 #include "TypeOfConfig.h"

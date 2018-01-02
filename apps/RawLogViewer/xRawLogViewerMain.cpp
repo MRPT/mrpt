@@ -5155,22 +5155,22 @@ void xRawLogViewerFrame::OnMenuShowTips(wxCommandEvent& event)
 void xRawLogViewerFrame::OnbtnEditCommentsClick(wxCommandEvent& event) {}
 void xRawLogViewerFrame::OnMenuInsertComment(wxCommandEvent& event) {}
 // Asks for a sensor label:
-vector_string xRawLogViewerFrame::AskForObservationByLabelMultiple(
+std::vector<std::string> xRawLogViewerFrame::AskForObservationByLabelMultiple(
 	const std::string& title)
 {
-	vector_string labels;
+	std::vector<std::string> labels;
 
 	if (listOfSensorLabels.empty())
 	{
 		wxMessageBox(
 			_("No sensors were found with proper sensor labels. Labels are "
 			  "required for this operation."));
-		return vector_string();
+		return std::vector<std::string>();
 	}
 
 	// List of labels:
 	wxArrayString lstLabels;
-	vector_string lstLabelsStd;
+	std::vector<std::string> lstLabelsStd;
 	for (std::map<std::string, TInfoPerSensorLabel>::iterator i =
 			 listOfSensorLabels.begin();
 		 i != listOfSensorLabels.end(); ++i)
@@ -5306,10 +5306,10 @@ void xRawLogViewerFrame::OnMenuChangePosesBatch(wxCommandEvent& event)
 		TSensor2PoseMap desiredSensorPoses;
 		std::map<std::string, mrpt::obs::CObservationImage> desiredCamParams;
 
-		vector_string sections;
+		std::vector<std::string> sections;
 		cfg.getAllSections(sections);
 
-		for (vector_string::iterator it = sections.begin();
+		for (std::vector<std::string>::iterator it = sections.begin();
 			 it != sections.end(); ++it)
 		{
 			if (it->empty()) continue;
@@ -5674,12 +5674,12 @@ void xRawLogViewerFrame::OnMenuBatchLaserExclusionZones(wxCommandEvent& event)
 		typedef map<string, vector<CPolygon>> TPolygonList;
 		TPolygonList lstExclusions;
 
-		vector_string sections;
+		std::vector<std::string> sections;
 		cfg.getAllSections(sections);
 
 		unsigned int nExclZones = 0;
 
-		for (vector_string::iterator it = sections.begin();
+		for (std::vector<std::string>::iterator it = sections.begin();
 			 it != sections.end(); ++it)
 		{
 			if (it->empty()) continue;
@@ -5857,12 +5857,12 @@ void xRawLogViewerFrame::OnLaserFilterAngles(wxCommandEvent& event)
 		typedef map<string, vector<pair<double, double>>> TExclAreasList;
 		TExclAreasList lstExclusions;
 
-		vector_string sections;
+		std::vector<std::string> sections;
 		cfg.getAllSections(sections);
 
 		unsigned int nExclZones = 0;
 
-		for (vector_string::iterator it = sections.begin();
+		for (std::vector<std::string>::iterator it = sections.begin();
 			 it != sections.end(); ++it)
 		{
 			if (it->empty()) continue;

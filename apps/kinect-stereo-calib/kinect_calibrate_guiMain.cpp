@@ -2702,7 +2702,7 @@ void kinect_calibrate_guiDialog::OnbtnLoadCalibClick(wxCommandEvent& event)
 	{
 		const string inFil = string(dialog.GetPath().mb_str());
 
-		mrpt::utils::CConfigFile cfg(inFil);
+		mrpt::config::CConfigFile cfg(inFil);
 
 		m_calib_result.cam_params.leftCamera.loadFromConfigFile(
 			"CAMERA_PARAMS_LEFT", cfg);

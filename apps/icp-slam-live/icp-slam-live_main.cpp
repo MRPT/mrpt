@@ -20,7 +20,7 @@
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/slam/CMetricMapBuilderICP.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/system/os.h>
@@ -111,7 +111,7 @@ std::mutex cs_global_list_obs;
 bool allThreadsMustExit = false;
 struct TThreadParams
 {
-	mrpt::utils::CConfigFile* cfgFile;
+	mrpt::config::CConfigFile* cfgFile;
 	string section_name;
 };
 
@@ -190,7 +190,7 @@ void MapBuilding_ICP_Live(const string& INI_FILENAME)
 	using namespace mrpt::poses;
 	using namespace mrpt::maps;
 
-	mrpt::utils::CConfigFile iniFile(INI_FILENAME);
+	mrpt::config::CConfigFile iniFile(INI_FILENAME);
 
 	// Load sensor params from section: "LIDAR_SENSOR"
 	std::thread hSensorThread;

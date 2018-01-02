@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/slam/CMonteCarloLocalization2D.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/CSimpleMap.h>

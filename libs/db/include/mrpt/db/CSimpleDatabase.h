@@ -103,9 +103,9 @@ class CSimpleDatabaseTable : public mrpt::serialization::CSerializable
 
    private:
 	/** Field names */
-	vector_string field_names;
+	std::vector<std::string> field_names;
 	/** Data for each cell */
-	std::vector<vector_string> data;
+	std::vector<std::vector<std::string>> data;
 
 };  // end of class definition
 

@@ -101,7 +101,7 @@ class TSetOfMetricMapInitializers;
  *file format.
  *
  * \code
- * mrpt::utils::CConfigFile cfgFile("file.cfg");
+ * mrpt::config::CConfigFile cfgFile("file.cfg");
  * mrpt::maps::TSetOfMetricMapInitializers map_inits;
  * map_inits.loadFromConfigFile(cfgFile, "MapDefinition");
  *

@@ -44,7 +44,7 @@ class CFFMPEG_InputStream
 {
    private:
 	/** The internal ffmpeg state */
-	mrpt::utils::void_ptr_noncopy m_state;
+	mrpt::void_ptr_noncopy m_state;
 	/** The open URL */
 	std::string m_url;
 	bool m_grab_as_grayscale;

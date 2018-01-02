@@ -21,7 +21,7 @@ IMPLEMENT_APP(hmtMapViewerApp)
 // The file to open (from cmd line), or an empty string
 std::string global_fileToOpen;
 
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/hmtslam/CHMTSLAM.h>
 #include <mrpt/hmtslam/CRobotPosesGraph.h>

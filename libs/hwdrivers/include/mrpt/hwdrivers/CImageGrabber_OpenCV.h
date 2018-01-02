@@ -80,7 +80,7 @@ class CImageGrabber_OpenCV
 
 	/** Internal use:
 	  */
-	mrpt::utils::void_ptr_noncopy /*CvCapture*/ m_capture;
+	mrpt::void_ptr_noncopy /*CvCapture*/ m_capture;
 
    public:
 	/** Constructor for cameras:

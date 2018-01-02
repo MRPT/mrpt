@@ -300,7 +300,7 @@ void xRawLogViewerFrame::OnMenuRegenerateGPSTimestamps(wxCommandEvent& event)
 
 	wxBusyCursor waitCursor;
 
-	vector_string the_labels =
+	std::vector<std::string> the_labels =
 		AskForObservationByLabelMultiple("Choose the GPS(s) to consider:");
 
 	CVectorDouble time_changes;  // all the shifts

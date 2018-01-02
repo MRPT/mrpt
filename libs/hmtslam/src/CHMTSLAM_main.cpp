@@ -27,7 +27,7 @@
 #include "hmtslam-precomp.h"  // Precomp header
 
 #include <mrpt/utils/CFileStream.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/utils/CMemoryStream.h>
@@ -491,7 +491,7 @@ void CHMTSLAM::initializeEmptyMap()
 		// Create new list:
 		//  1: Occupancy Grid matching.
 		//  2: Cummins' image matching.
-		for (vector_string::const_iterator d = m_options.TLC_detectors.begin();
+		for (std::vector<std::string>::const_iterator d = m_options.TLC_detectors.begin();
 			 d != m_options.TLC_detectors.end(); ++d)
 			m_topLCdets.push_back(loopClosureDetector_factory(*d));
 	}

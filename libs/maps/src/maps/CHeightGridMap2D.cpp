@@ -10,7 +10,7 @@
 #include "maps-precomp.h"  // Precomp header
 
 #include <mrpt/maps/CHeightGridMap2D.h>
-#include <mrpt/utils/CConfigFileBase.h>  // MRPT_LOAD_CONFIG_VAR()
+#include <mrpt/config/CConfigFileBase.h>  // MRPT_LOAD_CONFIG_VAR()
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/opengl/CMesh.h>

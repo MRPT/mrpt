@@ -539,7 +539,7 @@ CFormEdit::~CFormEdit()
 }
 
 // Load the selected items from list box:
-void loadSelectionsFromListBox(vector_string& v, wxCheckListBox* c)
+void loadSelectionsFromListBox(std::vector<std::string>& v, wxCheckListBox* c)
 {
 	v.clear();
 	for (unsigned i = 0; i < c->GetCount(); i++)
@@ -651,7 +651,7 @@ void CFormEdit::OnbtnDelObsIndxClick(wxCommandEvent& event)
 }
 
 // Remove observations by class name:
-vector_string classNameOfObsToRemove;
+std::vector<std::string> classNameOfObsToRemove;
 
 void filter_delObsByClass(
 	mrpt::obs::CActionCollection* acts, mrpt::obs::CSensoryFrame* SF,
@@ -1138,7 +1138,7 @@ void CFormEdit::executeOperationOnRawlog(
 }
 
 // Remove observations by class name:
-vector_string labelOfObsToRemove;
+std::vector<std::string> labelOfObsToRemove;
 
 void filter_delObsByLabel(
 	mrpt::obs::CActionCollection* acts, mrpt::obs::CSensoryFrame* SF,

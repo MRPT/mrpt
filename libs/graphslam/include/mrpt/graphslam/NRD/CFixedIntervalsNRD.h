@@ -15,8 +15,8 @@
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/types_simple.h>
 
