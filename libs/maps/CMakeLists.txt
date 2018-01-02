@@ -23,7 +23,6 @@ define_mrpt_lib(
 	mrpt-graphs
 	# Deps of deps:
 	mrpt-opengl
-	mrpt-base
 	)
 
 IF(BUILD_mrpt-maps)

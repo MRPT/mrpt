@@ -14,8 +14,8 @@
 #
 #
 #   The libraries or "modules" which can be included are
-#   (see the full list and description in: http://www.mrpt.org/Libraries )
-#     - base           --> libmrpt-base
+#   (see the full list and description in: https://www.mrpt.org/Libraries )
+#     - poses          --> libmrpt-poses
 #     - opengl         --> libmrpt-opengl
 #     - hwdrivers      --> libmrpt-hwdrivers
 #     - nav            --> libmrpt-nav
@@ -137,7 +137,7 @@ SET(ALL_MRPT_LIBS "@ALL_MRPT_LIBS@")
 #  End of DECLARE_LIBS_HDR_ONLY
 
 # Add hierarchical dependencies of MRPT libraries,
-#  and replace "base"->"mrpt-base", etc.
+#  and replace "core"->"mrpt-core", etc.
 # ================================================
 SET(FINAL_LIST_COMPONENTS "")
 FOREACH(_MOD ${MRPT_FIND_COMPONENTS})

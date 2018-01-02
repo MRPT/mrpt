@@ -38,7 +38,6 @@ define_mrpt_lib(
 	mrpt-obs
 	# Deps of deps:
 	mrpt-opengl
-	mrpt-base
 	#mrpt-gui  # used to camera preview, etc. (only for debugging!)
 	mrpt-opengl  # needed by mrpt-gui
 	)

@@ -220,8 +220,8 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 			)
 	ENDIF ()
 
-	# Special case: embedded eigen3 as dep of "mrpt-base"
-	IF (EIGEN_USE_EMBEDDED_VERSION AND ${name} STREQUAL "base")
+	# Special case: embedded eigen3 as dep of "mrpt-math"
+	IF (EIGEN_USE_EMBEDDED_VERSION AND ${name} STREQUAL "math")
 		add_dependencies(mrpt-${name} EP_eigen3)
 	ENDIF()
 
@@ -339,7 +339,7 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 			SET(mrpt_pkgconfig_REQUIRES "${mrpt_pkgconfig_REQUIRES}${DEP}")
 		ENDFOREACH(DEP)
 
-		# Special case: For mrpt-base, mark "eigen3" as a pkg-config dependency only
+		# Special case: For mrpt-math, mark "eigen3" as a pkg-config dependency only
 		#  if we are instructed to do so: (EIGEN_USE_EMBEDDED_VERSION=OFF)
 		IF(NOT EIGEN_USE_EMBEDDED_VERSION)
 			SET(mrpt_pkgconfig_REQUIRES "${mrpt_pkgconfig_REQUIRES},eigen3")
