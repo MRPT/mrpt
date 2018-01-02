@@ -30,11 +30,7 @@ struct TPixelCoordf
 };
 
 /** Prints TPixelCoordf as "(x,y)" */
-inline std::ostream& operator<<(std::ostream& o, const TPixelCoordf& p)
-{
-	o << "(" << p.x << "," << p.y << ")";
-	return o;
-}
+std::ostream& operator<<(std::ostream& o, const TPixelCoordf& p);
 
 /** A pair (x,y) of pixel coordinates (integer resolution). */
 struct TPixelCoord
@@ -48,11 +44,7 @@ struct TPixelCoord
 };
 
 /** Prints TPixelCoord as "(x,y)" */
-inline std::ostream& operator<<(std::ostream& o, const TPixelCoord& p)
-{
-	o << "(" << p.x << "," << p.y << ")";
-	return o;
-}
+std::ostream& operator<<(std::ostream& o, const TPixelCoord& p);
 
 /** A type for image sizes. */
 using TImageSize = TPixelCoord;

@@ -12,7 +12,7 @@
 #include <mrpt/nav/reactive/CRobot2NavInterfaceForSimulator.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/kinematics/CVehicleSimul_DiffDriven.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/system/filesystem.h>
 #include <gtest/gtest.h>
 
@@ -41,7 +41,7 @@ void run_rnav_test(
 		return;
 	}
 
-	mrpt::utils::CConfigFile cfg(sFil);
+	mrpt::config::CConfigFile cfg(sFil);
 	cfg.write("CAbstractPTGBasedReactive", "holonomic_method", sHoloMethod);
 	cfg.discardSavingChanges();
 

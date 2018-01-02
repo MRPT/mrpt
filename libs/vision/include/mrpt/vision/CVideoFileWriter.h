@@ -44,7 +44,7 @@ class CVideoFileWriter
 {
    private:
 	/** A pointer to CvVideoWriter */
-	mrpt::utils::void_ptr_noncopy m_video;
+	mrpt::void_ptr_noncopy m_video;
 	/** A copy of the video size */
 	mrpt::utils::TImageSize m_img_size;
 

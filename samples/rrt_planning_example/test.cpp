@@ -11,7 +11,7 @@
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/system/filesystem.h>  // directoryExists(), ...
 #include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/random.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 
@@ -55,7 +55,7 @@ void TestRRT1()
 	mrpt::nav::PlannerRRT_SE2_TPS planner;
 
 	// Parameters:
-	planner.loadConfig(mrpt::utils::CConfigFile(myCfgFileName));
+	planner.loadConfig(mrpt::config::CConfigFile(myCfgFileName));
 
 	planner.params.maxLength = 2.0;
 	planner.params.minDistanceBetweenNewNodes = 0.10;

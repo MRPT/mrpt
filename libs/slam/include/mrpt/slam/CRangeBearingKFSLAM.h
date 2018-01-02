@@ -10,7 +10,7 @@
 #define CRangeBearingKFSLAM_H
 
 #include <mrpt/math/CMatrixTemplateNumeric.h>
-#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/bayes/CKalmanFilterCapable.h>
 

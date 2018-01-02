@@ -345,7 +345,7 @@ int CSimpleDatabaseTable::query(string field, string value) const
  ---------------------------------------------------------------*/
 size_t CSimpleDatabaseTable::appendRecord()
 {
-	vector_string new_rec;
+	std::vector<std::string> new_rec;
 
 	new_rec.resize(fieldsCount());
 	data.push_back(new_rec);
@@ -360,7 +360,7 @@ void CSimpleDatabaseTable::deleteRecord(size_t recordIndex)
 {
 	MRPT_START
 	ASSERT_(recordIndex < getRecordCount());
-	std::vector<vector_string>::iterator it = data.begin();
+	std::vector<std::vector<std::string>>::iterator it = data.begin();
 	std::advance(it, recordIndex);
 	data.erase(it);
 

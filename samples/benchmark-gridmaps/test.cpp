@@ -11,7 +11,7 @@
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CRawlog.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;

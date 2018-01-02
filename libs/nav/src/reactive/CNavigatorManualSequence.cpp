@@ -10,7 +10,7 @@
 #include "nav-precomp.h"  // Precomp header
 
 #include <mrpt/nav/reactive/CNavigatorManualSequence.h>
-#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/kinematics/CVehicleVelCmd_DiffDriven.h>
 #include <mrpt/kinematics/CVehicleVelCmd_Holo.h>
@@ -36,7 +36,7 @@ void CNavigatorManualSequence::loadConfigFile(
 	const std::string s = "CNavigatorManualSequence";
 
 	programmed_orders.clear();
-	mrpt::vector_string lstKeys;
+	mrpt::std::vector<std::string> lstKeys;
 	c.getAllKeys(s, lstKeys);
 
 	for (size_t i = 0; i < lstKeys.size(); i++)

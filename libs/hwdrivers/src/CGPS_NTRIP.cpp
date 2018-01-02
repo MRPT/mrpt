@@ -10,7 +10,7 @@
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
 #include <mrpt/hwdrivers/CGPS_NTRIP.h>
-#include <mrpt/utils/CConfigFilePrefixer.h>
+#include <mrpt/config/CConfigFilePrefixer.h>
 
 using namespace mrpt::hwdrivers;
 using namespace mrpt::obs;
@@ -68,10 +68,10 @@ void CGPS_NTRIP::loadConfig_sensorSpecific(
 	const mrpt::config::CConfigFileBase& cfg, const std::string& section)
 {
 	// Load GPS params:
-	gps.loadConfig(mrpt::utils::CConfigFilePrefixer(cfg, "", "gps_"), section);
+	gps.loadConfig(mrpt::config::CConfigFilePrefixer(cfg, "", "gps_"), section);
 	// NTRIP params:
 	ntrip.loadConfig(
-		mrpt::utils::CConfigFilePrefixer(cfg, "", "ntrip_"), section);
+		mrpt::config::CConfigFilePrefixer(cfg, "", "ntrip_"), section);
 
 	// Own params:
 	// (none yet)

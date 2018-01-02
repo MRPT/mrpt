@@ -17,7 +17,7 @@
 
 #include <mrpt/hwdrivers/CKinect.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/maps/CColouredOctoMap.h>
@@ -70,7 +70,7 @@ void thread_grabbing(TThreadParam& p)
 		if (mrpt::system::fileExists(cfgFile))
 		{
 			cout << "Loading calibration from: " << cfgFile << endl;
-			kinect.loadConfig(mrpt::utils::CConfigFile(cfgFile), "KINECT");
+			kinect.loadConfig(mrpt::config::CConfigFile(cfgFile), "KINECT");
 		}
 		else
 			cerr << "Warning: Calibration file [" << cfgFile

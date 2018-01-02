@@ -13,7 +13,7 @@
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>
 #include <mrpt/obs/CObservationGPS.h>
-#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/utils/TEnumType.h>
 
 namespace mrpt

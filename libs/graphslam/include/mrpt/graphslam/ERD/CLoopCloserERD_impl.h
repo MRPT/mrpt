@@ -2395,7 +2395,7 @@ void CLoopCloserERD<GRAPH_T>::loadParams(const std::string& source_fname)
 	m_lc_params.loadFromConfigFileName(
 		source_fname, "EdgeRegistrationDeciderParameters");
 
-	mrpt::utils::CConfigFile source(source_fname);
+	mrpt::config::CConfigFile source(source_fname);
 
 	m_consec_icp_constraint_factor = source.read_double(
 		"EdgeRegistrationDeciderParameters", "consec_icp_constraint_factor",

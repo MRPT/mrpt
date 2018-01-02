@@ -9,7 +9,7 @@
 
 #include <mrpt/hwdrivers/CBoardSonars.h>
 #include <mrpt/system/CTicTac.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/gui/CDisplayWindow3D.h>

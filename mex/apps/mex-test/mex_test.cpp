@@ -8,7 +8,7 @@
   -----------------------------------------------------------------------------*/
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/utils/round.h>

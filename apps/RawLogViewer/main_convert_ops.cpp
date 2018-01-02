@@ -900,7 +900,7 @@ void xRawLogViewerFrame::OnMenuShiftTimestampsByLabel(wxCommandEvent& event)
 		_("The timestamps of all the observations of a given sensor label will "
 		  "be shifted a given number of seconds. Press OK to continue."));
 
-	vector_string the_labels =
+	std::vector<std::string> the_labels =
 		AskForObservationByLabelMultiple("Choose the sensor(s):");
 	if (the_labels.empty()) return;
 

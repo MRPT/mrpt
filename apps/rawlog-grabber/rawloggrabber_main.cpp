@@ -17,7 +17,7 @@
   -----------------------------------------------------------------------------*/
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/utils/round.h>
@@ -156,12 +156,12 @@ int main(int argc, char** argv)
 		// ----------------------------------------------
 		// Launch threads:
 		// ----------------------------------------------
-		vector_string sections;
+		std::vector<std::string> sections;
 		iniFile.getAllSections(sections);
 
 		vector<std::thread> lstThreads;
 
-		for (vector_string::iterator it = sections.begin();
+		for (std::vector<std::string>::iterator it = sections.begin();
 			 it != sections.end(); ++it)
 		{
 			if (*it == GLOBAL_SECTION_NAME || it->empty() ||

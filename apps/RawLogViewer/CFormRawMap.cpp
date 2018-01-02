@@ -1375,7 +1375,7 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
 	// Save other sensors GT predicted path
 	// ---------------------------------------------
 	{
-		vector_string the_labels =
+		std::vector<std::string> the_labels =
 			theMainWindow->AskForObservationByLabelMultiple(
 				"Choose additional sensors to export GT path:");
 		if (the_labels.size() == 0) return;
@@ -1406,7 +1406,7 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
 
 		ASSERT_(COV_sensor_local.rows() == 6 && COV_sensor_local.isSquare());
 
-		vector_string::iterator itStr;
+		std::vector<std::string>::iterator itStr;
 		std::vector<FILE*> outFiles(the_labels.size());
 		std::vector<FILE*>::iterator itOutFiles;
 

@@ -34,7 +34,7 @@ namespace nav
 * mrpt::nav::PlannerRRT_SE2_TPS  planner;
 *
 * // Set or load planner parameters:
-* //planner.loadConfig( mrpt::utils::CConfigFile("config_file.cfg") );
+* //planner.loadConfig( mrpt::config::CConfigFile("config_file.cfg") );
 * //planner.params.... // See RRTAlgorithmParams
 *
 * // Set RRT end criteria (when to stop searching for a solution)

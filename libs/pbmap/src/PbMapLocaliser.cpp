@@ -19,7 +19,7 @@
 #include <mrpt/pbmap/PbMapLocaliser.h>
 #include <mrpt/pbmap/SubgraphMatcher.h>
 #include <mrpt/pbmap/heuristicParams.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/common/time.h>
 #include <fstream>

@@ -23,6 +23,7 @@
 #include <mrpt/system/memory.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/serialization/CArchive.h>
+#include <iostream>
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>
@@ -2835,4 +2836,15 @@ bool CImage::loadTGA(
 #else
 	return false;
 #endif  // MRPT_HAS_OPENCV
+}
+
+std::ostream& mrpt::img::operator<<(std::ostream& o, const TPixelCoordf& p)
+{
+	o << "(" << p.x << "," << p.y << ")";
+	return o;
+}
+std::ostream& mrpt::img::operator<<(std::ostream& o, const TPixelCoord& p)
+{
+	o << "(" << p.x << "," << p.y << ")";
+	return o;
 }

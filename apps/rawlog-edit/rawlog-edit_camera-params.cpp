@@ -10,7 +10,7 @@
 #include "rawlog-edit-declarations.h"
 #include <mrpt/img/TCamera.h>
 #include <mrpt/img/TStereoCamera.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 

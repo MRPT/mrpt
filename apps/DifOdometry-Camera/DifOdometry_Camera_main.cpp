@@ -9,8 +9,8 @@
 
 #include "DifOdometry_Camera.h"
 #include <mrpt/system/os.h>
-#include <mrpt/utils/CConfigFileMemory.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/config/CConfigFile.h>
 
 using namespace std;
 using namespace mrpt;

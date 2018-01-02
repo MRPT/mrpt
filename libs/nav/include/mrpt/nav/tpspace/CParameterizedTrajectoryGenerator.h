@@ -11,7 +11,7 @@
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/core/round.h>
-#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/math/CPolygon.h>
 #include <cstdint>

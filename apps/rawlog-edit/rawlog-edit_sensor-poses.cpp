@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "rawlog-edit-declarations.h"
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -62,10 +62,10 @@ DECLARE_OP_FUNCTION(op_sensors_pose)
 			// make a list  "sensor_label -> sensor_pose" by parsing the
 			// ini-file:
 
-			vector_string sections;
+			std::vector<std::string> sections;
 			cfg.getAllSections(sections);
 
-			for (vector_string::iterator it = sections.begin();
+			for (std::vector<std::string>::iterator it = sections.begin();
 				 it != sections.end(); ++it)
 			{
 				if (it->empty()) continue;

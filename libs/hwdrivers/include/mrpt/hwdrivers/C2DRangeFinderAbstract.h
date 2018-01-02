@@ -12,7 +12,7 @@
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/COutputLogger.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
-#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/gui/CDisplayWindow3D.h>

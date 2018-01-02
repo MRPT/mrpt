@@ -11,7 +11,7 @@
 
 #include <mrpt/nav/reactive/CAbstractNavigator.h>
 #include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/utils/CConfigFileMemory.h>
+#include <mrpt/config/CConfigFileMemory.h>
 #include <limits>
 #include <typeinfo>
 
@@ -165,7 +165,7 @@ void CAbstractNavigator::loadConfigFile(const mrpt::config::CConfigFileBase& c)
 	// At this point, all derived classes have already loaded their parameters.
 	// Dump them to debug output:
 	{
-		mrpt::utils::CConfigFileMemory cfg_mem;
+		mrpt::config::CConfigFileMemory cfg_mem;
 		this->saveConfigFile(cfg_mem);
 		MRPT_LOG_INFO(cfg_mem.getContent());
 	}

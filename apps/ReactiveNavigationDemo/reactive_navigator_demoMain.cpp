@@ -28,7 +28,7 @@
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
-#include <mrpt/utils/CConfigFilePrefixer.h>
+#include <mrpt/config/CConfigFilePrefixer.h>
 #include "imgs/main_icon.xpm"
 #include "../wx-common/mrpt_logo.xpm"
 
@@ -1149,7 +1149,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 	// Retrieve default parameters for holonomic methods:
 	// ------------------------------------------------------
 	{
-		mrpt::utils::CConfigFileMemory cfg;
+		mrpt::config::CConfigFileMemory cfg;
 
 		m_simul_options.saveToConfigFile(cfg, "SIMULATOR");
 		edParamsGeneral->SetValue(_U(cfg.getContent().c_str()));
@@ -1343,7 +1343,7 @@ bool reactive_navigator_demoframe::reinitSimulator()
 	};
 
 	{
-		mrpt::utils::CConfigFilePrefixer cfg_prefixer;
+		mrpt::config::CConfigFilePrefixer cfg_prefixer;
 		cfg_prefixer.bind(cfg);
 		cfg_prefixer.setPrefixes(sKinPrefix /*sections*/, "" /*keys*/);
 
@@ -2293,7 +2293,7 @@ void reactive_navigator_demoframe::OnbtnGenerateTemplateClick(
 
 	mrpt::nav::CReactiveNavigationSystem react(*m_robotSimul2NavInterface);
 
-	mrpt::utils::CConfigFileMemory cfgMem;
+	mrpt::config::CConfigFileMemory cfgMem;
 	react.saveConfigFile(cfgMem);
 	edParamsReactive->SetValue(_U(cfgMem.getContent().c_str()));
 

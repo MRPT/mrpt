@@ -242,7 +242,7 @@ evaluation of mathematical expressions, under `<mrpt/otherlibs/exprtk.hpp>`
 			- Safer CClassRegistry: detect and warn on attempts to duplicated
 class registration.
 			- New class mrpt::math::CRuntimeCompiledExpression
-			- mrpt::utils::CConfigFile and mrpt::utils::CConfigFileMemory now
+			- mrpt::config::CConfigFile and mrpt::config::CConfigFileMemory now
 can parse config files with end-of-line backslash to split long strings into
 several lines.
 			- New class mrpt::poses::FrameTransformer
@@ -890,7 +890,7 @@ This change justifies the new minor version series 1.2.X.
 			- [mrpt-base]
 				- mrpt::math::ContainerType<CONTAINER>::element_t to allow
 handling either Eigen or STL containers seamlessly.
-				- mrpt::utils::CConfigFilePrefixer
+				- mrpt::config::CConfigFilePrefixer
 			- [mrpt-hwdrivers]
 				- mrpt::hwdrivers::COpenNI2Sensor: Interface to OpenNI2 cameras,
 capable of reading from an array of OpenNI2 RGBD cameras (By Eduardo Fernandez)

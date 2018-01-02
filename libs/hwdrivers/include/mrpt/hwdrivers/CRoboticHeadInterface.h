@@ -14,7 +14,7 @@
 #include <mrpt/utils/CMessage.h>
 #include <mrpt/math/CMatrixTemplate.h>
 #include <mrpt/utils/COutputLogger.h>
-#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/obs/CObservationRange.h>
 
 namespace mrpt

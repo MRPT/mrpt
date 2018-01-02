@@ -577,7 +577,7 @@ bool CRawlog::getActionObservationPair(
 void CRawlog::getCommentText(std::string& t) const { t = m_commentTexts.text; }
 std::string CRawlog::getCommentText() const { return m_commentTexts.text; }
 void CRawlog::getCommentTextAsConfigFile(
-	mrpt::utils::CConfigFileMemory& memCfg) const
+	mrpt::config::CConfigFileMemory& memCfg) const
 {
 	memCfg.setContent(m_commentTexts.text);
 }

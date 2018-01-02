@@ -13,7 +13,7 @@
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CObservationComment.h>
-#include <mrpt/utils/CConfigFileMemory.h>
+#include <mrpt/config/CConfigFileMemory.h>
 
 namespace mrpt
 {
@@ -87,7 +87,7 @@ class CRawlog : public mrpt::serialization::CSerializable
 	/** Saves the block of comment text for the rawlog into the passed config
 	 * file object. */
 	void getCommentTextAsConfigFile(
-		mrpt::utils::CConfigFileMemory& memCfg) const;
+		mrpt::config::CConfigFileMemory& memCfg) const;
 
 	/** The type of each entry in a rawlog.
 	  * \sa CRawlog::getType

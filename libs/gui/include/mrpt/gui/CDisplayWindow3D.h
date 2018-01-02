@@ -133,8 +133,8 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 	/** Throws an exception on initialization error */
 	void createOpenGLContext();
 
-	mrpt::utils::void_ptr_noncopy m_DisplayDeviceContext;
-	mrpt::utils::void_ptr_noncopy m_GLRenderingContext;
+	mrpt::void_ptr_noncopy m_DisplayDeviceContext;
+	mrpt::void_ptr_noncopy m_GLRenderingContext;
 
 	std::string m_grab_imgs_prefix;
 	unsigned int m_grab_imgs_idx;

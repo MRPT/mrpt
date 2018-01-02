@@ -10,7 +10,7 @@
 #ifndef CGenericSensor_H
 #define CGenericSensor_H
 
-#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/obs/CObservation.h>
 #include <map>
 #include <mutex>

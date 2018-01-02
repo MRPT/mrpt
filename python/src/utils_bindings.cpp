@@ -15,8 +15,8 @@
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CStdOutStream.h>
 #include <mrpt/serialization/CSerializable.h>
-#include <mrpt/utils/CConfigFileBase.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/utils/CLoadableOptions.h>
 
 /* STD */

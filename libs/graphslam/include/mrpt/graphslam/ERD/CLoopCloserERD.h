@@ -16,8 +16,8 @@
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/utils/stl_containers_utils.h>
 #include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/utils/types_simple.h>
 #include <mrpt/img/TColor.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>

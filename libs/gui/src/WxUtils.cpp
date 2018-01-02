@@ -19,7 +19,6 @@
 
 using namespace mrpt;
 using namespace mrpt::gui;
-using namespace mrpt::utils;
 using namespace std;
 
 //------------------------------------------------------------------------
@@ -928,13 +927,13 @@ void CPanelCameraSelection::writeConfigFromVideoSourcePanel(
 		case 2:
 		{
 			// Replicate the config sections in "edCustomCamConfig" into "cfg":
-			mrpt::utils::CConfigFileMemory cfgIn(
+			mrpt::config::CConfigFileMemory cfgIn(
 				string(edCustomCamConfig->GetValue().mb_str()));
-			vector_string allSects;
+			std::vector<std::string> allSects;
 			cfgIn.getAllSections(allSects);
 			for (size_t idxSect = 0; idxSect < allSects.size(); idxSect++)
 			{
-				vector_string keys;
+				std::vector<std::string> keys;
 				cfgIn.getAllKeys(allSects[idxSect], keys);
 				for (size_t i = 0; i < keys.size(); i++)
 					cfg->write(
@@ -969,7 +968,8 @@ void CPanelCameraSelection::writeConfigFromVideoSourcePanel(
 			if (!rawlog_lb.empty())
 				cfg->write(sect, "rawlog_camera_sensor_label", rawlog_lb);
 
-			CImage::setImagesPathBase(string(this->edRawlogImgDir->GetValue().mb_str()));
+			CImage::setImagesPathBase(
+				string(this->edRawlogImgDir->GetValue().mb_str()));
 		}
 		break;
 

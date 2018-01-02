@@ -255,7 +255,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>New function <a class="el" href="namespacemrpt_1_1rtti.html#a7ef4d778c0c36d67ae1f2f2f3d1b4e98" title="Like getAllRegisteredClasses(), but filters the list to only include children clases of a given base ...">mrpt::utils::getAllRegisteredClassesChildrenOf()</a></li>
 <li>Safer CClassRegistry: detect and warn on attempts to duplicated class registration.</li>
 <li>New class mrpt::math::CRuntimeCompiledExpression</li>
-<li><a class="el" href="namespacemrpt_1_1utils.html#a239100ac19d25043fda2e8aac618b84a">mrpt::utils::CConfigFile</a> and <a class="el" href="namespacemrpt_1_1utils.html#aa8a43e277b89a9fea4cff81566e56a95">mrpt::utils::CConfigFileMemory</a> now can parse config files with end-of-line backslash to split long strings into several lines.</li>
+<li><a class="el" href="namespacemrpt_1_1utils.html#a239100ac19d25043fda2e8aac618b84a">mrpt::config::CConfigFile</a> and <a class="el" href="namespacemrpt_1_1utils.html#aa8a43e277b89a9fea4cff81566e56a95">mrpt::config::CConfigFileMemory</a> now can parse config files with end-of-line backslash to split long strings into several lines.</li>
 <li>New class <a class="el" href="classmrpt_1_1poses_1_1_frame_transformer.html" title="See docs in FrameTransformerInterface. ">mrpt::poses::FrameTransformer</a></li>
 <li><a class="el" href="namespacemrpt_1_1poses.html" title="Classes for 2D/3D geometry representation, both of single values and probability density distribution...">mrpt::poses</a> classes now have all their constructors from <a class="el" href="namespacemrpt_1_1math.html" title="This base provides a set of functions for maths stuff. ">mrpt::math</a> types marked as explicit, to avoid potential ambiguities and unnoticed conversions.</li>
 <li><a href="https://github.com/strasdat/Sophus/">Sophus</a> is now used internally for some Lie Algebra methods, and also exposed to the user as <code>#include &lt;mrpt/otherlibs/sophus/so3.hpp&gt;</code>, etc. as part of mrpt-base</li>
@@ -832,7 +832,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>New classes:<ul>
 <li>[mrpt-base]<ul>
 <li><a class="el" href="structmrpt_1_1math_1_1_container_type.html#a1a26e8f1f219650b346a0a9ebb67ed69">mrpt::math::ContainerType&lt;CONTAINER&gt;::element_t</a> to allow handling either <a class="el" href="namespace_eigen.html">Eigen</a> or STL containers seamlessly.</li>
-<li>mrpt::utils::CConfigFilePrefixer</li>
+<li>mrpt::config::CConfigFilePrefixer</li>
 </ul>
 </li>
 <li>[mrpt-hwdrivers]<ul>

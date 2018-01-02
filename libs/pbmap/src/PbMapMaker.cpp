@@ -30,7 +30,7 @@
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/common/transforms.h>
 #include <pcl/common/time.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/pbmap/PbMapMaker.h>
 
 #include <iostream>
@@ -116,7 +116,7 @@ struct config_pbmap
 
 void readConfigFile(const string& config_file_name)
 {
-	mrpt::utils::CConfigFile config_file(config_file_name);
+	mrpt::config::CConfigFile config_file(config_file_name);
 
 	// Plane segmentation
 	configPbMap.dist_threshold = config_file.read_float(

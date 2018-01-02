@@ -229,8 +229,8 @@ void CMeshFast::updateColorsMatrix() const
 
 	if (m_isImage)
 	{
-		const auto cols = m_textureImage.getWidth();
-		const auto rows = m_textureImage.getHeight();
+		const int cols = m_textureImage.getWidth();
+		const int rows = m_textureImage.getHeight();
 
 		if ((cols != Z.cols()) || (rows != Z.rows()))
 		{

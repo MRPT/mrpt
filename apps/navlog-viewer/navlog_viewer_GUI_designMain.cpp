@@ -31,8 +31,8 @@
 
 #include <mrpt/system.h>
 #include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CConfigFileMemory.h>
-#include <mrpt/utils/CConfigFilePrefixer.h>
+#include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/config/CConfigFilePrefixer.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/math/geometry.h>  // intersect()
@@ -1665,7 +1665,7 @@ void navlog_viewer_GUI_designDialog::OnmnuSeePTGParamsSelected(
 	WX_START_TRY
 
 	const std::string sSection = "PTG_PARAMS";
-	mrpt::utils::CConfigFileMemory cfg;
+	mrpt::config::CConfigFileMemory cfg;
 
 	cfg.write(sSection, "PTG_COUNT", m_logdata_ptg_paths.size());
 

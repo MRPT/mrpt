@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/system/filesystem.h>
 #include <gtest/gtest.h>
 
@@ -33,7 +33,7 @@ TEST(NavTests, PTGs_tests)
 		return;
 	}
 
-	mrpt::utils::CConfigFile cfg(sFil);
+	mrpt::config::CConfigFile cfg(sFil);
 
 	const unsigned int PTG_COUNT =
 		cfg.read_int("PTG_UNIT_TESTS", "PTG_COUNT", 0, true);

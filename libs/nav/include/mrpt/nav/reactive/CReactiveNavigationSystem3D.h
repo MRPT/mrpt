@@ -69,7 +69,7 @@ struct TRobotShape
 * This class requires a number of parameters which are usually provided via an
 * external config (".ini") file.
 * Alternatively, a memory-only object can be used to avoid physical files, see
-* mrpt::utils::CConfigFileMemory.
+* mrpt::config::CConfigFileMemory.
 *
 * A template config file can be generated at any moment by the user by calling
 * saveConfigFile() with a default-constructed object.
