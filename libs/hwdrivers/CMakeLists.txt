@@ -143,7 +143,6 @@ define_mrpt_lib(
 	# Lib name
 	hwdrivers
 	# Dependencies
-	mrpt-base
 	mrpt-comms # serial ports, etc.
 	mrpt-maps  # used to laser preview, etc.
 	mrpt-obs

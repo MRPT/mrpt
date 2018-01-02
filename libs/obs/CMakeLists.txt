@@ -16,10 +16,10 @@ LIST(APPEND obs_EXTRA_SRCS_NAME
 	"back-compat-hdrs")
 
 # Minimal XMLParser:
-INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/base/src/utils/")  # Notice the "src", not "include": these are private hdrs
-IF (WIN32 AND BUILD_SHARED_LIBS)  # No need to reinclude these sources (already in mrpt-base) if building static libs or if in GCC
-	LIST(APPEND obs_EXTRA_SRCS		"${MRPT_LIBS_ROOT}/base/src/utils/xmlparser/*.cpp" "${MRPT_LIBS_ROOT}/base/src/utils/xmlparser/*.h")
-	LIST(APPEND obs_EXTRA_SRCS_NAME 	"utils/xmlparser" "utils/xmlparser")
+INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/db/src/")  # Notice the "src", not "include": these are private hdrs
+IF (WIN32 AND BUILD_SHARED_LIBS)  # No need to reinclude these sources (already in mrpt-db) if building static libs or if in GCC
+	LIST(APPEND obs_EXTRA_SRCS		"${MRPT_LIBS_ROOT}/db/src/xmlparser/*.cpp" "${MRPT_LIBS_ROOT}/db/src/xmlparser/*.h")
+	LIST(APPEND obs_EXTRA_SRCS_NAME 	"db/xmlparser" "db/xmlparser")
 	SET(OBS_HAS_LOCAL_XMLPARSER 1)
 ENDIF()
 
@@ -32,6 +32,7 @@ define_mrpt_lib(
 	# Dependencies
 	mrpt-opengl
 	mrpt-poses
+	mrpt-db # xmlparser
 	)
 
 IF(BUILD_mrpt-obs)

@@ -14,7 +14,7 @@ define_mrpt_lib(
 	mrpt-gui
 	mrpt-slam
 	# And deps of the deps:
-	mrpt-base
+	mrpt-poses
 	mrpt-opengl
 	mrpt-obs
 	mrpt-graphs

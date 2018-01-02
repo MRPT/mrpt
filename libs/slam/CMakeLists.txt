@@ -25,9 +25,8 @@ define_mrpt_lib(
 	# And deps of the deps:
 	mrpt-obs
 	mrpt-opengl
-	mrpt-base
 	)
 
 IF(BUILD_mrpt-slam)
 
-ENDIF() 
+ENDIF()

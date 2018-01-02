@@ -29,6 +29,4 @@ define_mrpt_lib(
 	mrpt-graphs  # dep of mrpt-maps
 	mrpt-obs
 	mrpt-opengl
-	mrpt-base
 	)
-
