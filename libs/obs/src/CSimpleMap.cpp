@@ -26,51 +26,38 @@ using namespace mrpt::utils::metaprogramming;
 
 IMPLEMENTS_SERIALIZABLE(CSimpleMap, CSerializable, mrpt::maps)
 
-/*---------------------------------------------------------------
-						Constructor
-  ---------------------------------------------------------------*/
+const auto fn_pair_make_unique = [auto &ptr](){
+	ptr.first.reset(
+		dynamic_cast<typename T::first_type::element_type*>(
+			ptr.first->clone()));
+	ptr.second.reset(
+		dynamic_cast<typename T::second_type::element_type*>(
+			ptr.first->clone()));
+};
+
 CSimpleMap::CSimpleMap() : m_posesObsPairs() {}
-/*---------------------------------------------------------------
-					Copy
-  ---------------------------------------------------------------*/
 CSimpleMap::CSimpleMap(const CSimpleMap& o) : m_posesObsPairs(o.m_posesObsPairs)
 {
 	for_each(
-		m_posesObsPairs.begin(), m_posesObsPairs.end(), ObjectPairMakeUnique());
+		m_posesObsPairs.begin(), m_posesObsPairs.end(), fn_pair_make_unique);
 }
 
-/*---------------------------------------------------------------
-					Copy
-  ---------------------------------------------------------------*/
 CSimpleMap& CSimpleMap::operator=(const CSimpleMap& o)
 {
 	MRPT_START
-
-	// TPosePDFSensFramePair	pair;
-
 	if (this == &o) return *this;  // It may be used sometimes
 
 	m_posesObsPairs = o.m_posesObsPairs;
 	for_each(
-		m_posesObsPairs.begin(), m_posesObsPairs.end(), ObjectPairMakeUnique());
+		m_posesObsPairs.begin(), m_posesObsPairs.end(), fn_pair_make_unique);
 
 	return *this;
-
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-						size
-  ---------------------------------------------------------------*/
 size_t CSimpleMap::size() const { return m_posesObsPairs.size(); }
 bool CSimpleMap::empty() const { return m_posesObsPairs.empty(); }
-/*---------------------------------------------------------------
-						clear
-  ---------------------------------------------------------------*/
 void CSimpleMap::clear() { m_posesObsPairs.clear(); }
-/*---------------------------------------------------------------
-						Destructor
-  ---------------------------------------------------------------*/
 CSimpleMap::~CSimpleMap() { clear(); }
 /*---------------------------------------------------------------
 							get const

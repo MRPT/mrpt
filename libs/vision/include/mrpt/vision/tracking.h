@@ -17,9 +17,6 @@
 #include <mrpt/img/CImage.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/TParameters.h>
-
-#include <mrpt/utils/metaprogramming.h>
-
 #include <memory>  // for unique_ptr
 
 namespace mrpt
@@ -209,7 +206,7 @@ struct CGenericFeatureTracker
 		out_featureList = in_featureList;
 		std::for_each(
 			out_featureList.begin(), out_featureList.end(),
-			mrpt::utils::metaprogramming::ObjectMakeUnique());
+			[](auto &ptr){ptr.reset(dynamic_cast<typename T::element_type*>(ptr->clone()))});
 		this->trackFeatures(old_img, new_img, out_featureList);
 	}
 

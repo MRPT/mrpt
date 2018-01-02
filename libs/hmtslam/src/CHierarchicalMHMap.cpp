@@ -33,21 +33,8 @@ CHierarchicalMHMap::~CHierarchicalMHMap() { clear(); }
   ---------------------------------------------------------------*/
 void CHierarchicalMHMap::clear()
 {
-	// Remaining arcs and nodes will be deleted now
-	// A delicate issue; we must:
-	// 1) .clear() all the smart pointers
-	// 2) then, empty the list of nodes/arcs, which will only
-	//     contain empty smart pointers, thus will not raise callbacks again.
-	// ----------------------------------------------------------------
-	TNodeList nodes = m_nodes;
-	TArcList arcs = m_arcs;
-
-	// 1:
-	std::for_each(
-		nodes.begin(), nodes.end(), metaprogramming::ObjectClearSecond());
-	std::for_each(arcs.begin(), arcs.end(), metaprogramming::ObjectClear2());
-
-	// 2:
+	// Remaining arcs and nodes will be deleted.
+	// Using smart ptr makes this simple:
 	m_nodes.clear();
 	m_arcs.clear();
 }

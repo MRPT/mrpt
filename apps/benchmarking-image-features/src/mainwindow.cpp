@@ -345,10 +345,7 @@ void MainWindow::on_button_generate_clicked()
 			case 7:  // descLATCH
 			{
 				vector<uint8_t> v1, v2;
-				vector<float> v1_surf,
-					v2_surf;  // since SURF descriptors are floating numbers
-				// mrpt::utils::metaprogramming::copy_container_typecasting(featsImage1[i1]->descriptors.SIFT,
-				// v1);
+				vector<float> v1_surf, v2_surf;
 
 				if (descriptor_selected == 0)
 					v1 = featsImage1[i1]->descriptors.SIFT;

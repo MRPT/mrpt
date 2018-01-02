@@ -12,14 +12,12 @@
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/maps/CMultiMetricMap.h>
-#include <mrpt/utils/metaprogramming.h>
 #include <mrpt/utils/CStream.h>
 
 using namespace mrpt::maps;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::obs;
-using namespace mrpt::utils::metaprogramming;
 
 IMPLEMENTS_SERIALIZABLE(CMultiMetricMap, CMetricMap, mrpt::maps)
 
@@ -248,50 +246,29 @@ void CMultiMetricMap::setListOfMaps(
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-					clear
-  ---------------------------------------------------------------*/
 void CMultiMetricMap::internal_clear()
 {
-	ObjectClear op;
-	MapExecutor::run(*this, op);
+	MapExecutor::run(*this, [](auto &ptr){if (ptr) ptr->clear()});
 }
 
-// Deletes all maps and clears the internal lists of maps (with reset(), so user
-// copies remain alive)
 void CMultiMetricMap::deleteAllMaps()
 {
-	// Clear smart pointers:
-	ObjectClearUnique<mrpt::utils::poly_ptr_ptr<mrpt::maps::CMetricMap::Ptr>>
-		op_reset;
-	MapExecutor::run(*this, op_reset);
-
 	// Clear list:
 	maps.clear();
 	m_ID = 0;
 }
 
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-uint8_t CMultiMetricMap::serializeGetVersion() const { return XX; } void CMultiMetricMap::serializeTo(
+uint8_t CMultiMetricMap::serializeGetVersion() const { return 11; }
+void CMultiMetricMap::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
-	if (version)
-		*version = 11;
-	else
-	{
-		// Version 11: simply the list of maps:
-		out << static_cast<uint32_t>(m_ID);
+	// Version 11: simply the list of maps:
+	out << static_cast<uint32_t>(m_ID);
 
-		const uint32_t n = static_cast<uint32_t>(maps.size());
-		for (uint32_t i = 0; i < n; i++) out << *maps[i];
-	}
+	const uint32_t n = static_cast<uint32_t>(maps.size());
+	for (uint32_t i = 0; i < n; i++) out << *maps[i];
 }
 
-/*---------------------------------------------------------------
-  Implements the reading from a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
 void CMultiMetricMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
