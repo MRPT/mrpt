@@ -13,7 +13,7 @@
 #include <mrpt/hwdrivers/CCameraSensor.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/utils/CTypeSelector.h>
+#include <mrpt/containers/CTypeSelector.h>
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/obs/CSensoryFrame.h>
@@ -109,7 +109,7 @@ void CCameraSensor::initialize()
 	if (m_grabber_type == "opencv")
 	{
 		// OpenCV driver:
-		mrpt::utils::CTypeSelector camera_type(
+		mrpt::containers::CTypeSelector camera_type(
 			"CAMERA_CV_AUTODETECT,CAMERA_CV_DC1394,CAMERA_CV_VFL,CAMERA_CV_VFW,"
 			"CAMERA_CV_MIL",
 			"CAMERA_CV_AUTODETECT");

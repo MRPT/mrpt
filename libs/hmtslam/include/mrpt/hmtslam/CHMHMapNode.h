@@ -15,7 +15,7 @@
 
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/utils/CMHPropertiesValuesList.h>
-#include <mrpt/utils/CTypeSelector.h>
+#include <mrpt/containers/CTypeSelector.h>
 #include <map>
 
 namespace mrpt
