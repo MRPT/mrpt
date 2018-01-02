@@ -14,11 +14,11 @@ namespace mrpt
 {
 /** A wrapper class for pointers that can be safely copied with "=" operator
  * without problems.
-  * This class does not keep any reference count nor automatically destroy the
+ * This class does not keep any reference count nor automatically destroy the
  * pointed data.
-  * \sa CReferencedMemBlock, safe_ptr, non_copiable_ptr, copiable_NULL_ptr
-  * \ingroup mrpt_core_grp
-  */
+ * \sa safe_ptr, non_copiable_ptr, copiable_NULL_ptr
+ * \ingroup mrpt_core_grp
+ */
 template <class T>
 struct safe_ptr_basic
 {
@@ -62,11 +62,11 @@ struct safe_ptr_basic
 
 /** A wrapper class for pointers that can be safely copied with "=" operator
  * without problems.
-  * This class does not keep any reference count nor automatically destroy the
+ * This class does not keep any reference count nor automatically destroy the
  * pointed data.
-  * \sa CReferencedMemBlock, safe_ptr, non_copiable_ptr, copiable_NULL_ptr
-  * \ingroup mrpt_core_grp
-  */
+ * \sa safe_ptr, non_copiable_ptr, copiable_NULL_ptr
+ * \ingroup mrpt_core_grp
+ */
 template <class T>
 struct safe_ptr : safe_ptr_basic<T>
 {
@@ -100,9 +100,9 @@ struct safe_ptr : safe_ptr_basic<T>
 
 /** A wrapper class for pointers that can NOT be copied with "=" operator,
  * raising an exception at runtime if a copy is attempted.
-  * \sa CReferencedMemBlock, safe_ptr, non_copiable_ptr, copiable_NULL_ptr
-  * \ingroup mrpt_core_grp
-  */
+ * \sa safe_ptr, non_copiable_ptr, copiable_NULL_ptr
+ * \ingroup mrpt_core_grp
+ */
 template <class T>
 struct non_copiable_ptr_basic
 {
@@ -160,9 +160,9 @@ struct non_copiable_ptr_basic
 
 /** A wrapper class for pointers that can NOT be copied with "=" operator,
  * raising an exception at runtime if a copy is attempted.
-  * \sa CReferencedMemBlock, safe_ptr, non_copiable_ptr, copiable_NULL_ptr
-  * \ingroup mrpt_core_grp
-  */
+ * \sa safe_ptr, non_copiable_ptr, copiable_NULL_ptr
+ * \ingroup mrpt_core_grp
+ */
 template <class T>
 struct non_copiable_ptr : non_copiable_ptr_basic<T>
 {
@@ -211,11 +211,11 @@ struct non_copiable_ptr : non_copiable_ptr_basic<T>
 /** A wrapper class for pointers whose copy operations from other objects of the
  * same type are ignored, that is, doing "a=b;" has no effect neiter on "a" or
  * "b".
-  * In turn, assigning a pointer with a direct "=" operation from a plain "T*"
+ * In turn, assigning a pointer with a direct "=" operation from a plain "T*"
  * type is permited.
-  * \sa CReferencedMemBlock, safe_ptr, non_copiable_ptr, copiable_NULL_ptr
-  * \ingroup mrpt_core_grp
-  */
+ * \sa safe_ptr, non_copiable_ptr, copiable_NULL_ptr
+ * \ingroup mrpt_core_grp
+ */
 template <class T>
 struct ignored_copy_ptr
 {
@@ -258,9 +258,9 @@ struct ignored_copy_ptr
 
 /** A wrapper class for pointers that, if copied with the "=" operator, should
  * be set to nullptr in the copy.
-  * \sa CReferencedMemBlock, safe_ptr, non_copiable_ptr, copiable_NULL_ptr
-  * \ingroup mrpt_core_grp
-  */
+ * \sa safe_ptr, non_copiable_ptr, copiable_NULL_ptr
+ * \ingroup mrpt_core_grp
+ */
 template <class T>
 struct copiable_NULL_ptr_basic
 {
@@ -311,9 +311,9 @@ struct copiable_NULL_ptr_basic
 
 /** A wrapper class for pointers that, if copied with the "=" operator, should
  * be set to nullptr in the new copy.
-  * \sa CReferencedMemBlock, safe_ptr, non_copiable_ptr, copiable_NULL_ptr
-  * \ingroup mrpt_core_grp
-  */
+ * \sa safe_ptr, non_copiable_ptr, copiable_NULL_ptr
+ * \ingroup mrpt_core_grp
+ */
 template <class T>
 struct copiable_NULL_ptr : copiable_NULL_ptr_basic<T>
 {
@@ -357,4 +357,4 @@ struct copiable_NULL_ptr : copiable_NULL_ptr_basic<T>
 using void_ptr = safe_ptr_basic<void>;
 using void_ptr_noncopy = non_copiable_ptr_basic<void>;
 
-}  // End of namespace
+}  // namespace mrpt
