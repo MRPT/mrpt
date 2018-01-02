@@ -78,7 +78,7 @@ void CPointCloudColoured::render_subset(
 {
 #if MRPT_HAS_OPENGL_GLUT
 	const size_t N = all ? m_points.size() : idxs.size();
-	const size_t decimation = mrpt::utils::round(std::max(
+	const size_t decimation = mrpt::round(std::max(
 		1.0f, static_cast<float>(
 				  N / (mrpt::global_settings::
 						   OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL() *

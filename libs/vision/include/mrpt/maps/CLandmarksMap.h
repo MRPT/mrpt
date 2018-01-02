@@ -556,7 +556,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 		const mrpt::poses::CPose2D& otherMapPose,
 		float maxDistForCorrespondence, float maxAngularDistForCorrespondence,
 		const mrpt::poses::CPose2D& angularDistPivotPoint,
-		mrpt::utils::TMatchingPairList& correspondences,
+		mrpt::tfest::TMatchingPairList& correspondences,
 		float& correspondencesRatio, float* sumSqrDist = nullptr,
 		bool onlyKeepTheClosest = false, bool onlyUniqueRobust = false) const;
 
@@ -574,7 +574,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 	  */
 	void computeMatchingWith3DLandmarks(
 		const mrpt::maps::CLandmarksMap* otherMap,
-		mrpt::utils::TMatchingPairList& correspondences,
+		mrpt::tfest::TMatchingPairList& correspondences,
 		float& correspondencesRatio,
 		std::vector<bool>& otherCorrespondences) const;
 
@@ -607,7 +607,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 	  */
 	double computeLikelihood_SIFT_LandmarkMap(
 		CLandmarksMap* map,
-		mrpt::utils::TMatchingPairList* correspondences = nullptr,
+		mrpt::tfest::TMatchingPairList* correspondences = nullptr,
 		std::vector<bool>* otherCorrespondences = nullptr);
 
 	/** Returns true if the map is empty/no observation has been inserted.
@@ -672,8 +672,8 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 		const mrpt::poses::CPose3D& sensorLocationOnRobot,
 		mrpt::obs::CObservationBearingRange& observations,
 		bool sensorDetectsIDs = true, const float stdRange = 0.01f,
-		const float stdYaw = mrpt::utils::DEG2RAD(0.1f),
-		const float stdPitch = mrpt::utils::DEG2RAD(0.1f),
+		const float stdYaw = mrpt::DEG2RAD(0.1f),
+		const float stdPitch = mrpt::DEG2RAD(0.1f),
 		std::vector<size_t>* real_associations = nullptr,
 		const double spurious_count_mean = 0,
 		const double spurious_count_std = 0) const;

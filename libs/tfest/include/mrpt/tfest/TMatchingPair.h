@@ -6,17 +6,18 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef TMatchingPair_H
-#define TMatchingPair_H
+#pragma once
 
 #include <string>
 #include <vector>
+#include <iosfwd>
+#include <cstdint>
 #include <mrpt/poses/poses_frwds.h>
-#include <ostream>
+#include <mrpt/core/common.h>  // MRPT_IS_X86_AMD64
 
 namespace mrpt
 {
-namespace utils
+namespace tfest
 {
 // Pragma defined to ensure no structure packing, so we can use SSE2
 // vectorization on parts of this struture
@@ -25,9 +26,10 @@ namespace utils
 #endif
 
 /** A structure for holding correspondences between two sets of points or
- * points-like entities in 2D or 3D.
+ * points-like entities in 2D or 3D. Using `float` to save space since large
+ * point clouds are likely stored in local coordinates using `float`.
  * \ingroup mrpt_base_grp
-  */
+ */
 struct TMatchingPair
 {
 	TMatchingPair()
@@ -44,9 +46,8 @@ struct TMatchingPair
 	}
 
 	TMatchingPair(
-		unsigned int _this_idx, unsigned int _other_idx, float _this_x,
-		float _this_y, float _this_z, float _other_x, float _other_y,
-		float _other_z)
+		uint32_t _this_idx, uint32_t _other_idx, float _this_x, float _this_y,
+		float _this_z, float _other_x, float _other_y, float _other_z)
 		: this_idx(_this_idx),
 		  other_idx(_other_idx),
 		  this_x(_this_x),
@@ -59,22 +60,8 @@ struct TMatchingPair
 	{
 	}
 
-	friend std::ostream& operator<<(
-		std::ostream& o, const mrpt::utils::TMatchingPair& pair)
-	{
-		o << "[" << pair.this_idx << "->" << pair.other_idx << "]"
-		  << ": "
-		  << "(" << pair.this_x << "," << pair.this_y << "," << pair.this_z
-		  << ")"
-		  << " -> "
-		  << "(" << pair.other_x << "," << pair.other_y << "," << pair.other_z
-		  << ")";
-
-		return o;
-	}
-
-	unsigned int this_idx;
-	unsigned int other_idx;
+	uint32_t this_idx;
+	uint32_t other_idx;
 	float this_x, this_y, this_z;
 	float other_x, other_y, other_z;
 	float errorSquareAfterTransformation;
@@ -87,9 +74,12 @@ struct TMatchingPair
 typedef TMatchingPair* TMatchingPairPtr;
 typedef TMatchingPair const* TMatchingPairConstPtr;
 
+std::ostream& operator<<(
+	std::ostream& o, const mrpt::tfest::TMatchingPair& pair);
+
 /** A list of TMatchingPair
  * \ingroup mrpt_base_grp
-  */
+ */
 class TMatchingPairList : public std::vector<TMatchingPair>
 {
    public:
@@ -102,43 +92,43 @@ class TMatchingPairList : public std::vector<TMatchingPair>
 
 	/** Computes the overall square error between the 2D points in the list of
 	 * correspondences, given the 2D transformation "q"
-	  *    \f[ \sum\limits_i e_i  \f]
-	  *  Where \f$ e_i \f$ are the elements of the square error vector as
+	 *    \f[ \sum\limits_i e_i  \f]
+	 *  Where \f$ e_i \f$ are the elements of the square error vector as
 	 * computed by computeSquareErrorVector
-	  * \sa squareErrorVector, overallSquareErrorAndPoints
-	  */
+	 * \sa squareErrorVector, overallSquareErrorAndPoints
+	 */
 	float overallSquareError(const mrpt::poses::CPose2D& q) const;
 
 	/** Computes the overall square error between the 2D points in the list of
 	 * correspondences, given the 2D transformation "q", and return the
 	 * transformed points as well.
-	  *    \f[ \sum\limits_i e_i  \f]
-	  *  Where \f$ e_i \f$ are the elements of the square error vector as
+	 *    \f[ \sum\limits_i e_i  \f]
+	 *  Where \f$ e_i \f$ are the elements of the square error vector as
 	 * computed by computeSquareErrorVector
-	  * \sa squareErrorVector
-	  */
+	 * \sa squareErrorVector
+	 */
 	float overallSquareErrorAndPoints(
 		const mrpt::poses::CPose2D& q, std::vector<float>& xs,
 		std::vector<float>& ys) const;
 
 	/**  Returns a vector with the square error between each pair of
 	 * correspondences in the list, given the 2D transformation "q"
-	  *    Each element \f$ e_i \f$ is the square distance between the "this"
+	 *    Each element \f$ e_i \f$ is the square distance between the "this"
 	 * (global) point and the "other" (local) point transformed through "q":
-	  *    \f[ e_i = | x_{this} -  q \oplus x_{other}  |^2 \f]
-	  * \sa overallSquareError
-	  */
+	 *    \f[ e_i = | x_{this} -  q \oplus x_{other}  |^2 \f]
+	 * \sa overallSquareError
+	 */
 	void squareErrorVector(
 		const mrpt::poses::CPose2D& q, std::vector<float>& out_sqErrs) const;
 
 	/**  Returns a vector with the square error between each pair of
 	 * correspondences in the list and the transformed "other" (local) points,
 	 * given the 2D transformation "q"
-	  *    Each element \f$ e_i \f$ is the square distance between the "this"
+	 *    Each element \f$ e_i \f$ is the square distance between the "this"
 	 * (global) point and the "other" (local) point transformed through "q":
-	  *    \f[ e_i = | x_{this} -  q \oplus x_{other}  |^2 \f]
-	  * \sa overallSquareError
-	  */
+	 *    \f[ e_i = | x_{this} -  q \oplus x_{other}  |^2 \f]
+	 * \sa overallSquareError
+	 */
 	void squareErrorVector(
 		const mrpt::poses::CPose2D& q, std::vector<float>& out_sqErrs,
 		std::vector<float>& xs, std::vector<float>& ys) const;
@@ -148,9 +138,9 @@ class TMatchingPairList : public std::vector<TMatchingPair>
 
 	/** Creates a filtered list of pairings with those ones which have a single
 	 * correspondence which coincides
-	  * in both directions, i.e. the best pairing of element `i` in map `this`
+	 * in both directions, i.e. the best pairing of element `i` in map `this`
 	 * is the best match for element `j` in map `other`,
-	  * and viceversa*/
+	 * and viceversa*/
 	void filterUniqueRobustPairs(
 		const size_t num_elements_this_map,
 		TMatchingPairList& out_filtered_list) const;
@@ -166,6 +156,5 @@ bool operator==(const TMatchingPair& a, const TMatchingPair& b);
 /** A comparison operator */
 bool operator==(const TMatchingPairList& a, const TMatchingPairList& b);
 
-}  // End of namespace
-}  // end of namespace
-#endif
+}  // namespace tfest
+}  // namespace mrpt

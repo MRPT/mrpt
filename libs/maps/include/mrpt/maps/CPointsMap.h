@@ -684,7 +684,7 @@ class CPointsMap : public CMetricMap,
 	virtual void determineMatching2D(
 		const mrpt::maps::CMetricMap* otherMap,
 		const mrpt::poses::CPose2D& otherMapPose,
-		mrpt::utils::TMatchingPairList& correspondences,
+		mrpt::tfest::TMatchingPairList& correspondences,
 		const TMatchingParams& params,
 		TMatchingExtraResults& extraResults) const override;
 
@@ -692,7 +692,7 @@ class CPointsMap : public CMetricMap,
 	virtual void determineMatching3D(
 		const mrpt::maps::CMetricMap* otherMap,
 		const mrpt::poses::CPose3D& otherMapPose,
-		mrpt::utils::TMatchingPairList& correspondences,
+		mrpt::tfest::TMatchingPairList& correspondences,
 		const TMatchingParams& params,
 		TMatchingExtraResults& extraResults) const override;
 
@@ -722,7 +722,7 @@ class CPointsMap : public CMetricMap,
 		const mrpt::maps::CMetricMap* otherMap2,
 		const mrpt::poses::CPose3D& otherMapPose,
 		float maxDistForCorrespondence,
-		mrpt::utils::TMatchingPairList& correspondences,
+		mrpt::tfest::TMatchingPairList& correspondences,
 		float& correspondencesRatio);
 
 	/** Transform the range scan into a set of cartessian coordinated

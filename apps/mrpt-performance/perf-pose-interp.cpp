@@ -16,7 +16,7 @@
 
 #include "common.h"
 
-using mrpt::utils::DEG2RAD;
+using mrpt::DEG2RAD;
 
 // ------------------------------------------------------
 //				Benchmark Pose Interpolation

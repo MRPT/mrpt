@@ -84,7 +84,7 @@ struct RRTEndCriteria
 
 	RRTEndCriteria()
 		: acceptedDistToTarget(0.1),
-		  acceptedAngToTarget(mrpt::utils::DEG2RAD(180)),
+		  acceptedAngToTarget(mrpt::DEG2RAD(180)),
 		  maxComputationTime(0.0),
 		  minComputationTime(0.0)
 	{

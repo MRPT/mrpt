@@ -355,7 +355,7 @@ void checkTrackedFeatures(
   * ...
   */
 void filterBadCorrsByDistance(
-	mrpt::utils::TMatchingPairList& list,  // The list of correspondences
+	mrpt::tfest::TMatchingPairList& list,  // The list of correspondences
 	unsigned int numberOfSigmas);  // Threshold
 
 /**  @}  */  // end of grouping

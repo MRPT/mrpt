@@ -657,7 +657,7 @@ double COccupancyGridMap2D::computeLikelihoodField_Thrun(
 					signed int Ax0 = 10 * (xx1 - cx);
 					signed int Ay = 10 * (yy1 - cy);
 
-					unsigned int occupiedMinDistInt = mrpt::utils::round(
+					unsigned int occupiedMinDistInt = mrpt::round(
 						maxCorrDist_sq * constDist2DiscrUnits);
 
 					for (int yy = yy1; yy <= yy2; yy++)

@@ -93,7 +93,7 @@ struct TSimpleFeatureTraits<TSimpleFeature>
 {
 	typedef int coord_t;
 
-	static inline coord_t f2coord(float f) { return mrpt::utils::round(f); }
+	static inline coord_t f2coord(float f) { return mrpt::round(f); }
 };
 
 template <>
@@ -269,7 +269,7 @@ struct TSimpleFeatureList_templ
 	}
 	inline void setScale(size_t i, float s)
 	{
-		m_feats[i]->octave = mrpt::utils::round(std::log(s) / std::log(2));
+		m_feats[i]->octave = mrpt::round(std::log(s) / std::log(2));
 	}
 	inline void setTrackStatus(size_t i, TFeatureTrackStatus s)
 	{

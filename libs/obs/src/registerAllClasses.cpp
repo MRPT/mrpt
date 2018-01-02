@@ -13,7 +13,7 @@
 #include <mrpt/obs.h>
 
 #include <mrpt/serialization/CSerializable.h>
-#include <mrpt/utils/initializer.h>
+#include <mrpt/core/initializer.h>
 
 using namespace mrpt::obs;
 using namespace mrpt::maps;

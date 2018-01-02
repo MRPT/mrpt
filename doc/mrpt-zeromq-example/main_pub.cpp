@@ -14,7 +14,7 @@
 #include <mrpt/img/CImage.h>
 #include <mrpt/system/CTicTac.h>
 
-using mrpt::utils::DEG2RAD;
+using mrpt::DEG2RAD;
 
 int main()
 {

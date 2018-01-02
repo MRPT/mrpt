@@ -176,7 +176,7 @@ void CSwissRanger3DCamera::loadConfig_sensorSpecific(
 	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
-	using mrpt::utils::DEG2RAD;
+	using mrpt::DEG2RAD;
 
 	m_sensorPoseOnRobot.setFromValues(
 		configSource.read_float(iniSection, "pose_x", 0),

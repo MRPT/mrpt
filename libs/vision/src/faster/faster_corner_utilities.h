@@ -15,7 +15,7 @@
 #ifndef MRPT_CVD_INTERNAL_INC_FAST_CORNER_UTILITIES_H
 #define MRPT_CVD_INTERNAL_INC_FAST_CORNER_UTILITIES_H
 
-#include <mrpt/utils/SSE_types.h>
+#include <mrpt/core/SSE_types.h>
 
 namespace mrpt
 {

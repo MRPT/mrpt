@@ -46,7 +46,7 @@ class CPose2DGridTemplate
 	  */
 	size_t x2idx(double x) const
 	{
-		int idx = mrpt::utils::round((x - m_xMin) / m_resolutionXY);
+		int idx = mrpt::round((x - m_xMin) / m_resolutionXY);
 		ASSERT_(idx >= 0 && idx < static_cast<int>(m_sizeX));
 		return idx;
 	}
@@ -55,7 +55,7 @@ class CPose2DGridTemplate
 	  */
 	size_t y2idx(double y) const
 	{
-		int idx = mrpt::utils::round((y - m_yMin) / m_resolutionXY);
+		int idx = mrpt::round((y - m_yMin) / m_resolutionXY);
 		ASSERT_(idx >= 0 && idx < static_cast<int>(m_sizeY));
 		return idx;
 	}
@@ -64,7 +64,7 @@ class CPose2DGridTemplate
 	  */
 	size_t phi2idx(double phi) const
 	{
-		int idx = mrpt::utils::round((phi - m_phiMin) / m_resolutionPhi);
+		int idx = mrpt::round((phi - m_phiMin) / m_resolutionPhi);
 		ASSERT_(idx >= 0 && idx < static_cast<int>(m_sizePhi));
 		return idx;
 	}
@@ -147,15 +147,15 @@ class CPose2DGridTemplate
 		m_resolutionPhi = resolutionPhi;
 
 		// Compute the indexes of the starting borders:
-		m_idxLeftX = mrpt::utils::round(xMin / resolutionXY);
-		m_idxLeftY = mrpt::utils::round(yMin / resolutionXY);
-		m_idxLeftPhi = mrpt::utils::round(phiMin / resolutionPhi);
+		m_idxLeftX = mrpt::round(xMin / resolutionXY);
+		m_idxLeftY = mrpt::round(yMin / resolutionXY);
+		m_idxLeftPhi = mrpt::round(phiMin / resolutionPhi);
 
 		// Compute new required space:
-		m_sizeX = mrpt::utils::round(xMax / resolutionXY) - m_idxLeftX + 1;
-		m_sizeY = mrpt::utils::round(yMax / resolutionXY) - m_idxLeftY + 1;
+		m_sizeX = mrpt::round(xMax / resolutionXY) - m_idxLeftX + 1;
+		m_sizeY = mrpt::round(yMax / resolutionXY) - m_idxLeftY + 1;
 		m_sizePhi =
-			mrpt::utils::round(phiMax / resolutionPhi) - m_idxLeftPhi + 1;
+			mrpt::round(phiMax / resolutionPhi) - m_idxLeftPhi + 1;
 		m_sizeXY = m_sizeX * m_sizeY;
 
 		// Resize "m_data":

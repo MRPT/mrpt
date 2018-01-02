@@ -293,7 +293,7 @@ CPosePDF::Ptr CICP::ICP_Method_Classic(
 	size_t nCorrespondences = 0;
 	bool keepApproaching;
 	CPose2D grossEst = initialEstimationPDF.mean;
-	mrpt::utils::TMatchingPairList correspondences, old_correspondences;
+	mrpt::tfest::TMatchingPairList correspondences, old_correspondences;
 	CPose2D lastMeanPose;
 
 	// Assure the class of the maps:
@@ -454,7 +454,7 @@ CPosePDF::Ptr CICP::ICP_Method_Classic(
 
 					// Fill out D:
 					double rho2 = square(options.kernel_rho);
-					mrpt::utils::TMatchingPairList::iterator it;
+					mrpt::tfest::TMatchingPairList::iterator it;
 					size_t i;
 					for (i = 0, it = correspondences.begin();
 						 i < nCorrespondences; ++i, ++it)
@@ -766,7 +766,7 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 				// Compute "dJ_dq"
 				// ------------------------------------
 				double rho2 = square(options.kernel_rho);
-				mrpt::utils::TMatchingPairList::iterator it;
+				mrpt::tfest::TMatchingPairList::iterator it;
 				std::vector<float>::const_iterator other_x_trans, other_y_trans;
 				size_t i;
 
@@ -1097,7 +1097,7 @@ CPose3DPDF::Ptr CICP::ICP3D_Method_Classic(
 	size_t nCorrespondences = 0;
 	bool keepApproaching;
 	CPose3D grossEst = initialEstimationPDF.mean;
-	mrpt::utils::TMatchingPairList correspondences, old_correspondences;
+	mrpt::tfest::TMatchingPairList correspondences, old_correspondences;
 	CPose3D lastMeanPose;
 
 	// Assure the class of the maps:

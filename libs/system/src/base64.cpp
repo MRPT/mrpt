@@ -30,7 +30,7 @@ void mrpt::system::encodeBase64(
 	const std::vector<uint8_t>& inputData, std::string& outString)
 {
 	outString.clear();
-	outString.reserve(inputData.size() * mrpt::utils::round(4.0 / 3.0));
+	outString.reserve(inputData.size() * mrpt::round(4.0 / 3.0));
 
 	int char_count = 0;
 	int bits = 0;

@@ -601,7 +601,7 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 	 */
 	void asString(std::string& s) const
 	{
-		using mrpt::utils::RAD2DEG;
+		using mrpt::RAD2DEG;
 		updateYawPitchRoll();
 		s = mrpt::format(
 			"[%f %f %f %f %f %f]", m_coords[0], m_coords[1], m_coords[2],
@@ -621,7 +621,7 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 	 */
 	void fromString(const std::string& s)
 	{
-		using mrpt::utils::DEG2RAD;
+		using mrpt::DEG2RAD;
 		mrpt::math::CMatrixDouble m;
 		if (!m.fromMatlabStringFormat(s))
 			THROW_EXCEPTION("Malformed expression in ::fromString");

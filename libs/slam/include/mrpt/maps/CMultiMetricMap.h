@@ -441,7 +441,7 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 	virtual void determineMatching2D(
 		const mrpt::maps::CMetricMap* otherMap,
 		const mrpt::poses::CPose2D& otherMapPose,
-		mrpt::utils::TMatchingPairList& correspondences,
+		mrpt::tfest::TMatchingPairList& correspondences,
 		const mrpt::maps::TMatchingParams& params,
 		mrpt::maps::TMatchingExtraResults& extraResults) const override;
 

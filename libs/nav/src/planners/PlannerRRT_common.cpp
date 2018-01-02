@@ -25,7 +25,7 @@ RRTAlgorithmParams::RRTAlgorithmParams()
 	  goalBias(0.05),
 	  maxLength(1.0),
 	  minDistanceBetweenNewNodes(0.10),
-	  minAngBetweenNewNodes(mrpt::utils::DEG2RAD(15)),
+	  minAngBetweenNewNodes(mrpt::DEG2RAD(15)),
 	  ptg_verbose(true),
 	  save_3d_log_freq(0)
 {

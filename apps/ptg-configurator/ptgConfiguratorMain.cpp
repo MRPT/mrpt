@@ -1078,7 +1078,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 				wxString::Format(
 					_("Selected path trajectory: Phi [deg]. PTG alpha=%.03f "
 					  "[deg]"),
-					mrpt::utils::RAD2DEG(ptg_alpha)));
+					mrpt::RAD2DEG(ptg_alpha)));
 		}
 		catch (...)
 		{
@@ -1178,15 +1178,15 @@ void ptgConfiguratorframe::rebuild3Dview()
 					if (is_selected_path)
 					{
 						robotHeadAng_x[j] = j * dt;
-						robotHeadAng_y[j] = mrpt::utils::RAD2DEG(head2dir);
+						robotHeadAng_y[j] = mrpt::RAD2DEG(head2dir);
 						robotPath_x[j] = curPose.x;
 						robotPath_y[j] = curPose.y;
-						robotPath_phi[j] = mrpt::utils::RAD2DEG(curPose.phi);
+						robotPath_phi[j] = mrpt::RAD2DEG(curPose.phi);
 						robotPath_dist[j] = ptg->getPathDist(k, j);
 
 						robotPath_vx[j] = dx / dt;
 						robotPath_vy[j] = dy / dt;
-						robotPath_w[j] = mrpt::utils::RAD2DEG(dphi / dt);
+						robotPath_w[j] = mrpt::RAD2DEG(dphi / dt);
 					}
 
 					mrpt::keep_max(maxRobotHeadErr, std::abs(head2dir));
@@ -1194,7 +1194,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 				prevPose = curPose;
 			}
 
-			robotHeadAngAll_y[k] = mrpt::utils::RAD2DEG(maxRobotHeadErr);
+			robotHeadAngAll_y[k] = mrpt::RAD2DEG(maxRobotHeadErr);
 		}
 		m_graph_head_all->SetData(robotHeadAngAll_x, robotHeadAngAll_y);
 		m_graph_head_indiv->SetData(robotHeadAng_x, robotHeadAng_y);

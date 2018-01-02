@@ -235,9 +235,9 @@ struct TDatum7Params
 		const double _Ry, const double _Rz, const double _dS)
 		: dX(_dX), dY(_dY), dZ(_dZ)
 	{
-		Rx = mrpt::utils::DEG2RAD(_Rx / 60 / 60);
-		Ry = mrpt::utils::DEG2RAD(_Ry / 60 / 60);
-		Rz = mrpt::utils::DEG2RAD(_Rz / 60 / 60);
+		Rx = mrpt::DEG2RAD(_Rx / 60 / 60);
+		Ry = mrpt::DEG2RAD(_Ry / 60 / 60);
+		Rz = mrpt::DEG2RAD(_Rz / 60 / 60);
 		dS = _dS * 1e-6;
 	}
 };
@@ -292,9 +292,9 @@ struct TDatum10Params
 		const double _Rz, const double _dS)
 		: dX(_dX), dY(_dY), dZ(_dZ), Xp(_Xp), Yp(_Yp), Zp(_Zp)
 	{
-		Rx = mrpt::utils::DEG2RAD(_Rx / 60 / 60);
-		Ry = mrpt::utils::DEG2RAD(_Ry / 60 / 60);
-		Rz = mrpt::utils::DEG2RAD(_Rz / 60 / 60);
+		Rx = mrpt::DEG2RAD(_Rx / 60 / 60);
+		Ry = mrpt::DEG2RAD(_Ry / 60 / 60);
+		Rz = mrpt::DEG2RAD(_Rz / 60 / 60);
 		dS = _dS * 1e-6;
 	}
 };
@@ -315,7 +315,7 @@ struct TDatumHelmert2D
 		const double _dS, const double _Xp, const double _Yp)
 		: dX(_dX), dY(_dY), Xp(_Xp), Yp(_Yp)
 	{
-		alpha = mrpt::utils::DEG2RAD(_alpha);
+		alpha = mrpt::DEG2RAD(_alpha);
 		dS = _dS * 1e-6;
 	}
 };
@@ -348,9 +348,9 @@ struct TDatumHelmert3D
 		const double _Ry, const double _Rz, const double _dS)
 		: dX(_dX), dY(_dY), dZ(_dZ)
 	{
-		Rx = mrpt::utils::DEG2RAD(_Rx / 60 / 60);
-		Ry = mrpt::utils::DEG2RAD(_Ry / 60 / 60);
-		Rz = mrpt::utils::DEG2RAD(_Rz / 60 / 60);
+		Rx = mrpt::DEG2RAD(_Rx / 60 / 60);
+		Ry = mrpt::DEG2RAD(_Ry / 60 / 60);
+		Rz = mrpt::DEG2RAD(_Rz / 60 / 60);
 		dS = _dS * 1e-6;
 	}
 };
@@ -407,7 +407,7 @@ struct TDatumTransfInterpolation
 	{
 		dSx = _dSx * 1e-6;
 		dSy = _dSy * 1e-6;
-		beta = mrpt::utils::DEG2RAD(_beta / 60 / 60);
+		beta = mrpt::DEG2RAD(_beta / 60 / 60);
 	}
 };
 

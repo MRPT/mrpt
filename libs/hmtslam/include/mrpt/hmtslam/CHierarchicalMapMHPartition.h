@@ -188,7 +188,7 @@ class CHierarchicalMapMHPartition : public mrpt::utils::COutputLogger
 		mrpt::poses::CPose3DPDFParticles& posePDF,
 		const THypothesisID& hypothesisID, unsigned int particlesCount = 100,
 		float additionalNoiseXYratio = 0.02,
-		float additionalNoisePhiRad = mrpt::utils::DEG2RAD(0.1)) const;
+		float additionalNoisePhiRad = mrpt::DEG2RAD(0.1)) const;
 
 	/** Computes the probability [0,1] of two areas' gridmaps to "match" (loop
 	 * closure), according to the grid maps and pose uncertainty from

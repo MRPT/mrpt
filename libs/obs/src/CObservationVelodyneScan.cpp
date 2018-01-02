@@ -216,7 +216,7 @@ static void velodyne_scan_to_pointcloud(
 {
 	// Initially based on code from ROS velodyne & from
 	// vtkVelodyneHDLReader::vtkInternal::ProcessHDLPacket().
-	using mrpt::utils::round;
+	using mrpt::round;
 
 	// Access to sin/cos table:
 	mrpt::obs::T2DScanProperties scan_props;
@@ -439,7 +439,7 @@ static void velodyne_scan_to_pointcloud(
 					}
 				};
 
-				const int azimuthadjustment = mrpt::utils::round(
+				const int azimuthadjustment = mrpt::round(
 					median_azimuth_diff * ((timestampadjustment - blockdsr0) /
 										   (nextblockdsr0 - blockdsr0)));
 

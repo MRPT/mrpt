@@ -19,7 +19,7 @@ using namespace mrpt::vision;
 using namespace mrpt::math;
 using namespace std;
 using namespace Eigen;
-using mrpt::utils::round;
+using mrpt::round;
 using mrpt::square;
 
 CDifodo::CDifodo()

@@ -130,7 +130,7 @@ void COccupancyGridMap2D::simulateScanRay(
 
 	// Ray tracing, until collision, out of the map or out of range:
 	const unsigned int max_ray_len =
-		mrpt::utils::round(max_range_meters / resolution);
+		mrpt::round(max_range_meters / resolution);
 	unsigned int ray_len = 0;
 
 // Use integers for all ray tracing for efficiency

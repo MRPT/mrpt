@@ -220,7 +220,7 @@ bool tfest::se3_l2(
 }
 
 bool tfest::se3_l2(
-	const mrpt::utils::TMatchingPairList& corrs,
+	const mrpt::tfest::TMatchingPairList& corrs,
 	mrpt::poses::CPose3DQuat& out_transform, double& out_scale,
 	bool forceScaleToUnity)
 {

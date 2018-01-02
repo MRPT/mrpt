@@ -31,7 +31,7 @@ double math_test_round(int a1, int a2)
 	double b = 2.3;
 	for (long i = 0; i < N; i++)
 	{
-		a = mrpt::utils::round(b);
+		a = mrpt::round(b);
 	}
 	double T = tictac.Tac() / N;
 	dummy_do_nothing_with_string(mrpt::format("%i", a));

@@ -180,7 +180,7 @@ class CGridMapAligner : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 		mrpt::maps::CLandmarksMap::Ptr landmarks_map1, landmarks_map2;
 
 		/** All the found correspondences (not consistent) */
-		mrpt::utils::TMatchingPairList correspondences;
+		mrpt::tfest::TMatchingPairList correspondences;
 
 		struct TPairPlusDistance
 		{

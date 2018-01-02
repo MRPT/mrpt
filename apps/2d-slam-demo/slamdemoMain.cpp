@@ -1177,7 +1177,7 @@ void slamdemoFrame::resetSimulator(const std::string& map_type)
 		newLM.pose_mean.z = 0;
 
 		for (int i = 0;
-			 i <= mrpt::utils::round((options.path_square_len) / 2.0); i++)
+			 i <= mrpt::round((options.path_square_len) / 2.0); i++)
 		{
 			// Bottom & top  corridors:
 			newLM.pose_mean.x = 1 + 2 * i;
@@ -1934,7 +1934,7 @@ void slamdemoFrame::executeOneStep()
 
 			if (fabs(fmod(m_GT_pose.phi(), DEG2RAD(90.0))) < 1e-2)
 			{
-				int dir = mrpt::utils::round(m_GT_pose.phi() / Aphi);
+				int dir = mrpt::round(m_GT_pose.phi() / Aphi);
 
 				// Continue in a straight line, unless we reach a corner:
 				if ((m_GT_pose.x() > PATH_SQUARE_LEN &&
@@ -1960,7 +1960,7 @@ void slamdemoFrame::executeOneStep()
 		m_GT_pose = m_GT_pose + poseIncr;
 
 		// Round phi so we have always perfect square paths:
-		m_GT_pose.phi(mrpt::utils::round(m_GT_pose.phi() / Aphi) * Aphi);
+		m_GT_pose.phi(mrpt::round(m_GT_pose.phi() / Aphi) * Aphi);
 
 		// Simulate observation ------------------------
 		{

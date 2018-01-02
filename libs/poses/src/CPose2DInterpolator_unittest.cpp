@@ -18,7 +18,7 @@ TEST(CPose2DInterpolator, interp)
 {
 	using namespace mrpt::poses;
 	using mrpt::math::TPose2D;
-	using mrpt::utils::DEG2RAD;
+	using mrpt::DEG2RAD;
 
 	const mrpt::system::TTimeStamp t0 = mrpt::system::now();
 	const mrpt::system::TTimeStamp dt = mrpt::system::secondsToTimestamp(0.10);

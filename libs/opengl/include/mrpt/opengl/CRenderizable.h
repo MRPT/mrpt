@@ -138,17 +138,17 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	/** Rotation relative to parent coordinate origin, in **DEGREES**. */
 	inline double getPoseYaw() const
 	{
-		return mrpt::utils::RAD2DEG(m_pose.yaw());
+		return mrpt::RAD2DEG(m_pose.yaw());
 	}
 	/** Rotation relative to parent coordinate origin, in **DEGREES**. */
 	inline double getPosePitch() const
 	{
-		return mrpt::utils::RAD2DEG(m_pose.pitch());
+		return mrpt::RAD2DEG(m_pose.pitch());
 	}
 	/** Rotation relative to parent coordinate origin, in **DEGREES**. */
 	inline double getPoseRoll() const
 	{
-		return mrpt::utils::RAD2DEG(m_pose.roll());
+		return mrpt::RAD2DEG(m_pose.roll());
 	}
 	/** Rotation relative to parent coordinate origin, in radians. */
 	inline double getPoseYawRad() const { return m_pose.yaw(); }

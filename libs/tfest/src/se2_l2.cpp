@@ -14,7 +14,7 @@
 #include <mrpt/random.h>
 
 #if MRPT_HAS_SSE2
-#include <mrpt/utils/SSE_types.h>
+#include <mrpt/core/SSE_types.h>
 #endif
 
 using namespace mrpt;

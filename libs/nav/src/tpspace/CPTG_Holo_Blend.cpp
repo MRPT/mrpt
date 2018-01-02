@@ -194,7 +194,7 @@ void CPTG_Holo_Blend::loadDefaultParams()
 	m_alphaValuesCount = 31;
 	T_ramp_max = 0.9;
 	V_MAX = 1.0;
-	W_MAX = mrpt::utils::DEG2RAD(40);
+	W_MAX = mrpt::DEG2RAD(40);
 }
 
 void CPTG_Holo_Blend::loadFromConfigFile(
@@ -231,7 +231,7 @@ void CPTG_Holo_Blend::saveToConfigFile(
 		sSection, "v_max_mps", V_MAX, WN, WV,
 		"Maximum linear velocity for trajectories [m/s].");
 	cfg.write(
-		sSection, "w_max_dps", mrpt::utils::RAD2DEG(W_MAX), WN, WV,
+		sSection, "w_max_dps", mrpt::RAD2DEG(W_MAX), WN, WV,
 		"Maximum angular velocity for trajectories [deg/s].");
 	cfg.write(
 		sSection, "turningRadiusReference", turningRadiusReference, WN, WV,
@@ -628,7 +628,7 @@ bool CPTG_Holo_Blend::getPathStepForDist(
 	}
 	if (t_solved >= 0)
 	{
-		out_step = mrpt::utils::round(t_solved / PATH_TIME_STEP);
+		out_step = mrpt::round(t_solved / PATH_TIME_STEP);
 		return true;
 	}
 	else

@@ -147,8 +147,8 @@ void rgbd2rawlog(const string& src_path, const string& out_name)
 	obs.cameraParams.cy(239.5);
 	obs.cameraParamsIntensity = obs.cameraParams;
 	obs.relativePoseIntensityWRTDepth = mrpt::poses::CPose3D(
-		0, 0, 0, mrpt::utils::DEG2RAD(-90), 0,
-		mrpt::utils::DEG2RAD(-90));  // No translation between rgb & range
+		0, 0, 0, mrpt::DEG2RAD(-90), 0,
+		mrpt::DEG2RAD(-90));  // No translation between rgb & range
 	// cameras, and rotation only due to XYZ
 	// axes conventions.
 

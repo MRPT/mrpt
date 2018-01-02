@@ -147,9 +147,9 @@ bool VelodyneCalibration::internal_loadFromXMLNode(void* node)
 		}
 
 		plc->sinVertCorrection =
-			std::sin(mrpt::utils::DEG2RAD(plc->verticalCorrection));
+			std::sin(mrpt::DEG2RAD(plc->verticalCorrection));
 		plc->cosVertCorrection =
-			std::cos(mrpt::utils::DEG2RAD(plc->verticalCorrection));
+			std::cos(mrpt::DEG2RAD(plc->verticalCorrection));
 
 		plc->sinVertOffsetCorrection =
 			plc->sinVertCorrection * plc->sinVertOffsetCorrection;

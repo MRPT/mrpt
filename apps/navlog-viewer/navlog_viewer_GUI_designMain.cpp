@@ -1085,12 +1085,12 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			mrpt::format(
 				"cur_vel      =[%.02f m/s, %0.2f m/s, %.02f dps]",
 				log.cur_vel.vx, log.cur_vel.vy,
-				mrpt::utils::RAD2DEG(log.cur_vel.omega)));
+				mrpt::RAD2DEG(log.cur_vel.omega)));
 		ADD_WIN_TEXTMSG(
 			mrpt::format(
 				"cur_vel_local=[%.02f m/s, %0.2f m/s, %.02f dps]",
 				log.cur_vel_local.vx, log.cur_vel_local.vy,
-				mrpt::utils::RAD2DEG(log.cur_vel_local.omega)));
+				mrpt::RAD2DEG(log.cur_vel_local.omega)));
 
 		ADD_WIN_TEXTMSG(
 			mrpt::format(
@@ -1146,7 +1146,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			ADD_WIN_TEXTMSG_COL(
 				mrpt::format(
 					"PTG#%u: SelDir=%+7.01f deg SelSpeed=%.03f Eval=%5.03f. %s",
-					nPTG, mrpt::utils::RAD2DEG(pI.desiredDirection),
+					nPTG, mrpt::RAD2DEG(pI.desiredDirection),
 					pI.desiredSpeed, pI.evaluation, sFactors.c_str()),
 				col);
 		}
@@ -1380,7 +1380,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 						format(
 							"TP_Target[0]=(%.02f,%.02f) k=%i ang=%.02f deg",
 							pI.TP_Targets[0].x, pI.TP_Targets[0].y, tp_target_k,
-							mrpt::utils::RAD2DEG(ang)),
+							mrpt::RAD2DEG(ang)),
 						TColorf(1.0f, 1.0f, 1.0f), "mono", 8,
 						mrpt::opengl::NICE, 1 /*id*/, 1.5, 0.1,
 						false /*shadow*/);

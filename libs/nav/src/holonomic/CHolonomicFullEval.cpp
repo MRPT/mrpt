@@ -427,11 +427,11 @@ void CHolonomicFullEval::evalSingleTarget(
 
 		const auto smallest_clearance_in_k_units = std::min(cl_left, cl_right);
 		const unsigned int clearance_threshold =
-			mrpt::utils::round(options.clearance_threshold_ratio * nDirs);
+			mrpt::round(options.clearance_threshold_ratio * nDirs);
 
 		const unsigned int gap_width = best_gap.k_to - best_gap.k_from;
 		const unsigned int width_threshold =
-			mrpt::utils::round(options.gap_width_ratio_threshold * nDirs);
+			mrpt::round(options.gap_width_ratio_threshold * nDirs);
 
 		// Move straight to target?
 		if (smallest_clearance_in_k_units >= clearance_threshold &&
@@ -446,7 +446,7 @@ void CHolonomicFullEval::evalSingleTarget(
 	{
 		// Not heading to target: go thru the "middle" of the gap to maximize
 		// clearance
-		eo.best_k = mrpt::utils::round(0.5 * (best_gap.k_to + best_gap.k_from));
+		eo.best_k = mrpt::round(0.5 * (best_gap.k_to + best_gap.k_from));
 	}
 
 	// Alternative, simpler method to decide motion:

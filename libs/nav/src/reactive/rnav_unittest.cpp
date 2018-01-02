@@ -99,7 +99,7 @@ void run_rnav_test(
 				curPose, curVel, pose_tim, odomPose, pose_frame_id);
 
 			mrpt::obs::CObservation2DRangeScan scan;
-			scan.aperture = mrpt::utils::DEG2RAD(270.0);
+			scan.aperture = mrpt::DEG2RAD(270.0);
 			scan.maxRange = 20.0;
 			scan.sensorPose.z(0.4);  // height of the lidar (important! it must
 			// intersect with the robot height)

@@ -15,7 +15,7 @@
 #include <mrpt/img/CImage.h>
 #include <mrpt/containers/CDynamicGrid.h>
 #include <mrpt/maps/CMetricMap.h>
-#include <mrpt/utils/TMatchingPair.h>
+#include <mrpt/tfest/TMatchingPair.h>
 #include <mrpt/maps/CLogOddsGridMap2D.h>
 #include <mrpt/utils/safe_pointers.h>
 #include <mrpt/poses/poses_frwds.h>
@@ -810,7 +810,7 @@ class COccupancyGridMap2D : public CMetricMap,
 		mrpt::obs::CObservation2DRangeScan& inout_Scan,
 		const mrpt::poses::CPose2D& robotPose, float threshold = 0.6f,
 		size_t N = 361, float noiseStd = 0, unsigned int decimation = 1,
-		float angleNoiseStd = mrpt::utils::DEG2RAD(0)) const;
+		float angleNoiseStd = mrpt::DEG2RAD(0)) const;
 
 	/** Simulates the observations of a sonar rig into the current grid map.
 	 *   The simulated ranges are stored in a CObservationRange object, which is
@@ -837,7 +837,7 @@ class COccupancyGridMap2D : public CMetricMap,
 		mrpt::obs::CObservationRange& inout_observation,
 		const mrpt::poses::CPose2D& robotPose, float threshold = 0.5f,
 		float rangeNoiseStd = 0.f,
-		float angleNoiseStd = mrpt::utils::DEG2RAD(0.f)) const;
+		float angleNoiseStd = mrpt::DEG2RAD(0.f)) const;
 
 	/** Simulate just one "ray" in the grid map. This method is used internally
 	 * to sonarSimulator and laserScanSimulator. \sa
@@ -976,7 +976,7 @@ class COccupancyGridMap2D : public CMetricMap,
 	static bool saveAsBitmapTwoMapsWithCorrespondences(
 		const std::string& fileName, const COccupancyGridMap2D* m1,
 		const COccupancyGridMap2D* m2,
-		const mrpt::utils::TMatchingPairList& corrs);
+		const mrpt::tfest::TMatchingPairList& corrs);
 
 	/** Saves a composite image with two gridmaps and numbers for the
 	 * correspondences between them.
@@ -986,7 +986,7 @@ class COccupancyGridMap2D : public CMetricMap,
 	static bool saveAsEMFTwoMapsWithCorrespondences(
 		const std::string& fileName, const COccupancyGridMap2D* m1,
 		const COccupancyGridMap2D* m2,
-		const mrpt::utils::TMatchingPairList& corrs);
+		const mrpt::tfest::TMatchingPairList& corrs);
 
 	/** Saves the gridmap as a graphical bitmap file, 8 bit gray scale, 1 pixel
 	 * is 1 cell, and with an overlay of landmarks.
@@ -1096,7 +1096,7 @@ class COccupancyGridMap2D : public CMetricMap,
 	virtual void determineMatching2D(
 		const mrpt::maps::CMetricMap* otherMap,
 		const mrpt::poses::CPose2D& otherMapPose,
-		mrpt::utils::TMatchingPairList& correspondences,
+		mrpt::tfest::TMatchingPairList& correspondences,
 		const TMatchingParams& params,
 		TMatchingExtraResults& extraResults) const override;
 

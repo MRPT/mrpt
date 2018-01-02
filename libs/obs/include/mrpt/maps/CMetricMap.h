@@ -10,7 +10,7 @@
 #define CMetricMap_H
 
 #include <mrpt/serialization/CSerializable.h>
-#include <mrpt/utils/TMatchingPair.h>
+#include <mrpt/tfest/TMatchingPair.h>
 #include <mrpt/utils/CObservable.h>
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/math/lightweight_geom_data.h>
@@ -215,7 +215,7 @@ class CMetricMap : public mrpt::serialization::CSerializable,
 	virtual void determineMatching2D(
 		const mrpt::maps::CMetricMap* otherMap,
 		const mrpt::poses::CPose2D& otherMapPose,
-		mrpt::utils::TMatchingPairList& correspondences,
+		mrpt::tfest::TMatchingPairList& correspondences,
 		const TMatchingParams& params,
 		TMatchingExtraResults& extraResults) const;
 
@@ -245,7 +245,7 @@ class CMetricMap : public mrpt::serialization::CSerializable,
 	virtual void determineMatching3D(
 		const mrpt::maps::CMetricMap* otherMap,
 		const mrpt::poses::CPose3D& otherMapPose,
-		mrpt::utils::TMatchingPairList& correspondences,
+		mrpt::tfest::TMatchingPairList& correspondences,
 		const TMatchingParams& params,
 		TMatchingExtraResults& extraResults) const;
 

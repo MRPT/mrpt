@@ -170,7 +170,7 @@ class CRobotKinects
 		const mrpt::poses::CPose3D& kinectrelpose)
 	{
 		unsigned int acc_factor =
-			std::max(1, mrpt::utils::round<double>(80.0 / m_columns));
+			std::max(1, mrpt::round<double>(80.0 / m_columns));
 		float h = 0, incrz;
 		CObservation2DRangeScan m_auxlaser;
 		mrpt::poses::CPose2D scanpose2d;

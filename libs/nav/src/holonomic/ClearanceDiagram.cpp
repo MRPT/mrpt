@@ -114,7 +114,7 @@ const ClearanceDiagram::dist2clearance_t& ClearanceDiagram::get_path_clearance(
 size_t mrpt::nav::ClearanceDiagram::real_k_to_decimated_k(size_t k) const
 {
 	ASSERT_(m_actual_num_paths > 0 && !m_raw_clearances.empty());
-	const size_t ret = mrpt::utils::round(k * m_k_a2d);
+	const size_t ret = mrpt::round(k * m_k_a2d);
 	ASSERT_(ret < m_raw_clearances.size());
 	return ret;
 }
@@ -122,7 +122,7 @@ size_t mrpt::nav::ClearanceDiagram::real_k_to_decimated_k(size_t k) const
 size_t mrpt::nav::ClearanceDiagram::decimated_k_to_real_k(size_t k) const
 {
 	ASSERT_(m_actual_num_paths > 0 && !m_raw_clearances.empty());
-	const size_t ret = mrpt::utils::round(k * m_k_d2a);
+	const size_t ret = mrpt::round(k * m_k_d2a);
 	ASSERT_(ret < m_actual_num_paths);
 	return ret;
 }

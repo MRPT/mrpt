@@ -204,7 +204,7 @@ void CPointCloudFilterByDistance::filter(
 
 CPointCloudFilterByDistance::TOptions::TOptions()
 	: min_dist(0.10),
-	  angle_tolerance(mrpt::utils::DEG2RAD(5)),
+	  angle_tolerance(mrpt::DEG2RAD(5)),
 	  too_old_seconds(1.0),
 	  previous_keyframes(1),
 	  max_deletion_ratio(.4)

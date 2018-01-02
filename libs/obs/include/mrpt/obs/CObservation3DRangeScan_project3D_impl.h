@@ -266,9 +266,9 @@ void project3DPointsFromDepthImageInto(
 				// Project to image plane:
 				if (pt_wrt_color[2])
 				{
-					img_idx_x = mrpt::utils::round(
+					img_idx_x = mrpt::round(
 						cx + fx * pt_wrt_color[0] / pt_wrt_color[2]);
-					img_idx_y = mrpt::utils::round(
+					img_idx_y = mrpt::round(
 						cy + fy * pt_wrt_color[1] / pt_wrt_color[2]);
 					pointWithinImage = img_idx_x >= 0 && img_idx_x < imgW &&
 									   img_idx_y >= 0 && img_idx_y < imgH;

@@ -10,7 +10,7 @@
 #include "hmtslam-precomp.h"  // Precomp header
 
 #include <mrpt/hmtslam.h>
-#include <mrpt/utils/initializer.h>
+#include <mrpt/core/initializer.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::hmtslam;

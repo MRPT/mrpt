@@ -45,7 +45,7 @@ double mrpt::slam::observationsOverlap(
 		CPose3D otherObsPose;
 		if (pose_o2_wrt_o1) otherObsPose = *pose_o2_wrt_o1;
 
-		mrpt::utils::TMatchingPairList correspondences;
+		mrpt::tfest::TMatchingPairList correspondences;
 		mrpt::maps::TMatchingParams matchParams;
 		mrpt::maps::TMatchingExtraResults matchExtraResults;
 

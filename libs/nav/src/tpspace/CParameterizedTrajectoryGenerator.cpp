@@ -125,7 +125,7 @@ void CParameterizedTrajectoryGenerator::saveToConfigFile(
 		sSection, "vyi", m_nav_dyn_state.curVelLocal.vy, WN, WV,
 		"(Only for debugging) Current robot velocity vy [m/s].");
 	cfg.write(
-		sSection, "wi", mrpt::utils::RAD2DEG(m_nav_dyn_state.curVelLocal.omega),
+		sSection, "wi", mrpt::RAD2DEG(m_nav_dyn_state.curVelLocal.omega),
 		WN, WV, "(Only for debugging) Current robot velocity omega [deg/s].");
 
 	cfg.write(
@@ -136,7 +136,7 @@ void CParameterizedTrajectoryGenerator::saveToConfigFile(
 		"(Only for debugging) Relative target y [m].");
 	cfg.write(
 		sSection, "reltrg_phi",
-		mrpt::utils::RAD2DEG(m_nav_dyn_state.relTarget.phi), WN, WV,
+		mrpt::RAD2DEG(m_nav_dyn_state.relTarget.phi), WN, WV,
 		"(Only for debugging) Relative target phi [deg].");
 
 	cfg.write(
@@ -209,7 +209,7 @@ uint16_t CParameterizedTrajectoryGenerator::alpha2index(
 	double alpha, const unsigned int num_paths)
 {
 	mrpt::math::wrapToPi(alpha);
-	int k = mrpt::utils::round(0.5 * (num_paths * (1.0 + alpha / M_PI) - 1.0));
+	int k = mrpt::round(0.5 * (num_paths * (1.0 + alpha / M_PI) - 1.0));
 	if (k < 0) k = 0;
 	if (k >= static_cast<int>(num_paths)) k = num_paths - 1;
 	return (uint16_t)k;
@@ -474,7 +474,7 @@ void mrpt::nav::CParameterizedTrajectoryGenerator::initClearanceDiagram(
 		for (double step_pointer_dbl = 0.0; step_pointer_dbl < numPathSteps;
 			 step_pointer_dbl += numStepsPerIncr)
 		{
-			const size_t step = mrpt::utils::round(step_pointer_dbl);
+			const size_t step = mrpt::round(step_pointer_dbl);
 			const double dist_over_path = this->getPathDist(real_k, step);
 			cl_path[dist_over_path] = 1.0;  // create entry in map<>
 		}
@@ -525,7 +525,7 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(
 	for (auto& e : inout_realdist2clearance)
 	{
 		step_pointer_dbl += numStepsPerIncr;
-		const size_t step = mrpt::utils::round(step_pointer_dbl);
+		const size_t step = mrpt::round(step_pointer_dbl);
 		// const double dist_over_path = e.first;
 		double& inout_clearance = e.second;
 

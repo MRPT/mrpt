@@ -20,7 +20,7 @@ TEST(CPose3DInterpolator, interp)
 	using namespace mrpt::poses;
 	using mrpt::math::TPose3D;
 	using mrpt::math::CMatrixDouble44;
-	using mrpt::utils::DEG2RAD;
+	using mrpt::DEG2RAD;
 
 	const mrpt::system::TTimeStamp t0 = mrpt::system::now();
 	const mrpt::system::TTimeStamp dt = mrpt::system::secondsToTimestamp(0.10);
