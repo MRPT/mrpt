@@ -15,7 +15,7 @@
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/ops_containers.h>  // sum()
 #include <mrpt/utils/printf_vector.h>
-#include <mrpt/utils/metaprogramming.h>
+#include <mrpt/containers/copy_container_typecasting.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/utils/CMemoryStream.h>
 #include <mrpt/maps/CPointCloudFilterByDistance.h>
@@ -1732,7 +1732,7 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 				"NOP cmdvel (prev PTG idx=%u)",
 				static_cast<unsigned int>(m_lastSentVelCmd.ptg_index));
 
-		metaprogramming::copy_container_typecasting(
+		mrpt::containers::copy_container_typecasting(
 			ipf.TP_Obstacles, ipp.TP_Obstacles);
 		ipp.clearance = ipf.clearance;
 		ipp.TP_Targets.clear();
