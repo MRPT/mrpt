@@ -177,7 +177,7 @@ void CVelodyneScanner::loadConfig_sensorSpecific(
 	MRPT_LOAD_HERE_CONFIG_VAR(
 		pos_packets_min_period, double, m_pos_packets_min_period, cfg, sect);
 
-	using mrpt::utils::DEG2RAD;
+	using mrpt::DEG2RAD;
 	m_sensorPose = mrpt::poses::CPose3D(
 		cfg.read_float(sect, "pose_x", 0), cfg.read_float(sect, "pose_y", 0),
 		cfg.read_float(sect, "pose_z", 0),

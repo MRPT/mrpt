@@ -100,10 +100,10 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 		options.methodSelection == CGridMapAligner::amModifiedRANSAC)
 
 	TReturnInfo outInfo;
-	mrpt::utils::TMatchingPairList& correspondences =
+	mrpt::tfest::TMatchingPairList& correspondences =
 		outInfo.correspondences;  // Use directly this placeholder to save 1
 	// variable & 1 copy.
-	mrpt::utils::TMatchingPairList largestConsensusCorrs;
+	mrpt::tfest::TMatchingPairList largestConsensusCorrs;
 
 	CTicTac* tictac = nullptr;
 
@@ -166,9 +166,9 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 	// Extract features from grid-maps:
 	// ------------------------------------------------------
 	const size_t N1 = std::max(
-		40, mrpt::utils::round(m1->getArea() * options.featsPerSquareMeter));
+		40, mrpt::round(m1->getArea() * options.featsPerSquareMeter));
 	const size_t N2 = std::max(
-		40, mrpt::utils::round(m2->getArea() * options.featsPerSquareMeter));
+		40, mrpt::round(m2->getArea() * options.featsPerSquareMeter));
 
 	m_grid_feat_extr.extractFeatures(
 		*m1, *lm1, N1, options.feature_descriptor,
@@ -346,7 +346,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 		for (it1 = idxs1.begin(), it2 = idxs2.begin(); it1 != idxs1.end();
 			 ++it1, ++it2)
 		{
-			mrpt::utils::TMatchingPair mp;
+			mrpt::tfest::TMatchingPair mp;
 			mp.this_idx = *it1;
 			mp.this_x = lm1->landmarks.get(*it1)->pose_mean.x;
 			mp.this_y = lm1->landmarks.get(*it1)->pose_mean.y;
@@ -393,7 +393,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 
 			// The list of SOG modes & their corresponding sub-sets of
 			// matchings:
-			typedef mrpt::aligned_containers<mrpt::utils::TMatchingPairList,
+			typedef mrpt::aligned_containers<mrpt::tfest::TMatchingPairList,
 											 CPosePDFSOG::TGaussianMode>::map_t
 				TMapMatchingsToPoseMode;
 			TMapMatchingsToPoseMode sog_modes;
@@ -468,7 +468,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 				// ====================================================
 				//             METHOD: "Modified" RANSAC
 				// ====================================================
-				mrpt::utils::TMatchingPairList all_corrs = correspondences;
+				mrpt::tfest::TMatchingPairList all_corrs = correspondences;
 
 				const size_t nCorrs = all_corrs.size();
 				ASSERT_(nCorrs >= 2)
@@ -530,7 +530,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 				{
 					trials++;
 
-					mrpt::utils::TMatchingPairList tentativeSubSet;
+					mrpt::tfest::TMatchingPairList tentativeSubSet;
 
 					// Pick 2 random correspondences:
 					uint32_t idx1, idx2;
@@ -792,7 +792,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 								used_landmarks2[best_pair_ij.second] = true;
 
 								tentativeSubSet.push_back(
-									mrpt::utils::TMatchingPair(
+									mrpt::tfest::TMatchingPair(
 										best_pair_ij.first, best_pair_ij.second,
 										p1_i_localx, p1_i_localy, 0,  // MAP1
 										p2_j_localx, p2_j_localy, 0  // MAP2

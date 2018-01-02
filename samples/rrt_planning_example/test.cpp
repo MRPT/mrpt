@@ -59,7 +59,7 @@ void TestRRT1()
 
 	planner.params.maxLength = 2.0;
 	planner.params.minDistanceBetweenNewNodes = 0.10;
-	planner.params.minAngBetweenNewNodes = mrpt::utils::DEG2RAD(20);
+	planner.params.minAngBetweenNewNodes = mrpt::DEG2RAD(20);
 	planner.params.goalBias = 0.05;
 
 	// Logging:

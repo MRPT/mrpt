@@ -14,7 +14,7 @@
 #include <mrpt/img/CImage.h>
 #include <mrpt/utils/aligned_containers.h>
 #include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/TMatchingPair.h>
+#include <mrpt/tfest/TMatchingPair.h>
 #include <mrpt/utils/TEnumType.h>
 
 namespace mrpt

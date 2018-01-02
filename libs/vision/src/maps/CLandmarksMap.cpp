@@ -2964,7 +2964,7 @@ void CLandmarksMap::simulateRangeBearingReadings(
 	size_t nSpurious = 0;
 	if (spurious_count_std != 0 || spurious_count_mean != 0)
 		nSpurious = static_cast<size_t>(
-			mrpt::utils::round_long(std::max(0.0, fSpurious)));
+			mrpt::round_long(std::max(0.0, fSpurious)));
 
 	// For each spurios reading to generate:
 	// ------------------------------------------

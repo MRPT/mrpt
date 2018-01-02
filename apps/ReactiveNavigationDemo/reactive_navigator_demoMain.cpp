@@ -1472,8 +1472,8 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 			m_log_trajectory_file.printf(
 				"%8.03f  %7.03f %7.03f %7.03f   %7.03f %7.03f %7.03f\n",
 				m_robotSimul->getTime(), pose.x, pose.y,
-				mrpt::utils::RAD2DEG(pose.phi), vel.vx, vel.vy,
-				mrpt::utils::RAD2DEG(vel.omega));
+				mrpt::RAD2DEG(pose.phi), vel.vx, vel.vy,
+				mrpt::RAD2DEG(vel.omega));
 		}
 	}
 	else

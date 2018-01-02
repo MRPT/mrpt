@@ -139,7 +139,7 @@ void SensorThread(TThreadParams params)
 			sensor->getProcessRate() > 0,
 			"process_rate must be set to a valid value (>0 Hz).");
 		const int process_period_ms =
-			mrpt::utils::round(1000.0 / sensor->getProcessRate());
+			mrpt::round(1000.0 / sensor->getProcessRate());
 
 		sensor->initialize();  // Init device:
 		while (!allThreadsMustExit)

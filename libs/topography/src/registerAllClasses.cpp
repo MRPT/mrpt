@@ -10,7 +10,7 @@
 #include "topography-precomp.h"
 #include <mrpt/topography.h>
 
-#include <mrpt/utils/initializer.h>
+#include <mrpt/core/initializer.h>
 
 using namespace mrpt::topography;
 using namespace mrpt::utils;

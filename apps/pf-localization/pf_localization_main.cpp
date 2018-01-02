@@ -1140,12 +1140,12 @@ void getGroundTruth(
 			if (first_step)
 			{
 				for (size_t i = 0; i < GT.rows(); i++)
-					GT_path[mrpt::utils::round_10power(GT(i, 0), -4)] =
+					GT_path[mrpt::round_10power(GT(i, 0), -4)] =
 						CPose2D(GT(i, 1), GT(i, 2), GT(i, 3));
 			}
 
 			double TT = mrpt::system::timestampTotime_t(cur_time);
-			double T = mrpt::utils::round_10power(TT, -4);
+			double T = mrpt::round_10power(TT, -4);
 
 			it = GT_path.find(T);
 			if (it != GT_path.end())

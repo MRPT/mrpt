@@ -10,7 +10,7 @@
 #include "detectors-precomp.h"  // Precompiled headers
 #include <mrpt/detectors.h>
 
-#include <mrpt/utils/initializer.h>
+#include <mrpt/core/initializer.h>
 
 using namespace mrpt::detectors;
 using namespace mrpt::utils;

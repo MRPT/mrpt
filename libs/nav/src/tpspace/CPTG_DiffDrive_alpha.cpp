@@ -37,10 +37,10 @@ void CPTG_DiffDrive_alpha::saveToConfigFile(
 	CPTG_DiffDrive_CollisionGridBased::saveToConfigFile(cfg, sSection);
 
 	cfg.write(
-		sSection, "cte_a0v_deg", mrpt::utils::RAD2DEG(cte_a0v), WN, WV,
+		sSection, "cte_a0v_deg", mrpt::RAD2DEG(cte_a0v), WN, WV,
 		"Contant for vel profile [deg].");
 	cfg.write(
-		sSection, "cte_a0w_deg", mrpt::utils::RAD2DEG(cte_a0v), WN, WV,
+		sSection, "cte_a0w_deg", mrpt::RAD2DEG(cte_a0v), WN, WV,
 		"Contant for omega profile [deg].");
 
 	MRPT_END
@@ -103,6 +103,6 @@ void CPTG_DiffDrive_alpha::loadDefaultParams()
 {
 	CPTG_DiffDrive_CollisionGridBased::loadDefaultParams();
 
-	cte_a0v = mrpt::utils::DEG2RAD(45.0);
-	cte_a0w = mrpt::utils::DEG2RAD(45.0);
+	cte_a0v = mrpt::DEG2RAD(45.0);
+	cte_a0w = mrpt::DEG2RAD(45.0);
 }

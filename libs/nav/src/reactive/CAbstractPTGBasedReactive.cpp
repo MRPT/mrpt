@@ -1142,7 +1142,7 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 				mrpt::format("%.06f s", NOP_At);
 			cur_k = move_k;
 			cur_ptg_step =
-				mrpt::utils::round(NOP_At / cm.PTG->getPathStepDuration());
+				mrpt::round(NOP_At / cm.PTG->getPathStepDuration());
 			cur_norm_d = cm.PTG->getPathDist(cur_k, cur_ptg_step) /
 						 cm.PTG->getRefDistance();
 			{

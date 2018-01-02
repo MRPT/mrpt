@@ -2183,9 +2183,9 @@ void CLoopCloserERD<GRAPH_T>::updateLaserScansVisualization()
 			laser_scan_viz->setPose(
 				mrpt::poses::CPose3D(
 					laser_scan_viz->getPoseX(), laser_scan_viz->getPoseY(),
-					-0.15, mrpt::utils::DEG2RAD(laser_scan_viz->getPoseYaw()),
-					mrpt::utils::DEG2RAD(laser_scan_viz->getPosePitch()),
-					mrpt::utils::DEG2RAD(laser_scan_viz->getPoseRoll())));
+					-0.15, mrpt::DEG2RAD(laser_scan_viz->getPoseYaw()),
+					mrpt::DEG2RAD(laser_scan_viz->getPosePitch()),
+					mrpt::DEG2RAD(laser_scan_viz->getPoseRoll())));
 		}
 
 		this->m_win->unlockAccess3DScene();

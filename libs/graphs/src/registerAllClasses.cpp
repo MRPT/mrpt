@@ -9,7 +9,7 @@
 
 #include "graphs-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/initializer.h>
+#include <mrpt/core/initializer.h>
 
 // using namespace mrpt::graphs;
 // using namespace mrpt::utils;

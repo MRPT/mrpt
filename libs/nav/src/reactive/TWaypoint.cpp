@@ -55,7 +55,7 @@ std::string TWaypoint::getAsText() const
 
 	if (target_heading != INVALID_NUM)
 		s += mrpt::format(
-			"phi=%8.03f deg ", mrpt::utils::RAD2DEG(target_heading));
+			"phi=%8.03f deg ", mrpt::RAD2DEG(target_heading));
 	else
 		s += " (heading: any) ";
 

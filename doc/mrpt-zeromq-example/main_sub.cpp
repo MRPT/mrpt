@@ -14,7 +14,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/system/CTicTac.h>
 
-using mrpt::utils::DEG2RAD;
+using mrpt::DEG2RAD;
 
 int main()
 {

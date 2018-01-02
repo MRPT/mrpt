@@ -222,7 +222,7 @@ class CBeaconMap : public mrpt::maps::CMetricMap
 	virtual void determineMatching2D(
 		const mrpt::maps::CMetricMap* otherMap,
 		const mrpt::poses::CPose2D& otherMapPose,
-		mrpt::utils::TMatchingPairList& correspondences,
+		mrpt::tfest::TMatchingPairList& correspondences,
 		const TMatchingParams& params,
 		TMatchingExtraResults& extraResults) const override;
 
@@ -241,7 +241,7 @@ class CBeaconMap : public mrpt::maps::CMetricMap
 	  */
 	void computeMatchingWith3DLandmarks(
 		const mrpt::maps::CBeaconMap* otherMap,
-		mrpt::utils::TMatchingPairList& correspondences,
+		mrpt::tfest::TMatchingPairList& correspondences,
 		float& correspondencesRatio,
 		std::vector<bool>& otherCorrespondences) const;
 

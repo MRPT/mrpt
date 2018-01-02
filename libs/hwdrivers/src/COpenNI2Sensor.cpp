@@ -23,7 +23,7 @@ using namespace mrpt::system;
 using namespace mrpt::obs;
 using namespace mrpt::math;
 using namespace std;
-using mrpt::utils::DEG2RAD;
+using mrpt::DEG2RAD;
 
 bool isValidParameter(const mrpt::img::TCamera& param)
 {

@@ -57,8 +57,8 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(
 // end of CConfigFileBase
 
 // Utils
-double mrpt_utils_DEG2RAD(double deg) { return mrpt::utils::DEG2RAD(deg); }
-double mrpt_utils_RAD2DEG(double rad) { return mrpt::utils::RAD2DEG(rad); }
+double mrpt_utils_DEG2RAD(double deg) { return mrpt::DEG2RAD(deg); }
+double mrpt_utils_RAD2DEG(double rad) { return mrpt::RAD2DEG(rad); }
 // end of Utils
 
 // smart pointer contents

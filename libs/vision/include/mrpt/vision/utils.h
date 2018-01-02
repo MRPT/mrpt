@@ -15,7 +15,7 @@
 #include <mrpt/img/TStereoCamera.h>
 #include <mrpt/math/CMatrixTemplate.h>
 #include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/TMatchingPair.h>
+#include <mrpt/tfest/TMatchingPair.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/vision/types.h>
 #include <mrpt/vision/chessboard_camera_calib.h>
@@ -181,7 +181,7 @@ void getDispersion(
   * ...
   */
 double computeMsd(
-	const mrpt::utils::TMatchingPairList& list, const poses::CPose3D& Rt);
+	const mrpt::tfest::TMatchingPairList& list, const poses::CPose3D& Rt);
 
 /** Transform two clouds of 3D points into a matched list of points
   * ...
@@ -189,7 +189,7 @@ double computeMsd(
 void cloudsToMatchedList(
 	const mrpt::obs::CObservationVisualLandmarks& cloud1,
 	const mrpt::obs::CObservationVisualLandmarks& cloud2,
-	mrpt::utils::TMatchingPairList& outList);
+	mrpt::tfest::TMatchingPairList& outList);
 
 /** Computes the main orientation of a set of points with an image (for using in
  * SIFT-based algorithms)

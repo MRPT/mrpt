@@ -16,7 +16,7 @@
 #include <mrpt/system/memory.h>
 #include "faster_corner_prototypes.h"
 
-#include <mrpt/utils/SSE_types.h>
+#include <mrpt/core/SSE_types.h>
 #include "faster_corner_utilities.h"
 #include "corner_12.h"
 

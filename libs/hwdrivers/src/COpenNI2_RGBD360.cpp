@@ -22,7 +22,7 @@ using namespace mrpt::obs;
 using namespace mrpt::math;
 using namespace std;
 using mrpt::utils::CTicTac;
-using mrpt::utils::DEG2RAD;
+using mrpt::DEG2RAD;
 using mrpt::obs::CObservationRGBD360;
 
 IMPLEMENTS_GENERIC_SENSOR(COpenNI2_RGBD360, mrpt::hwdrivers)

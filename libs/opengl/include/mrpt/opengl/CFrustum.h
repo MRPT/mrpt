@@ -109,25 +109,25 @@ class CFrustum : public CRenderizableDisplayList
 
 	float getHorzFOV() const
 	{
-		return mrpt::utils::RAD2DEG(m_fov_horz_left + m_fov_horz_right);
+		return mrpt::RAD2DEG(m_fov_horz_left + m_fov_horz_right);
 	}
 	float getVertFOV() const
 	{
-		return mrpt::utils::RAD2DEG(m_fov_vert_down + m_fov_vert_up);
+		return mrpt::RAD2DEG(m_fov_vert_down + m_fov_vert_up);
 	}
 	float getHorzFOVLeft() const
 	{
-		return mrpt::utils::RAD2DEG(m_fov_horz_left);
+		return mrpt::RAD2DEG(m_fov_horz_left);
 	}
 	float getHorzFOVRight() const
 	{
-		return mrpt::utils::RAD2DEG(m_fov_horz_right);
+		return mrpt::RAD2DEG(m_fov_horz_right);
 	}
 	float getVertFOVDown() const
 	{
-		return mrpt::utils::RAD2DEG(m_fov_vert_down);
+		return mrpt::RAD2DEG(m_fov_vert_down);
 	}
-	float getVertFOVUp() const { return mrpt::utils::RAD2DEG(m_fov_vert_up); }
+	float getVertFOVUp() const { return mrpt::RAD2DEG(m_fov_vert_up); }
 	/** Render \sa mrpt::opengl::CRenderizable */
 	void render_dl() const override;
 

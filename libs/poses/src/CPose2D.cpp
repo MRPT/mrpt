@@ -418,7 +418,7 @@ CPose2D CPose2D::getOppositeScalar() const
 
 void CPose2D::asString(std::string& s) const
 {
-	s = mrpt::format("[%f %f %fdeg]", x(), y(), mrpt::utils::RAD2DEG(m_phi));
+	s = mrpt::format("[%f %f %fdeg]", x(), y(), mrpt::RAD2DEG(m_phi));
 }
 
 void CPose2D::setToNaN()

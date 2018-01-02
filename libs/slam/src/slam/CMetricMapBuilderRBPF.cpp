@@ -383,7 +383,7 @@ unsigned int CMetricMapBuilderRBPF::getCurrentlyBuiltMapSize()
   ---------------------------------------------------------------*/
 void CMetricMapBuilderRBPF::drawCurrentEstimationToImage(utils::CCanvas* img)
 {
-	using mrpt::utils::round;
+	using mrpt::round;
 
 	unsigned int i, M = mapPDF.particlesCount();
 	std::deque<TPose3D> path;

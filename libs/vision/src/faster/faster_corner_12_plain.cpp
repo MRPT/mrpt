@@ -13,7 +13,7 @@
 // ---------------------------------------------------------------------------
 
 #include <mrpt/utils/utils_defs.h>
-#include <mrpt/utils/SSE_types.h>
+#include <mrpt/core/SSE_types.h>
 #include "faster_corner_prototypes.h"
 
 #include "faster_corner_utilities.h"

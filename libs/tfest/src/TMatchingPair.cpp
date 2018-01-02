@@ -7,41 +7,37 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "base-precomp.h"  // Precompiled headers
+#include "tfest-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/TMatchingPair.h>
-#include <mrpt/utils/CFileOutputStream.h>
-#include <mrpt/utils/utils_defs.h>
+#include <mrpt/tfest/TMatchingPair.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/system/os.h>
-#include <mrpt/math/ops_containers.h>
+#include <mrpt/core/format.h>
+#include <iostream>
+#include <fstream>
+#include <numeric>  // accumulate()
+#include <cstdio>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::math;
+using namespace mrpt::tfest;
 using namespace mrpt::poses;
 using namespace mrpt::system;
 using namespace std;
 
-/*---------------------------------------------------------------
-						dumpToFile
-  ---------------------------------------------------------------*/
 void TMatchingPairList::dumpToFile(const std::string& fileName) const
 {
-	CFileOutputStream f(fileName);
-	ASSERT_(f.fileOpenCorrectly());
-	for (const_iterator it = begin(); it != end(); ++it)
+	std::ofstream f(fileName);
+	ASSERT_(f.is_open());
+	for (auto it = begin(); it != end(); ++it)
 	{
-		f.printf(
+		f << mrpt::format(
 			"%u %u %f %f %f %f %f %f %f\n", it->this_idx, it->other_idx,
 			it->this_x, it->this_y, it->this_z, it->other_x, it->other_y,
 			it->other_z, it->errorSquareAfterTransformation);
 	}
 }
 
-/*---------------------------------------------------------------
-						saveAsMATLABScript
-  ---------------------------------------------------------------*/
 void TMatchingPairList::saveAsMATLABScript(const std::string& filName) const
 {
 	FILE* f = os::fopen(filName.c_str(), "wt");
@@ -82,7 +78,7 @@ bool TMatchingPairList::indexOtherMapHasCorrespondence(size_t idx) const
 	return false;
 }
 
-bool mrpt::utils::operator<(const TMatchingPair& a, const TMatchingPair& b)
+bool mrpt::tfest::operator<(const TMatchingPair& a, const TMatchingPair& b)
 {
 	if (a.this_idx == b.this_idx)
 		return (a.this_idx < b.this_idx);
@@ -90,12 +86,12 @@ bool mrpt::utils::operator<(const TMatchingPair& a, const TMatchingPair& b)
 		return (a.other_idx < b.other_idx);
 }
 
-bool mrpt::utils::operator==(const TMatchingPair& a, const TMatchingPair& b)
+bool mrpt::tfest::operator==(const TMatchingPair& a, const TMatchingPair& b)
 {
 	return (a.this_idx == b.this_idx) && (a.other_idx == b.other_idx);
 }
 
-bool mrpt::utils::operator==(
+bool mrpt::tfest::operator==(
 	const TMatchingPairList& a, const TMatchingPairList& b)
 {
 	if (a.size() != b.size()) return false;
@@ -105,25 +101,19 @@ bool mrpt::utils::operator==(
 	return true;
 }
 
-/*---------------------------------------------------------------
-						overallSquareError
-  ---------------------------------------------------------------*/
 float TMatchingPairList::overallSquareError(const CPose2D& q) const
 {
 	vector<float> errs(size());
 	squareErrorVector(q, errs);
-	return math::sum(errs);
+	return std::accumulate(errs.begin(), errs.end(), 0);
 }
 
-/*---------------------------------------------------------------
-						overallSquareErrorAndPoints
-  ---------------------------------------------------------------*/
 float TMatchingPairList::overallSquareErrorAndPoints(
 	const CPose2D& q, vector<float>& xs, vector<float>& ys) const
 {
 	vector<float> errs(size());
 	squareErrorVector(q, errs, xs, ys);
-	return math::sum(errs);
+	return std::accumulate(errs.begin(), errs.end(), 0);
 }
 
 /*---------------------------------------------------------------
@@ -207,7 +197,7 @@ void TMatchingPairList::filterUniqueRobustPairs(
 			c.errorSquareAfterTransformation <
 				bestMatchForThisMap[c.this_idx]
 					->errorSquareAfterTransformation  // or better
-			)
+		)
 		{
 			bestMatchForThisMap[c.this_idx] = &c;
 		}
@@ -220,4 +210,16 @@ void TMatchingPairList::filterUniqueRobustPairs(
 		if (bestMatchForThisMap[c.this_idx] == &c)
 			out_filtered_list.push_back(c);  // Add to the output
 	}
+}
+
+std::ostream& mrpt::tfest::operator<<(
+	std::ostream& o, const mrpt::tfest::TMatchingPair& pair)
+{
+	o << "[" << pair.this_idx << "->" << pair.other_idx << "]"
+	  << ": "
+	  << "(" << pair.this_x << "," << pair.this_y << "," << pair.this_z << ")"
+	  << " -> "
+	  << "(" << pair.other_x << "," << pair.other_y << "," << pair.other_z
+	  << ")";
+	return o;
 }

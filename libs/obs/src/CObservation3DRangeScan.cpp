@@ -1293,8 +1293,8 @@ CObservation3DRangeScan::TPixelLabelInfoBase*
 }
 
 T3DPointsTo2DScanParams::T3DPointsTo2DScanParams()
-	: angle_sup(mrpt::utils::DEG2RAD(5)),
-	  angle_inf(mrpt::utils::DEG2RAD(5)),
+	: angle_sup(mrpt::DEG2RAD(5)),
+	  angle_inf(mrpt::DEG2RAD(5)),
 	  z_min(-std::numeric_limits<double>::max()),
 	  z_max(std::numeric_limits<double>::max()),
 	  oversampling_ratio(1.2),

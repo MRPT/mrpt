@@ -11,7 +11,7 @@
 
 #define MRPT_NO_WARN_BIG_HDR
 #include <mrpt/base.h>
-#include <mrpt/utils/initializer.h>
+#include <mrpt/core/initializer.h>
 
 #ifndef MRPT_ENABLE_PRECOMPILED_HDRS
 #define MRPT_ALWAYS_INCLUDE_ALL_HEADERS

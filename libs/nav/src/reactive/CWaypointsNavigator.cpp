@@ -206,8 +206,8 @@ void CWaypointsNavigator::waypoints_navigationStep()
 									"Trying to align to heading: %.02f deg. "
 									"Relative heading: %.02f deg. "
 									"With motion cmd: %s",
-									mrpt::utils::RAD2DEG(wp.target_heading),
-									mrpt::utils::RAD2DEG(ang_err),
+									mrpt::RAD2DEG(wp.target_heading),
+									mrpt::RAD2DEG(ang_err),
 									align_cmd ? align_cmd->asString().c_str()
 											  : "nullptr (operation not "
 												"supported by this robot)");
@@ -235,8 +235,8 @@ void CWaypointsNavigator::waypoints_navigationStep()
 									"Waiting for the robot to get aligned: "
 									"current_heading=%.02f deg "
 									"target_heading=%.02f deg",
-									mrpt::utils::RAD2DEG(m_curPoseVel.pose.phi),
-									mrpt::utils::RAD2DEG(wp.target_heading));
+									mrpt::RAD2DEG(m_curPoseVel.pose.phi),
+									mrpt::RAD2DEG(wp.target_heading));
 							}
 						}
 					}
@@ -537,7 +537,7 @@ void mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams::
 CWaypointsNavigator::TWaypointsNavigatorParams::TWaypointsNavigatorParams()
 	: max_distance_to_allow_skip_waypoint(-1.0),
 	  min_timesteps_confirm_skip_waypoints(1),
-	  waypoint_angle_tolerance(mrpt::utils::DEG2RAD(5.0)),
+	  waypoint_angle_tolerance(mrpt::DEG2RAD(5.0)),
 	  rel_speed_for_stop_waypoints(0.10),
 	  multitarget_look_ahead(0)
 {

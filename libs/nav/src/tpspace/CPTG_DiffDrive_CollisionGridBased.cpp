@@ -42,7 +42,7 @@ void CPTG_DiffDrive_CollisionGridBased::loadDefaultParams()
 
 	m_resolution = 0.10;
 	V_MAX = 1.0;
-	W_MAX = mrpt::utils::DEG2RAD(120);
+	W_MAX = mrpt::DEG2RAD(120);
 }
 
 void CPTG_DiffDrive_CollisionGridBased::loadFromConfigFile(
@@ -74,7 +74,7 @@ void CPTG_DiffDrive_CollisionGridBased::saveToConfigFile(
 		sSection, "v_max_mps", V_MAX, WN, WV,
 		"Maximum linear velocity for trajectories [m/s].");
 	cfg.write(
-		sSection, "w_max_dps", mrpt::utils::RAD2DEG(W_MAX), WN, WV,
+		sSection, "w_max_dps", mrpt::RAD2DEG(W_MAX), WN, WV,
 		"Maximum angular velocity for trajectories [deg/s].");
 	cfg.write(
 		sSection, "turningRadiusReference", turningRadiusReference, WN, WV,

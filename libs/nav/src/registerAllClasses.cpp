@@ -11,7 +11,7 @@
 
 #include <mrpt/nav.h>
 #include <mrpt/serialization/CSerializable.h>
-#include <mrpt/utils/initializer.h>
+#include <mrpt/core/initializer.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;

@@ -28,7 +28,7 @@ struct loadFromRangeImpl
 	{
 		using namespace mrpt::poses;
 		using mrpt::square;
-		using mrpt::utils::DEG2RAD;
+		using mrpt::DEG2RAD;
 		obj.mark_as_modified();
 
 		// If robot pose is supplied, compute sensor pose relative to it.
@@ -286,7 +286,7 @@ struct loadFromRangeImpl
 									.maxDistForInterpolatePoints &&
 							fabs(changeInDirection) < DEG2RAD(5))
 						{
-							int nInterpol = mrpt::utils::round(
+							int nInterpol = mrpt::round(
 								d / (2 * sqrt(minDistSqrBetweenLaserPoints)));
 
 							for (int q = 1; q < nInterpol; q++)

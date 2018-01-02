@@ -159,7 +159,7 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 	CPose3DPDF::Ptr posePDF_i, posePDF_j;
 	CSensoryFrame::Ptr sf_i, sf_j;
 	CMultiMetricMap *map_i = NULL, *map_j = NULL;
-	mrpt::utils::TMatchingPairList corrs;
+	mrpt::tfest::TMatchingPairList corrs;
 	static CPose3D nullPose(0, 0, 0);
 
 	// Create the maps:
