@@ -33,14 +33,12 @@
 #include <mrpt/system/vector_loadsave.h>
 #include <mrpt/serialization/CMemoryChunk.h>
 #include <mrpt/serialization/CArchive.h>
-#include <mrpt/utils/CFileOutputStream.h>
-#include <mrpt/utils/CFileInputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/io/CFileInputStream.h>
+#include <mrpt/io/CMemoryStream.h>  // req by CMemoryChunk CRTP
 
 #include "opengl_internals.h"
 
-#include <mrpt/io/CMemoryStream.h>
-// Test refactoring CMemoryChunk:
-// IMPLEMENTS_SERIALIZABLE(CMemoryChunk, CSerializable, mrpt::serialization)
 using mrpt::serialization::CMemoryChunk;
 
 using namespace mrpt;
