@@ -26,6 +26,7 @@ using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
+using mrpt::serialization::CArchive;
 
 /*---------------------------------------------------------------
 						normalPDF
@@ -608,4 +609,30 @@ double mrpt::math::noncentralChi2CDF(
 		(std::pow((double)arg / a, 1.0 / 3.0) - (1.0 - 2.0 / 9.0 * b)) /
 		std::sqrt(2.0 / 9.0 * b);
 	return 0.5 * (1.0 + std::erf(t / std::sqrt(2.0)));
+}
+
+
+CArchive& mrpt::math::operator>>(CArchive& s, CVectorFloat& v)
+{
+	v.resize(s.ReadAs<uint32_t>());
+	if (v.size()>0) s.ReadBufferFixEndianness(&v[0], v.size());
+	return s;
+}
+CArchive& mrpt::math::operator>>(CArchive& s, CVectorDouble& v)
+{
+	v.resize(s.ReadAs<uint32_t>());
+	if (v.size()>0) s.ReadBufferFixEndianness(&v[0], v.size());
+	return s;
+}
+CArchive& mrpt::math::operator<<(CArchive& s, const CVectorFloat& v)
+{
+	s.WriteAs<uint32_t>(v.size());
+	if (v.size()>0) s.WriteBufferFixEndianness(&v[0], v.size());
+	return s;
+}
+CArchive& mrpt::math::operator<<(CArchive& s, const CVectorDouble& v)
+{
+	s.WriteAs<uint32_t>(v.size());
+	if (v.size()>0) s.WriteBufferFixEndianness(&v[0], v.size());
+	return s;
 }
