@@ -71,7 +71,7 @@ struct TMetricMapTypesRegistry
 	void loadFromConfigFile_map_specific(                                    \
 		const mrpt::config::CConfigFileBase& source,                          \
 		const std::string& sectionNamePrefix) override;                      \
-	void dumpToTextStream_map_specific(mrpt::utils::CStream& out)            \
+	void dumpToTextStream_map_specific(mrpt::serialization::CArchive& out)            \
 		const override;                                                      \
 	}                                                                        \
 	;                                                                        \

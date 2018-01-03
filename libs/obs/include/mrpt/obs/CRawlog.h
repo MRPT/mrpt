@@ -387,7 +387,7 @@ class CRawlog : public mrpt::serialization::CSerializable
 	  * \sa getActionObservationPair, getActionObservationPairOrObservation
 	  */
 	static bool readActionObservationPair(
-		mrpt::utils::CStream& inStream, CActionCollection::Ptr& action,
+		mrpt::serialization::CArchive& inStream, CActionCollection::Ptr& action,
 		CSensoryFrame::Ptr& observations, size_t& rawlogEntry);
 
 	/** Reads a consecutive pair action/sensory_frame OR an observation,
@@ -409,7 +409,7 @@ class CRawlog : public mrpt::serialization::CSerializable
 	  * \sa getActionObservationPair
 	  */
 	static bool getActionObservationPairOrObservation(
-		mrpt::utils::CStream& inStream, CActionCollection::Ptr& action,
+		mrpt::serialization::CArchive& inStream, CActionCollection::Ptr& action,
 		CSensoryFrame::Ptr& observations, CObservation::Ptr& observation,
 		size_t& rawlogEntry);
 

@@ -79,11 +79,11 @@ struct Message_TOPCON_PZS : public gnss_message
 			latitude_degrees, longitude_degrees, height_meters);
 	}
 	void dumpToStream(
-		mrpt::utils::CStream& out) const override;  // See docs in base
+		mrpt::serialization::CArchive& out) const override;  // See docs in base
 
    protected:
-	void internal_writeToStream(mrpt::utils::CStream& out) const override;
-	void internal_readFromStream(mrpt::utils::CStream& in) override;
+	void internal_writeToStream(mrpt::serialization::CArchive& out) const override;
+	void internal_readFromStream(mrpt::serialization::CArchive& in) override;
 
    public:
 	MRPT_MAKE_ALIGNED_OPERATOR_NEW
@@ -110,10 +110,10 @@ struct Message_TOPCON_SATS : public gnss_message
 	mrpt::vector_signed_word AZs;
 
 	void dumpToStream(
-		mrpt::utils::CStream& out) const override;  // See docs in base
+		mrpt::serialization::CArchive& out) const override;  // See docs in base
    protected:
-	void internal_writeToStream(mrpt::utils::CStream& out) const override;
-	void internal_readFromStream(mrpt::utils::CStream& in) override;
+	void internal_writeToStream(mrpt::serialization::CArchive& out) const override;
+	void internal_readFromStream(mrpt::serialization::CArchive& in) override;
 };
 }
 }

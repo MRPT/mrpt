@@ -30,25 +30,20 @@ CObservation6DFeatures::TMeasurement::TMeasurement() : id(INVALID_LANDMARK_ID)
 {
 }
 
-uint8_t CObservation6DFeatures::serializeGetVersion() const { return XX; }
+uint8_t CObservation6DFeatures::serializeGetVersion() const { return 0; }
 void CObservation6DFeatures::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
+	out << minSensorDistance << maxSensorDistance << sensorPose;
+
+	const uint32_t n = sensedFeatures.size();
+	out << n;
+	for (uint32_t i = 0; i < n; i++)
 	{
-		out << minSensorDistance << maxSensorDistance << sensorPose;
-
-		const uint32_t n = sensedFeatures.size();
-		out << n;
-		for (uint32_t i = 0; i < n; i++)
-		{
-			const TMeasurement& m = sensedFeatures[i];
-			out << m.pose << m.id << m.inf_matrix;
-		}
-
-		out << sensorLabel << timestamp;
+		const TMeasurement& m = sensedFeatures[i];
+		out << m.pose << m.id << m.inf_matrix;
 	}
+
+	out << sensorLabel << timestamp;
 }
 
 void CObservation6DFeatures::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)

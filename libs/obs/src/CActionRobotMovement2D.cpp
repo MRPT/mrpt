@@ -43,60 +43,50 @@ CActionRobotMovement2D::CActionRobotMovement2D()
 {
 }
 
-uint8_t CActionRobotMovement2D::serializeGetVersion() const { return XX; }
+uint8_t CActionRobotMovement2D::serializeGetVersion() const { return 7; }
 void CActionRobotMovement2D::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 7;
+	out.WriteAs<uint32_t>(estimationMethod);
+	// Added in version 2:
+	// If the estimation method is emOdometry, save the rawOdo + config data
+	// instead of
+	//  the PDF itself:
+	if (estimationMethod == emOdometry)
+	{
+		// The odometry data:
+		out << rawOdometryIncrementReading;
+		out.WriteAs<uint32_t>(motionModelConfiguration.modelSelection);
+		out << motionModelConfiguration.gaussianModel.a1
+			<< motionModelConfiguration.gaussianModel.a2
+			<< motionModelConfiguration.gaussianModel.a3
+			<< motionModelConfiguration.gaussianModel.a4
+			<< motionModelConfiguration.gaussianModel.minStdXY
+			<< motionModelConfiguration.gaussianModel.minStdPHI;
+
+		out << motionModelConfiguration.thrunModel.nParticlesCount
+			<< motionModelConfiguration.thrunModel.alfa1_rot_rot
+			<< motionModelConfiguration.thrunModel.alfa2_rot_trans
+			<< motionModelConfiguration.thrunModel.alfa3_trans_trans
+			<< motionModelConfiguration.thrunModel.alfa4_trans_rot
+			<< motionModelConfiguration.thrunModel.additional_std_XY
+			<< motionModelConfiguration.thrunModel.additional_std_phi;
+	}
 	else
 	{
-		uint32_t i = static_cast<uint32_t>(estimationMethod);
-
-		out << i;
-
-		// Added in version 2:
-		// If the estimation method is emOdometry, save the rawOdo + config data
-		// instead of
-		//  the PDF itself:
-		if (estimationMethod == emOdometry)
-		{
-			// The odometry data:
-			out << rawOdometryIncrementReading;
-
-			i = static_cast<uint32_t>(motionModelConfiguration.modelSelection);
-			out << i;
-			out << motionModelConfiguration.gaussianModel.a1
-				<< motionModelConfiguration.gaussianModel.a2
-				<< motionModelConfiguration.gaussianModel.a3
-				<< motionModelConfiguration.gaussianModel.a4
-				<< motionModelConfiguration.gaussianModel.minStdXY
-				<< motionModelConfiguration.gaussianModel.minStdPHI;
-
-			out << motionModelConfiguration.thrunModel.nParticlesCount
-				<< motionModelConfiguration.thrunModel.alfa1_rot_rot
-				<< motionModelConfiguration.thrunModel.alfa2_rot_trans
-				<< motionModelConfiguration.thrunModel.alfa3_trans_trans
-				<< motionModelConfiguration.thrunModel.alfa4_trans_rot
-				<< motionModelConfiguration.thrunModel.additional_std_XY
-				<< motionModelConfiguration.thrunModel.additional_std_phi;
-		}
-		else
-		{
-			// The PDF:
-			out << (*poseChange);
-		}
-
-		// Added in version 1:
-		out << hasVelocities;
-		if (hasVelocities) out << velocityLocal;  // v7
-
-		out << hasEncodersInfo;
-		if (hasEncodersInfo)
-			out << encoderLeftTicks << encoderRightTicks;  // added if() in v7
-
-		// Added in version 6
-		out << timestamp;
+		// The PDF:
+		out << (*poseChange);
 	}
+
+	// Added in version 1:
+	out << hasVelocities;
+	if (hasVelocities) out << velocityLocal;  // v7
+
+	out << hasEncodersInfo;
+	if (hasEncodersInfo)
+		out << encoderLeftTicks << encoderRightTicks;  // added if() in v7
+
+	// Added in version 6
+	out << timestamp;
 }
 
 void CActionRobotMovement2D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)

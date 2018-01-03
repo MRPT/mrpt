@@ -67,7 +67,7 @@ struct Message_NMEA_GGA : public gnss_message
 	content_t fields;
 
 	void dumpToStream(
-		mrpt::utils::CStream& out) const override;  // See docs in base
+		mrpt::serialization::CArchive& out) const override;  // See docs in base
 
 	/**  Return the geodetic coords as a mrpt::topography::TGeodeticCoords
 	 * structure (requires linking against mrpt-topography)
@@ -130,7 +130,7 @@ struct Message_NMEA_GLL : public gnss_message
 	/** Message content, accesible by individual fields */
 	content_t fields;
 	void dumpToStream(
-		mrpt::utils::CStream& out) const override;  // See docs in base
+		mrpt::serialization::CArchive& out) const override;  // See docs in base
 	bool getAllFieldDescriptions(std::ostream& o) const override;
 	bool getAllFieldValues(std::ostream& o) const override;
 };
@@ -175,7 +175,7 @@ struct Message_NMEA_RMC : public gnss_message
 	mrpt::system::TTimeStamp getDateAsTimestamp() const;
 
 	void dumpToStream(
-		mrpt::utils::CStream& out) const override;  // See docs in base
+		mrpt::serialization::CArchive& out) const override;  // See docs in base
 	bool getAllFieldDescriptions(std::ostream& o) const override;
 	bool getAllFieldValues(std::ostream& o) const override;
 };
@@ -200,7 +200,7 @@ struct Message_NMEA_VTG : public gnss_message
 	/** Message content, accesible by individual fields */
 	content_t fields;
 	void dumpToStream(
-		mrpt::utils::CStream& out) const override;  // See docs in base
+		mrpt::serialization::CArchive& out) const override;  // See docs in base
 	bool getAllFieldDescriptions(std::ostream& o) const override;
 	bool getAllFieldValues(std::ostream& o) const override;
 };
@@ -237,7 +237,7 @@ struct Message_NMEA_ZDA : public gnss_message
 	mrpt::system::TTimeStamp getDateAsTimestamp() const;
 
 	void dumpToStream(
-		mrpt::utils::CStream& out) const override;  // See docs in base
+		mrpt::serialization::CArchive& out) const override;  // See docs in base
 	bool getAllFieldDescriptions(std::ostream& o) const override;
 	bool getAllFieldValues(std::ostream& o) const override;
 };

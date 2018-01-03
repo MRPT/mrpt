@@ -195,10 +195,10 @@ struct Message_NV_OEM6_GENERIC_FRAME : public gnss_message
 	std::vector<uint8_t> msg_body;
 
 	void dumpToStream(
-		mrpt::utils::CStream& out) const override;  // See docs in base
+		mrpt::serialization::CArchive& out) const override;  // See docs in base
    protected:
-	void internal_writeToStream(mrpt::utils::CStream& out) const override;
-	void internal_readFromStream(mrpt::utils::CStream& in) override;
+	void internal_writeToStream(mrpt::serialization::CArchive& out) const override;
+	void internal_readFromStream(mrpt::serialization::CArchive& in) override;
 };
 
 /** Novatel generic short-header frame (to store frames without a parser at the
@@ -214,10 +214,10 @@ struct Message_NV_OEM6_GENERIC_SHORT_FRAME : public gnss_message
 	std::vector<uint8_t> msg_body;
 
 	void dumpToStream(
-		mrpt::utils::CStream& out) const override;  // See docs in base
+		mrpt::serialization::CArchive& out) const override;  // See docs in base
    protected:
-	void internal_writeToStream(mrpt::utils::CStream& out) const override;
-	void internal_readFromStream(mrpt::utils::CStream& in) override;
+	void internal_writeToStream(mrpt::serialization::CArchive& out) const override;
+	void internal_readFromStream(mrpt::serialization::CArchive& in) override;
 };
 
 /** Novatel frame: NV_OEM6_BESTPOS. \sa mrpt::obs::CObservationGPS  */
@@ -317,10 +317,10 @@ struct Message_NV_OEM6_RANGECMP : public gnss_message
 	uint32_t crc;
 
 	void dumpToStream(
-		mrpt::utils::CStream& out) const override;  // See docs in base
+		mrpt::serialization::CArchive& out) const override;  // See docs in base
    protected:
-	void internal_writeToStream(mrpt::utils::CStream& out) const override;
-	void internal_readFromStream(mrpt::utils::CStream& in) override;
+	void internal_writeToStream(mrpt::serialization::CArchive& out) const override;
+	void internal_readFromStream(mrpt::serialization::CArchive& in) override;
 };
 
 /** Novatel frame: NV_OEM6_RXSTATUS. \sa mrpt::obs::CObservationGPS  */
@@ -366,10 +366,10 @@ struct Message_NV_OEM6_VERSION : public gnss_message
 	uint32_t crc;
 
 	void dumpToStream(
-		mrpt::utils::CStream& out) const override;  // See docs in base
+		mrpt::serialization::CArchive& out) const override;  // See docs in base
    protected:
-	void internal_writeToStream(mrpt::utils::CStream& out) const override;
-	void internal_readFromStream(mrpt::utils::CStream& in) override;
+	void internal_writeToStream(mrpt::serialization::CArchive& out) const override;
+	void internal_readFromStream(mrpt::serialization::CArchive& in) override;
 };
 
 /** Novatel frame: NV_OEM6_RAWIMUS. \sa mrpt::obs::CObservationGPS  */

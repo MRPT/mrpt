@@ -35,24 +35,13 @@ CActionRobotMovement3D::CActionRobotMovement3D()
 	velocities.assign(.0);
 }
 
-uint8_t CActionRobotMovement3D::serializeGetVersion() const { return XX; }
+uint8_t CActionRobotMovement3D::serializeGetVersion() const { return 1; }
 void CActionRobotMovement3D::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		uint32_t i = static_cast<uint32_t>(estimationMethod);
-
-		out << i;
-
-		// The PDF:
-		out << poseChange;
-
-		out << hasVelocities << velocities;
-
-		out << timestamp;
-	}
+	out.WriteAs<uint32_t>(estimationMethod);
+	out << poseChange;
+	out << hasVelocities << velocities;
+	out << timestamp;
 }
 
 void CActionRobotMovement3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
