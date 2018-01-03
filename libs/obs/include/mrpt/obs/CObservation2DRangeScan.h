@@ -100,19 +100,19 @@ class CObservation2DRangeScan : public CObservation
 
 	/** The range values of the scan, in meters. Must have same length than \a
 	 * validRange */
-	mrpt::utils::ContainerReadOnlyProxyAccessor<std::vector<float>> scan;
+	mrpt::containers::ContainerReadOnlyProxyAccessor<std::vector<float>> scan;
 	float getScanRange(const size_t i) const;
 	void setScanRange(const size_t i, const float val);
 
 	/** The intensity values of the scan. If available, must have same length
 	 * than \a validRange */
-	mrpt::utils::ContainerReadOnlyProxyAccessor<std::vector<int32_t>> intensity;
+	mrpt::containers::ContainerReadOnlyProxyAccessor<std::vector<int32_t>> intensity;
 	int32_t getScanIntensity(const size_t i) const;
 	void setScanIntensity(const size_t i, const int val);
 
 	/** It's false (=0) on no reflected rays, referenced to elements in \a scan
 	 */
-	mrpt::utils::ContainerReadOnlyProxyAccessor<std::vector<char>> validRange;
+	mrpt::containers::ContainerReadOnlyProxyAccessor<std::vector<char>> validRange;
 	bool getScanRangeValidity(const size_t i) const;
 	void setScanRangeValidity(const size_t i, const bool val);
 

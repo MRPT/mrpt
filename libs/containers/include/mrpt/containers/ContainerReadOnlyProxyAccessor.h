@@ -13,7 +13,7 @@
 
 namespace mrpt
 {
-namespace utils
+namespace containers
 {
 /** \addtogroup stlext_grp
   * @{ */

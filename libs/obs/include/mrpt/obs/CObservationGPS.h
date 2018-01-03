@@ -197,7 +197,7 @@ class CObservationGPS : public CObservation
 
 	/** Dumps the contents of the observation in a human-readable form to a
 	 * given output stream \sa dumpToConsole(), getDescriptionAsText() */
-	void dumpToStream(mrpt::utils::CStream& out) const;
+	void dumpToStream(mrpt::serialization::CArchive& out) const;
 	/** Dumps the contents of the observation in a human-readable form to an
 	 * std::ostream (default=console) */
 	void dumpToConsole(std::ostream& o = std::cout) const;

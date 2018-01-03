@@ -614,7 +614,7 @@ Real-time ICP-SLAM with a LIDAR sensor.
 	- Changes in libraries:
 		- \ref mrpt_base_grp
 			- New helper templates: mrpt::utils::int_select_by_bytecount<>,
-mrpt::utils::uint_select_by_bytecount<>
+mrpt::uint_select_by_bytecount<>
 			- New methods to evaluate SO(2), SO(3), SE(2) and SE(3) averages and
 weighted averages. See:
 				- Header <mrpt/poses/SO_SE_average.h>

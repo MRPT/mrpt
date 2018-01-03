@@ -104,7 +104,7 @@ void gnss_message::serializeFrom(mrpt::serialization::CArchive& in, uint8_t vers
 
 // Load from binary stream and creates object detecting its type (class
 // factory). Launches an exception upon error
-gnss_message* gnss_message::readAndBuildFromStream(mrpt::utils::CStream& in)
+gnss_message* gnss_message::readAndBuildFromStream(mrpt::serialization::CArchive& in)
 {
 	int32_t msg_id;
 	in >> msg_id;

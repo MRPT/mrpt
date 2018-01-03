@@ -31,21 +31,17 @@ CObservationBeaconRanges::CObservationBeaconRanges()
 }
 
 uint8_t CObservationBeaconRanges::serializeGetVersion() const { return 3; }
-void CObservationBeaconRanges::serializeTo(mrpt::utils::CStream& out) const
+void CObservationBeaconRanges::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	uint32_t i, n;
-
 	// The data
 	out << minSensorDistance << maxSensorDistance << stdError;
-
 	n = sensedData.size();
 	out << n;
 	for (i = 0; i < n; i++)
 		out << sensedData[i].sensorLocationOnRobot
 			<< sensedData[i].sensedDistance << sensedData[i].beaconID;
-
 	out << auxEstimatePose;
-
 	out << sensorLabel << timestamp;
 }
 

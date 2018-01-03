@@ -610,9 +610,9 @@ class CObservation3DRangeScan : public CObservation
 		const uint8_t BITFIELD_BYTES;
 
 	   protected:
-		virtual void internal_readFromStream(mrpt::utils::CStream& in) = 0;
+		virtual void internal_readFromStream(mrpt::serialization::CArchive& in) = 0;
 		virtual void internal_writeToStream(
-			mrpt::utils::CStream& out) const = 0;
+			mrpt::serialization::CArchive& out) const = 0;
 		virtual void Print(std::ostream&) const = 0;
 	};
 
@@ -627,9 +627,7 @@ class CObservation3DRangeScan : public CObservation
 
 		/** Automatically-determined integer type of the proper size such that
 		 * all labels fit as one bit (max: 64)  */
-		typedef
-			typename mrpt::utils::uint_select_by_bytecount<BYTES_REQUIRED>::type
-				bitmask_t;
+		using bitmask_t = typename mrpt::uint_select_by_bytecount<BYTES_REQUIRED>::type;
 
 		/** Each pixel may be assigned between 0 and MAX_NUM_LABELS-1 'labels'
 		 * by
@@ -675,7 +673,7 @@ class CObservation3DRangeScan : public CObservation
 		// Ctor: pass identification to parent for deserialization
 		TPixelLabelInfo() : TPixelLabelInfoBase(BYTES_REQUIRED_) {}
 	   protected:
-		void internal_readFromStream(mrpt::utils::CStream& in) override
+		void internal_readFromStream(mrpt::serialization::CArchive& in) override
 		{
 			{
 				uint32_t nR, nC;
@@ -687,7 +685,7 @@ class CObservation3DRangeScan : public CObservation
 			}
 			in >> pixelLabelNames;
 		}
-		void internal_writeToStream(mrpt::utils::CStream& out) const override
+		void internal_writeToStream(mrpt::serialization::CArchive& out) const override
 		{
 			{
 				const uint32_t nR = static_cast<uint32_t>(pixelLabels.rows());
@@ -812,27 +810,7 @@ class CObservation3DRangeScan : public CObservation
 };  // End of class def.
 
 }  // End of namespace
-
-namespace utils
-{
-// Specialization must occur in the same namespace
-MRPT_DECLARE_TTYPENAME_PTR_NAMESPACE(CObservation3DRangeScan, mrpt::obs)
-
-// Enum <-> string converter:
-template <>
-struct TEnumTypeFiller<mrpt::obs::CObservation3DRangeScan::TIntensityChannelID>
-{
-	typedef mrpt::obs::CObservation3DRangeScan::TIntensityChannelID enum_t;
-	static void fill(bimap<enum_t, std::string>& m_map)
-	{
-		m_map.insert(
-			mrpt::obs::CObservation3DRangeScan::CH_VISIBLE, "CH_VISIBLE");
-		m_map.insert(mrpt::obs::CObservation3DRangeScan::CH_IR, "CH_IR");
-	}
-};
-}
-
-namespace utils
+namespace opengl
 {
 /** Specialization mrpt::opengl::PointCloudAdapter<CObservation3DRangeScan>
  * \ingroup mrpt_adapters_grp */
@@ -894,5 +872,9 @@ class PointCloudAdapter<mrpt::obs::CObservation3DRangeScan>
 };  // end of PointCloudAdapter<CObservation3DRangeScan>
 }
 }  // End of namespace
+MRPT_ENUM_TYPE_BEGIN(mrpt::obs::CObservation3DRangeScan::TIntensityChannelID)
+MRPT_FILL_ENUM_MEMBER(mrpt::obs::CObservation3DRangeScan, CH_VISIBLE);
+MRPT_FILL_ENUM_MEMBER(mrpt::obs::CObservation3DRangeScan, CH_IR);
+MRPT_ENUM_TYPE_END()
 
 #include "CObservation3DRangeScan_project3D_impl.h"

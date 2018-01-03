@@ -30,7 +30,7 @@ Message_NMEA_GGA::content_t::content_t()
 {
 }
 
-void Message_NMEA_GGA::dumpToStream(mrpt::utils::CStream& out) const
+void Message_NMEA_GGA::dumpToStream(mrpt::serialization::CArchive& out) const
 {
 	out.printf("[NMEA GGA datum]\n");
 	out.printf(
@@ -119,7 +119,7 @@ Message_NMEA_GLL::content_t::content_t()
 {
 }
 
-void Message_NMEA_GLL::dumpToStream(mrpt::utils::CStream& out) const
+void Message_NMEA_GLL::dumpToStream(mrpt::serialization::CArchive& out) const
 {
 	out.printf("[NMEA GLL datum]\n");
 	out.printf(
@@ -152,7 +152,7 @@ Message_NMEA_VTG::content_t::content_t()
 {
 }
 
-void Message_NMEA_VTG::dumpToStream(mrpt::utils::CStream& out) const
+void Message_NMEA_VTG::dumpToStream(mrpt::serialization::CArchive& out) const
 {
 	out.printf("[NMEA VTG datum]\n");
 	out.printf(
@@ -216,7 +216,7 @@ mrpt::system::TTimeStamp Message_NMEA_RMC::getDateAsTimestamp() const
 	return buildTimestampFromParts(parts);
 }
 
-void Message_NMEA_RMC::dumpToStream(mrpt::utils::CStream& out) const
+void Message_NMEA_RMC::dumpToStream(mrpt::serialization::CArchive& out) const
 {
 	out.printf("[NMEA RMC datum]\n");
 	out.printf(" Positioning mode: `%c`\n ", (char)fields.positioning_mode);
@@ -260,7 +260,7 @@ Message_NMEA_ZDA::content_t::content_t()
 {
 }
 
-void Message_NMEA_ZDA::dumpToStream(mrpt::utils::CStream& out) const
+void Message_NMEA_ZDA::dumpToStream(mrpt::serialization::CArchive& out) const
 {
 	out.printf("[NMEA ZDA datum]\n");
 	out.printf(

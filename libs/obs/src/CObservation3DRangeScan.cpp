@@ -1217,7 +1217,7 @@ void CObservation3DRangeScan::getDescriptionAsText(std::ostream& o) const
 }
 
 uint8_t CObservation3DRangeScan::TPixelLabelInfoBase::serializeGetVersion() const { return XX; } void CObservation3DRangeScan::TPixelLabelInfoBase::serializeTo(
-	mrpt::utils::CStream& out) const
+	mrpt::serialization::CArchive& out) const
 {
 	const uint8_t version = 1;  // for possible future changes.
 	out << version;
@@ -1233,7 +1233,7 @@ uint8_t CObservation3DRangeScan::TPixelLabelInfoBase::serializeGetVersion() cons
 // Deserialization and class factory. All in one, ladies and gentlemen
 CObservation3DRangeScan::TPixelLabelInfoBase*
 	CObservation3DRangeScan::TPixelLabelInfoBase::readAndBuildFromStream(
-		mrpt::utils::CStream& in)
+		mrpt::serialization::CArchive& in)
 {
 	uint8_t version;
 	in >> version;

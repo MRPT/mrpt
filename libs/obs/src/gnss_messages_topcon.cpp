@@ -45,7 +45,7 @@ Message_TOPCON_PZS::Message_TOPCON_PZS()
 {
 }
 
-void Message_TOPCON_PZS::dumpToStream(mrpt::utils::CStream& out) const
+void Message_TOPCON_PZS::dumpToStream(mrpt::serialization::CArchive& out) const
 {
 	out.printf("\n[TopCon PZS datum]\n");
 	out.printf(
@@ -83,7 +83,7 @@ void Message_TOPCON_PZS::dumpToStream(mrpt::utils::CStream& out) const
 			(int)stats_rtk_fix_progress);
 }
 
-void Message_TOPCON_PZS::internal_writeToStream(mrpt::utils::CStream& out) const
+void Message_TOPCON_PZS::internal_writeToStream(mrpt::serialization::CArchive& out) const
 {
 	out << latitude_degrees << longitude_degrees << height_meters
 		<< RTK_height_meters << PSigma << angle_transmitter << nId << Fix
@@ -94,7 +94,7 @@ void Message_TOPCON_PZS::internal_writeToStream(mrpt::utils::CStream& out) const
 		<< stats_GLONASS_sats_used << stats_rtk_fix_progress;
 }
 
-void Message_TOPCON_PZS::internal_readFromStream(mrpt::utils::CStream& in)
+void Message_TOPCON_PZS::internal_readFromStream(mrpt::serialization::CArchive& in)
 {
 	in >> latitude_degrees >> longitude_degrees >> height_meters >>
 		RTK_height_meters >> PSigma >> angle_transmitter >> nId >> Fix >>
@@ -107,7 +107,7 @@ void Message_TOPCON_PZS::internal_readFromStream(mrpt::utils::CStream& in)
 
 // -------------
 Message_TOPCON_SATS::Message_TOPCON_SATS() : gnss_message(TOPCON_SATS) {}
-void Message_TOPCON_SATS::dumpToStream(mrpt::utils::CStream& out) const
+void Message_TOPCON_SATS::dumpToStream(mrpt::serialization::CArchive& out) const
 {
 	out.printf("\n[TopCon SATS datum]\n");
 	out.printf(
@@ -121,12 +121,12 @@ void Message_TOPCON_SATS::dumpToStream(mrpt::utils::CStream& out) const
 }
 
 void Message_TOPCON_SATS::internal_writeToStream(
-	mrpt::utils::CStream& out) const
+	mrpt::serialization::CArchive& out) const
 {
 	out << USIs << ELs << AZs;
 }
 
-void Message_TOPCON_SATS::internal_readFromStream(mrpt::utils::CStream& in)
+void Message_TOPCON_SATS::internal_readFromStream(mrpt::serialization::CArchive& in)
 {
 	in >> USIs >> ELs >> AZs;
 }
