@@ -10,7 +10,7 @@
 #include "nav-precomp.h"  // Precomp header
 #include <mrpt/nav/tpspace/CPTG_Holo_Blend.h>
 #include <mrpt/math/types_math.h>
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/core/round.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/math/poly_roots.h>

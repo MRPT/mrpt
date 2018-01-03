@@ -10,7 +10,7 @@
 #include "containers-precomp.h"  // Precompiled headers
 
 #include <mrpt/hmtslam/CPropertiesValuesList.h>
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
 #include <stdio.h>
 #include <iostream>

@@ -10,7 +10,7 @@
 #include "maps-precomp.h"  // Precomp header
 
 #include <mrpt/opengl/CPlanarLaserScan.h>
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 
 #if MRPT_HAS_OPENGL_GLUT
 #ifdef _WIN32

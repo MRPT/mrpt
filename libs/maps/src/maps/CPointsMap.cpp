@@ -14,7 +14,7 @@
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/os.h>
 #include <mrpt/math/geometry.h>
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>

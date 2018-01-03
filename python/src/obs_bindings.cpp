@@ -23,7 +23,7 @@
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/maps/CSimpleMap.h>
 
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 
 /* STD */
 #include <cstdint>

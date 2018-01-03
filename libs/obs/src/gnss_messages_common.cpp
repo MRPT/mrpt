@@ -86,7 +86,7 @@ const std::string& gnss_message::getMessageTypeAsString() const
 }
 
 // Save to binary stream. Launches an exception upon error
-uint8_t gnss_message::serializeGetVersion() const { return XX; } void gnss_message::serializeTo(mrpt::utils::CStream& out) const
+uint8_t gnss_message::serializeGetVersion() const { return XX; } void gnss_message::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	const int32_t msg_id = message_type;
 	out << msg_id;
@@ -169,7 +169,7 @@ gnss_message_ptr::~gnss_message_ptr()
 
 // ---------------------------------------
 UTC_time::UTC_time() : hour(0), minute(0), sec(0) {}
-uint8_t UTC_time::serializeGetVersion() const { return XX; } void UTC_time::serializeTo(mrpt::utils::CStream& out) const
+uint8_t UTC_time::serializeGetVersion() const { return XX; } void UTC_time::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	out << hour << minute << sec;
 }

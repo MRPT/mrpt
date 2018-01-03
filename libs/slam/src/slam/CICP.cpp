@@ -13,7 +13,7 @@
 #include <mrpt/tfest.h>
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/system/CTicTac.h>
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/config/CConfigFileBase.h>  // MRPT_LOAD_*()
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/math/ops_containers.h>

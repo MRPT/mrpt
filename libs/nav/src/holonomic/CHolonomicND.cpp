@@ -10,7 +10,7 @@
 #include "nav-precomp.h"  // Precomp header
 
 #include <mrpt/nav/holonomic/CHolonomicND.h>
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/core/round.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/ops_containers.h>
@@ -740,7 +740,7 @@ void CHolonomicND::TOptions::saveToConfigFile(
 	MRPT_END
 }
 
-uint8_t CHolonomicND::serializeGetVersion() const { return XX; } void CHolonomicND::serializeTo(mrpt::utils::CStream& out, int* version) const
+uint8_t CHolonomicND::serializeGetVersion() const { return XX; } void CHolonomicND::serializeTo(mrpt::serialization::CArchive& out, int* version) const
 {
 	if (version)
 		*version = 0;

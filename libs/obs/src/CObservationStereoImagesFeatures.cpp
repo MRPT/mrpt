@@ -11,7 +11,7 @@
 #include <mrpt/obs/CObservationStereoImagesFeatures.h>
 
 #include <mrpt/io/CFileOutputStream.h>
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::obs;
 using namespace mrpt::poses;

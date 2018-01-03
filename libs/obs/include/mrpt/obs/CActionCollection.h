@@ -12,7 +12,7 @@
 #include <mrpt/obs/CAction.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/serialization/CSerializable.h>
-#include <mrpt/core/poly_ptr_ptr.h>
+#include <mrpt/containers/poly_ptr_ptr.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 
 namespace mrpt

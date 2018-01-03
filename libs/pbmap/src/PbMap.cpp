@@ -16,7 +16,7 @@
 
 #include <mrpt/pbmap.h>
 
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 #include <pcl/io/io.h>
 #include <pcl/io/pcd_io.h>
 
@@ -39,7 +39,7 @@ PbMap::PbMap()
 /*---------------------------------------------------------------
 						writeToStream
  ---------------------------------------------------------------*/
-uint8_t PbMap::serializeGetVersion() const { return XX; } void PbMap::serializeTo(mrpt::utils::CStream& out, int* out_Version) const
+uint8_t PbMap::serializeGetVersion() const { return XX; } void PbMap::serializeTo(mrpt::serialization::CArchive& out, int* out_Version) const
 {
 	// cout << "Write PbMap. Version " << *out_Version << endl;
 	if (out_Version)

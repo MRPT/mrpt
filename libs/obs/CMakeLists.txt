@@ -33,6 +33,7 @@ define_mrpt_lib(
 	mrpt-opengl
 	mrpt-poses
 	mrpt-db # xmlparser
+	mrpt-tfest
 	)
 
 IF(BUILD_mrpt-obs)

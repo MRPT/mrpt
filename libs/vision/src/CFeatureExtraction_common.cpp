@@ -12,7 +12,7 @@
 
 #include <mrpt/vision/CFeatureExtraction.h>
 #include <mrpt/system/CTicTac.h>
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::vision;

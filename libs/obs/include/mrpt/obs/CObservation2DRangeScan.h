@@ -252,7 +252,7 @@ class CObservation2DRangeScan : public CObservation
 };  // End of class def.
 
 }  // End of namespace
-namespace utils
+namespace typemeta
 {
 // Specialization must occur in the same namespace
 MRPT_DECLARE_TTYPENAME_PTR_NAMESPACE(CObservation2DRangeScan, ::mrpt::obs)

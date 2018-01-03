@@ -26,7 +26,7 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/typemeta/TEnumType.h>
-#include <mrpt/core/poly_ptr_ptr.h>
+#include <mrpt/containers/poly_ptr_ptr.h>
 #include <mrpt/obs/obs_frwds.h>
 
 namespace mrpt

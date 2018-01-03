@@ -11,7 +11,7 @@
 
 #include <mrpt/maps/TMetricMapInitializer.h>
 #include <mrpt/config/CConfigFileBase.h>
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace std;
 using namespace mrpt;
