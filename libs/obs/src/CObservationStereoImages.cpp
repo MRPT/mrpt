@@ -11,7 +11,7 @@
 
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/math/CMatrix.h>
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 #if MRPT_HAS_MATLAB
 #include <mexplus/mxarray.h>
 #endif

@@ -25,7 +25,7 @@
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/config/CConfigFileBase.h>
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 #include <cstdint>
 #include <mrpt/slam/CICP.h>
 #include <mrpt/system/datetime.h>

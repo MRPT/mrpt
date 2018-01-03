@@ -9,7 +9,7 @@
 
 #include "vision-precomp.h"  // Precompiled headers
 
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/maps/CLandmark.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/serialization/stl_serialization.h>
@@ -88,7 +88,7 @@ void CLandmark::setPose(const CPointPDFGaussian& pose)
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-uint8_t CLandmark::serializeGetVersion() const { return XX; } void CLandmark::serializeTo(mrpt::utils::CStream& out, int* version) const
+uint8_t CLandmark::serializeGetVersion() const { return XX; } void CLandmark::serializeTo(mrpt::serialization::CArchive& out, int* version) const
 {
 	if (version)
 		*version = 4;

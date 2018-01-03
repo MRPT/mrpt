@@ -12,7 +12,7 @@
 #include <mrpt/maps/CBeacon.h>
 #include <mrpt/maps/CBeaconMap.h>
 #include <mrpt/obs/CObservation.h>
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include <mrpt/system/os.h>
 #include <mrpt/math/geometry.h>
@@ -52,7 +52,7 @@ CBeacon::~CBeacon() {}
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-uint8_t CBeacon::serializeGetVersion() const { return XX; } void CBeacon::serializeTo(mrpt::utils::CStream& out, int* version) const
+uint8_t CBeacon::serializeGetVersion() const { return XX; } void CBeacon::serializeTo(mrpt::serialization::CArchive& out, int* version) const
 {
 	if (version)
 		*version = 0;

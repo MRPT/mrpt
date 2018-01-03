@@ -813,7 +813,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 		if (cbJoy->GetValue())
 		{
 			float x, y, z;
-			vector_bool btns;
+			std::vector<bool> btns;
 
 			if (joystick.getJoystickPosition(0, x, y, z, btns))
 			{

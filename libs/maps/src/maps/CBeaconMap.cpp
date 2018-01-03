@@ -20,7 +20,7 @@
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/math/data_utils.h>  // averageLogLikelihood()
 #include <mrpt/system/os.h>
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CSetOfObjects.h>

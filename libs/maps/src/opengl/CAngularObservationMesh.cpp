@@ -12,7 +12,7 @@
 #include <mrpt/opengl/CAngularObservationMesh.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/serialization/stl_serialization.h>
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 
 #if MRPT_HAS_OPENGL_GLUT
 #ifdef _WIN32

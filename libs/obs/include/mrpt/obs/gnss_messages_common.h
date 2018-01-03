@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/datetime.h>
 #include <iostream>
 #include <cstring>  // memset()

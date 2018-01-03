@@ -8,16 +8,18 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/config.h>
-#if MRPT_ENABLE_PRECOMPILED_HDRS
-
-// Observations:
-#include <mrpt/obs/CObservation.h>
-#include <mrpt/obs/CAction.h>
-
-// Very basic classes for maps:
-#include <mrpt/maps/CMetricMap.h>
-
-#include <mrpt/serialization/CArchive.h>  // Will be used in all serialized classes (most of them in mrpt-obs)
-
-#endif
+/*! \file lightweight_geom_data_frwds.h
+  * Forward declarations of all mrpt::math classes related to poses and points.
+  */
+namespace mrpt
+{
+namespace math
+{
+struct TPoint2D;
+struct TPoint3D;
+struct TPose2D;
+struct TPose3D;
+struct TPose3DQuat;
+struct TPoseOrPoint;
+}  // End of namespace
+}  // End of namespace

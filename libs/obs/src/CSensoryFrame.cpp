@@ -11,7 +11,7 @@
 
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
 #include <iterator>
 
@@ -72,7 +72,7 @@ void CSensoryFrame::clear()
 /*---------------------------------------------------------------
 						writeToStream
   ---------------------------------------------------------------*/
-uint8_t CSensoryFrame::serializeGetVersion() const { return XX; } void CSensoryFrame::serializeTo(mrpt::utils::CStream& out, int* version) const
+uint8_t CSensoryFrame::serializeGetVersion() const { return XX; } void CSensoryFrame::serializeTo(mrpt::serialization::CArchive& out, int* version) const
 {
 	if (version)
 		*version = 2;

@@ -12,7 +12,7 @@
 #include <mrpt/nav/holonomic/ClearanceDiagram.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/opengl/CMesh.h>
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/core/round.h>
 #include <mrpt/serialization/stl_serialization.h>
 #include <limits>
@@ -90,7 +90,7 @@ void mrpt::nav::ClearanceDiagram::serializeFrom(mrpt::serialization::CArchive& i
 	};
 }
 
-uint8_t mrpt::nav::ClearanceDiagram::serializeGetVersion() const { return XX; } void mrpt::nav::ClearanceDiagram::serializeTo(mrpt::utils::CStream& out) const
+uint8_t mrpt::nav::ClearanceDiagram::serializeGetVersion() const { return XX; } void mrpt::nav::ClearanceDiagram::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	const uint8_t version = 0;
 	out << version;

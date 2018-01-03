@@ -12,6 +12,8 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/math/math_frwds.h>
+#include <mrpt/math/lightweight_geom_data_frwds.h>
+#include <mrpt/poses/poses_frwds.h>
 
 namespace mrpt
 {

@@ -27,7 +27,7 @@ void TestJoystick()
 	// Open first joystick:
 	// ---------------------------
 	float x, y, z;
-	vector_bool buttons;
+	std::vector<bool> buttons;
 	CTicTac tictac;
 	CJoystick joy;
 

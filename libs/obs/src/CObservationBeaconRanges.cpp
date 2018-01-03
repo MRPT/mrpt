@@ -9,7 +9,7 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/system/os.h>
 
@@ -30,38 +30,26 @@ CObservationBeaconRanges::CObservationBeaconRanges()
 {
 }
 
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-uint8_t CObservationBeaconRanges::serializeGetVersion() const { return XX; } void CObservationBeaconRanges::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CObservationBeaconRanges::serializeGetVersion() const { return 3; }
+void CObservationBeaconRanges::serializeTo(mrpt::utils::CStream& out) const
 {
-	if (version)
-		*version = 3;
-	else
-	{
-		uint32_t i, n;
+	uint32_t i, n;
 
-		// The data
-		out << minSensorDistance << maxSensorDistance << stdError;
+	// The data
+	out << minSensorDistance << maxSensorDistance << stdError;
 
-		n = sensedData.size();
-		out << n;
-		for (i = 0; i < n; i++)
-			out << sensedData[i].sensorLocationOnRobot
-				<< sensedData[i].sensedDistance << sensedData[i].beaconID;
+	n = sensedData.size();
+	out << n;
+	for (i = 0; i < n; i++)
+		out << sensedData[i].sensorLocationOnRobot
+			<< sensedData[i].sensedDistance << sensedData[i].beaconID;
 
-		out << auxEstimatePose;
+	out << auxEstimatePose;
 
-		out << sensorLabel << timestamp;
-	}
+	out << sensorLabel << timestamp;
 }
 
-/*---------------------------------------------------------------
-  Implements the reading from a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
 void CObservationBeaconRanges::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
-	mrpt::utils::CStream& in, int version)
 {
 	switch (version)
 	{

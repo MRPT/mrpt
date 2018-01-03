@@ -266,7 +266,7 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::exactBisection(
 	size_t nodeCount;  // Nodes count
 	size_t i, j;
 	GRAPH_MATRIX Adj;
-	vector_bool partition, bestPartition;
+	std::vector<bool> partition, bestPartition;
 	std::vector<uint32_t> part1, part2;
 	num_t partCutValue, bestCutValue = std::numeric_limits<num_t>::max();
 	bool end = false;

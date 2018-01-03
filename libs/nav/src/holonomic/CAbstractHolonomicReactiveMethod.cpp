@@ -10,7 +10,7 @@
 #include "nav-precomp.h"  // Precomp header
 
 #include <mrpt/nav/holonomic/CAbstractHolonomicReactiveMethod.h>
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::nav;

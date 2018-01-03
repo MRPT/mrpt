@@ -11,7 +11,7 @@
 
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/poses/CPosePDF.h>
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/wrap2pi.h>
 #if MRPT_HAS_MATLAB

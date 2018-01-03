@@ -10,7 +10,7 @@
 #include "obs-precomp.h"  // Precompiled headers
 
 #include <mrpt/obs/CActionRobotMovement2D.h>
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/random.h>

@@ -9,7 +9,7 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/obs/CObservationIMU.h>
 //#include <mrpt/math/CMatrixD.h>
 

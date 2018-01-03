@@ -9,7 +9,7 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/obs/CObservationBatteryState.h>
 #include <mrpt/system/os.h>
 
@@ -32,32 +32,18 @@ CObservationBatteryState::CObservationBatteryState()
 {
 }
 
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-uint8_t CObservationBatteryState::serializeGetVersion() const { return XX; } void CObservationBatteryState::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CObservationBatteryState::serializeGetVersion() const { return 2; }
+void CObservationBatteryState::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	MRPT_UNUSED_PARAM(out);
-	if (version)
-		*version = 2;
-	else
-	{
-		// The data
-		out << voltageMainRobotBattery << voltageMainRobotComputer
-			<< voltageMainRobotBatteryIsValid << voltageMainRobotComputerIsValid
-			<< voltageOtherBatteries << voltageOtherBatteriesValid
-			<< sensorLabel << timestamp;
-	}
+	// The data
+	out << voltageMainRobotBattery << voltageMainRobotComputer
+		<< voltageMainRobotBatteryIsValid << voltageMainRobotComputerIsValid
+		<< voltageOtherBatteries << voltageOtherBatteriesValid
+		<< sensorLabel << timestamp;
 }
 
-/*---------------------------------------------------------------
-  Implements the reading from a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
 void CObservationBatteryState::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
-	mrpt::utils::CStream& in, int version)
 {
-	MRPT_UNUSED_PARAM(in);
 	switch (version)
 	{
 		case 0:

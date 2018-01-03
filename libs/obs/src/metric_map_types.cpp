@@ -9,7 +9,7 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/maps/metric_map_types.h>

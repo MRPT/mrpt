@@ -10,7 +10,7 @@
 #include "obs-precomp.h"  // Precompiled headers
 
 #include <mrpt/obs/CObservation.h>
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
@@ -31,7 +31,7 @@ void CObservation::getSensorPose(mrpt::math::TPose3D& out_sensorPose) const
 {
 	CPose3D p;
 	getSensorPose(p);
-	out_sensorPose = TPose3D(p);
+	out_sensorPose = p.asTPose();
 }
 
 void CObservation::setSensorPose(const mrpt::math::TPose3D& newSensorPose)

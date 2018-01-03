@@ -10,7 +10,7 @@
 #include "maps-precomp.h"  // Precomp header
 
 #include <mrpt/maps/CSimplePointsMap.h>
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include "CPointsMap_crtp_common.h"
 

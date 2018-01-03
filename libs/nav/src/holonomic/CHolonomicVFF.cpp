@@ -10,7 +10,7 @@
 #include "nav-precomp.h"  // Precomp header
 
 #include <mrpt/nav/holonomic/CHolonomicVFF.h>
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace std;
@@ -103,7 +103,7 @@ void CHolonomicVFF::navigate(const NavInput& ni, NavOutput& no)
 	}
 }
 
-uint8_t CHolonomicVFF::serializeGetVersion() const { return XX; } void CHolonomicVFF::serializeTo(mrpt::utils::CStream& out, int* version) const
+uint8_t CHolonomicVFF::serializeGetVersion() const { return XX; } void CHolonomicVFF::serializeTo(mrpt::serialization::CArchive& out, int* version) const
 {
 	if (version)
 		*version = 0;

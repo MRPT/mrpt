@@ -12,7 +12,7 @@
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::obs;
 using namespace mrpt::maps;
@@ -242,7 +242,7 @@ void CSimpleMap::insertToPos(
 	Implements the writing to a CStream capability of
 	  CSerializable objects
   ---------------------------------------------------------------*/
-uint8_t CSimpleMap::serializeGetVersion() const { return XX; } void CSimpleMap::serializeTo(mrpt::utils::CStream& out, int* version) const
+uint8_t CSimpleMap::serializeGetVersion() const { return XX; } void CSimpleMap::serializeTo(mrpt::serialization::CArchive& out, int* version) const
 {
 	if (version)
 		*version = 1;

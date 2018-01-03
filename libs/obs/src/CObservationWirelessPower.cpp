@@ -10,7 +10,7 @@
 #include "obs-precomp.h"  // Precompiled headers
 
 #include <mrpt/obs/CObservationWirelessPower.h>
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::obs;
 using namespace mrpt::poses;

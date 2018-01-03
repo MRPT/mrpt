@@ -129,7 +129,7 @@ class CObservationIMU : public CObservation
 	 * contains valid data (the IMU unit supplies that kind of data).
 	  *  See the top of this page for the meaning of the indices.
 	  */
-	vector_bool dataIsPresent;
+	std::vector<bool> dataIsPresent;
 
 	/** The accelerometer and/or gyroscope measurements taken by the IMU at the
 	 * given timestamp.

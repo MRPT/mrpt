@@ -11,7 +11,7 @@
 /* MRPT */
 #include <mrpt/img/TColor.h>
 #include <mrpt/rtti/CObject.h>
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/config/CConfigFileBase.h>

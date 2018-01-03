@@ -10,7 +10,7 @@
 #include "vision-precomp.h"  // Precompiled headers
 
 #include <mrpt/obs/CObservationVisualLandmarks.h>
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::obs;
 using namespace mrpt::poses;

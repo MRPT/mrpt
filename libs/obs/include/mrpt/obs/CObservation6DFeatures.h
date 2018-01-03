@@ -12,7 +12,7 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/core/aligned_std_vector.h>
+#include <mrpt/core/aligned_std_deque.h>
 
 namespace mrpt
 {

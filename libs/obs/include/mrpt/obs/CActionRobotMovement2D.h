@@ -12,7 +12,7 @@
 #include <mrpt/obs/CAction.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPosePDF.h>
-#include <mrpt/core/poly_ptr_ptr.h>
+#include <mrpt/containers/poly_ptr_ptr.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
 namespace mrpt

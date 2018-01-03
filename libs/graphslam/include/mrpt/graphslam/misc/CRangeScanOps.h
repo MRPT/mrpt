@@ -14,7 +14,7 @@
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/config/CConfigFileBase.h>
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/poses/CPosePDF.h>

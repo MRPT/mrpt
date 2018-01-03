@@ -16,7 +16,7 @@
 #include <mrpt/system/os.h>
 #include <mrpt/opengl/CTexturedPlane.h>
 #include <mrpt/opengl/CSetOfObjects.h>
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;

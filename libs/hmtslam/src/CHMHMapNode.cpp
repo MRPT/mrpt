@@ -64,7 +64,7 @@ CHMHMapNode::~CHMHMapNode()
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-uint8_t CHMHMapNode::serializeGetVersion() const { return XX; } void CHMHMapNode::serializeTo(mrpt::utils::CStream& out, int* version) const
+uint8_t CHMHMapNode::serializeGetVersion() const { return XX; } void CHMHMapNode::serializeTo(mrpt::serialization::CArchive& out, int* version) const
 {
 	if (version)
 		*version = 0;

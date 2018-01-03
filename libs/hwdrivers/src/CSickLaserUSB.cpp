@@ -9,7 +9,7 @@
 
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/crc.h>
 #include <mrpt/hwdrivers/CSickLaserUSB.h>

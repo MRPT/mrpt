@@ -9,7 +9,7 @@
 
 #include "kinematics-precomp.h"  // Precompiled header
 #include <mrpt/kinematics/CVehicleVelCmd_Holo.h>
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::kinematics;
 

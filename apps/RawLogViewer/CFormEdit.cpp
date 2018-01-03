@@ -608,7 +608,7 @@ void CFormEdit::OnbtnDeleteClick(wxCommandEvent& event)
 	WX_END_TRY
 }
 
-vector_bool auxMask;
+std::vector<bool> auxMask;
 
 // Delete observations by index in their sensory frame.
 void filter_delObsByIndex(

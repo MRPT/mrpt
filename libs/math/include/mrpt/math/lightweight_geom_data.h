@@ -11,6 +11,7 @@
 #include <mrpt/core/bits_math.h>
 #include <mrpt/typemeta/TTypeName.h>
 #include <mrpt/math/math_frwds.h>  // forward declarations
+#include <mrpt/math/lightweight_geom_data_frwds.h>  // forward declarations
 #include <mrpt/math/eigen_frwds.h>  // forward declarations
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/core/format.h>
@@ -27,12 +28,6 @@ class CArchive;
 }
 namespace math
 {
-struct TPoint2D;
-struct TPoint3D;
-struct TPose2D;
-struct TPose3D;
-struct TPose3DQuat;
-
 /** Base type of all TPoseXX and TPointXX classes in mrpt::math.
  * Useful for type traits. No virtual methods at all. */
 struct TPoseOrPoint

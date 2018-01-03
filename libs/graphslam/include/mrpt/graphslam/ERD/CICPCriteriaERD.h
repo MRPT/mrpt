@@ -17,7 +17,7 @@
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/system/CTimeLogger.h>
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 #include <cstdint>
 #include <mrpt/img/TColor.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>

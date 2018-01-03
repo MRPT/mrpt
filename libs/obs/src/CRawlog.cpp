@@ -14,7 +14,7 @@
 #include <mrpt/io/CFileInputStream.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;
@@ -159,7 +159,7 @@ CSensoryFrame::Ptr CRawlog::getAsObservations(size_t index) const
 	MRPT_END
 }
 
-uint8_t CRawlog::serializeGetVersion() const { return XX; } void CRawlog::serializeTo(mrpt::utils::CStream& out, int* version) const
+uint8_t CRawlog::serializeGetVersion() const { return XX; } void CRawlog::serializeTo(mrpt::serialization::CArchive& out, int* version) const
 {
 	if (version)
 		*version = 1;

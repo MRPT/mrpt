@@ -18,7 +18,7 @@
 
 //#include <mrpt/system/os.h>
 //#include <mrpt/img/color_maps.h>
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::maps;
 using namespace mrpt::obs;

@@ -599,8 +599,8 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 
 					// Maintain a list of already used landmarks IDs in both
 					// maps to avoid repetitions:
-					vector_bool used_landmarks1(nLM1, false);
-					vector_bool used_landmarks2(nLM2, false);
+					std::vector<bool> used_landmarks1(nLM1, false);
+					std::vector<bool> used_landmarks2(nLM2, false);
 
 					used_landmarks1[all_corrs[idx1].this_idx] = true;
 					used_landmarks1[all_corrs[idx2].this_idx] = true;

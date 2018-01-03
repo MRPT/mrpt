@@ -11,7 +11,7 @@
 
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/poses/CPosePDF.h>
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/opengl/CPointCloud.h>
 
 #include <mrpt/math/CMatrix.h>

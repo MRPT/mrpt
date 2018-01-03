@@ -11,7 +11,7 @@
 
 #include <mrpt/system/os.h>
 #include <mrpt/math/CMatrix.h>
-//#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/img/CEnhancedMetaFile.h>
 #include <mrpt/core/round.h>  // round()
 #include <mrpt/maps/COccupancyGridMap2D.h>

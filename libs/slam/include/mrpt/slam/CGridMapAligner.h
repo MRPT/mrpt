@@ -13,7 +13,7 @@
 #include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/typemeta/TEnumType.h>
-#include <mrpt/core/poly_ptr_ptr.h>
+#include <mrpt/containers/poly_ptr_ptr.h>
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/poses/poses_frwds.h>
 #include <mrpt/vision/CFeatureExtraction.h>
