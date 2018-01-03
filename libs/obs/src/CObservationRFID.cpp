@@ -21,29 +21,22 @@ IMPLEMENTS_SERIALIZABLE(CObservationRFID, CObservation, mrpt::obs)
 /** Constructor
  */
 CObservationRFID::CObservationRFID() : tag_readings() {}
-uint8_t CObservationRFID::serializeGetVersion() const { return XX; }
+uint8_t CObservationRFID::serializeGetVersion() const { return 4; }
 void CObservationRFID::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	// std::cout << "AP-1" << std::endl;
-	MRPT_UNUSED_PARAM(out);
-	if (version)
-		*version = 4;
-	else
-	{
-		// The data
-		const uint32_t Ntags = tag_readings.size();
-		out << Ntags;  // new in v4
+	// The data
+	const uint32_t Ntags = tag_readings.size();
+	out << Ntags;  // new in v4
 
-		// (Fields are dumped in separate for loops for backward compatibility
-		// with old serialization versions)
-		for (uint32_t i = 0; i < Ntags; i++) out << tag_readings[i].power;
-		for (uint32_t i = 0; i < Ntags; i++) out << tag_readings[i].epc;
-		for (uint32_t i = 0; i < Ntags; i++) out << tag_readings[i].antennaPort;
+	// (Fields are dumped in separate for loops for backward compatibility
+	// with old serialization versions)
+	for (uint32_t i = 0; i < Ntags; i++) out << tag_readings[i].power;
+	for (uint32_t i = 0; i < Ntags; i++) out << tag_readings[i].epc;
+	for (uint32_t i = 0; i < Ntags; i++) out << tag_readings[i].antennaPort;
 
-		out << sensorLabel;
-		out << timestamp;
-		out << sensorPoseOnRobot;  // Added in v3
-	}
+	out << sensorLabel;
+	out << timestamp;
+	out << sensorPoseOnRobot;  // Added in v3
 }
 
 void CObservationRFID::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)

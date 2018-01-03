@@ -23,32 +23,28 @@ IMPLEMENTS_SERIALIZABLE(CObservationSkeleton, CObservation, mrpt::obs)
 #define WRITE_JOINT(_J) out << _J.x << _J.y << _J.z << _J.conf;
 #define READ_JOINT(_J) in >> _J.x >> _J.y >> _J.z >> _J.conf;
 
-uint8_t CObservationSkeleton::serializeGetVersion() const { return XX; } void CObservationSkeleton::serializeTo(CStream& out, int* version) const
+uint8_t CObservationSkeleton::serializeGetVersion() const { return 2; }
+void CObservationSkeleton::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 2;
-	else
-	{
-		WRITE_JOINT(head)
-		WRITE_JOINT(neck)
-		WRITE_JOINT(torso)
+	WRITE_JOINT(head)
+	WRITE_JOINT(neck)
+	WRITE_JOINT(torso)
 
-		WRITE_JOINT(left_shoulder)
-		WRITE_JOINT(left_elbow)
-		WRITE_JOINT(left_hand)
-		WRITE_JOINT(left_hip)
-		WRITE_JOINT(left_knee)
-		WRITE_JOINT(left_foot)
+	WRITE_JOINT(left_shoulder)
+	WRITE_JOINT(left_elbow)
+	WRITE_JOINT(left_hand)
+	WRITE_JOINT(left_hip)
+	WRITE_JOINT(left_knee)
+	WRITE_JOINT(left_foot)
 
-		WRITE_JOINT(right_shoulder)
-		WRITE_JOINT(right_elbow)
-		WRITE_JOINT(right_hand)
-		WRITE_JOINT(right_hip)
-		WRITE_JOINT(right_knee)
-		WRITE_JOINT(right_foot)
+	WRITE_JOINT(right_shoulder)
+	WRITE_JOINT(right_elbow)
+	WRITE_JOINT(right_hand)
+	WRITE_JOINT(right_hip)
+	WRITE_JOINT(right_knee)
+	WRITE_JOINT(right_foot)
 
-		out << sensorLabel << timestamp << sensorPose;
-	}
+	out << sensorLabel << timestamp << sensorPose;
 }
 
 void CObservationSkeleton::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -93,7 +89,6 @@ void CObservationSkeleton::serializeFrom(mrpt::serialization::CArchive& in, uint
 void CObservationSkeleton::getDescriptionAsText(std::ostream& o) const
 {
 	using namespace std;
-	;
 	CObservation::getDescriptionAsText(o);
 
 	o << "Sensor pose on the robot: " << sensorPose << endl;

@@ -31,23 +31,16 @@ CObservationOdometry::CObservationOdometry()
 {
 }
 
-uint8_t CObservationOdometry::serializeGetVersion() const { return XX; }
+uint8_t CObservationOdometry::serializeGetVersion() const { return 2; }
 void CObservationOdometry::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	MRPT_UNUSED_PARAM(out);
-	if (version)
-		*version = 2;
-	else
-	{
-		// The data
-		out << odometry << sensorLabel << timestamp
-			// Added in V1:
-			<< hasEncodersInfo;
-		if (hasEncodersInfo) out << encoderLeftTicks << encoderRightTicks;
-
-		out << hasVelocities;
-		if (hasVelocities) out << velocityLocal;
-	}
+	// The data
+	out << odometry << sensorLabel << timestamp
+	// Added in V1:
+	<< hasEncodersInfo;
+	if (hasEncodersInfo) out << encoderLeftTicks << encoderRightTicks;
+	out << hasVelocities;
+	if (hasVelocities) out << velocityLocal;
 }
 
 void CObservationOdometry::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)

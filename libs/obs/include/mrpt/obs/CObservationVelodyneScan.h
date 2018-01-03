@@ -320,7 +320,7 @@ class CObservationVelodyneScan : public CObservation
 
 }  // End of namespace
 
-namespace utils
+namespace typemeta
 {  // Specialization must occur in the same namespace
 MRPT_DECLARE_TTYPENAME_PTR_NAMESPACE(CObservationVelodyneScan, ::mrpt::obs)
 }

@@ -24,27 +24,22 @@ IMPLEMENTS_SERIALIZABLE(CObservationGasSensors, CObservation, mrpt::obs)
 /** Constructor
  */
 CObservationGasSensors::CObservationGasSensors() : m_readings() {}
-uint8_t CObservationGasSensors::serializeGetVersion() const { return XX; }
+uint8_t CObservationGasSensors::serializeGetVersion() const { return 5; }
 void CObservationGasSensors::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 5;
-	else
+	uint32_t i, n = m_readings.size();
+	out << n;
+
+	for (i = 0; i < n; i++)
 	{
-		uint32_t i, n = m_readings.size();
-		out << n;
-
-		for (i = 0; i < n; i++)
-		{
-			out << CPose3D(m_readings[i].eNosePoseOnTheRobot);
-			out << m_readings[i].readingsVoltage;
-			out << m_readings[i].sensorTypes;
-			out << m_readings[i].hasTemperature;
-			if (m_readings[i].hasTemperature) out << m_readings[i].temperature;
-		}
-
-		out << sensorLabel << timestamp;
+		out << CPose3D(m_readings[i].eNosePoseOnTheRobot);
+		out << m_readings[i].readingsVoltage;
+		out << m_readings[i].sensorTypes;
+		out << m_readings[i].hasTemperature;
+		if (m_readings[i].hasTemperature) out << m_readings[i].temperature;
 	}
+
+	out << sensorLabel << timestamp;
 }
 
 void CObservationGasSensors::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -67,7 +62,7 @@ void CObservationGasSensors::serializeFrom(mrpt::serialization::CArchive& in, ui
 			for (i = 0; i < n; i++)
 			{
 				in >> aux;
-				m_readings[i].eNosePoseOnTheRobot = aux;
+				m_readings[i].eNosePoseOnTheRobot = aux.asTPose();
 				in >> m_readings[i].readingsVoltage;
 				in >> m_readings[i].sensorTypes;
 				if (version >= 3)
@@ -123,7 +118,7 @@ void CObservationGasSensors::serializeFrom(mrpt::serialization::CArchive& in, ui
 
 			// (2)
 			eNose.eNosePoseOnTheRobot =
-				CPose3D(0.20f, 0.15f, 0.10f);  // (x,y,z) only
+				mrpt::math::TPose3D(0.20, 0.15, 0.10, .0,.0,.0);  // (x,y,z) only
 			eNose.readingsVoltage.resize(4);
 			eNose.readingsVoltage[0] = readings[8];
 			eNose.readingsVoltage[1] = readings[10];

@@ -90,8 +90,8 @@ void project3DPointsFromDepthImageInto(
 					}
 			}  // end update LUT.
 
-			ASSERT_EQUAL_(WH, size_t(src_obs.get_3dproj_lut().Kys.size());
-			ASSERT_EQUAL_(WH, size_t(src_obs.get_3dproj_lut().Kzs.size());
+			ASSERT_EQUAL_(WH, size_t(src_obs.get_3dproj_lut().Kys.size()));
+			ASSERT_EQUAL_(WH, size_t(src_obs.get_3dproj_lut().Kzs.size()));
 			float* kys = &src_obs.get_3dproj_lut().Kys[0];
 			float* kzs = &src_obs.get_3dproj_lut().Kzs[0];
 

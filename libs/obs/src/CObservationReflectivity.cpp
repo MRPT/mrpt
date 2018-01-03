@@ -18,24 +18,11 @@ using namespace mrpt::poses;
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationReflectivity, CObservation, mrpt::obs)
 
-/** Default constructor.
- */
-CObservationReflectivity::CObservationReflectivity()
-	: reflectivityLevel(0.5f), channel(-1), sensorPose(), sensorStdNoise(0.2f)
-{
-}
-
-CObservationReflectivity::~CObservationReflectivity() {}
-uint8_t CObservationReflectivity::serializeGetVersion() const { return XX; }
+uint8_t CObservationReflectivity::serializeGetVersion() const { return 1; }
 void CObservationReflectivity::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		out << reflectivityLevel << channel << sensorPose;
-		out << sensorLabel << timestamp;
-	}
+	out << reflectivityLevel << channel << sensorPose;
+	out << sensorLabel << timestamp;
 }
 
 void CObservationReflectivity::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)

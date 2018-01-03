@@ -105,9 +105,9 @@ struct Message_TOPCON_SATS : public gnss_message
 	 * Manual, pag 4-31). */
 	std::vector<uint8_t> USIs;
 	/** Elevation (in degrees, 0-90) for each satellite in USIs. */
-	mrpt::vector_signed_byte ELs;
+	std::vector<int8_t> ELs;
 	/** Azimuth (in degrees, 0-360) for each satellite in USIs. */
-	mrpt::vector_signed_word AZs;
+	std::vector<int16_t> AZs;
 
 	void dumpToStream(
 		mrpt::serialization::CArchive& out) const override;  // See docs in base

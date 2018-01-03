@@ -19,22 +19,16 @@ using namespace mrpt::poses;
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationIMU, CObservation, mrpt::obs)
 
-uint8_t CObservationIMU::serializeGetVersion() const { return XX; }
+uint8_t CObservationIMU::serializeGetVersion() const { return 3; }
 void CObservationIMU::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 3;  // v1->v2 was only done to fix a bug in the ordering of
+	// v1->v2 was only done to fix a bug in the ordering of
 	// YAW/PITCH/ROLL rates.
-	else
-	{
-		out << sensorPose << dataIsPresent << timestamp;
-
-		out << rawMeasurements;
-		// Version 3: Added 6 new raw measurements (IMU_MAG_X=15 to
-		// IMU_TEMPERATURE=20)
-
-		out << sensorLabel;
-	}
+	out << sensorPose << dataIsPresent << timestamp;
+	out << rawMeasurements;
+	// Version 3: Added 6 new raw measurements (IMU_MAG_X=15 to
+	// IMU_TEMPERATURE=20)
+	out << sensorLabel;
 }
 
 void CObservationIMU::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)

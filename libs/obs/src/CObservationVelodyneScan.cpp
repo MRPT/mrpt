@@ -95,34 +95,22 @@ mrpt::system::TTimeStamp
 	return originalReceivedTimestamp;
 }
 
-uint8_t CObservationVelodyneScan::serializeGetVersion() const { return XX; }
+uint8_t CObservationVelodyneScan::serializeGetVersion() const { return 1; }
 void CObservationVelodyneScan::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		out << timestamp << sensorLabel;
-
-		out << minRange << maxRange << sensorPose;
-		{
-			uint32_t N = scan_packets.size();
-			out << N;
-			if (N)
-				out.WriteBuffer(&scan_packets[0], sizeof(scan_packets[0]) * N);
-		}
-		{
-			uint32_t N = calibration.laser_corrections.size();
-			out << N;
-			if (N)
-				out.WriteBuffer(
-					&calibration.laser_corrections[0],
-					sizeof(calibration.laser_corrections[0]) * N);
-		}
-		out << point_cloud.x << point_cloud.y << point_cloud.z
-			<< point_cloud.intensity;
-		out << has_satellite_timestamp;  // v1
-	}
+	out << timestamp << sensorLabel;
+	out << minRange << maxRange << sensorPose;
+	out.WriteAs<uint32_t>(scan_packets.size());
+	if (!scan_packets.empty())
+		out.WriteBuffer(&scan_packets[0], sizeof(scan_packets[0]) * scan_packets.size());
+	out.WriteAs<uint32_t>(calibration.laser_corrections.size());
+	if (!calibration.laser_corrections.empty())
+		out.WriteBuffer(
+			&calibration.laser_corrections[0],
+			sizeof(calibration.laser_corrections[0]) * calibration.laser_corrections.size());
+	out << point_cloud.x << point_cloud.y << point_cloud.z
+		<< point_cloud.intensity;
+	out << has_satellite_timestamp;  // v1
 }
 
 void CObservationVelodyneScan::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -172,10 +160,8 @@ void CObservationVelodyneScan::getDescriptionAsText(std::ostream& o) const
 {
 	CObservation::getDescriptionAsText(o);
 	o << "Homogeneous matrix for the sensor 3D pose, relative to robot base:\n";
-	o << sensorPose.getHomogeneousMatrixVal() << "\n" << sensorPose << endl;
-
+	o << sensorPose.getHomogeneousMatrixVal<mrpt::math::CMatrixDouble44>() << "\n" << sensorPose << endl;
 	o << format("Sensor min/max range: %.02f / %.02f m\n", minRange, maxRange);
-
 	o << "Raw packet count: " << scan_packets.size() << "\n";
 }
 
@@ -339,7 +325,7 @@ static void velodyne_scan_to_pointcloud(
 					}
 				}
 
-				ASSERT_BELOW_(laserId, num_lasers)
+				ASSERT_BELOW_(laserId, num_lasers);
 				const mrpt::obs::VelodyneCalibration::PerLaserCalib& calib =
 					scan.calibration.laser_corrections[laserId];
 
