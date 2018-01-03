@@ -165,7 +165,7 @@ void addNewLandmarks(
 	CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>& obj,
 	const typename CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
 										KFTYPE>::vector_KFArray_OBS& Z,
-	const vector_int& data_association,
+	const std::vector<int>& data_association,
 	const typename CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
 										KFTYPE>::KFMatrix_OxO& R);
 template <size_t VEH_SIZE, size_t OBS_SIZE, size_t ACT_SIZE, typename KFTYPE>
@@ -175,7 +175,7 @@ void addNewLandmarks(
 	const typename CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, 0 /* FEAT_SIZE=0 */,
 										ACT_SIZE, KFTYPE>::vector_KFArray_OBS&
 		Z,
-	const vector_int& data_association,
+	const std::vector<int>& data_association,
 	const typename CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, 0 /* FEAT_SIZE=0 */,
 										ACT_SIZE, KFTYPE>::KFMatrix_OxO& R);
 }
@@ -427,7 +427,7 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	 * are NO cross-covariances between them.
 	  */
 	virtual void OnGetObservationsAndDataAssociation(
-		vector_KFArray_OBS& out_z, mrpt::vector_int& out_data_association,
+		vector_KFArray_OBS& out_z, mrpt::std::vector<int>& out_data_association,
 		const vector_KFArray_OBS& in_all_predictions, const KFMatrix& in_S,
 		const std::vector<size_t>& in_lm_indices_in_S, const KFMatrix_OxO& in_R) = 0;
 
@@ -670,7 +670,7 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 		const typename CKalmanFilterCapable<VEH_SIZEb, OBS_SIZEb, FEAT_SIZEb,
 											ACT_SIZEb,
 											KFTYPEb>::vector_KFArray_OBS& Z,
-		const vector_int& data_association,
+		const std::vector<int>& data_association,
 		const typename CKalmanFilterCapable<VEH_SIZEb, OBS_SIZEb, FEAT_SIZEb,
 											ACT_SIZEb, KFTYPEb>::KFMatrix_OxO&
 			R);

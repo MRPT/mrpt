@@ -129,7 +129,7 @@ int main(int argc, char** argv)
 								{
 									if (obs->m_readings[enoseID].sensorTypes.at(
 											indexMonitoredSensor) ==
-										vector_int::value_type(sensorType))
+										std::vector<int>::value_type(sensorType))
 										break;
 								}
 							}

@@ -141,7 +141,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 		/** A grid-map with the set of landmarks falling into each cell.
 		  *  \todo Use the KD-tree instead?
 		  */
-		mrpt::containers::CDynamicGrid<vector_int> m_grid;
+		mrpt::containers::CDynamicGrid<std::vector<int>> m_grid;
 
 		/** Auxiliary variables used in "getLargestDistanceFromOrigin"
 		  * \sa getLargestDistanceFromOrigin
@@ -177,7 +177,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 		void hasBeenModifiedAll();
 		void erase(unsigned int indx);
 
-		mrpt::containers::CDynamicGrid<vector_int>* getGrid() { return &m_grid; }
+		mrpt::containers::CDynamicGrid<std::vector<int>>* getGrid() { return &m_grid; }
 		/** Returns the landmark with a given landmrk ID, or nullptr if not
 		 * found
 		  */

@@ -223,7 +223,7 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
 			? 1 /* In non-SLAM problems, there'll be only 1 fixed observation */
 			: predictLMidxs.size();
 
-	vector_int data_association;  // -1: New map feature.>=0: Indexes in the
+	std::vector<int> data_association;  // -1: New map feature.>=0: Indexes in the
 	// state vector
 
 	// The next loop will only do more than one iteration if the heuristic in
@@ -477,7 +477,7 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
 				// Build the whole Jacobian dh_dx matrix
 				// ---------------------------------------------
 				// Keep only those whose DA is not -1
-				vector_int mapIndicesForKFUpdate(data_association.size());
+				std::vector<int> mapIndicesForKFUpdate(data_association.size());
 				mapIndicesForKFUpdate.resize(
 					std::distance(
 						mapIndicesForKFUpdate.begin(),
@@ -1245,7 +1245,7 @@ void addNewLandmarks(
 	CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>& obj,
 	const typename CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
 										KFTYPE>::vector_KFArray_OBS& Z,
-	const vector_int& data_association,
+	const std::vector<int>& data_association,
 	const typename CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
 										KFTYPE>::KFMatrix_OxO& R)
 {
@@ -1363,7 +1363,7 @@ void addNewLandmarks(
 	const typename CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, 0 /* FEAT_SIZE=0 */,
 										ACT_SIZE, KFTYPE>::vector_KFArray_OBS&
 		Z,
-	const vector_int& data_association,
+	const std::vector<int>& data_association,
 	const typename CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, 0 /* FEAT_SIZE=0 */,
 										ACT_SIZE, KFTYPE>::KFMatrix_OxO& R)
 {

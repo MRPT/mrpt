@@ -169,7 +169,7 @@ class CLogFileRecord_ND : public CHolonomicLogFileRecord
    public:
 	/** Member data.
 	  */
-	vector_int gaps_ini, gaps_end;
+	std::vector<int> gaps_ini, gaps_end;
 	std::vector<double> gaps_eval;
 	int32_t selectedSector;
 	double evaluation;

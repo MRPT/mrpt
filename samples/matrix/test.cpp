@@ -45,7 +45,7 @@ void TestInitMatrix()
 	loadVector(v1, numbers2);
 	cout << "Initialized double vector: " << v1 << endl;
 
-	vector_int v2;
+	std::vector<int> v2;
 	loadVector(v2, numbers2);
 	cout << "Initialized int vector: " << v2 << endl;
 

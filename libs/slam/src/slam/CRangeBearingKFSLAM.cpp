@@ -566,7 +566,7 @@ void CRangeBearingKFSLAM::OnObservationJacobians(
  * cross-covariances between them.
   */
 void CRangeBearingKFSLAM::OnGetObservationsAndDataAssociation(
-	vector_KFArray_OBS& Z, vector_int& data_association,
+	vector_KFArray_OBS& Z, std::vector<int>& data_association,
 	const vector_KFArray_OBS& all_predictions, const KFMatrix& S,
 	const std::vector<size_t>& lm_indices_in_S, const KFMatrix_OxO& R)
 {
@@ -607,7 +607,7 @@ void CRangeBearingKFSLAM::OnGetObservationsAndDataAssociation(
 	obs_idxs_needing_data_assoc.reserve(N);
 
 	{
-		vector_int::iterator itDA;
+		std::vector<int>::iterator itDA;
 		CObservationBearingRange::TMeasurementList::const_iterator itObs;
 		size_t row;
 		for (row = 0, itObs = obs->sensedData.begin(),

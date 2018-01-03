@@ -61,7 +61,7 @@ class CObservationGasSensors : public CObservation
 		  *  0x2620 : Figaro TGS 2620
 		  *  0x4161 : Figaro TGS 4161
 		  */
-		vector_int sensorTypes;
+		std::vector<int> sensorTypes;
 		/** Must be true for "temperature" to contain a valid measurement */
 		bool hasTemperature;
 		/** Sensed temperature in Celcius (valid if hasTemperature=true only) */

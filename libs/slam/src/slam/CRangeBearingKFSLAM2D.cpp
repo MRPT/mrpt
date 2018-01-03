@@ -522,7 +522,7 @@ void CRangeBearingKFSLAM2D::OnObservationJacobians(
  * cross-covariances between them.
   */
 void CRangeBearingKFSLAM2D::OnGetObservationsAndDataAssociation(
-	vector_KFArray_OBS& Z, vector_int& data_association,
+	vector_KFArray_OBS& Z, std::vector<int>& data_association,
 	const vector_KFArray_OBS& all_predictions, const KFMatrix& S,
 	const std::vector<size_t>& lm_indices_in_S, const KFMatrix_OxO& R)
 {
@@ -565,7 +565,7 @@ void CRangeBearingKFSLAM2D::OnGetObservationsAndDataAssociation(
 	obs_idxs_needing_data_assoc.reserve(N);
 
 	{
-		vector_int::iterator itDA;
+		std::vector<int>::iterator itDA;
 		CObservationBearingRange::TMeasurementList::const_iterator itObs;
 		size_t row;
 		for (row = 0, itObs = obs->sensedData.begin(),
@@ -610,7 +610,7 @@ void CRangeBearingKFSLAM2D::OnGetObservationsAndDataAssociation(
 			static CFileOutputStream fNC("metric_stats_NC.txt", true);
 #endif
 
-			vector_int::iterator itDA;
+			std::vector<int>::iterator itDA;
 			size_t idx_obs = 0;
 			for (itDA = data_association.begin();
 				 itDA != data_association.end(); ++itDA, ++idx_obs)
