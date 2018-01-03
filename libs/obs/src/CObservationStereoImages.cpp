@@ -58,8 +58,8 @@ CObservationStereoImages::CObservationStereoImages()
 					Destructor
  ---------------------------------------------------------------*/
 CObservationStereoImages::~CObservationStereoImages() {}
-uint8_t CObservationStereoImages::serializeGetVersion() const { return XX; } void CObservationStereoImages::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CObservationStereoImages::serializeGetVersion() const { return XX; }
+void CObservationStereoImages::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 6;

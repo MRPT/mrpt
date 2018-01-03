@@ -197,8 +197,8 @@ CObservation3DRangeScan::~CObservation3DRangeScan()
 #endif
 }
 
-uint8_t CObservation3DRangeScan::serializeGetVersion() const { return XX; } void CObservation3DRangeScan::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CObservation3DRangeScan::serializeGetVersion() const { return XX; }
+void CObservation3DRangeScan::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 8;

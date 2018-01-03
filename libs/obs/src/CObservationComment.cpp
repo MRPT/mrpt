@@ -18,8 +18,8 @@ using namespace mrpt::poses;
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationComment, CObservation, mrpt::obs)
 
-uint8_t CObservationComment::serializeGetVersion() const { return XX; } void CObservationComment::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CObservationComment::serializeGetVersion() const { return XX; }
+void CObservationComment::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 0;

@@ -45,8 +45,8 @@ bool COccupancyGridMap2D::saveAsBitmapFile(const std::string& file) const
 	Implements the writing to a CStream capability of
 	  CSerializable objects
   ---------------------------------------------------------------*/
-uint8_t COccupancyGridMap2D::serializeGetVersion() const { return XX; } void COccupancyGridMap2D::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t COccupancyGridMap2D::serializeGetVersion() const { return XX; }
+void COccupancyGridMap2D::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 6;

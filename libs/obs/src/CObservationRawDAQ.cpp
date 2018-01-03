@@ -20,8 +20,8 @@ using namespace std;
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationRawDAQ, CObservation, mrpt::obs)
 
-uint8_t CObservationRawDAQ::serializeGetVersion() const { return XX; } void CObservationRawDAQ::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CObservationRawDAQ::serializeGetVersion() const { return XX; }
+void CObservationRawDAQ::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 0;

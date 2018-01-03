@@ -133,8 +133,8 @@ void CHolonomicVFF::serializeFrom(mrpt::serialization::CArchive& in, uint8_t ver
 	Implements the writing to a CStream capability of
 	  CSerializable objects
   ---------------------------------------------------------------*/
-uint8_t CLogFileRecord_VFF::serializeGetVersion() const { return XX; } void CLogFileRecord_VFF::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CLogFileRecord_VFF::serializeGetVersion() const { return XX; }
+void CLogFileRecord_VFF::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	MRPT_UNUSED_PARAM(out);
 	if (version)

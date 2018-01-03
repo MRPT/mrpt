@@ -87,8 +87,8 @@ void CVehicleVelCmd_DiffDriven::serializeFrom(mrpt::serialization::CArchive& in,
 	};
 }
 
-uint8_t CVehicleVelCmd_DiffDriven::serializeGetVersion() const { return XX; } void CVehicleVelCmd_DiffDriven::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CVehicleVelCmd_DiffDriven::serializeGetVersion() const { return XX; }
+void CVehicleVelCmd_DiffDriven::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 	{

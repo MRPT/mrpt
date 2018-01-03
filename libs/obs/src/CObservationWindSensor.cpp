@@ -21,8 +21,8 @@ IMPLEMENTS_SERIALIZABLE(CObservationWindSensor, CObservation, mrpt::obs)
 /** Constructor
  */
 CObservationWindSensor::CObservationWindSensor() : speed(0.0), direction(0.0) {}
-uint8_t CObservationWindSensor::serializeGetVersion() const { return XX; } void CObservationWindSensor::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CObservationWindSensor::serializeGetVersion() const { return XX; }
+void CObservationWindSensor::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	MRPT_UNUSED_PARAM(out);
 	if (version)

@@ -22,8 +22,8 @@ IMPLEMENTS_SERIALIZABLE(CObservationRobotPose, CObservation, mrpt::obs)
 
 /** Default constructor */
 CObservationRobotPose::CObservationRobotPose() {}
-uint8_t CObservationRobotPose::serializeGetVersion() const { return XX; } void CObservationRobotPose::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CObservationRobotPose::serializeGetVersion() const { return XX; }
+void CObservationRobotPose::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 0;

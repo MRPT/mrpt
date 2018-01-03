@@ -68,8 +68,8 @@ void CObservationStereoImagesFeatures::saveFeaturesToTextFile(
 	file.close();
 }
 
-uint8_t CObservationStereoImagesFeatures::serializeGetVersion() const { return XX; } void CObservationStereoImagesFeatures::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CObservationStereoImagesFeatures::serializeGetVersion() const { return XX; }
+void CObservationStereoImagesFeatures::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 0;

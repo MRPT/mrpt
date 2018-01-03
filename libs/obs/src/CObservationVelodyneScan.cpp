@@ -95,8 +95,8 @@ mrpt::system::TTimeStamp
 	return originalReceivedTimestamp;
 }
 
-uint8_t CObservationVelodyneScan::serializeGetVersion() const { return XX; } void CObservationVelodyneScan::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CObservationVelodyneScan::serializeGetVersion() const { return XX; }
+void CObservationVelodyneScan::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 1;

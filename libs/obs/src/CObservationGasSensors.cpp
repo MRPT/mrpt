@@ -24,8 +24,8 @@ IMPLEMENTS_SERIALIZABLE(CObservationGasSensors, CObservation, mrpt::obs)
 /** Constructor
  */
 CObservationGasSensors::CObservationGasSensors() : m_readings() {}
-uint8_t CObservationGasSensors::serializeGetVersion() const { return XX; } void CObservationGasSensors::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CObservationGasSensors::serializeGetVersion() const { return XX; }
+void CObservationGasSensors::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 5;

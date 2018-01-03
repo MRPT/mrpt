@@ -40,8 +40,8 @@ void CHierarchicalMHMap::clear()
 /*---------------------------------------------------------------
 						writeToStream
   ---------------------------------------------------------------*/
-uint8_t CHierarchicalMHMap::serializeGetVersion() const { return XX; } void CHierarchicalMHMap::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CHierarchicalMHMap::serializeGetVersion() const { return XX; }
+void CHierarchicalMHMap::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 0;

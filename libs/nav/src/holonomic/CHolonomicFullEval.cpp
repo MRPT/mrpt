@@ -589,8 +589,8 @@ CLogFileRecord_FullEval::CLogFileRecord_FullEval()
 {
 }
 
-uint8_t CLogFileRecord_FullEval::serializeGetVersion() const { return XX; } void CLogFileRecord_FullEval::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CLogFileRecord_FullEval::serializeGetVersion() const { return XX; }
+void CLogFileRecord_FullEval::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 3;
@@ -769,8 +769,8 @@ void CHolonomicFullEval::TOptions::saveToConfigFile(
 	MRPT_END;
 }
 
-uint8_t CHolonomicFullEval::serializeGetVersion() const { return XX; } void CHolonomicFullEval::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CHolonomicFullEval::serializeGetVersion() const { return XX; }
+void CHolonomicFullEval::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 4;

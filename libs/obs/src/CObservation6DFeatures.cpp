@@ -30,8 +30,8 @@ CObservation6DFeatures::TMeasurement::TMeasurement() : id(INVALID_LANDMARK_ID)
 {
 }
 
-uint8_t CObservation6DFeatures::serializeGetVersion() const { return XX; } void CObservation6DFeatures::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CObservation6DFeatures::serializeGetVersion() const { return XX; }
+void CObservation6DFeatures::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 0;

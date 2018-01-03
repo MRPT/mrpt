@@ -25,8 +25,8 @@ CObservationVisualLandmarks::CObservationVisualLandmarks()
 {
 }
 
-uint8_t CObservationVisualLandmarks::serializeGetVersion() const { return XX; } void CObservationVisualLandmarks::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CObservationVisualLandmarks::serializeGetVersion() const { return XX; }
+void CObservationVisualLandmarks::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 1;

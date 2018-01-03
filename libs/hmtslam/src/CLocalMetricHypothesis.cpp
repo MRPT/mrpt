@@ -976,8 +976,8 @@ void CLocalMetricHypothesis::serializeFrom(mrpt::serialization::CArchive& in, ui
 	Implements the writing to a CStream capability of
 	  CSerializable objects
   ---------------------------------------------------------------*/
-uint8_t CLocalMetricHypothesis::serializeGetVersion() const { return XX; } void CLocalMetricHypothesis::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CLocalMetricHypothesis::serializeGetVersion() const { return XX; }
+void CLocalMetricHypothesis::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 0;
@@ -1015,8 +1015,8 @@ void CLSLAMParticleData::serializeFrom(mrpt::serialization::CArchive& in, uint8_
 	Implements the writing to a CStream capability of
 	  CSerializable objects
   ---------------------------------------------------------------*/
-uint8_t CLSLAMParticleData::serializeGetVersion() const { return XX; } void CLSLAMParticleData::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CLSLAMParticleData::serializeGetVersion() const { return XX; }
+void CLSLAMParticleData::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 0;
