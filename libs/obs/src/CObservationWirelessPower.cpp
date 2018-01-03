@@ -18,26 +18,14 @@ using namespace mrpt::poses;
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationWirelessPower, CObservation, mrpt::obs)
 
-/** Constructor
- */
-CObservationWirelessPower::CObservationWirelessPower() : power(0) {}
-uint8_t CObservationWirelessPower::serializeGetVersion() const { return XX; }
+uint8_t CObservationWirelessPower::serializeGetVersion() const { return 3; }
 void CObservationWirelessPower::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	MRPT_UNUSED_PARAM(out);
-	if (version)
-		*version = 3;
-	else
-	{
-		// The data
-		out << power << sensorLabel << timestamp
-			<< sensorPoseOnRobot;  // Added in v3
-	}
+	out << power << sensorLabel << timestamp << sensorPoseOnRobot; // in v3
 }
 
 void CObservationWirelessPower::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
-	// MRPT_UNUSED_PARAM(in);
 	switch (version)
 	{
 		case 0:

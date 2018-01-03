@@ -31,15 +31,12 @@ class CObservationWirelessPower : public CObservation
 	DEFINE_SERIALIZABLE(CObservationWirelessPower)
 
    public:
-	/** Constructor */
-	CObservationWirelessPower();
-
 	/** @name The data members
 	 * @{ */
 
 	/** The power or signal strength as sensed by the Wifi receiver (In
 	 * percentage: [0-100]) */
-	double power;
+	double power{0};
 	/** The location of the sensing antenna on the robot coordinate framework */
 	mrpt::poses::CPose3D sensorPoseOnRobot;
 

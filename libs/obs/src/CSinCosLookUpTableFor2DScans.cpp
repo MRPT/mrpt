@@ -62,7 +62,7 @@ const CSinCosLookUpTableFor2DScans::TSinCosValues&
 		new_entry.ccos.resize(scan_prop.nRays + 4);
 		new_entry.csin.resize(scan_prop.nRays + 4);
 
-		ASSERT_(scan_prop.nRays >= 2)
+		ASSERT_(scan_prop.nRays >= 2);
 		if (scan_prop.nRays > 0)
 		{
 			double Ang =

@@ -18,26 +18,14 @@ using namespace mrpt::poses;
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationWindSensor, CObservation, mrpt::obs)
 
-/** Constructor
- */
-CObservationWindSensor::CObservationWindSensor() : speed(0.0), direction(0.0) {}
-uint8_t CObservationWindSensor::serializeGetVersion() const { return XX; }
+uint8_t CObservationWindSensor::serializeGetVersion() const { return 3; }
 void CObservationWindSensor::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	MRPT_UNUSED_PARAM(out);
-	if (version)
-		*version = 3;
-	else
-	{
-		// The data
-		out << speed << direction << sensorLabel << timestamp
-			<< sensorPoseOnRobot;
-	}
+	out << speed << direction << sensorLabel << timestamp << sensorPoseOnRobot;
 }
 
 void CObservationWindSensor::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
-	// MRPT_UNUSED_PARAM(in);
 	switch (version)
 	{
 		case 0:

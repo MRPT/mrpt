@@ -104,8 +104,8 @@ void CObservationGasSensors::serializeFrom(mrpt::serialization::CArchive& in, ui
 
 			// There was TWO e-noses:
 			// (1)
-			eNose.eNosePoseOnTheRobot =
-				CPose3D(0.20f, -0.15f, 0.10f);  // (x,y,z) only
+			eNose.eNosePoseOnTheRobot = 
+				TPose3D(0.20, -0.15, 0.10,0,0,0);  // (x,y,z) only
 			eNose.readingsVoltage.resize(4);
 			eNose.readingsVoltage[0] = readings[2];
 			eNose.readingsVoltage[1] = readings[4];
@@ -117,8 +117,8 @@ void CObservationGasSensors::serializeFrom(mrpt::serialization::CArchive& in, ui
 			m_readings.push_back(eNose);
 
 			// (2)
-			eNose.eNosePoseOnTheRobot =
-				mrpt::math::TPose3D(0.20, 0.15, 0.10, .0,.0,.0);  // (x,y,z) only
+			eNose.eNosePoseOnTheRobot = 
+				TPose3D(0.20, 0.15, 0.10, .0,.0,.0);  // (x,y,z) only
 			eNose.readingsVoltage.resize(4);
 			eNose.readingsVoltage[0] = readings[8];
 			eNose.readingsVoltage[1] = readings[10];
@@ -146,47 +146,11 @@ void CObservationGasSensors::getSensorPose(CPose3D& out_sensorPose) const
 		out_sensorPose = CPose3D(0, 0, 0);
 }
 
-/*---------------------------------------------------------------
-					 setSensorPose
- ---------------------------------------------------------------*/
 void CObservationGasSensors::setSensorPose(const CPose3D& newSensorPose)
 {
-	size_t i, n = m_readings.size();
-	if (n)
-		for (i = 0; i < n; i++)
-			m_readings[i].eNosePoseOnTheRobot =
-				mrpt::math::TPose3D(newSensorPose);
+	for (auto& r : m_readings) r.eNosePoseOnTheRobot = newSensorPose.asTPose();
 }
 
-/*---------------------------------------------------------------
-					 CMOSmodel
- ---------------------------------------------------------------*/
-/** Constructor
- */
-
-CObservationGasSensors::CMOSmodel::CMOSmodel()
-	: winNoise_size(30),
-	  decimate_value(6),
-	  a_rise(0),
-	  b_rise(0),
-	  a_decay(0),
-	  b_decay(0),
-	  save_maplog(false),
-	  last_Obs(),
-	  temporal_Obs(),
-	  m_debug_dump(nullptr),
-	  decimate_count(1),
-	  fixed_incT(0),
-	  first_incT(true),
-	  min_reading(10),
-	  first_iteration(true)
-{
-}
-
-CObservationGasSensors::CMOSmodel::~CMOSmodel() {}
-/*---------------------------------------------------------------
-				 get_GasDistribution_estimation
- ---------------------------------------------------------------*/
 bool CObservationGasSensors::CMOSmodel::get_GasDistribution_estimation(
 	float& reading, mrpt::system::TTimeStamp& timestamp)
 {
