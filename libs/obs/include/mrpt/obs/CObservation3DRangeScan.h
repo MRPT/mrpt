@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CObservation3DRangeScan_H
-#define CObservation3DRangeScan_H
+#pragma once
 
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/img/CImage.h>
@@ -21,7 +20,7 @@
 #include <mrpt/typemeta/TEnumType.h>
 #include <mrpt/opengl/pointcloud_adapters.h>
 #include <mrpt/core/integer_select.h>
-#include <mrpt/serialization/stl_serialization.h>
+#include <mrpt/serialization/serialization_frwds.h>
 
 namespace mrpt
 {
@@ -588,9 +587,9 @@ class CObservation3DRangeScan : public CObservation
 		virtual bool checkLabel(
 			const int row, const int col, uint8_t label_idx) const = 0;
 
-		void writeToStream(mrpt::utils::CStream& out) const;
+		void writeToStream(mrpt::serialization::CArchive& out) const;
 		static TPixelLabelInfoBase* readAndBuildFromStream(
-			mrpt::utils::CStream& in);
+			mrpt::serialization::CArchive& in);
 
 		/// std stream interface
 		friend std::ostream& operator<<(
@@ -897,5 +896,3 @@ class PointCloudAdapter<mrpt::obs::CObservation3DRangeScan>
 }  // End of namespace
 
 #include "CObservation3DRangeScan_project3D_impl.h"
-
-#endif

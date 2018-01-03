@@ -14,7 +14,7 @@
 
 // needed here for a few basic types used in Eigen MRPT's plugin:
 #include <mrpt/math/math_frwds.h>
-
+#include <mrpt/serialization/serialization_frwds.h>
 // --------------------------------------------------
 // Include the Eigen3 library headers, including
 //  MRPT's extensions:
@@ -61,10 +61,6 @@
 
 namespace mrpt
 {
-namespace serialization
-{
-	class CArchive;
-}
 namespace math
 {
 /** Column vector, like Eigen::MatrixX*, but automatically initialized to zeros

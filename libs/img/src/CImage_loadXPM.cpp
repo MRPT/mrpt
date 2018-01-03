@@ -639,7 +639,7 @@ bool mrpt::img::CImage::loadFromXPM(const char* const* xpm_data, bool swap_rb)
 		return false;
 	}
 #else
-	MRPT_UNUSED_PARAM(xpm_array);
+	MRPT_UNUSED_PARAM(xpm_data);
 	MRPT_UNUSED_PARAM(swap_rb);
 	return false;
 #endif

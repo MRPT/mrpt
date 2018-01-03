@@ -36,7 +36,7 @@ class CActionCollection : public mrpt::serialization::CSerializable
 
    public:
 	/** ctor */
-	CActionCollection();
+	CActionCollection() {}
 	/** Constructor from a single action. */
 	CActionCollection(CAction& a);
 

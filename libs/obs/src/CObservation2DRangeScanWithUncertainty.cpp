@@ -29,8 +29,8 @@ double CObservation2DRangeScanWithUncertainty::evaluateScanLikelihood(
 	ASSERT_EQUAL_((int)otherScan.scan.size(), (int)this->rangesMean.size());
 	ASSERT_EQUAL_((int)otherScan.scan.size(), (int)this->rangesCovar.rows());
 	ASSERT_EQUAL_((int)otherScan.scan.size(), (int)this->rangesCovar.cols());
-	ASSERT_(params.prob_outliers >= 0.0 && params.prob_outliers <= 1.0)
-	ASSERT_(otherScan.maxRange > 0.0)
+	ASSERT_(params.prob_outliers >= 0.0 && params.prob_outliers <= 1.0);
+	ASSERT_(otherScan.maxRange > 0.0);
 
 	const double sensorRangeVar = mrpt::square(otherScan.stdError);
 	const size_t N = rangesMean.size();

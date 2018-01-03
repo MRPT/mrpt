@@ -8,12 +8,12 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/serialization/serialization_frwds.h>
+
 namespace mrpt
 {
 namespace serialization
 {
-class CArchive;
-
 namespace metaprogramming
 {
 /** \addtogroup stlext_grp
