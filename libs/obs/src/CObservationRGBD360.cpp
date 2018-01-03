@@ -11,7 +11,7 @@
 
 #include <mrpt/obs/CObservationRGBD360.h>
 #include <mrpt/poses/CPosePDF.h>
-
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/system/CTimeLogger.h>
@@ -54,57 +54,52 @@ CObservationRGBD360::~CObservationRGBD360()
 #endif
 }
 
-uint8_t CObservationRGBD360::serializeGetVersion() const { return XX; }
+uint8_t CObservationRGBD360::serializeGetVersion() const { return 0; }
 void CObservationRGBD360::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		// The data
-		out << maxRange << sensorPose;
+	// The data
+	out << maxRange << sensorPose;
 
-		//		out << hasPoints3D;
-		//		if (hasPoints3D)
-		//		{
-		//			uint32_t N = points3D_x.size();
-		//			out << N;
-		//			if (N)
-		//			{
-		//				out.WriteBufferFixEndianness( &points3D_x[0], N );
-		//				out.WriteBufferFixEndianness( &points3D_y[0], N );
-		//				out.WriteBufferFixEndianness( &points3D_z[0], N );
-		//			}
-		//		}
-		//
-		out << hasRangeImage;
-		if (hasRangeImage)
-			for (unsigned i = 0; i < NUM_SENSORS; i++) out << rangeImages[i];
-		out << hasIntensityImage;
-		if (hasIntensityImage)
-			for (unsigned i = 0; i < NUM_SENSORS; i++)
-				out << intensityImages[i];
-		//		out << hasConfidenceImage; if (hasConfidenceImage) out <<
-		// confidenceImage;
-		for (unsigned i = 0; i < NUM_SENSORS; i++) out << timestamps[i];
-		//
-		out << stdError;
-		out << timestamp;
-		out << sensorLabel;
+	//		out << hasPoints3D;
+	//		if (hasPoints3D)
+	//		{
+	//			uint32_t N = points3D_x.size();
+	//			out << N;
+	//			if (N)
+	//			{
+	//				out.WriteBufferFixEndianness( &points3D_x[0], N );
+	//				out.WriteBufferFixEndianness( &points3D_y[0], N );
+	//				out.WriteBufferFixEndianness( &points3D_z[0], N );
+	//			}
+	//		}
+	//
+	out << hasRangeImage;
+	if (hasRangeImage)
+		for (unsigned i = 0; i < NUM_SENSORS; i++) out << rangeImages[i];
+	out << hasIntensityImage;
+	if (hasIntensityImage)
+		for (unsigned i = 0; i < NUM_SENSORS; i++) out << intensityImages[i];
+	//		out << hasConfidenceImage; if (hasConfidenceImage) out <<
+	// confidenceImage;
+	for (unsigned i = 0; i < NUM_SENSORS; i++) out << timestamps[i];
+	//
+	out << stdError;
+	out << timestamp;
+	out << sensorLabel;
 
-		out << m_points3D_external_stored << m_points3D_external_file;
-		out << m_rangeImage_external_stored << m_rangeImage_external_file;
-	}
+	out << m_points3D_external_stored << m_points3D_external_file;
+	out << m_rangeImage_external_stored << m_rangeImage_external_file;
+}
 }
 
-void CObservationRGBD360::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CObservationRGBD360::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
 		case 0:
 		{
 			in >> maxRange >> sensorPose;
-
 			in >> hasRangeImage;
 			if (hasRangeImage)
 				for (unsigned i = 0; i < NUM_SENSORS; i++)

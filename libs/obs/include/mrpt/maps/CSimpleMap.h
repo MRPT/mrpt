@@ -37,26 +37,24 @@ class CSimpleMap : public mrpt::serialization::CSerializable
 	DEFINE_SERIALIZABLE(CSimpleMap)
    public:
 	/** Default constructor (empty map) */
-	CSimpleMap();
+	CSimpleMap() = default;
 	/** Copy constructor */
 	CSimpleMap(const CSimpleMap& o);
-	/** Destructor: */
-	virtual ~CSimpleMap();
 	/** Copy */
 	CSimpleMap& operator=(const CSimpleMap& o);
 
 	/** \name Map access and modification
-	  * @{ */
+	 * @{ */
 
 	/** Save this object to a .simplemap binary file (compressed with gzip)
-	  * \sa loadFromFile
-	  * \return false on any error. */
+	 * \sa loadFromFile
+	 * \return false on any error. */
 	bool saveToFile(const std::string& filName) const;
 
 	/** Load the contents of this object from a .simplemap binary file (possibly
 	 * compressed with gzip)
-	  * \sa saveToFile
-	  * \return false on any error. */
+	 * \sa saveToFile
+	 * \return false on any error. */
 	bool loadFromFile(const std::string& filName);
 
 	/** Returns the count of pairs (pose,sensory data) */
@@ -65,48 +63,48 @@ class CSimpleMap : public mrpt::serialization::CSerializable
 	bool empty() const;
 
 	/** Access to the i'th pair, first one is index '0'. NOTE: This method
-	  *  returns pointers to the objects inside the list, nor a copy of them,
-	  *  so <b>do neither modify them nor delete them</b>.
-	  * NOTE: You can pass a nullptr pointer if you dont need one of the two
+	 *  returns pointers to the objects inside the list, nor a copy of them,
+	 *  so <b>do neither modify them nor delete them</b>.
+	 * NOTE: You can pass a nullptr pointer if you dont need one of the two
 	 * variables to be returned.
-	  * \exception std::exception On index out of bounds.
-	  */
+	 * \exception std::exception On index out of bounds.
+	 */
 	void get(
 		size_t index, mrpt::poses::CPose3DPDF::Ptr& out_posePDF,
 		mrpt::obs::CSensoryFrame::Ptr& out_SF) const;
 
 	/** Changes the i'th pair, first one is index '0'.
-	  *  The referenced object is COPIED, so you can freely destroy the object
+	 *  The referenced object is COPIED, so you can freely destroy the object
 	 * passed as parameter after calling this.
-	  *  If one of the pointers is nullptr, the corresponding contents of the
+	 *  If one of the pointers is nullptr, the corresponding contents of the
 	 * current i'th pair is not modified (i.e. if you want just to modify one of
 	 * the values).
-	  * \exception std::exception On index out of bounds.
-	  * \sa insert, get, remove
-	  */
+	 * \exception std::exception On index out of bounds.
+	 * \sa insert, get, remove
+	 */
 	void set(
 		size_t index, const mrpt::poses::CPose3DPDF::Ptr& in_posePDF,
 		const mrpt::obs::CSensoryFrame::Ptr& in_SF);
 
 	/** Changes the i'th pair, first one is index '0'.
-	  *  The referenced object is COPIED, so you can freely destroy the object
+	 *  The referenced object is COPIED, so you can freely destroy the object
 	 * passed as parameter after calling this.
-	  *  If one of the pointers is nullptr, the corresponding contents of the
+	 *  If one of the pointers is nullptr, the corresponding contents of the
 	 * current i'th pair is not modified (i.e. if you want just to modify one of
 	 * the values).
-	  * This version for 2D PDFs just converts the 2D PDF into 3D before calling
+	 * This version for 2D PDFs just converts the 2D PDF into 3D before calling
 	 * the 3D version.
-	  * \exception std::exception On index out of bounds.
-	  * \sa insert, get, remove
-	  */
+	 * \exception std::exception On index out of bounds.
+	 * \sa insert, get, remove
+	 */
 	void set(
 		size_t index, const mrpt::poses::CPosePDF::Ptr& in_posePDF,
 		const mrpt::obs::CSensoryFrame::Ptr& in_SF);
 
 	/** Deletes the i'th pair, first one is index '0'.
-	  * \exception std::exception On index out of bounds.
-	  * \sa insert, get, set
-	  */
+	 * \exception std::exception On index out of bounds.
+	 * \sa insert, get, set
+	 */
 	void remove(size_t index);
 
 	/** Add a new pair to the sequence. The objects are copied, so original ones
@@ -138,30 +136,30 @@ class CSimpleMap : public mrpt::serialization::CSerializable
 
 	/** Add a new pair to the sequence. The objects are copied, so original ones
 	 * can be free if desired
-	  *  after insertion.
-	  * This version for 2D PDFs just converts the 2D PDF into 3D before calling
+	 *  after insertion.
+	 * This version for 2D PDFs just converts the 2D PDF into 3D before calling
 	 * the 3D version.
-	  */
+	 */
 	void insert(
 		const mrpt::poses::CPosePDF::Ptr& in_posePDF,
 		const mrpt::obs::CSensoryFrame::Ptr& in_SF);
 
 	/** Add a new pair to the sequence. The objects are copied, so original ones
 	 * can be free if desired
-	  *  after insertion.
-	  * This version for 2D PDFs just converts the 2D PDF into 3D before calling
+	 *  after insertion.
+	 * This version for 2D PDFs just converts the 2D PDF into 3D before calling
 	 * the 3D version.
-	  */
+	 */
 	void insert(
 		const mrpt::poses::CPosePDF* in_posePDF,
 		const mrpt::obs::CSensoryFrame& in_SF);
 
 	/** Add a new pair to the sequence. The objects are copied, so original ones
 	 * can be free if desired
-	  *  after insertion.
-	  * This version for 2D PDFs just converts the 2D PDF into 3D before calling
+	 *  after insertion.
+	 * This version for 2D PDFs just converts the 2D PDF into 3D before calling
 	 * the 3D version.
-	  */
+	 */
 	void insert(
 		const mrpt::poses::CPosePDF* in_posePDF,
 		const mrpt::obs::CSensoryFrame::Ptr& in_SF);
@@ -176,17 +174,16 @@ class CSimpleMap : public mrpt::serialization::CSerializable
 	/** @} */
 
 	/** \name Iterators API
-	  * @{ */
-	typedef std::pair<mrpt::poses::CPose3DPDF::Ptr,
-					  mrpt::obs::CSensoryFrame::Ptr>
-		TPosePDFSensFramePair;
-	typedef std::deque<TPosePDFSensFramePair> TPosePDFSensFramePairList;
+	 * @{ */
+	using TPosePDFSensFramePair =
+		std::pair<mrpt::poses::CPose3DPDF::Ptr, mrpt::obs::CSensoryFrame::Ptr>;
+	using TPosePDFSensFramePairList = std::deque<TPosePDFSensFramePair>;
 
-	typedef TPosePDFSensFramePairList::const_iterator const_iterator;
-	typedef TPosePDFSensFramePairList::iterator iterator;
-	typedef TPosePDFSensFramePairList::reverse_iterator reverse_iterator;
-	typedef TPosePDFSensFramePairList::const_reverse_iterator
-		const_reverse_iterator;
+	using const_iterator = TPosePDFSensFramePairList::const_iterator;
+	using iterator = TPosePDFSensFramePairList::iterator;
+	using reverse_iterator = TPosePDFSensFramePairList::reverse_iterator;
+	using const_reverse_iterator =
+		TPosePDFSensFramePairList::const_reverse_iterator;
 
 	inline const_iterator begin() const { return m_posesObsPairs.begin(); }
 	inline const_iterator end() const { return m_posesObsPairs.end(); }
@@ -210,6 +207,6 @@ class CSimpleMap : public mrpt::serialization::CSerializable
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
+}  // namespace maps
+}  // namespace mrpt
 #endif

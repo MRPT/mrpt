@@ -26,7 +26,7 @@ IMPLEMENTS_SERIALIZABLE(CObservationGPS, CObservation, mrpt::obs)
 CObservationGPS::CObservationGPS()
 	: sensorPose(),
 	  originalReceivedTimestamp(INVALID_TIMESTAMP),
-	  has_satellite_timestamp(false),
+	  has_satellite_timestamp(),
 	  messages(),
 	  has_GGA_datum(messages),
 	  has_RMC_datum(messages),

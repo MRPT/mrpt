@@ -10,8 +10,11 @@
 #include "obs-precomp.h"  // Precompiled headers
 
 #include <mrpt/obs/VelodyneCalibration.h>
+#include <mrpt/core/bits_math.h>
+#include <mrpt/core/exceptions.h>
 #include <iostream>
 #include <map>
+#include <cmath>
 
 #undef _UNICODE  // JLBC, for xmlParser
 #include "xmlparser/xmlParser.h"

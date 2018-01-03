@@ -10,9 +10,10 @@
 
 #include "vision-precomp.h"  // Precompiled headers
 
-#include <mrpt/system/CTextFileLinesParser.h>
+#include <mrpt/utils/CTextFileLinesParser.h>
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/io/CFileInputStream.h>
+#include <mrpt/utils/CStdOutStream.h>
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/vision/CFeature.h>
 #include <mrpt/vision/types.h>
@@ -24,6 +25,7 @@ using namespace mrpt;
 using namespace mrpt::vision;
 using namespace mrpt::math;
 using namespace mrpt::system;
+using namespace mrpt::utils;
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CFeature, CSerializable, mrpt::vision)
@@ -96,7 +98,293 @@ void TMultiResDescMatchOptions::saveToConfigFile(
 // --------------------------------------------------
 //			dumpToTextStream
 // --------------------------------------------------
-void TMultiResDescMatchOptions::dumpToTextStreamstd::ostream& out, int* version) const
+void TMultiResDescMatchOptions::dumpToTextStream(
+	mrpt::utils::CStream& out) const
+{
+	out.printf(
+		"\n----------- [vision::TMultiResDescMatchOptions] ------------ \n");
+	out.printf("Use orientation filter?:        ");
+	if (useOriFilter)
+	{
+		out.printf("Yes\n");
+		out.printf(
+			"· Orientation threshold:        %.1f deg\n",
+			RAD2DEG(oriThreshold));
+	}
+	else
+		out.printf("No\n");
+	out.printf("Use depth filter?:              ");
+	if (useDepthFilter)
+		out.printf("Yes\n");
+	else
+	{
+		out.printf("No\n");
+		out.printf("Lowest scale in list1:          %d\n", lowScl1);
+		out.printf("Highest scale in list1:         %d\n", highScl1);
+		out.printf("Lowest scale in list2:          %d\n", lowScl2);
+		out.printf("Highest scale in list2:         %d\n", highScl2);
+	}
+	out.printf("#frames last seen threshold:    %d\n", lastSeenThreshold);
+	out.printf("#frames to be stable threshold: %d\n", timesSeenThreshold);
+	out.printf("min. # features in system:      %d\n", minFeaturesToFind);
+	out.printf("min. # features to be lost:     %d\n", minFeaturesToBeLost);
+	out.printf("Matching threshold:             %.2f\n", matchingThreshold);
+	out.printf(
+		"Matching ratio threshold:       %.2f\n", matchingRatioThreshold);
+	out.printf("Size of the search window:      %d px\n", searchAreaSize);
+	out.printf("-------------------------------------------------------- \n");
+}  // end-dumpToTextStream
+
+// --------------------------------------------------
+//			loadFromConfigFile
+// --------------------------------------------------
+/**  Load all the params from a config source, in the format described in
+ * saveToConfigFile()
+  */
+void TMultiResDescOptions::loadFromConfigFile(
+	const mrpt::config::CConfigFileBase& cfg, const std::string& section)
+{
+	basePSize = cfg.read_double(section, "basePSize", 23, false);
+	comLScl = cfg.read_int(section, "comLScl", 0, false);
+	comHScl = cfg.read_int(section, "comHScl", 6, false);
+	sg1 = cfg.read_double(section, "sg1", 0.5, false);
+	sg2 = cfg.read_double(section, "sg2", 7.5, false);
+	sg3 = cfg.read_double(section, "sg3", 8.0, false);
+	computeDepth = cfg.read_bool(section, "computeDepth", true, false);
+	blurImage = cfg.read_bool(section, "blurImage", true, false);
+	fx = cfg.read_double(section, "fx", 0.0, false);
+	cx = cfg.read_double(section, "cx", 0.0, false);
+	cy = cfg.read_double(section, "cy", 0.0, false);
+	baseline = cfg.read_double(section, "baseline", 0.0, false);
+	computeHashCoeffs =
+		cfg.read_bool(section, "computeHashCoeffs", false, false);
+
+	cfg.read_vector(section, "scales", vector<double>(), scales, false);
+	if (scales.size() < 1)
+	{
+		scales.resize(7);
+		scales[0] = 0.5;
+		scales[1] = 0.8;
+		scales[2] = 1.0;
+		scales[3] = 1.2;
+		scales[4] = 1.5;
+		scales[5] = 1.8;
+		scales[6] = 2.0;
+	}  // end-if
+}
+
+// --------------------------------------------------
+//			saveToConfigFile
+// --------------------------------------------------
+void TMultiResDescOptions::saveToConfigFile(
+	mrpt::config::CConfigFileBase& cfg, const std::string& section) const
+{
+	cfg.write(section, "basePSize", basePSize);
+	cfg.write(section, "comLScl", comLScl);
+	cfg.write(section, "comHScl", comHScl);
+	cfg.write(section, "sg1", sg1);
+	cfg.write(section, "sg2", sg2);
+	cfg.write(section, "sg3", sg3);
+
+	cfg.write(section, "computeDepth", computeDepth ? "true" : "false");
+	cfg.write(section, "blurImage", blurImage ? "true" : "false");
+	cfg.write(section, "fx", fx);
+	cfg.write(section, "cx", cx);
+	cfg.write(section, "cy", cy);
+	cfg.write(section, "baseline", baseline);
+	cfg.write(
+		section, "computeHashCoeffs", computeHashCoeffs ? "true" : "false");
+
+	char buf[300];
+	for (unsigned int k = 0; k < scales.size(); ++k)
+		mrpt::system::os::sprintf(buf, 300, "%.2f ", scales[k]);
+	cfg.write(section, "scales", buf);
+}  // end-saveToConfigFile
+
+// --------------------------------------------------
+//			dumpToTextStream
+// --------------------------------------------------
+void TMultiResDescOptions::dumpToTextStream(mrpt::utils::CStream& out) const
+{
+	out.printf("\n----------- [vision::TMultiResDescOptions] ------------ \n");
+	out.printf("Base patch size:                %d px\n", basePSize);
+	out.printf("Lowest scale to compute:        %d\n", comLScl);
+	out.printf("Highest scale to compute:       %d\n", comHScl);
+	out.printf("Image smoothing sigma:          %.2f px\n", sg1);
+	out.printf("Orientation histogram sigma:    %.2f\n", sg2);
+	out.printf("Descriptor histogram sigma:     %.2f\n", sg3);
+	out.printf("Compute depth:                  ");
+	if (computeDepth)
+	{
+		out.printf("Yes\n");
+		out.printf("Focal length:                   %.2f px\n", fx);
+		out.printf("Principal point (cx):           %.2f px\n", cx);
+		out.printf("Principal point (cy):           %.2f px\n", cy);
+		out.printf("Baseline:                       %.2f m\n", baseline);
+	}
+	else
+		out.printf("No\n");
+
+	out.printf("Compute Hash Coeffs:            ");
+	if (computeHashCoeffs)
+		out.printf("Yes\n");
+	else
+		out.printf("No\n");
+
+	out.printf("Blur image previously:          ");
+	if (blurImage)
+		out.printf("Yes\n");
+	else
+		out.printf("No\n");
+
+	out.printf("Scales:                         ");
+	for (unsigned int k = 0; k < scales.size(); ++k)
+		out.printf("%.2f ", scales[k]);
+	out.printf("\n");
+	out.printf("-------------------------------------------------------- \n");
+}  // end-dumpToTextStream
+
+void CFeature::dumpToTextStream(mrpt::utils::CStream& out) const
+{
+	out.printf("\n----------- [vision::CFeature] ------------ \n");
+	out.printf("Feature ID:                     %d\n", (int)ID);
+	out.printf("Coordinates:                    (%.2f,%.2f) px\n", x, y);
+	out.printf("PatchSize:                      %d\n", patchSize);
+	out.printf("Type:                           ");
+	switch (type)
+	{
+		case -1:
+			out.printf("Not defined\n");
+			break;
+		case 0:
+			out.printf("KLT\n");
+			break;
+		case 1:
+			out.printf("Harris\n");
+			break;
+		case 2:
+			out.printf("BCD\n");
+			break;
+		case 3:
+			out.printf("SIFT\n");
+			break;
+		case 4:
+			out.printf("SURF\n");
+			break;
+		case 5:
+			out.printf("Beacon\n");
+			break;
+		case 6:
+			out.printf("FAST\n");
+			break;
+		case 7:
+			out.printf("FASTER-9\n");
+			break;
+		case 8:
+			out.printf("FASTER-10\n");
+			break;
+		case 9:
+			out.printf("FASTER-12\n");
+			break;
+		case 10:
+			out.printf("ORB\n");
+			break;
+		case 11:
+			out.printf("AKAZE\n");
+			break;
+		case 12:
+			out.printf("LSD");
+			break;
+	}
+	out.printf("Status:                         ");
+	switch (track_status)
+	{
+		case 0:
+			out.printf("Idle\n");
+			break;
+		case 1:
+			out.printf("[KLT] Out of bounds [KLT]\n");
+			break;
+		case 5:
+			out.printf("[KLT] Tracked\n");
+			break;
+		case 10:
+			out.printf("[KLT] Lost\n");
+			break;
+	}
+
+	out.printf("Response:                       %.2f\n", response);
+	out.printf("Main orientation:               %.2f\n", orientation);
+	out.printf("Main scale:                     %.2f\n", scale);
+	out.printf("# frames seen:                  %d\n", nTimesSeen);
+	out.printf("# frames not seen:              %d\n", nTimesNotSeen);
+	out.printf("# frames since last seen:       %d\n", nTimesLastSeen);
+	out.printf("Initial Depth:                  %.2f m\n", initialDepth);
+	out.printf("Depth:                          %.2f m\n", depth);
+	out.printf(
+		"3D point:                       (%.2f,%.2f,%.2f) m\n", p3D.x, p3D.y,
+		p3D.z);
+	out.printf("Is point feature?:              ");
+	isPointFeature() ? out.printf("Yes\n") : out.printf("No\n");
+
+	out.printf("Has SIFT descriptor?:           ");
+	descriptors.hasDescriptorSIFT() ? out.printf("Yes\n") : out.printf("No\n");
+	out.printf("Has SURF descriptor?:           ");
+	descriptors.hasDescriptorSURF() ? out.printf("Yes\n") : out.printf("No\n");
+	out.printf("Has Spin image descriptor?:     ");
+	descriptors.hasDescriptorSpinImg() ? out.printf("Yes\n")
+									   : out.printf("No\n");
+	out.printf("Has Polar descriptor?:          ");
+	descriptors.hasDescriptorPolarImg() ? out.printf("Yes\n")
+										: out.printf("No\n");
+	out.printf("Has Log Polar descriptor?:      ");
+	descriptors.hasDescriptorLogPolarImg() ? out.printf("Yes\n")
+										   : out.printf("No\n");
+	out.printf("Has ORB descriptor?:			");
+	descriptors.hasDescriptorORB() ? out.printf("Yes\n") : out.printf("No\n");
+	//# added by Raghavender Sahdev
+	out.printf("Has BLD descriptor?:			");
+	descriptors.hasDescriptorBLD() ? out.printf("Yes\n") : out.printf("No\n");
+	out.printf("Has LATCH descriptor?:			");
+	descriptors.hasDescriptorLATCH() ? out.printf("Yes\n") : out.printf("No\n");
+
+	out.printf("Has multiscale?:                ");
+	if (!descriptors.hasDescriptorMultiSIFT())
+		out.printf("No\n");
+	else
+	{
+		out.printf("Yes [%d]\n", (int)multiScales.size());
+		for (int k = 0; k < (int)multiScales.size(); ++k)
+		{
+			out.printf(" · Scale %d: %.2f\n", k, multiScales[k]);
+			for (int m = 0; m < (int)multiOrientations[k].size(); ++m)
+			{
+				out.printf(
+					" ·· Orientation %d: %.2f\n", m, multiOrientations[k][m]);
+				out.printf(" ·· [D] ");
+				for (int n = 0;
+					 n < (int)descriptors.multiSIFTDescriptors[k][m].size();
+					 ++n)
+					out.printf(
+						"%d ", descriptors.multiSIFTDescriptors[k][m][n]);
+				out.printf("\n");
+				if (multiHashCoeffs.size() > 0)
+					out.printf(
+						" ·· HASH coefficients %d,%d,%d\n",
+						multiHashCoeffs[k][m][0], multiHashCoeffs[k][m][1],
+						multiHashCoeffs[k][m][2]);
+			}  // end-for-m
+		}  // end-for-k
+	}  // end else
+}  // end dumpToTextStream
+
+void CFeature::dumpToConsole() const
+{
+	CStdOutStream myOut;
+	dumpToTextStream(myOut);
+}
+
+uint8_t CFeature::serializeGetVersion() const { return XX; } void CFeature::serializeTo(mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
 		*version = 2;
