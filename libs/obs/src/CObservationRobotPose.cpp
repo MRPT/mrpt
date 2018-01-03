@@ -20,18 +20,11 @@ using namespace mrpt::poses;
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationRobotPose, CObservation, mrpt::obs)
 
-/** Default constructor */
-CObservationRobotPose::CObservationRobotPose() {}
-uint8_t CObservationRobotPose::serializeGetVersion() const { return XX; }
+uint8_t CObservationRobotPose::serializeGetVersion() const { return 0; }
 void CObservationRobotPose::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		out << pose;
-		out << sensorLabel << timestamp;
-	}
+	out << pose;
+	out << sensorLabel << timestamp;
 }
 
 void CObservationRobotPose::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)

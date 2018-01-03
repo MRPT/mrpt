@@ -25,9 +25,6 @@ class CObservationRobotPose : public CObservation
 {
 	DEFINE_SERIALIZABLE(CObservationRobotPose)
    public:
-	/** Default ctor */
-	CObservationRobotPose();
-
 	/** The observed robot pose */
 	mrpt::poses::CPose3DPDFGaussian pose;
 

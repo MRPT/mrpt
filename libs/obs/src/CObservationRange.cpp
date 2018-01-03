@@ -28,26 +28,17 @@ CObservationRange::CObservationRange()
 {
 }
 
-uint8_t CObservationRange::serializeGetVersion() const { return XX; }
+uint8_t CObservationRange::serializeGetVersion() const { return 3; }
 void CObservationRange::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 3;
-	else
-	{
-		uint32_t i, n;
-
-		// The data
-		out << minSensorDistance << maxSensorDistance << sensorConeApperture;
-
-		n = sensedData.size();
-		out << n;
-		for (i = 0; i < n; i++)
-			out << sensedData[i].sensorID << CPose3D(sensedData[i].sensorPose)
-				<< sensedData[i].sensedDistance;
-
-		out << sensorLabel << timestamp;
-	}
+	// The data
+	out << minSensorDistance << maxSensorDistance << sensorConeApperture;
+	const uint32_t n = sensedData.size();
+	out << n;
+	for (uint32_t i = 0; i < n; i++)
+		out << sensedData[i].sensorID << CPose3D(sensedData[i].sensorPose)
+			<< sensedData[i].sensedDistance;
+	out << sensorLabel << timestamp;
 }
 
 void CObservationRange::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -75,7 +66,7 @@ void CObservationRange::serializeFrom(mrpt::serialization::CArchive& in, uint8_t
 					sensedData[i].sensorID = i;
 
 				in >> aux >> sensedData[i].sensedDistance;
-				sensedData[i].sensorPose = aux;
+				sensedData[i].sensorPose = aux.asTPose();
 			}
 
 			if (version >= 1)
@@ -110,9 +101,7 @@ void CObservationRange::getSensorPose(CPose3D& out_sensorPose) const
  ---------------------------------------------------------------*/
 void CObservationRange::setSensorPose(const CPose3D& newSensorPose)
 {
-	size_t i, n = sensedData.size();
-	if (n)
-		for (i = 0; i < n; i++) sensedData[i].sensorPose = newSensorPose;
+	for (auto & sd : sensedData) sd.sensorPose = newSensorPose.asTPose();
 }
 
 void CObservationRange::getDescriptionAsText(std::ostream& o) const
