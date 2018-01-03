@@ -14,6 +14,7 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/wrap2pi.h>
+#include <mrpt/core/bits_mem.h> // length2length4N()
 #if MRPT_HAS_MATLAB
 #include <mexplus.h>
 #endif
@@ -58,47 +59,33 @@ CObservation2DRangeScan::CObservation2DRangeScan(
 	// proxies.
 }
 
-/*---------------------------------------------------------------
-							Destructor
- ---------------------------------------------------------------*/
 CObservation2DRangeScan::~CObservation2DRangeScan() {}
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-uint8_t CObservation2DRangeScan::serializeGetVersion() const { return XX; } void CObservation2DRangeScan::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+
+uint8_t CObservation2DRangeScan::serializeGetVersion() const { return 7; }
+void CObservation2DRangeScan::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 7;
-	else
+	// The data
+	out << aperture << rightToLeft << maxRange << sensorPose;
+	uint32_t N = scan.size();
+	out << N;
+	ASSERT_(validRange.size() == scan.size());
+	if (N)
 	{
-		// The data
-		out << aperture << rightToLeft << maxRange << sensorPose;
-		uint32_t N = scan.size();
-		out << N;
-		ASSERT_(validRange.size() == scan.size());
-		if (N)
-		{
-			out.WriteBufferFixEndianness(&m_scan[0], N);
-			out.WriteBuffer(&m_validRange[0], sizeof(m_validRange[0]) * N);
-		}
-		out << stdError;
-		out << timestamp;
-		out << beamAperture;
-
-		out << sensorLabel;
-
-		out << deltaPitch;
-
-		out << hasIntensity();
-		if (hasIntensity()) out.WriteBufferFixEndianness(&m_intensity[0], N);
+		out.WriteBufferFixEndianness(&m_scan[0], N);
+		out.WriteBuffer(&m_validRange[0], sizeof(m_validRange[0]) * N);
 	}
+	out << stdError;
+	out << timestamp;
+	out << beamAperture;
+
+	out << sensorLabel;
+
+	out << deltaPitch;
+
+	out << hasIntensity();
+	if (hasIntensity()) out.WriteBufferFixEndianness(&m_intensity[0], N);
 }
 
-/*---------------------------------------------------------------
-  Filter out invalid points by a minimum distance, a maximum angle and a certain
- distance at the end (z-coordinate of the lasers must be provided)
- ---------------------------------------------------------------*/
 void CObservation2DRangeScan::truncateByDistanceAndAngle(
 	float min_distance, float max_angle, float min_height, float max_height,
 	float h)
@@ -128,11 +115,7 @@ void CObservation2DRangeScan::truncateByDistanceAndAngle(
 	}
 }
 
-/*---------------------------------------------------------------
-  Implements the reading from a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
 void CObservation2DRangeScan::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
-	mrpt::utils::CStream& in, int version)
 {
 	switch (version)
 	{
@@ -504,7 +487,7 @@ void CObservation2DRangeScan::getDescriptionAsText(std::ostream& o) const
 	CObservation::getDescriptionAsText(o);
 	o << "Homogeneous matrix for the sensor's 3D pose, relative to robot "
 		 "base:\n";
-	o << sensorPose.getHomogeneousMatrixVal() << sensorPose << endl;
+	o << sensorPose.getHomogeneousMatrixVal<CMatrixDouble44>() << sensorPose << endl;
 
 	o << format(
 		"Samples direction: %s\n",
@@ -578,7 +561,7 @@ void CObservation2DRangeScan::setScanRangeValidity(
 
 void CObservation2DRangeScan::resizeScan(const size_t len)
 {
-	const size_t capacity = mrpt::utils::length2length4N(len);
+	const size_t capacity = mrpt::length2length4N(len);
 	m_scan.reserve(capacity);
 	m_intensity.reserve(capacity);
 	m_validRange.reserve(capacity);
@@ -592,7 +575,7 @@ void CObservation2DRangeScan::resizeScanAndAssign(
 	const size_t len, const float rangeVal, const bool rangeValidity,
 	const int32_t rangeIntensity)
 {
-	const size_t capacity = mrpt::utils::length2length4N(len);
+	const size_t capacity = mrpt::length2length4N(len);
 	m_scan.reserve(capacity);
 	m_intensity.reserve(capacity);
 	m_validRange.reserve(capacity);

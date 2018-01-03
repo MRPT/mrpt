@@ -11,13 +11,10 @@
 #include <cstdint>
 #include <iosfwd>
 #include <iostream>
+#include <mrpt/serialization/serialization_frwds.h>
 
 namespace mrpt
 {
-namespace serialization
-{
-class CArchive;
-}
 namespace img
 {
 /** A RGB color - 8bit

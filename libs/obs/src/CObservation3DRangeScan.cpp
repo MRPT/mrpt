@@ -23,6 +23,7 @@
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/string_utils.h>
+#include <mrpt/serialization/stl_serialization.h>
 
 #include <limits>
 

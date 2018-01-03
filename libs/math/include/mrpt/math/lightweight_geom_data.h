@@ -19,13 +19,10 @@
 #include <vector>
 #include <stdexcept>
 #include <type_traits>
+#include <mrpt/serialization/serialization_frwds.h>
 
 namespace mrpt
 {
-namespace serialization
-{
-class CArchive;
-}
 namespace math
 {
 /** Base type of all TPoseXX and TPointXX classes in mrpt::math.

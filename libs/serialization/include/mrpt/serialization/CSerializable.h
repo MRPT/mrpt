@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/rtti/CObject.h>
+#include <mrpt/serialization/serialization_frwds.h>
 #include <cstdint>
 
 // Make this frwd decl independent of MRPT_HAS_MATLAB in config.h:
@@ -20,8 +21,6 @@ namespace mrpt
 {
 namespace serialization
 {
-class CArchive; // frwd decl
-
 /** The virtual base class which provides a unified interface for all persistent
  *objects in MRPT.
  *  Many important properties of this class are inherited from
