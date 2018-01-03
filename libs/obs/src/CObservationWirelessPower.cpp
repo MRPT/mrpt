@@ -21,8 +21,8 @@ IMPLEMENTS_SERIALIZABLE(CObservationWirelessPower, CObservation, mrpt::obs)
 /** Constructor
  */
 CObservationWirelessPower::CObservationWirelessPower() : power(0) {}
-uint8_t CObservationWirelessPower::serializeGetVersion() const { return XX; } void CObservationWirelessPower::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CObservationWirelessPower::serializeGetVersion() const { return XX; }
+void CObservationWirelessPower::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	MRPT_UNUSED_PARAM(out);
 	if (version)

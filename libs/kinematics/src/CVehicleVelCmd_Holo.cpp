@@ -112,8 +112,8 @@ void CVehicleVelCmd_Holo::serializeFrom(mrpt::serialization::CArchive& in, uint8
 	};
 }
 
-uint8_t CVehicleVelCmd_Holo::serializeGetVersion() const { return XX; } void CVehicleVelCmd_Holo::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CVehicleVelCmd_Holo::serializeGetVersion() const { return XX; }
+void CVehicleVelCmd_Holo::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 	{

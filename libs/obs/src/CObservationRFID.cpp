@@ -21,8 +21,8 @@ IMPLEMENTS_SERIALIZABLE(CObservationRFID, CObservation, mrpt::obs)
 /** Constructor
  */
 CObservationRFID::CObservationRFID() : tag_readings() {}
-uint8_t CObservationRFID::serializeGetVersion() const { return XX; } void CObservationRFID::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CObservationRFID::serializeGetVersion() const { return XX; }
+void CObservationRFID::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	// std::cout << "AP-1" << std::endl;
 	MRPT_UNUSED_PARAM(out);

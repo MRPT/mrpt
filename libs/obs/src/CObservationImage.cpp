@@ -31,8 +31,8 @@ CObservationImage::CObservationImage(void* iplImage)
 {
 }
 
-uint8_t CObservationImage::serializeGetVersion() const { return XX; } void CObservationImage::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CObservationImage::serializeGetVersion() const { return XX; }
+void CObservationImage::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 4;

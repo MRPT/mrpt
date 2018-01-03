@@ -28,8 +28,8 @@ CObservationRange::CObservationRange()
 {
 }
 
-uint8_t CObservationRange::serializeGetVersion() const { return XX; } void CObservationRange::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CObservationRange::serializeGetVersion() const { return XX; }
+void CObservationRange::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 3;

@@ -35,8 +35,8 @@ CActionRobotMovement3D::CActionRobotMovement3D()
 	velocities.assign(.0);
 }
 
-uint8_t CActionRobotMovement3D::serializeGetVersion() const { return XX; } void CActionRobotMovement3D::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CActionRobotMovement3D::serializeGetVersion() const { return XX; }
+void CActionRobotMovement3D::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 1;

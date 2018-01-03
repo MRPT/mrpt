@@ -31,8 +31,8 @@ CObservationOdometry::CObservationOdometry()
 {
 }
 
-uint8_t CObservationOdometry::serializeGetVersion() const { return XX; } void CObservationOdometry::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CObservationOdometry::serializeGetVersion() const { return XX; }
+void CObservationOdometry::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	MRPT_UNUSED_PARAM(out);
 	if (version)

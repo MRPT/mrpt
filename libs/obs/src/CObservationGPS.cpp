@@ -45,8 +45,8 @@ void CObservationGPS::swap(CObservationGPS& o)
 	messages.swap(o.messages);
 }
 
-uint8_t CObservationGPS::serializeGetVersion() const { return XX; } void CObservationGPS::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CObservationGPS::serializeGetVersion() const { return XX; }
+void CObservationGPS::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 11;

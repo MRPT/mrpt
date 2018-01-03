@@ -46,8 +46,8 @@ CLogFileRecord::CLogFileRecord()
 /*---------------------------------------------------------------
 						writeToStream
  ---------------------------------------------------------------*/
-uint8_t CLogFileRecord::serializeGetVersion() const { return XX; } void CLogFileRecord::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CLogFileRecord::serializeGetVersion() const { return XX; }
+void CLogFileRecord::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 26;

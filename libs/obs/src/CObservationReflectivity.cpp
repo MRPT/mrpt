@@ -26,8 +26,8 @@ CObservationReflectivity::CObservationReflectivity()
 }
 
 CObservationReflectivity::~CObservationReflectivity() {}
-uint8_t CObservationReflectivity::serializeGetVersion() const { return XX; } void CObservationReflectivity::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CObservationReflectivity::serializeGetVersion() const { return XX; }
+void CObservationReflectivity::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 1;

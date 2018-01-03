@@ -621,8 +621,8 @@ unsigned int CHolonomicND::direction2sector(
 	Implements the writing to a CStream capability of
 	  CSerializable objects
   ---------------------------------------------------------------*/
-uint8_t CLogFileRecord_ND::serializeGetVersion() const { return XX; } void CLogFileRecord_ND::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CLogFileRecord_ND::serializeGetVersion() const { return XX; }
+void CLogFileRecord_ND::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 1;

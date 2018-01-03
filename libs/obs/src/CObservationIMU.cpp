@@ -19,8 +19,8 @@ using namespace mrpt::poses;
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationIMU, CObservation, mrpt::obs)
 
-uint8_t CObservationIMU::serializeGetVersion() const { return XX; } void CObservationIMU::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CObservationIMU::serializeGetVersion() const { return XX; }
+void CObservationIMU::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 3;  // v1->v2 was only done to fix a bug in the ordering of

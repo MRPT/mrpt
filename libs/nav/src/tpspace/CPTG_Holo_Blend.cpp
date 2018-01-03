@@ -294,8 +294,8 @@ void CPTG_Holo_Blend::serializeFrom(mrpt::serialization::CArchive& in, uint8_t v
 	};
 }
 
-uint8_t CPTG_Holo_Blend::serializeGetVersion() const { return XX; } void CPTG_Holo_Blend::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CPTG_Holo_Blend::serializeGetVersion() const { return XX; }
+void CPTG_Holo_Blend::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 	{

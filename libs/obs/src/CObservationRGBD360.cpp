@@ -54,8 +54,8 @@ CObservationRGBD360::~CObservationRGBD360()
 #endif
 }
 
-uint8_t CObservationRGBD360::serializeGetVersion() const { return XX; } void CObservationRGBD360::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CObservationRGBD360::serializeGetVersion() const { return XX; }
+void CObservationRGBD360::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 0;

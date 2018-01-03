@@ -56,8 +56,8 @@ void CPTG_DiffDrive_CC::serializeFrom(mrpt::serialization::CArchive& in, uint8_t
 	};
 }
 
-uint8_t CPTG_DiffDrive_CC::serializeGetVersion() const { return XX; } void CPTG_DiffDrive_CC::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CPTG_DiffDrive_CC::serializeGetVersion() const { return XX; }
+void CPTG_DiffDrive_CC::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 	{

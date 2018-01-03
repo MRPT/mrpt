@@ -19,8 +19,8 @@ using namespace std;
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationCANBusJ1939, CObservation, mrpt::obs)
 
-uint8_t CObservationCANBusJ1939::serializeGetVersion() const { return XX; } void CObservationCANBusJ1939::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CObservationCANBusJ1939::serializeGetVersion() const { return XX; }
+void CObservationCANBusJ1939::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 1;

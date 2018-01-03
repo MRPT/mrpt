@@ -39,8 +39,8 @@ CObservationBearingRange::CObservationBearingRange()
 {
 }
 
-uint8_t CObservationBearingRange::serializeGetVersion() const { return XX; } void CObservationBearingRange::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CObservationBearingRange::serializeGetVersion() const { return XX; }
+void CObservationBearingRange::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 3;

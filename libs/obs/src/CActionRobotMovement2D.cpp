@@ -43,8 +43,8 @@ CActionRobotMovement2D::CActionRobotMovement2D()
 {
 }
 
-uint8_t CActionRobotMovement2D::serializeGetVersion() const { return XX; } void CActionRobotMovement2D::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CActionRobotMovement2D::serializeGetVersion() const { return XX; }
+void CActionRobotMovement2D::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 7;
