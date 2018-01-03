@@ -21,6 +21,7 @@ using namespace mrpt::io;
 using namespace mrpt::obs;
 using namespace mrpt::poses;
 using namespace mrpt::system;
+using namespace mrpt::serialization;
 
 IMPLEMENTS_SERIALIZABLE(CRawlog, CSerializable, mrpt::obs)
 
@@ -160,24 +161,14 @@ CSensoryFrame::Ptr CRawlog::getAsObservations(size_t index) const
 	MRPT_END
 }
 
-uint8_t CRawlog::serializeGetVersion() const { return XX; } void CRawlog::serializeTo(mrpt::serialization::CArchive& out, int* version) const
+uint8_t CRawlog::serializeGetVersion() const { return 1; }
+void CRawlog::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		uint32_t i, n;
-		n = static_cast<uint32_t>(m_seqOfActObs.size());
-		out << n;
-		for (i = 0; i < n; i++) out << m_seqOfActObs[i];
-
-		out << m_commentTexts;
-	}
+	out.WriteAs<uint32_t>(m_seqOfActObs.size());
+	for (const auto& a : m_seqOfActObs) out << a;
+	out << m_commentTexts;
 }
 
-/*---------------------------------------------------------------
-					readFromStream
-  ---------------------------------------------------------------*/
 void CRawlog::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
@@ -185,15 +176,9 @@ void CRawlog::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 		case 0:
 		case 1:
 		{
-			uint32_t i, n;
-
 			clear();
-
-			in >> n;
-			m_seqOfActObs.resize(n);
-			for (i = 0; i < n; i++)
-				m_seqOfActObs[i] = CSerializable::Ptr(in.ReadObject());
-
+			m_seqOfActObs.resize(in.ReadAs<uint32_t>());
+			for (auto& a : m_seqOfActObs) a = in.ReadObject();
 			in >> m_commentTexts;
 		}
 		break;
@@ -206,8 +191,9 @@ bool CRawlog::loadFromRawLogFile(
 	const std::string& fileName, bool non_obs_objects_are_legal)
 {
 	// Open for read.
-	CFileGZInputStream fs(fileName);
-	if (!fs.fileOpenCorrectly()) return false;
+	CFileGZInputStream fi(fileName);
+	if (!fi.fileOpenCorrectly()) return false;
+	auto &fs = archiveFrom(fi);
 
 	clear();  // Clear first
 
@@ -264,7 +250,7 @@ bool CRawlog::loadFromRawLogFile(
 			}
 			if (add_obj) m_seqOfActObs.push_back(newObj);
 		}
-		catch (mrpt::utils::CExceptionEOF&)
+		catch (CExceptionEOF&)
 		{  // EOF, just finish the loop
 			keepReading = false;
 		}
@@ -305,7 +291,8 @@ bool CRawlog::saveToRawLogFile(const std::string& fileName) const
 {
 	try
 	{
-		CFileGZOutputStream f(fileName);
+		CFileGZOutputStream fo(fileName);
+		auto &f = archiveFrom(fo);
 		if (!m_commentTexts.text.empty()) f << m_commentTexts;
 		for (size_t i = 0; i < m_seqOfActObs.size(); i++)
 			f << *m_seqOfActObs[i];
@@ -337,7 +324,7 @@ void CRawlog::swap(CRawlog& obj)
 }
 
 bool CRawlog::readActionObservationPair(
-	CStream& inStream, CActionCollection::Ptr& action,
+	CArchive& inStream, CActionCollection::Ptr& action,
 	CSensoryFrame::Ptr& observations, size_t& rawlogEntry)
 {
 	try
@@ -395,11 +382,8 @@ bool CRawlog::readActionObservationPair(
 	}
 }
 
-/*---------------------------------------------------------------
-		getActionObservationPairOrObservation
-  ---------------------------------------------------------------*/
 bool CRawlog::getActionObservationPairOrObservation(
-	CStream& inStream, CActionCollection::Ptr& action,
+	CArchive& inStream, CActionCollection::Ptr& action,
 	CSensoryFrame::Ptr& observations, CObservation::Ptr& observation,
 	size_t& rawlogEntry)
 {

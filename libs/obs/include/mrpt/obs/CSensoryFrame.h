@@ -58,7 +58,7 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
    public:
 	/** Default constructor
 	 */
-	CSensoryFrame();
+	CSensoryFrame() = default;
 
 	/** Copy constructor
 	 */
@@ -118,10 +118,6 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
 	/** Copy
 	  */
 	CSensoryFrame& operator=(const CSensoryFrame& o);
-
-	/** Destructor.
-	 */
-	virtual ~CSensoryFrame();
 
 	/** Clear all current observations.
 	 */

@@ -17,6 +17,8 @@ using namespace std;
 using namespace mrpt;
 using namespace mrpt::maps;
 
+MRPT_TODO("look git history!");
+
 /** Looks up in the registry of known map types and call the corresponding
  * `<metric_map_class>::MapDefinition()`. */
 TMetricMapInitializer* TMetricMapInitializer::factory(
@@ -53,24 +55,19 @@ void TMetricMapInitializer::dumpToTextStream(std::ostream& out) const
 {
 	MRPT_START
 
-	out.printf(
+	out<< mrpt::format(
 		"===================================================================="
-		"\n\n");
-	out.printf("      Set of internal maps for 'CMultiMetricMap' object\n\n");
-	out.printf(
+		"\n\n"
+		"      Set of internal maps for 'CMultiMetricMap' object\n\n");
 		"===================================================================="
-		"\n");
-
-	// Show each map:
-	out.printf("Showing next the %u internal maps:\n\n", (int)size());
+		"\n"
+		// Show each map:
+		"Showing next the %u internal maps:\n\n", (int)size());
 
 	int i = 0;
-	for (const_iterator it = begin(); it != end(); ++it, i++)
+	for (auto it = begin(); it != end(); ++it, i++)
 	{
-		out.printf(
-			"------------------------- Internal map %u out of %u "
-			"--------------------------\n",
-			i + 1, (int)size());
+		out << mrpt::format("------- Internal map %u out of %u:\n", i + 1, (int)size());
 		(*it)->dumpToTextStream(out);
 	}  // for "it"
 
