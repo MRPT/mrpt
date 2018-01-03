@@ -2275,7 +2275,7 @@ void CRandomFieldGridMap2D::insertObservation_KF2(
 	CVectorDouble cross_covs_c_i(W21sqr, 0);  // Indexes are relative to the
 	// (2W+1)x(2W+1) window centered
 	// at "cellIdx".
-	vector_int window_idxs(W21sqr, -1);  // The real-map indexes for each
+	std::vector<int> window_idxs(W21sqr, -1);  // The real-map indexes for each
 	// element in the window, or -1 if
 	// there are out of the map (for cells
 	// close to the border)

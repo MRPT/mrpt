@@ -33,7 +33,7 @@ void markAsPicked(
 	std::vector<bool>& alreadySelectedOther
 #ifdef AVOID_MULTIPLE_CORRESPONDENCES
 	,
-	const std::vector<vector_int>& listDuplicatedLandmarksThis
+	const std::vector<std::vector<int>>& listDuplicatedLandmarksThis
 #endif
 )
 {
@@ -44,11 +44,11 @@ void markAsPicked(
 	alreadySelectedThis[c.this_idx] = true;
 	alreadySelectedOther[c.other_idx] = true;
 #else
-	for (vector_int::iterator it1 =
+	for (std::vector<int>::iterator it1 =
 			 listDuplicatedLandmarksThis[c.this_idx].begin();
 		 it1 != listDuplicatedLandmarksThis[c.this_idx].end(); it1++)
 		alreadySelectedThis[*it1] = true;
-	for (vector_int::iterator it2 =
+	for (std::vector<int>::iterator it2 =
 			 listDuplicatedLandmarksOther[c.other_idx].begin();
 		 it2 != listDuplicatedLandmarksOther[c.other_idx].end(); it2++)
 		alreadySelectedOther[*it2] = true;
@@ -162,11 +162,11 @@ bool tfest::se2_l2_robust(
 	//   this is to avoid establishing multiple correspondences for the same
 	//   physical point!
 	// ------------------------------------------------------------------------------------------------
-	std::vector<vector_int> listDuplicatedLandmarksThis(maxThis + 1);
+	std::vector<std::vector<int>> listDuplicatedLandmarksThis(maxThis + 1);
 	ASSERT_(nCorrs >= 1);
 	for (k = 0; k < nCorrs - 1; k++)
 	{
-		vector_int duplis;
+		std::vector<int> duplis;
 		for (unsigned j = k; j < nCorrs - 1; j++)
 		{
 			if (in_correspondences[k].this_x == in_correspondences[j].this_x &&
@@ -177,10 +177,10 @@ bool tfest::se2_l2_robust(
 		listDuplicatedLandmarksThis[in_correspondences[k].this_idx] = duplis;
 	}
 
-	std::vector<vector_int> listDuplicatedLandmarksOther(maxOther + 1);
+	std::vector<std::vector<int>> listDuplicatedLandmarksOther(maxOther + 1);
 	for (k = 0; k < nCorrs - 1; k++)
 	{
-		vector_int duplis;
+		std::vector<int> duplis;
 		for (unsigned j = k; j < nCorrs - 1; j++)
 		{
 			if (in_correspondences[k].other_x ==

@@ -38,7 +38,7 @@ class CJoystick
 	std::vector<bool> m_joystate_btns;
 	/** Using an event system we only have deltas, need to keep the whole
 	 * joystick state (Linux only) */
-	vector_int m_joystate_axes;
+	std::vector<int> m_joystate_axes;
 #endif
 
    public:

@@ -392,7 +392,7 @@ void CObservationGasSensors::getDescriptionAsText(std::ostream& o) const
 		o << format("e-nose #%u:\n", (unsigned)j);
 
 		vector<float>::const_iterator it;
-		vector_int::const_iterator itKind;
+		std::vector<int>::const_iterator itKind;
 
 		ASSERT_(
 			m_readings[j].readingsVoltage.size() ==

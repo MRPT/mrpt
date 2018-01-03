@@ -611,7 +611,7 @@ class CLSLAM_RBPF_2DLASER : public CLSLAMAlgorithmBase
 	struct TPathBin
 	{
 		TPathBin() : x(), y(), phi() {}
-		vector_int x, y, phi;
+		std::vector<int> x, y, phi;
 
 		/** For debugging purposes!
 		  */

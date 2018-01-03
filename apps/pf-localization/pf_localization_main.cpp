@@ -126,7 +126,7 @@ void do_pf_localization(
 
 	CConfigFile cfg(ini_fil);
 
-	vector_int particles_count;  // Number of initial particles (if size>1, run
+	std::vector<int> particles_count;  // Number of initial particles (if size>1, run
 	// the experiments N times)
 
 	// Load configuration:
@@ -135,7 +135,7 @@ void do_pf_localization(
 
 	// Mandatory entries:
 	cfg.read_vector(
-		sect, "particles_count", vector_int(1, 0), particles_count,
+		sect, "particles_count", std::vector<int>(1, 0), particles_count,
 		/*Fail if not found*/ true);
 	string OUT_DIR_PREFIX =
 		cfg.read_string(sect, "logOutput_dir", "", /*Fail if not found*/ true);
@@ -336,7 +336,7 @@ void do_pf_localization(
 		}
 	}
 
-	for (vector_int::iterator itNum = particles_count.begin();
+	for (std::vector<int>::iterator itNum = particles_count.begin();
 		 itNum != particles_count.end(); ++itNum)
 	{
 		int PARTICLE_COUNT = *itNum;

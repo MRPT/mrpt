@@ -686,7 +686,7 @@ double CLSLAM_RBPF_2DLASER::auxiliarComputeObservationLikelihood(
  ---------------------------------------------------------------*/
 void CLSLAM_RBPF_2DLASER::TPathBin::dumpToStdOut() const
 {
-	vector_int::const_iterator it;
+	std::vector<int>::const_iterator it;
 
 	std::cout << "x   = [";
 	for (it = x.begin(); it != x.end(); it++) std::cout << *it << " ";
@@ -716,7 +716,7 @@ void CLSLAM_RBPF_2DLASER::loadTPathBinFromPath(
 		lenBinPath = 0;
 
 	TMapPoseID2Pose3D::const_iterator itSrc;
-	vector_int::iterator itX, itY, itPHI;
+	std::vector<int>::iterator itX, itY, itPHI;
 
 	// Set the output bin dimensionality:
 	outBin.x.resize(lenBinPath + (newPose != nullptr ? 1 : 0));
