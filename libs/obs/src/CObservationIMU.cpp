@@ -19,9 +19,6 @@ using namespace mrpt::poses;
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationIMU, CObservation, mrpt::obs)
 
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
 uint8_t CObservationIMU::serializeGetVersion() const { return XX; } void CObservationIMU::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
@@ -40,9 +37,6 @@ uint8_t CObservationIMU::serializeGetVersion() const { return XX; } void CObserv
 	}
 }
 
-/*---------------------------------------------------------------
-  Implements the reading from a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
 void CObservationIMU::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)

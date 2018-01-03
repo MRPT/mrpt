@@ -605,7 +605,6 @@ uint8_t CLogFileRecord_FullEval::serializeGetVersion() const { return XX; } void
 					readFromStream
   ---------------------------------------------------------------*/
 void CLogFileRecord_FullEval::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
-	mrpt::utils::CStream& in, int version)
 {
 	switch (version)
 	{

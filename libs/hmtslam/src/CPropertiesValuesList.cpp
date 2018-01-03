@@ -48,7 +48,6 @@ void CPropertiesValuesList::serializeTo(
 						readFromStream
  ---------------------------------------------------------------*/
 void CPropertiesValuesList::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
-	mrpt::utils::CStream& in, int version)
 {
 	switch (version)
 	{
