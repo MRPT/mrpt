@@ -12,7 +12,7 @@
 
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/core/safe_pointers.h>
+#include <mrpt/utils/safe_pointers.h>
 #include <octomap/octomap.h>
 #include <mrpt/opengl/COctoMapVoxels.h>
 #include <mrpt/opengl/COpenGLScene.h>
@@ -104,7 +104,210 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStreamstd::ostream& in);
+		void dumpToTextStream(
+			mrpt::utils::CStream& out) const override;  // See base docs
+
+		/** maximum range for how long individual beams are inserted (default
+		 * -1: complete beam) */
+		double maxrange;
+		/** whether the tree is (losslessly) pruned after insertion (default:
+		 * true) */
+		bool pruning;
+
+		/// (key name in .ini files: "occupancyThres") sets the threshold for
+		/// occupancy (sensor model) (Default=0.5)
+		void setOccupancyThres(double prob)
+		{
+			if (m_parent.get()) m_parent->m_octomap.setOccupancyThres(prob);
+		}
+		/// (key name in .ini files: "probHit")sets the probablility for a "hit"
+		/// (will be converted to logodds) - sensor model (Default=0.7)
+		void setProbHit(double prob)
+		{
+			if (m_parent.get()) m_parent->m_octomap.setProbHit(prob);
+		}
+		/// (key name in .ini files: "probMiss")sets the probablility for a
+		/// "miss" (will be converted to logodds) - sensor model (Default=0.4)
+		void setProbMiss(double prob)
+		{
+			if (m_parent.get()) m_parent->m_octomap.setProbMiss(prob);
+		}
+		/// (key name in .ini files: "clampingThresMin")sets the minimum
+		/// threshold for occupancy clamping (sensor model) (Default=0.1192, -2
+		/// in log odds)
+		void setClampingThresMin(double thresProb)
+		{
+			if (m_parent.get())
+				m_parent->m_octomap.setClampingThresMin(thresProb);
+		}
+		/// (key name in .ini files: "clampingThresMax")sets the maximum
+		/// threshold for occupancy clamping (sensor model) (Default=0.971, 3.5
+		/// in log odds)
+		void setClampingThresMax(double thresProb)
+		{
+			if (m_parent.get())
+				m_parent->m_octomap.setClampingThresMax(thresProb);
+		}
+
+		/// @return threshold (probability) for occupancy - sensor model
+		double getOccupancyThres() const
+		{
+			if (m_parent.get())
+				return m_parent->m_octomap.getOccupancyThres();
+			else
+				return this->occupancyThres;
+		}
+		/// @return threshold (logodds) for occupancy - sensor model
+		float getOccupancyThresLog() const
+		{
+			return m_parent->m_octomap.getOccupancyThresLog();
+		}
+
+		/// @return probablility for a "hit" in the sensor model (probability)
+		double getProbHit() const
+		{
+			if (m_parent.get())
+				return m_parent->m_octomap.getProbHit();
+			else
+				return this->probHit;
+		}
+		/// @return probablility for a "hit" in the sensor model (logodds)
+		float getProbHitLog() const
+		{
+			return m_parent->m_octomap.getProbHitLog();
+		}
+		/// @return probablility for a "miss"  in the sensor model (probability)
+		double getProbMiss() const
+		{
+			if (m_parent.get())
+				return m_parent->m_octomap.getProbMiss();
+			else
+				return this->probMiss;
+		}
+		/// @return probablility for a "miss"  in the sensor model (logodds)
+		float getProbMissLog() const
+		{
+			return m_parent->m_octomap.getProbMissLog();
+		}
+
+		/// @return minimum threshold for occupancy clamping in the sensor model
+		/// (probability)
+		double getClampingThresMin() const
+		{
+			if (m_parent.get())
+				return m_parent->m_octomap.getClampingThresMin();
+			else
+				return this->clampingThresMin;
+		}
+		/// @return minimum threshold for occupancy clamping in the sensor model
+		/// (logodds)
+		float getClampingThresMinLog() const
+		{
+			return m_parent->m_octomap.getClampingThresMinLog();
+		}
+		/// @return maximum threshold for occupancy clamping in the sensor model
+		/// (probability)
+		double getClampingThresMax() const
+		{
+			if (m_parent.get())
+				return m_parent->m_octomap.getClampingThresMax();
+			else
+				return this->clampingThresMax;
+		}
+		/// @return maximum threshold for occupancy clamping in the sensor model
+		/// (logodds)
+		float getClampingThresMaxLog() const
+		{
+			return m_parent->m_octomap.getClampingThresMaxLog();
+		}
+
+	   private:
+		mrpt::utils::ignored_copy_ptr<myself_t> m_parent;
+
+		double occupancyThres;  // sets the threshold for occupancy (sensor
+		// model) (Default=0.5)
+		double probHit;  // sets the probablility for a "hit" (will be converted
+		// to logodds) - sensor model (Default=0.7)
+		double probMiss;  // sets the probablility for a "miss" (will be
+		// converted to logodds) - sensor model (Default=0.4)
+		double clampingThresMin;  // sets the minimum threshold for occupancy
+		// clamping (sensor model) (Default=0.1192, -2
+		// in log odds)
+		double clampingThresMax;  // sets the maximum threshold for occupancy
+		// clamping (sensor model) (Default=0.971, 3.5
+		// in log odds)
+	};
+
+	/** The options used when inserting observations in the map */
+	TInsertionOptions insertionOptions;
+
+	/** Options used when evaluating "computeObservationLikelihood"
+	* \sa CObservation::computeObservationLikelihood
+	*/
+	struct TLikelihoodOptions : public utils::CLoadableOptions
+	{
+		/** Initilization of default parameters
+			*/
+		TLikelihoodOptions();
+		virtual ~TLikelihoodOptions() {}
+		void loadFromConfigFile(
+			const mrpt::config::CConfigFileBase& source,
+			const std::string& section) override;  // See base docs
+		void dumpToTextStream(
+			mrpt::utils::CStream& out) const override;  // See base docs
+
+		/** Binary dump to stream */
+		void writeToStream(mrpt::utils::CStream& out) const;
+		/** Binary dump to stream */
+		void readFromStream(mrpt::utils::CStream& in);
+
+		/** Speed up the likelihood computation by considering only one out of N
+		 * rays (default=1) */
+		uint32_t decimation;
+	};
+
+	TLikelihoodOptions likelihoodOptions;
+
+	/** Returns true if the map is empty/no observation has been inserted */
+	virtual bool isEmpty() const override;
+
+	virtual void saveMetricMapRepresentationToFile(
+		const std::string& filNamePrefix) const override;
+
+	/** Options for the conversion of a mrpt::maps::COctoMap into a
+	 * mrpt::opengl::COctoMapVoxels */
+	struct TRenderingOptions
+	{
+		/** Generate grid lines for all octree nodes, useful to draw the
+		 * "structure" of the octree, but computationally costly (Default:
+		 * false) */
+		bool generateGridLines;
+
+		/** Generate voxels for the occupied volumes  (Default=true) */
+		bool generateOccupiedVoxels;
+		/** Set occupied voxels visible (requires generateOccupiedVoxels=true)
+		 * (Default=true) */
+		bool visibleOccupiedVoxels;
+
+		/** Generate voxels for the freespace (Default=true) */
+		bool generateFreeVoxels;
+		/** Set free voxels visible (requires generateFreeVoxels=true)
+		 * (Default=true) */
+		bool visibleFreeVoxels;
+
+		TRenderingOptions()
+			: generateGridLines(false),
+			  generateOccupiedVoxels(true),
+			  visibleOccupiedVoxels(true),
+			  generateFreeVoxels(true),
+			  visibleFreeVoxels(true)
+		{
+		}
+
+		/** Binary dump to stream */
+		void writeToStream(mrpt::utils::CStream& out) const;
+		/** Binary dump to stream */
+		void readFromStream(mrpt::utils::CStream& in);
 	};
 
 	TRenderingOptions renderingOptions;

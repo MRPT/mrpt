@@ -13,27 +13,24 @@
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/metaprogramming_serialization.h>
 
 using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::poses;
 using namespace mrpt::poses;
 using namespace std;
-
-using namespace mrpt::utils::metaprogramming;
+using namespace mrpt::serialization;
+using namespace mrpt::serialization::metaprogramming;
 
 IMPLEMENTS_SERIALIZABLE(CSimpleMap, CSerializable, mrpt::maps)
 
-const auto fn_pair_make_unique = [auto &ptr](){
-	ptr.first.reset(
-		dynamic_cast<typename T::first_type::element_type*>(
-			ptr.first->clone()));
+const auto fn_pair_make_unique = [](auto& ptr) {
+	ptr.first.reset(dynamic_cast<mrpt::poses::CPose3DPDF*>(ptr.first->clone()));
 	ptr.second.reset(
-		dynamic_cast<typename T::second_type::element_type*>(
-			ptr.first->clone()));
+		dynamic_cast<mrpt::obs::CSensoryFrame*>(ptr.first->clone()));
 };
 
-CSimpleMap::CSimpleMap() : m_posesObsPairs() {}
 CSimpleMap::CSimpleMap(const CSimpleMap& o) : m_posesObsPairs(o.m_posesObsPairs)
 {
 	for_each(
@@ -56,54 +53,35 @@ CSimpleMap& CSimpleMap::operator=(const CSimpleMap& o)
 size_t CSimpleMap::size() const { return m_posesObsPairs.size(); }
 bool CSimpleMap::empty() const { return m_posesObsPairs.empty(); }
 void CSimpleMap::clear() { m_posesObsPairs.clear(); }
-CSimpleMap::~CSimpleMap() { clear(); }
-/*---------------------------------------------------------------
-							get const
-  ---------------------------------------------------------------*/
+
 void CSimpleMap::get(
 	size_t index, CPose3DPDF::Ptr& out_posePDF,
 	CSensoryFrame::Ptr& out_SF) const
 {
 	if (index >= m_posesObsPairs.size()) THROW_EXCEPTION("Index out of bounds");
-
 	out_posePDF = m_posesObsPairs[index].first;
 	out_SF = m_posesObsPairs[index].second;
 }
 
-/*---------------------------------------------------------------
-						remove
-  ---------------------------------------------------------------*/
 void CSimpleMap::remove(size_t index)
 {
 	MRPT_START
-
 	if (index >= m_posesObsPairs.size()) THROW_EXCEPTION("Index out of bounds");
-
 	m_posesObsPairs.erase(m_posesObsPairs.begin() + index);
-
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-						set
-  ---------------------------------------------------------------*/
 void CSimpleMap::set(
 	size_t index, const CPose3DPDF::Ptr& in_posePDF,
 	const CSensoryFrame::Ptr& in_SF)
 {
 	MRPT_START
-
 	if (index >= m_posesObsPairs.size()) THROW_EXCEPTION("Index out of bounds");
-
 	if (in_posePDF) m_posesObsPairs[index].first = in_posePDF;
 	if (in_SF) m_posesObsPairs[index].second = in_SF;
-
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-						set 2D
-  ---------------------------------------------------------------*/
 void CSimpleMap::set(
 	size_t index, const CPosePDF::Ptr& in_posePDF,
 	const CSensoryFrame::Ptr& in_SF)
@@ -120,9 +98,6 @@ void CSimpleMap::set(
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-						insert
-  ---------------------------------------------------------------*/
 void CSimpleMap::insert(
 	const CPose3DPDF* in_posePDF, const CSensoryFrame::Ptr& in_SF)
 {
@@ -242,7 +217,9 @@ void CSimpleMap::insertToPos(
 	Implements the writing to a CStream capability of
 	  CSerializable objects
   ---------------------------------------------------------------*/
-uint8_t CSimpleMap::serializeGetVersion() const { return XX; } void CSimpleMap::serializeTo(mrpt::serialization::CArchive& out, int* version) const
+uint8_t CSimpleMap::serializeGetVersion() const { return XX; }
+void CSimpleMap::serializeTo(
+	mrpt::serialization::CArchive& out, int* version) const
 {
 	if (version)
 		*version = 1;
@@ -259,7 +236,8 @@ uint8_t CSimpleMap::serializeGetVersion() const { return XX; } void CSimpleMap::
 /*---------------------------------------------------------------
 					readFromStream
   ---------------------------------------------------------------*/
-void CSimpleMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CSimpleMap::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -305,15 +283,15 @@ void CSimpleMap::changeCoordinatesOrigin(const CPose3D& newOrigin)
 }
 
 /** Save this object to a .simplemap binary file (compressed with gzip)
-* \sa loadFromFile
-* \return false on any error.
-*/
+ * \sa loadFromFile
+ * \return false on any error.
+ */
 bool CSimpleMap::saveToFile(const std::string& filName) const
 {
 	try
 	{
-		mrpt::io::CFileGZOutputStream f(filName);
-		f << *this;
+		mrpt::io::CFileGZOutputStream fo(filName);
+		archiveFrom(fo) << *this;
 		return true;
 	}
 	catch (...)
@@ -323,16 +301,16 @@ bool CSimpleMap::saveToFile(const std::string& filName) const
 }
 
 /** Load the contents of this object from a .simplemap binary file (possibly
-* compressed with gzip)
-* \sa saveToFile
-* \return false on any error.
-*/
+ * compressed with gzip)
+ * \sa saveToFile
+ * \return false on any error.
+ */
 bool CSimpleMap::loadFromFile(const std::string& filName)
 {
 	try
 	{
-		mrpt::io::CFileGZInputStream f(filName);
-		f >> *this;
+		mrpt::io::CFileGZInputStream fi(filName);
+		archiveFrom(fi) >> *this;
 		return true;
 	}
 	catch (...)

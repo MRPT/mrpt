@@ -141,7 +141,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 		/** A grid-map with the set of landmarks falling into each cell.
 		  *  \todo Use the KD-tree instead?
 		  */
-		mrpt::containers::CDynamicGrid<std::vector<int>> m_grid;
+		mrpt::containers::CDynamicGrid<vector_int> m_grid;
 
 		/** Auxiliary variables used in "getLargestDistanceFromOrigin"
 		  * \sa getLargestDistanceFromOrigin
@@ -177,7 +177,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 		void hasBeenModifiedAll();
 		void erase(unsigned int indx);
 
-		mrpt::containers::CDynamicGrid<std::vector<int>>* getGrid() { return &m_grid; }
+		mrpt::containers::CDynamicGrid<vector_int>* getGrid() { return &m_grid; }
 		/** Returns the landmark with a given landmrk ID, or nullptr if not
 		 * found
 		  */
@@ -238,7 +238,121 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(std::ostream& out) const override;  // See base docs
+		void dumpToTextStream(
+			mrpt::utils::CStream& out) const override;  // See base docs
+
+		/** If set to true (default), the insertion of a CObservationImage in
+		 * the map will insert SIFT 3D features.
+		  */
+		bool insert_SIFTs_from_monocular_images;
+
+		/** If set to true (default), the insertion of a
+		 * CObservationStereoImages in the map will insert SIFT 3D features.
+		  */
+		bool insert_SIFTs_from_stereo_images;
+
+		/** If set to true (default), inserting a CObservation2DRangeScan in the
+		 * map will generate landmarks for each range.
+		  */
+		bool insert_Landmarks_from_range_scans;
+
+		/** [For SIFT landmarks only] The ratio between the best and second best
+		 * descriptor distances to set as correspondence (Default=0.4)
+		  */
+		float SiftCorrRatioThreshold;
+
+		/** [For SIFT landmarks only] The minimum likelihood value of a match to
+		 * set as correspondence (Default=0.5)
+		  */
+		float SiftLikelihoodThreshold;
+
+		/****************************************** FAMD
+		 * ******************************************/
+		/** [For SIFT landmarks only] The minimum Euclidean Descriptor Distance
+		 * value of a match to set as correspondence (Default=200)
+		  */
+		float SiftEDDThreshold;
+
+		/** [For SIFT landmarks only] Method to compute 3D matching (Default = 0
+		 * (Our method))
+		  * 0: Our method -> Euclidean Distance between Descriptors and 3D
+		 * position
+		  * 1: Sim, Elinas, Griffin, Little -> Euclidean Distance between
+		 * Descriptors
+		  */
+		unsigned int SIFTMatching3DMethod;
+
+		/** [For SIFT landmarks only] Method to compute the likelihood (Default
+		 * = 0 (Our method))
+		  * 0: Our method -> Euclidean Distance between Descriptors and 3D
+		 * position
+		  * 1: Sim, Elinas, Griffin, Little -> 3D position
+		  */
+		unsigned int SIFTLikelihoodMethod;
+
+		/****************************************** END FAMD
+		 * ******************************************/
+
+		/** [For SIFT landmarks only] The distance (in meters) of the mean value
+		 * of landmarks, for the initial position PDF (Default = 3m)
+		  */
+		float SIFTsLoadDistanceOfTheMean;
+
+		/** [For SIFT landmarks only] The width (in meters, standard deviation)
+		 * of the ellipsoid in the axis perpendicular to the main directiom
+		 * (Default = 0.05f)
+		  */
+		float SIFTsLoadEllipsoidWidth;
+
+		/** [For SIFT landmarks only] The standard deviation (in pixels) for the
+		 * SIFTs detector (This is used for the Jacobbian to project stereo
+		 * images to 3D)
+		  */
+		float SIFTs_stdXY, SIFTs_stdDisparity;
+
+		/** Number of points to extract in the image
+		  */
+		int SIFTs_numberOfKLTKeypoints;
+
+		/** Maximum depth of 3D landmarks when loading a landmarks map from a
+		 * stereo image observation.
+		  */
+		float SIFTs_stereo_maxDepth;
+
+		/** Maximum distance (in pixels) from a point to a certain epipolar line
+		 * to be considered a potential match.
+		  */
+		float SIFTs_epipolar_TH;
+
+		/** Indicates if the images (as well as the SIFT detected features)
+		 * should be shown in a window.
+		  */
+		bool PLOT_IMAGES;
+
+		/** Parameters of the SIFT feature detector/descriptors while inserting
+		 * images in the landmark map.
+		  *  \note There exists another \a SIFT_feat_options field in the \a
+		 * likelihoodOptions member.
+		  *  \note All parameters of this field can be loaded from a config
+		 * file. See mrpt::vision::CFeatureExtraction::TOptions for the names of
+		 * the expected fields.
+		  */
+		mrpt::vision::CFeatureExtraction::TOptions SIFT_feat_options;
+
+	} insertionOptions;
+
+	/** With this struct options are provided to the likelihood computations.
+	 */
+	struct TLikelihoodOptions : public utils::CLoadableOptions
+	{
+	   public:
+		TLikelihoodOptions();
+
+		void loadFromConfigFile(
+			const mrpt::config::CConfigFileBase& source,
+			const std::string& section) override;  // See base docs
+		void dumpToTextStream(
+			mrpt::utils::CStream& out) const override;  // See base docs
 
 		/** @name Parameters for: 2D LIDAR scans
 		  * @{ */

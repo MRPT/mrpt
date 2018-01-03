@@ -30,70 +30,48 @@ Message_NMEA_GGA::content_t::content_t()
 {
 }
 
-void Message_NMEA_GGA::dumpToStream(mrpt::serialization::CArchive& out) const
+void Message_NMEA_GGA::dumpToStream(std::ostream& out) const
 {
-	out.printf("[NMEA GGA datum]\n");
-	out.printf(
+	out << "[NMEA GGA datum]\n";
+	out << mrpt::format(
 		"  Longitude: %.09f deg  Latitude: %.09f deg  Height: %.03f m\n",
 		fields.longitude_degrees, fields.latitude_degrees,
 		fields.altitude_meters);
 
-	out.printf(
+	out << mrpt::format(
 		"  Geoidal distance: %.03f m  Orthometric alt.: %.03f m  Corrected "
 		"ort. alt.: %.03f m\n",
 		fields.geoidal_distance, fields.orthometric_altitude,
 		fields.corrected_orthometric_altitude);
 
-	out.printf(
+	out << mrpt::format(
 		"  UTC time-stamp: %02u:%02u:%02.03f  #sats=%2u  ", fields.UTCTime.hour,
 		fields.UTCTime.minute, fields.UTCTime.sec, fields.satellitesUsed);
 
-	out.printf("Fix mode: %u ", fields.fix_quality);
-	switch (fields.fix_quality)
-	{
-		case 0:
-			out.printf("(Invalid)\n");
-			break;
-		case 1:
-			out.printf("(GPS fix)\n");
-			break;
-		case 2:
-			out.printf("(DGPS fix)\n");
-			break;
-		case 3:
-			out.printf("(PPS fix)\n");
-			break;
-		case 4:
-			out.printf("(Real Time Kinematic/RTK Fixed)\n");
-			break;
-		case 5:
-			out.printf("(Real Time Kinematic/RTK Float)\n");
-			break;
-		case 6:
-			out.printf("(Dead Reckoning)\n");
-			break;
-		case 7:
-			out.printf("(Manual)\n");
-			break;
-		case 8:
-			out.printf("(Simulation)\n");
-			break;
-		case 9:
-			out.printf("(mmGPS + RTK Fixed)\n");
-			break;
-		case 10:
-			out.printf("(mmGPS + RTK Float)\n");
-			break;
-		default:
-			out.printf("(UNKNOWN!)\n");
-			break;
-	};
+	out << mrpt::format("Fix mode: %u ", fields.fix_quality);
 
-	out.printf("  HDOP (Horizontal Dilution of Precision): ");
-	if (fields.thereis_HDOP)
-		out.printf(" %f\n", fields.HDOP);
+	const char* fix_names[] = {"0:Invalid",
+							   "1:GPS fix",
+							   "2:DGPS fix",
+							   "3:PPS fix",
+							   "4:RTK Fixed",
+							   "5:RTK Float",
+							   "6:Dead Reckoning",
+							   "7:Manual",
+							   "8:Simulation",
+							   "9:mmGPS + RTK Fixed",
+							   "10: mmGPS + RTK Float"};
+
+	if (fields.fix_quality < sizeof(fix_names) / sizeof(fix_names[0]))
+		out << "(" << fix_names[fields.fix_quality] << ")\n";
 	else
-		out.printf(" N/A\n");
+		out << "(UNKNOWN!)\n";
+
+	out << "  HDOP (Horizontal Dilution of Precision): ";
+	if (fields.thereis_HDOP)
+		out << mrpt::format(" %f\n", fields.HDOP);
+	else
+		out << " N/A\n";
 }
 
 bool Message_NMEA_GGA::getAllFieldDescriptions(std::ostream& o) const
@@ -119,7 +97,7 @@ Message_NMEA_GLL::content_t::content_t()
 {
 }
 
-void Message_NMEA_GLL::dumpToStream(mrpt::serialization::CArchive& out) const
+void Message_NMEA_GLL::dumpToStream(std::ostream& out) const
 {
 	out.printf("[NMEA GLL datum]\n");
 	out.printf(

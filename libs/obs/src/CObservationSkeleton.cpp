@@ -11,6 +11,7 @@
 
 #include <mrpt/obs/CObservationSkeleton.h>
 #include <mrpt/serialization/CArchive.h>
+#include <iostream>
 
 using namespace mrpt::obs;
 using namespace mrpt::poses;
@@ -47,7 +48,8 @@ void CObservationSkeleton::serializeTo(mrpt::serialization::CArchive& out) const
 	out << sensorLabel << timestamp << sensorPose;
 }
 
-void CObservationSkeleton::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CObservationSkeleton::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

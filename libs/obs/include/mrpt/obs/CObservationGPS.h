@@ -15,6 +15,7 @@
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/obs/gnss_messages.h>
 #include <typeinfo>
+#include <map>
 
 namespace mrpt
 {
@@ -71,37 +72,34 @@ class CObservationGPS : public CObservation
 	DEFINE_SERIALIZABLE(CObservationGPS)
 
    public:
-	typedef std::map<gnss::gnss_message_type_t, gnss::gnss_message_ptr>
-		message_list_t;
-
-	/** ctor */
-	CObservationGPS();
+	using message_list_t =
+		std::map<gnss::gnss_message_type_t, gnss::gnss_message_ptr>;
 
 	/** @name GNSS (GPS) data fields
-	  * @{ */
+	 * @{ */
 	/** The sensor pose on the robot/vehicle */
-	mrpt::poses::CPose3D sensorPose;
+	mrpt::poses::CPose3D sensorPose{};
 	/** The local computer-based timestamp based on the reception of the message
 	 * in the computer. \sa CObservation::timestamp in the base class, which
 	 * should contain the accurate satellite-based UTC timestamp. */
-	mrpt::system::TTimeStamp originalReceivedTimestamp;
+	mrpt::system::TTimeStamp originalReceivedTimestamp{INVALID_TIMESTAMP};
 	/** If true, CObservation::timestamp has been generated from accurate
 	 * satellite clock. Otherwise, no GPS data is available and timestamps are
 	 * based on the local computer clock. */
-	bool has_satellite_timestamp;
+	bool has_satellite_timestamp{false};
 	/** The main piece of data in this class: a list of GNNS messages.
-	  * Normally users might prefer to access the list via the methods
+	 * Normally users might prefer to access the list via the methods
 	 * CObservationGPS::getMsgByClass() and CObservationGPS::setMsg()
-	  * Typically only one message, may be multiple if all have the same
+	 * Typically only one message, may be multiple if all have the same
 	 * timestamp. */
 	message_list_t messages;
 	/** @} */
 
 	/** @name Main API to access to the data fields
-	  * @{ */
+	 * @{ */
 	/** Stores a message in the list \a messages, making a copy of the passed
 	 * object.
-	  * Valid message classes are those derived from
+	 * Valid message classes are those derived from
 	 * mrpt::obs::gnss::gnss_message. If another message of the same type
 	 * exists, it is overwritten. */
 	template <class MSG_CLASS>
@@ -126,11 +124,11 @@ class CObservationGPS : public CObservation
 	/** Returns a pointer to the message in the list CObservationGPS::messages
 	 * of the requested type. Users normally would prefer using
 	 * CObservationGPS::getMsgByClass()
-	  * to avoid having to perform a dynamic_cast<>() on the returned pointer.
-	  * \exception std::runtime_error If there is no such a message in the list.
+	 * to avoid having to perform a dynamic_cast<>() on the returned pointer.
+	 * \exception std::runtime_error If there is no such a message in the list.
 	 * Please, check existence before calling this method with
 	 * CObservationGPS::hasMsgType()
-	  * \sa mrpt::obs::gnss::gnss_message_type_t,
+	 * \sa mrpt::obs::gnss::gnss_message_type_t,
 	 * CObservationGPS::getMsgByClass(), CObservationGPS::hasMsgType() */
 	mrpt::obs::gnss::gnss_message* getMsgByType(
 		const gnss::gnss_message_type_t type_id);
@@ -140,10 +138,10 @@ class CObservationGPS : public CObservation
 
 	/** Returns a reference to the message in the list CObservationGPS::messages
 	 * of the requested class.
-	  * \exception std::runtime_error If there is no such a message in the list.
+	 * \exception std::runtime_error If there is no such a message in the list.
 	 * Please, check existence before calling this method with
 	 * CObservationGPS::hasMsgClass()
-	  * \sa mrpt::obs::gnss::gnss_message_type_t,
+	 * \sa mrpt::obs::gnss::gnss_message_type_t,
 	 * CObservationGPS::getMsgByType(), CObservationGPS::hasMsgType() */
 	template <class MSG_CLASS>
 	MSG_CLASS& getMsgByClass()
@@ -221,7 +219,7 @@ class CObservationGPS : public CObservation
 	/** @} */
 
 	/** @name Deprecated, backwards compatible (MRPT <1.4.0) data and types
-	  * @{ */
+	 * @{ */
 	/** Deprecated, kept for backwards compatibility */
 	typedef gnss::UTC_time TUTCTime;
 	/** Deprecated, kept for backwards compatibility */
@@ -253,24 +251,26 @@ class CObservationGPS : public CObservation
 	// Was: bool  has_GGA_datum;
 	/** Evaluates as a bool; true if the corresponding field exists in \a
 	 * messages. */
-	internal_msg_test_proxy<gnss::NMEA_GGA> has_GGA_datum;
+	internal_msg_test_proxy<gnss::NMEA_GGA> has_GGA_datum{messages};
 	/** Evaluates as a bool; true if the corresponding field exists in \a
 	 * messages. */
-	internal_msg_test_proxy<gnss::NMEA_RMC> has_RMC_datum;
+	internal_msg_test_proxy<gnss::NMEA_RMC> has_RMC_datum{messages};
 	/** Evaluates as a bool; true if the corresponding field exists in \a
 	 * messages. */
-	internal_msg_test_proxy<gnss::TOPCON_PZS> has_PZS_datum;
+	internal_msg_test_proxy<gnss::TOPCON_PZS> has_PZS_datum{messages};
 	/** Evaluates as a bool; true if the corresponding field exists in \a
 	 * messages. */
-	internal_msg_test_proxy<gnss::TOPCON_SATS> has_SATS_datum;
+	internal_msg_test_proxy<gnss::TOPCON_SATS> has_SATS_datum{messages};
 	/** @} */
 
 	/** @name Utilities
-	  * @{ */
+	 * @{ */
 	static bool GPS_time_to_UTC(
 		uint16_t gps_week, double gps_sec,
-		const int
-			leap_seconds_count /**< [in] GPS to UTC time number of leap seconds (normally grabbed from satellital live data) */,
+		const int leap_seconds_count /**< [in] GPS to UTC time number of leap
+										seconds (normally grabbed from
+										satellital live data) */
+		,
 		/** Return false on invalid input data */
 		mrpt::system::TTimeStamp& utc_out /**< [out] UTC timestamp */);
 	/** \overload */
@@ -280,7 +280,7 @@ class CObservationGPS : public CObservation
 	/** @} */
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
+}  // namespace obs
+}  // namespace mrpt
 
 #endif
