@@ -68,9 +68,6 @@ void CObservationStereoImagesFeatures::saveFeaturesToTextFile(
 	file.close();
 }
 
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
 uint8_t CObservationStereoImagesFeatures::serializeGetVersion() const { return XX; } void CObservationStereoImagesFeatures::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
@@ -96,11 +93,7 @@ uint8_t CObservationStereoImagesFeatures::serializeGetVersion() const { return X
 	}
 }
 
-/*---------------------------------------------------------------
-  Implements the reading from a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
 void CObservationStereoImagesFeatures::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
-	mrpt::utils::CStream& in, int version)
 {
 	switch (version)
 	{

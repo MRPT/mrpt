@@ -21,9 +21,6 @@ IMPLEMENTS_SERIALIZABLE(CObservationRFID, CObservation, mrpt::obs)
 /** Constructor
  */
 CObservationRFID::CObservationRFID() : tag_readings() {}
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
 uint8_t CObservationRFID::serializeGetVersion() const { return XX; } void CObservationRFID::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
@@ -49,9 +46,6 @@ uint8_t CObservationRFID::serializeGetVersion() const { return XX; } void CObser
 	}
 }
 
-/*---------------------------------------------------------------
-  Implements the reading from a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
 void CObservationRFID::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	// MRPT_UNUSED_PARAM(in);

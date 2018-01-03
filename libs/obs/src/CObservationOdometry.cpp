@@ -31,9 +31,6 @@ CObservationOdometry::CObservationOdometry()
 {
 }
 
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
 uint8_t CObservationOdometry::serializeGetVersion() const { return XX; } void CObservationOdometry::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
@@ -53,9 +50,6 @@ uint8_t CObservationOdometry::serializeGetVersion() const { return XX; } void CO
 	}
 }
 
-/*---------------------------------------------------------------
-  Implements the reading from a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
 void CObservationOdometry::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	MRPT_UNUSED_PARAM(in);

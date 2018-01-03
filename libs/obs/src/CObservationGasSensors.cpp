@@ -24,9 +24,6 @@ IMPLEMENTS_SERIALIZABLE(CObservationGasSensors, CObservation, mrpt::obs)
 /** Constructor
  */
 CObservationGasSensors::CObservationGasSensors() : m_readings() {}
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
 uint8_t CObservationGasSensors::serializeGetVersion() const { return XX; } void CObservationGasSensors::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
@@ -50,11 +47,7 @@ uint8_t CObservationGasSensors::serializeGetVersion() const { return XX; } void 
 	}
 }
 
-/*---------------------------------------------------------------
-  Implements the reading from a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
 void CObservationGasSensors::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
-	mrpt::utils::CStream& in, int version)
 {
 	switch (version)
 	{

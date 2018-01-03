@@ -952,7 +952,6 @@ void CLocalMetricHypothesis::dumpAsText(std::vector<std::string>& st) const
 					readFromStream
   ---------------------------------------------------------------*/
 void CLocalMetricHypothesis::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
-	mrpt::utils::CStream& in, int version)
 {
 	switch (version)
 	{

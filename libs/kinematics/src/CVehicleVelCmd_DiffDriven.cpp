@@ -76,7 +76,6 @@ bool CVehicleVelCmd_DiffDriven::isStopCmd() const
 
 void CVehicleVelCmd_DiffDriven::setToStop() { lin_vel = ang_vel = .0; }
 void CVehicleVelCmd_DiffDriven::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
-	mrpt::utils::CStream& in, int version)
 {
 	switch (version)
 	{

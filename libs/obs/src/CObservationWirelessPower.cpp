@@ -21,9 +21,6 @@ IMPLEMENTS_SERIALIZABLE(CObservationWirelessPower, CObservation, mrpt::obs)
 /** Constructor
  */
 CObservationWirelessPower::CObservationWirelessPower() : power(0) {}
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
 uint8_t CObservationWirelessPower::serializeGetVersion() const { return XX; } void CObservationWirelessPower::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
@@ -38,11 +35,7 @@ uint8_t CObservationWirelessPower::serializeGetVersion() const { return XX; } vo
 	}
 }
 
-/*---------------------------------------------------------------
-  Implements the reading from a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
 void CObservationWirelessPower::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
-	mrpt::utils::CStream& in, int version)
 {
 	// MRPT_UNUSED_PARAM(in);
 	switch (version)

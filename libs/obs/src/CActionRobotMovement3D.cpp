@@ -35,9 +35,6 @@ CActionRobotMovement3D::CActionRobotMovement3D()
 	velocities.assign(.0);
 }
 
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
 uint8_t CActionRobotMovement3D::serializeGetVersion() const { return XX; } void CActionRobotMovement3D::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
@@ -58,11 +55,7 @@ uint8_t CActionRobotMovement3D::serializeGetVersion() const { return XX; } void 
 	}
 }
 
-/*---------------------------------------------------------------
-  Implements the reading from a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
 void CActionRobotMovement3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
-	mrpt::utils::CStream& in, int version)
 {
 	switch (version)
 	{

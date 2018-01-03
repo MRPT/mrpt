@@ -25,9 +25,6 @@ CObservationVisualLandmarks::CObservationVisualLandmarks()
 {
 }
 
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
 uint8_t CObservationVisualLandmarks::serializeGetVersion() const { return XX; } void CObservationVisualLandmarks::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
@@ -41,11 +38,7 @@ uint8_t CObservationVisualLandmarks::serializeGetVersion() const { return XX; } 
 	}
 }
 
-/*---------------------------------------------------------------
-  Implements the reading from a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
 void CObservationVisualLandmarks::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
-	mrpt::utils::CStream& in, int version)
 {
 	switch (version)
 	{

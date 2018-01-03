@@ -91,9 +91,6 @@ void CObservationBeaconRanges::serializeFrom(mrpt::serialization::CArchive& in, 
 	};
 }
 
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
 void CObservationBeaconRanges::debugPrintOut()
 {
 	printf("[CObservationBeaconRanges::debugPrintOut] Dumping:\n");

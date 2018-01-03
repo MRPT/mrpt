@@ -23,9 +23,6 @@ IMPLEMENTS_SERIALIZABLE(CObservationSkeleton, CObservation, mrpt::obs)
 #define WRITE_JOINT(_J) out << _J.x << _J.y << _J.z << _J.conf;
 #define READ_JOINT(_J) in >> _J.x >> _J.y >> _J.z >> _J.conf;
 
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
 uint8_t CObservationSkeleton::serializeGetVersion() const { return XX; } void CObservationSkeleton::serializeTo(CStream& out, int* version) const
 {
 	if (version)
@@ -54,9 +51,6 @@ uint8_t CObservationSkeleton::serializeGetVersion() const { return XX; } void CO
 	}
 }
 
-/*---------------------------------------------------------------
-  Implements the reading from a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
 void CObservationSkeleton::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)

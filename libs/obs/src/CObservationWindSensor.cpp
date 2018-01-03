@@ -21,9 +21,6 @@ IMPLEMENTS_SERIALIZABLE(CObservationWindSensor, CObservation, mrpt::obs)
 /** Constructor
  */
 CObservationWindSensor::CObservationWindSensor() : speed(0.0), direction(0.0) {}
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
 uint8_t CObservationWindSensor::serializeGetVersion() const { return XX; } void CObservationWindSensor::serializeTo(
 	mrpt::utils::CStream& out, int* version) const
 {
@@ -38,11 +35,7 @@ uint8_t CObservationWindSensor::serializeGetVersion() const { return XX; } void 
 	}
 }
 
-/*---------------------------------------------------------------
-  Implements the reading from a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
 void CObservationWindSensor::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
-	mrpt::utils::CStream& in, int version)
 {
 	// MRPT_UNUSED_PARAM(in);
 	switch (version)

@@ -54,7 +54,6 @@ void CMHPropertiesValuesList::serializeTo(
 						readFromStream
  ---------------------------------------------------------------*/
 void CMHPropertiesValuesList::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
-	mrpt::utils::CStream& in, int version)
 {
 	switch (version)
 	{
