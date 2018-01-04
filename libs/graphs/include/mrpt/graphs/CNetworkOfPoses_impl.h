@@ -10,7 +10,7 @@
 #define CONSTRAINED_POSE_NETWORK_IMPL_H
 
 #include <mrpt/graphs/dijkstra.h>
-#include <mrpt/system/CTextFileLinesParser.h>
+#include <mrpt/io/CTextFileLinesParser.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/math/CArrayNumeric.h>
 #include <mrpt/math/wrap2pi.h>
@@ -206,7 +206,7 @@ struct graph_ops
 	//                     save_graph_of_poses_to_binary_file
 	// =================================================================
 	static void save_graph_of_poses_to_binary_file(
-		const graph_t* g, mrpt::utils::CStream& out)
+		const graph_t* g, mrpt::serialization::CArchive& out)
 	{
 		// Store class name:
 		const std::string sClassName = TTypeName<graph_t>::get();
@@ -222,13 +222,13 @@ struct graph_ops
 	//                     read_graph_of_poses_from_binary_file
 	// =================================================================
 	static void read_graph_of_poses_from_binary_file(
-		graph_t* g, mrpt::utils::CStream& in)
+		graph_t* g, mrpt::serialization::CArchive& in)
 	{
 		// Compare class name:
 		const std::string sClassName = TTypeName<graph_t>::get();
 		std::string sStoredClassName;
 		in >> sStoredClassName;
-		ASSERT_EQUAL_(sStoredClassName, sClassName)
+		ASSERT_EQUAL_(sStoredClassName, sClassName);
 
 		// Check serialization version:
 		uint32_t stored_version;
