@@ -179,7 +179,7 @@ void TUncertaintyPath<GRAPH_T>::loadFromConfigFile(
 template <class GRAPH_T>
 void TUncertaintyPath<GRAPH_T>::dumpToTextStream(std::ostream& out) const
 {
-	out.printf("%s\n", this->getAsString().c_str());
+	out << mrpt::format("%s\n", this->getAsString().c_str());
 }
 
 template <class GRAPH_T>

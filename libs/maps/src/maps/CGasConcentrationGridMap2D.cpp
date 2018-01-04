@@ -69,7 +69,7 @@ void CGasConcentrationGridMap2D::TMapDefinition::
 void CGasConcentrationGridMap2D::TMapDefinition::dumpToTextStream_map_specific(
 	mrpt::utils::CStream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"MAP TYPE                                  = %s\n",
 		mrpt::utils::TEnumType<
 			CGasConcentrationGridMap2D::TMapRepresentation>::value2name(mapType)
@@ -82,40 +82,40 @@ void CGasConcentrationGridMap2D::TMapDefinition::dumpToTextStream_map_specific(
 
 	this->insertionOpts.dumpToTextStream(std::ostream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [CGasConcentrationGridMap2D::TInsertionOptions] "
 		"------------ \n\n");
-	out.printf("[TInsertionOptions.Common] ------------ \n\n");
+	out << mrpt::format("[TInsertionOptions.Common] ------------ \n\n");
 	internal_dumpToTextStream_common(
 		out);  // Common params to all random fields maps:
 
-	out.printf("[TInsertionOptions.GasSpecific] ------------ \n\n");
-	out.printf(
+	out << mrpt::format("[TInsertionOptions.GasSpecific] ------------ \n\n");
+	out << mrpt::format(
 		"gasSensorLabel							= %s\n",
 		gasSensorLabel.c_str());
-	out.printf(
+	out << mrpt::format(
 		"enose_id								= %u\n", (unsigned)enose_id);
-	out.printf(
+	out << mrpt::format(
 		"gasSensorType							= %u\n",
 		(unsigned)gasSensorType);
-	out.printf(
+	out << mrpt::format(
 		"windSensorLabel							= %s\n",
 		windSensorLabel.c_str());
-	out.printf(
+	out << mrpt::format(
 		"useWindInformation						= %u\n", useWindInformation);
 
-	out.printf("advectionFreq							= %f\n", advectionFreq);
-	out.printf(
+	out << mrpt::format("advectionFreq							= %f\n", advectionFreq);
+	out << mrpt::format(
 		"default_wind_direction					= %f\n",
 		default_wind_direction);
-	out.printf(
+	out << mrpt::format(
 		"default_wind_speed						= %f\n", default_wind_speed);
-	out.printf(
+	out << mrpt::format(
 		"std_windNoise_phi						= %f\n", std_windNoise_phi);
-	out.printf(
+	out << mrpt::format(
 		"std_windNoise_mod						= %f\n", std_windNoise_mod);
 
-	out.printf("\n");
+	out << mrpt::format("\n");
 }
 
 /*---------------------------------------------------------------

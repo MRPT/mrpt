@@ -17,7 +17,6 @@
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::math;
-
 using namespace mrpt::poses;
 
 IMPLEMENTS_SERIALIZABLE(CPose3DQuat, CSerializable, mrpt::poses)
@@ -32,7 +31,7 @@ CPose3DQuat::CPose3DQuat(const CPose3D& p)
 }
 
 /** Constructor from a 4x4 homogeneous transformation matrix.
-  */
+ */
 CPose3DQuat::CPose3DQuat(const CMatrixDouble44& M)
 	: m_quat(UNINITIALIZED_QUATERNION)
 {
@@ -45,8 +44,8 @@ CPose3DQuat::CPose3DQuat(const CMatrixDouble44& M)
 
 /** Returns the corresponding 4x4 homogeneous transformation matrix for the
  * point(translation) or pose (translation+orientation).
-  * \sa getInverseHomogeneousMatrix
-  */
+ * \sa getInverseHomogeneousMatrix
+ */
 void CPose3DQuat::getHomogeneousMatrix(CMatrixDouble44& out_HM) const
 {
 	m_quat.rotationMatrixNoResize(out_HM);
@@ -73,8 +72,8 @@ void CPose3DQuat::getAsVector(CVectorDouble& v) const
 
 /**  Makes "this = A (+) B"; this method is slightly more efficient than "this=
  * A + B;" since it avoids the temporary object.
-  *  \note A or B can be "this" without problems.
-  */
+ *  \note A or B can be "this" without problems.
+ */
 void CPose3DQuat::composeFrom(const CPose3DQuat& A, const CPose3DQuat& B)
 {
 	// The 3D point:
@@ -91,9 +90,9 @@ void CPose3DQuat::composeFrom(const CPose3DQuat& A, const CPose3DQuat& B)
 
 /**  Makes \f$ this = A \ominus B \f$ this method is slightly more efficient
  * than "this= A - B;" since it avoids the temporary object.
-  *  \note A or B can be "this" without problems.
-  * \sa composeFrom
-  */
+ *  \note A or B can be "this" without problems.
+ * \sa composeFrom
+ */
 void CPose3DQuat::inverseComposeFrom(const CPose3DQuat& A, const CPose3DQuat& B)
 {
 	// The 3D point:
@@ -108,8 +107,8 @@ void CPose3DQuat::inverseComposeFrom(const CPose3DQuat& A, const CPose3DQuat& B)
 }
 
 /**  Computes the 3D point G such as \f$ G = this \oplus L \f$.
-  * \sa inverseComposeFrom
-  */
+ * \sa inverseComposeFrom
+ */
 void CPose3DQuat::composePoint(
 	const double lx, const double ly, const double lz, double& gx, double& gy,
 	double& gz,
@@ -183,8 +182,8 @@ void CPose3DQuat::composePoint(
 }
 
 /**  Computes the 3D point G such as \f$ L = G \ominus this \f$.
-  * \sa composeFrom
-  */
+ * \sa composeFrom
+ */
 void CPose3DQuat::inverseComposePoint(
 	const double gx, const double gy, const double gz, double& lx, double& ly,
 	double& lz,
@@ -329,10 +328,11 @@ void CPose3DQuat::operator*=(const double s)
 uint8_t CPose3DQuat::serializeGetVersion() const { return 0; }
 void CPose3DQuat::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	out << m_coords[0] << m_coords[1] << m_coords[2] << m_quat[0]
-		<< m_quat[1] << m_quat[2] << m_quat[3];
+	out << m_coords[0] << m_coords[1] << m_coords[2] << m_quat[0] << m_quat[1]
+		<< m_quat[2] << m_quat[3];
 }
-void CPose3DQuat::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CPose3DQuat::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -492,10 +492,15 @@ CPoint3D mrpt::poses::operator-(const CPoint3D& G, const CPose3DQuat& p)
 	return L;
 }
 
-mrpt::math::TPoint3D mrpt::poses::operator-(
-	const mrpt::math::TPoint3D& G, const CPose3DQuat& p)
+TPoint3D mrpt::poses::operator-(const TPoint3D& G, const CPose3DQuat& p)
 {
 	mrpt::math::TPoint3D L;
 	p.inverseComposePoint(G[0], G[1], G[2], L[0], L[1], L[2]);
 	return L;
+}
+
+TPose3DQuat CPose3DQuat::asTPose() const
+{
+	return TPose3DQuat(
+		x(), y(), z(), m_quat.r(), m_quat.x(), m_quat.y(), m_quat.z());
 }

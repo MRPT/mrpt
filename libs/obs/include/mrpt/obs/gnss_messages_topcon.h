@@ -79,7 +79,7 @@ struct Message_TOPCON_PZS : public gnss_message
 			latitude_degrees, longitude_degrees, height_meters);
 	}
 	void dumpToStream(
-		mrpt::serialization::CArchive& out) const override;  // See docs in base
+		std::ostream& out) const override;  // See docs in base
 
    protected:
 	void internal_writeToStream(mrpt::serialization::CArchive& out) const override;
@@ -110,7 +110,7 @@ struct Message_TOPCON_SATS : public gnss_message
 	std::vector<int16_t> AZs;
 
 	void dumpToStream(
-		mrpt::serialization::CArchive& out) const override;  // See docs in base
+		std::ostream& out) const override;  // See docs in base
    protected:
 	void internal_writeToStream(mrpt::serialization::CArchive& out) const override;
 	void internal_readFromStream(mrpt::serialization::CArchive& in) override;

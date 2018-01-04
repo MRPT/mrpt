@@ -324,7 +324,7 @@ template <class OCTREE, class OCTREE_NODE>
 void COctoMapBase<OCTREE, OCTREE_NODE>::TInsertionOptions::dumpToTextStream(
 	mrpt::utils::CStream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [COctoMapBase<>::TInsertionOptions] ------------ \n\n");
 
 	LOADABLEOPTS_DUMP_VAR(maxrange, double);
@@ -336,14 +336,14 @@ void COctoMapBase<OCTREE, OCTREE_NODE>::TInsertionOptions::dumpToTextStream(
 	LOADABLEOPTS_DUMP_VAR(getClampingThresMin(), double);
 	LOADABLEOPTS_DUMP_VAR(getClampingThresMax(), double);
 
-	out.printf("\n");
+	out << mrpt::format("\n");
 }
 
 template <class OCTREE, class OCTREE_NODE>
 void COctoMapBase<OCTREE, OCTREE_NODE>::TLikelihoodOptions::dumpToTextStream(
 	mrpt::utils::CStream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [COctoMapBase<>::TLikelihoodOptions] ------------ \n\n");
 
 	LOADABLEOPTS_DUMP_VAR(decimation, int);

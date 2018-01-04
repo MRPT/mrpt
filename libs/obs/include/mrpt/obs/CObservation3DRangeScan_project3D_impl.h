@@ -68,7 +68,8 @@ void project3DPointsFromDepthImageInto(
 		if (projectParams.PROJ3D_USE_LUT)
 		{
 			// Use LUT:
-			if (src_obs.get_3dproj_lut().prev_camParams != src_obs.cameraParams ||
+			if (src_obs.get_3dproj_lut().prev_camParams !=
+					src_obs.cameraParams ||
 				WH != size_t(src_obs.get_3dproj_lut().Kys.size()))
 			{
 				src_obs.get_3dproj_lut().prev_camParams = src_obs.cameraParams;
@@ -155,7 +156,7 @@ void project3DPointsFromDepthImageInto(
 							D,  // x
 							Ky * D,  // y
 							Kz * D  // z
-							);
+						);
 						src_obs.points3D_idxs_x[idx] = c;
 						src_obs.points3D_idxs_y[idx] = r;
 						++idx;
@@ -167,13 +168,13 @@ void project3DPointsFromDepthImageInto(
 	else
 	{
 		/* range_is_depth = false :
-		  *   Ky = (r_cx - c)/r_fx
-		  *   Kz = (r_cy - r)/r_fy
-		  *
-		  *   x(i) = rangeImage(r,c) / sqrt( 1 + Ky^2 + Kz^2 )
-		  *   y(i) = Ky * x(i)
-		  *   z(i) = Kz * x(i)
-		  */
+		 *   Ky = (r_cx - c)/r_fx
+		 *   Kz = (r_cy - r)/r_fy
+		 *
+		 *   x(i) = rangeImage(r,c) / sqrt( 1 + Ky^2 + Kz^2 )
+		 *   y(i) = Ky * x(i)
+		 *   z(i) = Kz * x(i)
+		 */
 		const float r_cx = src_obs.cameraParams.cx();
 		const float r_cy = src_obs.cameraParams.cy();
 		const float r_fx_inv = 1.0f / src_obs.cameraParams.fx();
@@ -193,7 +194,7 @@ void project3DPointsFromDepthImageInto(
 						D / std::sqrt(1 + Ky * Ky + Kz * Kz),  // x
 						Ky * D,  // y
 						Kz * D  // z
-						);
+					);
 					src_obs.points3D_idxs_x[idx] = c;
 					src_obs.points3D_idxs_y[idx] = r;
 					++idx;
@@ -319,8 +320,10 @@ void project3DPointsFromDepthImageInto(
 				*projectParams.robotPoseInTheWorld,
 				mrpt::poses::CPose3D(transf_to_apply));
 
-		const mrpt::math::CMatrixFixedNumeric<float, 4, 4> HM =
-			transf_to_apply.getHomogeneousMatrixVal().cast<float>();
+		const auto HM =
+			transf_to_apply
+				.getHomogeneousMatrixVal<mrpt::math::CMatrixDouble44>()
+				.cast<float>();
 		Eigen::Matrix<float, 4, 1> pt, pt_transf;
 		pt[3] = 1;
 
@@ -498,7 +501,7 @@ inline void do_project_3d_pointcloud_SSE2(
 #endif
 }
 
-}  // End of namespace
-}  // End of namespace
-}  // End of namespace
+}  // namespace detail
+}  // namespace obs
+}  // namespace mrpt
 #endif

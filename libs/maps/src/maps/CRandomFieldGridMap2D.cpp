@@ -714,48 +714,48 @@ CRandomFieldGridMap2D::TInsertionOptionsCommon::TInsertionOptionsCommon()
 void CRandomFieldGridMap2D::TInsertionOptionsCommon::
 	internal_dumpToTextStream_common(mrpt::utils::CStream& out) const
 {
-	out.printf("sigma                                   = %f\n", sigma);
-	out.printf("cutoffRadius                            = %f\n", cutoffRadius);
-	out.printf("R_min                                   = %f\n", R_min);
-	out.printf("R_max                                   = %f\n", R_max);
-	out.printf(
+	out << mrpt::format("sigma                                   = %f\n", sigma);
+	out << mrpt::format("cutoffRadius                            = %f\n", cutoffRadius);
+	out << mrpt::format("R_min                                   = %f\n", R_min);
+	out << mrpt::format("R_max                                   = %f\n", R_max);
+	out << mrpt::format(
 		"dm_sigma_omega                          = %f\n", dm_sigma_omega);
 
-	out.printf("KF_covSigma                             = %f\n", KF_covSigma);
-	out.printf(
+	out << mrpt::format("KF_covSigma                             = %f\n", KF_covSigma);
+	out << mrpt::format(
 		"KF_initialCellStd                       = %f\n", KF_initialCellStd);
-	out.printf(
+	out << mrpt::format(
 		"KF_observationModelNoise                = %f\n",
 		KF_observationModelNoise);
-	out.printf(
+	out << mrpt::format(
 		"KF_defaultCellMeanValue                 = %f\n",
 		KF_defaultCellMeanValue);
-	out.printf(
+	out << mrpt::format(
 		"KF_W_size                               = %u\n", (unsigned)KF_W_size);
 
-	out.printf(
+	out << mrpt::format(
 		"GMRF_lambdaPrior                        = %f\n", GMRF_lambdaPrior);
-	out.printf(
+	out << mrpt::format(
 		"GMRF_lambdaObs                          = %f\n", GMRF_lambdaObs);
-	out.printf(
+	out << mrpt::format(
 		"GMRF_lambdaObsLoss                      = %f\n", GMRF_lambdaObs);
 
-	out.printf(
+	out << mrpt::format(
 		"GMRF_use_occupancy_information          = %s\n",
 		GMRF_use_occupancy_information ? "YES" : "NO");
-	out.printf(
+	out << mrpt::format(
 		"GMRF_simplemap_file                     = %s\n",
 		GMRF_simplemap_file.c_str());
-	out.printf(
+	out << mrpt::format(
 		"GMRF_gridmap_image_file                 = %s\n",
 		GMRF_gridmap_image_file.c_str());
-	out.printf(
+	out << mrpt::format(
 		"GMRF_gridmap_image_res                  = %f\n",
 		GMRF_gridmap_image_res);
-	out.printf(
+	out << mrpt::format(
 		"GMRF_gridmap_image_cx                   = %u\n",
 		static_cast<unsigned int>(GMRF_gridmap_image_cx));
-	out.printf(
+	out << mrpt::format(
 		"GMRF_gridmap_image_cy                   = %u\n",
 		static_cast<unsigned int>(GMRF_gridmap_image_cy));
 }

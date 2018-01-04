@@ -80,15 +80,15 @@ void CLandmarksMap::TMapDefinition::loadFromConfigFile_map_specific(
 void CLandmarksMap::TMapDefinition::dumpToTextStream_map_specific(
 	mrpt::utils::CStream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"number of initial beacons                = %u\n",
 		(int)initialBeacons.size());
 
-	out.printf("      ID         (X,Y,Z)\n");
-	out.printf("--------------------------------------------------------\n");
+	out << mrpt::format("      ID         (X,Y,Z)\n");
+	out << mrpt::format("--------------------------------------------------------\n");
 	for (std::deque<TPairIdBeacon>::const_iterator p = initialBeacons.begin();
 		 p != initialBeacons.end(); ++p)
-		out.printf(
+		out << mrpt::format(
 			"      %03u         (%8.03f,%8.03f,%8.03f)\n", p->second,
 			p->first.x, p->first.y, p->first.z);
 
@@ -2319,58 +2319,58 @@ CLandmarksMap::TInsertionOptions::TInsertionOptions()
 void CLandmarksMap::TInsertionOptions::dumpToTextStream(
 	mrpt::utils::CStream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [CLandmarksMap::TInsertionOptions] ------------ \n\n");
 
-	out.printf(
+	out << mrpt::format(
 		"insert_SIFTs_from_monocular_images      = %c\n",
 		insert_SIFTs_from_monocular_images ? 'Y' : 'N');
-	out.printf(
+	out << mrpt::format(
 		"insert_SIFTs_from_stereo_images         = %c\n",
 		insert_SIFTs_from_stereo_images ? 'Y' : 'N');
-	out.printf(
+	out << mrpt::format(
 		"insert_Landmarks_from_range_scans       = %c\n",
 		insert_Landmarks_from_range_scans ? 'Y' : 'N');
-	out.printf("\n");
-	out.printf(
+	out << mrpt::format("\n");
+	out << mrpt::format(
 		"SiftCorrRatioThreshold                  = %f\n",
 		SiftCorrRatioThreshold);
-	out.printf(
+	out << mrpt::format(
 		"SiftLikelihoodThreshold                 = %f\n",
 		SiftLikelihoodThreshold);
-	out.printf(
+	out << mrpt::format(
 		"SiftEDDThreshold                        = %f\n", SiftEDDThreshold);
-	out.printf(
+	out << mrpt::format(
 		"SIFTMatching3DMethod                    = %d\n", SIFTMatching3DMethod);
-	out.printf(
+	out << mrpt::format(
 		"SIFTLikelihoodMethod                    = %d\n", SIFTLikelihoodMethod);
 
-	out.printf(
+	out << mrpt::format(
 		"SIFTsLoadDistanceOfTheMean              = %f\n",
 		SIFTsLoadDistanceOfTheMean);
-	out.printf(
+	out << mrpt::format(
 		"SIFTsLoadEllipsoidWidth                 = %f\n",
 		SIFTsLoadEllipsoidWidth);
-	out.printf("\n");
-	out.printf("SIFTs_stdXY                             = %f\n", SIFTs_stdXY);
-	out.printf(
+	out << mrpt::format("\n");
+	out << mrpt::format("SIFTs_stdXY                             = %f\n", SIFTs_stdXY);
+	out << mrpt::format(
 		"SIFTs_stdDisparity                      = %f\n", SIFTs_stdDisparity);
-	out.printf("\n");
-	out.printf(
+	out << mrpt::format("\n");
+	out << mrpt::format(
 		"SIFTs_numberOfKLTKeypoints              = %i\n",
 		SIFTs_numberOfKLTKeypoints);
-	out.printf(
+	out << mrpt::format(
 		"SIFTs_stereo_maxDepth                   = %f\n",
 		SIFTs_stereo_maxDepth);
-	out.printf(
+	out << mrpt::format(
 		"SIFTs_epipolar_TH                       = %f\n", SIFTs_epipolar_TH);
-	out.printf(
+	out << mrpt::format(
 		"PLOT_IMAGES                             = %c\n",
 		PLOT_IMAGES ? 'Y' : 'N');
 
 	SIFT_feat_options.dumpToTextStream(out);
 
-	out.printf("\n");
+	out << mrpt::format("\n");
 }
 
 /*---------------------------------------------------------------
@@ -2456,52 +2456,52 @@ CLandmarksMap::TLikelihoodOptions::TGPSOrigin::TGPSOrigin()
 void CLandmarksMap::TLikelihoodOptions::dumpToTextStream(
 	mrpt::utils::CStream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [CLandmarksMap::TLikelihoodOptions] ------------ \n\n");
 
-	out.printf(
+	out << mrpt::format(
 		"rangeScan2D_decimation                  = %i\n",
 		rangeScan2D_decimation);
-	out.printf(
+	out << mrpt::format(
 		"SIFTs_sigma_euclidean_dist              = %f\n",
 		SIFTs_sigma_euclidean_dist);
-	out.printf(
+	out << mrpt::format(
 		"SIFTs_sigma_descriptor_dist             = %f\n",
 		SIFTs_sigma_descriptor_dist);
-	out.printf(
+	out << mrpt::format(
 		"SIFTs_mahaDist_std                      = %f\n", SIFTs_mahaDist_std);
-	out.printf(
+	out << mrpt::format(
 		"SIFTs_decimation                        = %i\n", SIFTs_decimation);
-	out.printf(
+	out << mrpt::format(
 		"SIFTnullCorrespondenceDistance          = %f\n",
 		SIFTnullCorrespondenceDistance);
-	out.printf(
+	out << mrpt::format(
 		"beaconRangesStd                         = %f\n", beaconRangesStd);
-	out.printf(
+	out << mrpt::format(
 		"beaconRangesUseObservationStd           = %c\n",
 		beaconRangesUseObservationStd ? 'Y' : 'N');
-	out.printf(
+	out << mrpt::format(
 		"extRobotPoseStd                         = %f\n", extRobotPoseStd);
 
-	out.printf(
+	out << mrpt::format(
 		"GPSOrigin:LATITUDE                      = %f\n", GPSOrigin.latitude);
-	out.printf(
+	out << mrpt::format(
 		"GPSOrigin:LONGITUDE                     = %f\n", GPSOrigin.longitude);
-	out.printf(
+	out << mrpt::format(
 		"GPSOrigin:ALTITUDE                      = %f\n", GPSOrigin.altitude);
-	out.printf("GPSOrigin:Rotation_Angle                = %f\n", GPSOrigin.ang);
-	out.printf(
+	out << mrpt::format("GPSOrigin:Rotation_Angle                = %f\n", GPSOrigin.ang);
+	out << mrpt::format(
 		"GPSOrigin:x_shift                       = %f\n", GPSOrigin.x_shift);
-	out.printf(
+	out << mrpt::format(
 		"GPSOrigin:y_shift                       = %f\n", GPSOrigin.y_shift);
-	out.printf(
+	out << mrpt::format(
 		"GPSOrigin:min_sat                       = %i\n", GPSOrigin.min_sat);
 
-	out.printf("GPS_sigma                               = %f (m)\n", GPS_sigma);
+	out << mrpt::format("GPS_sigma                               = %f (m)\n", GPS_sigma);
 
 	SIFT_feat_options.dumpToTextStream(out);
 
-	out.printf("\n");
+	out << mrpt::format("\n");
 }
 
 /*---------------------------------------------------------------

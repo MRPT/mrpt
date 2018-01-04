@@ -101,38 +101,38 @@ void TMultiResDescMatchOptions::saveToConfigFile(
 void TMultiResDescMatchOptions::dumpToTextStream(
 	mrpt::utils::CStream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [vision::TMultiResDescMatchOptions] ------------ \n");
-	out.printf("Use orientation filter?:        ");
+	out << mrpt::format("Use orientation filter?:        ");
 	if (useOriFilter)
 	{
-		out.printf("Yes\n");
-		out.printf(
+		out << mrpt::format("Yes\n");
+		out << mrpt::format(
 			"· Orientation threshold:        %.1f deg\n",
 			RAD2DEG(oriThreshold));
 	}
 	else
-		out.printf("No\n");
-	out.printf("Use depth filter?:              ");
+		out << mrpt::format("No\n");
+	out << mrpt::format("Use depth filter?:              ");
 	if (useDepthFilter)
-		out.printf("Yes\n");
+		out << mrpt::format("Yes\n");
 	else
 	{
-		out.printf("No\n");
-		out.printf("Lowest scale in list1:          %d\n", lowScl1);
-		out.printf("Highest scale in list1:         %d\n", highScl1);
-		out.printf("Lowest scale in list2:          %d\n", lowScl2);
-		out.printf("Highest scale in list2:         %d\n", highScl2);
+		out << mrpt::format("No\n");
+		out << mrpt::format("Lowest scale in list1:          %d\n", lowScl1);
+		out << mrpt::format("Highest scale in list1:         %d\n", highScl1);
+		out << mrpt::format("Lowest scale in list2:          %d\n", lowScl2);
+		out << mrpt::format("Highest scale in list2:         %d\n", highScl2);
 	}
-	out.printf("#frames last seen threshold:    %d\n", lastSeenThreshold);
-	out.printf("#frames to be stable threshold: %d\n", timesSeenThreshold);
-	out.printf("min. # features in system:      %d\n", minFeaturesToFind);
-	out.printf("min. # features to be lost:     %d\n", minFeaturesToBeLost);
-	out.printf("Matching threshold:             %.2f\n", matchingThreshold);
-	out.printf(
+	out << mrpt::format("#frames last seen threshold:    %d\n", lastSeenThreshold);
+	out << mrpt::format("#frames to be stable threshold: %d\n", timesSeenThreshold);
+	out << mrpt::format("min. # features in system:      %d\n", minFeaturesToFind);
+	out << mrpt::format("min. # features to be lost:     %d\n", minFeaturesToBeLost);
+	out << mrpt::format("Matching threshold:             %.2f\n", matchingThreshold);
+	out << mrpt::format(
 		"Matching ratio threshold:       %.2f\n", matchingRatioThreshold);
-	out.printf("Size of the search window:      %d px\n", searchAreaSize);
-	out.printf("-------------------------------------------------------- \n");
+	out << mrpt::format("Size of the search window:      %d px\n", searchAreaSize);
+	out << mrpt::format("-------------------------------------------------------- \n");
 }  // end-dumpToTextStream
 
 // --------------------------------------------------
@@ -206,170 +206,170 @@ void TMultiResDescOptions::saveToConfigFile(
 // --------------------------------------------------
 void TMultiResDescOptions::dumpToTextStream(mrpt::utils::CStream& out) const
 {
-	out.printf("\n----------- [vision::TMultiResDescOptions] ------------ \n");
-	out.printf("Base patch size:                %d px\n", basePSize);
-	out.printf("Lowest scale to compute:        %d\n", comLScl);
-	out.printf("Highest scale to compute:       %d\n", comHScl);
-	out.printf("Image smoothing sigma:          %.2f px\n", sg1);
-	out.printf("Orientation histogram sigma:    %.2f\n", sg2);
-	out.printf("Descriptor histogram sigma:     %.2f\n", sg3);
-	out.printf("Compute depth:                  ");
+	out << mrpt::format("\n----------- [vision::TMultiResDescOptions] ------------ \n");
+	out << mrpt::format("Base patch size:                %d px\n", basePSize);
+	out << mrpt::format("Lowest scale to compute:        %d\n", comLScl);
+	out << mrpt::format("Highest scale to compute:       %d\n", comHScl);
+	out << mrpt::format("Image smoothing sigma:          %.2f px\n", sg1);
+	out << mrpt::format("Orientation histogram sigma:    %.2f\n", sg2);
+	out << mrpt::format("Descriptor histogram sigma:     %.2f\n", sg3);
+	out << mrpt::format("Compute depth:                  ");
 	if (computeDepth)
 	{
-		out.printf("Yes\n");
-		out.printf("Focal length:                   %.2f px\n", fx);
-		out.printf("Principal point (cx):           %.2f px\n", cx);
-		out.printf("Principal point (cy):           %.2f px\n", cy);
-		out.printf("Baseline:                       %.2f m\n", baseline);
+		out << mrpt::format("Yes\n");
+		out << mrpt::format("Focal length:                   %.2f px\n", fx);
+		out << mrpt::format("Principal point (cx):           %.2f px\n", cx);
+		out << mrpt::format("Principal point (cy):           %.2f px\n", cy);
+		out << mrpt::format("Baseline:                       %.2f m\n", baseline);
 	}
 	else
-		out.printf("No\n");
+		out << mrpt::format("No\n");
 
-	out.printf("Compute Hash Coeffs:            ");
+	out << mrpt::format("Compute Hash Coeffs:            ");
 	if (computeHashCoeffs)
-		out.printf("Yes\n");
+		out << mrpt::format("Yes\n");
 	else
-		out.printf("No\n");
+		out << mrpt::format("No\n");
 
-	out.printf("Blur image previously:          ");
+	out << mrpt::format("Blur image previously:          ");
 	if (blurImage)
-		out.printf("Yes\n");
+		out << mrpt::format("Yes\n");
 	else
-		out.printf("No\n");
+		out << mrpt::format("No\n");
 
-	out.printf("Scales:                         ");
+	out << mrpt::format("Scales:                         ");
 	for (unsigned int k = 0; k < scales.size(); ++k)
-		out.printf("%.2f ", scales[k]);
-	out.printf("\n");
-	out.printf("-------------------------------------------------------- \n");
+		out << mrpt::format("%.2f ", scales[k]);
+	out << mrpt::format("\n");
+	out << mrpt::format("-------------------------------------------------------- \n");
 }  // end-dumpToTextStream
 
 void CFeature::dumpToTextStream(mrpt::utils::CStream& out) const
 {
-	out.printf("\n----------- [vision::CFeature] ------------ \n");
-	out.printf("Feature ID:                     %d\n", (int)ID);
-	out.printf("Coordinates:                    (%.2f,%.2f) px\n", x, y);
-	out.printf("PatchSize:                      %d\n", patchSize);
-	out.printf("Type:                           ");
+	out << mrpt::format("\n----------- [vision::CFeature] ------------ \n");
+	out << mrpt::format("Feature ID:                     %d\n", (int)ID);
+	out << mrpt::format("Coordinates:                    (%.2f,%.2f) px\n", x, y);
+	out << mrpt::format("PatchSize:                      %d\n", patchSize);
+	out << mrpt::format("Type:                           ");
 	switch (type)
 	{
 		case -1:
-			out.printf("Not defined\n");
+			out << mrpt::format("Not defined\n");
 			break;
 		case 0:
-			out.printf("KLT\n");
+			out << mrpt::format("KLT\n");
 			break;
 		case 1:
-			out.printf("Harris\n");
+			out << mrpt::format("Harris\n");
 			break;
 		case 2:
-			out.printf("BCD\n");
+			out << mrpt::format("BCD\n");
 			break;
 		case 3:
-			out.printf("SIFT\n");
+			out << mrpt::format("SIFT\n");
 			break;
 		case 4:
-			out.printf("SURF\n");
+			out << mrpt::format("SURF\n");
 			break;
 		case 5:
-			out.printf("Beacon\n");
+			out << mrpt::format("Beacon\n");
 			break;
 		case 6:
-			out.printf("FAST\n");
+			out << mrpt::format("FAST\n");
 			break;
 		case 7:
-			out.printf("FASTER-9\n");
+			out << mrpt::format("FASTER-9\n");
 			break;
 		case 8:
-			out.printf("FASTER-10\n");
+			out << mrpt::format("FASTER-10\n");
 			break;
 		case 9:
-			out.printf("FASTER-12\n");
+			out << mrpt::format("FASTER-12\n");
 			break;
 		case 10:
-			out.printf("ORB\n");
+			out << mrpt::format("ORB\n");
 			break;
 		case 11:
-			out.printf("AKAZE\n");
+			out << mrpt::format("AKAZE\n");
 			break;
 		case 12:
-			out.printf("LSD");
+			out << mrpt::format("LSD");
 			break;
 	}
-	out.printf("Status:                         ");
+	out << mrpt::format("Status:                         ");
 	switch (track_status)
 	{
 		case 0:
-			out.printf("Idle\n");
+			out << mrpt::format("Idle\n");
 			break;
 		case 1:
-			out.printf("[KLT] Out of bounds [KLT]\n");
+			out << mrpt::format("[KLT] Out of bounds [KLT]\n");
 			break;
 		case 5:
-			out.printf("[KLT] Tracked\n");
+			out << mrpt::format("[KLT] Tracked\n");
 			break;
 		case 10:
-			out.printf("[KLT] Lost\n");
+			out << mrpt::format("[KLT] Lost\n");
 			break;
 	}
 
-	out.printf("Response:                       %.2f\n", response);
-	out.printf("Main orientation:               %.2f\n", orientation);
-	out.printf("Main scale:                     %.2f\n", scale);
-	out.printf("# frames seen:                  %d\n", nTimesSeen);
-	out.printf("# frames not seen:              %d\n", nTimesNotSeen);
-	out.printf("# frames since last seen:       %d\n", nTimesLastSeen);
-	out.printf("Initial Depth:                  %.2f m\n", initialDepth);
-	out.printf("Depth:                          %.2f m\n", depth);
-	out.printf(
+	out << mrpt::format("Response:                       %.2f\n", response);
+	out << mrpt::format("Main orientation:               %.2f\n", orientation);
+	out << mrpt::format("Main scale:                     %.2f\n", scale);
+	out << mrpt::format("# frames seen:                  %d\n", nTimesSeen);
+	out << mrpt::format("# frames not seen:              %d\n", nTimesNotSeen);
+	out << mrpt::format("# frames since last seen:       %d\n", nTimesLastSeen);
+	out << mrpt::format("Initial Depth:                  %.2f m\n", initialDepth);
+	out << mrpt::format("Depth:                          %.2f m\n", depth);
+	out << mrpt::format(
 		"3D point:                       (%.2f,%.2f,%.2f) m\n", p3D.x, p3D.y,
 		p3D.z);
-	out.printf("Is point feature?:              ");
-	isPointFeature() ? out.printf("Yes\n") : out.printf("No\n");
+	out << mrpt::format("Is point feature?:              ");
+	isPointFeature() ? out << mrpt::format("Yes\n") : out << mrpt::format("No\n");
 
-	out.printf("Has SIFT descriptor?:           ");
-	descriptors.hasDescriptorSIFT() ? out.printf("Yes\n") : out.printf("No\n");
-	out.printf("Has SURF descriptor?:           ");
-	descriptors.hasDescriptorSURF() ? out.printf("Yes\n") : out.printf("No\n");
-	out.printf("Has Spin image descriptor?:     ");
-	descriptors.hasDescriptorSpinImg() ? out.printf("Yes\n")
-									   : out.printf("No\n");
-	out.printf("Has Polar descriptor?:          ");
-	descriptors.hasDescriptorPolarImg() ? out.printf("Yes\n")
-										: out.printf("No\n");
-	out.printf("Has Log Polar descriptor?:      ");
-	descriptors.hasDescriptorLogPolarImg() ? out.printf("Yes\n")
-										   : out.printf("No\n");
-	out.printf("Has ORB descriptor?:			");
-	descriptors.hasDescriptorORB() ? out.printf("Yes\n") : out.printf("No\n");
+	out << mrpt::format("Has SIFT descriptor?:           ");
+	descriptors.hasDescriptorSIFT() ? out << mrpt::format("Yes\n") : out << mrpt::format("No\n");
+	out << mrpt::format("Has SURF descriptor?:           ");
+	descriptors.hasDescriptorSURF() ? out << mrpt::format("Yes\n") : out << mrpt::format("No\n");
+	out << mrpt::format("Has Spin image descriptor?:     ");
+	descriptors.hasDescriptorSpinImg() ? out << mrpt::format("Yes\n")
+									   : out << mrpt::format("No\n");
+	out << mrpt::format("Has Polar descriptor?:          ");
+	descriptors.hasDescriptorPolarImg() ? out << mrpt::format("Yes\n")
+										: out << mrpt::format("No\n");
+	out << mrpt::format("Has Log Polar descriptor?:      ");
+	descriptors.hasDescriptorLogPolarImg() ? out << mrpt::format("Yes\n")
+										   : out << mrpt::format("No\n");
+	out << mrpt::format("Has ORB descriptor?:			");
+	descriptors.hasDescriptorORB() ? out << mrpt::format("Yes\n") : out << mrpt::format("No\n");
 	//# added by Raghavender Sahdev
-	out.printf("Has BLD descriptor?:			");
-	descriptors.hasDescriptorBLD() ? out.printf("Yes\n") : out.printf("No\n");
-	out.printf("Has LATCH descriptor?:			");
-	descriptors.hasDescriptorLATCH() ? out.printf("Yes\n") : out.printf("No\n");
+	out << mrpt::format("Has BLD descriptor?:			");
+	descriptors.hasDescriptorBLD() ? out << mrpt::format("Yes\n") : out << mrpt::format("No\n");
+	out << mrpt::format("Has LATCH descriptor?:			");
+	descriptors.hasDescriptorLATCH() ? out << mrpt::format("Yes\n") : out << mrpt::format("No\n");
 
-	out.printf("Has multiscale?:                ");
+	out << mrpt::format("Has multiscale?:                ");
 	if (!descriptors.hasDescriptorMultiSIFT())
-		out.printf("No\n");
+		out << mrpt::format("No\n");
 	else
 	{
-		out.printf("Yes [%d]\n", (int)multiScales.size());
+		out << mrpt::format("Yes [%d]\n", (int)multiScales.size());
 		for (int k = 0; k < (int)multiScales.size(); ++k)
 		{
-			out.printf(" · Scale %d: %.2f\n", k, multiScales[k]);
+			out << mrpt::format(" · Scale %d: %.2f\n", k, multiScales[k]);
 			for (int m = 0; m < (int)multiOrientations[k].size(); ++m)
 			{
-				out.printf(
+				out << mrpt::format(
 					" ·· Orientation %d: %.2f\n", m, multiOrientations[k][m]);
-				out.printf(" ·· [D] ");
+				out << mrpt::format(" ·· [D] ");
 				for (int n = 0;
 					 n < (int)descriptors.multiSIFTDescriptors[k][m].size();
 					 ++n)
-					out.printf(
+					out << mrpt::format(
 						"%d ", descriptors.multiSIFTDescriptors[k][m][n]);
-				out.printf("\n");
+				out << mrpt::format("\n");
 				if (multiHashCoeffs.size() > 0)
-					out.printf(
+					out << mrpt::format(
 						" ·· HASH coefficients %d,%d,%d\n",
 						multiHashCoeffs[k][m][0], multiHashCoeffs[k][m][1],
 						multiHashCoeffs[k][m][2]);

@@ -92,7 +92,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 		//  Use the z-axis direction of the transformed Z axis of the sensor
 		//  coordinates:
 		bool sensorIsBottomwards =
-			sensorPose3D.getHomogeneousMatrixVal().get_unsafe(2, 2) < 0;
+			sensorPose3D.getHomogeneousMatrixVal<CMatrixDouble44>().get_unsafe(2, 2) < 0;
 
 		if (reallyInsert)
 		{
@@ -1351,7 +1351,7 @@ void COccupancyGridMap2D::TInsertionOptions::loadFromConfigFile(
   ---------------------------------------------------------------*/
 void COccupancyGridMap2D::TInsertionOptions::dumpToTextStream(std::ostream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [COccupancyGridMap2D::TInsertionOptions] ------------ "
 		"\n\n");
 
@@ -1366,7 +1366,7 @@ void COccupancyGridMap2D::TInsertionOptions::dumpToTextStream(std::ostream& out)
 	LOADABLEOPTS_DUMP_VAR(CFD_features_median_size, float)
 	LOADABLEOPTS_DUMP_VAR(wideningBeamsWithDistance, bool)
 
-	out.printf("\n");
+	out << mrpt::format("\n");
 }
 
 void COccupancyGridMap2D::OnPostSuccesfulInsertObs(

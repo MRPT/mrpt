@@ -643,20 +643,20 @@ CMultiMetricMapPDF::TPredictionParams::TPredictionParams()
   ---------------------------------------------------------------*/
 void CMultiMetricMapPDF::TPredictionParams::dumpToTextStream(std::ostream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [CMultiMetricMapPDF::TPredictionParams] ------------ "
 		"\n\n");
 
-	out.printf(
+	out << mrpt::format(
 		"pfOptimalProposal_mapSelection          = %i\n",
 		pfOptimalProposal_mapSelection);
-	out.printf(
+	out << mrpt::format(
 		"ICPGlobalAlign_MinQuality               = %f\n",
 		ICPGlobalAlign_MinQuality);
 
 	KLD_params.dumpToTextStream(out);
 	icp_params.dumpToTextStream(out);
-	out.printf("\n");
+	out << mrpt::format("\n");
 }
 
 /*---------------------------------------------------------------

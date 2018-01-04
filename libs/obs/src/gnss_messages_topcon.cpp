@@ -45,39 +45,39 @@ Message_TOPCON_PZS::Message_TOPCON_PZS()
 {
 }
 
-void Message_TOPCON_PZS::dumpToStream(mrpt::serialization::CArchive& out) const
+void Message_TOPCON_PZS::dumpToStream(std::ostream& out) const
 {
-	out.printf("\n[TopCon PZS datum]\n");
-	out.printf(
+	out << mrpt::format("\n[TopCon PZS datum]\n");
+	out << mrpt::format(
 		"  Longitude: %.09f deg  Latitude: %.09f deg Height: %.03f m (%.03f m "
 		"without NBeam) \n",
 		longitude_degrees, latitude_degrees, height_meters, RTK_height_meters);
 
-	out.printf(
+	out << mrpt::format(
 		" PZL-ID: %i  Angle trans: %.05f deg\n ", (int)nId, angle_transmitter);
 
-	out.printf(" Fix: %i  ", (int)Fix);
-	out.printf(" Error: %i ", (int)error);
-	out.printf(" Battery levels: TX=%i  RX=%i\n ", TXBattery, RXBattery);
+	out << mrpt::format(" Fix: %i  ", (int)Fix);
+	out << mrpt::format(" Error: %i ", (int)error);
+	out << mrpt::format(" Battery levels: TX=%i  RX=%i\n ", TXBattery, RXBattery);
 
-	out.printf(
+	out << mrpt::format(
 		" hasCartesianPosVel= %s", hasCartesianPosVel ? "YES -> " : "NO\n");
 	if (hasCartesianPosVel)
 	{
-		out.printf(
+		out << mrpt::format(
 			" x=%f  y=%f  z=%f\n", cartesian_x, cartesian_y, cartesian_z);
-		out.printf(
+		out << mrpt::format(
 			" vx=%f  vy=%f  vz=%f\n", cartesian_vx, cartesian_vy, cartesian_vz);
 	}
-	out.printf("hasPosCov = %s", hasPosCov ? "YES\n" : "NO\n");
-	if (hasPosCov) out.printf("%s\n", pos_covariance.inMatlabFormat().c_str());
+	out << mrpt::format("hasPosCov = %s", hasPosCov ? "YES\n" : "NO\n");
+	if (hasPosCov) out << mrpt::format("%s\n", pos_covariance.inMatlabFormat().c_str());
 
-	out.printf("hasVelCov = %s", hasVelCov ? "YES\n" : "NO\n");
-	if (hasVelCov) out.printf("%s\n", vel_covariance.inMatlabFormat().c_str());
+	out << mrpt::format("hasVelCov = %s", hasVelCov ? "YES\n" : "NO\n");
+	if (hasVelCov) out << mrpt::format("%s\n", vel_covariance.inMatlabFormat().c_str());
 
-	out.printf("hasStats = %s", hasStats ? "YES: " : "NO\n");
+	out << mrpt::format("hasStats = %s", hasStats ? "YES: " : "NO\n");
 	if (hasStats)
-		out.printf(
+		out << mrpt::format(
 			"GPS sats used: %i  GLONASS sats used: %i  RTK Fix progress:%i%%\n",
 			(int)stats_GPS_sats_used, (int)stats_GLONASS_sats_used,
 			(int)stats_rtk_fix_progress);
@@ -107,16 +107,16 @@ void Message_TOPCON_PZS::internal_readFromStream(mrpt::serialization::CArchive& 
 
 // -------------
 Message_TOPCON_SATS::Message_TOPCON_SATS() : gnss_message(TOPCON_SATS) {}
-void Message_TOPCON_SATS::dumpToStream(mrpt::serialization::CArchive& out) const
+void Message_TOPCON_SATS::dumpToStream(std::ostream& out) const
 {
-	out.printf("\n[TopCon SATS datum]\n");
-	out.printf(
+	out << mrpt::format("\n[TopCon SATS datum]\n");
+	out << mrpt::format(
 		"  USI   ELEV    AZIM      (%u entries) \n",
 		static_cast<unsigned int>(USIs.size()));
 
 	ASSERT_(USIs.size() == AZs.size() && USIs.size() == ELs.size());
 	for (size_t i = 0; i < USIs.size(); i++)
-		out.printf(
+		out << mrpt::format(
 			" %03i   %02i    %03i\n", (int)USIs[i], (int)ELs[i], (int)AZs[i]);
 }
 

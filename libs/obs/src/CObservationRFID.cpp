@@ -39,7 +39,8 @@ void CObservationRFID::serializeTo(mrpt::serialization::CArchive& out) const
 	out << sensorPoseOnRobot;  // Added in v3
 }
 
-void CObservationRFID::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CObservationRFID::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	// MRPT_UNUSED_PARAM(in);
 	switch (version)
@@ -105,15 +106,12 @@ void CObservationRFID::getDescriptionAsText(std::ostream& o) const
 {
 	CObservation::getDescriptionAsText(o);
 
-	std::cout << "Number of RFID tags sensed: " << tag_readings.size()
-			  << std::endl
-			  << std::endl;
-
+	o << "Number of RFID tags sensed: " << tag_readings.size() << "\n";
 	for (size_t i = 0; i < tag_readings.size(); i++)
 	{
-		const CObservationRFID::TTagReading& rfid = tag_readings[i];
-		std::cout << "#" << i << ": Power=" << rfid.power
-				  << " (dBm) | AntennaPort=" << rfid.antennaPort
-				  << " | EPC=" << rfid.epc << std::endl;
+		const auto& rfid = tag_readings[i];
+		o << "#" << i << ": Power=" << rfid.power
+		  << " (dBm) | AntennaPort=" << rfid.antennaPort
+		  << " | EPC=" << rfid.epc << std::endl;
 	}
 }

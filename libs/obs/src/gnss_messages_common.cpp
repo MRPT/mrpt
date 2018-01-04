@@ -11,6 +11,7 @@
 
 #include <mrpt/obs/gnss_messages.h>  // Must include all message classes so we can implemente the class factory here
 #include <mrpt/io/CMemoryStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <map>
 
 using namespace std;
@@ -86,15 +87,14 @@ const std::string& gnss_message::getMessageTypeAsString() const
 }
 
 // Save to binary stream. Launches an exception upon error
-uint8_t gnss_message::serializeGetVersion() const { return XX; } void gnss_message::serializeTo(mrpt::serialization::CArchive& out) const
+void gnss_message::writeToStream(mrpt::serialization::CArchive& out) const
 {
-	const int32_t msg_id = message_type;
-	out << msg_id;
+	out.WriteAs<int32_t>(message_type);
 	this->internal_writeToStream(out);
 }
 
 // Load from binary stream. Launches an exception upon error
-void gnss_message::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void gnss_message::readFromStream(mrpt::serialization::CArchive& in)
 {
 	int32_t msg_id;
 	in >> msg_id;
@@ -104,7 +104,8 @@ void gnss_message::serializeFrom(mrpt::serialization::CArchive& in, uint8_t vers
 
 // Load from binary stream and creates object detecting its type (class
 // factory). Launches an exception upon error
-gnss_message* gnss_message::readAndBuildFromStream(mrpt::serialization::CArchive& in)
+gnss_message* gnss_message::readAndBuildFromStream(
+	mrpt::serialization::CArchive& in)
 {
 	int32_t msg_id;
 	in >> msg_id;
@@ -130,9 +131,10 @@ gnss_message_ptr::gnss_message_ptr(const gnss_message_ptr& o)
 	else
 	{
 		mrpt::io::CMemoryStream buf;
-		o->writeToStream(buf);
+		auto arch = mrpt::serialization::archiveFrom(buf);
+		o->writeToStream(arch);
 		buf.Seek(0);
-		ptr = gnss_message::readAndBuildFromStream(buf);
+		ptr = gnss_message::readAndBuildFromStream(arch);
 	}
 }
 /** Assigns a pointer */
@@ -153,9 +155,10 @@ void gnss_message_ptr::set(gnss_message* p)
 gnss_message_ptr& gnss_message_ptr::operator=(const gnss_message_ptr& o)
 {
 	mrpt::io::CMemoryStream buf;
-	o->writeToStream(buf);
+	auto arch = mrpt::serialization::archiveFrom(buf);
+	o->writeToStream(arch);
 	buf.Seek(0);
-	ptr = gnss_message::readAndBuildFromStream(buf);
+	ptr = gnss_message::readAndBuildFromStream(arch);
 	return *this;
 }
 gnss_message_ptr::~gnss_message_ptr()
@@ -169,11 +172,11 @@ gnss_message_ptr::~gnss_message_ptr()
 
 // ---------------------------------------
 UTC_time::UTC_time() : hour(0), minute(0), sec(0) {}
-uint8_t UTC_time::serializeGetVersion() const { return XX; } void UTC_time::serializeTo(mrpt::serialization::CArchive& out) const
+void UTC_time::writeToStream(mrpt::serialization::CArchive& out) const
 {
 	out << hour << minute << sec;
 }
-void UTC_time::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void UTC_time::readFromStream(mrpt::serialization::CArchive& in)
 {
 	in >> hour >> minute >> sec;
 }

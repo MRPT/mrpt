@@ -92,18 +92,17 @@ class TMapGenericParams : public mrpt::config::CLoadableOptions,
    public:
 	/** (Default=true) If false, calling CMetricMap::getAs3DObject() will have
 	 * no effects */
-	bool enableSaveAs3DObject;
+	bool enableSaveAs3DObject{true};
 	/** (Default=true) Enable computing observation likelihoods with this map */
-	bool enableObservationLikelihood;
+	bool enableObservationLikelihood{true};
 	/** (Default=true) Enable inserting observations in this map  */
-	bool enableObservationInsertion;
+	bool enableObservationInsertion{true};
 
-	TMapGenericParams();
 	void loadFromConfigFile(
 		const mrpt::config::CConfigFileBase& source,
 		const std::string& sectionNamePrefix) override;  // See base docs
 	void dumpToTextStream(std::ostream& out) const override;  // See base docs
 };
 
-}  // End of namespace
-}  // End of namespace
+}  // namespace maps
+}  // namespace mrpt

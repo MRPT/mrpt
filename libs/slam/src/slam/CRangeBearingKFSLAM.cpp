@@ -815,34 +815,34 @@ CRangeBearingKFSLAM::TOptions::TOptions()
   ---------------------------------------------------------------*/
 void CRangeBearingKFSLAM::TOptions::dumpToTextStream(CStream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [CRangeBearingKFSLAM::TOptions] ------------ \n\n");
 
-	out.printf(
+	out << mrpt::format(
 		"doPartitioningExperiment                = %c\n",
 		doPartitioningExperiment ? 'Y' : 'N');
-	out.printf(
+	out << mrpt::format(
 		"partitioningMethod                      = %i\n", partitioningMethod);
-	out.printf(
+	out << mrpt::format(
 		"data_assoc_method                       = %s\n",
 		TEnumType<TDataAssociationMethod>::value2name(data_assoc_method)
 			.c_str());
-	out.printf(
+	out << mrpt::format(
 		"data_assoc_metric                       = %s\n",
 		TEnumType<TDataAssociationMetric>::value2name(data_assoc_metric)
 			.c_str());
-	out.printf(
+	out << mrpt::format(
 		"data_assoc_IC_chi2_thres                = %.06f\n",
 		data_assoc_IC_chi2_thres);
-	out.printf(
+	out << mrpt::format(
 		"data_assoc_IC_metric                    = %s\n",
 		TEnumType<TDataAssociationMetric>::value2name(data_assoc_IC_metric)
 			.c_str());
-	out.printf(
+	out << mrpt::format(
 		"data_assoc_IC_ml_threshold              = %.06f\n",
 		data_assoc_IC_ml_threshold);
 
-	out.printf("\n");
+	out << mrpt::format("\n");
 }
 
 void CRangeBearingKFSLAM::OnInverseObservationModel(

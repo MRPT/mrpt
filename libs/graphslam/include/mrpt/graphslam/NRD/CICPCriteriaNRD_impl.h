@@ -375,12 +375,12 @@ void CICPCriteriaNRD<GRAPH_T>::TParams::dumpToTextStream(std::ostream& out) cons
 
 		using namespace mrpt::math;
 
-	out.printf(
+	out << mrpt::format(
 		"------------------[ ICP Fixed Intervals Node Registration "
 		"]------------------\n");
-	out.printf(
+	out << mrpt::format(
 		"Max distance for registration = %.2f m\n", registration_max_distance);
-	out.printf(
+	out << mrpt::format(
 		"Max Angle for registration    = %.2f deg\n",
 		RAD2DEG(registration_max_angle));
 

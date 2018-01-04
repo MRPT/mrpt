@@ -68,13 +68,13 @@ void CReflectivityGridMap2D::TMapDefinition::dumpToTextStream_map_specific(
 
 	this->insertionOpts.dumpToTextStream(std::ostream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [CReflectivityGridMap2D::TInsertionOptions] "
 		"------------ \n\n");
 
 	LOADABLEOPTS_DUMP_VAR(channel, int);
 
-	out.printf("\n");
+	out << mrpt::format("\n");
 }
 
 /*---------------------------------------------------------------

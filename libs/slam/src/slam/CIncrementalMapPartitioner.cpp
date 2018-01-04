@@ -93,24 +93,24 @@ void CIncrementalMapPartitioner::TOptions::loadFromConfigFile(
 void CIncrementalMapPartitioner::TOptions::dumpToTextStream(
 	mrpt::utils::CStream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [CIncrementalMapPartitioner::TOptions] ------------ "
 		"\n\n");
 
-	out.printf(
+	out << mrpt::format(
 		"partitionThreshold                      = %f\n", partitionThreshold);
-	out.printf(
+	out << mrpt::format(
 		"gridResolution                          = %f\n", gridResolution);
-	out.printf(
+	out << mrpt::format(
 		"minDistForCorrespondence                = %f\n",
 		minDistForCorrespondence);
-	out.printf(
+	out << mrpt::format(
 		"forceBisectionOnly                      = %c\n",
 		forceBisectionOnly ? 'Y' : 'N');
-	out.printf(
+	out << mrpt::format(
 		"useMapMatching                          = %c\n",
 		useMapMatching ? 'Y' : 'N');
-	out.printf(
+	out << mrpt::format(
 		"minimumNumberElementsEachCluster        = %i\n",
 		minimumNumberElementsEachCluster);
 }

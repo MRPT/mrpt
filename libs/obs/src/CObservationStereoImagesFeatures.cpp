@@ -9,38 +9,18 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 #include <mrpt/obs/CObservationStereoImagesFeatures.h>
-
-#include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/serialization/CArchive.h>
+#include <fstream>
 
 using namespace mrpt::obs;
 using namespace mrpt::poses;
 using namespace mrpt::math;
+using namespace mrpt::img;
 using namespace std;
 
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(
 	CObservationStereoImagesFeatures, CObservation, mrpt::obs)
-
-CObservationStereoImagesFeatures::CObservationStereoImagesFeatures()
-	: cameraLeft(), cameraRight(), rightCameraPose(), cameraPoseOnRobot()
-{
-}
-
-CObservationStereoImagesFeatures::CObservationStereoImagesFeatures(
-	const CMatrixDouble33& iPLeft, const CMatrixDouble33& iPRight,
-	const CArrayDouble<5>& dPLeft, const CArrayDouble<5>& dPRight,
-	const CPose3DQuat& rCPose, const CPose3DQuat& cPORobot)
-{
-	cameraLeft.intrinsicParams = iPLeft;
-	cameraLeft.dist = dPLeft;
-
-	cameraRight.intrinsicParams = iPRight;
-	cameraRight.dist = dPRight;
-
-	rightCameraPose = rCPose;
-	cameraPoseOnRobot = cPORobot;
-}
 
 CObservationStereoImagesFeatures::CObservationStereoImagesFeatures(
 	const TCamera& cLeft, const TCamera& cRight, const CPose3DQuat& rCPose,
@@ -53,47 +33,43 @@ CObservationStereoImagesFeatures::CObservationStereoImagesFeatures(
 	cameraPoseOnRobot = cPORobot;
 }
 
-CObservationStereoImagesFeatures::~CObservationStereoImagesFeatures() {}
 void CObservationStereoImagesFeatures::saveFeaturesToTextFile(
 	const std::string& filename)
 {
-	CFileOutputStream file(filename);
+	std::ofstream file(filename);
+	ASSERT_(file.is_open());
 
 	vector<TStereoImageFeatures>::iterator it;
 	for (it = theFeatures.begin(); it != theFeatures.end(); ++it)
 		file << format(
 			"%u %.2f %.2f %.2f %.2f\n", it->ID, it->pixels.first.x,
 			it->pixels.first.y, it->pixels.second.x, it->pixels.second.y);
-
-	file.close();
 }
 
-uint8_t CObservationStereoImagesFeatures::serializeGetVersion() const { return XX; }
-void CObservationStereoImagesFeatures::serializeTo(mrpt::serialization::CArchive& out) const
+uint8_t CObservationStereoImagesFeatures::serializeGetVersion() const
 {
-	if (version)
-		*version = 0;
-	else
+	return 0;
+}
+void CObservationStereoImagesFeatures::serializeTo(
+	mrpt::serialization::CArchive& out) const
+{
+	// The data
+	out << cameraLeft;
+	out << cameraRight;
+	out << rightCameraPose << cameraPoseOnRobot;
+	out << (uint32_t)theFeatures.size();  // Write the number of items
+	// within the feature list
+	for (unsigned int i = 0; i < theFeatures.size(); ++i)
 	{
-		// The data
-		out << cameraLeft;
-		out << cameraRight;
-		out << rightCameraPose << cameraPoseOnRobot;
-		out << (uint32_t)theFeatures.size();  // Write the number of items
-		// within the feature list
-		for (unsigned int i = 0; i < theFeatures.size(); ++i)
-		{
-			out << theFeatures[i].pixels.first.x
-				<< theFeatures[i].pixels.first.y;
-			out << theFeatures[i].pixels.second.x
-				<< theFeatures[i].pixels.second.y;
-			out << (uint32_t)theFeatures[i].ID;
-		}
-		out << sensorLabel << timestamp;
+		out << theFeatures[i].pixels.first.x << theFeatures[i].pixels.first.y;
+		out << theFeatures[i].pixels.second.x << theFeatures[i].pixels.second.y;
+		out << (uint32_t)theFeatures[i].ID;
 	}
+	out << sensorLabel << timestamp;
 }
 
-void CObservationStereoImagesFeatures::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CObservationStereoImagesFeatures::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -129,12 +105,12 @@ void CObservationStereoImagesFeatures::getDescriptionAsText(
 
 	o << "Homogeneous matrix for the sensor's 3D pose, relative to robot "
 		 "base:\n";
-	o << cameraPoseOnRobot.getHomogeneousMatrixVal() << cameraPoseOnRobot
-	  << endl;
+	o << cameraPoseOnRobot.getHomogeneousMatrixVal<CMatrixDouble44>()
+	  << cameraPoseOnRobot << endl;
 
 	o << "Homogeneous matrix for the RIGHT camera's 3D pose, relative to LEFT "
 		 "camera reference system:\n";
-	o << rightCameraPose.getHomogeneousMatrixVal() << rightCameraPose << endl;
+	o << rightCameraPose.getHomogeneousMatrixVal<CMatrixDouble44>() << rightCameraPose << endl;
 
 	o << "Intrinsic parameters matrix for the LEFT camera:" << endl;
 	CMatrixDouble33 aux = cameraLeft.intrinsicParams;

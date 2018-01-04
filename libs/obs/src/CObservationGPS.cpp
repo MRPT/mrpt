@@ -12,7 +12,6 @@
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/math/matrix_serialization.h>  // for << of matrices
-#include <mrpt/io/CMemoryStream.h>
 #include <iomanip>
 
 using namespace std;
@@ -22,18 +21,6 @@ using namespace mrpt::math;
 
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationGPS, CObservation, mrpt::obs)
-
-CObservationGPS::CObservationGPS()
-	: sensorPose(),
-	  originalReceivedTimestamp(INVALID_TIMESTAMP),
-	  has_satellite_timestamp(),
-	  messages(),
-	  has_GGA_datum(messages),
-	  has_RMC_datum(messages),
-	  has_PZS_datum(messages),
-	  has_SATS_datum(messages)
-{
-}
 
 void CObservationGPS::swap(CObservationGPS& o)
 {
@@ -45,26 +32,21 @@ void CObservationGPS::swap(CObservationGPS& o)
 	messages.swap(o.messages);
 }
 
-uint8_t CObservationGPS::serializeGetVersion() const { return XX; }
+uint8_t CObservationGPS::serializeGetVersion() const { return 11; }
 void CObservationGPS::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 11;
-	else
-	{
-		out << timestamp << originalReceivedTimestamp << sensorLabel
-			<< sensorPose;
-		out << has_satellite_timestamp;  // v11
+	out << timestamp << originalReceivedTimestamp << sensorLabel << sensorPose;
+	out << has_satellite_timestamp;  // v11
 
-		const uint32_t nMsgs = messages.size();
-		out << nMsgs;
-		for (message_list_t::const_iterator it = messages.begin();
-			 it != messages.end(); ++it)
-			it->second->writeToStream(out);
-	}
+	const uint32_t nMsgs = messages.size();
+	out << nMsgs;
+	for (message_list_t::const_iterator it = messages.begin();
+		 it != messages.end(); ++it)
+		it->second->writeToStream(out);
 }
 
-void CObservationGPS::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CObservationGPS::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	this->clear();
 
@@ -266,33 +248,17 @@ void CObservationGPS::serializeFrom(mrpt::serialization::CArchive& in, uint8_t v
 		originalReceivedTimestamp = timestamp;
 }
 
-/*---------------------------------------------------------------
-					dumpToStream
- ---------------------------------------------------------------*/
-void CObservationGPS::dumpToStream(CStream& out) const
+void CObservationGPS::dumpToStream(std::ostream& out) const
 {
-	out.printf(
-		"\n------------- [CObservationGPS] Dump of %u messages "
-		"-----------------------\n",
-		static_cast<unsigned int>(messages.size()));
-	for (message_list_t::const_iterator it = messages.begin();
-		 it != messages.end(); ++it)
-		it->second->dumpToStream(out);
-	out.printf(
-		"-------------- [CObservationGPS] End of dump  "
-		"------------------------------\n\n");
+	out << "\n------------- [CObservationGPS] Dump of " << messages.size()
+		<< " messages --------------------\n";
+	for (const auto& m : messages) m.second->dumpToStream(out);
+	out << "-------------- [CObservationGPS] End of dump -----------------\n\n";
 }
 
 void CObservationGPS::dumpToConsole(std::ostream& o) const
 {
-	mrpt::io::CMemoryStream memStr;
-	this->dumpToStream(memStr);
-	if (memStr.getTotalBytesCount())
-	{
-		o.write(
-			(const char*)memStr.getRawBufferData(),
-			memStr.getTotalBytesCount());
-	}
+	this->dumpToStream(o);
 }
 
 mrpt::system::TTimeStamp CObservationGPS::getOriginalReceivedTimeStamp() const

@@ -138,7 +138,7 @@ template <class GRAPH_T>
 void CIncrementalNodeRegistrationDecider<GRAPH_T>::TParams::dumpToTextStream(std::ostream& out) const
 {
 	MRPT_START;
-	out.printf("%s", this->getAsString().c_str());
+	out << mrpt::format("%s", this->getAsString().c_str());
 	MRPT_END;
 }
 

@@ -19,13 +19,6 @@ using namespace mrpt::maps;
 
 IMPLEMENTS_SERIALIZABLE(TMapGenericParams, CSerializable, mrpt::maps)
 
-TMapGenericParams::TMapGenericParams()
-	: enableSaveAs3DObject(true),
-	  enableObservationLikelihood(true),
-	  enableObservationInsertion(true)
-{
-}
-
 void TMapGenericParams::loadFromConfigFile(
 	const mrpt::config::CConfigFileBase& source, const std::string& sct)
 {
@@ -33,18 +26,22 @@ void TMapGenericParams::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR(enableObservationLikelihood, bool, source, sct);
 	MRPT_LOAD_CONFIG_VAR(enableObservationInsertion, bool, source, sct);
 }
-void TMapGenericParams::dumpToTextStreamstd::ostream& out, int* version) const
+void TMapGenericParams::dumpToTextStream(std::ostream& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		out << enableSaveAs3DObject << enableObservationLikelihood
-			<< enableObservationInsertion;
-	}
+	// Common:
+	LOADABLEOPTS_DUMP_VAR(enableSaveAs3DObject, bool);
+	LOADABLEOPTS_DUMP_VAR(enableObservationLikelihood, bool);
+	LOADABLEOPTS_DUMP_VAR(enableObservationInsertion, bool);
 }
 
-void TMapGenericParams::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+uint8_t TMapGenericParams::serializeGetVersion() const { return 0; }
+void TMapGenericParams::serializeTo(mrpt::serialization::CArchive& out) const
+{
+	out << enableSaveAs3DObject << enableObservationLikelihood
+		<< enableObservationInsertion;
+}
+void TMapGenericParams::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

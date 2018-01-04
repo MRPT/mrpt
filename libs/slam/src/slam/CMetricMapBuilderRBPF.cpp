@@ -539,23 +539,23 @@ CMetricMapBuilderRBPF::TConstructionOptions::TConstructionOptions()
   ---------------------------------------------------------------*/
 void CMetricMapBuilderRBPF::TConstructionOptions::dumpToTextStream(std::ostream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [CMetricMapBuilderRBPF::TConstructionOptions] "
 		"------------ \n\n");
 
-	out.printf(
+	out << mrpt::format(
 		"insertionLinDistance                    = %f m\n",
 		insertionLinDistance);
-	out.printf(
+	out << mrpt::format(
 		"insertionAngDistance                    = %f deg\n",
 		RAD2DEG(insertionAngDistance));
-	out.printf(
+	out << mrpt::format(
 		"localizeLinDistance                     = %f m\n",
 		localizeLinDistance);
-	out.printf(
+	out << mrpt::format(
 		"localizeAngDistance                     = %f deg\n",
 		RAD2DEG(localizeAngDistance));
-	out.printf(
+	out << mrpt::format(
 		"verbosity_level                         = %s\n",
 		mrpt::utils::TEnumType<mrpt::system::VerbosityLevel>::value2name(
 			verbosity_level)
@@ -563,8 +563,8 @@ void CMetricMapBuilderRBPF::TConstructionOptions::dumpToTextStream(std::ostream&
 
 	PF_options.dumpToTextStream(out);
 
-	out.printf("  Now showing 'mapsInitializers' and 'predictionOptions':\n");
-	out.printf("\n");
+	out << mrpt::format("  Now showing 'mapsInitializers' and 'predictionOptions':\n");
+	out << mrpt::format("\n");
 
 	mapsInitializers.dumpToTextStream(out);
 	predictionOptions.dumpToTextStream(out);

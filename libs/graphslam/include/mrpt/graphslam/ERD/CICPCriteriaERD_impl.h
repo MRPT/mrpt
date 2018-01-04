@@ -643,16 +643,16 @@ void CICPCriteriaERD<GRAPH_T>::TParams::dumpToTextStream(std::ostream& out) cons
 {
 	MRPT_START;
 
-	out.printf(
+	out << mrpt::format(
 		"------------------[ Goodness-based ICP Edge Registration "
 		"]------------------\n");
-	out.printf(
+	out << mrpt::format(
 		"ICP goodness threshold         = %.2f%% \n",
 		ICP_goodness_thresh * 100);
-	out.printf("ICP max radius for edge search = %.2f\n", ICP_max_distance);
-	out.printf("Min. node difference for LC    = %lu\n", LC_min_nodeid_diff);
-	out.printf("Visualize laser scans          = %d\n", visualize_laser_scans);
-	out.printf(
+	out << mrpt::format("ICP max radius for edge search = %.2f\n", ICP_max_distance);
+	out << mrpt::format("Min. node difference for LC    = %lu\n", LC_min_nodeid_diff);
+	out << mrpt::format("Visualize laser scans          = %d\n", visualize_laser_scans);
+	out << mrpt::format(
 		"3DScans Image Directory        = %s\n",
 		scans_img_external_dir.c_str());
 

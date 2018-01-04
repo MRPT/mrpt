@@ -129,7 +129,7 @@ void CTopLCDetector_FabMap::TOptions::loadFromConfigFile(
 //  textual form, sending it to a CStream.
 void CTopLCDetector_FabMap::TOptions::dumpToTextStream(std::ostream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [CTopLCDetector_FabMap::TOptions] ------------ \n\n");
 
 	LOADABLEOPTS_DUMP_VAR(vocab_path, string)

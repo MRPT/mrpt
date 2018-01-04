@@ -10,6 +10,7 @@
 #include "obs-precomp.h"  // Precompiled headers
 
 #include <mrpt/obs/gnss_messages_ascii_nmea.h>
+#include <iostream>
 
 using namespace std;
 using namespace mrpt::obs::gnss;
@@ -99,12 +100,12 @@ Message_NMEA_GLL::content_t::content_t()
 
 void Message_NMEA_GLL::dumpToStream(std::ostream& out) const
 {
-	out.printf("[NMEA GLL datum]\n");
-	out.printf(
+	out << "[NMEA GLL datum]\n";
+	out << mrpt::format(
 		"  Longitude: %.09f deg  Latitude: %.09f deg Validity: '%c'\n",
 		fields.longitude_degrees, fields.latitude_degrees,
 		fields.validity_char);
-	out.printf(
+	out << mrpt::format(
 		"  UTC time-stamp: %02u:%02u:%02.03f\n", fields.UTCTime.hour,
 		fields.UTCTime.minute, fields.UTCTime.sec);
 }
@@ -130,13 +131,13 @@ Message_NMEA_VTG::content_t::content_t()
 {
 }
 
-void Message_NMEA_VTG::dumpToStream(mrpt::serialization::CArchive& out) const
+void Message_NMEA_VTG::dumpToStream(std::ostream& out) const
 {
-	out.printf("[NMEA VTG datum]\n");
-	out.printf(
+	out << mrpt::format("[NMEA VTG datum]\n");
+	out << mrpt::format(
 		"  True track: %.03f deg  Magnetic track: %.03f deg\n",
 		fields.true_track, fields.magnetic_track);
-	out.printf(
+	out << mrpt::format(
 		"  Ground speed: %.03f knots  %.03f km/h\n", fields.ground_speed_knots,
 		fields.ground_speed_kmh);
 }
@@ -194,24 +195,25 @@ mrpt::system::TTimeStamp Message_NMEA_RMC::getDateAsTimestamp() const
 	return buildTimestampFromParts(parts);
 }
 
-void Message_NMEA_RMC::dumpToStream(mrpt::serialization::CArchive& out) const
+void Message_NMEA_RMC::dumpToStream(std::ostream& out) const
 {
-	out.printf("[NMEA RMC datum]\n");
-	out.printf(" Positioning mode: `%c`\n ", (char)fields.positioning_mode);
-	out.printf(
+	out << mrpt::format("[NMEA RMC datum]\n");
+	out << mrpt::format(
+		" Positioning mode: `%c`\n ", (char)fields.positioning_mode);
+	out << mrpt::format(
 		" UTC time-stamp: %02u:%02u:%02.03f\n", fields.UTCTime.hour,
 		fields.UTCTime.minute, fields.UTCTime.sec);
-	out.printf(
+	out << mrpt::format(
 		" Date (DD/MM/YY): %02u/%02u/%02u\n ", (unsigned)fields.date_day,
 		(unsigned)fields.date_month, (unsigned)fields.date_year);
-	out.printf(
+	out << mrpt::format(
 		"  Longitude: %.09f deg  Latitude: %.09f deg  Valid?: '%c'\n",
 		fields.longitude_degrees, fields.latitude_degrees,
 		fields.validity_char);
-	out.printf(
+	out << mrpt::format(
 		" Speed: %.05f knots  Direction:%.03f deg.\n ", fields.speed_knots,
 		fields.direction_degrees);
-	out.printf(
+	out << mrpt::format(
 		" Magnetic variation direction: %.04f deg\n ", fields.magnetic_dir);
 }
 
@@ -238,13 +240,13 @@ Message_NMEA_ZDA::content_t::content_t()
 {
 }
 
-void Message_NMEA_ZDA::dumpToStream(mrpt::serialization::CArchive& out) const
+void Message_NMEA_ZDA::dumpToStream(std::ostream& out) const
 {
-	out.printf("[NMEA ZDA datum]\n");
-	out.printf(
+	out << mrpt::format("[NMEA ZDA datum]\n");
+	out << mrpt::format(
 		" UTC time-stamp: %02u:%02u:%02.03f\n", fields.UTCTime.hour,
 		fields.UTCTime.minute, fields.UTCTime.sec);
-	out.printf(
+	out << mrpt::format(
 		" Date (DD/MM/YY): %02u/%02u/%04u\n ", (unsigned)fields.date_day,
 		(unsigned)fields.date_month, (unsigned)fields.date_year);
 }

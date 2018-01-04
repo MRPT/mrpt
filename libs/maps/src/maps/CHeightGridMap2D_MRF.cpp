@@ -58,7 +58,7 @@ void CHeightGridMap2D_MRF::TMapDefinition::loadFromConfigFile_map_specific(
 void CHeightGridMap2D_MRF::TMapDefinition::dumpToTextStream_map_specific(
 	mrpt::utils::CStream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"MAP TYPE                                  = %s\n",
 		mrpt::utils::TEnumType<
 			CHeightGridMap2D_MRF::TMapRepresentation>::value2name(mapType)
@@ -72,19 +72,19 @@ void CHeightGridMap2D_MRF::TMapDefinition::dumpToTextStream_map_specific(
 
 	this->insertionOpts.dumpToTextStream(std::ostream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [CHeightGridMap2D_MRF::TInsertionOptions] ------------ "
 		"\n\n");
-	out.printf("[TInsertionOptions.Common] ------------ \n\n");
+	out << mrpt::format("[TInsertionOptions.Common] ------------ \n\n");
 	internal_dumpToTextStream_common(
 		out);  // Common params to all random fields maps:
 
-	//	out.printf("[TInsertionOptions.CHeightGridMap2D_MRF] ------------
+	//	out << mrpt::format("[TInsertionOptions.CHeightGridMap2D_MRF] ------------
 	//\n\n");
-	//	out.printf("std_windNoise_phi						= %f\n",
+	//	out << mrpt::format("std_windNoise_phi						= %f\n",
 	// std_windNoise_phi);
 
-	out.printf("\n");
+	out << mrpt::format("\n");
 }
 
 /*---------------------------------------------------------------

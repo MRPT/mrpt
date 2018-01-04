@@ -34,20 +34,20 @@ TKLDParams::TKLDParams()
   ---------------------------------------------------------------*/
 void TKLDParams::dumpToTextStream(std::ostream& out) const
 {
-	out.printf("\n----------- [TKLDParams] ------------ \n\n");
+	out << mrpt::format("\n----------- [TKLDParams] ------------ \n\n");
 
-	out.printf(
+	out << mrpt::format(
 		"KLD_minSampleSize                       = %i\n", KLD_minSampleSize);
-	out.printf(
+	out << mrpt::format(
 		"KLD_maxSampleSize                       = %i\n", KLD_maxSampleSize);
-	out.printf(
+	out << mrpt::format(
 		"KLD_binSize_XY                          = %f m\n", KLD_binSize_XY);
-	out.printf(
+	out << mrpt::format(
 		"KLD_binSize_PHI                         = %f deg\n",
 		RAD2DEG(KLD_binSize_PHI));
-	out.printf("KLD_delta                               = %f\n", KLD_delta);
-	out.printf("KLD_epsilon                             = %f\n", KLD_epsilon);
-	out.printf("\n");
+	out << mrpt::format("KLD_delta                               = %f\n", KLD_delta);
+	out << mrpt::format("KLD_epsilon                             = %f\n", KLD_epsilon);
+	out << mrpt::format("\n");
 }
 
 /*---------------------------------------------------------------

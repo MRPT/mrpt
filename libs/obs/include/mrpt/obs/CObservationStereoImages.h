@@ -23,23 +23,21 @@ namespace obs
 {
 /** Observation class for either a pair of left+right or left+disparity images
  *from a stereo camera.
-  *
-  *  To find whether the observation contains a right image and/or a disparity
- *image, see the
-  *   fields hasImageDisparity and hasImageRight, respectively.
-  *
-  *   This figure illustrates the coordinate frames involved in this class:
-  *
-  *	 <center>
-  *   <img src="CObservationStereoImages_figRefSystem.png">
-  *  </center>
-  *
-  * \note The images stored in this class can be raw or undistorted images. In
+ *
+ *  To find whether the observation contains a right image and/or a disparity
+ *image, see the fields hasImageDisparity and hasImageRight, respectively.
+ *   This figure illustrates the coordinate frames involved in this class:
+ *
+ *	 <center>
+ *   <img src="CObservationStereoImages_figRefSystem.png">
+ *  </center>
+ *
+ * \note The images stored in this class can be raw or undistorted images. In
  *the latter case, the "distortion" params of the corresponding "leftCamera" and
  *"rightCamera" fields should be all zeros.
-  * \sa CObservation
+ * \sa CObservation
  * \ingroup mrpt_obs_grp
-  */
+ */
 class CObservationStereoImages : public mrpt::obs::CObservation
 {
 	DEFINE_SERIALIZABLE(CObservationStereoImages)
@@ -47,25 +45,20 @@ class CObservationStereoImages : public mrpt::obs::CObservation
 	DECLARE_MEX_CONVERSION
 
    public:
-	/** Default Constructor */
-	CObservationStereoImages();
+	CObservationStereoImages() = default;
 
 	/** Constructor from "IplImage*" images, which could be NULL.
-	  *  The fields hasImageDisparity and hasImageRight will be set to
+	 *  The fields hasImageDisparity and hasImageRight will be set to
 	 * true/false depending on them being !=nullptr.
-	  * Note that the IplImage's will be COPIED, so it's still the caller's
+	 * Note that the IplImage's will be COPIED, so it's still the caller's
 	 * reponsibility to free the original images,
-	  *  unless ownMemory is set to true: in that case the IplImage pointers are
+	 *  unless ownMemory is set to true: in that case the IplImage pointers are
 	 * copied and those IplImage's will be automatically freed by this object.
-	  *
-	  */
+	 *
+	 */
 	CObservationStereoImages(
 		void* iplImageLeft, void* iplImageRight,
 		void* iplImageDisparity = nullptr, bool ownMemory = false);
-
-	/** Destructor
-	 */
-	~CObservationStereoImages();
 
 	/** @name Main observation data members
 		@{ */
@@ -80,34 +73,34 @@ class CObservationStereoImages : public mrpt::obs::CObservation
 
 	/** Disparity image, only contains a valid image if hasImageDisparity ==
 	 * true.
-	  *  The relation between the actual disparity and pixels and each value in
+	 *  The relation between the actual disparity and pixels and each value in
 	 * this image is... ???????????  */
 	mrpt::img::CImage imageDisparity;
 
 	/** Whether imageDisparity actually contains data (Default upon
 	 * construction: false) */
-	bool hasImageDisparity;
+	bool hasImageDisparity{false};
 	/** Whether imageRight actually contains data  (Default upon construction:
 	 * true) */
-	bool hasImageRight;
+	bool hasImageRight{false};
 
 	/** Parameters for the left/right cameras: individual intrinsic and
 	 * distortion parameters of the cameras.
-	  * See the <a href="http://www.mrpt.org/Camera_Parameters" >tutorial</a>
+	 * See the <a href="http://www.mrpt.org/Camera_Parameters" >tutorial</a>
 	 * for a discussion of these parameters.
-	  * \sa areImagesRectified(), getStereoCameraParams()
-	  */
+	 * \sa areImagesRectified(), getStereoCameraParams()
+	 */
 	mrpt::img::TCamera leftCamera, rightCamera;
 
 	/** The pose of the LEFT camera, relative to the robot. */
 	mrpt::poses::CPose3DQuat cameraPose;
 
 	/** The pose of the right camera, relative to the left one:
-	  *  Note that using the conventional reference coordinates for the left
-	  *   camera (x points to the right, y down), the "right" camera is situated
-	  *   at position (BL, 0, 0) with yaw=pitch=roll=0, where BL is the
+	 *  Note that using the conventional reference coordinates for the left
+	 *   camera (x points to the right, y down), the "right" camera is situated
+	 *   at position (BL, 0, 0) with yaw=pitch=roll=0, where BL is the
 	 * BASELINE.
-	  */
+	 */
 	mrpt::poses::CPose3DQuat rightCameraPose;
 
 	/** Populates a TStereoCamera structure with the parameters in \a
@@ -121,9 +114,9 @@ class CObservationStereoImages : public mrpt::obs::CObservation
 
 	/** This method only checks whether ALL the distortion parameters in \a
 	 * leftCamera are set to zero, which is
-	  * the convention in MRPT to denote that this pair of stereo images has
+	 * the convention in MRPT to denote that this pair of stereo images has
 	 * been rectified.
-	  */
+	 */
 	bool areImagesRectified() const;
 
 	/** @} */
@@ -144,8 +137,8 @@ class CObservationStereoImages : public mrpt::obs::CObservation
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
+}  // namespace obs
+}  // namespace mrpt
 
 // Add for declaration of mexplus::from template specialization
 DECLARE_MEXPLUS_FROM(mrpt::obs::CObservationStereoImages)

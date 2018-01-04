@@ -90,7 +90,6 @@ void CObservationRGBD360::serializeTo(mrpt::serialization::CArchive& out) const
 	out << m_points3D_external_stored << m_points3D_external_file;
 	out << m_rangeImage_external_stored << m_rangeImage_external_file;
 }
-}
 
 void CObservationRGBD360::serializeFrom(
 	mrpt::serialization::CArchive& in, uint8_t version)

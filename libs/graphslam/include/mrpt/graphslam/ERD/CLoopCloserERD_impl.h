@@ -2597,7 +2597,7 @@ void CLoopCloserERD<GRAPH_T>::TLaserParams::dumpToTextStream(std::ostream& out) 
 	ss << "Visualize map partitions                              = "
 	   << (visualize_map_partitions ? "TRUE" : "FALSE") << endl;
 
-	out.printf("%s", ss.str().c_str());
+	out << mrpt::format("%s", ss.str().c_str());
 
 	MRPT_END;
 }

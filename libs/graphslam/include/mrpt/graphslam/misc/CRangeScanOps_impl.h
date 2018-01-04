@@ -191,19 +191,19 @@ void CRangeScanOps<GRAPH_T>::TParams::dumpToTextStream(std::ostream& out) const
 {
 	MRPT_START;
 
-	out.printf(
+	out << mrpt::format(
 		"3D=>2D LaserScan Conversion Sensor label       = %s\n",
 		conversion_params.sensorLabel.c_str());
-	out.printf(
+	out << mrpt::format(
 		"3D=>2D LaserScan Conversion angle sup          = %.2f deg\n",
 		mrpt::RAD2DEG(conversion_params.angle_sup));
-	out.printf(
+	out << mrpt::format(
 		"3D=>2D LaserScan Conversion angle inf          = %.2f deg\n",
 		mrpt::RAD2DEG(conversion_params.angle_inf));
-	out.printf(
+	out << mrpt::format(
 		"3D=>2D LaserScan Conversion oversampling ratio = %.2f\n",
 		conversion_params.oversampling_ratio);
-	out.printf(
+	out << mrpt::format(
 		"3D=>2D LaserScan Conversion Z minimum          = %.2f\n",
 		conversion_params.z_min);
 

@@ -49,19 +49,19 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
 	/** The type of the function passed to execute. The user must supply a
 	 * function which evaluates the error of a given point in the solution
 	 * space.
-	  *  \param x The state point under examination.
-	  *  \param y The same object passed to "execute" as the parameter
+	 *  \param x The state point under examination.
+	 *  \param y The same object passed to "execute" as the parameter
 	 * "userParam".
-	  *  \param out The vector of (non-squared) errors, of the average square
+	 *  \param out The vector of (non-squared) errors, of the average square
 	 * root error, for the given "x". The functor code must set the size of this
 	 * vector.
-	  */
+	 */
 	using TFunctorEval = std::function<void(
 		const VECTORTYPE& x, const USERPARAM& y, VECTORTYPE& out)>;
 
 	/** The type of an optional functor passed to \a execute to replace the
 	 * Euclidean addition "x_new = x_old + x_incr" by any other operation.
-	  */
+	 */
 	using TFunctorIncrement = std::function<void(
 		VECTORTYPE& x_new, const VECTORTYPE& x_old, const VECTORTYPE& x_incr,
 		const USERPARAM& user_param)>;
@@ -77,28 +77,28 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
 
 		/** This matrix can be used to obtain an estimate of the optimal
 		 * parameters covariance matrix:
-		  *  \f[ COV = H M H^\top \f]
-		  *  With COV the covariance matrix of the optimal parameters, H this
+		 *  \f[ COV = H M H^\top \f]
+		 *  With COV the covariance matrix of the optimal parameters, H this
 		 * matrix, and M the covariance of the input (observations).
-		  */
+		 */
 		matrix_t H;
 	};
 
 	/** Executes the LM-method, with derivatives estimated from
-	  *  \a functor is a user-provided function which takes as input two
-	  *vectors, in this order:
-	  *		- x: The parameters to be optimized.
-	  *		- userParam: The vector passed to the LM algorithm, unmodified.
-	  *	  and must return the "error vector", or the error (not squared) in each
-	  *measured dimension, so the sum of the square of that output is the
-	  *overall square error.
-	  *
-	  * \a x_increment_adder Is an optional functor which may replace the
-	  *Euclidean "x_new = x + x_increment" at the core of the incremental
-	  *optimizer by
-	  *     any other operation. It can be used for example, in on-manifold
-	  *optimizations.
-	  */
+	 *  \a functor is a user-provided function which takes as input two
+	 *vectors, in this order:
+	 *		- x: The parameters to be optimized.
+	 *		- userParam: The vector passed to the LM algorithm, unmodified.
+	 *	  and must return the "error vector", or the error (not squared) in each
+	 *measured dimension, so the sum of the square of that output is the
+	 *overall square error.
+	 *
+	 * \a x_increment_adder Is an optional functor which may replace the
+	 *Euclidean "x_new = x + x_increment" at the core of the incremental
+	 *optimizer by
+	 *     any other operation. It can be used for example, in on-manifold
+	 *optimizations.
+	 */
 	void execute(
 		VECTORTYPE& out_optimal_x, const VECTORTYPE& x0, TFunctorEval functor,
 		const VECTORTYPE& increments, const USERPARAM& userParam,
@@ -109,7 +109,7 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
 		bool returnPath = true, TFunctorIncrement x_increment_adder = nullptr)
 	{
 		using namespace mrpt;
-				using namespace mrpt::math;
+		using namespace mrpt::math;
 		using namespace std;
 
 		MRPT_START
@@ -161,8 +161,9 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
 			out_info.path.block(iter, 0, 1, N) = x.transpose();
 		}
 		else
-			out_info.path = Eigen::Matrix<NUMTYPE, Eigen::Dynamic,
-										  Eigen::Dynamic>();  // Empty matrix
+			out_info.path = Eigen::Matrix<
+				NUMTYPE, Eigen::Dynamic,
+				Eigen::Dynamic>();  // Empty matrix
 
 		while (!found && ++iter < maxIter)
 		{
@@ -179,7 +180,7 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
 
 			logFmt(
 				mrpt::system::LVL_DEBUG, "Iter:%u x=%s\n", (unsigned)iter,
-				sprintf_vector(" %f", x).c_str());
+				mrpt::containers::sprintf_vector(" %f", x).c_str());
 
 			if (h_lm_n2 < e2 * (x_n2 + e2))
 			{
@@ -259,6 +260,6 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
 /** The default name for the LM class is an instantiation for "double" */
 typedef CLevenbergMarquardtTempl<mrpt::math::CVectorDouble> CLevenbergMarquardt;
 
-}  // End of namespace
-}  // End of namespace
+}  // namespace math
+}  // namespace mrpt
 #endif
