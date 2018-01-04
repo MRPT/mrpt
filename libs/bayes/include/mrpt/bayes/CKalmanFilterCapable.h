@@ -32,11 +32,11 @@ namespace mrpt
 namespace bayes
 {
 /** The Kalman Filter algorithm to employ in bayes::CKalmanFilterCapable
-  *  For further details on each algorithm see the tutorial:
+ *  For further details on each algorithm see the tutorial:
  * http://www.mrpt.org/Kalman_Filters
-  * \sa bayes::CKalmanFilterCapable::KF_options
-  * \ingroup mrpt_bayes_grp
-  */
+ * \sa bayes::CKalmanFilterCapable::KF_options
+ * \ingroup mrpt_bayes_grp
+ */
 enum TKFMethod
 {
 	kfEKFNaive = 0,
@@ -46,13 +46,14 @@ enum TKFMethod
 };
 
 // Forward declaration:
-template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
-		  typename KFTYPE>
+template <
+	size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
+	typename KFTYPE>
 class CKalmanFilterCapable;
 
 /** Generic options for the Kalman Filter algorithm in itself.
-  * \ingroup mrpt_bayes_grp
-  */
+ * \ingroup mrpt_bayes_grp
+ */
 struct TKF_options : public mrpt::config::CLoadableOptions
 {
 	TKF_options(mrpt::system::VerbosityLevel& verb_level_ref)
@@ -137,48 +138,52 @@ struct TKF_options : public mrpt::config::CLoadableOptions
 namespace detail
 {
 // Auxiliary functions.
-template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
-		  typename KFTYPE>
+template <
+	size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
+	typename KFTYPE>
 inline size_t getNumberOfLandmarksInMap(
 	const CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>&
 		obj);
 // Specialization:
 template <size_t VEH_SIZE, size_t OBS_SIZE, size_t ACT_SIZE, typename KFTYPE>
 inline size_t getNumberOfLandmarksInMap(
-	const CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, 0 /*FEAT_SIZE*/, ACT_SIZE,
-							   KFTYPE>& obj);
+	const CKalmanFilterCapable<
+		VEH_SIZE, OBS_SIZE, 0 /*FEAT_SIZE*/, ACT_SIZE, KFTYPE>& obj);
 
-template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
-		  typename KFTYPE>
+template <
+	size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
+	typename KFTYPE>
 inline bool isMapEmpty(
 	const CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>&
 		obj);
 // Specialization:
 template <size_t VEH_SIZE, size_t OBS_SIZE, size_t ACT_SIZE, typename KFTYPE>
 inline bool isMapEmpty(
-	const CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, 0 /*FEAT_SIZE*/, ACT_SIZE,
-							   KFTYPE>& obj);
+	const CKalmanFilterCapable<
+		VEH_SIZE, OBS_SIZE, 0 /*FEAT_SIZE*/, ACT_SIZE, KFTYPE>& obj);
 
-template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
-		  typename KFTYPE>
+template <
+	size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
+	typename KFTYPE>
 void addNewLandmarks(
 	CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>& obj,
-	const typename CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
-										KFTYPE>::vector_KFArray_OBS& Z,
+	const typename CKalmanFilterCapable<
+		VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::vector_KFArray_OBS& Z,
 	const std::vector<int>& data_association,
-	const typename CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
-										KFTYPE>::KFMatrix_OxO& R);
+	const typename CKalmanFilterCapable<
+		VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::KFMatrix_OxO& R);
 template <size_t VEH_SIZE, size_t OBS_SIZE, size_t ACT_SIZE, typename KFTYPE>
 void addNewLandmarks(
-	CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, 0 /* FEAT_SIZE=0 */, ACT_SIZE,
-						 KFTYPE>& obj,
-	const typename CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, 0 /* FEAT_SIZE=0 */,
-										ACT_SIZE, KFTYPE>::vector_KFArray_OBS&
-		Z,
+	CKalmanFilterCapable<
+		VEH_SIZE, OBS_SIZE, 0 /* FEAT_SIZE=0 */, ACT_SIZE, KFTYPE>& obj,
+	const typename CKalmanFilterCapable<
+		VEH_SIZE, OBS_SIZE, 0 /* FEAT_SIZE=0 */, ACT_SIZE,
+		KFTYPE>::vector_KFArray_OBS& Z,
 	const std::vector<int>& data_association,
-	const typename CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, 0 /* FEAT_SIZE=0 */,
-										ACT_SIZE, KFTYPE>::KFMatrix_OxO& R);
-}
+	const typename CKalmanFilterCapable<
+		VEH_SIZE, OBS_SIZE, 0 /* FEAT_SIZE=0 */, ACT_SIZE,
+		KFTYPE>::KFMatrix_OxO& R);
+}  // namespace detail
 
 /** Virtual base for Kalman Filter (EKF,IEKF,UKF) implementations.
  *   This base class stores the state vector and covariance matrix of the
@@ -219,8 +224,9 @@ void addNewLandmarks(
  *  \sa mrpt::slam::CRangeBearingKFSLAM, mrpt::slam::CRangeBearingKFSLAM2D
  * \ingroup mrpt_bayes_grp
  */
-template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
-		  typename KFTYPE = double>
+template <
+	size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
+	typename KFTYPE = double>
 class CKalmanFilterCapable : public mrpt::system::COutputLogger
 {
    public:
@@ -236,8 +242,8 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	/** The numeric type used in the Kalman Filter (default=double) */
 	typedef KFTYPE kftype;
 	/** My class, in a shorter name! */
-	typedef CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
-								 KFTYPE>
+	typedef CKalmanFilterCapable<
+		VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>
 		KFCLASS;
 
 	// ---------- Many useful typedefs to short the notation a bit... --------
@@ -271,8 +277,7 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	typedef mrpt::math::CArrayNumeric<KFTYPE, VEH_SIZE> KFArray_VEH;
 	typedef mrpt::math::CArrayNumeric<KFTYPE, ACT_SIZE> KFArray_ACT;
 	typedef mrpt::math::CArrayNumeric<KFTYPE, OBS_SIZE> KFArray_OBS;
-	typedef mrpt::aligned_std_vector<KFArray_OBS>
-		vector_KFArray_OBS;
+	typedef mrpt::aligned_std_vector<KFArray_OBS> vector_KFArray_OBS;
 	typedef mrpt::math::CArrayNumeric<KFTYPE, FEAT_SIZE> KFArray_FEAT;
 
 	inline size_t getStateVectorLength() const { return m_xkk.size(); }
@@ -280,8 +285,8 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	inline KFMatrix& internal_getPkk() { return m_pkk; }
 	/** Returns the mean of the estimated value of the idx'th landmark (not
 	 * applicable to non-SLAM problems).
-	  * \exception std::exception On idx>= getNumberOfLandmarksInTheMap()
-	  */
+	 * \exception std::exception On idx>= getNumberOfLandmarksInTheMap()
+	 */
 	inline void getLandmarkMean(size_t idx, KFArray_FEAT& feat) const
 	{
 		ASSERT_(idx < getNumberOfLandmarksInTheMap();
@@ -291,8 +296,8 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	}
 	/** Returns the covariance of the idx'th landmark (not applicable to
 	 * non-SLAM problems).
-	  * \exception std::exception On idx>= getNumberOfLandmarksInTheMap()
-	  */
+	 * \exception std::exception On idx>= getNumberOfLandmarksInTheMap()
+	 */
 	inline void getLandmarkCov(size_t idx, KFMatrix_FxF& feat_cov) const
 	{
 		m_pkk.extractMatrix(
@@ -317,31 +322,31 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	 */
 
 	/** Must return the action vector u.
-	  * \param out_u The action vector which will be passed to OnTransitionModel
-	  */
+	 * \param out_u The action vector which will be passed to OnTransitionModel
+	 */
 	virtual void OnGetAction(KFArray_ACT& out_u) const = 0;
 
 	/** Implements the transition model \f$ \hat{x}_{k|k-1} = f(
 	 * \hat{x}_{k-1|k-1}, u_k ) \f$
-	  * \param in_u The vector returned by OnGetAction.
-	  * \param inout_x At input has \f[ \hat{x}_{k-1|k-1} \f] , at output must
+	 * \param in_u The vector returned by OnGetAction.
+	 * \param inout_x At input has \f[ \hat{x}_{k-1|k-1} \f] , at output must
 	 * have \f$ \hat{x}_{k|k-1} \f$ .
-	  * \param out_skip Set this to true if for some reason you want to skip the
+	 * \param out_skip Set this to true if for some reason you want to skip the
 	 * prediction step (to do not modify either the vector or the covariance).
 	 * Default:false
-	  * \note Even if you return "out_skip=true", the value of "inout_x" MUST be
+	 * \note Even if you return "out_skip=true", the value of "inout_x" MUST be
 	 * updated as usual (this is to allow numeric approximation of Jacobians).
-	  */
+	 */
 	virtual void OnTransitionModel(
 		const KFArray_ACT& in_u, KFArray_VEH& inout_x,
 		bool& out_skipPrediction) const = 0;
 
 	/** Implements the transition Jacobian \f$ \frac{\partial f}{\partial x} \f$
-	  * \param out_F Must return the Jacobian.
-	  *  The returned matrix must be \f$V \times V\f$ with V being either the
+	 * \param out_F Must return the Jacobian.
+	 *  The returned matrix must be \f$V \times V\f$ with V being either the
 	 * size of the whole state vector (for non-SLAM problems) or VEH_SIZE (for
 	 * SLAM problems).
-	  */
+	 */
 	virtual void OnTransitionJacobian(KFMatrix_VxV& out_F) const
 	{
 		MRPT_UNUSED_PARAM(out_F);
@@ -351,7 +356,7 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	/** Only called if using a numeric approximation of the transition Jacobian,
 	 * this method must return the increments in each dimension of the vehicle
 	 * state vector while estimating the Jacobian.
-	  */
+	 */
 	virtual void OnTransitionJacobianNumericGetIncrements(
 		KFArray_VEH& out_increments) const
 	{
@@ -359,27 +364,27 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	}
 
 	/** Implements the transition noise covariance \f$ Q_k \f$
-	  * \param out_Q Must return the covariance matrix.
-	  *  The returned matrix must be of the same size than the jacobian from
+	 * \param out_Q Must return the covariance matrix.
+	 *  The returned matrix must be of the same size than the jacobian from
 	 * OnTransitionJacobian
-	  */
+	 */
 	virtual void OnTransitionNoise(KFMatrix_VxV& out_Q) const = 0;
 
 	/** This will be called before OnGetObservationsAndDataAssociation to allow
 	 * the application to reduce the number of covariance landmark predictions
 	 * to be made.
-	  *  For example, features which are known to be "out of sight" shouldn't be
+	 *  For example, features which are known to be "out of sight" shouldn't be
 	 * added to the output list to speed up the calculations.
-	  * \param in_all_prediction_means The mean of each landmark predictions;
+	 * \param in_all_prediction_means The mean of each landmark predictions;
 	 * the computation or not of the corresponding covariances is what we're
 	 * trying to determined with this method.
-	  * \param out_LM_indices_to_predict The list of landmark indices in the map
+	 * \param out_LM_indices_to_predict The list of landmark indices in the map
 	 * [0,getNumberOfLandmarksInTheMap()-1] that should be predicted.
-	  * \note This is not a pure virtual method, so it should be implemented
+	 * \note This is not a pure virtual method, so it should be implemented
 	 * only if desired. The default implementation returns a vector with all the
 	 * landmarks in the map.
-	  * \sa OnGetObservations, OnDataAssociation
-	  */
+	 * \sa OnGetObservations, OnDataAssociation
+	 */
 	virtual void OnPreComputingPredictions(
 		const vector_KFArray_OBS& in_all_prediction_means,
 		std::vector<size_t>& out_LM_indices_to_predict) const
@@ -393,64 +398,65 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 
 	/** Return the observation NOISE covariance matrix, that is, the model of
 	 * the Gaussian additive noise of the sensor.
-	  * \param out_R The noise covariance matrix. It might be non diagonal, but
+	 * \param out_R The noise covariance matrix. It might be non diagonal, but
 	 * it'll usually be.
-	  * \note Upon call, it can be assumed that the previous contents of out_R
+	 * \note Upon call, it can be assumed that the previous contents of out_R
 	 * are all zeros.
-	  */
+	 */
 	virtual void OnGetObservationNoise(KFMatrix_OxO& out_R) const = 0;
 
 	/** This is called between the KF prediction step and the update step, and
 	 * the application must return the observations and, when applicable, the
 	 * data association between these observations and the current map.
-	  *
-	  * \param out_z N vectors, each for one "observation" of length OBS_SIZE, N
+	 *
+	 * \param out_z N vectors, each for one "observation" of length OBS_SIZE, N
 	 * being the number of "observations": how many observed landmarks for a
 	 * map, or just one if not applicable.
-	  * \param out_data_association An empty vector or, where applicable, a
+	 * \param out_data_association An empty vector or, where applicable, a
 	 * vector where the i'th element corresponds to the position of the
 	 * observation in the i'th row of out_z within the system state vector (in
 	 * the range [0,getNumberOfLandmarksInTheMap()-1]), or -1 if it is a new map
 	 * element and we want to insert it at the end of this KF iteration.
-	  * \param in_all_predictions A vector with the prediction of ALL the
+	 * \param in_all_predictions A vector with the prediction of ALL the
 	 * landmarks in the map. Note that, in contrast, in_S only comprises a
 	 * subset of all the landmarks.
-	  * \param in_S The full covariance matrix of the observation predictions
+	 * \param in_S The full covariance matrix of the observation predictions
 	 * (i.e. the "innovation covariance matrix"). This is a M*O x M*O matrix
 	 * with M=length of "in_lm_indices_in_S".
-	  * \param in_lm_indices_in_S The indices of the map landmarks (range
+	 * \param in_lm_indices_in_S The indices of the map landmarks (range
 	 * [0,getNumberOfLandmarksInTheMap()-1]) that can be found in the matrix
 	 * in_S.
-	  *
-	  *  This method will be called just once for each complete KF iteration.
-	  * \note It is assumed that the observations are independent, i.e. there
+	 *
+	 *  This method will be called just once for each complete KF iteration.
+	 * \note It is assumed that the observations are independent, i.e. there
 	 * are NO cross-covariances between them.
-	  */
+	 */
 	virtual void OnGetObservationsAndDataAssociation(
 		vector_KFArray_OBS& out_z, mrpt::std::vector<int>& out_data_association,
 		const vector_KFArray_OBS& in_all_predictions, const KFMatrix& in_S,
-		const std::vector<size_t>& in_lm_indices_in_S, const KFMatrix_OxO& in_R) = 0;
+		const std::vector<size_t>& in_lm_indices_in_S,
+		const KFMatrix_OxO& in_R) = 0;
 
 	/** Implements the observation prediction \f$ h_i(x) \f$.
-	  * \param idx_landmark_to_predict The indices of the landmarks in the map
+	 * \param idx_landmark_to_predict The indices of the landmarks in the map
 	 * whose predictions are expected as output. For non SLAM-like problems,
 	 * this input value is undefined and the application should just generate
 	 * one observation for the given problem.
-	  * \param out_predictions The predicted observations.
-	  */
+	 * \param out_predictions The predicted observations.
+	 */
 	virtual void OnObservationModel(
 		const std::vector<size_t>& idx_landmarks_to_predict,
 		vector_KFArray_OBS& out_predictions) const = 0;
 
 	/** Implements the observation Jacobians \f$ \frac{\partial h_i}{\partial x}
 	 * \f$ and (when applicable) \f$ \frac{\partial h_i}{\partial y_i} \f$.
-	  * \param idx_landmark_to_predict The index of the landmark in the map
+	 * \param idx_landmark_to_predict The index of the landmark in the map
 	 * whose prediction is expected as output. For non SLAM-like problems, this
 	 * will be zero and the expected output is for the whole state vector.
-	  * \param Hx  The output Jacobian \f$ \frac{\partial h_i}{\partial x} \f$.
-	  * \param Hy  The output Jacobian \f$ \frac{\partial h_i}{\partial y_i}
+	 * \param Hx  The output Jacobian \f$ \frac{\partial h_i}{\partial x} \f$.
+	 * \param Hy  The output Jacobian \f$ \frac{\partial h_i}{\partial y_i}
 	 * \f$.
-	  */
+	 */
 	virtual void OnObservationJacobians(
 		const size_t& idx_landmark_to_predict, KFMatrix_OxV& Hx,
 		KFMatrix_OxF& Hy) const
@@ -464,7 +470,7 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	/** Only called if using a numeric approximation of the observation
 	 * Jacobians, this method must return the increments in each dimension of
 	 * the vehicle state vector while estimating the Jacobian.
-	  */
+	 */
 	virtual void OnObservationJacobiansNumericGetIncrements(
 		KFArray_VEH& out_veh_increments,
 		KFArray_FEAT& out_feat_increments) const
@@ -475,7 +481,7 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 
 	/** Computes A=A-B, which may need to be re-implemented depending on the
 	 * topology of the individual scalar components (eg, angles).
-	  */
+	 */
 	virtual void OnSubstractObservationVectors(
 		KFArray_OBS& A, const KFArray_OBS& B) const
 	{
@@ -485,26 +491,26 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
    public:
 	/** If applicable to the given problem, this method implements the inverse
 	 * observation model needed to extend the "map" with a new "element".
-	  * \param in_z The observation vector whose inverse sensor model is to be
+	 * \param in_z The observation vector whose inverse sensor model is to be
 	 * computed. This is actually one of the vector<> returned by
 	 * OnGetObservationsAndDataAssociation().
-	  * \param out_yn The F-length vector with the inverse observation model \f$
+	 * \param out_yn The F-length vector with the inverse observation model \f$
 	 * y_n=y(x,z_n) \f$.
-	  * \param out_dyn_dxv The \f$F \times V\f$ Jacobian of the inv. sensor
+	 * \param out_dyn_dxv The \f$F \times V\f$ Jacobian of the inv. sensor
 	 * model wrt the robot pose \f$ \frac{\partial y_n}{\partial x_v} \f$.
-	  * \param out_dyn_dhn The \f$F \times O\f$ Jacobian of the inv. sensor
+	 * \param out_dyn_dhn The \f$F \times O\f$ Jacobian of the inv. sensor
 	 * model wrt the observation vector \f$ \frac{\partial y_n}{\partial h_n}
 	 * \f$.
-	  *
-	  *  - O: OBS_SIZE
-	  *  - V: VEH_SIZE
-	  *  - F: FEAT_SIZE
-	  *
-	  * \note OnNewLandmarkAddedToMap will be also called after calling this
+	 *
+	 *  - O: OBS_SIZE
+	 *  - V: VEH_SIZE
+	 *  - F: FEAT_SIZE
+	 *
+	 * \note OnNewLandmarkAddedToMap will be also called after calling this
 	 * method if a landmark is actually being added to the map.
-	  * \deprecated This version of the method is deprecated. The alternative
+	 * \deprecated This version of the method is deprecated. The alternative
 	 * method is preferred to allow a greater flexibility.
-	  */
+	 */
 	virtual void OnInverseObservationModel(
 		const KFArray_OBS& in_z, KFArray_FEAT& out_yn,
 		KFMatrix_FxV& out_dyn_dxv, KFMatrix_FxO& out_dyn_dhn) const
@@ -522,42 +528,42 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 
 	/** If applicable to the given problem, this method implements the inverse
 	 * observation model needed to extend the "map" with a new "element".
-	  *  The uncertainty in the new map feature comes from two parts: one from
+	 *  The uncertainty in the new map feature comes from two parts: one from
 	 * the vehicle uncertainty (through the out_dyn_dxv Jacobian),
-	  *   and another from the uncertainty in the observation itself. By
+	 *   and another from the uncertainty in the observation itself. By
 	 * default, out_use_dyn_dhn_jacobian=true on call, and if it's left at
 	 * "true",
-	  *   the base KalmanFilter class will compute the uncertainty of the
+	 *   the base KalmanFilter class will compute the uncertainty of the
 	 * landmark relative position from out_dyn_dhn.
-	  *  Only in some problems (e.g. MonoSLAM), it'll be needed for the
+	 *  Only in some problems (e.g. MonoSLAM), it'll be needed for the
 	 * application to directly return the covariance matrix \a
 	 * out_dyn_dhn_R_dyn_dhnT, which is the equivalent to:
-	  *
-	  *         \f$ \frac{\partial y_n}{\partial h_n} R \frac{\partial
+	 *
+	 *         \f$ \frac{\partial y_n}{\partial h_n} R \frac{\partial
 	 * y_n}{\partial h_n}^\top \f$.
-	  *
-	  *  but may be computed from additional terms, or whatever needed by the
+	 *
+	 *  but may be computed from additional terms, or whatever needed by the
 	 * user.
-	  *
-	  * \param in_z The observation vector whose inverse sensor model is to be
+	 *
+	 * \param in_z The observation vector whose inverse sensor model is to be
 	 * computed. This is actually one of the vector<> returned by
 	 * OnGetObservationsAndDataAssociation().
-	  * \param out_yn The F-length vector with the inverse observation model \f$
+	 * \param out_yn The F-length vector with the inverse observation model \f$
 	 * y_n=y(x,z_n) \f$.
-	  * \param out_dyn_dxv The \f$F \times V\f$ Jacobian of the inv. sensor
+	 * \param out_dyn_dxv The \f$F \times V\f$ Jacobian of the inv. sensor
 	 * model wrt the robot pose \f$ \frac{\partial y_n}{\partial x_v} \f$.
-	  * \param out_dyn_dhn The \f$F \times O\f$ Jacobian of the inv. sensor
+	 * \param out_dyn_dhn The \f$F \times O\f$ Jacobian of the inv. sensor
 	 * model wrt the observation vector \f$ \frac{\partial y_n}{\partial h_n}
 	 * \f$.
-	  * \param out_dyn_dhn_R_dyn_dhnT See the discussion above.
-	  *
-	  *  - O: OBS_SIZE
-	  *  - V: VEH_SIZE
-	  *  - F: FEAT_SIZE
-	  *
-	  * \note OnNewLandmarkAddedToMap will be also called after calling this
+	 * \param out_dyn_dhn_R_dyn_dhnT See the discussion above.
+	 *
+	 *  - O: OBS_SIZE
+	 *  - V: VEH_SIZE
+	 *  - F: FEAT_SIZE
+	 *
+	 * \note OnNewLandmarkAddedToMap will be also called after calling this
 	 * method if a landmark is actually being added to the map.
-	  */
+	 */
 	virtual void OnInverseObservationModel(
 		const KFArray_OBS& in_z, KFArray_FEAT& out_yn,
 		KFMatrix_FxV& out_dyn_dxv, KFMatrix_FxO& out_dyn_dhn,
@@ -573,14 +579,14 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 
 	/** If applicable to the given problem, do here any special handling of
 	 * adding a new landmark to the map.
-	  * \param in_obsIndex The index of the observation whose inverse sensor is
+	 * \param in_obsIndex The index of the observation whose inverse sensor is
 	 * to be computed. It corresponds to the row in in_z where the observation
 	 * can be found.
-	  * \param in_idxNewFeat The index that this new feature will have in the
+	 * \param in_idxNewFeat The index that this new feature will have in the
 	 * state vector (0:just after the vehicle state, 1: after that,...). Save
 	 * this number so data association can be done according to these indices.
-	  * \sa OnInverseObservationModel
-	  */
+	 * \sa OnInverseObservationModel
+	 */
 	virtual void OnNewLandmarkAddedToMap(
 		const size_t in_obsIdx, const size_t in_idxNewFeat)
 	{
@@ -592,7 +598,7 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	/** This method is called after the prediction and after the update, to give
 	 * the user an opportunity to normalize the state vector (eg, keep angles
 	 * within -pi,pi range) if the application requires it.
-	  */
+	 */
 	virtual void OnNormalizeStateVector()
 	{
 		// Do nothing in this base class.
@@ -600,7 +606,7 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 
 	/** This method is called after finishing one KF iteration and before
 	 * returning from runOneKalmanIteration().
-	  */
+	 */
 	virtual void OnPostIteration()
 	{
 		// Do nothing in this base class.
@@ -641,11 +647,11 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 
    protected:
 	/** The main entry point, executes one complete step: prediction + update.
-	  *  It is protected since derived classes must provide a problem-specific
+	 *  It is protected since derived classes must provide a problem-specific
 	 * entry point for users.
-	  *  The exact order in which this method calls the virtual method is
+	 *  The exact order in which this method calls the virtual method is
 	 * explained in http://www.mrpt.org/Kalman_Filters
-	  */
+	 */
 	void runOneKalmanIteration();
 
    private:
@@ -662,24 +668,25 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 		const KFArray_FEAT& x, const std::pair<KFCLASS*, size_t>& dat,
 		KFArray_OBS& out_x);
 
-	template <size_t VEH_SIZEb, size_t OBS_SIZEb, size_t FEAT_SIZEb,
-			  size_t ACT_SIZEb, typename KFTYPEb>
+	template <
+		size_t VEH_SIZEb, size_t OBS_SIZEb, size_t FEAT_SIZEb, size_t ACT_SIZEb,
+		typename KFTYPEb>
 	friend void detail::addNewLandmarks(
-		CKalmanFilterCapable<VEH_SIZEb, OBS_SIZEb, FEAT_SIZEb, ACT_SIZEb,
-							 KFTYPEb>& obj,
-		const typename CKalmanFilterCapable<VEH_SIZEb, OBS_SIZEb, FEAT_SIZEb,
-											ACT_SIZEb,
-											KFTYPEb>::vector_KFArray_OBS& Z,
+		CKalmanFilterCapable<
+			VEH_SIZEb, OBS_SIZEb, FEAT_SIZEb, ACT_SIZEb, KFTYPEb>& obj,
+		const typename CKalmanFilterCapable<
+			VEH_SIZEb, OBS_SIZEb, FEAT_SIZEb, ACT_SIZEb,
+			KFTYPEb>::vector_KFArray_OBS& Z,
 		const std::vector<int>& data_association,
-		const typename CKalmanFilterCapable<VEH_SIZEb, OBS_SIZEb, FEAT_SIZEb,
-											ACT_SIZEb, KFTYPEb>::KFMatrix_OxO&
+		const typename CKalmanFilterCapable<
+			VEH_SIZEb, OBS_SIZEb, FEAT_SIZEb, ACT_SIZEb, KFTYPEb>::KFMatrix_OxO&
 			R);
 };  // end class
 
-}  // end namespace
+}  // namespace bayes
 
 // Specializations MUST occur at the same namespace:
-namespace utils
+namespace typemeta
 {
 template <>
 struct TEnumTypeFiller<bayes::TKFMethod>
@@ -693,8 +700,8 @@ struct TEnumTypeFiller<bayes::TKFMethod>
 		m_map.insert(bayes::kfIKF, "kfIKF");
 	}
 };
-}  // End of namespace
-}  // end namespace
+}  // namespace typemeta
+}  // namespace mrpt
 
 // Template implementation:
 #include "CKalmanFilterCapable_impl.h"

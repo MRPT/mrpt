@@ -13,16 +13,16 @@
 
 namespace mrpt
 {
-namespace utils
+namespace containers
 {
 /** \addtogroup mrpt_containers_grp
-  * @{ */
+ * @{ */
 
 /** Wrapper to a clone smart pointer to polymorphic classes, capable of handling
-* copy operator, etc. making deep copies.
-* Example use: `poly_ptr_ptr<mrpt::poses::CPosePDF::Ptr>`
-* \sa copy_ptr<T>
-*/
+ * copy operator, etc. making deep copies.
+ * Example use: `poly_ptr_ptr<mrpt::poses::CPosePDF::Ptr>`
+ * \sa copy_ptr<T>
+ */
 template <typename T>
 class poly_ptr_ptr
 {
@@ -88,14 +88,15 @@ class poly_ptr_ptr
 	typename T::element_type& operator*(void) { return *get(); }
 	const typename T::element_type& operator*(void)const { return *get(); }
 	operator bool() const { return m_smartptr ? true : false; }
-	bool operator!(void)const { return m_smartptr ? false : true; }
+	bool operator!(void) const { return m_smartptr ? false : true; }
 	const T& get_ptr() const { return m_smartptr; }
 	T& get_ptr() { return m_smartptr; }
 	void reset() { m_smartptr.reset(); }
+
    private:
 	T m_smartptr;
 };
 
 /** @} */  // end of grouping
-}  // End of namespace
-}  // End of namespace
+}  // namespace containers
+}  // namespace mrpt

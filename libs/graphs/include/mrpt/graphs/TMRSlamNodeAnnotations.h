@@ -104,17 +104,17 @@ struct TMRSlamNodeAnnotations : public TNodeAnnotations
 	 */
 	mrpt::graphs::TNodeID nodeID_loc;
 };
-}
-}
-}  // end of namespaces
+}  // namespace detail
+}  // namespace graphs
+}  // namespace mrpt
 
 // declare as ttypename - in mrpt::utils namespace
 namespace mrpt
 {
-namespace utils
+namespace typemeta
 {
 MRPT_DECLARE_TTYPENAME(mrpt::graphs::detail::TMRSlamNodeAnnotations)
 }
-}  // end of namespaces
+}  // namespace mrpt
 
 #endif /* end of include guard: TMRSLAMNODEANNOTATIONS_H */

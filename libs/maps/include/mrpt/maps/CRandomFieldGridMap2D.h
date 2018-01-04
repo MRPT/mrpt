@@ -35,7 +35,7 @@ class COccupancyGridMap2D;
 #endif
 
 /** The contents of each cell in a CRandomFieldGridMap2D map.
-  * \ingroup mrpt_maps_grp
+ * \ingroup mrpt_maps_grp
  **/
 struct TRandomFieldCell
 {
@@ -94,61 +94,61 @@ struct TRandomFieldCell
 #endif
 
 /** CRandomFieldGridMap2D represents a 2D grid map where each cell is associated
-  *one real-valued property which is estimated by this map, either
-  *   as a simple value or as a probility distribution (for each cell).
-  *
-  *  There are a number of methods available to build the MRF grid-map,
-  *depending on the value of
-  *    `TMapRepresentation maptype` passed in the constructor.
-  *
-  *  The following papers describe the mapping alternatives implemented here:
-  *		- `mrKernelDM`: A Gaussian kernel-based method. See:
-  *			- "Building gas concentration gridmaps with a mobile robot",
-  *Lilienthal,
-  *A. and Duckett, T., Robotics and Autonomous Systems, v.48, 2004.
-  *		- `mrKernelDMV`: A kernel-based method. See:
-  *			- "A Statistical Approach to Gas Distribution Modelling with Mobile
-  *Robots--The Kernel DM+ V Algorithm", Lilienthal, A.J. and Reggente, M. and
-  *Trincavelli, M. and Blanco, J.L. and Gonzalez, J., IROS 2009.
-  *		- `mrKalmanFilter`: A "brute-force" approach to estimate the entire map
-  *with a dense (linear) Kalman filter. Will be very slow for mid or large maps.
-  *It's provided just for comparison purposes, not useful in practice.
-  *		- `mrKalmanApproximate`: A compressed/sparse Kalman filter approach.
-  *See:
-  *			- "A Kalman Filter Based Approach to Probabilistic Gas Distribution
-  *Mapping", JL Blanco, JG Monroy, J Gonzalez-Jimenez, A Lilienthal, 28th
-  *Symposium On Applied Computing (SAC), 2013.
-  *		- `mrGMRF_SD`: A Gaussian Markov Random Field (GMRF) estimator, with
-  *these
-  *constraints:
-  *			- `mrGMRF_SD`: Each cell only connected to its 4 immediate neighbors
-  *(Up,
-  *down, left, right).
-  *			- (Removed in MRPT 1.5.0: `mrGMRF_G`: Each cell connected to a
-  *square
-  *area
-  *of neighbors cells)
-  *			- See papers:
-  *				- "Time-variant gas distribution mapping with obstacle
-  *information",
-  *Monroy, J. G., Blanco, J. L., & Gonzalez-Jimenez, J. Autonomous Robots,
-  *40(1), 1-16, 2016.
-  *
-  *  Note that this class is virtual, since derived classes still have to
-  *implement:
-  *		- mrpt::maps::CMetricMap::internal_computeObservationLikelihood()
-  *		- mrpt::maps::CMetricMap::internal_insertObservation()
-  *		- Serialization methods: writeToStream() and readFromStream()
-  *
-  * [GMRF only] A custom connectivity pattern between cells can be defined by
-  *calling setCellsConnectivity().
-  *
-  * \sa mrpt::maps::CGasConcentrationGridMap2D,
-  *mrpt::maps::CWirelessPowerGridMap2D, mrpt::maps::CMetricMap,
-  *mrpt::containers::CDynamicGrid, The application icp-slam,
-  *mrpt::maps::CMultiMetricMap
-  * \ingroup mrpt_maps_grp
-  */
+ *one real-valued property which is estimated by this map, either
+ *   as a simple value or as a probility distribution (for each cell).
+ *
+ *  There are a number of methods available to build the MRF grid-map,
+ *depending on the value of
+ *    `TMapRepresentation maptype` passed in the constructor.
+ *
+ *  The following papers describe the mapping alternatives implemented here:
+ *		- `mrKernelDM`: A Gaussian kernel-based method. See:
+ *			- "Building gas concentration gridmaps with a mobile robot",
+ *Lilienthal,
+ *A. and Duckett, T., Robotics and Autonomous Systems, v.48, 2004.
+ *		- `mrKernelDMV`: A kernel-based method. See:
+ *			- "A Statistical Approach to Gas Distribution Modelling with Mobile
+ *Robots--The Kernel DM+ V Algorithm", Lilienthal, A.J. and Reggente, M. and
+ *Trincavelli, M. and Blanco, J.L. and Gonzalez, J., IROS 2009.
+ *		- `mrKalmanFilter`: A "brute-force" approach to estimate the entire map
+ *with a dense (linear) Kalman filter. Will be very slow for mid or large maps.
+ *It's provided just for comparison purposes, not useful in practice.
+ *		- `mrKalmanApproximate`: A compressed/sparse Kalman filter approach.
+ *See:
+ *			- "A Kalman Filter Based Approach to Probabilistic Gas Distribution
+ *Mapping", JL Blanco, JG Monroy, J Gonzalez-Jimenez, A Lilienthal, 28th
+ *Symposium On Applied Computing (SAC), 2013.
+ *		- `mrGMRF_SD`: A Gaussian Markov Random Field (GMRF) estimator, with
+ *these
+ *constraints:
+ *			- `mrGMRF_SD`: Each cell only connected to its 4 immediate neighbors
+ *(Up,
+ *down, left, right).
+ *			- (Removed in MRPT 1.5.0: `mrGMRF_G`: Each cell connected to a
+ *square
+ *area
+ *of neighbors cells)
+ *			- See papers:
+ *				- "Time-variant gas distribution mapping with obstacle
+ *information",
+ *Monroy, J. G., Blanco, J. L., & Gonzalez-Jimenez, J. Autonomous Robots,
+ *40(1), 1-16, 2016.
+ *
+ *  Note that this class is virtual, since derived classes still have to
+ *implement:
+ *		- mrpt::maps::CMetricMap::internal_computeObservationLikelihood()
+ *		- mrpt::maps::CMetricMap::internal_insertObservation()
+ *		- Serialization methods: writeToStream() and readFromStream()
+ *
+ * [GMRF only] A custom connectivity pattern between cells can be defined by
+ *calling setCellsConnectivity().
+ *
+ * \sa mrpt::maps::CGasConcentrationGridMap2D,
+ *mrpt::maps::CWirelessPowerGridMap2D, mrpt::maps::CMetricMap,
+ *mrpt::containers::CDynamicGrid, The application icp-slam,
+ *mrpt::maps::CMultiMetricMap
+ * \ingroup mrpt_maps_grp
+ */
 class CRandomFieldGridMap2D
 	: public mrpt::maps::CMetricMap,
 	  public mrpt::containers::CDynamicGrid<TRandomFieldCell>,
@@ -159,9 +159,9 @@ class CRandomFieldGridMap2D
 	DEFINE_VIRTUAL_SERIALIZABLE(CRandomFieldGridMap2D)
    public:
 	/** Calls the base CMetricMap::clear
-	  * Declared here to avoid ambiguity between the two clear() in both base
+	 * Declared here to avoid ambiguity between the two clear() in both base
 	 * classes.
-	  */
+	 */
 	inline void clear() { CMetricMap::clear(); }
 	// This method is just used for the ::saveToTextFile() method in base class.
 	float cell2float(const TRandomFieldCell& c) const override
@@ -171,7 +171,7 @@ class CRandomFieldGridMap2D
 
 	/** The type of map representation to be used, see CRandomFieldGridMap2D for
 	 * a discussion.
-	  */
+	 */
 	enum TMapRepresentation
 	{
 		/** Gaussian kernel-based estimator (see discussion in
@@ -208,20 +208,20 @@ class CRandomFieldGridMap2D
 
 	/** Returns true if the map is empty/no observation has been inserted (in
 	 * this class it always return false,
-	  * unless redefined otherwise in base classes)
-	  */
+	 * unless redefined otherwise in base classes)
+	 */
 	virtual bool isEmpty() const override;
 
 	/** Save the current map as a graphical file (BMP,PNG,...).
-	  * The file format will be derived from the file extension (see
-	  *CImage::saveToFile )
-	  *  It depends on the map representation model:
-	  *		mrAchim: Each pixel is the ratio \f$ \sum{\frac{wR}{w}} \f$
-	  *		mrKalmanFilter: Each pixel is the mean value of the Gaussian that
-	  *represents each cell.
-	  *
-	  * \sa \a getAsBitmapFile()
-	  */
+	 * The file format will be derived from the file extension (see
+	 *CImage::saveToFile )
+	 *  It depends on the map representation model:
+	 *		mrAchim: Each pixel is the ratio \f$ \sum{\frac{wR}{w}} \f$
+	 *		mrKalmanFilter: Each pixel is the mean value of the Gaussian that
+	 *represents each cell.
+	 *
+	 * \sa \a getAsBitmapFile()
+	 */
 	virtual void saveAsBitmapFile(const std::string& filName) const;
 
 	/** Returns an image just as described in \a saveAsBitmapFile */
@@ -232,13 +232,13 @@ class CRandomFieldGridMap2D
 	virtual void getAsMatrix(mrpt::math::CMatrixDouble& out_mat) const;
 
 	/** Parameters common to any derived class.
-	  *  Derived classes should derive a new struct from this one, plus "public
+	 *  Derived classes should derive a new struct from this one, plus "public
 	 * utils::CLoadableOptions",
-	  *  and call the internal_* methods where appropiate to deal with the
+	 *  and call the internal_* methods where appropiate to deal with the
 	 * variables declared here.
-	  *  Derived classes instantions of their "TInsertionOptions" MUST set the
+	 *  Derived classes instantions of their "TInsertionOptions" MUST set the
 	 * pointer "m_insertOptions_common" upon construction.
-	  */
+	 */
 	struct TInsertionOptionsCommon
 	{
 		/** Default values loader */
@@ -322,12 +322,12 @@ class CRandomFieldGridMap2D
 		double additionalMarginMeters = 1.0f) override;
 
 	/** Changes the size of the grid, erasing previous contents.
-	  *  \param[in] connectivity_descriptor Optional user-supplied object that
+	 *  \param[in] connectivity_descriptor Optional user-supplied object that
 	 * will visit all grid cells to define their connectivity with neighbors and
 	 * the strength of existing edges. If present, it overrides all options in
 	 * insertionOptions
-	  * \sa resize
-	  */
+	 * \sa resize
+	 */
 	virtual void setSize(
 		const double x_min, const double x_max, const double y_min,
 		const double y_max, const double resolution,
@@ -344,10 +344,10 @@ class CRandomFieldGridMap2D
 
 		/** Implement the check of whether node i=(icx,icy) is connected with
 		 * node j=(jcx,jcy).
-		  * This visitor method will be called only for immediate neighbors.
-		  * \return true if connected (and the "information" value should be
+		 * This visitor method will be called only for immediate neighbors.
+		 * \return true if connected (and the "information" value should be
 		 * also updated in out_edge_information), false otherwise.
-		  */
+		 */
 		virtual bool getEdgeInformation(
 			/** The parent map on which we are running */
 			const CRandomFieldGridMap2D* parent,
@@ -378,13 +378,13 @@ class CRandomFieldGridMap2D
 
 	/** Save a matlab ".m" file which represents as 3D surfaces the mean and a
 	 * given confidence level for the concentration of each cell.
-	  *  This method can only be called in a KF map model.
-	  *  \sa getAsMatlab3DGraphScript    */
+	 *  This method can only be called in a KF map model.
+	 *  \sa getAsMatlab3DGraphScript    */
 	virtual void saveAsMatlab3DGraph(const std::string& filName) const;
 
 	/** Return a large text block with a MATLAB script to plot the contents of
 	 * this map \sa saveAsMatlab3DGraph
-	  *  This method can only be called in a KF map model  */
+	 *  This method can only be called in a KF map model  */
 	void getAsMatlab3DGraphScript(std::string& out_script) const;
 
 	/** Returns a 3D object representing the map (mean) */
@@ -402,12 +402,12 @@ class CRandomFieldGridMap2D
 
 	/** Direct update of the map with a reading in a given position of the map,
 	 * using
-	  *  the appropriate method according to mapType passed in the constructor.
-	  *
-	  * This is a direct way to update the map, an alternative to the generic
+	 *  the appropriate method according to mapType passed in the constructor.
+	 *
+	 * This is a direct way to update the map, an alternative to the generic
 	 * insertObservation() method which works with mrpt::obs::CObservation
 	 * objects.
-	  */
+	 */
 	void insertIndividualReading(
 		/** [in] The value observed in the (x,y) position */
 		const double sensorReading,
@@ -483,6 +483,7 @@ class CRandomFieldGridMap2D
 		this->m_gmrf.enableProfiler(enable);
 	}
 	bool isProfilerEnabled() const { return this->m_gmrf.isProfilerEnabled(); }
+
    protected:
 	bool m_rfgm_run_update_upon_clear;
 
@@ -504,11 +505,11 @@ class CRandomFieldGridMap2D
 	mrpt::math::CMatrixD m_cov;
 
 	/** The compressed band diagonal matrix for the KF2 implementation.
-	  *   The format is a Nx(W^2+2W+1) matrix, one row per cell in the grid map
+	 *   The format is a Nx(W^2+2W+1) matrix, one row per cell in the grid map
 	 * with the
-	  *    cross-covariances between each cell and half of the window around it
+	 *    cross-covariances between each cell and half of the window around it
 	 * in the grid.
-	  */
+	 */
 	mrpt::math::CMatrixD m_stackedCov;
 	/** Only for the KF2 implementation. */
 	mutable bool m_hasToRecoverMeanAndCov;
@@ -578,34 +579,34 @@ class CRandomFieldGridMap2D
 
 	/** The implementation of "insertObservation" for Achim Lilienthal's map
 	 * models DM & DM+V.
-	  * \param normReading Is a [0,1] normalized concentration reading.
-	  * \param point Is the sensor location on the map
-	  * \param is_DMV = false -> map type is Kernel DM; true -> map type is DM+V
-	  */
+	 * \param normReading Is a [0,1] normalized concentration reading.
+	 * \param point Is the sensor location on the map
+	 * \param is_DMV = false -> map type is Kernel DM; true -> map type is DM+V
+	 */
 	void insertObservation_KernelDM_DMV(
 		double normReading, const mrpt::math::TPoint2D& point, bool is_DMV);
 
 	/** The implementation of "insertObservation" for the (whole) Kalman Filter
 	 * map model.
-	  * \param normReading Is a [0,1] normalized concentration reading.
-	  * \param point Is the sensor location on the map
-	  */
+	 * \param normReading Is a [0,1] normalized concentration reading.
+	 * \param point Is the sensor location on the map
+	 */
 	void insertObservation_KF(
 		double normReading, const mrpt::math::TPoint2D& point);
 
 	/** The implementation of "insertObservation" for the Efficient Kalman
 	 * Filter map model.
-	  * \param normReading Is a [0,1] normalized concentration reading.
-	  * \param point Is the sensor location on the map
-	  */
+	 * \param normReading Is a [0,1] normalized concentration reading.
+	 * \param point Is the sensor location on the map
+	 */
 	void insertObservation_KF2(
 		double normReading, const mrpt::math::TPoint2D& point);
 
 	/** The implementation of "insertObservation" for the Gaussian Markov Random
 	 * Field map model.
-	  * \param normReading Is a [0,1] normalized concentration reading.
-	  * \param point Is the sensor location on the map
-	  */
+	 * \param normReading Is a [0,1] normalized concentration reading.
+	 * \param point Is the sensor location on the map
+	 */
 	void insertObservation_GMRF(
 		double normReading, const mrpt::math::TPoint2D& point,
 		const bool update_map, const bool time_invariant,
@@ -629,8 +630,8 @@ class CRandomFieldGridMap2D
 
 	/** In the KF2 implementation, takes the auxiliary matrices and from them
 	 * update the cells' mean and std values.
-	  * \sa m_hasToRecoverMeanAndCov
-	  */
+	 * \sa m_hasToRecoverMeanAndCov
+	 */
 	void recoverMeanAndCov() const;
 
 	/** Erase all the contents of the map */
@@ -645,10 +646,10 @@ class CRandomFieldGridMap2D
 		const size_t objective_cyo);
 };
 
-}  // End of namespace
+}  // namespace maps
 
 // Specializations MUST occur at the same namespace:
-namespace utils
+namespace typemeta
 {
 template <>
 struct TEnumTypeFiller<maps::CRandomFieldGridMap2D::TMapRepresentation>
@@ -666,7 +667,7 @@ struct TEnumTypeFiller<maps::CRandomFieldGridMap2D::TMapRepresentation>
 		m_map.insert(maps::CRandomFieldGridMap2D::mrGMRF_SD, "mrGMRF_SD");
 	}
 };
-}  // End of namespace
-}  // End of namespace
+}  // namespace typemeta
+}  // namespace mrpt
 
 #endif

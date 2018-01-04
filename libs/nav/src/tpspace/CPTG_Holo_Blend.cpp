@@ -432,7 +432,7 @@ mrpt::kinematics::CVehicleVelCmd::Ptr CPTG_Holo_Blend::directionToMotionCommand(
 	cmd->dir_local = dir_local;
 	cmd->ramp_time = internal_get_T_ramp(dir_local);
 	cmd->rot_speed =
-		mrpt::utils::signWithZero(dir_local) * internal_get_w(dir_local);
+		mrpt::signWithZero(dir_local) * internal_get_w(dir_local);
 
 	return mrpt::kinematics::CVehicleVelCmd::Ptr(cmd);
 }
@@ -465,7 +465,7 @@ void CPTG_Holo_Blend::getPathPose(
 	const double dir = CParameterizedTrajectoryGenerator::index2alpha(k);
 	COMMON_PTG_DESIGN_PARAMS;
 	const double wf =
-		mrpt::utils::signWithZero(dir) * this->internal_get_w(dir);
+		mrpt::signWithZero(dir) * this->internal_get_w(dir);
 	const double TR2_ = 1.0 / (2 * T_ramp);
 
 	// Translational part:

@@ -25,26 +25,16 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CActionRobotMovement2D, CAction, mrpt::obs)
 
-/*---------------------------------------------------------------
-						Constructor
-  ---------------------------------------------------------------*/
+// Note: dont move this to the .h, to avoid having to include the definition of
+// the full pose type
 CActionRobotMovement2D::CActionRobotMovement2D()
-	: poseChange(mrpt::make_aligned_shared<CPosePDFGaussian>()),
-	  rawOdometryIncrementReading(),
-	  estimationMethod(emOdometry),
-	  hasEncodersInfo(false),
-	  encoderLeftTicks(0),
-	  encoderRightTicks(0),
-	  hasVelocities(false),
-	  velocityLocal(.0, .0, .0),
-	  motionModelConfiguration(),
-	  m_fastDrawGauss_Z(),
-	  m_fastDrawGauss_M()
+	: poseChange(mrpt::poses::CPosePDFGaussian::Create())
 {
 }
 
 uint8_t CActionRobotMovement2D::serializeGetVersion() const { return 7; }
-void CActionRobotMovement2D::serializeTo(mrpt::serialization::CArchive& out) const
+void CActionRobotMovement2D::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
 	out.WriteAs<uint32_t>(estimationMethod);
 	// Added in version 2:
@@ -89,7 +79,8 @@ void CActionRobotMovement2D::serializeTo(mrpt::serialization::CArchive& out) con
 	out << timestamp;
 }
 
-void CActionRobotMovement2D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CActionRobotMovement2D::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -511,19 +502,19 @@ void CActionRobotMovement2D::computeFromOdometry_modelThrun(
 	// Draw samples:
 	for (size_t i = 0; i < o.thrunModel.nParticlesCount; i++)
 	{
-		float Arot1_draw = Arot1 -
-						   (o.thrunModel.alfa1_rot_rot * fabs(Arot1) +
-							o.thrunModel.alfa2_rot_trans * Atrans) *
-							   getRandomGenerator().drawGaussian1D_normalized();
+		float Arot1_draw =
+			Arot1 - (o.thrunModel.alfa1_rot_rot * fabs(Arot1) +
+					 o.thrunModel.alfa2_rot_trans * Atrans) *
+						getRandomGenerator().drawGaussian1D_normalized();
 		float Atrans_draw =
 			Atrans -
 			(o.thrunModel.alfa3_trans_trans * Atrans +
 			 o.thrunModel.alfa4_trans_rot * (fabs(Arot1) + fabs(Arot2))) *
 				getRandomGenerator().drawGaussian1D_normalized();
-		float Arot2_draw = Arot2 -
-						   (o.thrunModel.alfa1_rot_rot * fabs(Arot2) +
-							o.thrunModel.alfa2_rot_trans * Atrans) *
-							   getRandomGenerator().drawGaussian1D_normalized();
+		float Arot2_draw =
+			Arot2 - (o.thrunModel.alfa1_rot_rot * fabs(Arot2) +
+					 o.thrunModel.alfa2_rot_trans * Atrans) *
+						getRandomGenerator().drawGaussian1D_normalized();
 
 		// Output:
 		aux->m_particles[i].d->x(
@@ -685,10 +676,10 @@ void CActionRobotMovement2D::prepareFastDrawSingleSample_modelGaussian() const
 	m_fastDrawGauss_M = gPdf->mean;
 
 	/** Computes the eigenvalues/eigenvector decomposition of this matrix,
-	*    so that: M = Z · D · Z<sup>T</sup>, where columns in Z are the
-	*	  eigenvectors and the diagonal matrix D contains the eigenvalues
-	*    as diagonal elements, sorted in <i>ascending</i> order.
-	*/
+	 *    so that: M = Z · D · Z<sup>T</sup>, where columns in Z are the
+	 *	  eigenvectors and the diagonal matrix D contains the eigenvalues
+	 *    as diagonal elements, sorted in <i>ascending</i> order.
+	 */
 	cov.eigenVectors(m_fastDrawGauss_Z, D);
 
 	// Scale eigenvectors with eigenvalues:

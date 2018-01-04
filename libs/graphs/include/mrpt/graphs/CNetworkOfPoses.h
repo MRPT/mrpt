@@ -49,16 +49,16 @@ template <class GRAPH_T>
 struct graph_ops;
 
 // forward declaration of CVisualizer
-template <class CPOSE,  // Type of edges
-		  class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
-		  class EDGE_ANNOTATIONS>
+template <
+	class CPOSE,  // Type of edges
+	class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS, class EDGE_ANNOTATIONS>
 class CVisualizer;
 // forward declaration of CMRVisualizer
-template <class CPOSE,  // Type of edges
-		  class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
-		  class EDGE_ANNOTATIONS>
+template <
+	class CPOSE,  // Type of edges
+	class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS, class EDGE_ANNOTATIONS>
 class CMRVisualizer;
-}
+}  // namespace detail
 
 /** A directed graph of pose constraints, with edges being the relative poses
  *between pairs of nodes identified by their numeric IDs (of type
@@ -105,9 +105,9 @@ class CMRVisualizer;
  *		- CPOSE: The type of the edges, which hold a relative pose (2D/3D, just
  *a
  *value or a Gaussian, etc.)
- *		- MAPS_IMPLEMENTATION: Can be either mrpt::containers::map_traits_stdmap or
- *mrpt::containers::map_traits_map_as_vector. Determines the type of the list of
- *global poses (member \a nodes).
+ *		- MAPS_IMPLEMENTATION: Can be either mrpt::containers::map_traits_stdmap
+ *or mrpt::containers::map_traits_map_as_vector. Determines the type of the list
+ *of global poses (member \a nodes).
  *
  * \sa mrpt::graphslam
  * \ingroup mrpt_graphs_grp
@@ -115,7 +115,8 @@ class CMRVisualizer;
 template <
 	class CPOSE,  // Type of edges
 	class MAPS_IMPLEMENTATION =
-		mrpt::containers::map_traits_stdmap,  // Use std::map<> vs. std::vector<>
+		mrpt::containers::map_traits_stdmap,  // Use std::map<> vs.
+											  // std::vector<>
 	class NODE_ANNOTATIONS = mrpt::graphs::detail::TNodeAnnotationsEmpty,
 	class EDGE_ANNOTATIONS = mrpt::graphs::detail::edge_annotations_empty>
 class CNetworkOfPoses
@@ -127,8 +128,8 @@ class CNetworkOfPoses
 	/** The base class "CDirectedGraph<CPOSE,EDGE_ANNOTATIONS>" */
 	typedef mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATIONS> BASE;
 	/** My own type */
-	typedef CNetworkOfPoses<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
-							EDGE_ANNOTATIONS>
+	typedef CNetworkOfPoses<
+		CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>
 		self_t;
 
 	/** The type of PDF poses in the contraints (edges) (=CPOSE template
@@ -151,10 +152,9 @@ class CNetworkOfPoses
 	 */
 	struct global_pose_t : public constraint_no_pdf_t, public NODE_ANNOTATIONS
 	{
-		typedef
-			typename CNetworkOfPoses<CPOSE, MAPS_IMPLEMENTATION,
-									 NODE_ANNOTATIONS,
-									 EDGE_ANNOTATIONS>::global_pose_t self_t;
+		typedef typename CNetworkOfPoses<
+			CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
+			EDGE_ANNOTATIONS>::global_pose_t self_t;
 
 		/**\brief Potential class constructors
 		 */
@@ -209,8 +209,8 @@ class CNetworkOfPoses
 
 	/** A map from pose IDs to their global coordinate estimates, without
 	 * uncertainty (the "most-likely value") */
-	typedef typename MAPS_IMPLEMENTATION::template map<mrpt::graphs::TNodeID,
-													   global_pose_t>
+	typedef typename MAPS_IMPLEMENTATION::template map<
+		mrpt::graphs::TNodeID, global_pose_t>
 		global_poses_t;
 
 	/** @} */
@@ -305,9 +305,9 @@ class CNetworkOfPoses
 
 		bool is_multirobot = false;
 		std::unique_ptr<visualizer_t> viz;
-		is_multirobot =
-			(std::is_base_of<mrpt::graphs::detail::TMRSlamNodeAnnotations,
-							 global_pose_t>::value);
+		is_multirobot = (std::is_base_of<
+						 mrpt::graphs::detail::TMRSlamNodeAnnotations,
+						 global_pose_t>::value);
 		if (is_multirobot)
 		{
 			viz.reset(new visualizer_multirobot_t(*this));
@@ -703,7 +703,7 @@ class CNetworkOfPoses
 	{
 		MRPT_START;
 		using namespace mrpt::graphs;
-				using namespace mrpt::graphs::detail;
+		using namespace mrpt::graphs::detail;
 		using namespace std;
 
 		typedef
@@ -940,30 +940,32 @@ class CNetworkOfPoses
 };
 
 /** Binary serialization (write) operator "stream << graph" */
-template <class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
-		  class EDGE_ANNOTATIONS>
+template <
+	class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
+	class EDGE_ANNOTATIONS>
 mrpt::utils::CStream& operator<<(
 	mrpt::utils::CStream& out,
-	const CNetworkOfPoses<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
-						  EDGE_ANNOTATIONS>& obj)
+	const CNetworkOfPoses<
+		CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>& obj)
 {
-	typedef CNetworkOfPoses<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
-							EDGE_ANNOTATIONS>
+	typedef CNetworkOfPoses<
+		CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>
 		graph_t;
 	detail::graph_ops<graph_t>::save_graph_of_poses_to_binary_file(&obj, out);
 	return out;
 }
 
 /** Binary serialization (read) operator "stream >> graph" */
-template <class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
-		  class EDGE_ANNOTATIONS>
+template <
+	class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
+	class EDGE_ANNOTATIONS>
 mrpt::utils::CStream& operator>>(
 	mrpt::utils::CStream& in,
-	CNetworkOfPoses<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
-					EDGE_ANNOTATIONS>& obj)
+	CNetworkOfPoses<
+		CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>& obj)
 {
-	typedef CNetworkOfPoses<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
-							EDGE_ANNOTATIONS>
+	typedef CNetworkOfPoses<
+		CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>
 		graph_t;
 	detail::graph_ops<graph_t>::read_graph_of_poses_from_binary_file(&obj, in);
 	return in;
@@ -975,56 +977,59 @@ mrpt::utils::CStream& operator>>(
 
 /** The specialization of CNetworkOfPoses for poses of type CPose2D (not a
  * PDF!), also implementing serialization. */
-typedef CNetworkOfPoses<mrpt::poses::CPose2D, mrpt::containers::map_traits_stdmap>
+typedef CNetworkOfPoses<
+	mrpt::poses::CPose2D, mrpt::containers::map_traits_stdmap>
 	CNetworkOfPoses2D;
 /** The specialization of CNetworkOfPoses for poses of type mrpt::poses::CPose3D
  * (not a PDF!), also implementing serialization. */
-typedef CNetworkOfPoses<mrpt::poses::CPose3D, mrpt::containers::map_traits_stdmap>
+typedef CNetworkOfPoses<
+	mrpt::poses::CPose3D, mrpt::containers::map_traits_stdmap>
 	CNetworkOfPoses3D;
 /** The specialization of CNetworkOfPoses for poses of type CPosePDFGaussian,
  * also implementing serialization. */
-typedef CNetworkOfPoses<mrpt::poses::CPosePDFGaussian,
-						mrpt::containers::map_traits_stdmap>
+typedef CNetworkOfPoses<
+	mrpt::poses::CPosePDFGaussian, mrpt::containers::map_traits_stdmap>
 	CNetworkOfPoses2DCov;
 /** The specialization of CNetworkOfPoses for poses of type CPose3DPDFGaussian,
  * also implementing serialization. */
-typedef CNetworkOfPoses<mrpt::poses::CPose3DPDFGaussian,
-						mrpt::containers::map_traits_stdmap>
+typedef CNetworkOfPoses<
+	mrpt::poses::CPose3DPDFGaussian, mrpt::containers::map_traits_stdmap>
 	CNetworkOfPoses3DCov;
 /** The specialization of CNetworkOfPoses for poses of type CPosePDFGaussianInf,
  * also implementing serialization. */
-typedef CNetworkOfPoses<mrpt::poses::CPosePDFGaussianInf,
-						mrpt::containers::map_traits_stdmap>
+typedef CNetworkOfPoses<
+	mrpt::poses::CPosePDFGaussianInf, mrpt::containers::map_traits_stdmap>
 	CNetworkOfPoses2DInf;
 /** The specialization of CNetworkOfPoses for poses of type
  * CPose3DPDFGaussianInf, also implementing serialization. */
-typedef CNetworkOfPoses<mrpt::poses::CPose3DPDFGaussianInf,
-						mrpt::containers::map_traits_stdmap>
+typedef CNetworkOfPoses<
+	mrpt::poses::CPose3DPDFGaussianInf, mrpt::containers::map_traits_stdmap>
 	CNetworkOfPoses3DInf;
 
 /**\brief Specializations of CNetworkOfPoses for graphs whose nodes inherit from
  * TMRSlamNodeAnnotations struct */
 /**\{ */
-typedef CNetworkOfPoses<mrpt::poses::CPosePDFGaussianInf,
-						mrpt::containers::map_traits_stdmap,
-						mrpt::graphs::detail::TMRSlamNodeAnnotations>
+typedef CNetworkOfPoses<
+	mrpt::poses::CPosePDFGaussianInf, mrpt::containers::map_traits_stdmap,
+	mrpt::graphs::detail::TMRSlamNodeAnnotations>
 	CNetworkOfPoses2DInf_NA;
-typedef CNetworkOfPoses<mrpt::poses::CPose3DPDFGaussianInf,
-						mrpt::containers::map_traits_stdmap,
-						mrpt::graphs::detail::TMRSlamNodeAnnotations>
+typedef CNetworkOfPoses<
+	mrpt::poses::CPose3DPDFGaussianInf, mrpt::containers::map_traits_stdmap,
+	mrpt::graphs::detail::TMRSlamNodeAnnotations>
 	CNetworkOfPoses3DInf_NA;
 /**\} */
 
 /** @} */  // end of grouping
 
-}  // End of namespace
+}  // namespace graphs
 
 // Specialization of TTypeName must occur in the same namespace:
-namespace utils
+namespace typemeta
 {
 // Extensions to mrpt::typemeta::TTypeName for matrices:
-template <class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
-		  class EDGE_ANNOTATIONS>
+template <
+	class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
+	class EDGE_ANNOTATIONS>
 struct TTypeName<mrpt::graphs::CNetworkOfPoses<
 	CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>>
 {
@@ -1040,9 +1045,9 @@ struct TTypeName<mrpt::graphs::CNetworkOfPoses<
 
 MRPT_DECLARE_TTYPENAME(mrpt::containers::map_traits_stdmap)
 MRPT_DECLARE_TTYPENAME(mrpt::containers::map_traits_map_as_vector)
-}
+}  // namespace typemeta
 
-}  // End of namespace
+}  // namespace mrpt
 
 // Implementation of templates (in a separate file for clarity)
 #include "CNetworkOfPoses_impl.h"

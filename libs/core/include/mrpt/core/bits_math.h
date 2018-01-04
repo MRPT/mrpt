@@ -92,7 +92,7 @@ T lowestPositive(const T a, const T b)
 
 /** Efficient and portable evaluation of the absolute difference of two unsigned
  * integer values
-  * (but will also work for signed and floating point types) */
+ * (but will also work for signed and floating point types) */
 template <typename T>
 inline T abs_diff(const T a, const T b)
 {
@@ -163,17 +163,4 @@ T round2up(T val)
 	}
 	return n;
 }
-
-// backward compat
-namespace math
-{
-using mrpt::square;
-}
-namespace utils
-{
-using mrpt::square;
-using mrpt::DEG2RAD;
-using mrpt::RAD2DEG;
-}
-
-}  // end of namespace
+}  // namespace mrpt

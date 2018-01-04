@@ -18,7 +18,7 @@ namespace mrpt
 namespace nav
 {
 /** \addtogroup nav_tpspace
-  * @{  */
+ * @{  */
 
 /** Trajectory points in C-Space for non-holonomic robots \sa
  * CPTG_DiffDrive_CollisionGridBased */
@@ -41,14 +41,14 @@ mrpt::utils::CStream& operator>>(
 
 /** Base class for all PTGs suitable to non-holonomic, differentially-driven (or
  * Ackermann) vehicles
-  * based on numerical integration of the trajectories and collision
+ * based on numerical integration of the trajectories and collision
  * look-up-table.
-  * Regarding `initialize()`: in this this family of PTGs, the method builds the
+ * Regarding `initialize()`: in this this family of PTGs, the method builds the
  * collision grid or load it from a cache file.
-  * Collision grids must be calculated before calling getTPObstacle(). Robot
+ * Collision grids must be calculated before calling getTPObstacle(). Robot
  * shape must be set before initializing with setRobotShape().
-  * The rest of PTG parameters should have been set at the constructor.
-  */
+ * The rest of PTG parameters should have been set at the constructor.
+ */
 class CPTG_DiffDrive_CollisionGridBased : public CPTG_RobotShape_Polygonal
 {
    public:
@@ -66,7 +66,7 @@ class CPTG_DiffDrive_CollisionGridBased : public CPTG_RobotShape_Polygonal
 	/** The default implementation in this class relies on a look-up-table.
 	 * Derived classes may redefine this to closed-form expressions, when they
 	 * exist.
-	  * See full docs in base class
+	 * See full docs in base class
 	 * CParameterizedTrajectoryGenerator::inverseMap_WS2TP() */
 	virtual bool inverseMap_WS2TP(
 		double x, double y, int& out_k, double& out_d,
@@ -74,7 +74,7 @@ class CPTG_DiffDrive_CollisionGridBased : public CPTG_RobotShape_Polygonal
 
 	/** In this class, `out_action_cmd` contains: [0]: linear velocity (m/s),
 	 * [1]: angular velocity (rad/s).
-	  * See more docs in
+	 * See more docs in
 	 * CParameterizedTrajectoryGenerator::directionToMotionCommand() */
 	virtual mrpt::kinematics::CVehicleVelCmd::Ptr directionToMotionCommand(
 		uint16_t k) const override;
@@ -83,7 +83,7 @@ class CPTG_DiffDrive_CollisionGridBased : public CPTG_RobotShape_Polygonal
 
 	/** Launches an exception in this class: it is not allowed in numerical
 	 * integration-based PTGs to change the reference distance
-	  * after initialization. */
+	 * after initialization. */
 	virtual void setRefDistance(const double refDist) override;
 
 	// Access to PTG paths (see docs in base class)
@@ -111,6 +111,7 @@ class CPTG_DiffDrive_CollisionGridBased : public CPTG_RobotShape_Polygonal
 
 	double getMax_V() const { return V_MAX; }
 	double getMax_W() const { return W_MAX; }
+
    protected:
 	CPTG_DiffDrive_CollisionGridBased();
 
@@ -156,11 +157,11 @@ class CPTG_DiffDrive_CollisionGridBased : public CPTG_RobotShape_Polygonal
 		float* out_max_acc_w = nullptr);
 
 	/**  A list of all the pairs (alpha,distance) such as the robot collides at
-	  *that cell.
-	  *  - map key   (uint16_t) -> alpha value (k)
-	  *	 - map value (float)    -> the MINIMUM distance (d), in meters,
-	  *associated with that "k".
-	  */
+	 *that cell.
+	 *  - map key   (uint16_t) -> alpha value (k)
+	 *	 - map value (float)    -> the MINIMUM distance (d), in meters,
+	 *associated with that "k".
+	 */
 	typedef std::vector<std::pair<uint16_t, float>> TCollisionCell;
 
 	/** An internal class for storing the collision grid  */
@@ -194,11 +195,11 @@ class CPTG_DiffDrive_CollisionGridBased : public CPTG_RobotShape_Polygonal
 			const float obsX, const float obsY) const;
 
 		/** Updates the info into a cell: It updates the cell only if the
-		  *distance d for the path k is lower than the previous value:
-			*	\param cellInfo The index of the cell
-			* \param k The path index (alpha discreet value)
-			* \param d The distance (in TP-Space, range 0..1) to collision.
-			*/
+		 *distance d for the path k is lower than the previous value:
+		 *	\param cellInfo The index of the cell
+		 * \param k The path index (alpha discreet value)
+		 * \param d The distance (in TP-Space, range 0..1) to collision.
+		 */
 		void updateCellInfo(
 			const unsigned int icx, const unsigned int icy, const uint16_t k,
 			const float dist);
@@ -217,8 +218,8 @@ class CPTG_DiffDrive_CollisionGridBased : public CPTG_RobotShape_Polygonal
 	CCollisionGrid m_collisionGrid;
 
 	/** Specifies the min/max values for "k" and "n", respectively.
-	  * \sa m_lambdaFunctionOptimizer
-	  */
+	 * \sa m_lambdaFunctionOptimizer
+	 */
 	struct TCellForLambdaFunction
 	{
 		TCellForLambdaFunction()
@@ -240,14 +241,15 @@ class CPTG_DiffDrive_CollisionGridBased : public CPTG_RobotShape_Polygonal
 
 	/** This grid will contain indexes data for speeding-up the default,
 	 * brute-force lambda function */
-	mrpt::containers::CDynamicGrid<TCellForLambdaFunction> m_lambdaFunctionOptimizer;
+	mrpt::containers::CDynamicGrid<TCellForLambdaFunction>
+		m_lambdaFunctionOptimizer;
 };
 
 /** @} */
-}
-namespace utils
+}  // namespace nav
+namespace typemeta
 {
 // Specialization must occur in the same namespace
 MRPT_DECLARE_TTYPENAME_NAMESPACE(TCPoint, mrpt::nav)
-}
-}
+}  // namespace typemeta
+}  // namespace mrpt

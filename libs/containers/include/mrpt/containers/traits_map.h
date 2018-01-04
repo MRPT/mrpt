@@ -13,10 +13,10 @@
 
 namespace mrpt
 {
-namespace utils
+namespace containers
 {
 /** \addtogroup stlext_grp
-  *  @{ */
+ *  @{ */
 
 /** @name Trait helper classes for templatized selection of a std::map
    implementation
@@ -26,9 +26,9 @@ namespace utils
  * map_traits_map_as_vector */
 struct map_traits_stdmap
 {
-	template <class KEY, class VALUE, class _LessPred = std::less<KEY>,
-			  class _Alloc =
-				  Eigen::aligned_allocator<std::pair<const KEY, VALUE>>>
+	template <
+		class KEY, class VALUE, class _LessPred = std::less<KEY>,
+		class _Alloc = Eigen::aligned_allocator<std::pair<const KEY, VALUE>>>
 	struct map : public std::map<KEY, VALUE, _LessPred, _Alloc>
 	{
 	};
@@ -38,9 +38,9 @@ struct map_traits_stdmap
  * representation) \sa map_traits_stdmap  */
 struct map_traits_map_as_vector
 {
-	template <class KEY, class VALUE, class _LessPred = std::less<KEY>,
-			  class _Alloc =
-				  Eigen::aligned_allocator<std::pair<const KEY, VALUE>>>
+	template <
+		class KEY, class VALUE, class _LessPred = std::less<KEY>,
+		class _Alloc = Eigen::aligned_allocator<std::pair<const KEY, VALUE>>>
 	struct map : public mrpt::utils::map_as_vector<KEY, VALUE>
 	{
 	};
@@ -49,7 +49,7 @@ struct map_traits_map_as_vector
 /** @} */
 /** @} */  // end of grouping
 
-}  // End of namespace
-}  // End of namespace
+}  // namespace containers
+}  // namespace mrpt
 
 #endif

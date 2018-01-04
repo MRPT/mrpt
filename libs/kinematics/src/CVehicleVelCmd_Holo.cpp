@@ -100,7 +100,8 @@ void CVehicleVelCmd_Holo::setToStop()
 {
 	vel = dir_local = ramp_time = rot_speed = .0;
 }
-void CVehicleVelCmd_Holo::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CVehicleVelCmd_Holo::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -112,14 +113,9 @@ void CVehicleVelCmd_Holo::serializeFrom(mrpt::serialization::CArchive& in, uint8
 	};
 }
 
-uint8_t CVehicleVelCmd_Holo::serializeGetVersion() const { return XX; }
+uint8_t CVehicleVelCmd_Holo::serializeGetVersion() const { return 0; }
 void CVehicleVelCmd_Holo::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-	{
-		*version = 0;
-		return;
-	}
 	out << vel << dir_local << ramp_time << rot_speed;
 }
 

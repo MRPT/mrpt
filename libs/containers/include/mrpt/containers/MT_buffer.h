@@ -15,7 +15,7 @@
 
 namespace mrpt
 {
-namespace utils
+namespace containers
 {
 /** This class is a bulk sequence of bytes with MultiThread (MT)-safe read and
  * write operations.
@@ -77,5 +77,5 @@ class MT_buffer
 
 };  // end of MT_buffer
 
-}  // End of namespace
-}  // End of namespace
+}  // namespace containers
+}  // namespace mrpt

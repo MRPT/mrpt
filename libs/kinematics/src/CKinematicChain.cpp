@@ -35,19 +35,19 @@ void CKinematicChain::addLink(
 /** Removes one link from the kinematic chain (0<=idx<N) */
 void CKinematicChain::removeLink(const size_t idx)
 {
-	ASSERT_BELOW_(idx, m_links.size();
+	ASSERT_BELOW_(idx, m_links.size());
 	m_links.erase(m_links.begin() + idx);
 }
 
 const TKinematicLink& CKinematicChain::getLink(const size_t idx) const
 {
-	ASSERT_BELOW_(idx, m_links.size();
+	ASSERT_BELOW_(idx, m_links.size());
 	return m_links[idx];
 }
 
 TKinematicLink& CKinematicChain::getLinkRef(const size_t idx)
 {
-	ASSERT_BELOW_(idx, m_links.size();
+	ASSERT_BELOW_(idx, m_links.size());
 	return m_links[idx];
 }
 
@@ -61,24 +61,14 @@ const mrpt::poses::CPose3D& CKinematicChain::getOriginPose() const
 	return m_origin;
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of CSerializable objects
-  ---------------------------------------------------------------*/
-uint8_t CKinematicChain::serializeGetVersion() const { return XX; }
+uint8_t CKinematicChain::serializeGetVersion() const { return 1; }
 void CKinematicChain::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		out << m_links << m_origin;
-	}
+	out << m_links << m_origin;
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of CSerializable objects
-  ---------------------------------------------------------------*/
-void CKinematicChain::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CKinematicChain::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -101,7 +91,7 @@ void CKinematicChain::serializeFrom(mrpt::serialization::CArchive& in, uint8_t v
 
 /** Go thru all the links of the chain and compute the global pose of each link.
  * The "ground" link pose "pose0" defaults to the origin of coordinates,
-	* but anything else can be passed as the optional argument. */
+ * but anything else can be passed as the optional argument. */
 void CKinematicChain::recomputeAllPoses(
 	mrpt::aligned_std_vector<mrpt::poses::CPose3D>& poses,
 	const mrpt::poses::CPose3D& pose0) const
@@ -170,10 +160,9 @@ void addBar_A(mrpt::opengl::CSetOfObjects::Ptr& objs, const double a)
 
 void CKinematicChain::getAs3DObject(
 	mrpt::opengl::CSetOfObjects::Ptr& obj,
-	mrpt::aligned_std_vector<mrpt::poses::CPose3D>* out_all_poses)
-	const
+	mrpt::aligned_std_vector<mrpt::poses::CPose3D>* out_all_poses) const
 {
-	ASSERT_(obj)
+	ASSERT_(obj);
 	const size_t N = m_links.size();
 
 	// Recompute current poses:
@@ -203,13 +192,12 @@ void CKinematicChain::getAs3DObject(
 }
 
 void CKinematicChain::update3DObject(
-	mrpt::aligned_std_vector<mrpt::poses::CPose3D>* out_all_poses)
-	const
+	mrpt::aligned_std_vector<mrpt::poses::CPose3D>* out_all_poses) const
 {
 	ASSERTMSG_(
 		(m_links.size() + 1) == m_last_gl_objects.size(),
 		"The kinematic chain has changed since the last call to "
-		"getAs3DObject()")
+		"getAs3DObject()");
 
 	const size_t N = m_links.size();
 
@@ -254,8 +242,8 @@ void CKinematicChain::clear()
 	m_last_gl_objects.clear();
 }
 
-mrpt::utils::CStream& mrpt::kinematics::operator>>(
-	mrpt::utils::CStream& in, TKinematicLink& o)
+mrpt::serialization::CArchive& mrpt::kinematics::operator>>(
+	mrpt::serialization::CArchive& in, TKinematicLink& o)
 {
 	uint32_t version;
 	in >> version;
@@ -269,8 +257,8 @@ mrpt::utils::CStream& mrpt::kinematics::operator>>(
 	}
 	return in;
 }
-mrpt::utils::CStream& mrpt::kinematics::operator<<(
-	mrpt::utils::CStream& out, const TKinematicLink& o)
+mrpt::serialization::CArchive& mrpt::kinematics::operator<<(
+	mrpt::serialization::CArchive& out, const TKinematicLink& o)
 {
 	const uint32_t version = 0;
 	out << version;

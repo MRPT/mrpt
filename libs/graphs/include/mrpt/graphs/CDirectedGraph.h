@@ -50,22 +50,22 @@ namespace detail
 struct edge_annotations_empty
 {
 };
-}
+}  // namespace detail
 
 /** A directed graph with the argument of the template specifying the type of
  * the annotations in the edges.
-  *  This class only keeps a list of edges (in the member \a edges), so there is
+ *  This class only keeps a list of edges (in the member \a edges), so there is
  * no information stored for each node but its existence referred by a node_ID.
-  *
-  *  Note that edges are stored as a std::multimap<> to allow <b>multiple
+ *
+ *  Note that edges are stored as a std::multimap<> to allow <b>multiple
  * edges</b> between the same pair of nodes.
-  *
-  * \sa mrpt::graphs::CDijkstra, mrpt::graphs::CNetworkOfPoses,
+ *
+ * \sa mrpt::graphs::CDijkstra, mrpt::graphs::CNetworkOfPoses,
  * mrpt::graphs::CDirectedTree
  * \ingroup mrpt_graphs_grp
-  */
-template <class TYPE_EDGES,
-		  class EDGE_ANNOTATIONS = detail::edge_annotations_empty>
+ */
+template <
+	class TYPE_EDGES, class EDGE_ANNOTATIONS = detail::edge_annotations_empty>
 class CDirectedGraph
 {
    public:
@@ -146,37 +146,35 @@ class CDirectedGraph
 	}
 
 	/** Return a reference to the content of a given edge.
-	  *  If several edges exist between the given nodes, the first one is
+	 *  If several edges exist between the given nodes, the first one is
 	 * returned.
-	  * \exception std::exception if the given edge does not exist
-	  * \sa getEdges
-	  */
+	 * \exception std::exception if the given edge does not exist
+	 * \sa getEdges
+	 */
 	edge_t& getEdge(TNodeID from_nodeID, TNodeID to_nodeID)
 	{
 		iterator it = edges.find(std::make_pair(from_nodeID, to_nodeID));
 		if (it == edges.end())
-			THROW_EXCEPTION(
-				format(
-					"Edge %u->%u does not exist", (unsigned)from_nodeID,
-					(unsigned)to_nodeID))
+			THROW_EXCEPTION(format(
+				"Edge %u->%u does not exist", (unsigned)from_nodeID,
+				(unsigned)to_nodeID))
 		else
 			return it->second;
 	}
 
 	/** Return a reference to the content of a given edge.
-	  *  If several edges exist between the given nodes, the first one is
+	 *  If several edges exist between the given nodes, the first one is
 	 * returned.
-	  * \exception std::exception if the given edge does not exist
-	  * \sa getEdges
-	  */
+	 * \exception std::exception if the given edge does not exist
+	 * \sa getEdges
+	 */
 	const edge_t& getEdge(TNodeID from_nodeID, TNodeID to_nodeID) const
 	{
 		const_iterator it = edges.find(std::make_pair(from_nodeID, to_nodeID));
 		if (it == edges.end())
-			THROW_EXCEPTION(
-				format(
-					"Edge %u->%u does not exist", (unsigned)from_nodeID,
-					(unsigned)to_nodeID))
+			THROW_EXCEPTION(format(
+				"Edge %u->%u does not exist", (unsigned)from_nodeID,
+				(unsigned)to_nodeID))
 		else
 			return it->second;
 	}
@@ -198,7 +196,7 @@ class CDirectedGraph
 
 	/** Erase all edges between the given nodes (it has no effect if no edge
 	 * existed)
-	  */
+	 */
 	inline void eraseEdge(TNodeID from_nodeID, TNodeID to_nodeID)
 	{
 		edges.erase(std::make_pair(from_nodeID, to_nodeID));
@@ -206,7 +204,7 @@ class CDirectedGraph
 
 	/** Return a list of all the node_ID's of the graph, generated from all the
 	 * nodes that appear in the list of edges
-	  */
+	 */
 	void getAllNodes(std::set<TNodeID>& lstNode_IDs) const
 	{
 		lstNode_IDs.clear();
@@ -228,7 +226,7 @@ class CDirectedGraph
 	}
 
 	/** Count how many different node IDs appear in the graph edges.
-	  */
+	 */
 	size_t countDifferentNodesInEdges() const
 	{
 		std::set<TNodeID> aux;
@@ -267,13 +265,13 @@ class CDirectedGraph
 
 	/** Return a map from node IDs to all its neighbors (that is, connected
 	 * nodes, regardless of the edge direction)
-	  *  This is a much more efficient method than calling getNeighborsOf() for
+	 *  This is a much more efficient method than calling getNeighborsOf() for
 	 * each node in the graph.
-	  *  Possible values for the template argument MAP_NODEID_SET_NODEIDS are:
-	  *    - std::map<TNodeID, std::set<TNodeID> >
-	  *    - mrpt::utils::map_as_vector<TNodeID, std::set<TNodeID> >
-	  * \sa getNeighborsOf
-	  */
+	 *  Possible values for the template argument MAP_NODEID_SET_NODEIDS are:
+	 *    - std::map<TNodeID, std::set<TNodeID> >
+	 *    - mrpt::utils::map_as_vector<TNodeID, std::set<TNodeID> >
+	 * \sa getNeighborsOf
+	 */
 	template <class MAP_NODEID_SET_NODEIDS>
 	void getAdjacencyMatrix(MAP_NODEID_SET_NODEIDS& outAdjacency) const
 	{
@@ -288,7 +286,7 @@ class CDirectedGraph
 
 	/** Just like \a getAdjacencyMatrix but return only the adjacency for those
 	 * node_ids in the set \a onlyForTheseNodes
-	  *  (both endings nodes of an edge must be within the set for it to be
+	 *  (both endings nodes of an edge must be within the set for it to be
 	 * returned) */
 	template <class MAP_NODEID_SET_NODEIDS, class SET_NODEIDS>
 	void getAdjacencyMatrix(
@@ -316,7 +314,7 @@ class CDirectedGraph
 
 	/** Save the graph in a Graphviz (.dot files) text format; useful for
 	 * quickly rendering the graph with "dot"
-	  * \return false on any error */
+	 * \return false on any error */
 	bool saveAsDot(
 		std::ostream& o,
 		const TGraphvizExportParams& p = TGraphvizExportParams()) const
@@ -374,13 +372,13 @@ class CDirectedGraph
 };  // end class CDirectedGraph
 
 /** @} */
-}  // End of namespace
+}  // namespace graphs
 
 // Specialization of TTypeName must occur in the same namespace:
-namespace utils
+namespace typemeta
 {
 MRPT_DECLARE_TTYPENAME(mrpt::graphs::detail::edge_annotations_empty)
 }
 
-}  // End of namespace
+}  // namespace mrpt
 #endif
