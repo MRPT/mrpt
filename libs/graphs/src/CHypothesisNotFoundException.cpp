@@ -11,7 +11,7 @@
 
 #include <mrpt/graphs/CHypothesisNotFoundException.h>
 
-std::ostringstream HypothesisNotFoundException::m_cnvt;
+using namespace mrpt::graphs;
 
 HypothesisNotFoundException::HypothesisNotFoundException(
 	mrpt::graphs::TNodeID from, mrpt::graphs::TNodeID to)
@@ -58,9 +58,10 @@ std::string HypothesisNotFoundException::getErrorMsg() const throw()
 	return m_msg;
 }
 
+std::string persistent_error_msg;
+
 const char* HypothesisNotFoundException::what() const throw()
 {
-	m_cnvt.str("");
-	m_cnvt << getErrorMsg();
-	return m_cnvt.str().c_str();
+	persistent_error_msg = getErrorMsg();
+	return persistent_error_msg.c_str();
 }
