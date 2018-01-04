@@ -13,7 +13,7 @@
 
 namespace mrpt
 {
-namespace utils
+namespace hmtslam
 {
 /** An arbitrary list of "annotations", or named attributes, each being an
  * instance of any CSerializable object.
@@ -31,50 +31,50 @@ class CPropertiesValuesList : public mrpt::serialization::CSerializable
 		CSerializable::Ptr value;
 	};
 	/** The properties list: a map between strings and objects
-	  */
+	 */
 	std::vector<TPropertyValuePair> m_properties;
 
    public:
 	/** Default constructor
-	  */
+	 */
 	CPropertiesValuesList();
 
 	/** Copy constructor
-	  */
+	 */
 	CPropertiesValuesList(const CPropertiesValuesList& o);
 
 	/** Copy operator
-	  */
+	 */
 	CPropertiesValuesList& operator=(const CPropertiesValuesList& o);
 
 	/** Destructor
-	  */
+	 */
 	virtual ~CPropertiesValuesList();
 
 	/** Clears the list.
-	  */
+	 */
 	void clear();
 
 	/** Returns the value of the property (case insensitive), or nullptr if it
 	 * does not exist.
-	  */
+	 */
 	CSerializable::Ptr get(const std::string& propertyName) const;
 
 	/** Sets/change the value of the property (case insensitive), making a copy
 	 * of the object (or setting it to nullptr if it is the passed value)
-	  */
+	 */
 	void set(const std::string& propertyName, const CSerializable::Ptr& obj);
 
 	/** Returns the number of properties in the list
-	  */
+	 */
 	size_t size() const;
 
 	/** Returns the name of all properties in the list
-	  */
+	 */
 	std::vector<std::string> getPropertyNames() const;
 
 };  // End of class def.
-}  // End of namespace
-}  // End of namespace
+}  // namespace hmtslam
+}  // namespace mrpt
 
 #endif

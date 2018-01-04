@@ -167,7 +167,7 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 	/** @name Access to internal list of maps: direct list, iterators, utility
 	   methods and proxies
 		@{ */
-	typedef std::deque<mrpt::utils::poly_ptr_ptr<mrpt::maps::CMetricMap::Ptr>>
+	typedef std::deque<mrpt::containers::poly_ptr_ptr<mrpt::maps::CMetricMap::Ptr>>
 		TListMaps;
 
 	/** The list of MRPT metric maps in this object. Use dynamic_cast or smart

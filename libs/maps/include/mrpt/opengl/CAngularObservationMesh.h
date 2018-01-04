@@ -154,8 +154,8 @@ class CAngularObservationMesh : public CRenderizableDisplayList
 			switch (rangeType)
 			{
 				case 0:
-					return (mrpt::utils::sign(rangeData.mode0.increment) ==
-							mrpt::utils::sign(
+					return (mrpt::sign(rangeData.mode0.increment) ==
+							mrpt::sign(
 								rangeData.mode0.final -
 								rangeData.mode0.initial))
 							   ? fabs(
@@ -198,8 +198,8 @@ class CAngularObservationMesh : public CRenderizableDisplayList
 			switch (rangeType)
 			{
 				case 0:
-					return (mrpt::utils::sign(rangeData.mode0.increment) ==
-							mrpt::utils::sign(
+					return (mrpt::sign(rangeData.mode0.increment) ==
+							mrpt::sign(
 								rangeData.mode0.final -
 								rangeData.mode0.initial))
 							   ? rangeData.mode0.final
@@ -248,8 +248,8 @@ class CAngularObservationMesh : public CRenderizableDisplayList
 			switch (rangeType)
 			{
 				case 0:
-					return (mrpt::utils::sign(rangeData.mode0.increment) ==
-							mrpt::utils::sign(
+					return (mrpt::sign(rangeData.mode0.increment) ==
+							mrpt::sign(
 								rangeData.mode0.final -
 								rangeData.mode0.initial))
 							   ? 1 + static_cast<size_t>(
@@ -281,9 +281,9 @@ class CAngularObservationMesh : public CRenderizableDisplayList
 			switch (rangeType)
 			{
 				case 0:
-					return mrpt::utils::sign(rangeData.mode0.increment) > 0;
+					return mrpt::sign(rangeData.mode0.increment) > 0;
 				case 1:
-					return mrpt::utils::sign(
+					return mrpt::sign(
 							   rangeData.mode1.final -
 							   rangeData.mode1.initial) > 0;
 				case 2:

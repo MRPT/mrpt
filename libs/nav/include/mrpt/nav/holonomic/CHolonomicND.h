@@ -18,8 +18,8 @@ namespace nav
 {
 class CLogFileRecord_ND;
 /** \addtogroup nav_holo Holonomic navigation methods
-  * \ingroup mrpt_nav_grp
-  * @{ */
+ * \ingroup mrpt_nav_grp
+ * @{ */
 
 /** An implementation of the holonomic reactive navigation method
  * "Nearness-Diagram".
@@ -87,8 +87,8 @@ class CHolonomicND : public CAbstractHolonomicReactiveMethod
 
 	/**  Initialize the parameters of the navigator. */
 	void initialize(const mrpt::config::CConfigFileBase& INI_FILE) override;
-	virtual void saveConfigFile(
-		mrpt::config::CConfigFileBase& c) const override;  // See base class docs
+	virtual void saveConfigFile(mrpt::config::CConfigFileBase& c)
+		const override;  // See base class docs
 
 	/** Algorithm options */
 	struct TOptions : public mrpt::config::CLoadableOptions
@@ -129,13 +129,13 @@ class CHolonomicND : public CAbstractHolonomicReactiveMethod
 	unsigned int direction2sector(const double a, const unsigned int N);
 
 	/**  Find gaps in the obtacles.
-	  */
+	 */
 	void gapsEstimator(
 		const std::vector<double>& obstacles,
 		const mrpt::math::TPoint2D& in_target, TGapArray& gaps);
 
 	/** Search the best gap.
-	  */
+	 */
 	void searchBestGap(
 		const std::vector<double>& in_obstacles, const double in_maxObsRange,
 		const TGapArray& in_gaps, const mrpt::math::TPoint2D& in_target,
@@ -144,13 +144,13 @@ class CHolonomicND : public CAbstractHolonomicReactiveMethod
 		CLogFileRecord_ND& log);
 
 	/** Fills in the representative sector field in the gap structure:
-	  */
+	 */
 	void calcRepresentativeSectorForGap(
 		TGap& gap, const mrpt::math::TPoint2D& target,
 		const std::vector<double>& obstacles);
 
 	/** Evaluate each gap:
-	  */
+	 */
 	void evaluateGaps(
 		const std::vector<double>& in_obstacles, const double in_maxObsRange,
 		const TGapArray& in_gaps, const unsigned int TargetSector,
@@ -168,7 +168,7 @@ class CLogFileRecord_ND : public CHolonomicLogFileRecord
 
    public:
 	/** Member data.
-	  */
+	 */
 	std::vector<int> gaps_ini, gaps_end;
 	std::vector<double> gaps_eval;
 	int32_t selectedSector;
@@ -178,10 +178,10 @@ class CLogFileRecord_ND : public CHolonomicLogFileRecord
 };
 
 /** @} */
-}  // end namespace
+}  // namespace nav
 
 // Specializations MUST occur at the same namespace:
-namespace utils
+namespace typemeta
 {
 template <>
 struct TEnumTypeFiller<nav::CHolonomicND::TSituations>
@@ -201,7 +201,7 @@ struct TEnumTypeFiller<nav::CHolonomicND::TSituations>
 			"SITUATION_NO_WAY_FOUND");
 	}
 };
-}  // End of namespace
-}
+}  // namespace typemeta
+}  // namespace mrpt
 
 #endif

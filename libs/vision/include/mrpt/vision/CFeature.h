@@ -31,8 +31,8 @@ enum TListIdx
 };
 
 /** \defgroup mrptvision_features Feature detection, descriptors and matching
-  * \ingroup mrpt_vision_grp
-  */
+ * \ingroup mrpt_vision_grp
+ */
 
 /** \addtogroup  mrptvision_features
 	@{ */
@@ -42,14 +42,14 @@ enum TListIdx
 *****************************************************/
 
 /** A generic 2D feature from an image, extracted with \a CFeatureExtraction
-  * Each feature may have one or more descriptors (see \a descriptors), in
+ * Each feature may have one or more descriptors (see \a descriptors), in
  * addition to an image patch.
-  * The (Euclidean) distance between descriptors in a pair of features can be
+ * The (Euclidean) distance between descriptors in a pair of features can be
  * computed with  descriptorDistanceTo,
-  *  while the similarity of the patches is given by patchCorrelationTo.
-  *
-  *  \sa CFeatureList, TSimpleFeature, TSimpleFeatureList
-  */
+ *  while the similarity of the patches is given by patchCorrelationTo.
+ *
+ *  \sa CFeatureList, TSimpleFeature, TSimpleFeatureList
+ */
 class CFeature : public mrpt::serialization::CSerializable
 {
 	friend class CFeatureList;
@@ -60,8 +60,7 @@ class CFeature : public mrpt::serialization::CSerializable
    public:
 	float x, y;  //!< Coordinates in the image
 	TFeatureID ID;  //!< ID of the feature
-	mrpt::img::CImage
-		patch;  //!< A patch of the image surrounding the feature
+	mrpt::img::CImage patch;  //!< A patch of the image surrounding the feature
 	uint16_t patchSize;  //!< Size of the patch (patchSize x patchSize) (it must
 	//! be an odd number)
 	TFeatureType type;  //!< Type of the feature: featNotDefined, featSIFT,
@@ -178,26 +177,26 @@ class CFeature : public mrpt::serialization::CSerializable
 	} descriptors;
 
 	/** Return the first found descriptor, as a matrix.
-	  * \return false on error, i.e. there is no valid descriptor.
-	  */
+	 * \return false on error, i.e. there is no valid descriptor.
+	 */
 	bool getFirstDescriptorAsMatrix(mrpt::math::CMatrixFloat& desc) const;
 
 	/** Computes the normalized cross-correlation between the patches of this
 	 * and another feature (normalized in the range [0,1], such as 0=best,
 	 * 1=worst).
-	  *  \note If this or the other features does not have patches or they are
+	 *  \note If this or the other features does not have patches or they are
 	 * of different sizes, an exception will be raised.
-	  * \sa descriptorDistanceTo
-	  */
+	 * \sa descriptorDistanceTo
+	 */
 	float patchCorrelationTo(const CFeature& oFeature) const;
 
 	/** Computes the Euclidean Distance between this feature's and other
 	 * feature's descriptors, using the given descriptor or the first present
 	 * one.
-	  *  \note If descriptorToUse is not descAny and that descriptor is not
+	 *  \note If descriptorToUse is not descAny and that descriptor is not
 	 * present in one of the features, an exception will be raised.
-	  * \sa patchCorrelationTo
-	  */
+	 * \sa patchCorrelationTo
+	 */
 	float descriptorDistanceTo(
 		const CFeature& oFeature, TDescriptorType descriptorToUse = descAny,
 		bool normalize_distances = true) const;
@@ -219,22 +218,22 @@ class CFeature : public mrpt::serialization::CSerializable
 
 	/** Returns the minimum Euclidean Distance between "this" and the "other"
 	 * polar image descriptor, for the best shift in orientation.
-	  * \param oFeature The other feature to compare with.
-	  * \param minDistAngle The placeholder for the angle at which the smallest
+	 * \param oFeature The other feature to compare with.
+	 * \param minDistAngle The placeholder for the angle at which the smallest
 	 * distance is found.
-	  * \return The distance for the best orientation (minimum distance).
-	  */
+	 * \return The distance for the best orientation (minimum distance).
+	 */
 	float descriptorPolarImgDistanceTo(
 		const CFeature& oFeature, float& minDistAngle,
 		bool normalize_distances = true) const;
 
 	/** Returns the minimum Euclidean Distance between "this" and the "other"
 	 * log-polar image descriptor, for the best shift in orientation.
-	  * \param oFeature The other feature to compare with.
-	  * \param minDistAngle The placeholder for the angle at which the smallest
+	 * \param oFeature The other feature to compare with.
+	 * \param minDistAngle The placeholder for the angle at which the smallest
 	 * distance is found.
-	  * \return The distance for the best orientation (minimum distance).
-	  */
+	 * \return The distance for the best orientation (minimum distance).
+	 */
 	float descriptorLogPolarImgDistanceTo(
 		const CFeature& oFeature, float& minDistAngle,
 		bool normalize_distances = true) const;
@@ -254,26 +253,26 @@ class CFeature : public mrpt::serialization::CSerializable
 		const CFeature& oFeature, bool normalize_distances = true) const;
 
 	/** Save the feature to a text file in this format:
-	  *    "%% Dump of mrpt::vision::CFeatureList. Each line format is:\n"
-	  *    "%% ID TYPE X Y ORIENTATION SCALE TRACK_STATUS RESPONSE HAS_SIFT
-	  *[SIFT] HAS_SURF [SURF] HAS_MULTI [MULTI_i] HAS_ORB [ORB]"
-	  *    "%% |---------------------- feature ------------------|
-	  *|---------------------- descriptors ------------------------|"
-	  *    "%% with:\n"
-	  *    "%%  TYPE  : The used detector: 0:KLT, 1: Harris, 2: BCD, 3: SIFT, 4:
-	  *SURF, 5: Beacon, 6: FAST, 7: ORB\n"
-	  *    "%%  HAS_* : 1 if a descriptor of that type is associated to the
-	  *feature."
-	  *    "%%  SIFT  : Present if HAS_SIFT=1: N DESC_0 ... DESC_N-1"
-	  *    "%%  SURF  : Present if HAS_SURF=1: N DESC_0 ... DESC_N-1"
-	  *    "%%  MULTI : Present if HAS_MULTI=1: SCALE ORI N DESC_0 ... DESC_N-1"
-	  *	   "%%  ORB   : Present if HAS_ORB=1: DESC_0 ... DESC_31
-	  *    "%%-----------------------------------------------------------------------------\n");
-	*/
+	 *    "%% Dump of mrpt::vision::CFeatureList. Each line format is:\n"
+	 *    "%% ID TYPE X Y ORIENTATION SCALE TRACK_STATUS RESPONSE HAS_SIFT
+	 *[SIFT] HAS_SURF [SURF] HAS_MULTI [MULTI_i] HAS_ORB [ORB]"
+	 *    "%% |---------------------- feature ------------------|
+	 *|---------------------- descriptors ------------------------|"
+	 *    "%% with:\n"
+	 *    "%%  TYPE  : The used detector: 0:KLT, 1: Harris, 2: BCD, 3: SIFT, 4:
+	 *SURF, 5: Beacon, 6: FAST, 7: ORB\n"
+	 *    "%%  HAS_* : 1 if a descriptor of that type is associated to the
+	 *feature."
+	 *    "%%  SIFT  : Present if HAS_SIFT=1: N DESC_0 ... DESC_N-1"
+	 *    "%%  SURF  : Present if HAS_SURF=1: N DESC_0 ... DESC_N-1"
+	 *    "%%  MULTI : Present if HAS_MULTI=1: SCALE ORI N DESC_0 ... DESC_N-1"
+	 *	   "%%  ORB   : Present if HAS_ORB=1: DESC_0 ... DESC_31
+	 *    "%%-----------------------------------------------------------------------------\n");
+	 */
 	void saveToTextFile(const std::string& filename, bool APPEND = false);
 
 	/** Get the type of the feature
-	*/
+	 */
 	TFeatureType get_type() const { return type; }
 	/** Dump feature information into a text stream */
 	void dumpToTextStream(std::ostream& out) const;
@@ -281,15 +280,16 @@ class CFeature : public mrpt::serialization::CSerializable
 	void dumpToConsole() const;
 
 	/** Constructor
-	*/
+	 */
 	CFeature();
 
 	/** Virtual destructor */
 	virtual ~CFeature() {}
+
    protected:
 	/** Internal function used by "descriptorLogPolarImgDistanceTo" and
 	 * "descriptorPolarImgDistanceTo"
-	  */
+	 */
 	static float internal_distanceBetweenPolarImages(
 		const mrpt::math::CMatrix& desc1, const mrpt::math::CMatrix& desc2,
 		float& minDistAngle, bool normalize_distances, bool dont_shift_angle);
@@ -301,7 +301,7 @@ class CFeature : public mrpt::serialization::CSerializable
 *****************************************************/
 /** A list of visual features, to be used as output by detectors, as
  * input/output by trackers, etc.
-  */
+ */
 class CFeatureList : public mrpt::math::KDTreeCapable<CFeatureList>
 {
    protected:
@@ -340,16 +340,16 @@ class CFeatureList : public mrpt::math::KDTreeCapable<CFeatureList>
 		std::vector<int>& outIndex) const;
 
 	/** Get a reference to the nearest feature to the a given 2D point (version
-	* returning distance to closest feature in "max_dist")
-	*   \param x [IN] The query point x-coordinate
-	*   \param y [IN] The query point y-coordinate
-	*   \param max_dist [IN/OUT] At input: The maximum distance to search for.
-	* At output: The actual distance to the feature.
-	*  \return A reference to the found feature, or a nullptr smart pointer if
-	* none found.
-	*  \note See also all the available KD-tree search methods, listed in
-	* mrpt::math::KDTreeCapable
-	*/
+	 * returning distance to closest feature in "max_dist")
+	 *   \param x [IN] The query point x-coordinate
+	 *   \param y [IN] The query point y-coordinate
+	 *   \param max_dist [IN/OUT] At input: The maximum distance to search for.
+	 * At output: The actual distance to the feature.
+	 *  \return A reference to the found feature, or a nullptr smart pointer if
+	 * none found.
+	 *  \note See also all the available KD-tree search methods, listed in
+	 * mrpt::math::KDTreeCapable
+	 */
 	CFeature::Ptr nearest(const float x, const float y, double& max_dist) const;
 
 	/** Constructor */
@@ -500,7 +500,7 @@ class CFeatureList : public mrpt::math::KDTreeCapable<CFeatureList>
 			Class CMATCHEDFEATURELIST
 *****************************************************/
 /** A list of features
-*/
+ */
 class CMatchedFeatureList
 	: public std::deque<std::pair<CFeature::Ptr, CFeature::Ptr>>
 {
@@ -556,13 +556,13 @@ class CMatchedFeatureList
 
 /** @} */  // End of add to module: mrptvision_features
 
-}  // end of namespace
+}  // namespace vision
 
-namespace utils
+namespace typemeta
 {
 // Specialization must occur in the same namespace
 MRPT_DECLARE_TTYPENAME_PTR_NAMESPACE(CFeature, mrpt::vision)
-}
-}  // end of namespace
+}  // namespace typemeta
+}  // namespace mrpt
 
 #endif

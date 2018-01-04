@@ -127,7 +127,7 @@ bool CPTG_DiffDrive_C::inverseMap_WS2TP(
 		if (std::abs(R) < Rmin)
 		{
 			is_exact = false;
-			R = Rmin * mrpt::utils::sign(R);
+			R = Rmin * mrpt::sign(R);
 		}
 
 		// Was: a = 2*atan( V_MAX / (W_MAX*R) );

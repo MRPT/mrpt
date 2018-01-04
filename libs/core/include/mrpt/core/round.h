@@ -15,8 +15,8 @@
 namespace mrpt
 {
 /** \addtogroup mrpt_round Round functions (in #include <mrpt/core/round.h>)
-  *  \ingroup mrpt_core_grp
-  * @{ */
+ *  \ingroup mrpt_core_grp
+ * @{ */
 
 /** Returns the closer integer (int) to x */
 template <typename T>
@@ -44,9 +44,9 @@ inline long round_long(const T value)
 
 /** Round a decimal number up to the given 10'th power (eg, to 1000,100,10, and
  * also fractions)
-  *  power10 means round up to: 1 -> 10, 2 -> 100, 3 -> 1000, ...  -1 -> 0.1, -2
+ *  power10 means round up to: 1 -> 10, 2 -> 100, 3 -> 1000, ...  -1 -> 0.1, -2
  * -> 0.01, ...
-  */
+ */
 template <class T>
 T round_10power(T val, int power10)
 {
@@ -56,8 +56,4 @@ T round_10power(T val, int power10)
 }
 
 /** @} */
-namespace utils
-{
-using mrpt::round;
-}  // backward compat
-}  // end of namespace
+}  // namespace mrpt

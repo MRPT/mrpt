@@ -6,48 +6,46 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
+#pragma once
 
-#ifndef mrpt_vision_types_H
-#define mrpt_vision_types_H
-
-#include <mrpt/utils/aligned_containers.h>
+#include <mrpt/core/aligned_std_vector.h>
+#include <mrpt/core/aligned_std_map.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/utils/aligned_containers.h>
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/tfest/TMatchingPair.h>
-#include <mrpt/utils/TEnumType.h>
+#include <mrpt/typemeta/TEnumType.h>
 
 namespace mrpt
 {
 namespace vision
 {
 /** \addtogroup mrpt_vision_grp
-  *  @{ */
+ *  @{ */
 /** Definition of a feature ID */
-typedef uint64_t TFeatureID;
+using TFeatureID = uint64_t;
 
 /** Unique IDs for landmarks */
-typedef uint64_t TLandmarkID;
+using TLandmarkID = uint64_t;
 /** Unique IDs for camera frames (poses) */
-typedef uint64_t TCameraPoseID;
+using TCameraPoseID = uint64_t;
 
 /** A list of camera frames (6D poses) indexed by unique IDs. */
-typedef mrpt::aligned_std_map<TCameraPoseID, mrpt::poses::CPose3D>
-	TFramePosesMap;
+using TFramePosesMap =
+	mrpt::aligned_std_map<TCameraPoseID, mrpt::poses::CPose3D>;
 /** A list of camera frames (6D poses), which assumes indexes are unique,
  * consecutive IDs. */
-typedef mrpt::aligned_std_vector<mrpt::poses::CPose3D> TFramePosesVec;
+using TFramePosesVec = mrpt::aligned_std_vector<mrpt::poses::CPose3D>;
 
 /** A list of landmarks (3D points) indexed by unique IDs. */
-typedef std::map<TLandmarkID, mrpt::math::TPoint3D> TLandmarkLocationsMap;
+using TLandmarkLocationsMap = std::map<TLandmarkID, mrpt::math::TPoint3D>;
 /** A list of landmarks (3D points), which assumes indexes are unique,
  * consecutive IDs. */
-typedef std::vector<mrpt::math::TPoint3D> TLandmarkLocationsVec;
+using TLandmarkLocationsVec = std::vector<mrpt::math::TPoint3D>;
 
 /** Types of features - This means that the point has been detected with this
  * algorithm, which is independent of additional descriptors a feature may also
  * have
-*/
+ */
 enum TFeatureType
 {
 	/** Non-defined feature (also used for Occupancy features) */
@@ -92,7 +90,7 @@ enum TFeatureType
 /** The bitwise OR combination of values of TDescriptorType are used in
  * CFeatureExtraction::computeDescriptors to indicate which descriptors are to
  * be computed for features.
-  */
+ */
 enum TDescriptorType
 {
 	/** Used in some methods to mean "any of the present descriptors" */
@@ -157,7 +155,7 @@ struct TFeatureObservation
 
 /** One relative feature observation entry, used with some relative
  * bundle-adjustment functions.
-  */
+ */
 struct TRelativeFeaturePos
 {
 	inline TRelativeFeaturePos() {}
@@ -182,12 +180,12 @@ typedef std::map<mrpt::vision::TFeatureID, TRelativeFeaturePos>
 
 /** A complete sequence of observations of features from different camera frames
  * (poses).
-  *  This structure is the input to some (Bundle-adjustment) methods in
+ *  This structure is the input to some (Bundle-adjustment) methods in
  * mrpt::vision
-  *  \note Pixel coordinates can be either "raw" or "undistorted". Read the doc
+ *  \note Pixel coordinates can be either "raw" or "undistorted". Read the doc
  * of functions handling this structure to see what they expect.
-  *  \sa mrpt::vision::bundle_adj_full
-  */
+ *  \sa mrpt::vision::bundle_adj_full
+ */
 struct TSequenceFeatureObservations : public std::vector<TFeatureObservation>
 {
 	typedef std::vector<TFeatureObservation> BASE;
@@ -201,10 +199,10 @@ struct TSequenceFeatureObservations : public std::vector<TFeatureObservation>
 
 	/** Saves all entries to a text file, with each line having this format:
 	 * #FRAME_ID  #FEAT_ID  #PIXEL_X  #PIXEL_Y
-	  * The file is self-descripting, since the first line contains a comment
+	 * The file is self-descripting, since the first line contains a comment
 	 * line (starting with '%') explaining the format.
-	  * Generated files can be loaded from MATLAB.
-	  * \sa loadFromTextFile \exception std::exception On I/O error  */
+	 * Generated files can be loaded from MATLAB.
+	 * \sa loadFromTextFile \exception std::exception On I/O error  */
 	void saveToTextFile(
 		const std::string& filName, bool skipFirstCommentLine = false) const;
 
@@ -214,36 +212,36 @@ struct TSequenceFeatureObservations : public std::vector<TFeatureObservation>
 
 	/** Save the list of observations + the point locations + the camera frame
 	 * poses to a pair of files in the format
-	  *  used by the Sparse Bundle Adjustment (SBA) C++ library.
-	  *
-	  *  Point file lines: X Y Z  nframes  frame0 x0 y0  frame1 x1 y1 ...
-	  *
-	  *  Camera file lines: qr qx qy qz x y z  (Pose as a quaternion)
-	  * \return false on any error
-	  */
+	 *  used by the Sparse Bundle Adjustment (SBA) C++ library.
+	 *
+	 *  Point file lines: X Y Z  nframes  frame0 x0 y0  frame1 x1 y1 ...
+	 *
+	 *  Camera file lines: qr qx qy qz x y z  (Pose as a quaternion)
+	 * \return false on any error
+	 */
 	bool saveAsSBAFiles(
 		const TLandmarkLocationsVec& pts, const std::string& pts_file,
 		const TFramePosesVec& cams, const std::string& cams_file) const;
 
 	/** Remove all those features that don't have a minimum number of
 	 * observations from different camera frame IDs.
-	  * \return the number of erased entries.
-	  * \sa After calling this you may want to call \a compressIDs */
+	 * \return the number of erased entries.
+	 * \sa After calling this you may want to call \a compressIDs */
 	size_t removeFewObservedFeatures(size_t minNumObservations = 3);
 
 	/** Remove all but one out of \a decimate_ratio camera frame IDs from the
 	 * list (eg: from N camera pose IDs at return there will be just
 	 * N/decimate_ratio)
-	  * The algorithm first builds a sorted list of frame IDs, then keep the
+	 * The algorithm first builds a sorted list of frame IDs, then keep the
 	 * lowest ID, remove the next "decimate_ratio-1", and so on.
-	  * \sa After calling this you may want to call \a compressIDs */
+	 * \sa After calling this you may want to call \a compressIDs */
 	void decimateCameraFrames(const size_t decimate_ratio);
 
 	/** Rearrange frame and feature IDs such as they start at 0 and there are no
 	 * gaps.
-	  * \param old2new_camIDs If provided, the mapping from old to new IDs is
+	 * \param old2new_camIDs If provided, the mapping from old to new IDs is
 	 * stored here.
-	  * \param old2new_lmIDs If provided, the mapping from old to new IDs is
+	 * \param old2new_lmIDs If provided, the mapping from old to new IDs is
 	 * stored here. */
 	void compressIDs(
 		std::map<TCameraPoseID, TCameraPoseID>* old2new_camIDs = nullptr,
@@ -251,7 +249,7 @@ struct TSequenceFeatureObservations : public std::vector<TFeatureObservation>
 };
 
 /** Parameters associated to a stereo system
-  */
+ */
 struct TStereoSystemParams : public mrpt::utils::CLoadableOptions
 {
 	/** Initilization of default parameters */
@@ -265,17 +263,17 @@ struct TStereoSystemParams : public mrpt::utils::CLoadableOptions
 
 	/** Method for propagating the feature's image coordinate uncertainty into
 	 * 3D space. Default value: Prop_Linear
-	  */
+	 */
 	enum TUnc_Prop_Method
 	{
 		/** Linear propagation of the uncertainty
-		  */
+		 */
 		Prop_Linear = -1,
 		/** Uncertainty propagation through the Unscented Transformation
-		  */
+		 */
 		Prop_UT,
 		/** Uncertainty propagation through the Scaled Unscented Transformation
-		  */
+		 */
 		Prop_SUT
 	};
 
@@ -285,46 +283,46 @@ struct TStereoSystemParams : public mrpt::utils::CLoadableOptions
 	mrpt::math::CMatrixDouble33 F;
 
 	/** Intrinsic parameters
-	  */
+	 */
 	mrpt::math::CMatrixDouble33 K;
 	/** Baseline. Default value: baseline = 0.119f;	[Bumblebee]
-	  */
+	 */
 	float baseline;
 	/** Standard deviation of the error in feature detection. Default value:
 	 * stdPixel = 1
-	  */
+	 */
 	float stdPixel;
 	/** Standard deviation of the error in disparity computation. Default value:
 	 * stdDisp = 1
-	  */
+	 */
 	float stdDisp;
 	/** Maximum allowed distance. Default value: maxZ = 20.0f
-	  */
+	 */
 	float maxZ;
 	/** Maximum allowed distance. Default value: minZ = 0.5f
-	  */
+	 */
 	float minZ;
 	/** Maximum allowed height. Default value: maxY = 3.0f
-	  */
+	 */
 	float maxY;
 	/** K factor for the UT. Default value: k = 1.5f
-	  */
+	 */
 	float factor_k;
 	/** Alpha factor for SUT. Default value: a = 1e-3
-	  */
+	 */
 	float factor_a;
 	/** Beta factor for the SUT. Default value: b = 2.0f
-	  */
+	 */
 	float factor_b;
 
 	/** Parameters initialization
-	  */
+	 */
 	// TStereoSystemParams();
 
 };  // End struct TStereoSystemParams
 
 /** A structure for storing a 3D ROI
-  */
+ */
 struct TROI
 {
 	// Constructors
@@ -341,7 +339,7 @@ struct TROI
 };  // end struct TROI
 
 /** A structure for defining a ROI within an image
-  */
+ */
 struct TImageROI
 {
 	// Constructors
@@ -350,36 +348,36 @@ struct TImageROI
 
 	// Members
 	/** X coordinate limits [0,imageWidth)
-	  */
+	 */
 	float xMin, xMax;
 	/** Y coordinate limits [0,imageHeight)
-	  */
+	 */
 	float yMin, yMax;
 };  // end struct TImageROI
 
 /** A structure containing options for the matching
-  */
+ */
 struct TMatchingOptions : public mrpt::utils::CLoadableOptions
 {
 	/** Method for propagating the feature's image coordinate uncertainty into
 	 * 3D space. Default value: Prop_Linear
-	  */
+	 */
 	enum TMatchingMethod
 	{
 		/** Matching by cross correlation of the image patches
-		  */
+		 */
 		mmCorrelation = 0,
 		/** Matching by Euclidean distance between SIFT descriptors
-		  */
+		 */
 		mmDescriptorSIFT,
 		/** Matching by Euclidean distance between SURF descriptors
-		  */
+		 */
 		mmDescriptorSURF,
 		/** Matching by sum of absolute differences of the image patches
-		  */
+		 */
 		mmSAD,
 		/** Matching by Hamming distance between ORB descriptors
-		  */
+		 */
 		mmDescriptorORB
 	};
 
@@ -519,7 +517,7 @@ struct TMatchingOptions : public mrpt::utils::CLoadableOptions
 
 /** Struct containing the output after matching multi-resolution SIFT-like
  * descriptors
-*/
+ */
 struct TMultiResMatchingOutput
 {
 	int nMatches;
@@ -549,7 +547,7 @@ struct TMultiResMatchingOutput
 
 /** Struct containing the options when matching multi-resolution SIFT-like
  * descriptors
-*/
+ */
 struct TMultiResDescMatchOptions : public mrpt::utils::CLoadableOptions
 {
 	/** Whether or not use the filter based on orientation test */
@@ -589,7 +587,7 @@ struct TMultiResDescMatchOptions : public mrpt::utils::CLoadableOptions
 	uint32_t minFeaturesToBeLost;
 
 	/** Default constructor
-	  */
+	 */
 	TMultiResDescMatchOptions()
 		: useOriFilter(true),
 		  oriThreshold(0.2),
@@ -644,7 +642,7 @@ struct TMultiResDescMatchOptions : public mrpt::utils::CLoadableOptions
 
 /** Struct containing the options when computing the multi-resolution SIFT-like
  * descriptors
-*/
+ */
 struct TMultiResDescOptions : public mrpt::utils::CLoadableOptions
 {
 	/** The size of the base patch */
@@ -672,7 +670,7 @@ struct TMultiResDescOptions : public mrpt::utils::CLoadableOptions
 	double cropValue;
 
 	/** Default constructor
-	  */
+	 */
 	TMultiResDescOptions()
 		: basePSize(23),
 		  sg1(0.5),
@@ -738,9 +736,9 @@ struct TMultiResDescOptions : public mrpt::utils::CLoadableOptions
 };  // end TMultiResDescOptions
 
 /** @} */  // end of grouping
-}
+}  // namespace vision
 // Specializations MUST occur at the same namespace:
-namespace utils
+namespace typemeta
 {
 template <>
 struct TEnumTypeFiller<mrpt::vision::TFeatureType>
@@ -783,6 +781,5 @@ struct TEnumTypeFiller<mrpt::vision::TDescriptorType>
 		MRPT_FILL_ENUM(descLATCH);
 	}
 };
-}
-}
-#endif
+}  // namespace typemeta
+}  // namespace mrpt

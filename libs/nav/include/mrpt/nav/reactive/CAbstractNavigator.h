@@ -132,14 +132,14 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
 	};
 
 	/** \name Navigation control API
-	  * @{ */
+	 * @{ */
 
 	/** Loads all params from a file. To be called before initialize().
-	  * Each derived class *MUST* load its own parameters, and then call *ITS
+	 * Each derived class *MUST* load its own parameters, and then call *ITS
 	 * PARENT'S* overriden method to ensure all params are loaded. */
 	virtual void loadConfigFile(const mrpt::config::CConfigFileBase& c);
 	/** Saves all current options to a config file.
-	  * Each derived class *MUST* save its own parameters, and then call *ITS
+	 * Each derived class *MUST* save its own parameters, and then call *ITS
 	 * PARENT'S* overriden method to ensure all params are saved. */
 	virtual void saveConfigFile(mrpt::config::CConfigFileBase& c) const;
 
@@ -151,12 +151,12 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
 
 	/** Navigation request to a single target location. It starts a new
 	 * navigation.
-	  * \param[in] params Pointer to structure with navigation info (its
+	 * \param[in] params Pointer to structure with navigation info (its
 	 * contents will be copied, so the original can be freely destroyed upon
 	 * return if it was dynamically allocated.)
-	  * \note A pointer is used so the passed object can be polymorphic with
+	 * \note A pointer is used so the passed object can be polymorphic with
 	 * derived types.
-	  */
+	 */
 	virtual void navigate(const TNavigationParams* params);
 
 	/** Cancel current navegation. */
@@ -181,14 +181,14 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
 	inline TState getCurrentState() const { return m_navigationState; }
 	/** Sets a user-provided frame transformer object; used only if providing
 	 * targets in a frame ID
-	  * different than the one in which robot odometry is given (both IDs
+	 * different than the one in which robot odometry is given (both IDs
 	 * default to `"map"`).
-	  * Ownership of the pointee object remains belonging to the user, which is
+	 * Ownership of the pointee object remains belonging to the user, which is
 	 * responsible of deleting it
-	  * and ensuring its a valid pointer during the lifetime of this navigator
+	 * and ensuring its a valid pointer during the lifetime of this navigator
 	 * object.
-	  * \todo [MRPT 2.0: Make this a weak_ptr]
-	  */
+	 * \todo [MRPT 2.0: Make this a weak_ptr]
+	 */
 	void setFrameTF(mrpt::poses::FrameTransformer<2>* frame_tf);
 
 	/** Get the current frame tf object (defaults to nullptr) \sa setFrameTF */
@@ -263,17 +263,17 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
 
 	/** Call to the robot getCurrentPoseAndSpeeds() and updates members
 	 * m_curPoseVel accordingly.
-	  * If an error is returned by the user callback, first, it calls
+	 * If an error is returned by the user callback, first, it calls
 	 * robot.stop() ,then throws an std::runtime_error exception. */
 	void updateCurrentPoseAndSpeeds();
 
 	/** Factorization of the part inside navigationStep(), for the case of state
 	 * being NAVIGATING.
-	  * Performs house-hold tasks like raising events in case of starting/ending
+	 * Performs house-hold tasks like raising events in case of starting/ending
 	 * navigation, timeout reaching destination, etc.
-	  * `call_virtual_nav_method` can be set to false to avoid calling the
+	 * `call_virtual_nav_method` can be set to false to avoid calling the
 	 * virtual method performNavigationStep()
-	  */
+	 */
 	virtual void performNavigationStepNavigating(
 		bool call_virtual_nav_method = true);
 
@@ -293,15 +293,15 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
 
 	/** Default implementation: check if target_dist is below the accepted
 	 * distance.
-	  * If true is returned here, the end-of-navigation event will be sent out
+	 * If true is returned here, the end-of-navigation event will be sent out
 	 * (only for non-intermediary targets).
-	  */
+	 */
 	virtual bool checkHasReachedTarget(const double targetDist) const;
 
 	/** Checks whether the robot shape, when placed at the given pose (relative
-	* to the current pose),
-	* is colliding with any of the latest known obstacles.
-	* Default implementation: always returns false. */
+	 * to the current pose),
+	 * is colliding with any of the latest known obstacles.
+	 * Default implementation: always returns false. */
 	virtual bool checkCollisionWithLatestObstacles(
 		const mrpt::math::TPose2D& relative_robot_pose) const;
 
@@ -314,7 +314,7 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
 	CRobot2NavInterface& m_robot;
 
 	/** Optional, user-provided frame transformer.
-	  * Note: We dont have ownership of the pointee object! */
+	 * Note: We dont have ownership of the pointee object! */
 	mrpt::poses::FrameTransformer<2>* m_frame_tf;
 
 	/** mutex for all navigation methods */
@@ -355,10 +355,10 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
 bool operator==(
 	const CAbstractNavigator::TNavigationParamsBase&,
 	const CAbstractNavigator::TNavigationParamsBase&);
-}
+}  // namespace nav
 
 // Specializations MUST occur at the same namespace:
-namespace utils
+namespace typemeta
 {
 template <>
 struct TEnumTypeFiller<mrpt::nav::CAbstractNavigator::TState>
@@ -372,5 +372,5 @@ struct TEnumTypeFiller<mrpt::nav::CAbstractNavigator::TState>
 		m_map.insert(mrpt::nav::CAbstractNavigator::NAV_ERROR, "NAV_ERROR");
 	}
 };
-}  // End of namespace
-}
+}  // namespace typemeta
+}  // namespace mrpt

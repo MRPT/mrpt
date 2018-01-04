@@ -44,7 +44,7 @@ class CGridMapAligner : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 {
    private:
 	/** Private member, implements one the algorithms.
-	  */
+	 */
 	mrpt::poses::CPosePDF::Ptr AlignPDF_correlation(
 		const mrpt::maps::CMetricMap* m1, const mrpt::maps::CMetricMap* m2,
 		const mrpt::poses::CPosePDFGaussian& initialEstimationPDF,
@@ -52,7 +52,7 @@ class CGridMapAligner : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 
 	/** Private member, implements both, the "robustMatch" and the newer
 	 * "modifiedRANSAC" algorithms.
-	  */
+	 */
 	mrpt::poses::CPosePDF::Ptr AlignPDF_robustMatch(
 		const mrpt::maps::CMetricMap* m1, const mrpt::maps::CMetricMap* m2,
 		const mrpt::poses::CPosePDFGaussian& initialEstimationPDF,
@@ -64,7 +64,7 @@ class CGridMapAligner : public mrpt::slam::CMetricMapsAlignmentAlgorithm
    public:
 	CGridMapAligner() : options() {}
 	/** The type for selecting the grid-map alignment algorithm.
-	  */
+	 */
 	enum TAlignerMethod
 	{
 		amRobustMatch = 0,
@@ -78,13 +78,14 @@ class CGridMapAligner : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 	{
 	   public:
 		/** Initializer for default values:
-		  */
+		 */
 		TConfigParams();
 
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(std::ostream& out) const override;  // See base docs
+		void dumpToTextStream(
+			std::ostream& out) const override;  // See base docs
 
 		/** The aligner method: */
 		TAlignerMethod methodSelection;
@@ -97,8 +98,8 @@ class CGridMapAligner : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 		mrpt::vision::CFeatureExtraction::TOptions feature_detector_options;
 
 		/** RANSAC-step options:
-		  * \sa CICP::robustRigidTransformation
-		  */
+		 * \sa CICP::robustRigidTransformation
+		 */
 		/** The ratio of landmarks that must be inliers to accepto an hypotheses
 		 * (typ: 0.20) */
 		float ransac_minSetSizeRatio;
@@ -107,8 +108,8 @@ class CGridMapAligner : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 		float ransac_SOG_sigma_m;
 
 		/** [amRobustMatch method only] RANSAC-step options:
-		  * \sa CICP::robustRigidTransformation
-		  */
+		 * \sa CICP::robustRigidTransformation
+		 */
 		float ransac_mahalanobisDistanceThreshold;
 
 		/** [amModifiedRANSAC method only] The quantile used for chi-square
@@ -160,18 +161,18 @@ class CGridMapAligner : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 		/** The "brute" estimation from using all the available correspondences,
 		 * provided just for comparison purposes (it is not the robust
 		 * estimation, available as the result of the Align method).
-		  */
+		 */
 		mrpt::poses::CPose2D noRobustEstimation;
 
 		/** The different SOG densities at different steps of the algorithm:
-		  *   - sog1 : Directly from the matching of features
-		  *   - sog2 : Merged of sog1
-		  *   - sog3 : sog2 refined with ICP
-		  *
-		  *   - The final sog is the merge of sog3.
-		  *
-		  */
-		mrpt::utils::poly_ptr_ptr<mrpt::poses::CPosePDFSOG::Ptr> sog1, sog2,
+		 *   - sog1 : Directly from the matching of features
+		 *   - sog2 : Merged of sog1
+		 *   - sog3 : sog2 refined with ICP
+		 *
+		 *   - The final sog is the merge of sog3.
+		 *
+		 */
+		mrpt::containers::poly_ptr_ptr<mrpt::poses::CPosePDFSOG::Ptr> sog1, sog2,
 			sog3;
 
 		/** The landmarks of each map (the indices of these landmarks correspond
@@ -241,10 +242,10 @@ class CGridMapAligner : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 		float* runningTime = nullptr, void* info = nullptr);
 };
 
-}  // End of namespace
+}  // namespace slam
 
 // Specializations MUST occur at the same namespace:
-namespace utils
+namespace typemeta
 {
 template <>
 struct TEnumTypeFiller<slam::CGridMapAligner::TAlignerMethod>
@@ -258,8 +259,8 @@ struct TEnumTypeFiller<slam::CGridMapAligner::TAlignerMethod>
 			slam::CGridMapAligner::amModifiedRANSAC, "amModifiedRANSAC");
 	}
 };
-}  // End of namespace
+}  // namespace typemeta
 
-}  // End of namespace
+}  // namespace mrpt
 
 #endif

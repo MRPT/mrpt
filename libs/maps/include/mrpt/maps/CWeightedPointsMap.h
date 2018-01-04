@@ -58,10 +58,10 @@ class CWeightedPointsMap : public CPointsMap
 	virtual void copyFrom(const CPointsMap& obj) override;
 
 	/** Get all the data fields for one point as a vector: [X Y Z WEIGHT]
-	  *  Unlike getPointAllFields(), this method does not check for index out of
+	 *  Unlike getPointAllFields(), this method does not check for index out of
 	 * bounds
-	  * \sa getPointAllFields, setPointAllFields, setPointAllFieldsFast
-	  */
+	 * \sa getPointAllFields, setPointAllFields, setPointAllFieldsFast
+	 */
 	virtual void getPointAllFieldsFast(
 		const size_t index, std::vector<float>& point_data) const override
 	{
@@ -73,10 +73,10 @@ class CWeightedPointsMap : public CPointsMap
 	}
 
 	/** Set all the data fields for one point as a vector: [X Y Z WEIGHT]
-	  *  Unlike setPointAllFields(), this method does not check for index out of
+	 *  Unlike setPointAllFields(), this method does not check for index out of
 	 * bounds
-	  * \sa setPointAllFields, getPointAllFields, getPointAllFieldsFast
-	  */
+	 * \sa setPointAllFields, getPointAllFields, getPointAllFieldsFast
+	 */
 	virtual void setPointAllFieldsFast(
 		const size_t index, const std::vector<float>& point_data) override
 	{
@@ -151,9 +151,9 @@ class CWeightedPointsMap : public CPointsMap
 	mrpt::maps::CPointsMap::TLikelihoodOptions likelihoodOpts;
 	MAP_DEFINITION_END(CWeightedPointsMap, )
 };  // End of class def.
-}  // End of namespace
+}  // namespace maps
 
-namespace utils
+namespace opengl
 {
 /** Specialization
  * mrpt::opengl::PointCloudAdapter<mrpt::maps::CWeightedPointsMap>  \ingroup
@@ -198,7 +198,7 @@ class PointCloudAdapter<mrpt::maps::CWeightedPointsMap>
 		m_obj.setPointFast(idx, x, y, z);
 	}
 };  // end of PointCloudAdapter<mrpt::maps::CPointsMap>
-}
-}  // End of namespace
+}  // namespace opengl
+}  // namespace mrpt
 
 #endif

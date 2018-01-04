@@ -6,9 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-
-#ifndef COccupancyGridMap2D_H
-#define COccupancyGridMap2D_H
+#pragma once
 
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/config/CLoadableOptions.h>
@@ -100,7 +98,7 @@ class COccupancyGridMap2D : public CMetricMap,
 	/** Frees the dynamic memory buffers of map. */
 	void freeMap();
 	/** Lookup tables for log-odds */
-	static CLogOddsGridMapLUT<cellType> & get_logodd_lut();
+	static CLogOddsGridMapLUT<cellType>& get_logodd_lut();
 
 	/** Store of cell occupancy values. Order: row by row, from left to right */
 	std::vector<cellType> map;
@@ -291,7 +289,7 @@ class COccupancyGridMap2D : public CMetricMap,
 	/** Returns the area of the gridmap, in square meters */
 	inline double getArea() const
 	{
-		return size_x * size_y * mrpt::square(resolution);
+		return size_x * size_y * mrpt::math::square(resolution);
 	}
 
 	/** Returns the horizontal size of grid map in cells count */
@@ -350,7 +348,10 @@ class COccupancyGridMap2D : public CMetricMap,
 
 	/** Scales an integer representation of the log-odd into a real valued
 	 * probability in [0,1], using p=exp(l)/(1+exp(l))  */
-	static inline float l2p(const cellType l) { return get_logodd_lut().l2p(l); }
+	static inline float l2p(const cellType l)
+	{
+		return get_logodd_lut().l2p(l);
+	}
 	/** Scales an integer representation of the log-odd into a linear scale
 	 * [0,255], using p=exp(l)/(1+exp(l)) */
 	static inline uint8_t l2p_255(const cellType l)
@@ -359,7 +360,10 @@ class COccupancyGridMap2D : public CMetricMap,
 	}
 	/** Scales a real valued probability in [0,1] to an integer representation
 	 * of: log(p)-log(1-p)  in the valid range of cellType */
-	static inline cellType p2l(const float p) { return get_logodd_lut().p2l(p); }
+	static inline cellType p2l(const float p)
+	{
+		return get_logodd_lut().p2l(p);
+	}
 	/** Change the contents [0,1] of a cell, given its index */
 	inline void setCell(int x, int y, float value)
 	{
@@ -432,8 +436,8 @@ class COccupancyGridMap2D : public CMetricMap,
 #ifdef _DEBUG
 		ASSERT_ABOVEEQ_(x, 0)
 		ASSERT_ABOVEEQ_(y, 0)
-		ASSERT_BELOWEQ_(x, int(m_basis_map.getSizeX());
-		ASSERT_BELOWEQ_(y, int(m_basis_map.getSizeY());
+		ASSERT_BELOWEQ_(x, int(m_basis_map.getSizeX()))
+		ASSERT_BELOWEQ_(y, int(m_basis_map.getSizeY()))
 #endif
 		*cell = value;
 	}
@@ -445,8 +449,8 @@ class COccupancyGridMap2D : public CMetricMap,
 #ifdef _DEBUG
 		ASSERT_ABOVEEQ_(x, 0)
 		ASSERT_ABOVEEQ_(y, 0)
-		ASSERT_BELOWEQ_(x, int(m_basis_map.getSizeX());
-		ASSERT_BELOWEQ_(y, int(m_basis_map.getSizeY());
+		ASSERT_BELOWEQ_(x, int(m_basis_map.getSizeX()))
+		ASSERT_BELOWEQ_(y, int(m_basis_map.getSizeY()))
 #endif
 		return *cell;
 	}
@@ -488,13 +492,13 @@ class COccupancyGridMap2D : public CMetricMap,
 	};
 
 	/** With this struct options are provided to the observation insertion
-	* process.
-	* \sa CObservation::insertIntoGridMap */
+	 * process.
+	 * \sa CObservation::insertIntoGridMap */
 	class TInsertionOptions : public mrpt::config::CLoadableOptions
 	{
 	   public:
 		/** Initilization of default parameters
-		*/
+		 */
 		TInsertionOptions();
 
 		/** This method load the options from a ".ini" file.
@@ -511,7 +515,84 @@ class COccupancyGridMap2D : public CMetricMap,
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(std::ostream& out) const override;  // See base docs
+		void dumpToTextStream(
+			std::ostream& out) const override;  // See base docs
+
+		/** The altitude (z-axis) of 2D scans (within a 0.01m tolerance) for
+		 * they to be inserted in this map! */
+		float mapAltitude;
+		/** The parameter "mapAltitude" has effect while inserting observations
+		 * in the grid only if this is true. */
+		bool useMapAltitude;
+		/** The largest distance at which cells will be updated (Default 15
+		 * meters) */
+		float maxDistanceInsertion;
+		/** A value in the range [0.5,1] used for updating cell with a bayesian
+		 * approach (default 0.8) */
+		float maxOccupancyUpdateCertainty;
+		/** If set to true (default), invalid range values (no echo rays) as
+		 * consider as free space until "maxOccupancyUpdateCertainty", but ONLY
+		 * when the previous and next rays are also an invalid ray. */
+		bool considerInvalidRangesAsFreeSpace;
+		/** Specify the decimation of the range scan (default=1 : take all the
+		 * range values!) */
+		uint16_t decimation;
+		/** The tolerance in rads in pitch & roll for a laser scan to be
+		 * considered horizontal, then processed by calls to this class
+		 * (default=0). */
+		float horizontalTolerance;
+		/** Gaussian sigma of the filter used in getAsImageFiltered (for
+		 * features detection) (Default=1) (0:Disabled)  */
+		float CFD_features_gaussian_size;
+		/** Size of the Median filter used in getAsImageFiltered (for features
+		 * detection) (Default=3) (0:Disabled) */
+		float CFD_features_median_size;
+		/** Enabled: Rays widen with distance to approximate the real behavior
+		 * of lasers, disabled: insert rays as simple lines (Default=false) */
+		bool wideningBeamsWithDistance;
+	};
+
+	/** With this struct options are provided to the observation insertion
+	 * process \sa CObservation::insertIntoGridMap */
+	TInsertionOptions insertionOptions;
+
+	/** The type for selecting a likelihood computation method */
+	enum TLikelihoodMethod
+	{
+		lmMeanInformation = 0,
+		lmRayTracing,
+		lmConsensus,
+		lmCellsDifference,
+		lmLikelihoodField_Thrun,
+		lmLikelihoodField_II,
+		lmConsensusOWA
+		// Remember: Update TEnumType below if new values are added here!
+	};
+
+	/** With this struct options are provided to the observation likelihood
+	 * computation process */
+	class TLikelihoodOptions : public mrpt::config::CLoadableOptions
+	{
+	   public:
+		/** Initilization of default parameters */
+		TLikelihoodOptions();
+
+		/** This method load the options from a ".ini" file.
+		 *   Only those parameters found in the given "section" and having
+		 *   the same name that the variable are loaded. Those not found in
+		 *   the file will stay with their previous values (usually the default
+		 *   values loaded at initialization). An example of an ".ini" file:
+		 *  \code
+		 *  [section]
+		 *	resolution=0.10		; blah blah...
+		 *	modeSelection=1		; 0=blah, 1=blah,...
+		 *  \endcode
+		 */
+		void loadFromConfigFile(
+			const mrpt::config::CConfigFileBase& source,
+			const std::string& section) override;  // See base docs
+		void dumpToTextStream(
+			std::ostream& out) const override;  // See base docs
 
 		/** The selected method to compute an observation likelihood */
 		TLikelihoodMethod likelihoodMethod;
@@ -621,8 +702,8 @@ class COccupancyGridMap2D : public CMetricMap,
 #ifdef _DEBUG
 		ASSERT_ABOVEEQ_(cx, 0)
 		ASSERT_ABOVEEQ_(cy, 0)
-		ASSERT_BELOWEQ_(cx, int(m_voronoi_diagram.getSizeX());
-		ASSERT_BELOWEQ_(cy, int(m_voronoi_diagram.getSizeY());
+		ASSERT_BELOWEQ_(cx, int(m_voronoi_diagram.getSizeX()))
+		ASSERT_BELOWEQ_(cy, int(m_voronoi_diagram.getSizeY()))
 #endif
 		const uint16_t* cell = m_voronoi_diagram.cellByIndex(cx, cy);
 		return *cell;
@@ -637,8 +718,8 @@ class COccupancyGridMap2D : public CMetricMap,
 #ifdef _DEBUG
 		ASSERT_ABOVEEQ_(cx, 0)
 		ASSERT_ABOVEEQ_(cy, 0)
-		ASSERT_BELOWEQ_(cx, int(m_voronoi_diagram.getSizeX());
-		ASSERT_BELOWEQ_(cy, int(m_voronoi_diagram.getSizeY());
+		ASSERT_BELOWEQ_(cx, int(m_voronoi_diagram.getSizeX()))
+		ASSERT_BELOWEQ_(cy, int(m_voronoi_diagram.getSizeY()))
 #endif
 		*cell = dist;
 	}
@@ -654,7 +735,8 @@ class COccupancyGridMap2D : public CMetricMap,
 	/** Return the Voronoi diagram; each cell contains the distance to its
 	 * closer obstacle, or 0 if not part of the Voronoi diagram \sa
 	 * buildVoronoiDiagram */
-	inline const mrpt::containers::CDynamicGrid<uint16_t>& getVoronoiDiagram() const
+	inline const mrpt::containers::CDynamicGrid<uint16_t>& getVoronoiDiagram()
+		const
 	{
 		return m_voronoi_diagram;
 	}
@@ -689,15 +771,15 @@ class COccupancyGridMap2D : public CMetricMap,
 
 	/** An alternative method for computing the clearance of a given location
 	 * (in meters).
-	  *  \return The clearance (distance to closest OCCUPIED cell), in meters.
-	  */
+	 *  \return The clearance (distance to closest OCCUPIED cell), in meters.
+	 */
 	float computeClearance(float x, float y, float maxSearchDistance) const;
 
 	/** Compute the 'cost' of traversing a segment of the map according to the
 	 * occupancy of traversed cells.
-	  *  \return This returns '1-mean(traversed cells occupancy)', i.e. 0.5 for
+	 *  \return This returns '1-mean(traversed cells occupancy)', i.e. 0.5 for
 	 * unknown cells, 1 for a free path.
-	  */
+	 */
 	float computePathCost(float x1, float y1, float x2, float y2) const;
 
 	/** \name Sensor simulators
@@ -705,35 +787,35 @@ class COccupancyGridMap2D : public CMetricMap,
 
 	/** Simulates a laser range scan into the current grid map.
 	 *   The simulated scan is stored in a CObservation2DRangeScan object, which
-	*is also used
+	 *is also used
 	 *    to pass some parameters: all previously stored characteristics (as
-	*aperture,...) are
+	 *aperture,...) are
 	 *	  taken into account for simulation. Only a few more parameters are
-	*needed. Additive gaussian noise can be optionally added to the simulated
-	*scan.
+	 *needed. Additive gaussian noise can be optionally added to the simulated
+	 *scan.
 	 * \param inout_Scan [IN/OUT] This must be filled with desired parameters
-	*before calling, and will contain the scan samples on return.
+	 *before calling, and will contain the scan samples on return.
 	 * \param robotPose [IN] The robot pose in this map coordinates. Recall that
-	*sensor pose relative to this robot pose must be specified in the
-	*observation object.
+	 *sensor pose relative to this robot pose must be specified in the
+	 *observation object.
 	 * \param threshold [IN] The minimum occupancy threshold to consider a cell
-	*to be occupied (Default: 0.5f)
+	 *to be occupied (Default: 0.5f)
 	 * \param N [IN] The count of range scan "rays", by default to 361.
 	 * \param noiseStd [IN] The standard deviation of measurement noise. If not
-	*desired, set to 0.
+	 *desired, set to 0.
 	 * \param decimation [IN] The rays that will be simulated are at indexes: 0,
-	*D, 2D, 3D, ... Default is D=1
+	 *D, 2D, 3D, ... Default is D=1
 	 * \param angleNoiseStd [IN] The sigma of an optional Gaussian noise added
-	*to the angles at which ranges are measured (in radians).
+	 *to the angles at which ranges are measured (in radians).
 	 *
-	* \sa laserScanSimulatorWithUncertainty(), sonarSimulator(),
-	*COccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS
+	 * \sa laserScanSimulatorWithUncertainty(), sonarSimulator(),
+	 *COccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS
 	 */
 	void laserScanSimulator(
 		mrpt::obs::CObservation2DRangeScan& inout_Scan,
 		const mrpt::poses::CPose2D& robotPose, float threshold = 0.6f,
 		size_t N = 361, float noiseStd = 0, unsigned int decimation = 1,
-		float angleNoiseStd = mrpt::DEG2RAD(0)) const;
+		float angleNoiseStd = mrpt::DEG2RAD(.0)) const;
 
 	/** Simulates the observations of a sonar rig into the current grid map.
 	 *   The simulated ranges are stored in a CObservationRange object, which is
@@ -843,18 +925,18 @@ class COccupancyGridMap2D : public CMetricMap,
 	};
 
 	/** Like laserScanSimulatorWithUncertainty() (see it for a discussion of
-	* most parameters) but taking into account
+	 * most parameters) but taking into account
 	 *  the robot pose uncertainty and generating a vector of predicted
-	* variances for each ray.
+	 * variances for each ray.
 	 *  Range uncertainty includes both, sensor noise and large non-linear
-	* effects caused by borders and discontinuities in the environment
+	 * effects caused by borders and discontinuities in the environment
 	 *  as seen from different robot poses.
 	 *
 	 * \param in_params [IN] Input settings. See TLaserSimulUncertaintyParams
 	 * \param in_params [OUT] Output range + uncertainty.
 	 *
-	* \sa laserScanSimulator(),
-	* COccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS
+	 * \sa laserScanSimulator(),
+	 * COccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS
 	 */
 	void laserScanSimulatorWithUncertainty(
 		const TLaserSimulUncertaintyParams& in_params,
@@ -864,22 +946,22 @@ class COccupancyGridMap2D : public CMetricMap,
 
 	/** Computes the likelihood [0,1] of a set of points, given the current grid
 	 * map as reference.
-	  * \param pm The points map
-	  * \param relativePose The relative pose of the points map in this map's
+	 * \param pm The points map
+	 * \param relativePose The relative pose of the points map in this map's
 	 * coordinates, or nullptr for (0,0,0).
-	  *  See "likelihoodOptions" for configuration parameters.
-	  */
+	 *  See "likelihoodOptions" for configuration parameters.
+	 */
 	double computeLikelihoodField_Thrun(
 		const CPointsMap* pm,
 		const mrpt::poses::CPose2D* relativePose = nullptr);
 
 	/** Computes the likelihood [0,1] of a set of points, given the current grid
 	 * map as reference.
-	  * \param pm The points map
-	  * \param relativePose The relative pose of the points map in this map's
+	 * \param pm The points map
+	 * \param relativePose The relative pose of the points map in this map's
 	 * coordinates, or nullptr for (0,0,0).
-	  *  See "likelihoodOptions" for configuration parameters.
-	  */
+	 *  See "likelihoodOptions" for configuration parameters.
+	 */
 	double computeLikelihoodField_II(
 		const CPointsMap* pm,
 		const mrpt::poses::CPose2D* relativePose = nullptr);
@@ -920,11 +1002,12 @@ class COccupancyGridMap2D : public CMetricMap,
 	template <class CLANDMARKSMAP>
 	bool saveAsBitmapFileWithLandmarks(
 		const std::string& file, const CLANDMARKSMAP* landmarks,
-		bool addTextLabels = false, const mrpt::img::TColor& marks_color =
-										mrpt::img::TColor(0, 0, 255)) const
+		bool addTextLabels = false,
+		const mrpt::img::TColor& marks_color =
+			mrpt::img::TColor(0, 0, 255)) const
 	{
 		MRPT_START
-				CImage img(1, 1, 3);
+		mrpt::img::CImage img(1, 1, 3);
 		getAsImageFiltered(img, false, true);  // in RGB
 		const bool topleft = img.isOriginTopLeft();
 		for (unsigned int i = 0; i < landmarks->landmarks.size(); i++)
@@ -945,31 +1028,31 @@ class COccupancyGridMap2D : public CMetricMap,
 
 	/** Returns the grid as a 8-bit graylevel image, where each pixel is a cell
 	 * (output image is RGB only if forceRGB is true)
-	  *  If "tricolor" is true, only three gray levels will appear in the image:
+	 *  If "tricolor" is true, only three gray levels will appear in the image:
 	 * gray for unobserved cells, and black/white for occupied/empty cells
 	 * respectively.
-	  * \sa getAsImageFiltered
-	  */
+	 * \sa getAsImageFiltered
+	 */
 	void getAsImage(
-		utils::CImage& img, bool verticalFlip = false, bool forceRGB = false,
-		bool tricolor = false) const;
+		mrpt::img::CImage& img, bool verticalFlip = false,
+		bool forceRGB = false, bool tricolor = false) const;
 
 	/** Returns the grid as a 8-bit graylevel image, where each pixel is a cell
 	 * (output image is RGB only if forceRGB is true) - This method filters the
 	 * image for easy feature detection
-	  *  If "tricolor" is true, only three gray levels will appear in the image:
+	 *  If "tricolor" is true, only three gray levels will appear in the image:
 	 * gray for unobserved cells, and black/white for occupied/empty cells
 	 * respectively.
-	  * \sa getAsImage
-	  */
+	 * \sa getAsImage
+	 */
 	void getAsImageFiltered(
-		utils::CImage& img, bool verticalFlip = false,
+		img::CImage& img, bool verticalFlip = false,
 		bool forceRGB = false) const;
 
 	/** Returns a 3D plane with its texture being the occupancy grid and
 	 * transparency proportional to "uncertainty" (i.e. a value of 0.5 is fully
 	 * transparent)
-	  */
+	 */
 	void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
 
 	/** Get a point cloud with all (border) occupied cells as points */
@@ -978,9 +1061,9 @@ class COccupancyGridMap2D : public CMetricMap,
 		const float occup_threshold = 0.5f) const;
 
 	/** Returns true upon map construction or after calling clear(), the return
-	  *  changes to false upon successful insertObservation() or any other
+	 *  changes to false upon successful insertObservation() or any other
 	 * method to load data in the map.
-	  */
+	 */
 	bool isEmpty() const override;
 
 	/** Load the gridmap from a image in a file (the format can be any supported
@@ -1102,7 +1185,7 @@ bool operator<(
 	const COccupancyGridMap2D::TPairLikelihoodIndex& e1,
 	const COccupancyGridMap2D::TPairLikelihoodIndex& e2);
 
-}  // End of namespace
+}  // namespace maps
 namespace utils
 {
 template <>
@@ -1121,7 +1204,5 @@ struct TEnumTypeFiller<mrpt::maps::COccupancyGridMap2D::TLikelihoodMethod>
 		MRPT_FILL_ENUM_MEMBER(COccupancyGridMap2D, lmConsensusOWA);
 	}
 };
-}
-}  // End of namespace
-
-#endif
+}  // namespace utils
+}  // namespace mrpt

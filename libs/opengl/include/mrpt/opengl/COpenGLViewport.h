@@ -14,22 +14,19 @@
 #include <mrpt/opengl/CCamera.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CLight.h>
+#include <mrpt/opengl/opengl_frwds.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/system/CObservable.h>
 #include <mrpt/system/mrptEvent.h>
 
 namespace mrpt
 {
-namespace utils
+namespace img
 {
 class CImage;
 }
-
 namespace opengl
 {
-class COpenGLScene;
-class CRenderizable;
-
 /** A viewport within a COpenGLScene, containing a set of OpenGL objects to
  *render.
  *   This class has protected constuctor, thus it cannot be created by users.

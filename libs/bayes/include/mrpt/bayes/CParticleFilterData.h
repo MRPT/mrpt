@@ -98,7 +98,7 @@ struct CParticleFilterDataImpl : public CParticleFilterCapable
 		for (typename particle_list_t::const_iterator it =
 				 derived().m_particles.begin();
 			 it != derived().m_particles.end(); ++it)
-			cum += utils::square(exp(it->log_w) / sumLinearWeights);
+			cum += mrpt::square(exp(it->log_w) / sumLinearWeights);
 
 		if (cum == 0)
 			return 0;

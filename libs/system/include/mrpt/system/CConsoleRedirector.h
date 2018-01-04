@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CConsoleRedirector_H
-#define CConsoleRedirector_H
+#pragma once
 
 #include <streambuf>
 #include <iostream>
@@ -16,14 +15,14 @@
 
 namespace mrpt
 {
-namespace utils
+namespace system
 {
 /** By creating an object of this class, all the output to std::cout (and
  * std::cerr) will be redirected to a text file, and optionally also shown on
  * the console.
-  *  Based on code from http://www.devmaster.net/forums/showthread.php?t=7037
+ *  Based on code from http://www.devmaster.net/forums/showthread.php?t=7037
  * \ingroup mrpt_base_grp
-  */
+ */
 class CConsoleRedirector : public std::streambuf
 {
    protected:
@@ -38,16 +37,16 @@ class CConsoleRedirector : public std::streambuf
 
    public:
 	/** Constructor
-	  * \param out_file The file to create / append
-	  * \param also_to_console Whether to redirect data to file *and* also dump
+	 * \param out_file The file to create / append
+	 * \param also_to_console Whether to redirect data to file *and* also dump
 	 * data to the console as usual.
-	  * \param append_file If set to false the file will be truncated on open
-	  * \param bufferSize It's recommended to buffer the data instead of writing
+	 * \param append_file If set to false the file will be truncated on open
+	 * \param bufferSize It's recommended to buffer the data instead of writing
 	 * characters one by one.
-	  * \param also_cerr Whether to redirect the output to std::cerr in addition
+	 * \param also_cerr Whether to redirect the output to std::cerr in addition
 	 * to std::cout.
-	  * \exception std::exception If the file cannot be opened.
-	  */
+	 * \exception std::exception If the file cannot be opened.
+	 */
 	CConsoleRedirector(
 		const std::string& out_file, bool also_to_console = true,
 		bool also_cerr = true, bool append_file = false, int bufferSize = 1000)
@@ -136,8 +135,5 @@ class CConsoleRedirector : public std::streambuf
 		return 0;
 	}
 };
-
-}  // end namespace
-}  // end namespace
-
-#endif
+}  // namespace system
+}  // namespace mrpt

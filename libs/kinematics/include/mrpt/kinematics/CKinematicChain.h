@@ -20,11 +20,11 @@ namespace kinematics
 {
 /** An individual kinematic chain element (one link) which builds up a
  * CKinematicChain.
-  * The parameterization of the SE(3) transformation from the starting point to
+ * The parameterization of the SE(3) transformation from the starting point to
  * the end point
-  * follows a Denavit-Hartenberg standard parameterization: [theta, d, a,
+ * follows a Denavit-Hartenberg standard parameterization: [theta, d, a,
  * alpha].
-  */
+ */
 struct TKinematicLink
 {
 	/** Rotation from X_i to X_{i+1} (radians) */
@@ -53,20 +53,21 @@ struct TKinematicLink
 	TKinematicLink() : theta(0), d(0), a(0), alpha(0), is_prismatic(false) {}
 };
 
-mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in, TKinematicLink& o);
-mrpt::utils::CStream& operator<<(
-	mrpt::utils::CStream& out, const TKinematicLink& o);
+mrpt::serialization::CArchive& operator>>(
+	mrpt::serialization::CArchive& in, TKinematicLink& o);
+mrpt::serialization::CArchive& operator<<(
+	mrpt::serialization::CArchive& out, const TKinematicLink& o);
 
 /** A open-loop kinematic chain model, suitable to robotic manipulators.
-  *  Each link is parameterized with standard Denavit-Hartenberg standard
+ *  Each link is parameterized with standard Denavit-Hartenberg standard
  * parameterization [theta, d, a, alpha].
-  *
-  *  The orientation of the first link can be modified with setOriginPose(),
+ *
+ *  The orientation of the first link can be modified with setOriginPose(),
  * which defaults to standard XYZ axes with +Z pointing upwards.
-  *
-  * \sa CPose3D
-  * \ingroup kinematics_grp
-  */
+ *
+ * \sa CPose3D
+ * \ingroup kinematics_grp
+ */
 class CKinematicChain : public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(CKinematicChain)
@@ -110,13 +111,13 @@ class CKinematicChain : public mrpt::serialization::CSerializable
 
 	/** Get all the DOFs of the arm at once, returning them in a vector with all
 	 * the "q_i" values, which
-	  * can be interpreted as rotations (radians) or displacements (meters)
+	 * can be interpreted as rotations (radians) or displacements (meters)
 	 * depending on links being "revolute" or "prismatic".
-	  * The vector is automatically resized to the correct size (the number of
+	 * The vector is automatically resized to the correct size (the number of
 	 * links).
-	  * \tparam VECTOR Can be any Eigen vector, mrpt::math::CVectorDouble, or
+	 * \tparam VECTOR Can be any Eigen vector, mrpt::math::CVectorDouble, or
 	 * std::vector<double>
-	  */
+	 */
 	template <class VECTOR>
 	void getConfiguration(VECTOR& v) const
 	{
@@ -133,17 +134,17 @@ class CKinematicChain : public mrpt::serialization::CSerializable
 
 	/** Set all the DOFs of the arm at once, from a vector with all the "q_i"
 	 * values, which
-	  * are interpreted as rotations (radians) or displacements (meters)
+	 * are interpreted as rotations (radians) or displacements (meters)
 	 * depending on links being "revolute" or "prismatic".
-	  * \exception std::exception If the size of the vector doesn't match the
+	 * \exception std::exception If the size of the vector doesn't match the
 	 * number of links.
-	  * \tparam VECTOR Can be any Eigen vector, mrpt::math::CVectorDouble, or
+	 * \tparam VECTOR Can be any Eigen vector, mrpt::math::CVectorDouble, or
 	 * std::vector<double>
-	  */
+	 */
 	template <class VECTOR>
 	void setConfiguration(const VECTOR& v)
 	{
-		ASSERT_EQUAL_(v.size(), this->size();
+		ASSERT_EQUAL_(v.size(), this->size());
 		const size_t N = m_links.size();
 		for (size_t i = 0; i < N; i++)
 		{
@@ -156,50 +157,50 @@ class CKinematicChain : public mrpt::serialization::CSerializable
 
 	/** Constructs a 3D representation of the kinematic chain, in its current
 	 * state.
-	  * You can call update3DObject() to update the kinematic state of these
+	 * You can call update3DObject() to update the kinematic state of these
 	 * OpenGL objects in the future, since
-	  * an internal list of smart pointers to the constructed objects is kept
+	 * an internal list of smart pointers to the constructed objects is kept
 	 * internally. This is more efficient
-	  * than calling this method again to build a new representation.
-	  * \param[out] out_all_poses Optional output vector, will contain the poses
+	 * than calling this method again to build a new representation.
+	 * \param[out] out_all_poses Optional output vector, will contain the poses
 	 * in the format of recomputeAllPoses()
-	  * \sa update3DObject
-	  */
+	 * \sa update3DObject
+	 */
 	void getAs3DObject(
 		mrpt::opengl::CSetOfObjects::Ptr& inout_gl_obj,
-		mrpt::aligned_std_vector<mrpt::poses::CPose3D>*
-			out_all_poses = nullptr) const;
+		mrpt::aligned_std_vector<mrpt::poses::CPose3D>* out_all_poses =
+			nullptr) const;
 
 	/** Read getAs3DObject() for a description.
-	  * \param[out] out_all_poses Optional output vector, will contain the poses
+	 * \param[out] out_all_poses Optional output vector, will contain the poses
 	 * in the format of recomputeAllPoses()
-	  */
+	 */
 	void update3DObject(
-		mrpt::aligned_std_vector<mrpt::poses::CPose3D>*
-			out_all_poses = nullptr) const;
+		mrpt::aligned_std_vector<mrpt::poses::CPose3D>* out_all_poses =
+			nullptr) const;
 
 	/** Go thru all the links of the chain and compute the global pose of each
 	 * link. The "ground" link pose "pose0" defaults to the origin of
 	 * coordinates,
-	  * but anything else can be passed as the optional argument.
-	  * The returned vector has N+1 elements (N=number of links), since [0]
+	 * but anything else can be passed as the optional argument.
+	 * The returned vector has N+1 elements (N=number of links), since [0]
 	 * contains the base frame, [1] the pose after the first link, and so on.
-	   */
+	 */
 	void recomputeAllPoses(
 		mrpt::aligned_std_vector<mrpt::poses::CPose3D>& poses,
 		const mrpt::poses::CPose3D& pose0 = mrpt::poses::CPose3D()) const;
 
 };  // End of class def.
 
-}  // End of namespace
+}  // namespace kinematics
 
 // Specialization must occur in the same namespace
 // (This is to ease serialization)
-namespace utils
+namespace typemeta
 {
 MRPT_DECLARE_TTYPENAME_NAMESPACE(TKinematicLink, ::mrpt::kinematics)
-}  // End of namespace
+}  // namespace typemeta
 
-}  // End of namespace
+}  // namespace mrpt
 
 #endif

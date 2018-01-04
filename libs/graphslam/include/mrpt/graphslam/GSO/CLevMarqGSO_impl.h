@@ -32,7 +32,7 @@ CLevMarqGSO<GRAPH_T>::CLevMarqGSO()
 	  m_min_nodes_for_optimization(3)
 {
 	MRPT_START;
-		this->initializeLoggers("CLevMarqGSO");
+	this->initializeLoggers("CLevMarqGSO");
 
 	MRPT_END;
 }
@@ -52,7 +52,7 @@ bool CLevMarqGSO<GRAPH_T>::updateState(
 	mrpt::obs::CObservation::Ptr observation)
 {
 	MRPT_START;
-		this->logFmt(LVL_DEBUG, "In updateOptimizerState... ");
+	this->logFmt(LVL_DEBUG, "In updateOptimizerState... ");
 
 	if (this->m_graph->nodeCount() > m_last_total_num_of_nodes)
 	{
@@ -187,7 +187,7 @@ inline void CLevMarqGSO<GRAPH_T>::updateGraphVisualization()
 	MRPT_START;
 	ASSERTMSG_(this->m_win_manager, "No CWindowManager* is given");
 	using namespace mrpt::opengl;
-	
+
 	this->logFmt(
 		mrpt::system::LVL_DEBUG, "In the updateGraphVisualization function");
 
@@ -425,7 +425,6 @@ void CLevMarqGSO<GRAPH_T>::_optimizeGraph(bool is_full_update /*=false*/)
 	MRPT_START;
 	this->m_time_logger.enter("CLevMarqGSO::_optimizeGraph");
 
-	
 	// if less than X nodes exist overall, do not try optimizing
 	if (m_min_nodes_for_optimization > this->m_graph->nodes.size())
 	{
@@ -671,7 +670,7 @@ template <class GRAPH_T>
 void CLevMarqGSO<GRAPH_T>::loadParams(const std::string& source_fname)
 {
 	MRPT_START;
-		parent::loadParams(source_fname);
+	parent::loadParams(source_fname);
 
 	opt_params.loadFromConfigFileName(source_fname, "OptimizerParameters");
 	viz_params.loadFromConfigFileName(source_fname, "VisualizationParameters");
@@ -746,11 +745,13 @@ CLevMarqGSO<GRAPH_T>::OptimizationParams::~OptimizationParams()
 {
 }
 template <class GRAPH_T>
-void CLevMarqGSO<GRAPH_T>::OptimizationParams::dumpToTextStream(std::ostream& out) const
+void CLevMarqGSO<GRAPH_T>::OptimizationParams::dumpToTextStream(
+	std::ostream& out) const
 {
 	MRPT_START;
 
-	out << mrpt::format("-----------[ Graph Visualization Parameters ]-----------\n");
+	out << mrpt::format(
+		"-----------[ Graph Visualization Parameters ]-----------\n");
 	out << mrpt::format(
 		"Visualize optimized graph = %s\n",
 		visualize_optimized_graph ? "TRUE" : "FALSE");
@@ -766,7 +767,6 @@ void CLevMarqGSO<GRAPH_T>::GraphVisualizationParams::loadFromConfigFile(
 	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {
 	MRPT_START;
-	using namespace utils;
 
 	visualize_optimized_graph =
 		source.read_bool(section, "visualize_optimized_graph", 1, false);
@@ -798,8 +798,8 @@ void CLevMarqGSO<GRAPH_T>::GraphVisualizationParams::loadFromConfigFile(
 
 	MRPT_END;
 }
-}
-}
-}  // end of namespaces
+}  // namespace optimizers
+}  // namespace graphslam
+}  // namespace mrpt
 
 #endif /* end of include guard: CLEVMARQGSO_IMPL_H */

@@ -24,7 +24,7 @@
 
 namespace mrpt
 {
-namespace utils
+namespace poses
 {
 namespace internal
 {
@@ -143,7 +143,7 @@ void readFileWithPoses(
 	MRPT_START;
 
 	using namespace std;
-		using namespace mrpt::system;
+	using namespace mrpt::system;
 	using namespace mrpt::poses;
 	using namespace internal;
 
@@ -218,5 +218,5 @@ void readFileWithPoses(
 
 	MRPT_END;
 }  // end of readFileWithPoses
-}
-}  // end of namespaces
+}  // namespace poses
+}  // namespace mrpt
