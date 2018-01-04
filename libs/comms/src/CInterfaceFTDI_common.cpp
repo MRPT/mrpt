@@ -15,9 +15,6 @@
 using namespace mrpt;
 using namespace mrpt::comms;
 
-/*-------------------------------------------------------------
-					Read
--------------------------------------------------------------*/
 size_t CInterfaceFTDI::Read(void* Buffer, size_t Count)
 {
 	if (!Count) return 0;
@@ -54,9 +51,6 @@ size_t CInterfaceFTDI::Read(void* Buffer, size_t Count)
 	}
 }
 
-/*-------------------------------------------------------------
-					Write
--------------------------------------------------------------*/
 size_t CInterfaceFTDI::Write(const void* Buffer, size_t Count)
 {
 	unsigned long ret = 0;
@@ -64,27 +58,13 @@ size_t CInterfaceFTDI::Write(const void* Buffer, size_t Count)
 	return (size_t)ret;
 }
 
-/*-------------------------------------------------------------
-					Seek
--------------------------------------------------------------*/
 uint64_t CInterfaceFTDI::Seek(uint64_t Offset, CStream::TSeekOrigin Origin)
 {
-	MRPT_UNUSED_PARAM(Offset);
-	MRPT_UNUSED_PARAM(Origin);
 	return 0;
 }
 
-/*-------------------------------------------------------------
-					getTotalBytesCount
--------------------------------------------------------------*/
 uint64_t CInterfaceFTDI::getTotalBytesCount() const { return 0; }
-/*-------------------------------------------------------------
-					getPosition
--------------------------------------------------------------*/
 uint64_t CInterfaceFTDI::getPosition() const { return 0; }
-/*-------------------------------------------------------------
-					ReadBufferImmediate
--------------------------------------------------------------*/
 size_t CInterfaceFTDI::ReadBufferImmediate(void* Buffer, size_t Count)
 {
 	unsigned long nRead;

@@ -170,11 +170,11 @@ class CInterfaceFTDI : public mrpt::io::CStream
 
 	/** This virtual method does nothing in this class.
 	 */
-	uint64_t getTotalBytesCount();
+	uint64_t getTotalBytesCount() const;
 
 	/** This virtual method does nothing in this class.
 	 */
-	uint64_t getPosition();
+	uint64_t getPosition() const;
 
 	void ftdi_read(
 		void* lpvBuffer, unsigned long dwBuffSize,
