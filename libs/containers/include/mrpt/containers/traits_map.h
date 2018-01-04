@@ -41,7 +41,7 @@ struct map_traits_map_as_vector
 	template <
 		class KEY, class VALUE, class _LessPred = std::less<KEY>,
 		class _Alloc = Eigen::aligned_allocator<std::pair<const KEY, VALUE>>>
-	struct map : public mrpt::utils::map_as_vector<KEY, VALUE>
+	struct map : public mrpt::containers::map_as_vector<KEY, VALUE>
 	{
 	};
 };

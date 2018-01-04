@@ -943,8 +943,8 @@ class CNetworkOfPoses
 template <
 	class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
 	class EDGE_ANNOTATIONS>
-mrpt::utils::CStream& operator<<(
-	mrpt::utils::CStream& out,
+mrpt::serialization::CArchive& operator<<(
+	mrpt::serialization::CArchive& out,
 	const CNetworkOfPoses<
 		CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>& obj)
 {
@@ -959,8 +959,8 @@ mrpt::utils::CStream& operator<<(
 template <
 	class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
 	class EDGE_ANNOTATIONS>
-mrpt::utils::CStream& operator>>(
-	mrpt::utils::CStream& in,
+mrpt::serialization::CArchive& operator>>(
+	mrpt::serialization::CArchive& in,
 	CNetworkOfPoses<
 		CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>& obj)
 {

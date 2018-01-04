@@ -10,7 +10,8 @@
 #define MRPT_DIRECTEDGRAPH_H
 
 #include <mrpt/typemeta/TTypeName.h>
-#include <mrpt/core/aligned_std_vector.h>
+#include <mrpt/core/aligned_std_map.h>
+#include <mrpt/graphs/TNodeID.h>
 #include <set>
 #include <map>
 #include <fstream>
@@ -19,11 +20,6 @@ namespace mrpt
 {
 namespace graphs
 {
-/** Make available this typedef in this namespace too */
-using mrpt::graphs::TNodeID;
-/** Make available this typedef in this namespace too */
-using mrpt::utils::TPairNodeIDs;
-
 /** \addtogroup mrpt_graphs_grp
 	@{ */
 
@@ -49,6 +45,7 @@ namespace detail
 /** An empty structure */
 struct edge_annotations_empty
 {
+	DECLARE_TTYPENAME_CLASSNAME(mrpt::graphs::detail::edge_annotations_empty)
 };
 }  // namespace detail
 
@@ -86,14 +83,13 @@ class CDirectedGraph
 	};
 
 	/** The type of the member \a edges */
-	typedef typename mrpt::aligned_containers<TPairNodeIDs, edge_t>::multimap_t
-		edges_map_t;
-	typedef typename edges_map_t::iterator iterator;
-	typedef typename edges_map_t::reverse_iterator reverse_iterator;
-	typedef typename edges_map_t::const_iterator const_iterator;
-	typedef typename edges_map_t::const_reverse_iterator const_reverse_iterator;
+	using edges_map_t = mrpt::aligned_std_multimap<TPairNodeIDs, edge_t>;
+	using iterator = typename edges_map_t::iterator;
+	using reverse_iterator = typename edges_map_t::reverse_iterator;
+	using const_iterator = typename edges_map_t::const_iterator;
+	using const_reverse_iterator = typename edges_map_t::const_reverse_iterator;
 	/**\brief Handy self type */
-	typedef CDirectedGraph<TYPE_EDGES, EDGE_ANNOTATIONS> self_t;
+	using self_t = CDirectedGraph<TYPE_EDGES, EDGE_ANNOTATIONS>;
 
 	/** The public member with the directed edges in the graph */
 	edges_map_t edges;
@@ -373,12 +369,5 @@ class CDirectedGraph
 
 /** @} */
 }  // namespace graphs
-
-// Specialization of TTypeName must occur in the same namespace:
-namespace typemeta
-{
-MRPT_DECLARE_TTYPENAME(mrpt::graphs::detail::edge_annotations_empty)
-}
-
 }  // namespace mrpt
 #endif

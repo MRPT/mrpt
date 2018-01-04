@@ -11,6 +11,7 @@
 
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/serialization/CSerializable.h>
+#include <mrpt/graphs/TNodeID.h>
 #include <cstdint>
 #include <mrpt/core/exceptions.h>
 #include <iostream>
@@ -81,18 +82,9 @@ struct TNodeAnnotations
 struct TNodeAnnotationsEmpty : public TNodeAnnotations
 {
 	TNodeAnnotationsEmpty() { this->is_node_annots_empty = true; }
+	DECLARE_TTYPENAME_CLASSNAME(mrpt::graphs::detail::TNodeAnnotationsEmpty)
 };
 }
 }
 }  // end of namespaces
-
-// declare as ttypename - in mrpt::utils namespace
-namespace mrpt
-{
-namespace utils
-{
-MRPT_DECLARE_TTYPENAME(mrpt::graphs::detail::TNodeAnnotationsEmpty)
-}
-}  // end of namespaces
-
 #endif /* end of include guard: TNODEANNOTATIONS_H */

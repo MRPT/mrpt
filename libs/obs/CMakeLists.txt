@@ -17,11 +17,8 @@ LIST(APPEND obs_EXTRA_SRCS_NAME
 
 # Minimal XMLParser:
 INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/db/src/")  # Notice the "src", not "include": these are private hdrs
-IF (WIN32 AND BUILD_SHARED_LIBS)  # No need to reinclude these sources (already in mrpt-db) if building static libs or if in GCC
-	LIST(APPEND obs_EXTRA_SRCS		"${MRPT_LIBS_ROOT}/db/src/xmlparser/*.cpp" "${MRPT_LIBS_ROOT}/db/src/xmlparser/*.h")
-	LIST(APPEND obs_EXTRA_SRCS_NAME 	"db/xmlparser" "db/xmlparser")
-	SET(OBS_HAS_LOCAL_XMLPARSER 1)
-ENDIF()
+# No need to compile XML sources here (already in mrpt-db), will be exported and linked from mrpt-db, 
+# even if their interface is in a private .h file.
 
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":
@@ -37,7 +34,4 @@ define_mrpt_lib(
 	)
 
 IF(BUILD_mrpt-obs)
-	IF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC AND OBS_HAS_LOCAL_XMLPARSER)
-			set_source_files_properties(${utils/xmlparser_FILES} PROPERTIES COMPILE_FLAGS "/Y-")
-	ENDIF()
 ENDIF(BUILD_mrpt-obs)

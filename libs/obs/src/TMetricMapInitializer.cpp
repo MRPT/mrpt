@@ -17,8 +17,6 @@ using namespace std;
 using namespace mrpt;
 using namespace mrpt::maps;
 
-MRPT_TODO("look git history!");
-
 /** Looks up in the registry of known map types and call the corresponding
  * `<metric_map_class>::MapDefinition()`. */
 TMetricMapInitializer* TMetricMapInitializer::factory(
