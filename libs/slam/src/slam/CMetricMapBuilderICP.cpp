@@ -97,29 +97,29 @@ void CMetricMapBuilderICP::TConfigParams::loadFromConfigFile(
 
 void CMetricMapBuilderICP::TConfigParams::dumpToTextStream(CStream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [CMetricMapBuilderICP::TConfigParams] ------------ "
 		"\n\n");
 
-	out.printf(
+	out << mrpt::format(
 		"insertionLinDistance                    = %f m\n",
 		insertionLinDistance);
-	out.printf(
+	out << mrpt::format(
 		"insertionAngDistance                    = %f deg\n",
 		RAD2DEG(insertionAngDistance));
-	out.printf(
+	out << mrpt::format(
 		"localizationLinDistance                 = %f m\n",
 		localizationLinDistance);
-	out.printf(
+	out << mrpt::format(
 		"localizationAngDistance                 = %f deg\n",
 		RAD2DEG(localizationAngDistance));
-	out.printf(
+	out << mrpt::format(
 		"verbosity_level                         = %s\n",
 		mrpt::utils::TEnumType<mrpt::system::VerbosityLevel>::value2name(
 			verbosity_level)
 			.c_str());
 
-	out.printf("  Now showing 'mapsInitializers':\n");
+	out << mrpt::format("  Now showing 'mapsInitializers':\n");
 	mapInitializers.dumpToTextStream(out);
 }
 

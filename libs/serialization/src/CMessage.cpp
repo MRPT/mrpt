@@ -12,7 +12,7 @@
 #include <mrpt/core/exceptions.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/serialization/CMessage.h>
-#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/archiveFrom_std_streams.h>
 #include <sstream>
 #include <cstring>  // memcpy()
 

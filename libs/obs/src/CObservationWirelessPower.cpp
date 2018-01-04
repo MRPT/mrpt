@@ -19,12 +19,14 @@ using namespace mrpt::poses;
 IMPLEMENTS_SERIALIZABLE(CObservationWirelessPower, CObservation, mrpt::obs)
 
 uint8_t CObservationWirelessPower::serializeGetVersion() const { return 3; }
-void CObservationWirelessPower::serializeTo(mrpt::serialization::CArchive& out) const
+void CObservationWirelessPower::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
-	out << power << sensorLabel << timestamp << sensorPoseOnRobot; // in v3
+	out << power << sensorLabel << timestamp << sensorPoseOnRobot;  // in v3
 }
 
-void CObservationWirelessPower::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CObservationWirelessPower::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -68,6 +70,5 @@ void CObservationWirelessPower::setSensorPose(const CPose3D& newSensorPose)
 void CObservationWirelessPower::getDescriptionAsText(std::ostream& o) const
 {
 	CObservation::getDescriptionAsText(o);
-
-	std::cout << format("Measured Power: %.02f/100\n", power);
+	o << format("Measured Power: %.02f/100\n", power);
 }

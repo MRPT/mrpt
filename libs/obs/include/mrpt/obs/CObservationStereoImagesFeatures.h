@@ -41,20 +41,7 @@ class CObservationStereoImagesFeatures : public CObservation
 	DEFINE_SERIALIZABLE(CObservationStereoImagesFeatures)
 
    public:
-	/** Default Constructor.
-	 */
-	CObservationStereoImagesFeatures();
-
-	/** Other constructor providing members initialization.
-	 */
-	CObservationStereoImagesFeatures(
-		const mrpt::math::CMatrixDouble33& iPLeft /*left intrinsic params*/,
-		const mrpt::math::CMatrixDouble33& iPRight /*right intrinsic params*/,
-		const mrpt::math::CArrayDouble<5>& dPLeft /*left distortion params*/,
-		const mrpt::math::CArrayDouble<5>& dPRight /*right distortion params*/,
-		const mrpt::poses::CPose3DQuat& rCPose /*rightCameraPose*/,
-		const mrpt::poses::CPose3DQuat& cPORobot /*cameraPoseOnRobot*/);
-
+	CObservationStereoImagesFeatures() = default;
 	/** Other constructor providing members initialization.
 	 */
 	CObservationStereoImagesFeatures(
@@ -63,14 +50,10 @@ class CObservationStereoImagesFeatures : public CObservation
 		const mrpt::poses::CPose3DQuat& rCPose /*rightCameraPose*/,
 		const mrpt::poses::CPose3DQuat& cPORobot /*cameraPoseOnRobot*/);
 
-	/** Destructor
-	 */
-	~CObservationStereoImagesFeatures();
-
 	/** A method for storing the set of observed features in a text file in the
 	 * format: <br>
-	  * ID ul vl ur vr <br>
-	  * being (ul,vl) and (ur,vr) the "x" and "y" coordinates for the left and
+	 * ID ul vl ur vr <br>
+	 * being (ul,vl) and (ur,vr) the "x" and "y" coordinates for the left and
 	 * right feature, respectively.
 	 */
 	void saveFeaturesToTextFile(const std::string& filename);
@@ -81,20 +64,20 @@ class CObservationStereoImagesFeatures : public CObservation
 	mrpt::img::TCamera cameraLeft, cameraRight;
 
 	/** The pose of the right camera, relative to the left one:
-	  *  Note that for the Bumblebee stereo camera and using the conventional
+	 *  Note that for the Bumblebee stereo camera and using the conventional
 	 * reference coordinates for the left
-	  *   camera ("x" points to the right, "y" down), the "right" camera is
+	 *   camera ("x" points to the right, "y" down), the "right" camera is
 	 * situated
-	  *   at position (BL, 0, 0) with q = [1 0 0 0], where BL is the BASELINE.
-	  */
+	 *   at position (BL, 0, 0) with q = [1 0 0 0], where BL is the BASELINE.
+	 */
 	mrpt::poses::CPose3DQuat rightCameraPose;
 
 	/** The pose of the LEFT camera, relative to the robot.
-	  */
+	 */
 	mrpt::poses::CPose3DQuat cameraPoseOnRobot;
 
 	/** Vectors of image feature pairs (with ID).
-	  */
+	 */
 	std::vector<TStereoImageFeatures> theFeatures;
 
 	// See base class docs
@@ -112,10 +95,10 @@ class CObservationStereoImagesFeatures : public CObservation
 
 	/** A general method to change the sensor pose on the robot in a
 	 * mrpt::poses::CPose3D form.
-	  *  Note that most sensors will use the full (6D) CPose3DQuat, but see the
+	 *  Note that most sensors will use the full (6D) CPose3DQuat, but see the
 	 * derived classes for more details or special cases.
-	  * \sa getSensorPose
-	  */
+	 * \sa getSensorPose
+	 */
 	inline void setSensorPose(
 		const mrpt::poses::CPose3D& newSensorPose) override
 	{
@@ -124,17 +107,17 @@ class CObservationStereoImagesFeatures : public CObservation
 
 	/** A general method to change the sensor pose on the robot in a CPose3DQuat
 	 * form.
-	  *  Note that most sensors will use the full (6D) CPose3DQuat, but see the
+	 *  Note that most sensors will use the full (6D) CPose3DQuat, but see the
 	 * derived classes for more details or special cases.
-	  * \sa getSensorPose
-	  */
+	 * \sa getSensorPose
+	 */
 	inline void setSensorPose(const mrpt::poses::CPose3DQuat& newSensorPose)
 	{
 		cameraPoseOnRobot = newSensorPose;
 	}
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
+}  // namespace obs
+}  // namespace mrpt
 
 #endif

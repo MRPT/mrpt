@@ -12,6 +12,7 @@
 #include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
+#include <iostream>
 
 using namespace mrpt::obs;
 using namespace mrpt::poses;
@@ -25,7 +26,8 @@ IMPLEMENTS_SERIALIZABLE(CObservationGasSensors, CObservation, mrpt::obs)
  */
 CObservationGasSensors::CObservationGasSensors() : m_readings() {}
 uint8_t CObservationGasSensors::serializeGetVersion() const { return 5; }
-void CObservationGasSensors::serializeTo(mrpt::serialization::CArchive& out) const
+void CObservationGasSensors::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
 	uint32_t i, n = m_readings.size();
 	out << n;
@@ -42,7 +44,8 @@ void CObservationGasSensors::serializeTo(mrpt::serialization::CArchive& out) con
 	out << sensorLabel << timestamp;
 }
 
-void CObservationGasSensors::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CObservationGasSensors::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -104,8 +107,8 @@ void CObservationGasSensors::serializeFrom(mrpt::serialization::CArchive& in, ui
 
 			// There was TWO e-noses:
 			// (1)
-			eNose.eNosePoseOnTheRobot = 
-				TPose3D(0.20, -0.15, 0.10,0,0,0);  // (x,y,z) only
+			eNose.eNosePoseOnTheRobot =
+				TPose3D(0.20, -0.15, 0.10, 0, 0, 0);  // (x,y,z) only
 			eNose.readingsVoltage.resize(4);
 			eNose.readingsVoltage[0] = readings[2];
 			eNose.readingsVoltage[1] = readings[4];
@@ -117,8 +120,8 @@ void CObservationGasSensors::serializeFrom(mrpt::serialization::CArchive& in, ui
 			m_readings.push_back(eNose);
 
 			// (2)
-			eNose.eNosePoseOnTheRobot = 
-				TPose3D(0.20, 0.15, 0.10, .0,.0,.0);  // (x,y,z) only
+			eNose.eNosePoseOnTheRobot =
+				TPose3D(0.20, 0.15, 0.10, .0, .0, .0);  // (x,y,z) only
 			eNose.readingsVoltage.resize(4);
 			eNose.readingsVoltage[0] = readings[8];
 			eNose.readingsVoltage[1] = readings[10];

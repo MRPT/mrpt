@@ -330,7 +330,7 @@ void CHMTSLAM::TOptions::loadFromConfigFile(
   ---------------------------------------------------------------*/
 void CHMTSLAM::TOptions::dumpToTextStream(mrpt::utils::CStream& out) const
 {
-	out.printf("\n----------- [CHMTSLAM::TOptions] ------------ \n\n");
+	out << mrpt::format("\n----------- [CHMTSLAM::TOptions] ------------ \n\n");
 
 	LOADABLEOPTS_DUMP_VAR(LOG_OUTPUT_DIR, string);
 	LOADABLEOPTS_DUMP_VAR(LOG_FREQUENCY, int);

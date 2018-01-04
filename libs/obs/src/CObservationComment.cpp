@@ -11,6 +11,7 @@
 
 #include <mrpt/obs/CObservationComment.h>
 #include <mrpt/serialization/CArchive.h>
+#include <iostream>
 
 using namespace mrpt::obs;
 using namespace mrpt::poses;
@@ -24,7 +25,8 @@ void CObservationComment::serializeTo(mrpt::serialization::CArchive& out) const
 	out << text << timestamp;
 }
 
-void CObservationComment::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CObservationComment::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -39,6 +41,5 @@ void CObservationComment::serializeFrom(mrpt::serialization::CArchive& in, uint8
 void CObservationComment::getDescriptionAsText(std::ostream& o) const
 {
 	CObservation::getDescriptionAsText(o);
-
 	o << "Comment content:\n'" << text << "'\n";
 }

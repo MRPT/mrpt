@@ -91,21 +91,21 @@ struct TKF_options : public mrpt::config::CLoadableOptions
 	 * textual form, sending it to a CStream. */
 	void dumpToTextStream(std::ostream& out) const override
 	{
-		out.printf("\n----------- [TKF_options] ------------ \n\n");
-		out.printf(
+		out << mrpt::format("\n----------- [TKF_options] ------------ \n\n");
+		out << mrpt::format(
 			"method                                  = %s\n",
 			mrpt::utils::TEnumType<TKFMethod>::value2name(method).c_str());
-		out.printf(
+		out << mrpt::format(
 			"verbosity_level                         = %s\n",
 			mrpt::utils::TEnumType<mrpt::system::VerbosityLevel>::value2name(
 				verbosity_level)
 				.c_str());
-		out.printf(
+		out << mrpt::format(
 			"IKF_iterations                          = %i\n", IKF_iterations);
-		out.printf(
+		out << mrpt::format(
 			"enable_profiler                         = %c\n",
 			enable_profiler ? 'Y' : 'N');
-		out.printf("\n");
+		out << mrpt::format("\n");
 	}
 
 	/** The method to employ (default: kfEKFNaive) */

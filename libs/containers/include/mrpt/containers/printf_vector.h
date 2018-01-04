@@ -15,10 +15,10 @@
 
 namespace mrpt
 {
-namespace utils
+namespace containers
 {
 /** \addtogroup
-  * @{ */
+ * @{ */
 
 /** Generates a string for a vector in the format [A,B,C,...] to std::cout, and
  * the fmt string for <b>each</b> vector element. */
@@ -59,5 +59,5 @@ void printf_vector(const char* fmt, const std::vector<T>& V)
 }
 
 /** @} */  // end of grouping
-}
-}
+}  // namespace containers
+}  // namespace mrpt

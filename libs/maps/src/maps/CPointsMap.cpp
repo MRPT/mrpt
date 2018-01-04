@@ -736,7 +736,7 @@ void CPointsMap::TLikelihoodOptions::serializeFrom(mrpt::serialization::CArchive
   ---------------------------------------------------------------*/
 void CPointsMap::TInsertionOptions::dumpToTextStream(std::ostream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [CPointsMap::TLikelihoodOptions] ------------ \n\n");
 
 	LOADABLEOPTS_DUMP_VAR(sigma_dist, double);

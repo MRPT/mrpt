@@ -190,79 +190,79 @@ void CICP::TConfigParams::loadFromConfigFile(
   ---------------------------------------------------------------*/
 void CICP::TConfigParams::dumpToTextStream(std::ostream& out) const
 {
-	out.printf("\n----------- [CICP::TConfigParams] ------------ \n\n");
+	out << mrpt::format("\n----------- [CICP::TConfigParams] ------------ \n\n");
 
-	out.printf(
+	out << mrpt::format(
 		"ICP_algorithm                           = %s\n",
 		mrpt::utils::TEnumType<TICPAlgorithm>::value2name(ICP_algorithm)
 			.c_str());
-	out.printf(
+	out << mrpt::format(
 		"ICP_covariance_method                   = %s\n",
 		mrpt::utils::TEnumType<TICPCovarianceMethod>::value2name(
 			ICP_covariance_method)
 			.c_str());
-	out.printf("maxIterations                           = %i\n", maxIterations);
-	out.printf(
+	out << mrpt::format("maxIterations                           = %i\n", maxIterations);
+	out << mrpt::format(
 		"minAbsStep_trans                        = %f\n", minAbsStep_trans);
-	out.printf(
+	out << mrpt::format(
 		"minAbsStep_rot                          = %f\n", minAbsStep_rot);
 
-	out.printf("thresholdDist                           = %f\n", thresholdDist);
-	out.printf(
+	out << mrpt::format("thresholdDist                           = %f\n", thresholdDist);
+	out << mrpt::format(
 		"thresholdAng                            = %f deg\n",
 		RAD2DEG(thresholdAng));
-	out.printf("ALFA                                    = %f\n", ALFA);
-	out.printf(
+	out << mrpt::format("ALFA                                    = %f\n", ALFA);
+	out << mrpt::format(
 		"smallestThresholdDist                   = %f\n",
 		smallestThresholdDist);
-	out.printf(
+	out << mrpt::format(
 		"onlyClosestCorrespondences              = %c\n",
 		onlyClosestCorrespondences ? 'Y' : 'N');
-	out.printf(
+	out << mrpt::format(
 		"onlyUniqueRobust                        = %c\n",
 		onlyUniqueRobust ? 'Y' : 'N');
-	out.printf(
+	out << mrpt::format(
 		"covariance_varPoints                    = %f\n", covariance_varPoints);
-	out.printf(
+	out << mrpt::format(
 		"doRANSAC                                = %c\n", doRANSAC ? 'Y' : 'N');
-	out.printf(
+	out << mrpt::format(
 		"ransac_minSetSize                       = %i\n", ransac_minSetSize);
-	out.printf(
+	out << mrpt::format(
 		"ransac_maxSetSize                       = %i\n", ransac_maxSetSize);
-	out.printf(
+	out << mrpt::format(
 		"ransac_mahalanobisDistanceThreshold     = %f\n",
 		ransac_mahalanobisDistanceThreshold);
-	out.printf(
+	out << mrpt::format(
 		"ransac_nSimulations                     = %i\n", ransac_nSimulations);
-	out.printf(
+	out << mrpt::format(
 		"ransac_fuseByCorrsMatch                 = %c\n",
 		ransac_fuseByCorrsMatch ? 'Y' : 'N');
-	out.printf(
+	out << mrpt::format(
 		"ransac_fuseMaxDiffXY                    = %f\n", ransac_fuseMaxDiffXY);
-	out.printf(
+	out << mrpt::format(
 		"ransac_fuseMaxDiffPhi                   = %f deg\n",
 		RAD2DEG(ransac_fuseMaxDiffPhi));
-	out.printf(
+	out << mrpt::format(
 		"normalizationStd                        = %f\n", normalizationStd);
-	out.printf("kernel_rho                              = %f\n", kernel_rho);
-	out.printf(
+	out << mrpt::format("kernel_rho                              = %f\n", kernel_rho);
+	out << mrpt::format(
 		"use_kernel                              = %c\n",
 		use_kernel ? 'Y' : 'N');
-	out.printf(
+	out << mrpt::format(
 		"Axy_aprox_derivatives                   = %f\n",
 		Axy_aprox_derivatives);
-	out.printf(
+	out << mrpt::format(
 		"LM_initial_lambda                       = %f\n", LM_initial_lambda);
-	out.printf(
+	out << mrpt::format(
 		"skip_cov_calculation                    = %c\n",
 		skip_cov_calculation ? 'Y' : 'N');
-	out.printf(
+	out << mrpt::format(
 		"skip_quality_calculation                = %c\n",
 		skip_quality_calculation ? 'Y' : 'N');
-	out.printf(
+	out << mrpt::format(
 		"corresponding_points_decimation         = %u\n",
 		(unsigned int)corresponding_points_decimation);
-	out.printf("\n");
+	out << mrpt::format("\n");
 }
 
 /*---------------------------------------------------------------

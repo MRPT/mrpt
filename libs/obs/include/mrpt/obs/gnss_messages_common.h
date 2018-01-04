@@ -153,7 +153,7 @@ struct gnss_message_ptr
 	}                                                                        \
 	;                                                                        \
 	content_t fields; /** Message content, accesible by individual fields */ \
-	void dumpToStream(mrpt::serialization::CArchive& out) const override;
+	void dumpToStream(std::ostream& out) const override;
 
 #define GNSS_BINARY_MSG_DEFINITION_MID_END \
 	}                                      \

@@ -212,30 +212,13 @@ void CSimpleMap::insertToPos(
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-					writeToStream
-	Implements the writing to a CStream capability of
-	  CSerializable objects
-  ---------------------------------------------------------------*/
-uint8_t CSimpleMap::serializeGetVersion() const { return XX; }
-void CSimpleMap::serializeTo(
-	mrpt::serialization::CArchive& out, int* version) const
+uint8_t CSimpleMap::serializeGetVersion() const { return 1; }
+void CSimpleMap::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		uint32_t i, n;
-		n = m_posesObsPairs.size();
-		out << n;
-		for (i = 0; i < n; i++)
-			out << *m_posesObsPairs[i].first << *m_posesObsPairs[i].second;
-	}
+	out.WriteAs<uint32_t>(m_posesObsPairs.size());
+	for (const auto& p : m_posesObsPairs) out << *p.first << *p.second;
 }
 
-/*---------------------------------------------------------------
-					readFromStream
-  ---------------------------------------------------------------*/
 void CSimpleMap::serializeFrom(
 	mrpt::serialization::CArchive& in, uint8_t version)
 {

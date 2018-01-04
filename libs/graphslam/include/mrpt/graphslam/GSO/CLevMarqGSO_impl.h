@@ -750,12 +750,12 @@ void CLevMarqGSO<GRAPH_T>::OptimizationParams::dumpToTextStream(std::ostream& ou
 {
 	MRPT_START;
 
-	out.printf("-----------[ Graph Visualization Parameters ]-----------\n");
-	out.printf(
+	out << mrpt::format("-----------[ Graph Visualization Parameters ]-----------\n");
+	out << mrpt::format(
 		"Visualize optimized graph = %s\n",
 		visualize_optimized_graph ? "TRUE" : "FALSE");
 
-	out.printf("%s", cfg.getAsString().c_str());
+	out << mrpt::format("%s", cfg.getAsString().c_str());
 
 	std::cout << std::endl;
 

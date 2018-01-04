@@ -24,20 +24,23 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/serialization/stl_serialization.h>
-
+#include <mrpt/core/bits_mem.h>  // vector_strong_clear
 #include <limits>
 
 using namespace std;
 using namespace mrpt::obs;
 using namespace mrpt::poses;
 using namespace mrpt::math;
+using namespace mrpt::img;
+using mrpt::config::CConfigFileMemory;
 
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservation3DRangeScan, CObservation, mrpt::obs)
 
 // Static LUT:
 static CObservation3DRangeScan::TCached3DProjTables lut_3dproj;
-CObservation3DRangeScan::TCached3DProjTables & CObservation3DRangeScan::get_3dproj_lut()
+CObservation3DRangeScan::TCached3DProjTables&
+	CObservation3DRangeScan::get_3dproj_lut()
 {
 	return lut_3dproj;
 }
@@ -51,7 +54,6 @@ bool CObservation3DRangeScan::EXTERNALS_AS_TEXT()
 {
 	return EXTERNALS_AS_TEXT_value;
 }
-
 
 // Whether to use a memory pool for 3D points:
 #define COBS3DRANGE_USE_MEMPOOL
@@ -185,10 +187,6 @@ CObservation3DRangeScan::CObservation3DRangeScan()
 {
 }
 
-/*---------------------------------------------------------------
-							Destructor
- ---------------------------------------------------------------*/
-
 CObservation3DRangeScan::~CObservation3DRangeScan()
 {
 #ifdef COBS3DRANGE_USE_MEMPOOL
@@ -197,73 +195,67 @@ CObservation3DRangeScan::~CObservation3DRangeScan()
 #endif
 }
 
-uint8_t CObservation3DRangeScan::serializeGetVersion() const { return XX; }
-void CObservation3DRangeScan::serializeTo(mrpt::serialization::CArchive& out) const
+uint8_t CObservation3DRangeScan::serializeGetVersion() const { return 8; }
+void CObservation3DRangeScan::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 8;
-	else
+	// The data
+	out << maxRange << sensorPose;
+	out << hasPoints3D;
+	if (hasPoints3D)
 	{
-		// The data
-		out << maxRange << sensorPose;
-
-		out << hasPoints3D;
-		if (hasPoints3D)
+		ASSERT_(
+			points3D_x.size() == points3D_y.size() &&
+			points3D_x.size() == points3D_z.size() &&
+			points3D_idxs_x.size() == points3D_x.size() &&
+			points3D_idxs_y.size() == points3D_x.size());
+		uint32_t N = points3D_x.size();
+		out << N;
+		if (N)
 		{
-			ASSERT_(
-				points3D_x.size() == points3D_y.size() &&
-				points3D_x.size() == points3D_z.size() &&
-				points3D_idxs_x.size() == points3D_x.size() &&
-				points3D_idxs_y.size() == points3D_x.size())
-			uint32_t N = points3D_x.size();
-			out << N;
-			if (N)
-			{
-				out.WriteBufferFixEndianness(&points3D_x[0], N);
-				out.WriteBufferFixEndianness(&points3D_y[0], N);
-				out.WriteBufferFixEndianness(&points3D_z[0], N);
-				out.WriteBufferFixEndianness(
-					&points3D_idxs_x[0], N);  // New in v8
-				out.WriteBufferFixEndianness(
-					&points3D_idxs_y[0], N);  // New in v8
-			}
+			out.WriteBufferFixEndianness(&points3D_x[0], N);
+			out.WriteBufferFixEndianness(&points3D_y[0], N);
+			out.WriteBufferFixEndianness(&points3D_z[0], N);
+			out.WriteBufferFixEndianness(&points3D_idxs_x[0], N);  // New in v8
+			out.WriteBufferFixEndianness(&points3D_idxs_y[0], N);  // New in v8
 		}
+	}
 
-		out << hasRangeImage;
-		if (hasRangeImage) out << rangeImage;
-		out << hasIntensityImage;
-		if (hasIntensityImage) out << intensityImage;
-		out << hasConfidenceImage;
-		if (hasConfidenceImage) out << confidenceImage;
+	out << hasRangeImage;
+	if (hasRangeImage) out << rangeImage;
+	out << hasIntensityImage;
+	if (hasIntensityImage) out << intensityImage;
+	out << hasConfidenceImage;
+	if (hasConfidenceImage) out << confidenceImage;
 
-		out << cameraParams;  // New in v2
-		out << cameraParamsIntensity;  // New in v4
-		out << relativePoseIntensityWRTDepth;  // New in v4
+	out << cameraParams;  // New in v2
+	out << cameraParamsIntensity;  // New in v4
+	out << relativePoseIntensityWRTDepth;  // New in v4
 
-		out << stdError;
-		out << timestamp;
-		out << sensorLabel;
+	out << stdError;
+	out << timestamp;
+	out << sensorLabel;
 
-		// New in v3:
-		out << m_points3D_external_stored << m_points3D_external_file;
-		out << m_rangeImage_external_stored << m_rangeImage_external_file;
+	// New in v3:
+	out << m_points3D_external_stored << m_points3D_external_file;
+	out << m_rangeImage_external_stored << m_rangeImage_external_file;
 
-		// New in v5:
-		out << range_is_depth;
+	// New in v5:
+	out << range_is_depth;
 
-		// New in v6:
-		out << static_cast<int8_t>(intensityImageChannel);
+	// New in v6:
+	out << static_cast<int8_t>(intensityImageChannel);
 
-		// New in v7:
-		out << hasPixelLabels();
-		if (hasPixelLabels())
-		{
-			pixelLabels->writeToStream(out);
-		}
+	// New in v7:
+	out << hasPixelLabels();
+	if (hasPixelLabels())
+	{
+		pixelLabels->writeToStream(out);
 	}
 }
 
-void CObservation3DRangeScan::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CObservation3DRangeScan::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -462,7 +454,8 @@ void CObservation3DRangeScan::load() const
 		}
 		else
 		{
-			mrpt::io::CFileGZInputStream f(fil);
+			mrpt::io::CFileGZInputStream fi(fil);
+			auto f = mrpt::serialization::archiveFrom(fi);
 			f >> const_cast<std::vector<float>&>(points3D_x) >>
 				const_cast<std::vector<float>&>(points3D_y) >>
 				const_cast<std::vector<float>&>(points3D_z);
@@ -479,7 +472,8 @@ void CObservation3DRangeScan::load() const
 		}
 		else
 		{
-			mrpt::io::CFileGZInputStream f(fil);
+			mrpt::io::CFileGZInputStream fi(fil);
+			auto f = mrpt::serialization::archiveFrom(fi);
 			f >> const_cast<CMatrix&>(rangeImage);
 		}
 	}
@@ -489,9 +483,9 @@ void CObservation3DRangeScan::unload()
 {
 	if (hasPoints3D && m_points3D_external_stored)
 	{
-		vector_strong_clear(points3D_x);
-		vector_strong_clear(points3D_y);
-		vector_strong_clear(points3D_z);
+		mrpt::vector_strong_clear(points3D_x);
+		mrpt::vector_strong_clear(points3D_y);
+		mrpt::vector_strong_clear(points3D_z);
 	}
 
 	if (hasRangeImage && m_rangeImage_external_stored) rangeImage.setSize(0, 0);
@@ -544,10 +538,10 @@ void CObservation3DRangeScan::points3D_getExternalStorageFileAbsolutePath(
 void CObservation3DRangeScan::points3D_convertToExternalStorage(
 	const std::string& fileName_, const std::string& use_this_base_dir)
 {
-	ASSERT_(!points3D_isExternallyStored();
+	ASSERT_(!points3D_isExternallyStored());
 	ASSERT_(
 		points3D_x.size() == points3D_y.size() &&
-		points3D_x.size() == points3D_z.size())
+		points3D_x.size() == points3D_z.size());
 
 	if (EXTERNALS_AS_TEXT_value)
 		m_points3D_external_file =
@@ -577,7 +571,8 @@ void CObservation3DRangeScan::points3D_convertToExternalStorage(
 	}
 	else
 	{
-		mrpt::io::CFileGZOutputStream f(real_absolute_file_path);
+		mrpt::io::CFileGZOutputStream fo(real_absolute_file_path);
+		auto f = mrpt::serialization::archiveFrom(fo);
 		f << points3D_x << points3D_y << points3D_z;
 	}
 
@@ -593,7 +588,7 @@ void CObservation3DRangeScan::points3D_convertToExternalStorage(
 void CObservation3DRangeScan::rangeImage_convertToExternalStorage(
 	const std::string& fileName_, const std::string& use_this_base_dir)
 {
-	ASSERT_(!rangeImage_isExternallyStored();
+	ASSERT_(!rangeImage_isExternallyStored());
 	if (EXTERNALS_AS_TEXT_value)
 		m_rangeImage_external_file =
 			mrpt::system::fileNameChangeExtension(fileName_, "txt");
@@ -615,7 +610,8 @@ void CObservation3DRangeScan::rangeImage_convertToExternalStorage(
 	}
 	else
 	{
-		mrpt::io::CFileGZOutputStream f(real_absolute_file_path);
+		mrpt::io::CFileGZOutputStream fo(real_absolute_file_path);
+		auto f = mrpt::serialization::archiveFrom(fo);
 		f << rangeImage;
 	}
 
@@ -719,27 +715,27 @@ void cost_func(
 		}
 	}
 }  // end error_func
-}
-}
-}
+}  // namespace detail
+}  // namespace obs
+}  // namespace mrpt
 
 /** A Levenberg-Marquart-based optimizer to recover the calibration parameters
  * of a 3D camera given a range (depth) image and the corresponding 3D point
  * cloud.
-  * \param camera_offset The offset (in meters) in the +X direction of the point
+ * \param camera_offset The offset (in meters) in the +X direction of the point
  * cloud. It's 1cm for SwissRanger SR4000.
-  * \return The final average reprojection error per pixel (typ <0.05 px)
-  */
+ * \return The final average reprojection error per pixel (typ <0.05 px)
+ */
 double CObservation3DRangeScan::recoverCameraCalibrationParameters(
 	const CObservation3DRangeScan& obs, mrpt::img::TCamera& out_camParams,
 	const double camera_offset)
 {
 	MRPT_START
 
-	ASSERT_(obs.hasRangeImage && obs.hasPoints3D)
+	ASSERT_(obs.hasRangeImage && obs.hasPoints3D);
 	ASSERT_(
 		obs.points3D_x.size() == obs.points3D_y.size() &&
-		obs.points3D_x.size() == obs.points3D_z.size())
+		obs.points3D_x.size() == obs.points3D_z.size());
 
 	typedef CLevenbergMarquardtTempl<CVectorDouble, detail::TLevMarData>
 		TMyLevMar;
@@ -793,7 +789,7 @@ void CObservation3DRangeScan::getZoneAsObs(
 	unsigned int cols = cameraParams.ncols;
 	unsigned int rows = cameraParams.nrows;
 
-	ASSERT_((r1 < r2) && (c1 < c2);
+	ASSERT_((r1 < r2) && (c1 < c2));
 	ASSERT_((r2 < rows) && (c2 < cols));
 	// Maybe we needed to copy more base obs atributes
 
@@ -1100,8 +1096,8 @@ void CObservation3DRangeScan::convertTo2DScan(
 			mrpt::make_aligned_shared<mrpt::opengl::CPointCloud>();
 		this->project3DPointsFromDepthImageInto(*pc, projParams, fp);
 
-		const std::vector<float> &xs = pc->getArrayX(), &ys = pc->getArrayY(),
-								 &zs = pc->getArrayZ();
+		const std::vector<float>&xs = pc->getArrayX(), &ys = pc->getArrayY(),
+			  &zs = pc->getArrayZ();
 		const size_t N = xs.size();
 
 		const double A_ang = FOV_equiv / (nLaserRays - 1);
@@ -1133,7 +1129,8 @@ void CObservation3DRangeScan::getDescriptionAsText(std::ostream& o) const
 
 	o << "Homogeneous matrix for the sensor's 3D pose, relative to robot "
 		 "base:\n";
-	o << sensorPose.getHomogeneousMatrixVal() << sensorPose << endl;
+	o << sensorPose.getHomogeneousMatrixVal<CMatrixDouble44>() << sensorPose
+	  << endl;
 
 	o << "maxRange = " << maxRange << " m" << endl;
 
@@ -1170,7 +1167,7 @@ void CObservation3DRangeScan::getDescriptionAsText(std::ostream& o) const
 			o << " (embedded).\n";
 		// Channel?
 		o << "Source channel: "
-		  << mrpt::utils::TEnumType<
+		  << mrpt::typemeta::TEnumType<
 				 CObservation3DRangeScan::TIntensityChannelID>::
 				 value2name(intensityImageChannel)
 		  << endl;
@@ -1213,27 +1210,53 @@ void CObservation3DRangeScan::getDescriptionAsText(std::ostream& o) const
 	  << endl
 	  << "Pose of the intensity cam. wrt the depth cam:\n"
 	  << relativePoseIntensityWRTDepth << endl
-	  << relativePoseIntensityWRTDepth.getHomogeneousMatrixVal() << endl;
+	  << relativePoseIntensityWRTDepth
+			 .getHomogeneousMatrixVal<CMatrixDouble44>()
+	  << endl;
 }
 
-uint8_t CObservation3DRangeScan::TPixelLabelInfoBase::serializeGetVersion() const { return XX; } void CObservation3DRangeScan::TPixelLabelInfoBase::serializeTo(
-	mrpt::serialization::CArchive& out) const
+using plib = CObservation3DRangeScan::TPixelLabelInfoBase;
+void plib::writeToStream(mrpt::serialization::CArchive& out) const
 {
 	const uint8_t version = 1;  // for possible future changes.
 	out << version;
-
 	// 1st: Save number MAX_NUM_DIFFERENT_LABELS so we can reconstruct the
 	// object in the class factory later on.
 	out << BITFIELD_BYTES;
-
 	// 2nd: data-specific serialization:
 	this->internal_writeToStream(out);
 }
 
+template <unsigned int BYTES_REQUIRED_>
+void CObservation3DRangeScan::TPixelLabelInfo<
+	BYTES_REQUIRED_>::internal_readFromStream(mrpt::serialization::CArchive& in)
+{
+	{
+		uint32_t nR, nC;
+		in >> nR >> nC;
+		pixelLabels.resize(nR, nC);
+		for (uint32_t c = 0; c < nC; c++)
+			for (uint32_t r = 0; r < nR; r++) in >> pixelLabels.coeffRef(r, c);
+	}
+	in >> pixelLabelNames;
+}
+template <unsigned int BYTES_REQUIRED_>
+void CObservation3DRangeScan::TPixelLabelInfo<BYTES_REQUIRED_>::
+	internal_writeToStream(mrpt::serialization::CArchive& out) const
+{
+	{
+		const uint32_t nR = static_cast<uint32_t>(pixelLabels.rows());
+		const uint32_t nC = static_cast<uint32_t>(pixelLabels.cols());
+		out << nR << nC;
+		for (uint32_t c = 0; c < nC; c++)
+			for (uint32_t r = 0; r < nR; r++) out << pixelLabels.coeff(r, c);
+	}
+	out << pixelLabelNames;
+}
+
 // Deserialization and class factory. All in one, ladies and gentlemen
-CObservation3DRangeScan::TPixelLabelInfoBase*
-	CObservation3DRangeScan::TPixelLabelInfoBase::readAndBuildFromStream(
-		mrpt::serialization::CArchive& in)
+CObservation3DRangeScan::TPixelLabelInfoBase* plib::readAndBuildFromStream(
+	mrpt::serialization::CArchive& in)
 {
 	uint8_t version;
 	in >> version;

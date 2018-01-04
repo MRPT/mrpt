@@ -102,7 +102,7 @@ enum nv_position_type_t : uint32_t
 };
 /** for nv_position_type_t */
 const std::string& enum2str(int val);
-}
+}  // namespace nv_oem6_position_type
 
 namespace nv_oem6_solution_status
 {
@@ -147,12 +147,12 @@ enum nv_solution_status_t : uint32_t
 	   position and determines if the fixed position is valid */
 	PENDING = 18,
 	/** the fixed position entered using the fix position command is not valid
-	   */
+	 */
 	INVALID_FIX
 };
 /** for nv_solution_status_t */
 const std::string& enum2str(int val);
-}
+}  // namespace nv_oem6_solution_status
 namespace nv_oem6_ins_status_type
 {
 /** Novatel SPAN on OEM6 firmware reference, table 33 */
@@ -180,7 +180,7 @@ enum nv_ins_status_type_t : uint32_t
 };
 /** for nv_ins_status_type_t */
 const std::string& enum2str(int val);
-}
+}  // namespace nv_oem6_ins_status_type
 
 /** Novatel generic frame (to store frames without a parser at the present
  * time). \sa mrpt::obs::CObservationGPS  */
@@ -194,10 +194,10 @@ struct Message_NV_OEM6_GENERIC_FRAME : public gnss_message
 	nv_oem6_header_t header;
 	std::vector<uint8_t> msg_body;
 
-	void dumpToStream(
-		mrpt::serialization::CArchive& out) const override;  // See docs in base
+	void dumpToStream(std::ostream& out) const override;  // See docs in base
    protected:
-	void internal_writeToStream(mrpt::serialization::CArchive& out) const override;
+	void internal_writeToStream(
+		mrpt::serialization::CArchive& out) const override;
 	void internal_readFromStream(mrpt::serialization::CArchive& in) override;
 };
 
@@ -213,10 +213,10 @@ struct Message_NV_OEM6_GENERIC_SHORT_FRAME : public gnss_message
 	nv_oem6_short_header_t header;
 	std::vector<uint8_t> msg_body;
 
-	void dumpToStream(
-		mrpt::serialization::CArchive& out) const override;  // See docs in base
+	void dumpToStream(std::ostream& out) const override;  // See docs in base
    protected:
-	void internal_writeToStream(mrpt::serialization::CArchive& out) const override;
+	void internal_writeToStream(
+		mrpt::serialization::CArchive& out) const override;
 	void internal_readFromStream(mrpt::serialization::CArchive& in) override;
 };
 
@@ -243,7 +243,7 @@ uint32_t crc;
 GNSS_BINARY_MSG_DEFINITION_MID
 /**  Return the geodetic coords as a mrpt::topography::TGeodeticCoords structure
  * (requires linking against mrpt-topography)
-	*   Call as: getAsStruct<TGeodeticCoords>(); */
+ *   Call as: getAsStruct<TGeodeticCoords>(); */
 template <class TGEODETICCOORDS>
 inline TGEODETICCOORDS getAsStruct() const
 {
@@ -267,7 +267,7 @@ uint32_t crc;
 GNSS_BINARY_MSG_DEFINITION_MID
 /**  Return the geodetic coords as a mrpt::topography::TGeodeticCoords structure
  * (requires linking against mrpt-topography)
-	*   Call as: getAsStruct<TGeodeticCoords>(); */
+ *   Call as: getAsStruct<TGeodeticCoords>(); */
 template <class TGEODETICCOORDS>
 inline TGEODETICCOORDS getAsStruct() const
 {
@@ -317,9 +317,10 @@ struct Message_NV_OEM6_RANGECMP : public gnss_message
 	uint32_t crc;
 
 	void dumpToStream(
-		mrpt::serialization::CArchive& out) const override;  // See docs in base
+		std::ostream& out) const override;  // See docs in base
    protected:
-	void internal_writeToStream(mrpt::serialization::CArchive& out) const override;
+	void internal_writeToStream(
+		mrpt::serialization::CArchive& out) const override;
 	void internal_readFromStream(mrpt::serialization::CArchive& in) override;
 };
 
@@ -366,9 +367,10 @@ struct Message_NV_OEM6_VERSION : public gnss_message
 	uint32_t crc;
 
 	void dumpToStream(
-		mrpt::serialization::CArchive& out) const override;  // See docs in base
+		std::ostream& out) const override;  // See docs in base
    protected:
-	void internal_writeToStream(mrpt::serialization::CArchive& out) const override;
+	void internal_writeToStream(
+		mrpt::serialization::CArchive& out) const override;
 	void internal_readFromStream(mrpt::serialization::CArchive& in) override;
 };
 
@@ -409,7 +411,7 @@ uint32_t crc;
 GNSS_BINARY_MSG_DEFINITION_MID
 /**  Return the geodetic coords as a mrpt::topography::TGeodeticCoords structure
  * (requires linking against mrpt-topography)
-	*   Call as: getAsStruct<TGeodeticCoords>(); */
+ *   Call as: getAsStruct<TGeodeticCoords>(); */
 template <class TGEODETICCOORDS>
 inline TGEODETICCOORDS getAsStruct() const
 {
@@ -472,6 +474,6 @@ uint32_t crc;
 GNSS_BINARY_MSG_DEFINITION_END
 
 #pragma pack(pop)  // End of pack = 1
-}
-}
-}  // End of namespaces
+}  // namespace gnss
+}  // namespace obs
+}  // namespace mrpt

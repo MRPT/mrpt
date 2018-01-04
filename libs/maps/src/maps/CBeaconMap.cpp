@@ -1003,12 +1003,12 @@ CBeaconMap::TLikelihoodOptions::TLikelihoodOptions() : rangeStd(0.08f) {}
 void CBeaconMap::TLikelihoodOptions::dumpToTextStream(
 	mrpt::utils::CStream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [CBeaconMap::TLikelihoodOptions] ------------ \n\n");
 
-	out.printf("rangeStd                                = %f\n", rangeStd);
+	out << mrpt::format("rangeStd                                = %f\n", rangeStd);
 
-	out.printf("\n");
+	out << mrpt::format("\n");
 }
 
 /*---------------------------------------------------------------
@@ -1044,41 +1044,41 @@ CBeaconMap::TInsertionOptions::TInsertionOptions()
 void CBeaconMap::TInsertionOptions::dumpToTextStream(
 	mrpt::utils::CStream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [CBeaconMap::TInsertionOptions] ------------ \n\n");
 
-	out.printf(
+	out << mrpt::format(
 		"insertAsMonteCarlo                      = %c\n",
 		insertAsMonteCarlo ? 'Y' : 'N');
-	out.printf(
+	out << mrpt::format(
 		"minElevation_deg                        = %.03f\n", minElevation_deg);
-	out.printf(
+	out << mrpt::format(
 		"maxElevation_deg                        = %.03f\n", maxElevation_deg);
-	out.printf(
+	out << mrpt::format(
 		"MC_numSamplesPerMeter                   = %d\n",
 		MC_numSamplesPerMeter);
-	out.printf(
+	out << mrpt::format(
 		"MC_maxStdToGauss                        = %.03f\n", MC_maxStdToGauss);
-	out.printf(
+	out << mrpt::format(
 		"MC_thresholdNegligible                  = %.03f\n",
 		MC_thresholdNegligible);
-	out.printf(
+	out << mrpt::format(
 		"MC_performResampling                    = %c\n",
 		MC_performResampling ? 'Y' : 'N');
-	out.printf(
+	out << mrpt::format(
 		"MC_afterResamplingNoise                 = %.03f\n",
 		MC_afterResamplingNoise);
-	out.printf(
+	out << mrpt::format(
 		"SOG_thresholdNegligible                 = %.03f\n",
 		SOG_thresholdNegligible);
-	out.printf(
+	out << mrpt::format(
 		"SOG_maxDistBetweenGaussians             = %.03f\n",
 		SOG_maxDistBetweenGaussians);
-	out.printf(
+	out << mrpt::format(
 		"SOG_separationConstant                  = %.03f\n",
 		SOG_separationConstant);
 
-	out.printf("\n");
+	out << mrpt::format("\n");
 }
 
 /*---------------------------------------------------------------

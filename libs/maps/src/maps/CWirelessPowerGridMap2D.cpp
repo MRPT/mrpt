@@ -60,7 +60,7 @@ void CWirelessPowerGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(
 void CWirelessPowerGridMap2D::TMapDefinition::dumpToTextStream_map_specific(
 	mrpt::utils::CStream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"MAP TYPE                                  = %s\n",
 		mrpt::utils::TEnumType<
 			CWirelessPowerGridMap2D::TMapRepresentation>::value2name(mapType)
@@ -73,13 +73,13 @@ void CWirelessPowerGridMap2D::TMapDefinition::dumpToTextStream_map_specific(
 
 	this->insertionOpts.dumpToTextStream(std::ostream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [CWirelessPowerGridMap2D::TInsertionOptions] "
 		"------------ \n\n");
 	internal_dumpToTextStream_common(
 		out);  // Common params to all random fields maps:
 
-	out.printf("\n");
+	out << mrpt::format("\n");
 }
 
 /*---------------------------------------------------------------

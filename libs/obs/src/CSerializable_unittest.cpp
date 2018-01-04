@@ -16,7 +16,9 @@
 
 using namespace mrpt;
 using namespace mrpt::obs;
+using namespace mrpt::io;
 using namespace mrpt::math;
+using namespace mrpt::serialization;
 using namespace std;
 
 #define TEST_CLASS_MOVE_COPY_CTORS(_classname) \
@@ -75,16 +77,17 @@ TEST(SerializeTestObs, WriteReadToMem)
 		try
 		{
 			CMemoryStream buf;
+			auto arch = mrpt::serialization::archiveFrom(buf);
 			{
 				CSerializable* o =
 					static_cast<CSerializable*>(lstClasses[i]->createObject());
-				buf << *o;
+				arch << *o;
 				delete o;
 			}
 
 			CSerializable::Ptr recons;
 			buf.Seek(0);
-			buf >> recons;
+			arch >> recons;
 		}
 		catch (std::exception& e)
 		{
@@ -106,12 +109,12 @@ TEST(SerializeTestObs, WriteReadToOctectVectors)
 			{
 				CSerializable* o =
 					static_cast<CSerializable*>(lstClasses[i]->createObject());
-				mrpt::utils::ObjectToOctetVector(o, buf);
+				mrpt::serialization::ObjectToOctetVector(o, buf);
 				delete o;
 			}
 
 			CSerializable::Ptr recons;
-			mrpt::utils::OctetVectorToObject(buf, recons);
+			mrpt::serialization::OctetVectorToObject(buf, recons);
 		}
 		catch (std::exception& e)
 		{

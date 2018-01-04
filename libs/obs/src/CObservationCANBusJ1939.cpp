@@ -11,6 +11,7 @@
 
 #include <mrpt/obs/CObservationCANBusJ1939.h>
 #include <mrpt/serialization/CArchive.h>
+#include <iostream>
 
 using namespace mrpt::obs;
 using namespace mrpt::poses;
@@ -20,18 +21,21 @@ using namespace std;
 IMPLEMENTS_SERIALIZABLE(CObservationCANBusJ1939, CObservation, mrpt::obs)
 
 uint8_t CObservationCANBusJ1939::serializeGetVersion() const { return 1; }
-void CObservationCANBusJ1939::serializeTo(mrpt::serialization::CArchive& out) const
+void CObservationCANBusJ1939::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
 	out << m_pgn << m_src_address << m_priority << m_pdu_format;
 	out << m_pdu_spec << m_data_length;
 	out.WriteAs<uint32_t>(m_data.size());
 	if (!m_data.empty()) out.WriteBuffer(&m_data[0], m_data.size());
 	out.WriteAs<uint32_t>(m_raw_frame.size());
-	if (!m_raw_frame.empty()) out.WriteBuffer(&m_raw_frame[0], m_raw_frame.size());
+	if (!m_raw_frame.empty())
+		out.WriteBuffer(&m_raw_frame[0], m_raw_frame.size());
 	out << sensorLabel << timestamp;
 }
 
-void CObservationCANBusJ1939::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CObservationCANBusJ1939::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

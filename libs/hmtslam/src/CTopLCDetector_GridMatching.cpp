@@ -153,7 +153,7 @@ void CTopLCDetector_GridMatching::TOptions::loadFromConfigFile(
 //  textual form, sending it to a CStream.
 void CTopLCDetector_GridMatching::TOptions::dumpToTextStream(std::ostream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [CTopLCDetector_GridMatching::TOptions] ------------ "
 		"\n\n");
 	matchingOptions.dumpToTextStream(out);

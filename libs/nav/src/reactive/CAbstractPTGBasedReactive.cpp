@@ -35,7 +35,7 @@ std::string CAbstractPTGBasedReactive::TNavigationParamsPTG::getAsText() const
 	std::string s =
 		CWaypointsNavigator::TNavigationParamsWaypoints::getAsText();
 	s += "restrict_PTG_indices: ";
-	s += mrpt::utils::sprintf_vector("%u ", this->restrict_PTG_indices);
+	s += mrpt::containers::sprintf_vector("%u ", this->restrict_PTG_indices);
 	s += "\n";
 	return s;
 }
@@ -187,11 +187,10 @@ void CAbstractPTGBasedReactive::enableLogFile(bool enable)
 				}
 			}
 
-			MRPT_LOG_DEBUG(
-				mrpt::format(
-					"[CAbstractPTGBasedReactive::enableLogFile] Logging to "
-					"file `%s`\n",
-					aux));
+			MRPT_LOG_DEBUG(mrpt::format(
+				"[CAbstractPTGBasedReactive::enableLogFile] Logging to "
+				"file `%s`\n",
+				aux));
 		}
 	}
 	catch (std::exception& e)
@@ -252,9 +251,9 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 	// Whether to worry about log files:
 	const bool fill_log_record = (m_logFile || m_enableKeepLogRecords);
 	CLogFileRecord newLogRec;
-	newLogRec.infoPerPTG.resize(
-		nPTGs + 1); /* +1: [N] is the "NOP cmdvel" option; not to be
-					   present in all log entries. */
+	newLogRec.infoPerPTG.resize(nPTGs + 1); /* +1: [N] is the "NOP cmdvel"
+											   option; not to be present in all
+											   log entries. */
 
 	// At the beginning of each log file, add an introductory block explaining
 	// which PTGs are we using:
@@ -362,32 +361,32 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		if (params_abstract_ptg_navigator.use_delays_model)
 		{
 			/*
-			*                                          Delays model
-			*
-			* Event:          OBSTACLES_SENSED         RNAV_ITERATION_STARTS
-			* GET_ROBOT_POSE_VEL         VEL_CMD_SENT_TO_ROBOT
-			* Timestamp:  (m_WS_Obstacles_timestamp)   (tim_start_iteration)
-			* (m_curPoseVelTimestamp)     ("tim_send_cmd_vel")
-			* Delay                       |
-			* <---+--------------->|<--------------+-------->| |
-			* estimator:                        |                |
-			* |                                   |
-			*                timoff_obstacles <-+                |
-			* +--> timoff_curPoseVelAge           |
-			*                                                    |<---------------------------------+--------------->|
-			*                                                                                       +-->
-			* timoff_sendVelCmd_avr (estimation)
-			*
-			*                                                                                                |<-------------------->|
-			*                                                                                                   tim_changeSpeed_avr
-			* (estim)
-			*
-			*                             |<-----------------------------------------------|-------------------------->|
-			*  Relative poses:                              relPoseSense
-			* relPoseVelCmd
-			*  Time offsets (signed):                       timoff_pose2sense
-			* timoff_pose2VelCmd
-			*/
+			 *                                          Delays model
+			 *
+			 * Event:          OBSTACLES_SENSED         RNAV_ITERATION_STARTS
+			 * GET_ROBOT_POSE_VEL         VEL_CMD_SENT_TO_ROBOT
+			 * Timestamp:  (m_WS_Obstacles_timestamp)   (tim_start_iteration)
+			 * (m_curPoseVelTimestamp)     ("tim_send_cmd_vel")
+			 * Delay                       |
+			 * <---+--------------->|<--------------+-------->| |
+			 * estimator:                        |                |
+			 * |                                   |
+			 *                timoff_obstacles <-+                |
+			 * +--> timoff_curPoseVelAge           |
+			 *                                                    |<---------------------------------+--------------->|
+			 *                                                                                       +-->
+			 * timoff_sendVelCmd_avr (estimation)
+			 *
+			 *                                                                                                |<-------------------->|
+			 *                                                                                                   tim_changeSpeed_avr
+			 * (estim)
+			 *
+			 *                             |<-----------------------------------------------|-------------------------->|
+			 *  Relative poses:                              relPoseSense
+			 * relPoseVelCmd
+			 *  Time offsets (signed):                       timoff_pose2sense
+			 * timoff_pose2VelCmd
+			 */
 			const double timoff_obstacles = mrpt::system::timeDifference(
 				tim_start_iteration, m_WS_Obstacles_timestamp);
 			timoff_obstacles_avr.filter(timoff_obstacles);
@@ -553,10 +552,9 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		}
 		if (is_all_ptg_collision)
 		{
-			m_pending_events.push_back(
-				std::bind(
-					&CRobot2NavInterface::sendApparentCollisionEvent,
-					std::ref(m_robot)));
+			m_pending_events.push_back(std::bind(
+				&CRobot2NavInterface::sendApparentCollisionEvent,
+				std::ref(m_robot)));
 		}
 
 		// Round #2: Evaluate dont sending any new velocity command ("NOP"
@@ -875,19 +873,17 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 		if (m_enableConsoleOutput)
 		{
-			MRPT_LOG_DEBUG(
-				mrpt::format(
-					"CMD: %s "
-					"speedScale=%.04f "
-					"T=%.01lfms Exec:%.01lfms|%.01lfms "
-					"PTG#%i\n",
-					new_vel_cmd ? new_vel_cmd->asString().c_str() : "NOP",
-					selectedHolonomicMovement ? selectedHolonomicMovement->speed
-											  : .0,
-					1000.0 * meanExecutionPeriod.getLastOutput(),
-					1000.0 * meanExecutionTime.getLastOutput(),
-					1000.0 * meanTotalExecutionTime.getLastOutput(),
-					best_ptg_idx));
+			MRPT_LOG_DEBUG(mrpt::format(
+				"CMD: %s "
+				"speedScale=%.04f "
+				"T=%.01lfms Exec:%.01lfms|%.01lfms "
+				"PTG#%i\n",
+				new_vel_cmd ? new_vel_cmd->asString().c_str() : "NOP",
+				selectedHolonomicMovement ? selectedHolonomicMovement->speed
+										  : .0,
+				1000.0 * meanExecutionPeriod.getLastOutput(),
+				1000.0 * meanExecutionTime.getLastOutput(),
+				1000.0 * meanTotalExecutionTime.getLastOutput(), best_ptg_idx));
 		}
 		if (fill_log_record)
 		{
@@ -901,10 +897,9 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 	catch (std::exception& e)
 	{
 		doEmergencyStop(
-			std::string(
-				"[CAbstractPTGBasedReactive::performNavigationStep] "
-				"Stopping robot and finishing navigation due to "
-				"exception:\n") +
+			std::string("[CAbstractPTGBasedReactive::performNavigationStep] "
+						"Stopping robot and finishing navigation due to "
+						"exception:\n") +
 			std::string(e.what()));
 	}
 	catch (...)
@@ -1013,9 +1008,8 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 		double best_trg_angdist = std::numeric_limits<double>::max();
 		for (size_t i = 0; i < TP_Targets.size(); i++)
 		{
-			const double angdist = std::abs(
-				mrpt::math::angDistance(
-					TP_Targets[i].target_alpha, cm.direction));
+			const double angdist = std::abs(mrpt::math::angDistance(
+				TP_Targets[i].target_alpha, cm.direction));
 			if (angdist < best_trg_angdist)
 			{
 				best_trg_angdist = angdist;
@@ -1050,7 +1044,7 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 		!cm.PTG->supportSpeedAtTarget()  // If the PTG is able to handle the
 		// slow-down on its own, dont change
 		// speed here
-		)
+	)
 	{
 		const double TARGET_SLOW_APPROACHING_DISTANCE =
 			m_holonomicMethod[0]->getTargetApproachSlowDownDistance();
@@ -1140,8 +1134,7 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 			newLogRec.additional_debug_msgs["PTG_eval.NOP_At"] =
 				mrpt::format("%.06f s", NOP_At);
 			cur_k = move_k;
-			cur_ptg_step =
-				mrpt::round(NOP_At / cm.PTG->getPathStepDuration());
+			cur_ptg_step = mrpt::round(NOP_At / cm.PTG->getPathStepDuration());
 			cur_norm_d = cm.PTG->getPathDist(cur_k, cur_ptg_step) /
 						 cm.PTG->getRefDistance();
 			{
@@ -1787,9 +1780,8 @@ void CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::saveToConfigFile(
 	}
 	MRPT_SAVE_CONFIG_VAR_COMMENT(
 		holonomic_method,
-		string(
-			"C++ class name of the holonomic navigation method to run in "
-			"the transformed TP-Space.\n") +
+		string("C++ class name of the holonomic navigation method to run in "
+			   "the transformed TP-Space.\n") +
 			lstHoloStr);
 
 	// Build list of known decider methods:

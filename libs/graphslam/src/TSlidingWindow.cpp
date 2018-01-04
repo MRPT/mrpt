@@ -203,28 +203,28 @@ void TSlidingWindow::dumpToTextStream(std::ostream& out) const
 {
 	MRPT_START;
 
-	out.printf(
+	out << mrpt::format(
 		"-----------[ %s: Sliding Window Properties ]-----------\n",
 		m_name.c_str());
-	out.printf("Measurements Vector: \n");
+	out << mrpt::format("Measurements Vector: \n");
 	for (std::vector<double>::const_iterator it = m_measurements_vec.begin();
 		 it != m_measurements_vec.end(); ++it)
 	{
-		out.printf("\t%.2f\n", *it);
+		out << mrpt::format("\t%.2f\n", *it);
 	}
-	out.printf("\n");
+	out << mrpt::format("\n");
 
-	out.printf("m_name              : %s\n", m_name.c_str());
-	out.printf("m_mean_cached       : %.2f\n", m_mean_cached);
-	out.printf("m_median_cached     : %.2f\n", m_median_cached);
-	out.printf("m_std_dev_cached    : %.2f\n", m_std_dev_cached);
-	out.printf("m_mean_updated      : %s\n", m_mean_updated ? "TRUE" : "FALSE");
-	out.printf(
+	out << mrpt::format("m_name              : %s\n", m_name.c_str());
+	out << mrpt::format("m_mean_cached       : %.2f\n", m_mean_cached);
+	out << mrpt::format("m_median_cached     : %.2f\n", m_median_cached);
+	out << mrpt::format("m_std_dev_cached    : %.2f\n", m_std_dev_cached);
+	out << mrpt::format("m_mean_updated      : %s\n", m_mean_updated ? "TRUE" : "FALSE");
+	out << mrpt::format(
 		"m_median_updated    : %s\n", m_median_updated ? "TRUE" : "FALSE");
-	out.printf(
+	out << mrpt::format(
 		"m_std_dev_updated   : %s\n", m_std_dev_updated ? "TRUE" : "FALSE");
-	out.printf("m_win_size          : %lu\n", m_win_size);
-	out.printf(
+	out << mrpt::format("m_win_size          : %lu\n", m_win_size);
+	out << mrpt::format(
 		"m_is_initialized    : %s\n", m_is_initialized ? "TRUE" : "FALSE");
 
 	MRPT_END;

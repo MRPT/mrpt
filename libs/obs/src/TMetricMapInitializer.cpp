@@ -50,26 +50,32 @@ void TMetricMapInitializer::loadFromConfigFile(
 	this->loadFromConfigFile_map_specific(source, sectionNamePrefix);
 }
 
-/** Dump the options of the metric map in human-readable format */
 void TMetricMapInitializer::dumpToTextStream(std::ostream& out) const
 {
-	MRPT_START
+	out << "-----------------TMetricMapInitializer --------------------\n";
+	out << "================ C++ Class: '"
+		<< this->metricMapClassType->className << "'\n";
+	this->genericMapParams.dumpToTextStream(out);
+	// Class-specific:
+	this->dumpToTextStream_map_specific(out);
+}
 
-	out<< mrpt::format(
-		"===================================================================="
-		"\n\n"
-		"      Set of internal maps for 'CMultiMetricMap' object\n\n");
-		"===================================================================="
-		"\n"
-		// Show each map:
-		"Showing next the %u internal maps:\n\n", (int)size());
+void TSetOfMetricMapInitializers::dumpToTextStream(std::ostream& out) const
+{
+	MRPT_START
+	out << "===============================================================\n\n"
+		   "      Set of internal maps for 'CMultiMetricMap' object\n\n"
+		   "=================================================================\n"
+		   // Show each map:
+		   "Showing next the "
+		<< this->size() << " internal maps:\n\n";
 
 	int i = 0;
 	for (auto it = begin(); it != end(); ++it, i++)
 	{
-		out << mrpt::format("------- Internal map %u out of %u:\n", i + 1, (int)size());
+		out << mrpt::format(
+			"------- Internal map %u out of %u:\n", i + 1, (int)size());
 		(*it)->dumpToTextStream(out);
 	}  // for "it"
-
 	MRPT_END
 }

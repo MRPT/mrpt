@@ -68,7 +68,7 @@ void CHeightGridMap2D::TMapDefinition::dumpToTextStream_map_specific(
 	LOADABLEOPTS_DUMP_VAR(min_y, double);
 	LOADABLEOPTS_DUMP_VAR(max_y, double);
 	LOADABLEOPTS_DUMP_VAR(resolution, double);
-	out.printf(
+	out << mrpt::format(
 		"MAP TYPE                                  = %s\n",
 		mrpt::utils::TEnumType<
 			CHeightGridMap2D::TMapRepresentation>::value2name(mapType)
@@ -76,18 +76,18 @@ void CHeightGridMap2D::TMapDefinition::dumpToTextStream_map_specific(
 
 	this->insertionOpts.dumpToTextStream(std::ostream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [CHeightGridMap2D::TInsertionOptions] ------------ "
 		"\n\n");
-	out.printf(
+	out << mrpt::format(
 		"filterByHeight                          = %c\n",
 		filterByHeight ? 'y' : 'n');
-	out.printf("z_min                                   = %f\n", z_min);
-	out.printf("z_max                                   = %f\n", z_max);
-	out.printf(
+	out << mrpt::format("z_min                                   = %f\n", z_min);
+	out << mrpt::format("z_max                                   = %f\n", z_max);
+	out << mrpt::format(
 		"colormap                                = %s\n",
 		colorMap == cmJET ? "jet" : "grayscale");
-	out.printf("\n");
+	out << mrpt::format("\n");
 }
 
 /*---------------------------------------------------------------

@@ -15,10 +15,12 @@
 #if MRPT_HAS_MATLAB
 #include <mexplus/mxarray.h>
 #endif
+#include <algorithm>  // all_of
 
 using namespace mrpt::obs;
 using namespace mrpt::math;
 using namespace mrpt::poses;
+using namespace mrpt::img;
 
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationStereoImages, CObservation, mrpt::obs)
@@ -46,54 +48,31 @@ CObservationStereoImages::CObservationStereoImages(
 				  : imageDisparity.loadFromIplImage(iplImageDisparity);
 }
 
-/*---------------------------------------------------------------
-					Default Constructor
- ---------------------------------------------------------------*/
-CObservationStereoImages::CObservationStereoImages()
-	: hasImageDisparity(false), hasImageRight(true)
+uint8_t CObservationStereoImages::serializeGetVersion() const { return 6; }
+void CObservationStereoImages::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
+	// The data
+	out << cameraPose << leftCamera << rightCamera << imageLeft;
+	out << hasImageDisparity << hasImageRight;
+	if (hasImageRight) out << imageRight;
+	if (hasImageDisparity) out << imageDisparity;
+	out << timestamp;
+	out << rightCameraPose;
+	out << sensorLabel;
 }
 
-/*---------------------------------------------------------------
-					Destructor
- ---------------------------------------------------------------*/
-CObservationStereoImages::~CObservationStereoImages() {}
-uint8_t CObservationStereoImages::serializeGetVersion() const { return XX; }
-void CObservationStereoImages::serializeTo(mrpt::serialization::CArchive& out) const
-{
-	if (version)
-		*version = 6;
-	else
-	{
-		// The data
-		out << cameraPose << leftCamera << rightCamera << imageLeft;
-
-		out << hasImageDisparity << hasImageRight;
-
-		if (hasImageRight) out << imageRight;
-
-		if (hasImageDisparity) out << imageDisparity;
-
-		out << timestamp;
-		out << rightCameraPose;
-		out << sensorLabel;
-	}
-}
-
-void CObservationStereoImages::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CObservationStereoImages::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
 		case 6:
 		{
 			in >> cameraPose >> leftCamera >> rightCamera >> imageLeft;
-
 			in >> hasImageDisparity >> hasImageRight;
-
 			if (hasImageRight) in >> imageRight;
-
 			if (hasImageDisparity) in >> imageDisparity;
-
 			in >> timestamp;
 			in >> rightCameraPose;
 			in >> sensorLabel;
@@ -151,8 +130,9 @@ void CObservationStereoImages::serializeFrom(mrpt::serialization::CArchive& in, 
 			}
 			else
 				rightCameraPose = CPose3DQuat(
-					0.10f, 0, 0, mrpt::math::CQuaternionDouble(
-									 1, 0, 0, 0));  // For version 1 to 5
+					0.10f, 0, 0,
+					mrpt::math::CQuaternionDouble(
+						1, 0, 0, 0));  // For version 1 to 5
 
 			if (version >= 3 && version < 5)  // For versions 3 & 4
 			{
@@ -217,7 +197,7 @@ void CObservationStereoImages::getStereoCameraParams(
 {
 	out_params.leftCamera = this->leftCamera;
 	out_params.rightCamera = this->rightCamera;
-	out_params.rightCameraPose = this->rightCameraPose;
+	out_params.rightCameraPose = this->rightCameraPose.asTPose();
 }
 
 /** Sets \a leftCamera, \a rightCamera and \a rightCameraPose from a
@@ -232,12 +212,14 @@ void CObservationStereoImages::setStereoCameraParams(
 
 /** This method only checks whether ALL the distortion parameters in \a
  * leftCamera are set to zero, which is
-  * the convention in MRPT to denote that this pair of stereo images has been
+ * the convention in MRPT to denote that this pair of stereo images has been
  * rectified.
-  */
+ */
 bool CObservationStereoImages::areImagesRectified() const
 {
-	return (leftCamera.dist.array() == 0).all();
+	return std::all_of(
+		leftCamera.dist.begin(), leftCamera.dist.end(),
+		[](auto v) { return v == 0; });
 }
 
 // Do an efficient swap of all data members of this object with "o".
@@ -266,7 +248,7 @@ void CObservationStereoImages::getDescriptionAsText(std::ostream& o) const
 
 	o << "Homogeneous matrix for the sensor's 3D pose, relative to robot "
 		 "base:\n";
-	o << cameraPose.getHomogeneousMatrixVal() << endl
+	o << cameraPose.getHomogeneousMatrixVal<CMatrixDouble44>() << endl
 	  << "Camera pose: " << cameraPose << endl
 	  << "Camera pose (YPR): " << CPose3D(cameraPose) << endl
 	  << endl;

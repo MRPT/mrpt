@@ -49,14 +49,14 @@ void CColouredPointsMap::TMapDefinition::dumpToTextStream_map_specific(
 {
 	this->insertionOpts.dumpToTextStream(std::ostream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [CColouredPointsMap::TColourOptions] ------------ \n\n");
 
-	out.printf(
+	out << mrpt::format(
 		"scheme                                  = %u\n", (unsigned)scheme);
-	out.printf("z_min                                   = %f\n", z_min);
-	out.printf("z_max                                   = %f\n", z_max);
-	out.printf("d_max                                   = %f\n", d_max);
+	out << mrpt::format("z_min                                   = %f\n", z_min);
+	out << mrpt::format("z_max                                   = %f\n", z_max);
+	out << mrpt::format("d_max                                   = %f\n", d_max);
 }
 
 /*---------------------------------------------------------------
