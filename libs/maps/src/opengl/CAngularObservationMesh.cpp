@@ -112,9 +112,9 @@ void CAngularObservationMesh::updateMesh() const
 										  0.5);
 				// Without the pitch since it's already within each sensorPose:
 				actualMesh(i, j) =
-					(origin +
+					((origin +
 					 CPose3D(0, 0, 0, rToL ? pYaw : -pYaw, pitchIncr)) +
-					CPoint3D(scan[j], 0, 0);
+					CPoint3D(scan[j], 0, 0)).asTPoint();
 			}
 	}
 	delete[] pitchs;
@@ -309,27 +309,14 @@ void CAngularObservationMesh::generatePointCloud(CPointsMap* out_map) const
 		scanSet.begin(), scanSet.end(), CAngularObservationMesh_fnctr(out_map));
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-uint8_t CAngularObservationMesh::serializeGetVersion() const { return XX; }
+uint8_t CAngularObservationMesh::serializeGetVersion() const { return 0; }
 void CAngularObservationMesh::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		writeToStreamRender(out);
-		// Version 0:
-		out << pitchBounds << scanSet << mWireframe << mEnableTransparency;
-	}
+	writeToStreamRender(out);
+	// Version 0:
+	out << pitchBounds << scanSet << mWireframe << mEnableTransparency;
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
 void CAngularObservationMesh::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
@@ -367,7 +354,7 @@ void CAngularObservationMesh::getTracedRays(CSetOfLines::Ptr& res) const
 		for (size_t j = 0; j < actualMesh.cols(); j++)
 			if (validityMatrix(i, j))
 				res->appendLine(
-					TPose3D(scanSet[i].sensorPose), actualMesh(i, j));
+					(scanSet[i].sensorPose).asTPose(), actualMesh(i, j));
 }
 
 class FAddUntracedLines
@@ -400,13 +387,13 @@ class FAddUntracedLines
 									 static_cast<double>(obs.scan.size() - 1)) -
 									0.5);
 				lins->appendLine(
-					TPoint3D(obs.sensorPose),
-					TPoint3D(
+					obs.sensorPose.asTPose(),
+					(
 						obs.sensorPose +
 						CPose3D(
 							0, 0, 0, obs.rightToLeft ? yaw : -yaw,
 							obs.deltaPitch * i + pitchs.back(), 0) +
-						pDist));
+						pDist).asTPoint());
 			}
 		pitchs.pop_back();
 	}
