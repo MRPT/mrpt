@@ -15,6 +15,7 @@
 #include <mrpt/poses/CPointPDFParticles.h>
 #include <mrpt/poses/CPointPDFGaussian.h>
 #include <mrpt/poses/CPointPDFSOG.h>
+#include <mrpt/obs/CObservation.h> // INVALID_BEACON_ID
 
 #include <mrpt/opengl/CSetOfObjects.h>
 
