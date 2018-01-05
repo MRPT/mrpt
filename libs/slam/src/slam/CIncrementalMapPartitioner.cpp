@@ -28,7 +28,6 @@ using namespace mrpt::maps;
 using namespace mrpt::math;
 using namespace mrpt::graphs;
 using namespace mrpt::poses;
-using namespace mrpt::utils;
 using namespace mrpt;
 using namespace std;
 
@@ -374,7 +373,7 @@ void CIncrementalMapPartitioner::updatePartitions(
 	unsigned int n_nodes;
 	unsigned int n_clusters_last;
 	std::vector<uint32_t> mods;  // The list of nodes that will have been regrouped
-	vector_bool last_parts_are_mods;
+	std::vector<bool> last_parts_are_mods;
 
 	n_nodes = m_modified_nodes.size();  // total number of nodes (scans)
 	n_clusters_last =
@@ -685,11 +684,7 @@ void CIncrementalMapPartitioner::getAs3DScene(
 	}
 }
 
-/*---------------------------------------------------------------
-					readFromStream
-  ---------------------------------------------------------------*/
 void CIncrementalMapPartitioner::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
-	mrpt::utils::CStream& in, int version)
 {
 	switch (version)
 	{
@@ -705,21 +700,11 @@ void CIncrementalMapPartitioner::serializeFrom(mrpt::serialization::CArchive& in
 	};
 }
 
-/*---------------------------------------------------------------
-					writeToStream
-	Implements the writing to a CStream capability of
-	  CSerializable objects
-  ---------------------------------------------------------------*/
-uint8_t CIncrementalMapPartitioner::serializeGetVersion() const { return XX; } void CIncrementalMapPartitioner::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CIncrementalMapPartitioner::serializeGetVersion() const { return 0; }
+void CIncrementalMapPartitioner::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		out << m_individualFrames << m_individualMaps << m_A << m_last_partition
-			<< m_last_last_partition_are_new_ones << m_modified_nodes;
-	}
+	out << m_individualFrames << m_individualMaps << m_A << m_last_partition
+		<< m_last_last_partition_are_new_ones << m_modified_nodes;
 }
 
 /*---------------------------------------------------------------

@@ -16,10 +16,13 @@
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::maps;
+using namespace mrpt::io;
 using namespace mrpt::poses;
+using namespace mrpt::serialization;
 
 CMetricMapBuilder::CMetricMapBuilder()
 	: mrpt::system::COutputLogger("CMetricMapBuilder"),
@@ -64,7 +67,7 @@ void CMetricMapBuilder::loadCurrentMapFromFile(const std::string& fileName)
 		CFileGZInputStream f(fileName);
 
 		// Load from file:
-		f >> map;
+		archiveFrom(f) >> map;
 	}
 	else
 	{  // Is a new file, start with an empty map:
@@ -95,7 +98,7 @@ void CMetricMapBuilder::saveCurrentMapToFile(
 
 	// Save to file:
 	if (compressGZ)
-		CFileGZOutputStream(fileName) << curmap;
+		archiveFrom(CFileGZOutputStream(fileName)) << curmap;
 	else
-		CFileOutputStream(fileName) << curmap;
+		archiveFrom(CFileOutputStream(fileName)) << curmap;
 }

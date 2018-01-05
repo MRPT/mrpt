@@ -251,7 +251,7 @@ template <>
 struct TEnumTypeFiller<slam::CGridMapAligner::TAlignerMethod>
 {
 	typedef slam::CGridMapAligner::TAlignerMethod enum_t;
-	static void fill(bimap<enum_t, std::string>& m_map)
+	static void fill(internal::bimap<enum_t, std::string>& m_map)
 	{
 		m_map.insert(slam::CGridMapAligner::amRobustMatch, "amRobustMatch");
 		m_map.insert(slam::CGridMapAligner::amCorrelation, "amCorrelation");

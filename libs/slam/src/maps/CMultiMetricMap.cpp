@@ -13,10 +13,13 @@
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/metaprogramming_serialization.h>
 
 using namespace mrpt::maps;
 using namespace mrpt::poses;
 using namespace mrpt::obs;
+using namespace mrpt::tfest;
+using namespace mrpt::serialization::metaprogramming;
 
 IMPLEMENTS_SERIALIZABLE(CMultiMetricMap, CMetricMap, mrpt::maps)
 
@@ -247,7 +250,7 @@ void CMultiMetricMap::setListOfMaps(
 
 void CMultiMetricMap::internal_clear()
 {
-	MapExecutor::run(*this, [](auto &ptr){if (ptr) ptr->clear()});
+	MapExecutor::run(*this, [](auto &ptr) {if (ptr) ptr->clear(); });
 }
 
 void CMultiMetricMap::deleteAllMaps()
@@ -258,12 +261,10 @@ void CMultiMetricMap::deleteAllMaps()
 }
 
 uint8_t CMultiMetricMap::serializeGetVersion() const { return 11; }
-void CMultiMetricMap::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+void CMultiMetricMap::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	// Version 11: simply the list of maps:
 	out << static_cast<uint32_t>(m_ID);
-
 	const uint32_t n = static_cast<uint32_t>(maps.size());
 	for (uint32_t i = 0; i < n; i++) out << *maps[i];
 }
@@ -304,7 +305,7 @@ double CMultiMetricMap::internal_computeObservationLikelihood(
 
 	MapExecutor::run(*this, op_likelihood);
 
-	MRPT_CHECK_NORMAL_NUMBER(ret_log_lik)  //-V614
+	MRPT_CHECK_NORMAL_NUMBER(ret_log_lik);  //-V614
 	return ret_log_lik;
 }
 
@@ -405,7 +406,7 @@ float CMultiMetricMap::compute3DMatchingRatio(
 	for (size_t idx = 0; idx < maps.size(); idx++)
 	{
 		const mrpt::maps::CMetricMap* m = maps[idx].get();
-		ASSERT_(m)
+		ASSERT_(m);
 		accumResult +=
 			m->compute3DMatchingRatio(otherMap, otherMapPose, params);
 	}
@@ -436,7 +437,7 @@ void CMultiMetricMap::auxParticleFilterCleanUp()
 const CSimplePointsMap* CMultiMetricMap::getAsSimplePointsMap() const
 {
 	MRPT_START
-	ASSERT_(m_pointsMaps.size() == 1 || m_pointsMaps.size() == 0)
+	ASSERT_(m_pointsMaps.size() == 1 || m_pointsMaps.size() == 0);
 	if (m_pointsMaps.empty())
 		return nullptr;
 	else
@@ -446,7 +447,7 @@ const CSimplePointsMap* CMultiMetricMap::getAsSimplePointsMap() const
 CSimplePointsMap* CMultiMetricMap::getAsSimplePointsMap()
 {
 	MRPT_START
-	ASSERT_(m_pointsMaps.size() == 1 || m_pointsMaps.size() == 0)
+	ASSERT_(m_pointsMaps.size() == 1 || m_pointsMaps.size() == 0);
 	if (m_pointsMaps.empty())
 		return nullptr;
 	else
@@ -457,6 +458,6 @@ CSimplePointsMap* CMultiMetricMap::getAsSimplePointsMap()
 /** Gets the i-th map \exception std::runtime_error On out-of-bounds */
 mrpt::maps::CMetricMap::Ptr CMultiMetricMap::getMapByIndex(size_t idx) const
 {
-	ASSERT_BELOW_(idx, maps.size();
+	ASSERT_BELOW_(idx, maps.size());
 	return maps[idx].get_ptr();
 }
