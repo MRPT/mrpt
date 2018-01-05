@@ -19,6 +19,7 @@
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/graphs/ScalarFactorGraph.h>
 
+
 #include <list>
 
 namespace mrpt
@@ -154,7 +155,7 @@ class CRandomFieldGridMap2D
 	  public mrpt::containers::CDynamicGrid<TRandomFieldCell>,
 	  public mrpt::system::COutputLogger
 {
-	typedef utils::CDynamicGrid<TRandomFieldCell> BASE;
+	using BASE = mrpt::containers::CDynamicGrid<TRandomFieldCell>;
 
 	DEFINE_VIRTUAL_SERIALIZABLE(CRandomFieldGridMap2D)
    public:
@@ -250,7 +251,7 @@ class CRandomFieldGridMap2D
 			const std::string& section);
 
 		/** See utils::CLoadableOptions */
-		void internal_dumpToTextStream_common(mrpt::utils::CStream& out) const;
+		void internal_dumpToTextStream_common(std::ostream& out) const;
 
 		/** @name Kernel methods (mrKernelDM, mrKernelDMV)
 			@{ */
@@ -647,27 +648,14 @@ class CRandomFieldGridMap2D
 };
 
 }  // namespace maps
-
-// Specializations MUST occur at the same namespace:
-namespace typemeta
-{
-template <>
-struct TEnumTypeFiller<maps::CRandomFieldGridMap2D::TMapRepresentation>
-{
-	typedef maps::CRandomFieldGridMap2D::TMapRepresentation enum_t;
-	static void fill(bimap<enum_t, std::string>& m_map)
-	{
-		m_map.insert(maps::CRandomFieldGridMap2D::mrKernelDM, "mrKernelDM");
-		m_map.insert(
-			maps::CRandomFieldGridMap2D::mrKalmanFilter, "mrKalmanFilter");
-		m_map.insert(
-			maps::CRandomFieldGridMap2D::mrKalmanApproximate,
-			"mrKalmanApproximate");
-		m_map.insert(maps::CRandomFieldGridMap2D::mrKernelDMV, "mrKernelDMV");
-		m_map.insert(maps::CRandomFieldGridMap2D::mrGMRF_SD, "mrGMRF_SD");
-	}
-};
-}  // namespace typemeta
 }  // namespace mrpt
+
+MRPT_ENUM_TYPE_BEGIN(mrpt::maps::CRandomFieldGridMap2D::TMapRepresentation)
+MRPT_FILL_ENUM_MEMBER(mrpt::maps::CRandomFieldGridMap2D::TMapRepresentation, mrKernelDM);
+MRPT_FILL_ENUM_MEMBER(mrpt::maps::CRandomFieldGridMap2D::TMapRepresentation, mrKalmanFilter);
+MRPT_FILL_ENUM_MEMBER(mrpt::maps::CRandomFieldGridMap2D::TMapRepresentation, mrKalmanApproximate);
+MRPT_FILL_ENUM_MEMBER(mrpt::maps::CRandomFieldGridMap2D::TMapRepresentation, mrKernelDMV);
+MRPT_FILL_ENUM_MEMBER(mrpt::maps::CRandomFieldGridMap2D::TMapRepresentation, mrGMRF_SD);
+MRPT_ENUM_TYPE_END()
 
 #endif

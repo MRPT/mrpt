@@ -69,7 +69,7 @@ class CICP : public mrpt::slam::CMetricMapsAlignmentAlgorithm
    public:
 	/** The ICP algorithm configuration data
 	 */
-	class TConfigParams : public utils::CLoadableOptions
+	class TConfigParams : public mrpt::config::CLoadableOptions
 	{
 	   public:
 		/** Initializer for default values: */

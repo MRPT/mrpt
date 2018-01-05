@@ -19,7 +19,7 @@
 #include <mrpt/opengl/CPointCloudColoured.h>
 
 #include <mrpt/system/filesystem.h>
-#include <mrpt/utils/CMemoryChunk.h>
+#include <sstream>
 #include <mrpt/io/CFileOutputStream.h>
 
 using namespace std;
@@ -27,6 +27,7 @@ using namespace mrpt;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
 using namespace mrpt::poses;
+using namespace mrpt::img;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
 
@@ -51,34 +52,50 @@ void CColouredOctoMap::TMapDefinition::loadFromConfigFile_map_specific(
 }
 
 void CColouredOctoMap::TMapDefinition::dumpToTextStream_map_specific(
-	mrpt::utils::CStream& out) const
+	std::ostream& out) const
 {
 	LOADABLEOPTS_DUMP_VAR(resolution, double);
 
-	this->insertionOpts.dumpToTextStreamstd::ostream& out, int* version) const
-{
-	if (version)
-		*version = 2;
-	else
-	{
-		this->likelihoodOptions.writeToStream(out);
-		this->renderingOptions.writeToStream(out);  // Added in v1
-		out << genericMapParams;  // v2
-
-		CMemoryChunk chunk;
-		const string tmpFil = mrpt::system::getTempFileName();
-		const_cast<octomap::ColorOcTree*>(&m_octomap)->writeBinary(tmpFil);
-		chunk.loadBufferFromFile(tmpFil);
-		mrpt::system::deleteFile(tmpFil);
-		out << chunk;
-	}
+	this->insertionOpts.dumpToTextStream(out);
+	this->likelihoodOpts.dumpToTextStream(out);
 }
 
-/*---------------------------------------------------------------
-					readFromStream
-   Implements the reading from a CStream capability of
-	  CSerializable objects
-  ---------------------------------------------------------------*/
+mrpt::maps::CMetricMap* CColouredOctoMap::internal_CreateFromMapDefinition(
+	const mrpt::maps::TMetricMapInitializer& _def)
+{
+	const CColouredOctoMap::TMapDefinition& def =
+		*dynamic_cast<const CColouredOctoMap::TMapDefinition*>(&_def);
+	CColouredOctoMap* obj = new CColouredOctoMap(def.resolution);
+	obj->insertionOptions = def.insertionOpts;
+	obj->likelihoodOptions = def.likelihoodOpts;
+	return obj;
+}
+//  =========== End of Map definition Block =========
+
+IMPLEMENTS_SERIALIZABLE(CColouredOctoMap, CMetricMap, mrpt::maps)
+
+CColouredOctoMap::CColouredOctoMap(const double resolution)
+	: COctoMapBase<octomap::ColorOcTree, octomap::ColorOcTreeNode>(resolution),
+	  m_colour_method(INTEGRATE)
+{
+}
+
+CColouredOctoMap::~CColouredOctoMap() {}
+
+uint8_t CColouredOctoMap::serializeGetVersion() const { return 3; }
+void CColouredOctoMap::serializeTo(mrpt::serialization::CArchive& out) const
+{
+	this->likelihoodOptions.writeToStream(out);
+	this->renderingOptions.writeToStream(out);  // Added in v1
+	out << genericMapParams;  // v2
+
+	// v2->v3: remove CMemoryChunk
+	std::stringstream ss;
+	const_cast<octomap::ColorOcTree*>(&m_octomap)->writeBinary(ss);
+	const std::string& buf = ss.str();
+	out << buf;
+}
+
 void CColouredOctoMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
@@ -87,22 +104,26 @@ void CColouredOctoMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t 
 		case 1:
 		case 2:
 		{
+			THROW_EXCEPTION("Deserialization of old versions of this class was discontinued in MRPT 1.9.9 [no CMemoryChunk]");
+		}
+		break;
+		case 3:
+		{
 			this->likelihoodOptions.readFromStream(in);
 			if (version >= 1) this->renderingOptions.readFromStream(in);
 			if (version >= 2) in >> genericMapParams;
 
 			this->clear();
 
-			CMemoryChunk chunk;
-			in >> chunk;
+			std::string buf;
+			in >> buf;
 
-			if (chunk.getTotalBytesCount())
+			if (!buf.empty())
 			{
-				const string tmpFil = mrpt::system::getTempFileName();
-				if (!chunk.saveBufferToFile(tmpFil))
-					THROW_EXCEPTION("Error saving temporary file");
-				m_octomap.readBinary(tmpFil);
-				mrpt::system::deleteFile(tmpFil);
+				std::stringstream ss;
+				ss.str(buf);
+				ss.seekg(0);
+				m_octomap.readBinary(ss);
 			}
 		}
 		break;

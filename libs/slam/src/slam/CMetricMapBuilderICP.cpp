@@ -115,7 +115,7 @@ void CMetricMapBuilderICP::TConfigParams::dumpToTextStream(CStream& out) const
 		RAD2DEG(localizationAngDistance));
 	out << mrpt::format(
 		"verbosity_level                         = %s\n",
-		mrpt::utils::TEnumType<mrpt::system::VerbosityLevel>::value2name(
+		mrpt::typemeta::TEnumType<mrpt::system::VerbosityLevel>::value2name(
 			verbosity_level)
 			.c_str());
 

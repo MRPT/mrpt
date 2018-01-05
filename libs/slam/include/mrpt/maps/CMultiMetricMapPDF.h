@@ -108,7 +108,7 @@ class CMultiMetricMapPDF
 	 *    when running a particle filter.
 	 * \sa prediction_and_update
 	 */
-	struct TPredictionParams : public utils::CLoadableOptions
+	struct TPredictionParams : public mrpt::config::CLoadableOptions
 	{
 		/** Default settings method */
 		TPredictionParams();

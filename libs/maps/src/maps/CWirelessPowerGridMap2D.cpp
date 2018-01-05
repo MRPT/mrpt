@@ -62,7 +62,7 @@ void CWirelessPowerGridMap2D::TMapDefinition::dumpToTextStream_map_specific(
 {
 	out << mrpt::format(
 		"MAP TYPE                                  = %s\n",
-		mrpt::utils::TEnumType<
+		mrpt::typemeta::TEnumType<
 			CWirelessPowerGridMap2D::TMapRepresentation>::value2name(mapType)
 			.c_str());
 	LOADABLEOPTS_DUMP_VAR(min_x, double);

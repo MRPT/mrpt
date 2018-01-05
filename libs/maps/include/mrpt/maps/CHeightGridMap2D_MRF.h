@@ -48,7 +48,7 @@ class CHeightGridMap2D_MRF : public CRandomFieldGridMap2D,
 		bool run_first_map_estimation_now = true);
 
 	/** Parameters related with inserting observations into the map */
-	struct TInsertionOptions : public utils::CLoadableOptions,
+	struct TInsertionOptions : public mrpt::config::CLoadableOptions,
 							   public TInsertionOptionsCommon
 	{
 		/** Default values loader */

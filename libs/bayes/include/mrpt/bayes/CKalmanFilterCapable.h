@@ -95,10 +95,10 @@ struct TKF_options : public mrpt::config::CLoadableOptions
 		out << mrpt::format("\n----------- [TKF_options] ------------ \n\n");
 		out << mrpt::format(
 			"method                                  = %s\n",
-			mrpt::utils::TEnumType<TKFMethod>::value2name(method).c_str());
+			mrpt::typemeta::TEnumType<TKFMethod>::value2name(method).c_str());
 		out << mrpt::format(
 			"verbosity_level                         = %s\n",
-			mrpt::utils::TEnumType<mrpt::system::VerbosityLevel>::value2name(
+			mrpt::typemeta::TEnumType<mrpt::system::VerbosityLevel>::value2name(
 				verbosity_level)
 				.c_str());
 		out << mrpt::format(

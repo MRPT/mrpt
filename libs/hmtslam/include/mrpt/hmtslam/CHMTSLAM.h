@@ -428,7 +428,7 @@ class CHMTSLAM : public mrpt::system::COutputLogger,
 	/** A variety of options and configuration params (private, use
 	 * loadOptions).
 	  */
-	struct TOptions : public utils::CLoadableOptions
+	struct TOptions : public mrpt::config::CLoadableOptions
 	{
 		/** Initialization of default params
 		  */

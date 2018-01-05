@@ -10,7 +10,7 @@
 
 #include <mrpt/maps/CPointCloudFilterBase.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/core/aligned_std_vector.h>
+#include <mrpt/core/aligned_std_map.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/config/CLoadableOptions.h>
 

@@ -60,9 +60,10 @@ struct THeightGridmapCell
  *
  * \ingroup mrpt_maps_grp
  */
-class CHeightGridMap2D : public mrpt::maps::CMetricMap,
-						 public utils::CDynamicGrid<THeightGridmapCell>,
-						 public CHeightGridMap2D_Base
+class CHeightGridMap2D :
+	  public mrpt::maps::CMetricMap,
+	  public mrpt::containers::CDynamicGrid<THeightGridmapCell>,
+	  public CHeightGridMap2D_Base
 {
 	DEFINE_SERIALIZABLE(CHeightGridMap2D)
    public:
@@ -94,7 +95,7 @@ class CHeightGridMap2D : public mrpt::maps::CMetricMap,
 	bool isEmpty() const override;
 
 	/** Parameters related with inserting observations into the map */
-	struct TInsertionOptions : public utils::CLoadableOptions
+	struct TInsertionOptions : public mrpt::config::CLoadableOptions
 	{
 		/** Default values loader */
 		TInsertionOptions();
@@ -184,22 +185,10 @@ namespace global_settings
 void HEIGHTGRIDMAP_EXPORT3D_AS_MESH(bool value);
 bool HEIGHTGRIDMAP_EXPORT3D_AS_MESH();
 }  // namespace global_settings
-
-// Specializations MUST occur at the same namespace:
-namespace typemeta
-{
-template <>
-struct TEnumTypeFiller<maps::CHeightGridMap2D::TMapRepresentation>
-{
-	typedef maps::CHeightGridMap2D::TMapRepresentation enum_t;
-	static void fill(bimap<enum_t, std::string>& m_map)
-	{
-		m_map.insert(
-			maps::CHeightGridMap2D::mrSimpleAverage, "mrSimpleAverage");
-	}
-};
-}  // namespace typemeta
-
 }  // namespace mrpt
+
+MRPT_ENUM_TYPE_BEGIN(maps::CHeightGridMap2D::TMapRepresentation)
+MRPT_FILL_ENUM_MEMBER(maps::CHeightGridMap2D::TMapRepresentation, mrSimpleAverage);
+MRPT_ENUM_TYPE_END()
 
 #endif

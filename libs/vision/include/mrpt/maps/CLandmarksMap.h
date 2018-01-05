@@ -228,7 +228,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 	/** With this struct options are provided to the observation insertion
 	 * process.
 	 */
-	struct TInsertionOptions : public utils::CLoadableOptions
+	struct TInsertionOptions : public mrpt::config::CLoadableOptions
 	{
 	   public:
 		/** Initilization of default parameters
@@ -343,7 +343,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 
 	/** With this struct options are provided to the likelihood computations.
 	 */
-	struct TLikelihoodOptions : public utils::CLoadableOptions
+	struct TLikelihoodOptions : public mrpt::config::CLoadableOptions
 	{
 	   public:
 		TLikelihoodOptions();

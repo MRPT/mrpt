@@ -27,7 +27,9 @@
 using namespace mrpt;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
+using namespace mrpt::io;
 using namespace mrpt::poses;
+using namespace mrpt::img;
 using namespace std;
 using namespace mrpt::math;
 
@@ -67,11 +69,11 @@ void CGasConcentrationGridMap2D::TMapDefinition::
 }
 
 void CGasConcentrationGridMap2D::TMapDefinition::dumpToTextStream_map_specific(
-	mrpt::utils::CStream& out) const
+	std::ostream& out) const
 {
 	out << mrpt::format(
 		"MAP TYPE                                  = %s\n",
-		mrpt::utils::TEnumType<
+		mrpt::typemeta::TEnumType<
 			CGasConcentrationGridMap2D::TMapRepresentation>::value2name(mapType)
 			.c_str());
 	LOADABLEOPTS_DUMP_VAR(min_x, float);
@@ -80,7 +82,383 @@ void CGasConcentrationGridMap2D::TMapDefinition::dumpToTextStream_map_specific(
 	LOADABLEOPTS_DUMP_VAR(max_y, float);
 	LOADABLEOPTS_DUMP_VAR(resolution, float);
 
-	this->insertionOpts.dumpToTextStream(std::ostream& out) const
+	this->insertionOpts.dumpToTextStream(out);
+}
+
+mrpt::maps::CMetricMap*
+	CGasConcentrationGridMap2D::internal_CreateFromMapDefinition(
+		const mrpt::maps::TMetricMapInitializer& _def)
+{
+	const CGasConcentrationGridMap2D::TMapDefinition& def =
+		*dynamic_cast<const CGasConcentrationGridMap2D::TMapDefinition*>(&_def);
+	CGasConcentrationGridMap2D* obj = new CGasConcentrationGridMap2D(
+		def.mapType, def.min_x, def.max_x, def.min_y, def.max_y,
+		def.resolution);
+	obj->insertionOptions = def.insertionOpts;
+	return obj;
+}
+//  =========== End of Map definition Block =========
+
+IMPLEMENTS_SERIALIZABLE(
+	CGasConcentrationGridMap2D, CRandomFieldGridMap2D, mrpt::maps)
+
+// Short-cut:
+#define LUT_TABLE (*(LUT.table))
+
+/*---------------------------------------------------------------
+						Constructor
+  ---------------------------------------------------------------*/
+CGasConcentrationGridMap2D::CGasConcentrationGridMap2D(
+	TMapRepresentation mapType, float x_min, float x_max, float y_min,
+	float y_max, float resolution)
+	: CRandomFieldGridMap2D(mapType, x_min, x_max, y_min, y_max, resolution),
+	  insertionOptions()
+{
+	// Override defaults:
+	insertionOptions.GMRF_saturate_min = 0;
+	insertionOptions.GMRF_saturate_max = 1;
+	insertionOptions.GMRF_lambdaObsLoss = 1.0;
+
+	// Set the grid to initial values (and adjust covariance matrices,...)
+	//  Also, calling clear() is mandatory to end initialization of our base
+	//  class (read note in CRandomFieldGridMap2D::CRandomFieldGridMap2D)
+	CMetricMap::clear();
+
+	// Create WindGrids with same dimensions that the original map
+	windGrid_module.setSize(x_min, x_max, y_min, y_max, resolution);
+	windGrid_direction.setSize(x_min, x_max, y_min, y_max, resolution);
+
+	// initialize counter for advection simulation
+	timeLastSimulated = mrpt::system::now();
+}
+
+CGasConcentrationGridMap2D::~CGasConcentrationGridMap2D() {}
+/*---------------------------------------------------------------
+						clear
+  ---------------------------------------------------------------*/
+void CGasConcentrationGridMap2D::internal_clear()
+{
+	// Just do the generic clear:
+	CRandomFieldGridMap2D::internal_clear();
+
+	// Anything else special for this derived class?
+
+	if (insertionOptions.useWindInformation)
+	{
+		// Set default values of the wind grid
+		windGrid_module.fill(insertionOptions.default_wind_speed);
+		windGrid_direction.fill(insertionOptions.default_wind_direction);
+
+		/*float S = windGrid_direction.getSizeX() *
+windGrid_direction.getSizeY();
+
+		for( unsigned int y=windGrid_direction.getSizeY()/2;
+y<windGrid_direction.getSizeY(); y++ )
+		{
+			for( unsigned int x=0; x<windGrid_direction.getSizeX(); x++ )
+			{
+				double * wind_cell = windGrid_direction.cellByIndex(x,y);
+				*wind_cell =  3*3.141516/2;
+}
+		}*/
+
+		// Generate Look-Up Table of the Gaussian weights due to wind advection.
+		if (!build_Gaussian_Wind_Grid())
+		{
+			// mrpt::system::pause();
+			THROW_EXCEPTION("Problem with LUT wind table");
+		}
+	}
+}
+
+/*---------------------------------------------------------------
+						insertObservation
+  ---------------------------------------------------------------*/
+bool CGasConcentrationGridMap2D::internal_insertObservation(
+	const CObservation* obs, const CPose3D* robotPose)
+{
+	MRPT_START
+
+	CPose2D robotPose2D;
+	CPose3D robotPose3D;
+
+	if (robotPose)
+	{
+		robotPose2D = CPose2D(*robotPose);
+		robotPose3D = (*robotPose);
+	}
+	else
+	{
+		// Default values are (0,0,0)
+	}
+
+	if (IS_CLASS(obs, CObservationGasSensors))
+	{
+		/********************************************************************
+					OBSERVATION TYPE: CObservationGasSensors
+		********************************************************************/
+		const CObservationGasSensors* o =
+			static_cast<const CObservationGasSensors*>(obs);
+
+		if (o->sensorLabel.compare(insertionOptions.gasSensorLabel) == 0)
+		{
+			float sensorReading;
+			CPose2D sensorPose;
+
+			if (o->sensorLabel.compare("MCEnose") == 0 ||
+				o->sensorLabel.compare("Full_MCEnose") == 0)
+			{
+				ASSERT_(o->m_readings.size() > insertionOptions.enose_id);
+				const CObservationGasSensors::TObservationENose* it =
+					&o->m_readings[insertionOptions.enose_id];
+
+				// Compute the 3D sensor pose in world coordinates:
+				sensorPose = CPose2D(
+					CPose3D(robotPose2D) + CPose3D(it->eNosePoseOnTheRobot));
+
+				// Compute the sensor reading value (Volts):
+				if (insertionOptions.gasSensorType == 0x0000)
+				{  // compute the mean
+					sensorReading = math::mean(it->readingsVoltage);
+				}
+				else
+				{
+					// Look for the correct sensor type
+					size_t i;
+					for (i = 0; i < it->sensorTypes.size(); i++)
+					{
+						if (it->sensorTypes.at(i) ==
+							int(insertionOptions.gasSensorType))
+							break;
+					}
+
+					if (i < it->sensorTypes.size())
+					{
+						sensorReading = it->readingsVoltage[i];
+					}
+					else
+					{
+						cout << "Sensor especified not found, compute default "
+								"mean value"
+							 << endl;
+						sensorReading = math::mean(it->readingsVoltage);
+					}
+				}
+			}
+			else  //"GDM, RAE_PID, ENOSE_SIMUL
+			{
+				const CObservationGasSensors::TObservationENose* it =
+					&o->m_readings[0];
+				// Compute the 3D sensor pose in world coordinates:
+				sensorPose = CPose2D(
+					CPose3D(robotPose2D) + CPose3D(it->eNosePoseOnTheRobot));
+				sensorReading = it->readingsVoltage[0];
+			}
+
+			// Normalization:
+			sensorReading = (sensorReading - insertionOptions.R_min) /
+							(insertionOptions.R_max - insertionOptions.R_min);
+
+			// Update the gross estimates of mean/vars for the whole reading
+			// history (see IROS2009 paper):
+			m_average_normreadings_mean =
+				(sensorReading +
+				 m_average_normreadings_count * m_average_normreadings_mean) /
+				(1 + m_average_normreadings_count);
+			m_average_normreadings_var =
+				(square(sensorReading - m_average_normreadings_mean) +
+				 m_average_normreadings_count * m_average_normreadings_var) /
+				(1 + m_average_normreadings_count);
+			m_average_normreadings_count++;
+
+			// Finally, do the actual map update with that value:
+			this->insertIndividualReading(
+				sensorReading,
+				mrpt::math::TPoint2D(sensorPose.x(), sensorPose.y()));
+			return true;  // Done!
+		}  // endif correct "gasSensorLabel"
+	}  // end if "CObservationGasSensors"
+
+	return false;
+	MRPT_END
+}
+
+/*---------------------------------------------------------------
+						computeObservationLikelihood
+  ---------------------------------------------------------------*/
+double CGasConcentrationGridMap2D::internal_computeObservationLikelihood(
+	const CObservation* obs, const CPose3D& takenFrom)
+{
+	MRPT_UNUSED_PARAM(obs);
+	MRPT_UNUSED_PARAM(takenFrom);
+
+	THROW_EXCEPTION("Not implemented yet!");
+}
+
+uint8_t CGasConcentrationGridMap2D::serializeGetVersion() const { return 5; }
+void CGasConcentrationGridMap2D::serializeTo(mrpt::serialization::CArchive& out) const
+{
+	dyngridcommon_writeToStream(out);
+
+	// To assure compatibility: The size of each cell:
+	uint32_t n = static_cast<uint32_t>(sizeof(TRandomFieldCell));
+	out << n;
+
+	// Save the map contents:
+	n = static_cast<uint32_t>(m_map.size());
+	out << n;
+
+// Save the "m_map": This requires special handling for big endian systems:
+#if MRPT_IS_BIG_ENDIAN
+	for (uint32_t i = 0; i < n; i++)
+	{
+		out << m_map[i].kf_mean << m_map[i].dm_mean
+			<< m_map[i].dmv_var_mean;
+	}
+#else
+	// Little endian: just write all at once:
+	out.WriteBuffer(
+		&m_map[0], sizeof(m_map[0]) *
+						m_map.size());  // TODO: Do this endianness safe!!
+#endif
+
+	// Version 1: Save the insertion options:
+	out << uint8_t(m_mapType) << m_cov << m_stackedCov;
+
+	out << insertionOptions.sigma << insertionOptions.cutoffRadius
+		<< insertionOptions.R_min << insertionOptions.R_max
+		<< insertionOptions.KF_covSigma
+		<< insertionOptions.KF_initialCellStd
+		<< insertionOptions.KF_observationModelNoise
+		<< insertionOptions.KF_defaultCellMeanValue
+		<< insertionOptions.KF_W_size;
+
+	// New in v3:
+	out << m_average_normreadings_mean << m_average_normreadings_var
+		<< uint64_t(m_average_normreadings_count);
+
+	out << genericMapParams;  // v4
+}
+
+// Aux struct used below (must be at global scope for STL):
+struct TOldCellTypeInVersion1
+{
+	float mean, std;
+	float w, wr;
+};
+
+void CGasConcentrationGridMap2D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+{
+	switch (version)
+	{
+		case 0:
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+		{
+			dyngridcommon_readFromStream(in, version < 5);
+
+			// To assure compatibility: The size of each cell:
+			uint32_t n;
+			in >> n;
+
+			if (version < 2)
+			{  // Converter from old versions <=1
+				ASSERT_(
+					n == static_cast<uint32_t>(sizeof(TOldCellTypeInVersion1)));
+				// Load the map contents in an aux struct:
+				in >> n;
+				vector<TOldCellTypeInVersion1> old_map(n);
+				in.ReadBuffer(&old_map[0], sizeof(old_map[0]) * old_map.size());
+
+				// Convert to newer format:
+				m_map.resize(n);
+				for (size_t k = 0; k < n; k++)
+				{
+					m_map[k].kf_mean =
+						(old_map[k].w != 0) ? old_map[k].wr : old_map[k].mean;
+					m_map[k].kf_std =
+						(old_map[k].w != 0) ? old_map[k].w : old_map[k].std;
+				}
+			}
+			else
+			{
+				ASSERT_EQUAL_(
+					n, static_cast<uint32_t>(sizeof(TRandomFieldCell)));
+				// Load the map contents:
+				in >> n;
+				m_map.resize(n);
+
+// Read the note in writeToStream()
+#if MRPT_IS_BIG_ENDIAN
+				for (uint32_t i = 0; i < n; i++)
+					in >> m_map[i].kf_mean >> m_map[i].dm_mean >>
+						m_map[i].dmv_var_mean;
+#else
+				// Little endian: just read all at once:
+				in.ReadBuffer(&m_map[0], sizeof(m_map[0]) * m_map.size());
+#endif
+			}
+
+			// Version 1: Insertion options:
+			if (version >= 1)
+			{
+				uint8_t i;
+				in >> i;
+				m_mapType = TMapRepresentation(i);
+
+				in >> m_cov >> m_stackedCov;
+
+				in >> insertionOptions.sigma >> insertionOptions.cutoffRadius >>
+					insertionOptions.R_min >> insertionOptions.R_max >>
+					insertionOptions.KF_covSigma >>
+					insertionOptions.KF_initialCellStd >>
+					insertionOptions.KF_observationModelNoise >>
+					insertionOptions.KF_defaultCellMeanValue >>
+					insertionOptions.KF_W_size;
+			}
+
+			if (version >= 3)
+			{
+				uint64_t N;
+				in >> m_average_normreadings_mean >>
+					m_average_normreadings_var >> N;
+				m_average_normreadings_count = N;
+			}
+
+			if (version >= 4) in >> genericMapParams;
+
+			m_hasToRecoverMeanAndCov = true;
+		}
+		break;
+		default:
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+	};
+}
+
+/*---------------------------------------------------------------
+					TInsertionOptions
+ ---------------------------------------------------------------*/
+CGasConcentrationGridMap2D::TInsertionOptions::TInsertionOptions()
+	:
+
+	  gasSensorLabel("MCEnose"),
+	  enose_id(0),  // By default use the first enose
+	  gasSensorType(
+		  0x0000),  // By default use the mean between all e-nose sensors
+	  windSensorLabel("windSensor"),
+	  useWindInformation(false),  // By default dont use wind
+	  std_windNoise_phi(0.2f),
+	  std_windNoise_mod(0.2f),
+	  default_wind_direction(0.0f),
+	  default_wind_speed(1.0f)
+{
+}
+
+void CGasConcentrationGridMap2D::TInsertionOptions::dumpToTextStream(
+	std::ostream& out) const
 {
 	out << mrpt::format(
 		"\n----------- [CGasConcentrationGridMap2D::TInsertionOptions] "
@@ -252,9 +630,9 @@ void CGasConcentrationGridMap2D::getWindAs3DObject(
 			double dir_xy = *windGrid_direction.cellByPos(xs[cx], ys[cy]);
 			double mod_xy = *windGrid_module.cellByPos(xs[cx], ys[cy]);
 
-			mrpt::opengl::CArrow::Ptr obj = mrpt::opengl::CArrow::Create(
-				xs[cx], ys[cy], 0, xs[cx] + scale * cos(dir_xy),
-				ys[cy] + scale * sin(dir_xy), 0, 1.15f * scale, 0.3f * scale,
+			auto obj = mrpt::opengl::CArrow::Create(
+				xs[cx], ys[cy], 0.f, xs[cx] + scale * (float)cos(dir_xy),
+				ys[cy] + scale * (float)sin(dir_xy), 0.f, 1.15f * scale, 0.3f * scale,
 				0.35f * scale);
 
 			float r, g, b;
@@ -953,16 +1331,16 @@ bool CGasConcentrationGridMap2D::save_Gaussian_Wind_Grid_To_File()
 	// Save LUT to file
 	cout << "Saving to File ....";
 
-	CFileGZOutputStream f(
+	CFileGZOutputStream fo(
 		format(
 			"Gaussian_Wind_Weights_res(%f)_stdPhi(%f)_stdR(%f).gz",
 			LUT.resolution, LUT.std_phi, LUT.std_r));
-
-	if (!f.fileOpenCorrectly())
+	if (!fo.fileOpenCorrectly())
 	{
 		return false;
 		cout << "WARNING: Gaussian_Wind_Weights file NOT SAVED" << endl;
 	}
+	auto f = mrpt::serialization::archiveFrom(fo);
 
 	try
 	{
@@ -997,7 +1375,6 @@ bool CGasConcentrationGridMap2D::save_Gaussian_Wind_Grid_To_File()
 			}
 		}
 		cout << "DONE" << endl;
-		f.close();
 		return true;
 	}
 	catch (exception e)
@@ -1007,7 +1384,6 @@ bool CGasConcentrationGridMap2D::save_Gaussian_Wind_Grid_To_File()
 			 << endl;
 		cout << "EXCEPTION WHILE SAVING LUT TO FILE" << endl;
 		cout << "Exception = " << e.what() << endl;
-		f.close();
 		return false;
 	}
 }
@@ -1019,23 +1395,23 @@ bool CGasConcentrationGridMap2D::load_Gaussian_Wind_Grid_From_File()
 
 	try
 	{
-		CFileGZInputStream f(
+		CFileGZInputStream fi(
 			format(
 				"Gaussian_Wind_Weights_res(%f)_stdPhi(%f)_stdR(%f).gz",
 				LUT.resolution, LUT.std_phi, LUT.std_r));
-
-		if (!f.fileOpenCorrectly())
+		if (!fi.fileOpenCorrectly())
 		{
 			cout << "WARNING WHILE READING FROM: Gaussian_Wind_Weights" << endl;
 			return false;
 		}
+		auto f = mrpt::serialization::archiveFrom(fi);
 
 		float t_float;
 		unsigned int t_uint;
 		// Ensure params from file are correct with the specified in the ini
 		// file
 		f >> t_float;
-		ASSERT_(LUT.resolution == t_float)
+		ASSERT_(LUT.resolution == t_float);
 
 		f >> t_float;
 		ASSERT_(LUT.std_phi == t_float);

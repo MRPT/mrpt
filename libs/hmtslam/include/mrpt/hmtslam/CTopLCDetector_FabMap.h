@@ -52,7 +52,7 @@ class CTopLCDetector_FabMap : public CTopLCDetectorBase
 
 	/** Options for a TLC-detector of type FabMap, used from CHMTSLAM
 	  */
-	struct TOptions : public utils::CLoadableOptions
+	struct TOptions : public mrpt::config::CLoadableOptions
 	{
 		/** Initialization of default params
 		  */

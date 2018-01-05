@@ -194,11 +194,11 @@ void CICP::TConfigParams::dumpToTextStream(std::ostream& out) const
 
 	out << mrpt::format(
 		"ICP_algorithm                           = %s\n",
-		mrpt::utils::TEnumType<TICPAlgorithm>::value2name(ICP_algorithm)
+		mrpt::typemeta::TEnumType<TICPAlgorithm>::value2name(ICP_algorithm)
 			.c_str());
 	out << mrpt::format(
 		"ICP_covariance_method                   = %s\n",
-		mrpt::utils::TEnumType<TICPCovarianceMethod>::value2name(
+		mrpt::typemeta::TEnumType<TICPCovarianceMethod>::value2name(
 			ICP_covariance_method)
 			.c_str());
 	out << mrpt::format("maxIterations                           = %i\n", maxIterations);

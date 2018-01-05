@@ -289,7 +289,7 @@ class COccupancyGridMap2D : public CMetricMap,
 	/** Returns the area of the gridmap, in square meters */
 	inline double getArea() const
 	{
-		return size_x * size_y * mrpt::math::square(resolution);
+		return size_x * size_y * mrpt::square(resolution);
 	}
 
 	/** Returns the horizontal size of grid map in cells count */
@@ -1184,25 +1184,16 @@ class COccupancyGridMap2D : public CMetricMap,
 bool operator<(
 	const COccupancyGridMap2D::TPairLikelihoodIndex& e1,
 	const COccupancyGridMap2D::TPairLikelihoodIndex& e2);
-
 }  // namespace maps
-namespace utils
-{
-template <>
-struct TEnumTypeFiller<mrpt::maps::COccupancyGridMap2D::TLikelihoodMethod>
-{
-	typedef mrpt::maps::COccupancyGridMap2D::TLikelihoodMethod enum_t;
-	static void fill(bimap<enum_t, std::string>& m_map)
-	{
-		using namespace mrpt::maps;
-		MRPT_FILL_ENUM_MEMBER(COccupancyGridMap2D, lmMeanInformation);
-		MRPT_FILL_ENUM_MEMBER(COccupancyGridMap2D, lmRayTracing);
-		MRPT_FILL_ENUM_MEMBER(COccupancyGridMap2D, lmConsensus);
-		MRPT_FILL_ENUM_MEMBER(COccupancyGridMap2D, lmCellsDifference);
-		MRPT_FILL_ENUM_MEMBER(COccupancyGridMap2D, lmLikelihoodField_Thrun);
-		MRPT_FILL_ENUM_MEMBER(COccupancyGridMap2D, lmLikelihoodField_II);
-		MRPT_FILL_ENUM_MEMBER(COccupancyGridMap2D, lmConsensusOWA);
-	}
-};
-}  // namespace utils
 }  // namespace mrpt
+
+MRPT_ENUM_TYPE_BEGIN(mrpt::maps::COccupancyGridMap2D::TLikelihoodMethod)
+MRPT_FILL_ENUM_MEMBER(mrpt::maps::COccupancyGridMap2D, lmMeanInformation);
+MRPT_FILL_ENUM_MEMBER(mrpt::maps::COccupancyGridMap2D, lmRayTracing);
+MRPT_FILL_ENUM_MEMBER(mrpt::maps::COccupancyGridMap2D, lmConsensus);
+MRPT_FILL_ENUM_MEMBER(mrpt::maps::COccupancyGridMap2D, lmCellsDifference);
+MRPT_FILL_ENUM_MEMBER(mrpt::maps::COccupancyGridMap2D, lmLikelihoodField_Thrun);
+MRPT_FILL_ENUM_MEMBER(mrpt::maps::COccupancyGridMap2D, lmLikelihoodField_II);
+MRPT_FILL_ENUM_MEMBER(mrpt::maps::COccupancyGridMap2D, lmConsensusOWA);
+MRPT_ENUM_TYPE_END()
+
