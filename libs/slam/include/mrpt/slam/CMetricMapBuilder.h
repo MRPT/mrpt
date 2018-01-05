@@ -135,9 +135,9 @@ class CMetricMapBuilder : public mrpt::system::COutputLogger
 		  *   \code
 		  *     alwaysInserByClass.insert(CLASS_ID(CObservationImage));
 		  *   \endcode
-		  * \sa mrpt::utils::CListOfClasses
+		  * \sa mrpt::rtti::CListOfClasses
 		  */
-		mrpt::utils::CListOfClasses alwaysInsertByClass;
+		mrpt::rtti::CListOfClasses alwaysInsertByClass;
 	};
 
 	TOptions options;

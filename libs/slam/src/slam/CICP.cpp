@@ -26,34 +26,11 @@
 using namespace mrpt::slam;
 using namespace mrpt::maps;
 using namespace mrpt::math;
+using namespace mrpt::tfest;
+using namespace mrpt::system;
 using namespace mrpt::poses;
 using namespace std;
 
-/*---------------------------------------------------------------
-The method for aligning a pair of 2D points map.
-*   The meaning of some parameters are implementation dependent,
-*    so look for derived classes for instructions.
-*  The target is to find a PDF for the pose displacement between
-*   maps, <b>thus the pose of m2 relative to m1</b>. This pose
-*   is returned as a PDF rather than a single value.
-*
-* \param m1			[IN] The first map
-* \param m2			[IN] The second map. The pose of this map respect to m1
-is to be estimated.
-* \param grossEst		[IN] An initial gross estimation for the displacement.
-If a given algorithm doesn't need it, set to <code>CPose2D(0,0,0)</code> for
-example.
-* \param pdf			[IN/OUT] A pointer to a CPosePDF pointer, initially set
-to nullptr for this method to create the object. For greater efficiency, this
-object can be left undeleted and passed again to the method. When <b>not used
-anymore remember to delete it</b> using <code>delete pdf;</code>
-* \param runningTime	[OUT] A pointer to a container for obtaining the
-algorithm running time in seconds, or nullptr if you don't need it.
-* \param info			[OUT] See derived classes for details, or nullptr if it
-isn't needed.
-*
-* \sa CPointsMapAlignmentAlgorithm
-  ---------------------------------------------------------------*/
 CPosePDF::Ptr CICP::AlignPDF(
 	const mrpt::maps::CMetricMap* m1, const mrpt::maps::CMetricMap* mm2,
 	const CPosePDFGaussian& initialEstimationPDF, float* runningTime,
@@ -441,7 +418,7 @@ CPosePDF::Ptr CICP::ICP_Method_Classic(
 					Eigen::Matrix<double, 3, Eigen::Dynamic> D(
 						3, nCorrespondences);
 
-					const TPose2D transf(gaussPdf->mean);
+					const TPose2D transf = gaussPdf->mean.asTPose();
 
 					double ccos = cos(transf.phi);
 					double csin = sin(transf.phi);
@@ -1014,31 +991,6 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-The method for aligning a pair of 2D points map.
-*   The meaning of some parameters are implementation dependant,
-*    so look for derived classes for instructions.
-*  The target is to find a PDF for the pose displacement between
-*   maps, <b>thus the pose of m2 relative to m1</b>. This pose
-*   is returned as a PDF rather than a single value.
-*
-* \param m1			[IN] The first map
-* \param m2			[IN] The second map. The pose of this map respect to m1
-is to be estimated.
-* \param grossEst		[IN] An initial gross estimation for the displacement.
-If a given algorithm doesn't need it, set to <code>CPose2D(0,0,0)</code> for
-example.
-* \param pdf			[IN/OUT] A pointer to a CPosePDF pointer, initially set
-to nullptr for this method to create the object. For greater efficiency, this
-object can be left undeleted and passed again to the method. When <b>not used
-anymore remember to delete it</b> using <code>delete pdf;</code>
-* \param runningTime	[OUT] A pointer to a container for obtaining the
-algorithm running time in seconds, or nullptr if you don't need it.
-* \param info			[OUT] See derived classes for details, or nullptr if it
-isn't needed.
-*
-* \sa CPointsMapAlignmentAlgorithm
-  ---------------------------------------------------------------*/
 CPose3DPDF::Ptr CICP::Align3DPDF(
 	const mrpt::maps::CMetricMap* m1, const mrpt::maps::CMetricMap* mm2,
 	const CPose3DPDFGaussian& initialEstimationPDF, float* runningTime,

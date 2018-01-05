@@ -80,7 +80,7 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::SpectralBisection(
 		out_part1.clear();
 		out_part2.clear();
 		// Assign 50%-50%:
-		for (size_t i = 0; i < Adj.cols(); i++)
+		for (int i = 0; i < Adj.cols(); i++)
 			if (i <= Adj.cols() / 2)
 				out_part1.push_back(i);
 			else

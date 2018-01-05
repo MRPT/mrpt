@@ -23,11 +23,10 @@ using namespace mrpt::slam;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::poses;
+using namespace mrpt::img;
 using namespace mrpt::math;
+using namespace mrpt::system;
 
-/*---------------------------------------------------------------
-		 Constructor
-  ---------------------------------------------------------------*/
 CMetricMapBuilderICP::CMetricMapBuilderICP()
 	: ICP_options(m_min_verbosity_level)
 {
@@ -140,7 +139,7 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 			"Neither grid maps nor points map: Have you called initialize() "
 			"after setting ICP_options.mapInitializers?");
 
-	ASSERT_(obs)
+	ASSERT_(obs);
 
 	// Is it an odometry observation??
 	if (IS_CLASS(obs, CObservationOdometry))
@@ -150,14 +149,14 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 
 		const CObservationOdometry::Ptr odo =
 			std::dynamic_pointer_cast<CObservationOdometry>(obs);
-		ASSERT_(odo->timestamp != INVALID_TIMESTAMP)
+		ASSERT_(odo->timestamp != INVALID_TIMESTAMP);
 
 		CPose2D pose_before;
 		bool pose_before_valid = m_lastPoseEst.getLatestRobotPose(pose_before);
 
 		// Move our estimation:
 		m_lastPoseEst.processUpdateNewOdometry(
-			odo->odometry, odo->timestamp, odo->hasVelocities,
+			odo->odometry.asTPose(), odo->timestamp, odo->hasVelocities,
 			odo->velocityLocal);
 
 		if (pose_before_valid)
@@ -245,12 +244,12 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 		{
 			ASSERTMSG_(
 				metricMap.m_pointsMaps.size(),
-				"No points map in multi-metric map.")
+				"No points map in multi-metric map.");
 			matchWith =
 				static_cast<CMetricMap*>(metricMap.m_pointsMaps[0].get());
 			MRPT_LOG_DEBUG("processObservation(): matching against point map.");
 		}
-		ASSERT_(matchWith != nullptr)
+		ASSERT_(matchWith != nullptr);
 
 		if (!we_skip_ICP_pose_correction)
 		{
@@ -324,7 +323,7 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 					pEst2D.copyFrom(*pestPose);
 
 					m_lastPoseEst.processUpdateNewPoseLocalization(
-						TPose2D(pEst2D.mean), obs->timestamp);
+						pEst2D.mean.asTPose(), obs->timestamp);
 					m_lastPoseEst_cov = pEst2D.cov;
 
 					m_distSinceLastICP.updatePose(pEst2D.mean);
@@ -565,7 +564,7 @@ void CMetricMapBuilderICP::initialize(
 
 	if (x0)
 		m_lastPoseEst.processUpdateNewPoseLocalization(
-			x0->getMeanVal(), mrpt::system::now());
+			x0->getMeanVal().asTPose(), mrpt::system::now());
 
 	for (size_t i = 0; i < SF_Poses_seq.size(); i++)
 	{
@@ -682,24 +681,16 @@ void CMetricMapBuilderICP::accumulateRobotDisplacementCounters(
 	const CPose2D& new_pose)
 {
 	m_distSinceLastICP.updateDistances(new_pose);
-
-	for (mrpt::aligned_containers<
-			 std::string, CMetricMapBuilderICP::TDist>::map_t::iterator it =
-			 m_distSinceLastInsertion.begin();
-		 it != m_distSinceLastInsertion.end(); ++it)
-		it->second.updateDistances(new_pose);
+	for (auto & m : m_distSinceLastInsertion)
+		m.second.updateDistances(new_pose);
 }
 
 void CMetricMapBuilderICP::resetRobotDisplacementCounters(
 	const CPose2D& new_pose)
 {
 	m_distSinceLastICP.updatePose(new_pose);
-
-	for (mrpt::aligned_containers<
-			 std::string, CMetricMapBuilderICP::TDist>::map_t::iterator it =
-			 m_distSinceLastInsertion.begin();
-		 it != m_distSinceLastInsertion.end(); ++it)
-		it->second.updatePose(new_pose);
+	for (auto & m: m_distSinceLastInsertion)
+		m.second.updatePose(new_pose);
 }
 
 void CMetricMapBuilderICP::TDist::updateDistances(const mrpt::poses::CPose2D& p)

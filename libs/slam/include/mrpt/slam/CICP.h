@@ -276,7 +276,7 @@ template <>
 struct TEnumTypeFiller<slam::TICPAlgorithm>
 {
 	typedef slam::TICPAlgorithm enum_t;
-	static void fill(bimap<enum_t, std::string>& m_map)
+	static void fill(internal::bimap<enum_t, std::string>& m_map)
 	{
 		m_map.insert(slam::icpClassic, "icpClassic");
 		m_map.insert(slam::icpLevenbergMarquardt, "icpLevenbergMarquardt");
@@ -286,7 +286,7 @@ template <>
 struct TEnumTypeFiller<slam::TICPCovarianceMethod>
 {
 	typedef slam::TICPCovarianceMethod enum_t;
-	static void fill(bimap<enum_t, std::string>& m_map)
+	static void fill(internal::bimap<enum_t, std::string>& m_map)
 	{
 		m_map.insert(slam::icpCovLinealMSE, "icpCovLinealMSE");
 		m_map.insert(slam::icpCovFiniteDifferences, "icpCovFiniteDifferences");
