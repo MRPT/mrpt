@@ -31,7 +31,10 @@
 
 using namespace mrpt;
 using namespace mrpt::vision;
+using namespace mrpt::img;
+using namespace mrpt::config;
 using namespace mrpt::maps;
+using namespace mrpt::tfest;
 using namespace mrpt::math;
 using namespace mrpt::system;
 using namespace mrpt::poses;
@@ -100,7 +103,7 @@ void vision::openCV_cross_correlation(
 	if ((y_search_ini + y_search_size + patch_h) > im_h)
 		y_search_size -= (y_search_ini + y_search_size + patch_h) - im_h;
 
-	ASSERT_((x_search_ini + x_search_size + patch_w) <= im_w)
+	ASSERT_((x_search_ini + x_search_size + patch_w) <= im_w);
 	ASSERT_((y_search_ini + y_search_size + patch_h) <= im_h);
 	IplImage* result = cvCreateImage(
 		cvSize(x_search_size + 1, y_search_size + 1), IPL_DEPTH_32F, 1);
@@ -174,7 +177,7 @@ TPoint3D vision::pixelTo3D(const TPixelCoordf& xy, const CMatrixDouble33& A)
 
 	// Normalize:
 	const double u = res.norm();
-	ASSERT_(u != 0)
+	ASSERT_(u != 0);
 	res *= 1.0 / u;
 
 	return res;
@@ -429,7 +432,7 @@ float vision::computeMainOrientation(
 -------------------------------------------------------------*/
 void vision::normalizeImage(const CImage& image, CImage& nimage)
 {
-	ASSERT_(image.getChannelCount() == 1)
+	ASSERT_(image.getChannelCount() == 1);
 	nimage.resize(
 		image.getWidth(), image.getHeight(), 1, image.isOriginTopLeft());
 
@@ -995,7 +998,7 @@ void vision::projectMatchedFeatures(
 		const double disp = it->first->x - it->second->x;
 		if (disp < 1) continue;
 
-		const double b_d = stereo_camera.rightCameraPose.x() / disp;
+		const double b_d = stereo_camera.rightCameraPose.x / disp;
 		out_points.push_back(
 			TPoint3D(
 				(it->first->x - stereo_camera.leftCamera.cx()) * b_d,

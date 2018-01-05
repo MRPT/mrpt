@@ -10,7 +10,6 @@
 #include "vision-precomp.h"  // Precompiled headers
 
 #include <mrpt/vision/tracking.h>
-
 #include <mrpt/vision/CFeatureExtraction.h>
 
 // Universal include for all versions of OpenCV
@@ -18,6 +17,8 @@
 
 using namespace mrpt;
 using namespace mrpt::vision;
+using namespace mrpt::img;
+using namespace mrpt::tfest;
 using namespace mrpt::math;
 using namespace std;
 

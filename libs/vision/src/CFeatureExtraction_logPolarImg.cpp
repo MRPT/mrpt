@@ -16,6 +16,7 @@
 
 using namespace mrpt;
 using namespace mrpt::vision;
+using namespace mrpt::img;
 using namespace mrpt::system;
 using namespace std;
 
@@ -28,9 +29,9 @@ void CFeatureExtraction::internal_computeLogPolarImageDescriptors(
 	MRPT_START
 #if MRPT_HAS_OPENCV
 
-	ASSERT_(options.LogPolarImagesOptions.radius > 1)
-	ASSERT_(options.LogPolarImagesOptions.num_angles > 1)
-	ASSERT_(options.LogPolarImagesOptions.rho_scale > 0)
+	ASSERT_(options.LogPolarImagesOptions.radius > 1);
+	ASSERT_(options.LogPolarImagesOptions.num_angles > 1);
+	ASSERT_(options.LogPolarImagesOptions.rho_scale > 0);
 
 	const unsigned int radius = options.LogPolarImagesOptions.radius;
 	const unsigned int patch_h = options.LogPolarImagesOptions.num_angles;

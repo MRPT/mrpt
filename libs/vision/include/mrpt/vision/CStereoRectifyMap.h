@@ -163,14 +163,14 @@ class CStereoRectifyMap
 
 	/** Change remap interpolation method (default=Lineal). This parameter can
 	 * be safely changed at any instant without consequences. */
-	void setInterpolationMethod(const mrpt::utils::TInterpolationMethod interp)
+	void setInterpolationMethod(const mrpt::img::TInterpolationMethod interp)
 	{
 		m_interpolation_method = interp;
 	}
 
 	/** Get the currently selected interpolation method \sa
 	 * setInterpolationMethod */
-	mrpt::utils::TInterpolationMethod getInterpolationMethod() const
+	mrpt::img::TInterpolationMethod getInterpolationMethod() const
 	{
 		return m_interpolation_method;
 	}
@@ -284,7 +284,7 @@ class CStereoRectifyMap
 	bool m_resize_output;
 	bool m_enable_both_centers_coincide;
 	mrpt::img::TImageSize m_resize_output_value;
-	mrpt::utils::TInterpolationMethod m_interpolation_method;
+	mrpt::img::TInterpolationMethod m_interpolation_method;
 
 	/** Memory caches for in-place rectification speed-up. */
 	mutable mrpt::img::CImage m_cache1, m_cache2;

@@ -15,6 +15,7 @@
 
 using namespace mrpt;
 using namespace mrpt::vision;
+using namespace mrpt::img;
 
 // Ctor: Leave all vectors empty
 CUndistortMap::CUndistortMap() {}

@@ -10,12 +10,14 @@
 #include "vision-precomp.h"  // Precompiled headers
 
 #include <mrpt/vision/pinhole.h>
+#include <mrpt/poses/CPose3DQuat.h>
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>
 
 using namespace mrpt;
 using namespace mrpt::vision;
+using namespace mrpt::img;
 using namespace mrpt::vision::pinhole;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
@@ -135,8 +137,8 @@ void mrpt::vision::pinhole::undistort_points(
 {  // Hub function:
 	TCamera cam;
 	cam.intrinsicParams = A;
-	ASSERT_(Dk.size() <= cam.dist.static_size)
-	for (size_t i = 0; i < cam.dist.static_size; i++) cam.dist[i] = Dk[i];
+	ASSERT_(Dk.size() <= cam.dist.size());
+	for (size_t i = 0; i < cam.dist.size(); i++) cam.dist[i] = Dk[i];
 	undistort_points(in_dist_pixels, out_pixels, cam);
 }
 

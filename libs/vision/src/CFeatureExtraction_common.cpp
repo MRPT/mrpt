@@ -15,17 +15,12 @@
 #include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
+using namespace mrpt::img;
 using namespace mrpt::vision;
+using namespace mrpt::img;
 using namespace mrpt::system;
 using namespace std;
 
-/************************************************************************************************
-*								Constructor *
-************************************************************************************************/
-CFeatureExtraction::CFeatureExtraction() {}
-/************************************************************************************************
-*								Destructor *
-************************************************************************************************/
 CFeatureExtraction::~CFeatureExtraction() {}
 struct sort_pred
 {
