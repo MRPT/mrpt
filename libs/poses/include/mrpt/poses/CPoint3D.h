@@ -69,6 +69,7 @@ class CPoint3D : public CPoint<CPoint3D>, public mrpt::serialization::CSerializa
 		m_coords[1] = p.y;
 		m_coords[2] = p.z;
 	}
+	mrpt::math::TPoint3D asTPoint() const;
 
 	/** Returns this point as seen from "b", i.e. result = this - b */
 	CPoint3D operator-(const CPose3D& b) const;

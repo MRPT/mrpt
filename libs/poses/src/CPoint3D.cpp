@@ -137,3 +137,8 @@ void CPoint3D::setToNaN()
 	for (int i = 0; i < 3; i++)
 		m_coords[i] = std::numeric_limits<double>::quiet_NaN();
 }
+
+mrpt::math::TPoint3D CPoint3D::asTPoint() const
+{
+	return mrpt::math::TPoint3D(x(), y(), z());
+}

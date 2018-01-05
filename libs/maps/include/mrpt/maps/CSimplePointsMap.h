@@ -35,8 +35,6 @@ class CSimplePointsMap : public CPointsMap
    public:
 	/** Default constructor */
 	CSimplePointsMap();
-	/** Destructor */
-	virtual ~CSimplePointsMap();
 
 	// --------------------------------------------
 	/** @name Pure virtual interfaces to be implemented by any class derived

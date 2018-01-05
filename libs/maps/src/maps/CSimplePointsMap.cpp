@@ -11,6 +11,7 @@
 
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/core/bits_mem.h>
 
 #include "CPointsMap_crtp_common.h"
 
@@ -37,31 +38,84 @@ void CSimplePointsMap::TMapDefinition::loadFromConfigFile_map_specific(
 }
 
 void CSimplePointsMap::TMapDefinition::dumpToTextStream_map_specific(
-	mrpt::utils::CStream& out) const
+	std::ostream& out) const
 {
-	this->insertionOpts.dumpToTextStreamstd::ostream& out, int* version) const
+	this->insertionOpts.dumpToTextStream(out);
+	this->likelihoodOpts.dumpToTextStream(out);
+}
+
+mrpt::maps::CMetricMap* CSimplePointsMap::internal_CreateFromMapDefinition(
+	const mrpt::maps::TMetricMapInitializer& _def)
 {
-	if (version)
-		*version = 9;
-	else
+	const CSimplePointsMap::TMapDefinition& def =
+		*dynamic_cast<const CSimplePointsMap::TMapDefinition*>(&_def);
+	CSimplePointsMap* obj = new CSimplePointsMap();
+	obj->insertionOptions = def.insertionOpts;
+	obj->likelihoodOptions = def.likelihoodOpts;
+	return obj;
+}
+//  =========== End of Map definition Block =========
+
+IMPLEMENTS_SERIALIZABLE(CSimplePointsMap, CPointsMap, mrpt::maps)
+
+CSimplePointsMap::CSimplePointsMap() { reserve(400); }
+
+void CSimplePointsMap::reserve(size_t newLength)
+{
+	newLength = mrpt::length2length4N(newLength);
+
+	x.reserve(newLength);
+	y.reserve(newLength);
+	z.reserve(newLength);
+}
+
+// Resizes all point buffers so they can hold the given number of points: newly
+// created points are set to default values,
+//  and old contents are not changed.
+void CSimplePointsMap::resize(size_t newLength)
+{
+	this->reserve(newLength);  // to ensure 4N capacity
+	x.resize(newLength, 0);
+	y.resize(newLength, 0);
+	z.resize(newLength, 0);
+	mark_as_modified();
+}
+
+// Resizes all point buffers so they can hold the given number of points,
+// *erasing* all previous contents
+//  and leaving all points to default values.
+void CSimplePointsMap::setSize(size_t newLength)
+{
+	this->reserve(newLength);  // to ensure 4N capacity
+	x.assign(newLength, 0);
+	y.assign(newLength, 0);
+	z.assign(newLength, 0);
+	mark_as_modified();
+}
+
+void CSimplePointsMap::copyFrom(const CPointsMap& obj)
+{
+	CPointsMap::base_copyFrom(
+		obj);  // This also does a ::resize(N) of all data fields.
+}
+
+uint8_t CSimplePointsMap::serializeGetVersion() const { return 9; }
+void CSimplePointsMap::serializeTo(mrpt::serialization::CArchive& out) const
+{
+	uint32_t n = x.size();
+
+	// First, write the number of points:
+	out << n;
+
+	if (n > 0)
 	{
-		uint32_t n = x.size();
-
-		// First, write the number of points:
-		out << n;
-
-		if (n > 0)
-		{
-			out.WriteBufferFixEndianness(&x[0], n);
-			out.WriteBufferFixEndianness(&y[0], n);
-			out.WriteBufferFixEndianness(&z[0], n);
-		}
-		out << genericMapParams;  // v9
-
-		insertionOptions.writeToStream(
-			out);  // version 9: insert options are saved with its own method:
-		likelihoodOptions.writeToStream(out);  // Added in version 5:
+		out.WriteBufferFixEndianness(&x[0], n);
+		out.WriteBufferFixEndianness(&y[0], n);
+		out.WriteBufferFixEndianness(&z[0], n);
 	}
+	out << genericMapParams;  // v9
+	insertionOptions.writeToStream(out);  // v9
+	likelihoodOptions.writeToStream(out);  // v5
 }
 
 /*---------------------------------------------------------------

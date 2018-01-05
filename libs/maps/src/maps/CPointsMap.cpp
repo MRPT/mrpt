@@ -45,7 +45,9 @@
 using namespace mrpt::poses;
 using namespace mrpt::maps;
 using namespace mrpt::math;
+using namespace mrpt::tfest;
 using namespace mrpt::obs;
+using namespace mrpt::img;
 using namespace mrpt::system;
 using namespace std;
 
@@ -322,9 +324,9 @@ void CPointsMap::determineMatching2D(
 
 	extraResults = TMatchingExtraResults();  // Clear output
 
-	ASSERT_ABOVE_(params.decimation_other_map_points, 0)
+	ASSERT_ABOVE_(params.decimation_other_map_points, 0);
 	ASSERT_BELOW_(
-		params.offset_other_map_points, params.decimation_other_map_points)
+		params.offset_other_map_points, params.decimation_other_map_points);
 	ASSERT_(otherMap2->GetRuntimeClass()->derivedFrom(CLASS_ID(CPointsMap)));
 	const CPointsMap* otherMap = static_cast<const CPointsMap*>(otherMap2);
 
@@ -671,8 +673,7 @@ CPointsMap::TInsertionOptions::TInsertionOptions()
 }
 
 // Binary dump to/read from stream - for usage in derived classes' serialization
-uint8_t CPointsMap::TInsertionOptions::serializeGetVersion() const { return XX; } void CPointsMap::TInsertionOptions::serializeTo(
-	mrpt::utils::CStream& out) const
+void CPointsMap::TInsertionOptions::writeToStream(mrpt::serialization::CArchive& out) const
 {
 	const int8_t version = 0;
 	out << version;
@@ -683,7 +684,7 @@ uint8_t CPointsMap::TInsertionOptions::serializeGetVersion() const { return XX; 
 		<< insertInvalidPoints;  // v0
 }
 
-void CPointsMap::TInsertionOptions::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CPointsMap::TInsertionOptions::readFromStream(mrpt::serialization::CArchive& in)
 {
 	int8_t version;
 	in >> version;
@@ -707,15 +708,14 @@ CPointsMap::TLikelihoodOptions::TLikelihoodOptions()
 {
 }
 
-uint8_t CPointsMap::TLikelihoodOptions::serializeGetVersion() const { return XX; } void CPointsMap::TLikelihoodOptions::serializeTo(
-	mrpt::utils::CStream& out) const
+void CPointsMap::TLikelihoodOptions::writeToStream(mrpt::serialization::CArchive& out) const
 {
 	const int8_t version = 0;
 	out << version;
 	out << sigma_dist << max_corr_distance << decimation;
 }
 
-void CPointsMap::TLikelihoodOptions::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CPointsMap::TLikelihoodOptions::readFromStream(mrpt::serialization::CArchive& in)
 {
 	int8_t version;
 	in >> version;
@@ -731,13 +731,32 @@ void CPointsMap::TLikelihoodOptions::serializeFrom(mrpt::serialization::CArchive
 	}
 }
 
-/*---------------------------------------------------------------
-					dumpToTextStream
-  ---------------------------------------------------------------*/
-void CPointsMap::TInsertionOptions::dumpToTextStream(std::ostream& out) const
+void CPointsMap::TInsertionOptions::dumpToTextStream(
+	std::ostream& out) const
 {
-	out << mrpt::format(
-		"\n----------- [CPointsMap::TLikelihoodOptions] ------------ \n\n");
+	out<< 
+		"\n----------- [CPointsMap::TInsertionOptions] ------------ \n\n";
+
+	LOADABLEOPTS_DUMP_VAR(minDistBetweenLaserPoints, double);
+	LOADABLEOPTS_DUMP_VAR(maxDistForInterpolatePoints, double);
+	LOADABLEOPTS_DUMP_VAR_DEG(horizontalTolerance);
+
+	LOADABLEOPTS_DUMP_VAR(addToExistingPointsMap, bool);
+	LOADABLEOPTS_DUMP_VAR(also_interpolate, bool);
+	LOADABLEOPTS_DUMP_VAR(disableDeletion, bool);
+	LOADABLEOPTS_DUMP_VAR(fuseWithExisting, bool);
+	LOADABLEOPTS_DUMP_VAR(isPlanarMap, bool);
+
+	LOADABLEOPTS_DUMP_VAR(insertInvalidPoints, bool);
+
+	out << endl;
+}
+
+void CPointsMap::TLikelihoodOptions::dumpToTextStream(
+	std::ostream& out) const
+{
+	out <<
+		"\n----------- [CPointsMap::TLikelihoodOptions] ------------ \n\n";
 
 	LOADABLEOPTS_DUMP_VAR(sigma_dist, double);
 	LOADABLEOPTS_DUMP_VAR(max_corr_distance, double);
@@ -1071,9 +1090,9 @@ void CPointsMap::determineMatching3D(
 
 	extraResults = TMatchingExtraResults();
 
-	ASSERT_ABOVE_(params.decimation_other_map_points, 0)
+	ASSERT_ABOVE_(params.decimation_other_map_points, 0);
 	ASSERT_BELOW_(
-		params.offset_other_map_points, params.decimation_other_map_points)
+		params.offset_other_map_points, params.decimation_other_map_points);
 
 	ASSERT_(otherMap2->GetRuntimeClass()->derivedFrom(CLASS_ID(CPointsMap)));
 	const CPointsMap* otherMap = static_cast<const CPointsMap*>(otherMap2);
@@ -1483,7 +1502,7 @@ double CPointsMap::internal_computeObservationLikelihood(
 		if (takenFrom.isHorizontal())
 		{
 			// optimized 2D version ---------------------------
-			TPose2D takenFrom2D = TPose2D(CPose2D(takenFrom));
+			TPose2D takenFrom2D = CPose2D(takenFrom).asTPose();
 
 			const float ccos = cos(takenFrom2D.phi);
 			const float csin = sin(takenFrom2D.phi);

@@ -31,6 +31,8 @@ using namespace mrpt::math;
 using namespace mrpt::obs;
 using namespace mrpt::poses;
 using namespace mrpt::system;
+using namespace mrpt::io;
+using namespace mrpt::img;
 using namespace std;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CRandomFieldGridMap2D, CMetricMap, mrpt::maps)
@@ -127,12 +129,12 @@ void CRandomFieldGridMap2D::internal_clear()
 			const double std0sqr =
 				square(m_insertOptions_common->KF_initialCellStd);
 
-			for (size_t i = 0; i < m_cov.rows(); i++)
+			for (int i = 0; i < m_cov.rows(); i++)
 			{
 				int cx1 = (i % m_size_x);
 				int cy1 = (i / m_size_x);
 
-				for (size_t j = i; j < m_cov.cols(); j++)
+				for (int j = i; j < m_cov.cols(); j++)
 				{
 					int cx2 = (j % m_size_x);
 					int cy2 = (j / m_size_x);
@@ -260,10 +262,9 @@ void CRandomFieldGridMap2D::internal_clear()
 				if (!m_insertOptions_common->GMRF_simplemap_file.empty())
 				{
 					mrpt::maps::CSimpleMap simpleMap;
-					CFileGZInputStream(
-						this->m_insertOptions_common->GMRF_simplemap_file) >>
-						simpleMap;
-					ASSERT_(!simpleMap.empty();
+					CFileGZInputStream fi(this->m_insertOptions_common->GMRF_simplemap_file);
+					mrpt::serialization::archiveFrom(fi) >> simpleMap;
+					ASSERT_(!simpleMap.empty());
 					m_Ocgridmap.loadFromSimpleMap(simpleMap);
 					res_coef =
 						this->getResolution() / m_Ocgridmap.getResolution();
@@ -853,7 +854,7 @@ void CRandomFieldGridMap2D::getAsMatrix(
 				default:
 					THROW_EXCEPTION("Unknown m_mapType!!");
 			};
-			mrpt::utils::saturate(
+			mrpt::saturate(
 				c, m_insertOptions_common->GMRF_saturate_min,
 				m_insertOptions_common->GMRF_saturate_max);
 			cells_mat(m_size_y - 1 - y, x) = c;
@@ -1157,13 +1158,13 @@ void CRandomFieldGridMap2D::resize(
 
 			// Go thru all the cells, from the bottom to the top so
 			//  we don't need to make a temporary copy of the covariances:
-			for (size_t i = N - 1; i < N;
-				 i--)  // i<N will become false for "i=-1" ;-)
+			// i<N will become false for "i=-1" ;-)
+			for (size_t i = N - 1; i < N; i--)
 			{
 				int cx, cy;
 				idx2cxcy(i, cx, cy);
 
-				const size_t old_idx_of_i =
+				const int old_idx_of_i =
 					(cx - Acx_left) + (cy - Acy_bottom) * old_sizeX;
 
 				TRandomFieldCell& cell = m_map[i];
@@ -1539,7 +1540,7 @@ void CRandomFieldGridMap2D::saveAsMatlab3DGraph(
 			const TRandomFieldCell* cell = cellByIndex(cx, cy);
 			ASSERT_(cell != nullptr);
 			os::fprintf(
-				f, "%e ", mrpt::utils::saturate_val(
+				f, "%e ", mrpt::saturate_val(
 							  cell->kf_mean + std_times * cell->kf_std,
 							  m_insertOptions_common->GMRF_saturate_min,
 							  m_insertOptions_common->GMRF_saturate_max));
@@ -1558,7 +1559,7 @@ void CRandomFieldGridMap2D::saveAsMatlab3DGraph(
 			const TRandomFieldCell* cell = cellByIndex(cx, cy);
 			ASSERT_(cell != nullptr);
 			os::fprintf(
-				f, "%e ", mrpt::utils::saturate_val(
+				f, "%e ", mrpt::saturate_val(
 							  cell->kf_mean - std_times * cell->kf_std,
 							  m_insertOptions_common->GMRF_saturate_min,
 							  m_insertOptions_common->GMRF_saturate_max));
@@ -1704,19 +1705,19 @@ void CRandomFieldGridMap2D::getAs3DObject(
 
 					// MEAN values
 					//-----------------
-					double c_xy = mrpt::utils::saturate_val(
+					double c_xy = mrpt::saturate_val(
 						cell_xy->kf_mean,
 						m_insertOptions_common->GMRF_saturate_min,
 						m_insertOptions_common->GMRF_saturate_max);
-					double c_x_1y = mrpt::utils::saturate_val(
+					double c_x_1y = mrpt::saturate_val(
 						cell_x_1y->kf_mean,
 						m_insertOptions_common->GMRF_saturate_min,
 						m_insertOptions_common->GMRF_saturate_max);
-					double c_xy_1 = mrpt::utils::saturate_val(
+					double c_xy_1 = mrpt::saturate_val(
 						cell_xy_1->kf_mean,
 						m_insertOptions_common->GMRF_saturate_min,
 						m_insertOptions_common->GMRF_saturate_max);
-					double c_x_1y_1 = mrpt::utils::saturate_val(
+					double c_x_1y_1 = mrpt::saturate_val(
 						cell_x_1y_1->kf_mean,
 						m_insertOptions_common->GMRF_saturate_min,
 						m_insertOptions_common->GMRF_saturate_max);
@@ -1874,19 +1875,19 @@ void CRandomFieldGridMap2D::getAs3DObject(
 
 					// MEAN values
 					//-----------------
-					double c_xy = mrpt::utils::saturate_val(
+					double c_xy = mrpt::saturate_val(
 						computeMeanCellValue_DM_DMV(cell_xy),
 						m_insertOptions_common->GMRF_saturate_min,
 						m_insertOptions_common->GMRF_saturate_max);
-					double c_x_1y = mrpt::utils::saturate_val(
+					double c_x_1y = mrpt::saturate_val(
 						computeMeanCellValue_DM_DMV(cell_x_1y),
 						m_insertOptions_common->GMRF_saturate_min,
 						m_insertOptions_common->GMRF_saturate_max);
-					double c_xy_1 = mrpt::utils::saturate_val(
+					double c_xy_1 = mrpt::saturate_val(
 						computeMeanCellValue_DM_DMV(cell_xy_1),
 						m_insertOptions_common->GMRF_saturate_min,
 						m_insertOptions_common->GMRF_saturate_max);
-					double c_x_1y_1 = mrpt::utils::saturate_val(
+					double c_x_1y_1 = mrpt::saturate_val(
 						computeMeanCellValue_DM_DMV(cell_x_1y_1),
 						m_insertOptions_common->GMRF_saturate_min,
 						m_insertOptions_common->GMRF_saturate_max);
@@ -2582,7 +2583,7 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 								: std::sqrt(x_var[j]);
 		m_map[j].gmrf_mean += x_incr[j];
 
-		mrpt::utils::saturate(
+		mrpt::saturate(
 			m_map[j].gmrf_mean, m_insertOptions_common->GMRF_saturate_min,
 			m_insertOptions_common->GMRF_saturate_max);
 	}
@@ -2672,9 +2673,9 @@ bool CRandomFieldGridMap2D::exist_relation_between2cells(
 	{
 		seedsOld = seedsNew;
 
-		for (size_t col = 0; col < matExp.cols(); col++)
+		for (int col = 0; col < matExp.cols(); col++)
 		{
-			for (size_t row = 0; row < matExp.rows(); row++)
+			for (int row = 0; row < matExp.rows(); row++)
 			{
 				// test if cell needs to be expanded
 				if (matExp(row, col) == 1)

@@ -168,31 +168,18 @@ void CPlanarLaserScan::render_dl() const
 #endif
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-uint8_t CPlanarLaserScan::serializeGetVersion() const { return XX; }
+uint8_t CPlanarLaserScan::serializeGetVersion() const { return 1; }
 void CPlanarLaserScan::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		writeToStreamRender(out);
-		out << m_scan;
-		out << m_line_width << m_line_R << m_line_G << m_line_B << m_line_A
-			<< m_points_width << m_points_R << m_points_G << m_points_B
-			<< m_points_A << m_plane_R << m_plane_G << m_plane_B << m_plane_A
-			<< m_enable_points << m_enable_line
-			<< m_enable_surface;  // new in v1
-	}
+	writeToStreamRender(out);
+	out << m_scan;
+	out << m_line_width << m_line_R << m_line_G << m_line_B << m_line_A
+		<< m_points_width << m_points_R << m_points_G << m_points_B
+		<< m_points_A << m_plane_R << m_plane_G << m_plane_B << m_plane_A
+		<< m_enable_points << m_enable_line
+		<< m_enable_surface;  // new in v1
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
 void CPlanarLaserScan::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
