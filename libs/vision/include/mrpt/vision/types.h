@@ -744,6 +744,7 @@ struct TEnumTypeFiller<mrpt::vision::TFeatureType>
 	static void fill(mrpt::typemeta::internal::bimap<enum_t, std::string>& m_map)
 	{
 		using namespace mrpt::vision;
+using namespace mrpt::img;
 		MRPT_FILL_ENUM(featNotDefined);
 		MRPT_FILL_ENUM(featKLT);
 		MRPT_FILL_ENUM(featHarris);
@@ -767,6 +768,7 @@ struct TEnumTypeFiller<mrpt::vision::TDescriptorType>
 	static void fill(mrpt::typemeta::internal::bimap<enum_t, std::string>& m_map)
 	{
 		using namespace mrpt::vision;
+using namespace mrpt::img;
 		MRPT_FILL_ENUM(descAny);
 		MRPT_FILL_ENUM(descSIFT);
 		MRPT_FILL_ENUM(descSURF);

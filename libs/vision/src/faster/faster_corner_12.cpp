@@ -224,7 +224,7 @@ void faster_corner_detect_12(
 		*ptr_feat_index_by_row++ = corners.size();
 		*ptr_feat_index_by_row++ = corners.size();
 		*ptr_feat_index_by_row++ = corners.size();
-		ASSERT_(ptr_feat_index_by_row == ptr_feat_index_end)
+		ASSERT_(ptr_feat_index_by_row == ptr_feat_index_end);
 	}
 }
 

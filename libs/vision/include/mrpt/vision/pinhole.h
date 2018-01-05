@@ -70,7 +70,7 @@ inline mrpt::img::TPixelCoordf projectPoint_no_distortion(
 		F.composePoint(P.x, P.y, P.z, x, y, z);
 	else
 		F.inverseComposePoint(P.x, P.y, P.z, x, y, z);
-	ASSERT_(z != 0)
+	ASSERT_(z != 0);
 	// Pinhole model:
 	return mrpt::img::TPixelCoordf(
 		cam_params.cx() + cam_params.fx() * x / z,

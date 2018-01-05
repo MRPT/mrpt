@@ -15,6 +15,7 @@
 #include <mrpt/vision/chessboard_find_corners.h>
 #include <mrpt/vision/chessboard_stereo_camera_calib.h>
 #include <mrpt/vision/pinhole.h>
+#include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/math/robust_kernels.h>
 #include <mrpt/math/wrap2pi.h>
 #include <algorithm>  // reverse()
@@ -30,6 +31,7 @@
 
 using namespace mrpt;
 using namespace mrpt::vision;
+using namespace mrpt::img;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace std;
@@ -43,9 +45,9 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 {
 	try
 	{
-		ASSERT_(p.check_size_x > 2)
-		ASSERT_(p.check_size_y > 2)
-		ASSERT_(p.check_squares_length_X_meters > 0)
+		ASSERT_(p.check_size_x > 2);
+		ASSERT_(p.check_size_y > 2);
+		ASSERT_(p.check_squares_length_X_meters > 0);
 		ASSERT_(p.check_squares_length_Y_meters > 0);
 		const bool user_wants_use_robust = p.use_robust_kernel;
 
@@ -171,13 +173,13 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 				// via the dot product. Swap rows/columns order as needed.
 				bool has_to_redraw_corners = false;
 
-				const mrpt::math::TPoint2D
+				const TPixelCoordf
 					pt_l0 = images[i].left.detected_corners[0],
 					pt_l1 = images[i].left.detected_corners[1],
 					pt_r0 = images[i].right.detected_corners[0],
 					pt_r1 = images[i].right.detected_corners[1];
-				const mrpt::math::TPoint2D Al = pt_l1 - pt_l0;
-				const mrpt::math::TPoint2D Ar = pt_r1 - pt_r0;
+				const auto Al = TPoint2D(pt_l1.x, pt_l1.y) - TPoint2D(pt_l0.x, pt_l0.y);
+				const auto Ar = TPoint2D(pt_r1.x, pt_r1.y) - TPoint2D(pt_r0.x, pt_r0.y);
 
 				// If the dot product is negative, we have INVERTED order of
 				// corners:

@@ -15,6 +15,7 @@
 
 using namespace mrpt;
 using namespace mrpt::vision;
+using namespace mrpt::img;
 using namespace mrpt::math;
 using namespace std;
 using namespace Eigen;

@@ -34,10 +34,12 @@ using namespace mrpt::math;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
 using namespace mrpt::poses;
+using namespace mrpt::tfest;
 using namespace mrpt::random;
 using namespace mrpt::system;
 using namespace mrpt::vision;
 using namespace mrpt::img;
+using namespace mrpt::containers;
 using namespace std;
 using mrpt::maps::internal::TSequenceLandmarks;
 
@@ -76,8 +78,7 @@ void CLandmarksMap::TMapDefinition::loadFromConfigFile_map_specific(
 		source, sectionNamePrefix + string("_likelihoodOpts"));
 }
 
-void CLandmarksMap::TMapDefinition::dumpToTextStream_map_specific(
-	mrpt::utils::CStream& out) const
+void CLandmarksMap::TMapDefinition::dumpToTextStream_map_specific(std::ostream& out) const
 {
 	out << mrpt::format(
 		"number of initial beacons                = %u\n",
@@ -167,34 +168,21 @@ void CLandmarksMap::internal_clear() { landmarks.clear(); }
 						getLandmarksCount
   ---------------------------------------------------------------*/
 size_t CLandmarksMap::size() const { return landmarks.size(); }
-/*---------------------------------------------------------------
-					writeToStream
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-uint8_t CLandmarksMap::serializeGetVersion() const { return XX; } void CLandmarksMap::serializeTo(mrpt::serialization::CArchive& out) const
+
+uint8_t CLandmarksMap::serializeGetVersion() const { return 0; }
+void CLandmarksMap::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		uint32_t n = landmarks.size();
+	uint32_t n = landmarks.size();
 
-		// First, write the number of landmarks:
-		out << n;
+	// First, write the number of landmarks:
+	out << n;
 
-		// Write all landmarks:
-		for (TSequenceLandmarks::const_iterator it = landmarks.begin();
-			 it != landmarks.end(); ++it)
-			out << (*it);
-	}
+	// Write all landmarks:
+	for (TSequenceLandmarks::const_iterator it = landmarks.begin();
+			it != landmarks.end(); ++it)
+		out << (*it);
 }
 
-/*---------------------------------------------------------------
-					readFromStream
-   Implements the reading from a CStream capability of
-	  CSerializable objects
-  ---------------------------------------------------------------*/
 void CLandmarksMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
@@ -707,9 +695,9 @@ void CLandmarksMap::loadSiftFeaturesFromImageObservation(
 		CPoint3D Normal = landmark3DPositionPDF.mean;
 		Normal *= -1 / Normal.norm();
 
-		lm.normal = Normal;
+		lm.normal = Normal.asTPoint();
 
-		lm.pose_mean = landmark3DPositionPDF.mean;
+		lm.pose_mean = landmark3DPositionPDF.mean.asTPoint();
 
 		lm.pose_cov_11 = landmark3DPositionPDF.cov(0, 0);
 		lm.pose_cov_22 = landmark3DPositionPDF.cov(1, 1);
@@ -1355,7 +1343,7 @@ void CLandmarksMap::computeMatchingWith3DLandmarks(
 
 			// 1.- COMPUTE EDD
 
-			ASSERT_(!anotherMap->landmarks.begin()->features.empty();
+			ASSERT_(!anotherMap->landmarks.begin()->features.empty());
 			ASSERT_(!landmarks.begin()->features.empty());
 			unsigned int dLen = anotherMap->landmarks.begin()
 									->features[0]
@@ -2128,14 +2116,14 @@ double CLandmarksMap::computeLikelihood_SIFT_LandmarkMap(
 									distDesc = 0;
 									ASSERT_(
 										!lm1->features.empty() &&
-										!lm2->features.empty())
+										!lm2->features.empty());
 									ASSERT_(
-										lm1->features[0] && lm2->features[0])
+										lm1->features[0] && lm2->features[0]);
 									ASSERT_(
 										lm1->features[0]
-											->descriptors.SIFT.size() ==
+										->descriptors.SIFT.size() ==
 										lm2->features[0]
-											->descriptors.SIFT.size())
+										->descriptors.SIFT.size());
 
 									for (it1 = lm1->features[0]
 												   ->descriptors.SIFT.begin(),
@@ -2642,8 +2630,7 @@ void CLandmarksMap::saveMetricMapRepresentationToFile(
 	scene.insert(objGround);
 
 	std::string fil2(filNamePrefix + std::string("_3D.3Dscene"));
-	CFileOutputStream f(fil2.c_str());
-	f << scene;
+	scene.saveToFile(fil2);
 
 	MRPT_END
 }
@@ -2924,7 +2911,7 @@ void CLandmarksMap::simulateRangeBearingReadings(
 
 		// Compute yaw,pitch,range:
 		double range, yaw, pitch;
-		point3D.sphericalCoordinates(beacon3D, range, yaw, pitch);
+		point3D.sphericalCoordinates(beacon3D.asTPoint(), range, yaw, pitch);
 
 		// Add noises:
 		range += in_stdRange * getRandomGenerator().drawGaussian1D_normalized();

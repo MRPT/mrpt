@@ -16,6 +16,7 @@
 
 using namespace mrpt;
 using namespace mrpt::vision;
+using namespace mrpt::img;
 using namespace mrpt::system;
 using namespace std;
 
@@ -123,18 +124,15 @@ void my_cvLinearPolar(
 }
 #endif
 
-/************************************************************************************************
-								computePolarImageDescriptors
-************************************************************************************************/
 void CFeatureExtraction::internal_computePolarImageDescriptors(
 	const mrpt::img::CImage& in_img, CFeatureList& in_features) const
 {
 	MRPT_START
 #if MRPT_HAS_OPENCV
 
-	ASSERT_(options.PolarImagesOptions.radius > 1)
-	ASSERT_(options.PolarImagesOptions.bins_angle > 1)
-	ASSERT_(options.PolarImagesOptions.bins_distance > 1)
+	ASSERT_(options.PolarImagesOptions.radius > 1);
+	ASSERT_(options.PolarImagesOptions.bins_angle > 1);
+	ASSERT_(options.PolarImagesOptions.bins_distance > 1);
 
 	const unsigned int radius = options.PolarImagesOptions.radius;
 	const unsigned int patch_w = options.PolarImagesOptions.bins_distance;

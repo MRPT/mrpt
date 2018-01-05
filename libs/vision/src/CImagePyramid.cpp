@@ -12,6 +12,7 @@
 
 using namespace mrpt;
 using namespace mrpt::vision;
+using namespace mrpt::img;
 
 CImagePyramid::CImagePyramid() {}
 CImagePyramid::~CImagePyramid()
@@ -25,7 +26,7 @@ void buildPyramid_templ(
 	CImagePyramid& obj, mrpt::img::CImage& img, const size_t nOctaves,
 	const bool smooth_halves, const bool convert_grayscale)
 {
-	ASSERT_ABOVE_(nOctaves, 0)
+	ASSERT_ABOVE_(nOctaves, 0);
 
 	// TImageSize  img_size = img.getSize();
 	obj.images.resize(nOctaves);

@@ -316,10 +316,6 @@ class CFeatureExtraction
 	TOptions options;  //!< Set all the parameters of the desired method here
 	//! before calling "detectFeatures"
 
-	/** Constructor
-	*/
-	CFeatureExtraction();
-
 	/** Virtual destructor.
 	*/
 	virtual ~CFeatureExtraction();

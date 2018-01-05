@@ -11,7 +11,7 @@
 
 #include <mrpt/vision/types.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/containers/stl_containers_utils.h>
+#include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/containers/stl_containers_utils.h>
 #include <iostream>
@@ -20,6 +20,7 @@
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::vision;
+using namespace mrpt::img;
 using namespace mrpt::system;
 
 // ==================== TSequenceFeatureObservations ====================
@@ -171,7 +172,7 @@ size_t TSequenceFeatureObservations::removeFewObservedFeatures(
 void TSequenceFeatureObservations::decimateCameraFrames(
 	const size_t decimate_ratio)
 {
-	ASSERT_ABOVEEQ_(decimate_ratio, 1)
+	ASSERT_ABOVEEQ_(decimate_ratio, 1);
 	if (decimate_ratio == 1) return;  // =1 -> Delete no one!
 
 	// 1) Make sorted list of frame IDs:
@@ -187,7 +188,7 @@ void TSequenceFeatureObservations::decimateCameraFrames(
 		++it;
 		// Remove "decimate_ratio-1"
 		for (size_t d = 0; d < decimate_ratio - 1 && it != frameIDs.end(); d++)
-			it = mrpt::utils::erase_return_next(frameIDs, it);
+			it = mrpt::containers::erase_return_next(frameIDs, it);
 	}
 
 	// 3) Make a new list of observations with only the desired data:

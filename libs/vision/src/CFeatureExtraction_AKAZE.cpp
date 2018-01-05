@@ -22,6 +22,7 @@
 #include <mrpt/io/CMemoryStream.h>
 
 using namespace mrpt::vision;
+using namespace mrpt::img;
 using namespace mrpt::math;
 using namespace mrpt::img;
 using namespace mrpt;

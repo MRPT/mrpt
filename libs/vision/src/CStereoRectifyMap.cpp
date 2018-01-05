@@ -16,6 +16,7 @@
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::vision;
+using namespace mrpt::img;
 using namespace mrpt::math;
 
 // Ctor: Leave all vectors empty
@@ -24,7 +25,7 @@ CStereoRectifyMap::CStereoRectifyMap()
 	  m_resize_output(false),
 	  m_enable_both_centers_coincide(false),
 	  m_resize_output_value(0, 0),
-	  m_interpolation_method(mrpt::utils::IMG_INTERP_LINEAR)
+	  m_interpolation_method(mrpt::img::IMG_INTERP_LINEAR)
 {
 }
 
@@ -72,7 +73,7 @@ void CStereoRectifyMap::setFromCamParams(
 	const mrpt::img::TCamera& cam1 = params.leftCamera;
 	const mrpt::img::TCamera& cam2 = params.rightCamera;
 
-	ASSERT_(cam1.ncols == cam2.ncols && cam1.nrows == cam2.nrows)
+	ASSERT_(cam1.ncols == cam2.ncols && cam1.nrows == cam2.nrows);
 
 	const uint32_t ncols = cam1.ncols;
 	const uint32_t nrows = cam1.nrows;
@@ -117,7 +118,7 @@ void CStereoRectifyMap::setFromCamParams(
 	CMatrixDouble44 hMatrix;
 	// NOTE!: OpenCV seems to expect the INVERSE of the pose we keep, so invert
 	// it:
-	params.rightCameraPose.getInverseHomogeneousMatrix(hMatrix);
+	mrpt::poses::CPose3D(params.rightCameraPose).getInverseHomogeneousMatrix(hMatrix);
 
 	double m1[3][3];
 	for (unsigned int i = 0; i < 3; ++i)
@@ -378,7 +379,7 @@ void CStereoRectifyMap::rectify(
 	const bool use_internal_mem_cache) const
 {
 	MRPT_START
-	ASSERT_(stereo_image_observation.hasImageRight)
+		ASSERT_(stereo_image_observation.hasImageRight);
 
 	// Rectify images:
 	this->rectify(
@@ -407,7 +408,7 @@ void CStereoRectifyMap::rectify_IPL(
 	void* outImg_right) const
 {
 	MRPT_START
-	ASSERT_(srcImg_left != outImg_left && srcImg_right != outImg_right)
+		ASSERT_(srcImg_left != outImg_left && srcImg_right != outImg_right);
 
 	if (!isSet())
 		THROW_EXCEPTION(

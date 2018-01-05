@@ -17,6 +17,7 @@
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::vision;
+using namespace mrpt::img;
 using namespace mrpt::math;
 using namespace mrpt::poses;
 
@@ -163,8 +164,8 @@ double mrpt::vision::reprojectionResiduals(
 
 		TFramePosesMap::const_iterator itF = frame_poses.find(i_f);
 		TLandmarkLocationsMap::const_iterator itP = landmark_points.find(i_p);
-		ASSERTMSG_(itF != frame_poses.end(), "Frame ID is not in list!")
-		ASSERTMSG_(itP != landmark_points.end(), "Landmark ID is not in list!")
+		ASSERTMSG_(itF != frame_poses.end(), "Frame ID is not in list!");
+		ASSERTMSG_(itP != landmark_points.end(), "Landmark ID is not in list!");
 
 		const TFramePosesMap::mapped_type& frame = itF->second;
 		const TLandmarkLocationsMap::mapped_type& point = itP->second;
@@ -210,7 +211,7 @@ double mrpt::vision::reprojectionResiduals(
 		const TFeatureID i_p = OBS.id_feature;
 		const TCameraPoseID i_f = OBS.id_frame;
 
-		ASSERT_BELOW_(i_p, landmark_points.size();
+		ASSERT_BELOW_(i_p, landmark_points.size());
 		ASSERT_BELOW_(i_f, frame_poses.size());
 		const TFramePosesVec::value_type& frame = frame_poses[i_f];
 		const TLandmarkLocationsVec::value_type& point = landmark_points[i_p];
