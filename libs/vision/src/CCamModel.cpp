@@ -17,6 +17,7 @@ using namespace mrpt;
 using namespace mrpt::vision;
 using namespace mrpt::poses;
 using namespace mrpt::math;
+using namespace mrpt::img;
 
 /**	Constructor */
 CCamModel::CCamModel() : cam() {}
@@ -158,7 +159,7 @@ void CCamModel::project_3D_point(
 	// Offsets from the image center for the undistorted projection, in units of
 	// pixels:
 
-	ASSERT_(p3D.z != 0)
+	ASSERT_(p3D.z != 0);
 	const double dx = (p3D.x / p3D.z) * cam.fx();
 	const double dy = (p3D.y / p3D.z) * cam.fy();
 
@@ -206,7 +207,7 @@ void CCamModel::jacobian_project_with_distortion(
 	 0 & \frac{f_y}{y_z} & - y \frac f_y}{y_z^2} \\
 	\end{array} \right)
 	*/
-	ASSERT_(p3D.z != 0)
+	ASSERT_(p3D.z != 0);
 
 	CMatrixDouble du_dy(2, 3);  // Default all to zeroes.
 
@@ -319,7 +320,7 @@ void CCamModel::loadFromConfigFile(
 
 	CVectorDouble DD;
 	source.read_vector(section, "dist_params", CVectorDouble(), DD, true);
-	ASSERT_(DD.size() == 4 || DD.size() == 5)
+	ASSERT_(DD.size() == 4 || DD.size() == 5);
 
 	this->cam.setDistortionParamsVector(DD);
 
@@ -328,4 +329,4 @@ void CCamModel::loadFromConfigFile(
 
 /** This method displays clearly all the contents of the structure in textual
  * form, sending it to a CStream. */
-void CCamModel::dumpToTextStream(CStream& out) const { MRPT_UNUSED_PARAM(out); }
+void CCamModel::dumpToTextStream(std::ostream& out) const { MRPT_UNUSED_PARAM(out); }

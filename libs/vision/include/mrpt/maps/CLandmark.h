@@ -100,7 +100,8 @@ class CLandmark : public mrpt::serialization::CSerializable
 	mrpt::vision::TFeatureType getType() const
 	{
 		ASSERT_(!features.empty());
-		ASSERT_(features[0]) return features[0]->type;
+		ASSERT_(features[0]);
+		return features[0]->type;
 	}
 
 	/** Creates one feature in the vector "features", calling the appropriate

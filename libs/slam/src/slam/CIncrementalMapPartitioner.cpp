@@ -90,8 +90,7 @@ void CIncrementalMapPartitioner::TOptions::loadFromConfigFile(
 /*---------------------------------------------------------------
 						dumpToTextStream
   ---------------------------------------------------------------*/
-void CIncrementalMapPartitioner::TOptions::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+void CIncrementalMapPartitioner::TOptions::dumpToTextStream(std::ostream& out) const
 {
 	out << mrpt::format(
 		"\n----------- [CIncrementalMapPartitioner::TOptions] ------------ "

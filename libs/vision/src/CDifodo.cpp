@@ -632,7 +632,7 @@ void CDifodo::computeWeights()
 	// Alternative way to compute the log
 	CMatrixDouble44 mat_aux = acu_trans.cast<double>();
 	poses::CPose3D aux(mat_aux);
-	CArrayDouble<6> kai_level_acu = aux.ln() * fps;
+	CArrayDouble<6> kai_level_acu ((aux.ln() * fps).matrix());
 	kai_level -= kai_level_acu.cast<float>();
 
 	// Parameters for the measurement error
@@ -814,7 +814,7 @@ void CDifodo::solveOneLevel()
 void CDifodo::odometryCalculation()
 {
 	// Clock to measure the runtime
-	utils::CTicTac clock;
+	mrpt::system::CTicTac clock;
 	clock.Tic();
 
 	// Build the gaussian pyramid
@@ -902,7 +902,7 @@ void CDifodo::filterLevelSolution()
 
 	CMatrixDouble44 mat_aux = acu_trans.cast<double>();
 	poses::CPose3D aux(mat_aux);
-	CArrayDouble<6> kai_level_acu = aux.ln() * fps;
+	CArrayDouble<6> kai_level_acu( aux.ln() * fps);
 	kai_loc_sub -= kai_level_acu.cast<float>();
 
 	// Matrix<float, 4, 4> log_trans = fps*acu_trans.log();
@@ -931,7 +931,7 @@ void CDifodo::filterLevelSolution()
 		Bii.inverse().colPivHouseholderQr().solve(kai_b_fil);
 
 	// Compute the rigid transformation
-	mrpt::math::CArrayDouble<6> aux_vel = kai_loc_fil.cast<double>() / fps;
+	mrpt::math::CArrayDouble<6> aux_vel( kai_loc_fil.cast<double>() / fps);
 	poses::CPose3D aux1, aux2;
 	CMatrixDouble44 trans;
 	aux2 = aux1.exp(aux_vel);
@@ -952,7 +952,7 @@ void CDifodo::poseUpdate()
 	//---------------------------------------------------------------------
 	CMatrixDouble44 mat_aux = acu_trans.cast<double>();
 	poses::CPose3D aux(mat_aux);
-	CArrayDouble<6> kai_level_acu = aux.ln() * fps;
+	CArrayDouble<6> kai_level_acu (aux.ln() * fps);
 	kai_loc = kai_level_acu.cast<float>();
 
 	//---------------------------------------------------------------------------------------------

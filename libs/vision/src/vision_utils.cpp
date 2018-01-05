@@ -2353,7 +2353,7 @@ void TStereoSystemParams::loadFromConfigFile(
 /*---------------------------------------------------------------
 					TStereoSystemParams: dumpToTextStream
   ---------------------------------------------------------------*/
-void TStereoSystemParams::dumpToTextStream(CStream& out) const
+void TStereoSystemParams::dumpToTextStream(std::ostream& out) const
 {
 	out << mrpt::format("\n----------- [vision::TStereoSystemParams] ------------ \n");
 	out << mrpt::format("Method for 3D Uncert. \t= ");
@@ -2510,7 +2510,7 @@ void TMatchingOptions::loadFromConfigFile(
 /*---------------------------------------------------------------
 					TMatchingOptions: dumpToTextStream
   ---------------------------------------------------------------*/
-void TMatchingOptions::dumpToTextStream(CStream& out) const
+void TMatchingOptions::dumpToTextStream(std::ostream& out) const
 {
 	out << mrpt::format("\n----------- [vision::TMatchingOptions] ------------ \n");
 	out << mrpt::format("Matching method:                ");

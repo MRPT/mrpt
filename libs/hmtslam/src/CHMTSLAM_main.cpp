@@ -328,7 +328,7 @@ void CHMTSLAM::TOptions::loadFromConfigFile(
 /*---------------------------------------------------------------
 						dumpToTextStream
   ---------------------------------------------------------------*/
-void CHMTSLAM::TOptions::dumpToTextStream(mrpt::utils::CStream& out) const
+void CHMTSLAM::TOptions::dumpToTextStream(std::ostream& out) const
 {
 	out << mrpt::format("\n----------- [CHMTSLAM::TOptions] ------------ \n\n");
 

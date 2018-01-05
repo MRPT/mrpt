@@ -83,28 +83,14 @@ void CLandmark::setPose(const CPointPDFGaussian& pose)
 	pose_cov_23 = pose.cov(1, 2);
 }
 
-/*---------------------------------------------------------------
-					writeToStream
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-uint8_t CLandmark::serializeGetVersion() const { return XX; } void CLandmark::serializeTo(mrpt::serialization::CArchive& out, int* version) const
+uint8_t CLandmark::serializeGetVersion() const { return 4; }
+void CLandmark::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 4;
-	else
-	{
-		out << features << pose_mean << normal << pose_cov_11 << pose_cov_22
-			<< pose_cov_33 << pose_cov_12 << pose_cov_13 << pose_cov_23 << ID
-			<< timestampLastSeen << seenTimesCount;
-	}
+	out << features << pose_mean << normal << pose_cov_11 << pose_cov_22
+		<< pose_cov_33 << pose_cov_12 << pose_cov_13 << pose_cov_23 << ID
+		<< timestampLastSeen << seenTimesCount;
 }
 
-/*---------------------------------------------------------------
-					readFromStream
-   Implements the reading from a CStream capability of
-	  CSerializable objects
-  ---------------------------------------------------------------*/
 void CLandmark::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)

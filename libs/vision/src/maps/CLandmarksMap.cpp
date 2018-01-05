@@ -33,12 +33,11 @@ using namespace mrpt;
 using namespace mrpt::math;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::random;
 using namespace mrpt::system;
 using namespace mrpt::vision;
-using namespace mrpt::utils;
+using namespace mrpt::img;
 using namespace std;
 using mrpt::maps::internal::TSequenceLandmarks;
 
@@ -173,7 +172,7 @@ size_t CLandmarksMap::size() const { return landmarks.size(); }
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-uint8_t CLandmarksMap::serializeGetVersion() const { return XX; } void CLandmarksMap::serializeTo(mrpt::utils::CStream& out, int* version) const
+uint8_t CLandmarksMap::serializeGetVersion() const { return XX; } void CLandmarksMap::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	if (version)
 		*version = 0;
@@ -1152,9 +1151,9 @@ void CLandmarksMap::computeMatchingWith3DLandmarks(
 				-0.5 / square(likelihoodOptions.SIFTs_sigma_descriptor_dist);
 			K_dist = -0.5 / square(likelihoodOptions.SIFTs_mahaDist_std);
 
-			// CDynamicGrid<vector_int>		*gridLandmarks =
+			// CDynamicGrid<std::vector<int32_t>>		*gridLandmarks =
 			// landmarks.getGrid();
-			// vector_int						closeLandmarksList;
+			// std::vector<int32_t>						closeLandmarksList;
 
 			for (k = 0, otherIt = anotherMap->landmarks.begin();
 				 otherIt != anotherMap->landmarks.end(); otherIt++, k++)
@@ -1741,13 +1740,13 @@ double CLandmarksMap::computeLikelihood_RSLC_2007(
 	// double								STD_THETA = DEG2RAD(0.15);
 	// double								STD_DIST = 0.5f;
 	double nFoundCorrs = 0;
-	vector_int* corrs;
+	std::vector<int32_t>* corrs;
 	unsigned int cx, cy, cx_1, cx_2, cy_1, cy_2;
 
 	//	s->saveToMATLABScript2D(std::string("ver_sensed.m"));
 	// saveToMATLABScript2D(std::string("ver_ref.m"),"r");
 
-	CDynamicGrid<vector_int>* grid = landmarks.getGrid();
+	CDynamicGrid<std::vector<int32_t>>* grid = landmarks.getGrid();
 	// grid->saveToTextFile( "debug_grid.txt" );
 
 	// For each landmark in the observations:
@@ -1782,7 +1781,7 @@ double CLandmarksMap::computeLikelihood_RSLC_2007(
 				corrs = grid->cellByIndex(cx, cy);
 				ASSERT_(corrs != nullptr);
 				if (!corrs->empty())
-					for (vector_int::iterator it = corrs->begin();
+					for (std::vector<int32_t>::iterator it = corrs->begin();
 						 it != corrs->end(); ++it)
 					{
 						lm = landmarks.get(*it);
@@ -1888,7 +1887,7 @@ void CLandmarksMap::TCustomSequenceLandmarks::clear()
 void CLandmarksMap::TCustomSequenceLandmarks::push_back(const CLandmark& l)
 {
 	// Resize grid if necesary:
-	vector_int dummyEmpty;
+	std::vector<int32_t> dummyEmpty;
 
 	m_grid.resize(
 		min(m_grid.getXMin(), l.pose_mean.x - 0.1),
@@ -1899,7 +1898,7 @@ void CLandmarksMap::TCustomSequenceLandmarks::push_back(const CLandmark& l)
 	m_landmarks.push_back(l);
 
 	// Add to the grid:
-	vector_int* cell = m_grid.cellByPos(l.pose_mean.x, l.pose_mean.y);
+	std::vector<int32_t>* cell = m_grid.cellByPos(l.pose_mean.x, l.pose_mean.y);
 	ASSERT_(cell);
 	cell->push_back(m_landmarks.size() - 1);
 
@@ -1919,10 +1918,10 @@ const CLandmark* CLandmarksMap::TCustomSequenceLandmarks::get(
 
 void CLandmarksMap::TCustomSequenceLandmarks::isToBeModified(unsigned int indx)
 {
-	vector_int* cell = m_grid.cellByPos(
+	std::vector<int32_t>* cell = m_grid.cellByPos(
 		m_landmarks[indx].pose_mean.x, m_landmarks[indx].pose_mean.y);
 
-	vector_int::iterator it;
+	std::vector<int32_t>::iterator it;
 	for (it = cell->begin(); it != cell->end(); it++)
 	{
 		if (*it == static_cast<int>(indx))
@@ -1943,7 +1942,7 @@ void CLandmarksMap::TCustomSequenceLandmarks::erase(unsigned int indx)
 
 void CLandmarksMap::TCustomSequenceLandmarks::hasBeenModified(unsigned int indx)
 {
-	vector_int dummyEmpty;
+	std::vector<int32_t> dummyEmpty;
 
 	// Resize grid if necesary:
 	m_grid.resize(
@@ -1953,7 +1952,7 @@ void CLandmarksMap::TCustomSequenceLandmarks::hasBeenModified(unsigned int indx)
 		max(m_grid.getYMax(), m_landmarks[indx].pose_mean.y), dummyEmpty);
 
 	// Add to the grid:
-	vector_int* cell = m_grid.cellByPos(
+	std::vector<int32_t>* cell = m_grid.cellByPos(
 		m_landmarks[indx].pose_mean.x, m_landmarks[indx].pose_mean.y);
 	cell->push_back(indx);
 	m_largestDistanceFromOriginIsUpdated = false;
@@ -1967,7 +1966,7 @@ void CLandmarksMap::TCustomSequenceLandmarks::hasBeenModifiedAll()
 	unsigned int idx;
 	double min_x = -10.0, max_x = 10.0;
 	double min_y = -10.0, max_y = 10.0;
-	vector_int dummyEmpty;
+	std::vector<int32_t> dummyEmpty;
 
 	// Clear cells:
 	m_grid.clear();
@@ -1987,7 +1986,7 @@ void CLandmarksMap::TCustomSequenceLandmarks::hasBeenModifiedAll()
 	for (idx = 0, it = m_landmarks.begin(); it != m_landmarks.end();
 		 idx++, it++)
 	{
-		vector_int* cell = m_grid.cellByPos(it->pose_mean.x, it->pose_mean.y);
+		std::vector<int32_t>* cell = m_grid.cellByPos(it->pose_mean.x, it->pose_mean.y);
 		cell->push_back(idx);
 	}
 
@@ -2316,8 +2315,7 @@ CLandmarksMap::TInsertionOptions::TInsertionOptions()
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void CLandmarksMap::TInsertionOptions::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+void CLandmarksMap::TInsertionOptions::dumpToTextStream(std::ostream& out) const
 {
 	out << mrpt::format(
 		"\n----------- [CLandmarksMap::TInsertionOptions] ------------ \n\n");
@@ -2453,8 +2451,7 @@ CLandmarksMap::TLikelihoodOptions::TGPSOrigin::TGPSOrigin()
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void CLandmarksMap::TLikelihoodOptions::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+void CLandmarksMap::TLikelihoodOptions::dumpToTextStream(std::ostream& out) const
 {
 	out << mrpt::format(
 		"\n----------- [CLandmarksMap::TLikelihoodOptions] ------------ \n\n");

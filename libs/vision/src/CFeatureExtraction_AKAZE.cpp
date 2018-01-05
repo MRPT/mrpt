@@ -23,6 +23,7 @@
 
 using namespace mrpt::vision;
 using namespace mrpt::math;
+using namespace mrpt::img;
 using namespace mrpt;
 using namespace std;
 
