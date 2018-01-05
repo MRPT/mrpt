@@ -80,7 +80,7 @@ class CRandomFieldGridMap3D
 	  public mrpt::serialization::CSerializable,
 	  public mrpt::system::COutputLogger
 {
-	typedef utils::CDynamicGrid3D<TRandomFieldVoxel> BASE;
+	using BASE = mrpt::containers::CDynamicGrid3D<TRandomFieldVoxel>;
 
 	DEFINE_SERIALIZABLE(CRandomFieldGridMap3D)
    public:

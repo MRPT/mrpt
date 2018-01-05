@@ -92,7 +92,7 @@ class CFeatureExtraction
 	};
 
 	/** The set of parameters for all the detectors & descriptor algorithms */
-	struct TOptions : public utils::CLoadableOptions
+	struct TOptions : public mrpt::config::CLoadableOptions
 	{
 		/** Initalizer */
 		TOptions(const TFeatureType featsType = featKLT);

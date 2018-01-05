@@ -12,7 +12,7 @@
 
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/utils/safe_pointers.h>
+#include <mrpt/core/safe_pointers.h>
 #include <octomap/octomap.h>
 #include <mrpt/opengl/COctoMapVoxels.h>
 #include <mrpt/opengl/COpenGLScene.h>
@@ -76,7 +76,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 	* process.
 	* \sa CObservation::insertObservationInto()
 	*/
-	struct TInsertionOptions : public utils::CLoadableOptions
+	struct TInsertionOptions : public mrpt::config::CLoadableOptions
 	{
 		/** Initilization of default parameters */
 		TInsertionOptions(myself_t& parent);
@@ -104,8 +104,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+		void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
 		/** maximum range for how long individual beams are inserted (default
 		 * -1: complete beam) */
@@ -222,7 +221,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 		}
 
 	   private:
-		mrpt::utils::ignored_copy_ptr<myself_t> m_parent;
+		mrpt::ignored_copy_ptr<myself_t> m_parent;
 
 		double occupancyThres;  // sets the threshold for occupancy (sensor
 		// model) (Default=0.5)
@@ -244,7 +243,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 	/** Options used when evaluating "computeObservationLikelihood"
 	* \sa CObservation::computeObservationLikelihood
 	*/
-	struct TLikelihoodOptions : public utils::CLoadableOptions
+	struct TLikelihoodOptions : public mrpt::config::CLoadableOptions
 	{
 		/** Initilization of default parameters
 			*/
@@ -253,13 +252,12 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+		void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
 		/** Binary dump to stream */
-		void writeToStream(mrpt::utils::CStream& out) const;
+		void writeToStream(mrpt::serialization::CArchive& out) const;
 		/** Binary dump to stream */
-		void readFromStream(mrpt::utils::CStream& in);
+		void readFromStream(mrpt::serialization::CArchive& in);
 
 		/** Speed up the likelihood computation by considering only one out of N
 		 * rays (default=1) */
@@ -305,9 +303,9 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 		}
 
 		/** Binary dump to stream */
-		void writeToStream(mrpt::utils::CStream& out) const;
+		void writeToStream(mrpt::serialization::CArchive& out) const;
 		/** Binary dump to stream */
-		void readFromStream(mrpt::utils::CStream& in);
+		void readFromStream(mrpt::serialization::CArchive& in);
 	};
 
 	TRenderingOptions renderingOptions;

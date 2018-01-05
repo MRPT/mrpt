@@ -44,7 +44,7 @@ class CIncrementalMapPartitioner : public mrpt::system::COutputLogger,
 
 	/** Configuration of the algorithm:
 	  */
-	struct TOptions : public utils::CLoadableOptions
+	struct TOptions : public mrpt::config::CLoadableOptions
 	{
 		/*\brief  Sets default values at object creation
 		  */

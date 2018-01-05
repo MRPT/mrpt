@@ -56,18 +56,18 @@ class CBeacon : public mrpt::poses::CPointPDF
 	 * object: montecarlo, gaussian, or a sum of gaussians.
 	 * \sa m_location
 	 */
-	TTypePDF m_typePDF;
+	TTypePDF m_typePDF{pdfGauss};
 
 	/** The individual PDF, if m_typePDF=pdfMonteCarlo (publicly accesible for
 	 * ease of use, but the CPointPDF interface is also implemented in CBeacon).
 	 */
-	mrpt::poses::CPointPDFParticles m_locationMC;
+	mrpt::poses::CPointPDFParticles m_locationMC{1};
 	/** The individual PDF, if m_typePDF=pdfGauss (publicly accesible for ease
 	 * of use, but the CPointPDF interface is also implemented in CBeacon). */
 	mrpt::poses::CPointPDFGaussian m_locationGauss;
 	/** The individual PDF, if m_typePDF=pdfSOG (publicly accesible for ease of
 	 * use, but the CPointPDF interface is also implemented in CBeacon). */
-	mrpt::poses::CPointPDFSOG m_locationSOG;
+	mrpt::poses::CPointPDFSOG m_locationSOG{ 1 };
 
 	/** An ID for the landmark (see details next...)
 	 *  This ID was introduced in the version 3 of this class (21/NOV/2006),
@@ -90,15 +90,7 @@ class CBeacon : public mrpt::poses::CPointPDF
 	 * Note that this field is never fill out automatically, it must be set by
 	 *the programmer if used.
 	 */
-	TBeaconID m_ID;
-
-	/** Default constructor
-	 */
-	CBeacon();
-
-	/** Virtual destructor
-	 */
-	virtual ~CBeacon();
+	TBeaconID m_ID{INVALID_BEACON_ID};
 
 	/** Returns an estimate of the point, (the mean, or mathematical expectation
 	 * of the PDF).
@@ -120,7 +112,7 @@ class CBeacon : public mrpt::poses::CPointPDF
 
 	/** Save PDF's particles to a text file. See derived classes for more
 	 * information about the format of generated files */
-	void saveToTextFile(const std::string& file) const override;
+	bool saveToTextFile(const std::string& file) const override;
 
 	/** this = p (+) this. This can be used to convert a PDF from local
 	 * coordinates to global, providing the point (newReferenceBase) from which

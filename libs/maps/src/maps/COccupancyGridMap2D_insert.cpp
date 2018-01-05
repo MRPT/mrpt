@@ -14,6 +14,7 @@
 #include <mrpt/obs/CObservationRange.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/core/round.h>  // round()
+#include <mrpt/system/memory.h> // alloca()
 
 #if HAVE_ALLOCA_H
 #include <alloca.h>
@@ -22,6 +23,7 @@
 using namespace mrpt;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
+using namespace mrpt::math;
 using namespace mrpt::poses;
 using namespace std;
 

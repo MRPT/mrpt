@@ -74,7 +74,7 @@ class CGridMapAligner : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 
 	/** The ICP algorithm configuration data
 	 */
-	class TConfigParams : public utils::CLoadableOptions
+	class TConfigParams : public mrpt::config::CLoadableOptions
 	{
 	   public:
 		/** Initializer for default values:

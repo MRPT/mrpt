@@ -47,7 +47,7 @@ class CWirelessPowerGridMap2D : public CRandomFieldGridMap2D
 
 	/** Parameters related with inserting observations into the map:
 	  */
-	struct TInsertionOptions : public utils::CLoadableOptions,
+	struct TInsertionOptions : public mrpt::config::CLoadableOptions,
 							   public TInsertionOptionsCommon
 	{
 		/** Default values loader */

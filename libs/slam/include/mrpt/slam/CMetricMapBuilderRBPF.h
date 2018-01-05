@@ -82,7 +82,7 @@ class CMetricMapBuilderRBPF : public mrpt::slam::CMetricMapBuilder
 	/** Options for building a CMetricMapBuilderRBPF object, passed to the
 	 * constructor.
 	  */
-	struct TConstructionOptions : public utils::CLoadableOptions
+	struct TConstructionOptions : public mrpt::config::CLoadableOptions
 	{
 	   public:
 		/** Constructor */

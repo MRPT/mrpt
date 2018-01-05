@@ -89,7 +89,7 @@ std::string CVelodyneScanner::TModelPropertiesFactory::getListKnownModels()
 		 it != lst.end(); ++it)
 		s += mrpt::format(
 			"`%s`,",
-			mrpt::utils::TEnumType<CVelodyneScanner::model_t>::value2name(
+			mrpt::typemeta::TEnumType<CVelodyneScanner::model_t>::value2name(
 				it->first)
 				.c_str());
 	return s;
@@ -407,7 +407,7 @@ void CVelodyneScanner::initialize()
 	{
 		// Try to load default data:
 		m_velodyne_calib = VelodyneCalibration::LoadDefaultCalibration(
-			mrpt::utils::TEnumType<CVelodyneScanner::model_t>::value2name(
+			mrpt::typemeta::TEnumType<CVelodyneScanner::model_t>::value2name(
 				m_model));
 		if (m_velodyne_calib.empty())
 			THROW_EXCEPTION(

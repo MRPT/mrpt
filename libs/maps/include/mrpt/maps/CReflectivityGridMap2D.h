@@ -38,9 +38,10 @@ namespace maps
   *		- mrSimpleAverage: Each cell only stores the current average value.
   * \ingroup mrpt_maps_grp
   */
-class CReflectivityGridMap2D : public CMetricMap,
-							   public utils::CDynamicGrid<int8_t>,
-							   public CLogOddsGridMap2D<int8_t>
+class CReflectivityGridMap2D :
+	  public CMetricMap,
+	  public mrpt::containers::CDynamicGrid<int8_t>,
+	  public CLogOddsGridMap2D<int8_t>
 {
 	DEFINE_SERIALIZABLE(CReflectivityGridMap2D)
 
@@ -69,7 +70,7 @@ class CReflectivityGridMap2D : public CMetricMap,
 
 	/** Parameters related with inserting observations into the map.
 	  */
-	struct TInsertionOptions : public utils::CLoadableOptions
+	struct TInsertionOptions : public mrpt::config::CLoadableOptions
 	{
 		/** Default values loader */
 		TInsertionOptions();
@@ -100,7 +101,7 @@ class CReflectivityGridMap2D : public CMetricMap,
 	/** Returns the grid as a 8-bit graylevel image, where each pixel is a cell
 	 * (output image is RGB only if forceRGB is true) */
 	void getAsImage(
-		utils::CImage& img, bool verticalFlip = false,
+		mrpt::img::CImage& img, bool verticalFlip = false,
 		bool forceRGB = false) const;
 
    protected:

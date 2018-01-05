@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CColouredPointsMap_H
-#define CColouredPointsMap_H
+#pragma once
 
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/obs/obs_frwds.h>
@@ -32,14 +31,6 @@ class CColouredPointsMap : public CPointsMap
 	DEFINE_SERIALIZABLE(CColouredPointsMap)
 
    public:
-	/** Destructor
-	 */
-	virtual ~CColouredPointsMap();
-
-	/** Default constructor
-	 */
-	CColouredPointsMap();
-
 	// --------------------------------------------
 	/** @name Pure virtual interfaces to be implemented by any class derived
 	   from CPointsMap
@@ -143,7 +134,7 @@ class CColouredPointsMap : public CPointsMap
 	/// \overload
 	inline void setPoint(size_t index, float x, float y, float z)
 	{
-		ASSERT_BELOW_(index, this->size();
+		ASSERT_BELOW_(index, this->size());
 		setPointFast(index, x, y, z);
 		mark_as_modified();
 	}
@@ -165,19 +156,10 @@ class CColouredPointsMap : public CPointsMap
 	// The following overloads must be repeated here (from CPointsMap) due to
 	// the shadowing of the above "insertPoint()"
 	/// \overload
-	inline void insertPoint(const mrpt::poses::CPoint3D& p)
+	template <typename POINT_T>
+	inline void insertPoint(const POINT_T& p)
 	{
-		insertPoint(p.x(), p.y(), p.z());
-	}
-	/// \overload
-	inline void insertPoint(const mrpt::math::TPoint3D& p)
-	{
-		insertPoint(p.x, p.y, p.z);
-	}
-	/// \overload
-	inline void insertPoint(const mrpt::math::TPoint3Df& p)
-	{
-		insertPoint(p.x, p.y, p.z);
+		insertPoint(p[0], p[1], p[2]);
 	}
 	/// \overload
 	inline void insertPoint(float x, float y, float z)
@@ -254,11 +236,10 @@ class CColouredPointsMap : public CPointsMap
 	};
 
 	/** The definition of parameters for generating colors from laser scans */
-	struct TColourOptions : public utils::CLoadableOptions
+	struct TColourOptions : public mrpt::config::CLoadableOptions
 	{
 		/** Initilization of default parameters */
 		TColourOptions();
-		virtual ~TColourOptions() {}
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
@@ -481,22 +462,12 @@ class PointCloudAdapter<mrpt::maps::CColouredPointsMap>
 	}
 
 };  // end of PointCloudAdapter<mrpt::maps::CColouredPointsMap>
-
-template <>
-struct TEnumTypeFiller<mrpt::maps::CColouredPointsMap::TColouringMethod>
-{
-	typedef mrpt::maps::CColouredPointsMap::TColouringMethod enum_t;
-	static void fill(bimap<enum_t, std::string>& m_map)
-	{
-		using namespace mrpt::maps;
-		MRPT_FILL_ENUM_MEMBER(CColouredPointsMap, cmFromHeightRelativeToSensor);
-		MRPT_FILL_ENUM_MEMBER(
-			CColouredPointsMap, cmFromHeightRelativeToSensorJet);
-		MRPT_FILL_ENUM_MEMBER(
-			CColouredPointsMap, cmFromHeightRelativeToSensorGray);
-		MRPT_FILL_ENUM_MEMBER(CColouredPointsMap, cmFromIntensityImage);
-	}
-};
 }  // namespace opengl
 }  // namespace mrpt
-#endif
+
+MRPT_ENUM_TYPE_BEGIN(mrpt::maps::CColouredPointsMap::TColouringMethod)
+MRPT_FILL_ENUM_MEMBER(mrpt::maps::CColouredPointsMap::TColouringMethod, cmFromHeightRelativeToSensor);
+MRPT_FILL_ENUM_MEMBER(mrpt::maps::CColouredPointsMap::TColouringMethod, cmFromHeightRelativeToSensorJet);
+MRPT_FILL_ENUM_MEMBER(mrpt::maps::CColouredPointsMap::TColouringMethod, cmFromHeightRelativeToSensorGray);
+MRPT_FILL_ENUM_MEMBER(mrpt::maps::CColouredPointsMap::TColouringMethod, cmFromIntensityImage);
+MRPT_ENUM_TYPE_END()

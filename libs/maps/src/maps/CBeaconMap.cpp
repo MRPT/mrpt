@@ -20,7 +20,8 @@
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/math/data_utils.h>  // averageLogLikelihood()
 #include <mrpt/system/os.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/system/string_utils.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CSetOfObjects.h>
@@ -31,11 +32,11 @@ using namespace mrpt;
 using namespace mrpt::maps;
 using namespace mrpt::math;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::random;
 using namespace mrpt::poses;
 using namespace mrpt::bayes;
 using namespace mrpt::system;
+using namespace mrpt::tfest;
 using namespace std;
 
 //  =========== Begin of Map definition ============
@@ -58,7 +59,7 @@ void CBeaconMap::TMapDefinition::loadFromConfigFile_map_specific(
 }
 
 void CBeaconMap::TMapDefinition::dumpToTextStream_map_specific(
-	mrpt::utils::CStream& out) const
+	std::ostream& out) const
 {
 	// LOADABLEOPTS_DUMP_VAR(resolution     , float);
 
@@ -99,32 +100,19 @@ size_t CBeaconMap::size() const { return m_beacons.size(); }
 	Resize
   ---------------------------------------------------------------*/
 void CBeaconMap::resize(const size_t N) { m_beacons.resize(N); }
-/*---------------------------------------------------------------
-					writeToStream
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-uint8_t CBeaconMap::serializeGetVersion() const { return XX; } void CBeaconMap::serializeTo(mrpt::utils::CStream& out, int* version) const
-{
-	if (version)
-		*version = 1;
-	else
-	{
-		out << genericMapParams;  // v1
 
-		// First, write the number of landmarks:
-		const uint32_t n = m_beacons.size();
-		out << n;
-		// Write all landmarks:
-		for (const_iterator it = begin(); it != end(); ++it) out << (*it);
-	}
+uint8_t CBeaconMap::serializeGetVersion() const { return 1; }
+void CBeaconMap::serializeTo(mrpt::serialization::CArchive& out) const
+{
+	out << genericMapParams;  // v1
+
+	// First, write the number of landmarks:
+	const uint32_t n = m_beacons.size();
+	out << n;
+	// Write all landmarks:
+	for (const_iterator it = begin(); it != end(); ++it) out << (*it);
 }
 
-/*---------------------------------------------------------------
-					readFromStream
-   Implements the reading from a CStream capability of
-	  CSerializable objects
-  ---------------------------------------------------------------*/
 void CBeaconMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
@@ -434,7 +422,7 @@ bool CBeaconMap::internal_insertObservation(
 							sensedRange);
 						ASSERT_(
 							insertionOptions.minElevation_deg <=
-							insertionOptions.maxElevation_deg)
+							insertionOptions.maxElevation_deg);
 						double minA =
 							DEG2RAD(insertionOptions.minElevation_deg);
 						double maxA =
@@ -983,7 +971,7 @@ bool CBeaconMap::saveToMATLABScript3D(
 	for (const_iterator it = m_beacons.begin(); it != m_beacons.end(); ++it)
 	{
 		it->getAsMatlabDrawCommands(strs);
-		strs.getText(s);
+		mrpt::system::stringListAsString(strs, s);
 		os::fprintf(f, "%s", s.c_str());
 	}
 
@@ -993,21 +981,11 @@ bool CBeaconMap::saveToMATLABScript3D(
 	return true;
 }
 
-/*---------------------------------------------------------------
-					TLikelihoodOptions
-  ---------------------------------------------------------------*/
-CBeaconMap::TLikelihoodOptions::TLikelihoodOptions() : rangeStd(0.08f) {}
-/*---------------------------------------------------------------
-					dumpToTextStream
-  ---------------------------------------------------------------*/
-void CBeaconMap::TLikelihoodOptions::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+void CBeaconMap::TLikelihoodOptions::dumpToTextStream(std::ostream& out) const
 {
 	out << mrpt::format(
 		"\n----------- [CBeaconMap::TLikelihoodOptions] ------------ \n\n");
-
 	out << mrpt::format("rangeStd                                = %f\n", rangeStd);
-
 	out << mrpt::format("\n");
 }
 
@@ -1020,29 +998,7 @@ void CBeaconMap::TLikelihoodOptions::loadFromConfigFile(
 	rangeStd = iniFile.read_float(section.c_str(), "rangeStd", rangeStd);
 }
 
-/*---------------------------------------------------------------
-					TInsertionOptions
-  ---------------------------------------------------------------*/
-CBeaconMap::TInsertionOptions::TInsertionOptions()
-	: insertAsMonteCarlo(true),
-	  maxElevation_deg(0),
-	  minElevation_deg(0),
-	  MC_numSamplesPerMeter(1000),
-	  MC_maxStdToGauss(0.4f),
-	  MC_thresholdNegligible(5),
-	  MC_performResampling(false),
-	  MC_afterResamplingNoise(0.01f),
-	  SOG_thresholdNegligible(20.0f),
-	  SOG_maxDistBetweenGaussians(1.0f),
-	  SOG_separationConstant(3.0f)
-{
-}
-
-/*---------------------------------------------------------------
-					dumpToTextStream
-  ---------------------------------------------------------------*/
-void CBeaconMap::TInsertionOptions::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+void CBeaconMap::TInsertionOptions::dumpToTextStream(std::ostream& out) const
 {
 	out << mrpt::format(
 		"\n----------- [CBeaconMap::TInsertionOptions] ------------ \n\n");
@@ -1171,16 +1127,14 @@ void CBeaconMap::saveMetricMapRepresentationToFile(
 		mrpt::make_aligned_shared<opengl::CSetOfObjects>();
 
 	getAs3DObject(obj3D);
-	opengl::CGridPlaneXY::Ptr objGround =
-		mrpt::make_aligned_shared<opengl::CGridPlaneXY>(
-			-100, 100, -100, 100, 0, 1);
+	auto objGround = opengl::CGridPlaneXY::Create(
+			-100.0f, 100.0f, -100.0f, 100.0f, .0f, 1.f);
 
 	scene.insert(obj3D);
 	scene.insert(objGround);
 
 	string fil2(filNamePrefix + string("_3D.3Dscene"));
-	CFileOutputStream f(fil2.c_str());
-	f << scene;
+	scene.saveToFile(fil2);
 
 	// Textual representation:
 	string fil3(filNamePrefix + string("_covs.txt"));

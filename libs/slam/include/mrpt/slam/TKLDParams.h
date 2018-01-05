@@ -17,7 +17,7 @@ namespace slam
 {
 /** Option set for KLD algorithm.  \ingroup mrpt_slam_grp
   */
-class TKLDParams : public utils::CLoadableOptions
+class TKLDParams : public mrpt::config::CLoadableOptions
 {
    public:
 	TKLDParams();

@@ -53,7 +53,7 @@ class CTopLCDetector_GridMatching : public CTopLCDetectorBase
 
 	/** Options for a TLC-detector of type gridmap-matching, used from CHMTSLAM
 	  */
-	struct TOptions : public utils::CLoadableOptions
+	struct TOptions : public mrpt::config::CLoadableOptions
 	{
 		/** Initialization of default params
 		  */

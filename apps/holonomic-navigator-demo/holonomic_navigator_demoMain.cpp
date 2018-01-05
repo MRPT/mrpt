@@ -818,7 +818,7 @@ void holonomic_navigator_demoFrame::simulateOneStep(double time_step)
 		const size_t nGaps = log->gaps_ini.size();
 
 		const string sSitu =
-			mrpt::utils::TEnumType<CHolonomicND::TSituations>::value2name(
+			mrpt::typemeta::TEnumType<CHolonomicND::TSituations>::value2name(
 				log->situation);
 
 		string sLog = mrpt::format("ND situation : %s\n", sSitu.c_str());

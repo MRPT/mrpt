@@ -321,7 +321,8 @@ class CDynamicGrid3D
 	size_t m_size_x, m_size_y, m_size_z, m_size_x_times_y;
 	/** Serialization of all parameters, except the contents of each voxel
 	 * (responsability of the derived class) */
-	void dyngridcommon_writeToStream(mrpt::utils::CStream& out) const
+	template <class ARCHIVE>
+	void dyngridcommon_writeToStream(ARCHIVE& out) const
 	{
 		out << m_x_min << m_x_max << m_y_min << m_y_max << m_z_min << m_z_max;
 		out << m_resolution_xy << m_resolution_z;
@@ -331,7 +332,8 @@ class CDynamicGrid3D
 	}
 	/** Serialization of all parameters, except the contents of each voxel
 	 * (responsability of the derived class) */
-	void dyngridcommon_readFromStream(mrpt::utils::CStream& in)
+	template <class ARCHIVE>
+	void dyngridcommon_readFromStream(ARCHIVE& in)
 	{
 		in >> m_x_min >> m_x_max >> m_y_min >> m_y_max >> m_z_min >> m_z_max;
 		in >> m_resolution_xy >> m_resolution_z;

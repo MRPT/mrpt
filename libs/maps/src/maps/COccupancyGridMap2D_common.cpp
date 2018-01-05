@@ -22,6 +22,7 @@ using namespace mrpt::math;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
 using namespace mrpt::poses;
+using namespace mrpt::tfest;
 using namespace std;
 
 //  =========== Begin of Map definition ============
@@ -60,7 +61,7 @@ void COccupancyGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(
 }
 
 void COccupancyGridMap2D::TMapDefinition::dumpToTextStream_map_specific(
-	mrpt::utils::CStream& out) const
+	std::ostream& out) const
 {
 	LOADABLEOPTS_DUMP_VAR(min_x, float);
 	LOADABLEOPTS_DUMP_VAR(max_x, float);
@@ -152,23 +153,17 @@ void COccupancyGridMap2D::copyMapContentFrom(const COccupancyGridMap2D& o)
 	m_is_empty = o.m_is_empty;
 }
 
-/*---------------------------------------------------------------
-						setSize
-  ---------------------------------------------------------------*/
 void COccupancyGridMap2D::setSize(
 	float x_min, float x_max, float y_min, float y_max, float resolution,
 	float default_value)
 {
 	MRPT_START
 
-	ASSERT_(resolution > 0)
-	ASSERT_(x_max > x_min && y_max > y_min)
-	ASSERT_(default_value >= 0 && default_value <= 1)
+	ASSERT_(resolution > 0);
+	ASSERT_(x_max > x_min && y_max > y_min);
+	ASSERT_(default_value >= 0 && default_value <= 1);
 
-	// Liberar primero:
 	freeMap();
-
-	// For the precomputed likelihood trick:
 	precomputedLikelihoodToBeRecomputed = true;
 
 	// Adjust sizes to adapt them to full sized cells acording to the
@@ -212,9 +207,6 @@ void COccupancyGridMap2D::setSize(
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-						ResizeGrid
-  ---------------------------------------------------------------*/
 void COccupancyGridMap2D::resizeGrid(
 	float new_x_min, float new_x_max, float new_y_min, float new_y_max,
 	float new_cells_default_value, bool additionalMargin) noexcept
@@ -564,14 +556,14 @@ void COccupancyGridMap2D::determineMatching2D(
 
 	extraResults = TMatchingExtraResults();
 
-	ASSERT_ABOVE_(params.decimation_other_map_points, 0)
+	ASSERT_ABOVE_(params.decimation_other_map_points, 0);
 	ASSERT_BELOW_(
-		params.offset_other_map_points, params.decimation_other_map_points)
+		params.offset_other_map_points, params.decimation_other_map_points);
 
 	ASSERT_(otherMap2->GetRuntimeClass()->derivedFrom(CLASS_ID(CPointsMap)));
 	const CPointsMap* otherMap = static_cast<const CPointsMap*>(otherMap2);
 
-	const TPose2D otherMapPose = TPose2D(otherMapPose_);
+	const TPose2D otherMapPose = otherMapPose_.asTPose();
 
 	const size_t nLocalPoints = otherMap->size();
 	std::vector<float> x_locals(nLocalPoints), y_locals(nLocalPoints),
