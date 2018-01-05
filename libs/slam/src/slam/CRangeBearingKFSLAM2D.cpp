@@ -790,7 +790,7 @@ CRangeBearingKFSLAM2D::TOptions::TOptions()
 /*---------------------------------------------------------------
 						dumpToTextStream
   ---------------------------------------------------------------*/
-void CRangeBearingKFSLAM2D::TOptions::dumpToTextStream(CStream& out) const
+void CRangeBearingKFSLAM2D::TOptions::dumpToTextStream(std::ostream& out) const
 {
 	out << mrpt::format(
 		"\n----------- [CRangeBearingKFSLAM2D::TOptions] ------------ \n\n");

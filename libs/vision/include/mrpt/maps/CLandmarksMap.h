@@ -141,7 +141,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 		/** A grid-map with the set of landmarks falling into each cell.
 		  *  \todo Use the KD-tree instead?
 		  */
-		mrpt::containers::CDynamicGrid<vector_int> m_grid;
+		mrpt::containers::CDynamicGrid<std::vector<int32_t>> m_grid;
 
 		/** Auxiliary variables used in "getLargestDistanceFromOrigin"
 		  * \sa getLargestDistanceFromOrigin
@@ -177,7 +177,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 		void hasBeenModifiedAll();
 		void erase(unsigned int indx);
 
-		mrpt::containers::CDynamicGrid<vector_int>* getGrid() { return &m_grid; }
+		mrpt::containers::CDynamicGrid<std::vector<int32_t>>* getGrid() { return &m_grid; }
 		/** Returns the landmark with a given landmrk ID, or nullptr if not
 		 * found
 		  */
@@ -238,8 +238,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+		void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
 		/** If set to true (default), the insertion of a CObservationImage in
 		 * the map will insert SIFT 3D features.
@@ -351,8 +350,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+		void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
 		/** @name Parameters for: 2D LIDAR scans
 		  * @{ */

@@ -250,7 +250,7 @@ struct TSequenceFeatureObservations : public std::vector<TFeatureObservation>
 
 /** Parameters associated to a stereo system
  */
-struct TStereoSystemParams : public mrpt::utils::CLoadableOptions
+struct TStereoSystemParams : public mrpt::config::CLoadableOptions
 {
 	/** Initilization of default parameters */
 	TStereoSystemParams();
@@ -258,8 +258,7 @@ struct TStereoSystemParams : public mrpt::utils::CLoadableOptions
 	void loadFromConfigFile(
 		const mrpt::config::CConfigFileBase& source,
 		const std::string& section) override;  // See base docs
-	void dumpToTextStream(
-		mrpt::utils::CStream& out) const override;  // See base docs
+	void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
 	/** Method for propagating the feature's image coordinate uncertainty into
 	 * 3D space. Default value: Prop_Linear
@@ -357,7 +356,7 @@ struct TImageROI
 
 /** A structure containing options for the matching
  */
-struct TMatchingOptions : public mrpt::utils::CLoadableOptions
+struct TMatchingOptions : public mrpt::config::CLoadableOptions
 {
 	/** Method for propagating the feature's image coordinate uncertainty into
 	 * 3D space. Default value: Prop_Linear
@@ -460,8 +459,7 @@ struct TMatchingOptions : public mrpt::utils::CLoadableOptions
 	void loadFromConfigFile(
 		const mrpt::config::CConfigFileBase& source,
 		const std::string& section) override;  // See base docs
-	void dumpToTextStream(
-		mrpt::utils::CStream& out) const override;  // See base docs
+	void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
 #define COPY_MEMBER(_m) this->_m = o._m;
 #define CHECK_MEMBER(_m) this->_m == o._m
@@ -548,7 +546,7 @@ struct TMultiResMatchingOutput
 /** Struct containing the options when matching multi-resolution SIFT-like
  * descriptors
  */
-struct TMultiResDescMatchOptions : public mrpt::utils::CLoadableOptions
+struct TMultiResDescMatchOptions : public mrpt::config::CLoadableOptions
 {
 	/** Whether or not use the filter based on orientation test */
 	bool useOriFilter;
@@ -636,14 +634,14 @@ struct TMultiResDescMatchOptions : public mrpt::utils::CLoadableOptions
 	void saveToConfigFile(
 		mrpt::config::CConfigFileBase& cfg,
 		const std::string& section) const override;
-	void dumpToTextStream(mrpt::utils::CStream& out) const override;
+	void dumpToTextStream(std::ostream& out) const override;
 
 };  // end TMultiResDescMatchOptions
 
 /** Struct containing the options when computing the multi-resolution SIFT-like
  * descriptors
  */
-struct TMultiResDescOptions : public mrpt::utils::CLoadableOptions
+struct TMultiResDescOptions : public mrpt::config::CLoadableOptions
 {
 	/** The size of the base patch */
 	uint32_t basePSize;
@@ -730,8 +728,7 @@ struct TMultiResDescOptions : public mrpt::utils::CLoadableOptions
 	void saveToConfigFile(
 		mrpt::config::CConfigFileBase& cfg,
 		const std::string& section) const override;  // See base docs
-	void dumpToTextStream(
-		mrpt::utils::CStream& out) const override;  // See base docs
+	void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
 };  // end TMultiResDescOptions
 
@@ -744,7 +741,7 @@ template <>
 struct TEnumTypeFiller<mrpt::vision::TFeatureType>
 {
 	typedef mrpt::vision::TFeatureType enum_t;
-	static void fill(bimap<enum_t, std::string>& m_map)
+	static void fill(mrpt::typemeta::internal::bimap<enum_t, std::string>& m_map)
 	{
 		using namespace mrpt::vision;
 		MRPT_FILL_ENUM(featNotDefined);
@@ -767,7 +764,7 @@ template <>
 struct TEnumTypeFiller<mrpt::vision::TDescriptorType>
 {
 	typedef mrpt::vision::TDescriptorType enum_t;
-	static void fill(bimap<enum_t, std::string>& m_map)
+	static void fill(mrpt::typemeta::internal::bimap<enum_t, std::string>& m_map)
 	{
 		using namespace mrpt::vision;
 		MRPT_FILL_ENUM(descAny);

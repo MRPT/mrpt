@@ -95,7 +95,7 @@ void CMetricMapBuilderICP::TConfigParams::loadFromConfigFile(
 	mapInitializers.loadFromConfigFile(source, section);
 }
 
-void CMetricMapBuilderICP::TConfigParams::dumpToTextStream(CStream& out) const
+void CMetricMapBuilderICP::TConfigParams::dumpToTextStream(std::ostream& out) const
 {
 	out << mrpt::format(
 		"\n----------- [CMetricMapBuilderICP::TConfigParams] ------------ "

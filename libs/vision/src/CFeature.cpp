@@ -10,22 +10,22 @@
 
 #include "vision-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/CTextFileLinesParser.h>
+#include <mrpt/io/CTextFileLinesParser.h>
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/io/CFileInputStream.h>
-#include <mrpt/utils/CStdOutStream.h>
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/vision/CFeature.h>
 #include <mrpt/vision/types.h>
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/math/data_utils.h>
 #include <mrpt/system/os.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::vision;
 using namespace mrpt::math;
 using namespace mrpt::system;
-using namespace mrpt::utils;
+using namespace mrpt::io;
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CFeature, CSerializable, mrpt::vision)
@@ -98,8 +98,7 @@ void TMultiResDescMatchOptions::saveToConfigFile(
 // --------------------------------------------------
 //			dumpToTextStream
 // --------------------------------------------------
-void TMultiResDescMatchOptions::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+void TMultiResDescMatchOptions::dumpToTextStream(std::ostream& out) const
 {
 	out << mrpt::format(
 		"\n----------- [vision::TMultiResDescMatchOptions] ------------ \n");
@@ -204,7 +203,7 @@ void TMultiResDescOptions::saveToConfigFile(
 // --------------------------------------------------
 //			dumpToTextStream
 // --------------------------------------------------
-void TMultiResDescOptions::dumpToTextStream(mrpt::utils::CStream& out) const
+void TMultiResDescOptions::dumpToTextStream(std::ostream& out) const
 {
 	out << mrpt::format("\n----------- [vision::TMultiResDescOptions] ------------ \n");
 	out << mrpt::format("Base patch size:                %d px\n", basePSize);
@@ -244,7 +243,7 @@ void TMultiResDescOptions::dumpToTextStream(mrpt::utils::CStream& out) const
 	out << mrpt::format("-------------------------------------------------------- \n");
 }  // end-dumpToTextStream
 
-void CFeature::dumpToTextStream(mrpt::utils::CStream& out) const
+void CFeature::dumpToTextStream(std::ostream& out) const
 {
 	out << mrpt::format("\n----------- [vision::CFeature] ------------ \n");
 	out << mrpt::format("Feature ID:                     %d\n", (int)ID);
@@ -380,29 +379,24 @@ void CFeature::dumpToTextStream(mrpt::utils::CStream& out) const
 
 void CFeature::dumpToConsole() const
 {
-	CStdOutStream myOut;
-	dumpToTextStream(myOut);
+	dumpToTextStream(std::cout);
 }
 
-uint8_t CFeature::serializeGetVersion() const { return XX; } void CFeature::serializeTo(mrpt::utils::CStream& out, int* version) const
+uint8_t CFeature::serializeGetVersion() const { return 2; }
+void CFeature::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 2;
-	else
-	{
-		// The coordinates:
-		out << x << y << ID << patch << patchSize << (uint32_t)type
-			<< (uint32_t)track_status << response << orientation << scale
-			<< user_flags << nTimesSeen << nTimesNotSeen << nTimesLastSeen
-			<< depth << initialDepth << p3D << multiScales << multiOrientations
-			<< multiHashCoeffs << descriptors.SIFT << descriptors.SURF
-			<< descriptors.SpinImg << descriptors.SpinImg_range_rows
-			<< descriptors.PolarImg << descriptors.LogPolarImg
-			<< descriptors.polarImgsNoRotation
-			<< descriptors.multiSIFTDescriptors << descriptors.ORB
-			//# ADDED by Raghavender Sahdev
-			<< descriptors.BLD << descriptors.LATCH;
-	}
+	// The coordinates:
+	out << x << y << ID << patch << patchSize << (uint32_t)type
+		<< (uint32_t)track_status << response << orientation << scale
+		<< user_flags << nTimesSeen << nTimesNotSeen << nTimesLastSeen
+		<< depth << initialDepth << p3D << multiScales << multiOrientations
+		<< multiHashCoeffs << descriptors.SIFT << descriptors.SURF
+		<< descriptors.SpinImg << descriptors.SpinImg_range_rows
+		<< descriptors.PolarImg << descriptors.LogPolarImg
+		<< descriptors.polarImgsNoRotation
+		<< descriptors.multiSIFTDescriptors << descriptors.ORB
+		//# ADDED by Raghavender Sahdev
+		<< descriptors.BLD << descriptors.LATCH;
 }
 
 void CFeature::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -495,8 +489,8 @@ bool CFeature::isPointFeature() const
 float CFeature::patchCorrelationTo(const CFeature& oFeature) const
 {
 	MRPT_START
-	ASSERT_(patch.getWidth() == oFeature.patch.getWidth();
-	ASSERT_(patch.getHeight() == oFeature.patch.getHeight();
+	ASSERT_(patch.getWidth() == oFeature.patch.getWidth());
+	ASSERT_(patch.getHeight() == oFeature.patch.getHeight());
 	ASSERT_(patch.getHeight() > 0 && patch.getWidth() > 0);
 	size_t x_max, y_max;
 	double max_val;
@@ -587,7 +581,7 @@ float CFeature::descriptorSIFTDistanceTo(
 	ASSERT_(this->descriptors.SIFT.size() == oFeature.descriptors.SIFT.size());
 	ASSERT_(
 		this->descriptors.hasDescriptorSIFT() &&
-		oFeature.descriptors.hasDescriptorSIFT())
+		oFeature.descriptors.hasDescriptorSIFT());
 
 	float dist = 0.0f;
 	std::vector<unsigned char>::const_iterator itDesc1, itDesc2;
@@ -612,7 +606,7 @@ float CFeature::descriptorSURFDistanceTo(
 	ASSERT_(this->descriptors.SURF.size() == oFeature.descriptors.SURF.size());
 	ASSERT_(
 		this->descriptors.hasDescriptorSURF() &&
-		oFeature.descriptors.hasDescriptorSURF())
+		oFeature.descriptors.hasDescriptorSURF());
 
 	float dist = 0.0f;
 	std::vector<float>::const_iterator itDesc1, itDesc2;
@@ -641,7 +635,7 @@ float CFeature::descriptorSpinImgDistanceTo(
 		oFeature.descriptors.SpinImg.size());
 	ASSERT_(
 		this->descriptors.hasDescriptorSpinImg() &&
-		oFeature.descriptors.hasDescriptorSpinImg())
+		oFeature.descriptors.hasDescriptorSpinImg());
 	ASSERT_(!this->descriptors.SpinImg.empty());
 	float dist = 0.0f;
 	std::vector<float>::const_iterator itDesc1, itDesc2;
@@ -785,15 +779,11 @@ float CFeature::descriptorPolarImgDistanceTo(
 {
 	MRPT_START
 
-	ASSERT_(
-		size(descriptors.PolarImg, 1) == oFeature.descriptors.PolarImg.rows())
-	ASSERT_(
-		size(descriptors.PolarImg, 2) == oFeature.descriptors.PolarImg.cols())
-	ASSERT_(
-		this->descriptors.hasDescriptorPolarImg() &&
-		oFeature.descriptors.hasDescriptorPolarImg())
-	ASSERT_(
-		size(descriptors.PolarImg, 1) > 1 && descriptors.PolarImg.cols() > 1)
+	ASSERT_(descriptors.PolarImg.rows() == oFeature.descriptors.PolarImg.rows());
+	ASSERT_(descriptors.PolarImg.cols() == oFeature.descriptors.PolarImg.cols());
+	ASSERT_(this->descriptors.hasDescriptorPolarImg() &&
+		oFeature.descriptors.hasDescriptorPolarImg());
+	ASSERT_(descriptors.PolarImg.rows() > 1 && descriptors.PolarImg.cols() > 1);
 
 	// Call the common method for computing these distances:
 	return internal_distanceBetweenPolarImages(
@@ -813,17 +803,17 @@ float CFeature::descriptorLogPolarImgDistanceTo(
 	MRPT_START
 
 	ASSERT_(
-		size(descriptors.LogPolarImg, 1) ==
-		size(oFeature.descriptors.LogPolarImg, 1))
+		descriptors.LogPolarImg.rows() ==
+		oFeature.descriptors.LogPolarImg.rows());
 	ASSERT_(
-		size(descriptors.LogPolarImg, 2) ==
-		size(oFeature.descriptors.LogPolarImg, 2))
+		descriptors.LogPolarImg.cols() ==
+		oFeature.descriptors.LogPolarImg.cols());
 	ASSERT_(
 		this->descriptors.hasDescriptorLogPolarImg() &&
-		oFeature.descriptors.hasDescriptorLogPolarImg())
+		oFeature.descriptors.hasDescriptorLogPolarImg());
 	ASSERT_(
-		size(descriptors.LogPolarImg, 1) > 1 &&
-		size(descriptors.LogPolarImg, 2) > 1)
+		descriptors.LogPolarImg.rows() > 1 &&
+		descriptors.LogPolarImg.cols() > 1);
 
 	// Call the common method for computing these distances:
 	return internal_distanceBetweenPolarImages(
@@ -840,7 +830,7 @@ uint8_t CFeature::descriptorORBDistanceTo(const CFeature& oFeature) const
 {
 	ASSERT_(
 		this->descriptors.hasDescriptorORB() &&
-		oFeature.descriptors.hasDescriptorORB())
+		oFeature.descriptors.hasDescriptorORB());
 	ASSERT_(this->descriptors.ORB.size() == oFeature.descriptors.ORB.size());
 	const std::vector<uint8_t>& t_desc = this->descriptors.ORB;
 	const std::vector<uint8_t>& o_desc = oFeature.descriptors.ORB;
@@ -871,7 +861,7 @@ float CFeature::descriptorBLDDistanceTo(
 	ASSERT_(this->descriptors.BLD.size() == oFeature.descriptors.BLD.size());
 	ASSERT_(
 		this->descriptors.hasDescriptorBLD() &&
-		oFeature.descriptors.hasDescriptorBLD())
+		oFeature.descriptors.hasDescriptorBLD());
 
 	float dist = 0.0f;
 	std::vector<unsigned char>::const_iterator itDesc1, itDesc2;
@@ -897,7 +887,7 @@ float CFeature::descriptorLATCHDistanceTo(
 		this->descriptors.LATCH.size() == oFeature.descriptors.LATCH.size());
 	ASSERT_(
 		this->descriptors.hasDescriptorLATCH() &&
-		oFeature.descriptors.hasDescriptorLATCH())
+		oFeature.descriptors.hasDescriptorLATCH());
 
 	float dist = 0.0f;
 	std::vector<unsigned char>::const_iterator itDesc1, itDesc2;
@@ -1111,7 +1101,7 @@ void CFeatureList::loadFromTextFile(const std::string& filename)
 {
 	MRPT_START
 
-	mrpt::utils::CTextFileLinesParser parser(filename);
+	mrpt::io::CTextFileLinesParser parser(filename);
 	std::istringstream line;
 
 	while (parser.getNextLine(line))
@@ -1321,7 +1311,7 @@ CFeature::Ptr CFeatureList::nearest(
 TFeatureID CFeatureList::getMaxID() const
 {
 	MRPT_START
-	ASSERT_(!empty();
+	ASSERT_(!empty());
 	vision::TFeatureID maxID = (*begin())->ID;
 	for (CFeatureList::const_iterator itList = begin(); itList != end();
 		 itList++)
