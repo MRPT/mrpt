@@ -33,6 +33,8 @@ using namespace mrpt::obs;
 using namespace mrpt::math;
 using namespace mrpt::poses;
 using namespace mrpt::system;
+using namespace mrpt::tfest;
+using namespace mrpt::config;
 using namespace mrpt::topography;
 
 template <class T>
@@ -177,8 +179,8 @@ void mrpt::topography::path_from_rtk_gps(
 						if (GPS_local_coords_on_vehicle.find(
 								obs->sensorLabel) ==
 							GPS_local_coords_on_vehicle.end())
-							GPS_local_coords_on_vehicle[obs->sensorLabel] =
-								TPoint3D(obs->sensorPose);
+							GPS_local_coords_on_vehicle[obs->sensorLabel] = 
+								TPoint3D(obs->sensorPose.asTPose());
 
 						// map<string, map<TTimeStamp,TPoint3D> >	gps_paths;
 						// //
