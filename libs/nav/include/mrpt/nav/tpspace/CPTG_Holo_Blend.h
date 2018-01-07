@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
-#include <mrpt/math/CRuntimeCompiledExpression.h>
+#include <mrpt/expr/CRuntimeCompiledExpression.h>
 
 namespace mrpt
 {
@@ -87,7 +87,7 @@ class CPTG_Holo_Blend : public CPTG_RobotShape_Circular
 	mutable std::vector<int> m_pathStepCountCache;
 
 	// Compilation of user-given expressions
-	mrpt::math::CRuntimeCompiledExpression m_expr_v, m_expr_w, m_expr_T_ramp;
+	mrpt::expr::CRuntimeCompiledExpression m_expr_v, m_expr_w, m_expr_T_ramp;
 	double m_expr_dir;  // Used as symbol "dir" in m_expr_v and m_expr_w
 
 	/** Evals expr_v */

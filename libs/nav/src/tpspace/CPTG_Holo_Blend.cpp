@@ -15,6 +15,7 @@
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/math/poly_roots.h>
 #include <mrpt/kinematics/CVehicleVelCmd_Holo.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::nav;
 using namespace mrpt::system;
@@ -294,15 +295,9 @@ void CPTG_Holo_Blend::serializeFrom(mrpt::serialization::CArchive& in, uint8_t v
 	};
 }
 
-uint8_t CPTG_Holo_Blend::serializeGetVersion() const { return XX; }
+uint8_t CPTG_Holo_Blend::serializeGetVersion() const { return 4; }
 void CPTG_Holo_Blend::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-	{
-		*version = 4;
-		return;
-	}
-
 	CParameterizedTrajectoryGenerator::internal_writeToStream(out);
 	CPTG_RobotShape_Circular::internal_shape_saveToStream(out);
 

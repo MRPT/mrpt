@@ -14,6 +14,7 @@
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/graphs/TNodeID.h>
 #include <string>
 #include <cstdlib>  // size_t
 

@@ -103,15 +103,11 @@ void CHolonomicVFF::navigate(const NavInput& ni, NavOutput& no)
 	}
 }
 
-uint8_t CHolonomicVFF::serializeGetVersion() const { return XX; } void CHolonomicVFF::serializeTo(mrpt::serialization::CArchive& out, int* version) const
+uint8_t CHolonomicVFF::serializeGetVersion() const { return 0; }
+void CHolonomicVFF::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		out << options.TARGET_ATTRACTIVE_FORCE
-			<< options.TARGET_SLOW_APPROACHING_DISTANCE;
-	}
+	out << options.TARGET_ATTRACTIVE_FORCE
+		<< options.TARGET_SLOW_APPROACHING_DISTANCE;
 }
 void CHolonomicVFF::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
@@ -128,25 +124,11 @@ void CHolonomicVFF::serializeFrom(mrpt::serialization::CArchive& in, uint8_t ver
 	};
 }
 
-/*---------------------------------------------------------------
-					writeToStream
-	Implements the writing to a CStream capability of
-	  CSerializable objects
-  ---------------------------------------------------------------*/
-uint8_t CLogFileRecord_VFF::serializeGetVersion() const { return XX; }
+uint8_t CLogFileRecord_VFF::serializeGetVersion() const { return 0; }
 void CLogFileRecord_VFF::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	MRPT_UNUSED_PARAM(out);
-	if (version)
-		*version = 0;
-	else
-	{
-	}
 }
 
-/*---------------------------------------------------------------
-					readFromStream
-  ---------------------------------------------------------------*/
 void CLogFileRecord_VFF::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	MRPT_UNUSED_PARAM(in);

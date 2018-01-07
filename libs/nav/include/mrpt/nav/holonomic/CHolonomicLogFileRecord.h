@@ -24,7 +24,7 @@ namespace nav
  *
  * \sa CReactiveNavigationSystem, CHolonomicLogFileRecord
  */
-class CHolonomicLogFileRecord : public utils::CSerializable
+class CHolonomicLogFileRecord : public mrpt::serialization::CSerializable
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CHolonomicLogFileRecord)
    public:

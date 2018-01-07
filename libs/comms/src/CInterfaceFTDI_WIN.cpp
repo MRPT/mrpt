@@ -176,27 +176,8 @@ CInterfaceFTDI::~CInterfaceFTDI()
 	}
 }
 
-/** This object cannot be copied */
-CInterfaceFTDI::CInterfaceFTDI(const CInterfaceFTDI& o) : m_readBuffer(4096)
-{
-	MRPT_START
-	THROW_EXCEPTION("This object cannot be copied");
-	MRPT_END
-}
-CInterfaceFTDI& CInterfaceFTDI::operator=(const CInterfaceFTDI& o)
-{
-	MRPT_START
-	THROW_EXCEPTION("This object cannot be copied");
-	MRPT_END
-}
-
-/*-------------------------------------------------------------
-					isOpen
--------------------------------------------------------------*/
 bool CInterfaceFTDI::isOpen() { return m_ftHandle != 0; }
-/*-------------------------------------------------------------
-					loadDriver
--------------------------------------------------------------*/
+
 void CInterfaceFTDI::loadDriver()
 {
 	MRPT_START

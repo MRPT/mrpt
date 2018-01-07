@@ -39,8 +39,8 @@ void PlannerSimple2D::computePath(
 #define CELL_OBSTACLE 0xFFFF
 #define CELL_TARGET 0xFFFE
 
-	const TPoint2D origin = TPoint2D(origin_);
-	const TPoint2D target = TPoint2D(target_);
+	const TPoint2D origin = TPoint2D(origin_.asTPose());
+	const TPoint2D target = TPoint2D(target_.asTPose());
 
 	std::vector<uint16_t> grid;
 	int size_x, size_y, i, n, m;
@@ -494,7 +494,7 @@ void PlannerSimple2D::computePath(
 			minStepInReturnedPath)
 		{
 			// Add to the path:
-			path.push_back(CPoint2D(xx, yy));
+			path.push_back(TPoint2D(xx, yy));
 
 			// For the next iteration:
 			last_xx = xx;
@@ -503,7 +503,7 @@ void PlannerSimple2D::computePath(
 	}
 
 	// Add the target point:
-	path.push_back(CPoint2D(target.x, target.y));
+	path.push_back(TPoint2D(target.x, target.y));
 
 	// That's all!! :-)
 }

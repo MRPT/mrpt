@@ -24,7 +24,7 @@ CParameterizedTrajectoryGenerator* CParameterizedTrajectoryGenerator::CreatePTG(
 {
 	MRPT_START
 
-	mrpt::utils::registerAllPendingClasses();
+	mrpt::rtti::registerAllPendingClasses();
 
 	// Special names for backwards compatibility with MRPT < 1.5.0
 	std::string ptgClassName = mrpt::system::trim(ptgClassName_);

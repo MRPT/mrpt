@@ -34,10 +34,10 @@ struct TCPoint
 	float x, y, phi, t, dist, v, w;
 };
 typedef std::vector<TCPoint> TCPointVector;
-mrpt::utils::CStream& operator<<(
-	mrpt::utils::CStream& o, const mrpt::nav::TCPoint& p);
-mrpt::utils::CStream& operator>>(
-	mrpt::utils::CStream& i, mrpt::nav::TCPoint& p);
+mrpt::serialization::CArchive& operator<<(
+	mrpt::serialization::CArchive& o, const mrpt::nav::TCPoint& p);
+mrpt::serialization::CArchive& operator>>(
+	mrpt::serialization::CArchive& i, mrpt::nav::TCPoint& p);
 
 /** Base class for all PTGs suitable to non-holonomic, differentially-driven (or
  * Ackermann) vehicles
@@ -146,8 +146,8 @@ class CPTG_DiffDrive_CollisionGridBased : public CPTG_RobotShape_Polygonal
 	double m_resolution;
 	double m_stepTimeDuration;
 
-	void internal_readFromStream(mrpt::utils::CStream& in) override;
-	void internal_writeToStream(mrpt::utils::CStream& out) const override;
+	void internal_readFromStream(mrpt::serialization::CArchive& in) override;
+	void internal_writeToStream(mrpt::serialization::CArchive& out) const override;
 
 	/** Numerically solve the diferential equations to generate a family of
 	 * trajectories */
@@ -182,11 +182,11 @@ class CPTG_DiffDrive_CollisionGridBased : public CPTG_RobotShape_Polygonal
 		virtual ~CCollisionGrid() {}
 		/** Save to file, true = OK */
 		bool saveToFile(
-			mrpt::utils::CStream* fil,
+			mrpt::serialization::CArchive* fil,
 			const mrpt::math::CPolygon& computed_robotShape) const;
 		/** Load from file,  true = OK */
 		bool loadFromFile(
-			mrpt::utils::CStream* fil,
+			mrpt::serialization::CArchive* fil,
 			const mrpt::math::CPolygon& current_robotShape);
 
 		/** For an obstacle (x,y), returns a vector with all the pairs (a,d)

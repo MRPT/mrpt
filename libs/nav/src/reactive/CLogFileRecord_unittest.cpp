@@ -10,10 +10,13 @@
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/nav/reactive/CLogFileRecord.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/serialization/CArchive.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
 using namespace mrpt::nav;
+using namespace mrpt::io;
+using namespace mrpt::serialization;
 using namespace std;
 
 // Defined in tests/test_main.cpp
@@ -35,16 +38,17 @@ TEST(NavTests, Serialization_WriteReadToMem)
 		try
 		{
 			CMemoryStream buf;
+			auto arch = archiveFrom(buf);
 			{
 				CSerializable* o =
 					static_cast<CSerializable*>(lstClasses[i]->createObject());
-				buf << *o;
+				arch << *o;
 				delete o;
 			}
 
 			CSerializable::Ptr recons;
 			buf.Seek(0);
-			buf >> recons;
+			arch >> recons;
 		}
 		catch (std::exception& e)
 		{
@@ -66,12 +70,12 @@ TEST(SerializeTestObs, WriteReadToOctectVectors)
 			{
 				CSerializable* o =
 					static_cast<CSerializable*>(lstClasses[i]->createObject());
-				mrpt::utils::ObjectToOctetVector(o, buf);
+				mrpt::serialization::ObjectToOctetVector(o, buf);
 				delete o;
 			}
 
 			CSerializable::Ptr recons;
-			mrpt::utils::OctetVectorToObject(buf, recons);
+			mrpt::serialization::OctetVectorToObject(buf, recons);
 		}
 		catch (std::exception& e)
 		{
@@ -96,13 +100,14 @@ TEST(NavTests, NavLogLoadFromTestFile)
 	}
 
 	CFileGZInputStream f(navlog_file);
+	auto arch = archiveFrom(f);
 
 	try
 	{
 		for (int i = 0; i < 2; i++)
 		{
 			mrpt::nav::CLogFileRecord lfr;
-			f.ReadObject(&lfr);
+			arch.ReadObject(&lfr);
 		}
 	}
 	catch (std::exception& e)

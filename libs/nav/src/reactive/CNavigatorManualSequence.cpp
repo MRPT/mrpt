@@ -36,7 +36,7 @@ void CNavigatorManualSequence::loadConfigFile(
 	const std::string s = "CNavigatorManualSequence";
 
 	programmed_orders.clear();
-	mrpt::std::vector<std::string> lstKeys;
+	std::vector<std::string> lstKeys;
 	c.getAllKeys(s, lstKeys);
 
 	for (size_t i = 0; i < lstKeys.size(); i++)
@@ -79,7 +79,7 @@ void CNavigatorManualSequence::loadConfigFile(
 
 void CNavigatorManualSequence::initialize()
 {
-	ASSERT_(!programmed_orders.empty();
+	ASSERT_(!programmed_orders.empty());
 	m_robot.resetNavigationTimer();
 }
 

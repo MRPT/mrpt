@@ -354,7 +354,7 @@ void CHolonomicND::searchBestGap(
 		// unsigned int dist;
 		// for ( unsigned int i=0;i<in_gaps.size();i++ )
 		//{
-		//	dist = mrpt::utils::abs_diff(target_sector,
+		//	dist = mrpt::abs_diff(target_sector,
 		// in_gaps[i].representative_sector );
 		//	if (dist > 0.5*obstacles.size())
 		//		dist = obstacles.size() - dist;
@@ -473,8 +473,8 @@ void CHolonomicND::calcRepresentativeSectorForGap(
 	else  // Select a sector close to the target but spaced
 	// "sectors_to_be_wide/2" from it
 	{
-		unsigned int dist_ini = mrpt::utils::abs_diff(target_sector, gap.ini);
-		unsigned int dist_end = mrpt::utils::abs_diff(target_sector, gap.end);
+		unsigned int dist_ini = mrpt::abs_diff(target_sector, gap.ini);
+		unsigned int dist_end = mrpt::abs_diff(target_sector, gap.end);
 
 		if (dist_ini > 0.5 * obstacles.size())
 			dist_ini = obstacles.size() - dist_ini;
@@ -541,7 +541,7 @@ void CHolonomicND::evaluateGaps(
 		meanDist /= (gap->end - gap->ini + 1);
 
 		double factor1;
-		if (mrpt::utils::abs_diff(gap->representative_sector, target_sector) <=
+		if (mrpt::abs_diff(gap->representative_sector, target_sector) <=
 				1 &&
 			target_dist < 1)
 			factor1 = std::min(target_dist, meanDist) / target_dist;
@@ -551,7 +551,7 @@ void CHolonomicND::evaluateGaps(
 		// Factor #2: Distance to target in "sectors"
 		// -------------------------------------------
 		unsigned int dif =
-			mrpt::utils::abs_diff(target_sector, gap->representative_sector);
+			mrpt::abs_diff(target_sector, gap->representative_sector);
 
 		// Handle the -PI,PI circular topology:
 		if (dif > 0.5 * obstacles.size()) dif = obstacles.size() - dif;
@@ -578,7 +578,7 @@ void CHolonomicND::evaluateGaps(
 
 		if (m_last_selected_sector != std::numeric_limits<unsigned int>::max())
 		{
-			unsigned int dist = mrpt::utils::abs_diff(
+			unsigned int dist = mrpt::abs_diff(
 				m_last_selected_sector, gap->representative_sector);
 
 			if (dist > unsigned(0.1 * obstacles.size()))
@@ -616,27 +616,14 @@ unsigned int CHolonomicND::direction2sector(
 		return static_cast<unsigned int>(idx);
 }
 
-/*---------------------------------------------------------------
-					writeToStream
-	Implements the writing to a CStream capability of
-	  CSerializable objects
-  ---------------------------------------------------------------*/
-uint8_t CLogFileRecord_ND::serializeGetVersion() const { return XX; }
+uint8_t CLogFileRecord_ND::serializeGetVersion() const { return 1; }
 void CLogFileRecord_ND::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		out << gaps_ini << gaps_end << gaps_eval;
-		out << selectedSector << evaluation << riskEvaluation
-			<< (uint32_t)situation;
-	}
+	out << gaps_ini << gaps_end << gaps_eval;
+	out << selectedSector << evaluation << riskEvaluation
+		<< (uint32_t)situation;
 }
 
-/*---------------------------------------------------------------
-					readFromStream
-  ---------------------------------------------------------------*/
 void CLogFileRecord_ND::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
@@ -715,8 +702,8 @@ void CHolonomicND::TOptions::saveToConfigFile(
 	mrpt::config::CConfigFileBase& c, const std::string& s) const
 {
 	MRPT_START;
-	const int WN = mrpt::utils::MRPT_SAVE_NAME_PADDING(),
-			  WV = mrpt::utils::MRPT_SAVE_VALUE_PADDING();
+	const int WN = mrpt::config::MRPT_SAVE_NAME_PADDING(),
+			  WV = mrpt::config::MRPT_SAVE_VALUE_PADDING();
 
 	MRPT_SAVE_CONFIG_VAR_COMMENT(WIDE_GAP_SIZE_PERCENT, "");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(MAX_SECTOR_DIST_FOR_D2_PERCENT, "");
@@ -727,7 +714,7 @@ void CHolonomicND::TOptions::saveToConfigFile(
 	MRPT_SAVE_CONFIG_VAR_COMMENT(
 		TARGET_SLOW_APPROACHING_DISTANCE, "In normalized ps-meters");
 
-	ASSERT_EQUAL_(factorWeights.size(), 4)
+	ASSERT_EQUAL_(factorWeights.size(), 4);
 	c.write(
 		s, "factorWeights",
 		mrpt::format(
@@ -740,21 +727,17 @@ void CHolonomicND::TOptions::saveToConfigFile(
 	MRPT_END
 }
 
-uint8_t CHolonomicND::serializeGetVersion() const { return XX; } void CHolonomicND::serializeTo(mrpt::serialization::CArchive& out, int* version) const
+uint8_t CHolonomicND::serializeGetVersion() const { return 0; }
+void CHolonomicND::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		// Params:
-		out << options.factorWeights << options.MAX_SECTOR_DIST_FOR_D2_PERCENT
-			<< options.RISK_EVALUATION_DISTANCE
-			<< options.RISK_EVALUATION_SECTORS_PERCENT
-			<< options.TARGET_SLOW_APPROACHING_DISTANCE
-			<< options.TOO_CLOSE_OBSTACLE << options.WIDE_GAP_SIZE_PERCENT;
-		// State:
-		out << m_last_selected_sector;
-	}
+	// Params:
+	out << options.factorWeights << options.MAX_SECTOR_DIST_FOR_D2_PERCENT
+		<< options.RISK_EVALUATION_DISTANCE
+		<< options.RISK_EVALUATION_SECTORS_PERCENT
+		<< options.TARGET_SLOW_APPROACHING_DISTANCE
+		<< options.TOO_CLOSE_OBSTACLE << options.WIDE_GAP_SIZE_PERCENT;
+	// State:
+	out << m_last_selected_sector;
 }
 void CHolonomicND::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {

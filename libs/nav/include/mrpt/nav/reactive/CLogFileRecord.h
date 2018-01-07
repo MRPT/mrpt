@@ -13,6 +13,7 @@
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/system/TParameters.h>
+#include <mrpt/core/aligned_std_vector.h>
 
 #include <mrpt/nav/holonomic/CHolonomicLogFileRecord.h>
 #include <mrpt/nav/holonomic/ClearanceDiagram.h>

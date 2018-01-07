@@ -241,7 +241,7 @@ evaluation of mathematical expressions, under `<mrpt/otherlibs/exprtk.hpp>`
 			- New function mrpt::rtti::getAllRegisteredClassesChildrenOf()
 			- Safer CClassRegistry: detect and warn on attempts to duplicated
 class registration.
-			- New class mrpt::math::CRuntimeCompiledExpression
+			- New class mrpt::expr::CRuntimeCompiledExpression
 			- mrpt::config::CConfigFile and mrpt::config::CConfigFileMemory now
 can parse config files with end-of-line backslash to split long strings into
 several lines.

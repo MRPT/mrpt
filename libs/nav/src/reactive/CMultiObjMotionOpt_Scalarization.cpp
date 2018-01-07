@@ -25,7 +25,7 @@ CMultiObjMotionOpt_Scalarization::CMultiObjMotionOpt_Scalarization()
 void CMultiObjMotionOpt_Scalarization::clear()
 {
 	CMultiObjectiveMotionOptimizerBase::clear();
-	m_expr_scalar_formula = mrpt::math::CRuntimeCompiledExpression();
+	m_expr_scalar_formula = mrpt::expr::CRuntimeCompiledExpression();
 	m_expr_scalar_vars.clear();
 }
 
@@ -72,7 +72,7 @@ int CMultiObjMotionOpt_Scalarization::impl_decide(
 		}
 
 		// formula:
-		m_expr_scalar_formula = mrpt::math::CRuntimeCompiledExpression();
+		m_expr_scalar_formula = mrpt::expr::CRuntimeCompiledExpression();
 		// Compile user-given expressions:
 		try
 		{

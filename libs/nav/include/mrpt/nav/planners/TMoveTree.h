@@ -45,8 +45,8 @@ struct PoseDistanceMetric;
 *      - 21/JAN/2015: Refactoring (JLBC)
 */
 template <class NODE_TYPE_DATA, class EDGE_TYPE,
-		  class MAPS_IMPLEMENTATION = mrpt::utils::
-			  map_traits_map_as_vector  // Use std::map<> vs. std::vector<>
+		  class MAPS_IMPLEMENTATION = mrpt::containers::map_traits_map_as_vector
+			/* Use std::map<> vs. std::vector<>*/
 		  >
 class TMoveTree : public mrpt::graphs::CDirectedTree<EDGE_TYPE>
 {

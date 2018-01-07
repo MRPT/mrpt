@@ -53,7 +53,7 @@ CAbstractHolonomicReactiveMethod::Ptr CAbstractHolonomicReactiveMethod::Factory(
 {
 	try
 	{
-		mrpt::utils::registerAllPendingClasses();
+		mrpt::rtti::registerAllPendingClasses();
 
 		// Factory:
 		const mrpt::rtti::TRuntimeClassId* classId =
