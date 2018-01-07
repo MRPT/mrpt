@@ -1286,10 +1286,7 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
 				p.yaw, p.pitch, p.roll);
 
 			// The uncertainty, if available:
-			mrpt::aligned_containers<
-				mrpt::system::TTimeStamp,
-				mrpt::math::CMatrixDouble66>::map_t::const_iterator Wit =
-				rtk_path_info.vehicle_uncertainty.find(i->first);
+			auto Wit = rtk_path_info.vehicle_uncertainty.find(i->first);
 			if (Wit != rtk_path_info.vehicle_uncertainty.end())
 			{
 				const CMatrixDouble66& C = Wit->second;

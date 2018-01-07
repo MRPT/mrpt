@@ -37,7 +37,7 @@ CICPCriteriaERD<GRAPH_T>::CICPCriteriaERD()
 
 	this->m_last_total_num_nodes = 2;
 
-	this->logFmt(LVL_DEBUG, "Initialized class object");
+	MRPT_LOG_DEBUG("Initialized class object");
 
 	MRPT_END;
 }
@@ -66,7 +66,7 @@ bool CICPCriteriaERD<GRAPH_T>::updateState(
 	{
 		registered_new_node = true;
 		this->m_last_total_num_nodes = this->m_graph->nodeCount();
-		this->logFmt(LVL_DEBUG, "New node has been registered!");
+		MRPT_LOG_DEBUG("New node has been registered!");
 	}
 
 	if (observation)
@@ -104,17 +104,13 @@ bool CICPCriteriaERD<GRAPH_T>::updateState(
 			{
 				this->m_nodes_to_laser_scans2D[this->m_graph->nodeCount() - 1] =
 					m_last_laser_scan2D;
-				this->logFmt(
-					LVL_DEBUG, "Added laser scans of nodeID: %lu",
-					this->m_graph->nodeCount() - 1);
+				MRPT_LOG_DEBUG_STREAM("Added laser scans of nodeID: " << m_graph->nodeCount() - 1);
 			}
 			if (m_last_laser_scan3D)
 			{
 				m_nodes_to_laser_scans3D[this->m_graph->nodeCount() - 1] =
 					m_last_laser_scan3D;
-				this->logFmt(
-					LVL_DEBUG, "Added laser scans of nodeID: %lu",
-					this->m_graph->nodeCount() - 1);
+				MRPT_LOG_DEBUG_STREAM("Added laser scans of nodeID: " << m_graph->nodeCount() - 1);
 			}
 		}
 	}
@@ -138,8 +134,7 @@ bool CICPCriteriaERD<GRAPH_T>::updateState(
 		this->getNearbyNodesOf(
 			&nodes_to_check_ICP, this->m_graph->nodeCount() - 1,
 			params.ICP_max_distance);
-		this->logFmt(
-			LVL_DEBUG, "Found * %lu * nodes close to nodeID %lu",
+		MRPT_LOG_DEBUG_FMT("Found * %lu * nodes close to nodeID %lu",
 			nodes_to_check_ICP.size(), this->m_graph->nodeCount() - 1);
 
 		// reset the loop_closure flag and run registration
@@ -329,7 +324,7 @@ void CICPCriteriaERD<GRAPH_T>::getNearbyNodesOf(
 	if (distance > 0)
 	{
 		// check all but the last node.
-		for (TNodeID nodeID = 0; nodeID < this->m_graph->nodeCount() - 1;
+		for (mrpt::graphs::TNodeID nodeID = 0; nodeID < this->m_graph->nodeCount() - 1;
 			 ++nodeID)
 		{
 			double curr_distance = this->m_graph->nodes[nodeID].distanceTo(
@@ -549,8 +544,7 @@ void CICPCriteriaERD<GRAPH_T>::dumpVisibilityErrorMsg(
 	MRPT_START;
 		using namespace mrpt;
 
-	this->logFmt(
-		LVL_ERROR,
+	MRPT_LOG_ERROR_FMT(
 		"Cannot toggle visibility of specified object.\n "
 		"Make sure that the corresponding visualization flag ( %s "
 		") is set to true in the .ini file.\n",
@@ -564,17 +558,17 @@ template <class GRAPH_T>
 void CICPCriteriaERD<GRAPH_T>::loadParams(const std::string& source_fname)
 {
 	MRPT_START;
-		parent_t::loadParams(source_fname);
+	parent_t::loadParams(source_fname);
 
 	params.loadFromConfigFileName(
 		source_fname, "EdgeRegistrationDeciderParameters");
-	this->logFmt(LVL_DEBUG, "Successfully loaded parameters. ");
+	MRPT_LOG_DEBUG("Successfully loaded parameters. ");
 
 	// set the logging level if given by the user
-	CConfigFile source(source_fname);
+	mrpt::config::CConfigFile source(source_fname);
 	int min_verbosity_level = source.read_int(
 		"EdgeRegistrationDeciderParameters", "class_verbosity", 1, false);
-	this->setMinLoggingLevel(VerbosityLevel(min_verbosity_level));
+	this->setMinLoggingLevel(mrpt::system::VerbosityLevel(min_verbosity_level));
 
 	MRPT_END;
 }

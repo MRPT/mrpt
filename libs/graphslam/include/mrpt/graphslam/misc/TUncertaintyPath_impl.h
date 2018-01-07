@@ -188,7 +188,8 @@ void TUncertaintyPath<GRAPH_T>::getAsString(std::string* str) const
 	using namespace mrpt;
 	using namespace mrpt::poses;
 	using namespace std;
-		using namespace mrpt::math;
+	using namespace mrpt::math;
+	using namespace mrpt::containers;
 
 	stringstream ss;
 	string header_sep(30, '=');

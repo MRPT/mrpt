@@ -72,13 +72,16 @@ class CDirectedGraph
 	{
 		// Replicate possible constructors:
 		inline edge_t() : TYPE_EDGES() {}
-		template <typename ARG1>
-		inline edge_t(const ARG1& a1) : TYPE_EDGES(a1)
+		template <typename... Args>
+		inline edge_t(Args&&... a) : TYPE_EDGES(std::forward<Args>(a)...)
 		{
 		}
-		template <typename ARG1, typename ARG2>
-		inline edge_t(const ARG1& a1, const ARG2& a2) : TYPE_EDGES(a1, a2)
+		constexpr static auto getClassName()
 		{
+			using namespace mrpt::typemeta;
+			return literal("edge_t<") +
+				TTypeName<TYPE_EDGES>::get() + literal(",") +
+				TTypeName<EDGE_ANNOTATIONS>::get() + literal(">");
 		}
 	};
 

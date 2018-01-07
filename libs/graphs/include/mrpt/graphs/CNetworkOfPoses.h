@@ -147,6 +147,16 @@ class CNetworkOfPoses
 	 * "edge" value) */
 	typedef typename CPOSE::type_value constraint_no_pdf_t;
 
+	constexpr static auto getClassName()
+	{
+		using namespace mrpt::typemeta;
+		return literal("mrpt::graphs::CNetworkOfPoses<") +
+			TTypeName<CPOSE>::get() + literal(",") +
+			TTypeName<MAPS_IMPLEMENTATION>::get() + literal(",") +
+			TTypeName<NODE_ANNOTATIONS>::get() + literal(",") +
+			TTypeName<EDGE_ANNOTATIONS>::get() + literal(">");
+	}
+
 	/** The type of each global pose in \a nodes: an extension of the \a
 	 * constraint_no_pdf_t pose with any optional user-defined data
 	 */
@@ -155,6 +165,14 @@ class CNetworkOfPoses
 		typedef typename CNetworkOfPoses<
 			CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 			EDGE_ANNOTATIONS>::global_pose_t self_t;
+
+		constexpr static auto getClassName()
+		{
+			using namespace mrpt::typemeta;
+			return literal("global_pose_t<") +
+				TTypeName<constraint_no_pdf_t>::get() + literal(",") +
+				TTypeName<NODE_ANNOTATIONS>::get() + literal(">");
+		}
 
 		/**\brief Potential class constructors
 		 */
@@ -1026,23 +1044,6 @@ typedef CNetworkOfPoses<
 // Specialization of TTypeName must occur in the same namespace:
 namespace typemeta
 {
-// Extensions to mrpt::typemeta::TTypeName for matrices:
-template <
-	class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
-	class EDGE_ANNOTATIONS>
-struct TTypeName<mrpt::graphs::CNetworkOfPoses<
-	CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>>
-{
-	static std::string get()
-	{
-		return std::string("mrpt::graphs::CNetworkOfPoses<") +
-			   TTypeName<CPOSE>::get() + std::string(",") +
-			   TTypeName<MAPS_IMPLEMENTATION>::get() + std::string(",") +
-			   TTypeName<NODE_ANNOTATIONS>::get() + std::string(",") +
-			   TTypeName<EDGE_ANNOTATIONS>::get() + std::string(">");
-	}
-};
-
 MRPT_DECLARE_TTYPENAME(mrpt::containers::map_traits_stdmap)
 MRPT_DECLARE_TTYPENAME(mrpt::containers::map_traits_map_as_vector)
 }  // namespace typemeta

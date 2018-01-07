@@ -152,28 +152,6 @@ T str2num(std::string const& value)
 	return output;
 }
 
-/** @brief Convert number instance (or any other common types) to string */
-template <typename T>
-inline std::string num2str(T value)
-{
-	return std::to_string(value);
-}
-template <>
-inline std::string num2str<bool>(bool value)
-{
-	return value ? "true" : "false";
-}
-template <>
-inline std::string num2str<std::string>(std::string value)
-{
-	return value;
-}
-template <>
-inline std::string num2str<const char*>(const char* value)
-{
-	return value;
-}
-
 /**\}*/
 
 /** @} */

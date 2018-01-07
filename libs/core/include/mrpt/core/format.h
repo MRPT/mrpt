@@ -20,4 +20,16 @@ namespace mrpt
   *  You can call this to obtain a std::string using printf-like syntax.
   */
 std::string format(const char* fmt, ...) MRPT_printf_format_check(1, 2);
+
+/** Just like std::to_string(), but with an overloaded version
+* for std::string arguments. */
+template <typename T>
+std::string to_string(T v) { return std::to_string(v); }
+template <>
+inline std::string to_string<>(std::string v) { return v; }
+template <>
+inline std::string to_string<>(bool v) { return v ? "true" : "false"; }
+template <>
+inline std::string to_string<>(const char*s) { return std::string(s); }
+
 }

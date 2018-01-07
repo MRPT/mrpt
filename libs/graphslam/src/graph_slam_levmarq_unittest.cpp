@@ -36,7 +36,7 @@ class GraphSlamLevMarqTester : public GraphSlamLevMarqTest<my_graph_t>,
 		// ----------------------------
 		//  Run graph slam:
 		// ----------------------------
-		TParametersDouble params;
+		mrpt::system::TParametersDouble params;
 		// params["verbose"]  = 1;
 		// params["profiler"] = 1;
 		params["max_iterations"] = 1000;
@@ -59,12 +59,12 @@ class GraphSlamLevMarqTester : public GraphSlamLevMarqTest<my_graph_t>,
 
 		// binary dump:
 		mrpt::io::CMemoryStream mem;
-		mem << graph;
+		mrpt::serialization::archiveFrom(mem) << graph;
 
 		{
 			my_graph_t read_graph;
 			mem.Seek(0);
-			mem >> read_graph;
+			mrpt::serialization::archiveFrom(mem) >> read_graph;
 
 			EXPECT_EQ(read_graph.edges.size(), graph.edges.size());
 			EXPECT_EQ(read_graph.nodes.size(), graph.nodes.size());

@@ -12,6 +12,7 @@
 #include <mrpt/graphslam/types.h>
 #include <mrpt/system/TParameters.h>
 #include <mrpt/containers/stl_containers_utils.h>  // find_in_vector()
+#include <mrpt/core/aligned_std_map.h>
 #include <mrpt/graphslam/levmarq_impl.h>  // Aux classes
 
 #include <iterator>  // ostream_iterator
@@ -88,7 +89,8 @@ void optimize_graph_spa_levmarq(
 	using namespace mrpt::poses;
 	using namespace mrpt::graphslam;
 	using namespace mrpt::math;
-		using namespace std;
+	using mrpt::graphs::TNodeID;
+	using namespace std;
 
 	MRPT_START
 
@@ -173,18 +175,16 @@ void optimize_graph_spa_levmarq(
 	for (typename gst::edge_const_iterator it = graph.edges.begin();
 		 it != graph.edges.end(); ++it)
 	{
-		const TPairNodeIDs& ids = it->first;
-		const typename gst::graph_t::edge_t& edge = it->second;
+		const auto& ids = it->first;
+		const auto& edge = it->second;
 
 		if (nodes_to_optimize->find(ids.first) == nodes_to_optimize->end() &&
 			nodes_to_optimize->find(ids.second) == nodes_to_optimize->end())
 			continue;  // Skip this edge, none of the IDs are free variables.
 
 		// get the current global poses of both nodes in this constraint:
-		typename gst::graph_t::global_poses_t::iterator itP1 =
-			graph.nodes.find(ids.first);
-		typename gst::graph_t::global_poses_t::iterator itP2 =
-			graph.nodes.find(ids.second);
+		auto itP1 = graph.nodes.find(ids.first);
+		auto itP2 = graph.nodes.find(ids.second);
 		ASSERTDEBMSG_(
 			itP1 != graph.nodes.end(),
 			"Node1 in an edge does not have a global pose in 'graph.nodes'.")
@@ -192,8 +192,7 @@ void optimize_graph_spa_levmarq(
 			itP2 != graph.nodes.end(),
 			"Node2 in an edge does not have a global pose in 'graph.nodes'.")
 
-		const typename gst::graph_t::constraint_t::type_value& EDGE_POSE =
-			edge.getPoseMean();
+		const auto& EDGE_POSE = edge.getPoseMean();
 
 		// Add all the data to the list of relevant observations:
 		typename gst::observation_info_t new_entry;
@@ -263,8 +262,8 @@ void optimize_graph_spa_levmarq(
 	// other important vars for the main loop:
 	CVectorDouble grad(nFreeNodes * DIMS_POSE);
 	grad.setZero();
-	typedef typename mrpt::aligned_containers<
-		TNodeID, typename gst::matrix_VxV_t>::map_t map_ID2matrix_VxV_t;
+	using map_ID2matrix_VxV_t = mrpt::aligned_std_map<
+		TNodeID, typename gst::matrix_VxV_t>;
 	vector<map_ID2matrix_VxV_t> H_map(nFreeNodes);
 
 	double lambda = initial_lambda;  // Will be actually set on first iteration.
@@ -492,7 +491,7 @@ void optimize_graph_spa_levmarq(
 				// After recomputing H and the grad, we update lambda:
 				lambda *= 0.1;  // std::max(0.333, 1-pow(2*rho-1,3.0) );
 			}
-			utils::keep_max(lambda, 1e-200);  // JL: Avoids underflow!
+			mrpt::keep_max(lambda, 1e-200);  // JL: Avoids underflow!
 			v = 2;
 #if 0
 					{ mrpt::math::CMatrixDouble H; sp_H.get_dense(H); H.saveToTextFile("d:\\H.txt"); }

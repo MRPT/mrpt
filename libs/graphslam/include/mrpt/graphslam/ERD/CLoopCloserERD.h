@@ -452,7 +452,52 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section);
 		void dumpToTextStream(std::ostream& out) const;
+		mrpt::slam::CICP icp;
+		/**\brief How many nodes back to check ICP against?
+		*/
+		int prev_nodes_for_ICP;
 
+		/** see Constructor for initialization */
+		const mrpt::img::TColor laser_scans_color;
+		bool visualize_laser_scans;
+		// keystroke to be used by the user to toggle the LaserScans from
+		// the CDisplayWindow
+		std::string keystroke_laser_scans;
+
+		/**\brief Indicate whethet to use scan-matching at all during
+		* graphSLAM [on by default].
+		*
+		* \warning It is strongly recomended that the user does not set this
+		* to false (via the .ini file). graphSLAM may diverge significantly if
+		* no scan-matching is not used.
+		*/
+		bool use_scan_matching;
+		bool has_read_config;
+		/**\brief Keep track of the mahalanobis distance between the initial
+		* pose
+		* difference and the suggested new edge for the pairs of checked
+		* nodes.
+		*/
+		TSlidingWindow mahal_distance_ICP_odom_win;
+		/**\brief Keep track of ICP Goodness values for ICP between nearby
+		* nodes and adapt the Goodness threshold based on the median of the
+		* recorded Goodness values.
+		*/
+		TSlidingWindow goodness_threshold_win;
+	};
+
+	/**\brief Struct for storing together the loop-closing related parameters.
+	*/
+	struct TLoopClosureParams : public mrpt::config::CLoadableOptions
+	{
+	public:
+		TLoopClosureParams();
+		~TLoopClosureParams();
+
+		void loadFromConfigFile(
+			const mrpt::config::CConfigFileBase& source,
+			const std::string& section);
+		void dumpToTextStream(std::ostream& out) const;
 		/**\brief flag indicating whether to check only the partition of the
 		 * last
 		 * registered node for potential loop closures

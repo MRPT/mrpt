@@ -503,11 +503,11 @@ bool mrpt::comms::net::Ping(
 
 // different "count" argument for Windows and *NIX  systems
 #if defined(MRPT_OS_LINUX) || defined(__APPLE__)
-	string count_arg_str = "-c " + num2str(max_attempts);
+	string count_arg_str = "-c " + std::to_string(max_attempts);
 #else
 	THROW_EXCEPTION("Ping not implemented on Windows Yet.");
 
-	string count_arg_str = "-n " + num2str(max_attempts);
+	string count_arg_str = "-n " + std::to_string(max_attempts);
 #endif
 
 	string redirection_str = "2>&1";
