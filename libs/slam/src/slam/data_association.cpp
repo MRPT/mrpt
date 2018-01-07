@@ -33,7 +33,7 @@
 #include <numeric>  // accumulate
 #include <memory>  // unique_ptr
 
-#include <mrpt/otherlibs/nanoflann/nanoflann.hpp>  // For kd-tree's
+#include <nanoflann.hpp>  // For kd-tree's
 #include <mrpt/math/KDTreeCapable.h>  // For kd-tree's
 
 using namespace std;
@@ -325,12 +325,12 @@ void mrpt::slam::data_association_full_covariance(
 
 	const size_t length_O = Z_observations_mean.cols();
 
-	ASSERT_(nPredictions != 0)
-	ASSERT_(nObservations != 0)
-	ASSERT_(length_O == Y_predictions_mean.cols();
-	ASSERT_(length_O * nPredictions == Y_predictions_cov.rows();
+	ASSERT_(nPredictions != 0);
+	ASSERT_(nObservations != 0);
+	ASSERT_(length_O == Y_predictions_mean.cols());
+	ASSERT_(length_O * nPredictions == Y_predictions_cov.rows());
 	ASSERT_(Y_predictions_cov.isSquare());
-	ASSERT_(chi2quantile > 0 && chi2quantile < 1)
+	ASSERT_(chi2quantile > 0 && chi2quantile < 1);
 	ASSERT_(metric == metricMaha || metric == metricML);
 	const double chi2thres = mrpt::math::chi2inv(chi2quantile, length_O);
 
@@ -603,11 +603,11 @@ void mrpt::slam::data_association_independent_predictions(
 
 	const size_t length_O = Z_observations_mean.cols();
 
-	ASSERT_(nPredictions != 0)
-	ASSERT_(nObservations != 0)
-	ASSERT_(length_O == Y_predictions_mean.cols();
+	ASSERT_(nPredictions != 0);
+	ASSERT_(nObservations != 0);
+	ASSERT_(length_O == Y_predictions_mean.cols());
 	ASSERT_(length_O * nPredictions == Y_predictions_cov_stacked.rows());
-	ASSERT_(chi2quantile > 0 && chi2quantile < 1)
+	ASSERT_(chi2quantile > 0 && chi2quantile < 1);
 	ASSERT_(metric == metricMaha || metric == metricML);
 	// const double chi2thres = mrpt::math::chi2inv( chi2quantile, length_O );
 

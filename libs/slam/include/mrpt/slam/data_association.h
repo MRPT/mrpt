@@ -235,7 +235,7 @@ template <>
 struct TEnumTypeFiller<slam::TDataAssociationMethod>
 {
 	typedef slam::TDataAssociationMethod enum_t;
-	static void fill(bimap<enum_t, std::string>& m_map)
+	static void fill(internal::bimap<enum_t, std::string>& m_map)
 	{
 		m_map.insert(slam::assocNN, "assocNN");
 		m_map.insert(slam::assocJCBB, "assocJCBB");
@@ -246,7 +246,7 @@ template <>
 struct TEnumTypeFiller<slam::TDataAssociationMetric>
 {
 	typedef slam::TDataAssociationMetric enum_t;
-	static void fill(bimap<enum_t, std::string>& m_map)
+	static void fill(internal::bimap<enum_t, std::string>& m_map)
 	{
 		m_map.insert(slam::metricMaha, "metricMaha");
 		m_map.insert(slam::metricML, "metricML");

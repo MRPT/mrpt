@@ -364,7 +364,7 @@ template <>
 struct TEnumTypeFiller<mrpt::nav::CAbstractNavigator::TState>
 {
 	typedef mrpt::nav::CAbstractNavigator::TState enum_t;
-	static void fill(bimap<enum_t, std::string>& m_map)
+	static void fill(internal::bimap<enum_t, std::string>& m_map)
 	{
 		m_map.insert(mrpt::nav::CAbstractNavigator::IDLE, "IDLE");
 		m_map.insert(mrpt::nav::CAbstractNavigator::NAVIGATING, "NAVIGATING");

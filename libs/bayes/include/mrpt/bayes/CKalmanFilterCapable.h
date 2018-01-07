@@ -289,7 +289,7 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	 */
 	inline void getLandmarkMean(size_t idx, KFArray_FEAT& feat) const
 	{
-		ASSERT_(idx < getNumberOfLandmarksInTheMap();
+		ASSERT_(idx < getNumberOfLandmarksInTheMap());
 		::memcpy(
 			&feat[0], &m_xkk[VEH_SIZE + idx * FEAT_SIZE],
 			FEAT_SIZE * sizeof(m_xkk[0]));
@@ -432,7 +432,7 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	 * are NO cross-covariances between them.
 	 */
 	virtual void OnGetObservationsAndDataAssociation(
-		vector_KFArray_OBS& out_z, mrpt::std::vector<int>& out_data_association,
+		vector_KFArray_OBS& out_z, std::vector<int>& out_data_association,
 		const vector_KFArray_OBS& in_all_predictions, const KFMatrix& in_S,
 		const std::vector<size_t>& in_lm_indices_in_S,
 		const KFMatrix_OxO& in_R) = 0;
@@ -692,7 +692,7 @@ template <>
 struct TEnumTypeFiller<bayes::TKFMethod>
 {
 	typedef bayes::TKFMethod enum_t;
-	static void fill(bimap<enum_t, std::string>& m_map)
+	static void fill(internal::bimap<enum_t, std::string>& m_map)
 	{
 		m_map.insert(bayes::kfEKFNaive, "kfEKFNaive");
 		m_map.insert(bayes::kfEKFAlaDavison, "kfEKFAlaDavison");

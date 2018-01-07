@@ -165,7 +165,7 @@ class CRangeBearingKFSLAM
 
 	/** The options for the algorithm
 	  */
-	struct TOptions : utils::CLoadableOptions
+	struct TOptions : public mrpt::config::CLoadableOptions
 	{
 		/** Default values */
 		TOptions();

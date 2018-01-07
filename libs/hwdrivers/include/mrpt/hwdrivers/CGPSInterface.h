@@ -376,7 +376,7 @@ template <>
 struct TEnumTypeFiller<hwdrivers::CGPSInterface::PARSERS>
 {
 	typedef hwdrivers::CGPSInterface::PARSERS enum_t;
-	static void fill(bimap<enum_t, std::string>& m_map)
+	static void fill(internal::bimap<enum_t, std::string>& m_map)
 	{
 		m_map.insert(hwdrivers::CGPSInterface::NONE, "NONE");
 		m_map.insert(hwdrivers::CGPSInterface::AUTO, "AUTO");

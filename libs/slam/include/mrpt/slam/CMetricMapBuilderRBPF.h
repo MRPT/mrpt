@@ -179,7 +179,7 @@ of type CMetricMapBuilderRBPF  */
 
 	/** A useful method for debugging: draws the current map and path hypotheses
 	 * to a CCanvas  */
-	void drawCurrentEstimationToImage(utils::CCanvas* img);
+	void drawCurrentEstimationToImage(mrpt::img::CCanvas* img);
 
 	/** A logging utility: saves the current path estimation for each particle
 	 * in a text file (a row per particle, each 3-column-entry is a set

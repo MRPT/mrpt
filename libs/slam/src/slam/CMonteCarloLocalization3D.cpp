@@ -52,7 +52,7 @@ void KLF_loadBinFromParticle(
 	}
 	else
 	{
-		ASSERT_(currentParticleValue)
+		ASSERT_(currentParticleValue);
 		outBin.x = round(currentParticleValue->x() / opts.KLD_binSize_XY);
 		outBin.y = round(currentParticleValue->y() / opts.KLD_binSize_XY);
 		outBin.z = round(currentParticleValue->z() / opts.KLD_binSize_XY);
@@ -82,10 +82,6 @@ CMonteCarloLocalization3D::CMonteCarloLocalization3D(size_t M)
 	this->setLoggerName("CMonteCarloLocalization3D");
 }
 
-/*---------------------------------------------------------------
-				Dtor
- ---------------------------------------------------------------*/
-CMonteCarloLocalization3D::~CMonteCarloLocalization3D() {}
 TPose3D CMonteCarloLocalization3D::getLastPose(
 	const size_t i, bool& is_valid_pose) const
 {
@@ -93,7 +89,7 @@ TPose3D CMonteCarloLocalization3D::getLastPose(
 		THROW_EXCEPTION("Particle index out of bounds!");
 	is_valid_pose = true;
 	ASSERTDEB_(m_particles[i].d != NULL);
-	return TPose3D(*m_particles[i].d);
+	return m_particles[i].d->asTPose();
 }
 
 /*---------------------------------------------------------------
@@ -110,9 +106,9 @@ void CMonteCarloLocalization3D::prediction_and_update_pfStandardProposal(
 
 	if (sf)
 	{  // A map MUST be supplied!
-		ASSERT_(options.metricMap || options.metricMaps.size() > 0)
+		ASSERT_(options.metricMap || options.metricMaps.size() > 0);
 		if (!options.metricMap)
-			ASSERT_(options.metricMaps.size() == m_particles.size();
+			ASSERT_(options.metricMaps.size() == m_particles.size());
 	}
 
 	PF_SLAM_implementation_pfStandardProposal<mrpt::slam::detail::TPoseBin3D>(
@@ -135,9 +131,9 @@ void CMonteCarloLocalization3D::prediction_and_update_pfAuxiliaryPFStandard(
 
 	if (sf)
 	{  // A map MUST be supplied!
-		ASSERT_(options.metricMap || options.metricMaps.size() > 0)
+		ASSERT_(options.metricMap || options.metricMaps.size() > 0);
 		if (!options.metricMap)
-			ASSERT_(options.metricMaps.size() == m_particles.size();
+			ASSERT_(options.metricMaps.size() == m_particles.size());
 	}
 
 	PF_SLAM_implementation_pfAuxiliaryPFStandard<
@@ -161,9 +157,9 @@ void CMonteCarloLocalization3D::prediction_and_update_pfAuxiliaryPFOptimal(
 
 	if (sf)
 	{  // A map MUST be supplied!
-		ASSERT_(options.metricMap || options.metricMaps.size() > 0)
+		ASSERT_(options.metricMap || options.metricMaps.size() > 0);
 		if (!options.metricMap)
-			ASSERT_(options.metricMaps.size() == m_particles.size();
+			ASSERT_(options.metricMaps.size() == m_particles.size());
 	}
 
 	PF_SLAM_implementation_pfAuxiliaryPFOptimal<mrpt::slam::detail::TPoseBin3D>(
@@ -183,7 +179,7 @@ double
 {
 	MRPT_UNUSED_PARAM(PF_options);
 	ASSERT_(
-		options.metricMap || particleIndexForMap < options.metricMaps.size())
+		options.metricMap || particleIndexForMap < options.metricMaps.size());
 
 	CMetricMap* map =
 		(options.metricMap) ? options.metricMap :  // All particles, one map

@@ -6330,7 +6330,7 @@ void xRawLogViewerFrame::OnmnuCreateAVISelected(wxCommandEvent& event)
 				const TImageToSaveData& d = *itIm;
 
 				size_t idx =
-					mrpt::utils::find_in_vector(d.channel_desc, outVideosIdx);
+					mrpt::containers::find_in_vector(d.channel_desc, outVideosIdx);
 				if (string::npos == idx)  // new?
 				{
 					idx = outVideosIdx.size();

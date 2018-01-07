@@ -22,7 +22,9 @@ using namespace mrpt;
 using namespace mrpt::bayes;
 using namespace mrpt::slam;
 using namespace mrpt::maps;
+using namespace mrpt::io;
 using namespace mrpt::poses;
+using namespace mrpt::config;
 using namespace mrpt::math;
 using namespace mrpt::random;
 using namespace mrpt::system;
@@ -119,12 +121,9 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
 		{
 			// It's a ".simplemap":
 			// -------------------------
-			CFileGZInputStream(MAP_FILE.c_str()) >> simpleMap;
-
+			mrpt::serialization::archiveFrom(CFileGZInputStream(MAP_FILE)) >> simpleMap;
 			ASSERT_(simpleMap.size() > 0);
-
 			// Build metric map:
-			// ------------------------------
 			metricMap.loadFromProbabilisticPosesAndObservations(simpleMap);
 		}
 		else if (!mapExt.compare("gridmap"))
@@ -132,7 +131,7 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
 			// It's a ".gridmap":
 			// -------------------------
 			ASSERT_(metricMap.m_gridMaps.size() == 1);
-			CFileGZInputStream(MAP_FILE) >> (*metricMap.m_gridMaps[0]);
+			mrpt::serialization::archiveFrom(CFileGZInputStream(MAP_FILE)) >> (*metricMap.m_gridMaps[0]);
 		}
 		else
 		{

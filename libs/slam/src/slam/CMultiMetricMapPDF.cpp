@@ -91,7 +91,7 @@ void CMultiMetricMapPDF::clear(const CPose3D& initialPose)
 		m_particles[i].d->mapTillNow.clear();
 
 		m_particles[i].d->robotPath.resize(1);
-		m_particles[i].d->robotPath[0] = initialPose;
+		m_particles[i].d->robotPath[0] = initialPose.asTPose();
 	}
 
 	SFs.clear();
@@ -146,7 +146,7 @@ void CMultiMetricMapPDF::clear(
 			{
 				kf_pose = keyframe_pose->getMeanVal();
 			}
-			p.d->robotPath[i] = kf_pose;
+			p.d->robotPath[i] = kf_pose.asTPose();
 			for (const auto& obs : *sfkeyframe_sf)
 			{
 				p.d->mapTillNow.insertObservation(&(*obs), &kf_pose);
@@ -198,56 +198,29 @@ void CMultiMetricMapPDF::getEstimatedPosePDFAtTime(
 	}
 }
 
-/*---------------------------------------------------------------
-						writeToStream
-  ---------------------------------------------------------------*/
-uint8_t CRBPFParticleData::serializeGetVersion() const { return XX; }
-void CRBPFParticleData::serializeTo(mrpt::serialization::CArchive& out) const
+uint8_t CRBPFParticleData::serializeGetVersion() const { return 0; }
+void CRBPFParticleData::serializeTo(mrpt::serialization::CArchive& ) const
 {
-	MRPT_UNUSED_PARAM(out);
-	MRPT_UNUSED_PARAM(version);
+	THROW_EXCEPTION("Shouldn't arrive here");
+}
+void CRBPFParticleData::serializeFrom(mrpt::serialization::CArchive& , uint8_t )
+{
 	THROW_EXCEPTION("Shouldn't arrive here");
 }
 
-/*---------------------------------------------------------------
-						readFromStream
-  ---------------------------------------------------------------*/
-void CRBPFParticleData::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
-{
-	MRPT_UNUSED_PARAM(in);
-	MRPT_UNUSED_PARAM(version);
-	THROW_EXCEPTION("Shouldn't arrive here");
-}
-
-/*---------------------------------------------------------------
-						writeToStream
-  ---------------------------------------------------------------*/
-uint8_t CMultiMetricMapPDF::serializeGetVersion() const { return XX; }
+uint8_t CMultiMetricMapPDF::serializeGetVersion() const { return 0; }
 void CMultiMetricMapPDF::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
+	out.WriteAs<uint32_t>(m_particles.size());
+	for (const auto& part: m_particles)
 	{
-		uint32_t i, n, j, m;
-
-		// The data
-		n = static_cast<uint32_t>(m_particles.size());
-		out << n;
-		for (i = 0; i < n; i++)
-		{
-			out << m_particles[i].log_w << m_particles[i].d->mapTillNow;
-			m = static_cast<uint32_t>(m_particles[i].d->robotPath.size());
-			out << m;
-			for (j = 0; j < m; j++) out << m_particles[i].d->robotPath[j];
-		}
-		out << SFs << SF2robotPath;
+		out << part.log_w << part.d->mapTillNow;
+		out.WriteAs<uint32_t>(part.d->robotPath.size());
+		for (const auto& p : part.d->robotPath) out << p;
 	}
+	out << SFs << SF2robotPath;
 }
 
-/*---------------------------------------------------------------
-						readFromStream
-  ---------------------------------------------------------------*/
 void CMultiMetricMapPDF::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
