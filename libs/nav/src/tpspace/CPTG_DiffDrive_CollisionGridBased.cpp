@@ -17,6 +17,8 @@
 #include <mrpt/math/geometry.h>
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/kinematics/CVehicleVelCmd_DiffDriven.h>
+#include <mrpt/serialization/CArchive.h>
+#include <iostream>
 
 using namespace mrpt::nav;
 
@@ -86,14 +88,14 @@ void CPTG_DiffDrive_CollisionGridBased::saveToConfigFile(
 	MRPT_END
 }
 
-mrpt::utils::CStream& mrpt::nav::operator<<(
-	mrpt::utils::CStream& o, const mrpt::nav::TCPoint& p)
+mrpt::serialization::CArchive& mrpt::nav::operator<<(
+	mrpt::serialization::CArchive& o, const mrpt::nav::TCPoint& p)
 {
 	o << p.x << p.y << p.phi << p.t << p.dist << p.v << p.w;
 	return o;
 }
-mrpt::utils::CStream& mrpt::nav::operator>>(
-	mrpt::utils::CStream& i, mrpt::nav::TCPoint& p)
+mrpt::serialization::CArchive& mrpt::nav::operator>>(
+	mrpt::serialization::CArchive& i, mrpt::nav::TCPoint& p)
 {
 	i >> p.x >> p.y >> p.phi >> p.t >> p.dist >> p.v >> p.w;
 	return i;
@@ -251,7 +253,7 @@ void CPTG_DiffDrive_CollisionGridBased::simulateTrajectories(
 				TCellForLambdaFunction* cell =
 					m_lambdaFunctionOptimizer.cellByPos(
 						m_trajectory[k][n].x, m_trajectory[k][n].y);
-				ASSERT_(cell)
+				ASSERT_(cell);
 				// Keep limits:
 				mrpt::keep_min(cell->k_min, k);
 				mrpt::keep_max(cell->k_max, k);
@@ -340,8 +342,9 @@ bool CPTG_DiffDrive_CollisionGridBased::saveColGridsToFile(
 		if (!fo.fileOpenCorrectly()) return false;
 
 		const uint32_t n = 1;  // for backwards compatibility...
-		fo << n;
-		return m_collisionGrid.saveToFile(&fo, computed_robotShape);
+		auto arch = mrpt::serialization::archiveFrom(fo);
+		arch << n;
+		return m_collisionGrid.saveToFile(&arch, computed_robotShape);
 	}
 	catch (...)
 	{
@@ -359,14 +362,15 @@ bool CPTG_DiffDrive_CollisionGridBased::loadColGridsFromFile(
 	{
 		mrpt::io::CFileGZInputStream fi(filename);
 		if (!fi.fileOpenCorrectly()) return false;
+		auto arch = mrpt::serialization::archiveFrom(fi);
 
 		uint32_t n;
-		fi >> n;
+		arch >> n;
 		if (n != 1)
 			return false;  // Incompatible (old) format, just discard and
 		// recompute.
 
-		return m_collisionGrid.loadFromFile(&fi, current_robotShape);
+		return m_collisionGrid.loadFromFile(&arch, current_robotShape);
 	}
 	catch (...)
 	{
@@ -380,7 +384,7 @@ const uint32_t COLGRID_FILE_MAGIC = 0xC0C0C0C3;
 					Save to file
   ---------------------------------------------------------------*/
 bool CPTG_DiffDrive_CollisionGridBased::CCollisionGrid::saveToFile(
-	mrpt::utils::CStream* f,
+	mrpt::serialization::CArchive* f,
 	const mrpt::math::CPolygon& computed_robotShape) const
 {
 	try
@@ -427,7 +431,7 @@ bool CPTG_DiffDrive_CollisionGridBased::CCollisionGrid::saveToFile(
 						loadFromFile
   ---------------------------------------------------------------*/
 bool CPTG_DiffDrive_CollisionGridBased::CCollisionGrid::loadFromFile(
-	mrpt::utils::CStream* f, const mrpt::math::CPolygon& current_robotShape)
+	mrpt::serialization::CArchive* f, const mrpt::math::CPolygon& current_robotShape)
 {
 	try
 	{
@@ -541,7 +545,7 @@ bool CPTG_DiffDrive_CollisionGridBased::inverseMap_WS2TP(
 	using mrpt::square;
 
 	ASSERTMSG_(
-		m_alphaValuesCount > 0, "Have you called simulateTrajectories() first?")
+		m_alphaValuesCount > 0, "Have you called simulateTrajectories() first?");
 
 	// -------------------------------------------------------------------
 	// Optimization: (24-JAN-2007 @ Jose Luis Blanco):
@@ -594,7 +598,7 @@ bool CPTG_DiffDrive_CollisionGridBased::inverseMap_WS2TP(
 
 	if (at_least_one)  // Otherwise, don't even lose time checking...
 	{
-		ASSERT_BELOW_(k_max, m_trajectory.size();
+		ASSERT_BELOW_(k_max, m_trajectory.size());
 		for (int k = k_min; k <= k_max; k++)
 		{
 			const size_t n_real = m_trajectory[k].size();
@@ -907,7 +911,7 @@ void CPTG_DiffDrive_CollisionGridBased::updateTPObstacleSingle(
 }
 
 void CPTG_DiffDrive_CollisionGridBased::internal_readFromStream(
-	mrpt::utils::CStream& in)
+	mrpt::serialization::CArchive& in)
 {
 	CParameterizedTrajectoryGenerator::internal_readFromStream(in);
 	CPTG_RobotShape_Polygonal::internal_shape_loadFromStream(in);
@@ -927,7 +931,7 @@ void CPTG_DiffDrive_CollisionGridBased::internal_readFromStream(
 }
 
 void CPTG_DiffDrive_CollisionGridBased::internal_writeToStream(
-	mrpt::utils::CStream& out) const
+	mrpt::serialization::CArchive& out) const
 {
 	CParameterizedTrajectoryGenerator::internal_writeToStream(out);
 	CPTG_RobotShape_Polygonal::internal_shape_saveToStream(out);

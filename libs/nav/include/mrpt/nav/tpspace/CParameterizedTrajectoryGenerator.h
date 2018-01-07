@@ -178,8 +178,8 @@ class CParameterizedTrajectoryGenerator : public mrpt::serialization::CSerializa
 		{
 			return !(*this == o);
 		}
-		void writeToStream(mrpt::utils::CStream& out) const;
-		void readFromStream(mrpt::utils::CStream& in);
+		void writeToStream(mrpt::serialization::CArchive& out) const;
+		void readFromStream(mrpt::serialization::CArchive& in);
 	};
 
    protected:
@@ -474,8 +474,8 @@ class CParameterizedTrajectoryGenerator : public mrpt::serialization::CSerializa
 		const double ox, const double oy, const double new_tp_obs_dist,
 		double& inout_tp_obs) const;
 
-	virtual void internal_readFromStream(mrpt::utils::CStream& in);
-	virtual void internal_writeToStream(mrpt::utils::CStream& out) const;
+	virtual void internal_readFromStream(mrpt::serialization::CArchive& in);
+	virtual void internal_writeToStream(mrpt::serialization::CArchive& out) const;
 
    public:
 	/** Evals the robot clearance for each robot pose along path `k`, for the
@@ -532,8 +532,8 @@ class CPTG_RobotShape_Polygonal : public CParameterizedTrajectoryGenerator
 	void saveToConfigFile(
 		mrpt::config::CConfigFileBase& cfg,
 		const std::string& sSection) const override;
-	void internal_shape_loadFromStream(mrpt::utils::CStream& in);
-	void internal_shape_saveToStream(mrpt::utils::CStream& out) const;
+	void internal_shape_loadFromStream(mrpt::serialization::CArchive& in);
+	void internal_shape_saveToStream(mrpt::serialization::CArchive& out) const;
 	/** Loads a set of default parameters; provided  exclusively for the
 	 * PTG-configurator tool. */
 	void loadDefaultParams() override;
@@ -573,8 +573,8 @@ class CPTG_RobotShape_Circular : public CParameterizedTrajectoryGenerator
 	void saveToConfigFile(
 		mrpt::config::CConfigFileBase& cfg,
 		const std::string& sSection) const override;
-	void internal_shape_loadFromStream(mrpt::utils::CStream& in);
-	void internal_shape_saveToStream(mrpt::utils::CStream& out) const;
+	void internal_shape_loadFromStream(mrpt::serialization::CArchive& in);
+	void internal_shape_saveToStream(mrpt::serialization::CArchive& out) const;
 	/** Loads a set of default parameters; provided  exclusively for the
 	 * PTG-configurator tool. */
 	void loadDefaultParams() override;

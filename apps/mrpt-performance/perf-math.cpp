@@ -71,15 +71,15 @@ void register_tests_math()
 				std::hypotf)));
 	lstTests.push_back(
 		TestData(
-			"math: mrpt::math::hypot_fast(float)",
+			"math: mrpt::hypot_fast(float)",
 			std::bind(
-				math_test_FUNC<float, decltype(mrpt::math::hypot_fast<float>)>,
-				_1, _2, mrpt::math::hypot_fast<float>)));
+				math_test_FUNC<float, decltype(mrpt::hypot_fast<float>)>,
+				_1, _2, mrpt::hypot_fast<float>)));
 	lstTests.push_back(
 		TestData(
-			"math: mrpt::math::hypot_fast(double)",
+			"math: mrpt::hypot_fast(double)",
 			std::bind(
 				math_test_FUNC<double,
-							   decltype(mrpt::math::hypot_fast<double>)>,
-				_1, _2, mrpt::math::hypot_fast<double>)));
+							   decltype(mrpt::hypot_fast<double>)>,
+				_1, _2, mrpt::hypot_fast<double>)));
 }

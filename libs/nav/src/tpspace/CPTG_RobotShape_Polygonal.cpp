@@ -12,6 +12,7 @@
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::nav;
 
@@ -119,7 +120,7 @@ void CPTG_RobotShape_Polygonal::add_robotShape_to_setOfLines(
 }
 
 void CPTG_RobotShape_Polygonal::internal_shape_loadFromStream(
-	mrpt::utils::CStream& in)
+	mrpt::serialization::CArchive& in)
 {
 	uint8_t version;
 	in >> version;
@@ -135,7 +136,7 @@ void CPTG_RobotShape_Polygonal::internal_shape_loadFromStream(
 }
 
 void CPTG_RobotShape_Polygonal::internal_shape_saveToStream(
-	mrpt::utils::CStream& out) const
+	mrpt::serialization::CArchive& out) const
 {
 	uint8_t version = 0;
 	out << version;
@@ -162,7 +163,7 @@ double CPTG_RobotShape_Polygonal::evalClearanceToRobotShape(
 
 	if (isPointInsideRobotShape(ox, oy)) return .0;
 
-	double d = mrpt::math::hypot_fast(ox, oy) - m_robotMaxRadius;
+	double d = mrpt::hypot_fast(ox, oy) - m_robotMaxRadius;
 
 	// if d<=0, we know from the isPointInsideRobotShape() above that
 	// it's a false positive: enforce a minimum "fake" clearance:

@@ -12,7 +12,7 @@
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/rtti/CObject.h>
-#include <mrpt/math/CRuntimeCompiledExpression.h>
+#include <mrpt/expr/CRuntimeCompiledExpression.h>
 
 namespace mrpt
 {
@@ -23,7 +23,7 @@ namespace nav
   *\sa CReactiveNavigationSystem, CReactiveNavigationSystem3D
   *  \ingroup nav_reactive
   */
-class CMultiObjectiveMotionOptimizerBase : public mrpt::utils::CObject
+class CMultiObjectiveMotionOptimizerBase : public mrpt::rtti::CObject
 {
 	DEFINE_VIRTUAL_MRPT_OBJECT(CMultiObjectiveMotionOptimizerBase)
    public:
@@ -104,8 +104,8 @@ class CMultiObjectiveMotionOptimizerBase : public mrpt::utils::CObject
 	TParamsBase& m_params_base;
 
 	/** score names -> score compiled expressions */
-	std::map<std::string, mrpt::math::CRuntimeCompiledExpression> m_score_exprs;
-	std::vector<mrpt::math::CRuntimeCompiledExpression> m_movement_assert_exprs;
+	std::map<std::string, mrpt::expr::CRuntimeCompiledExpression> m_score_exprs;
+	std::vector<mrpt::expr::CRuntimeCompiledExpression> m_movement_assert_exprs;
 	std::map<std::string, double> m_expr_vars;
 };
 }

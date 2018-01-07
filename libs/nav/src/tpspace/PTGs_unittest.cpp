@@ -24,7 +24,7 @@ TEST(NavTests, PTGs_tests)
 	using namespace mrpt;
 	using namespace mrpt::nav;
 
-	const string sFil = mrpt::utils::MRPT_GLOBAL_UNITTEST_SRC_DIR +
+	const string sFil = mrpt::MRPT_GLOBAL_UNITTEST_SRC_DIR +
 						string("/tests/PTGs_for_tests.ini");
 	if (!mrpt::system::fileExists(sFil))
 	{

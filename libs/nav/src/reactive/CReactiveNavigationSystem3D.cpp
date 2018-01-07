@@ -15,6 +15,7 @@
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::math;
+using namespace mrpt::system;
 using namespace mrpt::nav;
 using namespace std;
 

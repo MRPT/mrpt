@@ -210,7 +210,7 @@ void PlannerTPS_VirtualBase::renderMoveTree(
 			if (node.parent_id != INVALID_NODEID)
 			{
 				// Draw actual PT path between parent and children nodes:
-				ASSERT_(node.edge_to_parent)
+				ASSERT_(node.edge_to_parent);
 				const mrpt::nav::CParameterizedTrajectoryGenerator* ptg =
 					m_PTGs[node.edge_to_parent->ptg_index].get();
 

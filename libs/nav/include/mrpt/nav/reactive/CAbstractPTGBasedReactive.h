@@ -288,9 +288,9 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 	/** The holonomic navigation algorithm (one object per PTG, so internal
 	 * states are maintained) */
 	std::vector<CAbstractHolonomicReactiveMethod::Ptr> m_holonomicMethod;
-	std::unique_ptr<mrpt::utils::CStream> m_logFile;
+	std::unique_ptr<mrpt::io::CStream> m_logFile;
 	/** The current log file stream, or nullptr if not being used */
-	mrpt::utils::CStream* m_prev_logfile;
+	mrpt::io::CStream* m_prev_logfile;
 	/** See enableKeepLogRecords */
 	bool m_enableKeepLogRecords;
 	/** The last log */
@@ -429,7 +429,7 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 		mrpt::nav::CAbstractHolonomicReactiveMethod& holoMethod,
 		const mrpt::system::TTimeStamp tim_start_iteration,
 		const TNavigationParams& navp = TNavigationParams(),
-		const mrpt::math::TPose2D& relPoseVelCmd_NOP = mrpt::poses::CPose2D());
+		const mrpt::math::TPose2D& relPoseVelCmd_NOP = mrpt::math::TPose2D(0,0,0));
 
 	struct TSentVelCmd
 	{

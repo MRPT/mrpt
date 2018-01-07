@@ -17,6 +17,7 @@
 
 using namespace mrpt::nav;
 using namespace mrpt::math;
+using namespace mrpt::system;
 using namespace mrpt::poses;
 using namespace std;
 
@@ -307,7 +308,7 @@ void PlannerRRT_SE2_TPS::solve(
 				// is not a solution!
 				{
 					double new_nearest_dist;
-					const TNodeSE2 new_state_node(new_state);
+					const TNodeSE2 new_state_node(new_state.asTPose());
 
 					m_timelogger.enter("TMoveTree::getNearestNode");
 					new_nearest_id = result.move_tree.getNearestNode(
@@ -349,8 +350,7 @@ void PlannerRRT_SE2_TPS::solve(
 				// [Algo `tp_space_rrt`: Line 16]: Add to candidate solution set
 				// ------------------------------------------------------------
 				// Create "movement" (tree edge) object:
-				TMoveEdgeSE2_TP new_edge(
-					x_nearest_id, mrpt::math::TPose2D(new_state));
+				TMoveEdgeSE2_TP new_edge(x_nearest_id, new_state.asTPose());
 
 				new_edge.cost = d_new;
 				new_edge.ptg_index = idxPTG;

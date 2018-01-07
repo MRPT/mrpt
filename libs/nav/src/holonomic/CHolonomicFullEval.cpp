@@ -129,7 +129,7 @@ void CHolonomicFullEval::evalSingleTarget(
 
 		// Factor #1: collision-free distance
 		// -----------------------------------------------------
-		if (mrpt::utils::abs_diff(i, target_k) <= 1 &&
+		if (mrpt::abs_diff(i, target_k) <= 1 &&
 			target_dist < 1.0 - options.TOO_CLOSE_OBSTACLE &&
 			ni.obstacles[i] > 1.05 * target_dist)
 		{
@@ -208,7 +208,7 @@ void CHolonomicFullEval::evalSingleTarget(
 		// ------------------------------------------------------------------------------------------
 		if (m_last_selected_sector != std::numeric_limits<unsigned int>::max())
 		{
-			const unsigned int hist_dist = mrpt::utils::abs_diff(
+			const unsigned int hist_dist = mrpt::abs_diff(
 				m_last_selected_sector,
 				i);  // It's fine here to consider that -PI is far from +PI.
 
@@ -420,9 +420,9 @@ void CHolonomicFullEval::evalSingleTarget(
 	{
 		// the way seems to have clearance enought:
 		const auto cl_left =
-			mrpt::utils::abs_diff(target_k, (unsigned int)best_gap.k_from);
+			mrpt::abs_diff(target_k, (unsigned int)best_gap.k_from);
 		const auto cl_right =
-			mrpt::utils::abs_diff(target_k, (unsigned int)best_gap.k_to);
+			mrpt::abs_diff(target_k, (unsigned int)best_gap.k_to);
 
 		const auto smallest_clearance_in_k_units = std::min(cl_left, cl_right);
 		const unsigned int clearance_threshold =
@@ -589,16 +589,11 @@ CLogFileRecord_FullEval::CLogFileRecord_FullEval()
 {
 }
 
-uint8_t CLogFileRecord_FullEval::serializeGetVersion() const { return XX; }
+uint8_t CLogFileRecord_FullEval::serializeGetVersion() const { return 3; }
 void CLogFileRecord_FullEval::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 3;
-	else
-	{
-		out << CHolonomicLogFileRecord::dirs_eval << dirs_scores
-			<< selectedSector << evaluation << selectedTarget /*v3*/;
-	}
+	out << CHolonomicLogFileRecord::dirs_eval << dirs_scores
+		<< selectedSector << evaluation << selectedTarget /*v3*/;
 }
 
 /*---------------------------------------------------------------
@@ -709,8 +704,8 @@ void CHolonomicFullEval::TOptions::saveToConfigFile(
 {
 	MRPT_START;
 
-	const int WN = mrpt::utils::MRPT_SAVE_NAME_PADDING(),
-			  WV = mrpt::utils::MRPT_SAVE_VALUE_PADDING();
+	const int WN = mrpt::config::MRPT_SAVE_NAME_PADDING(),
+			  WV = mrpt::config::MRPT_SAVE_VALUE_PADDING();
 
 	MRPT_SAVE_CONFIG_VAR_COMMENT(
 		TOO_CLOSE_OBSTACLE,
@@ -738,7 +733,7 @@ void CHolonomicFullEval::TOptions::saveToConfigFile(
 		"Ratio [0,1], times path_count, gives the minimum gap width to accept "
 		"a direct motion towards target.");
 
-	ASSERT_EQUAL_(factorWeights.size(), 5)
+	ASSERT_EQUAL_(factorWeights.size(), 5);
 	c.write(
 		s, "factorWeights",
 		mrpt::system::sprintf_container("%.2f ", factorWeights), WN, WV,
@@ -769,26 +764,21 @@ void CHolonomicFullEval::TOptions::saveToConfigFile(
 	MRPT_END;
 }
 
-uint8_t CHolonomicFullEval::serializeGetVersion() const { return XX; }
+uint8_t CHolonomicFullEval::serializeGetVersion() const { return 4; }
 void CHolonomicFullEval::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 4;
-	else
-	{
-		// Params:
-		out << options.factorWeights << options.HYSTERESIS_SECTOR_COUNT
-			<< options.PHASE_FACTORS <<  // v3
-			options.TARGET_SLOW_APPROACHING_DISTANCE
-			<< options.TOO_CLOSE_OBSTACLE << options.PHASE_THRESHOLDS  // v3
-			<< options.OBSTACLE_SLOW_DOWN_DISTANCE  // v1
-			<< options.factorNormalizeOrNot  // v2
-			<< options.clearance_threshold_ratio
-			<< options.gap_width_ratio_threshold  // v4:
-			;
-		// State:
-		out << m_last_selected_sector;
-	}
+	// Params:
+	out << options.factorWeights << options.HYSTERESIS_SECTOR_COUNT
+		<< options.PHASE_FACTORS <<  // v3
+		options.TARGET_SLOW_APPROACHING_DISTANCE
+		<< options.TOO_CLOSE_OBSTACLE << options.PHASE_THRESHOLDS  // v3
+		<< options.OBSTACLE_SLOW_DOWN_DISTANCE  // v1
+		<< options.factorNormalizeOrNot  // v2
+		<< options.clearance_threshold_ratio
+		<< options.gap_width_ratio_threshold  // v4:
+		;
+	// State:
+	out << m_last_selected_sector;
 }
 void CHolonomicFullEval::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {

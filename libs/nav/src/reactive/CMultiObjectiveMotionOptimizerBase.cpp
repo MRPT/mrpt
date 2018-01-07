@@ -225,7 +225,7 @@ CMultiObjectiveMotionOptimizerBase::Ptr
 {
 	try
 	{
-		mrpt::utils::registerAllPendingClasses();
+		mrpt::rtti::registerAllPendingClasses();
 
 		// Factory:
 		const mrpt::rtti::TRuntimeClassId* classId =
@@ -321,8 +321,8 @@ void CMultiObjectiveMotionOptimizerBase::TParamsBase::saveToConfigFile(
 	mrpt::config::CConfigFileBase& c, const std::string& s) const
 {
 	// Save: formula_score
-	const int WN = mrpt::utils::MRPT_SAVE_NAME_PADDING(),
-		WV = mrpt::utils::MRPT_SAVE_VALUE_PADDING();
+	const int WN = mrpt::config::MRPT_SAVE_NAME_PADDING(),
+		WV = mrpt::config::MRPT_SAVE_VALUE_PADDING();
 
 	{
 		const std::string sComment =

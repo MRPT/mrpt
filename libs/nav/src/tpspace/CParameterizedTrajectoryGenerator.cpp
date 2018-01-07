@@ -147,7 +147,7 @@ void CParameterizedTrajectoryGenerator::saveToConfigFile(
 }
 
 void CParameterizedTrajectoryGenerator::internal_readFromStream(
-	mrpt::utils::CStream& in)
+	mrpt::serialization::CArchive& in)
 {
 	this->deinitialize();
 
@@ -182,7 +182,7 @@ void CParameterizedTrajectoryGenerator::internal_readFromStream(
 }
 
 void CParameterizedTrajectoryGenerator::internal_writeToStream(
-	mrpt::utils::CStream& out) const
+	mrpt::serialization::CArchive& out) const
 {
 	const uint8_t version = 4;
 	out << version;
@@ -195,8 +195,7 @@ void CParameterizedTrajectoryGenerator::internal_writeToStream(
 double CParameterizedTrajectoryGenerator::index2alpha(
 	uint16_t k, const unsigned int num_paths)
 {
-	ASSERT_BELOW_(k, num_paths)
-
+	ASSERT_BELOW_(k, num_paths);
 	return M_PI * (-1.0 + 2.0 * (k + 0.5) / num_paths);
 }
 
@@ -579,7 +578,7 @@ bool CParameterizedTrajectoryGenerator::TNavDynamicState::operator==(
 }
 
 void mrpt::nav::CParameterizedTrajectoryGenerator::TNavDynamicState::
-	writeToStream(mrpt::utils::CStream& out) const
+	writeToStream(mrpt::serialization::CArchive& out) const
 {
 	const uint8_t version = 0;
 	out << version;
@@ -588,7 +587,7 @@ void mrpt::nav::CParameterizedTrajectoryGenerator::TNavDynamicState::
 }
 
 void mrpt::nav::CParameterizedTrajectoryGenerator::TNavDynamicState::
-	readFromStream(mrpt::utils::CStream& in)
+	readFromStream(mrpt::serialization::CArchive& in)
 {
 	uint8_t version;
 	in >> version;

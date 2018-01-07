@@ -10,6 +10,7 @@
 #include "nav-precomp.h"  // Precomp header
 #include <mrpt/nav/tpspace/CPTG_DiffDrive_alpha.h>
 #include <mrpt/system/os.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::nav;
@@ -68,15 +69,9 @@ void CPTG_DiffDrive_alpha::serializeFrom(mrpt::serialization::CArchive& in, uint
 	};
 }
 
-uint8_t CPTG_DiffDrive_alpha::serializeGetVersion() const { return XX; }
+uint8_t CPTG_DiffDrive_alpha::serializeGetVersion() const { return 0; }
 void CPTG_DiffDrive_alpha::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-	{
-		*version = 0;
-		return;
-	}
-
 	CPTG_DiffDrive_CollisionGridBased::internal_writeToStream(out);
 	out << cte_a0v << cte_a0w;
 }

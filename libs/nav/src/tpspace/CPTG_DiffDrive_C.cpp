@@ -10,6 +10,7 @@
 #include "nav-precomp.h"  // Precomp header
 #include <mrpt/nav/tpspace/CPTG_DiffDrive_C.h>
 #include <mrpt/math/wrap2pi.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::nav;
@@ -53,15 +54,9 @@ void CPTG_DiffDrive_C::serializeFrom(mrpt::serialization::CArchive& in, uint8_t 
 	};
 }
 
-uint8_t CPTG_DiffDrive_C::serializeGetVersion() const { return XX; }
+uint8_t CPTG_DiffDrive_C::serializeGetVersion() const { return 0; }
 void CPTG_DiffDrive_C::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-	{
-		*version = 0;
-		return;
-	}
-
 	CPTG_DiffDrive_CollisionGridBased::internal_writeToStream(out);
 	out << K;
 }
@@ -153,8 +148,8 @@ bool CPTG_DiffDrive_C::inverseMap_WS2TP(
 	// Normalize:
 	d_out = d_out / refDistance;
 
-	ASSERT_ABOVEEQ_(k_out, 0)
-	ASSERT_BELOW_(k_out, m_alphaValuesCount)
+	ASSERT_ABOVEEQ_(k_out, 0);
+	ASSERT_BELOW_(k_out, m_alphaValuesCount);
 
 	return is_exact;
 }

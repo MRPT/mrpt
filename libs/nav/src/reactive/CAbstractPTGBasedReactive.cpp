@@ -19,14 +19,18 @@
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/maps/CPointCloudFilterByDistance.h>
+#include <mrpt/serialization/CArchive.h>
 #include <limits>
 #include <iomanip>
 #include <array>
 
 using namespace mrpt;
+using namespace mrpt::io;
 using namespace mrpt::poses;
 using namespace mrpt::math;
+using namespace mrpt::system;
 using namespace mrpt::nav;
+using namespace mrpt::serialization;
 using namespace std;
 
 // ------ CAbstractPTGBasedReactive::TNavigationParamsPTG -----
@@ -270,11 +274,12 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				// it, so paths can be reconstructed
 				// by invoking initialize()
 				mrpt::io::CMemoryStream buf;
-				buf << *this->getPTG(i);
+				auto arch = archiveFrom(buf);
+				arch << *this->getPTG(i);
 				buf.Seek(0);
 				newLogRec.infoPerPTG[i].ptg = std::dynamic_pointer_cast<
 					mrpt::nav::CParameterizedTrajectoryGenerator>(
-					buf.ReadObject());
+					arch.ReadObject());
 			}
 		}
 	}
@@ -340,8 +345,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 					-1,  // best_ptg_idx,
 					m_robot.getEmergencyStopCmd(), nPTGs,
 					false,  // best_is_NOP_cmdvel,
-					rel_cur_pose_wrt_last_vel_cmd_NOP,
-					rel_pose_PTG_origin_wrt_sense_NOP,
+					rel_cur_pose_wrt_last_vel_cmd_NOP.asTPose(),
+					rel_pose_PTG_origin_wrt_sense_NOP.asTPose(),
 					0,  // executionTimeValue,
 					0,  // tim_changeSpeed,
 					tim_start_iteration);
@@ -966,7 +971,7 @@ void CAbstractPTGBasedReactive::STEP8_GenerateLogRecord(
 	{
 		mrpt::system::CTimeLoggerEntry tle(
 			m_timelogger, "navigationStep.write_log_file");
-		if (m_logFile) (*m_logFile) << newLogRec;
+		if (m_logFile) archiveFrom(*m_logFile) << newLogRec;
 	}
 	// Set as last log record
 	{
@@ -1199,7 +1204,7 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 					predicted_rel_pose);
 				const auto predicted_pose_global =
 					m_lastSentVelCmd.poseVel.rawOdometry + predicted_rel_pose;
-				const double predicted2real_dist = mrpt::math::hypot_fast(
+				const double predicted2real_dist = mrpt::hypot_fast(
 					predicted_pose_global.x - m_curPoseVel.rawOdometry.x,
 					predicted_pose_global.y - m_curPoseVel.rawOdometry.y);
 				newLogRec.additional_debug_msgs["PTG_eval.lastCmdPose(raw)"] =
@@ -1258,7 +1263,7 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	// Factor4: Decrease in euclidean distance between (x,y) and the target:
 	//  Moving away of the target is negatively valued.
 	cm.props["dist_eucl_final"] =
-		mrpt::math::hypot_fast(WS_Target.x - pose.x, WS_Target.y - pose.y);
+		mrpt::hypot_fast(WS_Target.x - pose.x, WS_Target.y - pose.y);
 
 	// dist_eucl_min: Use PTG clearance methods to evaluate the real-world
 	// (WorkSpace) minimum distance to target:
@@ -1644,7 +1649,7 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 			// iterations to slow down accordingly *now*
 			if (ptg->supportVelCmdNOP())
 			{
-				const double v = mrpt::math::hypot_fast(
+				const double v = mrpt::hypot_fast(
 					m_curPoseVel.velLocal.vx, m_curPoseVel.velLocal.vy);
 				const double d = v * ptg->maxTimeInVelCmdNOP(kDirection);
 				obsFreeNormalizedDistance = std::min(
@@ -1928,8 +1933,8 @@ void CAbstractPTGBasedReactive::saveConfigFile(
 			CLASS_ID(CAbstractHolonomicReactiveMethod));
 		for (const auto& cl : lst)
 		{
-			mrpt::utils::CObject::Ptr obj =
-				mrpt::utils::CObject::Ptr(cl->createObject());
+			mrpt::rtti::CObject::Ptr obj =
+				mrpt::rtti::CObject::Ptr(cl->createObject());
 			CAbstractHolonomicReactiveMethod* holo =
 				dynamic_cast<CAbstractHolonomicReactiveMethod*>(obj.get());
 			if (holo)
@@ -1952,8 +1957,8 @@ void CAbstractPTGBasedReactive::saveConfigFile(
 			CLASS_ID(CMultiObjectiveMotionOptimizerBase));
 		for (const auto& cl : lst)
 		{
-			mrpt::utils::CObject::Ptr obj =
-				mrpt::utils::CObject::Ptr(cl->createObject());
+			mrpt::rtti::CObject::Ptr obj =
+				mrpt::rtti::CObject::Ptr(cl->createObject());
 			CMultiObjectiveMotionOptimizerBase* momo =
 				dynamic_cast<CMultiObjectiveMotionOptimizerBase*>(obj.get());
 			if (momo)

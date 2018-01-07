@@ -56,7 +56,7 @@ class CMultiObjMotionOpt_Scalarization
 	virtual void clear() override;
 
    protected:
-	mrpt::math::CRuntimeCompiledExpression m_expr_scalar_formula;
+	mrpt::expr::CRuntimeCompiledExpression m_expr_scalar_formula;
 	std::map<std::string, double> m_expr_scalar_vars;
 
 	// This virtual method is called by decide().
