@@ -58,7 +58,7 @@ size_t CInterfaceFTDI::Write(const void* Buffer, size_t Count)
 	return (size_t)ret;
 }
 
-uint64_t CInterfaceFTDI::Seek(uint64_t Offset, CStream::TSeekOrigin Origin)
+uint64_t CInterfaceFTDI::Seek(int64_t Offset, CStream::TSeekOrigin Origin)
 {
 	return 0;
 }

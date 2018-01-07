@@ -23,6 +23,8 @@ namespace mrpt
 {
 namespace serialization
 {
+class CMessage;
+
 /** Used in mrpt::serialization::CArchive */
 class CExceptionEOF : public std::runtime_error
 {
@@ -298,6 +300,46 @@ class CArchive
 	 * object raises a plain std::exception instead.
 	 */
 	void ReadObject(CSerializable* existingObj);
+
+	/** Send a message to the device.
+	 *  Note that only the low byte from the "type" field will be used.
+	 *
+	 *  For frames of size < 255 the frame format is an array of bytes in this
+	 * order:
+	 *  \code
+	 *  <START_FLAG> <HEADER> <LENGTH> <BODY> <END_FLAG>
+	 *  	<START_FLAG> 	= 0x69
+	 *  	<HEADER> 		= A header byte
+	 *  	<LENGHT>		= Number of bytes of BODY
+	 *  	<BODY>			= N x bytes
+	 *  	<END_FLAG>		= 0X96
+	 *  Total length 	= 	<LENGTH> + 4
+	 *  \endcode
+	 *
+	 *  For frames of size > 255 the frame format is an array of bytes in this
+	 * order:
+	 *  \code
+	 *  <START_FLAG> <HEADER> <HIBYTE(LENGTH)> <LOBYTE(LENGTH)> <BODY>
+	 * <END_FLAG>
+	 *  	<START_FLAG> 	= 0x79
+	 *  	<HEADER> 		= A header byte
+	 *  	<LENGHT>		= Number of bytes of BODY
+	 *  	<BODY>			= N x bytes
+	 *  	<END_FLAG>		= 0X96
+	 *  Total length 	= 	<LENGTH> + 5
+	 *  \endcode
+	 *
+	 * \exception std::exception On communication errors
+	 */
+	void sendMessage(const CMessage& msg);
+
+	/** Tries to receive a message from the device.
+	  * \exception std::exception On communication errors
+	  * \returns True if successful, false if there is no new data from the
+	 * device (but communications seem to work fine)
+	  * \sa The frame format is described in sendMessage()
+	  */
+	bool receiveMessage(CMessage& msg);
 
 	/** Write an object to a stream in the binary MRPT format. */
 	CArchive& operator<<(const CSerializable::Ptr& pObj);

@@ -19,6 +19,7 @@
 #include <mrpt/hwdrivers/CCANBusReader.h>
 
 #include <thread>
+#include <iostream>
 
 IMPLEMENTS_GENERIC_SENSOR(CCANBusReader, mrpt::hwdrivers)
 
@@ -32,6 +33,7 @@ using namespace std;
 using namespace mrpt;
 using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
+using namespace mrpt::system;
 
 char hexCharToInt(char n)
 {

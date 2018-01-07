@@ -10,8 +10,10 @@
 #include "serialization-precomp.h"  // Precompiled headers
 
 #include <mrpt/core/exceptions.h>
+#include <mrpt/core/byte_manip.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CMessage.h>
 #include <cstring> // strlen()
 
 using namespace mrpt::serialization;
@@ -544,8 +546,7 @@ CArchive& mrpt::serialization::operator>>(CArchive& s, std::vector<std::string>&
 	return s;
 }
 
-#if 0
-void CArchive::sendMessage(const utils::CMessage& msg)
+void CArchive::sendMessage(const CMessage& msg)
 {
 	MRPT_START
 
@@ -579,10 +580,7 @@ void CArchive::sendMessage(const utils::CMessage& msg)
 	MRPT_END
 }
 
-/*-------------------------------------------------------------
-receiveMessage
--------------------------------------------------------------*/
-bool CArchive::receiveMessage(utils::CMessage& msg)
+bool CArchive::receiveMessage(CMessage& msg)
 {
 	MRPT_START
 		std::vector<unsigned char> buf(66000);
@@ -615,7 +613,7 @@ bool CArchive::receiveMessage(utils::CMessage& msg)
 		unsigned long nBytesRx = 0;
 		try
 		{
-			nBytesRx = ReadBufferImmediate(&buf[nBytesInFrame], nBytesToRx);
+			nBytesRx = ReadBuffer(&buf[nBytesInFrame], nBytesToRx);
 		}
 		catch (...)
 		{
@@ -670,4 +668,3 @@ bool CArchive::receiveMessage(utils::CMessage& msg)
 	}
 	MRPT_END
 }
-#endif

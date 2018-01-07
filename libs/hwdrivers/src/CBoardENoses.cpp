@@ -93,7 +93,7 @@ bool CBoardENoses::queryFirmwareVersion(string& out_firmwareVersion)
 {
 	try
 	{
-		mrpt::utils::CMessage msg, msgRx;
+		mrpt::serialization::CMessage msg, msgRx;
 
 		// Try to connect to the device:
 		CStream* comms = checkConnectionAndConnect();
@@ -187,7 +187,7 @@ bool CBoardENoses::getObservation(mrpt::obs::CObservationGasSensors& obs)
 
 		if (!comms) return false;
 
-		utils::CMessage msg;
+		mrpt::serialization::CMessage msg;
 		CObservationGasSensors::TObservationENose newRead;
 
 		obs.m_readings.clear();
