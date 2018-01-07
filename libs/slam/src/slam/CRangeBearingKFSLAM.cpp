@@ -430,7 +430,7 @@ void CRangeBearingKFSLAM::OnObservationModel(
 	ASSERTMSG_(
 		obs,
 		"*ERROR*: This method requires an observation of type "
-		"CObservationBearingRange")
+		"CObservationBearingRange");
 	const CPose3DQuat sensorPoseOnRobot =
 		CPose3DQuat(obs->sensorLocationOnRobot);
 
@@ -501,7 +501,7 @@ void CRangeBearingKFSLAM::OnObservationJacobians(
 	ASSERTMSG_(
 		obs,
 		"*ERROR*: This method requires an observation of type "
-		"CObservationBearingRange")
+		"CObservationBearingRange");
 	const CPose3DQuat sensorPoseOnRobot =
 		CPose3DQuat(obs->sensorLocationOnRobot);
 
@@ -583,7 +583,7 @@ void CRangeBearingKFSLAM::OnGetObservationsAndDataAssociation(
 	ASSERTMSG_(
 		obs,
 		"*ERROR*: This method requires an observation of type "
-		"CObservationBearingRange")
+		"CObservationBearingRange");
 
 	const size_t N = obs->sensedData.size();
 	Z.resize(N);
@@ -722,7 +722,7 @@ void CRangeBearingKFSLAM::OnNormalizeStateVector()
 	const double T = std::sqrt(
 		square(m_xkk[3]) + square(m_xkk[4]) + square(m_xkk[5]) +
 		square(m_xkk[6]));
-	ASSERTMSG_(T > 0, "Vehicle pose quaternion norm is not >0!!")
+	ASSERTMSG_(T > 0, "Vehicle pose quaternion norm is not >0!!");
 
 	const double T_ = (m_xkk[3] < 0 ? -1.0 : 1.0) / T;  // qr>=0
 	m_xkk[3] *= T_;
@@ -815,6 +815,8 @@ CRangeBearingKFSLAM::TOptions::TOptions()
   ---------------------------------------------------------------*/
 void CRangeBearingKFSLAM::TOptions::dumpToTextStream(std::ostream& out) const
 {
+	using namespace mrpt::typemeta;
+
 	out << mrpt::format(
 		"\n----------- [CRangeBearingKFSLAM::TOptions] ------------ \n\n");
 
@@ -856,7 +858,7 @@ void CRangeBearingKFSLAM::OnInverseObservationModel(
 	ASSERTMSG_(
 		obs,
 		"*ERROR*: This method requires an observation of type "
-		"CObservationBearingRange")
+		"CObservationBearingRange");
 	const CPose3DQuat sensorPoseOnRobot =
 		CPose3DQuat(obs->sensorLocationOnRobot);
 
@@ -958,7 +960,7 @@ void CRangeBearingKFSLAM::OnNewLandmarkAddedToMap(
 	ASSERTMSG_(
 		obs,
 		"*ERROR*: This method requires an observation of type "
-		"CObservationBearingRange")
+		"CObservationBearingRange");
 
 	// ----------------------------------------------
 	// introduce in the lists of ID<->index in map:
@@ -1392,7 +1394,7 @@ void CRangeBearingKFSLAM::OnPreComputingPredictions(
 	ASSERTMSG_(
 		obs,
 		"*ERROR*: This method requires an observation of type "
-		"CObservationBearingRange")
+		"CObservationBearingRange");
 
 #define USE_HEURISTIC_PREDICTION
 

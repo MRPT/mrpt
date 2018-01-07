@@ -13,6 +13,8 @@
 #error Include this file only from 'CKalmanFilterCapable.h'
 #endif
 
+#include <mrpt/containers/stl_containers_utils.h>
+
 namespace mrpt
 {
 namespace bayes
@@ -29,7 +31,7 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
 	m_timLogger.enable(KF_options.enable_profiler);
 	m_timLogger.enter("KF:complete_step");
 
-	ASSERT_(size_t(m_xkk.size()) == m_pkk.cols();
+	ASSERT_(size_t(m_xkk.size()) == m_pkk.cols());
 	ASSERT_(size_t(m_xkk.size()) >= VEH_SIZE);
 	// =============================================================
 	//  1. CREATE ACTION MATRIX u FROM ODOMETRY
@@ -45,7 +47,7 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
 	{
 		ASSERTDEB_(
 			(((m_xkk.size() - VEH_SIZE) / FEAT_SIZE) * FEAT_SIZE) ==
-			(m_xkk.size() - VEH_SIZE))
+			(m_xkk.size() - VEH_SIZE));
 	}
 
 	// =============================================================
@@ -444,7 +446,7 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
 				if (data_association[i] < 0) continue;
 				const size_t assoc_idx_in_map =
 					static_cast<size_t>(data_association[i]);
-				const size_t assoc_idx_in_pred = mrpt::utils::find_in_vector(
+				const size_t assoc_idx_in_pred = mrpt::containers::find_in_vector(
 					assoc_idx_in_map, predictLMidxs);
 				if (assoc_idx_in_pred == std::string::npos)
 					missing_predictions_to_add.push_back(assoc_idx_in_map);
@@ -534,13 +536,13 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
 								const size_t assoc_idx_in_map =
 									static_cast<size_t>(data_association[i]);
 								const size_t assoc_idx_in_pred =
-									mrpt::utils::find_in_vector(
+									mrpt::containers::find_in_vector(
 										assoc_idx_in_map, predictLMidxs);
 								ASSERTMSG_(
 									assoc_idx_in_pred != string::npos,
 									"OnPreComputingPredictions() didn't "
 									"recommend the prediction of a landmark "
-									"which has been actually observed!")
+									"which has been actually observed!");
 								// TODO: In these cases, extend the prediction
 								// right now instead of launching an
 								// exception... or is this a bad idea??
@@ -585,10 +587,10 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
 						else
 						{  // Non-SLAM problems:
 							ASSERT_(
-								Z.size() == 1 && all_predictions.size() == 1)
+								Z.size() == 1 && all_predictions.size() == 1);
 							ASSERT_(
 								dh_dx_full_obs.rows() == OBS_SIZE &&
-								dh_dx_full_obs.cols() == VEH_SIZE)
+								dh_dx_full_obs.cols() == VEH_SIZE);
 							ASSERT_(Hxs.size() == 1);
 							dh_dx_full_obs = Hxs[0];  // Was: dh_dx_full
 							KFArray_OBS ytilde_i = Z[0];
@@ -737,13 +739,13 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
 						//         with N_pred = |predictLMidxs|
 
 						const size_t i_idx_in_preds =
-							mrpt::utils::find_in_vector(
+							mrpt::containers::find_in_vector(
 								idxInTheFilter, predictLMidxs);
 						ASSERTMSG_(
 							i_idx_in_preds != string::npos,
 							"OnPreComputingPredictions() didn't recommend the "
 							"prediction of a landmark which has been actually "
-							"observed!")
+							"observed!");
 
 						const KFMatrix_OxV& Hx = Hxs[i_idx_in_preds];
 						const KFMatrix_OxF& Hy = Hys[i_idx_in_preds];

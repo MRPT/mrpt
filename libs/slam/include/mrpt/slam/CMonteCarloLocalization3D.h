@@ -42,9 +42,6 @@ class CMonteCarloLocalization3D
 	  */
 	CMonteCarloLocalization3D(size_t M = 1);
 
-	/** Destructor */
-	virtual ~CMonteCarloLocalization3D();
-
 	/** Update the m_particles, predicting the posterior of robot pose and map
 	 * after a movement command.
 	 *  This method has additional configuration parameters in "options".

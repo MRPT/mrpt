@@ -246,11 +246,11 @@ void CRangeBearingKFSLAM2D::OnTransitionJacobian(KFMatrix_VxV& F) const
 
 	if (act3D)
 	{
-		Ap = TPoint2D(CPose2D(act3D->poseChange.mean));
+		Ap = TPoint2D(CPose2D(act3D->poseChange.mean).asTPose());
 	}
 	else if (act2D)
 	{
-		Ap = TPoint2D(act2D->poseChange->getMeanVal());
+		Ap = TPoint2D(act2D->poseChange->getMeanVal().asTPose());
 	}
 	else
 	{
@@ -331,7 +331,7 @@ void CRangeBearingKFSLAM2D::OnObservationModel(
 	ASSERTMSG_(
 		obs,
 		"*ERROR*: This method requires an observation of type "
-		"CObservationBearingRange")
+		"CObservationBearingRange");
 	const CPose2D sensorPoseOnRobot = CPose2D(obs->sensorLocationOnRobot);
 
 	/* -------------------------------------------
@@ -398,7 +398,7 @@ void CRangeBearingKFSLAM2D::OnObservationJacobians(
 	ASSERTMSG_(
 		obs,
 		"*ERROR*: This method requires an observation of type "
-		"CObservationBearingRange")
+		"CObservationBearingRange");
 	const CPose2D sensorPoseOnRobot = CPose2D(obs->sensorLocationOnRobot);
 
 	/* -------------------------------------------
@@ -539,7 +539,7 @@ void CRangeBearingKFSLAM2D::OnGetObservationsAndDataAssociation(
 	ASSERTMSG_(
 		obs,
 		"*ERROR*: This method requires an observation of type "
-		"CObservationBearingRange")
+		"CObservationBearingRange");
 
 	const size_t N = obs->sensedData.size();
 	Z.resize(N);
@@ -553,7 +553,7 @@ void CRangeBearingKFSLAM2D::OnGetObservationsAndDataAssociation(
 		Z[row][1] = itObs->yaw;
 		ASSERTMSG_(
 			itObs->pitch == 0,
-			"ERROR: Observation contains pitch!=0 but this is 2D-SLAM!!!")
+			"ERROR: Observation contains pitch!=0 but this is 2D-SLAM!!!");
 	}
 
 	// Data association:
@@ -792,6 +792,8 @@ CRangeBearingKFSLAM2D::TOptions::TOptions()
   ---------------------------------------------------------------*/
 void CRangeBearingKFSLAM2D::TOptions::dumpToTextStream(std::ostream& out) const
 {
+	using namespace mrpt::typemeta;
+
 	out << mrpt::format(
 		"\n----------- [CRangeBearingKFSLAM2D::TOptions] ------------ \n\n");
 
@@ -848,7 +850,7 @@ void CRangeBearingKFSLAM2D::OnInverseObservationModel(
 	ASSERTMSG_(
 		obs,
 		"*ERROR*: This method requires an observation of type "
-		"CObservationBearingRange")
+		"CObservationBearingRange");
 	const CPose2D sensorPoseOnRobot = CPose2D(obs->sensorLocationOnRobot);
 
 	// Mean of the prior of the robot pose:
@@ -916,7 +918,7 @@ void CRangeBearingKFSLAM2D::OnNewLandmarkAddedToMap(
 	ASSERTMSG_(
 		obs,
 		"*ERROR*: This method requires an observation of type "
-		"CObservationBearingRange")
+		"CObservationBearingRange");
 
 	// ----------------------------------------------
 	// introduce in the lists of ID<->index in map:
@@ -1143,7 +1145,7 @@ void CRangeBearingKFSLAM2D::OnPreComputingPredictions(
 	ASSERTMSG_(
 		obs,
 		"*ERROR*: This method requires an observation of type "
-		"CObservationBearingRange")
+		"CObservationBearingRange");
 
 	const double sensor_max_range = obs->maxSensorDistance;
 	const double fov_yaw = obs->fieldOfView_yaw;

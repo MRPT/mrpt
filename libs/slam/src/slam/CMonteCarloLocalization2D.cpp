@@ -54,7 +54,7 @@ void KLF_loadBinFromParticle(
 	}
 	else
 	{
-		ASSERT_(currentParticleValue)
+		ASSERT_(currentParticleValue);
 		outBin.x = round(currentParticleValue->x() / opts.KLD_binSize_XY);
 		outBin.y = round(currentParticleValue->y() / opts.KLD_binSize_XY);
 		outBin.phi = round(currentParticleValue->phi() / opts.KLD_binSize_PHI);
@@ -87,7 +87,7 @@ TPose3D CMonteCarloLocalization2D::getLastPose(
 		THROW_EXCEPTION("Particle index out of bounds!");
 	is_valid_pose = true;
 	ASSERTDEB_(m_particles[i].d);
-	return TPose3D(TPose2D(*m_particles[i].d));
+	return TPose3D(m_particles[i].d->asTPose());
 }
 
 /*---------------------------------------------------------------
@@ -104,9 +104,9 @@ void CMonteCarloLocalization2D::prediction_and_update_pfStandardProposal(
 
 	if (sf)
 	{  // A map MUST be supplied!
-		ASSERT_(options.metricMap || options.metricMaps.size() > 0)
+		ASSERT_(options.metricMap || options.metricMaps.size() > 0);
 		if (!options.metricMap)
-			ASSERT_(options.metricMaps.size() == m_particles.size();
+			ASSERT_(options.metricMaps.size() == m_particles.size());
 	}
 
 	PF_SLAM_implementation_pfStandardProposal<mrpt::slam::detail::TPoseBin2D>(
@@ -129,9 +129,9 @@ void CMonteCarloLocalization2D::prediction_and_update_pfAuxiliaryPFStandard(
 
 	if (sf)
 	{  // A map MUST be supplied!
-		ASSERT_(options.metricMap || options.metricMaps.size() > 0)
+		ASSERT_(options.metricMap || options.metricMaps.size() > 0);
 		if (!options.metricMap)
-			ASSERT_(options.metricMaps.size() == m_particles.size();
+			ASSERT_(options.metricMaps.size() == m_particles.size());
 	}
 
 	PF_SLAM_implementation_pfAuxiliaryPFStandard<
@@ -155,9 +155,9 @@ void CMonteCarloLocalization2D::prediction_and_update_pfAuxiliaryPFOptimal(
 
 	if (sf)
 	{  // A map MUST be supplied!
-		ASSERT_(options.metricMap || options.metricMaps.size() > 0)
+		ASSERT_(options.metricMap || options.metricMaps.size() > 0);
 		if (!options.metricMap)
-			ASSERT_(options.metricMaps.size() == m_particles.size();
+			ASSERT_(options.metricMaps.size() == m_particles.size());
 	}
 
 	PF_SLAM_implementation_pfAuxiliaryPFOptimal<mrpt::slam::detail::TPoseBin2D>(
@@ -177,7 +177,7 @@ double
 {
 	MRPT_UNUSED_PARAM(PF_options);
 	ASSERT_(
-		options.metricMap || particleIndexForMap < options.metricMaps.size())
+		options.metricMap || particleIndexForMap < options.metricMaps.size());
 
 	CMetricMap* map =
 		(options.metricMap) ? options.metricMap :  // All particles, one map

@@ -552,7 +552,7 @@ template <>
 struct TEnumTypeFiller<hwdrivers::CKinect::TVideoChannel>
 {
 	typedef hwdrivers::CKinect::TVideoChannel enum_t;
-	static void fill(bimap<enum_t, std::string>& m_map)
+	static void fill(internal::bimap<enum_t, std::string>& m_map)
 	{
 		m_map.insert(
 			hwdrivers::CKinect::VIDEO_CHANNEL_RGB, "VIDEO_CHANNEL_RGB");

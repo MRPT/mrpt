@@ -31,6 +31,8 @@ using namespace mrpt::slam;
 using namespace mrpt::maps;
 using namespace mrpt::poses;
 using namespace mrpt::random;
+using namespace mrpt::img;
+using namespace mrpt::system;
 using namespace mrpt::vision;
 using namespace std;
 
@@ -77,7 +79,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 
 	ASSERT_(
 		options.methodSelection == CGridMapAligner::amRobustMatch ||
-		options.methodSelection == CGridMapAligner::amModifiedRANSAC)
+		options.methodSelection == CGridMapAligner::amModifiedRANSAC);
 
 	TReturnInfo outInfo;
 	mrpt::tfest::TMatchingPairList& correspondences =
@@ -373,9 +375,9 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 
 			// The list of SOG modes & their corresponding sub-sets of
 			// matchings:
-			typedef mrpt::aligned_containers<mrpt::tfest::TMatchingPairList,
-											 CPosePDFSOG::TGaussianMode>::map_t
-				TMapMatchingsToPoseMode;
+			using TMapMatchingsToPoseMode = mrpt::aligned_std_map<
+				mrpt::tfest::TMatchingPairList,
+				CPosePDFSOG::TGaussianMode>;
 			TMapMatchingsToPoseMode sog_modes;
 
 			// ---------------------------------------------------------------
@@ -451,7 +453,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 				mrpt::tfest::TMatchingPairList all_corrs = correspondences;
 
 				const size_t nCorrs = all_corrs.size();
-				ASSERT_(nCorrs >= 2)
+				ASSERT_(nCorrs >= 2);
 
 				pdf_SOG->clear();  // Start with 0 Gaussian modes
 

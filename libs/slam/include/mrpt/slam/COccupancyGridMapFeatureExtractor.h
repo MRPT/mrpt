@@ -35,11 +35,6 @@ namespace slam
 class COccupancyGridMapFeatureExtractor : public mrpt::system::CObserver
 {
    public:
-	/** Default ctor */
-	COccupancyGridMapFeatureExtractor();
-	/** Destructor */
-	~COccupancyGridMapFeatureExtractor();
-
 	/** Computes a set of distinctive landmarks from an occupancy grid, and
 	 * store them (previous content is not erased!) into the given landmarks
 	 * map.

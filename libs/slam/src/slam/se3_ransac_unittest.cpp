@@ -26,6 +26,7 @@ using namespace mrpt;
 using namespace mrpt::math;
 using namespace mrpt::random;
 using namespace mrpt::maps;
+using namespace mrpt::tfest;
 using namespace mrpt::poses;
 using namespace std;
 
@@ -82,7 +83,7 @@ bool ransac_data_assoc_run()
 
 	std::vector<std::pair<size_t, float>> idxs;
 	the_map.kdTreeRadiusSearch2D(GT_pose.x(), GT_pose.y(), 1000, idxs);
-	ASSERT_(idxs.size() >= nObs)
+	ASSERT_(idxs.size() >= nObs);
 
 	for (size_t i = 0; i < nObs; i++)
 	{

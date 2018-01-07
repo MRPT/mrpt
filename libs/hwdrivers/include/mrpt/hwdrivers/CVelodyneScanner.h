@@ -434,7 +434,7 @@ template <>
 struct TEnumTypeFiller<hwdrivers::CVelodyneScanner::model_t>
 {
 	typedef hwdrivers::CVelodyneScanner::model_t enum_t;
-	static void fill(bimap<enum_t, std::string>& m_map)
+	static void fill(internal::bimap<enum_t, std::string>& m_map)
 	{
 		m_map.insert(hwdrivers::CVelodyneScanner::VLP16, "VLP16");
 		m_map.insert(hwdrivers::CVelodyneScanner::HDL32, "HDL32");
@@ -446,7 +446,7 @@ template <>
 struct TEnumTypeFiller<hwdrivers::CVelodyneScanner::return_type_t>
 {
 	typedef hwdrivers::CVelodyneScanner::return_type_t enum_t;
-	static void fill(bimap<enum_t, std::string>& m_map)
+	static void fill(internal::bimap<enum_t, std::string>& m_map)
 	{
 		m_map.insert(hwdrivers::CVelodyneScanner::UNCHANGED, "UNCHANGED");
 		m_map.insert(hwdrivers::CVelodyneScanner::STRONGEST, "STRONGEST");

@@ -187,7 +187,7 @@ template <>
 struct TEnumTypeFiller<nav::CHolonomicND::TSituations>
 {
 	typedef nav::CHolonomicND::TSituations enum_t;
-	static void fill(bimap<enum_t, std::string>& m_map)
+	static void fill(internal::bimap<enum_t, std::string>& m_map)
 	{
 		m_map.insert(
 			nav::CHolonomicND::SITUATION_TARGET_DIRECTLY,

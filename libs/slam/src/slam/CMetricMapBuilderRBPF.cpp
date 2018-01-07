@@ -22,8 +22,7 @@ using namespace mrpt::maps;
 using namespace mrpt::obs;
 using namespace mrpt::poses;
 using namespace mrpt::bayes;
-
-using namespace mrpt::utils::metaprogramming;
+using namespace mrpt::img;
 
 /*---------------------------------------------------------------
 						Constructor
@@ -160,12 +159,10 @@ void CMetricMapBuilderRBPF::processActionObservation(
 		 std::abs(odoIncrementSinceLastMapUpdate.yaw()) > insertionAngDistance);
 
 	// Used any "options.alwaysInsertByClass" ??
-	for (CListOfClasses::const_iterator itCl =
-			 options.alwaysInsertByClass.begin();
-		 !do_map_update && itCl != options.alwaysInsertByClass.end(); ++itCl)
-		for (CSensoryFrame::iterator it = observations.begin();
-			 it != observations.end(); ++it)
-			if ((*it)->GetRuntimeClass() == *itCl)
+	for (auto itCl = options.alwaysInsertByClass.data.begin();
+		 !do_map_update && itCl != options.alwaysInsertByClass.data.end(); ++itCl)
+		for (auto & o: observations)
+			if (o->GetRuntimeClass() == *itCl)
 			{
 				do_map_update = true;
 				do_localization = true;
@@ -201,7 +198,7 @@ void CMetricMapBuilderRBPF::processActionObservation(
 				// It must be 2D odometry:
 				CActionRobotMovement2D::Ptr act2D =
 					action.getActionByClass<CActionRobotMovement2D>();
-				ASSERT_(act2D)
+				ASSERT_(act2D);
 				CActionRobotMovement2D newAct;
 				newAct.computeFromOdometry(
 					CPose2D(odoIncrementSinceLastLocalization.mean),
@@ -224,7 +221,7 @@ void CMetricMapBuilderRBPF::processActionObservation(
 
 		pf.executeOn(mapPDF, &fakeActs, &observations);
 
-		if (isLoggingLevelVisible(LVL_INFO))
+		if (isLoggingLevelVisible(mrpt::system::LVL_INFO))
 		{
 			// Get current pose estimation:
 			CPose3DPDFParticles poseEstimation;
@@ -376,10 +373,7 @@ unsigned int CMetricMapBuilderRBPF::getCurrentlyBuiltMapSize()
 	return mapPDF.SFs.size();
 }
 
-/*---------------------------------------------------------------
-					drawCurrentEstimationToImage
-  ---------------------------------------------------------------*/
-void CMetricMapBuilderRBPF::drawCurrentEstimationToImage(utils::CCanvas* img)
+void CMetricMapBuilderRBPF::drawCurrentEstimationToImage(CCanvas* img)
 {
 	using mrpt::round;
 

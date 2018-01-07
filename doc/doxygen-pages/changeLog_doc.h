@@ -1057,7 +1057,7 @@ mrpt::maps::CPointsMap::TInsertionOptions::insertInvalidPoints -
 magnetometers and altimeters. -
 [(commit)](http://code.google.com/p/mrpt/source/detail?r=3451)
 		- Method renamed mrpt::utils::CEnhancedMetaFile::selectVectorTextFont()
-to avoid shadowing mrpt::utils::CCanvas::selectTextFont()
+to avoid shadowing mrpt::CCanvas::selectTextFont()
 		- mrpt::reactivenav::CParameterizedTrajectoryGenerator: New methods:
 			-
 mrpt::reactivenav::CParameterizedTrajectoryGenerator::inverseMap_WS2TP() for

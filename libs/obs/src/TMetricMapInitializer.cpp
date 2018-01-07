@@ -58,6 +58,54 @@ void TMetricMapInitializer::dumpToTextStream(std::ostream& out) const
 	this->dumpToTextStream_map_specific(out);
 }
 
+void TSetOfMetricMapInitializers::loadFromConfigFile(
+	const mrpt::config::CConfigFileBase& ini, const std::string& sectionName)
+{
+	MRPT_START
+
+	using internal::TMetricMapTypesRegistry;
+
+	// Delete previous contents:
+	clear();
+
+	TMetricMapTypesRegistry& mmr = TMetricMapTypesRegistry::Instance();
+
+	const TMetricMapTypesRegistry::TListRegisteredMaps& allMapKinds =
+		mmr.getAllRegistered();
+	for (TMetricMapTypesRegistry::TListRegisteredMaps::const_iterator
+		itMapKind = allMapKinds.begin();
+		itMapKind != allMapKinds.end(); ++itMapKind)
+	{
+		//  ; Creation of maps:
+		//  occupancyGrid_count=<Number of mrpt::maps::COccupancyGridMap2D maps>
+		const std::string sMapName = itMapKind->first;
+
+		unsigned int n =
+			ini.read_uint64_t(sectionName, sMapName + string("_count"), 0);
+		for (unsigned int i = 0; i < n; i++)
+		{
+			TMetricMapInitializer* mi = mmr.factoryMapDefinition(sMapName);
+			ASSERT_(mi);
+
+			// Load from sections formatted like this:
+			// [<sectionName>+"_occupancyGrid_##_creationOpts"]
+			// [<sectionName>+"_occupancyGrid_##_insertOpts"]
+			// [<sectionName>+"_occupancyGrid_##_likelihoodOpts"]
+			// ...
+			// ==> Section prefix:
+			const string sMapSectionsPrefix = mrpt::format(
+				"%s_%s_%02u", sectionName.c_str(), sMapName.c_str(), i);
+			mi->loadFromConfigFile(ini, sMapSectionsPrefix);
+
+			// Add the params to the list:
+			this->push_back(TMetricMapInitializer::Ptr(mi));
+		}
+
+	}  // end for each map kind
+
+	MRPT_END
+}
+
 void TSetOfMetricMapInitializers::dumpToTextStream(std::ostream& out) const
 {
 	MRPT_START

@@ -250,7 +250,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 				// Update the particle with the new pose: this part is
 				// caller-dependant and must be implemented there:
 				PF_SLAM_implementation_custom_update_particle_with_new_pose(
-					me->m_particles[i].d.get(), mrpt::math::TPose3D(finalPose));
+					me->m_particles[i].d.get(), finalPose.asTPose());
 			}
 		}
 		else
@@ -291,7 +291,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 					mrpt::poses::CPose3D(
 						getLastPose(drawn_idx, pose_is_valid)) +
 					increment_i;
-				const mrpt::math::TPose3D newPose_s = newPose;
+				const mrpt::math::TPose3D newPose_s = newPose.asTPose();
 
 				// Add to the new particles list:
 				newParticles.push_back(newPose_s);
@@ -420,7 +420,7 @@ double PF_implementation<PARTICLE_TYPE, MYSELF>::
 	double indivLik, maxLik = -1e300;
 	mrpt::poses::CPose3D maxLikDraw;
 	size_t N = PF_options.pfAuxFilterOptimal_MaximumSearchSamples;
-	ASSERT_(N > 1)
+	ASSERT_(N > 1);
 
 	bool pose_is_valid;
 	const mrpt::poses::CPose3D oldPose =
@@ -459,7 +459,7 @@ double PF_implementation<PARTICLE_TYPE, MYSELF>::
 	me->m_pfAuxiliaryPFOptimal_maxLikelihood[index] = maxLik;
 
 	if (PF_options.pfAuxFilterOptimal_MLE)
-		me->m_pfAuxiliaryPFOptimal_maxLikDrawnMovement[index] = maxLikDraw;
+		me->m_pfAuxiliaryPFOptimal_maxLikDrawnMovement[index] = maxLikDraw.asTPose();
 
 	// and compute the resulting probability of this particle:
 	// ------------------------------------------------------------
@@ -526,7 +526,7 @@ double PF_implementation<PARTICLE_TYPE, MYSELF>::
 		double indivLik, maxLik = -1e300;
 		mrpt::poses::CPose3D maxLikDraw;
 		size_t N = PF_options.pfAuxFilterOptimal_MaximumSearchSamples;
-		ASSERT_(N > 1)
+		ASSERT_(N > 1);
 
 		mrpt::math::CVectorDouble vectLiks(
 			N, 0);  // The vector with the individual log-likelihoods.
@@ -563,7 +563,7 @@ double PF_implementation<PARTICLE_TYPE, MYSELF>::
 		myObj->m_pfAuxiliaryPFOptimal_maxLikelihood[index] = maxLik;
 		if (PF_options.pfAuxFilterOptimal_MLE)
 			myObj->m_pfAuxiliaryPFOptimal_maxLikDrawnMovement[index] =
-				maxLikDraw;
+				maxLikDraw.asTPose();
 
 		// and compute the resulting probability of this particle:
 		// ------------------------------------------------------------
@@ -622,12 +622,9 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 	m_movementDrawer.getSamplingMean3D(meanRobotMovement);
 
 	// Prepare data for executing "fastDrawSample"
-	typedef PF_implementation<PARTICLE_TYPE, MYSELF>
-		TMyClass;  // Use this longer declaration to avoid errors in old GCC.
-	mrpt::bayes::CParticleFilterCapable::TParticleProbabilityEvaluator funcOpt =
-		&TMyClass::template PF_SLAM_particlesEvaluator_AuxPFOptimal<BINTYPE>;
-	mrpt::bayes::CParticleFilterCapable::TParticleProbabilityEvaluator funcStd =
-		&TMyClass::template PF_SLAM_particlesEvaluator_AuxPFStandard<BINTYPE>;
+	using TMyClass = PF_implementation<PARTICLE_TYPE, MYSELF>;
+	auto funcOpt = &TMyClass::template PF_SLAM_particlesEvaluator_AuxPFOptimal<BINTYPE>;
+	auto funcStd = &TMyClass::template PF_SLAM_particlesEvaluator_AuxPFStandard<BINTYPE>;
 
 	me->prepareFastDrawSample(
 		PF_options, USE_OPTIMAL_SAMPLING ? funcOpt : funcStd,
@@ -722,7 +719,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 				newPose, newParticleLogWeight);
 
 			// Insert the new particle
-			newParticles[i] = newPose;
+			newParticles[i] = newPose.asTPose();
 			newParticlesDerivedFromIdx[i] = k;
 			newParticlesWeight[i] = newParticleLogWeight;
 
@@ -912,7 +909,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 				newPose, newParticleLogWeight);
 
 			// Insert the new particle
-			newParticles.push_back(newPose);
+			newParticles.push_back(newPose.asTPose());
 			newParticlesDerivedFromIdx.push_back(k);
 			newParticlesWeight.push_back(newParticleLogWeight);
 
@@ -921,7 +918,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 			//  look if the particle's PATH falls into a new bin or not:
 			// ----------------------------------------------------------------
 			BINTYPE p;
-			const mrpt::math::TPose3D newPose_s = newPose;
+			const mrpt::math::TPose3D newPose_s = newPose.asTPose();
 			KLF_loadBinFromParticle<PARTICLE_TYPE, BINTYPE>(
 				p, KLD_options, me->m_particles[k].d.get(), &newPose_s);
 
@@ -1077,7 +1074,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 				if (poseLogLik > bestTryByNow_loglik)
 				{
 					bestTryByNow_loglik = poseLogLik;
-					bestTryByNow_pose = out_newPose;
+					bestTryByNow_pose = out_newPose.asTPose();
 				}
 
 				double ratioLikLik = std::exp(
