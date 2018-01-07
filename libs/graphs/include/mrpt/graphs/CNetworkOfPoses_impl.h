@@ -209,7 +209,7 @@ struct graph_ops
 		const graph_t* g, mrpt::serialization::CArchive& out)
 	{
 		// Store class name:
-		const std::string sClassName = TTypeName<graph_t>::get();
+		const std::string sClassName = mrpt::typemeta::TTypeName<graph_t>::get();
 		out << sClassName;
 
 		// Store serialization version & object data:
@@ -225,7 +225,7 @@ struct graph_ops
 		graph_t* g, mrpt::serialization::CArchive& in)
 	{
 		// Compare class name:
-		const std::string sClassName = TTypeName<graph_t>::get();
+		const std::string sClassName = mrpt::typemeta::TTypeName<graph_t>::get();
 		std::string sStoredClassName;
 		in >> sStoredClassName;
 		ASSERT_EQUAL_(sStoredClassName, sClassName);

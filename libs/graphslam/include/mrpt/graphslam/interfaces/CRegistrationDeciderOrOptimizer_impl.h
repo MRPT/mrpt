@@ -50,7 +50,7 @@ void CRegistrationDeciderOrOptimizer<GRAPH_T>::initializeLoggers(
 
 	// just for the messages until reading the actual verbosity level, set it to
 	// debug.
-	this->setMinLoggingLevel(LVL_DEBUG);
+	this->setMinLoggingLevel(mrpt::system::LVL_DEBUG);
 	MRPT_LOG_DEBUG_STREAM("Initialized time, output logger instances." << endl);
 }
 

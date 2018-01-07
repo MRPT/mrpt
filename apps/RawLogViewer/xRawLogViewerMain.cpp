@@ -52,6 +52,7 @@
 #include <mrpt/math/ops_matrices.h>  // << ops
 #include <mrpt/math/ops_vectors.h>  // << ops
 #include <mrpt/math/wrap2pi.h>
+#include <mrpt/core/aligned_std_map.h>
 
 #include <mrpt/obs/CObservationComment.h>
 #include <mrpt/obs/CObservationOdometry.h>
@@ -5300,8 +5301,8 @@ void xRawLogViewerFrame::OnMenuChangePosesBatch(wxCommandEvent& event)
 			std::vector<std::string>(string(dialog.edText->GetValue().mb_str())));
 
 		// make a list  "sensor_label -> sensor_pose" by parsing the ini-file:
-		typedef mrpt::aligned_containers<
-			std::string, mrpt::poses::CPose3D>::map_t TSensor2PoseMap;
+		using TSensor2PoseMap = mrpt::aligned_std_map<
+			std::string, mrpt::poses::CPose3D>;
 		TSensor2PoseMap desiredSensorPoses;
 		std::map<std::string, mrpt::obs::CObservationImage> desiredCamParams;
 

@@ -6,11 +6,11 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef GRAPH_SLAM_TYPES_H
-#define GRAPH_SLAM_TYPES_H
+#pragma once
 
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/poses/SE_traits.h>
+#include <mrpt/core/aligned_std_map.h>
 #include <functional>
 
 namespace mrpt
@@ -32,27 +32,25 @@ template <class GRAPH_T>
 struct graphslam_traits
 {
 	/** Typ:  mrpt::graphs::CNetworkOfPoses<...> */
-	typedef GRAPH_T graph_t;
-	typedef typename graph_t::edges_map_t::const_iterator edge_const_iterator;
-	typedef typename graph_t::constraint_t edge_t;
-	typedef typename edge_t::type_value edge_poses_type;
-	typedef mrpt::poses::SE_traits<edge_poses_type::rotation_dimensions>
-		SE_TYPE;
-	typedef typename SE_TYPE::matrix_VxV_t matrix_VxV_t;
-	typedef typename SE_TYPE::array_t Array_O;  // An array of the correct size
+	using graph_t = GRAPH_T;
+	using edge_const_iterator = typename graph_t::edges_map_t::const_iterator;
+	using edge_t = typename graph_t::constraint_t;
+	using edge_poses_type = typename edge_t::type_value;
+	using SE_TYPE = mrpt::poses::SE_traits<edge_poses_type::rotation_dimensions>;
+	using matrix_VxV_t = typename SE_TYPE::matrix_VxV_t;
+	using Array_O = typename SE_TYPE::array_t;  // An array of the correct size
 	// for an "observation" (i.e. a
 	// relative pose in an edge)
-	typedef std::pair<matrix_VxV_t, matrix_VxV_t> TPairJacobs;
-	typedef typename mrpt::aligned_containers<mrpt::utils::TPairNodeIDs,
-											  TPairJacobs>::multimap_t
-		map_pairIDs_pairJacobs_t;
+	using TPairJacobs = std::pair<matrix_VxV_t, matrix_VxV_t>;
+	using map_pairIDs_pairJacobs_t =
+		mrpt::aligned_std_multimap<mrpt::graphs::TPairNodeIDs,TPairJacobs>;
 
 	/** Auxiliary struct used in graph-slam implementation: It holds the
 	 * relevant information for each of the constraints being taking into
 	 * account. */
 	struct observation_info_t
 	{
-		typedef graphslam_traits<GRAPH_T> gst;
+		using gst = graphslam_traits<GRAPH_T>;
 		// Data:
 		typename gst::edge_const_iterator edge;
 		const typename gst::graph_t::constraint_t::type_value* edge_mean;
@@ -78,5 +76,3 @@ struct TResultInfoSpaLevMarq
 
 }  // End of namespace
 }  // End of namespace
-
-#endif

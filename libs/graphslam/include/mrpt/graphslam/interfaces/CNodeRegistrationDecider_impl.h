@@ -59,13 +59,14 @@ bool CNodeRegistrationDecider<GRAPH_T>::registerNewNodeAtEnd(
 	const typename GRAPH_T::constraint_t& constraint)
 {
 	MRPT_START;
-		using namespace std;
+	using namespace std;
+	using mrpt::graphs::TNodeID;
 
 	// register the initial node if it doesn't exist.
 	// Runs only once.
 	if (this->m_prev_registered_nodeID == INVALID_NODEID)
 	{  // root
-		MRPT_LOG_WARN_STREAM("Registering root node..." << endl);
+		MRPT_LOG_WARN("Registering root node...");
 		global_pose_t tmp_pose = this->getCurrentRobotPosEstimation();
 		this->addNodeAnnotsToPose(&tmp_pose);
 

@@ -9,6 +9,7 @@
 
 #include "rawlog-edit-declarations.h"
 #include <mrpt/config/CConfigFile.h>
+#include <mrpt/core/aligned_std_map.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;
@@ -29,8 +30,8 @@ DECLARE_OP_FUNCTION(op_sensors_pose)
 	   protected:
 		TOutputRawlogCreator outrawlog;
 
-		typedef mrpt::aligned_containers<
-			std::string, mrpt::poses::CPose3D>::map_t TSensor2PoseMap;
+		using TSensor2PoseMap = mrpt::aligned_std::map<
+			std::string, mrpt::poses::CPose3D>;
 		TSensor2PoseMap desiredSensorPoses;
 
 	   public:

@@ -24,7 +24,7 @@ CICPCriteriaNRD<GRAPH_T>::CICPCriteriaNRD()
 	: params(*this)  // pass reference to self when initializing the parameters
 // m_mahal_distance_ICP_odom("Mahalanobis dist (ICP - odom)")
 {
-		using namespace mrpt::math;
+	using namespace mrpt::math;
 	this->initializeLoggers("CICPCriteriaNRD");
 
 	m_is_using_3DScan = false;
@@ -39,7 +39,7 @@ CICPCriteriaNRD<GRAPH_T>::CICPCriteriaNRD()
 	m_times_used_ICP = 0;
 	m_times_used_odom = 0;
 
-	this->logFmt(LVL_DEBUG, "Initialized class object");
+	this->logFmt(mrpt::system::LVL_DEBUG, "Initialized class object");
 }
 template <class GRAPH_T>
 CICPCriteriaNRD<GRAPH_T>::~CICPCriteriaNRD()
@@ -167,18 +167,12 @@ bool CICPCriteriaNRD<GRAPH_T>::checkRegistrationCondition2D()
 		&icp_info);
 
 	// Debugging directives
-	this->logFmt(
-		LVL_DEBUG,
-		">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-	this->logFmt(
-		LVL_DEBUG, "ICP Alignment operation:\tnIterations: %d\tgoodness: %.f\n",
+	MRPT_LOG_DEBUG(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+	MRPT_LOG_DEBUG_FMT("ICP Alignment operation:\tnIterations: %d\tgoodness: %.f\n",
 		icp_info.nIterations, icp_info.goodness);
-
-	this->logFmt(
-		LVL_DEBUG, "Current ICP constraint: \n\tEdge: %s\n\tNorm: %f",
+	MRPT_LOG_DEBUG_FMT("Current ICP constraint: \n\tEdge: %s\n\tNorm: %f",
 		rel_edge.getMeanVal().asString().c_str(), rel_edge.getMeanVal().norm());
-	this->logFmt(
-		LVL_DEBUG,
+	MRPT_LOG_DEBUG_FMT(
 		"Corresponding Odometry constraint: \n\tEdge: %s\n\tNorm: %f",
 		m_latest_odometry_PDF.getMeanVal().asString().c_str(),
 		m_latest_odometry_PDF.getMeanVal().norm());
@@ -206,18 +200,18 @@ bool CICPCriteriaNRD<GRAPH_T>::checkRegistrationCondition2D()
 	if (mahal_distance < mahal_distance_lim ||
 		m_latest_odometry_PDF.getMeanVal().norm() == 0)
 	{
-		this->logFmt(LVL_DEBUG, "Using ICP Edge");
+		MRPT_LOG_DEBUG("Using ICP Edge");
 		m_times_used_ICP++;
 	}
 	else
 	{
-		this->logFmt(LVL_DEBUG, "Using Odometry Edge");
+		MRPT_LOG_DEBUG("Using Odometry Edge");
 		rel_edge.copyFrom(m_latest_odometry_PDF);
 		m_times_used_odom++;
 	}
-	this->logFmt(LVL_DEBUG, "\tMahalanobis Distance = %f", mahal_distance);
-	this->logFmt(
-		LVL_DEBUG, "Times that the ICP Edge was used: %d/%d", m_times_used_ICP,
+	MRPT_LOG_DEBUG_FMT("\tMahalanobis Distance = %f", mahal_distance);
+	MRPT_LOG_DEBUG_FMT(
+		"Times that the ICP Edge was used: %d/%d", m_times_used_ICP,
 		m_times_used_ICP + m_times_used_odom);
 
 	// update the PDF until last registered node
@@ -229,9 +223,7 @@ bool CICPCriteriaNRD<GRAPH_T>::checkRegistrationCondition2D()
 	m_last_odometry_only_pose = m_curr_odometry_only_pose;
 	this->resetPDF(&m_latest_odometry_PDF);
 
-	this->logFmt(
-		LVL_DEBUG,
-		"<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+	MRPT_LOG_DEBUG("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 	return registered_new_node;
 	MRPT_END;
 }  // end of checkRegistrationCondition2D
@@ -255,7 +247,7 @@ template <class GRAPH_T>
 bool CICPCriteriaNRD<GRAPH_T>::checkRegistrationCondition()
 {
 	MRPT_START;
-		this->logFmt(LVL_DEBUG, "In checkRegistrationCondition");
+	MRPT_LOG_DEBUG("In checkRegistrationCondition");
 	using namespace mrpt::math;
 
 	// Criterions for adding a new node
@@ -300,12 +292,12 @@ void CICPCriteriaNRD<GRAPH_T>::loadParams(const std::string& source_fname)
 	//"NodeRegistrationDeciderParameters");
 
 	// set the logging level if given by the user
-	CConfigFile source(source_fname);
+	mrpt::config::CConfigFile source(source_fname);
 	// Minimum verbosity level of the logger
 	int min_verbosity_level = source.read_int(
 		"NodeRegistrationDeciderParameters", "class_verbosity", 1, false);
-	this->setMinLoggingLevel(VerbosityLevel(min_verbosity_level));
-	this->logFmt(LVL_DEBUG, "Successfully loaded parameters.");
+	this->setMinLoggingLevel(mrpt::system::VerbosityLevel(min_verbosity_level));
+	MRPT_LOG_DEBUG("Successfully loaded parameters.");
 	MRPT_END;
 }  // end of loadParams
 

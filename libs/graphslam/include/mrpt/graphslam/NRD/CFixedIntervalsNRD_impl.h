@@ -22,9 +22,8 @@ namespace deciders
 template <class GRAPH_T>
 CFixedIntervalsNRD<GRAPH_T>::CFixedIntervalsNRD()
 {
-		this->initializeLoggers("CFixedIntervalsNRD");
-
-	this->logFmt(LVL_DEBUG, "IntervalsNRD: Initialized class object");
+	this->initializeLoggers("CFixedIntervalsNRD");
+	MRPT_LOG_DEBUG("IntervalsNRD: Initialized class object");
 }
 template <class GRAPH_T>
 CFixedIntervalsNRD<GRAPH_T>::~CFixedIntervalsNRD()
@@ -58,8 +57,7 @@ bool CFixedIntervalsNRD<GRAPH_T>::updateState(
 				std::dynamic_pointer_cast<CObservationOdometry>(observation);
 			// not incremental - gives the absolute odometry reading
 			m_curr_odometry_only_pose = pose_t(obs_odometry->odometry);
-			this->logFmt(
-				LVL_DEBUG, "Current odometry-only pose: %s",
+			MRPT_LOG_DEBUG_FMT("Current odometry-only pose: %s",
 				m_curr_odometry_only_pose.asString().c_str());
 
 			// I don't have any information about the covariane of the move in
@@ -172,12 +170,12 @@ void CFixedIntervalsNRD<GRAPH_T>::loadParams(const std::string& source_fname)
 		source_fname, "NodeRegistrationDeciderParameters");
 
 	// set the logging level if given by the user
-	CConfigFile source(source_fname);
+	mrpt::config::CConfigFile source(source_fname);
 	int min_verbosity_level = source.read_int(
 		"NodeRegistrationDeciderParameters", "class_verbosity", 1, false);
-	this->setMinLoggingLevel(VerbosityLevel(min_verbosity_level));
+	this->setMinLoggingLevel(mrpt::system::VerbosityLevel(min_verbosity_level));
 
-	this->logFmt(LVL_DEBUG, "Successfully loaded parameters.");
+	MRPT_LOG_DEBUG("Successfully loaded parameters.");
 	MRPT_END;
 }
 

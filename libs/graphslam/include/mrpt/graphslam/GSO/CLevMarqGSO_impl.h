@@ -52,7 +52,7 @@ bool CLevMarqGSO<GRAPH_T>::updateState(
 	mrpt::obs::CObservation::Ptr observation)
 {
 	MRPT_START;
-	this->logFmt(LVL_DEBUG, "In updateOptimizerState... ");
+	MRPT_LOG_DEBUG("In updateOptimizerState... ");
 
 	if (this->m_graph->nodeCount() > m_last_total_num_of_nodes)
 	{
@@ -219,7 +219,7 @@ inline void CLevMarqGSO<GRAPH_T>::updateGraphVisualization()
 		format(
 			"Optimized Graph: #nodes %d",
 			static_cast<int>(this->m_graph->nodeCount())),
-		TColorf(0.0, 0.0, 0.0),
+		mrpt::img::TColorf(0.0, 0.0, 0.0),
 		/* unique_index = */ viz_params.text_index_graph);
 
 	this->m_win->forceRepaint();
@@ -431,7 +431,7 @@ void CLevMarqGSO<GRAPH_T>::_optimizeGraph(bool is_full_update /*=false*/)
 		return;
 	}
 
-	CTicTac optimization_timer;
+	mrpt::system::CTicTac optimization_timer;
 	optimization_timer.Tic();
 
 	// set of nodes for which the optimization procedure will take place
@@ -496,15 +496,14 @@ bool CLevMarqGSO<GRAPH_T>::checkForLoopClosures()
 	MRPT_START;
 
 	bool is_loop_closure = false;
-	typename GRAPH_T::edges_map_t curr_pair_nodes_to_edge =
-		this->m_graph->edges;
+	auto curr_pair_nodes_to_edge = this->m_graph->edges;
 
 	// find the *node pairs* that exist in current but not the last
 	// nodes_to_edge
 	// map If the distance of any of these pairs is greater than
 	// LC_min_nodeid_diff then consider this a loop closure
 	typename GRAPH_T::edges_map_t::const_iterator search;
-	mrpt::utils::TPairNodeIDs curr_pair;
+	mrpt::graphs::TPairNodeIDs curr_pair;
 
 	for (typename GRAPH_T::edges_map_t::const_iterator it =
 			 curr_pair_nodes_to_edge.begin();
@@ -675,7 +674,7 @@ void CLevMarqGSO<GRAPH_T>::loadParams(const std::string& source_fname)
 	opt_params.loadFromConfigFileName(source_fname, "OptimizerParameters");
 	viz_params.loadFromConfigFileName(source_fname, "VisualizationParameters");
 
-	CConfigFile source(source_fname);
+	mrpt::config::CConfigFile source(source_fname);
 
 	// TODO - check that these work
 	m_max_used_consec_lcs = source.read_int(
@@ -689,9 +688,9 @@ void CLevMarqGSO<GRAPH_T>::loadParams(const std::string& source_fname)
 	// Minimum verbosity level of the logger
 	int min_verbosity_level =
 		source.read_int("OptimizerParameters", "class_verbosity", 1, false);
-	this->setMinLoggingLevel(VerbosityLevel(min_verbosity_level));
+	this->setMinLoggingLevel(mrpt::system::VerbosityLevel(min_verbosity_level));
 
-	this->logFmt(mrpt::system::LVL_DEBUG, "Successfully loaded Params. ");
+	MRPT_LOG_DEBUG("Successfully loaded Params. ");
 	m_has_read_config = true;
 
 	MRPT_END;
@@ -747,6 +746,61 @@ CLevMarqGSO<GRAPH_T>::OptimizationParams::~OptimizationParams()
 template <class GRAPH_T>
 void CLevMarqGSO<GRAPH_T>::OptimizationParams::dumpToTextStream(
 	std::ostream& out) const
+{
+	MRPT_START;
+	out<<"-----------[ Levenberg-Marquardt Optimization ] -------\n";
+	out <<
+		"Optimization on second thread  = "<<
+		(optimization_on_second_thread ? "TRUE" : "FALSE") << std::endl;
+	out <<
+		"Optimize nodes in distance     = "<< optimization_distance<<"\n";
+	out << "Min. node difference for LC    = "<< LC_min_nodeid_diff<<"\n";
+	out << cfg.getAsString() << std::endl;
+	MRPT_END;
+}
+template <class GRAPH_T>
+void CLevMarqGSO<GRAPH_T>::OptimizationParams::loadFromConfigFile(
+	const mrpt::config::CConfigFileBase& source, const std::string& section)
+{
+	MRPT_START;
+	optimization_on_second_thread = source.read_bool(
+		section, "optimization_on_second_thread", false, false);
+	LC_min_nodeid_diff = source.read_int(
+		"GeneralConfiguration", "LC_min_nodeid_diff", 30, false);
+	optimization_distance =
+		source.read_double(section, "optimization_distance", 5, false);
+	// asert the previous value
+	ASSERTMSG_(
+		optimization_distance == 1 || optimization_distance > 0,
+		format(
+			"Invalid value for optimization distance: %.2f",
+			optimization_distance));
+
+	// optimization parameters
+	cfg["verbose"] = source.read_bool(section, "verbose", 0, false);
+	cfg["profiler"] = source.read_bool(section, "profiler", 0, false);
+	cfg["max_iterations"] =
+		source.read_double(section, "max_iterations", 100, false);
+	cfg["scale_hessian"] =
+		source.read_double("Optimization", "scale_hessian", 0.2, false);
+	cfg["tau"] = source.read_double(section, "tau", 1e-3, false);
+
+	MRPT_END;
+}
+
+// GraphVisualizationParams
+//////////////////////////////////////////////////////////////
+template <class GRAPH_T>
+CLevMarqGSO<GRAPH_T>::GraphVisualizationParams::GraphVisualizationParams()
+	: keystroke_graph_toggle("s"), keystroke_graph_autofit("a")
+{
+}
+template <class GRAPH_T>
+CLevMarqGSO<GRAPH_T>::GraphVisualizationParams::~GraphVisualizationParams()
+{
+}
+template <class GRAPH_T>
+void CLevMarqGSO<GRAPH_T>::GraphVisualizationParams::dumpToTextStream(std::ostream& out) const
 {
 	MRPT_START;
 

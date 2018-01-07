@@ -105,7 +105,7 @@ class CConfigFileBase
 		const std::string& comment = std::string())
 	{
 		writeString(
-			section, name, mrpt::system::num2str(value), name_padding_width,
+			section, name, mrpt::to_string(value), name_padding_width,
 			value_padding_width, comment);
 	}
 	template <typename data_t>
@@ -119,7 +119,7 @@ class CConfigFileBase
 		for (typename std::vector<data_t>::const_iterator it = value.begin();
 			 it != value.end(); ++it)
 		{
-			s += mrpt::system::num2str(*it);
+			s += mrpt::to_string(*it);
 			s += " ";
 		}
 		writeString(

@@ -134,6 +134,7 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 	ASSERTMSG_(viz_params, "Pointer to viz_params was not provided.");
 
 	using namespace mrpt::opengl;
+	using namespace mrpt::img;
 	
 	const double nodes_point_size =
 		viz_params->getWithDefaultVal("nodes_point_size", 0.);
@@ -212,7 +213,9 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
 {
 	using namespace mrpt::opengl;
-		ASSERTMSG_(viz_params, "Pointer to viz_params was not provided.");
+	using namespace mrpt::img;
+	using mrpt::graphs::TNodeID;
+	ASSERTMSG_(viz_params, "Pointer to viz_params was not provided.");
 
 	const double nodes_edges_corner_scale =
 		viz_params->getWithDefaultVal("nodes_edges_corner_scale", 0.4);
@@ -222,8 +225,7 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 		edge_rel_poses_color & 0xffffff, edge_rel_poses_color >> 24);
 	const double edge_width = viz_params->getWithDefaultVal("edge_width", 2.);
 
-	for (typename GRAPH_T::const_iterator edge_it = m_graph.begin();
-		 edge_it != m_graph.end(); ++edge_it)
+	for (auto edge_it = m_graph.begin();edge_it != m_graph.end(); ++edge_it)
 	{
 		// Node ID of the source pose:
 		const TNodeID node_id_start = m_graph.edges_store_inverse_poses
@@ -280,7 +282,9 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
 {
 	using namespace mrpt::opengl;
-		ASSERTMSG_(viz_params, "Pointer to viz_params was not provided.");
+	using namespace mrpt::img;
+	using namespace mrpt::poses;
+	ASSERTMSG_(viz_params, "Pointer to viz_params was not provided.");
 
 	CSetOfLines::Ptr gl_edges = mrpt::make_aligned_shared<CSetOfLines>();
 	const unsigned int edge_color =
