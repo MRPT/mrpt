@@ -166,7 +166,7 @@ class CInterfaceFTDI : public mrpt::io::CStream
 	/** This virtual method does nothing in this class.
 	 */
 	uint64_t Seek(
-		uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning);
+		int64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning);
 
 	/** This virtual method does nothing in this class.
 	 */

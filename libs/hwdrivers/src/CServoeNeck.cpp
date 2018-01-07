@@ -43,7 +43,7 @@ bool CServoeNeck::queryFirmwareVersion(std::string& out_firmwareVersion)
 {
 	try
 	{
-		utils::CMessage msg, msgRx;
+		mrpt::serialization::CMessage msg, msgRx;
 
 		// Try to connect to the device:
 		if (!checkConnectionAndConnect()) return false;
@@ -125,7 +125,7 @@ bool CServoeNeck::setRegisterValue(
 	{
 		if (!isOpen()) return false;
 
-		utils::CMessage msg, msgRx;
+		mrpt::serialization::CMessage msg, msgRx;
 
 		// Send cmd for setting the value of the register:
 		// ------------------------------------------------
@@ -163,7 +163,7 @@ bool CServoeNeck::setRegisterValueAndSpeed(
 	{
 		if (!isOpen()) return false;
 
-		utils::CMessage msg, msgRx;
+		mrpt::serialization::CMessage msg, msgRx;
 
 		// Send cmd for setting the value of the register:
 		// ------------------------------------------------
@@ -200,7 +200,7 @@ bool CServoeNeck::getRegisterValue(uint16_t& value, const uint8_t servo)
 	{
 		if (!isOpen()) return false;
 
-		utils::CMessage msg, msgRx;
+		mrpt::serialization::CMessage msg, msgRx;
 
 		// Send cmd for obtaining the value of the OCR1A register:
 		// --------------------------------------------------------
@@ -330,7 +330,7 @@ bool CServoeNeck::disableServo(const uint8_t servo)
 	{
 		if (!isOpen()) return false;
 
-		utils::CMessage msg, msgRx;
+		mrpt::serialization::CMessage msg, msgRx;
 
 		// Send cmd for disabling servo:
 		// ----------------------------
@@ -361,7 +361,7 @@ bool CServoeNeck::enableServo(const uint8_t servo)
 	{
 		if (!isOpen()) return false;
 
-		utils::CMessage msg, msgRx;
+		mrpt::serialization::CMessage msg, msgRx;
 
 		// Send cmd for enabling the servo:
 		// --------------------------------

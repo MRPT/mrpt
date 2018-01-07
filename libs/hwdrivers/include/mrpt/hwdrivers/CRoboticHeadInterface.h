@@ -49,7 +49,7 @@ class CRoboticHeadInterface : public mrpt::system::COutputLogger
 {
    private:
 	mrpt::comms::CInterfaceFTDI m_usbConnection;
-	utils::CMessage msg;
+	mrpt::serialization::CMessage msg;
 	std::string m_serialNumber;
 	std::vector<int32_t> gain;
 	int head_yaw, head_pitch;

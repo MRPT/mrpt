@@ -86,7 +86,7 @@ class CBoardENoses : public mrpt::hwdrivers::CGenericSensor
 	/** Tries to connect to the USB device (if disconnected).
 	  * \return nullptr on error, otherwise a stream to be used for comms.
 	  */
-	mrpt::utils::CStream* checkConnectionAndConnect();
+	mrpt::io::CStream* checkConnectionAndConnect();
 
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(

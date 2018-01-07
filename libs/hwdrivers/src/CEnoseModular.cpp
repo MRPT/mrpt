@@ -139,7 +139,7 @@ bool CEnoseModular::getObservation(mrpt::obs::CObservationGasSensors& obs)
 		// N_senosrs
 		// Modular-nose provides a 4B+body frame lenght
 
-		mrpt::utils::CMessage msg;
+		mrpt::serialization::CMessage msg;
 		bool time_out = false;
 		mrpt::system::TTimeStamp t1 = mrpt::system::getCurrentLocalTime();
 		double time_out_val = 1;  // seconds
