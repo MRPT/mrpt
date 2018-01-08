@@ -12,6 +12,7 @@
 #include <mrpt/system/datetime.h>
 #include <mrpt/opengl/opengl_frwds.h>
 #include <mrpt/img/TColor.h>
+#include <mrpt/config/CConfigFileBase.h>
 #include <vector>
 #include <string>
 
@@ -24,12 +25,12 @@ struct TWaypoint
 {
 	/** [Must be set by the user] Coordinates of desired target location
 	 * (world/global coordinates).
-	  * \sa target_heading */
+	 * \sa target_heading */
 	mrpt::math::TPoint2D target;
 	/** [Default=any heading] Optionally, set to the desired orientation
 	 * [radians]
-	  * of the robot at this waypoint. Some navigator implementations may ignore
-	  * this preferred heading anyway, read the docs of each implementation to
+	 * of the robot at this waypoint. Some navigator implementations may ignore
+	 * this preferred heading anyway, read the docs of each implementation to
 	 * find it out. */
 	double target_heading;
 
@@ -43,12 +44,12 @@ struct TWaypoint
 
 	/** [Default=true] Whether it is allowed to the navigator to proceed to a
 	 * more advanced waypoint
-	  * in the sequence if it determines that it is easier to skip this one
+	 * in the sequence if it determines that it is easier to skip this one
 	 * (e.g. it seems blocked by dynamic obstacles).
-	  * This value is ignored for the last waypoint in a sequence, since it is
+	 * This value is ignored for the last waypoint in a sequence, since it is
 	 * always considered to be the
-	  * ultimate goal and hence not subject to be skipped.
-	  */
+	 * ultimate goal and hence not subject to be skipped.
+	 */
 	bool allow_skip;
 
 	/** Check whether all the minimum mandatory fields have been filled by the
@@ -63,7 +64,7 @@ struct TWaypoint
 	std::string getAsText() const;
 
 	/** The default value of fields (used to detect non-set values) */
-	static const int INVALID_NUM{ -100000 };
+	static const int INVALID_NUM{-100000};
 };
 
 /** used in getAsOpenglVisualization() */
@@ -141,8 +142,8 @@ struct TWaypointStatusSequence
 	bool final_goal_reached;
 	/** Index in `waypoints` of the waypoint the navigator is currently trying
 	 * to reach.
-	  * This will point to the last waypoint after navigation ends successfully.
-	  * Its value is `-1` if navigation has not started yet */
+	 * This will point to the last waypoint after navigation ends successfully.
+	 * Its value is `-1` if navigation has not started yet */
 	int waypoint_index_current_goal;
 
 	/** Robot pose at last time step (has INVALID_NUM fields upon
@@ -161,5 +162,5 @@ struct TWaypointStatusSequence
 		const mrpt::nav::TWaypointsRenderingParams& params =
 			mrpt::nav::TWaypointsRenderingParams()) const;
 };
-}
-}
+}  // namespace nav
+}  // namespace mrpt

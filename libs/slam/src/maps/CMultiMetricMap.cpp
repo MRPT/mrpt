@@ -44,7 +44,7 @@ struct MapExecutor
 	// Apply operation to maps in the same order as declared in
 	// CMultiMetricMap.h:
 	template <typename OP>
-	static void run(const CMultiMetricMap& _mmm, OP& op)
+	static void run(const CMultiMetricMap& _mmm, OP op)
 	{
 		MRPT_START
 		CMultiMetricMap& mmm =
@@ -250,7 +250,9 @@ void CMultiMetricMap::setListOfMaps(
 
 void CMultiMetricMap::internal_clear()
 {
-	MapExecutor::run(*this, [](auto &ptr) {if (ptr) ptr->clear(); });
+	MapExecutor::run(*this, [](auto ptr) {
+		if (ptr) ptr->clear();
+	});
 }
 
 void CMultiMetricMap::deleteAllMaps()
@@ -269,7 +271,8 @@ void CMultiMetricMap::serializeTo(mrpt::serialization::CArchive& out) const
 	for (uint32_t i = 0; i < n; i++) out << *maps[i];
 }
 
-void CMultiMetricMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CMultiMetricMap::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -431,9 +434,9 @@ void CMultiMetricMap::auxParticleFilterCleanUp()
 }
 
 /** If the map is a simple points map or it's a multi-metric map that contains
-* EXACTLY one simple points map, return it.
-* Otherwise, return NULL
-*/
+ * EXACTLY one simple points map, return it.
+ * Otherwise, return NULL
+ */
 const CSimplePointsMap* CMultiMetricMap::getAsSimplePointsMap() const
 {
 	MRPT_START

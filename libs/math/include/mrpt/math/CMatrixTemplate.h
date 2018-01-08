@@ -12,6 +12,7 @@
 #include <mrpt/math/math_frwds.h>  // forward declarations
 #include <algorithm>  // swap()
 #include <array>
+#include <cstring>  // memset()
 
 namespace mrpt
 {

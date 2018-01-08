@@ -11,6 +11,7 @@
 
 #include <mrpt/typemeta/TTypeName.h>
 #include <mrpt/core/aligned_std_map.h>
+#include <mrpt/core/exceptions.h>
 #include <mrpt/graphs/TNodeID.h>
 #include <set>
 #include <map>
@@ -79,9 +80,9 @@ class CDirectedGraph
 		constexpr static auto getClassName()
 		{
 			using namespace mrpt::typemeta;
-			return literal("edge_t<") +
-				TTypeName<TYPE_EDGES>::get() + literal(",") +
-				TTypeName<EDGE_ANNOTATIONS>::get() + literal(">");
+			return literal("edge_t<") + TTypeName<TYPE_EDGES>::get() +
+				   literal(",") + TTypeName<EDGE_ANNOTATIONS>::get() +
+				   literal(">");
 		}
 	};
 
@@ -154,9 +155,11 @@ class CDirectedGraph
 	{
 		iterator it = edges.find(std::make_pair(from_nodeID, to_nodeID));
 		if (it == edges.end())
-			THROW_EXCEPTION(format(
+		{
+			THROW_EXCEPTION_FMT(
 				"Edge %u->%u does not exist", (unsigned)from_nodeID,
-				(unsigned)to_nodeID))
+				(unsigned)to_nodeID);
+		}
 		else
 			return it->second;
 	}
@@ -171,9 +174,11 @@ class CDirectedGraph
 	{
 		const_iterator it = edges.find(std::make_pair(from_nodeID, to_nodeID));
 		if (it == edges.end())
-			THROW_EXCEPTION(format(
+		{
+			THROW_EXCEPTION_FMT(
 				"Edge %u->%u does not exist", (unsigned)from_nodeID,
-				(unsigned)to_nodeID))
+				(unsigned)to_nodeID);
+		}
 		else
 			return it->second;
 	}
@@ -333,10 +338,8 @@ class CDirectedGraph
 					p.node_names.find(id2);
 				if (itNam2 != p.node_names.end()) s2 = itNam2->second;
 			}
-			if (s1.empty())
-				s1 = mrpt::format("%u", static_cast<unsigned int>(id1));
-			if (s2.empty())
-				s2 = mrpt::format("%u", static_cast<unsigned int>(id2));
+			if (s1.empty()) s1 = std::to_string(id1);
+			if (s2.empty()) s2 = std::to_string(id2);
 			if (p.node_props.empty())
 			{
 				std::map<TNodeID, std::string>::const_iterator itP1 =

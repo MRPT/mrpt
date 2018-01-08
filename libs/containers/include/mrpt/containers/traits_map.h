@@ -6,10 +6,10 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef mrpt_traits_maps_H
-#define mrpt_traits_maps_H
+#pragma once
 
 #include <mrpt/containers/map_as_vector.h>
+#include <mrpt/core/aligned_allocator.h>
 
 namespace mrpt
 {
@@ -28,7 +28,8 @@ struct map_traits_stdmap
 {
 	template <
 		class KEY, class VALUE, class _LessPred = std::less<KEY>,
-		class _Alloc = Eigen::aligned_allocator<std::pair<const KEY, VALUE>>>
+		class _Alloc =
+			mrpt::aligned_allocator_cpp11<std::pair<const KEY, VALUE>>>
 	struct map : public std::map<KEY, VALUE, _LessPred, _Alloc>
 	{
 	};
@@ -40,7 +41,8 @@ struct map_traits_map_as_vector
 {
 	template <
 		class KEY, class VALUE, class _LessPred = std::less<KEY>,
-		class _Alloc = Eigen::aligned_allocator<std::pair<const KEY, VALUE>>>
+		class _Alloc =
+			mrpt::aligned_allocator_cpp11<std::pair<const KEY, VALUE>>>
 	struct map : public mrpt::containers::map_as_vector<KEY, VALUE>
 	{
 	};
@@ -51,5 +53,3 @@ struct map_traits_map_as_vector
 
 }  // namespace containers
 }  // namespace mrpt
-
-#endif

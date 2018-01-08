@@ -65,7 +65,7 @@ class NotConnectedGraph : public std::exception
 	std::set<mrpt::graphs::TNodeID> m_unconnected_nodeIDs;
 	std::string m_err;
 };
-}  // end of namespace - detail
+}  // namespace detail
 
 /** The Dijkstra algorithm for finding the shortest path between a given
  * source node in a (weighted) directed graph and all other nodes in the
@@ -96,8 +96,9 @@ class NotConnectedGraph : public std::exception
  *
  * \ingroup mrpt_graphs_grp
  */
-template <class TYPE_GRAPH,
-		  class MAPS_IMPLEMENTATION = mrpt::containers::map_traits_stdmap>
+template <
+	class TYPE_GRAPH,
+	class MAPS_IMPLEMENTATION = mrpt::containers::map_traits_stdmap>
 class CDijkstra
 {
    protected:
@@ -485,7 +486,7 @@ class CDijkstra
 					"Edge %u->%u is in Dijkstra paths but not in original "
 					"graph!",
 					static_cast<unsigned int>(id_from),
-					static_cast<unsigned int>(id_to)))
+					static_cast<unsigned int>(id_to)));
 			newEdge.data = &itEdgeData->second;
 			edges.push_back(newEdge);
 		}
@@ -496,6 +497,6 @@ class CDijkstra
 
 };  // end class
 
-}  // End of namespace
-}  // End of namespace
+}  // namespace graphs
+}  // namespace mrpt
 #endif

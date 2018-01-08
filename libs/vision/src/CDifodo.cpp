@@ -15,7 +15,6 @@
 
 using namespace mrpt;
 using namespace mrpt::vision;
-using namespace mrpt::img;
 using namespace mrpt::math;
 using namespace std;
 using namespace Eigen;
@@ -633,7 +632,7 @@ void CDifodo::computeWeights()
 	// Alternative way to compute the log
 	CMatrixDouble44 mat_aux = acu_trans.cast<double>();
 	poses::CPose3D aux(mat_aux);
-	CArrayDouble<6> kai_level_acu ((aux.ln() * fps).matrix());
+	CArrayDouble<6> kai_level_acu((aux.ln() * fps).matrix());
 	kai_level -= kai_level_acu.cast<float>();
 
 	// Parameters for the measurement error
@@ -903,7 +902,7 @@ void CDifodo::filterLevelSolution()
 
 	CMatrixDouble44 mat_aux = acu_trans.cast<double>();
 	poses::CPose3D aux(mat_aux);
-	CArrayDouble<6> kai_level_acu( aux.ln() * fps);
+	CArrayDouble<6> kai_level_acu(aux.ln() * fps);
 	kai_loc_sub -= kai_level_acu.cast<float>();
 
 	// Matrix<float, 4, 4> log_trans = fps*acu_trans.log();
@@ -922,17 +921,16 @@ void CDifodo::filterLevelSolution()
 				df = previous_speed_const_weight * expf(-int(level));
 	Matrix<float, 6, 1> kai_b_fil;
 	for (unsigned int i = 0; i < 6; i++)
-		kai_b_fil(i) =
-			(kai_b(i) +
-			 (cf * eigensolver.eigenvalues()(i, 0) + df) * kai_b_old(i)) /
-			(1.f + cf * eigensolver.eigenvalues()(i) + df);
+		kai_b_fil(i) = (kai_b(i) + (cf * eigensolver.eigenvalues()(i, 0) + df) *
+									   kai_b_old(i)) /
+					   (1.f + cf * eigensolver.eigenvalues()(i) + df);
 
 	// Transform filtered velocity to the local reference frame
 	Matrix<float, 6, 1> kai_loc_fil =
 		Bii.inverse().colPivHouseholderQr().solve(kai_b_fil);
 
 	// Compute the rigid transformation
-	mrpt::math::CArrayDouble<6> aux_vel( kai_loc_fil.cast<double>() / fps);
+	mrpt::math::CArrayDouble<6> aux_vel(kai_loc_fil.cast<double>() / fps);
 	poses::CPose3D aux1, aux2;
 	CMatrixDouble44 trans;
 	aux2 = aux1.exp(aux_vel);
@@ -953,7 +951,7 @@ void CDifodo::poseUpdate()
 	//---------------------------------------------------------------------
 	CMatrixDouble44 mat_aux = acu_trans.cast<double>();
 	poses::CPose3D aux(mat_aux);
-	CArrayDouble<6> kai_level_acu (aux.ln() * fps);
+	CArrayDouble<6> kai_level_acu(aux.ln() * fps);
 	kai_loc = kai_level_acu.cast<float>();
 
 	//---------------------------------------------------------------------------------------------

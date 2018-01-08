@@ -60,10 +60,10 @@ struct JacData
 
 /** The projective camera 2x6 Jacobian \f$ \frac{\partial h(f,p)}{\partial p}
  * \f$ (wrt the 6D camera pose)
-  * \note Jacobians as described in
+ * \note Jacobians as described in
  * http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty
  * (Appendix A)
-  */
+ */
 template <bool POSES_ARE_INVERSE>
 void frameJac(
 	const mrpt::img::TCamera& camera_params,
@@ -148,10 +148,10 @@ void frameJac(
 }
 
 /** Jacobians wrt the point
-  * \note Jacobians as described in
+ * \note Jacobians as described in
  * http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty
  * (Appendix A)
-*/
+ */
 template <bool POSES_ARE_INVERSE>
 void pointJac(
 	const mrpt::img::TCamera& camera_params,
@@ -214,8 +214,8 @@ void ba_compute_Jacobians(
 		const TCameraPoseID i_f = D.frame_id;
 		const TLandmarkID i_p = D.point_id;
 
-		ASSERTDEB_(i_f < frame_poses.size())
-		ASSERTDEB_(i_p < landmark_points.size())
+		ASSERTDEB_(i_f < frame_poses.size());
+		ASSERTDEB_(i_p < landmark_points.size());
 
 		if (i_f >= num_fix_frames)
 		{
@@ -237,8 +237,8 @@ void ba_compute_Jacobians(
 }
 
 /** Construct the BA linear system.
-  *  Set kernel_1st_deriv!=nullptr if using robust kernel.
-  */
+ *  Set kernel_1st_deriv!=nullptr if using robust kernel.
+ */
 void ba_build_gradient_Hessians(
 	const TSequenceFeatureObservations& observations,
 	const std::vector<std::array<double, 2>>& residual_vec,
@@ -249,7 +249,7 @@ void ba_build_gradient_Hessians(
 	mrpt::aligned_std_vector<CArrayDouble<3>>& eps_point,
 	const size_t num_fix_frames, const size_t num_fix_points,
 	const vector<double>* kernel_1st_deriv);
-}
-}
+}  // namespace vision
+}  // namespace mrpt
 
 #endif

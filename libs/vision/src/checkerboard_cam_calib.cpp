@@ -56,8 +56,9 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 //  It should be removed in the future when 2.3 becomes too old to support.
 namespace cv
 {
-template <typename _Tp, int _rows, int _cols, int _options, int _maxRows,
-		  int _maxCols>
+template <
+	typename _Tp, int _rows, int _cols, int _options, int _maxRows,
+	int _maxCols>
 void my_cv2eigen(
 	const Mat& src,
 	Eigen::Matrix<_Tp, _rows, _cols, _options, _maxRows, _maxCols>& dst)
@@ -88,7 +89,7 @@ void my_cv2eigen(
 		CV_DbgAssert(_dst.data == (uchar*)dst.data());
 	}
 }
-}
+}  // namespace cv
 #endif
 
 /* -------------------------------------------------------
@@ -97,9 +98,8 @@ void my_cv2eigen(
 bool mrpt::vision::checkerBoardCameraCalibration(
 	TCalibrationImageList& images, unsigned int check_size_x,
 	unsigned int check_size_y, double check_squares_length_X_meters,
-	double check_squares_length_Y_meters,
-	mrpt::img::TCamera& out_camera_params, bool normalize_image,
-	double* out_MSE, bool skipDrawDetectedImgs,
+	double check_squares_length_Y_meters, mrpt::img::TCamera& out_camera_params,
+	bool normalize_image, double* out_MSE, bool skipDrawDetectedImgs,
 	bool useScaramuzzaAlternativeDetector)
 {
 	MRPT_UNUSED_PARAM(skipDrawDetectedImgs);
@@ -245,9 +245,8 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 				unsigned int k;
 				for (y = 0, k = 0; y < check_size.height; y++)
 					for (x = 0; x < check_size.width; x++, k++)
-						dat.detected_corners.push_back(
-							mrpt::img::TPixelCoordf(
-								this_img_pts[k].x, this_img_pts[k].y));
+						dat.detected_corners.push_back(mrpt::img::TPixelCoordf(
+							this_img_pts[k].x, this_img_pts[k].y));
 
 				// Draw the checkerboard in the corresponding image:
 				// ----------------------------------------------------
@@ -329,7 +328,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 		out_camera_params.intrinsicParams =
 			CMatrixDouble33(cameraMatrix.ptr<double>());
 
-		out_camera_params.dist.assign(0);
+		out_camera_params.dist.fill(0);
 		for (int i = 0; i < 5; i++)
 			out_camera_params.dist[i] = distCoeffs.ptr<double>()[i];
 
@@ -411,7 +410,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 				dat.reconstructed_camera_pose,
 				out_camera_params.intrinsicParams,  // calib matrix
 				projectedPoints  // Output points in pixels
-				);
+			);
 
 			vision::pinhole::projectPoints_with_distortion(
 				lstPatternPoints,  // Input points
@@ -419,7 +418,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 				out_camera_params.intrinsicParams,  // calib matrix
 				out_camera_params.getDistortionParamsAsVector(),
 				projectedPoints_distorted  // Output points in pixels
-				);
+			);
 
 			ASSERT_(projectedPoints.size() == CORNERS_COUNT);
 			ASSERT_(projectedPoints_distorted.size() == CORNERS_COUNT);

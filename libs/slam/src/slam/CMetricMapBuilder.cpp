@@ -98,7 +98,13 @@ void CMetricMapBuilder::saveCurrentMapToFile(
 
 	// Save to file:
 	if (compressGZ)
-		archiveFrom(CFileGZOutputStream(fileName)) << curmap;
+	{
+		CFileGZOutputStream f(fileName);
+		archiveFrom(f) << curmap;
+	}
 	else
-		archiveFrom(CFileOutputStream(fileName)) << curmap;
+	{
+		CFileOutputStream f(fileName);
+		archiveFrom(f) << curmap;
+	}
 }

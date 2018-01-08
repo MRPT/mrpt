@@ -33,7 +33,7 @@ void CFeatureExtraction::detectFeatures_SSE2_FASTER9(
 {
 #if MRPT_HAS_OPENCV
 	const IplImage* IPL = img.getAs<IplImage>();
-	ASSERTDEB_(IPL && IPL->nChannels == 1)
+	ASSERTDEB_(IPL && IPL->nChannels == 1);
 	if (!append_to_list) corners.clear();
 
 	fast_corner_detect_9(
@@ -49,7 +49,7 @@ void CFeatureExtraction::detectFeatures_SSE2_FASTER10(
 {
 #if MRPT_HAS_OPENCV
 	const IplImage* IPL = img.getAs<IplImage>();
-	ASSERTDEB_(IPL && IPL->nChannels == 1)
+	ASSERTDEB_(IPL && IPL->nChannels == 1);
 	if (!append_to_list) corners.clear();
 
 	fast_corner_detect_10(
@@ -65,7 +65,7 @@ void CFeatureExtraction::detectFeatures_SSE2_FASTER12(
 {
 #if MRPT_HAS_OPENCV
 	const IplImage* IPL = img.getAs<IplImage>();
-	ASSERTDEB_(IPL && IPL->nChannels == 1)
+	ASSERTDEB_(IPL && IPL->nChannels == 1);
 	if (!append_to_list) corners.clear();
 
 	fast_corner_detect_12(
@@ -76,9 +76,9 @@ void CFeatureExtraction::detectFeatures_SSE2_FASTER12(
 }
 
 /************************************************************************************************
-*								extractFeaturesFASTER
-**
-************************************************************************************************/
+ *								extractFeaturesFASTER
+ **
+ ************************************************************************************************/
 // N_fast = 9, 10, 12
 void CFeatureExtraction::extractFeaturesFASTER_N(
 	const int N_fast, const mrpt::img::CImage& inImg, CFeatureList& feats,
@@ -135,7 +135,7 @@ void CFeatureExtraction::extractFeaturesFASTER_N(
 		nDesiredFeatures != 0  // If the user wants us to limit the number of
 		// features, we need to do it according to some
 		// quality measure
-		)
+	)
 	{
 		const int KLT_half_win = 4;
 		const int max_x = inImg_gray.getWidth() - 1 - KLT_half_win;

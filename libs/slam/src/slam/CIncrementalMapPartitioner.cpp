@@ -89,7 +89,8 @@ void CIncrementalMapPartitioner::TOptions::loadFromConfigFile(
 /*---------------------------------------------------------------
 						dumpToTextStream
   ---------------------------------------------------------------*/
-void CIncrementalMapPartitioner::TOptions::dumpToTextStream(std::ostream& out) const
+void CIncrementalMapPartitioner::TOptions::dumpToTextStream(
+	std::ostream& out) const
 {
 	out << mrpt::format(
 		"\n----------- [CIncrementalMapPartitioner::TOptions] ------------ "
@@ -189,9 +190,8 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 		0.20f;
 	options.minDistForCorrespondence =
 		max(options.minDistForCorrespondence,
-			1.3f *
-				newMetricMap.m_pointsMaps[0]
-					->insertionOptions.minDistBetweenLaserPoints);
+			1.3f * newMetricMap.m_pointsMaps[0]
+					   ->insertionOptions.minDistBetweenLaserPoints);
 
 	TMatchingRatioParams mrp;
 	mrp.maxDistForCorr = options.minDistForCorrespondence;
@@ -372,7 +372,8 @@ void CIncrementalMapPartitioner::updatePartitions(
 	unsigned int i, j;
 	unsigned int n_nodes;
 	unsigned int n_clusters_last;
-	std::vector<uint32_t> mods;  // The list of nodes that will have been regrouped
+	std::vector<uint32_t>
+		mods;  // The list of nodes that will have been regrouped
 	std::vector<bool> last_parts_are_mods;
 
 	n_nodes = m_modified_nodes.size();  // total number of nodes (scans)
@@ -432,7 +433,7 @@ void CIncrementalMapPartitioner::updatePartitions(
 			A_mods, mods_parts, options.partitionThreshold, true, true,
 			!options.forceBisectionOnly,
 			options.minimumNumberElementsEachCluster, false /* verbose */
-			);
+		);
 
 		// Aggregate the results with the clusters that were not used and return
 		// them
@@ -619,11 +620,10 @@ void CIncrementalMapPartitioner::getAs3DScene(
 	const std::map<uint32_t, int64_t>* renameIndexes) const
 {
 	objs->clear();
-	ASSERT_(m_individualFrames.size() == m_A.cols());
+	ASSERT_((int)m_individualFrames.size() == m_A.cols());
 
-	objs->insert(
-		mrpt::make_aligned_shared<opengl::CGridPlaneXY>(
-			-100, 100, -100, 100, 0, 5));
+	objs->insert(mrpt::make_aligned_shared<opengl::CGridPlaneXY>(
+		-100, 100, -100, 100, 0, 5));
 
 	for (size_t i = 0; i < m_individualFrames.size(); i++)
 	{
@@ -684,7 +684,8 @@ void CIncrementalMapPartitioner::getAs3DScene(
 	}
 }
 
-void CIncrementalMapPartitioner::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CIncrementalMapPartitioner::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -701,7 +702,8 @@ void CIncrementalMapPartitioner::serializeFrom(mrpt::serialization::CArchive& in
 }
 
 uint8_t CIncrementalMapPartitioner::serializeGetVersion() const { return 0; }
-void CIncrementalMapPartitioner::serializeTo(mrpt::serialization::CArchive& out) const
+void CIncrementalMapPartitioner::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
 	out << m_individualFrames << m_individualMaps << m_A << m_last_partition
 		<< m_last_last_partition_are_new_ones << m_modified_nodes;

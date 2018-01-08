@@ -11,6 +11,7 @@
 
 #include <list>
 #include <mrpt/graphs/TNodeID.h>
+#include <sstream>
 
 namespace mrpt
 {
@@ -18,37 +19,37 @@ namespace graphs
 {
 /** A special kind of graph in the form of a tree with directed edges and
  *optional edge annotations of templatized type "TYPE_EDGES".
-  *  The tree is represented by means of:
-  *		- \a root: The ID of the root node.
-  *		- \a edges_to_children: A map from node ID to all the edges to its
+ *  The tree is represented by means of:
+ *		- \a root: The ID of the root node.
+ *		- \a edges_to_children: A map from node ID to all the edges to its
  *children.
-  *
-  *  Note that nodes are *not* explicitly listed anywhere: their existence is
+ *
+ *  Note that nodes are *not* explicitly listed anywhere: their existence is
  *only inferred from their ID numbers in the list
-  *  of edges in the \a edges_to_children data structure. If you want to include
+ *  of edges in the \a edges_to_children data structure. If you want to include
  *information for each node, derive from this class
-  *  and create a separate container for that data.
-  *
-  *  This class is less general than CDirectedGraph but more efficient to
+ *  and create a separate container for that data.
+ *
+ *  This class is less general than CDirectedGraph but more efficient to
  *traverse (see \a visitDepthFirst and \a visitBreadthFirst).
-  *
-  *  If annotations in edges are not required, you can leave TYPE_EDGES to its
+ *
+ *  If annotations in edges are not required, you can leave TYPE_EDGES to its
  *default type "uint8_t".
-  *
-  *  Example of insertion of a new edge:
-  *  \code
-  *  typedef CDirectedTree<edge_t>  my_tree_t;
-  *  my_tree_t  tree;
-  *  TNodeID id_root = XXX;
-  *  TNodeID id_child = XXX;
-  *  my_tree_t::TListEdges & edges_of_root = tree.edges_to_children[id_root];
-  *  edges_of_root.push_back( my_tree_t::TEdgeInfo(id_child,false, edge_t(...) )
+ *
+ *  Example of insertion of a new edge:
+ *  \code
+ *  typedef CDirectedTree<edge_t>  my_tree_t;
+ *  my_tree_t  tree;
+ *  TNodeID id_root = XXX;
+ *  TNodeID id_child = XXX;
+ *  my_tree_t::TListEdges & edges_of_root = tree.edges_to_children[id_root];
+ *  edges_of_root.push_back( my_tree_t::TEdgeInfo(id_child,false, edge_t(...) )
  *);
-  *  \endcode
-  *
-  *  \sa CDirectedGraph, CDijkstra, mrpt::graphs::CNetworkOfPoses
+ *  \endcode
+ *
+ *  \sa CDirectedGraph, CDijkstra, mrpt::graphs::CNetworkOfPoses
  * \ingroup mrpt_graphs_grp
-  */
+ */
 template <class TYPE_EDGES = uint8_t>
 class CDirectedTree
 {
@@ -101,14 +102,14 @@ class CDirectedTree
 		/** Virtual method to be implemented by the user and which will be
 		 * called during the visit to a graph with visitDepthFirst or
 		 * visitBreadthFirst
-		  *  Specifically, the method will be called once for each <b>edge</b>
+		 *  Specifically, the method will be called once for each <b>edge</b>
 		 * in the tree.
-		  * \param parent [IN] The ID of the parent node.
-		  * \param edge_to_child [IN] The edge information from the parent to
+		 * \param parent [IN] The ID of the parent node.
+		 * \param edge_to_child [IN] The edge information from the parent to
 		 * "edge_to_child.id"
-		  * \param depth_level [IN] The "depth level" of the child node
+		 * \param depth_level [IN] The "depth level" of the child node
 		 * "edge_to_child.id" (root node is at 0, its children are at 1, etc.).
-		  */
+		 */
 		virtual void OnVisitNode(
 			const TNodeID parent,
 			const typename tree_t::TEdgeInfo& edge_to_child,
@@ -161,22 +162,22 @@ class CDirectedTree
 
 	/** Return a text representation of the tree spanned in a depth-first view,
 	 * as in this example:
-	  *  \code
-	  *    0
-	  *     -> 1
-	  *     -> 2
-	  *         -> 4
-	  *         -> 5
-	  *     -> 3
-	  *  \endcode
-	  */
+	 *  \code
+	 *    0
+	 *     -> 1
+	 *     -> 2
+	 *         -> 4
+	 *         -> 5
+	 *     -> 3
+	 *  \endcode
+	 */
 	std::string getAsTextDescription() const
 	{
-		std::ostringstream s;
+		std::stringstream s;
 		struct CMyVisitor
 			: public mrpt::graphs::CDirectedTree<TYPE_EDGES>::Visitor
 		{
-			std::ostringstream& m_s;
+			std::stringstream& m_s;
 			CMyVisitor(std::ostringstream& s) : m_s(s) {}
 			virtual void OnVisitNode(
 				const TNodeID parent,
@@ -197,6 +198,6 @@ class CDirectedTree
 };
 
 /** @} */
-}  // End of namespace
-}  // End of namespace
+}  // namespace graphs
+}  // namespace mrpt
 #endif

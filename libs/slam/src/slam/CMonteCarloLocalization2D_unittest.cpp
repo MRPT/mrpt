@@ -52,7 +52,8 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
 	}
 
 	CConfigFile iniFile(ini_fil);
-	std::vector<int> particles_count;  // Number of initial particles (if size>1, run
+	std::vector<int>
+		particles_count;  // Number of initial particles (if size>1, run
 	// the experiments N times)
 
 	// Load configuration:
@@ -61,7 +62,8 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
 
 	// Mandatory entries:
 	iniFile.read_vector(
-		iniSectionName, "particles_count", std::vector<int>(1, 0), particles_count,
+		iniSectionName, "particles_count", std::vector<int>(1, 0),
+		particles_count,
 		/*Fail if not found*/ true);
 	string RAWLOG_FILE = iniFile.read_string(
 		iniSectionName, "rawlog_file", "", /*Fail if not found*/ true);
@@ -121,7 +123,8 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
 		{
 			// It's a ".simplemap":
 			// -------------------------
-			mrpt::serialization::archiveFrom(CFileGZInputStream(MAP_FILE)) >> simpleMap;
+			CFileGZInputStream f(MAP_FILE);
+			mrpt::serialization::archiveFrom(f) >> simpleMap;
 			ASSERT_(simpleMap.size() > 0);
 			// Build metric map:
 			metricMap.loadFromProbabilisticPosesAndObservations(simpleMap);
@@ -131,7 +134,8 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
 			// It's a ".gridmap":
 			// -------------------------
 			ASSERT_(metricMap.m_gridMaps.size() == 1);
-			mrpt::serialization::archiveFrom(CFileGZInputStream(MAP_FILE)) >> (*metricMap.m_gridMaps[0]);
+			CFileGZInputStream f(MAP_FILE);
+			mrpt::serialization::archiveFrom(f) >> (*metricMap.m_gridMaps[0]);
 		}
 		else
 		{

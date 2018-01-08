@@ -167,8 +167,8 @@ void CRangeBearingKFSLAM2D::processActionObservation(
 }
 
 /** Must return the action vector u.
-  * \param out_u The action vector which will be passed to OnTransitionModel
-  */
+ * \param out_u The action vector which will be passed to OnTransitionModel
+ */
 void CRangeBearingKFSLAM2D::OnGetAction(KFArray_ACT& u) const
 {
 	// Get odometry estimation:
@@ -240,7 +240,8 @@ void CRangeBearingKFSLAM2D::OnTransitionJacobian(KFMatrix_VxV& F) const
 	CActionRobotMovement3D::Ptr act3D =
 		m_action->getActionByClass<CActionRobotMovement3D>();
 
-	if (act3D && act2D) THROW_EXCEPTION("Both 2D & 3D odometry are present!?!?");
+	if (act3D && act2D)
+		THROW_EXCEPTION("Both 2D & 3D odometry are present!?!?");
 
 	TPoint2D Ap;
 
@@ -285,7 +286,8 @@ void CRangeBearingKFSLAM2D::OnTransitionNoise(KFMatrix_VxV& Q) const
 	CActionRobotMovement3D::Ptr act3D =
 		m_action->getActionByClass<CActionRobotMovement3D>();
 
-	if (act3D && act2D) THROW_EXCEPTION("Both 2D & 3D odometry are present!?!?");
+	if (act3D && act2D)
+		THROW_EXCEPTION("Both 2D & 3D odometry are present!?!?");
 
 	CPosePDFGaussian odoIncr;
 
@@ -293,7 +295,7 @@ void CRangeBearingKFSLAM2D::OnTransitionNoise(KFMatrix_VxV& Q) const
 	{
 		// Use constant Q:
 		Q.zeros();
-		ASSERT_(size_t(options.stds_Q_no_odo.size()) == Q.cols());
+		ASSERT_(int(options.stds_Q_no_odo.size()) == Q.cols());
 		for (size_t i = 0; i < 3; i++)
 			Q.get_unsafe(i, i) = square(options.stds_Q_no_odo[i]);
 		return;
@@ -502,25 +504,25 @@ void CRangeBearingKFSLAM2D::OnObservationJacobians(
 /** This is called between the KF prediction step and the update step, and the
  * application must return the observations and, when applicable, the data
  * association between these observations and the current map.
-  *
-  * \param out_z N vectors, each for one "observation" of length OBS_SIZE, N
+ *
+ * \param out_z N vectors, each for one "observation" of length OBS_SIZE, N
  * being the number of "observations": how many observed landmarks for a map, or
  * just one if not applicable.
-  * \param out_data_association An empty vector or, where applicable, a vector
+ * \param out_data_association An empty vector or, where applicable, a vector
  * where the i'th element corresponds to the position of the observation in the
  * i'th row of out_z within the system state vector (in the range
  * [0,getNumberOfLandmarksInTheMap()-1]), or -1 if it is a new map element and
  * we want to insert it at the end of this KF iteration.
-  * \param in_S The full covariance matrix of the observation predictions (i.e.
+ * \param in_S The full covariance matrix of the observation predictions (i.e.
  * the "innovation covariance matrix"). This is a M·O x M·O matrix with M=length
  * of "in_lm_indices_in_S".
-  * \param in_lm_indices_in_S The indices of the map landmarks (range
+ * \param in_lm_indices_in_S The indices of the map landmarks (range
  * [0,getNumberOfLandmarksInTheMap()-1]) that can be found in the matrix in_S.
-  *
-  *  This method will be called just once for each complete KF iteration.
-  * \note It is assumed that the observations are independent, i.e. there are NO
+ *
+ *  This method will be called just once for each complete KF iteration.
+ * \note It is assumed that the observations are independent, i.e. there are NO
  * cross-covariances between them.
-  */
+ */
 void CRangeBearingKFSLAM2D::OnGetObservationsAndDataAssociation(
 	vector_KFArray_OBS& Z, std::vector<int>& data_association,
 	const vector_KFArray_OBS& all_predictions, const KFMatrix& S,
@@ -577,8 +579,8 @@ void CRangeBearingKFSLAM2D::OnGetObservationsAndDataAssociation(
 				obs_idxs_needing_data_assoc.push_back(row);
 			else
 			{
-				mrpt::containers::bimap<CLandmark::TLandmarkID,
-								   unsigned int>::iterator itID;
+				mrpt::containers::bimap<
+					CLandmark::TLandmarkID, unsigned int>::iterator itID;
 				if ((itID = m_IDs.find_key(itObs->landmarkID)) != m_IDs.end())
 					*itDA = itID->second;  // This row in Z corresponds to the
 				// i'th map element in the state
@@ -727,7 +729,8 @@ void CRangeBearingKFSLAM2D::OnNormalizeStateVector()
 /*---------------------------------------------------------------
 						loadOptions
   ---------------------------------------------------------------*/
-void CRangeBearingKFSLAM2D::loadOptions(const mrpt::config::CConfigFileBase& ini)
+void CRangeBearingKFSLAM2D::loadOptions(
+	const mrpt::config::CConfigFileBase& ini)
 {
 	// Main
 	options.loadFromConfigFile(ini, "RangeBearingKFSLAM");
@@ -748,9 +751,8 @@ void CRangeBearingKFSLAM2D::TOptions::loadFromConfigFile(
 
 	std_sensor_range =
 		source.read_float(section, "std_sensor_range", std_sensor_range);
-	std_sensor_yaw = DEG2RAD(
-		source.read_float(
-			section, "std_sensor_yaw_deg", RAD2DEG(std_sensor_yaw)));
+	std_sensor_yaw = DEG2RAD(source.read_float(
+		section, "std_sensor_yaw_deg", RAD2DEG(std_sensor_yaw)));
 
 	MRPT_LOAD_CONFIG_VAR(quantiles_3D_representation, float, source, section);
 	MRPT_LOAD_CONFIG_VAR(create_simplemap, bool, source, section);
@@ -900,14 +902,14 @@ void CRangeBearingKFSLAM2D::OnInverseObservationModel(
 
 /** If applicable to the given problem, do here any special handling of adding a
  * new landmark to the map.
-  * \param in_obsIndex The index of the observation whose inverse sensor is to
+ * \param in_obsIndex The index of the observation whose inverse sensor is to
  * be computed. It corresponds to the row in in_z where the observation can be
  * found.
-  * \param in_idxNewFeat The index that this new feature will have in the state
+ * \param in_idxNewFeat The index that this new feature will have in the state
  * vector (0:just after the vehicle state, 1: after that,...). Save this number
  * so data association can be done according to these indices.
-  * \sa OnInverseObservationModel
-  */
+ * \sa OnInverseObservationModel
+ */
 void CRangeBearingKFSLAM2D::OnNewLandmarkAddedToMap(
 	const size_t in_obsIdx, const size_t in_idxNewFeat)
 {
@@ -1101,7 +1103,7 @@ void CRangeBearingKFSLAM2D::saveMapAndPath2DRepresentationAsMATLABFile(
 
 /** Computes A=A-B, which may need to be re-implemented depending on the
  * topology of the individual scalar components (eg, angles).
-  */
+ */
 void CRangeBearingKFSLAM2D::OnSubstractObservationVectors(
 	KFArray_OBS& A, const KFArray_OBS& B) const
 {
@@ -1112,9 +1114,9 @@ void CRangeBearingKFSLAM2D::OnSubstractObservationVectors(
 
 /** Return the observation NOISE covariance matrix, that is, the model of the
  * Gaussian additive noise of the sensor.
-  * \param out_R The noise covariance matrix. It might be non diagonal, but
+ * \param out_R The noise covariance matrix. It might be non diagonal, but
  * it'll usually be.
-  */
+ */
 void CRangeBearingKFSLAM2D::OnGetObservationNoise(KFMatrix_OxO& out_R) const
 {
 	out_R(0, 0) = square(options.std_sensor_range);
@@ -1124,18 +1126,18 @@ void CRangeBearingKFSLAM2D::OnGetObservationNoise(KFMatrix_OxO& out_R) const
 /** This will be called before OnGetObservationsAndDataAssociation to allow the
  * application to reduce the number of covariance landmark predictions to be
  * made.
-  *  For example, features which are known to be "out of sight" shouldn't be
+ *  For example, features which are known to be "out of sight" shouldn't be
  * added to the output list to speed up the calculations.
-  * \param in_all_prediction_means The mean of each landmark predictions; the
+ * \param in_all_prediction_means The mean of each landmark predictions; the
  * computation or not of the corresponding covariances is what we're trying to
  * determined with this method.
-  * \param out_LM_indices_to_predict The list of landmark indices in the map
+ * \param out_LM_indices_to_predict The list of landmark indices in the map
  * [0,getNumberOfLandmarksInTheMap()-1] that should be predicted.
-  * \note This is not a pure virtual method, so it should be implemented only if
+ * \note This is not a pure virtual method, so it should be implemented only if
  * desired. The default implementation returns a vector with all the landmarks
  * in the map.
-  * \sa OnGetObservations, OnDataAssociation
-  */
+ * \sa OnGetObservations, OnDataAssociation
+ */
 void CRangeBearingKFSLAM2D::OnPreComputingPredictions(
 	const vector_KFArray_OBS& prediction_means,
 	std::vector<size_t>& out_LM_indices_to_predict) const
@@ -1175,7 +1177,7 @@ void CRangeBearingKFSLAM2D::OnPreComputingPredictions(
 /** Only called if using a numeric approximation of the transition Jacobian,
  * this method must return the increments in each dimension of the vehicle state
  * vector while estimating the Jacobian.
-  */
+ */
 void CRangeBearingKFSLAM2D::OnTransitionJacobianNumericGetIncrements(
 	KFArray_VEH& out_increments) const
 {
@@ -1185,7 +1187,7 @@ void CRangeBearingKFSLAM2D::OnTransitionJacobianNumericGetIncrements(
 /** Only called if using a numeric approximation of the observation Jacobians,
  * this method must return the increments in each dimension of the vehicle state
  * vector while estimating the Jacobian.
-  */
+ */
 void CRangeBearingKFSLAM2D::OnObservationJacobiansNumericGetIncrements(
 	KFArray_VEH& out_veh_increments, KFArray_FEAT& out_feat_increments) const
 {

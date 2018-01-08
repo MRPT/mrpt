@@ -13,13 +13,15 @@
 #include <mrpt/hwdrivers/CServoeNeck.h>
 #include <mrpt/serialization/CMessage.h>
 #include <mrpt/serialization/CArchive.h>
-
+#include <mrpt/core/bits_math.h>
 #include <thread>
+#include <cstdint>
+#include <cmath>
 
+using namespace mrpt;
 using namespace mrpt::comms;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::serialization;
-using namespace mrpt::math;
 using namespace std::literals;
 
 /*-------------------------------------------------------------

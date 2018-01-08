@@ -13,8 +13,10 @@
 #include <mrpt/comms/CClientTCPSocket.h>
 #include <mrpt/comms/net_utils.h>
 #include <mrpt/math/wrap2pi.h>
-
+#include <mrpt/core/format.h>
 #include <mrpt/system/string_utils.h>
+#include <mrpt/core/bits_math.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::comms;
@@ -341,7 +343,7 @@ bool CNTRIPClient::retrieveListOfMountpoints(
 
 	std::stringstream ss(content);
 	string lin;
-	while (std::getline(ss,lin,'\n'))
+	while (std::getline(ss, lin, '\n'))
 	{
 		if (lin.size() < 5) continue;
 		if (0 != ::strncmp("STR;", lin.c_str(), 4)) continue;

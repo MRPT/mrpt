@@ -422,7 +422,7 @@ class CFeatureList : public mrpt::math::KDTreeCapable<CFeatureList>
 	/// Returns the dim'th component of the idx'th point in the class:
 	inline float kdtree_get_pt(const size_t idx, int dim) const
 	{
-		ASSERTDEB_(dim == 0 || dim == 1)
+		ASSERTDEB_(dim == 0 || dim == 1);
 		if (dim == 0)
 			return m_feats[idx]->x;
 		else
@@ -434,7 +434,7 @@ class CFeatureList : public mrpt::math::KDTreeCapable<CFeatureList>
 	inline float kdtree_distance(
 		const float* p1, const size_t idx_p2, size_t size) const
 	{
-		ASSERTDEB_(size == 2)
+		ASSERTDEB_(size == 2);
 		MRPT_UNUSED_PARAM(size);  // in release mode
 
 		const float d0 = p1[0] - m_feats[idx_p2]->x;
