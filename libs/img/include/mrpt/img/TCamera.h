@@ -44,7 +44,7 @@ class TCamera : public mrpt::serialization::CSerializable
 	mrpt::math::CMatrixDouble33 intrinsicParams;
 	/** [k1 k2 t1 t2 k3] -> k_i: parameters of radial distortion, t_i:
 	 * parameters of tangential distortion (default=0) */
-	std::array<double, 5> dist{.0, .0, .0, .0, .0};
+	std::array<double, 5> dist{{.0, .0, .0, .0, .0}};
 	/** The focal length of the camera, in meters (can be used among
 	 * 'intrinsicParams' to determine the pixel size). */
 	double focalLengthMeters{.0};
