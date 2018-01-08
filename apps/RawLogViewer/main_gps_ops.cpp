@@ -33,6 +33,8 @@ using namespace mrpt;
 using namespace mrpt::obs;
 using namespace mrpt::opengl;
 using namespace mrpt::system;
+using namespace mrpt::config;
+using namespace mrpt::containers;
 using namespace mrpt::math;
 using namespace mrpt::gui;
 using namespace mrpt::topography;
@@ -178,10 +180,9 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath(wxCommandEvent& event)
 	}
 
 	// Window 3d:
-	winGPSPath = mrpt::make_aligned_shared<CDisplayWindow3D>(
-		format(
-			"GPS path, %i points (%s) %.03f meters length", int(M),
-			the_label.c_str(), overall_distance));
+	winGPSPath = mrpt::make_aligned_shared<CDisplayWindow3D>(format(
+		"GPS path, %i points (%s) %.03f meters length", int(M),
+		the_label.c_str(), overall_distance));
 
 	COpenGLScene scene;
 	CPointCloud::Ptr gl_path = mrpt::make_aligned_shared<CPointCloud>();
@@ -191,14 +192,10 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath(wxCommandEvent& event)
 	gl_path->setPointSize(3);
 
 	scene.insert(gl_path);
-	scene.insert(
-		CGridPlaneXY::Ptr(
-			mrpt::make_aligned_shared<CGridPlaneXY>(
-				-300, 300, -300, 300, 0, 10)));
-	scene.insert(
-		CAxis::Ptr(
-			mrpt::make_aligned_shared<CAxis>(
-				-300, -300, -50, 300, 300, 50, 1.0, 3, true)));
+	scene.insert(CGridPlaneXY::Ptr(
+		mrpt::make_aligned_shared<CGridPlaneXY>(-300, 300, -300, 300, 0, 10)));
+	scene.insert(CAxis::Ptr(mrpt::make_aligned_shared<CAxis>(
+		-300, -300, -50, 300, 300, 50, 1.0, 3, true)));
 
 	COpenGLScene::Ptr the_scene = winGPSPath->get3DSceneAndLock();
 	*the_scene = scene;
@@ -611,9 +608,9 @@ void xRawLogViewerFrame::OnSummaryGPS(wxCommandEvent& event)
 						ASSERT_(
 							obs->getMsgByClass<gnss::Message_NMEA_GGA>()
 								.fields.fix_quality <= 8);
-						histogramGPSModes[obs->getMsgByClass<
-												 gnss::Message_NMEA_GGA>()
-											  .fields.fix_quality]++;
+						histogramGPSModes
+							[obs->getMsgByClass<gnss::Message_NMEA_GGA>()
+								 .fields.fix_quality]++;
 					}
 			}
 			break;
@@ -631,9 +628,9 @@ void xRawLogViewerFrame::OnSummaryGPS(wxCommandEvent& event)
 							ASSERT_(
 								obs->getMsgByClass<gnss::Message_NMEA_GGA>()
 									.fields.fix_quality <= 8);
-							histogramGPSModes[obs->getMsgByClass<
-													 gnss::Message_NMEA_GGA>()
-												  .fields.fix_quality]++;
+							histogramGPSModes
+								[obs->getMsgByClass<gnss::Message_NMEA_GGA>()
+									 .fields.fix_quality]++;
 						}
 				}
 			}
@@ -837,14 +834,13 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 									f_this,
 									"%.4f %.16f %.16f %f %u %u %f %f %.16f "
 									"%.16f %f %i %.4f %.4f %.4f\n",
-									tim, DEG2RAD(
-											 obs->getMsgByClass<
-													gnss::Message_NMEA_GGA>()
-												 .fields.latitude_degrees),
-									DEG2RAD(
-										obs->getMsgByClass<
-											   gnss::Message_NMEA_GGA>()
-											.fields.longitude_degrees),
+									tim,
+									DEG2RAD(obs->getMsgByClass<
+												   gnss::Message_NMEA_GGA>()
+												.fields.latitude_degrees),
+									DEG2RAD(obs->getMsgByClass<
+												   gnss::Message_NMEA_GGA>()
+												.fields.longitude_degrees),
 									obs->getMsgByClass<gnss::Message_NMEA_GGA>()
 										.fields.altitude_meters,
 									obs->getMsgByClass<gnss::Message_NMEA_GGA>()
@@ -1006,8 +1002,9 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 									cart_vel.y = pzs.cartesian_vy;
 									cart_vel.z = pzs.cartesian_vz;
 
-									cart_vel_local = TPoint3D(
-										CPoint3D(cart_vel) - local_ENU);
+									cart_vel_local =
+										(CPoint3D(cart_vel) - local_ENU)
+											.asTPoint();
 								}
 
 								::fprintf(
@@ -1031,14 +1028,13 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 									// (Local)
 									"%14.4f "  // SAT Time
 									"\n",
-									tim, DEG2RAD(
-											 obs->getMsgByClass<
-													gnss::Message_NMEA_GGA>()
-												 .fields.latitude_degrees),
-									DEG2RAD(
-										obs->getMsgByClass<
-											   gnss::Message_NMEA_GGA>()
-											.fields.longitude_degrees),
+									tim,
+									DEG2RAD(obs->getMsgByClass<
+												   gnss::Message_NMEA_GGA>()
+												.fields.latitude_degrees),
+									DEG2RAD(obs->getMsgByClass<
+												   gnss::Message_NMEA_GGA>()
+												.fields.longitude_degrees),
 									obs->getMsgByClass<gnss::Message_NMEA_GGA>()
 										.fields.altitude_meters,
 									obs->getMsgByClass<gnss::Message_NMEA_GGA>()
@@ -1117,8 +1113,8 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 
 		CMatrixDouble MAT(lstXYZallGPS.size(), 1 + 3 * lstAllGPSlabels.size());
 		int nLabels = 0;
-		for (map<TTimeStamp, map<string, CPoint3D>>::iterator
-				 a = lstXYZallGPS.begin();
+		for (map<TTimeStamp, map<string, CPoint3D>>::iterator a =
+				 lstXYZallGPS.begin();
 			 a != lstXYZallGPS.end(); ++a, nLabels++)
 		{
 			MAT(nLabels, 0) = timestampTotime_t(a->first);
@@ -1177,15 +1173,12 @@ void filter_delGPSNan(
 				CObservationGPS::Ptr o =
 					std::dynamic_pointer_cast<CObservationGPS>(*it);
 				if (o->has_GGA_datum &&
-					(std::isnan(
-						 o->getMsgByClass<gnss::Message_NMEA_GGA>()
-							 .fields.latitude_degrees) ||
-					 std::isnan(
-						 o->getMsgByClass<gnss::Message_NMEA_GGA>()
-							 .fields.longitude_degrees) ||
-					 std::isnan(
-						 o->getMsgByClass<gnss::Message_NMEA_GGA>()
-							 .fields.altitude_meters)))
+					(std::isnan(o->getMsgByClass<gnss::Message_NMEA_GGA>()
+									.fields.latitude_degrees) ||
+					 std::isnan(o->getMsgByClass<gnss::Message_NMEA_GGA>()
+									.fields.longitude_degrees) ||
+					 std::isnan(o->getMsgByClass<gnss::Message_NMEA_GGA>()
+									.fields.altitude_meters)))
 				{
 					it = SF->erase(it);
 					changesCount++;

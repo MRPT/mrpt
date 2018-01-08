@@ -74,12 +74,16 @@ END_EVENT_TABLE()
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/gui/WxUtils.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;
 using namespace mrpt::opengl;
 using namespace mrpt::system;
 using namespace mrpt::math;
+using namespace mrpt::img;
+using namespace mrpt::io;
+using namespace mrpt::serialization;
 using namespace std;
 
 extern TTimeStamp rawlog_first_timestamp;
@@ -524,7 +528,7 @@ void CFormPlayVideo::OnbtnPlayClick(wxCommandEvent& event)
 
 			if (fil)
 			{
-				(*fil) >> obj;
+				archiveFrom(*fil) >> obj;
 			}
 			else
 			{
@@ -574,7 +578,7 @@ void CFormPlayVideo::OnbtnPlayClick(wxCommandEvent& event)
 			}
 		}
 	}
-	catch (utils::CExceptionExternalImageNotFound& e)
+	catch (CExceptionExternalImageNotFound& e)
 	{
 		wxMessageBox(
 			_U(e.what()), _("Error with a delayed load image"), wxOK, this);
@@ -811,9 +815,9 @@ bool CFormPlayVideo::showSensoryFrame(void* SF, size_t& nImgs)
 			}
 
 			// save:
-			displayedImgs[thePanel == pnLeft ? 0
-											 : (thePanel == pnRight ? 1 : 2)] =
-				obsImg;
+			displayedImgs
+				[thePanel == pnLeft ? 0 : (thePanel == pnRight ? 1 : 2)] =
+					obsImg;
 
 			doDelay = true;
 
@@ -841,9 +845,8 @@ bool CFormPlayVideo::showSensoryFrame(void* SF, size_t& nImgs)
 
 				if (firstFit)
 				{
-					pnLeft->SetMinSize(
-						wxSize(
-							imgShow->getWidth() + 2, imgShow->getHeight() + 2));
+					pnLeft->SetMinSize(wxSize(
+						imgShow->getWidth() + 2, imgShow->getHeight() + 2));
 					// Fit();
 					// firstFit=false; // Done in the right pane below...
 				}
@@ -860,9 +863,8 @@ bool CFormPlayVideo::showSensoryFrame(void* SF, size_t& nImgs)
 					0, 0, wxIMG->GetWidth(), wxIMG->GetHeight(), &tmpDc, 0, 0);
 				delete wxIMG;
 
-				lbCam1->SetLabel(
-					_U(format("%s - left", obsImg2->sensorLabel.c_str())
-						   .c_str()));
+				lbCam1->SetLabel(_U(
+					format("%s - left", obsImg2->sensorLabel.c_str()).c_str()));
 
 				// save:
 				displayedImgs[0] = obsImg2;
@@ -884,9 +886,8 @@ bool CFormPlayVideo::showSensoryFrame(void* SF, size_t& nImgs)
 
 				if (firstFit)
 				{
-					pnRight->SetMinSize(
-						wxSize(
-							imgShow->getWidth() + 2, imgShow->getHeight() + 2));
+					pnRight->SetMinSize(wxSize(
+						imgShow->getWidth() + 2, imgShow->getHeight() + 2));
 					Fit();
 					firstFit = false;
 				}
@@ -927,9 +928,8 @@ bool CFormPlayVideo::showSensoryFrame(void* SF, size_t& nImgs)
 
 				if (firstFit)
 				{
-					pnRight->SetMinSize(
-						wxSize(
-							imgShow->getWidth() + 2, imgShow->getHeight() + 2));
+					pnRight->SetMinSize(wxSize(
+						imgShow->getWidth() + 2, imgShow->getHeight() + 2));
 					Fit();
 					firstFit = false;
 				}
@@ -979,9 +979,8 @@ bool CFormPlayVideo::showSensoryFrame(void* SF, size_t& nImgs)
 
 				if (firstFit)
 				{
-					pnLeft->SetMinSize(
-						wxSize(
-							imgShow->getWidth() + 2, imgShow->getHeight() + 2));
+					pnLeft->SetMinSize(wxSize(
+						imgShow->getWidth() + 2, imgShow->getHeight() + 2));
 					// Fit();
 					// firstFit=false; // Done in the right pane below...
 				}
@@ -1091,11 +1090,10 @@ void CFormPlayVideo::saveCamImage(int n)
 						.c_str());
 				break;
 			case 1:
-				defaultFilename =
-					_U(format(
-						   "%s_right_%i.jpg", o->sensorLabel.c_str(),
-						   m_idxInRawlog)
-						   .c_str());
+				defaultFilename = _U(format(
+										 "%s_right_%i.jpg",
+										 o->sensorLabel.c_str(), m_idxInRawlog)
+										 .c_str());
 				break;
 			case 2:
 				defaultFilename = _U(

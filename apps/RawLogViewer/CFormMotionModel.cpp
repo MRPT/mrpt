@@ -30,15 +30,18 @@
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/obs/CActionCollection.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/obs/CSensoryFrame.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;
 using namespace mrpt::opengl;
+using namespace mrpt::io;
 using namespace mrpt::system;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
 using namespace mrpt::poses;
+using namespace mrpt::serialization;
 using namespace std;
 
 #define MAX_READ_FOR_MODEL_SEARCH 100
@@ -808,7 +811,7 @@ void CFormMotionModel::applyToRawlogFile()
 
 	string fileName_IN(txtInputFile->GetValue().mbc_str());
 
-	ASSERT_FILE_EXISTS_(fileName_IN)
+	ASSERT_FILE_EXISTS_(fileName_IN);
 
 	string fileName_OUT(txtOutputFile->GetValue().mbc_str());
 
@@ -850,9 +853,11 @@ void CFormMotionModel::applyToRawlogFile()
 		}
 
 		CSerializable::Ptr newObj;
+		auto in_arch = mrpt::serialization::archiveFrom(in_fil);
+		auto out_arch = mrpt::serialization::archiveFrom(out_fil);
 		try
 		{
-			in_fil >> newObj;
+			in_arch >> newObj;
 			// Check type:
 			if (newObj->GetRuntimeClass() == CLASS_ID(CRawlog))
 			{
@@ -893,7 +898,7 @@ void CFormMotionModel::applyToRawlogFile()
 					changes++;
 				}
 
-				out_fil << acts;
+				out_arch << acts;
 				newObj.reset();
 			}
 			else
@@ -1229,9 +1234,10 @@ void CFormMotionModel::OnbtnGetFromFileClick(wxCommandEvent& event)
 	WX_START_TRY
 
 	string fileName(txtInputFile->GetValue().mbc_str());
-	ASSERT_FILE_EXISTS_(fileName)
+	ASSERT_FILE_EXISTS_(fileName);
 
 	CFileGZInputStream fil(fileName);
+	auto arch = mrpt::serialization::archiveFrom(fil);
 
 	bool keepLoading = true;
 	string errorMsg;
@@ -1241,8 +1247,7 @@ void CFormMotionModel::OnbtnGetFromFileClick(wxCommandEvent& event)
 	while (keepLoading)
 	{
 		CSerializable::Ptr newObj;
-
-		fil >> newObj;
+		arch >> newObj;
 
 		// Check type:
 		if (newObj->GetRuntimeClass() == CLASS_ID(CActionCollection))

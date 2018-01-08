@@ -32,10 +32,13 @@
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::maps;
+using namespace mrpt::img;
+using namespace mrpt::math;
 using namespace mrpt::obs;
 using namespace mrpt::system;
-using namespace mrpt::math;
+using namespace mrpt::serialization;
 using namespace mrpt::poses;
+using namespace mrpt::rtti;
 using namespace std;
 
 // Update selected item display:
@@ -361,9 +364,8 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 				openGLSceneRef->clear();
 				// this->m_gl3DRangeScan->m_openGLScene->insert(
 				// mrpt::opengl::stock_objects::CornerXYZ() );
-				openGLSceneRef->insert(
-					mrpt::opengl::CAxis::Create(
-						-20, -20, -20, 20, 20, 20, 1, 2, true));
+				openGLSceneRef->insert(mrpt::opengl::CAxis::Create(
+					-20, -20, -20, 20, 20, 20, 1, 2, true));
 
 				mrpt::opengl::CPointCloudColoured::Ptr pnts =
 					mrpt::make_aligned_shared<
@@ -407,8 +409,8 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 						const size_t W = obs->confidenceImage.getWidth();
 						const size_t H = obs->confidenceImage.getHeight();
 
-						ASSERT_(obs->confidenceImage.isColor() == false)
-						ASSERT_(obs_xs.size() == H * W)
+						ASSERT_(obs->confidenceImage.isColor() == false);
+						ASSERT_(obs_xs.size() == H * W);
 
 						for (size_t r = 0; r < H; r++)
 						{
@@ -572,7 +574,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		memo->Thaw();  // Allow the window to redraw
 	}
 }
-catch (mrpt::utils::CExceptionExternalImageNotFound& e)
+catch (CExceptionExternalImageNotFound& e)
 {
 	wxMessageBox(
 		_U(e.what()), _("Error with a delayed load image"), wxOK, this);

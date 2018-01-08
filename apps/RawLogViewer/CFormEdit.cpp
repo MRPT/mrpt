@@ -29,13 +29,19 @@
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;
 using namespace mrpt::opengl;
 using namespace mrpt::system;
+using namespace mrpt::img;
 using namespace mrpt::math;
-using namespace mrpt::system;
+using namespace mrpt::containers;
+using namespace mrpt::serialization;
+using namespace mrpt::math;
+using namespace mrpt::img;
+using namespace mrpt::io;
 using namespace std;
 
 //(*IdInit(CFormEdit)
@@ -938,7 +944,7 @@ void CFormEdit::OnbtnPickOutClick(wxCommandEvent& event)
 /** This is the common function for all operations over a rawlog file ("filter"
  * a rawlog file into a new one) or over the loaded rawlog (depending on the
  * user selection in the GUI).
-  */
+ */
 void CFormEdit::executeOperationOnRawlog(
 	TRawlogFilter operation, const char* endMsg)
 {
@@ -1026,7 +1032,7 @@ void CFormEdit::executeOperationOnRawlog(
 			}
 			else
 			{
-				(*in_fil) >> newObj;
+				archiveFrom(*in_fil) >> newObj;
 			}
 
 			// Check type:
@@ -1046,10 +1052,10 @@ void CFormEdit::executeOperationOnRawlog(
 				if (!isInMemory || (countLoop >= first && countLoop <= last))
 					operation(nullptr, sf.get(), changes);
 
-				if (!isInMemory) (*out_fil) << *sf;
+				if (!isInMemory) archiveFrom(*out_fil) << *sf;
 			}
-			else if (
-				newObj->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
+			else if (newObj->GetRuntimeClass()->derivedFrom(
+						 CLASS_ID(CObservation)))
 			{
 				// A single observation:
 				dummy_sf->clear();
@@ -1063,7 +1069,7 @@ void CFormEdit::executeOperationOnRawlog(
 				// Still there?
 				if (dummy_sf->size() == 1)
 				{
-					if (!isInMemory) (*out_fil) << *newObj;
+					if (!isInMemory) archiveFrom(*out_fil) << *newObj;
 				}
 				else
 				{
@@ -1084,14 +1090,13 @@ void CFormEdit::executeOperationOnRawlog(
 				if (!isInMemory || (countLoop >= first && countLoop <= last))
 					operation((CActionCollection*)acts.get(), nullptr, changes);
 
-				if (!isInMemory) (*out_fil) << *acts;
+				if (!isInMemory) archiveFrom(*out_fil) << *acts;
 			}
 			else
 			{  // Unknown class:
-				THROW_EXCEPTION(
-					format(
-						"Unexpected class found in the file: '%s'",
-						newObj->GetRuntimeClass()->className));
+				THROW_EXCEPTION(format(
+					"Unexpected class found in the file: '%s'",
+					newObj->GetRuntimeClass()->className));
 			}
 		}
 		catch (exception& e)

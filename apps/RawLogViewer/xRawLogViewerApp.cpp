@@ -28,6 +28,7 @@ std::string global_fileToOpen;
 
 using namespace mrpt;
 using namespace mrpt::system;
+using namespace mrpt::config;
 using namespace std;
 
 // The configuration file:

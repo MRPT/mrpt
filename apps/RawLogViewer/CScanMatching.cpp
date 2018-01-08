@@ -31,6 +31,7 @@
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/slam/CICP.h>
+#include <mrpt/config/CConfigFileMemory.h>
 
 #include <mrpt/gui/WxUtils.h>
 
@@ -38,9 +39,13 @@ using namespace mrpt;
 using namespace mrpt::slam;
 using namespace mrpt::maps;
 using namespace mrpt::opengl;
+using namespace mrpt::config;
+using namespace mrpt::io;
 using namespace mrpt::poses;
 using namespace mrpt::system;
+using namespace mrpt::img;
 using namespace mrpt::math;
+using namespace mrpt::serialization;
 using namespace mrpt::obs;
 using namespace std;
 
@@ -362,8 +367,9 @@ CScanMatching::CScanMatching(wxWindow* parent, wxWindowID)
 	FlexGridSizer9->AddGrowableCol(0);
 	FlexGridSizer9->AddGrowableRow(1);
 	StaticText6 = new wxStaticText(
-		Panel3, ID_STATICTEXT6, _("Scan Matching Status:\n(Reference map: Blue "
-								  "or gridmap; Map to be aligned: Red)"),
+		Panel3, ID_STATICTEXT6,
+		_("Scan Matching Status:\n(Reference map: Blue "
+		  "or gridmap; Map to be aligned: Red)"),
 		wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT6"));
 	FlexGridSizer9->Add(
 		StaticText6, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 3);
@@ -568,8 +574,7 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
 
 	// Load ICP options:
 	// ------------------------------------------
-	CConfigFileMemory icpCfg(
-		std::vector<std::string>(string(edOptICP->GetValue().mb_str())));
+	CConfigFileMemory icpCfg((string(edOptICP->GetValue().mb_str())));
 	icp.options.loadFromConfigFile(icpCfg, "ICP");
 
 	// EXTRA options:
@@ -592,8 +597,7 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
 	bool useGridMap = rbGrid->GetValue();
 	if (!useGridMap)
 	{
-		CConfigFileMemory refCfg(
-			std::vector<std::string>(string(edOptRefPnt->GetValue().mb_str())));
+		CConfigFileMemory refCfg(string(edOptRefPnt->GetValue().mb_str()));
 		refMapPt.insertionOptions.loadFromConfigFile(
 			refCfg, "InsertionOptions");
 		cout << "REFERENCE MAP FOR THE ICP:" << endl;
@@ -601,8 +605,7 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
 	}
 	else
 	{
-		CConfigFileMemory refCfg(
-			std::vector<std::string>(string(edOptRefGrid->GetValue().mb_str())));
+		CConfigFileMemory refCfg(string(edOptRefGrid->GetValue().mb_str()));
 		float gridRes = refCfg.read_float("Construction", "resolution", 0.05f);
 		refMapGrid.setSize(-10, 10, -10, 10, gridRes);
 		refMapGrid.insertionOptions.loadFromConfigFile(
@@ -618,8 +621,7 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
 	// Load new map options:
 	// ----------------------------
 	{
-		CConfigFileMemory refCfg(
-			std::vector<std::string>(string(edOptAlignMap->GetValue().mb_str())));
+		CConfigFileMemory refCfg(string(edOptAlignMap->GetValue().mb_str()));
 		newMapPt.insertionOptions.loadFromConfigFile(
 			refCfg, "InsertionOptions");
 

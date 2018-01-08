@@ -17,24 +17,28 @@ namespace io
 {
 /** @defgroup vector_loadsave Load and save vectors to files (in #include
  * <mrpt/io/vector_loadsave.h>)
-  * \ingroup mrpt_io_grp
-  * @{ */
+ * \ingroup mrpt_io_grp
+ * @{ */
 
 /** Saves a vector directly as a binary dump to a file:
-* \return Returns false on any error, true on everything OK.
-* \sa loadBinaryFile
-*/
+ * \return Returns false on any error, true on everything OK.
+ * \sa loadBinaryFile
+ */
 bool vectorToBinaryFile(
 	const std::vector<uint8_t>& vec, const std::string& fileName);
 
 /** Loads a entire file as a vector of bytes.
-* \return Returns false on any error, true on everything OK.
-* \sa vectorToBinaryFile
-*/
+ * \return Returns false on any error, true on everything OK.
+ * \sa vectorToBinaryFile
+ */
 bool loadBinaryFile(
 	std::vector<uint8_t>& out_data, const std::string& fileName);
 
+/** Loads a text file as a vector of string lines.
+ * \return Returns false on any error, true on everything OK.
+ */
+bool loadTextFile(std::vector<std::string>& o, const std::string& fileName);
 /** @} */
 
-}  // End of namespace
-}  // End of namespace
+}  // namespace io
+}  // namespace mrpt

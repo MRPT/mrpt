@@ -36,7 +36,9 @@ END_EVENT_TABLE()
 
 using namespace mrpt;
 using namespace mrpt::system;
+using namespace mrpt::serialization;
 using namespace mrpt::obs;
+using namespace mrpt::rtti;
 using namespace std;
 
 const int CRawlogTreeView::ROW_HEIGHT = 17;
@@ -174,8 +176,8 @@ void CRawlogTreeView::reloadFromRawlog(int hint_rawlog_items)
 					}
 				}
 			}
-			else if (
-				(*it)->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
+			else if ((*it)->GetRuntimeClass()->derivedFrom(
+						 CLASS_ID(CObservation)))
 			{
 				CObservation::Ptr o =
 					std::dynamic_pointer_cast<CObservation>(*it);
