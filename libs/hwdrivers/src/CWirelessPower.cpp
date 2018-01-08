@@ -10,6 +10,7 @@
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
 #include <mrpt/hwdrivers/CWirelessPower.h>
+#include <iostream>
 
 using namespace mrpt::hwdrivers;
 using namespace std;
@@ -67,7 +68,7 @@ void* ConnectWlanServerW()
 		excmsg << "WlanOpenHandle failed with error: " << dwResult << std::endl;
 
 		// You can use FormatMessage here to find out why the function failed
-		THROW_EXCEPTION(excmsg.str();;
+		THROW_EXCEPTION(excmsg.str());
 	}
 	return (void*)hClient;
 }
@@ -105,7 +106,7 @@ std::vector<PWLAN_INTERFACE_INFO> ListInterfacesW(HANDLE hClient)
 		excmsg << "WlanEnumInterfaces failed with error: " << dwResult
 			   << std::endl;
 
-		THROW_EXCEPTION(excmsg.str();;
+		THROW_EXCEPTION(excmsg.str());
 		// You can use FormatMessage here to find out why the function failed
 	}
 	else

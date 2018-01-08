@@ -16,6 +16,7 @@
 
 using namespace std;
 using namespace mrpt::obs;
+using namespace mrpt::io;
 using namespace mrpt::hwdrivers;
 
 /*-------------------------------------------------------------

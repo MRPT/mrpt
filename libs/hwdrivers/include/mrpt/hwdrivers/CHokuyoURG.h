@@ -97,7 +97,7 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 	/** The sensor 6D pose: */
 	poses::CPose3D m_sensorPose;
 	/** Auxiliary buffer for readings */
-	mrpt::utils::circular_buffer<uint8_t> m_rx_buffer;
+	mrpt::containers::circular_buffer<uint8_t> m_rx_buffer;
 
 	/** The last sent measurement command (MDXXX), including the last 0x0A. */
 	std::string m_lastSentMeasCmd;

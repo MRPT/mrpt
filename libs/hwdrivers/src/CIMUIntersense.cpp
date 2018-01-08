@@ -11,6 +11,7 @@
 
 #include <mrpt/hwdrivers/CIMUIntersense.h>
 #include <mrpt/obs/CObservationIMU.h>
+#include <iostream>
 
 IMPLEMENTS_GENERIC_SENSOR(CIMUIntersense, mrpt::hwdrivers)
 

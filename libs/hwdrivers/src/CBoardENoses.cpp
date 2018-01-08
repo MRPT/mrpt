@@ -13,13 +13,14 @@
 #include <mrpt/hwdrivers/CBoardENoses.h>
 #include <mrpt/serialization/CMessage.h>
 #include <mrpt/math/ops_vectors.h>
-
+#include <iostream>
 #include <thread>
 
 using namespace mrpt::math;
 using namespace mrpt::obs;
 using namespace mrpt::poses;
 using namespace mrpt::hwdrivers;
+using namespace mrpt::io;
 using namespace std;
 
 IMPLEMENTS_GENERIC_SENSOR(CBoardENoses, mrpt::hwdrivers)
@@ -98,11 +99,12 @@ bool CBoardENoses::queryFirmwareVersion(string& out_firmwareVersion)
 		// Try to connect to the device:
 		CStream* comms = checkConnectionAndConnect();
 		if (!comms) return false;
+		auto arch = mrpt::serialization::archiveFrom(*comms);
 
 		msg.type = 0x10;
-		comms->sendMessage(msg);
+		arch.sendMessage(msg);
 
-		if (comms->receiveMessage(msgRx))
+		if (arch.receiveMessage(msgRx))
 		{
 			msgRx.getContentAsString(out_firmwareVersion);
 			return true;
@@ -154,7 +156,7 @@ CStream* CBoardENoses::checkConnectionAndConnect()
 	}
 	else
 	{  // Serial pipe ==================
-		ASSERT_(m_stream_SERIAL)
+		ASSERT_(m_stream_SERIAL);
 		if (m_stream_SERIAL->isOpen()) return m_stream_SERIAL.get();
 		try
 		{
@@ -205,7 +207,8 @@ bool CBoardENoses::getObservation(mrpt::obs::CObservationGasSensors& obs)
 		// MCE-nose provides a 136B body lenght which makes 140B total frame
 		// lenght
 
-		if (!comms->receiveMessage(msg))
+		auto arch = mrpt::serialization::archiveFrom(*comms);
+		if (!arch.receiveMessage(msg))
 		{
 			return false;
 		}
@@ -246,13 +249,13 @@ bool CBoardENoses::getObservation(mrpt::obs::CObservationGasSensors& obs)
 				// Do we have the sensor position?
 				if (i < enose_poses_x.size())
 				{
-					newRead.eNosePoseOnTheRobot = CPose3D(
+					newRead.eNosePoseOnTheRobot = TPose3D(
 						enose_poses_x[i], enose_poses_y[i], enose_poses_z[i],
 						enose_poses_yaw[i], enose_poses_pitch[i],
 						enose_poses_roll[i]);
 				}
 				else
-					newRead.eNosePoseOnTheRobot = CPose3D(0, 0, 0);
+					newRead.eNosePoseOnTheRobot = TPose3D(0, 0, 0, 0, 0, 0);
 
 				// Process the sensor codes:
 				newRead.sensorTypes.clear();
@@ -418,7 +421,7 @@ bool CBoardENoses::setActiveChamber(unsigned char chamber)
 		unsigned char buf[1];
 		buf[0] = ((chamber & 15) << 2) | 130;  // 130= 10 0000 10
 
-		comms->WriteBuffer(buf, 1);  // Exceptions will be raised on errors here
+		comms->Write(buf, 1);  // Exceptions will be raised on errors here
 		return true;
 	}
 	catch (...)

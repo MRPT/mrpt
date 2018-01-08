@@ -11,6 +11,7 @@
 
 #include <mrpt/hwdrivers/CGPS_NTRIP.h>
 #include <mrpt/config/CConfigFilePrefixer.h>
+#include <iostream>
 
 using namespace mrpt::hwdrivers;
 using namespace mrpt::obs;

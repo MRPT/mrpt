@@ -13,6 +13,7 @@
 
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/string_utils.h>
+#include <iostream>
 
 IMPLEMENTS_GENERIC_SENSOR(CNTRIPEmitter, mrpt::hwdrivers)
 
@@ -81,7 +82,7 @@ void CNTRIPEmitter::doProcess()
 				"[NTRIP %s] RX: %u bytes\n",
 				mrpt::system::timeLocalToString(mrpt::system::now()).c_str(),
 				(unsigned)buf.size());
-			m_out_COM.WriteBuffer(&buf[0], buf.size());
+			m_out_COM.Write(&buf[0], buf.size());
 		}
 
 		if (m_raw_output_file_stream.is_open())

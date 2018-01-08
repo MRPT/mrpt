@@ -403,7 +403,7 @@ bool CHokuyoURG::setHighBaudrate()
 	os::strcpy(cmd, 20, "SS115200\x0A");
 	toWrite = 9;
 
-	m_stream->WriteBuffer(cmd, toWrite);
+	m_stream->Write(cmd, toWrite);
 
 	// Receive response:
 	if (!receiveResponse(
@@ -453,7 +453,7 @@ bool CHokuyoURG::assureBufferHasBytes(const size_t nDesiredBytes)
 			}
 			else
 			{
-				nRead = m_stream->ReadBuffer(buf, to_read);
+				nRead = m_stream->Read(buf, to_read);
 			}
 
 			m_rx_buffer.push_many(buf, nRead);
@@ -618,7 +618,7 @@ bool CHokuyoURG::enableSCIP20()
 	os::strcpy(cmd, 20, "SCIP2.0\x0A");
 	toWrite = 8;
 
-	m_stream->WriteBuffer(cmd, toWrite);
+	m_stream->Write(cmd, toWrite);
 
 	// Receive response:
 	if (!receiveResponse(
@@ -658,7 +658,7 @@ bool CHokuyoURG::switchLaserOn()
 	os::strcpy(cmd, 20, "BM\x0A");
 	toWrite = 3;
 
-	m_stream->WriteBuffer(cmd, toWrite);
+	m_stream->Write(cmd, toWrite);
 
 	// Receive response:
 	if (!receiveResponse(
@@ -699,7 +699,7 @@ bool CHokuyoURG::switchLaserOff()
 	os::strcpy(cmd, 20, "QT\x0A");
 	toWrite = 3;
 
-	m_stream->WriteBuffer(cmd, toWrite);
+	m_stream->Write(cmd, toWrite);
 
 	// Receive response:
 	if (!receiveResponse(
@@ -747,7 +747,7 @@ bool CHokuyoURG::setMotorSpeed(int motoSpeed_rpm)
 	os::sprintf(cmd, 20, "CR%02i\x0A", motorSpeedCode);
 	toWrite = 5;
 
-	m_stream->WriteBuffer(cmd, toWrite);
+	m_stream->Write(cmd, toWrite);
 
 	// Receive response:
 	if (!receiveResponse(
@@ -789,7 +789,7 @@ bool CHokuyoURG::setHighSensitivityMode(bool enabled)
 	os::sprintf(cmd, 20, "HS%i\x0A", enabled ? 1 : 0);
 	toWrite = 4;
 
-	m_stream->WriteBuffer(cmd, toWrite);
+	m_stream->Write(cmd, toWrite);
 
 	// Receive response:
 	if (!receiveResponse(
@@ -838,7 +838,7 @@ bool CHokuyoURG::displayVersionInfo()
 	os::sprintf(cmd, 20, "VV\x0A");
 	toWrite = 3;
 
-	m_stream->WriteBuffer(cmd, toWrite);
+	m_stream->Write(cmd, toWrite);
 
 	// Receive response:
 	if (!receiveResponse(
@@ -891,7 +891,7 @@ bool CHokuyoURG::displaySensorInfo(TSensorInfo* out_data)
 	os::sprintf(cmd, 20, "PP\x0A");
 	toWrite = 3;
 
-	m_stream->WriteBuffer(cmd, toWrite);
+	m_stream->Write(cmd, toWrite);
 
 	// Receive response:
 	if (!receiveResponse(
@@ -1015,7 +1015,7 @@ bool CHokuyoURG::startScanningMode()
 
 	m_lastSentMeasCmd = cmd;
 
-	m_stream->WriteBuffer(cmd, toWrite);
+	m_stream->Write(cmd, toWrite);
 
 	// Receive response:
 	if (!receiveResponse(
@@ -1207,7 +1207,7 @@ void CHokuyoURG::purgeBuffers()
 		{
 			void* buf = malloc(sizeof(uint8_t) * to_read);
 
-			size_t nRead = m_stream->ReadBuffer(buf, to_read);
+			size_t nRead = m_stream->Read(buf, to_read);
 
 			if (nRead != to_read)
 				THROW_EXCEPTION(

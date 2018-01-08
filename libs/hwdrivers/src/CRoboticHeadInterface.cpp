@@ -10,9 +10,11 @@
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
 #include <mrpt/hwdrivers/CRoboticHeadInterface.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::math;
 using namespace mrpt::hwdrivers;
+using namespace mrpt::serialization;
 
 /*-------------------------------------------------------------
 						CRoboticHeadInterface
@@ -56,8 +58,8 @@ void CRoboticHeadInterface::GetGain(int& _gain, int& channel)
 	msg.type = 0x58;
 	msg.content.resize(1);
 	msg.content[0] = (unsigned char)channel;
-	m_usbConnection.sendMessage(msg);
-	while (!m_usbConnection.receiveMessage(msg))
+	archiveFrom(m_usbConnection).sendMessage(msg);
+	while (!archiveFrom(m_usbConnection).receiveMessage(msg))
 		;
 	_gain = msg.content[0];
 	if (msg.content[0])
@@ -74,8 +76,8 @@ bool CRoboticHeadInterface::SetGain(int& new_gain, int& channel)
 	msg.content.resize(2);
 	msg.content[0] = (unsigned char)channel;
 	msg.content[1] = (unsigned char)new_gain;
-	m_usbConnection.sendMessage(msg);
-	while (!m_usbConnection.receiveMessage(msg))
+	archiveFrom(m_usbConnection).sendMessage(msg);
+	while (!archiveFrom(m_usbConnection).receiveMessage(msg))
 		;
 	if (msg.content[0] == 0)
 		return 0;
@@ -90,8 +92,8 @@ void CRoboticHeadInterface::GetSoundLocation(int& ang)
 {
 	msg.type = 0x59;
 	msg.content.resize(0);
-	m_usbConnection.sendMessage(msg);
-	while (!m_usbConnection.receiveMessage(msg))
+	archiveFrom(m_usbConnection).sendMessage(msg);
+	while (!archiveFrom(m_usbConnection).receiveMessage(msg))
 		;
 	ang = 256 * (int)msg.content[1] + (int)msg.content[0];
 }
@@ -104,7 +106,7 @@ void CRoboticHeadInterface::Get3SoundBuffer(CMatrixTemplate<int>& buf)
 	buf.setSize(3, 500);  // 3 channel, 500 samples per channel
 	msg.type = 0x51;
 	msg.content.resize(0);
-	m_usbConnection.sendMessage(msg);
+	archiveFrom(m_usbConnection).sendMessage(msg);
 
 	// Las lecturas se haran de 100 en 100 datos y hay 3 buffers de 500 muestras
 	// cada uno
@@ -112,7 +114,7 @@ void CRoboticHeadInterface::Get3SoundBuffer(CMatrixTemplate<int>& buf)
 	{
 		for (size_t j = 0; j < 500 / 100; j++)  // Lectura de un canal completo
 		{
-			while (!m_usbConnection.receiveMessage(msg))
+			while (!archiveFrom(m_usbConnection).receiveMessage(msg))
 				;
 			for (size_t i = 0; i < 100; i++)  // Lectura de un envio
 				buf(k, 100 * j + i) =

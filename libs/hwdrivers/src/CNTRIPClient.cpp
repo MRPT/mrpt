@@ -339,11 +339,10 @@ bool CNTRIPClient::retrieveListOfMountpoints(
 	// Parse contents:
 	if (ret != net::erOk) return false;
 
-	std::vector<std::string> lstLines(content);
-
-	for (size_t i = 0; i < lstLines.size(); i++)
+	std::stringstream ss(content);
+	string lin;
+	while (std::getline(ss,lin,'\n'))
 	{
-		const string& lin = lstLines(i);
 		if (lin.size() < 5) continue;
 		if (0 != ::strncmp("STR;", lin.c_str(), 4)) continue;
 

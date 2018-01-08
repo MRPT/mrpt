@@ -12,6 +12,7 @@
 #include <mrpt/hwdrivers/CIMUXSens.h>
 #include <mrpt/obs/CObservationIMU.h>
 
+#include <iostream>
 #include <thread>
 IMPLEMENTS_GENERIC_SENSOR(CIMUXSens, mrpt::hwdrivers)
 

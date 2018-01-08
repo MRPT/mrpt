@@ -13,7 +13,7 @@
 #include <mrpt/obs/CObservationRawDAQ.h>
 #include <mrpt/system/COutputLogger.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/synch/CPipe.h>
+#include <mrpt/io/CPipe.h>
 
 #include <list>
 #include <memory>
@@ -468,8 +468,8 @@ class CNationalInstrumentsDAQ : public mrpt::system::COutputLogger,
 		void* taskHandle;
 		std::thread hThread;
 
-		std::unique_ptr<mrpt::synch::CPipeReadEndPoint> read_pipe;
-		std::unique_ptr<mrpt::synch::CPipeWriteEndPoint> write_pipe;
+		std::unique_ptr<mrpt::io::CPipeReadEndPoint> read_pipe;
+		std::unique_ptr<mrpt::io::CPipeWriteEndPoint> write_pipe;
 
 		bool must_close, is_closed;
 		std::atomic<int> new_obs_available;

@@ -16,6 +16,7 @@
 using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::hwdrivers;
+using namespace mrpt::serialization;
 using namespace std;
 
 /*-------------------------------------------------------------

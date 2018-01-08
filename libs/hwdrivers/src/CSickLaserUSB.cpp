@@ -291,7 +291,7 @@ bool CSickLaserUSB::waitContinuousSampleFrame(
 	}
 
 	// CRC:
-	const uint16_t CRC = mrpt::utils::compute_CRC16(buf, lenghtField - 2);
+	const uint16_t CRC = mrpt::system::compute_CRC16(buf, lenghtField - 2);
 	const uint16_t CRC_packet =
 		buf[lenghtField - 2] | (buf[lenghtField - 1] << 8);
 	if (CRC_packet != CRC)

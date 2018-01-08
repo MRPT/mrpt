@@ -103,6 +103,7 @@ class CPipeBaseEndPoint : public mrpt::io::CStream
 #else
 	int m_pipe_file;
 #endif
+   public:
 	virtual size_t Read(void* Buffer, size_t Count) override;
 	virtual size_t Write(const void* Buffer, size_t Count) override;
 
@@ -133,10 +134,10 @@ class CPipeReadEndPoint : public CPipeBaseEndPoint
 	 * process. */
 	explicit CPipeReadEndPoint(const std::string& serialized);
 
-   private:
+	/** Read-only pipe, don't call this method */
+	size_t Write(const void* Buffer, size_t Count) { throw std::runtime_error("CPipeReadEndPoint::Write() cant be called."); }
+private:
 	CPipeReadEndPoint();
-	/** Hide the write method in this read-only pipe. */
-	void WriteBuffer(const void* Buffer, size_t Count);
 
 };  // end of CPipeReadEndPoint
 
@@ -152,10 +153,10 @@ class CPipeWriteEndPoint : public CPipeBaseEndPoint
 	 * process. */
 	explicit CPipeWriteEndPoint(const std::string& serialized);
 
-   private:
+	/** Write-only pipe: read launches exception */
+	size_t Read(void* Buffer, size_t Count) { throw std::runtime_error("CPipeWriteEndPoint::Read() cant be called."); }
+private:
 	CPipeWriteEndPoint();
-	/** Hide the read method in this write-only pipe. */
-	size_t ReadBuffer(void* Buffer, size_t Count);
 
 };  // end of CPipeWriteEndPoint
 
