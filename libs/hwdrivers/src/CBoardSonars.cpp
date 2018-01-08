@@ -180,8 +180,8 @@ bool CBoardSonars::sendConfigCommands()
 		msg.type = 0x14;
 		msg.content.resize(1);
 		msg.content[0] = (int)((m_maxRange / 0.043f) - 1);
-		sendMessage(msg);
-		if (!receiveMessage(msgRx)) return false;  // Error
+		arch.sendMessage(msg);
+		if (!arch.receiveMessage(msgRx)) return false;  // Error
 
 		// Send cmd for max range:
 		// ----------------------------
@@ -190,8 +190,8 @@ bool CBoardSonars::sendConfigCommands()
 		uint16_t T = (uint16_t)(m_minTimeBetweenPings * 1000.0f);
 		msg.content[0] = T >> 8;
 		msg.content[1] = T & 0x00FF;
-		sendMessage(msg);
-		if (!receiveMessage(msgRx)) return false;  // Error
+		arch.sendMessage(msg);
+		if (!arch.receiveMessage(msgRx)) return false;  // Error
 
 		return true;
 	}

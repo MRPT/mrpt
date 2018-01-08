@@ -13,6 +13,7 @@
 
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
+#include <list>
 
 namespace mrpt
 {
@@ -245,7 +246,7 @@ class CImageGrabber_dc1394
 		int max_mem_channel;
 	};
 
-	typedef std::list<TCameraInfo> TCameraInfoList;
+	using TCameraInfoList = std::list<TCameraInfo>;
 
 	/** Generates a list with the information on all the existing (Firewire)
 	 * cameras in the system.

@@ -270,7 +270,7 @@ bool CRoboPeakLidar::checkCOMMs()
 	// create the driver instance
 	m_rplidar_drv =
 		RPlidarDriver::CreateDriver(RPlidarDriver::DRIVER_TYPE_SERIALPORT);
-	ASSERTMSG_(m_rplidar_drv, "Create Driver failed.")
+	ASSERTMSG_(m_rplidar_drv, "Create Driver failed.");
 
 	// Is it COMX, X>4? ->  "\\.\COMX"
 	if (m_com_port.size() >= 3)

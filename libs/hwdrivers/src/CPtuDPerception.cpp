@@ -15,6 +15,7 @@
 
 #include <cstring>
 #include <thread>
+#include <iostream>
 
 using namespace std;
 using namespace mrpt::hwdrivers;

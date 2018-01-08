@@ -11,6 +11,8 @@
 
 #include <mrpt/hwdrivers/CNationalInstrumentsDAQ.h>
 #include <iterator>  // advance()
+#include <iostream>
+#include <mrpt/serialization/CArchive.h>
 
 // If we have both, DAQmx & DAQmxBase, prefer DAQmx:
 #define MRPT_HAS_SOME_NIDAQMX (MRPT_HAS_NIDAQMXBASE || MRPT_HAS_NIDAQMX)
@@ -727,7 +729,8 @@ void CNationalInstrumentsDAQ::readFromDAQ(
 		{
 			if (it->new_obs_available != 0)
 			{
-				it->read_pipe->ReadObject(&tmp_obs);
+				auto arch = mrpt::serialization::archiveFrom(*it->read_pipe);
+				arch.ReadObject(&tmp_obs);
 				--(it->new_obs_available);
 
 				// Yes, valid block of samples was adquired:

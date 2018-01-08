@@ -19,6 +19,8 @@
 
 using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
+using namespace mrpt::io;
+using namespace mrpt::img;
 using namespace mrpt::comms::net;
 using namespace std;
 

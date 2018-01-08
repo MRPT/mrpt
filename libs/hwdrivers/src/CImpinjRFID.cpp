@@ -12,6 +12,7 @@
 #include <mrpt/hwdrivers/CImpinjRFID.h>
 #include <mrpt/system/os.h>
 
+#include <iostream>
 #include <thread>
 
 using namespace mrpt::hwdrivers;

@@ -449,7 +449,7 @@ void CVelodyneScanner::initialize()
 		if (int(INVALID_SOCKET) ==
 			::bind(
 				m_hDataSock, (struct sockaddr*)(&bindAddr), sizeof(sockaddr)))
-			THROW_EXCEPTION(mrpt::comms::net::getLastSocketErrorStr();;
+			THROW_EXCEPTION(mrpt::comms::net::getLastSocketErrorStr());
 
 #ifdef _WIN32
 		unsigned long non_block_mode = 1;
@@ -480,7 +480,7 @@ void CVelodyneScanner::initialize()
 									   m_hPositionSock,
 									   (struct sockaddr*)(&bindAddr),
 									   sizeof(sockaddr)))
-			THROW_EXCEPTION(mrpt::comms::net::getLastSocketErrorStr();;
+			THROW_EXCEPTION(mrpt::comms::net::getLastSocketErrorStr());
 
 #ifdef _WIN32
 		if (ioctlsocket(m_hPositionSock, FIONBIO, &non_block_mode))

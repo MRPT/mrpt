@@ -194,7 +194,7 @@ class CGPSInterface : public mrpt::system::COutputLogger, public CGenericSensor
 	 * \note Call before CGenericSensor::initialize()
 	 */
 	void bindStream(
-		mrpt::utils::CStream* external_stream,
+		mrpt::io::CStream* external_stream,
 		std::mutex* csOptionalExternalStream = nullptr);
 
 	bool useExternCOM() const { return m_data_stream_is_external; }
@@ -272,7 +272,7 @@ class CGPSInterface : public mrpt::system::COutputLogger, public CGenericSensor
 
 	/** Typically a CSerialPort created by this class, but may be set
 	 * externally. */
-	mrpt::utils::CStream* m_data_stream;
+	mrpt::io::CStream* m_data_stream;
 	std::mutex* m_data_stream_cs;
 	bool m_data_stream_is_external;
 
@@ -313,7 +313,7 @@ class CGPSInterface : public mrpt::system::COutputLogger, public CGenericSensor
 
    private:
 	/** Auxiliary buffer for readings */
-	mrpt::utils::circular_buffer<uint8_t> m_rx_buffer;
+	mrpt::containers::circular_buffer<uint8_t> m_rx_buffer;
 	PARSERS m_parser;
 	std::string m_raw_dump_file_prefix;
 	std::string m_COMname;

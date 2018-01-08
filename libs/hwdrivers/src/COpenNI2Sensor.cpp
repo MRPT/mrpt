@@ -14,6 +14,7 @@
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/img/TStereoCamera.h>
+#include <mrpt/poses/CPose3DQuat.h>
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>
@@ -60,7 +61,7 @@ COpenNI2Sensor::COpenNI2Sensor()
 	m_cameraParamsRGB.fx(-1);
 	m_cameraParamsRGB.fy(-1);
 
-	m_cameraParamsRGB.dist.zeros();
+	m_cameraParamsRGB.dist.fill(0);
 
 	// ----- Depth -----
 	m_cameraParamsDepth.ncols = 0;
@@ -71,7 +72,7 @@ COpenNI2Sensor::COpenNI2Sensor()
 	m_cameraParamsDepth.fx(-1);
 	m_cameraParamsDepth.fy(-1);
 
-	m_cameraParamsDepth.dist.zeros();
+	m_cameraParamsDepth.dist.fill(0);
 }
 
 /*-------------------------------------------------------------
@@ -248,7 +249,7 @@ void COpenNI2Sensor::loadConfig_sensorSpecific(
 		const mrpt::poses::CPose3D twist(
 			0, 0, 0, DEG2RAD(-90), DEG2RAD(0), DEG2RAD(-90));
 		m_relativePoseIntensityWRTDepth =
-			twist + mrpt::poses::CPose3D(sc.rightCameraPose);
+			twist + mrpt::poses::CPose3D(mrpt::poses::CPose3DQuat(sc.rightCameraPose));
 	}
 
 	// Id:

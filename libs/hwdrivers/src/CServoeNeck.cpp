@@ -12,11 +12,13 @@
 #include <mrpt/comms/net_utils.h>
 #include <mrpt/hwdrivers/CServoeNeck.h>
 #include <mrpt/serialization/CMessage.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include <thread>
 
 using namespace mrpt::comms;
 using namespace mrpt::hwdrivers;
+using namespace mrpt::serialization;
 using namespace mrpt::math;
 using namespace std::literals;
 
@@ -49,9 +51,9 @@ bool CServoeNeck::queryFirmwareVersion(std::string& out_firmwareVersion)
 		if (!checkConnectionAndConnect()) return false;
 
 		msg.type = 0x10;
-		sendMessage(msg);
+		archiveFrom(*this).sendMessage(msg);
 
-		if (receiveMessage(msgRx))
+		if (archiveFrom(*this).receiveMessage(msgRx))
 		{
 			msgRx.getContentAsString(out_firmwareVersion);
 			std::this_thread::sleep_for(200ms);
@@ -138,8 +140,8 @@ bool CServoeNeck::setRegisterValue(
 		msg.content[1] = (uint8_t)(value >> 8);  // High byte
 		msg.content[0] = servo;  // Servo number
 
-		sendMessage(msg);
-		if (!receiveMessage(msgRx)) return false;  // Error
+		archiveFrom(*this).sendMessage(msg);
+		if (!archiveFrom(*this).receiveMessage(msgRx)) return false;  // Error
 
 		std::this_thread::sleep_for(200ms);
 		return true;
@@ -176,8 +178,8 @@ bool CServoeNeck::setRegisterValueAndSpeed(
 		msg.content[1] = (uint8_t)(value >> 8);  // High byte
 		msg.content[0] = servo;  // Servo number
 
-		sendMessage(msg);
-		if (!receiveMessage(msgRx)) return false;  // Error
+		archiveFrom(*this).sendMessage(msg);
+		if (!archiveFrom(*this).receiveMessage(msgRx)) return false;  // Error
 
 		std::this_thread::sleep_for(200ms);
 		return true;
@@ -208,8 +210,8 @@ bool CServoeNeck::getRegisterValue(uint16_t& value, const uint8_t servo)
 		msg.content.resize(1);
 		msg.content[0] = servo;
 
-		sendMessage(msg);
-		if (receiveMessage(msgRx))
+		archiveFrom(*this).sendMessage(msg);
+		if (archiveFrom(*this).receiveMessage(msgRx))
 		{
 			if (msgRx.content.size() != 2) return false;
 
@@ -338,8 +340,8 @@ bool CServoeNeck::disableServo(const uint8_t servo)
 		msg.content.resize(1);
 		msg.content[0] = servo;  // Servo number
 
-		sendMessage(msg);
-		if (!receiveMessage(msgRx)) return false;  // Error
+		archiveFrom(*this).sendMessage(msg);
+		if (!archiveFrom(*this).receiveMessage(msgRx)) return false;  // Error
 
 		return true;
 	}
@@ -369,8 +371,8 @@ bool CServoeNeck::enableServo(const uint8_t servo)
 		msg.content.resize(1);
 		msg.content[0] = servo;  // Servo number
 
-		sendMessage(msg);
-		if (!receiveMessage(msgRx)) return false;  // Error
+		archiveFrom(*this).sendMessage(msg);
+		if (!archiveFrom(*this).receiveMessage(msgRx)) return false;  // Error
 
 		return true;
 	}

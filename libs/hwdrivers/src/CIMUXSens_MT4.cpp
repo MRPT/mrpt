@@ -13,6 +13,7 @@
 #include <mrpt/obs/CObservationIMU.h>
 #include <mrpt/obs/CObservationGPS.h>
 
+#include <iostream>
 #include <thread>
 
 IMPLEMENTS_GENERIC_SENSOR(CIMUXSens_MT4, mrpt::hwdrivers)
@@ -583,11 +584,8 @@ void CIMUXSens_MT4::doProcess()
 
 			appendObservation(obsGPS);
 		}
-
-		std::cout << std::flush;
 	}
 	msgs.clear();
-
 #else
 	THROW_EXCEPTION(
 		"MRPT has been compiled with 'BUILD_XSENS_MT4'=OFF, so this class "

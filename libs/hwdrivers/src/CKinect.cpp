@@ -12,12 +12,14 @@
 #include <mrpt/hwdrivers/CKinect.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/img/TStereoCamera.h>
+#include <mrpt/poses/CPose3DQuat.h>
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>
 
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
+using namespace mrpt::serialization;
 using namespace mrpt::math;
 using namespace mrpt::obs;
 using namespace mrpt::poses;
@@ -117,7 +119,7 @@ CKinect::CKinect()
 	m_cameraParamsRGB.fx(529.2151);
 	m_cameraParamsRGB.fy(525.5639);
 
-	m_cameraParamsRGB.dist.zeros();
+	m_cameraParamsRGB.dist.fill(0);
 
 	// ----- Depth -----
 	m_cameraParamsDepth.ncols = 640;
@@ -128,7 +130,7 @@ CKinect::CKinect()
 	m_cameraParamsDepth.fx(594.21434);
 	m_cameraParamsDepth.fy(591.04054);
 
-	m_cameraParamsDepth.dist.zeros();
+	m_cameraParamsDepth.dist.fill(0);
 
 #if !MRPT_HAS_KINECT
 	THROW_EXCEPTION(
@@ -218,7 +220,7 @@ void CKinect::loadConfig_sensorSpecific(
 	// have some reasonable numbers.
 	sc.rightCamera = m_cameraParamsRGB;
 	sc.rightCameraPose =
-		mrpt::poses::CPose3DQuat(m_relativePoseIntensityWRTDepth - twist);
+		mrpt::poses::CPose3DQuat(m_relativePoseIntensityWRTDepth - twist).asTPose();
 
 	try
 	{
@@ -762,7 +764,7 @@ void CKinect::setPathForExternalImages(const std::string& directory)
 /** Change tilt angle \note Sensor must be open first. */
 void CKinect::setTiltAngleDegrees(double angle)
 {
-	ASSERTMSG_(isOpen(), "Sensor must be open first")
+	ASSERTMSG_(isOpen(), "Sensor must be open first");
 
 #if MRPT_HAS_KINECT_FREENECT
 	freenect_set_tilt_degs(f_dev, angle);
@@ -773,7 +775,7 @@ void CKinect::setTiltAngleDegrees(double angle)
 
 double CKinect::getTiltAngleDegrees()
 {
-	ASSERTMSG_(isOpen(), "Sensor must be open first")
+	ASSERTMSG_(isOpen(), "Sensor must be open first");
 
 #if MRPT_KINECT_WITH_FREENECT
 	freenect_update_tilt_state(f_dev);

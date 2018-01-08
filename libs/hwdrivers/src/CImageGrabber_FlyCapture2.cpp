@@ -193,7 +193,7 @@ void TCaptureOptions_FlyCapture2::loadOptionsFrom(
 		mrpt::system::tokenize(sGUID, "- \t\r\n", sGUIDparts);
 		ASSERTMSG_(
 			sGUIDparts.size() == 4,
-			"GUID format error: must have four blocks like XXX-XXX-XXX-XXX")
+			"GUID format error: must have four blocks like XXX-XXX-XXX-XXX");
 
 		for (int i = 0; i < 4; i++)
 			sscanf(sGUIDparts[i].c_str(), "%X", &camera_guid[i]);

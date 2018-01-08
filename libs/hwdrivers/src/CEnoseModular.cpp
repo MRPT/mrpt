@@ -12,13 +12,15 @@
 #include <mrpt/system/os.h>
 #include <mrpt/hwdrivers/CEnoseModular.h>
 #include <mrpt/serialization/CMessage.h>
-
+#include <mrpt/serialization/CArchive.h>
+#include <iostream>
 #include <thread>
 
 using namespace mrpt::math;
 using namespace mrpt::obs;
 using namespace mrpt::poses;
 using namespace mrpt::hwdrivers;
+using namespace mrpt::io;
 using namespace std;
 
 IMPLEMENTS_GENERIC_SENSOR(CEnoseModular, mrpt::hwdrivers)
@@ -92,7 +94,7 @@ CStream* CEnoseModular::checkConnectionAndConnect()
 	}
 	else
 	{  // Serial pipe ==================
-		ASSERT_(m_stream_SERIAL)
+		ASSERT_(m_stream_SERIAL);
 		if (m_stream_SERIAL->isOpen()) return m_stream_SERIAL.get();
 		try
 		{
@@ -144,7 +146,9 @@ bool CEnoseModular::getObservation(mrpt::obs::CObservationGasSensors& obs)
 		mrpt::system::TTimeStamp t1 = mrpt::system::getCurrentLocalTime();
 		double time_out_val = 1;  // seconds
 
-		while (!comms->receiveMessage(msg) && !time_out)
+		auto arch = mrpt::serialization::archiveFrom(*comms);
+
+		while (!arch.receiveMessage(msg) && !time_out)
 		{
 			if (mrpt::system::timeDifference(
 					t1, mrpt::system::getCurrentLocalTime()) > time_out_val)
@@ -162,7 +166,7 @@ bool CEnoseModular::getObservation(mrpt::obs::CObservationGasSensors& obs)
 		{
 			// Each sensor reading is composed of 3 Bytes
 			// [<SensorID_H><SensorID_L><Sensor_Value>]
-			ASSERT_((msg.content.size() - 1) % 3 == 0)
+			ASSERT_((msg.content.size() - 1) % 3 == 0);
 			size_t numSensors = (msg.content.size() - 1) / 3;
 
 			// Prepare the Enose observation
@@ -174,13 +178,13 @@ bool CEnoseModular::getObservation(mrpt::obs::CObservationGasSensors& obs)
 			// Do we have the sensor position?
 			if (enose_poses_x.size() != 0)
 			{
-				newRead.eNosePoseOnTheRobot = CPose3D(
+				newRead.eNosePoseOnTheRobot = TPose3D(
 					enose_poses_x[0], enose_poses_y[0], enose_poses_z[0],
 					enose_poses_yaw[0], enose_poses_pitch[0],
 					enose_poses_roll[0]);
 			}
 			else
-				newRead.eNosePoseOnTheRobot = CPose3D(0, 0, 0);
+				newRead.eNosePoseOnTheRobot = TPose3D(0, 0, 0, 0, 0, 0);
 
 			// Get Temperature (degrees C)
 			newRead.temperature = msg.content[0] * 1.65214 - 277.74648;

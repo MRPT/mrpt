@@ -146,35 +146,37 @@ class CInterfaceFTDI : public mrpt::io::CStream
 	 */
 	virtual size_t ReadBufferImmediate(void* Buffer, size_t Count);
 
-   protected:
 	/** Introduces a pure virtual method responsible for reading from the
-	 * stream.
-	 *  It integrates a cache buffer to speed-up sequences of many, small
-	 * readings.
-	 */
+	* stream.
+	*  It integrates a cache buffer to speed-up sequences of many, small
+	* readings.
+	*/
 	size_t Read(void* Buffer, size_t Count);
 
-	/** Used in Read */
-	mrpt::containers::circular_buffer<uint8_t> m_readBuffer;
-
 	/** Introduces a pure virtual method responsible for writing to the stream.
-	 *  Write attempts to write up to Count bytes to Buffer, and returns the
-	 * number of bytes actually written.
-	 */
+	*  Write attempts to write up to Count bytes to Buffer, and returns the
+	* number of bytes actually written.
+	*/
 	size_t Write(const void* Buffer, size_t Count);
 
 	/** This virtual method does nothing in this class.
-	 */
+	*/
 	uint64_t Seek(
 		int64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning);
 
 	/** This virtual method does nothing in this class.
-	 */
+	*/
 	uint64_t getTotalBytesCount() const;
 
 	/** This virtual method does nothing in this class.
-	 */
+	*/
 	uint64_t getPosition() const;
+
+
+   protected:
+
+	/** Used in Read */
+	mrpt::containers::circular_buffer<uint8_t> m_readBuffer;
 
 	void ftdi_read(
 		void* lpvBuffer, unsigned long dwBuffSize,
