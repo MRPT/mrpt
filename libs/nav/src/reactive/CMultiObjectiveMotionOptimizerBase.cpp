@@ -11,6 +11,7 @@
 
 #include <mrpt/nav/reactive/CMultiObjectiveMotionOptimizerBase.h>
 #include <mrpt/system/string_utils.h>
+#include <limits>
 
 using namespace mrpt::nav;
 
@@ -196,11 +197,10 @@ int CMultiObjectiveMotionOptimizerBase::decide(
 				if (val == 0)
 				{
 					assert_failed = true;
-					extra_info.log_entries.emplace_back(
-						mrpt::format(
-							"[CMultiObjectiveMotionOptimizerBase] "
-							"mov_idx=%u ASSERT failed: `%s`",
-							mov_idx, ma.get_original_expression().c_str()));
+					extra_info.log_entries.emplace_back(mrpt::format(
+						"[CMultiObjectiveMotionOptimizerBase] "
+						"mov_idx=%u ASSERT failed: `%s`",
+						mov_idx, ma.get_original_expression().c_str()));
 					break;
 				}
 			}
@@ -322,7 +322,7 @@ void CMultiObjectiveMotionOptimizerBase::TParamsBase::saveToConfigFile(
 {
 	// Save: formula_score
 	const int WN = mrpt::config::MRPT_SAVE_NAME_PADDING(),
-		WV = mrpt::config::MRPT_SAVE_VALUE_PADDING();
+			  WV = mrpt::config::MRPT_SAVE_VALUE_PADDING();
 
 	{
 		const std::string sComment =

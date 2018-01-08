@@ -12,6 +12,7 @@
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/maps/CPointsMap.h>
+#include <mrpt/serialization/CArchive.h>
 
 namespace mrpt
 {
@@ -299,7 +300,8 @@ void COctoMapBase<OCTREE, OCTREE_NODE>::TLikelihoodOptions::writeToStream(
 }
 
 template <class OCTREE, class OCTREE_NODE>
-void COctoMapBase<OCTREE, OCTREE_NODE>::TLikelihoodOptions::readFromStream(mrpt::serialization::CArchive& in)
+void COctoMapBase<OCTREE, OCTREE_NODE>::TLikelihoodOptions::readFromStream(
+	mrpt::serialization::CArchive& in)
 {
 	int8_t version;
 	in >> version;
@@ -377,7 +379,8 @@ void COctoMapBase<OCTREE, OCTREE_NODE>::TLikelihoodOptions::loadFromConfigFile(
 
 /*  COctoMapColoured */
 template <class OCTREE, class OCTREE_NODE>
-void COctoMapBase<OCTREE, OCTREE_NODE>::TRenderingOptions::writeToStream(mrpt::serialization::CArchive& out) const
+void COctoMapBase<OCTREE, OCTREE_NODE>::TRenderingOptions::writeToStream(
+	mrpt::serialization::CArchive& out) const
 {
 	const int8_t version = 0;
 	out << version;
@@ -386,7 +389,8 @@ void COctoMapBase<OCTREE, OCTREE_NODE>::TRenderingOptions::writeToStream(mrpt::s
 }
 
 template <class OCTREE, class OCTREE_NODE>
-void COctoMapBase<OCTREE, OCTREE_NODE>::TRenderingOptions::readFromStream(mrpt::serialization::CArchive& in)
+void COctoMapBase<OCTREE, OCTREE_NODE>::TRenderingOptions::readFromStream(
+	mrpt::serialization::CArchive& in)
 {
 	int8_t version;
 	in >> version;
@@ -404,5 +408,5 @@ void COctoMapBase<OCTREE, OCTREE_NODE>::TRenderingOptions::readFromStream(mrpt::
 	}
 }
 
-}  // End of namespace
-}  // End of namespace
+}  // namespace maps
+}  // namespace mrpt

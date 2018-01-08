@@ -135,10 +135,10 @@ inline void reprojectionResidualsElement(
 
 /** Compute reprojection error vector (used from within Bundle Adjustment
  * methods, but can be used in general)
-  *  See mrpt::vision::bundle_adj_full for a description of most parameters.
-  *
-  *  \return Overall squared reprojection error.
-  */
+ *  See mrpt::vision::bundle_adj_full for a description of most parameters.
+ *
+ *  \return Overall squared reprojection error.
+ */
 double mrpt::vision::reprojectionResiduals(
 	const TSequenceFeatureObservations& observations,
 	const TCamera& camera_params, const TFramePosesMap& frame_poses,
@@ -259,12 +259,12 @@ void mrpt::vision::ba_build_gradient_Hessians(
 
 		const Eigen::Matrix<double, 2, 1> RESID(&residual_vec[i][0]);
 		const JacData<6, 3, 2>& JACOB = jac_data_vec[i];
-		ASSERTDEB_(JACOB.frame_id == i_f && JACOB.point_id == i_p)
+		ASSERTDEB_(JACOB.frame_id == i_f && JACOB.point_id == i_p);
 
 		if (i_f >= num_fix_frames)
 		{
 			const size_t frame_id = i_f - num_fix_frames;
-			ASSERTDEB_(JACOB.J_frame_valid)
+			ASSERTDEB_(JACOB.J_frame_valid);
 			ASSERT_BELOW_(frame_id, U.size());
 			CMatrixDouble66 JtJ(UNINITIALIZED_MATRIX);
 			JtJ.multiply_AtA(JACOB.J_frame);
@@ -286,7 +286,7 @@ void mrpt::vision::ba_build_gradient_Hessians(
 		if (i_p >= num_fix_points)
 		{
 			const size_t point_id = i_p - num_fix_points;
-			ASSERTDEB_(JACOB.J_point_valid)
+			ASSERTDEB_(JACOB.J_point_valid);
 			ASSERT_BELOW_(point_id, V.size());
 			CMatrixDouble33 JtJ(UNINITIALIZED_MATRIX);
 			JtJ.multiply_AtA(JACOB.J_point);

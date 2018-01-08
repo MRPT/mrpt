@@ -10,6 +10,7 @@
 
 #include <mrpt/core/round.h>
 #include <vector>
+#include <cstdint>
 #include <cmath>
 
 namespace mrpt
@@ -17,10 +18,10 @@ namespace mrpt
 namespace containers
 {
 /** A 3D rectangular grid of dynamic size which stores any kind of data at each
-* voxel.
-* \tparam T The type of each voxel in the grid.
-* \ingroup mrpt_containers_grp
-*/
+ * voxel.
+ * \tparam T The type of each voxel in the grid.
+ * \ingroup mrpt_containers_grp
+ */
 template <class T>
 class CDynamicGrid3D
 {
@@ -38,8 +39,8 @@ class CDynamicGrid3D
 	}
 
 	/** Changes the size of the grid, maintaining previous contents.
-	* \sa setSize
-	*/
+	 * \sa setSize
+	 */
 	virtual void resize(
 		double new_x_min, double new_x_max, double new_y_min, double new_y_max,
 		double new_z_min, double new_z_max, const T& defaultValueNewCells,
@@ -156,17 +157,17 @@ class CDynamicGrid3D
 	}
 
 	/** Changes the size of the grid, ERASING all previous contents.
-	  * If \a fill_value is left as nullptr, the contents of cells may be
+	 * If \a fill_value is left as nullptr, the contents of cells may be
 	 * undefined (some will remain with
-	  *  their old values, the new ones will have the default voxel value, but
+	 *  their old values, the new ones will have the default voxel value, but
 	 * the location of old values
-	  *  may change wrt their old places).
-	  * If \a fill_value is not nullptr, it is assured that all cells will have
+	 *  may change wrt their old places).
+	 * If \a fill_value is not nullptr, it is assured that all cells will have
 	 * a copy of that value after resizing.
-	  * If `resolution_z`<0, the same resolution will be used for all dimensions
+	 * If `resolution_z`<0, the same resolution will be used for all dimensions
 	 * x,y,z as given in `resolution_xy`
-	  * \sa resize, fill
-	  */
+	 * \sa resize, fill
+	 */
 	virtual void setSize(
 		const double x_min, const double x_max, const double y_min,
 		const double y_max, const double z_min, const double z_max,
@@ -214,7 +215,7 @@ class CDynamicGrid3D
 	}
 
 	/** Fills all the cells with the same value
-		*/
+	 */
 	inline void fill(const T& value)
 	{
 		for (typename std::vector<T>::iterator it = m_map.begin();
@@ -241,7 +242,7 @@ class CDynamicGrid3D
 
 	/** Returns a pointer to the contents of a voxel given by its coordinates,
 	 * or nullptr if it is out of the map extensions.
-		*/
+	 */
 	inline T* cellByPos(double x, double y, double z)
 	{
 		const size_t cidx =
@@ -260,7 +261,7 @@ class CDynamicGrid3D
 
 	/** Returns a pointer to the contents of a voxel given by its voxel indexes,
 	 * or nullptr if it is out of the map extensions.
-		*/
+	 */
 	inline T* cellByIndex(unsigned int cx, unsigned int cy, unsigned int cz)
 	{
 		const size_t cidx = cellAbsIndexFromCXCYCZ(cx, cy, cz);
@@ -270,7 +271,7 @@ class CDynamicGrid3D
 
 	/** Returns a pointer to the contents of a voxel given by its voxel indexes,
 	 * or nullptr if it is out of the map extensions.
-		*/
+	 */
 	inline const T* cellByIndex(
 		unsigned int cx, unsigned int cy, unsigned int cz) const
 	{
@@ -310,6 +311,7 @@ class CDynamicGrid3D
 	inline double idx2x(int cx) const { return m_x_min + (cx)*m_resolution_xy; }
 	inline double idx2y(int cy) const { return m_y_min + (cy)*m_resolution_xy; }
 	inline double idx2z(int cz) const { return m_z_min + (cz)*m_resolution_z; }
+
    protected:
 	/** The cells */
 	mutable std::vector<T> m_map;
@@ -348,5 +350,5 @@ class CDynamicGrid3D
 
 };  // end of CDynamicGrid3D<>
 
-}  // End of namespace
-}  // end of namespace
+}  // namespace containers
+}  // namespace mrpt

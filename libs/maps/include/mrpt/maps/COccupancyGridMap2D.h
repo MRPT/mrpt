@@ -434,10 +434,10 @@ class COccupancyGridMap2D : public CMetricMap,
 	{
 		uint8_t* cell = m_basis_map.cellByIndex(x, y);
 #ifdef _DEBUG
-		ASSERT_ABOVEEQ_(x, 0)
-		ASSERT_ABOVEEQ_(y, 0)
-		ASSERT_BELOWEQ_(x, int(m_basis_map.getSizeX()))
-		ASSERT_BELOWEQ_(y, int(m_basis_map.getSizeY()))
+		ASSERT_ABOVEEQ_(x, 0);
+		ASSERT_ABOVEEQ_(y, 0);
+		ASSERT_BELOWEQ_(x, int(m_basis_map.getSizeX()));
+		ASSERT_BELOWEQ_(y, int(m_basis_map.getSizeY()));
 #endif
 		*cell = value;
 	}
@@ -447,10 +447,10 @@ class COccupancyGridMap2D : public CMetricMap,
 	{
 		const uint8_t* cell = m_basis_map.cellByIndex(x, y);
 #ifdef _DEBUG
-		ASSERT_ABOVEEQ_(x, 0)
-		ASSERT_ABOVEEQ_(y, 0)
-		ASSERT_BELOWEQ_(x, int(m_basis_map.getSizeX()))
-		ASSERT_BELOWEQ_(y, int(m_basis_map.getSizeY()))
+		ASSERT_ABOVEEQ_(x, 0);
+		ASSERT_ABOVEEQ_(y, 0);
+		ASSERT_BELOWEQ_(x, int(m_basis_map.getSizeX()));
+		ASSERT_BELOWEQ_(y, int(m_basis_map.getSizeY()));
 #endif
 		return *cell;
 	}
@@ -462,33 +462,24 @@ class COccupancyGridMap2D : public CMetricMap,
 	/** Used for returning entropy related information \sa computeEntropy */
 	struct TEntropyInfo
 	{
-		TEntropyInfo()
-			: H(0),
-			  I(0),
-			  mean_H(0),
-			  mean_I(0),
-			  effectiveMappedArea(0),
-			  effectiveMappedCells(0)
-		{
-		}
 		/** The target variable for absolute entropy, computed
 		 * as:<br><center>H(map)=Sum<sub>x,y</sub>{ -p(x,y)*ln(p(x,y))
 		 * -(1-p(x,y))*ln(1-p(x,y)) }</center><br><br> */
-		double H;
+		double H{0};
 		/** The target variable for absolute "information", defining I(x) = 1 -
 		 * H(x) */
-		double I;
+		double I{0};
 		/** The target variable for mean entropy, defined as entropy per cell:
 		 * mean_H(map) = H(map) / (cells) */
-		double mean_H;
+		double mean_H{0};
 		/** The target variable for mean information, defined as information per
 		 * cell: mean_I(map) = I(map) / (cells) */
-		double mean_I;
+		double mean_I{0};
 		/** The target variable for the area of cells with information, i.e.
 		 * p(x)!=0.5 */
-		double effectiveMappedArea;
+		double effectiveMappedArea{0};
 		/** The mapped area in cells. */
-		unsigned long effectiveMappedCells;
+		unsigned long effectiveMappedCells{0};
 	};
 
 	/** With this struct options are provided to the observation insertion
@@ -700,10 +691,10 @@ class COccupancyGridMap2D : public CMetricMap,
 	inline uint16_t getVoroniClearance(int cx, int cy) const
 	{
 #ifdef _DEBUG
-		ASSERT_ABOVEEQ_(cx, 0)
-		ASSERT_ABOVEEQ_(cy, 0)
-		ASSERT_BELOWEQ_(cx, int(m_voronoi_diagram.getSizeX()))
-		ASSERT_BELOWEQ_(cy, int(m_voronoi_diagram.getSizeY()))
+		ASSERT_ABOVEEQ_(cx, 0);
+		ASSERT_ABOVEEQ_(cy, 0);
+		ASSERT_BELOWEQ_(cx, int(m_voronoi_diagram.getSizeX()));
+		ASSERT_BELOWEQ_(cy, int(m_voronoi_diagram.getSizeY()));
 #endif
 		const uint16_t* cell = m_voronoi_diagram.cellByIndex(cx, cy);
 		return *cell;
@@ -716,10 +707,10 @@ class COccupancyGridMap2D : public CMetricMap,
 	{
 		uint16_t* cell = m_voronoi_diagram.cellByIndex(cx, cy);
 #ifdef _DEBUG
-		ASSERT_ABOVEEQ_(cx, 0)
-		ASSERT_ABOVEEQ_(cy, 0)
-		ASSERT_BELOWEQ_(cx, int(m_voronoi_diagram.getSizeX()))
-		ASSERT_BELOWEQ_(cy, int(m_voronoi_diagram.getSizeY()))
+		ASSERT_ABOVEEQ_(cx, 0);
+		ASSERT_ABOVEEQ_(cy, 0);
+		ASSERT_BELOWEQ_(cx, int(m_voronoi_diagram.getSizeX()));
+		ASSERT_BELOWEQ_(cy, int(m_voronoi_diagram.getSizeY()));
 #endif
 		*cell = dist;
 	}
@@ -1020,7 +1011,8 @@ class COccupancyGridMap2D : public CMetricMap,
 			img.rectangle(px - 7, (py + 7), px + 7, (py - 7), marks_color);
 			img.rectangle(px - 6, (py + 6), px + 6, (py - 6), marks_color);
 			if (addTextLabels)
-				img.textOut(px, py - 8, format("%u", i), TColor::black());
+				img.textOut(
+					px, py - 8, format("%u", i), mrpt::img::TColor::black());
 		}
 		return img.saveToFile(file.c_str());
 		MRPT_END
@@ -1196,4 +1188,3 @@ MRPT_FILL_ENUM_MEMBER(mrpt::maps::COccupancyGridMap2D, lmLikelihoodField_Thrun);
 MRPT_FILL_ENUM_MEMBER(mrpt::maps::COccupancyGridMap2D, lmLikelihoodField_II);
 MRPT_FILL_ENUM_MEMBER(mrpt::maps::COccupancyGridMap2D, lmConsensusOWA);
 MRPT_ENUM_TYPE_END()
-

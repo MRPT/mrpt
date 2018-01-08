@@ -11,6 +11,8 @@
 
 #include <mrpt/config.h>
 
+#include <mrpt/core/exceptions.h>
+
 #ifdef _WIN32
 #include <windows.h>
 #include <mmsystem.h>
@@ -235,10 +237,10 @@ bool CJoystick::getJoystickPosition(
 }
 
 /** Set the axis limit values, for computing a [-1,1] position index easily.
-*   It seems that these values must been calibrated for each joystick model.
-*
-* \sa getJoystickPosition
-*/
+ *   It seems that these values must been calibrated for each joystick model.
+ *
+ * \sa getJoystickPosition
+ */
 void CJoystick::setLimits(
 	int x_min, int x_max, int y_min, int y_max, int z_min, int z_max)
 {

@@ -12,12 +12,14 @@
 #include <mrpt/hwdrivers/CPtuDPerception.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/system/os.h>
+#include <mrpt/core/bits_math.h>
 
 #include <cstring>
 #include <thread>
 #include <iostream>
 
 using namespace std;
+using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
 

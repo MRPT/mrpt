@@ -9,6 +9,7 @@
 #ifndef CJOYSTICK_H
 #define CJOYSTICK_H
 
+#include <vector>
 
 /*---------------------------------------------------------------
 	Class
@@ -19,8 +20,8 @@ namespace hwdrivers
 {
 /** Access to joysticks and gamepads (read buttons and position), and request
  * number of joysticks in the system.
-  * \ingroup mrpt_hwdrivers_grp
-  */
+ * \ingroup mrpt_hwdrivers_grp
+ */
 class CJoystick
 {
    private:
@@ -101,7 +102,7 @@ class CJoystick
 #endif
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
+}  // namespace hwdrivers
+}  // namespace mrpt
 
 #endif

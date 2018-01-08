@@ -10,6 +10,7 @@
 #include "graph_slam_levmarq_test_common.h"
 
 #include <gtest/gtest.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::random;
@@ -59,12 +60,13 @@ class GraphSlamLevMarqTester : public GraphSlamLevMarqTest<my_graph_t>,
 
 		// binary dump:
 		mrpt::io::CMemoryStream mem;
-		mrpt::serialization::archiveFrom(mem) << graph;
+		auto arch = mrpt::serialization::archiveFrom(mem);
+		arch << graph;
 
 		{
 			my_graph_t read_graph;
 			mem.Seek(0);
-			mrpt::serialization::archiveFrom(mem) >> read_graph;
+			arch >> read_graph;
 
 			EXPECT_EQ(read_graph.edges.size(), graph.edges.size());
 			EXPECT_EQ(read_graph.nodes.size(), graph.nodes.size());
@@ -76,11 +78,12 @@ class GraphSlamLevMarqTester : public GraphSlamLevMarqTest<my_graph_t>,
 			{
 				EXPECT_EQ(it1->first, it2->first);
 				EXPECT_NEAR(
-					0, (it1->second.getPoseMean().getAsVectorVal() -
-						it2->second.getPoseMean().getAsVectorVal())
-						   .array()
-						   .abs()
-						   .sum(),
+					0,
+					(it1->second.getPoseMean().getAsVectorVal() -
+					 it2->second.getPoseMean().getAsVectorVal())
+						.array()
+						.abs()
+						.sum(),
 					1e-9);
 			}
 		}

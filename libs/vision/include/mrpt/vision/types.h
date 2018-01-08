@@ -14,6 +14,7 @@
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/tfest/TMatchingPair.h>
 #include <mrpt/typemeta/TEnumType.h>
+#include <mrpt/math/lightweight_geom_data.h>
 
 namespace mrpt
 {
@@ -741,10 +742,11 @@ template <>
 struct TEnumTypeFiller<mrpt::vision::TFeatureType>
 {
 	typedef mrpt::vision::TFeatureType enum_t;
-	static void fill(mrpt::typemeta::internal::bimap<enum_t, std::string>& m_map)
+	static void fill(
+		mrpt::typemeta::internal::bimap<enum_t, std::string>& m_map)
 	{
 		using namespace mrpt::vision;
-using namespace mrpt::img;
+		using namespace mrpt::img;
 		MRPT_FILL_ENUM(featNotDefined);
 		MRPT_FILL_ENUM(featKLT);
 		MRPT_FILL_ENUM(featHarris);
@@ -765,10 +767,11 @@ template <>
 struct TEnumTypeFiller<mrpt::vision::TDescriptorType>
 {
 	typedef mrpt::vision::TDescriptorType enum_t;
-	static void fill(mrpt::typemeta::internal::bimap<enum_t, std::string>& m_map)
+	static void fill(
+		mrpt::typemeta::internal::bimap<enum_t, std::string>& m_map)
 	{
 		using namespace mrpt::vision;
-using namespace mrpt::img;
+		using namespace mrpt::img;
 		MRPT_FILL_ENUM(descAny);
 		MRPT_FILL_ENUM(descSIFT);
 		MRPT_FILL_ENUM(descSURF);

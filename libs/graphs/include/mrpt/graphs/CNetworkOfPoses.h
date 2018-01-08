@@ -151,10 +151,10 @@ class CNetworkOfPoses
 	{
 		using namespace mrpt::typemeta;
 		return literal("mrpt::graphs::CNetworkOfPoses<") +
-			TTypeName<CPOSE>::get() + literal(",") +
-			TTypeName<MAPS_IMPLEMENTATION>::get() + literal(",") +
-			TTypeName<NODE_ANNOTATIONS>::get() + literal(",") +
-			TTypeName<EDGE_ANNOTATIONS>::get() + literal(">");
+			   TTypeName<CPOSE>::get() + literal(",") +
+			   TTypeName<MAPS_IMPLEMENTATION>::get() + literal(",") +
+			   TTypeName<NODE_ANNOTATIONS>::get() + literal(",") +
+			   TTypeName<EDGE_ANNOTATIONS>::get() + literal(">");
 	}
 
 	/** The type of each global pose in \a nodes: an extension of the \a
@@ -170,8 +170,8 @@ class CNetworkOfPoses
 		{
 			using namespace mrpt::typemeta;
 			return literal("global_pose_t<") +
-				TTypeName<constraint_no_pdf_t>::get() + literal(",") +
-				TTypeName<NODE_ANNOTATIONS>::get() + literal(">");
+				   TTypeName<constraint_no_pdf_t>::get() + literal(",") +
+				   TTypeName<NODE_ANNOTATIONS>::get() + literal(">");
 		}
 
 		/**\brief Potential class constructors
@@ -742,10 +742,10 @@ class CNetworkOfPoses
 		{
 			ASSERTMSG_(
 				graph_from.nodes.find(h_cit->from) != graph_from.nodes.end(),
-				format("NodeID %lu is not found in (from) graph", h_cit->from))
+				format("NodeID %lu is not found in (from) graph", h_cit->from));
 			ASSERTMSG_(
 				graph_to.nodes.find(h_cit->to) != graph_to.nodes.end(),
-				format("NodeID %lu is not found in (to) graph", h_cit->to))
+				format("NodeID %lu is not found in (to) graph", h_cit->to));
 		}
 
 		// find the max nodeID in existing graph

@@ -182,7 +182,7 @@ void CHeightGridMap2D::serializeTo(mrpt::serialization::CArchive& out) const
 	n = static_cast<uint32_t>(m_map.size());
 	out << n;
 	for (vector<THeightGridmapCell>::const_iterator it = m_map.begin();
-			it != m_map.end(); ++it)
+		 it != m_map.end(); ++it)
 		out << it->h
 			<< it->w;  // This was removed in version 1: << it->history_Zs;
 
@@ -195,7 +195,8 @@ void CHeightGridMap2D::serializeTo(mrpt::serialization::CArchive& out) const
 	out << genericMapParams;  // v2
 }
 
-void CHeightGridMap2D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CHeightGridMap2D::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -255,8 +256,10 @@ void CHeightGridMap2D::TInsertionOptions::dumpToTextStream(
 	out << mrpt::format(
 		"filterByHeight                          = %c\n",
 		filterByHeight ? 'y' : 'n');
-	out << mrpt::format("z_min                                   = %f\n", z_min);
-	out << mrpt::format("z_max                                   = %f\n", z_max);
+	out << mrpt::format(
+		"z_min                                   = %f\n", z_min);
+	out << mrpt::format(
+		"z_max                                   = %f\n", z_max);
 	out << mrpt::format(
 		"colormap                                = %s\n",
 		colorMap == cmJET ? "jet" : "grayscale");
@@ -352,7 +355,7 @@ void CHeightGridMap2D::getAs3DObject(
 			for (size_t y = 0; y < m_size_y; y++)
 			{
 				const THeightGridmapCell* c = cellByIndex(x, y);
-				ASSERTDEB_(c)
+				ASSERTDEB_(c);
 				if (c->w)
 				{
 					float r, g, b;

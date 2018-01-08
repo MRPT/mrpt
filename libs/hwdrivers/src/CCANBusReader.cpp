@@ -16,6 +16,7 @@
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
 #include <cstdio>  // printf
+#include <cstring>  // memset
 #include <mrpt/hwdrivers/CCANBusReader.h>
 
 #include <thread>
@@ -690,9 +691,8 @@ bool CCANBusReader::waitIncomingFrame(uint16_t timeout)
 				nBytes++;
 			}
 			if (nBytes == 10)
-				dlc = 2 * uint8_t(
-							  hexCharToInt(
-								  m_received_frame_buffer[9]));  // here is the
+				dlc = 2 * uint8_t(hexCharToInt(
+							  m_received_frame_buffer[9]));  // here is the
 			// number of
 			// BYTES of
 			// data -> 2

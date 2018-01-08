@@ -11,6 +11,7 @@
 
 #include <mrpt/math/kmeans.h>
 #include <mrpt/math/geometry.h>
+#include <mrpt/math/CArrayNumeric.h>
 #include <list>
 
 // Universal include for all versions of OpenCV
@@ -37,8 +38,7 @@ bool find_chessboard_corners_multiple(
 	const CImage img(img_, FAST_REF_OR_CONVERT_TO_GRAY);
 
 	CImage thresh_img(img.getWidth(), img.getHeight(), CH_GRAY);
-	CImage thresh_img_save(
-		img.getWidth(), img.getHeight(), CH_GRAY);
+	CImage thresh_img_save(img.getWidth(), img.getHeight(), CH_GRAY);
 
 	out_corners.clear();  // for now, empty the output.
 
@@ -166,10 +166,11 @@ bool find_chessboard_corners_multiple(
 
 			vector<int> assignments;
 			mrpt::math::kmeanspp<
-				vector<CArrayDouble<2>,
-					   Eigen::aligned_allocator<CArrayDouble<2>>>,
-				vector<CArrayDouble<2>,
-					   Eigen::aligned_allocator<CArrayDouble<2>>>>(
+				vector<
+					CArrayDouble<2>, Eigen::aligned_allocator<CArrayDouble<2>>>,
+				vector<
+					CArrayDouble<2>,
+					Eigen::aligned_allocator<CArrayDouble<2>>>>(
 				nClusters, quad_centers, assignments);
 
 			// Count # of quads in each cluster:
@@ -180,10 +181,9 @@ bool find_chessboard_corners_multiple(
 #if VIS
 			{
 				static mrpt::gui::CDisplayWindow win;
-				win.setWindowTitle(
-					format(
-						"All quads (%u) | %u clusters",
-						(unsigned)quad_centers.size(), (unsigned)nClusters));
+				win.setWindowTitle(format(
+					"All quads (%u) | %u clusters",
+					(unsigned)quad_centers.size(), (unsigned)nClusters));
 				CImage im;
 				img.colorImage(im);
 				for (size_t i = 0; i < quad_centers.size(); i++)
@@ -245,10 +245,9 @@ bool find_chessboard_corners_multiple(
 #if VIS
 						{
 							static mrpt::gui::CDisplayWindow win;
-							win.setWindowTitle(
-								format(
-									"Candidate group #%i (%i)", (int)group_idx,
-									(int)quad_group.size()));
+							win.setWindowTitle(format(
+								"Candidate group #%i (%i)", (int)group_idx,
+								(int)quad_group.size()));
 							CImage im;
 							img.colorImage(im);
 							for (size_t i = 0; i < quad_group.size(); i++)

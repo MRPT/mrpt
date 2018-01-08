@@ -20,14 +20,14 @@ namespace graphs
   ---------------------------------------------------------------*/
 template <class GRAPH_MATRIX, typename num_t>
 void CGraphPartitioner<GRAPH_MATRIX, num_t>::SpectralBisection(
-	GRAPH_MATRIX& in_A, std::vector<uint32_t>& out_part1, std::vector<uint32_t>& out_part2,
-	num_t& out_cut_value, bool forceSimetry)
+	GRAPH_MATRIX& in_A, std::vector<uint32_t>& out_part1,
+	std::vector<uint32_t>& out_part2, num_t& out_cut_value, bool forceSimetry)
 {
 	size_t nodeCount;  // Nodes count
 	GRAPH_MATRIX Adj, eigenVectors, eigenValues;
 
 	// Check matrix is square:
-	if (in_A.cols() != (nodeCount = in_A.rows()))
+	if (in_A.cols() != int(nodeCount = in_A.rows()))
 		THROW_EXCEPTION("Weights matrix is not square!!");
 
 	// Shi & Malik's method
@@ -111,7 +111,7 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::RecursiveSpectralPartition(
 	out_parts.clear();
 
 	// Check matrix is square:
-	if (in_A.cols() != (nodeCount = in_A.rows()))
+	if (in_A.cols() != int(nodeCount = in_A.rows()))
 		THROW_EXCEPTION("Weights matrix is not square!!");
 
 	if (nodeCount == 1)
@@ -260,8 +260,8 @@ num_t CGraphPartitioner<GRAPH_MATRIX, num_t>::nCut(
   ---------------------------------------------------------------*/
 template <class GRAPH_MATRIX, typename num_t>
 void CGraphPartitioner<GRAPH_MATRIX, num_t>::exactBisection(
-	GRAPH_MATRIX& in_A, std::vector<uint32_t>& out_part1, std::vector<uint32_t>& out_part2,
-	num_t& out_cut_value, bool forceSimetry)
+	GRAPH_MATRIX& in_A, std::vector<uint32_t>& out_part1,
+	std::vector<uint32_t>& out_part2, num_t& out_cut_value, bool forceSimetry)
 {
 	size_t nodeCount;  // Nodes count
 	size_t i, j;
@@ -272,7 +272,7 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::exactBisection(
 	bool end = false;
 
 	// Check matrix is square:
-	if (in_A.cols() != (nodeCount = in_A.rows()))
+	if (in_A.cols() != int(nodeCount = in_A.rows()))
 		THROW_EXCEPTION("Weights matrix is not square!!");
 
 	ASSERT_(nodeCount >= 2);
@@ -351,5 +351,5 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::exactBisection(
 	}
 }
 
-}  // end NS
-}  // end NS
+}  // namespace graphs
+}  // namespace mrpt

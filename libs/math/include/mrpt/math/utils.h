@@ -10,8 +10,10 @@
 
 #include <cstdarg>
 #include <cstdio>
+#include <cmath>
 #include <iosfwd>
 #include <vector>
+#include <mrpt/core/exceptions.h>
 #include <mrpt/math/eigen_frwds.h>
 
 namespace mrpt
@@ -54,18 +56,18 @@ T absDiff(const T& lhs, const T& rhs)
 }
 
 /** \addtogroup container_ops_grp
-  * @{ */
+ * @{ */
 
 /** Loads one row of a text file as a numerical std::vector.
-  * \return false on EOF or invalid format.
-  * The body of the function is implemented in MATH.cpp
-	*/
+ * \return false on EOF or invalid format.
+ * The body of the function is implemented in MATH.cpp
+ */
 bool loadVector(std::istream& f, std::vector<int>& d);
 
 /** Loads one row of a text file as a numerical std::vector.
-  * \return false on EOF or invalid format.
-  * The body of the function is implemented in MATH.cpp
-	*/
+ * \return false on EOF or invalid format.
+ * The body of the function is implemented in MATH.cpp
+ */
 bool loadVector(std::istream& f, std::vector<double>& d);
 
 void medianFilter(
@@ -109,8 +111,8 @@ inline std::vector<T> sequenceStdVec(T first, size_t length)
 }
 
 /** Normalize a vector, such as its norm is the unity.
-  *  If the vector has a null norm, the output is a null vector.
-  */
+ *  If the vector has a null norm, the output is a null vector.
+ */
 template <class VEC1, class VEC2>
 void normalize(const VEC1& v, VEC2& out_v)
 {
@@ -127,14 +129,14 @@ void normalize(const VEC1& v, VEC2& out_v)
 }
 
 /** Extract a column from a vector of vectors, and store it in another vector.
-	*  - Input data can be: std::vector<mrpt::math::CVectorDouble>,
+ *  - Input data can be: std::vector<mrpt::math::CVectorDouble>,
  * std::deque<std::list<double> >, std::list<CArrayDouble<5> >, etc. etc.
-	*  - Output is the sequence:  data[0][idx],data[1][idx],data[2][idx], etc..
-	*
-	*  For the sake of generality, this function does NOT check the limits in
+ *  - Output is the sequence:  data[0][idx],data[1][idx],data[2][idx], etc..
+ *
+ *  For the sake of generality, this function does NOT check the limits in
  * the number of column, unless it's implemented in the [] operator of each of
  * the "rows".
-	*/
+ */
 template <class VECTOR_OF_VECTORS, class VECTORLIKE>
 inline void extractColumnFromVectorOfVectors(
 	const size_t colIndex, const VECTOR_OF_VECTORS& data,
@@ -147,24 +149,24 @@ inline void extractColumnFromVectorOfVectors(
 
 /** Computes the factorial of an integer number and returns it as a 64-bit
  * integer number.
-  */
+ */
 uint64_t factorial64(unsigned int n);
 
 /** Computes the factorial of an integer number and returns it as a double value
  * (internally it uses logarithms for avoiding overflow).
-  */
+ */
 double factorial(unsigned int n);
 
 /** Generates a string with the MATLAB commands required to plot an confidence
  * interval (ellipse) for a 2D Gaussian ('float' version)..
-  *  \param cov22 The 2x2 covariance matrix
-  *  \param mean  The 2-length vector with the mean
-  *  \param stdCount How many "quantiles" to get into the area of the ellipse:
+ *  \param cov22 The 2x2 covariance matrix
+ *  \param mean  The 2-length vector with the mean
+ *  \param stdCount How many "quantiles" to get into the area of the ellipse:
  * 2: 95%, 3:99.97%,...
-  *  \param style A matlab style string, for colors, line styles,...
-  *  \param nEllipsePoints The number of points in the ellipse to generate
-  * \ingroup stats_grp
-  */
+ *  \param style A matlab style string, for colors, line styles,...
+ *  \param nEllipsePoints The number of points in the ellipse to generate
+ * \ingroup stats_grp
+ */
 std::string MATLAB_plotCovariance2D(
 	const CMatrixFloat& cov22, const CVectorFloat& mean, const float& stdCount,
 	const std::string& style = std::string("b"),
@@ -172,28 +174,28 @@ std::string MATLAB_plotCovariance2D(
 
 /** Generates a string with the MATLAB commands required to plot an confidence
  * interval (ellipse) for a 2D Gaussian ('double' version).
-  *  \param cov22 The 2x2 covariance matrix
-  *  \param mean  The 2-length vector with the mean
-  *  \param stdCount How many "quantiles" to get into the area of the ellipse:
+ *  \param cov22 The 2x2 covariance matrix
+ *  \param mean  The 2-length vector with the mean
+ *  \param stdCount How many "quantiles" to get into the area of the ellipse:
  * 2: 95%, 3:99.97%,...
-  *  \param style A matlab style string, for colors, line styles,...
-  *  \param nEllipsePoints The number of points in the ellipse to generate
-  * \ingroup stats_grp
-  */
+ *  \param style A matlab style string, for colors, line styles,...
+ *  \param nEllipsePoints The number of points in the ellipse to generate
+ * \ingroup stats_grp
+ */
 std::string MATLAB_plotCovariance2D(
 	const CMatrixDouble& cov22, const CVectorDouble& mean,
 	const float& stdCount, const std::string& style = std::string("b"),
 	const size_t& nEllipsePoints = 30);
 
 /** Assignment operator for initializing a std::vector from a C array (The
-  *vector will be automatically set to the correct size).
-  * \code
-  *	 CVectorDouble  v;
-  *  const double numbers[] = { 1,2,3,5,6,7,8,9,10 };
-  *  loadVector( v, numbers );
-  * \endcode
-  * \note This operator performs the appropiate type castings, if required.
-  */
+ *vector will be automatically set to the correct size).
+ * \code
+ *	 CVectorDouble  v;
+ *  const double numbers[] = { 1,2,3,5,6,7,8,9,10 };
+ *  loadVector( v, numbers );
+ * \endcode
+ * \note This operator performs the appropiate type castings, if required.
+ */
 template <typename EIGEN_VECTOR, typename At, size_t N>
 EIGEN_VECTOR& loadVector(EIGEN_VECTOR& v, At (&theArray)[N])
 {
@@ -217,16 +219,16 @@ std::vector<T>& loadVector(std::vector<T>& v, At (&theArray)[N])
 /**  @} */  // end of grouping container_ops_grp
 
 /** \defgroup mrpt_math_io Custom I/O for math containers
-  * \ingroup mrpt_math_grp */
+ * \ingroup mrpt_math_grp */
 /** \addtogroup mrpt_math_io
-  * @{ */
+ * @{ */
 
 /** Saves to a plain-text file the nonzero entries of a Eigen sparse matrix,
  * represented as a vector of triplets.
-  *  Output format is one line per entry with the format: "i j val", i:row,
+ *  Output format is one line per entry with the format: "i j val", i:row,
  * j:col, val:value.
-  * \tparam TRIPLET should be Eigen::Triplet<T>
-  */
+ * \tparam TRIPLET should be Eigen::Triplet<T>
+ */
 template <class TRIPLET>
 bool saveEigenSparseTripletsToFile(
 	const std::string& sFile, std::vector<TRIPLET>& tri)
@@ -252,6 +254,6 @@ bool saveEigenSparseTripletsToFile(
 
 /** @} */  // End of mrpt_math_io
 
-}  // End of MATH namespace
+}  // namespace math
 
-}  // End of namespace
+}  // namespace mrpt

@@ -73,7 +73,7 @@ class CSimplePointsMap : public CPointsMap
 	virtual void setPointAllFieldsFast(
 		const size_t index, const std::vector<float>& point_data) override
 	{
-		ASSERTDEB_(point_data.size() == 3)
+		ASSERTDEB_(point_data.size() == 3);
 		x[index] = point_data[0];
 		y[index] = point_data[1];
 		z[index] = point_data[2];

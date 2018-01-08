@@ -64,8 +64,8 @@ void KLF_loadBinFromParticle(
 			round(currentParticleValue->roll() / opts.KLD_binSize_PHI);
 	}
 }
-}
-}
+}  // namespace slam
+}  // namespace mrpt
 
 #include <mrpt/slam/PF_implementations.h>
 
@@ -88,7 +88,7 @@ TPose3D CMonteCarloLocalization3D::getLastPose(
 	if (i >= m_particles.size())
 		THROW_EXCEPTION("Particle index out of bounds!");
 	is_valid_pose = true;
-	ASSERTDEB_(m_particles[i].d != NULL);
+	ASSERTDEB_(m_particles[i].d);
 	return m_particles[i].d->asTPose();
 }
 

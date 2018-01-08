@@ -82,7 +82,7 @@ class CColouredPointsMap : public CPointsMap
 	virtual void setPointAllFieldsFast(
 		const size_t index, const std::vector<float>& point_data) override
 	{
-		ASSERTDEB_(point_data.size() == 6)
+		ASSERTDEB_(point_data.size() == 6);
 		x[index] = point_data[0];
 		y[index] = point_data[1];
 		z[index] = point_data[2];
@@ -466,8 +466,15 @@ class PointCloudAdapter<mrpt::maps::CColouredPointsMap>
 }  // namespace mrpt
 
 MRPT_ENUM_TYPE_BEGIN(mrpt::maps::CColouredPointsMap::TColouringMethod)
-MRPT_FILL_ENUM_MEMBER(mrpt::maps::CColouredPointsMap::TColouringMethod, cmFromHeightRelativeToSensor);
-MRPT_FILL_ENUM_MEMBER(mrpt::maps::CColouredPointsMap::TColouringMethod, cmFromHeightRelativeToSensorJet);
-MRPT_FILL_ENUM_MEMBER(mrpt::maps::CColouredPointsMap::TColouringMethod, cmFromHeightRelativeToSensorGray);
-MRPT_FILL_ENUM_MEMBER(mrpt::maps::CColouredPointsMap::TColouringMethod, cmFromIntensityImage);
+MRPT_FILL_ENUM_MEMBER(
+	mrpt::maps::CColouredPointsMap::TColouringMethod,
+	cmFromHeightRelativeToSensor);
+MRPT_FILL_ENUM_MEMBER(
+	mrpt::maps::CColouredPointsMap::TColouringMethod,
+	cmFromHeightRelativeToSensorJet);
+MRPT_FILL_ENUM_MEMBER(
+	mrpt::maps::CColouredPointsMap::TColouringMethod,
+	cmFromHeightRelativeToSensorGray);
+MRPT_FILL_ENUM_MEMBER(
+	mrpt::maps::CColouredPointsMap::TColouringMethod, cmFromIntensityImage);
 MRPT_ENUM_TYPE_END()

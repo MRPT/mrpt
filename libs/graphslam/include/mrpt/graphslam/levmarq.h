@@ -22,60 +22,60 @@ namespace mrpt
 namespace graphslam
 {
 /** Optimize a graph of pose constraints using the Sparse Pose Adjustment (SPA)
-  *sparse representation and a Levenberg-Marquardt optimizer.
-  *  This method works for all types of graphs derived from \a CNetworkOfPoses
-  *(see its reference mrpt::graphs::CNetworkOfPoses for the list).
-  *  The input data are all the pose constraints in \a graph (graph.edges), and
-  *the gross first estimations of the "global" pose coordinates (in
-  *graph.nodes).
-  *
-  *  Note that these first coordinates can be obtained with
-  *mrpt::graphs::CNetworkOfPoses::dijkstra_nodes_estimate().
-  *
-  * The method implemented in this file is based on this work:
-  *  - "Efficient Sparse Pose Adjustment for 2D Mapping", Kurt Konolige et al.,
-  *2010.
-  * , but generalized for not only 2D but 2D and 3D poses, and using on-manifold
-  *optimization.
-  *
-  * \param[in,out] graph The input edges and output poses.
-  * \param[out] out_info Some basic output information on the process.
-  * \param[in] nodes_to_optimize The list of nodes whose global poses are to be
-  *optimized. If nullptr (default), all the node IDs are optimized (but that
-  *marked as \a root in the graph).
-  * \param[in] extra_params Optional parameters, see below.
-  * \param[in] functor_feedback Optional: a pointer to a user function can be
-  *set here to be called on each LM loop iteration (eg to refresh the current
-  *state and error, refresh a GUI, etc.)
-  *
-  * List of optional parameters by name in "extra_params":
-  *		- "verbose": (default=0) If !=0, produce verbose ouput.
-  *		- "max_iterations": (default=100) Maximum number of Lev-Marq.
-  *iterations.
-  *		- "scale_hessian": (default=0.1) Multiplies the Hessian matrix by this
-  *scalar (may improve convergence speed).
-  *		- "initial_lambda": (default=0) <=0 means auto guess, otherwise, initial
-  *lambda value for the lev-marq algorithm.
-  *		- "tau": (default=1e-3) Initial tau value for the lev-marq algorithm.
-  *		- "e1": (default=1e-6) Lev-marq algorithm iteration stopping criterion
-  *#1:
-  *|gradient| < e1
-  *		- "e2": (default=1e-6) Lev-marq algorithm iteration stopping criterion
-  *#2:
-  *|delta_incr| < e2*(x_norm+e2)
-  *
-  * \note The following graph types are supported:
-  *mrpt::graphs::CNetworkOfPoses2D, mrpt::graphs::CNetworkOfPoses3D,
-  *mrpt::graphs::CNetworkOfPoses2DInf, mrpt::graphs::CNetworkOfPoses3DInf
-  *
-  * \tparam GRAPH_T Normally a
-  *mrpt::graphs::CNetworkOfPoses<EDGE_TYPE,MAPS_IMPLEMENTATION>. Users won't
-  *have to write this template argument by hand, since the compiler will
-  *auto-fit it depending on the type of the graph object.
-  * \sa The example "graph_slam_demo"
-  * \ingroup mrpt_graphslam_grp
-  * \note Implementation can be found in file \a levmarq_impl.h
-  */
+ *sparse representation and a Levenberg-Marquardt optimizer.
+ *  This method works for all types of graphs derived from \a CNetworkOfPoses
+ *(see its reference mrpt::graphs::CNetworkOfPoses for the list).
+ *  The input data are all the pose constraints in \a graph (graph.edges), and
+ *the gross first estimations of the "global" pose coordinates (in
+ *graph.nodes).
+ *
+ *  Note that these first coordinates can be obtained with
+ *mrpt::graphs::CNetworkOfPoses::dijkstra_nodes_estimate().
+ *
+ * The method implemented in this file is based on this work:
+ *  - "Efficient Sparse Pose Adjustment for 2D Mapping", Kurt Konolige et al.,
+ *2010.
+ * , but generalized for not only 2D but 2D and 3D poses, and using on-manifold
+ *optimization.
+ *
+ * \param[in,out] graph The input edges and output poses.
+ * \param[out] out_info Some basic output information on the process.
+ * \param[in] nodes_to_optimize The list of nodes whose global poses are to be
+ *optimized. If nullptr (default), all the node IDs are optimized (but that
+ *marked as \a root in the graph).
+ * \param[in] extra_params Optional parameters, see below.
+ * \param[in] functor_feedback Optional: a pointer to a user function can be
+ *set here to be called on each LM loop iteration (eg to refresh the current
+ *state and error, refresh a GUI, etc.)
+ *
+ * List of optional parameters by name in "extra_params":
+ *		- "verbose": (default=0) If !=0, produce verbose ouput.
+ *		- "max_iterations": (default=100) Maximum number of Lev-Marq.
+ *iterations.
+ *		- "scale_hessian": (default=0.1) Multiplies the Hessian matrix by this
+ *scalar (may improve convergence speed).
+ *		- "initial_lambda": (default=0) <=0 means auto guess, otherwise, initial
+ *lambda value for the lev-marq algorithm.
+ *		- "tau": (default=1e-3) Initial tau value for the lev-marq algorithm.
+ *		- "e1": (default=1e-6) Lev-marq algorithm iteration stopping criterion
+ *#1:
+ *|gradient| < e1
+ *		- "e2": (default=1e-6) Lev-marq algorithm iteration stopping criterion
+ *#2:
+ *|delta_incr| < e2*(x_norm+e2)
+ *
+ * \note The following graph types are supported:
+ *mrpt::graphs::CNetworkOfPoses2D, mrpt::graphs::CNetworkOfPoses3D,
+ *mrpt::graphs::CNetworkOfPoses2DInf, mrpt::graphs::CNetworkOfPoses3DInf
+ *
+ * \tparam GRAPH_T Normally a
+ *mrpt::graphs::CNetworkOfPoses<EDGE_TYPE,MAPS_IMPLEMENTATION>. Users won't
+ *have to write this template argument by hand, since the compiler will
+ *auto-fit it depending on the type of the graph object.
+ * \sa The example "graph_slam_demo"
+ * \ingroup mrpt_graphslam_grp
+ * \note Implementation can be found in file \a levmarq_impl.h
+ */
 template <class GRAPH_T>
 void optimize_graph_spa_levmarq(
 	GRAPH_T& graph, TResultInfoSpaLevMarq& out_info,
@@ -187,10 +187,10 @@ void optimize_graph_spa_levmarq(
 		auto itP2 = graph.nodes.find(ids.second);
 		ASSERTDEBMSG_(
 			itP1 != graph.nodes.end(),
-			"Node1 in an edge does not have a global pose in 'graph.nodes'.")
+			"Node1 in an edge does not have a global pose in 'graph.nodes'.");
 		ASSERTDEBMSG_(
 			itP2 != graph.nodes.end(),
-			"Node2 in an edge does not have a global pose in 'graph.nodes'.")
+			"Node2 in an edge does not have a global pose in 'graph.nodes'.");
 
 		const auto& EDGE_POSE = edge.getPoseMean();
 
@@ -246,24 +246,23 @@ void optimize_graph_spa_levmarq(
 	// ordered in
 	// "nodes_to_optimize"
 	observationIndex_to_relatedFreeNodeIndex.reserve(nObservations);
-	ASSERTDEB_(lstJacobians.size() == nObservations)
+	ASSERTDEB_(lstJacobians.size() == nObservations);
 	for (typename gst::map_pairIDs_pairJacobs_t::const_iterator itJ =
 			 lstJacobians.begin();
 		 itJ != lstJacobians.end(); ++itJ)
 	{
 		const TNodeID id1 = itJ->first.first;
 		const TNodeID id2 = itJ->first.second;
-		observationIndex_to_relatedFreeNodeIndex.push_back(
-			std::make_pair(
-				mrpt::containers::find_in_vector(id1, *nodes_to_optimize),
-				mrpt::containers::find_in_vector(id2, *nodes_to_optimize)));
+		observationIndex_to_relatedFreeNodeIndex.push_back(std::make_pair(
+			mrpt::containers::find_in_vector(id1, *nodes_to_optimize),
+			mrpt::containers::find_in_vector(id2, *nodes_to_optimize)));
 	}
 
 	// other important vars for the main loop:
 	CVectorDouble grad(nFreeNodes * DIMS_POSE);
 	grad.setZero();
-	using map_ID2matrix_VxV_t = mrpt::aligned_std_map<
-		TNodeID, typename gst::matrix_VxV_t>;
+	using map_ID2matrix_VxV_t =
+		mrpt::aligned_std_map<TNodeID, typename gst::matrix_VxV_t>;
 	vector<map_ID2matrix_VxV_t> H_map(nFreeNodes);
 
 	double lambda = initial_lambda;  // Will be actually set on first iteration.
@@ -297,8 +296,8 @@ void optimize_graph_spa_levmarq(
 			// that is: g_i is the "dot-product" of the i'th (transposed)
 			// block-column of J and the vector of errors "errs"
 			profiler.enter("optimize_graph_spa_levmarq.grad");
-			mrpt::aligned_std_vector<typename gst::Array_O>
-				grad_parts(nFreeNodes, array_O_zeros);
+			mrpt::aligned_std_vector<typename gst::Array_O> grad_parts(
+				nFreeNodes, array_O_zeros);
 
 			// "lstJacobians" is sorted in the same order than
 			// "lstObservationData":
@@ -310,13 +309,9 @@ void optimize_graph_spa_levmarq(
 				for (idx_obs = 0, itJ = lstJacobians.begin();
 					 itJ != lstJacobians.end(); ++itJ, ++idx_obs)
 				{
+					// make sure they're in the expected order!
 					ASSERTDEB_(
-						itJ->first ==
-						lstObservationData[idx_obs].edge->first)  // make sure
-					// they're in
-					// the
-					// expected
-					// order!
+						itJ->first == lstObservationData[idx_obs].edge->first);
 
 					//  grad[k] += J^t_{i->k} * Inf.Matrix * errs_i
 					//    k: [0,nFreeNodes-1]     <-- IDs.first & IDs.second
@@ -337,7 +332,7 @@ void optimize_graph_spa_levmarq(
 								lstObservationData[idx_obs].edge /* W */,
 								errs[idx_obs] /* err */,
 								grad_parts[idx1] /* out */
-								);
+							);
 
 					if (idx2 != string::npos)
 						detail::AuxErrorEval<typename gst::edge_t, gst>::
@@ -346,7 +341,7 @@ void optimize_graph_spa_levmarq(
 								lstObservationData[idx_obs].edge /* W */,
 								errs[idx_obs] /* err */,
 								grad_parts[idx2] /* out */
-								);
+							);
 				}
 			}
 
@@ -638,7 +633,7 @@ void optimize_graph_spa_levmarq(
 
 			{
 				ASSERTDEB_(
-					delta.size() == nodes_to_optimize->size() * DIMS_POSE)
+					delta.size() == int(nodes_to_optimize->size() * DIMS_POSE));
 				const double* delta_ptr = &delta[0];
 				for (set<TNodeID>::const_iterator it =
 						 nodes_to_optimize->begin();
@@ -669,8 +664,7 @@ void optimize_graph_spa_levmarq(
 			// Compute Jacobians & errors with the new "graph.nodes" info:
 			// =============================================================
 			typename gst::map_pairIDs_pairJacobs_t new_lstJacobians;
-			mrpt::aligned_std_vector<typename gst::Array_O>
-				new_errs;
+			mrpt::aligned_std_vector<typename gst::Array_O> new_errs;
 
 			profiler.enter("optimize_graph_spa_levmarq.Jacobians&err");
 			double new_total_sqr_err = computeJacobiansAndErrors<GRAPH_T>(
@@ -722,7 +716,7 @@ void optimize_graph_spa_levmarq(
 
 /**  @} */  // end of grouping
 
-}  // End of namespace
-}  // End of namespace
+}  // namespace graphslam
+}  // namespace mrpt
 
 #endif
