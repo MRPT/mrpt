@@ -54,3 +54,14 @@ bool mrpt::io::vectorToBinaryFile(
 		return false;
 	}
 }
+
+bool mrpt::io::loadTextFile(
+	std::vector<std::string>& o, const std::string& fileName)
+{
+	o.clear();
+	std::ifstream f(fileName);
+	if (!f.is_open()) return false;
+	std::string s;
+	while (std::getline(f, s)) o.emplace_back(std::move(s));
+	return true;
+}

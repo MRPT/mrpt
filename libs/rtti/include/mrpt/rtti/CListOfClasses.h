@@ -20,18 +20,18 @@ namespace rtti
  * any class registered by the mechanism of CObject classes. Access to "data"
  * for the actual content, or use any of the helper methods in this class.
  * \ingroup mrpt_rtti_grp
-  */
+ */
 class CListOfClasses
 {
    public:
-	typedef std::set<const mrpt::rtti::TRuntimeClassId*> TSet;
+	using TSet = std::set<const mrpt::rtti::TRuntimeClassId*>;
 	TSet data;
 
 	/** Insert a class in the list. Example of usage:
-	  *   \code
-	  *     myList.insert(CLASS_ID(CObservationImage));
-	  *   \endcode
-	  */
+	 *   \code
+	 *     myList.insert(CLASS_ID(CObservationImage));
+	 *   \endcode
+	 */
 	inline void insert(const mrpt::rtti::TRuntimeClassId* id)
 	{
 		data.insert(id);
@@ -48,10 +48,16 @@ class CListOfClasses
 
 	/** Return a string representation of the list, for example: "CPose2D,
 	 * CObservation, CPose3D".
-	  */
+	 */
 	std::string toString() const;
+
+	/** Builds from a string representation of the list, for example: "CPose2D,
+	 * CObservation, CPose3D".
+	 * \exception std::exception On unregistered class name found.
+	 */
+	void fromString(const std::string& s);
 
 };  // end of class
 
-}  // End of namespace
-}  // end of namespace
+}  // namespace rtti
+}  // namespace mrpt

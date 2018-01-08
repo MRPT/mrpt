@@ -25,9 +25,10 @@
 #include <mrpt/system/string_utils.h>
 #include <mrpt/system/os.h>
 #include <mrpt/math/data_utils.h>
-#include <mrpt/system/CTextFileLinesParser.h>
+#include <mrpt/io/CTextFileLinesParser.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/vector_loadsave.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationOdometry.h>
@@ -43,8 +44,11 @@ using namespace mrpt;
 using namespace mrpt::obs;
 using namespace mrpt::opengl;
 using namespace mrpt::system;
+using namespace mrpt::img;
 using namespace mrpt::math;
 using namespace mrpt::gui;
+using namespace mrpt::io;
+using namespace mrpt::serialization;
 using namespace mrpt::poses;
 using namespace std;
 
@@ -113,11 +117,9 @@ void xRawLogViewerFrame::OnImportCARMEN(wxCommandEvent& event)
 
 	float thisTimestamp;
 
-	unsigned int i, n;
-
 	std::vector<std::string> sl;
-	sl.loadFromFile(fil);
-	n = (int)sl.size();
+	mrpt::io::loadTextFile(sl, fil);
+	size_t n = sl.size();
 
 	rawlog.clear();
 	wxProgressDialog progDia(
@@ -127,12 +129,12 @@ void xRawLogViewerFrame::OnImportCARMEN(wxCommandEvent& event)
 		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	i = 0;
+	unsigned int i = 0;
 	bool end = false;
 	while (i < n && !end)
 	{
 		// Find the line type:
-		string line(sl(i));  //= sl->Strings[i];
+		string line(sl[i]);  //= sl->Strings[i];
 
 		// Find the line type:
 		// ----------------------------------------------------
@@ -329,7 +331,7 @@ void xRawLogViewerFrame::OnImportSequenceOfImages(wxCommandEvent& event)
 				im->timestamp = fakeTimeStamp;
 
 				// Default camera parameters:
-				im->cameraParams.dist.assign(0);
+				im->cameraParams.dist.fill(0);
 				im->cameraParams.intrinsicParams.zeros();
 				im->cameraParams.intrinsicParams(0, 0) = 300;  // fx
 				im->cameraParams.intrinsicParams(1, 1) = 300;  // fy
@@ -994,8 +996,9 @@ void xRawLogViewerFrame::OnMenuImportALOG(wxCommandEvent& event)
 						 _("Additional images?"), wxYES_NO))
 		{
 			wxDirDialog dirDialog(
-				this, _("Choose the directory containing the image files from "
-						"the log"),
+				this,
+				_("Choose the directory containing the image files from "
+				  "the log"),
 				_U(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()),
 				0, wxDefaultPosition);
 
@@ -1186,7 +1189,7 @@ void xRawLogViewerFrame::saveImportedLogToRawlog(
 				if (firstSFtime != INVALID_TIMESTAMP &&
 					timeDifference(firstSFtime, tim) > 0.3)
 				{
-					filOut << sfAccum;
+					archiveFrom(filOut) << sfAccum;
 					sfAccum.clear();
 					firstSFtime = INVALID_TIMESTAMP;
 				}
@@ -1197,7 +1200,7 @@ void xRawLogViewerFrame::saveImportedLogToRawlog(
 			// First, flush observations:
 			if (sfAccum.size())
 			{
-				filOut << sfAccum;
+				archiveFrom(filOut) << sfAccum;
 				sfAccum.clear();
 				firstSFtime = INVALID_TIMESTAMP;
 			}
@@ -1225,7 +1228,7 @@ void xRawLogViewerFrame::saveImportedLogToRawlog(
 			CActionCollection acts;
 			acts.insert(act);
 
-			filOut << acts;
+			archiveFrom(filOut) << acts;
 
 			lastOdometry = curOdo;
 		}
@@ -1682,7 +1685,7 @@ void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog(wxCommandEvent& event)
 					  _("Import rawlog"), wxYES_NO, this));
 
 	// Parse line by line:
-	mrpt::utils::CTextFileLinesParser fileParser(import_filename);
+	mrpt::io::CTextFileLinesParser fileParser(import_filename);
 	std::string line;
 
 	mrpt::system::TTimeStamp cur_timestamp = mrpt::system::now();
@@ -1759,7 +1762,7 @@ void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog(wxCommandEvent& event)
 				set_of_obs.insert(obs);
 			}
 
-			ASSERT_ABOVEEQ_(words.size(), 11)
+			ASSERT_ABOVEEQ_(words.size(), 11);
 			// Process STEP entries (odometry increments)
 			//  STEP dlr-spatial_cognition-c.0000 -0.03752 -0.10467 -0.10807
 			//  0.000014396673 -0.000000184001 0.000013237216 0.000015157225
@@ -1812,7 +1815,7 @@ void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog(wxCommandEvent& event)
 		}
 		else if (words[0] == "LANDMARK_C")
 		{
-			ASSERT_ABOVEEQ_(words.size(), 8)
+			ASSERT_ABOVEEQ_(words.size(), 8);
 			// LANDMARK_C 0.67972 -2.87676 0.600235 0.00176143 -0.000314459
 			// 0.00334762 -1
 			// #  LANDMARK <pX> <pY> <quality> <cXX> <cXY> <cYY> <ID>
@@ -1821,7 +1824,7 @@ void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog(wxCommandEvent& event)
 
 			CObservationBearingRange::Ptr obs =
 				set_of_obs.getObservationByClass<CObservationBearingRange>();
-			ASSERT_(obs)
+			ASSERT_(obs);
 
 			// <pX> <pY> <quality> <cXX> <cXY> <cYY> <ID>
 			const double lm_x =
@@ -2060,9 +2063,10 @@ void xRawLogViewerFrame::OnGenerateIMUTextFile(wxCommandEvent& event)
 								obs->rawMeasurements.size());
 							for (size_t idx = 0; idx < nValuesPerRow; idx++)
 								::fprintf(
-									f, "%f ", obs->dataIsPresent[idx]
-												  ? obs->rawMeasurements[idx]
-												  : 0);
+									f, "%f ",
+									obs->dataIsPresent[idx]
+										? obs->rawMeasurements[idx]
+										: 0);
 							::fprintf(f, "\n");
 							M++;
 						}  // end if

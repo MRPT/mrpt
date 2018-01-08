@@ -30,11 +30,14 @@
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;
+using namespace mrpt::io;
+using namespace mrpt::serialization;
 using namespace mrpt::system;
 using namespace mrpt::math;
 using namespace std;
@@ -759,7 +762,7 @@ void CFormChangeSensorPositions::OnInit(wxInitDialogEvent& event)
 /** This is the common function for all operations over a rawlog file ("filter"
  * a rawlog file into a new one) or over the loaded rawlog (depending on the
  * user selection in the GUI).
-  */
+ */
 void CFormChangeSensorPositions::executeOperationOnRawlog(
 	TRawlogFilter operation, const char* endMsg)
 {
@@ -835,7 +838,7 @@ void CFormChangeSensorPositions::executeOperationOnRawlog(
 			}
 			else
 			{
-				(*in_fil) >> newObj;
+				archiveFrom(*in_fil) >> newObj;
 			}
 
 			// Check type:
@@ -848,7 +851,7 @@ void CFormChangeSensorPositions::executeOperationOnRawlog(
 				// Process & save:
 				operation(nullptr, sf.get(), changes);
 
-				if (!isInMemory) (*out_fil) << *sf.get();
+				if (!isInMemory) archiveFrom(*out_fil) << *sf.get();
 			}
 			else if (newObj->GetRuntimeClass() == CLASS_ID(CActionCollection))
 			{
@@ -861,10 +864,10 @@ void CFormChangeSensorPositions::executeOperationOnRawlog(
 					dynamic_cast<CActionCollection*>(acts.get()), nullptr,
 					changes);
 
-				if (!isInMemory) (*out_fil) << *acts;
+				if (!isInMemory) archiveFrom(*out_fil) << *acts;
 			}
-			else if (
-				newObj->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
+			else if (newObj->GetRuntimeClass()->derivedFrom(
+						 CLASS_ID(CObservation)))
 			{
 				// A sensory frame:
 				CObservation::Ptr o(
@@ -877,14 +880,13 @@ void CFormChangeSensorPositions::executeOperationOnRawlog(
 				// Process & save:
 				operation(nullptr, &sf, changes);
 
-				if (!isInMemory) (*out_fil) << *o;
+				if (!isInMemory) archiveFrom(*out_fil) << *o;
 			}
 			else
 			{  // Unknown class:
-				THROW_EXCEPTION(
-					format(
-						"Unexpected class found in the file: '%s'",
-						newObj->GetRuntimeClass()->className));
+				THROW_EXCEPTION(format(
+					"Unexpected class found in the file: '%s'",
+					newObj->GetRuntimeClass()->className));
 			}
 		}
 		catch (exception& e)

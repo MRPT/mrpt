@@ -27,6 +27,7 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/random.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/system/memory.h>
 #include <mrpt/system/os.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 
@@ -44,6 +45,9 @@ using namespace mrpt::gui;
 using namespace mrpt::math;
 using namespace mrpt::system;
 using namespace mrpt::random;
+using namespace mrpt::io;
+using namespace mrpt::img;
+using namespace mrpt::config;
 using namespace mrpt::poses;
 using namespace std;
 
@@ -99,7 +103,7 @@ int main(int argc, char** argv)
 		}
 
 		INI_FILENAME = std::string(argv[1]);
-		ASSERT_FILE_EXISTS_(INI_FILENAME)
+		ASSERT_FILE_EXISTS_(INI_FILENAME);
 
 		string override_rawlog_file;
 		if (argc >= 3) override_rawlog_file = string(argv[2]);
@@ -147,10 +151,9 @@ int main(int argc, char** argv)
 			"MappingApplication", "METRIC_MAP_CONTINUATION_START_POSE_X", .0);
 		METRIC_MAP_CONTINUATION_START_POSE.y = iniFile.read_double(
 			"MappingApplication", "METRIC_MAP_CONTINUATION_START_POSE_Y", .0);
-		METRIC_MAP_CONTINUATION_START_POSE.phi = DEG2RAD(
-			iniFile.read_double(
-				"MappingApplication",
-				"METRIC_MAP_CONTINUATION_START_POSE_PHI_DEG", .0));
+		METRIC_MAP_CONTINUATION_START_POSE.phi = DEG2RAD(iniFile.read_double(
+			"MappingApplication", "METRIC_MAP_CONTINUATION_START_POSE_PHI_DEG",
+			.0));
 
 		MRPT_LOAD_CONFIG_VAR(
 			PROGRESS_WINDOW_WIDTH, int, iniFile, "MappingApplication");
@@ -182,7 +185,7 @@ int main(int argc, char** argv)
 
 		// Checks:
 		ASSERT_(RAWLOG_FILE.size() > 0);
-		ASSERT_FILE_EXISTS_(RAWLOG_FILE)
+		ASSERT_FILE_EXISTS_(RAWLOG_FILE);
 
 		// Set relative path for externally-stored images in rawlogs:
 		string rawlog_images_path = extractFileDirectory(RAWLOG_FILE);
@@ -227,6 +230,7 @@ void MapBuilding_RBPF()
 
 	size_t rawlogEntry = 0;
 	CFileGZInputStream rawlogFile(RAWLOG_FILE);
+	auto rawlogArch = mrpt::serialization::archiveFrom(rawlogFile);
 
 	// ---------------------------------
 	//		MapPDF opts
@@ -257,7 +261,7 @@ void MapBuilding_RBPF()
 		{
 			mrpt::io::CFileGZInputStream f(
 				METRIC_MAP_CONTINUATION_GRIDMAP_FILE);
-			f >> gridmap;
+			mrpt::serialization::archiveFrom(f) >> gridmap;
 		}
 
 		mapBuilder.initialize(dummySimpleMap, &startPose);
@@ -280,7 +284,8 @@ void MapBuilding_RBPF()
 	if (!SIMPLEMAP_CONTINUATION.empty())
 	{
 		mrpt::maps::CSimpleMap init_map;
-		mrpt::io::CFileGZInputStream(SIMPLEMAP_CONTINUATION) >> init_map;
+		mrpt::io::CFileGZInputStream f(SIMPLEMAP_CONTINUATION);
+		mrpt::serialization::archiveFrom(f) >> init_map;
 		mapBuilder.initialize(init_map);
 	}
 
@@ -373,7 +378,7 @@ void MapBuilding_RBPF()
 		// Load action/observation pair from the rawlog:
 		// --------------------------------------------------
 		if (!CRawlog::readActionObservationPair(
-				rawlogFile, action, observations, rawlogEntry))
+				rawlogArch, action, observations, rawlogEntry))
 			break;  // file EOF
 
 		if (rawlogEntry >= rawlog_offset)
@@ -469,9 +474,8 @@ void MapBuilding_RBPF()
 
 					//  Most likely maps:
 					// ----------------------------------------
-					mostLikMap->saveMetricMapRepresentationToFile(
-						format(
-							"%s/mapbuilt_%05u_", OUT_DIR_MAPS.c_str(), step));
+					mostLikMap->saveMetricMapRepresentationToFile(format(
+						"%s/mapbuilt_%05u_", OUT_DIR_MAPS.c_str(), step));
 
 					if (mostLikMap->m_gridMaps.size() > 0)
 					{
@@ -580,11 +584,10 @@ void MapBuilding_RBPF()
 
 				if (SAVE_3D_SCENE)
 				{  // Save as file:
-					CFileGZOutputStream(
-						format(
-							"%s/buildingmap_%05u.3Dscene", OUT_DIR_3D.c_str(),
-							step))
-						<< *scene;
+					CFileGZOutputStream f(format(
+						"%s/buildingmap_%05u.3Dscene", OUT_DIR_3D.c_str(),
+						step));
+					mrpt::serialization::archiveFrom(f) << *scene;
 				}
 
 				if (SHOW_PROGRESS_IN_WINDOW)
@@ -679,7 +682,7 @@ void MapBuilding_RBPF()
 	mapBuilder.getCurrentlyBuiltMap(finalMap);
 
 	CFileOutputStream filOut(format("%s/_finalmap_.simplemap", OUT_DIR));
-	filOut << finalMap;
+	mrpt::serialization::archiveFrom(filOut) << finalMap;
 
 	// Save gridmap extend (if exists):
 	const CMultiMetricMap* mostLikMap =
