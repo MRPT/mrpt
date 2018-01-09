@@ -443,3 +443,4 @@ mrpt::math::TPose2D CPose2D::asTPose() const
 {
 	return mrpt::math::TPose2D(x(), y(),phi());
 }
+

@@ -22,6 +22,7 @@
 #include <mrpt/slam/TKLDParams.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/serialization/CMessage.h>
 
 #include <thread>
 #include <queue>
@@ -156,7 +157,7 @@ class CHMTSLAM : public mrpt::system::COutputLogger,
 
 	/** LSLAM thread input queue, messages of type CHMTSLAM::TMessageLSLAMfromAA
 	 */
-	using CMessageQueue = mrpt::containers::CThreadSafeQueue<mrpt::io::CMessage>;
+	using CMessageQueue = mrpt::containers::CThreadSafeQueue<mrpt::serialization::CMessage>;
 
 	CMessageQueue m_LSLAM_queue;
 
@@ -268,7 +269,7 @@ class CHMTSLAM : public mrpt::system::COutputLogger,
 	/** @name HMT-SLAM sub-processes.
 		@{ */
 	/** Auxiliary method within thread_LSLAM */
-	void LSLAM_process_message(const mrpt::utils::CMessage& msg);
+	void LSLAM_process_message(const mrpt::serialization::CMessage& msg);
 
 	/** No critical section locks are assumed at the entrance of this method.
 	  */
@@ -515,7 +516,7 @@ class CLSLAMAlgorithmBase
 	friend class CLocalMetricHypothesis;
 
    protected:
-	mrpt::utils::safe_ptr<CHMTSLAM> m_parent;
+	mrpt::safe_ptr<CHMTSLAM> m_parent;
 
    public:
 	/** Constructor

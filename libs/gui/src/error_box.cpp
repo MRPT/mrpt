@@ -17,6 +17,9 @@
 #else
 #include <iostream>
 #endif  // MRPT_HAS_Qt5
+#if MRPT_HAS_WXWIDGETS
+#include <mrpt/gui/WxUtils.h>
+#endif
 
 void mrpt::gui::tryCatch(
 	const std::function<void()>& tryPart, const std::string& catchMessage)
@@ -42,7 +45,7 @@ void mrpt::gui::showErrorMessage(const std::string& str)
 	msg.showMessage(QString::fromStdString(str));
 	msg.exec();
 #elif MRPT_HAS_WXWIDGETS
-	wxMessageBox(_U(str), _("Exception"));
+	wxMessageBox(_U(str.c_str()), _("Exception"));
 #else
 	std::cerr << str << std::endl;
 #endif  // MRPT_HAS_Qt5

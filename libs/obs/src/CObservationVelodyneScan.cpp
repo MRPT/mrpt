@@ -42,54 +42,6 @@ const float VLP16_FIRING_TOFFSET = 55.296f;  // [us]
 const float HDR32_DSR_TOFFSET = 1.152f;  // [us]
 const float HDR32_FIRING_TOFFSET = 46.08f;  // [us]
 
-const CObservationVelodyneScan::TGeneratePointCloudParameters
-	CObservationVelodyneScan::defaultPointCloudParams;
-
-CObservationVelodyneScan::TGeneratePointCloudParameters::
-	TGeneratePointCloudParameters()
-	: minAzimuth_deg(0.0),
-	  maxAzimuth_deg(360.0),
-	  minDistance(1.0f),
-	  maxDistance(std::numeric_limits<float>::max()),
-	  ROI_x_min(-std::numeric_limits<float>::max()),
-	  ROI_x_max(+std::numeric_limits<float>::max()),
-	  ROI_y_min(-std::numeric_limits<float>::max()),
-	  ROI_y_max(+std::numeric_limits<float>::max()),
-	  ROI_z_min(-std::numeric_limits<float>::max()),
-	  ROI_z_max(+std::numeric_limits<float>::max()),
-	  nROI_x_min(.0f),
-	  nROI_x_max(.0f),
-	  nROI_y_min(.0f),
-	  nROI_y_max(.0f),
-	  nROI_z_min(.0f),
-	  nROI_z_max(.0f),
-	  isolatedPointsFilterDistance(2.0f),
-	  filterByROI(false),
-	  filterBynROI(false),
-	  filterOutIsolatedPoints(false),
-	  dualKeepStrongest(true),
-	  dualKeepLast(true),
-	  generatePerPointTimestamp(false),
-	  generatePerPointAzimuth(false)
-{
-}
-
-CObservationVelodyneScan::TGeneratePointCloudSE3Results::
-	TGeneratePointCloudSE3Results()
-	: num_points(0), num_correctly_inserted_points(0)
-{
-}
-
-CObservationVelodyneScan::CObservationVelodyneScan()
-	: minRange(1.0),
-	  maxRange(130.0),
-	  sensorPose(),
-	  originalReceivedTimestamp(INVALID_TIMESTAMP),
-	  has_satellite_timestamp(false)
-{
-}
-
-CObservationVelodyneScan::~CObservationVelodyneScan() {}
 mrpt::system::TTimeStamp
 	CObservationVelodyneScan::getOriginalReceivedTimeStamp() const
 {

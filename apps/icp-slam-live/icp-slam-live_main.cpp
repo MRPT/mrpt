@@ -34,6 +34,7 @@
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;
+using namespace mrpt::io;
 using namespace std;
 
 // Forward declaration.
@@ -73,7 +74,7 @@ int main(int argc, char** argv)
 		}
 
 		const string INI_FILENAME = string(argv[1]);
-		ASSERT_FILE_EXISTS_(INI_FILENAME)
+		ASSERT_FILE_EXISTS_(INI_FILENAME);
 
 		// Run:
 		MapBuilding_ICP_Live(INI_FILENAME);
@@ -284,7 +285,7 @@ void MapBuilding_ICP_Live(const string& INI_FILENAME)
 	mapBuilder.ICP_options.dumpToConsole();
 
 	// Checks:
-	CTicTac tictac, tictacGlobal, tictac_JH;
+	mrpt::system::CTicTac tictac, tictacGlobal, tictac_JH;
 	int step = 0;
 	string str;
 	CSimpleMap finalMap;
@@ -322,7 +323,7 @@ void MapBuilding_ICP_Live(const string& INI_FILENAME)
 	//						Map Building
 	// ----------------------------------------------------------
 	tictacGlobal.Tic();
-	CTicTac timeout_read_scans;
+	mrpt::system::CTicTac timeout_read_scans;
 	while (!allThreadsMustExit)
 	{
 		// Check for exit app:
@@ -360,7 +361,7 @@ void MapBuilding_ICP_Live(const string& INI_FILENAME)
 					 it != obs_copy.end(); ++it)
 					if (it->second &&
 						IS_CLASS(it->second, CObservation2DRangeScan))
-						out_rawlog << *it->second;
+						mrpt::serialization::archiveFrom(out_rawlog) << *it->second;
 			}
 		}
 
@@ -517,7 +518,7 @@ void MapBuilding_ICP_Live(const string& INI_FILENAME)
 			{
 				CFileGZOutputStream f(
 					format("%s/buildingmap_%05u.3Dscene", OUT_DIR, step));
-				f << *scene;
+				mrpt::serialization::archiveFrom(f) << *scene;
 			}
 
 			// Show 3D?

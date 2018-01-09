@@ -77,9 +77,6 @@ class CObservationVelodyneScan : public CObservation
 	DEFINE_SERIALIZABLE(CObservationVelodyneScan)
 
    public:
-	CObservationVelodyneScan();
-	virtual ~CObservationVelodyneScan();
-
 	/** @name Raw scan fixed parameters
 		@{ */
 	static const int SIZE_BLOCK = 100;
@@ -157,7 +154,7 @@ class CObservationVelodyneScan : public CObservation
 
 	/** The maximum range allowed by the device, in meters (e.g. 100m). Stored
 	 * here by the driver while capturing based on the sensor model. */
-	double minRange, maxRange;
+	double minRange{1.0}, maxRange{130.0};
 	/** The 6D pose of the sensor on the robot/vehicle frame of reference */
 	mrpt::poses::CPose3D sensorPose;
 	/** The main content of this object: raw data packet from the LIDAR. \sa
@@ -171,11 +168,11 @@ class CObservationVelodyneScan : public CObservation
 	 * in the computer. \sa has_satellite_timestamp, CObservation::timestamp in
 	 * the base class, which should contain the accurate satellite-based UTC
 	 * timestamp.  */
-	mrpt::system::TTimeStamp originalReceivedTimestamp;
+	mrpt::system::TTimeStamp originalReceivedTimestamp{INVALID_TIMESTAMP};
 	/** If true, CObservation::timestamp has been generated from accurate
 	 * satellite clock. Otherwise, no GPS data is available and timestamps are
 	 * based on the local computer clock. */
-	bool has_satellite_timestamp;
+	bool has_satellite_timestamp{false};
 
 	mrpt::system::TTimeStamp getOriginalReceivedTimeStamp()
 		const override;  // See base class docs
@@ -215,47 +212,48 @@ class CObservationVelodyneScan : public CObservation
 	{
 		/** Minimum azimuth, in degrees (Default=0). Points will be generated
 		 * only the the area of interest [minAzimuth, maxAzimuth] */
-		double minAzimuth_deg;
+		double minAzimuth_deg{.0};
 		/** Minimum azimuth, in degrees (Default=360). Points will be generated
 		 * only the the area of interest [minAzimuth, maxAzimuth] */
-		double maxAzimuth_deg;
+		double maxAzimuth_deg{360.};
 		/** Minimum (default=1.0f) and maximum (default: Infinity)
 		 * distances/ranges for a point to be considered. Points must pass this
 		 * (application specific) condition and also the minRange/maxRange
 		 * values in CObservationVelodyneScan (sensor-specific). */
-		float minDistance, maxDistance;
+		float minDistance{1.0f}, maxDistance{std::numeric_limits<float>::max()};
 		/** The limits of the 3D box (default=infinity) in sensor (not vehicle)
 		 * local coordinates for the ROI filter \sa filterByROI */
-		float ROI_x_min, ROI_x_max, ROI_y_min, ROI_y_max, ROI_z_min, ROI_z_max;
+		float ROI_x_min{-std::numeric_limits<float>::max()},
+			ROI_x_max{std::numeric_limits<float>::max()},
+			ROI_y_min{-std::numeric_limits<float>::max()},
+			ROI_y_max{std::numeric_limits<float>::max()},
+			ROI_z_min{-std::numeric_limits<float>::max()},
+			ROI_z_max{std::numeric_limits<float>::max()};
 		/** The limits of the 3D box (default=0) in sensor (not vehicle) local
 		 * coordinates for the nROI filter \sa filterBynROI */
-		float nROI_x_min, nROI_x_max, nROI_y_min, nROI_y_max, nROI_z_min,
-			nROI_z_max;
+		float nROI_x_min{0}, nROI_x_max{ 0 }, nROI_y_min{ 0 }, nROI_y_max{ 0 },
+			nROI_z_min{0}, nROI_z_max{0};
 		/** (Default:2.0 meters) Minimum distance between a point and its two
 		 * neighbors to be considered an invalid point. */
-		float isolatedPointsFilterDistance;
+		float isolatedPointsFilterDistance{2.0f};
 
 		/** Enable ROI filter (Default:false): add points inside a given 3D box
 		 */
-		bool filterByROI;
+		bool filterByROI{false};
 		/** Enable nROI filter (Default:false): do NOT add points inside a given
 		 * 3D box */
-		bool filterBynROI;
+		bool filterBynROI{false};
 		/** (Default:false) Simple filter to remove spurious returns (e.g. Sun
 		 * reflected on large water extensions) */
-		bool filterOutIsolatedPoints;
+		bool filterOutIsolatedPoints{false};
 		/** (Default:true) In VLP16 dual mode, keep both or just one of the
 		 * returns. */
-		bool dualKeepStrongest, dualKeepLast;
+		bool dualKeepStrongest{true}, dualKeepLast{true};
 		/** (Default:false) If `true`, populate the vector timestamp */
-		bool generatePerPointTimestamp;
+		bool generatePerPointTimestamp{false};
 		/** (Default:false) If `true`, populate the vector azimuth */
-		bool generatePerPointAzimuth;
-
-		TGeneratePointCloudParameters();
+		bool generatePerPointAzimuth{false};
 	};
-
-	static const TGeneratePointCloudParameters defaultPointCloudParams;
 
 	/** Generates the point cloud into the point cloud data fields in \a
 	 * CObservationVelodyneScan::point_cloud
@@ -271,17 +269,16 @@ class CObservationVelodyneScan : public CObservation
 	 * TGeneratePointCloudParameters
 	  */
 	void generatePointCloud(
-		const TGeneratePointCloudParameters& params = defaultPointCloudParams);
+		const TGeneratePointCloudParameters& params = TGeneratePointCloudParameters());
 
 	/** Results for generatePointCloudAlongSE3Trajectory() */
 	struct TGeneratePointCloudSE3Results
 	{
 		/** Number of points in the observation */
-		size_t num_points;
+		size_t num_points{0};
 		/** Number of points for which a valid interpolated SE(3) pose could be
 		 * determined */
-		size_t num_correctly_inserted_points;
-		TGeneratePointCloudSE3Results();
+		size_t num_correctly_inserted_points{0};
 	};
 
 	/** An alternative to generatePointCloud() for cases where the motion of the
@@ -301,7 +298,7 @@ class CObservationVelodyneScan : public CObservation
 		const mrpt::poses::CPose3DInterpolator& vehicle_path,
 		std::vector<mrpt::math::TPointXYZIu8>& out_points,
 		TGeneratePointCloudSE3Results& results_stats,
-		const TGeneratePointCloudParameters& params = defaultPointCloudParams);
+		const TGeneratePointCloudParameters& params = TGeneratePointCloudParameters());
 
 	/** @} */
 
