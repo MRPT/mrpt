@@ -37,6 +37,9 @@ using namespace mrpt::opengl;
 using namespace mrpt::system;
 using namespace mrpt::math;
 using namespace mrpt::poses;
+using namespace mrpt::config;
+using namespace mrpt::io;
+using namespace mrpt::img;
 using namespace mrpt::obs;
 using namespace std;
 
@@ -86,10 +89,8 @@ int main(int argc, char** argv)
 				"MappingApplication", "rawlog_file", std::string("log.rawlog"));
 
 		// 2D or 3D implementation:
-		const string kf_implementation = mrpt::system::trim(
-			cfg.read_string(
-				"MappingApplication", "kf_implementation",
-				"CRangeBearingKFSLAM"));
+		const string kf_implementation = mrpt::system::trim(cfg.read_string(
+			"MappingApplication", "kf_implementation", "CRangeBearingKFSLAM"));
 
 		if (kf_implementation == "CRangeBearingKFSLAM")
 			Run_KF_SLAM<CRangeBearingKFSLAM>(cfg, rawlogFileName);
@@ -194,7 +195,7 @@ struct kfslam_traits<CRangeBearingKFSLAM>
 			vector<std::vector<uint32_t>> landmarksMembership, partsInObsSpace;
 			CMatrix ERRS(50, 3);
 
-			for (size_t i = 0; i < ERRS.rows(); i++)
+			for (int i = 0; i < ERRS.rows(); i++)
 			{
 				size_t K;
 
@@ -301,7 +302,7 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 		"MappingApplication", "ground_truth_data_association", "");
 
 	cout << "RAWLOG FILE:" << endl << rawlogFileName << endl;
-	ASSERT_FILE_EXISTS_(rawlogFileName)
+	ASSERT_FILE_EXISTS_(rawlogFileName);
 	CFileGZInputStream rawlogFile(rawlogFileName);
 
 	cout << "---------------------------------------------------" << endl
@@ -326,7 +327,7 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 	if (ground_truth_file_robot.size() && fileExists(ground_truth_file_robot))
 	{
 		GT_PATH.loadFromTextFile(ground_truth_file_robot);
-		ASSERT_(GT_PATH.rows() > 0 && GT_PATH.cols() == 6)
+		ASSERT_(GT_PATH.rows() > 0 && GT_PATH.cols() == 6);
 	}
 
 	// Is there a ground truth file of the data association?
@@ -342,7 +343,7 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 		mGT_DA.loadFromTextFile(ground_truth_data_association);
 		ASSERT_ABOVEEQ_(mGT_DA.cols(), 3);
 		// Convert the loaded matrix into a std::map in GT_DA:
-		for (size_t i = 0; i < mGT_DA.rows(); i++)
+		for (int i = 0; i < mGT_DA.rows(); i++)
 		{
 			std::vector<int>& v = GT_DA[mGT_DA(i, 0)];
 			if (v.size() <= mGT_DA(i, 1)) v.resize(mGT_DA(i, 1) + 1);
@@ -360,7 +361,7 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 		out_da_performance_log.open(f.c_str());
 		ASSERTMSG_(
 			out_da_performance_log.is_open(),
-			std::string("Error writing to: ") + f)
+			std::string("Error writing to: ") + f);
 
 		// Header:
 		out_da_performance_log
@@ -390,7 +391,7 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 		const std::string f =
 			std::string(OUT_DIR + std::string("/data_association.log"));
 		out_da_log.open(f.c_str());
-		ASSERTMSG_(out_da_log.is_open(), std::string("Error writing to: ") + f)
+		ASSERTMSG_(out_da_log.is_open(), std::string("Error writing to: ") + f);
 
 		// Header:
 		out_da_log << "%           TIMESTAMP                INDEX_IN_OBS    ID "
@@ -415,6 +416,8 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 	CVectorDouble fullState;
 	CTicTac kftictac;
 
+	auto rawlogArch = mrpt::serialization::archiveFrom(rawlogFile);
+
 	for (;;)
 	{
 		if (os::kbhit())
@@ -426,7 +429,7 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 		// Load action/observation pair from the rawlog:
 		// --------------------------------------------------
 		if (!CRawlog::readActionObservationPair(
-				rawlogFile, action, observations, rawlogEntry))
+				rawlogArch, action, observations, rawlogEntry))
 			break;  // file EOF
 
 		if (rawlogEntry >= rawlog_offset)
@@ -449,7 +452,7 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 			const CPose3D robotPoseMean3D = CPose3D(robotPose.mean);
 
 			// Build the path:
-			meanPath.push_back(TPose3D(robotPoseMean3D));
+			meanPath.push_back(robotPoseMean3D.asTPose());
 
 			// Save mean pose:
 			if (!(step % SAVE_LOG_FREQUENCY))
@@ -484,9 +487,8 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 
 					for (size_t i = 0; i < obsRB->sensedData.size(); i++)
 					{
-						std::map<observation_index_t,
-								 prediction_index_t>::const_iterator it =
-							da.results.associations.find(i);
+						std::map<observation_index_t, prediction_index_t>::
+							const_iterator it = da.results.associations.find(i);
 						int assoc_ID_in_SLAM;
 						if (it != da.results.associations.end())
 							assoc_ID_in_SLAM = it->second;
@@ -536,12 +538,12 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 						if (itDA != GT_DA.end())
 						{
 							const std::vector<int>& vDA = itDA->second;
-							ASSERT_BELOW_(i, vDA.size();
+							ASSERT_BELOW_(i, vDA.size());
 							const int GT_ASSOC = vDA[i];
 
-							std::map<observation_index_t,
-									 prediction_index_t>::const_iterator it =
-								da.results.associations.find(i);
+							std::map<observation_index_t, prediction_index_t>::
+								const_iterator it =
+									da.results.associations.find(i);
 							if (it != da.results.associations.end())
 							{
 								// This observation was assigned the already
@@ -549,7 +551,8 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 								// TruePos -> If that LM index corresponds to
 								// that in the GT (with index mapping):
 
-								// mrpt::containers::bimap<int,int>  DA2GTDA_indices;
+								// mrpt::containers::bimap<int,int>
+								// DA2GTDA_indices;
 								// // Landmark indices bimapping: SLAM DA <--->
 								// GROUND TRUTH DA
 								if (DA2GTDA_indices.hasKey(it->second))
@@ -645,7 +648,7 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 
 					TPose3D init_pose;
 					if (!meanPath.empty())
-						init_pose = TPose3D(CPose3D(meanPath[0]));
+						init_pose = CPose3D(meanPath[0]).asTPose();
 
 					int path_decim = 0;
 					for (vector<TPose3D>::iterator it = meanPath.begin();
@@ -685,12 +688,13 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 				}
 
 				// Do we have a ground truth?
-				if (GT_PATH, 2) == 6 || size(GT_PATH.cols() == 3)
+				if (GT_PATH.cols() == 6 || GT_PATH.cols() == 3)
 				{
 					opengl::CSetOfLines::Ptr GT_path =
 						mrpt::make_aligned_shared<opengl::CSetOfLines>();
 					GT_path->setColor(0, 0, 0);
-					size_t N = std::min(GT_PATH.rows(), meanPath.size());
+					size_t N =
+						std::min((int)GT_PATH.rows(), (int)meanPath.size());
 
 					if (GT_PATH.cols() == 6)
 					{
@@ -733,9 +737,9 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 						mrpt::make_aligned_shared<mrpt::opengl::CSetOfLines>();
 					lins->setLineWidth(1.2f);
 					lins->setColor(1, 1, 1);
-					for (std::map<observation_index_t,
-								  prediction_index_t>::const_iterator it =
-							 da.results.associations.begin();
+					for (std::map<observation_index_t, prediction_index_t>::
+							 const_iterator it =
+								 da.results.associations.begin();
 						 it != da.results.associations.end(); ++it)
 					{
 						const prediction_index_t idxPred = it->second;
@@ -815,10 +819,10 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 				if (SAVE_3D_SCENES && !(step % SAVE_LOG_FREQUENCY))
 				{
 					// Save to file:
-					CFileGZOutputStream(
+					CFileGZOutputStream f(
 						OUT_DIR +
-						format("/kf_state_%05u.3Dscene", (unsigned int)step))
-						<< *scene3D;
+						format("/kf_state_%05u.3Dscene", (unsigned int)step));
+					mrpt::serialization::archiveFrom(f) << *scene3D;
 				}
 			}
 
@@ -863,14 +867,13 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 			{
 				// Find the entry in the GT for this mapped LM:
 				bool found = false;
-				for (size_t r = 0; r < GT.rows(); r++)
+				for (int r = 0; r < GT.rows(); r++)
 				{
 					if (LM_IDs[i] == GT(r, 6))
 					{
 						const CPoint3D gtPt(GT(r, 0), GT(r, 1), GT(r, 2));
-						ERRS.push_back(
-							gtPt.distanceTo(
-								CPoint3D(TPoint3D(LMs[i]))));  // All these
+						ERRS.push_back(gtPt.distanceTo(
+							CPoint3D(TPoint3D(LMs[i]))));  // All these
 						// conversions
 						// are to make it
 						// work with

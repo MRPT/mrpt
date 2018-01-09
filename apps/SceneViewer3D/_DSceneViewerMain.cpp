@@ -97,7 +97,6 @@ wxBitmap MyArtProvider::CreateBitmap(
 // Used for feedback from the glcanvas component to its parent.
 _DSceneViewerFrame* theWindow = nullptr;
 
-#include <mrpt/system.h>
 using namespace mrpt;
 using namespace mrpt::system;
 using namespace mrpt::poses;
@@ -184,10 +183,8 @@ void CMyGLCanvas::OnPostRenderSwapBuffers(double At, wxPaintDC& dc)
 		glReadBuffer(GL_FRONT);
 		glReadPixels(0, 0, w, h, GL_BGR_EXT, GL_UNSIGNED_BYTE, frame(0, 0));
 
-		string fileName(
-			format(
-				"%s/screenshot_%07i.png", capturingDir.c_str(),
-				captureCount++));
+		string fileName(format(
+			"%s/screenshot_%07i.png", capturingDir.c_str(), captureCount++));
 
 		frame.saveToFile(fileName);
 	}
@@ -405,9 +402,8 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 	SetMinSize(wxSize(150, 100));
 	{
 		wxIcon FrameIcon;
-		FrameIcon.CopyFromBitmap(
-			wxArtProvider::GetBitmap(
-				wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")), wxART_FRAME_ICON));
+		FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(
+			wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")), wxART_FRAME_ICON));
 		SetIcon(FrameIcon);
 	}
 	FlexGridSizer1 = new wxFlexGridSizer(1, 2, 0, 0);
@@ -420,10 +416,8 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 			wxART_MAKE_ART_ID_FROM_STR(_T("wxART_NORMAL_FILE")), wxART_TOOLBAR),
 		wxDefaultPosition, wxDefaultSize, wxCUSTBUT_BUTTON | wxCUSTBUT_BOTTOM,
 		wxDefaultValidator, _T("ID_BUTTON1"));
-	btnNew->SetBitmapDisabled(
-		wxArtProvider::GetBitmap(
-			wxART_MAKE_ART_ID_FROM_STR(_T("wxART_NORMAL_FILE")),
-			wxART_TOOLBAR));
+	btnNew->SetBitmapDisabled(wxArtProvider::GetBitmap(
+		wxART_MAKE_ART_ID_FROM_STR(_T("wxART_NORMAL_FILE")), wxART_TOOLBAR));
 	btnNew->SetMargins(wxSize(5, 5));
 	FlexGridSizer2->Add(
 		btnNew, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
@@ -433,9 +427,8 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 			wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_OPEN")), wxART_TOOLBAR),
 		wxDefaultPosition, wxDefaultSize, wxCUSTBUT_BUTTON | wxCUSTBUT_BOTTOM,
 		wxDefaultValidator, _T("ID_BUTTON2"));
-	btnToolbarOpen->SetBitmapDisabled(
-		wxArtProvider::GetBitmap(
-			wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_OPEN")), wxART_TOOLBAR));
+	btnToolbarOpen->SetBitmapDisabled(wxArtProvider::GetBitmap(
+		wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_OPEN")), wxART_TOOLBAR));
 	btnToolbarOpen->SetMargins(wxSize(5, 5));
 	FlexGridSizer2->Add(
 		btnToolbarOpen, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
@@ -451,9 +444,8 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 			wxART_MAKE_ART_ID_FROM_STR(_T("wxART_GO_BACK")), wxART_TOOLBAR),
 		wxDefaultPosition, wxDefaultSize, wxCUSTBUT_BUTTON | wxCUSTBUT_BOTTOM,
 		wxDefaultValidator, _T("ID_BUTTON3"));
-	btnPrev->SetBitmapDisabled(
-		wxArtProvider::GetBitmap(
-			wxART_MAKE_ART_ID_FROM_STR(_T("wxART_GO_BACK")), wxART_TOOLBAR));
+	btnPrev->SetBitmapDisabled(wxArtProvider::GetBitmap(
+		wxART_MAKE_ART_ID_FROM_STR(_T("wxART_GO_BACK")), wxART_TOOLBAR));
 	btnPrev->SetMargins(wxSize(5, 5));
 	FlexGridSizer2->Add(
 		btnPrev, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
@@ -463,9 +455,8 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 			wxART_MAKE_ART_ID_FROM_STR(_T("wxART_GO_FORWARD")), wxART_TOOLBAR),
 		wxDefaultPosition, wxDefaultSize, wxCUSTBUT_BUTTON | wxCUSTBUT_BOTTOM,
 		wxDefaultValidator, _T("ID_BUTTON4"));
-	btnNext->SetBitmapDisabled(
-		wxArtProvider::GetBitmap(
-			wxART_MAKE_ART_ID_FROM_STR(_T("wxART_GO_FORWARD")), wxART_TOOLBAR));
+	btnNext->SetBitmapDisabled(wxArtProvider::GetBitmap(
+		wxART_MAKE_ART_ID_FROM_STR(_T("wxART_GO_FORWARD")), wxART_TOOLBAR));
 	btnNext->SetMargins(wxSize(5, 5));
 	FlexGridSizer2->Add(
 		btnNext, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
@@ -475,9 +466,8 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 			wxART_MAKE_ART_ID_FROM_STR(_T("wxART_REDO")), wxART_TOOLBAR),
 		wxDefaultPosition, wxDefaultSize, wxCUSTBUT_BUTTON | wxCUSTBUT_BOTTOM,
 		wxDefaultValidator, _T("ID_BUTTON5"));
-	btnReload->SetBitmapDisabled(
-		wxArtProvider::GetBitmap(
-			wxART_MAKE_ART_ID_FROM_STR(_T("wxART_REDO")), wxART_TOOLBAR));
+	btnReload->SetBitmapDisabled(wxArtProvider::GetBitmap(
+		wxART_MAKE_ART_ID_FROM_STR(_T("wxART_REDO")), wxART_TOOLBAR));
 	btnReload->SetMargins(wxSize(5, 5));
 	FlexGridSizer2->Add(
 		btnReload, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP,
@@ -494,9 +484,8 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 			wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FIND")), wxART_TOOLBAR),
 		wxDefaultPosition, wxDefaultSize, wxCUSTBUT_BUTTON | wxCUSTBUT_BOTTOM,
 		wxDefaultValidator, _T("ID_BUTTON6"));
-	btnOptions->SetBitmapDisabled(
-		wxArtProvider::GetBitmap(
-			wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FIND")), wxART_TOOLBAR));
+	btnOptions->SetBitmapDisabled(wxArtProvider::GetBitmap(
+		wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FIND")), wxART_TOOLBAR));
 	btnOptions->SetMargins(wxSize(5, 5));
 	FlexGridSizer2->Add(
 		btnOptions, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
@@ -506,9 +495,8 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 			wxART_MAKE_ART_ID_FROM_STR(_T("wxART_TICK_MARK")), wxART_TOOLBAR),
 		wxDefaultPosition, wxDefaultSize, wxCUSTBUT_TOGGLE | wxCUSTBUT_BOTTOM,
 		wxDefaultValidator, _T("ID_BUTTON7"));
-	btnOrtho->SetBitmapDisabled(
-		wxArtProvider::GetBitmap(
-			wxART_MAKE_ART_ID_FROM_STR(_T("wxART_TICK_MARK")), wxART_TOOLBAR));
+	btnOrtho->SetBitmapDisabled(wxArtProvider::GetBitmap(
+		wxART_MAKE_ART_ID_FROM_STR(_T("wxART_TICK_MARK")), wxART_TOOLBAR));
 	btnOrtho->SetMargins(wxSize(5, 5));
 	FlexGridSizer2->Add(
 		btnOrtho, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
@@ -518,9 +506,8 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 			wxART_MAKE_ART_ID_FROM_STR(_T("wxART_REMOVABLE")), wxART_TOOLBAR),
 		wxDefaultPosition, wxDefaultSize, wxCUSTBUT_TOGGLE | wxCUSTBUT_BOTTOM,
 		wxDefaultValidator, _T("ID_BUTTON8"));
-	btnAutoplay->SetBitmapDisabled(
-		wxArtProvider::GetBitmap(
-			wxART_MAKE_ART_ID_FROM_STR(_T("wxART_REMOVABLE")), wxART_TOOLBAR));
+	btnAutoplay->SetBitmapDisabled(wxArtProvider::GetBitmap(
+		wxART_MAKE_ART_ID_FROM_STR(_T("wxART_REMOVABLE")), wxART_TOOLBAR));
 	btnAutoplay->SetMargins(wxSize(5, 5));
 	FlexGridSizer2->Add(
 		btnAutoplay, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
@@ -530,9 +517,8 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 			wxART_MAKE_ART_ID_FROM_STR(_T("wxART_HARDDISK")), wxART_TOOLBAR),
 		wxDefaultPosition, wxDefaultSize, wxCUSTBUT_TOGGLE | wxCUSTBUT_BOTTOM,
 		wxDefaultValidator, _T("ID_BUTTON9"));
-	btnCapture->SetBitmapDisabled(
-		wxArtProvider::GetBitmap(
-			wxART_MAKE_ART_ID_FROM_STR(_T("wxART_HARDDISK")), wxART_TOOLBAR));
+	btnCapture->SetBitmapDisabled(wxArtProvider::GetBitmap(
+		wxART_MAKE_ART_ID_FROM_STR(_T("wxART_HARDDISK")), wxART_TOOLBAR));
 	btnCapture->SetMargins(wxSize(5, 5));
 	FlexGridSizer2->Add(
 		btnCapture, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
@@ -548,9 +534,8 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 			wxART_MAKE_ART_ID_FROM_STR(_T("wxART_HELP_BOOK")), wxART_TOOLBAR),
 		wxDefaultPosition, wxDefaultSize, wxCUSTBUT_BUTTON | wxCUSTBUT_BOTTOM,
 		wxDefaultValidator, _T("ID_BUTTON10"));
-	btnAbout->SetBitmapDisabled(
-		wxArtProvider::GetBitmap(
-			wxART_MAKE_ART_ID_FROM_STR(_T("wxART_HELP_BOOK")), wxART_TOOLBAR));
+	btnAbout->SetBitmapDisabled(wxArtProvider::GetBitmap(
+		wxART_MAKE_ART_ID_FROM_STR(_T("wxART_HELP_BOOK")), wxART_TOOLBAR));
 	btnAbout->SetMargins(wxSize(5, 5));
 	FlexGridSizer2->Add(
 		btnAbout, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
@@ -560,9 +545,8 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 			wxART_MAKE_ART_ID_FROM_STR(_T("wxART_QUIT")), wxART_TOOLBAR),
 		wxDefaultPosition, wxDefaultSize, wxCUSTBUT_BUTTON | wxCUSTBUT_BOTTOM,
 		wxDefaultValidator, _T("ID_BUTTON11"));
-	btnQuit->SetBitmapDisabled(
-		wxArtProvider::GetBitmap(
-			wxART_MAKE_ART_ID_FROM_STR(_T("wxART_QUIT")), wxART_TOOLBAR));
+	btnQuit->SetBitmapDisabled(wxArtProvider::GetBitmap(
+		wxART_MAKE_ART_ID_FROM_STR(_T("wxART_QUIT")), wxART_TOOLBAR));
 	btnQuit->SetMargins(wxSize(5, 5));
 	FlexGridSizer2->Add(
 		btnQuit, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
@@ -830,8 +814,9 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 		idMenuAbout, wxEVT_COMMAND_MENU_SELECTED,
 		(wxObjectEventFunction)&_DSceneViewerFrame::OnAbout);
 	Connect(
-		ID_TIMER1, wxEVT_TIMER, (wxObjectEventFunction)&_DSceneViewerFrame::
-									OntimLoadFileCmdLineTrigger);
+		ID_TIMER1, wxEVT_TIMER,
+		(wxObjectEventFunction)&_DSceneViewerFrame::
+			OntimLoadFileCmdLineTrigger);
 	//*)
 
 	Connect(
@@ -1044,13 +1029,12 @@ void _DSceneViewerFrame::loadFromFile(
 
 void _DSceneViewerFrame::updateTitle()
 {
-	SetTitle(
-		_U(format(
-			   "3DSceneViewer - Part of the MRPT project [%s]",
-			   (extractFileName(loadedFileName) + string(".") +
-				extractFileExtension(loadedFileName))
-				   .c_str())
-			   .c_str()));
+	SetTitle(_U(format(
+					"3DSceneViewer - Part of the MRPT project [%s]",
+					(extractFileName(loadedFileName) + string(".") +
+					 extractFileExtension(loadedFileName))
+						.c_str())
+					.c_str()));
 }
 
 void _DSceneViewerFrame::OntimLoadFileCmdLineTrigger(wxTimerEvent& event)
@@ -1212,9 +1196,8 @@ void _DSceneViewerFrame::OnInsert3DS(wxCommandEvent& event)
 		mrpt::opengl::CAssimpModel::Ptr obj3D =
 			mrpt::make_aligned_shared<mrpt::opengl::CAssimpModel>();
 		obj3D->loadScene(fil);
-		obj3D->setPose(
-			mrpt::math::TPose3D(
-				0, 0, 0, DEG2RAD(.0), DEG2RAD(0.), DEG2RAD(90.0)));
+		obj3D->setPose(mrpt::math::TPose3D(
+			0, 0, 0, DEG2RAD(.0), DEG2RAD(0.), DEG2RAD(90.0)));
 		m_canvas->getOpenGLSceneRef()->insert(obj3D);
 
 		m_canvas->Refresh();
@@ -1386,16 +1369,16 @@ void _DSceneViewerFrame::OnStartCameraTravelling(wxCommandEvent& event)
 				iniFile
 					->read_string("Spherical travelling", "Zoom distance", "25")
 					.c_str());
-			double elevation = atof(
-				iniFile
-					->read_string(
-						"Spherical travelling", "Elevation degrees", "15")
-					.c_str());
-			double azimuth = atof(
-				iniFile
-					->read_string(
-						"Spherical travelling", "Azimuth degrees", "90")
-					.c_str());
+			double elevation =
+				atof(iniFile
+						 ->read_string(
+							 "Spherical travelling", "Elevation degrees", "15")
+						 .c_str());
+			double azimuth =
+				atof(iniFile
+						 ->read_string(
+							 "Spherical travelling", "Azimuth degrees", "90")
+						 .c_str());
 
 			double min_value = atof(
 				iniFile->read_string("Spherical travelling", "Min value", "90")
@@ -1938,10 +1921,9 @@ void _DSceneViewerFrame::OnMenuItemHighResRender(wxCommandEvent& event)
 			CFBORender render(width, height, true /* skip Glut extra window */);
 			CImage frame(width, height, 3, false);
 
-			render.setBackgroundColor(
-				mrpt::img::TColorf(
-					m_canvas->getClearColorR(), m_canvas->getClearColorG(),
-					m_canvas->getClearColorB(), 1.0));
+			render.setBackgroundColor(mrpt::img::TColorf(
+				m_canvas->getClearColorR(), m_canvas->getClearColorG(),
+				m_canvas->getClearColorB(), 1.0));
 
 			// render the scene
 			render.getFrame(*m_canvas->getOpenGLSceneRef(), frame);
@@ -2089,8 +2071,9 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 		wxFileDialog dialog(
 			this, _("Choose the LAS file to import"),
 			_U(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()),
-			_("*.las"), _("LAS files (*.las, "
-						  "*.laz)|*.las;*.LAS;*.laz;*.LAZ|All files (*.*)|*.*"),
+			_("*.las"),
+			_("LAS files (*.las, "
+			  "*.laz)|*.las;*.LAS;*.laz;*.LAZ|All files (*.*)|*.*"),
 			wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
 		if (dialog.ShowModal() != wxID_OK) return;
@@ -2220,7 +2203,8 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 		updateTitle();
 
 		// Typically, LAS scenes have millions of points:
-		mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL(1000);
+		mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL(
+			1000);
 
 		Refresh(false);
 

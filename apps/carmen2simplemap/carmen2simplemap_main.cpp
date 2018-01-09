@@ -32,6 +32,7 @@
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 
@@ -87,11 +88,10 @@ int main(int argc, char** argv)
 				format("Input file doesn't exist: '%s'", input_log.c_str()));
 
 		if (mrpt::system::fileExists(output_file) && !overwrite)
-			throw runtime_error(
-				format(
-					"Output file already exist: '%s' (Use --overwrite to "
-					"override)",
-					output_file.c_str()));
+			throw runtime_error(format(
+				"Output file already exist: '%s' (Use --overwrite to "
+				"override)",
+				output_file.c_str()));
 
 		VERBOSE_COUT << "Input log        : " << input_log << endl;
 		VERBOSE_COUT << "Output map file  : " << output_file
@@ -186,13 +186,12 @@ int main(int argc, char** argv)
 		{
 			mrpt::io::CFileGZOutputStream out_map;
 			if (!out_map.open(output_file, compress_level))
-				throw runtime_error(
-					format(
-						"Error opening for write: '%s'", output_file.c_str()));
+				throw runtime_error(format(
+					"Error opening for write: '%s'", output_file.c_str()));
 
 			cout << "Dumping simplemap object to file...";
 			cout.flush();
-			out_map << theSimpleMap;
+			mrpt::serialization::archiveFrom(out_map) << theSimpleMap;
 			cout << "Done\n";
 			cout.flush();
 		}

@@ -31,7 +31,8 @@ IMPLEMENTS_SERIALIZABLE(Plane, CSerializable, mrpt::pbmap)
 ///*---------------------------------------------------------------
 //						writeToStream
 // ---------------------------------------------------------------*/
-// uint8_t  Plane::serializeGetVersion() const { return XX; } void  Plane::serializeTo(mrpt::serialization::CArchive& out) const
+// uint8_t  Plane::serializeGetVersion() const { return XX; } void
+// Plane::serializeTo(mrpt::serialization::CArchive& out) const
 //{
 //	if (out_Version)
 //		*out_Version = 0;
@@ -76,7 +77,8 @@ IMPLEMENTS_SERIALIZABLE(Plane, CSerializable, mrpt::pbmap)
 ///*---------------------------------------------------------------
 //						readFromStream
 // ---------------------------------------------------------------*/
-// void  Plane::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+// void  Plane::serializeFrom(mrpt::serialization::CArchive& in, uint8_t
+// version)
 //{
 //	switch(version)
 //	{
@@ -131,224 +133,82 @@ IMPLEMENTS_SERIALIZABLE(Plane, CSerializable, mrpt::pbmap)
 //  };
 //}
 
-/*---------------------------------------------------------------
-						writeToStream
- ---------------------------------------------------------------*/
-uint8_t Plane::serializeGetVersion() const { return XX; } void Plane::serializeTo(mrpt::serialization::CArchive& out, int* out_Version) const
+uint8_t Plane::serializeGetVersion() const { return 0; }
+void Plane::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	// cout << "Write plane. Version " << *out_Version << endl;
-	if (out_Version) *out_Version = 0;
-	//	else //if(*out_Version == 0)
-	//	{
-	//		// The data
+	// The data
 	//		out << static_cast<uint32_t>(numObservations);//out <<
 	// uint32_t(numObservations);
 	//		out << areaVoxels;
-	//		out << areaHull;
-	//		out << elongation;
-	//    out << v3normal(0) << v3normal(1) << v3normal(2);
-	//    out << v3center(0) << v3center(1) << v3center(2);
-	//    out << v3PpalDir(0) << v3PpalDir(1) << v3PpalDir(2);
-	//    out << v3colorNrgb(0) << v3colorNrgb(1) << v3colorNrgb(2);
-	//    out << v3colorNrgbDev(0) << v3colorNrgbDev(1) << v3colorNrgbDev(2);
-	//
-	//// out.WriteBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3normal(0),3);
-	//// out.WriteBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3center(0),3);
-	//// out.WriteBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3PpalDir(0),3);
-	////
-	/// out.WriteBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3colorNrgb(0),3);
-	////
-	/// out.WriteBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3colorNrgbDev(0),3);
-	//
-	//    out << (uint32_t)neighborPlanes.size();
-	//    for (std::map<unsigned,unsigned>::const_iterator
-	//    it=neighborPlanes.begin(); it != neighborPlanes.end(); it++)
-	//      out << static_cast<uint32_t>(it->first) <<
-	//      static_cast<uint32_t>(it->second);
-	//
-	//    out << (uint32_t)polygonContourPtr->size();
-	//    for (uint32_t i=0; i < polygonContourPtr->size(); i++)
-	//      out << polygonContourPtr->points[i].x <<
-	//      polygonContourPtr->points[i].y << polygonContourPtr->points[i].z;
-	//
-	//    out << bFullExtent;
-	//    out << bFromStructure;
-	////cout << "Write plane\n";
-	//	}
-	//	else if(*out_Version == 1)
-	else
-	{
-		// The data
-		//		out << static_cast<uint32_t>(numObservations);//out <<
-		// uint32_t(numObservations);
-		//		out << areaVoxels;
-		out << areaHull;
-		out << elongation;
-		out << curvature;
-		out << v3normal(0) << v3normal(1) << v3normal(2);
-		out << v3center(0) << v3center(1) << v3center(2);
-		out << v3PpalDir(0) << v3PpalDir(1) << v3PpalDir(2);
-		out << v3colorNrgb(0) << v3colorNrgb(1) << v3colorNrgb(2);
-		////    out << v3colorNrgbDev(0) << v3colorNrgbDev(1) <<
-		/// v3colorNrgbDev(2);
-		out << dominantIntensity;
-		out << bDominantColor;
+	out << areaHull;
+	out << elongation;
+	out << curvature;
+	out << v3normal(0) << v3normal(1) << v3normal(2);
+	out << v3center(0) << v3center(1) << v3center(2);
+	out << v3PpalDir(0) << v3PpalDir(1) << v3PpalDir(2);
+	out << v3colorNrgb(0) << v3colorNrgb(1) << v3colorNrgb(2);
+	////    out << v3colorNrgbDev(0) << v3colorNrgbDev(1) <<
+	/// v3colorNrgbDev(2);
+	out << dominantIntensity;
+	out << bDominantColor;
 
-		out << hist_H;
-		// cout << "color " << hist_H.size() << endl;
-		//    for (size_t i=0; i < 74; i++){//cout << hist_H[i] << " ";
-		//      out << hist_H[i];}
+	out << hist_H;
+	// cout << "color " << hist_H.size() << endl;
+	//    for (size_t i=0; i < 74; i++){//cout << hist_H[i] << " ";
+	//      out << hist_H[i];}
 
-		out << inliers;
+	out << inliers;
 
-		out << label;
-		out << label_object;
-		out << label_context;
+	out << label;
+	out << label_object;
+	out << label_context;
 
-		//    out.WriteBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3normal(0),3);
-		//    out.WriteBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3center(0),3);
-		//    out.WriteBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3PpalDir(0),3);
-		//    out.WriteBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3colorNrgb(0),3);
-		//    out.WriteBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3colorNrgbDev(0),3);
-
-		// cout << "write neighbors " << neighborPlanes.size() << endl;
-
-		//    out << (uint32_t)neighborPlanes.size();
-		//    for (std::map<unsigned,unsigned>::const_iterator
-		//    it=neighborPlanes.begin(); it != neighborPlanes.end(); it++)
-		//      out << static_cast<uint32_t>(it->first) <<
-		//      static_cast<uint32_t>(it->second);
-
-		out << (uint32_t)polygonContourPtr->size();
-		for (uint32_t i = 0; i < polygonContourPtr->size(); i++)
-			out << polygonContourPtr->points[i].x
-				<< polygonContourPtr->points[i].y
-				<< polygonContourPtr->points[i].z;
-
-		//    out << bFullExtent;
-		//    out << bFromStructure;
-	}
+	out << (uint32_t)polygonContourPtr->size();
+	for (uint32_t i = 0; i < polygonContourPtr->size(); i++)
+		out << polygonContourPtr->points[i].x << polygonContourPtr->points[i].y
+			<< polygonContourPtr->points[i].z;
 }
 
-/*---------------------------------------------------------------
-						readFromStream
- ---------------------------------------------------------------*/
 void Plane::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
 		case 0:
-			//		{
+		{
 			//			// The data
-			//			uint32_t n;
+			uint32_t n;
 			//			in >> n;
 			//			numObservations = (unsigned)n;
 			//			in >> areaVoxels;
-			//			in >> areaHull;
-			//			in >> elongation;
-			//			in >> v3normal(0) >> v3normal(1) >> v3normal(2);
-			//			in >> v3center(0) >> v3center(1) >> v3center(2);
-			//			in >> v3PpalDir(0) >> v3PpalDir(1) >> v3PpalDir(2);
-			//			in >> v3colorNrgb(0) >> v3colorNrgb(1) >>
-			// v3colorNrgb(2);
-			//			in >> v3colorNrgbDev(0) >> v3colorNrgbDev(1) >>
-			// v3colorNrgbDev(2);
-			////
-			/// in.ReadBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3normal[0],sizeof(v3normal[0])*3);
-			////
-			/// in.ReadBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3center[0],sizeof(v3center[0])*3);
-			////
-			/// in.ReadBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3PpalDir[0],sizeof(v3PpalDir[0])*3);
-			////
-			/// in.ReadBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3colorNrgb[0],sizeof(v3colorNrgb[0])*3);
-			////
-			/// in.ReadBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3colorNrgbDev[0],sizeof(v3colorNrgbDev[0])*3);
-			//
-			//			in >> n;
-			//			neighborPlanes.clear();
-			//      for (uint32_t i=0; i < n; i++)
-			//      {
-			//        uint32_t neighbor, commonObs;
-			//        in >> neighbor >> commonObs;
-			//        neighborPlanes[neighbor] = commonObs;
-			//      }
-			//
-			//			in >> n;
-			//			polygonContourPtr->resize(n);
-			//      for (unsigned i=0; i < n; i++)
-			//        in >> polygonContourPtr->points[i].x >>
-			//        polygonContourPtr->points[i].y >>
-			//        polygonContourPtr->points[i].z;
-			//
-			//      in >> bFullExtent;
-			//      in >> bFromStructure;
-			//
-			//		} break;
-			////	case 1:
-			{
-				//			// The data
-				uint32_t n;
-				//			in >> n;
-				//			numObservations = (unsigned)n;
-				//			in >> areaVoxels;
-				in >> areaHull;
-				in >> elongation;
-				in >> curvature;
-				in >> v3normal(0) >> v3normal(1) >> v3normal(2);
-				in >> v3center(0) >> v3center(1) >> v3center(2);
-				in >> v3PpalDir(0) >> v3PpalDir(1) >> v3PpalDir(2);
-				d = -v3normal.dot(v3center);
-				in >> v3colorNrgb(0) >> v3colorNrgb(1) >> v3colorNrgb(2);
-				////			in >> v3colorNrgbDev(0) >> v3colorNrgbDev(1) >>
-				/// v3colorNrgbDev(2);
-				in >> dominantIntensity;
-				in >> bDominantColor;
+			in >> areaHull;
+			in >> elongation;
+			in >> curvature;
+			in >> v3normal(0) >> v3normal(1) >> v3normal(2);
+			in >> v3center(0) >> v3center(1) >> v3center(2);
+			in >> v3PpalDir(0) >> v3PpalDir(1) >> v3PpalDir(2);
+			d = -v3normal.dot(v3center);
+			in >> v3colorNrgb(0) >> v3colorNrgb(1) >> v3colorNrgb(2);
+			////			in >> v3colorNrgbDev(0) >> v3colorNrgbDev(1) >>
+			/// v3colorNrgbDev(2);
+			in >> dominantIntensity;
+			in >> bDominantColor;
 
-				in >> hist_H;
-				//      hist_H.resize(74);
-				//      for (size_t i=0; i < 74; i++)
-				//        in >> hist_H[i];
+			in >> hist_H;
 
-				in >> inliers;
+			in >> inliers;
 
-				in >> label;
-				in >> label_object;
-				in >> label_context;
-				////cout << "Read Nrgb color \n";// << v3colorNrgb.transpose()
-				////
-				////cout << "Read color histogram\n";
-				////
-				/// in.ReadBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3normal[0],sizeof(v3normal[0])*3);
-				////
-				/// in.ReadBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3center[0],sizeof(v3center[0])*3);
-				////
-				/// in.ReadBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3PpalDir[0],sizeof(v3PpalDir[0])*3);
-				////
-				/// in.ReadBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3colorNrgb[0],sizeof(v3colorNrgb[0])*3);
-				////
-				/// in.ReadBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3colorNrgbDev[0],sizeof(v3colorNrgbDev[0])*3);
-				//
-				//			in >> n;
-				//			neighborPlanes.clear();
-				//      for (uint32_t i=0; i < n; i++)
-				//      {
-				//        uint32_t neighbor, commonObs;
-				//        in >> neighbor >> commonObs;
-				//        neighborPlanes[neighbor] = commonObs;
-				//      }
+			in >> label;
+			in >> label_object;
+			in >> label_context;
 
-				in >> n;
-				//        cout << "neighbors " << n << endl;
-				polygonContourPtr->resize(n);
-				for (unsigned i = 0; i < n; i++)
-					in >> polygonContourPtr->points[i].x >>
-						polygonContourPtr->points[i].y >>
-						polygonContourPtr->points[i].z;
-
-				//      in >> bFullExtent;
-				//      in >> bFromStructure;
-			}
-			break;
+			in >> n;
+			polygonContourPtr->resize(n);
+			for (unsigned i = 0; i < n; i++)
+				in >> polygonContourPtr->points[i].x >>
+					polygonContourPtr->points[i].y >>
+					polygonContourPtr->points[i].z;
+		}
+		break;
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	};
@@ -385,7 +245,7 @@ void Plane::forcePtsLayOnPlane()
 }
 
 /** \brief Compute the area of a 2D planar polygon patch
-  */
+ */
 float Plane::compute2DPolygonalArea()
 {
 	int k0, k1, k2;
@@ -421,7 +281,7 @@ float Plane::compute2DPolygonalArea()
 }
 
 /** \brief Compute the patch's convex-hull area and mass center
-  */
+ */
 void Plane::computeMassCenterAndArea()
 {
 	int k0, k1, k2;
@@ -809,7 +669,7 @@ void Plane::calcMainColor()
  * mPointHull serves to calculate the convex hull of a set of points in 2D,
  * which are defined by its position (x,y)
  * and an identity id
-*/
+ */
 struct mPointHull
 {
 	float x, y;
@@ -1145,9 +1005,9 @@ bool Plane::isPlaneNearby(Plane& plane_nearby, const float distThreshold)
 }
 
 /*! Returns true if the two input planes represent the same physical surface for
-* some given angle and distance thresholds.
-* If the planes are the same they are merged in this and the function returns
-* true. Otherwise it returns false.*/
+ * some given angle and distance thresholds.
+ * If the planes are the same they are merged in this and the function returns
+ * true. Otherwise it returns false.*/
 bool Plane::isSamePlane(
 	Plane& plane_nearby, const float& cosAngleThreshold,
 	const float& parallelDistThres, const float& proxThreshold)
@@ -1216,9 +1076,9 @@ bool Plane::hasSimilarDominantColor(Plane& plane, const float colorThreshold)
 }
 
 /*! Merge the input "same_plane_patch" into "this".
-*  Recalculate center, normal vector, area, inlier points (filtered), convex
-* hull, etc.
-*/
+ *  Recalculate center, normal vector, area, inlier points (filtered), convex
+ * hull, etc.
+ */
 void Plane::mergePlane(Plane& same_plane_patch)
 {
 	// Update normal and center

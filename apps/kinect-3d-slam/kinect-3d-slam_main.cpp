@@ -46,6 +46,7 @@ using namespace mrpt::math;
 using namespace mrpt::gui;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
+using namespace mrpt::system;
 using namespace mrpt::opengl;
 using namespace std;
 
@@ -243,8 +244,7 @@ void Test_Kinect()
 	gl_points_map->setPointSize(2.0);
 
 	const double aspect_ratio =
-		480.0 /
-		640.0;  // kinect.rows() / double( kinect.cols() );
+		480.0 / 640.0;  // kinect.rows() / double( kinect.cols() );
 
 	mrpt::opengl::CSetOfObjects::Ptr gl_cur_cam_corner =
 		mrpt::opengl::stock_objects::CornerXYZSimple(0.4f, 4);
@@ -393,12 +393,10 @@ void Test_Kinect()
 						lastVisibleFeats.find(itCur->first);
 					if (itFound != lastVisibleFeats.end())
 					{
-						corrs.push_back(
-							TMatchingPair(
-								itFound->first, itCur->first, itFound->second.x,
-								itFound->second.y, itFound->second.z,
-								itCur->second.x, itCur->second.y,
-								itCur->second.z));
+						corrs.push_back(TMatchingPair(
+							itFound->first, itCur->first, itFound->second.x,
+							itFound->second.y, itFound->second.z,
+							itCur->second.x, itCur->second.y, itCur->second.z));
 					}
 				}
 
@@ -629,9 +627,9 @@ void Test_Kinect()
 
 		win3D.get3DSceneAndLock();
 		win3D.addTextMessage(
-			2, -30, format(
-						"'s':save point cloud, 'r': reset, 'o'/'i': zoom "
-						"out/in, mouse: orbit 3D, ESC: quit"),
+			2, -30,
+			format("'s':save point cloud, 'r': reset, 'o'/'i': zoom "
+				   "out/in, mouse: orbit 3D, ESC: quit"),
 			TColorf(1, 1, 1), 110, MRPT_GLUT_BITMAP_HELVETICA_12);
 		win3D.addTextMessage(
 			2, -50, str_status, TColorf(1, 1, 1), 111,

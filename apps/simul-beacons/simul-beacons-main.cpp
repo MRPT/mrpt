@@ -18,11 +18,15 @@
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/poses/CPoint3D.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/random.h>
 
 using namespace mrpt;
 using namespace mrpt::system;
+using namespace mrpt::math;
+using namespace mrpt::io;
 using namespace mrpt::poses;
+using namespace mrpt::config;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::random;
@@ -56,7 +60,7 @@ int main(int argc, char** argv)
 		}
 
 		string INI_FILENAME = std::string(argv[1]);
-		ASSERT_FILE_EXISTS_(INI_FILENAME)
+		ASSERT_FILE_EXISTS_(INI_FILENAME);
 
 		CConfigFile ini(INI_FILENAME);
 
@@ -129,12 +133,12 @@ int main(int argc, char** argv)
 		for (i = 0; i < nBeacons; i++)
 		{
 			CBeacon b;
-			CPoint3D pt3D;
+			TPoint3D pt3D;
 
 			// Random coordinates:
-			pt3D.x(getRandomGenerator().drawUniform(min_x, max_x));
-			pt3D.y(getRandomGenerator().drawUniform(min_y, max_y));
-			pt3D.z(getRandomGenerator().drawUniform(min_z, max_z));
+			pt3D.x = getRandomGenerator().drawUniform(min_x, max_x);
+			pt3D.y = getRandomGenerator().drawUniform(min_y, max_y);
+			pt3D.z = getRandomGenerator().drawUniform(min_z, max_z);
 
 			// Add:
 			b.m_typePDF = CBeacon::pdfMonteCarlo;
@@ -242,7 +246,7 @@ int main(int argc, char** argv)
 			acts.insert(act);
 
 			// Save:
-			fil << SF << acts;
+			mrpt::serialization::archiveFrom(fil) << SF << acts;
 
 			// Next pose:
 			realPose = realPose + incPose;

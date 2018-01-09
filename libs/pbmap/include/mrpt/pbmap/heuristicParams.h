@@ -82,7 +82,7 @@ struct config_heuristics
 	/*! Load the PbMap registration thresholds from an .ini file */
 	void load_params(const std::string& config_file_name)
 	{
-		ASSERT_FILE_EXISTS_(config_file_name)
+		ASSERT_FILE_EXISTS_(config_file_name);
 		mrpt::config::CConfigFile config_file(config_file_name);
 
 		// global
@@ -155,7 +155,7 @@ struct config_heuristics
 		cout << "height_threshold " << height_threshold << endl;
 	};
 };
-}
-}  // End of namespaces
+}  // namespace pbmap
+}  // namespace mrpt
 
 #endif

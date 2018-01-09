@@ -666,7 +666,7 @@ CMatrixDouble getAlignment(const CMatrixDouble& matched_planes)
 
 // Ransac functions to detect outliers in the plane matching
 void ransacPlaneAlignment_fit(
-	const CMatrixDouble& planeCorresp, const mrpt::std::vector<size_t>& useIndices,
+	const CMatrixDouble& planeCorresp, const std::vector<size_t>& useIndices,
 	vector<CMatrixDouble>& fitModels)
 //        vector< Eigen::Matrix4f > &fitModels )
 {
@@ -697,9 +697,9 @@ void ransacPlaneAlignment_fit(
 void ransac3Dplane_distance(
 	const CMatrixDouble& planeCorresp, const vector<CMatrixDouble>& testModels,
 	const double distanceThreshold, unsigned int& out_bestModelIndex,
-	mrpt::std::vector<size_t>& out_inlierIndices)
+	std::vector<size_t>& out_inlierIndices)
 {
-	ASSERT_(testModels.size() == 1)
+	ASSERT_(testModels.size() == 1);
 	out_bestModelIndex = 0;
 	const CMatrixDouble& M = testModels[0];
 
@@ -709,7 +709,7 @@ void ransac3Dplane_distance(
 	Eigen::Vector3f translation;
 	translation << M(0, 3), M(1, 3), M(2, 3);
 
-	ASSERT_(M.rows() == 4 && M.cols() == 4)
+	ASSERT_(M.rows() == 4 && M.cols() == 4);
 
 	const size_t N = planeCorresp.cols();
 	out_inlierIndices.clear();
@@ -734,11 +734,11 @@ void ransac3Dplane_distance(
 }
 
 /** Return "true" if the selected points are a degenerate (invalid) case.
-  */
+ */
 bool ransac3Dplane_degenerate(
-	const CMatrixDouble& planeCorresp, const mrpt::std::vector<size_t>& useIndices)
+	const CMatrixDouble& planeCorresp, const std::vector<size_t>& useIndices)
 {
-	ASSERT_(useIndices.size() == 3)
+	ASSERT_(useIndices.size() == 3);
 
 	const Eigen::Vector3f n_1 = Eigen::Vector3f(
 		planeCorresp(0, useIndices[0]), planeCorresp(1, useIndices[0]),
@@ -788,7 +788,7 @@ Eigen::Matrix4f ConsistencyTest::estimatePoseRANSAC(
 	}
 	//  cout << "Size " << matched_planes.size() << " " << size(1) << endl;
 
-	mrpt::std::vector<size_t> inliers;
+	std::vector<size_t> inliers;
 	//  Eigen::Matrix4f best_model;
 	CMatrixDouble best_model;
 
@@ -895,7 +895,7 @@ Eigen::Matrix4f ConsistencyTest::estimatePoseRANSAC(
 //  */
 // bool ransac3Dplane_degenerate(
 //	const CMatrixDouble &allData,
-//	const mrpt::std::vector<size_t> &useIndices )
+//	const std::vector<size_t> &useIndices )
 //{
 //	return false;
 //}
