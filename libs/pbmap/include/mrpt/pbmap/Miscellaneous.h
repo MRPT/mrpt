@@ -27,7 +27,7 @@
 #include <vector>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
-#include <mrpt/math.h>
+#include <mrpt/math/ops_containers.h>
 
 namespace mrpt
 {
@@ -344,8 +344,8 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T>& v)
 	std::copy(v.begin(), v.end(), std::ostream_iterator<T>(os, " "));
 	return os;
 }
-}
-}  // End of namespaces
+}  // namespace pbmap
+}  // namespace mrpt
 
 #endif
 

@@ -263,7 +263,7 @@ class slamdemoFrame : public wxFrame
 	mrpt::obs::CObservationBearingRange m_lastObservation;
 	/** Ground truth of the indices in the landmark map of the sensed landmarks.
 	 */
-	mrpt::std::vector<size_t> m_lastObservation_GT_indices;
+	std::vector<size_t> m_lastObservation_GT_indices;
 
 	/** Reconstructed map estimated_map_idx -> real_map_idx for the landmarks.
 		 Used to evaluate the performance of data-association (D.A.)

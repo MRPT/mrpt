@@ -860,7 +860,7 @@ void ransacHomography_distance(
 template <typename T>
 bool ransacHomography_degenerate(
 	const CMatrixTemplateNumeric<T>& allData,
-	const mrpt::std::vector<size_t>& useIndices)
+	const std::vector<size_t>& useIndices)
 {
 	// double r_a, r_b, r_c, dist;
 	// r_a = ( allData.get_unsafe( 3, useIndices[0] ) - allData.get_unsafe( 3,
@@ -909,10 +909,10 @@ void ransac_homographies(
 	// ---------------------------------------------
 	// For each plane:
 	// ---------------------------------------------
-	mrpt::std::vector<size_t> other_inliers, other_inliers2;
+	std::vector<size_t> other_inliers, other_inliers2;
 	for (;;)
 	{
-		mrpt::std::vector<size_t> this_best_inliers;
+		std::vector<size_t> this_best_inliers;
 		CMatrixTemplateNumeric<double> this_best_model;
 
 		math::RANSAC_Template<double>::execute(
@@ -938,7 +938,7 @@ void ransac_homographies(
 			}
 			else
 			{
-				mrpt::std::vector<size_t>
+				std::vector<size_t>
 					this_best_inliers_r;  // Restored Index of Inliers
 				this_best_inliers_r.resize(this_best_inliers.size());
 				unsigned int j = 0;

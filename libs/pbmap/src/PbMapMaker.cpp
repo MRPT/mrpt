@@ -33,6 +33,7 @@
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/pbmap/PbMapMaker.h>
 
+#include <mutex>
 #include <iostream>
 
 //#define _VERBOSE 0
@@ -169,8 +170,8 @@ void readConfigFile(const string& config_file_name)
 	configPbMap.path_save_registered_cloud = config_file.read_string(
 		"serialize", "path_save_registered_cloud",
 		"/home/edu/Projects/PbMaps/PbMaps.txt");
-// cout << "path_save_registered_cloud " <<
-// configPbMap.path_save_registered_cloud << endl;
+	// cout << "path_save_registered_cloud " <<
+	// configPbMap.path_save_registered_cloud << endl;
 
 #ifdef _VERBOSE
 	cout << "readConfigFile configPbMap.ini dist_threshold "
@@ -185,7 +186,7 @@ PbMapMaker::PbMapMaker(const string& config_file)
 	  m_pbmaker_finished(false)
 {
 	// Load parameters
-	ASSERT_FILE_EXISTS_(config_file)
+	ASSERT_FILE_EXISTS_(config_file);
 	readConfigFile(config_file);
 
 	mpPlaneInferInfo = new PlaneInferredInfo(mPbMap);
@@ -457,8 +458,10 @@ void PbMapMaker::watchProperties(
 			if (i == observedPlane.id) continue;
 
 			Plane& prevPlane = mPbMap.vPlanes[i];
-//    cout << "color prev plane " << prevPlane.v3colorNrgb.transpose() << " " <<
-//    prevPlane.dominantIntensity << " " << prevPlane.bDominantColor << endl;
+			//    cout << "color prev plane " <<
+			//    prevPlane.v3colorNrgb.transpose() << " " <<
+			//    prevPlane.dominantIntensity << " " << prevPlane.bDominantColor
+			//    << endl;
 
 #if WATCH_UNARY
 			//    tCondition = pcl::getTime();
@@ -544,7 +547,7 @@ void PbMapMaker::watchProperties(
 				rejectHistH_F++;
 			else
 				acceptHistH_F++;
-// cout << "finish reject conditions\n";
+				// cout << "finish reject conditions\n";
 
 #endif
 		}
@@ -557,7 +560,7 @@ void PbMapMaker::watchProperties(
 //    observedPlane.prog_v3PpalDir.push_back(observedPlane.v3PpalDir);
 #endif
 
-// cout << "Update progression\n";
+		// cout << "Update progression\n";
 
 #if WATCH_COLOR
 		observedPlane.prog_C1C2C3.push_back(observedPlane.v3colorC1C2C3);
@@ -701,8 +704,8 @@ void PbMapMaker::detectPlanesCloud(
 	mps.setInputNormals(normal_cloud);
 	mps.setInputCloud(pointCloudPtr_arg2);
 
-	std::vector<pcl::PlanarRegion<PointT>,
-				aligned_allocator<pcl::PlanarRegion<PointT>>>
+	std::vector<
+		pcl::PlanarRegion<PointT>, aligned_allocator<pcl::PlanarRegion<PointT>>>
 		regions;
 	std::vector<pcl::ModelCoefficients> model_coefficients;
 	std::vector<pcl::PointIndices> inlier_indices;
@@ -1101,11 +1104,11 @@ void PbMapMaker::detectPlanesCloud(
 		}
 	}
 
-//  if(frameQueue.size() == 12)
-//   cout << "Same plane? " << areSamePlane(mPbMap.vPlanes[2],
-//   mPbMap.vPlanes[9], configPbMap.max_cos_normal,
-//   configPbMap.max_dist_center_plane, configPbMap.proximity_threshold) <<
-//   endl;
+	//  if(frameQueue.size() == 12)
+	//   cout << "Same plane? " << areSamePlane(mPbMap.vPlanes[2],
+	//   mPbMap.vPlanes[9], configPbMap.max_cos_normal,
+	//   configPbMap.max_dist_center_plane, configPbMap.proximity_threshold) <<
+	//   endl;
 
 #ifdef _VERBOSE
 	cout << "\n\tobservedPlanes: ";
@@ -1492,7 +1495,7 @@ void PbMapMaker::viz_cb(pcl::visualization::PCLVisualizer& viz)
 						//          red[i%10], grn[i%10], blu[i%10]);
 						////
 						/// pcl::visualization::PointCloudColorHandlerCustom
-						///<PointT> color (plane_i.planePointCloudPtr,
+						///< PointT> color (plane_i.planePointCloudPtr,
 						/// red[plane_i.semanticGroup%10],
 						/// grn[plane_i.semanticGroup%10],
 						/// blu[plane_i.semanticGroup%10]);

@@ -17,6 +17,8 @@
 #include <mrpt/pbmap.h>
 
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <pcl/io/io.h>
 #include <pcl/io/pcd_io.h>
 
@@ -36,44 +38,27 @@ PbMap::PbMap()
 {
 }
 
-/*---------------------------------------------------------------
-						writeToStream
- ---------------------------------------------------------------*/
-uint8_t PbMap::serializeGetVersion() const { return XX; } void PbMap::serializeTo(mrpt::serialization::CArchive& out, int* out_Version) const
+uint8_t PbMap::serializeGetVersion() const { return 0; }
+void PbMap::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	// cout << "Write PbMap. Version " << *out_Version << endl;
-	if (out_Version)
-	{  // cout << "There is version\n";
-		*out_Version = 0;
-	}
-	else
-	{
-		// Write label
-		out << label;
+	// Write label
+	out << label;
 
-		// The data
-		uint32_t n = uint32_t(vPlanes.size());
-		out << n;
-		//  cout << "Write " << n << " planes\n";
-		for (uint32_t i = 0; i < n; i++) out << vPlanes[i];
-	}
-	// cout << "Exit Write PbMap. " << endl;
+	// The data
+	uint32_t n = uint32_t(vPlanes.size());
+	out << n;
+	//  cout << "Write " << n << " planes\n";
+	for (uint32_t i = 0; i < n; i++) out << vPlanes[i];
 }
 
-/*---------------------------------------------------------------
-						readFromStream
- ---------------------------------------------------------------*/
 void PbMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
 		case 0:
 		{
-			//      cout << "Read planes\n";
-
 			// Read label
 			in >> label;
-			//      cout << "PbMap label " << label << endl;
 
 			// Delete previous content:
 			vPlanes.clear();
@@ -85,14 +70,11 @@ void PbMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			vPlanes.resize(n);
 			for (uint32_t i = 0; i < n; i++)
 			{
-				//      cout << "plane\n";
-
 				Plane pl;
 				pl.id = i;
 				in >> pl;
 				vPlanes[i] = pl;
 			}
-			//        cout << "Finish reading planes\n";
 		}
 		break;
 		default:
@@ -102,17 +84,12 @@ void PbMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 
 void PbMap::savePbMap(string filePath)
 {
-	//  boost::mutex::scoped_lock lock (mtx_pbmap_busy);
-
-	// cout << "PbMap::savePbMap\n";
 	// Serialize PbMap
-	mrpt::io::CFileGZOutputStream serialize_pbmap(
-		filePath + "/planes.pbmap");
+	mrpt::io::CFileGZOutputStream f(filePath + "/planes.pbmap");
+	auto serialize_pbmap = mrpt::serialization::archiveFrom(f);
 	serialize_pbmap << *this;
-	serialize_pbmap.close();
+	f.close();
 
-	// cout << "PbMap::save cloud\n";
-	// Save reconstructed point cloud
 	pcl::io::savePCDFile(filePath + "/cloud.pcd", *this->globalMapPtr);
 }
 
@@ -122,19 +99,18 @@ void PbMap::loadPbMap(std::string filePath)
 	pcl::PCDReader reader;
 	string PbMapFile = filePath;
 	reader.read(PbMapFile.append("/cloud.pcd"), *(this->globalMapPtr));
-	//  cout << "Size " << globalMapPtr->size() << " " << globalMapPtr->empty()
-	//  << endl;
 
 	// Load Previous Map
 	PbMapFile = filePath;
-	mrpt::io::CFileGZInputStream serialized_pbmap;
-	if (serialized_pbmap.open(PbMapFile.append("/planes.pbmap")))
+	mrpt::io::CFileGZInputStream f;
+	if (f.open(PbMapFile.append("/planes.pbmap")))
 	{
+		auto serialized_pbmap = mrpt::serialization::archiveFrom(f);
 		serialized_pbmap >> *this;
 	}
 	else
 		cout << "Error: cannot open " << PbMapFile << "\n";
-	serialized_pbmap.close();
+	f.close();
 
 	//  std::cout << "Load PbMap from " << filePath << "\n";
 }

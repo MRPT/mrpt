@@ -32,6 +32,7 @@
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CText.h>
 #include <mrpt/opengl/stock_objects.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include "imgs/main_icon.xpm"
 #include "../wx-common/mrpt_logo.xpm"
@@ -164,9 +165,8 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(
 	SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE));
 	{
 		wxIcon FrameIcon;
-		FrameIcon.CopyFromBitmap(
-			wxArtProvider::GetBitmap(
-				wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")), wxART_FRAME_ICON));
+		FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(
+			wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")), wxART_FRAME_ICON));
 		SetIcon(FrameIcon);
 	}
 	FlexGridSizer1 = new wxFlexGridSizer(1, 2, 0, 0);
@@ -1055,7 +1055,7 @@ void robotic_arm_kinematicsFrame::OnLoadBinary(wxCommandEvent& event)
 	const std::string fil = std::string(sFil.mb_str());
 
 	mrpt::io::CFileGZInputStream f(fil);
-	f >> m_robot;
+	mrpt::serialization::archiveFrom(f) >> m_robot;
 
 	this->RegenerateDOFPanels();
 	this->UpdateListLinks();
@@ -1084,7 +1084,7 @@ void robotic_arm_kinematicsFrame::OnSaveBinary(wxCommandEvent& event)
 	const std::string fil = std::string(sFil.mb_str());
 
 	mrpt::io::CFileOutputStream f(fil);
-	f << m_robot;
+	mrpt::serialization::archiveFrom(f) << m_robot;
 
 	WX_END_TRY
 }

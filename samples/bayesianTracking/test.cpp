@@ -144,7 +144,7 @@ class CRangeBearing : public mrpt::bayes::CKalmanFilterCapable<
 	 * are NO cross-covariances between them.
 	  */
 	void OnGetObservationsAndDataAssociation(
-		vector_KFArray_OBS& out_z, mrpt::std::vector<int>& out_data_association,
+		vector_KFArray_OBS& out_z, std::vector<int>& out_data_association,
 		const vector_KFArray_OBS& in_all_predictions, const KFMatrix& in_S,
 		const std::vector<size_t>& in_lm_indices_in_S, const KFMatrix_OxO& in_R);
 
@@ -511,7 +511,7 @@ void CRangeBearing::OnGetObservationNoise(KFMatrix_OxO& R) const
 }
 
 void CRangeBearing::OnGetObservationsAndDataAssociation(
-	vector_KFArray_OBS& out_z, mrpt::std::vector<int>& out_data_association,
+	vector_KFArray_OBS& out_z, std::vector<int>& out_data_association,
 	const vector_KFArray_OBS& in_all_predictions, const KFMatrix& in_S,
 	const std::vector<size_t>& in_lm_indices_in_S, const KFMatrix_OxO& in_R)
 {

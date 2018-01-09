@@ -111,7 +111,7 @@ class ConsistencyTest
 	//
 	// bool ransac3Dplane_degenerate( const mrpt::math::CMatrixFloat
 	// &planeCorresp,
-	//                                const mrpt::std::vector<size_t> &useIndices );
+	//                                const std::vector<size_t> &useIndices );
 	//
 	// void TestRANSAC();
 };

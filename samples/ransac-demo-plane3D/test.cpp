@@ -89,7 +89,7 @@ void ransac3Dplane_distance(
 /** Return "true" if the selected points are a degenerate (invalid) case.
   */
 bool ransac3Dplane_degenerate(
-	const CMatrixDouble& allData, const mrpt::std::vector<size_t>& useIndices)
+	const CMatrixDouble& allData, const std::vector<size_t>& useIndices)
 {
 	return false;
 }
