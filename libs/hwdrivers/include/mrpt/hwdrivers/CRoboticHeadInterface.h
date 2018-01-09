@@ -59,7 +59,7 @@ class CRoboticHeadInterface : public mrpt::system::COutputLogger
    protected:
 	/** Loads specific configuration for the device from a given source of
 	 * configuration parameters, for example, an ".ini" file,
-	  *  loading from the section "[iniSection]" (see utils::CConfigFileBase and
+	  *  loading from the section "[iniSection]" (see config::CConfigFileBase and
 	 * derived classes)
 	  *  See hwdrivers::CSonarSRF10 for the possible parameters
 	  */

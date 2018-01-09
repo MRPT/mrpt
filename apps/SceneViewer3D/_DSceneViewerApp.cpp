@@ -24,6 +24,7 @@ std::string global_fileToOpen;
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/system/filesystem.h>
 using namespace mrpt;
+using namespace mrpt::config;
 
 // The configuration file:
 CConfigFile* iniFile = nullptr;

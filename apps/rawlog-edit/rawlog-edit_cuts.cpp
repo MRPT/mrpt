@@ -14,6 +14,7 @@ using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::rawlogtools;
 using namespace std;
+using namespace mrpt::io;
 
 // ======================================================================
 //		op_cut
@@ -31,7 +32,7 @@ DECLARE_OP_FUNCTION(op_cut)
 	   public:
 		CRawlogProcessor_Cut(
 			mrpt::io::CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
-			bool verbose, CFileGZOutputStream& out_rawlog)
+			bool verbose, mrpt::io::CFileGZOutputStream& out_rawlog)
 			: CRawlogProcessorFilterObservations(
 				  in_rawlog, cmdline, verbose, out_rawlog),
 			  m_from_index(0),
@@ -110,7 +111,7 @@ DECLARE_OP_FUNCTION(op_cut)
 	// ---------------------------------
 	TOutputRawlogCreator outrawlog;
 	CRawlogProcessor_Cut proc(
-		in_rawlog, cmdline, verbose, outrawlog.out_rawlog);
+		in_rawlog, cmdline, verbose, outrawlog.out_rawlog_io);
 	proc.doProcessRawlog();
 
 	// Dump statistics:

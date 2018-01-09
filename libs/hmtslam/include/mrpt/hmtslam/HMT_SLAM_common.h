@@ -103,18 +103,18 @@ class THypothesisIDSet : public mrpt::serialization::CSerializable,
 /** A class for storing a sequence of arcs (a path).
   * \sa CHMTSLAM
   */
-class TArcList : public mrpt::utils::list_searchable<
+class TArcList : public mrpt::containers::list_searchable<
 					 std::shared_ptr<mrpt::hmtslam::CHMHMapArc>>
 {
    private:
-	typedef mrpt::utils::list_searchable<
+	typedef mrpt::containers::list_searchable<
 		std::shared_ptr<mrpt::hmtslam::CHMHMapArc>>
 		BASE;
 
    public:
 	void debugDump();
-	void read(utils::CStream& in);
-	void write(utils::CStream& out) const;
+	void read(mrpt::serialization::CArchive& in);
+	void write(mrpt::serialization::CArchive& out) const;
 };
 
 }  // End of namespace

@@ -14,6 +14,7 @@ using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::rawlogtools;
 using namespace std;
+using namespace mrpt::io;
 
 // ======================================================================
 //		op_list_timestamps

@@ -15,7 +15,6 @@
 
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/hmtslam/CMHPropertiesValuesList.h>
-#include <mrpt/containers/CTypeSelector.h>
 #include <map>
 
 namespace mrpt
@@ -142,7 +141,7 @@ class CHMHMapNode : public mrpt::serialization::CSerializable
   * \sa CHMTSLAM
   */
 typedef std::map<CHMHMapNode::TNodeID, std::shared_ptr<CHMHMapNode>> TNodeList;
-typedef mrpt::utils::list_searchable<CHMHMapNode::TNodeID> TNodeIDList;
+typedef mrpt::containers::list_searchable<CHMHMapNode::TNodeID> TNodeIDList;
 typedef std::set<CHMHMapNode::TNodeID> TNodeIDSet;
 typedef std::pair<CHMHMapNode::TNodeID, CHMHMapNode::TNodeID> TPairNodeIDs;
 

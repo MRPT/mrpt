@@ -14,6 +14,7 @@
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
+#include <mrpt/serialization/CArchive.h>
 
 // Aparently, TCLAP headers can't be included in more than one source file
 //  or duplicated linking symbols appear! -> Use forward declarations instead:
@@ -69,8 +70,9 @@ class CRawlogProcessor
 		m_timParse.Tic();
 
 		// Parse the entire rawlog:
+		auto arch = mrpt::serialization::archiveFrom(m_in_rawlog);
 		while (mrpt::obs::CRawlog::getActionObservationPairOrObservation(
-			m_in_rawlog, actions, SF, obs, m_rawlogEntry))
+			arch, actions, SF, obs, m_rawlogEntry))
 		{
 			// Abort if the user presses ESC:
 			if (mrpt::system::os::kbhit())
@@ -187,7 +189,7 @@ class CRawlogProcessorOnEachObservation : public CRawlogProcessor
 				break;  // shouldn't...
 
 			// Process "obs_indiv":
-			ASSERT_(obs_indiv)
+			ASSERT_(obs_indiv);
 			if (!processOneObservation(obs_indiv)) return false;
 		}
 
@@ -209,7 +211,7 @@ class CRawlogProcessorFilterObservations
 	: public CRawlogProcessorOnEachObservation
 {
    public:
-	mrpt::io::CFileGZOutputStream& m_out_rawlog;
+	mrpt::serialization::CArchive& m_out_rawlog;
 	size_t m_entries_removed, m_entries_parsed;
 	/** Set to true to indicate that we are sure we don't have to keep on
 	 * reading. */
@@ -219,7 +221,7 @@ class CRawlogProcessorFilterObservations
 		mrpt::io::CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
 		bool verbose, mrpt::io::CFileGZOutputStream& out_rawlog)
 		: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, verbose),
-		  m_out_rawlog(out_rawlog),
+		  m_out_rawlog(mrpt::serialization::archiveFrom(out_rawlog)),
 		  m_entries_removed(0),
 		  m_entries_parsed(0),
 		  m_we_are_done_with_this_rawlog(false)
@@ -251,7 +253,7 @@ class CRawlogProcessorFilterObservations
 	{
 		if (actions)
 		{
-			ASSERT_(actions && SF)
+			ASSERT_(actions && SF);
 			// Remove from SF those observations freed:
 			mrpt::obs::CSensoryFrame::iterator it = SF->begin();
 			while (it != SF->end())

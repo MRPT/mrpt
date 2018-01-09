@@ -17,6 +17,7 @@ using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::rawlogtools;
 using namespace std;
+using namespace mrpt::io;
 
 // ======================================================================
 //		op_rename_externals
@@ -195,11 +196,11 @@ DECLARE_OP_FUNCTION(op_rename_externals)
 			mrpt::obs::CSensoryFrame::Ptr& SF,
 			mrpt::obs::CObservation::Ptr& obs)
 		{
-			ASSERT_((actions && SF) || obs)
+			ASSERT_((actions && SF) || obs);
 			if (actions)
-				outrawlog.out_rawlog << actions << SF;
+				(*outrawlog.out_rawlog) << actions << SF;
 			else
-				outrawlog.out_rawlog << obs;
+				(*outrawlog.out_rawlog) << obs;
 		}
 	};
 

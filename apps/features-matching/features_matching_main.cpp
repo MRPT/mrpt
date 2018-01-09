@@ -12,9 +12,15 @@
 #include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/math/data_utils.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/containers/copy_container_typecasting.h>
 
 using namespace mrpt::math;
 using namespace mrpt::gui;
+using namespace mrpt::img;
+using namespace mrpt::system;
+using namespace mrpt::serialization;
+using namespace mrpt::io;
 using namespace mrpt::vision;
 using namespace mrpt;
 using namespace std;
@@ -128,7 +134,7 @@ bool DemoFeatures()
 	{
 		CMemoryStream buf;
 		buf.assignMemoryNotOwn(sample_image1, sizeof(sample_image1));
-		buf >> img1;
+		archiveFrom(buf) >> img1;
 	}
 
 	if (!file2.empty())
@@ -140,7 +146,7 @@ bool DemoFeatures()
 	{
 		CMemoryStream buf;
 		buf.assignMemoryNotOwn(sample_image2, sizeof(sample_image2));
-		buf >> img2;
+		archiveFrom(buf) >> img2;
 	}
 
 	// img2.rotateImage(DEG2RAD(20),img2.getWidth()/2,img2.getHeight()/2);
@@ -371,10 +377,8 @@ bool DemoFeatures()
 			case descSIFT:
 			{
 				vector<float> v1, v2;
-				mrpt::containers::metaprogramming::copy_container_typecasting(
-					feats1[i1]->descriptors.SIFT, v1);
-				mrpt::containers::metaprogramming::copy_container_typecasting(
-					feats2[min_dist_idx]->descriptors.SIFT, v2);
+				mrpt::containers::copy_container_typecasting(feats1[i1]->descriptors.SIFT, v1);
+				mrpt::containers::copy_container_typecasting(feats2[min_dist_idx]->descriptors.SIFT, v2);
 				winptrPlot_descr1->plot(v1);
 				winptrPlot_descr2->plot(v2);
 				winptrPlot_descr1->axis_fit();

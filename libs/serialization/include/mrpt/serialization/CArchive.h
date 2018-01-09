@@ -380,22 +380,21 @@ class CArchive
 // reference binding errors.
 #define DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(T)  \
 	CArchive& operator<<(CArchive& out, const T a); \
-	CArchive& operator>>(CArchive& in, T& a);
+	CArchive& operator>>(CArchive& in, T& a)
 
 // Definitions:
-DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(
-	bool) DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(uint8_t)
-	DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(
-		int8_t) DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(uint16_t)
-		DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(int16_t)
-			DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(uint32_t)
-				DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(int32_t)
-					DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(uint64_t)
-						DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(int64_t)
-							DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(float)
-								DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(double)
-									DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(
-										long double)
+DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(bool);
+DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(uint8_t);
+DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(int8_t);
+DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(uint16_t);
+DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(int16_t);
+DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(uint32_t);
+DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(int32_t);
+DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(uint64_t);
+DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(int64_t);
+DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(float);
+DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(double);
+DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(long double);
 
 #define MRPT_READ_POD(_STREAM, _VARIABLE)                                    \
 	do                                                                       \

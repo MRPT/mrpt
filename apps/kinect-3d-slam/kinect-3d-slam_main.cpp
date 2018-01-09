@@ -41,9 +41,11 @@ accurate.
 using namespace mrpt;
 using namespace mrpt::vision;
 using namespace mrpt::hwdrivers;
+using namespace mrpt::img;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::gui;
+using namespace mrpt::tfest;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::system;
@@ -300,7 +302,7 @@ void Test_Kinect()
 			last_obs = possiblyNewObs;
 
 			// Feature tracking -------------------------------------------
-			ASSERT_(last_obs->hasIntensityImage)
+			ASSERT_(last_obs->hasIntensityImage);
 
 			CImage theImg;  // The grabbed image:
 			theImg = last_obs->intensityImage;
@@ -365,7 +367,7 @@ void Test_Kinect()
 						size_t(
 							last_obs->rangeImage.cols() *
 							last_obs->rangeImage.rows()) ==
-						last_obs->points3D_x.size())
+						last_obs->points3D_x.size());
 					const size_t nPt = last_obs->rangeImage.cols() * y + x;
 					curVisibleFeats[(*itFeat)->ID] = TPoint3D(
 						last_obs->points3D_x[nPt], last_obs->points3D_y[nPt],
@@ -449,8 +451,7 @@ void Test_Kinect()
 								CPose3D(*camera_key_frames_path.rbegin()) +
 								relativePose;
 
-							camera_key_frames_path.push_back(
-								TPose3D(new_keyframe_global));
+							camera_key_frames_path.push_back(new_keyframe_global.asTPose());
 
 							gl_keyframes_must_refresh = true;
 

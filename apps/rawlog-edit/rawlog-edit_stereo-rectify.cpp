@@ -15,6 +15,7 @@ using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::rawlogtools;
 using namespace std;
+using namespace mrpt::io;
 
 // ======================================================================
 //		op_stereo_rectify
@@ -180,7 +181,7 @@ DECLARE_OP_FUNCTION(op_stereo_rectify)
 						}
 						m_changedCams++;
 					}
-					catch (CExceptionExternalImageNotFound&)
+					catch (mrpt::img::CExceptionExternalImageNotFound&)
 					{
 						const size_t MAX_FAILURES = 1000;
 						m_num_external_files_failures++;
@@ -214,11 +215,11 @@ DECLARE_OP_FUNCTION(op_stereo_rectify)
 		{
 			if (!m_this_obs_is_ok) return;
 
-			ASSERT_((actions && SF) || obs)
+			ASSERT_((actions && SF) || obs);
 			if (actions)
-				outrawlog.out_rawlog << actions << SF;
+				(*outrawlog.out_rawlog) << actions << SF;
 			else
-				outrawlog.out_rawlog << obs;
+				(*outrawlog.out_rawlog) << obs;
 		}
 	};
 

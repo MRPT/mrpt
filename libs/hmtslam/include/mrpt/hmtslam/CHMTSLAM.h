@@ -10,7 +10,7 @@
 #define CHMTSLAM_H
 
 #include <mrpt/system/COutputLogger.h>
-#include <mrpt/utils/CThreadSafeQueue.h>
+#include <mrpt/containers/CThreadSafeQueue.h>
 
 #include <mrpt/hmtslam/HMT_SLAM_common.h>
 #include <mrpt/hmtslam/CLocalMetricHypothesis.h>

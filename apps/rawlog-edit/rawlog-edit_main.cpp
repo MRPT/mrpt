@@ -32,10 +32,12 @@ typedef void (*TOperationFunctor)(
 	bool verbose);
 
 using namespace mrpt;
+using namespace mrpt::img;
 using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::rawlogtools;
 using namespace std;
+using namespace mrpt::io;
 
 // Frwd. decl:
 DECLARE_OP_FUNCTION(op_externalize);
@@ -518,7 +520,7 @@ int main(int argc, char** argv)
 		// ------------------------------------
 		ASSERTMSG_(
 			ops_functors.find(selected_op) != ops_functors.end(),
-			"Internal error: Unknown operation functor!")
+			"Internal error: Unknown operation functor!");
 
 		// Call the selected functor:
 		ops_functors[selected_op](fil_input, cmd, verbose);
@@ -558,10 +560,11 @@ TOutputRawlogCreator::TOutputRawlogCreator()
 				"\n. Select a different output path, remove the file or "
 				"force overwrite with '-w' or '--overwrite'."));
 
-	if (!out_rawlog.open(out_rawlog_filename))
+	if (!out_rawlog_io.open(out_rawlog_filename))
 		throw runtime_error(
 			string("*ABORTING*: Cannot open output file: ") +
 			out_rawlog_filename);
+	out_rawlog.reset(new mrpt::serialization::CArchiveStreamBase<mrpt::io::CFileGZOutputStream>(out_rawlog_io));
 }
 
 bool isFlagSet(TCLAP::CmdLine& cmdline, const std::string& arg_name)

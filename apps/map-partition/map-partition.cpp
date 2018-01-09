@@ -26,6 +26,9 @@
 using namespace mrpt;
 using namespace mrpt::slam;
 using namespace mrpt::maps;
+using namespace mrpt::io;
+using namespace mrpt::config;
+using namespace mrpt::img;
 using namespace mrpt::obs;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
@@ -80,7 +83,10 @@ void Test()
 
 	// Load map from the input file:
 	printf("Loading input map:\n%s\n...", MAP_FILE.c_str());
-	CFileGZInputStream(MAP_FILE) >> in_map;
+	{
+		CFileGZInputStream f(MAP_FILE);
+		mrpt::serialization::archiveFrom(f) >> in_map;
+	}
 	printf("Ok\n");
 
 	// Execute the method:
@@ -153,10 +159,11 @@ void Test()
 			out_map.insert(posePDF, sf);
 		}
 
-		CFileOutputStream(
-			format(
-				"MAP-PARTITION_RESULTS/out_part#%03u.simplemap", (unsigned)i))
-			<< out_map;
+		{
+			CFileOutputStream f(format(
+				"MAP-PARTITION_RESULTS/out_part#%03u.simplemap", (unsigned)i));
+			mrpt::serialization::archiveFrom(f) << out_map;
+		}
 	}
 
 	printf("Ok\n");

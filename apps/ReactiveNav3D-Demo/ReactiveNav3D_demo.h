@@ -560,7 +560,7 @@ class CMyReactInterface
 		return true;
 	}
 
-	void loadMaps(const utils::CConfigFileBase& ini)
+	void loadMaps(const config::CConfigFileBase& ini)
 	{
 		COccupancyGridMap2D grid;
 		CImage myImg;
@@ -585,7 +585,7 @@ class CMyReactInterface
 		std::cout << std::endl << "Maps have been loaded successfully.";
 	}
 
-	void loadConfiguration(const utils::CConfigFileBase& ini)
+	void loadConfiguration(const config::CConfigFileBase& ini)
 	{
 		unsigned int num_lasers, num_kinects, num_levels;
 		std::vector<double> lasercoord, xaux, yaux;

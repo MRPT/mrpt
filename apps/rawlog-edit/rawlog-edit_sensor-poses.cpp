@@ -13,10 +13,12 @@
 
 using namespace mrpt;
 using namespace mrpt::obs;
+using namespace mrpt::config;
 using namespace mrpt::poses;
 using namespace mrpt::system;
 using namespace mrpt::rawlogtools;
 using namespace std;
+using namespace mrpt::io;
 
 // ======================================================================
 //		op_sensors_pose
@@ -30,8 +32,7 @@ DECLARE_OP_FUNCTION(op_sensors_pose)
 	   protected:
 		TOutputRawlogCreator outrawlog;
 
-		using TSensor2PoseMap = mrpt::aligned_std::map<
-			std::string, mrpt::poses::CPose3D>;
+		using TSensor2PoseMap = mrpt::aligned_std_map<std::string, mrpt::poses::CPose3D>;
 		TSensor2PoseMap desiredSensorPoses;
 
 	   public:
@@ -112,11 +113,11 @@ DECLARE_OP_FUNCTION(op_sensors_pose)
 			mrpt::obs::CSensoryFrame::Ptr& SF,
 			mrpt::obs::CObservation::Ptr& obs)
 		{
-			ASSERT_((actions && SF) || obs)
+			ASSERT_((actions && SF) || obs);
 			if (actions)
-				outrawlog.out_rawlog << actions << SF;
+				(*outrawlog.out_rawlog) << actions << SF;
 			else
-				outrawlog.out_rawlog << obs;
+				(*outrawlog.out_rawlog) << obs;
 		}
 	};
 

@@ -14,6 +14,7 @@ using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::rawlogtools;
 using namespace std;
+using namespace mrpt::io;
 
 struct TInfoPerSensorLabel
 {
@@ -86,7 +87,7 @@ DECLARE_OP_FUNCTION(op_info)
 					break;  // shouldn't...
 
 				// Process "obs_indiv":
-				ASSERT_(obs_indiv)
+				ASSERT_(obs_indiv);
 				TInfoPerSensorLabel& d =
 					infoPerSensorLabel[obs_indiv->sensorLabel];
 
