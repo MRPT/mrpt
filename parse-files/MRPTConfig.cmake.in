@@ -140,24 +140,21 @@ SET(ALL_MRPT_LIBS "@ALL_MRPT_LIBS@")
 #  and replace "core"->"mrpt-core", etc.
 # ================================================
 SET(FINAL_LIST_COMPONENTS "")
-FOREACH(_MOD ${MRPT_FIND_COMPONENTS})
-	STRING(TOLOWER ${_MOD} _MOD)
-	SET(_NAM "mrpt-${_MOD}")
-	get_property(_LIB_DEP GLOBAL PROPERTY "${_NAM}_LIB_DEPS")
-
-	# Add deps:
-	IF (NOT "${_LIB_DEP}" STREQUAL "")
-		#MESSAGE(STATUS "ADD: ${_LIB_DEP}")
-		LIST(APPEND FINAL_LIST_COMPONENTS ${_LIB_DEP})
-	ENDIF ()
-
-	# Add lib itself:
-	IF (NOT "${_NAM}" STREQUAL "mrpt-core")
+FOREACH(iter RANGE 1 3) # repeat to get depedencies recursively
+	FOREACH(_MOD ${MRPT_FIND_COMPONENTS})
+		STRING(TOLOWER ${_MOD} _MOD)
+		STRING(REGEX REPLACE "mrpt-(.*)" "\\1" _MOD ${_MOD})
+		SET(_NAM "mrpt-${_MOD}")
 		LIST(APPEND FINAL_LIST_COMPONENTS ${_NAM})
-	ENDIF ()
+		get_property(_LIB_DEP GLOBAL PROPERTY "${_NAM}_LIB_DEPS")
+		# Add deps:
+		IF (NOT "${_LIB_DEP}" STREQUAL "")
+			LIST(APPEND FINAL_LIST_COMPONENTS ${_LIB_DEP})
+		ENDIF ()
+	ENDFOREACH()
+	SET(MRPT_FIND_COMPONENTS ${FINAL_LIST_COMPONENTS})
+	list(REMOVE_DUPLICATES MRPT_FIND_COMPONENTS)
 ENDFOREACH()
-SET(MRPT_FIND_COMPONENTS ${FINAL_LIST_COMPONENTS})
-list(REMOVE_DUPLICATES MRPT_FIND_COMPONENTS)
 
 # ======================================================
 # Check:
