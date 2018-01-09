@@ -13,8 +13,10 @@ using namespace mrpt;
 using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::poses;
+using namespace mrpt::io;
 using namespace mrpt::rawlogtools;
 using namespace std;
+using namespace mrpt::io;
 
 // ======================================================================
 //		op_list_poses

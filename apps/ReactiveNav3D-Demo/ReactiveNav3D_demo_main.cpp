@@ -289,7 +289,7 @@ int main(int num_arg, char* argv[])
 
 		if (use_config_file == 0)
 		{
-			utils::CConfigFileMemory configNavigation(default_cfg_txt);
+			config::CConfigFileMemory configNavigation(default_cfg_txt);
 			rn3d.loadConfigFile(configNavigation);
 			ReactInterface.loadMaps(configNavigation);
 			ReactInterface.loadConfiguration(configNavigation);

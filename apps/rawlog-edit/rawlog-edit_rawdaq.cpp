@@ -16,6 +16,7 @@ using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::rawlogtools;
 using namespace std;
+using namespace mrpt::io;
 
 #define WRITE_AIN_SAMPLES(_VECTOR_NAME, _FRMT, _TYPECAST)                    \
 	if (!obs->_VECTOR_NAME.empty())                                          \

@@ -21,6 +21,7 @@ using namespace mrpt::system;
 using namespace mrpt::rawlogtools;
 using namespace mrpt::topography;
 using namespace std;
+using namespace mrpt::io;
 
 // STL data must have global scope:
 struct TGPSGASDataPoint
@@ -184,7 +185,7 @@ DECLARE_OP_FUNCTION(op_export_gps_gas_kml)
 
 					// Decode gas concentration [0,1] to color RGBA
 					float r, g, b;
-					jet2rgb(
+					mrpt::img::jet2rgb(
 						(d.color - minGasValue) / (maxGasValue - minGasValue),
 						r, g, b);
 

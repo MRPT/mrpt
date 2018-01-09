@@ -122,7 +122,7 @@ int main(int num_arg, char* argv[])
 
 		int pushed_key = 0;
 		bool working = 0, stop = 0;
-		utils::CTicTac main_clock;
+		mrpt::system::CTicTac main_clock;
 		main_clock.Tic();
 
 		odo.reset();

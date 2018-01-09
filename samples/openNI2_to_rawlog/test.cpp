@@ -216,7 +216,7 @@ int main(int argc, char** argv)
 		//							Grab frames and record
 		//========================================================================================
 
-		utils::CTicTac tictac;
+		mrpt::system::CTicTac tictac;
 		unsigned int frame = 0;
 
 		bool depthfirst = true;

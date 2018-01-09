@@ -53,7 +53,14 @@ const std::string iniFileSect("CONF_LIN");
 #include <mrpt/gui/CWxGLCanvasBase.h>
 #include <mrpt/gui/about_box.h>
 #include <mrpt/opengl/CFBORender.h>
-
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/CDirectoryExplorer.h>
+#include <mrpt/system/string_utils.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CAssimpModel.h>
@@ -101,7 +108,11 @@ using namespace mrpt;
 using namespace mrpt::system;
 using namespace mrpt::poses;
 using namespace mrpt::math;
+using namespace mrpt::io;
+using namespace mrpt::config;
+using namespace mrpt::rtti;
 using namespace mrpt::opengl;
+using namespace mrpt::img;
 using namespace std;
 
 #ifdef MRPT_OS_WINDOWS
@@ -116,6 +127,8 @@ using namespace std;
 #include <GL/gl.h>
 #include <GL/glu.h>
 #endif
+
+#include <mutex>
 
 // Critical section for updating the scene:
 std::mutex critSec_UpdateScene;
@@ -945,7 +958,7 @@ void _DSceneViewerFrame::loadFromFile(
 
 		CFileGZInputStream f(fil);
 
-		static utils::CTicTac tictac;
+		static mrpt::system::CTicTac tictac;
 		auto openGLSceneRef = m_canvas->getOpenGLSceneRef();
 		{
 			std::lock_guard<std::mutex> lock(critSec_UpdateScene);
@@ -953,7 +966,7 @@ void _DSceneViewerFrame::loadFromFile(
 			tictac.Tic();
 
 			openGLSceneRef->clear();
-			f >> openGLSceneRef;
+			mrpt::serialization::archiveFrom(f) >> openGLSceneRef;
 		}
 
 		double timeToLoad = tictac.Tac();
@@ -1235,7 +1248,7 @@ void _DSceneViewerFrame::OnMenuSave(wxCommandEvent& event)
 		wxString fileName = dialog.GetPath();
 
 		CFileGZOutputStream fo(string(fileName.mb_str()));
-		fo << *m_canvas->getOpenGLSceneRef();
+		mrpt::serialization::archiveFrom(fo) << *m_canvas->getOpenGLSceneRef();
 	}
 	catch (std::exception& e)
 	{
@@ -1798,12 +1811,15 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 
 			Refresh(false);
 
+			string sC, sI;
+			mrpt::system::stringListAsString(file_comments, sC);
+			mrpt::system::stringListAsString(file_info, sI);
 			wxMessageBox(
 				_U(format(
 					   "Comments:\n--------------------\n%s\nObject "
 					   "info:\n--------------------\n%s",
-					   file_comments.getText().c_str(),
-					   file_info.getText().c_str())
+					   sC.c_str(),
+					   sI.c_str())
 					   .c_str()),
 				_("File info"), wxOK, this);
 		}

@@ -10,7 +10,6 @@
 #define CMHPropertiesValuesList_H
 
 #include <mrpt/serialization/CSerializable.h>
-//#include <mrpt/utils/CMemoryChunk.h>
 #include <mrpt/system/string_utils.h>
 #include <cstdio>
 
@@ -23,7 +22,7 @@ struct TPropertyValueIDTriplet
 {
 	TPropertyValueIDTriplet() : name(), value(nullptr), ID(0) {}
 	std::string name;
-	CSerializable::Ptr value;
+	mrpt::serialization::CSerializable::Ptr value;
 	int64_t ID;
 };
 

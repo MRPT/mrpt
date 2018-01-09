@@ -14,6 +14,7 @@ using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::rawlogtools;
 using namespace std;
+using namespace mrpt::io;
 
 // ======================================================================
 //		op_remove_label
@@ -30,13 +31,13 @@ DECLARE_OP_FUNCTION(op_remove_label)
 	   public:
 		CRawlogProcessor_RemoveLabel(
 			mrpt::io::CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
-			bool verbose, CFileGZOutputStream& out_rawlog,
+			bool verbose, mrpt::io::CFileGZOutputStream& out_rawlog,
 			const std::string& filter_label)
 			: CRawlogProcessorFilterObservations(
 				  in_rawlog, cmdline, verbose, out_rawlog)
 		{
 			mrpt::system::tokenize(filter_label, " ,", m_filter_labels);
-			ASSERT_(!m_filter_labels.empty();
+			ASSERT_(!m_filter_labels.empty());
 			if (verbose)
 				for (size_t i = 0; i < m_filter_labels.size(); i++)
 					cout << "Removing label: '" << m_filter_labels[i] << "'\n";
@@ -64,7 +65,7 @@ DECLARE_OP_FUNCTION(op_remove_label)
 
 	TOutputRawlogCreator outrawlog;
 	CRawlogProcessor_RemoveLabel proc(
-		in_rawlog, cmdline, verbose, outrawlog.out_rawlog, filter_label);
+		in_rawlog, cmdline, verbose, outrawlog.out_rawlog_io, filter_label);
 	proc.doProcessRawlog();
 
 	// Dump statistics:
@@ -91,13 +92,13 @@ DECLARE_OP_FUNCTION(op_keep_label)
 	   public:
 		CRawlogProcessor_KeepLabel(
 			mrpt::io::CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
-			bool verbose, CFileGZOutputStream& out_rawlog,
+			bool verbose, mrpt::io::CFileGZOutputStream& out_rawlog,
 			const std::string& filter_label)
 			: CRawlogProcessorFilterObservations(
 				  in_rawlog, cmdline, verbose, out_rawlog)
 		{
 			mrpt::system::tokenize(filter_label, " ,", m_filter_labels);
-			ASSERT_(!m_filter_labels.empty();
+			ASSERT_(!m_filter_labels.empty());
 			if (verbose)
 				for (size_t i = 0; i < m_filter_labels.size(); i++)
 					cout << "Keeping label: '" << m_filter_labels[i] << "'\n";
@@ -125,7 +126,7 @@ DECLARE_OP_FUNCTION(op_keep_label)
 
 	TOutputRawlogCreator outrawlog;
 	CRawlogProcessor_KeepLabel proc(
-		in_rawlog, cmdline, verbose, outrawlog.out_rawlog, filter_label);
+		in_rawlog, cmdline, verbose, outrawlog.out_rawlog_io, filter_label);
 	proc.doProcessRawlog();
 
 	// Dump statistics:

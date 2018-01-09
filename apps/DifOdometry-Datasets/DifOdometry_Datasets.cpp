@@ -25,12 +25,13 @@ using namespace mrpt;
 using namespace mrpt::opengl;
 
 using namespace mrpt::gui;
+using namespace mrpt::img;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::math;
 using namespace mrpt::poses;
 
-void CDifodoDatasets::loadConfiguration(const utils::CConfigFileBase& ini)
+void CDifodoDatasets::loadConfiguration(const mrpt::config::CConfigFileBase& ini)
 {
 	fovh = M_PIf * 62.5f /
 		   180.0f;  // Larger FOV because depth is registered with color
@@ -85,7 +86,7 @@ void CDifodoDatasets::loadConfiguration(const utils::CConfigFileBase& ini)
 	//=========================================================
 	width = 640 / (cam_mode * downsample);
 	height = 480 / (cam_mode * downsample);
-	repr_level = utils::round(log(float(width / cols)) / log(2.f));
+	repr_level = mrpt::round(log(float(width / cols)) / log(2.f));
 
 	// Resize pyramid
 	const unsigned int pyr_levels =
@@ -272,7 +273,7 @@ void CDifodoDatasets::initializeScene()
 	scene->insert(ellip);
 
 	// User-interface information
-	utils::CImage img_legend;
+	CImage img_legend;
 	img_legend.loadFromXPM(legend_xpm);
 	COpenGLViewport::Ptr legend = scene->createViewport("legend");
 	legend->setViewportPosition(20, 20, 332, 164);

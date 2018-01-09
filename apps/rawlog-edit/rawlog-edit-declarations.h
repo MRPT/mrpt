@@ -31,7 +31,8 @@
 */
 struct TOutputRawlogCreator
 {
-	mrpt::io::CFileGZOutputStream out_rawlog;
+	mrpt::io::CFileGZOutputStream out_rawlog_io;
+	std::unique_ptr<mrpt::serialization::CArchive> out_rawlog;
 	std::string out_rawlog_filename;
 
 	TOutputRawlogCreator();
