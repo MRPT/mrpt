@@ -26,6 +26,7 @@
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include "imgs/main_icon.xpm"
 #include "../wx-common/mrpt_logo.xpm"
 
@@ -59,8 +60,12 @@ wxBitmap MyArtProvider::CreateBitmap(
 using namespace mrpt;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
+using namespace mrpt::io;
+using namespace mrpt::img;
 using namespace mrpt::opengl;
+using namespace mrpt::serialization;
 using namespace mrpt::math;
+using namespace mrpt::config;
 using namespace mrpt::system;
 using namespace mrpt::nav;
 using namespace mrpt::poses;
@@ -437,7 +442,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(
 	// Initialize gridmap:
 	// -------------------------------
 	CMemoryStream s(DEFAULT_GRIDMAP_DATA, sizeof(DEFAULT_GRIDMAP_DATA));
-	s >> m_gridMap;
+	archiveFrom(s) >> m_gridMap;
 
 	auto openGLSceneRef = m_plot3D->getOpenGLSceneRef();
 	// Populate 3D views:
@@ -770,9 +775,9 @@ void holonomic_navigator_demoFrame::simulateOneStep(double time_step)
 	gl_scan2D->setScan(simulatedScan);  // Draw scaled scan in right-hand view
 
 	// Navigate:
-	mrpt::math::TPoint2D relTargetPose = mrpt::math::TPoint2D(
+	mrpt::math::TPoint2D relTargetPose = (
 		mrpt::poses::CPoint2D(m_targetPoint) -
-		mrpt::poses::CPose2D(m_robotPose));
+		mrpt::poses::CPose2D(m_robotPose)).asTPoint();
 	relTargetPose *=
 		1.0 / simulatedScan.maxRange;  // Normalized relative target:
 
@@ -1051,7 +1056,7 @@ void holonomic_navigator_demoFrame::OnbtnLoadMapClick(wxCommandEvent& event)
 	if (mrpt::system::lowerCase(fil_ext) == "gridmap")
 	{
 		CFileGZInputStream f(fil);
-		f >> m_gridMap;
+		archiveFrom(f) >> m_gridMap;
 	}
 	else
 	{

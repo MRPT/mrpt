@@ -48,7 +48,7 @@ class CHMHMapArc : public mrpt::serialization::CSerializable
 	CHMHMapNode::TNodeID m_nodeFrom, m_nodeTo;
 
 	/** The hierarchical graph in which this object is into. */
-	mrpt::utils::safe_ptr<CHierarchicalMHMap> m_parent;
+	mrpt::safe_ptr<CHierarchicalMHMap> m_parent;
 
 	/** Event handler to be called just before a node is being destroyed: it
 	 * should be called only for nodes involved in the arc, altought other cases
@@ -98,12 +98,12 @@ class CHMHMapArc : public mrpt::serialization::CSerializable
 			- "Navegability"
 			- "RelativePose"
 	  */
-	utils::CTypeSelector m_arcType;
+	std::string m_arcType;
 
 	/** The annotations of the arc, see the general description of the class for
 	 * possible properties and values.
 	  */
-	utils::CMHPropertiesValuesList m_annotations;
+	CMHPropertiesValuesList m_annotations;
 
 };  // End of class def.
 

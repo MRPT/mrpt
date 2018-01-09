@@ -29,7 +29,6 @@
 #include <wx/tipdlg.h>
 #include <wx/statbox.h>
 
-#include <mrpt/system.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/config/CConfigFilePrefixer.h>
@@ -38,6 +37,8 @@
 #include <mrpt/math/geometry.h>  // intersect()
 #include <mrpt/containers/printf_vector.h>
 #include <mrpt/system/string_utils.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CMesh.h>
 #include <mrpt/opengl/CDisk.h>
@@ -61,7 +62,10 @@ const double fy = 9,
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::math;
+using namespace mrpt::img;
 using namespace mrpt::maps;
+using namespace mrpt::serialization;
+using namespace mrpt::config;
 using namespace mrpt::poses;
 using namespace mrpt::gui;
 using namespace mrpt::nav;
@@ -505,7 +509,7 @@ void navlog_viewer_GUI_designDialog::loadLogfile(const std::string& filName)
 
 	this->edLogFile->SetLabel(_U(filName.c_str()));
 
-	CFileGZInputStream f(filName);
+	mrpt::io::CFileGZInputStream f(filName);
 
 	m_logdata.clear();
 	m_logdata_ptg_paths.clear();
@@ -518,11 +522,12 @@ void navlog_viewer_GUI_designDialog::loadLogfile(const std::string& filName)
 	m_log_first_tim = INVALID_TIMESTAMP;
 	m_log_last_tim = INVALID_TIMESTAMP;
 
+	auto arch = archiveFrom(f);
 	for (;;)
 	{
 		try
 		{
-			CSerializable::Ptr obj = f.ReadObject();
+			CSerializable::Ptr obj = arch.ReadObject();
 			if (validClasses.find(string(obj->GetRuntimeClass()->className)) ==
 				validClasses.end())
 			{

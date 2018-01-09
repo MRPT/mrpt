@@ -142,7 +142,7 @@ int main(int argc, char** argv)
 
 			// Add:
 			b.m_typePDF = CBeacon::pdfMonteCarlo;
-			b.m_locationMC.setSize(1, pt3D);
+			b.m_locationMC.setSize(1, TPoint3Df(pt3D.x, pt3D.y, pt3D.z));
 			b.m_ID = i;
 			beaconMap.push_back(b);
 		}

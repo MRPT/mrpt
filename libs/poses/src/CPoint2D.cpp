@@ -68,3 +68,8 @@ void CPoint2D::setToNaN()
 	for (int i = 0; i < 2; i++)
 		m_coords[i] = std::numeric_limits<double>::quiet_NaN();
 }
+
+mrpt::math::TPoint2D CPoint2D::asTPoint() const
+{
+	return mrpt::math::TPoint2D(x(), y());
+}

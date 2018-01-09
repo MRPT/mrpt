@@ -15,6 +15,7 @@
 
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/hmtslam/CMHPropertiesValuesList.h>
+#include <mrpt/graphs/TNodeID.h>
 #include <map>
 
 namespace mrpt
@@ -74,7 +75,7 @@ class CHMHMapNode : public mrpt::serialization::CSerializable
 
 	/** The hierarchical graph in which this object is into.
 	  */
-	mrpt::utils::safe_ptr<CHierarchicalMHMap> m_parent;
+	mrpt::safe_ptr<CHierarchicalMHMap> m_parent;
 
    public:
 	/** Constructor
@@ -90,7 +91,7 @@ class CHMHMapNode : public mrpt::serialization::CSerializable
 	/** The annotations of the node, see the general description of the class
 	 * for possible properties and values.
 	  */
-	utils::CMHPropertiesValuesList m_annotations;
+	CMHPropertiesValuesList m_annotations;
 
 	/** The type of the node, the possibilities are:
 	  *		- Place
@@ -98,7 +99,7 @@ class CHMHMapNode : public mrpt::serialization::CSerializable
 	  *		- TopologicalMap
 	  *		- Object
 	  */
-	utils::CTypeSelector m_nodeType;
+	std::string m_nodeType;
 
 	/** Reads the ID of the node (read-only property)
 	  */

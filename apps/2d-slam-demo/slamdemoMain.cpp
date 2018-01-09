@@ -28,12 +28,14 @@
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/system/vector_loadsave.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/random.h>
 #include <mrpt/obs/CObservationComment.h>
 #include <mrpt/gui/about_box.h>
 
 using namespace std;
 using namespace mrpt;
+using namespace mrpt::io;
 using namespace mrpt::bayes;
 using namespace mrpt::random;
 using namespace mrpt::slam;
@@ -2497,6 +2499,6 @@ void slamdemoFrame::OnmnuItemSaveRawlogSelected(wxCommandEvent& event)
 				   mrpt::system::dateTimeLocalToString(mrpt::system::now()) +
 				   std::string("\n");
 
-		m_rawlog_out_file << obs;
+		mrpt::serialization::archiveFrom(m_rawlog_out_file) << obs;
 	}
 }

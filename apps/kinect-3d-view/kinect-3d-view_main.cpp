@@ -32,6 +32,7 @@
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::math;
+using namespace mrpt::img;
 using namespace mrpt::gui;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
@@ -80,7 +81,7 @@ void thread_grabbing(TThreadParam& p)
 		kinect.initialize();
 		cout << "OK\n";
 
-		CTicTac tictac;
+		mrpt::system::CTicTac tictac;
 		int nImgs = 0;
 		bool there_is_obs = true, hard_error = false;
 

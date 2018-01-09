@@ -23,6 +23,7 @@
 using namespace mrpt;
 using namespace mrpt::nav;
 using namespace mrpt::opengl;
+using namespace mrpt::system;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
 using namespace mrpt::gui;

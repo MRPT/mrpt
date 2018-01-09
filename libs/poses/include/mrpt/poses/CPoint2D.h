@@ -71,6 +71,8 @@ class CPoint2D : public CPoint<CPoint2D>, public mrpt::serialization::CSerializa
 		m_coords[2] = 0;
 	}
 
+	mrpt::math::TPoint2D asTPoint() const;
+
 	/** The operator D="this"-b is the pose inverse compounding operator,
 	*   the resulting points "D" fulfils: "this" = b + D, so that: b == a +
 	* (b-a)

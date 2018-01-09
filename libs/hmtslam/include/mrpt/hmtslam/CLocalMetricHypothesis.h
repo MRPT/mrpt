@@ -96,7 +96,7 @@ class CLocalMetricHypothesis
 	 * mrpt::slam::CHierarchicalMHMap). */
 	THypothesisID m_ID;
 	/** For quick access to our parent object. */
-	mrpt::utils::safe_ptr<CHMTSLAM> m_parent;
+	mrpt::safe_ptr<CHMTSLAM> m_parent;
 	/** The current robot pose (its global unique ID) for this hypothesis. */
 	TPoseID m_currentRobotPose;
 	// TNodeIDList							m_neighbors;			//!< The
@@ -273,13 +273,13 @@ class CLocalMetricHypothesis
 	mutable std::vector<double> m_maxLikelihood;
 
 	/** Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm. */
-	mutable mrpt::poses::StdVector_CPose2D m_movementDraws;
+	mutable mrpt::aligned_std_vector<mrpt::poses::CPose2D> m_movementDraws;
 
 	/** Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm. */
 	mutable unsigned int m_movementDrawsIdx;
 
 	/** Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm. */
-	mutable mrpt::poses::StdVector_CPose2D m_movementDrawMaximumLikelihood;
+	mutable mrpt::aligned_std_vector<mrpt::poses::CPose2D> m_movementDrawMaximumLikelihood;
 
 };  // End of class def.
 
