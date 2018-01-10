@@ -559,12 +559,10 @@ void CLocalMetricHypothesis::getRelativePose(
 	{
 		itP->log_w = it->log_w;
 
-		TMapPoseID2Pose3D::const_iterator srcPose =
-			it->d->robotPoses.find(reference);
-		TMapPoseID2Pose3D::const_iterator trgPose =
-			it->d->robotPoses.find(pose);
+		auto srcPose = it->d->robotPoses.find(reference);
+		auto trgPose = it->d->robotPoses.find(pose);
 
-		ASSERT_(srcPose != it->d->robotPoses.end();
+		ASSERT_(srcPose != it->d->robotPoses.end());
 		ASSERT_(trgPose != it->d->robotPoses.end());
 		*itP->d = trgPose->second - srcPose->second;
 	}
@@ -585,9 +583,8 @@ void CLocalMetricHypothesis::changeCoordinateOrigin(const TPoseID& newOrigin)
 	for (it = m_particles.begin(), itOrgPDF = originPDF.m_particles.begin();
 		 it != m_particles.end(); it++, itOrgPDF++)
 	{
-		TMapPoseID2Pose3D::iterator refPoseIt =
-			it->d->robotPoses.find(newOrigin);
-		ASSERT_(refPoseIt != it->d->robotPoses.end();
+		auto refPoseIt = it->d->robotPoses.find(newOrigin);
+		ASSERT_(refPoseIt != it->d->robotPoses.end());
 		const CPose3D& refPose = refPoseIt->second;
 
 		// Save in pdf to compute mean:
@@ -921,15 +918,15 @@ void CLocalMetricHypothesis::updateAreaFromLMH(
 void CLocalMetricHypothesis::dumpAsText(std::vector<std::string>& st) const
 {
 	st.clear();
-	st << "LIST OF POSES IN LMH";
-	st << "====================";
+	st.push_back("LIST OF POSES IN LMH");
+	st.push_back("====================");
 
 	string s;
 	s = "Neighbors: ";
 	for (TNodeIDSet::const_iterator it = m_neighbors.begin();
 		 it != m_neighbors.end(); ++it)
 		s += format("%i ", (int)*it);
-	st << s;
+	st.push_back(s);
 
 	TMapPoseID2Pose3D lst;
 	getMeans(lst);
@@ -944,7 +941,7 @@ void CLocalMetricHypothesis::dumpAsText(std::vector<std::string>& st) const
 			"  ID: %i \t AREA: %i \t %.03f,%.03f,%.03fdeg", (int)it->first,
 			(int)area->second, it->second.x(), it->second.y(),
 			RAD2DEG(it->second.yaw()));
-		st << s;
+		st.push_back(s);
 	}
 }
 
@@ -971,31 +968,18 @@ void CLocalMetricHypothesis::serializeFrom(mrpt::serialization::CArchive& in, ui
 	};
 }
 
-/*---------------------------------------------------------------
-					writeToStream
-	Implements the writing to a CStream capability of
-	  CSerializable objects
-  ---------------------------------------------------------------*/
-uint8_t CLocalMetricHypothesis::serializeGetVersion() const { return XX; }
+uint8_t CLocalMetricHypothesis::serializeGetVersion() const { return 0; }
 void CLocalMetricHypothesis::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		out << m_ID << m_currentRobotPose << m_neighbors << m_nodeIDmemberships
-			<< m_SFs << m_posesPendingAddPartitioner << m_areasPendingTBI
-			<< m_log_w << m_log_w_metric_history
-			<< m_robotPosesGraph.partitioner << m_robotPosesGraph.idx2pose;
+	out << m_ID << m_currentRobotPose << m_neighbors << m_nodeIDmemberships
+		<< m_SFs << m_posesPendingAddPartitioner << m_areasPendingTBI
+		<< m_log_w << m_log_w_metric_history
+		<< m_robotPosesGraph.partitioner << m_robotPosesGraph.idx2pose;
 
-		// particles:
-		writeParticlesToStream(out);
-	}
+	// particles:
+	writeParticlesToStream(out);
 }
 
-/*---------------------------------------------------------------
-					readFromStream
-  ---------------------------------------------------------------*/
 void CLSLAMParticleData::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
@@ -1010,18 +994,8 @@ void CLSLAMParticleData::serializeFrom(mrpt::serialization::CArchive& in, uint8_
 	};
 }
 
-/*---------------------------------------------------------------
-					writeToStream
-	Implements the writing to a CStream capability of
-	  CSerializable objects
-  ---------------------------------------------------------------*/
-uint8_t CLSLAMParticleData::serializeGetVersion() const { return XX; }
+uint8_t CLSLAMParticleData::serializeGetVersion() const { return 0; }
 void CLSLAMParticleData::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		out << metricMaps << robotPoses;
-	}
+	out << metricMaps << robotPoses;
 }

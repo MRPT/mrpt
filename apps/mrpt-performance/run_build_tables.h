@@ -7,7 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/system.h>
+#include <mrpt/system/CDirectoryExplorer.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/datetime.h>
+#include <algorithm>
 
 struct TPerfField
 {
@@ -54,7 +57,7 @@ int run_build_tables()
 		dat.file_path = fils[i].wholePath;
 
 		CFileInputStream f(dat.file_path);
-		f >> dat.all_perf_data;
+		archiveFrom(f) >> dat.all_perf_data;
 		lstConfigurations.push_back(dat);
 
 		cout << " Read: " << setw(30) << config_name << " with "

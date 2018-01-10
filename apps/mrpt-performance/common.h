@@ -12,8 +12,17 @@
 
 #include <mrpt/img/CImage.h>
 #include <mrpt/system/CTicTac.h>
+#include <mrpt/system/CTimeLogger.h>
+#include <mrpt/core/bits_math.h>
 #include <list>
 #include <functional>
+
+using namespace mrpt;
+using namespace mrpt::img;
+using namespace mrpt::io;
+using namespace mrpt::serialization;
+using mrpt::system::CTicTac;
+using mrpt::system::CTimeLogger;
 
 // All the register functions: --------------------
 void register_tests_icpslam();

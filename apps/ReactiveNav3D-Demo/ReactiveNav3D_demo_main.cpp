@@ -12,6 +12,8 @@
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/config/CConfigFileMemory.h>
 
+using namespace std;
+using namespace mrpt::config;
 using namespace mrpt::math;
 using namespace std::literals;
 

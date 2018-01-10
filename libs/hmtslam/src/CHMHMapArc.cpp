@@ -82,35 +82,21 @@ void CHMHMapArc::onNodeDestruction(CHMHMapNode* node)
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-						writeToStream
-  ---------------------------------------------------------------*/
-uint8_t CHMHMapArc::serializeGetVersion() const { return XX; } void CHMHMapArc::serializeTo(mrpt::serialization::CArchive& out, int* version) const
+uint8_t CHMHMapArc::serializeGetVersion() const { return 0; }
+void CHMHMapArc::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		out << m_nodeFrom << m_nodeTo << m_arcType.getType() << m_annotations
-			<< m_hypotheses;
-	}
+	out << m_nodeFrom << m_nodeTo << m_arcType << m_annotations
+		<< m_hypotheses;
 }
 
-/*---------------------------------------------------------------
-						readFromStream
-  ---------------------------------------------------------------*/
 void CHMHMapArc::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
 		case 0:
 		{
-			std::string type;
-
-			in >> m_nodeFrom >> m_nodeTo >> type >> m_annotations >>
+			in >> m_nodeFrom >> m_nodeTo >> m_arcType >> m_annotations >>
 				m_hypotheses;
-
-			m_arcType.setType(type);
 
 			// Find my smart pointer in the HMT map: we MUST have only 1 smrt.
 			// pointer pointing to the same object!!
@@ -124,7 +110,7 @@ void CHMHMapArc::serializeFrom(mrpt::serialization::CArchive& in, uint8_t versio
 					break;
 				}
 			}
-			ASSERTMSG_(myPtr, "I cannot be found in my parent HMT map!")
+			ASSERTMSG_(myPtr, "I cannot be found in my parent HMT map!");
 
 			CHMHMapNode::Ptr node;
 			// It's not necessary since at ::Create this is already done
@@ -158,7 +144,7 @@ void TArcList::debugDump()
 	}
 }
 
-void TArcList::read(utils::CStream& in)
+void TArcList::read(mrpt::serialization::CArchive& in)
 {
 	uint32_t i, n;
 	in >> n;
@@ -170,7 +156,7 @@ void TArcList::read(utils::CStream& in)
 		this->push_back(theObj);
 	}
 }
-void TArcList::write(utils::CStream& out) const
+void TArcList::write(mrpt::serialization::CArchive& out) const
 {
 	out << static_cast<uint32_t>(this->size());
 	for (const_iterator i = begin(); i != end(); ++i) out << **i;

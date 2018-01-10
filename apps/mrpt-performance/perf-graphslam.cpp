@@ -33,7 +33,7 @@ double graphslam_levmarq_solve(int nVertices, int N)
 	// cout << graph.nodeCount() << " nodes, " << graph.edgeCount() << "
 	// edges\n";
 
-	TParametersDouble params;
+	mrpt::system::TParametersDouble params;
 	// params["verbose"]  = 1;
 	// params["profiler"] = 1;
 	params["max_iterations"] = 1000;

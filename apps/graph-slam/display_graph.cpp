@@ -19,6 +19,7 @@
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/graph_tools.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::graphs;
@@ -173,7 +174,7 @@ void display_graph(const GRAPHTYPE& g)
 						mrpt::opengl::COpenGLScene scene;
 						scene.insert(m_new_3dobj);
 						mrpt::io::CFileGZOutputStream f(sFil);
-						f << scene;
+						mrpt::serialization::archiveFrom(f) << scene;
 					}
 					break;
 					case 'v':

@@ -89,7 +89,7 @@ CSetOfObjects::Ptr graph_visualize(
 
 		// Create ground plane:
 		const double grid_frequency = 5.0;
-		CGridPlaneXY::Ptr grid = mrpt::make_aligned_shared<CGridPlaneXY>(
+		CGridPlaneXY::Ptr grid = CGridPlaneXY::Create(
 			BB_min.x, BB_max.x, BB_min.y, BB_max.y, BB_min.z, grid_frequency);
 		grid->setColor(0.3, 0.3, 0.3);
 		ret->insert(grid);

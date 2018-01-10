@@ -16,6 +16,7 @@
 
 using namespace mrpt::poses;
 using namespace mrpt::system;
+using namespace mrpt::tfest;
 using namespace std;
 
 typedef std::vector<std::vector<double>> TPoints;

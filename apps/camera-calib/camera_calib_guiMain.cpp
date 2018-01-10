@@ -40,6 +40,7 @@
 
 using namespace mrpt;
 using namespace mrpt::math;
+using namespace mrpt::img;
 using namespace mrpt::vision;
 using namespace mrpt::gui;
 using namespace std;
@@ -757,7 +758,7 @@ void camera_calib_guiDialog::refreshDisplayedImage()
 			string(cbZoom->GetStringSelection().mb_str());
 		const double zoomVal = 0.01 * atof(strZoom.c_str());
 
-		ASSERT_(zoomVal > 0 && zoomVal < 30)
+		ASSERT_(zoomVal > 0 && zoomVal < 30);
 
 		TImageSize imgSizes(0, 0);
 

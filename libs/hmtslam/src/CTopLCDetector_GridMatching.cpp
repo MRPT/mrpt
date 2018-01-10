@@ -12,11 +12,14 @@
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::hmtslam;
 using namespace mrpt::poses;
 using namespace mrpt::obs;
+using namespace mrpt::io;
+using namespace mrpt::serialization;
 using namespace mrpt::maps;
 
 CTopLCDetector_GridMatching::CTopLCDetector_GridMatching(CHMTSLAM* hmtslam)
@@ -59,8 +62,8 @@ CPose3DPDF::Ptr CTopLCDetector_GridMatching::computeTopologicalObservationModel(
 		refArea->m_annotations.getAs<CMultiMetricMap>(
 			NODE_ANNOTATION_METRIC_MAPS, hypID, false);
 
-	ASSERT_(hMapRef->m_gridMaps.size() >= 1)
-	ASSERT_(hMapCur->m_gridMaps.size() >= 1)
+	ASSERT_(hMapRef->m_gridMaps.size() >= 1);
+	ASSERT_(hMapCur->m_gridMaps.size() >= 1);
 
 #if 0
 	{
@@ -111,7 +114,7 @@ CPose3DPDF::Ptr CTopLCDetector_GridMatching::computeTopologicalObservationModel(
 			mrpt::system::LVL_DEBUG, "[TLCD_gridmatch] DEBUG: Saving %s\n",
 			filStat.c_str());
 		CFileGZOutputStream f(filStat);
-		this->m_hmtslam->saveState(f);
+		this->m_hmtslam->saveState(mrpt::serialization::archiveFrom(f));
 
 		m_hmtslam->logFmt(
 			mrpt::system::LVL_DEBUG, "[TLCD_gridmatch] DEBUG: Saving %s\n",

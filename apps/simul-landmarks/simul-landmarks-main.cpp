@@ -25,6 +25,7 @@
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CSphere.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -32,8 +33,11 @@ using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::random;
 using namespace mrpt::system;
+using namespace mrpt::io;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;
+using namespace mrpt::config;
+using namespace mrpt::serialization;
 using namespace mrpt::vision;
 using namespace std;
 
@@ -65,7 +69,7 @@ int main(int argc, char** argv)
 		}
 
 		string INI_FILENAME = std::string(argv[1]);
-		ASSERT_FILE_EXISTS_(INI_FILENAME)
+		ASSERT_FILE_EXISTS_(INI_FILENAME);
 
 		CConfigFile ini(INI_FILENAME);
 
@@ -379,7 +383,7 @@ int main(int argc, char** argv)
 			}
 
 			// Save:
-			fil << SF << acts;
+			archiveFrom(fil) << SF << acts;
 
 			// Next pose:
 			realPose = realPose + incPose3D;

@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "containers-precomp.h"  // Precompiled headers
+#include "hmtslam-precomp.h"  // Precompiled headers
 
 #include <mrpt/hmtslam/CPropertiesValuesList.h>
 #include <mrpt/serialization/CArchive.h>
@@ -16,16 +16,14 @@
 #include <iostream>
 
 using namespace mrpt::system;
+using namespace mrpt::hmtslam;
+using namespace mrpt::serialization;
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CPropertiesValuesList, CSerializable, mrpt::utils)
+IMPLEMENTS_SERIALIZABLE(CPropertiesValuesList, CSerializable, mrpt::hmtslam)
 
-/*---------------------------------------------------------------
-						writeToStream
- ---------------------------------------------------------------*/
 uint8_t CPropertiesValuesList::serializeGetVersion() const { return 0; }
-void CPropertiesValuesList::serializeTo(
-	mrpt::utils::CStream& out, int* out_Version) const
+void CPropertiesValuesList::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	uint32_t i, n = (uint32_t)size();
 	uint8_t isNull;
@@ -44,9 +42,6 @@ void CPropertiesValuesList::serializeTo(
 	}
 }
 
-/*---------------------------------------------------------------
-						readFromStream
- ---------------------------------------------------------------*/
 void CPropertiesValuesList::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)

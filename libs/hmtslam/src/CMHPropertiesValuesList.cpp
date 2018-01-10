@@ -7,52 +7,42 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "containers-precomp.h"  // Precompiled headers
+#include "hmtslam-precomp.h"  // Precompiled headers
 
 #include <mrpt/hmtslam/CMHPropertiesValuesList.h>
 #include <mrpt/system/os.h>
 #include <stdio.h>
 
+using namespace mrpt::hmtslam;
 using namespace mrpt::system;
+using namespace mrpt::serialization;
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CMHPropertiesValuesList, CSerializable, mrpt::utils)
+IMPLEMENTS_SERIALIZABLE(CMHPropertiesValuesList, CSerializable, mrpt::hmtslam)
 
-/*---------------------------------------------------------------
-						writeToStream
- ---------------------------------------------------------------*/
-uint8_t CMHPropertiesValuesList::serializeGetVersion() const { return XX; }
-void CMHPropertiesValuesList::serializeTo(
-	mrpt::utils::CStream& out, int* out_Version) const
+uint8_t CMHPropertiesValuesList::serializeGetVersion() const { return 0; }
+void CMHPropertiesValuesList::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (out_Version)
-		*out_Version = 0;
-	else
+	uint32_t i, n = (uint32_t)m_properties.size();
+	uint8_t isNull;
+	out << n;
+
+	for (i = 0; i < n; i++)
 	{
-		uint32_t i, n = (uint32_t)m_properties.size();
-		uint8_t isNull;
-		out << n;
+		// Name:
+		out << m_properties[i].name.c_str();
 
-		for (i = 0; i < n; i++)
-		{
-			// Name:
-			out << m_properties[i].name.c_str();
+		// Object:
+		isNull = !m_properties[i].value;
+		out << isNull;
 
-			// Object:
-			isNull = !m_properties[i].value;
-			out << isNull;
+		if (!isNull) out << *m_properties[i].value;
 
-			if (!isNull) out << *m_properties[i].value;
-
-			// Hypot. ID:
-			out << m_properties[i].ID;
-		}
+		// Hypot. ID:
+		out << m_properties[i].ID;
 	}
 }
 
-/*---------------------------------------------------------------
-						readFromStream
- ---------------------------------------------------------------*/
 void CMHPropertiesValuesList::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)

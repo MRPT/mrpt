@@ -121,7 +121,7 @@ static_assert(
 	"Copy Check");
 
 /** The read end-point in a pipe created with mrpt::synch::CPipe.
-  * Use the method mrpt::utils::CStream::ReadBuffer() of the base class CStream
+  * Use the method CStream::Read() of the base class CStream
  * for blocking reading.
  * \ingroup mrpt_io_grp
  */
@@ -142,7 +142,7 @@ private:
 };  // end of CPipeReadEndPoint
 
 /** The write end-point in a pipe created with mrpt::synch::CPipe.
-  * Use the method mrpt::utils::CStream::WriteBuffer() of the base class CStream
+  * Use the method CStream::Write() of the base class CStream
  * for blocking writing. */
 class CPipeWriteEndPoint : public CPipeBaseEndPoint
 {

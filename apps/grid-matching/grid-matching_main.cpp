@@ -29,14 +29,20 @@
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
 using namespace mrpt::opengl;
+using namespace mrpt::tfest;
 using namespace mrpt::math;
+using namespace mrpt::serialization;
+using namespace mrpt::config;
 using namespace mrpt::gui;
+using namespace mrpt::img;
+using namespace mrpt::io;
 using namespace mrpt::random;
 using namespace mrpt::poses;
 using namespace std;
@@ -184,12 +190,16 @@ void do_grid_align()
 	CSimpleMap map1, map2, map2noisy;
 
 	// Load maps:
-	CFileGZInputStream(fil_grid1) >> map1;
+	{
+		CFileGZInputStream f(fil_grid1);
+		archiveFrom(f) >> map1;
+	}
 
 	// If it's detect_test only load one map:
 	if (is_match || mrpt::system::fileExists(fil_grid2))
 	{
-		CFileGZInputStream(fil_grid2) >> map2;
+		CFileGZInputStream f(fil_grid2);
+		archiveFrom(f) >> map2;
 	}
 
 	// Generate the_map1 now:
@@ -419,7 +429,7 @@ void do_grid_align()
 								-10, 10, -10, 10, 0, 1);
 						scene3D.insert(gridXY);
 						scene3D.insert(thePDF3D);
-						CFileGZOutputStream("_out_SoG.3Dscene") << scene3D;
+						scene3D.saveToFile("_out_SoG.3Dscene");
 					}
 
 					if (!SAVE_ICP_GOODNESS_FIL.empty())
@@ -531,11 +541,10 @@ void do_grid_align()
 
 							scene.insert(lines);
 
-							CFileGZOutputStream(
+							scene.saveToFile(
 								format(
 									"%s/_OVERLAP_MAPS_SOG_MODE_%04u.3Dscene",
-									RESULTS_DIR.c_str(), (unsigned int)nNode))
-								<< scene;
+									RESULTS_DIR.c_str(), (unsigned int)nNode));
 						}
 
 					}  // end SAVE_SOG_ALL
@@ -634,8 +643,8 @@ void do_grid_align()
 						const double dErr = P1.distanceTo(P2);
 						dErrs[i2] = dErr;
 
-						ASSERT_(!l1->features.empty() && l1->features[0])
-						ASSERT_(!l2->features.empty() && l2->features[0])
+						ASSERT_(!l1->features.empty() && l1->features[0]);
+						ASSERT_(!l2->features.empty() && l2->features[0]);
 
 						D[i2] = l1->features[0]->descriptorDistanceTo(
 							*l2->features[0]);
@@ -809,7 +818,7 @@ int main(int argc, char** argv)
 		CONFIG_FIL = arg_config.getValue();
 		SAVE_ICP_GOODNESS_FIL = arg_icpgoodness.getValue();
 
-		aligner_method = TEnumType<CGridMapAligner::TAlignerMethod>::name2value(
+		aligner_method = mrpt::typemeta::TEnumType<CGridMapAligner::TAlignerMethod>::name2value(
 			arg_aligner_method.getValue());
 
 		STD_NOISE_XY = arg_noise_std_xy.getValue();

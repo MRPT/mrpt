@@ -28,6 +28,7 @@ using namespace mrpt::slam;
 using namespace mrpt::hmtslam;
 using namespace mrpt::obs;
 using namespace mrpt::random;
+using namespace mrpt::system;
 using namespace mrpt::maps;
 using namespace mrpt::bayes;
 using namespace mrpt::poses;
@@ -351,7 +352,7 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 	//  where X is the robot pose prior (as implemented in
 	//  the aux. function "particlesEvaluator_AuxPFOptimal"),
 	//  and also the "m_maxLikelihood" filled with the maximum lik. values.
-	StdVector_CPose2D newParticles;
+	mrpt::aligned_std_vector<mrpt::poses::CPose2D> newParticles;
 	vector<double> newParticlesWeight;
 	vector<size_t> newParticlesDerivedFromIdx;
 

@@ -12,6 +12,7 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/string_utils.h>
 #include <cstdio>
+#include <sstream>
 
 namespace mrpt
 {
@@ -21,7 +22,7 @@ namespace hmtslam
 struct TPropertyValueIDTriplet
 {
 	TPropertyValueIDTriplet() : name(), value(nullptr), ID(0) {}
-	std::string name;
+	std::string name, basic_value;
 	mrpt::serialization::CSerializable::Ptr value;
 	int64_t ID;
 };
@@ -133,20 +134,18 @@ class CMHPropertiesValuesList : public mrpt::serialization::CSerializable
 	{
 		MRPT_START
 
-		CMemoryChunk::Ptr memChunk = mrpt::make_aligned_shared<CMemoryChunk>();
-		memChunk->setAllocBlockSize(10);
-		(*memChunk) << data;
+		std::string basic_value;
+		basic_value.resize(sizeof(T));
+		::memcpy(&basic_value[0], &data, sizeof(T));
 
-		for (std::vector<TPropertyValueIDTriplet>::iterator it =
-				 m_properties.begin();
-			 it != m_properties.end(); ++it)
+		for (auto it =m_properties.begin();it != m_properties.end(); ++it)
 		{
 			if (it->ID == hypothesis_ID &&
 				mrpt::system::strCmpI(propertyName, it->name))
 			{
 				// Delete current contents &
 				// Copy new value:
-				it->value = memChunk;
+				it->basic_value= basic_value;
 				return;
 			}
 		}
@@ -154,7 +153,7 @@ class CMHPropertiesValuesList : public mrpt::serialization::CSerializable
 		// Insert as new:
 		TPropertyValueIDTriplet newPair;
 		newPair.name = std::string(propertyName);
-		newPair.value = memChunk;
+		newPair.basic_value = basic_value;
 		newPair.ID = hypothesis_ID;
 		m_properties.push_back(newPair);
 
@@ -173,19 +172,14 @@ class CMHPropertiesValuesList : public mrpt::serialization::CSerializable
 		bool raiseExceptionIfNotFound = false) const
 	{
 		MRPT_START
-		for (std::vector<TPropertyValueIDTriplet>::const_iterator it =
-				 m_properties.begin();
-			 it != m_properties.end(); ++it)
+		for (auto it = m_properties.begin();it != m_properties.end(); ++it)
 		{
 			if (mrpt::system::strCmpI(propertyName, it->name) &&
 				it->ID == hypothesis_ID)
 			{
-				CMemoryChunk::Ptr memChunk =
-					std::dynamic_pointer_cast<CMemoryChunk>(it->value);
-				ASSERT_(memChunk)
-				if (memChunk->getTotalBytesCount() != sizeof(out_data))
+				if (it->basic_value.size() != sizeof(out_data))
 					THROW_EXCEPTION("Data sizes do not match.");
-				out_data = *static_cast<T*>(memChunk->getRawBufferData());
+				out_data = *reinterpret_cast<const T*>(&it->basic_value[0]);
 				return true;
 			}
 		}

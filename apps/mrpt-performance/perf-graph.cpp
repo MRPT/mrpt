@@ -11,6 +11,7 @@
 #include <mrpt/graphs/dijkstra.h>
 #include <mrpt/random.h>
 #include <mrpt/system/CTimeLogger.h>
+#include <mrpt/containers/traits_map.h>
 
 #include "common.h"
 
@@ -118,6 +119,8 @@ double graphs_dijkstra(int nNodes, int _N)
 // ------------------------------------------------------
 void register_tests_graph()
 {
+	using namespace mrpt::containers;
+
 	getRandomGenerator().randomize(1234);
 
 	lstTests.push_back(

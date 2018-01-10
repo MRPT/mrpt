@@ -26,9 +26,13 @@ using namespace mrpt::slam;
 using namespace mrpt::hmtslam;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
+using namespace mrpt::io;
 using namespace mrpt::opengl;
 using namespace mrpt::random;
 using namespace mrpt::poses;
+using namespace mrpt::system;
+using namespace mrpt::serialization;
+using namespace mrpt::containers;
 using namespace mrpt::math;
 using namespace std;
 
@@ -114,16 +118,12 @@ void CHMTSLAM::thread_LSLAM()
 				// Process them, for each LMH:
 				// -----------------------------------------
 				ASSERT_(!obj->m_LMHs.empty());
-
-				aligned_containers<THypothesisID,
-								   CLocalMetricHypothesis>::map_t::iterator it;
-
 				ASSERT_(obj->m_LSLAM_method);
 
 				{
 					std::lock_guard<std::mutex> LMHs_cs_lock(obj->m_LMHs_cs);
 
-					for (it = obj->m_LMHs.begin(); it != obj->m_LMHs.end();
+					for (auto it = obj->m_LMHs.begin(); it != obj->m_LMHs.end();
 						 it++)
 					{
 						std::lock_guard<std::mutex> LMH_individual_lock(
@@ -326,8 +326,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 		"  [\n");
 
 	// Get the corresponding LMH:
-	aligned_containers<THypothesisID, CLocalMetricHypothesis>::map_t::iterator
-		itLMH = m_LMHs.find(myMsg.hypothesisID);
+	auto itLMH = m_LMHs.find(myMsg.hypothesisID);
 	ASSERT_(itLMH != m_LMHs.end());
 	CLocalMetricHypothesis* LMH = &itLMH->second;
 
@@ -415,10 +414,13 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 		std::lock_guard<std::mutex> lock(m_map_cs);
 		std::vector<std::string> s;
 		m_map.dumpAsText(s);
-		s.saveToFile(
+		std::string ss;
+		mrpt::system::stringListAsString(s, ss);
+		std::ofstream f(
 			format(
 				"%s/HMAP_txt/HMAP_%05i_before.txt",
 				m_options.LOG_OUTPUT_DIR.c_str(), DEBUG_STEP));
+		f << ss;
 		logFmt(
 			mrpt::system::LVL_INFO,
 			"[LSLAM_proc_msg_AA] Saved HMAP_%05i_before.txt\n", DEBUG_STEP);
@@ -521,7 +523,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 
 			// For now, the area exists in this hypothesis only:
 			newArea->m_hypotheses.insert(LMH->m_ID);
-			newArea->m_nodeType.setType("Area");
+			newArea->m_nodeType = "Area";
 			newArea->m_label = generateUniqueAreaLabel();
 
 			CMultiMetricMap::Ptr emptyMap = CMultiMetricMap::Ptr(
@@ -891,7 +893,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 									LMH->m_ID,  // Hypos
 									&m_map  // The graph
 									);
-								newArc->m_arcType.setType("RelativePose");
+								newArc->m_arcType = "RelativePose";
 								arcDeltaIsInverted = false;
 							}
 
@@ -1442,7 +1444,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 					theArcHypos,  // Hypos
 					&m_map  // The graph
 					);
-				newArc->m_arcType.setType("RelativePose");
+				newArc->m_arcType ="RelativePose";
 				arcDeltaIsInverted = false;
 			}
 
@@ -1567,10 +1569,14 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 		std::lock_guard<std::mutex> lock(m_map_cs);
 		std::vector<std::string> s;
 		m_map.dumpAsText(s);
-		s.saveToFile(
+		std::string ss;
+		mrpt::system::stringListAsString(s, ss);
+
+		std::ofstream f(
 			format(
 				"%s/HMAP_txt/HMAP_%05i_mid.txt",
 				m_options.LOG_OUTPUT_DIR.c_str(), DEBUG_STEP));
+		f << ss;
 		logFmt(
 			mrpt::system::LVL_INFO,
 			"[LSLAM_proc_msg_AA] Saved HMAP_%05i_mid.txt\n", DEBUG_STEP);
@@ -1606,7 +1612,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 				// Remove from list first:
 				CHMHMapNode::TNodeID id = *pNei1;
 
-				pNei1 = mrpt::utils::erase_return_next(LMH->m_neighbors, pNei1);
+				pNei1 = erase_return_next(LMH->m_neighbors, pNei1);
 
 				// Now: this calls internally to "updateAreaFromLMH"
 				double ESS_bef = LMH->ESS();
@@ -1805,10 +1811,13 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 	{
 		std::vector<std::string> s;
 		LMH->dumpAsText(s);
-		s.saveToFile(
+		std::string ss;
+		mrpt::system::stringListAsString(s, ss);
+		std::ofstream f(
 			format(
 				"%s/HMAP_txt/HMAP_%05i_LMH_mid.txt",
 				m_options.LOG_OUTPUT_DIR.c_str(), DEBUG_STEP));
+		f << ss;
 		logFmt(
 			mrpt::system::LVL_INFO,
 			"[LSLAM_proc_msg_AA] Saved HMAP_%05i_LMH_mid.txt\n", DEBUG_STEP);
@@ -1837,7 +1846,8 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 			m_options.LOG_OUTPUT_DIR.c_str(), DEBUG_STEP);
 		logFmt(
 			mrpt::system::LVL_INFO, "[LOG] Saving %s\n", filLocalAreas.c_str());
-		CFileOutputStream(filLocalAreas) << sceneLSLAM;
+		CFileOutputStream f(filLocalAreas);
+		archiveFrom(f) << sceneLSLAM;
 	}
 
 	// -------------------------------------------------------------
@@ -1909,10 +1919,13 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 		std::lock_guard<std::mutex> lock(m_map_cs);
 		std::vector<std::string> s;
 		m_map.dumpAsText(s);
-		s.saveToFile(
+		std::string ss;
+		mrpt::system::stringListAsString(s, ss);
+		std::ofstream f(
 			format(
 				"%s/HMAP_txt/HMAP_%05i_after.txt",
 				m_options.LOG_OUTPUT_DIR.c_str(), DEBUG_STEP));
+		f << ss;
 		logFmt(
 			mrpt::system::LVL_INFO,
 			"[LSLAM_proc_msg_AA] Saved HMAP_%05i_after.txt\n", DEBUG_STEP);
@@ -1921,10 +1934,13 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 	{
 		std::vector<std::string> s;
 		LMH->dumpAsText(s);
-		s.saveToFile(
+		std::string ss;
+		mrpt::system::stringListAsString(s, ss);
+		std::ofstream f(
 			format(
 				"%s/HMAP_txt/HMAP_%05i_LMH_after.txt",
 				m_options.LOG_OUTPUT_DIR.c_str(), DEBUG_STEP));
+		f << ss;
 		logFmt(
 			mrpt::system::LVL_INFO,
 			"[LSLAM_proc_msg_AA] Saved HMAP_%05i_LMH_after.txt\n", DEBUG_STEP);
