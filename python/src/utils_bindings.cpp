@@ -23,7 +23,10 @@
 
 using namespace boost::python;
 using namespace mrpt::config;
+using namespace mrpt::img;
+using namespace mrpt::rtti;
 using namespace mrpt::serialization;
+using namespace mrpt::io;
 
 // CStream
 void CStream_ReadObject(CArchive& self, CSerializable::Ptr& obj)
@@ -214,15 +217,6 @@ void export_utils()
 			.def(
 				"WriteObject", &CStream_WriteObject,
 				"Writes an object to the stream.");
-	}
-
-	// CStdOutStream
-	{
-		class_<CStdOutStream, bases<CStream>>(
-			"CStdOutStream",
-			"This CStdOutStream derived class allow printing to standard out, "
-			"normally the console text output.",
-			init<>());
 	}
 
 	// CFileGZInputStream

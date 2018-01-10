@@ -58,7 +58,7 @@ namespace deciders
  *
  * - \b class_verbosity
  *   + \a Section       : NodeRegistrationDeciderParameters
- *   + \a Default value : 1 (LVL_INFO)
+ *   + \a Default value : 1 (mrpt::system::LVL_INFO)
  *   + \a Required      : FALSE
  *
  * - \b registration_max_distance

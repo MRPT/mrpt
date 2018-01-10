@@ -114,7 +114,8 @@ CPose3DPDF::Ptr CTopLCDetector_GridMatching::computeTopologicalObservationModel(
 			mrpt::system::LVL_DEBUG, "[TLCD_gridmatch] DEBUG: Saving %s\n",
 			filStat.c_str());
 		CFileGZOutputStream f(filStat);
-		this->m_hmtslam->saveState(mrpt::serialization::archiveFrom(f));
+		auto arch = mrpt::serialization::archiveFrom(f);
+		this->m_hmtslam->saveState(arch);
 
 		m_hmtslam->logFmt(
 			mrpt::system::LVL_DEBUG, "[TLCD_gridmatch] DEBUG: Saving %s\n",

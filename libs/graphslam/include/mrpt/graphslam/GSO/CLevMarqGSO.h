@@ -56,7 +56,7 @@ namespace optimizers
  *
  * - \b class_verbosity
  *   + \a Section       : OptimizerParameters
- *   + \a Default value : 1 (LVL_INFO)
+ *   + \a Default value : 1 (mrpt::system::LVL_INFO)
  *   + \a Required      : FALSE
  *
  * - \b optimization_on_second_thread

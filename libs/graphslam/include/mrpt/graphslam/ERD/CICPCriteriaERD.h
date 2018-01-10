@@ -70,7 +70,7 @@ namespace deciders
  *
  * - \b class_verbosity
  *   + \a Section       : EdgeRegistrationDeciderParameters
- *   + \a default value : 1 (LVL_INFO)
+ *   + \a default value : 1 (mrpt::system::LVL_INFO)
  *   + \a Required      : FALSE
  *
  * - \b LC_min_nodeid_diff

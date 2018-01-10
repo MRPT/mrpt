@@ -17,6 +17,10 @@
 #include <mrpt/opengl/COpenGLScene.h>
 
 #include <mrpt/poses/CPose3DPDF.h>
+#include <mrpt/poses/CPoint2D.h>
+#include <mrpt/poses/CPoint3D.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPose2D.h>
 
 #include <mrpt/math/CMatrix.h>
 
@@ -27,6 +31,8 @@ using namespace boost::python;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;
 using namespace mrpt::math;
+using namespace mrpt::serialization;
+using namespace mrpt::io;
 
 // CRenderizable
 void CRenderizable_setPose(CRenderizable& self, mrpt::poses::CPose3D pose)
@@ -36,7 +42,7 @@ void CRenderizable_setPose(CRenderizable& self, mrpt::poses::CPose3D pose)
 
 void CRenderizable_setLocation1(CRenderizable& self, mrpt::poses::CPoint3D pose)
 {
-	self.setLocation(pose);
+	self.setLocation(pose.asTPoint());
 }
 
 void CRenderizable_setLocation2(CRenderizable& self, float x, float y, float z)

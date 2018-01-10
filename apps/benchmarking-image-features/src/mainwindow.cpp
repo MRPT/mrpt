@@ -193,7 +193,8 @@ void MainWindow::on_button_generate_clicked()
 				xData.at<double>(i) = i;
 				yData.at<double>(i) = distances.row(i).x();
 			}
-			plot = plot::createPlot2d(xData, yData);
+#ifdef HAVE_OPENCV_PLOT
+			plot = plot::Plot2d::create(xData, yData);
 			plot->setPlotSize(len, 1);
 			plot->setMaxX(distances.size());
 			plot->setMinX(-15);
@@ -205,7 +206,7 @@ void MainWindow::on_button_generate_clicked()
 			plot->setPlotLineColor(Scalar(255, 0, 0));
 			plot->setPlotBackgroundColor(Scalar(255, 255, 255));
 			plot->setPlotGridColor(Scalar(255, 255, 0));
-
+#endif
 			cv::Mat temp1(display.cols, display.rows, display.type());
 			cvtColor(display, temp1, CV_RGB2BGR);
 
@@ -393,14 +394,15 @@ void MainWindow::on_button_generate_clicked()
 					min_y = -1;
 				}
 
-				plot = plot::createPlot2d(xData, yData);
+#ifdef HAVE_OPENCV_PLOT
+				plot = plot::Plot2d::create(xData, yData);
 				plot->setPlotSize(len, 1);
 				plot->setMaxX(len);
 				plot->setMinX(0);
 				plot->setMaxY(max_y);
 				plot->setMinY(min_y);
 				plot->render(display);
-
+#endif
 				cv::Mat temp1(display.cols, display.rows, display.type());
 				cvtColor(display, temp1, CV_RGB2BGR);
 
@@ -446,14 +448,15 @@ void MainWindow::on_button_generate_clicked()
 						else
 							yData.at<double>(i) = v2_surf.at(i);
 					}
-					plot = plot::createPlot2d(xData, yData);
+#ifdef HAVE_OPENCV_PLOT
+					plot = plot::Plot2d::create(xData, yData);
 					plot->setPlotSize(len, 1);
 					plot->setMaxX(len);
 					plot->setMinX(0);
 					plot->setMaxY(max_y);
 					plot->setMinY(min_y);
 					plot->render(display);
-
+#endif
 					cv::Mat temp2(display.cols, display.rows, display.type());
 					cvtColor(display, temp2, CV_RGB2BGR);
 

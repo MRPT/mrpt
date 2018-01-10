@@ -181,7 +181,7 @@ exponential.
  *
  * - \b class_verbosity
  *   + \a Section       : EdgeRegistrationDeciderParameters
- *   + \a Default value : 1 (LVL_INFO)
+ *   + \a Default value : 1 (mrpt::system::LVL_INFO)
  *   + \a Required      : FALSE
  *
  * - \b use_scan_matching
