@@ -18,6 +18,7 @@
 #include <mrpt/core/SSE_types.h>
 #include "faster_corner_utilities.h"
 #include "corner_12.h"
+#include <list>
 
 using namespace std;
 using namespace mrpt;
