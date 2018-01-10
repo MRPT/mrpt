@@ -113,7 +113,7 @@ namespace graphslam
  *
  * - \b output_dir_fname
  *   + \a Section       : GeneralConfiguration
- *   + \a Default value : 1 (LVL_INFO)
+ *   + \a Default value : 1 (mrpt::system::LVL_INFO)
  *   + \a Required      : FALSE
  *
  * - \b user_decides_about_output_dir
@@ -138,7 +138,7 @@ namespace graphslam
  *
  * - \b class_verbosity
  *   + \a Section       : GeneralConfiguration
- *   + \a Default value : 1 (LVL_INFO)
+ *   + \a Default value : 1 (mrpt::system::LVL_INFO)
  *   + \a Required      : FALSE
  *
  *

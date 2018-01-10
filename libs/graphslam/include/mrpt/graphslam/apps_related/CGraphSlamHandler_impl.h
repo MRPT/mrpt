@@ -47,13 +47,13 @@ template <class GRAPH_T>
 CGraphSlamHandler<GRAPH_T>::~CGraphSlamHandler()
 {
 	
-	m_logger->logFmt(LVL_WARN, "graphslam-engine has finished.");
+	m_logger->logFmt(mrpt::system::LVL_WARN, "graphslam-engine has finished.");
 
 	// keep the window open until user closes it.
 	if (m_win)
 	{
 		m_logger->logFmt(
-			LVL_WARN,
+			mrpt::system::LVL_WARN,
 			"Application will exit when the display window is closed.");
 		bool break_exec = false;
 		while (m_win->isOpen() && break_exec == false)
@@ -83,24 +83,24 @@ CGraphSlamHandler<GRAPH_T>::~CGraphSlamHandler()
 		if (m_win)
 		{
 			m_logger->logFmt(
-				LVL_DEBUG, "Releasing CDisplayWindow3D instance...");
+				mrpt::system::LVL_DEBUG, "Releasing CDisplayWindow3D instance...");
 			delete m_win;
 		}
 
 		if (m_win_observer)
 		{
 			m_logger->logFmt(
-				LVL_DEBUG, "Releasing CWindowObserver instance...");
+				mrpt::system::LVL_DEBUG, "Releasing CWindowObserver instance...");
 			delete m_win_observer;
 		}
 
 		if (m_win_manager)
 		{
-			m_logger->logFmt(LVL_DEBUG, "Releasing CWindowManager instance...");
+			m_logger->logFmt(mrpt::system::LVL_DEBUG, "Releasing CWindowManager instance...");
 			delete m_win_manager;
 		}
 	}
-	m_logger->logFmt(LVL_INFO, "Exited.");
+	m_logger->logFmt(mrpt::system::LVL_INFO, "Exited.");
 }
 
 template <class GRAPH_T>
@@ -113,7 +113,7 @@ void CGraphSlamHandler<GRAPH_T>::initOutputDir(
 	using namespace mrpt;
 
 	m_logger->logFmt(
-		LVL_INFO, "Setting up output directory: %s", output_dir_fname.c_str());
+		mrpt::system::LVL_INFO, "Setting up output directory: %s", output_dir_fname.c_str());
 
 	// current time vars - handy in the rest of the function.
 	mrpt::system::TTimeStamp cur_date(getCurrentTime());
@@ -155,7 +155,7 @@ void CGraphSlamHandler<GRAPH_T>::initOutputDir(
 		{
 			case 2:
 			{
-				m_logger->logFmt(LVL_INFO, "Deleting existing files...");
+				m_logger->logFmt(mrpt::system::LVL_INFO, "Deleting existing files...");
 				// purge directory
 				deleteFilesInDirectory(
 					output_dir_fname,
@@ -173,7 +173,7 @@ void CGraphSlamHandler<GRAPH_T>::initOutputDir(
 				// rename the whole directory to DATE_TIME_${OUTPUT_DIR_NAME}
 				string dst_fname = output_dir_fname + cur_date_validstr;
 				m_logger->logFmt(
-					LVL_INFO, "Renaming directory to: %s", dst_fname.c_str());
+					mrpt::system::LVL_INFO, "Renaming directory to: %s", dst_fname.c_str());
 				string error_msg;
 				bool did_rename =
 					renameFile(output_dir_fname, dst_fname, &error_msg);
@@ -188,12 +188,12 @@ void CGraphSlamHandler<GRAPH_T>::initOutputDir(
 	}  // IF DIRECTORY EXISTS..
 
 	// Now rebuild the directory from scratch
-	m_logger->logFmt(LVL_INFO, "Creating the new directory structure...");
+	m_logger->logFmt(mrpt::system::LVL_INFO, "Creating the new directory structure...");
 	string cur_fname;
 
 	// debug_fname
 	createDirectory(output_dir_fname);
-	m_logger->logFmt(LVL_INFO, "Finished initializing output directory.");
+	m_logger->logFmt(mrpt::system::LVL_INFO, "Finished initializing output directory.");
 
 	MRPT_END;
 }  // end of initOutputDir
@@ -223,7 +223,7 @@ void CGraphSlamHandler<GRAPH_T>::readConfigFname(const std::string& fname)
 		mrpt::system::fileExists(fname),
 		mrpt::format("\nConfiguration file not found: \n%s\n", fname.c_str()));
 
-	m_logger->logFmt(LVL_INFO, "Reading the .ini file... ");
+	m_logger->logFmt(mrpt::system::LVL_INFO, "Reading the .ini file... ");
 
 	mrpt::config::CConfigFile cfg_file(fname);
 
@@ -339,7 +339,7 @@ void CGraphSlamHandler<GRAPH_T>::setResultsDirName(const std::string& dirname)
 	
 	m_output_dir_fname = mrpt::system::fileNameStripInvalidChars(dirname);
 	m_logger->logFmt(
-		LVL_WARN, "Overriding .ini Results directory -> %s...",
+		mrpt::system::LVL_WARN, "Overriding .ini Results directory -> %s...",
 		m_output_dir_fname.c_str());
 }
 
@@ -349,7 +349,7 @@ void CGraphSlamHandler<GRAPH_T>::saveResults(
 {
 		ASSERT_(m_engine);
 
-	m_logger->logFmt(LVL_INFO, "Generating overall report...");
+	m_logger->logFmt(mrpt::system::LVL_INFO, "Generating overall report...");
 	m_engine->generateReportFiles(output_dir_fname);
 	// save the graph and the 3DScene
 	if (m_save_graph)
@@ -371,7 +371,7 @@ void CGraphSlamHandler<GRAPH_T>::saveResults(
 		this->saveMap(output_dir_fname + "/" + m_save_map_fname);
 	}
 
-	m_logger->logFmt(LVL_INFO, "Generated report.");
+	m_logger->logFmt(mrpt::system::LVL_INFO, "Generated report.");
 }
 
 template <class GRAPH_T>
@@ -410,7 +410,7 @@ void CGraphSlamHandler<GRAPH_T>::execute()
 		cont_exec = m_engine->_execGraphSlamStep(
 			action, observations, observation, curr_rawlog_entry);
 	}
-	m_logger->logFmt(LVL_WARN, "Finished graphslam execution.");
+	m_logger->logFmt(mrpt::system::LVL_WARN, "Finished graphslam execution.");
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -432,8 +432,8 @@ void CGraphSlamHandler<GRAPH_T>::initVisualization()
 		m_win->unlockAccess3DScene();
 	}
 
-	m_logger->logFmt(LVL_DEBUG, "Initialized CDisplayWindow3D...");
-	m_logger->logFmt(LVL_DEBUG, "Listening to CDisplayWindow3D events...");
+	m_logger->logFmt(mrpt::system::LVL_DEBUG, "Initialized CDisplayWindow3D...");
+	m_logger->logFmt(mrpt::system::LVL_DEBUG, "Listening to CDisplayWindow3D events...");
 
 	// pass the window and the observer pointers to the CWindowManager instance
 	m_win_manager = new mrpt::graphslam::CWindowManager();

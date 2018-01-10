@@ -10,6 +10,8 @@
 #include <mrpt/system/CDirectoryExplorer.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/datetime.h>
+#include <mrpt/serialization/stl_serialization.h>
+#include <mrpt/serialization/CArchive.h>
 #include <algorithm>
 
 struct TPerfField
@@ -32,6 +34,7 @@ int run_build_tables()
 	using namespace std;
 	using namespace mrpt;
 	using namespace mrpt::system;
+	using namespace mrpt::serialization;
 	
 	// Perf. results are in:
 	//  PERF_DATA_DIR + mrpt::format("/perf-results-%i.%i.%i%s-%s-%ibit.dat"
@@ -57,7 +60,8 @@ int run_build_tables()
 		dat.file_path = fils[i].wholePath;
 
 		CFileInputStream f(dat.file_path);
-		archiveFrom(f) >> dat.all_perf_data;
+		auto arch = archiveFrom(f);
+		arch >> dat.all_perf_data;
 		lstConfigurations.push_back(dat);
 
 		cout << " Read: " << setw(30) << config_name << " with "

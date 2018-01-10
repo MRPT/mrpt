@@ -17,6 +17,7 @@
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/io/CFileInputStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
 
 #include "common.h"
@@ -348,7 +349,8 @@ int main(int argc, char** argv)
 									int(MRPT_WORD_SIZE));
 			cout << "Saving perf-data to: " << fil_name << endl;
 			CFileOutputStream f(fil_name);
-			archiveFrom(f) << all_perf_data;
+			auto arch = archiveFrom(f);
+			arch << all_perf_data;
 		}
 
 		return 0;

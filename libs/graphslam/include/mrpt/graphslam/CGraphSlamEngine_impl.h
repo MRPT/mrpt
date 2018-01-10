@@ -968,7 +968,7 @@ void CGraphSlamEngine<GRAPH_T>::getMap(
 	}
 	//	map =
 	// dynamic_cast<mrpt::maps::COctoMap::Ptr>(m_octomap_cached->clone());
-	ASSERT_(map)
+	ASSERT_(map);
 
 	// fill the timestamp if this is given
 	if (acquisition_time)
@@ -1003,7 +1003,7 @@ inline void CGraphSlamEngine<GRAPH_T>::computeMap() const
 				 it = m_nodes_to_laser_scans2D.begin();
 			 it != m_nodes_to_laser_scans2D.end(); ++it)
 		{
-			const TNodeID& curr_node = it->first;
+			const mrpt::graphs::TNodeID& curr_node = it->first;
 
 			// fetch LaserScan
 			const mrpt::obs::CObservation2DRangeScan::Ptr& curr_laser_scan =
@@ -1056,7 +1056,7 @@ void CGraphSlamEngine<GRAPH_T>::loadParams(const std::string& fname)
 	// Minimum verbosity level of the logger
 	int min_verbosity_level =
 		cfg_file.read_int("GeneralConfiguration", "class_verbosity", 1, false);
-	this->setMinLoggingLevel(VerbosityLevel(min_verbosity_level));
+	this->setMinLoggingLevel(mrpt::system::VerbosityLevel(min_verbosity_level));
 
 	// Section: VisualizationParameters
 	// ////////////////////////////////
@@ -1888,7 +1888,7 @@ void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
 {
 	MRPT_START;
 	ASSERT_(m_enable_visuals);
-		using namespace mrpt::obs;
+	using namespace mrpt::obs;
 	using namespace mrpt::opengl;
 	using namespace std;
 	using namespace mrpt::poses;
@@ -1900,7 +1900,7 @@ void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
 		ASSERT_(map_obj);
 	}
 
-	CTicTac map_update_timer;
+	mrpt::system::CTicTac map_update_timer;
 	map_update_timer.Tic();
 
 	// get the set of nodes for which to run the update

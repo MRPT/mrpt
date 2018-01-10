@@ -104,13 +104,13 @@ bool CICPCriteriaERD<GRAPH_T>::updateState(
 			{
 				this->m_nodes_to_laser_scans2D[this->m_graph->nodeCount() - 1] =
 					m_last_laser_scan2D;
-				MRPT_LOG_DEBUG_STREAM("Added laser scans of nodeID: " << m_graph->nodeCount() - 1);
+				MRPT_LOG_DEBUG(mrpt::format("Added laser scans of nodeID: %u",(unsigned)(this->m_graph->nodeCount() - 1)));
 			}
 			if (m_last_laser_scan3D)
 			{
 				m_nodes_to_laser_scans3D[this->m_graph->nodeCount() - 1] =
 					m_last_laser_scan3D;
-				MRPT_LOG_DEBUG_STREAM("Added laser scans of nodeID: " << m_graph->nodeCount() - 1);
+				MRPT_LOG_DEBUG(mrpt::format("Added laser scans of nodeID: %u",(unsigned)(this->m_graph->nodeCount() - 1)));
 			}
 		}
 	}
