@@ -36,6 +36,7 @@
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/random.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include <mrpt/opengl/CSphere.h>
 #include <mrpt/opengl/CAxis.h>
@@ -51,6 +52,8 @@ using namespace mrpt::bayes;
 using namespace mrpt::poses;
 using namespace mrpt::opengl;
 using namespace mrpt::gui;
+using namespace mrpt::io;
+using namespace mrpt::serialization;
 using namespace mrpt::math;
 using namespace mrpt::random;
 using namespace mrpt::system;
@@ -67,7 +70,7 @@ using namespace std;
 // ------------------------------------------------------
 //				Configuration
 // ------------------------------------------------------
-CConfigFile* iniFile = nullptr;
+mrpt::config::CConfigFile* iniFile = nullptr;
 std::string iniFileName;
 
 // extern double	likelihood_acumulation;
@@ -115,7 +118,7 @@ void TestParticlesLocalization()
 		SHOW_3D_FRANCO_POSITION, bool, (*iniFile), "ro-localization");
 	MRPT_LOAD_CONFIG_VAR(SAVE_3D_TO_VIDEO, bool, (*iniFile), "ro-localization");
 
-	ASSERT_FILE_EXISTS_(RAWLOG_FILE)
+	ASSERT_FILE_EXISTS_(RAWLOG_FILE);
 
 	// Load GT:
 	CMatrix groundTruth;
@@ -322,7 +325,10 @@ void TestParticlesLocalization()
 			if (mrpt::system::fileExists(MAP_FILE))
 			{
 				COccupancyGridMap2D grid2d;
-				CFileGZInputStream(MAP_FILE) >> grid2d;
+				{
+					CFileGZInputStream f(MAP_FILE);
+					archiveFrom(f) >> grid2d;
+				}
 
 #ifdef SHOW_REAL_TIME_3D
 				{
@@ -448,7 +454,7 @@ void TestParticlesLocalization()
 				pdf.getMean(pdfEstimation);
 
 				CPose2D GT_Pose;
-				if (groundTruth.rows() > size_t(step))
+				if (groundTruth.rows() > step)
 				{
 					GT_Pose = CPose2D(
 						groundTruth(step, 1), groundTruth(step, 2),
@@ -811,7 +817,7 @@ observations->getObservationByClass( CLASS_ID(CObservation2DRangeScan));
 					}
 
 					// groundTruth
-					if (groundTruth.rows() > size_t(step))
+					if (groundTruth.rows() > step)
 					{
 #ifdef SHOW_REAL_TIME_3D
 						opengl::CRenderizable::Ptr obj =
@@ -989,10 +995,9 @@ observations->getObservationByClass( CLASS_ID(CObservation2DRangeScan));
 #endif
 
 				if ((step % SCENE3D_FREQ) == 0)
-					CFileGZOutputStream(
+					scene->saveToFile(
 						format(
-							"%s/3Dscene_%03u.3Dscene", OUT_DIR.c_str(), step))
-						<< *scene;
+							"%s/3Dscene_%03u.3Dscene", OUT_DIR.c_str(), step));
 
 				step++;
 			}  // while rawlogEntries
@@ -1072,7 +1077,7 @@ int main(int argc, char** argv)
 
 		iniFileName = argv[1];
 
-		iniFile = new CConfigFile(iniFileName);
+		iniFile = new mrpt::config::CConfigFile(iniFileName);
 
 		TestParticlesLocalization();
 

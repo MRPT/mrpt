@@ -24,8 +24,6 @@ namespace mrpt
 {
 namespace system
 {
-class CStream;  // frwd decl
-
 /** \brief Enumeration of available verbosity levels. \sa COutputLogger */
 enum VerbosityLevel
 {

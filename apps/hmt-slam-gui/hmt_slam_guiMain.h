@@ -208,7 +208,7 @@ class hmt_slam_guiFrame : public wxFrame
 		THREAD_OPCODE opcode;
 	};
 
-	mrpt::utils::CThreadSafeQueue<TThreadMsg> m_thread_in_queue,
+	mrpt::containers::CThreadSafeQueue<TThreadMsg> m_thread_in_queue,
 		m_thread_out_queue;
 
 	// ---------------------------------------------|

@@ -20,6 +20,7 @@
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 
@@ -27,10 +28,14 @@ using namespace mrpt;
 using namespace mrpt::slam;
 using namespace mrpt::obs;
 using namespace mrpt::hmtslam;
+using namespace mrpt::config;
+using namespace mrpt::io;
+using namespace mrpt::img;
 using namespace mrpt::opengl;
 using namespace mrpt::system;
 using namespace mrpt::math;
 using namespace mrpt::system;
+using namespace mrpt::serialization;
 using namespace std;
 
 std::string configFile;
@@ -112,7 +117,7 @@ void Run_HMT_SLAM()
 	const std::string OUT_DIR =
 		cfgFile.read_string("HMT-SLAM", "LOG_OUTPUT_DIR", "HMT_SLAM_OUTPUT");
 
-	ASSERT_FILE_EXISTS_(rawlogFileName)
+	ASSERT_FILE_EXISTS_(rawlogFileName);
 	CFileGZInputStream rawlogFile(rawlogFileName);
 
 	mapping.logFmt(
@@ -153,7 +158,7 @@ void Run_HMT_SLAM()
 		CSerializable::Ptr objFromRawlog;
 		try
 		{
-			rawlogFile >> objFromRawlog;
+			archiveFrom(rawlogFile) >> objFromRawlog;
 			rawlogEntry++;
 		}
 		catch (std::exception&)
@@ -231,6 +236,7 @@ void Run_HMT_SLAM()
 			mrpt::system::LVL_WARN, "\n Saving FINAL HMT-MAP to file: %s\n",
 			final_file.c_str());
 		CFileGZOutputStream fil(final_file);
-		mapping.saveState(fil);
+		auto arch = archiveFrom(fil);
+		mapping.saveState(arch);
 	}
 }

@@ -287,31 +287,14 @@ void CPosePDFParticlesExtended::getCovarianceAndMean(
 	}
 }
 
-/*---------------------------------------------------------------
-						writeToStream
-  ---------------------------------------------------------------*/
-uint8_t CPosePDFParticlesExtended::serializeGetVersion() const { return XX; }
-void CPosePDFParticlesExtended::serializeTo(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CPosePDFParticlesExtended::serializeGetVersion() const { return 0; }
+void CPosePDFParticlesExtended::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		CParticleList::const_iterator it;
-		uint32_t n;
-
-		// The data
-		n = uint32_t(m_particles.size());
-		out << n;
-		for (it = m_particles.begin(); it != m_particles.end(); it++)
-			out << it->log_w << it->d->pose << it->d->state;
-	}
+	out.WriteAs<uint32_t>(m_particles.size());
+	for (const auto& p : m_particles)
+		out << p.log_w << p.d->pose << p.d->state;
 }
 
-/*---------------------------------------------------------------
-						readFromStream
-  ---------------------------------------------------------------*/
 void CPosePDFParticlesExtended::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
@@ -720,15 +703,10 @@ void CPosePDFParticlesExtended::resetUniform(
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-						saveToTextFile
-   Save PDF's particles to a text file. In each line it
-	  will go: "x y phi weight"
- ---------------------------------------------------------------*/
-void CPosePDFParticlesExtended::saveToTextFile(const std::string& file) const
+bool CPosePDFParticlesExtended::saveToTextFile(const std::string& file) const
 {
 	FILE* f = os::fopen(file.c_str(), "wt");
-	if (!f) return;
+	if (!f) return false;
 
 	for (unsigned int i = 0; i < m_particles.size(); i++)
 		os::fprintf(
@@ -737,19 +715,14 @@ void CPosePDFParticlesExtended::saveToTextFile(const std::string& file) const
 			m_particles[i].log_w);
 
 	os::fclose(f);
+	return true;
 }
 
-/*---------------------------------------------------------------
-						getParticlePose
- ---------------------------------------------------------------*/
 CPose2D CPosePDFParticlesExtended::getParticlePose(int i) const
 {
 	return m_particles[i].d->pose;
 }
 
-/*---------------------------------------------------------------
-						changeCoordinatesReference
- ---------------------------------------------------------------*/
 void CPosePDFParticlesExtended::changeCoordinatesReference(
 	const CPose3D& newReferenceBase_)
 {
@@ -760,9 +733,6 @@ void CPosePDFParticlesExtended::changeCoordinatesReference(
 		it->d->pose = newReferenceBase + it->d->pose;
 }
 
-/*---------------------------------------------------------------
-					drawSingleSample
- ---------------------------------------------------------------*/
 void CPosePDFParticlesExtended::drawSingleSample(CPose2D& outPart) const
 {
 	float uni = getRandomGenerator().drawUniform(0.0f, 0.9999f);

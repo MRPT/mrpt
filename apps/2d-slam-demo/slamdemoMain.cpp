@@ -32,12 +32,15 @@
 #include <mrpt/random.h>
 #include <mrpt/obs/CObservationComment.h>
 #include <mrpt/gui/about_box.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::io;
 using namespace mrpt::bayes;
 using namespace mrpt::random;
+using namespace mrpt::serialization;
+using namespace mrpt::system;
 using namespace mrpt::slam;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
@@ -1083,7 +1086,7 @@ void slamdemoFrame::OnbtnResetClicked(wxCommandEvent& event)
   ---------------------------------------------------------------*/
 void slamdemoFrame::OnbtnOneStepClicked(wxCommandEvent& event)
 {
-	static CTicTac tictac;
+	CTicTac tictac;
 	tictac.Tic();
 	executeOneStep();
 	const double T = tictac.Tac();
@@ -1914,7 +1917,7 @@ void slamdemoFrame::TSimulationOptions::saveToConfigFile(
 	MRPT_SAVE_CONFIG_VAR(spurious_count_std, f, c)
 }
 
-void slamdemoFrame::TSimulationOptions::dumpToTextStream(CStream& out) const {}
+void slamdemoFrame::TSimulationOptions::dumpToTextStream(std::ostream& out) const {}
 /*---------------------------------------------------------------
 						executeOneStep
   ---------------------------------------------------------------*/
@@ -2041,7 +2044,7 @@ void slamdemoFrame::executeOneStep()
 			// Save dataset to file?
 			if (m_rawlog_out_file.fileOpenCorrectly())
 			{
-				m_rawlog_out_file << act << sf;
+				archiveFrom(m_rawlog_out_file) << act << sf;
 			}
 		}
 
@@ -2120,7 +2123,7 @@ void slamdemoFrame::executeOneStep()
 					}
 					else
 					{
-						ASSERT_(o_has_been_just_inserted)
+						ASSERT_(o_has_been_just_inserted);
 						// False negative: It was an already known LM but has
 						// been wrongly classified as new:
 						hist.da_false_neg++;
@@ -2399,7 +2402,7 @@ void slamdemoFrame::OnMenuSaveFilterState(wxCommandEvent& event)
 		mrpt::opengl::COpenGLScene scene;
 		scene.insert(obj3D);
 
-		CFileGZOutputStream(filName) << scene;
+		scene.saveToFile(filName);
 	}
 }
 

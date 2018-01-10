@@ -217,7 +217,7 @@ int main(int argc, char** argv)
 			// ------------------------------------
 			ASSERTMSG_(
 				ops_functors.find(selected_op) != ops_functors.end(),
-				"Internal error: Unknown operation functor!")
+				"Internal error: Unknown operation functor!");
 
 			// Call the selected functor:
 			ops_functors[selected_op](input_file, is3d, cmd, verbose);

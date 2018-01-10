@@ -38,7 +38,7 @@ void CHMTSLAM::perform_TLC(
 	const mrpt::poses::CPose3DPDFGaussian& pose_i_wrt_e)
 {
 	MRPT_START
-	ASSERT_(Ai != Ae)
+	ASSERT_(Ai != Ae);
 
 	std::lock_guard<std::mutex> locker(LMH.m_robotPosesGraph.lock);
 

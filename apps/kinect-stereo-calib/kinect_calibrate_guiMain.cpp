@@ -34,10 +34,18 @@
 #include <mrpt/vision/chessboard_find_corners.h>
 #include <mrpt/vision/chessboard_stereo_camera_calib.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/io/vector_loadsave.h>
+#include <mrpt/poses/CPose3DQuat.h>
+#include <mrpt/io/CMemoryStream.h>
 #include <mrpt/gui/WxUtils.h>
+#include <mrpt/config/CConfigFile.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;
+using namespace mrpt::io;
+using namespace mrpt::img;
+using namespace mrpt::system;
 using namespace mrpt::hwdrivers;
 using namespace std;
 
@@ -2505,7 +2513,7 @@ void kinect_calibrate_guiDialog::OnbtnLoadImageListClick(wxCommandEvent& event)
 		m_config.Write(_("last_path"), startPath);
 
 		std::vector<std::string> lst;
-		lst.loadFromFile(file_list);
+		mrpt::io::loadTextFile(lst,file_list);
 
 		if (lst.size() == 0)
 			throw std::runtime_error("Error: List file seems to be empty.");
@@ -2523,8 +2531,8 @@ void kinect_calibrate_guiDialog::OnbtnLoadImageListClick(wxCommandEvent& event)
 
 		for (unsigned int i = 0; i < N; i++)
 		{
-			const string& sL = lst(2 * i + 0);
-			const string& sR = lst(2 * i + 1);
+			const string& sL = lst[2 * i + 0];
+			const string& sR = lst[2 * i + 1];
 
 			mrpt::vision::TImageStereoCalibData& scd = m_calib_images[i];
 

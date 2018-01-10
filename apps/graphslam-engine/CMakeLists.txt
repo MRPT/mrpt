@@ -43,6 +43,7 @@ DeclareAppDependencies(${PROJECT_NAME}
 	mrpt-maps
 	mrpt-slam
 	mrpt-opengl
+	mrpt-tclap
 	)
 
 DeclareAppForInstall(${PROJECT_NAME})

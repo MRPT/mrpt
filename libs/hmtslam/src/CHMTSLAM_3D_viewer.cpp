@@ -18,6 +18,7 @@
 
 using namespace mrpt::slam;
 using namespace mrpt::hmtslam;
+using namespace mrpt::system;
 using namespace std::literals;
 
 /*---------------------------------------------------------------

@@ -28,6 +28,7 @@ using namespace mrpt::slam;
 using namespace mrpt::random;
 using namespace mrpt::hmtslam;
 using namespace mrpt::system;
+using namespace mrpt::serialization;
 using namespace mrpt::poses;
 using namespace mrpt::opengl;
 using namespace mrpt::maps;
@@ -1058,7 +1059,7 @@ void CHierarchicalMapMHPartition::findArcsOfTypeBetweenNodes(
 			if ((*itArc)->m_nodeFrom == node2id ||
 				(*itArc)->m_nodeTo == node2id)
 			{
-				if ((*itArc)->m_arcType.isType(arcType)) ret.push_back(*itArc);
+				if ((*itArc)->m_arcType == arcType) ret.push_back(*itArc);
 			}
 	}
 
@@ -1407,8 +1408,8 @@ void CHierarchicalMapMHPartition::computeGloballyConsistentNodeCoordinates(
 void CHierarchicalMapMHPartition::dumpAsText(std::vector<std::string>& st) const
 {
 	st.clear();
-	st << "LIST OF NODES";
-	st << "================";
+	st.push_back("LIST OF NODES");
+	st.push_back("================");
 
 	for (TNodeList::const_iterator it = m_nodes.begin(); it != m_nodes.end();
 		 ++it)
@@ -1423,7 +1424,7 @@ void CHierarchicalMapMHPartition::dumpAsText(std::vector<std::string>& st) const
 			s += format(
 				"%i-%i, ", (int)(*a)->getNodeFrom(), (int)(*a)->getNodeTo());
 
-		st << s;
+		st.push_back(s);
 
 		for (CMHPropertiesValuesList::const_iterator ann =
 				 it->second->m_annotations.begin();
@@ -1437,14 +1438,14 @@ void CHierarchicalMapMHPartition::dumpAsText(std::vector<std::string>& st) const
 			else
 				s += "(nullptr)";
 
-			st << s;
+			st.push_back(s);
 
 			if (ann->name == NODE_ANNOTATION_REF_POSEID)
 			{
 				TPoseID refID;
 				it->second->m_annotations.getElemental(
 					NODE_ANNOTATION_REF_POSEID, refID, ann->ID);
-				st << format("     VALUE: %i", (int)refID);
+				st.push_back(format("     VALUE: %i", (int)refID));
 			}
 			else if (ann->name == NODE_ANNOTATION_POSES_GRAPH)
 			{
@@ -1453,30 +1454,30 @@ void CHierarchicalMapMHPartition::dumpAsText(std::vector<std::string>& st) const
 						NODE_ANNOTATION_POSES_GRAPH, ann->ID);
 				ASSERT_(posesGraph);
 
-				st << format(
+				st.push_back(format(
 					"     CRobotPosesGraph has %i poses:",
-					(int)posesGraph->size());
+					(int)posesGraph->size()));
 				CPose3D pdfMean;
 				for (CRobotPosesGraph::const_iterator p = posesGraph->begin();
 					 p != posesGraph->end(); ++p)
 				{
 					const CPose3DPDFParticles& pdf = p->second.pdf;
 					pdf.getMean(pdfMean);
-					st << format(
+					st.push_back(format(
 						"       Pose %i \t (%.03f,%.03f,%.03fdeg)",
 						(int)p->first, pdfMean.x(), pdfMean.y(),
-						RAD2DEG(pdfMean.yaw()));
+						RAD2DEG(pdfMean.yaw())));
 				}
 			}
 		}
 
-		st << "";
+		st.push_back("");
 	}
 
-	st << "";
-	st << "";
-	st << "LIST OF ARCS";
-	st << "================";
+	st.push_back("");
+	st.push_back("");
+	st.push_back("LIST OF ARCS");
+	st.push_back("================");
 
 	for (TArcList::const_iterator it = m_arcs.begin(); it != m_arcs.end(); ++it)
 	{
@@ -1485,9 +1486,9 @@ void CHierarchicalMapMHPartition::dumpAsText(std::vector<std::string>& st) const
 			"ARC: %i -> %i\n", (int)(*it)->getNodeFrom(),
 			(int)(*it)->getNodeTo());
 
-		s += string("   Arc type: ") + (*it)->m_arcType.getType();
+		s += string("   Arc type: ") + (*it)->m_arcType;
 
-		st << s;
+		st.push_back(s);
 
 		for (CMHPropertiesValuesList::const_iterator ann =
 				 (*it)->m_annotations.begin();
@@ -1501,21 +1502,21 @@ void CHierarchicalMapMHPartition::dumpAsText(std::vector<std::string>& st) const
 			else
 				s += "(nullptr)";
 
-			st << s;
+			st.push_back(s);
 
 			if (ann->name == ARC_ANNOTATION_DELTA_SRC_POSEID)
 			{
 				TPoseID refID;
 				(*it)->m_annotations.getElemental(
 					ARC_ANNOTATION_DELTA_SRC_POSEID, refID, ann->ID);
-				st << format("     VALUE: %i", (int)refID);
+				st.push_back(format("     VALUE: %i", (int)refID));
 			}
 			else if (ann->name == ARC_ANNOTATION_DELTA_TRG_POSEID)
 			{
 				TPoseID refID;
 				(*it)->m_annotations.getElemental(
 					ARC_ANNOTATION_DELTA_TRG_POSEID, refID, ann->ID);
-				st << format("     VALUE: %i", (int)refID);
+				st.push_back(format("     VALUE: %i", (int)refID));
 			}
 			else if (ann->name == ARC_ANNOTATION_DELTA)
 			{
@@ -1527,18 +1528,18 @@ void CHierarchicalMapMHPartition::dumpAsText(std::vector<std::string>& st) const
 				relativePoseAcordToArc.copyFrom(
 					*std::dynamic_pointer_cast<CPose3DPDF>(o));
 
-				st << format(
+				st.push_back(format(
 					"     VALUE: (%f,%f,%f , %fdeg,%fdeg,%fdeg)",
 					relativePoseAcordToArc.mean.x(),
 					relativePoseAcordToArc.mean.y(),
 					relativePoseAcordToArc.mean.z(),
 					RAD2DEG(relativePoseAcordToArc.mean.yaw()),
 					RAD2DEG(relativePoseAcordToArc.mean.pitch()),
-					RAD2DEG(relativePoseAcordToArc.mean.roll()));
+					RAD2DEG(relativePoseAcordToArc.mean.roll())));
 			}
 		}
 
-		st << "";
+		st.push_back("");
 	}
 }
 

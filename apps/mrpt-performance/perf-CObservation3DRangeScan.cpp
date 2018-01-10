@@ -12,6 +12,7 @@
 #include <mrpt/random.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include "common.h"
 
@@ -19,6 +20,9 @@ using namespace mrpt;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
 using namespace mrpt::poses;
+using namespace mrpt::io;
+using namespace mrpt::system;
+using namespace mrpt::serialization;
 using namespace std;
 
 const string rgbd_test_rawlog_file =
@@ -42,7 +46,10 @@ void generateRandomMaskImage(
 double obs3d_test_depth_to_3d(int a, int b)
 {
 	CObservation3DRangeScan obs1;
-	CFileGZInputStream(rgbd_test_rawlog_file) >> obs1;
+	{
+		CFileGZInputStream f(rgbd_test_rawlog_file);
+		archiveFrom(f) >> obs1;
+	}
 
 	CTimeLogger timlog;
 
@@ -86,7 +93,10 @@ double obs3d_test_depth_to_3d(int a, int b)
 double obs3d_test_depth_to_2d_scan(int useMinFilter, int useMaxFilter)
 {
 	CObservation3DRangeScan obs1;
-	CFileGZInputStream(rgbd_test_rawlog_file) >> obs1;
+	{
+		CFileGZInputStream f(rgbd_test_rawlog_file);
+		archiveFrom(f) >> obs1;
+	}
 
 	CTimeLogger timlog;
 

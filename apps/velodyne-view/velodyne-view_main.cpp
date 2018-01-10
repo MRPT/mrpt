@@ -31,6 +31,11 @@ using namespace mrpt::hwdrivers;
 using namespace mrpt::gui;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
+using namespace mrpt::io;
+using namespace mrpt::img;
+using namespace mrpt::config;
+using namespace mrpt::system;
+using namespace mrpt::serialization;
 using namespace mrpt::opengl;
 using namespace std;
 
@@ -92,6 +97,7 @@ void thread_grabbing(TThreadParam& p)
 					"Error creating output rawlog file: %s",
 					arg_out_rawlog.getValue().c_str())
 		}
+		auto arch = mrpt::serialization::archiveFrom(f_out_rawlog);
 
 		mrpt::hwdrivers::CVelodyneScanner velodyne;
 
@@ -142,8 +148,8 @@ void thread_grabbing(TThreadParam& p)
 			// Save to log file:
 			if (f_out_rawlog.fileOpenCorrectly())
 			{
-				if (obs) f_out_rawlog << *obs;
-				if (obs_gps) f_out_rawlog << *obs_gps;
+				if (obs) arch << *obs;
+				if (obs_gps) arch << *obs_gps;
 			}
 
 			if (obs)

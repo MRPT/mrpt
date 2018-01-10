@@ -61,11 +61,16 @@ wxBitmap MyArtProvider::CreateBitmap(
 #include <mrpt/opengl.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
 using namespace mrpt::opengl;
+using namespace mrpt::io;
+using namespace mrpt::config;
+using namespace mrpt::img;
+using namespace mrpt::serialization;
 using namespace mrpt::math;
 using namespace mrpt::system;
 using namespace mrpt::nav;
@@ -946,7 +951,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 	// Initialize gridmap:
 	// -------------------------------
 	CMemoryStream s(DEFAULT_GRIDMAP_DATA, sizeof(DEFAULT_GRIDMAP_DATA));
-	s >> m_gridMap;
+	archiveFrom(s) >> m_gridMap;
 
 	// Populate 3D views:
 	// -------------------------------
@@ -2009,7 +2014,7 @@ void reactive_navigator_demoframe::OnbtnLoadMapClick(wxCommandEvent& event)
 	if (mrpt::system::lowerCase(fil_ext) == "gridmap")
 	{
 		CFileGZInputStream f(fil);
-		f >> m_gridMap;
+		archiveFrom(f) >> m_gridMap;
 	}
 	else
 	{
@@ -2206,7 +2211,7 @@ void reactive_navigator_demoframe::OnbtnSaveMapClick(wxCommandEvent& event)
 	if (dlg.ShowModal() != wxID_OK) return;
 
 	CFileGZOutputStream f(std::string(dlg.GetPath().mb_str()));
-	f << m_gridMap;
+	archiveFrom(f) << m_gridMap;
 
 	WX_END_TRY
 }

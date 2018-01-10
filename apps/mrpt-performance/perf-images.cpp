@@ -237,7 +237,7 @@ double image_KLTscore(int WIN, int N)
 			getRandomGenerator().drawUniform(0, h - 1),
 			TColor(getRandomGenerator().drawUniform32bit()));
 
-	ASSERT_BELOW_(WIN, 128)
+	ASSERT_BELOW_(WIN, 128);
 	int x = 0;
 	int y = 0;
 

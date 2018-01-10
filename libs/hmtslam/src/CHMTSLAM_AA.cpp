@@ -129,7 +129,7 @@ void CHMTSLAM::TMessageLSLAMfromAA::dumpToConsole() const
 	for (std::vector<TPoseIDList>::const_iterator it = partitions.begin();
 		 it != partitions.end(); ++it)
 	{
-		printf_vector("%i", *it);
+		mrpt::containers::printf_vector("%i", *it);
 		cout << endl;
 	}
 }

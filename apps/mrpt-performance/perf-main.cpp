@@ -128,7 +128,7 @@ void getTestImage(unsigned int img_index, mrpt::img::CImage& out_img)
 		default:
 			THROW_EXCEPTION("Sample image index out of range!");
 	}
-	buf >> out_img;
+	archiveFrom(buf) >> out_img;
 }
 
 #include "run_build_tables.h"
@@ -348,7 +348,7 @@ int main(int argc, char** argv)
 									int(MRPT_WORD_SIZE));
 			cout << "Saving perf-data to: " << fil_name << endl;
 			CFileOutputStream f(fil_name);
-			f << all_perf_data;
+			archiveFrom(f) << all_perf_data;
 		}
 
 		return 0;

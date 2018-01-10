@@ -22,6 +22,9 @@ using namespace mrpt::math;
 using namespace mrpt::poses;
 using namespace mrpt::slam;
 using namespace mrpt::system;
+using namespace mrpt::config;
+using namespace mrpt::io;
+using namespace mrpt::serialization;
 
 // Do batch experiments as indicated by the command line arguments
 //  and the command file "cfgFil".

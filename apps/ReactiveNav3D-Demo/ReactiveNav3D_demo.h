@@ -27,6 +27,7 @@ using namespace mrpt::system;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
 using namespace mrpt::gui;
+using namespace mrpt::img;
 using namespace mrpt::poses;
 using namespace mrpt::kinematics;
 
@@ -95,7 +96,7 @@ class CRobotKinects
 				p1.z = z[i];
 				ray.point1 = p1;
 				intersect(ray, ground, pintobj);
-				ASSERT_(pintobj.isPoint();
+				ASSERT_(pintobj.isPoint());
 				pintobj.getPoint(pint);
 				x[i] = pint.x;
 				y[i] = pint.y;
@@ -130,7 +131,7 @@ class CRobotKinects
 				p1.z = z[i];
 				ray.point1 = p1;
 				intersect(ray, ceiling, pintobj);
-				ASSERT_(pintobj.isPoint();
+				ASSERT_(pintobj.isPoint());
 				pintobj.getPoint(pint);
 				x[i] = pint.x;
 				y[i] = pint.y;
@@ -875,7 +876,7 @@ class CMyReactInterface
 		legend.append(format("\n        %.02fFPS", window.getRenderingFPS()));
 
 		window.addTextMessage(
-			5, 180, legend, utils::TColorf(1, 1, 1), "Arial", 13);
+			5, 180, legend, TColorf(1, 1, 1), "Arial", 13);
 		window.repaint();
 	}
 
@@ -958,7 +959,7 @@ class CMyReactInterface
 		legend.append(format("\n        %.02fFPS", window.getRenderingFPS()));
 
 		window.addTextMessage(
-			5, 180, legend, utils::TColorf(1, 1, 1), "Arial", 13);
+			5, 180, legend, TColorf(1, 1, 1), "Arial", 13);
 		window.repaint();
 	}
 

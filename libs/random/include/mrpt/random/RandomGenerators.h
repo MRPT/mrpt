@@ -182,14 +182,15 @@ class CRandomGenerator
 	 * formula C = v*v^t + epsilon*I, with "v" being a vector of gaussian random
 	 * samples.
 	  */
-	template <class MATRIX>
+	template <class MATRIX, class AUXVECTOR_T = MATRIX>
 	MATRIX drawDefinitePositiveMatrix(
 		const size_t dim, const double std_scale = 1.0,
 		const double diagonal_epsilon = 1e-8)
 	{
-		MATRIX r(dim, 1);
+		AUXVECTOR_T r(dim, 1);
 		drawGaussian1DMatrix(r, 0, std_scale);
-		MATRIX cov(dim, dim);
+		MATRIX cov;
+		cov.resize(dim, dim);
 		cov.multiply_AAt(r);  // random semi-definite positive matrix:
 		for (size_t i = 0; i < dim; i++)
 			cov(i, i) += diagonal_epsilon;  // make sure it's definite-positive

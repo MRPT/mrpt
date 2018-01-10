@@ -23,6 +23,7 @@
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/serialization/CMessage.h>
+#include <mrpt/core/aligned_std_map.h>
 
 #include <thread>
 #include <queue>
@@ -398,14 +399,14 @@ class CHMTSLAM : public mrpt::system::COutputLogger,
 	  * \return true if everything goes OK.
 	  * \sa loadState
 	  */
-	bool saveState(mrpt::utils::CStream& out) const;
+	bool saveState(mrpt::serialization::CArchive& out) const;
 
 	/** Load the state of the whole HMT-SLAM framework from some binary stream
 	 * (e.g. a file).
 	  * \return true if everything goes OK.
 	  * \sa saveState
 	  */
-	bool loadState(mrpt::utils::CStream& in);
+	bool loadState(mrpt::serialization::CArchive& in);
 	/** @} */
 
 	/** @name The important data.
@@ -413,7 +414,7 @@ class CHMTSLAM : public mrpt::system::COutputLogger,
 	/** The hiearchical, multi-hypothesis graph-based map. */
 	CHierarchicalMHMap m_map;
 	/** The list of LMHs at each instant. */
-	aligned_containers<THypothesisID, CLocalMetricHypothesis>::map_t m_LMHs;
+	mrpt::aligned_std_map<THypothesisID, CLocalMetricHypothesis> m_LMHs;
 	/** @} */
 
 	/** Called from LSLAM thread when log files must be created.
