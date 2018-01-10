@@ -75,7 +75,7 @@ Description: Mobile Robot Programming Toolkit - bayes library
 Package: libmrpt-bayes-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-bayes@MRPT_VER_MM@ (= ${binary:Version}),
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-bayes@MRPT_VER_MM@ (= ${binary:Version})
 Description: Mobile Robot Programming Toolkit - bayes development package
  This package provides headers and libraries for development.
 
@@ -90,7 +90,7 @@ Description: Mobile Robot Programming Toolkit - comms library
 Package: libmrpt-comms-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-comms@MRPT_VER_MM@ (= ${binary:Version}),
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-comms@MRPT_VER_MM@ (= ${binary:Version})
 Description: Mobile Robot Programming Toolkit - comms development package
  This package provides headers and libraries for development.
 
@@ -105,7 +105,7 @@ Description: Mobile Robot Programming Toolkit - config library
 Package: libmrpt-config-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-config@MRPT_VER_MM@ (= ${binary:Version}),
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-config@MRPT_VER_MM@ (= ${binary:Version})
 Description: Mobile Robot Programming Toolkit - config development package
  This package provides headers and libraries for development.
 
@@ -120,7 +120,7 @@ Description: Mobile Robot Programming Toolkit - containers library
 Package: libmrpt-containers-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-containers@MRPT_VER_MM@ (= ${binary:Version}),
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-containers@MRPT_VER_MM@ (= ${binary:Version})
 Description: Mobile Robot Programming Toolkit - containers development package
  This package provides headers and libraries for development.
 
@@ -135,7 +135,7 @@ Description: Mobile Robot Programming Toolkit - core library
 Package: libmrpt-core-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-core@MRPT_VER_MM@ (= ${binary:Version}),
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-core@MRPT_VER_MM@ (= ${binary:Version})
 Description: Mobile Robot Programming Toolkit - core development package
  This package provides headers and libraries for development.
 
@@ -150,7 +150,7 @@ Description: Mobile Robot Programming Toolkit - db library
 Package: libmrpt-db-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-db@MRPT_VER_MM@ (= ${binary:Version}),
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-db@MRPT_VER_MM@ (= ${binary:Version})
 Description: Mobile Robot Programming Toolkit - db development package
  This package provides headers and libraries for development.
 
@@ -165,7 +165,7 @@ Description: Mobile Robot Programming Toolkit - detectors library
 Package: libmrpt-detectors-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-detectors@MRPT_VER_MM@ (= ${binary:Version}),
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-detectors@MRPT_VER_MM@ (= ${binary:Version})
 Description: Mobile Robot Programming Toolkit - detectors development package
  This package provides headers and libraries for development.
 
@@ -180,7 +180,7 @@ Description: Mobile Robot Programming Toolkit - expr library
 Package: libmrpt-expr-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-expr@MRPT_VER_MM@ (= ${binary:Version}),
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-expr@MRPT_VER_MM@ (= ${binary:Version})
 Description: Mobile Robot Programming Toolkit - expr development package
  This package provides headers and libraries for development.
 
@@ -195,7 +195,7 @@ Description: Mobile Robot Programming Toolkit - graphs library
 Package: libmrpt-graphs-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-graphs@MRPT_VER_MM@ (= ${binary:Version}),
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-graphs@MRPT_VER_MM@ (= ${binary:Version})
 Description: Mobile Robot Programming Toolkit - graphs development package
  This package provides headers and libraries for development.
 
@@ -210,7 +210,7 @@ Description: Mobile Robot Programming Toolkit - graphslam library
 Package: libmrpt-graphslam-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-graphslam@MRPT_VER_MM@ (= ${binary:Version}),
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-graphslam@MRPT_VER_MM@ (= ${binary:Version})
 Description: Mobile Robot Programming Toolkit - graphslam development package
  This package provides headers and libraries for development.
 
@@ -225,7 +225,7 @@ Description: Mobile Robot Programming Toolkit - gui library
 Package: libmrpt-gui-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-gui@MRPT_VER_MM@ (= ${binary:Version}),
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-gui@MRPT_VER_MM@ (= ${binary:Version})
 Description: Mobile Robot Programming Toolkit - gui development package
  This package provides headers and libraries for development.
 
@@ -240,7 +240,7 @@ Description: Mobile Robot Programming Toolkit - hmtslam library
 Package: libmrpt-hmtslam-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-hmtslam@MRPT_VER_MM@ (= ${binary:Version}),
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-hmtslam@MRPT_VER_MM@ (= ${binary:Version})
 Description: Mobile Robot Programming Toolkit - hmtslam development package
  This package provides headers and libraries for development.
 
@@ -255,7 +255,7 @@ Description: Mobile Robot Programming Toolkit - hwdrivers library
 Package: libmrpt-hwdrivers-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-hwdrivers@MRPT_VER_MM@ (= ${binary:Version}),
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-hwdrivers@MRPT_VER_MM@ (= ${binary:Version})
 Description: Mobile Robot Programming Toolkit - hwdrivers development package
  This package provides headers and libraries for development.
 
@@ -270,7 +270,7 @@ Description: Mobile Robot Programming Toolkit - img library
 Package: libmrpt-img-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-img@MRPT_VER_MM@ (= ${binary:Version}),
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-img@MRPT_VER_MM@ (= ${binary:Version})
 Description: Mobile Robot Programming Toolkit - img development package
  This package provides headers and libraries for development.
 
@@ -285,7 +285,7 @@ Description: Mobile Robot Programming Toolkit - io library
 Package: libmrpt-io-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-io@MRPT_VER_MM@ (= ${binary:Version}),
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-io@MRPT_VER_MM@ (= ${binary:Version})
 Description: Mobile Robot Programming Toolkit - io development package
  This package provides headers and libraries for development.
 
@@ -300,7 +300,7 @@ Description: Mobile Robot Programming Toolkit - kinematics library
 Package: libmrpt-kinematics-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-kinematics@MRPT_VER_MM@ (= ${binary:Version}),
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-kinematics@MRPT_VER_MM@ (= ${binary:Version})
 Description: Mobile Robot Programming Toolkit - kinematics development package
  This package provides headers and libraries for development.
 
@@ -315,7 +315,8 @@ Description: Mobile Robot Programming Toolkit - maps library
 Package: libmrpt-maps-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-maps@MRPT_VER_MM@ (= ${binary:Version}),
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-maps@MRPT_VER_MM@ (= ${binary:Version})
+         liboctomap-dev
 Description: Mobile Robot Programming Toolkit - maps development package
  This package provides headers and libraries for development.
 
@@ -330,22 +331,15 @@ Description: Mobile Robot Programming Toolkit - math library
 Package: libmrpt-math-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-math@MRPT_VER_MM@ (= ${binary:Version}),
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-math@MRPT_VER_MM@ (= ${binary:Version})
+         libsuitesparse-dev
 Description: Mobile Robot Programming Toolkit - math development package
  This package provides headers and libraries for development.
-
-Package: libmrpt-nanoflann@MRPT_VER_MM@
-Section: libs
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Multi-Arch: same
-Description: Mobile Robot Programming Toolkit - nanoflann library
- More about MRPT libraries in: https://www.mrpt.org/Libraries
 
 Package: libmrpt-nanoflann-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-nanoflann@MRPT_VER_MM@ (= ${binary:Version}),
+Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Mobile Robot Programming Toolkit - nanoflann development package
  This package provides headers and libraries for development.
 
@@ -360,7 +354,7 @@ Description: Mobile Robot Programming Toolkit - nav library
 Package: libmrpt-nav-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-nav@MRPT_VER_MM@ (= ${binary:Version}),
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-nav@MRPT_VER_MM@ (= ${binary:Version})
 Description: Mobile Robot Programming Toolkit - nav development package
  This package provides headers and libraries for development.
 
@@ -375,7 +369,7 @@ Description: Mobile Robot Programming Toolkit - obs library
 Package: libmrpt-obs-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-obs@MRPT_VER_MM@ (= ${binary:Version}),
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-obs@MRPT_VER_MM@ (= ${binary:Version})
 Description: Mobile Robot Programming Toolkit - obs development package
  This package provides headers and libraries for development.
 
@@ -390,7 +384,7 @@ Description: Mobile Robot Programming Toolkit - opengl library
 Package: libmrpt-opengl-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-opengl@MRPT_VER_MM@ (= ${binary:Version}),
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-opengl@MRPT_VER_MM@ (= ${binary:Version})
 Description: Mobile Robot Programming Toolkit - opengl development package
  This package provides headers and libraries for development.
 
@@ -405,7 +399,7 @@ Description: Mobile Robot Programming Toolkit - pbmap library
 Package: libmrpt-pbmap-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-pbmap@MRPT_VER_MM@ (= ${binary:Version}),
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-pbmap@MRPT_VER_MM@ (= ${binary:Version})
 Description: Mobile Robot Programming Toolkit - pbmap development package
  This package provides headers and libraries for development.
 
@@ -420,7 +414,7 @@ Description: Mobile Robot Programming Toolkit - poses library
 Package: libmrpt-poses-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-poses@MRPT_VER_MM@ (= ${binary:Version}),
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-poses@MRPT_VER_MM@ (= ${binary:Version})
 Description: Mobile Robot Programming Toolkit - poses development package
  This package provides headers and libraries for development.
 
@@ -435,7 +429,7 @@ Description: Mobile Robot Programming Toolkit - random library
 Package: libmrpt-random-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-random@MRPT_VER_MM@ (= ${binary:Version}),
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-random@MRPT_VER_MM@ (= ${binary:Version})
 Description: Mobile Robot Programming Toolkit - random development package
  This package provides headers and libraries for development.
 
@@ -450,7 +444,7 @@ Description: Mobile Robot Programming Toolkit - rtti library
 Package: libmrpt-rtti-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-rtti@MRPT_VER_MM@ (= ${binary:Version}),
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-rtti@MRPT_VER_MM@ (= ${binary:Version})
 Description: Mobile Robot Programming Toolkit - rtti development package
  This package provides headers and libraries for development.
 
@@ -465,7 +459,7 @@ Description: Mobile Robot Programming Toolkit - serialization library
 Package: libmrpt-serialization-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-serialization@MRPT_VER_MM@ (= ${binary:Version}),
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-serialization@MRPT_VER_MM@ (= ${binary:Version})
 Description: Mobile Robot Programming Toolkit - serialization development package
  This package provides headers and libraries for development.
 
@@ -480,7 +474,7 @@ Description: Mobile Robot Programming Toolkit - slam library
 Package: libmrpt-slam-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-slam@MRPT_VER_MM@ (= ${binary:Version}),
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-slam@MRPT_VER_MM@ (= ${binary:Version})
 Description: Mobile Robot Programming Toolkit - slam development package
  This package provides headers and libraries for development.
 
@@ -495,7 +489,7 @@ Description: Mobile Robot Programming Toolkit - system library
 Package: libmrpt-system-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-system@MRPT_VER_MM@ (= ${binary:Version}),
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-system@MRPT_VER_MM@ (= ${binary:Version})
 Description: Mobile Robot Programming Toolkit - system development package
  This package provides headers and libraries for development.
 
@@ -510,7 +504,7 @@ Description: Mobile Robot Programming Toolkit - tclap library
 Package: libmrpt-tclap-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-tclap@MRPT_VER_MM@ (= ${binary:Version}),
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-tclap@MRPT_VER_MM@ (= ${binary:Version})
 Description: Mobile Robot Programming Toolkit - tclap development package
  This package provides headers and libraries for development.
 
@@ -525,7 +519,7 @@ Description: Mobile Robot Programming Toolkit - tfest library
 Package: libmrpt-tfest-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-tfest@MRPT_VER_MM@ (= ${binary:Version}),
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-tfest@MRPT_VER_MM@ (= ${binary:Version})
 Description: Mobile Robot Programming Toolkit - tfest development package
  This package provides headers and libraries for development.
 
@@ -540,7 +534,7 @@ Description: Mobile Robot Programming Toolkit - topography library
 Package: libmrpt-topography-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-topography@MRPT_VER_MM@ (= ${binary:Version}),
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-topography@MRPT_VER_MM@ (= ${binary:Version})
 Description: Mobile Robot Programming Toolkit - topography development package
  This package provides headers and libraries for development.
 
@@ -555,7 +549,7 @@ Description: Mobile Robot Programming Toolkit - typemeta library
 Package: libmrpt-typemeta-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-typemeta@MRPT_VER_MM@ (= ${binary:Version}),
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-typemeta@MRPT_VER_MM@ (= ${binary:Version})
 Description: Mobile Robot Programming Toolkit - typemeta development package
  This package provides headers and libraries for development.
 
@@ -570,7 +564,7 @@ Description: Mobile Robot Programming Toolkit - vision library
 Package: libmrpt-vision-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-vision@MRPT_VER_MM@ (= ${binary:Version}),
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-vision@MRPT_VER_MM@ (= ${binary:Version})
 Description: Mobile Robot Programming Toolkit - vision development package
  This package provides headers and libraries for development.
 
