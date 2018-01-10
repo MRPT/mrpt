@@ -12,13 +12,16 @@
 #include <mrpt/maps/CColouredPointsMap.h>
 
 #include <mrpt/detectors/CFaceDetection.h>
-#include <mrpt/math.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CSphere.h>
 #include <mrpt/opengl/CArrow.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CAxis.h>
+#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixTemplate.h>
+#include <mrpt/math/geometry.h>
+#include <mrpt/math/ops_containers.h>
 
 #include <mrpt/slam/CMetricMapsAlignmentAlgorithm.h>
 #include <mrpt/slam/CICP.h>
@@ -30,6 +33,7 @@ using namespace std;
 using namespace mrpt;
 using namespace mrpt::detectors;
 using namespace mrpt::math;
+using namespace mrpt::img;
 using namespace mrpt::gui;
 using namespace mrpt::math;
 using namespace mrpt::opengl;
@@ -290,10 +294,8 @@ void CFaceDetection::detectObjects_Impl(
 		// Convert 2d detected objects to 3d
 		for (unsigned int i = 0; i < localDetected.size(); i++)
 		{
-			CDetectable3D::Ptr object3d = CDetectable3D::Ptr(
-				new CDetectable3D(
-					std::dynamic_pointer_cast<CDetectable2D>(
-						localDetected[i])));
+			CDetectable3D::Ptr object3d = CDetectable3D::Ptr(new CDetectable3D(
+				std::dynamic_pointer_cast<CDetectable2D>(localDetected[i])));
 			detected.push_back(object3d);
 		}
 
@@ -648,50 +650,41 @@ bool CFaceDetection::checkIfFaceRegions(CObservation3DRangeScan* face)
 				++numPoints[row][col];
 
 				if (row == 0 && col == 0)
-					regions2[0].push_back(
-						TPoint3D(
-							face->points3D_x[cont], face->points3D_y[cont],
-							face->points3D_z[cont]));
+					regions2[0].push_back(TPoint3D(
+						face->points3D_x[cont], face->points3D_y[cont],
+						face->points3D_z[cont]));
 				else if (row == 0 && col == 1)
-					regions2[1].push_back(
-						TPoint3D(
-							face->points3D_x[cont], face->points3D_y[cont],
-							face->points3D_z[cont]));
+					regions2[1].push_back(TPoint3D(
+						face->points3D_x[cont], face->points3D_y[cont],
+						face->points3D_z[cont]));
 				else if (row == 0 && col == 2)
-					regions2[2].push_back(
-						TPoint3D(
-							face->points3D_x[cont], face->points3D_y[cont],
-							face->points3D_z[cont]));
+					regions2[2].push_back(TPoint3D(
+						face->points3D_x[cont], face->points3D_y[cont],
+						face->points3D_z[cont]));
 				else if (row == 1 && col == 0)
-					regions2[3].push_back(
-						TPoint3D(
-							face->points3D_x[cont], face->points3D_y[cont],
-							face->points3D_z[cont]));
+					regions2[3].push_back(TPoint3D(
+						face->points3D_x[cont], face->points3D_y[cont],
+						face->points3D_z[cont]));
 				else if (row == 1 && col == 1)
-					regions2[4].push_back(
-						TPoint3D(
-							face->points3D_x[cont], face->points3D_y[cont],
-							face->points3D_z[cont]));
+					regions2[4].push_back(TPoint3D(
+						face->points3D_x[cont], face->points3D_y[cont],
+						face->points3D_z[cont]));
 				else if (row == 1 && col == 2)
-					regions2[5].push_back(
-						TPoint3D(
-							face->points3D_x[cont], face->points3D_y[cont],
-							face->points3D_z[cont]));
+					regions2[5].push_back(TPoint3D(
+						face->points3D_x[cont], face->points3D_y[cont],
+						face->points3D_z[cont]));
 				else if (row == 2 && col == 0)
-					regions2[6].push_back(
-						TPoint3D(
-							face->points3D_x[cont], face->points3D_y[cont],
-							face->points3D_z[cont]));
+					regions2[6].push_back(TPoint3D(
+						face->points3D_x[cont], face->points3D_y[cont],
+						face->points3D_z[cont]));
 				else if (row == 2 && col == 1)
-					regions2[7].push_back(
-						TPoint3D(
-							face->points3D_x[cont], face->points3D_y[cont],
-							face->points3D_z[cont]));
+					regions2[7].push_back(TPoint3D(
+						face->points3D_x[cont], face->points3D_y[cont],
+						face->points3D_z[cont]));
 				else
-					regions2[8].push_back(
-						TPoint3D(
-							face->points3D_x[cont], face->points3D_y[cont],
-							face->points3D_z[cont]));
+					regions2[8].push_back(TPoint3D(
+						face->points3D_x[cont], face->points3D_y[cont],
+						face->points3D_z[cont]));
 			}
 		}
 	}
@@ -905,10 +898,9 @@ bool CFaceDetection::checkIfDiagonalSurface(CObservation3DRangeScan* face)
 			{
 				sumDepth += face->points3D_x[cont];
 				total++;
-				points.push_back(
-					TPoint3D(
-						face->points3D_x[cont], face->points3D_y[cont],
-						face->points3D_z[cont]));
+				points.push_back(TPoint3D(
+					face->points3D_x[cont], face->points3D_y[cont],
+					face->points3D_z[cont]));
 			}
 		}
 		cont += faceWidth - x2 - 1;
@@ -989,10 +981,9 @@ bool CFaceDetection::checkIfDiagonalSurface(CObservation3DRangeScan* face)
 			//&& ( face->points3D_x[cont] < meanDepth + max_desv ) )
 			{
 				valids.set_unsafe(i, j, true);
-				points.push_back(
-					TPoint3D(
-						face->points3D_x[cont], face->points3D_y[cont],
-						face->points3D_z[cont]));
+				points.push_back(TPoint3D(
+					face->points3D_x[cont], face->points3D_y[cont],
+					face->points3D_z[cont]));
 			}
 			else
 				valids.set_unsafe(i, j, false);
@@ -1032,11 +1023,10 @@ bool CFaceDetection::checkIfDiagonalSurface(CObservation3DRangeScan* face)
 							face->points3D_x[cont], face->points3D_y[cont],
 							face->points3D_z[cont]);
 						offsetIndex = cont + faceWidth + 1;
-						distance = p1.distanceTo(
-							TPoint3D(
-								face->points3D_x[offsetIndex],
-								face->points3D_y[offsetIndex],
-								face->points3D_z[offsetIndex]));
+						distance = p1.distanceTo(TPoint3D(
+							face->points3D_x[offsetIndex],
+							face->points3D_y[offsetIndex],
+							face->points3D_z[offsetIndex]));
 					}
 					else
 					{
@@ -1054,11 +1044,10 @@ bool CFaceDetection::checkIfDiagonalSurface(CObservation3DRangeScan* face)
 										face->points3D_y[cont],
 										face->points3D_z[cont]);
 									offsetIndex = cont + faceWidth + offset;
-									distance = p1.distanceTo(
-										TPoint3D(
-											face->points3D_x[offsetIndex],
-											face->points3D_y[offsetIndex],
-											face->points3D_z[offsetIndex]));
+									distance = p1.distanceTo(TPoint3D(
+										face->points3D_x[offsetIndex],
+										face->points3D_y[offsetIndex],
+										face->points3D_z[offsetIndex]));
 									break;
 								}
 								offset++;
@@ -1168,10 +1157,9 @@ bool CFaceDetection::checkIfDiagonalSurface2(CObservation3DRangeScan* face)
 			{
 				sumDepth += face->points3D_x[cont];
 				total++;
-				points.push_back(
-					TPoint3D(
-						face->points3D_x[cont], face->points3D_y[cont],
-						face->points3D_z[cont]));
+				points.push_back(TPoint3D(
+					face->points3D_x[cont], face->points3D_y[cont],
+					face->points3D_z[cont]));
 			}
 		}
 	}
@@ -1259,11 +1247,10 @@ bool CFaceDetection::checkIfDiagonalSurface2(CObservation3DRangeScan* face)
 							face->points3D_x[cont], face->points3D_y[cont],
 							face->points3D_z[cont]);
 						offsetIndex = cont + faceWidth + 1;
-						distance = p1.distanceTo(
-							TPoint3D(
-								face->points3D_x[offsetIndex],
-								face->points3D_y[offsetIndex],
-								face->points3D_z[offsetIndex]));
+						distance = p1.distanceTo(TPoint3D(
+							face->points3D_x[offsetIndex],
+							face->points3D_y[offsetIndex],
+							face->points3D_z[offsetIndex]));
 					}
 					else
 					{
@@ -1282,11 +1269,10 @@ bool CFaceDetection::checkIfDiagonalSurface2(CObservation3DRangeScan* face)
 										face->points3D_y[cont],
 										face->points3D_z[cont]);
 									offsetIndex = cont + faceWidth + offset;
-									distance = p1.distanceTo(
-										TPoint3D(
-											face->points3D_x[offsetIndex],
-											face->points3D_y[offsetIndex],
-											face->points3D_z[offsetIndex]));
+									distance = p1.distanceTo(TPoint3D(
+										face->points3D_x[offsetIndex],
+										face->points3D_y[offsetIndex],
+										face->points3D_z[offsetIndex]));
 									break;
 								}
 								offset++;
@@ -1643,9 +1629,8 @@ void CFaceDetection::experimental_viewRegions(
 
 	scene->insert(gl_points);
 	scene->insert(mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>());
-	scene->insert(
-		mrpt::make_aligned_shared<mrpt::opengl::CAxis>(
-			-5, -5, -5, 5, 5, 5, 2.5, 3, true));
+	scene->insert(mrpt::make_aligned_shared<mrpt::opengl::CAxis>(
+		-5, -5, -5, 5, 5, 5, 2.5, 3, true));
 
 	CColouredPointsMap pntsMap;
 
@@ -2020,8 +2005,9 @@ void CFaceDetection::experimental_showMeasurements()
 //------------------------------------------------------------------------
 
 void CFaceDetection::debug_returnResults(
-	const std::vector<uint32_t>& falsePositives, const std::vector<uint32_t>& ignore,
-	unsigned int& falsePositivesDeleted, unsigned int& realFacesDeleted)
+	const std::vector<uint32_t>& falsePositives,
+	const std::vector<uint32_t>& ignore, unsigned int& falsePositivesDeleted,
+	unsigned int& realFacesDeleted)
 {
 	const unsigned int numDeleted = m_measure.deletedRegions.size();
 	const unsigned int numFalsePositives = falsePositives.size();

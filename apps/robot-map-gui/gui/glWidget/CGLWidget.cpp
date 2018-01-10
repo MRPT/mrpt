@@ -194,7 +194,7 @@ void CGlWidget::setDocument(CDocument* doc)
 	for (auto iter = m_doc->simplemap().begin();
 		 iter != m_doc->simplemap().end(); ++iter)
 	{
-		math::TPose3D pose = iter->first->getMeanVal();
+		math::TPose3D pose = iter->first->getMeanVal().asTPose();
 		CRobotPose::Ptr robotPose = mrpt::make_aligned_shared<CRobotPose>(id);
 		robotPose->setPose(pose);
 		m_visiblePoints->insert(robotPose);
@@ -217,7 +217,7 @@ void CGlWidget::updateObservations()
 	for (auto iter = m_doc->simplemap().begin();
 		 iter != m_doc->simplemap().end(); ++iter)
 	{
-		math::TPose3D pose = iter->first->getMeanVal();
+		math::TPose3D pose = iter->first->getMeanVal().asTPose();
 		CRobotPose::Ptr robotPose = mrpt::make_aligned_shared<CRobotPose>(id);
 		robotPose->setPose(pose);
 		m_visiblePoints->insert(robotPose);
@@ -349,7 +349,7 @@ bool CGlWidget::setObservationSize(double s)
 
 bool CGlWidget::setObservationColor(int type)
 {
-	utils::TColorf color = typeToColor(type);
+	img::TColorf color = typeToColor(type);
 	if (color.R != m_observationColor.R || color.B != m_observationColor.B ||
 		color.G != m_observationColor.G || color.A != m_observationColor.A)
 	{
@@ -372,7 +372,7 @@ bool CGlWidget::setSelectedObservationSize(double s)
 
 bool CGlWidget::setSelectedObservationColor(int type)
 {
-	utils::TColorf color = typeToColor(type);
+	img::TColorf color = typeToColor(type);
 	if (color.R != m_selectedColor.R || color.B != m_selectedColor.B ||
 		color.G != m_selectedColor.G || color.A != m_selectedColor.A)
 	{
@@ -570,7 +570,7 @@ void CGlWidget::keyPressEvent(QKeyEvent* event)
 	}
 }
 
-utils::TColorf CGlWidget::typeToColor(int type) const
+img::TColorf CGlWidget::typeToColor(int type) const
 {
 	mrpt::img::TColor color = mrpt::img::TColor::red();
 	switch (type)

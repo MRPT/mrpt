@@ -24,7 +24,7 @@ using namespace std;
 using namespace mrpt;
 using namespace mrpt::opengl;
 
-void CDifodoCamera::loadConfiguration(const utils::CConfigFileBase& ini)
+void CDifodoCamera::loadConfiguration(const mrpt::config::CConfigFileBase& ini)
 {
 	fovh = M_PI * 58.6 / 180.0;
 	fovv = M_PI * 45.6 / 180.0;
@@ -40,11 +40,11 @@ void CDifodoCamera::loadConfiguration(const utils::CConfigFileBase& ini)
 	//=========================================================
 	width = 640 / (cam_mode * downsample);
 	height = 480 / (cam_mode * downsample);
-	repr_level = utils::round(log(float(width / cols)) / log(2.f));
+	repr_level = mrpt::round(log(float(width / cols)) / log(2.f));
 
 	// Resize pyramid
 	const unsigned int pyr_levels =
-		utils::round(log(float(width / cols)) / log(2.f)) + ctf_levels;
+		mrpt::round(log(float(width / cols)) / log(2.f)) + ctf_levels;
 	depth.resize(pyr_levels);
 	depth_old.resize(pyr_levels);
 	depth_inter.resize(pyr_levels);
@@ -306,7 +306,7 @@ void CDifodoCamera::initializeScene()
 	scene->insert(ellip);
 
 	// User-interface information
-	utils::CImage img_legend;
+	img::CImage img_legend;
 	img_legend.loadFromXPM(legend_xpm);
 	COpenGLViewport::Ptr legend = scene->createViewport("legend");
 	legend->setViewportPosition(20, 20, 350, 201);

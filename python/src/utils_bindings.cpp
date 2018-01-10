@@ -22,14 +22,16 @@
 #include <cstdint>
 
 using namespace boost::python;
+using namespace mrpt::config;
+using namespace mrpt::serialization;
 
 // CStream
-void CStream_ReadObject(CStream& self, CSerializable::Ptr& obj)
+void CStream_ReadObject(CArchive& self, CSerializable::Ptr& obj)
 {
 	self.ReadObject(obj.get());
 }
 
-void CStream_WriteObject(CStream& self, CSerializable::Ptr& obj)
+void CStream_WriteObject(CArchive& self, CSerializable::Ptr& obj)
 {
 	self.WriteObject(obj.get());
 }

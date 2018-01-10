@@ -69,6 +69,7 @@ const std::string iniFileSect("CONF_LIN");
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>  // It's in lib mrpt-maps
 #include <mrpt/opengl/CAngularObservationMesh.h>  // It's in lib mrpt-maps
+#include <mrpt/serialization/CArchive.h>
 
 #include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/maps/CPointsMap.h>
@@ -966,7 +967,7 @@ void _DSceneViewerFrame::loadFromFile(
 			tictac.Tic();
 
 			openGLSceneRef->clear();
-			mrpt::serialization::archiveFrom(f) >> openGLSceneRef;
+			mrpt::serialization::archiveFrom(f) >> *openGLSceneRef;
 		}
 
 		double timeToLoad = tictac.Tac();
@@ -1818,8 +1819,7 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 				_U(format(
 					   "Comments:\n--------------------\n%s\nObject "
 					   "info:\n--------------------\n%s",
-					   sC.c_str(),
-					   sI.c_str())
+					   sC.c_str(), sI.c_str())
 					   .c_str()),
 				_("File info"), wxOK, this);
 		}
