@@ -12,17 +12,21 @@
 #include <wx/msgdlg.h>
 
 #include <mrpt/system/filesystem.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <memory>
 
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::serialization;
 using namespace mrpt::hmtslam;
+using namespace mrpt::img;
 using namespace mrpt::slam;
 using namespace mrpt::poses;
 using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::maps;
+using namespace mrpt::io;
 
 void hmt_slam_guiFrame::thread_HMTSLAM()
 {
@@ -111,7 +115,7 @@ void hmt_slam_guiFrame::thread_HMTSLAM()
 
 				if (is_running_slam)
 				{
-					ASSERT_(fInRawlog)
+					ASSERT_(fInRawlog);
 
 					// Wait for the mapping framework processed the data
 					// ---------------------------------------------------
@@ -126,7 +130,7 @@ void hmt_slam_guiFrame::thread_HMTSLAM()
 					CSerializable::Ptr objFromRawlog;
 					try
 					{
-						(*fInRawlog) >> objFromRawlog;
+						archiveFrom(*fInRawlog) >> objFromRawlog;
 						rawlogEntry++;
 						cout << "[HMT-SLAM-GUI] Read rawlog entry "
 							 << rawlogEntry << endl;
