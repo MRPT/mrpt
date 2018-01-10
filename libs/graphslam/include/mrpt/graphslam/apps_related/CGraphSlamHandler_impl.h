@@ -12,6 +12,8 @@
 
 // Implementation file for CGraphSlamHandler class
 #include "CGraphSlamHandler.h"
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 template <class GRAPH_T>
 CGraphSlamHandler<GRAPH_T>::CGraphSlamHandler(
@@ -223,7 +225,7 @@ void CGraphSlamHandler<GRAPH_T>::readConfigFname(const std::string& fname)
 
 	m_logger->logFmt(LVL_INFO, "Reading the .ini file... ");
 
-	CConfigFile cfg_file(fname);
+	mrpt::config::CConfigFile cfg_file(fname);
 
 	m_user_decides_about_output_dir = cfg_file.read_bool(
 		"GeneralConfiguration", "user_decides_about_output_dir", false, false);
@@ -386,19 +388,20 @@ template <class GRAPH_T>
 void CGraphSlamHandler<GRAPH_T>::execute()
 {
 	using namespace mrpt::obs;
-		ASSERT_(m_engine);
+	ASSERT_(m_engine);
 
 	// Variables initialization
-	CFileGZInputStream rawlog_stream(m_rawlog_fname);
+	mrpt::io::CFileGZInputStream rawlog_stream(m_rawlog_fname);
 	CActionCollection::Ptr action;
 	CSensoryFrame::Ptr observations;
 	CObservation::Ptr observation;
 	size_t curr_rawlog_entry;
+	auto arch = mrpt::serialization::archiveFrom(rawlog_stream);
 
 	// Read the dataset and pass the measurements to CGraphSlamEngine
 	bool cont_exec = true;
 	while (CRawlog::getActionObservationPairOrObservation(
-			   rawlog_stream, action, observations, observation,
+			   arch, action, observations, observation,
 			   curr_rawlog_entry) &&
 		   cont_exec)
 	{

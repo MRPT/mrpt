@@ -81,7 +81,7 @@ CGraphSlamEngine<GRAPH_T>::~CGraphSlamEngine()
 	if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum"))
 	{
 		MRPT_LOG_DEBUG_STREAM("Changing back the CImage PATH");
-		CImage::setImagesPathBase(m_img_prev_path_base);
+		mrpt::img::CImage::setImagesPathBase(m_img_prev_path_base);
 	}
 
 	// delete the CDisplayWindowPlots object
@@ -311,14 +311,14 @@ void CGraphSlamEngine<GRAPH_T>::initClass()
 	if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum"))
 	{
 		// keep the last path - change back to it after rawlog parsing
-		m_img_prev_path_base = CImage::getImagesPathBase();
+		m_img_prev_path_base = mrpt::img::CImage::getImagesPathBase();
 
 		std::string rawlog_fname_noext =
 			system::extractFileName(m_rawlog_fname);
 		std::string rawlog_dir = system::extractFileDirectory(m_rawlog_fname);
 		std::string m_img_external_storage_dir =
 			rawlog_dir + rawlog_fname_noext + "_Images/";
-		CImage::setImagesPathBase(m_img_external_storage_dir);
+		mrpt::img::CImage::setImagesPathBase(m_img_external_storage_dir);
 	}
 
 	// 3DRangeScans viewports initialization, in case of RGBD datasets
@@ -423,7 +423,7 @@ void CGraphSlamEngine<GRAPH_T>::initClass()
 			&m_text_index_current_constraint_type);
 		m_win_manager->addTextMessage(
 			m_offset_x_left, -m_offset_y_current_constraint_type,
-			m_current_constraint_type, TColorf(m_current_constraint_type_color),
+			m_current_constraint_type, mrpt::img::TColorf(m_current_constraint_type_color),
 			m_text_index_current_constraint_type);
 	}
 
@@ -790,7 +790,7 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
 				format(
 					"Simulated time: %s",
 					timeToString(m_curr_timestamp).c_str()),
-				TColorf(1.0, 1.0, 1.0),
+				mrpt::img::TColorf(1.0, 1.0, 1.0),
 				/* unique_index = */ m_text_index_timestamp);
 		}
 		else
@@ -800,7 +800,7 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
 				format(
 					"Wall time: %s",
 					timeToString(mrpt::system::getCurrentTime()).c_str()),
-				TColorf(1.0, 1.0, 1.0),
+				mrpt::img::TColorf(1.0, 1.0, 1.0),
 				/* unique_index = */ m_text_index_timestamp);
 		}
 	}
@@ -1044,7 +1044,7 @@ void CGraphSlamEngine<GRAPH_T>::loadParams(const std::string& fname)
 
 	MRPT_LOG_INFO_STREAM("Reading the .ini file... ");
 	MRPT_LOG_INFO_STREAM("Reading the .ini file... ");
-	CConfigFile cfg_file(fname);
+	mrpt::config::CConfigFile cfg_file(fname);
 
 	// Section: GeneralConfiguration
 	// ////////////////////////////////
@@ -1187,7 +1187,7 @@ void CGraphSlamEngine<GRAPH_T>::initResultsFile(const std::string& fname)
 	string cur_date_str(dateTimeToString(cur_date));
 	string cur_date_validstr(fileNameStripInvalidChars(cur_date_str));
 
-	m_out_streams[fname] = new CFileOutputStream(fname);
+	m_out_streams[fname] = new mrpt::io::CFileOutputStream(fname);
 	ASSERTMSG_(
 		m_out_streams[fname]->fileOpenCorrectly(),
 		mrpt::format("\nError while trying to open %s\n", fname.c_str()));
@@ -1361,7 +1361,7 @@ void CGraphSlamEngine<GRAPH_T>::initCurrPosViewport()
 	viewp->setTransparent(false);
 	viewp->getCamera().setAzimuthDegrees(90);
 	viewp->getCamera().setElevationDegrees(90);
-	viewp->setCustomBackgroundColor(TColorf(205, 193, 197, /*alpha = */ 255));
+	viewp->setCustomBackgroundColor(mrpt::img::TColorf(205, 193, 197, /*alpha = */ 255));
 	viewp->getCamera().setZoomDistance(30);
 	viewp->getCamera().setOrthogonal();
 
@@ -1412,7 +1412,7 @@ void CGraphSlamEngine<GRAPH_T>::readGTFile(
 			"m_visualize_GT flag to false\n",
 			fname_GT.c_str()));
 
-	CFileInputStream file_GT(fname_GT);
+	mrpt::io::CFileInputStream file_GT(fname_GT);
 	ASSERTMSG_(file_GT.fileOpenCorrectly(), "\nCouldn't open GT file\n");
 	ASSERTMSG_(gt_poses, "\nNo valid std::vector<pose_t>* was given\n");
 
@@ -1478,7 +1478,7 @@ void CGraphSlamEngine<GRAPH_T>::readGTFileRGBD_TUM(
 			"m_visualize_GT flag to false\n",
 			fname_GT.c_str()));
 
-	CFileInputStream file_GT(fname_GT);
+	mrpt::io::CFileInputStream file_GT(fname_GT);
 	ASSERTMSG_(
 		file_GT.fileOpenCorrectly(),
 		"\nreadGTFileRGBD_TUM: Couldn't openGT file\n");
@@ -2091,7 +2091,7 @@ void CGraphSlamEngine<GRAPH_T>::initGTVisualization()
 		/* text_index* = */ &m_text_index_GT);
 	m_win_manager->addTextMessage(
 		m_offset_x_left, -m_offset_y_GT, mrpt::format("Ground truth path"),
-		TColorf(m_GT_color),
+		mrpt::img::TColorf(m_GT_color),
 		/* unique_index = */ m_text_index_GT);
 
 	m_win->forceRepaint();
@@ -2170,7 +2170,7 @@ void CGraphSlamEngine<GRAPH_T>::initOdometryVisualization()
 		/* text_index* = */ &m_text_index_odometry);
 	m_win_manager->addTextMessage(
 		m_offset_x_left, -m_offset_y_odometry, mrpt::format("Odometry path"),
-		TColorf(m_odometry_color),
+		mrpt::img::TColorf(m_odometry_color),
 		/* unique_index = */ m_text_index_odometry);
 
 	m_win->forceRepaint();
@@ -2252,7 +2252,7 @@ void CGraphSlamEngine<GRAPH_T>::initEstimatedTrajectoryVisualization()
 		m_win_manager->addTextMessage(
 			m_offset_x_left, -m_offset_y_estimated_traj,
 			mrpt::format("Estimated trajectory"),
-			TColorf(m_estimated_traj_color),
+			mrpt::img::TColorf(m_estimated_traj_color),
 			/* unique_index = */ m_text_index_estimated_traj);
 	}
 
@@ -2370,7 +2370,7 @@ void CGraphSlamEngine<GRAPH_T>::TRGBDInfoFileParams::parseFile()
 	using namespace std;
 	
 	// open file
-	CFileInputStream info_file(info_fname);
+	mrpt::io::CFileInputStream info_file(info_fname);
 	ASSERTMSG_(
 		info_file.fileOpenCorrectly(),
 		"\nTRGBDInfoFileParams::parseFile: Couldn't open info file\n");

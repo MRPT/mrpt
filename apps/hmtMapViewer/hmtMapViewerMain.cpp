@@ -52,6 +52,7 @@ extern std::string global_fileToOpen;
 #include <mrpt/opengl/CEllipsoid.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/stock_objects.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include <mrpt/hmtslam/CHMTSLAM.h>
 #include <mrpt/hmtslam/CRobotPosesGraph.h>
@@ -60,11 +61,14 @@ using namespace mrpt;
 using namespace mrpt::slam;
 using namespace mrpt::hmtslam;
 using namespace mrpt::opengl;
+using namespace mrpt::serialization;
 using namespace mrpt::gui;
 using namespace mrpt::system;
 using namespace mrpt::math;
 using namespace mrpt::poses;
 using namespace mrpt::maps;
+using namespace mrpt::config;
+using namespace mrpt::io;
 using namespace std;
 
 // The configuration file:
@@ -601,7 +605,10 @@ bool hmtMapViewerFrame::loadHTMSLAMFromFile(const std::string& filePath)
 	WX_END_TRY
 
 	// Load
-	CFileGZInputStream(filePath) >> *hmt_map;
+	{
+		CFileGZInputStream f(filePath);
+		archiveFrom(f) >> *hmt_map;
+	}
 
 	m_curFileOpen = filePath;
 
@@ -651,11 +658,8 @@ void hmtMapViewerFrame::rebuildTreeView()
 	// List of hypotheses:
 	cbHypos->Clear();
 
-	for (aligned_containers<THypothesisID,
-							CLocalMetricHypothesis>::map_t::const_iterator l =
-			 hmt_map->m_LMHs.begin();
-		 l != hmt_map->m_LMHs.end(); ++l)
-		cbHypos->Append(_U(format("%i", (int)l->first).c_str()));
+	for (const auto& l : hmt_map->m_LMHs)
+		cbHypos->Append(_U(format("%i", (int)l.first).c_str()));
 
 	cbHypos->SetSelection(0);
 
@@ -907,7 +911,7 @@ void hmtMapViewerFrame::updateGlobalMapView()
 		std::vector<std::string> strLst;
 		hmt_map->m_map.dumpAsText(strLst);
 		string str;
-		strLst.getText(str);
+		mrpt::system::stringListAsString(strLst, str);
 		cout << str << endl;
 	}
 
@@ -1098,7 +1102,8 @@ void hmtMapViewerFrame::OnmenuExportLocalMapsSelected(wxCommandEvent& event)
 				NODE_ANNOTATION_POSES_GRAPH, hypID, false);
 		obj_poseGraph->convertIntoSimplemap(simpleMap);
 
-		CFileGZOutputStream(map_file) << simpleMap;  // Save simplemap
+		CFileGZOutputStream f(map_file);
+		archiveFrom(f) << simpleMap;  // Save simplemap
 	}
 
 	WX_END_TRY
