@@ -16,9 +16,11 @@
 
 #include "place_recognition.h"
 
+using mrpt::system::CTicTac;
+
 /************************************************************************************************
-*								Place Recognition Constructor *
-************************************************************************************************/
+ *								Place Recognition Constructor *
+ ************************************************************************************************/
 PlaceRecognition::PlaceRecognition(
 	vector<string> training_paths, vector<string> testing_paths,
 
@@ -49,8 +51,8 @@ PlaceRecognition::PlaceRecognition(
 }
 
 /************************************************************************************************
-*								Compute Labels function *
-************************************************************************************************/
+ *								Compute Labels function *
+ ************************************************************************************************/
 void PlaceRecognition::computeLabels(
 	vector<string> file_paths, int counts[NUM_CLASSES], int* labels)
 {
@@ -90,8 +92,8 @@ void PlaceRecognition::computeLabels(
 }
 
 /************************************************************************************************
-*								Predict Label2 function *
-************************************************************************************************/
+ *								Predict Label2 function *
+ ************************************************************************************************/
 int PlaceRecognition::predictLabel2(
 	CFeatureList* feats_testingAll, vector<uint8_t>* training_words,
 	int* training_word_labels, int total_vocab_size, int current_image)
@@ -158,8 +160,8 @@ int PlaceRecognition::predictLabel2(
 }
 
 /************************************************************************************************
-*								Predict Label function *
-************************************************************************************************/
+ *								Predict Label function *
+ ************************************************************************************************/
 int PlaceRecognition::predictLabel(
 	CFeatureList* feats_testingAll, vector<float>* training_words,
 	int* training_word_labels, int total_vocab_size, int current_image)
@@ -219,8 +221,8 @@ int PlaceRecognition::predictLabel(
 }
 
 /************************************************************************************************
-*								Find Max function *
-************************************************************************************************/
+ *								Find Max function *
+ ************************************************************************************************/
 int PlaceRecognition::findMax(int* labels, int feats_size)
 {
 	int temp_labels[NUM_CLASSES];
@@ -243,8 +245,8 @@ int PlaceRecognition::findMax(int* labels, int feats_size)
 }
 
 /************************************************************************************************
-*								Start Function function *
-************************************************************************************************/
+ *								Start Function function *
+ ************************************************************************************************/
 string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
 {
 	ofstream training_file;
@@ -468,8 +470,8 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
 }
 
 /************************************************************************************************
-*								find PlaceName function *
-************************************************************************************************/
+ *								find PlaceName function *
+ ************************************************************************************************/
 string PlaceRecognition::findPlaceName(int type)
 {
 	if (type == 1)

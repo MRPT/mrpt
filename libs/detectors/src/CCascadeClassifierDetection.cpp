@@ -21,6 +21,7 @@
 
 using namespace mrpt::detectors;
 using namespace mrpt::obs;
+using namespace mrpt::img;
 using namespace std;
 
 #if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x200
@@ -137,10 +138,8 @@ void CCascadeClassifierDetection::detectObjects_Impl(
 	// Convert from cv::Rect to vision::CDetectable2D
 	for (unsigned int i = 0; i < N; i++)
 	{
-		CDetectable2D::Ptr obj = CDetectable2D::Ptr(
-			new CDetectable2D(
-				objects[i].x, objects[i].y, objects[i].height,
-				objects[i].width));
+		CDetectable2D::Ptr obj = CDetectable2D::Ptr(new CDetectable2D(
+			objects[i].x, objects[i].y, objects[i].height, objects[i].width));
 
 		detected.push_back((CDetectableObject::Ptr)obj);
 	}

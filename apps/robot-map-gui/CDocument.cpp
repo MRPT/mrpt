@@ -18,6 +18,8 @@ const std::string METRIC_MAP_CONFIG_SECTION = "MappingApplication";
 
 using namespace mrpt;
 using namespace mrpt::opengl;
+using namespace mrpt::io;
+using namespace mrpt::config;
 using namespace mrpt::maps;
 
 CDocument::CDocument()
@@ -33,8 +35,8 @@ bool CDocument::isFileChanged() const { return m_changedFile; }
 void CDocument::loadSimpleMap(const std::string& fileName)
 {
 	m_fileName = fileName;
-	CFileGZInputStream file(fileName.c_str());
-	file >> m_simplemap;
+	CFileGZInputStream f(fileName.c_str());
+	mrpt::serialization::archiveFrom(f) >> m_simplemap;
 }
 
 void CDocument::saveSimpleMap()
@@ -73,7 +75,7 @@ void CDocument::saveMetricmapInBinaryFormat(
 	auto mapIter = iter->second.begin() + index;
 
 	mrpt::io::CFileGZOutputStream fil(fileName);
-	fil << *mapIter->get_ptr();
+	mrpt::serialization::archiveFrom(fil) << *mapIter->get_ptr();
 }
 
 void CDocument::saveAsPng(const std::string& fileName) const

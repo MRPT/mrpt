@@ -26,52 +26,52 @@ namespace obs
 {
 /** A `CObservation`-derived class for RAW DATA (and optionally, point cloud) of
  * scans from 3D Velodyne LIDAR scanners.
-  * A scan comprises one or more "velodyne packets" (refer to Velodyne user
+ * A scan comprises one or more "velodyne packets" (refer to Velodyne user
  * manual).
-  *
-  * <h2>Main data fields:</h2><hr>
-  * - CObservationVelodyneScan::scan_packets with raw data packets.
-  * - CObservationVelodyneScan::point_cloud normally empty after grabbing for
+ *
+ * <h2>Main data fields:</h2><hr>
+ * - CObservationVelodyneScan::scan_packets with raw data packets.
+ * - CObservationVelodyneScan::point_cloud normally empty after grabbing for
  * efficiency, can be generated calling \a
  * CObservationVelodyneScan::generatePointCloud()
-  *
-  * Axes convention for point cloud (x,y,z) coordinates:
-  *
-  *  <div align=center> <img src="velodyne_axes.jpg"> </div>
-  *
-  * If it can be assumed that the sensor moves SLOWLY through the environment
+ *
+ * Axes convention for point cloud (x,y,z) coordinates:
+ *
+ *  <div align=center> <img src="velodyne_axes.jpg"> </div>
+ *
+ * If it can be assumed that the sensor moves SLOWLY through the environment
  * (i.e. its pose can be approximated to be the same since the beginning to the
  * end of one complete scan)
-  * then this observation can be converted / loaded into the following other
+ * then this observation can be converted / loaded into the following other
  * classes:
-  *  - Maps of points (these require first generating the pointcloud in this
+ *  - Maps of points (these require first generating the pointcloud in this
  * observation object with
  * mrpt::obs::CObservationVelodyneScan::generatePointCloud() ):
-  *    - mrpt::maps::CPointsMap::loadFromVelodyneScan() (available in all
+ *    - mrpt::maps::CPointsMap::loadFromVelodyneScan() (available in all
  * derived classes)
-  *    - and the generic method:mrpt::maps::CPointsMap::insertObservation()
-  *  - mrpt::opengl::CPointCloud and mrpt::opengl::CPointCloudColoured is
+ *    - and the generic method:mrpt::maps::CPointsMap::insertObservation()
+ *  - mrpt::opengl::CPointCloud and mrpt::opengl::CPointCloudColoured is
  * supported by first converting
-  *    this scan to a mrpt::maps::CPointsMap-derived class, then loading it into
+ *    this scan to a mrpt::maps::CPointsMap-derived class, then loading it into
  * the opengl object.
-  *
-  * Otherwise, the following API exists for accurate reconstruction of the
+ *
+ * Otherwise, the following API exists for accurate reconstruction of the
  * sensor path in SE(3) over time:
-  *  - CObservationVelodyneScan::generatePointCloudAlongSE3Trajectory()
-  *
-  *  Note that this object has \b two timestamp fields:
-  *  - The standard CObservation::timestamp field in the base class, which
+ *  - CObservationVelodyneScan::generatePointCloudAlongSE3Trajectory()
+ *
+ *  Note that this object has \b two timestamp fields:
+ *  - The standard CObservation::timestamp field in the base class, which
  * should contain the accurate satellite-based UTC timestamp, and
-  *  - the field CObservationVelodyneScan::originalReceivedTimestamp, with the
+ *  - the field CObservationVelodyneScan::originalReceivedTimestamp, with the
  * local computer-based timestamp based on the reception of the message in the
  * computer.
-  *  Both timestamps correspond to the firing of the <b>first</b> laser in the
+ *  Both timestamps correspond to the firing of the <b>first</b> laser in the
  * <b>first</b> CObservationVelodyneScan::scan_packets packet.
-  *
-  * \note New in MRPT 1.4.0
-  * \sa CObservation, CPointsMap, CVelodyneScanner
-  * \ingroup mrpt_obs_grp
-  */
+ *
+ * \note New in MRPT 1.4.0
+ * \sa CObservation, CPointsMap, CVelodyneScanner
+ * \ingroup mrpt_obs_grp
+ */
 class CObservationVelodyneScan : public CObservation
 {
 	DEFINE_SERIALIZABLE(CObservationVelodyneScan)
@@ -106,10 +106,10 @@ class CObservationVelodyneScan : public CObservation
 	static const uint8_t RETMODE_STRONGEST = 0x37;
 	static const uint8_t RETMODE_LAST = 0x38;
 	static const uint8_t RETMODE_DUAL = 0x39;
-/** @} */
+	/** @} */
 
-/** @name Scan data
-	@{ */
+	/** @name Scan data
+		@{ */
 
 #pragma pack(push, 1)
 	struct laser_return_t
@@ -118,8 +118,8 @@ class CObservationVelodyneScan : public CObservation
 		uint8_t intensity;
 	};
 	/** Raw Velodyne data block.
-	*  Each block contains data from either the upper or lower laser
-	*  bank.  The device returns three times as many upper bank blocks. */
+	 *  Each block contains data from either the upper or lower laser
+	 *  bank.  The device returns three times as many upper bank blocks. */
 	struct raw_block_t
 	{
 		uint16_t header;  ///< Block id: UPPER_BANK or LOWER_BANK
@@ -200,16 +200,17 @@ class CObservationVelodyneScan : public CObservation
 
 	/** Optionally, raw data can be converted into a 3D point cloud (local
 	 * coordinates wrt the sensor, not the vehicle)
-	  * with intensity (graylevel) information. See axes convention in
+	 * with intensity (graylevel) information. See axes convention in
 	 * mrpt::obs::CObservationVelodyneScan \sa generatePointCloud()
-	  */
+	 */
 	TPointCloud point_cloud;
 	/** @} */
 
 	/** @name Related to conversion to 3D point cloud
-	  * @{ */
+	 * @{ */
 	struct TGeneratePointCloudParameters
 	{
+		TGeneratePointCloudParameters() {}
 		/** Minimum azimuth, in degrees (Default=0). Points will be generated
 		 * only the the area of interest [minAzimuth, maxAzimuth] */
 		double minAzimuth_deg{.0};
@@ -231,7 +232,7 @@ class CObservationVelodyneScan : public CObservation
 			ROI_z_max{std::numeric_limits<float>::max()};
 		/** The limits of the 3D box (default=0) in sensor (not vehicle) local
 		 * coordinates for the nROI filter \sa filterBynROI */
-		float nROI_x_min{0}, nROI_x_max{ 0 }, nROI_y_min{ 0 }, nROI_y_max{ 0 },
+		float nROI_x_min{0}, nROI_x_max{0}, nROI_y_min{0}, nROI_y_max{0},
 			nROI_z_min{0}, nROI_z_max{0};
 		/** (Default:2.0 meters) Minimum distance between a point and its two
 		 * neighbors to be considered an invalid point. */
@@ -257,19 +258,20 @@ class CObservationVelodyneScan : public CObservation
 
 	/** Generates the point cloud into the point cloud data fields in \a
 	 * CObservationVelodyneScan::point_cloud
-	  * where it is stored in local coordinates wrt the sensor (neither the
+	 * where it is stored in local coordinates wrt the sensor (neither the
 	 * vehicle nor the world).
-	  * So, this method does not take into account the possible motion of the
+	 * So, this method does not take into account the possible motion of the
 	 * sensor through the world as it collects LIDAR scans.
-	  * For high dynamics, see the more costly API
+	 * For high dynamics, see the more costly API
 	 * generatePointCloudAlongSE3Trajectory()
-	  * \note Points with ranges out of [minRange,maxRange] are discarded; as
+	 * \note Points with ranges out of [minRange,maxRange] are discarded; as
 	 * well, other filters are available in \a params.
-	  * \sa generatePointCloudAlongSE3Trajectory(),
+	 * \sa generatePointCloudAlongSE3Trajectory(),
 	 * TGeneratePointCloudParameters
-	  */
+	 */
 	void generatePointCloud(
-		const TGeneratePointCloudParameters& params = TGeneratePointCloudParameters());
+		const TGeneratePointCloudParameters& params =
+			TGeneratePointCloudParameters());
 
 	/** Results for generatePointCloudAlongSE3Trajectory() */
 	struct TGeneratePointCloudSE3Results
@@ -283,22 +285,23 @@ class CObservationVelodyneScan : public CObservation
 
 	/** An alternative to generatePointCloud() for cases where the motion of the
 	 * sensor as it grabs one scan (360 deg horiz FOV) cannot be ignored.
-	  * \param[in] vehicle_path Timestamped sequence of known poses for the
+	 * \param[in] vehicle_path Timestamped sequence of known poses for the
 	 * VEHICLE. Recall that the sensor has a relative pose wrt the vehicle
 	 * according to CObservationVelodyneScan::getSensorPose() &
 	 * CObservationVelodyneScan::setSensorPose()
-	  * \param[out] out_points The generated points, in the same coordinates
+	 * \param[out] out_points The generated points, in the same coordinates
 	 * frame than \a vehicle_path. Points are APPENDED to the list, so prevous
 	 * contents are kept.
-	  * \param[out] results_stats Stats
-	  * \param[in] params Filtering and other parameters
-	  * \sa generatePointCloud(), TGeneratePointCloudParameters
-	  */
+	 * \param[out] results_stats Stats
+	 * \param[in] params Filtering and other parameters
+	 * \sa generatePointCloud(), TGeneratePointCloudParameters
+	 */
 	void generatePointCloudAlongSE3Trajectory(
 		const mrpt::poses::CPose3DInterpolator& vehicle_path,
 		std::vector<mrpt::math::TPointXYZIu8>& out_points,
 		TGeneratePointCloudSE3Results& results_stats,
-		const TGeneratePointCloudParameters& params = TGeneratePointCloudParameters());
+		const TGeneratePointCloudParameters& params =
+			TGeneratePointCloudParameters());
 
 	/** @} */
 
@@ -315,13 +318,13 @@ class CObservationVelodyneScan : public CObservation
 
 };  // End of class def.
 
-}  // End of namespace
+}  // namespace obs
 
 namespace typemeta
 {  // Specialization must occur in the same namespace
 MRPT_DECLARE_TTYPENAME_PTR_NAMESPACE(CObservationVelodyneScan, ::mrpt::obs)
 }
 
-}  // End of namespace
+}  // namespace mrpt
 
 #endif

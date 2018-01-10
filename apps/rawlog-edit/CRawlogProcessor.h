@@ -30,8 +30,8 @@ namespace rawlogtools
 {
 /** A virtual class that implements the common stuff around parsing a rawlog
  * file
-  * and (optionally) display a progress indicator to the console.
-  */
+ * and (optionally) display a progress indicator to the console.
+ */
 class CRawlogProcessor
 {
    protected:
@@ -153,8 +153,8 @@ class CRawlogProcessor
 
 /** A virtual class that implements the common stuff around parsing a rawlog
  * file
-  * and (optionally) display a progress indicator to the console.
-  */
+ * and (optionally) display a progress indicator to the console.
+ */
 class CRawlogProcessorOnEachObservation : public CRawlogProcessor
 {
    public:
@@ -204,14 +204,14 @@ class CRawlogProcessorOnEachObservation : public CRawlogProcessor
 
 /** A specialization of CRawlogProcessorOnEachObservation that handles the
  * common case of
-  *  filtering entries in a rawlog depending on the return value of a user
+ *  filtering entries in a rawlog depending on the return value of a user
  * function.
-  */
+ */
 class CRawlogProcessorFilterObservations
 	: public CRawlogProcessorOnEachObservation
 {
    public:
-	mrpt::serialization::CArchive& m_out_rawlog;
+	mrpt::io::CFileGZOutputStream& m_out_rawlog;
 	size_t m_entries_removed, m_entries_parsed;
 	/** Set to true to indicate that we are sure we don't have to keep on
 	 * reading. */
@@ -221,7 +221,7 @@ class CRawlogProcessorFilterObservations
 		mrpt::io::CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
 		bool verbose, mrpt::io::CFileGZOutputStream& out_rawlog)
 		: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, verbose),
-		  m_out_rawlog(mrpt::serialization::archiveFrom(out_rawlog)),
+		  m_out_rawlog(out_rawlog),
 		  m_entries_removed(0),
 		  m_entries_parsed(0),
 		  m_we_are_done_with_this_rawlog(false)
@@ -264,17 +264,17 @@ class CRawlogProcessorFilterObservations
 					it = SF->erase(it);
 			}
 			// Save:
-			m_out_rawlog << actions << SF;
+			mrpt::serialization::archiveFrom(m_out_rawlog) << actions << SF;
 		}
 		else
 		{
-			if (obs) m_out_rawlog << obs;
+			if (obs) mrpt::serialization::archiveFrom(m_out_rawlog) << obs;
 		}
 	}
 
 };  // end CRawlogProcessorOnEachObservation
 
-}  // end NS
-}  // end NS
+}  // namespace rawlogtools
+}  // namespace mrpt
 
 #endif

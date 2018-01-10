@@ -104,12 +104,12 @@ int main(int num_arg, char* argv[])
 
 		if (use_config_file == 0)
 		{
-			utils::CConfigFileMemory configDifodo(default_cfg_txt);
+			mrpt::config::CConfigFileMemory configDifodo(default_cfg_txt);
 			odo.loadConfiguration(configDifodo);
 		}
 		else
 		{
-			utils::CConfigFile configDifodo(filename);
+			mrpt::config::CConfigFile configDifodo(filename);
 			odo.loadConfiguration(configDifodo);
 		}
 
