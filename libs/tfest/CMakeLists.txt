@@ -5,7 +5,5 @@ define_mrpt_lib(
 	# Lib name
 	tfest
 	# Dependencies
-	mrpt-random
 	mrpt-poses
 	)
-

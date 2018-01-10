@@ -5,14 +5,8 @@ define_mrpt_lib(
 	# Lib name
 	graphslam
 	# Dependencies
-	mrpt-poses
-	mrpt-graphs
 	mrpt-gui
-	mrpt-maps
-	mrpt-obs
-	mrpt-opengl
 	mrpt-slam
-	mrpt-vision
 	)
 
 IF(BUILD_mrpt-graphslam)
