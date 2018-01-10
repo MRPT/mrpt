@@ -1044,7 +1044,7 @@ bool COpenNI2Generic::CDevice::CStream::isMirrorSupported() const
 {
 	if (isValid() == false)
 	{
-		THROW_EXCEPTION(getName();+ " is not opened.");
+		THROW_EXCEPTION(getName() + " is not opened.");
 	}
 	return m_stream.isPropertySupported(openni::STREAM_PROPERTY_MIRRORING);
 }
