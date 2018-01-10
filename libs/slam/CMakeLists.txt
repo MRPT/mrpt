@@ -17,14 +17,8 @@ define_mrpt_lib(
 	# Lib name
 	slam
 	# Dependencies
-	mrpt-bayes
-	mrpt-graphs
 	mrpt-vision
-	mrpt-tfest
 	mrpt-maps
-	# And deps of the deps:
-	mrpt-obs
-	mrpt-opengl
 	)
 
 IF(BUILD_mrpt-slam)

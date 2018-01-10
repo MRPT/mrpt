@@ -36,10 +36,6 @@ define_mrpt_lib(
 	vision
 	# Dependencies:
 	mrpt-obs
-	# Deps of deps:
-	mrpt-opengl
-	#mrpt-gui  # used to camera preview, etc. (only for debugging!)
-	mrpt-opengl  # needed by mrpt-gui
 	)
 
 IF(BUILD_mrpt-vision)

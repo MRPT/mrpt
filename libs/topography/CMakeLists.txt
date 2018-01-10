@@ -6,8 +6,6 @@ define_mrpt_lib(
 	topography
 	# Dependencies
 	mrpt-obs
-	mrpt-opengl
-	mrpt-tfest
 	)
 
 IF(BUILD_mrpt-topography)

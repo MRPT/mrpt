@@ -50,9 +50,7 @@ define_mrpt_lib(
 	# Lib name
 	opengl
 	# Dependencies:
-	mrpt-core
 	mrpt-poses
-	mrpt-serialization
 	mrpt-img
 	)
 

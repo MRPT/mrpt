@@ -22,11 +22,6 @@ define_mrpt_lib(
 	# Lib name
 	nav
 	# Dependencies
-	mrpt-graphs
 	mrpt-maps
 	mrpt-kinematics
-	# Depts of the deps:
-	mrpt-graphs  # dep of mrpt-maps
-	mrpt-obs
-	mrpt-opengl
 	)

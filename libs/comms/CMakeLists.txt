@@ -9,8 +9,6 @@ define_mrpt_lib(
 	comms
 	# Dependencies
 	mrpt-io
-	mrpt-containers
-	mrpt-system
 	)
 
 IF(CMAKE_MRPT_HAS_FTDI_SYSTEM)
