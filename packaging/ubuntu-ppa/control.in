@@ -555,7 +555,6 @@ Description: Mobile Robot Programming Toolkit - vision development package
 Package: libmrpt-dev
 Section: libdevel
 Architecture: any
-<<<<<<< HEAD
 Depends: ${shlibs:Depends}, ${misc:Depends},
          libeigen3-dev,
          libmrpt-bayes-dev (= ${binary:Version}),
@@ -593,35 +592,6 @@ Depends: ${shlibs:Depends}, ${misc:Depends},
          libmrpt-typemeta-dev (= ${binary:Version}),
          libmrpt-vision-dev (= ${binary:Version})
 Description: Mobile Robot Programming Toolkit - Metapackage: all dev packages
-=======
-Depends: ${shlibs:Depends}, ${misc:Depends}, libeigen3-dev,
-         libmrpt-base@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-detectors@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-gui@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-hmtslam@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-hwdrivers@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-graphslam@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-kinematics@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-maps@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-obs@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-opengl@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-nav@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-tfest@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-slam@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-topography@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-vision@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-graphs@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-comms@MRPT_VER_MM@ (= ${binary:Version}),
-         libsuitesparse-dev
-Description: Mobile Robot Programming Toolkit - Development headers
- The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
- and open source C++ library aimed to help robotics researchers to design and
- implement algorithms in the fields of Simultaneous Localization and Mapping
- (SLAM, Graph-SLAM, Bundle Adjustment), computer vision, and motion planning
- (obstacle avoidance).
- .
- This package provides the MRPT headers and libraries for development.
->>>>>>> master
 
 Package: mrpt-common
 Architecture: all
