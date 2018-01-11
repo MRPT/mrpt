@@ -29,6 +29,7 @@ build:
     image_tag: v5.6.1
   ci:
     - sudo add-apt-repository -y ppa:jolting/backport-mrpt
+    - curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
     - sudo apt-get update
     - sudo apt-get install -y build-essential pkg-config cmake
     - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$DEPS" != "minimal" ]; then
