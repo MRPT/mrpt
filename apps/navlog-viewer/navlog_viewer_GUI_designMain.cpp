@@ -1975,7 +1975,7 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabExportPaths(
 			 "figure(); plot(iteration_duration(:,1),iteration_duration(:,2), "
 			 "'x');\n"
 			 "hold on;\n"
-			 "plot(iteration_duration(1:(end-1),1),diff(selected_PTG(:,1)),'.')"
+			 "plot(selected_PTG(1:(end-1),1),diff(selected_PTG(:,1)),'.')"
 			 ";"
 			 "xlabel('Time'); legend('Iteration duration', 'Diff consecutive "
 			 "call time'); title('rnav_iter_call_time_duration');\n\n";
