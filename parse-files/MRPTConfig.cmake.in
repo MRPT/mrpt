@@ -129,7 +129,7 @@ SET(ALL_MRPT_LIBS "@ALL_MRPT_LIBS@")
 #  and replace "core"->"mrpt-core", etc.
 # ================================================
 SET(FINAL_LIST_COMPONENTS "")
-FOREACH(iter RANGE 1 3) # repeat to get depedencies recursively
+FOREACH(iter RANGE 1 12) # repeat to get depedencies recursively
 	FOREACH(_MOD ${MRPT_FIND_COMPONENTS})
 		STRING(TOLOWER ${_MOD} _MOD)
 		STRING(REGEX REPLACE "mrpt-(.*)" "\\1" _MOD ${_MOD})
