@@ -40,7 +40,8 @@ TColor TColorManager::getNextTColor()
 	else
 	{
 		bool used_red = used_colors.find(TColor::red()) != used_colors.end();
-		bool used_green = used_colors.find(TColor::green()) != used_colors.end();
+		bool used_green =
+			used_colors.find(TColor::green()) != used_colors.end();
 		bool used_blue = used_colors.find(TColor::blue()) != used_colors.end();
 
 		// fixed order of usage

@@ -29,7 +29,6 @@
 /// using namespaces
 using namespace mrpt::obs;
 using namespace mrpt::system;
-using namespace cv::line_descriptor;
 using namespace mrpt::vision;
 using namespace mrpt::gui;
 using namespace mrpt::img;
@@ -39,9 +38,6 @@ using namespace mrpt::math;
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace std;
-
-using namespace cv;
-using namespace cv::xfeatures2d;
 
 QImage qimage_1[MAX_DESC], qimage_2[MAX_DESC];  //!< qimage1 and qimage2 stores
 //! the descriptor visualizations
@@ -194,7 +190,11 @@ void MainWindow::on_button_generate_clicked()
 				yData.at<double>(i) = distances.row(i).x();
 			}
 #ifdef HAVE_OPENCV_PLOT
+#if MRPT_OPENCV_VERSION_NUM >= 0x330
 			plot = plot::Plot2d::create(xData, yData);
+#else
+			plot = plot::createPlot2d(xData, yData);
+#endif
 			plot->setPlotSize(len, 1);
 			plot->setMaxX(distances.size());
 			plot->setMinX(-15);
@@ -395,7 +395,11 @@ void MainWindow::on_button_generate_clicked()
 				}
 
 #ifdef HAVE_OPENCV_PLOT
+#if MRPT_OPENCV_VERSION_NUM >= 0x330
 				plot = plot::Plot2d::create(xData, yData);
+#else
+				plot = plot::createPlot2d(xData, yData);
+#endif
 				plot->setPlotSize(len, 1);
 				plot->setMaxX(len);
 				plot->setMinX(0);
@@ -449,7 +453,11 @@ void MainWindow::on_button_generate_clicked()
 							yData.at<double>(i) = v2_surf.at(i);
 					}
 #ifdef HAVE_OPENCV_PLOT
+#if MRPT_OPENCV_VERSION_NUM >= 0x330
 					plot = plot::Plot2d::create(xData, yData);
+#else
+					plot = plot::createPlot2d(xData, yData);
+#endif
 					plot->setPlotSize(len, 1);
 					plot->setMaxX(len);
 					plot->setMinX(0);
@@ -2440,10 +2448,6 @@ void MainWindow::on_generateVisualOdometry_clicked()
 
 	/// following creates an object of the visual odometry class and performs
 	/// the VO task on the monocular images dataset
-	string file_paths[3];
-	file_paths[0] = single_dataset_path;
-	file_paths[1] = file_path3;
-	file_paths[2] = calibration_file;
 
 	// Start the computation.
 	// QFuture<void> future = QtConcurrent::run(&this->visual_odom,
@@ -2463,7 +2467,9 @@ void MainWindow::on_generateVisualOdometry_clicked()
 	std::this_thread::sleep_for(4s);
 	QFuture<Mat> future = QtConcurrent::run(
 		&this->visual_odom, &VisualOdometry::generateVO, fext, numFeats,
-		file_paths, feat_type);
+		std::array<std::string, 3>{
+			{single_dataset_path, file_path3, calibration_file}},
+		feat_type);
 	Mat display_VO = future.result();
 	this->FutureWatcher.setFuture(future);
 

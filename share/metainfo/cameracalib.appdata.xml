@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>org.mrpt.cameracalib.desktop</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <name>camera-calib</name>
+  <summary>Tool for easy calibration of monocular cameras</summary>
+  <description>
+    <p>This GUI program allows users to find out the camera parameters of a camera by capturing several images of a checkerboard. The program allows online grabbing or images as well as selection of pre-recorded image files. It also shows the reprojected points, undistorted images and a 3D view of the reconstructed camera poses.</p>
+
+    <p>Supported image sources:</p>
+
+    <ul>
+      <li> All cameras supported by OpenCV (webcams, firewire,…)</li>
+      <li>  All cameras supported by FFmpeg (IP cameras,…)</li>
+      <li>  Video files (in any format)</li>
+
+      <li>  The stereo Bumblebee camera, for calibration of the individual cameras one at a time.</li>
+      <li>  The intensity channel of a SwisssRanger ToF 3D camera.</li>
+      <li>  The RGB intensity and IR channels of Microsoft Kinect.</li>
+    </ul>
+
+    <p>Precompiled binaries of this application can be found in the Windows packages and Linux repositories.</p>
+
+  </description>
+  <screenshots>
+    <screenshot type="default">http://static.mrpt.org/screenshots/cameracalib.png</screenshot>
+  </screenshots>
+  <url type="homepage">https://www.mrpt.org/</url>
+  <update_contact>joseluisblancoc_at_gmail.com</update_contact>
+</component>

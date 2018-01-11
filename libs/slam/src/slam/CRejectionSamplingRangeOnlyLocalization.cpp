@@ -62,7 +62,8 @@ void CRejectionSamplingRangeOnlyLocalization::RS_drawFromProposal(
 	outSample.x(m_dataPerBeacon[m_drawIndex].beaconPosition.x + cos(ang) * R);
 	outSample.y(m_dataPerBeacon[m_drawIndex].beaconPosition.y + sin(ang) * R);
 
-	outSample.phi(getRandomGenerator().drawGaussian1D(m_oldPose.phi(), DEG2RAD(2)));
+	outSample.phi(
+		getRandomGenerator().drawGaussian1D(m_oldPose.phi(), DEG2RAD(2)));
 
 	// Compute the robot pose P.
 	//	  P = SAMPLE - ROT · SENSOR_ON_ROBOT

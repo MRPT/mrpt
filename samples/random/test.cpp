@@ -123,7 +123,8 @@ void TestRandomGenerators()
 		CMatrixDouble22 cov;
 		cov.fromMatlabStringFormat("[7.5 -7;-7 8]");
 
-		getRandomGenerator().drawGaussianMultivariateMany(v1, 10000, cov, &Mean);
+		getRandomGenerator().drawGaussianMultivariateMany(
+			v1, 10000, cov, &Mean);
 
 #if 0 
 		CVectorDouble m;

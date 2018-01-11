@@ -59,11 +59,6 @@ def main():
 		sFrom, sTo)
 
 	replaceInFile(
-		os.path.normpath(parseDir+'/include/mrpt/name/link_pragmas.h.in'),
-		os.path.normpath(baseDir+'/include/mrpt/'+ NewLibName.lower() + '/link_pragmas.h'),
-		sFrom, sTo)
-
-	replaceInFile(
 		os.path.normpath(parseDir+'/src/name-precomp.cpp.in'),
 		os.path.normpath(baseDir+'/src/'+ NewLibName.lower() +'-precomp.cpp'),
 		sFrom, sTo)

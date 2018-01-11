@@ -216,7 +216,8 @@ struct ExampleDemoGraphSLAM
 					getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_XYZ),
 					getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_ANG),
 					getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_ANG),
-					getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_ANG)));
+					getRandomGenerator().drawGaussian1D(
+						0, STD_NOISE_EDGE_ANG)));
 			itEdge->second.getPoseMean() +=
 				typename my_graph_t::edge_t::type_value(delta_noise);
 		}
@@ -225,15 +226,21 @@ struct ExampleDemoGraphSLAM
 				 graph.nodes.begin();
 			 itNode != graph.nodes.end(); ++itNode)
 			if (itNode->first != graph.root)
-				itNode->second
-					.getPoseMean() += typename my_graph_t::edge_t::type_value(
-					CPose3D(
-						getRandomGenerator().drawGaussian1D(0, STD_NOISE_NODE_XYZ),
-						getRandomGenerator().drawGaussian1D(0, STD_NOISE_NODE_XYZ),
-						getRandomGenerator().drawGaussian1D(0, STD_NOISE_NODE_XYZ),
-						getRandomGenerator().drawGaussian1D(0, STD_NOISE_NODE_ANG),
-						getRandomGenerator().drawGaussian1D(0, STD_NOISE_NODE_ANG),
-						getRandomGenerator().drawGaussian1D(0, STD_NOISE_NODE_ANG)));
+				itNode->second.getPoseMean() +=
+					typename my_graph_t::edge_t::type_value(
+						CPose3D(
+							getRandomGenerator().drawGaussian1D(
+								0, STD_NOISE_NODE_XYZ),
+							getRandomGenerator().drawGaussian1D(
+								0, STD_NOISE_NODE_XYZ),
+							getRandomGenerator().drawGaussian1D(
+								0, STD_NOISE_NODE_XYZ),
+							getRandomGenerator().drawGaussian1D(
+								0, STD_NOISE_NODE_ANG),
+							getRandomGenerator().drawGaussian1D(
+								0, STD_NOISE_NODE_ANG),
+							getRandomGenerator().drawGaussian1D(
+								0, STD_NOISE_NODE_ANG)));
 
 		// This is the initial input graph (make a copy for later use):
 		const my_graph_t graph_initial = graph;

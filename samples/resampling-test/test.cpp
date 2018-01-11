@@ -41,7 +41,7 @@ map<string, CVectorDouble> results;
 	ERR_STDs.clear();                                                     \
 	for (size_t i = 0; i < N_TESTS; i++)                                  \
 	{                                                                     \
-		mrpt::random::getRandomGenerator().drawUniformVector(                  \
+		mrpt::random::getRandomGenerator().drawUniformVector(             \
 			log_ws, MIN_LOG_WEIG, 0.0);                                   \
 		CParticleFilterCapable::log2linearWeights(log_ws, lin_ws);        \
 		CParticleFilterCapable::computeResampling(                        \

@@ -20,10 +20,10 @@ void atan2_lut_test(
 {
 	for (int i = 0; i < 1000; i++)
 	{
-		const double x =
-			mrpt::random::getRandomGenerator().drawUniform(-.5 * SIZE, .5 * SIZE);
-		const double y =
-			mrpt::random::getRandomGenerator().drawUniform(-.5 * SIZE, .5 * SIZE);
+		const double x = mrpt::random::getRandomGenerator().drawUniform(
+			-.5 * SIZE, .5 * SIZE);
+		const double y = mrpt::random::getRandomGenerator().drawUniform(
+			-.5 * SIZE, .5 * SIZE);
 
 		// Avoid the central part, where accuracy is worse
 		if (std::abs(x) < skip_area || std::abs(y) < skip_area) continue;

@@ -10,8 +10,16 @@
 #include <mrpt/maps/COctoMap.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/COctoMapVoxels.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/system/os.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
+
+//#define HAS_SYSTEM_OCTOMAP
+
+#ifdef HAS_SYSTEM_OCTOMAP
+#include <octomap/octomap.h>
+#include <octomap/OcTree.h>
+#endif
 
 using namespace mrpt;
 using namespace mrpt::maps;
@@ -156,19 +164,18 @@ void TestOctoMap()
 		win.unlockAccess3DScene();
 	}
 
-	// Go through voxels:
-	if (1)
+// Go through voxels:
+#ifdef HAS_SYSTEM_OCTOMAP
 	{
-		const COctoMap::octree_t& om = map.getOctomap();
-
-		for (COctoMap::octree_t::leaf_iterator it = om.begin_leafs();
-			 it != om.end_leafs(); ++it)
+		const auto& om = map.getOctomap<octomap::OcTree>();
+		for (auto it = om.begin_leafs(); it != om.end_leafs(); ++it)
 		{
 			const octomap::point3d pt = it.getCoordinate();
 			cout << "pt: " << pt << " -> occupancy = " << it->getOccupancy()
 				 << endl;
 		}
 	}
+#endif
 
 	cout << "Close the window to exit" << endl;
 

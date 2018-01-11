@@ -10,6 +10,7 @@
 
 #include "CAbstractHolonomicReactiveMethod.h"
 #include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/obs/CSinCosLookUpTableFor2DScans.h>
 
 namespace mrpt
 {
@@ -153,6 +154,8 @@ class CHolonomicFullEval : public CAbstractHolonomicReactiveMethod
 	/** Evals one single target of the potentially many of them in NavInput */
 	void evalSingleTarget(
 		unsigned int target_idx, const NavInput& ni, EvalOutput& eo);
+
+	mrpt::obs::CSinCosLookUpTableFor2DScans m_sincos_lut;
 };  // end of CHolonomicFullEval
 
 /** A class for storing extra information about the execution of

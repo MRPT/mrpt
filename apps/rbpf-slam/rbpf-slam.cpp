@@ -23,6 +23,7 @@
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/random.h>

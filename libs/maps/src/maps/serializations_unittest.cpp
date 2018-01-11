@@ -36,10 +36,8 @@ TEST_CLASS_MOVE_COPY_CTORS(COccupancyGridMap2D);
 TEST_CLASS_MOVE_COPY_CTORS(CSimplePointsMap);
 TEST_CLASS_MOVE_COPY_CTORS(CRandomFieldGridMap3D);
 TEST_CLASS_MOVE_COPY_CTORS(CWeightedPointsMap);
-
-MRPT_TODO("liboctomap doesn't work nice with move ctors...");
-// TEST_CLASS_MOVE_COPY_CTORS(COctoMap);
-// TEST_CLASS_MOVE_COPY_CTORS(CColouredOctoMap);
+TEST_CLASS_MOVE_COPY_CTORS(COctoMap);
+TEST_CLASS_MOVE_COPY_CTORS(CColouredOctoMap);
 
 // Create a set of classes, then serialize and deserialize to test possible
 // bugs:

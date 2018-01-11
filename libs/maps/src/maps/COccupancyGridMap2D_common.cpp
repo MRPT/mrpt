@@ -94,11 +94,11 @@ static const float MAX_H = 0.69314718055994531f;  // ln(2)
 
 // Static lookup tables for log-odds
 static CLogOddsGridMapLUT<COccupancyGridMap2D::cellType> logodd_lut;
-CLogOddsGridMapLUT<COccupancyGridMap2D::cellType> & COccupancyGridMap2D::get_logodd_lut()
+CLogOddsGridMapLUT<COccupancyGridMap2D::cellType>&
+	COccupancyGridMap2D::get_logodd_lut()
 {
 	return logodd_lut;
 }
-
 
 /*---------------------------------------------------------------
 						Constructor

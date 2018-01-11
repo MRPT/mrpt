@@ -765,16 +765,21 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	 * unload.
 	 *   An image becomes of type "external storage" only through calling
 	 * setExternalStorage. This property remains after serializing the object.
-	 *   File names can be absolute, or relative to the
+	  *   File names can be absolute, or relative to the
 	 * CImage::getImagesPathBase() directory. Filenames staring with "X:\" or
-	 * "/" are considered absolute paths. By calling this method the current
-	 * contents of the image are NOT saved to that file, because this method can
-	 * be also called to let the object know where to load the image in case its
-	 * contents are required. Thus, for saving images in this format (not when
-	 * loading) the proper order of commands should be: \code img.saveToFile(
-	 * fileName ); img.setExternalStorage( fileName ); \endcode
-	 *
-	 *   \note Modifications to the memory copy of the image are not
+	 * "/"
+	 * are considered absolute paths.
+	  *   By calling this method the current contents of the image are NOT saved
+	 * to that file, because this method can be also called
+	  *    to let the object know where to load the image in case its contents
+	 * are required. Thus, for saving images in this format (not when loading)
+	  *    the proper order of commands should be:
+	  *   \code
+	  *   img.saveToFile( fileName );
+	  *   img.setExternalStorage( fileName );
+	  *   \endcode
+	  *
+	  *   \note Modifications to the memory copy of the image are not
 	 * automatically saved to disk.
 	 *  \sa unload, isExternallyStored
 	 */

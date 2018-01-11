@@ -30,7 +30,6 @@ Build-Depends: debhelper (>= 10),
 	python-numpy,
 	libeigen3-dev,
 	libassimp-dev,
-	liboctomap-dev,
 	qtbase5-dev,
 	libqt5opengl5-dev
 Standards-Version: 4.1.1
@@ -626,7 +625,8 @@ Description: Mobile Robot Programming Toolkit - Example datasets and files
 
 Package: mrpt-apps
 Architecture: any
-Depends: mrpt-common (= ${source:Version}), ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Recommends: mrpt-common (= ${source:Version})
 Description: Mobile Robot Programming Toolkit - Console and GUI applications
  The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
  and open source C++ library aimed to help robotics researchers to design and

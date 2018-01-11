@@ -177,8 +177,10 @@ void TestRANSAC()
 		observations.resize(nObs);
 
 		const mrpt::poses::CPose2D GT_pose(
-			mrpt::random::getRandomGenerator().drawUniform(-10, 10 + MAP_SIZE_X),
-			mrpt::random::getRandomGenerator().drawUniform(-10, 10 + MAP_SIZE_Y),
+			mrpt::random::getRandomGenerator().drawUniform(
+				-10, 10 + MAP_SIZE_X),
+			mrpt::random::getRandomGenerator().drawUniform(
+				-10, 10 + MAP_SIZE_Y),
 			mrpt::random::getRandomGenerator().drawUniform(-M_PI, M_PI));
 
 		const mrpt::poses::CPose2D GT_pose_inv = -GT_pose;
@@ -196,12 +198,14 @@ void TestRANSAC()
 			GT_pose_inv.composePoint(gx, gy, lx, ly);
 
 			observations[i].ID = idxs[i].first;
-			observations[i].x = lx +
-								mrpt::random::getRandomGenerator().drawGaussian1D(
-									0, normalizationStd);
-			observations[i].y = ly +
-								mrpt::random::getRandomGenerator().drawGaussian1D(
-									0, normalizationStd);
+			observations[i].x =
+				lx +
+				mrpt::random::getRandomGenerator().drawGaussian1D(
+					0, normalizationStd);
+			observations[i].y =
+				ly +
+				mrpt::random::getRandomGenerator().drawGaussian1D(
+					0, normalizationStd);
 		}
 
 		// ----------------------------------------------------

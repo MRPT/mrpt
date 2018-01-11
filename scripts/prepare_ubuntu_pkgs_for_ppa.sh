@@ -46,7 +46,7 @@ rm -fr $MRPT_UBUNTU_OUT_DIR/
 # -------------------------------------------------------------------
 # And now create the custom packages for each Ubuntu distribution:
 # -------------------------------------------------------------------
-LST_DISTROS=(zesty xenial artful)
+LST_DISTROS=(zesty xenial artful bionic)
 
 # Xenial:armhf does not have any version of liboctomap-dev:
 export MRPT_RELEASE_EXTRA_OTHERLIBS_URL="https://github.com/MRPT/octomap/archive/devel.zip"
@@ -67,7 +67,7 @@ do
 	cd ${MRPTSRC}
 	bash scripts/prepare_debian.sh -s -u -h -d ${DEBIAN_DIST} -c "${MRPT_PKG_CUSTOM_CMAKE_PARAMS}"
 
-	MRPT_SNAPSHOT_VERSION=`date +%Y%m%d-%H%M`
+	MRPT_SNAPSHOT_VERSION=`date +%Y%m%d`
 	MRPT_SNAPSHOT_VERSION+="-git-"
 	MRPT_SNAPSHOT_VERSION+=`git rev-parse --short=8 HEAD`
 	MRPT_SNAPSHOT_VERSION+="-"
