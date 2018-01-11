@@ -10,12 +10,11 @@
 #ifndef MRPT_FASTER_CORNER_PROTO_H
 #define MRPT_FASTER_CORNER_PROTO_H
 
-#include <mrpt/utils/types.h>
 #include <mrpt/vision/TSimpleFeature.h>
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>
 
-using mrpt::utils::TPixelCoord;
+using mrpt::img::TPixelCoord;
 using mrpt::vision::TSimpleFeatureList;
 using std::vector;
 

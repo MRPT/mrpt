@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/hwdrivers/CJoystick.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
 
 #include <cstdio>
@@ -17,7 +17,6 @@
 
 using namespace std;
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
 
 // ------------------------------------------------------
@@ -28,7 +27,7 @@ void TestJoystick()
 	// Open first joystick:
 	// ---------------------------
 	float x, y, z;
-	vector_bool buttons;
+	std::vector<bool> buttons;
 	CTicTac tictac;
 	CJoystick joy;
 

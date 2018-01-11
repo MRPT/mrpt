@@ -11,11 +11,10 @@
 #include <mrpt/graphslam/levmarq.h>
 #include <mrpt/graphs.h>
 #include <mrpt/random.h>
-#include <mrpt/utils/CMemoryStream.h>
+#include <mrpt/io/CMemoryStream.h>
 
 using namespace mrpt;
 using namespace mrpt::random;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::graphs;
 using namespace mrpt::math;

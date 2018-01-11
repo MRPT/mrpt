@@ -3,22 +3,22 @@
 # ----------------------------------------------------------------------------
 FILE(GLOB MRPT_PKGCONFIG_PC_FILES "${MRPT_BINARY_DIR}/pkgconfig/mrpt-*.pc")
 
-IF(EXISTS "${MRPT_BINARY_DIR}/pkgconfig/mrpt-base.pc" AND NOT IS_DEBIAN_DBG_PKG)
+IF(EXISTS "${MRPT_BINARY_DIR}/pkgconfig/mrpt-core.pc" AND NOT IS_DEBIAN_DBG_PKG)
 	INSTALL(
 		FILES ${MRPT_PKGCONFIG_PC_FILES}
 		DESTINATION ${libmrpt_dev_INSTALL_PREFIX}${CMAKE_INSTALL_LIBDIR}/pkgconfig )
-ENDIF(EXISTS "${MRPT_BINARY_DIR}/pkgconfig/mrpt-base.pc" AND NOT IS_DEBIAN_DBG_PKG)
+ENDIF()
 
 # CMake will look for MRPTConfig.cmake at: /usr/share|lib/mrpt
 IF(WIN32)
 	INSTALL(FILES "${MRPT_BINARY_DIR}/unix-install/MRPTConfig.cmake" DESTINATION ./ )
 	INSTALL(FILES "${MRPT_BINARY_DIR}/unix-install/MRPTConfig-version.cmake" DESTINATION ./ )
-ELSE(WIN32)
+ELSE()
 	IF (NOT IS_DEBIAN_DBG_PKG)
 		INSTALL(FILES "${MRPT_BINARY_DIR}/unix-install/MRPTConfig.cmake" DESTINATION ${libmrpt_dev_INSTALL_PREFIX}share/mrpt )
 		INSTALL(FILES "${MRPT_BINARY_DIR}/unix-install/MRPTConfig-version.cmake" DESTINATION ${libmrpt_dev_INSTALL_PREFIX}share/mrpt )
 	ENDIF(NOT IS_DEBIAN_DBG_PKG)
-ENDIF(WIN32)
+ENDIF()
 
 # Docs, examples and the rest of files:
 IF(WIN32)

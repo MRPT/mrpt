@@ -12,10 +12,10 @@
 #include <mrpt/hwdrivers/CIMUXSens.h>
 #include <mrpt/obs/CObservationIMU.h>
 
+#include <iostream>
 #include <thread>
 IMPLEMENTS_GENERIC_SENSOR(CIMUXSens, mrpt::hwdrivers)
 
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
 using namespace std::literals;
@@ -41,12 +41,12 @@ using namespace std::literals;
 
 // Include libraries in linking:
 #if MRPT_HAS_xSENS_MT3
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 // WINDOWS:
-#if defined(_MSC_VER) || defined(__BORLANDC__)
+#if defined(_MSC_VER)
 #pragma comment(lib, "SetupAPI.lib")
 #endif
-#endif  // MRPT_OS_WINDOWS
+#endif  // _WIN32
 #endif  // MRPT_HAS_xSENS_MT3
 
 /*-------------------------------------------------------------
@@ -389,7 +389,7 @@ void CIMUXSens::initialize()
 					loadConfig_sensorSpecific
 -------------------------------------------------------------*/
 void CIMUXSens::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 	m_sensorPose.setFromValues(
@@ -403,7 +403,7 @@ void CIMUXSens::loadConfig_sensorSpecific(
 	m_COMbauds =
 		configSource.read_int(iniSection, "baudRate", m_COMbauds, false);
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	m_com_port =
 		configSource.read_string(iniSection, "COM_port_WIN", m_com_port, false);
 #else

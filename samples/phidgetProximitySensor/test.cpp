@@ -8,13 +8,12 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/hwdrivers/CPhidgetInterfaceKitProximitySensors.h>
-#include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/obs/CObservationRange.h>
 #include <mrpt/system.h>
 
 using namespace mrpt::hwdrivers;
-using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace mrpt::obs;
 using namespace std;

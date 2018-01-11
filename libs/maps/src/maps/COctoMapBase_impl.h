@@ -8,10 +8,11 @@
    +------------------------------------------------------------------------+ */
 
 // This file is to be included from <mrpt/maps/COctoMapBase.h>
-#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/maps/CPointsMap.h>
+#include <mrpt/serialization/CArchive.h>
 
 namespace mrpt
 {
@@ -156,8 +157,7 @@ void COctoMapBase<OCTREE, OCTREE_NODE>::saveMetricMapRepresentationToFile(
 		scene.insert(obj3D);
 
 		const std::string fil = filNamePrefix + std::string("_3D.3Dscene");
-		mrpt::utils::CFileOutputStream f(fil);
-		f << scene;
+		scene.saveToFile(fil);
 	}
 
 	// Save as ".bt" file (a binary format from the octomap lib):
@@ -295,7 +295,7 @@ COctoMapBase<OCTREE, OCTREE_NODE>::TLikelihoodOptions::TLikelihoodOptions()
 
 template <class OCTREE, class OCTREE_NODE>
 void COctoMapBase<OCTREE, OCTREE_NODE>::TLikelihoodOptions::writeToStream(
-	mrpt::utils::CStream& out) const
+	mrpt::serialization::CArchive& out) const
 {
 	const int8_t version = 0;
 	out << version;
@@ -304,7 +304,7 @@ void COctoMapBase<OCTREE, OCTREE_NODE>::TLikelihoodOptions::writeToStream(
 
 template <class OCTREE, class OCTREE_NODE>
 void COctoMapBase<OCTREE, OCTREE_NODE>::TLikelihoodOptions::readFromStream(
-	mrpt::utils::CStream& in)
+	mrpt::serialization::CArchive& in)
 {
 	int8_t version;
 	in >> version;
@@ -320,14 +320,11 @@ void COctoMapBase<OCTREE, OCTREE_NODE>::TLikelihoodOptions::readFromStream(
 	}
 }
 
-/*---------------------------------------------------------------
-					dumpToTextStream
-  ---------------------------------------------------------------*/
 template <class OCTREE, class OCTREE_NODE>
 void COctoMapBase<OCTREE, OCTREE_NODE>::TInsertionOptions::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+	std::ostream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [COctoMapBase<>::TInsertionOptions] ------------ \n\n");
 
 	LOADABLEOPTS_DUMP_VAR(maxrange, double);
@@ -339,14 +336,14 @@ void COctoMapBase<OCTREE, OCTREE_NODE>::TInsertionOptions::dumpToTextStream(
 	LOADABLEOPTS_DUMP_VAR(getClampingThresMin(), double);
 	LOADABLEOPTS_DUMP_VAR(getClampingThresMax(), double);
 
-	out.printf("\n");
+	out << mrpt::format("\n");
 }
 
 template <class OCTREE, class OCTREE_NODE>
 void COctoMapBase<OCTREE, OCTREE_NODE>::TLikelihoodOptions::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+	std::ostream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [COctoMapBase<>::TLikelihoodOptions] ------------ \n\n");
 
 	LOADABLEOPTS_DUMP_VAR(decimation, int);
@@ -357,7 +354,7 @@ void COctoMapBase<OCTREE, OCTREE_NODE>::TLikelihoodOptions::dumpToTextStream(
   ---------------------------------------------------------------*/
 template <class OCTREE, class OCTREE_NODE>
 void COctoMapBase<OCTREE, OCTREE_NODE>::TInsertionOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
 {
 	MRPT_LOAD_CONFIG_VAR(maxrange, double, iniFile, section);
 	MRPT_LOAD_CONFIG_VAR(pruning, bool, iniFile, section);
@@ -378,7 +375,7 @@ void COctoMapBase<OCTREE, OCTREE_NODE>::TInsertionOptions::loadFromConfigFile(
 
 template <class OCTREE, class OCTREE_NODE>
 void COctoMapBase<OCTREE, OCTREE_NODE>::TLikelihoodOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
 {
 	MRPT_LOAD_CONFIG_VAR(decimation, int, iniFile, section);
 }
@@ -386,7 +383,7 @@ void COctoMapBase<OCTREE, OCTREE_NODE>::TLikelihoodOptions::loadFromConfigFile(
 /*  COctoMapColoured */
 template <class OCTREE, class OCTREE_NODE>
 void COctoMapBase<OCTREE, OCTREE_NODE>::TRenderingOptions::writeToStream(
-	mrpt::utils::CStream& out) const
+	mrpt::serialization::CArchive& out) const
 {
 	const int8_t version = 0;
 	out << version;
@@ -396,7 +393,7 @@ void COctoMapBase<OCTREE, OCTREE_NODE>::TRenderingOptions::writeToStream(
 
 template <class OCTREE, class OCTREE_NODE>
 void COctoMapBase<OCTREE, OCTREE_NODE>::TRenderingOptions::readFromStream(
-	mrpt::utils::CStream& in)
+	mrpt::serialization::CArchive& in)
 {
 	int8_t version;
 	in >> version;
@@ -414,5 +411,5 @@ void COctoMapBase<OCTREE, OCTREE_NODE>::TRenderingOptions::readFromStream(
 	}
 }
 
-}  // End of namespace
-}  // End of namespace
+}  // namespace maps
+}  // namespace mrpt

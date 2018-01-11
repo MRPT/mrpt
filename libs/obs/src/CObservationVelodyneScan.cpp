@@ -11,8 +11,9 @@
 
 #include <mrpt/obs/CObservationVelodyneScan.h>
 #include <mrpt/poses/CPose3DInterpolator.h>
-#include <mrpt/utils/round.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/core/round.h>
+#include <mrpt/serialization/CArchive.h>
+#include <iostream>
 
 using namespace std;
 using namespace mrpt::obs;
@@ -41,98 +42,35 @@ const float VLP16_FIRING_TOFFSET = 55.296f;  // [us]
 const float HDR32_DSR_TOFFSET = 1.152f;  // [us]
 const float HDR32_FIRING_TOFFSET = 46.08f;  // [us]
 
-const CObservationVelodyneScan::TGeneratePointCloudParameters
-	CObservationVelodyneScan::defaultPointCloudParams;
-
-CObservationVelodyneScan::TGeneratePointCloudParameters::
-	TGeneratePointCloudParameters()
-	: minAzimuth_deg(0.0),
-	  maxAzimuth_deg(360.0),
-	  minDistance(1.0f),
-	  maxDistance(std::numeric_limits<float>::max()),
-	  ROI_x_min(-std::numeric_limits<float>::max()),
-	  ROI_x_max(+std::numeric_limits<float>::max()),
-	  ROI_y_min(-std::numeric_limits<float>::max()),
-	  ROI_y_max(+std::numeric_limits<float>::max()),
-	  ROI_z_min(-std::numeric_limits<float>::max()),
-	  ROI_z_max(+std::numeric_limits<float>::max()),
-	  nROI_x_min(.0f),
-	  nROI_x_max(.0f),
-	  nROI_y_min(.0f),
-	  nROI_y_max(.0f),
-	  nROI_z_min(.0f),
-	  nROI_z_max(.0f),
-	  isolatedPointsFilterDistance(2.0f),
-	  filterByROI(false),
-	  filterBynROI(false),
-	  filterOutIsolatedPoints(false),
-	  dualKeepStrongest(true),
-	  dualKeepLast(true),
-	  generatePerPointTimestamp(false),
-	  generatePerPointAzimuth(false)
-{
-}
-
-CObservationVelodyneScan::TGeneratePointCloudSE3Results::
-	TGeneratePointCloudSE3Results()
-	: num_points(0), num_correctly_inserted_points(0)
-{
-}
-
-CObservationVelodyneScan::CObservationVelodyneScan()
-	: minRange(1.0),
-	  maxRange(130.0),
-	  sensorPose(),
-	  originalReceivedTimestamp(INVALID_TIMESTAMP),
-	  has_satellite_timestamp(false)
-{
-}
-
-CObservationVelodyneScan::~CObservationVelodyneScan() {}
 mrpt::system::TTimeStamp
 	CObservationVelodyneScan::getOriginalReceivedTimeStamp() const
 {
 	return originalReceivedTimestamp;
 }
 
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CObservationVelodyneScan::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CObservationVelodyneScan::serializeGetVersion() const { return 1; }
+void CObservationVelodyneScan::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		out << timestamp << sensorLabel;
-
-		out << minRange << maxRange << sensorPose;
-		{
-			uint32_t N = scan_packets.size();
-			out << N;
-			if (N)
-				out.WriteBuffer(&scan_packets[0], sizeof(scan_packets[0]) * N);
-		}
-		{
-			uint32_t N = calibration.laser_corrections.size();
-			out << N;
-			if (N)
-				out.WriteBuffer(
-					&calibration.laser_corrections[0],
-					sizeof(calibration.laser_corrections[0]) * N);
-		}
-		out << point_cloud.x << point_cloud.y << point_cloud.z
-			<< point_cloud.intensity;
-		out << has_satellite_timestamp;  // v1
-	}
+	out << timestamp << sensorLabel;
+	out << minRange << maxRange << sensorPose;
+	out.WriteAs<uint32_t>(scan_packets.size());
+	if (!scan_packets.empty())
+		out.WriteBuffer(
+			&scan_packets[0], sizeof(scan_packets[0]) * scan_packets.size());
+	out.WriteAs<uint32_t>(calibration.laser_corrections.size());
+	if (!calibration.laser_corrections.empty())
+		out.WriteBuffer(
+			&calibration.laser_corrections[0],
+			sizeof(calibration.laser_corrections[0]) *
+				calibration.laser_corrections.size());
+	out << point_cloud.x << point_cloud.y << point_cloud.z
+		<< point_cloud.intensity;
+	out << has_satellite_timestamp;  // v1
 }
 
-/*---------------------------------------------------------------
-  Implements the reading from a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CObservationVelodyneScan::readFromStream(
-	mrpt::utils::CStream& in, int version)
+void CObservationVelodyneScan::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -179,10 +117,10 @@ void CObservationVelodyneScan::getDescriptionAsText(std::ostream& o) const
 {
 	CObservation::getDescriptionAsText(o);
 	o << "Homogeneous matrix for the sensor 3D pose, relative to robot base:\n";
-	o << sensorPose.getHomogeneousMatrixVal() << "\n" << sensorPose << endl;
-
+	o << sensorPose.getHomogeneousMatrixVal<mrpt::math::CMatrixDouble44>()
+	  << "\n"
+	  << sensorPose << endl;
 	o << format("Sensor min/max range: %.02f / %.02f m\n", minRange, maxRange);
-
 	o << "Raw packet count: " << scan_packets.size() << "\n";
 }
 
@@ -216,7 +154,7 @@ static void velodyne_scan_to_pointcloud(
 {
 	// Initially based on code from ROS velodyne & from
 	// vtkVelodyneHDLReader::vtkInternal::ProcessHDLPacket().
-	using mrpt::utils::round;
+	using mrpt::round;
 
 	// Access to sin/cos table:
 	mrpt::obs::T2DScanProperties scan_props;
@@ -295,9 +233,8 @@ static void velodyne_scan_to_pointcloud(
 			 block++)  // Firings per packet
 		{
 			// ignore packets with mangled or otherwise different contents
-			if ((num_lasers != 64 &&
-				 CObservationVelodyneScan::UPPER_BANK !=
-					 raw->blocks[block].header) ||
+			if ((num_lasers != 64 && CObservationVelodyneScan::UPPER_BANK !=
+										 raw->blocks[block].header) ||
 				(raw->blocks[block].header !=
 					 CObservationVelodyneScan::UPPER_BANK &&
 				 raw->blocks[block].header !=
@@ -346,7 +283,7 @@ static void velodyne_scan_to_pointcloud(
 					}
 				}
 
-				ASSERT_BELOW_(laserId, num_lasers)
+				ASSERT_BELOW_(laserId, num_lasers);
 				const mrpt::obs::VelodyneCalibration::PerLaserCalib& calib =
 					scan.calibration.laser_corrections[laserId];
 
@@ -435,11 +372,11 @@ static void velodyne_scan_to_pointcloud(
 						break;
 					default:
 					{
-						THROW_EXCEPTION("Error: unhandled LIDAR model!")
+						THROW_EXCEPTION("Error: unhandled LIDAR model!");
 					}
 				};
 
-				const int azimuthadjustment = mrpt::utils::round(
+				const int azimuthadjustment = mrpt::round(
 					median_azimuth_diff * ((timestampadjustment - blockdsr0) /
 										   (nextblockdsr0 - blockdsr0)));
 

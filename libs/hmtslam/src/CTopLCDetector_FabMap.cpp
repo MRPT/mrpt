@@ -15,7 +15,6 @@
 #endif
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::poses;
 using namespace mrpt::hmtslam;
@@ -44,7 +43,7 @@ CTopLCDetector_FabMap::CTopLCDetector_FabMap(CHMTSLAM* hmtslam)
 	cout << "[CTopLCDetector_FabMap::constructor] Resetting FabMap" << endl;
 	THE_FABMAP->hmtslam_restart();
 #else
-	THROW_EXCEPTION("Please, recompile MRPT with FabMap to use this class.")
+	THROW_EXCEPTION("Please, recompile MRPT with FabMap to use this class.");
 #endif
 }
 
@@ -117,7 +116,7 @@ CTopLCDetector_FabMap::TOptions::TOptions()
 
 //  Load parameters from configuration source
 void CTopLCDetector_FabMap::TOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
 {
 	MRPT_LOAD_CONFIG_VAR(vocab_path, string, iniFile, section);
 	MRPT_LOAD_CONFIG_VAR(vocabName, string, iniFile, section);
@@ -128,10 +127,9 @@ void CTopLCDetector_FabMap::TOptions::loadFromConfigFile(
 
 //  This method must display clearly all the contents of the structure in
 //  textual form, sending it to a CStream.
-void CTopLCDetector_FabMap::TOptions::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+void CTopLCDetector_FabMap::TOptions::dumpToTextStream(std::ostream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [CTopLCDetector_FabMap::TOptions] ------------ \n\n");
 
 	LOADABLEOPTS_DUMP_VAR(vocab_path, string)

@@ -11,13 +11,13 @@
 
 #include <mrpt/opengl/CSphere.h>
 //#include <mrpt/poses/CPose3D.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;
-using namespace mrpt::utils;
+
 using namespace mrpt::math;
 using namespace std;
 
@@ -78,28 +78,16 @@ void CSphere::render_dl() const
 
 #endif
 }
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CSphere::writeToStream(mrpt::utils::CStream& out, int* version) const
-{
-	if (version)
-		*version = 1;
-	else
-	{
-		writeToStreamRender(out);
-		out << m_radius;
-		out << (uint32_t)m_nDivsLongitude << (uint32_t)m_nDivsLatitude
-			<< m_keepRadiusIndependentEyeDistance;
-	}
-}
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CSphere::readFromStream(mrpt::utils::CStream& in, int version)
+uint8_t CSphere::serializeGetVersion() const { return 1; }
+void CSphere::serializeTo(mrpt::serialization::CArchive& out) const
+{
+	writeToStreamRender(out);
+	out << m_radius;
+	out << (uint32_t)m_nDivsLongitude << (uint32_t)m_nDivsLatitude
+		<< m_keepRadiusIndependentEyeDistance;
+}
+void CSphere::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

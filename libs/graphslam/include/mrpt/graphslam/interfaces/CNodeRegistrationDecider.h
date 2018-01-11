@@ -14,9 +14,9 @@
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/utils/TParameters.h>
-#include <mrpt/utils/CTimeLogger.h>
-#include <mrpt/utils/CProbabilityDensityFunction.h>
+#include <mrpt/system/TParameters.h>
+#include <mrpt/system/CTimeLogger.h>
+#include <mrpt/math/CProbabilityDensityFunction.h>
 
 #include <mrpt/graphslam/misc/CWindowManager.h>
 #include "CRegistrationDeciderOrOptimizer.h"
@@ -128,7 +128,7 @@ class CNodeRegistrationDecider
 	 * the
 	 * graph-optimization procedure / dijkstra_node_estimation
 	 */
-	mrpt::utils::TNodeID m_prev_registered_nodeID;
+	mrpt::graphs::TNodeID m_prev_registered_nodeID;
 	/**\brief Tracking the PDF of the current position of the robot with
 	 * regards to the <b previous registered node</b>.
 	 */

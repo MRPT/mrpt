@@ -8,13 +8,12 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/poses/CPosePDFSOG.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/system/os.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::opengl;
 using namespace mrpt::gui;

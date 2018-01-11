@@ -7,8 +7,8 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/slam/CMonteCarloLocalization2D.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/CSimpleMap.h>
@@ -22,8 +22,9 @@ using namespace mrpt;
 using namespace mrpt::bayes;
 using namespace mrpt::slam;
 using namespace mrpt::maps;
-using namespace mrpt::utils;
+using namespace mrpt::io;
 using namespace mrpt::poses;
+using namespace mrpt::config;
 using namespace mrpt::math;
 using namespace mrpt::random;
 using namespace mrpt::system;
@@ -33,10 +34,7 @@ using namespace std;
 // Defined in tests/test_main.cpp
 namespace mrpt
 {
-namespace utils
-{
 extern std::string MRPT_GLOBAL_UNITTEST_SRC_DIR;
-}
 }
 
 void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
@@ -54,7 +52,8 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
 	}
 
 	CConfigFile iniFile(ini_fil);
-	vector_int particles_count;  // Number of initial particles (if size>1, run
+	std::vector<int>
+		particles_count;  // Number of initial particles (if size>1, run
 	// the experiments N times)
 
 	// Load configuration:
@@ -63,7 +62,8 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
 
 	// Mandatory entries:
 	iniFile.read_vector(
-		iniSectionName, "particles_count", vector_int(1, 0), particles_count,
+		iniSectionName, "particles_count", std::vector<int>(1, 0),
+		particles_count,
 		/*Fail if not found*/ true);
 	string RAWLOG_FILE = iniFile.read_string(
 		iniSectionName, "rawlog_file", "", /*Fail if not found*/ true);
@@ -116,20 +116,17 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
 
 		// Detect file extension:
 		// -----------------------------
-		string mapExt = lowerCase(
-			extractFileExtension(
-				MAP_FILE, true));  // Ignore possible .gz extensions
+		string mapExt = lowerCase(extractFileExtension(
+			MAP_FILE, true));  // Ignore possible .gz extensions
 
 		if (!mapExt.compare("simplemap"))
 		{
 			// It's a ".simplemap":
 			// -------------------------
-			CFileGZInputStream(MAP_FILE.c_str()) >> simpleMap;
-
+			CFileGZInputStream f(MAP_FILE);
+			mrpt::serialization::archiveFrom(f) >> simpleMap;
 			ASSERT_(simpleMap.size() > 0);
-
 			// Build metric map:
-			// ------------------------------
 			metricMap.loadFromProbabilisticPosesAndObservations(simpleMap);
 		}
 		else if (!mapExt.compare("gridmap"))
@@ -137,7 +134,8 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
 			// It's a ".gridmap":
 			// -------------------------
 			ASSERT_(metricMap.m_gridMaps.size() == 1);
-			CFileGZInputStream(MAP_FILE) >> (*metricMap.m_gridMaps[0]);
+			CFileGZInputStream f(MAP_FILE);
+			mrpt::serialization::archiveFrom(f) >> (*metricMap.m_gridMaps[0]);
 		}
 		else
 		{
@@ -152,7 +150,7 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
 	rawlog.loadFromRawLogFile(RAWLOG_FILE);
 	rawlogEntries = rawlog.size();
 
-	for (vector_int::iterator itNum = particles_count.begin();
+	for (std::vector<int>::iterator itNum = particles_count.begin();
 		 itNum != particles_count.end(); ++itNum)
 	{
 		int PARTICLE_COUNT = *itNum;
@@ -197,12 +195,10 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
 						iniSectionName, "init_PDF_min_y", 0, true),
 					iniFile.read_float(
 						iniSectionName, "init_PDF_max_y", 0, true),
-					DEG2RAD(
-						iniFile.read_float(
-							iniSectionName, "init_PDF_min_phi_deg", -180)),
-					DEG2RAD(
-						iniFile.read_float(
-							iniSectionName, "init_PDF_max_phi_deg", 180)));
+					DEG2RAD(iniFile.read_float(
+						iniSectionName, "init_PDF_min_phi_deg", -180)),
+					DEG2RAD(iniFile.read_float(
+						iniSectionName, "init_PDF_max_phi_deg", 180)));
 			else
 				pdf.resetUniform(
 					iniFile.read_float(
@@ -213,12 +209,10 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
 						iniSectionName, "init_PDF_min_y", 0, true),
 					iniFile.read_float(
 						iniSectionName, "init_PDF_max_y", 0, true),
-					DEG2RAD(
-						iniFile.read_float(
-							iniSectionName, "init_PDF_min_phi_deg", -180)),
-					DEG2RAD(
-						iniFile.read_float(
-							iniSectionName, "init_PDF_max_phi_deg", 180)),
+					DEG2RAD(iniFile.read_float(
+						iniSectionName, "init_PDF_min_phi_deg", -180)),
+					DEG2RAD(iniFile.read_float(
+						iniSectionName, "init_PDF_max_phi_deg", 180)),
 					PARTICLE_COUNT);
 
 			// -----------------------------
@@ -261,7 +255,7 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
 							action.get(),  // Action
 							observations.get(),  // Obs.
 							&PF_stats  // Output statistics
-							);
+						);
 					}
 
 					pdf.getCovarianceAndMean(cov, meanPose);

@@ -32,9 +32,10 @@
 #include "mrpt/gui/about_box.h"
 #include "mrpt/gui/error_box.h"
 #include "mrpt/math/wrap2pi.h"
-#include "mrpt/utils/bits.h"
+#include <mrpt/core/bits_math.h>
 
-using namespace mrpt::utils;
+using mrpt::DEG2RAD;
+using mrpt::RAD2DEG;
 
 CMainWindow::CMainWindow(QWidget* parent)
 	: QMainWindow(parent),

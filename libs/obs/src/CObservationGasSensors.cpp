@@ -10,11 +10,11 @@
 #include "obs-precomp.h"  // Precompiled headers
 
 #include <mrpt/obs/CObservationGasSensors.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
+#include <iostream>
 
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace std;
@@ -25,37 +25,27 @@ IMPLEMENTS_SERIALIZABLE(CObservationGasSensors, CObservation, mrpt::obs)
 /** Constructor
  */
 CObservationGasSensors::CObservationGasSensors() : m_readings() {}
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CObservationGasSensors::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CObservationGasSensors::serializeGetVersion() const { return 5; }
+void CObservationGasSensors::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 5;
-	else
+	uint32_t i, n = m_readings.size();
+	out << n;
+
+	for (i = 0; i < n; i++)
 	{
-		uint32_t i, n = m_readings.size();
-		out << n;
-
-		for (i = 0; i < n; i++)
-		{
-			out << CPose3D(m_readings[i].eNosePoseOnTheRobot);
-			out << m_readings[i].readingsVoltage;
-			out << m_readings[i].sensorTypes;
-			out << m_readings[i].hasTemperature;
-			if (m_readings[i].hasTemperature) out << m_readings[i].temperature;
-		}
-
-		out << sensorLabel << timestamp;
+		out << CPose3D(m_readings[i].eNosePoseOnTheRobot);
+		out << m_readings[i].readingsVoltage;
+		out << m_readings[i].sensorTypes;
+		out << m_readings[i].hasTemperature;
+		if (m_readings[i].hasTemperature) out << m_readings[i].temperature;
 	}
+
+	out << sensorLabel << timestamp;
 }
 
-/*---------------------------------------------------------------
-  Implements the reading from a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CObservationGasSensors::readFromStream(
-	mrpt::utils::CStream& in, int version)
+void CObservationGasSensors::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -75,7 +65,7 @@ void CObservationGasSensors::readFromStream(
 			for (i = 0; i < n; i++)
 			{
 				in >> aux;
-				m_readings[i].eNosePoseOnTheRobot = aux;
+				m_readings[i].eNosePoseOnTheRobot = aux.asTPose();
 				in >> m_readings[i].readingsVoltage;
 				in >> m_readings[i].sensorTypes;
 				if (version >= 3)
@@ -118,7 +108,7 @@ void CObservationGasSensors::readFromStream(
 			// There was TWO e-noses:
 			// (1)
 			eNose.eNosePoseOnTheRobot =
-				CPose3D(0.20f, -0.15f, 0.10f);  // (x,y,z) only
+				TPose3D(0.20, -0.15, 0.10, 0, 0, 0);  // (x,y,z) only
 			eNose.readingsVoltage.resize(4);
 			eNose.readingsVoltage[0] = readings[2];
 			eNose.readingsVoltage[1] = readings[4];
@@ -131,7 +121,7 @@ void CObservationGasSensors::readFromStream(
 
 			// (2)
 			eNose.eNosePoseOnTheRobot =
-				CPose3D(0.20f, 0.15f, 0.10f);  // (x,y,z) only
+				TPose3D(0.20, 0.15, 0.10, .0, .0, .0);  // (x,y,z) only
 			eNose.readingsVoltage.resize(4);
 			eNose.readingsVoltage[0] = readings[8];
 			eNose.readingsVoltage[1] = readings[10];
@@ -159,47 +149,11 @@ void CObservationGasSensors::getSensorPose(CPose3D& out_sensorPose) const
 		out_sensorPose = CPose3D(0, 0, 0);
 }
 
-/*---------------------------------------------------------------
-					 setSensorPose
- ---------------------------------------------------------------*/
 void CObservationGasSensors::setSensorPose(const CPose3D& newSensorPose)
 {
-	size_t i, n = m_readings.size();
-	if (n)
-		for (i = 0; i < n; i++)
-			m_readings[i].eNosePoseOnTheRobot =
-				mrpt::math::TPose3D(newSensorPose);
+	for (auto& r : m_readings) r.eNosePoseOnTheRobot = newSensorPose.asTPose();
 }
 
-/*---------------------------------------------------------------
-					 CMOSmodel
- ---------------------------------------------------------------*/
-/** Constructor
- */
-
-CObservationGasSensors::CMOSmodel::CMOSmodel()
-	: winNoise_size(30),
-	  decimate_value(6),
-	  a_rise(0),
-	  b_rise(0),
-	  a_decay(0),
-	  b_decay(0),
-	  save_maplog(false),
-	  last_Obs(),
-	  temporal_Obs(),
-	  m_debug_dump(nullptr),
-	  decimate_count(1),
-	  fixed_incT(0),
-	  first_incT(true),
-	  min_reading(10),
-	  first_iteration(true)
-{
-}
-
-CObservationGasSensors::CMOSmodel::~CMOSmodel() {}
-/*---------------------------------------------------------------
-				 get_GasDistribution_estimation
- ---------------------------------------------------------------*/
 bool CObservationGasSensors::CMOSmodel::get_GasDistribution_estimation(
 	float& reading, mrpt::system::TTimeStamp& timestamp)
 {
@@ -400,7 +354,7 @@ void CObservationGasSensors::getDescriptionAsText(std::ostream& o) const
 		o << format("e-nose #%u:\n", (unsigned)j);
 
 		vector<float>::const_iterator it;
-		vector_int::const_iterator itKind;
+		std::vector<int>::const_iterator itKind;
 
 		ASSERT_(
 			m_readings[j].readingsVoltage.size() ==

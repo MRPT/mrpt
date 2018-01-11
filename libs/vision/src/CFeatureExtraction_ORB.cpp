@@ -15,9 +15,10 @@
 #include <mrpt/otherlibs/do_opencv_includes.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::vision;
+using namespace mrpt::img;
 using namespace mrpt::system;
+using namespace mrpt::img;
 using namespace std;
 
 /************************************************************************************************
@@ -25,7 +26,7 @@ using namespace std;
 **
 ************************************************************************************************/
 void CFeatureExtraction::extractFeaturesORB(
-	const mrpt::utils::CImage& inImg, CFeatureList& feats,
+	const mrpt::img::CImage& inImg, CFeatureList& feats,
 	const unsigned int init_ID, const unsigned int nDesiredFeatures,
 	const TImageROI& ROI) const
 {
@@ -34,7 +35,7 @@ void CFeatureExtraction::extractFeaturesORB(
 
 #if MRPT_HAS_OPENCV
 #if MRPT_OPENCV_VERSION_NUM < 0x240
-	THROW_EXCEPTION("This function requires OpenCV > 2.4.0")
+	THROW_EXCEPTION("This function requires OpenCV > 2.4.0");
 #else
 
 	using namespace cv;
@@ -239,7 +240,7 @@ void CFeatureExtraction::internal_computeORBDescriptors(
 {
 #if MRPT_HAS_OPENCV
 #if MRPT_OPENCV_VERSION_NUM < 0x240
-	THROW_EXCEPTION("This function requires OpenCV > 2.4.0")
+	THROW_EXCEPTION("This function requires OpenCV > 2.4.0");
 #else
 	using namespace cv;
 

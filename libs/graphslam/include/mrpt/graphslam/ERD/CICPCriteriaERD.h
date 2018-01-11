@@ -12,14 +12,14 @@
 
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/utils.h>
-#include <mrpt/utils/CImage.h>
-#include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CConfigFileBase.h>
-#include <mrpt/utils/CTimeLogger.h>
-#include <mrpt/utils/CStream.h>
-#include <mrpt/utils/types_simple.h>
-#include <mrpt/utils/TColor.h>
+#include <mrpt/img/CImage.h>
+#include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/system/CTimeLogger.h>
+#include <mrpt/serialization/CArchive.h>
+#include <cstdint>
+#include <mrpt/img/TColor.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CActionCollection.h>
@@ -70,7 +70,7 @@ namespace deciders
  *
  * - \b class_verbosity
  *   + \a Section       : EdgeRegistrationDeciderParameters
- *   + \a default value : 1 (LVL_INFO)
+ *   + \a default value : 1 (mrpt::system::LVL_INFO)
  *   + \a Required      : FALSE
  *
  * - \b LC_min_nodeid_diff
@@ -147,16 +147,16 @@ class CICPCriteriaERD
 	void loadParams(const std::string& source_fname);
 	void printParams() const;
 
-	struct TParams : public mrpt::utils::CLoadableOptions
+	struct TParams : public mrpt::config::CLoadableOptions
 	{
 	   public:
 		TParams(decider_t& d);
 		~TParams();
 
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section);
-		void dumpToTextStream(mrpt::utils::CStream& out) const;
+		void dumpToTextStream(std::ostream& out) const;
 
 		decider_t& decider;
 		// maximum distance for checking other nodes for ICP constraints
@@ -183,11 +183,11 @@ class CICPCriteriaERD
 	// protected functions
 	//////////////////////////////////////////////////////////////
 	void checkRegistrationCondition2D(
-		const std::set<mrpt::utils::TNodeID>& nodes_set);
+		const std::set<mrpt::graphs::TNodeID>& nodes_set);
 	void checkRegistrationCondition3D(
-		const std::set<mrpt::utils::TNodeID>& nodes_set);
+		const std::set<mrpt::graphs::TNodeID>& nodes_set);
 	void registerNewEdge(
-		const mrpt::utils::TNodeID& from, const mrpt::utils::TNodeID& to,
+		const mrpt::graphs::TNodeID& from, const mrpt::graphs::TNodeID& to,
 		const constraint_t& rel_edge);
 	void checkIfInvalidDataset(
 		mrpt::obs::CActionCollection::Ptr action,
@@ -197,8 +197,8 @@ class CICPCriteriaERD
 	 * distance to the specified nodeID
 	 */
 	void getNearbyNodesOf(
-		std::set<mrpt::utils::TNodeID>* nodes_set,
-		const mrpt::utils::TNodeID& cur_nodeID, double distance);
+		std::set<mrpt::graphs::TNodeID>* nodes_set,
+		const mrpt::graphs::TNodeID& cur_nodeID, double distance);
 	/**\brief togle the LaserScans visualization on and off
 	 */
 	void toggleLaserScansVisualization();
@@ -209,15 +209,15 @@ class CICPCriteriaERD
 	//////////////////////////////////////////////////////////////
 
 	/** see Constructor for initialization */
-	mrpt::utils::TColor m_search_disk_color;
+	mrpt::img::TColor m_search_disk_color;
 	/** see Constructor for initialization */
-	mrpt::utils::TColor m_laser_scans_color;
+	mrpt::img::TColor m_laser_scans_color;
 	double m_offset_y_search_disk;
 	int m_text_index_search_disk;
 
-	std::map<mrpt::utils::TNodeID, mrpt::obs::CObservation2DRangeScan::Ptr>
+	std::map<mrpt::graphs::TNodeID, mrpt::obs::CObservation2DRangeScan::Ptr>
 		m_nodes_to_laser_scans2D;
-	std::map<mrpt::utils::TNodeID, mrpt::obs::CObservation3DRangeScan::Ptr>
+	std::map<mrpt::graphs::TNodeID, mrpt::obs::CObservation3DRangeScan::Ptr>
 		m_nodes_to_laser_scans3D;
 	std::map<std::string, int> m_edge_types_to_nums;
 	bool m_is_using_3DScan;

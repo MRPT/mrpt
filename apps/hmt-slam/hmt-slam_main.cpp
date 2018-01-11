@@ -16,10 +16,11 @@
   ---------------------------------------------------------------*/
 
 #include <mrpt/hmtslam/CHMTSLAM.h>
-#include <mrpt/utils/CConsoleRedirector.h>
-#include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/system/CConsoleRedirector.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 
@@ -27,11 +28,14 @@ using namespace mrpt;
 using namespace mrpt::slam;
 using namespace mrpt::obs;
 using namespace mrpt::hmtslam;
+using namespace mrpt::config;
+using namespace mrpt::io;
+using namespace mrpt::img;
 using namespace mrpt::opengl;
 using namespace mrpt::system;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace mrpt::system;
+using namespace mrpt::serialization;
 using namespace std;
 
 std::string configFile;
@@ -108,16 +112,16 @@ void Run_HMT_SLAM()
 		cfgFile.read_int("HMT-SLAM", "rawlog_offset", 0);
 
 	mapping.logFmt(
-		mrpt::utils::LVL_INFO, "RAWLOG FILE: \n%s\n", rawlogFileName.c_str());
+		mrpt::system::LVL_INFO, "RAWLOG FILE: \n%s\n", rawlogFileName.c_str());
 
 	const std::string OUT_DIR =
 		cfgFile.read_string("HMT-SLAM", "LOG_OUTPUT_DIR", "HMT_SLAM_OUTPUT");
 
-	ASSERT_FILE_EXISTS_(rawlogFileName)
+	ASSERT_FILE_EXISTS_(rawlogFileName);
 	CFileGZInputStream rawlogFile(rawlogFileName);
 
 	mapping.logFmt(
-		mrpt::utils::LVL_INFO,
+		mrpt::system::LVL_INFO,
 		"---------------------------------------------------\n\n");
 
 	// Set relative path for externally-stored images in rawlogs:
@@ -154,7 +158,7 @@ void Run_HMT_SLAM()
 		CSerializable::Ptr objFromRawlog;
 		try
 		{
-			rawlogFile >> objFromRawlog;
+			archiveFrom(rawlogFile) >> objFromRawlog;
 			rawlogEntry++;
 		}
 		catch (std::exception&)
@@ -193,7 +197,7 @@ void Run_HMT_SLAM()
 				// class
 			}
 			else
-				THROW_EXCEPTION("Invalid object class from rawlog!!")
+				THROW_EXCEPTION("Invalid object class from rawlog!!");
 
 			// Wait for the mapping framework processed the data
 			// ---------------------------------------------------
@@ -206,7 +210,7 @@ void Run_HMT_SLAM()
 		}  // (rawlogEntry>=rawlog_offset)
 
 		mapping.logFmt(
-			mrpt::utils::LVL_INFO,
+			mrpt::system::LVL_INFO,
 			"======== Rawlog entries processed: %i ========\n", rawlogEntry);
 
 		step++;
@@ -214,24 +218,25 @@ void Run_HMT_SLAM()
 	};  // end "while(1)"
 
 	mapping.logFmt(
-		mrpt::utils::LVL_INFO,
+		mrpt::system::LVL_INFO,
 		"********* Application finished!! 3 seconds to exit... **********\n");
 	std::this_thread::sleep_for(1000ms);
 	mapping.logFmt(
-		mrpt::utils::LVL_INFO,
+		mrpt::system::LVL_INFO,
 		"********* Application finished!! 2 seconds to exit... **********\n");
 	std::this_thread::sleep_for(1000ms);
 	mapping.logFmt(
-		mrpt::utils::LVL_INFO,
+		mrpt::system::LVL_INFO,
 		"********* Application finished!! 1 second to exit... **********\n");
 	std::this_thread::sleep_for(1000ms);
 
 	{
 		string final_file = OUT_DIR + string("/final_map.hmtslam");
 		mapping.logFmt(
-			mrpt::utils::LVL_WARN, "\n Saving FINAL HMT-MAP to file: %s\n",
+			mrpt::system::LVL_WARN, "\n Saving FINAL HMT-MAP to file: %s\n",
 			final_file.c_str());
 		CFileGZOutputStream fil(final_file);
-		mapping.saveState(fil);
+		auto arch = archiveFrom(fil);
+		mapping.saveState(arch);
 	}
 }

@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/system/os.h>
 #include <mrpt/opengl/CText.h>
@@ -21,7 +21,6 @@ using namespace std;
 using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace mrpt::opengl;
 
 // ------------------------------------------------------

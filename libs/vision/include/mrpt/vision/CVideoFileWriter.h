@@ -10,8 +10,8 @@
 #define CVideoFileWriter_H
 
 #include <mrpt/vision/utils.h>
-#include <mrpt/utils/CImage.h>
-#include <mrpt/utils/safe_pointers.h>
+#include <mrpt/img/CImage.h>
+#include <mrpt/core/safe_pointers.h>
 
 namespace mrpt
 {
@@ -44,9 +44,9 @@ class CVideoFileWriter
 {
    private:
 	/** A pointer to CvVideoWriter */
-	mrpt::utils::void_ptr_noncopy m_video;
+	mrpt::void_ptr_noncopy m_video;
 	/** A copy of the video size */
-	mrpt::utils::TImageSize m_img_size;
+	mrpt::img::TImageSize m_img_size;
 
    public:
 	/** Default constructor, which does not open any file */
@@ -71,7 +71,7 @@ class CVideoFileWriter
 	  */
 	bool open(
 		const std::string& out_file, double fps,
-		const mrpt::utils::TImageSize& frameSize,
+		const mrpt::img::TImageSize& frameSize,
 		const std::string& fourcc = std::string(""), bool isColor = true);
 
 	/** Finish the file writing and close the file output
@@ -85,13 +85,13 @@ class CVideoFileWriter
 	/** Write image to the video file.
 	  * \exception std::exception On any error
 	  */
-	const CVideoFileWriter& operator<<(const mrpt::utils::CImage& img) const;
+	const CVideoFileWriter& operator<<(const mrpt::img::CImage& img) const;
 
 	/**  Write image to the video file (method function, alternative to the
 	 * operator <<).
 	  * \return false on any error
 	  */
-	bool writeImage(const mrpt::utils::CImage& img) const;
+	bool writeImage(const mrpt::img::CImage& img) const;
 
 };  // end of class
 

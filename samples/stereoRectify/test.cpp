@@ -7,8 +7,8 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/utils/CTimeLogger.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/system/CTimeLogger.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/system/filesystem.h>  // for ASSERT_FILE_EXISTS_
 #include <mrpt/hwdrivers/CCameraSensor.h>
@@ -16,7 +16,6 @@
 #include <mrpt/opengl/COpenGLScene.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::opengl;
 using namespace mrpt::gui;
 using namespace mrpt::vision;
@@ -47,7 +46,7 @@ void TestStereoRectify(int argc, char** argv)
 		ASSERT_FILE_EXISTS_(sCfgFile)
 
 		// Load params from file:
-		mrpt::utils::TStereoCamera params;
+		mrpt::img::TStereoCamera params;
 		params.loadFromConfigFile("CAMERA_PARAMS", CConfigFile(sCfgFile));
 
 		// Prepare rectify map:
@@ -136,7 +135,7 @@ void TestStereoRectify(int argc, char** argv)
 					rectifyMap.setFromCamParams(*o);
 					timlog.leave("rectifyMap.setFromCamParams");
 
-					/*mrpt::utils::TStereoCamera params;
+					/*mrpt::img::TStereoCamera params;
 					o->getStereoCameraParams(params);
 					cout << params.dumpAsText() << endl;*/
 				}
@@ -170,9 +169,9 @@ void TestStereoRectify(int argc, char** argv)
 					for (unsigned int y = 0; y < h; y += LINES_SEP)
 					{
 						img_left_rectified.line(
-							0, y, w - 1, y, mrpt::utils::TColor::red(), 2);
+							0, y, w - 1, y, mrpt::img::TColor::red(), 2);
 						img_right_rectified.line(
-							0, y, w - 1, y, mrpt::utils::TColor::red(), 2);
+							0, y, w - 1, y, mrpt::img::TColor::red(), 2);
 					}
 				}
 

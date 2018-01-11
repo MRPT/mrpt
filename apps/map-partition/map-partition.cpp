@@ -15,10 +15,10 @@
 	See README.txt for instructions.
   ---------------------------------------------------------------*/
 
-#include <mrpt/utils/CTicTac.h>
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CFileOutputStream.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
 #include <mrpt/maps/CSimpleMap.h>
@@ -27,10 +27,12 @@
 using namespace mrpt;
 using namespace mrpt::slam;
 using namespace mrpt::maps;
+using namespace mrpt::io;
+using namespace mrpt::config;
+using namespace mrpt::img;
 using namespace mrpt::obs;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace mrpt::poses;
 using namespace std;
@@ -50,7 +52,7 @@ void Test()
 	CSimpleMap in_map, out_map;
 	CTicTac tictac;
 	CIncrementalMapPartitioner imp;
-	std::vector<vector_uint> parts;
+	std::vector<std::vector<uint32_t>> parts;
 
 	deleteFilesInDirectory("./MAP-PARTITION_RESULTS");
 	createDirectory("./MAP-PARTITION_RESULTS");
@@ -82,7 +84,10 @@ void Test()
 
 	// Load map from the input file:
 	printf("Loading input map:\n%s\n...", MAP_FILE.c_str());
-	CFileGZInputStream(MAP_FILE) >> in_map;
+	{
+		CFileGZInputStream f(MAP_FILE);
+		mrpt::serialization::archiveFrom(f) >> in_map;
+	}
 	printf("Ok\n");
 
 	// Execute the method:
@@ -155,10 +160,11 @@ void Test()
 			out_map.insert(posePDF, sf);
 		}
 
-		CFileOutputStream(
-			format(
-				"MAP-PARTITION_RESULTS/out_part#%03u.simplemap", (unsigned)i))
-			<< out_map;
+		{
+			CFileOutputStream f(format(
+				"MAP-PARTITION_RESULTS/out_part#%03u.simplemap", (unsigned)i));
+			mrpt::serialization::archiveFrom(f) << out_map;
+		}
 	}
 
 	printf("Ok\n");
@@ -173,9 +179,9 @@ void Test()
 
 	std::sort(parts.begin(), parts.end());
 
-	CMatrix B(A.getRowCount(), A.getColCount());
-	vector_uint rearrIndexes;
-	vector_uint separations;
+	CMatrix B(A.rows(), A.cols());
+	std::vector<uint32_t> rearrIndexes;
+	std::vector<uint32_t> separations;
 	for (size_t i = 0; i < parts.size(); i++)
 	{
 		uint32_t maxIdx = 0;
@@ -202,7 +208,7 @@ void Test()
 		win.showImage(img);
 		win2.showImage(img2);
 		win.setPos(20, 20);
-		win2.setPos((int)(40 + A.getColCount()), 20);
+		win2.setPos((int)(40 + A.cols()), 20);
 		cout << "Press any key to continue..." << endl;
 		win2.waitForKey();
 	}

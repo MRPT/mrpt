@@ -212,7 +212,7 @@ class CPosePDFParticlesExtended
 	/** Save PDF's particles to a text file. In each line it will go: "x y phi
 	 * weight"
 	 */
-	void saveToTextFile(const std::string& file) const override;
+	bool saveToTextFile(const std::string& file) const override;
 
 	/** Get the particles count (equivalent to "particlesCount")
 	 */

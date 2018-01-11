@@ -10,14 +10,15 @@
 #include "vision-precomp.h"  // Precompiled headers
 
 #include <mrpt/vision/pinhole.h>
+#include <mrpt/poses/CPose3DQuat.h>
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>
 
 using namespace mrpt;
 using namespace mrpt::vision;
+using namespace mrpt::img;
 using namespace mrpt::vision::pinhole;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::math;
@@ -52,14 +53,14 @@ void mrpt::vision::pinhole::projectPoints_with_distortion(
 	const mrpt::poses::CPose3D& cameraPose,
 	const mrpt::math::CMatrixDouble33& intrinsicParams,
 	const std::vector<double>& distortionParams,
-	std::vector<mrpt::utils::TPixelCoordf>& projectedPoints,
+	std::vector<mrpt::img::TPixelCoordf>& projectedPoints,
 	bool accept_points_behind)
 {
 	MRPT_START
 #if MRPT_HAS_OPENCV
 
-	ASSERT_(size(intrinsicParams, 1) == 3);
-	ASSERT_(size(intrinsicParams, 2) == 3);
+	ASSERT_(intrinsicParams.rows() == 3);
+	ASSERT_(intrinsicParams.cols() == 3);
 	ASSERT_(distortionParams.size() == 4 || distortionParams.size() == 5);
 
 	const size_t N = in_points_3D.size();
@@ -121,7 +122,7 @@ void mrpt::vision::pinhole::projectPoints_with_distortion(
 	}
 
 #else
-	THROW_EXCEPTION("Function not available: MRPT was compiled without OpenCV")
+	THROW_EXCEPTION("Function not available: MRPT was compiled without OpenCV");
 #endif
 	MRPT_END
 }
@@ -130,21 +131,21 @@ void mrpt::vision::pinhole::projectPoints_with_distortion(
 				undistort_points
    ------------------------------------------------------- */
 void mrpt::vision::pinhole::undistort_points(
-	const std::vector<mrpt::utils::TPixelCoordf>& in_dist_pixels,
-	std::vector<mrpt::utils::TPixelCoordf>& out_pixels,
+	const std::vector<mrpt::img::TPixelCoordf>& in_dist_pixels,
+	std::vector<mrpt::img::TPixelCoordf>& out_pixels,
 	const mrpt::math::CMatrixDouble33& A, const std::vector<double>& Dk)
 {  // Hub function:
 	TCamera cam;
 	cam.intrinsicParams = A;
-	ASSERT_(Dk.size() <= cam.dist.static_size)
-	for (size_t i = 0; i < cam.dist.static_size; i++) cam.dist[i] = Dk[i];
+	ASSERT_(Dk.size() <= cam.dist.size());
+	for (size_t i = 0; i < cam.dist.size(); i++) cam.dist[i] = Dk[i];
 	undistort_points(in_dist_pixels, out_pixels, cam);
 }
 
 void mrpt::vision::pinhole::undistort_points(
-	const std::vector<mrpt::utils::TPixelCoordf>& in_dist_pixels,
-	std::vector<mrpt::utils::TPixelCoordf>& out_pixels,
-	const mrpt::utils::TCamera& cameraModel)
+	const std::vector<mrpt::img::TPixelCoordf>& in_dist_pixels,
+	std::vector<mrpt::img::TPixelCoordf>& out_pixels,
+	const mrpt::img::TCamera& cameraModel)
 {
 	MRPT_START
 
@@ -202,7 +203,7 @@ void mrpt::vision::pinhole::undistort_points(
   */
 void mrpt::vision::pinhole::undistort_point(
 	const TPixelCoordf& inPt, TPixelCoordf& outPt,
-	const mrpt::utils::TCamera& cameraModel)
+	const mrpt::img::TCamera& cameraModel)
 {
 	MRPT_START
 
@@ -249,15 +250,15 @@ void mrpt::vision::pinhole::undistort_point(
 
 void mrpt::vision::pinhole::projectPoints_with_distortion(
 	const std::vector<mrpt::math::TPoint3D>& P,
-	const mrpt::utils::TCamera& params,
+	const mrpt::img::TCamera& params,
 	const mrpt::poses::CPose3DQuat& cameraPose,
-	std::vector<mrpt::utils::TPixelCoordf>& pixels, bool accept_points_behind)
+	std::vector<mrpt::img::TPixelCoordf>& pixels, bool accept_points_behind)
 {
 	MRPT_START
 
 	pixels.resize(P.size());
 	std::vector<mrpt::math::TPoint3D>::const_iterator itPoints;
-	std::vector<mrpt::utils::TPixelCoordf>::iterator itPixels;
+	std::vector<mrpt::img::TPixelCoordf>::iterator itPixels;
 	unsigned int k = 0;
 	for (itPoints = P.begin(), itPixels = pixels.begin(); itPoints != P.end();
 		 ++itPoints, ++itPixels, ++k)
@@ -301,8 +302,8 @@ void mrpt::vision::pinhole::projectPoints_with_distortion(
 				projectPoint_with_distortion
    ------------------------------------------------------- */
 void mrpt::vision::pinhole::projectPoint_with_distortion(
-	const mrpt::math::TPoint3D& P, const mrpt::utils::TCamera& params,
-	mrpt::utils::TPixelCoordf& pixel, bool accept_points_behind)
+	const mrpt::math::TPoint3D& P, const mrpt::img::TCamera& params,
+	mrpt::img::TPixelCoordf& pixel, bool accept_points_behind)
 {
 	MRPT_UNUSED_PARAM(accept_points_behind);
 	// Pinhole model:
@@ -330,7 +331,7 @@ void mrpt::vision::pinhole::projectPoint_with_distortion(
 					undistortPixels
    ------------------------------------------------------- */
 // void mrpt::vision::pinhole::undistortPixels(
-//	const std::vector<mrpt::utils::TPixelCoordf>	&inputPixels, 		/*
+//	const std::vector<mrpt::img::TPixelCoordf>	&inputPixels, 		/*
 // distorted
 // pixels in image */
 //	const mrpt::math::CMatrixDouble33				&intrinsicParams,	/*
@@ -355,7 +356,7 @@ void mrpt::vision::pinhole::projectPoint_with_distortion(
 //	const double									&pixelSize,			/* pixel
 // size
 //(square)*/
-//	std::vector<mrpt::utils::TPixelCoordf>			&outputPixels		/*
+//	std::vector<mrpt::img::TPixelCoordf>			&outputPixels		/*
 // estimated
 // undistorted pixels in image */
 //    )
@@ -377,11 +378,11 @@ void mrpt::vision::pinhole::projectPoint_with_distortion(
 //
 //	// Compute the undistortion params according to Heittilä code.
 //	// Generate a regular meshgrid of size 43x43 and distort them
-//	std::vector<mrpt::utils::TPixelCoordf>				grid;			// The
+//	std::vector<mrpt::img::TPixelCoordf>				grid;			// The
 // 43x43
 // grid
 // with distorted
-//	std::vector<mrpt::utils::TPixelCoordf>::iterator	itGrid;
+//	std::vector<mrpt::img::TPixelCoordf>::iterator	itGrid;
 //
 //	grid.resize( 43 );
 //	unsigned int c;

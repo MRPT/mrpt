@@ -10,7 +10,7 @@
 #define CDisplayWindow_H
 
 #include <mrpt/gui/CBaseGUIWindow.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/system/os.h>
 #include <vector>
 
@@ -68,15 +68,15 @@ class CDisplayWindow : public mrpt::gui::CBaseGUIWindow
 	 *  It adapts the size of the window to that of the image.
 	 */
 	void showImageAndPoints(
-		const mrpt::utils::CImage& img, const mrpt::math::CVectorFloat& x,
+		const mrpt::img::CImage& img, const mrpt::math::CVectorFloat& x,
 		const mrpt::math::CVectorFloat& y,
-		const mrpt::utils::TColor& color = mrpt::utils::TColor::red(),
+		const mrpt::img::TColor& color = mrpt::img::TColor::red(),
 		const bool& showNumbers = false);
 	/** \overload */
 	void showImageAndPoints(
-		const mrpt::utils::CImage& img, const std::vector<float>& x,
+		const mrpt::img::CImage& img, const std::vector<float>& x,
 		const std::vector<float>& y,
-		const mrpt::utils::TColor& color = mrpt::utils::TColor::red(),
+		const mrpt::img::TColor& color = mrpt::img::TColor::red(),
 		const bool& showNumbers = false);
 
 	/** Show a given color or grayscale image on the window and print a set of
@@ -87,12 +87,12 @@ class CDisplayWindow : public mrpt::gui::CBaseGUIWindow
 	 */
 	template <class FEATURELIST>
 	void showImageAndPoints(
-		const mrpt::utils::CImage& img, const FEATURELIST& list,
-		const mrpt::utils::TColor& color = mrpt::utils::TColor::red(),
+		const mrpt::img::CImage& img, const FEATURELIST& list,
+		const mrpt::img::TColor& color = mrpt::img::TColor::red(),
 		const bool& showIDs = false)
 	{
 		MRPT_START
-		mrpt::utils::CImage imgColor(1, 1, CH_RGB);
+		mrpt::img::CImage imgColor(1, 1, CH_RGB);
 		img.colorImage(imgColor);  // Create a colorimage
 		imgColor.drawFeatures(list, color, showIDs);
 		showImage(imgColor);
@@ -106,12 +106,12 @@ class CDisplayWindow : public mrpt::gui::CBaseGUIWindow
 	 */
 	template <class FEATURELIST>
 	void showTiledImageAndPoints(
-		const mrpt::utils::CImage& img, const FEATURELIST& list,
-		const mrpt::utils::TColor& color = mrpt::utils::TColor::red())
+		const mrpt::img::CImage& img, const FEATURELIST& list,
+		const mrpt::img::TColor& color = mrpt::img::TColor::red())
 	{
 		MRPT_START
-		using mrpt::utils::TColor;
-		mrpt::utils::CImage imgColor(1, 1, 3);
+		using mrpt::img::TColor;
+		mrpt::img::CImage imgColor(1, 1, 3);
 		img.colorImage(imgColor);  // Create a colorimage
 
 		// Print the 4 tile lines
@@ -136,14 +136,14 @@ class CDisplayWindow : public mrpt::gui::CBaseGUIWindow
 	 */
 	template <class MATCHEDLIST>
 	void showImagesAndMatchedPoints(
-		const mrpt::utils::CImage& img1, const mrpt::utils::CImage& img2,
+		const mrpt::img::CImage& img1, const mrpt::img::CImage& img2,
 		const MATCHEDLIST& mList,
-		const mrpt::utils::TColor& color = mrpt::utils::TColor::red(),
+		const mrpt::img::TColor& color = mrpt::img::TColor::red(),
 		bool showNumbers = false)
 	{
 		MRPT_START
 
-		mrpt::utils::CImage imgColor;
+		mrpt::img::CImage imgColor;
 
 		// img1.colorImage( imgColor ); // Create a colorimage
 		imgColor.joinImagesHorz(img1, img2);
@@ -186,13 +186,13 @@ class CDisplayWindow : public mrpt::gui::CBaseGUIWindow
 	 */
 	template <class FEATURELIST>
 	void showImagesAndMatchedPoints(
-		const mrpt::utils::CImage& img1, const mrpt::utils::CImage& img2,
+		const mrpt::img::CImage& img1, const mrpt::img::CImage& img2,
 		const FEATURELIST& leftList, const FEATURELIST& rightList,
-		const mrpt::utils::TColor& color = mrpt::utils::TColor::red())
+		const mrpt::img::TColor& color = mrpt::img::TColor::red())
 	{
 		MRPT_START
 
-		mrpt::utils::CImage imgColor;
+		mrpt::img::CImage imgColor;
 
 		// img1.colorImage( imgColor ); // Create a colorimage
 		ASSERT_(leftList.size() == rightList.size());
@@ -218,7 +218,7 @@ class CDisplayWindow : public mrpt::gui::CBaseGUIWindow
 	/** Show a given color or grayscale image on the window.
 	 *  It adapts the size of the window to that of the image.
 	 */
-	void showImage(const mrpt::utils::CImage& img);
+	void showImage(const mrpt::img::CImage& img);
 
 	/** Plots a graph in MATLAB-like style.
 	 */

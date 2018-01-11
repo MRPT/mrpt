@@ -11,7 +11,7 @@
 
 #include <mrpt/comms/CInterfaceFTDI.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/obs/CObservationRange.h>
 
 namespace mrpt
@@ -138,12 +138,12 @@ class CBoardSonars : public mrpt::comms::CInterfaceFTDI, public CGenericSensor
 
 	/** Loads specific configuration for the device from a given source of
 	 * configuration parameters, for example, an ".ini" file,
-	  *  loading from the section "[iniSection]" (see utils::CConfigFileBase and
+	  *  loading from the section "[iniSection]" (see config::CConfigFileBase and
 	 * derived classes)
 	  *  See hwdrivers::CBoardSonars for the possible parameters
 	  */
 	void loadConfig_sensorSpecific(
-		const mrpt::utils::CConfigFileBase& configSource,
+		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& iniSection);
 
 };  // End of class

@@ -17,7 +17,6 @@ using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 
 // ------------------------------------------------------
 //				TestOpenGLObjects
@@ -393,8 +392,8 @@ void TestOpenGLObjects()
 		//		Us.resize(Zs.size());
 		//		Vs.resize(Zs.size());
 
-		for (size_t i = 0; i < size(Zs, 1); i++)
-			for (size_t j = 0; j < size(Zs, 2); j++)
+		for (size_t i = 0; i < Zs.rows(); i++)
+			for (size_t j = 0; j < Zs.cols(); j++)
 			{
 				double x = i * 0.25;
 				double y = j * 0.25;
@@ -405,7 +404,7 @@ void TestOpenGLObjects()
 		obj->setGridLimits(-10, 10, -10, 10);
 		obj->setZ(Zs);
 		// obj->enableWireFrame(true);
-		obj->enableColorFromZ(true, mrpt::utils::cmJET);
+		obj->enableColorFromZ(true, mrpt::img::cmJET);
 		theScene->insert(obj);
 
 		opengl::CText::Ptr gl_txt =
@@ -610,7 +609,7 @@ void TestOpenGLObjects()
 		{
 			opengl::CColorBar::Ptr obj =
 				mrpt::make_aligned_shared<opengl::CColorBar>(
-					mrpt::utils::cmHOT, 0.2, 1.0, 0.0, 1.0, -50.0, 100.0,
+					mrpt::img::cmHOT, 0.2, 1.0, 0.0, 1.0, -50.0, 100.0,
 					"%7.02f m/s");
 			obj->setLocation(off_x, 0, 0);
 			theScene->insert(obj);
@@ -682,8 +681,8 @@ void TestOpenGLObjects()
 			obj->setLocation(off_x, 0, 0);
 
 			CMatrixFloat x(16, 16), y(16, 16);
-			for (unsigned int i = 0; i < x.getRowCount(); i++)
-				for (unsigned int j = 0; j < x.getColCount(); j++)
+			for (unsigned int i = 0; i < x.rows(); i++)
+				for (unsigned int j = 0; j < x.cols(); j++)
 				{
 					x(i, j) = sin(0.3 * i);
 					y(i, j) = cos(0.3 * i);
@@ -716,8 +715,8 @@ void TestOpenGLObjects()
 
 			CMatrixFloat x(num, num), y(num, num), z(num, num);
 			CMatrixFloat vx(num, num), vy(num, num), vz(num, num);
-			for (unsigned int i = 0; i < x.getRowCount(); i++)
-				for (unsigned int j = 0; j < x.getColCount(); j++)
+			for (unsigned int i = 0; i < x.rows(); i++)
+				for (unsigned int j = 0; j < x.cols(); j++)
 				{
 					x(i, j) = (i - 0.5 * num) * scale;
 					y(i, j) = j * scale;

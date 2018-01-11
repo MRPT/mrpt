@@ -15,7 +15,7 @@
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::math;
-using namespace mrpt::utils;
+using namespace mrpt::system;
 using namespace mrpt::nav;
 using namespace std;
 
@@ -60,14 +60,14 @@ void CReactiveNavigationSystem3D::changeRobotShape(TRobotShape robotShape)
 	for (unsigned int i = 0; i < robotShape.size(); i++)
 	{
 		if (robotShape.polygon(i).verticesCount() < 3)
-			THROW_EXCEPTION("The robot shape has less than 3 vertices!!")
+			THROW_EXCEPTION("The robot shape has less than 3 vertices!!");
 	}
 
 	m_robotShape = robotShape;
 }
 
 void CReactiveNavigationSystem3D::saveConfigFile(
-	mrpt::utils::CConfigFileBase& c) const
+	mrpt::config::CConfigFileBase& c) const
 {
 	const std::string s = "CReactiveNavigationSystem3D";
 
@@ -80,7 +80,7 @@ void CReactiveNavigationSystem3D::saveConfigFile(
 }
 
 void CReactiveNavigationSystem3D::loadConfigFile(
-	const mrpt::utils::CConfigFileBase& c)
+	const mrpt::config::CConfigFileBase& c)
 {
 	MRPT_START
 
@@ -152,7 +152,7 @@ void CReactiveNavigationSystem3D::STEP1_InitPTGs()
 	{
 		m_PTGsMustBeReInitialized = false;
 
-		mrpt::utils::CTimeLoggerEntry tle(m_timelogger, "STEP1_InitPTGs");
+		mrpt::system::CTimeLoggerEntry tle(m_timelogger, "STEP1_InitPTGs");
 
 		for (unsigned int j = 0; j < m_ptgmultilevel.size(); j++)
 		{

@@ -21,8 +21,8 @@
 #include <mrpt/obs/CObservationBearingRange.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
-#include <mrpt/utils/CTicTac.h>
-#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/system/CTimeLogger.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/math/ops_vectors.h>
 #include <mrpt/math/lightweight_geom_data.h>
@@ -33,13 +33,13 @@
 
 using namespace mrpt;
 using namespace mrpt::vision;
-using namespace mrpt::utils;
+using namespace mrpt::img;
 // using namespace mrpt::maps;
 using namespace mrpt::math;
 using namespace mrpt::system;
 using namespace std;
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 #include <process.h>
 #include <windows.h>  // TODO: This is temporary!!!
 #endif
@@ -1822,7 +1822,7 @@ int vision::computeMoreDescriptors(
 	return 1;
 	MRPT_END
 #else
-	THROW_EXCEPTION("This function needs OpenCV 2.1+")
+	THROW_EXCEPTION("This function needs OpenCV 2.1+");
 	return 0;
 #endif
 }  // end-computeMoreDescriptors
@@ -2093,7 +2093,7 @@ void vision::computeMultiResolutionDescriptors(
 	}  // end matches for
 	MRPT_END
 #else
-	THROW_EXCEPTION("This function needs OpenCV 2.1+")
+	THROW_EXCEPTION("This function needs OpenCV 2.1+");
 #endif
 }  // end-vision::computeMultiResolutionDescriptors
 
@@ -2208,7 +2208,7 @@ bool vision::computeMultiResolutionDescriptors(
 	return true;
 	MRPT_END
 #else
-	THROW_EXCEPTION("This function needs OpenCV 2.1+")
+	THROW_EXCEPTION("This function needs OpenCV 2.1+");
 #endif
 }  // end-computeMultiResolutionDescriptors
 
@@ -2253,7 +2253,7 @@ vector<bool> vision::computeMultiResolutionDescriptors(
 	return st;
 	MRPT_END
 #else
-	THROW_EXCEPTION("This function needs OpenCV 2.1+")
+	THROW_EXCEPTION("This function needs OpenCV 2.1+");
 #endif
 
 }  // end computeMultiResolutionDescriptors
@@ -2364,6 +2364,6 @@ void vision::computeMultiOrientations(
 	}  // end matches for
 	MRPT_END
 #else
-	THROW_EXCEPTION("This function needs OpenCV 2.1+")
+	THROW_EXCEPTION("This function needs OpenCV 2.1+");
 #endif
 }  // end computeMultiOrientations

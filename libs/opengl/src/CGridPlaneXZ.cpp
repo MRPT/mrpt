@@ -10,13 +10,13 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CGridPlaneXZ.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
+
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CGridPlaneXZ, CRenderizableDisplayList, mrpt::opengl)
@@ -25,9 +25,8 @@ CGridPlaneXZ::Ptr CGridPlaneXZ::Create(
 	float xMin, float xMax, float zMin, float zMax, float y, float frequency,
 	float lineWidth, bool antiAliasing)
 {
-	return CGridPlaneXZ::Ptr(
-		new CGridPlaneXZ(
-			xMin, xMax, zMin, zMax, y, frequency, lineWidth, antiAliasing));
+	return CGridPlaneXZ::Ptr(new CGridPlaneXZ(
+		xMin, xMax, zMin, zMax, y, frequency, lineWidth, antiAliasing));
 }
 
 /** Constructor */
@@ -51,7 +50,7 @@ CGridPlaneXZ::CGridPlaneXZ(
 void CGridPlaneXZ::render_dl() const
 {
 #if MRPT_HAS_OPENGL_GLUT
-	ASSERT_(m_frequency >= 0)
+	ASSERT_(m_frequency >= 0);
 
 	// Enable antialiasing:
 	if (m_antiAliasing)
@@ -92,29 +91,18 @@ void CGridPlaneXZ::render_dl() const
 #endif
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CGridPlaneXZ::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CGridPlaneXZ::serializeGetVersion() const { return 1; }
+void CGridPlaneXZ::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		writeToStreamRender(out);
-		out << m_xMin << m_xMax;
-		out << m_zMin << m_zMax << m_plane_y;
-		out << m_frequency;
-		out << m_lineWidth << m_antiAliasing;  // v1
-	}
+	writeToStreamRender(out);
+	out << m_xMin << m_xMax;
+	out << m_zMin << m_zMax << m_plane_y;
+	out << m_frequency;
+	out << m_lineWidth << m_antiAliasing;  // v1
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CGridPlaneXZ::readFromStream(mrpt::utils::CStream& in, int version)
+void CGridPlaneXZ::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

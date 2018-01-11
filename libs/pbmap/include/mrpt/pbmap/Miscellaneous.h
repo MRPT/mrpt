@@ -19,7 +19,7 @@
 #include <mrpt/config.h>
 #if MRPT_HAS_PCL
 
-#include <mrpt/utils/types_math.h>  // Eigen
+#include <mrpt/math/types_math.h>  // Eigen
 #include <map>
 #include <string>
 #include <iostream>
@@ -27,7 +27,7 @@
 #include <vector>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
-#include <mrpt/math.h>
+#include <mrpt/math/ops_containers.h>
 
 namespace mrpt
 {
@@ -250,7 +250,7 @@ dataType getHistogramMeanShift(
 	dataType& stdDevHist_out)  //, dataType &concentration05)
 {
 	//    cout << "Do meanShift\n";
-	//  mrpt::utils::CTicTac clock;
+	//  mrpt::system::CTicTac clock;
 	//  clock.Tic();
 	size_t size = data.size();
 	std::vector<dataType> dataTemp = data;
@@ -344,8 +344,8 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T>& v)
 	std::copy(v.begin(), v.end(), std::ostream_iterator<T>(os, " "));
 	return os;
 }
-}
-}  // End of namespaces
+}  // namespace pbmap
+}  // namespace mrpt
 
 #endif
 

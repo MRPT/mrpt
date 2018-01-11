@@ -9,12 +9,11 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/system/os.h>
 
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 // This must be added to any CSerializable class implementation file.
@@ -31,38 +30,22 @@ CObservationBeaconRanges::CObservationBeaconRanges()
 {
 }
 
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CObservationBeaconRanges::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CObservationBeaconRanges::serializeGetVersion() const { return 3; }
+void CObservationBeaconRanges::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 3;
-	else
-	{
-		uint32_t i, n;
-
-		// The data
-		out << minSensorDistance << maxSensorDistance << stdError;
-
-		n = sensedData.size();
-		out << n;
-		for (i = 0; i < n; i++)
-			out << sensedData[i].sensorLocationOnRobot
-				<< sensedData[i].sensedDistance << sensedData[i].beaconID;
-
-		out << auxEstimatePose;
-
-		out << sensorLabel << timestamp;
-	}
+	uint32_t i, n;
+	// The data
+	out << minSensorDistance << maxSensorDistance << stdError;
+	n = sensedData.size();
+	out << n;
+	for (i = 0; i < n; i++)
+		out << sensedData[i].sensorLocationOnRobot
+			<< sensedData[i].sensedDistance << sensedData[i].beaconID;
+	out << auxEstimatePose;
+	out << sensorLabel << timestamp;
 }
 
-/*---------------------------------------------------------------
-  Implements the reading from a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CObservationBeaconRanges::readFromStream(
-	mrpt::utils::CStream& in, int version)
+void CObservationBeaconRanges::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -104,9 +87,6 @@ void CObservationBeaconRanges::readFromStream(
 	};
 }
 
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
 void CObservationBeaconRanges::debugPrintOut()
 {
 	printf("[CObservationBeaconRanges::debugPrintOut] Dumping:\n");

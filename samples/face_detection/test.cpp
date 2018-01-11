@@ -22,7 +22,6 @@ using namespace mrpt::maps;
 using namespace mrpt::obs;
 using namespace mrpt::gui;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::detectors;
 using namespace std;
@@ -41,8 +40,8 @@ bool showEachDetectedFace;  // If using a 3D face detection (actually with
 // detected for analize it.
 bool batchMode;
 vector<string> rawlogs;
-vector<vector_uint> falsePositives;
-vector<vector_uint> ignored;
+vector<std::vector<uint32_t>> falsePositives;
+vector<std::vector<uint32_t>> ignored;
 string rawlogsDir;
 
 #ifdef MRPT_OPENCV_SRC_DIR
@@ -106,7 +105,7 @@ void TestCamera3DFaceDetection(CCameraSensor::Ptr cam)
 	}
 
 	double counter = 0;
-	mrpt::utils::CTicTac tictac;
+	mrpt::system::CTicTac tictac;
 
 	CVectorDouble fps;
 
@@ -139,7 +138,7 @@ void TestCamera3DFaceDetection(CCameraSensor::Ptr cam)
 		{
 			for (unsigned int i = 0; i < detected.size(); i++)
 			{
-				ASSERT_(IS_CLASS(detected[i], CDetectable3D))
+				ASSERT_(IS_CLASS(detected[i], CDetectable3D);
 				CDetectable3D::Ptr obj =
 					std::dynamic_pointer_cast<CDetectable3D>(detected[i]);
 
@@ -263,7 +262,7 @@ void TestCameraFaceDetection()
 	cout << "Close the window to exit." << endl;
 
 	double counter = 0;
-	mrpt::utils::CTicTac tictac;
+	mrpt::system::CTicTac tictac;
 
 	while (win.isOpen())
 	{
@@ -289,7 +288,7 @@ void TestCameraFaceDetection()
 				std::dynamic_pointer_cast<CObservationImage>(obs);
 			for (unsigned int i = 0; i < detected.size(); i++)
 			{
-				ASSERT_(IS_CLASS(detected[i], CDetectable2D))
+				ASSERT_(IS_CLASS(detected[i], CDetectable2D);
 				CDetectable2D::Ptr obj =
 					std::dynamic_pointer_cast<CDetectable2D>(detected[i]);
 				o->image.rectangle(
@@ -309,7 +308,7 @@ void TestCameraFaceDetection()
 
 			for (unsigned int i = 0; i < detected.size(); i++)
 			{
-				ASSERT_(IS_CLASS(detected[i], CDetectable2D))
+				ASSERT_(IS_CLASS(detected[i], CDetectable2D);
 				CDetectable2D::Ptr obj =
 					std::dynamic_pointer_cast<CDetectable2D>(detected[i]);
 				o->imageRight.rectangle(
@@ -339,7 +338,7 @@ void TestImagesFaceDetection(int argc, char* argv[])
 {
 	CImage img;
 	CDisplayWindow win("Result");
-	mrpt::utils::CTicTac tictac;
+	mrpt::system::CTicTac tictac;
 
 	// For each aditional argument, tty to load an image and detect faces
 	for (int i = 1; i < argc; i++)
@@ -362,7 +361,7 @@ void TestImagesFaceDetection(int argc, char* argv[])
 
 		for (unsigned int i = 0; i < detected.size(); i++)
 		{
-			ASSERT_(IS_CLASS(detected[i], CDetectable2D))
+			ASSERT_(IS_CLASS(detected[i], CDetectable2D);
 			CDetectable2D::Ptr obj =
 				std::dynamic_pointer_cast<CDetectable2D>(detected[i]);
 			img.rectangle(
@@ -391,7 +390,7 @@ void BatchMode()
 
 		const unsigned int size = rawlog.size();
 
-		mrpt::utils::CTicTac tictac;
+		mrpt::system::CTicTac tictac;
 		size_t counter = 0;
 
 		// PROCESS RAWLOG
@@ -459,7 +458,7 @@ void mySplit(const string& str)
 // ------------------------------------------------------
 void TestPrepareDetector()
 {
-	CStringList lst;
+	std::vector<std::string> lst;
 	CConfigFileMemory cfg;
 
 	lst.loadFromFile(myInitFile);
@@ -494,8 +493,8 @@ void TestPrepareDetector()
 		for (size_t i = 0; i < numRawlogs; i++)
 		{
 			cfg.read_vector(
-				rawlogs[i], "falsePositives", vector_uint(), falsePositives[i]);
-			cfg.read_vector(rawlogs[i], "ignored", vector_uint(), ignored[i]);
+				rawlogs[i], "falsePositives", std::vector<uint32_t>(), falsePositives[i]);
+			cfg.read_vector(rawlogs[i], "ignored", std::vector<uint32_t>(), ignored[i]);
 		}
 
 		rawlogsDir = cfg.read_string("Example", "rawlogsDir", "");

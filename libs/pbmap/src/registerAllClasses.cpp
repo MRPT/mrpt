@@ -9,9 +9,8 @@
 
 #include "pbmap-precomp.h"  // precomp. hdr
 #include <mrpt/pbmap.h>
-#include <mrpt/utils/initializer.h>
+#include <mrpt/core/initializer.h>
 
-using namespace mrpt::utils;
 using namespace mrpt::pbmap;
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_pbmap)

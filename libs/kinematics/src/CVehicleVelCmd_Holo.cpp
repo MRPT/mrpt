@@ -9,10 +9,9 @@
 
 #include "kinematics-precomp.h"  // Precompiled header
 #include <mrpt/kinematics/CVehicleVelCmd_Holo.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::kinematics;
-using namespace mrpt::utils;
 
 IMPLEMENTS_SERIALIZABLE(CVehicleVelCmd_Holo, CVehicleVelCmd, mrpt::kinematics)
 
@@ -101,7 +100,8 @@ void CVehicleVelCmd_Holo::setToStop()
 {
 	vel = dir_local = ramp_time = rot_speed = .0;
 }
-void CVehicleVelCmd_Holo::readFromStream(mrpt::utils::CStream& in, int version)
+void CVehicleVelCmd_Holo::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -113,14 +113,9 @@ void CVehicleVelCmd_Holo::readFromStream(mrpt::utils::CStream& in, int version)
 	};
 }
 
-void CVehicleVelCmd_Holo::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CVehicleVelCmd_Holo::serializeGetVersion() const { return 0; }
+void CVehicleVelCmd_Holo::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-	{
-		*version = 0;
-		return;
-	}
 	out << vel << dir_local << ramp_time << rot_speed;
 }
 

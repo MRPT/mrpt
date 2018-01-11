@@ -14,12 +14,11 @@
 #include <mrpt/random.h>
 
 #if MRPT_HAS_SSE2
-#include <mrpt/utils/SSE_types.h>
+#include <mrpt/core/SSE_types.h>
 #endif
 
 using namespace mrpt;
 using namespace mrpt::tfest;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace std;

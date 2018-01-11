@@ -14,7 +14,6 @@
 
 using namespace std;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 
 /** Return two vectors with the cos and the sin of the angles for each of the
   * rays in a scan, computing them only the first time and returning a cached
@@ -63,7 +62,7 @@ const CSinCosLookUpTableFor2DScans::TSinCosValues&
 		new_entry.ccos.resize(scan_prop.nRays + 4);
 		new_entry.csin.resize(scan_prop.nRays + 4);
 
-		ASSERT_(scan_prop.nRays >= 2)
+		ASSERT_(scan_prop.nRays >= 2);
 		if (scan_prop.nRays > 0)
 		{
 			double Ang =

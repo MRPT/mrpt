@@ -1,0 +1,39 @@
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
+#pragma once
+
+#include <mrpt/containers/generic_copier_ptr.h>  // copy_ptr<>
+
+namespace mrpt
+{
+namespace bayes
+{
+/** A template class for holding a the data and the weight of a particle.
+*    Particles are composed of two parts:
+ *		- A state vector descritor, which in this case can be any user defined
+*CSerializable class
+ *		- A (logarithmic) weight value.
+ *
+ *  This structure is used within CParticleFilterData, see that class for more
+*information.
+ * \ingroup mrpt_bayes_grp
+ */
+template <class T>
+struct CProbabilityParticle
+{
+   public:
+	/** The data associated with this particle. The use of copy_ptr<> allows
+	 * relying on compiler-generated copy ctor, etc. */
+	mrpt::containers::copy_ptr<T> d{};
+	/** The (logarithmic) weight value for this particle. */
+	double log_w{ .0 };
+};
+
+}  // end namespace
+}  // end namespace

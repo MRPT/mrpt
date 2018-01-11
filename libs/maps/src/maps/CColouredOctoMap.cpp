@@ -11,7 +11,7 @@
 
 #include <octomap/octomap.h>
 #include <octomap/ColorOcTree.h>
-#include <mrpt/utils/pimpl.h>
+#include <mrpt/core/pimpl.h>
 PIMPL_IMPLEMENT(octomap::ColorOcTree);
 
 #include <mrpt/maps/CColouredOctoMap.h>
@@ -24,8 +24,8 @@ PIMPL_IMPLEMENT(octomap::ColorOcTree);
 #include <mrpt/opengl/CPointCloudColoured.h>
 
 #include <mrpt/system/filesystem.h>
-#include <mrpt/utils/CMemoryChunk.h>
-#include <mrpt/utils/CFileOutputStream.h>
+#include <sstream>
+#include <mrpt/io/CFileOutputStream.h>
 
 #include "COctoMapBase_impl.h"
 
@@ -37,8 +37,8 @@ using namespace std;
 using namespace mrpt;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
+using namespace mrpt::img;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
 
@@ -48,7 +48,7 @@ MAP_DEFINITION_REGISTER(
 
 CColouredOctoMap::TMapDefinition::TMapDefinition() : resolution(0.10) {}
 void CColouredOctoMap::TMapDefinition::loadFromConfigFile_map_specific(
-	const mrpt::utils::CConfigFileBase& source,
+	const mrpt::config::CConfigFileBase& source,
 	const std::string& sectionNamePrefix)
 {
 	// [<sectionNamePrefix>+"_creationOpts"]
@@ -63,7 +63,7 @@ void CColouredOctoMap::TMapDefinition::loadFromConfigFile_map_specific(
 }
 
 void CColouredOctoMap::TMapDefinition::dumpToTextStream_map_specific(
-	mrpt::utils::CStream& out) const
+	std::ostream& out) const
 {
 	LOADABLEOPTS_DUMP_VAR(resolution, double);
 
@@ -85,52 +85,29 @@ mrpt::maps::CMetricMap* CColouredOctoMap::internal_CreateFromMapDefinition(
 
 IMPLEMENTS_SERIALIZABLE(CColouredOctoMap, CMetricMap, mrpt::maps)
 
-/*---------------------------------------------------------------
-						Constructor
-  ---------------------------------------------------------------*/
 CColouredOctoMap::CColouredOctoMap(const double resolution)
 	: m_colour_method(INTEGRATE)
 {
 	m_octomap.ptr.reset(new octomap::ColorOcTree(resolution));
 }
 
-/*---------------------------------------------------------------
-						Destructor
-  ---------------------------------------------------------------*/
 CColouredOctoMap::~CColouredOctoMap() {}
-/*---------------------------------------------------------------
-					writeToStream
-   Implements the writing to a CStream capability of
-				CSerializable objects
-  ---------------------------------------------------------------*/
-void CColouredOctoMap::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
-{
-	if (version)
-		*version = 2;
-	else
-	{
-		this->likelihoodOptions.writeToStream(out);
-		this->renderingOptions.writeToStream(out);  // Added in v1
-		out << genericMapParams;  // v2
 
-		CMemoryChunk chunk;
-		const string tmpFil = mrpt::system::getTempFileName();
-		const_cast<octomap::ColorOcTree*>(
-			&PIMPL_GET_REF(ColorOcTree, m_octomap))
-			->writeBinary(tmpFil);
-		chunk.loadBufferFromFile(tmpFil);
-		mrpt::system::deleteFile(tmpFil);
-		out << chunk;
-	}
+uint8_t CColouredOctoMap::serializeGetVersion() const { return 3; }
+void CColouredOctoMap::serializeTo(mrpt::serialization::CArchive& out) const
+{
+	this->likelihoodOptions.writeToStream(out);
+	this->renderingOptions.writeToStream(out);  // Added in v1
+	out << genericMapParams;  // v2
+
+	// v2->v3: remove CMemoryChunk
+	std::stringstream ss;
+	const_cast<octomap::ColorOcTree*>(&PIMPL_GET_REF(ColorOcTree, m_octomap))->writeBinary(ss);
+	const std::string& buf = ss.str();
+	out << buf;
 }
 
-/*---------------------------------------------------------------
-					readFromStream
-   Implements the reading from a CStream capability of
-	  CSerializable objects
-  ---------------------------------------------------------------*/
-void CColouredOctoMap::readFromStream(mrpt::utils::CStream& in, int version)
+void CColouredOctoMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -138,22 +115,26 @@ void CColouredOctoMap::readFromStream(mrpt::utils::CStream& in, int version)
 		case 1:
 		case 2:
 		{
+			THROW_EXCEPTION("Deserialization of old versions of this class was discontinued in MRPT 1.9.9 [no CMemoryChunk]");
+		}
+		break;
+		case 3:
+		{
 			this->likelihoodOptions.readFromStream(in);
 			if (version >= 1) this->renderingOptions.readFromStream(in);
 			if (version >= 2) in >> genericMapParams;
 
 			this->clear();
 
-			CMemoryChunk chunk;
-			in >> chunk;
+			std::string buf;
+			in >> buf;
 
-			if (chunk.getTotalBytesCount())
+			if (!buf.empty())
 			{
-				const string tmpFil = mrpt::system::getTempFileName();
-				if (!chunk.saveBufferToFile(tmpFil))
-					THROW_EXCEPTION("Error saving temporary file");
-				PIMPL_GET_REF(ColorOcTree, m_octomap).readBinary(tmpFil);
-				mrpt::system::deleteFile(tmpFil);
+				std::stringstream ss;
+				ss.str(buf);
+				ss.seekg(0);
+				PIMPL_GET_REF(ColorOcTree, m_octomap).readBinary(ss);
 			}
 		}
 		break;
@@ -347,7 +328,7 @@ void CColouredOctoMap::updateVoxelColour(
 				.averageNodeColor(x, y, z, r, g, b);
 			break;
 		default:
-			THROW_EXCEPTION("Invalid value found for 'm_colour_method'")
+			THROW_EXCEPTION("Invalid value found for 'm_colour_method'");
 	}
 }
 
@@ -400,7 +381,7 @@ void CColouredOctoMap::getAsOctoMapVoxels(
 			if ((occ >= 0.5 && renderingOptions.generateOccupiedVoxels) ||
 				(occ < 0.5 && renderingOptions.generateFreeVoxels))
 			{
-				mrpt::utils::TColor vx_color;
+				mrpt::img::TColor vx_color;
 				octomap::ColorOcTreeNode::Color node_color = it->getColor();
 				vx_color = TColor(node_color.r, node_color.g, node_color.b);
 

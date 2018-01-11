@@ -16,8 +16,9 @@
 
 using namespace mrpt;
 using namespace mrpt::vision;
+using namespace mrpt::img;
 using namespace mrpt::system;
-using namespace mrpt::utils;
+using namespace mrpt::img;
 using namespace mrpt::math;
 using namespace std;
 
@@ -26,7 +27,7 @@ using namespace std;
 **
 ************************************************************************************************/
 void CFeatureExtraction::extractFeaturesFAST(
-	const mrpt::utils::CImage& inImg, CFeatureList& feats, unsigned int init_ID,
+	const mrpt::img::CImage& inImg, CFeatureList& feats, unsigned int init_ID,
 	unsigned int nDesiredFeatures, const TImageROI& ROI,
 	const CMatrixBool* mask) const
 {
@@ -35,7 +36,7 @@ void CFeatureExtraction::extractFeaturesFAST(
 
 #if MRPT_HAS_OPENCV
 #if MRPT_OPENCV_VERSION_NUM < 0x210
-	THROW_EXCEPTION("This function requires OpenCV > 2.1.0")
+	THROW_EXCEPTION("This function requires OpenCV > 2.1.0");
 #else
 
 	using namespace cv;
@@ -62,7 +63,7 @@ void CFeatureExtraction::extractFeaturesFAST(
 	if (options.useMask)
 	{
 		cout << "using mask" << endl;
-		size_t maskW = mask->getColCount(), maskH = mask->getRowCount();
+		size_t maskW = mask->cols(), maskH = mask->rows();
 		ASSERT_(
 			maskW == inImg_gray.getWidth() && maskH == inImg_gray.getHeight());
 

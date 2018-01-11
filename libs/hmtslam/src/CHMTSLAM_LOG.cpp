@@ -10,16 +10,19 @@
 #include "hmtslam-precomp.h"  // Precomp header
 
 #include <mrpt/system/os.h>
-#include <mrpt/utils/CFileOutputStream.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/system/os.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/memory.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::hmtslam;
+using namespace mrpt::io;
+using namespace mrpt::serialization;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;
-using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
 
@@ -63,20 +66,18 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 				mrpt::make_aligned_shared<COpenGLScene>();
 
 			// Look for the most likely LMH:
-			aligned_containers<THypothesisID,
-							   CLocalMetricHypothesis>::map_t::iterator it;
-			for (it = m_LMHs.begin(); it != m_LMHs.end(); it++)
+			for (auto& m: m_LMHs)
 			{
 				if (!bestLMH)
 				{
-					bestLMH = &it->second;
+					bestLMH = &m.second;
 				}
-				else if (it->second.m_log_w > bestLMH->m_log_w)
+				else if (m.second.m_log_w > bestLMH->m_log_w)
 				{
-					bestLMH = &it->second;
+					bestLMH = &m.second;
 				}
 			}
-			ASSERT_(bestLMH != nullptr)
+			ASSERT_(bestLMH != nullptr);
 
 			bestHypoID = bestLMH->m_ID;
 
@@ -103,7 +104,8 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 					sceneLSLAM->enableFollowCamera(true);
 
 					MRPT_LOG_INFO_STREAM("[LOG] Saving " << filLocalAreas);
-					CFileGZOutputStream(filLocalAreas) << *sceneLSLAM;
+					CFileGZOutputStream f(filLocalAreas);
+					archiveFrom(f) << *sceneLSLAM;
 				}
 
 // Save the SSO matrix:
@@ -121,7 +123,7 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 					{
 						CMatrix  A;
 						bestLMH->m_robotPosesGraph.partitioner.getAdjacencyMatrix( A );
-						if (A.getColCount()>0)
+						if (A.cols()>0)
 						{
 							A.adjustRange();
 							A.saveToTextFile( format("%s/ASSO/mostLikelyLMH_ASSO_%05u.txt", m_options.LOG_OUTPUT_DIR.c_str(), nIteration ) );
@@ -147,7 +149,8 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 					"%s/HMTSLAM_state/state_%05u.hmtslam",
 					m_options.LOG_OUTPUT_DIR.c_str(), nIteration));
 			MRPT_LOG_INFO_STREAM("[LOG] Saving: " << hmtmap_file.c_str());
-			CFileGZOutputStream(hmtmap_file) << *this;
+			CFileGZOutputStream f(hmtmap_file);
+			archiveFrom(f) << *this;
 		}
 	}
 #endif
@@ -185,7 +188,8 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 					"%s/HMAP_3D/mostLikelyHMT_MAP_%05u.3Dscene",
 					m_options.LOG_OUTPUT_DIR.c_str(), nIteration));
 			MRPT_LOG_INFO_STREAM("[LOG] Saving " << hmtmap_file);
-			CFileGZOutputStream(hmtmap_file) << sceneGlobalHMTMAP;
+			CFileGZOutputStream f(hmtmap_file);
+			archiveFrom(f) << sceneGlobalHMTMAP;
 		}
 	}
 #endif

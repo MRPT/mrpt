@@ -9,7 +9,6 @@
 #ifndef PF_aux_structs_H
 #define PF_aux_structs_H
 
-#include <mrpt/utils/utils_defs.h>
 #include <vector>
 #include <iostream>
 #include <iterator>
@@ -56,7 +55,7 @@ struct TPathBin2D
 	{
 		bool operator()(const TPathBin2D& s1, const TPathBin2D& s2) const
 		{
-			ASSERT_(s1.bins.size() == s2.bins.size())
+			ASSERT_(s1.bins.size() == s2.bins.size());
 			for (size_t i = 0; i < s1.bins.size(); i++)
 			{
 				if (s1.bins[i].x < s2.bins[i].x) return true;

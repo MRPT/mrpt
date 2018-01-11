@@ -11,16 +11,15 @@
 
 #include <octomap/octomap.h>
 #include <octomap/OcTree.h>
-#include <mrpt/utils/pimpl.h>
+#include <mrpt/core/pimpl.h>
 PIMPL_IMPLEMENT(octomap::OcTree);
 
 #include <mrpt/maps/COctoMap.h>
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/utils/CMemoryChunk.h>
 
 #include "COctoMapBase_impl.h"
 
@@ -30,8 +29,8 @@ template class mrpt::maps::COctoMapBase<octomap::OcTree, octomap::OcTreeNode>;
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::maps;
+using namespace mrpt::img;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::opengl;
@@ -41,7 +40,7 @@ MAP_DEFINITION_REGISTER("COctoMap,octoMap", mrpt::maps::COctoMap)
 
 COctoMap::TMapDefinition::TMapDefinition() : resolution(0.10) {}
 void COctoMap::TMapDefinition::loadFromConfigFile_map_specific(
-	const mrpt::utils::CConfigFileBase& source,
+	const mrpt::config::CConfigFileBase& source,
 	const std::string& sectionNamePrefix)
 {
 	// [<sectionNamePrefix>+"_creationOpts"]
@@ -56,7 +55,7 @@ void COctoMap::TMapDefinition::loadFromConfigFile_map_specific(
 }
 
 void COctoMap::TMapDefinition::dumpToTextStream_map_specific(
-	mrpt::utils::CStream& out) const
+	std::ostream& out) const
 {
 	LOADABLEOPTS_DUMP_VAR(resolution, double);
 
@@ -86,42 +85,22 @@ COctoMap::COctoMap(const double resolution)
 	m_octomap.ptr.reset(new octomap::OcTree(resolution));
 }
 
-/*---------------------------------------------------------------
-						Destructor
-  ---------------------------------------------------------------*/
 COctoMap::~COctoMap() {}
-/*---------------------------------------------------------------
-					writeToStream
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void COctoMap::writeToStream(mrpt::utils::CStream& out, int* version) const
+
+uint8_t COctoMap::serializeGetVersion() const { return 3; }
+void COctoMap::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 2;
-	else
-	{
-		this->likelihoodOptions.writeToStream(out);
-		this->renderingOptions.writeToStream(out);  // Added in v1
-		out << genericMapParams;  // v2
-
-		CMemoryChunk chunk;
-		const string tmpFil = mrpt::system::getTempFileName();
-		const_cast<octomap::OcTree*>(&PIMPL_GET_REF(OcTree, m_octomap))
-			->writeBinary(tmpFil);
-		chunk.loadBufferFromFile(tmpFil);
-		mrpt::system::deleteFile(tmpFil);
-
-		out << chunk;
-	}
+	this->likelihoodOptions.writeToStream(out);
+	this->renderingOptions.writeToStream(out);  // Added in v1
+	out << genericMapParams;
+	// v2->v3: remove CMemoryChunk
+	std::stringstream ss;
+	const_cast<octomap::OcTree*>(&PIMPL_GET_REF(OcTree, m_octomap))->writeBinary(ss);
+	const std::string& buf = ss.str();
+	out << buf;
 }
 
-/*---------------------------------------------------------------
-					readFromStream
-   Implements the reading from a CStream capability of
-	  CSerializable objects
-  ---------------------------------------------------------------*/
-void COctoMap::readFromStream(mrpt::utils::CStream& in, int version)
+void COctoMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -129,22 +108,26 @@ void COctoMap::readFromStream(mrpt::utils::CStream& in, int version)
 		case 1:
 		case 2:
 		{
+			THROW_EXCEPTION("Deserialization of old versions of this class was discontinued in MRPT 1.9.9 [no CMemoryChunk]");
+		}
+		break;
+		case 3:
+		{
 			this->likelihoodOptions.readFromStream(in);
 			if (version >= 1) this->renderingOptions.readFromStream(in);
 			if (version >= 2) in >> genericMapParams;
 
 			this->clear();
 
-			CMemoryChunk chunk;
-			in >> chunk;
+			std::string buf;
+			in >> buf;
 
-			if (chunk.getTotalBytesCount())
+			if (!buf.empty())
 			{
-				const string tmpFil = mrpt::system::getTempFileName();
-				if (!chunk.saveBufferToFile(tmpFil))
-					THROW_EXCEPTION("Error saving temporary file");
-				PIMPL_GET_REF(OcTree, m_octomap).readBinary(tmpFil);
-				mrpt::system::deleteFile(tmpFil);
+				std::stringstream ss;
+				ss.str(buf);
+				ss.seekg(0);
+				PIMPL_GET_REF(OcTree, m_octomap).readBinary(ss);
 			}
 		}
 		break;
@@ -217,7 +200,7 @@ void COctoMap::getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels& gl_obj) const
 			if ((occ >= 0.5 && renderingOptions.generateOccupiedVoxels) ||
 				(occ < 0.5 && renderingOptions.generateFreeVoxels))
 			{
-				mrpt::utils::TColor vx_color;
+				mrpt::img::TColor vx_color;
 				double coefc, coeft;
 				switch (gl_obj.getVisualizationMode())
 				{
@@ -269,7 +252,7 @@ void COctoMap::getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels& gl_obj) const
 						break;
 
 					default:
-						THROW_EXCEPTION("Unknown coloring scheme!")
+						THROW_EXCEPTION("Unknown coloring scheme!");
 				}
 
 				const size_t vx_set =

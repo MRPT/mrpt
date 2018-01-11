@@ -8,17 +8,17 @@
    +------------------------------------------------------------------------+ */
 
 #include "rawlog-edit-declarations.h"
-#include <mrpt/utils/TCamera.h>
-#include <mrpt/utils/TStereoCamera.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/img/TCamera.h>
+#include <mrpt/img/TStereoCamera.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::rawlogtools;
+using namespace mrpt::io;
 using namespace std;
 
 // ======================================================================
@@ -33,8 +33,8 @@ DECLARE_OP_FUNCTION(op_camera_params)
 		TOutputRawlogCreator outrawlog;
 
 		string target_label;
-		mrpt::utils::TCamera new_cam_params;
-		mrpt::utils::TStereoCamera new_stereo_cam_params;
+		mrpt::img::TCamera new_cam_params;
+		mrpt::img::TStereoCamera new_stereo_cam_params;
 		bool is_stereo;
 
 	   public:
@@ -67,7 +67,7 @@ DECLARE_OP_FUNCTION(op_camera_params)
 					fil);
 
 			// Load:
-			CConfigFile cfg(fil);
+			mrpt::config::CConfigFile cfg(fil);
 			is_stereo = true;
 			string sErrorCam;
 			try
@@ -135,11 +135,11 @@ DECLARE_OP_FUNCTION(op_camera_params)
 			mrpt::obs::CSensoryFrame::Ptr& SF,
 			mrpt::obs::CObservation::Ptr& obs)
 		{
-			ASSERT_((actions && SF) || obs)
+			ASSERT_((actions && SF) || obs);
 			if (actions)
-				outrawlog.out_rawlog << actions << SF;
+				(*outrawlog.out_rawlog) << actions << SF;
 			else
-				outrawlog.out_rawlog << obs;
+				(*outrawlog.out_rawlog) << obs;
 		}
 	};
 

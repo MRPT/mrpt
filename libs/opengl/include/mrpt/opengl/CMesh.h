@@ -12,8 +12,8 @@
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/math/CMatrix.h>
-#include <mrpt/utils/CImage.h>
-#include <mrpt/utils/color_maps.h>
+#include <mrpt/img/CImage.h>
+#include <mrpt/img/color_maps.h>
 #include <mrpt/opengl/CSetOfTriangles.h>
 
 namespace mrpt
@@ -46,7 +46,7 @@ class CMesh : public CRenderizableDisplayList
 	};
 
    protected:
-	mrpt::utils::CImage m_textureImage;
+	mrpt::img::CImage m_textureImage;
 
 	bool m_enableTransparency;
 	bool m_colorFromZ;
@@ -71,7 +71,7 @@ class CMesh : public CRenderizableDisplayList
 	mutable math::CMatrix C_b;
 
 	/** Used when m_colorFromZ is true */
-	mrpt::utils::TColormap m_colorMap;
+	mrpt::img::TColormap m_colorMap;
 
 	/** Whether C is not up-to-date wrt to Z */
 	mutable bool m_modified_Z;
@@ -130,7 +130,7 @@ class CMesh : public CRenderizableDisplayList
 		CRenderizableDisplayList::notifyChange();
 	}
 	void enableColorFromZ(
-		bool v, mrpt::utils::TColormap colorMap = mrpt::utils::cmHOT)
+		bool v, mrpt::img::TColormap colorMap = mrpt::img::cmHOT)
 	{
 		m_colorFromZ = v;
 		m_colorMap = colorMap;
@@ -226,12 +226,12 @@ class CMesh : public CRenderizableDisplayList
 
 	/** Assigns a texture image, and disable transparency.
 	  */
-	void assignImage(const mrpt::utils::CImage& img);
+	void assignImage(const mrpt::img::CImage& img);
 
 	/** Assigns a texture image and Z simultaneously, and disable transparency.
 	  */
 	void assignImageAndZ(
-		const mrpt::utils::CImage& img,
+		const mrpt::img::CImage& img,
 		const mrpt::math::CMatrixTemplateNumeric<float>& in_Z);
 
 	/** Adjust grid limits according to the image aspect ratio, maintaining the

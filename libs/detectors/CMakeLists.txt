@@ -9,15 +9,8 @@ define_mrpt_lib(
 	# Lib name
 	detectors
 	# Deps:
-	mrpt-vision
-	mrpt-maps
 	mrpt-gui
 	mrpt-slam
-	# And deps of the deps:
-	mrpt-base
-	mrpt-opengl
-	mrpt-obs
-	mrpt-graphs
 	)
 
 IF(BUILD_mrpt-detectors)

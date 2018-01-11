@@ -10,7 +10,7 @@
 #define mrpt_maps_PCL_adapters_H
 
 #include <mrpt/config.h>
-#include <mrpt/utils/adapters.h>
+#include <mrpt/opengl/pointcloud_adapters.h>
 
 // NOTE: Only include this file if you have PCL installed in your system
 //        and do it only after including MRPT headers...
@@ -21,10 +21,11 @@
 
 namespace mrpt
 {
-namespace utils
+namespace opengl
 {
-/** Specialization mrpt::utils::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZ>
- * > for an XYZ point cloud (without RGB) \ingroup mrpt_adapters_grp */
+/** Specialization
+ * mrpt::opengl::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZ> > for an XYZ
+ * point cloud (without RGB) \ingroup mrpt_adapters_grp */
 template <>
 class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZ>>
 	: public detail::PointCloudAdapterHelperNoRGB<
@@ -77,11 +78,11 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZ>>
 		pcl::PointXYZ& p = m_obj.points[idx];
 		p.x = p.y = p.z = std::numeric_limits<float>::quiet_NaN();
 	}
-};  // end of mrpt::utils::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZ> >
+};  // end of mrpt::opengl::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZ> >
 
 /** Specialization
- * mrpt::utils::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGB> > for an XYZ
- * point cloud with RGB  \ingroup mrpt_adapters_grp */
+ * mrpt::opengl::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGB> > for an
+ * XYZ point cloud with RGB  \ingroup mrpt_adapters_grp */
 template <>
 class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGB>>
 {
@@ -220,10 +221,11 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGB>>
 		p.b = b;
 	}
 
-};  // end of mrpt::utils::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGB> >
+};  // end of mrpt::opengl::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGB>
+	// >
 
 /** Specialization
- * mrpt::utils::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGBA> > for an
+ * mrpt::opengl::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGBA> > for an
  * XYZ point cloud with RGB  \ingroup mrpt_adapters_grp */
 template <>
 class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGBA>>
@@ -370,9 +372,9 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGBA>>
 		p.b = b;
 	}
 
-};  // end of mrpt::utils::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGBA>
+};  // end of mrpt::opengl::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGBA>
 // >
-}
-}  // End of namespace
+}  // namespace opengl
+}  // namespace mrpt
 
 #endif

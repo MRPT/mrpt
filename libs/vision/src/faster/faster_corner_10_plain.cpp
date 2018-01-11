@@ -12,8 +12,7 @@
 //             released under LGPL 2.1 by Edward Rosten
 // ---------------------------------------------------------------------------
 
-#include <mrpt/utils/utils_defs.h>
-#include <mrpt/utils/SSE_types.h>
+#include <mrpt/core/SSE_types.h>
 #include "faster_corner_prototypes.h"
 
 #include "faster_corner_utilities.h"
@@ -21,7 +20,6 @@
 
 using namespace std;
 using namespace mrpt;
-using namespace mrpt::utils;
 
 #if MRPT_HAS_OPENCV
 

@@ -9,24 +9,25 @@
 
 #include <mrpt/system/os.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CRawlog.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/random.h>
 
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::random;
 using namespace mrpt::math;
+using namespace mrpt::io;
 using namespace mrpt::poses;
 using namespace std;
 
@@ -117,22 +118,23 @@ int main(int argc, char** argv)
 
 void do_simulation()
 {
-	ASSERT_FILE_EXISTS_(gt_file)
+	ASSERT_FILE_EXISTS_(gt_file);
 
 	bool have_in_rawlog;
 	if (!in_rawlog_file.empty())
 	{
-		ASSERT_FILE_EXISTS_(in_rawlog_file)
+		ASSERT_FILE_EXISTS_(in_rawlog_file);
 		have_in_rawlog = true;
 	}
 	else
 		have_in_rawlog = false;
 
-	ASSERT_FILE_EXISTS_(grid_file)
+	ASSERT_FILE_EXISTS_(grid_file);
 
 	// Load the grid:
 	COccupancyGridMap2D the_grid;
-	CFileGZInputStream(grid_file) >> the_grid;
+	CFileGZInputStream f(grid_file);
+	mrpt::serialization::archiveFrom(f) >> the_grid;
 
 	// GT file rows are:
 	//  time x y z
@@ -146,14 +148,14 @@ void do_simulation()
 		rawlog.loadFromRawLogFile(in_rawlog_file);
 		ASSERT_(rawlog.size() > 0);
 		ASSERT_(rawlog.getType(0) == CRawlog::etActionCollection);
-		ASSERT_(rawlog.size() / 2 == GT.getRowCount());
+		ASSERT_(int(rawlog.size() / 2) == GT.rows());
 	}
 
 	// # of simulation steps:
-	size_t N = GT.getRowCount();
+	size_t N = GT.rows();
 
 	// Assert sizes:
-	ASSERT_(GT.getColCount() >= 4);
+	ASSERT_(GT.cols() >= 4);
 
 	// ------------------------------------------
 	// Resimulate scans:

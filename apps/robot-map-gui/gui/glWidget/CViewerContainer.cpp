@@ -75,7 +75,7 @@ void CViewerContainer::showRangeScan(CNode* node)
 	obj->setSurfaceColor(1.0f, 0.0f, 0.0f, 0.5f);
 
 	forEachGl([obsNode, obj](CGlWidget* gl) {
-		gl->setSelected(obsNode->getPose());
+		gl->setSelected(obsNode->getPose().asTPose());
 		gl->setLaserScan(obj);
 	});
 }
@@ -94,7 +94,7 @@ void CViewerContainer::forEachGl(const std::function<void(CGlWidget*)>& func)
 
 void CViewerContainer::showRobotDirection(const mrpt::poses::CPose3D& pose)
 {
-	forEachGl([pose](CGlWidget* gl) { gl->setSelected(pose); });
+	forEachGl([pose](CGlWidget* gl) { gl->setSelected(pose.asTPose()); });
 }
 
 void CViewerContainer::applyConfigChanges(RenderizableMaps renderizableMaps)

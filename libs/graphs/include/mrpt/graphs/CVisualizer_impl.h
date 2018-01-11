@@ -42,11 +42,10 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 				 EDGE_ANNOTATIONS>::
 	getAs3DObject(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		mrpt::utils::TParametersDouble viz_params) const
+		mrpt::system::TParametersDouble viz_params) const
 {
 	using namespace mrpt::opengl;
-	using namespace mrpt::utils;
-
+	
 	// graph visualization parameters
 	const bool show_ID_labels =
 		0 != viz_params.getWithDefaultVal("show_ID_labels", 0);
@@ -92,11 +91,10 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 				 EDGE_ANNOTATIONS>::
 	drawGroundGrid(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::utils::TParametersDouble* viz_params /*=NULL*/) const
+		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
 {
 	using namespace mrpt::opengl;
-	using namespace mrpt::utils;
-	ASSERTMSG_(viz_params, "Pointer to viz_params was not provided.");
+		ASSERTMSG_(viz_params, "Pointer to viz_params was not provided.");
 
 	// Estimate bounding box.
 	mrpt::math::TPoint3D BB_min(-10., -10., 0.), BB_max(10., 10., 0.);
@@ -131,13 +129,13 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 				 EDGE_ANNOTATIONS>::
 	drawNodePoints(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::utils::TParametersDouble* viz_params /*=NULL*/) const
+		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
 {
 	ASSERTMSG_(viz_params, "Pointer to viz_params was not provided.");
 
 	using namespace mrpt::opengl;
-	using namespace mrpt::utils;
-
+	using namespace mrpt::img;
+	
 	const double nodes_point_size =
 		viz_params->getWithDefaultVal("nodes_point_size", 0.);
 	const unsigned int nodes_point_color = viz_params->getWithDefaultVal(
@@ -167,11 +165,10 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 				 EDGE_ANNOTATIONS>::
 	drawNodeCorners(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::utils::TParametersDouble* viz_params /*=NULL*/) const
+		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
 {
 	using namespace mrpt::opengl;
-	using namespace mrpt::utils;
-	using mrpt::poses::CPose3D;
+		using mrpt::poses::CPose3D;
 
 	ASSERTMSG_(viz_params, "Pointer to viz_params was not provided.");
 
@@ -213,10 +210,11 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 				 EDGE_ANNOTATIONS>::
 	drawEdgeRelPoses(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::utils::TParametersDouble* viz_params /*=NULL*/) const
+		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
 {
 	using namespace mrpt::opengl;
-	using namespace mrpt::utils;
+	using namespace mrpt::img;
+	using mrpt::graphs::TNodeID;
 	ASSERTMSG_(viz_params, "Pointer to viz_params was not provided.");
 
 	const double nodes_edges_corner_scale =
@@ -227,8 +225,7 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 		edge_rel_poses_color & 0xffffff, edge_rel_poses_color >> 24);
 	const double edge_width = viz_params->getWithDefaultVal("edge_width", 2.);
 
-	for (typename GRAPH_T::const_iterator edge_it = m_graph.begin();
-		 edge_it != m_graph.end(); ++edge_it)
+	for (auto edge_it = m_graph.begin();edge_it != m_graph.end(); ++edge_it)
 	{
 		// Node ID of the source pose:
 		const TNodeID node_id_start = m_graph.edges_store_inverse_poses
@@ -282,10 +279,11 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 				 EDGE_ANNOTATIONS>::
 	drawEdges(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::utils::TParametersDouble* viz_params /*=NULL*/) const
+		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
 {
 	using namespace mrpt::opengl;
-	using namespace mrpt::utils;
+	using namespace mrpt::img;
+	using namespace mrpt::poses;
 	ASSERTMSG_(viz_params, "Pointer to viz_params was not provided.");
 
 	CSetOfLines::Ptr gl_edges = mrpt::make_aligned_shared<CSetOfLines>();

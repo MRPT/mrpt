@@ -10,13 +10,13 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CCamera.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
+
 using namespace mrpt::math;
 using namespace std;
 
@@ -38,28 +38,16 @@ CCamera::CCamera()
 {
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CCamera::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CCamera::serializeGetVersion() const { return 1; }
+void CCamera::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		// Save data:
-		out << m_pointingX << m_pointingY << m_pointingZ << m_distanceZoom
-			<< m_azimuthDeg << m_elevationDeg << m_projectiveModel
-			<< m_projectiveFOVdeg;
-	}
+	// Save data:
+	out << m_pointingX << m_pointingY << m_pointingZ << m_distanceZoom
+		<< m_azimuthDeg << m_elevationDeg << m_projectiveModel
+		<< m_projectiveFOVdeg;
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CCamera::readFromStream(mrpt::utils::CStream& in, int version)
+void CCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

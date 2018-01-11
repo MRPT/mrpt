@@ -9,14 +9,14 @@
 
 #include "opengl-precomp.h"  // Precompiled header
 #include <mrpt/opengl/CFrustum.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/opengl/gl_utils.h>
 
 #include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
+
 using namespace mrpt::math;
 using namespace std;
 
@@ -104,10 +104,10 @@ void CFrustum::render_dl() const
 CFrustum::CFrustum()
 	: m_min_distance(0.1f),
 	  m_max_distance(1.f),
-	  m_fov_horz_left(mrpt::utils::DEG2RAD(45)),
-	  m_fov_horz_right(mrpt::utils::DEG2RAD(45)),
-	  m_fov_vert_down(mrpt::utils::DEG2RAD(30)),
-	  m_fov_vert_up(mrpt::utils::DEG2RAD(30)),
+	  m_fov_horz_left(mrpt::DEG2RAD(45)),
+	  m_fov_horz_right(mrpt::DEG2RAD(45)),
+	  m_fov_vert_down(mrpt::DEG2RAD(30)),
+	  m_fov_vert_up(mrpt::DEG2RAD(30)),
 	  m_draw_lines(true),
 	  m_draw_planes(false),
 	  m_lineWidth(1.5f),
@@ -128,10 +128,10 @@ CFrustum::CFrustum(
 	float vert_FOV_degrees, float lineWidth, bool draw_lines, bool draw_planes)
 	: m_min_distance(near_distance),
 	  m_max_distance(far_distance),
-	  m_fov_horz_left(mrpt::utils::DEG2RAD(.5f * horz_FOV_degrees)),
-	  m_fov_horz_right(mrpt::utils::DEG2RAD(.5f * horz_FOV_degrees)),
-	  m_fov_vert_down(mrpt::utils::DEG2RAD(.5f * vert_FOV_degrees)),
-	  m_fov_vert_up(mrpt::utils::DEG2RAD(.5f * vert_FOV_degrees)),
+	  m_fov_horz_left(mrpt::DEG2RAD(.5f * horz_FOV_degrees)),
+	  m_fov_horz_right(mrpt::DEG2RAD(.5f * horz_FOV_degrees)),
+	  m_fov_vert_down(mrpt::DEG2RAD(.5f * vert_FOV_degrees)),
+	  m_fov_vert_up(mrpt::DEG2RAD(.5f * vert_FOV_degrees)),
 	  m_draw_lines(draw_lines),
 	  m_draw_planes(draw_planes),
 	  m_lineWidth(lineWidth),
@@ -139,30 +139,18 @@ CFrustum::CFrustum(
 {
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CFrustum::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CFrustum::serializeGetVersion() const { return 0; }
+void CFrustum::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		writeToStreamRender(out);
-		// version 0
-		out << m_min_distance << m_max_distance << m_fov_horz_left
-			<< m_fov_horz_right << m_fov_vert_down << m_fov_vert_up
-			<< m_draw_lines << m_draw_planes << m_lineWidth << m_planes_color.R
-			<< m_planes_color.G << m_planes_color.B << m_planes_color.A;
-	}
+	writeToStreamRender(out);
+	// version 0
+	out << m_min_distance << m_max_distance << m_fov_horz_left
+		<< m_fov_horz_right << m_fov_vert_down << m_fov_vert_up << m_draw_lines
+		<< m_draw_planes << m_lineWidth << m_planes_color.R << m_planes_color.G
+		<< m_planes_color.B << m_planes_color.A;
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CFrustum::readFromStream(mrpt::utils::CStream& in, int version)
+void CFrustum::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -184,7 +172,7 @@ bool CFrustum::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 {
 	MRPT_UNUSED_PARAM(o);
 	MRPT_UNUSED_PARAM(dist);
-	THROW_EXCEPTION("TO DO")
+	THROW_EXCEPTION("TO DO");
 }
 
 // setters:
@@ -198,7 +186,7 @@ void CFrustum::setNearFarPlanes(
 void CFrustum::setHorzFOV(const float fov_horz_degrees)
 {
 	m_fov_horz_right = m_fov_horz_left =
-		0.5f * mrpt::utils::DEG2RAD(fov_horz_degrees);
+		0.5f * mrpt::DEG2RAD(fov_horz_degrees);
 	keep_min(m_fov_horz_left, DEG2RAD(89.9f));
 	keep_max(m_fov_horz_left, 0);
 	keep_min(m_fov_horz_right, DEG2RAD(89.9f));
@@ -208,7 +196,7 @@ void CFrustum::setHorzFOV(const float fov_horz_degrees)
 void CFrustum::setVertFOV(const float fov_vert_degrees)
 {
 	m_fov_vert_down = m_fov_vert_up =
-		0.5f * mrpt::utils::DEG2RAD(fov_vert_degrees);
+		0.5f * mrpt::DEG2RAD(fov_vert_degrees);
 	keep_min(m_fov_vert_down, DEG2RAD(89.9f));
 	keep_max(m_fov_vert_down, 0);
 	keep_min(m_fov_vert_up, DEG2RAD(89.9f));
@@ -218,8 +206,8 @@ void CFrustum::setVertFOV(const float fov_vert_degrees)
 void CFrustum::setHorzFOVAsymmetric(
 	const float fov_horz_left_degrees, const float fov_horz_right_degrees)
 {
-	m_fov_horz_left = mrpt::utils::DEG2RAD(fov_horz_left_degrees);
-	m_fov_horz_right = mrpt::utils::DEG2RAD(fov_horz_right_degrees);
+	m_fov_horz_left = mrpt::DEG2RAD(fov_horz_left_degrees);
+	m_fov_horz_right = mrpt::DEG2RAD(fov_horz_right_degrees);
 	keep_min(m_fov_horz_left, DEG2RAD(89.9f));
 	keep_max(m_fov_horz_left, 0);
 	keep_min(m_fov_horz_right, DEG2RAD(89.9f));
@@ -229,8 +217,8 @@ void CFrustum::setHorzFOVAsymmetric(
 void CFrustum::setVertFOVAsymmetric(
 	const float fov_vert_down_degrees, const float fov_vert_up_degrees)
 {
-	m_fov_vert_down = mrpt::utils::DEG2RAD(fov_vert_down_degrees);
-	m_fov_vert_up = mrpt::utils::DEG2RAD(fov_vert_up_degrees);
+	m_fov_vert_down = mrpt::DEG2RAD(fov_vert_down_degrees);
+	m_fov_vert_up = mrpt::DEG2RAD(fov_vert_up_degrees);
 	keep_min(m_fov_vert_down, DEG2RAD(89.9f));
 	keep_max(m_fov_vert_down, 0);
 	keep_min(m_fov_vert_up, DEG2RAD(89.9f));

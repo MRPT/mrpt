@@ -12,7 +12,7 @@
 #include <mrpt/maps/CBeacon.h>
 #include <mrpt/maps/CBeaconMap.h>
 #include <mrpt/obs/CObservation.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include <mrpt/system/os.h>
 #include <mrpt/math/geometry.h>
@@ -27,50 +27,19 @@ using namespace mrpt::obs;
 using namespace mrpt::math;
 using namespace mrpt::system;
 using namespace mrpt::poses;
-using namespace mrpt::utils;
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CBeacon, CSerializable, mrpt::maps)
 
-/*---------------------------------------------------------------
-						Default constructor
-  ---------------------------------------------------------------*/
-CBeacon::CBeacon()
-	: m_typePDF(pdfGauss),
-	  m_locationMC(1),
-	  m_locationGauss(),
-	  m_locationSOG(1),
-	  m_ID(INVALID_BEACON_ID)
+uint8_t CBeacon::serializeGetVersion() const { return 0; }
+void CBeacon::serializeTo(mrpt::serialization::CArchive& out) const
 {
+	uint32_t i = m_ID;
+	uint32_t j = m_typePDF;
+	out << i << j << m_locationMC << m_locationGauss << m_locationSOG;
 }
 
-/*---------------------------------------------------------------
-						Destructor
-  ---------------------------------------------------------------*/
-CBeacon::~CBeacon() {}
-/*---------------------------------------------------------------
-					writeToStream
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CBeacon::writeToStream(mrpt::utils::CStream& out, int* version) const
-{
-	if (version)
-		*version = 0;
-	else
-	{
-		uint32_t i = m_ID;
-		uint32_t j = m_typePDF;
-		out << i << j << m_locationMC << m_locationGauss << m_locationSOG;
-	}
-}
-
-/*---------------------------------------------------------------
-					readFromStream
-   Implements the reading from a CStream capability of
-	  CSerializable objects
-  ---------------------------------------------------------------*/
-void CBeacon::readFromStream(mrpt::utils::CStream& in, int version)
+void CBeacon::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -207,19 +176,19 @@ void CBeacon::copyFrom(const CPointPDF& o)
 /*---------------------------------------------------------------
 					saveToTextFile
   ---------------------------------------------------------------*/
-void CBeacon::saveToTextFile(const std::string& file) const
+bool CBeacon::saveToTextFile(const std::string& file) const
 {
 	MRPT_START
 	switch (m_typePDF)
 	{
 		case pdfMonteCarlo:
-			m_locationMC.saveToTextFile(file);
+			return m_locationMC.saveToTextFile(file);
 			break;
 		case pdfGauss:
-			m_locationGauss.saveToTextFile(file);
+			return m_locationGauss.saveToTextFile(file);
 			break;
 		case pdfSOG:
-			m_locationSOG.saveToTextFile(file);
+			return m_locationSOG.saveToTextFile(file);
 			break;
 		default:
 			THROW_EXCEPTION("ERROR: Invalid 'm_typePDF' value");
@@ -321,7 +290,7 @@ void CBeacon::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
 /*---------------------------------------------------------------
 					getAsMatlabDrawCommands
   ---------------------------------------------------------------*/
-void CBeacon::getAsMatlabDrawCommands(utils::CStringList& out_Str) const
+void CBeacon::getAsMatlabDrawCommands(std::vector<std::string>& out_Str) const
 {
 	MRPT_START
 
@@ -353,9 +322,9 @@ void CBeacon::getAsMatlabDrawCommands(utils::CStringList& out_Str) const
 			}
 			sx = sx + "];";
 			sy = sy + "];";
-			out_Str.add(sx);
-			out_Str.add(sy);
-			out_Str.add(std::string("plot(xs,ys,'k.','MarkerSize',4);"));
+			out_Str.emplace_back(sx);
+			out_Str.emplace_back(sy);
+			out_Str.emplace_back("plot(xs,ys,'k.','MarkerSize',4);");
 		}
 		break;
 		case pdfGauss:
@@ -367,15 +336,14 @@ void CBeacon::getAsMatlabDrawCommands(utils::CStringList& out_Str) const
 			os::sprintf(
 				auxStr, sizeof(auxStr), "m=[%.3f %.3f];",
 				m_locationGauss.mean.x(), m_locationGauss.mean.y());
-			out_Str.add(std::string(auxStr));
+			out_Str.emplace_back(auxStr);
 			os::sprintf(
 				auxStr, sizeof(auxStr), "C=[%e %e;%e %e];",
 				m_locationGauss.cov(0, 0), m_locationGauss.cov(0, 1),
 				m_locationGauss.cov(1, 0), m_locationGauss.cov(1, 1));
-			out_Str.add(std::string(auxStr));
+			out_Str.emplace_back(auxStr);
 
-			out_Str.add(
-				std::string("error_ellipse(C,m,'conf',0.997,'style','k');"));
+			out_Str.emplace_back("error_ellipse(C,m,'conf',0.997,'style','k');");
 		}
 		break;
 		case pdfSOG:
@@ -386,15 +354,14 @@ void CBeacon::getAsMatlabDrawCommands(utils::CStringList& out_Str) const
 				os::sprintf(
 					auxStr, sizeof(auxStr), "m=[%.3f %.3f];",
 					(it)->val.mean.x(), (it)->val.mean.y());
-				out_Str.add(std::string(auxStr));
+				out_Str.emplace_back(auxStr);
 				os::sprintf(
 					auxStr, sizeof(auxStr), "C=[%e %e;%e %e];",
 					(it)->val.cov(0, 0), (it)->val.cov(0, 1),
 					(it)->val.cov(1, 0), (it)->val.cov(1, 1));
-				out_Str.add(std::string(auxStr));
-				out_Str.add(
-					std::string(
-						"error_ellipse(C,m,'conf',0.997,'style','k');"));
+				out_Str.emplace_back(auxStr);
+				out_Str.emplace_back(
+						"error_ellipse(C,m,'conf',0.997,'style','k');");
 			}
 		}
 		break;
@@ -409,7 +376,7 @@ void CBeacon::getAsMatlabDrawCommands(utils::CStringList& out_Str) const
 	os::sprintf(
 		auxStr, sizeof(auxStr), "text(%f,%f,'#%i');", meanP.x(), meanP.y(),
 		static_cast<int>(m_ID));
-	out_Str.add(std::string(auxStr));
+	out_Str.emplace_back(auxStr);
 
 	MRPT_END
 }
@@ -451,7 +418,7 @@ void CBeacon::generateObservationModelDistribution(
 	}
 	else
 	{
-		ASSERT_(m_typePDF == pdfSOG)
+		ASSERT_(m_typePDF == pdfSOG);
 		beaconPos = static_cast<const CPointPDFSOG*>(&m_locationSOG);
 	}
 
@@ -502,14 +469,14 @@ void CBeacon::generateRingSOG(
 {
 	MRPT_START
 
-	ASSERT_(myBeaconMap)
+	ASSERT_(myBeaconMap);
 
 	// Compute the number of Gaussians:
 	const float minEl = DEG2RAD(myBeaconMap->insertionOptions.minElevation_deg);
 	const float maxEl = DEG2RAD(myBeaconMap->insertionOptions.maxElevation_deg);
 	ASSERT_(
 		myBeaconMap->insertionOptions.minElevation_deg <=
-		myBeaconMap->insertionOptions.maxElevation_deg)
+		myBeaconMap->insertionOptions.maxElevation_deg);
 
 	double el, th, A_ang;
 	const float maxDistBetweenGaussians =

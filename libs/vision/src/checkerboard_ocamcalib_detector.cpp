@@ -67,8 +67,8 @@ France, September 2008.
 #if MRPT_HAS_OPENCV
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::math;
+using namespace mrpt::img;
 using namespace std;
 
 //===========================================================================
@@ -80,7 +80,7 @@ using namespace std;
 // JL: Refactored code from within cvFindChessboardCorners3() and alternative
 // algorithm:
 bool do_special_dilation(
-	mrpt::utils::CImage& thresh_img, const int dilations,
+	CImage& thresh_img, const int dilations,
 	IplConvKernel* kernel_cross, IplConvKernel* kernel_rect,
 	IplConvKernel* kernel_diag1, IplConvKernel* kernel_diag2,
 	IplConvKernel* kernel_horz, IplConvKernel* kernel_vert)
@@ -244,7 +244,7 @@ bool do_special_dilation(
 //===========================================================================
 // Return: -1: errors, 0: not found, 1: found OK
 int cvFindChessboardCorners3(
-	const mrpt::utils::CImage& img_, CvSize pattern_size,
+	const CImage& img_, CvSize pattern_size,
 	std::vector<CvPoint2D32f>& out_corners)
 {
 	// PART 0: INITIALIZATION
@@ -282,12 +282,12 @@ int cvFindChessboardCorners3(
 	}
 
 	// Assure it's a grayscale image:
-	const mrpt::utils::CImage img(img_, FAST_REF_OR_CONVERT_TO_GRAY);
+	const CImage img(img_, FAST_REF_OR_CONVERT_TO_GRAY);
 
-	mrpt::utils::CImage thresh_img(
+	CImage thresh_img(
 		img.getWidth(), img.getHeight(),
 		CH_GRAY);  // = cvCreateMat( img->rows, img->cols, CV_8UC1 );
-	mrpt::utils::CImage thresh_img_save(
+	CImage thresh_img_save(
 		img.getWidth(), img.getHeight(),
 		CH_GRAY);  //  = cvCreateMat( img->rows, img->cols, CV_8UC1 );
 
@@ -2236,7 +2236,7 @@ int mrAugmentBestRun(
 //===========================================================================
 int icvGenerateQuads(
 	vector<CvCBQuad::Ptr>& out_quads, vector<CvCBCorner::Ptr>& out_corners,
-	const mrpt::utils::CImage& image, int flags, int dilation, bool firstRun)
+	const CImage& image, int flags, int dilation, bool firstRun)
 {
 	MRPT_UNUSED_PARAM(dilation);
 	// Initializations

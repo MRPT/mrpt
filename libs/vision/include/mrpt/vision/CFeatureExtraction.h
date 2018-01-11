@@ -10,8 +10,8 @@
 #ifndef CFeatureExtraction_H
 #define CFeatureExtraction_H
 
-#include <mrpt/utils/CImage.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/img/CImage.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/vision/utils.h>
 #include <mrpt/vision/CFeature.h>
 #include <mrpt/vision/TSimpleFeature.h>
@@ -92,16 +92,15 @@ class CFeatureExtraction
 	};
 
 	/** The set of parameters for all the detectors & descriptor algorithms */
-	struct TOptions : public utils::CLoadableOptions
+	struct TOptions : public mrpt::config::CLoadableOptions
 	{
 		/** Initalizer */
 		TOptions(const TFeatureType featsType = featKLT);
 
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+		void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
 		/** Type of the extracted features
 		*/
@@ -317,10 +316,6 @@ class CFeatureExtraction
 	TOptions options;  //!< Set all the parameters of the desired method here
 	//! before calling "detectFeatures"
 
-	/** Constructor
-	*/
-	CFeatureExtraction();
-
 	/** Virtual destructor.
 	*/
 	virtual ~CFeatureExtraction();
@@ -335,7 +330,7 @@ class CFeatureExtraction
 	* \sa computeDescriptors
 	*/
 	void detectFeatures(
-		const mrpt::utils::CImage& img, CFeatureList& feats,
+		const mrpt::img::CImage& img, CFeatureList& feats,
 		const unsigned int init_ID = 0, const unsigned int nDesiredFeatures = 0,
 		const TImageROI& ROI = TImageROI()) const;
 
@@ -364,7 +359,7 @@ class CFeatureExtraction
 	* \note This call will also use additional parameters from \a options
 	*/
 	void computeDescriptors(
-		const mrpt::utils::CImage& in_img, CFeatureList& inout_features,
+		const mrpt::img::CImage& in_img, CFeatureList& inout_features,
 		TDescriptorType in_descriptor_list) const;
 
 #if 0  // Delete? see comments in .cpp
@@ -376,7 +371,7 @@ class CFeatureExtraction
 			*
 			*  \sa The more powerful class: mrpt::vision::CGenericFeatureTracker
 			*/
-			void  findMoreFeatures( const mrpt::utils::CImage &img,
+			void  findMoreFeatures( const mrpt::img::CImage &img,
 									const CFeatureList &inList,
 									CFeatureList &outList,
 									unsigned int nDesiredFeats = 0) const;
@@ -414,7 +409,7 @@ class CFeatureExtraction
 	  * \ingroup mrptvision_features
 	  */
 	static void detectFeatures_SSE2_FASTER9(
-		const mrpt::utils::CImage& img, TSimpleFeatureList& corners,
+		const mrpt::img::CImage& img, TSimpleFeatureList& corners,
 		const int threshold = 20, bool append_to_list = false,
 		uint8_t octave = 0,
 		std::vector<size_t>* out_feats_index_by_row = nullptr);
@@ -423,7 +418,7 @@ class CFeatureExtraction
 	 * detector.
 	  * \ingroup mrptvision_features */
 	static void detectFeatures_SSE2_FASTER10(
-		const mrpt::utils::CImage& img, TSimpleFeatureList& corners,
+		const mrpt::img::CImage& img, TSimpleFeatureList& corners,
 		const int threshold = 20, bool append_to_list = false,
 		uint8_t octave = 0,
 		std::vector<size_t>* out_feats_index_by_row = nullptr);
@@ -432,7 +427,7 @@ class CFeatureExtraction
 	 * detector.
 	  * \ingroup mrptvision_features */
 	static void detectFeatures_SSE2_FASTER12(
-		const mrpt::utils::CImage& img, TSimpleFeatureList& corners,
+		const mrpt::img::CImage& img, TSimpleFeatureList& corners,
 		const int threshold = 20, bool append_to_list = false,
 		uint8_t octave = 0,
 		std::vector<size_t>* out_feats_index_by_row = nullptr);
@@ -452,7 +447,7 @@ class CFeatureExtraction
 	CFeatureExtraction::TOptions::SIFTOptions.
 	*/
 	void internal_computeSiftDescriptors(
-		const mrpt::utils::CImage& in_img, CFeatureList& in_features) const;
+		const mrpt::img::CImage& in_img, CFeatureList& in_features) const;
 
 	/** Compute the SURF descriptor of the provided features into the input
 	* image
@@ -461,7 +456,7 @@ class CFeatureExtraction
 	* are going to be computed.
 	*/
 	void internal_computeSurfDescriptors(
-		const mrpt::utils::CImage& in_img, CFeatureList& in_features) const;
+		const mrpt::img::CImage& in_img, CFeatureList& in_features) const;
 
 	/** Compute the ORB descriptor of the provided features into the input image
 	* \param in_img (input) The image from where to compute the descriptors.
@@ -469,7 +464,7 @@ class CFeatureExtraction
 	* are going to be computed.
 	*/
 	void internal_computeORBDescriptors(
-		const mrpt::utils::CImage& in_img, CFeatureList& in_features) const;
+		const mrpt::img::CImage& in_img, CFeatureList& in_features) const;
 
 	/** Compute the intensity-domain spin images descriptor of the provided
 	* features into the input image
@@ -481,7 +476,7 @@ class CFeatureExtraction
 	* CFeatureExtraction::TOptions::SpinImagesOptions are used in this method.
 	*/
 	void internal_computeSpinImageDescriptors(
-		const mrpt::utils::CImage& in_img, CFeatureList& in_features) const;
+		const mrpt::img::CImage& in_img, CFeatureList& in_features) const;
 
 	/** Compute a polar-image descriptor of the provided features into the input
 	* image
@@ -493,7 +488,7 @@ class CFeatureExtraction
 	* CFeatureExtraction::TOptions::PolarImagesOptions are used in this method.
 	*/
 	void internal_computePolarImageDescriptors(
-		const mrpt::utils::CImage& in_img, CFeatureList& in_features) const;
+		const mrpt::img::CImage& in_img, CFeatureList& in_features) const;
 
 	/** Compute a log-polar image descriptor of the provided features into the
 	* input image
@@ -506,7 +501,7 @@ class CFeatureExtraction
 	* method.
 	*/
 	void internal_computeLogPolarImageDescriptors(
-		const mrpt::utils::CImage& in_img, CFeatureList& in_features) const;
+		const mrpt::img::CImage& in_img, CFeatureList& in_features) const;
 	/** Compute a BLD descriptor of the provided features into the input image
 	* \param in_img (input) The image from where to compute the descriptors.
 	* \param in_features (input/output) The list of features whose descriptors
@@ -517,7 +512,7 @@ class CFeatureExtraction
 	* method.
 	*/
 	void internal_computeBLDLineDescriptors(
-		const mrpt::utils::CImage& in_img, CFeatureList& in_features) const;
+		const mrpt::img::CImage& in_img, CFeatureList& in_features) const;
 	/** Compute a LATCH descriptor of the provided features into the input image
 	* \param in_img (input) The image from where to compute the descriptors.
 	* \param in_features (input/output) The list of features whose descriptors
@@ -528,7 +523,7 @@ class CFeatureExtraction
 	* method.
 	*/
 	void internal_computeLATCHDescriptors(
-		const mrpt::utils::CImage& in_img, CFeatureList& in_features) const;
+		const mrpt::img::CImage& in_img, CFeatureList& in_features) const;
 
 #if 0  // Delete? see comments in .cpp
 			/** Select good features using the openCV implementation of the KLT method.
@@ -537,7 +532,7 @@ class CFeatureExtraction
 			* \param nDesiredFeatures (op. input) Number of features to be extracted. Default: all possible.
 			*/
 			void  selectGoodFeaturesKLT(
-				const mrpt::utils::CImage	&inImg,
+				const mrpt::img::CImage	&inImg,
 				CFeatureList		&feats,
 				unsigned int		init_ID = 0,
 				unsigned int		nDesiredFeatures = 0) const;
@@ -550,7 +545,7 @@ class CFeatureExtraction
 	* authomatic.
 	*/
 	void extractFeaturesKLT(
-		const mrpt::utils::CImage& img, CFeatureList& feats,
+		const mrpt::img::CImage& img, CFeatureList& feats,
 		unsigned int init_ID = 0, unsigned int nDesiredFeatures = 0,
 		const TImageROI& ROI = TImageROI()) const;
 
@@ -565,7 +560,7 @@ class CFeatureExtraction
 	* \param ROI (op. input) Region of Interest. Default: All the image.
 	*/
 	void extractFeaturesBCD(
-		const mrpt::utils::CImage& img, CFeatureList& feats,
+		const mrpt::img::CImage& img, CFeatureList& feats,
 		unsigned int init_ID = 0, unsigned int nDesiredFeatures = 0,
 		const TImageROI& ROI = TImageROI()) const;
 
@@ -580,7 +575,7 @@ class CFeatureExtraction
 	* \param ROI (op. input) Region of Interest. Default: All the image.
 	*/
 	void extractFeaturesSIFT(
-		const mrpt::utils::CImage& img, CFeatureList& feats,
+		const mrpt::img::CImage& img, CFeatureList& feats,
 		unsigned int init_ID = 0, unsigned int nDesiredFeatures = 0,
 		const TImageROI& ROI = TImageROI()) const;
 
@@ -594,7 +589,7 @@ class CFeatureExtraction
 	* authomatic.
 	*/
 	void extractFeaturesORB(
-		const mrpt::utils::CImage& img, CFeatureList& feats,
+		const mrpt::img::CImage& img, CFeatureList& feats,
 		const unsigned int init_ID = 0, const unsigned int nDesiredFeatures = 0,
 		const TImageROI& ROI = TImageROI()) const;
 
@@ -608,7 +603,7 @@ class CFeatureExtraction
 	* authomatic.
 	*/
 	void extractFeaturesSURF(
-		const mrpt::utils::CImage& img, CFeatureList& feats,
+		const mrpt::img::CImage& img, CFeatureList& feats,
 		unsigned int init_ID = 0, unsigned int nDesiredFeatures = 0,
 		const TImageROI& ROI = TImageROI()) const;
 
@@ -622,14 +617,14 @@ class CFeatureExtraction
 	* authomatic.
 	*/
 	void extractFeaturesFAST(
-		const mrpt::utils::CImage& img, CFeatureList& feats,
+		const mrpt::img::CImage& img, CFeatureList& feats,
 		unsigned int init_ID = 0, unsigned int nDesiredFeatures = 0,
 		const TImageROI& ROI = TImageROI(),
 		const mrpt::math::CMatrixBool* mask = nullptr) const;
 
 	/** Edward's "FASTER & Better" detector, N=9,10,12 */
 	void extractFeaturesFASTER_N(
-		const int N, const mrpt::utils::CImage& img, CFeatureList& feats,
+		const int N, const mrpt::img::CImage& img, CFeatureList& feats,
 		unsigned int init_ID = 0, unsigned int nDesiredFeatures = 0,
 		const TImageROI& ROI = TImageROI()) const;
 
@@ -644,7 +639,7 @@ class CFeatureExtraction
 	* authomatic.
 	*/
 	void extractFeaturesAKAZE(
-		const mrpt::utils::CImage& inImg, CFeatureList& feats,
+		const mrpt::img::CImage& inImg, CFeatureList& feats,
 		unsigned int init_ID, unsigned int nDesiredFeatures,
 		const TImageROI& ROI = TImageROI()) const;
 
@@ -658,7 +653,7 @@ class CFeatureExtraction
 	* authomatic.
 	*/
 	void extractFeaturesLSD(
-		const mrpt::utils::CImage& inImg, CFeatureList& feats,
+		const mrpt::img::CImage& inImg, CFeatureList& feats,
 		unsigned int init_ID, unsigned int nDesiredFeatures,
 		const TImageROI& ROI = TImageROI()) const;
 

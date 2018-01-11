@@ -10,7 +10,7 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mutex>
 #include <cstdlib>  // atexit()
 
@@ -19,7 +19,7 @@
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
+
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(
 	CRenderizableDisplayList, CRenderizable, mrpt::opengl)

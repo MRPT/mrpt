@@ -10,6 +10,9 @@
 #include "hmt_slam_guiMain.h"
 #include "MyArtProvider.h"
 #include <mrpt/gui/about_box.h>
+#include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include <wx/msgdlg.h>
 
@@ -25,16 +28,16 @@
 #include <wx/artprov.h>
 //*)
 
-#include <mrpt/utils.h>
 #include <mrpt/system/filesystem.h>
 
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::hmtslam;
 using namespace mrpt::slam;
+using namespace mrpt::config;
+using namespace mrpt::io;
 using namespace mrpt::system;
 using namespace mrpt::poses;
-using namespace mrpt::utils;
 
 //(*IdInit(hmt_slam_guiFrame)
 const long hmt_slam_guiFrame::ID_BUTTON1 = wxNewId();
@@ -940,7 +943,10 @@ bool hmt_slam_guiFrame::loadHTMSLAMFromFile(const std::string& filePath)
 	WX_END_TRY
 
 	// Load
-	CFileGZInputStream(filePath) >> *m_hmtslam;
+	{
+		CFileGZInputStream f(filePath);
+		mrpt::serialization::archiveFrom(f) >> *m_hmtslam;
+	}
 
 	m_curFileOpen = filePath;
 
@@ -990,11 +996,8 @@ void hmt_slam_guiFrame::rebuildTreeView()
 	// List of hypotheses:
 	cbHypos->Clear();
 
-	for (aligned_containers<THypothesisID,
-							CLocalMetricHypothesis>::map_t::const_iterator l =
-			 m_hmtslam->m_LMHs.begin();
-		 l != m_hmtslam->m_LMHs.end(); ++l)
-		cbHypos->Append(_U(format("%i", (int)l->first).c_str()));
+	for (const auto& h : m_hmtslam->m_LMHs)
+		cbHypos->Append(_U(format("%i", (int)h.first).c_str()));
 
 	cbHypos->SetSelection(0);
 

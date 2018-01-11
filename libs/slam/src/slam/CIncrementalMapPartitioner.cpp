@@ -15,8 +15,8 @@
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/graphs/CGraphPartitioner.h>
-#include <mrpt/utils/CTicTac.h>
-#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CSphere.h>
@@ -28,7 +28,6 @@ using namespace mrpt::maps;
 using namespace mrpt::math;
 using namespace mrpt::graphs;
 using namespace mrpt::poses;
-using namespace mrpt::utils;
 using namespace mrpt;
 using namespace std;
 
@@ -72,7 +71,7 @@ CIncrementalMapPartitioner::TOptions::TOptions()
 						loadFromConfigFile
   ---------------------------------------------------------------*/
 void CIncrementalMapPartitioner::TOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& source, const string& section)
+	const mrpt::config::CConfigFileBase& source, const string& section)
 {
 	MRPT_START
 
@@ -91,26 +90,26 @@ void CIncrementalMapPartitioner::TOptions::loadFromConfigFile(
 						dumpToTextStream
   ---------------------------------------------------------------*/
 void CIncrementalMapPartitioner::TOptions::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+	std::ostream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [CIncrementalMapPartitioner::TOptions] ------------ "
 		"\n\n");
 
-	out.printf(
+	out << mrpt::format(
 		"partitionThreshold                      = %f\n", partitionThreshold);
-	out.printf(
+	out << mrpt::format(
 		"gridResolution                          = %f\n", gridResolution);
-	out.printf(
+	out << mrpt::format(
 		"minDistForCorrespondence                = %f\n",
 		minDistForCorrespondence);
-	out.printf(
+	out << mrpt::format(
 		"forceBisectionOnly                      = %c\n",
 		forceBisectionOnly ? 'Y' : 'N');
-	out.printf(
+	out << mrpt::format(
 		"useMapMatching                          = %c\n",
 		useMapMatching ? 'Y' : 'N');
-	out.printf(
+	out << mrpt::format(
 		"minimumNumberElementsEachCluster        = %i\n",
 		minimumNumberElementsEachCluster);
 }
@@ -159,7 +158,7 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 	CPose3DPDF::Ptr posePDF_i, posePDF_j;
 	CSensoryFrame::Ptr sf_i, sf_j;
 	CMultiMetricMap *map_i = NULL, *map_j = NULL;
-	mrpt::utils::TMatchingPairList corrs;
+	mrpt::tfest::TMatchingPairList corrs;
 	static CPose3D nullPose(0, 0, 0);
 
 	// Create the maps:
@@ -191,9 +190,8 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 		0.20f;
 	options.minDistForCorrespondence =
 		max(options.minDistForCorrespondence,
-			1.3f *
-				newMetricMap.m_pointsMaps[0]
-					->insertionOptions.minDistBetweenLaserPoints);
+			1.3f * newMetricMap.m_pointsMaps[0]
+					   ->insertionOptions.minDistBetweenLaserPoints);
 
 	TMatchingRatioParams mrp;
 	mrp.maxDistForCorr = options.minDistForCorrespondence;
@@ -221,7 +219,7 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 
 	// Expand the adjacency matrix
 	// -----------------------------------------------------------------
-	n = m_A.getColCount();
+	n = m_A.cols();
 	n++;
 	m_A.setSize(n, n);
 
@@ -338,7 +336,7 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 	else
 	{
 		// Add a new partition:
-		vector_uint dummyPart;
+		std::vector<uint32_t> dummyPart;
 		dummyPart.push_back(n - 1);
 		m_last_partition.push_back(dummyPart);
 
@@ -367,15 +365,16 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 						updatePartitions
   ---------------------------------------------------------------*/
 void CIncrementalMapPartitioner::updatePartitions(
-	vector<vector_uint>& partitions)
+	vector<std::vector<uint32_t>>& partitions)
 {
 	MRPT_START
 
 	unsigned int i, j;
 	unsigned int n_nodes;
 	unsigned int n_clusters_last;
-	vector_uint mods;  // The list of nodes that will have been regrouped
-	vector_bool last_parts_are_mods;
+	std::vector<uint32_t>
+		mods;  // The list of nodes that will have been regrouped
+	std::vector<bool> last_parts_are_mods;
 
 	n_nodes = m_modified_nodes.size();  // total number of nodes (scans)
 	n_clusters_last =
@@ -388,7 +387,7 @@ void CIncrementalMapPartitioner::updatePartitions(
 	// -------------------------------------------------------------------
 	for (i = 0; i < n_clusters_last; i++)
 	{
-		vector_uint p = m_last_partition[i];
+		std::vector<uint32_t> p = m_last_partition[i];
 
 		// Recorrer esta particion:
 		last_parts_are_mods[i] = false;
@@ -427,14 +426,14 @@ void CIncrementalMapPartitioner::updatePartitions(
 		}
 
 		// Partitions of the modified nodes
-		vector<vector_uint> mods_parts;
+		vector<std::vector<uint32_t>> mods_parts;
 		mods_parts.clear();
 
 		CGraphPartitioner<CMatrix>::RecursiveSpectralPartition(
 			A_mods, mods_parts, options.partitionThreshold, true, true,
 			!options.forceBisectionOnly,
 			options.minimumNumberElementsEachCluster, false /* verbose */
-			);
+		);
 
 		// Aggregate the results with the clusters that were not used and return
 		// them
@@ -452,7 +451,7 @@ void CIncrementalMapPartitioner::updatePartitions(
 		// -----------------------------------------------
 		for (i = 0; i < mods_parts.size(); i++)
 		{
-			vector_uint v;
+			std::vector<uint32_t> v;
 			v.clear();
 			for (j = 0; j < mods_parts[i].size(); j++)
 				v.push_back(mods[mods_parts[i][j]]);
@@ -487,11 +486,11 @@ unsigned int CIncrementalMapPartitioner::getNodesCount()
 				removeSetOfNodes
   ---------------------------------------------------------------*/
 void CIncrementalMapPartitioner::removeSetOfNodes(
-	vector_uint indexesToRemove, bool changeCoordsRef)
+	std::vector<uint32_t> indexesToRemove, bool changeCoordsRef)
 {
 	MRPT_START
 
-	size_t nOld = m_A.getColCount();
+	size_t nOld = m_A.cols();
 	size_t nNew = nOld - indexesToRemove.size();
 	size_t i, j;
 
@@ -501,7 +500,7 @@ void CIncrementalMapPartitioner::removeSetOfNodes(
 	ASSERT_(nNew >= 1);
 
 	// Build the vector with the nodes that REMAINS;
-	vector_uint indexesToStay;
+	std::vector<uint32_t> indexesToStay;
 	indexesToStay.reserve(nNew);
 	for (i = 0; i < nOld; i++)
 	{
@@ -539,7 +538,7 @@ void CIncrementalMapPartitioner::removeSetOfNodes(
 
 	// The new sequence of maps:
 	// --------------------------------------------------
-	vector_uint::reverse_iterator it;
+	std::vector<uint32_t>::reverse_iterator it;
 	for (it = indexesToRemove.rbegin(); it != indexesToRemove.rend(); ++it)
 	{
 		deque<mrpt::maps::CMultiMetricMap>::iterator itM =
@@ -621,11 +620,10 @@ void CIncrementalMapPartitioner::getAs3DScene(
 	const std::map<uint32_t, int64_t>* renameIndexes) const
 {
 	objs->clear();
-	ASSERT_(m_individualFrames.size() == m_A.getColCount());
+	ASSERT_((int)m_individualFrames.size() == m_A.cols());
 
-	objs->insert(
-		mrpt::make_aligned_shared<opengl::CGridPlaneXY>(
-			-100, 100, -100, 100, 0, 5));
+	objs->insert(mrpt::make_aligned_shared<opengl::CGridPlaneXY>(
+		-100, 100, -100, 100, 0, 5));
 
 	for (size_t i = 0; i < m_individualFrames.size(); i++)
 	{
@@ -686,11 +684,8 @@ void CIncrementalMapPartitioner::getAs3DScene(
 	}
 }
 
-/*---------------------------------------------------------------
-					readFromStream
-  ---------------------------------------------------------------*/
-void CIncrementalMapPartitioner::readFromStream(
-	mrpt::utils::CStream& in, int version)
+void CIncrementalMapPartitioner::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -706,21 +701,12 @@ void CIncrementalMapPartitioner::readFromStream(
 	};
 }
 
-/*---------------------------------------------------------------
-					writeToStream
-	Implements the writing to a CStream capability of
-	  CSerializable objects
-  ---------------------------------------------------------------*/
-void CIncrementalMapPartitioner::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CIncrementalMapPartitioner::serializeGetVersion() const { return 0; }
+void CIncrementalMapPartitioner::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		out << m_individualFrames << m_individualMaps << m_A << m_last_partition
-			<< m_last_last_partition_are_new_ones << m_modified_nodes;
-	}
+	out << m_individualFrames << m_individualMaps << m_A << m_last_partition
+		<< m_last_last_partition_are_new_ones << m_modified_nodes;
 }
 
 /*---------------------------------------------------------------

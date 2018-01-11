@@ -7,14 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/comms/CSerialPort.h>
 #include <mrpt/hwdrivers/CSickLaserUSB.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/system/os.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::opengl;

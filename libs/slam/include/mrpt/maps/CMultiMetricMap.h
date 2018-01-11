@@ -23,10 +23,10 @@
 #include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/maps/CBeaconMap.h>
 #include <mrpt/maps/CMetricMap.h>
-#include <mrpt/utils/CSerializable.h>
-#include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/TEnumType.h>
-#include <mrpt/utils/poly_ptr_ptr.h>
+#include <mrpt/serialization/CSerializable.h>
+#include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/typemeta/TEnumType.h>
+#include <mrpt/containers/poly_ptr_ptr.h>
 #include <mrpt/obs/obs_frwds.h>
 
 namespace mrpt
@@ -101,7 +101,7 @@ class TSetOfMetricMapInitializers;
  *file format.
  *
  * \code
- * mrpt::utils::CConfigFile cfgFile("file.cfg");
+ * mrpt::config::CConfigFile cfgFile("file.cfg");
  * mrpt::maps::TSetOfMetricMapInitializers map_inits;
  * map_inits.loadFromConfigFile(cfgFile, "MapDefinition");
  *
@@ -167,7 +167,7 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 	/** @name Access to internal list of maps: direct list, iterators, utility
 	   methods and proxies
 		@{ */
-	typedef std::deque<mrpt::utils::poly_ptr_ptr<mrpt::maps::CMetricMap::Ptr>>
+	typedef std::deque<mrpt::containers::poly_ptr_ptr<mrpt::maps::CMetricMap::Ptr>>
 		TListMaps;
 
 	/** The list of MRPT metric maps in this object. Use dynamic_cast or smart
@@ -199,8 +199,7 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 	typename T::Ptr getMapByClass(const size_t& ith = 0) const
 	{
 		size_t foundCount = 0;
-		const mrpt::utils::TRuntimeClassId* class_ID =
-			&T::GetRuntimeClassIdStatic();
+		const mrpt::rtti::TRuntimeClassId* class_ID = &T::GetRuntimeClassIdStatic();
 		for (const_iterator it = begin(); it != end(); ++it)
 			if ((*it)->GetRuntimeClass()->derivedFrom(class_ID))
 				if (foundCount++ == ith)
@@ -442,7 +441,7 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 	virtual void determineMatching2D(
 		const mrpt::maps::CMetricMap* otherMap,
 		const mrpt::poses::CPose2D& otherMapPose,
-		mrpt::utils::TMatchingPairList& correspondences,
+		mrpt::tfest::TMatchingPairList& correspondences,
 		const mrpt::maps::TMatchingParams& params,
 		mrpt::maps::TMatchingExtraResults& extraResults) const override;
 

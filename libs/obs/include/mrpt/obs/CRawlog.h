@@ -13,7 +13,7 @@
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CObservationComment.h>
-#include <mrpt/utils/CConfigFileMemory.h>
+#include <mrpt/config/CConfigFileMemory.h>
 
 namespace mrpt
 {
@@ -65,12 +65,12 @@ typedef std::multimap<mrpt::system::TTimeStamp, CObservation::Ptr>
  *RawLog file format</a>.
  * \ingroup mrpt_obs_grp
  */
-class CRawlog : public mrpt::utils::CSerializable
+class CRawlog : public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(CRawlog)
 
    private:
-	typedef std::vector<mrpt::utils::CSerializable::Ptr> TListObjects;
+	typedef std::vector<mrpt::serialization::CSerializable::Ptr> TListObjects;
 	/** The list where the objects really are in. */
 	TListObjects m_seqOfActObs;
 
@@ -87,7 +87,7 @@ class CRawlog : public mrpt::utils::CSerializable
 	/** Saves the block of comment text for the rawlog into the passed config
 	 * file object. */
 	void getCommentTextAsConfigFile(
-		mrpt::utils::CConfigFileMemory& memCfg) const;
+		mrpt::config::CConfigFileMemory& memCfg) const;
 
 	/** The type of each entry in a rawlog.
 	  * \sa CRawlog::getType
@@ -152,7 +152,7 @@ class CRawlog : public mrpt::utils::CSerializable
 	  * \sa addObservations, addActionsMemoryReference,
 	 * addObservationMemoryReference
 	  */
-	void addGenericObject(const mrpt::utils::CSerializable::Ptr& obj);
+	void addGenericObject(const mrpt::serialization::CSerializable::Ptr& obj);
 
 	/** Load the contents from a file containing one of these possibilities:
 	  *  - A "CRawlog" object.
@@ -216,7 +216,7 @@ class CRawlog : public mrpt::utils::CSerializable
 	  * \sa size, isAction, getAsAction, getAsObservations
 	  * \exception std::exception If index is out of bounds
 	  */
-	mrpt::utils::CSerializable::Ptr getAsGeneric(size_t index) const;
+	mrpt::serialization::CSerializable::Ptr getAsGeneric(size_t index) const;
 
 	/** Returns the i'th element in the sequence, as being an observation, where
 	 * index=0 is the first object.
@@ -248,7 +248,7 @@ class CRawlog : public mrpt::utils::CSerializable
 
 		bool operator==(const iterator& o) { return m_it == o.m_it; }
 		bool operator!=(const iterator& o) { return m_it != o.m_it; }
-		mrpt::utils::CSerializable::Ptr operator*() { return *m_it; }
+		mrpt::serialization::CSerializable::Ptr operator*() { return *m_it; }
 		inline iterator operator++(int)
 		{
 			iterator aux = *this;
@@ -303,7 +303,7 @@ class CRawlog : public mrpt::utils::CSerializable
 		virtual ~const_iterator() {}
 		bool operator==(const const_iterator& o) { return m_it == o.m_it; }
 		bool operator!=(const const_iterator& o) { return m_it != o.m_it; }
-		const mrpt::utils::CSerializable::Ptr operator*() const
+		const mrpt::serialization::CSerializable::Ptr operator*() const
 		{
 			return *m_it;
 		}
@@ -362,7 +362,7 @@ class CRawlog : public mrpt::utils::CSerializable
 	  */
 	void findObservationsByClassInRange(
 		mrpt::system::TTimeStamp time_start, mrpt::system::TTimeStamp time_end,
-		const mrpt::utils::TRuntimeClassId* class_type,
+		const mrpt::rtti::TRuntimeClassId* class_type,
 		TListTimeAndObservations& out_found,
 		size_t guess_start_position = 0) const;
 
@@ -387,7 +387,7 @@ class CRawlog : public mrpt::utils::CSerializable
 	  * \sa getActionObservationPair, getActionObservationPairOrObservation
 	  */
 	static bool readActionObservationPair(
-		mrpt::utils::CStream& inStream, CActionCollection::Ptr& action,
+		mrpt::serialization::CArchive& inStream, CActionCollection::Ptr& action,
 		CSensoryFrame::Ptr& observations, size_t& rawlogEntry);
 
 	/** Reads a consecutive pair action/sensory_frame OR an observation,
@@ -409,7 +409,7 @@ class CRawlog : public mrpt::utils::CSerializable
 	  * \sa getActionObservationPair
 	  */
 	static bool getActionObservationPairOrObservation(
-		mrpt::utils::CStream& inStream, CActionCollection::Ptr& action,
+		mrpt::serialization::CArchive& inStream, CActionCollection::Ptr& action,
 		CSensoryFrame::Ptr& observations, CObservation::Ptr& observation,
 		size_t& rawlogEntry);
 
@@ -437,7 +437,7 @@ class CRawlog : public mrpt::utils::CSerializable
 	  *choices actually exists).
 	  *
 	  *  The results from this function should be written into
-	  *mrpt::utils::CImage::getImagesPathBase() to enable automatic
+	  *mrpt::img::CImage::getImagesPathBase() to enable automatic
 	  *  loading of extenrnally-stored images in rawlogs.
 	  */
 	static std::string detectImagesDirectory(const std::string& rawlogFilename);

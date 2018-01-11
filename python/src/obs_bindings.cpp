@@ -23,18 +23,20 @@
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/maps/CSimpleMap.h>
 
-#include <mrpt/utils/CStream.h>
+#include <mrpt/io/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 /* STD */
 #include <cstdint>
 
 using namespace boost::python;
 
+using namespace mrpt::io;
 using namespace mrpt::poses;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::math;
+using namespace mrpt::serialization;
 
 // CActionCollection
 void CActionCollection_insert1(
@@ -133,9 +135,8 @@ void CObservationOdometry_from_ROS_RawOdometry_msg(
 	// set info
 	self.sensorLabel =
 		extract<std::string>(raw_odometry_msg.attr("header").attr("frame_id"));
-	self.timestamp = extract<uint64_t>(
-		TTimeStamp_from_ROS_Time(
-			raw_odometry_msg.attr("header").attr("stamp")));
+	self.timestamp = extract<uint64_t>(TTimeStamp_from_ROS_Time(
+		raw_odometry_msg.attr("header").attr("stamp")));
 	self.hasEncodersInfo =
 		extract<bool>(raw_odometry_msg.attr("has_encoders_info"));
 	self.hasVelocities = extract<bool>(raw_odometry_msg.attr("has_velocities"));
@@ -261,8 +262,9 @@ tuple CRawlog_readActionObservationPair(CStream& inStream, size_t rawlogEntry)
 	CActionCollection::Ptr action;
 	CSensoryFrame::Ptr observations;
 
+	auto arch = mrpt::serialization::archiveFrom(inStream);
 	bool is_next = CRawlog::readActionObservationPair(
-		inStream, action, observations, rawlogEntry);
+		arch, action, observations, rawlogEntry);
 
 	ret_val.append(is_next);
 	try

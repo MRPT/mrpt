@@ -15,15 +15,15 @@
 #include <mrpt/system/os.h>
 
 using namespace std;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
+using namespace mrpt::io;
 using namespace mrpt::hwdrivers;
 
 /*-------------------------------------------------------------
 						Constructor
 -------------------------------------------------------------*/
 C2DRangeFinderAbstract::C2DRangeFinderAbstract()
-	: mrpt::utils::COutputLogger("C2DRangeFinderAbstract"),
+	: mrpt::system::COutputLogger("C2DRangeFinderAbstract"),
 	  m_lastObservation(),
 	  m_lastObservationIsNew(false),
 	  m_hardwareError(false),
@@ -96,7 +96,7 @@ void C2DRangeFinderAbstract::doProcess()
 						loadExclusionAreas
 -------------------------------------------------------------*/
 void C2DRangeFinderAbstract::loadCommonParams(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 	// Params:
@@ -121,8 +121,7 @@ void C2DRangeFinderAbstract::loadCommonParams(
 
 		if (!x.empty() && !y.empty())
 		{
-			ASSERT_(x.size() == y.size())
-
+			ASSERT_(x.size() == y.size());
 			CObservation2DRangeScan::TListExclusionAreasWithRanges::value_type
 				dat;
 

@@ -1,11 +1,12 @@
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":
 #---------------------------------------------
-define_mrpt_lib_header_only(
+define_mrpt_lib(
 	# Lib name
 	bayes
 	# Dependencies
-	mrpt-base
+	mrpt-math
+	mrpt-config
 	)
 
 IF(BUILD_mrpt-bayes)

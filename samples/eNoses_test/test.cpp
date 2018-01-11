@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/hwdrivers/CBoardENoses.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/filesystem.h>
@@ -19,7 +19,6 @@ using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace std;
 
 int main()

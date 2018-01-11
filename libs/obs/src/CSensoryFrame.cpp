@@ -11,90 +11,50 @@
 
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/metaprogramming_serialization.h>
 #include <mrpt/system/os.h>
 #include <iterator>
 
 using namespace mrpt::obs;
 using namespace mrpt::poses;
-using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
 
-#include <mrpt/utils/metaprogramming.h>
-using namespace mrpt::utils::metaprogramming;
-
 IMPLEMENTS_SERIALIZABLE(CSensoryFrame, CSerializable, mrpt::obs)
 
-/*---------------------------------------------------------------
-						Default constructor
-  ---------------------------------------------------------------*/
-CSensoryFrame::CSensoryFrame() : m_cachedMap(), m_observations() {}
-/*---------------------------------------------------------------
-						Copy constructor
-  ---------------------------------------------------------------*/
 CSensoryFrame::CSensoryFrame(const CSensoryFrame& o) : m_observations()
 {
 	*this = o;
 }
 
-/*---------------------------------------------------------------
-							Copy
-  ---------------------------------------------------------------*/
 CSensoryFrame& CSensoryFrame::operator=(const CSensoryFrame& o)
 {
 	MRPT_START
-
 	clear();
-
 	if (this == &o) return *this;  // It may be used sometimes
-
 	m_observations = o.m_observations;
-
 	m_cachedMap.reset();
-
 	return *this;
-
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-							Destructor
-  ---------------------------------------------------------------*/
-CSensoryFrame::~CSensoryFrame() { clear(); }
-/*---------------------------------------------------------------
-							clear
-  ---------------------------------------------------------------*/
 void CSensoryFrame::clear()
 {
 	m_observations.clear();
 	m_cachedMap.reset();
 }
 
-/*---------------------------------------------------------------
-						writeToStream
-  ---------------------------------------------------------------*/
-void CSensoryFrame::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CSensoryFrame::serializeGetVersion() const { return 2; }
+void CSensoryFrame::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 2;
-	else
-	{
-		uint32_t i, n;
-
-		n = static_cast<uint32_t>(m_observations.size());
-		out << n;
-		for (i = 0; i < n; i++) out << *m_observations[i];
-	}
+	out.WriteAs<uint32_t>(m_observations.size());
+	for (const auto & o : m_observations) { ASSERT_(o);  out << *o; }
 }
 
-/*---------------------------------------------------------------
-						readFromStream
-  ---------------------------------------------------------------*/
-void CSensoryFrame::readFromStream(mrpt::utils::CStream& in, int version)
+void CSensoryFrame::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	MRPT_START
-
 	switch (version)
 	{
 		case 0:
@@ -117,7 +77,7 @@ void CSensoryFrame::readFromStream(mrpt::utils::CStream& in, int version)
 			m_observations.resize(n);
 			for_each(
 				m_observations.begin(), m_observations.end(),
-				ObjectReadFromStream(&in));
+				mrpt::serialization::metaprogramming::ObjectReadFromStream(&in));
 
 			if (version == 0)
 				for (i = 0; i < n; i++)
@@ -216,8 +176,7 @@ CObservation::Ptr CSensoryFrame::getObservationByIndex(const size_t& idx) const
 CSensoryFrame::iterator CSensoryFrame::erase(const iterator& it)
 {
 	MRPT_START
-	ASSERT_(it != end())
-
+	ASSERT_(it != end());
 	m_cachedMap.reset();
 
 	return m_observations.erase(it);

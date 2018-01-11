@@ -15,7 +15,7 @@
 #include <mrpt/hwdrivers/CGenericSensor.h>
 
 #include <mrpt/obs/CObservationGasSensors.h>
-#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/config/CConfigFileBase.h>
 #include <memory>  // unique_ptr
 
 namespace mrpt
@@ -86,11 +86,11 @@ class CBoardENoses : public mrpt::hwdrivers::CGenericSensor
 	/** Tries to connect to the USB device (if disconnected).
 	  * \return nullptr on error, otherwise a stream to be used for comms.
 	  */
-	mrpt::utils::CStream* checkConnectionAndConnect();
+	mrpt::io::CStream* checkConnectionAndConnect();
 
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(
-		const mrpt::utils::CConfigFileBase& configSource,
+		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& section);
 
    public:

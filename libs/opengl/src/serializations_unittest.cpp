@@ -10,27 +10,21 @@
 #define MRPT_NO_WARN_BIG_HDR
 #include <mrpt/opengl.h>
 
+#include <mrpt/io/CMemoryStream.h>
+#include <mrpt/serialization/CArchive.h>
+
 #include <gtest/gtest.h>
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
+using namespace mrpt::serialization;
 using namespace std;
-
-// Defined in tests/test_main.cpp
-namespace mrpt
-{
-namespace utils
-{
-extern std::string MRPT_GLOBAL_UNITTEST_SRC_DIR;
-}
-}
 
 // Create a set of classes, then serialize and deserialize to test possible
 // bugs:
 TEST(SerializeTestOpenGL, WriteReadToMem)
 {
-	const mrpt::utils::TRuntimeClassId* lstClasses[] = {
+	const mrpt::rtti::TRuntimeClassId* lstClasses[] = {
 		CLASS_ID(CAxis),
 		CLASS_ID(CBox),
 		CLASS_ID(CFrustum),
@@ -68,17 +62,17 @@ TEST(SerializeTestOpenGL, WriteReadToMem)
 	{
 		try
 		{
-			CMemoryStream buf;
+			mrpt::io::CMemoryStream buf;
 			{
 				CSerializable* o =
 					static_cast<CSerializable*>(lstClasses[i]->createObject());
-				buf << *o;
+				mrpt::serialization::archiveFrom(buf) << *o;
 				delete o;
 			}
 
 			CSerializable::Ptr recons;
 			buf.Seek(0);
-			buf >> recons;
+			mrpt::serialization::archiveFrom(buf) >> recons;
 		}
 		catch (std::exception& e)
 		{

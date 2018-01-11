@@ -71,7 +71,7 @@ bool THypothesis<GRAPH_T>::sameEndsWith(const self_t& other) const
 
 template <class GRAPH_T>
 bool THypothesis<GRAPH_T>::hasEnds(
-	mrpt::utils::TNodeID from_in, mrpt::utils::TNodeID to_in) const
+	mrpt::graphs::TNodeID from_in, mrpt::graphs::TNodeID to_in) const
 {
 	return (this->from == from_in && this->to == to_in);
 }
@@ -115,7 +115,7 @@ template <class GRAPH_T>
 void THypothesis<GRAPH_T>::inverseHypothesis()
 {
 	// inverse the start/end nodes
-	mrpt::utils::TNodeID tmp = from;
+	mrpt::graphs::TNodeID tmp = from;
 	from = to;
 	to = tmp;
 

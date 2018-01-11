@@ -63,340 +63,550 @@ Description: Mobile Robot Programming Toolkit - Documentation and examples
   Writing Scientific Applications with the Mobile Robot Programming Toolkit
   in .ps.gz format.
 
-Package: libmrpt-base@MRPT_VER_MM@
+Package: libmrpt-bayes@MRPT_VER_MM@
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Multi-Arch: same
-Description: Mobile Robot Programming Toolkit - base library
- The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
- and open source C++ library aimed to help robotics researchers to design and
- implement algorithms in the fields of Simultaneous Localization and Mapping
- (SLAM, Graph-SLAM, Bundle Adjustment), computer vision, and motion planning
- (obstacle avoidance).
- .
- This package includes the mrpt-base library.
- .
+Description: Mobile Robot Programming Toolkit - bayes library
  More about MRPT libraries in: https://www.mrpt.org/Libraries
 
-Package: libmrpt-opengl@MRPT_VER_MM@
-Section: libs
+Package: libmrpt-bayes-dev
+Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},
-	  libmrpt-base@MRPT_VER_MM@
-Multi-Arch: same
-Description: Mobile Robot Programming Toolkit - opengl library
- The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
- and open source C++ library aimed to help robotics researchers to design and
- implement algorithms in the fields of Simultaneous Localization and Mapping
- (SLAM, Graph-SLAM, Bundle Adjustment), computer vision, and motion planning
- (obstacle avoidance).
- .
- This package includes the mrpt-opengl library.
- .
- More about MRPT libraries in: https://www.mrpt.org/Libraries
-
-
-Package: libmrpt-gui@MRPT_VER_MM@
-Section: libs
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},
-	  libmrpt-opengl@MRPT_VER_MM@
-Multi-Arch: same
-Description: Mobile Robot Programming Toolkit - gui library
- The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
- and open source C++ library aimed to help robotics researchers to design and
- implement algorithms in the fields of Simultaneous Localization and Mapping
- (SLAM, Graph-SLAM, Bundle Adjustment), computer vision, and motion planning
- (obstacle avoidance).
- .
- This package includes the mrpt-gui library.
- .
- More about MRPT libraries in: https://www.mrpt.org/Libraries
-
-Package: libmrpt-obs@MRPT_VER_MM@
-Section: libs
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},
-	  libmrpt-opengl@MRPT_VER_MM@
-Multi-Arch: same
-Description: Mobile Robot Programming Toolkit - obs library
- The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
- and open source C++ library aimed to help robotics researchers to design and
- implement algorithms in the fields of Simultaneous Localization and Mapping
- (SLAM, Graph-SLAM, Bundle Adjustment), computer vision, and motion planning
- (obstacle avoidance).
- .
- This package includes the mrpt-obs library.
- .
- More about MRPT libraries in: https://www.mrpt.org/Libraries
-
-Package: libmrpt-maps@MRPT_VER_MM@
-Section: libs
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},
-	  libmrpt-obs@MRPT_VER_MM@
-Multi-Arch: same
-Description: Mobile Robot Programming Toolkit - maps library
- The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
- and open source C++ library aimed to help robotics researchers to design and
- implement algorithms in the fields of Simultaneous Localization and Mapping
- (SLAM, Graph-SLAM, Bundle Adjustment), computer vision, and motion planning
- (obstacle avoidance).
- .
- This package includes the mrpt-maps library.
- .
- More about MRPT libraries in: https://www.mrpt.org/Libraries
-
-
-Package: libmrpt-hwdrivers@MRPT_VER_MM@
-Section: libs
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},
-	  libmrpt-obs@MRPT_VER_MM@,
-	  libmrpt-gui@MRPT_VER_MM@
-Multi-Arch: same
-Description: Mobile Robot Programming Toolkit - hwdrivers library
- The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
- and open source C++ library aimed to help robotics researchers to design and
- implement algorithms in the fields of Simultaneous Localization and Mapping
- (SLAM, Graph-SLAM, Bundle Adjustment), computer vision, and motion planning
- (obstacle avoidance).
- .
- This package includes the mrpt-hwdrivers library.
- .
- More about MRPT libraries in: https://www.mrpt.org/Libraries
-
-Package: libmrpt-graphslam@MRPT_VER_MM@
-Section: libs
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},
- 	  libmrpt-slam@MRPT_VER_MM@
-Multi-Arch: same
-Description: Mobile Robot Programming Toolkit - graphslam library
- The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
- and open source C++ library aimed to help robotics researchers to design and
- implement algorithms in the fields of Simultaneous Localization and Mapping
- (SLAM, Graph-SLAM, Bundle Adjustment), computer vision, and motion planning
- (obstacle avoidance).
- .
- This package includes the mrpt-graphslam library.
- .
- More about MRPT libraries in: https://www.mrpt.org/Libraries
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-bayes@MRPT_VER_MM@ (= ${binary:Version})
+Description: Mobile Robot Programming Toolkit - bayes development package
+ This package provides headers and libraries for development.
 
 Package: libmrpt-comms@MRPT_VER_MM@
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},
- 	  libmrpt-base@MRPT_VER_MM@
+Depends: ${shlibs:Depends}, ${misc:Depends}
 Multi-Arch: same
 Description: Mobile Robot Programming Toolkit - comms library
- The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
- and open source C++ library aimed to help robotics researchers to design and
- implement algorithms in the fields of Simultaneous Localization and Mapping
- (SLAM, Graph-SLAM, Bundle Adjustment), computer vision, and motion planning
- (obstacle avoidance).
- .
- This package includes the mrpt-comms library.
- .
  More about MRPT libraries in: https://www.mrpt.org/Libraries
 
-Package: libmrpt-vision@MRPT_VER_MM@
+Package: libmrpt-comms-dev
+Section: libdevel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-comms@MRPT_VER_MM@ (= ${binary:Version})
+Description: Mobile Robot Programming Toolkit - comms development package
+ This package provides headers and libraries for development.
+
+Package: libmrpt-config@MRPT_VER_MM@
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},
-	  libmrpt-obs@MRPT_VER_MM@
+Depends: ${shlibs:Depends}, ${misc:Depends}
 Multi-Arch: same
-Description: Mobile Robot Programming Toolkit - vision library
- The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
- and open source C++ library aimed to help robotics researchers to design and
- implement algorithms in the fields of Simultaneous Localization and Mapping
- (SLAM, Graph-SLAM, Bundle Adjustment), computer vision, and motion planning
- (obstacle avoidance).
- .
- This package includes the mrpt-vision library.
- .
+Description: Mobile Robot Programming Toolkit - config library
  More about MRPT libraries in: https://www.mrpt.org/Libraries
 
-Package: libmrpt-tfest@MRPT_VER_MM@
+Package: libmrpt-config-dev
+Section: libdevel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-config@MRPT_VER_MM@ (= ${binary:Version})
+Description: Mobile Robot Programming Toolkit - config development package
+ This package provides headers and libraries for development.
+
+Package: libmrpt-containers@MRPT_VER_MM@
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},
-          libmrpt-base@MRPT_VER_MM@
+Depends: ${shlibs:Depends}, ${misc:Depends}
 Multi-Arch: same
-Description: Mobile Robot Programming Toolkit - tfest library
- The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
- and open source C++ library aimed to help robotics researchers to design and
- implement algorithms in the fields of Simultaneous Localization and Mapping
- (SLAM, Graph-SLAM, Bundle Adjustment), computer vision, and motion planning
- (obstacle avoidance).
- .
- This package includes the mrpt-tfest library.
- .
+Description: Mobile Robot Programming Toolkit - containers library
  More about MRPT libraries in: https://www.mrpt.org/Libraries
 
+Package: libmrpt-containers-dev
+Section: libdevel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-containers@MRPT_VER_MM@ (= ${binary:Version})
+Description: Mobile Robot Programming Toolkit - containers development package
+ This package provides headers and libraries for development.
 
-Package: libmrpt-topography@MRPT_VER_MM@
+Package: libmrpt-core@MRPT_VER_MM@
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},
-	  libmrpt-tfest@MRPT_VER_MM@,
-	  libmrpt-obs@MRPT_VER_MM@
+Depends: ${shlibs:Depends}, ${misc:Depends}
 Multi-Arch: same
-Description: Mobile Robot Programming Toolkit - topography library
- The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
- and open source C++ library aimed to help robotics researchers to design and
- implement algorithms in the fields of Simultaneous Localization and Mapping
- (SLAM, Graph-SLAM, Bundle Adjustment), computer vision, and motion planning
- (obstacle avoidance).
- .
- This package includes the mrpt-topography library.
- .
+Description: Mobile Robot Programming Toolkit - core library
  More about MRPT libraries in: https://www.mrpt.org/Libraries
 
+Package: libmrpt-core-dev
+Section: libdevel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-core@MRPT_VER_MM@ (= ${binary:Version})
+Description: Mobile Robot Programming Toolkit - core development package
+ This package provides headers and libraries for development.
+
+Package: libmrpt-db@MRPT_VER_MM@
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Multi-Arch: same
+Description: Mobile Robot Programming Toolkit - db library
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
+
+Package: libmrpt-db-dev
+Section: libdevel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-db@MRPT_VER_MM@ (= ${binary:Version})
+Description: Mobile Robot Programming Toolkit - db development package
+ This package provides headers and libraries for development.
 
 Package: libmrpt-detectors@MRPT_VER_MM@
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},
-	  libmrpt-maps@MRPT_VER_MM@,
-	  libmrpt-vision@MRPT_VER_MM@,
-	  libmrpt-gui@MRPT_VER_MM@
+Depends: ${shlibs:Depends}, ${misc:Depends}
 Multi-Arch: same
 Description: Mobile Robot Programming Toolkit - detectors library
- The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
- and open source C++ library aimed to help robotics researchers to design and
- implement algorithms in the fields of Simultaneous Localization and Mapping
- (SLAM, Graph-SLAM, Bundle Adjustment), computer vision, and motion planning
- (obstacle avoidance).
- .
- This package includes the mrpt-detectors library.
- .
  More about MRPT libraries in: https://www.mrpt.org/Libraries
 
+Package: libmrpt-detectors-dev
+Section: libdevel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-detectors@MRPT_VER_MM@ (= ${binary:Version})
+Description: Mobile Robot Programming Toolkit - detectors development package
+ This package provides headers and libraries for development.
 
-Package: libmrpt-slam@MRPT_VER_MM@
+Package: libmrpt-expr@MRPT_VER_MM@
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},
-	  libmrpt-maps@MRPT_VER_MM@,
-	  libmrpt-vision@MRPT_VER_MM@,
-	  libmrpt-tfest@MRPT_VER_MM@
+Depends: ${shlibs:Depends}, ${misc:Depends}
 Multi-Arch: same
-Description: Mobile Robot Programming Toolkit - slam library
- The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
- and open source C++ library aimed to help robotics researchers to design and
- implement algorithms in the fields of Simultaneous Localization and Mapping
- (SLAM, Graph-SLAM, Bundle Adjustment), computer vision, and motion planning
- (obstacle avoidance).
- .
- This package includes the mrpt-slam library.
- .
+Description: Mobile Robot Programming Toolkit - expr library
  More about MRPT libraries in: https://www.mrpt.org/Libraries
 
-
-Package: libmrpt-nav@MRPT_VER_MM@
-Section: libs
+Package: libmrpt-expr-dev
+Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},
-	  libmrpt-maps@MRPT_VER_MM@
-Multi-Arch: same
-Description: Mobile Robot Programming Toolkit - nav library
- The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
- and open source C++ library aimed to help robotics researchers to design and
- implement algorithms in the fields of Simultaneous Localization and Mapping
- (SLAM, Graph-SLAM, Bundle Adjustment), computer vision, and motion planning
- (obstacle avoidance).
- .
- This package includes the mrpt-nav library.
- .
- More about MRPT libraries in: https://www.mrpt.org/Libraries
-
-
-Package: libmrpt-hmtslam@MRPT_VER_MM@
-Section: libs
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},
-	  libmrpt-slam@MRPT_VER_MM@
-Multi-Arch: same
-Description: Mobile Robot Programming Toolkit - hmtslam library
- The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
- and open source C++ library aimed to help robotics researchers to design and
- implement algorithms in the fields of Simultaneous Localization and Mapping
- (SLAM, Graph-SLAM, Bundle Adjustment), computer vision, and motion planning
- (obstacle avoidance).
- .
- This package includes the mrpt-hmtslam library.
- .
- More about MRPT libraries in: https://www.mrpt.org/Libraries
-
-
-Package: libmrpt-kinematics@MRPT_VER_MM@
-Section: libs
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},
-	  libmrpt-opengl@MRPT_VER_MM@
-Multi-Arch: same
-Description: Mobile Robot Programming Toolkit - kinematics library
- The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
- and open source C++ library aimed to help robotics researchers to design and
- implement algorithms in the fields of Simultaneous Localization and Mapping
- (SLAM, Graph-SLAM, Bundle Adjustment), computer vision, and motion planning
- (obstacle avoidance).
- .
- This package includes the mrpt-kinematics library.
- .
- More about MRPT libraries in: https://www.mrpt.org/Libraries
-
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-expr@MRPT_VER_MM@ (= ${binary:Version})
+Description: Mobile Robot Programming Toolkit - expr development package
+ This package provides headers and libraries for development.
 
 Package: libmrpt-graphs@MRPT_VER_MM@
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},
- 	  libmrpt-base@MRPT_VER_MM@
+Depends: ${shlibs:Depends}, ${misc:Depends}
 Multi-Arch: same
 Description: Mobile Robot Programming Toolkit - graphs library
- The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
- and open source C++ library aimed to help robotics researchers to design and
- implement algorithms in the fields of Simultaneous Localization and Mapping
- (SLAM, Graph-SLAM, Bundle Adjustment), computer vision, and motion planning
- (obstacle avoidance).
- .
- This package includes the mrpt-graphs library.
- .
  More about MRPT libraries in: https://www.mrpt.org/Libraries
 
+Package: libmrpt-graphs-dev
+Section: libdevel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-graphs@MRPT_VER_MM@ (= ${binary:Version})
+Description: Mobile Robot Programming Toolkit - graphs development package
+ This package provides headers and libraries for development.
+
+Package: libmrpt-graphslam@MRPT_VER_MM@
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Multi-Arch: same
+Description: Mobile Robot Programming Toolkit - graphslam library
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
+
+Package: libmrpt-graphslam-dev
+Section: libdevel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-graphslam@MRPT_VER_MM@ (= ${binary:Version})
+Description: Mobile Robot Programming Toolkit - graphslam development package
+ This package provides headers and libraries for development.
+
+Package: libmrpt-gui@MRPT_VER_MM@
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Multi-Arch: same
+Description: Mobile Robot Programming Toolkit - gui library
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
+
+Package: libmrpt-gui-dev
+Section: libdevel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-gui@MRPT_VER_MM@ (= ${binary:Version})
+Description: Mobile Robot Programming Toolkit - gui development package
+ This package provides headers and libraries for development.
+
+Package: libmrpt-hmtslam@MRPT_VER_MM@
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Multi-Arch: same
+Description: Mobile Robot Programming Toolkit - hmtslam library
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
+
+Package: libmrpt-hmtslam-dev
+Section: libdevel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-hmtslam@MRPT_VER_MM@ (= ${binary:Version})
+Description: Mobile Robot Programming Toolkit - hmtslam development package
+ This package provides headers and libraries for development.
+
+Package: libmrpt-hwdrivers@MRPT_VER_MM@
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Multi-Arch: same
+Description: Mobile Robot Programming Toolkit - hwdrivers library
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
+
+Package: libmrpt-hwdrivers-dev
+Section: libdevel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-hwdrivers@MRPT_VER_MM@ (= ${binary:Version})
+Description: Mobile Robot Programming Toolkit - hwdrivers development package
+ This package provides headers and libraries for development.
+
+Package: libmrpt-img@MRPT_VER_MM@
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Multi-Arch: same
+Description: Mobile Robot Programming Toolkit - img library
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
+
+Package: libmrpt-img-dev
+Section: libdevel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-img@MRPT_VER_MM@ (= ${binary:Version})
+Description: Mobile Robot Programming Toolkit - img development package
+ This package provides headers and libraries for development.
+
+Package: libmrpt-io@MRPT_VER_MM@
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Multi-Arch: same
+Description: Mobile Robot Programming Toolkit - io library
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
+
+Package: libmrpt-io-dev
+Section: libdevel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-io@MRPT_VER_MM@ (= ${binary:Version})
+Description: Mobile Robot Programming Toolkit - io development package
+ This package provides headers and libraries for development.
+
+Package: libmrpt-kinematics@MRPT_VER_MM@
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Multi-Arch: same
+Description: Mobile Robot Programming Toolkit - kinematics library
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
+
+Package: libmrpt-kinematics-dev
+Section: libdevel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-kinematics@MRPT_VER_MM@ (= ${binary:Version})
+Description: Mobile Robot Programming Toolkit - kinematics development package
+ This package provides headers and libraries for development.
+
+Package: libmrpt-maps@MRPT_VER_MM@
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Multi-Arch: same
+Description: Mobile Robot Programming Toolkit - maps library
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
+
+Package: libmrpt-maps-dev
+Section: libdevel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-maps@MRPT_VER_MM@ (= ${binary:Version})
+         liboctomap-dev
+Description: Mobile Robot Programming Toolkit - maps development package
+ This package provides headers and libraries for development.
+
+Package: libmrpt-math@MRPT_VER_MM@
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Multi-Arch: same
+Description: Mobile Robot Programming Toolkit - math library
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
+
+Package: libmrpt-math-dev
+Section: libdevel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-math@MRPT_VER_MM@ (= ${binary:Version})
+         libsuitesparse-dev
+Description: Mobile Robot Programming Toolkit - math development package
+ This package provides headers and libraries for development.
+
+Package: libmrpt-nanoflann-dev
+Section: libdevel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Mobile Robot Programming Toolkit - nanoflann development package
+ This package provides headers and libraries for development.
+
+Package: libmrpt-nav@MRPT_VER_MM@
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Multi-Arch: same
+Description: Mobile Robot Programming Toolkit - nav library
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
+
+Package: libmrpt-nav-dev
+Section: libdevel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-nav@MRPT_VER_MM@ (= ${binary:Version})
+Description: Mobile Robot Programming Toolkit - nav development package
+ This package provides headers and libraries for development.
+
+Package: libmrpt-obs@MRPT_VER_MM@
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Multi-Arch: same
+Description: Mobile Robot Programming Toolkit - obs library
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
+
+Package: libmrpt-obs-dev
+Section: libdevel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-obs@MRPT_VER_MM@ (= ${binary:Version})
+Description: Mobile Robot Programming Toolkit - obs development package
+ This package provides headers and libraries for development.
+
+Package: libmrpt-opengl@MRPT_VER_MM@
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Multi-Arch: same
+Description: Mobile Robot Programming Toolkit - opengl library
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
+
+Package: libmrpt-opengl-dev
+Section: libdevel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-opengl@MRPT_VER_MM@ (= ${binary:Version})
+Description: Mobile Robot Programming Toolkit - opengl development package
+ This package provides headers and libraries for development.
+
+Package: libmrpt-pbmap@MRPT_VER_MM@
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Multi-Arch: same
+Description: Mobile Robot Programming Toolkit - pbmap library
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
+
+Package: libmrpt-pbmap-dev
+Section: libdevel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-pbmap@MRPT_VER_MM@ (= ${binary:Version})
+Description: Mobile Robot Programming Toolkit - pbmap development package
+ This package provides headers and libraries for development.
+
+Package: libmrpt-poses@MRPT_VER_MM@
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Multi-Arch: same
+Description: Mobile Robot Programming Toolkit - poses library
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
+
+Package: libmrpt-poses-dev
+Section: libdevel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-poses@MRPT_VER_MM@ (= ${binary:Version})
+Description: Mobile Robot Programming Toolkit - poses development package
+ This package provides headers and libraries for development.
+
+Package: libmrpt-random@MRPT_VER_MM@
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Multi-Arch: same
+Description: Mobile Robot Programming Toolkit - random library
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
+
+Package: libmrpt-random-dev
+Section: libdevel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-random@MRPT_VER_MM@ (= ${binary:Version})
+Description: Mobile Robot Programming Toolkit - random development package
+ This package provides headers and libraries for development.
+
+Package: libmrpt-rtti@MRPT_VER_MM@
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Multi-Arch: same
+Description: Mobile Robot Programming Toolkit - rtti library
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
+
+Package: libmrpt-rtti-dev
+Section: libdevel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-rtti@MRPT_VER_MM@ (= ${binary:Version})
+Description: Mobile Robot Programming Toolkit - rtti development package
+ This package provides headers and libraries for development.
+
+Package: libmrpt-serialization@MRPT_VER_MM@
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Multi-Arch: same
+Description: Mobile Robot Programming Toolkit - serialization library
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
+
+Package: libmrpt-serialization-dev
+Section: libdevel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-serialization@MRPT_VER_MM@ (= ${binary:Version})
+Description: Mobile Robot Programming Toolkit - serialization development package
+ This package provides headers and libraries for development.
+
+Package: libmrpt-slam@MRPT_VER_MM@
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Multi-Arch: same
+Description: Mobile Robot Programming Toolkit - slam library
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
+
+Package: libmrpt-slam-dev
+Section: libdevel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-slam@MRPT_VER_MM@ (= ${binary:Version})
+Description: Mobile Robot Programming Toolkit - slam development package
+ This package provides headers and libraries for development.
+
+Package: libmrpt-system@MRPT_VER_MM@
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Multi-Arch: same
+Description: Mobile Robot Programming Toolkit - system library
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
+
+Package: libmrpt-system-dev
+Section: libdevel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-system@MRPT_VER_MM@ (= ${binary:Version})
+Description: Mobile Robot Programming Toolkit - system development package
+ This package provides headers and libraries for development.
+
+Package: libmrpt-tclap@MRPT_VER_MM@
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Multi-Arch: same
+Description: Mobile Robot Programming Toolkit - tclap library
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
+
+Package: libmrpt-tclap-dev
+Section: libdevel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-tclap@MRPT_VER_MM@ (= ${binary:Version})
+Description: Mobile Robot Programming Toolkit - tclap development package
+ This package provides headers and libraries for development.
+
+Package: libmrpt-tfest@MRPT_VER_MM@
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Multi-Arch: same
+Description: Mobile Robot Programming Toolkit - tfest library
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
+
+Package: libmrpt-tfest-dev
+Section: libdevel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-tfest@MRPT_VER_MM@ (= ${binary:Version})
+Description: Mobile Robot Programming Toolkit - tfest development package
+ This package provides headers and libraries for development.
+
+Package: libmrpt-topography@MRPT_VER_MM@
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Multi-Arch: same
+Description: Mobile Robot Programming Toolkit - topography library
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
+
+Package: libmrpt-topography-dev
+Section: libdevel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-topography@MRPT_VER_MM@ (= ${binary:Version})
+Description: Mobile Robot Programming Toolkit - topography development package
+ This package provides headers and libraries for development.
+
+Package: libmrpt-typemeta@MRPT_VER_MM@
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Multi-Arch: same
+Description: Mobile Robot Programming Toolkit - typemeta library
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
+
+Package: libmrpt-typemeta-dev
+Section: libdevel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-typemeta@MRPT_VER_MM@ (= ${binary:Version})
+Description: Mobile Robot Programming Toolkit - typemeta development package
+ This package provides headers and libraries for development.
+
+Package: libmrpt-vision@MRPT_VER_MM@
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Multi-Arch: same
+Description: Mobile Robot Programming Toolkit - vision library
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
+
+Package: libmrpt-vision-dev
+Section: libdevel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-vision@MRPT_VER_MM@ (= ${binary:Version})
+Description: Mobile Robot Programming Toolkit - vision development package
+ This package provides headers and libraries for development.
 
 Package: libmrpt-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libeigen3-dev,
-         libmrpt-base@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-detectors@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-gui@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-hmtslam@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-hwdrivers@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-graphslam@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-kinematics@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-maps@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-obs@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-opengl@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-nav@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-tfest@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-slam@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-topography@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-vision@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-graphs@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-comms@MRPT_VER_MM@ (= ${binary:Version}),
-         libsuitesparse-dev
-Description: Mobile Robot Programming Toolkit - Development headers
- The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
- and open source C++ library aimed to help robotics researchers to design and
- implement algorithms in the fields of Simultaneous Localization and Mapping
- (SLAM, Graph-SLAM, Bundle Adjustment), computer vision, and motion planning
- (obstacle avoidance).
- .
- This package provides the MRPT headers and libraries for development.
+Depends: ${shlibs:Depends}, ${misc:Depends},
+         libeigen3-dev,
+         libmrpt-bayes-dev (= ${binary:Version}),
+         libmrpt-comms-dev (= ${binary:Version}),
+         libmrpt-config-dev (= ${binary:Version}),
+         libmrpt-containers-dev (= ${binary:Version}),
+         libmrpt-core-dev (= ${binary:Version}),
+         libmrpt-db-dev (= ${binary:Version}),
+         libmrpt-detectors-dev (= ${binary:Version}),
+         libmrpt-expr-dev (= ${binary:Version}),
+         libmrpt-graphs-dev (= ${binary:Version}),
+         libmrpt-graphslam-dev (= ${binary:Version}),
+         libmrpt-gui-dev (= ${binary:Version}),
+         libmrpt-hmtslam-dev (= ${binary:Version}),
+         libmrpt-hwdrivers-dev (= ${binary:Version}),
+         libmrpt-img-dev (= ${binary:Version}),
+         libmrpt-io-dev (= ${binary:Version}),
+         libmrpt-kinematics-dev (= ${binary:Version}),
+         libmrpt-maps-dev (= ${binary:Version}),
+         libmrpt-math-dev (= ${binary:Version}),
+         libmrpt-nanoflann-dev (= ${binary:Version}),
+         libmrpt-nav-dev (= ${binary:Version}),
+         libmrpt-obs-dev (= ${binary:Version}),
+         libmrpt-opengl-dev (= ${binary:Version}),
+         libmrpt-pbmap-dev (= ${binary:Version}),
+         libmrpt-poses-dev (= ${binary:Version}),
+         libmrpt-random-dev (= ${binary:Version}),
+         libmrpt-rtti-dev (= ${binary:Version}),
+         libmrpt-serialization-dev (= ${binary:Version}),
+         libmrpt-slam-dev (= ${binary:Version}),
+         libmrpt-system-dev (= ${binary:Version}),
+         libmrpt-tclap-dev (= ${binary:Version}),
+         libmrpt-tfest-dev (= ${binary:Version}),
+         libmrpt-topography-dev (= ${binary:Version}),
+         libmrpt-typemeta-dev (= ${binary:Version}),
+         libmrpt-vision-dev (= ${binary:Version})
+Description: Mobile Robot Programming Toolkit - Metapackage: all dev packages
 
 Package: mrpt-common
 Architecture: all

@@ -9,18 +9,17 @@
 
 #include "comms-precomp.h"  // Precompiled headers
 
+#include <mrpt/core/exceptions.h>
 #include <mrpt/comms/CClientTCPSocket.h>
-#include <mrpt/utils/CMessage.h>
 #include <mrpt/comms/net_utils.h>
-#include <mrpt/system/os.h>
 #include <cstring>
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 // Windows
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include <winsock2.h>
 #include <winerror.h>
-#if defined(__BORLANDC__) || defined(_MSC_VER)
+#if defined(_MSC_VER)
 #pragma comment(lib, "WS2_32.LIB")
 #endif
 #else
@@ -38,7 +37,6 @@
 #include <netinet/tcp.h>
 #endif
 
-using namespace mrpt::utils;
 using namespace mrpt::comms;
 using namespace mrpt::system;
 using namespace mrpt;
@@ -50,7 +48,7 @@ CClientTCPSocket::CClientTCPSocket()
 {
 	MRPT_START
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	// Init the WinSock Library:
 	// ----------------------------
 	WORD wVersionRequested;
@@ -73,7 +71,7 @@ CClientTCPSocket::~CClientTCPSocket()
 {
 	// Close socket:
 	close();
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	WSACleanup();
 #else
 // Nothing else to do.
@@ -84,7 +82,7 @@ void CClientTCPSocket::close()
 {
 	MRPT_START
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	// Delete socket:
 	if (m_hSock != INVALID_SOCKET)
 	{
@@ -128,111 +126,9 @@ size_t CClientTCPSocket::Write(const void* Buffer, size_t Count)
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-						sendString
- ---------------------------------------------------------------*/
 void CClientTCPSocket::sendString(const std::string& str)
 {
 	Write(str.c_str(), str.size());
-}
-
-/*---------------------------------------------------------------
-						sendMessage
- ---------------------------------------------------------------*/
-bool CClientTCPSocket::sendMessage(const CMessage& outMsg, const int timeout_ms)
-{
-	uint32_t contentLen, toWrite, written;
-
-	// --------------------------------
-	// (1) Send a "magic word":
-	// --------------------------------
-	const char* magic = "MRPTMessage";
-	toWrite = strlen(magic);
-
-	written = writeAsync(magic, toWrite, timeout_ms);
-	if (written != toWrite) return false;  // Error!
-
-	// --------------------------------
-	// (2) Send the message type:
-	// --------------------------------
-	toWrite = sizeof(outMsg.type);
-
-	written = writeAsync(&outMsg.type, toWrite, timeout_ms);
-	if (written != toWrite) return false;  // Error!
-
-	// ---------------------------------------
-	// (3) Send the message's content length:
-	// ---------------------------------------
-	contentLen = outMsg.content.size();
-	toWrite = sizeof(contentLen);
-
-	written = writeAsync(&contentLen, toWrite, timeout_ms);
-	if (written != toWrite) return false;  // Error!
-
-	// ---------------------------------------
-	// (4) Send the message's contents:
-	// ---------------------------------------
-	toWrite = contentLen;
-
-	written = writeAsync(&outMsg.content[0], toWrite, timeout_ms);
-	if (written != toWrite) return false;  // Error!
-
-	return true;
-}
-
-/*---------------------------------------------------------------
-						receiveMessage
- ---------------------------------------------------------------*/
-bool CClientTCPSocket::receiveMessage(
-	CMessage& inMsg, unsigned int timeoutStart_ms,
-	unsigned int timeoutBetween_ms)
-{
-	uint32_t contentLen, toRead, actRead;
-
-	// --------------------------------
-	// (1) Read the "magic word":
-	// --------------------------------
-	char magic[20];  // ;
-	toRead = 11;
-
-	actRead = readAsync(magic, toRead, timeoutStart_ms, timeoutBetween_ms);
-	if (actRead != toRead) return false;  // Error!
-	magic[actRead] = 0;  // Null-term string
-
-	// Check magic:
-	if (0 != os::_strcmpi("MRPTMessage", magic)) return false;
-
-	// --------------------------------
-	// (2) Read the message type:
-	// --------------------------------
-	toRead = sizeof(inMsg.type);
-
-	actRead =
-		readAsync(&inMsg.type, toRead, timeoutBetween_ms, timeoutBetween_ms);
-	if (actRead != toRead) return false;  // Error!
-
-	// ---------------------------------------
-	// (3) Read the message's content length:
-	// ---------------------------------------
-	toRead = sizeof(contentLen);
-
-	actRead =
-		readAsync(&contentLen, toRead, timeoutBetween_ms, timeoutBetween_ms);
-	if (actRead != toRead) return false;  // Error!
-
-	// Reserve memory:
-	inMsg.content.resize(contentLen);
-
-	// ---------------------------------------
-	// (4) Read the message's contents:
-	// ---------------------------------------
-	toRead = contentLen;
-
-	actRead = readAsync(
-		&inMsg.content[0], toRead, timeoutBetween_ms, timeoutBetween_ms);
-	if (actRead != toRead) return false;  // Error!
-
-	return true;
 }
 
 /*---------------------------------------------------------------
@@ -273,22 +169,22 @@ void CClientTCPSocket::connect(
 			"Invalid IP address provided: %s", solved_IP.c_str());
 
 // Set to NON-BLOCKING:
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	unsigned long non_block_mode = 1;
 	if (ioctlsocket(m_hSock, FIONBIO, &non_block_mode))
-		THROW_EXCEPTION("Error entering non-blocking mode with ioctlsocket().");
+		THROW_EXCEPTION("Error entering non-blocking mode with ioctlsocket();");
 #else
 	int oldflags = fcntl(m_hSock, F_GETFL, 0);
-	if (oldflags == -1) THROW_EXCEPTION("Error retrieving fcntl() of socket.");
+	if (oldflags == -1) THROW_EXCEPTION("Error retrieving fcntl();of socket.");
 	oldflags |= O_NONBLOCK;  // Set NON-BLOCKING
 	if (-1 == fcntl(m_hSock, F_SETFL, oldflags))
-		THROW_EXCEPTION("Error entering non-blocking mode with fcntl().");
+		THROW_EXCEPTION("Error entering non-blocking mode with fcntl();");
 #endif
 
 	// Try to connect:
 	int r = ::connect(
 		m_hSock, (struct sockaddr*)&otherAddress, sizeof(otherAddress));
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	int er = WSAGetLastError();
 	if (r < 0 && er != WSAEINPROGRESS && er != WSAEWOULDBLOCK)
 #else
@@ -332,7 +228,7 @@ void CClientTCPSocket::connect(
 
 	// Now, make sure it was not an error!
 	int valopt;
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	int lon = sizeof(int);
 	getsockopt(m_hSock, SOL_SOCKET, SO_ERROR, (char*)(&valopt), &lon);
 #else
@@ -340,7 +236,7 @@ void CClientTCPSocket::connect(
 	getsockopt(m_hSock, SOL_SOCKET, SO_ERROR, (void*)(&valopt), &lon);
 #endif
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	if (valopt)
 		THROW_EXCEPTION(
 			format(
@@ -357,14 +253,14 @@ void CClientTCPSocket::connect(
 // Connected!
 
 // If connected OK, remove the non-blocking flag:
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	non_block_mode = 0;
 	if (ioctlsocket(m_hSock, FIONBIO, &non_block_mode))
-		THROW_EXCEPTION("Error entering blocking mode with ioctlsocket().");
+		THROW_EXCEPTION("Error entering blocking mode with ioctlsocket();");
 #else
 	oldflags &= ~O_NONBLOCK;  // Set BLOCKING
 	if (-1 == fcntl(m_hSock, F_SETFL, oldflags))
-		THROW_EXCEPTION("Error entering blocking mode with fcntl().");
+		THROW_EXCEPTION("Error entering blocking mode with fcntl();");
 #endif
 
 	// Save the IP of the other part.
@@ -556,14 +452,14 @@ size_t CClientTCPSocket::getReadPendingBytes()
 	if (m_hSock == INVALID_SOCKET) return 0;  // The socket is not connected!
 	unsigned long ret = 0;
 	if (
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 		ioctlsocket(m_hSock, FIONREAD, &ret)
 #else
 		ioctl(m_hSock, FIONREAD, &ret)
 #endif
 			)
 	{
-		THROW_EXCEPTION("Error invoking ioctlsocket(FIONREAD)")
+		THROW_EXCEPTION("Error invoking ioctlsocket(FIONREAD)");
 	}
 	else
 		return ret;
@@ -586,7 +482,7 @@ int CClientTCPSocket::setTCPNoDelay(const int& newValue)
 int CClientTCPSocket::getTCPNoDelay()
 {
 	int value;
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	int length = sizeof(value);
 #else
 	unsigned int length = sizeof(value);
@@ -616,7 +512,7 @@ int CClientTCPSocket::setSOSendBufffer(const int& newValue)
 int CClientTCPSocket::getSOSendBufffer()
 {
 	int value;
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	int length = sizeof(value);
 #else
 	unsigned int length = sizeof(value);
@@ -629,4 +525,27 @@ int CClientTCPSocket::getSOSendBufffer()
 std::string CClientTCPSocket::getLastErrorStr()
 {
 	return mrpt::comms::net::getLastSocketErrorStr();
+}
+
+uint64_t CClientTCPSocket::Seek(int64_t off, CStream::TSeekOrigin org)
+{
+	MRPT_START
+	MRPT_UNUSED_PARAM(off);
+	MRPT_UNUSED_PARAM(org);
+	THROW_EXCEPTION("This method has no effect in this class!");
+	MRPT_END
+}
+
+uint64_t CClientTCPSocket::getTotalBytesCount() const
+{
+	MRPT_START
+	THROW_EXCEPTION("This method has no effect in this class!");
+	MRPT_END
+}
+
+uint64_t CClientTCPSocket::getPosition() const
+{
+	MRPT_START
+	THROW_EXCEPTION("This method has no effect in this class!");
+	MRPT_END
 }

@@ -15,8 +15,8 @@
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
-#include <mrpt/utils/TParameters.h>
-#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/TParameters.h>
+#include <mrpt/system/CTimeLogger.h>
 
 #include <mrpt/graphslam/misc/CWindowManager.h>
 #include "CRegistrationDeciderOrOptimizer.h"

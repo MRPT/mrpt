@@ -9,7 +9,6 @@
 #ifndef TRangeImageFilter_H
 #define CObservation3DRangeScan_H
 
-#include <mrpt/utils/core_defs.h>
 #include <mrpt/math/CMatrix.h>
 
 namespace mrpt

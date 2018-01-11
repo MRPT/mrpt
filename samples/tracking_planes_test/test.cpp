@@ -40,11 +40,10 @@ using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
 using namespace mrpt::slam;
-using namespace mrpt::utils;
 using namespace mrpt::gui;
 using namespace std;
 
-typedef vector_uint patch_ind;
+typedef std::vector<uint32_t> patch_ind;
 typedef vector<patch_ind> indices_list;
 typedef vector_byte triangle;
 typedef vector<triangle> triangle_list;
@@ -311,7 +310,7 @@ void loadPatches(
 
 	int idx1, idx2, idx3;
 	CvPoint2D32f p1, p2, p3;
-	int num_facets = mesh.getRowCount();
+	int num_facets = mesh.rows();
 
 	for (int i = 1; i <= num_facets; i++)  // CAMBIAR ESTRUCTURA, A UN UNICO FOR
 	// PARA EL RECORRIDO DE LA IMAGEN
@@ -486,7 +485,7 @@ namespace math
 {
 template <typename T>
 void ransacHomography_fit(
-	const CMatrixTemplateNumeric<T>& allData, const vector_size_t& useIndices,
+	const CMatrixTemplateNumeric<T>& allData, const std::vector<size_t>& useIndices,
 	vector<CMatrixTemplateNumeric<T>>& fitModels)
 {
 	ASSERT_(useIndices.size() == 3);
@@ -571,7 +570,7 @@ void ransacHomography_distance(
 	const CMatrixTemplateNumeric<T>& allData,
 	const vector<CMatrixTemplateNumeric<T>>& testModels,
 	const T distanceThreshold, unsigned int& out_bestModelIndex,
-	vector_size_t& out_inlierIndices)
+	std::vector<size_t>& out_inlierIndices)
 {
 	ASSERT_(testModels.size() == 1)
 	out_bestModelIndex = 0;
@@ -579,11 +578,10 @@ void ransacHomography_distance(
 
 	const CMatrixDouble& M = testModels[0];
 
-	ASSERT_(size(M, 1) == 3 && size(M, 2) == 3)
-
+	ASSERT_(M.rows() == 3 && M.cols() == 3);
 	CArrayDouble<3> pt, pt_r;
 
-	const size_t N = size(allData, 2);
+	const size_t N = allData.cols();
 	out_inlierIndices.clear();
 	out_inlierIndices.reserve(100);
 	for (size_t i = 0; i < N; i++)
@@ -602,7 +600,7 @@ void ransacHomography_distance(
 	{
 		// A)Search and store natural vertices in clockwise direction (greatest
 		// and smallest x & y coordinates)
-		vector_size_t vertices(4, out_inlierIndices[0]);
+		std::vector<size_t> vertices(4, out_inlierIndices[0]);
 		for (size_t i = 1; i < out_inlierIndices.size(); i++)
 		{
 			if (allData(3, out_inlierIndices[i]) > allData(3, vertices[0]))
@@ -620,11 +618,11 @@ void ransacHomography_distance(
 		// v.insert( vertices.begin(), vertices.end() );
 		////ESTA FORMA DE BORRAR REPETICIONES GENERA ERRORES "ALEATORIOS" -> HAY
 		/// QUE CAMBIARLA
-		// for (vector_size_t::iterator it1=vertices.begin();
+		// for (std::vector<size_t>::iterator it1=vertices.begin();
 		// it1!=(vertices.end()-1); ++it1)	//Erase repeated vertex
 		// //poly.removeRepeatedVertices();
 		//{
-		//	for (vector_size_t::iterator it2=it1+1; it2!=vertices.end(); ++it2)
+		//	for (std::vector<size_t>::iterator it2=it1+1; it2!=vertices.end(); ++it2)
 		//	{
 		//		if( (*it1)==(*it2) )
 		//		{
@@ -633,7 +631,7 @@ void ransacHomography_distance(
 		//		}
 		//	}
 		//}
-		vector_size_t::iterator it1;
+		std::vector<size_t>::iterator it1;
 		for (size_t i = 0; i < vertices.size() - 1;
 			 ++i)  // Erase repeated vertex		//poly.removeRepeatedVertices();
 		{
@@ -815,7 +813,7 @@ void ransacHomography_distance(
 		// Check the rest of points inside the polygon
 		size_t k = 0;
 		size_t outliers = 0;
-		vector_size_t more_inlierIndices;
+		std::vector<size_t> more_inlierIndices;
 		dist = 0;  // dist is now used to check how consistent are the rest of
 		// inside points with the homography
 		for (size_t i = 0; i < N; i++)
@@ -862,7 +860,7 @@ void ransacHomography_distance(
 template <typename T>
 bool ransacHomography_degenerate(
 	const CMatrixTemplateNumeric<T>& allData,
-	const mrpt::vector_size_t& useIndices)
+	const std::vector<size_t>& useIndices)
 {
 	// double r_a, r_b, r_c, dist;
 	// r_a = ( allData.get_unsafe( 3, useIndices[0] ) - allData.get_unsafe( 3,
@@ -894,7 +892,7 @@ void ransac_homographies(
 {
 	MRPT_START
 
-	ASSERT_(ref.size() == vid.size())
+	ASSERT_(ref.size() == vid.size();
 	if (ref.empty()) return;
 
 	out_detected_planes.clear();
@@ -911,10 +909,10 @@ void ransac_homographies(
 	// ---------------------------------------------
 	// For each plane:
 	// ---------------------------------------------
-	mrpt::vector_size_t other_inliers, other_inliers2;
+	std::vector<size_t> other_inliers, other_inliers2;
 	for (;;)
 	{
-		mrpt::vector_size_t this_best_inliers;
+		std::vector<size_t> this_best_inliers;
 		CMatrixTemplateNumeric<double> this_best_model;
 
 		math::RANSAC_Template<double>::execute(
@@ -940,7 +938,7 @@ void ransac_homographies(
 			}
 			else
 			{
-				mrpt::vector_size_t
+				std::vector<size_t>
 					this_best_inliers_r;  // Restored Index of Inliers
 				this_best_inliers_r.resize(this_best_inliers.size());
 				unsigned int j = 0;
@@ -1372,8 +1370,8 @@ int main()
 		// flow_klt = ExtractFeaturesFrame1(im1);
 
 		//// CREATE AND ALLOCATE ALL THE BUFFERS FOR SINGLE PATCHES//
-		//	//std::vector<IplImage> tri_ref( mesh.getRowCount() );
-		//	//std::vector<IplImage> tri_vid( mesh.getRowCount() );
+		//	//std::vector<IplImage> tri_ref( mesh.rows() );
+		//	//std::vector<IplImage> tri_vid( mesh.rows() );
 		//	//tri_ref = (IplImage*)cvAlloc(numTri*sizeof(tri_ref[0]));
 		//	int numFeatTri = 5;
 		//	IplImage* tri_ref[ 9 ];
@@ -1417,10 +1415,10 @@ int main()
 		//	fclose(file);
 
 		////VERTEX OF REFERENCE TRIANGLE:
-		// po1.resize( mesh.getRowCount() );
-		// po2.resize( mesh.getRowCount() );
-		// po3.resize( mesh.getRowCount() );
-		// for(t=0; t<mesh.getRowCount(); t++)
+		// po1.resize( mesh.rows() );
+		// po2.resize( mesh.rows() );
+		// po3.resize( mesh.rows() );
+		// for(t=0; t<mesh.rows(); t++)
 		//{
 		//	po1[t][0] = boot[mesh(t,0)-1]->x; po1[t][1] = boot[mesh(t,0)-1]->y;
 		// po1[t][2] = 1;
@@ -1430,18 +1428,18 @@ int main()
 		// po3[t][2] = 1;
 		//}
 
-		// aux1.tri_list.resize( mesh.getRowCount() );
-		// aux1.ind_list.resize( mesh.getRowCount() );
+		// aux1.tri_list.resize( mesh.rows() );
+		// aux1.ind_list.resize( mesh.rows() );
 		// loadPatches(boot, mesh, &(aux1.mask), aux1.tri_list, aux1.ind_list,
 		// aux1.img);			//LOAD PATCHES
 
 		// data_img.push_back( aux1 );
 
-		// correlations.resize( 400, mesh.getRowCount() );		//->PASARLO A LA
+		// correlations.resize( 400, mesh.rows() );		//->PASARLO A LA
 		// ESTRUCTURA DE DATOS	!!!!!!!!!!!!!!!!
 		// correlations.fill(0);
 
-		// for( i=0; i<mesh.getRowCount(); i++ )
+		// for( i=0; i<mesh.rows(); i++ )
 		//{
 		//	pt1 = cvPoint( boot[mesh(i,0)-1]->x, boot[mesh(i,0)-1]->y);
 		//	pt2 = cvPoint( boot[mesh(i,1)-1]->x, boot[mesh(i,1)-1]->y);
@@ -1456,7 +1454,7 @@ int main()
 
 		////NCC STATISTICS (HISTOGRAM)
 		//	char* cstr = new char [20];
-		//	for( j=0; j<mesh.getRowCount(); j++ )
+		//	for( j=0; j<mesh.rows(); j++ )
 		//	{
 		//		vector_double hist = aux1.tri_list[j].histogram( 0, 255, 256,
 		// false);
@@ -1490,14 +1488,14 @@ int main()
 
 		////PATCH FEATURES
 		// CFeatureExtraction	fExt;
-		// std::vector<CFeatureList> feat_patch_ref( mesh.getRowCount() );
-		// std::vector<CFeatureList> feat_patch_vid( mesh.getRowCount() );
+		// std::vector<CFeatureList> feat_patch_ref( mesh.rows() );
+		// std::vector<CFeatureList> feat_patch_vid( mesh.rows() );
 		// fExt.options.featsType = featKLT;
 		// fExt.options.harrisOptions.tile_image = false;
 		// fExt.options.patchSize=0;
 
 		//// DRAW patch_ref
-		// for( t=0; t<mesh.getRowCount(); t++ )
+		// for( t=0; t<mesh.rows(); t++ )
 		//{
 		//	//vector_float xx(3); xx[0] = pt1.x; xx[1] = pt2.x; xx[2] = pt3.x;
 		//	//vector_float yy(3); yy[0] = pt1.y; yy[1] = pt2.y; yy[2] = pt3.y;
@@ -1856,7 +1854,7 @@ int main()
 					CV_SWAP( prev_grey, grey, swap_temp );
 
 					img_seq_data aux;
-					//data_img[f].tri.resize(mesh.getRowCount);
+					//data_img[f].tri.resize(mesh.rows());
 					//data_img[f].img = (IplImage*) im2->getAsIplImage();
 
 					frame = cvQueryFrame(video); frame = cvQueryFrame(video);
@@ -1952,7 +1950,7 @@ int main()
 
 
 					//// Draw Image and mesh.	//frame_aux
-					//for( i=0; i<mesh.getRowCount(); i++ )
+					//for( i=0; i<mesh.rows(); i++ )
 					//{
 					//	pt1 = cvPoint( flow_klt[mesh(i,0)-1]->x,
 		   flow_klt[mesh(i,0)-1]->y );
@@ -1981,8 +1979,8 @@ int main()
 							mrpt::system::pause();
 						}
 					}
-					aux.tri_list.resize( mesh.getRowCount() );
-					aux.ind_list.resize( mesh.getRowCount() );
+					aux.tri_list.resize( mesh.rows() );
+					aux.ind_list.resize( mesh.rows() );
 					//loadPatches(flow_klt, mesh, &(aux.mask), aux.tri_list,
 		   aux.ind_list, aux.img);
 
@@ -1992,7 +1990,7 @@ int main()
 		   data_img[0].img->height), data_img[0].img->depth, 1);
 
 
-					for(t=0; t<mesh.getRowCount(); t++)
+					for(t=0; t<mesh.rows(); t++)
 					{
 						//if(f==1)	//HISTOGRAM CALCULATION
 						//{
@@ -2018,7 +2016,7 @@ int main()
 
 
 				////TRANSFORM DATA TYPE TO PERFORM CORRELATION MEASUREMENT
-						//for(t=0; t<mesh.getRowCount; t++)
+						//for(t=0; t<mesh.rows(); t++)
 						//{
 						//	image = cvCreateMatHeader(1,
 		   data_img[f].tri_list[t].size(), CV_8UC1 );
@@ -2143,10 +2141,10 @@ int main()
 						cvLine(patch_tform, pt1, pt3, color, 1, 8, 0);
 						cvLine(patch_tform, pt3, pt2, color, 1, 8, 0);
 
-						if( t==(mesh.getRowCount()-1) )
+						if( t==(mesh.rows()-1) )
 						{
 							im2.loadFromIplImage(patch_tform);
-							for( i=0; i<mesh.getRowCount(); i++ )
+							for( i=0; i<mesh.rows(); i++ )
 								im2.textOut( (boot[mesh(i,0)-1]->x +
 		   boot[mesh(i,1)-1]->x + boot[mesh(i,2)-1]->x)/3-20,
 		   (boot[mesh(i,0)-1]->y + boot[mesh(i,1)-1]->y +
@@ -2321,10 +2319,10 @@ int main()
 						//	//cvLine(patch_LM, pt1, pt3, color, 1, 8, 0);
 						//	//cvLine(patch_LM, pt3, pt2, color, 1, 8, 0);
 						//	//
-						//	//if( t==(mesh.getRowCount()-1) )
+						//	//if( t==(mesh.rows()-1) )
 						//	//{
 						//	//	im2.loadFromIplImage(patch_LM);
-						//	//	for( i=0; i<mesh.getRowCount(); i++ )
+						//	//	for( i=0; i<mesh.rows(); i++ )
 						//	//	{
 						//	//		char* cstr = new char [20];
 						//	//		sprintf( cstr, "%.2f",

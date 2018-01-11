@@ -20,8 +20,9 @@
 
 using namespace mrpt;
 using namespace mrpt::vision;
+using namespace mrpt::img;
+using namespace mrpt::img;
 using namespace mrpt::system;
-using namespace mrpt::utils;
 using namespace std;
 
 // ------------  SSE2-optimized implementations of FASTER -------------
@@ -32,13 +33,13 @@ void CFeatureExtraction::detectFeatures_SSE2_FASTER9(
 {
 #if MRPT_HAS_OPENCV
 	const IplImage* IPL = img.getAs<IplImage>();
-	ASSERTDEB_(IPL && IPL->nChannels == 1)
+	ASSERTDEB_(IPL && IPL->nChannels == 1);
 	if (!append_to_list) corners.clear();
 
 	fast_corner_detect_9(
 		IPL, corners, threshold, octave, out_feats_index_by_row);
 #else
-	THROW_EXCEPTION("MRPT built without OpenCV support!")
+	THROW_EXCEPTION("MRPT built without OpenCV support!");
 #endif
 }
 void CFeatureExtraction::detectFeatures_SSE2_FASTER10(
@@ -48,13 +49,13 @@ void CFeatureExtraction::detectFeatures_SSE2_FASTER10(
 {
 #if MRPT_HAS_OPENCV
 	const IplImage* IPL = img.getAs<IplImage>();
-	ASSERTDEB_(IPL && IPL->nChannels == 1)
+	ASSERTDEB_(IPL && IPL->nChannels == 1);
 	if (!append_to_list) corners.clear();
 
 	fast_corner_detect_10(
 		IPL, corners, threshold, octave, out_feats_index_by_row);
 #else
-	THROW_EXCEPTION("MRPT built without OpenCV support!")
+	THROW_EXCEPTION("MRPT built without OpenCV support!");
 #endif
 }
 void CFeatureExtraction::detectFeatures_SSE2_FASTER12(
@@ -64,23 +65,23 @@ void CFeatureExtraction::detectFeatures_SSE2_FASTER12(
 {
 #if MRPT_HAS_OPENCV
 	const IplImage* IPL = img.getAs<IplImage>();
-	ASSERTDEB_(IPL && IPL->nChannels == 1)
+	ASSERTDEB_(IPL && IPL->nChannels == 1);
 	if (!append_to_list) corners.clear();
 
 	fast_corner_detect_12(
 		IPL, corners, threshold, octave, out_feats_index_by_row);
 #else
-	THROW_EXCEPTION("MRPT built without OpenCV support!")
+	THROW_EXCEPTION("MRPT built without OpenCV support!");
 #endif
 }
 
 /************************************************************************************************
-*								extractFeaturesFASTER
-**
-************************************************************************************************/
+ *								extractFeaturesFASTER
+ **
+ ************************************************************************************************/
 // N_fast = 9, 10, 12
 void CFeatureExtraction::extractFeaturesFASTER_N(
-	const int N_fast, const mrpt::utils::CImage& inImg, CFeatureList& feats,
+	const int N_fast, const mrpt::img::CImage& inImg, CFeatureList& feats,
 	unsigned int init_ID, unsigned int nDesiredFeatures,
 	const TImageROI& ROI) const
 {
@@ -134,7 +135,7 @@ void CFeatureExtraction::extractFeaturesFASTER_N(
 		nDesiredFeatures != 0  // If the user wants us to limit the number of
 		// features, we need to do it according to some
 		// quality measure
-		)
+	)
 	{
 		const int KLT_half_win = 4;
 		const int max_x = inImg_gray.getWidth() - 1 - KLT_half_win;

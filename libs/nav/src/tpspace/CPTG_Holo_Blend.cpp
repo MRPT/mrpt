@@ -9,15 +9,15 @@
 
 #include "nav-precomp.h"  // Precomp header
 #include <mrpt/nav/tpspace/CPTG_Holo_Blend.h>
-#include <mrpt/utils/types_math.h>
-#include <mrpt/utils/CStream.h>
-#include <mrpt/utils/round.h>
-#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/math/types_math.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/core/round.h>
+#include <mrpt/system/CTimeLogger.h>
 #include <mrpt/math/poly_roots.h>
 #include <mrpt/kinematics/CVehicleVelCmd_Holo.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::nav;
-using namespace mrpt::utils;
 using namespace mrpt::system;
 
 IMPLEMENTS_SERIALIZABLE(
@@ -40,7 +40,7 @@ Number of steps "d" for each PTG path "k":
 //#define DO_PERFORMANCE_BENCHMARK
 
 #ifdef DO_PERFORMANCE_BENCHMARK
-mrpt::utils::CTimeLogger tl_holo("CPTG_Holo_Blend");
+mrpt::system::CTimeLogger tl_holo("CPTG_Holo_Blend");
 #define PERFORMANCE_BENCHMARK \
 	CTimeLoggerEntry tle(tl_holo, __CURRENT_FUNCTION_NAME__);
 #else
@@ -194,11 +194,11 @@ void CPTG_Holo_Blend::loadDefaultParams()
 	m_alphaValuesCount = 31;
 	T_ramp_max = 0.9;
 	V_MAX = 1.0;
-	W_MAX = mrpt::utils::DEG2RAD(40);
+	W_MAX = mrpt::DEG2RAD(40);
 }
 
 void CPTG_Holo_Blend::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& cfg, const std::string& sSection)
+	const mrpt::config::CConfigFileBase& cfg, const std::string& sSection)
 {
 	CParameterizedTrajectoryGenerator::loadFromConfigFile(cfg, sSection);
 	CPTG_RobotShape_Circular::loadShapeFromConfigFile(cfg, sSection);
@@ -216,7 +216,7 @@ void CPTG_Holo_Blend::loadFromConfigFile(
 	MRPT_LOAD_HERE_CONFIG_VAR(expr_T_ramp, string, expr_T_ramp, cfg, sSection);
 }
 void CPTG_Holo_Blend::saveToConfigFile(
-	mrpt::utils::CConfigFileBase& cfg, const std::string& sSection) const
+	mrpt::config::CConfigFileBase& cfg, const std::string& sSection) const
 {
 	MRPT_START
 	const int WN = 25, WV = 30;
@@ -231,7 +231,7 @@ void CPTG_Holo_Blend::saveToConfigFile(
 		sSection, "v_max_mps", V_MAX, WN, WV,
 		"Maximum linear velocity for trajectories [m/s].");
 	cfg.write(
-		sSection, "w_max_dps", mrpt::utils::RAD2DEG(W_MAX), WN, WV,
+		sSection, "w_max_dps", mrpt::RAD2DEG(W_MAX), WN, WV,
 		"Maximum angular velocity for trajectories [deg/s].");
 	cfg.write(
 		sSection, "turningRadiusReference", turningRadiusReference, WN, WV,
@@ -263,7 +263,7 @@ std::string CPTG_Holo_Blend::getDescription() const
 		W_MAX);
 }
 
-void CPTG_Holo_Blend::readFromStream(mrpt::utils::CStream& in, int version)
+void CPTG_Holo_Blend::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	CParameterizedTrajectoryGenerator::internal_readFromStream(in);
 
@@ -295,15 +295,9 @@ void CPTG_Holo_Blend::readFromStream(mrpt::utils::CStream& in, int version)
 	};
 }
 
-void CPTG_Holo_Blend::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CPTG_Holo_Blend::serializeGetVersion() const { return 4; }
+void CPTG_Holo_Blend::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-	{
-		*version = 4;
-		return;
-	}
-
 	CParameterizedTrajectoryGenerator::internal_writeToStream(out);
 	CPTG_RobotShape_Circular::internal_shape_saveToStream(out);
 
@@ -355,7 +349,7 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(
 			r[1] = vyi * q[0] + q[0] * q[0] * TR2_ * (q[2] - vyi) - y;
 		}
 		const double alpha = atan2(q[2], q[1]);
-		const double V_MAXsq = mrpt::math::square(this->internal_get_v(alpha));
+		const double V_MAXsq = mrpt::square(this->internal_get_v(alpha));
 		r[2] = q[1] * q[1] + q[2] * q[2] - V_MAXsq;
 
 		// Jacobian: q=[t vxf vyf]   q0=t   q1=vxf   q2=vyf
@@ -433,7 +427,7 @@ mrpt::kinematics::CVehicleVelCmd::Ptr CPTG_Holo_Blend::directionToMotionCommand(
 	cmd->dir_local = dir_local;
 	cmd->ramp_time = internal_get_T_ramp(dir_local);
 	cmd->rot_speed =
-		mrpt::utils::signWithZero(dir_local) * internal_get_w(dir_local);
+		mrpt::signWithZero(dir_local) * internal_get_w(dir_local);
 
 	return mrpt::kinematics::CVehicleVelCmd::Ptr(cmd);
 }
@@ -466,7 +460,7 @@ void CPTG_Holo_Blend::getPathPose(
 	const double dir = CParameterizedTrajectoryGenerator::index2alpha(k);
 	COMMON_PTG_DESIGN_PARAMS;
 	const double wf =
-		mrpt::utils::signWithZero(dir) * this->internal_get_w(dir);
+		mrpt::signWithZero(dir) * this->internal_get_w(dir);
 	const double TR2_ = 1.0 / (2 * T_ramp);
 
 	// Translational part:
@@ -628,7 +622,7 @@ bool CPTG_Holo_Blend::getPathStepForDist(
 	}
 	if (t_solved >= 0)
 	{
-		out_step = mrpt::utils::round(t_solved / PATH_TIME_STEP);
+		out_step = mrpt::round(t_solved / PATH_TIME_STEP);
 		return true;
 	}
 	else
@@ -708,7 +702,7 @@ void CPTG_Holo_Blend::updateTPObstacleSingle(
 			if (sol_t < 0)
 				sol_t = roots[i];
 			else
-				mrpt::utils::keep_min(sol_t, roots[i]);
+				mrpt::keep_min(sol_t, roots[i]);
 		}
 	}
 
@@ -803,7 +797,7 @@ CPTG_Holo_Blend::CPTG_Holo_Blend()
 }
 
 CPTG_Holo_Blend::CPTG_Holo_Blend(
-	const mrpt::utils::CConfigFileBase& cfg, const std::string& sSection)
+	const mrpt::config::CConfigFileBase& cfg, const std::string& sSection)
 	: turningRadiusReference(0.30)
 {
 	internal_construct_exprs();

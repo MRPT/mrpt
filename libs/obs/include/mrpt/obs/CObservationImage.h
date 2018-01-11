@@ -9,9 +9,9 @@
 #ifndef CObservationImage_H
 #define CObservationImage_H
 
-#include <mrpt/utils/CSerializable.h>
-#include <mrpt/utils/CImage.h>
-#include <mrpt/utils/TCamera.h>
+#include <mrpt/serialization/CSerializable.h>
+#include <mrpt/img/CImage.h>
+#include <mrpt/img/TCamera.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/poses/CPose3D.h>
@@ -54,16 +54,16 @@ class CObservationImage : public CObservation
 	  * See the <a href="http://www.mrpt.org/Camera_Parameters" >tutorial</a>
 	 * for a discussion of these parameters.
 	  */
-	mrpt::utils::TCamera cameraParams;
+	mrpt::img::TCamera cameraParams;
 
 	/** The image captured by the camera, that is, the main piece of information
 	 * of this observation. */
-	mrpt::utils::CImage image;
+	mrpt::img::CImage image;
 
 	/** Computes the rectified (un-distorted) image, using the embeded
 	 * distortion parameters.
 	  */
-	void getRectifiedImage(mrpt::utils::CImage& out_img) const;
+	void getRectifiedImage(mrpt::img::CImage& out_img) const;
 
 	// See base class docs
 	void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override

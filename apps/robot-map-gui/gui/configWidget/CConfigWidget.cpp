@@ -17,7 +17,7 @@
 #include "CLandmarksConfig.h"
 #include "CGasGridConfig.h"
 
-#include "mrpt/utils/CFileOutputStream.h"
+#include "mrpt/io/CFileOutputStream.h"
 #include "mrpt/gui/error_box.h"
 
 #include <QFileDialog>
@@ -87,7 +87,7 @@ void CConfigWidget::saveConfig()
 			this, tr("Unable to open file"), file.errorString());
 		return;
 	}
-	mrpt::utils::CFileOutputStream f(configName.toStdString(), true);
+	mrpt::io::CFileOutputStream f(configName.toStdString(), true);
 
 	for (int i = 0; i < m_ui->stackedWidget->count(); ++i)
 	{

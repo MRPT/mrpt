@@ -33,7 +33,7 @@
 #include <numeric>  // accumulate
 #include <memory>  // unique_ptr
 
-#include <mrpt/otherlibs/nanoflann/nanoflann.hpp>  // For kd-tree's
+#include <nanoflann.hpp>  // For kd-tree's
 #include <mrpt/math/KDTreeCapable.h>  // For kd-tree's
 
 using namespace std;
@@ -41,7 +41,6 @@ using namespace mrpt;
 using namespace mrpt::math;
 using namespace mrpt::poses;
 using namespace mrpt::slam;
-using namespace mrpt::utils;
 
 namespace mrpt
 {
@@ -73,10 +72,9 @@ double joint_pdf_metric(
 	// Make a list of the indices of the predictions that appear in
 	// "currentAssociation":
 	const size_t N = info.currentAssociation.size();
-	ASSERT_(N > 0)
-
-	vector_size_t indices_pred(N);  // Appearance order indices in the std::maps
-	vector_size_t indices_obs(N);
+	ASSERT_(N > 0);
+	std::vector<size_t> indices_pred(N);  // Appearance order indices in the std::maps
+	std::vector<size_t> indices_obs(N);
 
 	{
 		size_t i = 0;
@@ -198,7 +196,7 @@ void JCBB_recursive(
 		// Iterate for all compatible landmarsk of "curObsIdx"
 		const observation_index_t obsIdx = curObsIdx;
 
-		const size_t nPreds = results.indiv_compatibility.getRowCount();
+		const size_t nPreds = results.indiv_compatibility.rows();
 
 		// Can we do it better than the current "results.associations"?
 		// This can be checked by counting the potential new pairings+the so-far
@@ -322,20 +320,18 @@ void mrpt::slam::data_association_full_covariance(
 
 	results.clear();
 
-	const size_t nPredictions = size(Y_predictions_mean, 1);
-	const size_t nObservations = size(Z_observations_mean, 1);
+	const size_t nPredictions = Y_predictions_mean.rows();
+	const size_t nObservations = Z_observations_mean.rows();
 
-	const size_t length_O = size(Z_observations_mean, 2);
+	const size_t length_O = Z_observations_mean.cols();
 
-	ASSERT_(nPredictions != 0)
-	ASSERT_(nObservations != 0)
-	ASSERT_(length_O == size(Y_predictions_mean, 2))
-	ASSERT_(length_O * nPredictions == size(Y_predictions_cov, 1))
-	ASSERT_(Y_predictions_cov.isSquare())
-
-	ASSERT_(chi2quantile > 0 && chi2quantile < 1)
-	ASSERT_(metric == metricMaha || metric == metricML)
-
+	ASSERT_(nPredictions != 0);
+	ASSERT_(nObservations != 0);
+	ASSERT_(length_O == Y_predictions_mean.cols());
+	ASSERT_(length_O * nPredictions == Y_predictions_cov.rows());
+	ASSERT_(Y_predictions_cov.isSquare());
+	ASSERT_(chi2quantile > 0 && chi2quantile < 1);
+	ASSERT_(metric == metricMaha || metric == metricML);
 	const double chi2thres = mrpt::math::chi2inv(chi2quantile, length_O);
 
 	// ------------------------------------------------------------
@@ -566,7 +562,7 @@ void mrpt::slam::data_association_full_covariance(
 		break;
 
 		default:
-			THROW_EXCEPTION("Unknown value of 'method'")
+			THROW_EXCEPTION("Unknown value of 'method'");
 	};
 
 	// If a mapping of prediction indices to IDs was providen, apply it now:
@@ -602,19 +598,17 @@ void mrpt::slam::data_association_independent_predictions(
 
 	results.clear();
 
-	const size_t nPredictions = size(Y_predictions_mean, 1);
-	const size_t nObservations = size(Z_observations_mean, 1);
+	const size_t nPredictions = Y_predictions_mean.rows();
+	const size_t nObservations = Z_observations_mean.rows();
 
-	const size_t length_O = size(Z_observations_mean, 2);
+	const size_t length_O = Z_observations_mean.cols();
 
-	ASSERT_(nPredictions != 0)
-	ASSERT_(nObservations != 0)
-	ASSERT_(length_O == size(Y_predictions_mean, 2))
-	ASSERT_(length_O * nPredictions == size(Y_predictions_cov_stacked, 1))
-
-	ASSERT_(chi2quantile > 0 && chi2quantile < 1)
-	ASSERT_(metric == metricMaha || metric == metricML)
-
+	ASSERT_(nPredictions != 0);
+	ASSERT_(nObservations != 0);
+	ASSERT_(length_O == Y_predictions_mean.cols());
+	ASSERT_(length_O * nPredictions == Y_predictions_cov_stacked.rows());
+	ASSERT_(chi2quantile > 0 && chi2quantile < 1);
+	ASSERT_(metric == metricMaha || metric == metricML);
 	// const double chi2thres = mrpt::math::chi2inv( chi2quantile, length_O );
 
 	// TODO: Optimized version!!

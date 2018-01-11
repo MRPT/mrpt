@@ -17,7 +17,7 @@
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPoseRandomSampler.h>
 #include <mrpt/slam/TKLDParams.h>
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/system/COutputLogger.h>
 
 namespace mrpt
 {
@@ -35,11 +35,11 @@ void KLF_loadBinFromParticle(
   *   \ingroup mrpt_slam_grp
   */
 template <class PARTICLE_TYPE, class MYSELF>
-class PF_implementation : public mrpt::utils::COutputLogger
+class PF_implementation : public mrpt::system::COutputLogger
 {
    public:
 	PF_implementation()
-		: mrpt::utils::COutputLogger("PF_implementation"),
+		: mrpt::system::COutputLogger("PF_implementation"),
 		  m_accumRobotMovement2DIsValid(false),
 		  m_accumRobotMovement3DIsValid(false)
 	{

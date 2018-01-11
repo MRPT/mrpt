@@ -15,7 +15,6 @@
 
 using namespace mrpt;
 using namespace mrpt::tfest;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace std;
@@ -75,8 +74,7 @@ bool se3_l2_internal(
 {
 	MRPT_START
 
-	ASSERT_EQUAL_(points_this.size(), points_other.size())
-
+	ASSERT_EQUAL_(points_this.size(), points_other.size());
 	// Compute the centroids
 	TPoint3D ct_others(0, 0, 0), ct_this(0, 0, 0);
 	const size_t nMatches = points_this.size();
@@ -148,7 +146,7 @@ bool se3_l2_internal(
 	vector<double> v;
 
 	N.eigenVectors(Z, D);
-	Z.extractCol(Z.getColCount() - 1, v);
+	Z.extractCol(Z.cols() - 1, v);
 
 	ASSERTDEB_(
 		fabs(
@@ -221,7 +219,7 @@ bool tfest::se3_l2(
 }
 
 bool tfest::se3_l2(
-	const mrpt::utils::TMatchingPairList& corrs,
+	const mrpt::tfest::TMatchingPairList& corrs,
 	mrpt::poses::CPose3DQuat& out_transform, double& out_scale,
 	bool forceScaleToUnity)
 {

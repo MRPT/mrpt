@@ -10,10 +10,10 @@
 #include "comms-precomp.h"  // Precompiled headers
 
 #include <mrpt/comms/CSerialPort.h>
+#include <mrpt/core/exceptions.h>
 #include <mrpt/system/os.h>
-#include <mrpt/utils/utils_defs.h>
 
-#if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
+#if defined(MRPT_OS_LINUX) || defined(__APPLE__)
 // Linux implementation: refer to
 //  http://www.easysw.com/~mike/serial/serial.html
 
@@ -37,15 +37,16 @@
 
 #endif  // Linux | Apple
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 #include <windows.h>
 #endif
 
 #include <thread>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::comms;
-using namespace mrpt::utils;
+using namespace mrpt::io;
 using namespace std;
 using namespace std::literals;
 
@@ -54,7 +55,7 @@ CSerialPort::CSerialPort(const string& portName, bool openNow)
 	: m_serialName(portName),
 	  m_totalTimeout_ms(0),
 	  m_interBytesTimeout_ms(0),
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	  hCOM(nullptr)
 #else
 	  hCOM(-1)  // Not connected
@@ -68,7 +69,7 @@ CSerialPort::CSerialPort()
 	: m_serialName(),
 	  m_totalTimeout_ms(0),
 	  m_interBytesTimeout_ms(0),
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	  hCOM(nullptr)
 #else
 	  hCOM(-1)  // Not connected
@@ -82,15 +83,32 @@ CSerialPort::~CSerialPort()
 	if (isOpen()) close();
 }
 
+void CSerialPort::open(const std::string& COM_name)
+{
+	if (isOpen() && m_serialName != COM_name)
+		THROW_EXCEPTION("Cannot change serial port while open");
+	if (!isOpen())
+	{
+		setSerialPortName(COM_name);
+		open();
+	}
+}
+
+void CSerialPort::setSerialPortName(const std::string& COM_name)
+{
+	if (isOpen()) THROW_EXCEPTION("Cannot change serial port while open");
+	m_serialName = COM_name;
+}
+
 /* -----------------------------------------------------
 				Open
    ----------------------------------------------------- */
 void CSerialPort::open()
 {
 	MRPT_START
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	// Check name:
-	if (!m_serialName.size()) THROW_EXCEPTION("Serial port name is empty!!")
+	if (!m_serialName.size()) THROW_EXCEPTION("Serial port name is empty!!");
 
 	// Is it COMX, X>4? ->  "\\.\COMX"
 	if (tolower(m_serialName[0]) == 'c' && tolower(m_serialName[1]) == 'o' &&
@@ -117,7 +135,7 @@ void CSerialPort::open()
 
 #else
 	// Check name:
-	if (!m_serialName.size()) THROW_EXCEPTION("Serial port name is empty!!")
+	if (!m_serialName.size()) THROW_EXCEPTION("Serial port name is empty!!");
 	if (m_serialName[0] != '/') m_serialName = string("/dev/") + m_serialName;
 
 	// Open the serial port:
@@ -158,14 +176,14 @@ void CSerialPort::open()
 	port_settings.c_cc[VTIME] = 0;
 
 	/*
-		* Flush the input buffer associated with the port.
-		*/
+	 * Flush the input buffer associated with the port.
+	 */
 	if (tcflush(hCOM, TCIFLUSH) < 0)
 		THROW_EXCEPTION_FMT("Cannot flush serial port: %s", strerror(errno));
 
 	/*
-		* Write the new settings to the port.
-		*/
+	 * Write the new settings to the port.
+	 */
 	if (tcsetattr(hCOM, TCSANOW, &port_settings) < 0)
 		THROW_EXCEPTION_FMT(
 			"Cannot set the new config to the serial port: %s",
@@ -184,7 +202,7 @@ void CSerialPort::open()
    ----------------------------------------------------- */
 bool CSerialPort::isOpen() const
 {
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	return hCOM != nullptr;
 #else
 	return hCOM != -1;
@@ -198,7 +216,7 @@ void CSerialPort::setConfig(
 	int baudRate, int parity, int bits, int nStopBits, bool enableFlowControl)
 {
 	MRPT_START
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 
 	DCB dcb_conf;
 	dcb_conf.DCBlength = sizeof(DCB);
@@ -294,7 +312,7 @@ void CSerialPort::setConfig(
 	// Port must be open!
 	if (!isOpen()) THROW_EXCEPTION("The serial port is not open!");
 
-	ASSERT_(baudRate > 0)
+	ASSERT_(baudRate > 0);
 
 	//
 	// Apply baud rate
@@ -528,7 +546,7 @@ void CSerialPort::setConfig(
 	}
 
 	/* Write the new settings to the port.
-		*/
+	 */
 	if (tcsetattr(hCOM, TCSANOW, &port_settings) < 0)
 		THROW_EXCEPTION_FMT("Cannot set the new settings: %s", strerror(errno));
 
@@ -562,7 +580,7 @@ void CSerialPort::setTimeouts(
 	int WriteTotalTimeoutConstant)
 {
 	MRPT_START
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	COMMTIMEOUTS timeouts;
 
 	// Port must be open!
@@ -607,7 +625,7 @@ void CSerialPort::setTimeouts(
 	port_settings.c_cc[VTIME] = max(1, ReadTotalTimeoutConstant / 100);
 
 	/* Write the new settings to the port.
-	*/
+	 */
 	if (tcsetattr(hCOM, TCSANOW, &port_settings) < 0)
 		THROW_EXCEPTION_FMT("Cannot set the new settings: %s", strerror(errno));
 #endif
@@ -620,7 +638,7 @@ void CSerialPort::setTimeouts(
 void CSerialPort::close()
 {
 	MRPT_START
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	if (hCOM) CloseHandle(hCOM);
 	hCOM = nullptr;
 #else
@@ -643,7 +661,7 @@ void CSerialPort::close()
 size_t CSerialPort::Read(void* Buffer, size_t Count)
 {
 	MRPT_START
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	// Port must be open!
 	if (!isOpen()) THROW_EXCEPTION("The port is not open yet!");
 
@@ -727,9 +745,9 @@ size_t CSerialPort::Read(void* Buffer, size_t Count)
 }
 
 /** Reads one text line from the serial port in POSIX "canonical mode".
-  *  This method reads from the serial port until one of the characters in \a
+ *  This method reads from the serial port until one of the characters in \a
  * eol are found.
-  */
+ */
 std::string CSerialPort::ReadString(
 	const int total_timeout_ms, bool* out_timeout, const char* eol_chars)
 {
@@ -737,7 +755,7 @@ std::string CSerialPort::ReadString(
 	// Calling ::ReadBuffer() many times would be even worse, so replicate its
 	// code here:
 
-	ASSERT_(eol_chars != nullptr)
+	ASSERT_(eol_chars != nullptr);
 
 	// Port must be open!
 	if (!isOpen()) THROW_EXCEPTION("The port is not open yet!");
@@ -749,7 +767,7 @@ std::string CSerialPort::ReadString(
 
 	while (total_timeout_ms < 0 || (m_timer.Tac() * 1e3 < total_timeout_ms))
 	{
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 		// Read just 1 byte:
 		char buf[1];
 
@@ -783,7 +801,7 @@ std::string CSerialPort::ReadString(
 			if (errno == EIO)
 			{  // The port has been disconnect (for USB ports)
 				this->close();
-				THROW_EXCEPTION("Error reading port before end of line")
+				THROW_EXCEPTION("Error reading port before end of line");
 			}
 		}
 
@@ -831,7 +849,7 @@ size_t CSerialPort::Write(const void* Buffer, size_t Count)
 	// Port must be open!
 	if (!isOpen()) THROW_EXCEPTION("The port is not open yet!");
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	DWORD actuallyWritten;
 	if (!WriteFile(hCOM, Buffer, (DWORD)Count, &actuallyWritten, nullptr))
 		THROW_EXCEPTION("Error writing to port!");
@@ -897,7 +915,7 @@ void CSerialPort::purgeBuffers()
 	// Port must be open!
 	if (!isOpen()) THROW_EXCEPTION("The port is not open yet!");
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	if (!PurgeComm(
 			hCOM,
 			PURGE_RXABORT | PURGE_RXCLEAR | PURGE_TXABORT | PURGE_TXCLEAR))
@@ -908,5 +926,31 @@ void CSerialPort::purgeBuffers()
 		THROW_EXCEPTION_FMT("Cannot flush serial port: %s", strerror(errno));
 #endif
 
+	MRPT_END
+}
+
+uint64_t CSerialPort::Seek(int64_t Offset, CStream::TSeekOrigin Origin)
+{
+	MRPT_START
+	MRPT_UNUSED_PARAM(Origin);
+	MRPT_UNUSED_PARAM(Offset);
+	THROW_EXCEPTION(
+		"Method not applicable to serial communications port CStream!");
+	MRPT_END
+}
+
+uint64_t CSerialPort::getTotalBytesCount() const
+{
+	MRPT_START
+	THROW_EXCEPTION(
+		"Method not applicable to serial communications port CStream!");
+	MRPT_END
+}
+
+uint64_t CSerialPort::getPosition() const
+{
+	MRPT_START
+	THROW_EXCEPTION(
+		"Method not applicable to serial communications port CStream!");
 	MRPT_END
 }

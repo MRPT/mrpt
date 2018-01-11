@@ -60,12 +60,12 @@ void CWindowObserver::registerKeystroke(
 	m_key_codes_to_pressed[key_str] = false;
 }
 
-void CWindowObserver::OnEvent(const mrpt::utils::mrptEvent& e)
+void CWindowObserver::OnEvent(const mrpt::system::mrptEvent& e)
 {
-	if (e.isOfType<mrpt::utils::mrptEventOnDestroy>())
+	if (e.isOfType<mrpt::system::mrptEventOnDestroy>())
 	{
-		const mrpt::utils::mrptEventOnDestroy& ev =
-			static_cast<const mrpt::utils::mrptEventOnDestroy&>(e);
+		const mrpt::system::mrptEventOnDestroy& ev =
+			static_cast<const mrpt::system::mrptEventOnDestroy&>(e);
 		MRPT_UNUSED_PARAM(ev);
 		std::cout << "Event received: mrptEventOnDestroy" << std::endl;
 	}
@@ -179,10 +179,10 @@ void CWindowObserver::OnEvent(const mrpt::utils::mrptEvent& e)
 				0.50f, 0.50f,  // width, height (in screen "ratios")
 				m_help_msg.c_str(),
 				0.02f,  // text size
-				mrpt::utils::TColor(
+				mrpt::img::TColor(
 					190, 190, 190, 200 * tranparency),  // background
-				mrpt::utils::TColor(0, 0, 0, 200 * tranparency),  // border
-				mrpt::utils::TColor(200, 0, 0, 150 * tranparency),  // text
+				mrpt::img::TColor(0, 0, 0, 200 * tranparency),  // border
+				mrpt::img::TColor(200, 0, 0, 150 * tranparency),  // text
 				6.0f,  // border width
 				"serif",  // text font
 				mrpt::opengl::NICE  // text style

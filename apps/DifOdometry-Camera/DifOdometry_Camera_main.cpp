@@ -9,8 +9,8 @@
 
 #include "DifOdometry_Camera.h"
 #include <mrpt/system/os.h>
-#include <mrpt/utils/CConfigFileMemory.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/config/CConfigFile.h>
 
 using namespace std;
 using namespace mrpt;
@@ -104,12 +104,12 @@ int main(int num_arg, char* argv[])
 
 		if (use_config_file == 0)
 		{
-			utils::CConfigFileMemory configDifodo(default_cfg_txt);
+			mrpt::config::CConfigFileMemory configDifodo(default_cfg_txt);
 			odo.loadConfiguration(configDifodo);
 		}
 		else
 		{
-			utils::CConfigFile configDifodo(filename);
+			mrpt::config::CConfigFile configDifodo(filename);
 			odo.loadConfiguration(configDifodo);
 		}
 
@@ -122,7 +122,7 @@ int main(int num_arg, char* argv[])
 
 		int pushed_key = 0;
 		bool working = 0, stop = 0;
-		utils::CTicTac main_clock;
+		mrpt::system::CTicTac main_clock;
 		main_clock.Tic();
 
 		odo.reset();

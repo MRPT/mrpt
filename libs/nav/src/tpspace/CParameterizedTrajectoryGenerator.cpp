@@ -9,7 +9,7 @@
 
 #include "nav-precomp.h"  // Precomp header
 
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
@@ -56,7 +56,7 @@ double CParameterizedTrajectoryGenerator::maxTimeInVelCmdNOP(int path_k) const
 }
 
 void CParameterizedTrajectoryGenerator::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& cfg, const std::string& sSection)
+	const mrpt::config::CConfigFileBase& cfg, const std::string& sSection)
 {
 	MRPT_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(
 		num_paths, uint64_t, m_alphaValuesCount, cfg, sSection);
@@ -70,7 +70,7 @@ void CParameterizedTrajectoryGenerator::loadFromConfigFile(
 		sSection);
 
 	// Ensure a minimum of resolution:
-	mrpt::utils::keep_max(m_clearance_num_points, refDistance / 1.0);
+	mrpt::keep_max(m_clearance_num_points, refDistance / 1.0);
 
 	// Optional params, for debugging only
 	MRPT_LOAD_HERE_CONFIG_VAR(
@@ -92,7 +92,7 @@ void CParameterizedTrajectoryGenerator::loadFromConfigFile(
 		sSection);
 }
 void CParameterizedTrajectoryGenerator::saveToConfigFile(
-	mrpt::utils::CConfigFileBase& cfg, const std::string& sSection) const
+	mrpt::config::CConfigFileBase& cfg, const std::string& sSection) const
 {
 	MRPT_START
 	const int WN = 25, WV = 30;
@@ -125,7 +125,7 @@ void CParameterizedTrajectoryGenerator::saveToConfigFile(
 		sSection, "vyi", m_nav_dyn_state.curVelLocal.vy, WN, WV,
 		"(Only for debugging) Current robot velocity vy [m/s].");
 	cfg.write(
-		sSection, "wi", mrpt::utils::RAD2DEG(m_nav_dyn_state.curVelLocal.omega),
+		sSection, "wi", mrpt::RAD2DEG(m_nav_dyn_state.curVelLocal.omega),
 		WN, WV, "(Only for debugging) Current robot velocity omega [deg/s].");
 
 	cfg.write(
@@ -136,7 +136,7 @@ void CParameterizedTrajectoryGenerator::saveToConfigFile(
 		"(Only for debugging) Relative target y [m].");
 	cfg.write(
 		sSection, "reltrg_phi",
-		mrpt::utils::RAD2DEG(m_nav_dyn_state.relTarget.phi), WN, WV,
+		mrpt::RAD2DEG(m_nav_dyn_state.relTarget.phi), WN, WV,
 		"(Only for debugging) Relative target phi [deg].");
 
 	cfg.write(
@@ -147,7 +147,7 @@ void CParameterizedTrajectoryGenerator::saveToConfigFile(
 }
 
 void CParameterizedTrajectoryGenerator::internal_readFromStream(
-	mrpt::utils::CStream& in)
+	mrpt::serialization::CArchive& in)
 {
 	this->deinitialize();
 
@@ -182,7 +182,7 @@ void CParameterizedTrajectoryGenerator::internal_readFromStream(
 }
 
 void CParameterizedTrajectoryGenerator::internal_writeToStream(
-	mrpt::utils::CStream& out) const
+	mrpt::serialization::CArchive& out) const
 {
 	const uint8_t version = 4;
 	out << version;
@@ -195,8 +195,7 @@ void CParameterizedTrajectoryGenerator::internal_writeToStream(
 double CParameterizedTrajectoryGenerator::index2alpha(
 	uint16_t k, const unsigned int num_paths)
 {
-	ASSERT_BELOW_(k, num_paths)
-
+	ASSERT_BELOW_(k, num_paths);
 	return M_PI * (-1.0 + 2.0 * (k + 0.5) / num_paths);
 }
 
@@ -209,7 +208,7 @@ uint16_t CParameterizedTrajectoryGenerator::alpha2index(
 	double alpha, const unsigned int num_paths)
 {
 	mrpt::math::wrapToPi(alpha);
-	int k = mrpt::utils::round(0.5 * (num_paths * (1.0 + alpha / M_PI) - 1.0));
+	int k = mrpt::round(0.5 * (num_paths * (1.0 + alpha / M_PI) - 1.0));
 	if (k < 0) k = 0;
 	if (k >= static_cast<int>(num_paths)) k = num_paths - 1;
 	return (uint16_t)k;
@@ -422,7 +421,7 @@ void CParameterizedTrajectoryGenerator::internal_TPObsDistancePostprocess(
 	const bool is_obs_inside_robot_shape = isPointInsideRobotShape(ox, oy);
 	if (!is_obs_inside_robot_shape)
 	{
-		mrpt::utils::keep_min(inout_tp_obs, new_tp_obs_dist);
+		mrpt::keep_min(inout_tp_obs, new_tp_obs_dist);
 		return;
 	}
 
@@ -474,7 +473,7 @@ void mrpt::nav::CParameterizedTrajectoryGenerator::initClearanceDiagram(
 		for (double step_pointer_dbl = 0.0; step_pointer_dbl < numPathSteps;
 			 step_pointer_dbl += numStepsPerIncr)
 		{
-			const size_t step = mrpt::utils::round(step_pointer_dbl);
+			const size_t step = mrpt::round(step_pointer_dbl);
 			const double dist_over_path = this->getPathDist(real_k, step);
 			cl_path[dist_over_path] = 1.0;  // create entry in map<>
 		}
@@ -525,7 +524,7 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(
 	for (auto& e : inout_realdist2clearance)
 	{
 		step_pointer_dbl += numStepsPerIncr;
-		const size_t step = mrpt::utils::round(step_pointer_dbl);
+		const size_t step = mrpt::round(step_pointer_dbl);
 		// const double dist_over_path = e.first;
 		double& inout_clearance = e.second;
 
@@ -559,7 +558,7 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(
 				this_clearance / this->refDistance;
 
 			// Update minimum in output structure
-			mrpt::utils::keep_min(inout_clearance, this_clearance_norm);
+			mrpt::keep_min(inout_clearance, this_clearance_norm);
 		}
 	}
 }
@@ -579,7 +578,7 @@ bool CParameterizedTrajectoryGenerator::TNavDynamicState::operator==(
 }
 
 void mrpt::nav::CParameterizedTrajectoryGenerator::TNavDynamicState::
-	writeToStream(mrpt::utils::CStream& out) const
+	writeToStream(mrpt::serialization::CArchive& out) const
 {
 	const uint8_t version = 0;
 	out << version;
@@ -588,7 +587,7 @@ void mrpt::nav::CParameterizedTrajectoryGenerator::TNavDynamicState::
 }
 
 void mrpt::nav::CParameterizedTrajectoryGenerator::TNavDynamicState::
-	readFromStream(mrpt::utils::CStream& in)
+	readFromStream(mrpt::serialization::CArchive& in)
 {
 	uint8_t version;
 	in >> version;

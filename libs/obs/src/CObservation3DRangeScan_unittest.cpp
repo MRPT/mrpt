@@ -14,15 +14,6 @@
 using namespace mrpt;
 using namespace std;
 
-// Defined in tests/test_main.cpp
-namespace mrpt
-{
-namespace utils
-{
-extern std::string MRPT_GLOBAL_UNITTEST_SRC_DIR;
-}
-}
-
 #define TEST_RANGEIMG_WIDTH 32
 #define TEST_RANGEIMG_HEIGHT 24
 
@@ -55,8 +46,8 @@ TEST(CObservation3DRangeScan, Project3D_noFilter)
 		fillSampleObs(o, pp, i);
 
 		o.project3DPointsFromDepthImageInto(o, pp, fp);
-		EXPECT_EQ(o.points3D_x.size(), 21U) << " testcase flags: i=" << i
-											<< std::endl;
+		EXPECT_EQ(o.points3D_x.size(), 21U)
+			<< " testcase flags: i=" << i << std::endl;
 	}
 }
 
@@ -82,8 +73,8 @@ TEST(CObservation3DRangeScan, Project3D_filterMinMax1)
 		fp.rangeCheckBetween = (i & 8) != 0;
 
 		o.project3DPointsFromDepthImageInto(o, pp, fp);
-		EXPECT_EQ(o.points3D_x.size(), 20U) << " testcase flags: i=" << i
-											<< std::endl;
+		EXPECT_EQ(o.points3D_x.size(), 20U)
+			<< " testcase flags: i=" << i << std::endl;
 	}
 }
 
@@ -164,8 +155,8 @@ TEST(CObservation3DRangeScan, Project3D_filterMin)
 		fillSampleObs(o, pp, i);
 
 		o.project3DPointsFromDepthImageInto(o, pp, fp);
-		EXPECT_EQ(o.points3D_x.size(), 6U) << " testcase flags: i=" << i
-										   << std::endl;
+		EXPECT_EQ(o.points3D_x.size(), 6U)
+			<< " testcase flags: i=" << i << std::endl;
 	}
 }
 
@@ -188,7 +179,7 @@ TEST(CObservation3DRangeScan, Project3D_filterMax)
 		fillSampleObs(o, pp, i);
 
 		o.project3DPointsFromDepthImageInto(o, pp, fp);
-		EXPECT_EQ(o.points3D_x.size(), 3U) << " testcase flags: i=" << i
-										   << std::endl;
+		EXPECT_EQ(o.points3D_x.size(), 3U)
+			<< " testcase flags: i=" << i << std::endl;
 	}
 }

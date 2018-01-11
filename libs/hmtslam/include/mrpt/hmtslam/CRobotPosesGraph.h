@@ -9,7 +9,7 @@
 #ifndef CRobotPosesGraph_H
 #define CRobotPosesGraph_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 
 #include <mrpt/hmtslam/HMT_SLAM_common.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
@@ -36,7 +36,7 @@ struct TPoseInfo
  * NODE_ANNOTATION_POSES_GRAPH.
   * \ingroup mrpt_hmtslam_grp
   */
-class CRobotPosesGraph : public mrpt::utils::CSerializable,
+class CRobotPosesGraph : public mrpt::serialization::CSerializable,
 						 public std::map<TPoseID, TPoseInfo>
 {
 	DEFINE_SERIALIZABLE(CRobotPosesGraph)

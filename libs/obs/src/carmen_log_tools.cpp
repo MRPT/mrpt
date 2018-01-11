@@ -11,14 +11,13 @@
 
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservationOdometry.h>
-#include <mrpt/utils/TParameters.h>
+#include <mrpt/system/TParameters.h>
 
 #include <mrpt/system/string_utils.h>
 
 #include <mrpt/obs/carmen_log_tools.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::poses;
 using namespace mrpt::system;

@@ -10,18 +10,20 @@
 #define MRPT_NO_WARN_BIG_HDR  // Yes, we really want to include all classes.
 #include <mrpt/maps.h>
 
-#include <mrpt/utils/CMemoryStream.h>
+#include <mrpt/io/CMemoryStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <gtest/gtest.h>
-#include <mrpt/utils/CTraitsTest.h>
+#include <CTraitsTest.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
+using namespace mrpt::io;
+using namespace mrpt::serialization;
 using namespace std;
 
 #define TEST_CLASS_MOVE_COPY_CTORS(_classname) \
-	template class mrpt::utils::CTraitsTest<_classname>
+	template class mrpt::CTraitsTest<_classname>
 
 TEST_CLASS_MOVE_COPY_CTORS(CBeacon);
 TEST_CLASS_MOVE_COPY_CTORS(CBeaconMap);
@@ -41,7 +43,7 @@ TEST_CLASS_MOVE_COPY_CTORS(CColouredOctoMap);
 // bugs:
 TEST(SerializeTestMaps, WriteReadToMem)
 {
-	const mrpt::utils::TRuntimeClassId* lstClasses[] = {
+	const mrpt::rtti::TRuntimeClassId* lstClasses[] = {
 		CLASS_ID(CBeacon),
 		CLASS_ID(CBeaconMap),
 		CLASS_ID(CColouredPointsMap),
@@ -61,16 +63,17 @@ TEST(SerializeTestMaps, WriteReadToMem)
 		try
 		{
 			CMemoryStream buf;
+			auto arch = mrpt::serialization::archiveFrom(buf);
 			{
 				CSerializable* o =
 					static_cast<CSerializable*>(lstClasses[i]->createObject());
-				buf << *o;
+				arch << *o;
 				delete o;
 			}
 
 			CSerializable::Ptr recons;
 			buf.Seek(0);
-			buf >> recons;
+			arch >> recons;
 		}
 		catch (std::exception& e)
 		{

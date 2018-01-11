@@ -8,13 +8,11 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/random.h>
-#include <mrpt/utils/round.h>
-#include <mrpt/utils/bits.h>
+#include <mrpt/core/round.h>
 
 #include "common.h"
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::random;
 using namespace std;
@@ -31,7 +29,7 @@ double math_test_round(int a1, int a2)
 	double b = 2.3;
 	for (long i = 0; i < N; i++)
 	{
-		a = mrpt::utils::round(b);
+		a = mrpt::round(b);
 	}
 	double T = tictac.Tac() / N;
 	dummy_do_nothing_with_string(mrpt::format("%i", a));
@@ -73,15 +71,15 @@ void register_tests_math()
 				std::hypotf)));
 	lstTests.push_back(
 		TestData(
-			"math: mrpt::math::hypot_fast(float)",
+			"math: mrpt::hypot_fast(float)",
 			std::bind(
-				math_test_FUNC<float, decltype(mrpt::math::hypot_fast<float>)>,
-				_1, _2, mrpt::math::hypot_fast<float>)));
+				math_test_FUNC<float, decltype(mrpt::hypot_fast<float>)>,
+				_1, _2, mrpt::hypot_fast<float>)));
 	lstTests.push_back(
 		TestData(
-			"math: mrpt::math::hypot_fast(double)",
+			"math: mrpt::hypot_fast(double)",
 			std::bind(
 				math_test_FUNC<double,
-							   decltype(mrpt::math::hypot_fast<double>)>,
-				_1, _2, mrpt::math::hypot_fast<double>)));
+							   decltype(mrpt::hypot_fast<double>)>,
+				_1, _2, mrpt::hypot_fast<double>)));
 }

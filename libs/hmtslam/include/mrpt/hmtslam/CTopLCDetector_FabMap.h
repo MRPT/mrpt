@@ -52,17 +52,16 @@ class CTopLCDetector_FabMap : public CTopLCDetectorBase
 
 	/** Options for a TLC-detector of type FabMap, used from CHMTSLAM
 	  */
-	struct TOptions : public utils::CLoadableOptions
+	struct TOptions : public mrpt::config::CLoadableOptions
 	{
 		/** Initialization of default params
 		  */
 		TOptions();
 
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+		void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
 		std::string vocab_path, vocabName;
 		double p_obs_given_exists, p_at_new_place, df_lik_smooth;

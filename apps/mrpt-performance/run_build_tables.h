@@ -7,7 +7,12 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/system.h>
+#include <mrpt/system/CDirectoryExplorer.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/datetime.h>
+#include <mrpt/serialization/stl_serialization.h>
+#include <mrpt/serialization/CArchive.h>
+#include <algorithm>
 
 struct TPerfField
 {
@@ -29,8 +34,8 @@ int run_build_tables()
 	using namespace std;
 	using namespace mrpt;
 	using namespace mrpt::system;
-	using namespace mrpt::utils;
-
+	using namespace mrpt::serialization;
+	
 	// Perf. results are in:
 	//  PERF_DATA_DIR + mrpt::format("/perf-results-%i.%i.%i%s-%s-%ibit.dat"
 	// Data is serializations of: vector<pair<string,double> >  all_perf_data;
@@ -55,7 +60,8 @@ int run_build_tables()
 		dat.file_path = fils[i].wholePath;
 
 		CFileInputStream f(dat.file_path);
-		f >> dat.all_perf_data;
+		auto arch = archiveFrom(f);
+		arch >> dat.all_perf_data;
 		lstConfigurations.push_back(dat);
 
 		cout << " Read: " << setw(30) << config_name << " with "
@@ -65,8 +71,7 @@ int run_build_tables()
 	std::sort(
 		lstConfigurations.begin(), lstConfigurations.end(), func_comp_entries);
 
-	ASSERT_(directoryExists(PERF_DATA_DIR + string("/perf-html/")))
-
+	ASSERT_(directoryExists(PERF_DATA_DIR + string("/perf-html/")));
 	CFileOutputStream fo;
 	// ====================================================
 	//                  index.html

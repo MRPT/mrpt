@@ -22,13 +22,14 @@
 #include <mrpt/opengl/CCylinder.h>
 #include <mrpt/opengl/CTexturedPlane.h>
 #include <mrpt/opengl/stock_objects.h>
+#include <mrpt/poses/CPoint3D.h>
 
 IMPLEMENTS_GENERIC_SENSOR(CSkeletonTracker, mrpt::hwdrivers)
 
-using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::poses;
 using namespace mrpt::obs;
+using namespace mrpt::img;
 using namespace std;
 
 #define skl_states (static_cast<nite::SkeletonState*>(m_skeletons_ptr))
@@ -277,7 +278,7 @@ void CSkeletonTracker::processPreviewNone()
 				CSetOfObjects::Ptr body =
 					std::dynamic_pointer_cast<CSetOfObjects>(
 						scene->getByName("body"));
-				ASSERT_(body)
+				ASSERT_(body);
 
 				for (int i = 0; i < NUM_JOINTS; ++i)
 				{
@@ -368,7 +369,7 @@ void CSkeletonTracker::processPreview(
 				CSetOfObjects::Ptr body =
 					std::dynamic_pointer_cast<CSetOfObjects>(
 						scene->getByName("body"));
-				ASSERT_(body)
+				ASSERT_(body);
 
 				for (int i = 0; i < NUM_JOINTS; ++i)
 				{
@@ -439,7 +440,7 @@ void CSkeletonTracker::processPreview(
 				// update lines joining joints
 				CSetOfLines::Ptr lines = std::dynamic_pointer_cast<CSetOfLines>(
 					body->getByName("lines"));
-				ASSERT_(lines)
+				ASSERT_(lines);
 
 				lines->clear();
 				for (int i = 0; i < NUM_LINES; ++i)
@@ -449,7 +450,7 @@ void CSkeletonTracker::processPreview(
 						body->getByName(jointNames[pair.first]));
 					CSphere::Ptr s1 = dynamic_pointer_cast<CSphere>(
 						body->getByName(jointNames[pair.second]));
-					ASSERT_(s0 && s1)
+					ASSERT_(s0 && s1);
 
 					lines->appendLine(
 						s0->getPoseX(), s0->getPoseY(), s0->getPoseZ(),
@@ -633,7 +634,7 @@ void CSkeletonTracker::initialize()
 					loadConfig_sensorSpecific
 -------------------------------------------------------------*/
 void CSkeletonTracker::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 	m_sensorPose.setFromValues(

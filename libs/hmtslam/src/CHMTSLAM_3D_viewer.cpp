@@ -9,16 +9,16 @@
 
 #include "hmtslam-precomp.h"  // Precomp header
 
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/random.h>
-#include <mrpt/utils/CFileStream.h>
+#include <mrpt/io/CFileStream.h>
 #include <mrpt/system/os.h>
 
 #include <thread>
 
 using namespace mrpt::slam;
 using namespace mrpt::hmtslam;
-using namespace mrpt::utils;
+using namespace mrpt::system;
 using namespace std::literals;
 
 /*---------------------------------------------------------------
@@ -38,7 +38,7 @@ void CHMTSLAM::thread_3D_viewer()
 		// Start thread:
 		// -------------------------
 		obj->logFmt(
-			mrpt::utils::LVL_DEBUG,
+			mrpt::system::LVL_DEBUG,
 			"[thread_3D_viewer] Thread started (ID=0x%08lX)\n",
 			std::this_thread::get_id());
 
@@ -58,7 +58,7 @@ void CHMTSLAM::thread_3D_viewer()
 		MRPT_TODO("Fix thread times")
 		// try { mrpt::system::getCurrentThreadTimes( timCreat,timExit,timCPU);
 		// } catch(...) {};
-		// obj->logFmt(mrpt::utils::LVL_DEBUG,"[thread_3D_viewer] Thread
+		// obj->logFmt(mrpt::system::LVL_DEBUG,"[thread_3D_viewer] Thread
 		// finished. CPU time used:%.06f secs \n",timCPU);
 		obj->m_terminationFlag_3D_viewer = true;
 	}
@@ -68,7 +68,7 @@ void CHMTSLAM::thread_3D_viewer()
 
 		// Release semaphores:
 
-		obj->logFmt(mrpt::utils::LVL_ERROR, "%s", e.what());
+		obj->logFmt(mrpt::system::LVL_ERROR, "%s", e.what());
 
 		// DEBUG: Terminate application:
 		obj->m_terminateThreads = true;
@@ -78,7 +78,7 @@ void CHMTSLAM::thread_3D_viewer()
 		obj->m_terminationFlag_3D_viewer = true;
 
 		obj->logFmt(
-			mrpt::utils::LVL_ERROR,
+			mrpt::system::LVL_ERROR,
 			"\n---------------------- EXCEPTION CAUGHT! ---------------------\n"
 			" In CHierarchicalMappingFramework::thread_3D_viewer. Unexpected "
 			"runtime error!!\n");

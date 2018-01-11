@@ -10,7 +10,7 @@
 #include "obs-precomp.h"  // Precompiled headers
 
 #include <mrpt/obs/CObservationImage.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/math/ops_vectors.h>  // << of std::vector()
 #include <iostream>
 #if MRPT_HAS_MATLAB
@@ -18,9 +18,9 @@
 #endif
 
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::poses;
+using namespace mrpt::img;
 
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationImage, CObservation, mrpt::obs)
@@ -32,25 +32,14 @@ CObservationImage::CObservationImage(void* iplImage)
 {
 }
 
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CObservationImage::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CObservationImage::serializeGetVersion() const { return 4; }
+void CObservationImage::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 4;
-	else
-	{
-		// The data
-		out << cameraPose << cameraParams << image << timestamp << sensorLabel;
-	}
+	out << cameraPose << cameraParams << image << timestamp << sensorLabel;
 }
 
-/*---------------------------------------------------------------
-  Implements the reading from a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CObservationImage::readFromStream(mrpt::utils::CStream& in, int version)
+void CObservationImage::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -71,14 +60,14 @@ void CObservationImage::readFromStream(mrpt::utils::CStream& in, int version)
 				CMatrix intrinsicParams, distortionParams;
 				in >> distortionParams >> intrinsicParams;
 
-				if (size(distortionParams, 1) == 1 &&
-					size(distortionParams, 2) == 5)
+				if (distortionParams.rows() == 1 &&
+					distortionParams.cols() == 5)
 				{
 					const CMatrixDouble15 p = distortionParams.cast<double>();
 					cameraParams.setDistortionParamsVector(p);
 				}
 				else
-					cameraParams.dist.assign(0);
+					cameraParams.dist.fill(0);
 
 				cameraParams.intrinsicParams =
 					intrinsicParams.block(0, 0, 3, 3).cast<double>();
@@ -112,9 +101,11 @@ void CObservationImage::readFromStream(mrpt::utils::CStream& in, int version)
 #if MRPT_HAS_MATLAB
 // Add to implement mexplus::from template specialization
 IMPLEMENTS_MEXPLUS_FROM(mrpt::obs::CObservationImage)
+#endif
 
 mxArray* CObservationImage::writeToMatlab() const
 {
+#if MRPT_HAS_MATLAB
 	const char* fields[] = {"class", "ts",   "sensorLabel",
 							"image", "pose", "params"};
 	mexplus::MxArray obs_struct(
@@ -127,12 +118,11 @@ mxArray* CObservationImage::writeToMatlab() const
 	obs_struct.set("pose", this->cameraPose);
 	obs_struct.set("params", this->cameraParams);
 	return obs_struct.release();
-}
+#else
+	THROW_EXCEPTION("MRPT built without MATLAB/Mex support");
 #endif
+}
 
-/*---------------------------------------------------------------
-						getRectifiedImage
- ---------------------------------------------------------------*/
 void CObservationImage::getRectifiedImage(CImage& out_img) const
 {
 	image.rectifyImage(out_img, cameraParams);
@@ -145,7 +135,8 @@ void CObservationImage::getDescriptionAsText(std::ostream& o) const
 
 	o << "Homogeneous matrix for the sensor's 3D pose, relative to robot "
 		 "base:\n";
-	o << cameraPose.getHomogeneousMatrixVal() << cameraPose << endl;
+	o << cameraPose.getHomogeneousMatrixVal<CMatrixDouble44>() << cameraPose
+	  << endl;
 
 	o << format(
 		"Focal length: %.03f mm\n", cameraParams.focalLengthMeters * 1000);

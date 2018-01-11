@@ -16,7 +16,7 @@
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::vision;
-using namespace mrpt::utils;
+using namespace mrpt::img;
 using namespace mrpt::math;
 
 // Ctor: Leave all vectors empty
@@ -25,7 +25,7 @@ CStereoRectifyMap::CStereoRectifyMap()
 	  m_resize_output(false),
 	  m_enable_both_centers_coincide(false),
 	  m_resize_output_value(0, 0),
-	  m_interpolation_method(mrpt::utils::IMG_INTERP_LINEAR)
+	  m_interpolation_method(mrpt::img::IMG_INTERP_LINEAR)
 {
 }
 
@@ -66,14 +66,14 @@ void CStereoRectifyMap::enableBothCentersCoincide(bool enable)
   * Must be called before invoking \a undistort().
   */
 void CStereoRectifyMap::setFromCamParams(
-	const mrpt::utils::TStereoCamera& params)
+	const mrpt::img::TStereoCamera& params)
 {
 	MRPT_START
 #if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x200
-	const mrpt::utils::TCamera& cam1 = params.leftCamera;
-	const mrpt::utils::TCamera& cam2 = params.rightCamera;
+	const mrpt::img::TCamera& cam1 = params.leftCamera;
+	const mrpt::img::TCamera& cam2 = params.rightCamera;
 
-	ASSERT_(cam1.ncols == cam2.ncols && cam1.nrows == cam2.nrows)
+	ASSERT_(cam1.ncols == cam2.ncols && cam1.nrows == cam2.nrows);
 
 	const uint32_t ncols = cam1.ncols;
 	const uint32_t nrows = cam1.nrows;
@@ -118,7 +118,7 @@ void CStereoRectifyMap::setFromCamParams(
 	CMatrixDouble44 hMatrix;
 	// NOTE!: OpenCV seems to expect the INVERSE of the pose we keep, so invert
 	// it:
-	params.rightCameraPose.getInverseHomogeneousMatrix(hMatrix);
+	mrpt::poses::CPose3D(params.rightCameraPose).getInverseHomogeneousMatrix(hMatrix);
 
 	double m1[3][3];
 	for (unsigned int i = 0; i < 3; ++i)
@@ -260,16 +260,16 @@ validPixROI2=0 );
 	m_rectified_image_params.rightCameraPose = params.rightCameraPose;
 
 #else
-	THROW_EXCEPTION("MRPT built without OpenCV >=2.0.0!")
+	THROW_EXCEPTION("MRPT built without OpenCV >=2.0.0!");
 #endif
 	MRPT_END
 }
 
 void CStereoRectifyMap::rectify(
-	const mrpt::utils::CImage& in_left_image,
-	const mrpt::utils::CImage& in_right_image,
-	mrpt::utils::CImage& out_left_image,
-	mrpt::utils::CImage& out_right_image) const
+	const mrpt::img::CImage& in_left_image,
+	const mrpt::img::CImage& in_right_image,
+	mrpt::img::CImage& out_left_image,
+	mrpt::img::CImage& out_right_image) const
 {
 	MRPT_START
 
@@ -303,7 +303,7 @@ void CStereoRectifyMap::rectify(
 
 // In place:
 void CStereoRectifyMap::rectify(
-	mrpt::utils::CImage& left_image, mrpt::utils::CImage& right_image,
+	mrpt::img::CImage& left_image, mrpt::img::CImage& right_image,
 	const bool use_internal_mem_cache) const
 {
 	MRPT_START
@@ -379,7 +379,7 @@ void CStereoRectifyMap::rectify(
 	const bool use_internal_mem_cache) const
 {
 	MRPT_START
-	ASSERT_(stereo_image_observation.hasImageRight)
+		ASSERT_(stereo_image_observation.hasImageRight);
 
 	// Rectify images:
 	this->rectify(
@@ -408,7 +408,7 @@ void CStereoRectifyMap::rectify_IPL(
 	void* outImg_right) const
 {
 	MRPT_START
-	ASSERT_(srcImg_left != outImg_left && srcImg_right != outImg_right)
+		ASSERT_(srcImg_left != outImg_left && srcImg_right != outImg_right);
 
 	if (!isSet())
 		THROW_EXCEPTION(
@@ -456,27 +456,27 @@ void CStereoRectifyMap::rectify_IPL(
 	MRPT_END
 }
 
-const mrpt::utils::TStereoCamera& CStereoRectifyMap::getRectifiedImageParams()
+const mrpt::img::TStereoCamera& CStereoRectifyMap::getRectifiedImageParams()
 	const
 {
 	if (!isSet())
-		THROW_EXCEPTION("Error: setFromCamParams() must be called before.")
+		THROW_EXCEPTION("Error: setFromCamParams() must be called before.");
 	return m_rectified_image_params;
 }
 
-const mrpt::utils::TCamera& CStereoRectifyMap::getRectifiedLeftImageParams()
+const mrpt::img::TCamera& CStereoRectifyMap::getRectifiedLeftImageParams()
 	const
 {
 	if (!isSet())
-		THROW_EXCEPTION("Error: setFromCamParams() must be called before.")
+		THROW_EXCEPTION("Error: setFromCamParams() must be called before.");
 	return m_rectified_image_params.leftCamera;
 }
 
-const mrpt::utils::TCamera& CStereoRectifyMap::getRectifiedRightImageParams()
+const mrpt::img::TCamera& CStereoRectifyMap::getRectifiedRightImageParams()
 	const
 {
 	if (!isSet())
-		THROW_EXCEPTION("Error: setFromCamParams() must be called before.")
+		THROW_EXCEPTION("Error: setFromCamParams() must be called before.");
 	return m_rectified_image_params.rightCamera;
 }
 

@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/datetime.h>
-#include <iostream>
+#include <iosfwd>
 #include <cstring>  // memset()
 #include <mrpt/obs/gnss_messages_type_list.h>
 
@@ -30,10 +30,10 @@ struct gnss_message
 
 	gnss_message(gnss_message_type_t msg_type_id) : message_type(msg_type_id) {}
 	/** Save to binary stream. Launches an exception upon error */
-	void writeToStream(mrpt::utils::CStream& out) const;
+	void writeToStream(mrpt::serialization::CArchive& out) const;
 	/** Load from binary stream into this existing object. Launches an exception
 	 * upon error. */
-	void readFromStream(mrpt::utils::CStream& in);
+	void readFromStream(mrpt::serialization::CArchive& in);
 
 	bool isOfType(const gnss_message_type_t type_id) const;
 	template <class MSG_CLASS>
@@ -44,7 +44,8 @@ struct gnss_message
 
 	/** Load from binary stream and creates object detecting its type (class
 	 * factory). Launches an exception upon error */
-	static gnss_message* readAndBuildFromStream(mrpt::utils::CStream& in);
+	static gnss_message* readAndBuildFromStream(
+		mrpt::serialization::CArchive& in);
 	/** Creates message \return nullptr on unknown msg type */
 	static gnss_message* Factory(const gnss_message_type_t msg_id);
 	/** Returns true if Factory() has a registered constructor for this msg type
@@ -53,10 +54,10 @@ struct gnss_message
 
 	/** Dumps the contents of the observation in a human-readable form to a
 	 * given output stream \sa dumpToConsole() */
-	virtual void dumpToStream(mrpt::utils::CStream& out) const = 0;
+	virtual void dumpToStream(std::ostream& out) const = 0;
 	/** Dumps the contents of the observation in a human-readable form to an
-	 * std::ostream (default=console) */
-	void dumpToConsole(std::ostream& o = std::cout) const;
+	 * std::ostream (set to std::cout to print to console) */
+	void dumpToConsole(std::ostream& o) const;
 	/** Dumps a header for getAllFieldValues() \return false if not implemented
 	 * for this message type */
 	virtual bool getAllFieldDescriptions(std::ostream& o) const
@@ -70,11 +71,13 @@ struct gnss_message
 	/** Returns "NMEA_GGA", etc. */
 	const std::string& getMessageTypeAsString() const;
 	virtual ~gnss_message() {}
+
    protected:
 	/** Save to binary stream. Launches an exception upon error */
-	virtual void internal_writeToStream(mrpt::utils::CStream& out) const = 0;
+	virtual void internal_writeToStream(
+		mrpt::serialization::CArchive& out) const = 0;
 	/** Save to binary stream. Launches an exception upon error */
-	virtual void internal_readFromStream(mrpt::utils::CStream& in) = 0;
+	virtual void internal_readFromStream(mrpt::serialization::CArchive& in) = 0;
 };
 
 /** A smart pointer to a GNSS message. \sa gnss_message,
@@ -116,21 +119,22 @@ struct gnss_message_ptr
 	void set(gnss_message* p);
 };
 
-#define GNSS_MESSAGE_BINARY_BLOCK(DATA_PTR, DATA_LEN)                     \
-   protected:                                                             \
-	void internal_writeToStream(mrpt::utils::CStream& out) const override \
-	{                                                                     \
-		out << static_cast<uint32_t>(DATA_LEN);                           \
-		out.WriteBuffer(DATA_PTR, DATA_LEN);                              \
-	}                                                                     \
-	void internal_readFromStream(mrpt::utils::CStream& in) override       \
-	{                                                                     \
-		uint32_t nBytesInStream;                                          \
-		in >> nBytesInStream;                                             \
-		ASSERT_EQUAL_(nBytesInStream, DATA_LEN);                          \
-		in.ReadBuffer(DATA_PTR, DATA_LEN);                                \
-	}                                                                     \
-                                                                          \
+#define GNSS_MESSAGE_BINARY_BLOCK(DATA_PTR, DATA_LEN)                        \
+   protected:                                                                \
+	void internal_writeToStream(mrpt::serialization::CArchive& out)          \
+		const override                                                       \
+	{                                                                        \
+		out << static_cast<uint32_t>(DATA_LEN);                              \
+		out.WriteBuffer(DATA_PTR, DATA_LEN);                                 \
+	}                                                                        \
+	void internal_readFromStream(mrpt::serialization::CArchive& in) override \
+	{                                                                        \
+		uint32_t nBytesInStream;                                             \
+		in >> nBytesInStream;                                                \
+		ASSERT_EQUAL_(nBytesInStream, DATA_LEN);                             \
+		in.ReadBuffer(DATA_PTR, DATA_LEN);                                   \
+	}                                                                        \
+                                                                             \
    public:
 
 #define GNSS_BINARY_MSG_DEFINITION_START(_MSG_ID)                            \
@@ -149,7 +153,7 @@ struct gnss_message_ptr
 	}                                                                        \
 	;                                                                        \
 	content_t fields; /** Message content, accesible by individual fields */ \
-	void dumpToStream(mrpt::utils::CStream& out) const override;
+	void dumpToStream(std::ostream& out) const override;
 
 #define GNSS_BINARY_MSG_DEFINITION_MID_END \
 	}                                      \
@@ -184,12 +188,12 @@ struct UTC_time
 		return hour != o.hour || minute != o.minute || sec != o.sec;
 	}
 	/** Save to binary stream. Launches an exception upon error */
-	void writeToStream(mrpt::utils::CStream& out) const;
+	void writeToStream(mrpt::serialization::CArchive& out) const;
 	/** Save to binary stream. Launches an exception upon error */
-	void readFromStream(mrpt::utils::CStream& in);
+	void readFromStream(mrpt::serialization::CArchive& in);
 };
 
 #pragma pack(pop)  // End of pack = 1
-}
-}
-}  // End of namespaces
+}  // namespace gnss
+}  // namespace obs
+}  // namespace mrpt

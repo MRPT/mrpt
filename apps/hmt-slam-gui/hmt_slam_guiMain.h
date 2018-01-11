@@ -208,7 +208,7 @@ class hmt_slam_guiFrame : public wxFrame
 		THREAD_OPCODE opcode;
 	};
 
-	mrpt::utils::CThreadSafeQueue<TThreadMsg> m_thread_in_queue,
+	mrpt::containers::CThreadSafeQueue<TThreadMsg> m_thread_in_queue,
 		m_thread_out_queue;
 
 	// ---------------------------------------------|
@@ -237,10 +237,10 @@ class hmt_slam_guiFrame : public wxFrame
 class CItemData : public wxTreeItemData
 {
    public:
-	mrpt::utils::CSerializable::Ptr m_ptr;
+	mrpt::serialization::CSerializable::Ptr m_ptr;
 	size_t m_itemIndex;
 
-	CItemData(mrpt::utils::CSerializable::Ptr ptr, size_t itemIndex)
+	CItemData(mrpt::serialization::CSerializable::Ptr ptr, size_t itemIndex)
 		: m_ptr(ptr), m_itemIndex(itemIndex)
 	{
 	}

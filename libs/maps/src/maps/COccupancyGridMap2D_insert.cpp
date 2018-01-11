@@ -12,8 +12,9 @@
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservationRange.h>
-#include <mrpt/utils/CStream.h>
-#include <mrpt/utils/round.h>  // round()
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/core/round.h>  // round()
+#include <mrpt/system/memory.h> // alloca()
 
 #if HAVE_ALLOCA_H
 #include <alloca.h>
@@ -22,7 +23,7 @@
 using namespace mrpt;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
+using namespace mrpt::math;
 using namespace mrpt::poses;
 using namespace std;
 
@@ -93,7 +94,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 		//  Use the z-axis direction of the transformed Z axis of the sensor
 		//  coordinates:
 		bool sensorIsBottomwards =
-			sensorPose3D.getHomogeneousMatrixVal().get_unsafe(2, 2) < 0;
+			sensorPose3D.getHomogeneousMatrixVal<CMatrixDouble44>().get_unsafe(2, 2) < 0;
 
 		if (reallyInsert)
 		{
@@ -1331,7 +1332,7 @@ COccupancyGridMap2D::TInsertionOptions::TInsertionOptions()
 					loadFromConfigFile
   ---------------------------------------------------------------*/
 void COccupancyGridMap2D::TInsertionOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
 {
 	MRPT_LOAD_CONFIG_VAR(mapAltitude, float, iniFile, section);
 	MRPT_LOAD_CONFIG_VAR(maxDistanceInsertion, float, iniFile, section);
@@ -1350,10 +1351,9 @@ void COccupancyGridMap2D::TInsertionOptions::loadFromConfigFile(
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void COccupancyGridMap2D::TInsertionOptions::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+void COccupancyGridMap2D::TInsertionOptions::dumpToTextStream(std::ostream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [COccupancyGridMap2D::TInsertionOptions] ------------ "
 		"\n\n");
 
@@ -1368,7 +1368,7 @@ void COccupancyGridMap2D::TInsertionOptions::dumpToTextStream(
 	LOADABLEOPTS_DUMP_VAR(CFD_features_median_size, float)
 	LOADABLEOPTS_DUMP_VAR(wideningBeamsWithDistance, bool)
 
-	out.printf("\n");
+	out << mrpt::format("\n");
 }
 
 void COccupancyGridMap2D::OnPostSuccesfulInsertObs(

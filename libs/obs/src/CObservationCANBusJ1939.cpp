@@ -10,50 +10,32 @@
 #include "obs-precomp.h"  // Precompiled headers
 
 #include <mrpt/obs/CObservationCANBusJ1939.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
+#include <iostream>
 
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace std;
 
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationCANBusJ1939, CObservation, mrpt::obs)
 
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CObservationCANBusJ1939::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CObservationCANBusJ1939::serializeGetVersion() const { return 1; }
+void CObservationCANBusJ1939::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		uint32_t i, n = m_data.size();
-		out << m_pgn;
-		out << m_src_address;
-		out << m_priority;
-		out << m_pdu_format;
-		out << m_pdu_spec;
-		out << m_data_length;
-		out << n;
-
-		for (i = 0; i < n; i++) out << m_data[i];
-
-		n = m_raw_frame.size();
-		out << n;
-		for (i = 0; i < n; i++) out << uint8_t(m_raw_frame[i]);
-
-		out << sensorLabel << timestamp;
-	}
+	out << m_pgn << m_src_address << m_priority << m_pdu_format;
+	out << m_pdu_spec << m_data_length;
+	out.WriteAs<uint32_t>(m_data.size());
+	if (!m_data.empty()) out.WriteBuffer(&m_data[0], m_data.size());
+	out.WriteAs<uint32_t>(m_raw_frame.size());
+	if (!m_raw_frame.empty())
+		out.WriteBuffer(&m_raw_frame[0], m_raw_frame.size());
+	out << sensorLabel << timestamp;
 }
 
-/*---------------------------------------------------------------
-  Implements the reading from a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CObservationCANBusJ1939::readFromStream(
-	mrpt::utils::CStream& in, int version)
+void CObservationCANBusJ1939::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

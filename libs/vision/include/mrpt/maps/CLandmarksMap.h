@@ -16,10 +16,10 @@
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/obs/CObservationBearingRange.h>
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/math/CMatrix.h>
-#include <mrpt/utils/CDynamicGrid.h>
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/containers/CDynamicGrid.h>
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/obs/obs_frwds.h>
 
 namespace mrpt
@@ -125,7 +125,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 		const mrpt::poses::CPose3D& takenFrom) override;
 
 	/** The color of landmark ellipsoids in CLandmarksMap::getAs3DObject */
-	static mrpt::utils::TColorf COLOR_LANDMARKS_IN_3DSCENES;
+	static mrpt::img::TColorf COLOR_LANDMARKS_IN_3DSCENES;
 
 	typedef mrpt::maps::CLandmark landmark_type;
 
@@ -141,7 +141,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 		/** A grid-map with the set of landmarks falling into each cell.
 		  *  \todo Use the KD-tree instead?
 		  */
-		mrpt::utils::CDynamicGrid<vector_int> m_grid;
+		mrpt::containers::CDynamicGrid<std::vector<int32_t>> m_grid;
 
 		/** Auxiliary variables used in "getLargestDistanceFromOrigin"
 		  * \sa getLargestDistanceFromOrigin
@@ -177,7 +177,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 		void hasBeenModifiedAll();
 		void erase(unsigned int indx);
 
-		mrpt::utils::CDynamicGrid<vector_int>* getGrid() { return &m_grid; }
+		mrpt::containers::CDynamicGrid<std::vector<int32_t>>* getGrid() { return &m_grid; }
 		/** Returns the landmark with a given landmrk ID, or nullptr if not
 		 * found
 		  */
@@ -228,7 +228,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 	/** With this struct options are provided to the observation insertion
 	 * process.
 	 */
-	struct TInsertionOptions : public utils::CLoadableOptions
+	struct TInsertionOptions : public mrpt::config::CLoadableOptions
 	{
 	   public:
 		/** Initilization of default parameters
@@ -236,10 +236,9 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 		TInsertionOptions();
 
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+		void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
 		/** If set to true (default), the insertion of a CObservationImage in
 		 * the map will insert SIFT 3D features.
@@ -343,16 +342,15 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 
 	/** With this struct options are provided to the likelihood computations.
 	 */
-	struct TLikelihoodOptions : public utils::CLoadableOptions
+	struct TLikelihoodOptions : public mrpt::config::CLoadableOptions
 	{
 	   public:
 		TLikelihoodOptions();
 
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+		void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
 		/** @name Parameters for: 2D LIDAR scans
 		  * @{ */
@@ -556,7 +554,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 		const mrpt::poses::CPose2D& otherMapPose,
 		float maxDistForCorrespondence, float maxAngularDistForCorrespondence,
 		const mrpt::poses::CPose2D& angularDistPivotPoint,
-		mrpt::utils::TMatchingPairList& correspondences,
+		mrpt::tfest::TMatchingPairList& correspondences,
 		float& correspondencesRatio, float* sumSqrDist = nullptr,
 		bool onlyKeepTheClosest = false, bool onlyUniqueRobust = false) const;
 
@@ -574,7 +572,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 	  */
 	void computeMatchingWith3DLandmarks(
 		const mrpt::maps::CLandmarksMap* otherMap,
-		mrpt::utils::TMatchingPairList& correspondences,
+		mrpt::tfest::TMatchingPairList& correspondences,
 		float& correspondencesRatio,
 		std::vector<bool>& otherCorrespondences) const;
 
@@ -607,7 +605,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 	  */
 	double computeLikelihood_SIFT_LandmarkMap(
 		CLandmarksMap* map,
-		mrpt::utils::TMatchingPairList* correspondences = nullptr,
+		mrpt::tfest::TMatchingPairList* correspondences = nullptr,
 		std::vector<bool>* otherCorrespondences = nullptr);
 
 	/** Returns true if the map is empty/no observation has been inserted.
@@ -672,9 +670,9 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 		const mrpt::poses::CPose3D& sensorLocationOnRobot,
 		mrpt::obs::CObservationBearingRange& observations,
 		bool sensorDetectsIDs = true, const float stdRange = 0.01f,
-		const float stdYaw = mrpt::utils::DEG2RAD(0.1f),
-		const float stdPitch = mrpt::utils::DEG2RAD(0.1f),
-		vector_size_t* real_associations = nullptr,
+		const float stdYaw = mrpt::DEG2RAD(0.1f),
+		const float stdPitch = mrpt::DEG2RAD(0.1f),
+		std::vector<size_t>* real_associations = nullptr,
 		const double spurious_count_mean = 0,
 		const double spurious_count_std = 0) const;
 

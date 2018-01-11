@@ -19,9 +19,8 @@
 #include <mrpt/config.h>
 #if MRPT_HAS_PCL
 
-#include <mrpt/utils/utils_defs.h>
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 
 #include <mrpt/pbmap/Plane.h>
 #include <mrpt/pbmap/Miscellaneous.h>  // For typedef PointT;
@@ -46,7 +45,7 @@ namespace pbmap
 *
 *\ingroup mrpt_pbmap_grp
 */
-class PbMap : public mrpt::utils::CSerializable
+class PbMap : public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(PbMap)
 

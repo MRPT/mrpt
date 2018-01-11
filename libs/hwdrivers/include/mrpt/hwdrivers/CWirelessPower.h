@@ -11,7 +11,7 @@
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/obs/CObservationWirelessPower.h>
-#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/config/CConfigFileBase.h>
 
 namespace mrpt
 {
@@ -58,7 +58,7 @@ class CWirelessPower : public mrpt::hwdrivers::CGenericSensor
 
 	void doProcess();
 	void loadConfig_sensorSpecific(
-		const mrpt::utils::CConfigFileBase& configSource,
+		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& section);
 
 	/** Gets a list of the interfaces

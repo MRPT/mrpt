@@ -7,10 +7,9 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/utils/TParameters.h>
+#include <mrpt/system/TParameters.h>
 
 using namespace std;
-using namespace mrpt::utils;
 
 void MyCoolFunction(const TParametersDouble& params)
 {

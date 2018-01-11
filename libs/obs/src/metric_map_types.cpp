@@ -9,32 +9,24 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/CStream.h>
-#include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/maps/metric_map_types.h>
 
 using namespace mrpt::obs;
 using namespace mrpt::maps;
-using namespace mrpt::utils;
 
 IMPLEMENTS_SERIALIZABLE(TMapGenericParams, CSerializable, mrpt::maps)
 
-TMapGenericParams::TMapGenericParams()
-	: enableSaveAs3DObject(true),
-	  enableObservationLikelihood(true),
-	  enableObservationInsertion(true)
-{
-}
-
 void TMapGenericParams::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& source, const std::string& sct)
+	const mrpt::config::CConfigFileBase& source, const std::string& sct)
 {
 	MRPT_LOAD_CONFIG_VAR(enableSaveAs3DObject, bool, source, sct);
 	MRPT_LOAD_CONFIG_VAR(enableObservationLikelihood, bool, source, sct);
 	MRPT_LOAD_CONFIG_VAR(enableObservationInsertion, bool, source, sct);
 }
-void TMapGenericParams::dumpToTextStream(mrpt::utils::CStream& out) const
+void TMapGenericParams::dumpToTextStream(std::ostream& out) const
 {
 	// Common:
 	LOADABLEOPTS_DUMP_VAR(enableSaveAs3DObject, bool);
@@ -42,19 +34,14 @@ void TMapGenericParams::dumpToTextStream(mrpt::utils::CStream& out) const
 	LOADABLEOPTS_DUMP_VAR(enableObservationInsertion, bool);
 }
 
-void TMapGenericParams::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t TMapGenericParams::serializeGetVersion() const { return 0; }
+void TMapGenericParams::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		out << enableSaveAs3DObject << enableObservationLikelihood
-			<< enableObservationInsertion;
-	}
+	out << enableSaveAs3DObject << enableObservationLikelihood
+		<< enableObservationInsertion;
 }
-
-void TMapGenericParams::readFromStream(mrpt::utils::CStream& in, int version)
+void TMapGenericParams::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

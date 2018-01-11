@@ -9,7 +9,7 @@
 #ifndef CSENSORYFRAME_H
 #define CSENSORYFRAME_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/obs/CObservation.h>
 
@@ -51,14 +51,14 @@ namespace obs
   * \sa CObservation
   * \ingroup mrpt_obs_grp
   */
-class CSensoryFrame : public mrpt::utils::CSerializable
+class CSensoryFrame : public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(CSensoryFrame)
 
    public:
 	/** Default constructor
 	 */
-	CSensoryFrame();
+	CSensoryFrame() = default;
 
 	/** Copy constructor
 	 */
@@ -118,10 +118,6 @@ class CSensoryFrame : public mrpt::utils::CSerializable
 	/** Copy
 	  */
 	CSensoryFrame& operator=(const CSensoryFrame& o);
-
-	/** Destructor.
-	 */
-	virtual ~CSensoryFrame();
 
 	/** Clear all current observations.
 	 */
@@ -218,8 +214,7 @@ class CSensoryFrame : public mrpt::utils::CSerializable
 	{
 		MRPT_START
 		size_t foundCount = 0;
-		const mrpt::utils::TRuntimeClassId* class_ID =
-			&T::GetRuntimeClassIdStatic();
+		const mrpt::rtti::TRuntimeClassId* class_ID = &T::GetRuntimeClassIdStatic();
 		for (const_iterator it = begin(); it != end(); ++it)
 			if ((*it)->GetRuntimeClass()->derivedFrom(class_ID))
 				if (foundCount++ == ith)

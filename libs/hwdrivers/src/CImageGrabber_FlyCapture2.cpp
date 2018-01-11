@@ -177,7 +177,7 @@ TCaptureOptions_FlyCapture2::TCaptureOptions_FlyCapture2()
 }
 
 void TCaptureOptions_FlyCapture2::loadOptionsFrom(
-	const mrpt::utils::CConfigFileBase& cfg, const std::string& sect,
+	const mrpt::config::CConfigFileBase& cfg, const std::string& sect,
 	const std::string& prefix)
 {
 	camera_index =
@@ -193,7 +193,7 @@ void TCaptureOptions_FlyCapture2::loadOptionsFrom(
 		mrpt::system::tokenize(sGUID, "- \t\r\n", sGUIDparts);
 		ASSERTMSG_(
 			sGUIDparts.size() == 4,
-			"GUID format error: must have four blocks like XXX-XXX-XXX-XXX")
+			"GUID format error: must have four blocks like XXX-XXX-XXX-XXX");
 
 		for (int i = 0; i < 4; i++)
 			sscanf(sGUIDparts[i].c_str(), "%X", &camera_guid[i]);
@@ -441,7 +441,7 @@ void CImageGrabber_FlyCapture2::open(
 				*(TRI_CONTEXT), &m_centerRow, &m_centerCol);
 			CHECK_TRICLOPS_ERROR(te);
 #else
-			THROW_EXCEPTION("MRPT compiled without support for Triclops")
+			THROW_EXCEPTION("MRPT compiled without support for Triclops");
 #endif
 		}
 	}
@@ -575,7 +575,7 @@ void CImageGrabber_FlyCapture2::open(
 	// Start:
 	if (startCapture) this->startCapture();
 #else
-	THROW_EXCEPTION("MRPT compiled without support for FlyCapture2")
+	THROW_EXCEPTION("MRPT compiled without support for FlyCapture2");
 #endif
 }
 
@@ -586,14 +586,14 @@ void CImageGrabber_FlyCapture2::startCapture()
 #if MRPT_HAS_FLYCAPTURE2
 	if (!m_camera)
 	{
-		THROW_EXCEPTION("Camera is not opened. Call open() first.")
+		THROW_EXCEPTION("Camera is not opened. Call open() first.");
 	}
 
 	FlyCapture2::Error error = FC2_CAM->StartCapture();
 	CHECK_FC2_ERROR(error)
 
 #else
-	THROW_EXCEPTION("MRPT compiled without support for FlyCapture2")
+	THROW_EXCEPTION("MRPT compiled without support for FlyCapture2");
 #endif
 }
 
@@ -627,7 +627,7 @@ void CImageGrabber_FlyCapture2::startSyncCapture(
 		CHECK_FC2_ERROR(error)
 	}
 #else
-	THROW_EXCEPTION("MRPT compiled without support for FlyCapture2")
+	THROW_EXCEPTION("MRPT compiled without support for FlyCapture2");
 #endif
 }
 
@@ -644,7 +644,7 @@ void CImageGrabber_FlyCapture2::stopCapture()
 		CHECK_FC2_ERROR(error)
 	}
 #else
-	THROW_EXCEPTION("MRPT compiled without support for FlyCapture2")
+	THROW_EXCEPTION("MRPT compiled without support for FlyCapture2");
 #endif
 }
 
@@ -699,7 +699,7 @@ void CImageGrabber_FlyCapture2::close()
 	m_camera_info = nullptr;
 
 #else
-	THROW_EXCEPTION("MRPT compiled without support for FlyCapture2")
+	THROW_EXCEPTION("MRPT compiled without support for FlyCapture2");
 #endif
 }
 
@@ -713,7 +713,7 @@ std::string CImageGrabber_FlyCapture2::getFC2version()
 		"%d.%d.%d.%d", fc2Version.major, fc2Version.minor, fc2Version.type,
 		fc2Version.build);
 #else
-	THROW_EXCEPTION("MRPT compiled without support for FlyCapture2")
+	THROW_EXCEPTION("MRPT compiled without support for FlyCapture2");
 #endif
 }
 
@@ -776,7 +776,7 @@ bool CImageGrabber_FlyCapture2::getObservation(
 		return false;
 	}
 #else
-	THROW_EXCEPTION("MRPT compiled without support for FlyCapture2")
+	THROW_EXCEPTION("MRPT compiled without support for FlyCapture2");
 #endif
 }
 

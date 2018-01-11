@@ -10,13 +10,13 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CSetOfLines.h>
-#include <mrpt/utils/CStream.h>
-#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/stl_serialization.h>
 #include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
+
 using namespace mrpt::math;
 using namespace std;
 
@@ -123,28 +123,17 @@ void CSetOfLines::render_dl() const
 #endif
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CSetOfLines::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CSetOfLines::serializeGetVersion() const { return 4; }
+void CSetOfLines::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 4;
-	else
-	{
-		writeToStreamRender(out);
-		out << mSegments << mLineWidth;
-		out << m_antiAliasing;  // Added in v3
-		out << m_verticesPointSize;  // v4
-	}
+	writeToStreamRender(out);
+	out << mSegments << mLineWidth;
+	out << m_antiAliasing;  // Added in v3
+	out << m_verticesPointSize;  // v4
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CSetOfLines::readFromStream(mrpt::utils::CStream& in, int version)
+void CSetOfLines::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -228,7 +217,7 @@ void CSetOfLines::getLineByIndex(
 	size_t index, double& x0, double& y0, double& z0, double& x1, double& y1,
 	double& z1) const
 {
-	ASSERT_(index < mSegments.size())
+	ASSERT_(index < mSegments.size());
 	const mrpt::math::TPoint3D& p0 = mSegments[index].point1;
 	const mrpt::math::TPoint3D& p1 = mSegments[index].point2;
 	x0 = p0.x;

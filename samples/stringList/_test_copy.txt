@@ -6,7 +6,7 @@ using namespace std;
 // ------------------------------------------------------
 void TestStringList()
 {
-	UTILS::CStringList		strings, strings2;
+	std::vector<std::string>		strings, strings2;
 	std::string				wholeStr;
  // This was line 10!!
 	std::cout << "Number of lines: " << strings.size() << "\n";
@@ -38,7 +38,7 @@ void TestStringList()
 }
 void Test2()
 {
-	UTILS::CStringList		strings;
+	std::vector<std::string>		strings;
 	strings.loadFromFile("test.ini");
 	cout << "OBSTACLES_GRID_MAX_RANGE=" << strings.get_float("OBSTACLES_GRID_MAX_RANGE") << endl;
 	strings.set("x","");

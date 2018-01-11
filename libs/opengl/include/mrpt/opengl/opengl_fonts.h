@@ -10,8 +10,8 @@
 #ifndef mrpt_opengl_fonts_H
 #define mrpt_opengl_fonts_H
 
-#include <mrpt/utils/TColor.h>
-#include <mrpt/utils/compiler_fixes.h>  // disable warnings
+#include <mrpt/img/TColor.h>
+#include <mrpt/core/common.h>  // disable warnings
 #include <string>
 
 namespace mrpt
@@ -59,10 +59,10 @@ struct TFontParams
 	{
 	}
 
-	mrpt::utils::TColorf color;
+	mrpt::img::TColorf color;
 
 	bool draw_shadow;
-	mrpt::utils::TColorf shadow_color;
+	mrpt::img::TColorf shadow_color;
 
 	/** @name Bitmapped font params
 		@{ */

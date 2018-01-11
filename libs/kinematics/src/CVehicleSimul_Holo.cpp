@@ -49,14 +49,14 @@ void CVehicleSimul_Holo::internal_simulControlStep(const double dt)
 		// Ramp rotvel until aligned:
 		const double Aang =
 			mrpt::math::wrapToPi(m_vel_ramp_cmd.dir - m_odometry.phi);
-		if (std::abs(Aang) < mrpt::utils::DEG2RAD(1.0))
+		if (std::abs(Aang) < mrpt::DEG2RAD(1.0))
 		{
 			m_odometric_vel.omega = .0;  // we are aligned.
 		}
 		else
 		{
 			const double wf =
-				mrpt::utils::sign(Aang) * std::abs(m_vel_ramp_cmd.rot_speed);
+				mrpt::sign(Aang) * std::abs(m_vel_ramp_cmd.rot_speed);
 			if (t <= m_vel_ramp_cmd.ramp_time)
 			{
 				m_odometric_vel.omega = wi + t * (wf - wi) / T;

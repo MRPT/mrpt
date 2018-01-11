@@ -7,8 +7,8 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/utils/CTicTac.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
@@ -17,7 +17,6 @@
 #include <mrpt/obs/CObservation2DRangeScan.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace mrpt::obs;
 using namespace mrpt::maps;

@@ -9,7 +9,7 @@
 #ifndef CMRVISUALIZER_IMPL_H
 #define CMRVISUALIZER_IMPL_H
 
-#include <mrpt/utils/TColorManager.h>
+#include <mrpt/img/TColorManager.h>
 
 namespace mrpt
 {
@@ -47,7 +47,7 @@ void CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 				   EDGE_ANNOTATIONS>::
 	drawNodePoints(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::utils::TParametersDouble* viz_params /*=NULL*/) const
+		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
 {
 }
 
@@ -57,7 +57,7 @@ void CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 				   EDGE_ANNOTATIONS>::
 	drawEdges(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::utils::TParametersDouble* viz_params /*=NULL*/) const
+		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
 {
 }
 
@@ -86,11 +86,11 @@ void CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations,
 				   EDGE_ANNOTATIONS>::
 	drawNodePoints(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::utils::TParametersDouble* viz_params /*=NULL*/) const
+		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
 {
 	using namespace mrpt::opengl;
-	using namespace mrpt::utils;
 	using namespace mrpt::graphs;
+	using namespace mrpt::img;
 	using namespace std;
 
 	const double nodes_point_size =
@@ -172,11 +172,11 @@ void CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations,
 				   EDGE_ANNOTATIONS>::
 	drawEdges(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::utils::TParametersDouble* viz_params /*=NULL*/) const
+		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
 {
 	using namespace mrpt::opengl;
-	using namespace mrpt::utils;
-
+	using namespace mrpt::img;
+	
 	ASSERTMSG_(viz_params, "Pointer to viz_params was not provided.");
 	typedef map<pair<string, bool>, CSetOfLines::Ptr> PairToSetOfLines_t;
 

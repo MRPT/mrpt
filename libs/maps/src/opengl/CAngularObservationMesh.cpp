@@ -11,16 +11,16 @@
 
 #include <mrpt/opengl/CAngularObservationMesh.h>
 #include <mrpt/poses/CPoint3D.h>
-#include <mrpt/utils/stl_serialization.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/stl_serialization.h>
+#include <mrpt/serialization/CArchive.h>
 
 #if MRPT_HAS_OPENGL_GLUT
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 // Windows:
 #include <windows.h>
 #endif
 
-#ifdef MRPT_OS_APPLE
+#ifdef __APPLE__
 #include <OpenGL/gl.h>
 #else
 #include <GL/gl.h>
@@ -28,9 +28,9 @@
 #endif
 
 // Include libraries in linking:
-#if MRPT_HAS_OPENGL_GLUT && defined(MRPT_OS_WINDOWS)
+#if MRPT_HAS_OPENGL_GLUT && defined(_WIN32)
 // WINDOWS:
-#if defined(_MSC_VER) || defined(__BORLANDC__)
+#if defined(_MSC_VER)
 #pragma comment(lib, "opengl32.lib")
 #pragma comment(lib, "GlU32.lib")
 #endif
@@ -41,7 +41,6 @@ using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::math;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 
@@ -113,9 +112,9 @@ void CAngularObservationMesh::updateMesh() const
 										  0.5);
 				// Without the pitch since it's already within each sensorPose:
 				actualMesh(i, j) =
-					(origin +
+					((origin +
 					 CPose3D(0, 0, 0, rToL ? pYaw : -pYaw, pitchIncr)) +
-					CPoint3D(scan[j], 0, 0);
+					CPoint3D(scan[j], 0, 0)).asTPoint();
 			}
 	}
 	delete[] pitchs;
@@ -310,29 +309,15 @@ void CAngularObservationMesh::generatePointCloud(CPointsMap* out_map) const
 		scanSet.begin(), scanSet.end(), CAngularObservationMesh_fnctr(out_map));
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CAngularObservationMesh::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CAngularObservationMesh::serializeGetVersion() const { return 0; }
+void CAngularObservationMesh::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		writeToStreamRender(out);
-		// Version 0:
-		out << pitchBounds << scanSet << mWireframe << mEnableTransparency;
-	}
+	writeToStreamRender(out);
+	// Version 0:
+	out << pitchBounds << scanSet << mWireframe << mEnableTransparency;
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CAngularObservationMesh::readFromStream(
-	mrpt::utils::CStream& in, int version)
+void CAngularObservationMesh::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -361,15 +346,15 @@ void CAngularObservationMesh::getTracedRays(CSetOfLines::Ptr& res) const
 {
 	if (!meshUpToDate) updateMesh();
 	size_t count = 0;
-	for (size_t i = 0; i < validityMatrix.getRowCount(); i++)
-		for (size_t j = 0; j < validityMatrix.getColCount(); j++)
+	for (size_t i = 0; i < validityMatrix.rows(); i++)
+		for (size_t j = 0; j < validityMatrix.cols(); j++)
 			if (validityMatrix(i, j)) count++;
 	res->reserve(count);
-	for (size_t i = 0; i < actualMesh.getRowCount(); i++)
-		for (size_t j = 0; j < actualMesh.getColCount(); j++)
+	for (size_t i = 0; i < actualMesh.rows(); i++)
+		for (size_t j = 0; j < actualMesh.cols(); j++)
 			if (validityMatrix(i, j))
 				res->appendLine(
-					TPose3D(scanSet[i].sensorPose), actualMesh(i, j));
+					(scanSet[i].sensorPose).asTPose(), actualMesh(i, j));
 }
 
 class FAddUntracedLines
@@ -402,13 +387,13 @@ class FAddUntracedLines
 									 static_cast<double>(obs.scan.size() - 1)) -
 									0.5);
 				lins->appendLine(
-					TPoint3D(obs.sensorPose),
-					TPoint3D(
+					obs.sensorPose.asTPose(),
+					(
 						obs.sensorPose +
 						CPose3D(
 							0, 0, 0, obs.rightToLeft ? yaw : -yaw,
 							obs.deltaPitch * i + pitchs.back(), 0) +
-						pDist));
+						pDist).asTPoint());
 			}
 		pitchs.pop_back();
 	}

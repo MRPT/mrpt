@@ -9,13 +9,13 @@
 #ifndef CHMHMapNode_H
 #define CHMHMapNode_H
 
-#include <mrpt/utils/safe_pointers.h>
+#include <mrpt/core/safe_pointers.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/hmtslam/HMT_SLAM_common.h>
 
-#include <mrpt/utils/CSerializable.h>
-#include <mrpt/utils/CMHPropertiesValuesList.h>
-#include <mrpt/utils/CTypeSelector.h>
+#include <mrpt/serialization/CSerializable.h>
+#include <mrpt/hmtslam/CMHPropertiesValuesList.h>
+#include <mrpt/graphs/TNodeID.h>
 #include <map>
 
 namespace mrpt
@@ -33,7 +33,7 @@ class CHMHMapArc;
  * \sa CHierarchicalMHMap,CHMHMapArc
   * \ingroup mrpt_hmtslam_grp
  */
-class CHMHMapNode : public mrpt::utils::CSerializable
+class CHMHMapNode : public mrpt::serialization::CSerializable
 {
 	friend class CHierarchicalMHMap;
 	friend class CHierarchicalMHMapPartition;
@@ -44,7 +44,7 @@ class CHMHMapNode : public mrpt::utils::CSerializable
    public:
 	/** The type of the IDs of nodes.
 	  */
-	typedef mrpt::utils::TNodeID TNodeID;
+	typedef mrpt::graphs::TNodeID TNodeID;
 
 	/** The hypothesis IDs under which this node exists.
 	  */
@@ -75,7 +75,7 @@ class CHMHMapNode : public mrpt::utils::CSerializable
 
 	/** The hierarchical graph in which this object is into.
 	  */
-	mrpt::utils::safe_ptr<CHierarchicalMHMap> m_parent;
+	mrpt::safe_ptr<CHierarchicalMHMap> m_parent;
 
    public:
 	/** Constructor
@@ -91,7 +91,7 @@ class CHMHMapNode : public mrpt::utils::CSerializable
 	/** The annotations of the node, see the general description of the class
 	 * for possible properties and values.
 	  */
-	utils::CMHPropertiesValuesList m_annotations;
+	CMHPropertiesValuesList m_annotations;
 
 	/** The type of the node, the possibilities are:
 	  *		- Place
@@ -99,7 +99,7 @@ class CHMHMapNode : public mrpt::utils::CSerializable
 	  *		- TopologicalMap
 	  *		- Object
 	  */
-	utils::CTypeSelector m_nodeType;
+	std::string m_nodeType;
 
 	/** Reads the ID of the node (read-only property)
 	  */
@@ -142,7 +142,7 @@ class CHMHMapNode : public mrpt::utils::CSerializable
   * \sa CHMTSLAM
   */
 typedef std::map<CHMHMapNode::TNodeID, std::shared_ptr<CHMHMapNode>> TNodeList;
-typedef mrpt::utils::list_searchable<CHMHMapNode::TNodeID> TNodeIDList;
+typedef mrpt::containers::list_searchable<CHMHMapNode::TNodeID> TNodeIDList;
 typedef std::set<CHMHMapNode::TNodeID> TNodeIDSet;
 typedef std::pair<CHMHMapNode::TNodeID, CHMHMapNode::TNodeID> TPairNodeIDs;
 

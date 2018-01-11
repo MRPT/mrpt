@@ -44,14 +44,13 @@ void CRegistrationDeciderOrOptimizer<GRAPH_T>::initializeLoggers(
 	const std::string& name)
 {
 	using namespace std;
-	using namespace mrpt::utils;
-
+	
 	this->setClassName(name);  // all the names in one call
 	this->logging_enable_keep_record = true;
 
 	// just for the messages until reading the actual verbosity level, set it to
 	// debug.
-	this->setMinLoggingLevel(LVL_DEBUG);
+	this->setMinLoggingLevel(mrpt::system::LVL_DEBUG);
 	MRPT_LOG_DEBUG_STREAM("Initialized time, output logger instances." << endl);
 }
 
@@ -84,7 +83,7 @@ void CRegistrationDeciderOrOptimizer<GRAPH_T>::setCriticalSectionPtr(
 {
 	m_graph_section = graph_section;
 	this->logFmt(
-		mrpt::utils::LVL_DEBUG, "Fetched the CCRiticalSection successfully");
+		mrpt::system::LVL_DEBUG, "Fetched the CCRiticalSection successfully");
 }
 
 template <class GRAPH_T>
@@ -139,8 +138,7 @@ void CRegistrationDeciderOrOptimizer<GRAPH_T>::getDescriptiveReport(
 template <class GRAPH_T>
 void CRegistrationDeciderOrOptimizer<GRAPH_T>::setGraphPtr(GRAPH_T* graph)
 {
-	using namespace mrpt::utils;
-
+	
 	m_graph = graph;
 	MRPT_LOG_DEBUG_STREAM("Fetched the graph pointer successfully");
 }

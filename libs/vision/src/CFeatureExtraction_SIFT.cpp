@@ -31,14 +31,14 @@
 #endif
 
 // TODO: Remove, it's just for GetTempPathA
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 #include <windows.h>
 #endif
 
 using namespace mrpt;
 using namespace mrpt::vision;
+using namespace mrpt::img;
 using namespace mrpt::system;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
@@ -106,7 +106,7 @@ void CFeatureExtraction::extractFeaturesSIFT(
 
 		case CSBinary:
 		{
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 
 			char filImg[2000], filOut[2000], filFeat[2000];
 			char paramImg[2000];
@@ -165,14 +165,14 @@ void CFeatureExtraction::extractFeaturesSIFT(
 
 			CMatrix aux;
 			aux.loadFromTextFile(filOut);
-			std::cout << "[computeSiftFeatures] " << aux.getRowCount()
+			std::cout << "[computeSiftFeatures] " << aux.rows()
 					  << " features." << std::endl;
 
 			if (onlyDesc)
 				nFeats = feats.size();
 			else
 			{
-				nFeats = aux.getRowCount();
+				nFeats = aux.rows();
 				feats.resize(nFeats);
 			}
 
@@ -202,7 +202,7 @@ void CFeatureExtraction::extractFeaturesSIFT(
 // --------------------------------------------------------------------------------------
 //		Binary by Vedaldi: NOT IMPLEMENTED YET. Input in PGM format
 // --------------------------------------------------------------------------------------
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 			THROW_EXCEPTION(
 				"Usage of Vedaldi Binary not implemented yet, please, try "
 				"another one");
@@ -218,7 +218,7 @@ void CFeatureExtraction::extractFeaturesSIFT(
 		// --------------------------------------------------------------------------------------
 		case LoweBinary:  // Binary by Lowe
 		{
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 			char filImg[2000], filOut[2000];
 			char paramImg[2000];
 
@@ -575,7 +575,7 @@ void CFeatureExtraction::internal_computeSiftDescriptors(
 	{
 		case CSBinary:
 		{
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 			char filImg[2000], filOut[2000], filFeat[2000];
 			char paramImg[2000];
 
@@ -621,7 +621,7 @@ void CFeatureExtraction::internal_computeSiftDescriptors(
 			// Load the results:
 			CMatrix aux;
 			aux.loadFromTextFile(filOut);
-			size_t nRows = aux.getRowCount();
+			size_t nRows = aux.rows();
 
 			std::cout << "[computeSiftFeatures1] " << nRows << " features.\n";
 

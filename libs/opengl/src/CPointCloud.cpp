@@ -11,14 +11,14 @@
 
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/math/ops_containers.h>
-#include <mrpt/utils/CStream.h>
-#include <mrpt/utils/round.h>  // round()
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/core/round.h>  // round()
 
 #include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
+using namespace mrpt::img;
 using namespace mrpt::math;
 using namespace std;
 
@@ -189,11 +189,10 @@ void CPointCloud::render_subset(
 #if MRPT_HAS_OPENGL_GLUT
 
 	const size_t N = (all ? m_xs.size() : idxs.size());
-	const size_t decimation = mrpt::utils::round(
-		std::max(
-			1.0f, static_cast<float>(
-					  N / (OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL_value *
-						   render_area_sqpixels))));
+	const size_t decimation = mrpt::round(std::max(
+		1.0f, static_cast<float>(
+				  N / (OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL_value *
+					   render_area_sqpixels))));
 
 	m_last_rendered_count_ongoing += N / decimation;
 
@@ -214,40 +213,29 @@ void CPointCloud::render_subset(
 #endif
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CPointCloud::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CPointCloud::serializeGetVersion() const { return 4; }
+void CPointCloud::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 4;
-	else
-	{
-		writeToStreamRender(out);
-		// Changed from bool to enum/int32_t in version 3.
-		out << static_cast<int32_t>(m_colorFromDepth);
-		out << m_xs << m_ys << m_zs;
+	writeToStreamRender(out);
+	// Changed from bool to enum/int32_t in version 3.
+	out << static_cast<int32_t>(m_colorFromDepth);
+	out << m_xs << m_ys << m_zs;
 
-		// Added in version 1.
-		out << m_pointSize;
+	// Added in version 1.
+	out << m_pointSize;
 
-		// New in version 2:
-		out << m_colorFromDepth_min.R << m_colorFromDepth_min.G
-			<< m_colorFromDepth_min.B;
-		out << m_colorFromDepth_max.R << m_colorFromDepth_max.G
-			<< m_colorFromDepth_max.B;
+	// New in version 2:
+	out << m_colorFromDepth_min.R << m_colorFromDepth_min.G
+		<< m_colorFromDepth_min.B;
+	out << m_colorFromDepth_max.R << m_colorFromDepth_max.G
+		<< m_colorFromDepth_max.B;
 
-		// New in version 4:
-		out << m_pointSmooth;
-	}
+	// New in version 4:
+	out << m_pointSmooth;
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CPointCloud::readFromStream(mrpt::utils::CStream& in, int version)
+void CPointCloud::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -339,7 +327,7 @@ void CPointCloud::setPoint(
 	size_t i, const float x, const float y, const float z)
 {
 #ifdef _DEBUG
-	ASSERT_BELOW_(i, size())
+	ASSERT_BELOW_(i, size());
 #endif
 	m_xs[i] = x;
 	m_ys[i] = y;
@@ -356,7 +344,7 @@ void CPointCloud::setPoint(
 					setGradientColors
 ---------------------------------------------------------------*/
 void CPointCloud::setGradientColors(
-	const mrpt::utils::TColorf& colorMin, const mrpt::utils::TColorf& colorMax)
+	const mrpt::img::TColorf& colorMin, const mrpt::img::TColorf& colorMax)
 {
 	m_colorFromDepth_min = colorMin;
 	m_colorFromDepth_max = colorMax;
@@ -378,12 +366,12 @@ void CPointCloud::PLY_import_set_vertex_count(const size_t N)
 
 /** In a base class, will be called after PLY_import_set_vertex_count() once for
  * each loaded point.
-  *  \param pt_color Will be nullptr if the loaded file does not provide color
+ *  \param pt_color Will be nullptr if the loaded file does not provide color
  * info.
-  */
+ */
 void CPointCloud::PLY_import_set_vertex(
 	const size_t idx, const mrpt::math::TPoint3Df& pt,
-	const mrpt::utils::TColorf* pt_color)
+	const mrpt::img::TColorf* pt_color)
 {
 	MRPT_UNUSED_PARAM(pt_color);
 	this->setPoint(idx, pt.x, pt.y, pt.z);
@@ -393,12 +381,12 @@ void CPointCloud::PLY_import_set_vertex(
 size_t CPointCloud::PLY_export_get_vertex_count() const { return this->size(); }
 /** In a base class, will be called after PLY_export_get_vertex_count() once for
  * each exported point.
-  *  \param pt_color Will be nullptr if the loaded file does not provide color
+ *  \param pt_color Will be nullptr if the loaded file does not provide color
  * info.
-  */
+ */
 void CPointCloud::PLY_export_get_vertex(
 	const size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
-	mrpt::utils::TColorf& pt_color) const
+	mrpt::img::TColorf& pt_color) const
 {
 	MRPT_UNUSED_PARAM(pt_color);
 	pt_has_color = false;

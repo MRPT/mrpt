@@ -15,8 +15,8 @@
 
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
-#include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/safe_pointers.h>
+#include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/core/safe_pointers.h>
 
 namespace mrpt
 {
@@ -82,16 +82,15 @@ class CMetricMapBuilderRBPF : public mrpt::slam::CMetricMapBuilder
 	/** Options for building a CMetricMapBuilderRBPF object, passed to the
 	 * constructor.
 	  */
-	struct TConstructionOptions : public utils::CLoadableOptions
+	struct TConstructionOptions : public mrpt::config::CLoadableOptions
 	{
 	   public:
 		/** Constructor */
 		TConstructionOptions();
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+		void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
 		float insertionLinDistance;
 		float insertionAngDistance;
@@ -103,7 +102,7 @@ class CMetricMapBuilderRBPF : public mrpt::slam::CMetricMapBuilder
 
 		mrpt::maps::TSetOfMetricMapInitializers mapsInitializers;
 		mrpt::maps::CMultiMetricMapPDF::TPredictionParams predictionOptions;
-		mrpt::utils::VerbosityLevel verbosity_level;
+		mrpt::system::VerbosityLevel verbosity_level;
 	};
 
 	/** Constructor. */
@@ -180,7 +179,7 @@ of type CMetricMapBuilderRBPF  */
 
 	/** A useful method for debugging: draws the current map and path hypotheses
 	 * to a CCanvas  */
-	void drawCurrentEstimationToImage(utils::CCanvas* img);
+	void drawCurrentEstimationToImage(mrpt::img::CCanvas* img);
 
 	/** A logging utility: saves the current path estimation for each particle
 	 * in a text file (a row per particle, each 3-column-entry is a set

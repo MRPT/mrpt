@@ -9,10 +9,10 @@
 
 #include <mrpt/system/os.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/obs/CSensoryFrame.h>
@@ -25,16 +25,19 @@
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CSphere.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::random;
 using namespace mrpt::system;
+using namespace mrpt::io;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;
+using namespace mrpt::config;
+using namespace mrpt::serialization;
 using namespace mrpt::vision;
 using namespace std;
 
@@ -66,7 +69,7 @@ int main(int argc, char** argv)
 		}
 
 		string INI_FILENAME = std::string(argv[1]);
-		ASSERT_FILE_EXISTS_(INI_FILENAME)
+		ASSERT_FILE_EXISTS_(INI_FILENAME);
 
 		CConfigFile ini(INI_FILENAME);
 
@@ -383,7 +386,7 @@ int main(int argc, char** argv)
 			}
 
 			// Save:
-			fil << SF << acts;
+			archiveFrom(fil) << SF << acts;
 
 			// Next pose:
 			realPose = realPose + incPose3D;
@@ -408,7 +411,7 @@ int main(int argc, char** argv)
 				<< endl;
 
 		// Optionally, display in 3D:
-		if (show_in_3d && size(GT_path, 1) > 1)
+		if (show_in_3d && GT_path.rows() > 1)
 		{
 #if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_WXWIDGETS
 			mrpt::gui::CDisplayWindow3D win("Final simulation", 400, 300);
@@ -436,7 +439,7 @@ int main(int argc, char** argv)
 			}
 
 			// Insert all robot poses:
-			const size_t N = size(GT_path, 1);
+			const size_t N = GT_path.rows();
 			mrpt::opengl::CSetOfLines::Ptr pathLines =
 				mrpt::make_aligned_shared<mrpt::opengl::CSetOfLines>();
 			pathLines->setColor(0, 0, 1, 0.5);

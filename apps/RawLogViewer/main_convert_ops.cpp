@@ -21,16 +21,18 @@
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;
+using namespace mrpt::io;
 using namespace mrpt::opengl;
+using namespace mrpt::serialization;
 using namespace mrpt::system;
 using namespace mrpt::math;
 using namespace mrpt::gui;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace std;
 
@@ -156,7 +158,7 @@ void xRawLogViewerFrame::OnMenuCompactRawlog(wxCommandEvent& event)
 			}
 		}
 		else
-			THROW_EXCEPTION("Unexpected class found!")
+			THROW_EXCEPTION("Unexpected class found!");
 
 		if (deleteThis)
 		{
@@ -193,7 +195,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecimate(wxCommandEvent& event)
 	long DECIMATE_RATIO;
 	strDecimation.ToLong(&DECIMATE_RATIO);
 
-	ASSERT_(DECIMATE_RATIO >= 1)
+	ASSERT_(DECIMATE_RATIO >= 1);
 
 	wxBusyCursor busyCursor;
 	wxTheApp->Yield();  // Let the app. process messages
@@ -337,7 +339,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecFILE(wxCommandEvent& event)
 	long DECIMATE_RATIO;
 	strDecimation.ToLong(&DECIMATE_RATIO);
 
-	ASSERT_(DECIMATE_RATIO >= 1)
+	ASSERT_(DECIMATE_RATIO >= 1);
 
 	string filToSave;
 	AskForSaveRawlog(filToSave);
@@ -392,7 +394,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecFILE(wxCommandEvent& event)
 		CSerializable::Ptr newObj;
 		try
 		{
-			fil >> newObj;
+			archiveFrom(fil) >> newObj;
 			entryIndex++;
 
 			// Check type:
@@ -414,7 +416,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecFILE(wxCommandEvent& event)
 					SF_counter = 0;
 
 					// INSERT OBSERVATIONS:
-					f_out << *accum_sf;
+					archiveFrom(f_out) << *accum_sf;
 					accum_sf.reset();
 
 					// INSERT ACTIONS:
@@ -430,7 +432,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecFILE(wxCommandEvent& event)
 						// Reset odometry accumulation:
 						accumMovement = CPose2D(0, 0, 0);
 					}
-					f_out << *actsCol;
+					archiveFrom(f_out) << *actsCol;
 					actsCol.reset();
 				}
 			}
@@ -532,10 +534,9 @@ void xRawLogViewerFrame::OnMenuConvertExternallyStored(wxCommandEvent& event)
 	createDirectory(outDir);
 	if (!fileExists(outDir))
 	{
-		wxMessageBox(
-			_U(format(
-				   "*ABORTING*: Cannot create directory:\n%s", outDir.c_str())
-				   .c_str()));
+		wxMessageBox(_U(
+			format("*ABORTING*: Cannot create directory:\n%s", outDir.c_str())
+				.c_str()));
 		return;
 	}
 
@@ -580,7 +581,7 @@ void xRawLogViewerFrame::OnMenuConvertExternallyStored(wxCommandEvent& event)
 		try
 		{
 			CSerializable::Ptr newObj;
-			fil >> newObj;
+			archiveFrom(fil) >> newObj;
 
 			// Check type:
 			if (newObj->GetRuntimeClass() == CLASS_ID(CSensoryFrame))
@@ -645,7 +646,7 @@ void xRawLogViewerFrame::OnMenuConvertExternallyStored(wxCommandEvent& event)
 			}
 
 			// Dump to the new file:
-			f_out << *newObj;
+			archiveFrom(f_out) << *newObj;
 
 			// Free memory:
 			newObj.reset();
@@ -724,7 +725,7 @@ void xRawLogViewerFrame::OnMenuConvertObservationOnly(wxCommandEvent& event)
 		try
 		{
 			CSerializable::Ptr newObj;
-			fil >> newObj;
+			archiveFrom(fil) >> newObj;
 
 			// Check type:
 			if (newObj->GetRuntimeClass() == CLASS_ID(CSensoryFrame))
@@ -765,8 +766,8 @@ void xRawLogViewerFrame::OnMenuConvertObservationOnly(wxCommandEvent& event)
 						TTimeObservationPair(newO->timestamp, newO));
 				}
 			}
-			else if (
-				newObj->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
+			else if (newObj->GetRuntimeClass()->derivedFrom(
+						 CLASS_ID(CObservation)))
 			{
 				CObservation::Ptr o =
 					std::dynamic_pointer_cast<CObservation>(newObj);
@@ -781,7 +782,8 @@ void xRawLogViewerFrame::OnMenuConvertObservationOnly(wxCommandEvent& event)
 				// Save a few of the oldest and continue:
 				for (unsigned i = 0; i < 15; i++)
 				{
-					f_out << *(time_ordered_list_observation.begin()->second);
+					archiveFrom(f_out)
+						<< *(time_ordered_list_observation.begin()->second);
 					time_ordered_list_observation.erase(
 						time_ordered_list_observation.begin());
 				}
@@ -804,7 +806,7 @@ void xRawLogViewerFrame::OnMenuConvertObservationOnly(wxCommandEvent& event)
 	// Save the rest to the out file:
 	while (!time_ordered_list_observation.empty())
 	{
-		f_out << *(time_ordered_list_observation.begin()->second);
+		archiveFrom(f_out) << *(time_ordered_list_observation.begin()->second);
 		time_ordered_list_observation.erase(
 			time_ordered_list_observation.begin());
 	}
@@ -855,11 +857,10 @@ void xRawLogViewerFrame::OnMenuResortByTimestamp(wxCommandEvent& event)
 
 				if (tim == INVALID_TIMESTAMP)
 				{
-					wxMessageBox(
-						wxString::Format(
-							_("Error: Element %u does not have a valid "
-							  "timestamp."),
-							(unsigned int)i));
+					wxMessageBox(wxString::Format(
+						_("Error: Element %u does not have a valid "
+						  "timestamp."),
+						(unsigned int)i));
 					return;
 				}
 
@@ -900,7 +901,7 @@ void xRawLogViewerFrame::OnMenuShiftTimestampsByLabel(wxCommandEvent& event)
 		_("The timestamps of all the observations of a given sensor label will "
 		  "be shifted a given number of seconds. Press OK to continue."));
 
-	vector_string the_labels =
+	std::vector<std::string> the_labels =
 		AskForObservationByLabelMultiple("Choose the sensor(s):");
 	if (the_labels.empty()) return;
 

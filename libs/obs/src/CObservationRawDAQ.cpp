@@ -10,39 +10,27 @@
 #include "obs-precomp.h"  // Precompiled headers
 
 #include <mrpt/obs/CObservationRawDAQ.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <iostream>
 
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace std;
 
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationRawDAQ, CObservation, mrpt::obs)
 
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CObservationRawDAQ::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CObservationRawDAQ::serializeGetVersion() const { return 0; }
+void CObservationRawDAQ::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		out << sensorLabel << timestamp << sample_rate << AIN_8bits
-			<< AIN_16bits << AIN_32bits << AIN_float << AIN_double
-			<< AIN_channel_count << AIN_interleaved << AOUT_8bits << AOUT_16bits
-			<< AOUT_float << AOUT_double << DIN << DOUT << CNTRIN_32bits
-			<< CNTRIN_double;
-	}
+	out << sensorLabel << timestamp << sample_rate << AIN_8bits
+		<< AIN_16bits << AIN_32bits << AIN_float << AIN_double
+		<< AIN_channel_count << AIN_interleaved << AOUT_8bits << AOUT_16bits
+		<< AOUT_float << AOUT_double << DIN << DOUT << CNTRIN_32bits
+		<< CNTRIN_double;
 }
 
-/*---------------------------------------------------------------
-  Implements the reading from a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CObservationRawDAQ::readFromStream(mrpt::utils::CStream& in, int version)
+void CObservationRawDAQ::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

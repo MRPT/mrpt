@@ -12,7 +12,7 @@
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/math/CMatrix.h>
 
 namespace mrpt
@@ -24,7 +24,7 @@ namespace maps
  *    This class stores the coordinates (x,y,z) and a "weight", or counter of
  * how many times that point has been seen, used only if points fusion is
  * enabled in the options structure.
- * \sa CMetricMap, CPoint, mrpt::utils::CSerializable, CSimplePointsMap
+ * \sa CMetricMap, CPoint, mrpt::serialization::CSerializable, CSimplePointsMap
  * \ingroup mrpt_maps_grp
  */
 class CWeightedPointsMap : public CPointsMap
@@ -58,10 +58,10 @@ class CWeightedPointsMap : public CPointsMap
 	virtual void copyFrom(const CPointsMap& obj) override;
 
 	/** Get all the data fields for one point as a vector: [X Y Z WEIGHT]
-	  *  Unlike getPointAllFields(), this method does not check for index out of
+	 *  Unlike getPointAllFields(), this method does not check for index out of
 	 * bounds
-	  * \sa getPointAllFields, setPointAllFields, setPointAllFieldsFast
-	  */
+	 * \sa getPointAllFields, setPointAllFields, setPointAllFieldsFast
+	 */
 	virtual void getPointAllFieldsFast(
 		const size_t index, std::vector<float>& point_data) const override
 	{
@@ -73,14 +73,14 @@ class CWeightedPointsMap : public CPointsMap
 	}
 
 	/** Set all the data fields for one point as a vector: [X Y Z WEIGHT]
-	  *  Unlike setPointAllFields(), this method does not check for index out of
+	 *  Unlike setPointAllFields(), this method does not check for index out of
 	 * bounds
-	  * \sa setPointAllFields, getPointAllFields, getPointAllFieldsFast
-	  */
+	 * \sa setPointAllFields, getPointAllFields, getPointAllFieldsFast
+	 */
 	virtual void setPointAllFieldsFast(
 		const size_t index, const std::vector<float>& point_data) override
 	{
-		ASSERTDEB_(point_data.size() == 4)
+		ASSERTDEB_(point_data.size() == 4);
 		x[index] = point_data[0];
 		y[index] = point_data[1];
 		z[index] = point_data[2];
@@ -151,12 +151,12 @@ class CWeightedPointsMap : public CPointsMap
 	mrpt::maps::CPointsMap::TLikelihoodOptions likelihoodOpts;
 	MAP_DEFINITION_END(CWeightedPointsMap, )
 };  // End of class def.
-}  // End of namespace
+}  // namespace maps
 
-namespace utils
+namespace opengl
 {
 /** Specialization
- * mrpt::utils::PointCloudAdapter<mrpt::maps::CWeightedPointsMap>  \ingroup
+ * mrpt::opengl::PointCloudAdapter<mrpt::maps::CWeightedPointsMap>  \ingroup
  * mrpt_adapters_grp*/
 template <>
 class PointCloudAdapter<mrpt::maps::CWeightedPointsMap>
@@ -198,7 +198,7 @@ class PointCloudAdapter<mrpt::maps::CWeightedPointsMap>
 		m_obj.setPointFast(idx, x, y, z);
 	}
 };  // end of PointCloudAdapter<mrpt::maps::CPointsMap>
-}
-}  // End of namespace
+}  // namespace opengl
+}  // namespace mrpt
 
 #endif

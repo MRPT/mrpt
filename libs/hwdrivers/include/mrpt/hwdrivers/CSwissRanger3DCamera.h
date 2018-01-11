@@ -83,7 +83,7 @@ namespace hwdrivers
   *(default:
   *true)
   *
-  *    // Camera calibration parameters: See mrpt::utils::TCamera
+  *    // Camera calibration parameters: See mrpt::img::TCamera
   *    //  If not provided, a set of default parameters for a SR4000 camera will
   *be loaded.
   *    resolution = [176 144]
@@ -160,10 +160,10 @@ class CSwissRanger3DCamera : public mrpt::hwdrivers::CGenericSensor
 
 	/** Get the row count in the camera images, loaded automatically upon camera
 	 * open(). */
-	size_t getRowCount() const { return m_rows; }
+	size_t rows() const { return m_rows; }
 	/** Get the col count in the camera images, loaded automatically upon camera
 	 * open(). */
-	size_t getColCount() const { return m_cols; }
+	size_t cols() const { return m_cols; }
 	/** Get the camera serial number, loaded automatically upon camera open().
 	 */
 	unsigned int getCameraSerialNumber() const { return m_cam_serial_num; }
@@ -248,7 +248,7 @@ class CSwissRanger3DCamera : public mrpt::hwdrivers::CGenericSensor
    protected:
 	/** See the class documentation at the top for expected parameters */
 	virtual void loadConfig_sensorSpecific(
-		const mrpt::utils::CConfigFileBase& configSource,
+		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& section);
 
 	void internal_resendParamsToCamera() const;
@@ -289,7 +289,7 @@ class CSwissRanger3DCamera : public mrpt::hwdrivers::CGenericSensor
 	/** opaque handler to SRCAM. nullptr means it's not open yet. */
 	void* m_cam;
 
-	mrpt::utils::TCamera m_cameraParams;
+	mrpt::img::TCamera m_cameraParams;
 
    private:
 };  // End of class

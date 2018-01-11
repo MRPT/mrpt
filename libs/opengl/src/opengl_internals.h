@@ -16,16 +16,16 @@
 #include <mrpt/config.h>
 
 #if MRPT_HAS_OPENGL_GLUT
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 // WINDOWS:
 #if defined(_MSC_VER)
 #pragma warning(disable : 4505)
 #endif
 #include <windows.h>
 #include <GL/glew.h>
-#endif  // MRPT_OS_WINDOWS
+#endif  // _WIN32
 
-#ifdef MRPT_OS_APPLE
+#ifdef __APPLE__
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
 #include <GLUT/glut.h>
@@ -35,7 +35,7 @@
 #include <GL/glu.h>
 #include <GL/glut.h>
 // gl-ext
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 #include "glext/glext.h"
 #else
 #include <GL/glext.h>

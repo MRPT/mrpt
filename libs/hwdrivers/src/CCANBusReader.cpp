@@ -12,13 +12,15 @@
 
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/crc.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/crc.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
 #include <cstdio>  // printf
+#include <cstring>  // memset
 #include <mrpt/hwdrivers/CCANBusReader.h>
 
 #include <thread>
+#include <iostream>
 
 IMPLEMENTS_GENERIC_SENSOR(CCANBusReader, mrpt::hwdrivers)
 
@@ -30,9 +32,9 @@ IMPLEMENTS_GENERIC_SENSOR(CCANBusReader, mrpt::hwdrivers)
 
 using namespace std;
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
+using namespace mrpt::system;
 
 char hexCharToInt(char n)
 {
@@ -50,7 +52,7 @@ char hexCharToInt(char n)
 						CCANBusReader
 -------------------------------------------------------------*/
 CCANBusReader::CCANBusReader()
-	: mrpt::utils::COutputLogger("CCANBusReader"),
+	: mrpt::system::COutputLogger("CCANBusReader"),
 	  m_com_port(),
 	  m_mySerialPort(nullptr),
 	  m_com_baudRate(57600),
@@ -160,7 +162,7 @@ void CCANBusReader::doProcessSimple(
 						loadConfig_sensorSpecific
 -------------------------------------------------------------*/
 void CCANBusReader::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 	//	m_sensorPose = CPose3D(
@@ -177,7 +179,7 @@ void CCANBusReader::loadConfig_sensorSpecific(
 	m_canreader_timestamp = configSource.read_bool(
 		iniSection, "useCANReaderTimestamp", m_canreader_timestamp);
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	m_com_port =
 		configSource.read_string(iniSection, "COM_port_WIN", m_com_port, true);
 #else
@@ -689,9 +691,8 @@ bool CCANBusReader::waitIncomingFrame(uint16_t timeout)
 				nBytes++;
 			}
 			if (nBytes == 10)
-				dlc = 2 * uint8_t(
-							  hexCharToInt(
-								  m_received_frame_buffer[9]));  // here is the
+				dlc = 2 * uint8_t(hexCharToInt(
+							  m_received_frame_buffer[9]));  // here is the
 			// number of
 			// BYTES of
 			// data -> 2

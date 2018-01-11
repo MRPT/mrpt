@@ -9,7 +9,7 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPoint3D.h>
@@ -20,9 +20,9 @@
 
 using namespace mrpt::obs;
 using namespace mrpt::maps;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
+using namespace mrpt::tfest;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CMetricMap, CSerializable, mrpt::maps)
 
@@ -135,7 +135,7 @@ void CMetricMap::determineMatching2D(
 	MRPT_UNUSED_PARAM(params);
 	MRPT_UNUSED_PARAM(extraResults);
 	MRPT_START
-	THROW_EXCEPTION("Virtual method not implemented in derived class.")
+	THROW_EXCEPTION("Virtual method not implemented in derived class.");
 	MRPT_END
 }
 
@@ -150,7 +150,7 @@ void CMetricMap::determineMatching3D(
 	MRPT_UNUSED_PARAM(params);
 	MRPT_UNUSED_PARAM(extraResults);
 	MRPT_START
-	THROW_EXCEPTION("Virtual method not implemented in derived class.")
+	THROW_EXCEPTION("Virtual method not implemented in derived class.");
 	MRPT_END
 }
 
@@ -163,7 +163,7 @@ float CMetricMap::compute3DMatchingRatio(
 	MRPT_UNUSED_PARAM(otherMapPose);
 	MRPT_UNUSED_PARAM(params);
 	MRPT_START
-	THROW_EXCEPTION("Virtual method not implemented in derived class.")
+	THROW_EXCEPTION("Virtual method not implemented in derived class.");
 	MRPT_END
 }
 
@@ -173,7 +173,7 @@ float CMetricMap::squareDistanceToClosestCorrespondence(
 	MRPT_UNUSED_PARAM(x0);
 	MRPT_UNUSED_PARAM(y0);
 	MRPT_START
-	THROW_EXCEPTION("Virtual method not implemented in derived class.")
+	THROW_EXCEPTION("Virtual method not implemented in derived class.");
 	MRPT_END
 }
 

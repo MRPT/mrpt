@@ -10,20 +10,21 @@
 #include "vision-precomp.h"  // Precompiled headers
 #include <mrpt/vision/CCamModel.h>
 #include <mrpt/vision/pinhole.h>
-#include <mrpt/utils/CFileOutputStream.h>
-#include <mrpt/utils/types_math.h>
+#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/math/types_math.h>
 
 using namespace mrpt;
 using namespace mrpt::vision;
+using namespace mrpt::img;
 using namespace mrpt::poses;
 using namespace mrpt::math;
-using namespace mrpt::utils;
+using namespace mrpt::img;
 
 /**	Constructor */
 CCamModel::CCamModel() : cam() {}
 /**********************************************************************************************************************/
 void CCamModel::jacob_undistor_fm(
-	const mrpt::utils::TPixelCoordf& p, math::CMatrixDouble& J_undist)
+	const mrpt::img::TPixelCoordf& p, math::CMatrixDouble& J_undist)
 {
 	// JL: CHECK!!!!
 	const double Cx = cam.cx();
@@ -54,7 +55,7 @@ void CCamModel::jacob_undistor_fm(
 /******************************************************************************************************************************/
 
 void CCamModel::jacob_undistor(
-	const mrpt::utils::TPixelCoordf& p, mrpt::math::CMatrixDouble& J_undistor)
+	const mrpt::img::TPixelCoordf& p, mrpt::math::CMatrixDouble& J_undistor)
 {
 	// J_undistor.setSize(2,2);
 	const double dx = p.x - cam.cx();
@@ -101,7 +102,7 @@ void CCamModel::jacob_undistor(
 /**********************************************************************************************************************/
 
 void CCamModel::distort_a_point(
-	const mrpt::utils::TPixelCoordf& p, mrpt::utils::TPixelCoordf& distorted_p)
+	const mrpt::img::TPixelCoordf& p, mrpt::img::TPixelCoordf& distorted_p)
 {
 	// JLBC: Added from Davison's SceneLib:
 	//
@@ -123,8 +124,8 @@ void CCamModel::distort_a_point(
 /*************************************************************************************************************************/
 // Removes distortion of a pair of pixel coordinates x,y.
 void CCamModel::undistort_point(
-	const mrpt::utils::TPixelCoordf& p,
-	mrpt::utils::TPixelCoordf& undistorted_p)
+	const mrpt::img::TPixelCoordf& p,
+	mrpt::img::TPixelCoordf& undistorted_p)
 {
 	std::vector<TPixelCoordf> in_p(1), out_p;
 	in_p[0] = p;
@@ -149,7 +150,7 @@ void CCamModel::undistort_point(
  */
 void CCamModel::project_3D_point(
 	const mrpt::math::TPoint3D& p3D,
-	mrpt::utils::TPixelCoordf& distorted_p) const
+	mrpt::img::TPixelCoordf& distorted_p) const
 {
 	// JLBC: From Davison's SceneLib:
 	//
@@ -159,7 +160,7 @@ void CCamModel::project_3D_point(
 	// Offsets from the image center for the undistorted projection, in units of
 	// pixels:
 
-	ASSERT_(p3D.z != 0)
+	ASSERT_(p3D.z != 0);
 	const double dx = (p3D.x / p3D.z) * cam.fx();
 	const double dy = (p3D.y / p3D.z) * cam.fy();
 
@@ -177,7 +178,7 @@ void CCamModel::project_3D_point(
  * (distorted) pixel position
   */
 void CCamModel::unproject_3D_point(
-	const mrpt::utils::TPixelCoordf& distorted_p,
+	const mrpt::img::TPixelCoordf& distorted_p,
 	mrpt::math::TPoint3D& p3D) const
 {
 	// JLBC: From Davison's SceneLib:
@@ -207,7 +208,7 @@ void CCamModel::jacobian_project_with_distortion(
 	 0 & \frac{f_y}{y_z} & - y \frac f_y}{y_z^2} \\
 	\end{array} \right)
 	*/
-	ASSERT_(p3D.z != 0)
+	ASSERT_(p3D.z != 0);
 
 	CMatrixDouble du_dy(2, 3);  // Default all to zeroes.
 
@@ -263,7 +264,7 @@ WideCamera::ProjectionJacobian
 \sa unproject_3D_point
 */
 void CCamModel::jacobian_unproject_with_distortion(
-	const mrpt::utils::TPixelCoordf& p, math::CMatrixDouble& dy_dh) const
+	const mrpt::img::TPixelCoordf& p, math::CMatrixDouble& dy_dh) const
 {
 	// dy/du
 	CMatrixDouble dy_du(3, 2);  // Default is all zeroes
@@ -298,7 +299,7 @@ void CCamModel::jacobian_unproject_with_distortion(
 }
 
 void CCamModel::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& source, const std::string& section)
+	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {
 	MRPT_START
 
@@ -320,7 +321,7 @@ void CCamModel::loadFromConfigFile(
 
 	CVectorDouble DD;
 	source.read_vector(section, "dist_params", CVectorDouble(), DD, true);
-	ASSERT_(DD.size() == 4 || DD.size() == 5)
+	ASSERT_(DD.size() == 4 || DD.size() == 5);
 
 	this->cam.setDistortionParamsVector(DD);
 
@@ -329,4 +330,4 @@ void CCamModel::loadFromConfigFile(
 
 /** This method displays clearly all the contents of the structure in textual
  * form, sending it to a CStream. */
-void CCamModel::dumpToTextStream(CStream& out) const { MRPT_UNUSED_PARAM(out); }
+void CCamModel::dumpToTextStream(std::ostream& out) const { MRPT_UNUSED_PARAM(out); }

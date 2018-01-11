@@ -15,20 +15,18 @@
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/utils/CTicTac.h>
-#include <mrpt/utils/CEnhancedMetaFile.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/img/CEnhancedMetaFile.h>
 
 using namespace std;
 using namespace mrpt::slam;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
+using namespace mrpt::img;
 using namespace mrpt::math;
+using namespace mrpt::system;
 
-/*---------------------------------------------------------------
-		 Constructor
-  ---------------------------------------------------------------*/
 CMetricMapBuilderICP::CMetricMapBuilderICP()
 	: ICP_options(m_min_verbosity_level)
 {
@@ -53,7 +51,7 @@ CMetricMapBuilderICP::~CMetricMapBuilderICP()
 							Options
   ---------------------------------------------------------------*/
 CMetricMapBuilderICP::TConfigParams::TConfigParams(
-	mrpt::utils::VerbosityLevel& parent_verbosity_level)
+	mrpt::system::VerbosityLevel& parent_verbosity_level)
 	: matchAgainstTheGrid(false),
 	  insertionLinDistance(1.0),
 	  insertionAngDistance(DEG2RAD(30)),
@@ -81,14 +79,14 @@ CMetricMapBuilderICP::TConfigParams& CMetricMapBuilderICP::TConfigParams::
 }
 
 void CMetricMapBuilderICP::TConfigParams::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& source, const std::string& section)
+	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {
 	MRPT_LOAD_CONFIG_VAR(matchAgainstTheGrid, bool, source, section)
 	MRPT_LOAD_CONFIG_VAR(insertionLinDistance, double, source, section)
 	MRPT_LOAD_CONFIG_VAR_DEGREES(insertionAngDistance, source, section)
 	MRPT_LOAD_CONFIG_VAR(localizationLinDistance, double, source, section)
 	MRPT_LOAD_CONFIG_VAR_DEGREES(localizationAngDistance, source, section)
-	verbosity_level = source.read_enum<mrpt::utils::VerbosityLevel>(
+	verbosity_level = source.read_enum<mrpt::system::VerbosityLevel>(
 		section, "verbosity_level", verbosity_level);
 
 	MRPT_LOAD_CONFIG_VAR(minICPgoodnessToAccept, double, source, section)
@@ -96,31 +94,31 @@ void CMetricMapBuilderICP::TConfigParams::loadFromConfigFile(
 	mapInitializers.loadFromConfigFile(source, section);
 }
 
-void CMetricMapBuilderICP::TConfigParams::dumpToTextStream(CStream& out) const
+void CMetricMapBuilderICP::TConfigParams::dumpToTextStream(std::ostream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [CMetricMapBuilderICP::TConfigParams] ------------ "
 		"\n\n");
 
-	out.printf(
+	out << mrpt::format(
 		"insertionLinDistance                    = %f m\n",
 		insertionLinDistance);
-	out.printf(
+	out << mrpt::format(
 		"insertionAngDistance                    = %f deg\n",
 		RAD2DEG(insertionAngDistance));
-	out.printf(
+	out << mrpt::format(
 		"localizationLinDistance                 = %f m\n",
 		localizationLinDistance);
-	out.printf(
+	out << mrpt::format(
 		"localizationAngDistance                 = %f deg\n",
 		RAD2DEG(localizationAngDistance));
-	out.printf(
+	out << mrpt::format(
 		"verbosity_level                         = %s\n",
-		mrpt::utils::TEnumType<mrpt::utils::VerbosityLevel>::value2name(
+		mrpt::typemeta::TEnumType<mrpt::system::VerbosityLevel>::value2name(
 			verbosity_level)
 			.c_str());
 
-	out.printf("  Now showing 'mapsInitializers':\n");
+	out << mrpt::format("  Now showing 'mapsInitializers':\n");
 	mapInitializers.dumpToTextStream(out);
 }
 
@@ -141,7 +139,7 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 			"Neither grid maps nor points map: Have you called initialize() "
 			"after setting ICP_options.mapInitializers?");
 
-	ASSERT_(obs)
+	ASSERT_(obs);
 
 	// Is it an odometry observation??
 	if (IS_CLASS(obs, CObservationOdometry))
@@ -151,14 +149,14 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 
 		const CObservationOdometry::Ptr odo =
 			std::dynamic_pointer_cast<CObservationOdometry>(obs);
-		ASSERT_(odo->timestamp != INVALID_TIMESTAMP)
+		ASSERT_(odo->timestamp != INVALID_TIMESTAMP);
 
 		CPose2D pose_before;
 		bool pose_before_valid = m_lastPoseEst.getLatestRobotPose(pose_before);
 
 		// Move our estimation:
 		m_lastPoseEst.processUpdateNewOdometry(
-			odo->odometry, odo->timestamp, odo->hasVelocities,
+			odo->odometry.asTPose(), odo->timestamp, odo->hasVelocities,
 			odo->velocityLocal);
 
 		if (pose_before_valid)
@@ -246,12 +244,12 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 		{
 			ASSERTMSG_(
 				metricMap.m_pointsMaps.size(),
-				"No points map in multi-metric map.")
+				"No points map in multi-metric map.");
 			matchWith =
 				static_cast<CMetricMap*>(metricMap.m_pointsMaps[0].get());
 			MRPT_LOG_DEBUG("processObservation(): matching against point map.");
 		}
-		ASSERT_(matchWith != nullptr)
+		ASSERT_(matchWith != nullptr);
 
 		if (!we_skip_ICP_pose_correction)
 		{
@@ -325,7 +323,7 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 					pEst2D.copyFrom(*pestPose);
 
 					m_lastPoseEst.processUpdateNewPoseLocalization(
-						TPose2D(pEst2D.mean), obs->timestamp);
+						pEst2D.mean.asTPose(), obs->timestamp);
 					m_lastPoseEst_cov = pEst2D.cov;
 
 					m_distSinceLastICP.updatePose(pEst2D.mean);
@@ -566,7 +564,7 @@ void CMetricMapBuilderICP::initialize(
 
 	if (x0)
 		m_lastPoseEst.processUpdateNewPoseLocalization(
-			x0->getMeanVal(), mrpt::system::now());
+			x0->getMeanVal().asTPose(), mrpt::system::now());
 
 	for (size_t i = 0; i < SF_Poses_seq.size(); i++)
 	{
@@ -684,24 +682,16 @@ void CMetricMapBuilderICP::accumulateRobotDisplacementCounters(
 	const CPose2D& new_pose)
 {
 	m_distSinceLastICP.updateDistances(new_pose);
-
-	for (mrpt::aligned_containers<
-			 std::string, CMetricMapBuilderICP::TDist>::map_t::iterator it =
-			 m_distSinceLastInsertion.begin();
-		 it != m_distSinceLastInsertion.end(); ++it)
-		it->second.updateDistances(new_pose);
+	for (auto & m : m_distSinceLastInsertion)
+		m.second.updateDistances(new_pose);
 }
 
 void CMetricMapBuilderICP::resetRobotDisplacementCounters(
 	const CPose2D& new_pose)
 {
 	m_distSinceLastICP.updatePose(new_pose);
-
-	for (mrpt::aligned_containers<
-			 std::string, CMetricMapBuilderICP::TDist>::map_t::iterator it =
-			 m_distSinceLastInsertion.begin();
-		 it != m_distSinceLastInsertion.end(); ++it)
-		it->second.updatePose(new_pose);
+	for (auto & m: m_distSinceLastInsertion)
+		m.second.updatePose(new_pose);
 }
 
 void CMetricMapBuilderICP::TDist::updateDistances(const mrpt::poses::CPose2D& p)

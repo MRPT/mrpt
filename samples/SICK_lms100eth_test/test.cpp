@@ -16,7 +16,6 @@
 #include <mrpt/hwdrivers/CLMS100eth.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::opengl;
 using namespace mrpt::hwdrivers;

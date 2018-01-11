@@ -11,10 +11,10 @@
 #define CRoboticHeadInterface_H
 
 #include <mrpt/comms/CInterfaceFTDI.h>
-#include <mrpt/utils/CMessage.h>
+#include <mrpt/serialization/CMessage.h>
 #include <mrpt/math/CMatrixTemplate.h>
-#include <mrpt/utils/COutputLogger.h>
-#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/system/COutputLogger.h>
+#include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/obs/CObservationRange.h>
 
 namespace mrpt
@@ -45,11 +45,11 @@ namespace hwdrivers
   *  \endcode
   * \ingroup mrpt_hwdrivers_grp
   */
-class CRoboticHeadInterface : public mrpt::utils::COutputLogger
+class CRoboticHeadInterface : public mrpt::system::COutputLogger
 {
    private:
 	mrpt::comms::CInterfaceFTDI m_usbConnection;
-	utils::CMessage msg;
+	mrpt::serialization::CMessage msg;
 	std::string m_serialNumber;
 	std::vector<int32_t> gain;
 	int head_yaw, head_pitch;
@@ -59,12 +59,12 @@ class CRoboticHeadInterface : public mrpt::utils::COutputLogger
    protected:
 	/** Loads specific configuration for the device from a given source of
 	 * configuration parameters, for example, an ".ini" file,
-	  *  loading from the section "[iniSection]" (see utils::CConfigFileBase and
+	  *  loading from the section "[iniSection]" (see config::CConfigFileBase and
 	 * derived classes)
 	  *  See hwdrivers::CSonarSRF10 for the possible parameters
 	  */
 	void loadConfig_sensorSpecific(
-		const mrpt::utils::CConfigFileBase* configSource,
+		const mrpt::config::CConfigFileBase* configSource,
 		const std::string& iniSection);
 
    public:

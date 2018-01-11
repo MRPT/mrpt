@@ -14,8 +14,8 @@
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
-#include <mrpt/utils/COutputLogger.h>
-#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/COutputLogger.h>
+#include <mrpt/system/CTimeLogger.h>
 #include <mrpt/graphslam/misc/CWindowManager.h>
 
 #include <string>
@@ -41,7 +41,7 @@ namespace graphslam
  * \ingroup mrpt_graphslam_grp
  */
 template <class GRAPH_T = typename mrpt::graphs::CNetworkOfPoses2DInf>
-class CRegistrationDeciderOrOptimizer : public mrpt::utils::COutputLogger
+class CRegistrationDeciderOrOptimizer : public mrpt::system::COutputLogger
 {
    public:
 	/**\Default Ctor*/
@@ -162,7 +162,7 @@ class CRegistrationDeciderOrOptimizer : public mrpt::utils::COutputLogger
 	/**\}*/
 
 	/**\brief Time logger instance */
-	mrpt::utils::CTimeLogger m_time_logger;
+	mrpt::system::CTimeLogger m_time_logger;
 	/**\brief Name of the class instance */
 	std::string m_class_name;
 	/**\brief Boolean indicating if the current class can be used in

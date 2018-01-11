@@ -8,10 +8,10 @@
   -----------------------------------------------------------------------------*/
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
-#include <mrpt/utils/CImage.h>
-#include <mrpt/utils/round.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/img/CImage.h>
+#include <mrpt/core/round.h>
 #include <mrpt/slam/CActionCollection.h>
 #include <mrpt/slam/CSensoryFrame.h>
 #include <mrpt/system/os.h>
@@ -23,7 +23,6 @@
 using namespace mrpt;
 using namespace mrpt::system;
 using namespace mrpt::hwdrivers;
-using namespace mrpt::utils;
 using namespace mrpt::slam;
 using namespace std;
 using namespace mexplus;

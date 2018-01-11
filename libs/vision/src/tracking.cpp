@@ -10,7 +10,6 @@
 #include "vision-precomp.h"  // Precompiled headers
 
 #include <mrpt/vision/tracking.h>
-
 #include <mrpt/vision/CFeatureExtraction.h>
 
 // Universal include for all versions of OpenCV
@@ -18,7 +17,8 @@
 
 using namespace mrpt;
 using namespace mrpt::vision;
-using namespace mrpt::utils;
+using namespace mrpt::img;
+using namespace mrpt::tfest;
 using namespace mrpt::math;
 using namespace std;
 
@@ -273,7 +273,7 @@ inline void trackFeatures_addNewFeats_simple_list(
 					{
 						const TSimpleFeature &existing = featureList[j];
 						const int d = std::abs(existing.pt.x-feat.pt.x)+std::abs(existing.pt.y-feat.pt.y);
-						mrpt::utils::keep_min(manh_dist, d);
+						mrpt::keep_min(manh_dist, d);
 					}
 
 					if (manh_dist<max_manhatan_dist)
@@ -567,7 +567,7 @@ void CGenericFeatureTracker::trackFeatures_impl(
 	MRPT_UNUSED_PARAM(old_img);
 	MRPT_UNUSED_PARAM(new_img);
 	MRPT_UNUSED_PARAM(inout_featureList);
-	THROW_EXCEPTION("Method not implemented by derived class!")
+	THROW_EXCEPTION("Method not implemented by derived class!");
 }
 
 /** Perform feature tracking from "old_img" to "new_img", with a (possibly

@@ -9,7 +9,7 @@
 #ifndef CObservation3DRangeScan_project3D_impl_H
 #define CObservation3DRangeScan_project3D_impl_H
 
-#include <mrpt/utils/round.h>  // round()
+#include <mrpt/core/round.h>  // round()
 
 namespace mrpt
 {
@@ -23,14 +23,14 @@ template <class POINTMAP>
 void do_project_3d_pointcloud(
 	const int H, const int W, const float* kys, const float* kzs,
 	const mrpt::math::CMatrix& rangeImage,
-	mrpt::utils::PointCloudAdapter<POINTMAP>& pca,
+	mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
 	std::vector<uint16_t>& idxs_x, std::vector<uint16_t>& idxs_y,
 	const mrpt::obs::TRangeImageFilterParams& filterParams, bool MAKE_DENSE);
 template <class POINTMAP>
 void do_project_3d_pointcloud_SSE2(
 	const int H, const int W, const float* kys, const float* kzs,
 	const mrpt::math::CMatrix& rangeImage,
-	mrpt::utils::PointCloudAdapter<POINTMAP>& pca,
+	mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
 	std::vector<uint16_t>& idxs_x, std::vector<uint16_t>& idxs_y,
 	const mrpt::obs::TRangeImageFilterParams& filterParams, bool MAKE_DENSE);
 
@@ -44,7 +44,7 @@ void project3DPointsFromDepthImageInto(
 
 	if (!src_obs.hasRangeImage) return;
 
-	mrpt::utils::PointCloudAdapter<POINTMAP> pca(dest_pointcloud);
+	mrpt::opengl::PointCloudAdapter<POINTMAP> pca(dest_pointcloud);
 
 	// ------------------------------------------------------------
 	// Stage 1/3: Create 3D point cloud local coordinates
@@ -91,8 +91,8 @@ void project3DPointsFromDepthImageInto(
 					}
 			}  // end update LUT.
 
-			ASSERT_EQUAL_(WH, size_t(src_obs.get_3dproj_lut().Kys.size()))
-			ASSERT_EQUAL_(WH, size_t(src_obs.get_3dproj_lut().Kzs.size()))
+			ASSERT_EQUAL_(WH, size_t(src_obs.get_3dproj_lut().Kys.size()));
+			ASSERT_EQUAL_(WH, size_t(src_obs.get_3dproj_lut().Kzs.size()));
 			float* kys = &src_obs.get_3dproj_lut().Kys[0];
 			float* kzs = &src_obs.get_3dproj_lut().Kzs[0];
 
@@ -156,7 +156,7 @@ void project3DPointsFromDepthImageInto(
 							D,  // x
 							Ky * D,  // y
 							Kz * D  // z
-							);
+						);
 						src_obs.points3D_idxs_x[idx] = c;
 						src_obs.points3D_idxs_y[idx] = r;
 						++idx;
@@ -168,13 +168,13 @@ void project3DPointsFromDepthImageInto(
 	else
 	{
 		/* range_is_depth = false :
-		  *   Ky = (r_cx - c)/r_fx
-		  *   Kz = (r_cy - r)/r_fy
-		  *
-		  *   x(i) = rangeImage(r,c) / sqrt( 1 + Ky^2 + Kz^2 )
-		  *   y(i) = Ky * x(i)
-		  *   z(i) = Kz * x(i)
-		  */
+		 *   Ky = (r_cx - c)/r_fx
+		 *   Kz = (r_cy - r)/r_fy
+		 *
+		 *   x(i) = rangeImage(r,c) / sqrt( 1 + Ky^2 + Kz^2 )
+		 *   y(i) = Ky * x(i)
+		 *   z(i) = Kz * x(i)
+		 */
 		const float r_cx = src_obs.cameraParams.cx();
 		const float r_cy = src_obs.cameraParams.cy();
 		const float r_fx_inv = 1.0f / src_obs.cameraParams.fx();
@@ -194,7 +194,7 @@ void project3DPointsFromDepthImageInto(
 						D / std::sqrt(1 + Ky * Ky + Kz * Kz),  // x
 						Ky * D,  // y
 						Kz * D  // z
-						);
+					);
 					src_obs.points3D_idxs_x[idx] = c;
 					src_obs.points3D_idxs_y[idx] = r;
 					++idx;
@@ -241,7 +241,7 @@ void project3DPointsFromDepthImageInto(
 		Eigen::Matrix<float, 4, 1> pt_wrt_color, pt_wrt_depth;
 		pt_wrt_depth[3] = 1;
 
-		mrpt::utils::TColor pCol;
+		mrpt::img::TColor pCol;
 
 		// For each local point:
 		const size_t nPts = pca.size();
@@ -267,9 +267,9 @@ void project3DPointsFromDepthImageInto(
 				// Project to image plane:
 				if (pt_wrt_color[2])
 				{
-					img_idx_x = mrpt::utils::round(
+					img_idx_x = mrpt::round(
 						cx + fx * pt_wrt_color[0] / pt_wrt_color[2]);
-					img_idx_y = mrpt::utils::round(
+					img_idx_y = mrpt::round(
 						cy + fy * pt_wrt_color[1] / pt_wrt_color[2]);
 					pointWithinImage = img_idx_x >= 0 && img_idx_x < imgW &&
 									   img_idx_y >= 0 && img_idx_y < imgH;
@@ -320,8 +320,10 @@ void project3DPointsFromDepthImageInto(
 				*projectParams.robotPoseInTheWorld,
 				mrpt::poses::CPose3D(transf_to_apply));
 
-		const mrpt::math::CMatrixFixedNumeric<float, 4, 4> HM =
-			transf_to_apply.getHomogeneousMatrixVal().cast<float>();
+		const auto HM =
+			transf_to_apply
+				.getHomogeneousMatrixVal<mrpt::math::CMatrixDouble44>()
+				.cast<float>();
 		Eigen::Matrix<float, 4, 1> pt, pt_transf;
 		pt[3] = 1;
 
@@ -340,7 +342,7 @@ template <class POINTMAP>
 inline void do_project_3d_pointcloud(
 	const int H, const int W, const float* kys, const float* kzs,
 	const mrpt::math::CMatrix& rangeImage,
-	mrpt::utils::PointCloudAdapter<POINTMAP>& pca,
+	mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
 	std::vector<uint16_t>& idxs_x, std::vector<uint16_t>& idxs_y,
 	const mrpt::obs::TRangeImageFilterParams& fp, bool MAKE_DENSE)
 {
@@ -374,7 +376,7 @@ template <class POINTMAP>
 inline void do_project_3d_pointcloud_SSE2(
 	const int H, const int W, const float* kys, const float* kzs,
 	const mrpt::math::CMatrix& rangeImage,
-	mrpt::utils::PointCloudAdapter<POINTMAP>& pca,
+	mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
 	std::vector<uint16_t>& idxs_x, std::vector<uint16_t>& idxs_y,
 	const mrpt::obs::TRangeImageFilterParams& filterParams, bool MAKE_DENSE)
 {
@@ -499,7 +501,7 @@ inline void do_project_3d_pointcloud_SSE2(
 #endif
 }
 
-}  // End of namespace
-}  // End of namespace
-}  // End of namespace
+}  // namespace detail
+}  // namespace obs
+}  // namespace mrpt
 #endif

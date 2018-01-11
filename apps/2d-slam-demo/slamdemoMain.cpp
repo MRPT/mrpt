@@ -25,18 +25,22 @@
 //*)
 #include <mrpt/gui/wx28-fixes.h>
 
-#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/system/vector_loadsave.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/random.h>
 #include <mrpt/obs/CObservationComment.h>
 #include <mrpt/gui/about_box.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace std;
 using namespace mrpt;
+using namespace mrpt::io;
 using namespace mrpt::bayes;
-using namespace mrpt::utils;
 using namespace mrpt::random;
+using namespace mrpt::serialization;
+using namespace mrpt::system;
 using namespace mrpt::slam;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
@@ -1082,7 +1086,7 @@ void slamdemoFrame::OnbtnResetClicked(wxCommandEvent& event)
   ---------------------------------------------------------------*/
 void slamdemoFrame::OnbtnOneStepClicked(wxCommandEvent& event)
 {
-	static CTicTac tictac;
+	CTicTac tictac;
 	tictac.Tic();
 	executeOneStep();
 	const double T = tictac.Tac();
@@ -1177,7 +1181,7 @@ void slamdemoFrame::resetSimulator(const std::string& map_type)
 		newLM.pose_mean.z = 0;
 
 		for (int i = 0;
-			 i <= mrpt::utils::round((options.path_square_len) / 2.0); i++)
+			 i <= mrpt::round((options.path_square_len) / 2.0); i++)
 		{
 			// Bottom & top  corridors:
 			newLM.pose_mean.x = 1 + 2 * i;
@@ -1628,10 +1632,10 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 
 			cov->SetQuantiles(2);
 			cov->SetCoordinateBase(RAD2DEG(ha), hr);
-			if (da.Y_pred_covs.getColCount() == obs_size)
+			if (da.Y_pred_covs.cols() == obs_size)
 			{  // Independent predictions:
 				ASSERT_(
-					da.Y_pred_covs.getRowCount() ==
+					da.Y_pred_covs.rows() ==
 					obs_size * da.predictions_IDs.size());
 				cov->SetCovarianceMatrix(
 					RAD2DEGSQ * da.Y_pred_covs(obs_size * i + 1, 1),
@@ -1642,7 +1646,7 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 			{  // Full cov. predictions:
 				ASSERT_(
 					da.Y_pred_covs.isSquare() &&
-					da.Y_pred_covs.getColCount() ==
+					da.Y_pred_covs.cols() ==
 						obs_size * da.predictions_IDs.size());
 				cov->SetCovarianceMatrix(
 					RAD2DEGSQ *
@@ -1845,7 +1849,7 @@ slamdemoFrame::TSimulationOptions::TSimulationOptions()
 }
 
 void slamdemoFrame::TSimulationOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& f, const std::string& c)
+	const mrpt::config::CConfigFileBase& f, const std::string& c)
 {
 	MRPT_LOAD_CONFIG_VAR(random_seed, int, f, c)
 	MRPT_LOAD_CONFIG_VAR(map_generator, string, f, c)
@@ -1882,7 +1886,7 @@ void slamdemoFrame::TSimulationOptions::loadFromConfigFile(
 }
 
 void slamdemoFrame::TSimulationOptions::saveToConfigFile(
-	mrpt::utils::CConfigFileBase& f, const std::string& c) const
+	mrpt::config::CConfigFileBase& f, const std::string& c) const
 {
 	MRPT_SAVE_CONFIG_VAR(random_seed, f, c)
 	MRPT_SAVE_CONFIG_VAR(map_generator, f, c)
@@ -1913,7 +1917,7 @@ void slamdemoFrame::TSimulationOptions::saveToConfigFile(
 	MRPT_SAVE_CONFIG_VAR(spurious_count_std, f, c)
 }
 
-void slamdemoFrame::TSimulationOptions::dumpToTextStream(CStream& out) const {}
+void slamdemoFrame::TSimulationOptions::dumpToTextStream(std::ostream& out) const {}
 /*---------------------------------------------------------------
 						executeOneStep
   ---------------------------------------------------------------*/
@@ -1934,7 +1938,7 @@ void slamdemoFrame::executeOneStep()
 
 			if (fabs(fmod(m_GT_pose.phi(), DEG2RAD(90.0))) < 1e-2)
 			{
-				int dir = mrpt::utils::round(m_GT_pose.phi() / Aphi);
+				int dir = mrpt::round(m_GT_pose.phi() / Aphi);
 
 				// Continue in a straight line, unless we reach a corner:
 				if ((m_GT_pose.x() > PATH_SQUARE_LEN &&
@@ -1960,7 +1964,7 @@ void slamdemoFrame::executeOneStep()
 		m_GT_pose = m_GT_pose + poseIncr;
 
 		// Round phi so we have always perfect square paths:
-		m_GT_pose.phi(mrpt::utils::round(m_GT_pose.phi() / Aphi) * Aphi);
+		m_GT_pose.phi(mrpt::round(m_GT_pose.phi() / Aphi) * Aphi);
 
 		// Simulate observation ------------------------
 		{
@@ -2040,7 +2044,7 @@ void slamdemoFrame::executeOneStep()
 			// Save dataset to file?
 			if (m_rawlog_out_file.fileOpenCorrectly())
 			{
-				m_rawlog_out_file << act << sf;
+				archiveFrom(m_rawlog_out_file) << act << sf;
 			}
 		}
 
@@ -2119,7 +2123,7 @@ void slamdemoFrame::executeOneStep()
 					}
 					else
 					{
-						ASSERT_(o_has_been_just_inserted)
+						ASSERT_(o_has_been_just_inserted);
 						// False negative: It was an already known LM but has
 						// been wrongly classified as new:
 						hist.da_false_neg++;
@@ -2398,7 +2402,7 @@ void slamdemoFrame::OnMenuSaveFilterState(wxCommandEvent& event)
 		mrpt::opengl::COpenGLScene scene;
 		scene.insert(obj3D);
 
-		CFileGZOutputStream(filName) << scene;
+		scene.saveToFile(filName);
 	}
 }
 
@@ -2498,6 +2502,6 @@ void slamdemoFrame::OnmnuItemSaveRawlogSelected(wxCommandEvent& event)
 				   mrpt::system::dateTimeLocalToString(mrpt::system::now()) +
 				   std::string("\n");
 
-		m_rawlog_out_file << obs;
+		mrpt::serialization::archiveFrom(m_rawlog_out_file) << obs;
 	}
 }

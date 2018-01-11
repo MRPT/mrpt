@@ -10,15 +10,14 @@
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/nav/planners/PlannerSimple2D.h>
 #include <mrpt/gui/CDisplayWindow.h>
-#include <mrpt/utils/CTicTac.h>
-#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/poses/CPose2D.h>
 
 #include <iostream>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::maps;
 using namespace mrpt::nav;
 using namespace mrpt::math;

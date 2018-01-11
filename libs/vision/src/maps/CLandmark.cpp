@@ -9,14 +9,13 @@
 
 #include "vision-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/maps/CLandmark.h>
 #include <mrpt/obs/CObservation.h>
-#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/serialization/stl_serialization.h>
 
 using namespace mrpt::obs;
 using namespace mrpt::maps;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 IMPLEMENTS_SERIALIZABLE(CLandmark, CSerializable, mrpt::maps)
@@ -84,29 +83,15 @@ void CLandmark::setPose(const CPointPDFGaussian& pose)
 	pose_cov_23 = pose.cov(1, 2);
 }
 
-/*---------------------------------------------------------------
-					writeToStream
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CLandmark::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CLandmark::serializeGetVersion() const { return 4; }
+void CLandmark::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 4;
-	else
-	{
-		out << features << pose_mean << normal << pose_cov_11 << pose_cov_22
-			<< pose_cov_33 << pose_cov_12 << pose_cov_13 << pose_cov_23 << ID
-			<< timestampLastSeen << seenTimesCount;
-	}
+	out << features << pose_mean << normal << pose_cov_11 << pose_cov_22
+		<< pose_cov_33 << pose_cov_12 << pose_cov_13 << pose_cov_23 << ID
+		<< timestampLastSeen << seenTimesCount;
 }
 
-/*---------------------------------------------------------------
-					readFromStream
-   Implements the reading from a CStream capability of
-	  CSerializable objects
-  ---------------------------------------------------------------*/
-void CLandmark::readFromStream(mrpt::utils::CStream& in, int version)
+void CLandmark::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

@@ -9,13 +9,13 @@
 #ifndef _mrpt_vision_TSimpleFeature_H
 #define _mrpt_vision_TSimpleFeature_H
 
-#include <mrpt/utils/TPixelCoord.h>
-#include <mrpt/utils/round.h>
+#include <mrpt/img/TPixelCoord.h>
+#include <mrpt/core/round.h>
 #include <mrpt/math/KDTreeCapable.h>
 #include <mrpt/math/CMatrixTemplate.h>  // mrpt::math::CMatrixBool
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/vision/types.h>
-#include <mrpt/utils/round.h>
+#include <mrpt/core/round.h>
 
 namespace mrpt
 {
@@ -26,10 +26,10 @@ namespace vision
 
 /** A simple structure for representing one image feature (without descriptor
  * nor patch) - This is
-  *  the template which allows you to select if pixels are represented as
+ *  the template which allows you to select if pixels are represented as
  * integers or floats.
-  *  \sa TSimpleFeature, TSimpleFeaturef
-  */
+ *  \sa TSimpleFeature, TSimpleFeaturef
+ */
 template <typename PIXEL_COORD_TYPE>
 struct TSimpleFeature_templ
 {
@@ -78,12 +78,12 @@ struct TSimpleFeature_templ
 
 /** A simple structure for representing one image feature (without descriptor
  * nor patch).
-  *  \sa TSimpleFeaturef, CFeature, TSimpleFeatureList
-  */
-typedef TSimpleFeature_templ<mrpt::utils::TPixelCoord> TSimpleFeature;
+ *  \sa TSimpleFeaturef, CFeature, TSimpleFeatureList
+ */
+typedef TSimpleFeature_templ<mrpt::img::TPixelCoord> TSimpleFeature;
 
 /** A version of  TSimpleFeature with subpixel precision */
-typedef TSimpleFeature_templ<mrpt::utils::TPixelCoordf> TSimpleFeaturef;
+typedef TSimpleFeature_templ<mrpt::img::TPixelCoordf> TSimpleFeaturef;
 
 template <typename FEATURE>
 struct TSimpleFeatureTraits;
@@ -93,7 +93,7 @@ struct TSimpleFeatureTraits<TSimpleFeature>
 {
 	typedef int coord_t;
 
-	static inline coord_t f2coord(float f) { return mrpt::utils::round(f); }
+	static inline coord_t f2coord(float f) { return mrpt::round(f); }
 };
 
 template <>
@@ -106,9 +106,9 @@ struct TSimpleFeatureTraits<TSimpleFeaturef>
 
 /** A list of image features using the structure TSimpleFeature for each feature
  * - capable of KD-tree computations
-  *  Users normally use directly the typedef's: TSimpleFeatureList &
+ *  Users normally use directly the typedef's: TSimpleFeatureList &
  * TSimpleFeaturefList
-  */
+ */
 template <typename FEATURE>
 struct TSimpleFeatureList_templ
 {
@@ -128,17 +128,17 @@ struct TSimpleFeatureList_templ
 		if (this->empty()) return 0;
 		TFeatureID maxID = m_feats[0].ID;
 		size_t N = m_feats.size() - 1;
-		for (; N; --N) mrpt::utils::keep_max(maxID, m_feats[N].ID);
+		for (; N; --N) mrpt::keep_max(maxID, m_feats[N].ID);
 		return maxID;
 	}
 
 	/** Returns a vector with a LUT of the first feature index per row, to
 	 * efficiently look for neighbors, etc.
-	  *  By default this vector is empty, so if a feature detector is used that
+	 *  By default this vector is empty, so if a feature detector is used that
 	 * doesn't fill this out, it will remain empty and useless.
-	  *  \note FASTER detectors do fill this out. In general, a feature list
+	 *  \note FASTER detectors do fill this out. In general, a feature list
 	 * that dynamically changes will not use this LUT.
-	  */
+	 */
 	const std::vector<size_t>& getFirstIndexPerRowLUT() const
 	{
 		return m_first_index_per_row;
@@ -269,7 +269,7 @@ struct TSimpleFeatureList_templ
 	}
 	inline void setScale(size_t i, float s)
 	{
-		m_feats[i]->octave = mrpt::utils::round(std::log(s) / std::log(2));
+		m_feats[i]->octave = mrpt::round(std::log(s) / std::log(2));
 	}
 	inline void setTrackStatus(size_t i, TFeatureTrackStatus s)
 	{
@@ -298,10 +298,10 @@ typedef TSimpleFeatureList_templ<TSimpleFeature> TSimpleFeatureList;
 typedef TSimpleFeatureList_templ<TSimpleFeaturef> TSimpleFeaturefList;
 
 /** A helper struct to sort keypoints by their response: It can be used with
-  *these types:
-  *	  - std::vector<cv::KeyPoint>
-  *	  - mrpt::vision::TSimpleFeatureList
-  */
+ *these types:
+ *	  - std::vector<cv::KeyPoint>
+ *	  - mrpt::vision::TSimpleFeatureList
+ */
 template <typename FEATURE_LIST>
 struct KeypointResponseSorter
 	: public std::binary_function<size_t, size_t, bool>
@@ -315,10 +315,10 @@ struct KeypointResponseSorter
 };
 
 /** Helper class: KD-tree search class for vector<KeyPoint>:
-  *  Call mark_as_outdated() to force rebuilding the kd-tree after modifying the
+ *  Call mark_as_outdated() to force rebuilding the kd-tree after modifying the
  * linked feature list.
-  *  \tparam FEAT Can be cv::KeyPoint or mrpt::vision::TSimpleFeature
-  */
+ *  \tparam FEAT Can be cv::KeyPoint or mrpt::vision::TSimpleFeature
+ */
 template <typename FEAT>
 class CFeatureListKDTree
 	: public mrpt::math::KDTreeCapable<CFeatureListKDTree<FEAT>>
@@ -341,7 +341,7 @@ class CFeatureListKDTree
 	/// Returns the dim'th component of the idx'th point in the class:
 	inline float kdtree_get_pt(const size_t idx, int dim) const
 	{
-		ASSERTDEB_(dim == 0 || dim == 1)
+		ASSERTDEB_(dim == 0 || dim == 1);
 		if (dim == 0)
 			return m_data[idx].pt.x;
 		else
@@ -354,7 +354,7 @@ class CFeatureListKDTree
 		const float* p1, const size_t idx_p2, size_t size) const
 	{
 		MRPT_UNUSED_PARAM(size);  // in release mode
-		ASSERTDEB_(size == 2)
+		ASSERTDEB_(size == 2);
 
 		const float d0 = p1[0] - m_data[idx_p2].pt.x;
 		const float d1 = p1[1] - m_data[idx_p2].pt.y;
@@ -380,8 +380,8 @@ class CFeatureListKDTree
 
 /** @} */  // End of add to module: mrptvision_features
 
-}  // end of namespace
+}  // namespace vision
 
-}  // end of namespace
+}  // namespace mrpt
 
 #endif

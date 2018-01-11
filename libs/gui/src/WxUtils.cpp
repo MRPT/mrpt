@@ -10,7 +10,7 @@
 #include "gui-precomp.h"  // Precompiled headers
 
 #include <mrpt/gui/WxUtils.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/system/filesystem.h>
 
 #if MRPT_HAS_WXWIDGETS
@@ -19,14 +19,13 @@
 
 using namespace mrpt;
 using namespace mrpt::gui;
-using namespace mrpt::utils;
 using namespace std;
 
 //------------------------------------------------------------------------
 // An auxiliary function for passing MRPT images to wxWidgets images.
 //   The returned object MUST be deleted by hand!
 //------------------------------------------------------------------------
-wxImage* mrpt::gui::MRPTImage2wxImage(const mrpt::utils::CImage& img)
+wxImage* mrpt::gui::MRPTImage2wxImage(const mrpt::img::CImage& img)
 {
 #if MRPT_HAS_OPENCV
 	IplImage* image = const_cast<IplImage*>(img.getAs<IplImage>());
@@ -229,7 +228,7 @@ wxBitmap* mrpt::gui::MRPTImage2wxBitmap(const CImage& img)
 	// create and return the object
 	return new wxBitmap(wxImage(w, h, data, false));
 #else
-	THROW_EXCEPTION("MRPT compiled without OpenCV")
+	THROW_EXCEPTION("MRPT compiled without OpenCV");
 #endif
 }
 
@@ -277,7 +276,7 @@ wxImage* mrpt::gui::IplImage2wxImage(void* img)
 //------------------------------------------------------------------------
 // Convert wxImage -> MRPTImage
 //------------------------------------------------------------------------
-mrpt::utils::CImage* mrpt::gui::wxImage2MRPTImage(const wxImage& img)
+mrpt::img::CImage* mrpt::gui::wxImage2MRPTImage(const wxImage& img)
 {
 	CImage* newImg = new CImage();
 
@@ -293,9 +292,9 @@ mrpt::utils::CImage* mrpt::gui::wxImage2MRPTImage(const wxImage& img)
 //------------------------------------------------------------------------
 // Convert wxImage -> MRPTImagePtr
 //------------------------------------------------------------------------
-mrpt::utils::CImage::Ptr mrpt::gui::wxImage2MRPTImagePtr(const wxImage& img)
+mrpt::img::CImage::Ptr mrpt::gui::wxImage2MRPTImagePtr(const wxImage& img)
 {
-	return mrpt::utils::CImage::Ptr(wxImage2MRPTImage(img));
+	return mrpt::img::CImage::Ptr(wxImage2MRPTImage(img));
 }
 
 //------------------------------------------------------------------------
@@ -350,7 +349,7 @@ void wxMRPTImageControl::AssignImage(wxBitmap* img)
 	m_img = img;
 }
 
-void wxMRPTImageControl::AssignImage(const mrpt::utils::CImage& img)
+void wxMRPTImageControl::AssignImage(const mrpt::img::CImage& img)
 {
 	wxBitmap* wxImg = MRPTImage2wxBitmap(img);
 
@@ -876,7 +875,7 @@ CPanelCameraSelection::~CPanelCameraSelection()
 						writeConfigFromVideoSourcePanel
    ------------------------------------------------------------------------ */
 void CPanelCameraSelection::writeConfigFromVideoSourcePanel(
-	const std::string& sect, mrpt::utils::CConfigFileBase* cfg) const
+	const std::string& sect, mrpt::config::CConfigFileBase* cfg) const
 {
 	MRPT_START
 
@@ -928,13 +927,13 @@ void CPanelCameraSelection::writeConfigFromVideoSourcePanel(
 		case 2:
 		{
 			// Replicate the config sections in "edCustomCamConfig" into "cfg":
-			mrpt::utils::CConfigFileMemory cfgIn(
+			mrpt::config::CConfigFileMemory cfgIn(
 				string(edCustomCamConfig->GetValue().mb_str()));
-			vector_string allSects;
+			std::vector<std::string> allSects;
 			cfgIn.getAllSections(allSects);
 			for (size_t idxSect = 0; idxSect < allSects.size(); idxSect++)
 			{
-				vector_string keys;
+				std::vector<std::string> keys;
 				cfgIn.getAllKeys(allSects[idxSect], keys);
 				for (size_t i = 0; i < keys.size(); i++)
 					cfg->write(
@@ -1029,7 +1028,7 @@ void CPanelCameraSelection::writeConfigFromVideoSourcePanel(
 		{
 			cerr << "[MRPT CPanelCameraSelection] ERROR: Unknown camera "
 					"selection tab!\n";
-			THROW_EXCEPTION("Unknown camera selection tab!")
+			THROW_EXCEPTION("Unknown camera selection tab!");
 		}
 	}
 
@@ -1043,7 +1042,7 @@ void CPanelCameraSelection::writeConfigFromVideoSourcePanel(
 						readConfigIntoVideoSourcePanel
    ------------------------------------------------------------------------ */
 void CPanelCameraSelection::readConfigIntoVideoSourcePanel(
-	const std::string& sect, const mrpt::utils::CConfigFileBase* cfg) const
+	const std::string& sect, const mrpt::config::CConfigFileBase* cfg) const
 {
 	MRPT_START
 

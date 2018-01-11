@@ -15,7 +15,6 @@
 using namespace mrpt;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace std;
 using namespace mrpt::math;
@@ -36,7 +35,7 @@ CHeightGridMap2D_MRF::TMapDefinition::TMapDefinition()
 }
 
 void CHeightGridMap2D_MRF::TMapDefinition::loadFromConfigFile_map_specific(
-	const mrpt::utils::CConfigFileBase& source,
+	const mrpt::config::CConfigFileBase& source,
 	const std::string& sectionNamePrefix)
 {
 	// [<sectionNamePrefix>+"_creationOpts"]
@@ -57,11 +56,11 @@ void CHeightGridMap2D_MRF::TMapDefinition::loadFromConfigFile_map_specific(
 }
 
 void CHeightGridMap2D_MRF::TMapDefinition::dumpToTextStream_map_specific(
-	mrpt::utils::CStream& out) const
+	std::ostream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"MAP TYPE                                  = %s\n",
-		mrpt::utils::TEnumType<
+		mrpt::typemeta::TEnumType<
 			CHeightGridMap2D_MRF::TMapRepresentation>::value2name(mapType)
 			.c_str());
 	LOADABLEOPTS_DUMP_VAR(run_map_estimation_at_ctor, bool);
@@ -70,6 +69,7 @@ void CHeightGridMap2D_MRF::TMapDefinition::dumpToTextStream_map_specific(
 	LOADABLEOPTS_DUMP_VAR(min_y, double);
 	LOADABLEOPTS_DUMP_VAR(max_y, double);
 	LOADABLEOPTS_DUMP_VAR(resolution, double);
+
 
 	this->insertionOpts.dumpToTextStream(out);
 }
@@ -166,60 +166,49 @@ double CHeightGridMap2D_MRF::internal_computeObservationLikelihood(
 	THROW_EXCEPTION("Not implemented yet!");
 }
 
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CHeightGridMap2D_MRF::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CHeightGridMap2D_MRF::serializeGetVersion() const { return 0; }
+void CHeightGridMap2D_MRF::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		dyngridcommon_writeToStream(out);
+	dyngridcommon_writeToStream(out);
 
-		// To assure compatibility: The size of each cell:
-		uint32_t n = static_cast<uint32_t>(sizeof(TRandomFieldCell));
-		out << n;
+	// To assure compatibility: The size of each cell:
+	uint32_t n = static_cast<uint32_t>(sizeof(TRandomFieldCell));
+	out << n;
 
-		// Save the map contents:
-		n = static_cast<uint32_t>(m_map.size());
-		out << n;
+	// Save the map contents:
+	n = static_cast<uint32_t>(m_map.size());
+	out << n;
 
 // Save the "m_map": This requires special handling for big endian systems:
 #if MRPT_IS_BIG_ENDIAN
-		for (uint32_t i = 0; i < n; i++)
-		{
-			out << m_map[i].kf_mean << m_map[i].dm_mean
-				<< m_map[i].dmv_var_mean;
-		}
+	for (uint32_t i = 0; i < n; i++)
+	{
+		out << m_map[i].kf_mean << m_map[i].dm_mean
+			<< m_map[i].dmv_var_mean;
+	}
 #else
-		// Little endian: just write all at once:
-		out.WriteBuffer(&m_map[0], sizeof(m_map[0]) * m_map.size());
+	// Little endian: just write all at once:
+	out.WriteBuffer(&m_map[0], sizeof(m_map[0]) * m_map.size());
 #endif
 
-		// Save the insertion options:
-		out << uint8_t(m_mapType) << m_cov << m_stackedCov;
+	// Save the insertion options:
+	out << uint8_t(m_mapType) << m_cov << m_stackedCov;
 
-		out << insertionOptions.sigma << insertionOptions.cutoffRadius
-			<< insertionOptions.R_min << insertionOptions.R_max
-			<< insertionOptions.KF_covSigma
-			<< insertionOptions.KF_initialCellStd
-			<< insertionOptions.KF_observationModelNoise
-			<< insertionOptions.KF_defaultCellMeanValue
-			<< insertionOptions.KF_W_size;
+	out << insertionOptions.sigma << insertionOptions.cutoffRadius
+		<< insertionOptions.R_min << insertionOptions.R_max
+		<< insertionOptions.KF_covSigma
+		<< insertionOptions.KF_initialCellStd
+		<< insertionOptions.KF_observationModelNoise
+		<< insertionOptions.KF_defaultCellMeanValue
+		<< insertionOptions.KF_W_size;
 
-		out << m_average_normreadings_mean << m_average_normreadings_var
-			<< uint64_t(m_average_normreadings_count);
+	out << m_average_normreadings_mean << m_average_normreadings_var
+		<< uint64_t(m_average_normreadings_count);
 
-		out << genericMapParams;
-	}
+	out << genericMapParams;
 }
 
-/*---------------------------------------------------------------
-  Implements the reading from a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CHeightGridMap2D_MRF::readFromStream(mrpt::utils::CStream& in, int version)
+void CHeightGridMap2D_MRF::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -283,32 +272,25 @@ void CHeightGridMap2D_MRF::readFromStream(mrpt::utils::CStream& in, int version)
 					TInsertionOptions
  ---------------------------------------------------------------*/
 CHeightGridMap2D_MRF::TInsertionOptions::TInsertionOptions() {}
-/*---------------------------------------------------------------
-					dumpToTextStream
-  ---------------------------------------------------------------*/
+
 void CHeightGridMap2D_MRF::TInsertionOptions::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+	std::ostream& out) const 
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [CHeightGridMap2D_MRF::TInsertionOptions] ------------ "
 		"\n\n");
-	out.printf("[TInsertionOptions.Common] ------------ \n\n");
+	out << mrpt::format("[TInsertionOptions.Common] ------------ \n\n");
 	internal_dumpToTextStream_common(
 		out);  // Common params to all random fields maps:
 
-	//	out.printf("[TInsertionOptions.CHeightGridMap2D_MRF] ------------
-	//\n\n");
-	//	out.printf("std_windNoise_phi						= %f\n",
-	// std_windNoise_phi);
-
-	out.printf("\n");
+	out << mrpt::format("\n");
 }
 
 /*---------------------------------------------------------------
 					loadFromConfigFile
   ---------------------------------------------------------------*/
 void CHeightGridMap2D_MRF::TInsertionOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
 {
 	// Common data fields for all random fields maps:
 	internal_loadFromConfigFile_common(iniFile, section);

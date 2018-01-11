@@ -18,6 +18,6 @@
 // Very basic classes for maps:
 #include <mrpt/maps/CMetricMap.h>
 
-#include <mrpt/utils/CStream.h>  // Will be used in all serialized classes (most of them in mrpt-obs)
+#include <mrpt/serialization/CArchive.h>  // Will be used in all serialized classes (most of them in mrpt-obs)
 
 #endif

@@ -14,7 +14,7 @@
  */
 #include <mrpt/pbmap.h>  // precomp. hdr
 
-#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/io/io.h>
@@ -261,7 +261,7 @@ int main(int argc, char** argv)
 		 << mapViewer.pbmap.globalMapPtr->empty() << endl;
 
 	// Load Previous Map
-	mrpt::utils::CFileGZInputStream serialized_pbmap;
+	mrpt::io::CFileGZInputStream serialized_pbmap;
 	if (serialized_pbmap.open(PbMapFile))
 	{
 		serialized_pbmap >> mapViewer.pbmap;

@@ -78,12 +78,12 @@ struct CvCBQuad
 //===========================================================================
 // Return: -1: errors, 0: not found, 1: found OK
 int cvFindChessboardCorners3(
-	const mrpt::utils::CImage& img_, CvSize pattern_size,
+	const mrpt::img::CImage& img_, CvSize pattern_size,
 	std::vector<CvPoint2D32f>& out_corners);
 
 // Return: true: found OK
 bool find_chessboard_corners_multiple(
-	const mrpt::utils::CImage& img_, CvSize pattern_size,
+	const mrpt::img::CImage& img_, CvSize pattern_size,
 	std::vector<std::vector<CvPoint2D32f>>& out_corners);
 
 //===========================================================================
@@ -91,7 +91,7 @@ bool find_chessboard_corners_multiple(
 //===========================================================================
 int icvGenerateQuads(
 	std::vector<CvCBQuad::Ptr>& quads, std::vector<CvCBCorner::Ptr>& corners,
-	const mrpt::utils::CImage& img, int flags, int dilation, bool firstRun);
+	const mrpt::img::CImage& img, int flags, int dilation, bool firstRun);
 
 void mrFindQuadNeighbors2(std::vector<CvCBQuad::Ptr>& quads, int dilation);
 
@@ -124,7 +124,7 @@ void quadListMakeUnique(std::vector<CvCBQuad::Ptr>& quads);
 // JL: Refactored code from within cvFindChessboardCorners3() and alternative
 // algorithm:
 bool do_special_dilation(
-	mrpt::utils::CImage& thresh_img, const int dilations,
+	mrpt::img::CImage& thresh_img, const int dilations,
 	IplConvKernel* kernel_cross, IplConvKernel* kernel_rect,
 	IplConvKernel* kernel_diag1, IplConvKernel* kernel_diag2,
 	IplConvKernel* kernel_horz, IplConvKernel* kernel_vert);

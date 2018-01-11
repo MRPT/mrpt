@@ -9,9 +9,7 @@ SET(DOC_INDIV_FILES
 	)
 SET(all_docs_files ${DOX_HDRS} ${DOC_INDIV_FILES})
 add_custom_target(DocumentationFiles DEPENDS ${all_docs_files} SOURCES ${all_docs_files})
-if(ENABLE_SOLUTION_FOLDERS)
-	set_target_properties(DocumentationFiles PROPERTIES FOLDER "documentation")
-endif()
+set_target_properties(DocumentationFiles PROPERTIES FOLDER "documentation")
 
 # ----------------------------------------------------------------------------
 # Targets for building the documentation of the MRPT
@@ -36,9 +34,7 @@ if(TARGET mrpt-perfdata2html)
 		COMMENT 		"Generating performance HTML pages"
 		)
 	add_dependencies(documentation_performance_html mrpt-perfdata2html)
-	if(ENABLE_SOLUTION_FOLDERS)
-		set_target_properties(documentation_performance_html PROPERTIES FOLDER "documentation")
-	endif()
+	set_target_properties(documentation_performance_html PROPERTIES FOLDER "documentation")
 endif()
 
 IF(DOXYGEN_EXECUTABLE)
@@ -56,9 +52,7 @@ IF(DOXYGEN_EXECUTABLE)
 		WORKING_DIRECTORY	${MRPT_SOURCE_DIR}/
 		COMMENT 		"Generating MRPT documentation (html)"
 		)
-	if(ENABLE_SOLUTION_FOLDERS)
-		set_target_properties(documentation_html PROPERTIES FOLDER "documentation")
-	endif()
+	set_target_properties(documentation_html PROPERTIES FOLDER "documentation")
 
 	# --------------------------------
 	#   documentation_chm
@@ -74,9 +68,7 @@ IF(DOXYGEN_EXECUTABLE)
 		WORKING_DIRECTORY	${MRPT_SOURCE_DIR}/
 		COMMENT 		"Generating MRPT documentation (chm)"
 		)
-	if(ENABLE_SOLUTION_FOLDERS)
-		set_target_properties(documentation_chm PROPERTIES FOLDER "documentation")
-	endif()
+	set_target_properties(documentation_chm PROPERTIES FOLDER "documentation")
 
 	# --------------------------------
 	#   documentation_html_chm
@@ -92,10 +84,7 @@ IF(DOXYGEN_EXECUTABLE)
 		WORKING_DIRECTORY	${MRPT_SOURCE_DIR}/
 		COMMENT 		"Generating MRPT documentation (html+chm)"
 		)
-	if(ENABLE_SOLUTION_FOLDERS)
-		set_target_properties(documentation_html_chm PROPERTIES FOLDER "documentation")
-	endif()
-
+	set_target_properties(documentation_html_chm PROPERTIES FOLDER "documentation")
 ENDIF()
 
 

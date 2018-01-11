@@ -10,7 +10,7 @@
 #include "nav-precomp.h"  // Precomp header
 
 #include <mrpt/nav/reactive/CNavigatorManualSequence.h>
-#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/kinematics/CVehicleVelCmd_DiffDriven.h>
 #include <mrpt/kinematics/CVehicleVelCmd_Holo.h>
@@ -26,17 +26,17 @@ CNavigatorManualSequence::CNavigatorManualSequence(
 // Dtor:
 CNavigatorManualSequence::~CNavigatorManualSequence() {}
 void CNavigatorManualSequence::saveConfigFile(
-	mrpt::utils::CConfigFileBase& c) const
+	mrpt::config::CConfigFileBase& c) const
 {
 }
 
 void CNavigatorManualSequence::loadConfigFile(
-	const mrpt::utils::CConfigFileBase& c)
+	const mrpt::config::CConfigFileBase& c)
 {
 	const std::string s = "CNavigatorManualSequence";
 
 	programmed_orders.clear();
-	mrpt::vector_string lstKeys;
+	std::vector<std::string> lstKeys;
 	c.getAllKeys(s, lstKeys);
 
 	for (size_t i = 0; i < lstKeys.size(); i++)
@@ -79,7 +79,7 @@ void CNavigatorManualSequence::loadConfigFile(
 
 void CNavigatorManualSequence::initialize()
 {
-	ASSERT_(!programmed_orders.empty())
+	ASSERT_(!programmed_orders.empty());
 	m_robot.resetNavigationTimer();
 }
 
@@ -95,7 +95,7 @@ void CNavigatorManualSequence::navigationStep()
 		const TVelCmd& krc = programmed_orders.begin()->second;
 		// Send cmd:
 		logFmt(
-			mrpt::utils::LVL_DEBUG,
+			mrpt::system::LVL_DEBUG,
 			"[CNavigatorManualSequence] Sending cmd: t=%f\n",
 			programmed_orders.begin()->first);
 
@@ -103,7 +103,7 @@ void CNavigatorManualSequence::navigationStep()
 		{
 			this->stop(true /*not emergency*/);
 			logFmt(
-				mrpt::utils::LVL_ERROR,
+				mrpt::system::LVL_ERROR,
 				"[CNavigatorManualSequence] **ERROR** sending cmd to robot.");
 			return;
 		}

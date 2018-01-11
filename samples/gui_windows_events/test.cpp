@@ -8,20 +8,19 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/gui.h>
-#include <mrpt/utils/CObserver.h>
+#include <mrpt/system/CObserver.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 
 using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace std;
 
 #include <mrpt/examples_config.h>
 string myExampleImage(
 	MRPT_EXAMPLES_BASE_DIRECTORY + string("imageBasics/frame_color.jpg"));
 
-class MyObserver : public mrpt::utils::CObserver
+class MyObserver : public mrpt::system::CObserver
 {
    protected:
 	void OnEvent(const mrptEvent& e)
@@ -74,7 +73,7 @@ void TestGuiWindowsEvents()
 	CDisplayWindow win2D("Bitmap window", 300, 300);
 
 	{
-		mrpt::utils::CImage img(300, 300, 3);
+		mrpt::img::CImage img(300, 300, 3);
 		img.filledRectangle(0, 0, 300, 300, TColor(0, 0, 255));
 		img.textOut(50, 50, "Hello world!", TColor(255, 255, 255));
 		win2D.showImage(img);

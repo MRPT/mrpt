@@ -11,12 +11,11 @@
  * Execute a least squares approximation of the given x,y data.
  */
 
-#include <mrpt/utils/types_math.h>  // CVectorDouble
+#include <mrpt/math/types_math.h>  // CVectorDouble
 #include <mrpt/gui.h>
 #include <mrpt/math/interp_fit.hpp>
 #include <mrpt/math/utils.h>  // normalize()
 
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::gui;
 using namespace std;

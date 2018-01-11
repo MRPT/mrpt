@@ -11,7 +11,7 @@
 
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/hwdrivers/C2DRangeFinderAbstract.h>
-#include <mrpt/utils/circular_buffer.h>
+#include <mrpt/containers/circular_buffer.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 
 namespace mrpt
@@ -97,7 +97,7 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 	/** The sensor 6D pose: */
 	poses::CPose3D m_sensorPose;
 	/** Auxiliary buffer for readings */
-	mrpt::utils::circular_buffer<uint8_t> m_rx_buffer;
+	mrpt::containers::circular_buffer<uint8_t> m_rx_buffer;
 
 	/** The last sent measurement command (MDXXX), including the last 0x0A. */
 	std::string m_lastSentMeasCmd;
@@ -272,7 +272,7 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(
-		const mrpt::utils::CConfigFileBase& configSource,
+		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& iniSection);
 
 };  // End of class

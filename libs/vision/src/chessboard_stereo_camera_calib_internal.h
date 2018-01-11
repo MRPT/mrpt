@@ -27,7 +27,7 @@ struct lm_stat_t
 
 	// State being optimized:
 	//  N*left_cam_pose + right2left_pose + left_cam_params + right_cam_params
-	mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t
+	mrpt::aligned_std_vector<mrpt::poses::CPose3D>
 		left_cam_poses;  // Poses of the origin of coordinates of the pattern
 	// wrt the left camera
 	mrpt::poses::CPose3D right2left_pose;
@@ -69,7 +69,7 @@ struct TResidJacobElement
 	Eigen::Matrix<double, 4, 30> J;
 };
 
-typedef std::vector<mrpt::aligned_containers<TResidJacobElement>::vector_t>
+typedef std::vector<mrpt::aligned_std_vector<TResidJacobElement>>
 	TResidualJacobianList;
 
 // Auxiliary functions for the Lev-Marq algorithm:
@@ -77,10 +77,10 @@ double recompute_errors_and_Jacobians(
 	const lm_stat_t& lm_stat, TResidualJacobianList& res_jac,
 	bool use_robust_kernel, double kernel_param);
 void build_linear_system(
-	const TResidualJacobianList& res_jac, const vector_size_t& var_indxs,
+	const TResidualJacobianList& res_jac, const std::vector<size_t>& var_indxs,
 	Eigen::VectorXd& minus_g, Eigen::MatrixXd& H);
 void add_lm_increment(
-	const Eigen::VectorXd& eps, const vector_size_t& var_indxs,
+	const Eigen::VectorXd& eps, const std::vector<size_t>& var_indxs,
 	lm_stat_t& new_lm_stat);
 }
 }

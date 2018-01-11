@@ -10,12 +10,12 @@
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/graphs/dijkstra.h>
 #include <mrpt/random.h>
-#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/CTimeLogger.h>
+#include <mrpt/containers/traits_map.h>
 
 #include "common.h"
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::graphs;
 using namespace mrpt::poses;
@@ -119,6 +119,8 @@ double graphs_dijkstra(int nNodes, int _N)
 // ------------------------------------------------------
 void register_tests_graph()
 {
+	using namespace mrpt::containers;
+
 	getRandomGenerator().randomize(1234);
 
 	lstTests.push_back(

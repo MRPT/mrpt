@@ -9,9 +9,8 @@
 
 #include <mrpt/hwdrivers/CImageGrabber_dc1394.h>
 #include <mrpt/gui/CDisplayWindow.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 
-using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::gui;
 using namespace mrpt::obs;

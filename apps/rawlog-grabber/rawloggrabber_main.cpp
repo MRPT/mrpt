@@ -17,10 +17,10 @@
   -----------------------------------------------------------------------------*/
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
-#include <mrpt/utils/CImage.h>
-#include <mrpt/utils/round.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/img/CImage.h>
+#include <mrpt/core/round.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CObservationOdometry.h>
@@ -29,6 +29,7 @@
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include <thread>
 
@@ -39,7 +40,9 @@
 using namespace mrpt;
 using namespace mrpt::system;
 using namespace mrpt::hwdrivers;
-using namespace mrpt::utils;
+using namespace mrpt::config;
+using namespace mrpt::serialization;
+using namespace mrpt::img;
 using namespace mrpt::obs;
 using namespace mrpt::poses;
 using namespace std;
@@ -90,7 +93,7 @@ int main(int argc, char** argv)
 		}
 
 		string INI_FILENAME(argv[1]);
-		ASSERT_FILE_EXISTS_(INI_FILENAME)
+		ASSERT_FILE_EXISTS_(INI_FILENAME);
 
 		CConfigFile iniFile(INI_FILENAME);
 
@@ -156,12 +159,12 @@ int main(int argc, char** argv)
 		// ----------------------------------------------
 		// Launch threads:
 		// ----------------------------------------------
-		vector_string sections;
+		std::vector<std::string> sections;
 		iniFile.getAllSections(sections);
 
 		vector<std::thread> lstThreads;
 
-		for (vector_string::iterator it = sections.begin();
+		for (std::vector<std::string>::iterator it = sections.begin();
 			 it != sections.end(); ++it)
 		{
 			if (*it == GLOBAL_SECTION_NAME || it->empty() ||
@@ -180,7 +183,8 @@ int main(int argc, char** argv)
 		// ----------------------------------------------
 		// Run:
 		// ----------------------------------------------
-		CFileGZOutputStream out_file;
+		mrpt::io::CFileGZOutputStream out_file;
+		auto out_arch = archiveFrom(out_file);
 
 		out_file.open(rawlog_filename, rawlog_GZ_compress_level);
 
@@ -221,7 +225,7 @@ int main(int argc, char** argv)
 						CAction::Ptr act =
 							std::dynamic_pointer_cast<CAction>(it->second);
 
-						out_file << curSF;
+						out_arch << curSF;
 						cout << "[" << dateTimeToString(now())
 							 << "] Saved SF with " << curSF.size()
 							 << " objects." << endl;
@@ -231,7 +235,7 @@ int main(int argc, char** argv)
 						acts.insert(*act);
 						act.reset();
 
-						out_file << acts;
+						out_arch << acts;
 					}
 					else if (IS_CLASS(it->second, CObservationOdometry))
 					{
@@ -279,7 +283,7 @@ int main(int argc, char** argv)
 						act->hasVelocities = true;
 						act->velocityLocal = odom->velocityLocal;
 
-						out_file << curSF;
+						out_arch << curSF;
 						cout << "[" << dateTimeToString(now())
 							 << "] Saved SF with " << curSF.size()
 							 << " objects." << endl;
@@ -289,7 +293,7 @@ int main(int argc, char** argv)
 						acts.insert(*act);
 						act.reset();
 
-						out_file << acts;
+						out_arch << acts;
 					}
 					else if (IS_DERIVED(it->second, CObservation))
 					{
@@ -349,7 +353,7 @@ int main(int argc, char** argv)
 							}
 
 							// Save and start a new one:
-							out_file << curSF;
+							out_arch << curSF;
 							cout << "[" << dateTimeToString(now())
 								 << "] Saved SF with " << curSF.size()
 								 << " objects." << endl;
@@ -376,7 +380,7 @@ int main(int argc, char** argv)
 						 copy_of_global_list_obs.begin();
 					 it != copy_of_global_list_obs.end(); ++it)
 				{
-					out_file << *(it->second);
+					out_arch << *(it->second);
 
 					// Show GPS mode:
 					if (hwdrivers_verbose)

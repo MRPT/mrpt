@@ -8,10 +8,8 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/poses.h>
-#include <mrpt/utils.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace std;
 

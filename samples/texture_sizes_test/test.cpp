@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/opengl/CTexturedPlane.h>
 #include <mrpt/opengl/CText.h>
@@ -21,7 +21,6 @@ using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 
 // ------------------------------------------------------
 //				TextureSizes_test

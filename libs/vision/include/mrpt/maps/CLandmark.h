@@ -9,7 +9,7 @@
 #ifndef CLandmark_H
 #define CLandmark_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/poses/CPointPDFGaussian.h>
@@ -32,7 +32,7 @@ namespace maps
   * \sa CLandmarksMap
   * \ingroup mrpt_vision_grp
   */
-class CLandmark : public mrpt::utils::CSerializable
+class CLandmark : public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(CLandmark)
 
@@ -100,7 +100,8 @@ class CLandmark : public mrpt::utils::CSerializable
 	mrpt::vision::TFeatureType getType() const
 	{
 		ASSERT_(!features.empty());
-		ASSERT_(features[0]) return features[0]->type;
+		ASSERT_(features[0]);
+		return features[0]->type;
 	}
 
 	/** Creates one feature in the vector "features", calling the appropriate

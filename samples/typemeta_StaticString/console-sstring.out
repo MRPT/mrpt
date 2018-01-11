@@ -1,0 +1,7 @@
+string_literal<3>=foo
+a=foo
+b=bar
+a+b=foobar
+(a+b).size()=6
+(a+b)[0]=f
+(a+b)[5]=r

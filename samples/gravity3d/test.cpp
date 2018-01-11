@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/random.h>
 #include <mrpt/system/os.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
@@ -19,7 +19,6 @@ using namespace std;
 using namespace mrpt::gui;
 using namespace mrpt::random;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
 
 const size_t N_MASSES = 750;
 
@@ -108,7 +107,7 @@ void GravityDemo()
 	// IMPORTANT!!! IF NOT UNLOCKED, THE WINDOW WILL NOT BE UPDATED!
 	win.unlockAccess3DScene();
 
-	mrpt::utils::CTicTac tictac;
+	mrpt::system::CTicTac tictac;
 	tictac.Tic();
 
 	double t0 = tictac.Tac();

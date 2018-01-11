@@ -7,11 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/utils/CObserver.h>
+#include <mrpt/system/CObserver.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::poses;
@@ -94,7 +93,7 @@ CObservation2DRangeScan getScan()
 	return scan1;
 }
 
-class MyObserver : public mrpt::utils::CObserver
+class MyObserver : public mrpt::system::CObserver
 {
    protected:
 	void OnEvent(const mrptEvent& e)

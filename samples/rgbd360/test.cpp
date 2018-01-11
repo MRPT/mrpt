@@ -53,7 +53,7 @@ int main(int argc, char** argv)
 		//    rgbd360.enableGrab3DPoints(p.generate_3D_pointcloud_in_this_thread);
 
 		//    rgbd360.loadConfig_sensorSpecific(const
-		//    mrpt::utils::CConfigFileBase &configSource,	const std::string
+		//    mrpt::config::CConfigFileBase &configSource,	const std::string
 		//    &iniSection );
 
 		// Open:

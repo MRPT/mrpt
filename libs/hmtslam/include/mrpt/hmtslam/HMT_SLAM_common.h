@@ -9,8 +9,8 @@
 #ifndef HMT_SLAM_common_H
 #define HMT_SLAM_common_H
 
-#include <mrpt/utils/CSerializable.h>
-#include <mrpt/utils/list_searchable.h>
+#include <mrpt/serialization/CSerializable.h>
+#include <mrpt/containers/list_searchable.h>
 #include <set>
 
 #define COMMON_TOPOLOG_HYP static_cast<THypothesisID>(0)
@@ -75,7 +75,7 @@ typedef std::set<TPoseID> TPoseIDSet;
   *  \sa THypothesisID, CHierarchicalMHMap
   * \ingroup mrpt_hmtslam_grp
   */
-class THypothesisIDSet : public mrpt::utils::CSerializable,
+class THypothesisIDSet : public mrpt::serialization::CSerializable,
 						 public std::set<THypothesisID>
 {
 	DEFINE_SERIALIZABLE(THypothesisIDSet)
@@ -103,18 +103,18 @@ class THypothesisIDSet : public mrpt::utils::CSerializable,
 /** A class for storing a sequence of arcs (a path).
   * \sa CHMTSLAM
   */
-class TArcList : public mrpt::utils::list_searchable<
+class TArcList : public mrpt::containers::list_searchable<
 					 std::shared_ptr<mrpt::hmtslam::CHMHMapArc>>
 {
    private:
-	typedef mrpt::utils::list_searchable<
+	typedef mrpt::containers::list_searchable<
 		std::shared_ptr<mrpt::hmtslam::CHMHMapArc>>
 		BASE;
 
    public:
 	void debugDump();
-	void read(utils::CStream& in);
-	void write(utils::CStream& out) const;
+	void read(mrpt::serialization::CArchive& in);
+	void write(mrpt::serialization::CArchive& out) const;
 };
 
 }  // End of namespace

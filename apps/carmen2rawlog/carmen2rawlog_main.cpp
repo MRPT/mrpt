@@ -20,7 +20,7 @@
 //  Started: JLBC @ Aug-2010
 // ===========================================================================
 
-#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/filesystem.h>
@@ -28,6 +28,7 @@
 
 #include <mrpt/obs/carmen_log_tools.h>
 #include <mrpt/obs/CObservationOdometry.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 
@@ -35,7 +36,6 @@
 #include <map>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::math;
 using namespace mrpt::system;
@@ -86,11 +86,10 @@ int main(int argc, char** argv)
 				format("Input file doesn't exist: '%s'", input_log.c_str()));
 
 		if (mrpt::system::fileExists(output_rawlog) && !overwrite)
-			throw runtime_error(
-				format(
-					"Output file already exist: '%s' (Use --overwrite to "
-					"override)",
-					output_rawlog.c_str()));
+			throw runtime_error(format(
+				"Output file already exist: '%s' (Use --overwrite to "
+				"override)",
+				output_rawlog.c_str()));
 
 		VERBOSE_COUT << "Input log        : " << input_log << endl;
 		VERBOSE_COUT << "Output rawlog    : " << output_rawlog
@@ -102,7 +101,7 @@ int main(int argc, char** argv)
 			throw runtime_error(
 				format("Error opening for read: '%s'", input_log.c_str()));
 
-		mrpt::utils::CFileGZOutputStream out_rawlog;
+		mrpt::io::CFileGZOutputStream out_rawlog;
 		if (!out_rawlog.open(output_rawlog, compress_level))
 			throw runtime_error(
 				format("Error opening for write: '%s'", output_rawlog.c_str()));
@@ -124,7 +123,8 @@ int main(int argc, char** argv)
 		{
 			for (size_t i = 0; i < importedObservations.size(); i++)
 			{
-				out_rawlog << *importedObservations[i];
+				mrpt::serialization::archiveFrom(out_rawlog)
+					<< *importedObservations[i];
 				nSavedObs++;
 
 				// by the way: if we have an "odometry" observation but it's not
@@ -137,7 +137,7 @@ int main(int argc, char** argv)
 					CObservationOdometry::Ptr odo =
 						std::dynamic_pointer_cast<CObservationOdometry>(
 							importedObservations[i]);
-					groundTruthPoses[odo->timestamp] = TPose2D(odo->odometry);
+					groundTruthPoses[odo->timestamp] = odo->odometry.asTPose();
 				}
 			}
 
@@ -173,10 +173,9 @@ int main(int argc, char** argv)
 			std::ofstream gt_file;
 			gt_file.open(gt_filename.c_str());
 			if (!gt_file.is_open())
-				throw std::runtime_error(
-					format(
-						"Couldn't open output file for ground truth: '%s'",
-						gt_filename.c_str()));
+				throw std::runtime_error(format(
+					"Couldn't open output file for ground truth: '%s'",
+					gt_filename.c_str()));
 			gt_file
 				<< "%          Ground truth positioning data \n"
 				   "%  Timestamp (sec)       x (m)    y (m)    phi (rad)  \n"

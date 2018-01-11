@@ -66,19 +66,15 @@ fi
 #  Paths relative to "$MRPT_ROOT"
 # -------------------------------------------------------------------
 CUR_DIR=`pwd`
-EIGEN_BASE_DIR="$CUR_DIR/otherlibs/eigen3/Eigen"
-EIGEN_EXTRA_DIR="$CUR_DIR/otherlibs/eigen3/unsupported/Eigen"
 EXTRA_INDIV_FILES=`find libs -name '*SSE*.cpp' | xargs -I FIL printf "$CUR_DIR/FIL "`
-EIGEN_INDIV_FILES="$EIGEN_BASE_DIR/Array  $EIGEN_BASE_DIR/Cholesky  $EIGEN_BASE_DIR/Core  $EIGEN_BASE_DIR/Dense  $EIGEN_BASE_DIR/Eigen  $EIGEN_BASE_DIR/Eigenvalues  $EIGEN_BASE_DIR/Geometry  $EIGEN_BASE_DIR/Householder  $EIGEN_BASE_DIR/Jacobi  $EIGEN_BASE_DIR/LeastSquares  $EIGEN_BASE_DIR/LU  $EIGEN_BASE_DIR/QR  $EIGEN_BASE_DIR/Sparse  $EIGEN_BASE_DIR/SVD $EIGEN_EXTRA_DIR/AdolcForward $EIGEN_EXTRA_DIR/AlignedVector3 $EIGEN_EXTRA_DIR/AutoDiff $EIGEN_EXTRA_DIR/BVH $EIGEN_EXTRA_DIR/CholmodSupport $EIGEN_EXTRA_DIR/FFT $EIGEN_EXTRA_DIR/IterativeSolvers $EIGEN_EXTRA_DIR/MatrixFunctions $EIGEN_EXTRA_DIR/MoreVectorization $EIGEN_EXTRA_DIR/MPRealSupport $EIGEN_EXTRA_DIR/NonLinearOptimization $EIGEN_EXTRA_DIR/NumericalDiff $EIGEN_EXTRA_DIR/OpenGLSupport $EIGEN_EXTRA_DIR/Polynomials $EIGEN_EXTRA_DIR/Skyline $EIGEN_EXTRA_DIR/SparseExtra $EIGEN_EXTRA_DIR/SuperLUSupport $EIGEN_EXTRA_DIR/UmfPackSupport"
-VISION_EXTRA_DIR="$CUR_DIR/libs/vision/src/pnp"
 VISION_CITATION_FILES="$CUR_DIR/doc/pnp_algos.bib"
 if ( [ "$skipMAINMRPTDOCS" -eq "0" ] )
 then
-	MRPT_LIST_DIRECTORIES=$(echo $CUR_DIR/doc/doxygen-pages $CUR_DIR/libs/*/include/ $CUR_DIR/libs/*/src/)
+	MRPT_LIST_DIRECTORIES=$(echo $CUR_DIR/doc/doxygen-pages $CUR_DIR/libs/*/include/ $CUR_DIR/libs/*/src/ $CUR_DIR/samples/*/)
 else
-	MRPT_LIST_DIRECTORIES=$(echo $CUR_DIR/doc/doxygen-pages)
+	MRPT_LIST_DIRECTORIES=$(echo $CUR_DIR/doc/doxygen-pages $CUR_DIR/samples/*/)
 fi
-MRPT_LIST_INPUT="$MRPT_LIST_DIRECTORIES $EXTRA_INDIV_FILES $EIGEN_INDIV_FILES $VISION_EXTRA_DIR"
+MRPT_LIST_INPUT="$MRPT_LIST_DIRECTORIES $EXTRA_INDIV_FILES"
 
 MRPT_EXAMPLE_PATH="$CUR_DIR/samples/ $CUR_DIR/share/mrpt/config_files/"
 

@@ -11,11 +11,11 @@
 #define mrpt_vision_utils_H
 
 #include <mrpt/vision/CFeature.h>
-#include <mrpt/utils/CImage.h>
-#include <mrpt/utils/TStereoCamera.h>
+#include <mrpt/img/CImage.h>
+#include <mrpt/img/TStereoCamera.h>
 #include <mrpt/math/CMatrixTemplate.h>
-#include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/TMatchingPair.h>
+#include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/tfest/TMatchingPair.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/vision/types.h>
 #include <mrpt/vision/chessboard_camera_calib.h>
@@ -62,14 +62,14 @@ namespace vision
 * \sa cross_correlation
 */
 void openCV_cross_correlation(
-	const mrpt::utils::CImage& img, const mrpt::utils::CImage& patch_img,
+	const mrpt::img::CImage& img, const mrpt::img::CImage& patch_img,
 	size_t& x_max, size_t& y_max, double& max_val, int x_search_ini = -1,
 	int y_search_ini = -1, int x_search_size = -1, int y_search_size = -1);
 
 /**	Invert an image using OpenCV function
 *
 */
-void flip(mrpt::utils::CImage& img);
+void flip(mrpt::img::CImage& img);
 
 /** Extract a UNITARY 3D vector in the direction of a 3D point, given from its
  * (x,y) pixels coordinates, and the camera intrinsic coordinates.
@@ -80,7 +80,7 @@ void flip(mrpt::utils::CImage& img);
   * \sa buildIntrinsicParamsMatrix, defaultIntrinsicParamsMatrix, TPixelCoordf
   */
 mrpt::math::TPoint3D pixelTo3D(
-	const mrpt::utils::TPixelCoordf& xy, const mrpt::math::CMatrixDouble33& A);
+	const mrpt::img::TPixelCoordf& xy, const mrpt::math::CMatrixDouble33& A);
 
 /** Builds the intrinsic parameters matrix A from parameters:
   * \param focalLengthX [IN]   The focal length, in X (horizontal) pixels
@@ -181,7 +181,7 @@ void getDispersion(
   * ...
   */
 double computeMsd(
-	const mrpt::utils::TMatchingPairList& list, const poses::CPose3D& Rt);
+	const mrpt::tfest::TMatchingPairList& list, const poses::CPose3D& Rt);
 
 /** Transform two clouds of 3D points into a matched list of points
   * ...
@@ -189,7 +189,7 @@ double computeMsd(
 void cloudsToMatchedList(
 	const mrpt::obs::CObservationVisualLandmarks& cloud1,
 	const mrpt::obs::CObservationVisualLandmarks& cloud2,
-	mrpt::utils::TMatchingPairList& outList);
+	mrpt::tfest::TMatchingPairList& outList);
 
 /** Computes the main orientation of a set of points with an image (for using in
  * SIFT-based algorithms)
@@ -201,7 +201,7 @@ void cloudsToMatchedList(
   * \return The main orientation of the image point.
   */
 float computeMainOrientation(
-	const mrpt::utils::CImage& image, unsigned int x, unsigned int y);
+	const mrpt::img::CImage& image, unsigned int x, unsigned int y);
 
 /** Normalizes the brigthness and contrast of an image by setting its mean value
  * to zero and its standard deviation to unit.
@@ -209,7 +209,7 @@ float computeMainOrientation(
   * \param nimage       [OUTPUT]    The new normalized image.
   */
 void normalizeImage(
-	const mrpt::utils::CImage& image, mrpt::utils::CImage& nimage);
+	const mrpt::img::CImage& image, mrpt::img::CImage& nimage);
 
 /** Find the matches between two lists of features which must be of the same
  * type.
@@ -244,7 +244,7 @@ void generateMask(
   * \return The value of computed SAD normalized to [0,1]
   */
 double computeSAD(
-	const mrpt::utils::CImage& patch1, const mrpt::utils::CImage& patch2);
+	const mrpt::img::CImage& patch1, const mrpt::img::CImage& patch2);
 
 /** Draw rectangles around each of the features on a copy of the input image.
   * \param inImg    [IN]    The input image where to draw the features.
@@ -253,12 +253,12 @@ double computeSAD(
  * features.
   */
 void addFeaturesToImage(
-	const mrpt::utils::CImage& inImg, const CFeatureList& theList,
-	mrpt::utils::CImage& outImg);
+	const mrpt::img::CImage& inImg, const CFeatureList& theList,
+	mrpt::img::CImage& outImg);
 
 void projectMatchedFeatures(
 	const CMatchedFeatureList& matches,
-	const mrpt::utils::TStereoCamera& stereo_camera,
+	const mrpt::img::TStereoCamera& stereo_camera,
 	std::vector<mrpt::math::TPoint3D>& out_points);
 
 /** Computes the 3D position of a set of matched features from their coordinates
@@ -378,7 +378,7 @@ wrt the first one
 mrpt::vision::CStereoRectifyMap
 */
 void computeStereoRectificationMaps(
-	const mrpt::utils::TCamera& cam1, const mrpt::utils::TCamera& cam2,
+	const mrpt::img::TCamera& cam1, const mrpt::img::TCamera& cam2,
 	const mrpt::poses::CPose3D& rightCameraPose, void* outMap1x, void* outMap1y,
 	void* outMap2x, void* outMap2y);
 

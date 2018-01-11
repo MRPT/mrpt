@@ -19,23 +19,24 @@
 
 #include <mrpt/system/os.h>
 #include <mrpt/vision/CFeatureExtraction.h>  // important import
-#include <mrpt/utils/CMemoryStream.h>
+#include <mrpt/io/CMemoryStream.h>
 
 using namespace mrpt::vision;
-using namespace mrpt::utils;
+using namespace mrpt::img;
 using namespace mrpt::math;
+using namespace mrpt::img;
 using namespace mrpt;
 using namespace std;
 
 void CFeatureExtraction::extractFeaturesAKAZE(
-	const mrpt::utils::CImage& inImg, CFeatureList& feats, unsigned int init_ID,
+	const mrpt::img::CImage& inImg, CFeatureList& feats, unsigned int init_ID,
 	unsigned int nDesiredFeatures, const TImageROI& ROI) const
 {
 	MRPT_UNUSED_PARAM(ROI);
 	MRPT_START
 #if MRPT_HAS_OPENCV
 #if MRPT_OPENCV_VERSION_NUM < 0x300
-	THROW_EXCEPTION("This function requires OpenCV > 3.0.0")
+	THROW_EXCEPTION("This function requires OpenCV > 3.0.0");
 #else
 
 	using namespace cv;

@@ -9,10 +9,10 @@
 #pragma once
 
 #include <mrpt/math/wrap2pi.h>
-#include <mrpt/utils/CSerializable.h>
-#include <mrpt/utils/round.h>
-#include <mrpt/utils/CConfigFileBase.h>
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/serialization/CSerializable.h>
+#include <mrpt/core/round.h>
+#include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/math/CPolygon.h>
 #include <cstdint>
 #include <mrpt/nav/holonomic/ClearanceDiagram.h>
@@ -73,8 +73,8 @@ enum PTG_collision_behavior_t
  *
  *  \ingroup nav_tpspace
  */
-class CParameterizedTrajectoryGenerator : public mrpt::utils::CSerializable,
-										  public mrpt::utils::CLoadableOptions
+class CParameterizedTrajectoryGenerator : public mrpt::serialization::CSerializable,
+										  public mrpt::config::CLoadableOptions
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CParameterizedTrajectoryGenerator)
    public:
@@ -92,13 +92,13 @@ class CParameterizedTrajectoryGenerator : public mrpt::utils::CSerializable,
 	  *
 	  * `ptgClassName` can be any PTG class name which has been registered as
 	  *any other
-	  * mrpt::utils::CSerializable class.
+	  * mrpt::serialization::CSerializable class.
 	  *
 	  * \exception std::logic_error On invalid or missing parameters.
 	  */
 	static CParameterizedTrajectoryGenerator* CreatePTG(
 		const std::string& ptgClassName,
-		const mrpt::utils::CConfigFileBase& cfg, const std::string& sSection,
+		const mrpt::config::CConfigFileBase& cfg, const std::string& sSection,
 		const std::string& sKeyPrefix);
 
 	/** @name Virtual interface of each PTG implementation
@@ -178,8 +178,8 @@ class CParameterizedTrajectoryGenerator : public mrpt::utils::CSerializable,
 		{
 			return !(*this == o);
 		}
-		void writeToStream(mrpt::utils::CStream& out) const;
-		void readFromStream(mrpt::utils::CStream& in);
+		void writeToStream(mrpt::serialization::CArchive& out) const;
+		void readFromStream(mrpt::serialization::CArchive& in);
 	};
 
    protected:
@@ -410,10 +410,10 @@ class CParameterizedTrajectoryGenerator : public mrpt::utils::CSerializable,
 	 * values <1 to PTGs with low priority.
 	 */
 	virtual void loadFromConfigFile(
-		const mrpt::utils::CConfigFileBase& cfg,
+		const mrpt::config::CConfigFileBase& cfg,
 		const std::string& sSection) override;
 	virtual void saveToConfigFile(
-		mrpt::utils::CConfigFileBase& cfg,
+		mrpt::config::CConfigFileBase& cfg,
 		const std::string& sSection) const override;
 
 	/** Auxiliary function for rendering */
@@ -474,8 +474,8 @@ class CParameterizedTrajectoryGenerator : public mrpt::utils::CSerializable,
 		const double ox, const double oy, const double new_tp_obs_dist,
 		double& inout_tp_obs) const;
 
-	virtual void internal_readFromStream(mrpt::utils::CStream& in);
-	virtual void internal_writeToStream(mrpt::utils::CStream& out) const;
+	virtual void internal_readFromStream(mrpt::serialization::CArchive& in);
+	virtual void internal_writeToStream(mrpt::serialization::CArchive& out) const;
 
    public:
 	/** Evals the robot clearance for each robot pose along path `k`, for the
@@ -528,12 +528,12 @@ class CPTG_RobotShape_Polygonal : public CParameterizedTrajectoryGenerator
 	mrpt::math::CPolygon m_robotShape;
 	double m_robotMaxRadius;
 	void loadShapeFromConfigFile(
-		const mrpt::utils::CConfigFileBase& source, const std::string& section);
+		const mrpt::config::CConfigFileBase& source, const std::string& section);
 	void saveToConfigFile(
-		mrpt::utils::CConfigFileBase& cfg,
+		mrpt::config::CConfigFileBase& cfg,
 		const std::string& sSection) const override;
-	void internal_shape_loadFromStream(mrpt::utils::CStream& in);
-	void internal_shape_saveToStream(mrpt::utils::CStream& out) const;
+	void internal_shape_loadFromStream(mrpt::serialization::CArchive& in);
+	void internal_shape_saveToStream(mrpt::serialization::CArchive& out) const;
 	/** Loads a set of default parameters; provided  exclusively for the
 	 * PTG-configurator tool. */
 	void loadDefaultParams() override;
@@ -569,12 +569,12 @@ class CPTG_RobotShape_Circular : public CParameterizedTrajectoryGenerator
 	virtual void internal_processNewRobotShape() = 0;
 	double m_robotRadius;
 	void loadShapeFromConfigFile(
-		const mrpt::utils::CConfigFileBase& source, const std::string& section);
+		const mrpt::config::CConfigFileBase& source, const std::string& section);
 	void saveToConfigFile(
-		mrpt::utils::CConfigFileBase& cfg,
+		mrpt::config::CConfigFileBase& cfg,
 		const std::string& sSection) const override;
-	void internal_shape_loadFromStream(mrpt::utils::CStream& in);
-	void internal_shape_saveToStream(mrpt::utils::CStream& out) const;
+	void internal_shape_loadFromStream(mrpt::serialization::CArchive& in);
+	void internal_shape_saveToStream(mrpt::serialization::CArchive& out) const;
 	/** Loads a set of default parameters; provided  exclusively for the
 	 * PTG-configurator tool. */
 	void loadDefaultParams() override;

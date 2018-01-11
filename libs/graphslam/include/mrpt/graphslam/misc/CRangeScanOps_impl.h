@@ -187,24 +187,23 @@ CRangeScanOps<GRAPH_T>::TParams::~TParams()
 }
 
 template <class GRAPH_T>
-void CRangeScanOps<GRAPH_T>::TParams::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+void CRangeScanOps<GRAPH_T>::TParams::dumpToTextStream(std::ostream& out) const
 {
 	MRPT_START;
 
-	out.printf(
+	out << mrpt::format(
 		"3D=>2D LaserScan Conversion Sensor label       = %s\n",
 		conversion_params.sensorLabel.c_str());
-	out.printf(
+	out << mrpt::format(
 		"3D=>2D LaserScan Conversion angle sup          = %.2f deg\n",
-		mrpt::utils::RAD2DEG(conversion_params.angle_sup));
-	out.printf(
+		mrpt::RAD2DEG(conversion_params.angle_sup));
+	out << mrpt::format(
 		"3D=>2D LaserScan Conversion angle inf          = %.2f deg\n",
-		mrpt::utils::RAD2DEG(conversion_params.angle_inf));
-	out.printf(
+		mrpt::RAD2DEG(conversion_params.angle_inf));
+	out << mrpt::format(
 		"3D=>2D LaserScan Conversion oversampling ratio = %.2f\n",
 		conversion_params.oversampling_ratio);
-	out.printf(
+	out << mrpt::format(
 		"3D=>2D LaserScan Conversion Z minimum          = %.2f\n",
 		conversion_params.z_min);
 
@@ -214,15 +213,15 @@ void CRangeScanOps<GRAPH_T>::TParams::dumpToTextStream(
 }
 template <class GRAPH_T>
 void CRangeScanOps<GRAPH_T>::TParams::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& source, const std::string& section)
+	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {
 	MRPT_START;
 
 	conversion_params.sensorLabel = source.read_string(
 		section, "conversion_sensor_label", "KINECT_TO_2D_SCAN", false);
-	conversion_params.angle_sup = mrpt::utils::DEG2RAD(
+	conversion_params.angle_sup = mrpt::DEG2RAD(
 		source.read_double(section, "conversion_angle_sup", 10, false));
-	conversion_params.angle_inf = mrpt::utils::DEG2RAD(
+	conversion_params.angle_inf = mrpt::DEG2RAD(
 		source.read_double(section, "conversion_angle_inf", 10, false));
 	conversion_params.oversampling_ratio = source.read_double(
 		section, "conversion_oversampling_ratio", 1.1, false);

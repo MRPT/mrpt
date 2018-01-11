@@ -28,7 +28,7 @@ namespace maps
   * Update the map with insertIndividualReading() or insertObservation()
   *
   * \sa mrpt::maps::CRandomFieldGridMap2D, mrpt::maps::CMetricMap,
- * mrpt::utils::CDynamicGrid, The application icp-slam,
+ * mrpt::containers::CDynamicGrid, The application icp-slam,
  * mrpt::maps::CMultiMetricMap
   * \note New in MRPT 1.4.0
   * \ingroup mrpt_maps_grp
@@ -48,17 +48,16 @@ class CHeightGridMap2D_MRF : public CRandomFieldGridMap2D,
 		bool run_first_map_estimation_now = true);
 
 	/** Parameters related with inserting observations into the map */
-	struct TInsertionOptions : public utils::CLoadableOptions,
+	struct TInsertionOptions : public mrpt::config::CLoadableOptions,
 							   public TInsertionOptionsCommon
 	{
 		/** Default values loader */
 		TInsertionOptions();
 
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+		void dumpToTextStream(std::ostream& out) const override;  // See base docs
 	} insertionOptions;
 
 	/** Returns a 3D object representing the map */

@@ -12,16 +12,15 @@
 #include <mrpt/maps/CWirelessPowerGridMap2D.h>
 #include <mrpt/obs/CObservationWirelessPower.h>
 #include <mrpt/system/os.h>
-#include <mrpt/utils/round.h>
-#include <mrpt/utils/CTicTac.h>
-#include <mrpt/utils/color_maps.h>
+#include <mrpt/core/round.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/img/color_maps.h>
 #include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace std;
 
@@ -40,7 +39,7 @@ CWirelessPowerGridMap2D::TMapDefinition::TMapDefinition()
 }
 
 void CWirelessPowerGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(
-	const mrpt::utils::CConfigFileBase& source,
+	const mrpt::config::CConfigFileBase& source,
 	const std::string& sectionNamePrefix)
 {
 	// [<sectionNamePrefix>+"_creationOpts"]
@@ -59,11 +58,11 @@ void CWirelessPowerGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(
 }
 
 void CWirelessPowerGridMap2D::TMapDefinition::dumpToTextStream_map_specific(
-	mrpt::utils::CStream& out) const
+	std::ostream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"MAP TYPE                                  = %s\n",
-		mrpt::utils::TEnumType<
+		mrpt::typemeta::TEnumType<
 			CWirelessPowerGridMap2D::TMapRepresentation>::value2name(mapType)
 			.c_str());
 	LOADABLEOPTS_DUMP_VAR(min_x, double);
@@ -197,57 +196,49 @@ double CWirelessPowerGridMap2D::internal_computeObservationLikelihood(
 	THROW_EXCEPTION("Not implemented yet!");
 }
 
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CWirelessPowerGridMap2D::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CWirelessPowerGridMap2D::serializeGetVersion() const { return 5; }
+void CWirelessPowerGridMap2D::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 5;
-	else
-	{
-		dyngridcommon_writeToStream(out);
+	dyngridcommon_writeToStream(out);
 
-		// To ensure compatibility: The size of each cell:
-		uint32_t n = static_cast<uint32_t>(sizeof(TRandomFieldCell));
-		out << n;
+	// To ensure compatibility: The size of each cell:
+	uint32_t n = static_cast<uint32_t>(sizeof(TRandomFieldCell));
+	out << n;
 
-		// Save the map contents:
-		n = static_cast<uint32_t>(m_map.size());
-		out << n;
+	// Save the map contents:
+	n = static_cast<uint32_t>(m_map.size());
+	out << n;
 
 // Save the "m_map": This requires special handling for big endian systems:
 #if MRPT_IS_BIG_ENDIAN
-		for (uint32_t i = 0; i < n; i++)
-		{
-			out << m_map[i].kf_mean << m_map[i].dm_mean
-				<< m_map[i].dmv_var_mean;
-		}
+	for (uint32_t i = 0; i < n; i++)
+	{
+		out << m_map[i].kf_mean << m_map[i].dm_mean
+			<< m_map[i].dmv_var_mean;
+	}
 #else
-		// Little endian: just write all at once:
-		out.WriteBuffer(
-			&m_map[0], sizeof(m_map[0]) *
-						   m_map.size());  // TODO: Do this endianness safe!!
+	// Little endian: just write all at once:
+	out.WriteBuffer(
+		&m_map[0], sizeof(m_map[0]) *
+						m_map.size());  // TODO: Do this endianness safe!!
 #endif
 
-		// Version 1: Save the insertion options:
-		out << uint8_t(m_mapType) << m_cov << m_stackedCov;
+	// Version 1: Save the insertion options:
+	out << uint8_t(m_mapType) << m_cov << m_stackedCov;
 
-		out << insertionOptions.sigma << insertionOptions.cutoffRadius
-			<< insertionOptions.R_min << insertionOptions.R_max
-			<< insertionOptions.KF_covSigma
-			<< insertionOptions.KF_initialCellStd
-			<< insertionOptions.KF_observationModelNoise
-			<< insertionOptions.KF_defaultCellMeanValue
-			<< insertionOptions.KF_W_size;
+	out << insertionOptions.sigma << insertionOptions.cutoffRadius
+		<< insertionOptions.R_min << insertionOptions.R_max
+		<< insertionOptions.KF_covSigma
+		<< insertionOptions.KF_initialCellStd
+		<< insertionOptions.KF_observationModelNoise
+		<< insertionOptions.KF_defaultCellMeanValue
+		<< insertionOptions.KF_W_size;
 
-		// New in v3:
-		out << m_average_normreadings_mean << m_average_normreadings_var
-			<< uint64_t(m_average_normreadings_count);
+	// New in v3:
+	out << m_average_normreadings_mean << m_average_normreadings_var
+		<< uint64_t(m_average_normreadings_count);
 
-		out << genericMapParams;  // v4
-	}
+	out << genericMapParams;  // v4
 }
 
 // Aux struct used below (must be at global scope for STL):
@@ -257,11 +248,7 @@ struct TOldCellTypeInVersion1
 	float w, wr;
 };
 
-/*---------------------------------------------------------------
-  Implements the reading from a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CWirelessPowerGridMap2D::readFromStream(
-	mrpt::utils::CStream& in, int version)
+void CWirelessPowerGridMap2D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -352,30 +339,25 @@ void CWirelessPowerGridMap2D::readFromStream(
 	};
 }
 
-/*---------------------------------------------------------------
-					TInsertionOptions
- ---------------------------------------------------------------*/
 CWirelessPowerGridMap2D::TInsertionOptions::TInsertionOptions() {}
-/*---------------------------------------------------------------
-					dumpToTextStream
-  ---------------------------------------------------------------*/
+
 void CWirelessPowerGridMap2D::TInsertionOptions::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+	std::ostream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [CWirelessPowerGridMap2D::TInsertionOptions] "
 		"------------ \n\n");
 	internal_dumpToTextStream_common(
 		out);  // Common params to all random fields maps:
 
-	out.printf("\n");
+	out << mrpt::format("\n");
 }
 
 /*---------------------------------------------------------------
 					loadFromConfigFile
   ---------------------------------------------------------------*/
 void CWirelessPowerGridMap2D::TInsertionOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
 {
 	// Common data fields for all random fields maps:
 	internal_loadFromConfigFile_common(iniFile, section);

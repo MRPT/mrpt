@@ -25,7 +25,6 @@ using namespace mrpt;
 using namespace mrpt::slam;
 using namespace mrpt::maps;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::obs;
@@ -346,10 +345,10 @@ TEST_F(ICPTests, RayTracingICP3D)
 	CSetOfObjects::Ptr PTNS1 = mrpt::make_aligned_shared<CSetOfObjects>();
 	CSetOfObjects::Ptr PTNS2 = mrpt::make_aligned_shared<CSetOfObjects>();
 
-	CPointsMap::COLOR_3DSCENE(mrpt::utils::TColorf(1, 0, 0));
+	CPointsMap::COLOR_3DSCENE(mrpt::img::TColorf(1, 0, 0));
 	M1.getAs3DObject(PTNS1);
 
-	CPointsMap::COLOR_3DSCENE(mrpt::utils::TColorf(0, 0, 1));
+	CPointsMap::COLOR_3DSCENE(mrpt::img::TColorf(0, 0, 1));
 	M2_noisy.getAs3DObject(PTNS2);
 
 	scene2->insert(PTNS1);

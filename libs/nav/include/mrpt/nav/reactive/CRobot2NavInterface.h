@@ -10,8 +10,8 @@
 
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/obs/obs_frwds.h>  // CSimplePointsMap
-#include <mrpt/utils/CTicTac.h>
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/system/COutputLogger.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/kinematics/CVehicleVelCmd.h>
 
@@ -41,7 +41,7 @@ namespace nav
   * \sa CReactiveNavigationSystem, CAbstractNavigator
   *  \ingroup nav_reactive
   */
-class CRobot2NavInterface : public mrpt::utils::COutputLogger
+class CRobot2NavInterface : public mrpt::system::COutputLogger
 {
    public:
 	CRobot2NavInterface();
@@ -194,7 +194,7 @@ class CRobot2NavInterface : public mrpt::utils::COutputLogger
 
    private:
 	/** For getNavigationTime */
-	mrpt::utils::CTicTac m_navtime;
+	mrpt::system::CTicTac m_navtime;
 };
 }
 }

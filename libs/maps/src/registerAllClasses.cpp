@@ -11,9 +11,8 @@
 
 #define MRPT_NO_WARN_BIG_HDR
 #include <mrpt/maps.h>
-#include <mrpt/utils/initializer.h>
+#include <mrpt/core/initializer.h>
 
-using namespace mrpt::utils;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
 using namespace mrpt::opengl;

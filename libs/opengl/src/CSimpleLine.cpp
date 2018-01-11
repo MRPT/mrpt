@@ -10,12 +10,12 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CSimpleLine.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
+
 using namespace mrpt::math;
 using namespace std;
 
@@ -77,28 +77,17 @@ void CSimpleLine::render_dl() const
 #endif
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CSimpleLine::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CSimpleLine::serializeGetVersion() const { return 1; }
+void CSimpleLine::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		writeToStreamRender(out);
-		out << m_x0 << m_y0 << m_z0;
-		out << m_x1 << m_y1 << m_z1 << m_lineWidth;
-		out << m_antiAliasing;  // Added in v1
-	}
+	writeToStreamRender(out);
+	out << m_x0 << m_y0 << m_z0;
+	out << m_x1 << m_y1 << m_z1 << m_lineWidth;
+	out << m_antiAliasing;  // Added in v1
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CSimpleLine::readFromStream(mrpt::utils::CStream& in, int version)
+void CSimpleLine::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

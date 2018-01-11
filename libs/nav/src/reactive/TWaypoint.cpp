@@ -55,7 +55,7 @@ std::string TWaypoint::getAsText() const
 
 	if (target_heading != INVALID_NUM)
 		s += mrpt::format(
-			"phi=%8.03f deg ", mrpt::utils::RAD2DEG(target_heading));
+			"phi=%8.03f deg ", mrpt::RAD2DEG(target_heading));
 	else
 		s += " (heading: any) ";
 
@@ -147,9 +147,9 @@ TWaypointsRenderingParams::TWaypointsRenderingParams()
 	  outter_radius_reached(.2),
 	  inner_radius_reached(.1),
 	  heading_arrow_len(1.0),
-	  color_regular(mrpt::utils::TColor(0x00, 0x00, 0xff)),
-	  color_current_goal(mrpt::utils::TColor(0xff, 0x00, 0x20)),
-	  color_reached(mrpt::utils::TColor(0x00, 0x00, 0xc0, 0xd0)),
+	  color_regular(mrpt::img::TColor(0x00, 0x00, 0xff)),
+	  color_current_goal(mrpt::img::TColor(0xff, 0x00, 0x20)),
+	  color_reached(mrpt::img::TColor(0x00, 0x00, 0xc0, 0xd0)),
 	  show_labels(true)
 {
 }
@@ -241,7 +241,7 @@ void TWaypointStatusSequence::getAsOpenglVisualization(
 }
 
 void TWaypointSequence::save(
-	mrpt::utils::CConfigFileBase& c, const std::string& s) const
+	mrpt::config::CConfigFileBase& c, const std::string& s) const
 {
 	const unsigned int N = waypoints.size();
 	c.write(s, "waypoint_count", N);
@@ -267,7 +267,7 @@ void TWaypointSequence::save(
 }
 
 void TWaypointSequence::load(
-	const mrpt::utils::CConfigFileBase& c, const std::string& s)
+	const mrpt::config::CConfigFileBase& c, const std::string& s)
 {
 	this->clear();
 

@@ -12,8 +12,9 @@
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/opengl/COpenGLScene.h>
-#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/CTimeLogger.h>
 #include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/graphs/TNodeID.h>
 #include <string>
 #include <cstdlib>  // size_t
 
@@ -47,10 +48,10 @@ struct TPlannerResultTempl
 	/** Total cost of the best found path (cost ~~ Euclidean distance) */
 	double path_cost;
 	/** The ID of the best target node in the tree */
-	mrpt::utils::TNodeID best_goal_node_id;
+	mrpt::graphs::TNodeID best_goal_node_id;
 	/** The set of target nodes within an acceptable distance to target
 	 * (including `best_goal_node_id` and others) */
-	std::set<mrpt::utils::TNodeID> acceptable_goal_node_ids;
+	std::set<mrpt::graphs::TNodeID> acceptable_goal_node_ids;
 	/** The generated motion tree that explores free space starting at "start"
 	 */
 	tree_t move_tree;
@@ -84,7 +85,7 @@ struct RRTEndCriteria
 
 	RRTEndCriteria()
 		: acceptedDistToTarget(0.1),
-		  acceptedAngToTarget(mrpt::utils::DEG2RAD(180)),
+		  acceptedAngToTarget(mrpt::DEG2RAD(180)),
 		  maxComputationTime(0.0),
 		  minComputationTime(0.0)
 	{
@@ -147,14 +148,14 @@ class PlannerTPS_VirtualBase
 	/** ctor */
 	PlannerTPS_VirtualBase();
 
-	mrpt::utils::CTimeLogger& getProfiler() { return m_timelogger; }
+	mrpt::system::CTimeLogger& getProfiler() { return m_timelogger; }
 	const mrpt::nav::TListPTGPtr& getPTGs() const { return m_PTGs; }
 	/** Options for renderMoveTree()  */
 	struct TRenderPlannedPathOptions
 	{
 		/** Highlight the path from root towards this node (usually, the target)
 		 */
-		mrpt::utils::TNodeID highlight_path_to_node_id;
+		mrpt::graphs::TNodeID highlight_path_to_node_id;
 		/** (Default=1) Draw one out of N vehicle shapes along the highlighted
 		 * path */
 		size_t draw_shape_decimation;
@@ -173,19 +174,19 @@ class PlannerTPS_VirtualBase
 		double ground_xy_grid_frequency;
 
 		/** Robot color  */
-		mrpt::utils::TColor color_vehicle;
+		mrpt::img::TColor color_vehicle;
 		/** obstacles color  */
-		mrpt::utils::TColor color_obstacles;
+		mrpt::img::TColor color_obstacles;
 		/** local obstacles color  */
-		mrpt::utils::TColor color_local_obstacles;
+		mrpt::img::TColor color_local_obstacles;
 		/** START indication color  */
-		mrpt::utils::TColor color_start;
+		mrpt::img::TColor color_start;
 		/** END indication color  */
-		mrpt::utils::TColor color_goal;
-		mrpt::utils::TColor color_ground_xy_grid;
-		mrpt::utils::TColor color_normal_edge;
-		mrpt::utils::TColor color_last_edge;
-		mrpt::utils::TColor color_optimal_edge;
+		mrpt::img::TColor color_goal;
+		mrpt::img::TColor color_ground_xy_grid;
+		mrpt::img::TColor color_normal_edge;
+		mrpt::img::TColor color_last_edge;
+		mrpt::img::TColor color_optimal_edge;
 		float width_last_edge;
 		float width_normal_edge;
 		float width_optimal_edge;
@@ -247,7 +248,7 @@ class PlannerTPS_VirtualBase
 		const TRenderPlannedPathOptions& options);
 
    protected:
-	mrpt::utils::CTimeLogger m_timelogger;
+	mrpt::system::CTimeLogger m_timelogger;
 	bool m_initialized_PTG;
 	mrpt::nav::TListPTGPtr m_PTGs;
 	mrpt::maps::CSimplePointsMap m_local_obs;  // Temporary map. Defined as a
@@ -256,7 +257,7 @@ class PlannerTPS_VirtualBase
 
 	/** Load all PTG params from a config file source */
 	void internal_loadConfig_PTG(
-		const mrpt::utils::CConfigFileBase& cfgSource,
+		const mrpt::config::CConfigFileBase& cfgSource,
 		const std::string& sSectionName = std::string("PTG_CONFIG"));
 
 	/** Must be called after setting all params (see

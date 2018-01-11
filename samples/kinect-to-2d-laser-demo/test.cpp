@@ -20,8 +20,8 @@
 #include <mrpt/hwdrivers/CKinect.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/utils/CTicTac.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>
 #include <mrpt/opengl/CFrustum.h>
@@ -34,7 +34,6 @@ using namespace mrpt::math;
 using namespace mrpt::gui;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
-using namespace mrpt::utils;
 using namespace mrpt::opengl;
 using namespace std;
 
@@ -66,7 +65,7 @@ void thread_grabbing(TThreadParam& p)
 		if (mrpt::system::fileExists(cfgFile))
 		{
 			cout << "Loading calibration from: " << cfgFile << endl;
-			kinect.loadConfig(mrpt::utils::CConfigFile(cfgFile), "KINECT");
+			kinect.loadConfig(mrpt::config::CConfigFile(cfgFile), "KINECT");
 		}
 		else
 			cerr << "Warning: Calibration file [" << cfgFile
@@ -181,7 +180,7 @@ void Test_Kinect()
 
 	const double aspect_ratio =
 		480.0 /
-		640.0;  // kinect.getRowCount() / double( kinect.getColCount() );
+		640.0;  // kinect.rows() / double( kinect.cols() );
 
 	opengl::COpenGLViewport::Ptr viewRange,
 		viewInt;  // Extra viewports for the RGB & D images.
@@ -251,7 +250,7 @@ void Test_Kinect()
 			// Show 2D ranges as a grayscale image:
 			if (last_obs->hasRangeImage)
 			{
-				mrpt::utils::CImage img;
+				mrpt::img::CImage img;
 
 				// Normalize the image
 				static CMatrixFloat range2D;  // Static to save time allocating

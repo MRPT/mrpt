@@ -9,14 +9,13 @@
 
 #include <mrpt/hwdrivers/COpenNI2Sensor.h>
 #include <mrpt/gui.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/opengl.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>  // This class is in mrpt-maps
 
 using namespace mrpt;
 using namespace mrpt::obs;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
 using namespace std;
 
@@ -39,7 +38,7 @@ int main(int argc, char** argv)
 		// const unsigned sensor_id = 0;
 		COpenNI2Sensor rgbd_sensor;
 		// rgbd_sensor.loadConfig_sensorSpecific(const
-		// mrpt::utils::CConfigFileBase &configSource,	const std::string
+		// mrpt::config::CConfigFileBase &configSource,	const std::string
 		// &iniSection );
 
 		unsigned sensor_id_or_serial = 0;

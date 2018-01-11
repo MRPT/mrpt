@@ -12,11 +12,11 @@
 
 #include <mrpt/maps/CHeightGridMap2D_Base.h>
 #include <mrpt/maps/CMetricMap.h>
-#include <mrpt/utils/CDynamicGrid.h>
-#include <mrpt/utils/CSerializable.h>
-#include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/color_maps.h>
-#include <mrpt/utils/TEnumType.h>
+#include <mrpt/containers/CDynamicGrid.h>
+#include <mrpt/serialization/CSerializable.h>
+#include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/img/color_maps.h>
+#include <mrpt/typemeta/TEnumType.h>
 #include <mrpt/poses/poses_frwds.h>
 #include <mrpt/obs/obs_frwds.h>
 
@@ -45,31 +45,32 @@ struct THeightGridmapCell
 
 /** Digital Elevation Model (DEM), a mesh or grid representation of a surface
  * which keeps the estimated height for each (x,y) location.
-  *  Important implemented features are the insertion of 2D laser scans (from
+ *  Important implemented features are the insertion of 2D laser scans (from
  * arbitrary 6D poses) and the exportation as 3D scenes.
-  *
-  * Each cell contains the up-to-date average height from measured falling in
+ *
+ * Each cell contains the up-to-date average height from measured falling in
  * that cell. Algorithms that can be used:
-  *   - mrSimpleAverage: Each cell only stores the current average value.
-  *
-  *  This class implements generic version of
+ *   - mrSimpleAverage: Each cell only stores the current average value.
+ *
+ *  This class implements generic version of
  * mrpt::maps::CMetric::insertObservation() accepting these types of sensory
  * data:
-  *   - mrpt::obs::CObservation2DRangeScan: 2D range scans
-  *   - mrpt::obs::CObservationVelodyneScan
-  *
-  * \ingroup mrpt_maps_grp
-  */
-class CHeightGridMap2D : public mrpt::maps::CMetricMap,
-						 public utils::CDynamicGrid<THeightGridmapCell>,
-						 public CHeightGridMap2D_Base
+ *   - mrpt::obs::CObservation2DRangeScan: 2D range scans
+ *   - mrpt::obs::CObservationVelodyneScan
+ *
+ * \ingroup mrpt_maps_grp
+ */
+class CHeightGridMap2D :
+	  public mrpt::maps::CMetricMap,
+	  public mrpt::containers::CDynamicGrid<THeightGridmapCell>,
+	  public CHeightGridMap2D_Base
 {
 	DEFINE_SERIALIZABLE(CHeightGridMap2D)
    public:
 	/** Calls the base CMetricMap::clear
-	  * Declared here to avoid ambiguity between the two clear() in both base
+	 * Declared here to avoid ambiguity between the two clear() in both base
 	 * classes.
-	  */
+	 */
 	inline void clear() { CMetricMap::clear(); }
 	float cell2float(const THeightGridmapCell& c) const override
 	{
@@ -77,8 +78,8 @@ class CHeightGridMap2D : public mrpt::maps::CMetricMap,
 	}
 
 	/** The type of map representation to be used.
-	  *  See mrpt::maps::CHeightGridMap2D for discussion.
-	  */
+	 *  See mrpt::maps::CHeightGridMap2D for discussion.
+	 */
 	enum TMapRepresentation
 	{
 		mrSimpleAverage = 0
@@ -94,16 +95,16 @@ class CHeightGridMap2D : public mrpt::maps::CMetricMap,
 	bool isEmpty() const override;
 
 	/** Parameters related with inserting observations into the map */
-	struct TInsertionOptions : public utils::CLoadableOptions
+	struct TInsertionOptions : public mrpt::config::CLoadableOptions
 	{
 		/** Default values loader */
 		TInsertionOptions();
 
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+			std::ostream& out) const override;  // See base docs
 
 		/** Whether to perform filtering by z-coordinate (default=false):
 		 * coordinates are always RELATIVE to the robot for this filter.vvv */
@@ -112,7 +113,7 @@ class CHeightGridMap2D : public mrpt::maps::CMetricMap,
 		 * the robot for this filter. */
 		float z_min, z_max;
 
-		mrpt::utils::TColormap colorMap;
+		mrpt::img::TColormap colorMap;
 	} insertionOptions;
 
 	/** See docs in base class: in this class it always returns 0 */
@@ -126,7 +127,7 @@ class CHeightGridMap2D : public mrpt::maps::CMetricMap,
 
 	/** Returns a 3D object representing the map: by default, it will be a
 	 * mrpt::opengl::CMesh object, unless
-	  *   it is specified otherwise in
+	 *   it is specified otherwise in
 	 * mrpt::global_settings::HEIGHTGRIDMAP_EXPORT3D_AS_MESH */
 	void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
 
@@ -172,34 +173,22 @@ class CHeightGridMap2D : public mrpt::maps::CMetricMap,
 	MAP_DEFINITION_END(CHeightGridMap2D, )
 };
 
-}  // End of namespace
+}  // namespace maps
 
 namespace global_settings
 {
 /** If set to true (default), mrpt::maps::CHeightGridMap2D will be exported as a
-  *opengl::CMesh, otherwise, as a opengl::CPointCloudColoured
-  * Affects to:
-  *		- CHeightGridMap2D::getAs3DObject
-  */
+ *opengl::CMesh, otherwise, as a opengl::CPointCloudColoured
+ * Affects to:
+ *		- CHeightGridMap2D::getAs3DObject
+ */
 void HEIGHTGRIDMAP_EXPORT3D_AS_MESH(bool value);
 bool HEIGHTGRIDMAP_EXPORT3D_AS_MESH();
-}
+}  // namespace global_settings
+}  // namespace mrpt
 
-// Specializations MUST occur at the same namespace:
-namespace utils
-{
-template <>
-struct TEnumTypeFiller<maps::CHeightGridMap2D::TMapRepresentation>
-{
-	typedef maps::CHeightGridMap2D::TMapRepresentation enum_t;
-	static void fill(bimap<enum_t, std::string>& m_map)
-	{
-		m_map.insert(
-			maps::CHeightGridMap2D::mrSimpleAverage, "mrSimpleAverage");
-	}
-};
-}  // End of namespace
-
-}  // End of namespace
+MRPT_ENUM_TYPE_BEGIN(maps::CHeightGridMap2D::TMapRepresentation)
+MRPT_FILL_ENUM_MEMBER(maps::CHeightGridMap2D::TMapRepresentation, mrSimpleAverage);
+MRPT_ENUM_TYPE_END()
 
 #endif

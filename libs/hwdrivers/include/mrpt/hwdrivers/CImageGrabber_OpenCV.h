@@ -12,7 +12,8 @@
 #include <mrpt/config.h>
 
 #include <mrpt/obs/CObservationImage.h>
-#include <mrpt/utils/safe_pointers.h>
+#include <mrpt/core/safe_pointers.h>
+#include <mrpt/typemeta/TEnumType.h>
 
 namespace mrpt
 {
@@ -80,7 +81,7 @@ class CImageGrabber_OpenCV
 
 	/** Internal use:
 	  */
-	mrpt::utils::void_ptr_noncopy /*CvCapture*/ m_capture;
+	mrpt::void_ptr_noncopy /*CvCapture*/ m_capture;
 
    public:
 	/** Constructor for cameras:
@@ -117,5 +118,13 @@ class CImageGrabber_OpenCV
 
 }  // End of NS
 }  // End of NS
+MRPT_ENUM_TYPE_BEGIN(mrpt::hwdrivers::TCameraType)
+MRPT_FILL_ENUM_MEMBER(mrpt::hwdrivers, CAMERA_CV_AUTODETECT);
+MRPT_FILL_ENUM_MEMBER(mrpt::hwdrivers, CAMERA_CV_DC1394);
+MRPT_FILL_ENUM_MEMBER(mrpt::hwdrivers, CAMERA_CV_VFL);
+MRPT_FILL_ENUM_MEMBER(mrpt::hwdrivers, CAMERA_CV_VFW);
+MRPT_FILL_ENUM_MEMBER(mrpt::hwdrivers, CAMERA_CV_MIL);
+MRPT_FILL_ENUM_MEMBER(mrpt::hwdrivers, CAMERA_CV_DSHOW);
+MRPT_ENUM_TYPE_END()
 
 #endif

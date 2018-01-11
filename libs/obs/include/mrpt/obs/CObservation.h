@@ -9,9 +9,11 @@
 #ifndef COBSERVATION_H
 #define COBSERVATION_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/math/math_frwds.h>
+#include <mrpt/math/lightweight_geom_data_frwds.h>
+#include <mrpt/poses/poses_frwds.h>
 
 namespace mrpt
 {
@@ -38,7 +40,7 @@ namespace obs
  * \sa CSensoryFrame, CMetricMap
  * \ingroup mrpt_obs_grp
  */
-class CObservation : public mrpt::utils::CSerializable
+class CObservation : public mrpt::serialization::CSerializable
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CObservation)
 

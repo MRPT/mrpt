@@ -9,23 +9,23 @@
 
 #include "gui-precomp.h"  // Precompiled headers
 #include <mrpt/gui/CGlCanvasBase.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::gui;
 using namespace mrpt::opengl;
 using namespace std;
+using mrpt::system::CTicTac;
 
 float CGlCanvasBase::SENSIBILITY_DEG_PER_PIXEL = 0.1f;
 
 #if MRPT_HAS_OPENGL_GLUT
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 // Windows:
 #include <windows.h>
 #endif
 
-#ifdef MRPT_OS_APPLE
+#ifdef __APPLE__
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
 #include <GLUT/glut.h>
@@ -70,12 +70,12 @@ void CGlCanvasBase::updateZoom(CamaraParams& params, float delta) const
 void CGlCanvasBase::updateRotate(CamaraParams& params, int x, int y) const
 {
 	const float dis = max(0.01f, (params.cameraZoomDistance));
-	float eye_x = params.cameraPointingX +
-				  dis * cos(DEG2RAD(params.cameraAzimuthDeg)) *
-					  cos(DEG2RAD(params.cameraElevationDeg));
-	float eye_y = params.cameraPointingY +
-				  dis * sin(DEG2RAD(params.cameraAzimuthDeg)) *
-					  cos(DEG2RAD(params.cameraElevationDeg));
+	float eye_x =
+		params.cameraPointingX + dis * cos(DEG2RAD(params.cameraAzimuthDeg)) *
+									 cos(DEG2RAD(params.cameraElevationDeg));
+	float eye_y =
+		params.cameraPointingY + dis * sin(DEG2RAD(params.cameraAzimuthDeg)) *
+									 cos(DEG2RAD(params.cameraElevationDeg));
 	float eye_z =
 		params.cameraPointingZ + dis * sin(DEG2RAD(params.cameraElevationDeg));
 
@@ -87,12 +87,12 @@ void CGlCanvasBase::updateRotate(CamaraParams& params, int x, int y) const
 	params.setElevationDeg(params.cameraElevationDeg + A_ElevationDeg);
 
 	// Move cameraPointing pos:
-	params.cameraPointingX = eye_x -
-							 dis * cos(DEG2RAD(params.cameraAzimuthDeg)) *
-								 cos(DEG2RAD(params.cameraElevationDeg));
-	params.cameraPointingY = eye_y -
-							 dis * sin(DEG2RAD(params.cameraAzimuthDeg)) *
-								 cos(DEG2RAD(params.cameraElevationDeg));
+	params.cameraPointingX =
+		eye_x - dis * cos(DEG2RAD(params.cameraAzimuthDeg)) *
+					cos(DEG2RAD(params.cameraElevationDeg));
+	params.cameraPointingY =
+		eye_y - dis * sin(DEG2RAD(params.cameraAzimuthDeg)) *
+					cos(DEG2RAD(params.cameraElevationDeg));
 	params.cameraPointingZ =
 		eye_z - dis * sin(DEG2RAD(params.cameraElevationDeg));
 }

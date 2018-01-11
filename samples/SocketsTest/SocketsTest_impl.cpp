@@ -9,8 +9,8 @@
 
 #include <mrpt/comms/CServerTCPSocket.h>
 #include <mrpt/comms/CClientTCPSocket.h>
+#include <mrpt/serialization/CMessage.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/utils/CMessage.h>
 #include <cstdio>  // printf()
 #include <thread>
 #include <chrono>
@@ -19,11 +19,12 @@ bool sockets_test_passed_ok = false;
 // Test payload:
 const mrpt::poses::CPose3D p_tx(1.0, 2.0, 3.0, 0.2, 0.4, 0.6);
 
+using mrpt::serialization::CMessage;
+
 void thread_server()
 {
 	using namespace mrpt::comms;
-	using namespace mrpt::utils;
-	using namespace std;
+		using namespace std;
 
 	try
 	{
@@ -34,11 +35,11 @@ void thread_server()
 		CServerTCPSocket server(
 			15000, "127.0.0.1", 10,
 #ifdef SOCKET_TEST_VERBOSE
-			mrpt::utils::LVL_DEBUG
+			mrpt::system::LVL_DEBUG
 #else
-			mrpt::utils::LVL_ERROR
+			mrpt::system::LVL_ERROR
 #endif
-			);
+		);
 		std::unique_ptr<CClientTCPSocket> client = server.accept(2000);
 
 		if (client)
@@ -73,8 +74,7 @@ void thread_server()
 void thread_client()
 {
 	using namespace mrpt::comms;
-	using namespace mrpt::utils;
-	using namespace std;
+		using namespace std;
 
 	try
 	{

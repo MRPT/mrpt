@@ -12,14 +12,15 @@
 #include <mrpt/hwdrivers/CRovio.h>
 #include <mrpt/hwdrivers/CFFMPEG_InputStream.h>
 #include <mrpt/comms/net_utils.h>
-#include <mrpt/utils/CMemoryStream.h>
+#include <mrpt/io/CMemoryStream.h>
 #include <mrpt/obs/CObservationImage.h>
 
 #include <thread>
 
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
+using namespace mrpt::io;
+using namespace mrpt::img;
 using namespace mrpt::comms::net;
 using namespace std;
 
@@ -198,7 +199,7 @@ bool CRovio::goHome(bool dock, int speed)
 				  CAMERA FUNCTIONS
   -----------------------------------------------*/
 void CRovio::loadConfig(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& section)
 {
 	options.cameraParams.loadFromConfigFile(section, configSource);
@@ -344,7 +345,7 @@ bool CRovio::captureImageAsync(CImage& picture, bool rectified)
 {
 	try
 	{
-		vector_byte resp;
+		std::vector<uint8_t> resp;
 		string errormsg;
 		string MF =
 			format("http://%s/Jpeg/CamImg[0000].jpg", options.IP.c_str());

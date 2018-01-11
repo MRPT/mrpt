@@ -12,7 +12,7 @@
 #include <mrpt/nav/reactive/CRobot2NavInterfaceForSimulator.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/kinematics/CVehicleSimul_DiffDriven.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/system/filesystem.h>
 #include <gtest/gtest.h>
 
@@ -41,7 +41,7 @@ void run_rnav_test(
 		return;
 	}
 
-	mrpt::utils::CConfigFile cfg(sFil);
+	mrpt::config::CConfigFile cfg(sFil);
 	cfg.write("CAbstractPTGBasedReactive", "holonomic_method", sHoloMethod);
 	cfg.discardSavingChanges();
 
@@ -79,7 +79,7 @@ void run_rnav_test(
 			: CRobot2NavInterfaceForSimulator_DiffDriven(sim), m_grid(grid)
 		{
 			this->setMinLoggingLevel(
-				mrpt::utils::LVL_ERROR);  // less verbose output for tests
+				mrpt::system::LVL_ERROR);  // less verbose output for tests
 		}
 
 		void sendNavigationStartEvent() override {}
@@ -99,7 +99,7 @@ void run_rnav_test(
 				curPose, curVel, pose_tim, odomPose, pose_frame_id);
 
 			mrpt::obs::CObservation2DRangeScan scan;
-			scan.aperture = mrpt::utils::DEG2RAD(270.0);
+			scan.aperture = mrpt::DEG2RAD(270.0);
 			scan.maxRange = 20.0;
 			scan.sensorPose.z(0.4);  // height of the lidar (important! it must
 			// intersect with the robot height)
@@ -122,9 +122,9 @@ void run_rnav_test(
 	{
 		rnav.enableTimeLog(false);
 #ifdef _DEBUG
-		rnav.setMinLoggingLevel(mrpt::utils::LVL_DEBUG);
+		rnav.setMinLoggingLevel(mrpt::system::LVL_DEBUG);
 #else
-		rnav.setMinLoggingLevel(mrpt::utils::LVL_ERROR);  // quiet
+		rnav.setMinLoggingLevel(mrpt::system::LVL_ERROR);  // quiet
 #endif
 		const std::string sTmpFil = mrpt::system::getTempFileName();
 		const std::string sTmpDir = mrpt::system::extractFileDirectory(sTmpFil);
@@ -164,9 +164,9 @@ void run_rnav_test(
 		(TPoint2D(robot_simul.getCurrentGTPose()) - nav_target).norm(), 0.4);
 	EXPECT_TRUE(rnav.getCurrentState() == CAbstractNavigator::IDLE);
 
-	const_cast<mrpt::utils::CTimeLogger&>(rnav.getTimeLogger())
+	const_cast<mrpt::system::CTimeLogger&>(rnav.getTimeLogger())
 		.clear(true);  // do not show timelog table to console
-	const_cast<mrpt::utils::CTimeLogger&>(rnav.getDelaysTimeLogger())
+	const_cast<mrpt::system::CTimeLogger&>(rnav.getDelaysTimeLogger())
 		.clear(true);
 }
 

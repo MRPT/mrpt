@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "DifOdometry_Datasets.h"
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 
 using namespace std;
 using namespace mrpt;
@@ -105,12 +105,12 @@ int main(int num_arg, char* argv[])
 
 		if (!use_config_file)
 		{
-			utils::CConfigFileMemory configDifodo(default_cfg_txt);
+			config::CConfigFileMemory configDifodo(default_cfg_txt);
 			odo.loadConfiguration(configDifodo);
 		}
 		else
 		{
-			utils::CConfigFile configDifodo(filename);
+			config::CConfigFile configDifodo(filename);
 			odo.loadConfiguration(configDifodo);
 		}
 

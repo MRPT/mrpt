@@ -11,15 +11,16 @@
 
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/math/CMatrix.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #if MRPT_HAS_MATLAB
 #include <mexplus/mxarray.h>
 #endif
+#include <algorithm>  // all_of
 
 using namespace mrpt::obs;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
+using namespace mrpt::img;
 
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationStereoImages, CObservation, mrpt::obs)
@@ -47,61 +48,31 @@ CObservationStereoImages::CObservationStereoImages(
 				  : imageDisparity.loadFromIplImage(iplImageDisparity);
 }
 
-/*---------------------------------------------------------------
-					Default Constructor
- ---------------------------------------------------------------*/
-CObservationStereoImages::CObservationStereoImages()
-	: hasImageDisparity(false), hasImageRight(true)
+uint8_t CObservationStereoImages::serializeGetVersion() const { return 6; }
+void CObservationStereoImages::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
+	// The data
+	out << cameraPose << leftCamera << rightCamera << imageLeft;
+	out << hasImageDisparity << hasImageRight;
+	if (hasImageRight) out << imageRight;
+	if (hasImageDisparity) out << imageDisparity;
+	out << timestamp;
+	out << rightCameraPose;
+	out << sensorLabel;
 }
 
-/*---------------------------------------------------------------
-					Destructor
- ---------------------------------------------------------------*/
-CObservationStereoImages::~CObservationStereoImages() {}
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CObservationStereoImages::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
-{
-	if (version)
-		*version = 6;
-	else
-	{
-		// The data
-		out << cameraPose << leftCamera << rightCamera << imageLeft;
-
-		out << hasImageDisparity << hasImageRight;
-
-		if (hasImageRight) out << imageRight;
-
-		if (hasImageDisparity) out << imageDisparity;
-
-		out << timestamp;
-		out << rightCameraPose;
-		out << sensorLabel;
-	}
-}
-
-/*---------------------------------------------------------------
-  Implements the reading from a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CObservationStereoImages::readFromStream(
-	mrpt::utils::CStream& in, int version)
+void CObservationStereoImages::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
 		case 6:
 		{
 			in >> cameraPose >> leftCamera >> rightCamera >> imageLeft;
-
 			in >> hasImageDisparity >> hasImageRight;
-
 			if (hasImageRight) in >> imageRight;
-
 			if (hasImageDisparity) in >> imageDisparity;
-
 			in >> timestamp;
 			in >> rightCameraPose;
 			in >> sensorLabel;
@@ -159,8 +130,9 @@ void CObservationStereoImages::readFromStream(
 			}
 			else
 				rightCameraPose = CPose3DQuat(
-					0.10f, 0, 0, mrpt::math::CQuaternionDouble(
-									 1, 0, 0, 0));  // For version 1 to 5
+					0.10f, 0, 0,
+					mrpt::math::CQuaternionDouble(
+						1, 0, 0, 0));  // For version 1 to 5
 
 			if (version >= 3 && version < 5)  // For versions 3 & 4
 			{
@@ -191,9 +163,11 @@ void CObservationStereoImages::readFromStream(
 #if MRPT_HAS_MATLAB
 // Add to implement mexplus::from template specialization
 IMPLEMENTS_MEXPLUS_FROM(mrpt::obs::CObservationStereoImages)
+#endif
 
 mxArray* CObservationStereoImages::writeToMatlab() const
 {
+#if MRPT_HAS_MATLAB
 	const char* fields[] = {"class",   "ts",	 "sensorLabel", "imageL",
 							"imageR",  "poseL",  "poseLR",		"poseR",
 							"paramsL", "paramsR"};
@@ -211,23 +185,25 @@ mxArray* CObservationStereoImages::writeToMatlab() const
 	obs_struct.set("paramsL", this->leftCamera);
 	obs_struct.set("paramsR", this->rightCamera);
 	return obs_struct.release();
-}
+#else
+	THROW_EXCEPTION("MRPT was built without MEX (Matlab) support!");
 #endif
+}
 
 /** Populates a TStereoCamera structure with the parameters in \a leftCamera, \a
  * rightCamera and \a rightCameraPose */
 void CObservationStereoImages::getStereoCameraParams(
-	mrpt::utils::TStereoCamera& out_params) const
+	mrpt::img::TStereoCamera& out_params) const
 {
 	out_params.leftCamera = this->leftCamera;
 	out_params.rightCamera = this->rightCamera;
-	out_params.rightCameraPose = this->rightCameraPose;
+	out_params.rightCameraPose = this->rightCameraPose.asTPose();
 }
 
 /** Sets \a leftCamera, \a rightCamera and \a rightCameraPose from a
  * TStereoCamera structure */
 void CObservationStereoImages::setStereoCameraParams(
-	const mrpt::utils::TStereoCamera& in_params)
+	const mrpt::img::TStereoCamera& in_params)
 {
 	this->leftCamera = in_params.leftCamera;
 	this->rightCamera = in_params.rightCamera;
@@ -236,12 +212,14 @@ void CObservationStereoImages::setStereoCameraParams(
 
 /** This method only checks whether ALL the distortion parameters in \a
  * leftCamera are set to zero, which is
-  * the convention in MRPT to denote that this pair of stereo images has been
+ * the convention in MRPT to denote that this pair of stereo images has been
  * rectified.
-  */
+ */
 bool CObservationStereoImages::areImagesRectified() const
 {
-	return (leftCamera.dist.array() == 0).all();
+	return std::all_of(
+		leftCamera.dist.begin(), leftCamera.dist.end(),
+		[](auto v) { return v == 0; });
 }
 
 // Do an efficient swap of all data members of this object with "o".
@@ -270,12 +248,12 @@ void CObservationStereoImages::getDescriptionAsText(std::ostream& o) const
 
 	o << "Homogeneous matrix for the sensor's 3D pose, relative to robot "
 		 "base:\n";
-	o << cameraPose.getHomogeneousMatrixVal() << endl
+	o << cameraPose.getHomogeneousMatrixVal<CMatrixDouble44>() << endl
 	  << "Camera pose: " << cameraPose << endl
 	  << "Camera pose (YPR): " << CPose3D(cameraPose) << endl
 	  << endl;
 
-	mrpt::utils::TStereoCamera stParams;
+	mrpt::img::TStereoCamera stParams;
 	getStereoCameraParams(stParams);
 	o << stParams.dumpAsText() << endl;
 

@@ -10,7 +10,6 @@
 #ifndef CLogOddsGridMap2D_H
 #define CLogOddsGridMap2D_H
 
-#include <mrpt/utils/core_defs.h>
 #include <cstdint>
 #include <vector>
 

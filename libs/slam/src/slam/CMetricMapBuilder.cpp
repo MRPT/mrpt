@@ -12,18 +12,20 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/slam/CMetricMapBuilder.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/utils/CFileInputStream.h>
-#include <mrpt/utils/CFileOutputStream.h>
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/io/CFileInputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::maps;
+using namespace mrpt::io;
 using namespace mrpt::poses;
-using namespace mrpt::utils;
+using namespace mrpt::serialization;
 
 CMetricMapBuilder::CMetricMapBuilder()
-	: mrpt::utils::COutputLogger("CMetricMapBuilder"),
+	: mrpt::system::COutputLogger("CMetricMapBuilder"),
 	  options(this->m_min_verbosity_level)
 {
 	MRPT_LOG_DEBUG("CMetricMapBuilder ctor.");
@@ -65,7 +67,7 @@ void CMetricMapBuilder::loadCurrentMapFromFile(const std::string& fileName)
 		CFileGZInputStream f(fileName);
 
 		// Load from file:
-		f >> map;
+		archiveFrom(f) >> map;
 	}
 	else
 	{  // Is a new file, start with an empty map:
@@ -96,7 +98,13 @@ void CMetricMapBuilder::saveCurrentMapToFile(
 
 	// Save to file:
 	if (compressGZ)
-		CFileGZOutputStream(fileName) << curmap;
+	{
+		CFileGZOutputStream f(fileName);
+		archiveFrom(f) << curmap;
+	}
 	else
-		CFileOutputStream(fileName) << curmap;
+	{
+		CFileOutputStream f(fileName);
+		archiveFrom(f) << curmap;
+	}
 }

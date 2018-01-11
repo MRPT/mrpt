@@ -10,14 +10,14 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CMesh3D.h>
-#include <mrpt/utils/color_maps.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/img/color_maps.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
+
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace std;
@@ -35,7 +35,7 @@ CMesh3D::CMesh3D(
 	  m_computeNormals(true),
 	  m_lineWidth(2.f),
 	  m_pointSize(6.f),
-	  m_colorMap(mrpt::utils::cmHOT)
+	  m_colorMap(mrpt::img::cmHOT)
 {
 	m_color.R = 1.f;
 	m_color.G = 0.f;
@@ -365,19 +365,12 @@ void CMesh3D::render_dl() const
 #endif
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CMesh3D::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CMesh3D::serializeGetVersion() const { return 0; }
+void CMesh3D::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	//********** To do **********
-	THROW_EXCEPTION("not implemented yet!")
+	THROW_EXCEPTION("not implemented yet!");
 
-	// if (version)
-	//	*version = 0;
-	// else
-	//{
 	//	writeToStreamRender(out);
 
 	//	// Version 0:
@@ -393,42 +386,11 @@ void CMesh3D::writeToStream(mrpt::utils::CStream& out, int* version) const
 	//	f_verts		*m_face_verts;
 	//	coord3D		*m_vert_coords;
 	//	coord3D		*m_normals;
-	//}
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CMesh3D::readFromStream(mrpt::utils::CStream& in, int version)
+void CMesh3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	//********** To do ************
-
-	// switch(version)
-	//{
-	// case 0:
-	//	{
-	//		readFromStreamRender(in);
-
-	// in >>	m_enableTransparency;
-	// in >>	m_showEdges;
-	// in >>	m_showFaces;
-	// in >>	m_showVertices;
-	// in >> m_computeNormals;
-	// in >> m_num_verts;
-	// in >> m_num_faces;
-
-	// bool			*m_is_quad;
-	// f_verts		*m_face_verts;
-	// coord3D		*m_vert_coords;
-	// coord3D		*m_normals;
-	//	}
-	//	break;
-	// default:
-	//	MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
-
-	//};
-	// CRenderizableDisplayList::notifyChange();
 }
 
 void CMesh3D::getBoundingBox(

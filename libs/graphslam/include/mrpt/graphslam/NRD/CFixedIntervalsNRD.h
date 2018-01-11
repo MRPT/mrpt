@@ -14,11 +14,11 @@
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CRawlog.h>
-#include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CConfigFileBase.h>
-#include <mrpt/utils/CStream.h>
-#include <mrpt/utils/types_simple.h>
+#include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/serialization/CArchive.h>
+#include <cstdint>
 
 #include <mrpt/graphslam/interfaces/CNodeRegistrationDecider.h>
 
@@ -58,7 +58,7 @@ namespace deciders
  *
  * - \b class_verbosity
  *   + \a Section       : NodeRegistrationDeciderParameters
- *   + \a Default value : 1 (LVL_INFO)
+ *   + \a Default value : 1 (mrpt::system::LVL_INFO)
  *   + \a Required      : FALSE
  *
  * - \b registration_max_distance
@@ -125,16 +125,16 @@ class CFixedIntervalsNRD
 	/**\brief Parameters structure for managing the relevant to the decider
 	 * variables in a compact manner
 	 */
-	struct TParams : public mrpt::utils::CLoadableOptions
+	struct TParams : public mrpt::config::CLoadableOptions
 	{
 	   public:
 		TParams();
 		~TParams();
 
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section);
-		void dumpToTextStream(mrpt::utils::CStream& out) const;
+		void dumpToTextStream(std::ostream& out) const;
 		/**\brief Return a string with the configuration parameters
 		 */
 		void getAsString(std::string* params_out) const;

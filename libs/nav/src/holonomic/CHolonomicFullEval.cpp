@@ -10,15 +10,14 @@
 #include "nav-precomp.h"  // Precomp header
 
 #include <mrpt/nav/holonomic/CHolonomicFullEval.h>
-#include <mrpt/utils/CStream.h>
-#include <mrpt/utils/round.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/core/round.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/ops_containers.h>
-#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/serialization/stl_serialization.h>
 #include <cmath>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::nav;
 using namespace std;
@@ -31,19 +30,19 @@ IMPLEMENTS_SERIALIZABLE(
 const unsigned int INVALID_K = std::numeric_limits<unsigned int>::max();
 
 CHolonomicFullEval::CHolonomicFullEval(
-	const mrpt::utils::CConfigFileBase* INI_FILE)
+	const mrpt::config::CConfigFileBase* INI_FILE)
 	: CAbstractHolonomicReactiveMethod("CHolonomicFullEval"),
 	  m_last_selected_sector(std::numeric_limits<unsigned int>::max())
 {
 	if (INI_FILE != nullptr) initialize(*INI_FILE);
 }
 
-void CHolonomicFullEval::saveConfigFile(mrpt::utils::CConfigFileBase& c) const
+void CHolonomicFullEval::saveConfigFile(mrpt::config::CConfigFileBase& c) const
 {
 	options.saveToConfigFile(c, getConfigFileSectionName());
 }
 
-void CHolonomicFullEval::initialize(const mrpt::utils::CConfigFileBase& c)
+void CHolonomicFullEval::initialize(const mrpt::config::CConfigFileBase& c)
 {
 	options.loadFromConfigFile(c, getConfigFileSectionName());
 }
@@ -77,7 +76,7 @@ void CHolonomicFullEval::evalSingleTarget(
 	ASSERT_(target_idx < ni.targets.size());
 	const auto target = ni.targets[target_idx];
 
-	using mrpt::math::square;
+	using mrpt::square;
 
 	eo = EvalOutput();
 
@@ -134,7 +133,7 @@ void CHolonomicFullEval::evalSingleTarget(
 
 		// Factor #1: collision-free distance
 		// -----------------------------------------------------
-		if (mrpt::utils::abs_diff(i, target_k) <= 1 &&
+		if (mrpt::abs_diff(i, target_k) <= 1 &&
 			target_dist < 1.0 - options.TOO_CLOSE_OBSTACLE &&
 			ni.obstacles[i] > 1.05 * target_dist)
 		{
@@ -157,7 +156,7 @@ void CHolonomicFullEval::evalSingleTarget(
 			const double max_real_freespace_norm =
 				max_real_freespace / ptg->getRefDistance();
 
-			mrpt::utils::keep_min(scores[0], max_real_freespace_norm);
+			mrpt::keep_min(scores[0], max_real_freespace_norm);
 		}
 
 		// Factor #2: Closest approach to target along straight line (Euclidean)
@@ -213,7 +212,7 @@ void CHolonomicFullEval::evalSingleTarget(
 		// ------------------------------------------------------------------------------------------
 		if (m_last_selected_sector != std::numeric_limits<unsigned int>::max())
 		{
-			const unsigned int hist_dist = mrpt::utils::abs_diff(
+			const unsigned int hist_dist = mrpt::abs_diff(
 				m_last_selected_sector,
 				i);  // It's fine here to consider that -PI is far from +PI.
 
@@ -311,8 +310,8 @@ void CHolonomicFullEval::evalSingleTarget(
 			}
 			phase_scores[phase_idx][i] = this_dir_eval;
 
-			mrpt::utils::keep_max(phase_max, phase_scores[phase_idx][i]);
-			mrpt::utils::keep_min(phase_min, phase_scores[phase_idx][i]);
+			mrpt::keep_max(phase_max, phase_scores[phase_idx][i]);
+			mrpt::keep_min(phase_min, phase_scores[phase_idx][i]);
 
 		}  // for each direction
 
@@ -337,8 +336,8 @@ void CHolonomicFullEval::evalSingleTarget(
 		double phase_min = std::numeric_limits<double>::max(), phase_max = .0;
 		for (unsigned int i = 0; i < nDirs; i++)
 		{
-			mrpt::utils::keep_max(phase_max, phase_scores[NUM_PHASES - 1][i]);
-			mrpt::utils::keep_min(phase_min, phase_scores[NUM_PHASES - 1][i]);
+			mrpt::keep_max(phase_max, phase_scores[NUM_PHASES - 1][i]);
+			mrpt::keep_min(phase_min, phase_scores[NUM_PHASES - 1][i]);
 		}
 		last_phase_threshold =
 			options.PHASE_THRESHOLDS[NUM_PHASES - 1] * phase_max +
@@ -389,8 +388,8 @@ void CHolonomicFullEval::evalSingleTarget(
 				{
 					active_gap.k_best_eval = i;
 				}
-				mrpt::utils::keep_max(active_gap.max_eval, val);
-				mrpt::utils::keep_min(active_gap.min_eval, val);
+				mrpt::keep_max(active_gap.max_eval, val);
+				mrpt::keep_min(active_gap.min_eval, val);
 
 				if (target_k == i)
 				{
@@ -425,17 +424,17 @@ void CHolonomicFullEval::evalSingleTarget(
 	{
 		// the way seems to have clearance enought:
 		const auto cl_left =
-			mrpt::utils::abs_diff(target_k, (unsigned int)best_gap.k_from);
+			mrpt::abs_diff(target_k, (unsigned int)best_gap.k_from);
 		const auto cl_right =
-			mrpt::utils::abs_diff(target_k, (unsigned int)best_gap.k_to);
+			mrpt::abs_diff(target_k, (unsigned int)best_gap.k_to);
 
 		const auto smallest_clearance_in_k_units = std::min(cl_left, cl_right);
 		const unsigned int clearance_threshold =
-			mrpt::utils::round(options.clearance_threshold_ratio * nDirs);
+			mrpt::round(options.clearance_threshold_ratio * nDirs);
 
 		const unsigned int gap_width = best_gap.k_to - best_gap.k_from;
 		const unsigned int width_threshold =
-			mrpt::utils::round(options.gap_width_ratio_threshold * nDirs);
+			mrpt::round(options.gap_width_ratio_threshold * nDirs);
 
 		// Move straight to target?
 		if (smallest_clearance_in_k_units >= clearance_threshold &&
@@ -450,7 +449,7 @@ void CHolonomicFullEval::evalSingleTarget(
 	{
 		// Not heading to target: go thru the "middle" of the gap to maximize
 		// clearance
-		eo.best_k = mrpt::utils::round(0.5 * (best_gap.k_to + best_gap.k_from));
+		eo.best_k = mrpt::round(0.5 * (best_gap.k_to + best_gap.k_from));
 	}
 
 	// Alternative, simpler method to decide motion:
@@ -485,7 +484,7 @@ void CHolonomicFullEval::evalSingleTarget(
 
 void CHolonomicFullEval::navigate(const NavInput& ni, NavOutput& no)
 {
-	using mrpt::math::square;
+	using mrpt::square;
 
 	ASSERT_(ni.clearance != nullptr);
 	ASSERT_(!ni.targets.empty());
@@ -594,23 +593,17 @@ CLogFileRecord_FullEval::CLogFileRecord_FullEval()
 {
 }
 
-void CLogFileRecord_FullEval::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CLogFileRecord_FullEval::serializeGetVersion() const { return 3; }
+void CLogFileRecord_FullEval::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 3;
-	else
-	{
-		out << CHolonomicLogFileRecord::dirs_eval << dirs_scores
-			<< selectedSector << evaluation << selectedTarget /*v3*/;
-	}
+	out << CHolonomicLogFileRecord::dirs_eval << dirs_scores
+		<< selectedSector << evaluation << selectedTarget /*v3*/;
 }
 
 /*---------------------------------------------------------------
 					readFromStream
   ---------------------------------------------------------------*/
-void CLogFileRecord_FullEval::readFromStream(
-	mrpt::utils::CStream& in, int version)
+void CLogFileRecord_FullEval::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -668,7 +661,7 @@ CHolonomicFullEval::TOptions::TOptions()
 }
 
 void CHolonomicFullEval::TOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& c, const std::string& s)
+	const mrpt::config::CConfigFileBase& c, const std::string& s)
 {
 	MRPT_START
 
@@ -711,12 +704,12 @@ void CHolonomicFullEval::TOptions::loadFromConfigFile(
 }
 
 void CHolonomicFullEval::TOptions::saveToConfigFile(
-	mrpt::utils::CConfigFileBase& c, const std::string& s) const
+	mrpt::config::CConfigFileBase& c, const std::string& s) const
 {
 	MRPT_START;
 
-	const int WN = mrpt::utils::MRPT_SAVE_NAME_PADDING(),
-			  WV = mrpt::utils::MRPT_SAVE_VALUE_PADDING();
+	const int WN = mrpt::config::MRPT_SAVE_NAME_PADDING(),
+			  WV = mrpt::config::MRPT_SAVE_VALUE_PADDING();
 
 	MRPT_SAVE_CONFIG_VAR_COMMENT(
 		TOO_CLOSE_OBSTACLE,
@@ -744,7 +737,7 @@ void CHolonomicFullEval::TOptions::saveToConfigFile(
 		"Ratio [0,1], times path_count, gives the minimum gap width to accept "
 		"a direct motion towards target.");
 
-	ASSERT_EQUAL_(factorWeights.size(), 5)
+	ASSERT_EQUAL_(factorWeights.size(), 5);
 	c.write(
 		s, "factorWeights",
 		mrpt::system::sprintf_container("%.2f ", factorWeights), WN, WV,
@@ -775,28 +768,23 @@ void CHolonomicFullEval::TOptions::saveToConfigFile(
 	MRPT_END;
 }
 
-void CHolonomicFullEval::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CHolonomicFullEval::serializeGetVersion() const { return 4; }
+void CHolonomicFullEval::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 4;
-	else
-	{
-		// Params:
-		out << options.factorWeights << options.HYSTERESIS_SECTOR_COUNT
-			<< options.PHASE_FACTORS <<  // v3
-			options.TARGET_SLOW_APPROACHING_DISTANCE
-			<< options.TOO_CLOSE_OBSTACLE << options.PHASE_THRESHOLDS  // v3
-			<< options.OBSTACLE_SLOW_DOWN_DISTANCE  // v1
-			<< options.factorNormalizeOrNot  // v2
-			<< options.clearance_threshold_ratio
-			<< options.gap_width_ratio_threshold  // v4:
-			;
-		// State:
-		out << m_last_selected_sector;
-	}
+	// Params:
+	out << options.factorWeights << options.HYSTERESIS_SECTOR_COUNT
+		<< options.PHASE_FACTORS <<  // v3
+		options.TARGET_SLOW_APPROACHING_DISTANCE
+		<< options.TOO_CLOSE_OBSTACLE << options.PHASE_THRESHOLDS  // v3
+		<< options.OBSTACLE_SLOW_DOWN_DISTANCE  // v1
+		<< options.factorNormalizeOrNot  // v2
+		<< options.clearance_threshold_ratio
+		<< options.gap_width_ratio_threshold  // v4:
+		;
+	// State:
+	out << m_last_selected_sector;
 }
-void CHolonomicFullEval::readFromStream(mrpt::utils::CStream& in, int version)
+void CHolonomicFullEval::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

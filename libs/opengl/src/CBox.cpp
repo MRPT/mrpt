@@ -10,14 +10,14 @@
 #include "opengl-precomp.h"  // Precompiled header
 #include <mrpt/opengl/CBox.h>
 #include <mrpt/math/geometry.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/opengl/gl_utils.h>
 
 #include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
+
 using namespace mrpt::math;
 using namespace std;
 
@@ -201,31 +201,18 @@ void CBox::render_dl() const
 #endif
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CBox::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CBox::serializeGetVersion() const { return 1; }
+void CBox::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		writeToStreamRender(out);
-		// version 0
-		out << m_corner_min.x << m_corner_min.y << m_corner_min.z
-			<< m_corner_max.x << m_corner_max.y << m_corner_max.z << m_wireframe
-			<< m_lineWidth;
-		// Version 1:
-		out << m_draw_border << m_solidborder_color;
-	}
+	writeToStreamRender(out);
+	// version 0
+	out << m_corner_min.x << m_corner_min.y << m_corner_min.z << m_corner_max.x
+		<< m_corner_max.y << m_corner_max.z << m_wireframe << m_lineWidth;
+	// Version 1:
+	out << m_draw_border << m_solidborder_color;
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CBox::readFromStream(mrpt::utils::CStream& in, int version)
+void CBox::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -270,7 +257,7 @@ bool CBox::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 {
 	MRPT_UNUSED_PARAM(o);
 	MRPT_UNUSED_PARAM(dist);
-	THROW_EXCEPTION("TO DO")
+	THROW_EXCEPTION("TO DO");
 }
 
 void CBox::getBoundingBox(

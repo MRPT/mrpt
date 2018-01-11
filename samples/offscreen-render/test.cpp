@@ -8,12 +8,11 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/opengl/CFBORender.h>
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/img/CImage.h>
 
 using namespace std;
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::opengl;
 
 // ------------------------------------------------------

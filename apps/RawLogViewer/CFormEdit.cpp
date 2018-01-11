@@ -22,21 +22,26 @@
 #include <wx/app.h>
 
 // General global variables:
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
-#include <mrpt/utils/stl_containers_utils.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/containers/stl_containers_utils.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;
 using namespace mrpt::opengl;
 using namespace mrpt::system;
+using namespace mrpt::img;
 using namespace mrpt::math;
-using namespace mrpt::utils;
-using namespace mrpt::system;
+using namespace mrpt::containers;
+using namespace mrpt::serialization;
+using namespace mrpt::math;
+using namespace mrpt::img;
+using namespace mrpt::io;
 using namespace std;
 
 //(*IdInit(CFormEdit)
@@ -539,7 +544,7 @@ CFormEdit::~CFormEdit()
 }
 
 // Load the selected items from list box:
-void loadSelectionsFromListBox(vector_string& v, wxCheckListBox* c)
+void loadSelectionsFromListBox(std::vector<std::string>& v, wxCheckListBox* c)
 {
 	v.clear();
 	for (unsigned i = 0; i < c->GetCount(); i++)
@@ -609,7 +614,7 @@ void CFormEdit::OnbtnDeleteClick(wxCommandEvent& event)
 	WX_END_TRY
 }
 
-vector_bool auxMask;
+std::vector<bool> auxMask;
 
 // Delete observations by index in their sensory frame.
 void filter_delObsByIndex(
@@ -651,7 +656,7 @@ void CFormEdit::OnbtnDelObsIndxClick(wxCommandEvent& event)
 }
 
 // Remove observations by class name:
-vector_string classNameOfObsToRemove;
+std::vector<std::string> classNameOfObsToRemove;
 
 void filter_delObsByClass(
 	mrpt::obs::CActionCollection* acts, mrpt::obs::CSensoryFrame* SF,
@@ -939,7 +944,7 @@ void CFormEdit::OnbtnPickOutClick(wxCommandEvent& event)
 /** This is the common function for all operations over a rawlog file ("filter"
  * a rawlog file into a new one) or over the loaded rawlog (depending on the
  * user selection in the GUI).
-  */
+ */
 void CFormEdit::executeOperationOnRawlog(
 	TRawlogFilter operation, const char* endMsg)
 {
@@ -969,18 +974,18 @@ void CFormEdit::executeOperationOnRawlog(
 		isInMemory = false;
 
 		if (!txtInputFile->GetValue().size())
-			THROW_EXCEPTION("An input rawlog file must be selected")
+			THROW_EXCEPTION("An input rawlog file must be selected");
 		if (!txtOutputFile->GetValue().size())
-			THROW_EXCEPTION("An output rawlog file must be selected")
+			THROW_EXCEPTION("An output rawlog file must be selected");
 
 		string fileName_IN(txtInputFile->GetValue().mbc_str());
 		if (!fileExists(fileName_IN))
-			THROW_EXCEPTION("Input file does not exist!")
+			THROW_EXCEPTION("Input file does not exist!");
 
 		string fileName_OUT(txtOutputFile->GetValue().mbc_str());
 
 		if (!fileName_OUT.compare(fileName_IN))
-			THROW_EXCEPTION("Input and output files must be different!")
+			THROW_EXCEPTION("Input and output files must be different!");
 
 		in_fil = new CFileGZInputStream(fileName_IN);
 		out_fil = new CFileGZOutputStream(fileName_OUT);
@@ -1027,7 +1032,7 @@ void CFormEdit::executeOperationOnRawlog(
 			}
 			else
 			{
-				(*in_fil) >> newObj;
+				archiveFrom(*in_fil) >> newObj;
 			}
 
 			// Check type:
@@ -1047,10 +1052,10 @@ void CFormEdit::executeOperationOnRawlog(
 				if (!isInMemory || (countLoop >= first && countLoop <= last))
 					operation(nullptr, sf.get(), changes);
 
-				if (!isInMemory) (*out_fil) << *sf;
+				if (!isInMemory) archiveFrom(*out_fil) << *sf;
 			}
-			else if (
-				newObj->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
+			else if (newObj->GetRuntimeClass()->derivedFrom(
+						 CLASS_ID(CObservation)))
 			{
 				// A single observation:
 				dummy_sf->clear();
@@ -1064,7 +1069,7 @@ void CFormEdit::executeOperationOnRawlog(
 				// Still there?
 				if (dummy_sf->size() == 1)
 				{
-					if (!isInMemory) (*out_fil) << *newObj;
+					if (!isInMemory) archiveFrom(*out_fil) << *newObj;
 				}
 				else
 				{
@@ -1085,14 +1090,13 @@ void CFormEdit::executeOperationOnRawlog(
 				if (!isInMemory || (countLoop >= first && countLoop <= last))
 					operation((CActionCollection*)acts.get(), nullptr, changes);
 
-				if (!isInMemory) (*out_fil) << *acts;
+				if (!isInMemory) archiveFrom(*out_fil) << *acts;
 			}
 			else
 			{  // Unknown class:
-				THROW_EXCEPTION(
-					format(
-						"Unexpected class found in the file: '%s'",
-						newObj->GetRuntimeClass()->className));
+				THROW_EXCEPTION(format(
+					"Unexpected class found in the file: '%s'",
+					newObj->GetRuntimeClass()->className));
 			}
 		}
 		catch (exception& e)
@@ -1138,7 +1142,7 @@ void CFormEdit::executeOperationOnRawlog(
 }
 
 // Remove observations by class name:
-vector_string labelOfObsToRemove;
+std::vector<std::string> labelOfObsToRemove;
 
 void filter_delObsByLabel(
 	mrpt::obs::CActionCollection* acts, mrpt::obs::CSensoryFrame* SF,

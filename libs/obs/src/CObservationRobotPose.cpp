@@ -9,40 +9,25 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/obs/CObservationRobotPose.h>
 #include <mrpt/system/os.h>
 #include <mrpt/math/matrix_serialization.h>
 
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationRobotPose, CObservation, mrpt::obs)
 
-/** Default constructor */
-CObservationRobotPose::CObservationRobotPose() {}
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CObservationRobotPose::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CObservationRobotPose::serializeGetVersion() const { return 0; }
+void CObservationRobotPose::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		out << pose;
-		out << sensorLabel << timestamp;
-	}
+	out << pose;
+	out << sensorLabel << timestamp;
 }
 
-/*---------------------------------------------------------------
-  Implements the reading from a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CObservationRobotPose::readFromStream(
-	mrpt::utils::CStream& in, int version)
+void CObservationRobotPose::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

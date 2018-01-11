@@ -14,7 +14,7 @@
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPose3DPDF.h>
 
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/system/COutputLogger.h>
 
 namespace mrpt
 {
@@ -26,11 +26,11 @@ namespace slam
  *
  * \sa CPointsMap, \ingroup mrpt_slam_grp
  */
-class CMetricMapsAlignmentAlgorithm : public mrpt::utils::COutputLogger
+class CMetricMapsAlignmentAlgorithm : public mrpt::system::COutputLogger
 {
    public:
 	CMetricMapsAlignmentAlgorithm()
-		: mrpt::utils::COutputLogger("CMetricMapsAlignmentAlgorithm")
+		: mrpt::system::COutputLogger("CMetricMapsAlignmentAlgorithm")
 	{
 	}
 	/** Dtor */

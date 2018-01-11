@@ -38,14 +38,14 @@
 #include <mrpt/gui/about_box.h>
 
 #include <mrpt/system/filesystem.h>
-#include <mrpt/utils/CFileOutputStream.h>
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/CTimeLogger.h>
 
 //#define DO_SCAN_LIKELIHOOD_DEBUG
 
@@ -99,7 +99,7 @@ wxBitmap MyArtProvider::CreateBitmap(
 
 #include <mrpt/gui/CWxGLCanvasBase.h>
 
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/kinematics/CVehicleSimul_DiffDriven.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
@@ -108,7 +108,8 @@ wxBitmap MyArtProvider::CreateBitmap(
 #include <mrpt/hwdrivers/CJoystick.h>
 
 #include <mrpt/opengl/stock_objects.h>
-#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/core/aligned_std_vector.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include <mrpt/gui/WxUtils.h>
 
@@ -117,10 +118,12 @@ using namespace mrpt::hwdrivers;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::opengl;
+using namespace mrpt::io;
+using namespace mrpt::img;
+using namespace mrpt::serialization;
 using namespace mrpt::gui;
 using namespace mrpt::system;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace std;
 
@@ -128,7 +131,7 @@ mrpt::kinematics::CVehicleSimul_DiffDriven the_robot;
 COccupancyGridMap2D the_grid;
 CJoystick joystick;
 
-StdVector_CPose2D robot_path_GT, robot_path_ODO;
+mrpt::aligned_std_vector<mrpt::poses::CPose2D> robot_path_GT, robot_path_ODO;
 CPose2D lastOdo, pose_start;
 bool we_are_closing = false;
 long decimation = 1;
@@ -814,7 +817,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 		if (cbJoy->GetValue())
 		{
 			float x, y, z;
-			vector_bool btns;
+			std::vector<bool> btns;
 
 			if (joystick.getJoystickPosition(0, x, y, z, btns))
 			{
@@ -899,7 +902,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 		the_scan.aperture = LASER_APERTURE;
 		the_scan.stdError = LASER_STD_ERROR;
 
-		static mrpt::utils::CTimeLogger timlog;
+		static mrpt::system::CTimeLogger timlog;
 
 		timlog.enter("laserScanSimulator");
 		the_grid.laserScanSimulator(
@@ -997,7 +1000,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 						_("Error"), wxOK, this);
 				}
 
-				out_grid << the_grid;  // save it
+				archiveFrom(out_grid) << the_grid;  // save it
 			}
 
 			static long decimation_count = 0;
@@ -1028,7 +1031,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 					act.timestamp = tim_now;
 
 					acts.insert(act);
-					outs << acts;
+					archiveFrom(outs) << acts;
 
 					// Observation:
 					CSensoryFrame sf;
@@ -1036,7 +1039,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 					sf.insert(
 						CObservation2DRangeScan::Ptr(
 							new CObservation2DRangeScan(the_scan)));
-					outs << sf;
+					archiveFrom(outs) << sf;
 				}
 				else
 				{
@@ -1050,7 +1053,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 					odo_obs.hasVelocities = true;
 					odo_obs.velocityLocal = the_robot.getCurrentGTVelLocal();
 
-					outs << odo_obs << the_scan;
+					archiveFrom(outs) << odo_obs << the_scan;
 				}
 
 				// And save to a text file the GT robot pose:
@@ -1183,7 +1186,7 @@ void gridmapSimulFrame::OnMenuLoadMap(wxCommandEvent& event)
 	if (mrpt::system::lowerCase(fil_ext) == "gridmap")
 	{
 		CFileGZInputStream f(fil);
-		f >> the_grid;
+		archiveFrom(f) >> the_grid;
 		update_grid_map_3d();
 	}
 	else
@@ -1307,9 +1310,9 @@ void gridmapSimulFrame::OnbtnResimulateClick(wxCommandEvent& event)
 
 	// Assert sizes:
 	ASSERT_(rawlog.size() > 0);
-	ASSERT_(GT.getColCount() >= 4);
+	ASSERT_(GT.cols() >= 4);
 	ASSERT_(rawlog.getType(0) == CRawlog::etActionCollection);
-	ASSERT_(rawlog.size() / 2 == GT.getRowCount());
+	ASSERT_(rawlog.size() / 2 == GT.rows());
 
 	// Ask for the output:
 	string out_raw_file, out_GT_file;
@@ -1346,7 +1349,8 @@ void gridmapSimulFrame::OnbtnResimulateClick(wxCommandEvent& event)
 	}
 
 	// Save the new rawlog:
-	CFileGZOutputStream(out_raw_file) << rawlog;
+	CFileGZOutputStream f(out_raw_file);
+	archiveFrom(f) << rawlog;
 	// rawlog.saveToRawLogFile(out_raw_file);
 
 	// The GT file is the same:

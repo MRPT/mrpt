@@ -13,22 +13,25 @@
 #include <mrpt/hwdrivers/CCameraSensor.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/utils/CTypeSelector.h>
-#include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CConfigFileMemory.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/gui/WxUtils.h>
 #include <mrpt/gui/WxSubsystem.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::gui;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
+using namespace mrpt::config;
 using namespace mrpt::system;
+using namespace mrpt::io;
+using namespace mrpt::serialization;
+using namespace mrpt::img;
 using namespace std;
 using namespace std::literals;
 
@@ -38,7 +41,7 @@ IMPLEMENTS_GENERIC_SENSOR(CCameraSensor, mrpt::hwdrivers)
 				Constructor
    ----------------------------------------------------- */
 CCameraSensor::CCameraSensor()
-	: mrpt::utils::COutputLogger("CCameraSensor"),
+	: mrpt::system::COutputLogger("CCameraSensor"),
 	  m_sensorPose(),
 	  m_grabber_type("opencv"),
 	  m_capture_grayscale(false),
@@ -109,26 +112,22 @@ void CCameraSensor::initialize()
 	if (m_grabber_type == "opencv")
 	{
 		// OpenCV driver:
-		mrpt::utils::CTypeSelector camera_type(
-			"CAMERA_CV_AUTODETECT,CAMERA_CV_DC1394,CAMERA_CV_VFL,CAMERA_CV_VFW,"
-			"CAMERA_CV_MIL",
-			"CAMERA_CV_AUTODETECT");
-
-		int idx = camera_type.checkTypeIndex(m_cv_camera_type);
-		if (idx < 0)
+		TCameraType ct;
+		try
+		{
+			ct = mrpt::typemeta::TEnumType<TCameraType>::name2value(m_cv_camera_type);
+		}
+		catch (std::exception &)
 		{
 			m_state = CGenericSensor::ssError;
-			THROW_EXCEPTION_FMT(
-				"Invalid value of :'%s'", m_cv_camera_type.c_str())
+			throw;
 		}
-
 		cout << format(
 			"[CCameraSensor::initialize] opencv camera, index: %i type: "
 			"%i...\n",
-			int(m_cv_camera_index), idx);
+			int(m_cv_camera_index), (int)ct);
 		m_cap_cv.reset(
-			new CImageGrabber_OpenCV(
-				m_cv_camera_index, TCameraType(idx), m_cv_options));
+			new CImageGrabber_OpenCV(m_cv_camera_index, ct, m_cv_options));
 
 		if (!m_cap_cv->isOpen())
 		{
@@ -429,7 +428,7 @@ void CCameraSensor::close()
 				loadConfig_sensorSpecific
    ----------------------------------------------------- */
 void CCameraSensor::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 	// At this point, my parent class CGenericSensor has already loaded its
@@ -937,7 +936,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 		CSerializable::Ptr newObs;
 		while (!obs && !stObs && !obs3D)
 		{
-			*m_cap_rawlog >> newObs;
+			archiveFrom(*m_cap_rawlog) >> newObs;
 			if (IS_DERIVED(newObs, CObservation))
 			{
 				CObservation::Ptr o =
@@ -1116,7 +1115,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 			"called?")
 	}
 
-	ASSERT_(capture_ok)
+	ASSERT_(capture_ok);
 
 	// Are we supposed to do a decimation??
 	m_camera_grab_decimator_counter++;
@@ -1129,7 +1128,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 	// Continue as normal:
 	m_camera_grab_decimator_counter = 0;
 
-	ASSERT_(obs || stObs || obs3D || obsIMU)
+	ASSERT_(obs || stObs || obs3D || obsIMU);
 	// If we grabbed an image: prepare it and add it to the internal queue:
 	if (obs)
 	{
@@ -1499,7 +1498,7 @@ CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromUserSelection()
 
 	return cam;
 #else
-	THROW_EXCEPTION("MRPT compiled without wxWidgets")
+	THROW_EXCEPTION("MRPT compiled without wxWidgets");
 #endif  // MRPT_HAS_WXWIDGETS
 }
 
@@ -1531,7 +1530,7 @@ CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromPanel(void* _panel)
 		return CCameraSensor::Ptr();
 	}
 #else
-	THROW_EXCEPTION("MRPT compiled without wxWidgets")
+	THROW_EXCEPTION("MRPT compiled without wxWidgets");
 #endif  // MRPT_HAS_WXWIDGETS
 }
 
@@ -1539,20 +1538,19 @@ CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromPanel(void* _panel)
 						writeConfigFromVideoSourcePanel
    ------------------------------------------------------------------------ */
 void mrpt::hwdrivers::writeConfigFromVideoSourcePanel(
-	void* _panel, const std::string& sect, mrpt::utils::CConfigFileBase* cfg)
+	void* _panel, const std::string& sect, mrpt::config::CConfigFileBase* cfg)
 {
 	MRPT_START
 #if MRPT_HAS_WXWIDGETS
-	ASSERT_(_panel)
+	ASSERT_(_panel);
 	mrpt::gui::CPanelCameraSelection* panel =
 		reinterpret_cast<mrpt::gui::CPanelCameraSelection*>(_panel);
 	ASSERTMSG_(
-		panel, "panel must be of type mrpt::gui::CPanelCameraSelection *")
-
+		panel, "panel must be of type mrpt::gui::CPanelCameraSelection *");
 	panel->writeConfigFromVideoSourcePanel(sect, cfg);
 
 #else
-	THROW_EXCEPTION("MRPT compiled without wxWidgets")
+	THROW_EXCEPTION("MRPT compiled without wxWidgets");
 #endif  // MRPT_HAS_WXWIDGETS
 	MRPT_END
 }
@@ -1562,20 +1560,20 @@ void mrpt::hwdrivers::writeConfigFromVideoSourcePanel(
    ------------------------------------------------------------------------ */
 void mrpt::hwdrivers::readConfigIntoVideoSourcePanel(
 	void* _panel, const std::string& sect,
-	const mrpt::utils::CConfigFileBase* cfg)
+	const mrpt::config::CConfigFileBase* cfg)
 {
 	MRPT_START
 #if MRPT_HAS_WXWIDGETS
-	ASSERT_(_panel)
+	ASSERT_(_panel);
 	mrpt::gui::CPanelCameraSelection* panel =
 		reinterpret_cast<mrpt::gui::CPanelCameraSelection*>(_panel);
 	ASSERTMSG_(
-		panel, "panel must be of type mrpt::gui::CPanelCameraSelection *")
+		panel, "panel must be of type mrpt::gui::CPanelCameraSelection *");
 
 	panel->readConfigIntoVideoSourcePanel(sect, cfg);
 
 #else
-	THROW_EXCEPTION("MRPT compiled without wxWidgets")
+	THROW_EXCEPTION("MRPT compiled without wxWidgets");
 #endif  // MRPT_HAS_WXWIDGETS
 	MRPT_END
 }

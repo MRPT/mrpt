@@ -19,7 +19,6 @@
 using namespace mrpt;
 using namespace mrpt::system;
 using namespace mrpt::poses;
-using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::obs;
 using namespace std;
@@ -269,7 +268,7 @@ double CIbeoLuxETH::convertLayerToRad(int scanlayer)
 }
 
 void CIbeoLuxETH::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 	float pose_x, pose_y, pose_z, pose_yaw, pose_pitch, pose_roll;

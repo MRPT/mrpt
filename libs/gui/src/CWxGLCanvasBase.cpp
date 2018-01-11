@@ -11,23 +11,22 @@
 
 #include <mrpt/gui/CWxGLCanvasBase.h>
 #include <mrpt/gui/WxSubsystem.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::gui;
 using namespace mrpt::opengl;
 using namespace std;
 
 #if MRPT_HAS_OPENGL_GLUT
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 // Windows:
 #include <windows.h>
 #endif
 
-#ifdef MRPT_OS_APPLE
+#ifdef __APPLE__
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
 #include <GLUT/glut.h>
@@ -159,7 +158,10 @@ CWxGLCanvasBase::CWxGLCanvasBase(
 #endif
 }
 
-CWxGLCanvasBase::~CWxGLCanvasBase() { delete_safe(m_gl_context); }
+CWxGLCanvasBase::~CWxGLCanvasBase()
+{
+	if (m_gl_context) delete m_gl_context;
+}
 void CWxGLCanvasBase::OnChar(wxKeyEvent& event) { OnCharCustom(event); }
 void CWxGLCanvasBase::Render()
 {
@@ -241,7 +243,7 @@ void CWxGLCanvasBase::InitGL()
 
 void CWxGLCanvasBase::setCameraPose(const mrpt::poses::CPose3D& camPose)
 {
-	THROW_EXCEPTION("todo")
+	THROW_EXCEPTION("todo");
 }
 
 #endif  // MRPT_HAS_WXWIDGETS

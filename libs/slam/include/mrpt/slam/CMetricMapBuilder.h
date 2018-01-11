@@ -9,9 +9,9 @@
 #ifndef CMetricMapBuilder_H
 #define CMetricMapBuilder_H
 
-#include <mrpt/utils/CSerializable.h>
-#include <mrpt/utils/CListOfClasses.h>
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/serialization/CSerializable.h>
+#include <mrpt/rtti/CListOfClasses.h>
+#include <mrpt/system/COutputLogger.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/maps/CSimpleMap.h>
@@ -32,7 +32,7 @@ namespace slam
  *
  * \sa CMetricMap  \ingroup metric_slam_grp
  */
-class CMetricMapBuilder : public mrpt::utils::COutputLogger
+class CMetricMapBuilder : public mrpt::system::COutputLogger
 {
    protected:
 	/** Critical zones */
@@ -114,7 +114,7 @@ class CMetricMapBuilder : public mrpt::utils::COutputLogger
 	/** Options for the algorithm */
 	struct TOptions
 	{
-		TOptions(mrpt::utils::VerbosityLevel& verb_level_ref)
+		TOptions(mrpt::system::VerbosityLevel& verb_level_ref)
 			: verbosity_level(verb_level_ref),
 			  enableMapUpdating(true),
 			  debugForceInsertion(false),
@@ -122,7 +122,7 @@ class CMetricMapBuilder : public mrpt::utils::COutputLogger
 		{
 		}
 
-		mrpt::utils::VerbosityLevel& verbosity_level;
+		mrpt::system::VerbosityLevel& verbosity_level;
 		/** Enable map updating, default is true. */
 		bool enableMapUpdating;
 		/** Always insert into map. Default is false: detect if necesary. */
@@ -135,9 +135,9 @@ class CMetricMapBuilder : public mrpt::utils::COutputLogger
 		  *   \code
 		  *     alwaysInserByClass.insert(CLASS_ID(CObservationImage));
 		  *   \endcode
-		  * \sa mrpt::utils::CListOfClasses
+		  * \sa mrpt::rtti::CListOfClasses
 		  */
-		mrpt::utils::CListOfClasses alwaysInsertByClass;
+		mrpt::rtti::CListOfClasses alwaysInsertByClass;
 	};
 
 	TOptions options;

@@ -29,15 +29,16 @@
 #include <wx/tipdlg.h>
 #include <wx/statbox.h>
 
-#include <mrpt/system.h>
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CConfigFileMemory.h>
-#include <mrpt/utils/CConfigFilePrefixer.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/config/CConfigFilePrefixer.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/math/geometry.h>  // intersect()
-#include <mrpt/utils/printf_vector.h>
+#include <mrpt/containers/printf_vector.h>
 #include <mrpt/system/string_utils.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CMesh.h>
 #include <mrpt/opengl/CDisk.h>
@@ -56,13 +57,15 @@ const double fy = 9,
 		unique_id++);
 
 #define ADD_WIN_TEXTMSG(__MSG) \
-	ADD_WIN_TEXTMSG_COL(__MSG, mrpt::utils::TColorf(1, 1, 1))
+	ADD_WIN_TEXTMSG_COL(__MSG, mrpt::img::TColorf(1, 1, 1))
 
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::math;
-using namespace mrpt::utils;
+using namespace mrpt::img;
 using namespace mrpt::maps;
+using namespace mrpt::serialization;
+using namespace mrpt::config;
 using namespace mrpt::poses;
 using namespace mrpt::gui;
 using namespace mrpt::nav;
@@ -506,7 +509,7 @@ void navlog_viewer_GUI_designDialog::loadLogfile(const std::string& filName)
 
 	this->edLogFile->SetLabel(_U(filName.c_str()));
 
-	CFileGZInputStream f(filName);
+	mrpt::io::CFileGZInputStream f(filName);
 
 	m_logdata.clear();
 	m_logdata_ptg_paths.clear();
@@ -519,11 +522,12 @@ void navlog_viewer_GUI_designDialog::loadLogfile(const std::string& filName)
 	m_log_first_tim = INVALID_TIMESTAMP;
 	m_log_last_tim = INVALID_TIMESTAMP;
 
+	auto arch = archiveFrom(f);
 	for (;;)
 	{
 		try
 		{
-			CSerializable::Ptr obj = f.ReadObject();
+			CSerializable::Ptr obj = arch.ReadObject();
 			if (validClasses.find(string(obj->GetRuntimeClass()->className)) ==
 				validClasses.end())
 			{
@@ -710,7 +714,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 				mrpt::opengl::CGridPlaneXY::Ptr gl_grid =
 					mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>(
 						-20, 20, -20, 20, 0, 1, 0.75f);
-				gl_grid->setColor_u8(mrpt::utils::TColor(0xa0a0a0, 0x90));
+				gl_grid->setColor_u8(mrpt::img::TColor(0xa0a0a0, 0x90));
 				scene->insert(gl_grid);
 
 				// XYZ corner at origin:
@@ -824,7 +828,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 						mrpt::make_aligned_shared<mrpt::opengl::CPointCloud>();
 					gl_obs->setName("obs-raw");
 					gl_obs->setPointSize(3);
-					gl_obs->setColor_u8(mrpt::utils::TColor(0xff, 0xff, 0x00));
+					gl_obs->setColor_u8(mrpt::img::TColor(0xff, 0xff, 0x00));
 					gl_robot_frame->insert(gl_obs);
 				}
 				else
@@ -849,7 +853,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 						mrpt::make_aligned_shared<mrpt::opengl::CPointCloud>();
 					gl_obs->setName("obs");
 					gl_obs->setPointSize(3.0);
-					gl_obs->setColor_u8(mrpt::utils::TColor(0x00, 0x00, 0xff));
+					gl_obs->setColor_u8(mrpt::img::TColor(0x00, 0x00, 0xff));
 					gl_robot_frame->insert(gl_obs);
 				}
 				else
@@ -876,7 +880,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 						mrpt::make_aligned_shared<mrpt::opengl::CSetOfLines>();
 					gl_path->setName("path");
 					gl_path->setLineWidth(2.0);
-					gl_path->setColor_u8(mrpt::utils::TColor(0x00, 0x00, 0xff));
+					gl_path->setColor_u8(mrpt::img::TColor(0x00, 0x00, 0xff));
 					gl_robot_frame->insert(gl_path);
 				}
 				gl_path->clear();
@@ -907,7 +911,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 						ptg->renderPathAsSimpleLine(
 							selected_k, *gl_path, 0.10, max_dist);
 						gl_path->setColor_u8(
-							mrpt::utils::TColor(0xff, 0x00, 0x00));
+							mrpt::img::TColor(0xff, 0x00, 0x00));
 
 						// PTG origin:
 						// enable delays model?
@@ -958,7 +962,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 								gl_shape->setName("shape");
 								gl_shape->setLineWidth(4.0);
 								gl_shape->setColor_u8(
-									mrpt::utils::TColor(0xff, 0x00, 0x00));
+									mrpt::img::TColor(0xff, 0x00, 0x00));
 								gl_robot_frame->insert(gl_shape);
 							}
 							else
@@ -981,7 +985,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 								gl_shape->setName("velocity");
 								gl_shape->setLineWidth(4.0);
 								gl_shape->setColor_u8(
-									mrpt::utils::TColor(0x00, 0xff, 0xff));
+									mrpt::img::TColor(0x00, 0xff, 0xff));
 								gl_robot_frame->insert(gl_shape);
 							}
 							else
@@ -1011,7 +1015,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					gl_trg->setName("target");
 					gl_trg->enableShowName(true);
 					gl_trg->setPointSize(9.0);
-					gl_trg->setColor_u8(mrpt::utils::TColor(0x00, 0x00, 0x00));
+					gl_trg->setColor_u8(mrpt::img::TColor(0x00, 0x00, 0x00));
 					gl_robot_frame->insert(gl_trg);
 				}
 				else
@@ -1085,12 +1089,12 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			mrpt::format(
 				"cur_vel      =[%.02f m/s, %0.2f m/s, %.02f dps]",
 				log.cur_vel.vx, log.cur_vel.vy,
-				mrpt::utils::RAD2DEG(log.cur_vel.omega)));
+				mrpt::RAD2DEG(log.cur_vel.omega)));
 		ADD_WIN_TEXTMSG(
 			mrpt::format(
 				"cur_vel_local=[%.02f m/s, %0.2f m/s, %.02f dps]",
 				log.cur_vel_local.vx, log.cur_vel_local.vy,
-				mrpt::utils::RAD2DEG(log.cur_vel_local.omega)));
+				mrpt::RAD2DEG(log.cur_vel_local.omega)));
 
 		ADD_WIN_TEXTMSG(
 			mrpt::format(
@@ -1133,11 +1137,11 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 		{
 			const CLogFileRecord::TInfoPerPTG& pI = log.infoPerPTG[nPTG];
 
-			mrpt::utils::TColorf col;
+			mrpt::img::TColorf col;
 			if (((int)nPTG) == log.nSelectedPTG)
-				col = mrpt::utils::TColorf(1, 1, 1);
+				col = mrpt::img::TColorf(1, 1, 1);
 			else
-				col = mrpt::utils::TColorf(.8f, .8f, .8f);
+				col = mrpt::img::TColorf(.8f, .8f, .8f);
 
 			auto sFactors = pI.evalFactors.getAsString();
 			std::replace(sFactors.begin(), sFactors.end(), '\r', ' ');
@@ -1146,7 +1150,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			ADD_WIN_TEXTMSG_COL(
 				mrpt::format(
 					"PTG#%u: SelDir=%+7.01f deg SelSpeed=%.03f Eval=%5.03f. %s",
-					nPTG, mrpt::utils::RAD2DEG(pI.desiredDirection),
+					nPTG, mrpt::RAD2DEG(pI.desiredDirection),
 					pI.desiredSpeed, pI.evaluation, sFactors.c_str()),
 				col);
 		}
@@ -1217,7 +1221,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					gl_obj->setDiskRadius(1.01f, 1.0);
 					gl_obj->setSlicesCount(30);
 					gl_obj->setColor_u8(
-						mrpt::utils::TColor(0x30, 0x30, 0x30, 0xff));
+						mrpt::img::TColor(0x30, 0x30, 0x30, 0xff));
 					scene->insert(gl_obj);
 				}
 				{
@@ -1227,7 +1231,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					gl_obj->setLineWidth(1.0f);
 					gl_obj->setVerticesPointSize(4.0f);
 					gl_obj->setColor_u8(
-						mrpt::utils::TColor(0x00, 0x00, 0xff, 0xff));
+						mrpt::img::TColor(0x00, 0x00, 0xff, 0xff));
 					scene->insert(gl_obj);
 				}
 				{
@@ -1237,7 +1241,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					gl_obj->setLineWidth(1.0f);
 					gl_obj->setVerticesPointSize(2.0f);
 					gl_obj->setColor_u8(
-						mrpt::utils::TColor(0xff, 0xff, 0x00, 0xff));
+						mrpt::img::TColor(0xff, 0xff, 0x00, 0xff));
 					scene->insert(gl_obj);
 				}
 				{
@@ -1247,7 +1251,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					gl_obj->setLineWidth(1.0f);
 					gl_obj->setVerticesPointSize(2.0f);
 					gl_obj->setColor_u8(
-						mrpt::utils::TColor(0xff, 0xff, 0xff, 0xff));
+						mrpt::img::TColor(0xff, 0xff, 0xff, 0xff));
 					scene->insert(gl_obj);
 				}
 				{
@@ -1256,7 +1260,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					gl_obj->setName("tp_selected_dir");
 					gl_obj->setLineWidth(3.0f);
 					gl_obj->setColor_u8(
-						mrpt::utils::TColor(0x00, 0xff, 0x00, 0xd0));
+						mrpt::img::TColor(0x00, 0xff, 0x00, 0xd0));
 					scene->insert(gl_obj);
 				}
 				{
@@ -1265,7 +1269,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					gl_obj->setName("tp_target");
 					gl_obj->setPointSize(5.0f);
 					gl_obj->setColor_u8(
-						mrpt::utils::TColor(0x30, 0x30, 0x30, 0xff));
+						mrpt::img::TColor(0x30, 0x30, 0x30, 0xff));
 					gl_obj->setLocation(0, 0, 0.02f);
 					scene->insert(gl_obj);
 				}
@@ -1275,7 +1279,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					gl_obj->setName("tp_robot");
 					gl_obj->setPointSize(4.0f);
 					gl_obj->setColor_u8(
-						mrpt::utils::TColor(0xff, 0x00, 0x00, 0xa0));
+						mrpt::img::TColor(0xff, 0x00, 0x00, 0xa0));
 					gl_obj->setLocation(0, 0, 0.02f);
 					scene->insert(gl_obj);
 				}
@@ -1380,7 +1384,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 						format(
 							"TP_Target[0]=(%.02f,%.02f) k=%i ang=%.02f deg",
 							pI.TP_Targets[0].x, pI.TP_Targets[0].y, tp_target_k,
-							mrpt::utils::RAD2DEG(ang)),
+							mrpt::RAD2DEG(ang)),
 						TColorf(1.0f, 1.0f, 1.0f), "mono", 8,
 						mrpt::opengl::NICE, 1 /*id*/, 1.5, 0.1,
 						false /*shadow*/);
@@ -1395,7 +1399,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					win->addTextMessage(
 						4, 5 + (lineY++) * 11,
 						mrpt::format("%20s=%6.03f", e.first.c_str(), e.second),
-						mrpt::utils::TColorf(1, 1, 1), "mono", 9,
+						mrpt::img::TColorf(1, 1, 1), "mono", 9,
 						mrpt::opengl::NICE, unique_id++, 1.5, 0.1, true);
 				}
 			}
@@ -1665,7 +1669,7 @@ void navlog_viewer_GUI_designDialog::OnmnuSeePTGParamsSelected(
 	WX_START_TRY
 
 	const std::string sSection = "PTG_PARAMS";
-	mrpt::utils::CConfigFileMemory cfg;
+	mrpt::config::CConfigFileMemory cfg;
 
 	cfg.write(sSection, "PTG_COUNT", m_logdata_ptg_paths.size());
 
@@ -1732,7 +1736,7 @@ void navlog_viewer_GUI_designDialog::OnmnuSaveScoreMatrixSelected(
 
 			const mrpt::math::CMatrixD* dirs_scores =
 				hlog->getDirectionScores();
-			if (!dirs_scores || dirs_scores->getRowCount() < 2) continue;
+			if (!dirs_scores || dirs_scores->rows() < 2) continue;
 
 			const std::string sFil = mrpt::system::fileNameChangeExtension(
 				filName, mrpt::format(
@@ -1821,7 +1825,7 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabExportPaths(
 
 	const int MAX_CMDVEL_COMPONENTS = 15;
 	typedef Eigen::Matrix<double, 1, MAX_CMDVEL_COMPONENTS> cmdvel_vector_t;
-	mrpt::aligned_containers<double, cmdvel_vector_t>::map_t
+	mrpt::aligned_std_map<double, cmdvel_vector_t>
 		cmdvels;  // time: tim_send_cmd_vel
 
 	double tim_start_iteration = .0;

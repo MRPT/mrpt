@@ -12,8 +12,8 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/ops_matrices.h>  // for extract*()
-#include <mrpt/utils/CStream.h>
-#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/stl_serialization.h>
 
 #include "opengl_internals.h"
 
@@ -21,7 +21,7 @@ using namespace mrpt;
 using namespace mrpt::math;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;
-using namespace mrpt::utils;
+
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(
@@ -48,7 +48,7 @@ void CGeneralizedCylinder::TQuadrilateral::calculateNormal()
 class FQuadrilateralRenderer
 {
    private:
-	const mrpt::utils::TColor& color;
+	const mrpt::img::TColor& color;
 
    public:
 	void operator()(const CGeneralizedCylinder::TQuadrilateral& t) const
@@ -57,7 +57,7 @@ class FQuadrilateralRenderer
 		for (int i = 0; i < 4; i++)
 			glVertex3d(t.points[i].x, t.points[i].y, t.points[i].z);
 	}
-	FQuadrilateralRenderer(const mrpt::utils::TColor& c) : color(c) {}
+	FQuadrilateralRenderer(const mrpt::img::TColor& c) : color(c) {}
 	~FQuadrilateralRenderer() {}
 };
 #endif
@@ -107,16 +107,15 @@ inline void createMesh(
 	mesh.reserve(R * C);
 	for (size_t i = 0; i < R; i++)
 		for (size_t j = 0; j < C; j++)
-			mesh.push_back(
-				CGeneralizedCylinder::TQuadrilateral(
-					pointsMesh(i, j), pointsMesh(i, j + 1),
-					pointsMesh(i + 1, j + 1), pointsMesh(i + 1, j)));
+			mesh.push_back(CGeneralizedCylinder::TQuadrilateral(
+				pointsMesh(i, j), pointsMesh(i, j + 1),
+				pointsMesh(i + 1, j + 1), pointsMesh(i + 1, j)));
 }
 
 /*void transformMesh(const CPose3D &pose,const CMatrixTemplate<TPoint3D>
 &in,CMatrixTemplate<TPoint3D> &out)	{
-	size_t R=in.getRowCount();
-	size_t C=in.getColCount();
+	size_t R=in.rows();
+	size_t C=in.cols();
 	out.setSize(R,C);
 	for (size_t i=0;i<R;i++) for (size_t j=0;j<C;j++)	{
 		TPoint3D pIn=in.get_unsafe(i,j);
@@ -128,7 +127,7 @@ inline void createMesh(
 bool CGeneralizedCylinder::traceRay(const CPose3D& o, double& dist) const
 {
 	if (!meshUpToDate || !polysUpToDate) updatePolys();
-	return math::traceRay(polys, o - this->m_pose, dist);
+	return math::traceRay(polys, (o - this->m_pose).asTPose(), dist);
 }
 
 void CGeneralizedCylinder::updateMesh() const
@@ -152,21 +151,16 @@ void CGeneralizedCylinder::updateMesh() const
 	polysUpToDate = false;
 }
 
-void CGeneralizedCylinder::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CGeneralizedCylinder::serializeGetVersion() const { return 1; }
+void CGeneralizedCylinder::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		writeToStreamRender(out);
-		out << axis << generatrix;  // In version 0, axis was a
-		// vector<TPoint3D>. In version 1, it is a
-		// vector<CPose3D>.
-	}
+	writeToStreamRender(out);
+	out << axis << generatrix;  // In version 0, axis was a vector<TPoint3D>. In
+								// version 1, it is a vector<CPose3D>.
 }
 
-void CGeneralizedCylinder::readFromStream(mrpt::utils::CStream& in, int version)
+void CGeneralizedCylinder::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -257,8 +251,8 @@ void CGeneralizedCylinder::getClosedSection(
 	}
 	vector<TPoint3D> vertices;
 	ROIpoints.getAsVector(vertices);
-	size_t nr = ROIpoints.getRowCount() - 1;
-	size_t nc = ROIpoints.getColCount() - 1;
+	size_t nr = ROIpoints.rows() - 1;
+	size_t nc = ROIpoints.cols() - 1;
 	vector<vector<uint32_t>> faces;
 	faces.reserve(nr * nc + 2);
 	vector<uint32_t> tmp(4);
@@ -328,7 +322,7 @@ void CGeneralizedCylinder::updatePolys() const
 
 void CGeneralizedCylinder::generatePoses(
 	const vector<TPoint3D>& pIn,
-	mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t& pOut)
+	mrpt::aligned_std_vector<mrpt::poses::CPose3D>& pOut)
 {
 	size_t N = pIn.size();
 	if (N == 0)

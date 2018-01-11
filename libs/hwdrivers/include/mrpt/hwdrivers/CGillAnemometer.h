@@ -12,7 +12,7 @@
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/comms/CSerialPort.h>
 #include <mrpt/obs/CObservationWindSensor.h>
-#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/config/CConfigFileBase.h>
 
 namespace mrpt
 {
@@ -62,7 +62,7 @@ class CGillAnemometer : public mrpt::hwdrivers::CGenericSensor
 	void doProcess();
 
 	void loadConfig_sensorSpecific(
-		const mrpt::utils::CConfigFileBase& configSource,
+		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& section);
 };  // End of class def.
 

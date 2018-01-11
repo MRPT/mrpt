@@ -90,7 +90,6 @@
 #include "place_recognition.h"
 
 using namespace mrpt::vision;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt;
 

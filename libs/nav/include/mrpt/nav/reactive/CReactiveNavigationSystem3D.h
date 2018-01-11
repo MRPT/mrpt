@@ -69,7 +69,7 @@ struct TRobotShape
 * This class requires a number of parameters which are usually provided via an
 * external config (".ini") file.
 * Alternatively, a memory-only object can be used to avoid physical files, see
-* mrpt::utils::CConfigFileMemory.
+* mrpt::config::CConfigFileMemory.
 *
 * A template config file can be generated at any moment by the user by calling
 * saveConfigFile() with a default-constructed object.
@@ -110,21 +110,21 @@ class CReactiveNavigationSystem3D : public CAbstractPTGBasedReactive
 	}
 	virtual CParameterizedTrajectoryGenerator* getPTG(size_t i) override
 	{
-		ASSERT_(!m_ptgmultilevel.empty() && !m_ptgmultilevel[i].PTGs.empty())
+		ASSERT_(!m_ptgmultilevel.empty() && !m_ptgmultilevel[i].PTGs.empty());
 		return m_ptgmultilevel[i].PTGs[0];  // Return for the 0'th level (ptgs
 		// are replicated at each level)
 	}
 	virtual const CParameterizedTrajectoryGenerator* getPTG(
 		size_t i) const override
 	{
-		ASSERT_(!m_ptgmultilevel.empty() && !m_ptgmultilevel[i].PTGs.empty())
+		ASSERT_(!m_ptgmultilevel.empty() && !m_ptgmultilevel[i].PTGs.empty());
 		return m_ptgmultilevel[i].PTGs[0];  // Return for the 0'th level (ptgs
 		// are replicated at each level)
 	}
 
-	virtual void loadConfigFile(const mrpt::utils::CConfigFileBase& c)
+	virtual void loadConfigFile(const mrpt::config::CConfigFileBase& c)
 		override;  // See base class docs!
-	virtual void saveConfigFile(mrpt::utils::CConfigFileBase& c)
+	virtual void saveConfigFile(mrpt::config::CConfigFileBase& c)
 		const override;  // See base class docs!
 
    private:

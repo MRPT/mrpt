@@ -12,7 +12,7 @@
 #include <mrpt/hwdrivers/CNTRIPClient.h>
 #include <mrpt/comms/CSerialPort.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <fstream>
 
 namespace mrpt
@@ -81,13 +81,13 @@ class CNTRIPEmitter : public CGenericSensor
 	bool m_transmit_to_server;
 	std::string m_raw_output_file_prefix;
 	std::ofstream m_raw_output_file_stream;
-	mrpt::utils::CTicTac m_rate_timer;
+	mrpt::system::CTicTac m_rate_timer;
 	size_t m_rate_count;
 
    protected:
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(
-		const mrpt::utils::CConfigFileBase& configSource,
+		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& iniSection);
 
    public:

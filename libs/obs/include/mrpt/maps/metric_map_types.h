@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/obs/obs_frwds.h>
 
@@ -85,26 +85,24 @@ struct TMatchingRatioParams
 };
 
 /** Common params to all maps derived from mrpt::maps::CMetricMap  */
-class TMapGenericParams : public mrpt::utils::CLoadableOptions,
-						  public mrpt::utils::CSerializable
+class TMapGenericParams : public mrpt::config::CLoadableOptions,
+						  public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(TMapGenericParams)
    public:
 	/** (Default=true) If false, calling CMetricMap::getAs3DObject() will have
 	 * no effects */
-	bool enableSaveAs3DObject;
+	bool enableSaveAs3DObject{true};
 	/** (Default=true) Enable computing observation likelihoods with this map */
-	bool enableObservationLikelihood;
+	bool enableObservationLikelihood{true};
 	/** (Default=true) Enable inserting observations in this map  */
-	bool enableObservationInsertion;
+	bool enableObservationInsertion{true};
 
-	TMapGenericParams();
 	void loadFromConfigFile(
-		const mrpt::utils::CConfigFileBase& source,
+		const mrpt::config::CConfigFileBase& source,
 		const std::string& sectionNamePrefix) override;  // See base docs
-	void dumpToTextStream(
-		mrpt::utils::CStream& out) const override;  // See base docs
+	void dumpToTextStream(std::ostream& out) const override;  // See base docs
 };
 
-}  // End of namespace
-}  // End of namespace
+}  // namespace maps
+}  // namespace mrpt

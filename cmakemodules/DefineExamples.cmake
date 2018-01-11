@@ -47,6 +47,30 @@ IF(BUILD_EXAMPLES)
 	#  modify the above variable and/or the list_examples.txt files!
 	# -----------------------------------------------------------------
 	SET(CMAKE_COMMANDS_INCLUDE_EXAMPLE_DIRS_ROOT "")
+	#SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS}) # use CMake Interface?
+
+	# === Depending on: typemeta ===
+	SET(LIST_EXAMPLES_IN_THIS_DIR
+		typemeta_TTypeName
+		typemeta_StaticString
+		typemeta_TEnumType
+		)
+	SET(CMAKE_EXAMPLE_DEPS mrpt-typemeta)
+	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
+
+	# === Depending on: rtti ===
+	SET(LIST_EXAMPLES_IN_THIS_DIR
+		rtti_example1
+		)
+	SET(CMAKE_EXAMPLE_DEPS mrpt-rtti)
+	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
+
+	# === Depending on: serialization, io ===
+	SET(LIST_EXAMPLES_IN_THIS_DIR
+		serialization_stl
+		)
+	SET(CMAKE_EXAMPLE_DEPS mrpt-serialization mrpt-io)
+	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 	# === Depending on: mrpt-base ===
 	#  list of examples for each directory:
@@ -68,7 +92,6 @@ IF(BUILD_EXAMPLES)
 		optimize-lm
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-base)
-	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 	# === Depending on: mrpt-base, mrpt-comms ===
@@ -78,7 +101,6 @@ IF(BUILD_EXAMPLES)
 		SocketsTest
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-base mrpt-comms)
-	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 	# === Depending on: mrpt-base, mrpt-gui ===
@@ -103,7 +125,6 @@ IF(BUILD_EXAMPLES)
 		texture_sizes_test
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-base mrpt-gui)
-	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 	# === Depending on: mrpt-base, mrpt-bayes, mrpt-obs, mrpt-gui ===
@@ -112,7 +133,6 @@ IF(BUILD_EXAMPLES)
 		bayesianTracking
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-base mrpt-bayes mrpt-obs mrpt-gui)
-	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 	# === Depending on: base, obs, maps, etc... ===
@@ -143,7 +163,6 @@ IF(BUILD_EXAMPLES)
 		polyhedronIntersection
 		observer_pattern
 		smart_pointers_test
-		stl_containers_serialize
 		polygonSplit
 		setOfTexturedTrianglesTest
 		gui_windows_events
@@ -156,7 +175,6 @@ IF(BUILD_EXAMPLES)
 		keypoint_matching
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-slam mrpt-vision mrpt-gui mrpt-topography)
-	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 	# === Depending on: nav ===
@@ -165,7 +183,6 @@ IF(BUILD_EXAMPLES)
 		pathPlanning
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-nav mrpt-gui)
-	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 	# === Depending on: obs ===
@@ -175,7 +192,6 @@ IF(BUILD_EXAMPLES)
 		kitti_dataset2rawlog
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-obs)
-	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 	# === Depending on: maps, gui ===
@@ -185,7 +201,6 @@ IF(BUILD_EXAMPLES)
 		gmrf_map_demo
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-maps mrpt-gui)
-	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 	# === Depending on: maps, tfest, gui ===
@@ -194,7 +209,6 @@ IF(BUILD_EXAMPLES)
 		ransac-data-association
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-maps mrpt-gui mrpt-tfest)
-	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 	# === Depending on: graphs & gui ===
@@ -202,10 +216,8 @@ IF(BUILD_EXAMPLES)
 	SET(LIST_EXAMPLES_IN_THIS_DIR
 		a_starAlgorithm
 		dijkstra-example
-		type_name
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-graphs mrpt-gui)
-	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 
@@ -215,7 +227,6 @@ IF(BUILD_EXAMPLES)
 		graph_slam_demo
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-graphslam mrpt-gui)
-	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 
@@ -226,7 +237,6 @@ IF(BUILD_EXAMPLES)
 		stereo-calib-demo
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-vision mrpt-gui)
-	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 	# === HWDRIVERS ===
@@ -258,7 +268,6 @@ IF(BUILD_EXAMPLES)
 			NIDAQ_test
 			)
 	        SET(CMAKE_EXAMPLE_DEPS mrpt-hwdrivers mrpt-gui)
-	        SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 	        GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 	        # === Depending on: maps & hwdrivers ===
@@ -273,7 +282,6 @@ IF(BUILD_EXAMPLES)
 			kinect-to-2d-laser-demo
 	                )
 	        SET(CMAKE_EXAMPLE_DEPS mrpt-hwdrivers mrpt-maps)
-	        SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 	        GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 		# === Depending on: slam & hwdrivers ===
@@ -283,7 +291,6 @@ IF(BUILD_EXAMPLES)
 			MOXmodel-rawlog
 			)
 		SET(CMAKE_EXAMPLE_DEPS mrpt-slam mrpt-hwdrivers)
-		SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 		GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 		# === HWDRIVERS & VISION ===
@@ -292,7 +299,6 @@ IF(BUILD_EXAMPLES)
 			stereoRectify
 			)
 		SET(CMAKE_EXAMPLE_DEPS mrpt-vision mrpt-hwdrivers)
-		SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 		GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 		# === HWDRIVERS & DETECTORS ===
@@ -300,7 +306,6 @@ IF(BUILD_EXAMPLES)
 			face_detection
 			)
 		SET(CMAKE_EXAMPLE_DEPS mrpt-slam mrpt-hwdrivers mrpt-detectors)
-		SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 		GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 
@@ -316,7 +321,7 @@ IF(BUILD_EXAMPLES)
 			openNI2_to_rawlog)
 
 		SET(CMAKE_EXAMPLE_DEPS mrpt-base mrpt-hwdrivers mrpt-gui mrpt-opengl mrpt-maps)
-		SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS} "\${OPENNI2_LIBRARIES}")
+		#SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS} "\${OPENNI2_LIBRARIES}")
 		GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 	ENDIF(MRPT_HAS_OPENNI2)
 
@@ -327,7 +332,6 @@ IF(BUILD_EXAMPLES)
 			pbmap-tutorial-visualizer
 			)
 		SET(CMAKE_EXAMPLE_DEPS mrpt-pbmap mrpt-gui)
-		SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 		GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 	ENDIF()
 
@@ -337,7 +341,6 @@ IF(BUILD_EXAMPLES)
 			rrt_planning_example
 			)
 		SET(CMAKE_EXAMPLE_DEPS mrpt-nav mrpt-gui)
-		SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 		GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 	ENDIF()
 

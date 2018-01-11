@@ -9,10 +9,10 @@
 #pragma once
 
 #include <mrpt/nav/reactive/CRobot2NavInterface.h>
-#include <mrpt/utils/COutputLogger.h>
-#include <mrpt/utils/CTimeLogger.h>
-#include <mrpt/utils/TEnumType.h>
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/system/COutputLogger.h>
+#include <mrpt/system/CTimeLogger.h>
+#include <mrpt/typemeta/TEnumType.h>
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/poses/CPose2DInterpolator.h>
 #include <mrpt/poses/FrameTransformer.h>
 #include <mrpt/obs/obs_frwds.h>
@@ -56,7 +56,7 @@ namespace nav
  * children classes
  *  \ingroup nav_reactive
  */
-class CAbstractNavigator : public mrpt::utils::COutputLogger
+class CAbstractNavigator : public mrpt::system::COutputLogger
 {
    public:
 	/** ctor */
@@ -132,16 +132,16 @@ class CAbstractNavigator : public mrpt::utils::COutputLogger
 	};
 
 	/** \name Navigation control API
-	  * @{ */
+	 * @{ */
 
 	/** Loads all params from a file. To be called before initialize().
-	  * Each derived class *MUST* load its own parameters, and then call *ITS
+	 * Each derived class *MUST* load its own parameters, and then call *ITS
 	 * PARENT'S* overriden method to ensure all params are loaded. */
-	virtual void loadConfigFile(const mrpt::utils::CConfigFileBase& c);
+	virtual void loadConfigFile(const mrpt::config::CConfigFileBase& c);
 	/** Saves all current options to a config file.
-	  * Each derived class *MUST* save its own parameters, and then call *ITS
+	 * Each derived class *MUST* save its own parameters, and then call *ITS
 	 * PARENT'S* overriden method to ensure all params are saved. */
-	virtual void saveConfigFile(mrpt::utils::CConfigFileBase& c) const;
+	virtual void saveConfigFile(mrpt::config::CConfigFileBase& c) const;
 
 	/**  Must be called before any other navigation command */
 	virtual void initialize() = 0;
@@ -151,12 +151,12 @@ class CAbstractNavigator : public mrpt::utils::COutputLogger
 
 	/** Navigation request to a single target location. It starts a new
 	 * navigation.
-	  * \param[in] params Pointer to structure with navigation info (its
+	 * \param[in] params Pointer to structure with navigation info (its
 	 * contents will be copied, so the original can be freely destroyed upon
 	 * return if it was dynamically allocated.)
-	  * \note A pointer is used so the passed object can be polymorphic with
+	 * \note A pointer is used so the passed object can be polymorphic with
 	 * derived types.
-	  */
+	 */
 	virtual void navigate(const TNavigationParams* params);
 
 	/** Cancel current navegation. */
@@ -181,14 +181,14 @@ class CAbstractNavigator : public mrpt::utils::COutputLogger
 	inline TState getCurrentState() const { return m_navigationState; }
 	/** Sets a user-provided frame transformer object; used only if providing
 	 * targets in a frame ID
-	  * different than the one in which robot odometry is given (both IDs
+	 * different than the one in which robot odometry is given (both IDs
 	 * default to `"map"`).
-	  * Ownership of the pointee object remains belonging to the user, which is
+	 * Ownership of the pointee object remains belonging to the user, which is
 	 * responsible of deleting it
-	  * and ensuring its a valid pointer during the lifetime of this navigator
+	 * and ensuring its a valid pointer during the lifetime of this navigator
 	 * object.
-	  * \todo [MRPT 2.0: Make this a weak_ptr]
-	  */
+	 * \todo [MRPT 2.0: Make this a weak_ptr]
+	 */
 	void setFrameTF(mrpt::poses::FrameTransformer<2>* frame_tf);
 
 	/** Get the current frame tf object (defaults to nullptr) \sa setFrameTF */
@@ -199,7 +199,7 @@ class CAbstractNavigator : public mrpt::utils::COutputLogger
 
 	/** @}*/
 
-	struct TAbstractNavigatorParams : public mrpt::utils::CLoadableOptions
+	struct TAbstractNavigatorParams : public mrpt::config::CLoadableOptions
 	{
 		/** Default value=0, means use the "targetAllowedDistance" passed by the
 		 * user in the navigation request. */
@@ -214,10 +214,10 @@ class CAbstractNavigator : public mrpt::utils::COutputLogger
 		int hysteresis_check_target_is_blocked;
 
 		virtual void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& c,
+			const mrpt::config::CConfigFileBase& c,
 			const std::string& s) override;
 		virtual void saveToConfigFile(
-			mrpt::utils::CConfigFileBase& c,
+			mrpt::config::CConfigFileBase& c,
 			const std::string& s) const override;
 		TAbstractNavigatorParams();
 	};
@@ -226,7 +226,7 @@ class CAbstractNavigator : public mrpt::utils::COutputLogger
 
 	/** Gives access to a const-ref to the internal time logger used to estimate
 	 * delays \sa getTimeLogger() in derived classes */
-	const mrpt::utils::CTimeLogger& getDelaysTimeLogger() const
+	const mrpt::system::CTimeLogger& getDelaysTimeLogger() const
 	{
 		return m_timlog_delays;
 	}
@@ -263,17 +263,17 @@ class CAbstractNavigator : public mrpt::utils::COutputLogger
 
 	/** Call to the robot getCurrentPoseAndSpeeds() and updates members
 	 * m_curPoseVel accordingly.
-	  * If an error is returned by the user callback, first, it calls
+	 * If an error is returned by the user callback, first, it calls
 	 * robot.stop() ,then throws an std::runtime_error exception. */
 	void updateCurrentPoseAndSpeeds();
 
 	/** Factorization of the part inside navigationStep(), for the case of state
 	 * being NAVIGATING.
-	  * Performs house-hold tasks like raising events in case of starting/ending
+	 * Performs house-hold tasks like raising events in case of starting/ending
 	 * navigation, timeout reaching destination, etc.
-	  * `call_virtual_nav_method` can be set to false to avoid calling the
+	 * `call_virtual_nav_method` can be set to false to avoid calling the
 	 * virtual method performNavigationStep()
-	  */
+	 */
 	virtual void performNavigationStepNavigating(
 		bool call_virtual_nav_method = true);
 
@@ -293,15 +293,15 @@ class CAbstractNavigator : public mrpt::utils::COutputLogger
 
 	/** Default implementation: check if target_dist is below the accepted
 	 * distance.
-	  * If true is returned here, the end-of-navigation event will be sent out
+	 * If true is returned here, the end-of-navigation event will be sent out
 	 * (only for non-intermediary targets).
-	  */
+	 */
 	virtual bool checkHasReachedTarget(const double targetDist) const;
 
 	/** Checks whether the robot shape, when placed at the given pose (relative
-	* to the current pose),
-	* is colliding with any of the latest known obstacles.
-	* Default implementation: always returns false. */
+	 * to the current pose),
+	 * is colliding with any of the latest known obstacles.
+	 * Default implementation: always returns false. */
 	virtual bool checkCollisionWithLatestObstacles(
 		const mrpt::math::TPose2D& relative_robot_pose) const;
 
@@ -314,7 +314,7 @@ class CAbstractNavigator : public mrpt::utils::COutputLogger
 	CRobot2NavInterface& m_robot;
 
 	/** Optional, user-provided frame transformer.
-	  * Note: We dont have ownership of the pointee object! */
+	 * Note: We dont have ownership of the pointee object! */
 	mrpt::poses::FrameTransformer<2>* m_frame_tf;
 
 	/** mutex for all navigation methods */
@@ -341,7 +341,7 @@ class CAbstractNavigator : public mrpt::utils::COutputLogger
 	mrpt::poses::CPose2DInterpolator m_latestPoses, m_latestOdomPoses;
 
 	/** Time logger to collect delay-related stats */
-	mrpt::utils::CTimeLogger m_timlog_delays;
+	mrpt::system::CTimeLogger m_timlog_delays;
 
 	/** For sending an alarm (error event) when it seems that we are not
 	 * approaching toward the target in a while... */
@@ -355,16 +355,16 @@ class CAbstractNavigator : public mrpt::utils::COutputLogger
 bool operator==(
 	const CAbstractNavigator::TNavigationParamsBase&,
 	const CAbstractNavigator::TNavigationParamsBase&);
-}
+}  // namespace nav
 
 // Specializations MUST occur at the same namespace:
-namespace utils
+namespace typemeta
 {
 template <>
 struct TEnumTypeFiller<mrpt::nav::CAbstractNavigator::TState>
 {
 	typedef mrpt::nav::CAbstractNavigator::TState enum_t;
-	static void fill(bimap<enum_t, std::string>& m_map)
+	static void fill(internal::bimap<enum_t, std::string>& m_map)
 	{
 		m_map.insert(mrpt::nav::CAbstractNavigator::IDLE, "IDLE");
 		m_map.insert(mrpt::nav::CAbstractNavigator::NAVIGATING, "NAVIGATING");
@@ -372,5 +372,5 @@ struct TEnumTypeFiller<mrpt::nav::CAbstractNavigator::TState>
 		m_map.insert(mrpt::nav::CAbstractNavigator::NAV_ERROR, "NAV_ERROR");
 	}
 };
-}  // End of namespace
-}
+}  // namespace typemeta
+}  // namespace mrpt

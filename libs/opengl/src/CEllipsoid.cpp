@@ -13,13 +13,13 @@
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/matrix_serialization.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
+
 using namespace mrpt::math;
 using namespace std;
 
@@ -33,7 +33,7 @@ void CEllipsoid::render_dl() const
 #if MRPT_HAS_OPENGL_GLUT
 	MRPT_START
 
-	const size_t dim = m_cov.getColCount();
+	const size_t dim = m_cov.cols();
 
 	if (m_eigVal(0, 0) != 0.0 && m_eigVal(1, 1) != 0.0 &&
 		(dim == 2 || m_eigVal(2, 2) != 0.0) && m_quantiles != 0.0)
@@ -166,33 +166,22 @@ void CEllipsoid::render_dl() const
 
 		glEnable(GL_LIGHTING);
 	}
-	MRPT_END_WITH_CLEAN_UP(
-		cout << "Covariance matrix leading to error is:" << endl
-			 << m_cov << endl;);
+	MRPT_END_WITH_CLEAN_UP(cout << "Covariance matrix leading to error is:"
+								<< endl
+								<< m_cov << endl;);
 #endif
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CEllipsoid::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CEllipsoid::serializeGetVersion() const { return 1; }
+void CEllipsoid::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		writeToStreamRender(out);
-		out << m_cov << m_drawSolid3D << m_quantiles << (uint32_t)m_2D_segments
-			<< (uint32_t)m_3D_segments << m_lineWidth;
-	}
+	writeToStreamRender(out);
+	out << m_cov << m_drawSolid3D << m_quantiles << (uint32_t)m_2D_segments
+		<< (uint32_t)m_3D_segments << m_lineWidth;
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CEllipsoid::readFromStream(mrpt::utils::CStream& in, int version)
+void CEllipsoid::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -249,9 +238,9 @@ bool quickSolveEqn(double a, double b_2, double c, double& t)
 
 bool CEllipsoid::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 {
-	if (m_cov.getRowCount() != 3) return false;
+	if (m_cov.rows() != 3) return false;
 	TLine3D lin, lin2;
-	createFromPoseX(o - this->m_pose, lin);
+	createFromPoseX((o - this->m_pose).asTPose(), lin);
 	lin.unitarize();  // By adding this line, distance from any point of the
 	// line to its base is exactly equal to the "t".
 	for (size_t i = 0; i < 3; i++)
@@ -281,13 +270,13 @@ void CEllipsoid::setCovMatrix(
 {
 	MRPT_START
 
-	ASSERT_(m.getColCount() == m.getRowCount());
+	ASSERT_(m.cols() == m.rows());
 	ASSERT_(
-		size(m, 1) == 2 || size(m, 1) == 3 ||
+		m.rows() == 2 || m.rows() == 3 ||
 		(resizeToSize > 0 && (resizeToSize == 2 || resizeToSize == 3)));
 
 	m_cov = m;
-	if (resizeToSize > 0 && resizeToSize < (int)size(m, 1))
+	if (resizeToSize > 0 && resizeToSize < (int)m.rows())
 		m_cov.setSize(resizeToSize, resizeToSize);
 
 	if (m_cov == m_prevComputedCov) return;  // Done.

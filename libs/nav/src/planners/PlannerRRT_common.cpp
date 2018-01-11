@@ -14,7 +14,6 @@
 #include <mrpt/math/CPolygon.h>
 
 using namespace mrpt::nav;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::poses;
 using namespace std;
@@ -25,7 +24,7 @@ RRTAlgorithmParams::RRTAlgorithmParams()
 	  goalBias(0.05),
 	  maxLength(1.0),
 	  minDistanceBetweenNewNodes(0.10),
-	  minAngBetweenNewNodes(mrpt::utils::DEG2RAD(15)),
+	  minAngBetweenNewNodes(mrpt::DEG2RAD(15)),
 	  ptg_verbose(true),
 	  save_3d_log_freq(0)
 {
@@ -54,7 +53,7 @@ void PlannerTPS_VirtualBase::internal_initialize_PTG()
 
 	for (size_t i = 0; i < m_PTGs.size(); i++)
 	{
-		mrpt::utils::CTimeLoggerEntry tle(m_timelogger, "PTG_initialization");
+		mrpt::system::CTimeLoggerEntry tle(m_timelogger, "PTG_initialization");
 
 		// Polygonal robot shape?
 		{
@@ -96,7 +95,7 @@ void PlannerTPS_VirtualBase::internal_initialize_PTG()
 }
 
 void PlannerTPS_VirtualBase::internal_loadConfig_PTG(
-	const mrpt::utils::CConfigFileBase& ini, const std::string& sSect)
+	const mrpt::config::CConfigFileBase& ini, const std::string& sSect)
 {
 	// Robot shape:
 	// ==========================
@@ -111,10 +110,10 @@ void PlannerTPS_VirtualBase::internal_loadConfig_PTG(
 			if (!mShape.fromMatlabStringFormat(sShape))
 				THROW_EXCEPTION_FMT(
 					"Error parsing robot_shape matrix: '%s'", sShape.c_str());
-			ASSERT_(size(mShape, 1) == 2);
-			ASSERT_(size(mShape, 2) >= 3);
+			ASSERT_(mShape.rows() == 2);
+			ASSERT_(mShape.cols() >= 3);
 
-			for (size_t i = 0; i < size(mShape, 2); i++)
+			for (int i = 0; i < mShape.cols(); i++)
 				params.robot_shape.push_back(
 					TPoint2D(mShape(0, i), mShape(1, i)));
 		}

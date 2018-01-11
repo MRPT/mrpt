@@ -12,14 +12,14 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/opengl/CMeshFast.h>
 #include <mrpt/opengl/CSetOfTriangles.h>
-#include <mrpt/utils/color_maps.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/img/color_maps.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
+using namespace mrpt::img;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace std;
@@ -30,21 +30,20 @@ void CMeshFast::updatePoints() const
 {
 	CRenderizableDisplayList::notifyChange();
 
-	const size_t cols = Z.getColCount();
-	const size_t rows = Z.getRowCount();
+	const auto cols = Z.cols();
+	const auto rows = Z.rows();
 
 	if ((m_colorFromZ) || (m_isImage)) updateColorsMatrix();
 
-	ASSERT_((cols > 0) && (rows > 0))
-	ASSERT_((xMax > xMin) && (yMax > yMin))
-
+	ASSERT_((cols > 0) && (rows > 0));
+	ASSERT_((xMax > xMin) && (yMax > yMin));
 	X.setSize(rows, cols);
 	Y.setSize(rows, cols);
 	const float sCellX = (xMax - xMin) / (rows - 1);
 	const float sCellY = (yMax - yMin) / (cols - 1);
 
-	for (size_t iX = 0; iX < rows; iX++)
-		for (size_t iY = 0; iY < cols; iY++)
+	for (int iX = 0; iX < rows; iX++)
+		for (int iY = 0; iY < cols; iY++)
 		{
 			X(iX, iY) = xMin + iX * sCellX;
 			Y(iX, iY) = yMin + iY * sCellY;
@@ -82,8 +81,8 @@ void CMeshFast::render_dl() const
 	glDisable(GL_LIGHTING);
 
 	glBegin(GL_POINTS);
-	for (unsigned int i = 0; i < X.getRowCount(); i++)
-		for (unsigned int j = 0; j < X.getColCount(); j++)
+	for (unsigned int i = 0; i < X.rows(); i++)
+		for (unsigned int j = 0; j < X.cols(); j++)
 		{
 			if (m_isImage && m_textureImage.isColor())
 				glColor4f(C_r(i, j), C_g(i, j), C_b(i, j), m_color.A / 255.f);
@@ -119,9 +118,6 @@ void CMeshFast::render_dl() const
 #endif
 }
 
-/*---------------------------------------------------------------
-							assignImage
-  ---------------------------------------------------------------*/
 void CMeshFast::assignImage(const CImage& img)
 {
 	MRPT_START
@@ -145,9 +141,6 @@ void CMeshFast::assignImage(const CImage& img)
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-							assign Image and Z
-  ---------------------------------------------------------------*/
 void CMeshFast::assignImageAndZ(
 	const CImage& img, const mrpt::math::CMatrixTemplateNumeric<float>& in_Z)
 {
@@ -155,7 +148,7 @@ void CMeshFast::assignImageAndZ(
 
 	ASSERT_(
 		(img.getWidth() == static_cast<size_t>(in_Z.cols())) &&
-		(img.getHeight() == static_cast<size_t>(in_Z.rows())))
+		(img.getHeight() == static_cast<size_t>(in_Z.rows())));
 
 	Z = in_Z;
 
@@ -174,35 +167,24 @@ void CMeshFast::assignImageAndZ(
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CMeshFast::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CMeshFast::serializeGetVersion() const { return 0; }
+void CMeshFast::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		writeToStreamRender(out);
+	writeToStreamRender(out);
 
-		out << m_textureImage;
-		out << m_isImage;
-		out << xMin << xMax << yMin << yMax;
-		out << X << Y << Z;  // We don't need to serialize C, it's computed
-		out << m_enableTransparency;
-		out << m_colorFromZ;
-		out << int16_t(m_colorMap);
-		out << m_pointSize;
-		out << m_pointSmooth;
-	}
+	out << m_textureImage;
+	out << m_isImage;
+	out << xMin << xMax << yMin << yMax;
+	out << X << Y << Z;  // We don't need to serialize C, it's computed
+	out << m_enableTransparency;
+	out << m_colorFromZ;
+	out << int16_t(m_colorMap);
+	out << m_pointSize;
+	out << m_pointSmooth;
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CMeshFast::readFromStream(mrpt::utils::CStream& in, int version)
+void CMeshFast::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -247,10 +229,10 @@ void CMeshFast::updateColorsMatrix() const
 
 	if (m_isImage)
 	{
-		const size_t cols = m_textureImage.getWidth();
-		const size_t rows = m_textureImage.getHeight();
+		const int cols = m_textureImage.getWidth();
+		const int rows = m_textureImage.getHeight();
 
-		if ((cols != Z.getColCount()) || (rows != Z.getRowCount()))
+		if ((cols != Z.cols()) || (rows != Z.rows()))
 		{
 			printf("\nTexture Image and Z sizes have to be equal");
 		}
@@ -269,8 +251,8 @@ void CMeshFast::updateColorsMatrix() const
 	}
 	else
 	{
-		const size_t cols = Z.getColCount();
-		const size_t rows = Z.getRowCount();
+		const size_t cols = Z.cols();
+		const size_t rows = Z.rows();
 
 		C.setSize(rows, cols);
 

@@ -9,10 +9,10 @@
 #ifndef C2DRangeFinderAbstract_H
 #define C2DRangeFinderAbstract_H
 
-#include <mrpt/utils/CStream.h>
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/COutputLogger.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
-#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
@@ -40,7 +40,7 @@ namespace hwdrivers
   * \sa comms::CSerialPort
   * \ingroup mrpt_hwdrivers_grp
   */
-class C2DRangeFinderAbstract : public mrpt::utils::COutputLogger,
+class C2DRangeFinderAbstract : public mrpt::system::COutputLogger,
 							   public mrpt::hwdrivers::CGenericSensor
 {
    private:
@@ -69,7 +69,7 @@ class C2DRangeFinderAbstract : public mrpt::utils::COutputLogger,
 
    protected:
 	/** The I/O channel (will be nullptr if not bound). */
-	utils::CStream* m_stream;
+	mrpt::io::CStream* m_stream;
 
 	/** Should be call by derived classes at "loadConfig" (loads exclusion areas
 	  *AND exclusion angles).
@@ -92,7 +92,7 @@ class C2DRangeFinderAbstract : public mrpt::utils::COutputLogger,
 	  * \sa filterByExclusionAreas
 	  */
 	void loadCommonParams(
-		const mrpt::utils::CConfigFileBase& configSource,
+		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& iniSection);
 
 	/** Mark as invalid those points which (x,y) coordinates fall within the
@@ -123,7 +123,7 @@ class C2DRangeFinderAbstract : public mrpt::utils::COutputLogger,
 	 * class.
 	  * \sa comms::CSerialPort
 	  */
-	void bindIO(mrpt::utils::CStream* streamIO);
+	void bindIO(mrpt::io::CStream* streamIO);
 
 	/** Get the last observation from the sensor, if available, and unmarks it
 	 * as being "the last one" (thus a new scan must arrive or subsequent calls

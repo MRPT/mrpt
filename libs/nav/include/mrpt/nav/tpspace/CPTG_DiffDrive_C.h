@@ -45,15 +45,15 @@ class CPTG_DiffDrive_C : public CPTG_DiffDrive_CollisionGridBased
    public:
 	CPTG_DiffDrive_C() : K(0) {}
 	CPTG_DiffDrive_C(
-		const mrpt::utils::CConfigFileBase& cfg, const std::string& sSection)
+		const mrpt::config::CConfigFileBase& cfg, const std::string& sSection)
 	{
 		loadFromConfigFile(cfg, sSection);
 	}
 	virtual void loadFromConfigFile(
-		const mrpt::utils::CConfigFileBase& cfg,
+		const mrpt::config::CConfigFileBase& cfg,
 		const std::string& sSection) override;
 	virtual void saveToConfigFile(
-		mrpt::utils::CConfigFileBase& cfg,
+		mrpt::config::CConfigFileBase& cfg,
 		const std::string& sSection) const override;
 
 	std::string getDescription() const override;

@@ -10,7 +10,7 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CTexturedPlane.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/opengl/CSetOfTriangles.h>
 
 #include "opengl_internals.h"
@@ -18,7 +18,7 @@
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;
-using namespace mrpt::utils;
+
 using namespace mrpt::math;
 using namespace std;
 
@@ -83,31 +83,19 @@ void CTexturedPlane::render_texturedobj() const
 #endif
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CTexturedPlane::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CTexturedPlane::serializeGetVersion() const { return 2; }
+void CTexturedPlane::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 2;
-	else
-	{
-		writeToStreamRender(out);
+	writeToStreamRender(out);
 
-		out << m_xMin << m_xMax;
-		out << m_yMin << m_yMax;
+	out << m_xMin << m_xMax;
+	out << m_yMin << m_yMax;
 
-		writeToStreamTexturedObject(out);
-	}
+	writeToStreamTexturedObject(out);
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CTexturedPlane::readFromStream(mrpt::utils::CStream& in, int version)
+void CTexturedPlane::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -158,7 +146,7 @@ void CTexturedPlane::readFromStream(mrpt::utils::CStream& in, int version)
 bool CTexturedPlane::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 {
 	if (!polygonUpToDate) updatePoly();
-	return math::traceRay(tmpPoly, o - this->m_pose, dist);
+	return math::traceRay(tmpPoly, (o - this->m_pose).asTPose(), dist);
 }
 
 void CTexturedPlane::updatePoly() const

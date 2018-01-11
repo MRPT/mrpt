@@ -9,9 +9,11 @@
 
 #include <iostream>
 #include "ReactiveNav3D_demo.h"
-#include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CConfigFileMemory.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/config/CConfigFileMemory.h>
 
+using namespace std;
+using namespace mrpt::config;
 using namespace mrpt::math;
 using namespace std::literals;
 
@@ -289,7 +291,7 @@ int main(int num_arg, char* argv[])
 
 		if (use_config_file == 0)
 		{
-			utils::CConfigFileMemory configNavigation(default_cfg_txt);
+			config::CConfigFileMemory configNavigation(default_cfg_txt);
 			rn3d.loadConfigFile(configNavigation);
 			ReactInterface.loadMaps(configNavigation);
 			ReactInterface.loadConfiguration(configNavigation);

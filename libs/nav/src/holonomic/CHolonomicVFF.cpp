@@ -10,10 +10,9 @@
 #include "nav-precomp.h"  // Precomp header
 
 #include <mrpt/nav/holonomic/CHolonomicVFF.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace std;
 
 using namespace mrpt::nav;
@@ -25,17 +24,17 @@ IMPLEMENTS_SERIALIZABLE(
 /*---------------------------------------------------------------
 						initialize
   ---------------------------------------------------------------*/
-CHolonomicVFF::CHolonomicVFF(const mrpt::utils::CConfigFileBase* INI_FILE)
+CHolonomicVFF::CHolonomicVFF(const mrpt::config::CConfigFileBase* INI_FILE)
 	: CAbstractHolonomicReactiveMethod("CHolonomicVFF")
 {
 	if (INI_FILE != nullptr) initialize(*INI_FILE);
 }
 
-void CHolonomicVFF::initialize(const mrpt::utils::CConfigFileBase& INI_FILE)
+void CHolonomicVFF::initialize(const mrpt::config::CConfigFileBase& INI_FILE)
 {
 	options.loadFromConfigFile(INI_FILE, getConfigFileSectionName());
 }
-void CHolonomicVFF::saveConfigFile(mrpt::utils::CConfigFileBase& c) const
+void CHolonomicVFF::saveConfigFile(mrpt::config::CConfigFileBase& c) const
 {
 	options.saveToConfigFile(c, getConfigFileSectionName());
 }
@@ -104,17 +103,13 @@ void CHolonomicVFF::navigate(const NavInput& ni, NavOutput& no)
 	}
 }
 
-void CHolonomicVFF::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CHolonomicVFF::serializeGetVersion() const { return 0; }
+void CHolonomicVFF::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		out << options.TARGET_ATTRACTIVE_FORCE
-			<< options.TARGET_SLOW_APPROACHING_DISTANCE;
-	}
+	out << options.TARGET_ATTRACTIVE_FORCE
+		<< options.TARGET_SLOW_APPROACHING_DISTANCE;
 }
-void CHolonomicVFF::readFromStream(mrpt::utils::CStream& in, int version)
+void CHolonomicVFF::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -129,26 +124,12 @@ void CHolonomicVFF::readFromStream(mrpt::utils::CStream& in, int version)
 	};
 }
 
-/*---------------------------------------------------------------
-					writeToStream
-	Implements the writing to a CStream capability of
-	  CSerializable objects
-  ---------------------------------------------------------------*/
-void CLogFileRecord_VFF::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CLogFileRecord_VFF::serializeGetVersion() const { return 0; }
+void CLogFileRecord_VFF::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	MRPT_UNUSED_PARAM(out);
-	if (version)
-		*version = 0;
-	else
-	{
-	}
 }
 
-/*---------------------------------------------------------------
-					readFromStream
-  ---------------------------------------------------------------*/
-void CLogFileRecord_VFF::readFromStream(mrpt::utils::CStream& in, int version)
+void CLogFileRecord_VFF::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	MRPT_UNUSED_PARAM(in);
 	switch (version)
@@ -171,7 +152,7 @@ CHolonomicVFF::TOptions::TOptions()
 }
 
 void CHolonomicVFF::TOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& source, const std::string& section)
+	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {
 	MRPT_START
 
@@ -184,7 +165,7 @@ void CHolonomicVFF::TOptions::loadFromConfigFile(
 }
 
 void CHolonomicVFF::TOptions::saveToConfigFile(
-	mrpt::utils::CConfigFileBase& c, const std::string& s) const
+	mrpt::config::CConfigFileBase& c, const std::string& s) const
 {
 	MRPT_START;
 

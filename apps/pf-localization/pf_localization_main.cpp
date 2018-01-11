@@ -18,7 +18,7 @@
 
 #include <mrpt/slam/CMonteCarloLocalization2D.h>
 
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/math/ops_vectors.h>  // << for vector<>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
@@ -37,10 +37,10 @@
 #include <mrpt/system/vector_loadsave.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/utils.h>
-#include <mrpt/utils/CTicTac.h>
-#include <mrpt/utils/CFileOutputStream.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
-#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
 
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CPointCloud.h>
@@ -58,11 +58,14 @@ using namespace mrpt::opengl;
 using namespace mrpt::gui;
 using namespace mrpt::math;
 using namespace mrpt::system;
-using namespace mrpt::utils;
 using namespace mrpt::random;
 using namespace mrpt::poses;
 using namespace mrpt::bayes;
 using namespace mrpt::obs;
+using namespace mrpt::io;
+using namespace mrpt::img;
+using namespace mrpt::config;
+using namespace mrpt::serialization;
 using namespace std;
 
 // Forward declaration:
@@ -123,11 +126,11 @@ int main(int argc, char** argv)
 void do_pf_localization(
 	const std::string& ini_fil, const std::string& cmdline_rawlog_file)
 {
-	ASSERT_FILE_EXISTS_(ini_fil)
+	ASSERT_FILE_EXISTS_(ini_fil);
 
 	CConfigFile cfg(ini_fil);
 
-	vector_int particles_count;  // Number of initial particles (if size>1, run
+	std::vector<int> particles_count;  // Number of initial particles (if size>1, run
 	// the experiments N times)
 
 	// Load configuration:
@@ -136,7 +139,7 @@ void do_pf_localization(
 
 	// Mandatory entries:
 	cfg.read_vector(
-		sect, "particles_count", vector_int(1, 0), particles_count,
+		sect, "particles_count", std::vector<int>(1, 0), particles_count,
 		/*Fail if not found*/ true);
 	string OUT_DIR_PREFIX =
 		cfg.read_string(sect, "logOutput_dir", "", /*Fail if not found*/ true);
@@ -241,7 +244,10 @@ void do_pf_localization(
 			// It's a ".simplemap":
 			// -------------------------
 			printf("Loading '.simplemap' file...");
-			CFileGZInputStream(MAP_FILE) >> simpleMap;
+			{
+				CFileGZInputStream f(MAP_FILE);
+				archiveFrom(f) >> simpleMap;
+			}
 			printf("Ok\n");
 
 			ASSERT_(simpleMap.size() > 0);
@@ -258,7 +264,10 @@ void do_pf_localization(
 			// -------------------------
 			printf("Loading gridmap from '.gridmap'...");
 			ASSERT_(metricMap.m_gridMaps.size() == 1);
-			CFileGZInputStream(MAP_FILE) >> (*metricMap.m_gridMaps[0]);
+			{
+				CFileGZInputStream f(MAP_FILE);
+				archiveFrom(f) >> (*metricMap.m_gridMaps[0]);
+			}
 			printf("Ok\n");
 		}
 		else
@@ -337,7 +346,7 @@ void do_pf_localization(
 		}
 	}
 
-	for (vector_int::iterator itNum = particles_count.begin();
+	for (std::vector<int>::iterator itNum = particles_count.begin();
 		 itNum != particles_count.end(); ++itNum)
 	{
 		int PARTICLE_COUNT = *itNum;
@@ -470,6 +479,8 @@ void do_pf_localization(
 
 			TTimeStamp cur_obs_timestamp;
 
+			auto arch = archiveFrom(rawlog_in_stream);
+
 			while (!end)
 			{
 				// Finish if ESC is pushed:
@@ -483,7 +494,7 @@ void do_pf_localization(
 				CObservation::Ptr obs;
 
 				if (!CRawlog::getActionObservationPairOrObservation(
-						rawlog_in_stream,  // In stream
+						arch,  // In stream
 						action, observations,  // Out pair <action,SF>, or:
 						obs,  // Out single observation
 						rawlogEntry  // In/Out index counter.
@@ -561,7 +572,7 @@ void do_pf_localization(
 											mrpt::system::dateTimeLocalToString(
 												cur_obs_timestamp)
 												.c_str()),
-								mrpt::utils::TColorf(.8f, .8f, .8f), "mono", 15,
+								mrpt::img::TColorf(.8f, .8f, .8f), "mono", 15,
 								mrpt::opengl::NICE, 6001);
 
 							win3D->addTextMessage(
@@ -569,14 +580,14 @@ void do_pf_localization(
 								mrpt::format(
 									"#particles= %7u",
 									static_cast<unsigned int>(pdf.size())),
-								mrpt::utils::TColorf(.8f, .8f, .8f), "mono", 15,
+								mrpt::img::TColorf(.8f, .8f, .8f), "mono", 15,
 								mrpt::opengl::NICE, 6002);
 
 							win3D->addTextMessage(
 								10, 55, mrpt::format(
 											"mean pose (x y phi_deg)= %s",
 											meanPose.asString().c_str()),
-								mrpt::utils::TColorf(.8f, .8f, .8f), "mono", 15,
+								mrpt::img::TColorf(.8f, .8f, .8f), "mono", 15,
 								mrpt::opengl::NICE, 6003);
 
 							{
@@ -596,7 +607,7 @@ void do_pf_localization(
 							}
 
 							// The Ground Truth (GT):
-							if (GT.getRowCount() > 0)
+							if (GT.rows() > 0)
 							{
 								CRenderizable::Ptr GTpt =
 									ptrScene->getByName("GT");
@@ -606,7 +617,7 @@ void do_pf_localization(
 									GTpt->setName("GT");
 									GTpt->setColor(0, 0, 0, 0.9);
 
-									getAs<CDisk>(GTpt)->setDiskRadius(0.04f);
+									mrpt::ptr_cast<CDisk>::from(GTpt)->setDiskRadius(0.04f);
 									ptrScene->insert(GTpt);
 								}
 
@@ -636,16 +647,16 @@ void do_pf_localization(
 									ellip->setName("parts_cov");
 									ellip->setColor(1, 0, 0, 0.6);
 
-									getAs<CEllipsoid>(ellip)->setLineWidth(2);
-									getAs<CEllipsoid>(ellip)->setQuantiles(3);
-									getAs<CEllipsoid>(ellip)
+									mrpt::ptr_cast<CEllipsoid>::from(ellip)->setLineWidth(2);
+									mrpt::ptr_cast<CEllipsoid>::from(ellip)->setQuantiles(3);
+									mrpt::ptr_cast<CEllipsoid>::from(ellip)
 										->set2DsegmentsCount(60);
 									ptrScene->insert(ellip);
 								}
 								ellip->setLocation(
 									meanPose.x(), meanPose.y(), 0.05);
 
-								getAs<CEllipsoid>(ellip)->setCovMatrix(cov, 2);
+								mrpt::ptr_cast<CEllipsoid>::from(ellip)->setCovMatrix(cov, 2);
 							}
 
 							// The laser scan:
@@ -658,9 +669,9 @@ void do_pf_localization(
 										CPointCloud>();
 									scanPts->setName("scan");
 									scanPts->setColor(1, 0, 0, 0.9);
-									getAs<CPointCloud>(scanPts)
+									mrpt::ptr_cast<CPointCloud>::from(scanPts)
 										->enableColorFromZ(false);
-									getAs<CPointCloud>(scanPts)->setPointSize(
+									mrpt::ptr_cast<CPointCloud>::from(scanPts)->setPointSize(
 										4);
 									ptrScene->insert(scanPts);
 								}
@@ -672,9 +683,9 @@ void do_pf_localization(
 								map.clear();
 								observations->insertObservationsInto(&map);
 
-								getAs<CPointCloud>(scanPts)->loadFromPointsMap(
+								mrpt::ptr_cast<CPointCloud>::from(scanPts)->loadFromPointsMap(
 									&map);
-								getAs<CPointCloud>(scanPts)->setPose(
+								mrpt::ptr_cast<CPointCloud>::from(scanPts)->setPose(
 									robotPose3D);
 							}
 
@@ -762,8 +773,6 @@ void do_pf_localization(
 
 					getGroundTruth(
 						expectedPose, rawlogEntry, GT, cur_obs_timestamp);
-// cout << format("TIM: %f GT:",
-// mrpt::system::timestampTotime_t(cur_obs_timestamp)) << expectedPose << endl;
 
 #if 1
 					{  // Averaged error to GT
@@ -798,7 +807,7 @@ void do_pf_localization(
 							 << " tr(cov): "
 							 << std::sqrt(current_pdf_gaussian.cov.trace())
 							 << "\n";
-						if (GT.getRowCount() > 0)
+						if (GT.rows() > 0)
 							cout << "    Ground truth: " << expectedPose
 								 << "\n";
 					}
@@ -927,7 +936,7 @@ void do_pf_localization(
 						// two different 3D scenes are built -> refactor code")
 
 						// The Ground Truth (GT):
-						if (GT.getRowCount() > 0)
+						if (GT.rows() > 0)
 						{
 							CRenderizable::Ptr GTpt = scene.getByName("GT");
 							if (!GTpt)
@@ -937,7 +946,7 @@ void do_pf_localization(
 								GTpt->setName("GT");
 								GTpt->setColor(0, 0, 0, 0.9);
 
-								getAs<CDisk>(GTpt)->setDiskRadius(0.04f);
+								mrpt::ptr_cast<CDisk>::from(GTpt)->setDiskRadius(0.04f);
 								scene.insert(GTpt);
 							}
 
@@ -966,15 +975,15 @@ void do_pf_localization(
 								ellip->setName("parts_cov");
 								ellip->setColor(1, 0, 0, 0.6);
 
-								getAs<CEllipsoid>(ellip)->setLineWidth(4);
-								getAs<CEllipsoid>(ellip)->setQuantiles(3);
-								getAs<CEllipsoid>(ellip)->set2DsegmentsCount(
+								mrpt::ptr_cast<CEllipsoid>::from(ellip)->setLineWidth(4);
+								mrpt::ptr_cast<CEllipsoid>::from(ellip)->setQuantiles(3);
+								mrpt::ptr_cast<CEllipsoid>::from(ellip)->set2DsegmentsCount(
 									60);
 								scene.insert(ellip);
 							}
 							ellip->setLocation(meanPose.x(), meanPose.y(), 0);
 
-							getAs<CEllipsoid>(ellip)->setCovMatrix(cov, 2);
+							mrpt::ptr_cast<CEllipsoid>::from(ellip)->setCovMatrix(cov, 2);
 						}
 
 						// The laser scan:
@@ -987,9 +996,9 @@ void do_pf_localization(
 									mrpt::make_aligned_shared<CPointCloud>();
 								scanPts->setName("scan");
 								scanPts->setColor(1, 0, 0, 0.9);
-								getAs<CPointCloud>(scanPts)->enableColorFromZ(
+								mrpt::ptr_cast<CPointCloud>::from(scanPts)->enableColorFromZ(
 									false);
-								getAs<CPointCloud>(scanPts)->setPointSize(4);
+								mrpt::ptr_cast<CPointCloud>::from(scanPts)->setPointSize(4);
 								scene.insert(scanPts);
 							}
 
@@ -1000,9 +1009,9 @@ void do_pf_localization(
 							map.clear();
 							observations->insertObservationsInto(&map);
 
-							getAs<CPointCloud>(scanPts)->loadFromPointsMap(
+							mrpt::ptr_cast<CPointCloud>::from(scanPts)->loadFromPointsMap(
 								&map);
-							getAs<CPointCloud>(scanPts)->setPose(robotPose3D);
+							mrpt::ptr_cast<CPointCloud>::from(scanPts)->setPose(robotPose3D);
 						}
 
 						// The camera:
@@ -1018,35 +1027,17 @@ void do_pf_localization(
 							cam.setZoomDistance(5);
 							cam.setOrthogonal();
 						}
-
-						/*COpenGLViewport::Ptr view2=
-						scene.createViewport("small_view"); // Create, or get
-						existing one.
-						view2->setCloneView("main");
-						view2->setCloneCamera(false);
-						view2->setBorderSize(3);
-						{
-							CCamera  &cam = view1->getCamera();
-							cam.setAzimuthDegrees(-90);
-							cam.setElevationDegrees(90);
-							cam.setPointingAt( meanPose );
-							cam.setZoomDistance(15);
-							cam.setOrthogonal();
-
-							view2->setTransparent(false);
-							view2->setViewportPosition(0.59,0.01,0.4,0.3);
-						}*/
 					}
 
 					if (!SAVE_STATS_ONLY && SCENE3D_FREQ != -1 &&
 						(step % SCENE3D_FREQ) == 0)
 					{
 						// Save 3D scene:
-						CFileGZOutputStream(
+						CFileGZOutputStream f(
 							format(
 								"%s/progress_%05u.3Dscene", sOUT_DIR_3D.c_str(),
-								(unsigned)step))
-							<< scene;
+								(unsigned)step));
+						archiveFrom(f) << scene;
 
 						// Generate text files for matlab:
 						// ------------------------------------
@@ -1115,14 +1106,14 @@ void getGroundTruth(
 	CPose2D& expectedPose, size_t rawlogEntry, const CMatrixDouble& GT,
 	const TTimeStamp& cur_time)
 {
-	if (GT.getColCount() == 4)
+	if (GT.cols() == 4)
 	{
 		static bool first_step = true;
 		static bool GT_index_is_time;
 
 		// First column can be: timestamps, or rawlogentries:
 		//  Auto-figure it out:
-		if (GT.getRowCount() > 2)
+		if (GT.rows() > 2)
 		{
 			GT_index_is_time =
 				floor(GT(0, 0)) != GT(0, 0) && floor(GT(1, 0)) != GT(1, 0);
@@ -1135,17 +1126,17 @@ void getGroundTruth(
 		if (GT_index_is_time)
 		{
 			// Look for the timestamp:
-			static mrpt::aligned_containers<double, CPose2D>::map_t GT_path;
-			mrpt::aligned_containers<double, CPose2D>::map_t::iterator it;
+			static mrpt::aligned_std_map<double, CPose2D> GT_path;
+			mrpt::aligned_std_map<double, CPose2D>::iterator it;
 			if (first_step)
 			{
-				for (size_t i = 0; i < GT.getRowCount(); i++)
-					GT_path[mrpt::utils::round_10power(GT(i, 0), -4)] =
+				for (int i = 0; i < GT.rows(); i++)
+					GT_path[mrpt::round_10power(GT(i, 0), -4)] =
 						CPose2D(GT(i, 1), GT(i, 2), GT(i, 3));
 			}
 
 			double TT = mrpt::system::timestampTotime_t(cur_time);
-			double T = mrpt::utils::round_10power(TT, -4);
+			double T = mrpt::round_10power(TT, -4);
 
 			it = GT_path.find(T);
 			if (it != GT_path.end())
@@ -1158,7 +1149,7 @@ void getGroundTruth(
 		else
 		{
 			// Look for the rawlogEntry:
-			size_t k, N = GT.getRowCount();
+			size_t k, N = GT.rows();
 			for (k = 0; k < N; k++)
 			{
 				if (GT(k, 0) == rawlogEntry) break;
@@ -1173,15 +1164,15 @@ void getGroundTruth(
 		}
 		first_step = false;
 	}
-	else if (GT.getColCount() == 3)
+	else if (GT.cols() == 3)
 	{
-		if (rawlogEntry < GT.getRowCount())
+		if ((int)rawlogEntry < GT.rows())
 		{
 			expectedPose.x(GT(rawlogEntry, 0));
 			expectedPose.y(GT(rawlogEntry, 1));
 			expectedPose.phi(GT(rawlogEntry, 2));
 		}
 	}
-	else if (GT.getColCount() > 0)
+	else if (GT.cols() > 0)
 		THROW_EXCEPTION("Unexpected number of columns in ground truth file");
 }

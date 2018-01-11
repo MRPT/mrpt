@@ -7,9 +7,9 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/utils/CImage.h>
-#include <mrpt/utils/TStereoCamera.h>
-#include <mrpt/utils/CConfigFileMemory.h>
+#include <mrpt/img/CImage.h>
+#include <mrpt/img/TStereoCamera.h>
+#include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/vision/CImagePyramid.h>
 #include <mrpt/vision/CStereoRectifyMap.h>
@@ -18,12 +18,11 @@
 #include "common.h"
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::random;
 using namespace mrpt::vision;
 using namespace std;
 
-extern void getTestImage(unsigned int img_index, mrpt::utils::CImage& out_img);
+extern void getTestImage(unsigned int img_index, mrpt::img::CImage& out_img);
 
 // ------------------------------------------------------
 //				Benchmark: image loading/saving
@@ -92,7 +91,7 @@ double image_saveload(int iFormat, int to_shm)
 			format = "jpg";
 			break;
 		default:
-			THROW_EXCEPTION("Wrong format")
+			THROW_EXCEPTION("Wrong format");
 	}
 
 	const int w = 800, h = 600;
@@ -238,7 +237,7 @@ double image_KLTscore(int WIN, int N)
 			getRandomGenerator().drawUniform(0, h - 1),
 			TColor(getRandomGenerator().drawUniform32bit()));
 
-	ASSERT_BELOW_(WIN, 128)
+	ASSERT_BELOW_(WIN, 128);
 	int x = 0;
 	int y = 0;
 
@@ -311,10 +310,10 @@ const char* EXAMPLE_STEREO_CALIB =
 template <int IMG_CHANNELS, int w, int h, int w2, int h2>
 double stereoimage_rectify_prepare_map(int, int)
 {
-	mrpt::utils::TStereoCamera params;
+	mrpt::img::TStereoCamera params;
 	params.loadFromConfigFile(
 		"CAMERA_PARAMS",
-		mrpt::utils::CConfigFileMemory(std::string(EXAMPLE_STEREO_CALIB)));
+		mrpt::config::CConfigFileMemory(std::string(EXAMPLE_STEREO_CALIB)));
 	params.scaleToResolution(w, h);
 
 	mrpt::vision::CStereoRectifyMap rectify_map;
@@ -340,10 +339,10 @@ double stereoimage_rectify(int, int)
 	const CImage imgL(w, h, IMG_CHANNELS), imgR(w, h, IMG_CHANNELS);
 	CImage imgL2, imgR2;
 
-	mrpt::utils::TStereoCamera params;
+	mrpt::img::TStereoCamera params;
 	params.loadFromConfigFile(
 		"CAMERA_PARAMS",
-		mrpt::utils::CConfigFileMemory(std::string(EXAMPLE_STEREO_CALIB)));
+		mrpt::config::CConfigFileMemory(std::string(EXAMPLE_STEREO_CALIB)));
 	params.scaleToResolution(w, h);
 
 	mrpt::vision::CStereoRectifyMap rectify_map;

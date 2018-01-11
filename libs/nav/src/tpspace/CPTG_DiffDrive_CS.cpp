@@ -10,18 +10,18 @@
 #include "nav-precomp.h"  // Precomp header
 #include <mrpt/nav/tpspace/CPTG_DiffDrive_CS.h>
 #include <mrpt/system/os.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::nav;
 using namespace std;
 using namespace mrpt::system;
-using namespace mrpt::utils;
 
 IMPLEMENTS_SERIALIZABLE(
 	CPTG_DiffDrive_CS, CParameterizedTrajectoryGenerator, mrpt::nav)
 
 void CPTG_DiffDrive_CS::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& cfg, const std::string& sSection)
+	const mrpt::config::CConfigFileBase& cfg, const std::string& sSection)
 {
 	CPTG_DiffDrive_CollisionGridBased::loadFromConfigFile(cfg, sSection);
 
@@ -31,7 +31,7 @@ void CPTG_DiffDrive_CS::loadFromConfigFile(
 	R = V_MAX / W_MAX;
 }
 void CPTG_DiffDrive_CS::saveToConfigFile(
-	mrpt::utils::CConfigFileBase& cfg, const std::string& sSection) const
+	mrpt::config::CConfigFileBase& cfg, const std::string& sSection) const
 {
 	MRPT_START
 	const int WN = 25, WV = 30;
@@ -44,7 +44,7 @@ void CPTG_DiffDrive_CS::saveToConfigFile(
 	MRPT_END
 }
 
-void CPTG_DiffDrive_CS::readFromStream(mrpt::utils::CStream& in, int version)
+void CPTG_DiffDrive_CS::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	CPTG_DiffDrive_CollisionGridBased::internal_readFromStream(in);
 
@@ -58,15 +58,9 @@ void CPTG_DiffDrive_CS::readFromStream(mrpt::utils::CStream& in, int version)
 	};
 }
 
-void CPTG_DiffDrive_CS::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CPTG_DiffDrive_CS::serializeGetVersion() const { return 0; }
+void CPTG_DiffDrive_CS::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-	{
-		*version = 0;
-		return;
-	}
-
 	CPTG_DiffDrive_CollisionGridBased::internal_writeToStream(out);
 	out << K;
 }

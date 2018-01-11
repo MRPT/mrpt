@@ -11,10 +11,10 @@
 
 #include <mrpt/graphs/CHypothesisNotFoundException.h>
 
-std::ostringstream HypothesisNotFoundException::m_cnvt;
+using namespace mrpt::graphs;
 
 HypothesisNotFoundException::HypothesisNotFoundException(
-	mrpt::utils::TNodeID from, mrpt::utils::TNodeID to)
+	mrpt::graphs::TNodeID from, mrpt::graphs::TNodeID to)
 	: runtime_error("Hypothesis between set of nodes was not found")
 {
 	using namespace mrpt;
@@ -58,9 +58,10 @@ std::string HypothesisNotFoundException::getErrorMsg() const throw()
 	return m_msg;
 }
 
+std::string persistent_error_msg;
+
 const char* HypothesisNotFoundException::what() const throw()
 {
-	m_cnvt.str("");
-	m_cnvt << getErrorMsg();
-	return m_cnvt.str().c_str();
+	persistent_error_msg = getErrorMsg();
+	return persistent_error_msg.c_str();
 }

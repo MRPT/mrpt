@@ -9,21 +9,24 @@
 
 #include <mrpt/system/os.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CFileOutputStream.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/maps/CBeaconMap.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/poses/CPoint3D.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/random.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::system;
+using namespace mrpt::math;
+using namespace mrpt::io;
 using namespace mrpt::poses;
+using namespace mrpt::config;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::random;
@@ -57,7 +60,7 @@ int main(int argc, char** argv)
 		}
 
 		string INI_FILENAME = std::string(argv[1]);
-		ASSERT_FILE_EXISTS_(INI_FILENAME)
+		ASSERT_FILE_EXISTS_(INI_FILENAME);
 
 		CConfigFile ini(INI_FILENAME);
 
@@ -130,16 +133,16 @@ int main(int argc, char** argv)
 		for (i = 0; i < nBeacons; i++)
 		{
 			CBeacon b;
-			CPoint3D pt3D;
+			TPoint3D pt3D;
 
 			// Random coordinates:
-			pt3D.x(getRandomGenerator().drawUniform(min_x, max_x));
-			pt3D.y(getRandomGenerator().drawUniform(min_y, max_y));
-			pt3D.z(getRandomGenerator().drawUniform(min_z, max_z));
+			pt3D.x = getRandomGenerator().drawUniform(min_x, max_x);
+			pt3D.y = getRandomGenerator().drawUniform(min_y, max_y);
+			pt3D.z = getRandomGenerator().drawUniform(min_z, max_z);
 
 			// Add:
 			b.m_typePDF = CBeacon::pdfMonteCarlo;
-			b.m_locationMC.setSize(1, pt3D);
+			b.m_locationMC.setSize(1, TPoint3Df(pt3D.x, pt3D.y, pt3D.z));
 			b.m_ID = i;
 			beaconMap.push_back(b);
 		}
@@ -243,7 +246,7 @@ int main(int argc, char** argv)
 			acts.insert(act);
 
 			// Save:
-			fil << SF << acts;
+			mrpt::serialization::archiveFrom(fil) << SF << acts;
 
 			// Next pose:
 			realPose = realPose + incPose;

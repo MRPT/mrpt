@@ -10,7 +10,7 @@
 #include <mrpt/math/CArrayNumeric.h>
 #include <mrpt/math/transform_gaussian.h>
 #include <mrpt/math/utils.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DQuat.h>
@@ -21,7 +21,6 @@
 #include <mrpt/opengl/CEllipsoid.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::poses;
 using namespace std;
@@ -96,7 +95,7 @@ void Test_SUT()
 	// Do Montecarlo for comparison:
 	N = 10;
 
-	mrpt::aligned_containers<CArrayDouble<3>>::vector_t MC_samples;
+	mrpt::aligned_std_vector<CArrayDouble<3>> MC_samples;
 
 	tictac.Tic();
 	for (size_t i = 0; i < N; i++)

@@ -10,7 +10,6 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose2D.h>
 
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace std;
 

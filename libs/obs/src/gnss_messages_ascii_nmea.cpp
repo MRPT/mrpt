@@ -10,6 +10,7 @@
 #include "obs-precomp.h"  // Precompiled headers
 
 #include <mrpt/obs/gnss_messages_ascii_nmea.h>
+#include <iostream>
 
 using namespace std;
 using namespace mrpt::obs::gnss;
@@ -30,70 +31,48 @@ Message_NMEA_GGA::content_t::content_t()
 {
 }
 
-void Message_NMEA_GGA::dumpToStream(mrpt::utils::CStream& out) const
+void Message_NMEA_GGA::dumpToStream(std::ostream& out) const
 {
-	out.printf("[NMEA GGA datum]\n");
-	out.printf(
+	out << "[NMEA GGA datum]\n";
+	out << mrpt::format(
 		"  Longitude: %.09f deg  Latitude: %.09f deg  Height: %.03f m\n",
 		fields.longitude_degrees, fields.latitude_degrees,
 		fields.altitude_meters);
 
-	out.printf(
+	out << mrpt::format(
 		"  Geoidal distance: %.03f m  Orthometric alt.: %.03f m  Corrected "
 		"ort. alt.: %.03f m\n",
 		fields.geoidal_distance, fields.orthometric_altitude,
 		fields.corrected_orthometric_altitude);
 
-	out.printf(
+	out << mrpt::format(
 		"  UTC time-stamp: %02u:%02u:%02.03f  #sats=%2u  ", fields.UTCTime.hour,
 		fields.UTCTime.minute, fields.UTCTime.sec, fields.satellitesUsed);
 
-	out.printf("Fix mode: %u ", fields.fix_quality);
-	switch (fields.fix_quality)
-	{
-		case 0:
-			out.printf("(Invalid)\n");
-			break;
-		case 1:
-			out.printf("(GPS fix)\n");
-			break;
-		case 2:
-			out.printf("(DGPS fix)\n");
-			break;
-		case 3:
-			out.printf("(PPS fix)\n");
-			break;
-		case 4:
-			out.printf("(Real Time Kinematic/RTK Fixed)\n");
-			break;
-		case 5:
-			out.printf("(Real Time Kinematic/RTK Float)\n");
-			break;
-		case 6:
-			out.printf("(Dead Reckoning)\n");
-			break;
-		case 7:
-			out.printf("(Manual)\n");
-			break;
-		case 8:
-			out.printf("(Simulation)\n");
-			break;
-		case 9:
-			out.printf("(mmGPS + RTK Fixed)\n");
-			break;
-		case 10:
-			out.printf("(mmGPS + RTK Float)\n");
-			break;
-		default:
-			out.printf("(UNKNOWN!)\n");
-			break;
-	};
+	out << mrpt::format("Fix mode: %u ", fields.fix_quality);
 
-	out.printf("  HDOP (Horizontal Dilution of Precision): ");
-	if (fields.thereis_HDOP)
-		out.printf(" %f\n", fields.HDOP);
+	const char* fix_names[] = {"0:Invalid",
+							   "1:GPS fix",
+							   "2:DGPS fix",
+							   "3:PPS fix",
+							   "4:RTK Fixed",
+							   "5:RTK Float",
+							   "6:Dead Reckoning",
+							   "7:Manual",
+							   "8:Simulation",
+							   "9:mmGPS + RTK Fixed",
+							   "10: mmGPS + RTK Float"};
+
+	if (fields.fix_quality < sizeof(fix_names) / sizeof(fix_names[0]))
+		out << "(" << fix_names[fields.fix_quality] << ")\n";
 	else
-		out.printf(" N/A\n");
+		out << "(UNKNOWN!)\n";
+
+	out << "  HDOP (Horizontal Dilution of Precision): ";
+	if (fields.thereis_HDOP)
+		out << mrpt::format(" %f\n", fields.HDOP);
+	else
+		out << " N/A\n";
 }
 
 bool Message_NMEA_GGA::getAllFieldDescriptions(std::ostream& o) const
@@ -119,14 +98,14 @@ Message_NMEA_GLL::content_t::content_t()
 {
 }
 
-void Message_NMEA_GLL::dumpToStream(mrpt::utils::CStream& out) const
+void Message_NMEA_GLL::dumpToStream(std::ostream& out) const
 {
-	out.printf("[NMEA GLL datum]\n");
-	out.printf(
+	out << "[NMEA GLL datum]\n";
+	out << mrpt::format(
 		"  Longitude: %.09f deg  Latitude: %.09f deg Validity: '%c'\n",
 		fields.longitude_degrees, fields.latitude_degrees,
 		fields.validity_char);
-	out.printf(
+	out << mrpt::format(
 		"  UTC time-stamp: %02u:%02u:%02.03f\n", fields.UTCTime.hour,
 		fields.UTCTime.minute, fields.UTCTime.sec);
 }
@@ -152,13 +131,13 @@ Message_NMEA_VTG::content_t::content_t()
 {
 }
 
-void Message_NMEA_VTG::dumpToStream(mrpt::utils::CStream& out) const
+void Message_NMEA_VTG::dumpToStream(std::ostream& out) const
 {
-	out.printf("[NMEA VTG datum]\n");
-	out.printf(
+	out << mrpt::format("[NMEA VTG datum]\n");
+	out << mrpt::format(
 		"  True track: %.03f deg  Magnetic track: %.03f deg\n",
 		fields.true_track, fields.magnetic_track);
-	out.printf(
+	out << mrpt::format(
 		"  Ground speed: %.03f knots  %.03f km/h\n", fields.ground_speed_knots,
 		fields.ground_speed_kmh);
 }
@@ -216,24 +195,25 @@ mrpt::system::TTimeStamp Message_NMEA_RMC::getDateAsTimestamp() const
 	return buildTimestampFromParts(parts);
 }
 
-void Message_NMEA_RMC::dumpToStream(mrpt::utils::CStream& out) const
+void Message_NMEA_RMC::dumpToStream(std::ostream& out) const
 {
-	out.printf("[NMEA RMC datum]\n");
-	out.printf(" Positioning mode: `%c`\n ", (char)fields.positioning_mode);
-	out.printf(
+	out << mrpt::format("[NMEA RMC datum]\n");
+	out << mrpt::format(
+		" Positioning mode: `%c`\n ", (char)fields.positioning_mode);
+	out << mrpt::format(
 		" UTC time-stamp: %02u:%02u:%02.03f\n", fields.UTCTime.hour,
 		fields.UTCTime.minute, fields.UTCTime.sec);
-	out.printf(
+	out << mrpt::format(
 		" Date (DD/MM/YY): %02u/%02u/%02u\n ", (unsigned)fields.date_day,
 		(unsigned)fields.date_month, (unsigned)fields.date_year);
-	out.printf(
+	out << mrpt::format(
 		"  Longitude: %.09f deg  Latitude: %.09f deg  Valid?: '%c'\n",
 		fields.longitude_degrees, fields.latitude_degrees,
 		fields.validity_char);
-	out.printf(
+	out << mrpt::format(
 		" Speed: %.05f knots  Direction:%.03f deg.\n ", fields.speed_knots,
 		fields.direction_degrees);
-	out.printf(
+	out << mrpt::format(
 		" Magnetic variation direction: %.04f deg\n ", fields.magnetic_dir);
 }
 
@@ -260,13 +240,13 @@ Message_NMEA_ZDA::content_t::content_t()
 {
 }
 
-void Message_NMEA_ZDA::dumpToStream(mrpt::utils::CStream& out) const
+void Message_NMEA_ZDA::dumpToStream(std::ostream& out) const
 {
-	out.printf("[NMEA ZDA datum]\n");
-	out.printf(
+	out << mrpt::format("[NMEA ZDA datum]\n");
+	out << mrpt::format(
 		" UTC time-stamp: %02u:%02u:%02.03f\n", fields.UTCTime.hour,
 		fields.UTCTime.minute, fields.UTCTime.sec);
-	out.printf(
+	out << mrpt::format(
 		" Date (DD/MM/YY): %02u/%02u/%04u\n ", (unsigned)fields.date_day,
 		(unsigned)fields.date_month, (unsigned)fields.date_year);
 }

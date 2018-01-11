@@ -15,16 +15,17 @@
 #include <mrpt/otherlibs/do_opencv_includes.h>
 
 using namespace mrpt;
+using namespace mrpt::img;
 using namespace mrpt::vision;
+using namespace mrpt::img;
 using namespace mrpt::system;
-using namespace mrpt::utils;
 using namespace std;
 
 /************************************************************************************************
 *							extractFeaturesKLT
 ************************************************************************************************/
 void CFeatureExtraction::extractFeaturesKLT(
-	const mrpt::utils::CImage& inImg, CFeatureList& feats, unsigned int init_ID,
+	const mrpt::img::CImage& inImg, CFeatureList& feats, unsigned int init_ID,
 	unsigned int nDesiredFeatures, const TImageROI& ROI) const
 {
 //#define VERBOSE_TIMING
@@ -181,7 +182,7 @@ MRPT_TODO("Delete? Refactor / join to mrpt::vision::CGenericFeatureTracker?")
 /*------------------------------------------------------------
 					findMoreFeatures
 -------------------------------------------------------------*/
-void  CFeatureExtraction::findMoreFeatures( const mrpt::utils::CImage &img,
+void  CFeatureExtraction::findMoreFeatures( const mrpt::img::CImage &img,
 											const CFeatureList &inList,
 											CFeatureList &outList,
 											unsigned int nDesiredFeats) const
@@ -243,7 +244,7 @@ void  CFeatureExtraction::findMoreFeatures( const mrpt::utils::CImage &img,
 	}
 	MRPT_END
 #else
-	THROW_EXCEPTION("MRPT was compiled without OpenCV")
+	THROW_EXCEPTION("MRPT was compiled without OpenCV");
 #endif
 } // end findMoreFeatures
 #endif
@@ -254,7 +255,7 @@ MRPT_TODO("Delete? Is not this a duplicate of extractFeaturesKLT ()???")
 *								selectGoodFeaturesKLT												*
 ************************************************************************************************/
 void  CFeatureExtraction::selectGoodFeaturesKLT(
-		const mrpt::utils::CImage			&img,
+		const mrpt::img::CImage			&img,
 		CFeatureList			&feats,
 		unsigned int			init_ID,
 		unsigned int			nDesiredFeatures) const
@@ -326,7 +327,7 @@ void  CFeatureExtraction::selectGoodFeaturesKLT(
 		selectGoodFeaturesKLT( img, feats, init_ID, nDesiredFeatures, &mask );
 	} // end if-else there exists a ROI
 #else
-	THROW_EXCEPTION("MRPT was compiled without OpenCV")
+	THROW_EXCEPTION("MRPT was compiled without OpenCV");
 #endif
 }
 

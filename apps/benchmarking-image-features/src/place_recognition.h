@@ -33,7 +33,6 @@
 
 /// MRPT includes
 #include <mrpt/vision/CFeatureExtraction.h>
-#include <mrpt/utils/metaprogramming.h>
 #include <mrpt/math/data_utils.h>
 #include <mrpt/vision/tracking.h>
 #include <mrpt/vision/CVideoFileWriter.h>
@@ -43,7 +42,6 @@
 #define NUM_CLASSES 5
 
 using namespace mrpt::vision;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt;
 using namespace cv;

@@ -11,7 +11,7 @@
 
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/hwdrivers/C2DRangeFinderAbstract.h>
-#include <mrpt/utils/circular_buffer.h>
+#include <mrpt/containers/circular_buffer.h>
 
 namespace mrpt
 {
@@ -103,7 +103,7 @@ class CRoboPeakLidar : public C2DRangeFinderAbstract
 
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(
-		const mrpt::utils::CConfigFileBase& configSource,
+		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& iniSection);
 
 };  // End of class

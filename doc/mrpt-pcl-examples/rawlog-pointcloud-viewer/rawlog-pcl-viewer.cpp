@@ -35,7 +35,7 @@
 
 #include <mrpt/obs.h>    // For loading from the rawlog
 #include <mrpt/maps.h>   // For converting into point maps
-#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/system.h>
 #include <mrpt/synch.h>
 
@@ -124,7 +124,7 @@ int main(int argc, char**argv)
 
 
 		std::cout << "Opening: " << argv[1] << std::endl;
-		mrpt::utils::CFileGZInputStream  fil(argv[1]);
+		mrpt::io::CFileGZInputStream  fil(argv[1]);
 		bool rawlog_eof = false;
 
 		pcl::visualization::CloudViewer viewer("Cloud Viewer from MRPT's rawlog");

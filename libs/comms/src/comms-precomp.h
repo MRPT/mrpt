@@ -9,9 +9,4 @@
 
 #pragma once
 
-#include <mrpt/config.h>
-#if MRPT_ENABLE_PRECOMPILED_HDRS
-
-#include <mrpt/utils/core_defs.h>
-
-#endif
+#include <mrpt/core/common.h>

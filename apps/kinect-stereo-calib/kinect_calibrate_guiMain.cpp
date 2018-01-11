@@ -34,11 +34,18 @@
 #include <mrpt/vision/chessboard_find_corners.h>
 #include <mrpt/vision/chessboard_stereo_camera_calib.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/io/vector_loadsave.h>
+#include <mrpt/poses/CPose3DQuat.h>
+#include <mrpt/io/CMemoryStream.h>
 #include <mrpt/gui/WxUtils.h>
+#include <mrpt/config/CConfigFile.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
+using namespace mrpt::io;
+using namespace mrpt::img;
+using namespace mrpt::system;
 using namespace mrpt::hwdrivers;
 using namespace std;
 
@@ -1310,10 +1317,10 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(
 	// Load image from embedded JPEG image in .h:
 	try
 	{
-		mrpt::utils::CMemoryStream img1_jpeg_stream(
+		mrpt::io::CMemoryStream img1_jpeg_stream(
 			kinect_covered_projector_img_jpeg,
 			sizeof(kinect_covered_projector_img_jpeg));
-		mrpt::utils::CImage img1;
+		mrpt::img::CImage img1;
 		img1.loadFromStreamAsJPEG(img1_jpeg_stream);
 		m_imgStaticKinect->AssignImage(img1);
 		m_imgStaticKinect->Refresh(false);
@@ -1928,7 +1935,7 @@ void kinect_calibrate_guiDialog::ProcessNewSelectedImageListBox()
 
 		if (sel == wxNOT_FOUND || sel >= (int)m_calib_images.size())
 		{
-			mrpt::utils::CImage img(320, 240, CH_RGB);
+			mrpt::img::CImage img(320, 240, CH_RGB);
 			img.filledRectangle(0, 0, 319, 239, TColor(200, 200, 200));
 			img.textOut(100, 110, "(No image selected)", TColor::white());
 
@@ -2013,15 +2020,15 @@ void kinect_calibrate_guiDialog::ProcessNewSelectedImageListBox()
 					->GetSize();  // In theory, right&left will be always equal.
 			const double szRatio = static_cast<double>(szView.x) / szView.y;
 
-			const mrpt::utils::TImageSize szL = il.getSize();
-			const mrpt::utils::TImageSize szR = ir.getSize();
+			const mrpt::img::TImageSize szL = il.getSize();
+			const mrpt::img::TImageSize szR = ir.getSize();
 
 			const double lRatio =
 				static_cast<double>(szL.x) /
 				szL.y;  // Don't assume both images have equal size
 			const double rRatio = static_cast<double>(szR.x) / szR.y;
 
-			mrpt::utils::TImageSize trg_sz_l, trg_sz_r;
+			mrpt::img::TImageSize trg_sz_l, trg_sz_r;
 
 			if (szRatio < lRatio)
 			{  // Fill y
@@ -2505,8 +2512,8 @@ void kinect_calibrate_guiDialog::OnbtnLoadImageListClick(wxCommandEvent& event)
 		startPath = _U(fil_dir.c_str());
 		m_config.Write(_("last_path"), startPath);
 
-		mrpt::utils::CStringList lst;
-		lst.loadFromFile(file_list);
+		std::vector<std::string> lst;
+		mrpt::io::loadTextFile(lst,file_list);
 
 		if (lst.size() == 0)
 			throw std::runtime_error("Error: List file seems to be empty.");
@@ -2524,8 +2531,8 @@ void kinect_calibrate_guiDialog::OnbtnLoadImageListClick(wxCommandEvent& event)
 
 		for (unsigned int i = 0; i < N; i++)
 		{
-			const string& sL = lst(2 * i + 0);
-			const string& sR = lst(2 * i + 1);
+			const string& sL = lst[2 * i + 0];
+			const string& sR = lst[2 * i + 1];
 
 			mrpt::vision::TImageStereoCalibData& scd = m_calib_images[i];
 
@@ -2702,7 +2709,7 @@ void kinect_calibrate_guiDialog::OnbtnLoadCalibClick(wxCommandEvent& event)
 	{
 		const string inFil = string(dialog.GetPath().mb_str());
 
-		mrpt::utils::CConfigFile cfg(inFil);
+		mrpt::config::CConfigFile cfg(inFil);
 
 		m_calib_result.cam_params.leftCamera.loadFromConfigFile(
 			"CAMERA_PARAMS_LEFT", cfg);
@@ -2765,7 +2772,7 @@ void kinect_calibrate_guiDialog::LiveCalibUpdateToGrid()
 	for (int lr = 0; lr < 2; lr++)
 	{
 		const char* sN = (lr == 0 ? "Left" : "Right");
-		const mrpt::utils::TCamera& c =
+		const mrpt::img::TCamera& c =
 			(lr == 0 ? m_calib_result.cam_params.leftCamera
 					 : m_calib_result.cam_params.rightCamera);
 
@@ -2816,7 +2823,7 @@ void kinect_calibrate_guiDialog::LiveCalibUpdateFromGrid()
 	int r = 0;
 	for (int lr = 0; lr < 2; lr++)
 	{
-		mrpt::utils::TCamera& c =
+		mrpt::img::TCamera& c =
 			(lr == 0 ? m_calib_result.cam_params.leftCamera
 					 : m_calib_result.cam_params.rightCamera);
 

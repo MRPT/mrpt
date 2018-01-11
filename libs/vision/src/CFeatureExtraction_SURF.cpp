@@ -26,8 +26,9 @@
 
 using namespace mrpt;
 using namespace mrpt::vision;
+using namespace mrpt::img;
+using namespace mrpt::img;
 using namespace mrpt::system;
-using namespace mrpt::utils;
 using namespace std;
 
 // Was: MRPT_HAS_OPENCV_NONFREE
@@ -42,7 +43,7 @@ using namespace std;
 *								extractFeaturesSURF *
 ************************************************************************************************/
 void CFeatureExtraction::extractFeaturesSURF(
-	const mrpt::utils::CImage& inImg, CFeatureList& feats, unsigned int init_ID,
+	const mrpt::img::CImage& inImg, CFeatureList& feats, unsigned int init_ID,
 	unsigned int nDesiredFeatures, const TImageROI& ROI) const
 {
 #if HAVE_OPENCV_WITH_SURF
@@ -154,7 +155,7 @@ void CFeatureExtraction::extractFeaturesSURF(
 *						internal_computeSurfDescriptors
 ************************************************************************************************/
 void CFeatureExtraction::internal_computeSurfDescriptors(
-	const mrpt::utils::CImage& inImg, CFeatureList& in_features) const
+	const mrpt::img::CImage& inImg, CFeatureList& in_features) const
 {
 #if HAVE_OPENCV_WITH_SURF
 	using namespace cv;

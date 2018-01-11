@@ -19,7 +19,6 @@
 #include <mrpt/config.h>
 #if MRPT_HAS_PCL
 
-#include <mrpt/utils.h>
 #include <mrpt/graphs/CGraphPartitioner.h>
 
 #include <mrpt/pbmap/PbMap.h>
@@ -189,7 +188,7 @@ class SemanticClustering
 	/*!
 	* Arrange the semantic groups
 	*/
-	void arrangeNewGroups(std::vector<mrpt::vector_uint>& parts)
+	void arrangeNewGroups(std::vector<std::vector<uint32_t>>& parts)
 	{
 		using namespace std;
 		int group_diff = parts.size() - neighborGroups.size();
@@ -380,7 +379,7 @@ class SemanticClustering
 	int evalPartition(std::set<unsigned>& observedPlanes)
 	{
 		using namespace std;
-		//      mrpt::utils::CTicTac time;
+		//      mrpt::system::CTicTac time;
 		//      time.Tic();
 		//
 
@@ -404,7 +403,7 @@ class SemanticClustering
 
 		//      buildCoVisibilityMatrix();
 		buildProximityMatrix();
-		std::vector<mrpt::vector_uint> parts;  // Vector of vectors to keep the
+		std::vector<std::vector<uint32_t>> parts;  // Vector of vectors to keep the
 		// KFs index of the different
 		// partitions (submaps)
 		mrpt::graphs::CGraphPartitioner<mrpt::math::CMatrix>::

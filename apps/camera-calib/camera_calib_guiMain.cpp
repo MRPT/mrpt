@@ -39,8 +39,8 @@
 #include <mrpt/vision/pnp_algos.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::math;
+using namespace mrpt::img;
 using namespace mrpt::vision;
 using namespace mrpt::gui;
 using namespace std;
@@ -53,7 +53,7 @@ using namespace std;
 // VARIABLES  ================================
 
 TCalibrationImageList lst_images;  // Here are all the images: file_name -> data
-mrpt::utils::TCamera camera_params;
+mrpt::img::TCamera camera_params;
 
 // END VARIABLES  ============================
 
@@ -758,7 +758,7 @@ void camera_calib_guiDialog::refreshDisplayedImage()
 			string(cbZoom->GetStringSelection().mb_str());
 		const double zoomVal = 0.01 * atof(strZoom.c_str());
 
-		ASSERT_(zoomVal > 0 && zoomVal < 30)
+		ASSERT_(zoomVal > 0 && zoomVal < 30);
 
 		TImageSize imgSizes(0, 0);
 

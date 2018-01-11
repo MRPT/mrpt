@@ -11,8 +11,8 @@
 #define mrpt_vision_ba_H
 
 #include <mrpt/vision/types.h>
-#include <mrpt/utils/TCamera.h>
-#include <mrpt/utils/TParameters.h>
+#include <mrpt/img/TCamera.h>
+#include <mrpt/system/TParameters.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
 #include <array>
@@ -98,11 +98,11 @@ using TBundleAdjustmentFeedbackFunctor = std::function<void(
   */
 double bundle_adj_full(
 	const mrpt::vision::TSequenceFeatureObservations& observations,
-	const mrpt::utils::TCamera& camera_params,
+	const mrpt::img::TCamera& camera_params,
 	mrpt::vision::TFramePosesVec& frame_poses,
 	mrpt::vision::TLandmarkLocationsVec& landmark_points,
-	const mrpt::utils::TParametersDouble& extra_params =
-		mrpt::utils::TParametersDouble(),
+	const mrpt::system::TParametersDouble& extra_params =
+		mrpt::system::TParametersDouble(),
 	const mrpt::vision::TBundleAdjustmentFeedbackFunctor user_feedback =
 		mrpt::vision::TBundleAdjustmentFeedbackFunctor());
 
@@ -119,14 +119,14 @@ double bundle_adj_full(
   */
 void ba_initial_estimate(
 	const mrpt::vision::TSequenceFeatureObservations& observations,
-	const mrpt::utils::TCamera& camera_params,
+	const mrpt::img::TCamera& camera_params,
 	mrpt::vision::TFramePosesVec& frame_poses,
 	mrpt::vision::TLandmarkLocationsVec& landmark_points);
 
 //! \overload
 void ba_initial_estimate(
 	const mrpt::vision::TSequenceFeatureObservations& observations,
-	const mrpt::utils::TCamera& camera_params,
+	const mrpt::img::TCamera& camera_params,
 	mrpt::vision::TFramePosesMap& frame_poses,
 	mrpt::vision::TLandmarkLocationsMap& landmark_points);
 
@@ -141,7 +141,7 @@ void ba_initial_estimate(
   */
 double reprojectionResiduals(
 	const mrpt::vision::TSequenceFeatureObservations& observations,
-	const mrpt::utils::TCamera& camera_params,
+	const mrpt::img::TCamera& camera_params,
 	const mrpt::vision::TFramePosesVec& frame_poses,
 	const mrpt::vision::TLandmarkLocationsVec& landmark_points,
 	std::vector<std::array<double, 2>>& out_residuals,
@@ -152,7 +152,7 @@ double reprojectionResiduals(
 //! \overload
 double reprojectionResiduals(
 	const mrpt::vision::TSequenceFeatureObservations& observations,
-	const mrpt::utils::TCamera& camera_params,
+	const mrpt::img::TCamera& camera_params,
 	const mrpt::vision::TFramePosesMap& frame_poses,
 	const mrpt::vision::TLandmarkLocationsMap& landmark_points,
 	std::vector<std::array<double, 2>>& out_residuals,

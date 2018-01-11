@@ -8,13 +8,13 @@
    +------------------------------------------------------------------------+ */
 
 #include "nav-precomp.h"  // Precomp header
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/system/COutputLogger.h>
 #include <mrpt/nav/reactive/CRobot2NavInterface.h>
 
 using namespace mrpt::nav;
 
 CRobot2NavInterface::CRobot2NavInterface()
-	: mrpt::utils::COutputLogger("CRobot2NavInterface")
+	: mrpt::system::COutputLogger("CRobot2NavInterface")
 {
 }
 CRobot2NavInterface::~CRobot2NavInterface() {}

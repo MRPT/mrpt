@@ -7,11 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/utils/CTicTac.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/gui/CDisplayWindow.h>
 
-using namespace mrpt::utils;
 using namespace mrpt::gui;
 using namespace std;
 

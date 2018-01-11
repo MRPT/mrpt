@@ -17,7 +17,7 @@
 
 			  Where <feats.txt> is a "TSequenceFeatureObservations" saved as
 			  a text file, and <cam_model.cfg> is a .ini-like file with a
-			  section named "CAMERA" loadable by mrpt::utils::TCamera.
+			  section named "CAMERA" loadable by mrpt::img::TCamera.
 
 	DATE: 20-Aug-2010
    ===========================================================================
@@ -30,15 +30,14 @@
 #include <mrpt/random.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CTextFileLinesParser.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/system/CTextFileLinesParser.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/stock_objects.h>
 
 using namespace mrpt;
 using namespace mrpt::gui;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;
@@ -238,8 +237,7 @@ int main(int argc, char** argv)
 				 << " observations (of which: " << numOutliers
 				 << " are outliers).\n";
 
-			ASSERT_EQUAL_(numViewedFrom.size(), frame_poses_real.size())
-
+			ASSERT_EQUAL_(numViewedFrom.size(), frame_poses_real.size());
 			// Make sure all poses and all LMs appear at least once!
 			{
 				TSequenceFeatureObservations allObs2 = allObs;
@@ -247,8 +245,8 @@ int main(int argc, char** argv)
 				std::map<TLandmarkID, TLandmarkID> old2new_lmIDs;
 				allObs2.compressIDs(&old2new_camIDs, &old2new_lmIDs);
 
-				ASSERT_EQUAL_(old2new_camIDs.size(), frame_poses_real.size())
-				ASSERT_EQUAL_(old2new_lmIDs.size(), landmark_points_real.size())
+				ASSERT_EQUAL_(old2new_camIDs.size(), frame_poses_real.size();
+				ASSERT_EQUAL_(old2new_lmIDs.size(), landmark_points_real.size();
 			}
 
 			// Add noise to the data:
@@ -328,7 +326,7 @@ int main(int argc, char** argv)
 				allObs.decimateCameraFrames(20);
 				allObs.compressIDs();
 
-				ASSERT_(mrpt::system::fileExists(cam_fil))
+				ASSERT_(mrpt::system::fileExists(cam_fil);
 				cout << "Loading camera params from: " << cam_fil;
 				CConfigFile cfgCam(cam_fil);
 				camera_params.loadFromConfigFile("CAMERA", cfgCam);

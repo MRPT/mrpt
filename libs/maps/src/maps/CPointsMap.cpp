@@ -9,12 +9,12 @@
 
 #include "maps-precomp.h"  // Precomp header
 
-#include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CTicTac.h>
-#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/os.h>
 #include <mrpt/math/geometry.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
@@ -34,8 +34,8 @@
 #endif
 
 #if MRPT_HAS_SSE2
-#include <mrpt/utils/SSE_types.h>
-#include <mrpt/utils/SSE_macros.h>
+#include <mrpt/core/SSE_types.h>
+#include <mrpt/core/SSE_macros.h>
 #endif
 
 #if MRPT_HAS_MATLAB
@@ -44,9 +44,10 @@
 
 using namespace mrpt::poses;
 using namespace mrpt::maps;
-using namespace mrpt::utils;
 using namespace mrpt::math;
+using namespace mrpt::tfest;
 using namespace mrpt::obs;
+using namespace mrpt::img;
 using namespace mrpt::system;
 using namespace std;
 
@@ -63,13 +64,10 @@ float mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE()
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CPointsMap, CMetricMap, mrpt::maps)
 
-static mrpt::utils::TColorf COLOR_3DSCENE_value(0, 0, 1);
+static mrpt::img::TColorf COLOR_3DSCENE_value(0, 0, 1);
 
-void CPointsMap::COLOR_3DSCENE(const mrpt::utils::TColorf& value)
-{
-	COLOR_3DSCENE_value = value;
-}
-mrpt::utils::TColorf CPointsMap::COLOR_3DSCENE() { return COLOR_3DSCENE_value; }
+void CPointsMap::COLOR_3DSCENE(const mrpt::img::TColorf &value) { COLOR_3DSCENE_value = value; }
+mrpt::img::TColorf CPointsMap::COLOR_3DSCENE() { return COLOR_3DSCENE_value; }
 /*---------------------------------------------------------------
 						Constructor
   ---------------------------------------------------------------*/
@@ -193,9 +191,11 @@ bool CPointsMap::load2Dor3D_from_text_file(
 #if MRPT_HAS_MATLAB
 // Add to implement mexplus::from template specialization
 IMPLEMENTS_MEXPLUS_FROM(mrpt::maps::CPointsMap)
+#endif
 
 mxArray* CPointsMap::writeToMatlab() const
 {
+#if MRPT_HAS_MATLAB
 	MRPT_TODO("Create 3xN array xyz of points coordinates")
 	const char* fields[] = {"x", "y", "z"};
 	mexplus::MxArray map_struct(
@@ -205,8 +205,10 @@ mxArray* CPointsMap::writeToMatlab() const
 	map_struct.set("y", this->y);
 	map_struct.set("z", this->z);
 	return map_struct.release();
-}
+#else
+	THROW_EXCEPTION("MRPT built without MATLAB/Mex support");
 #endif
+}
 
 /*---------------------------------------------------------------
 					getPoint
@@ -214,8 +216,7 @@ mxArray* CPointsMap::writeToMatlab() const
   ---------------------------------------------------------------*/
 unsigned long CPointsMap::getPoint(size_t index, float& x, float& y) const
 {
-	ASSERT_BELOW_(index, this->x.size())
-
+	ASSERT_BELOW_(index, this->x.size());
 	x = this->x[index];
 	y = this->y[index];
 
@@ -224,8 +225,7 @@ unsigned long CPointsMap::getPoint(size_t index, float& x, float& y) const
 unsigned long CPointsMap::getPoint(
 	size_t index, float& x, float& y, float& z) const
 {
-	ASSERT_BELOW_(index, this->x.size())
-
+	ASSERT_BELOW_(index, this->x.size());
 	x = this->x[index];
 	y = this->y[index];
 	z = this->z[index];
@@ -234,8 +234,7 @@ unsigned long CPointsMap::getPoint(
 }
 unsigned long CPointsMap::getPoint(size_t index, double& x, double& y) const
 {
-	ASSERT_BELOW_(index, this->x.size())
-
+	ASSERT_BELOW_(index, this->x.size());
 	x = this->x[index];
 	y = this->y[index];
 
@@ -245,8 +244,7 @@ unsigned long CPointsMap::getPoint(size_t index, double& x, double& y) const
 unsigned long CPointsMap::getPoint(
 	size_t index, double& x, double& y, double& z) const
 {
-	ASSERT_BELOW_(index, this->x.size())
-
+	ASSERT_BELOW_(index, this->x.size());
 	x = this->x[index];
 	y = this->y[index];
 	z = this->z[index];
@@ -325,9 +323,9 @@ void CPointsMap::determineMatching2D(
 
 	extraResults = TMatchingExtraResults();  // Clear output
 
-	ASSERT_ABOVE_(params.decimation_other_map_points, 0)
+	ASSERT_ABOVE_(params.decimation_other_map_points, 0);
 	ASSERT_BELOW_(
-		params.offset_other_map_points, params.decimation_other_map_points)
+		params.offset_other_map_points, params.decimation_other_map_points);
 	ASSERT_(otherMap2->GetRuntimeClass()->derivedFrom(CLASS_ID(CPointsMap)));
 	const CPointsMap* otherMap = static_cast<const CPointsMap*>(otherMap2);
 
@@ -674,8 +672,7 @@ CPointsMap::TInsertionOptions::TInsertionOptions()
 }
 
 // Binary dump to/read from stream - for usage in derived classes' serialization
-void CPointsMap::TInsertionOptions::writeToStream(
-	mrpt::utils::CStream& out) const
+void CPointsMap::TInsertionOptions::writeToStream(mrpt::serialization::CArchive& out) const
 {
 	const int8_t version = 0;
 	out << version;
@@ -686,7 +683,7 @@ void CPointsMap::TInsertionOptions::writeToStream(
 		<< insertInvalidPoints;  // v0
 }
 
-void CPointsMap::TInsertionOptions::readFromStream(mrpt::utils::CStream& in)
+void CPointsMap::TInsertionOptions::readFromStream(mrpt::serialization::CArchive& in)
 {
 	int8_t version;
 	in >> version;
@@ -710,15 +707,14 @@ CPointsMap::TLikelihoodOptions::TLikelihoodOptions()
 {
 }
 
-void CPointsMap::TLikelihoodOptions::writeToStream(
-	mrpt::utils::CStream& out) const
+void CPointsMap::TLikelihoodOptions::writeToStream(mrpt::serialization::CArchive& out) const
 {
 	const int8_t version = 0;
 	out << version;
 	out << sigma_dist << max_corr_distance << decimation;
 }
 
-void CPointsMap::TLikelihoodOptions::readFromStream(mrpt::utils::CStream& in)
+void CPointsMap::TLikelihoodOptions::readFromStream(mrpt::serialization::CArchive& in)
 {
 	int8_t version;
 	in >> version;
@@ -734,14 +730,11 @@ void CPointsMap::TLikelihoodOptions::readFromStream(mrpt::utils::CStream& in)
 	}
 }
 
-/*---------------------------------------------------------------
-					dumpToTextStream
-  ---------------------------------------------------------------*/
 void CPointsMap::TInsertionOptions::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+	std::ostream& out) const
 {
-	out.printf(
-		"\n----------- [CPointsMap::TInsertionOptions] ------------ \n\n");
+	out<< 
+		"\n----------- [CPointsMap::TInsertionOptions] ------------ \n\n";
 
 	LOADABLEOPTS_DUMP_VAR(minDistBetweenLaserPoints, double);
 	LOADABLEOPTS_DUMP_VAR(maxDistForInterpolatePoints, double);
@@ -755,14 +748,14 @@ void CPointsMap::TInsertionOptions::dumpToTextStream(
 
 	LOADABLEOPTS_DUMP_VAR(insertInvalidPoints, bool);
 
-	out.printf("\n");
+	out << endl;
 }
 
 void CPointsMap::TLikelihoodOptions::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+	std::ostream& out) const
 {
-	out.printf(
-		"\n----------- [CPointsMap::TLikelihoodOptions] ------------ \n\n");
+	out <<
+		"\n----------- [CPointsMap::TLikelihoodOptions] ------------ \n\n";
 
 	LOADABLEOPTS_DUMP_VAR(sigma_dist, double);
 	LOADABLEOPTS_DUMP_VAR(max_corr_distance, double);
@@ -773,7 +766,7 @@ void CPointsMap::TLikelihoodOptions::dumpToTextStream(
 					loadFromConfigFile
   ---------------------------------------------------------------*/
 void CPointsMap::TInsertionOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const string& section)
 {
 	MRPT_LOAD_CONFIG_VAR(minDistBetweenLaserPoints, float, iniFile, section);
 	MRPT_LOAD_CONFIG_VAR_DEGREES(horizontalTolerance, iniFile, section);
@@ -790,7 +783,7 @@ void CPointsMap::TInsertionOptions::loadFromConfigFile(
 }
 
 void CPointsMap::TLikelihoodOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const string& section)
 {
 	MRPT_LOAD_CONFIG_VAR(sigma_dist, double, iniFile, section);
 	MRPT_LOAD_CONFIG_VAR(max_corr_distance, double, iniFile, section);
@@ -866,8 +859,7 @@ void CPointsMap::getAllPoints(
 	vector<float>& xs, vector<float>& ys, size_t decimation) const
 {
 	MRPT_START
-	ASSERT_(decimation > 0)
-
+	ASSERT_(decimation > 0);
 	if (decimation == 1)
 	{
 		xs = x;
@@ -1097,9 +1089,9 @@ void CPointsMap::determineMatching3D(
 
 	extraResults = TMatchingExtraResults();
 
-	ASSERT_ABOVE_(params.decimation_other_map_points, 0)
+	ASSERT_ABOVE_(params.decimation_other_map_points, 0);
 	ASSERT_BELOW_(
-		params.offset_other_map_points, params.decimation_other_map_points)
+		params.offset_other_map_points, params.decimation_other_map_points);
 
 	ASSERT_(otherMap2->GetRuntimeClass()->derivedFrom(CLASS_ID(CPointsMap)));
 	const CPointsMap* otherMap = static_cast<const CPointsMap*>(otherMap2);
@@ -1509,7 +1501,7 @@ double CPointsMap::internal_computeObservationLikelihood(
 		if (takenFrom.isHorizontal())
 		{
 			// optimized 2D version ---------------------------
-			TPose2D takenFrom2D = TPose2D(CPose2D(takenFrom));
+			TPose2D takenFrom2D = CPose2D(takenFrom).asTPose();
 
 			const float ccos = cos(takenFrom2D.phi);
 			const float csin = sin(takenFrom2D.phi);
@@ -1529,7 +1521,7 @@ double CPointsMap::internal_computeObservationLikelihood(
 					);
 
 				// Put a limit:
-				mrpt::utils::keep_min(closest_err, max_sqr_err);
+				mrpt::keep_min(closest_err, max_sqr_err);
 
 				sumSqrDist += closest_err;
 			}
@@ -1554,7 +1546,7 @@ double CPointsMap::internal_computeObservationLikelihood(
 					);
 
 				// Put a limit:
-				mrpt::utils::keep_min(closest_err, max_sqr_err);
+				mrpt::keep_min(closest_err, max_sqr_err);
 
 				sumSqrDist += closest_err;
 			}
@@ -1623,7 +1615,7 @@ TAuxLoadFunctor dummy_loader;  // used just to set
   */
 void CPointsMap::PLY_import_set_vertex(
 	const size_t idx, const mrpt::math::TPoint3Df& pt,
-	const mrpt::utils::TColorf* pt_color)
+	const mrpt::img::TColorf* pt_color)
 {
 	MRPT_UNUSED_PARAM(pt_color);
 	this->setPoint(idx, pt.x, pt.y, pt.z);
@@ -1638,7 +1630,7 @@ size_t CPointsMap::PLY_export_get_vertex_count() const { return this->size(); }
   */
 void CPointsMap::PLY_export_get_vertex(
 	const size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
-	mrpt::utils::TColorf& pt_color) const
+	mrpt::img::TColorf& pt_color) const
 {
 	MRPT_UNUSED_PARAM(pt_color);
 	pt_has_color = false;
@@ -1686,7 +1678,7 @@ bool CPointsMap::savePCDFile(
 #else
 	MRPT_UNUSED_PARAM(filename);
 	MRPT_UNUSED_PARAM(save_as_binary);
-	THROW_EXCEPTION("Operation not available: MRPT was built without PCL")
+	THROW_EXCEPTION("Operation not available: MRPT was built without PCL");
 #endif
 }
 
@@ -1703,7 +1695,7 @@ bool CPointsMap::loadPCDFile(const std::string& filename)
 	return true;
 #else
 	MRPT_UNUSED_PARAM(filename);
-	THROW_EXCEPTION("Operation not available: MRPT was built without PCL")
+	THROW_EXCEPTION("Operation not available: MRPT was built without PCL");
 #endif
 }
 
@@ -1712,8 +1704,7 @@ bool CPointsMap::loadPCDFile(const std::string& filename)
  ---------------------------------------------------------------*/
 void CPointsMap::applyDeletionMask(const std::vector<bool>& mask)
 {
-	ASSERT_EQUAL_(size(), mask.size())
-
+	ASSERT_EQUAL_(size(), mask.size());
 	// Remove marked points:
 	const size_t n = mask.size();
 	vector<float> Pt;

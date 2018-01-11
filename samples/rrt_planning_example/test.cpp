@@ -10,15 +10,14 @@
 #include <mrpt/nav.h>
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/system/filesystem.h>  // directoryExists(), ...
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/random.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 
 #include <iostream>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::nav;
 using namespace mrpt::maps;
 using namespace std;
@@ -55,11 +54,11 @@ void TestRRT1()
 	mrpt::nav::PlannerRRT_SE2_TPS planner;
 
 	// Parameters:
-	planner.loadConfig(mrpt::utils::CConfigFile(myCfgFileName));
+	planner.loadConfig(mrpt::config::CConfigFile(myCfgFileName));
 
 	planner.params.maxLength = 2.0;
 	planner.params.minDistanceBetweenNewNodes = 0.10;
-	planner.params.minAngBetweenNewNodes = mrpt::utils::DEG2RAD(20);
+	planner.params.minAngBetweenNewNodes = mrpt::DEG2RAD(20);
 	planner.params.goalBias = 0.05;
 
 	// Logging:

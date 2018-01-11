@@ -15,7 +15,6 @@
 #include <mrpt/opengl/CGridPlaneXY.h>
 
 using mrpt::format;
-using namespace mrpt::utils;
 using namespace mrpt::gui;
 using namespace mrpt::vision;
 using namespace mrpt::opengl;

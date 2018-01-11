@@ -10,42 +10,22 @@
 #include "obs-precomp.h"  // Precompiled headers
 
 #include <mrpt/obs/CObservationWindSensor.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationWindSensor, CObservation, mrpt::obs)
 
-/** Constructor
- */
-CObservationWindSensor::CObservationWindSensor() : speed(0.0), direction(0.0) {}
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CObservationWindSensor::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CObservationWindSensor::serializeGetVersion() const { return 3; }
+void CObservationWindSensor::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	MRPT_UNUSED_PARAM(out);
-	if (version)
-		*version = 3;
-	else
-	{
-		// The data
-		out << speed << direction << sensorLabel << timestamp
-			<< sensorPoseOnRobot;
-	}
+	out << speed << direction << sensorLabel << timestamp << sensorPoseOnRobot;
 }
 
-/*---------------------------------------------------------------
-  Implements the reading from a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CObservationWindSensor::readFromStream(
-	mrpt::utils::CStream& in, int version)
+void CObservationWindSensor::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
-	// MRPT_UNUSED_PARAM(in);
 	switch (version)
 	{
 		case 0:

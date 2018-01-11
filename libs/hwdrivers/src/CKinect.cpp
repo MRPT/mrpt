@@ -10,15 +10,16 @@
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
 #include <mrpt/hwdrivers/CKinect.h>
-#include <mrpt/utils/CTimeLogger.h>
-#include <mrpt/utils/TStereoCamera.h>
+#include <mrpt/system/CTimeLogger.h>
+#include <mrpt/img/TStereoCamera.h>
+#include <mrpt/poses/CPose3DQuat.h>
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>
 
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
-using namespace mrpt::utils;
+using namespace mrpt::serialization;
 using namespace mrpt::math;
 using namespace mrpt::obs;
 using namespace mrpt::poses;
@@ -49,7 +50,7 @@ IMPLEMENTS_GENERIC_SENSOR(CKinect, mrpt::hwdrivers)
 #endif  // MRPT_HAS_KINECT_FREENECT
 
 #ifdef KINECT_PROFILE_MEM_ALLOC
-mrpt::utils::CTimeLogger alloc_tim;
+mrpt::system::CTimeLogger alloc_tim;
 #endif
 // int int a;
 
@@ -118,7 +119,7 @@ CKinect::CKinect()
 	m_cameraParamsRGB.fx(529.2151);
 	m_cameraParamsRGB.fy(525.5639);
 
-	m_cameraParamsRGB.dist.zeros();
+	m_cameraParamsRGB.dist.fill(0);
 
 	// ----- Depth -----
 	m_cameraParamsDepth.ncols = 640;
@@ -129,7 +130,7 @@ CKinect::CKinect()
 	m_cameraParamsDepth.fx(594.21434);
 	m_cameraParamsDepth.fy(591.04054);
 
-	m_cameraParamsDepth.dist.zeros();
+	m_cameraParamsDepth.dist.fill(0);
 
 #if !MRPT_HAS_KINECT
 	THROW_EXCEPTION(
@@ -183,12 +184,12 @@ void CKinect::doProcess()
 
 /** Loads specific configuration for the device from a given source of
 * configuration parameters, for example, an ".ini" file, loading from the
-* section "[iniSection]" (see utils::CConfigFileBase and derived classes)
+* section "[iniSection]" (see config::CConfigFileBase and derived classes)
 *  \exception This method must throw an exception with a descriptive message if
 * some critical parameter is missing or has an invalid value.
 */
 void CKinect::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 	m_sensorPoseOnRobot.setFromValues(
@@ -213,13 +214,13 @@ void CKinect::loadConfig_sensorSpecific(
 	const mrpt::poses::CPose3D twist(
 		0, 0, 0, DEG2RAD(-90), DEG2RAD(0), DEG2RAD(-90));
 
-	mrpt::utils::TStereoCamera sc;
+	mrpt::img::TStereoCamera sc;
 	sc.leftCamera = m_cameraParamsDepth;  // Load default values so that if we
 	// fail to load from cfg at least we
 	// have some reasonable numbers.
 	sc.rightCamera = m_cameraParamsRGB;
 	sc.rightCameraPose =
-		mrpt::poses::CPose3DQuat(m_relativePoseIntensityWRTDepth - twist);
+		mrpt::poses::CPose3DQuat(m_relativePoseIntensityWRTDepth - twist).asTPose();
 
 	try
 	{
@@ -366,7 +367,7 @@ void rgb_cb(freenect_device* dev, void* img_data, uint32_t timestamp)
 		cv::cvtColor(src_img_bayer, dst_img_RGB, CV_BayerGB2BGR);
 #endif
 #else
-		THROW_EXCEPTION("Need building with OpenCV!")
+		THROW_EXCEPTION("Need building with OpenCV!");
 #endif
 	}
 	else
@@ -401,7 +402,7 @@ void CKinect::open()
 #if MRPT_HAS_KINECT_FREENECT  // ----> libfreenect
 	// Try to open the device:
 	if (freenect_init(f_ctx_ptr, nullptr) < 0)
-		THROW_EXCEPTION("freenect_init() failed")
+		THROW_EXCEPTION("freenect_init() failed");
 
 	freenect_set_log_level(
 		f_ctx,
@@ -415,7 +416,7 @@ void CKinect::open()
 	int nr_devices = freenect_num_devices(f_ctx);
 	// printf("[CKinect] Number of devices found: %d\n", nr_devices);
 
-	if (!nr_devices) THROW_EXCEPTION("No Kinect devices found.")
+	if (!nr_devices) THROW_EXCEPTION("No Kinect devices found.");
 
 	// Open the given device number:
 	if (freenect_open_device(f_ctx, f_dev_ptr, m_user_device_number) < 0)
@@ -440,7 +441,7 @@ void CKinect::open()
 
 	// Switch to that video mode:
 	if (freenect_set_video_mode(f_dev, desiredFrMode) < 0)
-		THROW_EXCEPTION("Error setting Kinect video mode.")
+		THROW_EXCEPTION("Error setting Kinect video mode.");
 
 	// Get video mode:
 	const freenect_frame_mode frMode = freenect_get_current_video_mode(f_dev);
@@ -467,10 +468,10 @@ void CKinect::open()
 	freenect_set_user(f_dev, this);
 
 	if (freenect_start_depth(f_dev) < 0)
-		THROW_EXCEPTION("Error starting depth streaming.")
+		THROW_EXCEPTION("Error starting depth streaming.");
 
 	if (freenect_start_video(f_dev) < 0)
-		THROW_EXCEPTION("Error starting video streaming.")
+		THROW_EXCEPTION("Error starting video streaming.");
 
 #endif  // MRPT_HAS_KINECT_FREENECT
 }
@@ -516,7 +517,7 @@ void CKinect::setVideoChannel(const TVideoChannel vch)
 
 	// Switch to that video mode:
 	if (freenect_set_video_mode(f_dev, desiredFrMode) < 0)
-		THROW_EXCEPTION("Error setting Kinect video mode.")
+		THROW_EXCEPTION("Error setting Kinect video mode.");
 
 	freenect_start_video(f_dev);
 
@@ -651,7 +652,7 @@ void CKinect::getNextObservation(
 				}
 
 				// Normalize the image
-				mrpt::utils::CImage img;
+				mrpt::img::CImage img;
 				img.setFromMatrix(_out_obs.rangeImage);
 				CMatrixFloat r =
 					_out_obs.rangeImage * float(1.0 / this->m_maxRange);
@@ -763,7 +764,7 @@ void CKinect::setPathForExternalImages(const std::string& directory)
 /** Change tilt angle \note Sensor must be open first. */
 void CKinect::setTiltAngleDegrees(double angle)
 {
-	ASSERTMSG_(isOpen(), "Sensor must be open first")
+	ASSERTMSG_(isOpen(), "Sensor must be open first");
 
 #if MRPT_HAS_KINECT_FREENECT
 	freenect_set_tilt_degs(f_dev, angle);
@@ -774,7 +775,7 @@ void CKinect::setTiltAngleDegrees(double angle)
 
 double CKinect::getTiltAngleDegrees()
 {
-	ASSERTMSG_(isOpen(), "Sensor must be open first")
+	ASSERTMSG_(isOpen(), "Sensor must be open first");
 
 #if MRPT_KINECT_WITH_FREENECT
 	freenect_update_tilt_state(f_dev);

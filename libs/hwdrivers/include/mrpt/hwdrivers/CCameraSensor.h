@@ -12,8 +12,8 @@
 
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/obs/CObservation.h>
-#include <mrpt/utils/COutputLogger.h>
-#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/system/COutputLogger.h>
+#include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 
 #include <mrpt/hwdrivers/CFFMPEG_InputStream.h>
@@ -26,7 +26,7 @@
 #include <mrpt/hwdrivers/COpenNI2Sensor.h>
 #include <mrpt/hwdrivers/CDUO3DCamera.h>
 
-#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/hwdrivers/CStereoGrabber_SVS.h>
 
 #include <mrpt/gui/CDisplayWindow.h>
@@ -343,7 +343,7 @@ namespace hwdrivers
  * prepareVideoSourceFromUserSelection()
   * \ingroup mrpt_hwdrivers_grp
   */
-class CCameraSensor : public mrpt::utils::COutputLogger, public CGenericSensor
+class CCameraSensor : public mrpt::system::COutputLogger, public CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CCameraSensor)
 
@@ -367,7 +367,7 @@ class CCameraSensor : public mrpt::utils::COutputLogger, public CGenericSensor
 	  *		- mrpt::obs::CObservation3DRangeScan (For 3D cameras)
 	  */
 	mrpt::obs::CObservation::Ptr getNextFrame();
-	void getNextFrame(std::vector<mrpt::utils::CSerializable::Ptr>& out_obs);
+	void getNextFrame(std::vector<mrpt::serialization::CSerializable::Ptr>& out_obs);
 
 	/** Tries to open the camera, after setting all the parameters with a call
 	 * to loadConfig.
@@ -509,7 +509,7 @@ class CCameraSensor : public mrpt::utils::COutputLogger, public CGenericSensor
 
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(
-		const mrpt::utils::CConfigFileBase& configSource,
+		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& iniSection);
 
    private:
@@ -529,7 +529,7 @@ class CCameraSensor : public mrpt::utils::COutputLogger, public CGenericSensor
 	/** The FFMPEG capture object */
 	std::unique_ptr<CFFMPEG_InputStream> m_cap_ffmpeg;
 	/** The input file for rawlogs */
-	std::unique_ptr<mrpt::utils::CFileGZInputStream> m_cap_rawlog;
+	std::unique_ptr<mrpt::io::CFileGZInputStream> m_cap_rawlog;
 	/** SR 3D camera object. */
 	std::unique_ptr<CSwissRanger3DCamera> m_cap_swissranger;
 	/** Kinect camera object. */
@@ -585,7 +585,7 @@ CCameraSensor::Ptr prepareVideoSourceFromPanel(void* panel);
   */
 void writeConfigFromVideoSourcePanel(
 	void* panel, const std::string& in_cfgfile_section_name,
-	mrpt::utils::CConfigFileBase* out_cfgfile);
+	mrpt::config::CConfigFileBase* out_cfgfile);
 
 /** Parse the given section of the given configuration file and set accordingly
  * the controls of the wxWidgets "panel".
@@ -596,7 +596,7 @@ void writeConfigFromVideoSourcePanel(
   */
 void readConfigIntoVideoSourcePanel(
 	void* panel, const std::string& in_cfgfile_section_name,
-	const mrpt::utils::CConfigFileBase* in_cfgfile);
+	const mrpt::config::CConfigFileBase* in_cfgfile);
 
 /** Show to the user a list of possible camera drivers and creates and open the
  * selected camera.

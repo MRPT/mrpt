@@ -20,8 +20,8 @@
 #include <mrpt/hwdrivers/CKinect.h>
 #include <mrpt/gui.h>
 #include <mrpt/maps/CColouredPointsMap.h>
-#include <mrpt/utils/CTimeLogger.h>
-#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/system/CTimeLogger.h>
+#include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>
@@ -39,7 +39,6 @@ using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::gui;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace std;
 
 // Thread for online/offline capturing: This should be done in another thread
@@ -356,7 +355,7 @@ void Test_KinectOnlineOffline(
 			// -------------------------------------------------------
 			if (newObs->hasRangeImage)
 			{
-				static mrpt::utils::CTimeLogger logger;
+				static mrpt::system::CTimeLogger logger;
 				logger.enter("RGBD->3D");
 
 // Pathway: RGB+D --> PCL <PointXYZ> --> XYZ opengl

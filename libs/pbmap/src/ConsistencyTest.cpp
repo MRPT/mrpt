@@ -579,7 +579,7 @@ Eigen::Matrix4f ConsistencyTest::getRTwithModel(
 // Obtain the rigid transformation from 3 matched planes
 CMatrixDouble getAlignment(const CMatrixDouble& matched_planes)
 {
-	assert(size(matched_planes, 1) == 8 && size(matched_planes, 2) == 3);
+	assert(matched_planes.rows() == 8 && matched_planes.cols() == 3);
 
 	// Calculate rotation
 	Matrix3f normalCovariances = Matrix3f::Zero();
@@ -666,7 +666,7 @@ CMatrixDouble getAlignment(const CMatrixDouble& matched_planes)
 
 // Ransac functions to detect outliers in the plane matching
 void ransacPlaneAlignment_fit(
-	const CMatrixDouble& planeCorresp, const mrpt::vector_size_t& useIndices,
+	const CMatrixDouble& planeCorresp, const std::vector<size_t>& useIndices,
 	vector<CMatrixDouble>& fitModels)
 //        vector< Eigen::Matrix4f > &fitModels )
 {
@@ -697,9 +697,9 @@ void ransacPlaneAlignment_fit(
 void ransac3Dplane_distance(
 	const CMatrixDouble& planeCorresp, const vector<CMatrixDouble>& testModels,
 	const double distanceThreshold, unsigned int& out_bestModelIndex,
-	mrpt::vector_size_t& out_inlierIndices)
+	std::vector<size_t>& out_inlierIndices)
 {
-	ASSERT_(testModels.size() == 1)
+	ASSERT_(testModels.size() == 1);
 	out_bestModelIndex = 0;
 	const CMatrixDouble& M = testModels[0];
 
@@ -709,9 +709,9 @@ void ransac3Dplane_distance(
 	Eigen::Vector3f translation;
 	translation << M(0, 3), M(1, 3), M(2, 3);
 
-	ASSERT_(size(M, 1) == 4 && size(M, 2) == 4)
+	ASSERT_(M.rows() == 4 && M.cols() == 4);
 
-	const size_t N = size(planeCorresp, 2);
+	const size_t N = planeCorresp.cols();
 	out_inlierIndices.clear();
 	out_inlierIndices.reserve(100);
 	for (size_t i = 0; i < N; i++)
@@ -734,11 +734,11 @@ void ransac3Dplane_distance(
 }
 
 /** Return "true" if the selected points are a degenerate (invalid) case.
-  */
+ */
 bool ransac3Dplane_degenerate(
-	const CMatrixDouble& planeCorresp, const mrpt::vector_size_t& useIndices)
+	const CMatrixDouble& planeCorresp, const std::vector<size_t>& useIndices)
 {
-	ASSERT_(useIndices.size() == 3)
+	ASSERT_(useIndices.size() == 3);
 
 	const Eigen::Vector3f n_1 = Eigen::Vector3f(
 		planeCorresp(0, useIndices[0]), planeCorresp(1, useIndices[0]),
@@ -788,7 +788,7 @@ Eigen::Matrix4f ConsistencyTest::estimatePoseRANSAC(
 	}
 	//  cout << "Size " << matched_planes.size() << " " << size(1) << endl;
 
-	mrpt::vector_size_t inliers;
+	std::vector<size_t> inliers;
 	//  Eigen::Matrix4f best_model;
 	CMatrixDouble best_model;
 
@@ -804,7 +804,7 @@ Eigen::Matrix4f ConsistencyTest::estimatePoseRANSAC(
 	//  cout << "Computation time: " << tictac.Tac()*1000.0/TIMES << " ms" <<
 	//  endl;
 
-	cout << "Size planeCorresp: " << size(planeCorresp, 2) << endl;
+	cout << "Size planeCorresp: " << planeCorresp.cols() << endl;
 	cout << "RANSAC finished: " << inliers.size() << " inliers: " << inliers
 		 << " . \nBest model: \n"
 		 << best_model << endl;
@@ -821,15 +821,14 @@ Eigen::Matrix4f ConsistencyTest::estimatePoseRANSAC(
 }
 
 // using namespace mrpt;
-// using namespace mrpt::utils;
-////using namespace mrpt::gui;
+// ////using namespace mrpt::gui;
 // using namespace mrpt::math;
 // using namespace mrpt::random;
 // using namespace std;
 //
 // void  ransac3Dplane_fit(
 //	const CMatrixDouble  &allData,
-//	const vector_size_t  &useIndices,
+//	const std::vector<size_t>  &useIndices,
 //	vector< CMatrixDouble > &fitModels )
 //{
 //	ASSERT_(useIndices.size()==3);
@@ -866,7 +865,7 @@ Eigen::Matrix4f ConsistencyTest::estimatePoseRANSAC(
 //	const vector< CMatrixDouble > & testModels,
 //	const double distanceThreshold,
 //	unsigned int & out_bestModelIndex,
-//	vector_size_t & out_inlierIndices )
+//	std::vector<size_t> & out_inlierIndices )
 //{
 //	ASSERT_( testModels.size()==1 )
 //	out_bestModelIndex = 0;
@@ -896,7 +895,7 @@ Eigen::Matrix4f ConsistencyTest::estimatePoseRANSAC(
 //  */
 // bool ransac3Dplane_degenerate(
 //	const CMatrixDouble &allData,
-//	const mrpt::vector_size_t &useIndices )
+//	const std::vector<size_t> &useIndices )
 //{
 //	return false;
 //}
@@ -939,7 +938,7 @@ Eigen::Matrix4f ConsistencyTest::estimatePoseRANSAC(
 //	// Run RANSAC
 //	// ------------------------------------
 //	CMatrixDouble best_model;
-//	vector_size_t best_inliers;
+//	std::vector<size_t> best_inliers;
 //	const double DIST_THRESHOLD = 0.2;
 //
 //

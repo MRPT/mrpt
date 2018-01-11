@@ -11,8 +11,8 @@
 
 #include <mrpt/random.h>
 #include <mrpt/math/utils.h>
-#include <mrpt/utils/CTicTac.h>
-#include <mrpt/utils/CFileStream.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/io/CFileStream.h>
 
 #include <mrpt/maps/CMultiMetricMapPDF.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
@@ -23,7 +23,6 @@
 #include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/maps/CLandmarksMap.h>
-#include <mrpt/math.h>
 
 #include <mrpt/slam/PF_aux_structs.h>
 
@@ -35,7 +34,6 @@ using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::poses;
 using namespace mrpt::random;
-using namespace mrpt::utils;
 using namespace std;
 
 namespace mrpt
@@ -61,7 +59,7 @@ void KLF_loadBinFromParticle(
 	else
 	{
 		ASSERT_(
-			currentParticleValue && !currentParticleValue->robotPath.empty())
+			currentParticleValue && !currentParticleValue->robotPath.empty());
 		const TPose3D& p = *currentParticleValue->robotPath.rbegin();
 		outBin.x = round(p.x / opts.KLD_binSize_XY);
 		outBin.y = round(p.y / opts.KLD_binSize_XY);
@@ -211,8 +209,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 
 	CParticleList::iterator partIt;
 
-	ASSERT_(sf != nullptr)
-
+	ASSERT_(sf != nullptr);
 	// Find a robot movement estimation:
 	CPose3D motionModelMeanIncr;  // The mean motion increment:
 	CPoseRandomSampler robotActionSampler;
@@ -262,8 +259,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 		if (getW(i) > getW(particleWithHighestW)) particleWithHighestW = i;
 
 	//   The paths MUST already contain the starting location for each particle:
-	ASSERT_(!m_particles[0].d->robotPath.empty())
-
+	ASSERT_(!m_particles[0].d->robotPath.empty());
 	// Build the local map of points for ICP:
 	CSimplePointsMap localMapPoints;
 	CLandmarksMap localMapLandmarks;
@@ -484,8 +480,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 						cerr << "[RO-SLAM] Optimal filtering without map & "
 								"odometry->FIXING ONE BEACON!"
 							 << endl;
-						ASSERT_(beacMap->get(0).m_locationSOG.size() > 0)
-
+						ASSERT_(beacMap->get(0).m_locationSOG.size() > 0);
 						CPoint3D fixedBeacon(
 							beacMap->get(0).m_locationSOG[0].val.mean);
 
@@ -515,7 +510,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 					for (itRanges = obs->sensedData.begin();
 						 itRanges != obs->sensedData.end(); itRanges++)
 					{
-						ASSERT_(itRanges->beaconID != INVALID_BEACON_ID)
+						ASSERT_(itRanges->beaconID != INVALID_BEACON_ID);
 						// only add those in the map:
 						for (CBeaconMap::iterator itBeacs = beacMap->begin();
 							 itBeacs != beacMap->end(); ++itBeacs)
@@ -531,7 +526,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 
 								ASSERT_(
 									(itBeacs)->m_typePDF == CBeacon::pdfGauss ||
-									(itBeacs)->m_typePDF == CBeacon::pdfSOG)
+									(itBeacs)->m_typePDF == CBeacon::pdfSOG);
 								newMeas.nGaussiansInMap =
 									(itBeacs)->m_typePDF == CBeacon::pdfSOG
 										? (itBeacs)->m_locationSOG.size()
@@ -671,7 +666,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 							CMatrixDouble currentCov;
 							fusedObsModels.getCovariance(currentCov);
 							ASSERT_(
-								currentCov(0, 0) > 0 && currentCov(1, 1) > 0)
+								currentCov(0, 0) > 0 && currentCov(1, 1) > 0);
 							if (sqrt(currentCov(0, 0)) < 0.10f &&
 								sqrt(currentCov(1, 1)) < 0.10f &&
 								sqrt(currentCov(2, 2)) < 0.10f)
@@ -815,7 +810,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 											}
 											break;
 											default:
-												break;  // THROW_EXCEPTION("NO")
+												break;  // THROW_EXCEPTION("NO");
 										}
 
 										(*cell) *= lik;
@@ -917,10 +912,9 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 				// cout << "Final cov was:\n" <<
 				// fusedObsModels.getEstimatedCovariance() << endl << endl;
 
-				ASSERT_(
-					firstEstimateRobotHeading !=
-					std::numeric_limits<float>::max())  // Make sure it was
-				// initialized
+				// Make sure it was initialized
+				ASSERT_(firstEstimateRobotHeading != 
+					std::numeric_limits<float>::max());
 
 				finalPose.setFromValues(
 					newDrawnPosition.x(), newDrawnPosition.y(),
@@ -954,7 +948,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 		}
 
 		// Insert as the new pose in the path:
-		partIt->d->robotPath.push_back(finalPose);
+		partIt->d->robotPath.push_back(finalPose.asTPose());
 
 		// ----------------------------------------------------------------------
 		//						UPDATE STAGE
@@ -1007,7 +1001,7 @@ bool CMultiMetricMapPDF::PF_SLAM_implementation_doWeHaveValidObservations(
 	const CSensoryFrame* sf) const
 {
 	if (sf == nullptr) return false;
-	ASSERT_(!particles.empty())
+	ASSERT_(!particles.empty());
 	return particles.begin()
 		->d.get()
 		->mapTillNow.canComputeObservationsLikelihood(*sf);

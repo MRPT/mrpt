@@ -22,11 +22,11 @@
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
-#include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CConfigFileBase.h>
-#include <mrpt/utils/CStream.h>
-#include <mrpt/utils/types_simple.h>
+#include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/serialization/CArchive.h>
+#include <cstdint>
 #include <mrpt/slam/CICP.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/os.h>
@@ -74,7 +74,7 @@ namespace deciders
  *
  * - \b class_verbosity
  *   + \a Section       : NodeRegistrationDeciderParameters
- *   + \a default value : 1 (LVL_INFO)
+ *   + \a default value : 1 (mrpt::system::LVL_INFO)
  *   + \a Required      : FALSE
  *
  * - \b registration_max_distance
@@ -168,7 +168,7 @@ class CICPCriteriaNRD
 	 */
 	bool updateState3D(mrpt::obs::CObservation3DRangeScan::Ptr observation);
 
-	struct TParams : public mrpt::utils::CLoadableOptions
+	struct TParams : public mrpt::config::CLoadableOptions
 	{
 	   public:
 		TParams(decider_t& d);
@@ -177,9 +177,9 @@ class CICPCriteriaNRD
 		decider_t& decider; /**< Reference to outer decider class */
 
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section);
-		void dumpToTextStream(mrpt::utils::CStream& out) const;
+		void dumpToTextStream(std::ostream& out) const;
 
 		double registration_max_distance; /**< Maximum distance for new node
 											 registration */

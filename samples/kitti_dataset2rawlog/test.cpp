@@ -32,15 +32,14 @@ Output files:
 
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/string_utils.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
-#include <mrpt/utils/TCamera.h>
-#include <mrpt/utils/CTextFileLinesParser.h>
+#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/img/TCamera.h>
+#include <mrpt/system/CTextFileLinesParser.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 
 const double STEREO_FPS = 10.0;
 
@@ -94,7 +93,7 @@ void stereo2rawlog(
 	if (!p1_ok || !p2_ok)
 		throw std::runtime_error("Couldn't load P*_ROI calib matrices!");
 
-	mrpt::utils::TCamera cam_params_l;
+	mrpt::img::TCamera cam_params_l;
 	cam_params_l.ncols = 1344;
 	cam_params_l.nrows = 391;
 	cam_params_l.fx(P2_roi(0, 0));
@@ -102,7 +101,7 @@ void stereo2rawlog(
 	cam_params_l.cx(P2_roi(0, 2));
 	cam_params_l.cy(P2_roi(0, 6));
 
-	mrpt::utils::TCamera cam_params_r = cam_params_l;
+	mrpt::img::TCamera cam_params_r = cam_params_l;
 
 	// base = -P2_roi(1,4)/P2_roi(1,1)
 	const double baseline = -P2_roi(0, 3) / P2_roi(0, 0);
@@ -115,7 +114,7 @@ void stereo2rawlog(
 	const string out_rawlog_fil = out_name + string(".rawlog");
 	const string out_imgs_dir = out_name + string("_Images");
 	cout << "Creating rawlog: " << out_rawlog_fil << endl;
-	mrpt::utils::CFileGZOutputStream f_out(out_rawlog_fil);
+	mrpt::io::CFileGZOutputStream f_out(out_rawlog_fil);
 
 	if (is_kitti_dataset)
 	{

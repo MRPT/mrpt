@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/bayes.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPoint2D.h>
@@ -15,7 +15,6 @@
 #include <mrpt/system/os.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::bayes;
 using namespace mrpt::poses;
 using namespace mrpt::random;

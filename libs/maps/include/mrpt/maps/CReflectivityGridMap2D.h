@@ -10,10 +10,10 @@
 #ifndef CReflectivityGridMap2D_H
 #define CReflectivityGridMap2D_H
 
-#include <mrpt/utils/CImage.h>
-#include <mrpt/utils/CDynamicGrid.h>
-#include <mrpt/utils/CSerializable.h>
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/img/CImage.h>
+#include <mrpt/containers/CDynamicGrid.h>
+#include <mrpt/serialization/CSerializable.h>
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/maps/CLogOddsGridMap2D.h>
 #include <mrpt/obs/obs_frwds.h>
@@ -38,9 +38,10 @@ namespace maps
   *		- mrSimpleAverage: Each cell only stores the current average value.
   * \ingroup mrpt_maps_grp
   */
-class CReflectivityGridMap2D : public CMetricMap,
-							   public utils::CDynamicGrid<int8_t>,
-							   public CLogOddsGridMap2D<int8_t>
+class CReflectivityGridMap2D :
+	  public CMetricMap,
+	  public mrpt::containers::CDynamicGrid<int8_t>,
+	  public CLogOddsGridMap2D<int8_t>
 {
 	DEFINE_SERIALIZABLE(CReflectivityGridMap2D)
 
@@ -69,16 +70,15 @@ class CReflectivityGridMap2D : public CMetricMap,
 
 	/** Parameters related with inserting observations into the map.
 	  */
-	struct TInsertionOptions : public utils::CLoadableOptions
+	struct TInsertionOptions : public mrpt::config::CLoadableOptions
 	{
 		/** Default values loader */
 		TInsertionOptions();
 
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+		void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
 		int16_t channel;  //!< The reflectivity channel for this map. If
 		//! channel=-1, then any channel will be accepted.
@@ -101,7 +101,7 @@ class CReflectivityGridMap2D : public CMetricMap,
 	/** Returns the grid as a 8-bit graylevel image, where each pixel is a cell
 	 * (output image is RGB only if forceRGB is true) */
 	void getAsImage(
-		utils::CImage& img, bool verticalFlip = false,
+		mrpt::img::CImage& img, bool verticalFlip = false,
 		bool forceRGB = false) const;
 
    protected:

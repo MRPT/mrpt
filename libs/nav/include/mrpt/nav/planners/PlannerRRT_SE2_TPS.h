@@ -34,7 +34,7 @@ namespace nav
 * mrpt::nav::PlannerRRT_SE2_TPS  planner;
 *
 * // Set or load planner parameters:
-* //planner.loadConfig( mrpt::utils::CConfigFile("config_file.cfg") );
+* //planner.loadConfig( mrpt::config::CConfigFile("config_file.cfg") );
 * //planner.params.... // See RRTAlgorithmParams
 *
 * // Set RRT end criteria (when to stop searching for a solution)
@@ -91,7 +91,7 @@ class PlannerRRT_SE2_TPS : public PlannerTPS_VirtualBase
 
 	/** Load all params from a config file source */
 	void loadConfig(
-		const mrpt::utils::CConfigFileBase& cfgSource,
+		const mrpt::config::CConfigFileBase& cfgSource,
 		const std::string& sSectionName = std::string("PTG_CONFIG"));
 
 	/** Must be called after setting all params (see `loadConfig()`) and before

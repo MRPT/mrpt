@@ -22,8 +22,8 @@
 
 using namespace std;
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
+using namespace mrpt::img;
 
 //(*IdInit(CDlgCalibWizardOnline)
 const long CDlgCalibWizardOnline::ID_CUSTOM2 = wxNewId();
@@ -357,7 +357,7 @@ void CDlgCalibWizardOnline::OntimCaptureTrigger(wxTimerEvent& event)
 			return;
 		}
 
-		ASSERT_(m_video)
+		ASSERT_(m_video);
 
 		m_check_size_x = this->edSizeX->GetValue();
 		m_check_size_y = this->edSizeY->GetValue();
@@ -366,10 +366,10 @@ void CDlgCalibWizardOnline::OntimCaptureTrigger(wxTimerEvent& event)
 			this->rbMethod->GetSelection() == 1;
 
 		CObservation::Ptr obs = m_video->getNextFrame();
-		ASSERT_(obs)
+		ASSERT_(obs);
 		ASSERT_(
 			IS_CLASS(obs, CObservationImage) ||
-			IS_CLASS(obs, CObservation3DRangeScan))
+			IS_CLASS(obs, CObservation3DRangeScan));
 
 		// Convert to an image:
 		if (IS_CLASS(obs, CObservation3DRangeScan))
@@ -380,7 +380,7 @@ void CDlgCalibWizardOnline::OntimCaptureTrigger(wxTimerEvent& event)
 			CObservationImage::Ptr obsImg =
 				mrpt::make_aligned_shared<CObservationImage>();
 			obsImg->timestamp = obs3D->timestamp;
-			ASSERT_(obs3D->hasIntensityImage)
+			ASSERT_(obs3D->hasIntensityImage);
 			obsImg->image = obs3D->intensityImage;
 
 			// Ale hoop!

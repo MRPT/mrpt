@@ -9,11 +9,10 @@
 
 #include "graphs-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/initializer.h>
+#include <mrpt/core/initializer.h>
 
 // using namespace mrpt::graphs;
-// using namespace mrpt::utils;
-
+// 
 MRPT_INITIALIZER(registerAllClasses_mrpt_graphs)
 {
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)

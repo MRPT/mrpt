@@ -10,7 +10,7 @@
 #ifndef opengl_CFBORender_H
 #define opengl_CFBORender_H
 
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CTextMessageCapable.h>
 
@@ -54,27 +54,27 @@ class CFBORender : public mrpt::opengl::CTextMessageCapable
 	   buffer if it
 		is necessary.
 	  */
-	void getFrame(const COpenGLScene& scene, mrpt::utils::CImage& image);
+	void getFrame(const COpenGLScene& scene, mrpt::img::CImage& image);
 
 	/** Render the scene and get the rendered rgb image. Does not resize the
 	   image buffer.
 		MANDATORY: The image origin must be bottom left.
 	  */
-	void getFrame2(const COpenGLScene& scene, mrpt::utils::CImage& image);
+	void getFrame2(const COpenGLScene& scene, mrpt::img::CImage& image);
 
 	/** Resize the rendering canvas size. */
 	void resize(unsigned int width, unsigned int height);
 
 	/** Get the default background color (unles an COpenGLViewport defines a
 	 * custom color) */
-	const mrpt::utils::TColorf& getBackgroundColor() const
+	const mrpt::img::TColorf& getBackgroundColor() const
 	{
 		return m_default_bk_color;
 	}
 
 	/** Set the default background color (unles an COpenGLViewport defines a
 	 * custom color) */
-	void setBackgroundColor(const mrpt::utils::TColorf& col)
+	void setBackgroundColor(const mrpt::img::TColorf& col)
 	{
 		m_default_bk_color = col;
 	}
@@ -83,7 +83,7 @@ class CFBORender : public mrpt::opengl::CTextMessageCapable
 	int m_win, m_width, m_height;
 	unsigned int m_fbo, m_tex;
 	bool m_win_used;
-	mrpt::utils::TColorf m_default_bk_color;
+	mrpt::img::TColorf m_default_bk_color;
 
 	/** Provide information on Framebuffer object extension.
 	  */

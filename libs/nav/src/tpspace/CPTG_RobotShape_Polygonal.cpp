@@ -11,7 +11,8 @@
 
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/opengl/CSetOfLines.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::nav;
 
@@ -28,7 +29,7 @@ void CPTG_RobotShape_Polygonal::setRobotShape(
 
 	m_robotMaxRadius = .0;  // Default minimum
 	for (const auto& v : m_robotShape)
-		mrpt::utils::keep_max(m_robotMaxRadius, v.norm());
+		mrpt::keep_max(m_robotMaxRadius, v.norm());
 
 	internal_processNewRobotShape();
 }
@@ -43,7 +44,7 @@ void CPTG_RobotShape_Polygonal::loadDefaultParams()
 }
 
 void CPTG_RobotShape_Polygonal::loadShapeFromConfigFile(
-	const mrpt::utils::CConfigFileBase& cfg, const std::string& sSection)
+	const mrpt::config::CConfigFileBase& cfg, const std::string& sSection)
 {
 	bool any_pt = false;
 	const double BADNUM = std::numeric_limits<double>::max();
@@ -74,7 +75,7 @@ void CPTG_RobotShape_Polygonal::loadShapeFromConfigFile(
 }
 
 void CPTG_RobotShape_Polygonal::saveToConfigFile(
-	mrpt::utils::CConfigFileBase& cfg, const std::string& sSection) const
+	mrpt::config::CConfigFileBase& cfg, const std::string& sSection) const
 {
 	const int WN = 25, WV = 30;
 
@@ -119,7 +120,7 @@ void CPTG_RobotShape_Polygonal::add_robotShape_to_setOfLines(
 }
 
 void CPTG_RobotShape_Polygonal::internal_shape_loadFromStream(
-	mrpt::utils::CStream& in)
+	mrpt::serialization::CArchive& in)
 {
 	uint8_t version;
 	in >> version;
@@ -135,7 +136,7 @@ void CPTG_RobotShape_Polygonal::internal_shape_loadFromStream(
 }
 
 void CPTG_RobotShape_Polygonal::internal_shape_saveToStream(
-	mrpt::utils::CStream& out) const
+	mrpt::serialization::CArchive& out) const
 {
 	uint8_t version = 0;
 	out << version;
@@ -162,11 +163,11 @@ double CPTG_RobotShape_Polygonal::evalClearanceToRobotShape(
 
 	if (isPointInsideRobotShape(ox, oy)) return .0;
 
-	double d = mrpt::math::hypot_fast(ox, oy) - m_robotMaxRadius;
+	double d = mrpt::hypot_fast(ox, oy) - m_robotMaxRadius;
 
 	// if d<=0, we know from the isPointInsideRobotShape() above that
 	// it's a false positive: enforce a minimum "fake" clearance:
-	mrpt::utils::keep_max(d, 0.1 * m_robotMaxRadius);
+	mrpt::keep_max(d, 0.1 * m_robotMaxRadius);
 
 	return d;
 }

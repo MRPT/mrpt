@@ -10,9 +10,9 @@
 #define CAbstractHolonomicReactiveMethod_H
 
 #include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/utils/TEnumType.h>
-#include <mrpt/utils/CConfigFileBase.h>
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/typemeta/TEnumType.h>
+#include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/nav/holonomic/ClearanceDiagram.h>
 
@@ -29,7 +29,7 @@ namespace nav
 /** A base class for holonomic reactive navigation methods.
  *  \sa CHolonomicVFF,CHolonomicND,CHolonomicFullEval, CReactiveNavigationSystem
  */
-class CAbstractHolonomicReactiveMethod : public mrpt::utils::CSerializable
+class CAbstractHolonomicReactiveMethod : public mrpt::serialization::CSerializable
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CAbstractHolonomicReactiveMethod)
    public:
@@ -91,9 +91,9 @@ class CAbstractHolonomicReactiveMethod : public mrpt::utils::CSerializable
 	/** Initialize the parameters of the navigator, reading from the default
 	 * section name (see derived classes) or the one set via
 	 * setConfigFileSectionName() */
-	virtual void initialize(const mrpt::utils::CConfigFileBase& c) = 0;
+	virtual void initialize(const mrpt::config::CConfigFileBase& c) = 0;
 	/** saves all available parameters, in a forma loadable by `initialize()` */
-	virtual void saveConfigFile(mrpt::utils::CConfigFileBase& c) const = 0;
+	virtual void saveConfigFile(mrpt::config::CConfigFileBase& c) const = 0;
 	/** Defines the name of the section used in initialize() */
 	void setConfigFileSectionName(const std::string& sectName);
 	/** Gets the name of the section used in initialize() */

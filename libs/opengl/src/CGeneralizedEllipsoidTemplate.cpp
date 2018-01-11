@@ -15,7 +15,7 @@
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
+
 using namespace mrpt::math;
 using namespace std;
 
@@ -80,8 +80,7 @@ void renderGeneralizedEllipsoidTemplate<3>(
 	//  * "#slices" slices, with "#stacks" points each, but for the two ends
 	//  * 1 point at each end slice
 	// #total points = stacks*(slices-2) + 2
-	ASSERT_EQUAL_((slices - 2) * stacks + 2, pts.size())
-
+	ASSERT_EQUAL_((slices - 2) * stacks + 2, pts.size());
 	const size_t idx_1st_slice = 1;
 
 	// 1st slice: triangle fan (if it were solid)
@@ -200,9 +199,8 @@ void generalizedEllipsoidPoints<3>(
 	const uint32_t slices, const uint32_t stacks)
 {
 	MRPT_START
-	ASSERT_ABOVEEQ_(slices, 3)
-	ASSERT_ABOVEEQ_(stacks, 3)
-
+	ASSERT_ABOVEEQ_(slices, 3);
+	ASSERT_ABOVEEQ_(stacks, 3);
 	// sin/cos cache --------
 	// Slices: [0,pi]
 	std::vector<double> slice_cos(slices), slice_sin(slices);

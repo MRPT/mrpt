@@ -39,7 +39,6 @@
 #include <string>
 
 /// MRPT includes
-#include <mrpt/utils/metaprogramming.h>
 #include <mrpt/math/data_utils.h>
 #include <mrpt/vision/CFeatureExtraction.h>
 #include <mrpt/vision/tracking.h>
@@ -48,8 +47,8 @@
 #include <mrpt/system/os.h>
 
 using namespace mrpt::vision;
-using namespace mrpt::utils;
 using namespace mrpt::math;
+using namespace mrpt::img;
 using namespace mrpt;
 using namespace cv;
 using namespace std;

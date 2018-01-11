@@ -10,9 +10,9 @@
 #include "CGLWidget.h"
 
 #include "mrpt/maps/TMetricMapInitializer.h"
-#include "mrpt/utils/CConfigFile.h"
-#include "mrpt/utils/CFileGZOutputStream.h"
-#include "mrpt/utils/CFileGZInputStream.h"
+#include "mrpt/config/CConfigFile.h"
+#include "mrpt/io/CFileGZOutputStream.h"
+#include "mrpt/io/CFileGZInputStream.h"
 #include "mrpt/opengl/CPointCloud.h"
 #include "mrpt/opengl/CTexturedPlane.h"
 #include "mrpt/gui/CGlCanvasBase.h"
@@ -43,9 +43,9 @@ CGlWidget::CGlWidget(bool is2D, QWidget* parent)
 	  m_miniMapSize(-1.0),
 	  m_minimapPercentSize(0.25),
 	  m_observationSize(10.),
-	  m_observationColor(mrpt::utils::TColor::red()),
+	  m_observationColor(mrpt::img::TColor::red()),
 	  m_selectedObsSize(15.0),
-	  m_selectedColor(mrpt::utils::TColor::green()),
+	  m_selectedColor(mrpt::img::TColor::green()),
 	  m_isShowObs(false),
 	  m_visiblePoints(mrpt::make_aligned_shared<CSetOfObjects>()),
 	  m_currentObs(opengl::stock_objects::CornerXYZSimple()),
@@ -194,7 +194,7 @@ void CGlWidget::setDocument(CDocument* doc)
 	for (auto iter = m_doc->simplemap().begin();
 		 iter != m_doc->simplemap().end(); ++iter)
 	{
-		math::TPose3D pose = iter->first->getMeanVal();
+		math::TPose3D pose = iter->first->getMeanVal().asTPose();
 		CRobotPose::Ptr robotPose = mrpt::make_aligned_shared<CRobotPose>(id);
 		robotPose->setPose(pose);
 		m_visiblePoints->insert(robotPose);
@@ -217,7 +217,7 @@ void CGlWidget::updateObservations()
 	for (auto iter = m_doc->simplemap().begin();
 		 iter != m_doc->simplemap().end(); ++iter)
 	{
-		math::TPose3D pose = iter->first->getMeanVal();
+		math::TPose3D pose = iter->first->getMeanVal().asTPose();
 		CRobotPose::Ptr robotPose = mrpt::make_aligned_shared<CRobotPose>(id);
 		robotPose->setPose(pose);
 		m_visiblePoints->insert(robotPose);
@@ -349,7 +349,7 @@ bool CGlWidget::setObservationSize(double s)
 
 bool CGlWidget::setObservationColor(int type)
 {
-	utils::TColorf color = typeToColor(type);
+	img::TColorf color = typeToColor(type);
 	if (color.R != m_observationColor.R || color.B != m_observationColor.B ||
 		color.G != m_observationColor.G || color.A != m_observationColor.A)
 	{
@@ -372,7 +372,7 @@ bool CGlWidget::setSelectedObservationSize(double s)
 
 bool CGlWidget::setSelectedObservationColor(int type)
 {
-	utils::TColorf color = typeToColor(type);
+	img::TColorf color = typeToColor(type);
 	if (color.R != m_selectedColor.R || color.B != m_selectedColor.B ||
 		color.G != m_selectedColor.G || color.A != m_selectedColor.A)
 	{
@@ -570,33 +570,33 @@ void CGlWidget::keyPressEvent(QKeyEvent* event)
 	}
 }
 
-utils::TColorf CGlWidget::typeToColor(int type) const
+img::TColorf CGlWidget::typeToColor(int type) const
 {
-	mrpt::utils::TColor color = mrpt::utils::TColor::red();
+	mrpt::img::TColor color = mrpt::img::TColor::red();
 	switch (type)
 	{
 		case 0:
-			color = mrpt::utils::TColor::red();
+			color = mrpt::img::TColor::red();
 			break;
 		case 1:
-			color = mrpt::utils::TColor::green();
+			color = mrpt::img::TColor::green();
 			break;
 		case 2:
-			color = mrpt::utils::TColor::blue();
+			color = mrpt::img::TColor::blue();
 			break;
 		case 3:
-			color = mrpt::utils::TColor::white();
+			color = mrpt::img::TColor::white();
 			break;
 		case 4:
-			color = mrpt::utils::TColor::black();
+			color = mrpt::img::TColor::black();
 			break;
 		case 5:
-			color = mrpt::utils::TColor::gray();
+			color = mrpt::img::TColor::gray();
 			break;
 		default:
 			break;
 	}
-	return mrpt::utils::TColorf(color);
+	return mrpt::img::TColorf(color);
 }
 
 std::pair<bool, math::TPoint3D> CGlWidget::sceneToWorld(const QPoint& pos) const

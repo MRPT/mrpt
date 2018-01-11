@@ -11,14 +11,14 @@
 
 #include <mrpt/hwdrivers/CTuMicos.h>
 #include <mrpt/system/string_utils.h>
-#include <mrpt/utils/utils_defs.h>
-
+#include <mrpt/core/bits_math.h>
 #include <cstring>
 #include <cstdio>
 #include <thread>
+#include <iostream>
 
 using namespace std;
-using namespace mrpt::utils;
+using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
 

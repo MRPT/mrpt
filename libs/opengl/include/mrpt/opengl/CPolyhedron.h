@@ -19,7 +19,7 @@ namespace opengl
 class CPolyhedron;
 
 /**
-  * This class represents arbitrary polyhedra. The class includes a set of
+ * This class represents arbitrary polyhedra. The class includes a set of
  * static methods to create common polyhedrons. The class includes many methods
  * to create standard polyhedra, not intended to be fast but to be simple. For
  * example, the dodecahedron is not created efficiently: first, an icosahedron
@@ -27,45 +27,45 @@ class CPolyhedron;
  * dodecahedron. This way, code is much smaller, although much slower. This is
  * not a big problem, since polyhedron creation does not usually take a
  * significant amount of time (they are created once and rendered many times).
-  * Polyhedra information and models have been gotten from the Wikipedia,
+ * Polyhedra information and models have been gotten from the Wikipedia,
  * http://wikipedia.org
-  * \sa opengl::COpenGLScene
-  *
-  *  <div align="center">
-  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
+ * \sa opengl::COpenGLScene
+ *
+ *  <div align="center">
+ *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
  * border-style: solid;">
-  *   <tr> <td> mrpt::opengl::CPolyhedron </td> <td> \image html
+ *   <tr> <td> mrpt::opengl::CPolyhedron </td> <td> \image html
  * preview_CPolyhedron.png </td> </tr>
-  *  </table>
-  *  </div>
-  *
-  * \ingroup mrpt_opengl_grp
-  */
+ *  </table>
+ *  </div>
+ *
+ * \ingroup mrpt_opengl_grp
+ */
 class CPolyhedron : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CPolyhedron)
    public:
 	/**
-	  * Struct used to store a polyhedron edge. The struct consists only of two
+	 * Struct used to store a polyhedron edge. The struct consists only of two
 	 * vertex indices, used to access the polyhedron vertex list.
-	  */
+	 */
 	struct TPolyhedronEdge
 	{
 		/**
-		  * First vertex.
-		  */
+		 * First vertex.
+		 */
 		uint32_t v1;
 		/**
-		  * Second vertex.
-		  */
+		 * Second vertex.
+		 */
 		uint32_t v2;
 		/**
-		  * Default constructor. Initializes to garbage.
-		  */
+		 * Default constructor. Initializes to garbage.
+		 */
 		TPolyhedronEdge() : v1(), v2() {}
 		/**
-		  * Comparison agains another edge. Simmetry is taken into account.
-		  */
+		 * Comparison agains another edge. Simmetry is taken into account.
+		 */
 		bool operator==(const TPolyhedronEdge& e) const
 		{
 			if (e.v1 == v1 && e.v2 == v2)
@@ -74,18 +74,18 @@ class CPolyhedron : public CRenderizableDisplayList
 				return e.v1 == v2 && e.v2 == v1;
 		}
 		/**
-		  * Given a set of vertices, computes the length of the vertex.
-		  */
+		 * Given a set of vertices, computes the length of the vertex.
+		 */
 		double length(const std::vector<mrpt::math::TPoint3D>& vs) const;
 		/**
-		  * Destructor.
-		  */
+		 * Destructor.
+		 */
 		~TPolyhedronEdge() {}
 	};
 	/**
-	  * Struct used to store a polyhedron face. Consists on a set of vertex
+	 * Struct used to store a polyhedron face. Consists on a set of vertex
 	 * indices and a normal vector.
-	  */
+	 */
 	struct TPolyhedronFace
 	{
 		/** Vector of indices to the vertex list. */
@@ -106,34 +106,34 @@ class CPolyhedron : public CRenderizableDisplayList
 
    protected:
 	/**
-	  * List of vertices presents in the polyhedron.
-	  */
+	 * List of vertices presents in the polyhedron.
+	 */
 	std::vector<mrpt::math::TPoint3D> mVertices;
 	/**
-	  * List of polyhedron's edges.
-	  */
+	 * List of polyhedron's edges.
+	 */
 	std::vector<TPolyhedronEdge> mEdges;
 	/**
-	  * List of polyhedron's faces.
-	  */
+	 * List of polyhedron's faces.
+	 */
 	std::vector<TPolyhedronFace> mFaces;
 	/**
-	  * This flag determines whether the polyhedron will be displayed as a solid
+	 * This flag determines whether the polyhedron will be displayed as a solid
 	 * object or as a set of edges.
-	  */
+	 */
 	bool mWireframe;
 	/**
-	  * When displaying as wireframe object, this variable stores the width of
+	 * When displaying as wireframe object, this variable stores the width of
 	 * the edges.
-	  */
+	 */
 	double mLineWidth;
 	/**
-	  * Mutable list of actual polygons, maintained for speed.
-	  */
+	 * Mutable list of actual polygons, maintained for speed.
+	 */
 	mutable std::vector<mrpt::math::TPolygonWithPlane> tempPolygons;
 	/**
-	  * Whether the set of actual polygons is up to date or not.
-	  */
+	 * Whether the set of actual polygons is up to date or not.
+	 */
 	mutable bool polygonsUpToDate;
 
    public:
@@ -203,7 +203,7 @@ class CPolyhedron : public CRenderizableDisplayList
 	  */
 	static CPolyhedron::Ptr CreateIcosahedron(double radius);
 	/** @}
-	  */
+	 */
 
 	/** @name Archimedean solids.
 		@{
@@ -312,11 +312,11 @@ class CPolyhedron : public CRenderizableDisplayList
 		@{
 	 */
 	/**
-	  * Creates a pentagonal rotunda (half an icosidodecahedron), consisting of
+	 * Creates a pentagonal rotunda (half an icosidodecahedron), consisting of
 	 * six pentagons, ten triangles and a decagon (see
 	 * http://en.wikipedia.org/wiki/Pentagonal_rotunda).
-	  * \sa CreateIcosidodecahedron,CreateJohnsonSolidWithConstantBase
-	  */
+	 * \sa CreateIcosidodecahedron,CreateJohnsonSolidWithConstantBase
+	 */
 	static CPolyhedron::Ptr CreatePentagonalRotunda(double radius);
 	/** @}
 	 */
@@ -411,185 +411,185 @@ class CPolyhedron : public CRenderizableDisplayList
 		@{
 	 */
 	/**
-	  * Creates a cubic prism, given the coordinates of two opposite vertices.
+	 * Creates a cubic prism, given the coordinates of two opposite vertices.
 	 * Each edge will be parallel to one of the coordinate axes, although the
 	 * orientation may change by assigning a pose to the object.
-	  * \sa CreateCubicPrism(const mrpt::math::TPoint3D &,const
+	 * \sa CreateCubicPrism(const mrpt::math::TPoint3D &,const
 	 * mrpt::math::TPoint3D
 	 * &),CreateParallelepiped,CreateCustomPrism,CreateRegularPrism,CreateArchimedeanRegularPrism
-	  */
+	 */
 	static CPolyhedron::Ptr CreateCubicPrism(
 		double x1, double x2, double y1, double y2, double z1, double z2);
 	/**
-	  * Creates a cubic prism, given two opposite vertices.
-	  * \sa
+	 * Creates a cubic prism, given two opposite vertices.
+	 * \sa
 	 * CreateCubicPrism(double,double,double,double,double,double),CreateParallelepiped,CreateCustomPrism,CreateRegularPrism,CreateArchimedeanRegularPrism
-	  */
+	 */
 	static CPolyhedron::Ptr CreateCubicPrism(
 		const mrpt::math::TPoint3D& p1, const mrpt::math::TPoint3D& p2);
 	/**
-	  * Creates a custom pyramid, using a set of 2D vertices which will lie on
+	 * Creates a custom pyramid, using a set of 2D vertices which will lie on
 	 * the XY plane.
-	  * \sa
+	 * \sa
 	 * CreateDoublePyramid,CreateFrustum,CreateBifrustum,CreateRegularPyramid
-	  */
+	 */
 	static CPolyhedron::Ptr CreatePyramid(
 		const std::vector<mrpt::math::TPoint2D>& baseVertices, double height);
 	/**
-	  * Creates a double pyramid, using a set of 2D vertices which will lie on
+	 * Creates a double pyramid, using a set of 2D vertices which will lie on
 	 * the XY plane. The second height is used with the downwards pointing
 	 * pyramid, so that it will effectively point downwards if it's positive.
-	  * \sa CreatePyramid,CreateBifrustum,CreateRegularDoublePyramid
-	  */
+	 * \sa CreatePyramid,CreateBifrustum,CreateRegularDoublePyramid
+	 */
 	static CPolyhedron::Ptr CreateDoublePyramid(
 		const std::vector<mrpt::math::TPoint2D>& baseVertices, double height1,
 		double height2);
 	/**
-	  * Creates a truncated pyramid, using a set of vertices which will lie on
+	 * Creates a truncated pyramid, using a set of vertices which will lie on
 	 * the XY plane.
-	  * Do not try to use with a ratio equal to zero; use CreatePyramid instead.
+	 * Do not try to use with a ratio equal to zero; use CreatePyramid instead.
 	 * When using a ratio of 1, it will create a Prism.
-	  * \sa CreatePyramid,CreateBifrustum
-	  */
+	 * \sa CreatePyramid,CreateBifrustum
+	 */
 	static CPolyhedron::Ptr CreateTruncatedPyramid(
 		const std::vector<mrpt::math::TPoint2D>& baseVertices, double height,
 		double ratio);
 	/**
-	  * This is a synonym for CreateTruncatedPyramid.
-	  * \sa CreateTruncatedPyramid
-	  */
+	 * This is a synonym for CreateTruncatedPyramid.
+	 * \sa CreateTruncatedPyramid
+	 */
 	static CPolyhedron::Ptr CreateFrustum(
 		const std::vector<mrpt::math::TPoint2D>& baseVertices, double height,
 		double ratio);
 	/**
-	  * Creates a custom prism with vertical edges, given any base which will
+	 * Creates a custom prism with vertical edges, given any base which will
 	 * lie on the XY plane.
-	  * \sa
+	 * \sa
 	 * CreateCubicPrism,CreateCustomAntiprism,CreateRegularPrism,CreateArchimedeanRegularPrism
-	  */
+	 */
 	static CPolyhedron::Ptr CreateCustomPrism(
 		const std::vector<mrpt::math::TPoint2D>& baseVertices, double height);
 	/**
-	  * Creates a custom antiprism, using two custom bases. For better results,
+	 * Creates a custom antiprism, using two custom bases. For better results,
 	 * the top base should be slightly rotated with respect to the bottom one.
-	  * \sa
+	 * \sa
 	 * CreateCustomPrism,CreateRegularAntiprism,CreateArchimedeanRegularAntiprism
-	  */
+	 */
 	static CPolyhedron::Ptr CreateCustomAntiprism(
 		const std::vector<mrpt::math::TPoint2D>& bottomBase,
 		const std::vector<mrpt::math::TPoint2D>& topBase, double height);
 	/**
-	  * Creates a parallelepiped, given a base point and three vectors
+	 * Creates a parallelepiped, given a base point and three vectors
 	 * represented as points.
-	  * \sa CreateCubicPrism
-	  */
+	 * \sa CreateCubicPrism
+	 */
 	static CPolyhedron::Ptr CreateParallelepiped(
 		const mrpt::math::TPoint3D& base, const mrpt::math::TPoint3D& v1,
 		const mrpt::math::TPoint3D& v2, const mrpt::math::TPoint3D& v3);
 	/**
-	  * Creates a bifrustum, or double truncated pyramid, given a base which
+	 * Creates a bifrustum, or double truncated pyramid, given a base which
 	 * will lie on the XY plane.
-	  * \sa CreateFrustum,CreateDoublePyramid
-	  */
+	 * \sa CreateFrustum,CreateDoublePyramid
+	 */
 	static CPolyhedron::Ptr CreateBifrustum(
 		const std::vector<mrpt::math::TPoint2D>& baseVertices, double height1,
 		double ratio1, double height2, double ratio2);
 	/**
-	  * Creates a trapezohedron, consisting of 2*N kites, where N is the number
+	 * Creates a trapezohedron, consisting of 2*N kites, where N is the number
 	 * of edges in the base. The base radius controls the polyhedron height,
 	 * whilst the distance between bases affects the height.
-	  * When the number of edges equals 3, the polyhedron is actually a
+	 * When the number of edges equals 3, the polyhedron is actually a
 	 * parallelepiped, and it can even be a cube.
-	  */
+	 */
 	static CPolyhedron::Ptr CreateTrapezohedron(
 		uint32_t numBaseEdges, double baseRadius, double basesDistance);
 	/**
-	  * Creates an antiprism whose base is a regular polygon. The upper base is
+	 * Creates an antiprism whose base is a regular polygon. The upper base is
 	 * rotated \f$\frac\pi N\f$ with respect to the lower one, where N is the
 	 * number of vertices in the base, and thus the lateral triangles are
 	 * isosceles.
-	  * \sa CreateCustomAntiprism,CreateArchimedeanRegularAntiprism
-	  */
+	 * \sa CreateCustomAntiprism,CreateArchimedeanRegularAntiprism
+	 */
 	static CPolyhedron::Ptr CreateRegularAntiprism(
 		uint32_t numBaseEdges, double baseRadius, double height);
 	/**
-	  * Creates a regular prism whose base is a regular polygon and whose edges
+	 * Creates a regular prism whose base is a regular polygon and whose edges
 	 * are either parallel or perpendicular to the XY plane.
-	  * \sa CreateCubicPrism,CreateCustomPrism,CreateArchimedeanRegularAntiprism
-	  */
+	 * \sa CreateCubicPrism,CreateCustomPrism,CreateArchimedeanRegularAntiprism
+	 */
 	static CPolyhedron::Ptr CreateRegularPrism(
 		uint32_t numBaseEdges, double baseRadius, double height);
 	/**
-	  * Creates a regular pyramid whose base is a regular polygon.
-	  * \sa CreatePyramid
-	  */
+	 * Creates a regular pyramid whose base is a regular polygon.
+	 * \sa CreatePyramid
+	 */
 	static CPolyhedron::Ptr CreateRegularPyramid(
 		uint32_t numBaseEdges, double baseRadius, double height);
 	/**
-	  * Creates a regular double pyramid whose base is a regular polygon.
-	  * \sa CreateDoublePyramid
-	  */
+	 * Creates a regular double pyramid whose base is a regular polygon.
+	 * \sa CreateDoublePyramid
+	 */
 	static CPolyhedron::Ptr CreateRegularDoublePyramid(
 		uint32_t numBaseEdges, double baseRadius, double height1,
 		double height2);
 	/**
-	  * Creates a regular prism whose lateral area is comprised of squares, and
+	 * Creates a regular prism whose lateral area is comprised of squares, and
 	 * so each face of its is a regular polygon. Due to vertex transitivity, the
 	 * resulting object is always archimedean.
-	  * \sa CreateRegularPrism,CreateCustomPrism
-	  */
+	 * \sa CreateRegularPrism,CreateCustomPrism
+	 */
 	static CPolyhedron::Ptr CreateArchimedeanRegularPrism(
 		uint32_t numBaseEdges, double baseRadius);
 	/**
-	  * Creates a regular antiprism whose lateral polygons are equilateral
+	 * Creates a regular antiprism whose lateral polygons are equilateral
 	 * triangles, and so each face of its is a regular polygon. Due to vertex
 	 * transitivity, the resulting object is always archimedean.
-	  * \sa CreateRegularAntiprism,CreateCustomAntiprism
-	  */
+	 * \sa CreateRegularAntiprism,CreateCustomAntiprism
+	 */
 	static CPolyhedron::Ptr CreateArchimedeanRegularAntiprism(
 		uint32_t numBaseEdges, double baseRadius);
 	/**
-	  * Creates a regular truncated pyramid whose base is a regular polygon.
-	  * \sa CreateTruncatedPyramid
-	  */
+	 * Creates a regular truncated pyramid whose base is a regular polygon.
+	 * \sa CreateTruncatedPyramid
+	 */
 	static CPolyhedron::Ptr CreateRegularTruncatedPyramid(
 		uint32_t numBaseEdges, double baseRadius, double height, double ratio);
 	/**
-	  * This is a synonym for CreateRegularTruncatedPyramid.
-	  * \sa CreateRegularTruncatedPyramid
-	  */
+	 * This is a synonym for CreateRegularTruncatedPyramid.
+	 * \sa CreateRegularTruncatedPyramid
+	 */
 	static CPolyhedron::Ptr CreateRegularFrustum(
 		uint32_t numBaseEdges, double baseRadius, double height, double ratio);
 	/**
-	  * Creates a bifrustum (double truncated pyramid) whose base is a regular
+	 * Creates a bifrustum (double truncated pyramid) whose base is a regular
 	 * polygon lying in the XY plane.
-	  * \sa CreateBifrustum
-	  */
+	 * \sa CreateBifrustum
+	 */
 	static CPolyhedron::Ptr CreateRegularBifrustum(
 		uint32_t numBaseEdges, double baseRadius, double height1, double ratio1,
 		double height2, double ratio2);
 	/**
-	  * Creates a cupola.
-	  * \throw std::logic_error if the number of edges is odd or less than four.
-	  */
+	 * Creates a cupola.
+	 * \throw std::logic_error if the number of edges is odd or less than four.
+	 */
 	static CPolyhedron::Ptr CreateCupola(
 		uint32_t numBaseEdges, double edgeLength);
 	/**
-	  * Creates a trapezohedron whose dual is exactly an archimedean antiprism.
+	 * Creates a trapezohedron whose dual is exactly an archimedean antiprism.
 	 * Creates a cube if numBaseEdges is equal to 3.
-	  * \todo Actually resulting height is significantly higher than that passed
+	 * \todo Actually resulting height is significantly higher than that passed
 	 * to the algorithm.
-	  * \sa CreateTrapezohedron,CreateArchimedeanRegularAntiprism,getDual
-	  */
+	 * \sa CreateTrapezohedron,CreateArchimedeanRegularAntiprism,getDual
+	 */
 	static CPolyhedron::Ptr CreateCatalanTrapezohedron(
 		uint32_t numBaseEdges, double height);
 	/**
-	  * Creates a double pyramid whose dual is exactly an archimedean prism.
+	 * Creates a double pyramid whose dual is exactly an archimedean prism.
 	 * Creates an octahedron if numBaseEdges is equal to 4.
-	  * \todo Actually resulting height is significantly higher than that passed
+	 * \todo Actually resulting height is significantly higher than that passed
 	 * to the algorithm.
-	  * \sa CreateDoublePyramid,CreateArchimedeanRegularPrism,getDual
-	  */
+	 * \sa CreateDoublePyramid,CreateArchimedeanRegularPrism,getDual
+	 */
 	static CPolyhedron::Ptr CreateCatalanDoublePyramid(
 		uint32_t numBaseEdges, double height);
 	/**
@@ -648,108 +648,108 @@ class CPolyhedron : public CRenderizableDisplayList
 	 */
 
 	/**
-	  * Render
-	  * \sa CRenderizable
-	  */
+	 * Render
+	 * \sa CRenderizable
+	 */
 	void render_dl() const override;
 	/**
-	  * Ray trace
-	  * \sa CRenderizable
-	  */
+	 * Ray trace
+	 * \sa CRenderizable
+	 */
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
 	/**
-	  * Gets a list with the polyhedron's vertices.
-	  */
+	 * Gets a list with the polyhedron's vertices.
+	 */
 	inline void getVertices(std::vector<mrpt::math::TPoint3D>& vertices) const
 	{
 		vertices = mVertices;
 	}
 	/**
-	  * Gets a list with the polyhedron's edges.
-	  */
+	 * Gets a list with the polyhedron's edges.
+	 */
 	inline void getEdges(std::vector<TPolyhedronEdge>& edges) const
 	{
 		edges = mEdges;
 	}
 	/**
-	  * Gets a list with the polyhedron's faces.
-	  */
+	 * Gets a list with the polyhedron's faces.
+	 */
 	inline void getFaces(std::vector<TPolyhedronFace>& faces) const
 	{
 		faces = mFaces;
 	}
 	/**
-	  * Gets the amount of vertices.
-	  */
+	 * Gets the amount of vertices.
+	 */
 	inline uint32_t getNumberOfVertices() const { return mVertices.size(); }
 	/**
-	  * Gets the amount of edges.
-	  */
+	 * Gets the amount of edges.
+	 */
 	inline uint32_t getNumberOfEdges() const { return mEdges.size(); }
 	/**
-	  * Gets the amount of faces.
-	  */
+	 * Gets the amount of faces.
+	 */
 	inline uint32_t getNumberOfFaces() const { return mFaces.size(); }
 	/**
-	  * Gets a vector with each edge's length.
-	  */
+	 * Gets a vector with each edge's length.
+	 */
 	void getEdgesLength(std::vector<double>& lengths) const;
 	/**
-	  * Gets a vector with each face's area. Won't work properly if the polygons
+	 * Gets a vector with each face's area. Won't work properly if the polygons
 	 * are not convex.
-	  */
+	 */
 	void getFacesArea(std::vector<double>& areas) const;
 	/**
-	  * Gets the polyhedron volume. Won't work properly if the polyhedron is not
+	 * Gets the polyhedron volume. Won't work properly if the polyhedron is not
 	 * convex.
-	  */
+	 */
 	double getVolume() const;
 	/**
-	  * Returns whether the polyhedron will be rendered as a wireframe object.
-	  */
+	 * Returns whether the polyhedron will be rendered as a wireframe object.
+	 */
 	inline bool isWireframe() const { return mWireframe; }
 	/**
-	  * Sets whether the polyhedron will be rendered as a wireframe object.
-	  */
+	 * Sets whether the polyhedron will be rendered as a wireframe object.
+	 */
 	inline void setWireframe(bool enabled = true)
 	{
 		mWireframe = enabled;
 		CRenderizableDisplayList::notifyChange();
 	}
 	/**
-	  * Gets the wireframe lines width.
-	  */
+	 * Gets the wireframe lines width.
+	 */
 	inline double getLineWidth() const { return mLineWidth; }
 	/**
-	  * Sets the width used to render lines, when wireframe rendering is
+	 * Sets the width used to render lines, when wireframe rendering is
 	 * activated.
-	  */
+	 */
 	inline void setLineWidth(double lineWidth)
 	{
 		mLineWidth = lineWidth;
 		CRenderizableDisplayList::notifyChange();
 	}
 	/**
-	  * Gets the polyhedron as a set of polygons.
-	  * \sa mrpt::math::TPolygon3D
-	  */
+	 * Gets the polyhedron as a set of polygons.
+	 * \sa mrpt::math::TPolygon3D
+	 */
 	void getSetOfPolygons(std::vector<math::TPolygon3D>& vec) const;
 	/**
-	  * Gets the polyhedron as a set of polygons, with the pose transformation
+	 * Gets the polyhedron as a set of polygons, with the pose transformation
 	 * already applied.
-	  * \sa mrpt::math::TPolygon3D,mrpt::poses::CPose3D
-	  */
+	 * \sa mrpt::math::TPolygon3D,mrpt::poses::CPose3D
+	 */
 	void getSetOfPolygonsAbsolute(std::vector<math::TPolygon3D>& vec) const;
 	/** Gets the intersection of two polyhedra, either as a set or as a matrix
 	 * of intersections. Each intersection is represented by a TObject3D.
-	  * \sa mrpt::math::TObject3D
-	  */
+	 * \sa mrpt::math::TObject3D
+	 */
 	template <class T>
 	inline static size_t getIntersection(
 		const CPolyhedron::Ptr& p1, const CPolyhedron::Ptr& p2, T& container);
 	/**
-	  * Returns true if the polygon is a completely closed object.
-	  */
+	 * Returns true if the polygon is a completely closed object.
+	 */
 	inline bool isClosed() const
 	{
 		for (size_t i = 0; i < mVertices.size(); i++)
@@ -757,141 +757,141 @@ class CPolyhedron : public CRenderizableDisplayList
 		return true;
 	}
 	/**
-	  * Recomputes polygons, if necessary, so that each one is convex.
-	  */
+	 * Recomputes polygons, if necessary, so that each one is convex.
+	 */
 	void makeConvexPolygons();
 	/**
-	  * Gets the center of the polyhedron.
-	  */
+	 * Gets the center of the polyhedron.
+	 */
 	void getCenter(mrpt::math::TPoint3D& center) const;
 	/**
-	  * Creates a random polyhedron from the static methods.
-	  */
+	 * Creates a random polyhedron from the static methods.
+	 */
 	static CPolyhedron::Ptr CreateRandomPolyhedron(double radius);
 
 	/** @name Polyhedron special operations.
 		@{
 	 */
 	/**
-	  * Given a polyhedron, creates its dual.
-	  * \sa truncate,cantellate,augment
-	  * \throw std::logic_error Can't get the dual to this polyhedron.
-	  */
+	 * Given a polyhedron, creates its dual.
+	 * \sa truncate,cantellate,augment
+	 * \throw std::logic_error Can't get the dual to this polyhedron.
+	 */
 	CPolyhedron::Ptr getDual() const;
 	/**
-	  * Truncates a polyhedron to a given factor.
-	  * \sa getDual,cantellate,augment
-	  * \throw std::logic_error Polyhedron truncation results in skew polygons
+	 * Truncates a polyhedron to a given factor.
+	 * \sa getDual,cantellate,augment
+	 * \throw std::logic_error Polyhedron truncation results in skew polygons
 	 * and thus it's impossible to perform.
-	  */
+	 */
 	CPolyhedron::Ptr truncate(double factor) const;
 	/**
-	  * Cantellates a polyhedron to a given factor.
-	  * \sa getDual,truncate,augment
-	  */
+	 * Cantellates a polyhedron to a given factor.
+	 * \sa getDual,truncate,augment
+	 */
 	CPolyhedron::Ptr cantellate(double factor) const;
 	/**
-	  * Augments a polyhedron to a given height. This operation is roughly dual
+	 * Augments a polyhedron to a given height. This operation is roughly dual
 	 * to the truncation: given a body P, the operation dtdP and aP yield
 	 * resembling results.
-	  * \sa getDual,truncate,cantellate
-	  */
+	 * \sa getDual,truncate,cantellate
+	 */
 	CPolyhedron::Ptr augment(double height) const;
 	/**
-	  * Augments a polyhedron to a given height. This method only affects to
+	 * Augments a polyhedron to a given height. This method only affects to
 	 * faces with certain number of vertices.
-	  * \sa augment(double) const
-	  */
+	 * \sa augment(double) const
+	 */
 	CPolyhedron::Ptr augment(double height, size_t numVertices) const;
 	/**
-	  * Augments a polyhedron, so that the resulting triangles are equilateral.
+	 * Augments a polyhedron, so that the resulting triangles are equilateral.
 	 * If the argument is true, triangles are "cut" from the polyhedron, instead
 	 * of being added.
-	  * \throw std::logic_error a non-regular face has been found.
-	  * \sa augment(double) const
-	  */
+	 * \throw std::logic_error a non-regular face has been found.
+	 * \sa augment(double) const
+	 */
 	CPolyhedron::Ptr augment(bool direction = false) const;
 	/**
-	  * Augments a polyhedron, so that the resulting triangles are equilateral;
+	 * Augments a polyhedron, so that the resulting triangles are equilateral;
 	 * affects only faces with certain number of faces. If the second argument
 	 * is true, triangles are "cut" from the polyhedron.
-	  * \throw std::logic_error a non-regular face has been found.
-	  * \sa augment(double) const
-	  */
+	 * \throw std::logic_error a non-regular face has been found.
+	 * \sa augment(double) const
+	 */
 	CPolyhedron::Ptr augment(size_t numVertices, bool direction = false) const;
 	/**
-	  * Rotates a polyhedron around the Z axis a given amount of radians. In
-	  *some cases, this operation may be necessary to view the symmetry between
-	  *related objects.
-	  *	\sa scale
-	  */
+	 * Rotates a polyhedron around the Z axis a given amount of radians. In
+	 *some cases, this operation may be necessary to view the symmetry between
+	 *related objects.
+	 *	\sa scale
+	 */
 	CPolyhedron::Ptr rotate(double angle) const;
 	/**
-	  * Scales a polyhedron to a given factor.
-	  * \throw std::logic_error factor is not a strictly positive number.
-	  * \sa rotate
-	  */
+	 * Scales a polyhedron to a given factor.
+	 * \throw std::logic_error factor is not a strictly positive number.
+	 * \sa rotate
+	 */
 	CPolyhedron::Ptr scale(double factor) const;
 	/** @}
 	 */
 	/**
-	  * Updates the mutable list of polygons used in rendering and ray tracing.
-	  */
+	 * Updates the mutable list of polygons used in rendering and ray tracing.
+	 */
 	void updatePolygons() const;
 
    private:
 	/**
-	  * Generates a list of 2D vertices constituting a regular polygon.
-	  */
+	 * Generates a list of 2D vertices constituting a regular polygon.
+	 */
 	static std::vector<mrpt::math::TPoint2D> generateBase(
 		uint32_t numBaseEdges, double baseRadius);
 	/**
-	  * Generates a list of 2D vertices constituting a regular polygon, with an
+	 * Generates a list of 2D vertices constituting a regular polygon, with an
 	 * angle shift which makes it suitable for antiprisms.
-	  */
+	 */
 	static std::vector<mrpt::math::TPoint2D> generateShiftedBase(
 		uint32_t numBaseEdges, double baseRadius);
 	/**
-	  * Generates a list of 3D vertices constituting a regular polygon,
+	 * Generates a list of 3D vertices constituting a regular polygon,
 	 * appending it to an existing vector.
-	  */
+	 */
 	static void generateBase(
 		uint32_t numBaseEdges, double baseRadius, double height,
 		std::vector<mrpt::math::TPoint3D>& vec);
 	/**
-	  * Generates a list of 3D vertices constituting a regular polygon
+	 * Generates a list of 3D vertices constituting a regular polygon
 	 * conveniently shifted, appending it to an existing vector.
-	  */
+	 */
 	static void generateShiftedBase(
 		uint32_t numBaseEdges, double baseRadius, double height, double shift,
 		std::vector<mrpt::math::TPoint3D>& vec);
 	/**
-	  * Calculates the normal vector to a face.
-	  */
+	 * Calculates the normal vector to a face.
+	 */
 	bool setNormal(TPolyhedronFace& f, bool doCheck = true);
 	/**
-	  * Adds, to the existing list of edges, each edge in a given face.
-	  */
+	 * Adds, to the existing list of edges, each edge in a given face.
+	 */
 	void addEdges(const TPolyhedronFace& e);
 	/**
-	  * Checks whether a set of faces is suitable for a set of vertices.
-	  */
+	 * Checks whether a set of faces is suitable for a set of vertices.
+	 */
 	static bool checkConsistence(
 		const std::vector<mrpt::math::TPoint3D>& vertices,
 		const std::vector<TPolyhedronFace>& faces);
 	/**
-	  * Returns how many edges converge in a given vertex.
-	  */
+	 * Returns how many edges converge in a given vertex.
+	 */
 	size_t edgesInVertex(size_t vertex) const;
 	/**
-	  * Returns how many faces converge in a given vertex.
-	  */
+	 * Returns how many faces converge in a given vertex.
+	 */
 	size_t facesInVertex(size_t vertex) const;
 
    public:
 	/**
-	  * Basic empty constructor.
-	  */
+	 * Basic empty constructor.
+	 */
 	inline CPolyhedron()
 		: mVertices(),
 		  mEdges(),
@@ -902,9 +902,9 @@ class CPolyhedron : public CRenderizableDisplayList
 	{
 	}
 	/**
-	  * Basic constructor with a list of vertices and another of faces, checking
+	 * Basic constructor with a list of vertices and another of faces, checking
 	 * for correctness.
-	  */
+	 */
 	inline CPolyhedron(
 		const std::vector<mrpt::math::TPoint3D>& vertices,
 		const std::vector<TPolyhedronFace>& faces, bool doCheck = true)
@@ -960,31 +960,31 @@ size_t CPolyhedron::getIntersection(
 }
 
 /**
-  * Reads a polyhedron edge from a binary stream.
-  */
-mrpt::utils::CStream& operator>>(
-	mrpt::utils::CStream& in, CPolyhedron::TPolyhedronEdge& o);
+ * Reads a polyhedron edge from a binary stream.
+ */
+mrpt::serialization::CArchive& operator>>(
+	mrpt::serialization::CArchive& in, CPolyhedron::TPolyhedronEdge& o);
 /**
-  * Writes a polyhedron edge to a binary stream.
-  */
-mrpt::utils::CStream& operator<<(
-	mrpt::utils::CStream& out, const CPolyhedron::TPolyhedronEdge& o);
+ * Writes a polyhedron edge to a binary stream.
+ */
+mrpt::serialization::CArchive& operator<<(
+	mrpt::serialization::CArchive& out, const CPolyhedron::TPolyhedronEdge& o);
 /**
-  * Reads a polyhedron face from a binary stream.
-  */
-mrpt::utils::CStream& operator>>(
-	mrpt::utils::CStream& in, CPolyhedron::TPolyhedronFace& o);
+ * Reads a polyhedron face from a binary stream.
+ */
+mrpt::serialization::CArchive& operator>>(
+	mrpt::serialization::CArchive& in, CPolyhedron::TPolyhedronFace& o);
 /**
-  * Writes a polyhedron face to a binary stream.
-  */
-mrpt::utils::CStream& operator<<(
-	mrpt::utils::CStream& out, const CPolyhedron::TPolyhedronFace& o);
-}
-namespace utils
+ * Writes a polyhedron face to a binary stream.
+ */
+mrpt::serialization::CArchive& operator<<(
+	mrpt::serialization::CArchive& out, const CPolyhedron::TPolyhedronFace& o);
+}  // namespace opengl
+namespace typemeta
 {
 // Specialization must occur in the same namespace
 MRPT_DECLARE_TTYPENAME_NAMESPACE(CPolyhedron::TPolyhedronEdge, mrpt::opengl)
 MRPT_DECLARE_TTYPENAME_NAMESPACE(CPolyhedron::TPolyhedronFace, mrpt::opengl)
-}
-}
+}  // namespace typemeta
+}  // namespace mrpt
 #endif

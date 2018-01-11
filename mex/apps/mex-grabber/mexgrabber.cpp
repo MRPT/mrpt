@@ -19,10 +19,10 @@
   -----------------------------------------------------------------------------*/
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
-#include <mrpt/utils/CImage.h>
-#include <mrpt/utils/round.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/img/CImage.h>
+#include <mrpt/core/round.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/filesystem.h>
 
@@ -47,7 +47,6 @@ using namespace mrpt::obs;
 using namespace mrpt;
 using namespace mrpt::system;
 using namespace mrpt::hwdrivers;
-using namespace mrpt::utils;
 using namespace std;
 using namespace mexplus;
 
@@ -129,10 +128,10 @@ MEX_DEFINE(new)(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 	// ----------------------------------------------
 	// Launch threads:
 	// ----------------------------------------------
-	vector_string sections;
+	std::vector<std::string> sections;
 	iniFile.getAllSections(sections);
 
-	for (vector_string::iterator it = sections.begin(); it != sections.end();
+	for (std::vector<std::string>::iterator it = sections.begin(); it != sections.end();
 		 ++it)
 	{
 		if (*it == GLOBAL_SECTION_NAME || it->empty() ||

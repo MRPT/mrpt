@@ -11,9 +11,9 @@
 
 #include <mrpt/nav/reactive/CMultiObjectiveMotionOptimizerBase.h>
 #include <mrpt/system/string_utils.h>
+#include <limits>
 
 using namespace mrpt::nav;
-using namespace mrpt::utils;
 
 IMPLEMENTS_VIRTUAL_MRPT_OBJECT(
 	CMultiObjectiveMotionOptimizerBase, CObject, mrpt::nav)
@@ -144,7 +144,7 @@ int CMultiObjectiveMotionOptimizerBase::decide(
 		for (const auto& s : score_values)
 		{
 			const auto it = s.find(sScoreName);
-			if (it != s.cend()) mrpt::utils::keep_max(maxScore, it->second);
+			if (it != s.cend()) mrpt::keep_max(maxScore, it->second);
 		}
 
 		// Normalize:
@@ -197,11 +197,10 @@ int CMultiObjectiveMotionOptimizerBase::decide(
 				if (val == 0)
 				{
 					assert_failed = true;
-					extra_info.log_entries.emplace_back(
-						mrpt::format(
-							"[CMultiObjectiveMotionOptimizerBase] "
-							"mov_idx=%u ASSERT failed: `%s`",
-							mov_idx, ma.get_original_expression().c_str()));
+					extra_info.log_entries.emplace_back(mrpt::format(
+						"[CMultiObjectiveMotionOptimizerBase] "
+						"mov_idx=%u ASSERT failed: `%s`",
+						mov_idx, ma.get_original_expression().c_str()));
 					break;
 				}
 			}
@@ -226,11 +225,11 @@ CMultiObjectiveMotionOptimizerBase::Ptr
 {
 	try
 	{
-		mrpt::utils::registerAllPendingClasses();
+		mrpt::rtti::registerAllPendingClasses();
 
 		// Factory:
-		const mrpt::utils::TRuntimeClassId* classId =
-			mrpt::utils::findRegisteredClass(className);
+		const mrpt::rtti::TRuntimeClassId* classId =
+			mrpt::rtti::findRegisteredClass(className);
 		if (!classId) return nullptr;
 
 		return CMultiObjectiveMotionOptimizerBase::Ptr(
@@ -260,7 +259,7 @@ CMultiObjectiveMotionOptimizerBase::TParamsBase::TParamsBase()
 }
 
 void CMultiObjectiveMotionOptimizerBase::TParamsBase::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& c, const std::string& s)
+	const mrpt::config::CConfigFileBase& c, const std::string& s)
 {
 	// Load: formula_score
 	{
@@ -319,11 +318,11 @@ void CMultiObjectiveMotionOptimizerBase::TParamsBase::loadFromConfigFile(
 }
 
 void CMultiObjectiveMotionOptimizerBase::TParamsBase::saveToConfigFile(
-	mrpt::utils::CConfigFileBase& c, const std::string& s) const
+	mrpt::config::CConfigFileBase& c, const std::string& s) const
 {
 	// Save: formula_score
-	const int WN = mrpt::utils::MRPT_SAVE_NAME_PADDING(),
-			  WV = mrpt::utils::MRPT_SAVE_VALUE_PADDING();
+	const int WN = mrpt::config::MRPT_SAVE_NAME_PADDING(),
+			  WV = mrpt::config::MRPT_SAVE_VALUE_PADDING();
 
 	{
 		const std::string sComment =

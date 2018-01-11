@@ -10,7 +10,7 @@
 #ifndef mrpt_vision_chessboard_camera_calib_H
 #define mrpt_vision_chessboard_camera_calib_H
 
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/vision/types.h>
@@ -31,23 +31,23 @@ struct TImageCalibData
 {
 	/** This image will be automatically loaded from the file name passed to
 	 * checkerBoardCameraCalibration */
-	mrpt::utils::CImage img_original;
+	mrpt::img::CImage img_original;
 	/** At output, this will contain the detected checkerboard overprinted to
 	 * the image. */
-	mrpt::utils::CImage img_checkboard;
+	mrpt::img::CImage img_checkboard;
 	/** At output, this will be the rectified image */
-	mrpt::utils::CImage img_rectified;
+	mrpt::img::CImage img_rectified;
 	/** At output, the detected corners (x,y) in pixel units. */
-	std::vector<mrpt::utils::TPixelCoordf> detected_corners;
+	std::vector<mrpt::img::TPixelCoordf> detected_corners;
 	/** At output, the reconstructed pose of the camera. */
 	mrpt::poses::CPose3D reconstructed_camera_pose;
 	/** At output, only will have an empty vector if the checkerboard was not
 	 * found in this image, or the predicted (reprojected) corners, which were
 	 * used to estimate the average square error. */
-	std::vector<mrpt::utils::TPixelCoordf> projectedPoints_distorted;
+	std::vector<mrpt::img::TPixelCoordf> projectedPoints_distorted;
 	/** At output, like projectedPoints_distorted but for the undistorted image.
 	 */
-	std::vector<mrpt::utils::TPixelCoordf> projectedPoints_undistorted;
+	std::vector<mrpt::img::TPixelCoordf> projectedPoints_undistorted;
 
 	/** Empty all the data */
 	void clear() { *this = TImageCalibData(); }
@@ -92,11 +92,11 @@ bool checkerBoardCameraCalibration(
 	TCalibrationImageList& images, unsigned int check_size_x,
 	unsigned int check_size_y, double check_squares_length_X_meters,
 	double check_squares_length_Y_meters,
-	mrpt::utils::TCamera& out_camera_params, bool normalize_image = true,
+	mrpt::img::TCamera& out_camera_params, bool normalize_image = true,
 	double* out_MSE = nullptr, bool skipDrawDetectedImgs = false,
 	bool useScaramuzzaAlternativeDetector = false);
 
-/** \overload with matrix of intrinsic params instead of mrpt::utils::TCamera
+/** \overload with matrix of intrinsic params instead of mrpt::img::TCamera
  */
 bool checkerBoardCameraCalibration(
 	TCalibrationImageList& images, unsigned int check_size_x,

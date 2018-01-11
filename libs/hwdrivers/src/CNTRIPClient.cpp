@@ -12,13 +12,13 @@
 #include <mrpt/hwdrivers/CNTRIPClient.h>
 #include <mrpt/comms/CClientTCPSocket.h>
 #include <mrpt/comms/net_utils.h>
-#include <mrpt/utils/CStringList.h>
 #include <mrpt/math/wrap2pi.h>
-
+#include <mrpt/core/format.h>
 #include <mrpt/system/string_utils.h>
+#include <mrpt/core/bits_math.h>
+#include <iostream>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::comms;
 using namespace mrpt::system;
 using namespace mrpt::hwdrivers;
@@ -165,7 +165,7 @@ void CNTRIPClient::private_ntrip_thread()
 			{
 				TConnResult connect_res = connError;
 
-				vector_byte buf;
+				std::vector<uint8_t> buf;
 				try
 				{
 					// Nope, it's the first time: get params and try open the
@@ -198,7 +198,7 @@ void CNTRIPClient::private_ntrip_thread()
 					{
 						string auth_str =
 							m_args.user + string(":") + m_args.password;
-						vector_byte v(auth_str.size());
+						std::vector<uint8_t> v(auth_str.size());
 						::memcpy(&v[0], &auth_str[0], auth_str.size());
 
 						string encoded_str;
@@ -274,7 +274,7 @@ void CNTRIPClient::private_ntrip_thread()
 
 			// Read data from the stream and accumulate it in a buffer:
 			// ----------------------------------------------------------------------
-			vector_byte buf;
+			std::vector<uint8_t> buf;
 			size_t to_read_now = 1000;
 			buf.resize(to_read_now);
 			size_t len = my_sock.readAsync(&buf[0], to_read_now, 10, 5);
@@ -293,7 +293,7 @@ void CNTRIPClient::private_ntrip_thread()
 
 			// Send back data to the server, if so requested:
 			// ------------------------------------------
-			mrpt::vector_byte upload_data;
+			std::vector<uint8_t> upload_data;
 			m_upload_data.readAndClear(upload_data);
 			if (!upload_data.empty())
 			{
@@ -341,11 +341,10 @@ bool CNTRIPClient::retrieveListOfMountpoints(
 	// Parse contents:
 	if (ret != net::erOk) return false;
 
-	CStringList lstLines(content);
-
-	for (size_t i = 0; i < lstLines.size(); i++)
+	std::stringstream ss(content);
+	string lin;
+	while (std::getline(ss, lin, '\n'))
 	{
-		const string& lin = lstLines(i);
 		if (lin.size() < 5) continue;
 		if (0 != ::strncmp("STR;", lin.c_str(), 4)) continue;
 
@@ -387,7 +386,7 @@ void CNTRIPClient::sendBackToServer(const std::string& data)
 {
 	if (data.empty()) return;
 
-	mrpt::vector_byte d(data.size());
+	std::vector<uint8_t> d(data.size());
 	::memcpy(&d[0], &data[0], data.size());
 	m_upload_data.appendData(d);
 }

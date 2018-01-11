@@ -9,7 +9,7 @@
 #ifndef CDetectorDoorCrossing_H
 #define CDetectorDoorCrossing_H
 
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/system/COutputLogger.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/obs/CSensoryFrame.h>
@@ -25,7 +25,7 @@ namespace detectors
  *
  * \sa CPointsMap   \ingroup mrpt_slam_grp
  */
-class CDetectorDoorCrossing : public mrpt::utils::COutputLogger
+class CDetectorDoorCrossing : public mrpt::system::COutputLogger
 {
    public:
 	/** The constructor. See options for customizing the default parameters.

@@ -14,17 +14,17 @@
 
 #include <mrpt/version.h>
 #include <mrpt/otherlibs/tclap/CmdLine.h>
-#include <mrpt/utils/CMemoryStream.h>
-#include <mrpt/utils/CFileOutputStream.h>
-#include <mrpt/utils/CFileInputStream.h>
-#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/io/CMemoryStream.h>
+#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/io/CFileInputStream.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/stl_serialization.h>
 
 #include "common.h"
 
 using namespace mrpt;
 using namespace mrpt::system;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace std;
 
 std::list<TestData> lstTests;
@@ -114,7 +114,7 @@ void dummy_do_nothing_with_string(const std::string& s)
 #include "../common/sample_image1.h"
 #include "../common/sample_image2.h"
 
-void getTestImage(unsigned int img_index, mrpt::utils::CImage& out_img)
+void getTestImage(unsigned int img_index, mrpt::img::CImage& out_img)
 {
 	CMemoryStream buf;
 	switch (img_index)
@@ -127,9 +127,9 @@ void getTestImage(unsigned int img_index, mrpt::utils::CImage& out_img)
 			buf.assignMemoryNotOwn(sample_image2, sizeof(sample_image2));
 			break;
 		default:
-			THROW_EXCEPTION("Sample image index out of range!")
+			THROW_EXCEPTION("Sample image index out of range!");
 	}
-	buf >> out_img;
+	archiveFrom(buf) >> out_img;
 }
 
 #include "run_build_tables.h"
@@ -349,7 +349,8 @@ int main(int argc, char** argv)
 									int(MRPT_WORD_SIZE));
 			cout << "Saving perf-data to: " << fil_name << endl;
 			CFileOutputStream f(fil_name);
-			f << all_perf_data;
+			auto arch = archiveFrom(f);
+			arch << all_perf_data;
 		}
 
 		return 0;

@@ -116,7 +116,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 {
 	MRPT_START
 
-	using mrpt::math::square;
+	using mrpt::square;
 
 	// --------------------------------------
 	//     Waypoint navigation algorithm
@@ -125,7 +125,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 		false;  // the robot is aligning into a waypoint with a desired heading
 
 	{
-		mrpt::utils::CTimeLoggerEntry tle(
+		mrpt::system::CTimeLoggerEntry tle(
 			m_timlog_delays, "CWaypointsNavigator::navigationStep()");
 		std::lock_guard<std::recursive_mutex> csl(m_nav_waypoints_cs);
 
@@ -206,8 +206,8 @@ void CWaypointsNavigator::waypoints_navigationStep()
 									"Trying to align to heading: %.02f deg. "
 									"Relative heading: %.02f deg. "
 									"With motion cmd: %s",
-									mrpt::utils::RAD2DEG(wp.target_heading),
-									mrpt::utils::RAD2DEG(ang_err),
+									mrpt::RAD2DEG(wp.target_heading),
+									mrpt::RAD2DEG(ang_err),
 									align_cmd ? align_cmd->asString().c_str()
 											  : "nullptr (operation not "
 												"supported by this robot)");
@@ -235,8 +235,8 @@ void CWaypointsNavigator::waypoints_navigationStep()
 									"Waiting for the robot to get aligned: "
 									"current_heading=%.02f deg "
 									"target_heading=%.02f deg",
-									mrpt::utils::RAD2DEG(m_curPoseVel.pose.phi),
-									mrpt::utils::RAD2DEG(wp.target_heading));
+									mrpt::RAD2DEG(m_curPoseVel.pose.phi),
+									mrpt::RAD2DEG(wp.target_heading));
 							}
 						}
 					}
@@ -481,7 +481,7 @@ bool CWaypointsNavigator::isRelativePointReachable(
 	return impl_waypoint_is_reachable(wp_local_wrt_robot);
 }
 
-void CWaypointsNavigator::loadConfigFile(const mrpt::utils::CConfigFileBase& c)
+void CWaypointsNavigator::loadConfigFile(const mrpt::config::CConfigFileBase& c)
 {
 	MRPT_START
 
@@ -491,7 +491,7 @@ void CWaypointsNavigator::loadConfigFile(const mrpt::utils::CConfigFileBase& c)
 	MRPT_END
 }
 
-void CWaypointsNavigator::saveConfigFile(mrpt::utils::CConfigFileBase& c) const
+void CWaypointsNavigator::saveConfigFile(mrpt::config::CConfigFileBase& c) const
 {
 	CAbstractNavigator::saveConfigFile(c);
 	params_waypoints_navigator.saveToConfigFile(c, "CWaypointsNavigator");
@@ -499,7 +499,7 @@ void CWaypointsNavigator::saveConfigFile(mrpt::utils::CConfigFileBase& c) const
 
 void mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams::
 	loadFromConfigFile(
-		const mrpt::utils::CConfigFileBase& c, const std::string& s)
+		const mrpt::config::CConfigFileBase& c, const std::string& s)
 {
 	MRPT_LOAD_CONFIG_VAR(max_distance_to_allow_skip_waypoint, double, c, s);
 	MRPT_LOAD_CONFIG_VAR(min_timesteps_confirm_skip_waypoints, int, c, s);
@@ -510,7 +510,7 @@ void mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams::
 
 void mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams::
 	saveToConfigFile(
-		mrpt::utils::CConfigFileBase& c, const std::string& s) const
+		mrpt::config::CConfigFileBase& c, const std::string& s) const
 {
 	MRPT_SAVE_CONFIG_VAR_COMMENT(
 		max_distance_to_allow_skip_waypoint,
@@ -537,7 +537,7 @@ void mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams::
 CWaypointsNavigator::TWaypointsNavigatorParams::TWaypointsNavigatorParams()
 	: max_distance_to_allow_skip_waypoint(-1.0),
 	  min_timesteps_confirm_skip_waypoints(1),
-	  waypoint_angle_tolerance(mrpt::utils::DEG2RAD(5.0)),
+	  waypoint_angle_tolerance(mrpt::DEG2RAD(5.0)),
 	  rel_speed_for_stop_waypoints(0.10),
 	  multitarget_look_ahead(0)
 {

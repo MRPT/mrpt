@@ -9,7 +9,7 @@
 #ifndef CObservationRawDAQ_H
 #define CObservationRawDAQ_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/obs/CObservation.h>
 
 namespace mrpt

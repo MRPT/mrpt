@@ -19,31 +19,16 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CRobotPosesGraph, CSerializable, mrpt::hmtslam)
 
-/*---------------------------------------------------------------
-						writeToStream
-  ---------------------------------------------------------------*/
-void CRobotPosesGraph::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CRobotPosesGraph::serializeGetVersion() const { return 0; }
+void CRobotPosesGraph::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		uint32_t N = static_cast<uint32_t>(size());
-		out << N;
-
-		for (std::map<TPoseID, TPoseInfo>::const_iterator it = begin();
-			 it != end(); ++it)
-		{
-			out << it->first << it->second.sf << it->second.pdf;
-		}
-	}
+	uint32_t N = static_cast<uint32_t>(size());
+	out << N;
+	for (const auto& e : *this)
+		out << e.first << e.second.sf << e.second.pdf;
 }
 
-/*---------------------------------------------------------------
-						readFromStream
-  ---------------------------------------------------------------*/
-void CRobotPosesGraph::readFromStream(mrpt::utils::CStream& in, int version)
+void CRobotPosesGraph::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

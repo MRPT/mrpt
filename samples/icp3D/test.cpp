@@ -32,7 +32,6 @@ using namespace mrpt::poses;
 using namespace mrpt::slam;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 
 // Increase this values to get more precision. It will also increase run time.
 const size_t HOW_MANY_YAWS = 120;
@@ -141,10 +140,14 @@ void test_icp3D()
 	CSetOfObjects::Ptr PTNS1 = mrpt::make_aligned_shared<CSetOfObjects>();
 	CSetOfObjects::Ptr PTNS2 = mrpt::make_aligned_shared<CSetOfObjects>();
 
+<<<<<<< HEAD
+	CPointsMap::COLOR_3DSCENE(mrpt::img::TColorf(1,0,0));
+=======
 	CPointsMap::COLOR_3DSCENE(mrpt::utils::TColorf(1, 0, 0));
+>>>>>>> master
 	M1.getAs3DObject(PTNS1);
 
-	CPointsMap::COLOR_3DSCENE(mrpt::utils::TColorf(0, 0, 1));
+	CPointsMap::COLOR_3DSCENE(mrpt::img::TColorf(0, 0, 1));
 	M2_noisy.getAs3DObject(PTNS2);
 
 	scene2->insert(PTNS1);

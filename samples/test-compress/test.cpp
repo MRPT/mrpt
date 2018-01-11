@@ -8,12 +8,11 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/system/vector_loadsave.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/compress.h>
 #include <cstdio>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::system;
 using namespace std;

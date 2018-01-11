@@ -42,7 +42,7 @@ class CRangeScanEdgeRegistrationDecider
 	 * RangeScanRegistrationDecider_t parent class.
 	 */
 	typedef mrpt::graphslam::deciders::CRangeScanOps<GRAPH_T> range_ops_t;
-	typedef std::map<mrpt::utils::TNodeID,
+	typedef std::map<mrpt::graphs::TNodeID,
 					 mrpt::obs::CObservation2DRangeScan::Ptr>
 		nodes_to_scans2D_t;
 
