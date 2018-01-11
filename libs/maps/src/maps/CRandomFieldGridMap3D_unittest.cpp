@@ -18,7 +18,7 @@ TEST(CRandomFieldGridMap3D, insertCheckMapBounds)
 		mrpt::maps::CRandomFieldGridMap3D::gimNearest;
 
 	mrpt::maps::CRandomFieldGridMap3D grid3d;
-	// grid3d.setMinLoggingLevel(mrpt::utils::LVL_DEBUG);
+	// grid3d.setMinLoggingLevel(mrpt::system::LVL_DEBUG);
 
 	grid3d.setSize(
 		-4.0, 4.0, 0.0, 4.0, 0.0, 4.0,
@@ -64,7 +64,7 @@ TEST(CRandomFieldGridMap3D, insertPointsAndRead)
 	mrpt::maps::CRandomFieldGridMap3D::TVoxelInterpolationMethod im =
 		mrpt::maps::CRandomFieldGridMap3D::gimNearest;
 	mrpt::maps::CRandomFieldGridMap3D grid3d;
-	// grid3d.setMinLoggingLevel(mrpt::utils::LVL_DEBUG);
+	// grid3d.setMinLoggingLevel(mrpt::system::LVL_DEBUG);
 
 	grid3d.setSize(
 		-4.0, 4.0, 0.0, 4.0, 0.0, 4.0,

@@ -10,9 +10,11 @@
 #include "obs-precomp.h"  // Precompiled headers
 
 #include <mrpt/obs/VelodyneCalibration.h>
-#include <mrpt/utils/bits.h>
+#include <mrpt/core/bits_math.h>
+#include <mrpt/core/exceptions.h>
 #include <iostream>
 #include <map>
+#include <cmath>
 
 #undef _UNICODE  // JLBC, for xmlParser
 #include "xmlparser/xmlParser.h"
@@ -147,9 +149,9 @@ bool VelodyneCalibration::internal_loadFromXMLNode(void* node)
 		}
 
 		plc->sinVertCorrection =
-			std::sin(mrpt::utils::DEG2RAD(plc->verticalCorrection));
+			std::sin(mrpt::DEG2RAD(plc->verticalCorrection));
 		plc->cosVertCorrection =
-			std::cos(mrpt::utils::DEG2RAD(plc->verticalCorrection));
+			std::cos(mrpt::DEG2RAD(plc->verticalCorrection));
 
 		plc->sinVertOffsetCorrection =
 			plc->sinVertCorrection * plc->sinVertOffsetCorrection;

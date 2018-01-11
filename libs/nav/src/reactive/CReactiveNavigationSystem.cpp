@@ -11,12 +11,12 @@
 
 #include <mrpt/nav/reactive/CReactiveNavigationSystem.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/utils/CConfigFileMemory.h>
+#include <mrpt/config/CConfigFileMemory.h>
 
 using namespace mrpt;
 using namespace mrpt::poses;
+using namespace mrpt::system;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace mrpt::nav;
 using namespace std;
 
@@ -50,7 +50,7 @@ void CReactiveNavigationSystem::changeRobotShape(const math::CPolygon& shape)
 	m_PTGsMustBeReInitialized = true;
 	if (shape.verticesCount() < 3)
 	{
-		THROW_EXCEPTION("The robot shape has less than 3 vertices!!")
+		THROW_EXCEPTION("The robot shape has less than 3 vertices!!");
 	}
 	m_robotShape = shape;
 }
@@ -62,7 +62,7 @@ void CReactiveNavigationSystem::changeRobotCircularShapeRadius(const double R)
 }
 
 void CReactiveNavigationSystem::saveConfigFile(
-	mrpt::utils::CConfigFileBase& c) const
+	mrpt::config::CConfigFileBase& c) const
 {
 	CAbstractPTGBasedReactive::saveConfigFile(c);
 
@@ -74,7 +74,7 @@ void CReactiveNavigationSystem::saveConfigFile(
 }
 
 void CReactiveNavigationSystem::loadConfigFile(
-	const mrpt::utils::CConfigFileBase& c)
+	const mrpt::config::CConfigFileBase& c)
 {
 	MRPT_START
 
@@ -140,14 +140,14 @@ void CReactiveNavigationSystem::STEP1_InitPTGs()
 	{
 		m_PTGsMustBeReInitialized = false;
 
-		mrpt::utils::CTimeLoggerEntry tle(m_timelogger, "STEP1_InitPTGs");
+		mrpt::system::CTimeLoggerEntry tle(m_timelogger, "STEP1_InitPTGs");
 
 		for (unsigned int i = 0; i < PTGs.size(); i++)
 		{
 			PTGs[i]->deinitialize();
 
 			logFmt(
-				mrpt::utils::LVL_INFO,
+				mrpt::system::LVL_INFO,
 				"[CReactiveNavigationSystem::STEP1_InitPTGs] Initializing "
 				"PTG#%u (`%s`)...",
 				i, PTGs[i]->getDescription().c_str());
@@ -175,7 +175,7 @@ void CReactiveNavigationSystem::STEP1_InitPTGs()
 					i),
 				m_enableConsoleOutput /*verbose*/
 				);
-			logStr(mrpt::utils::LVL_INFO, "Done!");
+			logStr(mrpt::system::LVL_INFO, "Done!");
 		}
 	}
 }
@@ -280,14 +280,14 @@ void CReactiveNavigationSystem::loggingGetWSObstaclesAndShape(
 }
 
 void CReactiveNavigationSystem::TReactiveNavigatorParams::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& c, const std::string& s)
+	const mrpt::config::CConfigFileBase& c, const std::string& s)
 {
 	MRPT_LOAD_CONFIG_VAR_REQUIRED_CS(min_obstacles_height, double);
 	MRPT_LOAD_CONFIG_VAR_REQUIRED_CS(max_obstacles_height, double);
 }
 
 void CReactiveNavigationSystem::TReactiveNavigatorParams::saveToConfigFile(
-	mrpt::utils::CConfigFileBase& c, const std::string& s) const
+	mrpt::config::CConfigFileBase& c, const std::string& s) const
 {
 	MRPT_SAVE_CONFIG_VAR_COMMENT(
 		min_obstacles_height,

@@ -10,8 +10,8 @@
 #define CICP_H
 
 #include <mrpt/slam/CMetricMapsAlignmentAlgorithm.h>
-#include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/TEnumType.h>
+#include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/typemeta/TEnumType.h>
 
 namespace mrpt
 {
@@ -69,17 +69,17 @@ class CICP : public mrpt::slam::CMetricMapsAlignmentAlgorithm
    public:
 	/** The ICP algorithm configuration data
 	 */
-	class TConfigParams : public utils::CLoadableOptions
+	class TConfigParams : public mrpt::config::CLoadableOptions
 	{
 	   public:
 		/** Initializer for default values: */
 		TConfigParams();
 
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+			std::ostream& out) const override;  // See base docs
 
 		/** @name Algorithms selection
 			@{ */
@@ -128,11 +128,11 @@ class CICP : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 
 		/** This is the normalization constant \f$ \sigma^2_p \f$ that is used
 		 * to scale the whole 3x3 covariance.
-		  *  This has a default value of \f$ (0.02)^2 \f$, that is, a 2cm sigma.
-		  *  See paper: J.L. Blanco, J. Gonzalez-Jimenez, J.A.
+		 *  This has a default value of \f$ (0.02)^2 \f$, that is, a 2cm sigma.
+		 *  See paper: J.L. Blanco, J. Gonzalez-Jimenez, J.A.
 		 * Fernandez-Madrigal, "A Robust, Multi-Hypothesis Approach to Matching
 		 * Occupancy Grid Maps", Robotica, vol. 31, no. 5, pp. 687-701, 2013.
-		  */
+		 */
 		float covariance_varPoints;
 
 		/** Perform a RANSAC step, mrpt::tfest::se2_l2_robust(), after the ICP
@@ -141,7 +141,7 @@ class CICP : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 
 		/** @name RANSAC-step options for mrpt::tfest::se2_l2_robust() if \a
 		 * doRANSAC=true
-		  * @{ */
+		 * @{ */
 		unsigned int ransac_minSetSize, ransac_maxSetSize, ransac_nSimulations;
 		float ransac_mahalanobisDistanceThreshold;
 		/** RANSAC-step option: The standard deviation in X,Y of
@@ -174,10 +174,10 @@ class CICP : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 
 		/** Decimation of the point cloud being registered against the reference
 		 * one (default=5) - set to 1 to have the older (MRPT <0.9.5) behavior
-		  *  of not approximating ICP by ignoring the correspondence of some
+		 *  of not approximating ICP by ignoring the correspondence of some
 		 * points. The speed-up comes from a decimation of the number of KD-tree
 		 * queries,
-		  *  the most expensive step in ICP */
+		 *  the most expensive step in ICP */
 		uint32_t corresponding_points_decimation;
 	};
 
@@ -249,9 +249,9 @@ class CICP : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 
    protected:
 	/** Computes:
-	  *  \f[ K(x^2) = \frac{x^2}{x^2+\rho^2}  \f]
-	  *  or just return the input if options.useKernel = false.
-	  */
+	 *  \f[ K(x^2) = \frac{x^2}{x^2+\rho^2}  \f]
+	 *  or just return the input if options.useKernel = false.
+	 */
 	float kernel(const float& x2, const float& rho2);
 
 	mrpt::poses::CPosePDF::Ptr ICP_Method_Classic(
@@ -267,16 +267,16 @@ class CICP : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 		const mrpt::poses::CPose3DPDFGaussian& initialEstimationPDF,
 		TReturnInfo& outInfo);
 };
-}  // End of namespace
+}  // namespace slam
 
 // Specializations MUST occur at the same namespace:
-namespace utils
+namespace typemeta
 {
 template <>
 struct TEnumTypeFiller<slam::TICPAlgorithm>
 {
 	typedef slam::TICPAlgorithm enum_t;
-	static void fill(bimap<enum_t, std::string>& m_map)
+	static void fill(internal::bimap<enum_t, std::string>& m_map)
 	{
 		m_map.insert(slam::icpClassic, "icpClassic");
 		m_map.insert(slam::icpLevenbergMarquardt, "icpLevenbergMarquardt");
@@ -286,13 +286,13 @@ template <>
 struct TEnumTypeFiller<slam::TICPCovarianceMethod>
 {
 	typedef slam::TICPCovarianceMethod enum_t;
-	static void fill(bimap<enum_t, std::string>& m_map)
+	static void fill(internal::bimap<enum_t, std::string>& m_map)
 	{
 		m_map.insert(slam::icpCovLinealMSE, "icpCovLinealMSE");
 		m_map.insert(slam::icpCovFiniteDifferences, "icpCovFiniteDifferences");
 	}
 };
-}  // End of namespace
-}  // End of namespace
+}  // namespace typemeta
+}  // namespace mrpt
 
 #endif

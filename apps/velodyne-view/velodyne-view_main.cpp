@@ -18,8 +18,8 @@
 #include <mrpt/hwdrivers/CVelodyneScanner.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/maps/CColouredPointsMap.h>
-#include <mrpt/utils/CTicTac.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
@@ -31,7 +31,11 @@ using namespace mrpt::hwdrivers;
 using namespace mrpt::gui;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
-using namespace mrpt::utils;
+using namespace mrpt::io;
+using namespace mrpt::img;
+using namespace mrpt::config;
+using namespace mrpt::system;
+using namespace mrpt::serialization;
 using namespace mrpt::opengl;
 using namespace std;
 
@@ -93,6 +97,7 @@ void thread_grabbing(TThreadParam& p)
 					"Error creating output rawlog file: %s",
 					arg_out_rawlog.getValue().c_str())
 		}
+		auto arch = mrpt::serialization::archiveFrom(f_out_rawlog);
 
 		mrpt::hwdrivers::CVelodyneScanner velodyne;
 
@@ -100,7 +105,7 @@ void thread_grabbing(TThreadParam& p)
 
 		// Set params:
 		velodyne.setModelName(
-			mrpt::utils::TEnumType<mrpt::hwdrivers::CVelodyneScanner::model_t>::
+			mrpt::typemeta::TEnumType<mrpt::hwdrivers::CVelodyneScanner::model_t>::
 				name2value(arg_model.getValue()));
 		if (arg_ip_filter.isSet())
 			velodyne.setDeviceIP(
@@ -143,8 +148,8 @@ void thread_grabbing(TThreadParam& p)
 			// Save to log file:
 			if (f_out_rawlog.fileOpenCorrectly())
 			{
-				if (obs) f_out_rawlog << *obs;
-				if (obs_gps) f_out_rawlog << *obs_gps;
+				if (obs) arch << *obs;
+				if (obs_gps) arch << *obs_gps;
 			}
 
 			if (obs)

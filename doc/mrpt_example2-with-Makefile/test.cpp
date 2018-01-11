@@ -11,11 +11,10 @@
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/gui.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 
 using namespace mrpt;
 using namespace mrpt::gui;
-using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
 using namespace std;
 
@@ -38,7 +37,7 @@ void TestCameraCaptureAsk()
 	cout << "Close the window to exit." << endl;
 
 	double counter = 0;
-	mrpt::utils::CTicTac	tictac;
+	mrpt::system::CTicTac	tictac;
 
 	while (win.isOpen())
 	{

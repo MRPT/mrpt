@@ -16,7 +16,7 @@
 // This program requires the MRPT libraries ( http://www.mrpt.org/ )
 
 // Serialization, etc.
-#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/filesystem.h>
 
@@ -35,7 +35,6 @@
 
 using namespace mrpt;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::gui;
 using namespace mrpt::opengl;
@@ -57,8 +56,7 @@ int main(int argc, char **argv)
 		}
 
 		const string rawlog_file = string(argv[1]);
-		ASSERT_(mrpt::system::fileExists(rawlog_file))
-
+		ASSERT_(mrpt::system::fileExists(rawlog_file));
 		const TTimeStamp start_timestamp =
 			(argc==3) ?
 			mrpt::system::time_tToTimestamp(atof(argv[2])) :
@@ -132,7 +130,7 @@ int main(int argc, char **argv)
 			    win.setImageView( o->imageLeft ); // Use a 3D window to display a 2D image (exploits OpenGL acceleration)
 			    win.repaint();
 
-			    // Internally, mrpt::utils::CImage are stored in OpenCV's IPL format, so you can efficiently get
+			    // Internally, mrpt::img::CImage are stored in OpenCV's IPL format, so you can efficiently get
 			    // them as "IplImage*" and call OpenCV APIs:
 			    //
 			    // const IplImage * img_left  = o->imageLeft.getAs<IplImage>();

@@ -8,11 +8,12 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/random.h>
+#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/CMatrixTemplateNumeric.h>
 
 #include "common.h"
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::random;
 using namespace mrpt::math;
 using namespace std;

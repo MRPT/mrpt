@@ -10,10 +10,9 @@
 #include "maps-precomp.h"  // Precomp header
 
 #include <mrpt/maps/CRandomFieldGridMap3D.h>
-#include <mrpt/utils/CConfigFileBase.h>
-#include <mrpt/utils/CTicTac.h>
-#include <mrpt/utils/CFileOutputStream.h>
-
+#include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/system/CTicTac.h>
+#include <fstream>
 #include <mrpt/config.h>
 
 #if MRPT_HAS_VTK
@@ -29,7 +28,7 @@
 
 using namespace mrpt;
 using namespace mrpt::maps;
-using namespace mrpt::utils;
+using namespace mrpt::system;
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CRandomFieldGridMap3D, CSerializable, mrpt::maps)
@@ -83,7 +82,7 @@ void CRandomFieldGridMap3D::resize(
 
 void CRandomFieldGridMap3D::clear()
 {
-	mrpt::utils::CDynamicGrid3D<TRandomFieldVoxel>::clear();
+	mrpt::containers::CDynamicGrid3D<TRandomFieldVoxel>::clear();
 	internal_initialize();
 }
 
@@ -201,16 +200,16 @@ CRandomFieldGridMap3D::TInsertionOptions::TInsertionOptions()
 }
 
 void CRandomFieldGridMap3D::TInsertionOptions::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+	std::ostream& out) const
 {
-	out.printf("GMRF_lambdaPrior                     = %f\n", GMRF_lambdaPrior);
-	out.printf(
+	out << mrpt::format("GMRF_lambdaPrior                     = %f\n", GMRF_lambdaPrior);
+	out << mrpt::format(
 		"GMRF_skip_variance                   = %s\n",
 		GMRF_skip_variance ? "true" : "false");
 }
 
 void CRandomFieldGridMap3D::TInsertionOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
 {
 	GMRF_lambdaPrior = iniFile.read_double(
 		section.c_str(), "GMRF_lambdaPrior", GMRF_lambdaPrior);
@@ -254,26 +253,28 @@ bool CRandomFieldGridMap3D::saveAsVtkStructuredGrid(
 bool mrpt::maps::CRandomFieldGridMap3D::saveAsCSV(
 	const std::string& filName_mean, const std::string& filName_stddev) const
 {
-	CFileOutputStream f_mean, f_stddev;
+	std::ofstream f_mean, f_stddev;
 
-	if (!f_mean.open(filName_mean))
+	f_mean.open(filName_mean);
+	if (!f_mean.is_open())
 	{
 		return false;
 	}
 	else
 	{
-		f_mean.printf("x coord, y coord, z coord, scalar\n");
+		f_mean<< "x coord, y coord, z coord, scalar\n";
 	}
 
 	if (!filName_stddev.empty())
 	{
-		if (!f_stddev.open(filName_stddev))
+		f_stddev.open(filName_stddev);
+		if (!f_stddev.is_open())
 		{
 			return false;
 		}
 		else
 		{
-			f_mean.printf("x coord, y coord, z coord, scalar\n");
+			f_mean << "x coord, y coord, z coord, scalar\n";
 		}
 	}
 
@@ -285,10 +286,10 @@ bool mrpt::maps::CRandomFieldGridMap3D::saveAsCSV(
 		const double mean_val = m_map[j].mean_value;
 		const double stddev_val = m_map[j].stddev_value;
 
-		f_mean.printf("%f, %f, %f, %e\n", x, y, z, mean_val);
+		f_mean << mrpt::format("%f, %f, %f, %e\n", x, y, z, mean_val);
 
 		if (f_stddev.is_open())
-			f_stddev.printf("%f, %f, %f, %e\n", x, y, z, stddev_val);
+			f_stddev << mrpt::format("%f, %f, %f, %e\n", x, y, z, stddev_val);
 
 		// Increment coordinates:
 		if (++cx >= m_size_x)
@@ -376,41 +377,33 @@ bool CRandomFieldGridMap3D::insertIndividualReading(
 	MRPT_END;
 }
 
-void CRandomFieldGridMap3D::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CRandomFieldGridMap3D::serializeGetVersion() const { return 0; }
+void CRandomFieldGridMap3D::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		dyngridcommon_writeToStream(out);
+	dyngridcommon_writeToStream(out);
 
-		// To assure compatibility: The size of each cell:
-		uint32_t n = static_cast<uint32_t>(sizeof(TRandomFieldVoxel));
-		out << n;
+	// To assure compatibility: The size of each cell:
+	uint32_t n = static_cast<uint32_t>(sizeof(TRandomFieldVoxel));
+	out << n;
 
-		// Save the map contents:
-		n = static_cast<uint32_t>(m_map.size());
-		out << n;
+	// Save the map contents:
+	n = static_cast<uint32_t>(m_map.size());
+	out << n;
 
 // Save the "m_map": This requires special handling for big endian systems:
 #if MRPT_IS_BIG_ENDIAN
-		for (uint32_t i = 0; i < n; i++)
-		{
-			out << m_map[i].mean_value << m_map[i].stddev_value;
-		}
+	for (uint32_t i = 0; i < n; i++)
+		out << m_map[i].mean_value << m_map[i].stddev_value;
 #else
-		// Little endian: just write all at once:
-		out.WriteBuffer(&m_map[0], sizeof(m_map[0]) * m_map.size());
+	// Little endian: just write all at once:
+	out.WriteBuffer(&m_map[0], sizeof(m_map[0]) * m_map.size());
 #endif
 
-		out << insertionOptions.GMRF_lambdaPrior
-			<< insertionOptions.GMRF_skip_variance;
-	}
+	out << insertionOptions.GMRF_lambdaPrior
+		<< insertionOptions.GMRF_skip_variance;
 }
 
-void CRandomFieldGridMap3D::readFromStream(
-	mrpt::utils::CStream& in, int version)
+void CRandomFieldGridMap3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

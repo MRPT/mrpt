@@ -8,11 +8,10 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/hwdrivers/CImageGrabber_OpenCV.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/gui/CDisplayWindow.h>
 
-using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::gui;
 using namespace mrpt::obs;

@@ -9,15 +9,17 @@
 
 #include "hmtslam-precomp.h"  // Precomp header
 
-#include <mrpt/utils/CFileGZOutputStream.h>
-#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::hmtslam;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::obs;
+using namespace mrpt::io;
+using namespace mrpt::serialization;
 using namespace mrpt::maps;
 
 CTopLCDetector_GridMatching::CTopLCDetector_GridMatching(CHMTSLAM* hmtslam)
@@ -60,8 +62,8 @@ CPose3DPDF::Ptr CTopLCDetector_GridMatching::computeTopologicalObservationModel(
 		refArea->m_annotations.getAs<CMultiMetricMap>(
 			NODE_ANNOTATION_METRIC_MAPS, hypID, false);
 
-	ASSERT_(hMapRef->m_gridMaps.size() >= 1)
-	ASSERT_(hMapCur->m_gridMaps.size() >= 1)
+	ASSERT_(hMapRef->m_gridMaps.size() >= 1);
+	ASSERT_(hMapCur->m_gridMaps.size() >= 1);
 
 #if 0
 	{
@@ -109,13 +111,14 @@ CPose3DPDF::Ptr CTopLCDetector_GridMatching::computeTopologicalObservationModel(
 						  (int)currentArea->getID(), (int)refArea->getID());
 
 		m_hmtslam->logFmt(
-			mrpt::utils::LVL_DEBUG, "[TLCD_gridmatch] DEBUG: Saving %s\n",
+			mrpt::system::LVL_DEBUG, "[TLCD_gridmatch] DEBUG: Saving %s\n",
 			filStat.c_str());
 		CFileGZOutputStream f(filStat);
-		this->m_hmtslam->saveState(f);
+		auto arch = mrpt::serialization::archiveFrom(f);
+		this->m_hmtslam->saveState(arch);
 
 		m_hmtslam->logFmt(
-			mrpt::utils::LVL_DEBUG, "[TLCD_gridmatch] DEBUG: Saving %s\n",
+			mrpt::system::LVL_DEBUG, "[TLCD_gridmatch] DEBUG: Saving %s\n",
 			filRes.c_str());
 		CFileOutputStream f_res(filRes);
 		f_res.printf(
@@ -145,17 +148,16 @@ void CTopLCDetector_GridMatching::OnNewPose(
 CTopLCDetector_GridMatching::TOptions::TOptions() : matchingOptions() {}
 //  Load parameters from configuration source
 void CTopLCDetector_GridMatching::TOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& source, const std::string& section)
+	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {
 	matchingOptions.loadFromConfigFile(source, section);
 }
 
 //  This method must display clearly all the contents of the structure in
 //  textual form, sending it to a CStream.
-void CTopLCDetector_GridMatching::TOptions::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+void CTopLCDetector_GridMatching::TOptions::dumpToTextStream(std::ostream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [CTopLCDetector_GridMatching::TOptions] ------------ "
 		"\n\n");
 	matchingOptions.dumpToTextStream(out);

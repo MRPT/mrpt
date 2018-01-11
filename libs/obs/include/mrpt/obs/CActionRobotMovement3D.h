@@ -109,7 +109,7 @@ class CActionRobotMovement3D : public CAction
 	/** Each "true" entry means that the corresponding "velocities" element
 	 * contains valid data - There are 6 entries.
 	  */
-	vector_bool hasVelocities;
+	std::vector<bool> hasVelocities;
 
 	/** The velocity of the robot in each of 6D:
 	 * v_x,v_y,v_z,v_yaw,v_pitch,v_roll (linear in meters/sec and angular in

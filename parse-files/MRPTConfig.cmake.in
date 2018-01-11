@@ -14,8 +14,8 @@
 #
 #
 #   The libraries or "modules" which can be included are
-#   (see the full list and description in: http://www.mrpt.org/Libraries )
-#     - base           --> libmrpt-base
+#   (see the full list and description in: https://www.mrpt.org/Libraries )
+#     - poses          --> libmrpt-poses
 #     - opengl         --> libmrpt-opengl
 #     - hwdrivers      --> libmrpt-hwdrivers
 #     - nav            --> libmrpt-nav
@@ -126,27 +126,24 @@ SET(ALL_MRPT_LIBS "@ALL_MRPT_LIBS@")
 #  End of DECLARE_LIBS_HDR_ONLY
 
 # Add hierarchical dependencies of MRPT libraries,
-#  and replace "base"->"mrpt-base", etc.
+#  and replace "core"->"mrpt-core", etc.
 # ================================================
 SET(FINAL_LIST_COMPONENTS "")
-FOREACH(_MOD ${MRPT_FIND_COMPONENTS})
-	STRING(TOLOWER ${_MOD} _MOD)
-	SET(_NAM "mrpt-${_MOD}")
-	get_property(_LIB_DEP GLOBAL PROPERTY "${_NAM}_LIB_DEPS")
-
-	# Add deps:
-	IF (NOT "${_LIB_DEP}" STREQUAL "")
-		#MESSAGE(STATUS "ADD: ${_LIB_DEP}")
-		LIST(APPEND FINAL_LIST_COMPONENTS ${_LIB_DEP})
-	ENDIF ()
-
-	# Add lib itself:
-	IF (NOT "${_NAM}" STREQUAL "mrpt-core")
+FOREACH(iter RANGE 1 3) # repeat to get depedencies recursively
+	FOREACH(_MOD ${MRPT_FIND_COMPONENTS})
+		STRING(TOLOWER ${_MOD} _MOD)
+		STRING(REGEX REPLACE "mrpt-(.*)" "\\1" _MOD ${_MOD})
+		SET(_NAM "mrpt-${_MOD}")
 		LIST(APPEND FINAL_LIST_COMPONENTS ${_NAM})
-	ENDIF ()
+		get_property(_LIB_DEP GLOBAL PROPERTY "${_NAM}_LIB_DEPS")
+		# Add deps:
+		IF (NOT "${_LIB_DEP}" STREQUAL "")
+			LIST(APPEND FINAL_LIST_COMPONENTS ${_LIB_DEP})
+		ENDIF ()
+	ENDFOREACH()
+	SET(MRPT_FIND_COMPONENTS ${FINAL_LIST_COMPONENTS})
+	list(REMOVE_DUPLICATES MRPT_FIND_COMPONENTS)
 ENDFOREACH()
-SET(MRPT_FIND_COMPONENTS ${FINAL_LIST_COMPONENTS})
-list(REMOVE_DUPLICATES MRPT_FIND_COMPONENTS)
 
 # ======================================================
 # Check:

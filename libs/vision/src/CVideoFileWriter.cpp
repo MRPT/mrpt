@@ -21,8 +21,8 @@
 
 using namespace mrpt;
 using namespace mrpt::vision;
+using namespace mrpt::img;
 using namespace mrpt::system;
-using namespace mrpt::utils;
 
 /* ----------------------------------------------------------
 						Ctor
@@ -37,7 +37,7 @@ CVideoFileWriter::~CVideoFileWriter() { close(); }
    ---------------------------------------------------------- */
 bool CVideoFileWriter::open(
 	const std::string& out_file, double fps,
-	const mrpt::utils::TImageSize& frameSize, const std::string& fourcc,
+	const mrpt::img::TImageSize& frameSize, const std::string& fourcc,
 	bool isColor)
 {
 #if MRPT_HAS_OPENCV
@@ -50,7 +50,7 @@ bool CVideoFileWriter::open(
 #if MRPT_OPENCV_VERSION_NUM <= 0x100
 		cc = 0;  // Default
 #else
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 		cc = CV_FOURCC_DEFAULT;  // Default CV_FOURCC_PROMPT;
 #else
 		cc = CV_FOURCC_DEFAULT;  // Default
@@ -112,9 +112,9 @@ bool CVideoFileWriter::isOpen() const
 						operator <<
    ---------------------------------------------------------- */
 const CVideoFileWriter& CVideoFileWriter::operator<<(
-	const mrpt::utils::CImage& img) const
+	const mrpt::img::CImage& img) const
 {
-	if (!m_video.get()) THROW_EXCEPTION("Call open first")
+	if (!m_video.get()) THROW_EXCEPTION("Call open first");
 
 	if ((size_t)m_img_size.x != img.getWidth() ||
 		(size_t)m_img_size.y != img.getHeight())
@@ -126,7 +126,7 @@ const CVideoFileWriter& CVideoFileWriter::operator<<(
 
 #if MRPT_HAS_OPENCV
 	if (!cvWriteFrame(M_WRITER, img.getAs<IplImage>()))
-		THROW_EXCEPTION("Error writing image frame to video file")
+		THROW_EXCEPTION("Error writing image frame to video file");
 #endif
 	return *this;
 }
@@ -134,7 +134,7 @@ const CVideoFileWriter& CVideoFileWriter::operator<<(
 /* ----------------------------------------------------------
 						writeImage
    ---------------------------------------------------------- */
-bool CVideoFileWriter::writeImage(const mrpt::utils::CImage& img) const
+bool CVideoFileWriter::writeImage(const mrpt::img::CImage& img) const
 {
 	if (!m_video.get()) return false;
 

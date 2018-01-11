@@ -10,7 +10,7 @@
 #ifndef CROVIO_H
 #define CROVIO_H
 
-#include <mrpt/utils/TCamera.h>
+#include <mrpt/img/TCamera.h>
 #include <mrpt/obs/CObservationImage.h>
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
@@ -57,7 +57,7 @@ class CRovio
 		std::string user;
 		std::string password;
 
-		mrpt::utils::TCamera cameraParams;  // Mat. cam. preguntar paco
+		mrpt::img::TCamera cameraParams;  // Mat. cam. preguntar paco
 
 		TOptions();
 	} options;
@@ -146,7 +146,7 @@ class CRovio
 	 * if some critical parameter is missing or has an invalid value.
 	  */
 	void loadConfig(
-		const mrpt::utils::CConfigFileBase& configSource,
+		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& section);
 
 	/** This function launchs a thread with the function "thread_video()" which
@@ -180,7 +180,7 @@ class CRovio
 	  * \sa captureImageSync
 	  */
 	bool captureImageAsync(
-		mrpt::utils::CImage& out_img, bool recttified);  // string pict_name,
+		mrpt::img::CImage& out_img, bool recttified);  // string pict_name,
 
 	/** Return true if video is streaming correctly \sa retrieve_video */
 	bool isVideoStreamming() const;

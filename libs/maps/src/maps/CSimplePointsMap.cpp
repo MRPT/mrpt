@@ -10,7 +10,8 @@
 #include "maps-precomp.h"  // Precomp header
 
 #include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/core/bits_mem.h>
 
 #include "CPointsMap_crtp_common.h"
 
@@ -18,7 +19,6 @@ using namespace std;
 using namespace mrpt;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 
@@ -28,7 +28,7 @@ MAP_DEFINITION_REGISTER(
 
 CSimplePointsMap::TMapDefinition::TMapDefinition() {}
 void CSimplePointsMap::TMapDefinition::loadFromConfigFile_map_specific(
-	const mrpt::utils::CConfigFileBase& source,
+	const mrpt::config::CConfigFileBase& source,
 	const std::string& sectionNamePrefix)
 {
 	insertionOpts.loadFromConfigFile(
@@ -38,7 +38,7 @@ void CSimplePointsMap::TMapDefinition::loadFromConfigFile_map_specific(
 }
 
 void CSimplePointsMap::TMapDefinition::dumpToTextStream_map_specific(
-	mrpt::utils::CStream& out) const
+	std::ostream& out) const
 {
 	this->insertionOpts.dumpToTextStream(out);
 	this->likelihoodOpts.dumpToTextStream(out);
@@ -58,20 +58,11 @@ mrpt::maps::CMetricMap* CSimplePointsMap::internal_CreateFromMapDefinition(
 
 IMPLEMENTS_SERIALIZABLE(CSimplePointsMap, CPointsMap, mrpt::maps)
 
-/*---------------------------------------------------------------
-						Constructor
-  ---------------------------------------------------------------*/
 CSimplePointsMap::CSimplePointsMap() { reserve(400); }
-/*---------------------------------------------------------------
-						Destructor
-  ---------------------------------------------------------------*/
-CSimplePointsMap::~CSimplePointsMap() {}
-/*---------------------------------------------------------------
-				reserve & resize methods
- ---------------------------------------------------------------*/
+
 void CSimplePointsMap::reserve(size_t newLength)
 {
-	newLength = mrpt::utils::length2length4N(newLength);
+	newLength = mrpt::length2length4N(newLength);
 
 	x.reserve(newLength);
 	y.reserve(newLength);
@@ -102,44 +93,29 @@ void CSimplePointsMap::setSize(size_t newLength)
 	mark_as_modified();
 }
 
-/*---------------------------------------------------------------
-						Copy constructor
-  ---------------------------------------------------------------*/
 void CSimplePointsMap::copyFrom(const CPointsMap& obj)
 {
 	CPointsMap::base_copyFrom(
 		obj);  // This also does a ::resize(N) of all data fields.
 }
 
-/*---------------------------------------------------------------
-					writeToStream
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CSimplePointsMap::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CSimplePointsMap::serializeGetVersion() const { return 9; }
+void CSimplePointsMap::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 9;
-	else
+	uint32_t n = x.size();
+
+	// First, write the number of points:
+	out << n;
+
+	if (n > 0)
 	{
-		uint32_t n = x.size();
-
-		// First, write the number of points:
-		out << n;
-
-		if (n > 0)
-		{
-			out.WriteBufferFixEndianness(&x[0], n);
-			out.WriteBufferFixEndianness(&y[0], n);
-			out.WriteBufferFixEndianness(&z[0], n);
-		}
-		out << genericMapParams;  // v9
-
-		insertionOptions.writeToStream(
-			out);  // version 9: insert options are saved with its own method:
-		likelihoodOptions.writeToStream(out);  // Added in version 5:
+		out.WriteBufferFixEndianness(&x[0], n);
+		out.WriteBufferFixEndianness(&y[0], n);
+		out.WriteBufferFixEndianness(&z[0], n);
 	}
+	out << genericMapParams;  // v9
+	insertionOptions.writeToStream(out);  // v9
+	likelihoodOptions.writeToStream(out);  // v5
 }
 
 /*---------------------------------------------------------------
@@ -147,7 +123,7 @@ void CSimplePointsMap::writeToStream(
    Implements the reading from a CStream capability of
 	  CSerializable objects
   ---------------------------------------------------------------*/
-void CSimplePointsMap::readFromStream(mrpt::utils::CStream& in, int version)
+void CSimplePointsMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

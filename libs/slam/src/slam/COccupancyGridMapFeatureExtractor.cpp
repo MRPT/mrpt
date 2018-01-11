@@ -14,20 +14,10 @@
 using namespace mrpt;
 using namespace mrpt::maps;
 using namespace mrpt::slam;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
+using namespace mrpt::img;
+using namespace mrpt::system;
 
-/*---------------------------------------------------------------
-						Constructor
-  ---------------------------------------------------------------*/
-COccupancyGridMapFeatureExtractor::COccupancyGridMapFeatureExtractor() {}
-/*---------------------------------------------------------------
-						Destructor
-  ---------------------------------------------------------------*/
-COccupancyGridMapFeatureExtractor::~COccupancyGridMapFeatureExtractor() {}
-/*---------------------------------------------------------------
-						uncached_extractFeatures
-  ---------------------------------------------------------------*/
 void COccupancyGridMapFeatureExtractor::uncached_extractFeatures(
 	const mrpt::maps::COccupancyGridMap2D& grid,
 	mrpt::maps::CLandmarksMap& outMap, const size_t number_of_features,

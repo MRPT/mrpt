@@ -10,10 +10,9 @@
 #include "kinematics-precomp.h"  // Precompiled headers
 
 #include <mrpt/kinematics.h>
-#include <mrpt/utils/initializer.h>
+#include <mrpt/core/initializer.h>
 
 using namespace mrpt::kinematics;
-using namespace mrpt::utils;
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_kinematics)
 {

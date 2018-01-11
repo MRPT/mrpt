@@ -15,7 +15,7 @@
 
 #include <mrpt/poses/CPose3DPDFSOG.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/system/COutputLogger.h>
 #include <mrpt/opengl/opengl_frwds.h>
 
 #include <map>
@@ -36,7 +36,7 @@ namespace hmtslam
  * \sa CHierarchicalMHMap, CHMHMapArc, CHMHMapNode
   * \ingroup mrpt_hmtslam_grp
  */
-class CHierarchicalMapMHPartition : public mrpt::utils::COutputLogger
+class CHierarchicalMapMHPartition : public mrpt::system::COutputLogger
 {
    protected:
 	/** The internal list of nodes and arcs in the whole hierarchical model.
@@ -188,7 +188,7 @@ class CHierarchicalMapMHPartition : public mrpt::utils::COutputLogger
 		mrpt::poses::CPose3DPDFParticles& posePDF,
 		const THypothesisID& hypothesisID, unsigned int particlesCount = 100,
 		float additionalNoiseXYratio = 0.02,
-		float additionalNoisePhiRad = mrpt::utils::DEG2RAD(0.1)) const;
+		float additionalNoisePhiRad = mrpt::DEG2RAD(0.1)) const;
 
 	/** Computes the probability [0,1] of two areas' gridmaps to "match" (loop
 	 * closure), according to the grid maps and pose uncertainty from
@@ -263,7 +263,7 @@ class CHierarchicalMapMHPartition : public mrpt::utils::COutputLogger
 		const bool& showRobotPoseIDs = true) const;
 
 	/** Return a textual description of the whole graph */
-	void dumpAsText(utils::CStringList& s) const;
+	void dumpAsText(std::vector<std::string>& s) const;
 
 	/** Computes the probability [0,1] of two areas' gridmaps to overlap, via a
 	 * Monte Carlo aproximation.

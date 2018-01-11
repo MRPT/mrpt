@@ -13,8 +13,9 @@
 
 using namespace mrpt;
 using namespace mrpt::vision;
+using namespace mrpt::img;
+using namespace mrpt::img;
 using namespace mrpt::system;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
@@ -27,7 +28,7 @@ void CFeatureExtraction::internal_computeSpinImageDescriptors(
 {
 	MRPT_START
 
-	ASSERT_(options.SpinImagesOptions.radius > 1)
+	ASSERT_(options.SpinImagesOptions.radius > 1);
 
 	// This is a C++ implementation of the descriptor "Intensity-domain spin
 	// images" as described

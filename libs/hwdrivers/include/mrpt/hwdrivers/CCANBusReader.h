@@ -10,7 +10,7 @@
 #define CCANBusReader_H
 
 #include <mrpt/obs/CObservationCANBusJ1939.h>
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/system/COutputLogger.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/comms/CSerialPort.h>
 
@@ -57,7 +57,7 @@ namespace hwdrivers
   * \sa C2DRangeFinderAbstract
   * \ingroup mrpt_hwdrivers_grp
   */
-class CCANBusReader : public mrpt::utils::COutputLogger, public CGenericSensor
+class CCANBusReader : public mrpt::system::COutputLogger, public CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CCANBusReader)
 
@@ -109,7 +109,7 @@ class CCANBusReader : public mrpt::utils::COutputLogger, public CGenericSensor
    protected:
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(
-		const mrpt::utils::CConfigFileBase& configSource,
+		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& iniSection);
 
    public:

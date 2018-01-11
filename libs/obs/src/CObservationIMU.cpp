@@ -9,42 +9,29 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/obs/CObservationIMU.h>
 //#include <mrpt/math/CMatrixD.h>
 
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationIMU, CObservation, mrpt::obs)
 
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CObservationIMU::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CObservationIMU::serializeGetVersion() const { return 3; }
+void CObservationIMU::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 3;  // v1->v2 was only done to fix a bug in the ordering of
+	// v1->v2 was only done to fix a bug in the ordering of
 	// YAW/PITCH/ROLL rates.
-	else
-	{
-		out << sensorPose << dataIsPresent << timestamp;
-
-		out << rawMeasurements;
-		// Version 3: Added 6 new raw measurements (IMU_MAG_X=15 to
-		// IMU_TEMPERATURE=20)
-
-		out << sensorLabel;
-	}
+	out << sensorPose << dataIsPresent << timestamp;
+	out << rawMeasurements;
+	// Version 3: Added 6 new raw measurements (IMU_MAG_X=15 to
+	// IMU_TEMPERATURE=20)
+	out << sensorLabel;
 }
 
-/*---------------------------------------------------------------
-  Implements the reading from a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CObservationIMU::readFromStream(mrpt::utils::CStream& in, int version)
+void CObservationIMU::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

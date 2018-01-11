@@ -12,13 +12,13 @@
 #include <mrpt/opengl/CArrow.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/geometry.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
+
 using namespace mrpt::math;
 using namespace std;
 
@@ -30,10 +30,9 @@ CArrow::Ptr CArrow::Create(
 	float smallRadius, float largeRadius, float arrow_roll, float arrow_pitch,
 	float arrow_yaw)
 {
-	return CArrow::Ptr(
-		new CArrow(
-			x0, y0, z0, x1, y1, z1, headRatio, smallRadius, largeRadius,
-			arrow_roll, arrow_pitch, arrow_yaw));
+	return CArrow::Ptr(new CArrow(
+		x0, y0, z0, x1, y1, z1, headRatio, smallRadius, largeRadius, arrow_roll,
+		arrow_pitch, arrow_yaw));
 }
 /*---------------------------------------------------------------
 							render
@@ -139,7 +138,7 @@ void CArrow::render_dl() const
 		mat + 8,  // 1st vector
 		mat + 0,  // 2nd vector
 		out_v3  // Output cross product
-		);
+	);
 
 	glPushMatrix();
 
@@ -172,29 +171,17 @@ void CArrow::render_dl() const
 #endif
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CArrow::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CArrow::serializeGetVersion() const { return 1; }
+void CArrow::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		writeToStreamRender(out);
-		out << m_x0 << m_y0 << m_z0;
-		out << m_x1 << m_y1 << m_z1;
-		out << m_headRatio << m_smallRadius << m_largeRadius;
-		out << m_arrow_roll << m_arrow_pitch << m_arrow_yaw;
-	}
+	writeToStreamRender(out);
+	out << m_x0 << m_y0 << m_z0;
+	out << m_x1 << m_y1 << m_z1;
+	out << m_headRatio << m_smallRadius << m_largeRadius;
+	out << m_arrow_roll << m_arrow_pitch << m_arrow_yaw;
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CArrow::readFromStream(mrpt::utils::CStream& in, int version)
+void CArrow::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

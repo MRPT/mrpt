@@ -10,15 +10,15 @@
 #include "maps-precomp.h"  // Precomp header
 
 #include <mrpt/opengl/CPlanarLaserScan.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 #if MRPT_HAS_OPENGL_GLUT
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 // Windows:
 #include <windows.h>
 #endif
 
-#ifdef MRPT_OS_APPLE
+#ifdef __APPLE__
 #include <OpenGL/gl.h>
 #else
 #include <GL/gl.h>
@@ -26,9 +26,9 @@
 #endif
 
 // Include libraries in linking:
-#if MRPT_HAS_OPENGL_GLUT && defined(MRPT_OS_WINDOWS)
+#if MRPT_HAS_OPENGL_GLUT && defined(_WIN32)
 // WINDOWS:
-#if defined(_MSC_VER) || defined(__BORLANDC__)
+#if defined(_MSC_VER)
 #pragma comment(lib, "opengl32.lib")
 #pragma comment(lib, "GlU32.lib")
 #endif
@@ -36,7 +36,6 @@
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
@@ -169,32 +168,19 @@ void CPlanarLaserScan::render_dl() const
 #endif
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CPlanarLaserScan::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CPlanarLaserScan::serializeGetVersion() const { return 1; }
+void CPlanarLaserScan::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		writeToStreamRender(out);
-		out << m_scan;
-		out << m_line_width << m_line_R << m_line_G << m_line_B << m_line_A
-			<< m_points_width << m_points_R << m_points_G << m_points_B
-			<< m_points_A << m_plane_R << m_plane_G << m_plane_B << m_plane_A
-			<< m_enable_points << m_enable_line
-			<< m_enable_surface;  // new in v1
-	}
+	writeToStreamRender(out);
+	out << m_scan;
+	out << m_line_width << m_line_R << m_line_G << m_line_B << m_line_A
+		<< m_points_width << m_points_R << m_points_G << m_points_B
+		<< m_points_A << m_plane_R << m_plane_G << m_plane_B << m_plane_A
+		<< m_enable_points << m_enable_line
+		<< m_enable_surface;  // new in v1
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CPlanarLaserScan::readFromStream(mrpt::utils::CStream& in, int version)
+void CPlanarLaserScan::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

@@ -10,10 +10,9 @@
 #include "nav-precomp.h"  // Precomp header
 
 #include <mrpt/nav/holonomic/CAbstractHolonomicReactiveMethod.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::nav;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(
@@ -54,11 +53,11 @@ CAbstractHolonomicReactiveMethod::Ptr CAbstractHolonomicReactiveMethod::Factory(
 {
 	try
 	{
-		mrpt::utils::registerAllPendingClasses();
+		mrpt::rtti::registerAllPendingClasses();
 
 		// Factory:
-		const mrpt::utils::TRuntimeClassId* classId =
-			mrpt::utils::findRegisteredClass(className);
+		const mrpt::rtti::TRuntimeClassId* classId =
+			mrpt::rtti::findRegisteredClass(className);
 		if (!classId) return nullptr;
 
 		return CAbstractHolonomicReactiveMethod::Ptr(

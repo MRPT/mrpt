@@ -28,8 +28,8 @@
 #include <wx/numdlg.h>
 
 // General global variables:
-#include <mrpt/utils/CFileOutputStream.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/system/os.h>
@@ -46,8 +46,10 @@ using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::opengl;
 using namespace mrpt::system;
+using namespace mrpt::config;
 using namespace mrpt::math;
-using namespace mrpt::utils;
+using namespace mrpt::io;
+using namespace mrpt::serialization;
 using namespace mrpt::poses;
 using namespace mrpt::gui;
 using namespace std;
@@ -452,8 +454,8 @@ void loadMapInto3DScene(COpenGLScene& scene)
 			robot_path.getBoundingBox(minC, maxC);
 		else
 		{
-			minC = CPoint3D(-100, -100, 0);
-			maxC = CPoint3D(100, 100, 0);
+			minC = TPoint3D(-100, -100, 0);
+			maxC = TPoint3D(100, 100, 0);
 		}
 
 		mrpt::opengl::CGridPlaneXY::Ptr gridobj =
@@ -572,7 +574,7 @@ void loadMapInto3DScene(COpenGLScene& scene)
 
 	// The built maps:
 	// ---------------------------
-	CPointsMap::COLOR_3DSCENE(mrpt::utils::TColorf(.9f, .9f, .9f));
+	CPointsMap::COLOR_3DSCENE(mrpt::img::TColorf(.9f, .9f, .9f));
 
 	opengl::CSetOfObjects::Ptr objs =
 		mrpt::make_aligned_shared<opengl::CSetOfObjects>();
@@ -617,8 +619,7 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent&)
 	ASSERT_(decimate > 0);
 
 	// Create a memory "ini file" with the text in the window:
-	CConfigFileMemory configSrc(
-		CStringList(std::string(edOpts->GetValue().mb_str())));
+	CConfigFileMemory configSrc(std::string(edOpts->GetValue().mb_str()));
 
 	TSetOfMetricMapInitializers lstMaps;
 	lstMaps.loadFromConfigFile(configSrc, "map");
@@ -795,14 +796,12 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent&)
 		plotMap->AddLayer(new mpScaleY());
 
 		if (decimation > 1)
-			lbCount->SetLabel(
-				wxString::Format(
-					_("Point count=%u\n(Decimation=%u)"), unsigned(Xs.size()),
-					unsigned(decimation)));
+			lbCount->SetLabel(wxString::Format(
+				_("Point count=%u\n(Decimation=%u)"), unsigned(Xs.size()),
+				unsigned(decimation)));
 		else
-			lbCount->SetLabel(
-				wxString::Format(
-					_("Point count=%u\n(No decimation)"), unsigned(Xs.size())));
+			lbCount->SetLabel(wxString::Format(
+				_("Point count=%u\n(No decimation)"), unsigned(Xs.size())));
 	}
 
 	// Enable "results" buttons:
@@ -870,7 +869,7 @@ void CFormRawMap::OnbtnSave3DClick(wxCommandEvent&)
 
 			loadMapInto3DScene(scene);
 
-			fil << scene;
+			archiveFrom(fil) << scene;
 		}
 		catch (std::exception& e)
 		{
@@ -1069,8 +1068,7 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent&)
 	ASSERT_(decimate > 0);
 
 	// Create a memory "ini file" with the text in the window:
-	CConfigFileMemory configSrc(
-		CStringList(std::string(edOpts->GetValue().mb_str())));
+	CConfigFileMemory configSrc(std::string(edOpts->GetValue().mb_str()));
 
 	TSetOfMetricMapInitializers lstMaps;
 	lstMaps.loadFromConfigFile(configSrc, "map");
@@ -1222,14 +1220,12 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent&)
 		plotMap->AddLayer(new mpScaleY());
 
 		if (decimation > 1)
-			lbCount->SetLabel(
-				wxString::Format(
-					_("Point count=%u\n(Decimation=%u)"), unsigned(Xs.size()),
-					unsigned(decimation)));
+			lbCount->SetLabel(wxString::Format(
+				_("Point count=%u\n(Decimation=%u)"), unsigned(Xs.size()),
+				unsigned(decimation)));
 		else
-			lbCount->SetLabel(
-				wxString::Format(
-					_("Point count=%u\n(No decimation)"), unsigned(Xs.size())));
+			lbCount->SetLabel(wxString::Format(
+				_("Point count=%u\n(No decimation)"), unsigned(Xs.size())));
 	}
 
 	lbLength->SetLabel(
@@ -1276,26 +1272,22 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
 
 		cout << robot_path.size() << endl;
 
-		CFileOutputStream f(string(dialog.GetPath().mb_str()));
-		for (CPose3DInterpolator::const_iterator i = robot_path.begin();
-			 i != robot_path.end(); ++i)
+		std::ofstream f(string(dialog.GetPath().mb_str()));
+		for (const auto& rp : robot_path)
 		{
-			const double t = timestampTotime_t(i->first);
-			const auto& p = i->second;
-			f.printf(
+			const double t = timestampTotime_t(rp.first);
+			const auto& p = rp.second;
+			f << mrpt::format(
 				"%.06f %.06f %.06f %.06f %.06f %.06f %.06f ", t, p.x, p.y, p.z,
 				p.yaw, p.pitch, p.roll);
 
 			// The uncertainty, if available:
-			mrpt::aligned_containers<
-				mrpt::system::TTimeStamp,
-				mrpt::math::CMatrixDouble66>::map_t::const_iterator Wit =
-				rtk_path_info.vehicle_uncertainty.find(i->first);
+			auto Wit = rtk_path_info.vehicle_uncertainty.find(rp.first);
 			if (Wit != rtk_path_info.vehicle_uncertainty.end())
 			{
 				const CMatrixDouble66& C = Wit->second;
 
-				f.printf(
+				f << mrpt::format(
 					" %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e "
 					"%e %e\n",
 					C(0, 0), C(0, 1), C(0, 2), C(0, 3), C(0, 4), C(0, 5),
@@ -1304,7 +1296,7 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
 					C(4, 4), C(4, 5), C(5, 5));
 			}
 			else
-				f.printf(
+				f << mrpt::format(
 					" %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e "
 					"%e %e\n",
 					1e-4, 0.0, 0.0, 0.0, 0.0, 0.0, 1e-4, 0.0, 0.0, 0.0, 0.0,
@@ -1328,7 +1320,8 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
 		if (dialog.ShowModal() != wxID_OK) return;
 
 		wxBusyCursor waitCursor;
-		CFileGZOutputStream(string(dialog.GetPath().mb_str())) << robot_path;
+		CFileGZOutputStream f(string(dialog.GetPath().mb_str()));
+		archiveFrom(f) << robot_path;
 	}
 
 	// ---------------------------------------------
@@ -1363,19 +1356,18 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
 		if (dialog.ShowModal() != wxID_OK) return;
 
 		wxBusyCursor waitCursor;
-		CFileOutputStream f(string(dialog.GetPath().mb_str()));
+		std::ofstream f(string(dialog.GetPath().mb_str()));
 
-		for (map<TTimeStamp, double>::const_iterator i =
-				 rtk_path_info.mahalabis_quality_measure.begin();
-			 i != rtk_path_info.mahalabis_quality_measure.end(); ++i)
-			f.printf("%.06f %.06e\n", timestampTotime_t(i->first), i->second);
+		for (const auto& pi : rtk_path_info.mahalabis_quality_measure)
+			f << mrpt::format(
+				"%.06f %.06e\n", timestampTotime_t(pi.first), pi.second);
 	}
 
 	// ---------------------------------------------
 	// Save other sensors GT predicted path
 	// ---------------------------------------------
 	{
-		vector_string the_labels =
+		std::vector<std::string> the_labels =
 			theMainWindow->AskForObservationByLabelMultiple(
 				"Choose additional sensors to export GT path:");
 		if (the_labels.size() == 0) return;
@@ -1393,20 +1385,17 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
 				square(cfg.read_double("ERROR_SENSOR_POSES", "std_y", 1e-3));
 			COV_sensor_local(2, 2) =
 				square(cfg.read_double("ERROR_SENSOR_POSES", "std_z", 1e-3));
-			COV_sensor_local(3, 3) = square(
-				DEG2RAD(
-					cfg.read_double("ERROR_SENSOR_POSES", "std_yaw", 1e-3)));
-			COV_sensor_local(4, 4) = square(
-				DEG2RAD(
-					cfg.read_double("ERROR_SENSOR_POSES", "std_pitch", 1e-3)));
-			COV_sensor_local(5, 5) = square(
-				DEG2RAD(
-					cfg.read_double("ERROR_SENSOR_POSES", "std_roll", 1e-3)));
+			COV_sensor_local(3, 3) = square(DEG2RAD(
+				cfg.read_double("ERROR_SENSOR_POSES", "std_yaw", 1e-3)));
+			COV_sensor_local(4, 4) = square(DEG2RAD(
+				cfg.read_double("ERROR_SENSOR_POSES", "std_pitch", 1e-3)));
+			COV_sensor_local(5, 5) = square(DEG2RAD(
+				cfg.read_double("ERROR_SENSOR_POSES", "std_roll", 1e-3)));
 		}
 
-		ASSERT_(size(COV_sensor_local, 1) == 6 && COV_sensor_local.isSquare());
+		ASSERT_(COV_sensor_local.rows() == 6 && COV_sensor_local.isSquare());
 
-		vector_string::iterator itStr;
+		std::vector<std::string>::iterator itStr;
 		std::vector<FILE*> outFiles(the_labels.size());
 		std::vector<FILE*>::iterator itOutFiles;
 
@@ -1442,8 +1431,8 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
 
 						CPose3DPDFGaussian veh_pose;
 						veh_pose.mean.setFromValues(0, 0, 0, 0, 0, 0);
-						if (size(rtk_path_info.W_star, 1) == 6 &&
-							size(rtk_path_info.W_star, 2) == 6)
+						if (rtk_path_info.W_star.rows() == 6 &&
+							rtk_path_info.W_star.cols() == 6)
 						{
 							// Uncertainty estimation:
 							veh_pose.cov = rtk_path_info.W_star;

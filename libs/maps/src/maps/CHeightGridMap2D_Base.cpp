@@ -46,8 +46,8 @@ bool CHeightGridMap2D_Base::getMinMaxHeight(float& z_min, float& z_max) const
 				}
 				else
 				{
-					mrpt::utils::keep_max(z_max, z);
-					mrpt::utils::keep_min(z_min, z);
+					mrpt::keep_max(z_max, z);
+					mrpt::keep_min(z_min, z);
 				}
 			}
 		}

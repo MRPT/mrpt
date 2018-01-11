@@ -13,7 +13,6 @@
 #include <mrpt/obs/CObservationGPS.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::poses;
 using namespace mrpt::system;
@@ -21,6 +20,7 @@ using namespace mrpt::math;
 using namespace mrpt::rawlogtools;
 using namespace mrpt::topography;
 using namespace std;
+using namespace mrpt::io;
 
 // STL data must have global scope:
 struct TGPSDataPoint
@@ -493,7 +493,7 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 						cart_vel.z = pzs.cartesian_vz;
 
 						cart_vel_local =
-							TPoint3D(CPoint3D(cart_vel) - local_ENU);
+							(CPoint3D(cart_vel) - local_ENU).asTPoint();
 					}
 				}
 

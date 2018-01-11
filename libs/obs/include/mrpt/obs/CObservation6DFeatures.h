@@ -9,10 +9,10 @@
 #ifndef CObservation6DFeatures_H
 #define CObservation6DFeatures_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/utils/aligned_containers.h>
+#include <mrpt/core/aligned_std_deque.h>
 
 namespace mrpt
 {
@@ -53,7 +53,7 @@ class CObservation6DFeatures : public CObservation
 		// matrices
 	};
 	/** The list of observed features */
-	mrpt::aligned_containers<TMeasurement>::deque_t sensedFeatures;
+	mrpt::aligned_std_deque<TMeasurement> sensedFeatures;
 
 	/** The pose of the sensor on the robot/vehicle */
 	mrpt::poses::CPose3D sensorPose;

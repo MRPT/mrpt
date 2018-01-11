@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/utils/core_defs.h>
+#include <cstddef>
 #include <functional>
 
 namespace mrpt
@@ -16,13 +16,13 @@ namespace mrpt
 namespace tfest
 {
 /** \addtogroup mrpt_tfest_grp
-  * @{ */
+ * @{ */
 
 /** For each individual-compatibility (IC) test, the indices of the candidate
  * match between elements in both reference frames.
-	* \sa TSE3RobustParams::user_individual_compat_callback ,
+ * \sa TSE3RobustParams::user_individual_compat_callback ,
  * TSE2RobustParams::user_individual_compat_callback
-	*/
+ */
 struct TPotentialMatch
 {
 	size_t idx_this, idx_other;
@@ -31,5 +31,5 @@ struct TPotentialMatch
 using TFunctorCheckPotentialMatch = std::function<bool(const TPotentialMatch&)>;
 
 /** @} */  // end of grouping
-}
-}  // End of namespace
+}  // namespace tfest
+}  // namespace mrpt

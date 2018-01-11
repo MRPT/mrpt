@@ -9,11 +9,10 @@
 
 #include <mrpt/random.h>
 #include <mrpt/math/kmeans.h>
-#include <mrpt/utils/aligned_containers.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/core/aligned_std_vector.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
 
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::gui;
 using namespace mrpt::random;
@@ -37,9 +36,8 @@ void TestKMeans()
 	while (win.isOpen())
 	{
 		// Generate N clusters of random points:
-		mrpt::aligned_containers<CPointType>::vector_t points;
-		const size_t nClusters =
-			2 + (getRandomGenerator().drawUniform32bit() % 4);
+		mrpt::aligned_std_vector<CPointType> points;
+		const size_t nClusters = 2 + (getRandomGenerator().drawUniform32bit() % 4);
 
 		for (size_t cl = 0; cl < nClusters; cl++)
 		{
@@ -59,7 +57,7 @@ void TestKMeans()
 		}
 
 		// do k-means
-		mrpt::aligned_containers<CPointType>::vector_t centers;
+		mrpt::aligned_std_vector<CPointType> centers;
 		vector<int> assignments;
 		tictac.Tic();
 

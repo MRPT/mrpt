@@ -53,10 +53,10 @@ class CMRVisualizer : public CVisualizer<CPOSE, MAPS_IMPLEMENTATION,
 	~CMRVisualizer();
 	void drawNodePoints(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::utils::TParametersDouble* viz_params = NULL) const;
+		const mrpt::system::TParametersDouble* viz_params = NULL) const;
 	void drawEdges(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::utils::TParametersDouble* viz_params = NULL) const;
+		const mrpt::system::TParametersDouble* viz_params = NULL) const;
 
    private:
 };
@@ -85,10 +85,10 @@ class CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations,
 	~CMRVisualizer();
 	void drawNodePoints(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::utils::TParametersDouble* viz_params = NULL) const;
+		const mrpt::system::TParametersDouble* viz_params = NULL) const;
 	void drawEdges(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::utils::TParametersDouble* viz_params = NULL) const;
+		const mrpt::system::TParametersDouble* viz_params = NULL) const;
 
    private:
 };

@@ -11,7 +11,7 @@
 
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/system/string_utils.h>
-#include <mrpt/utils/CConfigFilePrefixer.h>
+#include <mrpt/config/CConfigFilePrefixer.h>
 
 using namespace mrpt::nav;
 
@@ -19,12 +19,12 @@ using namespace mrpt::nav;
 					Class factory
   ---------------------------------------------------------------*/
 CParameterizedTrajectoryGenerator* CParameterizedTrajectoryGenerator::CreatePTG(
-	const std::string& ptgClassName_, const mrpt::utils::CConfigFileBase& cfg,
+	const std::string& ptgClassName_, const mrpt::config::CConfigFileBase& cfg,
 	const std::string& sSection, const std::string& sKeyPrefix)
 {
 	MRPT_START
 
-	mrpt::utils::registerAllPendingClasses();
+	mrpt::rtti::registerAllPendingClasses();
 
 	// Special names for backwards compatibility with MRPT < 1.5.0
 	std::string ptgClassName = mrpt::system::trim(ptgClassName_);
@@ -51,8 +51,8 @@ CParameterizedTrajectoryGenerator* CParameterizedTrajectoryGenerator::CreatePTG(
 	}
 
 	// Factory:
-	const mrpt::utils::TRuntimeClassId* classId =
-		mrpt::utils::findRegisteredClass(ptgClassName);
+	const mrpt::rtti::TRuntimeClassId* classId =
+		mrpt::rtti::findRegisteredClass(ptgClassName);
 	if (!classId)
 	{
 		THROW_EXCEPTION_FMT(
@@ -71,7 +71,7 @@ CParameterizedTrajectoryGenerator* CParameterizedTrajectoryGenerator::CreatePTG(
 	}
 
 	// Wrapper to transparently add prefixes to all config keys:
-	mrpt::utils::CConfigFilePrefixer cfp;
+	mrpt::config::CConfigFilePrefixer cfp;
 	cfp.bind(cfg);
 	cfp.setPrefixes("", sKeyPrefix);
 

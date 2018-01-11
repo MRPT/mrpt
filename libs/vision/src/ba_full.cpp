@@ -10,9 +10,10 @@
 #include "vision-precomp.h"  // Precompiled headers
 
 #include <mrpt/vision/bundle_adjustment.h>
-#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/CTimeLogger.h>
 #include <mrpt/math/CSparseMatrix.h>
 #include <mrpt/math/ops_containers.h>
+#include <mrpt/core/aligned_std_map.h>
 
 #include <memory>  // unique_ptr
 
@@ -21,10 +22,8 @@
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::vision;
-using namespace mrpt::utils;
+using namespace mrpt::img;
 using namespace mrpt::math;
-
-using mrpt::aligned_containers;
 
 // Define -> estimate the inverse of poses; Undefined -> estimate the camera
 // poses (read the doc of mrpt::vision::bundle_adj_full)
@@ -53,7 +52,7 @@ double mrpt::vision::bundle_adj_full(
 	const TSequenceFeatureObservations& observations,
 	const TCamera& camera_params, TFramePosesVec& frame_poses,
 	TLandmarkLocationsVec& landmark_points,
-	const mrpt::utils::TParametersDouble& extra_params,
+	const mrpt::system::TParametersDouble& extra_params,
 	const TBundleAdjustmentFeedbackFunctor user_feedback)
 {
 	MRPT_START
@@ -65,7 +64,7 @@ double mrpt::vision::bundle_adj_full(
 
 	// Typedefs for this specific BA problem:
 	typedef JacData<FrameDof, PointDof, ObsDim> MyJacData;
-	typedef aligned_containers<MyJacData>::vector_t MyJacDataVec;
+	typedef mrpt::aligned_std_vector<MyJacData> MyJacDataVec;
 
 	typedef std::array<double, ObsDim> Array_O;
 	typedef CArrayDouble<FrameDof> Array_F;
@@ -91,7 +90,7 @@ double mrpt::vision::bundle_adj_full(
 	const bool enable_profiler =
 		0 != extra_params.getWithDefaultVal("profiler", 0);
 
-	mrpt::utils::CTimeLogger profiler(enable_profiler);
+	mrpt::system::CTimeLogger profiler(enable_profiler);
 
 	profiler.enter("bundle_adj_full (complete run)");
 
@@ -100,9 +99,9 @@ double mrpt::vision::bundle_adj_full(
 	const size_t num_frames = frame_poses.size();
 	const size_t num_obs = observations.size();
 
-	ASSERT_ABOVE_(num_frames, 0)
-	ASSERT_ABOVE_(num_points, 0)
-	ASSERT_(num_fix_frames >= 1)
+	ASSERT_ABOVE_(num_frames, 0);
+	ASSERT_ABOVE_(num_points, 0);
+	ASSERT_(num_fix_frames >= 1);
 	ASSERT_ABOVEEQ_(num_frames, num_fix_frames);
 	ASSERT_ABOVEEQ_(num_points, num_fix_points);
 
@@ -140,7 +139,7 @@ double mrpt::vision::bundle_adj_full(
 		use_robust_kernel ? &kernel_1st_deriv : nullptr);
 	profiler.leave("reprojectionResiduals");
 
-	MRPT_CHECK_NORMAL_NUMBER(res)
+	MRPT_CHECK_NORMAL_NUMBER(res);
 
 	VERBOSE_COUT << "res: " << res << endl;
 
@@ -155,12 +154,10 @@ double mrpt::vision::bundle_adj_full(
 	const size_t len_free_frames = FrameDof * num_free_frames;
 	const size_t len_free_points = PointDof * num_free_points;
 
-	aligned_containers<Matrix_FxF>::vector_t H_f(num_free_frames);
-	aligned_containers<Array_F>::vector_t eps_frame(
-		num_free_frames, arrF_zeros);
-	aligned_containers<Matrix_PxP>::vector_t H_p(num_free_points);
-	aligned_containers<Array_P>::vector_t eps_point(
-		num_free_points, arrP_zeros);
+	mrpt::aligned_std_vector<Matrix_FxF> H_f(num_free_frames);
+	mrpt::aligned_std_vector<Array_F> eps_frame(num_free_frames, arrF_zeros);
+	mrpt::aligned_std_vector<Matrix_PxP> H_p(num_free_points);
+	mrpt::aligned_std_vector<Array_P> eps_point(num_free_points, arrP_zeros);
 
 	profiler.enter("build_gradient_Hessians");
 	ba_build_gradient_Hessians(
@@ -217,17 +214,15 @@ double mrpt::vision::bundle_adj_full(
 			I_muFrame.unit(FrameDof, mu);
 			I_muPoint.unit(PointDof, mu);
 
-			aligned_containers<Matrix_FxF>::vector_t U_star(
-				num_free_frames, I_muFrame);
-			aligned_containers<Matrix_PxP>::vector_t V_inv(num_free_points);
+			mrpt::aligned_std_vector<Matrix_FxF> U_star(num_free_frames, I_muFrame);
+			mrpt::aligned_std_vector<Matrix_PxP> V_inv(num_free_points);
 
 			for (size_t i = 0; i < U_star.size(); ++i) U_star[i] += H_f[i];
 
 			for (size_t i = 0; i < H_p.size(); ++i)
 				(H_p[i] + I_muPoint).inv_fast(V_inv[i]);
 
-			typedef aligned_containers<pair<TCameraPoseID, TLandmarkID>,
-									   Matrix_FxP>::map_t WMap;
+			using WMap = mrpt::aligned_std_map<pair<TCameraPoseID, TLandmarkID>,Matrix_FxP>;
 			WMap W, Y;
 
 			// For quick look-up of entries in W affecting a given point ID:
@@ -258,7 +253,7 @@ double mrpt::vision::bundle_adj_full(
 					// Was: W[id_pair] = tmp;
 					const pair<WMap::iterator, bool>& retInsert =
 						W.insert(make_pair(id_pair, tmp));
-					ASSERT_(retInsert.second == true)
+					ASSERT_(retInsert.second == true);
 					W_entries[feat_id].push_back(
 						retInsert.first);  // Keep the iterator
 
@@ -269,8 +264,7 @@ double mrpt::vision::bundle_adj_full(
 				++jac_iter;
 			}
 
-			aligned_containers<pair<TCameraPoseID, TLandmarkID>,
-							   Matrix_FxF>::map_t YW_map;
+			mrpt::aligned_std_map<pair<TCameraPoseID, TLandmarkID>,Matrix_FxF> YW_map;
 			for (size_t i = 0; i < H_f.size(); ++i)
 				YW_map[std::pair<TCameraPoseID, TLandmarkID>(i, i)] = U_star[i];
 
@@ -310,9 +304,7 @@ double mrpt::vision::bundle_adj_full(
 					const pair<TCameraPoseID, TLandmarkID> ids_jk =
 						pair<TCameraPoseID, TLandmarkID>(j, k);
 
-					aligned_containers<pair<TCameraPoseID, TLandmarkID>,
-									   Matrix_FxF>::map_t::iterator it =
-						YW_map.find(ids_jk);
+					auto it = YW_map.find(ids_jk);
 					if (it != YW_map.end())
 						it->second -= YWt;  // += (-YWt);
 					else
@@ -333,10 +325,7 @@ double mrpt::vision::bundle_adj_full(
 
 			CSparseMatrix sS(len_free_frames, len_free_frames);
 
-			for (aligned_containers<pair<TCameraPoseID, TLandmarkID>,
-									Matrix_FxF>::map_t::const_iterator it =
-					 YW_map.begin();
-				 it != YW_map.end(); ++it)
+			for (auto it =YW_map.begin();it != YW_map.end(); ++it)
 			{
 				const pair<TCameraPoseID, TLandmarkID>& ids = it->first;
 				const Matrix_FxF& YW = it->second;
@@ -452,7 +441,7 @@ double mrpt::vision::bundle_adj_full(
 				use_robust_kernel ? &new_kernel_1st_deriv : nullptr);
 			profiler.leave("reprojectionResiduals");
 
-			MRPT_CHECK_NORMAL_NUMBER(res_new)
+			MRPT_CHECK_NORMAL_NUMBER(res_new);
 
 			has_improved = (res_new < res);
 

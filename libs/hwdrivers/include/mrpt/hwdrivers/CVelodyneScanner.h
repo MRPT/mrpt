@@ -13,8 +13,8 @@
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>
 #include <mrpt/obs/CObservationGPS.h>
-#include <mrpt/utils/CConfigFileBase.h>
-#include <mrpt/utils/TEnumType.h>
+#include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/typemeta/TEnumType.h>
 
 namespace mrpt
 {
@@ -22,149 +22,149 @@ namespace hwdrivers
 {
 /** A C++ interface to Velodyne laser scanners (HDL-64, HDL-32, VLP-16), working
  * on Linux and Windows.
-  * (Using this class requires WinPCap as a run-time dependency in Windows).
-  * It can receive data from real devices via an Ethernet connection or parse a
+ * (Using this class requires WinPCap as a run-time dependency in Windows).
+ * It can receive data from real devices via an Ethernet connection or parse a
  * WireShark PCAP file for offline processing.
-  * The choice of online vs. offline operation is taken upon calling \a
+ * The choice of online vs. offline operation is taken upon calling \a
  * initialize(): if a PCAP input file has been defined,
-  * offline operation takes place and network is not listened for incomming
+ * offline operation takes place and network is not listened for incomming
  * packets.
-  *
-  * Parsing dual return scans requires a VLP-16 with firmware version 3.0.23 or
+ *
+ * Parsing dual return scans requires a VLP-16 with firmware version 3.0.23 or
  * newer. While converting the scan into a
-  * point cloud in mrpt::obs::CObservationVelodyneScan you can select whether to
+ * point cloud in mrpt::obs::CObservationVelodyneScan you can select whether to
  * keep the strongest, the last or both laser returns.
-  *
-  * XML calibration files are not mandatory for VLP-16 and HDL-32, but they are
+ *
+ * XML calibration files are not mandatory for VLP-16 and HDL-32, but they are
  * for HDL-64.
-  *
-  * <h2>Grabbing live data (as a user)</h2> <hr>
-  *  - Use the application
+ *
+ * <h2>Grabbing live data (as a user)</h2> <hr>
+ *  - Use the application
  * [velodyne-view](http://www.mrpt.org/list-of-mrpt-apps/application-velodyne-view/)
  * to visualize the LIDAR output in real-time (optionally saving to a PCAP file)
  * or to playback a PCAP file.
-  *  - Use
+ *  - Use
  * [rawlog-grabber](http://www.mrpt.org/list-of-mrpt-apps/application-rawlog-grabber/)
  * to record a dataset in MRPT's format together with any other set of sensors.
  * See example config file:
  * [MRPT\share\mrpt\config_files\rawlog-grabber\velodyne.ini](https://github.com/MRPT/mrpt/blob/master/share/mrpt/config_files/rawlog-grabber/velodyne.ini)
-  *
-  * <h2>Grabbing live data (programmatically)</h2> <hr>
-  *  - See CGenericSensor for a general overview of the sequence of methods to
+ *
+ * <h2>Grabbing live data (programmatically)</h2> <hr>
+ *  - See CGenericSensor for a general overview of the sequence of methods to
  * be called: loadConfig(), initialize(), doProcess().
-  *  - Or use this class inside the application
+ *  - Or use this class inside the application
  * [rawlog-grabber](http://www.mrpt.org/list-of-mrpt-apps/application-rawlog-grabber/).
  * See example config files:
  * [MRPT\share\mrpt\config_files\rawlog-grabber\velodyne.ini](https://github.com/MRPT/mrpt/blob/master/share/mrpt/config_files/rawlog-grabber/velodyne.ini)
-  *
-  * See the source code of the example application `[MRPT]/apps/velodyne-view`
+ *
+ * See the source code of the example application `[MRPT]/apps/velodyne-view`
  * ([velodyne-view web
  * page](http://www.mrpt.org/list-of-mrpt-apps/application-velodyne-view/)) for
  * more details.
-  *
-  * <h2>Playing back a PCAP file:</h2><hr>
-  *  It is common to save Velodyne datasets as Wireshark's PCAP files.
-  *  These files can be played back with tools like
+ *
+ * <h2>Playing back a PCAP file:</h2><hr>
+ *  It is common to save Velodyne datasets as Wireshark's PCAP files.
+ *  These files can be played back with tools like
  * [bittwist](http://bittwist.sourceforge.net/), which emit all UDP packets in
  * the PCAP log.
-  *  Then, use this class to receive the packets as if they come from the real
+ *  Then, use this class to receive the packets as if they come from the real
  * sensor.
-  *
-  *  Alternatively, if MRPT is linked against libpcap, this class can directly
+ *
+ *  Alternatively, if MRPT is linked against libpcap, this class can directly
  * parse a PCAP file to simulate reading from a device offline.
-  *  See method setPCAPInputFile() and config file parameter ``
-  *
-  *  To compile with PCAP support: In Debian/Ubuntu, install libpcap-dev. In
+ *  See method setPCAPInputFile() and config file parameter ``
+ *
+ *  To compile with PCAP support: In Debian/Ubuntu, install libpcap-dev. In
  * Windows, install WinPCap developer packages + the regular WinPCap driver.
-  *
-  *  <h2>Configuration and usage:</h2> <hr>
-  * Data is returned as observations of type:
-  *  - mrpt::obs::CObservationVelodyneScan for one or more "data packets" (refer
+ *
+ *  <h2>Configuration and usage:</h2> <hr>
+ * Data is returned as observations of type:
+ *  - mrpt::obs::CObservationVelodyneScan for one or more "data packets" (refer
  * to Velodyne usage manual)
-  *  - mrpt::obs::CObservationGPS for GPS (GPRMC) packets, if available via the
+ *  - mrpt::obs::CObservationGPS for GPS (GPRMC) packets, if available via the
  * synchronization interface of the device.
-  *  See those classes for documentation on their fields.
-  *
-  * Configuration includes setting the device IP (optional) and sensor model
+ *  See those classes for documentation on their fields.
+ *
+ * Configuration includes setting the device IP (optional) and sensor model
  * (mandatory only if a calibration file is not provided).
-  * These parameters can be set programmatically (see methods of this class), or
+ * These parameters can be set programmatically (see methods of this class), or
  * via a configuration file with CGenericSensor::loadConfig() (see example
  * config file section below).
-  *
-  * <h2>About timestamps:</h2><hr>
-  *  Each gathered observation of type mrpt::obs::CObservationVelodyneScan is
+ *
+ * <h2>About timestamps:</h2><hr>
+ *  Each gathered observation of type mrpt::obs::CObservationVelodyneScan is
  * populated with two timestamps, one for the local PC timestamp and,
-  *  if available, another one for the GPS-stamped timestamp. Refer to the
+ *  if available, another one for the GPS-stamped timestamp. Refer to the
  * observation docs for details.
-  *
-  * <h2>Format of parameters for loading from a .ini file</h2><hr>
-  *  \code
-  *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
-  * -------------------------------------------------------
-  *   [supplied_section_name]
-  *   # ---- Sensor description ----
-  *   #calibration_file         = PUT_HERE_FULL_PATH_TO_CALIB_FILE.xml      //
+ *
+ * <h2>Format of parameters for loading from a .ini file</h2><hr>
+ *  \code
+ *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
+ * -------------------------------------------------------
+ *   [supplied_section_name]
+ *   # ---- Sensor description ----
+ *   #calibration_file         = PUT_HERE_FULL_PATH_TO_CALIB_FILE.xml      //
  * Optional but recommended: put here your vendor-provided calibration file
-  *   model                    = VLP16      // Can be any of: `VLP16`, `HDL32`,
+ *   model                    = VLP16      // Can be any of: `VLP16`, `HDL32`,
  * `HDL64`  (It is used to load default calibration file. Parameter not required
  * if `calibration_file` is provided.
-  *   #pos_packets_min_period  = 0.5        // (Default=0.5 seconds) Minimum
+ *   #pos_packets_min_period  = 0.5        // (Default=0.5 seconds) Minimum
  * period to leave between reporting position packets. Used to decimate the
  * large number of packets of this type.
-  *   # How long to wait, after loss of GPS signal, to report timestamps as "not
+ *   # How long to wait, after loss of GPS signal, to report timestamps as "not
  * based on satellite time". 30 secs, with typical velodyne clock drifts, means
  * a ~1.7 ms typical drift.
-  *   #pos_packets_timing_timeout = 30      // (Default=30 seconds)
-  *   # ---- Online operation ----
-  *
-  *   # IP address of the device. UDP packets from other IPs will be ignored.
+ *   #pos_packets_timing_timeout = 30      // (Default=30 seconds)
+ *   # ---- Online operation ----
+ *
+ *   # IP address of the device. UDP packets from other IPs will be ignored.
  * Leave commented or blank
-  *   # if only one scanner is present (no IP filtering)
-  *   #device_ip       = XXX.XXX.XXX.XXX
-  *
-  *   #rpm             = 600        // Sensor RPM (Default: unchanged). Requires
+ *   # if only one scanner is present (no IP filtering)
+ *   #device_ip       = XXX.XXX.XXX.XXX
+ *
+ *   #rpm             = 600        // Sensor RPM (Default: unchanged). Requires
  * setting `device_ip`
-  *   #return_type     = STRONGEST  // Any of: 'STRONGEST', 'LAST', 'DUAL'
+ *   #return_type     = STRONGEST  // Any of: 'STRONGEST', 'LAST', 'DUAL'
  * (Default: unchanged). Requires setting `device_ip`
-  *
-  *   # ---- Offline operation ----
-  *   # If uncommented, this class will read from the PCAP instead of connecting
+ *
+ *   # ---- Offline operation ----
+ *   # If uncommented, this class will read from the PCAP instead of connecting
  * and listeling
-  *   # for online network packets.
-  *   # pcap_input     = PUT_FULL_PATH_TO_PCAP_LOG_FILE.pcap
-  *   # pcap_read_once = false   // Do not loop
-  *   # pcap_read_fast = false    // fast forward skipping non-velodyne packets
-  *   # pcap_read_full_scan_delay_ms = 100 // Used to simulate a reasonable
+ *   # for online network packets.
+ *   # pcap_input     = PUT_FULL_PATH_TO_PCAP_LOG_FILE.pcap
+ *   # pcap_read_once = false   // Do not loop
+ *   # pcap_read_fast = false    // fast forward skipping non-velodyne packets
+ *   # pcap_read_full_scan_delay_ms = 100 // Used to simulate a reasonable
  * number of full scans / second
-  *   # pcap_repeat_delay = 0.0   // seconds
-  *
-  *   # ---- Save to PCAP file ----
-  *   # If uncommented, a PCAP file named
+ *   # pcap_repeat_delay = 0.0   // seconds
+ *
+ *   # ---- Save to PCAP file ----
+ *   # If uncommented, a PCAP file named
  * `[pcap_output_prefix]_[DATE_TIME].pcap` will be
-  *   # written simultaneously to the normal operation of this class.
-  *   # pcap_output     = velodyne_log
-  *
-  *   # 3D position of the sensor on the vehicle:
-  *   pose_x     = 0    // 3D position (meters)
-  *   pose_y     = 0
-  *   pose_z     = 0
-  *   pose_yaw   = 0    // 3D orientation (degrees)
-  *   pose_pitch = 0
-  *   pose_roll  = 0
-  *
-  *  \endcode
-  *
-  *
-  * <h2>Copyright notice</h2><hr>
-  * Portions of this class are based on code from velodyne ROS node in
+ *   # written simultaneously to the normal operation of this class.
+ *   # pcap_output     = velodyne_log
+ *
+ *   # 3D position of the sensor on the vehicle:
+ *   pose_x     = 0    // 3D position (meters)
+ *   pose_y     = 0
+ *   pose_z     = 0
+ *   pose_yaw   = 0    // 3D orientation (degrees)
+ *   pose_pitch = 0
+ *   pose_roll  = 0
+ *
+ *  \endcode
+ *
+ *
+ * <h2>Copyright notice</h2><hr>
+ * Portions of this class are based on code from velodyne ROS node in
  * https://github.com/ros-drivers/velodyne
-  *  Copyright (C) 2007 Austin Robot Technology, Patrick Beeson
-  *  Copyright (C) 2009, 2010 Austin Robot Technology, Jack O'Quin
-  *  License: Modified BSD Software License Agreement
-  *
-  * \note New in MRPT 1.4.0
-  * \ingroup mrpt_hwdrivers_grp
-  */
+ *  Copyright (C) 2007 Austin Robot Technology, Patrick Beeson
+ *  Copyright (C) 2009, 2010 Austin Robot Technology, Jack O'Quin
+ *  License: Modified BSD Software License Agreement
+ *
+ * \note New in MRPT 1.4.0
+ * \ingroup mrpt_hwdrivers_grp
+ */
 class CVelodyneScanner : public mrpt::hwdrivers::CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CVelodyneScanner)
@@ -250,7 +250,7 @@ class CVelodyneScanner : public mrpt::hwdrivers::CGenericSensor
 
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(
-		const mrpt::utils::CConfigFileBase& configSource,
+		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& section);
 
    public:
@@ -259,7 +259,7 @@ class CVelodyneScanner : public mrpt::hwdrivers::CGenericSensor
 
 	/** @name Change configuration parameters; to be called BEFORE initialize();
 	 * see above for the list of parameters and their meaning
-	  * @{ */
+	 * @{ */
 	/** See supported model names in the general discussion docs for
 	 * mrpt::hwdrivers::CVelodyneScanner */
 	void setModelName(const model_t model) { m_model = model; }
@@ -322,39 +322,39 @@ class CVelodyneScanner : public mrpt::hwdrivers::CGenericSensor
 
 	/** Changes among STRONGEST, LAST, DUAL return types (via HTTP post
 	 * interface).
-	  * Can be called at any instant, before or after initialize().
-	  * Requires setting a device IP address.
-	  * \return false on error */
+	 * Can be called at any instant, before or after initialize().
+	 * Requires setting a device IP address.
+	 * \return false on error */
 	bool setLidarReturnType(return_type_t ret_type);
 
 	/** Changes Lidar RPM (valid range: 300-600) (via HTTP post interface).
-	  * Can be called at any instant, before or after initialize().
-	  * Requires setting a device IP address.
-	  * \return false on error*/
+	 * Can be called at any instant, before or after initialize().
+	 * Requires setting a device IP address.
+	 * \return false on error*/
 	bool setLidarRPM(int rpm);
 
 	/** Switches the LASER on/off (saves energy when not measuring) (via HTTP
-	* post interface).
-	* Can be called at any instant, before or after initialize().
-	* Requires setting a device IP address.
-	* \return false on error*/
+	 * post interface).
+	 * Can be called at any instant, before or after initialize().
+	 * Requires setting a device IP address.
+	 * \return false on error*/
 	bool setLidarOnOff(bool on);
 
 	/** @} */
 
 	/** Polls the UDP port for incoming data packets. The user *must* call this
 	 * method in a timely fashion to grab data as it it generated by the device.
-	  *  The minimum call rate should be the expected number of data
+	 *  The minimum call rate should be the expected number of data
 	 * packets/second (!=scans/second). Checkout Velodyne user manual if in
 	 * doubt.
-	  *
-	  * \param[out] outScan Upon return, an empty smart pointer will be found
+	 *
+	 * \param[out] outScan Upon return, an empty smart pointer will be found
 	 * here if no new data was available. Otherwise, a valid scan.
-	  * \param[out] outGPS  Upon return, an empty smart pointer will be found
+	 * \param[out] outGPS  Upon return, an empty smart pointer will be found
 	 * here if no new GPS data was available. Otherwise, a valid GPS reading.
-	  * \return true if no error ocurred (even if there was no new observation).
+	 * \return true if no error ocurred (even if there was no new observation).
 	 * false if any communication error occurred.
-	  */
+	 */
 	bool getNextObservation(
 		mrpt::obs::CObservationVelodyneScan::Ptr& outScan,
 		mrpt::obs::CObservationGPS::Ptr& outGPS);
@@ -364,11 +364,11 @@ class CVelodyneScanner : public mrpt::hwdrivers::CGenericSensor
 
 	/** Tries to initialize the sensor driver, after setting all the parameters
 	 * with a call to loadConfig.
-	  * Velodyne specifics: this method sets up the UDP listening sockets, so
+	 * Velodyne specifics: this method sets up the UDP listening sockets, so
 	 * all relevant params MUST BE SET BEFORE calling this.
-	  *  \exception This method must throw an exception with a descriptive
+	 *  \exception This method must throw an exception with a descriptive
 	 * message if some critical error is found.
-	  */
+	 */
 	virtual void initialize();
 
 	/** Close the UDP sockets set-up in \a initialize(). This is called
@@ -376,13 +376,13 @@ class CVelodyneScanner : public mrpt::hwdrivers::CGenericSensor
 	void close();
 
 	/** Users normally would prefer calling \a getNextObservation() instead.
-	  * This method polls the UDP data port and returns one Velodyne DATA packet
+	 * This method polls the UDP data port and returns one Velodyne DATA packet
 	 * (1206 bytes) and/or one POSITION packet. Refer to Velodyne users manual.
-	  * Approximate timestamps (based on this computer clock) are returned for
+	 * Approximate timestamps (based on this computer clock) are returned for
 	 * each kind of packets, or INVALID_TIMESTAMP if timeout ocurred waiting for
 	 * a packet.
-	  * \return true on all ok. false only for pcap reading EOF
-	  */
+	 * \return true on all ok. false only for pcap reading EOF
+	 */
 	bool receivePackets(
 		mrpt::system::TTimeStamp& data_pkt_timestamp,
 		mrpt::obs::CObservationVelodyneScan::TVelodyneRawPacket& out_data_pkt,
@@ -393,7 +393,7 @@ class CVelodyneScanner : public mrpt::hwdrivers::CGenericSensor
    private:
 	/** Handles for the UDP sockets, or INVALID_SOCKET (-1) */
 	typedef
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 #if MRPT_WORD_SIZE == 64
 		uint64_t
 #else
@@ -426,15 +426,15 @@ class CVelodyneScanner : public mrpt::hwdrivers::CGenericSensor
 	bool internal_send_http_post(const std::string& post_data);
 
 };  // end of class
-}  // end of namespace
+}  // namespace hwdrivers
 
-namespace utils  // Specializations MUST occur at the same namespace:
+namespace typemeta  // Specializations MUST occur at the same namespace:
 {
 template <>
 struct TEnumTypeFiller<hwdrivers::CVelodyneScanner::model_t>
 {
 	typedef hwdrivers::CVelodyneScanner::model_t enum_t;
-	static void fill(bimap<enum_t, std::string>& m_map)
+	static void fill(internal::bimap<enum_t, std::string>& m_map)
 	{
 		m_map.insert(hwdrivers::CVelodyneScanner::VLP16, "VLP16");
 		m_map.insert(hwdrivers::CVelodyneScanner::HDL32, "HDL32");
@@ -446,7 +446,7 @@ template <>
 struct TEnumTypeFiller<hwdrivers::CVelodyneScanner::return_type_t>
 {
 	typedef hwdrivers::CVelodyneScanner::return_type_t enum_t;
-	static void fill(bimap<enum_t, std::string>& m_map)
+	static void fill(internal::bimap<enum_t, std::string>& m_map)
 	{
 		m_map.insert(hwdrivers::CVelodyneScanner::UNCHANGED, "UNCHANGED");
 		m_map.insert(hwdrivers::CVelodyneScanner::STRONGEST, "STRONGEST");
@@ -454,7 +454,7 @@ struct TEnumTypeFiller<hwdrivers::CVelodyneScanner::return_type_t>
 		m_map.insert(hwdrivers::CVelodyneScanner::DUAL, "DUAL");
 	}
 };
-}  // End of namespace
-}  // end of namespace
+}  // namespace typemeta
+}  // namespace mrpt
 
 #endif

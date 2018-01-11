@@ -11,7 +11,7 @@
 
 #include <mrpt/slam/CMetricMapBuilderRBPF.h>
 #include <mrpt/obs/CObservationStereoImages.h>
-#include <mrpt/utils/CEnhancedMetaFile.h>
+#include <mrpt/img/CEnhancedMetaFile.h>
 #include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/math/utils.h>
 
@@ -20,12 +20,9 @@ using namespace mrpt::slam;
 using namespace mrpt::math;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::bayes;
-
-#include <mrpt/utils/metaprogramming.h>
-using namespace mrpt::utils::metaprogramming;
+using namespace mrpt::img;
 
 /*---------------------------------------------------------------
 						Constructor
@@ -162,12 +159,10 @@ void CMetricMapBuilderRBPF::processActionObservation(
 		 std::abs(odoIncrementSinceLastMapUpdate.yaw()) > insertionAngDistance);
 
 	// Used any "options.alwaysInsertByClass" ??
-	for (CListOfClasses::const_iterator itCl =
-			 options.alwaysInsertByClass.begin();
-		 !do_map_update && itCl != options.alwaysInsertByClass.end(); ++itCl)
-		for (CSensoryFrame::iterator it = observations.begin();
-			 it != observations.end(); ++it)
-			if ((*it)->GetRuntimeClass() == *itCl)
+	for (auto itCl = options.alwaysInsertByClass.data.begin();
+		 !do_map_update && itCl != options.alwaysInsertByClass.data.end(); ++itCl)
+		for (auto & o: observations)
+			if (o->GetRuntimeClass() == *itCl)
 			{
 				do_map_update = true;
 				do_localization = true;
@@ -203,7 +198,7 @@ void CMetricMapBuilderRBPF::processActionObservation(
 				// It must be 2D odometry:
 				CActionRobotMovement2D::Ptr act2D =
 					action.getActionByClass<CActionRobotMovement2D>();
-				ASSERT_(act2D)
+				ASSERT_(act2D);
 				CActionRobotMovement2D newAct;
 				newAct.computeFromOdometry(
 					CPose2D(odoIncrementSinceLastLocalization.mean),
@@ -226,7 +221,7 @@ void CMetricMapBuilderRBPF::processActionObservation(
 
 		pf.executeOn(mapPDF, &fakeActs, &observations);
 
-		if (isLoggingLevelVisible(LVL_INFO))
+		if (isLoggingLevelVisible(mrpt::system::LVL_INFO))
 		{
 			// Get current pose estimation:
 			CPose3DPDFParticles poseEstimation;
@@ -378,12 +373,9 @@ unsigned int CMetricMapBuilderRBPF::getCurrentlyBuiltMapSize()
 	return mapPDF.SFs.size();
 }
 
-/*---------------------------------------------------------------
-					drawCurrentEstimationToImage
-  ---------------------------------------------------------------*/
-void CMetricMapBuilderRBPF::drawCurrentEstimationToImage(utils::CCanvas* img)
+void CMetricMapBuilderRBPF::drawCurrentEstimationToImage(CCanvas* img)
 {
-	using mrpt::utils::round;
+	using mrpt::round;
 
 	unsigned int i, M = mapPDF.particlesCount();
 	std::deque<TPose3D> path;
@@ -532,42 +524,41 @@ CMetricMapBuilderRBPF::TConstructionOptions::TConstructionOptions()
 	  PF_options(),
 	  mapsInitializers(),
 	  predictionOptions(),
-	  verbosity_level(mrpt::utils::LVL_INFO)
+	  verbosity_level(mrpt::system::LVL_INFO)
 {
 }
 
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void CMetricMapBuilderRBPF::TConstructionOptions::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+void CMetricMapBuilderRBPF::TConstructionOptions::dumpToTextStream(std::ostream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [CMetricMapBuilderRBPF::TConstructionOptions] "
 		"------------ \n\n");
 
-	out.printf(
+	out << mrpt::format(
 		"insertionLinDistance                    = %f m\n",
 		insertionLinDistance);
-	out.printf(
+	out << mrpt::format(
 		"insertionAngDistance                    = %f deg\n",
 		RAD2DEG(insertionAngDistance));
-	out.printf(
+	out << mrpt::format(
 		"localizeLinDistance                     = %f m\n",
 		localizeLinDistance);
-	out.printf(
+	out << mrpt::format(
 		"localizeAngDistance                     = %f deg\n",
 		RAD2DEG(localizeAngDistance));
-	out.printf(
+	out << mrpt::format(
 		"verbosity_level                         = %s\n",
-		mrpt::utils::TEnumType<mrpt::utils::VerbosityLevel>::value2name(
+		mrpt::typemeta::TEnumType<mrpt::system::VerbosityLevel>::value2name(
 			verbosity_level)
 			.c_str());
 
 	PF_options.dumpToTextStream(out);
 
-	out.printf("  Now showing 'mapsInitializers' and 'predictionOptions':\n");
-	out.printf("\n");
+	out << mrpt::format("  Now showing 'mapsInitializers' and 'predictionOptions':\n");
+	out << mrpt::format("\n");
 
 	mapsInitializers.dumpToTextStream(out);
 	predictionOptions.dumpToTextStream(out);
@@ -577,7 +568,7 @@ void CMetricMapBuilderRBPF::TConstructionOptions::dumpToTextStream(
 					loadFromConfigFile
   ---------------------------------------------------------------*/
 void CMetricMapBuilderRBPF::TConstructionOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
 {
 	MRPT_START
 
@@ -591,7 +582,7 @@ void CMetricMapBuilderRBPF::TConstructionOptions::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR(localizeLinDistance, float, iniFile, section);
 	MRPT_LOAD_HERE_CONFIG_VAR_DEGREES_NO_DEFAULT(
 		localizeAngDistance_deg, double, localizeAngDistance, iniFile, section);
-	verbosity_level = iniFile.read_enum<mrpt::utils::VerbosityLevel>(
+	verbosity_level = iniFile.read_enum<mrpt::system::VerbosityLevel>(
 		section, "verbosity_level", verbosity_level);
 
 	mapsInitializers.loadFromConfigFile(iniFile, section);

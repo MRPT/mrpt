@@ -10,11 +10,10 @@
 #include "obs-precomp.h"  // Precompiled headers
 
 #include <mrpt/obs/CObservationOdometry.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
 
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 // This must be added to any CSerializable class implementation file.
@@ -32,32 +31,19 @@ CObservationOdometry::CObservationOdometry()
 {
 }
 
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CObservationOdometry::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CObservationOdometry::serializeGetVersion() const { return 2; }
+void CObservationOdometry::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	MRPT_UNUSED_PARAM(out);
-	if (version)
-		*version = 2;
-	else
-	{
-		// The data
-		out << odometry << sensorLabel << timestamp
-			// Added in V1:
-			<< hasEncodersInfo;
-		if (hasEncodersInfo) out << encoderLeftTicks << encoderRightTicks;
-
-		out << hasVelocities;
-		if (hasVelocities) out << velocityLocal;
-	}
+	// The data
+	out << odometry << sensorLabel << timestamp
+	// Added in V1:
+	<< hasEncodersInfo;
+	if (hasEncodersInfo) out << encoderLeftTicks << encoderRightTicks;
+	out << hasVelocities;
+	if (hasVelocities) out << velocityLocal;
 }
 
-/*---------------------------------------------------------------
-  Implements the reading from a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CObservationOdometry::readFromStream(mrpt::utils::CStream& in, int version)
+void CObservationOdometry::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	MRPT_UNUSED_PARAM(in);
 	switch (version)

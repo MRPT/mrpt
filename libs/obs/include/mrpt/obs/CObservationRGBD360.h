@@ -9,15 +9,15 @@
 #ifndef CObservationRGBD360_H
 #define CObservationRGBD360_H
 
-#include <mrpt/utils/CSerializable.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/serialization/CSerializable.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/math/CMatrix.h>
-#include <mrpt/utils/adapters.h>
+#include <mrpt/opengl/pointcloud_adapters.h>
 
 namespace mrpt
 {
@@ -39,7 +39,7 @@ namespace obs
  *    - 2D range image (as a matrix): Each entry in the matrix
  *"rangeImage(ROW,COLUMN)" contains a distance or a depth (in meters), depending
  *on \a range_is_depth.
- *    - 2D intensity (grayscale or RGB) image (as a mrpt::utils::CImage): For
+ *    - 2D intensity (grayscale or RGB) image (as a mrpt::img::CImage): For
  *SwissRanger cameras, a logarithmic A-law compression is used to convert the
  *original 16bit intensity to a more standard 8bit graylevel.
  *
@@ -121,9 +121,9 @@ class CObservationRGBD360 : public CObservation
 	bool hasIntensityImage;
 	/** If hasIntensityImage=true, a color or gray-level intensity image of the
 	 * same size than "rangeImage" */
-	mrpt::utils::CImage intensityImages[NUM_SENSORS];
+	mrpt::img::CImage intensityImages[NUM_SENSORS];
 	/** Projection parameters of the 8 RGBD sensor. */
-	mrpt::utils::TCamera sensorParamss[NUM_SENSORS];
+	mrpt::img::TCamera sensorParamss[NUM_SENSORS];
 
 	/** The maximum range allowed by the device, in meters (e.g. 8.0m, 5.0m,...)
 	 */

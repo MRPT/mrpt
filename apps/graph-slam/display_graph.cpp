@@ -10,7 +10,7 @@
 #include <mrpt/graphs.h>
 //#include <mrpt/graphslam/levmarq.h>
 #include <mrpt/gui.h>
-#include <mrpt/utils/CObserver.h>
+#include <mrpt/system/CObserver.h>
 #include <mrpt/opengl/gl_utils.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CSetOfObjects.h>
@@ -19,6 +19,7 @@
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/graph_tools.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::graphs;
@@ -27,7 +28,6 @@ using namespace mrpt::poses;
 using namespace mrpt::opengl;
 using namespace mrpt::system;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace std;
 
 const char* MSG_HELP_WINDOW =
@@ -89,7 +89,7 @@ void display_graph(const GRAPHTYPE& g)
 	win.repaint();
 
 	// Create a feedback class for keystrokes:
-	struct Win3D_observer : public mrpt::utils::CObserver
+	struct Win3D_observer : public mrpt::system::CObserver
 	{
 		const GRAPHTYPE& m_graph;
 		CSetOfObjects::Ptr m_new_3dobj;
@@ -99,7 +99,7 @@ void display_graph(const GRAPHTYPE& g)
 		bool request_to_quit;
 
 		bool showing_help, hiding_help;
-		mrpt::utils::CTicTac tim_show_start, tim_show_end;
+		mrpt::system::CTicTac tim_show_start, tim_show_end;
 
 		Win3D_observer(const GRAPHTYPE& g)
 			: m_graph(g),
@@ -173,8 +173,8 @@ void display_graph(const GRAPHTYPE& g)
 
 						mrpt::opengl::COpenGLScene scene;
 						scene.insert(m_new_3dobj);
-						mrpt::utils::CFileGZOutputStream f(sFil);
-						f << scene;
+						mrpt::io::CFileGZOutputStream f(sFil);
+						mrpt::serialization::archiveFrom(f) << scene;
 					}
 					break;
 					case 'v':
@@ -254,11 +254,11 @@ void display_graph(const GRAPHTYPE& g)
 						0.50f, 0.50f,  // width, height (in screen "ratios")
 						MSG_HELP_WINDOW,
 						0.02f,  // text size
-						mrpt::utils::TColor(
+						mrpt::img::TColor(
 							190, 190, 190, 200 * transparency),  // background
-						mrpt::utils::TColor(
+						mrpt::img::TColor(
 							0, 0, 0, 200 * transparency),  // border
-						mrpt::utils::TColor(
+						mrpt::img::TColor(
 							200, 0, 0, 150 * transparency),  // text
 						5.0f,  // border width
 						"serif",  // text font

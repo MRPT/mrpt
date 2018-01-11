@@ -10,7 +10,7 @@
 #ifndef CObservationWindSensor_H
 #define CObservationWindSensor_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose2D.h>
@@ -33,16 +33,13 @@ class CObservationWindSensor : public CObservation
 	DEFINE_SERIALIZABLE(CObservationWindSensor)
 
    public:
-	/** Constructor */
-	CObservationWindSensor();
-
 	/** @name The data members
 	 * @{ */
 
 	/** The wind speed in m/s */
-	double speed;
+	double speed{.0};
 	/** The wind flow direction in deg */
-	double direction;
+	double direction{.0};
 	/** The location of the sensing anemometer on the robot coordinate framework
 	 */
 	mrpt::poses::CPose3D sensorPoseOnRobot;

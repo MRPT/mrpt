@@ -40,7 +40,10 @@ define_mrpt_lib(
 	gui
 	# Dependencies: None
 	mrpt-opengl
-	mrpt-base
+#	mrpt-img
+#	mrpt-rtti
+#	mrpt-system
+#	mrpt-core
 	)
 
 IF(BUILD_mrpt-gui)

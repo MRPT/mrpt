@@ -26,12 +26,13 @@
 
 #include <mrpt/gui/WxUtils.h>
 
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
-#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CText.h>
 #include <mrpt/opengl/stock_objects.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include "imgs/main_icon.xpm"
 #include "../wx-common/mrpt_logo.xpm"
@@ -59,7 +60,6 @@ wxBitmap MyArtProvider::CreateBitmap(
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::kinematics;
 using namespace std;
@@ -165,9 +165,8 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(
 	SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE));
 	{
 		wxIcon FrameIcon;
-		FrameIcon.CopyFromBitmap(
-			wxArtProvider::GetBitmap(
-				wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")), wxART_FRAME_ICON));
+		FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(
+			wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")), wxART_FRAME_ICON));
 		SetIcon(FrameIcon);
 	}
 	FlexGridSizer1 = new wxFlexGridSizer(1, 2, 0, 0);
@@ -697,8 +696,8 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(
 			mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>(
 				-5, 5, -5, 5, 0.001f, 1);
 
-		grid_10cm->setColor_u8(mrpt::utils::TColor(0xC0, 0xC0, 0xC0, 0xA0));
-		grid_1m->setColor_u8(mrpt::utils::TColor(0xFF, 0xFF, 0xFF));
+		grid_10cm->setColor_u8(mrpt::img::TColor(0xC0, 0xC0, 0xC0, 0xA0));
+		grid_1m->setColor_u8(mrpt::img::TColor(0xFF, 0xFF, 0xFF));
 
 		openGLSceneRef->insert(grid_10cm);
 		openGLSceneRef->insert(grid_1m);
@@ -1055,8 +1054,8 @@ void robotic_arm_kinematicsFrame::OnLoadBinary(wxCommandEvent& event)
 	const wxString sFil = dlg.GetPath();
 	const std::string fil = std::string(sFil.mb_str());
 
-	mrpt::utils::CFileGZInputStream f(fil);
-	f >> m_robot;
+	mrpt::io::CFileGZInputStream f(fil);
+	mrpt::serialization::archiveFrom(f) >> m_robot;
 
 	this->RegenerateDOFPanels();
 	this->UpdateListLinks();
@@ -1084,8 +1083,8 @@ void robotic_arm_kinematicsFrame::OnSaveBinary(wxCommandEvent& event)
 	const wxString sFil = dlg.GetPath();
 	const std::string fil = std::string(sFil.mb_str());
 
-	mrpt::utils::CFileOutputStream f(fil);
-	f << m_robot;
+	mrpt::io::CFileOutputStream f(fil);
+	mrpt::serialization::archiveFrom(f) << m_robot;
 
 	WX_END_TRY
 }
@@ -1132,7 +1131,7 @@ void robotic_arm_kinematicsFrame::UpdateMatrixView()
 	edMatrix->Freeze();
 
 	const mrpt::math::CMatrixDouble44 M =
-		m_all_poses[sel].getHomogeneousMatrixVal();
+		m_all_poses[sel].getHomogeneousMatrixVal<CMatrixDouble44>();
 
 	const std::string s = format(
 		"%6.03f %6.03f %6.03f %6.03f\n"

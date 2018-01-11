@@ -40,8 +40,8 @@ std::map<const mrpt::hwdrivers::TCaptureOptions_DUO3D*, TDUOParams> duo_params;
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
+using namespace mrpt::img;
 using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
 
@@ -106,7 +106,7 @@ TCaptureOptions_DUO3D::TYMLReadResult
 
 	return yrr_OK;
 #else
-	THROW_EXCEPTION("This function requires building with OpenCV support")
+	THROW_EXCEPTION("This function requires building with OpenCV support");
 #endif
 }
 
@@ -126,7 +126,7 @@ TCaptureOptions_DUO3D::TYMLReadResult
 		mrpt::format("_R%dx%d_", this->m_img_width, this->m_img_height));
 	if (found == std::string::npos)
 	{
-		m_stereo_camera.rightCameraPose = CPose3DQuat();
+		m_stereo_camera.rightCameraPose = TPose3DQuat(0, 0, 0,1.0 ,0 ,0 ,0);
 		return yrr_NAME_NON_CONSISTENT;
 	}
 	// read file
@@ -146,7 +146,7 @@ TCaptureOptions_DUO3D::TYMLReadResult
 	else
 	{
 		empty = true;
-		m_stereo_camera.rightCameraPose = CPose3DQuat();
+		m_stereo_camera.rightCameraPose = TPose3DQuat(0,0,0,1,0,0,0);
 	}
 
 	// translation
@@ -160,15 +160,15 @@ TCaptureOptions_DUO3D::TYMLReadResult
 	else
 	{
 		empty = true;
-		m_stereo_camera.rightCameraPose = CPose3DQuat();
+		m_stereo_camera.rightCameraPose = TPose3DQuat(0,0,0,1,0,0,0);
 	}
 
 	if (empty) return yrr_EMPTY;
 
-	m_stereo_camera.rightCameraPose = CPose3DQuat(CPose3D(M, t));
+	m_stereo_camera.rightCameraPose = CPose3DQuat(CPose3D(M, t)).asTPose();
 	return yrr_OK;
 #else
-	THROW_EXCEPTION("This function requires building with OpenCV support")
+	THROW_EXCEPTION("This function requires building with OpenCV support");
 #endif
 }
 
@@ -189,9 +189,9 @@ TCaptureOptions_DUO3D::TYMLReadResult
 	if (found == std::string::npos)
 	{
 		m_stereo_camera.leftCamera.intrinsicParams.zeros();
-		m_stereo_camera.leftCamera.dist.zeros();
+		m_stereo_camera.leftCamera.dist.fill(0);
 		m_stereo_camera.rightCamera.intrinsicParams.zeros();
-		m_stereo_camera.rightCamera.dist.zeros();
+		m_stereo_camera.rightCamera.dist.fill(0);
 
 		return yrr_NAME_NON_CONSISTENT;
 	}
@@ -213,7 +213,7 @@ TCaptureOptions_DUO3D::TYMLReadResult
 	if (aux_mat.size() == Size(0, 0))
 	{
 		empty = true;
-		m_stereo_camera.leftCamera.dist.zeros();
+		m_stereo_camera.leftCamera.dist.fill(0);
 	}
 	m_stereo_camera.leftCamera.setDistortionParamsFromValues(
 		aux_mat.at<double>(0, 0), aux_mat.at<double>(0, 1),
@@ -234,7 +234,7 @@ TCaptureOptions_DUO3D::TYMLReadResult
 	if (aux_mat.size() == Size(0, 0))
 	{
 		empty = true;
-		m_stereo_camera.rightCamera.dist.zeros();
+		m_stereo_camera.rightCamera.dist.fill(0);
 	}
 	m_stereo_camera.rightCamera.setDistortionParamsFromValues(
 		aux_mat.at<double>(0, 0), aux_mat.at<double>(0, 1),
@@ -243,12 +243,12 @@ TCaptureOptions_DUO3D::TYMLReadResult
 
 	return empty ? yrr_EMPTY : yrr_OK;
 #else
-	THROW_EXCEPTION("This function requires building with OpenCV support")
+	THROW_EXCEPTION("This function requires building with OpenCV support");
 #endif
 }
 
 void TCaptureOptions_DUO3D::loadOptionsFrom(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection, const std::string& prefix)
 {
 	m_img_width = configSource.read_int(iniSection, "image_width", m_img_width);
@@ -456,10 +456,10 @@ void CDUO3DCamera::open(
 	if (!EnumerateResolutions(
 			&ri, 1, this->m_options.m_img_width, this->m_options.m_img_height,
 			binning, this->m_options.m_fps))
-		THROW_EXCEPTION("[CDUO3DCamera] Error: Resolution not supported.")
+		THROW_EXCEPTION("[CDUO3DCamera] Error: Resolution not supported.");
 
 	if (!OpenDUO(&M_DUO_VALUE))  // was: m_duo
-		THROW_EXCEPTION("[CDUO3DCamera] Error: Camera could not be opened.")
+		THROW_EXCEPTION("[CDUO3DCamera] Error: Camera could not be opened.");
 
 	// Get and print some DUO parameter values
 	char name[260], version[260];

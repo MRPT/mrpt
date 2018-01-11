@@ -10,15 +10,14 @@
 #include "hmtslam-precomp.h"  // Precomp header
 
 #include <mrpt/hmtslam/CRobotPosesGraph.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/random.h>
-#include <mrpt/utils/CFileStream.h>
+#include <mrpt/io/CFileStream.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/system/os.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::hmtslam;
-using namespace mrpt::utils;
 using namespace mrpt::random;
 using namespace mrpt::poses;
 using namespace std;
@@ -39,12 +38,12 @@ void CHMTSLAM::perform_TLC(
 	const mrpt::poses::CPose3DPDFGaussian& pose_i_wrt_e)
 {
 	MRPT_START
-	ASSERT_(Ai != Ae)
+	ASSERT_(Ai != Ae);
 
 	std::lock_guard<std::mutex> locker(LMH.m_robotPosesGraph.lock);
 
 	logFmt(
-		mrpt::utils::LVL_DEBUG, "[perform_TLC] TLC of areas: %u <-> %u \n",
+		mrpt::system::LVL_DEBUG, "[perform_TLC] TLC of areas: %u <-> %u \n",
 		(unsigned)Ai, (unsigned)Ae);
 
 	// * Verify a1 \in LMH & a2 \notin LMH

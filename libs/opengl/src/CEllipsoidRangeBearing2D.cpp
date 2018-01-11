@@ -10,11 +10,11 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CEllipsoidRangeBearing2D.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
+
 using namespace mrpt::math;
 using namespace std;
 
@@ -44,28 +44,16 @@ void CEllipsoidRangeBearing2D::transformFromParameterSpace(
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CEllipsoidRangeBearing2D::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CEllipsoidRangeBearing2D::serializeGetVersion() const { return 0; }
+void CEllipsoidRangeBearing2D::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		writeToStreamRender(out);
-		BASE::thisclass_writeToStream(out);
-	}
+	writeToStreamRender(out);
+	BASE::thisclass_writeToStream(out);
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CEllipsoidRangeBearing2D::readFromStream(
-	mrpt::utils::CStream& in, int version)
+void CEllipsoidRangeBearing2D::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

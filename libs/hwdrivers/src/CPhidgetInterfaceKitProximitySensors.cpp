@@ -11,7 +11,7 @@
 
 #include <mrpt/system/os.h>
 #include <mrpt/hwdrivers/CPhidgetInterfaceKitProximitySensors.h>
-#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/config/CConfigFileBase.h>
 
 #include <algorithm>
 
@@ -22,7 +22,6 @@
 using namespace mrpt::hwdrivers;
 using namespace mrpt::obs;
 using namespace mrpt::system;
-using namespace mrpt::utils;
 using namespace std;
 
 IMPLEMENTS_GENERIC_SENSOR(CPhidgetInterfaceKitProximitySensors, mrpt::hwdrivers)
@@ -31,7 +30,7 @@ IMPLEMENTS_GENERIC_SENSOR(CPhidgetInterfaceKitProximitySensors, mrpt::hwdrivers)
 				Constructor
    ----------------------------------------------------- */
 CPhidgetInterfaceKitProximitySensors::CPhidgetInterfaceKitProximitySensors()
-	: mrpt::utils::COutputLogger("CPhidgetInterfaceKitProximitySensors"),
+	: mrpt::system::COutputLogger("CPhidgetInterfaceKitProximitySensors"),
 	  m_serialNumber(-1)
 {
 #if MRPT_HAS_PHIDGET
@@ -56,7 +55,7 @@ CPhidgetInterfaceKitProximitySensors::CPhidgetInterfaceKitProximitySensors()
 				loadConfig_sensorSpecific
    ----------------------------------------------------- */
 void CPhidgetInterfaceKitProximitySensors::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 #if MRPT_HAS_PHIDGET

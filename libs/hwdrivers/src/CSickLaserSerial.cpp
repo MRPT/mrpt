@@ -12,8 +12,8 @@
 
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/crc.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/crc.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
 
 #include <mrpt/hwdrivers/CSickLaserSerial.h>
@@ -28,11 +28,12 @@ IMPLEMENTS_GENERIC_SENSOR(CSickLaserSerial, mrpt::hwdrivers)
 
 using namespace std;
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::comms;
 using namespace mrpt::obs;
 using namespace mrpt::poses;
+using namespace mrpt::math;
 using namespace mrpt::hwdrivers;
+using namespace mrpt::system;
 
 int CSickLaserSerial::CRC16_GEN_POL = 0x8005;
 
@@ -145,10 +146,10 @@ void CSickLaserSerial::doProcessSimple(
 						loadConfig_sensorSpecific
 -------------------------------------------------------------*/
 void CSickLaserSerial::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
-	m_sensorPose = CPose3D(
+	m_sensorPose = TPose3D(
 		configSource.read_float(iniSection, "pose_x", 0),
 		configSource.read_float(iniSection, "pose_y", 0),
 		configSource.read_float(iniSection, "pose_z", 0),
@@ -158,7 +159,7 @@ void CSickLaserSerial::loadConfig_sensorSpecific(
 
 	m_mm_mode = configSource.read_bool(iniSection, "mm_mode", m_mm_mode);
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	m_com_port =
 		configSource.read_string(iniSection, "COM_port_WIN", m_com_port, true);
 #else
@@ -369,7 +370,7 @@ bool CSickLaserSerial::waitContinuousSampleFrame(
 
 	// CRC:
 	uint16_t CRC =
-		mrpt::utils::compute_CRC16(buf, lengthField - 2, CRC16_GEN_POL);
+		mrpt::system::compute_CRC16(buf, lengthField - 2, CRC16_GEN_POL);
 	uint16_t CRC_packet = buf[lengthField - 2] | (buf[lengthField - 1] << 8);
 	if (CRC_packet != CRC)
 	{
@@ -597,7 +598,7 @@ bool CSickLaserSerial::LMS_waitIncomingFrame(uint16_t timeout)
 	}
 
 	// Check CRC
-	uint16_t CRC = mrpt::utils::compute_CRC16(
+	uint16_t CRC = mrpt::system::compute_CRC16(
 		m_received_frame_buffer, 4 + lengthField, CRC16_GEN_POL);
 	uint16_t CRC_packet = m_received_frame_buffer[4 + lengthField + 0] |
 						  (m_received_frame_buffer[4 + lengthField + 1] << 8);
@@ -788,7 +789,7 @@ bool CSickLaserSerial::SendCommandToSICK(
 	memcpy(cmd_full + 4, cmd, cmd_len);
 
 	const uint16_t crc =
-		mrpt::utils::compute_CRC16(cmd_full, 4 + cmd_len, CRC16_GEN_POL);
+		mrpt::system::compute_CRC16(cmd_full, 4 + cmd_len, CRC16_GEN_POL);
 	cmd_full[4 + cmd_len + 0] = crc & 0xFF;
 	cmd_full[4 + cmd_len + 1] = crc >> 8;
 

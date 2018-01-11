@@ -10,7 +10,7 @@
 #include "vision-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/geometry.h>
-#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
 
 #include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/maps/CLandmark.h>
@@ -33,12 +33,13 @@ using namespace mrpt;
 using namespace mrpt::math;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
+using namespace mrpt::tfest;
 using namespace mrpt::random;
 using namespace mrpt::system;
 using namespace mrpt::vision;
-using namespace mrpt::utils;
+using namespace mrpt::img;
+using namespace mrpt::containers;
 using namespace std;
 using mrpt::maps::internal::TSequenceLandmarks;
 
@@ -47,7 +48,7 @@ MAP_DEFINITION_REGISTER("CLandmarksMap,landmarksMap", mrpt::maps::CLandmarksMap)
 
 CLandmarksMap::TMapDefinition::TMapDefinition() {}
 void CLandmarksMap::TMapDefinition::loadFromConfigFile_map_specific(
-	const mrpt::utils::CConfigFileBase& source,
+	const mrpt::config::CConfigFileBase& source,
 	const std::string& sectionNamePrefix)
 {
 	// [<sectionNamePrefix>+"_creationOpts"]
@@ -77,18 +78,17 @@ void CLandmarksMap::TMapDefinition::loadFromConfigFile_map_specific(
 		source, sectionNamePrefix + string("_likelihoodOpts"));
 }
 
-void CLandmarksMap::TMapDefinition::dumpToTextStream_map_specific(
-	mrpt::utils::CStream& out) const
+void CLandmarksMap::TMapDefinition::dumpToTextStream_map_specific(std::ostream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"number of initial beacons                = %u\n",
 		(int)initialBeacons.size());
 
-	out.printf("      ID         (X,Y,Z)\n");
-	out.printf("--------------------------------------------------------\n");
+	out << mrpt::format("      ID         (X,Y,Z)\n");
+	out << mrpt::format("--------------------------------------------------------\n");
 	for (std::deque<TPairIdBeacon>::const_iterator p = initialBeacons.begin();
 		 p != initialBeacons.end(); ++p)
-		out.printf(
+		out << mrpt::format(
 			"      %03u         (%8.03f,%8.03f,%8.03f)\n", p->second,
 			p->first.x, p->first.y, p->first.z);
 
@@ -168,35 +168,22 @@ void CLandmarksMap::internal_clear() { landmarks.clear(); }
 						getLandmarksCount
   ---------------------------------------------------------------*/
 size_t CLandmarksMap::size() const { return landmarks.size(); }
-/*---------------------------------------------------------------
-					writeToStream
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CLandmarksMap::writeToStream(mrpt::utils::CStream& out, int* version) const
+
+uint8_t CLandmarksMap::serializeGetVersion() const { return 0; }
+void CLandmarksMap::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		uint32_t n = landmarks.size();
+	uint32_t n = landmarks.size();
 
-		// First, write the number of landmarks:
-		out << n;
+	// First, write the number of landmarks:
+	out << n;
 
-		// Write all landmarks:
-		for (TSequenceLandmarks::const_iterator it = landmarks.begin();
-			 it != landmarks.end(); ++it)
-			out << (*it);
-	}
+	// Write all landmarks:
+	for (TSequenceLandmarks::const_iterator it = landmarks.begin();
+			it != landmarks.end(); ++it)
+		out << (*it);
 }
 
-/*---------------------------------------------------------------
-					readFromStream
-   Implements the reading from a CStream capability of
-	  CSerializable objects
-  ---------------------------------------------------------------*/
-void CLandmarksMap::readFromStream(mrpt::utils::CStream& in, int version)
+void CLandmarksMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -708,9 +695,9 @@ void CLandmarksMap::loadSiftFeaturesFromImageObservation(
 		CPoint3D Normal = landmark3DPositionPDF.mean;
 		Normal *= -1 / Normal.norm();
 
-		lm.normal = Normal;
+		lm.normal = Normal.asTPoint();
 
-		lm.pose_mean = landmark3DPositionPDF.mean;
+		lm.pose_mean = landmark3DPositionPDF.mean.asTPoint();
 
 		lm.pose_cov_11 = landmark3DPositionPDF.cov(0, 0);
 		lm.pose_cov_22 = landmark3DPositionPDF.cov(1, 1);
@@ -1152,9 +1139,9 @@ void CLandmarksMap::computeMatchingWith3DLandmarks(
 				-0.5 / square(likelihoodOptions.SIFTs_sigma_descriptor_dist);
 			K_dist = -0.5 / square(likelihoodOptions.SIFTs_mahaDist_std);
 
-			// CDynamicGrid<vector_int>		*gridLandmarks =
+			// CDynamicGrid<std::vector<int32_t>>		*gridLandmarks =
 			// landmarks.getGrid();
-			// vector_int						closeLandmarksList;
+			// std::vector<int32_t>						closeLandmarksList;
 
 			for (k = 0, otherIt = anotherMap->landmarks.begin();
 				 otherIt != anotherMap->landmarks.end(); otherIt++, k++)
@@ -1356,9 +1343,8 @@ void CLandmarksMap::computeMatchingWith3DLandmarks(
 
 			// 1.- COMPUTE EDD
 
-			ASSERT_(!anotherMap->landmarks.begin()->features.empty())
-			ASSERT_(!landmarks.begin()->features.empty())
-
+			ASSERT_(!anotherMap->landmarks.begin()->features.empty());
+			ASSERT_(!landmarks.begin()->features.empty());
 			unsigned int dLen = anotherMap->landmarks.begin()
 									->features[0]
 									->descriptors.SIFT.size();
@@ -1462,8 +1448,7 @@ bool CLandmarksMap::saveToTextFile(std::string file)
 
 		if (it->getType() == featSIFT)
 		{
-			ASSERT_(!it->features.empty() && it->features[0])
-
+			ASSERT_(!it->features.empty() && it->features[0]);
 			for (unsigned int i = 0;
 				 i < it->features[0]->descriptors.SIFT.size(); i++)
 				os::fprintf(f, " %u ", it->features[0]->descriptors.SIFT[i]);
@@ -1743,13 +1728,13 @@ double CLandmarksMap::computeLikelihood_RSLC_2007(
 	// double								STD_THETA = DEG2RAD(0.15);
 	// double								STD_DIST = 0.5f;
 	double nFoundCorrs = 0;
-	vector_int* corrs;
+	std::vector<int32_t>* corrs;
 	unsigned int cx, cy, cx_1, cx_2, cy_1, cy_2;
 
 	//	s->saveToMATLABScript2D(std::string("ver_sensed.m"));
 	// saveToMATLABScript2D(std::string("ver_ref.m"),"r");
 
-	CDynamicGrid<vector_int>* grid = landmarks.getGrid();
+	CDynamicGrid<std::vector<int32_t>>* grid = landmarks.getGrid();
 	// grid->saveToTextFile( "debug_grid.txt" );
 
 	// For each landmark in the observations:
@@ -1784,7 +1769,7 @@ double CLandmarksMap::computeLikelihood_RSLC_2007(
 				corrs = grid->cellByIndex(cx, cy);
 				ASSERT_(corrs != nullptr);
 				if (!corrs->empty())
-					for (vector_int::iterator it = corrs->begin();
+					for (std::vector<int32_t>::iterator it = corrs->begin();
 						 it != corrs->end(); ++it)
 					{
 						lm = landmarks.get(*it);
@@ -1890,7 +1875,7 @@ void CLandmarksMap::TCustomSequenceLandmarks::clear()
 void CLandmarksMap::TCustomSequenceLandmarks::push_back(const CLandmark& l)
 {
 	// Resize grid if necesary:
-	vector_int dummyEmpty;
+	std::vector<int32_t> dummyEmpty;
 
 	m_grid.resize(
 		min(m_grid.getXMin(), l.pose_mean.x - 0.1),
@@ -1901,7 +1886,7 @@ void CLandmarksMap::TCustomSequenceLandmarks::push_back(const CLandmark& l)
 	m_landmarks.push_back(l);
 
 	// Add to the grid:
-	vector_int* cell = m_grid.cellByPos(l.pose_mean.x, l.pose_mean.y);
+	std::vector<int32_t>* cell = m_grid.cellByPos(l.pose_mean.x, l.pose_mean.y);
 	ASSERT_(cell);
 	cell->push_back(m_landmarks.size() - 1);
 
@@ -1921,10 +1906,10 @@ const CLandmark* CLandmarksMap::TCustomSequenceLandmarks::get(
 
 void CLandmarksMap::TCustomSequenceLandmarks::isToBeModified(unsigned int indx)
 {
-	vector_int* cell = m_grid.cellByPos(
+	std::vector<int32_t>* cell = m_grid.cellByPos(
 		m_landmarks[indx].pose_mean.x, m_landmarks[indx].pose_mean.y);
 
-	vector_int::iterator it;
+	std::vector<int32_t>::iterator it;
 	for (it = cell->begin(); it != cell->end(); it++)
 	{
 		if (*it == static_cast<int>(indx))
@@ -1945,7 +1930,7 @@ void CLandmarksMap::TCustomSequenceLandmarks::erase(unsigned int indx)
 
 void CLandmarksMap::TCustomSequenceLandmarks::hasBeenModified(unsigned int indx)
 {
-	vector_int dummyEmpty;
+	std::vector<int32_t> dummyEmpty;
 
 	// Resize grid if necesary:
 	m_grid.resize(
@@ -1955,7 +1940,7 @@ void CLandmarksMap::TCustomSequenceLandmarks::hasBeenModified(unsigned int indx)
 		max(m_grid.getYMax(), m_landmarks[indx].pose_mean.y), dummyEmpty);
 
 	// Add to the grid:
-	vector_int* cell = m_grid.cellByPos(
+	std::vector<int32_t>* cell = m_grid.cellByPos(
 		m_landmarks[indx].pose_mean.x, m_landmarks[indx].pose_mean.y);
 	cell->push_back(indx);
 	m_largestDistanceFromOriginIsUpdated = false;
@@ -1969,7 +1954,7 @@ void CLandmarksMap::TCustomSequenceLandmarks::hasBeenModifiedAll()
 	unsigned int idx;
 	double min_x = -10.0, max_x = 10.0;
 	double min_y = -10.0, max_y = 10.0;
-	vector_int dummyEmpty;
+	std::vector<int32_t> dummyEmpty;
 
 	// Clear cells:
 	m_grid.clear();
@@ -1989,7 +1974,7 @@ void CLandmarksMap::TCustomSequenceLandmarks::hasBeenModifiedAll()
 	for (idx = 0, it = m_landmarks.begin(); it != m_landmarks.end();
 		 idx++, it++)
 	{
-		vector_int* cell = m_grid.cellByPos(it->pose_mean.x, it->pose_mean.y);
+		std::vector<int32_t>* cell = m_grid.cellByPos(it->pose_mean.x, it->pose_mean.y);
 		cell->push_back(idx);
 	}
 
@@ -2131,14 +2116,14 @@ double CLandmarksMap::computeLikelihood_SIFT_LandmarkMap(
 									distDesc = 0;
 									ASSERT_(
 										!lm1->features.empty() &&
-										!lm2->features.empty())
+										!lm2->features.empty());
 									ASSERT_(
-										lm1->features[0] && lm2->features[0])
+										lm1->features[0] && lm2->features[0]);
 									ASSERT_(
 										lm1->features[0]
-											->descriptors.SIFT.size() ==
+										->descriptors.SIFT.size() ==
 										lm2->features[0]
-											->descriptors.SIFT.size())
+										->descriptors.SIFT.size());
 
 									for (it1 = lm1->features[0]
 												   ->descriptors.SIFT.begin(),
@@ -2318,68 +2303,67 @@ CLandmarksMap::TInsertionOptions::TInsertionOptions()
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void CLandmarksMap::TInsertionOptions::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+void CLandmarksMap::TInsertionOptions::dumpToTextStream(std::ostream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [CLandmarksMap::TInsertionOptions] ------------ \n\n");
 
-	out.printf(
+	out << mrpt::format(
 		"insert_SIFTs_from_monocular_images      = %c\n",
 		insert_SIFTs_from_monocular_images ? 'Y' : 'N');
-	out.printf(
+	out << mrpt::format(
 		"insert_SIFTs_from_stereo_images         = %c\n",
 		insert_SIFTs_from_stereo_images ? 'Y' : 'N');
-	out.printf(
+	out << mrpt::format(
 		"insert_Landmarks_from_range_scans       = %c\n",
 		insert_Landmarks_from_range_scans ? 'Y' : 'N');
-	out.printf("\n");
-	out.printf(
+	out << mrpt::format("\n");
+	out << mrpt::format(
 		"SiftCorrRatioThreshold                  = %f\n",
 		SiftCorrRatioThreshold);
-	out.printf(
+	out << mrpt::format(
 		"SiftLikelihoodThreshold                 = %f\n",
 		SiftLikelihoodThreshold);
-	out.printf(
+	out << mrpt::format(
 		"SiftEDDThreshold                        = %f\n", SiftEDDThreshold);
-	out.printf(
+	out << mrpt::format(
 		"SIFTMatching3DMethod                    = %d\n", SIFTMatching3DMethod);
-	out.printf(
+	out << mrpt::format(
 		"SIFTLikelihoodMethod                    = %d\n", SIFTLikelihoodMethod);
 
-	out.printf(
+	out << mrpt::format(
 		"SIFTsLoadDistanceOfTheMean              = %f\n",
 		SIFTsLoadDistanceOfTheMean);
-	out.printf(
+	out << mrpt::format(
 		"SIFTsLoadEllipsoidWidth                 = %f\n",
 		SIFTsLoadEllipsoidWidth);
-	out.printf("\n");
-	out.printf("SIFTs_stdXY                             = %f\n", SIFTs_stdXY);
-	out.printf(
+	out << mrpt::format("\n");
+	out << mrpt::format("SIFTs_stdXY                             = %f\n", SIFTs_stdXY);
+	out << mrpt::format(
 		"SIFTs_stdDisparity                      = %f\n", SIFTs_stdDisparity);
-	out.printf("\n");
-	out.printf(
+	out << mrpt::format("\n");
+	out << mrpt::format(
 		"SIFTs_numberOfKLTKeypoints              = %i\n",
 		SIFTs_numberOfKLTKeypoints);
-	out.printf(
+	out << mrpt::format(
 		"SIFTs_stereo_maxDepth                   = %f\n",
 		SIFTs_stereo_maxDepth);
-	out.printf(
+	out << mrpt::format(
 		"SIFTs_epipolar_TH                       = %f\n", SIFTs_epipolar_TH);
-	out.printf(
+	out << mrpt::format(
 		"PLOT_IMAGES                             = %c\n",
 		PLOT_IMAGES ? 'Y' : 'N');
 
 	SIFT_feat_options.dumpToTextStream(out);
 
-	out.printf("\n");
+	out << mrpt::format("\n");
 }
 
 /*---------------------------------------------------------------
 					loadFromConfigFile
   ---------------------------------------------------------------*/
 void CLandmarksMap::TInsertionOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
 {
 	insert_SIFTs_from_monocular_images = iniFile.read_bool(
 		section.c_str(), "insert_SIFTs_from_monocular_images",
@@ -2455,62 +2439,61 @@ CLandmarksMap::TLikelihoodOptions::TGPSOrigin::TGPSOrigin()
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void CLandmarksMap::TLikelihoodOptions::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+void CLandmarksMap::TLikelihoodOptions::dumpToTextStream(std::ostream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [CLandmarksMap::TLikelihoodOptions] ------------ \n\n");
 
-	out.printf(
+	out << mrpt::format(
 		"rangeScan2D_decimation                  = %i\n",
 		rangeScan2D_decimation);
-	out.printf(
+	out << mrpt::format(
 		"SIFTs_sigma_euclidean_dist              = %f\n",
 		SIFTs_sigma_euclidean_dist);
-	out.printf(
+	out << mrpt::format(
 		"SIFTs_sigma_descriptor_dist             = %f\n",
 		SIFTs_sigma_descriptor_dist);
-	out.printf(
+	out << mrpt::format(
 		"SIFTs_mahaDist_std                      = %f\n", SIFTs_mahaDist_std);
-	out.printf(
+	out << mrpt::format(
 		"SIFTs_decimation                        = %i\n", SIFTs_decimation);
-	out.printf(
+	out << mrpt::format(
 		"SIFTnullCorrespondenceDistance          = %f\n",
 		SIFTnullCorrespondenceDistance);
-	out.printf(
+	out << mrpt::format(
 		"beaconRangesStd                         = %f\n", beaconRangesStd);
-	out.printf(
+	out << mrpt::format(
 		"beaconRangesUseObservationStd           = %c\n",
 		beaconRangesUseObservationStd ? 'Y' : 'N');
-	out.printf(
+	out << mrpt::format(
 		"extRobotPoseStd                         = %f\n", extRobotPoseStd);
 
-	out.printf(
+	out << mrpt::format(
 		"GPSOrigin:LATITUDE                      = %f\n", GPSOrigin.latitude);
-	out.printf(
+	out << mrpt::format(
 		"GPSOrigin:LONGITUDE                     = %f\n", GPSOrigin.longitude);
-	out.printf(
+	out << mrpt::format(
 		"GPSOrigin:ALTITUDE                      = %f\n", GPSOrigin.altitude);
-	out.printf("GPSOrigin:Rotation_Angle                = %f\n", GPSOrigin.ang);
-	out.printf(
+	out << mrpt::format("GPSOrigin:Rotation_Angle                = %f\n", GPSOrigin.ang);
+	out << mrpt::format(
 		"GPSOrigin:x_shift                       = %f\n", GPSOrigin.x_shift);
-	out.printf(
+	out << mrpt::format(
 		"GPSOrigin:y_shift                       = %f\n", GPSOrigin.y_shift);
-	out.printf(
+	out << mrpt::format(
 		"GPSOrigin:min_sat                       = %i\n", GPSOrigin.min_sat);
 
-	out.printf("GPS_sigma                               = %f (m)\n", GPS_sigma);
+	out << mrpt::format("GPS_sigma                               = %f (m)\n", GPS_sigma);
 
 	SIFT_feat_options.dumpToTextStream(out);
 
-	out.printf("\n");
+	out << mrpt::format("\n");
 }
 
 /*---------------------------------------------------------------
 					loadFromConfigFile
   ---------------------------------------------------------------*/
 void CLandmarksMap::TLikelihoodOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
 {
 	rangeScan2D_decimation = iniFile.read_int(
 		section.c_str(), "rangeScan2D_decimation", rangeScan2D_decimation);
@@ -2647,8 +2630,7 @@ void CLandmarksMap::saveMetricMapRepresentationToFile(
 	scene.insert(objGround);
 
 	std::string fil2(filNamePrefix + std::string("_3D.3Dscene"));
-	CFileOutputStream f(fil2.c_str());
-	f << scene;
+	scene.saveToFile(fil2);
 
 	MRPT_END
 }
@@ -2895,7 +2877,7 @@ void CLandmarksMap::simulateRangeBearingReadings(
 	const CPose3D& in_robotPose, const CPose3D& in_sensorLocationOnRobot,
 	CObservationBearingRange& out_Observations, bool sensorDetectsIDs,
 	const float in_stdRange, const float in_stdYaw, const float in_stdPitch,
-	vector_size_t* out_real_associations, const double spurious_count_mean,
+	std::vector<size_t>* out_real_associations, const double spurious_count_mean,
 	const double spurious_count_std) const
 {
 	TSequenceLandmarks::const_iterator it;
@@ -2929,7 +2911,7 @@ void CLandmarksMap::simulateRangeBearingReadings(
 
 		// Compute yaw,pitch,range:
 		double range, yaw, pitch;
-		point3D.sphericalCoordinates(beacon3D, range, yaw, pitch);
+		point3D.sphericalCoordinates(beacon3D.asTPoint(), range, yaw, pitch);
 
 		// Add noises:
 		range += in_stdRange * getRandomGenerator().drawGaussian1D_normalized();
@@ -2966,7 +2948,7 @@ void CLandmarksMap::simulateRangeBearingReadings(
 	size_t nSpurious = 0;
 	if (spurious_count_std != 0 || spurious_count_mean != 0)
 		nSpurious = static_cast<size_t>(
-			mrpt::utils::round_long(std::max(0.0, fSpurious)));
+			mrpt::round_long(std::max(0.0, fSpurious)));
 
 	// For each spurios reading to generate:
 	// ------------------------------------------

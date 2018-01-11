@@ -13,18 +13,18 @@
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/obs/CSensoryFrame.h>
-#include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CConfigFileBase.h>
-#include <mrpt/utils/CStream.h>
-#include <mrpt/utils/CTicTac.h>
-#include <mrpt/utils/types_simple.h>
-#include <mrpt/utils/TColor.h>
+#include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/CTicTac.h>
+#include <cstdint>
+#include <mrpt/img/TColor.h>
 #include <mrpt/opengl/graph_tools.h>
 #include <mrpt/opengl/CDisk.h>
 #include <mrpt/opengl/CSphere.h>
 #include <mrpt/opengl/CRenderizable.h>
-#include <mrpt/utils/TColor.h>
+#include <mrpt/img/TColor.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 
@@ -56,7 +56,7 @@ namespace optimizers
  *
  * - \b class_verbosity
  *   + \a Section       : OptimizerParameters
- *   + \a Default value : 1 (LVL_INFO)
+ *   + \a Default value : 1 (mrpt::system::LVL_INFO)
  *   + \a Required      : FALSE
  *
  * - \b optimization_on_second_thread
@@ -165,28 +165,28 @@ class CLevMarqGSO
 	/**\brief Struct for holding the optimization-related variables in a
 	 * compact form
 	 */
-	struct OptimizationParams : public mrpt::utils::CLoadableOptions
+	struct OptimizationParams : public mrpt::config::CLoadableOptions
 	{
 	   public:
 		OptimizationParams();
 		~OptimizationParams();
 
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section);
-		void dumpToTextStream(mrpt::utils::CStream& out) const;
+		void dumpToTextStream(std::ostream& out) const;
 
-		mrpt::utils::TParametersDouble cfg;
+		mrpt::system::TParametersDouble cfg;
 		// True if optimization procedure is to run in a multithreading fashion
 		bool optimization_on_second_thread;
 
 		/**\brief optimize only for the nodes found in a certain distance from
-		 * the current position. Optimize for the entire graph if set to -1
-		 */
+		* the current position. Optimize for the entire graph if set to1
+		*/
 		double optimization_distance;
 		double offset_y_optimization_distance;
 		int text_index_optimization_distance;
-		mrpt::utils::TColor optimization_distance_color;
+		mrpt::img::TColor optimization_distance_color;
 		/**\brief Keystroke to toggle the optimization distance on/off */
 		std::string keystroke_optimization_distance;
 		/**\brief Keystroke to manually trigger a full graph optimization */
@@ -201,20 +201,20 @@ class CLevMarqGSO
 	};
 
 	/**\brief struct for holding the graph visualization-related variables in a
-	 * compact form
-	 */
-	struct GraphVisualizationParams : public mrpt::utils::CLoadableOptions
+	* compact form
+	*/
+	struct GraphVisualizationParams : public mrpt::config::CLoadableOptions
 	{
-	   public:
+	public:
 		GraphVisualizationParams();
 		~GraphVisualizationParams();
 
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section);
-		void dumpToTextStream(mrpt::utils::CStream& out) const;
+		void dumpToTextStream(std::ostream& out) const;
 
-		mrpt::utils::TParametersDouble cfg;
+		mrpt::system::TParametersDouble cfg;
 		bool visualize_optimized_graph;
 		// textMessage parameters
 		std::string keystroke_graph_toggle;  // see Ctor for initialization
@@ -337,8 +337,8 @@ class CLevMarqGSO
 	 * distance to the specified nodeID
 	 */
 	void getNearbyNodesOf(
-		std::set<mrpt::utils::TNodeID>* nodes_set,
-		const mrpt::utils::TNodeID& cur_nodeID, double distance);
+		std::set<mrpt::graphs::TNodeID>* nodes_set,
+		const mrpt::graphs::TNodeID& cur_nodeID, double distance);
 
 	// protected members
 	//////////////////////////////////////////////////////////////

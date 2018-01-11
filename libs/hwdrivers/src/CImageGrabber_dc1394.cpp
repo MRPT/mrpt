@@ -773,8 +773,8 @@ bool CImageGrabber_dc1394::setSoftwareTriggerLevel(bool level)
 
 /** Generates a list with the information on all the existing (Firewire) cameras
  * in the system.
-  * \exception std::runtime_error On any error calling libdc1394.
-  */
+ * \exception std::runtime_error On any error calling libdc1394.
+ */
 void CImageGrabber_dc1394::enumerateCameras(TCameraInfoList& out_list)
 {
 	MRPT_START
@@ -812,11 +812,10 @@ void CImageGrabber_dc1394::enumerateCameras(TCameraInfoList& out_list)
 			dc1394camera_t* cam = dc1394_camera_new_unit(
 				lib_context, list->ids[i].guid, list->ids[i].unit);
 			if (!cam)
-				throw std::runtime_error(
-					format(
-						"[CImageGrabber_dc1394] ERROR: Failed to query camera "
-						"with GUID %u\n",
-						static_cast<unsigned int>(list->ids[i].guid)));
+				throw std::runtime_error(format(
+					"[CImageGrabber_dc1394] ERROR: Failed to query camera "
+					"with GUID %u\n",
+					static_cast<unsigned int>(list->ids[i].guid)));
 
 			info.unit_spec_ID = cam->unit_spec_ID;
 			info.unit_sw_version = cam->unit_sw_version;
@@ -861,10 +860,10 @@ void CImageGrabber_dc1394::enumerateCameras(TCameraInfoList& out_list)
 		if (list) dc1394_camera_free_list(list);
 		if (lib_context) dc1394_free(lib_context);
 
-		THROW_STACKED_EXCEPTION(e)
+		THROW_STACKED_EXCEPTION(e);
 	}
 #else
-	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_LIBDC1394_2=0 !")
+	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_LIBDC1394_2=0 !");
 #endif
 	MRPT_END
 }

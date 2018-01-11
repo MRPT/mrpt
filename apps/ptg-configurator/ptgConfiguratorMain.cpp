@@ -53,11 +53,11 @@ wxBitmap MyArtProvider::CreateBitmap(
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CAxis.h>
-#include <mrpt/utils/CConfigFileMemory.h>
-#include <mrpt/utils/CConfigFilePrefixer.h>
+#include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/config/CConfigFilePrefixer.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/system/os.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 
 mrpt::nav::CParameterizedTrajectoryGenerator* ptg = nullptr;
 
@@ -744,10 +744,10 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	gl_view_TPSpace->insert(gl_TPSpace_clearance_interp);
 
 	m_plot->addTextMessage(
-		0.01, 5, "Workspace", mrpt::utils::TColorf(1, 1, 1, 0.75), "sans", 15,
+		0.01, 5, "Workspace", mrpt::img::TColorf(1, 1, 1, 0.75), "sans", 15,
 		mrpt::opengl::NICE, 1);
 	m_plotTPSpace->addTextMessage(
-		0.01, 5, "TP-Space", mrpt::utils::TColorf(1, 1, 1, 0.75), "sans", 15,
+		0.01, 5, "TP-Space", mrpt::img::TColorf(1, 1, 1, 0.75), "sans", 15,
 		mrpt::opengl::NICE, 2);
 
 	gl_robot_ptg_prediction =
@@ -755,7 +755,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	gl_robot_ptg_prediction->setName("ptg_prediction");
 	gl_robot_ptg_prediction->setLineWidth(1.0);
 	gl_robot_ptg_prediction->setColor_u8(
-		mrpt::utils::TColor(0x00, 0x00, 0xff, 0x90));
+		mrpt::img::TColor(0x00, 0x00, 0xff, 0x90));
 	gl_view_WS->insert(gl_robot_ptg_prediction);
 
 	gl_robot_ptg_prediction_highlight =
@@ -763,7 +763,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	gl_robot_ptg_prediction_highlight->setName("ptg_prediction_highlight");
 	gl_robot_ptg_prediction_highlight->setLineWidth(3.0);
 	gl_robot_ptg_prediction_highlight->setColor_u8(
-		mrpt::utils::TColor(0xff, 0x00, 0x00, 0xff));
+		mrpt::img::TColor(0xff, 0x00, 0x00, 0xff));
 	gl_view_WS->insert(gl_robot_ptg_prediction_highlight);
 
 	gl_WS_obs = mrpt::make_aligned_shared<mrpt::opengl::CPointCloud>();
@@ -801,7 +801,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 			-10.0, -10.0, 0, 10.0, 10.0, 0.0, 1.0, 2.0);
 		gl_axis_WS->setTextScale(0.20f);
 		gl_axis_WS->enableTickMarks(true, true, true);
-		gl_axis_WS->setColor_u8(mrpt::utils::TColor(30, 30, 30, 50));
+		gl_axis_WS->setColor_u8(mrpt::img::TColor(30, 30, 30, 50));
 		gl_axis_WS->setTextLabelOrientation(0, 0, 0, 0);
 		gl_axis_WS->setTextLabelOrientation(1, 0, 0, 0);
 
@@ -812,7 +812,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 			-1.0, -1.0, 0, 1.0, 1.0, 0.0, 0.25, 2.0);
 		gl_axis_TPS->setTextScale(0.04f);
 		gl_axis_TPS->enableTickMarks(true, true, false);
-		gl_axis_TPS->setColor_u8(mrpt::utils::TColor(30, 30, 30, 50));
+		gl_axis_TPS->setColor_u8(mrpt::img::TColor(30, 30, 30, 50));
 		gl_axis_TPS->setTextLabelOrientation(0, 0, 0, 0);
 		gl_axis_TPS->setTextLabelOrientation(1, 0, 0, 0);
 		gl_view_TPSpace->insert(gl_axis_TPS);
@@ -821,7 +821,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	gl_tp_obstacles = mrpt::make_aligned_shared<mrpt::opengl::CSetOfLines>();
 	gl_tp_obstacles->setName("tp_obstacles");
 	gl_tp_obstacles->setLineWidth(2.0f);
-	gl_tp_obstacles->setColor_u8(mrpt::utils::TColor(0x00, 0x00, 0x00, 0xff));
+	gl_tp_obstacles->setColor_u8(mrpt::img::TColor(0x00, 0x00, 0x00, 0xff));
 
 	gl_TPSpace_TP_obstacles->insert(gl_tp_obstacles);
 
@@ -852,8 +852,8 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	// Populate list of existing PTGs:
 	{
 		// mrpt::nav::registerAllNavigationClasses();
-		const std::vector<const mrpt::utils::TRuntimeClassId*>& lstClasses =
-			mrpt::utils::getAllRegisteredClasses();
+		const std::vector<const mrpt::rtti::TRuntimeClassId*>& lstClasses =
+			mrpt::rtti::getAllRegisteredClasses();
 		for (size_t i = 0; i < lstClasses.size(); i++)
 		{
 			if (!lstClasses[i]->derivedFrom(
@@ -916,8 +916,8 @@ void ptgConfiguratorframe::OnbtnReloadParamsClick(wxCommandEvent& event)
 		mrpt::format("PTG%d_", (int)edPTGIndex->GetValue());
 	const std::string sSection = "PTG_PARAMS";
 
-	mrpt::utils::CConfigFileMemory cfg;
-	mrpt::utils::CConfigFilePrefixer cfp;
+	mrpt::config::CConfigFileMemory cfg;
+	mrpt::config::CConfigFilePrefixer cfp;
 	cfp.bind(cfg);
 	cfp.setPrefixes("", sKeyPrefix);
 
@@ -957,8 +957,8 @@ void ptgConfiguratorframe::OncbPTGClassSelect(wxCommandEvent& event)
 	}
 
 	// Factory:
-	const mrpt::utils::TRuntimeClassId* classId =
-		mrpt::utils::findRegisteredClass(sSelPTG);
+	const mrpt::rtti::TRuntimeClassId* classId =
+		mrpt::rtti::findRegisteredClass(sSelPTG);
 	if (!classId)
 	{
 		THROW_EXCEPTION_FMT(
@@ -988,7 +988,7 @@ void ptgConfiguratorframe::OncbPTGClassSelect(wxCommandEvent& event)
 void ptgConfiguratorframe::rebuild3Dview()
 {
 	WX_START_TRY;
-	static mrpt::utils::CTicTac timer;
+	static mrpt::system::CTicTac timer;
 	const double refDist = ptg ? ptg->getRefDistance() : 10.0;
 	ASSERT_(refDist > 0);
 
@@ -1078,7 +1078,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 				wxString::Format(
 					_("Selected path trajectory: Phi [deg]. PTG alpha=%.03f "
 					  "[deg]"),
-					mrpt::utils::RAD2DEG(ptg_alpha)));
+					mrpt::RAD2DEG(ptg_alpha)));
 		}
 		catch (...)
 		{
@@ -1178,23 +1178,23 @@ void ptgConfiguratorframe::rebuild3Dview()
 					if (is_selected_path)
 					{
 						robotHeadAng_x[j] = j * dt;
-						robotHeadAng_y[j] = mrpt::utils::RAD2DEG(head2dir);
+						robotHeadAng_y[j] = mrpt::RAD2DEG(head2dir);
 						robotPath_x[j] = curPose.x;
 						robotPath_y[j] = curPose.y;
-						robotPath_phi[j] = mrpt::utils::RAD2DEG(curPose.phi);
+						robotPath_phi[j] = mrpt::RAD2DEG(curPose.phi);
 						robotPath_dist[j] = ptg->getPathDist(k, j);
 
 						robotPath_vx[j] = dx / dt;
 						robotPath_vy[j] = dy / dt;
-						robotPath_w[j] = mrpt::utils::RAD2DEG(dphi / dt);
+						robotPath_w[j] = mrpt::RAD2DEG(dphi / dt);
 					}
 
-					mrpt::utils::keep_max(maxRobotHeadErr, std::abs(head2dir));
+					mrpt::keep_max(maxRobotHeadErr, std::abs(head2dir));
 				}
 				prevPose = curPose;
 			}
 
-			robotHeadAngAll_y[k] = mrpt::utils::RAD2DEG(maxRobotHeadErr);
+			robotHeadAngAll_y[k] = mrpt::RAD2DEG(maxRobotHeadErr);
 		}
 		m_graph_head_all->SetData(robotHeadAngAll_x, robotHeadAngAll_y);
 		m_graph_head_indiv->SetData(robotHeadAng_x, robotHeadAng_y);
@@ -1311,8 +1311,8 @@ void ptgConfiguratorframe::loadPlugin()
 	// Populate list of existing PTGs:
 	{
 		cbPTGClass->Clear();
-		const std::vector<const mrpt::utils::TRuntimeClassId*>& lstClasses =
-			mrpt::utils::getAllRegisteredClasses();
+		const std::vector<const mrpt::rtti::TRuntimeClassId*>& lstClasses =
+			mrpt::rtti::getAllRegisteredClasses();
 		for (size_t i = 0; i < lstClasses.size(); i++)
 		{
 			if (!lstClasses[i]->derivedFrom(
@@ -1350,8 +1350,8 @@ void ptgConfiguratorframe::dumpPTGcfgToTextBox()
 		mrpt::format("PTG%d_", (int)edPTGIndex->GetValue());
 	const std::string sSection = "PTG_PARAMS";
 
-	mrpt::utils::CConfigFileMemory cfg;
-	mrpt::utils::CConfigFilePrefixer cfp;
+	mrpt::config::CConfigFileMemory cfg;
+	mrpt::config::CConfigFilePrefixer cfp;
 	cfp.bind(cfg);
 	cfp.setPrefixes("", sKeyPrefix);
 

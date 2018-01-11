@@ -12,7 +12,6 @@
 #include <mrpt/nav/reactive/CMultiObjMotionOpt_Scalarization.h>
 
 using namespace mrpt::nav;
-using namespace mrpt::utils;
 
 IMPLEMENTS_MRPT_OBJECT(
 	CMultiObjMotionOpt_Scalarization, CMultiObjectiveMotionOptimizerBase,
@@ -26,12 +25,12 @@ CMultiObjMotionOpt_Scalarization::CMultiObjMotionOpt_Scalarization()
 void CMultiObjMotionOpt_Scalarization::clear()
 {
 	CMultiObjectiveMotionOptimizerBase::clear();
-	m_expr_scalar_formula = mrpt::math::CRuntimeCompiledExpression();
+	m_expr_scalar_formula = mrpt::expr::CRuntimeCompiledExpression();
 	m_expr_scalar_vars.clear();
 }
 
 void CMultiObjMotionOpt_Scalarization::loadConfigFile(
-	const mrpt::utils::CConfigFileBase& c)
+	const mrpt::config::CConfigFileBase& c)
 {
 	parameters
 		.CMultiObjectiveMotionOptimizerBase::TParamsBase::loadFromConfigFile(
@@ -41,7 +40,7 @@ void CMultiObjMotionOpt_Scalarization::loadConfigFile(
 }
 
 void CMultiObjMotionOpt_Scalarization::saveConfigFile(
-	mrpt::utils::CConfigFileBase& c) const
+	mrpt::config::CConfigFileBase& c) const
 {
 	parameters
 		.CMultiObjectiveMotionOptimizerBase::TParamsBase::saveToConfigFile(
@@ -73,7 +72,7 @@ int CMultiObjMotionOpt_Scalarization::impl_decide(
 		}
 
 		// formula:
-		m_expr_scalar_formula = mrpt::math::CRuntimeCompiledExpression();
+		m_expr_scalar_formula = mrpt::expr::CRuntimeCompiledExpression();
 		// Compile user-given expressions:
 		try
 		{
@@ -126,14 +125,14 @@ int CMultiObjMotionOpt_Scalarization::impl_decide(
 
 CMultiObjMotionOpt_Scalarization::TParams::TParams() {}
 void CMultiObjMotionOpt_Scalarization::TParams::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& c, const std::string& s)
+	const mrpt::config::CConfigFileBase& c, const std::string& s)
 {
 	// TParamsBase members are already dealt elsewhere.
 	MRPT_LOAD_CONFIG_VAR_REQUIRED_CS(scalar_score_formula, string);
 }
 
 void CMultiObjMotionOpt_Scalarization::TParams::saveToConfigFile(
-	mrpt::utils::CConfigFileBase& c, const std::string& s) const
+	mrpt::config::CConfigFileBase& c, const std::string& s) const
 {
 	// TParamsBase members are already dealt elsewhere.
 	MRPT_SAVE_CONFIG_VAR_COMMENT(

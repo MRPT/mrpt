@@ -14,7 +14,6 @@
  * documentation of the functions
  */
 
-#include <mrpt/utils.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/system.h>
@@ -24,7 +23,6 @@
 
 using namespace mrpt;
 using namespace mrpt::poses;
-using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
 
@@ -133,7 +131,7 @@ void renameDirContents()
 	}
 	else
 	{
-		THROW_EXCEPTION("Error while trying to rename directory: " << dir_name)
+		THROW_EXCEPTION("Error while trying to rename directory: " << dir_name);
 	}
 }
 

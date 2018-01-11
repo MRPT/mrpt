@@ -11,8 +11,9 @@
 
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/opengl/CSetOfLines.h>
-#include <mrpt/utils/CStream.h>
-#include <mrpt/utils/round.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/core/round.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::nav;
 
@@ -26,7 +27,7 @@ void CPTG_RobotShape_Circular::setRobotShapeRadius(const double robot_radius)
 
 void CPTG_RobotShape_Circular::loadDefaultParams() { m_robotRadius = 0.2; }
 void CPTG_RobotShape_Circular::loadShapeFromConfigFile(
-	const mrpt::utils::CConfigFileBase& cfg, const std::string& sSection)
+	const mrpt::config::CConfigFileBase& cfg, const std::string& sSection)
 {
 	const double old_R = m_robotRadius;
 	MRPT_LOAD_HERE_CONFIG_VAR(
@@ -35,7 +36,7 @@ void CPTG_RobotShape_Circular::loadShapeFromConfigFile(
 	if (m_robotRadius != old_R) internal_processNewRobotShape();
 }
 void CPTG_RobotShape_Circular::saveToConfigFile(
-	mrpt::utils::CConfigFileBase& cfg, const std::string& sSection) const
+	mrpt::config::CConfigFileBase& cfg, const std::string& sSection) const
 {
 	const int WN = 25, WV = 30;
 
@@ -75,7 +76,7 @@ void CPTG_RobotShape_Circular::add_robotShape_to_setOfLines(
 }
 
 void CPTG_RobotShape_Circular::internal_shape_loadFromStream(
-	mrpt::utils::CStream& in)
+	mrpt::serialization::CArchive& in)
 {
 	uint8_t version;
 	in >> version;
@@ -91,7 +92,7 @@ void CPTG_RobotShape_Circular::internal_shape_loadFromStream(
 }
 
 void CPTG_RobotShape_Circular::internal_shape_saveToStream(
-	mrpt::utils::CStream& out) const
+	mrpt::serialization::CArchive& out) const
 {
 	uint8_t version = 0;
 	out << version;
@@ -107,11 +108,11 @@ double CPTG_RobotShape_Circular::getMaxRobotRadius() const
 bool CPTG_RobotShape_Circular::isPointInsideRobotShape(
 	const double x, const double y) const
 {
-	return mrpt::math::hypot_fast(x, y) < m_robotRadius;
+	return mrpt::hypot_fast(x, y) < m_robotRadius;
 }
 
 double CPTG_RobotShape_Circular::evalClearanceToRobotShape(
 	const double ox, const double oy) const
 {
-	return mrpt::math::hypot_fast(ox, oy) - m_robotRadius;
+	return mrpt::hypot_fast(ox, oy) - m_robotRadius;
 }

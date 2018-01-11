@@ -18,24 +18,24 @@ namespace opengl
 #define INVALID_DISPLAY_LIST_ID static_cast<unsigned int>(-1)
 
 /** A renderizable object suitable for rendering with OpenGL's display lists.
-  *   The idea is to use the derived classes' ::render() method to save all the
-  *primitives
-  *   into one display list, then in subsequent rendering events, just execute
-  *the list.
-  *   This method is normally faster since it avoids the bottleneck between
-  *CPU-GPU. On the
-  *   other hand, it demands more memory on the graphic card.
-  *
-  *  Instructions for implementing derived classes:
-  *		- Each time the object is modified is some way that modifies its
-  *appearance, you must call notifyChange()
-  *		- Implement the rendering method: render_dl(), calling to OpenGL
-  *primitives
-  *as usual. They'll be saved in a display list transparently.
-  *
-  *  \sa mrpt::opengl::CRenderizable
-  * \ingroup mrpt_opengl_grp
-  */
+ *   The idea is to use the derived classes' ::render() method to save all the
+ *primitives
+ *   into one display list, then in subsequent rendering events, just execute
+ *the list.
+ *   This method is normally faster since it avoids the bottleneck between
+ *CPU-GPU. On the
+ *   other hand, it demands more memory on the graphic card.
+ *
+ *  Instructions for implementing derived classes:
+ *		- Each time the object is modified is some way that modifies its
+ *appearance, you must call notifyChange()
+ *		- Implement the rendering method: render_dl(), calling to OpenGL
+ *primitives
+ *as usual. They'll be saved in a display list transparently.
+ *
+ *  \sa mrpt::opengl::CRenderizable
+ * \ingroup mrpt_opengl_grp
+ */
 class CRenderizableDisplayList : public mrpt::opengl::CRenderizable
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CRenderizableDisplayList)
@@ -60,9 +60,9 @@ class CRenderizableDisplayList : public mrpt::opengl::CRenderizable
 
 	/** Optional: If the object has some state in which creating a display list
 	 * is NOT preferred over direct rendering,
-	  *  implement this method and return "true" in those cases. */
+	 *  implement this method and return "true" in those cases. */
 	virtual bool should_skip_display_list_cache() const { return false; }
-	inline void readFromStreamRender(mrpt::utils::CStream& in)
+	inline void readFromStreamRender(mrpt::serialization::CArchive& in)
 	{
 		CRenderizable::readFromStreamRender(in);
 		notifyChange();
@@ -110,7 +110,7 @@ class CRenderizableDisplayList : public mrpt::opengl::CRenderizable
 		return *this;
 	}
 	/** Changes the default object color \return a ref to this */
-	CRenderizable& setColor_u8(const mrpt::utils::TColor& c) override
+	CRenderizable& setColor_u8(const mrpt::img::TColor& c) override
 	{
 		CRenderizable::setColor_u8(c);
 		notifyChange();
@@ -127,8 +127,8 @@ class CRenderizableDisplayList : public mrpt::opengl::CRenderizable
 	/** @} */
 };
 
-}  // end namespace
+}  // namespace opengl
 
-}  // End of namespace
+}  // namespace mrpt
 
 #endif

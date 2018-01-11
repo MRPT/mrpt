@@ -27,20 +27,22 @@
 #include <mrpt/opengl/C3DSScene.h>
 #include <mrpt/opengl/CTexturedPlane.h>
 
-#include <mrpt/compress/zip.h>
+#include <mrpt/io/zip.h>
+#include <mrpt/io/vector_loadsave.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/vector_loadsave.h>
-
-#include <mrpt/utils/CStringList.h>
-#include <mrpt/utils/CStream.h>
-#include <mrpt/utils/CFileOutputStream.h>
-#include <mrpt/utils/CFileInputStream.h>
+#include <mrpt/serialization/CMemoryChunk.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/io/CFileInputStream.h>
+#include <mrpt/io/CMemoryStream.h>  // req by CMemoryChunk CRTP
 
 #include "opengl_internals.h"
 
+using mrpt::serialization::CMemoryChunk;
+
 using namespace mrpt;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
@@ -86,8 +88,8 @@ void C3DSScene::render_dl() const
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, file->ambient);
 
 	/* Lights.  Set them from light nodes if possible.  If not, use the
-	* light objects directly.
-	*/
+	 * light objects directly.
+	 */
 	{
 		const GLfloat a[] = {0.1f, 0.1f, 0.1f, 1.0f};
 		GLfloat c[] = {1.0f, 1.0f, 1.0f, 1.0f};
@@ -172,9 +174,9 @@ int tex_mode = 0;  // Texturing active ?
 const char* datapath = ".";
 
 /*
-* Render node recursively, first children, then parent.
-* Each node receives its own OpenGL display list.
-*/
+ * Render node recursively, first children, then parent.
+ * Each node receives its own OpenGL display list.
+ */
 static void render_node(Lib3dsNode* node, Lib3dsFile* file)
 {
 #if MRPT_HAS_OPENGL_GLUT
@@ -458,14 +460,14 @@ static void render_node(Lib3dsNode* node, Lib3dsFile* file)
 #else
 	MRPT_UNUSED_PARAM(node);
 	MRPT_UNUSED_PARAM(file);
-	THROW_EXCEPTION("MRPT was compiled without OpenGL support")
+	THROW_EXCEPTION("MRPT was compiled without OpenGL support");
 #endif
 }
 
 /*!
-* Update information about a light.  Try to find corresponding nodes
-* if possible, and copy values from nodes into light struct.
-*/
+ * Update information about a light.  Try to find corresponding nodes
+ * if possible, and copy values from nodes into light struct.
+ */
 static void light_update(Lib3dsLight* l, Lib3dsFile* file)
 {
 	Lib3dsNode *ln, *sn;
@@ -487,29 +489,25 @@ static void light_update(Lib3dsLight* l, Lib3dsFile* file)
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-void C3DSScene::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t C3DSScene::serializeGetVersion() const { return 2; }
+void C3DSScene::serializeTo(mrpt::serialization::CArchive& out) const
 {
 #if MRPT_HAS_LIB3DS
-	if (version)
-		*version = 2;
-	else
+	writeToStreamRender(out);
+
+	CMemoryChunk chunk;
+	if (m_3dsfile && m_3dsfile->file)
 	{
-		writeToStreamRender(out);
-
-		CMemoryChunk chunk;
-		if (m_3dsfile && m_3dsfile->file)
-		{
-			const string tmpFil = mrpt::system::getTempFileName();
-			lib3ds_file_save((Lib3dsFile*)m_3dsfile->file, tmpFil.c_str());
-			chunk.loadBufferFromFile(tmpFil);
-			mrpt::system::deleteFile(tmpFil);
-		}
-
-		// Write the "3dsfile":
-		out << chunk;
-
-		out << m_enable_extra_lighting;  // Added in version 1
+		const string tmpFil = mrpt::system::getTempFileName();
+		lib3ds_file_save((Lib3dsFile*)m_3dsfile->file, tmpFil.c_str());
+		chunk.loadBufferFromFile(tmpFil);
+		mrpt::system::deleteFile(tmpFil);
 	}
+
+	// Write the "3dsfile":
+	out << chunk;
+
+	out << m_enable_extra_lighting;  // Added in version 1
 #else
 	THROW_EXCEPTION("This class requires compiling MRPT against lib3ds");
 #endif
@@ -519,7 +517,8 @@ void C3DSScene::writeToStream(mrpt::utils::CStream& out, int* version) const
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void C3DSScene::readFromStream(mrpt::utils::CStream& in, int version)
+void C3DSScene::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 #if MRPT_HAS_LIB3DS
 	switch (version)
@@ -615,15 +614,15 @@ void C3DSScene::loadFrom3DSFile(const std::string& filepath)
 	if (mrpt::system::extractFileExtension(filepath) == "gz")
 	{
 		// Load compressed file:
-		vector_byte out_data;
-		if (!mrpt::compress::zip::decompress_gz_file(filepath, out_data))
+		std::vector<uint8_t> out_data;
+		if (!mrpt::io::zip::decompress_gz_file(filepath, out_data))
 			THROW_EXCEPTION_FMT(
 				"Error loading compressed file: %s", filepath.c_str())
 
 		// Save to tmp file & load:
 		string tmpFil = mrpt::system::getTempFileName();
 
-		mrpt::system::vectorToBinaryFile(out_data, tmpFil);
+		mrpt::io::vectorToBinaryFile(out_data, tmpFil);
 		out_data.clear();
 
 		file = lib3ds_file_load(tmpFil.c_str());

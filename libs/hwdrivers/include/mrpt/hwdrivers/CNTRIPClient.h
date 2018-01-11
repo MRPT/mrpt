@@ -10,8 +10,7 @@
 #ifndef CNTRIPClient_H
 #define CNTRIPClient_H
 
-#include <mrpt/utils/utils_defs.h>
-#include <mrpt/synch/MT_buffer.h>
+#include <mrpt/containers/MT_buffer.h>
 
 #include <future>
 #include <list>
@@ -134,7 +133,7 @@ class CNTRIPClient
 	mutable NTRIPArgs m_args;
 
 	/** Buffer for data to be sent back to the server */
-	mrpt::synch::MT_buffer m_upload_data;
+	mrpt::containers::MT_buffer m_upload_data;
 
    public:
 	/** Default constructor */
@@ -161,7 +160,7 @@ class CNTRIPClient
 	 * contents.
 	  * \sa open, close
 	  */
-	mrpt::synch::MT_buffer stream_data;
+	mrpt::containers::MT_buffer stream_data;
 
 	/** Connect to a given NTRIP caster and get the list of all available
 	  *mountpoints and their parameters.

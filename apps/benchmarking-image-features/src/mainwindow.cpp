@@ -17,7 +17,7 @@
 #include "mainwindow.h"
 
 /// MRPT includes
-#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
@@ -30,8 +30,10 @@
 using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::vision;
-using namespace mrpt::utils;
 using namespace mrpt::gui;
+using namespace mrpt::img;
+using namespace mrpt::io;
+using namespace mrpt::serialization;
 using namespace mrpt::math;
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -106,8 +108,8 @@ string descriptor_names[] = {"SIFT Descriptor",
 cv::Mat cvImg1;
 
 /************************************************************************************************
-*					    On Button Generate Clicked: visualize descriptor *
-************************************************************************************************/
+ *					    On Button Generate Clicked: visualize descriptor *
+ ************************************************************************************************/
 void MainWindow::on_button_generate_clicked()
 {
 	visualize_descriptor_clicked = true;
@@ -187,7 +189,12 @@ void MainWindow::on_button_generate_clicked()
 				xData.at<double>(i) = i;
 				yData.at<double>(i) = distances.row(i).x();
 			}
+#ifdef HAVE_OPENCV_PLOT
+#if MRPT_OPENCV_VERSION_NUM >= 0x330
+			plot = plot::Plot2d::create(xData, yData);
+#else
 			plot = plot::createPlot2d(xData, yData);
+#endif
 			plot->setPlotSize(len, 1);
 			plot->setMaxX(distances.size());
 			plot->setMinX(-15);
@@ -199,7 +206,7 @@ void MainWindow::on_button_generate_clicked()
 			plot->setPlotLineColor(Scalar(255, 0, 0));
 			plot->setPlotBackgroundColor(Scalar(255, 255, 255));
 			plot->setPlotGridColor(Scalar(255, 255, 0));
-
+#endif
 			cv::Mat temp1(display.cols, display.rows, display.type());
 			cvtColor(display, temp1, CV_RGB2BGR);
 
@@ -341,10 +348,7 @@ void MainWindow::on_button_generate_clicked()
 			case 7:  // descLATCH
 			{
 				vector<uint8_t> v1, v2;
-				vector<float> v1_surf,
-					v2_surf;  // since SURF descriptors are floating numbers
-				// mrpt::utils::metaprogramming::copy_container_typecasting(featsImage1[i1]->descriptors.SIFT,
-				// v1);
+				vector<float> v1_surf, v2_surf;
 
 				if (descriptor_selected == 0)
 					v1 = featsImage1[i1]->descriptors.SIFT;
@@ -390,14 +394,19 @@ void MainWindow::on_button_generate_clicked()
 					min_y = -1;
 				}
 
+#ifdef HAVE_OPENCV_PLOT
+#if MRPT_OPENCV_VERSION_NUM >= 0x330
+				plot = plot::Plot2d::create(xData, yData);
+#else
 				plot = plot::createPlot2d(xData, yData);
+#endif
 				plot->setPlotSize(len, 1);
 				plot->setMaxX(len);
 				plot->setMinX(0);
 				plot->setMaxY(max_y);
 				plot->setMinY(min_y);
 				plot->render(display);
-
+#endif
 				cv::Mat temp1(display.cols, display.rows, display.type());
 				cvtColor(display, temp1, CV_RGB2BGR);
 
@@ -443,14 +452,19 @@ void MainWindow::on_button_generate_clicked()
 						else
 							yData.at<double>(i) = v2_surf.at(i);
 					}
+#ifdef HAVE_OPENCV_PLOT
+#if MRPT_OPENCV_VERSION_NUM >= 0x330
+					plot = plot::Plot2d::create(xData, yData);
+#else
 					plot = plot::createPlot2d(xData, yData);
+#endif
 					plot->setPlotSize(len, 1);
 					plot->setMaxX(len);
 					plot->setMinX(0);
 					plot->setMaxY(max_y);
 					plot->setMinY(min_y);
 					plot->render(display);
-
+#endif
 					cv::Mat temp2(display.cols, display.rows, display.type());
 					cvtColor(display, temp2, CV_RGB2BGR);
 
@@ -513,8 +527,8 @@ void MainWindow::on_button_generate_clicked()
 }
 
 /************************************************************************************************
-*								On Close Clicked *
-************************************************************************************************/
+ *								On Close Clicked *
+ ************************************************************************************************/
 void MainWindow::button_close_clicked()
 {
 	window_gui->close();
@@ -523,8 +537,8 @@ void MainWindow::button_close_clicked()
 }
 
 /************************************************************************************************
-*								On Descriptor Choose *
-************************************************************************************************/
+ *								On Descriptor Choose *
+ ************************************************************************************************/
 void MainWindow::on_descriptor_choose(int choice)
 {
 	makeGraphsVisible(false);
@@ -687,8 +701,8 @@ void MainWindow::on_descriptor_choose(int choice)
 }
 
 /************************************************************************************************
-*								On Detector Choose *
-************************************************************************************************/
+ *								On Detector Choose *
+ ************************************************************************************************/
 void MainWindow::on_detector_choose(int choice)
 {
 	makeGraphsVisible(false);
@@ -874,8 +888,8 @@ void MainWindow::on_detector_choose(int choice)
 }
 
 /************************************************************************************************
-*								On StereoMatching Checked *
-************************************************************************************************/
+ *								On StereoMatching Checked *
+ ************************************************************************************************/
 void MainWindow::onHomographyChecked(int state)
 {
 	if (homography_enable->isChecked() && (currentInputIndex == 3))
@@ -894,9 +908,9 @@ void MainWindow::onHomographyChecked(int state)
 }
 
 /************************************************************************************************
-*								Make Homography Params Visible
-**
-************************************************************************************************/
+ *								Make Homography Params Visible
+ **
+ ************************************************************************************************/
 void MainWindow::makeHomographyParamsVisible(bool flag)
 {
 	inputHomogrpahyPath->setVisible(false);
@@ -904,8 +918,8 @@ void MainWindow::makeHomographyParamsVisible(bool flag)
 }
 
 /************************************************************************************************
-*								Make Detector Params Visbile *
-************************************************************************************************/
+ *								Make Detector Params Visbile *
+ ************************************************************************************************/
 void MainWindow::makeAllDetectorParamsVisible(bool flag)
 {
 	param1->setVisible(flag);
@@ -921,9 +935,9 @@ void MainWindow::makeAllDetectorParamsVisible(bool flag)
 }
 
 /************************************************************************************************
-*								Make Descriptor Params Visible
-**
-************************************************************************************************/
+ *								Make Descriptor Params Visible
+ **
+ ************************************************************************************************/
 void MainWindow::makeAllDescriptorParamsVisible(bool flag)
 {
 	param1_desc->setVisible(flag);
@@ -939,8 +953,8 @@ void MainWindow::makeAllDescriptorParamsVisible(bool flag)
 }
 
 /************************************************************************************************
-*								Get Image Directory *
-************************************************************************************************/
+ *								Get Image Directory *
+ ************************************************************************************************/
 string MainWindow::getImageDir(string path)
 {
 	long i = path.size() - 1;
@@ -957,9 +971,9 @@ string MainWindow::getImageDir(string path)
 }
 
 /************************************************************************************************
-*								Make Vision Options Visible
-**
-************************************************************************************************/
+ *								Make Vision Options Visible
+ **
+ ************************************************************************************************/
 void MainWindow::makeVisionOptionsVisible(bool flag)
 {
 	tracking_enable->setVisible(flag);
@@ -969,12 +983,12 @@ void MainWindow::makeVisionOptionsVisible(bool flag)
 }
 
 /************************************************************************************************
-*								Reade RawLog Files *
-************************************************************************************************/
+ *								Reade RawLog Files *
+ ************************************************************************************************/
 void MainWindow::readRawlogFiles(string rawlog)
 {
 	/// APPROACH 1: not required
-	/*mrpt::utils::CFileGZInputStream rawlog_stream_;// = new CFileGZInputStream
+	/*mrpt::io::CFileGZInputStream rawlog_stream_;// = new CFileGZInputStream
 	rawlog_stream_.open(rawlog);
 	CSensoryFrame frames;
 	CActionCollection actions;
@@ -1039,7 +1053,7 @@ void MainWindow::readRawlogFiles(string rawlog)
 
 						stringstream str;
 						str << getImageDir(rawlog) << "/Images";
-						mrpt::utils::CImage::setImagesPathBase(str.str());
+						mrpt::img::CImage::setImagesPathBase(str.str());
 						file_path1 = str.str();
 						flag_path2++;
 						inputFilePath->setText(
@@ -1057,7 +1071,7 @@ void MainWindow::readRawlogFiles(string rawlog)
 
 						stringstream str;
 						str << getImageDir(rawlog) << "/Images";
-						mrpt::utils::CImage::setImagesPathBase(str.str());
+						mrpt::img::CImage::setImagesPathBase(str.str());
 						file_path1 = str.str();
 						flag_path++;
 
@@ -1102,8 +1116,8 @@ void MainWindow::readRawlogFiles(string rawlog)
 	}
 }
 /************************************************************************************************
-*								On File Input Choose *
-************************************************************************************************/
+ *								On File Input Choose *
+ ************************************************************************************************/
 void MainWindow::on_file_input_choose(int choice)
 {
 	// makeGraphsVisible(false);
@@ -1201,8 +1215,8 @@ void MainWindow::on_file_input_choose(int choice)
 }
 
 /************************************************************************************************
-*								Fill Detector Info *
-************************************************************************************************/
+ *								Fill Detector Info *
+ ************************************************************************************************/
 void MainWindow::fillDetectorInfo()
 {
 	numFeats = numFeaturesLineEdit->text().toInt();
@@ -1360,8 +1374,8 @@ void MainWindow::fillDetectorInfo()
 }
 
 /************************************************************************************************
-*								Fill Descriptor Info *
-************************************************************************************************/
+ *								Fill Descriptor Info *
+ ************************************************************************************************/
 void MainWindow::fillDescriptorInfo()
 {
 	// clear CDescriptor storage data variable before each button click
@@ -1505,9 +1519,9 @@ void MainWindow::fillDescriptorInfo()
 }
 
 /************************************************************************************************
-*								On Detector Button Clicked
-**
-************************************************************************************************/
+ *								On Detector Button Clicked
+ **
+ ************************************************************************************************/
 void MainWindow::on_detector_button_clicked()
 {
 	if (detector_selected == 2)
@@ -1682,9 +1696,9 @@ void MainWindow::on_detector_button_clicked()
 }
 
 /************************************************************************************************
-*								On Descriptor Button Clicked
-**
-************************************************************************************************/
+ *								On Descriptor Button Clicked
+ **
+ ************************************************************************************************/
 void MainWindow::on_descriptor_button_clicked()
 {
 	evaluate_descriptor_clicked = true;
@@ -1801,8 +1815,8 @@ void MainWindow::on_descriptor_button_clicked()
 }
 
 /************************************************************************************************
-*								Show Evaluation *
-************************************************************************************************/
+ *								Show Evaluation *
+ ************************************************************************************************/
 void MainWindow::showEvaluation(int mode)
 {
 	stringstream concat;
@@ -1818,8 +1832,8 @@ void MainWindow::showEvaluation(int mode)
 }
 
 /************************************************************************************************
-*								On Browse Button Clicked *
-************************************************************************************************/
+ *								On Browse Button Clicked *
+ ************************************************************************************************/
 void MainWindow::on_browse_button_clicked()
 {
 	/// to reset the image counter on selection of a different dataset
@@ -1882,8 +1896,8 @@ void MainWindow::on_browse_button_clicked()
 }
 
 /************************************************************************************************
-*								On Browse Button2 Clicked *
-************************************************************************************************/
+ *								On Browse Button2 Clicked *
+ ************************************************************************************************/
 void MainWindow::on_browse_button_clicked2()
 {
 	/// to reset the image counter on selection of a different dataset
@@ -1917,8 +1931,8 @@ void MainWindow::on_browse_button_clicked2()
 }
 
 /************************************************************************************************
-*								On Browse Button3 Clicked *
-************************************************************************************************/
+ *								On Browse Button3 Clicked *
+ ************************************************************************************************/
 void MainWindow::on_browse_button_clicked3()
 {
 	ReadInputFormat();
@@ -1941,8 +1955,8 @@ void MainWindow::on_browse_button_clicked3()
 }
 
 /************************************************************************************************
-*								On Browse Homography Clicked *
-************************************************************************************************/
+ *								On Browse Homography Clicked *
+ ************************************************************************************************/
 void MainWindow::on_browse_homography_clicked3()
 {
 	ReadInputFormat();
@@ -1965,8 +1979,8 @@ void MainWindow::on_browse_homography_clicked3()
 }
 
 /************************************************************************************************
-*								Read Input Format *
-************************************************************************************************/
+ *								Read Input Format *
+ ************************************************************************************************/
 void MainWindow::ReadInputFormat()
 {
 	/// store the input type here
@@ -1994,8 +2008,8 @@ void MainWindow::ReadInputFormat()
 }
 
 /************************************************************************************************
-*								Read Files From Folder *
-************************************************************************************************/
+ *								Read Files From Folder *
+ ************************************************************************************************/
 void MainWindow::readFilesFromFolder(int next_prev)
 {
 	ReadInputFormat();
@@ -2139,9 +2153,9 @@ void MainWindow::readFilesFromFolder(int next_prev)
 }
 
 /************************************************************************************************
-*								Display Images Without Detectors
-**
-************************************************************************************************/
+ *								Display Images Without Detectors
+ **
+ ************************************************************************************************/
 void MainWindow::displayImagesWithoutDetector()
 {
 	/// DISPLAYING THE NEXT IMAGE AS A QIMAGE WITHOUT DETECTOR, DETECTOR WILL
@@ -2227,8 +2241,8 @@ void MainWindow::displayImagesWithoutDetector()
 }
 
 /************************************************************************************************
-*								On Next Button Clicked *
-************************************************************************************************/
+ *								On Next Button Clicked *
+ ************************************************************************************************/
 void MainWindow::on_next_button_clicked()
 {
 	/// read files from the folder and move to the next image accordingly
@@ -2239,8 +2253,8 @@ void MainWindow::on_next_button_clicked()
 }
 
 /************************************************************************************************
-*								On Previous Button Clicked *
-************************************************************************************************/
+ *								On Previous Button Clicked *
+ ************************************************************************************************/
 void MainWindow::on_prev_button_clicked()
 {
 	/// read files from the folder and move to the previous image accordingly
@@ -2251,9 +2265,9 @@ void MainWindow::on_prev_button_clicked()
 }
 
 /************************************************************************************************
-*								On Sample Clicked (Image Decimation)
-**
-************************************************************************************************/
+ *								On Sample Clicked (Image Decimation)
+ **
+ ************************************************************************************************/
 void MainWindow::on_sample_clicked()
 {
 	float factor = decimateFactor->text().toFloat();
@@ -2301,8 +2315,8 @@ void MainWindow::on_sample_clicked()
 }
 
 /************************************************************************************************
-*								Initialize Parameters *
-************************************************************************************************/
+ *								Initialize Parameters *
+ ************************************************************************************************/
 void MainWindow::initializeParameters()
 {
 	/// detector information parameters fill in here from the user
@@ -2403,9 +2417,9 @@ void MainWindow::initializeParameters()
 }
 
 /************************************************************************************************
-*						On Generate Visual Odometry button clicked
-**
-************************************************************************************************/
+ *						On Generate Visual Odometry button clicked
+ **
+ ************************************************************************************************/
 void MainWindow::on_generateVisualOdometry_clicked()
 {
 	evaluate_detector_clicked = true;
@@ -2479,9 +2493,9 @@ void MainWindow::on_generateVisualOdometry_clicked()
 }
 
 /************************************************************************************************
-*								Make Visual Odom Params Visible
-**
-************************************************************************************************/
+ *								Make Visual Odom Params Visible
+ **
+ ************************************************************************************************/
 void MainWindow::makeVisualOdomParamsVisible(bool flag)
 {
 	generateVisualOdometry->setVisible(flag);
@@ -2493,9 +2507,9 @@ void MainWindow::makeVisualOdomParamsVisible(bool flag)
 }
 
 /************************************************************************************************
-*								On Visual Odometry Checked
-**
-************************************************************************************************/
+ *								On Visual Odometry Checked
+ **
+ ************************************************************************************************/
 void MainWindow::onVisualOdomChecked(int state)
 {
 	if (visual_odom_enable->isChecked())
@@ -2508,9 +2522,9 @@ void MainWindow::onVisualOdomChecked(int state)
 }
 
 /************************************************************************************************
-*								On Browse Calibration Clicked
-**
-************************************************************************************************/
+ *								On Browse Calibration Clicked
+ **
+ ************************************************************************************************/
 void MainWindow::on_browse_calibration_clicked()
 {
 	ReadInputFormat();
@@ -2533,9 +2547,9 @@ void MainWindow::on_browse_calibration_clicked()
 }
 
 /************************************************************************************************
-*								On Tracking Enabled mehtod
-**
-************************************************************************************************/
+ *								On Tracking Enabled mehtod
+ **
+ ************************************************************************************************/
 void MainWindow::onTrackingEnabled(int state)
 {
 	ReadInputFormat();
@@ -2598,9 +2612,9 @@ void MainWindow::onTrackingEnabled(int state)
 }
 
 /************************************************************************************************
-*								Track Key-Point method  (NOT USED)
-**
-************************************************************************************************/
+ *								Track Key-Point method  (NOT USED)
+ **
+ ************************************************************************************************/
 Point MainWindow::trackKeyPoint(
 	CImage img_org, CImage img_test, int org_x, int org_y)
 {
@@ -2665,8 +2679,8 @@ Point MainWindow::trackKeyPoint(
 }
 
 /************************************************************************************************
-*								On TrackIt button clicked *
-************************************************************************************************/
+ *								On TrackIt button clicked *
+ ************************************************************************************************/
 void MainWindow::on_trackIt_clicked()
 {
 	/// tracker parameter variables
@@ -2700,9 +2714,9 @@ void MainWindow::on_trackIt_clicked()
 }
 
 /************************************************************************************************
-*								Make Tracker Parametrs Visible
-**
-************************************************************************************************/
+ *								Make Tracker Parametrs Visible
+ **
+ ************************************************************************************************/
 void MainWindow::makeTrackerParamVisible(bool flag)
 {
 	tracker_param1->setVisible(flag);
@@ -2719,9 +2733,9 @@ void MainWindow::makeTrackerParamVisible(bool flag)
 }
 
 /************************************************************************************************
-*								Initialize Tracker Parameters
-**
-************************************************************************************************/
+ *								Initialize Tracker Parameters
+ **
+ ************************************************************************************************/
 void MainWindow::initializeTrackerParams()
 {
 	tracker_param1 = new QCheckBox("RemoveLost Features? ");
@@ -2754,8 +2768,8 @@ void MainWindow::initializeTrackerParams()
 }
 
 /************************************************************************************************
-*								Update VO Progress (Slot) *
-************************************************************************************************/
+ *								Update VO Progress (Slot) *
+ ************************************************************************************************/
 void MainWindow::updateVOProgress()
 {
 	// QMessageBox::information(this, "SIFT error","MRPT has been compiled
@@ -2768,9 +2782,9 @@ void MainWindow::updateVOProgress()
 }
 
 /************************************************************************************************
-*								Slot_finished (NOT USED currently)
-**
-************************************************************************************************/
+ *								Slot_finished (NOT USED currently)
+ **
+ ************************************************************************************************/
 void MainWindow::slot_finished()
 {
 	// progressBar->hide();
@@ -2778,8 +2792,8 @@ void MainWindow::slot_finished()
 }
 
 /************************************************************************************************
-*						Make Place Recognition Params Visible function *
-************************************************************************************************/
+ *						Make Place Recognition Params Visible function *
+ ************************************************************************************************/
 void MainWindow::makePlaceRecognitionParamVisible(bool flag)
 {
 	training_set->setVisible(flag);
@@ -2791,8 +2805,8 @@ void MainWindow::makePlaceRecognitionParamVisible(bool flag)
 }
 
 /************************************************************************************************
-*						On Place Recognition Checked function *
-************************************************************************************************/
+ *						On Place Recognition Checked function *
+ ************************************************************************************************/
 void MainWindow::onPlaceRecogChecked(int status)
 {
 	ReadInputFormat();
@@ -2814,8 +2828,8 @@ void MainWindow::onPlaceRecogChecked(int status)
 }
 
 /************************************************************************************************
-*						On Browse Training Clicked Slot function *
-************************************************************************************************/
+ *						On Browse Training Clicked Slot function *
+ ************************************************************************************************/
 void MainWindow::on_browseTraining_clicked()
 {
 	ReadInputFormat();
@@ -2839,8 +2853,8 @@ void MainWindow::on_browseTraining_clicked()
 }
 
 /************************************************************************************************
-*						On Browse Testing Clicked Slot function *
-************************************************************************************************/
+ *						On Browse Testing Clicked Slot function *
+ ************************************************************************************************/
 void MainWindow::on_browseTesting_clicked()
 {
 	ReadInputFormat();
@@ -2866,8 +2880,8 @@ void MainWindow::on_browseTesting_clicked()
 }
 
 /************************************************************************************************
-*						display Vector function (NOT Used) *
-************************************************************************************************/
+ *						display Vector function (NOT Used) *
+ ************************************************************************************************/
 void MainWindow::displayVector(vector<string> paths)
 {
 	for (unsigned long i = 0; i < paths.size(); i++)
@@ -2875,8 +2889,8 @@ void MainWindow::displayVector(vector<string> paths)
 }
 
 /************************************************************************************************
-*						Store Training Testing Sets function *
-************************************************************************************************/
+ *						Store Training Testing Sets function *
+ ************************************************************************************************/
 void MainWindow::store_Training_TestingSets()
 {
 	if (training_set->text().toStdString().size() < 1)
@@ -2970,8 +2984,8 @@ void MainWindow::store_Training_TestingSets()
 }
 
 /************************************************************************************************
-*						On Place Recognition clicked Slot function *
-************************************************************************************************/
+ *						On Place Recognition clicked Slot function *
+ ************************************************************************************************/
 void MainWindow::on_place_recog_clicked()
 {
 	if (descriptor_selected == 2 || descriptor_selected == 3 ||
@@ -3013,11 +3027,9 @@ void MainWindow::on_place_recog_clicked()
 	place_recog_label->setVisible(true);
 
 	place_recog_image = new QLabel;
-	place_recog_qimage.load(
-		QString::fromStdString(
-			testing_files_paths.at(
-				current_place_recog_index %
-				testing_files_paths.size())));  // replace this with initial
+	place_recog_qimage.load(QString::fromStdString(testing_files_paths.at(
+		current_place_recog_index %
+		testing_files_paths.size())));  // replace this with initial
 	// image of select an image by
 	// specifying path
 
@@ -3034,8 +3046,8 @@ void MainWindow::on_place_recog_clicked()
 }
 
 /************************************************************************************************
-*						On Place Recognition clicked Slot function *
-************************************************************************************************/
+ *						On Place Recognition clicked Slot function *
+ ************************************************************************************************/
 void MainWindow::on_place_recog_clicked_iterate()
 {
 	if (descriptor_selected == 2 || descriptor_selected == 3 ||
@@ -3065,11 +3077,9 @@ void MainWindow::on_place_recog_clicked_iterate()
 	string result = place_recog_obj->startPlaceRecognition(fext);
 	place_recog_label->setText(QString::fromStdString(result));
 	place_recog_image = new QLabel;
-	place_recog_qimage.load(
-		QString::fromStdString(
-			testing_files_paths.at(
-				current_place_recog_index %
-				testing_files_paths.size())));  // replace this with initial
+	place_recog_qimage.load(QString::fromStdString(testing_files_paths.at(
+		current_place_recog_index %
+		testing_files_paths.size())));  // replace this with initial
 	// image of select an image by
 	// specifying path
 	QImage qscaled2 = place_recog_qimage.scaled(
@@ -3081,8 +3091,8 @@ void MainWindow::on_place_recog_clicked_iterate()
 }
 
 /************************************************************************************************
-*								Main Window Constructor *
-************************************************************************************************/
+ *								Main Window Constructor *
+ ************************************************************************************************/
 MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
 {
 	placeRecog_checked_flag = false;
@@ -3613,8 +3623,8 @@ MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
 }
 
 /************************************************************************************************
-*								Draw LSD Line Detector *
-************************************************************************************************/
+ *								Draw LSD Line Detector *
+ ************************************************************************************************/
 void MainWindow::drawLineLSD(Mat img, int image_left_right)
 {
 	if (detector_selected == 10)
@@ -3657,8 +3667,8 @@ void MainWindow::drawLineLSD(Mat img, int image_left_right)
 }
 
 /************************************************************************************************
-*								Find Repeatability *
-************************************************************************************************/
+ *								Find Repeatability *
+ ************************************************************************************************/
 string MainWindow::findRepeatability(float mouse_x, float mouse_y)
 {
 	ReadInputFormat();
@@ -3777,9 +3787,9 @@ string MainWindow::findRepeatability(float mouse_x, float mouse_y)
 }
 
 /************************************************************************************************
-*								Find Repeatability Homography
-**
-************************************************************************************************/
+ *								Find Repeatability Homography
+ **
+ ************************************************************************************************/
 string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 {
 	ReadInputFormat();
@@ -3987,8 +3997,8 @@ string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 }
 
 /************************************************************************************************
-*								False Positives Negatives *
-************************************************************************************************/
+ *								False Positives Negatives *
+ ************************************************************************************************/
 string MainWindow::falsePositivesNegatives()
 {
 	if (currentInputIndex == 1 || currentInputIndex == 4 ||
@@ -4058,8 +4068,8 @@ string MainWindow::falsePositivesNegatives()
 }
 
 /************************************************************************************************
-*								Check if Same Point *
-************************************************************************************************/
+ *								Check if Same Point *
+ ************************************************************************************************/
 bool MainWindow::checkIfSamePoint(
 	float x, float y, float x2, float y2, int threshold)
 {
@@ -4071,8 +4081,8 @@ bool MainWindow::checkIfSamePoint(
 }
 
 /************************************************************************************************
-*								Make Graphs Visible *
-************************************************************************************************/
+ *								Make Graphs Visible *
+ ************************************************************************************************/
 void MainWindow::makeGraphsVisible(bool flag)
 {
 	if (visualize_descriptor_clicked)
@@ -4102,8 +4112,8 @@ void MainWindow::makeGraphsVisible(bool flag)
 }
 
 /************************************************************************************************
-*								Mouse Pressed Slot *
-************************************************************************************************/
+ *								Mouse Pressed Slot *
+ ************************************************************************************************/
 void MainWindow::Mouse_Pressed()
 {
 	if (!(evaluate_detector_clicked && evaluate_descriptor_clicked &&
@@ -4253,9 +4263,10 @@ void MainWindow::Mouse_Pressed()
 			}
 			drawLineLSD(temp2, 1);  // 1 means right image
 			drawMarker(
-				temp2, Point(
-						   featsImage2.getFeatureX(temp_idx),
-						   featsImage2.getFeatureY(temp_idx)),
+				temp2,
+				Point(
+					featsImage2.getFeatureX(temp_idx),
+					featsImage2.getFeatureY(temp_idx)),
 				Scalar(255, 0, 0), MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
 
 			QImage dest2 = QImage(
@@ -4364,9 +4375,10 @@ void MainWindow::Mouse_Pressed()
 			}
 			drawLineLSD(temp2, 1);  // 1 means draw on right image
 			drawMarker(
-				temp2, Point(
-						   featsImage2.getFeatureX(temp_idx),
-						   featsImage2.getFeatureY(temp_idx)),
+				temp2,
+				Point(
+					featsImage2.getFeatureX(temp_idx),
+					featsImage2.getFeatureY(temp_idx)),
 				Scalar(255, 0, 0), MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
 
 			QImage dest2 = QImage(
@@ -4456,16 +4468,16 @@ void MainWindow::Mouse_Pressed()
 }
 
 /************************************************************************************************
-*								Mouse Current Pos Slot *
-************************************************************************************************/
+ *								Mouse Current Pos Slot *
+ ************************************************************************************************/
 void MainWindow::Mouse_current_pos() {}
 /************************************************************************************************
-*								Mouse Left Slot *
-************************************************************************************************/
+ *								Mouse Left Slot *
+ ************************************************************************************************/
 void MainWindow::Mouse_left() {}
 /************************************************************************************************
-*								Find Closest Point *
-************************************************************************************************/
+ *								Find Closest Point *
+ ************************************************************************************************/
 int MainWindow::findClosest(double x, double y, double X[], double Y[], int n)
 {
 	double dist = 10000;

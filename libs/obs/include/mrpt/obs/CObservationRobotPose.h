@@ -9,7 +9,7 @@
 #ifndef CObservationRobotPose_H
 #define CObservationRobotPose_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 
@@ -25,9 +25,6 @@ class CObservationRobotPose : public CObservation
 {
 	DEFINE_SERIALIZABLE(CObservationRobotPose)
    public:
-	/** Default ctor */
-	CObservationRobotPose();
-
 	/** The observed robot pose */
 	mrpt::poses::CPose3DPDFGaussian pose;
 

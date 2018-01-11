@@ -10,16 +10,14 @@
 #include "obs-precomp.h"  // Precompiled headers
 
 #include <mrpt/random.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::random;
-using namespace mrpt::utils;
 
 IMPLEMENTS_SERIALIZABLE(CActionRobotMovement3D, CAction, mrpt::obs)
 
@@ -37,34 +35,16 @@ CActionRobotMovement3D::CActionRobotMovement3D()
 	velocities.assign(.0);
 }
 
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CActionRobotMovement3D::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CActionRobotMovement3D::serializeGetVersion() const { return 1; }
+void CActionRobotMovement3D::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		uint32_t i = static_cast<uint32_t>(estimationMethod);
-
-		out << i;
-
-		// The PDF:
-		out << poseChange;
-
-		out << hasVelocities << velocities;
-
-		out << timestamp;
-	}
+	out.WriteAs<uint32_t>(estimationMethod);
+	out << poseChange;
+	out << hasVelocities << velocities;
+	out << timestamp;
 }
 
-/*---------------------------------------------------------------
-  Implements the reading from a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CActionRobotMovement3D::readFromStream(
-	mrpt::utils::CStream& in, int version)
+void CActionRobotMovement3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

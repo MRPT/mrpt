@@ -75,7 +75,7 @@ struct TCaptureOptions_DUO3D
 
 	/** @name Others
 	  * @{ */
-	mrpt::utils::TStereoCamera m_stereo_camera;
+	mrpt::img::TStereoCamera m_stereo_camera;
 	/** @} */
 
 	// clang-format off
@@ -105,7 +105,7 @@ struct TCaptureOptions_DUO3D
 	  *on.
 	  */
 	void loadOptionsFrom(
-		const mrpt::utils::CConfigFileBase& configSource,
+		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& sectionName,
 		const std::string& prefix = std::string());
 	// clang-format on

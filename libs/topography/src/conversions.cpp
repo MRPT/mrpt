@@ -18,7 +18,6 @@
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 bool mrpt::topography::operator==(const TCoords& a, const TCoords& o)
@@ -185,7 +184,7 @@ void mrpt::topography::ENU_axes_from_WGS84(
 		HM(2, 3) = PPref.z;
 	}
 
-	out_ENU = mrpt::math::TPose3D(CPose3D(HM));
+	out_ENU = CPose3D(HM).asTPose();
 }
 
 //*---------------------------------------------------------------
@@ -380,7 +379,7 @@ void mrpt::topography::geodeticToUTM(
 
 	const precnum_t lat = DEG2RAD(GeodeticCoords.lat);
 	const precnum_t lon = DEG2RAD(GeodeticCoords.lon);
-	const int Huso = mrpt::utils::fix((GeodeticCoords.lon / 6) + 31);
+	const int Huso = mrpt::fix((GeodeticCoords.lon / 6) + 31);
 	const precnum_t lon0 = DEG2RAD(Huso * 6 - 183);
 
 	const precnum_t sa = ellip.sa;
@@ -440,7 +439,7 @@ void mrpt::topography::GeodeticToUTM(
 	const double lat = DEG2RAD(la);
 	const double lon = DEG2RAD(lo);
 
-	const int Huso = mrpt::utils::fix((lo / 6) + 31);
+	const int Huso = mrpt::fix((lo / 6) + 31);
 	double S = ((Huso * 6) - 183);
 	double deltaS = lon - DEG2RAD(S);
 

@@ -15,7 +15,7 @@
 #include <mrpt/opengl/CTexturedPlane.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
@@ -23,7 +23,6 @@ using namespace mrpt::math;
 using namespace mrpt::gui;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::opengl;
 using namespace std;
 
@@ -50,10 +49,10 @@ void Test_SwissRanger()
 	if (cam.isOpen())
 		cout << "[Test_SwissRanger] Camera open, serial #"
 			 << cam.getCameraSerialNumber()
-			 << " resolution: " << cam.getColCount() << "x" << cam.getRowCount()
+			 << " resolution: " << cam.cols() << "x" << cam.rows()
 			 << " max. range: " << cam.getMaxRange() << endl;
 
-	const double aspect_ratio = cam.getRowCount() / double(cam.getColCount());
+	const double aspect_ratio = cam.rows() / double(cam.cols());
 
 	{
 		std::string ver;
@@ -167,7 +166,7 @@ void Test_SwissRanger()
 		// Show ranges as 2D:
 		if (there_is_obs && obs.hasRangeImage)
 		{
-			mrpt::utils::CImage img;
+			mrpt::img::CImage img;
 			// Normalize the image
 			CMatrixFloat range2D = obs.rangeImage;
 			range2D *= 1.0 / cam.getMaxRange();

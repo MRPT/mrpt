@@ -16,7 +16,7 @@
 #ifndef __HEURISTICPARAMS_H
 #define __HEURISTICPARAMS_H
 
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/system/filesystem.h>
 
 namespace mrpt
@@ -82,8 +82,8 @@ struct config_heuristics
 	/*! Load the PbMap registration thresholds from an .ini file */
 	void load_params(const std::string& config_file_name)
 	{
-		ASSERT_FILE_EXISTS_(config_file_name)
-		mrpt::utils::CConfigFile config_file(config_file_name);
+		ASSERT_FILE_EXISTS_(config_file_name);
+		mrpt::config::CConfigFile config_file(config_file_name);
 
 		// global
 		path_prev_pbmaps =
@@ -155,7 +155,7 @@ struct config_heuristics
 		cout << "height_threshold " << height_threshold << endl;
 	};
 };
-}
-}  // End of namespaces
+}  // namespace pbmap
+}  // namespace mrpt
 
 #endif

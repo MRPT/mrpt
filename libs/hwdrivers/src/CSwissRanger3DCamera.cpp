@@ -21,7 +21,7 @@ using namespace std;
 IMPLEMENTS_GENERIC_SENSOR(CSwissRanger3DCamera, mrpt::hwdrivers)
 
 #if MRPT_HAS_SWISSRANGE
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #endif
@@ -134,7 +134,7 @@ void do_init_table_16u_to_8u()
 */
 void CSwissRanger3DCamera::initialize()
 {
-	if (!open()) THROW_EXCEPTION("Error opening SwissRanger 3D camera.")
+	if (!open()) THROW_EXCEPTION("Error opening SwissRanger 3D camera.");
 }
 
 /** This method will be invoked at a minimum rate of "process_rate" (Hz)
@@ -168,15 +168,15 @@ void CSwissRanger3DCamera::doProcess()
 
 /** Loads specific configuration for the device from a given source of
 * configuration parameters, for example, an ".ini" file, loading from the
-* section "[iniSection]" (see utils::CConfigFileBase and derived classes)
+* section "[iniSection]" (see config::CConfigFileBase and derived classes)
 *  \exception This method must throw an exception with a descriptive message if
 * some critical parameter is missing or has an invalid value.
 */
 void CSwissRanger3DCamera::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
-	using mrpt::utils::DEG2RAD;
+	using mrpt::DEG2RAD;
 
 	m_sensorPoseOnRobot.setFromValues(
 		configSource.read_float(iniSection, "pose_x", 0),
@@ -567,7 +567,7 @@ void CSwissRanger3DCamera::getNextObservation(
 					m_win_range->setPos(5, 5);
 				}
 
-				mrpt::utils::CImage img;
+				mrpt::img::CImage img;
 				// Normalize the image
 				math::CMatrixFloat range2D = _out_obs.rangeImage;
 				range2D *= 1.0 / m_maxRange;

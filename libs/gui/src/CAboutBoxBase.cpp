@@ -12,6 +12,8 @@
 #include "CAboutBoxBase.h"
 #include <mrpt/config.h>
 #include <mrpt/system/os.h>
+#include <mrpt/core/format.h>
+#include <mrpt/math/types_math.h>  // for Eigen version
 
 using namespace mrpt;
 using namespace mrpt::system;

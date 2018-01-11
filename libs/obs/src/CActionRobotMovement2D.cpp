@@ -10,7 +10,7 @@
 #include "obs-precomp.h"  // Precompiled headers
 
 #include <mrpt/obs/CActionRobotMovement2D.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/random.h>
@@ -18,7 +18,6 @@
 #include <mrpt/math/wrap2pi.h>
 
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::random;
@@ -26,88 +25,62 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CActionRobotMovement2D, CAction, mrpt::obs)
 
-/*---------------------------------------------------------------
-						Constructor
-  ---------------------------------------------------------------*/
+// Note: dont move this to the .h, to avoid having to include the definition of
+// the full pose type
 CActionRobotMovement2D::CActionRobotMovement2D()
-	: poseChange(mrpt::make_aligned_shared<CPosePDFGaussian>()),
-	  rawOdometryIncrementReading(),
-	  estimationMethod(emOdometry),
-	  hasEncodersInfo(false),
-	  encoderLeftTicks(0),
-	  encoderRightTicks(0),
-	  hasVelocities(false),
-	  velocityLocal(.0, .0, .0),
-	  motionModelConfiguration(),
-	  m_fastDrawGauss_Z(),
-	  m_fastDrawGauss_M()
+	: poseChange(mrpt::poses::CPosePDFGaussian::Create())
 {
 }
 
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CActionRobotMovement2D::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CActionRobotMovement2D::serializeGetVersion() const { return 7; }
+void CActionRobotMovement2D::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 7;
+	out.WriteAs<uint32_t>(estimationMethod);
+	// Added in version 2:
+	// If the estimation method is emOdometry, save the rawOdo + config data
+	// instead of
+	//  the PDF itself:
+	if (estimationMethod == emOdometry)
+	{
+		// The odometry data:
+		out << rawOdometryIncrementReading;
+		out.WriteAs<uint32_t>(motionModelConfiguration.modelSelection);
+		out << motionModelConfiguration.gaussianModel.a1
+			<< motionModelConfiguration.gaussianModel.a2
+			<< motionModelConfiguration.gaussianModel.a3
+			<< motionModelConfiguration.gaussianModel.a4
+			<< motionModelConfiguration.gaussianModel.minStdXY
+			<< motionModelConfiguration.gaussianModel.minStdPHI;
+
+		out << motionModelConfiguration.thrunModel.nParticlesCount
+			<< motionModelConfiguration.thrunModel.alfa1_rot_rot
+			<< motionModelConfiguration.thrunModel.alfa2_rot_trans
+			<< motionModelConfiguration.thrunModel.alfa3_trans_trans
+			<< motionModelConfiguration.thrunModel.alfa4_trans_rot
+			<< motionModelConfiguration.thrunModel.additional_std_XY
+			<< motionModelConfiguration.thrunModel.additional_std_phi;
+	}
 	else
 	{
-		uint32_t i = static_cast<uint32_t>(estimationMethod);
-
-		out << i;
-
-		// Added in version 2:
-		// If the estimation method is emOdometry, save the rawOdo + config data
-		// instead of
-		//  the PDF itself:
-		if (estimationMethod == emOdometry)
-		{
-			// The odometry data:
-			out << rawOdometryIncrementReading;
-
-			i = static_cast<uint32_t>(motionModelConfiguration.modelSelection);
-			out << i;
-			out << motionModelConfiguration.gaussianModel.a1
-				<< motionModelConfiguration.gaussianModel.a2
-				<< motionModelConfiguration.gaussianModel.a3
-				<< motionModelConfiguration.gaussianModel.a4
-				<< motionModelConfiguration.gaussianModel.minStdXY
-				<< motionModelConfiguration.gaussianModel.minStdPHI;
-
-			out << motionModelConfiguration.thrunModel.nParticlesCount
-				<< motionModelConfiguration.thrunModel.alfa1_rot_rot
-				<< motionModelConfiguration.thrunModel.alfa2_rot_trans
-				<< motionModelConfiguration.thrunModel.alfa3_trans_trans
-				<< motionModelConfiguration.thrunModel.alfa4_trans_rot
-				<< motionModelConfiguration.thrunModel.additional_std_XY
-				<< motionModelConfiguration.thrunModel.additional_std_phi;
-		}
-		else
-		{
-			// The PDF:
-			out << (*poseChange);
-		}
-
-		// Added in version 1:
-		out << hasVelocities;
-		if (hasVelocities) out << velocityLocal;  // v7
-
-		out << hasEncodersInfo;
-		if (hasEncodersInfo)
-			out << encoderLeftTicks << encoderRightTicks;  // added if() in v7
-
-		// Added in version 6
-		out << timestamp;
+		// The PDF:
+		out << (*poseChange);
 	}
+
+	// Added in version 1:
+	out << hasVelocities;
+	if (hasVelocities) out << velocityLocal;  // v7
+
+	out << hasEncodersInfo;
+	if (hasEncodersInfo)
+		out << encoderLeftTicks << encoderRightTicks;  // added if() in v7
+
+	// Added in version 6
+	out << timestamp;
 }
 
-/*---------------------------------------------------------------
-  Implements the reading from a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CActionRobotMovement2D::readFromStream(
-	mrpt::utils::CStream& in, int version)
+void CActionRobotMovement2D::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -529,19 +502,19 @@ void CActionRobotMovement2D::computeFromOdometry_modelThrun(
 	// Draw samples:
 	for (size_t i = 0; i < o.thrunModel.nParticlesCount; i++)
 	{
-		float Arot1_draw = Arot1 -
-						   (o.thrunModel.alfa1_rot_rot * fabs(Arot1) +
-							o.thrunModel.alfa2_rot_trans * Atrans) *
-							   getRandomGenerator().drawGaussian1D_normalized();
+		float Arot1_draw =
+			Arot1 - (o.thrunModel.alfa1_rot_rot * fabs(Arot1) +
+					 o.thrunModel.alfa2_rot_trans * Atrans) *
+						getRandomGenerator().drawGaussian1D_normalized();
 		float Atrans_draw =
 			Atrans -
 			(o.thrunModel.alfa3_trans_trans * Atrans +
 			 o.thrunModel.alfa4_trans_rot * (fabs(Arot1) + fabs(Arot2))) *
 				getRandomGenerator().drawGaussian1D_normalized();
-		float Arot2_draw = Arot2 -
-						   (o.thrunModel.alfa1_rot_rot * fabs(Arot2) +
-							o.thrunModel.alfa2_rot_trans * Atrans) *
-							   getRandomGenerator().drawGaussian1D_normalized();
+		float Arot2_draw =
+			Arot2 - (o.thrunModel.alfa1_rot_rot * fabs(Arot2) +
+					 o.thrunModel.alfa2_rot_trans * Atrans) *
+						getRandomGenerator().drawGaussian1D_normalized();
 
 		// Output:
 		aux->m_particles[i].d->x(
@@ -703,10 +676,10 @@ void CActionRobotMovement2D::prepareFastDrawSingleSample_modelGaussian() const
 	m_fastDrawGauss_M = gPdf->mean;
 
 	/** Computes the eigenvalues/eigenvector decomposition of this matrix,
-	*    so that: M = Z · D · Z<sup>T</sup>, where columns in Z are the
-	*	  eigenvectors and the diagonal matrix D contains the eigenvalues
-	*    as diagonal elements, sorted in <i>ascending</i> order.
-	*/
+	 *    so that: M = Z · D · Z<sup>T</sup>, where columns in Z are the
+	 *	  eigenvectors and the diagonal matrix D contains the eigenvalues
+	 *    as diagonal elements, sorted in <i>ascending</i> order.
+	 */
 	cov.eigenVectors(m_fastDrawGauss_Z, D);
 
 	// Scale eigenvectors with eigenvalues:

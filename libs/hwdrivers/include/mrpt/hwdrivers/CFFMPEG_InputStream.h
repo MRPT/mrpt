@@ -10,9 +10,8 @@
 #ifndef CFFMPEG_InputStream_H
 #define CFFMPEG_InputStream_H
 
-#include <mrpt/utils/utils_defs.h>
-#include <mrpt/utils/CImage.h>
-#include <mrpt/utils/safe_pointers.h>
+#include <mrpt/img/CImage.h>
+#include <mrpt/core/safe_pointers.h>
 
 /*---------------------------------------------------------------
 	Class
@@ -44,7 +43,7 @@ class CFFMPEG_InputStream
 {
    private:
 	/** The internal ffmpeg state */
-	mrpt::utils::void_ptr_noncopy m_state;
+	mrpt::void_ptr_noncopy m_state;
 	/** The open URL */
 	std::string m_url;
 	bool m_grab_as_grayscale;
@@ -91,7 +90,7 @@ class CFFMPEG_InputStream
 	  *  \return false on any error, true on success.
 	  *  \sa openURL, close, isOpen
 	  */
-	bool retrieveFrame(mrpt::utils::CImage& out_img);
+	bool retrieveFrame(mrpt::img::CImage& out_img);
 };
 }
 }

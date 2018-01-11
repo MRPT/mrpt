@@ -9,10 +9,10 @@
 #pragma once
 
 #include <mrpt/nav/reactive/TCandidateMovementPTG.h>
-#include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/CConfigFileBase.h>
-#include <mrpt/utils/CObject.h>
-#include <mrpt/math/CRuntimeCompiledExpression.h>
+#include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/rtti/CObject.h>
+#include <mrpt/expr/CRuntimeCompiledExpression.h>
 
 namespace mrpt
 {
@@ -23,7 +23,7 @@ namespace nav
   *\sa CReactiveNavigationSystem, CReactiveNavigationSystem3D
   *  \ingroup nav_reactive
   */
-class CMultiObjectiveMotionOptimizerBase : public mrpt::utils::CObject
+class CMultiObjectiveMotionOptimizerBase : public mrpt::rtti::CObject
 {
 	DEFINE_VIRTUAL_MRPT_OBJECT(CMultiObjectiveMotionOptimizerBase)
    public:
@@ -54,11 +54,11 @@ class CMultiObjectiveMotionOptimizerBase : public mrpt::utils::CObject
 		const std::vector<mrpt::nav::TCandidateMovementPTG>& movs,
 		TResultInfo& extra_info);
 
-	virtual void loadConfigFile(const mrpt::utils::CConfigFileBase& c) = 0;
-	virtual void saveConfigFile(mrpt::utils::CConfigFileBase& c) const = 0;
+	virtual void loadConfigFile(const mrpt::config::CConfigFileBase& c) = 0;
+	virtual void saveConfigFile(mrpt::config::CConfigFileBase& c) const = 0;
 
 	/** Common params for all children */
-	struct TParamsBase : public mrpt::utils::CLoadableOptions
+	struct TParamsBase : public mrpt::config::CLoadableOptions
 	{
 		TParamsBase();
 
@@ -81,10 +81,10 @@ class CMultiObjectiveMotionOptimizerBase : public mrpt::utils::CObject
 		std::vector<std::string> scores_to_normalize;
 
 		virtual void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		virtual void saveToConfigFile(
-			mrpt::utils::CConfigFileBase& cfg,
+			mrpt::config::CConfigFileBase& cfg,
 			const std::string& section) const override;  // See base docs
 	};
 
@@ -104,8 +104,8 @@ class CMultiObjectiveMotionOptimizerBase : public mrpt::utils::CObject
 	TParamsBase& m_params_base;
 
 	/** score names -> score compiled expressions */
-	std::map<std::string, mrpt::math::CRuntimeCompiledExpression> m_score_exprs;
-	std::vector<mrpt::math::CRuntimeCompiledExpression> m_movement_assert_exprs;
+	std::map<std::string, mrpt::expr::CRuntimeCompiledExpression> m_score_exprs;
+	std::vector<mrpt::expr::CRuntimeCompiledExpression> m_movement_assert_exprs;
 	std::map<std::string, double> m_expr_vars;
 };
 }

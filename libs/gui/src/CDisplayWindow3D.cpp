@@ -12,27 +12,26 @@
 #include <mrpt/config.h>
 
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/utils/CImage.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/img/CImage.h>
+#include <mrpt/system/CTicTac.h>
 
 #include <mrpt/gui/WxSubsystem.h>
 #include <mrpt/gui/WxUtils.h>
 
 using namespace mrpt;
 using namespace mrpt::gui;
-using namespace mrpt::utils;
-using namespace mrpt::system;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
+using namespace mrpt::img;
 using namespace std;
 
 #if MRPT_HAS_OPENGL_GLUT
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 // Windows:
 #include <windows.h>
 #endif
 
-#ifdef MRPT_OS_APPLE
+#ifdef __APPLE__
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
 #include <GLUT/glut.h>
@@ -96,8 +95,8 @@ class CMyGLCanvas_DisplayWindow3D : public mrpt::gui::CWxGLCanvasBase
 	static void display3D_processKeyEvent(
 		CDisplayWindow3D* m_win3D, wxKeyEvent& ev);
 };
-}
-}
+}  // namespace gui
+}  // namespace mrpt
 
 CMyGLCanvas_DisplayWindow3D::CMyGLCanvas_DisplayWindow3D(
 	CDisplayWindow3D* win3D, wxWindow* parent, wxWindowID id,
@@ -171,10 +170,9 @@ void CMyGLCanvas_DisplayWindow3D::OnMouseDown(wxMouseEvent& event)
 	{
 		try
 		{
-			m_win3D->publishEvent(
-				mrptEventMouseDown(
-					m_win3D, TPixelCoord(event.GetX(), event.GetY()),
-					event.LeftDown(), event.RightDown()));
+			m_win3D->publishEvent(mrptEventMouseDown(
+				m_win3D, TPixelCoord(event.GetX(), event.GetY()),
+				event.LeftDown(), event.RightDown()));
 		}
 		catch (...)
 		{
@@ -191,10 +189,9 @@ void CMyGLCanvas_DisplayWindow3D::OnMouseMove(wxMouseEvent& event)
 	{
 		try
 		{
-			m_win3D->publishEvent(
-				mrptEventMouseMove(
-					m_win3D, TPixelCoord(event.GetX(), event.GetY()),
-					event.LeftDown(), event.RightDown()));
+			m_win3D->publishEvent(mrptEventMouseMove(
+				m_win3D, TPixelCoord(event.GetX(), event.GetY()),
+				event.LeftDown(), event.RightDown()));
 		}
 		catch (...)
 		{
@@ -315,7 +312,7 @@ C3DWindowDialog::C3DWindowDialog(
 	WxSubsystem::CWXMainFrame::notifyWindowCreation();
 // cout << "[C3DWindowDialog] Notifying new window: " << winCount << endl;
 #else
-	THROW_EXCEPTION("MRPT was compiled without OpenGL support")
+	THROW_EXCEPTION("MRPT was compiled without OpenGL support");
 #endif
 	// this->Iconize(false);
 }
@@ -380,10 +377,9 @@ void C3DWindowDialog::OnResize(wxSizeEvent& event)
 	{
 		try
 		{
-			m_win3D->publishEvent(
-				mrptEventWindowResize(
-					m_win3D, event.GetSize().GetWidth(),
-					event.GetSize().GetHeight()));
+			m_win3D->publishEvent(mrptEventWindowResize(
+				m_win3D, event.GetSize().GetWidth(),
+				event.GetSize().GetHeight()));
 		}
 		catch (...)
 		{
@@ -402,7 +398,7 @@ void C3DWindowDialog::clearTextMessages()
 
 void C3DWindowDialog::addTextMessage(
 	const double x_frac, const double y_frac, const std::string& text,
-	const mrpt::utils::TColorf& color, const size_t unique_index,
+	const mrpt::img::TColorf& color, const size_t unique_index,
 	const mrpt::opengl::TOpenGLFont font)
 {
 #if MRPT_HAS_OPENGL_GLUT
@@ -413,11 +409,11 @@ void C3DWindowDialog::addTextMessage(
 
 void C3DWindowDialog::addTextMessage(
 	const double x_frac, const double y_frac, const std::string& text,
-	const mrpt::utils::TColorf& color, const std::string& font_name,
+	const mrpt::img::TColorf& color, const std::string& font_name,
 	const double font_size, const mrpt::opengl::TOpenGLFontStyle font_style,
 	const size_t unique_index, const double font_spacing,
 	const double font_kerning, const bool has_shadow,
-	const mrpt::utils::TColorf& shadow_color)
+	const mrpt::img::TColorf& shadow_color)
 {
 #if MRPT_HAS_OPENGL_GLUT
 	m_canvas->m_text_msgs.addTextMessage(
@@ -452,9 +448,8 @@ CDisplayWindow3D::Ptr CDisplayWindow3D::Create(
 	const std::string& windowCaption, unsigned int initialWindowWidth,
 	unsigned int initialWindowHeight)
 {
-	return CDisplayWindow3D::Ptr(
-		new CDisplayWindow3D(
-			windowCaption, initialWindowWidth, initialWindowHeight));
+	return CDisplayWindow3D::Ptr(new CDisplayWindow3D(
+		windowCaption, initialWindowWidth, initialWindowHeight));
 }
 /*---------------------------------------------------------------
 					Destructor
@@ -868,7 +863,7 @@ void CDisplayWindow3D::captureImagesStop() { m_is_capturing_imgs = false; }
 /*---------------------------------------------------------------
 					getLastWindowImage
  ---------------------------------------------------------------*/
-bool CDisplayWindow3D::getLastWindowImage(mrpt::utils::CImage& out_img) const
+bool CDisplayWindow3D::getLastWindowImage(mrpt::img::CImage& out_img) const
 {
 	bool ret;
 
@@ -899,7 +894,7 @@ CImage::Ptr CDisplayWindow3D::getLastWindowImagePtr() const
  ---------------------------------------------------------------*/
 void CDisplayWindow3D::addTextMessage(
 	const double x_frac, const double y_frac, const std::string& text,
-	const mrpt::utils::TColorf& color, const size_t unique_index,
+	const mrpt::img::TColorf& color, const size_t unique_index,
 	const TOpenGLFont font)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
@@ -941,11 +936,11 @@ void CDisplayWindow3D::addTextMessage(
  ---------------------------------------------------------------*/
 void CDisplayWindow3D::addTextMessage(
 	const double x_frac, const double y_frac, const std::string& text,
-	const mrpt::utils::TColorf& color, const std::string& font_name,
+	const mrpt::img::TColorf& color, const std::string& font_name,
 	const double font_size, const mrpt::opengl::TOpenGLFontStyle font_style,
 	const size_t unique_index, const double font_spacing,
 	const double font_kerning, const bool draw_shadow,
-	const mrpt::utils::TColorf& shadow_color)
+	const mrpt::img::TColorf& shadow_color)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	C3DWindowDialog* win = (C3DWindowDialog*)m_hwnd.get();
@@ -1035,7 +1030,7 @@ mrpt::opengl::COpenGLViewport::Ptr CDisplayWindow3D::getDefaultViewport()
 	return view;
 }
 
-void CDisplayWindow3D::setImageView(const mrpt::utils::CImage& img)
+void CDisplayWindow3D::setImageView(const mrpt::img::CImage& img)
 {
 	m_csAccess3DScene.lock();
 	mrpt::opengl::COpenGLViewport::Ptr view = m_3Dscene->getViewport("main");
@@ -1043,7 +1038,7 @@ void CDisplayWindow3D::setImageView(const mrpt::utils::CImage& img)
 	m_csAccess3DScene.unlock();
 }
 
-void CDisplayWindow3D::setImageView_fast(mrpt::utils::CImage& img)
+void CDisplayWindow3D::setImageView_fast(mrpt::img::CImage& img)
 {
 	m_csAccess3DScene.lock();
 	mrpt::opengl::COpenGLViewport::Ptr view = m_3Dscene->getViewport("main");

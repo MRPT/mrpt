@@ -6,40 +6,38 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
+#pragma once
 
-#ifndef CHYPOTHESISNOTFOUNDEXCEPTION_H
-#define CHYPOTHESISNOTFOUNDEXCEPTION_H
-
-#include <mrpt/utils/types_simple.h>
-#include <mrpt/utils/mrpt_macros.h>
-
+#include <cstdint>
+#include <mrpt/core/exceptions.h>
+#include <mrpt/graphs/TNodeID.h>
 #include <stdexcept>
-#include <iostream>
 #include <string>
-#include <sstream>
 
+namespace mrpt
+{
+namespace graphs
+{
 // TODO - include docstring, group etc.
 class HypothesisNotFoundException : public std::runtime_error
 {
    public:
 	HypothesisNotFoundException(
-		mrpt::utils::TNodeID from, mrpt::utils::TNodeID to);
+		mrpt::graphs::TNodeID from, mrpt::graphs::TNodeID to);
 	HypothesisNotFoundException(size_t id);
-	~HypothesisNotFoundException() throw();
+	~HypothesisNotFoundException() noexcept;
 	void clear();
-	std::string getErrorMsg() const throw();
-	const char* what() const throw();
+	std::string getErrorMsg() const noexcept;
+	const char* what() const noexcept;
 
    private:
-	mrpt::utils::TNodeID m_from;
-	mrpt::utils::TNodeID m_to;
+	mrpt::graphs::TNodeID m_from, m_to;
 
 	/**\brief Hypothesis ID */
 	size_t m_id;
 
 	/**\brief Error message */
 	std::string m_msg;
-	static std::ostringstream m_cnvt;
 };
-
-#endif /* end of include guard: CHYPOTHESISNOTFOUNDEXCEPTION_H */
+}  // namespace graphs
+}  // namespace mrpt

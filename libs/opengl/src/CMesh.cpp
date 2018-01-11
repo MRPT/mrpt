@@ -12,17 +12,17 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/opengl/CMesh.h>
 #include <mrpt/opengl/CSetOfTriangles.h>
-#include <mrpt/utils/color_maps.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/img/color_maps.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace std;
+using mrpt::img::CImage;
 
 IMPLEMENTS_SERIALIZABLE(CMesh, CRenderizableDisplayList, mrpt::opengl)
 
@@ -41,7 +41,7 @@ CMesh::CMesh(
 	  C_r(0, 0),
 	  C_g(0, 0),
 	  C_b(0, 0),
-	  m_colorMap(mrpt::utils::cmHOT),
+	  m_colorMap(mrpt::img::cmHOT),
 	  m_modified_Z(true),
 	  m_modified_Image(false),
 	  xMin(xMin),
@@ -71,14 +71,14 @@ void CMesh::updateTriangles() const
 	// mutable std::vector<std::pair<mrpt::math::TPoint3D,size_t> >
 	// vertex_normals;
 
-	const size_t cols = Z.getColCount();
-	const size_t rows = Z.getRowCount();
+	const auto cols = Z.cols();
+	const auto rows = Z.rows();
 
 	actualMesh.clear();
 	if (cols == 0 && rows == 0) return;  // empty mesh
 
-	ASSERT_(cols > 0 && rows > 0)
-	ASSERT_(xMax > xMin && yMax > yMin)
+	ASSERT_(cols > 0 && rows > 0);
+	ASSERT_(xMax > xMin && yMax > yMin);
 
 	// we have 1 more row & col of vertices than of triangles:
 	vertex_normals.assign(
@@ -100,17 +100,17 @@ void CMesh::updateTriangles() const
 	}
 
 	bool useMask = false;
-	if (mask.getColCount() != 0 && mask.getRowCount() != 0)
+	if (mask.cols() != 0 && mask.rows() != 0)
 	{
-		ASSERT_(mask.getColCount() == cols && mask.getRowCount() == rows);
+		ASSERT_(mask.cols() == cols && mask.rows() == rows);
 		useMask = true;
 	}
 	const float sCellX = (xMax - xMin) / (rows - 1);
 	const float sCellY = (yMax - yMin) / (cols - 1);
 
 	CSetOfTriangles::TTriangle tri;
-	for (size_t iX = 0; iX < rows - 1; iX++)
-		for (size_t iY = 0; iY < cols - 1; iY++)
+	for (int iX = 0; iX < rows - 1; iX++)
+		for (int iY = 0; iY < cols - 1; iY++)
 		{
 			if (useMask && (!mask(iX, iY) || !mask(iX + 1, iY + 1))) continue;
 			tri.x[0] = xMin + iX * sCellX;
@@ -189,8 +189,9 @@ void CMesh::updateTriangles() const
 
 				// Add triangle:
 				actualMesh.push_back(
-					std::pair<CSetOfTriangles::TTriangle,
-							  TTriangleVertexIndices>(tri, tvi));
+					std::pair<
+						CSetOfTriangles::TTriangle, TTriangleVertexIndices>(
+						tri, tvi));
 
 				// For averaging normals:
 				for (int k = 0; k < 3; k++)
@@ -265,8 +266,9 @@ void CMesh::updateTriangles() const
 
 				// Add triangle:
 				actualMesh.push_back(
-					std::pair<CSetOfTriangles::TTriangle,
-							  TTriangleVertexIndices>(tri, tvi));
+					std::pair<
+						CSetOfTriangles::TTriangle, TTriangleVertexIndices>(
+						tri, tvi));
 
 				// For averaging normals:
 				for (int k = 0; k < 3; k++)
@@ -366,9 +368,6 @@ void CMesh::assignImage(const CImage& img)
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-							assign Image and Z
-  ---------------------------------------------------------------*/
 void CMesh::assignImageAndZ(
 	const CImage& img, const mrpt::math::CMatrixTemplateNumeric<float>& in_Z)
 {
@@ -376,7 +375,7 @@ void CMesh::assignImageAndZ(
 
 	ASSERT_(
 		(img.getWidth() == static_cast<size_t>(in_Z.cols())) &&
-		(img.getHeight() == static_cast<size_t>(in_Z.rows())))
+		(img.getHeight() == static_cast<size_t>(in_Z.rows())));
 
 	Z = in_Z;
 
@@ -394,36 +393,23 @@ void CMesh::assignImageAndZ(
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CMesh::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CMesh::serializeGetVersion() const { return 1; }
+void CMesh::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		writeToStreamRender(out);
+	writeToStreamRender(out);
 
-		// Version 0:
-		out << m_textureImage;
-		out << xMin << xMax << yMin << yMax;
-		out << Z << U << V
-			<< mask;  // We don't need to serialize C, it's computed
-		out << m_enableTransparency;
-		out << m_colorFromZ;
-		// new in v1
-		out << m_isWireFrame;
-		out << int16_t(m_colorMap);
-	}
+	// Version 0:
+	out << m_textureImage;
+	out << xMin << xMax << yMin << yMax;
+	out << Z << U << V << mask;  // We don't need to serialize C, it's computed
+	out << m_enableTransparency;
+	out << m_colorFromZ;
+	// new in v1
+	out << m_isWireFrame;
+	out << int16_t(m_colorMap);
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CMesh::readFromStream(mrpt::utils::CStream& in, int version)
+void CMesh::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -448,7 +434,7 @@ void CMesh::readFromStream(mrpt::utils::CStream& in, int version)
 				in >> m_isWireFrame;
 				int16_t i;
 				in >> i;
-				m_colorMap = TColormap(i);
+				m_colorMap = mrpt::img::TColormap(i);
 			}
 			else
 				m_isWireFrame = false;
@@ -472,10 +458,10 @@ void CMesh::updateColorsMatrix() const
 
 	if (m_isImage)
 	{
-		const size_t cols = m_textureImage.getWidth();
-		const size_t rows = m_textureImage.getHeight();
+		const int cols = m_textureImage.getWidth();
+		const int rows = m_textureImage.getHeight();
 
-		if ((cols != Z.getColCount()) || (rows != Z.getRowCount()))
+		if ((cols != Z.cols()) || (rows != Z.rows()))
 			printf("\nTexture Image and Z sizes have to be equal");
 
 		else if (m_textureImage.isColor())
@@ -493,8 +479,8 @@ void CMesh::updateColorsMatrix() const
 	}
 	else
 	{
-		const size_t cols = Z.getColCount();
-		const size_t rows = Z.getRowCount();
+		const size_t cols = Z.cols();
+		const size_t rows = Z.rows();
 		C.setSize(rows, cols);
 
 		// Color is proportional to height:
@@ -516,8 +502,8 @@ void CMesh::updateColorsMatrix() const
 					if (!mask(r, c)) continue;
 					any_valid = true;
 					const float val = C(r, c);
-					mrpt::utils::keep_max(val_max, val);
-					mrpt::utils::keep_min(val_min, val);
+					mrpt::keep_max(val_max, val);
+					mrpt::keep_min(val_min, val);
 				}
 
 			if (any_valid)
@@ -566,7 +552,7 @@ void CMesh::setUV(
 bool CMesh::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 {
 	if (!trianglesUpToDate || !polygonsUpToDate) updatePolygons();
-	return mrpt::math::traceRay(tmpPolys, o - this->m_pose, dist);
+	return mrpt::math::traceRay(tmpPolys, (o - this->m_pose).asTPose(), dist);
 }
 
 static math::TPolygon3D tmpPoly(3);

@@ -7,17 +7,16 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/utils.h>
 #include <mrpt/random.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/slam/CMetricMapBuilderICP.h>
 #include <mrpt/maps/CMultiMetricMap.h>
+#include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/obs/CRawlog.h>
 
 #include "common.h"
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::slam;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
@@ -38,7 +37,7 @@ double icp_test_1(int a1, int a2)
 
 	int step = 0;
 	size_t rawlogEntry = 0;
-	CFileGZInputStream rawlogFile(rawlog_file);
+	mrpt::io::CFileGZInputStream rawlogFile(rawlog_file);
 
 	TSetOfMetricMapInitializers metricMapsOpts;
 
@@ -83,7 +82,7 @@ double icp_test_1(int a1, int a2)
 	// ---------------------------------
 	//   CMetricMapBuilder::TOptions
 	// ---------------------------------
-	mapBuilder.setVerbosityLevel(mrpt::utils::LVL_ERROR);
+	mapBuilder.setVerbosityLevel(mrpt::system::LVL_ERROR);
 	mapBuilder.options.enableMapUpdating = true;
 
 	// ----------------------------------------------------------
@@ -92,12 +91,13 @@ double icp_test_1(int a1, int a2)
 	CActionCollection::Ptr action;
 	CSensoryFrame::Ptr observations;
 
+	auto arch = archiveFrom(rawlogFile);
 	for (;;)
 	{
 		// Load action/observation pair from the rawlog:
 		// --------------------------------------------------
 		if (!CRawlog::readActionObservationPair(
-				rawlogFile, action, observations, rawlogEntry))
+				arch, action, observations, rawlogEntry))
 			break;  // file EOF
 
 		// Execute:

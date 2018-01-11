@@ -10,7 +10,7 @@
 #ifndef CDetectableObject_H
 #define CDetectableObject_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/obs/CObservation.h>
 #include <cmath>
 
@@ -25,7 +25,7 @@ namespace detectors
   * expandable to other source types (f.i. scanners).
   * \ingroup mrpt_detectors_grp
   */
-class CDetectableObject : public mrpt::utils::CSerializable
+class CDetectableObject : public mrpt::serialization::CSerializable
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CDetectableObject)
 

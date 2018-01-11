@@ -9,10 +9,10 @@
 #ifndef RAWLOG_EDIT_DECLS_H
 #define RAWLOG_EDIT_DECLS_H
 
-#include <mrpt/utils/CFileGZOutputStream.h>
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CFileOutputStream.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/obs/CObservation.h>
 #include "CRawlogProcessor.h"
@@ -23,7 +23,7 @@
 
 #define DECLARE_OP_FUNCTION(_NAME)                                           \
 	void _NAME(                                                              \
-		mrpt::utils::CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline, \
+		mrpt::io::CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline, \
 		bool verbose)
 
 /** Auxiliary struct that performs all the checks and create the
@@ -31,7 +31,8 @@
 */
 struct TOutputRawlogCreator
 {
-	mrpt::utils::CFileGZOutputStream out_rawlog;
+	mrpt::io::CFileGZOutputStream out_rawlog_io;
+	std::unique_ptr<mrpt::serialization::CArchive> out_rawlog;
 	std::string out_rawlog_filename;
 
 	TOutputRawlogCreator();

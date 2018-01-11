@@ -15,7 +15,6 @@
 #include <mrpt/opengl/graph_tools.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::graphs;
 using namespace mrpt::graphslam;
 using namespace mrpt::poses;

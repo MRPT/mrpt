@@ -51,8 +51,8 @@ class CVectorField2D : public CRenderizableDisplayList
 	/** By default is true */
 	bool m_antiAliasing;
 
-	mrpt::utils::TColor m_point_color;
-	mrpt::utils::TColor m_field_color;
+	mrpt::img::TColor m_point_color;
+	mrpt::img::TColor m_field_color;
 
    public:
 	/**
@@ -71,16 +71,16 @@ class CVectorField2D : public CRenderizableDisplayList
 	inline void setPointColor(
 		const float R, const float G, const float B, const float A = 1)
 	{
-		m_point_color = mrpt::utils::TColor(R * 255, G * 255, B * 255, A * 255);
+		m_point_color = mrpt::img::TColor(R * 255, G * 255, B * 255, A * 255);
 		CRenderizableDisplayList::notifyChange();
 	}
 
 	/**
 	  * Get the point color in the range [0,1]
 	  */
-	inline mrpt::utils::TColorf getPointColor() const
+	inline mrpt::img::TColorf getPointColor() const
 	{
-		return mrpt::utils::TColorf(m_point_color);
+		return mrpt::img::TColorf(m_point_color);
 	}
 
 	/**
@@ -89,16 +89,16 @@ class CVectorField2D : public CRenderizableDisplayList
 	inline void setVectorFieldColor(
 		const float R, const float G, const float B, const float A = 1)
 	{
-		m_field_color = mrpt::utils::TColor(R * 255, G * 255, B * 255, A * 255);
+		m_field_color = mrpt::img::TColor(R * 255, G * 255, B * 255, A * 255);
 		CRenderizableDisplayList::notifyChange();
 	}
 
 	/**
 	  * Get the arrow color in the range [0,1]
 	  */
-	inline mrpt::utils::TColorf getVectorFieldColor() const
+	inline mrpt::img::TColorf getVectorFieldColor() const
 	{
-		return mrpt::utils::TColorf(m_field_color);
+		return mrpt::img::TColorf(m_field_color);
 	}
 
 	/**
@@ -137,10 +137,10 @@ class CVectorField2D : public CRenderizableDisplayList
 		const float center_x, const float center_y, const float cellsize_x,
 		const float cellsize_y)
 	{
-		xMin = center_x - 0.5 * cellsize_x * (xcomp.getColCount() - 1);
-		xMax = center_x + 0.5 * cellsize_x * (xcomp.getColCount() - 1);
-		yMin = center_y - 0.5 * cellsize_y * (xcomp.getRowCount() - 1);
-		yMax = center_y + 0.5 * cellsize_y * (xcomp.getRowCount() - 1);
+		xMin = center_x - 0.5 * cellsize_x * (xcomp.cols() - 1);
+		xMax = center_x + 0.5 * cellsize_x * (xcomp.cols() - 1);
+		yMin = center_y - 0.5 * cellsize_y * (xcomp.rows() - 1);
+		yMax = center_y + 0.5 * cellsize_y * (xcomp.rows() - 1);
 		CRenderizableDisplayList::notifyChange();
 	}
 
@@ -206,8 +206,8 @@ class CVectorField2D : public CRenderizableDisplayList
 		mrpt::math::CMatrixFloat& Matrix_x, mrpt::math::CMatrixFloat& Matrix_y)
 	{
 		ASSERT_(
-			(Matrix_x.getRowCount() == Matrix_y.getRowCount()) &&
-			(Matrix_x.getColCount() == Matrix_y.getColCount()))
+			(Matrix_x.rows() == Matrix_y.rows()) &&
+			(Matrix_x.cols() == Matrix_y.cols()));
 		xcomp = Matrix_x;
 		ycomp = Matrix_y;
 		CRenderizableDisplayList::notifyChange();
@@ -229,10 +229,10 @@ class CVectorField2D : public CRenderizableDisplayList
 	}
 
 	/** Returns the total count of rows used to represent the vector field. */
-	inline size_t getColCount() const { return xcomp.getColCount(); }
+	inline size_t cols() const { return xcomp.cols(); }
 	/** Returns the total count of columns used to represent the vector field.
 	 */
-	inline size_t getRowCount() const { return xcomp.getRowCount(); }
+	inline size_t rows() const { return xcomp.rows(); }
 	/**
 	  * Class factory
 	  */

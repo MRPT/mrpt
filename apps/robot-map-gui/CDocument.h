@@ -13,7 +13,7 @@
 #include "mrpt/maps/CSimpleMap.h"
 #include "mrpt/maps/CMultiMetricMap.h"
 #include "mrpt/opengl/CRenderizable.h"
-#include "mrpt/utils/CConfigFile.h"
+#include "mrpt/config/CConfigFile.h"
 
 #include "gui/configWidget/CConfigWidget.h"
 #include "TypeOfConfig.h"
@@ -23,7 +23,7 @@ CSetOfObjects.
 Also, it provides work with *.simplemap.
 */
 
-typedef mrpt::utils::poly_ptr_ptr<mrpt::maps::CMetricMap::Ptr> MetricPolyPtr;
+typedef mrpt::containers::poly_ptr_ptr<mrpt::maps::CMetricMap::Ptr> MetricPolyPtr;
 typedef std::map<SType, mrpt::opengl::CSetOfObjects::Ptr> RenderizableMaps;
 typedef std::map<TypeOfConfig, std::vector<MetricPolyPtr>> TypeConfig;
 

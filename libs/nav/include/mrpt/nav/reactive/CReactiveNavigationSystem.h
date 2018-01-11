@@ -46,7 +46,7 @@ namespace nav
 * This class requires a number of parameters which are usually provided via an
 * external config (".ini") file.
 * Alternatively, a memory-only object can be used to avoid physical files, see
-* mrpt::utils::CConfigFileMemory.
+* mrpt::config::CConfigFileMemory.
 *
 * A template config file can be generated at any moment by the user by calling
 * saveConfigFile() with a default-constructed object.
@@ -97,26 +97,26 @@ class CReactiveNavigationSystem : public CAbstractPTGBasedReactive
 	virtual bool checkCollisionWithLatestObstacles(
 		const mrpt::math::TPose2D& relative_robot_pose) const override;
 
-	struct TReactiveNavigatorParams : public mrpt::utils::CLoadableOptions
+	struct TReactiveNavigatorParams : public mrpt::config::CLoadableOptions
 	{
 		double min_obstacles_height,
 			max_obstacles_height;  // The range of "z" coordinates for obstacles
 		// to be considered
 
 		virtual void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& c,
+			const mrpt::config::CConfigFileBase& c,
 			const std::string& s) override;
 		virtual void saveToConfigFile(
-			mrpt::utils::CConfigFileBase& c,
+			mrpt::config::CConfigFileBase& c,
 			const std::string& s) const override;
 		TReactiveNavigatorParams();
 	};
 
 	TReactiveNavigatorParams params_reactive_nav;
 
-	virtual void loadConfigFile(const mrpt::utils::CConfigFileBase& c)
+	virtual void loadConfigFile(const mrpt::config::CConfigFileBase& c)
 		override;  // See base class docs!
-	virtual void saveConfigFile(mrpt::utils::CConfigFileBase& c)
+	virtual void saveConfigFile(mrpt::config::CConfigFileBase& c)
 		const override;  // See base class docs!
 
    private:

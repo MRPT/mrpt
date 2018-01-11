@@ -11,8 +11,8 @@
 
 #include <mrpt/nav/reactive/CLogFileRecord.h>
 #include <mrpt/poses/CPoint2D.h>
-#include <mrpt/utils/CStream.h>
-#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/kinematics/CVehicleVelCmd_DiffDriven.h>
 #include <mrpt/kinematics/CVehicleVelCmd_Holo.h>
 
@@ -43,114 +43,103 @@ CLogFileRecord::CLogFileRecord()
 	WS_Obstacles.clear();
 }
 
-/*---------------------------------------------------------------
-						writeToStream
- ---------------------------------------------------------------*/
-void CLogFileRecord::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CLogFileRecord::serializeGetVersion() const { return 26; }
+void CLogFileRecord::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 26;
-	else
+	uint32_t i, n;
+
+	// Version 0 ---------
+	n = infoPerPTG.size();
+	out << n;
+	for (i = 0; i < n; i++)
 	{
-		uint32_t i, n;
+		out << infoPerPTG[i].PTG_desc.c_str();
 
-		// Version 0 ---------
-		n = infoPerPTG.size();
-		out << n;
-		for (i = 0; i < n; i++)
-		{
-			out << infoPerPTG[i].PTG_desc.c_str();
-
-			uint32_t m = infoPerPTG[i].TP_Obstacles.size();
-			out << m;
-			if (m)
-				out.WriteBuffer(
-					(const void*)&(*infoPerPTG[i].TP_Obstacles.begin()),
-					m * sizeof(infoPerPTG[i].TP_Obstacles[0]));
-
-			out << infoPerPTG[i]
-					   .TP_Targets;  // v8: CPoint2D -> TPoint2D. v26: vector
-			out << infoPerPTG[i].TP_Robot;  // v17
-			out << infoPerPTG[i].timeForTPObsTransformation
-				<< infoPerPTG[i].timeForHolonomicMethod;  // made double in v12
-			out << infoPerPTG[i].desiredDirection << infoPerPTG[i].desiredSpeed
-				<< infoPerPTG[i].evaluation;  // made double in v12
-			// removed in v23: out << evaluation_org << evaluation_priority; //
-			// added in v21
-			out << infoPerPTG[i].HLFR;
-
-			// Version 9: Removed security distances. Added optional field with
-			// PTG info.
-			const bool there_is_ptg_data = infoPerPTG[i].ptg ? true : false;
-			out << there_is_ptg_data;
-			if (there_is_ptg_data) out << infoPerPTG[i].ptg;
-
-			// Was: out << infoPerPTG[i].clearance.raw_clearances; // v19
-			infoPerPTG[i].clearance.writeToStream(out);  // v25
-		}
-		out << nSelectedPTG << WS_Obstacles;
-		out << WS_Obstacles_original;  // v20
-
-		// Removed v24: out << robotOdometryPose;
-		out << robotPoseLocalization << robotPoseOdometry;  // v24
-
-		out << WS_targets_relative;  // v8, v26: vector
-		// v16:
-		out << ptg_index_NOP << ptg_last_k_NOP;
-		out << rel_cur_pose_wrt_last_vel_cmd_NOP
-			<< rel_pose_PTG_origin_wrt_sense_NOP;  // v24: CPose2D->TPose2D
-
-		// Removed: v24. out << ptg_last_curRobotVelLocal; // v17
-		ptg_last_navDynState.writeToStream(out);  // v24
-
-		if (ptg_index_NOP < 0)
-			out << cmd_vel /*v10*/ << cmd_vel_original;  // v15
-
-		// Previous values: REMOVED IN VERSION #6
-		n = robotShape_x.size();
-		out << n;
-		if (n)
-		{
+		uint32_t m = infoPerPTG[i].TP_Obstacles.size();
+		out << m;
+		if (m)
 			out.WriteBuffer(
-				(const void*)&(*robotShape_x.begin()),
-				n * sizeof(robotShape_x[0]));
-			out.WriteBuffer(
-				(const void*)&(*robotShape_y.begin()),
-				n * sizeof(robotShape_y[0]));
-		}
+				(const void*)&(*infoPerPTG[i].TP_Obstacles.begin()),
+				m * sizeof(infoPerPTG[i].TP_Obstacles[0]));
 
-		// Version 1 ---------
-		out << cur_vel << cur_vel_local; /*v10*/
-		// out << estimatedExecutionPeriod; // removed v13
+		out << infoPerPTG[i]
+					.TP_Targets;  // v8: CPoint2D -> TPoint2D. v26: vector
+		out << infoPerPTG[i].TP_Robot;  // v17
+		out << infoPerPTG[i].timeForTPObsTransformation
+			<< infoPerPTG[i].timeForHolonomicMethod;  // made double in v12
+		out << infoPerPTG[i].desiredDirection << infoPerPTG[i].desiredSpeed
+			<< infoPerPTG[i].evaluation;  // made double in v12
+		// removed in v23: out << evaluation_org << evaluation_priority; //
+		// added in v21
+		out << infoPerPTG[i].HLFR;
 
-		// Version 3 ----------
-		for (i = 0; i < infoPerPTG.size(); i++)
-		{
-			out << infoPerPTG[i].evalFactors;  // v22: this is now a TParameters
-		}
+		// Version 9: Removed security distances. Added optional field with
+		// PTG info.
+		const bool there_is_ptg_data = infoPerPTG[i].ptg ? true : false;
+		out << there_is_ptg_data;
+		if (there_is_ptg_data) out << infoPerPTG[i].ptg;
 
-		out << nPTGs;  // v4
-		// out << timestamp; // removed v13
-		out << robotShape_radius;  // v11
-		// out << cmd_vel_filterings; // added v12: Removed in v15
-
-		out << values << timestamps;  // v13
-
-		out << relPoseSense
-			<< relPoseVelCmd;  // v14, v24 changed CPose2D->TPose2D
-
-		// v15: cmd_vel converted from std::vector<double> into CSerializable
-		out << additional_debug_msgs;  // v18
-
-		navDynState.writeToStream(out);  // v24
+		// Was: out << infoPerPTG[i].clearance.raw_clearances; // v19
+		infoPerPTG[i].clearance.writeToStream(out);  // v25
 	}
+	out << nSelectedPTG << WS_Obstacles;
+	out << WS_Obstacles_original;  // v20
+
+	// Removed v24: out << robotOdometryPose;
+	out << robotPoseLocalization << robotPoseOdometry;  // v24
+
+	out << WS_targets_relative;  // v8, v26: vector
+	// v16:
+	out << ptg_index_NOP << ptg_last_k_NOP;
+	out << rel_cur_pose_wrt_last_vel_cmd_NOP
+		<< rel_pose_PTG_origin_wrt_sense_NOP;  // v24: CPose2D->TPose2D
+
+	// Removed: v24. out << ptg_last_curRobotVelLocal; // v17
+	ptg_last_navDynState.writeToStream(out);  // v24
+
+	if (ptg_index_NOP < 0)
+		out << cmd_vel /*v10*/ << cmd_vel_original;  // v15
+
+	// Previous values: REMOVED IN VERSION #6
+	n = robotShape_x.size();
+	out << n;
+	if (n)
+	{
+		out.WriteBuffer(
+			(const void*)&(*robotShape_x.begin()),
+			n * sizeof(robotShape_x[0]));
+		out.WriteBuffer(
+			(const void*)&(*robotShape_y.begin()),
+			n * sizeof(robotShape_y[0]));
+	}
+
+	// Version 1 ---------
+	out << cur_vel << cur_vel_local; /*v10*/
+	// out << estimatedExecutionPeriod; // removed v13
+
+	// Version 3 ----------
+	for (i = 0; i < infoPerPTG.size(); i++)
+	{
+		out << infoPerPTG[i].evalFactors;  // v22: this is now a TParameters
+	}
+
+	out << nPTGs;  // v4
+	// out << timestamp; // removed v13
+	out << robotShape_radius;  // v11
+	// out << cmd_vel_filterings; // added v12: Removed in v15
+
+	out << values << timestamps;  // v13
+
+	out << relPoseSense
+		<< relPoseVelCmd;  // v14, v24 changed CPose2D->TPose2D
+
+	// v15: cmd_vel converted from std::vector<double> into CSerializable
+	out << additional_debug_msgs;  // v18
+
+	navDynState.writeToStream(out);  // v24
 }
 
-/*---------------------------------------------------------------
-						readFromStream
- ---------------------------------------------------------------*/
-void CLogFileRecord::readFromStream(mrpt::utils::CStream& in, int version)
+void CLogFileRecord::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -220,7 +209,7 @@ void CLogFileRecord::readFromStream(mrpt::utils::CStream& in, int version)
 				{
 					mrpt::poses::CPoint2D pos;
 					in >> pos;
-					ipp.TP_Targets.push_back(mrpt::math::TPoint2D(pos));
+					ipp.TP_Targets.push_back(mrpt::math::TPoint2D(pos.x(),pos.y()));
 				}
 				if (version >= 17)
 					in >> ipp.TP_Robot;
@@ -300,8 +289,8 @@ void CLogFileRecord::readFromStream(mrpt::utils::CStream& in, int version)
 			{
 				mrpt::poses::CPose2D robotOdometryPose;
 				in >> robotOdometryPose;
-				robotPoseOdometry = robotOdometryPose;
-				robotPoseLocalization = robotOdometryPose;
+				robotPoseOdometry = robotOdometryPose.asTPose();
+				robotPoseLocalization = robotOdometryPose.asTPose();
 			}
 			else
 			{
@@ -326,7 +315,7 @@ void CLogFileRecord::readFromStream(mrpt::utils::CStream& in, int version)
 			{
 				mrpt::poses::CPoint2D pos;
 				in >> pos;
-				WS_targets_relative.push_back(mrpt::math::TPoint2D(pos));
+				WS_targets_relative.push_back(mrpt::math::TPoint2D(pos.x(),pos.y()));
 			}
 
 			if (version >= 16)
@@ -344,9 +333,9 @@ void CLogFileRecord::readFromStream(mrpt::utils::CStream& in, int version)
 					in >> crel_cur_pose_wrt_last_vel_cmd_NOP >>
 						crel_pose_PTG_origin_wrt_sense_NOP;
 					rel_cur_pose_wrt_last_vel_cmd_NOP =
-						crel_cur_pose_wrt_last_vel_cmd_NOP;
+						crel_cur_pose_wrt_last_vel_cmd_NOP.asTPose();
 					rel_pose_PTG_origin_wrt_sense_NOP =
-						crel_pose_PTG_origin_wrt_sense_NOP;
+						crel_pose_PTG_origin_wrt_sense_NOP.asTPose();
 				}
 			}
 			else
@@ -555,8 +544,8 @@ void CLogFileRecord::readFromStream(mrpt::utils::CStream& in, int version)
 				{
 					mrpt::poses::CPose2D crelPoseSense, crelPoseVelCmd;
 					in >> crelPoseSense >> crelPoseVelCmd;
-					relPoseSense = crelPoseSense;
-					relPoseVelCmd = crelPoseVelCmd;
+					relPoseSense = crelPoseSense.asTPose();
+					relPoseVelCmd = crelPoseVelCmd.asTPose();
 				}
 			}
 			else

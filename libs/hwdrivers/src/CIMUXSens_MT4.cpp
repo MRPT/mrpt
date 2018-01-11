@@ -13,11 +13,11 @@
 #include <mrpt/obs/CObservationIMU.h>
 #include <mrpt/obs/CObservationGPS.h>
 
+#include <iostream>
 #include <thread>
 
 IMPLEMENTS_GENERIC_SENSOR(CIMUXSens_MT4, mrpt::hwdrivers)
 
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
 using namespace std;
@@ -312,13 +312,13 @@ class DeviceClass
 
 // Include libraries in linking:
 #if MRPT_HAS_xSENS_MT4
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 // WINDOWS:
-#if defined(_MSC_VER) || defined(__BORLANDC__)
+#if defined(_MSC_VER)
 #pragma comment(lib, "SetupAPI.lib")
 #pragma comment(lib, "WinUsb.lib")
 #endif
-#endif  // MRPT_OS_WINDOWS
+#endif  // _WIN32
 #endif  // MRPT_HAS_xSENS_MT4
 
 /*-------------------------------------------------------------
@@ -584,11 +584,8 @@ void CIMUXSens_MT4::doProcess()
 
 			appendObservation(obsGPS);
 		}
-
-		std::cout << std::flush;
 	}
 	msgs.clear();
-
 #else
 	THROW_EXCEPTION(
 		"MRPT has been compiled with 'BUILD_XSENS_MT4'=OFF, so this class "
@@ -763,7 +760,7 @@ void CIMUXSens_MT4::initialize()
 					loadConfig_sensorSpecific
 -------------------------------------------------------------*/
 void CIMUXSens_MT4::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 	m_sensorPose.setFromValues(
@@ -780,7 +777,7 @@ void CIMUXSens_MT4::loadConfig_sensorSpecific(
 	m_port_bauds =
 		configSource.read_int(iniSection, "baudRate", m_port_bauds, false);
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	m_portname =
 		configSource.read_string(iniSection, "portname_WIN", m_portname, false);
 #else

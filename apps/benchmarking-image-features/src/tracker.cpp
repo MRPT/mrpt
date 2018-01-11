@@ -15,10 +15,14 @@
   ---------------------------------------------------------------*/
 
 #include "tracker.h"
+#include <set>
+
+using mrpt::system::CTicTac;
+using namespace mrpt::img;
 
 /************************************************************************************************
-*					    Tracker Constructor *
-************************************************************************************************/
+ *					    Tracker Constructor *
+ ************************************************************************************************/
 Tracker::Tracker()
 {
 	hasResolution = false;
@@ -38,8 +42,8 @@ Tracker::Tracker()
 }
 
 /************************************************************************************************
-*					    Track Them All tracker *
-************************************************************************************************/
+ *					    Track Them All tracker *
+ ************************************************************************************************/
 cv::Mat Tracker::trackThemAll(
 	vector<string> files_fullpath_tracking, int tracking_image_counter,
 	int remove_lost_feats, int add_new_feats, int max_feats, int patch_size,

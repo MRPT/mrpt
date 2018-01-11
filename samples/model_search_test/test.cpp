@@ -10,7 +10,7 @@
 #include <mrpt/math/ransac.h>
 #include <mrpt/math/model_search.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/opengl/CPointCloud.h>
@@ -19,7 +19,6 @@
 #include <mrpt/random.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::gui;
 using namespace mrpt::math;
 using namespace mrpt::random;
@@ -35,7 +34,7 @@ struct Fit3DPlane
 
 	Fit3DPlane(const std::vector<TPoint3D>& _allData) : allData(_allData) {}
 	size_t getSampleCount(void) const { return allData.size(); }
-	bool fitModel(const vector_size_t& useIndices, TPlane3D& model) const
+	bool fitModel(const std::vector<size_t>& useIndices, TPlane3D& model) const
 	{
 		ASSERT_(useIndices.size() == 3);
 		TPoint3D p1(allData[useIndices[0]]);
@@ -96,7 +95,7 @@ void TestRANSAC()
 	// Run RANSAC
 	// ------------------------------------
 	TPlane3D best_model;
-	vector_size_t best_inliers;
+	std::vector<size_t> best_inliers;
 	const double DIST_THRESHOLD = 0.2;
 
 	CTicTac tictac;

@@ -12,7 +12,7 @@
 
 #include <mrpt/detectors/CObjectDetection.h>
 #include <mrpt/detectors/CCascadeClassifierDetection.h>
-#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/CTimeLogger.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/obs_frwds.h>
 
@@ -38,7 +38,7 @@ class CFaceDetection : public CObjectDetection
 
 	~CFaceDetection();
 
-	virtual void init(const mrpt::utils::CConfigFileBase& cfg);
+	virtual void init(const mrpt::config::CConfigFileBase& cfg);
 
 	virtual void detectObjects_Impl(
 		const mrpt::obs::CObservation* obs, vector_detectable_object& detected);
@@ -71,7 +71,7 @@ class CFaceDetection : public CObjectDetection
 	void experimental_showMeasurements();
 
 	void debug_returnResults(
-		const vector_uint& falsePositives, const vector_uint& ignore,
+		const std::vector<uint32_t>& falsePositives, const std::vector<uint32_t>& ignore,
 		unsigned int& falsePositivesDeleted, unsigned int& realFacesDeleted);
 
    private:
@@ -126,7 +126,7 @@ class CFaceDetection : public CObjectDetection
 		mrpt::math::CVectorDouble sumDistances;
 
 		int faceNum;
-		vector_uint deletedRegions;
+		std::vector<uint32_t> deletedRegions;
 		int numPossibleFacesDetected;
 		int numRealFacesDetected;
 
@@ -137,7 +137,7 @@ class CFaceDetection : public CObjectDetection
 	} m_measure;
 
 	// To take measures abaout execution time
-	mrpt::utils::CTimeLogger m_timeLog;
+	mrpt::system::CTimeLogger m_timeLog;
 
 	std::vector<double> m_meanHist;
 
@@ -197,7 +197,7 @@ class CFaceDetection : public CObjectDetection
 
 	// Histogram methods
 	void experimental_calcHist(
-		const mrpt::utils::CImage& face, const size_t& c1, const size_t& r1,
+		const mrpt::img::CImage& face, const size_t& c1, const size_t& r1,
 		const size_t& c2, const size_t& r2,
 		mrpt::math::CMatrixTemplate<unsigned int>& hist);
 

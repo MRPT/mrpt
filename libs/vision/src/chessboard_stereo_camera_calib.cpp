@@ -10,11 +10,12 @@
 #include "vision-precomp.h"  // Precompiled headers
 
 #include <mrpt/system/filesystem.h>
-#include <mrpt/utils/CConfigFileMemory.h>
+#include <mrpt/config/CConfigFileMemory.h>
 
 #include <mrpt/vision/chessboard_find_corners.h>
 #include <mrpt/vision/chessboard_stereo_camera_calib.h>
 #include <mrpt/vision/pinhole.h>
+#include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/math/robust_kernels.h>
 #include <mrpt/math/wrap2pi.h>
 #include <algorithm>  // reverse()
@@ -25,12 +26,12 @@
 //#define COMPARE_NUMERIC_JACOBIANS
 
 #ifdef USE_NUMERIC_JACOBIANS
-#include <mrpt/math/jacobians.h>
+#include <mrpt/math/num_jacobian.h>
 #endif
 
 using namespace mrpt;
 using namespace mrpt::vision;
-using namespace mrpt::utils;
+using namespace mrpt::img;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace std;
@@ -44,11 +45,10 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 {
 	try
 	{
-		ASSERT_(p.check_size_x > 2)
-		ASSERT_(p.check_size_y > 2)
-		ASSERT_(p.check_squares_length_X_meters > 0)
-		ASSERT_(p.check_squares_length_Y_meters > 0)
-
+		ASSERT_(p.check_size_x > 2);
+		ASSERT_(p.check_size_y > 2);
+		ASSERT_(p.check_squares_length_X_meters > 0);
+		ASSERT_(p.check_squares_length_Y_meters > 0);
 		const bool user_wants_use_robust = p.use_robust_kernel;
 
 		if (images.size() < 1)
@@ -173,13 +173,13 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 				// via the dot product. Swap rows/columns order as needed.
 				bool has_to_redraw_corners = false;
 
-				const mrpt::math::TPoint2D
+				const TPixelCoordf
 					pt_l0 = images[i].left.detected_corners[0],
 					pt_l1 = images[i].left.detected_corners[1],
 					pt_r0 = images[i].right.detected_corners[0],
 					pt_r1 = images[i].right.detected_corners[1];
-				const mrpt::math::TPoint2D Al = pt_l1 - pt_l0;
-				const mrpt::math::TPoint2D Ar = pt_r1 - pt_r0;
+				const auto Al = TPoint2D(pt_l1.x, pt_l1.y) - TPoint2D(pt_l0.x, pt_l0.y);
+				const auto Ar = TPoint2D(pt_r1.x, pt_r1.y) - TPoint2D(pt_r0.x, pt_r0.y);
 
 				// If the dot product is negative, we have INVERTED order of
 				// corners:
@@ -278,7 +278,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 		size_t nUnknownsCamParams = 0;
 		size_t iter = 0;
 		double err = 0;
-		vector_size_t vars_to_optimize;
+		std::vector<size_t> vars_to_optimize;
 		Eigen::MatrixXd H;  // Hessian matrix  (Declared here so it's accessible
 		// as the final uncertainty measure)
 
@@ -328,8 +328,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 			Eigen::VectorXd minus_g;  // minus gradient
 			build_linear_system(res_jacob, vars_to_optimize, minus_g, H);
 
-			ASSERT_EQUAL_(nUnknowns, (size_t)H.cols())
-
+			ASSERT_EQUAL_(nUnknowns, (size_t)H.cols());
 			// Lev-Marq. parameters:
 			double nu = 2;
 			double lambda = tau * H.diagonal().array().maxCoeff();
@@ -718,8 +717,8 @@ void jacob_dA_eps_D_p_deps(
 }
 
 void project_point(
-	const mrpt::math::TPoint3D& P, const mrpt::utils::TCamera& params,
-	const CPose3D& cameraPose, mrpt::utils::TPixelCoordf& px)
+	const mrpt::math::TPoint3D& P, const mrpt::img::TCamera& params,
+	const CPose3D& cameraPose, mrpt::img::TPixelCoordf& px)
 {
 	// Change the reference system to that wrt the camera
 	TPoint3D nP;
@@ -752,7 +751,7 @@ void project_point(
 //  * Left-cam-params (<=9)
 //  * Right-cam-params (<=9)
 void mrpt::vision::build_linear_system(
-	const TResidualJacobianList& res_jac, const vector_size_t& var_indxs,
+	const TResidualJacobianList& res_jac, const std::vector<size_t>& var_indxs,
 	Eigen::VectorXd& minus_g, Eigen::MatrixXd& H)
 {
 	const size_t N = res_jac.size();  // Number of stereo image pairs
@@ -866,7 +865,7 @@ void mrpt::vision::build_linear_system(
 //  * Left-cam-params (<=9)
 //  * Right-cam-params (<=9)
 void mrpt::vision::add_lm_increment(
-	const Eigen::VectorXd& eps, const vector_size_t& var_indxs,
+	const Eigen::VectorXd& eps, const std::vector<size_t>& var_indxs,
 	lm_stat_t& lm_stat)
 {
 	// Increment of the N cam poses
@@ -1161,12 +1160,12 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 				x_incrs.setConstant(1e-6);
 
 				Eigen::Matrix<double,2,2> num_dhl_dbl, num_dhr_dbr;
-				mrpt::math::jacobians::jacob_numeric_estimate(x0, &eval_h_b, x_incrs, camparam_l, num_dhl_dbl );
+				mrpt::math::estimateJacobian(x0, &eval_h_b, x_incrs, camparam_l, num_dhl_dbl );
 
 				nP = pt_wrt_right;
 				x0[0] = nP.x/nP.z;
 				x0[1] = nP.y/nP.z;
-				mrpt::math::jacobians::jacob_numeric_estimate(x0, &eval_h_b, x_incrs, camparam_r, num_dhr_dbr );
+				mrpt::math::estimateJacobian(x0, &eval_h_b, x_incrs, camparam_r, num_dhr_dbr );
 
 				cout << "num_dhl_dbl:\n" << num_dhl_dbl << "\ndiff dhl_dbl:\n" << dhl_dbl-num_dhl_dbl << endl << endl;
 				cout << "num_dhr_dbr:\n" << num_dhr_dbr << "\ndiff dhr_dbr:\n" << dhr_dbr-num_dhr_dbr << endl << endl;
@@ -1191,12 +1190,12 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 
 				Eigen::Matrix<double,2,3> num_dbl_dpl, num_dbr_dpr;
 				const int dumm=0;
-				mrpt::math::jacobians::jacob_numeric_estimate(x0, &eval_b_p, x_incrs, dumm, num_dbl_dpl );
+				mrpt::math::estimateJacobian(x0, &eval_b_p, x_incrs, dumm, num_dbl_dpl );
 
 				x0[0]=pt_wrt_right.x;
 				x0[1]=pt_wrt_right.y;
 				x0[2]=pt_wrt_right.z;
-				mrpt::math::jacobians::jacob_numeric_estimate(x0, &eval_b_p, x_incrs, dumm, num_dbr_dpr );
+				mrpt::math::estimateJacobian(x0, &eval_b_p, x_incrs, dumm, num_dbr_dpr );
 
 				cout << "num_dbl_dpl:\n" << num_dbl_dpl << "\ndbl_dpl:\n" << dbl_dpl << endl << endl;
 				cout << "num_dbr_dpr:\n" << num_dbr_dpr << "\ndbr_dpr:\n" << dbr_dpr << endl << endl;
@@ -1225,8 +1224,8 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 				x_incrs.setConstant(1e-8);
 
 				Eigen::Matrix<double,3,6> num_dpl_del, num_dpr_der;
-				mrpt::math::jacobians::jacob_numeric_estimate(x0, &eval_deps_D_p, x_incrs, pt_wrt_left , num_dpl_del );
-				mrpt::math::jacobians::jacob_numeric_estimate(x0, &eval_deps_D_p, x_incrs, pt_wrt_right, num_dpr_der );
+				mrpt::math::estimateJacobian(x0, &eval_deps_D_p, x_incrs, pt_wrt_left , num_dpl_del );
+				mrpt::math::estimateJacobian(x0, &eval_deps_D_p, x_incrs, pt_wrt_right, num_dpr_der );
 
 				cout << "num_dpl_del:\n" << num_dpl_del << "\ndiff dpl_del:\n" << dpl_del-num_dpl_del << endl << endl;
 				cout << "num_dpr_der:\n" << num_dpr_der << "\ndiff dpr_der:\n" << dpr_der-num_dpr_der << endl << endl;
@@ -1249,7 +1248,7 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 				dat.p = lm_stat.obj_points[i];
 
 				Eigen::Matrix<double,3,6> num_dpr_del;
-				mrpt::math::jacobians::jacob_numeric_estimate(x0, &eval_dA_eps_D_p, x_incrs,dat , num_dpr_del );
+				mrpt::math::estimateJacobian(x0, &eval_dA_eps_D_p, x_incrs,dat , num_dpr_del );
 
 				cout << "num_dpr_del:\n" << num_dpr_del << "\ndiff dpr_del:\n" << num_dpr_del-dpr_del << endl << endl;
 			}
@@ -1293,7 +1292,7 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 				lm_stat, lm_stat.obj_points[i], lm_stat.left_cam_poses[k_idx],
 				lm_stat.right2left_pose, obs);
 
-			mrpt::math::jacobians::jacob_numeric_estimate(
+			mrpt::math::estimateJacobian(
 				x0, &numeric_jacob_eval_function, x_incrs, dat, rje.J);
 
 #if defined(COMPARE_NUMERIC_JACOBIANS)

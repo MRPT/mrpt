@@ -10,21 +10,19 @@
 #include "maps-precomp.h"  // Precomp header
 
 #include <mrpt/maps/CHeightGridMap2D.h>
-#include <mrpt/utils/CConfigFileBase.h>  // MRPT_LOAD_CONFIG_VAR()
+#include <mrpt/config/CConfigFileBase.h>  // MRPT_LOAD_CONFIG_VAR()
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/opengl/CMesh.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
-
-//#include <mrpt/system/os.h>
-//#include <mrpt/utils/color_maps.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/img/color_maps.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::maps;
 using namespace mrpt::obs;
 using namespace mrpt::poses;
+using namespace mrpt::img;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
 
@@ -43,7 +41,7 @@ CHeightGridMap2D::TMapDefinition::TMapDefinition()
 }
 
 void CHeightGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(
-	const mrpt::utils::CConfigFileBase& source,
+	const mrpt::config::CConfigFileBase& source,
 	const std::string& sectionNamePrefix)
 {
 	// [<sectionNamePrefix>+"_creationOpts"]
@@ -62,16 +60,16 @@ void CHeightGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(
 }
 
 void CHeightGridMap2D::TMapDefinition::dumpToTextStream_map_specific(
-	mrpt::utils::CStream& out) const
+	std::ostream& out) const
 {
 	LOADABLEOPTS_DUMP_VAR(min_x, double);
 	LOADABLEOPTS_DUMP_VAR(max_x, double);
 	LOADABLEOPTS_DUMP_VAR(min_y, double);
 	LOADABLEOPTS_DUMP_VAR(max_y, double);
 	LOADABLEOPTS_DUMP_VAR(resolution, double);
-	out.printf(
+	out << mrpt::format(
 		"MAP TYPE                                  = %s\n",
-		mrpt::utils::TEnumType<
+		mrpt::typemeta::TEnumType<
 			CHeightGridMap2D::TMapRepresentation>::value2name(mapType)
 			.c_str());
 
@@ -171,44 +169,34 @@ double CHeightGridMap2D::internal_computeObservationLikelihood(
 	THROW_EXCEPTION("Not implemented yet!");
 }
 
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CHeightGridMap2D::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CHeightGridMap2D::serializeGetVersion() const { return 3; }
+void CHeightGridMap2D::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 3;
-	else
-	{
-		dyngridcommon_writeToStream(out);
+	dyngridcommon_writeToStream(out);
 
-		// To assure compatibility: The size of each cell:
-		uint32_t n = static_cast<uint32_t>(sizeof(THeightGridmapCell));
-		out << n;
+	// To assure compatibility: The size of each cell:
+	uint32_t n = static_cast<uint32_t>(sizeof(THeightGridmapCell));
+	out << n;
 
-		// Save the map contents:
-		n = static_cast<uint32_t>(m_map.size());
-		out << n;
-		for (vector<THeightGridmapCell>::const_iterator it = m_map.begin();
-			 it != m_map.end(); ++it)
-			out << it->h
-				<< it->w;  // This was removed in version 1: << it->history_Zs;
+	// Save the map contents:
+	n = static_cast<uint32_t>(m_map.size());
+	out << n;
+	for (vector<THeightGridmapCell>::const_iterator it = m_map.begin();
+		 it != m_map.end(); ++it)
+		out << it->h
+			<< it->w;  // This was removed in version 1: << it->history_Zs;
 
-		// Save the insertion options:
-		out << uint8_t(m_mapType);
+	// Save the insertion options:
+	out << uint8_t(m_mapType);
 
-		out << insertionOptions.filterByHeight << insertionOptions.z_min
-			<< insertionOptions.z_max;
+	out << insertionOptions.filterByHeight << insertionOptions.z_min
+		<< insertionOptions.z_max;
 
-		out << genericMapParams;  // v2
-	}
+	out << genericMapParams;  // v2
 }
 
-/*---------------------------------------------------------------
-  Implements the reading from a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CHeightGridMap2D::readFromStream(mrpt::utils::CStream& in, int version)
+void CHeightGridMap2D::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -254,39 +242,35 @@ void CHeightGridMap2D::readFromStream(mrpt::utils::CStream& in, int version)
 	};
 }
 
-/*---------------------------------------------------------------
-					TInsertionOptions
- ---------------------------------------------------------------*/
 CHeightGridMap2D::TInsertionOptions::TInsertionOptions()
 	: filterByHeight(false), z_min(-0.5), z_max(0.5), colorMap(cmJET)
 {
 }
 
-/*---------------------------------------------------------------
-					dumpToTextStream
-  ---------------------------------------------------------------*/
 void CHeightGridMap2D::TInsertionOptions::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+	std::ostream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [CHeightGridMap2D::TInsertionOptions] ------------ "
 		"\n\n");
-	out.printf(
+	out << mrpt::format(
 		"filterByHeight                          = %c\n",
 		filterByHeight ? 'y' : 'n');
-	out.printf("z_min                                   = %f\n", z_min);
-	out.printf("z_max                                   = %f\n", z_max);
-	out.printf(
+	out << mrpt::format(
+		"z_min                                   = %f\n", z_min);
+	out << mrpt::format(
+		"z_max                                   = %f\n", z_max);
+	out << mrpt::format(
 		"colormap                                = %s\n",
 		colorMap == cmJET ? "jet" : "grayscale");
-	out.printf("\n");
+	out << mrpt::format("\n");
 }
 
 /*---------------------------------------------------------------
 					loadFromConfigFile
   ---------------------------------------------------------------*/
 void CHeightGridMap2D::TInsertionOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
 {
 	MRPT_LOAD_CONFIG_VAR(filterByHeight, bool, iniFile, section)
 	MRPT_LOAD_CONFIG_VAR(z_min, float, iniFile, section)
@@ -371,7 +355,7 @@ void CHeightGridMap2D::getAs3DObject(
 			for (size_t y = 0; y < m_size_y; y++)
 			{
 				const THeightGridmapCell* c = cellByIndex(x, y);
-				ASSERTDEB_(c)
+				ASSERTDEB_(c);
 				if (c->w)
 				{
 					float r, g, b;

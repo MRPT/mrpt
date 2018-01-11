@@ -16,9 +16,9 @@
 #include <PS1080.h>
 
 #include <mrpt/system/filesystem.h>
-#include <mrpt/utils/CImage.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/img/CImage.h>
+#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
 #include <mrpt/opengl.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
@@ -53,9 +53,10 @@ int main(int argc, char** argv)
 		if (argc < 2)
 		{
 			cerr << "Usage: " << argv[0] << " OUTPUT_PATH [-m]\n";
-			cerr << "Example: " << argv[0] << " /home/jdoe/myrawlog will "
-											  "produce file myrawlog.rawlog in "
-											  "folder /home/jdoe\n";
+			cerr << "Example: " << argv[0]
+				 << " /home/jdoe/myrawlog will "
+					"produce file myrawlog.rawlog in "
+					"folder /home/jdoe\n";
 			cerr << "-m will activate manual mode\n";
 			return 1;
 		}
@@ -175,7 +176,7 @@ int main(int argc, char** argv)
 		// Create rawlog file ----------------------------------------------
 		const string out_rawlog_fil = out_name + string(".rawlog");
 		cout << "Creating rawlog: " << out_rawlog_fil << endl;
-		mrpt::utils::CFileGZOutputStream f_out(out_rawlog_fil);
+		mrpt::io::CFileGZOutputStream f_out(out_rawlog_fil);
 
 		// Fill out the common field to all entries:
 		mrpt::obs::CObservation3DRangeScan obs;
@@ -216,7 +217,7 @@ int main(int argc, char** argv)
 		//							Grab frames and record
 		//========================================================================================
 
-		utils::CTicTac tictac;
+		mrpt::system::CTicTac tictac;
 		unsigned int frame = 0;
 
 		bool depthfirst = true;
@@ -298,7 +299,7 @@ int main(int argc, char** argv)
 				const string sDepthfile = mrpt::format("%i_depth.bin", frame);
 				const string sRGBfile = mrpt::format("%i_rgb.png", frame);
 
-				utils::CImage iimage(width, height, CH_RGB);
+				img::CImage iimage(width, height, CH_RGB);
 				for (unsigned int yc = 0; yc < height; ++yc)
 				{
 					const openni::DepthPixel* pDepth =

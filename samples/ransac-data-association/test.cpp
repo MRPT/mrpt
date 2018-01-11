@@ -13,8 +13,8 @@
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/math/geometry.h>
-#include <mrpt/utils/CTimeLogger.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTimeLogger.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/stock_objects.h>
@@ -50,7 +50,6 @@ const std::string sMAP_FILE = string("./DLRMap.txt");
 // ==============================================
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::random;
 using namespace mrpt::maps;
@@ -70,8 +69,8 @@ void TestRANSAC()
 	mrpt::gui::CDisplayWindow3D win(
 		"MRPT example: ransac-data-association", 800, 600);
 
-	mrpt::utils::CTimeLogger timelog;  // For dumping stats at the end
-	mrpt::utils::CTicTac timer;
+	mrpt::system::CTimeLogger timelog;  // For dumping stats at the end
+	mrpt::system::CTicTac timer;
 
 	getRandomGenerator().randomize();  // randomize with time
 
@@ -83,9 +82,9 @@ void TestRANSAC()
 	{
 		CMatrixDouble M;
 		M.loadFromTextFile(sMAP_FILE);  // Launch except. on error
-		ASSERT_(M.getColCount() == 3 && M.getRowCount() > 2)
+		ASSERT_(M.cols() == 3 && M.rows() > 2)
 
-		const size_t nPts = M.getRowCount();
+		const size_t nPts = M.rows();
 		the_map.resize(nPts);
 		for (size_t i = 0; i < nPts; i++) the_map.setPoint(i, M(i, 1), M(i, 2));
 	}
@@ -316,7 +315,7 @@ void TestRANSAC()
 				5, 5,
 				"Blue: map landmarks | Red: Observations | White lines: Found "
 				"correspondences",
-				mrpt::utils::TColorf(0, 0, 0), "mono", 12, mrpt::opengl::NICE,
+				mrpt::img::TColorf(0, 0, 0), "mono", 12, mrpt::opengl::NICE,
 				0);
 
 			//
@@ -368,13 +367,13 @@ void TestRANSAC()
 
 			win.addTextMessage(
 				5, 20, "Ground truth pose    : " + GT_pose.asString(),
-				mrpt::utils::TColorf(0, 0, 0), "mono", 12, mrpt::opengl::NICE,
+				mrpt::img::TColorf(0, 0, 0), "mono", 12, mrpt::opengl::NICE,
 				1);
 			win.addTextMessage(
 				5, 35,
 				"RANSAC estimated pose: " + solution_pose.mean.asString() +
 					mrpt::format(" | RMSE=%f", (nPairs ? sqerr / nPairs : 0.0)),
-				mrpt::utils::TColorf(0, 0, 0), "mono", 12, mrpt::opengl::NICE,
+				mrpt::img::TColorf(0, 0, 0), "mono", 12, mrpt::opengl::NICE,
 				2);
 
 			win.unlockAccess3DScene();

@@ -32,7 +32,7 @@ class CRawlogTreeView;
   */
 typedef void (*wxRawlogTreeEventFunction)(
 	wxWindow* me, CRawlogTreeView* the_tree, TRawlogTreeViewEvent ev,
-	int item_index, const mrpt::utils::CSerializable::Ptr& item_data);
+	int item_index, const mrpt::serialization::CSerializable::Ptr& item_data);
 
 /** A tree view that represents efficiently all rawlog's items.
  */
@@ -105,7 +105,7 @@ class CRawlogTreeView : public wxScrolledWindow
 		/** Hierarchy level: 0,1,2. */
 		uint8_t level;
 		/** The object, or nullptr */
-		mrpt::utils::CSerializable::Ptr data;
+		mrpt::serialization::CSerializable::Ptr data;
 		size_t index;
 	};
 
@@ -116,7 +116,7 @@ class CRawlogTreeView : public wxScrolledWindow
 	/** Returns an icon index depending on the class of the object in the tree
 	 * view
 	  */
-	static int iconIndexFromClass(const mrpt::utils::TRuntimeClassId* class_ID);
+	static int iconIndexFromClass(const mrpt::rtti::TRuntimeClassId* class_ID);
 
 	static const int ROW_HEIGHT;
 	static const int TREE_HORZ_STEPS;

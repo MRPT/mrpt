@@ -11,19 +11,20 @@
 
 #include <mrpt/system/os.h>
 #include <mrpt/math/CMatrix.h>
-#include <mrpt/utils/CStream.h>
-#include <mrpt/utils/CEnhancedMetaFile.h>
-#include <mrpt/utils/round.h>  // round()
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/img/CEnhancedMetaFile.h>
+#include <mrpt/core/round.h>  // round()
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/random.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;
+using namespace mrpt::tfest;
 using namespace mrpt::math;
 using namespace mrpt::obs;
 using namespace mrpt::random;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
+using namespace mrpt::img;
 using namespace mrpt::system;
 using namespace std;
 
@@ -41,79 +42,66 @@ bool COccupancyGridMap2D::saveAsBitmapFile(const std::string& file) const
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-					writeToStream
-	Implements the writing to a CStream capability of
-	  CSerializable objects
-  ---------------------------------------------------------------*/
-void COccupancyGridMap2D::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t COccupancyGridMap2D::serializeGetVersion() const { return 6; }
+void COccupancyGridMap2D::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 6;
-	else
-	{
 // Version 3: Change to log-odds. The only change is in the loader, when
 // translating
 //   from older versions.
 
 // Version 2: Save OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS/16BITS
 #ifdef OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS
-		out << uint8_t(8);
+	out << uint8_t(8);
 #else
-		out << uint8_t(16);
+	out << uint8_t(16);
 #endif
 
-		out << size_x << size_y << x_min << x_max << y_min << y_max
-			<< resolution;
-		ASSERT_(size_x * size_y == map.size());
+	out << size_x << size_y << x_min << x_max << y_min << y_max
+		<< resolution;
+	ASSERT_(size_x * size_y == map.size());
 
 #ifdef OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS
-		out.WriteBuffer(&map[0], sizeof(map[0]) * size_x * size_y);
+	out.WriteBuffer(&map[0], sizeof(map[0]) * size_x * size_y);
 #else
-		out.WriteBufferFixEndianness(&map[0], size_x * size_y);
+	out.WriteBufferFixEndianness(&map[0], size_x * size_y);
 #endif
 
-		// insertionOptions:
-		out << insertionOptions.mapAltitude << insertionOptions.useMapAltitude
-			<< insertionOptions.maxDistanceInsertion
-			<< insertionOptions.maxOccupancyUpdateCertainty
-			<< insertionOptions.considerInvalidRangesAsFreeSpace
-			<< insertionOptions.decimation
-			<< insertionOptions.horizontalTolerance;
+	// insertionOptions:
+	out << insertionOptions.mapAltitude << insertionOptions.useMapAltitude
+		<< insertionOptions.maxDistanceInsertion
+		<< insertionOptions.maxOccupancyUpdateCertainty
+		<< insertionOptions.considerInvalidRangesAsFreeSpace
+		<< insertionOptions.decimation
+		<< insertionOptions.horizontalTolerance;
 
-		// Likelihood:
-		out << (int32_t)likelihoodOptions.likelihoodMethod
-			<< likelihoodOptions.LF_stdHit << likelihoodOptions.LF_zHit
-			<< likelihoodOptions.LF_zRandom << likelihoodOptions.LF_maxRange
-			<< likelihoodOptions.LF_decimation
-			<< likelihoodOptions.LF_maxCorrsDistance
-			<< likelihoodOptions.LF_alternateAverageMethod
-			<< likelihoodOptions.MI_exponent << likelihoodOptions.MI_skip_rays
-			<< likelihoodOptions.MI_ratio_max_distance
-			<< likelihoodOptions.rayTracing_useDistanceFilter
-			<< likelihoodOptions.rayTracing_decimation
-			<< likelihoodOptions.rayTracing_stdHit
-			<< likelihoodOptions.consensus_takeEachRange
-			<< likelihoodOptions.consensus_pow << likelihoodOptions.OWA_weights
-			<< likelihoodOptions.enableLikelihoodCache;
+	// Likelihood:
+	out << (int32_t)likelihoodOptions.likelihoodMethod
+		<< likelihoodOptions.LF_stdHit << likelihoodOptions.LF_zHit
+		<< likelihoodOptions.LF_zRandom << likelihoodOptions.LF_maxRange
+		<< likelihoodOptions.LF_decimation
+		<< likelihoodOptions.LF_maxCorrsDistance
+		<< likelihoodOptions.LF_alternateAverageMethod
+		<< likelihoodOptions.MI_exponent << likelihoodOptions.MI_skip_rays
+		<< likelihoodOptions.MI_ratio_max_distance
+		<< likelihoodOptions.rayTracing_useDistanceFilter
+		<< likelihoodOptions.rayTracing_decimation
+		<< likelihoodOptions.rayTracing_stdHit
+		<< likelihoodOptions.consensus_takeEachRange
+		<< likelihoodOptions.consensus_pow << likelihoodOptions.OWA_weights
+		<< likelihoodOptions.enableLikelihoodCache;
 
-		// Insertion as 3D:
-		out << genericMapParams;  // v6
+	// Insertion as 3D:
+	out << genericMapParams;  // v6
 
-		// Version 4:
-		out << insertionOptions.CFD_features_gaussian_size
-			<< insertionOptions.CFD_features_median_size;
+	// Version 4:
+	out << insertionOptions.CFD_features_gaussian_size
+		<< insertionOptions.CFD_features_median_size;
 
-		// Version: 5;
-		out << insertionOptions.wideningBeamsWithDistance;
-	}
+	// Version: 5;
+	out << insertionOptions.wideningBeamsWithDistance;
 }
 
-/*---------------------------------------------------------------
-					readFromStream
-  ---------------------------------------------------------------*/
-void COccupancyGridMap2D::readFromStream(mrpt::utils::CStream& in, int version)
+void COccupancyGridMap2D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	m_is_empty = false;
 
@@ -300,7 +288,7 @@ bool COccupancyGridMap2D::loadFromBitmapFile(
 					loadFromBitmap
  ---------------------------------------------------------------*/
 bool COccupancyGridMap2D::loadFromBitmap(
-	const mrpt::utils::CImage& imgFl, float resolution, float xCentralPixel,
+	const mrpt::img::CImage& imgFl, float resolution, float xCentralPixel,
 	float yCentralPixel)
 {
 	MRPT_START
@@ -450,7 +438,7 @@ bool COccupancyGridMap2D::saveAsEMFTwoMapsWithCorrespondences(
 
 // The individual maps:
 // ---------------------------------------------
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	m1->getAsImage(img1, true);
 	m2->getAsImage(img2, true);
 #else

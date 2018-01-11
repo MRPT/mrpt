@@ -20,7 +20,7 @@
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/obs/CObservationBearingRange.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/math/ops_vectors.h>
 #include <mrpt/math/lightweight_geom_data.h>
@@ -31,15 +31,17 @@
 
 using namespace mrpt;
 using namespace mrpt::vision;
-using namespace mrpt::utils;
+using namespace mrpt::img;
+using namespace mrpt::config;
 using namespace mrpt::maps;
+using namespace mrpt::tfest;
 using namespace mrpt::math;
 using namespace mrpt::system;
 using namespace mrpt::poses;
 using namespace mrpt::obs;
 using namespace std;
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 #include <process.h>
 #include <windows.h>  // TODO: This is temporary!!!
 #endif
@@ -76,8 +78,7 @@ void vision::openCV_cross_correlation(
 	}
 	else
 	{
-		ASSERT_(!img.isColor() && !patch_img.isColor())
-
+		ASSERT_(!img.isColor() && !patch_img.isColor());
 		im.setFromIplImageReadOnly(
 			const_cast<IplImage*>(img.getAs<IplImage>()));
 		patch_im.setFromIplImageReadOnly(
@@ -102,9 +103,8 @@ void vision::openCV_cross_correlation(
 	if ((y_search_ini + y_search_size + patch_h) > im_h)
 		y_search_size -= (y_search_ini + y_search_size + patch_h) - im_h;
 
-	ASSERT_((x_search_ini + x_search_size + patch_w) <= im_w)
-	ASSERT_((y_search_ini + y_search_size + patch_h) <= im_h)
-
+	ASSERT_((x_search_ini + x_search_size + patch_w) <= im_w);
+	ASSERT_((y_search_ini + y_search_size + patch_h) <= im_h);
 	IplImage* result = cvCreateImage(
 		cvSize(x_search_size + 1, y_search_size + 1), IPL_DEPTH_32F, 1);
 
@@ -132,8 +132,8 @@ void vision::openCV_cross_correlation(
 
 	// Find the max point:
 	cvMinMaxLoc(result, &mini, &max_val, &min_point, &max_point, nullptr);
-	x_max = max_point.x + x_search_ini + (mrpt::utils::round(patch_w - 1) >> 1);
-	y_max = max_point.y + y_search_ini + (mrpt::utils::round(patch_h - 1) >> 1);
+	x_max = max_point.x + x_search_ini + (mrpt::round(patch_w - 1) >> 1);
+	y_max = max_point.y + y_search_ini + (mrpt::round(patch_h - 1) >> 1);
 
 	// Free memory:
 	cvReleaseImage(&result);
@@ -177,7 +177,7 @@ TPoint3D vision::pixelTo3D(const TPixelCoordf& xy, const CMatrixDouble33& A)
 
 	// Normalize:
 	const double u = res.norm();
-	ASSERT_(u != 0)
+	ASSERT_(u != 0);
 	res *= 1.0 / u;
 
 	return res;
@@ -432,7 +432,7 @@ float vision::computeMainOrientation(
 -------------------------------------------------------------*/
 void vision::normalizeImage(const CImage& image, CImage& nimage)
 {
-	ASSERT_(image.getChannelCount() == 1)
+	ASSERT_(image.getChannelCount() == 1);
 	nimage.resize(
 		image.getWidth(), image.getHeight(), 1, image.isOriginTopLeft());
 
@@ -661,7 +661,7 @@ size_t vision::matchFeatures(
 							(*itList1)->patchSize > 0 &&
 							(*itList2)->patchSize == (*itList1)->patchSize);
 #if !MRPT_HAS_OPENCV
-						THROW_EXCEPTION("MRPT has been compiled without OpenCV")
+						THROW_EXCEPTION("MRPT has been compiled without OpenCV");
 #else
 						IplImage *aux1, *aux2;
 						if ((*itList1)->patch.isColor() &&
@@ -917,7 +917,7 @@ void vision::generateMask(
 	//    cv::Mat *mask2 = static_cast<cv::Mat*>(_mask2);
 
 	int hwsize = (int)(0.5 * wSize);
-	int mx = mask1.getColCount(), my = mask1.getRowCount();
+	int mx = mask1.cols(), my = mask1.rows();
 
 	int idx, idy;
 	CMatchedFeatureList::const_iterator it;
@@ -987,7 +987,7 @@ void vision::addFeaturesToImage(
 -------------------------------------------------------------*/
 void vision::projectMatchedFeatures(
 	const CMatchedFeatureList& matches,
-	const mrpt::utils::TStereoCamera& stereo_camera,
+	const mrpt::img::TStereoCamera& stereo_camera,
 	vector<TPoint3D>& out_points)
 {
 	out_points.clear();
@@ -998,7 +998,7 @@ void vision::projectMatchedFeatures(
 		const double disp = it->first->x - it->second->x;
 		if (disp < 1) continue;
 
-		const double b_d = stereo_camera.rightCameraPose.x() / disp;
+		const double b_d = stereo_camera.rightCameraPose.x / disp;
 		out_points.push_back(
 			TPoint3D(
 				(it->first->x - stereo_camera.leftCamera.cx()) * b_d,
@@ -2356,42 +2356,42 @@ void TStereoSystemParams::loadFromConfigFile(
 /*---------------------------------------------------------------
 					TStereoSystemParams: dumpToTextStream
   ---------------------------------------------------------------*/
-void TStereoSystemParams::dumpToTextStream(CStream& out) const
+void TStereoSystemParams::dumpToTextStream(std::ostream& out) const
 {
-	out.printf("\n----------- [vision::TStereoSystemParams] ------------ \n");
-	out.printf("Method for 3D Uncert. \t= ");
+	out << mrpt::format("\n----------- [vision::TStereoSystemParams] ------------ \n");
+	out << mrpt::format("Method for 3D Uncert. \t= ");
 	switch (uncPropagation)
 	{
 		case Prop_Linear:
-			out.printf("Linear propagation\n");
+			out << mrpt::format("Linear propagation\n");
 			break;
 		case Prop_UT:
-			out.printf("Unscented Transform\n");
+			out << mrpt::format("Unscented Transform\n");
 			break;
 		case Prop_SUT:
-			out.printf("Scaled Unscented Transform\n");
+			out << mrpt::format("Scaled Unscented Transform\n");
 			break;
 	}  // end switch
 
-	out.printf("K\t\t\t= [%f\t%f\t%f]\n", K(0, 0), K(0, 1), K(0, 2));
-	out.printf(" \t\t\t  [%f\t%f\t%f]\n", K(1, 0), K(1, 1), K(1, 2));
-	out.printf(" \t\t\t  [%f\t%f\t%f]\n", K(2, 0), K(2, 1), K(2, 2));
+	out << mrpt::format("K\t\t\t= [%f\t%f\t%f]\n", K(0, 0), K(0, 1), K(0, 2));
+	out << mrpt::format(" \t\t\t  [%f\t%f\t%f]\n", K(1, 0), K(1, 1), K(1, 2));
+	out << mrpt::format(" \t\t\t  [%f\t%f\t%f]\n", K(2, 0), K(2, 1), K(2, 2));
 
-	out.printf("F\t\t\t= [%f\t%f\t%f]\n", F(0, 0), F(0, 1), F(0, 2));
-	out.printf(" \t\t\t  [%f\t%f\t%f]\n", F(1, 0), F(1, 1), F(1, 2));
-	out.printf(" \t\t\t  [%f\t%f\t%f]\n", F(2, 0), F(2, 1), F(2, 2));
+	out << mrpt::format("F\t\t\t= [%f\t%f\t%f]\n", F(0, 0), F(0, 1), F(0, 2));
+	out << mrpt::format(" \t\t\t  [%f\t%f\t%f]\n", F(1, 0), F(1, 1), F(1, 2));
+	out << mrpt::format(" \t\t\t  [%f\t%f\t%f]\n", F(2, 0), F(2, 1), F(2, 2));
 
-	out.printf("Baseline \t\t= %f\n", baseline);
-	out.printf("Pixel std \t\t= %f\n", stdPixel);
-	out.printf("Disparity std\t\t= %f\n", stdDisp);
-	out.printf("Z maximum\t\t= %f\n", maxZ);
-	out.printf("Z minimum\t\t= %f\n", minZ);
-	out.printf("Y maximum\t\t= %f\n", maxY);
+	out << mrpt::format("Baseline \t\t= %f\n", baseline);
+	out << mrpt::format("Pixel std \t\t= %f\n", stdPixel);
+	out << mrpt::format("Disparity std\t\t= %f\n", stdDisp);
+	out << mrpt::format("Z maximum\t\t= %f\n", maxZ);
+	out << mrpt::format("Z minimum\t\t= %f\n", minZ);
+	out << mrpt::format("Y maximum\t\t= %f\n", maxY);
 
-	out.printf("k Factor [UT]\t\t= %f\n", factor_k);
-	out.printf("a Factor [UT]\t\t= %f\n", factor_a);
-	out.printf("b Factor [UT]\t\t= %f\n", factor_b);
-	out.printf("-------------------------------------------------------- \n");
+	out << mrpt::format("k Factor [UT]\t\t= %f\n", factor_k);
+	out << mrpt::format("a Factor [UT]\t\t= %f\n", factor_a);
+	out << mrpt::format("b Factor [UT]\t\t= %f\n", factor_b);
+	out << mrpt::format("-------------------------------------------------------- \n");
 }
 
 /*-------------------------------------------------------------
@@ -2513,65 +2513,65 @@ void TMatchingOptions::loadFromConfigFile(
 /*---------------------------------------------------------------
 					TMatchingOptions: dumpToTextStream
   ---------------------------------------------------------------*/
-void TMatchingOptions::dumpToTextStream(CStream& out) const
+void TMatchingOptions::dumpToTextStream(std::ostream& out) const
 {
-	out.printf("\n----------- [vision::TMatchingOptions] ------------ \n");
-	out.printf("Matching method:                ");
+	out << mrpt::format("\n----------- [vision::TMatchingOptions] ------------ \n");
+	out << mrpt::format("Matching method:                ");
 	switch (matching_method)
 	{
 		case mmCorrelation:
-			out.printf("Cross Correlation\n");
-			out.printf("· Min. CC. Threshold:           %f\n", minCC_TH);
-			out.printf("· Min. Dif. CC Threshold:       %f\n", minDCC_TH);
-			out.printf("· Max. Ratio CC Threshold:      %f\n", rCC_TH);
+			out << mrpt::format("Cross Correlation\n");
+			out << mrpt::format("· Min. CC. Threshold:           %f\n", minCC_TH);
+			out << mrpt::format("· Min. Dif. CC Threshold:       %f\n", minDCC_TH);
+			out << mrpt::format("· Max. Ratio CC Threshold:      %f\n", rCC_TH);
 			break;
 		case mmDescriptorSIFT:
-			out.printf("SIFT descriptor\n");
-			out.printf("· Max. EDD Threshold:           %f\n", maxEDD_TH);
-			out.printf("· EDD Ratio:                    %f\n", EDD_RATIO);
+			out << mrpt::format("SIFT descriptor\n");
+			out << mrpt::format("· Max. EDD Threshold:           %f\n", maxEDD_TH);
+			out << mrpt::format("· EDD Ratio:                    %f\n", EDD_RATIO);
 			break;
 		case mmDescriptorSURF:
-			out.printf("SURF descriptor\n");
-			out.printf("· EDD Ratio:                    %f\n", maxEDSD_TH);
-			out.printf("· Min. CC Threshold:            %f\n", EDSD_RATIO);
+			out << mrpt::format("SURF descriptor\n");
+			out << mrpt::format("· EDD Ratio:                    %f\n", maxEDSD_TH);
+			out << mrpt::format("· Min. CC Threshold:            %f\n", EDSD_RATIO);
 			break;
 		case mmSAD:
-			out.printf("SAD\n");
-			out.printf("· Max. Dif. SAD Threshold:      %f\n", maxSAD_TH);
-			out.printf("· Ratio SAD Threshold:          %f\n", SAD_RATIO);
+			out << mrpt::format("SAD\n");
+			out << mrpt::format("· Max. Dif. SAD Threshold:      %f\n", maxSAD_TH);
+			out << mrpt::format("· Ratio SAD Threshold:          %f\n", SAD_RATIO);
 			break;
 		case mmDescriptorORB:
-			out.printf("ORB\n");
-			out.printf("· Max. distance between desc:	%f\n", maxORB_dist);
+			out << mrpt::format("ORB\n");
+			out << mrpt::format("· Max. distance between desc:	%f\n", maxORB_dist);
 			break;
 	}  // end switch
-	out.printf("Epipolar Thres:                 %.2f px\n", epipolar_TH);
-	out.printf("Using epipolar restriction?:    ");
-	out.printf(useEpipolarRestriction ? "Yes\n" : "No\n");
-	out.printf("Has Fundamental Matrix?:        ");
-	out.printf(hasFundamentalMatrix ? "Yes\n" : "No\n");
-	out.printf("Are camera axis parallel?:      ");
-	out.printf(parallelOpticalAxis ? "Yes\n" : "No\n");
-	out.printf("Use X-coord restriction?:       ");
-	out.printf(useXRestriction ? "Yes\n" : "No\n");
-	out.printf("Use disparity limits?:       ");
-	out.printf(useDisparityLimits ? "Yes\n" : "No\n");
+	out << mrpt::format("Epipolar Thres:                 %.2f px\n", epipolar_TH);
+	out << mrpt::format("Using epipolar restriction?:    ");
+	out << mrpt::format(useEpipolarRestriction ? "Yes\n" : "No\n");
+	out << mrpt::format("Has Fundamental Matrix?:        ");
+	out << mrpt::format(hasFundamentalMatrix ? "Yes\n" : "No\n");
+	out << mrpt::format("Are camera axis parallel?:      ");
+	out << mrpt::format(parallelOpticalAxis ? "Yes\n" : "No\n");
+	out << mrpt::format("Use X-coord restriction?:       ");
+	out << mrpt::format(useXRestriction ? "Yes\n" : "No\n");
+	out << mrpt::format("Use disparity limits?:       ");
+	out << mrpt::format(useDisparityLimits ? "Yes\n" : "No\n");
 	if (useDisparityLimits)
-		out.printf(
+		out << mrpt::format(
 			"· Min/max disp limits:          %.2f/%.2f px\n", min_disp,
 			max_disp);
-	out.printf("Estimate depth?:                ");
-	out.printf(estimateDepth ? "Yes\n" : "No\n");
+	out << mrpt::format("Estimate depth?:                ");
+	out << mrpt::format(estimateDepth ? "Yes\n" : "No\n");
 	if (estimateDepth)
 	{
-		//        out.printf("· Focal length:                 %f px\n", fx);
-		//        out.printf("· Principal Point (cx):         %f px\n", cx);
-		//        out.printf("· Principal Point (cy):         %f px\n", cy);
-		//        out.printf("· Baseline:                     %f m\n",
+		//        out << mrpt::format("· Focal length:                 %f px\n", fx);
+		//        out << mrpt::format("· Principal Point (cx):         %f px\n", cx);
+		//        out << mrpt::format("· Principal Point (cy):         %f px\n", cy);
+		//        out << mrpt::format("· Baseline:                     %f m\n",
 		//        baseline);
-		out.printf("· Maximum depth allowed:        %f m\n", maxDepthThreshold);
+		out << mrpt::format("· Maximum depth allowed:        %f m\n", maxDepthThreshold);
 	}
-	out.printf("Add matches to list?:           ");
-	out.printf(addMatches ? "Yes\n" : "No\n");
-	out.printf("-------------------------------------------------------- \n");
+	out << mrpt::format("Add matches to list?:           ");
+	out << mrpt::format(addMatches ? "Yes\n" : "No\n");
+	out << mrpt::format("-------------------------------------------------------- \n");
 }  // end TMatchingOptions::dumpToTextStream

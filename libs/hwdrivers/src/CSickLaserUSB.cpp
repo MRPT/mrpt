@@ -9,13 +9,12 @@
 
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/CStream.h>
-#include <mrpt/utils/utils_defs.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
-#include <mrpt/utils/crc.h>
+#include <mrpt/system/crc.h>
 #include <mrpt/hwdrivers/CSickLaserUSB.h>
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 #include <windows.h>
 #endif
 
@@ -23,7 +22,6 @@ IMPLEMENTS_GENERIC_SENSOR(CSickLaserUSB, mrpt::hwdrivers)
 
 using namespace std;
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::comms;
 using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
@@ -132,7 +130,7 @@ void CSickLaserUSB::doProcessSimple(
 						loadConfig_sensorSpecific
 -------------------------------------------------------------*/
 void CSickLaserUSB::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 	m_serialNumber = configSource.read_string(
@@ -285,7 +283,7 @@ bool CSickLaserUSB::waitContinuousSampleFrame(
 	{
 // cerr << format("[CSickLaserUSB::waitContinuousSampleFrame] bad end flag") <<
 // endl;
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 		OutputDebugStringA(
 			"[CSickLaserUSB::waitContinuousSampleFrame] bad end flag\n");
 #endif
@@ -293,7 +291,7 @@ bool CSickLaserUSB::waitContinuousSampleFrame(
 	}
 
 	// CRC:
-	const uint16_t CRC = mrpt::utils::compute_CRC16(buf, lenghtField - 2);
+	const uint16_t CRC = mrpt::system::compute_CRC16(buf, lenghtField - 2);
 	const uint16_t CRC_packet =
 		buf[lenghtField - 2] | (buf[lenghtField - 1] << 8);
 	if (CRC_packet != CRC)
@@ -303,7 +301,7 @@ bool CSickLaserUSB::waitContinuousSampleFrame(
 			"nptns=%u: %i != %i\n",
 			unsigned(lenghtField), unsigned(n_points), CRC_packet, CRC);
 		cerr << s;
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 		OutputDebugStringA(s.c_str());
 #endif
 		return false;  // Bad CRC

@@ -13,12 +13,12 @@
 
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/string_utils.h>
+#include <iostream>
 
 IMPLEMENTS_GENERIC_SENSOR(CNTRIPEmitter, mrpt::hwdrivers)
 
 using namespace std;
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
 
@@ -49,7 +49,7 @@ CNTRIPEmitter::~CNTRIPEmitter()
 -------------------------------------------------------------*/
 void CNTRIPEmitter::doProcess()
 {
-	vector_byte buf;
+	std::vector<uint8_t> buf;
 	m_client.stream_data.readAndClear(buf);
 
 	if (!buf.empty())
@@ -82,7 +82,7 @@ void CNTRIPEmitter::doProcess()
 				"[NTRIP %s] RX: %u bytes\n",
 				mrpt::system::timeLocalToString(mrpt::system::now()).c_str(),
 				(unsigned)buf.size());
-			m_out_COM.WriteBuffer(&buf[0], buf.size());
+			m_out_COM.Write(&buf[0], buf.size());
 		}
 
 		if (m_raw_output_file_stream.is_open())
@@ -157,9 +157,9 @@ void CNTRIPEmitter::initialize()
 				loadConfig_sensorSpecific
    ----------------------------------------------------- */
 void CNTRIPEmitter::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& c, const std::string& s)
+	const mrpt::config::CConfigFileBase& c, const std::string& s)
 {
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	m_com_port = c.read_string(s, "COM_port_WIN", "");
 #else
 	m_com_port = c.read_string(s, "COM_port_LIN", "");

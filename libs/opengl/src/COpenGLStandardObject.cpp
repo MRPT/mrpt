@@ -10,15 +10,14 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/COpenGLStandardObject.h>
-#include <mrpt/utils/CStream.h>
-#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/stl_serialization.h>
 #include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
 using namespace mrpt::poses;
-using namespace mrpt::utils;
 
 IMPLEMENTS_SERIALIZABLE(
 	COpenGLStandardObject, CRenderizableDisplayList, mrpt::opengl)
@@ -72,28 +71,17 @@ void COpenGLStandardObject::render_dl() const
 	for_each(enabled.begin(), enabled.end(), glDisable);
 #endif
 }
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void COpenGLStandardObject::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+
+uint8_t COpenGLStandardObject::serializeGetVersion() const { return 1; }
+void COpenGLStandardObject::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		writeToStreamRender(out);
-		out << type << vertices << chunkSize << enabled;
-	}
+	writeToStreamRender(out);
+	out << type << vertices << chunkSize << enabled;
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void COpenGLStandardObject::readFromStream(
-	mrpt::utils::CStream& in, int version)
+void COpenGLStandardObject::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

@@ -12,8 +12,7 @@
 #include <mrpt/config.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/system/os.h>
-#include <mrpt/utils/CImage.h>
-#include <mrpt/utils/metaprogramming.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/gui/WxSubsystem.h>
 #include <mrpt/gui/WxUtils.h>
 
@@ -21,10 +20,10 @@
 
 using namespace mrpt;
 using namespace mrpt::gui;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::system;
 using namespace std;
+using mrpt::img::TPixelCoord;
 
 #if MRPT_HAS_WXWIDGETS
 
@@ -121,9 +120,10 @@ CWindowDialogPlots::CWindowDialogPlots(
 	// Increment number of windows:
 	// int winCount =
 	WxSubsystem::CWXMainFrame::notifyWindowCreation();
-// cout << "[CWindowDialogPlots] Notifying new window: " << winCount << endl;
+	// cout << "[CWindowDialogPlots] Notifying new window: " << winCount <<
+	// endl;
 
-// this->Iconize(false);
+	// this->Iconize(false);
 
 #if 0
 	// JL: TEST CODE: This is the seed of the future new implementation based on wxFreeChart...
@@ -223,10 +223,9 @@ void CWindowDialogPlots::OnResize(wxSizeEvent& event)
 	{
 		try
 		{
-			m_winPlots->publishEvent(
-				mrptEventWindowResize(
-					m_winPlots, event.GetSize().GetWidth(),
-					event.GetSize().GetHeight()));
+			m_winPlots->publishEvent(mrptEventWindowResize(
+				m_winPlots, event.GetSize().GetWidth(),
+				event.GetSize().GetHeight()));
 		}
 		catch (...)
 		{
@@ -242,10 +241,9 @@ void CWindowDialogPlots::OnMouseDown(wxMouseEvent& event)
 	{
 		try
 		{
-			m_winPlots->publishEvent(
-				mrptEventMouseDown(
-					m_winPlots, TPixelCoord(event.GetX(), event.GetY()),
-					event.LeftDown(), event.RightDown()));
+			m_winPlots->publishEvent(mrptEventMouseDown(
+				m_winPlots, TPixelCoord(event.GetX(), event.GetY()),
+				event.LeftDown(), event.RightDown()));
 		}
 		catch (...)
 		{
@@ -296,10 +294,9 @@ void CWindowDialogPlots::OnMouseMove(wxMouseEvent& event)
 	{
 		try
 		{
-			m_winPlots->publishEvent(
-				mrptEventMouseMove(
-					m_winPlots, TPixelCoord(event.GetX(), event.GetY()),
-					event.LeftDown(), event.RightDown()));
+			m_winPlots->publishEvent(mrptEventMouseMove(
+				m_winPlots, mrpt::img::TPixelCoord(event.GetX(), event.GetY()),
+				event.LeftDown(), event.RightDown()));
 		}
 		catch (...)
 		{
@@ -675,9 +672,8 @@ CDisplayWindowPlots::Ptr CDisplayWindowPlots::Create(
 	const std::string& windowCaption, unsigned int initialWindowWidth,
 	unsigned int initialWindowHeight)
 {
-	return CDisplayWindowPlots::Ptr(
-		new CDisplayWindowPlots(
-			windowCaption, initialWindowWidth, initialWindowHeight));
+	return CDisplayWindowPlots::Ptr(new CDisplayWindowPlots(
+		windowCaption, initialWindowWidth, initialWindowHeight));
 }
 /*---------------------------------------------------------------
 					Constructor
@@ -918,7 +914,7 @@ void CDisplayWindowPlots::plotEllipse(
 	MRPT_START
 	if (!isOpen()) return;
 
-	ASSERT_(cov22.getColCount() == 2 && cov22.getRowCount() == 2);
+	ASSERT_(cov22.cols() == 2 && cov22.rows() == 2);
 	ASSERT_(cov22(0, 0) >= 0);
 	ASSERT_(cov22(1, 1) >= 0);
 	ASSERT_(cov22(0, 1) == cov22(1, 0));
@@ -1056,7 +1052,7 @@ template void CDisplayWindowPlots::plotEllipse(
 					image
  ---------------------------------------------------------------*/
 void CDisplayWindowPlots::image(
-	const utils::CImage& img, const float& x_left, const float& y_bottom,
+	const mrpt::img::CImage& img, const float& x_left, const float& y_bottom,
 	const float& x_width, const float& y_height, const std::string& plotName)
 {
 #if MRPT_HAS_WXWIDGETS
@@ -1220,7 +1216,7 @@ void CDisplayWindowPlots::addPopupMenuEntry(
 void CDisplayWindowPlots::setMenuCallback(
 	TCallbackMenu userFunction, void* userParam)
 {
-	ASSERT_(userFunction != nullptr)
+	ASSERT_(userFunction != nullptr);
 	m_callback = userFunction;
 	m_callback_param = userParam;
 }

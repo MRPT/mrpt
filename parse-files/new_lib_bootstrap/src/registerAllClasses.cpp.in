@@ -12,7 +12,7 @@
 #define MRPT_NO_WARN_BIG_HDR   // In this register file is the only place where it makes sense to include *all* headers.
 #include <mrpt/@name@.h>
 
-#include <mrpt/utils/initializer.h>
+#include <mrpt/core/initializer.h>
 
 
 using namespace mrpt::@name@;

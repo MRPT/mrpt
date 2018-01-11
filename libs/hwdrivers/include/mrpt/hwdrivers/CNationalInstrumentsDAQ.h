@@ -11,9 +11,9 @@
 #define CNationalInstrumentsDAQ_H
 
 #include <mrpt/obs/CObservationRawDAQ.h>
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/system/COutputLogger.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/synch/CPipe.h>
+#include <mrpt/io/CPipe.h>
 
 #include <list>
 #include <memory>
@@ -213,7 +213,7 @@ namespace hwdrivers
 *
 * \ingroup mrpt_hwdrivers_grp
 */
-class CNationalInstrumentsDAQ : public mrpt::utils::COutputLogger,
+class CNationalInstrumentsDAQ : public mrpt::system::COutputLogger,
 								public CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CNationalInstrumentsDAQ)
@@ -454,7 +454,7 @@ class CNationalInstrumentsDAQ : public mrpt::utils::COutputLogger,
    protected:
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(
-		const mrpt::utils::CConfigFileBase& configSource,
+		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& iniSection);
 
    private:
@@ -468,8 +468,8 @@ class CNationalInstrumentsDAQ : public mrpt::utils::COutputLogger,
 		void* taskHandle;
 		std::thread hThread;
 
-		std::unique_ptr<mrpt::synch::CPipeReadEndPoint> read_pipe;
-		std::unique_ptr<mrpt::synch::CPipeWriteEndPoint> write_pipe;
+		std::unique_ptr<mrpt::io::CPipeReadEndPoint> read_pipe;
+		std::unique_ptr<mrpt::io::CPipeWriteEndPoint> write_pipe;
 
 		bool must_close, is_closed;
 		std::atomic<int> new_obs_available;

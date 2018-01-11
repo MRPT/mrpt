@@ -12,7 +12,7 @@
 #include <mrpt/obs/CAction.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPosePDF.h>
-#include <mrpt/utils/poly_ptr_ptr.h>
+#include <mrpt/containers/poly_ptr_ptr.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
 namespace mrpt
@@ -37,39 +37,38 @@ class CActionRobotMovement2D : public CAction
    public:
 	/** A list of posible ways for estimating the content of a
 	 * CActionRobotMovement2D object.
-		*/
+	 */
 	enum TEstimationMethod
 	{
 		emOdometry = 0,
 		emScan2DMatching
 	};
 
-	/** Constructor */
 	CActionRobotMovement2D();
 
 	/** The 2D pose change probabilistic estimation. */
-	mrpt::utils::poly_ptr_ptr<mrpt::poses::CPosePDF::Ptr> poseChange;
+	mrpt::containers::poly_ptr_ptr<mrpt::poses::CPosePDF::Ptr> poseChange;
 	/** This is the raw odometry reading, and only is used when
 	 * "estimationMethod" is "TEstimationMethod::emOdometry" */
 	mrpt::poses::CPose2D rawOdometryIncrementReading;
 	/** This fields indicates the way in which this estimation was obtained. */
-	TEstimationMethod estimationMethod;
+	TEstimationMethod estimationMethod{emOdometry};
 
 	/** If "true" means that "encoderLeftTicks" and "encoderRightTicks" contain
 	 * valid values. */
-	bool hasEncodersInfo;
+	bool hasEncodersInfo{false};
 	/** For odometry only: the ticks count for each wheel FROM the last reading
 	 * (positive means FORWARD, for both wheels);
-	  * \sa hasEncodersInfo
-	  */
-	int32_t encoderLeftTicks, encoderRightTicks;
+	 * \sa hasEncodersInfo
+	 */
+	int32_t encoderLeftTicks{0}, encoderRightTicks{0};
 
 	/** If "true" means that "velocityLin" and "velocityAng" contain valid
 	 * values. */
-	bool hasVelocities;
+	bool hasVelocities{0};
 	/** If "hasVelocities"=true, the robot velocity in local (robot frame, +X
 	 * forward) coordinates. */
-	mrpt::math::TTwist2D velocityLocal;
+	mrpt::math::TTwist2D velocityLocal{.0, .0, .0};
 
 	double velocityLin() const { return velocityLocal.vx; }
 	double velocityAng() const { return velocityLocal.omega; }
@@ -89,9 +88,9 @@ class CActionRobotMovement2D : public CAction
 
 		/** Options for the gaussian model, which generates a CPosePDFGaussian
 		 * object in poseChange
-		  * See docs in :
+		 * See docs in :
 		 * http://www.mrpt.org/tutorials/programming/odometry-and-motion-models/probabilistic_motion_models/
-		  */
+		 */
 		struct TOptions_GaussianModel
 		{
 			float a1, a2, a3, a4, minStdXY, minStdPHI;
@@ -99,9 +98,9 @@ class CActionRobotMovement2D : public CAction
 
 		/** Options for the Thrun's model, which generates a CPosePDFParticles
 		 * object in poseChange
-		  * See docs in :
+		 * See docs in :
 		 * http://www.mrpt.org/tutorials/programming/odometry-and-motion-models/probabilistic_motion_models/
-		  */
+		 */
 		struct TOptions_ThrunModel
 		{
 			/** The default number of particles to generate in a internal
@@ -123,10 +122,10 @@ class CActionRobotMovement2D : public CAction
 	/** Computes the PDF of the pose increment from an odometry reading and
 	 * according to the given motion model (speed and encoder ticks information
 	 * is not modified).
-	  * According to the parameters in the passed struct, it will be called one
+	 * According to the parameters in the passed struct, it will be called one
 	 * the private sampling functions (see "see also" next).
-	  * \sa computeFromOdometry_modelGaussian, computeFromOdometry_modelThrun
-	  */
+	 * \sa computeFromOdometry_modelGaussian, computeFromOdometry_modelThrun
+	 */
 	void computeFromOdometry(
 		const mrpt::poses::CPose2D& odometryIncrement,
 		const TMotionModelOptions& options);
@@ -136,27 +135,27 @@ class CActionRobotMovement2D : public CAction
 	 * which is passed internally to the method "computeFromOdometry" with the
 	 * last used PDF options (or the defualt ones if not explicitly called by
 	 * the user).
-	  *
-	  * \param K_left The meters / tick ratio for the left encoder.
-	  * \param K_right The meters / tick ratio for the right encoder.
-	  * \param D The distance between both wheels, in meters.
-	  */
+	 *
+	 * \param K_left The meters / tick ratio for the left encoder.
+	 * \param K_right The meters / tick ratio for the right encoder.
+	 * \param D The distance between both wheels, in meters.
+	 */
 	void computeFromEncoders(double K_left, double K_right, double D);
 
 	/** Using this method instead of "poseChange->drawSingleSample()" may be
 	 * more efficient in most situations.
-	  * \sa CPosePDF::drawSingleSample
-	  */
+	 * \sa CPosePDF::drawSingleSample
+	 */
 	void drawSingleSample(mrpt::poses::CPose2D& outSample) const;
 
 	/** Call this before calling a high number of times "fastDrawSingleSample",
 	 * which is much faster than "drawSingleSample"
-	  */
+	 */
 	void prepareFastDrawSingleSamples() const;
 
 	/** Faster version than "drawSingleSample", but requires a previous call to
 	 * "prepareFastDrawSingleSamples"
-	  */
+	 */
 	void fastDrawSingleSample(mrpt::poses::CPose2D& outSample) const;
 
    protected:
@@ -180,39 +179,39 @@ class CActionRobotMovement2D : public CAction
 
 	/** The sample generator for the model "computeFromOdometry_modelGaussian",
 	 * internally called when the user invokes "drawSingleSample".
-	  */
+	 */
 	void drawSingleSample_modelGaussian(mrpt::poses::CPose2D& outSample) const;
 
 	/** The sample generator for the model "computeFromOdometry_modelThrun",
 	 * internally called when the user invokes "drawSingleSample".
-	  */
+	 */
 	void drawSingleSample_modelThrun(mrpt::poses::CPose2D& outSample) const;
 
 	/** Internal use
-	  */
+	 */
 	void prepareFastDrawSingleSample_modelGaussian() const;
 
 	/** Internal use
-	  */
+	 */
 	void prepareFastDrawSingleSample_modelThrun() const;
 
 	/** Internal use
-	  */
+	 */
 	void fastDrawSingleSample_modelGaussian(
 		mrpt::poses::CPose2D& outSample) const;
 
 	/** Internal use
-	  */
+	 */
 	void fastDrawSingleSample_modelThrun(mrpt::poses::CPose2D& outSample) const;
 
 	/** Auxiliary matrix
-	  */
+	 */
 	mutable mrpt::math::CMatrixDouble33 m_fastDrawGauss_Z;
 	mutable mrpt::poses::CPose2D m_fastDrawGauss_M;
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
+}  // namespace obs
+}  // namespace mrpt
 
 #endif

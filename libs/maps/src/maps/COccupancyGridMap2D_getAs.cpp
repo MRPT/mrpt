@@ -12,22 +12,22 @@
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/system/os.h>
-#include <mrpt/utils/round.h>
+#include <mrpt/core/round.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CTexturedPlane.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
+using namespace mrpt::img;
 using namespace std;
 
 /*---------------------------------------------------------------
 					getAsImage
   ---------------------------------------------------------------*/
 void COccupancyGridMap2D::getAsImage(
-	utils::CImage& img, bool verticalFlip, bool forceRGB, bool tricolor) const
+	CImage& img, bool verticalFlip, bool forceRGB, bool tricolor) const
 {
 	if (!tricolor)
 	{
@@ -130,7 +130,7 @@ void COccupancyGridMap2D::getAsImage(
 					getAsImageFiltered
   ---------------------------------------------------------------*/
 void COccupancyGridMap2D::getAsImageFiltered(
-	utils::CImage& img, bool verticalFlip, bool forceRGB) const
+	CImage& img, bool verticalFlip, bool forceRGB) const
 {
 	getAsImage(img, verticalFlip, forceRGB);
 

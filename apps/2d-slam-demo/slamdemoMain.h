@@ -25,7 +25,7 @@
 //*)
 
 #include <mrpt/slam/CRangeBearingKFSLAM2D.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 
 class slamdemoApp;
 
@@ -263,7 +263,7 @@ class slamdemoFrame : public wxFrame
 	mrpt::obs::CObservationBearingRange m_lastObservation;
 	/** Ground truth of the indices in the landmark map of the sensed landmarks.
 	 */
-	mrpt::vector_size_t m_lastObservation_GT_indices;
+	std::vector<size_t> m_lastObservation_GT_indices;
 
 	/** Reconstructed map estimated_map_idx -> real_map_idx for the landmarks.
 		 Used to evaluate the performance of data-association (D.A.)
@@ -274,7 +274,7 @@ class slamdemoFrame : public wxFrame
 	std::set<size_t> m_realIDX_already_mapped;
 
 	/** The output rawlog file to save simulated sensor obs (if enabled) */
-	mrpt::utils::CFileGZOutputStream m_rawlog_out_file;
+	mrpt::io::CFileGZOutputStream m_rawlog_out_file;
 
 	/** Historic data */
 	struct THistoric
@@ -314,18 +314,17 @@ class slamdemoFrame : public wxFrame
 	  */
 	void updateAllGraphs(bool alsoGTMap = false);
 
-	struct TSimulationOptions : public mrpt::utils::CLoadableOptions
+	struct TSimulationOptions : public mrpt::config::CLoadableOptions
 	{
 		TSimulationOptions();
 
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		void saveToConfigFile(
-			mrpt::utils::CConfigFileBase& source,
+			mrpt::config::CConfigFileBase& source,
 			const std::string& section) const override;  // See base docs
-		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+		void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
 		/** -1: random, other, use as seed */
 		int random_seed;

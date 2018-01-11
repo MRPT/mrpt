@@ -13,22 +13,23 @@
   ---------------------------------------------------------------*/
 
 #include <mrpt/version.h>
-#include <mrpt/utils/CFileOutputStream.h>
-#include <mrpt/utils/CFileInputStream.h>
-#include <mrpt/utils/CSerializable.h>
-#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/io/CFileInputStream.h>
+#include <mrpt/serialization/CSerializable.h>
+#include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/system/CDirectoryExplorer.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/datetime.h>
+#include <mrpt/serialization/CArchive.h>
 #include <iomanip>
 
 #include "../mrpt-performance/common.h"
 
 using namespace mrpt;
 using namespace mrpt::system;
+using namespace mrpt::io;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace std;
 
 std::list<TestData> lstTests;
@@ -55,7 +56,6 @@ int run_build_tables(const std::string& PERF_DATA_DIR)
 	using namespace std;
 	using namespace mrpt;
 	using namespace mrpt::system;
-	using namespace mrpt::utils;
 
 	// Perf. results are in:
 	//  PERF_DATA_DIR + mrpt::format("/perf-results-%i.%i.%i%s-%s-%ibit.dat"
@@ -81,7 +81,8 @@ int run_build_tables(const std::string& PERF_DATA_DIR)
 		dat.file_path = fils[i].wholePath;
 
 		CFileInputStream f(dat.file_path);
-		f >> dat.all_perf_data;
+		auto arch = mrpt::serialization::archiveFrom(f);
+		arch >> dat.all_perf_data;
 		lstConfigurations.push_back(dat);
 
 		cout << " Read: " << setw(30) << config_name << " with "
@@ -91,8 +92,7 @@ int run_build_tables(const std::string& PERF_DATA_DIR)
 	std::sort(
 		lstConfigurations.begin(), lstConfigurations.end(), func_comp_entries);
 
-	ASSERT_(directoryExists(PERF_DATA_DIR + string("/perf-html/")))
-
+	ASSERT_(directoryExists(PERF_DATA_DIR + string("/perf-html/")));
 	CFileOutputStream fo;
 	// ====================================================
 	//                  index.html

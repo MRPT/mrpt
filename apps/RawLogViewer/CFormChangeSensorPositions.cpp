@@ -22,22 +22,24 @@
 #include "xRawLogViewerMain.h"
 // General global variables:
 
-#include <mrpt/utils/CFileGZOutputStream.h>
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;
+using namespace mrpt::io;
+using namespace mrpt::serialization;
 using namespace mrpt::system;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace std;
 
 // The index within the SF to process:
@@ -760,7 +762,7 @@ void CFormChangeSensorPositions::OnInit(wxInitDialogEvent& event)
 /** This is the common function for all operations over a rawlog file ("filter"
  * a rawlog file into a new one) or over the loaded rawlog (depending on the
  * user selection in the GUI).
-  */
+ */
 void CFormChangeSensorPositions::executeOperationOnRawlog(
 	TRawlogFilter operation, const char* endMsg)
 {
@@ -786,18 +788,18 @@ void CFormChangeSensorPositions::executeOperationOnRawlog(
 		isInMemory = false;
 
 		if (!txtInputFile->GetValue().size())
-			THROW_EXCEPTION("An input rawlog file must be selected")
+			THROW_EXCEPTION("An input rawlog file must be selected");
 		if (!txtOutputFile->GetValue().size())
-			THROW_EXCEPTION("An output rawlog file must be selected")
+			THROW_EXCEPTION("An output rawlog file must be selected");
 
 		string fileName_IN(txtInputFile->GetValue().mbc_str());
 		if (!mrpt::system::fileExists(fileName_IN))
-			THROW_EXCEPTION("Input file does not exist!")
+			THROW_EXCEPTION("Input file does not exist!");
 
 		string fileName_OUT(txtOutputFile->GetValue().mbc_str());
 
 		if (!fileName_OUT.compare(fileName_IN))
-			THROW_EXCEPTION("Input and output files must be different!")
+			THROW_EXCEPTION("Input and output files must be different!");
 
 		in_fil = new CFileGZInputStream(fileName_IN);
 		out_fil = new CFileGZOutputStream(fileName_OUT);
@@ -836,7 +838,7 @@ void CFormChangeSensorPositions::executeOperationOnRawlog(
 			}
 			else
 			{
-				(*in_fil) >> newObj;
+				archiveFrom(*in_fil) >> newObj;
 			}
 
 			// Check type:
@@ -849,7 +851,7 @@ void CFormChangeSensorPositions::executeOperationOnRawlog(
 				// Process & save:
 				operation(nullptr, sf.get(), changes);
 
-				if (!isInMemory) (*out_fil) << *sf.get();
+				if (!isInMemory) archiveFrom(*out_fil) << *sf.get();
 			}
 			else if (newObj->GetRuntimeClass() == CLASS_ID(CActionCollection))
 			{
@@ -862,10 +864,10 @@ void CFormChangeSensorPositions::executeOperationOnRawlog(
 					dynamic_cast<CActionCollection*>(acts.get()), nullptr,
 					changes);
 
-				if (!isInMemory) (*out_fil) << *acts;
+				if (!isInMemory) archiveFrom(*out_fil) << *acts;
 			}
-			else if (
-				newObj->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
+			else if (newObj->GetRuntimeClass()->derivedFrom(
+						 CLASS_ID(CObservation)))
 			{
 				// A sensory frame:
 				CObservation::Ptr o(
@@ -878,14 +880,13 @@ void CFormChangeSensorPositions::executeOperationOnRawlog(
 				// Process & save:
 				operation(nullptr, &sf, changes);
 
-				if (!isInMemory) (*out_fil) << *o;
+				if (!isInMemory) archiveFrom(*out_fil) << *o;
 			}
 			else
 			{  // Unknown class:
-				THROW_EXCEPTION(
-					format(
-						"Unexpected class found in the file: '%s'",
-						newObj->GetRuntimeClass()->className));
+				THROW_EXCEPTION(format(
+					"Unexpected class found in the file: '%s'",
+					newObj->GetRuntimeClass()->className));
 			}
 		}
 		catch (exception& e)

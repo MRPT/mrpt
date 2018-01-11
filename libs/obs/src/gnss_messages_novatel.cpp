@@ -11,6 +11,7 @@
 
 #include <mrpt/obs/gnss_messages_novatel.h>
 #include <map>
+#include <iostream>
 
 using namespace std;
 using namespace mrpt::obs::gnss;
@@ -40,21 +41,22 @@ nv_oem6_short_header_t::nv_oem6_short_header_t()
 }
 
 // ------------
-void Message_NV_OEM6_GENERIC_FRAME::dumpToStream(
-	mrpt::utils::CStream& out) const
+void Message_NV_OEM6_GENERIC_FRAME::dumpToStream(std::ostream& out) const
 {
-	out.printf("[Novatel OEM6 GENERIC FRAME]\n");
-	out.printf(" Message ID: %u\n", (unsigned)this->header.msg_id);
+	out << mrpt::format(
+		"[Novatel OEM6 GENERIC FRAME]\n"
+		" Message ID: %u\n",
+		(unsigned)this->header.msg_id);
 }
 void Message_NV_OEM6_GENERIC_FRAME::internal_writeToStream(
-	mrpt::utils::CStream& out) const
+	mrpt::serialization::CArchive& out) const
 {
 	out.WriteBuffer(&header, sizeof(header));
 	out << static_cast<uint32_t>(msg_body.size());
 	if (!msg_body.empty()) out.WriteBuffer(&msg_body[0], msg_body.size());
 }
 void Message_NV_OEM6_GENERIC_FRAME::internal_readFromStream(
-	mrpt::utils::CStream& in)
+	mrpt::serialization::CArchive& in)
 {
 	in.ReadBuffer(&header, sizeof(header));
 	uint32_t nBytesInStream;
@@ -63,21 +65,20 @@ void Message_NV_OEM6_GENERIC_FRAME::internal_readFromStream(
 	if (nBytesInStream) in.ReadBuffer(&msg_body[0], sizeof(nBytesInStream));
 }
 // ------------
-void Message_NV_OEM6_GENERIC_SHORT_FRAME::dumpToStream(
-	mrpt::utils::CStream& out) const
+void Message_NV_OEM6_GENERIC_SHORT_FRAME::dumpToStream(std::ostream& out) const
 {
-	out.printf("[Novatel OEM6 GENERIC SHORT FRAME]\n");
-	out.printf(" Message ID: %u\n", (unsigned)this->header.msg_id);
+	out << mrpt::format("[Novatel OEM6 GENERIC SHORT FRAME]\n");
+	out << mrpt::format(" Message ID: %u\n", (unsigned)this->header.msg_id);
 }
 void Message_NV_OEM6_GENERIC_SHORT_FRAME::internal_writeToStream(
-	mrpt::utils::CStream& out) const
+	mrpt::serialization::CArchive& out) const
 {
 	out.WriteBuffer(&header, sizeof(header));
 	out << static_cast<uint32_t>(msg_body.size());
 	if (!msg_body.empty()) out.WriteBuffer(&msg_body[0], msg_body.size());
 }
 void Message_NV_OEM6_GENERIC_SHORT_FRAME::internal_readFromStream(
-	mrpt::utils::CStream& in)
+	mrpt::serialization::CArchive& in)
 {
 	in.ReadBuffer(&header, sizeof(header));
 	uint32_t nBytesInStream;
@@ -188,38 +189,39 @@ const std::string& nv_oem6_ins_status_type::enum2str(int val)
 }
 
 void generic_dump_BESTPOS(
-	const Message_NV_OEM6_BESTPOS::content_t& fields, mrpt::utils::CStream& out)
+	const Message_NV_OEM6_BESTPOS::content_t& fields, std::ostream& out)
 {
-	out.printf(
+	out << mrpt::format(
 		" GPS week: %u  ms in week: %u\n", (unsigned)fields.header.week,
 		(unsigned)(fields.header.ms_in_week));
-	out.printf(
+	out << mrpt::format(
 		" Solution status: `%s`\n",
 		nv_oem6_solution_status::enum2str(fields.solution_stat).c_str());
-	out.printf(
+	out << mrpt::format(
 		" Position type  : `%s`\n",
 		nv_oem6_position_type::enum2str(fields.position_type).c_str());
-	out.printf(
+	out << mrpt::format(
 		" Longitude: %.09f deg (std dev: %.06f m)  Latitude: %.09f deg (std "
 		"dev: %.06f m)\n",
 		fields.lon, fields.lon_sigma, fields.lat, fields.lat_sigma);
-	out.printf(
+	out << mrpt::format(
 		" Height (sea level): %.06f m (std dev: %.06f m) Undulation: %.04f m   "
 		"(Sum: %.04f m)\n",
 		fields.hgt, fields.hgt_sigma, fields.undulation,
 		fields.hgt + fields.undulation);
-	out.printf(
+	out << mrpt::format(
 		" Diff age: %.03f  Solution age: %.03f\n", fields.diff_age,
 		fields.sol_age);
-	out.printf(" Base station ID: `%.*s`\n", 4, fields.base_station_id);
-	out.printf(
+	out << mrpt::format(
+		" Base station ID: `%.*s`\n", 4, fields.base_station_id);
+	out << mrpt::format(
 		" Num sat tracked: %u  Num sat in solution: %u\n",
 		(unsigned)fields.num_sats_tracked, (unsigned)fields.num_sats_sol);
 }
 
-void Message_NV_OEM6_BESTPOS::dumpToStream(mrpt::utils::CStream& out) const
+void Message_NV_OEM6_BESTPOS::dumpToStream(std::ostream& out) const
 {
-	out.printf("[Novatel OEM6 BESTPOS]\n");
+	out << "[Novatel OEM6 BESTPOS]\n";
 	generic_dump_BESTPOS(fields, out);
 }
 
@@ -244,22 +246,22 @@ bool Message_NV_OEM6_BESTPOS::getAllFieldValues(std::ostream& o) const
 }
 
 // ------------
-void Message_NV_OEM6_INSPVAS::dumpToStream(mrpt::utils::CStream& out) const
+void Message_NV_OEM6_INSPVAS::dumpToStream(std::ostream& out) const
 {
-	out.printf("[Novatel OEM6 INSPVAS]\n");
-	out.printf(
+	out << mrpt::format("[Novatel OEM6 INSPVAS]\n");
+	out << mrpt::format(
 		" GPS week: %u  ms in week: %u\n", (unsigned)fields.header.week,
 		(unsigned)(fields.header.ms_in_week));
-	out.printf(
+	out << mrpt::format(
 		" INS status: `%s`\n",
 		nv_oem6_ins_status_type::enum2str(fields.ins_status).c_str());
-	out.printf(
+	out << mrpt::format(
 		" Longitude: %.09f deg  Latitude: %.09f deg  Height: %.03f m\n",
 		fields.lon, fields.lat, fields.hgt);
-	out.printf(
+	out << mrpt::format(
 		" Velocities: North: %.05f  East: %.05f  Up: %.05f\n", fields.vel_north,
 		fields.vel_east, fields.vel_up);
-	out.printf(
+	out << mrpt::format(
 		" Attitude: Roll: %.05f  Pitch: %.05f  Azimuth: %.05f\n", fields.roll,
 		fields.pitch, fields.azimuth);
 }
@@ -282,25 +284,25 @@ bool Message_NV_OEM6_INSPVAS::getAllFieldValues(std::ostream& o) const
 }
 
 // ------------
-void Message_NV_OEM6_INSCOVS::dumpToStream(mrpt::utils::CStream& out) const
+void Message_NV_OEM6_INSCOVS::dumpToStream(std::ostream& out) const
 {
-	out.printf("[Novatel OEM6 INSCOVS]\n");
-	out.printf(
+	out << mrpt::format("[Novatel OEM6 INSCOVS]\n");
+	out << mrpt::format(
 		" GPS week: %u  ms in week: %u\n", (unsigned)fields.header.week,
 		(unsigned)(fields.header.ms_in_week));
-	out.printf(
+	out << mrpt::format(
 		" Position cov: %9.03f %9.03f %9.03f  %9.03f %9.03f %9.03f  %9.03f "
 		"%9.03f %9.03f\n",
 		fields.pos_cov[0], fields.pos_cov[1], fields.pos_cov[2],
 		fields.pos_cov[3], fields.pos_cov[4], fields.pos_cov[5],
 		fields.pos_cov[6], fields.pos_cov[7], fields.pos_cov[8]);
-	out.printf(
+	out << mrpt::format(
 		" Attitude cov: %9.03f %9.03f %9.03f  %9.03f %9.03f %9.03f  %9.03f "
 		"%9.03f %9.03f\n",
 		fields.att_cov[0], fields.att_cov[1], fields.att_cov[2],
 		fields.att_cov[3], fields.att_cov[4], fields.att_cov[5],
 		fields.att_cov[6], fields.att_cov[7], fields.att_cov[8]);
-	out.printf(
+	out << mrpt::format(
 		" Velocity cov: %9.03f %9.03f %9.03f  %9.03f %9.03f %9.03f  %9.03f "
 		"%9.03f %9.03f\n",
 		fields.vel_cov[0], fields.vel_cov[1], fields.vel_cov[2],
@@ -334,16 +336,16 @@ bool Message_NV_OEM6_INSCOVS::getAllFieldValues(std::ostream& o) const
 }
 
 // ------------
-void Message_NV_OEM6_RANGECMP::dumpToStream(mrpt::utils::CStream& out) const
+void Message_NV_OEM6_RANGECMP::dumpToStream(std::ostream& out) const
 {
-	out.printf("[Novatel OEM6 RANGECMP]\n");
-	out.printf(
+	out << mrpt::format("[Novatel OEM6 RANGECMP]\n");
+	out << mrpt::format(
 		" Number of SAT observations: %u\n",
 		static_cast<unsigned int>(this->num_obs));
 }
 
 void Message_NV_OEM6_RANGECMP::internal_writeToStream(
-	mrpt::utils::CStream& out) const
+	mrpt::serialization::CArchive& out) const
 {
 	const uint32_t msg_len = sizeof(header) + header.msg_len + 4;
 	out << msg_len;
@@ -354,7 +356,8 @@ void Message_NV_OEM6_RANGECMP::internal_writeToStream(
 		out.WriteBuffer(&obs_data[0], sizeof(obs_data[0]) * obs_data.size());
 }
 
-void Message_NV_OEM6_RANGECMP::internal_readFromStream(mrpt::utils::CStream& in)
+void Message_NV_OEM6_RANGECMP::internal_readFromStream(
+	mrpt::serialization::CArchive& in)
 {
 	uint32_t expected_msg_len;
 	in >> expected_msg_len;
@@ -367,32 +370,32 @@ void Message_NV_OEM6_RANGECMP::internal_readFromStream(mrpt::utils::CStream& in)
 }
 
 // ------------
-void Message_NV_OEM6_RXSTATUS::dumpToStream(mrpt::utils::CStream& out) const
+void Message_NV_OEM6_RXSTATUS::dumpToStream(std::ostream& out) const
 {
-	out.printf("[Novatel OEM6 RXSTATUS]\n");
-	out.printf(
+	out << mrpt::format("[Novatel OEM6 RXSTATUS]\n");
+	out << mrpt::format(
 		" Error code: 0x%04X\n", static_cast<unsigned int>(this->fields.error));
 }
 
 // ------------
-void Message_NV_OEM6_RAWEPHEM::dumpToStream(mrpt::utils::CStream& out) const
+void Message_NV_OEM6_RAWEPHEM::dumpToStream(std::ostream& out) const
 {
-	out.printf("[Novatel OEM6 RAWEPHEM]\n");
-	out.printf(
+	out << mrpt::format("[Novatel OEM6 RAWEPHEM]\n");
+	out << mrpt::format(
 		" GPS week: %u  ms in week: %u\n", (unsigned)fields.header.week,
 		(unsigned)(fields.header.ms_in_week));
 }
 
 // ------------
-void Message_NV_OEM6_VERSION::dumpToStream(mrpt::utils::CStream& out) const
+void Message_NV_OEM6_VERSION::dumpToStream(std::ostream& out) const
 {
-	out.printf("[Novatel OEM6 VERSION]\n");
-	out.printf(
+	out << mrpt::format("[Novatel OEM6 VERSION]\n");
+	out << mrpt::format(
 		" Number of components: %u\n",
 		static_cast<unsigned int>(this->num_comps));
 	for (unsigned i = 0; i < components.size(); i++)
 	{
-		out.printf(
+		out << mrpt::format(
 			" Component #%u:\n  Model: `%.*s`\n  Serial: `%.*s`\n  SW "
 			"version:`%.*s`\n",
 			i, (int)sizeof(components[i].model), components[i].model,
@@ -402,7 +405,7 @@ void Message_NV_OEM6_VERSION::dumpToStream(mrpt::utils::CStream& out) const
 }
 
 void Message_NV_OEM6_VERSION::internal_writeToStream(
-	mrpt::utils::CStream& out) const
+	mrpt::serialization::CArchive& out) const
 {
 	const uint32_t msg_len = sizeof(header) + header.msg_len + 4;
 	out << msg_len;
@@ -414,7 +417,8 @@ void Message_NV_OEM6_VERSION::internal_writeToStream(
 			&components[0], sizeof(components[0]) * components.size());
 }
 
-void Message_NV_OEM6_VERSION::internal_readFromStream(mrpt::utils::CStream& in)
+void Message_NV_OEM6_VERSION::internal_readFromStream(
+	mrpt::serialization::CArchive& in)
 {
 	uint32_t expected_msg_len;
 	in >> expected_msg_len;
@@ -428,17 +432,17 @@ void Message_NV_OEM6_VERSION::internal_readFromStream(mrpt::utils::CStream& in)
 }
 
 // ------------
-void Message_NV_OEM6_RAWIMUS::dumpToStream(mrpt::utils::CStream& out) const
+void Message_NV_OEM6_RAWIMUS::dumpToStream(std::ostream& out) const
 {
-	out.printf("[Novatel OEM6 RAWIMUS]\n");
-	out.printf(
+	out << mrpt::format("[Novatel OEM6 RAWIMUS]\n");
+	out << mrpt::format(
 		" GPS week: %u  ms in week: %u\n", (unsigned)fields.header.week,
 		(unsigned)(fields.header.ms_in_week));
-	out.printf(" Status: 0x%08lu\n", (long)fields.imu_status);
-	out.printf(
+	out << mrpt::format(" Status: 0x%08lu\n", (long)fields.imu_status);
+	out << mrpt::format(
 		" Acel: X=%li Y=%li Z=%li\n", (long)fields.accel_x,
 		-(long)fields.accel_y_neg, (long)fields.accel_z);
-	out.printf(
+	out << mrpt::format(
 		" Gyro: X=%li Y=%li Z=%li\n", (long)fields.gyro_x,
 		-(long)fields.gyro_y_neg, (long)fields.gyro_z);
 }
@@ -460,21 +464,20 @@ bool Message_NV_OEM6_RAWIMUS::getAllFieldValues(std::ostream& o) const
 
 // ------------
 void generic_dump_MARKTIME(
-	const Message_NV_OEM6_MARKTIME::content_t& fields,
-	mrpt::utils::CStream& out)
+	const Message_NV_OEM6_MARKTIME::content_t& fields, std::ostream& out)
 {
-	out.printf(" Clock status: 0x%08lu\n", (long)fields.clock_status);
-	out.printf(
+	out << mrpt::format(" Clock status: 0x%08lu\n", (long)fields.clock_status);
+	out << mrpt::format(
 		" GPS week: %lu Seconds: %f\n", (long)fields.week, fields.week_seconds);
-	out.printf(
+	out << mrpt::format(
 		" Clock offset: %f  (std dev = %e)\n", fields.clock_offset,
 		fields.clock_offset_std);
-	out.printf(" UTC offset: %f\n", fields.utc_offset);
+	out << mrpt::format(" UTC offset: %f\n", fields.utc_offset);
 }
 
-void Message_NV_OEM6_MARKTIME::dumpToStream(mrpt::utils::CStream& out) const
+void Message_NV_OEM6_MARKTIME::dumpToStream(std::ostream& out) const
 {
-	out.printf("[Novatel OEM6 MARKTIME]\n");
+	out << mrpt::format("[Novatel OEM6 MARKTIME]\n");
 	generic_dump_MARKTIME(fields, out);
 }
 
@@ -497,9 +500,9 @@ bool Message_NV_OEM6_MARKTIME::getAllFieldValues(std::ostream& o) const
 	return true;
 }
 // ------------
-void Message_NV_OEM6_MARK2TIME::dumpToStream(mrpt::utils::CStream& out) const
+void Message_NV_OEM6_MARK2TIME::dumpToStream(std::ostream& out) const
 {
-	out.printf("[Novatel OEM6 MARK2TIME]\n");
+	out << mrpt::format("[Novatel OEM6 MARK2TIME]\n");
 	generic_dump_MARKTIME(
 		*reinterpret_cast<const Message_NV_OEM6_MARKTIME::content_t*>(&fields),
 		out);
@@ -518,25 +521,25 @@ bool Message_NV_OEM6_MARK2TIME::getAllFieldValues(std::ostream& o) const
 }
 
 // ------------
-void Message_NV_OEM6_MARKPOS::dumpToStream(mrpt::utils::CStream& out) const
+void Message_NV_OEM6_MARKPOS::dumpToStream(std::ostream& out) const
 {
-	out.printf("[Novatel OEM6 MARKPOSE]\n");
+	out << mrpt::format("[Novatel OEM6 MARKPOSE]\n");
 	generic_dump_BESTPOS(
 		*reinterpret_cast<const Message_NV_OEM6_BESTPOS::content_t*>(&fields),
 		out);
 }
 
 // ------------
-void Message_NV_OEM6_IONUTC::dumpToStream(mrpt::utils::CStream& out) const
+void Message_NV_OEM6_IONUTC::dumpToStream(std::ostream& out) const
 {
-	out.printf("[Novatel NV_OEM6_IONUTC]\n");
-	out.printf(
+	out << mrpt::format("[Novatel NV_OEM6_IONUTC]\n");
+	out << mrpt::format(
 		" GPS week: %u  ms in week: %u\n", (unsigned)fields.header.week,
 		(unsigned)(fields.header.ms_in_week));
-	out.printf(
+	out << mrpt::format(
 		" UTC ref week: %u  Tot: %u\n", (unsigned)fields.utc_wn,
 		(unsigned)fields.tot);
-	out.printf(
+	out << mrpt::format(
 		" Leap seconds delta_t: %u  future: %u\n", (unsigned)fields.deltat_ls,
 		(unsigned)fields.deltat_lsf);
 }

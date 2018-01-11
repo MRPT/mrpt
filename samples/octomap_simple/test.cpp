@@ -22,7 +22,6 @@
 #endif
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::maps;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
@@ -150,7 +149,7 @@ void TestOctoMap()
 			mrpt::opengl::CGridPlaneXY::Ptr gl_grid =
 				mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>(
 					-20, 20, -20, 20, 0, 1);
-			gl_grid->setColor_u8(mrpt::utils::TColor(0x80, 0x80, 0x80));
+			gl_grid->setColor_u8(mrpt::img::TColor(0x80, 0x80, 0x80));
 			scene->insert(gl_grid);
 		}
 

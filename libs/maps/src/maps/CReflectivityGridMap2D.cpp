@@ -12,19 +12,19 @@
 #include <mrpt/maps/CReflectivityGridMap2D.h>
 #include <mrpt/obs/CObservationReflectivity.h>
 #include <mrpt/poses/CPose2D.h>
-#include <mrpt/utils/round.h>  // round()
+#include <mrpt/core/round.h>  // round()
 #include <mrpt/system/os.h>
 #include <mrpt/opengl/CTexturedPlane.h>
 #include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
 using namespace mrpt::poses;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace mrpt::system;
+using namespace mrpt::img;
 using namespace std;
 
 //  =========== Begin of Map definition ============
@@ -42,7 +42,7 @@ CReflectivityGridMap2D::TMapDefinition::TMapDefinition()
 }
 
 void CReflectivityGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(
-	const mrpt::utils::CConfigFileBase& source,
+	const mrpt::config::CConfigFileBase& source,
 	const std::string& sectionNamePrefix)
 {
 	// [<sectionNamePrefix>+"_creationOpts"]
@@ -59,7 +59,7 @@ void CReflectivityGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(
 }
 
 void CReflectivityGridMap2D::TMapDefinition::dumpToTextStream_map_specific(
-	mrpt::utils::CStream& out) const
+	std::ostream& out) const
 {
 	LOADABLEOPTS_DUMP_VAR(min_x, double);
 	LOADABLEOPTS_DUMP_VAR(max_x, double);
@@ -169,7 +169,7 @@ bool CReflectivityGridMap2D::internal_insertObservation(
 			cell = cellByPos(sensor_pose.x(), sensor_pose.y());
 
 			ASSERTMSG_(
-				cell != nullptr, "cell==nullptr even after resizing grid!?")
+				cell != nullptr, "cell==nullptr even after resizing grid!?");
 		}
 
 		const int cell_old = static_cast<int>(*cell);
@@ -230,35 +230,23 @@ double CReflectivityGridMap2D::internal_computeObservationLikelihood(
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CReflectivityGridMap2D::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CReflectivityGridMap2D::serializeGetVersion() const { return 3; }
+void CReflectivityGridMap2D::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 3;
-	else
-	{
-		dyngridcommon_writeToStream(out);
+	dyngridcommon_writeToStream(out);
 
-		// Map cells:
-		const uint32_t n = static_cast<uint32_t>(m_map.size());
-		out << n;
-		if (n) out.WriteBuffer(&m_map[0], n);
+	// Map cells:
+	const uint32_t n = static_cast<uint32_t>(m_map.size());
+	out << n;
+	if (n) out.WriteBuffer(&m_map[0], n);
 
-		// Save the insertion options
-		out << insertionOptions.channel;  // v3
+	// Save the insertion options
+	out << insertionOptions.channel;  // v3
 
-		out << genericMapParams;  // v1
-	}
+	out << genericMapParams;  // v1
 }
 
-/*---------------------------------------------------------------
-  Implements the reading from a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CReflectivityGridMap2D::readFromStream(
-	mrpt::utils::CStream& in, int version)
+void CReflectivityGridMap2D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -290,26 +278,24 @@ void CReflectivityGridMap2D::readFromStream(
 					TInsertionOptions
  ---------------------------------------------------------------*/
 CReflectivityGridMap2D::TInsertionOptions::TInsertionOptions() : channel(-1) {}
-/*---------------------------------------------------------------
-					dumpToTextStream
-  ---------------------------------------------------------------*/
+
 void CReflectivityGridMap2D::TInsertionOptions::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+	std::ostream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [CReflectivityGridMap2D::TInsertionOptions] "
 		"------------ \n\n");
 
 	LOADABLEOPTS_DUMP_VAR(channel, int);
 
-	out.printf("\n");
+	out << mrpt::format("\n");
 }
 
 /*---------------------------------------------------------------
 					loadFromConfigFile
   ---------------------------------------------------------------*/
 void CReflectivityGridMap2D::TInsertionOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
 {
 	MRPT_UNUSED_PARAM(iniFile);
 	MRPT_UNUSED_PARAM(section);
@@ -330,7 +316,7 @@ void CReflectivityGridMap2D::saveMetricMapRepresentationToFile(
 					getAsImage
   ---------------------------------------------------------------*/
 void CReflectivityGridMap2D::getAsImage(
-	utils::CImage& img, bool verticalFlip, bool forceRGB) const
+	CImage& img, bool verticalFlip, bool forceRGB) const
 {
 	if (!forceRGB)
 	{  // 8bit gray-scale

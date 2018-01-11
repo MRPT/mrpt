@@ -12,7 +12,7 @@
 
 #include <mrpt/obs/CObservationRange.h>
 #include <mrpt/poses/CPoint3D.h>
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/system/COutputLogger.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 
 namespace mrpt
@@ -101,7 +101,7 @@ enum SensorType
 	UNPLUGGED
 };
 
-class CPhidgetInterfaceKitProximitySensors : public mrpt::utils::COutputLogger,
+class CPhidgetInterfaceKitProximitySensors : public mrpt::system::COutputLogger,
 											 public CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CPhidgetInterfaceKitProximitySensors)
@@ -175,7 +175,7 @@ class CPhidgetInterfaceKitProximitySensors : public mrpt::utils::COutputLogger,
 
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(
-		const mrpt::utils::CConfigFileBase& configSource,
+		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& iniSection);
 };  // end class
 

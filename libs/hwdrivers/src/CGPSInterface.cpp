@@ -14,6 +14,7 @@
 #include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/comms/CClientTCPSocket.h>
 
+#include <iostream>
 #include <list>
 #include <mutex>
 #include <thread>
@@ -21,7 +22,6 @@
 using namespace mrpt::hwdrivers;
 using namespace mrpt::obs;
 using namespace mrpt::system;
-using namespace mrpt::utils;
 using namespace mrpt::comms;
 using namespace std;
 
@@ -49,7 +49,7 @@ struct TParsersRegistry
 				Constructor
    ----------------------------------------------------- */
 CGPSInterface::CGPSInterface()
-	: mrpt::utils::COutputLogger("CGPSInterface"),
+	: mrpt::system::COutputLogger("CGPSInterface"),
 	  m_data_stream(nullptr),  // Typically a CSerialPort created by this class,
 	  // but may be set externally.
 	  m_data_stream_cs(nullptr),
@@ -80,7 +80,7 @@ CGPSInterface::CGPSInterface()
 				loadConfig_sensorSpecific
    ----------------------------------------------------- */
 void CGPSInterface::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 	m_parser = configSource.read_enum<CGPSInterface::PARSERS>(
@@ -89,7 +89,7 @@ void CGPSInterface::loadConfig_sensorSpecific(
 		iniSection, "raw_dump_file_prefix", m_raw_dump_file_prefix,
 		false /*Allow default values*/);
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	m_COMname =
 		configSource.read_string(iniSection, "COM_port_WIN", m_COMname, true);
 #else
@@ -171,7 +171,7 @@ void CGPSInterface::setParser(CGPSInterface::PARSERS parser)
 }
 CGPSInterface::PARSERS CGPSInterface::getParser() const { return m_parser; }
 void CGPSInterface::bindStream(
-	mrpt::utils::CStream* external_stream, std::mutex* csOptionalExternalStream)
+	mrpt::io::CStream* external_stream, std::mutex* csOptionalExternalStream)
 {
 	if (!m_data_stream_is_external)
 	{
@@ -310,7 +310,7 @@ void CGPSInterface::doProcess()
 		m_state = ssError;
 		THROW_EXCEPTION("Could not open the input stream");
 	}
-	ASSERT_(m_data_stream != nullptr)
+	ASSERT_(m_data_stream != nullptr);
 	CSerialPort* stream_serial = dynamic_cast<CSerialPort*>(m_data_stream);
 	CClientTCPSocket* stream_tcpip =
 		dynamic_cast<CClientTCPSocket*>(m_data_stream);
@@ -335,7 +335,7 @@ void CGPSInterface::doProcess()
 			}
 			else
 			{
-				nRead = m_data_stream->ReadBuffer(buf, to_read);
+				nRead = m_data_stream->Read(buf, to_read);
 			}
 		}
 
@@ -366,7 +366,7 @@ void CGPSInterface::doProcess()
 		}
 		if (nRead && m_raw_output_file.fileOpenCorrectly())
 		{
-			m_raw_output_file.WriteBuffer(buf, nRead);
+			m_raw_output_file.Write(buf, nRead);
 		}
 	}
 	catch (std::exception&)
@@ -530,7 +530,7 @@ void CGPSInterface::parseBuffer()
 				size_t this_parser_min_bytes;
 				if ((*this.*parser_ptr)(this_parser_min_bytes))
 					all_parsers_want_to_skip = false;
-				mrpt::utils::keep_max(
+				mrpt::keep_max(
 					global_min_bytes_max, this_parser_min_bytes);
 			}
 
@@ -618,7 +618,7 @@ bool CGPSInterface::OnConnectionShutdown()
 		try
 		{
 			std::lock_guard<std::mutex> lock(*m_data_stream_cs);
-			m_data_stream->WriteBuffer(&sTx[0], sTx.size());
+			m_data_stream->Write(&sTx[0], sTx.size());
 		}
 		catch (...)
 		{
@@ -671,7 +671,7 @@ bool CGPSInterface::OnConnectionEstablished()
 		try
 		{
 			std::lock_guard<std::mutex> lock(*m_data_stream_cs);
-			m_data_stream->WriteBuffer(&sTx[0], sTx.size());
+			m_data_stream->Write(&sTx[0], sTx.size());
 		}
 		catch (std::exception& e)
 		{
@@ -736,7 +736,7 @@ bool CGPSInterface::setJAVAD_AIM_mode()
 		// be treated
 		// as normal
 
-		ASSERT_(!m_JAVAD_rtk_format.empty())
+		ASSERT_(!m_JAVAD_rtk_format.empty());
 		cout << "Formato de correcciones para GR3: " << m_JAVAD_rtk_format
 			 << endl;
 		if (m_JAVAD_rtk_format == "cmr")
@@ -926,7 +926,7 @@ bool CGPSInterface::sendCustomCommand(const void* data, const size_t datalen)
 	try
 	{
 		std::lock_guard<std::mutex> lock(*m_data_stream_cs);
-		m_data_stream->WriteBuffer(data, datalen);
+		m_data_stream->Write(data, datalen);
 		return true;
 	}
 	catch (std::exception& e)

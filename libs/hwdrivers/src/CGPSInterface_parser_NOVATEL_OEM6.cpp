@@ -12,8 +12,9 @@
 #include <mrpt/system/os.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/hwdrivers/CGPSInterface.h>
-#include <mrpt/utils/CMemoryStream.h>
-#include <mrpt/utils/crc.h>
+#include <mrpt/io/CMemoryStream.h>
+#include <mrpt/system/crc.h>
+#include <iostream>
 
 using namespace mrpt::hwdrivers;
 using namespace mrpt::obs;
@@ -77,7 +78,7 @@ bool CGPSInterface::implement_parser_NOVATEL_OEM6(
 
 		// Check CRC:
 		const uint32_t crc_computed =
-			mrpt::utils::compute_CRC32(&buf[0], expected_total_msg_len - 4);
+			mrpt::system::compute_CRC32(&buf[0], expected_total_msg_len - 4);
 		const uint32_t crc_read = (buf[expected_total_msg_len - 1] << 24) |
 								  (buf[expected_total_msg_len - 2] << 16) |
 								  (buf[expected_total_msg_len - 3] << 8) |
@@ -96,17 +97,18 @@ bool CGPSInterface::implement_parser_NOVATEL_OEM6(
 		// static_cast<uint32_t>(DATA_LEN); out.WriteBuffer(DATA_PTR,DATA_LEN);
 		// }
 		// ------
-		mrpt::utils::CMemoryStream tmpStream;
+		mrpt::io::CMemoryStream tmpStream;
+		auto arch = mrpt::serialization::archiveFrom(tmpStream);
 		const uint32_t msg_id = use_generic_container
 									? (uint32_t)(NV_OEM6_GENERIC_SHORT_FRAME)
 									: (uint32_t)hdr.msg_id + NV_OEM6_MSG2ENUM;
-		tmpStream << (uint32_t)(msg_id);
-		tmpStream << (uint32_t)(
-			expected_total_msg_len);  // This len = hdr + hdr.msg_len + 4 (crc);
-		tmpStream.WriteBuffer(&buf[0], buf.size());
+		arch << (uint32_t)(msg_id);
+		// This len = hdr + hdr.msg_len + 4 (crc);
+		arch << (uint32_t)(expected_total_msg_len);
+		arch.WriteBuffer(&buf[0], buf.size());
 
 		tmpStream.Seek(0);
-		gnss_message_ptr msg(gnss_message::readAndBuildFromStream(tmpStream));
+		gnss_message_ptr msg(gnss_message::readAndBuildFromStream(arch));
 		if (!msg.get())
 		{
 			std::cerr << "[CGPSInterface::implement_parser_NOVATEL_OEM6] Error "
@@ -154,7 +156,7 @@ bool CGPSInterface::implement_parser_NOVATEL_OEM6(
 
 		// Check CRC:
 		const uint32_t crc_computed =
-			mrpt::utils::compute_CRC32(&buf[0], expected_total_msg_len - 4);
+			mrpt::system::compute_CRC32(&buf[0], expected_total_msg_len - 4);
 		const uint32_t crc_read = (buf[expected_total_msg_len - 1] << 24) |
 								  (buf[expected_total_msg_len - 2] << 16) |
 								  (buf[expected_total_msg_len - 3] << 8) |
@@ -173,16 +175,17 @@ bool CGPSInterface::implement_parser_NOVATEL_OEM6(
 		// static_cast<uint32_t>(DATA_LEN); out.WriteBuffer(DATA_PTR,DATA_LEN);
 		// }
 		// ------
-		mrpt::utils::CMemoryStream tmpStream;
+		mrpt::io::CMemoryStream tmpStream;
+		auto arch = mrpt::serialization::archiveFrom(tmpStream);
 		const int32_t msg_id = use_generic_container
 								   ? (uint32_t)(NV_OEM6_GENERIC_FRAME)
 								   : (uint32_t)hdr.msg_id + NV_OEM6_MSG2ENUM;
-		tmpStream << msg_id;
-		tmpStream << (uint32_t)(expected_total_msg_len);
-		tmpStream.WriteBuffer(&buf[0], buf.size());
+		arch << msg_id;
+		arch << (uint32_t)(expected_total_msg_len);
+		arch.WriteBuffer(&buf[0], buf.size());
 
 		tmpStream.Seek(0);
-		gnss_message_ptr msg(gnss_message::readAndBuildFromStream(tmpStream));
+		gnss_message_ptr msg(gnss_message::readAndBuildFromStream(arch));
 		if (!msg.get())
 		{
 			std::cerr << "[CGPSInterface::implement_parser_NOVATEL_OEM6] Error "

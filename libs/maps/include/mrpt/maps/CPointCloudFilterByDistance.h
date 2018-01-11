@@ -10,9 +10,9 @@
 
 #include <mrpt/maps/CPointCloudFilterBase.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/utils/aligned_containers.h>
+#include <mrpt/core/aligned_std_map.h>
 #include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/config/CLoadableOptions.h>
 
 namespace mrpt
 {
@@ -42,7 +42,7 @@ class CPointCloudFilterByDistance : public mrpt::maps::CPointCloudFilterBase
 		/** [in,out] additional in/out parameters */
 		TExtraFilterParams* params = nullptr) override;
 
-	struct TOptions : public mrpt::utils::CLoadableOptions
+	struct TOptions : public mrpt::config::CLoadableOptions
 	{
 		/** (Default: 0.05 m) */
 		double min_dist;
@@ -61,10 +61,10 @@ class CPointCloudFilterByDistance : public mrpt::maps::CPointCloudFilterBase
 
 		TOptions();
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		void saveToConfigFile(
-			mrpt::utils::CConfigFileBase& c,
+			mrpt::config::CConfigFileBase& c,
 			const std::string& section) const override;
 	};
 
@@ -79,7 +79,7 @@ class CPointCloudFilterByDistance : public mrpt::maps::CPointCloudFilterBase
 		MRPT_MAKE_ALIGNED_OPERATOR_NEW
 	};
 
-	mrpt::aligned_containers<mrpt::system::TTimeStamp, FrameInfo>::map_t
+	mrpt::aligned_std_map<mrpt::system::TTimeStamp, FrameInfo>
 		m_last_frames;
 };
 }

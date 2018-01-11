@@ -11,13 +11,13 @@
 
 #include <mrpt/nav/planners/PlannerRRT_SE2_TPS.h>
 #include <mrpt/nav/tpspace/CPTG_DiffDrive_CollisionGridBased.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/random.h>
 #include <mrpt/system/filesystem.h>
 
 using namespace mrpt::nav;
-using namespace mrpt::utils;
 using namespace mrpt::math;
+using namespace mrpt::system;
 using namespace mrpt::poses;
 using namespace std;
 
@@ -26,7 +26,7 @@ MRPT_TODO("Optimize getNearestNode() with KD-tree!")
 PlannerRRT_SE2_TPS::PlannerRRT_SE2_TPS() : m_initialized(false) {}
 /** Load all params from a config file source */
 void PlannerRRT_SE2_TPS::loadConfig(
-	const mrpt::utils::CConfigFileBase& ini, const std::string& sSect)
+	const mrpt::config::CConfigFileBase& ini, const std::string& sSect)
 {
 	PlannerTPS_VirtualBase::internal_loadConfig_PTG(ini, sSect);
 }
@@ -46,7 +46,7 @@ void PlannerRRT_SE2_TPS::solve(
 	const PlannerRRT_SE2_TPS::TPlannerInput& pi,
 	PlannerRRT_SE2_TPS::TPlannerResult& result)
 {
-	mrpt::utils::CTimeLoggerEntry tle(m_timelogger, "PT_RRT::solve");
+	mrpt::system::CTimeLoggerEntry tle(m_timelogger, "PT_RRT::solve");
 
 	// Sanity checks:
 	ASSERTMSG_(m_initialized, "initialize() must be called before!");
@@ -54,7 +54,7 @@ void PlannerRRT_SE2_TPS::solve(
 	// Calc maximum vehicle shape radius:
 	double max_veh_radius = 0.;
 	for (const auto& ptg : m_PTGs)
-		mrpt::utils::keep_max(max_veh_radius, ptg->getMaxRobotRadius());
+		mrpt::keep_max(max_veh_radius, ptg->getMaxRobotRadius());
 
 	// [Algo `tp_space_rrt`: Line 1]: Init tree adding the initial pose
 	if (result.move_tree.getAllNodes().empty())
@@ -64,7 +64,7 @@ void PlannerRRT_SE2_TPS::solve(
 			result.move_tree.root, TNodeSE2_TP(pi.start_pose));
 	}
 
-	mrpt::utils::CTicTac working_time;
+	mrpt::system::CTicTac working_time;
 	working_time.Tic();
 	size_t rrt_iter_counter = 0;
 
@@ -143,7 +143,7 @@ void PlannerRRT_SE2_TPS::solve(
 			const TNodeSE2_TP query_node(x_rand);
 
 			m_timelogger.enter("TMoveTree::getNearestNode");
-			mrpt::utils::TNodeID x_nearest_id =
+			mrpt::graphs::TNodeID x_nearest_id =
 				result.move_tree.getNearestNode(query_node, distance_evaluator);
 			m_timelogger.leave("TMoveTree::getNearestNode");
 
@@ -303,12 +303,12 @@ void PlannerRRT_SE2_TPS::solve(
 					(goal_dist < end_criteria.acceptedDistToTarget) &&
 					(goal_ang < end_criteria.acceptedAngToTarget);
 
-				mrpt::utils::TNodeID new_nearest_id = INVALID_NODEID;
+				mrpt::graphs::TNodeID new_nearest_id = INVALID_NODEID;
 				if (!is_acceptable_goal)  // Only check for nearby nodes if this
 				// is not a solution!
 				{
 					double new_nearest_dist;
-					const TNodeSE2 new_state_node(new_state);
+					const TNodeSE2 new_state_node(new_state.asTPose());
 
 					m_timelogger.enter("TMoveTree::getNearestNode");
 					new_nearest_id = result.move_tree.getNearestNode(
@@ -350,8 +350,7 @@ void PlannerRRT_SE2_TPS::solve(
 				// [Algo `tp_space_rrt`: Line 16]: Add to candidate solution set
 				// ------------------------------------------------------------
 				// Create "movement" (tree edge) object:
-				TMoveEdgeSE2_TP new_edge(
-					x_nearest_id, mrpt::math::TPose2D(new_state));
+				TMoveEdgeSE2_TP new_edge(x_nearest_id, new_state.asTPose());
 
 				new_edge.cost = d_new;
 				new_edge.ptg_index = idxPTG;
@@ -379,7 +378,7 @@ void PlannerRRT_SE2_TPS::solve(
 			const TNodeSE2_TP new_state_node(best_edge.end_state);
 
 			// Insert into the tree:
-			const mrpt::utils::TNodeID new_child_id =
+			const mrpt::graphs::TNodeID new_child_id =
 				result.move_tree.getNextFreeNodeID();
 			result.move_tree.insertNodeAndEdge(
 				best_edge.parent_id, new_child_id, new_state_node, best_edge);

@@ -26,9 +26,9 @@
 #include <mrpt/gui/about_box.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPose2D.h>
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
-#include <mrpt/utils/CConfigFilePrefixer.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/config/CConfigFilePrefixer.h>
 #include "imgs/main_icon.xpm"
 #include "../wx-common/mrpt_logo.xpm"
 
@@ -61,14 +61,18 @@ wxBitmap MyArtProvider::CreateBitmap(
 #include <mrpt/opengl.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
 using namespace mrpt::opengl;
+using namespace mrpt::io;
+using namespace mrpt::config;
+using namespace mrpt::img;
+using namespace mrpt::serialization;
 using namespace mrpt::math;
 using namespace mrpt::system;
-using namespace mrpt::utils;
 using namespace mrpt::nav;
 using namespace mrpt::poses;
 using namespace std;
@@ -947,7 +951,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 	// Initialize gridmap:
 	// -------------------------------
 	CMemoryStream s(DEFAULT_GRIDMAP_DATA, sizeof(DEFAULT_GRIDMAP_DATA));
-	s >> m_gridMap;
+	archiveFrom(s) >> m_gridMap;
 
 	// Populate 3D views:
 	// -------------------------------
@@ -1065,7 +1069,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 		mrpt::opengl::CCylinder::Ptr obj =
 			mrpt::make_aligned_shared<mrpt::opengl::CCylinder>(
 				0.05f, 0.10f, 1.0f);
-		obj->setColor_u8(mrpt::utils::TColor(0xff, 0x00, 0x00, 0x70));
+		obj->setColor_u8(mrpt::img::TColor(0xff, 0x00, 0x00, 0x70));
 		m_gl_drawing_obs->insert(obj);
 
 		m_gl_drawing_obs->setVisibility(false);  // Start invisible.
@@ -1078,7 +1082,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 		mrpt::make_aligned_shared<mrpt::opengl::CSetOfLines>();
 	gl_robot_ptg_prediction->setName("ptg_prediction");
 	gl_robot_ptg_prediction->setLineWidth(2.0);
-	gl_robot_ptg_prediction->setColor_u8(mrpt::utils::TColor(0x00, 0x00, 0xff));
+	gl_robot_ptg_prediction->setColor_u8(mrpt::img::TColor(0x00, 0x00, 0xff));
 	gl_robot->insert(gl_robot_ptg_prediction);
 
 	// Set camera:
@@ -1149,7 +1153,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 	// Retrieve default parameters for holonomic methods:
 	// ------------------------------------------------------
 	{
-		mrpt::utils::CConfigFileMemory cfg;
+		mrpt::config::CConfigFileMemory cfg;
 
 		m_simul_options.saveToConfigFile(cfg, "SIMULATOR");
 		edParamsGeneral->SetValue(_U(cfg.getContent().c_str()));
@@ -1327,8 +1331,7 @@ bool reactive_navigator_demoframe::reinitSimulator()
 		default:
 			throw std::runtime_error("Invalid nav method selected!");
 	};
-	ASSERT_(m_navMethod.get())
-
+	ASSERT_(m_navMethod.get());
 	// Load params:
 	std::string sKinPrefix;
 	switch (rbKinType->GetSelection())
@@ -1344,7 +1347,7 @@ bool reactive_navigator_demoframe::reinitSimulator()
 	};
 
 	{
-		mrpt::utils::CConfigFilePrefixer cfg_prefixer;
+		mrpt::config::CConfigFilePrefixer cfg_prefixer;
 		cfg_prefixer.bind(cfg);
 		cfg_prefixer.setPrefixes(sKinPrefix /*sections*/, "" /*keys*/);
 
@@ -1473,8 +1476,8 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 			m_log_trajectory_file.printf(
 				"%8.03f  %7.03f %7.03f %7.03f   %7.03f %7.03f %7.03f\n",
 				m_robotSimul->getTime(), pose.x, pose.y,
-				mrpt::utils::RAD2DEG(pose.phi), vel.vx, vel.vy,
-				mrpt::utils::RAD2DEG(vel.omega));
+				mrpt::RAD2DEG(pose.phi), vel.vx, vel.vy,
+				mrpt::RAD2DEG(vel.omega));
 		}
 	}
 	else
@@ -1506,7 +1509,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 			const size_t nGaps = log->gaps_ini.size();
 
 			const string sSitu =
-				mrpt::utils::TEnumType<CHolonomicND::TSituations>::value2name(
+				mrpt::typemeta::TEnumType<CHolonomicND::TSituations>::value2name(
 					log->situation);
 
 			string sLog = mrpt::format("ND situation : %s\n", sSitu.c_str());
@@ -1610,7 +1613,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 				ptg->renderPathAsSimpleLine(
 					selected_k, *gl_robot_ptg_prediction, 0.10, max_dist);
 				gl_robot_ptg_prediction->setColor_u8(
-					mrpt::utils::TColor(0xff, 0x00, 0x00));
+					mrpt::img::TColor(0xff, 0x00, 0x00));
 
 				// Place it:
 				if (is_NOP_op)
@@ -1937,7 +1940,7 @@ reactive_navigator_demoframe::TOptions::TOptions()
 {
 }
 void reactive_navigator_demoframe::TOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& source, const std::string& section)
+	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {
 	MRPT_START
 
@@ -1953,7 +1956,7 @@ void reactive_navigator_demoframe::TOptions::loadFromConfigFile(
 }
 
 void reactive_navigator_demoframe::TOptions::saveToConfigFile(
-	mrpt::utils::CConfigFileBase& cfg, const std::string& section) const
+	mrpt::config::CConfigFileBase& cfg, const std::string& section) const
 {
 	MRPT_START
 	const int WN = 40, WV = 20;
@@ -2011,7 +2014,7 @@ void reactive_navigator_demoframe::OnbtnLoadMapClick(wxCommandEvent& event)
 	if (mrpt::system::lowerCase(fil_ext) == "gridmap")
 	{
 		CFileGZInputStream f(fil);
-		f >> m_gridMap;
+		archiveFrom(f) >> m_gridMap;
 	}
 	else
 	{
@@ -2208,7 +2211,7 @@ void reactive_navigator_demoframe::OnbtnSaveMapClick(wxCommandEvent& event)
 	if (dlg.ShowModal() != wxID_OK) return;
 
 	CFileGZOutputStream f(std::string(dlg.GetPath().mb_str()));
-	f << m_gridMap;
+	archiveFrom(f) << m_gridMap;
 
 	WX_END_TRY
 }
@@ -2294,7 +2297,7 @@ void reactive_navigator_demoframe::OnbtnGenerateTemplateClick(
 
 	mrpt::nav::CReactiveNavigationSystem react(*m_robotSimul2NavInterface);
 
-	mrpt::utils::CConfigFileMemory cfgMem;
+	mrpt::config::CConfigFileMemory cfgMem;
 	react.saveConfigFile(cfgMem);
 	edParamsReactive->SetValue(_U(cfgMem.getContent().c_str()));
 

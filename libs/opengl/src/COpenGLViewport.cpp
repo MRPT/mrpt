@@ -13,10 +13,10 @@
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CTexturedPlane.h>
-#include <mrpt/utils/CStringList.h>
-#include <mrpt/utils/CTimeLogger.h>
-#include <mrpt/utils/CStream.h>
-#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/system/CTimeLogger.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/stl_serialization.h>
+#include <mrpt/serialization/metaprogramming_serialization.h>
 #include <mrpt/opengl/gl_utils.h>
 
 #include "opengl_internals.h"
@@ -24,19 +24,18 @@
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
 using namespace mrpt::math;
+using namespace mrpt::serialization::metaprogramming;
 using namespace std;
 
-#include <mrpt/utils/metaprogramming.h>
-using namespace mrpt::utils::metaprogramming;
+//// using namespace mrpt::utils::metaprogramming;
 
 IMPLEMENTS_SERIALIZABLE(COpenGLViewport, CSerializable, mrpt::opengl)
 
 //#define OPENGLVIEWPORT_ENABLE_TIMEPROFILING
 
 #if defined(OPENGLVIEWPORT_ENABLE_TIMEPROFILING)
-mrpt::utils::CTimeLogger glv_timlog;
+mrpt::system::CTimeLogger glv_timlog;
 #endif
 
 /*--------------------------------------------------------------
@@ -113,8 +112,8 @@ void COpenGLViewport::setViewportPosition(
 	const double x, const double y, const double width, const double height)
 {
 	MRPT_START
-	ASSERT_(m_view_width > 0)
-	ASSERT_(m_view_height > 0)
+	ASSERT_(m_view_width > 0);
+	ASSERT_(m_view_height > 0);
 
 	m_view_x = x;
 	m_view_y = y;
@@ -253,7 +252,7 @@ void COpenGLViewport::render(
 				//  - PTAM, by Klein & Murray
 				//  http://www.robots.ox.ac.uk/~gk/PTAM/
 
-				const mrpt::utils::CImage* img = m_imageview_img.get();
+				const mrpt::img::CImage* img = m_imageview_img.get();
 
 				const int img_w = img->getWidth();
 				const int img_h = img->getHeight();
@@ -282,10 +281,9 @@ void COpenGLViewport::render(
 					// Prepare image data types:
 					const GLenum img_type = GL_UNSIGNED_BYTE;
 					const int nBytesPerPixel = img->isColor() ? 3 : 1;
-					const bool is_RGB_order =
-						(!::strcmp(
-							img->getChannelsOrder(),
-							"RGB"));  // Reverse RGB <-> BGR order?
+					const bool is_RGB_order = (!::strcmp(
+						img->getChannelsOrder(),
+						"RGB"));  // Reverse RGB <-> BGR order?
 					const GLenum img_format =
 						nBytesPerPixel == 3 ? (is_RGB_order ? GL_RGB : GL_BGR)
 											: GL_LUMINANCE;
@@ -348,7 +346,7 @@ void COpenGLViewport::render(
 			CCamera* myCamera = nullptr;
 			if (cam_ptr)
 			{
-				myCamera = getAs<CCamera>(cam_ptr);
+				myCamera = dynamic_cast<CCamera*>(cam_ptr.get());
 			}
 
 			// 2nd: the internal camera of all viewports:
@@ -539,48 +537,35 @@ void COpenGLViewport::render(
 #endif
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void COpenGLViewport::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t COpenGLViewport::serializeGetVersion() const { return 3; }
+void COpenGLViewport::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 3;
-	else
-	{
-		// Save data:
-		out << m_camera << m_isCloned << m_isClonedCamera << m_clonedViewport
-			<< m_name << m_isTransparent << m_borderWidth << m_view_x
-			<< m_view_y << m_view_width << m_view_height;
+	// Save data:
+	out << m_camera << m_isCloned << m_isClonedCamera << m_clonedViewport
+		<< m_name << m_isTransparent << m_borderWidth << m_view_x << m_view_y
+		<< m_view_width << m_view_height;
 
-		// Added in v1:
-		out << m_custom_backgb_color << m_background_color.R
-			<< m_background_color.G << m_background_color.B
-			<< m_background_color.A;
+	// Added in v1:
+	out << m_custom_backgb_color << m_background_color.R << m_background_color.G
+		<< m_background_color.B << m_background_color.A;
 
-		// Save objects:
-		uint32_t n;
-		n = (uint32_t)m_objects.size();
-		out << n;
-		for (CListOpenGLObjects::const_iterator it = m_objects.begin();
-			 it != m_objects.end(); ++it)
-			out << **it;
+	// Save objects:
+	uint32_t n;
+	n = (uint32_t)m_objects.size();
+	out << n;
+	for (CListOpenGLObjects::const_iterator it = m_objects.begin();
+		 it != m_objects.end(); ++it)
+		out << **it;
 
-		// Added in v2: Global OpenGL settings:
-		out << m_OpenGL_enablePolygonNicest;
+	// Added in v2: Global OpenGL settings:
+	out << m_OpenGL_enablePolygonNicest;
 
-		// Added in v3: Lights
-		out << m_lights;
-	}
+	// Added in v3: Lights
+	out << m_lights;
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void COpenGLViewport::readFromStream(mrpt::utils::CStream& in, int version)
+void COpenGLViewport::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -656,7 +641,8 @@ CRenderizable::Ptr COpenGLViewport::getByName(const string& str)
 			(*it)->GetRuntimeClass() ==
 			CLASS_ID_NAMESPACE(CSetOfObjects, opengl))
 		{
-			CRenderizable::Ptr ret = getAs<CSetOfObjects>(*it)->getByName(str);
+			CRenderizable::Ptr ret =
+				std::dynamic_pointer_cast<CSetOfObjects>(*it)->getByName(str);
 			if (ret) return ret;
 		}
 	}
@@ -673,17 +659,16 @@ void COpenGLViewport::initializeAllTextures()
 		 it != m_objects.end(); ++it)
 	{
 		if (IS_DERIVED(*it, CTexturedObject))
-			getAs<CTexturedObject>(*it)->loadTextureInOpenGL();
+			std::dynamic_pointer_cast<CTexturedObject>(*it)
+				->loadTextureInOpenGL();
 		else if (IS_CLASS(*it, CSetOfObjects))
-			getAs<CSetOfObjects>(*it)->initializeAllTextures();
+			std::dynamic_pointer_cast<CSetOfObjects>(*it)
+				->initializeAllTextures();
 	}
 #endif
 }
 
-/*--------------------------------------------------------------
-					dumpListOfObjects
-  ---------------------------------------------------------------*/
-void COpenGLViewport::dumpListOfObjects(utils::CStringList& lst)
+void COpenGLViewport::dumpListOfObjects(std::vector<std::string>& lst)
 {
 	for (CListOpenGLObjects::iterator it = m_objects.begin();
 		 it != m_objects.end(); ++it)
@@ -692,17 +677,17 @@ void COpenGLViewport::dumpListOfObjects(utils::CStringList& lst)
 		string s((*it)->GetRuntimeClass()->className);
 		if ((*it)->m_name.size())
 			s += string(" (") + (*it)->m_name + string(")");
-		lst.add(s);
+		lst.emplace_back(s);
 
 		if ((*it)->GetRuntimeClass() ==
 			CLASS_ID_NAMESPACE(CSetOfObjects, mrpt::opengl))
 		{
-			utils::CStringList auxLst;
+			std::vector<std::string> auxLst;
 
-			getAs<CSetOfObjects>(*it)->dumpListOfObjects(auxLst);
+			dynamic_cast<CSetOfObjects*>(it->get())->dumpListOfObjects(auxLst);
 
 			for (size_t i = 0; i < auxLst.size(); i++)
-				lst.add(string(" ") + auxLst(i));
+				lst.emplace_back(string(" ") + auxLst[i]);
 		}
 	}
 }
@@ -722,7 +707,7 @@ void COpenGLViewport::removeObject(const CRenderizable::Ptr& obj)
 		else if (
 			(*it)->GetRuntimeClass() ==
 			CLASS_ID_NAMESPACE(CSetOfObjects, opengl))
-			getAs<CSetOfObjects>(*it)->removeObject(obj);
+			dynamic_cast<CSetOfObjects*>(it->get())->removeObject(obj);
 }
 
 /*--------------------------------------------------------------
@@ -755,7 +740,7 @@ void COpenGLViewport::get3DRayForPixelCoord(
 	mrpt::poses::CPose3D* out_cameraPose) const
 {
 	ASSERTDEB_(
-		m_lastProjMat.viewport_height > 0 && m_lastProjMat.viewport_width > 0)
+		m_lastProjMat.viewport_height > 0 && m_lastProjMat.viewport_width > 0);
 
 	const double ASPECT =
 		m_lastProjMat.viewport_width / double(m_lastProjMat.viewport_height);
@@ -894,30 +879,30 @@ void COpenGLViewport::setNormalMode()
 	m_isImageView = false;
 }
 
-void COpenGLViewport::setImageView(const mrpt::utils::CImage& img)
+void COpenGLViewport::setImageView(const mrpt::img::CImage& img)
 {
 	internal_setImageView_fast(img, false);
 }
-void COpenGLViewport::setImageView_fast(mrpt::utils::CImage& img)
+void COpenGLViewport::setImageView_fast(mrpt::img::CImage& img)
 {
 	internal_setImageView_fast(img, true);
 }
 
 void COpenGLViewport::internal_setImageView_fast(
-	const mrpt::utils::CImage& img, bool is_fast)
+	const mrpt::img::CImage& img, bool is_fast)
 {
 	// If this is the first time, we have to create the quad object:
 	if (!m_isImageView || !m_imageview_img)
-		m_imageview_img = mrpt::make_aligned_shared<mrpt::utils::CImage>();
+		m_imageview_img = mrpt::make_aligned_shared<mrpt::img::CImage>();
 	m_isImageView = true;
 
 	// Update texture image:
-	mrpt::utils::CImage* my_img = m_imageview_img.get();
+	mrpt::img::CImage* my_img = m_imageview_img.get();
 
 	if (!is_fast)
 		*my_img = img;
 	else
-		my_img->copyFastFrom(*const_cast<mrpt::utils::CImage*>(&img));
+		my_img->copyFastFrom(*const_cast<mrpt::img::CImage*>(&img));
 }
 
 /** Evaluates the bounding box of this object (including possible children) in

@@ -29,7 +29,6 @@
 #include <mrpt/config.h>
 
 #include <mrpt/system/os.h>
-#include <mrpt/utils/utils_defs.h>
 
 using namespace mrpt;
 using namespace mrpt::system;

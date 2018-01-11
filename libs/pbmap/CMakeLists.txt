@@ -10,7 +10,6 @@ IF(CMAKE_MRPT_HAS_PCL)
 		pbmap
 		# Dependencies
 		mrpt-graphs
-		mrpt-base
 		)
 
 	IF(BUILD_mrpt-pbmap)

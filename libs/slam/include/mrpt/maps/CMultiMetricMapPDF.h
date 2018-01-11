@@ -17,7 +17,7 @@
 #include <mrpt/poses/CPoseRandomSampler.h>
 
 #include <mrpt/bayes/CParticleFilterCapable.h>
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/slam/CICP.h>
 
 #include <mrpt/slam/PF_implementations_data.h>
@@ -33,7 +33,7 @@ namespace maps
 /** Auxiliary class used in mrpt::maps::CMultiMetricMapPDF
  * \ingroup mrpt_slam_grp
   */
-class CRBPFParticleData : public mrpt::utils::CSerializable
+class CRBPFParticleData : public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(CRBPFParticleData)
    public:
@@ -56,7 +56,7 @@ class CRBPFParticleData : public mrpt::utils::CSerializable
  * \ingroup metric_slam_grp
  */
 class CMultiMetricMapPDF
-	: public mrpt::utils::CSerializable,
+	: public mrpt::serialization::CSerializable,
 	  public mrpt::bayes::CParticleFilterData<CRBPFParticleData>,
 	  public mrpt::bayes::CParticleFilterDataImpl<
 		  CMultiMetricMapPDF,
@@ -108,16 +108,15 @@ class CMultiMetricMapPDF
 	 *    when running a particle filter.
 	 * \sa prediction_and_update
 	 */
-	struct TPredictionParams : public utils::CLoadableOptions
+	struct TPredictionParams : public mrpt::config::CLoadableOptions
 	{
 		/** Default settings method */
 		TPredictionParams();
 
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+		void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
 		/** [pf optimal proposal only]  Only for PF algorithm=2 (Exact
 		 * "pfOptimalProposal")

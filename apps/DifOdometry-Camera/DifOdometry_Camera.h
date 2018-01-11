@@ -8,10 +8,10 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/vision/CDifodo.h>
-#include <mrpt/utils/CConfigFileBase.h>
-#include <mrpt/utils/CImage.h>
-#include <mrpt/utils/CTicTac.h>
-#include <mrpt/utils/round.h>
+#include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/img/CImage.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/core/round.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <iostream>
@@ -33,7 +33,7 @@ class CDifodoCamera : public mrpt::vision::CDifodo
 	/** Constructor. */
 	CDifodoCamera() : mrpt::vision::CDifodo() { save_results = 0; }
 	/** Initialize the visual odometry method */
-	void loadConfiguration(const mrpt::utils::CConfigFileBase& ini);
+	void loadConfiguration(const mrpt::config::CConfigFileBase& ini);
 
 	/** Open camera */
 	bool openCamera();
@@ -80,5 +80,5 @@ class CDifodoCamera : public mrpt::vision::CDifodo
 	openni::VideoStream depth_ch;
 
 	/** Clock used to save the timestamp */
-	mrpt::utils::CTicTac clock;
+	mrpt::system::CTicTac clock;
 };

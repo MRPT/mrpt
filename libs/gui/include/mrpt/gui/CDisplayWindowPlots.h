@@ -12,7 +12,7 @@
 #include <mrpt/gui/CBaseGUIWindow.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/gui/gui_frwds.h>
 
 namespace mrpt
@@ -265,7 +265,7 @@ class CDisplayWindowPlots : public mrpt::gui::CBaseGUIWindow
 	  * \sa axis, axis_equal, axis_fit, hold_on, hold_off
 	  */
 	void image(
-		const utils::CImage& img, const float& x_left, const float& y_bottom,
+		const mrpt::img::CImage& img, const float& x_left, const float& y_bottom,
 		const float& x_width, const float& y_height,
 		const std::string& plotName = std::string("image"));
 

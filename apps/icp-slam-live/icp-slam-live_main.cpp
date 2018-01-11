@@ -20,10 +20,10 @@
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/slam/CMetricMapBuilderICP.h>
-#include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
-#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/opengl/COpenGLScene.h>
@@ -35,6 +35,7 @@
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;
+using namespace mrpt::io;
 using namespace std;
 
 // Forward declaration.
@@ -74,7 +75,7 @@ int main(int argc, char** argv)
 		}
 
 		const string INI_FILENAME = string(argv[1]);
-		ASSERT_FILE_EXISTS_(INI_FILENAME)
+		ASSERT_FILE_EXISTS_(INI_FILENAME);
 
 		// Run:
 		MapBuilding_ICP_Live(INI_FILENAME);
@@ -112,7 +113,7 @@ std::mutex cs_global_list_obs;
 bool allThreadsMustExit = false;
 struct TThreadParams
 {
-	mrpt::utils::CConfigFile* cfgFile;
+	mrpt::config::CConfigFile* cfgFile;
 	string section_name;
 };
 
@@ -140,7 +141,7 @@ void SensorThread(TThreadParams params)
 			sensor->getProcessRate() > 0,
 			"process_rate must be set to a valid value (>0 Hz).");
 		const int process_period_ms =
-			mrpt::utils::round(1000.0 / sensor->getProcessRate());
+			mrpt::round(1000.0 / sensor->getProcessRate());
 
 		sensor->initialize();  // Init device:
 		while (!allThreadsMustExit)
@@ -186,12 +187,11 @@ void MapBuilding_ICP_Live(const string& INI_FILENAME)
 
 	using namespace mrpt::slam;
 	using namespace mrpt::obs;
-	using namespace mrpt::utils;
-	using namespace mrpt::opengl;
+		using namespace mrpt::opengl;
 	using namespace mrpt::poses;
 	using namespace mrpt::maps;
 
-	mrpt::utils::CConfigFile iniFile(INI_FILENAME);
+	mrpt::config::CConfigFile iniFile(INI_FILENAME);
 
 	// Load sensor params from section: "LIDAR_SENSOR"
 	std::thread hSensorThread;
@@ -280,13 +280,13 @@ void MapBuilding_ICP_Live(const string& INI_FILENAME)
 	// ---------------------------------
 	//   CMetricMapBuilder::TOptions
 	// ---------------------------------
-	mapBuilder.setVerbosityLevel(mrpt::utils::LVL_DEBUG);
+	mapBuilder.setVerbosityLevel(mrpt::system::LVL_DEBUG);
 
 	mapBuilder.ICP_params.dumpToConsole();
 	mapBuilder.ICP_options.dumpToConsole();
 
 	// Checks:
-	CTicTac tictac, tictacGlobal, tictac_JH;
+	mrpt::system::CTicTac tictac, tictacGlobal, tictac_JH;
 	int step = 0;
 	string str;
 	CSimpleMap finalMap;
@@ -324,7 +324,7 @@ void MapBuilding_ICP_Live(const string& INI_FILENAME)
 	//						Map Building
 	// ----------------------------------------------------------
 	tictacGlobal.Tic();
-	CTicTac timeout_read_scans;
+	mrpt::system::CTicTac timeout_read_scans;
 	while (!allThreadsMustExit)
 	{
 		// Check for exit app:
@@ -362,7 +362,7 @@ void MapBuilding_ICP_Live(const string& INI_FILENAME)
 					 it != obs_copy.end(); ++it)
 					if (it->second &&
 						IS_CLASS(it->second, CObservation2DRangeScan))
-						out_rawlog << *it->second;
+						mrpt::serialization::archiveFrom(out_rawlog) << *it->second;
 			}
 		}
 
@@ -519,7 +519,7 @@ void MapBuilding_ICP_Live(const string& INI_FILENAME)
 			{
 				CFileGZOutputStream f(
 					format("%s/buildingmap_%05u.3Dscene", OUT_DIR, step));
-				f << *scene;
+				mrpt::serialization::archiveFrom(f) << *scene;
 			}
 
 			// Show 3D?

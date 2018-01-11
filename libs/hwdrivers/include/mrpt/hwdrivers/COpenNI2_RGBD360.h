@@ -12,7 +12,7 @@
 #include <mrpt/hwdrivers/COpenNI2Generic.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/obs/CObservationRGBD360.h>
-#include <mrpt/utils/TEnumType.h>
+#include <mrpt/typemeta/TEnumType.h>
 #include <mrpt/gui/CDisplayWindow.h>
 
 namespace mrpt
@@ -283,7 +283,7 @@ class COpenNI2_RGBD360 : public mrpt::hwdrivers::CGenericSensor,
 
    protected:
 	virtual void loadConfig_sensorSpecific(
-		const mrpt::utils::CConfigFileBase& configSource,
+		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& section);
 
 	mrpt::poses::CPose3D m_sensorPoseOnRobot;

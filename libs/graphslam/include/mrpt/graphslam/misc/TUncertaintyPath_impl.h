@@ -23,15 +23,15 @@ TUncertaintyPath<GRAPH_T>::TUncertaintyPath()
 }
 template <class GRAPH_T>
 TUncertaintyPath<GRAPH_T>::TUncertaintyPath(
-	const mrpt::utils::TNodeID& starting_node)
+	const mrpt::graphs::TNodeID& starting_node)
 {
 	this->clear();
 	nodes_traversed.push_back(starting_node);
 }
 template <class GRAPH_T>
 TUncertaintyPath<GRAPH_T>::TUncertaintyPath(
-	const mrpt::utils::TNodeID& starting_node,
-	const mrpt::utils::TNodeID& ending_node, const constraint_t& edge)
+	const mrpt::graphs::TNodeID& starting_node,
+	const mrpt::graphs::TNodeID& ending_node, const constraint_t& edge)
 {
 	this->clear();
 	nodes_traversed.push_back(starting_node);
@@ -76,7 +76,7 @@ bool TUncertaintyPath<GRAPH_T>::isEmpty() const
 
 template <class GRAPH_T>
 void TUncertaintyPath<GRAPH_T>::assertIsBetweenNodeIDs(
-	const mrpt::utils::TNodeID& from, const mrpt::utils::TNodeID& to) const
+	const mrpt::graphs::TNodeID& from, const mrpt::graphs::TNodeID& to) const
 {
 	ASSERTMSG_(
 		this->getSource() == from,
@@ -159,7 +159,7 @@ bool TUncertaintyPath<GRAPH_T>::operator!=(const self_t& other) const
 
 template <class GRAPH_T>
 void TUncertaintyPath<GRAPH_T>::addToPath(
-	const mrpt::utils::TNodeID& node, const constraint_t& edge)
+	const mrpt::graphs::TNodeID& node, const constraint_t& edge)
 {
 	// update the path
 	curr_pose_pdf += edge;
@@ -172,15 +172,14 @@ void TUncertaintyPath<GRAPH_T>::addToPath(
 
 template <class GRAPH_T>
 void TUncertaintyPath<GRAPH_T>::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& source, const std::string& section)
+	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {
 }
 
 template <class GRAPH_T>
-void TUncertaintyPath<GRAPH_T>::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+void TUncertaintyPath<GRAPH_T>::dumpToTextStream(std::ostream& out) const
 {
-	out.printf("%s\n", this->getAsString().c_str());
+	out << mrpt::format("%s\n", this->getAsString().c_str());
 }
 
 template <class GRAPH_T>
@@ -189,8 +188,8 @@ void TUncertaintyPath<GRAPH_T>::getAsString(std::string* str) const
 	using namespace mrpt;
 	using namespace mrpt::poses;
 	using namespace std;
-	using namespace mrpt::utils;
 	using namespace mrpt::math;
+	using namespace mrpt::containers;
 
 	stringstream ss;
 	string header_sep(30, '=');
@@ -229,12 +228,12 @@ std::string TUncertaintyPath<GRAPH_T>::getAsString() const
 }
 
 template <class GRAPH_T>
-const mrpt::utils::TNodeID& TUncertaintyPath<GRAPH_T>::getSource() const
+const mrpt::graphs::TNodeID& TUncertaintyPath<GRAPH_T>::getSource() const
 {
 	return nodes_traversed.at(0);
 }
 template <class GRAPH_T>
-const mrpt::utils::TNodeID& TUncertaintyPath<GRAPH_T>::getDestination() const
+const mrpt::graphs::TNodeID& TUncertaintyPath<GRAPH_T>::getDestination() const
 {
 	return nodes_traversed.back();
 }

@@ -30,7 +30,7 @@ class CPose3DPDFParticles;
 
 namespace hmtslam
 {
-typedef mrpt::aligned_containers<TPoseID, mrpt::poses::CPose3D>::map_t
+typedef mrpt::aligned_std_map<TPoseID, mrpt::poses::CPose3D>
 	TMapPoseID2Pose3D;
 
 class CHMTSLAM;
@@ -41,7 +41,7 @@ class CLSLAM_RBPF_2DLASER;
  * metric path hypothesis" and its associated metric map).
   * \ingroup mrpt_hmtslam_grp
   */
-class CLSLAMParticleData : public mrpt::utils::CSerializable
+class CLSLAMParticleData : public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(CLSLAMParticleData)
 
@@ -67,7 +67,7 @@ class CLocalMetricHypothesis
 	  public mrpt::bayes::CParticleFilterDataImpl<
 		  CLocalMetricHypothesis,
 		  mrpt::bayes::CParticleFilterData<CLSLAMParticleData>::CParticleList>,
-	  public mrpt::utils::CSerializable
+	  public mrpt::serialization::CSerializable
 {
 	friend class CLSLAM_RBPF_2DLASER;
 
@@ -96,7 +96,7 @@ class CLocalMetricHypothesis
 	 * mrpt::slam::CHierarchicalMHMap). */
 	THypothesisID m_ID;
 	/** For quick access to our parent object. */
-	mrpt::utils::safe_ptr<CHMTSLAM> m_parent;
+	mrpt::safe_ptr<CHMTSLAM> m_parent;
 	/** The current robot pose (its global unique ID) for this hypothesis. */
 	TPoseID m_currentRobotPose;
 	// TNodeIDList							m_neighbors;			//!< The
@@ -187,7 +187,7 @@ class CLocalMetricHypothesis
 
 	/** Describes the LMH in text.
 	  */
-	void dumpAsText(utils::CStringList& st) const;
+	void dumpAsText(std::vector<std::string>& st) const;
 
 	/** Change all coordinates to set a given robot pose as the new coordinate
 	 * origin, and rebuild metric maps and change coords in the partitioning
@@ -273,13 +273,13 @@ class CLocalMetricHypothesis
 	mutable std::vector<double> m_maxLikelihood;
 
 	/** Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm. */
-	mutable mrpt::poses::StdVector_CPose2D m_movementDraws;
+	mutable mrpt::aligned_std_vector<mrpt::poses::CPose2D> m_movementDraws;
 
 	/** Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm. */
 	mutable unsigned int m_movementDrawsIdx;
 
 	/** Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm. */
-	mutable mrpt::poses::StdVector_CPose2D m_movementDrawMaximumLikelihood;
+	mutable mrpt::aligned_std_vector<mrpt::poses::CPose2D> m_movementDrawMaximumLikelihood;
 
 };  // End of class def.
 

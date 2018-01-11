@@ -12,7 +12,7 @@
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/comms/CSerialPort.h>
 #include <mrpt/obs/CObservationGasSensors.h>
-#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/config/CConfigFileBase.h>
 
 namespace mrpt
 {
@@ -63,7 +63,7 @@ class CRaePID : public mrpt::hwdrivers::CGenericSensor
 	void doProcess();
 
 	void loadConfig_sensorSpecific(
-		const mrpt::utils::CConfigFileBase& configSource,
+		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& section);
 
 	/** Get firmware version string.

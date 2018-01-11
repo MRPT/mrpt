@@ -12,9 +12,9 @@
 #include <mrpt/slam/CICP.h>
 #include <mrpt/tfest.h>
 #include <mrpt/poses/CPosePDFSOG.h>
-#include <mrpt/utils/CTicTac.h>
-#include <mrpt/utils/CStream.h>
-#include <mrpt/utils/CConfigFileBase.h>  // MRPT_LOAD_*()
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/config/CConfigFileBase.h>  // MRPT_LOAD_*()
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/poses/CPose2D.h>
@@ -26,35 +26,11 @@
 using namespace mrpt::slam;
 using namespace mrpt::maps;
 using namespace mrpt::math;
+using namespace mrpt::tfest;
+using namespace mrpt::system;
 using namespace mrpt::poses;
-using namespace mrpt::utils;
 using namespace std;
 
-/*---------------------------------------------------------------
-The method for aligning a pair of 2D points map.
-*   The meaning of some parameters are implementation dependent,
-*    so look for derived classes for instructions.
-*  The target is to find a PDF for the pose displacement between
-*   maps, <b>thus the pose of m2 relative to m1</b>. This pose
-*   is returned as a PDF rather than a single value.
-*
-* \param m1			[IN] The first map
-* \param m2			[IN] The second map. The pose of this map respect to m1
-is to be estimated.
-* \param grossEst		[IN] An initial gross estimation for the displacement.
-If a given algorithm doesn't need it, set to <code>CPose2D(0,0,0)</code> for
-example.
-* \param pdf			[IN/OUT] A pointer to a CPosePDF pointer, initially set
-to nullptr for this method to create the object. For greater efficiency, this
-object can be left undeleted and passed again to the method. When <b>not used
-anymore remember to delete it</b> using <code>delete pdf;</code>
-* \param runningTime	[OUT] A pointer to a container for obtaining the
-algorithm running time in seconds, or nullptr if you don't need it.
-* \param info			[OUT] See derived classes for details, or nullptr if it
-isn't needed.
-*
-* \sa CPointsMapAlignmentAlgorithm
-  ---------------------------------------------------------------*/
 CPosePDF::Ptr CICP::AlignPDF(
 	const mrpt::maps::CMetricMap* m1, const mrpt::maps::CMetricMap* mm2,
 	const CPosePDFGaussian& initialEstimationPDF, float* runningTime,
@@ -138,7 +114,7 @@ CICP::TConfigParams::TConfigParams()
 					loadFromConfigFile
   ---------------------------------------------------------------*/
 void CICP::TConfigParams::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
 {
 	MRPT_LOAD_CONFIG_VAR(maxIterations, int, iniFile, section);
 	MRPT_LOAD_CONFIG_VAR(minAbsStep_trans, float, iniFile, section);
@@ -189,81 +165,81 @@ void CICP::TConfigParams::loadFromConfigFile(
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void CICP::TConfigParams::dumpToTextStream(mrpt::utils::CStream& out) const
+void CICP::TConfigParams::dumpToTextStream(std::ostream& out) const
 {
-	out.printf("\n----------- [CICP::TConfigParams] ------------ \n\n");
+	out << mrpt::format("\n----------- [CICP::TConfigParams] ------------ \n\n");
 
-	out.printf(
+	out << mrpt::format(
 		"ICP_algorithm                           = %s\n",
-		mrpt::utils::TEnumType<TICPAlgorithm>::value2name(ICP_algorithm)
+		mrpt::typemeta::TEnumType<TICPAlgorithm>::value2name(ICP_algorithm)
 			.c_str());
-	out.printf(
+	out << mrpt::format(
 		"ICP_covariance_method                   = %s\n",
-		mrpt::utils::TEnumType<TICPCovarianceMethod>::value2name(
+		mrpt::typemeta::TEnumType<TICPCovarianceMethod>::value2name(
 			ICP_covariance_method)
 			.c_str());
-	out.printf("maxIterations                           = %i\n", maxIterations);
-	out.printf(
+	out << mrpt::format("maxIterations                           = %i\n", maxIterations);
+	out << mrpt::format(
 		"minAbsStep_trans                        = %f\n", minAbsStep_trans);
-	out.printf(
+	out << mrpt::format(
 		"minAbsStep_rot                          = %f\n", minAbsStep_rot);
 
-	out.printf("thresholdDist                           = %f\n", thresholdDist);
-	out.printf(
+	out << mrpt::format("thresholdDist                           = %f\n", thresholdDist);
+	out << mrpt::format(
 		"thresholdAng                            = %f deg\n",
 		RAD2DEG(thresholdAng));
-	out.printf("ALFA                                    = %f\n", ALFA);
-	out.printf(
+	out << mrpt::format("ALFA                                    = %f\n", ALFA);
+	out << mrpt::format(
 		"smallestThresholdDist                   = %f\n",
 		smallestThresholdDist);
-	out.printf(
+	out << mrpt::format(
 		"onlyClosestCorrespondences              = %c\n",
 		onlyClosestCorrespondences ? 'Y' : 'N');
-	out.printf(
+	out << mrpt::format(
 		"onlyUniqueRobust                        = %c\n",
 		onlyUniqueRobust ? 'Y' : 'N');
-	out.printf(
+	out << mrpt::format(
 		"covariance_varPoints                    = %f\n", covariance_varPoints);
-	out.printf(
+	out << mrpt::format(
 		"doRANSAC                                = %c\n", doRANSAC ? 'Y' : 'N');
-	out.printf(
+	out << mrpt::format(
 		"ransac_minSetSize                       = %i\n", ransac_minSetSize);
-	out.printf(
+	out << mrpt::format(
 		"ransac_maxSetSize                       = %i\n", ransac_maxSetSize);
-	out.printf(
+	out << mrpt::format(
 		"ransac_mahalanobisDistanceThreshold     = %f\n",
 		ransac_mahalanobisDistanceThreshold);
-	out.printf(
+	out << mrpt::format(
 		"ransac_nSimulations                     = %i\n", ransac_nSimulations);
-	out.printf(
+	out << mrpt::format(
 		"ransac_fuseByCorrsMatch                 = %c\n",
 		ransac_fuseByCorrsMatch ? 'Y' : 'N');
-	out.printf(
+	out << mrpt::format(
 		"ransac_fuseMaxDiffXY                    = %f\n", ransac_fuseMaxDiffXY);
-	out.printf(
+	out << mrpt::format(
 		"ransac_fuseMaxDiffPhi                   = %f deg\n",
 		RAD2DEG(ransac_fuseMaxDiffPhi));
-	out.printf(
+	out << mrpt::format(
 		"normalizationStd                        = %f\n", normalizationStd);
-	out.printf("kernel_rho                              = %f\n", kernel_rho);
-	out.printf(
+	out << mrpt::format("kernel_rho                              = %f\n", kernel_rho);
+	out << mrpt::format(
 		"use_kernel                              = %c\n",
 		use_kernel ? 'Y' : 'N');
-	out.printf(
+	out << mrpt::format(
 		"Axy_aprox_derivatives                   = %f\n",
 		Axy_aprox_derivatives);
-	out.printf(
+	out << mrpt::format(
 		"LM_initial_lambda                       = %f\n", LM_initial_lambda);
-	out.printf(
+	out << mrpt::format(
 		"skip_cov_calculation                    = %c\n",
 		skip_cov_calculation ? 'Y' : 'N');
-	out.printf(
+	out << mrpt::format(
 		"skip_quality_calculation                = %c\n",
 		skip_quality_calculation ? 'Y' : 'N');
-	out.printf(
+	out << mrpt::format(
 		"corresponding_points_decimation         = %u\n",
 		(unsigned int)corresponding_points_decimation);
-	out.printf("\n");
+	out << mrpt::format("\n");
 }
 
 /*---------------------------------------------------------------
@@ -293,7 +269,7 @@ CPosePDF::Ptr CICP::ICP_Method_Classic(
 	size_t nCorrespondences = 0;
 	bool keepApproaching;
 	CPose2D grossEst = initialEstimationPDF.mean;
-	mrpt::utils::TMatchingPairList correspondences, old_correspondences;
+	mrpt::tfest::TMatchingPairList correspondences, old_correspondences;
 	CPose2D lastMeanPose;
 
 	// Assure the class of the maps:
@@ -442,7 +418,7 @@ CPosePDF::Ptr CICP::ICP_Method_Classic(
 					Eigen::Matrix<double, 3, Eigen::Dynamic> D(
 						3, nCorrespondences);
 
-					const TPose2D transf(gaussPdf->mean);
+					const TPose2D transf = gaussPdf->mean.asTPose();
 
 					double ccos = cos(transf.phi);
 					double csin = sin(transf.phi);
@@ -454,7 +430,7 @@ CPosePDF::Ptr CICP::ICP_Method_Classic(
 
 					// Fill out D:
 					double rho2 = square(options.kernel_rho);
-					mrpt::utils::TMatchingPairList::iterator it;
+					mrpt::tfest::TMatchingPairList::iterator it;
 					size_t i;
 					for (i = 0, it = correspondences.begin();
 						 i < nCorrespondences; ++i, ++it)
@@ -766,7 +742,7 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 				// Compute "dJ_dq"
 				// ------------------------------------
 				double rho2 = square(options.kernel_rho);
-				mrpt::utils::TMatchingPairList::iterator it;
+				mrpt::tfest::TMatchingPairList::iterator it;
 				std::vector<float>::const_iterator other_x_trans, other_y_trans;
 				size_t i;
 
@@ -1015,31 +991,6 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-The method for aligning a pair of 2D points map.
-*   The meaning of some parameters are implementation dependant,
-*    so look for derived classes for instructions.
-*  The target is to find a PDF for the pose displacement between
-*   maps, <b>thus the pose of m2 relative to m1</b>. This pose
-*   is returned as a PDF rather than a single value.
-*
-* \param m1			[IN] The first map
-* \param m2			[IN] The second map. The pose of this map respect to m1
-is to be estimated.
-* \param grossEst		[IN] An initial gross estimation for the displacement.
-If a given algorithm doesn't need it, set to <code>CPose2D(0,0,0)</code> for
-example.
-* \param pdf			[IN/OUT] A pointer to a CPosePDF pointer, initially set
-to nullptr for this method to create the object. For greater efficiency, this
-object can be left undeleted and passed again to the method. When <b>not used
-anymore remember to delete it</b> using <code>delete pdf;</code>
-* \param runningTime	[OUT] A pointer to a container for obtaining the
-algorithm running time in seconds, or nullptr if you don't need it.
-* \param info			[OUT] See derived classes for details, or nullptr if it
-isn't needed.
-*
-* \sa CPointsMapAlignmentAlgorithm
-  ---------------------------------------------------------------*/
 CPose3DPDF::Ptr CICP::Align3DPDF(
 	const mrpt::maps::CMetricMap* m1, const mrpt::maps::CMetricMap* mm2,
 	const CPose3DPDFGaussian& initialEstimationPDF, float* runningTime,
@@ -1060,7 +1011,7 @@ CPose3DPDF::Ptr CICP::Align3DPDF(
 				ICP3D_Method_Classic(m1, mm2, initialEstimationPDF, outInfo);
 			break;
 		case icpLevenbergMarquardt:
-			THROW_EXCEPTION("Only icpClassic is implemented for ICP-3D")
+			THROW_EXCEPTION("Only icpClassic is implemented for ICP-3D");
 			break;
 		default:
 			THROW_EXCEPTION_FMT(
@@ -1097,7 +1048,7 @@ CPose3DPDF::Ptr CICP::ICP3D_Method_Classic(
 	size_t nCorrespondences = 0;
 	bool keepApproaching;
 	CPose3D grossEst = initialEstimationPDF.mean;
-	mrpt::utils::TMatchingPairList correspondences, old_correspondences;
+	mrpt::tfest::TMatchingPairList correspondences, old_correspondences;
 	CPose3D lastMeanPose;
 
 	// Assure the class of the maps:

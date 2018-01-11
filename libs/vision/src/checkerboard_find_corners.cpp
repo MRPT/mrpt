@@ -18,7 +18,7 @@
 
 using namespace mrpt;
 using namespace mrpt::vision;
-using namespace mrpt::utils;
+using namespace mrpt::img;
 using namespace mrpt::math;
 using namespace std;
 
@@ -33,14 +33,14 @@ using namespace std;
   * \return true on success
   */
 bool mrpt::vision::findChessboardCorners(
-	const mrpt::utils::CImage& in_img, std::vector<TPixelCoordf>& cornerCoords,
+	const mrpt::img::CImage& in_img, std::vector<TPixelCoordf>& cornerCoords,
 	unsigned int check_size_x, unsigned int check_size_y, bool normalize_image,
 	bool useScaramuzzaMethod)
 {
 #if MRPT_HAS_OPENCV
 	MRPT_START
 
-	ASSERT_(check_size_y > 0 && check_size_x > 0)
+	ASSERT_(check_size_y > 0 && check_size_x > 0);
 
 	// Grayscale version:
 	const CImage img(in_img, FAST_REF_OR_CONVERT_TO_GRAY);
@@ -133,7 +133,7 @@ bool mrpt::vision::findChessboardCorners(
   * \sa mrpt::vision::checkerBoardCameraCalibration, drawChessboardCorners
   */
 void mrpt::vision::findMultipleChessboardsCorners(
-	const mrpt::utils::CImage& in_img,
+	const mrpt::img::CImage& in_img,
 	std::vector<std::vector<TPixelCoordf>>& cornerCoords,
 	unsigned int check_size_x, unsigned int check_size_y)
 {
@@ -155,7 +155,7 @@ void mrpt::vision::findMultipleChessboardsCorners(
 		// Refine corners:
 		for (size_t i = 0; i < corners_list.size(); i++)
 		{
-			ASSERT_(corners_list[i].size() == check_size_x * check_size_y)
+			ASSERT_(corners_list[i].size() == check_size_x * check_size_y);
 
 			cvFindCornerSubPix(
 				img.getAs<IplImage>(), &corners_list[i][0],
@@ -176,9 +176,10 @@ void mrpt::vision::findMultipleChessboardsCorners(
 			// Key idea: The cross product of X * Y must point outwards the
 			// screen:
 
-			const mrpt::math::TPoint2D pt_0 = cornerCoords[i][0],
-									   pt_x1 = cornerCoords[i][1],
-									   pt_y1 = cornerCoords[i][check_size_x];
+			const mrpt::math::TPoint2D
+				pt_0{ cornerCoords[i][0].x,cornerCoords[i][0].y },
+				pt_x1{ cornerCoords[i][1].x,cornerCoords[i][1].y },
+				pt_y1{ cornerCoords[i][check_size_x].x,cornerCoords[i][check_size_x].y };
 			const mrpt::math::TPoint3D Ax = pt_x1 - pt_0;  // z=0
 			const mrpt::math::TPoint3D Ay = pt_y1 - pt_0;  // z=0
 

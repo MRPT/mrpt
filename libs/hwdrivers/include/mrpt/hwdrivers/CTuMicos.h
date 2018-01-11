@@ -12,7 +12,7 @@
 
 #include <mrpt/comms/CSerialPort.h>
 #include <mrpt/hwdrivers/CPtuBase.h>
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/system/COutputLogger.h>
 
 namespace mrpt
 {
@@ -22,7 +22,7 @@ namespace hwdrivers
   * control a Tilt Unit model DT-80, working in radians .
   * \ingroup mrpt_hwdrivers_grp
   */
-class CTuMicos : public CPtuBase, public mrpt::utils::COutputLogger
+class CTuMicos : public CPtuBase, public mrpt::system::COutputLogger
 {
    public:
 	/** Default constructor */

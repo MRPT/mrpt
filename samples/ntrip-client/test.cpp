@@ -15,7 +15,6 @@ using namespace std;
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
-using namespace mrpt::utils;
 
 // ------------------------------------------------------
 //				TestNTRIP

@@ -9,13 +9,13 @@
 
 #include "gui-precomp.h"  // Precompiled headers
 
+#include <iostream>
 #include <mrpt/gui/CBaseGUIWindow.h>
 #include <mrpt/system/os.h>
 #include <mrpt/gui/WxSubsystem.h>
 
 using namespace mrpt;
 using namespace mrpt::gui;
-using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
 
@@ -90,7 +90,7 @@ void CBaseGUIWindow::createWxWindow(
 			 << endl;
 	}
 #else
-	THROW_EXCEPTION("MRPT compiled without wxWidgets!")
+	THROW_EXCEPTION("MRPT compiled without wxWidgets!");
 #endif
 	MRPT_END
 }
@@ -133,9 +133,8 @@ void CBaseGUIWindow::destroyWxWindow()
 #else
 			6000;
 #endif
-		if (m_windowDestroyed.get_future().wait_for(
-				std::chrono::milliseconds(maxTimeout)) ==
-			std::future_status::timeout)
+		if (m_windowDestroyed.get_future().wait_for(std::chrono::milliseconds(
+				maxTimeout)) == std::future_status::timeout)
 		{
 			cerr << "[CBaseGUIWindow::dtor] Timeout waiting window destruction."
 				 << endl;

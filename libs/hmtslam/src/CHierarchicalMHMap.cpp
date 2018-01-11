@@ -9,14 +9,17 @@
 
 #include "hmtslam-precomp.h"  // Precomp header
 
-#include <mrpt/utils/CSimpleDatabase.h>
-#include <mrpt/utils/metaprogramming.h>
+#include <mrpt/db/CSimpleDatabase.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/poses/CPoint2D.h>
 
 using namespace mrpt::poses;
 using namespace mrpt::slam;
-using namespace mrpt::utils;
+using namespace mrpt::db;
+using namespace mrpt::system;
+using namespace mrpt::serialization;
 using namespace mrpt::hmtslam;
+using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CHierarchicalMHMap, CSerializable, mrpt::hmtslam)
 
@@ -33,56 +36,26 @@ CHierarchicalMHMap::~CHierarchicalMHMap() { clear(); }
   ---------------------------------------------------------------*/
 void CHierarchicalMHMap::clear()
 {
-	// Remaining arcs and nodes will be deleted now
-	// A delicate issue; we must:
-	// 1) .clear() all the smart pointers
-	// 2) then, empty the list of nodes/arcs, which will only
-	//     contain empty smart pointers, thus will not raise callbacks again.
-	// ----------------------------------------------------------------
-	TNodeList nodes = m_nodes;
-	TArcList arcs = m_arcs;
-
-	// 1:
-	std::for_each(
-		nodes.begin(), nodes.end(), metaprogramming::ObjectClearSecond());
-	std::for_each(arcs.begin(), arcs.end(), metaprogramming::ObjectClear2());
-
-	// 2:
+	// Remaining arcs and nodes will be deleted.
+	// Using smart ptr makes this simple:
 	m_nodes.clear();
 	m_arcs.clear();
 }
 
-/*---------------------------------------------------------------
-						writeToStream
-  ---------------------------------------------------------------*/
-void CHierarchicalMHMap::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CHierarchicalMHMap::serializeGetVersion() const { return 0; }
+void CHierarchicalMHMap::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		uint32_t n;
-		TNodeList::const_iterator it;
-		TArcList::const_iterator it2;
+	// Nodes:
+	out.WriteAs<uint32_t>(nodeCount());
+	for (const auto& n : m_nodes)
+		out << *n.second;
 
-		// Nodes:
-		n = static_cast<uint32_t>(nodeCount());
-		out << n;
-		for (it = m_nodes.begin(); it != m_nodes.end(); it++)
-			out << *it->second;
-
-		// Arcs:
-		n = static_cast<uint32_t>(arcCount());
-		out << n;
-		for (it2 = m_arcs.begin(); it2 != m_arcs.end(); it2++) out << *(*it2);
-	}
+	// Arcs:
+	out.WriteAs<uint32_t>(arcCount());
+	for (const auto& a : m_arcs) out << *a;
 }
 
-/*---------------------------------------------------------------
-						readFromStream
-  ---------------------------------------------------------------*/
-void CHierarchicalMHMap::readFromStream(mrpt::utils::CStream& in, int version)
+void CHierarchicalMHMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -209,7 +182,7 @@ void CHierarchicalMHMap::loadFromXMLfile(std::string fileName)
 		node = mrpt::make_aligned_shared<CHMHMapNode>(this);
 		node->m_label = table->get(j, "nodename");
 		nodemap.insert(IDPair(atoi(table->get(j, "id").c_str()), node));
-		node->m_nodeType.setType(table->get(j, "nodetype"));
+		node->m_nodeType = table->get(j, "nodetype");
 		node->m_hypotheses.insert(COMMON_TOPOLOG_HYP);
 		printf("Loaded node %s\n", node->m_label.c_str());
 
@@ -244,7 +217,7 @@ void CHierarchicalMHMap::loadFromXMLfile(std::string fileName)
 				  << nodeto->m_label << std::endl;
 
 		arc = mrpt::make_aligned_shared<CHMHMapArc>(nodefrom, nodeto, 0, this);
-		arc->m_arcType.setType(table->get(j, "arctype"));
+		arc->m_arcType = table->get(j, "arctype");
 		arc->m_hypotheses.insert(COMMON_TOPOLOG_HYP);
 
 		if (atoi(table->get(j, "bidirectional").c_str()) == 1)
@@ -252,7 +225,7 @@ void CHierarchicalMHMap::loadFromXMLfile(std::string fileName)
 			printf("Creating bidirectional arc\n");
 			arcrev = mrpt::make_aligned_shared<CHMHMapArc>(
 				nodeto, nodefrom, 0, this);
-			arcrev->m_arcType.setType(table->get(j, "arctype"));
+			arcrev->m_arcType = table->get(j, "arctype");
 			arcrev->m_hypotheses.insert(COMMON_TOPOLOG_HYP);
 		}
 	}
@@ -323,7 +296,7 @@ void CHierarchicalMHMap::dumpAsXMLfile(std::string fileName) const
 		tablenodes->set(i, "nodename", it->second->m_label.c_str());
 		tablenodes->set(
 			i, "id", format("%i", static_cast<int>(it->second->getID())));
-		tablenodes->set(i, "nodetype", it->second->m_nodeType.getType());
+		tablenodes->set(i, "nodetype", it->second->m_nodeType);
 
 		tablenodes->set(i, "annotation-list", ".");
 		for (CMHPropertiesValuesList::const_iterator ann =
@@ -334,7 +307,7 @@ void CHierarchicalMHMap::dumpAsXMLfile(std::string fileName) const
 			tableannots->set(
 				j, "id", format("%u", static_cast<unsigned int>(j)));
 			tableannots->set(j, "annotation-type", ann->name.c_str());
-			ASSERT_(ann->value)
+			ASSERT_(ann->value);
 			string str;
 			if (IS_CLASS(ann->value, CPoint2D))
 			{
@@ -344,7 +317,10 @@ void CHierarchicalMHMap::dumpAsXMLfile(std::string fileName) const
 			}
 			else
 			{
-				str = ObjectToString(ann->value.get());
+				std::vector<uint8_t> v;
+				ObjectToOctetVector(ann->value.get(), v);
+				str.resize(v.size());
+				::memcpy(&str[0], &v[0], v.size());
 			}
 			tableannots->set(j, "annotation-value", str);
 			if (tablenodes->get(j, "annotation-list") == ".")
@@ -374,7 +350,7 @@ void CHierarchicalMHMap::dumpAsXMLfile(std::string fileName) const
 		tablearcs->set(
 			i, "from", format("%u", static_cast<unsigned int>(fromid)));
 		tablearcs->set(i, "to", format("%u", static_cast<unsigned int>(toid)));
-		tablearcs->set(i, "arctype", (*it)->m_arcType.getType());
+		tablearcs->set(i, "arctype", (*it)->m_arcType);
 
 		for (CMHPropertiesValuesList::const_iterator ann =
 				 (*it)->m_annotations.begin();
@@ -462,7 +438,7 @@ void CHierarchicalMHMap::dumpAsXMLfile(std::string fileName) const
 			s += format("ARC: %i -> %i\n", (int)(*it)->getNodeFrom(),
 	   (int)(*it)->getNodeTo() );
 
-			s+= string("   Arc type: ")+(*it)->m_arcType.getType();
+			s+= string("   Arc type: ")+(*it)->m_arcType;
 
 			st << s;
 

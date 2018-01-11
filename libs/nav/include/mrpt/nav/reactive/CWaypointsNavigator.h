@@ -108,7 +108,7 @@ class CWaypointsNavigator : public mrpt::nav::CAbstractNavigator
 	bool isRelativePointReachable(
 		const mrpt::math::TPoint2D& wp_local_wrt_robot) const;
 
-	struct TWaypointsNavigatorParams : public mrpt::utils::CLoadableOptions
+	struct TWaypointsNavigatorParams : public mrpt::config::CLoadableOptions
 	{
 		/** In meters. <0: unlimited */
 		double max_distance_to_allow_skip_waypoint;
@@ -127,19 +127,19 @@ class CWaypointsNavigator : public mrpt::nav::CAbstractNavigator
 		int multitarget_look_ahead;
 
 		virtual void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& c,
+			const mrpt::config::CConfigFileBase& c,
 			const std::string& s) override;
 		virtual void saveToConfigFile(
-			mrpt::utils::CConfigFileBase& c,
+			mrpt::config::CConfigFileBase& c,
 			const std::string& s) const override;
 		TWaypointsNavigatorParams();
 	};
 
 	TWaypointsNavigatorParams params_waypoints_navigator;
 
-	virtual void loadConfigFile(const mrpt::utils::CConfigFileBase& c)
+	virtual void loadConfigFile(const mrpt::config::CConfigFileBase& c)
 		override;  // See base class docs!
-	virtual void saveConfigFile(mrpt::utils::CConfigFileBase& c)
+	virtual void saveConfigFile(mrpt::config::CConfigFileBase& c)
 		const override;  // See base class docs!
 
    protected:

@@ -13,7 +13,7 @@
 #include <wx/image.h>
 #include <wx/msgdlg.h>
 
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/math/wrap2pi.h>
 
 using namespace std;
@@ -21,8 +21,10 @@ using namespace mrpt;
 using namespace mrpt::math;
 using namespace mrpt::poses;
 using namespace mrpt::slam;
-using namespace mrpt::utils;
 using namespace mrpt::system;
+using namespace mrpt::config;
+using namespace mrpt::io;
+using namespace mrpt::serialization;
 
 // Do batch experiments as indicated by the command line arguments
 //  and the command file "cfgFil".

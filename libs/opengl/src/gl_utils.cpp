@@ -21,7 +21,7 @@ using namespace mrpt::math;
 using namespace mrpt::poses;
 using namespace mrpt::system;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
+
 
 /** For each object in the list:
 *   - checks visibility of each object
@@ -146,7 +146,7 @@ void gl_utils::checkOpenGLError()
 		const std::string sErr = std::string("OpenGL error: ") +
 								 std::string((char*)gluErrorString(openglErr));
 		std::cerr << "[gl_utils::checkOpenGLError] " << sErr << std::endl;
-		// THROW_EXCEPTION(sErr)
+		// THROW_EXCEPTION(sErr);
 	}
 #endif
 }
@@ -384,8 +384,8 @@ void CRenderizable::renderTextBitmap(
 void gl_utils::renderMessageBox(
 	const float msg_x, const float msg_y, const float msg_w, const float msg_h,
 	const std::string& text, float text_scale,
-	const mrpt::utils::TColor& back_col, const mrpt::utils::TColor& border_col,
-	const mrpt::utils::TColor& text_col, const float border_width,
+	const mrpt::img::TColor& back_col, const mrpt::img::TColor& border_col,
+	const mrpt::img::TColor& text_col, const float border_width,
 	const std::string& text_font, mrpt::opengl::TOpenGLFontStyle text_style,
 	const double text_spacing, const double text_kerning)
 {
@@ -452,7 +452,7 @@ void gl_utils::renderMessageBox(
 
 	// Draw text (centered):
 	gl_utils::glSetFont(text_font);
-	mrpt::utils::TPixelCoordf txtSize =
+	mrpt::img::TPixelCoordf txtSize =
 		gl_utils::glGetExtends(text, text_scale, text_spacing, text_kerning);
 
 	// Adjust text size if it doesn't fit into the box:
@@ -633,11 +633,11 @@ const std::string& gl_utils::glGetFont()
 #if MRPT_HAS_OPENGL_GLUT
 	return Internal::data.currentFontName;
 #else
-	THROW_EXCEPTION("MRPT built without OpenGL")
+	THROW_EXCEPTION("MRPT built without OpenGL");
 #endif
 }
 
-mrpt::utils::TPixelCoordf gl_utils::glDrawText(
+mrpt::img::TPixelCoordf gl_utils::glDrawText(
 	const std::string& text, const double textScale,
 	enum TOpenGLFontStyle style, double spacing, double kerning)
 {
@@ -728,7 +728,7 @@ mrpt::utils::TPixelCoordf gl_utils::glDrawText(
 
 	max_total = std::max(total, max_total);
 
-	return mrpt::utils::TPixelCoordf(
+	return mrpt::img::TPixelCoordf(
 		textScale * max_total, textScale * (lines + 1) * spacing);
 #else
 	MRPT_UNUSED_PARAM(text);
@@ -736,11 +736,11 @@ mrpt::utils::TPixelCoordf gl_utils::glDrawText(
 	MRPT_UNUSED_PARAM(style);
 	MRPT_UNUSED_PARAM(spacing);
 	MRPT_UNUSED_PARAM(kerning);
-	THROW_EXCEPTION("MRPT built without OpenGL")
+	THROW_EXCEPTION("MRPT built without OpenGL");
 #endif
 }
 
-mrpt::utils::TPixelCoordf gl_utils::glGetExtends(
+mrpt::img::TPixelCoordf gl_utils::glGetExtends(
 	const std::string& text, const double textScale, double spacing,
 	double kerning)
 {
@@ -774,14 +774,14 @@ mrpt::utils::TPixelCoordf gl_utils::glGetExtends(
 		total += ch->advance + kerning;
 	}
 	max_total = std::max(total, max_total);
-	return mrpt::utils::TPixelCoordf(
+	return mrpt::img::TPixelCoordf(
 		textScale * max_total, textScale * (lines + 1) * spacing);
 #else
 	MRPT_UNUSED_PARAM(text);
 	MRPT_UNUSED_PARAM(textScale);
 	MRPT_UNUSED_PARAM(spacing);
 	MRPT_UNUSED_PARAM(kerning);
-	THROW_EXCEPTION("MRPT built without OpenGL")
+	THROW_EXCEPTION("MRPT built without OpenGL");
 #endif
 }
 //  ===============  END OF CODE FROM "libcvd -> gltext.cpp" ===============

@@ -38,18 +38,17 @@ class CMetricMapBuilderICP : public mrpt::slam::CMetricMapBuilder
 
 	/** Algorithm configuration params
 	  */
-	struct TConfigParams : public mrpt::utils::CLoadableOptions
+	struct TConfigParams : public mrpt::config::CLoadableOptions
 	{
 		/** Initializer */
-		TConfigParams(mrpt::utils::VerbosityLevel& parent_verbosity_level);
+		TConfigParams(mrpt::system::VerbosityLevel& parent_verbosity_level);
 		TConfigParams& operator=(const TConfigParams& other);  // Copy
 		// assignment
 
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+		void dumpToTextStream(std::ostream& out) const override;  // See base docs
 		/** (default:false) Match against the occupancy grid or the points map?
 		 * The former is quicker but less precise. */
 		bool matchAgainstTheGrid;
@@ -73,7 +72,7 @@ class CMetricMapBuilderICP : public mrpt::slam::CMetricMapBuilder
 		 * position (default: 0.40) */
 		double minICPgoodnessToAccept;
 
-		mrpt::utils::VerbosityLevel& verbosity_level;
+		mrpt::system::VerbosityLevel& verbosity_level;
 
 		/** What maps to create (at least one points map and/or a grid map are
 		 * needed).
@@ -189,7 +188,7 @@ class CMetricMapBuilderICP : public mrpt::slam::CMetricMapBuilder
 	};
 	TDist m_distSinceLastICP;
 	/** Indexed by sensor label. */
-	mrpt::aligned_containers<std::string, TDist>::map_t
+	mrpt::aligned_std_map<std::string, TDist>
 		m_distSinceLastInsertion;
 	bool m_there_has_been_an_odometry;
 

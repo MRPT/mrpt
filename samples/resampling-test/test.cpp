@@ -16,7 +16,6 @@
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <map>
 
-using namespace mrpt::utils;
 using namespace mrpt::bayes;
 using namespace mrpt::math;
 using namespace mrpt::random;
@@ -62,7 +61,7 @@ map<string, CVectorDouble> results;
 void TestResampling()
 {
 	vector<double> log_ws;
-	mrpt::vector_size_t out_indxs;
+	std::vector<size_t> out_indxs;
 
 	const size_t M = N_PARTICLES;
 

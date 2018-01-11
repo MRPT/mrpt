@@ -17,16 +17,17 @@
 
 #include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/system/os.h>
 
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::obs;
+using namespace mrpt::io;
+using namespace mrpt::serialization;
 using namespace mrpt::system;
 using namespace std;
 
@@ -63,7 +64,7 @@ int main(int argc, char** argv)
 			output_rawlog_file =
 				mrpt::system::fileNameChangeExtension(input_gps_file, "rawlog");
 
-		ASSERT_FILE_EXISTS_(input_gps_file)
+		ASSERT_FILE_EXISTS_(input_gps_file);
 
 		// Open input rawlog:
 		CFileGZInputStream fil_input;
@@ -89,6 +90,8 @@ int main(int argc, char** argv)
 		CGPSInterface gps_if;
 		gps_if.bindStream(&fil_input);
 
+		auto arch = archiveFrom(fil_out);
+
 		// ------------------------------------
 		//  Parse:
 		// ------------------------------------
@@ -106,7 +109,7 @@ int main(int argc, char** argv)
 					 lst_obs.begin();
 				 it != lst_obs.end(); ++it)
 			{
-				fil_out << *it->second;
+				arch << *it->second;
 			}
 		}
 

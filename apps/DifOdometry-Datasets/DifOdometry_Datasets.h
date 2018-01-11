@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/vision/CDifodo.h>
-#include <mrpt/utils/types_math.h>  // Eigen (with MRPT "plugin" in BaseMatrix<>)
-#include <mrpt/utils/CConfigFileBase.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/math/types_math.h>  // Eigen (with MRPT "plugin" in BaseMatrix<>)
+#include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/opengl/COpenGLScene.h>
@@ -47,7 +47,7 @@ class CDifodoDatasets : public mrpt::vision::CDifodo
 	}
 
 	/** Initialize the visual odometry method and loads the rawlog file */
-	void loadConfiguration(const mrpt::utils::CConfigFileBase& ini);
+	void loadConfiguration(const mrpt::config::CConfigFileBase& ini);
 
 	/** Load the depth image and the corresponding groundtruth pose */
 	void loadFrame();

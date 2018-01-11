@@ -9,7 +9,7 @@
 #ifndef CCamModel_H
 #define CCamModel_H
 
-#include <mrpt/utils/TCamera.h>
+#include <mrpt/img/TCamera.h>
 #include <mrpt/system/os.h>
 #include <mrpt/vision/utils.h>
 #include <mrpt/math/lightweight_geom_data.h>
@@ -28,53 +28,52 @@ namespace vision
  *    - First version: By Antonio J. Ortiz de Galistea.
  *    - 2009-2010: Rewritten by various authors.
  *
- * \sa mrpt::utils::TCamera, CMonoSlam, the application <a
+ * \sa mrpt::img::TCamera, CMonoSlam, the application <a
  * href="http://www.mrpt.org/Application:camera-calib-gui" >camera-calib-gui</a>
  * for calibrating a camera
  * \ingroup mrpt_vision_grp
  */
-class CCamModel : public mrpt::utils::CLoadableOptions
+class CCamModel : public mrpt::config::CLoadableOptions
 {
    public:
 	/** The parameters of a camera */
-	mrpt::utils::TCamera cam;
+	mrpt::img::TCamera cam;
 
 	/** Default Constructor */
 	CCamModel();
 
 	void loadFromConfigFile(
-		const mrpt::utils::CConfigFileBase& source,
+		const mrpt::config::CConfigFileBase& source,
 		const std::string& section) override;  // See base docs
-	void dumpToTextStream(
-		mrpt::utils::CStream& out) const override;  // See base docs
+	void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
 	/** Constructor from a ini file
 	 */
-	CCamModel(const mrpt::utils::CConfigFileBase& cfgIni);
+	CCamModel(const mrpt::config::CConfigFileBase& cfgIni);
 
 	/** Jacobian for undistortion the image coordinates */
 	void jacob_undistor_fm(
-		const mrpt::utils::TPixelCoordf& uvd, math::CMatrixDouble& J_undist);
+		const mrpt::img::TPixelCoordf& uvd, math::CMatrixDouble& J_undist);
 
 	/** Calculate the image coordinates undistorted
 	 */
 	void jacob_undistor(
-		const mrpt::utils::TPixelCoordf& p,
+		const mrpt::img::TPixelCoordf& p,
 		mrpt::math::CMatrixDouble& J_undist);
 
 	/**	Return the pixel position distorted by the camera
 	 */
 	void distort_a_point(
-		const mrpt::utils::TPixelCoordf& p,
-		mrpt::utils::TPixelCoordf& distorted_p);
+		const mrpt::img::TPixelCoordf& p,
+		mrpt::img::TPixelCoordf& distorted_p);
 
 	/**	Return the pixel position undistorted by the camera
 	 *	The input values 'col' and 'row' will be replace for the new values
 	 *(undistorted)
 	 */
 	void undistort_point(
-		const mrpt::utils::TPixelCoordf& p,
-		mrpt::utils::TPixelCoordf& undistorted_p);
+		const mrpt::img::TPixelCoordf& p,
+		mrpt::img::TPixelCoordf& undistorted_p);
 
 	/**	Return the (distorted) pixel position of a 3D point given in
 	 * coordinates relative to the camera (+Z pointing forward, +X to the right)
@@ -82,7 +81,7 @@ class CCamModel : public mrpt::utils::CLoadableOptions
 	 */
 	void project_3D_point(
 		const mrpt::math::TPoint3D& p3D,
-		mrpt::utils::TPixelCoordf& distorted_p) const;
+		mrpt::img::TPixelCoordf& distorted_p) const;
 
 	/**	Return the 3D location of a point (at a fixed distance z=1), for the
 	 * given (distorted) pixel position
@@ -92,7 +91,7 @@ class CCamModel : public mrpt::utils::CLoadableOptions
 	 * than a meaninful physical point.
 	 */
 	void unproject_3D_point(
-		const mrpt::utils::TPixelCoordf& distorted_p,
+		const mrpt::img::TPixelCoordf& distorted_p,
 		mrpt::math::TPoint3D& p3D) const;
 
 	/** Jacobian of the projection of 3D points (with distortion), as done in
@@ -154,7 +153,7 @@ class CCamModel : public mrpt::utils::CLoadableOptions
 	\sa unproject_3D_point
 	*/
 	void jacobian_unproject_with_distortion(
-		const mrpt::utils::TPixelCoordf& p, math::CMatrixDouble& dy_dh) const;
+		const mrpt::img::TPixelCoordf& p, math::CMatrixDouble& dy_dh) const;
 
 	template <typename T>
 	struct CameraTempVariables
@@ -289,7 +288,7 @@ class CCamModel : public mrpt::utils::CLoadableOptions
 		// method somewhat
 		// faster, but makes it incapable of being used in more than one thread
 		// simultaneously!
-		using mrpt::math::square;
+		using mrpt::square;
 		static mrpt::math::CMatrixFixedNumeric<double, 2, 2> J1(
 			firstInverseJacobian());
 		static mrpt::math::CMatrixFixedNumeric<double, 4, 2> J2(

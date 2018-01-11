@@ -11,10 +11,10 @@
 
 #include <mrpt/hwdrivers/CIMUIntersense.h>
 #include <mrpt/obs/CObservationIMU.h>
+#include <iostream>
 
 IMPLEMENTS_GENERIC_SENSOR(CIMUIntersense, mrpt::hwdrivers)
 
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
 using namespace std;
@@ -29,12 +29,12 @@ using namespace std;
 // Include libraries in linking:
 #if 0
 #if MRPT_HAS_INTERSENSE
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 		// WINDOWS:
-#if defined(_MSC_VER) || defined(__BORLANDC__)
+#if defined(_MSC_VER)
 #pragma comment(lib, "isense.dll")
 #endif
-#endif  // MRPT_OS_WINDOWS
+#endif  // _WIN32
 #endif  // MRPT_HAS_INTERSENSE
 #endif
 /*-------------------------------------------------------------
@@ -319,7 +319,7 @@ void CIMUIntersense::initialize()
 					loadConfig_sensorSpecific
 -------------------------------------------------------------*/
 void CIMUIntersense::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 	m_sensorPose.setFromValues(

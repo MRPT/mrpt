@@ -10,12 +10,11 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CVectorField3D.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
@@ -98,8 +97,8 @@ void CVectorField3D::render_dl() const
 		glColor4ub(
 			m_point_color.R, m_point_color.G, m_point_color.B, m_point_color.A);
 
-		for (unsigned int i = 0; i < x_p.getColCount(); i++)
-			for (unsigned int j = 0; j < x_p.getRowCount(); j++)
+		for (unsigned int i = 0; i < x_p.cols(); i++)
+			for (unsigned int j = 0; j < x_p.rows(); j++)
 			{
 				glVertex3f(x_p(j, i), y_p(j, i), z_p(j, i));
 			}
@@ -112,8 +111,8 @@ void CVectorField3D::render_dl() const
 	{
 		glColor4ub(
 			m_field_color.R, m_field_color.G, m_field_color.B, m_field_color.A);
-		for (unsigned int i = 0; i < x_vf.getColCount(); i++)
-			for (unsigned int j = 0; j < x_vf.getRowCount(); j++)
+		for (unsigned int i = 0; i < x_vf.cols(); i++)
+			for (unsigned int j = 0; j < x_vf.rows(); j++)
 			{
 				glVertex3f(x_p(j, i), y_p(j, i), z_p(j, i));
 				glVertex3f(
@@ -123,8 +122,8 @@ void CVectorField3D::render_dl() const
 	}
 	else
 	{
-		for (unsigned int i = 0; i < x_vf.getColCount(); i++)
-			for (unsigned int j = 0; j < x_vf.getRowCount(); j++)
+		for (unsigned int i = 0; i < x_vf.cols(); i++)
+			for (unsigned int j = 0; j < x_vf.rows(); j++)
 			{
 				// Compute color
 				const float module = sqrt(
@@ -163,8 +162,8 @@ void CVectorField3D::render_dl() const
 	//	glBegin(GL_TRIANGLES);
 	//	glColor4ub( m_field_color.R, m_field_color.G, m_field_color.B,
 	// m_field_color.A);
-	//	for (unsigned int i=0; i<xcomp.getColCount(); i++)
-	//		for (unsigned int j=0; j<xcomp.getRowCount(); j++)
+	//	for (unsigned int i=0; i<xcomp.cols(); i++)
+	//		for (unsigned int j=0; j<xcomp.rows(); j++)
 	//		{
 	//			const float tri_side = 0.25*sqrt(xcomp(j,i)*xcomp(j,i) +
 	// ycomp(j,i)*ycomp(j,i));
@@ -189,34 +188,21 @@ void CVectorField3D::render_dl() const
 #endif
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CVectorField3D::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CVectorField3D::serializeGetVersion() const { return 0; }
+void CVectorField3D::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		writeToStreamRender(out);
+	writeToStreamRender(out);
 
-		out << x_vf << y_vf << z_vf;
-		out << x_p << y_p << z_p;
-		out << m_LineWidth;
-		out << m_pointSize;
-		out << m_antiAliasing;
-		out << m_point_color;
-		out << m_field_color;
-	}
+	out << x_vf << y_vf << z_vf;
+	out << x_p << y_p << z_p;
+	out << m_LineWidth;
+	out << m_pointSize;
+	out << m_antiAliasing;
+	out << m_point_color;
+	out << m_field_color;
 }
-
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CVectorField3D::readFromStream(mrpt::utils::CStream& in, int version)
+void CVectorField3D::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -249,8 +235,8 @@ void CVectorField3D::getBoundingBox(
 	bb_max.y = -10e10;
 	bb_max.z = -10e10;
 
-	for (unsigned int i = 0; i < x_p.getColCount(); i++)
-		for (unsigned int j = 0; j < x_p.getRowCount(); j++)
+	for (unsigned int i = 0; i < x_p.cols(); i++)
+		for (unsigned int j = 0; j < x_p.rows(); j++)
 		{
 			// Minimum values
 			if (x_p(j, i) < bb_min.x) bb_min.x = x_p(j, i);

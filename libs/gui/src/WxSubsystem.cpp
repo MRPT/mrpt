@@ -38,7 +38,6 @@
 
 using namespace mrpt;
 using namespace mrpt::gui;
-using namespace mrpt::utils;
 using namespace std;
 
 std::mutex WxSubsystem::CWXMainFrame::cs_windowCount;
@@ -234,7 +233,7 @@ int WxSubsystem::CWXMainFrame::notifyWindowDestruction()
 
 /** Thread-safe method to return the next pending request, or nullptr if there
  * is none (After usage, FREE the memory!)
-  */
+ */
 WxSubsystem::TRequestToWxMainThread* WxSubsystem::popPendingWxRequest()
 {
 	if (!cs_listPendingWxRequests)
@@ -256,7 +255,7 @@ WxSubsystem::TRequestToWxMainThread* WxSubsystem::popPendingWxRequest()
 
 /** Thread-safe method to insert a new pending request (The memory must be
  * dinamically allocated with "new T[1]", will be freed by receiver.)
-  */
+ */
 void WxSubsystem::pushPendingWxRequest(
 	WxSubsystem::TRequestToWxMainThread* data)
 {
@@ -282,9 +281,9 @@ void WxSubsystem::pushPendingWxRequest(
 
 /** This method processes the pending requests from the main MRPT application
  * thread.
-  *  The requests may be to create a new window, close another one, change
+ *  The requests may be to create a new window, close another one, change
  * title, etc...
-  */
+ */
 void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 {
 	bool app_closed = false;
@@ -331,9 +330,8 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 						wxImage* img = (wxImage*)msg->voidPtr2;
 						if (!img) break;
 
-						wnd->m_image->AssignImage(
-							new wxBitmap(
-								*img));  // Memory will be freed by the object.
+						wnd->m_image->AssignImage(new wxBitmap(
+							*img));  // Memory will be freed by the object.
 
 						if (wnd->m_image->GetSize().GetX() != img->GetWidth() &&
 							wnd->m_image->GetSize().GetY() != img->GetHeight())
@@ -467,7 +465,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 						{
 							wnd->addTextMessage(
 								msg->vector_x[0], msg->vector_x[1], msg->str,
-								mrpt::utils::TColorf(
+								mrpt::img::TColorf(
 									msg->vector_x[2], msg->vector_x[3],
 									msg->vector_x[4]),
 								size_t(msg->y),
@@ -498,14 +496,14 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 						{
 							wnd->addTextMessage(
 								msg->vector_x[0], msg->vector_x[1], msg->str,
-								mrpt::utils::TColorf(
+								mrpt::img::TColorf(
 									msg->vector_x[2], msg->vector_x[3],
 									msg->vector_x[4]),
 								msg->plotName, msg->vector_x[5],
 								mrpt::opengl::TOpenGLFontStyle(msg->x),
 								size_t(msg->y), msg->vector_x[6],
 								msg->vector_x[7], msg->vector_x[8] != 0,
-								mrpt::utils::TColorf(
+								mrpt::img::TColorf(
 									msg->vector_x[9], msg->vector_x[10],
 									msg->vector_x[11]));
 						}
@@ -783,8 +781,9 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 #endif
 					app_closed = true;  // Do NOT launch a timer again
 					if (WxSubsystem::CWXMainFrame::oneInstance)
-						((WxSubsystem::
-							  CWXMainFrame*)(WxSubsystem::CWXMainFrame::oneInstance))
+						((WxSubsystem::CWXMainFrame*)(WxSubsystem::
+														  CWXMainFrame::
+															  oneInstance))
 							->Close();
 #ifdef WXSUBSYSTEM_VERBOSE
 					cout << "[WxSubsystem:999] Shutdown done" << endl;
@@ -847,13 +846,12 @@ const char* mrpt_default_icon_xpm[] = {"32 32 2 1",
 wxBitmap WxSubsystem::getMRPTDefaultIcon()
 {
 // To avoid an error in wx, always resize the icon to the expected size:
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	const wxSize iconsSize(
 		::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON));
-	return wxBitmap(
-		wxBitmap(mrpt_default_icon_xpm)
-			.ConvertToImage()
-			.Scale(iconsSize.x, iconsSize.y));
+	return wxBitmap(wxBitmap(mrpt_default_icon_xpm)
+						.ConvertToImage()
+						.Scale(iconsSize.x, iconsSize.y));
 #else
 	return wxBitmap(mrpt_default_icon_xpm);
 #endif
@@ -910,7 +908,7 @@ int CDisplayWindow_WXAPP::OnExit()
 /** This method must be called in the destructor of the user class FROM THE MAIN
  * THREAD, in order to wait for the shutdown of the wx thread if this was the
  * last open window.
-  */
+ */
 void WxSubsystem::waitWxShutdownsIfNoWindows()
 {
 #ifndef WXSHUTDOWN_DO_IT_CLEAN

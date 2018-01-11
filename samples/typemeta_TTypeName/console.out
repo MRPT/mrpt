@@ -1,0 +1,12 @@
+int32_t
+std::set<std::vector<double>>
+MyFooClass
+MyNS::MyBarClass
+MyNS::MyBarClass2
+double
+std::vector<double>
+std::array<int32_t,5>
+std::set<double>
+std::pair<int32_t,std::pair<int32_t,int32_t>>
+std::map<double,std::set<int32_t>>
+std::set<std::multimap<double,std::pair<MyFooClass,MyNS::MyBarClass2>>>

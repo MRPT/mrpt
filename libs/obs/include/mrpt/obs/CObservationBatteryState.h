@@ -9,7 +9,7 @@
 #ifndef CObservationBatteryState_H
 #define CObservationBatteryState_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose2D.h>
@@ -59,7 +59,7 @@ class CObservationBatteryState : public CObservation
 	/** These values must be true if the corresponding fields contain valid
 	 * values (it MUST has the same size than voltageOtherBatteries)
 	  */
-	vector_bool voltageOtherBatteriesValid;
+	std::vector<bool> voltageOtherBatteriesValid;
 
 	void getSensorPose(mrpt::poses::CPose3D& out_sensorPose)
 		const override;  // See base class docs.

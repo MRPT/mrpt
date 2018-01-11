@@ -14,7 +14,6 @@
  */
 
 #include "pbmap-precomp.h"  // Precompiled headers
-#include <mrpt/utils/utils_defs.h>
 #include <mrpt/pbmap/SubgraphMatcher.h>
 
 //#define _VERBOSE 1
@@ -22,7 +21,6 @@
 extern double time1, time2;
 
 using namespace std;
-using namespace mrpt::utils;
 using namespace mrpt::pbmap;
 
 // Bhattacharyya histogram distance function

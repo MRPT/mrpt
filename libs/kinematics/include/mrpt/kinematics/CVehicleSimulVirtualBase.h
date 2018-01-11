@@ -92,8 +92,8 @@ class CVehicleSimulVirtualBase
 	void setOdometryErrors(
 		bool enabled, double Ax_err_bias = 1e-3, double Ax_err_std = 10e-3,
 		double Ay_err_bias = 1e-3, double Ay_err_std = 10e-3,
-		double Aphi_err_bias = mrpt::utils::DEG2RAD(1e-3),
-		double Aphi_err_std = mrpt::utils::DEG2RAD(10e-3))
+		double Aphi_err_bias = mrpt::DEG2RAD(1e-3),
+		double Aphi_err_std = mrpt::DEG2RAD(10e-3))
 	{
 		m_use_odo_error = enabled;
 		m_Ax_err_bias = Ax_err_bias;

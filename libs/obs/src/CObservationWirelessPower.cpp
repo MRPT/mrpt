@@ -10,42 +10,24 @@
 #include "obs-precomp.h"  // Precompiled headers
 
 #include <mrpt/obs/CObservationWirelessPower.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationWirelessPower, CObservation, mrpt::obs)
 
-/** Constructor
- */
-CObservationWirelessPower::CObservationWirelessPower() : power(0) {}
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CObservationWirelessPower::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CObservationWirelessPower::serializeGetVersion() const { return 3; }
+void CObservationWirelessPower::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
-	MRPT_UNUSED_PARAM(out);
-	if (version)
-		*version = 3;
-	else
-	{
-		// The data
-		out << power << sensorLabel << timestamp
-			<< sensorPoseOnRobot;  // Added in v3
-	}
+	out << power << sensorLabel << timestamp << sensorPoseOnRobot;  // in v3
 }
 
-/*---------------------------------------------------------------
-  Implements the reading from a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CObservationWirelessPower::readFromStream(
-	mrpt::utils::CStream& in, int version)
+void CObservationWirelessPower::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
-	// MRPT_UNUSED_PARAM(in);
 	switch (version)
 	{
 		case 0:
@@ -88,6 +70,5 @@ void CObservationWirelessPower::setSensorPose(const CPose3D& newSensorPose)
 void CObservationWirelessPower::getDescriptionAsText(std::ostream& o) const
 {
 	CObservation::getDescriptionAsText(o);
-
-	std::cout << format("Measured Power: %.02f/100\n", power);
+	o << format("Measured Power: %.02f/100\n", power);
 }

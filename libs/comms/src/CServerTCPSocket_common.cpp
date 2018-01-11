@@ -13,10 +13,11 @@
 #include <mrpt/comms/CClientTCPSocket.h>
 #include <mrpt/comms/net_utils.h>
 #include <mrpt/system/os.h>
+#include <mrpt/core/exceptions.h>
 #include <cstdio>  // stderr
 using namespace mrpt::comms;
 
-#if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
+#if defined(MRPT_OS_LINUX) || defined(__APPLE__)
 #define INVALID_SOCKET (-1)
 
 #include <sys/socket.h>
@@ -30,7 +31,7 @@ using namespace mrpt::comms;
 #include <netinet/in.h>
 #endif
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 #include <winsock.h>
 typedef int socklen_t;
 #endif

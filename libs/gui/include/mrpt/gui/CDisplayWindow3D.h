@@ -12,7 +12,7 @@
 #include <mrpt/gui/CBaseGUIWindow.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/opengl_fonts.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 
 #include <mutex>
 
@@ -133,14 +133,14 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 	/** Throws an exception on initialization error */
 	void createOpenGLContext();
 
-	mrpt::utils::void_ptr_noncopy m_DisplayDeviceContext;
-	mrpt::utils::void_ptr_noncopy m_GLRenderingContext;
+	mrpt::void_ptr_noncopy m_DisplayDeviceContext;
+	mrpt::void_ptr_noncopy m_GLRenderingContext;
 
 	std::string m_grab_imgs_prefix;
 	unsigned int m_grab_imgs_idx;
 
 	bool m_is_capturing_imgs;
-	mrpt::utils::CImage::Ptr m_last_captured_img;
+	mrpt::img::CImage::Ptr m_last_captured_img;
 	mutable std::mutex m_last_captured_img_cs;
 
 	void doRender();
@@ -283,7 +283,7 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 	 * output image is undefined).
 	  * \sa captureImagesStart, getLastWindowImagePtr
 	  */
-	bool getLastWindowImage(mrpt::utils::CImage& out_img) const;
+	bool getLastWindowImage(mrpt::img::CImage& out_img) const;
 
 	/** Retrieve the last captured image from the window, as a smart pointer.
 	  *  This method is more efficient than getLastWindowImage since only a copy
@@ -295,7 +295,7 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 	 * pointer will be returned.
 	  * \sa captureImagesStart, getLastWindowImage
 	  */
-	mrpt::utils::CImage::Ptr getLastWindowImagePtr() const;
+	mrpt::img::CImage::Ptr getLastWindowImagePtr() const;
 
 	/** Increments by one the image counter and return the next image file name
 	 * (Users normally don't want to call this method).
@@ -327,7 +327,7 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 	  */
 	void addTextMessage(
 		const double x, const double y, const std::string& text,
-		const mrpt::utils::TColorf& color = mrpt::utils::TColorf(1.0, 1.0, 1.0),
+		const mrpt::img::TColorf& color = mrpt::img::TColorf(1.0, 1.0, 1.0),
 		const size_t unique_index = 0,
 		const mrpt::opengl::TOpenGLFont font =
 			mrpt::opengl::MRPT_GLUT_BITMAP_TIMES_ROMAN_24);
@@ -337,13 +337,13 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 	 *  Available fonts are enumerated at mrpt::opengl::gl_utils::glSetFont() */
 	void addTextMessage(
 		const double x_frac, const double y_frac, const std::string& text,
-		const mrpt::utils::TColorf& color, const std::string& font_name,
+		const mrpt::img::TColorf& color, const std::string& font_name,
 		const double font_size,
 		const mrpt::opengl::TOpenGLFontStyle font_style = mrpt::opengl::NICE,
 		const size_t unique_index = 0, const double font_spacing = 1.5,
 		const double font_kerning = 0.1, const bool draw_shadow = false,
-		const mrpt::utils::TColorf& shadow_color =
-			mrpt::utils::TColorf(0, 0, 0));
+		const mrpt::img::TColorf& shadow_color =
+			mrpt::img::TColorf(0, 0, 0));
 
 	/**  Clear all text messages created with addTextMessage().
 	  *  You'll need to refresh the display manually with forceRepaint().
@@ -378,7 +378,7 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 	 * the user must NOT call get3DSceneAndLock() / unlockAccess3DScene()
 	 * before/after calling it.
 	  */
-	void setImageView(const mrpt::utils::CImage& img);
+	void setImageView(const mrpt::img::CImage& img);
 
 	/** Just like \a setImageView but moves the internal image memory instead of
 	 * making a copy, so it's faster but empties the input image.
@@ -387,7 +387,7 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 	 * the user must NOT call get3DSceneAndLock() / unlockAccess3DScene()
 	 * before/after calling it.
 	  */
-	void setImageView_fast(mrpt::utils::CImage& img);
+	void setImageView_fast(mrpt::img::CImage& img);
 
    protected:
 	/** Set the rendering FPS (users don't call this, the method is for internal
@@ -408,7 +408,7 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
  * from the wxWidgets internal MRPT thread,
   *    so all your code in the handler must be thread safe.
   */
-class mrptEvent3DWindowGrabImageFile : public mrpt::utils::mrptEvent
+class mrptEvent3DWindowGrabImageFile : public mrpt::system::mrptEvent
 {
    protected:
 	/** Just to allow this class to be polymorphic */

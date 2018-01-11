@@ -11,11 +11,11 @@
 #include <mrpt/nav/reactive/CRobot2NavInterfaceForSimulator.h>
 #include <mrpt/opengl.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>
-#include <mrpt/utils/CObserver.h>
+#include <mrpt/system/CObserver.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/kinematics/CVehicleSimul_DiffDriven.h>
 #include <mrpt/gui.h>
-#include <mrpt/utils/round.h>
+#include <mrpt/core/round.h>
 #include "map2_1.xpm"
 #include "map2_2.xpm"
 #include "map2_3.xpm"
@@ -23,14 +23,15 @@
 using namespace mrpt;
 using namespace mrpt::nav;
 using namespace mrpt::opengl;
+using namespace mrpt::system;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
 using namespace mrpt::gui;
-using namespace mrpt::utils;
+using namespace mrpt::img;
 using namespace mrpt::poses;
 using namespace mrpt::kinematics;
 
-class MyObserver : public mrpt::utils::CObserver
+class MyObserver : public mrpt::system::CObserver
 {
    protected:
 	void OnEvent(const mrptEvent& e)
@@ -95,7 +96,7 @@ class CRobotKinects
 				p1.z = z[i];
 				ray.point1 = p1;
 				intersect(ray, ground, pintobj);
-				ASSERT_(pintobj.isPoint())
+				ASSERT_(pintobj.isPoint());
 				pintobj.getPoint(pint);
 				x[i] = pint.x;
 				y[i] = pint.y;
@@ -130,7 +131,7 @@ class CRobotKinects
 				p1.z = z[i];
 				ray.point1 = p1;
 				intersect(ray, ceiling, pintobj);
-				ASSERT_(pintobj.isPoint())
+				ASSERT_(pintobj.isPoint());
 				pintobj.getPoint(pint);
 				x[i] = pint.x;
 				y[i] = pint.y;
@@ -170,7 +171,7 @@ class CRobotKinects
 		const mrpt::poses::CPose3D& kinectrelpose)
 	{
 		unsigned int acc_factor =
-			std::max(1, mrpt::utils::round<double>(80.0 / m_columns));
+			std::max(1, mrpt::round<double>(80.0 / m_columns));
 		float h = 0, incrz;
 		CObservation2DRangeScan m_auxlaser;
 		mrpt::poses::CPose2D scanpose2d;
@@ -279,7 +280,7 @@ class CShortTermMemory
 		const std::vector<double>& heights)
 	{
 		using namespace std;
-		using mrpt::math::square;
+		using mrpt::square;
 		// First, move the robot respect to the grid and adjust the likelihood
 		// values in the grid according to that movement
 		//-----------------------------------------------------------------------------------------------------------------
@@ -561,7 +562,7 @@ class CMyReactInterface
 		return true;
 	}
 
-	void loadMaps(const utils::CConfigFileBase& ini)
+	void loadMaps(const config::CConfigFileBase& ini)
 	{
 		COccupancyGridMap2D grid;
 		CImage myImg;
@@ -586,7 +587,7 @@ class CMyReactInterface
 		std::cout << std::endl << "Maps have been loaded successfully.";
 	}
 
-	void loadConfiguration(const utils::CConfigFileBase& ini)
+	void loadConfiguration(const config::CConfigFileBase& ini)
 	{
 		unsigned int num_lasers, num_kinects, num_levels;
 		std::vector<double> lasercoord, xaux, yaux;
@@ -875,7 +876,7 @@ class CMyReactInterface
 		legend.append(format("\n        %.02fFPS", window.getRenderingFPS()));
 
 		window.addTextMessage(
-			5, 180, legend, utils::TColorf(1, 1, 1), "Arial", 13);
+			5, 180, legend, TColorf(1, 1, 1), "Arial", 13);
 		window.repaint();
 	}
 
@@ -958,7 +959,7 @@ class CMyReactInterface
 		legend.append(format("\n        %.02fFPS", window.getRenderingFPS()));
 
 		window.addTextMessage(
-			5, 180, legend, utils::TColorf(1, 1, 1), "Arial", 13);
+			5, 180, legend, TColorf(1, 1, 1), "Arial", 13);
 		window.repaint();
 	}
 

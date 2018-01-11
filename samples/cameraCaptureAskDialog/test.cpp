@@ -9,11 +9,10 @@
 
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/hwdrivers/CCameraSensor.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 
 using namespace mrpt;
 using namespace mrpt::gui;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
 using namespace std;
@@ -36,7 +35,7 @@ void TestCameraCaptureAsk()
 	cout << "Press 's' to save frames.\nClose the window to exit.\n";
 
 	double counter = 0;
-	mrpt::utils::CTicTac tictac;
+	mrpt::system::CTicTac tictac;
 
 	while (win.isOpen())
 	{

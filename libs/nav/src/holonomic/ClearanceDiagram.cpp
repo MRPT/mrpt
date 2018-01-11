@@ -12,9 +12,9 @@
 #include <mrpt/nav/holonomic/ClearanceDiagram.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/opengl/CMesh.h>
-#include <mrpt/utils/CStream.h>
-#include <mrpt/utils/round.h>
-#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/core/round.h>
+#include <mrpt/serialization/stl_serialization.h>
 #include <limits>
 
 using namespace mrpt::nav;
@@ -72,7 +72,7 @@ void ClearanceDiagram::renderAs3DObject(
 	mesh.enableWireFrame(false);
 }
 
-void mrpt::nav::ClearanceDiagram::readFromStream(mrpt::utils::CStream& in)
+void mrpt::nav::ClearanceDiagram::readFromStream(mrpt::serialization::CArchive& in)
 {
 	uint8_t version;
 	in >> version;
@@ -90,7 +90,7 @@ void mrpt::nav::ClearanceDiagram::readFromStream(mrpt::utils::CStream& in)
 	};
 }
 
-void mrpt::nav::ClearanceDiagram::writeToStream(mrpt::utils::CStream& out) const
+void mrpt::nav::ClearanceDiagram::writeToStream(mrpt::serialization::CArchive& out) const
 {
 	const uint8_t version = 0;
 	out << version;
@@ -114,7 +114,7 @@ const ClearanceDiagram::dist2clearance_t& ClearanceDiagram::get_path_clearance(
 size_t mrpt::nav::ClearanceDiagram::real_k_to_decimated_k(size_t k) const
 {
 	ASSERT_(m_actual_num_paths > 0 && !m_raw_clearances.empty());
-	const size_t ret = mrpt::utils::round(k * m_k_a2d);
+	const size_t ret = mrpt::round(k * m_k_a2d);
 	ASSERT_(ret < m_raw_clearances.size());
 	return ret;
 }
@@ -122,7 +122,7 @@ size_t mrpt::nav::ClearanceDiagram::real_k_to_decimated_k(size_t k) const
 size_t mrpt::nav::ClearanceDiagram::decimated_k_to_real_k(size_t k) const
 {
 	ASSERT_(m_actual_num_paths > 0 && !m_raw_clearances.empty());
-	const size_t ret = mrpt::utils::round(k * m_k_d2a);
+	const size_t ret = mrpt::round(k * m_k_d2a);
 	ASSERT_(ret < m_actual_num_paths);
 	return ret;
 }

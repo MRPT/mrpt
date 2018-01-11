@@ -41,8 +41,8 @@
 #include <wx/docview.h>
 
 // General global variables:
-#include <mrpt/utils/CSerializable.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/serialization/CSerializable.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
 
@@ -583,9 +583,9 @@ class xRawLogViewerFrame : public wxFrame
 
 	static void OntreeViewSelectionChanged(
 		wxWindow* me, CRawlogTreeView* the_tree, TRawlogTreeViewEvent ev,
-		int item_index, const mrpt::utils::CSerializable::Ptr& item_data);
+		int item_index, const mrpt::serialization::CSerializable::Ptr& item_data);
 
-	void SelectObjectInTreeView(const mrpt::utils::CSerializable::Ptr& sel_obj);
+	void SelectObjectInTreeView(const mrpt::serialization::CSerializable::Ptr& sel_obj);
 
 	void showNextTip(bool forceShow = false);
 
@@ -601,7 +601,7 @@ class xRawLogViewerFrame : public wxFrame
 
 	// ALWAYS access this inside a "try" block, for the case...
 	mrpt::obs::CObservation::Ptr curSelectedObservation;
-	mrpt::utils::CSerializable::Ptr curSelectedObject;
+	mrpt::serialization::CSerializable::Ptr curSelectedObject;
 	mrpt::gui::CDisplayWindow3D::Ptr winGPSPath;
 	mrpt::gui::CDisplayWindowPlots::Ptr winGPSPath2D_xy, winGPSPath2D_xz;
 
@@ -634,7 +634,7 @@ class xRawLogViewerFrame : public wxFrame
 	}
 
 extern std::string iniFileSect;
-extern mrpt::utils::CConfigFile* iniFile;
+extern mrpt::config::CConfigFile* iniFile;
 extern std::string loadedFileName;
 extern mrpt::obs::CRawlog rawlog;
 

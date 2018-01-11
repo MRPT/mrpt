@@ -11,11 +11,11 @@
 
 #include <mrpt/opengl/CEllipsoidInverseDepth2D.h>
 #include <mrpt/math/matrix_serialization.h>  // for << >> ops of matrices
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
+
 using namespace mrpt::math;
 using namespace std;
 
@@ -48,30 +48,17 @@ void CEllipsoidInverseDepth2D::transformFromParameterSpace(
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CEllipsoidInverseDepth2D::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CEllipsoidInverseDepth2D::serializeGetVersion() const { return 0; }
+void CEllipsoidInverseDepth2D::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		writeToStreamRender(out);
-		BASE::thisclass_writeToStream(out);
+	writeToStreamRender(out);
+	BASE::thisclass_writeToStream(out);
 
-		out << m_underflowMaxRange;
-	}
+	out << m_underflowMaxRange;
 }
-
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CEllipsoidInverseDepth2D::readFromStream(
-	mrpt::utils::CStream& in, int version)
+void CEllipsoidInverseDepth2D::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

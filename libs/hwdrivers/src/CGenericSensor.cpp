@@ -13,10 +13,10 @@
 #include <mrpt/obs/CAction.h>
 #include <mrpt/obs/CObservation.h>
 
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::hwdrivers;
+using namespace mrpt::serialization;
 using namespace std;
 
 /*-------------------------------------------------------------
@@ -51,7 +51,7 @@ CGenericSensor::~CGenericSensor()
 						appendObservations
 -------------------------------------------------------------*/
 void CGenericSensor::appendObservations(
-	const std::vector<mrpt::utils::CSerializable::Ptr>& objs)
+	const std::vector<mrpt::serialization::CSerializable::Ptr>& objs)
 {
 	if (++m_grab_decimation_counter >= m_grab_decimation)
 	{
@@ -130,7 +130,7 @@ void CGenericSensor::registerClass(const TSensorClassId* pNewClass)
  * some critical parameter is missing or has an invalid value.
   */
 void CGenericSensor::loadConfig(
-	const mrpt::utils::CConfigFileBase& cfg, const std::string& sect)
+	const mrpt::config::CConfigFileBase& cfg, const std::string& sect)
 {
 	MRPT_START
 

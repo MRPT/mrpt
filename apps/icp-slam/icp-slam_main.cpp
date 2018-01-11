@@ -22,12 +22,14 @@
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
-#include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
-#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/system/os.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/system/memory.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>  // This class lives in the lib [mrpt-maps] and must be included by hand
 #include <mrpt/gui/CDisplayWindow3D.h>
 
@@ -37,9 +39,11 @@ using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::opengl;
 using namespace mrpt::gui;
+using namespace mrpt::io;
+using namespace mrpt::gui;
+using namespace mrpt::config;
 using namespace mrpt::system;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace std;
 
@@ -83,7 +87,7 @@ int main(int argc, char** argv)
 		}
 
 		const string INI_FILENAME = string(argv[1]);
-		ASSERT_FILE_EXISTS_(INI_FILENAME)
+		ASSERT_FILE_EXISTS_(INI_FILENAME);
 
 		string override_rawlog_file;
 		if (argc >= 3) override_rawlog_file = string(argv[2]);
@@ -205,8 +209,8 @@ void MapBuilding_ICP(
 	mapBuilder.ICP_options.dumpToConsole();
 
 	// Checks:
-	ASSERT_(RAWLOG_FILE.size() > 0)
-	ASSERT_FILE_EXISTS_(RAWLOG_FILE)
+	ASSERT_(RAWLOG_FILE.size() > 0);
+	ASSERT_FILE_EXISTS_(RAWLOG_FILE);
 
 	CTicTac tictac, tictacGlobal, tictac_JH;
 	int step = 0;
@@ -216,7 +220,8 @@ void MapBuilding_ICP(
 	COccupancyGridMap2D::TEntropyInfo entropy;
 
 	size_t rawlogEntry = 0;
-	CFileGZInputStream rawlogFile(RAWLOG_FILE.c_str());
+	CFileGZInputStream rawlogFile(RAWLOG_FILE);
+	auto rawlogFileArch = mrpt::serialization::archiveFrom(rawlogFile);
 
 	// Prepare output directory:
 	// --------------------------------
@@ -262,7 +267,7 @@ void MapBuilding_ICP(
 		// Load action/observation pair from the rawlog:
 		// --------------------------------------------------
 		if (!CRawlog::getActionObservationPairOrObservation(
-				rawlogFile, action, observations, observation, rawlogEntry))
+				rawlogFileArch, action, observations, observation, rawlogEntry))
 			break;  // file EOF
 
 		const bool isObsBasedRawlog = observation ? true : false;
@@ -458,7 +463,7 @@ void MapBuilding_ICP(
 				{
 					CFileGZOutputStream f(
 						format("%s/buildingmap_%05u.3Dscene", OUT_DIR, step));
-					f << *scene;
+					mrpt::serialization::archiveFrom(f) << *scene;
 				}
 
 				// Show 3D?
@@ -477,9 +482,8 @@ void MapBuilding_ICP(
 					// Update:
 					win3D->forceRepaint();
 
-					std::this_thread::sleep_for(
-						std::chrono::milliseconds(
-							SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS));
+					std::this_thread::sleep_for(std::chrono::milliseconds(
+						SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS));
 				}
 			}
 

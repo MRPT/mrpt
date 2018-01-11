@@ -53,7 +53,7 @@ class CTopLCDetector_GridMatching : public CTopLCDetectorBase
 
 	/** Options for a TLC-detector of type gridmap-matching, used from CHMTSLAM
 	  */
-	struct TOptions : public utils::CLoadableOptions
+	struct TOptions : public mrpt::config::CLoadableOptions
 	{
 		/** Initialization of default params
 		  */
@@ -63,10 +63,9 @@ class CTopLCDetector_GridMatching : public CTopLCDetectorBase
 		mrpt::slam::CGridMapAligner::TConfigParams matchingOptions;
 
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+		void dumpToTextStream(std::ostream& out) const override;  // See base docs
 	};
 };  // end class
 }  // end namespace

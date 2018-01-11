@@ -10,43 +10,22 @@
 #include "obs-precomp.h"  // Precompiled headers
 
 #include <mrpt/obs/CObservationReflectivity.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationReflectivity, CObservation, mrpt::obs)
 
-/** Default constructor.
- */
-CObservationReflectivity::CObservationReflectivity()
-	: reflectivityLevel(0.5f), channel(-1), sensorPose(), sensorStdNoise(0.2f)
+uint8_t CObservationReflectivity::serializeGetVersion() const { return 1; }
+void CObservationReflectivity::serializeTo(mrpt::serialization::CArchive& out) const
 {
+	out << reflectivityLevel << channel << sensorPose;
+	out << sensorLabel << timestamp;
 }
 
-CObservationReflectivity::~CObservationReflectivity() {}
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CObservationReflectivity::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
-{
-	if (version)
-		*version = 1;
-	else
-	{
-		out << reflectivityLevel << channel << sensorPose;
-		out << sensorLabel << timestamp;
-	}
-}
-
-/*---------------------------------------------------------------
-  Implements the reading from a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CObservationReflectivity::readFromStream(
-	mrpt::utils::CStream& in, int version)
+void CObservationReflectivity::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

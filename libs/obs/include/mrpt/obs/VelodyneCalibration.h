@@ -9,7 +9,6 @@
 #ifndef VelodyneCalibration_H
 #define VelodyneCalibration_H
 
-#include <mrpt/utils/core_defs.h>
 #include <string>
 #include <vector>
 

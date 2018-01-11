@@ -16,7 +16,6 @@
 using namespace mrpt;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace std;
@@ -112,7 +111,7 @@ void do_test_clipOutOfRange()
 
 	// Clip:
 	{
-		CPoint2D pivot(0, 0);
+		TPoint2D pivot(0, 0);
 		const float radius = 0.5;
 
 		MAP pts = pts0;
@@ -122,7 +121,7 @@ void do_test_clipOutOfRange()
 
 	// Clip:
 	{
-		CPoint2D pivot(-10, -10);
+		TPoint2D pivot(-10, -10);
 		const float radius = 1;
 
 		MAP pts = pts0;
@@ -132,7 +131,7 @@ void do_test_clipOutOfRange()
 
 	// Clip:
 	{
-		CPoint2D pivot(0, 0);
+		TPoint2D pivot(0, 0);
 		const float radius = 1.1f;
 
 		MAP pts = pts0;

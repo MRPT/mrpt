@@ -15,7 +15,6 @@
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
 #include <mrpt/config.h>
-#include <mrpt/utils/utils_defs.h>
 
 #if MRPT_HAS_FFMPEG
 extern "C" {
@@ -79,7 +78,7 @@ CFFMPEG_InputStream::CFFMPEG_InputStream()
 	// Register all formats and codecs
 	av_register_all();
 #else
-	THROW_EXCEPTION("MRPT has been compiled without FFMPEG libraries.")
+	THROW_EXCEPTION("MRPT has been compiled without FFMPEG libraries.");
 #endif
 }
 
@@ -338,7 +337,7 @@ void CFFMPEG_InputStream::close()
 /* --------------------------------------------------------
 					retrieveFrame
    -------------------------------------------------------- */
-bool CFFMPEG_InputStream::retrieveFrame(mrpt::utils::CImage& out_img)
+bool CFFMPEG_InputStream::retrieveFrame(mrpt::img::CImage& out_img)
 {
 #if MRPT_HAS_FFMPEG
 	if (!this->isOpen()) return false;

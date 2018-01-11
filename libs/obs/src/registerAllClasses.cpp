@@ -12,12 +12,11 @@
 #define MRPT_NO_WARN_BIG_HDR
 #include <mrpt/obs.h>
 
-#include <mrpt/utils/CSerializable.h>
-#include <mrpt/utils/initializer.h>
+#include <mrpt/serialization/CSerializable.h>
+#include <mrpt/core/initializer.h>
 
 using namespace mrpt::obs;
 using namespace mrpt::maps;
-using namespace mrpt::utils;
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_obs)
 {

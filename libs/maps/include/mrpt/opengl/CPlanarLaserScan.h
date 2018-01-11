@@ -16,7 +16,7 @@
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/utils/TColor.h>
+#include <mrpt/img/TColor.h>
 
 namespace mrpt
 {

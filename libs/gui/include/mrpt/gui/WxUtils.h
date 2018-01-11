@@ -6,13 +6,11 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef MRPT_WX_UTILS_H
-#define MRPT_WX_UTILS_H
+#pragma once
 
-#include <mrpt/utils/utils_defs.h>
-#include <mrpt/utils/CImage.h>
-#include <mrpt/utils/CConfigFileBase.h>
-#include <mrpt/utils/CConfigFileMemory.h>
+#include <mrpt/img/CImage.h>
+#include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/gui/keycodes.h>
 
 #if MRPT_HAS_WXWIDGETS
@@ -101,43 +99,43 @@ namespace gui
 
 /** Create a wxImage from a MRPT image. The new object must be freed by the user
  * when not required anymore.
-  * \sa MRPTImage2wxImage
-  */
-wxImage* MRPTImage2wxImage(const mrpt::utils::CImage& img);
+ * \sa MRPTImage2wxImage
+ */
+wxImage* MRPTImage2wxImage(const mrpt::img::CImage& img);
 
 /** Create a wxBitmap from a MRPT image. The new object must be freed by the
  * user when not required anymore.
-  * \sa MRPTImage2wxImage
-  */
-wxBitmap* MRPTImage2wxBitmap(const mrpt::utils::CImage& img);
+ * \sa MRPTImage2wxImage
+ */
+wxBitmap* MRPTImage2wxBitmap(const mrpt::img::CImage& img);
 
 #if MRPT_HAS_OPENCV
 /** Create a wxImage from a IPL image. The new object must be freed by the user
  * when not required anymore.
-  * \sa IplImage2wxImage
-  */
+ * \sa IplImage2wxImage
+ */
 wxImage* IplImage2wxImage(void* img);
 #endif
 
 /** Create a MRPT image from a wxImage. The new object must be freed by the user
  * when not required anymore.
-  *  It is recommended to use wxImage2MRPTImagePtr instead since smart pointers
+ *  It is recommended to use wxImage2MRPTImagePtr instead since smart pointers
  * are safer to manage.
-  * \sa wxImage2MRPTImage, wxImage2MRPTImagePtr
-  */
-mrpt::utils::CImage* wxImage2MRPTImage(const wxImage& img);
+ * \sa wxImage2MRPTImage, wxImage2MRPTImagePtr
+ */
+mrpt::img::CImage* wxImage2MRPTImage(const wxImage& img);
 
 /** Create a MRPT image from a wxImage. The new object is returned as a smart
  * pointer to a CImage object.
-  * \sa wxImage2MRPTImage
-  */
-mrpt::utils::CImage::Ptr wxImage2MRPTImagePtr(const wxImage& img);
+ * \sa wxImage2MRPTImage
+ */
+mrpt::img::CImage::Ptr wxImage2MRPTImagePtr(const wxImage& img);
 
 /** Extracts the key modifiers from a wxKeyEvent */
 mrptKeyModifier keyEventToMrptKeyModifier(const wxKeyEvent& ev);
 
 /** A custom control to display the bitmap and avoid flicker
-  */
+ */
 class wxMRPTImageControl : public wxPanel
 {
    protected:
@@ -158,14 +156,16 @@ class wxMRPTImageControl : public wxPanel
 	 * image. */
 	void AssignImage(wxBitmap* img);
 	/** Assigns this image. Remember to call Refresh to display the image. */
-	void AssignImage(const mrpt::utils::CImage& img);
+	void AssignImage(const mrpt::img::CImage& img);
 	void GetBitmap(wxBitmap& bmp);
 
 	void OnPaint(wxPaintEvent& ev);
 	void OnMouseMove(wxMouseEvent& ev);
 	void OnMouseClick(wxMouseEvent& ev);
 
-	void OnEraseBackground(wxEraseEvent&) { /* Do nothing */}
+	void OnEraseBackground(wxEraseEvent&)
+	{ /* Do nothing */
+	}
 };
 // end wxMRPTImageControl  -----------
 
@@ -177,10 +177,11 @@ class CPanelCameraSelection : public wxPanel
 	virtual ~CPanelCameraSelection();
 
 	void readConfigIntoVideoSourcePanel(
-		const std::string& sect, const mrpt::utils::CConfigFileBase* cfg) const;
+		const std::string& sect,
+		const mrpt::config::CConfigFileBase* cfg) const;
 
 	void writeConfigFromVideoSourcePanel(
-		const std::string& sect, mrpt::utils::CConfigFileBase* cfg) const;
+		const std::string& sect, mrpt::config::CConfigFileBase* cfg) const;
 
 	//(*Declarations(CPanelCameraSelection)
 	wxTextCtrl* edRawlogLabel;
@@ -295,14 +296,12 @@ namespace detail
 {
 struct TReturnAskUserOpenCamera
 {
-	mrpt::utils::CConfigFileMemory selectedConfig;
+	mrpt::config::CConfigFileMemory selectedConfig;
 	bool accepted_by_user;
 };
-}
+}  // namespace detail
 
 #endif
 /** @} */
-}  // End of namespace
-}  // End of namespace
-
-#endif
+}  // namespace gui
+}  // namespace mrpt

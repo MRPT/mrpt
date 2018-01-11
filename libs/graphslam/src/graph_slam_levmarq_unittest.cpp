@@ -10,10 +10,10 @@
 #include "graph_slam_levmarq_test_common.h"
 
 #include <gtest/gtest.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::random;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::graphs;
 using namespace mrpt::math;
@@ -37,7 +37,7 @@ class GraphSlamLevMarqTester : public GraphSlamLevMarqTest<my_graph_t>,
 		// ----------------------------
 		//  Run graph slam:
 		// ----------------------------
-		TParametersDouble params;
+		mrpt::system::TParametersDouble params;
 		// params["verbose"]  = 1;
 		// params["profiler"] = 1;
 		params["max_iterations"] = 1000;
@@ -59,13 +59,14 @@ class GraphSlamLevMarqTester : public GraphSlamLevMarqTest<my_graph_t>,
 		GraphSlamLevMarqTest<my_graph_t>::create_ring_path(graph);
 
 		// binary dump:
-		mrpt::utils::CMemoryStream mem;
-		mem << graph;
+		mrpt::io::CMemoryStream mem;
+		auto arch = mrpt::serialization::archiveFrom(mem);
+		arch << graph;
 
 		{
 			my_graph_t read_graph;
 			mem.Seek(0);
-			mem >> read_graph;
+			arch >> read_graph;
 
 			EXPECT_EQ(read_graph.edges.size(), graph.edges.size());
 			EXPECT_EQ(read_graph.nodes.size(), graph.nodes.size());
@@ -77,11 +78,12 @@ class GraphSlamLevMarqTester : public GraphSlamLevMarqTest<my_graph_t>,
 			{
 				EXPECT_EQ(it1->first, it2->first);
 				EXPECT_NEAR(
-					0, (it1->second.getPoseMean().getAsVectorVal() -
-						it2->second.getPoseMean().getAsVectorVal())
-						   .array()
-						   .abs()
-						   .sum(),
+					0,
+					(it1->second.getPoseMean().getAsVectorVal() -
+					 it2->second.getPoseMean().getAsVectorVal())
+						.array()
+						.abs()
+						.sum(),
 					1e-9);
 			}
 		}

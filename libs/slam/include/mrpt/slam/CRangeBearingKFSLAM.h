@@ -10,12 +10,12 @@
 #define CRangeBearingKFSLAM_H
 
 #include <mrpt/math/CMatrixTemplateNumeric.h>
-#include <mrpt/utils/CConfigFileBase.h>
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/bayes/CKalmanFilterCapable.h>
 
-#include <mrpt/utils/safe_pointers.h>
-#include <mrpt/utils/bimap.h>
+#include <mrpt/core/safe_pointers.h>
+#include <mrpt/containers/bimap.h>
 
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CActionCollection.h>
@@ -161,20 +161,19 @@ class CRangeBearingKFSLAM
 
 	/** Load options from a ini-like file/text
 	  */
-	void loadOptions(const mrpt::utils::CConfigFileBase& ini);
+	void loadOptions(const mrpt::config::CConfigFileBase& ini);
 
 	/** The options for the algorithm
 	  */
-	struct TOptions : utils::CLoadableOptions
+	struct TOptions : public mrpt::config::CLoadableOptions
 	{
 		/** Default values */
 		TOptions();
 
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+		void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
 		/** A 7-length vector with the std. deviation of the transition model in
 		 * (x,y,z, qr,qx,qy,qz) used only when there is no odometry (if there is
@@ -240,7 +239,7 @@ class CRangeBearingKFSLAM
 
 		// Predictions from the map:
 		mrpt::math::CMatrixTemplateNumeric<kftype> Y_pred_means, Y_pred_covs;
-		mrpt::vector_size_t predictions_IDs;
+		std::vector<size_t> predictions_IDs;
 
 		/** Map from the 0-based index within the last observation and the
 		   landmark 0-based index in the map (the robot-map state vector)
@@ -263,7 +262,7 @@ class CRangeBearingKFSLAM
 	  *  Only if options.doPartitioningExperiment = true
 	  * \sa getLastPartitionLandmarks
 	  */
-	void getLastPartition(std::vector<vector_uint>& parts)
+	void getLastPartition(std::vector<std::vector<uint32_t>>& parts)
 	{
 		parts = m_lastPartitionSet;
 	}
@@ -279,21 +278,21 @@ class CRangeBearingKFSLAM
 	  * \sa getLastPartition
 	  */
 	void getLastPartitionLandmarks(
-		std::vector<vector_uint>& landmarksMembership) const;
+		std::vector<std::vector<uint32_t>>& landmarksMembership) const;
 
 	/** For testing only: returns the partitioning as
 	 * "getLastPartitionLandmarks" but as if a fixed-size submaps (size K) were
 	 * have been used.
 	  */
 	void getLastPartitionLandmarksAsIfFixedSubmaps(
-		size_t K, std::vector<vector_uint>& landmarksMembership);
+		size_t K, std::vector<std::vector<uint32_t>>& landmarksMembership);
 
 	/** Computes the ratio of the missing information matrix elements which are
 	 * ignored under a certain partitioning of the landmarks.
 	  * \sa getLastPartitionLandmarks, getLastPartitionLandmarksAsIfFixedSubmaps
 	  */
 	double computeOffDiagonalBlocksApproximationError(
-		const std::vector<vector_uint>& landmarksMembership) const;
+		const std::vector<std::vector<uint32_t>>& landmarksMembership) const;
 
 	/** The partitioning of the entire map is recomputed again.
 	  *  Only when options.doPartitioningExperiment = true.
@@ -382,12 +381,12 @@ class CRangeBearingKFSLAM
 	 * are NO cross-covariances between them.
 	  */
 	void OnGetObservationsAndDataAssociation(
-		vector_KFArray_OBS& out_z, vector_int& out_data_association,
+		vector_KFArray_OBS& out_z, std::vector<int>& out_data_association,
 		const vector_KFArray_OBS& in_all_predictions, const KFMatrix& in_S,
-		const vector_size_t& in_lm_indices_in_S, const KFMatrix_OxO& in_R);
+		const std::vector<size_t>& in_lm_indices_in_S, const KFMatrix_OxO& in_R);
 
 	void OnObservationModel(
-		const vector_size_t& idx_landmarks_to_predict,
+		const std::vector<size_t>& idx_landmarks_to_predict,
 		vector_KFArray_OBS& out_predictions) const;
 
 	/** Implements the observation Jacobians \f$ \frac{\partial h_i}{\partial x}
@@ -433,7 +432,7 @@ class CRangeBearingKFSLAM
 	  */
 	void OnPreComputingPredictions(
 		const vector_KFArray_OBS& in_all_prediction_means,
-		vector_size_t& out_LM_indices_to_predict) const;
+		std::vector<size_t>& out_LM_indices_to_predict) const;
 
 	/** If applicable to the given problem, this method implements the inverse
 	 * observation model needed to extend the "map" with a new "element".
@@ -488,7 +487,7 @@ class CRangeBearingKFSLAM
 	mrpt::obs::CSensoryFrame::Ptr m_SF;
 
 	/** The mapping between landmark IDs and indexes in the Pkk cov. matrix: */
-	mrpt::utils::bimap<mrpt::maps::CLandmark::TLandmarkID, unsigned int> m_IDs;
+	mrpt::containers::bimap<mrpt::maps::CLandmark::TLandmarkID, unsigned int> m_IDs;
 
 	/** Used for map partitioning experiments */
 	CIncrementalMapPartitioner mapPartitioner;
@@ -498,7 +497,7 @@ class CRangeBearingKFSLAM
 	  */
 	mrpt::maps::CSimpleMap m_SFs;
 
-	std::vector<vector_uint> m_lastPartitionSet;
+	std::vector<std::vector<uint32_t>> m_lastPartitionSet;
 
 	/** Last data association */
 	TDataAssocInfo m_last_data_association;

@@ -8,13 +8,13 @@
    +---------------------------------------------------------------------------+ */
 
 #include <zmq.h>
-#include <mrpt/utils/serialization_zmq.h>
+#include <mrpt/serialization/serialization_zmq.h>
 #include <assert.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/utils/CImage.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/img/CImage.h>
+#include <mrpt/system/CTicTac.h>
 
-using mrpt::utils::DEG2RAD;
+using mrpt::DEG2RAD;
 
 int main()
 {
@@ -31,12 +31,12 @@ int main()
 		{
 			mrpt::poses::CPose3D  my_pose(0.5f,0.5f,1.5f ,DEG2RAD(-90.0f),DEG2RAD(0),DEG2RAD(-90.0f)  );
 			printf("Publishing pose...\n");
-			mrpt::utils::mrpt_send_to_zmq(pub_sock, my_pose);
+			mrpt::comms::mrpt_send_to_zmq(pub_sock, my_pose);
 			std::this_thread::sleep_for(100ms);
 
-			mrpt::utils::CImage my_img(800,600, CH_RGB);
+			mrpt::img::CImage my_img(800,600, CH_RGB);
 			printf("Publishing img...\n");
-			mrpt::utils::mrpt_send_to_zmq(pub_sock, my_img, 0 /* max_packet_len: 0=no max size */);
+			mrpt::comms::mrpt_send_to_zmq(pub_sock, my_img, 0 /* max_packet_len: 0=no max size */);
 			std::this_thread::sleep_for(100ms);
 		}
 

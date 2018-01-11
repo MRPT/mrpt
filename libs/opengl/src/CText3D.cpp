@@ -10,13 +10,13 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CText3D.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/opengl/gl_utils.h>
 #include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
+
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CText3D, CRenderizableDisplayList, mrpt::opengl)
@@ -26,9 +26,8 @@ CText3D::Ptr CText3D::Create(
 	const mrpt::opengl::TOpenGLFontStyle text_style, const double text_spacing,
 	const double text_kerning)
 {
-	return CText3D::Ptr(
-		new CText3D(
-			str, fontName, scale, text_style, text_spacing, text_kerning));
+	return CText3D::Ptr(new CText3D(
+		str, fontName, scale, text_style, text_spacing, text_kerning));
 }
 /*---------------------------------------------------------------
 							Constructor
@@ -67,27 +66,15 @@ void CText3D::render_dl() const
 #endif
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CText3D::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CText3D::serializeGetVersion() const { return 0; }
+void CText3D::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		writeToStreamRender(out);
-		out << m_str << m_fontName << (uint32_t)m_text_style << m_text_spacing
-			<< m_text_kerning;
-	}
+	writeToStreamRender(out);
+	out << m_str << m_fontName << (uint32_t)m_text_style << m_text_spacing
+		<< m_text_kerning;
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CText3D::readFromStream(mrpt::utils::CStream& in, int version)
+void CText3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

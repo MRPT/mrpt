@@ -189,7 +189,7 @@ void mpInfoLayer::Plot(wxDC& dc, mpWindow& w)
 	}
 }
 
-wxPoint mpInfoLayer::GetPosition() { return m_dim.GetPosition(); }
+wxPoint mpInfoLayer::GetPosition() const { return m_dim.GetPosition(); }
 wxSize mpInfoLayer::GetSize() { return m_dim.GetSize(); }
 mpInfoCoords::mpInfoCoords() : mpInfoLayer() {}
 mpInfoCoords::mpInfoCoords(wxRect rect, const wxBrush* brush)
@@ -1903,14 +1903,12 @@ void mpWindow::ZoomIn(const wxPoint& centerPoint)
 
 	m_desiredXmin = m_posX;
 	m_desiredXmax =
-		m_posX +
-		(m_scrX - m_marginLeft - m_marginRight) /
-			m_scaleX;  // m_desiredXmax = m_posX + m_scrX / m_scaleX;
+		m_posX + (m_scrX - m_marginLeft - m_marginRight) /
+					 m_scaleX;  // m_desiredXmax = m_posX + m_scrX / m_scaleX;
 	m_desiredYmax = m_posY;
 	m_desiredYmin =
-		m_posY -
-		(m_scrY - m_marginTop - m_marginBottom) /
-			m_scaleY;  // m_desiredYmin = m_posY - m_scrY / m_scaleY;
+		m_posY - (m_scrY - m_marginTop - m_marginBottom) /
+					 m_scaleY;  // m_desiredYmin = m_posY - m_scrY / m_scaleY;
 
 #ifdef MATHPLOT_DO_LOGGING
 	wxLogMessage(
@@ -1948,14 +1946,12 @@ void mpWindow::ZoomOut(const wxPoint& centerPoint)
 
 	m_desiredXmin = m_posX;
 	m_desiredXmax =
-		m_posX +
-		(m_scrX - m_marginLeft - m_marginRight) /
-			m_scaleX;  // m_desiredXmax = m_posX + m_scrX / m_scaleX;
+		m_posX + (m_scrX - m_marginLeft - m_marginRight) /
+					 m_scaleX;  // m_desiredXmax = m_posX + m_scrX / m_scaleX;
 	m_desiredYmax = m_posY;
 	m_desiredYmin =
-		m_posY -
-		(m_scrY - m_marginTop - m_marginBottom) /
-			m_scaleY;  // m_desiredYmin = m_posY - m_scrY / m_scaleY;
+		m_posY - (m_scrY - m_marginTop - m_marginBottom) /
+					 m_scaleY;  // m_desiredYmin = m_posY - m_scrY / m_scaleY;
 
 #ifdef MATHPLOT_DO_LOGGING
 	wxLogMessage(
@@ -2148,7 +2144,7 @@ void mpWindow::OnPaint(wxPaintEvent& WXUNUSED(event))
 {
 	wxPaintDC dc(this);
 	dc.GetSize(&m_scrX, &m_scrY);  // This is the size of the visible area only!
-//     DoPrepareDC(dc);
+	//     DoPrepareDC(dc);
 
 #ifdef MATHPLOT_DO_LOGGING
 	{
@@ -2225,7 +2221,8 @@ void mpWindow::OnPaint(wxPaintEvent& WXUNUSED(event))
 		//         m_marginLeft; // c.x = m_scrX/2;
 		// 	int centerY = (m_scrY - m_marginTop - m_marginBottom)/2; // -
 		// m_marginTop; // c.y = m_scrY/2;
-		/*SetScrollbars(1, 1, (int) ((m_maxX - m_minX)*m_scaleX), (int) ((m_maxY - m_minY)*m_scaleY));*/  //, x2p(m_posX + centerX/m_scaleX), y2p(m_posY - centerY/m_scaleY), true);
+		/*SetScrollbars(1, 1, (int) ((m_maxX - m_minX)*m_scaleX), (int) ((m_maxY
+		 * - m_minY)*m_scaleY));*/  //, x2p(m_posX + centerX/m_scaleX), y2p(m_posY - centerY/m_scaleY), true);
 	}
 }
 

@@ -9,9 +9,9 @@
 #ifndef CMetricMap_H
 #define CMetricMap_H
 
-#include <mrpt/utils/CSerializable.h>
-#include <mrpt/utils/TMatchingPair.h>
-#include <mrpt/utils/CObservable.h>
+#include <mrpt/serialization/CSerializable.h>
+#include <mrpt/tfest/TMatchingPair.h>
+#include <mrpt/system/CObservable.h>
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/obs/CObservation.h>
@@ -35,7 +35,7 @@ namespace maps
  *  robot pose, just the raw observation and information about
  *  the sensor pose relative to the robot mobile base coordinates origin.
  *
- *  Note that all metric maps implement this mrpt::utils::CObservable interface,
+ *  Note that all metric maps implement this mrpt::system::CObservable interface,
  *   emitting the following events:
  *	  - mrpt::obs::mrptEventMetricMapClear: Upon call of the ::clear() method.
  *    - mrpt::obs::mrptEventMetricMapInsert: Upon insertion of an observation
@@ -52,8 +52,8 @@ namespace maps
  * \sa CObservation, CSensoryFrame, CMultiMetricMap
  * \ingroup mrpt_obs_grp
  */
-class CMetricMap : public mrpt::utils::CSerializable,
-				   public mrpt::utils::CObservable
+class CMetricMap : public mrpt::serialization::CSerializable,
+				   public mrpt::system::CObservable
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CMetricMap)
 
@@ -215,7 +215,7 @@ class CMetricMap : public mrpt::utils::CSerializable,
 	virtual void determineMatching2D(
 		const mrpt::maps::CMetricMap* otherMap,
 		const mrpt::poses::CPose2D& otherMapPose,
-		mrpt::utils::TMatchingPairList& correspondences,
+		mrpt::tfest::TMatchingPairList& correspondences,
 		const TMatchingParams& params,
 		TMatchingExtraResults& extraResults) const;
 
@@ -245,7 +245,7 @@ class CMetricMap : public mrpt::utils::CSerializable,
 	virtual void determineMatching3D(
 		const mrpt::maps::CMetricMap* otherMap,
 		const mrpt::poses::CPose3D& otherMapPose,
-		mrpt::utils::TMatchingPairList& correspondences,
+		mrpt::tfest::TMatchingPairList& correspondences,
 		const TMatchingParams& params,
 		TMatchingExtraResults& extraResults) const;
 

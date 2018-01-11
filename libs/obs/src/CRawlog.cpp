@@ -11,17 +11,17 @@
 
 #include <mrpt/system/filesystem.h>
 #include <mrpt/obs/CRawlog.h>
-#include <mrpt/utils/CFileInputStream.h>
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/io/CFileInputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
+using namespace mrpt::io;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
-using namespace mrpt::utils;
 using namespace mrpt::system;
+using namespace mrpt::serialization;
 
 IMPLEMENTS_SERIALIZABLE(CRawlog, CSerializable, mrpt::obs)
 
@@ -37,16 +37,14 @@ void CRawlog::clear()
 
 void CRawlog::addObservations(CSensoryFrame& observations)
 {
-	m_seqOfActObs.push_back(
-		std::dynamic_pointer_cast<CSerializable>(
-			observations.duplicateGetSmartPtr()));
+	m_seqOfActObs.push_back(std::dynamic_pointer_cast<CSerializable>(
+		observations.duplicateGetSmartPtr()));
 }
 
 void CRawlog::addActions(CActionCollection& actions)
 {
-	m_seqOfActObs.push_back(
-		std::dynamic_pointer_cast<CSerializable>(
-			actions.duplicateGetSmartPtr()));
+	m_seqOfActObs.push_back(std::dynamic_pointer_cast<CSerializable>(
+		actions.duplicateGetSmartPtr()));
 }
 
 void CRawlog::addActionsMemoryReference(const CActionCollection::Ptr& action)
@@ -90,7 +88,7 @@ CActionCollection::Ptr CRawlog::getAsAction(size_t index) const
 {
 	MRPT_START
 
-	if (index >= m_seqOfActObs.size()) THROW_EXCEPTION("Index out of bounds")
+	if (index >= m_seqOfActObs.size()) THROW_EXCEPTION("Index out of bounds");
 
 	CSerializable::Ptr obj = m_seqOfActObs[index];
 
@@ -106,7 +104,7 @@ CObservation::Ptr CRawlog::getAsObservation(size_t index) const
 {
 	MRPT_START
 
-	if (index >= m_seqOfActObs.size()) THROW_EXCEPTION("Index out of bounds")
+	if (index >= m_seqOfActObs.size()) THROW_EXCEPTION("Index out of bounds");
 
 	CSerializable::Ptr obj = m_seqOfActObs[index];
 
@@ -121,7 +119,7 @@ CObservation::Ptr CRawlog::getAsObservation(size_t index) const
 CSerializable::Ptr CRawlog::getAsGeneric(size_t index) const
 {
 	MRPT_START
-	if (index >= m_seqOfActObs.size()) THROW_EXCEPTION("Index out of bounds")
+	if (index >= m_seqOfActObs.size()) THROW_EXCEPTION("Index out of bounds");
 
 	return m_seqOfActObs[index];
 	MRPT_END
@@ -130,7 +128,7 @@ CSerializable::Ptr CRawlog::getAsGeneric(size_t index) const
 CRawlog::TEntryType CRawlog::getType(size_t index) const
 {
 	MRPT_START
-	if (index >= m_seqOfActObs.size()) THROW_EXCEPTION("Index out of bounds")
+	if (index >= m_seqOfActObs.size()) THROW_EXCEPTION("Index out of bounds");
 
 	const CSerializable::Ptr& obj = m_seqOfActObs[index];
 
@@ -149,7 +147,7 @@ CRawlog::TEntryType CRawlog::getType(size_t index) const
 CSensoryFrame::Ptr CRawlog::getAsObservations(size_t index) const
 {
 	MRPT_START
-	if (index >= m_seqOfActObs.size()) THROW_EXCEPTION("Index out of bounds")
+	if (index >= m_seqOfActObs.size()) THROW_EXCEPTION("Index out of bounds");
 
 	CSerializable::Ptr obj = m_seqOfActObs[index];
 
@@ -161,40 +159,24 @@ CSensoryFrame::Ptr CRawlog::getAsObservations(size_t index) const
 	MRPT_END
 }
 
-void CRawlog::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CRawlog::serializeGetVersion() const { return 1; }
+void CRawlog::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		uint32_t i, n;
-		n = static_cast<uint32_t>(m_seqOfActObs.size());
-		out << n;
-		for (i = 0; i < n; i++) out << m_seqOfActObs[i];
-
-		out << m_commentTexts;
-	}
+	out.WriteAs<uint32_t>(m_seqOfActObs.size());
+	for (const auto& a : m_seqOfActObs) out << a;
+	out << m_commentTexts;
 }
 
-/*---------------------------------------------------------------
-					readFromStream
-  ---------------------------------------------------------------*/
-void CRawlog::readFromStream(mrpt::utils::CStream& in, int version)
+void CRawlog::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
 		case 0:
 		case 1:
 		{
-			uint32_t i, n;
-
 			clear();
-
-			in >> n;
-			m_seqOfActObs.resize(n);
-			for (i = 0; i < n; i++)
-				m_seqOfActObs[i] = CSerializable::Ptr(in.ReadObject());
-
+			m_seqOfActObs.resize(in.ReadAs<uint32_t>());
+			for (auto& a : m_seqOfActObs) a = in.ReadObject();
 			in >> m_commentTexts;
 		}
 		break;
@@ -207,8 +189,9 @@ bool CRawlog::loadFromRawLogFile(
 	const std::string& fileName, bool non_obs_objects_are_legal)
 {
 	// Open for read.
-	CFileGZInputStream fs(fileName);
-	if (!fs.fileOpenCorrectly()) return false;
+	CFileGZInputStream fi(fileName);
+	if (!fi.fileOpenCorrectly()) return false;
+	auto fs = archiveFrom(fi);
 
 	clear();  // Clear first
 
@@ -229,8 +212,8 @@ bool CRawlog::loadFromRawLogFile(
 				this->swap(*ao);
 				return true;
 			}
-			else if (
-				newObj->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
+			else if (newObj->GetRuntimeClass()->derivedFrom(
+						 CLASS_ID(CObservation)))
 			{
 				if (IS_CLASS(newObj, CObservationComment))
 				{
@@ -265,7 +248,7 @@ bool CRawlog::loadFromRawLogFile(
 			}
 			if (add_obj) m_seqOfActObs.push_back(newObj);
 		}
-		catch (mrpt::utils::CExceptionEOF&)
+		catch (CExceptionEOF&)
 		{  // EOF, just finish the loop
 			keepReading = false;
 		}
@@ -285,7 +268,7 @@ bool CRawlog::loadFromRawLogFile(
 void CRawlog::remove(size_t index)
 {
 	MRPT_START
-	if (index >= m_seqOfActObs.size()) THROW_EXCEPTION("Index out of bounds")
+	if (index >= m_seqOfActObs.size()) THROW_EXCEPTION("Index out of bounds");
 	m_seqOfActObs.erase(m_seqOfActObs.begin() + index);
 	MRPT_END
 }
@@ -295,7 +278,7 @@ void CRawlog::remove(size_t first_index, size_t last_index)
 	MRPT_START
 	if (first_index >= m_seqOfActObs.size() ||
 		last_index >= m_seqOfActObs.size())
-		THROW_EXCEPTION("Index out of bounds")
+		THROW_EXCEPTION("Index out of bounds");
 	m_seqOfActObs.erase(
 		m_seqOfActObs.begin() + first_index,
 		m_seqOfActObs.begin() + last_index + 1);
@@ -306,7 +289,8 @@ bool CRawlog::saveToRawLogFile(const std::string& fileName) const
 {
 	try
 	{
-		CFileGZOutputStream f(fileName);
+		CFileGZOutputStream fo(fileName);
+		auto f = archiveFrom(fo);
 		if (!m_commentTexts.text.empty()) f << m_commentTexts;
 		for (size_t i = 0; i < m_seqOfActObs.size(); i++)
 			f << *m_seqOfActObs[i];
@@ -338,7 +322,7 @@ void CRawlog::swap(CRawlog& obj)
 }
 
 bool CRawlog::readActionObservationPair(
-	CStream& inStream, CActionCollection::Ptr& action,
+	CArchive& inStream, CActionCollection::Ptr& action,
 	CSensoryFrame::Ptr& observations, size_t& rawlogEntry)
 {
 	try
@@ -396,11 +380,8 @@ bool CRawlog::readActionObservationPair(
 	}
 }
 
-/*---------------------------------------------------------------
-		getActionObservationPairOrObservation
-  ---------------------------------------------------------------*/
 bool CRawlog::getActionObservationPairOrObservation(
-	CStream& inStream, CActionCollection::Ptr& action,
+	CArchive& inStream, CActionCollection::Ptr& action,
 	CSensoryFrame::Ptr& observations, CObservation::Ptr& observation,
 	size_t& rawlogEntry)
 {
@@ -463,7 +444,7 @@ bool CRawlog::getActionObservationPairOrObservation(
 
 void CRawlog::findObservationsByClassInRange(
 	mrpt::system::TTimeStamp time_start, mrpt::system::TTimeStamp time_end,
-	const mrpt::utils::TRuntimeClassId* class_type,
+	const mrpt::rtti::TRuntimeClassId* class_type,
 	TListTimeAndObservations& out_found, size_t guess_start_position) const
 {
 	MRPT_UNUSED_PARAM(guess_start_position);
@@ -577,7 +558,7 @@ bool CRawlog::getActionObservationPair(
 void CRawlog::getCommentText(std::string& t) const { t = m_commentTexts.text; }
 std::string CRawlog::getCommentText() const { return m_commentTexts.text; }
 void CRawlog::getCommentTextAsConfigFile(
-	mrpt::utils::CConfigFileMemory& memCfg) const
+	mrpt::config::CConfigFileMemory& memCfg) const
 {
 	memCfg.setContent(m_commentTexts.text);
 }
@@ -590,15 +571,15 @@ std::string CRawlog::detectImagesDirectory(const std::string& str)
 		rawlog_path + extractFileName(str) + std::string("_Images");
 	if (mrpt::system::fileExists(temptative_img_path))
 		return temptative_img_path;
-	else if (
-		mrpt::system::fileExists(
-			temptative_img_path =
-				(rawlog_path + extractFileName(str) + std::string("_images"))))
+	else if (mrpt::system::fileExists(
+				 temptative_img_path =
+					 (rawlog_path + extractFileName(str) +
+					  std::string("_images"))))
 		return temptative_img_path;
-	else if (
-		mrpt::system::fileExists(
-			temptative_img_path =
-				(rawlog_path + extractFileName(str) + std::string("_IMAGES"))))
+	else if (mrpt::system::fileExists(
+				 temptative_img_path =
+					 (rawlog_path + extractFileName(str) +
+					  std::string("_IMAGES"))))
 		return temptative_img_path;
 	else
 		return rawlog_path + "Images";

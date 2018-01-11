@@ -125,22 +125,10 @@ ENDIF()
 # Only for Unix: use pkg-config to find libraries
 # ===================================================
 INCLUDE(FindPkgConfig OPTIONAL)
-# "QUIET" was introduced in 2.8.2 for PKG_CHECK_MODULES
-if (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION} VERSION_GREATER 2.8.1)
-   set(_QUIET QUIET)
-endif()
-
 
 # Group projects in "folders"
-# ===================================================
-IF (CMAKE_VERSION VERSION_GREATER 2.8.0)
-	SET(ENABLE_SOLUTION_FOLDERS ON CACHE BOOL "Group projects under virtual folders of the compiler IDE (e.g. VisualStudio)")
-ENDIF (CMAKE_VERSION VERSION_GREATER 2.8.0)
-
-if (ENABLE_SOLUTION_FOLDERS)
-  set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-  set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMakeTargets")
-endif ()
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMakeTargets")
 
 # Build the RoboPeak Lidar library?
 SET(DEFAULT_BUILD_ROBOPEAK_LIDAR ON) # Default: Yes
@@ -175,7 +163,14 @@ ENDIF()
 
 # Enable precompiled headers:
 # ===================================================
-SET(MRPT_ENABLE_PRECOMPILED_HDRS ON CACHE BOOL "Enable precompiled headers (thru 'mrpt/LIB.h')")
+IF (MSVC)
+	set(default_use_precomp ON)
+ELSE()
+	# JLBC 28th Dec 2017: It seems cotire does not work well with imported -I
+	# directories via target_include_directories(... PUBLIC/INTERFACE ...)
+	set(default_use_precomp OFF)
+ENDIF()
+SET(MRPT_ENABLE_PRECOMPILED_HDRS ${default_use_precomp} CACHE BOOL "Enable precompiled headers")
 MARK_AS_ADVANCED(MRPT_ENABLE_PRECOMPILED_HDRS)
 
 # Eigen library plugins:
@@ -189,6 +184,9 @@ SET(MRPT_HAS_STACKED_EXCEPTIONS ON CACHE BOOL "Enable MRPT_TRY_START/END blocks 
 # Optional MRPT embedded profiler:
 # ===================================================
 SET(MRPT_ENABLE_EMBEDDED_GLOBAL_PROFILER OFF CACHE BOOL "Enable MRPT embedded profiler.")
+if (MRPT_ENABLE_EMBEDDED_GLOBAL_PROFILER)
+	add_definitions(-DMRPT_ENABLE_EMBEDDED_GLOBAL_PROFILER)
+endif()
 
 # ASSERT_ blocks
 # ===================================================
@@ -216,9 +214,7 @@ CONFIGURE_FILE(
 ADD_CUSTOM_TARGET(uninstall
   "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
 
-if(ENABLE_SOLUTION_FOLDERS)
-	set_target_properties(uninstall PROPERTIES FOLDER "CMakeTargets")
-endif()
+set_target_properties(uninstall PROPERTIES FOLDER "CMakeTargets")
 
 # See docs for CMake FindThreads()
 SET(THREADS_PREFER_PTHREAD_FLAG ON)

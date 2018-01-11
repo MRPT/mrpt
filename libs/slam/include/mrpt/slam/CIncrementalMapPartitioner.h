@@ -10,8 +10,8 @@
 #ifndef CINCREMENTALMAPPARTITIONER_H
 #define CINCREMENTALMAPPARTITIONER_H
 
-#include <mrpt/utils/COutputLogger.h>
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/system/COutputLogger.h>
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/maps/CSimpleMap.h>
@@ -26,8 +26,8 @@ namespace slam
   *   observations taken at some poses/nodes.
   * \ingroup mrpt_slam_grp
   */
-class CIncrementalMapPartitioner : public mrpt::utils::COutputLogger,
-								   public mrpt::utils::CSerializable
+class CIncrementalMapPartitioner : public mrpt::system::COutputLogger,
+								   public mrpt::serialization::CSerializable
 {
 	// This must be added to any CSerializable derived class:
 	DEFINE_SERIALIZABLE(CIncrementalMapPartitioner)
@@ -44,17 +44,16 @@ class CIncrementalMapPartitioner : public mrpt::utils::COutputLogger,
 
 	/** Configuration of the algorithm:
 	  */
-	struct TOptions : public utils::CLoadableOptions
+	struct TOptions : public mrpt::config::CLoadableOptions
 	{
 		/*\brief  Sets default values at object creation
 		  */
 		TOptions();
 
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+		void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
 		/**\brief The partition threshold for bisection in range [0,2],
 		 * default=1.0
@@ -126,7 +125,7 @@ class CIncrementalMapPartitioner : public mrpt::utils::COutputLogger,
 	 *
 	 * \sa addMapFrame
 	 */
-	void updatePartitions(std::vector<vector_uint>& partitions);
+	void updatePartitions(std::vector<std::vector<uint32_t>>& partitions);
 
 	/**\brief Get the total node count currently in the internal map/graph.
 	 *
@@ -140,7 +139,7 @@ class CIncrementalMapPartitioner : public mrpt::utils::COutputLogger,
 	 * node at (0,0,0).
 	 */
 	void removeSetOfNodes(
-		vector_uint indexesToRemove, bool changeCoordsRef = true);
+		std::vector<uint32_t> indexesToRemove, bool changeCoordsRef = true);
 
 	/**\brief Return a copy of the internal adjacency matrix.  */
 	template <class MATRIX>
@@ -202,7 +201,7 @@ class CIncrementalMapPartitioner : public mrpt::utils::COutputLogger,
 	mrpt::math::CMatrixD m_A;
 
 	/** The last partition */
-	std::vector<vector_uint> m_last_partition;
+	std::vector<std::vector<uint32_t>> m_last_partition;
 
 	/** This will be true after adding new observations, and before an
 	 * "updatePartitions" is invoked. */

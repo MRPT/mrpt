@@ -10,14 +10,14 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CSetOfTexturedTriangles.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include "opengl_internals.h"
 
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
+
 using namespace mrpt::math;
 
 IMPLEMENTS_SERIALIZABLE(
@@ -73,36 +73,24 @@ void CSetOfTexturedTriangles::render_texturedobj() const
 #endif
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CSetOfTexturedTriangles::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CSetOfTexturedTriangles::serializeGetVersion() const { return 2; }
+void CSetOfTexturedTriangles::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 2;
-	else
-	{
-		uint32_t n;
+	uint32_t n;
 
-		writeToStreamRender(out);
-		writeToStreamTexturedObject(out);
+	writeToStreamRender(out);
+	writeToStreamTexturedObject(out);
 
-		n = (uint32_t)m_triangles.size();
+	n = (uint32_t)m_triangles.size();
 
-		out << n;
+	out << n;
 
-		for (uint32_t i = 0; i < n; i++) m_triangles[i].writeToStream(out);
-	}
+	for (uint32_t i = 0; i < n; i++) m_triangles[i].writeToStream(out);
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CSetOfTexturedTriangles::readFromStream(
-	mrpt::utils::CStream& in, int version)
+void CSetOfTexturedTriangles::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -206,11 +194,12 @@ CSetOfTexturedTriangles::TVertex::TVertex(
 }
 
 void CSetOfTexturedTriangles::TVertex::writeToStream(
-	mrpt::utils::CStream& out) const
+	mrpt::serialization::CArchive& out) const
 {
 	out << m_x << m_y << m_z << m_u << m_v;
 }
-void CSetOfTexturedTriangles::TVertex::readFromStream(mrpt::utils::CStream& in)
+void CSetOfTexturedTriangles::TVertex::readFromStream(
+	mrpt::serialization::CArchive& in)
 {
 	in >> m_x >> m_y >> m_z >> m_u >> m_v;
 }
@@ -223,14 +212,14 @@ CSetOfTexturedTriangles::TTriangle::TTriangle(
 }
 
 void CSetOfTexturedTriangles::TTriangle::writeToStream(
-	mrpt::utils::CStream& out) const
+	mrpt::serialization::CArchive& out) const
 {
 	m_v1.writeToStream(out);
 	m_v2.writeToStream(out);
 	m_v3.writeToStream(out);
 }
 void CSetOfTexturedTriangles::TTriangle::readFromStream(
-	mrpt::utils::CStream& in)
+	mrpt::serialization::CArchive& in)
 {
 	m_v1.readFromStream(in);
 	m_v2.readFromStream(in);

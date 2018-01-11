@@ -11,7 +11,9 @@
 
 #include <mrpt/config.h>
 
-#ifdef MRPT_OS_WINDOWS
+#include <mrpt/core/exceptions.h>
+
+#ifdef _WIN32
 #include <windows.h>
 #include <mmsystem.h>
 
@@ -20,7 +22,7 @@
 #endif
 #endif
 
-#if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
+#if defined(MRPT_OS_LINUX) || defined(__APPLE__)
 // Linux
 #include <sys/ioctl.h>
 #include <sys/time.h>
@@ -77,7 +79,7 @@ CJoystick::~CJoystick()
 int CJoystick::getJoysticksCount()
 {
 	MRPT_START
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	return joyGetNumDevs();
 #elif defined(MRPT_OS_LINUX) && defined(HAVE_LINUX_INPUT_H)
 	// Try to open several joy devs:
@@ -113,7 +115,7 @@ bool CJoystick::getJoystickPosition(
 	int* raw_x_pos, int* raw_y_pos, int* raw_z_pos)
 {
 	MRPT_START
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	JOYINFO jinfo;
 
 	int ID = JOYSTICKID1 + nJoy;
@@ -235,10 +237,10 @@ bool CJoystick::getJoystickPosition(
 }
 
 /** Set the axis limit values, for computing a [-1,1] position index easily.
-*   It seems that these values must been calibrated for each joystick model.
-*
-* \sa getJoystickPosition
-*/
+ *   It seems that these values must been calibrated for each joystick model.
+ *
+ * \sa getJoystickPosition
+ */
 void CJoystick::setLimits(
 	int x_min, int x_max, int y_min, int y_max, int z_min, int z_max)
 {

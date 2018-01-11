@@ -10,34 +10,18 @@
 #include "hmtslam-precomp.h"  // Precomp header
 
 using namespace mrpt::hmtslam;
-using namespace mrpt::utils;
 
 IMPLEMENTS_SERIALIZABLE(THypothesisIDSet, CSerializable, mrpt::hmtslam)
 
-/*---------------------------------------------------------------
-					writeToStream
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void THypothesisIDSet::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t THypothesisIDSet::serializeGetVersion() const { return 0; }
+void THypothesisIDSet::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		uint32_t N = (uint32_t)size();
-		out << N;
-		for (const_iterator it = begin(); it != end(); ++it) out << *it;
-	}
+	uint32_t N = (uint32_t)size();
+	out << N;
+	for (const_iterator it = begin(); it != end(); ++it) out << *it;
 }
 
-/*---------------------------------------------------------------
-					readFromStream
-   Implements the reading from a CStream capability of
-	  CSerializable objects
-  ---------------------------------------------------------------*/
-void THypothesisIDSet::readFromStream(mrpt::utils::CStream& in, int version)
+void THypothesisIDSet::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

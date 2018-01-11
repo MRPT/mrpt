@@ -10,7 +10,7 @@
 #define CHolonomicND_H
 
 #include "CAbstractHolonomicReactiveMethod.h"
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/config/CLoadableOptions.h>
 
 namespace mrpt
 {
@@ -18,8 +18,8 @@ namespace nav
 {
 class CLogFileRecord_ND;
 /** \addtogroup nav_holo Holonomic navigation methods
-  * \ingroup mrpt_nav_grp
-  * @{ */
+ * \ingroup mrpt_nav_grp
+ * @{ */
 
 /** An implementation of the holonomic reactive navigation method
  * "Nearness-Diagram".
@@ -58,7 +58,7 @@ class CHolonomicND : public CAbstractHolonomicReactiveMethod
    public:
 	/**  Initialize the parameters of the navigator, from some configuration
 	 * file, or default values if set to nullptr */
-	CHolonomicND(const mrpt::utils::CConfigFileBase* INI_FILE = nullptr);
+	CHolonomicND(const mrpt::config::CConfigFileBase* INI_FILE = nullptr);
 
 	// See base class docs
 	void navigate(const NavInput& ni, NavOutput& no) override;
@@ -76,7 +76,7 @@ class CHolonomicND : public CAbstractHolonomicReactiveMethod
 	typedef std::vector<TGap> TGapArray;
 
 	/** The set of posible situations for each trajectory.
-	 * (mrpt::utils::TEnumType works with this enum) */
+	 * (mrpt::typemeta::TEnumType works with this enum) */
 	enum TSituations
 	{
 		SITUATION_TARGET_DIRECTLY = 1,
@@ -86,12 +86,12 @@ class CHolonomicND : public CAbstractHolonomicReactiveMethod
 	};
 
 	/**  Initialize the parameters of the navigator. */
-	void initialize(const mrpt::utils::CConfigFileBase& INI_FILE) override;
-	virtual void saveConfigFile(
-		mrpt::utils::CConfigFileBase& c) const override;  // See base class docs
+	void initialize(const mrpt::config::CConfigFileBase& INI_FILE) override;
+	virtual void saveConfigFile(mrpt::config::CConfigFileBase& c)
+		const override;  // See base class docs
 
 	/** Algorithm options */
-	struct TOptions : public mrpt::utils::CLoadableOptions
+	struct TOptions : public mrpt::config::CLoadableOptions
 	{
 		double TOO_CLOSE_OBSTACLE, WIDE_GAP_SIZE_PERCENT,
 			RISK_EVALUATION_SECTORS_PERCENT;
@@ -103,10 +103,10 @@ class CHolonomicND : public CAbstractHolonomicReactiveMethod
 
 		TOptions();
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		void saveToConfigFile(
-			mrpt::utils::CConfigFileBase& cfg,
+			mrpt::config::CConfigFileBase& cfg,
 			const std::string& section) const override;  // See base docs
 	};
 
@@ -129,13 +129,13 @@ class CHolonomicND : public CAbstractHolonomicReactiveMethod
 	unsigned int direction2sector(const double a, const unsigned int N);
 
 	/**  Find gaps in the obtacles.
-	  */
+	 */
 	void gapsEstimator(
 		const std::vector<double>& obstacles,
 		const mrpt::math::TPoint2D& in_target, TGapArray& gaps);
 
 	/** Search the best gap.
-	  */
+	 */
 	void searchBestGap(
 		const std::vector<double>& in_obstacles, const double in_maxObsRange,
 		const TGapArray& in_gaps, const mrpt::math::TPoint2D& in_target,
@@ -144,13 +144,13 @@ class CHolonomicND : public CAbstractHolonomicReactiveMethod
 		CLogFileRecord_ND& log);
 
 	/** Fills in the representative sector field in the gap structure:
-	  */
+	 */
 	void calcRepresentativeSectorForGap(
 		TGap& gap, const mrpt::math::TPoint2D& target,
 		const std::vector<double>& obstacles);
 
 	/** Evaluate each gap:
-	  */
+	 */
 	void evaluateGaps(
 		const std::vector<double>& in_obstacles, const double in_maxObsRange,
 		const TGapArray& in_gaps, const unsigned int TargetSector,
@@ -168,8 +168,8 @@ class CLogFileRecord_ND : public CHolonomicLogFileRecord
 
    public:
 	/** Member data.
-	  */
-	vector_int gaps_ini, gaps_end;
+	 */
+	std::vector<int> gaps_ini, gaps_end;
 	std::vector<double> gaps_eval;
 	int32_t selectedSector;
 	double evaluation;
@@ -178,16 +178,16 @@ class CLogFileRecord_ND : public CHolonomicLogFileRecord
 };
 
 /** @} */
-}  // end namespace
+}  // namespace nav
 
 // Specializations MUST occur at the same namespace:
-namespace utils
+namespace typemeta
 {
 template <>
 struct TEnumTypeFiller<nav::CHolonomicND::TSituations>
 {
 	typedef nav::CHolonomicND::TSituations enum_t;
-	static void fill(bimap<enum_t, std::string>& m_map)
+	static void fill(internal::bimap<enum_t, std::string>& m_map)
 	{
 		m_map.insert(
 			nav::CHolonomicND::SITUATION_TARGET_DIRECTLY,
@@ -201,7 +201,7 @@ struct TEnumTypeFiller<nav::CHolonomicND::TSituations>
 			"SITUATION_NO_WAY_FOUND");
 	}
 };
-}  // End of namespace
-}
+}  // namespace typemeta
+}  // namespace mrpt
 
 #endif

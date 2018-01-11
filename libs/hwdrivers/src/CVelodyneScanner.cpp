@@ -10,16 +10,15 @@
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
 #include <mrpt/hwdrivers/CVelodyneScanner.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/comms/net_utils.h>
 #include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/utils/bits.h>  // for reverseBytesInPlace()
-
+#include <mrpt/core/reverse_bytes.h>
 #include <thread>
 
 // socket's hdrs:
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #if defined(_WIN32_WINNT) && (_WIN32_WINNT < 0x600)
 #undef _WIN32_WINNT
@@ -29,7 +28,7 @@
 #include <winsock2.h>
 typedef int socklen_t;
 
-#if defined(__BORLANDC__) || defined(_MSC_VER)
+#if defined(_MSC_VER)
 #pragma comment(lib, "WS2_32.LIB")
 #endif
 
@@ -90,7 +89,7 @@ std::string CVelodyneScanner::TModelPropertiesFactory::getListKnownModels()
 		 it != lst.end(); ++it)
 		s += mrpt::format(
 			"`%s`,",
-			mrpt::utils::TEnumType<CVelodyneScanner::model_t>::value2name(
+			mrpt::typemeta::TEnumType<CVelodyneScanner::model_t>::value2name(
 				it->first)
 				.c_str());
 	return s;
@@ -124,7 +123,7 @@ CVelodyneScanner::CVelodyneScanner()
 	m_pcap_bpf_program = new bpf_program[1];
 #endif
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	// Init the WinSock Library:
 	WORD wVersionRequested = MAKEWORD(2, 0);
 	WSADATA wsaData;
@@ -136,7 +135,7 @@ CVelodyneScanner::CVelodyneScanner()
 CVelodyneScanner::~CVelodyneScanner()
 {
 	this->close();
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	WSACleanup();
 #endif
 
@@ -153,7 +152,7 @@ bool CVelodyneScanner::loadCalibrationFile(
 }
 
 void CVelodyneScanner::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& cfg, const std::string& sect)
+	const mrpt::config::CConfigFileBase& cfg, const std::string& sect)
 {
 	MRPT_START
 
@@ -177,7 +176,7 @@ void CVelodyneScanner::loadConfig_sensorSpecific(
 	MRPT_LOAD_HERE_CONFIG_VAR(
 		pos_packets_min_period, double, m_pos_packets_min_period, cfg, sect);
 
-	using mrpt::utils::DEG2RAD;
+	using mrpt::DEG2RAD;
 	m_sensorPose = mrpt::poses::CPose3D(
 		cfg.read_float(sect, "pose_x", 0), cfg.read_float(sect, "pose_y", 0),
 		cfg.read_float(sect, "pose_z", 0),
@@ -408,7 +407,7 @@ void CVelodyneScanner::initialize()
 	{
 		// Try to load default data:
 		m_velodyne_calib = VelodyneCalibration::LoadDefaultCalibration(
-			mrpt::utils::TEnumType<CVelodyneScanner::model_t>::value2name(
+			mrpt::typemeta::TEnumType<CVelodyneScanner::model_t>::value2name(
 				m_model));
 		if (m_velodyne_calib.empty())
 			THROW_EXCEPTION(
@@ -425,12 +424,12 @@ void CVelodyneScanner::initialize()
 		if (m_lidar_rpm > 0)
 		{
 			if (!setLidarRPM(m_lidar_rpm))
-				THROW_EXCEPTION("Error in setLidarRPM()!");
+				THROW_EXCEPTION("Error in setLidarRPM();");
 		}
 		if (m_lidar_return != UNCHANGED)
 		{
 			if (!setLidarReturnType(m_lidar_return))
-				THROW_EXCEPTION("Error in setLidarReturnType()!");
+				THROW_EXCEPTION("Error in setLidarReturnType();");
 		}
 
 		// (1) Create LIDAR DATA socket
@@ -452,7 +451,7 @@ void CVelodyneScanner::initialize()
 				m_hDataSock, (struct sockaddr*)(&bindAddr), sizeof(sockaddr)))
 			THROW_EXCEPTION(mrpt::comms::net::getLastSocketErrorStr());
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 		unsigned long non_block_mode = 1;
 		if (ioctlsocket(m_hDataSock, FIONBIO, &non_block_mode))
 			THROW_EXCEPTION(
@@ -463,7 +462,7 @@ void CVelodyneScanner::initialize()
 			THROW_EXCEPTION("Error retrieving fcntl() of socket.");
 		oldflags |= O_NONBLOCK | FASYNC;
 		if (-1 == fcntl(m_hDataSock, F_SETFL, oldflags))
-			THROW_EXCEPTION("Error entering non-blocking mode with fcntl().");
+			THROW_EXCEPTION("Error entering non-blocking mode with fcntl();");
 #endif
 
 		// (2) Create LIDAR POSITION socket
@@ -483,7 +482,7 @@ void CVelodyneScanner::initialize()
 									   sizeof(sockaddr)))
 			THROW_EXCEPTION(mrpt::comms::net::getLastSocketErrorStr());
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 		if (ioctlsocket(m_hPositionSock, FIONBIO, &non_block_mode))
 			THROW_EXCEPTION(
 				"Error entering non-blocking mode with ioctlsocket().");
@@ -493,7 +492,7 @@ void CVelodyneScanner::initialize()
 			THROW_EXCEPTION("Error retrieving fcntl() of socket.");
 		oldflags |= O_NONBLOCK | FASYNC;
 		if (-1 == fcntl(m_hPositionSock, F_SETFL, oldflags))
-			THROW_EXCEPTION("Error entering non-blocking mode with fcntl().");
+			THROW_EXCEPTION("Error entering non-blocking mode with fcntl();");
 #endif
 	}
 	else
@@ -563,7 +562,7 @@ void CVelodyneScanner::close()
 	if (m_hDataSock != INVALID_SOCKET)
 	{
 		shutdown(m_hDataSock, 2);  // SD_BOTH  );
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 		closesocket(m_hDataSock);
 #else
 		::close(m_hDataSock);
@@ -574,7 +573,7 @@ void CVelodyneScanner::close()
 	if (m_hPositionSock != INVALID_SOCKET)
 	{
 		shutdown(m_hPositionSock, 2);  // SD_BOTH  );
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 		closesocket(m_hPositionSock);
 #else
 		::close(m_hPositionSock);
@@ -619,7 +618,7 @@ const uint16_t PositionPacketHeader[21] = {
 	0xffff, 0x7420, 0x7420, 0x0802, 0x0000};
 #endif
 
-#if defined(MRPT_OS_WINDOWS) && MRPT_HAS_LIBPCAP
+#if defined(_WIN32) && MRPT_HAS_LIBPCAP
 int gettimeofday(struct timeval* tp, void*)
 {
 	FILETIME ft;
@@ -843,7 +842,7 @@ mrpt::system::TTimeStamp CVelodyneScanner::internal_receive_UDP_packet(
 		do
 		{
 			int retval =
-#if !defined(MRPT_OS_WINDOWS)
+#if !defined(_WIN32)
 				poll
 #else
 				WSAPoll
@@ -877,7 +876,7 @@ mrpt::system::TTimeStamp CVelodyneScanner::internal_receive_UDP_packet(
 
 		if (nbytes < 0)
 		{
-			if (errno != EWOULDBLOCK) THROW_EXCEPTION("recvfrom() failed!?!")
+			if (errno != EWOULDBLOCK) THROW_EXCEPTION("recvfrom() failed!?!");
 		}
 		else if ((size_t)nbytes == expected_packet_size)
 		{
@@ -1101,11 +1100,11 @@ bool CVelodyneScanner::internal_send_http_post(const std::string& post_data)
 
 	using namespace mrpt::comms::net;
 
-	vector_byte post_out;
+	std::vector<uint8_t> post_out;
 	string post_err_str;
 
 	int http_rep_code;
-	mrpt::utils::TParameters<string> extra_headers, out_headers;
+	mrpt::system::TParameters<string> extra_headers, out_headers;
 
 	extra_headers["Origin"] = mrpt::format("http://%s", m_device_ip.c_str());
 	extra_headers["Referer"] = mrpt::format("http://%s", m_device_ip.c_str());

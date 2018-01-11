@@ -9,29 +9,32 @@
 #include "bindings.h"
 
 /* MRPT */
-#include <mrpt/utils/TColor.h>
-#include <mrpt/utils/CObject.h>
-#include <mrpt/utils/CStream.h>
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CStdOutStream.h>
-#include <mrpt/utils/CSerializable.h>
-#include <mrpt/utils/CConfigFileBase.h>
-#include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/img/TColor.h>
+#include <mrpt/rtti/CObject.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/serialization/CSerializable.h>
+#include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/config/CLoadableOptions.h>
 
 /* STD */
 #include <cstdint>
 
 using namespace boost::python;
-using namespace mrpt::utils;
+using namespace mrpt::config;
+using namespace mrpt::img;
+using namespace mrpt::rtti;
+using namespace mrpt::serialization;
+using namespace mrpt::io;
 
 // CStream
-void CStream_ReadObject(CStream& self, CSerializable::Ptr& obj)
+void CStream_ReadObject(CArchive& self, CSerializable::Ptr& obj)
 {
 	self.ReadObject(obj.get());
 }
 
-void CStream_WriteObject(CStream& self, CSerializable::Ptr& obj)
+void CStream_WriteObject(CArchive& self, CSerializable::Ptr& obj)
 {
 	self.WriteObject(obj.get());
 }
@@ -57,8 +60,8 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(
 // end of CConfigFileBase
 
 // Utils
-double mrpt_utils_DEG2RAD(double deg) { return mrpt::utils::DEG2RAD(deg); }
-double mrpt_utils_RAD2DEG(double rad) { return mrpt::utils::RAD2DEG(rad); }
+double mrpt_utils_DEG2RAD(double deg) { return mrpt::DEG2RAD(deg); }
+double mrpt_utils_RAD2DEG(double rad) { return mrpt::RAD2DEG(rad); }
 // end of Utils
 
 // smart pointer contents
@@ -214,15 +217,6 @@ void export_utils()
 			.def(
 				"WriteObject", &CStream_WriteObject,
 				"Writes an object to the stream.");
-	}
-
-	// CStdOutStream
-	{
-		class_<CStdOutStream, bases<CStream>>(
-			"CStdOutStream",
-			"This CStdOutStream derived class allow printing to standard out, "
-			"normally the console text output.",
-			init<>());
 	}
 
 	// CFileGZInputStream

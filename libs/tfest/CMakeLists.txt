@@ -5,6 +5,5 @@ define_mrpt_lib(
 	# Lib name
 	tfest
 	# Dependencies
-	mrpt-base
+	mrpt-poses
 	)
-

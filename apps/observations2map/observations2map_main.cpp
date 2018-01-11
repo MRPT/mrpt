@@ -18,16 +18,17 @@
 #include <mrpt/system/os.h>
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/maps/CMultiMetricMap.h>
-#include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;
 using namespace mrpt::opengl;
+using namespace mrpt::io;
 using namespace mrpt::system;
+using namespace mrpt::config;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace std;
 
 string METRIC_MAP_CONFIG_SECTION = "MappingApplication";
@@ -74,8 +75,8 @@ int main(int argc, char** argv)
 		// Load simplemap:
 		cout << "Loading simplemap...";
 		mrpt::maps::CSimpleMap simplemap;
-		CFileGZInputStream f(inputFile.c_str());
-		f >> simplemap;
+		mrpt::io::CFileGZInputStream f(inputFile.c_str());
+		mrpt::serialization::archiveFrom(f) >> simplemap;
 		cout << "done: " << simplemap.size() << " observations." << endl;
 
 		// Create metric maps:
@@ -106,7 +107,7 @@ int main(int argc, char** argv)
 			cout << "Saving gridmap #" << i << " to " << str << endl;
 
 			CFileGZOutputStream f(str);
-			f << *metricMap.m_gridMaps[i];
+			mrpt::serialization::archiveFrom(f) << *metricMap.m_gridMaps[i];
 
 			cout << "done." << endl;
 		}

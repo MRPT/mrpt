@@ -10,7 +10,7 @@
 #define CSimplePointsMap_H
 
 #include <mrpt/maps/CPointsMap.h>
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/obs/obs_frwds.h>
 
@@ -25,8 +25,8 @@ namespace maps
  *  See mrpt::maps::CPointsMap and derived classes for other point cloud
  * classes.
  *
- * \sa CMetricMap, CWeightedPointsMap, CPoint, mrpt::utils::CSerializable
- * \ingroup mrpt_maps_grp
+ * \sa CMetricMap, CWeightedPointsMap, CPoint,
+ * mrpt::serialization::CSerializable \ingroup mrpt_maps_grp
  */
 class CSimplePointsMap : public CPointsMap
 {
@@ -35,8 +35,6 @@ class CSimplePointsMap : public CPointsMap
    public:
 	/** Default constructor */
 	CSimplePointsMap();
-	/** Destructor */
-	virtual ~CSimplePointsMap();
 
 	// --------------------------------------------
 	/** @name Pure virtual interfaces to be implemented by any class derived
@@ -55,10 +53,10 @@ class CSimplePointsMap : public CPointsMap
 	/** Virtual assignment operator, to be implemented in derived classes  */
 	virtual void copyFrom(const CPointsMap& obj) override;
 	/** Get all the data fields for one point as a vector: [X Y Z]
-	  *  Unlike getPointAllFields(), this method does not check for index out of
+	 *  Unlike getPointAllFields(), this method does not check for index out of
 	 * bounds
-	  * \sa getPointAllFields, setPointAllFields, setPointAllFieldsFast
-	  */
+	 * \sa getPointAllFields, setPointAllFields, setPointAllFieldsFast
+	 */
 	virtual void getPointAllFieldsFast(
 		const size_t index, std::vector<float>& point_data) const override
 	{
@@ -68,14 +66,14 @@ class CSimplePointsMap : public CPointsMap
 		point_data[2] = z[index];
 	}
 	/** Set all the data fields for one point as a vector: [X Y Z]
-	  *  Unlike setPointAllFields(), this method does not check for index out of
+	 *  Unlike setPointAllFields(), this method does not check for index out of
 	 * bounds
-	  * \sa setPointAllFields, getPointAllFields, getPointAllFieldsFast
-	  */
+	 * \sa setPointAllFields, getPointAllFields, getPointAllFieldsFast
+	 */
 	virtual void setPointAllFieldsFast(
 		const size_t index, const std::vector<float>& point_data) override
 	{
-		ASSERTDEB_(point_data.size() == 3)
+		ASSERTDEB_(point_data.size() == 3);
 		x[index] = point_data[0];
 		y[index] = point_data[1];
 		z[index] = point_data[2];
@@ -113,8 +111,8 @@ class CSimplePointsMap : public CPointsMap
 
 	/** If the map is a simple points map or it's a multi-metric map that
 	 * contains EXACTLY one simple points map, return it.
-		* Otherwise, return NULL
-		*/
+	 * Otherwise, return NULL
+	 */
 	virtual const mrpt::maps::CSimplePointsMap* getAsSimplePointsMap()
 		const override
 	{
@@ -145,16 +143,16 @@ class CSimplePointsMap : public CPointsMap
 	MAP_DEFINITION_END(CSimplePointsMap, )
 
 };  // End of class def.
-}  // End of namespace
+}  // namespace maps
 
-namespace utils
+namespace opengl
 {
-/** Specialization mrpt::utils::PointCloudAdapter<mrpt::maps::CSimplePointsMap>
+/** Specialization mrpt::opengl::PointCloudAdapter<mrpt::maps::CSimplePointsMap>
  * \ingroup mrpt_adapters_grp*/
 template <>
 class PointCloudAdapter<mrpt::maps::CSimplePointsMap>
-	: public detail::PointCloudAdapterHelperNoRGB<mrpt::maps::CSimplePointsMap,
-												  float>
+	: public detail::PointCloudAdapterHelperNoRGB<
+		  mrpt::maps::CSimplePointsMap, float>
 {
    private:
 	mrpt::maps::CSimplePointsMap& m_obj;
@@ -197,8 +195,8 @@ class PointCloudAdapter<mrpt::maps::CSimplePointsMap>
 		THROW_EXCEPTION("mrpt::maps::CSimplePointsMap needs to be dense");
 	}
 };  // end of PointCloudAdapter<mrpt::maps::CPointsMap>
-}
+}  // namespace opengl
 
-}  // End of namespace
+}  // namespace mrpt
 
 #endif

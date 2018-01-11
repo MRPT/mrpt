@@ -12,12 +12,12 @@
 #include <mrpt/opengl/CSetOfTriangles.h>
 #include "opengl_internals.h"
 #include <mrpt/math/CMatrixTemplateNumeric.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;
-using namespace mrpt::utils;
+
 using namespace mrpt::math;
 using namespace std;
 
@@ -79,7 +79,7 @@ void CSetOfTriangles::render_dl() const
 }
 
 static void triangle_writeToStream(
-	mrpt::utils::CStream& o, const CSetOfTriangles::TTriangle& t)
+	mrpt::serialization::CArchive& o, const CSetOfTriangles::TTriangle& t)
 {
 	o.WriteBufferFixEndianness(t.x, 3);
 	o.WriteBufferFixEndianness(t.y, 3);
@@ -91,7 +91,7 @@ static void triangle_writeToStream(
 	o.WriteBufferFixEndianness(t.a, 3);
 }
 static void triangle_readFromStream(
-	mrpt::utils::CStream& i, CSetOfTriangles::TTriangle& t)
+	mrpt::serialization::CArchive& i, CSetOfTriangles::TTriangle& t)
 {
 	i.ReadBufferFixEndianness(t.x, 3);
 	i.ReadBufferFixEndianness(t.y, 3);
@@ -103,33 +103,19 @@ static void triangle_readFromStream(
 	i.ReadBufferFixEndianness(t.a, 3);
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CSetOfTriangles::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CSetOfTriangles::serializeGetVersion() const { return 1; }
+void CSetOfTriangles::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		writeToStreamRender(out);
-		uint32_t n = (uint32_t)m_triangles.size();
-		out << n;
-		for (size_t i = 0; i < n; i++)
-			triangle_writeToStream(out, m_triangles[i]);
+	writeToStreamRender(out);
+	uint32_t n = (uint32_t)m_triangles.size();
+	out << n;
+	for (size_t i = 0; i < n; i++) triangle_writeToStream(out, m_triangles[i]);
 
-		// Version 1:
-		out << m_enableTransparency;
-	}
+	// Version 1:
+	out << m_enableTransparency;
 }
-
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CSetOfTriangles::readFromStream(mrpt::utils::CStream& in, int version)
+void CSetOfTriangles::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -160,7 +146,8 @@ bool CSetOfTriangles::traceRay(
 	const mrpt::poses::CPose3D& o, double& dist) const
 {
 	if (!polygonsUpToDate) updatePolygons();
-	return mrpt::math::traceRay(tmpPolygons, o - this->m_pose, dist);
+	return mrpt::math::traceRay(
+		tmpPolygons, (o - this->m_pose).asTPose(), dist);
 }
 
 // Helper function. Given two 2D points (y1,z1) and (y2,z2), returns three
@@ -293,11 +280,11 @@ return false;
 }
 */
 
-CRenderizable& CSetOfTriangles::setColor_u8(const mrpt::utils::TColor& c)
+CRenderizable& CSetOfTriangles::setColor_u8(const mrpt::img::TColor& c)
 {
 	CRenderizableDisplayList::notifyChange();
 	m_color = c;
-	mrpt::utils::TColorf col(c);
+	mrpt::img::TColorf col(c);
 	for (std::vector<TTriangle>::iterator it = m_triangles.begin();
 		 it != m_triangles.end(); ++it)
 		for (size_t i = 0; i < 3; i++)

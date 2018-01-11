@@ -17,8 +17,8 @@
 
 #include <mrpt/hwdrivers/CKinect.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/maps/CColouredOctoMap.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
@@ -32,10 +32,10 @@
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::math;
+using namespace mrpt::img;
 using namespace mrpt::gui;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
-using namespace mrpt::utils;
 using namespace mrpt::opengl;
 using namespace std;
 
@@ -70,7 +70,7 @@ void thread_grabbing(TThreadParam& p)
 		if (mrpt::system::fileExists(cfgFile))
 		{
 			cout << "Loading calibration from: " << cfgFile << endl;
-			kinect.loadConfig(mrpt::utils::CConfigFile(cfgFile), "KINECT");
+			kinect.loadConfig(mrpt::config::CConfigFile(cfgFile), "KINECT");
 		}
 		else
 			cerr << "Warning: Calibration file [" << cfgFile
@@ -81,7 +81,7 @@ void thread_grabbing(TThreadParam& p)
 		kinect.initialize();
 		cout << "OK\n";
 
-		CTicTac tictac;
+		mrpt::system::CTicTac tictac;
 		int nImgs = 0;
 		bool there_is_obs = true, hard_error = false;
 
@@ -195,7 +195,7 @@ void Test_Kinect()
 
 	const double aspect_ratio =
 		480.0 /
-		640.0;  // kinect.getRowCount() / double( kinect.getColCount() );
+		640.0;  // kinect.rows() / double( kinect.cols() );
 
 	opengl::COpenGLViewport::Ptr viewRange,
 		viewInt;  // Extra viewports for the RGB & D images.
@@ -256,7 +256,7 @@ void Test_Kinect()
 			// Show ranges as 2D:
 			if (last_obs->hasRangeImage)
 			{
-				mrpt::utils::CImage img;
+				mrpt::img::CImage img;
 
 				// Normalize the image
 				static CMatrixFloat range2D;  // Static to save time allocating

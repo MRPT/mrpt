@@ -11,7 +11,7 @@
 
 #include <mrpt/hwdrivers/COpenNI2_RGBD360.h>
 #include <mrpt/obs/CObservationRGBD360.h>
-#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/CTimeLogger.h>
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>
@@ -21,8 +21,8 @@ using namespace mrpt::system;
 using namespace mrpt::obs;
 using namespace mrpt::math;
 using namespace std;
-using mrpt::utils::CTicTac;
-using mrpt::utils::DEG2RAD;
+using mrpt::system::CTicTac;
+using mrpt::DEG2RAD;
 using mrpt::obs::CObservationRGBD360;
 
 IMPLEMENTS_GENERIC_SENSOR(COpenNI2_RGBD360, mrpt::hwdrivers)
@@ -78,7 +78,7 @@ void COpenNI2_RGBD360::initialize()
 		 sensor_id++)
 		open(sensor_id);
 #else
-	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
+	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
 #endif  // MRPT_HAS_OPENNI2
 }
 
@@ -112,25 +112,25 @@ void COpenNI2_RGBD360::doProcess()
 	{
 		m_state = ssWorking;
 
-		std::vector<mrpt::utils::CSerializable::Ptr> objs;
+		std::vector<mrpt::serialization::CSerializable::Ptr> objs;
 		if (m_grab_rgb || m_grab_depth || m_grab_3D_points)
 			objs.push_back(newObs);
 
 		appendObservations(objs);
 	}
 #else
-	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
+	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
 #endif  // MRPT_HAS_OPENNI2
 }
 
 /** Loads specific configuration for the device from a given source of
 * configuration parameters, for example, an ".ini" file, loading from the
-* section "[iniSection]" (see utils::CConfigFileBase and derived classes)
+* section "[iniSection]" (see config::CConfigFileBase and derived classes)
 *  \exception This method must throw an exception with a descriptive message if
 * some critical parameter is missing or has an invalid value.
 */
 void COpenNI2_RGBD360::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 	cout << "COpenNI2_RGBD360::loadConfig_sensorSpecific...\n";
@@ -221,7 +221,7 @@ void COpenNI2_RGBD360::getNextObservation(
 					}
 
 					// Normalize the image
-					mrpt::utils::CImage img;
+					mrpt::img::CImage img;
 					img.setFromMatrix(out_obs.rangeImages[sensor_id]);
 					CMatrixFloat r = out_obs.rangeImages[sensor_id] *
 									 float(1.0 / this->m_maxRange);
@@ -256,7 +256,7 @@ void COpenNI2_RGBD360::getNextObservation(
 	MRPT_UNUSED_PARAM(there_is_obs);
 	MRPT_UNUSED_PARAM(hardware_error);
 	MRPT_UNUSED_PARAM(out_obs);
-	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
+	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
 #endif  // MRPT_HAS_OPENNI2
 }
 

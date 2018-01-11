@@ -9,7 +9,7 @@
 #include "bindings.h"
 
 /* MRPT */
-#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/config/CLoadableOptions.h>
 
 #include <mrpt/bayes/CProbabilityParticle.h>
 #include <mrpt/bayes/CParticleFilter.h>
@@ -28,7 +28,7 @@
 using namespace boost::python;
 using namespace mrpt::poses;
 using namespace mrpt::bayes;
-using namespace mrpt::utils;
+using namespace mrpt::config;
 
 // aux typedefs
 namespace mrpt
@@ -37,8 +37,8 @@ namespace bayes
 {
 typedef std::deque<CProbabilityParticle<CPose2D>> CParticle2DList;
 typedef std::deque<CProbabilityParticle<CPose3D>> CParticle3DList;
-}
-}
+}  // namespace bayes
+}  // namespace mrpt
 
 // CParticleFilter
 CParticleFilter::TParticleFilterStats CParticleFilter_executeOn(
@@ -90,8 +90,9 @@ void export_bayes()
 			.value("prSystematic", CParticleFilter::prSystematic);
 
 		// TParticleFilterOptions
-		class_<CParticleFilter::TParticleFilterOptions,
-			   bases<CLoadableOptions>>("TParticleFilterOptions", init<>())
+		class_<
+			CParticleFilter::TParticleFilterOptions, bases<CLoadableOptions>>(
+			"TParticleFilterOptions", init<>())
 			.def_readwrite(
 				"adaptiveSampleSize",
 				&CParticleFilter::TParticleFilterOptions::adaptiveSampleSize)

@@ -9,10 +9,11 @@
 #ifndef CLogFileRecord_H
 #define CLogFileRecord_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/utils/CMemoryStream.h>
-#include <mrpt/utils/TParameters.h>
+#include <mrpt/io/CMemoryStream.h>
+#include <mrpt/system/TParameters.h>
+#include <mrpt/core/aligned_std_vector.h>
 
 #include <mrpt/nav/holonomic/CHolonomicLogFileRecord.h>
 #include <mrpt/nav/holonomic/ClearanceDiagram.h>
@@ -28,7 +29,7 @@ namespace nav
  * \sa CReactiveNavigationSystem, CHolonomicLogFileRecord
  *  \ingroup nav_reactive
  */
-class CLogFileRecord : public mrpt::utils::CSerializable
+class CLogFileRecord : public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(CLogFileRecord)
 
@@ -58,7 +59,7 @@ class CLogFileRecord : public mrpt::utils::CSerializable
 		/** Final score of this candidate */
 		double evaluation;
 		/** Evaluation factors */
-		mrpt::utils::TParametersDouble evalFactors;
+		mrpt::system::TParametersDouble evalFactors;
 		/** Other useful info about holonomic method execution. */
 		CHolonomicLogFileRecord::Ptr HLFR;
 		/** Only for the FIRST entry in a log file, this will contain a copy of
@@ -73,7 +74,7 @@ class CLogFileRecord : public mrpt::utils::CSerializable
 	uint32_t nPTGs;
 	/** The info for each applied PTG: must contain "nPTGs * nSecDistances"
 	 * elements */
-	mrpt::aligned_containers<TInfoPerPTG>::vector_t infoPerPTG;
+	mrpt::aligned_std_vector<TInfoPerPTG> infoPerPTG;
 	/** The selected PTG. */
 	int32_t nSelectedPTG;
 

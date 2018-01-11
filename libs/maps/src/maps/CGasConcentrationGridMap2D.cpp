@@ -12,23 +12,24 @@
 #include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/ops_containers.h>
-#include <mrpt/utils/CTicTac.h>
-#include <mrpt/utils/color_maps.h>
-#include <mrpt/utils/round.h>  // round()
-#include <mrpt/utils/CFileGZOutputStream.h>
-#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/img/color_maps.h>
+#include <mrpt/core/round.h>  // round()
+#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 #include <mrpt/opengl/CArrow.h>
 #include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
+using namespace mrpt::io;
 using namespace mrpt::poses;
+using namespace mrpt::img;
 using namespace std;
 using namespace mrpt::math;
 
@@ -49,7 +50,7 @@ CGasConcentrationGridMap2D::TMapDefinition::TMapDefinition()
 
 void CGasConcentrationGridMap2D::TMapDefinition::
 	loadFromConfigFile_map_specific(
-		const mrpt::utils::CConfigFileBase& source,
+		const mrpt::config::CConfigFileBase& source,
 		const std::string& sectionNamePrefix)
 {
 	// [<sectionNamePrefix>+"_creationOpts"]
@@ -68,11 +69,11 @@ void CGasConcentrationGridMap2D::TMapDefinition::
 }
 
 void CGasConcentrationGridMap2D::TMapDefinition::dumpToTextStream_map_specific(
-	mrpt::utils::CStream& out) const
+	std::ostream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"MAP TYPE                                  = %s\n",
-		mrpt::utils::TEnumType<
+		mrpt::typemeta::TEnumType<
 			CGasConcentrationGridMap2D::TMapRepresentation>::value2name(mapType)
 			.c_str());
 	LOADABLEOPTS_DUMP_VAR(min_x, float);
@@ -294,57 +295,49 @@ double CGasConcentrationGridMap2D::internal_computeObservationLikelihood(
 	THROW_EXCEPTION("Not implemented yet!");
 }
 
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CGasConcentrationGridMap2D::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CGasConcentrationGridMap2D::serializeGetVersion() const { return 5; }
+void CGasConcentrationGridMap2D::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 5;
-	else
-	{
-		dyngridcommon_writeToStream(out);
+	dyngridcommon_writeToStream(out);
 
-		// To assure compatibility: The size of each cell:
-		uint32_t n = static_cast<uint32_t>(sizeof(TRandomFieldCell));
-		out << n;
+	// To assure compatibility: The size of each cell:
+	uint32_t n = static_cast<uint32_t>(sizeof(TRandomFieldCell));
+	out << n;
 
-		// Save the map contents:
-		n = static_cast<uint32_t>(m_map.size());
-		out << n;
+	// Save the map contents:
+	n = static_cast<uint32_t>(m_map.size());
+	out << n;
 
 // Save the "m_map": This requires special handling for big endian systems:
 #if MRPT_IS_BIG_ENDIAN
-		for (uint32_t i = 0; i < n; i++)
-		{
-			out << m_map[i].kf_mean << m_map[i].dm_mean
-				<< m_map[i].dmv_var_mean;
-		}
+	for (uint32_t i = 0; i < n; i++)
+	{
+		out << m_map[i].kf_mean << m_map[i].dm_mean
+			<< m_map[i].dmv_var_mean;
+	}
 #else
-		// Little endian: just write all at once:
-		out.WriteBuffer(
-			&m_map[0], sizeof(m_map[0]) *
-						   m_map.size());  // TODO: Do this endianness safe!!
+	// Little endian: just write all at once:
+	out.WriteBuffer(
+		&m_map[0], sizeof(m_map[0]) *
+						m_map.size());  // TODO: Do this endianness safe!!
 #endif
 
-		// Version 1: Save the insertion options:
-		out << uint8_t(m_mapType) << m_cov << m_stackedCov;
+	// Version 1: Save the insertion options:
+	out << uint8_t(m_mapType) << m_cov << m_stackedCov;
 
-		out << insertionOptions.sigma << insertionOptions.cutoffRadius
-			<< insertionOptions.R_min << insertionOptions.R_max
-			<< insertionOptions.KF_covSigma
-			<< insertionOptions.KF_initialCellStd
-			<< insertionOptions.KF_observationModelNoise
-			<< insertionOptions.KF_defaultCellMeanValue
-			<< insertionOptions.KF_W_size;
+	out << insertionOptions.sigma << insertionOptions.cutoffRadius
+		<< insertionOptions.R_min << insertionOptions.R_max
+		<< insertionOptions.KF_covSigma
+		<< insertionOptions.KF_initialCellStd
+		<< insertionOptions.KF_observationModelNoise
+		<< insertionOptions.KF_defaultCellMeanValue
+		<< insertionOptions.KF_W_size;
 
-		// New in v3:
-		out << m_average_normreadings_mean << m_average_normreadings_var
-			<< uint64_t(m_average_normreadings_count);
+	// New in v3:
+	out << m_average_normreadings_mean << m_average_normreadings_var
+		<< uint64_t(m_average_normreadings_count);
 
-		out << genericMapParams;  // v4
-	}
+	out << genericMapParams;  // v4
 }
 
 // Aux struct used below (must be at global scope for STL):
@@ -354,11 +347,7 @@ struct TOldCellTypeInVersion1
 	float w, wr;
 };
 
-/*---------------------------------------------------------------
-  Implements the reading from a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CGasConcentrationGridMap2D::readFromStream(
-	mrpt::utils::CStream& in, int version)
+void CGasConcentrationGridMap2D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -468,53 +457,50 @@ CGasConcentrationGridMap2D::TInsertionOptions::TInsertionOptions()
 {
 }
 
-/*---------------------------------------------------------------
-					dumpToTextStream
-  ---------------------------------------------------------------*/
 void CGasConcentrationGridMap2D::TInsertionOptions::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+	std::ostream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [CGasConcentrationGridMap2D::TInsertionOptions] "
 		"------------ \n\n");
-	out.printf("[TInsertionOptions.Common] ------------ \n\n");
+	out << mrpt::format("[TInsertionOptions.Common] ------------ \n\n");
 	internal_dumpToTextStream_common(
 		out);  // Common params to all random fields maps:
 
-	out.printf("[TInsertionOptions.GasSpecific] ------------ \n\n");
-	out.printf(
+	out << mrpt::format("[TInsertionOptions.GasSpecific] ------------ \n\n");
+	out << mrpt::format(
 		"gasSensorLabel							= %s\n",
 		gasSensorLabel.c_str());
-	out.printf(
+	out << mrpt::format(
 		"enose_id								= %u\n", (unsigned)enose_id);
-	out.printf(
+	out << mrpt::format(
 		"gasSensorType							= %u\n",
 		(unsigned)gasSensorType);
-	out.printf(
+	out << mrpt::format(
 		"windSensorLabel							= %s\n",
 		windSensorLabel.c_str());
-	out.printf(
+	out << mrpt::format(
 		"useWindInformation						= %u\n", useWindInformation);
 
-	out.printf("advectionFreq							= %f\n", advectionFreq);
-	out.printf(
+	out << mrpt::format("advectionFreq							= %f\n", advectionFreq);
+	out << mrpt::format(
 		"default_wind_direction					= %f\n",
 		default_wind_direction);
-	out.printf(
+	out << mrpt::format(
 		"default_wind_speed						= %f\n", default_wind_speed);
-	out.printf(
+	out << mrpt::format(
 		"std_windNoise_phi						= %f\n", std_windNoise_phi);
-	out.printf(
+	out << mrpt::format(
 		"std_windNoise_mod						= %f\n", std_windNoise_mod);
 
-	out.printf("\n");
+	out << mrpt::format("\n");
 }
 
 /*---------------------------------------------------------------
 					loadFromConfigFile
   ---------------------------------------------------------------*/
 void CGasConcentrationGridMap2D::TInsertionOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
 {
 	// Common data fields for all random fields maps:
 	internal_loadFromConfigFile_common(iniFile, section);
@@ -644,9 +630,9 @@ void CGasConcentrationGridMap2D::getWindAs3DObject(
 			double dir_xy = *windGrid_direction.cellByPos(xs[cx], ys[cy]);
 			double mod_xy = *windGrid_module.cellByPos(xs[cx], ys[cy]);
 
-			mrpt::opengl::CArrow::Ptr obj = mrpt::opengl::CArrow::Create(
-				xs[cx], ys[cy], 0, xs[cx] + scale * cos(dir_xy),
-				ys[cy] + scale * sin(dir_xy), 0, 1.15f * scale, 0.3f * scale,
+			auto obj = mrpt::opengl::CArrow::Create(
+				xs[cx], ys[cy], 0.f, xs[cx] + scale * (float)cos(dir_xy),
+				ys[cy] + scale * (float)sin(dir_xy), 0.f, 1.15f * scale, 0.3f * scale,
 				0.35f * scale);
 
 			float r, g, b;
@@ -713,7 +699,7 @@ bool CGasConcentrationGridMap2D::simulateAdvection(
 	  This Matrix contains the probabilities of each cell
 	  to "be displaced" to other cells by the wind effect.
 	------------------------------------------------------*/
-	mrpt::utils::CTicTac tictac;
+	mrpt::system::CTicTac tictac;
 	size_t i = 0, c = 0;
 	int cell_i_cx, cell_i_cy;
 	float mu_phi, mu_r, mu_modwind;
@@ -1345,16 +1331,16 @@ bool CGasConcentrationGridMap2D::save_Gaussian_Wind_Grid_To_File()
 	// Save LUT to file
 	cout << "Saving to File ....";
 
-	CFileGZOutputStream f(
+	CFileGZOutputStream fo(
 		format(
 			"Gaussian_Wind_Weights_res(%f)_stdPhi(%f)_stdR(%f).gz",
 			LUT.resolution, LUT.std_phi, LUT.std_r));
-
-	if (!f.fileOpenCorrectly())
+	if (!fo.fileOpenCorrectly())
 	{
 		return false;
 		cout << "WARNING: Gaussian_Wind_Weights file NOT SAVED" << endl;
 	}
+	auto f = mrpt::serialization::archiveFrom(fo);
 
 	try
 	{
@@ -1389,7 +1375,6 @@ bool CGasConcentrationGridMap2D::save_Gaussian_Wind_Grid_To_File()
 			}
 		}
 		cout << "DONE" << endl;
-		f.close();
 		return true;
 	}
 	catch (exception e)
@@ -1399,7 +1384,6 @@ bool CGasConcentrationGridMap2D::save_Gaussian_Wind_Grid_To_File()
 			 << endl;
 		cout << "EXCEPTION WHILE SAVING LUT TO FILE" << endl;
 		cout << "Exception = " << e.what() << endl;
-		f.close();
 		return false;
 	}
 }
@@ -1411,23 +1395,23 @@ bool CGasConcentrationGridMap2D::load_Gaussian_Wind_Grid_From_File()
 
 	try
 	{
-		CFileGZInputStream f(
+		CFileGZInputStream fi(
 			format(
 				"Gaussian_Wind_Weights_res(%f)_stdPhi(%f)_stdR(%f).gz",
 				LUT.resolution, LUT.std_phi, LUT.std_r));
-
-		if (!f.fileOpenCorrectly())
+		if (!fi.fileOpenCorrectly())
 		{
 			cout << "WARNING WHILE READING FROM: Gaussian_Wind_Weights" << endl;
 			return false;
 		}
+		auto f = mrpt::serialization::archiveFrom(fi);
 
 		float t_float;
 		unsigned int t_uint;
 		// Ensure params from file are correct with the specified in the ini
 		// file
 		f >> t_float;
-		ASSERT_(LUT.resolution == t_float)
+		ASSERT_(LUT.resolution == t_float);
 
 		f >> t_float;
 		ASSERT_(LUT.std_phi == t_float);

@@ -8,13 +8,13 @@
    +---------------------------------------------------------------------------+ */
 
 #include <zmq.h>
-#include <mrpt/utils/serialization_zmq.h>
+#include <mrpt/serialization/serialization_zmq.h>
 #include <assert.h>
 #include <stdio.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 
-using mrpt::utils::DEG2RAD;
+using mrpt::DEG2RAD;
 
 int main()
 {
@@ -30,7 +30,7 @@ int main()
 
 		for (int i=0;i<10;i++)
 		{
-			mrpt::utils::CSerializable::Ptr obj;
+			mrpt::serialization::CSerializable::Ptr obj;
 			size_t rx_len;
 
 			printf ("Waiting %d-th incomming pkt...",i);

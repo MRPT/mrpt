@@ -16,7 +16,7 @@
 #include "vision-precomp.h"  // Precompiled headers
 #include <mrpt/system/os.h>
 #include <mrpt/vision/CFeatureExtraction.h>  // important import
-#include <mrpt/utils/CMemoryStream.h>
+#include <mrpt/io/CMemoryStream.h>
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>
 
@@ -33,8 +33,9 @@ using namespace cv::line_descriptor;
 #endif
 
 using namespace mrpt::vision;
-using namespace mrpt::utils;
+using namespace mrpt::img;
 using namespace mrpt::math;
+using namespace mrpt::img;
 using namespace mrpt;
 using namespace std;
 
@@ -48,7 +49,7 @@ using namespace std;
 *						internal_computeLATCHDescriptors
 ************************************************************************************************/
 void CFeatureExtraction::internal_computeLATCHDescriptors(
-	const mrpt::utils::CImage& in_img, CFeatureList& in_features) const
+	const mrpt::img::CImage& in_img, CFeatureList& in_features) const
 {
 	MRPT_START
 #if (!HAVE_OPENCV_WITH_LATCH)

@@ -79,11 +79,11 @@ struct Message_TOPCON_PZS : public gnss_message
 			latitude_degrees, longitude_degrees, height_meters);
 	}
 	void dumpToStream(
-		mrpt::utils::CStream& out) const override;  // See docs in base
+		std::ostream& out) const override;  // See docs in base
 
    protected:
-	void internal_writeToStream(mrpt::utils::CStream& out) const override;
-	void internal_readFromStream(mrpt::utils::CStream& in) override;
+	void internal_writeToStream(mrpt::serialization::CArchive& out) const override;
+	void internal_readFromStream(mrpt::serialization::CArchive& in) override;
 
    public:
 	MRPT_MAKE_ALIGNED_OPERATOR_NEW
@@ -103,17 +103,17 @@ struct Message_TOPCON_SATS : public gnss_message
 
 	/** The list of USI (Universal Sat ID) for the detected sats (See GRIL
 	 * Manual, pag 4-31). */
-	mrpt::vector_byte USIs;
+	std::vector<uint8_t> USIs;
 	/** Elevation (in degrees, 0-90) for each satellite in USIs. */
-	mrpt::vector_signed_byte ELs;
+	std::vector<int8_t> ELs;
 	/** Azimuth (in degrees, 0-360) for each satellite in USIs. */
-	mrpt::vector_signed_word AZs;
+	std::vector<int16_t> AZs;
 
 	void dumpToStream(
-		mrpt::utils::CStream& out) const override;  // See docs in base
+		std::ostream& out) const override;  // See docs in base
    protected:
-	void internal_writeToStream(mrpt::utils::CStream& out) const override;
-	void internal_readFromStream(mrpt::utils::CStream& in) override;
+	void internal_writeToStream(mrpt::serialization::CArchive& out) const override;
+	void internal_readFromStream(mrpt::serialization::CArchive& in) override;
 };
 }
 }

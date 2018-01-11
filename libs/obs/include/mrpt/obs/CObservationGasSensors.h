@@ -9,7 +9,7 @@
 #ifndef CObservationGasSensors_H
 #define CObservationGasSensors_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose2D.h>
@@ -61,7 +61,7 @@ class CObservationGasSensors : public CObservation
 		  *  0x2620 : Figaro TGS 2620
 		  *  0x4161 : Figaro TGS 4161
 		  */
-		vector_int sensorTypes;
+		std::vector<int> sensorTypes;
 		/** Must be true for "temperature" to contain a valid measurement */
 		bool hasTemperature;
 		/** Sensed temperature in Celcius (valid if hasTemperature=true only) */
@@ -90,30 +90,26 @@ class CObservationGasSensors : public CObservation
 	class CMOSmodel
 	{
 	   public:
-		/** Constructor  */
-		CMOSmodel();
-		~CMOSmodel();
-
 		/** @name MOS-model parameters
 		  *  @{  */
 		/** The size of the mobile average window used to reduce noise on sensor
 		 * reagings. */
-		size_t winNoise_size;
+		size_t winNoise_size{30};
 		/** [useMOSmodel] The decimate frecuency applied after noise filtering
 		 */
-		int decimate_value;
+		int decimate_value{6};
 
 		/** tau = a*AMPLITUDE +b (linear relationship) */
-		float a_rise;
+		float a_rise{0};
 		/** tau = a*AMPLITUDE +b (linear relationship) */
-		float b_rise;
+		float b_rise{0};
 		/** tau = a*AMPLITUDE +b (linear relationship) */
-		float a_decay;
+		float a_decay{0};
 		/** tau = a*AMPLITUDE +b (linear relationship) */
-		float b_decay;
+		float b_decay{0};
 
 		/** If true save generated gas map as a log file */
-		bool save_maplog;
+		bool save_maplog{false};
 
 		/** @} */
 
@@ -146,18 +142,18 @@ class CObservationGasSensors : public CObservation
 		/** Vector to temporally store and averge readings to reduce noise */
 		std::vector<TdataMap> m_antiNoise_window;
 		/** Ofstream to save to file option "save_maplog" */
-		std::ofstream* m_debug_dump;
+		std::ofstream* m_debug_dump{nullptr};
 		/** Decimate value for oversampled enose readings */
-		uint16_t decimate_count;
+		uint16_t decimate_count{1};
 		/** To force e-nose samples to have fixed time increments */
-		double fixed_incT;
+		double fixed_incT{0};
 		/** To force e-nose samples to have fixed time increments */
-		bool first_incT;
+		bool first_incT{true};
 		/** Minimum reading value till the moment, used as approximation to
 		 * baeline level */
-		float min_reading;
+		float min_reading{10};
 		/** To avoid the model estimation on first iteration */
-		bool first_iteration;
+		bool first_iteration{true};
 
 		/** Estimates the gas concentration based on readings and sensor model
 		  */

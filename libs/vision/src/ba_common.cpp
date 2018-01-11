@@ -17,7 +17,7 @@
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::vision;
-using namespace mrpt::utils;
+using namespace mrpt::img;
 using namespace mrpt::math;
 using namespace mrpt::poses;
 
@@ -135,10 +135,10 @@ inline void reprojectionResidualsElement(
 
 /** Compute reprojection error vector (used from within Bundle Adjustment
  * methods, but can be used in general)
-  *  See mrpt::vision::bundle_adj_full for a description of most parameters.
-  *
-  *  \return Overall squared reprojection error.
-  */
+ *  See mrpt::vision::bundle_adj_full for a description of most parameters.
+ *
+ *  \return Overall squared reprojection error.
+ */
 double mrpt::vision::reprojectionResiduals(
 	const TSequenceFeatureObservations& observations,
 	const TCamera& camera_params, const TFramePosesMap& frame_poses,
@@ -164,8 +164,8 @@ double mrpt::vision::reprojectionResiduals(
 
 		TFramePosesMap::const_iterator itF = frame_poses.find(i_f);
 		TLandmarkLocationsMap::const_iterator itP = landmark_points.find(i_p);
-		ASSERTMSG_(itF != frame_poses.end(), "Frame ID is not in list!")
-		ASSERTMSG_(itP != landmark_points.end(), "Landmark ID is not in list!")
+		ASSERTMSG_(itF != frame_poses.end(), "Frame ID is not in list!");
+		ASSERTMSG_(itP != landmark_points.end(), "Landmark ID is not in list!");
 
 		const TFramePosesMap::mapped_type& frame = itF->second;
 		const TLandmarkLocationsMap::mapped_type& point = itP->second;
@@ -211,9 +211,8 @@ double mrpt::vision::reprojectionResiduals(
 		const TFeatureID i_p = OBS.id_feature;
 		const TCameraPoseID i_f = OBS.id_frame;
 
-		ASSERT_BELOW_(i_p, landmark_points.size())
-		ASSERT_BELOW_(i_f, frame_poses.size())
-
+		ASSERT_BELOW_(i_p, landmark_points.size());
+		ASSERT_BELOW_(i_f, frame_poses.size());
 		const TFramePosesVec::value_type& frame = frame_poses[i_f];
 		const TLandmarkLocationsVec::value_type& point = landmark_points[i_p];
 
@@ -238,11 +237,11 @@ double mrpt::vision::reprojectionResiduals(
 void mrpt::vision::ba_build_gradient_Hessians(
 	const TSequenceFeatureObservations& observations,
 	const vector<std::array<double, 2>>& residual_vec,
-	const mrpt::aligned_containers<JacData<6, 3, 2>>::vector_t& jac_data_vec,
-	mrpt::aligned_containers<CMatrixFixedNumeric<double, 6, 6>>::vector_t& U,
-	mrpt::aligned_containers<CArrayDouble<6>>::vector_t& eps_frame,
-	mrpt::aligned_containers<CMatrixFixedNumeric<double, 3, 3>>::vector_t& V,
-	mrpt::aligned_containers<CArrayDouble<3>>::vector_t& eps_point,
+	const mrpt::aligned_std_vector<JacData<6, 3, 2>>& jac_data_vec,
+	mrpt::aligned_std_vector<CMatrixFixedNumeric<double, 6, 6>>& U,
+	mrpt::aligned_std_vector<CArrayDouble<6>>& eps_frame,
+	mrpt::aligned_std_vector<CMatrixFixedNumeric<double, 3, 3>>& V,
+	mrpt::aligned_std_vector<CArrayDouble<3>>& eps_point,
 	const size_t num_fix_frames, const size_t num_fix_points,
 	const vector<double>* kernel_1st_deriv)
 {
@@ -260,14 +259,13 @@ void mrpt::vision::ba_build_gradient_Hessians(
 
 		const Eigen::Matrix<double, 2, 1> RESID(&residual_vec[i][0]);
 		const JacData<6, 3, 2>& JACOB = jac_data_vec[i];
-		ASSERTDEB_(JACOB.frame_id == i_f && JACOB.point_id == i_p)
+		ASSERTDEB_(JACOB.frame_id == i_f && JACOB.point_id == i_p);
 
 		if (i_f >= num_fix_frames)
 		{
 			const size_t frame_id = i_f - num_fix_frames;
-			ASSERTDEB_(JACOB.J_frame_valid)
-			ASSERT_BELOW_(frame_id, U.size())
-
+			ASSERTDEB_(JACOB.J_frame_valid);
+			ASSERT_BELOW_(frame_id, U.size());
 			CMatrixDouble66 JtJ(UNINITIALIZED_MATRIX);
 			JtJ.multiply_AtA(JACOB.J_frame);
 
@@ -288,9 +286,8 @@ void mrpt::vision::ba_build_gradient_Hessians(
 		if (i_p >= num_fix_points)
 		{
 			const size_t point_id = i_p - num_fix_points;
-			ASSERTDEB_(JACOB.J_point_valid)
-			ASSERT_BELOW_(point_id, V.size())
-
+			ASSERTDEB_(JACOB.J_point_valid);
+			ASSERT_BELOW_(point_id, V.size());
 			CMatrixDouble33 JtJ(UNINITIALIZED_MATRIX);
 			JtJ.multiply_AtA(JACOB.J_point);
 
@@ -347,8 +344,7 @@ void mrpt::vision::add_se3_deltas_to_frames(
 		delta_used_vals += 6;
 	}
 
-	ASSERT_(delta_used_vals == delta_num_vals)
-
+	ASSERT_(delta_used_vals == delta_num_vals);
 	MRPT_END
 }
 void mrpt::vision::add_3d_deltas_to_points(
@@ -379,7 +375,6 @@ void mrpt::vision::add_3d_deltas_to_points(
 		delta_used_vals += 3;
 	}
 
-	ASSERT_(delta_used_vals == delta_num_vals)
-
+	ASSERT_(delta_used_vals == delta_num_vals);
 	MRPT_END
 }

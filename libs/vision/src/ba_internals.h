@@ -13,7 +13,7 @@
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/CArrayNumeric.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/utils/aligned_containers.h>
+#include <mrpt/core/aligned_std_vector.h>
 #include <mrpt/vision/types.h>
 
 #include <array>
@@ -60,18 +60,18 @@ struct JacData
 
 /** The projective camera 2x6 Jacobian \f$ \frac{\partial h(f,p)}{\partial p}
  * \f$ (wrt the 6D camera pose)
-  * \note Jacobians as described in
+ * \note Jacobians as described in
  * http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty
  * (Appendix A)
-  */
+ */
 template <bool POSES_ARE_INVERSE>
 void frameJac(
-	const mrpt::utils::TCamera& camera_params,
+	const mrpt::img::TCamera& camera_params,
 	const mrpt::poses::CPose3D& cam_pose,
 	const mrpt::math::TPoint3D& landmark_global,
 	mrpt::math::CMatrixFixedNumeric<double, 2, 6>& out_J)
 {
-	using mrpt::math::square;
+	using mrpt::square;
 
 	double x, y, z;  // wrt cam (local coords)
 	if (POSES_ARE_INVERSE)
@@ -81,8 +81,7 @@ void frameJac(
 		cam_pose.inverseComposePoint(
 			landmark_global.x, landmark_global.y, landmark_global.z, x, y, z);
 
-	ASSERT_(z != 0)
-
+	ASSERT_(z != 0);
 	const double _z = 1.0 / z;
 	const double fx_z = camera_params.fx() * _z;
 	const double fy_z = camera_params.fy() * _z;
@@ -149,13 +148,13 @@ void frameJac(
 }
 
 /** Jacobians wrt the point
-  * \note Jacobians as described in
+ * \note Jacobians as described in
  * http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty
  * (Appendix A)
-*/
+ */
 template <bool POSES_ARE_INVERSE>
 void pointJac(
-	const mrpt::utils::TCamera& camera_params,
+	const mrpt::img::TCamera& camera_params,
 	const mrpt::poses::CPose3D& cam_pose,
 	const mrpt::math::TPoint3D& landmark_global,
 	mrpt::math::CMatrixFixedNumeric<double, 2, 3>& out_J)
@@ -175,8 +174,7 @@ void pointJac(
 			landmark_global.x, landmark_global.y, landmark_global.z, l.x, l.y,
 			l.z, &dp_point);
 
-	ASSERT_(l.z != 0)
-
+	ASSERT_(l.z != 0);
 	const double _z = 1.0 / l.z;
 	const double _z2 = square(_z);
 
@@ -198,16 +196,15 @@ template <bool POSES_ARE_INVERSE>
 void ba_compute_Jacobians(
 	const TFramePosesVec& frame_poses,
 	const TLandmarkLocationsVec& landmark_points,
-	const mrpt::utils::TCamera& camera_params,
-	mrpt::aligned_containers<JacData<6, 3, 2>>::vector_t& jac_data_vec,
+	const mrpt::img::TCamera& camera_params,
+	mrpt::aligned_std_vector<JacData<6, 3, 2>>& jac_data_vec,
 	const size_t num_fix_frames, const size_t num_fix_points)
 {
 	MRPT_START
 
 	// num_fix_frames & num_fix_points: Are relative to the order in frame_poses
 	// & landmark_points
-	ASSERT_(!frame_poses.empty() && !landmark_points.empty())
-
+	ASSERT_(!frame_poses.empty() && !landmark_points.empty());
 	const size_t N = jac_data_vec.size();
 
 	for (size_t i = 0; i < N; i++)
@@ -217,8 +214,8 @@ void ba_compute_Jacobians(
 		const TCameraPoseID i_f = D.frame_id;
 		const TLandmarkID i_p = D.point_id;
 
-		ASSERTDEB_(i_f < frame_poses.size())
-		ASSERTDEB_(i_p < landmark_points.size())
+		ASSERTDEB_(i_f < frame_poses.size());
+		ASSERTDEB_(i_p < landmark_points.size());
 
 		if (i_f >= num_fix_frames)
 		{
@@ -240,21 +237,19 @@ void ba_compute_Jacobians(
 }
 
 /** Construct the BA linear system.
-  *  Set kernel_1st_deriv!=nullptr if using robust kernel.
-  */
+ *  Set kernel_1st_deriv!=nullptr if using robust kernel.
+ */
 void ba_build_gradient_Hessians(
 	const TSequenceFeatureObservations& observations,
 	const std::vector<std::array<double, 2>>& residual_vec,
-	const mrpt::aligned_containers<JacData<6, 3, 2>>::vector_t& jac_data_vec,
-	mrpt::aligned_containers<
-		mrpt::math::CMatrixFixedNumeric<double, 6, 6>>::vector_t& U,
-	mrpt::aligned_containers<CArrayDouble<6>>::vector_t& eps_frame,
-	mrpt::aligned_containers<
-		mrpt::math::CMatrixFixedNumeric<double, 3, 3>>::vector_t& V,
-	mrpt::aligned_containers<CArrayDouble<3>>::vector_t& eps_point,
+	const mrpt::aligned_std_vector<JacData<6, 3, 2>>& jac_data_vec,
+	mrpt::aligned_std_vector<mrpt::math::CMatrixFixedNumeric<double, 6, 6>>& U,
+	mrpt::aligned_std_vector<CArrayDouble<6>>& eps_frame,
+	mrpt::aligned_std_vector<mrpt::math::CMatrixFixedNumeric<double, 3, 3>>& V,
+	mrpt::aligned_std_vector<CArrayDouble<3>>& eps_point,
 	const size_t num_fix_frames, const size_t num_fix_points,
 	const vector<double>* kernel_1st_deriv);
-}
-}
+}  // namespace vision
+}  // namespace mrpt
 
 #endif

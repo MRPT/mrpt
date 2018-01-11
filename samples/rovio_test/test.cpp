@@ -9,7 +9,6 @@
 
 #include <mrpt/hwdrivers/CRovio.h>
 #include <mrpt/hwdrivers/CJoystick.h>
-#include <mrpt/utils/utils_defs.h>
 #include <mrpt/slam.h>
 
 #include <fstream>
@@ -17,7 +16,6 @@
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
-using namespace mrpt::utils;
 using namespace mrpt::gui;
 using namespace std;
 
@@ -802,7 +800,7 @@ void getFMat_from_txt(data_st* data)
 
 	// HARRIS
 	A.loadFromTextFile("Harris_matches.txt");
-	point_count = A.getRowCount();
+	point_count = A.rows();
 	if (point_count < 8)
 		cout << "WARNING->Less than 8 elements...\n";
 	else
@@ -851,7 +849,7 @@ void getFMat_from_txt(data_st* data)
 
 	// SIFT
 	A.loadFromTextFile("SIFT_matches.txt");
-	point_count = A.getRowCount();
+	point_count = A.rows();
 
 	if (point_count < 8)
 		cout << "WARNING->Less than 8 elements...\n";
@@ -898,7 +896,7 @@ void getFMat_from_txt(data_st* data)
 
 	// SURF
 	A.loadFromTextFile("SURF_matches.txt");
-	point_count = A.getRowCount();
+	point_count = A.rows();
 
 	if (point_count < 8)
 		cout << "WARNING->Less than 8 elements...\n";

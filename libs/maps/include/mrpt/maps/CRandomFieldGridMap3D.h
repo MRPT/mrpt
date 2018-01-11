@@ -9,11 +9,11 @@
 
 #pragma once
 
-#include <mrpt/utils/CDynamicGrid3D.h>
-#include <mrpt/utils/types_math.h>
-#include <mrpt/utils/CSerializable.h>
-#include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/containers/CDynamicGrid3D.h>
+#include <mrpt/math/types_math.h>
+#include <mrpt/serialization/CSerializable.h>
+#include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/system/COutputLogger.h>
 #include <mrpt/graphs/ScalarFactorGraph.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
@@ -76,11 +76,11 @@ struct TRandomFieldVoxel
   * \note [New in MRPT 1.5.0]
   */
 class CRandomFieldGridMap3D
-	: public mrpt::utils::CDynamicGrid3D<TRandomFieldVoxel>,
-	  public mrpt::utils::CSerializable,
-	  public mrpt::utils::COutputLogger
+	: public mrpt::containers::CDynamicGrid3D<TRandomFieldVoxel>,
+	  public mrpt::serialization::CSerializable,
+	  public mrpt::system::COutputLogger
 {
-	typedef utils::CDynamicGrid3D<TRandomFieldVoxel> BASE;
+	using BASE = mrpt::containers::CDynamicGrid3D<TRandomFieldVoxel>;
 
 	DEFINE_SERIALIZABLE(CRandomFieldGridMap3D)
    public:
@@ -125,18 +125,18 @@ class CRandomFieldGridMap3D
 	  *  Derived classes instantions of their "TInsertionOptions" MUST set the
 	 * pointer "m_insertOptions_common" upon construction.
 	  */
-	struct TInsertionOptions : public mrpt::utils::CLoadableOptions
+	struct TInsertionOptions : public mrpt::config::CLoadableOptions
 	{
 		/** Default values loader */
 		TInsertionOptions();
 
 		/** See utils::CLoadableOptions */
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section);
 
 		/** See utils::CLoadableOptions */
-		void dumpToTextStream(mrpt::utils::CStream& out) const;
+		void dumpToTextStream(std::ostream& out) const;
 
 		/** @name Gaussian Markov Random Fields method
 			@{ */

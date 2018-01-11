@@ -18,9 +18,8 @@
 #include <mrpt/opengl/CPolyhedron.h>
 #include <mrpt/opengl/CSimpleLine.h>
 #include <mrpt/opengl/C3DSScene.h>
-#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
 
-using namespace mrpt::utils;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;
 using namespace mrpt::math;
@@ -481,21 +480,21 @@ CSetOfObjects::Ptr stock_objects::Hokuyo_URG()
 		CCylinder::Ptr cyl1 =
 			mrpt::make_aligned_shared<CCylinder>(0.02f, 0.02f, 0.01f);
 		cyl1->setColor(0, 0, 0);
-		cyl1->setPose(CPoint3D(0, 0, -0.014));
+		cyl1->setLocation(0, 0, -0.014);
 		ret->insert(cyl1);
 	}
 	{
 		CCylinder::Ptr cyl2 =
 			mrpt::make_aligned_shared<CCylinder>(0.02f, 0.0175f, 0.01f);
 		cyl2->setColor(0, 0, 0);
-		cyl2->setPose(CPoint3D(0, 0, -0.004));
+		cyl2->setLocation(0, 0, -0.004);
 		ret->insert(cyl2);
 	}
 	{
 		CCylinder::Ptr cyl3 =
 			mrpt::make_aligned_shared<CCylinder>(0.0175f, 0.0175f, 0.01f);
 		cyl3->setColor(0, 0, 0);
-		cyl3->setPose(CPoint3D(0, 0, 0.004));
+		cyl3->setLocation(0, 0, 0.004);
 		ret->insert(cyl3);
 	}
 
@@ -523,14 +522,14 @@ CSetOfObjects::Ptr stock_objects::Hokuyo_UTM()
 		CCylinder::Ptr cyl2 =
 			mrpt::make_aligned_shared<CCylinder>(0.028f, 0.028f, 0.01f);
 		cyl2->setColor(1, 69 / 255.0, 0);
-		cyl2->setPose(CPoint3D(0, 0, 0.014));
+		cyl2->setLocation(0, 0, 0.014);
 		ret->insert(cyl2);
 	}
 	{
 		CCylinder::Ptr cyl3 =
 			mrpt::make_aligned_shared<CCylinder>(0.028f, 0.028f, 0.01f);
 		cyl3->setColor(0, 0, 0);
-		cyl3->setPose(CPoint3D(0, 0, 0.024));
+		cyl3->setLocation(0, 0, 0.024);
 		ret->insert(cyl3);
 	}
 

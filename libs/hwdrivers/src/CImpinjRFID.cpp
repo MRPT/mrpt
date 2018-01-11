@@ -12,6 +12,7 @@
 #include <mrpt/hwdrivers/CImpinjRFID.h>
 #include <mrpt/system/os.h>
 
+#include <iostream>
 #include <thread>
 
 using namespace mrpt::hwdrivers;
@@ -65,7 +66,7 @@ void CImpinjRFID::startDriver()
 }
 
 void CImpinjRFID::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 	MRPT_START

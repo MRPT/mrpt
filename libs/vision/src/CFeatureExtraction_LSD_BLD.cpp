@@ -16,7 +16,7 @@
 #include "vision-precomp.h"  // Precompiled headers
 #include <mrpt/system/os.h>
 #include <mrpt/vision/CFeatureExtraction.h>  // important import
-#include <mrpt/utils/CMemoryStream.h>
+#include <mrpt/io/CMemoryStream.h>
 #include <mrpt/otherlibs/do_opencv_includes.h>
 
 #ifdef HAVE_OPENCV_XFEATURES2D
@@ -28,8 +28,9 @@ using namespace cv::line_descriptor;
 #endif
 
 using namespace mrpt::vision;
-using namespace mrpt::utils;
+using namespace mrpt::img;
 using namespace mrpt::math;
+using namespace mrpt::img;
 using namespace mrpt;
 using namespace std;
 
@@ -40,7 +41,7 @@ using namespace std;
 #endif
 
 void CFeatureExtraction::extractFeaturesLSD(
-	const mrpt::utils::CImage& inImg, CFeatureList& feats, unsigned int init_ID,
+	const mrpt::img::CImage& inImg, CFeatureList& feats, unsigned int init_ID,
 	unsigned int nDesiredFeatures, const TImageROI& ROI) const
 {
 	MRPT_START
@@ -177,7 +178,7 @@ void CFeatureExtraction::extractFeaturesLSD(
 *						internal_computeBLDDescriptors
 ************************************************************************************************/
 void CFeatureExtraction::internal_computeBLDLineDescriptors(
-	const mrpt::utils::CImage& in_img, CFeatureList& in_features) const
+	const mrpt::img::CImage& in_img, CFeatureList& in_features) const
 {
 #if (!HAVE_OPENCV_WITH_LSD)
 	THROW_EXCEPTION(

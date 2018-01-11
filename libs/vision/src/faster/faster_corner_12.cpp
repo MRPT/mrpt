@@ -12,17 +12,16 @@
 //             released under LGPL 2.1 by Edward Rosten
 // ---------------------------------------------------------------------------
 
-#include <mrpt/utils/utils_defs.h>
 #include <mrpt/system/memory.h>
 #include "faster_corner_prototypes.h"
 
-#include <mrpt/utils/SSE_types.h>
+#include <mrpt/core/SSE_types.h>
 #include "faster_corner_utilities.h"
 #include "corner_12.h"
+#include <list>
 
 using namespace std;
 using namespace mrpt;
-using namespace mrpt::utils;
 
 template <int I, int N>
 struct BitCheck
@@ -226,7 +225,7 @@ void faster_corner_detect_12(
 		*ptr_feat_index_by_row++ = corners.size();
 		*ptr_feat_index_by_row++ = corners.size();
 		*ptr_feat_index_by_row++ = corners.size();
-		ASSERT_(ptr_feat_index_by_row == ptr_feat_index_end)
+		ASSERT_(ptr_feat_index_by_row == ptr_feat_index_end);
 	}
 }
 

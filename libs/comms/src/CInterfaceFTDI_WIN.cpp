@@ -9,7 +9,7 @@
 
 #include "comms-precomp.h"  // Precompiled headers
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 
 /*===========================================================================
 	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -141,9 +141,9 @@ typedef void (*PFT_EVENT_HANDLER)(unsigned long, unsigned long);
 #include <windows.h>
 
 #include <mrpt/comms/CInterfaceFTDI.h>
+#include <mrpt/core/exceptions.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::comms;
 using namespace std;
 
@@ -176,27 +176,8 @@ CInterfaceFTDI::~CInterfaceFTDI()
 	}
 }
 
-/** This object cannot be copied */
-CInterfaceFTDI::CInterfaceFTDI(const CInterfaceFTDI& o) : m_readBuffer(4096)
-{
-	MRPT_START
-	THROW_EXCEPTION("This object cannot be copied");
-	MRPT_END
-}
-CInterfaceFTDI& CInterfaceFTDI::operator=(const CInterfaceFTDI& o)
-{
-	MRPT_START
-	THROW_EXCEPTION("This object cannot be copied");
-	MRPT_END
-}
-
-/*-------------------------------------------------------------
-					isOpen
--------------------------------------------------------------*/
 bool CInterfaceFTDI::isOpen() { return m_ftHandle != 0; }
-/*-------------------------------------------------------------
-					loadDriver
--------------------------------------------------------------*/
+
 void CInterfaceFTDI::loadDriver()
 {
 	MRPT_START

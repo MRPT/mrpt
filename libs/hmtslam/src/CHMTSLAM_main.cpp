@@ -26,20 +26,21 @@
 
 #include "hmtslam-precomp.h"  // Precomp header
 
-#include <mrpt/utils/CFileStream.h>
-#include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/io/CFileStream.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/utils/CMemoryStream.h>
+#include <mrpt/io/CMemoryStream.h>
 
 #include <mrpt/system/os.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::hmtslam;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
+using namespace mrpt::config;
 using namespace mrpt::opengl;
+using namespace mrpt::serialization;
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CHMTSLAM, CSerializable, mrpt::hmtslam)
@@ -228,7 +229,7 @@ void CHMTSLAM::pushObservation(const CObservation::Ptr& obs)
 /*---------------------------------------------------------------
 						loadOptions
   ---------------------------------------------------------------*/
-void CHMTSLAM::loadOptions(const mrpt::utils::CConfigFileBase& cfg)
+void CHMTSLAM::loadOptions(const mrpt::config::CConfigFileBase& cfg)
 {
 	m_options.loadFromConfigFile(cfg, "HMT-SLAM");
 
@@ -289,7 +290,7 @@ CHMTSLAM::TOptions::TOptions()
 						loadFromConfigFile
   ---------------------------------------------------------------*/
 void CHMTSLAM::TOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& source, const std::string& section)
+	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {
 	MRPT_LOAD_CONFIG_VAR(LOG_OUTPUT_DIR, string, source, section);
 	MRPT_LOAD_CONFIG_VAR(LOG_FREQUENCY, int, source, section);
@@ -310,7 +311,7 @@ void CHMTSLAM::TOptions::loadFromConfigFile(
 
 	stds_Q_no_odo[2] = RAD2DEG(stds_Q_no_odo[2]);
 	source.read_vector(section, "stds_Q_no_odo", stds_Q_no_odo, stds_Q_no_odo);
-	ASSERT_(stds_Q_no_odo.size() == 3)
+	ASSERT_(stds_Q_no_odo.size() == 3);
 
 	stds_Q_no_odo[2] = DEG2RAD(stds_Q_no_odo[2]);
 
@@ -328,9 +329,9 @@ void CHMTSLAM::TOptions::loadFromConfigFile(
 /*---------------------------------------------------------------
 						dumpToTextStream
   ---------------------------------------------------------------*/
-void CHMTSLAM::TOptions::dumpToTextStream(mrpt::utils::CStream& out) const
+void CHMTSLAM::TOptions::dumpToTextStream(std::ostream& out) const
 {
-	out.printf("\n----------- [CHMTSLAM::TOptions] ------------ \n\n");
+	out << mrpt::format("\n----------- [CHMTSLAM::TOptions] ------------ \n\n");
 
 	LOADABLEOPTS_DUMP_VAR(LOG_OUTPUT_DIR, string);
 	LOADABLEOPTS_DUMP_VAR(LOG_FREQUENCY, int);
@@ -429,7 +430,7 @@ void CHMTSLAM::initializeEmptyMap()
 		CMultiMetricMap::Ptr emptyMap = CMultiMetricMap::Ptr(
 			new CMultiMetricMap(&m_options.defaultMapsInitializers));
 
-		firstArea->m_nodeType.setType("Area");
+		firstArea->m_nodeType = "Area";
 		firstArea->m_label = generateUniqueAreaLabel();
 		firstArea->m_annotations.set(
 			NODE_ANNOTATION_METRIC_MAPS, emptyMap, newHypothID);
@@ -491,7 +492,7 @@ void CHMTSLAM::initializeEmptyMap()
 		// Create new list:
 		//  1: Occupancy Grid matching.
 		//  2: Cummins' image matching.
-		for (vector_string::const_iterator d = m_options.TLC_detectors.begin();
+		for (std::vector<std::string>::const_iterator d = m_options.TLC_detectors.begin();
 			 d != m_options.TLC_detectors.end(); ++d)
 			m_topLCdets.push_back(loopClosureDetector_factory(*d));
 	}
@@ -575,10 +576,7 @@ CTopLCDetectorBase* CHMTSLAM::loopClosureDetector_factory(
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-					saveState
-  ---------------------------------------------------------------*/
-bool CHMTSLAM::saveState(CStream& out) const
+bool CHMTSLAM::saveState(CArchive& out) const
 {
 	try
 	{
@@ -591,10 +589,7 @@ bool CHMTSLAM::saveState(CStream& out) const
 	}
 }
 
-/*---------------------------------------------------------------
-					loadState
-  ---------------------------------------------------------------*/
-bool CHMTSLAM::loadState(CStream& in)
+bool CHMTSLAM::loadState(CArchive& in)
 {
 	try
 	{
@@ -610,7 +605,7 @@ bool CHMTSLAM::loadState(CStream& in)
 /*---------------------------------------------------------------
 					readFromStream
   ---------------------------------------------------------------*/
-void CHMTSLAM::readFromStream(mrpt::utils::CStream& in, int version)
+void CHMTSLAM::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -618,29 +613,15 @@ void CHMTSLAM::readFromStream(mrpt::utils::CStream& in, int version)
 		{
 			// Acquire all critical sections before!
 			// -------------------------------------------
-			// std::map< THypothesisID, CLocalMetricHypothesis >::const_iterator
-			// it;
-
-			// std::lock_guard<std::mutex> LMHs( & m_LMHs_cs );
-			// for (it=m_LMHs.begin();it!=m_LMHs.end();it++)
-			// it->second.m_lock.lock();
-
 			std::lock_guard<std::mutex> lock_map(m_map_cs);
 
 			// Data:
 			in >> m_nextAreaLabel >> m_nextPoseID >> m_nextHypID;
-
 			// The HMT-MAP:
 			in >> m_map;
-
 			// The LMHs:
 			in >> m_LMHs;
-
 			// Save options??? Better allow changing them...
-
-			// Release all critical sections:
-			// for (it=m_LMHs.begin();it!=m_LMHs.end();it++)
-			// it->second.m_lock.lock();
 		}
 		break;
 		default:
@@ -648,40 +629,18 @@ void CHMTSLAM::readFromStream(mrpt::utils::CStream& in, int version)
 	};
 }
 
-/*---------------------------------------------------------------
-					writeToStream
-	Implements the writing to a CStream capability of
-	  CSerializable objects
-  ---------------------------------------------------------------*/
-void CHMTSLAM::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CHMTSLAM::serializeGetVersion() const { return 0; }
+void CHMTSLAM::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		// Acquire all critical sections before!
-		// -------------------------------------------
-		// std::map< THypothesisID, CLocalMetricHypothesis >::const_iterator it;
+	// Acquire all critical sections before!
+	// -------------------------------------------
+	std::lock_guard<std::mutex> lock_map(m_map_cs);
 
-		// std::lock_guard<std::mutex> LMHs( & m_LMHs_cs );
-		// for (it=m_LMHs.begin();it!=m_LMHs.end();it++)
-		// it->second.m_lock.lock();
-
-		std::lock_guard<std::mutex> lock_map(m_map_cs);
-
-		// Data:
-		out << m_nextAreaLabel << m_nextPoseID << m_nextHypID;
-
-		// The HMT-MAP:
-		out << m_map;
-
-		// The LMHs:
-		out << m_LMHs;
-
-		// Save options??? Better allow changing them...
-
-		// Release all critical sections:
-		// for (it=m_LMHs.begin();it!=m_LMHs.end();it++)
-		// it->second.m_lock.lock();
-	}
+	// Data:
+	out << m_nextAreaLabel << m_nextPoseID << m_nextHypID;
+	// The HMT-MAP:
+	out << m_map;
+	// The LMHs:
+	out << m_LMHs;
+	// Save options??? Better allow changing them...
 }

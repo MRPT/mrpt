@@ -9,8 +9,8 @@
 #pragma once
 
 #include <mrpt/config.h>
-#include <mrpt/utils/CStream.h>
-#include <mrpt/utils/circular_buffer.h>
+#include <mrpt/io/CStream.h>
+#include <mrpt/containers/circular_buffer.h>
 
 #include <deque>
 
@@ -19,9 +19,9 @@ namespace mrpt
 namespace comms
 {
 /** A list of FTDI devices and their descriptors.
-  * \sa CInterfaceFTDI::ListAllDevices
-  * \ingroup mrpt_comms_grp
-  */
+ * \sa CInterfaceFTDI::ListAllDevices
+ * \ingroup mrpt_comms_grp
+ */
 struct TFTDIDevice
 {
 	std::string ftdi_manufacturer;
@@ -32,7 +32,7 @@ struct TFTDIDevice
 	uint16_t usb_idProduct;
 	uint8_t usb_serialNumber;
 
-#if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
+#if defined(MRPT_OS_LINUX) || defined(__APPLE__)
 	/** Only for Linux: the corresponding libusb's `libusb_device*` (or
 	 * `usb_device*` for libftdi <1.2) */
 	void* usb_device_struct;
@@ -72,35 +72,35 @@ typedef std::deque<TFTDIDevice> TFTDIDeviceList;
  * \sa CStream
  * \ingroup mrpt_comms_grp
  */
-class CInterfaceFTDI : public utils::CStream
+class CInterfaceFTDI : public mrpt::io::CStream
 {
    public:
 	/** Constructor, which loads driver interface (the DLL under Windows).
-	  */
+	 */
 	CInterfaceFTDI();
 
 	/** Destructor, which closes the connection with the chip and unloads the
 	 * driver interface.
-	  */
+	 */
 	virtual ~CInterfaceFTDI();
 
 	/** This object cannot be copied */
-	CInterfaceFTDI(const CInterfaceFTDI& o);
+	CInterfaceFTDI(const CInterfaceFTDI& o) = delete;
 
 	/** This object cannot be copied */
-	CInterfaceFTDI& operator=(const CInterfaceFTDI& o);
+	CInterfaceFTDI& operator=(const CInterfaceFTDI& o) = delete;
 
 	/** Checks whether the chip has been successfully open.
-	  * \sa OpenBySerialNumber, OpenByDescription
-	  */
+	 * \sa OpenBySerialNumber, OpenByDescription
+	 */
 	bool isOpen();
 
 	/** Open by device serial number
-	  */
+	 */
 	void OpenBySerialNumber(const std::string& serialNumber);
 
 	/** Open by device description
-	  */
+	 */
 	void OpenByDescription(const std::string& description);
 
 	/** Close the USB device */
@@ -122,7 +122,7 @@ class CInterfaceFTDI : public utils::CStream
 		unsigned long dwReadTimeout_ms, unsigned long dwWriteTimeout_ms);
 
 	/** Generates a list with all FTDI devices connected right now.
-	  */
+	 */
 	void ListAllDevices(TFTDIDeviceList& outList);
 
 	/** Tries to read, raising no exception if not all the bytes are available,
@@ -146,35 +146,37 @@ class CInterfaceFTDI : public utils::CStream
 	 */
 	virtual size_t ReadBufferImmediate(void* Buffer, size_t Count);
 
-   protected:
 	/** Introduces a pure virtual method responsible for reading from the
-	 * stream.
-	  *  It integrates a cache buffer to speed-up sequences of many, small
-	 * readings.
-	  */
+	* stream.
+	*  It integrates a cache buffer to speed-up sequences of many, small
+	* readings.
+	*/
 	size_t Read(void* Buffer, size_t Count);
 
-	/** Used in Read */
-	mrpt::utils::circular_buffer<uint8_t> m_readBuffer;
-
 	/** Introduces a pure virtual method responsible for writing to the stream.
-	 *  Write attempts to write up to Count bytes to Buffer, and returns the
-	 * number of bytes actually written.
-	 */
+	*  Write attempts to write up to Count bytes to Buffer, and returns the
+	* number of bytes actually written.
+	*/
 	size_t Write(const void* Buffer, size_t Count);
 
 	/** This virtual method does nothing in this class.
-	 */
+	*/
 	uint64_t Seek(
-		uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning);
+		int64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning);
 
 	/** This virtual method does nothing in this class.
-	 */
-	uint64_t getTotalBytesCount();
+	*/
+	uint64_t getTotalBytesCount() const;
 
 	/** This virtual method does nothing in this class.
-	 */
-	uint64_t getPosition();
+	*/
+	uint64_t getPosition() const;
+
+
+   protected:
+
+	/** Used in Read */
+	mrpt::containers::circular_buffer<uint8_t> m_readBuffer;
 
 	void ftdi_read(
 		void* lpvBuffer, unsigned long dwBuffSize,
@@ -183,7 +185,7 @@ class CInterfaceFTDI : public utils::CStream
 		const void* lpvBuffer, unsigned long dwBuffSize,
 		unsigned long* lpdwBytes);
 
-#if defined(MRPT_OS_WINDOWS)
+#if defined(_WIN32)
    private:
 	void checkErrorAndRaise(int errorCode);
 
@@ -250,5 +252,5 @@ class CInterfaceFTDI : public utils::CStream
 
 };  // end of class
 
-}  // end of namespace
-}  // end of namespace
+}  // namespace comms
+}  // namespace mrpt

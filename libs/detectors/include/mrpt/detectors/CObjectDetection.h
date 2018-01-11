@@ -11,8 +11,8 @@
 #define CObjectDetection_H
 
 #include <mrpt/detectors/CDetectableObject.h>
-#include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/img/CImage.h>
 
 namespace mrpt
 {
@@ -28,13 +28,13 @@ class CObjectDetection
 	 */
 	inline void init(const std::string& configFile)
 	{
-		mrpt::utils::CConfigFile cfg(configFile);
+		mrpt::config::CConfigFile cfg(configFile);
 		init(cfg);
 	}
 
 	/** Initialize the object with parameters loaded from the given config
 	 * source. */
-	virtual void init(const mrpt::utils::CConfigFileBase& cfg) = 0;
+	virtual void init(const mrpt::config::CConfigFileBase& cfg) = 0;
 
 	inline void detectObjects(
 		const mrpt::obs::CObservation::Ptr obs,
@@ -50,7 +50,7 @@ class CObjectDetection
 	};
 
 	void detectObjects(
-		const mrpt::utils::CImage* img, vector_detectable_object& detected);
+		const mrpt::img::CImage* img, vector_detectable_object& detected);
 
    protected:
 	virtual void detectObjects_Impl(

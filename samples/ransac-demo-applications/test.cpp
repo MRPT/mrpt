@@ -11,8 +11,8 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/random.h>
-#include <mrpt/utils/CTicTac.h>
-#include <mrpt/utils/metaprogramming.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/containers/copy_container_typecasting.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CPointCloud.h>
@@ -20,7 +20,6 @@
 #include <mrpt/opengl/CTexturedPlane.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::gui;
 using namespace mrpt::math;
 using namespace mrpt::random;
@@ -125,9 +124,9 @@ void TestRANSACPlanes()
 
 		// Convert double -> float:
 		vector<float> xsf, ysf, zsf;
-		metaprogramming::copy_container_typecasting(xs, xsf);
-		metaprogramming::copy_container_typecasting(ys, ysf);
-		metaprogramming::copy_container_typecasting(zs, zsf);
+		mrpt::containers::copy_container_typecasting(xs, xsf);
+		mrpt::containers::copy_container_typecasting(ys, ysf);
+		mrpt::containers::copy_container_typecasting(zs, zsf);
 
 		points->setAllPoints(xsf, ysf, zsf);
 

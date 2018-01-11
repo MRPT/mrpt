@@ -24,14 +24,17 @@
 #include <mrpt/hwdrivers/CCameraSensor.h>  // For capture of video from videos/cameras
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/system/os.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
+using namespace mrpt::img;
+using namespace mrpt::config;
 using namespace mrpt::system;
 using namespace mrpt::vision;
+using namespace mrpt::serialization;
 using namespace mrpt::poses;
 
 mrpt::gui::CDisplayWindow3D::Ptr win;  // This is global such as an exception
@@ -137,7 +140,7 @@ int DoTrackingDemo(CCameraSensor::Ptr cam, bool DO_SAVE_VIDEO)
 		{
 			obs = cam->getNextFrame();
 		}
-		catch (CExceptionEOF&)
+		catch (mrpt::serialization::CExceptionEOF&)
 		{  // End of a rawlog file.
 			break;
 		}

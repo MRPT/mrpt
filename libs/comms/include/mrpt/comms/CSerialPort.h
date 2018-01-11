@@ -8,9 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/config.h>
-#include <mrpt/utils/CStream.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/io/CStream.h>
+#include <mrpt/system/CTicTac.h>
 
 namespace mrpt
 {
@@ -19,21 +18,18 @@ namespace comms
 /** A communications serial port built as an implementation of a utils::CStream.
  * On communication errors (eg. the given port number does not exist,
  * timeouts,...), most of the methods will
- * raise an exception of the class "std::exception"
+ * raise an exception of the class `std::exception`
  *
  *  The serial port to open is passed in the constructor in the form of a string
- * description,
- *   which is platform dependent.
+ * description, which is platform dependent.
  *
- *  In windows they are numbered "COM1"-"COM4" and "\\.\COMXXX" for numbers
- * above.
- *    It is recomended to always use the prefix "\\.\" despite the actual port
- * number.
+ *  In Windows they are numbered "COM1"-"COM4" and "\\.\COMXXX" for numbers
+ * above. It is recomended to always use the prefix "\\.\" despite the actual
+ * port number.
  *
  *  In Linux the name must refer to the device, for example: "ttyUSB0","ttyS0".
- * If the name string does not
- *   start with "/" (an absolute path), the constructor will assume the prefix
- * "/dev/".
+ * If the name string does not start with "/" (an absolute path), the
+ * constructor will assume the prefix "/dev/".
  *
  *  History:
  *    - 1/DEC/2005:  (JLBC) First version
@@ -44,7 +40,7 @@ namespace comms
  * \todo Add the internal buffer to the Windows implementation also
  * \ingroup mrpt_comms_grp
  */
-class CSerialPort : public mrpt::utils::CStream
+class CSerialPort : public mrpt::io::CStream
 {
 	friend class PosixSignalDispatcherImpl;
 
@@ -71,11 +67,7 @@ class CSerialPort : public mrpt::utils::CStream
 	 * open yet).
 	  * \sa open, close
 	  */
-	void setSerialPortName(const std::string& COM_name)
-	{
-		if (isOpen()) THROW_EXCEPTION("Cannot change serial port while open");
-		m_serialName = COM_name;
-	}
+	void setSerialPortName(const std::string& COM_name);
 
 	/** Open the port. If is already open results in no action.
 	* \exception std::exception On communication errors
@@ -87,16 +79,7 @@ class CSerialPort : public mrpt::utils::CStream
 	* \exception std::exception On communication errors or a different serial
 	* port already open.
 	*/
-	void open(const std::string& COM_name)
-	{
-		if (isOpen() && m_serialName != COM_name)
-			THROW_EXCEPTION("Cannot change serial port while open");
-		if (!isOpen())
-		{
-			setSerialPortName(COM_name);
-			open();
-		}
-	}
+	void open(const std::string& COM_name);
 
 	/** Close the port. If is already closed, results in no action.
 	*/
@@ -156,56 +139,14 @@ class CSerialPort : public mrpt::utils::CStream
 		const int total_timeout_ms = -1, bool* out_timeout = nullptr,
 		const char* eol_chars = "\r\n");
 
-	/** Implements the virtual method responsible for writing to the stream.
-	 *  Write attempts to write up to Count bytes to Buffer, and returns the
-	* number of bytes actually written.
-	* \exception std::exception On communication errors
-	 */
-	size_t Write(const void* Buffer, size_t Count);
-
-	/** Introduces a pure virtual method for moving to a specified position in
-	 *the streamed resource.
-	 *   he Origin parameter indicates how to interpret the Offset parameter.
-	 *Origin should be one of the following values:
-	 *	- sFromBeginning	(Default) Offset is from the beginning of the
-	 *resource. Seek moves to the position Offset. Offset must be >= 0.
-	 *	- sFromCurrent		Offset is from the current position in the resource.
-	 *Seek moves to Position + Offset.
-	 *	- sFromEnd			Offset is from the end of the resource. Offset must
-	 *be
-	 *<= 0 to indicate a number of bytes before the end of the file.
-	 * \return Seek returns the new value of the Position property.
-	 */
-	uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning)
-	{
-		MRPT_START
-		MRPT_UNUSED_PARAM(Origin);
-		MRPT_UNUSED_PARAM(Offset);
-		THROW_EXCEPTION(
-			"Method not applicable to serial communications port CStream!");
-		MRPT_END
-	}
-
-	/** Returns the total amount of bytes in the stream.
-	 */
-	uint64_t getTotalBytesCount()
-	{
-		MRPT_START
-		THROW_EXCEPTION(
-			"Method not applicable to serial communications port CStream!");
-		MRPT_END
-	}
-
-	/** Method for getting the current cursor position, where 0 is the first
-	 * byte and TotalBytesCount-1 the last one.
-	 */
-	uint64_t getPosition()
-	{
-		MRPT_START
-		THROW_EXCEPTION(
-			"Method not applicable to serial communications port CStream!");
-		MRPT_END
-	}
+	// See base class docs
+	size_t Write(const void* Buffer, size_t Count) override;
+	/** not applicable in a serial port */
+	uint64_t Seek(int64_t off, CStream::TSeekOrigin o = sFromBeginning) override;
+	/** not applicable in a serial port */
+	uint64_t getTotalBytesCount() const override;
+	/** not applicable in a serial port */
+	uint64_t getPosition() const override;
 
    protected:
 	/** The complete name of the serial port device (i.e.
@@ -214,11 +155,8 @@ class CSerialPort : public mrpt::utils::CStream
 	std::string m_serialName;
 	int m_baudRate;
 	int m_totalTimeout_ms, m_interBytesTimeout_ms;
-
-	/** Used only in \a ReadString */
-	mrpt::utils::CTicTac m_timer;
-
-#ifdef MRPT_OS_WINDOWS
+	mrpt::system::CTicTac m_timer;
+#ifdef _WIN32
 	// WINDOWS
 	void* hCOM;
 #else
@@ -226,10 +164,7 @@ class CSerialPort : public mrpt::utils::CStream
 	/** The file handle (-1: Not open)
 	  */
 	int hCOM;
-// size_t  ReadUnbuffered(void *Buffer, size_t Count); // JL: Remove??
 #endif
-
 };  // end of class
-
 }  // end of namespace
 }  // end of namespace

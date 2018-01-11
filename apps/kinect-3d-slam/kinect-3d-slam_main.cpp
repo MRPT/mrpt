@@ -32,7 +32,7 @@ accurate.
 #include <mrpt/vision/tracking.h>
 #include <mrpt/tfest/se3.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
@@ -41,12 +41,14 @@ accurate.
 using namespace mrpt;
 using namespace mrpt::vision;
 using namespace mrpt::hwdrivers;
+using namespace mrpt::img;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::gui;
-using namespace mrpt::utils;
+using namespace mrpt::tfest;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
+using namespace mrpt::system;
 using namespace mrpt::opengl;
 using namespace std;
 
@@ -81,7 +83,7 @@ void thread_grabbing(TThreadParam& p)
 		if (mrpt::system::fileExists(cfgFile))
 		{
 			cout << "Loading calibration from: " << cfgFile << endl;
-			kinect.loadConfig(mrpt::utils::CConfigFile(cfgFile), "KINECT");
+			kinect.loadConfig(mrpt::config::CConfigFile(cfgFile), "KINECT");
 		}
 		else
 			cerr << "Warning: Calibration file [" << cfgFile
@@ -244,8 +246,7 @@ void Test_Kinect()
 	gl_points_map->setPointSize(2.0);
 
 	const double aspect_ratio =
-		480.0 /
-		640.0;  // kinect.getRowCount() / double( kinect.getColCount() );
+		480.0 / 640.0;  // kinect.rows() / double( kinect.cols() );
 
 	mrpt::opengl::CSetOfObjects::Ptr gl_cur_cam_corner =
 		mrpt::opengl::stock_objects::CornerXYZSimple(0.4f, 4);
@@ -301,7 +302,7 @@ void Test_Kinect()
 			last_obs = possiblyNewObs;
 
 			// Feature tracking -------------------------------------------
-			ASSERT_(last_obs->hasIntensityImage)
+			ASSERT_(last_obs->hasIntensityImage);
 
 			CImage theImg;  // The grabbed image:
 			theImg = last_obs->intensityImage;
@@ -366,7 +367,7 @@ void Test_Kinect()
 						size_t(
 							last_obs->rangeImage.cols() *
 							last_obs->rangeImage.rows()) ==
-						last_obs->points3D_x.size())
+						last_obs->points3D_x.size());
 					const size_t nPt = last_obs->rangeImage.cols() * y + x;
 					curVisibleFeats[(*itFeat)->ID] = TPoint3D(
 						last_obs->points3D_x[nPt], last_obs->points3D_y[nPt],
@@ -394,12 +395,10 @@ void Test_Kinect()
 						lastVisibleFeats.find(itCur->first);
 					if (itFound != lastVisibleFeats.end())
 					{
-						corrs.push_back(
-							TMatchingPair(
-								itFound->first, itCur->first, itFound->second.x,
-								itFound->second.y, itFound->second.z,
-								itCur->second.x, itCur->second.y,
-								itCur->second.z));
+						corrs.push_back(TMatchingPair(
+							itFound->first, itCur->first, itFound->second.x,
+							itFound->second.y, itFound->second.z,
+							itCur->second.x, itCur->second.y, itCur->second.z));
 					}
 				}
 
@@ -452,8 +451,7 @@ void Test_Kinect()
 								CPose3D(*camera_key_frames_path.rbegin()) +
 								relativePose;
 
-							camera_key_frames_path.push_back(
-								TPose3D(new_keyframe_global));
+							camera_key_frames_path.push_back(new_keyframe_global.asTPose());
 
 							gl_keyframes_must_refresh = true;
 
@@ -630,9 +628,9 @@ void Test_Kinect()
 
 		win3D.get3DSceneAndLock();
 		win3D.addTextMessage(
-			2, -30, format(
-						"'s':save point cloud, 'r': reset, 'o'/'i': zoom "
-						"out/in, mouse: orbit 3D, ESC: quit"),
+			2, -30,
+			format("'s':save point cloud, 'r': reset, 'o'/'i': zoom "
+				   "out/in, mouse: orbit 3D, ESC: quit"),
 			TColorf(1, 1, 1), 110, MRPT_GLUT_BITMAP_HELVETICA_12);
 		win3D.addTextMessage(
 			2, -50, str_status, TColorf(1, 1, 1), 111,

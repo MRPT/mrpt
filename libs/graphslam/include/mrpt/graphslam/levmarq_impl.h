@@ -10,7 +10,7 @@
 #define GRAPH_SLAM_LEVMARQ_IMPL_H
 
 #include <mrpt/graphs/CNetworkOfPoses.h>
-#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/CTimeLogger.h>
 #include <mrpt/math/CSparseMatrix.h>
 
 #include <memory>
@@ -26,7 +26,6 @@ using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::graphslam;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace std;
 
 // An auxiliary struct to compute the pseudo-ln of a pose error, possibly
@@ -189,8 +188,7 @@ double computeJacobiansAndErrors(
 	const std::vector<typename graphslam_traits<GRAPH_T>::observation_info_t>&
 		lstObservationData,
 	typename graphslam_traits<GRAPH_T>::map_pairIDs_pairJacobs_t& lstJacobians,
-	typename mrpt::aligned_containers<
-		typename graphslam_traits<GRAPH_T>::Array_O>::vector_t& errs)
+	mrpt::aligned_std_vector<typename graphslam_traits<GRAPH_T>::Array_O>& errs)
 {
 	MRPT_UNUSED_PARAM(graph);
 	typedef graphslam_traits<GRAPH_T> gst;
@@ -209,8 +207,8 @@ double computeJacobiansAndErrors(
 		typename gst::graph_t::constraint_t::type_value* P1 = obs.P1;
 		typename gst::graph_t::constraint_t::type_value* P2 = obs.P2;
 
-		const mrpt::utils::TPairNodeIDs& ids = it->first;
-		const typename gst::graph_t::edge_t& edge = it->second;
+		const auto& ids = it->first;
+		const auto& edge = it->second;
 
 		// Compute the residual pose error of these pair of nodes + its
 		// constraint,
@@ -233,7 +231,7 @@ double computeJacobiansAndErrors(
 
 		// Compute the jacobians:
 		alignas(16)
-			std::pair<mrpt::utils::TPairNodeIDs, typename gst::TPairJacobs>
+			std::pair<mrpt::graphs::TPairNodeIDs, typename gst::TPairJacobs>
 				newMapEntry;
 		newMapEntry.first = ids;
 		gst::SE_TYPE::jacobian_dP1DP2inv_depsilon(
@@ -244,7 +242,7 @@ double computeJacobiansAndErrors(
 	}
 
 	// return overall square error:  (Was:
-	// std::accumulate(...,mrpt::math::squareNorm_accum<>), but led to GCC
+	// std::accumulate(...,mrpt::squareNorm_accum<>), but led to GCC
 	// errors when enabling parallelization)
 	double ret_err = 0.0;
 	for (size_t i = 0; i < errs.size(); i++) ret_err += errs[i].squaredNorm();

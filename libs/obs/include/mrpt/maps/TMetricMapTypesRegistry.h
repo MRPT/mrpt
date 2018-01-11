@@ -9,7 +9,6 @@
 
 #pragma once
 
-#include <mrpt/utils/core_defs.h>
 #include <mrpt/obs/obs_frwds.h>
 #include <map>
 #include <string>
@@ -44,10 +43,11 @@ struct TMetricMapTypesRegistry
 	/** Return nullptr if not found */
 	mrpt::maps::CMetricMap* factoryMapObjectFromDefinition(
 		const mrpt::maps::TMetricMapInitializer& mi) const;
-	typedef std::map<std::string,
-					 std::pair<MapDefCtorFunctor, MapCtorFromDefFunctor>>
+	typedef std::map<
+		std::string, std::pair<MapDefCtorFunctor, MapCtorFromDefFunctor>>
 		TListRegisteredMaps;
 	const TListRegisteredMaps& getAllRegistered() const { return m_registry; }
+
    private:
 	TMetricMapTypesRegistry() {}  // Access thru singleton in Instance()
 	TListRegisteredMaps m_registry;
@@ -55,25 +55,25 @@ struct TMetricMapTypesRegistry
 
 /** Add a MAP_DEFINITION_START() ... MAP_DEFINITION_END() block inside the
  * declaration of each metric map */
-#define MAP_DEFINITION_START(_CLASS_NAME_)                                      \
-   public:                                                                      \
-	/** @name Map Definition Interface stuff (see                               \
-	 * mrpt::maps::TMetricMapInitializer) @{ */                                 \
-	struct TMapDefinitionBase : public mrpt::maps::TMetricMapInitializer        \
-	{                                                                           \
-		TMapDefinitionBase() : TMetricMapInitializer(CLASS_ID(_CLASS_NAME_)) {} \
-	};                                                                          \
-	struct TMapDefinition : public TMapDefinitionBase                           \
+#define MAP_DEFINITION_START(_CLASS_NAME_)                               \
+   public:                                                               \
+	/** @name Map Definition Interface stuff (see                        \
+	 * mrpt::maps::TMetricMapInitializer) @{ */                          \
+	struct TMapDefinitionBase : public mrpt::maps::TMetricMapInitializer \
+	{                                                                    \
+		TMapDefinitionBase()                                             \
+			: TMetricMapInitializer(CLASS_ID(_CLASS_NAME_)) {}           \
+	};                                                                   \
+	struct TMapDefinition : public TMapDefinitionBase                    \
 	{
 #define MAP_DEFINITION_END(_CLASS_NAME_, _LINKAGE_)                          \
 	TMapDefinition();                                                        \
                                                                              \
    protected:                                                                \
 	void loadFromConfigFile_map_specific(                                    \
-		const mrpt::utils::CConfigFileBase& source,                          \
+		const mrpt::config::CConfigFileBase& source,                         \
 		const std::string& sectionNamePrefix) override;                      \
-	void dumpToTextStream_map_specific(mrpt::utils::CStream& out)            \
-		const override;                                                      \
+	void dumpToTextStream_map_specific(std::ostream& out) const override;    \
 	}                                                                        \
 	;                                                                        \
 	/** Returns default map definition initializer. See                      \
@@ -90,7 +90,7 @@ struct TMetricMapTypesRegistry
 /** @} */
 
 /** Registers one map class into TMetricMapInitializer factory.
-	* One or several alternative class names can be provided, separated with
+ * One or several alternative class names can be provided, separated with
  * whitespaces or commas */
 #define MAP_DEFINITION_REGISTER(_CLASSNAME_STRINGS, _CLASSNAME_WITH_NS)       \
 	const size_t _CLASSNAME_WITH_NS::m_private_map_register_id =              \
@@ -108,6 +108,6 @@ struct TMetricMapTypesRegistry
 			_CLASSNAME_WITH_NS::internal_CreateFromMapDefinition(def));       \
 	}
 
-}  // end NS internal
-}  // End of namespace
-}  // End of namespace
+}  // namespace internal
+}  // namespace maps
+}  // namespace mrpt

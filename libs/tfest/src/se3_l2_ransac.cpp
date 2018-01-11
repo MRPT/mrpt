@@ -14,23 +14,23 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/random.h>
-#include <mrpt/utils/round.h>
+#include <mrpt/core/round.h>
 #include <mrpt/math/utils.h>  // linspace()
 #include <numeric>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::tfest;
 using namespace mrpt::random;
 using namespace mrpt::poses;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace std;
 
 /*---------------------------------------------------------------
 						 se3_l2_robust
   ---------------------------------------------------------------*/
 bool tfest::se3_l2_robust(
-	const mrpt::utils::TMatchingPairList& in_correspondences,
+	const mrpt::tfest::TMatchingPairList& in_correspondences,
 	const TSE3RobustParams& params, TSE3RobustResult& results)
 {
 	MRPT_START
@@ -59,7 +59,7 @@ bool tfest::se3_l2_robust(
 
 	const size_t n =
 		params.ransac_minSetSize;  // Minimum number of points to fit the model
-	const size_t d = mrpt::utils::round(
+	const size_t d = mrpt::round(
 		N * params.ransac_maxSetSizePct);  // Minimum number of points to be
 	// considered a good set
 	const size_t max_it =
@@ -68,7 +68,7 @@ bool tfest::se3_l2_robust(
 	ASSERTMSG_(
 		d >= n,
 		"Minimum number of points to be considered a good set is < Minimum "
-		"number of points to fit the model")
+		"number of points to fit the model");
 
 	// -------------------------------------------
 	// MAIN loop
@@ -78,7 +78,7 @@ bool tfest::se3_l2_robust(
 		// printf("Iteration %2u of %u", iterations+1, max_it );
 
 		// Generate maybe inliers
-		vector_int rub, mbSet, cSet;
+		std::vector<uint32_t> rub, mbSet, cSet;
 		mrpt::math::linspace((int)0, (int)N - 1, (int)N, rub);
 		getRandomGenerator().permuteVector(rub, mbSet);
 
@@ -205,7 +205,7 @@ bool tfest::se3_l2_robust(
 			ASSERTMSG_(
 				res,
 				"tfest::se3_l2() returned false for tentative subset during "
-				"RANSAC iteration!")
+				"RANSAC iteration!");
 
 			// Compute error for consensus_set
 			const CPose3D cIOut = CPose3D(cIOutQuat);

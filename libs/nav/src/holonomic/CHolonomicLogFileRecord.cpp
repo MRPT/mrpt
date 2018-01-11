@@ -10,10 +10,9 @@
 #include "nav-precomp.h"  // Precomp header
 
 #include <mrpt/nav/holonomic/CHolonomicLogFileRecord.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::nav;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(

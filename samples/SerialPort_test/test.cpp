@@ -8,10 +8,8 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/comms/CSerialPort.h>
-#include <mrpt/utils.h>
 
 using namespace mrpt::comms;
-using namespace mrpt::utils;
 using namespace std;
 
 int main()

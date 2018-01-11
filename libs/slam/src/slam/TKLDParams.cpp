@@ -9,12 +9,11 @@
 
 #include "slam-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/CStream.h>
-#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/slam/TKLDParams.h>
 
 using namespace mrpt::slam;
-using namespace mrpt::utils;
 
 /*---------------------------------------------------------------
 					TKLDParams
@@ -33,29 +32,29 @@ TKLDParams::TKLDParams()
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void TKLDParams::dumpToTextStream(mrpt::utils::CStream& out) const
+void TKLDParams::dumpToTextStream(std::ostream& out) const
 {
-	out.printf("\n----------- [TKLDParams] ------------ \n\n");
+	out << mrpt::format("\n----------- [TKLDParams] ------------ \n\n");
 
-	out.printf(
+	out << mrpt::format(
 		"KLD_minSampleSize                       = %i\n", KLD_minSampleSize);
-	out.printf(
+	out << mrpt::format(
 		"KLD_maxSampleSize                       = %i\n", KLD_maxSampleSize);
-	out.printf(
+	out << mrpt::format(
 		"KLD_binSize_XY                          = %f m\n", KLD_binSize_XY);
-	out.printf(
+	out << mrpt::format(
 		"KLD_binSize_PHI                         = %f deg\n",
 		RAD2DEG(KLD_binSize_PHI));
-	out.printf("KLD_delta                               = %f\n", KLD_delta);
-	out.printf("KLD_epsilon                             = %f\n", KLD_epsilon);
-	out.printf("\n");
+	out << mrpt::format("KLD_delta                               = %f\n", KLD_delta);
+	out << mrpt::format("KLD_epsilon                             = %f\n", KLD_epsilon);
+	out << mrpt::format("\n");
 }
 
 /*---------------------------------------------------------------
 					loadFromConfigFile
   ---------------------------------------------------------------*/
 void TKLDParams::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
 {
 	MRPT_LOAD_CONFIG_VAR(KLD_minSampleSize, int, iniFile, section);
 	MRPT_LOAD_CONFIG_VAR(KLD_maxSampleSize, int, iniFile, section);

@@ -167,7 +167,7 @@ struct TCaptureOptions_FlyCapture2
 	  * on.
 	  */
 	void loadOptionsFrom(
-		const mrpt::utils::CConfigFileBase& configSource,
+		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& sectionName,
 		const std::string& prefix = std::string());
 	// clang-format on

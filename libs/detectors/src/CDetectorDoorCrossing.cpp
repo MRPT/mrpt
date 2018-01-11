@@ -17,7 +17,6 @@ using namespace mrpt;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::detectors;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 /*---------------------------------------------------------------
@@ -103,9 +102,8 @@ void CDetectorDoorCrossing::process(
 		CActionCollection::Ptr acts = lastObs.getAsAction(i * 2 + 0);
 		CAction::Ptr act = acts->get(0);
 
-		ASSERT_(
-			act->GetRuntimeClass()->derivedFrom(
-				CLASS_ID(CActionRobotMovement2D)))
+		ASSERT_(act->GetRuntimeClass()->derivedFrom(
+			CLASS_ID(CActionRobotMovement2D)));
 		CActionRobotMovement2D::Ptr action =
 			std::dynamic_pointer_cast<CActionRobotMovement2D>(act);
 

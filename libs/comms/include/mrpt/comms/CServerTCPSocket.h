@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/utils/core_defs.h>
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/core/common.h>
+#include <mrpt/system/COutputLogger.h>
 #include <string>
 #include <memory>  // unique_ptr
 
@@ -23,7 +23,7 @@ class CClientTCPSocket;
   *  Unless otherwise noticed, operations are blocking.
  * \ingroup mrpt_comms_grp
   */
-class CServerTCPSocket : public utils::COutputLogger
+class CServerTCPSocket : public mrpt::system::COutputLogger
 {
    public:
 	/** Constructor that creates the socket, performs binding, and start
@@ -42,7 +42,7 @@ class CServerTCPSocket : public utils::COutputLogger
 		unsigned short listenPort,
 		const std::string& IPaddress = std::string("127.0.0.1"),
 		int maxConnectionsWaiting = 50,
-		mrpt::utils::VerbosityLevel verbosityLevel = mrpt::utils::LVL_INFO);
+		mrpt::system::VerbosityLevel verbosityLevel = mrpt::system::LVL_INFO);
 	/** Dtor */
 	virtual ~CServerTCPSocket();
 
@@ -61,7 +61,7 @@ class CServerTCPSocket : public utils::COutputLogger
 
    private:
 /** The handle for the listening server TCP socket. */
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	unsigned int
 #else
 	int

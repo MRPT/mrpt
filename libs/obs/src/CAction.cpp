@@ -10,10 +10,9 @@
 #include "obs-precomp.h"  // Precompiled headers
 
 #include <mrpt/obs/CAction.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CAction, CSerializable, mrpt::obs)
 

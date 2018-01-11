@@ -14,7 +14,7 @@
 #include <mrpt/opengl/CSetOfTriangles.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/CMatrixTemplate.h>
-#include <mrpt/utils/aligned_containers.h>
+#include <mrpt/core/aligned_std_vector.h>
 
 namespace mrpt
 {
@@ -22,41 +22,41 @@ namespace opengl
 {
 class CGeneralizedCylinder;
 /**
-  * This object represents any figure obtained by extruding any profile along a
+ * This object represents any figure obtained by extruding any profile along a
  * given axis. The profile should lie over a x=0 plane, and the axis must be
  * roughly perpendicular to this plane. In particular, it should be almost
  * perpendicular to the Z axis.
-  * \ingroup mrpt_opengl_grp
-  */
+ * \ingroup mrpt_opengl_grp
+ */
 class CGeneralizedCylinder : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CGeneralizedCylinder)
    public:
 	/**
-	  * Auxiliary struct holding any quadrilateral, represented by foour points.
-	  */
+	 * Auxiliary struct holding any quadrilateral, represented by foour points.
+	 */
 	struct TQuadrilateral
 	{
 	   private:
 		/**
-		  * Automatically compute a vector normal to this quadrilateral.
-		  */
+		 * Automatically compute a vector normal to this quadrilateral.
+		 */
 		void calculateNormal();
 
 	   public:
 		/**
-		  * Quadrilateral`'s points.
-		  */
+		 * Quadrilateral`'s points.
+		 */
 		mrpt::math::TPoint3D points[4];
 		/**
-		  * Normal vector.
-		  */
+		 * Normal vector.
+		 */
 		double normal[3];
 		/**
-		  * Given a polygon with 4 already positions allocated, this method
+		 * Given a polygon with 4 already positions allocated, this method
 		 * fills it with the quadrilateral points.
-		  * \sa mrpt::math::TPolygon3D
-		  */
+		 * \sa mrpt::math::TPolygon3D
+		 */
 		inline void getAsPolygonUnsafe(mrpt::math::TPolygon3D& vec) const
 		{
 			vec[0] = points[0];
@@ -65,8 +65,8 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 			vec[3] = points[3];
 		}
 		/**
-		  * Constructor from 4 points.
-		  */
+		 * Constructor from 4 points.
+		 */
 		TQuadrilateral(
 			const mrpt::math::TPoint3D& p1, const mrpt::math::TPoint3D& p2,
 			const mrpt::math::TPoint3D& p3, const mrpt::math::TPoint3D& p4)
@@ -78,8 +78,8 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 			calculateNormal();
 		}
 		/**
-		  * Construction from any array of four compatible objects.
-		  */
+		 * Construction from any array of four compatible objects.
+		 */
 		template <class T>
 		TQuadrilateral(const T (&p)[4])
 		{
@@ -87,19 +87,19 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 			calculateNormal();
 		}
 		/**
-		  * Empty constructor. Initializes to garbage.
-		  */
+		 * Empty constructor. Initializes to garbage.
+		 */
 		TQuadrilateral() {}
 		/**
-		  * Destructor.
-		  */
+		 * Destructor.
+		 */
 		~TQuadrilateral() {}
 	};
 
    protected:
 	/** Cylinder's axis. It's represented as a pose because it holds the angle
 	 * to get to the next pose. */
-	mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t axis;
+	mrpt::aligned_std_vector<mrpt::poses::CPose3D> axis;
 	/**  Object's generatrix, that is, profile which will be extruded. */
 	std::vector<mrpt::math::TPoint3D> generatrix;
 	/** Mutable object with mesh information, used to avoid repeated
@@ -111,9 +111,9 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 	/**  Mutable flag which tells if recalculations are needed. */
 	mutable bool meshUpToDate;
 	/**
-	  * Mutable set of data used in ray tracing.
-	  * \sa mrpt::math::TPolygonWithPlane
-	  */
+	 * Mutable set of data used in ray tracing.
+	 * \sa mrpt::math::TPolygonWithPlane
+	 */
 	mutable std::vector<mrpt::math::TPolygonWithPlane> polys;
 	/** Mutable flag telling whether ray tracing temporary data must be
 	 * recalculated or not. */
@@ -125,36 +125,36 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 	 * sections are. */
 	bool fullyVisible;
 	/**
-	  * First visible section, if fullyVisible is set to false.
-	  * \sa fullyVisible,lastSection
-	  */
+	 * First visible section, if fullyVisible is set to false.
+	 * \sa fullyVisible,lastSection
+	 */
 	size_t firstSection;
 	/**
-	  * Last visible section, if fullyVisible is set to false.
-	  * \sa fullyVisible,firstSection
-	  */
+	 * Last visible section, if fullyVisible is set to false.
+	 * \sa fullyVisible,firstSection
+	 */
 	size_t lastSection;
 
    public:
 	/**
-	  * Creation of generalized cylinder from axis and generatrix
-	  */
+	 * Creation of generalized cylinder from axis and generatrix
+	 */
 	static CGeneralizedCylinder::Ptr Create(
 		const std::vector<mrpt::math::TPoint3D>& axis,
 		const std::vector<mrpt::math::TPoint3D>& generatrix);
 	/**
-	  * Render.
-	  * \sa mrpt::opengl::CRenderizable
-	  */
+	 * Render.
+	 * \sa mrpt::opengl::CRenderizable
+	 */
 	void render_dl() const override;
 	/**
-	  * Ray tracing.
-	  * \sa mrpt::opengl::CRenderizable.
-	  */
+	 * Ray tracing.
+	 * \sa mrpt::opengl::CRenderizable.
+	 */
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
 	/**
-	  * Get axis's spatial coordinates.
-	  */
+	 * Get axis's spatial coordinates.
+	 */
 	inline void getAxis(std::vector<mrpt::math::TPoint3D>& a) const
 	{
 		// a=axis;
@@ -168,16 +168,15 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 		}
 	}
 	/**
-	  * Get axis, including angular coordinates.
-	  */
-	inline void getAxis(
-		mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t& a) const
+	 * Get axis, including angular coordinates.
+	 */
+	inline void getAxis(mrpt::aligned_std_vector<mrpt::poses::CPose3D>& a) const
 	{
 		a = axis;
 	}
 	/**
-	  * Set the axis points.
-	  */
+	 * Set the axis points.
+	 */
 	inline void setAxis(const std::vector<mrpt::math::TPoint3D>& a)
 	{
 		generatePoses(a, axis);
@@ -186,15 +185,15 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 		CRenderizableDisplayList::notifyChange();
 	}
 	/**
-	  * Get cylinder's profile.
-	  */
+	 * Get cylinder's profile.
+	 */
 	inline void getGeneratrix(std::vector<mrpt::math::TPoint3D>& g) const
 	{
 		g = generatrix;
 	}
 	/**
-	  * Set cylinder's profile.
-	  */
+	 * Set cylinder's profile.
+	 */
 	inline void setGeneratrix(const std::vector<mrpt::math::TPoint3D>& g)
 	{
 		generatrix = g;
@@ -202,12 +201,12 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 		CRenderizableDisplayList::notifyChange();
 	}
 	/**
-	  * Returns true if each section is a closed polygon.
-	  */
+	 * Returns true if each section is a closed polygon.
+	 */
 	inline bool isClosed() const { return closed; }
 	/**
-	  * Set whether each section is a closed polygon or not.
-	  */
+	 * Set whether each section is a closed polygon or not.
+	 */
 	inline void setClosed(bool c = true)
 	{
 		closed = c;
@@ -215,54 +214,54 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 		CRenderizableDisplayList::notifyChange();
 	}
 	/**
-	  * Get a polyhedron containing the starting point of the cylinder (its
+	 * Get a polyhedron containing the starting point of the cylinder (its
 	 * "base").
-	  * \sa getEnd,mrpt::opengl::CPolyhedron
-	  */
+	 * \sa getEnd,mrpt::opengl::CPolyhedron
+	 */
 	void getOrigin(CPolyhedron::Ptr& poly) const;
 	/**
-	  * Get a polyhedron containing the ending point of the cylinder (its
+	 * Get a polyhedron containing the ending point of the cylinder (its
 	 * "base").
-	  * \sa getOrigin,mrpt::opengl::CPolyhedron
-	  */
+	 * \sa getOrigin,mrpt::opengl::CPolyhedron
+	 */
 	void getEnd(CPolyhedron::Ptr& poly) const;
 	/**
-	  * Get the cylinder as a set of polygons in 3D.
-	  * \sa mrpt::math::TPolygon3D
-	  */
+	 * Get the cylinder as a set of polygons in 3D.
+	 * \sa mrpt::math::TPolygon3D
+	 */
 	void generateSetOfPolygons(std::vector<mrpt::math::TPolygon3D>& res) const;
 	/**
-	  * Get a polyhedron consisting of a set of closed sections of the cylinder.
-	  * \sa mrpt::opengl::CPolyhedron
-	  */
+	 * Get a polyhedron consisting of a set of closed sections of the cylinder.
+	 * \sa mrpt::opengl::CPolyhedron
+	 */
 	void getClosedSection(
 		size_t index1, size_t index2, CPolyhedron::Ptr& poly) const;
 	/**
-	  * Get a polyhedron consisting of a single section of the cylinder.
-	  * \sa mrpt::opengl::CPolyhedron
-	  */
+	 * Get a polyhedron consisting of a single section of the cylinder.
+	 * \sa mrpt::opengl::CPolyhedron
+	 */
 	inline void getClosedSection(size_t index, CPolyhedron::Ptr& poly) const
 	{
 		getClosedSection(index, index, poly);
 	}
 	/**
-	  * Get the number of sections in this cylinder.
-	  */
+	 * Get the number of sections in this cylinder.
+	 */
 	inline size_t getNumberOfSections() const
 	{
 		return axis.size() ? (axis.size() - 1) : 0;
 	}
 	/**
-	  * Get how many visible sections are in the cylinder.
-	  */
+	 * Get how many visible sections are in the cylinder.
+	 */
 	inline size_t getVisibleSections() const
 	{
 		return fullyVisible ? getNumberOfSections()
 							: (lastSection - firstSection);
 	}
 	/**
-	  * Gets the cylinder's visible sections.
-	  */
+	 * Gets the cylinder's visible sections.
+	 */
 	void getVisibleSections(size_t& first, size_t& last) const
 	{
 		if (fullyVisible)
@@ -277,16 +276,16 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 		}
 	}
 	/**
-	  * Sets all sections visible.
-	  */
+	 * Sets all sections visible.
+	 */
 	inline void setAllSectionsVisible()
 	{
 		fullyVisible = true;
 		CRenderizableDisplayList::notifyChange();
 	}
 	/**
-	  * Hides all sections.
-	  */
+	 * Hides all sections.
+	 */
 	inline void setAllSectionsInvisible(size_t pointer = 0)
 	{
 		fullyVisible = false;
@@ -295,9 +294,9 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 		CRenderizableDisplayList::notifyChange();
 	}
 	/**
-	  * Sets which sections are visible.
-	  * \throw std::logic_error on wrongly defined bounds.
-	  */
+	 * Sets which sections are visible.
+	 * \throw std::logic_error on wrongly defined bounds.
+	 */
 	inline void setVisibleSections(size_t first, size_t last)
 	{
 		fullyVisible = false;
@@ -308,13 +307,13 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 		CRenderizableDisplayList::notifyChange();
 	}
 	/**
-	  * Adds another visible section at the start of the cylinder. The cylinder
+	 * Adds another visible section at the start of the cylinder. The cylinder
 	 * must have an invisble section to display.
-	  * \throw std::logic_error if there is no section to add to the displaying
+	 * \throw std::logic_error if there is no section to add to the displaying
 	 * set.
-	  * \sa
+	 * \sa
 	 * addVisibleSectionAtEnd,removeVisibleSectionAtStart,removeVisibleSectionAtEnd
-	  */
+	 */
 	inline void addVisibleSectionAtStart()
 	{
 		if (fullyVisible || firstSection == 0)
@@ -323,13 +322,13 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 		CRenderizableDisplayList::notifyChange();
 	}
 	/**
-	  * Adds another visible section at the end of the cylinder. The cylinder
+	 * Adds another visible section at the end of the cylinder. The cylinder
 	 * must have an invisible section to display.
-	  * \throw std::logic_error if there is no section to add to the displaying
+	 * \throw std::logic_error if there is no section to add to the displaying
 	 * set.
-	  * \sa
+	 * \sa
 	 * addVisibleSectionAtStart,removeVisibleSectionAtStart,removeVisibleSectionAtEnd
-	  */
+	 */
 	inline void addVisibleSectionAtEnd()
 	{
 		if (fullyVisible || lastSection == getNumberOfSections())
@@ -338,42 +337,42 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 		CRenderizableDisplayList::notifyChange();
 	}
 	/**
-	  * Removes a visible section from the start of the currently visible set.
-	  * \throw std::logic_error if there are no visible sections.
-	  * \sa
+	 * Removes a visible section from the start of the currently visible set.
+	 * \throw std::logic_error if there are no visible sections.
+	 * \sa
 	 * addVisibleSectionAtStart,addVisibleSectionAtEnd,removeVisibleSectionAtEnd
-	  */
+	 */
 	void removeVisibleSectionAtStart();
 	/**
-	  * Removes a visible section from the ending of the currently visible set.
-	  * \throw std::logic_error when there is no such section.
-	  * \sa
+	 * Removes a visible section from the ending of the currently visible set.
+	 * \throw std::logic_error when there is no such section.
+	 * \sa
 	 * addVisibleSectionAtStart,addVisibleSectionAtEnd,removeVisibleSectionAtStart
-	  */
+	 */
 	void removeVisibleSectionAtEnd();
 	/**
-	  * Gets the axis pose of the first section, returning false if there is no
+	 * Gets the axis pose of the first section, returning false if there is no
 	 * such pose.
-	  */
+	 */
 	bool getFirstSectionPose(mrpt::poses::CPose3D& p);
 	/**
-	  * Gets the axis pose of the last section, returning false if there is no
+	 * Gets the axis pose of the last section, returning false if there is no
 	 * such pose.
-	  */
+	 */
 	bool getLastSectionPose(mrpt::poses::CPose3D& p);
 	/**
-	  * Gets the axis pose of the first visible section, returning false if
+	 * Gets the axis pose of the first visible section, returning false if
 	 * there is no such pose.
-	  */
+	 */
 	bool getFirstVisibleSectionPose(mrpt::poses::CPose3D& p);
 	/**
-	  * Gets the axis pose of the last section, returning false if there is no
+	 * Gets the axis pose of the last section, returning false if there is no
 	 * such pose.
-	  */
+	 */
 	bool getLastVisibleSectionPose(mrpt::poses::CPose3D& p);
 	/**
-	  * Updates the mutable set of polygons used in ray tracing.
-	  */
+	 * Updates the mutable set of polygons used in ray tracing.
+	 */
 	void updatePolys() const;
 
 	/** Evaluates the bounding box of this object (including possible children)
@@ -384,20 +383,20 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 
    private:
 	/**
-	  * Updates the axis, transforming each point into a pose pointing to the
+	 * Updates the axis, transforming each point into a pose pointing to the
 	 * next section.
-	  */
+	 */
 	void generatePoses(
 		const std::vector<mrpt::math::TPoint3D>& pIn,
-		mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t& pOut);
+		mrpt::aligned_std_vector<mrpt::poses::CPose3D>& pOut);
 	/**
-	  * Updates the mutable mesh.
-	  */
+	 * Updates the mutable mesh.
+	 */
 	void updateMesh() const;
 	/**
-	  * Given a vector of polyhedrons, gets the starting and ending iterators to
+	 * Given a vector of polyhedrons, gets the starting and ending iterators to
 	 * the section to be actually rendered.
-	  */
+	 */
 	void getMeshIterators(
 		const std::vector<TQuadrilateral>& m,
 		std::vector<TQuadrilateral>::const_iterator& begin,
@@ -405,8 +404,8 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 
    public:
 	/**
-	  * Basic constructor with default initialization.
-	  */
+	 * Basic constructor with default initialization.
+	 */
 	CGeneralizedCylinder()
 		: axis(),
 		  generatrix(),
@@ -418,8 +417,8 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 	{
 	}
 	/**
-	  * Constructor with axis and generatrix.
-	  */
+	 * Constructor with axis and generatrix.
+	 */
 	CGeneralizedCylinder(
 		const std::vector<mrpt::math::TPoint3D>& a,
 		const std::vector<mrpt::math::TPoint3D>& g)
@@ -433,10 +432,10 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 		generatePoses(a, axis);
 	}
 	/**
-	  * Destructor.
-	  */
+	 * Destructor.
+	 */
 	virtual ~CGeneralizedCylinder(){};
 };
-}
-}
+}  // namespace opengl
+}  // namespace mrpt
 #endif

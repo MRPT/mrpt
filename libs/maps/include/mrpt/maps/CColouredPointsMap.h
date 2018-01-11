@@ -6,15 +6,14 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CColouredPointsMap_H
-#define CColouredPointsMap_H
+#pragma once
 
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/obs/obs_frwds.h>
 #include <mrpt/obs/CObservationImage.h>
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/math/CMatrix.h>
-#include <mrpt/utils/TEnumType.h>
+#include <mrpt/typemeta/TEnumType.h>
 
 namespace mrpt
 {
@@ -24,7 +23,7 @@ namespace maps
  *  For different color schemes, see CColouredPointsMap::colorScheme
  *  Colors are defined in the range [0,1].
  * \sa mrpt::maps::CPointsMap, mrpt::maps::CMetricMap,
- * mrpt::utils::CSerializable
+ * mrpt::serialization::CSerializable
  * \ingroup mrpt_maps_grp
  */
 class CColouredPointsMap : public CPointsMap
@@ -32,14 +31,6 @@ class CColouredPointsMap : public CPointsMap
 	DEFINE_SERIALIZABLE(CColouredPointsMap)
 
    public:
-	/** Destructor
-	  */
-	virtual ~CColouredPointsMap();
-
-	/** Default constructor
-	 */
-	CColouredPointsMap();
-
 	// --------------------------------------------
 	/** @name Pure virtual interfaces to be implemented by any class derived
 	   from CPointsMap
@@ -67,10 +58,10 @@ class CColouredPointsMap : public CPointsMap
 	virtual void copyFrom(const CPointsMap& obj) override;
 
 	/** Get all the data fields for one point as a vector: [X Y Z R G B]
-	  *  Unlike getPointAllFields(), this method does not check for index out of
+	 *  Unlike getPointAllFields(), this method does not check for index out of
 	 * bounds
-	  * \sa getPointAllFields, setPointAllFields, setPointAllFieldsFast
-	  */
+	 * \sa getPointAllFields, setPointAllFields, setPointAllFieldsFast
+	 */
 	virtual void getPointAllFieldsFast(
 		const size_t index, std::vector<float>& point_data) const override
 	{
@@ -84,14 +75,14 @@ class CColouredPointsMap : public CPointsMap
 	}
 
 	/** Set all the data fields for one point as a vector: [X Y Z R G B]
-	  *  Unlike setPointAllFields(), this method does not check for index out of
+	 *  Unlike setPointAllFields(), this method does not check for index out of
 	 * bounds
-	  * \sa setPointAllFields, getPointAllFields, getPointAllFieldsFast
-	  */
+	 * \sa setPointAllFields, getPointAllFields, getPointAllFieldsFast
+	 */
 	virtual void setPointAllFieldsFast(
 		const size_t index, const std::vector<float>& point_data) override
 	{
-		ASSERTDEB_(point_data.size() == 6)
+		ASSERTDEB_(point_data.size() == 6);
 		x[index] = point_data[0];
 		y[index] = point_data[1];
 		z[index] = point_data[2];
@@ -143,7 +134,7 @@ class CColouredPointsMap : public CPointsMap
 	/// \overload
 	inline void setPoint(size_t index, float x, float y, float z)
 	{
-		ASSERT_BELOW_(index, this->size())
+		ASSERT_BELOW_(index, this->size());
 		setPointFast(index, x, y, z);
 		mark_as_modified();
 	}
@@ -165,19 +156,10 @@ class CColouredPointsMap : public CPointsMap
 	// The following overloads must be repeated here (from CPointsMap) due to
 	// the shadowing of the above "insertPoint()"
 	/// \overload
-	inline void insertPoint(const mrpt::poses::CPoint3D& p)
+	template <typename POINT_T>
+	inline void insertPoint(const POINT_T& p)
 	{
-		insertPoint(p.x(), p.y(), p.z());
-	}
-	/// \overload
-	inline void insertPoint(const mrpt::math::TPoint3D& p)
-	{
-		insertPoint(p.x, p.y, p.z);
-	}
-	/// \overload
-	inline void insertPoint(const mrpt::math::TPoint3Df& p)
-	{
-		insertPoint(p.x, p.y, p.z);
+		insertPoint(p[0], p[1], p[2]);
 	}
 	/// \overload
 	inline void insertPoint(float x, float y, float z)
@@ -200,7 +182,7 @@ class CColouredPointsMap : public CPointsMap
 	}
 
 	/** Retrieves a point and its color (colors range is [0,1])
-	  */
+	 */
 	virtual void getPoint(
 		size_t index, float& x, float& y, float& z, float& R, float& G,
 		float& B) const override;
@@ -224,8 +206,8 @@ class CColouredPointsMap : public CPointsMap
 	virtual bool hasColorPoints() const override { return true; }
 	/** Override of the default 3D scene builder to account for the individual
 	 * points' color.
-	  * \sa mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE
-	  */
+	 * \sa mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE
+	 */
 	virtual void getAs3DObject(
 		mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
 
@@ -236,14 +218,14 @@ class CColouredPointsMap : public CPointsMap
 		const mrpt::poses::CPose3D& robotPose);
 
 	/** The choices for coloring schemes:
-	  *		- cmFromHeightRelativeToSensor: The Z coordinate wrt the sensor will
-	  *be
-	  *used to obtain the color using the limits z_min,z_max.
-	  * 	- cmFromIntensityImage: When inserting 3D range scans, take the
-	  *color
-	  *from the intensity image channel, if available.
-	  * \sa TColourOptions
-	  */
+	 *		- cmFromHeightRelativeToSensor: The Z coordinate wrt the sensor will
+	 *be
+	 *used to obtain the color using the limits z_min,z_max.
+	 * 	- cmFromIntensityImage: When inserting 3D range scans, take the
+	 *color
+	 *from the intensity image channel, if available.
+	 * \sa TColourOptions
+	 */
 	enum TColouringMethod
 	{
 		cmFromHeightRelativeToSensor = 0,
@@ -254,16 +236,15 @@ class CColouredPointsMap : public CPointsMap
 	};
 
 	/** The definition of parameters for generating colors from laser scans */
-	struct TColourOptions : public utils::CLoadableOptions
+	struct TColourOptions : public mrpt::config::CLoadableOptions
 	{
 		/** Initilization of default parameters */
 		TColourOptions();
-		virtual ~TColourOptions() {}
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+			std::ostream& out) const override;  // See base docs
 
 		TColouringMethod scheme;
 		float z_min, z_max;
@@ -287,15 +268,15 @@ class CColouredPointsMap : public CPointsMap
 
 	/** Loads a PCL point cloud (WITH RGB information) into this MRPT class (for
 	 * clouds without RGB data, see CPointsMap::setFromPCLPointCloud() ).
-	  *  Usage example:
-	  *  \code
-	  *    pcl::PointCloud<pcl::PointXYZRGB> cloud;
-	  *    mrpt::maps::CColouredPointsMap       pc;
-	  *
-	  *    pc.setFromPCLPointCloudRGB(cloud);
-	  *  \endcode
-	  * \sa CPointsMap::setFromPCLPointCloud()
-	  */
+	 *  Usage example:
+	 *  \code
+	 *    pcl::PointCloud<pcl::PointXYZRGB> cloud;
+	 *    mrpt::maps::CColouredPointsMap       pc;
+	 *
+	 *    pc.setFromPCLPointCloudRGB(cloud);
+	 *  \endcode
+	 * \sa CPointsMap::setFromPCLPointCloud()
+	 */
 	template <class POINTCLOUD>
 	void setFromPCLPointCloudRGB(const POINTCLOUD& cloud)
 	{
@@ -342,12 +323,12 @@ class CColouredPointsMap : public CPointsMap
 		@{ */
 	/** In a base class, will be called after PLY_import_set_vertex_count() once
 	 * for each loaded point.
-	  *  \param pt_color Will be nullptr if the loaded file does not provide
+	 *  \param pt_color Will be nullptr if the loaded file does not provide
 	 * color info.
-	  */
+	 */
 	virtual void PLY_import_set_vertex(
 		const size_t idx, const mrpt::math::TPoint3Df& pt,
-		const mrpt::utils::TColorf* pt_color = nullptr) override;
+		const mrpt::img::TColorf* pt_color = nullptr) override;
 
 	/** In a base class, reserve memory to prepare subsequent calls to
 	 * PLY_import_set_vertex */
@@ -358,7 +339,7 @@ class CColouredPointsMap : public CPointsMap
 		@{ */
 	void PLY_export_get_vertex(
 		const size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
-		mrpt::utils::TColorf& pt_color) const override;
+		mrpt::img::TColorf& pt_color) const override;
 	/** @} */
 
 	MAP_DEFINITION_START(CColouredPointsMap)
@@ -369,13 +350,13 @@ class CColouredPointsMap : public CPointsMap
 
 };  // End of class def.
 
-}  // End of namespace
+}  // namespace maps
 
-#include <mrpt/utils/adapters.h>
-namespace utils
+#include <mrpt/opengl/pointcloud_adapters.h>
+namespace opengl
 {
 /** Specialization
- * mrpt::utils::PointCloudAdapter<mrpt::maps::CColouredPointsMap> \ingroup
+ * mrpt::opengl::PointCloudAdapter<mrpt::maps::CColouredPointsMap> \ingroup
  * mrpt_adapters_grp */
 template <>
 class PointCloudAdapter<mrpt::maps::CColouredPointsMap>
@@ -481,22 +462,19 @@ class PointCloudAdapter<mrpt::maps::CColouredPointsMap>
 	}
 
 };  // end of PointCloudAdapter<mrpt::maps::CColouredPointsMap>
+}  // namespace opengl
+}  // namespace mrpt
 
-template <>
-struct TEnumTypeFiller<mrpt::maps::CColouredPointsMap::TColouringMethod>
-{
-	typedef mrpt::maps::CColouredPointsMap::TColouringMethod enum_t;
-	static void fill(bimap<enum_t, std::string>& m_map)
-	{
-		using namespace mrpt::maps;
-		MRPT_FILL_ENUM_MEMBER(CColouredPointsMap, cmFromHeightRelativeToSensor);
-		MRPT_FILL_ENUM_MEMBER(
-			CColouredPointsMap, cmFromHeightRelativeToSensorJet);
-		MRPT_FILL_ENUM_MEMBER(
-			CColouredPointsMap, cmFromHeightRelativeToSensorGray);
-		MRPT_FILL_ENUM_MEMBER(CColouredPointsMap, cmFromIntensityImage);
-	}
-};
-}  // End of namespace
-}  // End of namespace
-#endif
+MRPT_ENUM_TYPE_BEGIN(mrpt::maps::CColouredPointsMap::TColouringMethod)
+MRPT_FILL_ENUM_MEMBER(
+	mrpt::maps::CColouredPointsMap::TColouringMethod,
+	cmFromHeightRelativeToSensor);
+MRPT_FILL_ENUM_MEMBER(
+	mrpt::maps::CColouredPointsMap::TColouringMethod,
+	cmFromHeightRelativeToSensorJet);
+MRPT_FILL_ENUM_MEMBER(
+	mrpt::maps::CColouredPointsMap::TColouringMethod,
+	cmFromHeightRelativeToSensorGray);
+MRPT_FILL_ENUM_MEMBER(
+	mrpt::maps::CColouredPointsMap::TColouringMethod, cmFromIntensityImage);
+MRPT_ENUM_TYPE_END()

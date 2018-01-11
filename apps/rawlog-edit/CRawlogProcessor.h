@@ -11,9 +11,10 @@
 #define RAWLOG_PROCESSOR_H
 
 #include <mrpt/obs/CRawlog.h>
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
+#include <mrpt/serialization/CArchive.h>
 
 // Aparently, TCLAP headers can't be included in more than one source file
 //  or duplicated linking symbols appear! -> Use forward declarations instead:
@@ -29,16 +30,16 @@ namespace rawlogtools
 {
 /** A virtual class that implements the common stuff around parsing a rawlog
  * file
-  * and (optionally) display a progress indicator to the console.
-  */
+ * and (optionally) display a progress indicator to the console.
+ */
 class CRawlogProcessor
 {
    protected:
-	mrpt::utils::CFileGZInputStream& m_in_rawlog;
+	mrpt::io::CFileGZInputStream& m_in_rawlog;
 	TCLAP::CmdLine& m_cmdline;
 	bool verbose;
 	mrpt::system::TTimeStamp m_last_console_update;
-	mrpt::utils::CTicTac m_timParse;
+	mrpt::system::CTicTac m_timParse;
 
    public:
 	uint64_t m_filSize;
@@ -47,7 +48,7 @@ class CRawlogProcessor
 
 	// Ctor
 	CRawlogProcessor(
-		mrpt::utils::CFileGZInputStream& _in_rawlog, TCLAP::CmdLine& _cmdline,
+		mrpt::io::CFileGZInputStream& _in_rawlog, TCLAP::CmdLine& _cmdline,
 		bool _verbose)
 		: m_in_rawlog(_in_rawlog),
 		  m_cmdline(_cmdline),
@@ -69,8 +70,9 @@ class CRawlogProcessor
 		m_timParse.Tic();
 
 		// Parse the entire rawlog:
+		auto arch = mrpt::serialization::archiveFrom(m_in_rawlog);
 		while (mrpt::obs::CRawlog::getActionObservationPairOrObservation(
-			m_in_rawlog, actions, SF, obs, m_rawlogEntry))
+			arch, actions, SF, obs, m_rawlogEntry))
 		{
 			// Abort if the user presses ESC:
 			if (mrpt::system::os::kbhit())
@@ -151,13 +153,13 @@ class CRawlogProcessor
 
 /** A virtual class that implements the common stuff around parsing a rawlog
  * file
-  * and (optionally) display a progress indicator to the console.
-  */
+ * and (optionally) display a progress indicator to the console.
+ */
 class CRawlogProcessorOnEachObservation : public CRawlogProcessor
 {
    public:
 	CRawlogProcessorOnEachObservation(
-		mrpt::utils::CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
+		mrpt::io::CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
 		bool verbose)
 		: CRawlogProcessor(in_rawlog, cmdline, verbose)
 	{
@@ -187,7 +189,7 @@ class CRawlogProcessorOnEachObservation : public CRawlogProcessor
 				break;  // shouldn't...
 
 			// Process "obs_indiv":
-			ASSERT_(obs_indiv)
+			ASSERT_(obs_indiv);
 			if (!processOneObservation(obs_indiv)) return false;
 		}
 
@@ -202,22 +204,22 @@ class CRawlogProcessorOnEachObservation : public CRawlogProcessor
 
 /** A specialization of CRawlogProcessorOnEachObservation that handles the
  * common case of
-  *  filtering entries in a rawlog depending on the return value of a user
+ *  filtering entries in a rawlog depending on the return value of a user
  * function.
-  */
+ */
 class CRawlogProcessorFilterObservations
 	: public CRawlogProcessorOnEachObservation
 {
    public:
-	mrpt::utils::CFileGZOutputStream& m_out_rawlog;
+	mrpt::io::CFileGZOutputStream& m_out_rawlog;
 	size_t m_entries_removed, m_entries_parsed;
 	/** Set to true to indicate that we are sure we don't have to keep on
 	 * reading. */
 	bool m_we_are_done_with_this_rawlog;
 
 	CRawlogProcessorFilterObservations(
-		mrpt::utils::CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
-		bool verbose, mrpt::utils::CFileGZOutputStream& out_rawlog)
+		mrpt::io::CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
+		bool verbose, mrpt::io::CFileGZOutputStream& out_rawlog)
 		: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, verbose),
 		  m_out_rawlog(out_rawlog),
 		  m_entries_removed(0),
@@ -251,7 +253,7 @@ class CRawlogProcessorFilterObservations
 	{
 		if (actions)
 		{
-			ASSERT_(actions && SF)
+			ASSERT_(actions && SF);
 			// Remove from SF those observations freed:
 			mrpt::obs::CSensoryFrame::iterator it = SF->begin();
 			while (it != SF->end())
@@ -262,17 +264,17 @@ class CRawlogProcessorFilterObservations
 					it = SF->erase(it);
 			}
 			// Save:
-			m_out_rawlog << actions << SF;
+			mrpt::serialization::archiveFrom(m_out_rawlog) << actions << SF;
 		}
 		else
 		{
-			if (obs) m_out_rawlog << obs;
+			if (obs) mrpt::serialization::archiveFrom(m_out_rawlog) << obs;
 		}
 	}
 
 };  // end CRawlogProcessorOnEachObservation
 
-}  // end NS
-}  // end NS
+}  // namespace rawlogtools
+}  // namespace mrpt
 
 #endif

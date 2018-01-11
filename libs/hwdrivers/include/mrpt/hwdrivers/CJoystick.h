@@ -9,7 +9,7 @@
 #ifndef CJOYSTICK_H
 #define CJOYSTICK_H
 
-#include <mrpt/utils/utils_defs.h>
+#include <vector>
 
 /*---------------------------------------------------------------
 	Class
@@ -20,8 +20,8 @@ namespace hwdrivers
 {
 /** Access to joysticks and gamepads (read buttons and position), and request
  * number of joysticks in the system.
-  * \ingroup mrpt_hwdrivers_grp
-  */
+ * \ingroup mrpt_hwdrivers_grp
+ */
 class CJoystick
 {
    private:
@@ -36,10 +36,10 @@ class CJoystick
 	int m_joy_index;
 	/** Using an event system we only have deltas, need to keep the whole
 	 * joystick state (Linux only) */
-	vector_bool m_joystate_btns;
+	std::vector<bool> m_joystate_btns;
 	/** Using an event system we only have deltas, need to keep the whole
 	 * joystick state (Linux only) */
-	vector_int m_joystate_axes;
+	std::vector<int> m_joystate_axes;
 #endif
 
    public:
@@ -91,7 +91,7 @@ class CJoystick
  *
  * \sa getJoystickPosition
  */
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	void setLimits(
 		int x_min = 0, int x_max = 0xFFFF, int y_min = 0, int y_max = 0xFFFF,
 		int z_min = 0, int z_max = 0xFFFF);
@@ -102,7 +102,7 @@ class CJoystick
 #endif
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
+}  // namespace hwdrivers
+}  // namespace mrpt
 
 #endif

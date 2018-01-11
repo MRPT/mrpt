@@ -10,7 +10,7 @@
 #ifndef __mrpt_vision_image_pyramid_H
 #define __mrpt_vision_image_pyramid_H
 
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 
 namespace mrpt
 {
@@ -51,7 +51,7 @@ namespace vision
   *  \note Both converting to grayscale and building the octave images have
  * SSE2-optimized implementations (if available).
   *
-  * \sa mrpt::utils::CImage
+  * \sa mrpt::img::CImage
   * \ingroup mrpt_vision_grp
   */
 class CImagePyramid
@@ -74,7 +74,7 @@ class CImagePyramid
 	  * \sa buildPyramidFast
 	  */
 	void buildPyramid(
-		const mrpt::utils::CImage& img, const size_t nOctaves,
+		const mrpt::img::CImage& img, const size_t nOctaves,
 		const bool smooth_halves = true, const bool convert_grayscale = false);
 
 	/**  Exactly like \a buildPyramid(), but if the input image has not to be
@@ -83,7 +83,7 @@ class CImagePyramid
 	  * \sa buildPyramid
 	  */
 	void buildPyramidFast(
-		mrpt::utils::CImage& img, const size_t nOctaves,
+		mrpt::img::CImage& img, const size_t nOctaves,
 		const bool smooth_halves = true, const bool convert_grayscale = false);
 
 	/** The individual images:
@@ -91,7 +91,7 @@ class CImagePyramid
 	  *  - images[1]: 2nd octave (1/2 size)
 	  *  - images[2]: 3rd octave (1/4 size)
 	  */
-	std::vector<mrpt::utils::CImage> images;
+	std::vector<mrpt::img::CImage> images;
 };
 }
 }

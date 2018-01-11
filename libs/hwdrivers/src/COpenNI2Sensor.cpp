@@ -12,8 +12,9 @@
 #include <mrpt/hwdrivers/COpenNI2Generic.h>
 #include <mrpt/hwdrivers/COpenNI2Sensor.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
-#include <mrpt/utils/CTimeLogger.h>
-#include <mrpt/utils/TStereoCamera.h>
+#include <mrpt/system/CTimeLogger.h>
+#include <mrpt/img/TStereoCamera.h>
+#include <mrpt/poses/CPose3DQuat.h>
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>
@@ -23,9 +24,9 @@ using namespace mrpt::system;
 using namespace mrpt::obs;
 using namespace mrpt::math;
 using namespace std;
-using mrpt::utils::DEG2RAD;
+using mrpt::DEG2RAD;
 
-bool isValidParameter(const mrpt::utils::TCamera& param)
+bool isValidParameter(const mrpt::img::TCamera& param)
 {
 	return param.ncols > 0 && param.nrows > 0;
 }
@@ -60,7 +61,7 @@ COpenNI2Sensor::COpenNI2Sensor()
 	m_cameraParamsRGB.fx(-1);
 	m_cameraParamsRGB.fy(-1);
 
-	m_cameraParamsRGB.dist.zeros();
+	m_cameraParamsRGB.dist.fill(0);
 
 	// ----- Depth -----
 	m_cameraParamsDepth.ncols = 0;
@@ -71,7 +72,7 @@ COpenNI2Sensor::COpenNI2Sensor()
 	m_cameraParamsDepth.fx(-1);
 	m_cameraParamsDepth.fy(-1);
 
-	m_cameraParamsDepth.dist.zeros();
+	m_cameraParamsDepth.dist.fill(0);
 }
 
 /*-------------------------------------------------------------
@@ -128,7 +129,7 @@ void COpenNI2Sensor::initialize()
 			if (getDepthSensorParam(
 					m_cameraParamsDepth, m_user_device_number) == false)
 			{
-				THROW_EXCEPTION("Failed to get Depth camera parameters.")
+				THROW_EXCEPTION("Failed to get Depth camera parameters.");
 			}
 		}
 		if (isValidParameter(m_cameraParamsRGB) == false)
@@ -136,7 +137,7 @@ void COpenNI2Sensor::initialize()
 			if (getColorSensorParam(m_cameraParamsRGB, m_user_device_number) ==
 				false)
 			{
-				THROW_EXCEPTION("Failed to get RGB camera parameters.")
+				THROW_EXCEPTION("Failed to get RGB camera parameters.");
 			}
 		}
 	}
@@ -145,7 +146,7 @@ void COpenNI2Sensor::initialize()
 		throw(e);
 	}
 #else
-	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
+	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
 #endif  // MRPT_HAS_OPENNI2
 }
 
@@ -176,25 +177,25 @@ void COpenNI2Sensor::doProcess()
 	{
 		m_state = ssWorking;
 
-		std::vector<mrpt::utils::CSerializable::Ptr> objs;
+		std::vector<mrpt::serialization::CSerializable::Ptr> objs;
 		if (m_grab_image || m_grab_depth || m_grab_3D_points)
 			objs.push_back(newObs);
 
 		appendObservations(objs);
 	}
 #else
-	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
+	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
 #endif  // MRPT_HAS_OPENNI2
 }
 
 /** Loads specific configuration for the device from a given source of
 * configuration parameters, for example, an ".ini" file, loading from the
-* section "[iniSection]" (see utils::CConfigFileBase and derived classes)
+* section "[iniSection]" (see config::CConfigFileBase and derived classes)
 *  \exception This method must throw an exception with a descriptive message if
 * some critical parameter is missing or has an invalid value.
 */
 void COpenNI2Sensor::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 	cout << "COpenNI2Sensor::loadConfig_sensorSpecific...\n";
@@ -223,7 +224,7 @@ void COpenNI2Sensor::loadConfig_sensorSpecific(
 	bool hasLeft2RightPose =
 		configSource.sectionExists(iniSection + string("_LEFT2RIGHT_POSE"));
 
-	mrpt::utils::TStereoCamera sc;
+	mrpt::img::TStereoCamera sc;
 
 	try
 	{
@@ -248,7 +249,7 @@ void COpenNI2Sensor::loadConfig_sensorSpecific(
 		const mrpt::poses::CPose3D twist(
 			0, 0, 0, DEG2RAD(-90), DEG2RAD(0), DEG2RAD(-90));
 		m_relativePoseIntensityWRTDepth =
-			twist + mrpt::poses::CPose3D(sc.rightCameraPose);
+			twist + mrpt::poses::CPose3D(mrpt::poses::CPose3DQuat(sc.rightCameraPose));
 	}
 
 	// Id:
@@ -329,7 +330,7 @@ void COpenNI2Sensor::getNextObservation(
 				}
 
 				// Normalize the image
-				mrpt::utils::CImage img;
+				mrpt::img::CImage img;
 				img.setFromMatrix(out_obs.rangeImage);
 				CMatrixFloat r =
 					out_obs.rangeImage * float(1.0 / this->m_maxRange);
@@ -363,7 +364,7 @@ void COpenNI2Sensor::getNextObservation(
 	MRPT_UNUSED_PARAM(out_obs);
 	MRPT_UNUSED_PARAM(there_is_obs);
 	MRPT_UNUSED_PARAM(hardware_error);
-	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
+	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
 #endif  // MRPT_HAS_OPENNI2
 }
 

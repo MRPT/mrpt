@@ -16,7 +16,7 @@
 double atan2_lut_test_build(int, int)
 {
 	const unsigned int step = 100;
-	mrpt::utils::CTicTac tictac;
+	mrpt::system::CTicTac tictac;
 	mrpt::math::CAtan2LookUpTable lut;
 	tictac.Tic();
 	for (unsigned int i = 0; i < step; i++)
@@ -29,7 +29,7 @@ double atan2_lut_test_build(int, int)
 double atan2_lut_test_query(int, int)
 {
 	const unsigned int step = 1000000;
-	mrpt::utils::CTicTac tictac;
+	mrpt::system::CTicTac tictac;
 	mrpt::math::CAtan2LookUpTable lut;
 	lut.resize(-10.0, 10.0, -10.0, 10.0, 0.01);
 	tictac.Tic();
@@ -58,7 +58,7 @@ double atan2_lut_multires_test_build(int, int)
 	res2extension[0.02] = 5.0;  // 2.0 cm resolution
 	res2extension[0.05] = 11.0;  // 5.0 cm resolution
 
-	mrpt::utils::CTicTac tictac;
+	mrpt::system::CTicTac tictac;
 	tictac.Tic();
 	for (unsigned int i = 0; i < step; i++)
 	{
@@ -70,7 +70,7 @@ double atan2_lut_multires_test_build(int, int)
 double atan2_lut_multires_test_query(int, int)
 {
 	const unsigned int step = 1000000;
-	mrpt::utils::CTicTac tictac;
+	mrpt::system::CTicTac tictac;
 	mrpt::math::CAtan2LookUpTableMultiRes atan2lut;
 
 	std::map<double, double> res2extension;
@@ -97,7 +97,7 @@ double atan2_lut_multires_test_query(int, int)
 double atan2_raw_test_query(int, int)
 {
 	const unsigned int step = 1000000;
-	mrpt::utils::CTicTac tictac;
+	mrpt::system::CTicTac tictac;
 
 	double atan2val = .0;
 	double x = -9.0, y = -8.0;

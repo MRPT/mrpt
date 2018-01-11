@@ -11,10 +11,10 @@
 #define mrpt_multiDesc_utils_H
 
 #include <mrpt/vision/CFeature.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/math/utils.h>
-#include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/TMatchingPair.h>
+#include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/tfest/TMatchingPair.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/obs/CObservationVisualLandmarks.h>
@@ -42,7 +42,7 @@ void saveQTableToFile(
 void insertHashCoeffs(const CFeature::Ptr& feat, TQuantizationTable& qTable);
 
 TMultiResMatchingOutput relocalizeMultiDesc(
-	const mrpt::utils::CImage& image, CFeatureList& baseList,
+	const mrpt::img::CImage& image, CFeatureList& baseList,
 	CFeatureList& currentList, TQuantizationTable& qTable,
 	const TMultiResDescOptions& desc_opts,
 	const TMultiResDescMatchOptions& match_opts);
@@ -53,7 +53,7 @@ void updateBaseList(
 
 void checkScalesAndFindMore(
 	CMatchedFeatureList& baseList, const CFeatureList& currentList,
-	const mrpt::utils::CImage& currentImage,
+	const mrpt::img::CImage& currentImage,
 	const TMultiResMatchingOutput& output,
 	const TMultiResDescOptions& computeOpts,
 	const TMultiResDescMatchOptions& matchOpts);
@@ -69,7 +69,7 @@ void checkScalesAndFindMore(
  * computed)
 	*/
 bool computeGradient(
-	const mrpt::utils::CImage& image, const unsigned int x,
+	const mrpt::img::CImage& image, const unsigned int x,
 	const unsigned int y, double& mag, double& ori);
 
 /** Computes the main orientations (within 80% of the peak value of orientation
@@ -86,7 +86,7 @@ bool computeGradient(
  * smooth the orientation histogram (typically 7.5 px).
 	*/
 bool computeMainOrientations(
-	const mrpt::utils::CImage& image, const unsigned int x,
+	const mrpt::img::CImage& image, const unsigned int x,
 	const unsigned int y, const unsigned int patchSize,
 	std::vector<double>& orientations, const double& sigma);
 
@@ -124,7 +124,7 @@ void interpolateHistEntry(
 	* \sa TMultiResDescOptions
 	*/
 void computeHistogramOfOrientations(
-	const mrpt::utils::CImage& image, const unsigned int x,
+	const mrpt::img::CImage& image, const unsigned int x,
 	const unsigned int y, const unsigned int patchSize,
 	const double& orientation, std::vector<int32_t>& descriptor,
 	const TMultiResDescOptions& opts, std::vector<int32_t>& hashCoeffs);
@@ -155,7 +155,7 @@ void computeHistogramOfOrientations(
 	*/
 TMultiResMatchingOutput matchMultiResolutionFeatures(
 	const CFeatureList& list1, CFeatureList& list2,
-	const mrpt::utils::CImage& rightImage,
+	const mrpt::img::CImage& rightImage,
 	const TMultiResDescMatchOptions& matchOpts,
 	const TMultiResDescOptions& computeOpts);
 
@@ -185,7 +185,7 @@ TMultiResMatchingOutput matchMultiResolutionFeatures(
 	*/
 int matchMultiResolutionFeatures(
 	CMatchedFeatureList& mList1, CMatchedFeatureList& mList2,
-	const mrpt::utils::CImage& leftImage, const mrpt::utils::CImage& rightImage,
+	const mrpt::img::CImage& leftImage, const mrpt::img::CImage& rightImage,
 	const TMultiResDescMatchOptions& matchOpts,
 	const TMultiResDescOptions& computeOpts);
 
@@ -203,7 +203,7 @@ int matchMultiResolutionFeatures(
 	* \param opts         [IN]    The options for computing the new descriptors.
 	*/
 int computeMoreDescriptors(
-	const mrpt::utils::CImage& image, const CFeature::Ptr& inputFeat,
+	const mrpt::img::CImage& image, const CFeature::Ptr& inputFeat,
 	CFeature::Ptr& outputFeat, const bool& lowerScales,
 	const TMultiResDescOptions& opts);
 
@@ -235,7 +235,7 @@ void setProperScales(
 	* \sa TMultiResDescOptions
 */
 void computeMultiResolutionDescriptors(
-	const mrpt::utils::CImage& imageLeft, const mrpt::utils::CImage& imageRight,
+	const mrpt::img::CImage& imageLeft, const mrpt::img::CImage& imageRight,
 	CMatchedFeatureList& matchedFeats, const TMultiResDescOptions& opts);
 
 /** Computes the multi-resolution SIFT-like descriptor of a features
@@ -247,7 +247,7 @@ void computeMultiResolutionDescriptors(
 	* \sa TMultiResDescOptions
 */
 bool computeMultiResolutionDescriptors(
-	const mrpt::utils::CImage& image, CFeature::Ptr& feat,
+	const mrpt::img::CImage& image, CFeature::Ptr& feat,
 	const TMultiResDescOptions& opts);
 
 /** Computes the multi-resolution SIFT-like descriptor of a list of features
@@ -259,7 +259,7 @@ bool computeMultiResolutionDescriptors(
 	* \sa TMultiResDescOptions
 	*/
 std::vector<bool> computeMultiResolutionDescriptors(
-	const mrpt::utils::CImage& image, CFeatureList& list,
+	const mrpt::img::CImage& image, CFeatureList& list,
 	const TMultiResDescOptions& opts);
 
 /** Computes the multi-resolution SIFT-like descriptor of a list of features
@@ -271,7 +271,7 @@ std::vector<bool> computeMultiResolutionDescriptors(
 	* \sa TMultiResDescOptions
 	*/
 void computeMultiOrientations(
-	const mrpt::utils::CImage& image, CFeatureList& list,
+	const mrpt::img::CImage& image, CFeatureList& list,
 	const TMultiResDescOptions& opts);
 
 /** @} */  // end of grouping

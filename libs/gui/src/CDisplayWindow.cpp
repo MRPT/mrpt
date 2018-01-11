@@ -11,8 +11,8 @@
 
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/system/os.h>
-#include <mrpt/utils/CImage.h>
-#include <mrpt/utils/round.h>
+#include <mrpt/img/CImage.h>
+#include <mrpt/core/round.h>
 
 #include <mrpt/gui/WxSubsystem.h>
 #include <mrpt/gui/WxUtils.h>
@@ -20,9 +20,9 @@
 using namespace mrpt;
 using namespace mrpt::math;
 using namespace mrpt::gui;
-using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
+using namespace mrpt::img;
 
 #if MRPT_HAS_WXWIDGETS
 
@@ -268,10 +268,9 @@ void CWindowDialog::OnResize(wxSizeEvent& event)
 	{
 		try
 		{
-			m_win2D->publishEvent(
-				mrptEventWindowResize(
-					m_win2D, event.GetSize().GetWidth(),
-					event.GetSize().GetHeight()));
+			m_win2D->publishEvent(mrptEventWindowResize(
+				m_win2D, event.GetSize().GetWidth(),
+				event.GetSize().GetHeight()));
 		}
 		catch (...)
 		{
@@ -287,10 +286,9 @@ void CWindowDialog::OnMouseDown(wxMouseEvent& event)
 	{
 		try
 		{
-			m_win2D->publishEvent(
-				mrptEventMouseDown(
-					m_win2D, TPixelCoord(event.GetX(), event.GetY()),
-					event.LeftDown(), event.RightDown()));
+			m_win2D->publishEvent(mrptEventMouseDown(
+				m_win2D, TPixelCoord(event.GetX(), event.GetY()),
+				event.LeftDown(), event.RightDown()));
 		}
 		catch (...)
 		{
@@ -306,10 +304,9 @@ void CWindowDialog::OnMouseMove(wxMouseEvent& event)
 	{
 		try
 		{
-			m_win2D->publishEvent(
-				mrptEventMouseMove(
-					m_win2D, TPixelCoord(event.GetX(), event.GetY()),
-					event.LeftDown(), event.RightDown()));
+			m_win2D->publishEvent(mrptEventMouseMove(
+				m_win2D, TPixelCoord(event.GetX(), event.GetY()),
+				event.LeftDown(), event.RightDown()));
 		}
 		catch (...)
 		{

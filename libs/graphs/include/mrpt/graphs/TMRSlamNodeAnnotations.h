@@ -10,7 +10,7 @@
 #define TMRSLAMNODEANNOTATIONS_H
 
 #include <mrpt/graphs/TNodeAnnotations.h>
-#include <mrpt/utils/types_simple.h>
+#include <cstdint>
 #include <sstream>
 #include <string>
 
@@ -102,19 +102,19 @@ struct TMRSlamNodeAnnotations : public TNodeAnnotations
 	 * its local graph to another agent and we still want to keep track of the
 	 * node ID in the former's graph.
 	 */
-	mrpt::utils::TNodeID nodeID_loc;
+	mrpt::graphs::TNodeID nodeID_loc;
 };
-}
-}
-}  // end of namespaces
+}  // namespace detail
+}  // namespace graphs
+}  // namespace mrpt
 
 // declare as ttypename - in mrpt::utils namespace
 namespace mrpt
 {
-namespace utils
+namespace typemeta
 {
 MRPT_DECLARE_TTYPENAME(mrpt::graphs::detail::TMRSlamNodeAnnotations)
 }
-}  // end of namespaces
+}  // namespace mrpt
 
 #endif /* end of include guard: TMRSLAMNODEANNOTATIONS_H */

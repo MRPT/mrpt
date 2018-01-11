@@ -9,18 +9,13 @@
 
 #include "kinematics-precomp.h"  // Precompiled header
 #include <mrpt/kinematics/CVehicleVelCmd_DiffDriven.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::kinematics;
-using namespace mrpt::utils;
 
 IMPLEMENTS_SERIALIZABLE(
 	CVehicleVelCmd_DiffDriven, CVehicleVelCmd, mrpt::kinematics)
 
-CVehicleVelCmd_DiffDriven::CVehicleVelCmd_DiffDriven()
-	: lin_vel(.0), ang_vel(.0)
-{
-}
 CVehicleVelCmd_DiffDriven::~CVehicleVelCmd_DiffDriven() {}
 size_t CVehicleVelCmd_DiffDriven::getVelCmdLength() const { return 2; }
 std::string CVehicleVelCmd_DiffDriven::getVelCmdDescription(
@@ -76,8 +71,8 @@ bool CVehicleVelCmd_DiffDriven::isStopCmd() const
 }
 
 void CVehicleVelCmd_DiffDriven::setToStop() { lin_vel = ang_vel = .0; }
-void CVehicleVelCmd_DiffDriven::readFromStream(
-	mrpt::utils::CStream& in, int version)
+void CVehicleVelCmd_DiffDriven::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -89,14 +84,10 @@ void CVehicleVelCmd_DiffDriven::readFromStream(
 	};
 }
 
-void CVehicleVelCmd_DiffDriven::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CVehicleVelCmd_DiffDriven::serializeGetVersion() const { return 0; }
+void CVehicleVelCmd_DiffDriven::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
-	if (version)
-	{
-		*version = 0;
-		return;
-	}
 	out << lin_vel << ang_vel;
 }
 

@@ -10,18 +10,19 @@
 #define MRPT_NO_WARN_BIG_HDR  // Yes, we really want to include all classes.
 #include <mrpt/obs.h>
 
-#include <mrpt/utils/CMemoryStream.h>
+#include <mrpt/io/CMemoryStream.h>
 #include <gtest/gtest.h>
-#include <mrpt/utils/CTraitsTest.h>
+#include <CTraitsTest.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
+using namespace mrpt::io;
 using namespace mrpt::math;
+using namespace mrpt::serialization;
 using namespace std;
 
 #define TEST_CLASS_MOVE_COPY_CTORS(_classname) \
-	template class mrpt::utils::CTraitsTest<_classname>
+	template class mrpt::CTraitsTest<_classname>
 
 TEST_CLASS_MOVE_COPY_CTORS(CObservation2DRangeScan);
 TEST_CLASS_MOVE_COPY_CTORS(CObservation3DRangeScan);
@@ -49,16 +50,7 @@ TEST_CLASS_MOVE_COPY_CTORS(CObservationVelodyneScan);
 TEST_CLASS_MOVE_COPY_CTORS(CActionRobotMovement2D);
 TEST_CLASS_MOVE_COPY_CTORS(CActionRobotMovement3D);
 
-// Defined in tests/test_main.cpp
-namespace mrpt
-{
-namespace utils
-{
-extern std::string MRPT_GLOBAL_UNITTEST_SRC_DIR;
-}
-}
-
-const mrpt::utils::TRuntimeClassId* lstClasses[] = {
+const mrpt::rtti::TRuntimeClassId* lstClasses[] = {
 	// Observations:
 	CLASS_ID(CObservation2DRangeScan), CLASS_ID(CObservation3DRangeScan),
 	CLASS_ID(CObservationRGBD360), CLASS_ID(CObservationBearingRange),
@@ -85,16 +77,17 @@ TEST(SerializeTestObs, WriteReadToMem)
 		try
 		{
 			CMemoryStream buf;
+			auto arch = mrpt::serialization::archiveFrom(buf);
 			{
 				CSerializable* o =
 					static_cast<CSerializable*>(lstClasses[i]->createObject());
-				buf << *o;
+				arch << *o;
 				delete o;
 			}
 
 			CSerializable::Ptr recons;
 			buf.Seek(0);
-			buf >> recons;
+			arch >> recons;
 		}
 		catch (std::exception& e)
 		{
@@ -112,16 +105,16 @@ TEST(SerializeTestObs, WriteReadToOctectVectors)
 	{
 		try
 		{
-			mrpt::vector_byte buf;
+			std::vector<uint8_t> buf;
 			{
 				CSerializable* o =
 					static_cast<CSerializable*>(lstClasses[i]->createObject());
-				mrpt::utils::ObjectToOctetVector(o, buf);
+				mrpt::serialization::ObjectToOctetVector(o, buf);
 				delete o;
 			}
 
 			CSerializable::Ptr recons;
-			mrpt::utils::OctetVectorToObject(buf, recons);
+			mrpt::serialization::OctetVectorToObject(buf, recons);
 		}
 		catch (std::exception& e)
 		{

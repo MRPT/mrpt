@@ -15,7 +15,6 @@
 #include "common.h"
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
 using namespace mrpt::random;
@@ -201,6 +200,8 @@ double pointmap_test_3(int a1, int a2)
 
 double pointmap_test_4(int a1, int a2)
 {
+	using namespace mrpt::tfest;
+
 	// test 4: computeMatchingWith2D
 	// ----------------------------------------
 

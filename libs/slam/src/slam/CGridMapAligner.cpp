@@ -18,7 +18,7 @@
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/utils/CEnhancedMetaFile.h>
+#include <mrpt/img/CEnhancedMetaFile.h>
 
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CMultiMetricMap.h>
@@ -29,31 +29,13 @@
 using namespace mrpt::math;
 using namespace mrpt::slam;
 using namespace mrpt::maps;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::random;
+using namespace mrpt::img;
+using namespace mrpt::system;
 using namespace mrpt::vision;
 using namespace std;
 
-/*---------------------------------------------------------------
-The method for aligning a pair of 2D points map.
-*   The meaning of some parameters are implementation dependent,
-*    so look for derived classes for instructions.
-*  The target is to find a PDF for the pose displacement between
-*   maps, <b>thus the pose of m2 relative to m1</b>. This pose
-*   is returned as a PDF rather than a single value.
-*
-* \param m1			[IN] The first map
-* \param m2			[IN] The second map. The pose of this map respect to m1
-is to be estimated.
-* \param grossEst		[IN] IGNORED
-* \param runningTime	[OUT] A pointer to a container for obtaining the
-algorithm running time in seconds, or nullptr if you don't need it.
-* \param info			[OUT] See derived classes for details, or nullptr if it
-isn't needed.
-*
-* \sa CPointsMapAlignmentAlgorithm
-  ---------------------------------------------------------------*/
 CPosePDF::Ptr CGridMapAligner::AlignPDF(
 	const mrpt::maps::CMetricMap* mm1, const mrpt::maps::CMetricMap* mm2,
 	const CPosePDFGaussian& initialEstimationPDF, float* runningTime,
@@ -97,13 +79,13 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 
 	ASSERT_(
 		options.methodSelection == CGridMapAligner::amRobustMatch ||
-		options.methodSelection == CGridMapAligner::amModifiedRANSAC)
+		options.methodSelection == CGridMapAligner::amModifiedRANSAC);
 
 	TReturnInfo outInfo;
-	mrpt::utils::TMatchingPairList& correspondences =
+	mrpt::tfest::TMatchingPairList& correspondences =
 		outInfo.correspondences;  // Use directly this placeholder to save 1
 	// variable & 1 copy.
-	mrpt::utils::TMatchingPairList largestConsensusCorrs;
+	mrpt::tfest::TMatchingPairList largestConsensusCorrs;
 
 	CTicTac* tictac = nullptr;
 
@@ -166,9 +148,9 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 	// Extract features from grid-maps:
 	// ------------------------------------------------------
 	const size_t N1 = std::max(
-		40, mrpt::utils::round(m1->getArea() * options.featsPerSquareMeter));
+		40, mrpt::round(m1->getArea() * options.featsPerSquareMeter));
 	const size_t N2 = std::max(
-		40, mrpt::utils::round(m2->getArea() * options.featsPerSquareMeter));
+		40, mrpt::round(m2->getArea() * options.featsPerSquareMeter));
 
 	m_grid_feat_extr.extractFeatures(
 		*m1, *lm1, N1, options.feature_descriptor,
@@ -346,7 +328,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 		for (it1 = idxs1.begin(), it2 = idxs2.begin(); it1 != idxs1.end();
 			 ++it1, ++it2)
 		{
-			mrpt::utils::TMatchingPair mp;
+			mrpt::tfest::TMatchingPair mp;
 			mp.this_idx = *it1;
 			mp.this_x = lm1->landmarks.get(*it1)->pose_mean.x;
 			mp.this_y = lm1->landmarks.get(*it1)->pose_mean.y;
@@ -393,9 +375,9 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 
 			// The list of SOG modes & their corresponding sub-sets of
 			// matchings:
-			typedef mrpt::aligned_containers<mrpt::utils::TMatchingPairList,
-											 CPosePDFSOG::TGaussianMode>::map_t
-				TMapMatchingsToPoseMode;
+			using TMapMatchingsToPoseMode = mrpt::aligned_std_map<
+				mrpt::tfest::TMatchingPairList,
+				CPosePDFSOG::TGaussianMode>;
 			TMapMatchingsToPoseMode sog_modes;
 
 			// ---------------------------------------------------------------
@@ -468,10 +450,10 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 				// ====================================================
 				//             METHOD: "Modified" RANSAC
 				// ====================================================
-				mrpt::utils::TMatchingPairList all_corrs = correspondences;
+				mrpt::tfest::TMatchingPairList all_corrs = correspondences;
 
 				const size_t nCorrs = all_corrs.size();
-				ASSERT_(nCorrs >= 2)
+				ASSERT_(nCorrs >= 2);
 
 				pdf_SOG->clear();  // Start with 0 Gaussian modes
 
@@ -530,7 +512,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 				{
 					trials++;
 
-					mrpt::utils::TMatchingPairList tentativeSubSet;
+					mrpt::tfest::TMatchingPairList tentativeSubSet;
 
 					// Pick 2 random correspondences:
 					uint32_t idx1, idx2;
@@ -600,8 +582,8 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 
 					// Maintain a list of already used landmarks IDs in both
 					// maps to avoid repetitions:
-					vector_bool used_landmarks1(nLM1, false);
-					vector_bool used_landmarks2(nLM2, false);
+					std::vector<bool> used_landmarks1(nLM1, false);
+					std::vector<bool> used_landmarks2(nLM2, false);
 
 					used_landmarks1[all_corrs[idx1].this_idx] = true;
 					used_landmarks1[all_corrs[idx2].this_idx] = true;
@@ -792,7 +774,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 								used_landmarks2[best_pair_ij.second] = true;
 
 								tentativeSubSet.push_back(
-									mrpt::utils::TMatchingPair(
+									mrpt::tfest::TMatchingPair(
 										best_pair_ij.first, best_pair_ij.second,
 										p1_i_localx, p1_i_localy, 0,  // MAP1
 										p2_j_localx, p2_j_localy, 0  // MAP2
@@ -1208,10 +1190,9 @@ CGridMapAligner::TConfigParams::TConfigParams()
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void CGridMapAligner::TConfigParams::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+void CGridMapAligner::TConfigParams::dumpToTextStream(std::ostream& out) const
 {
-	out.printf(
+	out << mrpt::format(
 		"\n----------- [CGridMapAligner::TConfigParams] ------------ \n\n");
 
 	LOADABLEOPTS_DUMP_VAR(methodSelection, int)
@@ -1234,14 +1215,14 @@ void CGridMapAligner::TConfigParams::dumpToTextStream(
 
 	feature_detector_options.dumpToTextStream(out);
 
-	out.printf("\n");
+	out << mrpt::format("\n");
 }
 
 /*---------------------------------------------------------------
 					loadFromConfigFile
   ---------------------------------------------------------------*/
 void CGridMapAligner::TConfigParams::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
+	const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
 {
 	methodSelection =
 		iniFile.read_enum(section, "methodSelection", methodSelection);

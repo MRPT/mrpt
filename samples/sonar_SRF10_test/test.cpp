@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/hwdrivers/CBoardSonars.h>
-#include <mrpt/utils/CTicTac.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
@@ -21,7 +21,6 @@
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::gui;
 using namespace mrpt::opengl;
 using namespace mrpt::system;

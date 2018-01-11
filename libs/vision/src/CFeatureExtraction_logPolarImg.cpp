@@ -16,6 +16,7 @@
 
 using namespace mrpt;
 using namespace mrpt::vision;
+using namespace mrpt::img;
 using namespace mrpt::system;
 using namespace std;
 
@@ -23,14 +24,14 @@ using namespace std;
 								computeLogPolarImageDescriptors
 ************************************************************************************************/
 void CFeatureExtraction::internal_computeLogPolarImageDescriptors(
-	const mrpt::utils::CImage& in_img, CFeatureList& in_features) const
+	const mrpt::img::CImage& in_img, CFeatureList& in_features) const
 {
 	MRPT_START
 #if MRPT_HAS_OPENCV
 
-	ASSERT_(options.LogPolarImagesOptions.radius > 1)
-	ASSERT_(options.LogPolarImagesOptions.num_angles > 1)
-	ASSERT_(options.LogPolarImagesOptions.rho_scale > 0)
+	ASSERT_(options.LogPolarImagesOptions.radius > 1);
+	ASSERT_(options.LogPolarImagesOptions.num_angles > 1);
+	ASSERT_(options.LogPolarImagesOptions.rho_scale > 0);
 
 	const unsigned int radius = options.LogPolarImagesOptions.radius;
 	const unsigned int patch_h = options.LogPolarImagesOptions.num_angles;
@@ -38,7 +39,7 @@ void CFeatureExtraction::internal_computeLogPolarImageDescriptors(
 	const unsigned int patch_w =
 		rho_scale * std::log(static_cast<double>(radius));
 
-	mrpt::utils::CImage logpolar_frame(
+	mrpt::img::CImage logpolar_frame(
 		patch_w, patch_h, in_img.getChannelCount());
 
 	// Compute intensity-domain spin images
@@ -60,7 +61,7 @@ void CFeatureExtraction::internal_computeLogPolarImageDescriptors(
 	}  // end for it
 
 #else
-	THROW_EXCEPTION("This method needs MRPT compiled with OpenCV support")
+	THROW_EXCEPTION("This method needs MRPT compiled with OpenCV support");
 #endif
 	MRPT_END
 }

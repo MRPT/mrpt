@@ -143,16 +143,11 @@ define_mrpt_lib(
 	# Lib name
 	hwdrivers
 	# Dependencies
-	mrpt-base
 	mrpt-comms # serial ports, etc.
 	mrpt-maps  # used to laser preview, etc.
-	mrpt-obs
 	mrpt-gui    # used to camera preview, etc.
 	mrpt-opengl  # needed by mrpt-gui
-	mrpt-maps # needed by laser preview
 	mrpt-vision  # needed to stereo rectification
-	#
-	mrpt-graphs  # dep of mrpt-maps
 	)
 
 IF(BUILD_mrpt-hwdrivers)

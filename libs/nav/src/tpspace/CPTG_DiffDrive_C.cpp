@@ -10,24 +10,24 @@
 #include "nav-precomp.h"  // Precomp header
 #include <mrpt/nav/tpspace/CPTG_DiffDrive_C.h>
 #include <mrpt/math/wrap2pi.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::nav;
-using namespace mrpt::utils;
 using namespace mrpt::system;
 
 IMPLEMENTS_SERIALIZABLE(
 	CPTG_DiffDrive_C, CParameterizedTrajectoryGenerator, mrpt::nav)
 
 void CPTG_DiffDrive_C::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& cfg, const std::string& sSection)
+	const mrpt::config::CConfigFileBase& cfg, const std::string& sSection)
 {
 	CPTG_DiffDrive_CollisionGridBased::loadFromConfigFile(cfg, sSection);
 
 	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(K, double, cfg, sSection);
 }
 void CPTG_DiffDrive_C::saveToConfigFile(
-	mrpt::utils::CConfigFileBase& cfg, const std::string& sSection) const
+	mrpt::config::CConfigFileBase& cfg, const std::string& sSection) const
 {
 	MRPT_START
 	const int WN = 25, WV = 30;
@@ -40,7 +40,7 @@ void CPTG_DiffDrive_C::saveToConfigFile(
 	MRPT_END
 }
 
-void CPTG_DiffDrive_C::readFromStream(mrpt::utils::CStream& in, int version)
+void CPTG_DiffDrive_C::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	CPTG_DiffDrive_CollisionGridBased::internal_readFromStream(in);
 
@@ -54,15 +54,9 @@ void CPTG_DiffDrive_C::readFromStream(mrpt::utils::CStream& in, int version)
 	};
 }
 
-void CPTG_DiffDrive_C::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CPTG_DiffDrive_C::serializeGetVersion() const { return 0; }
+void CPTG_DiffDrive_C::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-	{
-		*version = 0;
-		return;
-	}
-
 	CPTG_DiffDrive_CollisionGridBased::internal_writeToStream(out);
 	out << K;
 }
@@ -128,7 +122,7 @@ bool CPTG_DiffDrive_C::inverseMap_WS2TP(
 		if (std::abs(R) < Rmin)
 		{
 			is_exact = false;
-			R = Rmin * mrpt::utils::sign(R);
+			R = Rmin * mrpt::sign(R);
 		}
 
 		// Was: a = 2*atan( V_MAX / (W_MAX*R) );
@@ -154,8 +148,8 @@ bool CPTG_DiffDrive_C::inverseMap_WS2TP(
 	// Normalize:
 	d_out = d_out / refDistance;
 
-	ASSERT_ABOVEEQ_(k_out, 0)
-	ASSERT_BELOW_(k_out, m_alphaValuesCount)
+	ASSERT_ABOVEEQ_(k_out, 0);
+	ASSERT_BELOW_(k_out, m_alphaValuesCount);
 
 	return is_exact;
 }

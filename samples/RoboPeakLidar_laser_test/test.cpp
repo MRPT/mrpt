@@ -9,7 +9,7 @@
 
 #include <mrpt/hwdrivers/CRoboPeakLidar.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/system/os.h>
 #include <iostream>
@@ -18,7 +18,6 @@ using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::obs;
 using namespace mrpt::gui;
-using namespace mrpt::utils;
 using namespace std;
 
 string SERIAL_NAME;  // Name of the serial port to open

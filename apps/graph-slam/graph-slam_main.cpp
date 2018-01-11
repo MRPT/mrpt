@@ -29,7 +29,6 @@ using namespace mrpt::poses;
 using namespace mrpt::opengl;
 using namespace mrpt::system;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace std;
 
 // Declarations:
@@ -218,7 +217,7 @@ int main(int argc, char** argv)
 			// ------------------------------------
 			ASSERTMSG_(
 				ops_functors.find(selected_op) != ops_functors.end(),
-				"Internal error: Unknown operation functor!")
+				"Internal error: Unknown operation functor!");
 
 			// Call the selected functor:
 			ops_functors[selected_op](input_file, is3d, cmd, verbose);
@@ -310,8 +309,7 @@ IMPLEMENT_OP_FUNCTION(op_dijkstra)
 	set<TNodeID> lstNodeIDs;
 	g.getAllNodes(lstNodeIDs);
 
-	ASSERT_(!lstNodeIDs.empty())
-
+	ASSERT_(!lstNodeIDs.empty());
 	const TNodeID id_root = *lstNodeIDs.begin();
 	VERBOSE_COUT << "Using root node ID=" << id_root << endl;
 
@@ -365,8 +363,7 @@ IMPLEMENT_OP_FUNCTION(op_levmarq)
 	set<TNodeID> lstNodeIDs;
 	g.getAllNodes(lstNodeIDs);
 
-	ASSERT_(!lstNodeIDs.empty())
-
+	ASSERT_(!lstNodeIDs.empty());
 	const TNodeID id_root = *lstNodeIDs.begin();
 	VERBOSE_COUT << "Using root node ID=" << id_root << endl;
 

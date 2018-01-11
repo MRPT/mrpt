@@ -17,7 +17,6 @@
 #include <thread>
 
 using namespace std;
-using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
 
 IMPLEMENTS_GENERIC_SENSOR(CGillAnemometer, mrpt::hwdrivers)
@@ -30,10 +29,10 @@ CGillAnemometer::CGillAnemometer() { m_sensorLabel = "WINDSONIC"; }
 				loadConfig_sensorSpecific
    ----------------------------------------------------- */
 void CGillAnemometer::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	com_port =
 		configSource.read_string(iniSection, "COM_port_WIN", "COM1", true);
 #else

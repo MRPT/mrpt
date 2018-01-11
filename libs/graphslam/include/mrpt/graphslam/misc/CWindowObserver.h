@@ -11,9 +11,9 @@
 #define CWINDOWOBSERVER_H
 
 #include <mrpt/gui/CBaseGUIWindow.h>
-#include <mrpt/utils/CTicTac.h>
-#include <mrpt/utils/TParameters.h>
-#include <mrpt/utils/CObserver.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/system/TParameters.h>
+#include <mrpt/system/CObserver.h>
 #include <mrpt/opengl/gl_utils.h>
 #include <mrpt/system/string_utils.h>
 
@@ -29,7 +29,7 @@ namespace graphslam
  *
  * \ingroup mrpt_graphslam_grp
  */
-class CWindowObserver : public mrpt::utils::CObserver
+class CWindowObserver : public mrpt::system::CObserver
 {
    public:
 	CWindowObserver();
@@ -51,7 +51,7 @@ class CWindowObserver : public mrpt::utils::CObserver
 		const std::string key_str, const std::string key_desc);
 
    protected:
-	void OnEvent(const mrpt::utils::mrptEvent& e);
+	void OnEvent(const mrpt::system::mrptEvent& e);
 
    private:
 	bool m_showing_help, m_hiding_help;
@@ -64,7 +64,7 @@ class CWindowObserver : public mrpt::utils::CObserver
 	 * checked
 	 */
 	std::map<std::string, bool> m_key_codes_to_pressed;
-	mrpt::utils::CTicTac m_tim_show_start, m_tim_show_end;
+	mrpt::system::CTicTac m_tim_show_start, m_tim_show_end;
 };
 }
 }  // END OF NAMESPACES

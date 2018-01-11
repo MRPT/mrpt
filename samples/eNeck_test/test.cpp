@@ -15,7 +15,6 @@
 using namespace mrpt;
 using namespace mrpt::system;
 using namespace mrpt::hwdrivers;
-using namespace mrpt::utils;
 using namespace std;
 
 #define SRV1 0
@@ -94,7 +93,7 @@ int main()
 				case 'j':  // turn left
 					srv = c == 'a' ? SRV1 : SRV2;
 					cangle += 5;
-					mrpt::utils::keep_min(
+					mrpt::keep_min(
 						cangle,
 						eNeckBoard.getTruncateFactor() * 90);  // Saturation
 					eNeckBoard.setAngle(DEG2RAD(cangle), srv);
@@ -106,7 +105,7 @@ int main()
 				case 'l':  // turn right
 					srv = c == 'd' ? SRV1 : SRV2;
 					cangle -= 5;
-					mrpt::utils::keep_max(
+					mrpt::keep_max(
 						cangle,
 						eNeckBoard.getTruncateFactor() * (-90));  // Saturation
 					eNeckBoard.setAngle(DEG2RAD(cangle), srv);

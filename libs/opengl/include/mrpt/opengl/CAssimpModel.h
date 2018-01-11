@@ -11,7 +11,6 @@
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/opengl/COpenGLScene.h>
-#include <mrpt/utils/CMemoryChunk.h>
 #include <map>
 
 namespace mrpt
@@ -20,26 +19,26 @@ namespace opengl
 {
 /** This class can load & render 3D models in a number of different formats
  * (requires the library assimp).
-  *  - All supported formats:
+ *  - All supported formats:
  * http://assimp.sourceforge.net/main_features_formats.html
-  *  - Most common ones: AutoCAD DXF ( .dxf ), Collada ( .dae ), Blender 3D (
+ *  - Most common ones: AutoCAD DXF ( .dxf ), Collada ( .dae ), Blender 3D (
  * .blend ), 3ds Max 3DS ( .3ds ), 3ds Max ASE ( .ase ), Quake I ( .mdl ), Quake
  * II ( .md2 ), Quake III Mesh ( .md3 ), etc.
-  *
-  *  Models are loaded via CAssimpModel::loadScene()
-  *
-  *  <div align="center">
-  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
+ *
+ *  Models are loaded via CAssimpModel::loadScene()
+ *
+ *  <div align="center">
+ *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
  * border-style: solid;">
-  *   <tr> <td> mrpt::opengl::CAssimpModel </td> <td> \image html
+ *   <tr> <td> mrpt::opengl::CAssimpModel </td> <td> \image html
  * preview_CAssimpModel.png </td> </tr>
-  *  </table>
-  *  </div>
-  *
-  *  \sa opengl::COpenGLScene
-  * \ingroup mrpt_opengl_grp
-  * \note Class introduced in MRPT 1.2.2
-  */
+ *  </table>
+ *  </div>
+ *
+ *  \sa opengl::COpenGLScene
+ * \ingroup mrpt_opengl_grp
+ * \note Class introduced in MRPT 1.2.2
+ */
 class CAssimpModel : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CAssimpModel)
@@ -55,9 +54,9 @@ class CAssimpModel : public CRenderizableDisplayList
 		mrpt::math::TPoint3D& bb_max) const override;
 
 	/**  Loads a scene from a file in any supported file.
-	  * \exception std::runtime_error On any error during loading or importing
+	 * \exception std::runtime_error On any error during loading or importing
 	 * the file.
-	  */
+	 */
 	void loadScene(const std::string& file_name);
 
 	/** Empty the object */
@@ -74,7 +73,7 @@ class CAssimpModel : public CRenderizableDisplayList
 		/** indices in \a m_textureIds. string::npos for non-initialized ones.
 		 */
 		size_t id_idx;
-		mrpt::utils::CImage::Ptr img_rgb, img_alpha;
+		mrpt::img::CImage::Ptr img_rgb, img_alpha;
 		TInfoPerTexture() : id_idx(std::string::npos) {}
 	};
 
@@ -85,7 +84,7 @@ class CAssimpModel : public CRenderizableDisplayList
    private:
 	/** A container for automatic deletion of lib3ds's scene when the last
 	 * reference of the smart_ptr's is destroyed.
-	  */
+	 */
 	struct TImplAssimp
 	{
 		TImplAssimp();
@@ -105,7 +104,7 @@ class CAssimpModel : public CRenderizableDisplayList
 	mutable std::map<std::string, TInfoPerTexture> m_textureIdMap;
 };
 
-}  // end namespace
-}  // End of namespace
+}  // namespace opengl
+}  // namespace mrpt
 
 #endif

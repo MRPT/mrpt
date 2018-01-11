@@ -36,7 +36,7 @@
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/obs_utils.h>
-#include <mrpt/utils/CProbabilityDensityFunction.h>
+#include <mrpt/math/CProbabilityDensityFunction.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
@@ -49,17 +49,17 @@
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/string_utils.h>
-#include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/CFileOutputStream.h>
-#include <mrpt/utils/CFileInputStream.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/io/CFileInputStream.h>
+#include <mrpt/system/CTicTac.h>
 #include <cstdint>
-#include <mrpt/utils/mrpt_macros.h>
-#include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/types_simple.h>
-#include <mrpt/utils/TColor.h>
-#include <mrpt/utils/CImage.h>
-#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/core/exceptions.h>
+#include <mrpt/config/CConfigFile.h>
+#include <cstdint>
+#include <mrpt/img/TColor.h>
+#include <mrpt/img/CImage.h>
+#include <mrpt/system/COutputLogger.h>
 
 #include <mrpt/graphslam/misc/CEdgeCounter.h>
 #include <mrpt/graphslam/interfaces/CNodeRegistrationDecider.h>
@@ -113,7 +113,7 @@ namespace graphslam
  *
  * - \b output_dir_fname
  *   + \a Section       : GeneralConfiguration
- *   + \a Default value : 1 (LVL_INFO)
+ *   + \a Default value : 1 (mrpt::system::LVL_INFO)
  *   + \a Required      : FALSE
  *
  * - \b user_decides_about_output_dir
@@ -138,7 +138,7 @@ namespace graphslam
  *
  * - \b class_verbosity
  *   + \a Section       : GeneralConfiguration
- *   + \a Default value : 1 (LVL_INFO)
+ *   + \a Default value : 1 (mrpt::system::LVL_INFO)
  *   + \a Required      : FALSE
  *
  *
@@ -190,15 +190,15 @@ namespace graphslam
  * \ingroup mrpt_graphslam_grp
  */
 template <class GRAPH_T = typename mrpt::graphs::CNetworkOfPoses2DInf>
-class CGraphSlamEngine : public mrpt::utils::COutputLogger
+class CGraphSlamEngine : public mrpt::system::COutputLogger
 {
    public:
 	/**\brief Handy typedefs */
 	/**\{*/
 	/**\brief Map for managing output file streams.*/
-	typedef std::map<std::string, mrpt::utils::CFileOutputStream*> fstreams_out;
+	typedef std::map<std::string, mrpt::io::CFileOutputStream*> fstreams_out;
 	/**\brief Map for iterating over output file streams.*/
-	typedef std::map<std::string, mrpt::utils::CFileOutputStream*>::iterator
+	typedef std::map<std::string, mrpt::io::CFileOutputStream*>::iterator
 		fstreams_out_it;
 
 	/**\brief Type of graph constraints */
@@ -206,7 +206,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger
 	/**\brief Type of underlying poses (2D/3D). */
 	typedef typename GRAPH_T::constraint_t::type_value pose_t;
 	typedef typename GRAPH_T::global_pose_t global_pose_t;
-	typedef std::map<mrpt::utils::TNodeID,
+	typedef std::map<mrpt::graphs::TNodeID,
 					 mrpt::obs::CObservation2DRangeScan::Ptr>
 		nodes_to_scans2D_t;
 	/**\}*/
@@ -267,7 +267,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger
 	 * \sa updateEstimatedTrajectoryVisualization
 	 */
 	virtual void getNodeIDsOfEstimatedTrajectory(
-		std::set<mrpt::utils::TNodeID>* nodes_set) const;
+		std::set<mrpt::graphs::TNodeID>* nodes_set) const;
 	/**\brief Wrapper method around the GRAPH_T::saveToTextFile method.
 	 * Method saves the graph in the format used by TORO & HoG-man strategies
 	 *
@@ -472,7 +472,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger
 		if (m_enable_visuals)
 		{
 			this->m_win->addTextMessage(
-				0.3, 0.8, "", mrpt::utils::TColorf(1.0, 0, 0),
+				0.3, 0.8, "", mrpt::img::TColorf(1.0, 0, 0),
 				m_text_index_paused_message);
 		}
 	}
@@ -492,7 +492,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger
 		if (m_enable_visuals)
 		{
 			this->m_win->addTextMessage(
-				0.3, 0.8, m_paused_message, mrpt::utils::TColorf(1.0, 0, 0),
+				0.3, 0.8, m_paused_message, mrpt::img::TColorf(1.0, 0, 0),
 				m_text_index_paused_message);
 		}
 
@@ -592,7 +592,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger
 	 * Used during the computeMap call for the occupancy gridmap
 	 */
 	virtual mrpt::poses::CPose3D getLSPoseForGridMapVisualization(
-		const mrpt::utils::TNodeID nodeID) const;
+		const mrpt::graphs::TNodeID nodeID) const;
 	/**\brief Set the properties of the map visual object based on the nodeID
 	 * that
 	 * it was produced by.
@@ -602,7 +602,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger
 	 * \note Base class method sets only the color of the object
 	 */
 	virtual void setObjectPropsFromNodeID(
-		const mrpt::utils::TNodeID nodeID,
+		const mrpt::graphs::TNodeID nodeID,
 		mrpt::opengl::CSetOfObjects::Ptr& viz_object);
 	void initMapVisualization();
 	/**\brief Update the map visualization based on the current graphSLAM
@@ -614,7 +614,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger
 	 * \sa updateEstimatedTrajectoryVisualization
 	 */
 	void updateMapVisualization(
-		const std::map<mrpt::utils::TNodeID,
+		const std::map<mrpt::graphs::TNodeID,
 					   mrpt::obs::CObservation2DRangeScan::Ptr>&
 			nodes_to_laser_scans2D,
 		bool full_update = false);
@@ -683,7 +683,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger
 	 * A Comparison of SLAM Algorithms Based on a Graph of Relations</a>
 	 * for more details on this.
 	 */
-	void computeSlamMetric(mrpt::utils::TNodeID nodeID, size_t gt_index);
+	void computeSlamMetric(mrpt::graphs::TNodeID nodeID, size_t gt_index);
 
 	/**\brief Wrapper method that used for printing error messages in a
 	 * consistent manner
@@ -740,7 +740,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger
 	 */
 	mrpt::opengl::CSetOfObjects::Ptr setCurrentPositionModel(
 		const std::string& model_name,
-		const mrpt::utils::TColor& model_color = mrpt::utils::TColor(0, 0, 0),
+		const mrpt::img::TColor& model_color = mrpt::img::TColor(0, 0, 0),
 		const size_t model_size = 1, const pose_t& init_pose = pose_t());
 
 	/**\brief Assert that the given nodes number matches the registered graph
@@ -761,7 +761,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger
 
 	// VARIABLES
 	//////////////////////////////////////////////////////////////
-	mrpt::utils::CTimeLogger m_time_logger; /**<Time logger instance */
+	mrpt::system::CTimeLogger m_time_logger; /**<Time logger instance */
 
 	/**\brief The graph object to be built and optimized. */
 	GRAPH_T m_graph;
@@ -913,11 +913,11 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger
 
 	/**\name Trajectories colors */
 	/**\{*/
-	mrpt::utils::TColor m_odometry_color;
-	mrpt::utils::TColor m_GT_color;
-	mrpt::utils::TColor m_estimated_traj_color;
-	mrpt::utils::TColor m_optimized_map_color;
-	mrpt::utils::TColor m_current_constraint_type_color;
+	mrpt::img::TColor m_odometry_color;
+	mrpt::img::TColor m_GT_color;
+	mrpt::img::TColor m_estimated_traj_color;
+	mrpt::img::TColor m_optimized_map_color;
+	mrpt::img::TColor m_current_constraint_type_color;
 	/**\}*/
 
 	// frame transformation from the RGBD_TUM GrountTruth to the MRPT
@@ -930,7 +930,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger
 	 *
 	 * Handy for not locking the m_graph resource
 	 */
-	mrpt::utils::TNodeID m_nodeID_max;
+	mrpt::graphs::TNodeID m_nodeID_max;
 	/** Mark graph modification/accessing explicitly for multithreaded
 	 * implementation
 	 */
@@ -947,7 +947,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger
 	 * Keep track of the nodeIDs instead of the node positions as the latter
 	 * are about to change in the Edge Registration / Loop closing procedures
 	 */
-	std::map<mrpt::utils::TNodeID, size_t> m_nodeID_to_gt_indices;
+	std::map<mrpt::graphs::TNodeID, size_t> m_nodeID_to_gt_indices;
 	double m_curr_deformation_energy;
 	std::vector<double> m_deformation_energy_vec;
 	/**\}*/

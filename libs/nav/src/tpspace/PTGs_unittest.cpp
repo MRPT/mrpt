@@ -8,17 +8,14 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/system/filesystem.h>
 #include <gtest/gtest.h>
 
 // Defined in tests/test_main.cpp
 namespace mrpt
 {
-namespace utils
-{
 extern std::string MRPT_GLOBAL_UNITTEST_SRC_DIR;
-}
 }
 
 TEST(NavTests, PTGs_tests)
@@ -27,7 +24,7 @@ TEST(NavTests, PTGs_tests)
 	using namespace mrpt;
 	using namespace mrpt::nav;
 
-	const string sFil = mrpt::utils::MRPT_GLOBAL_UNITTEST_SRC_DIR +
+	const string sFil = mrpt::MRPT_GLOBAL_UNITTEST_SRC_DIR +
 						string("/tests/PTGs_for_tests.ini");
 	if (!mrpt::system::fileExists(sFil))
 	{
@@ -36,7 +33,7 @@ TEST(NavTests, PTGs_tests)
 		return;
 	}
 
-	mrpt::utils::CConfigFile cfg(sFil);
+	mrpt::config::CConfigFile cfg(sFil);
 
 	const unsigned int PTG_COUNT =
 		cfg.read_int("PTG_UNIT_TESTS", "PTG_COUNT", 0, true);

@@ -12,7 +12,7 @@
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservationRange.h>
-#include <mrpt/utils/round.h>  // round()
+#include <mrpt/core/round.h>  // round()
 #include <mrpt/math/transform_gaussian.h>
 
 #include <mrpt/random.h>
@@ -20,7 +20,6 @@
 using namespace mrpt;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::random;
 using namespace mrpt::poses;
 using namespace std;
@@ -35,8 +34,8 @@ void COccupancyGridMap2D::laserScanSimulator(
 {
 	MRPT_START
 
-	ASSERT_(decimation >= 1)
-	ASSERT_(N >= 2)
+	ASSERT_(decimation >= 1);
+	ASSERT_(N >= 2);
 
 	// Sensor pose in global coordinates
 	CPose3D sensorPose3D = CPose3D(robotPose) + inout_Scan.sensorPose;
@@ -81,7 +80,7 @@ void COccupancyGridMap2D::sonarSimulator(
 
 		// For each sonar cone, simulate several rays and keep the shortest
 		// distance:
-		ASSERT_(inout_observation.sensorConeApperture > 0)
+		ASSERT_(inout_observation.sensorConeApperture > 0);
 		size_t nRays =
 			round(1 + inout_observation.sensorConeApperture / DEG2RAD(1.0));
 
@@ -130,7 +129,7 @@ void COccupancyGridMap2D::simulateScanRay(
 
 	// Ray tracing, until collision, out of the map or out of range:
 	const unsigned int max_ray_len =
-		mrpt::utils::round(max_range_meters / resolution);
+		mrpt::round(max_range_meters / resolution);
 	unsigned int ray_len = 0;
 
 // Use integers for all ray tracing for efficiency
@@ -215,9 +214,9 @@ static void func_laserSimul_callback(
 	const Eigen::Vector3d& x_pose, const TFunctorLaserSimulData& fixed_param,
 	Eigen::VectorXd& y_scanRanges)
 {
-	ASSERT_(fixed_param.params && fixed_param.grid)
-	ASSERT_(fixed_param.params->decimation >= 1)
-	ASSERT_(fixed_param.params->nRays >= 2)
+	ASSERT_(fixed_param.params && fixed_param.grid);
+	ASSERT_(fixed_param.params->decimation >= 1);
+	ASSERT_(fixed_param.params->nRays >= 2);
 
 	const size_t N = fixed_param.params->nRays;
 

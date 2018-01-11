@@ -9,16 +9,15 @@
 
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/utils_defs.h>
-#include <mrpt/utils/CMessage.h>
+#include <mrpt/serialization/CMessage.h>
 #include <mrpt/system/os.h>
-
 #include <mrpt/hwdrivers/CBoardSonars.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include <thread>
 
-using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
+using namespace mrpt::serialization;
 using namespace std;
 
 IMPLEMENTS_GENERIC_SENSOR(CBoardSonars, mrpt::hwdrivers)
@@ -43,7 +42,7 @@ CBoardSonars::CBoardSonars()
 						loadConfig_sensorSpecific
 -------------------------------------------------------------*/
 void CBoardSonars::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 	MRPT_START
@@ -104,15 +103,16 @@ bool CBoardSonars::queryFirmwareVersion(string& out_firmwareVersion)
 {
 	try
 	{
-		utils::CMessage msg, msgRx;
+		CMessage msg, msgRx;
 
 		// Try to connect to the device:
 		if (!checkConnectionAndConnect()) return false;
 
 		msg.type = 0x10;
-		sendMessage(msg);
+		auto arch = mrpt::serialization::archiveFrom(*this);
+		arch.sendMessage(msg);
 
-		if (receiveMessage(msgRx))
+		if (arch.receiveMessage(msgRx))
 		{
 			msgRx.getContentAsString(out_firmwareVersion);
 			return true;
@@ -135,7 +135,7 @@ bool CBoardSonars::sendConfigCommands()
 	try
 	{
 		if (!isOpen()) return false;
-		utils::CMessage msg, msgRx;
+		mrpt::serialization::CMessage msg, msgRx;
 		size_t i;
 
 		// Send cmd for firing order:
@@ -149,8 +149,9 @@ bool CBoardSonars::sendConfigCommands()
 			else
 				msg.content[i] = 0xFF;
 		}
-		sendMessage(msg);
-		if (!receiveMessage(msgRx)) return false;  // Error
+		auto arch = mrpt::serialization::archiveFrom(*this);
+		arch.sendMessage(msg);
+		if (!arch.receiveMessage(msgRx)) return false;  // Error
 
 		// Send cmd for gain:
 		// ----------------------------
@@ -171,16 +172,16 @@ bool CBoardSonars::sendConfigCommands()
 			else
 				msg.content[i] = 0xFF;
 		}
-		sendMessage(msg);
-		if (!receiveMessage(msgRx)) return false;  // Error
+		arch.sendMessage(msg);
+		if (!arch.receiveMessage(msgRx)) return false;  // Error
 
 		// Send cmd for max range:
 		// ----------------------------
 		msg.type = 0x14;
 		msg.content.resize(1);
 		msg.content[0] = (int)((m_maxRange / 0.043f) - 1);
-		sendMessage(msg);
-		if (!receiveMessage(msgRx)) return false;  // Error
+		arch.sendMessage(msg);
+		if (!arch.receiveMessage(msgRx)) return false;  // Error
 
 		// Send cmd for max range:
 		// ----------------------------
@@ -189,8 +190,8 @@ bool CBoardSonars::sendConfigCommands()
 		uint16_t T = (uint16_t)(m_minTimeBetweenPings * 1000.0f);
 		msg.content[0] = T >> 8;
 		msg.content[1] = T & 0x00FF;
-		sendMessage(msg);
-		if (!receiveMessage(msgRx)) return false;  // Error
+		arch.sendMessage(msg);
+		if (!arch.receiveMessage(msgRx)) return false;  // Error
 
 		return true;
 	}
@@ -217,15 +218,17 @@ bool CBoardSonars::getObservation(mrpt::obs::CObservationRange& obs)
 		obs.sensedData.clear();
 		mrpt::obs::CObservationRange::TMeasurement obsRange;
 
-		utils::CMessage msg, msgRx;
+		mrpt::serialization::CMessage msg, msgRx;
 
 		// Try to connect to the device:
 		if (!checkConnectionAndConnect()) return false;
 
-		msg.type = 0x11;
-		sendMessage(msg);
+		auto arch = mrpt::serialization::archiveFrom(*this);
 
-		if (receiveMessage(msgRx))
+		msg.type = 0x11;
+		arch.sendMessage(msg);
+
+		if (arch.receiveMessage(msgRx))
 		{
 			if (msgRx.content.empty()) return false;
 
@@ -267,20 +270,21 @@ bool CBoardSonars::programI2CAddress(uint8_t currentAddress, uint8_t newAddress)
 {
 	try
 	{
-		utils::CMessage msg, msgRx;
+		mrpt::serialization::CMessage msg, msgRx;
 
 		// Try to connect to the device:
 		if (!checkConnectionAndConnect()) return false;
+		auto arch = mrpt::serialization::archiveFrom(*this);
 
 		msg.type = 0x20;
 		msg.content.resize(2);
 		msg.content[0] = currentAddress;
 		msg.content[1] = newAddress;
-		sendMessage(msg);
+		arch.sendMessage(msg);
 
 		std::this_thread::sleep_for(10ms);
 
-		return receiveMessage(msgRx);
+		return arch.receiveMessage(msgRx);
 	}
 	catch (...)
 	{

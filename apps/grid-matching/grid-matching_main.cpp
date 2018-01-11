@@ -7,11 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/utils/CFileStream.h>
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
-#include <mrpt/utils/CFileOutputStream.h>
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/io/CFileStream.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/poses/CPoint2D.h>
@@ -30,15 +30,20 @@
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::slam;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
 using namespace mrpt::opengl;
+using namespace mrpt::tfest;
 using namespace mrpt::math;
+using namespace mrpt::serialization;
+using namespace mrpt::config;
 using namespace mrpt::gui;
+using namespace mrpt::img;
+using namespace mrpt::io;
 using namespace mrpt::random;
 using namespace mrpt::poses;
 using namespace std;
@@ -186,12 +191,16 @@ void do_grid_align()
 	CSimpleMap map1, map2, map2noisy;
 
 	// Load maps:
-	CFileGZInputStream(fil_grid1) >> map1;
+	{
+		CFileGZInputStream f(fil_grid1);
+		archiveFrom(f) >> map1;
+	}
 
 	// If it's detect_test only load one map:
 	if (is_match || mrpt::system::fileExists(fil_grid2))
 	{
-		CFileGZInputStream(fil_grid2) >> map2;
+		CFileGZInputStream f(fil_grid2);
+		archiveFrom(f) >> map2;
 	}
 
 	// Generate the_map1 now:
@@ -226,7 +235,7 @@ void do_grid_align()
 		CVectorFloat stats_errorXY, stats_errorPhi;
 		CVectorFloat stats_bruteErrorXY, stats_bruteErrorPhi;
 		CVectorFloat stats_GT_likelihood;
-		vector_uint overallGTcorrsFound;
+		std::vector<uint32_t> overallGTcorrsFound;
 
 		for (unsigned int iter = 0; iter < N_ITERS; iter++)
 		{
@@ -278,9 +287,8 @@ void do_grid_align()
 						getRandomGenerator().drawGaussian1D(0, STD_NOISE_XY));
 					newPDF->mean.y_incr(
 						getRandomGenerator().drawGaussian1D(0, STD_NOISE_XY));
-					newPDF->mean.phi_incr(
-						getRandomGenerator().drawGaussian1D(
-							0, DEG2RAD(STD_NOISE_PHI)));
+					newPDF->mean.phi_incr(getRandomGenerator().drawGaussian1D(
+						0, DEG2RAD(STD_NOISE_PHI)));
 					newPDF->mean.normalizePhi();
 
 					// Change into the map:
@@ -308,10 +316,8 @@ void do_grid_align()
 			// test, save time
 			{
 				// Save maps:
-				grid2->saveAsBitmapFile(
-					format(
-						"%s/map2_noise_%f.png", RESULTS_DIR.c_str(),
-						STD_NOISE_XY));
+				grid2->saveAsBitmapFile(format(
+					"%s/map2_noise_%f.png", RESULTS_DIR.c_str(), STD_NOISE_XY));
 				grid2->saveAsBitmapFileWithLandmarks(
 					format(
 						"%s/map2_LM_noise_%f.png", RESULTS_DIR.c_str(),
@@ -319,10 +325,9 @@ void do_grid_align()
 					&lm2, true);
 				CImage img;
 				grid2->getAsImageFiltered(img);
-				img.saveToFile(
-					format(
-						"%s/map2_filt_noise_%f.png", RESULTS_DIR.c_str(),
-						STD_NOISE_XY));
+				img.saveToFile(format(
+					"%s/map2_filt_noise_%f.png", RESULTS_DIR.c_str(),
+					STD_NOISE_XY));
 			}
 
 			// Only if the case of "save-corr-dists" we can do NOT align the
@@ -362,9 +367,8 @@ void do_grid_align()
 					fabs(math::wrapToPi(estimateMean.phi() - GT_Aphi_rad));
 				float AxyBrute =
 					info.noRobustEstimation.distance2DTo(GT_Ax, GT_Ay);
-				float AphiBrute = fabs(
-					math::wrapToPi(
-						info.noRobustEstimation.phi() - GT_Aphi_rad));
+				float AphiBrute = fabs(math::wrapToPi(
+					info.noRobustEstimation.phi() - GT_Aphi_rad));
 
 				printf("Done in %.03fms\n", 1000.0f * tim);
 
@@ -377,10 +381,9 @@ void do_grid_align()
 					CPosePDFParticles::Ptr partsPdf =
 						std::dynamic_pointer_cast<CPosePDFParticles>(parts);
 
-					partsPdf->saveToTextFile(
-						format(
-							"%s/particles_noise_%.03f.txt", RESULTS_DIR.c_str(),
-							STD_NOISE_XY));
+					partsPdf->saveToTextFile(format(
+						"%s/particles_noise_%.03f.txt", RESULTS_DIR.c_str(),
+						STD_NOISE_XY));
 
 					printf("Goodness: %.03f%%\n", 100 * info.goodness);
 					std::cout << partsPdf->particlesCount() << " particles\n";
@@ -395,9 +398,8 @@ void do_grid_align()
 					pdf_SOG->normalizeWeights();
 					// pdf_SOG->saveToTextFile("_debug_SoG.txt");
 
-					stats_GT_likelihood.push_back(
-						(float)pdf_SOG->evaluatePDF(
-							CPose2D(GT_Ax, GT_Ay, GT_Aphi_rad), true));
+					stats_GT_likelihood.push_back((float)pdf_SOG->evaluatePDF(
+						CPose2D(GT_Ax, GT_Ay, GT_Aphi_rad), true));
 
 					if (f_out_log.fileOpenCorrectly())
 					{
@@ -421,7 +423,7 @@ void do_grid_align()
 								-10, 10, -10, 10, 0, 1);
 						scene3D.insert(gridXY);
 						scene3D.insert(thePDF3D);
-						CFileGZOutputStream("_out_SoG.3Dscene") << scene3D;
+						scene3D.saveToFile("_out_SoG.3Dscene");
 					}
 
 					if (!SAVE_ICP_GOODNESS_FIL.empty())
@@ -493,21 +495,20 @@ void do_grid_align()
 								imgGrid1LY - 1 - grid1->y2idx(pp1.y),
 								TColor::black());
 
-							imgCanvas.saveToFile(
-								format(
-									"%s/_OVERLAP_MAPS_SOG_MODE_%04u.png",
-									RESULTS_DIR.c_str(), (unsigned int)nNode));
+							imgCanvas.saveToFile(format(
+								"%s/_OVERLAP_MAPS_SOG_MODE_%04u.png",
+								RESULTS_DIR.c_str(), (unsigned int)nNode));
 
 							// Save as 3D scene:
 							COpenGLScene scene;
 							CPointsMap::COLOR_3DSCENE(
-								mrpt::utils::TColorf(0, 0, 1));
+								mrpt::img::TColorf(0, 0, 1));
 							CSetOfObjects::Ptr obj1 =
 								mrpt::make_aligned_shared<CSetOfObjects>();
 							the_map1.getAs3DObject(obj1);
 
 							CPointsMap::COLOR_3DSCENE(
-								mrpt::utils::TColorf(1, 0, 0));
+								mrpt::img::TColorf(1, 0, 0));
 							CSetOfObjects::Ptr obj2 =
 								mrpt::make_aligned_shared<CSetOfObjects>();
 							the_map2.getAs3DObject(obj2);
@@ -535,11 +536,9 @@ void do_grid_align()
 
 							scene.insert(lines);
 
-							CFileGZOutputStream(
-								format(
-									"%s/_OVERLAP_MAPS_SOG_MODE_%04u.3Dscene",
-									RESULTS_DIR.c_str(), (unsigned int)nNode))
-								<< scene;
+							scene.saveToFile(format(
+								"%s/_OVERLAP_MAPS_SOG_MODE_%04u.3Dscene",
+								RESULTS_DIR.c_str(), (unsigned int)nNode));
 						}
 
 					}  // end SAVE_SOG_ALL
@@ -551,22 +550,20 @@ void do_grid_align()
 					gridLimits(0, 1) = estimateMean.x + 0.10f,
 								  gridLimits(0, 2) = estimateMean.y - 0.10f;
 					gridLimits(0, 3) = estimateMean.y + 0.10f;
-					gridLimits.saveToTextFile(
-						format(
-							"%s/SOG_grid_limits_noise_%f.txt",
-							RESULTS_DIR.c_str(), STD_NOISE_XY));
+					gridLimits.saveToTextFile(format(
+						"%s/SOG_grid_limits_noise_%f.txt", RESULTS_DIR.c_str(),
+						STD_NOISE_XY));
 
 					CMatrixD evalGrid;
 					pdf_SOG->evaluatePDFInArea(
 						gridLimits(0, 0), gridLimits(0, 1), gridLimits(0, 2),
 						gridLimits(0, 3), 0.002f, 0, evalGrid,
 						true  // Sum over all phis
-						);
+					);
 
-					evalGrid.saveToTextFile(
-						format(
-							"%s/SOG_grid_noise_%f.txt", RESULTS_DIR.c_str(),
-							STD_NOISE_XY));
+					evalGrid.saveToTextFile(format(
+						"%s/SOG_grid_noise_%f.txt", RESULTS_DIR.c_str(),
+						STD_NOISE_XY));
 #endif
 				}  // end if is SOG
 
@@ -638,8 +635,8 @@ void do_grid_align()
 						const double dErr = P1.distanceTo(P2);
 						dErrs[i2] = dErr;
 
-						ASSERT_(!l1->features.empty() && l1->features[0])
-						ASSERT_(!l2->features.empty() && l2->features[0])
+						ASSERT_(!l1->features.empty() && l1->features[0]);
+						ASSERT_(!l2->features.empty() && l2->features[0]);
 
 						D[i2] = l1->features[0]->descriptorDistanceTo(
 							*l2->features[0]);
@@ -651,12 +648,10 @@ void do_grid_align()
 					if (dErrs[best_match] < 0.20)
 					{
 						CLandmark* l2 = lm2->landmarks.get(best_match);
-						gt_corrs.push_back(
-							TMatchingPair(
-								i1, best_match, l1->pose_mean.x,
-								l1->pose_mean.y, l1->pose_mean.z,
-								l2->pose_mean.x, l2->pose_mean.y,
-								l2->pose_mean.z));
+						gt_corrs.push_back(TMatchingPair(
+							i1, best_match, l1->pose_mean.x, l1->pose_mean.y,
+							l1->pose_mean.z, l2->pose_mean.x, l2->pose_mean.y,
+							l2->pose_mean.z));
 					}
 					else
 						best_match = (unsigned int)(-1);
@@ -813,8 +808,9 @@ int main(int argc, char** argv)
 		CONFIG_FIL = arg_config.getValue();
 		SAVE_ICP_GOODNESS_FIL = arg_icpgoodness.getValue();
 
-		aligner_method = TEnumType<CGridMapAligner::TAlignerMethod>::name2value(
-			arg_aligner_method.getValue());
+		aligner_method =
+			mrpt::typemeta::TEnumType<CGridMapAligner::TAlignerMethod>::
+				name2value(arg_aligner_method.getValue());
 
 		STD_NOISE_XY = arg_noise_std_xy.getValue();
 		STD_NOISE_PHI = DEG2RAD(arg_noise_std_phi.getValue());

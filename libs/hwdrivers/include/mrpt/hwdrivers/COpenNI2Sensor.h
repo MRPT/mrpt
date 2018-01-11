@@ -11,7 +11,7 @@
 
 #include <mrpt/hwdrivers/COpenNI2Generic.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/utils/TEnumType.h>
+#include <mrpt/typemeta/TEnumType.h>
 #include <mrpt/gui/CDisplayWindow.h>
 
 namespace mrpt
@@ -296,26 +296,26 @@ class COpenNI2Sensor : public mrpt::hwdrivers::CGenericSensor,
 	inline double getMaxRange() const { return m_maxRange; }
 	/** Get the row count in the camera images, loaded automatically upon camera
 	 * open(). */
-	inline size_t getRowCount() const { return m_cameraParamsRGB.nrows; }
+	inline size_t rows() const { return m_cameraParamsRGB.nrows; }
 	/** Get the col count in the camera images, loaded automatically upon camera
 	 * open(). */
-	inline size_t getColCount() const { return m_cameraParamsRGB.ncols; }
+	inline size_t cols() const { return m_cameraParamsRGB.ncols; }
 	/** Get a const reference to the depth camera calibration parameters */
-	inline const mrpt::utils::TCamera& getCameraParamsIntensity() const
+	inline const mrpt::img::TCamera& getCameraParamsIntensity() const
 	{
 		return m_cameraParamsRGB;
 	}
-	inline void setCameraParamsIntensity(const mrpt::utils::TCamera& p)
+	inline void setCameraParamsIntensity(const mrpt::img::TCamera& p)
 	{
 		m_cameraParamsRGB = p;
 	}
 
 	/** Get a const reference to the depth camera calibration parameters */
-	inline const mrpt::utils::TCamera& getCameraParamsDepth() const
+	inline const mrpt::img::TCamera& getCameraParamsDepth() const
 	{
 		return m_cameraParamsDepth;
 	}
-	inline void setCameraParamsDepth(const mrpt::utils::TCamera& p)
+	inline void setCameraParamsDepth(const mrpt::img::TCamera& p)
 	{
 		m_cameraParamsDepth = p;
 	}
@@ -347,7 +347,7 @@ class COpenNI2Sensor : public mrpt::hwdrivers::CGenericSensor,
 
    protected:
 	virtual void loadConfig_sensorSpecific(
-		const mrpt::utils::CConfigFileBase& configSource,
+		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& section);
 
 	mrpt::poses::CPose3D m_sensorPoseOnRobot;
@@ -363,10 +363,10 @@ class COpenNI2Sensor : public mrpt::hwdrivers::CGenericSensor,
 
 	/** Params for the RGB camera
  */
-	mrpt::utils::TCamera m_cameraParamsRGB;
+	mrpt::img::TCamera m_cameraParamsRGB;
 	/** Params for the Depth camera
  */
-	mrpt::utils::TCamera m_cameraParamsDepth;
+	mrpt::img::TCamera m_cameraParamsDepth;
 	/** See mrpt::obs::CObservation3DRangeScan for a diagram of this pose
  */
 	mrpt::poses::CPose3D m_relativePoseIntensityWRTDepth;

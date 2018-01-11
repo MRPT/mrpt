@@ -62,39 +62,22 @@ CHMHMapNode::~CHMHMapNode()
 		(*it)->onNodeDestruction(this);
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CHMHMapNode::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CHMHMapNode::serializeGetVersion() const { return 0; }
+void CHMHMapNode::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		// Data:
-		out << m_ID << m_label;
-		out << m_nodeType.getType();
-		out << m_annotations;
-		out << m_hypotheses;
-	}
+	out << m_ID << m_label;
+	out << m_nodeType;
+	out << m_annotations;
+	out << m_hypotheses;
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CHMHMapNode::readFromStream(mrpt::utils::CStream& in, int version)
+void CHMHMapNode::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
 		case 0:
 		{
-			std::string type;
-			// Data:
-			in >> m_ID >> m_label >> type >> m_annotations >> m_hypotheses;
-
-			m_nodeType.setType(type);
+			in >> m_ID >> m_label >> m_nodeType  >> m_annotations >> m_hypotheses;
 
 			// It's not necessary since at ::Create this is already done
 			// (but...check!)
@@ -107,9 +90,6 @@ void CHMHMapNode::readFromStream(mrpt::utils::CStream& in, int version)
 	};
 }
 
-/*---------------------------------------------------------------
-					onArcDestruction
-  ---------------------------------------------------------------*/
 void CHMHMapNode::onArcDestruction(CHMHMapArc* arc)
 {
 	MRPT_START
@@ -161,7 +141,7 @@ unsigned int CHMHMapNode::getLevelInTheHierarchy()
 	{
 		// I am a "level+1" from the level below if a "belongs" arc points to
 		// me:
-		if ((*itArc)->m_arcType.isType("Membership") &&
+		if ((*itArc)->m_arcType=="Membership" &&
 			(*itArc)->m_nodeTo == this->m_ID)
 		{
 			unsigned int L = m_parent->getNodeByID((*itArc)->m_nodeFrom)
@@ -198,9 +178,9 @@ void CHMHMapNode::getArcs(
 	TArcList& out, const char* arcType, const THypothesisID& hyp_id) const
 {
 	out.clear();
-	for (TArcList::const_iterator it = m_arcs.begin(); it != m_arcs.end(); ++it)
-		if ((*it)->m_hypotheses.has(hyp_id) && (*it)->m_arcType.isType(arcType))
-			out.push_back(*it);
+	for (const auto& a: m_arcs)
+		if (a->m_hypotheses.has(hyp_id) && a->m_arcType == arcType)
+			out.push_back(a);
 }
 
 /*---------------------------------------------------------------

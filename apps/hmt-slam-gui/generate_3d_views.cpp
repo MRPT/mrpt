@@ -24,13 +24,15 @@
 #include <wx/artprov.h>
 //*)
 
+#include <mrpt/system/string_utils.h>
+
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::hmtslam;
 using namespace mrpt::slam;
 using namespace mrpt::maps;
+using namespace mrpt::serialization;
 using namespace mrpt::poses;
-using namespace mrpt::utils;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
 
@@ -248,10 +250,10 @@ void hmt_slam_guiFrame::updateGlobalMapView()
 
 	// Dump text representation to log window:
 	{
-		CStringList strLst;
+		std::vector<std::string> strLst;
 		m_hmtslam->m_map.dumpAsText(strLst);
 		string str;
-		strLst.getText(str);
+		mrpt::system::stringListAsString(strLst, str);
 		cout << str << endl;
 	}
 

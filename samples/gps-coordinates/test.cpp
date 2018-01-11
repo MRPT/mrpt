@@ -10,7 +10,6 @@
 #include <mrpt/topography.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace std;
@@ -55,7 +54,7 @@ void TestGPS_coords()
 		pt0.lon, pt0.lat, pt0.height, pose_ENU);
 	cout << "ENU system of coordinates for lat=" << pt0.lat
 		 << " lon=" << pt0.lon << " alt=" << pt0.height << " is: \n"
-		 << mrpt::poses::CPose3D(pose_ENU).getHomogeneousMatrixVal() << endl;
+		 << mrpt::poses::CPose3D(pose_ENU).getHomogeneousMatrixVal<CMatrixDouble44>() << endl;
 
 	cout << "P0->P1: " << (geo1 - geo0) << endl;
 	cout << "(p1.h-p0.h)*ENU_Z: "

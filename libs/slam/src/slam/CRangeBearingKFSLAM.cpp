@@ -23,7 +23,7 @@
 #include <mrpt/math/utils.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/math/wrap2pi.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
 
 #include <mrpt/opengl/stock_objects.h>
@@ -35,7 +35,6 @@ using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::math;
 using namespace mrpt::poses;
-using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace mrpt;
 using namespace std;
@@ -117,7 +116,7 @@ void CRangeBearingKFSLAM::getCurrentRobotPose(
 mrpt::poses::CPose3DQuat CRangeBearingKFSLAM::getCurrentRobotPoseMean() const
 {
 	CPose3DQuat q(mrpt::math::UNINITIALIZED_QUATERNION);
-	ASSERTDEB_(m_xkk.size() >= 7)
+	ASSERTDEB_(m_xkk.size() >= 7);
 	// Copy xyz+quat: (explicitly unroll the loop)
 	q.m_coords[0] = m_xkk[0];
 	q.m_coords[1] = m_xkk[1];
@@ -197,7 +196,7 @@ void CRangeBearingKFSLAM::processActionObservation(
 	// Sanity check:
 	ASSERT_(
 		m_IDs.size() ==
-		(m_pkk.getColCount() - get_vehicle_size()) / get_feature_size());
+		(m_pkk.cols() - get_vehicle_size()) / get_feature_size());
 
 	// ===================================================================================================================
 	// Here's the meat!: Call the main method for the KF algorithm, which will
@@ -228,15 +227,15 @@ void CRangeBearingKFSLAM::processActionObservation(
 			// Use spectral-graph technique:
 			mapPartitioner.addMapFrame(SF, auxPosePDF);
 
-			vector<vector_uint> partitions;
+			vector<std::vector<uint32_t>> partitions;
 			mapPartitioner.updatePartitions(partitions);
 			m_lastPartitionSet = partitions;
 		}
 		else
 		{
 			// Fixed partitions every K observations:
-			vector<vector_uint> partitions;
-			vector_uint tmpCluster;
+			vector<std::vector<uint32_t>> partitions;
+			std::vector<uint32_t> tmpCluster;
 
 			ASSERT_(options.partitioningMethod > 1);
 			size_t K = options.partitioningMethod;
@@ -264,7 +263,7 @@ void CRangeBearingKFSLAM::processActionObservation(
 }
 
 /** Return the last odometry, as a pose increment.
-  */
+ */
 CPose3DQuat CRangeBearingKFSLAM::getIncrementFromOdometry() const
 {
 	CActionRobotMovement2D::Ptr actMov2D =
@@ -288,8 +287,8 @@ CPose3DQuat CRangeBearingKFSLAM::getIncrementFromOdometry() const
 }
 
 /** Must return the action vector u.
-  * \param out_u The action vector which will be passed to OnTransitionModel
-  */
+ * \param out_u The action vector which will be passed to OnTransitionModel
+ */
 void CRangeBearingKFSLAM::OnGetAction(KFArray_ACT& u) const
 {
 	// Get odometry estimation:
@@ -374,7 +373,8 @@ void CRangeBearingKFSLAM::OnTransitionNoise(KFMatrix_VxV& Q) const
 	CActionRobotMovement3D::Ptr act3D =
 		m_action->getActionByClass<CActionRobotMovement3D>();
 
-	if (act3D && act2D) THROW_EXCEPTION("Both 2D & 3D odometry are present!?!?")
+	if (act3D && act2D)
+		THROW_EXCEPTION("Both 2D & 3D odometry are present!?!?");
 
 	CPose3DQuatPDFGaussian odoIncr;
 
@@ -382,8 +382,7 @@ void CRangeBearingKFSLAM::OnTransitionNoise(KFMatrix_VxV& Q) const
 	{
 		// Use constant Q:
 		Q.zeros();
-		ASSERT_(size_t(options.stds_Q_no_odo.size()) == size_t(Q.getColCount()))
-
+		ASSERT_(size_t(options.stds_Q_no_odo.size()) == size_t(Q.cols()));
 		for (size_t i = 0; i < get_vehicle_size(); i++)
 			Q.set_unsafe(i, i, square(options.stds_Q_no_odo[i]));
 		return;
@@ -418,7 +417,7 @@ void CRangeBearingKFSLAM::OnTransitionNoise(KFMatrix_VxV& Q) const
 }
 
 void CRangeBearingKFSLAM::OnObservationModel(
-	const vector_size_t& idx_landmarks_to_predict,
+	const std::vector<size_t>& idx_landmarks_to_predict,
 	vector_KFArray_OBS& out_predictions) const
 {
 	MRPT_START
@@ -432,7 +431,7 @@ void CRangeBearingKFSLAM::OnObservationModel(
 	ASSERTMSG_(
 		obs,
 		"*ERROR*: This method requires an observation of type "
-		"CObservationBearingRange")
+		"CObservationBearingRange");
 	const CPose3DQuat sensorPoseOnRobot =
 		CPose3DQuat(obs->sensorLocationOnRobot);
 
@@ -482,7 +481,7 @@ void CRangeBearingKFSLAM::OnObservationModel(
 			out_predictions[i][0],  // range
 			out_predictions[i][1],  // yaw
 			out_predictions[i][2]  // pitch
-			);
+		);
 	}
 
 	MRPT_END
@@ -503,7 +502,7 @@ void CRangeBearingKFSLAM::OnObservationJacobians(
 	ASSERTMSG_(
 		obs,
 		"*ERROR*: This method requires an observation of type "
-		"CObservationBearingRange")
+		"CObservationBearingRange");
 	const CPose3DQuat sensorPoseOnRobot =
 		CPose3DQuat(obs->sensorLocationOnRobot);
 
@@ -548,29 +547,29 @@ void CRangeBearingKFSLAM::OnObservationJacobians(
 /** This is called between the KF prediction step and the update step, and the
  * application must return the observations and, when applicable, the data
  * association between these observations and the current map.
-  *
-  * \param out_z N vectors, each for one "observation" of length OBS_SIZE, N
+ *
+ * \param out_z N vectors, each for one "observation" of length OBS_SIZE, N
  * being the number of "observations": how many observed landmarks for a map, or
  * just one if not applicable.
-  * \param out_data_association An empty vector or, where applicable, a vector
+ * \param out_data_association An empty vector or, where applicable, a vector
  * where the i'th element corresponds to the position of the observation in the
  * i'th row of out_z within the system state vector (in the range
  * [0,getNumberOfLandmarksInTheMap()-1]), or -1 if it is a new map element and
  * we want to insert it at the end of this KF iteration.
-  * \param in_S The full covariance matrix of the observation predictions (i.e.
+ * \param in_S The full covariance matrix of the observation predictions (i.e.
  * the "innovation covariance matrix"). This is a M·O x M·O matrix with M=length
  * of "in_lm_indices_in_S".
-  * \param in_lm_indices_in_S The indices of the map landmarks (range
+ * \param in_lm_indices_in_S The indices of the map landmarks (range
  * [0,getNumberOfLandmarksInTheMap()-1]) that can be found in the matrix in_S.
-  *
-  *  This method will be called just once for each complete KF iteration.
-  * \note It is assumed that the observations are independent, i.e. there are NO
+ *
+ *  This method will be called just once for each complete KF iteration.
+ * \note It is assumed that the observations are independent, i.e. there are NO
  * cross-covariances between them.
-  */
+ */
 void CRangeBearingKFSLAM::OnGetObservationsAndDataAssociation(
-	vector_KFArray_OBS& Z, vector_int& data_association,
+	vector_KFArray_OBS& Z, std::vector<int>& data_association,
 	const vector_KFArray_OBS& all_predictions, const KFMatrix& S,
-	const vector_size_t& lm_indices_in_S, const KFMatrix_OxO& R)
+	const std::vector<size_t>& lm_indices_in_S, const KFMatrix_OxO& R)
 {
 	MRPT_START
 
@@ -585,7 +584,7 @@ void CRangeBearingKFSLAM::OnGetObservationsAndDataAssociation(
 	ASSERTMSG_(
 		obs,
 		"*ERROR*: This method requires an observation of type "
-		"CObservationBearingRange")
+		"CObservationBearingRange");
 
 	const size_t N = obs->sensedData.size();
 	Z.resize(N);
@@ -605,11 +604,11 @@ void CRangeBearingKFSLAM::OnGetObservationsAndDataAssociation(
 	data_association.assign(N, -1);  // Initially, all new landmarks
 
 	// For each observed LM:
-	vector_size_t obs_idxs_needing_data_assoc;
+	std::vector<size_t> obs_idxs_needing_data_assoc;
 	obs_idxs_needing_data_assoc.reserve(N);
 
 	{
-		vector_int::iterator itDA;
+		std::vector<int>::iterator itDA;
 		CObservationBearingRange::TMeasurementList::const_iterator itObs;
 		size_t row;
 		for (row = 0, itObs = obs->sensedData.begin(),
@@ -621,8 +620,8 @@ void CRangeBearingKFSLAM::OnGetObservationsAndDataAssociation(
 				obs_idxs_needing_data_assoc.push_back(row);
 			else
 			{
-				mrpt::utils::bimap<CLandmark::TLandmarkID,
-								   unsigned int>::iterator itID;
+				mrpt::containers::bimap<
+					CLandmark::TLandmarkID, unsigned int>::iterator itID;
 				if ((itID = m_IDs.find_key(itObs->landmarkID)) != m_IDs.end())
 					*itDA = itID->second;  // This row in Z corresponds to the
 				// i'th map element in the state
@@ -724,7 +723,7 @@ void CRangeBearingKFSLAM::OnNormalizeStateVector()
 	const double T = std::sqrt(
 		square(m_xkk[3]) + square(m_xkk[4]) + square(m_xkk[5]) +
 		square(m_xkk[6]));
-	ASSERTMSG_(T > 0, "Vehicle pose quaternion norm is not >0!!")
+	ASSERTMSG_(T > 0, "Vehicle pose quaternion norm is not >0!!");
 
 	const double T_ = (m_xkk[3] < 0 ? -1.0 : 1.0) / T;  // qr>=0
 	m_xkk[3] *= T_;
@@ -738,7 +737,7 @@ void CRangeBearingKFSLAM::OnNormalizeStateVector()
 /*---------------------------------------------------------------
 						loadOptions
   ---------------------------------------------------------------*/
-void CRangeBearingKFSLAM::loadOptions(const mrpt::utils::CConfigFileBase& ini)
+void CRangeBearingKFSLAM::loadOptions(const mrpt::config::CConfigFileBase& ini)
 {
 	// Main
 	options.loadFromConfigFile(ini, "RangeBearingKFSLAM");
@@ -751,19 +750,16 @@ void CRangeBearingKFSLAM::loadOptions(const mrpt::utils::CConfigFileBase& ini)
 						loadOptions
   ---------------------------------------------------------------*/
 void CRangeBearingKFSLAM::TOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& source, const std::string& section)
+	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {
 	source.read_vector(section, "stds_Q_no_odo", stds_Q_no_odo, stds_Q_no_odo);
-	ASSERT_(stds_Q_no_odo.size() == 7)
-
+	ASSERT_(stds_Q_no_odo.size() == 7);
 	std_sensor_range =
 		source.read_float(section, "std_sensor_range", std_sensor_range);
-	std_sensor_yaw = DEG2RAD(
-		source.read_float(
-			section, "std_sensor_yaw_deg", RAD2DEG(std_sensor_yaw)));
-	std_sensor_pitch = DEG2RAD(
-		source.read_float(
-			section, "std_sensor_pitch_deg", RAD2DEG(std_sensor_pitch)));
+	std_sensor_yaw = DEG2RAD(source.read_float(
+		section, "std_sensor_yaw_deg", RAD2DEG(std_sensor_yaw)));
+	std_sensor_pitch = DEG2RAD(source.read_float(
+		section, "std_sensor_pitch_deg", RAD2DEG(std_sensor_pitch)));
 
 	std_odo_z_additional = source.read_float(
 		section, "std_odo_z_additional", std_odo_z_additional);
@@ -816,36 +812,38 @@ CRangeBearingKFSLAM::TOptions::TOptions()
 /*---------------------------------------------------------------
 						dumpToTextStream
   ---------------------------------------------------------------*/
-void CRangeBearingKFSLAM::TOptions::dumpToTextStream(CStream& out) const
+void CRangeBearingKFSLAM::TOptions::dumpToTextStream(std::ostream& out) const
 {
-	out.printf(
+	using namespace mrpt::typemeta;
+
+	out << mrpt::format(
 		"\n----------- [CRangeBearingKFSLAM::TOptions] ------------ \n\n");
 
-	out.printf(
+	out << mrpt::format(
 		"doPartitioningExperiment                = %c\n",
 		doPartitioningExperiment ? 'Y' : 'N');
-	out.printf(
+	out << mrpt::format(
 		"partitioningMethod                      = %i\n", partitioningMethod);
-	out.printf(
+	out << mrpt::format(
 		"data_assoc_method                       = %s\n",
 		TEnumType<TDataAssociationMethod>::value2name(data_assoc_method)
 			.c_str());
-	out.printf(
+	out << mrpt::format(
 		"data_assoc_metric                       = %s\n",
 		TEnumType<TDataAssociationMetric>::value2name(data_assoc_metric)
 			.c_str());
-	out.printf(
+	out << mrpt::format(
 		"data_assoc_IC_chi2_thres                = %.06f\n",
 		data_assoc_IC_chi2_thres);
-	out.printf(
+	out << mrpt::format(
 		"data_assoc_IC_metric                    = %s\n",
 		TEnumType<TDataAssociationMetric>::value2name(data_assoc_IC_metric)
 			.c_str());
-	out.printf(
+	out << mrpt::format(
 		"data_assoc_IC_ml_threshold              = %.06f\n",
 		data_assoc_IC_ml_threshold);
 
-	out.printf("\n");
+	out << mrpt::format("\n");
 }
 
 void CRangeBearingKFSLAM::OnInverseObservationModel(
@@ -859,7 +857,7 @@ void CRangeBearingKFSLAM::OnInverseObservationModel(
 	ASSERTMSG_(
 		obs,
 		"*ERROR*: This method requires an observation of type "
-		"CObservationBearingRange")
+		"CObservationBearingRange");
 	const CPose3DQuat sensorPoseOnRobot =
 		CPose3DQuat(obs->sensorLocationOnRobot);
 
@@ -943,14 +941,14 @@ void CRangeBearingKFSLAM::OnInverseObservationModel(
 
 /** If applicable to the given problem, do here any special handling of adding a
  * new landmark to the map.
-  * \param in_obsIndex The index of the observation whose inverse sensor is to
+ * \param in_obsIndex The index of the observation whose inverse sensor is to
  * be computed. It corresponds to the row in in_z where the observation can be
  * found.
-  * \param in_idxNewFeat The index that this new feature will have in the state
+ * \param in_idxNewFeat The index that this new feature will have in the state
  * vector (0:just after the vehicle state, 1: after that,...). Save this number
  * so data association can be done according to these indices.
-  * \sa OnInverseObservationModel
-  */
+ * \sa OnInverseObservationModel
+ */
 void CRangeBearingKFSLAM::OnNewLandmarkAddedToMap(
 	const size_t in_obsIdx, const size_t in_idxNewFeat)
 {
@@ -961,13 +959,12 @@ void CRangeBearingKFSLAM::OnNewLandmarkAddedToMap(
 	ASSERTMSG_(
 		obs,
 		"*ERROR*: This method requires an observation of type "
-		"CObservationBearingRange")
+		"CObservationBearingRange");
 
 	// ----------------------------------------------
 	// introduce in the lists of ID<->index in map:
 	// ----------------------------------------------
-	ASSERT_(in_obsIdx < obs->sensedData.size())
-
+	ASSERT_(in_obsIdx < obs->sensedData.size());
 	if (obs->sensedData[in_obsIdx].landmarkID >= 0)
 	{
 		// The sensor provides us a LM ID... use it:
@@ -1103,16 +1100,16 @@ void CRangeBearingKFSLAM::getAs3DObject(
 						getLastPartitionLandmarks
   ---------------------------------------------------------------*/
 void CRangeBearingKFSLAM::getLastPartitionLandmarksAsIfFixedSubmaps(
-	size_t K, std::vector<vector_uint>& landmarksMembership)
+	size_t K, std::vector<std::vector<uint32_t>>& landmarksMembership)
 {
 	// temporary copy:
-	std::vector<vector_uint> tmpParts = m_lastPartitionSet;
+	std::vector<std::vector<uint32_t>> tmpParts = m_lastPartitionSet;
 
 	// Fake "m_lastPartitionSet":
 
 	// Fixed partitions every K observations:
-	vector<vector_uint> partitions;
-	vector_uint tmpCluster;
+	vector<std::vector<uint32_t>> partitions;
+	std::vector<uint32_t> tmpCluster;
 
 	for (size_t i = 0; i < m_SFs.size(); i++)
 	{
@@ -1138,7 +1135,7 @@ void CRangeBearingKFSLAM::getLastPartitionLandmarksAsIfFixedSubmaps(
 						getLastPartitionLandmarks
   ---------------------------------------------------------------*/
 void CRangeBearingKFSLAM::getLastPartitionLandmarks(
-	std::vector<vector_uint>& landmarksMembership) const
+	std::vector<std::vector<uint32_t>>& landmarksMembership) const
 {
 	landmarksMembership.clear();
 
@@ -1181,7 +1178,7 @@ void CRangeBearingKFSLAM::getLastPartitionLandmarks(
 		}  // end for p
 
 		// Build membership list:
-		vector_uint membershipOfThisLM;
+		std::vector<uint32_t> membershipOfThisLM;
 
 		for (map<int, bool>::iterator it = belongToPartition.begin();
 			 it != belongToPartition.end(); ++it)
@@ -1195,7 +1192,7 @@ void CRangeBearingKFSLAM::getLastPartitionLandmarks(
 			computeOffDiagonalBlocksApproximationError
   ---------------------------------------------------------------*/
 double CRangeBearingKFSLAM::computeOffDiagonalBlocksApproximationError(
-	const std::vector<vector_uint>& landmarksMembership) const
+	const std::vector<std::vector<uint32_t>>& landmarksMembership) const
 {
 	MRPT_START
 
@@ -1212,8 +1209,7 @@ double CRangeBearingKFSLAM::computeOffDiagonalBlocksApproximationError(
 	unsigned int nLMs = landmarksMembership.size();
 
 	ASSERT_(
-		(get_vehicle_size() + nLMs * get_feature_size()) ==
-		fullCov.getColCount());
+		int(get_vehicle_size() + nLMs * get_feature_size()) == fullCov.cols());
 
 	for (i = 0; i < nLMs; i++)
 	{
@@ -1231,11 +1227,11 @@ double CRangeBearingKFSLAM::computeOffDiagonalBlocksApproximationError(
 		}
 	}
 
-	return sumOffBlocks /
-		   H.block(
-				get_vehicle_size(), get_vehicle_size(),
-				H.rows() - get_vehicle_size(), H.cols() - get_vehicle_size())
-			   .sum();  // Starting (7,7)-end
+	return sumOffBlocks / H.block(
+							   get_vehicle_size(), get_vehicle_size(),
+							   H.rows() - get_vehicle_size(),
+							   H.cols() - get_vehicle_size())
+							  .sum();  // Starting (7,7)-end
 	MRPT_END
 }
 
@@ -1246,7 +1242,8 @@ void CRangeBearingKFSLAM::reconsiderPartitionsNow()
 {
 	mapPartitioner.markAllNodesForReconsideration();
 
-	vector<vector_uint> partitions;  // A different buffer for making this
+	vector<std::vector<uint32_t>>
+		partitions;  // A different buffer for making this
 	// thread-safe some day...
 
 	mapPartitioner.updatePartitions(partitions);
@@ -1351,7 +1348,7 @@ void CRangeBearingKFSLAM::saveMapAndPath2DRepresentationAsMATLABFile(
 
 /** Computes A=A-B, which may need to be re-implemented depending on the
  * topology of the individual scalar components (eg, angles).
-  */
+ */
 void CRangeBearingKFSLAM::OnSubstractObservationVectors(
 	KFArray_OBS& A, const KFArray_OBS& B) const
 {
@@ -1362,9 +1359,9 @@ void CRangeBearingKFSLAM::OnSubstractObservationVectors(
 
 /** Return the observation NOISE covariance matrix, that is, the model of the
  * Gaussian additive noise of the sensor.
-  * \param out_R The noise covariance matrix. It might be non diagonal, but
+ * \param out_R The noise covariance matrix. It might be non diagonal, but
  * it'll usually be.
-  */
+ */
 void CRangeBearingKFSLAM::OnGetObservationNoise(KFMatrix_OxO& out_R) const
 {
 	out_R(0, 0) = square(options.std_sensor_range);
@@ -1375,28 +1372,28 @@ void CRangeBearingKFSLAM::OnGetObservationNoise(KFMatrix_OxO& out_R) const
 /** This will be called before OnGetObservationsAndDataAssociation to allow the
  * application to reduce the number of covariance landmark predictions to be
  * made.
-  *  For example, features which are known to be "out of sight" shouldn't be
+ *  For example, features which are known to be "out of sight" shouldn't be
  * added to the output list to speed up the calculations.
-  * \param in_all_prediction_means The mean of each landmark predictions; the
+ * \param in_all_prediction_means The mean of each landmark predictions; the
  * computation or not of the corresponding covariances is what we're trying to
  * determined with this method.
-  * \param out_LM_indices_to_predict The list of landmark indices in the map
+ * \param out_LM_indices_to_predict The list of landmark indices in the map
  * [0,getNumberOfLandmarksInTheMap()-1] that should be predicted.
-  * \note This is not a pure virtual method, so it should be implemented only if
+ * \note This is not a pure virtual method, so it should be implemented only if
  * desired. The default implementation returns a vector with all the landmarks
  * in the map.
-  * \sa OnGetObservations, OnDataAssociation
-  */
+ * \sa OnGetObservations, OnDataAssociation
+ */
 void CRangeBearingKFSLAM::OnPreComputingPredictions(
 	const vector_KFArray_OBS& prediction_means,
-	vector_size_t& out_LM_indices_to_predict) const
+	std::vector<size_t>& out_LM_indices_to_predict) const
 {
 	CObservationBearingRange::Ptr obs =
 		m_SF->getObservationByClass<CObservationBearingRange>();
 	ASSERTMSG_(
 		obs,
 		"*ERROR*: This method requires an observation of type "
-		"CObservationBearingRange")
+		"CObservationBearingRange");
 
 #define USE_HEURISTIC_PREDICTION
 

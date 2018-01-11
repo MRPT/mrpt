@@ -13,8 +13,8 @@
 #include <mrpt/maps/COctoMapBase.h>
 
 #include <mrpt/maps/CMetricMap.h>
-#include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/safe_pointers.h>
+#include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/core/safe_pointers.h>
 #include <mrpt/obs/obs_frwds.h>
 
 PIMPL_FORWARD_DECLARATION(namespace octomap { class OcTree; })

@@ -10,12 +10,12 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CText.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
+
 using namespace mrpt::math;
 using namespace std;
 
@@ -58,28 +58,16 @@ void CText::render() const
 #endif
 }
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
-void CText::writeToStream(mrpt::utils::CStream& out, int* version) const
+uint8_t CText::serializeGetVersion() const { return 1; }
+void CText::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		writeToStreamRender(out);
-		out << m_str;
-		out << m_fontName;
-		out << (uint32_t)m_fontHeight << (uint32_t)m_fontWidth;
-	}
+	writeToStreamRender(out);
+	out << m_str;
+	out << m_fontName;
+	out << (uint32_t)m_fontHeight << (uint32_t)m_fontWidth;
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void CText::readFromStream(mrpt::utils::CStream& in, int version)
+void CText::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

@@ -42,7 +42,6 @@
 
 #include <mrpt/gui/CMyRedirector.h>
 
-#include <mrpt/utils.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/opengl.h>
 #include <mrpt/vision/chessboard_stereo_camera_calib.h>
@@ -93,9 +92,9 @@ struct TThreadDetectCornerParam
 	volatile bool terminated;
 
 	volatile bool ready_for_new_images;
-	mrpt::utils::CImage image;
+	mrpt::img::CImage image;
 	volatile mrpt::system::TTimeStamp image_timestamp;
-	std::vector<mrpt::utils::TPixelCoordf> detected_corners;
+	std::vector<mrpt::img::TPixelCoordf> detected_corners;
 	volatile bool detected_corners_done;
 };
 

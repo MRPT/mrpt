@@ -21,35 +21,35 @@ namespace vision
 
 /** Search for pairings between two sets of visual descriptors (for now, only
  * SURF
-  *   and SIFT features are considered).
-  *  Pairings are returned in one of two formats (or both of them
+ *   and SIFT features are considered).
+ *  Pairings are returned in one of two formats (or both of them
  * simultaneously),
-  *   depending on the non-NULL output containers present in the call.
-  *
-  * \code
-  *  CFeatureList  feats1, feats2;
-  *  // Populate feature lists [...]
-  *
-  *  // Create kd-tree for SIFT features of "feats2":
-  *  TSIFTDescriptorsKDTreeIndex<double>  feats2_kdtree(feats2);
-  *
-  *  // Search correspondences:
-  *  std::vector<vector_size_t>             pairings_1_to_multi_2;
-  *  std::vector<std::pair<size_t,size_t> > pairings_1_to_2;
-  *  mrpt::vision::find_descriptor_pairings(
-  *     &pairings_1_to_multi_2,   // Can be set to nullptr if not needed
-  *     &pairings_1_to_2,         // Can be set to nullptr if not needed
-  *     feats1, feats2_kdtree,    // The two sets of features
-  *     mrpt::vision::descSIFT    // Select descriptor to use
-  *     // [further optional params]
-  *     );
-  * \endcode
-  *
-  * \sa TSIFTDescriptorsKDTreeIndex, TSURFDescriptorsKDTreeIndex
-  */
+ *   depending on the non-NULL output containers present in the call.
+ *
+ * \code
+ *  CFeatureList  feats1, feats2;
+ *  // Populate feature lists [...]
+ *
+ *  // Create kd-tree for SIFT features of "feats2":
+ *  TSIFTDescriptorsKDTreeIndex<double>  feats2_kdtree(feats2);
+ *
+ *  // Search correspondences:
+ *  std::vector<std::vector<size_t>>             pairings_1_to_multi_2;
+ *  std::vector<std::pair<size_t,size_t> > pairings_1_to_2;
+ *  mrpt::vision::find_descriptor_pairings(
+ *     &pairings_1_to_multi_2,   // Can be set to nullptr if not needed
+ *     &pairings_1_to_2,         // Can be set to nullptr if not needed
+ *     feats1, feats2_kdtree,    // The two sets of features
+ *     mrpt::vision::descSIFT    // Select descriptor to use
+ *     // [further optional params]
+ *     );
+ * \endcode
+ *
+ * \sa TSIFTDescriptorsKDTreeIndex, TSURFDescriptorsKDTreeIndex
+ */
 template <class DESCRIPTOR_KDTREE>
 size_t find_descriptor_pairings(
-	std::vector<vector_size_t>* pairings_1_to_multi_2,
+	std::vector<std::vector<size_t>>* pairings_1_to_multi_2,
 	std::vector<std::pair<size_t, size_t>>* pairings_1_to_2,
 	const CFeatureList& feats_img1, const DESCRIPTOR_KDTREE& feats_img2_kdtree,
 	const mrpt::vision::TDescriptorType descriptor = descSIFT,
@@ -59,8 +59,8 @@ size_t find_descriptor_pairings(
 			typename DESCRIPTOR_KDTREE::kdtree_t::DistanceType>::max())
 {
 	MRPT_START
-	ASSERT_ABOVEEQ_(max_neighbors, 1)
-	ASSERT_(pairings_1_to_multi_2 != nullptr || pairings_1_to_2 != nullptr)
+	ASSERT_ABOVEEQ_(max_neighbors, 1);
+	ASSERT_(pairings_1_to_multi_2 != nullptr || pairings_1_to_2 != nullptr);
 
 	typedef typename DESCRIPTOR_KDTREE::kdtree_t::ElementType
 		KDTreeElementType;  // The expected data type of elements for the
@@ -71,7 +71,7 @@ size_t find_descriptor_pairings(
 	const size_t N = feats_img1.size();
 	if (pairings_1_to_multi_2)
 		pairings_1_to_multi_2->assign(
-			N, vector_size_t());  // Reset output container
+			N, std::vector<size_t>());  // Reset output container
 	if (pairings_1_to_2)
 	{
 		pairings_1_to_2->clear();
@@ -87,28 +87,29 @@ size_t find_descriptor_pairings(
 		ASSERTMSG_(
 			feats_img1[0]->descriptors.hasDescriptorSIFT(),
 			"Request to match SIFT features but feats_img1 has no SIFT "
-			"descriptors!")
+			"descriptors!");
 		ASSERTMSG_(
 			sizeof(KDTreeElementType) ==
 				sizeof(feats_img1[0]->descriptors.SIFT[0]),
 			"Incorrect data type kd_tree::ElementType for SIFT (should be "
-			"uint8_t)")
+			"uint8_t)");
 	}
 	else if (descriptor == descSURF)
 	{
 		ASSERTMSG_(
 			feats_img1[0]->descriptors.hasDescriptorSURF(),
 			"Request to match SURF features but feats_img1 has no SURF "
-			"descriptors!")
+			"descriptors!");
 		ASSERTMSG_(
 			sizeof(KDTreeElementType) ==
 				sizeof(feats_img1[0]->descriptors.SURF[0]),
 			"Incorrect data type kd_tree::ElementType for SURF (should be "
-			"float)")
+			"float)");
 	}
 	else
 	{
-		THROW_EXCEPTION("This function only supports SIFT or SURFT descriptors")
+		THROW_EXCEPTION(
+			"This function only supports SIFT or SURFT descriptors");
 	}
 
 	std::vector<size_t> indices(max_neighbors);
@@ -128,7 +129,7 @@ size_t find_descriptor_pairings(
 			static_cast<const KDTreeElementType*>(ptr_query),  // Query point
 			max_neighbors,  // Number of neigbors
 			&indices[0], &distances[0]  // Output
-			);
+		);
 
 		// Include all correspondences below the absolute and the relative
 		// threshold (indices comes ordered by distances):
@@ -153,6 +154,6 @@ size_t find_descriptor_pairings(
 }
 
 /** @} */
-}
-}
+}  // namespace vision
+}  // namespace mrpt
 #endif

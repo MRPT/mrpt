@@ -9,8 +9,8 @@
 
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/system/os.h>
-#include <mrpt/utils/CTicTac.h>
-#include <mrpt/utils/CObserver.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/system/CObserver.h>
 #include <mrpt/opengl/gl_utils.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/opengl/CText.h>
@@ -23,14 +23,13 @@ using namespace std;
 using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::opengl;
-using namespace mrpt::utils;
 
 // This is my custom class to handle the pre/post render events:
-struct TMyExtraRenderingStuff : public mrpt::utils::CObserver
+struct TMyExtraRenderingStuff : public mrpt::system::CObserver
 {
 	opengl::CSphere::Ptr ball_obj;  // The ball moving in the scene
 	bool showing_help, hiding_help;
-	mrpt::utils::CTicTac tim_show_start, tim_show_end;
+	mrpt::system::CTicTac tim_show_start, tim_show_end;
 
 	TMyExtraRenderingStuff() : showing_help(false), hiding_help(false) {}
 	virtual void OnEvent(const mrptEvent& e)
@@ -76,10 +75,10 @@ struct TMyExtraRenderingStuff : public mrpt::utils::CObserver
 					" - 'Alt+Enter': Toogle fullscreen\n"
 					" - 'ESC': Quit",
 					0.05f,  // text size
-					mrpt::utils::TColor(
+					mrpt::img::TColor(
 						190, 190, 190, 200 * tranparency),  // background
-					mrpt::utils::TColor(0, 0, 0, 200 * tranparency),  // border
-					mrpt::utils::TColor(200, 0, 0, 150 * tranparency),  // text
+					mrpt::img::TColor(0, 0, 0, 200 * tranparency),  // border
+					mrpt::img::TColor(200, 0, 0, 150 * tranparency),  // text
 					6.0f,  // border width
 					"serif",  // text font
 					mrpt::opengl::NICE  // text style

@@ -10,10 +10,9 @@
 #include "vision-precomp.h"  // Precompiled headers
 
 #include <mrpt/obs/CObservationVisualLandmarks.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 // This must be added to any CSerializable class implementation file.
@@ -26,27 +25,15 @@ CObservationVisualLandmarks::CObservationVisualLandmarks()
 {
 }
 
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CObservationVisualLandmarks::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CObservationVisualLandmarks::serializeGetVersion() const { return 1; }
+void CObservationVisualLandmarks::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 1;
-	else
-	{
-		out << refCameraPose << timestamp
-			// The landmarks:
-			<< landmarks << sensorLabel;
-	}
+	out << refCameraPose << timestamp
+		// The landmarks:
+		<< landmarks << sensorLabel;
 }
 
-/*---------------------------------------------------------------
-  Implements the reading from a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CObservationVisualLandmarks::readFromStream(
-	mrpt::utils::CStream& in, int version)
+void CObservationVisualLandmarks::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

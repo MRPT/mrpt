@@ -19,11 +19,11 @@ class COccupancyConfig;
 }
 namespace mrpt
 {
-namespace utils
+namespace io
 {
 class CFileOutputStream;
 }
-}
+}  // namespace mrpt
 
 class COccupancyConfig : public CBaseConfig
 {

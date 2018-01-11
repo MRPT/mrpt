@@ -10,11 +10,10 @@
 #include "maps-precomp.h"  // Precomp header
 
 #include <mrpt/maps/CPointCloudFilterByDistance.h>
-#include <mrpt/utils/CConfigFileBase.h>
-#include <mrpt/utils/aligned_containers.h>
+#include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/core/aligned_std_vector.h>
 
 using namespace mrpt::maps;
-using namespace mrpt::utils;
 
 void CPointCloudFilterByDistance::filter(
 	/** [in,out] The input pointcloud, which will be modified upon return after
@@ -31,7 +30,7 @@ void CPointCloudFilterByDistance::filter(
 {
 	using namespace mrpt::poses;
 	using namespace mrpt::math;
-	using mrpt::math::square;
+	using mrpt::square;
 
 	MRPT_START;
 	ASSERT_(pc_timestamp != INVALID_TIMESTAMP);
@@ -85,7 +84,7 @@ void CPointCloudFilterByDistance::filter(
 	{
 		// Reference poses of each PC:
 		// Previous: prev_pc.pose
-		mrpt::aligned_containers<CPose3D>::vector_t rel_poses;
+		mrpt::aligned_std_vector<CPose3D> rel_poses;
 		for (int k = 0; k < options.previous_keyframes; ++k)
 		{
 			const CPose3D rel_pose = cur_pc_pose - prev_pc[k]->pose;
@@ -204,7 +203,7 @@ void CPointCloudFilterByDistance::filter(
 
 CPointCloudFilterByDistance::TOptions::TOptions()
 	: min_dist(0.10),
-	  angle_tolerance(mrpt::utils::DEG2RAD(5)),
+	  angle_tolerance(mrpt::DEG2RAD(5)),
 	  too_old_seconds(1.0),
 	  previous_keyframes(1),
 	  max_deletion_ratio(.4)
@@ -212,7 +211,7 @@ CPointCloudFilterByDistance::TOptions::TOptions()
 }
 
 void CPointCloudFilterByDistance::TOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& c, const std::string& s)
+	const mrpt::config::CConfigFileBase& c, const std::string& s)
 {
 	MRPT_LOAD_CONFIG_VAR(min_dist, double, c, s);
 	MRPT_LOAD_CONFIG_VAR_DEGREES(angle_tolerance, c, s);
@@ -222,7 +221,7 @@ void CPointCloudFilterByDistance::TOptions::loadFromConfigFile(
 }
 
 void CPointCloudFilterByDistance::TOptions::saveToConfigFile(
-	mrpt::utils::CConfigFileBase& c, const std::string& s) const
+	mrpt::config::CConfigFileBase& c, const std::string& s) const
 {
 	MRPT_SAVE_CONFIG_VAR_COMMENT(min_dist, "");
 	MRPT_SAVE_CONFIG_VAR_DEGREES_COMMENT(

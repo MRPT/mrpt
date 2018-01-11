@@ -22,10 +22,8 @@ namespace deciders
 template <class GRAPH_T>
 CFixedIntervalsNRD<GRAPH_T>::CFixedIntervalsNRD()
 {
-	using namespace mrpt::utils;
 	this->initializeLoggers("CFixedIntervalsNRD");
-
-	this->logFmt(LVL_DEBUG, "IntervalsNRD: Initialized class object");
+	MRPT_LOG_DEBUG("IntervalsNRD: Initialized class object");
 }
 template <class GRAPH_T>
 CFixedIntervalsNRD<GRAPH_T>::~CFixedIntervalsNRD()
@@ -44,8 +42,7 @@ bool CFixedIntervalsNRD<GRAPH_T>::updateState(
 	MRPT_START;
 	using namespace mrpt::obs;
 	using namespace mrpt::math;
-	using namespace mrpt::utils;
-	using namespace mrpt::poses;
+		using namespace mrpt::poses;
 
 	// don't use the measurements in this implementation
 	MRPT_UNUSED_PARAM(observations);
@@ -60,8 +57,7 @@ bool CFixedIntervalsNRD<GRAPH_T>::updateState(
 				std::dynamic_pointer_cast<CObservationOdometry>(observation);
 			// not incremental - gives the absolute odometry reading
 			m_curr_odometry_only_pose = pose_t(obs_odometry->odometry);
-			this->logFmt(
-				LVL_DEBUG, "Current odometry-only pose: %s",
+			MRPT_LOG_DEBUG_FMT("Current odometry-only pose: %s",
 				m_curr_odometry_only_pose.asString().c_str());
 
 			// I don't have any information about the covariane of the move in
@@ -168,19 +164,18 @@ template <class GRAPH_T>
 void CFixedIntervalsNRD<GRAPH_T>::loadParams(const std::string& source_fname)
 {
 	MRPT_START;
-	using namespace mrpt::utils;
-	parent_t::loadParams(source_fname);
+		parent_t::loadParams(source_fname);
 
 	params.loadFromConfigFileName(
 		source_fname, "NodeRegistrationDeciderParameters");
 
 	// set the logging level if given by the user
-	CConfigFile source(source_fname);
+	mrpt::config::CConfigFile source(source_fname);
 	int min_verbosity_level = source.read_int(
 		"NodeRegistrationDeciderParameters", "class_verbosity", 1, false);
-	this->setMinLoggingLevel(VerbosityLevel(min_verbosity_level));
+	this->setMinLoggingLevel(mrpt::system::VerbosityLevel(min_verbosity_level));
 
-	this->logFmt(LVL_DEBUG, "Successfully loaded parameters.");
+	MRPT_LOG_DEBUG("Successfully loaded parameters.");
 	MRPT_END;
 }
 
@@ -246,21 +241,19 @@ CFixedIntervalsNRD<GRAPH_T>::TParams::~TParams()
 {
 }
 template <class GRAPH_T>
-void CFixedIntervalsNRD<GRAPH_T>::TParams::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+void CFixedIntervalsNRD<GRAPH_T>::TParams::dumpToTextStream(std::ostream& out) const
 {
 	MRPT_START;
-	out.printf("%s", this->getAsString().c_str());
+	out << mrpt::format("%s", this->getAsString().c_str());
 	MRPT_END;
 }
 template <class GRAPH_T>
 void CFixedIntervalsNRD<GRAPH_T>::TParams::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase& source, const std::string& section)
+	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {
 	MRPT_START;
 	using namespace mrpt::math;
-	using namespace mrpt::utils;
-
+	
 	registration_max_distance = source.read_double(
 		section, "registration_max_distance", 0.5 /* meter */, false);
 	registration_max_angle = source.read_double(
@@ -276,8 +269,7 @@ void CFixedIntervalsNRD<GRAPH_T>::TParams::getAsString(
 {
 	MRPT_START;
 	using namespace mrpt::math;
-	using namespace mrpt::utils;
-
+	
 	double max_angle_deg = RAD2DEG(registration_max_angle);
 	params_out->clear();
 

@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/utils/core_defs.h>
-#include <mrpt/utils/types_simple.h>
-#include <mrpt/utils/TParameters.h>
+#include <string>
+#include <vector>
+#include <mrpt/system/TParameters.h>
 
 namespace mrpt
 {
@@ -38,7 +38,7 @@ enum ERRORCODE_HTTP
 };
 
 /** Perform an HTTP GET operation (version for retrieving the data as a
- * vector_byte)
+ * std::vector<uint8_t>)
  * \param url Must be a simple string of the form
  * "http://<servername>/<relative-address>".
  * \param port The server port, if different from 80.
@@ -55,14 +55,14 @@ enum ERRORCODE_HTTP
  * & password.
  *
  * \return The error or success code.
- * \sa mrpt::utils::vectorToBinaryFile
+ * \sa http_request()
  */
 ERRORCODE_HTTP http_get(
-	const string& url, vector_byte& out_content, string& out_errormsg,
+	const string& url, std::vector<uint8_t>& out_content, string& out_errormsg,
 	int port = 80, const string& auth_user = string(),
 	const string& auth_pass = string(), int* out_http_responsecode = nullptr,
-	mrpt::utils::TParameters<string>* extra_headers = nullptr,
-	mrpt::utils::TParameters<string>* out_headers = nullptr,
+	mrpt::system::TParameters<string>* extra_headers = nullptr,
+	mrpt::system::TParameters<string>* out_headers = nullptr,
 	int timeout_ms = 1000);
 
 /** Perform an HTTP GET operation (version for retrieving the data as text)
@@ -82,24 +82,24 @@ ERRORCODE_HTTP http_get(
  * & password.
  *
  * \return The error or success code.
- * \sa mrpt::utils::vectorToBinaryFile
+ * \sa http_request()
  */
 ERRORCODE_HTTP http_get(
 	const string& url, string& out_content, string& out_errormsg, int port = 80,
 	const string& auth_user = string(), const string& auth_pass = string(),
 	int* out_http_responsecode = nullptr,
-	mrpt::utils::TParameters<string>* extra_headers = nullptr,
-	mrpt::utils::TParameters<string>* out_headers = nullptr,
+	mrpt::system::TParameters<string>* extra_headers = nullptr,
+	mrpt::system::TParameters<string>* out_headers = nullptr,
 	int timeout_ms = 1000);
 
 /** Generic function for HTTP GET & POST methods. \sa http_get */
 ERRORCODE_HTTP http_request(
 	const string& http_method, const string& http_send_content,
-	const string& url, vector_byte& out_content, string& out_errormsg,
+	const string& url, std::vector<uint8_t>& out_content, string& out_errormsg,
 	int port = 80, const string& auth_user = string(),
 	const string& auth_pass = string(), int* out_http_responsecode = nullptr,
-	mrpt::utils::TParameters<string>* extra_headers = nullptr,
-	mrpt::utils::TParameters<string>* out_headers = nullptr,
+	mrpt::system::TParameters<string>* extra_headers = nullptr,
+	mrpt::system::TParameters<string>* out_headers = nullptr,
 	int timeout_ms = 1000);
 
 /** Resolve a server address by its name, returning its IP address as a

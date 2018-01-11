@@ -11,6 +11,8 @@
 
 #include <mrpt/hwdrivers/CNationalInstrumentsDAQ.h>
 #include <iterator>  // advance()
+#include <iostream>
+#include <mrpt/serialization/CArchive.h>
 
 // If we have both, DAQmx & DAQmxBase, prefer DAQmx:
 #define MRPT_HAS_SOME_NIDAQMX (MRPT_HAS_NIDAQMXBASE || MRPT_HAS_NIDAQMX)
@@ -88,7 +90,7 @@
 		MRPT_DAQmxGetExtendedErrorInfo(errBuff, 2048);                 \
 		std::string sErr = mrpt::format(                               \
 			"DAQ error: '%s'\nCalling: '%s'", errBuff, #functionCall); \
-		THROW_EXCEPTION(sErr)                                          \
+		THROW_EXCEPTION(sErr);                                         \
 	}
 
 using namespace mrpt::hwdrivers;
@@ -113,7 +115,7 @@ CNationalInstrumentsDAQ::TInfoPerTask::TInfoPerTask()
 				Constructor
    ----------------------------------------------------- */
 CNationalInstrumentsDAQ::CNationalInstrumentsDAQ()
-	: mrpt::utils::COutputLogger("CNationalInstrumentsDAQ")
+	: mrpt::system::COutputLogger("CNationalInstrumentsDAQ")
 {
 	m_sensorLabel = "NIDAQ";
 }
@@ -147,7 +149,7 @@ CNationalInstrumentsDAQ::CNationalInstrumentsDAQ()
 				loadConfig_sensorSpecific
    ----------------------------------------------------- */
 void CNationalInstrumentsDAQ::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& cfg, const std::string& sect)
+	const mrpt::config::CConfigFileBase& cfg, const std::string& sect)
 {
 	// std::vector<TaskDescription>  task_definitions;
 	task_definitions.clear();
@@ -649,7 +651,7 @@ void CNationalInstrumentsDAQ::initialize()
 	}  // end for each task_definitions[i]
 
 #else
-	THROW_EXCEPTION("MRPT was compiled without support for NI DAQmx!!")
+	THROW_EXCEPTION("MRPT was compiled without support for NI DAQmx!!");
 #endif
 }
 
@@ -727,7 +729,8 @@ void CNationalInstrumentsDAQ::readFromDAQ(
 		{
 			if (it->new_obs_available != 0)
 			{
-				it->read_pipe->ReadObject(&tmp_obs);
+				auto arch = mrpt::serialization::archiveFrom(*it->read_pipe);
+				arch.ReadObject(&tmp_obs);
 				--(it->new_obs_available);
 
 				// Yes, valid block of samples was adquired:
@@ -760,7 +763,7 @@ void CNationalInstrumentsDAQ::doProcess()
 	{
 		m_state = ssWorking;
 
-		std::vector<mrpt::utils::CSerializable::Ptr> new_obs;
+		std::vector<mrpt::serialization::CSerializable::Ptr> new_obs;
 		new_obs.resize(m_nextObservations.size());
 
 		for (size_t i = 0; i < m_nextObservations.size(); i++)
@@ -885,8 +888,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask& ipt)
 				}
 				else if (pointsReadPerChan > 0)
 				{
-					ASSERT_EQUAL_(totalSamplesToRead, pointsReadPerChan)
-
+					ASSERT_EQUAL_(totalSamplesToRead, pointsReadPerChan);
 					// Decimate?
 					if (++ipt.task.ci_ang_encoder.decimate_cnt >=
 						ipt.task.ci_ang_encoder.decimate)
@@ -940,8 +942,7 @@ void CNationalInstrumentsDAQ::writeAnalogOutputTask(
 	double timeout, bool groupedByChannel)
 {
 #if MRPT_HAS_SOME_NIDAQMX
-	ASSERT_(task_index < m_running_tasks.size())
-
+	ASSERT_(task_index < m_running_tasks.size());
 	std::list<TInfoPerTask>::iterator it = m_running_tasks.begin();
 	std::advance(it, task_index);
 	TInfoPerTask& ipt = *it;
@@ -970,8 +971,7 @@ void CNationalInstrumentsDAQ::writeDigitalOutputTask(
 	size_t task_index, bool line_value, double timeout)
 {
 #if MRPT_HAS_SOME_NIDAQMX
-	ASSERT_(task_index < m_running_tasks.size())
-
+	ASSERT_(task_index < m_running_tasks.size());
 	std::list<TInfoPerTask>::iterator it = m_running_tasks.begin();
 	std::advance(it, task_index);
 	TInfoPerTask& ipt = *it;

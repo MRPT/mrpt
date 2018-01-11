@@ -8,15 +8,17 @@
    +------------------------------------------------------------------------+ */
 
 #include "rawlog-edit-declarations.h"
-#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/core/aligned_std_map.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
+using namespace mrpt::config;
 using namespace mrpt::poses;
 using namespace mrpt::system;
 using namespace mrpt::rawlogtools;
 using namespace std;
+using namespace mrpt::io;
 
 // ======================================================================
 //		op_sensors_pose
@@ -30,8 +32,7 @@ DECLARE_OP_FUNCTION(op_sensors_pose)
 	   protected:
 		TOutputRawlogCreator outrawlog;
 
-		typedef mrpt::aligned_containers<
-			std::string, mrpt::poses::CPose3D>::map_t TSensor2PoseMap;
+		using TSensor2PoseMap = mrpt::aligned_std_map<std::string, mrpt::poses::CPose3D>;
 		TSensor2PoseMap desiredSensorPoses;
 
 	   public:
@@ -62,10 +63,10 @@ DECLARE_OP_FUNCTION(op_sensors_pose)
 			// make a list  "sensor_label -> sensor_pose" by parsing the
 			// ini-file:
 
-			vector_string sections;
+			std::vector<std::string> sections;
 			cfg.getAllSections(sections);
 
-			for (vector_string::iterator it = sections.begin();
+			for (std::vector<std::string>::iterator it = sections.begin();
 				 it != sections.end(); ++it)
 			{
 				if (it->empty()) continue;
@@ -112,11 +113,11 @@ DECLARE_OP_FUNCTION(op_sensors_pose)
 			mrpt::obs::CSensoryFrame::Ptr& SF,
 			mrpt::obs::CObservation::Ptr& obs)
 		{
-			ASSERT_((actions && SF) || obs)
+			ASSERT_((actions && SF) || obs);
 			if (actions)
-				outrawlog.out_rawlog << actions << SF;
+				(*outrawlog.out_rawlog) << actions << SF;
 			else
-				outrawlog.out_rawlog << obs;
+				(*outrawlog.out_rawlog) << obs;
 		}
 	};
 

@@ -17,18 +17,18 @@
 #include <mrpt/random.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/math/ops_containers.h>
-#include <mrpt/utils/CTicTac.h>
-#include <mrpt/utils/CFileStream.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/io/CFileStream.h>
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/system/os.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/CTicTac.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;
 using namespace mrpt::hmtslam;
-using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::random;
+using namespace mrpt::system;
 using namespace mrpt::maps;
 using namespace mrpt::bayes;
 using namespace mrpt::poses;
@@ -163,7 +163,7 @@ void CLSLAM_RBPF_2DLASER::processOneLMH(
 	if (insertNewRobotPose)
 	{
 		m_parent->logStr(
-			mrpt::utils::LVL_INFO,
+			mrpt::system::LVL_INFO,
 			"[CLSLAM_RBPF_2DLASER] Adding new pose...\n");
 
 		//	Leave the up-to-now "current pose" in the map, insert the SF in it,
@@ -204,7 +204,7 @@ void CLSLAM_RBPF_2DLASER::processOneLMH(
 		LMH->m_posesPendingAddPartitioner.push_back(newlyAddedPose);
 
 		m_parent->logFmt(
-			mrpt::utils::LVL_INFO, "[CLSLAM_RBPF_2DLASER] Added pose %i.\n",
+			mrpt::system::LVL_INFO, "[CLSLAM_RBPF_2DLASER] Added pose %i.\n",
 			(int)newlyAddedPose);
 
 		// Notice LC detectors:
@@ -353,7 +353,7 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 	//  where X is the robot pose prior (as implemented in
 	//  the aux. function "particlesEvaluator_AuxPFOptimal"),
 	//  and also the "m_maxLikelihood" filled with the maximum lik. values.
-	StdVector_CPose2D newParticles;
+	mrpt::aligned_std_vector<mrpt::poses::CPose2D> newParticles;
 	vector<double> newParticlesWeight;
 	vector<size_t> newParticlesDerivedFromIdx;
 
@@ -688,7 +688,7 @@ double CLSLAM_RBPF_2DLASER::auxiliarComputeObservationLikelihood(
  ---------------------------------------------------------------*/
 void CLSLAM_RBPF_2DLASER::TPathBin::dumpToStdOut() const
 {
-	vector_int::const_iterator it;
+	std::vector<int>::const_iterator it;
 
 	std::cout << "x   = [";
 	for (it = x.begin(); it != x.end(); it++) std::cout << *it << " ";
@@ -718,7 +718,7 @@ void CLSLAM_RBPF_2DLASER::loadTPathBinFromPath(
 		lenBinPath = 0;
 
 	TMapPoseID2Pose3D::const_iterator itSrc;
-	vector_int::iterator itX, itY, itPHI;
+	std::vector<int>::iterator itX, itY, itPHI;
 
 	// Set the output bin dimensionality:
 	outBin.x.resize(lenBinPath + (newPose != nullptr ? 1 : 0));

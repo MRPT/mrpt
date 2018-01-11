@@ -13,10 +13,10 @@
 #include <mrpt/obs/CObservationIMU.h>
 
 #include <thread>
+#include <iostream>
 
 IMPLEMENTS_GENERIC_SENSOR(CGyroKVHDSP3000, mrpt::hwdrivers)
 
-using namespace mrpt::utils;
 using namespace mrpt::comms;
 using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
@@ -121,7 +121,7 @@ void CGyroKVHDSP3000::initialize()
 					loadConfig_sensorSpecific
 -------------------------------------------------------------*/
 void CGyroKVHDSP3000::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase& configSource,
+	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
 	m_sensorPose.setFromValues(

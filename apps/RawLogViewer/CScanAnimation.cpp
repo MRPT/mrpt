@@ -61,7 +61,6 @@ using namespace mrpt::obs;
 using namespace mrpt::opengl;
 using namespace mrpt::system;
 using namespace mrpt::math;
-using namespace mrpt::utils;
 using namespace std;
 
 CScanAnimation::CScanAnimation(
@@ -505,7 +504,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 
 	// Check what observations are too old and must be deleted:
 	const double largest_period = 0.2;
-	vector_string lst_to_delete;
+	std::vector<std::string> lst_to_delete;
 	for (auto& o : m_gl_objects)
 	{
 		TRenderObject& ro = o.second;

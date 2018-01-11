@@ -19,7 +19,6 @@
 #include <mrpt/otherlibs/do_opencv_includes.h>
 
 using namespace mrpt::detectors;
-using namespace mrpt::utils;
 
 void CObjectDetection::detectObjects(
 	const CImage* img, vector_detectable_object& detected)

@@ -18,7 +18,7 @@
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
 
 /* STD */
 #include "math.h"
@@ -26,7 +26,6 @@
 
 using namespace boost::python;
 using namespace mrpt::poses;
-using namespace mrpt::utils;
 
 // prototypes
 #ifdef ROS_EXTENSIONS
@@ -125,12 +124,12 @@ void CPose3D_from_ROS_Pose_msg(CPose3D& self, object pose_msg)
 //     return this->get_override("duplicate")();
 // }
 //
-// void CPosePDFWrap::writeToStream(CStream& stream, int32_t* pos) const
+// uint8_t CPosePDFWrap::serializeGetVersion() const { return XX; } void CPosePDFWrap::serializeTo(CStream& stream, int32_t* pos) const
 // {
 //     this->get_override("writeToStream")(stream, pos);
 // }
 //
-// void CPosePDFWrap::readFromStream(CStream& stream, int32_t pos)
+// void CPosePDFWrap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 // {
 //     this->get_override("readFromStream")(stream, pos);
 // }

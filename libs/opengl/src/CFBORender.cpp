@@ -14,8 +14,8 @@
 
 using namespace std;
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::opengl;
+using mrpt::img::CImage;
 
 /*---------------------------------------------------------------
 						Constructor
@@ -52,7 +52,7 @@ CFBORender::CFBORender(
 		THROW_EXCEPTION("Framebuffer Object extension unsupported");
 
 // In win32 we have to load the pointers to the functions:
-#ifdef MRPT_OS_WINDOWS
+#ifdef _WIN32
 	glGenFramebuffersEXT =
 		(PFNGLGENFRAMEBUFFERSEXTPROC)wglGetProcAddress("glGenFramebuffersEXT");
 	glDeleteFramebuffersEXT = (PFNGLDELETEFRAMEBUFFERSEXTPROC)wglGetProcAddress(
@@ -63,10 +63,10 @@ CFBORender::CFBORender(
 		(PFNGLFRAMEBUFFERTEXTURE2DEXTPROC)wglGetProcAddress(
 			"glFramebufferTexture2DEXT");
 
-	ASSERT_(glGenFramebuffersEXT != nullptr)
-	ASSERT_(glDeleteFramebuffersEXT != nullptr)
-	ASSERT_(glBindFramebufferEXT != nullptr)
-	ASSERT_(glFramebufferTexture2DEXT != nullptr)
+	ASSERT_(glGenFramebuffersEXT != nullptr);
+	ASSERT_(glDeleteFramebuffersEXT != nullptr);
+	ASSERT_(glBindFramebufferEXT != nullptr);
+	ASSERT_(glFramebufferTexture2DEXT != nullptr);
 #endif
 
 	// gen the frambuffer object (FBO), similar manner as a texture
@@ -108,7 +108,7 @@ CFBORender::CFBORender(
 	MRPT_END
 
 //#else
-//	THROW_EXCEPTION("MRPT compiled without OpenCV and/or OpenGL support!!")
+//	THROW_EXCEPTION("MRPT compiled without OpenCV and/or OpenGL support!!");
 #endif
 }
 
@@ -189,11 +189,10 @@ void CFBORender::getFrame2(const COpenGLScene& scene, CImage& buffer)
 	MRPT_START
 
 	// check the buffer size
-	ASSERT_EQUAL_(buffer.getWidth(), static_cast<size_t>(m_width))
-	ASSERT_EQUAL_(buffer.getHeight(), static_cast<size_t>(m_height))
-	ASSERT_EQUAL_(buffer.getChannelCount(), 3)
-	ASSERT_EQUAL_(buffer.isOriginTopLeft(), false)
-
+	ASSERT_EQUAL_(buffer.getWidth(), static_cast<size_t>(m_width));
+	ASSERT_EQUAL_(buffer.getHeight(), static_cast<size_t>(m_height));
+	ASSERT_EQUAL_(buffer.getChannelCount(), 3);
+	ASSERT_EQUAL_(buffer.isOriginTopLeft(), false);
 	// bind the framebuffer, fbo, so operations will now occur on it
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_fbo);
 
@@ -268,7 +267,7 @@ void CFBORender::resize(unsigned int width, unsigned int height)
 	MRPT_END
 
 //#else
-//	THROW_EXCEPTION("MRPT compiled without OpenCV and/or OpenGL support!!")
+//	THROW_EXCEPTION("MRPT compiled without OpenCV and/or OpenGL support!!");
 #else
 	MRPT_UNUSED_PARAM(width);
 	MRPT_UNUSED_PARAM(height);
@@ -310,7 +309,7 @@ int CFBORender::isExtensionSupported(const char* extension)
 	MRPT_END
 
 //#else
-//	THROW_EXCEPTION("MRPT compiled without OpenGL support!!")
+//	THROW_EXCEPTION("MRPT compiled without OpenGL support!!");
 #else
 	MRPT_UNUSED_PARAM(extension);
 #endif

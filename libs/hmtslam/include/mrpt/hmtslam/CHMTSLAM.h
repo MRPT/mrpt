@@ -9,8 +9,8 @@
 #ifndef CHMTSLAM_H
 #define CHMTSLAM_H
 
-#include <mrpt/utils/COutputLogger.h>
-#include <mrpt/utils/CMessageQueue.h>
+#include <mrpt/system/COutputLogger.h>
+#include <mrpt/containers/CThreadSafeQueue.h>
 
 #include <mrpt/hmtslam/HMT_SLAM_common.h>
 #include <mrpt/hmtslam/CLocalMetricHypothesis.h>
@@ -22,6 +22,8 @@
 #include <mrpt/slam/TKLDParams.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/serialization/CMessage.h>
+#include <mrpt/core/aligned_std_map.h>
 
 #include <thread>
 #include <queue>
@@ -53,7 +55,7 @@ class CLSLAM_RBPF_2DLASER;
  *
  *  The complete state of the SLAM framework is serializable, so it can be saved
  *and restore to/from a binary dump. This class implements
- *mrpt::utils::CSerializable, so
+ *mrpt::serialization::CSerializable, so
  *    it can be saved with "stream << slam_object;" and restored with "stream >>
  *slam_object;". Alternatively, the methods CHMTSLAM::saveState and
  *CHMTSLAM::loadState
@@ -63,8 +65,8 @@ class CLSLAM_RBPF_2DLASER;
  * \sa CHierarchicalMHMap
   * \ingroup mrpt_hmtslam_grp
  */
-class CHMTSLAM : public mrpt::utils::COutputLogger,
-				 public mrpt::utils::CSerializable
+class CHMTSLAM : public mrpt::system::COutputLogger,
+				 public mrpt::serialization::CSerializable
 {
 	friend class CLocalMetricHypothesis;
 	friend class CLSLAM_RBPF_2DLASER;
@@ -156,7 +158,9 @@ class CHMTSLAM : public mrpt::utils::COutputLogger,
 
 	/** LSLAM thread input queue, messages of type CHMTSLAM::TMessageLSLAMfromAA
 	 */
-	utils::CMessageQueue m_LSLAM_queue;
+	using CMessageQueue = mrpt::containers::CThreadSafeQueue<mrpt::serialization::CMessage>;
+
+	CMessageQueue m_LSLAM_queue;
 
 	/** @} */
 
@@ -231,11 +235,11 @@ class CHMTSLAM : public mrpt::utils::COutputLogger,
 	/** Used from the LSLAM thread to retrieve the next object from the queue.
 	  * \return The object, or nullptr if empty.
 	  */
-	mrpt::utils::CSerializable::Ptr getNextObjectFromInputQueue();
+	mrpt::serialization::CSerializable::Ptr getNextObjectFromInputQueue();
 
 	/** The queue of pending actions/observations supplied by the user waiting
 	 * for being processed. */
-	std::queue<mrpt::utils::CSerializable::Ptr> m_inputQueue;
+	std::queue<mrpt::serialization::CSerializable::Ptr> m_inputQueue;
 
 	/** Critical section for accessing  m_inputQueue */
 	mutable std::mutex m_inputQueue_cs;
@@ -266,7 +270,7 @@ class CHMTSLAM : public mrpt::utils::COutputLogger,
 	/** @name HMT-SLAM sub-processes.
 		@{ */
 	/** Auxiliary method within thread_LSLAM */
-	void LSLAM_process_message(const mrpt::utils::CMessage& msg);
+	void LSLAM_process_message(const mrpt::serialization::CMessage& msg);
 
 	/** No critical section locks are assumed at the entrance of this method.
 	  */
@@ -358,7 +362,7 @@ class CHMTSLAM : public mrpt::utils::COutputLogger,
 	  */
 	CHMTSLAM();
 
-	CHMTSLAM(const CHMTSLAM&) : mrpt::utils::COutputLogger()
+	CHMTSLAM(const CHMTSLAM&) : mrpt::system::COutputLogger()
 	{
 		THROW_EXCEPTION("This object cannot be copied.");
 	}
@@ -383,7 +387,7 @@ class CHMTSLAM : public mrpt::utils::COutputLogger,
 	/** Loads the options from a config file. */
 	void loadOptions(const std::string& configFile);
 	/** Loads the options from a config source */
-	void loadOptions(const mrpt::utils::CConfigFileBase& cfgSource);
+	void loadOptions(const mrpt::config::CConfigFileBase& cfgSource);
 
 	/** Initializes the whole HMT-SLAM framework, reseting to an empty map (It
 	 * also clears the logs directory) - this must be called AFTER loading the
@@ -395,14 +399,14 @@ class CHMTSLAM : public mrpt::utils::COutputLogger,
 	  * \return true if everything goes OK.
 	  * \sa loadState
 	  */
-	bool saveState(mrpt::utils::CStream& out) const;
+	bool saveState(mrpt::serialization::CArchive& out) const;
 
 	/** Load the state of the whole HMT-SLAM framework from some binary stream
 	 * (e.g. a file).
 	  * \return true if everything goes OK.
 	  * \sa saveState
 	  */
-	bool loadState(mrpt::utils::CStream& in);
+	bool loadState(mrpt::serialization::CArchive& in);
 	/** @} */
 
 	/** @name The important data.
@@ -410,7 +414,7 @@ class CHMTSLAM : public mrpt::utils::COutputLogger,
 	/** The hiearchical, multi-hypothesis graph-based map. */
 	CHierarchicalMHMap m_map;
 	/** The list of LMHs at each instant. */
-	aligned_containers<THypothesisID, CLocalMetricHypothesis>::map_t m_LMHs;
+	mrpt::aligned_std_map<THypothesisID, CLocalMetricHypothesis> m_LMHs;
 	/** @} */
 
 	/** Called from LSLAM thread when log files must be created.
@@ -426,17 +430,16 @@ class CHMTSLAM : public mrpt::utils::COutputLogger,
 	/** A variety of options and configuration params (private, use
 	 * loadOptions).
 	  */
-	struct TOptions : public utils::CLoadableOptions
+	struct TOptions : public mrpt::config::CLoadableOptions
 	{
 		/** Initialization of default params
 		  */
 		TOptions();
 
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+		void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
 		/** [LOGGING] If it is not an empty string (""), a directory with that
 		 * name will be created and log files save there. */
@@ -496,7 +499,7 @@ class CHMTSLAM : public mrpt::utils::COutputLogger,
 		  *  'gridmaps': Occupancy Grid matching.
 		  *  'fabmap': Mark Cummins' image matching framework.
 		  */
-		vector_string TLC_detectors;
+		std::vector<std::string> TLC_detectors;
 
 		/** Options passed to this TLC constructor */
 		CTopLCDetector_GridMatching::TOptions TLC_grid_options;
@@ -514,7 +517,7 @@ class CLSLAMAlgorithmBase
 	friend class CLocalMetricHypothesis;
 
    protected:
-	mrpt::utils::safe_ptr<CHMTSLAM> m_parent;
+	mrpt::safe_ptr<CHMTSLAM> m_parent;
 
    public:
 	/** Constructor
@@ -610,7 +613,7 @@ class CLSLAM_RBPF_2DLASER : public CLSLAMAlgorithmBase
 	struct TPathBin
 	{
 		TPathBin() : x(), y(), phi() {}
-		vector_int x, y, phi;
+		std::vector<int> x, y, phi;
 
 		/** For debugging purposes!
 		  */

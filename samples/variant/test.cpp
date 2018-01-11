@@ -7,7 +7,6 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/utils.h>
 #include <mrpt/system.h>
 #include <mrpt/synch/CPipe.h>
 #include <mrpt/poses/CPose3D.h>
@@ -15,7 +14,6 @@
 
 using namespace mrpt;
 using namespace mrpt::poses;
-using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace mrpt::synch;
 using namespace std;

@@ -6,20 +6,19 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CPOINTSMAP_H
-#define CPOINTSMAP_H
+#pragma once
 
 #include <mrpt/maps/CMetricMap.h>
-#include <mrpt/utils/CSerializable.h>
-#include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/safe_pointers.h>
+#include <mrpt/serialization/CSerializable.h>
+#include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/core/safe_pointers.h>
 #include <mrpt/math/KDTreeCapable.h>
 #include <mrpt/obs/CSinCosLookUpTableFor2DScans.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/utils/PLY_import_export.h>
+#include <mrpt/opengl/PLY_import_export.h>
 #include <mrpt/obs/obs_frwds.h>
-#include <mrpt/utils/adapters.h>
+#include <mrpt/opengl/pointcloud_adapters.h>
 
 // Add for declaration of mexplus::from template specialization
 DECLARE_MEXPLUS_FROM(mrpt::maps::CPointsMap)
@@ -36,7 +35,7 @@ template <class Derived>
 struct loadFromRangeImpl;
 template <class Derived>
 struct pointmap_traits;
-}
+}  // namespace detail
 
 /** A cloud of points in 2D or 3D, which can be built from a sequence of laser
  * scans or other sensors.
@@ -57,13 +56,13 @@ struct pointmap_traits;
  * there is no need to build MRPT against libLAS to use this feature.
  * See LAS functions in \ref mrpt_maps_liblas_grp.
  *
- * \sa CMetricMap, CPoint, mrpt::utils::CSerializable
-  * \ingroup mrpt_maps_grp
+ * \sa CMetricMap, CPoint, CSerializable
+ * \ingroup mrpt_maps_grp
  */
 class CPointsMap : public CMetricMap,
 				   public mrpt::math::KDTreeCapable<CPointsMap>,
-				   public mrpt::utils::PLY_Importer,
-				   public mrpt::utils::PLY_Exporter
+				   public mrpt::opengl::PLY_Importer,
+				   public mrpt::opengl::PLY_Exporter
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CPointsMap)
 	// This must be added for declaration of MEX-related functions
@@ -122,25 +121,25 @@ class CPointsMap : public CMetricMap,
 
 	/** Reserves memory for a given number of points: the size of the map does
 	 * not change, it only reserves the memory.
-	  *  This is useful for situations where it is approximately known the final
+	 *  This is useful for situations where it is approximately known the final
 	 * size of the map. This method is more
-	  *  efficient than constantly increasing the size of the buffers. Refer to
+	 *  efficient than constantly increasing the size of the buffers. Refer to
 	 * the STL C++ library's "reserve" methods.
-	  */
+	 */
 	virtual void reserve(size_t newLength) = 0;
 
 	/** Resizes all point buffers so they can hold the given number of points:
 	 * newly created points are set to default values,
-	  *  and old contents are not changed.
-	  * \sa reserve, setPoint, setPointFast, setSize
-	  */
+	 *  and old contents are not changed.
+	 * \sa reserve, setPoint, setPointFast, setSize
+	 */
 	virtual void resize(size_t newLength) = 0;
 
 	/** Resizes all point buffers so they can hold the given number of points,
 	 * *erasing* all previous contents
-	  *  and leaving all points to default values.
-	  * \sa reserve, setPoint, setPointFast, setSize
-	  */
+	 *  and leaving all points to default values.
+	 * \sa reserve, setPoint, setPointFast, setSize
+	 */
 	virtual void setSize(size_t newLength) = 0;
 
 	/** Changes the coordinates of the given point (0-based index), *without*
@@ -158,19 +157,19 @@ class CPointsMap : public CMetricMap,
 
 	/** Get all the data fields for one point as a vector: depending on the
 	 * implementation class this can be [X Y Z] or [X Y Z R G B], etc...
-	  *  Unlike getPointAllFields(), this method does not check for index out of
+	 *  Unlike getPointAllFields(), this method does not check for index out of
 	 * bounds
-	  * \sa getPointAllFields, setPointAllFields, setPointAllFieldsFast
-	  */
+	 * \sa getPointAllFields, setPointAllFields, setPointAllFieldsFast
+	 */
 	virtual void getPointAllFieldsFast(
 		const size_t index, std::vector<float>& point_data) const = 0;
 
 	/** Set all the data fields for one point as a vector: depending on the
 	 * implementation class this can be [X Y Z] or [X Y Z R G B], etc...
-	  *  Unlike setPointAllFields(), this method does not check for index out of
+	 *  Unlike setPointAllFields(), this method does not check for index out of
 	 * bounds
-	  * \sa setPointAllFields, getPointAllFields, getPointAllFieldsFast
-	  */
+	 * \sa setPointAllFields, getPointAllFields, getPointAllFieldsFast
+	 */
 	virtual void setPointAllFieldsFast(
 		const size_t index, const std::vector<float>& point_data) = 0;
 
@@ -186,7 +185,7 @@ class CPointsMap : public CMetricMap,
 
 	/** Returns the square distance from the 2D point (x0,y0) to the closest
 	 * correspondence in the map.
-	  */
+	 */
 	virtual float squareDistanceToClosestCorrespondence(
 		float x0, float y0) const override;
 
@@ -201,15 +200,15 @@ class CPointsMap : public CMetricMap,
 	 * process.
 	 * \sa CObservation::insertIntoPointsMap
 	 */
-	struct TInsertionOptions : public utils::CLoadableOptions
+	struct TInsertionOptions : public config::CLoadableOptions
 	{
 		/** Initilization of default parameters */
 		TInsertionOptions();
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+			std::ostream& out) const override;  // See base docs
 
 		/** The minimum distance between points (in 3D): If two points are too
 		 * close, one of them is not inserted into the map. Default is 0.02
@@ -246,10 +245,10 @@ class CPointsMap : public CMetricMap,
 
 		/** Binary dump to stream - for usage in derived classes' serialization
 		 */
-		void writeToStream(mrpt::utils::CStream& out) const;
+		void writeToStream(mrpt::serialization::CArchive& out) const;
 		/** Binary dump to stream - for usage in derived classes' serialization
 		 */
-		void readFromStream(mrpt::utils::CStream& in);
+		void readFromStream(mrpt::serialization::CArchive& in);
 	};
 
 	/** The options used when inserting observations in the map */
@@ -259,24 +258,24 @@ class CPointsMap : public CMetricMap,
 	 * derived classes.
 	 * \sa CObservation::computeObservationLikelihood
 	 */
-	struct TLikelihoodOptions : public utils::CLoadableOptions
+	struct TLikelihoodOptions : public config::CLoadableOptions
 	{
 		/** Initilization of default parameters
 		 */
 		TLikelihoodOptions();
 		virtual ~TLikelihoodOptions() {}
 		void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& source,
+			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+			std::ostream& out) const override;  // See base docs
 
 		/** Binary dump to stream - for usage in derived classes' serialization
 		 */
-		void writeToStream(mrpt::utils::CStream& out) const;
+		void writeToStream(mrpt::serialization::CArchive& out) const;
 		/** Binary dump to stream - for usage in derived classes' serialization
 		 */
-		void readFromStream(mrpt::utils::CStream& in);
+		void readFromStream(mrpt::serialization::CArchive& in);
 
 		/** Sigma squared (variance, in meters) of the exponential used to model
 		 * the likelihood (default= 0.5^2 meters) */
@@ -293,16 +292,16 @@ class CPointsMap : public CMetricMap,
 	TLikelihoodOptions likelihoodOptions;
 
 	/** Adds all the points from \a anotherMap to this map, without fusing.
-	  *  This operation can be also invoked via the "+=" operator, for example:
-	  *  \code
-	  *   mrpt::maps::CSimplePointsMap m1, m2;
-	  *   ...
-	  *   m1.addFrom( m2 );  // Add all points of m2 to m1
-	  *   m1 += m2;          // Exactly the same than above
-	  *  \endcode
-	  * \note The method in CPointsMap is generic but derived classes may
+	 *  This operation can be also invoked via the "+=" operator, for example:
+	 *  \code
+	 *   mrpt::maps::CSimplePointsMap m1, m2;
+	 *   ...
+	 *   m1.addFrom( m2 );  // Add all points of m2 to m1
+	 *   m1 += m2;          // Exactly the same than above
+	 *  \endcode
+	 * \note The method in CPointsMap is generic but derived classes may
 	 * redefine this virtual method to another one more optimized.
-	  */
+	 */
 	virtual void addFrom(const CPointsMap& anotherMap);
 
 	/** This operator is synonymous with \a addFrom. \sa addFrom */
@@ -438,7 +437,7 @@ class CPointsMap : public CMetricMap,
 	 */
 	inline void setPoint(size_t index, float x, float y, float z)
 	{
-		ASSERT_BELOW_(index, this->size())
+		ASSERT_BELOW_(index, this->size());
 		setPointFast(index, x, y, z);
 		mark_as_modified();
 	}
@@ -486,7 +485,7 @@ class CPointsMap : public CMetricMap,
 
 	/** Provides a direct access to points buffer, or nullptr if there is no
 	 * points in the map.
-	  */
+	 */
 	void getPointsBuffer(
 		size_t& outPointsCount, const float*& xs, const float*& ys,
 		const float*& zs) const;
@@ -502,19 +501,19 @@ class CPointsMap : public CMetricMap,
 	inline const std::vector<float>& getPointsBufferRef_z() const { return z; }
 	/** Returns a copy of the 2D/3D points as a std::vector of float
 	 * coordinates.
-	  * If decimation is greater than 1, only 1 point out of that number will be
+	 * If decimation is greater than 1, only 1 point out of that number will be
 	 * saved in the output, effectively performing a subsampling of the points.
-	  * \sa getPointsBufferRef_x, getPointsBufferRef_y, getPointsBufferRef_z
-	  * \tparam VECTOR can be std::vector<float or double> or any row/column
+	 * \sa getPointsBufferRef_x, getPointsBufferRef_y, getPointsBufferRef_z
+	 * \tparam VECTOR can be std::vector<float or double> or any row/column
 	 * Eigen::Array or Eigen::Matrix (this includes mrpt::math::CVectorFloat and
 	 * mrpt::math::CVectorDouble).
-	  */
+	 */
 	template <class VECTOR>
 	void getAllPoints(
 		VECTOR& xs, VECTOR& ys, VECTOR& zs, size_t decimation = 1) const
 	{
 		MRPT_START
-		ASSERT_(decimation > 0)
+		ASSERT_(decimation > 0);
 		const size_t Nout = x.size() / decimation;
 		xs.resize(Nout);
 		ys.resize(Nout);
@@ -531,12 +530,12 @@ class CPointsMap : public CMetricMap,
 	}
 
 	/** Gets all points as a STL-like container.
-	  * \tparam CONTAINER Any STL-like container of mrpt::math::TPoint3D,
+	 * \tparam CONTAINER Any STL-like container of mrpt::math::TPoint3D,
 	 * mrpt::math::TPoint3Df or anything having members `x`,`y`,`z`.
-	  * Note that this method is not efficient for large point clouds. Fastest
+	 * Note that this method is not efficient for large point clouds. Fastest
 	 * methods are getPointsBuffer() or getPointsBufferRef_x(),
 	 * getPointsBufferRef_y(), getPointsBufferRef_z()
-	  */
+	 */
 	template <class CONTAINER>
 	void getAllPoints(CONTAINER& ps, size_t decimation = 1) const
 	{
@@ -553,10 +552,10 @@ class CPointsMap : public CMetricMap,
 
 	/** Returns a copy of the 2D/3D points as a std::vector of float
 	 * coordinates.
-	  * If decimation is greater than 1, only 1 point out of that number will be
+	 * If decimation is greater than 1, only 1 point out of that number will be
 	 * saved in the output, effectively performing a subsampling of the points.
-	  * \sa setAllPoints
-	  */
+	 * \sa setAllPoints
+	 */
 	void getAllPoints(
 		std::vector<float>& xs, std::vector<float>& ys,
 		size_t decimation = 1) const;
@@ -576,8 +575,8 @@ class CPointsMap : public CMetricMap,
 
 	/** Provides a way to insert (append) individual points into the map: the
 	 * missing fields of child
-	  * classes (color, weight, etc) are left to their default values
-	  */
+	 * classes (color, weight, etc) are left to their default values
+	 */
 	inline void insertPoint(float x, float y, float z = 0)
 	{
 		insertPointFast(x, y, z);
@@ -600,16 +599,16 @@ class CPointsMap : public CMetricMap,
 
 	/** Set all the points at once from vectors with X,Y and Z coordinates (if Z
 	 * is not provided, it will be set to all zeros).
-	  * \tparam VECTOR can be mrpt::math::CVectorFloat or std::vector<float> or
+	 * \tparam VECTOR can be mrpt::math::CVectorFloat or std::vector<float> or
 	 * any other column or row Eigen::Matrix.
-	  */
+	 */
 	template <typename VECTOR>
 	inline void setAllPointsTemplate(
 		const VECTOR& X, const VECTOR& Y, const VECTOR& Z = VECTOR())
 	{
 		const size_t N = X.size();
-		ASSERT_EQUAL_(X.size(), Y.size())
-		ASSERT_(Z.size() == 0 || Z.size() == X.size())
+		ASSERT_EQUAL_(X.size(), Y.size());
+		ASSERT_(Z.size() == 0 || Z.size() == X.size());
 		this->setSize(N);
 		const bool z_valid = !Z.empty();
 		if (z_valid)
@@ -644,47 +643,47 @@ class CPointsMap : public CMetricMap,
 
 	/** Get all the data fields for one point as a vector: depending on the
 	 * implementation class this can be [X Y Z] or [X Y Z R G B], etc...
-	  * \sa getPointAllFieldsFast, setPointAllFields, setPointAllFieldsFast
-	  */
+	 * \sa getPointAllFieldsFast, setPointAllFields, setPointAllFieldsFast
+	 */
 	void getPointAllFields(
 		const size_t index, std::vector<float>& point_data) const
 	{
-		ASSERT_BELOW_(index, this->size())
+		ASSERT_BELOW_(index, this->size());
 		getPointAllFieldsFast(index, point_data);
 	}
 
 	/** Set all the data fields for one point as a vector: depending on the
 	 * implementation class this can be [X Y Z] or [X Y Z R G B], etc...
-	  *  Unlike setPointAllFields(), this method does not check for index out of
+	 *  Unlike setPointAllFields(), this method does not check for index out of
 	 * bounds
-	  * \sa setPointAllFields, getPointAllFields, getPointAllFieldsFast
-	  */
+	 * \sa setPointAllFields, getPointAllFields, getPointAllFieldsFast
+	 */
 	void setPointAllFields(
 		const size_t index, const std::vector<float>& point_data)
 	{
-		ASSERT_BELOW_(index, this->size())
+		ASSERT_BELOW_(index, this->size());
 		setPointAllFieldsFast(index, point_data);
 	}
 
 	/** Delete points out of the given "z" axis range have been removed.
-	  */
+	 */
 	void clipOutOfRangeInZ(float zMin, float zMax);
 
 	/** Delete points which are more far than "maxRange" away from the given
 	 * "point".
-	  */
+	 */
 	void clipOutOfRange(const mrpt::math::TPoint2D& point, float maxRange);
 
 	/** Remove from the map the points marked in a bool's array as "true".
-	  * \exception std::exception If mask size is not equal to points count.
-	  */
+	 * \exception std::exception If mask size is not equal to points count.
+	 */
 	void applyDeletionMask(const std::vector<bool>& mask);
 
 	// See docs in base class.
 	virtual void determineMatching2D(
 		const mrpt::maps::CMetricMap* otherMap,
 		const mrpt::poses::CPose2D& otherMapPose,
-		mrpt::utils::TMatchingPairList& correspondences,
+		mrpt::tfest::TMatchingPairList& correspondences,
 		const TMatchingParams& params,
 		TMatchingExtraResults& extraResults) const override;
 
@@ -692,7 +691,7 @@ class CPointsMap : public CMetricMap,
 	virtual void determineMatching3D(
 		const mrpt::maps::CMetricMap* otherMap,
 		const mrpt::poses::CPose3D& otherMapPose,
-		mrpt::utils::TMatchingPairList& correspondences,
+		mrpt::tfest::TMatchingPairList& correspondences,
 		const TMatchingParams& params,
 		TMatchingExtraResults& extraResults) const override;
 
@@ -722,48 +721,48 @@ class CPointsMap : public CMetricMap,
 		const mrpt::maps::CMetricMap* otherMap2,
 		const mrpt::poses::CPose3D& otherMapPose,
 		float maxDistForCorrespondence,
-		mrpt::utils::TMatchingPairList& correspondences,
+		mrpt::tfest::TMatchingPairList& correspondences,
 		float& correspondencesRatio);
 
 	/** Transform the range scan into a set of cartessian coordinated
-	  *	 points. The options in "insertionOptions" are considered in this
-	  *method.
-	  * \param rangeScan The scan to be inserted into this map
-	  * \param robotPose Default to (0,0,0|0deg,0deg,0deg). Changes the frame of
-	  *reference for the point cloud (i.e. the vehicle/robot pose in world
-	  *coordinates).
-	  *
-	  *  Only ranges marked as "valid=true" in the observation will be inserted
-	  *
-	  *  \note Each derived class may enrich points in different ways (color,
-	  *weight, etc..), so please refer to the description of the specific
-	  *         implementation of mrpt::maps::CPointsMap you are using.
-	  *  \note The actual generic implementation of this file lives in
-	  *<src>/CPointsMap_crtp_common.h, but specific instantiations are generated
-	  *at each derived class.
-	  *
-	  * \sa CObservation2DRangeScan, CObservation3DRangeScan
-	  */
+	 *	 points. The options in "insertionOptions" are considered in this
+	 *method.
+	 * \param rangeScan The scan to be inserted into this map
+	 * \param robotPose Default to (0,0,0|0deg,0deg,0deg). Changes the frame of
+	 *reference for the point cloud (i.e. the vehicle/robot pose in world
+	 *coordinates).
+	 *
+	 *  Only ranges marked as "valid=true" in the observation will be inserted
+	 *
+	 *  \note Each derived class may enrich points in different ways (color,
+	 *weight, etc..), so please refer to the description of the specific
+	 *         implementation of mrpt::maps::CPointsMap you are using.
+	 *  \note The actual generic implementation of this file lives in
+	 *<src>/CPointsMap_crtp_common.h, but specific instantiations are generated
+	 *at each derived class.
+	 *
+	 * \sa CObservation2DRangeScan, CObservation3DRangeScan
+	 */
 	virtual void loadFromRangeScan(
 		const mrpt::obs::CObservation2DRangeScan& rangeScan,
 		const mrpt::poses::CPose3D* robotPose = nullptr) = 0;
 
 	/** Overload of \a loadFromRangeScan() for 3D range scans (for example,
 	 * Kinect observations).
-	  *
-	  * \param rangeScan The scan to be inserted into this map
-	  * \param robotPose Default to (0,0,0|0deg,0deg,0deg). Changes the frame of
+	 *
+	 * \param rangeScan The scan to be inserted into this map
+	 * \param robotPose Default to (0,0,0|0deg,0deg,0deg). Changes the frame of
 	 * reference for the point cloud (i.e. the vehicle/robot pose in world
 	 * coordinates).
-	  *
-	  *  \note Each derived class may enrich points in different ways (color,
+	 *
+	 *  \note Each derived class may enrich points in different ways (color,
 	 * weight, etc..), so please refer to the description of the specific
-	  *         implementation of mrpt::maps::CPointsMap you are using.
-	  *  \note The actual generic implementation of this file lives in
+	 *         implementation of mrpt::maps::CPointsMap you are using.
+	 *  \note The actual generic implementation of this file lives in
 	 * <src>/CPointsMap_crtp_common.h, but specific instantiations are generated
 	 * at each derived class.
-	  * \sa loadFromVelodyneScan
-	  */
+	 * \sa loadFromVelodyneScan
+	 */
 	virtual void loadFromRangeScan(
 		const mrpt::obs::CObservation3DRangeScan& rangeScan,
 		const mrpt::poses::CPose3D* robotPose = nullptr) = 0;
@@ -771,16 +770,16 @@ class CPointsMap : public CMetricMap,
 	/** Like \a loadFromRangeScan() for Velodyne 3D scans. Points are translated
 	 * and rotated according to the \a sensorPose field in the observation and,
 	 * if provided, to the \a robotPose parameter.
-	  *
-	  * \param scan The Raw LIDAR data to be inserted into this map. It MUST
+	 *
+	 * \param scan The Raw LIDAR data to be inserted into this map. It MUST
 	 * contain point cloud data, generated by calling to \a
 	 * mrpt::obs::CObservationVelodyneScan::generatePointCloud() prior to
 	 * insertion in this map.
-	  * \param robotPose Default to (0,0,0|0deg,0deg,0deg). Changes the frame of
+	 * \param robotPose Default to (0,0,0|0deg,0deg,0deg). Changes the frame of
 	 * reference for the point cloud (i.e. the vehicle/robot pose in world
 	 * coordinates).
-	  * \sa loadFromRangeScan
-	  */
+	 * \sa loadFromRangeScan
+	 */
 	void loadFromVelodyneScan(
 		const mrpt::obs::CObservationVelodyneScan& scan,
 		const mrpt::poses::CPose3D* robotPose = nullptr);
@@ -809,37 +808,37 @@ class CPointsMap : public CMetricMap,
 
 	/** Replace each point \f$ p_i \f$ by \f$ p'_i = b \oplus p_i \f$ (pose
 	 * compounding operator).
-	  */
+	 */
 	void changeCoordinatesReference(const mrpt::poses::CPose2D& b);
 
 	/** Replace each point \f$ p_i \f$ by \f$ p'_i = b \oplus p_i \f$ (pose
 	 * compounding operator).
-	  */
+	 */
 	void changeCoordinatesReference(const mrpt::poses::CPose3D& b);
 
 	/** Copy all the points from "other" map to "this", replacing each point \f$
 	 * p_i \f$ by \f$ p'_i = b \oplus p_i \f$ (pose compounding operator).
-	  */
+	 */
 	void changeCoordinatesReference(
 		const CPointsMap& other, const mrpt::poses::CPose3D& b);
 
 	/** Returns true if the map is empty/no observation has been inserted.
-	   */
+	 */
 	virtual bool isEmpty() const override;
 
 	/** STL-like method to check whether the map is empty: */
 	inline bool empty() const { return isEmpty(); }
 	/** Returns a 3D object representing the map.
-	  *  The color of the points is controlled by COLOR_3DSCENE()
-	  * \sa mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE
-	  */
+	 *  The color of the points is controlled by COLOR_3DSCENE()
+	 * \sa mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE
+	 */
 	virtual void getAs3DObject(
 		mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
 
 	/** If the map is a simple points map or it's a multi-metric map that
 	 * contains EXACTLY one simple points map, return it.
-		* Otherwise, return NULL
-		*/
+	 * Otherwise, return NULL
+	 */
 	virtual const mrpt::maps::CSimplePointsMap* getAsSimplePointsMap()
 		const override
 	{
@@ -868,9 +867,9 @@ class CPointsMap : public CMetricMap,
 
 	/** Computes the bounding box of all the points, or (0,0 ,0,0, 0,0) if there
 	 * are no points.
-	  *  Results are cached unless the map is somehow modified to avoid repeated
+	 *  Results are cached unless the map is somehow modified to avoid repeated
 	 * calculations.
-	  */
+	 */
 	void boundingBox(
 		float& min_x, float& max_x, float& min_y, float& max_y, float& min_z,
 		float& max_z) const;
@@ -890,14 +889,14 @@ class CPointsMap : public CMetricMap,
 
 	/** Extracts the points in the map within a cylinder in 3D defined the
 	 * provided radius and zmin/zmax values.
-	  */
+	 */
 	void extractCylinder(
 		const mrpt::math::TPoint2D& center, const double radius,
 		const double zmin, const double zmax, CPointsMap* outMap);
 
 	/** Extracts the points in the map within the area defined by two corners.
-	  *  The points are coloured according the R,G,B input data.
-	  */
+	 *  The points are coloured according the R,G,B input data.
+	 */
 	void extractPoints(
 		const mrpt::math::TPoint3D& corner1,
 		const mrpt::math::TPoint3D& corner2, CPointsMap* outMap,
@@ -936,8 +935,8 @@ class CPointsMap : public CMetricMap,
 	/** @} */
 
 	/** The color of points in getAs3DObject() (default=blue) */
-	static void COLOR_3DSCENE(const mrpt::utils::TColorf& value);
-	static mrpt::utils::TColorf COLOR_3DSCENE();
+	static void COLOR_3DSCENE(const mrpt::img::TColorf& value);
+	static mrpt::img::TColorf COLOR_3DSCENE();
 
 	// See docs in base class
 	virtual double internal_computeObservationLikelihood(
@@ -949,16 +948,16 @@ class CPointsMap : public CMetricMap,
 
 	/** Use to convert this MRPT point cloud object into a PCL point cloud
 	 * object (PointCloud<PointXYZ>).
-	  *  Usage example:
-	  *  \code
-	  *    mrpt::maps::CPointsCloud       pc;
-	  *    pcl::PointCloud<pcl::PointXYZ> cloud;
-	  *
-	  *    pc.getPCLPointCloud(cloud);
-	  *  \endcode
-	  * \sa setFromPCLPointCloud, CColouredPointsMap::getPCLPointCloudXYZRGB
+	 *  Usage example:
+	 *  \code
+	 *    mrpt::maps::CPointsCloud       pc;
+	 *    pcl::PointCloud<pcl::PointXYZ> cloud;
+	 *
+	 *    pc.getPCLPointCloud(cloud);
+	 *  \endcode
+	 * \sa setFromPCLPointCloud, CColouredPointsMap::getPCLPointCloudXYZRGB
 	 * (for color data)
-	  */
+	 */
 	template <class POINTCLOUD>
 	void getPCLPointCloud(POINTCLOUD& cloud) const
 	{
@@ -979,15 +978,15 @@ class CPointsMap : public CMetricMap,
 	/** Loads a PCL point cloud into this MRPT class (note: this method ignores
 	 * potential RGB information, see
 	 * CColouredPointsMap::setFromPCLPointCloudRGB() ).
-	  *  Usage example:
-	  *  \code
-	  *    pcl::PointCloud<pcl::PointXYZ> cloud;
-	  *    mrpt::maps::CPointsCloud       pc;
-	  *
-	  *    pc.setFromPCLPointCloud(cloud);
-	  *  \endcode
-	  * \sa getPCLPointCloud, CColouredPointsMap::setFromPCLPointCloudRGB()
-	  */
+	 *  Usage example:
+	 *  \code
+	 *    pcl::PointCloud<pcl::PointXYZ> cloud;
+	 *    mrpt::maps::CPointsCloud       pc;
+	 *
+	 *    pc.setFromPCLPointCloud(cloud);
+	 *  \endcode
+	 * \sa getPCLPointCloud, CColouredPointsMap::setFromPCLPointCloudRGB()
+	 */
 	template <class POINTCLOUD>
 	void setFromPCLPointCloud(const POINTCLOUD& cloud)
 	{
@@ -1079,13 +1078,13 @@ class CPointsMap : public CMetricMap,
 	mrpt::obs::CSinCosLookUpTableFor2DScans m_scans_sincos_cache;
 
 	/** Auxiliary variables used in "getLargestDistanceFromOrigin"
-	  * \sa getLargestDistanceFromOrigin
-	  */
+	 * \sa getLargestDistanceFromOrigin
+	 */
 	mutable float m_largestDistanceFromOrigin;
 
 	/** Auxiliary variables used in "getLargestDistanceFromOrigin"
-	  * \sa getLargestDistanceFromOrigin
-	  */
+	 * \sa getLargestDistanceFromOrigin
+	 */
 	mutable bool m_largestDistanceFromOriginIsUpdated;
 
 	mutable bool m_boundingBoxIsUpdated;
@@ -1094,9 +1093,9 @@ class CPointsMap : public CMetricMap,
 
 	/** This is a common version of CMetricMap::insertObservation() for point
 	 * maps (actually, CMetricMap::internal_insertObservation),
-	  *   so derived classes don't need to worry implementing that method unless
+	 *   so derived classes don't need to worry implementing that method unless
 	 * something special is really necesary.
-	  * See mrpt::maps::CPointsMap for the enumeration of types of observations
+	 * See mrpt::maps::CPointsMap for the enumeration of types of observations
 	 * which are accepted. */
 	bool internal_insertObservation(
 		const mrpt::obs::CObservation* obs,
@@ -1116,12 +1115,12 @@ class CPointsMap : public CMetricMap,
 
 	/** In a base class, will be called after PLY_import_set_vertex_count() once
 	 * for each loaded point.
-	  *  \param pt_color Will be nullptr if the loaded file does not provide
+	 *  \param pt_color Will be nullptr if the loaded file does not provide
 	 * color info.
-	  */
+	 */
 	virtual void PLY_import_set_vertex(
 		const size_t idx, const mrpt::math::TPoint3Df& pt,
-		const mrpt::utils::TColorf* pt_color = nullptr) override;
+		const mrpt::img::TColorf* pt_color = nullptr) override;
 	/** @} */
 
 	/** @name PLY Export virtual methods to implement in base classes
@@ -1130,16 +1129,16 @@ class CPointsMap : public CMetricMap,
 	size_t PLY_export_get_face_count() const override { return 0; }
 	virtual void PLY_export_get_vertex(
 		const size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
-		mrpt::utils::TColorf& pt_color) const override;
+		mrpt::img::TColorf& pt_color) const override;
 	/** @} */
 
 	/** The minimum and maximum height for a certain laser scan to be inserted
 	 * into this map
-	   * \sa m_heightfilter_enabled */
+	 * \sa m_heightfilter_enabled */
 	double m_heightfilter_z_min, m_heightfilter_z_max;
 
 	/** Whether or not (default=not) filter the input points by height
-	  * \sa m_heightfilter_z_min, m_heightfilter_z_max */
+	 * \sa m_heightfilter_z_min, m_heightfilter_z_max */
 	bool m_heightfilter_enabled;
 
 	// Friend methods:
@@ -1150,21 +1149,21 @@ class CPointsMap : public CMetricMap,
 
 };  // End of class def.
 
-}  // End of namespace
+}  // namespace maps
 
 namespace global_settings
 {
 /** The size of points when exporting with getAs3DObject() (default=3.0)
-  * Affects to:
-  *		- mrpt::maps::CPointsMap and all its children classes.
-  */
+ * Affects to:
+ *		- mrpt::maps::CPointsMap and all its children classes.
+ */
 void POINTSMAPS_3DOBJECT_POINTSIZE(float value);
 float POINTSMAPS_3DOBJECT_POINTSIZE();
-}
+}  // namespace global_settings
 
-namespace utils
+namespace opengl
 {
-/** Specialization mrpt::utils::PointCloudAdapter<mrpt::maps::CPointsMap>
+/** Specialization mrpt::opengl::PointCloudAdapter<mrpt::maps::CPointsMap>
  * \ingroup mrpt_adapters_grp*/
 template <>
 class PointCloudAdapter<mrpt::maps::CPointsMap>
@@ -1205,8 +1204,5 @@ class PointCloudAdapter<mrpt::maps::CPointsMap>
 		m_obj.setPointFast(idx, x, y, z);
 	}
 };  // end of PointCloudAdapter<mrpt::maps::CPointsMap>
-}
-
-}  // End of namespace
-
-#endif
+}  // namespace opengl
+}  // namespace mrpt

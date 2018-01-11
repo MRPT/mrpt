@@ -13,65 +13,37 @@
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/poses/CPosePDF.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/metaprogramming_serialization.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;
 using namespace mrpt::poses;
-using namespace mrpt::utils;
-
-#include <mrpt/utils/metaprogramming.h>
-using namespace mrpt::utils::metaprogramming;
 
 IMPLEMENTS_SERIALIZABLE(CActionCollection, CSerializable, mrpt::obs)
 
-/*---------------------------------------------------------------
-						Constructor
-  ---------------------------------------------------------------*/
-CActionCollection::CActionCollection() : m_actions() {}
-/*---------------------------------------------------------------
-						Constructor
-  ---------------------------------------------------------------*/
 CActionCollection::CActionCollection(CAction& a) : m_actions()
 {
 	m_actions.push_back(CAction::Ptr(static_cast<CAction*>(a.clone())));
 }
 
-/*---------------------------------------------------------------
-  Implements the writing to a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CActionCollection::writeToStream(
-	mrpt::utils::CStream& out, int* version) const
+uint8_t CActionCollection::serializeGetVersion() const { return 0; }
+void CActionCollection::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	if (version)
-		*version = 0;
-	else
-	{
-		uint32_t n;
-
-		n = static_cast<uint32_t>(m_actions.size());
-		out << n;
-		for (const_iterator it = begin(); it != end(); ++it) out << *(*it);
-	}
+	out.WriteAs<uint32_t>(m_actions.size());
+	for (const auto &a : *this) out << *a;
 }
 
-/*---------------------------------------------------------------
-  Implements the reading from a CStream capability of CSerializable objects
- ---------------------------------------------------------------*/
-void CActionCollection::readFromStream(mrpt::utils::CStream& in, int version)
+void CActionCollection::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
 		case 0:
 		{
-			uint32_t n;
-
 			clear();
-
-			in >> n;
-			m_actions.resize(n);
+			m_actions.resize(in.ReadAs<uint32_t>());
 			for_each(
-				begin(), end(), ObjectReadFromStreamToPtrs<CAction::Ptr>(&in));
+				begin(), end(), mrpt::serialization::metaprogramming::ObjectReadFromStreamToPtrs<CAction::Ptr>(&in));
 		}
 		break;
 		default:

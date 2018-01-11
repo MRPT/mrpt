@@ -8,16 +8,15 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/obs/CObservationGasSensors.h>
-#include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/system/filesystem.h>
 
 using namespace mrpt;
 using namespace mrpt::system;
 using namespace mrpt::obs;
-using namespace mrpt::utils;
 using namespace std;
 
 int main(int argc, char** argv)
@@ -130,7 +129,7 @@ int main(int argc, char** argv)
 								{
 									if (obs->m_readings[enoseID].sensorTypes.at(
 											indexMonitoredSensor) ==
-										vector_int::value_type(sensorType))
+										std::vector<int>::value_type(sensorType))
 										break;
 								}
 							}

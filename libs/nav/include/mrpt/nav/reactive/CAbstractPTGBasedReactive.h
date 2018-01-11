@@ -16,7 +16,7 @@
 #include <mrpt/nav/holonomic/ClearanceDiagram.h>
 #include <mrpt/nav/reactive/TCandidateMovementPTG.h>
 #include <mrpt/nav/reactive/CMultiObjectiveMotionOptimizerBase.h>
-#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/math/filters.h>
 #include <mrpt/math/CPolygon.h>
@@ -145,7 +145,7 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 	 * CAbstractHolonomicReactiveMethod
 		*/
 	void setHolonomicMethod(
-		const std::string& method, const mrpt::utils::CConfigFileBase& cfgBase);
+		const std::string& method, const mrpt::config::CConfigFileBase& cfgBase);
 
 	/** Provides a copy of the last log record with information about execution.
 		* \param o An object where the log will be stored into.
@@ -170,7 +170,7 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 		m_navlogfiles_dir = sDir;
 	}
 	std::string getLogFileDirectory() const { return m_navlogfiles_dir; }
-	struct TAbstractPTGNavigatorParams : public mrpt::utils::CLoadableOptions
+	struct TAbstractPTGNavigatorParams : public mrpt::config::CLoadableOptions
 	{
 		/** C++ class name of the holonomic navigation method to run in the
 		 * transformed TP-Space */
@@ -224,19 +224,19 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 		double max_dist_for_timebased_path_prediction;
 
 		virtual void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase& c,
+			const mrpt::config::CConfigFileBase& c,
 			const std::string& s) override;
 		virtual void saveToConfigFile(
-			mrpt::utils::CConfigFileBase& c,
+			mrpt::config::CConfigFileBase& c,
 			const std::string& s) const override;
 		TAbstractPTGNavigatorParams();
 	};
 
 	TAbstractPTGNavigatorParams params_abstract_ptg_navigator;
 
-	virtual void loadConfigFile(const mrpt::utils::CConfigFileBase& c)
+	virtual void loadConfigFile(const mrpt::config::CConfigFileBase& c)
 		override;  // See base class docs!
-	virtual void saveConfigFile(mrpt::utils::CConfigFileBase& c)
+	virtual void saveConfigFile(mrpt::config::CConfigFileBase& c)
 		const override;  // See base class docs!
 
 	/** Enables/disables the detailed time logger (default:disabled upon
@@ -247,7 +247,7 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 	void enableTimeLog(bool enable = true) { m_timelogger.enable(enable); }
 	/** Gives access to a const-ref to the internal time logger \sa
 	 * enableTimeLog */
-	const mrpt::utils::CTimeLogger& getTimeLogger() const
+	const mrpt::system::CTimeLogger& getTimeLogger() const
 	{
 		return m_timelogger;
 	}
@@ -288,9 +288,9 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 	/** The holonomic navigation algorithm (one object per PTG, so internal
 	 * states are maintained) */
 	std::vector<CAbstractHolonomicReactiveMethod::Ptr> m_holonomicMethod;
-	std::unique_ptr<mrpt::utils::CStream> m_logFile;
+	std::unique_ptr<mrpt::io::CStream> m_logFile;
 	/** The current log file stream, or nullptr if not being used */
-	mrpt::utils::CStream* m_prev_logfile;
+	mrpt::io::CStream* m_prev_logfile;
 	/** See enableKeepLogRecords */
 	bool m_enableKeepLogRecords;
 	/** The last log */
@@ -305,15 +305,15 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 	bool m_enableConsoleOutput;
 	/** Whether \a loadConfigFile() has been called or not. */
 	bool m_init_done;
-	mrpt::utils::CTicTac timerForExecutionPeriod;
+	mrpt::system::CTicTac timerForExecutionPeriod;
 
 	/** A complete time logger \sa enableTimeLog() */
-	mrpt::utils::CTimeLogger m_timelogger;
+	mrpt::system::CTimeLogger m_timelogger;
 	bool m_PTGsMustBeReInitialized;
 
 	/** @name Variables for CReactiveNavigationSystem::performNavigationStep
 		@{ */
-	mrpt::utils::CTicTac totalExecutionTime, executionTime, tictac;
+	mrpt::system::CTicTac totalExecutionTime, executionTime, tictac;
 	mrpt::math::LowPassFilter_IIR1 meanExecutionTime;
 	mrpt::math::LowPassFilter_IIR1 meanTotalExecutionTime;
 	/** Runtime estimation of execution period of the method. */
@@ -429,7 +429,7 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 		mrpt::nav::CAbstractHolonomicReactiveMethod& holoMethod,
 		const mrpt::system::TTimeStamp tim_start_iteration,
 		const TNavigationParams& navp = TNavigationParams(),
-		const mrpt::math::TPose2D& relPoseVelCmd_NOP = mrpt::poses::CPose2D());
+		const mrpt::math::TPose2D& relPoseVelCmd_NOP = mrpt::math::TPose2D(0,0,0));
 
 	struct TSentVelCmd
 	{
