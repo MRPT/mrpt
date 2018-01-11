@@ -94,9 +94,9 @@ namespace hwdrivers
  * it up.
  *  # An arbitrary number of commands can be defined, but their names must be
  * "setup_cmd%d" starting at "1".
- *  # Commands will be sent by index order. Binary commands instead of ASCII
- * strings can be set programatically, not from a config file.
- *  # custom_cmds_delay   = 0.1   // (Default=0.1) Delay in seconds between
+  *  # Commands will be sent by index order. Binary commands instead of ASCII
+ * strings can be set programmatically, not from a config file.
+  *  # custom_cmds_delay   = 0.1   // (Default=0.1) Delay in seconds between
  * consecutive set-up commands
  *  # custom_cmds_append_CRLF = true    // (Default:true) Append "\r\n" to each
  * command

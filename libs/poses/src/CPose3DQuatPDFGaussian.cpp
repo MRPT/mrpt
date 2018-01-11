@@ -38,7 +38,6 @@ void mrpt::global_settings::USE_SUT_EULER2QUAT_CONVERSION(bool value)
 	USE_SUT_EULER2QUAT_CONVERSION_value = value;
 }
 
-
 IMPLEMENTS_SERIALIZABLE(CPose3DQuatPDFGaussian, CPose3DQuatPDF, mrpt::poses)
 
 /** Default constructor - set all values to zero. */

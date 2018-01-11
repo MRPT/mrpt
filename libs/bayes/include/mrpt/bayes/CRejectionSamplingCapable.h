@@ -82,8 +82,9 @@ class CRejectionSamplingCapable
 					bestLik = acceptanceProb;
 					bestVal = *it->d;
 				}
-			} while (acceptanceProb < mrpt::random::getRandomGenerator().drawUniform(
-										  0.0, 0.999) &&
+			} while (acceptanceProb <
+						 mrpt::random::getRandomGenerator().drawUniform(
+							 0.0, 0.999) &&
 					 (++timeoutCount) < timeoutTrials);
 
 			// Save weights:

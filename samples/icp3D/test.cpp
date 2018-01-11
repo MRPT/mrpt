@@ -140,7 +140,11 @@ void test_icp3D()
 	CSetOfObjects::Ptr PTNS1 = mrpt::make_aligned_shared<CSetOfObjects>();
 	CSetOfObjects::Ptr PTNS2 = mrpt::make_aligned_shared<CSetOfObjects>();
 
+<<<<<<< HEAD
 	CPointsMap::COLOR_3DSCENE(mrpt::img::TColorf(1,0,0));
+=======
+	CPointsMap::COLOR_3DSCENE(mrpt::utils::TColorf(1, 0, 0));
+>>>>>>> master
 	M1.getAs3DObject(PTNS1);
 
 	CPointsMap::COLOR_3DSCENE(mrpt::img::TColorf(0, 0, 1));

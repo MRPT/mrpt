@@ -19,11 +19,12 @@ namespace mrpt
 namespace maps
 {
 template <class OCTREE, class OCTREE_NODE>
+template <class octomap_point3d, class octomap_pointcloud>
 bool COctoMapBase<OCTREE, OCTREE_NODE>::
 	internal_build_PointCloud_for_observation(
 		const mrpt::obs::CObservation* obs,
-		const mrpt::poses::CPose3D* robotPose, octomap::point3d& sensorPt,
-		octomap::Pointcloud& scan) const
+		const mrpt::poses::CPose3D* robotPose, octomap_point3d& sensorPt,
+		octomap_pointcloud& scan) const
 {
 	using namespace mrpt::poses;
 	using namespace mrpt::obs;
@@ -140,12 +141,6 @@ bool COctoMapBase<OCTREE, OCTREE_NODE>::
 }
 
 template <class OCTREE, class OCTREE_NODE>
-bool COctoMapBase<OCTREE, OCTREE_NODE>::isEmpty() const
-{
-	return m_octomap.size() == 1;
-}
-
-template <class OCTREE, class OCTREE_NODE>
 void COctoMapBase<OCTREE, OCTREE_NODE>::saveMetricMapRepresentationToFile(
 	const std::string& filNamePrefix) const
 {
@@ -168,7 +163,8 @@ void COctoMapBase<OCTREE, OCTREE_NODE>::saveMetricMapRepresentationToFile(
 	// Save as ".bt" file (a binary format from the octomap lib):
 	{
 		const std::string fil = filNamePrefix + std::string("_binary.bt");
-		const_cast<OCTREE*>(&m_octomap)->writeBinary(fil);
+		const_cast<OCTREE*>(&PIMPL_GET_CONSTREF(ColorOcTree, m_octomap))
+			->writeBinary(fil);
 	}
 	MRPT_END
 }
@@ -190,9 +186,11 @@ double COctoMapBase<OCTREE, OCTREE_NODE>::internal_computeObservationLikelihood(
 	double log_lik = 0;
 	for (size_t i = 0; i < N; i += likelihoodOptions.decimation)
 	{
-		if (m_octomap.coordToKeyChecked(scan.getPoint(i), key))
+		if (PIMPL_GET_REF(ColorOcTree, m_octomap)
+				.coordToKeyChecked(scan.getPoint(i), key))
 		{
-			octree_node_t* node = m_octomap.search(key, 0 /*depth*/);
+			OCTREE_NODE* node =
+				PIMPL_GET_REF(ColorOcTree, m_octomap).search(key, 0 /*depth*/);
 			if (node) log_lik += std::log(node->getOccupancy());
 		}
 	}
@@ -205,9 +203,11 @@ bool COctoMapBase<OCTREE, OCTREE_NODE>::getPointOccupancy(
 	const float x, const float y, const float z, double& prob_occupancy) const
 {
 	octomap::OcTreeKey key;
-	if (m_octomap.coordToKeyChecked(octomap::point3d(x, y, z), key))
+	if (PIMPL_GET_REF(ColorOcTree, m_octomap)
+			.coordToKeyChecked(octomap::point3d(x, y, z), key))
 	{
-		octree_node_t* node = m_octomap.search(key, 0 /*depth*/);
+		OCTREE_NODE* node =
+			PIMPL_GET_REF(ColorOcTree, m_octomap).search(key, 0 /*depth*/);
 		if (!node) return false;
 
 		prob_occupancy = node->getOccupancy();
@@ -228,9 +228,10 @@ void COctoMapBase<OCTREE, OCTREE_NODE>::insertPointCloud(
 	const float *xs, *ys, *zs;
 	ptMap.getPointsBuffer(N, xs, ys, zs);
 	for (size_t i = 0; i < N; i++)
-		m_octomap.insertRay(
-			sensorPt, octomap::point3d(xs[i], ys[i], zs[i]),
-			insertionOptions.maxrange, insertionOptions.pruning);
+		PIMPL_GET_REF(ColorOcTree, m_octomap)
+			.insertRay(
+				sensorPt, octomap::point3d(xs[i], ys[i], zs[i]),
+				insertionOptions.maxrange, insertionOptions.pruning);
 	MRPT_END
 }
 
@@ -241,10 +242,12 @@ bool COctoMapBase<OCTREE, OCTREE_NODE>::castRay(
 {
 	octomap::point3d _end;
 
-	const bool ret = m_octomap.castRay(
-		octomap::point3d(origin.x, origin.y, origin.z),
-		octomap::point3d(direction.x, direction.y, direction.z), _end,
-		ignoreUnknownCells, maxRange);
+	const bool ret =
+		PIMPL_GET_REF(ColorOcTree, m_octomap)
+			.castRay(
+				octomap::point3d(origin.x, origin.y, origin.z),
+				octomap::point3d(direction.x, direction.y, direction.z), _end,
+				ignoreUnknownCells, maxRange);
 
 	end.x = _end.x();
 	end.y = _end.y();

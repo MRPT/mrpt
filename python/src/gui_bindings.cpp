@@ -192,20 +192,20 @@ void export_gui()
 				.def(
 					"setCameraElevationDeg",
 					&CDisplayWindow3D::setCameraElevationDeg, args("deg"),
-					"Changes the camera parameters programatically.")
+					"Changes the camera parameters programmatically.")
 				.def(
 					"setCameraAzimuthDeg",
 					&CDisplayWindow3D::setCameraAzimuthDeg, args("deg"),
-					"Changes the camera parameters programatically.")
+					"Changes the camera parameters programmatically.")
 				.def(
 					"setCameraPointingToPoint",
 					&CDisplayWindow3D::setCameraPointingToPoint,
 					args("x", "y", "z"),
-					"Changes the camera parameters programatically.")
+					"Changes the camera parameters programmatically.")
 				.def(
 					"setCameraZoom", &CDisplayWindow3D::setCameraZoom,
 					args("zoom"),
-					"Changes the camera parameters programatically.")
+					"Changes the camera parameters programmatically.")
 				.def(
 					"setCameraProjective",
 					&CDisplayWindow3D::setCameraProjective,

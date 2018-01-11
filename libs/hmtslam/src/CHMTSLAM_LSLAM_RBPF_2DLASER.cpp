@@ -323,7 +323,8 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 		PF_options.pfAuxFilterOptimal_MaximumSearchSamples * M);
 	size_t size_movementDraws = LMH->m_movementDraws.size();
 	LMH->m_movementDrawsIdx = (unsigned int)floor(
-		getRandomGenerator().drawUniform(0.0f, ((float)size_movementDraws) - 0.01f));
+		getRandomGenerator().drawUniform(
+			0.0f, ((float)size_movementDraws) - 0.01f));
 
 	robotMovement->prepareFastDrawSingleSamples();
 	for (size_t i = 0; i < LMH->m_movementDraws.size(); i++)

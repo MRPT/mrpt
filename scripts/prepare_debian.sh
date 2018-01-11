@@ -37,6 +37,11 @@ done
 if [ -f version_prefix.txt ];
 then
 	MRPT_VERSION_STR=`head -n 1 version_prefix.txt`
+  MRPT_VERSION_MAJOR=${MRPT_VERSION_STR:0:1}
+	MRPT_VERSION_MINOR=${MRPT_VERSION_STR:2:1}
+	MRPT_VERSION_PATCH=${MRPT_VERSION_STR:4:1}
+	MRPT_VER_MM="${MRPT_VERSION_MAJOR}.${MRPT_VERSION_MINOR}"
+	MRPT_VER_MMP="${MRPT_VERSION_MAJOR}.${MRPT_VERSION_MINOR}.${MRPT_VERSION_PATCH}"
 else
 	echo "Error: cannot find version_prefix.txt!!"
 	exit 1
@@ -45,7 +50,7 @@ fi
 # Append snapshot?
 if [ $APPEND_SNAPSHOT_NUM == "1" ];
 then
-        MRPT_SNAPSHOT_VERSION=`date +%Y%m%d-%H%M`
+        MRPT_SNAPSHOT_VERSION=`date +%Y%m%d`
         MRPT_SNAPSHOT_VERSION+="-git-"
         MRPT_SNAPSHOT_VERSION+=`git rev-parse --short=8 HEAD`
         MRPT_SNAPSHOT_VERSION+="-"
@@ -107,7 +112,10 @@ cp $HOME/mrpt_release/mrpt*.tar.gz $MRPT_DEB_DIR/mrpt_${MRPT_VERSION_STR}.orig.t
 cd ${MRPT_DEB_DIR}
 tar -xf mrpt_${MRPT_VERSION_STR}.orig.tar.gz
 
-mv mrpt-* ${MRPT_DEBSRC_DIR}  # fix different dir names for Ubuntu PPA packages
+if [ ! -d "${MRPT_DEBSRC_DIR}" ];
+then
+  mv mrpt-* ${MRPT_DEBSRC_DIR}  # fix different dir names for Ubuntu PPA packages
+fi
 
 if [ ! -f "${MRPT_DEBSRC_DIR}/CMakeLists.txt" ];
 then

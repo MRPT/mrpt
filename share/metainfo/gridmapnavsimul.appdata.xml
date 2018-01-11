@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>org.mrpt.gridmapnavsimul.desktop</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <name>GridmapNavSimul</name>
+  <summary>Gridmap Navigation Simulator</summary>
+  <description>
+    <p>Gridmap Navigation Simulator.</p>
+  </description>
+  <screenshots>
+    <screenshot type="default">http://static.mrpt.org/screenshots/gridmapnavsimul.png</screenshot>
+  </screenshots>
+  <url type="homepage">https://www.mrpt.org/</url>
+  <update_contact>joseluisblancoc_at_gmail.com</update_contact>
+</component>

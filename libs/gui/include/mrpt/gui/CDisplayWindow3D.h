@@ -211,23 +211,23 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 	void setPos(int x, int y) override;
 	/**  Changes the window title. */
 	void setWindowTitle(const std::string& str) override;
-	/** Changes the camera parameters programatically */
+	/** Changes the camera parameters programmatically */
 	void setCameraElevationDeg(float deg);
-	/** Changes the camera parameters programatically */
+	/** Changes the camera parameters programmatically */
 	void setCameraAzimuthDeg(float deg);
-	/** Changes the camera parameters programatically */
+	/** Changes the camera parameters programmatically */
 	void setCameraPointingToPoint(float x, float y, float z);
-	/** Changes the camera parameters programatically */
+	/** Changes the camera parameters programmatically */
 	void setCameraZoom(float zoom);
 	/** Sets the camera as projective, or orthogonal. */
 	void setCameraProjective(bool isProjective);
-	/** Get camera parameters programatically */
+	/** Get camera parameters programmatically */
 	float getCameraElevationDeg() const;
-	/** Get camera parameters programatically */
+	/** Get camera parameters programmatically */
 	float getCameraAzimuthDeg() const;
-	/** Get camera parameters programatically */
+	/** Get camera parameters programmatically */
 	void getCameraPointingToPoint(float& x, float& y, float& z) const;
-	/** Get camera parameters programatically */
+	/** Get camera parameters programmatically */
 	float getCameraZoom() const;
 	/** Sets the camera as projective, or orthogonal */
 	bool isCameraProjective() const;

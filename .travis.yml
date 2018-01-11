@@ -1,53 +1,16 @@
+# Use docker to test on a more modern Ubuntu distro
 language: cpp
-cache: ccache
 sudo: required
 dist: trusty
 
-addons:
-  apt:
-    sources:
-    - ubuntu-toolchain-r-test
-    - sourceline: 'ppa:v-launchpad-jochen-sprickerhof-de/pcl'
-    packages:
-    - g++-6
-    - clang-3.8
-    - build-essential
-    - pkg-config
-    - cmake
-
-before_install:
-  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update; fi
-
-install:
-  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then
-      brew tap homebrew/science ;
-      brew install eigen ;
-      /usr/bin/yes | pip uninstall numpy ;
-      brew install opencv ;
-      brew install assimp ;
-    fi
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then
-      if [ "$CXX" == "g++" ]; then export CXX="g++-6"; fi
-      if [ "$CXX" == "clang++" ]; then export CXX="clang++-3.8"; fi
-      if [ "$TASK" == "lint" ]; then pip install -r travis/python_reqs.txt; fi
-    fi
-  - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$DEPS" != "minimal" ]; then
-      sudo apt-get install libftdi-dev zlib1g-dev libusb-1.0-0-dev libdc1394-22-dev -y ;
-      sudo apt-get install libjpeg-dev libopencv-dev libgtest-dev libeigen3-dev -y ;
-      sudo apt-get install libsuitesparse-dev libpcl-all libopenni2-dev libudev-dev  -y ;
-      sudo apt-get install libboost-python-dev libpython-dev python-numpy -y ;
-      if [ "$DEPS" != "headless" ]; then
-        sudo apt-get install libwxgtk3.0-dev -y ;
-        sudo apt-get install freeglut3-dev -y ;
-        sudo apt-get install libavformat-dev libswscale-dev -y ;
-        sudo apt-get install libassimp-dev -y ;
-        sudo apt-get install qtbase5-dev libqt5opengl5-dev -y ;
-      fi
-    fi
+before_script:
+  - export DOCKER_IMAGE=ubuntu:$DISTRO
+  - export CI_SOURCE_PATH=$(pwd)
+  - export REPOSITORY_NAME=${PWD##*/}
+  - docker images
 
 script:
-  - bash travis/check_style.sh
-  - bash travis/travis_main.sh
+  - docker run -v $HOME:$HOME -e MAKEFLAGS -e CCACHE_SLOPPINESS -e TASK -e DEPS -e CI_SOURCE_PATH -e REPOSITORY_NAME -e HOME -e DISTRO -e CI_ROS_DISTRO $DOCKER_IMAGE bash -c 'cd $CI_SOURCE_PATH; apt-get update -qq ; source travis/check_style.sh; source travis/travis_main.sh'
 
 env:
   global:
@@ -58,34 +21,28 @@ matrix:
   include:
   - compiler: gcc
     os: linux
-    env: TASK="build"
+    env: TASK="build" DISTRO=xenial
   - compiler: gcc
     os: linux
-    env: TASK="test"
+    env: TASK="test" DISTRO=xenial
   - compiler: gcc
     os: linux
-    env: TASK="build" DEPS="headless"
+    env: TASK="build" DEPS="headless" DISTRO=xenial
   - compiler: gcc
     os: linux
-    env: TASK="test" DEPS="headless"
+    env: TASK="test" DEPS="headless" DISTRO=xenial
   - compiler: gcc
     os: linux
-    env: TASK="build" DEPS="minimal"
+    env: TASK="build" DEPS="minimal" DISTRO=xenial
   - compiler: gcc
     os: linux
-    env: TASK="test" DEPS="minimal"
+    env: TASK="test" DEPS="minimal" DISTRO=xenial
   - compiler: clang
     os: linux
-    env: TASK="build"
+    env: TASK="build" DISTRO=xenial
   - compiler: clang
     os: linux
-    env: TASK="test"
-  - compiler: gcc
-    os: osx
-    env: TASK="test"
-  - compiler: clang
-    os: osx
-    env: TASK="test"
+    env: TASK="test" DISTRO=xenial
   - language: python
     os: linux
-    env: TASK="lint"
+    env: TASK="lint" DISTRO=xenial

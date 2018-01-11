@@ -435,7 +435,8 @@ bool CBeaconMap::internal_insertObservation(
 						{
 							double th =
 								getRandomGenerator().drawUniform(-M_PI, M_PI);
-							double el = getRandomGenerator().drawUniform(minA, maxA);
+							double el =
+								getRandomGenerator().drawUniform(minA, maxA);
 							double R = getRandomGenerator().drawGaussian1D(
 								sensedRange, likelihoodOptions.rangeStd);
 							itP->d->x = sensorPnt.x() + R * cos(th) * cos(el);
@@ -543,8 +544,9 @@ bool CBeaconMap::internal_insertObservation(
 												0, noiseStd);
 										if (!is2D)
 											itSample->d->z +=
-												getRandomGenerator().drawGaussian1D(
-													0, noiseStd);
+												getRandomGenerator()
+													.drawGaussian1D(
+														0, noiseStd);
 									}
 								}
 							}  // end "do resample"
@@ -1094,8 +1096,8 @@ void CBeaconMap::simulateBeaconReadings(
 			range > out_Observations.minSensorDistance)
 		{
 			// Add noise:
-			range +=
-				getRandomGenerator().drawGaussian1D(0, out_Observations.stdError);
+			range += getRandomGenerator().drawGaussian1D(
+				0, out_Observations.stdError);
 
 			// Fill out:
 			newMeas.beaconID = it->m_ID;

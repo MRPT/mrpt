@@ -13,10 +13,11 @@
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/core/safe_pointers.h>
-#include <octomap/octomap.h>
 #include <mrpt/opengl/COctoMapVoxels.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/obs/obs_frwds.h>
+#include <mrpt/core/safe_pointers.h>
+#include <mrpt/core/pimpl.h>
 
 namespace mrpt
 {
@@ -44,34 +45,29 @@ namespace maps
  * \sa CMetricMap, the example in "MRPT/samples/octomap_simple"
  * \ingroup mrpt_maps_grp
  */
-template <class OCTREE, class OCTREE_NODE>
+template <class octree_t, class octree_node_t>
 class COctoMapBase : public mrpt::maps::CMetricMap
 {
    public:
-	/** The type of this MRPT class */
-	typedef COctoMapBase<OCTREE, OCTREE_NODE> myself_t;
-	/** The type of the octree class in the "octomap" library. */
-	typedef OCTREE octree_t;
-	/** The type of nodes in the octree, in the "octomap" library. */
-	typedef OCTREE_NODE octree_node_t;
+	typedef COctoMapBase<octree_t, octree_node_t>
+		myself_t;  //!< The type of this MRPT class
 
 	/** Constructor, defines the resolution of the octomap (length of each voxel
 	 * side) */
-	COctoMapBase(const double resolution = 0.10)
-		: insertionOptions(*this), m_octomap(resolution)
-	{
-	}
+	COctoMapBase() : insertionOptions(*this) {}
 	virtual ~COctoMapBase() {}
 	/** Get a reference to the internal octomap object. Example:
 	   * \code
 	   *  mrpt::maps::COctoMap  map;
-	   *  ...
-	   *  octomap::OcTree &om = map.getOctomap();
-	   *
-	   *
+	   *  octomap::OcTree &om = map.getOctomap<octomap::OcTree>();
 	   * \endcode
 	   */
-	inline OCTREE& getOctomap() { return m_octomap; }
+	template <class OCTOMAP_CLASS>
+	inline OCTOMAP_CLASS& getOctomap()
+	{
+		return *m_octomap.ptr.get();
+	}
+
 	/** With this struct options are provided to the observation insertion
 	* process.
 	* \sa CObservation::insertObservationInto()
@@ -81,15 +77,16 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 		/** Initilization of default parameters */
 		TInsertionOptions(myself_t& parent);
 
-		/** Especial constructor, not attached to a real COctoMap object: used
-		 * only in limited situations, since get*() methods don't work, etc. */
-		TInsertionOptions();
+		TInsertionOptions();  //!< Especial constructor, not attached to a real
+		//! COctoMap object: used only in limited
+		//! situations, since get*() methods don't work,
+		//! etc.
 		TInsertionOptions& operator=(const TInsertionOptions& o)
 		{
 			// Copy all but the m_parent pointer!
 			maxrange = o.maxrange;
 			pruning = o.pruning;
-			const bool o_has_parent = o.m_parent.get() != nullptr;
+			const bool o_has_parent = o.m_parent.get() != NULL;
 			setOccupancyThres(
 				o_has_parent ? o.getOccupancyThres() : o.occupancyThres);
 			setProbHit(o_has_parent ? o.getProbHit() : o.probHit);
@@ -106,95 +103,84 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 			const std::string& section) override;  // See base docs
 		void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
-		/** maximum range for how long individual beams are inserted (default
-		 * -1: complete beam) */
-		double maxrange;
-		/** whether the tree is (losslessly) pruned after insertion (default:
-		 * true) */
-		bool pruning;
+		double maxrange;  //!< maximum range for how long individual beams are
+		//! inserted (default -1: complete beam)
+		bool pruning;  //!< whether the tree is (losslessly) pruned after
+		//! insertion (default: true)
 
 		/// (key name in .ini files: "occupancyThres") sets the threshold for
 		/// occupancy (sensor model) (Default=0.5)
 		void setOccupancyThres(double prob)
 		{
-			if (m_parent.get()) m_parent->m_octomap.setOccupancyThres(prob);
+			if (m_parent.get()) m_parent->setOccupancyThres(prob);
 		}
 		/// (key name in .ini files: "probHit")sets the probablility for a "hit"
 		/// (will be converted to logodds) - sensor model (Default=0.7)
 		void setProbHit(double prob)
 		{
-			if (m_parent.get()) m_parent->m_octomap.setProbHit(prob);
+			if (m_parent.get()) m_parent->setProbHit(prob);
 		}
 		/// (key name in .ini files: "probMiss")sets the probablility for a
 		/// "miss" (will be converted to logodds) - sensor model (Default=0.4)
 		void setProbMiss(double prob)
 		{
-			if (m_parent.get()) m_parent->m_octomap.setProbMiss(prob);
+			if (m_parent.get()) m_parent->setProbMiss(prob);
 		}
 		/// (key name in .ini files: "clampingThresMin")sets the minimum
 		/// threshold for occupancy clamping (sensor model) (Default=0.1192, -2
 		/// in log odds)
 		void setClampingThresMin(double thresProb)
 		{
-			if (m_parent.get())
-				m_parent->m_octomap.setClampingThresMin(thresProb);
+			if (m_parent.get()) m_parent->setClampingThresMin(thresProb);
 		}
 		/// (key name in .ini files: "clampingThresMax")sets the maximum
 		/// threshold for occupancy clamping (sensor model) (Default=0.971, 3.5
 		/// in log odds)
 		void setClampingThresMax(double thresProb)
 		{
-			if (m_parent.get())
-				m_parent->m_octomap.setClampingThresMax(thresProb);
+			if (m_parent.get()) m_parent->setClampingThresMax(thresProb);
 		}
 
 		/// @return threshold (probability) for occupancy - sensor model
 		double getOccupancyThres() const
 		{
 			if (m_parent.get())
-				return m_parent->m_octomap.getOccupancyThres();
+				return m_parent->getOccupancyThres();
 			else
 				return this->occupancyThres;
 		}
 		/// @return threshold (logodds) for occupancy - sensor model
 		float getOccupancyThresLog() const
 		{
-			return m_parent->m_octomap.getOccupancyThresLog();
+			return m_parent->getOccupancyThresLog();
 		}
 
 		/// @return probablility for a "hit" in the sensor model (probability)
 		double getProbHit() const
 		{
 			if (m_parent.get())
-				return m_parent->m_octomap.getProbHit();
+				return m_parent->getProbHit();
 			else
 				return this->probHit;
 		}
 		/// @return probablility for a "hit" in the sensor model (logodds)
-		float getProbHitLog() const
-		{
-			return m_parent->m_octomap.getProbHitLog();
-		}
+		float getProbHitLog() const { return m_parent->getProbHitLog(); }
 		/// @return probablility for a "miss"  in the sensor model (probability)
 		double getProbMiss() const
 		{
 			if (m_parent.get())
-				return m_parent->m_octomap.getProbMiss();
+				return m_parent->getProbMiss();
 			else
 				return this->probMiss;
 		}
 		/// @return probablility for a "miss"  in the sensor model (logodds)
-		float getProbMissLog() const
-		{
-			return m_parent->m_octomap.getProbMissLog();
-		}
-
+		float getProbMissLog() const { return m_parent->getProbMissLog(); }
 		/// @return minimum threshold for occupancy clamping in the sensor model
 		/// (probability)
 		double getClampingThresMin() const
 		{
 			if (m_parent.get())
-				return m_parent->m_octomap.getClampingThresMin();
+				return m_parent->getClampingThresMin();
 			else
 				return this->clampingThresMin;
 		}
@@ -202,14 +188,14 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 		/// (logodds)
 		float getClampingThresMinLog() const
 		{
-			return m_parent->m_octomap.getClampingThresMinLog();
+			return m_parent->getClampingThresMinLog();
 		}
 		/// @return maximum threshold for occupancy clamping in the sensor model
 		/// (probability)
 		double getClampingThresMax() const
 		{
 			if (m_parent.get())
-				return m_parent->m_octomap.getClampingThresMax();
+				return m_parent->getClampingThresMax();
 			else
 				return this->clampingThresMax;
 		}
@@ -217,7 +203,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 		/// (logodds)
 		float getClampingThresMaxLog() const
 		{
-			return m_parent->m_octomap.getClampingThresMaxLog();
+			return m_parent->getClampingThresMaxLog();
 		}
 
 	   private:
@@ -237,8 +223,8 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 		// in log odds)
 	};
 
-	/** The options used when inserting observations in the map */
-	TInsertionOptions insertionOptions;
+	TInsertionOptions insertionOptions;  //!< The options used when inserting
+	//! observations in the map
 
 	/** Options used when evaluating "computeObservationLikelihood"
 	* \sa CObservation::computeObservationLikelihood
@@ -259,15 +245,11 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 		/** Binary dump to stream */
 		void readFromStream(mrpt::serialization::CArchive& in);
 
-		/** Speed up the likelihood computation by considering only one out of N
-		 * rays (default=1) */
-		uint32_t decimation;
+		uint32_t decimation;  //!< Speed up the likelihood computation by
+		//! considering only one out of N rays (default=1)
 	};
 
 	TLikelihoodOptions likelihoodOptions;
-
-	/** Returns true if the map is empty/no observation has been inserted */
-	virtual bool isEmpty() const override;
 
 	virtual void saveMetricMapRepresentationToFile(
 		const std::string& filNamePrefix) const override;
@@ -276,22 +258,21 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 	 * mrpt::opengl::COctoMapVoxels */
 	struct TRenderingOptions
 	{
-		/** Generate grid lines for all octree nodes, useful to draw the
-		 * "structure" of the octree, but computationally costly (Default:
-		 * false) */
-		bool generateGridLines;
+		bool generateGridLines;  //!< Generate grid lines for all octree nodes,
+		//! useful to draw the "structure" of the
+		//! octree, but computationally costly (Default:
+		//! false)
 
-		/** Generate voxels for the occupied volumes  (Default=true) */
-		bool generateOccupiedVoxels;
-		/** Set occupied voxels visible (requires generateOccupiedVoxels=true)
-		 * (Default=true) */
-		bool visibleOccupiedVoxels;
+		bool generateOccupiedVoxels;  //!< Generate voxels for the occupied
+		//! volumes  (Default=true)
+		bool visibleOccupiedVoxels;  //!< Set occupied voxels visible (requires
+		//! generateOccupiedVoxels=true)
+		//!(Default=true)
 
-		/** Generate voxels for the freespace (Default=true) */
-		bool generateFreeVoxels;
-		/** Set free voxels visible (requires generateFreeVoxels=true)
-		 * (Default=true) */
-		bool visibleFreeVoxels;
+		bool generateFreeVoxels;  //!< Generate voxels for the freespace
+		//!(Default=true)
+		bool visibleFreeVoxels;  //!< Set free voxels visible (requires
+		//! generateFreeVoxels=true) (Default=true)
 
 		TRenderingOptions()
 			: generateGridLines(false),
@@ -316,8 +297,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 	virtual void getAs3DObject(
 		mrpt::opengl::CSetOfObjects::Ptr& outObj) const override
 	{
-		mrpt::opengl::COctoMapVoxels::Ptr gl_obj =
-			mrpt::make_aligned_shared<mrpt::opengl::COctoMapVoxels>();
+		auto gl_obj = mrpt::opengl::COctoMapVoxels::Create();
 		this->getAsOctoMapVoxels(*gl_obj);
 		outObj->insert(gl_obj);
 	}
@@ -329,29 +309,12 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 	virtual void getAsOctoMapVoxels(
 		mrpt::opengl::COctoMapVoxels& gl_obj) const = 0;
 
-	/** Check whether the given point lies within the volume covered by the
-	 * octomap (that is, whether it is "mapped") */
-	bool isPointWithinOctoMap(const float x, const float y, const float z) const
-	{
-		octomap::OcTreeKey key;
-		return m_octomap.coordToKeyChecked(octomap::point3d(x, y, z), key);
-	}
-
 	/** Get the occupancy probability [0,1] of a point
 		* \return false if the point is not mapped, in which case the returned
 	 * "prob" is undefined. */
 	bool getPointOccupancy(
 		const float x, const float y, const float z,
 		double& prob_occupancy) const;
-
-	/** Manually updates the occupancy of the voxel at (x,y,z) as being occupied
-	 * (true) or free (false), using the log-odds parameters in \a
-	 * insertionOptions */
-	void updateVoxel(
-		const double x, const double y, const double z, bool occupied)
-	{
-		m_octomap.updateNode(x, y, z, occupied);
-	}
 
 	/** Update the octomap with a 2D or 3D scan, given directly as a point cloud
 	 * and the 3D location of the sensor (the origin of the rays) in this map's
@@ -363,17 +326,6 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 	void insertPointCloud(
 		const CPointsMap& ptMap, const float sensor_x, const float sensor_y,
 		const float sensor_z);
-
-	/** Just like insertPointCloud but with a single ray. */
-	void insertRay(
-		const float end_x, const float end_y, const float end_z,
-		const float sensor_x, const float sensor_y, const float sensor_z)
-	{
-		m_octomap.insertRay(
-			octomap::point3d(sensor_x, sensor_y, sensor_z),
-			octomap::point3d(end_x, end_y, end_z), insertionOptions.maxrange,
-			insertionOptions.pruning);
-	}
 
 	/** Performs raycasting in 3d, similar to computeRay().
 	 *
@@ -398,61 +350,23 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 		const mrpt::math::TPoint3D& direction, mrpt::math::TPoint3D& end,
 		bool ignoreUnknownCells = false, double maxRange = -1.0) const;
 
-	/** @name Direct access to octomap library methods
-		@{ */
-
-	double getResolution() const { return m_octomap.getResolution(); }
-	unsigned int getTreeDepth() const { return m_octomap.getTreeDepth(); }
-	/// \return The number of nodes in the tree
-	size_t size() const { return m_octomap.size(); }
-	/// \return Memory usage of the complete octree in bytes (may vary between
-	/// architectures)
-	size_t memoryUsage() const { return m_octomap.memoryUsage(); }
-	/// \return Memory usage of the a single octree node
-	size_t memoryUsageNode() const { return m_octomap.memoryUsageNode(); }
-	/// \return Memory usage of a full grid of the same size as the OcTree in
-	/// bytes (for comparison)
-	size_t memoryFullGrid() const { return m_octomap.memoryFullGrid(); }
-	double volume() { return m_octomap.volume(); }
-	/// Size of OcTree (all known space) in meters for x, y and z dimension
-	void getMetricSize(double& x, double& y, double& z)
-	{
-		return m_octomap.getMetricSize(x, y, z);
-	}
-	/// Size of OcTree (all known space) in meters for x, y and z dimension
-	void getMetricSize(double& x, double& y, double& z) const
-	{
-		return m_octomap.getMetricSize(x, y, z);
-	}
-	/// minimum value of the bounding box of all known space in x, y, z
-	void getMetricMin(double& x, double& y, double& z)
-	{
-		return m_octomap.getMetricMin(x, y, z);
-	}
-	/// minimum value of the bounding box of all known space in x, y, z
-	void getMetricMin(double& x, double& y, double& z) const
-	{
-		return m_octomap.getMetricMin(x, y, z);
-	}
-	/// maximum value of the bounding box of all known space in x, y, z
-	void getMetricMax(double& x, double& y, double& z)
-	{
-		return m_octomap.getMetricMax(x, y, z);
-	}
-	/// maximum value of the bounding box of all known space in x, y, z
-	void getMetricMax(double& x, double& y, double& z) const
-	{
-		return m_octomap.getMetricMax(x, y, z);
-	}
-
-	/// Traverses the tree to calculate the total number of nodes
-	size_t calcNumNodes() const { return m_octomap.calcNumNodes(); }
-	/// Traverses the tree to calculate the total number of leaf nodes
-	size_t getNumLeafNodes() const { return m_octomap.getNumLeafNodes(); }
-	/** @} */
+	virtual void setOccupancyThres(double prob) = 0;
+	virtual void setProbHit(double prob) = 0;
+	virtual void setProbMiss(double prob) = 0;
+	virtual void setClampingThresMin(double thresProb) = 0;
+	virtual void setClampingThresMax(double thresProb) = 0;
+	virtual double getOccupancyThres() const = 0;
+	virtual float getOccupancyThresLog() const = 0;
+	virtual double getProbHit() const = 0;
+	virtual float getProbHitLog() const = 0;
+	virtual double getProbMiss() const = 0;
+	virtual float getProbMissLog() const = 0;
+	virtual double getClampingThresMin() const = 0;
+	virtual float getClampingThresMinLog() const = 0;
+	virtual double getClampingThresMax() const = 0;
+	virtual float getClampingThresMaxLog() const = 0;
 
    protected:
-	virtual void internal_clear() override { m_octomap.clear(); }
 	/**  Builds the list of 3D points in global coordinates for a generic
 	 * observation. Used for both, insertObservation() and computeLikelihood().
 	  * \param[out] point3d_sensorPt Is a pointer to a "point3D".
@@ -460,14 +374,13 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 	 * declared as such to avoid headers dependencies in user code.
 	  * \return false if the observation kind is not applicable.
 	  */
+	template <class octomap_point3d, class octomap_pointcloud>
 	bool internal_build_PointCloud_for_observation(
 		const mrpt::obs::CObservation* obs,
-		const mrpt::poses::CPose3D* robotPose,
-		octomap::point3d& point3d_sensorPt,
-		octomap::Pointcloud& ptr_scan) const;
+		const mrpt::poses::CPose3D* robotPose, octomap_point3d& sensorPt,
+		octomap_pointcloud& scan) const;
 
-	/** The actual octo-map object. */
-	OCTREE m_octomap;
+	PIMPL_DECLARE_TYPE(octree_t, m_octomap);  //!< The actual octo-map object.
 
    private:
 	// See docs in base class
@@ -478,7 +391,5 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 };  // End of class def.
 }  // End of namespace
 }  // End of namespace
-
-#include "COctoMapBase_impl.h"
 
 #endif

@@ -30,7 +30,8 @@ class PosePDFGaussTests : public ::testing::Test
 		double x, double y, double phi, double std_scale)
 	{
 		CMatrixDouble31 r;
-		mrpt::random::getRandomGenerator().drawGaussian1DMatrix(r, 0, std_scale);
+		mrpt::random::getRandomGenerator().drawGaussian1DMatrix(
+			r, 0, std_scale);
 		CMatrixDouble33 cov;
 		cov.multiply_AAt(r);  // random semi-definite positive matrix:
 		for (int i = 0; i < 3; i++) cov(i, i) += 1e-7;

@@ -135,7 +135,7 @@ double CVehicleVelCmd_Holo::cmdVel_limits(
 	ASSERTMSG_(
 		params.robotMax_V_mps >= .0,
 		"[CVehicleVelCmd_Holo] `robotMax_V_mps` must be set to valid values: "
-		"either assign values programatically or call loadConfigFile()");
+		"either assign values programmatically or call loadConfigFile()");
 
 	double f = 1.0;
 	if (vel > params.robotMax_V_mps) f = params.robotMax_V_mps / vel;

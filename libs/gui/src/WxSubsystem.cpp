@@ -51,7 +51,6 @@ volatile WxSubsystem::CWXMainFrame* WxSubsystem::CWXMainFrame::oneInstance =
 	nullptr;
 bool isConsoleApp_value = true;
 bool WxSubsystem::isConsoleApp() { return isConsoleApp_value; }
-
 WxSubsystem::CAuxWxSubsystemShutdowner WxSubsystem::global_wxsubsystem_shutdown;
 
 // Auxiliary class implementation:

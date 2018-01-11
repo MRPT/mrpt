@@ -30,6 +30,11 @@ if(MRPT_NUMPY_INCLUDE_DIRECTORY)
   include_directories(${MRPT_NUMPY_INCLUDE_DIRECTORY})
 endif()
 
+# gcc and clang
+if (NOT MSVC)
+	add_compile_options(-Wno-unused-local-typedef)
+endif()
+
 add_library(pymrpt
   SHARED # Python lib must be shared
   src/system_bindings.cpp

@@ -261,9 +261,12 @@ int main(int argc, char** argv)
 					TPose3D Ap =
 						TPose3D(0.20 * cos(Ar), 0.20 * sin(Ar), 0, Ar, 0, 0);
 					// Ap.z  += getRandomGenerator().drawGaussian1D(0,0.05);
-					Ap.yaw += getRandomGenerator().drawGaussian1D(0, DEG2RAD(0.2));
-					Ap.pitch += getRandomGenerator().drawGaussian1D(0, DEG2RAD(2));
-					Ap.roll += getRandomGenerator().drawGaussian1D(0, DEG2RAD(4));
+					Ap.yaw +=
+						getRandomGenerator().drawGaussian1D(0, DEG2RAD(0.2));
+					Ap.pitch +=
+						getRandomGenerator().drawGaussian1D(0, DEG2RAD(2));
+					Ap.roll +=
+						getRandomGenerator().drawGaussian1D(0, DEG2RAD(4));
 
 					incPose3D = CPose3D(Ap);
 				}

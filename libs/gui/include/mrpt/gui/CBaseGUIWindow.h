@@ -270,8 +270,8 @@ class mrptEventMouseMove : public mrpt::system::mrptEvent
 };  // End of class def.
 
 /**  An event sent by a window upon when it's about to be closed, either
- * manually by the user or programatically.
- *   The event field member \a allow_close is default by default, but can be
+ * manually by the user or programmatically.
+  *   The event field member \a allow_close is default by default, but can be
  * set to false in the event callback
  *   to forbid the window to be closed by the user. If the event corresponds to
  * a programatic close, this field is ignored.

@@ -176,7 +176,8 @@ void COccupancyGridMap2D::simulateScanRay(
 		out_valid = (ray_len < max_ray_len);  // out_range<max_range_meters;
 		// Add additive Gaussian noise:
 		if (noiseStd > 0 && out_valid)
-			out_range += noiseStd * getRandomGenerator().drawGaussian1D_normalized();
+			out_range +=
+				noiseStd * getRandomGenerator().drawGaussian1D_normalized();
 	}
 }
 
