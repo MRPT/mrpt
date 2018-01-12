@@ -26,15 +26,12 @@ SET(CPACK_SOURCE_GENERATOR "TGZ")
 SET(CPACK_PACKAGE_INSTALL_DIRECTORY "mrpt-${CMAKE_MRPT_VERSION_NUMBER_MAJOR}.${CMAKE_MRPT_VERSION_NUMBER_MINOR}.${CMAKE_MRPT_VERSION_NUMBER_PATCH}" CACHE STRING "Name of the install directory")
 MARK_AS_ADVANCED(CPACK_PACKAGE_INSTALL_DIRECTORY)
 
-SET(PACKAGE_INCLUDES_SOURCES ON CACHE BOOL "Include all sources while building packages")
-MARK_AS_ADVANCED(PACKAGE_INCLUDES_SOURCES)
-
 IF(WIN32)
 	# --------------------------------
 	# Packages for Windows
 	# --------------------------------
 	SET(CPACK_SOURCE_IGNORE_FILES ".svn/;.*~;build;CMakeCache.txt;_CPack_Pakages/;CMakeFiles/;install/;Makefile;*.cmake")
-	
+
 	# There is a bug in NSI that does not handle full unix paths properly. Make
 	# sure there is at least one set of four (4) backlasshes.
 	SET(CPACK_NSIS_MUI_ICON "${CMAKE_CURRENT_SOURCE_DIR}/share/pixmaps\\\\mrpt_icon.ico")
@@ -52,19 +49,15 @@ IF(WIN32)
 
 	# Install header and source files:
 	# ---------------------------------------------
-	IF (PACKAGE_INCLUDES_SOURCES)
-		INSTALL(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/libs/"
-			COMPONENT Library_sources
-			DESTINATION libs
-			PATTERN ".svn" EXCLUDE
-			PATTERN "*~" EXCLUDE)
+	INSTALL(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/libs/"
+		COMPONENT Library_sources
+		DESTINATION libs
+		PATTERN "*~" EXCLUDE)
 
-		INSTALL(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/apps/"
-			COMPONENT App_sources
-			DESTINATION apps
-			PATTERN ".svn" EXCLUDE
-			PATTERN "*~" EXCLUDE)
-	ENDIF (PACKAGE_INCLUDES_SOURCES)
+	INSTALL(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/apps/"
+		COMPONENT App_sources
+		DESTINATION apps
+		PATTERN "*~" EXCLUDE)
 
 	INSTALL(FILES
 		AUTHORS
@@ -81,7 +74,7 @@ IF(WIN32)
 
 	# Force usage of our custom NSIS template:
 	SET(CPACK_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/parse-files/")
-	
+
 	# File types association:
 	SET(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
 		\\\${registerExtension} \\\"$INSTDIR\\\\bin\\\\RawLogViewer.exe\\\" \\\".rawlog\\\" \\\"Robotic Dataset File\\\"
@@ -98,17 +91,17 @@ IF(WIN32)
 	else(CMAKE_SIZEOF_VOID_P EQUAL 8)
 	  set(CPACK_NSIS_PROGRAMFILES PROGRAMFILES)
 	endif(CMAKE_SIZEOF_VOID_P EQUAL 8)
-	
+
 	# Allow installing VC redistributables:
 	SET(INSTALL_MSVC_REDISTRIBUTABLE "" CACHE FILEPATH "Select an optional vcredist*.exe file to include in the installation")
 	MARK_AS_ADVANCED(INSTALL_MSVC_REDISTRIBUTABLE)
-	
+
 	if (NOT "${INSTALL_MSVC_REDISTRIBUTABLE}" STREQUAL "")
 		if (EXISTS "${INSTALL_MSVC_REDISTRIBUTABLE}")
 			GET_FILENAME_COMPONENT(INSTALL_MSVC_REDISTRIBUTABLE_FILENAME "${INSTALL_MSVC_REDISTRIBUTABLE}" NAME_WE)
-		
+
 			install(PROGRAMS ${INSTALL_MSVC_REDISTRIBUTABLE} DESTINATION tmp)
-			set(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "${CPACK_NSIS_EXTRA_INSTALL_COMMANDS} 
+			set(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
 				   ExecWait \\\"$INSTDIR\\\\tmp\\\\${INSTALL_MSVC_REDISTRIBUTABLE_FILENAME}\\\"
 				   ")
 		endif (EXISTS "${INSTALL_MSVC_REDISTRIBUTABLE}")

@@ -1,13 +1,6 @@
 # ----------------------------------------------------------------------------
 #   More installation commands:
 # ----------------------------------------------------------------------------
-FILE(GLOB MRPT_PKGCONFIG_PC_FILES "${MRPT_BINARY_DIR}/pkgconfig/mrpt-*.pc")
-
-IF(EXISTS "${MRPT_BINARY_DIR}/pkgconfig/mrpt-core.pc" AND NOT IS_DEBIAN_DBG_PKG)
-	INSTALL(
-		FILES ${MRPT_PKGCONFIG_PC_FILES}
-		DESTINATION ${libmrpt_dev_INSTALL_PREFIX}${CMAKE_INSTALL_LIBDIR}/pkgconfig )
-ENDIF()
 
 # CMake will look for MRPTConfig.cmake at: /usr/share|lib/mrpt
 IF(WIN32)
@@ -24,15 +17,13 @@ ENDIF()
 IF(WIN32)
 	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/doc" DESTINATION ./ )
 
-	IF (PACKAGE_INCLUDES_SOURCES)
-		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/cmakemodules" DESTINATION ./ )
-		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/otherlibs" DESTINATION ./ )
-		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/samples"  DESTINATION ./
-			COMPONENT Examples
-			PATTERN ".gitignore" EXCLUDE)
-		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/scripts" DESTINATION ./  )
-		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/tests" DESTINATION ./  )
-	ENDIF (PACKAGE_INCLUDES_SOURCES)
+	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/cmakemodules" DESTINATION ./ )
+	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/otherlibs" DESTINATION ./ )
+	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/samples"  DESTINATION ./
+		COMPONENT Examples
+		PATTERN ".gitignore" EXCLUDE)
+	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/scripts" DESTINATION ./  )
+	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/tests" DESTINATION ./  )
 
 	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/parse-files" DESTINATION ./ )
 	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/share"
@@ -118,46 +109,26 @@ ELSE(WIN32)
 	ENDIF(NOT IS_DEBIAN_DBG_PKG)
 ENDIF(WIN32)
 
-# The headers of all the MRPT libs:
-# (in win32 the /libs/* tree is install entirely, not only the headers):
-IF (PACKAGE_INCLUDES_SOURCES)
-	IF (UNIX AND NOT IS_DEBIAN_DBG_PKG)
-		FOREACH(_LIB ${ALL_MRPT_LIBS})
-			STRING(REGEX REPLACE "mrpt-(.*)" "\\1" _LIB ${_LIB})
-			SET(SRC_DIR "${MRPT_SOURCE_DIR}/libs/${_LIB}/include/")
-			IF (EXISTS "${SRC_DIR}")  # This is mainly to avoid a crash with "mrpt-core", which is a "virtual" MRPT module.
-				INSTALL(DIRECTORY "${SRC_DIR}" DESTINATION ${libmrpt_dev_INSTALL_PREFIX}include/mrpt/${_LIB}/include/  )
-			ENDIF (EXISTS "${SRC_DIR}")
-		ENDFOREACH(_LIB)
-	ENDIF(UNIX AND NOT IS_DEBIAN_DBG_PKG)
-ENDIF (PACKAGE_INCLUDES_SOURCES)
-
-
 # Config-dependent headers:
-IF (PACKAGE_INCLUDES_SOURCES)
-	IF (NOT IS_DEBIAN_DBG_PKG)
-		INSTALL(FILES "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/config.h" DESTINATION "${libmrpt_dev_INSTALL_PREFIX}include/mrpt/mrpt-config/mrpt/" )
-		INSTALL(FILES "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/version.h" DESTINATION "${libmrpt_dev_INSTALL_PREFIX}include/mrpt/mrpt-config/mrpt/" )
-	ENDIF(NOT IS_DEBIAN_DBG_PKG)
-ENDIF (PACKAGE_INCLUDES_SOURCES)
+IF (NOT IS_DEBIAN_DBG_PKG)
+	INSTALL(FILES "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/config.h" DESTINATION "${libmrpt_dev_INSTALL_PREFIX}include/mrpt/mrpt-config/mrpt/" )
+	INSTALL(FILES "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/version.h" DESTINATION "${libmrpt_dev_INSTALL_PREFIX}include/mrpt/mrpt-config/mrpt/" )
+ENDIF()
 
 # Using embedded version of libraries that need public headers?
-IF (PACKAGE_INCLUDES_SOURCES)
-	IF (EIGEN_USE_EMBEDDED_VERSION AND NOT IS_DEBIAN_DBG_PKG)
-		IF(WIN32)
-			# Eigen headers must end up in /Program Files/MRPT-X.Y.Z/libs/base/...
-			SET(MRPT_INSTALL_EIGEN_PREFIX "libs/base/include/")
-		ELSE(WIN32)
-			# Eigen headers must end up in /usr/...
-			SET(MRPT_INSTALL_EIGEN_PREFIX "${libmrpt_dev_INSTALL_PREFIX}include/mrpt/base/include/")
-		ENDIF(WIN32)
+IF (EIGEN_USE_EMBEDDED_VERSION AND NOT IS_DEBIAN_DBG_PKG)
+	IF(WIN32)
+		# Eigen headers must end up in /Program Files/MRPT-X.Y.Z/libs/base/...
+		SET(MRPT_INSTALL_EIGEN_PREFIX "libs/base/include/")
+	ELSE(WIN32)
+		# Eigen headers must end up in /usr/...
+		SET(MRPT_INSTALL_EIGEN_PREFIX "${libmrpt_dev_INSTALL_PREFIX}include/mrpt/base/include/")
+	ENDIF(WIN32)
 
-		INSTALL(
-			DIRECTORY "${MRPT_BINARY_DIR}/otherlibs/eigen3/Eigen"
-			DESTINATION "${MRPT_INSTALL_EIGEN_PREFIX}" )
-		INSTALL(
-			DIRECTORY "${MRPT_BINARY_DIR}/otherlibs/eigen3/unsupported"
-			DESTINATION "${MRPT_INSTALL_EIGEN_PREFIX}" )
-	ENDIF (EIGEN_USE_EMBEDDED_VERSION AND NOT IS_DEBIAN_DBG_PKG)
-
-ENDIF (PACKAGE_INCLUDES_SOURCES)
+	INSTALL(
+		DIRECTORY "${MRPT_BINARY_DIR}/otherlibs/eigen3/Eigen"
+		DESTINATION "${MRPT_INSTALL_EIGEN_PREFIX}" )
+	INSTALL(
+		DIRECTORY "${MRPT_BINARY_DIR}/otherlibs/eigen3/unsupported"
+		DESTINATION "${MRPT_INSTALL_EIGEN_PREFIX}" )
+ENDIF (EIGEN_USE_EMBEDDED_VERSION AND NOT IS_DEBIAN_DBG_PKG)
