@@ -37,6 +37,7 @@ float CGlCanvasBase::SENSIBILITY_DEG_PER_PIXEL = 0.1f;
 #include <GL/freeglut_ext.h>
 #endif
 #endif
+#endif // MRPT_HAS_OPENGL_GLUT
 
 void CGlCanvasBase::setMinimumZoom(float zoom) { m_minZoom = zoom; }
 void CGlCanvasBase::setMaximumZoom(float zoom) { m_maxZoom = zoom; }
@@ -112,14 +113,18 @@ void CGlCanvasBase::updateLastPos(int x, int y)
 
 void CGlCanvasBase::resizeViewport(int w, int h)
 {
+#if MRPT_HAS_OPENGL_GLUT
 	if (w == -1 || h == -1) return;
 
 	glViewport(0, 0, (GLint)w, (GLint)h);
+#endif
 }
 
 void CGlCanvasBase::clearColors()
 {
+#if MRPT_HAS_OPENGL_GLUT
 	glClearColor(clearColorR, clearColorG, clearColorB, clearColorA);
+#endif
 }
 
 void CGlCanvasBase::updatePan(CamaraParams& params, int x, int y) const
@@ -247,6 +252,7 @@ float CGlCanvasBase::getCameraPointingZ() const
 
 double CGlCanvasBase::renderCanvas(int width, int height)
 {
+#if MRPT_HAS_OPENGL_GLUT
 	CTicTac tictac;
 	double At = 0.1;
 
@@ -325,6 +331,9 @@ double CGlCanvasBase::renderCanvas(int width, int height)
 	}
 
 	return At;
+#else
+THROW_EXCEPTION("Cant render: MRPT was built without OpenGL");
+#endif
 }
 
 void CGlCanvasBase::CamaraParams::setElevationDeg(float deg)
@@ -336,4 +345,3 @@ void CGlCanvasBase::CamaraParams::setElevationDeg(float deg)
 	else if (cameraElevationDeg > 90.0f)
 		cameraElevationDeg = 90.0f;
 }
-#endif

@@ -48,7 +48,7 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(C3DSScene, CRenderizableDisplayList, mrpt::opengl)
 
-#if MRPT_HAS_LIB3DS
+#if MRPT_HAS_LIB3DS && MRPT_HAS_OPENGL_GLUT
 static void render_node(Lib3dsNode* node, Lib3dsFile* file);
 static void light_update(Lib3dsLight* l, Lib3dsFile* file);
 #endif
@@ -58,8 +58,7 @@ static void light_update(Lib3dsLight* l, Lib3dsFile* file);
   ---------------------------------------------------------------*/
 void C3DSScene::render_dl() const
 {
-#if MRPT_HAS_LIB3DS
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_LIB3DS && MRPT_HAS_OPENGL_GLUT
 	MRPT_START
 
 	if (!m_3dsfile->file) return;  // No scene
@@ -136,13 +135,12 @@ void C3DSScene::render_dl() const
 
 	glDisable(GL_CULL_FACE);
 	MRPT_END
-#endif
 #else
 	THROW_EXCEPTION("This class requires compiling MRPT against lib3ds");
 #endif
 }
 
-#if MRPT_HAS_LIB3DS
+#if MRPT_HAS_LIB3DS && MRPT_HAS_OPENGL_GLUT
 
 // texture size: by now minimum standard
 #define TEX_XSIZE 1024
@@ -157,12 +155,7 @@ struct _player_texture
 	void* bitmap;
 #endif
 
-#if MRPT_HAS_OPENGL_GLUT
 	GLuint tex_id;  // OpenGL texture ID
-#else
-	unsigned int tex_id;  // OpenGL texture ID
-#endif
-
 	float scale_x, scale_y;  // scale the texcoords, as OpenGL thinks in
 	// TEX_XSIZE and TEX_YSIZE
 };
@@ -179,7 +172,6 @@ const char* datapath = ".";
  */
 static void render_node(Lib3dsNode* node, Lib3dsFile* file)
 {
-#if MRPT_HAS_OPENGL_GLUT
 	{
 		Lib3dsNode* p;
 		for (p = node->childs; p != 0; p = p->next)
@@ -457,11 +449,6 @@ static void render_node(Lib3dsNode* node, Lib3dsFile* file)
 			// if( flush ) glFlush();
 		}
 	}
-#else
-	MRPT_UNUSED_PARAM(node);
-	MRPT_UNUSED_PARAM(file);
-	THROW_EXCEPTION("MRPT was compiled without OpenGL support");
-#endif
 }
 
 /*!
@@ -485,10 +472,6 @@ static void light_update(Lib3dsLight* l, Lib3dsFile* file)
 }
 #endif
 
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-	 CSerializable objects
-  ---------------------------------------------------------------*/
 uint8_t C3DSScene::serializeGetVersion() const { return 2; }
 void C3DSScene::serializeTo(mrpt::serialization::CArchive& out) const
 {
@@ -513,10 +496,6 @@ void C3DSScene::serializeTo(mrpt::serialization::CArchive& out) const
 #endif
 }
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
 void C3DSScene::serializeFrom(
 	mrpt::serialization::CArchive& in, uint8_t version)
 {
@@ -576,9 +555,6 @@ void C3DSScene::serializeFrom(
 #endif
 }
 
-/*---------------------------------------------------------------
-					initializeAllTextures
-  ---------------------------------------------------------------*/
 void C3DSScene::initializeAllTextures()
 {
 #if MRPT_HAS_OPENGL_GLUT
@@ -593,9 +569,6 @@ C3DSScene::C3DSScene()
 }
 
 C3DSScene::~C3DSScene() { clear(); }
-/*---------------------------------------------------------------
-							clear
-  ---------------------------------------------------------------*/
 void C3DSScene::clear()
 {
 	CRenderizableDisplayList::notifyChange();
