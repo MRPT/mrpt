@@ -1,6 +1,6 @@
 #!/bin/bash
 # Export sources from a git tree and prepare it for a public release.
-# JLBC, 2008-2017
+# JLBC, 2008-2018
 
 set -e  # exit on error
 

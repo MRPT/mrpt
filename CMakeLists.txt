@@ -8,7 +8,7 @@
 #  For compiling instructions for all compilers and platforms, see
 #   http://www.mrpt.org/Building_and_Installing_Instructions
 #
-#  2007-2017, Jose Luis Blanco <jlblanco@ual.es>
+#  2007-2018, Jose Luis Blanco <jlblanco@ual.es>
 #
 #  NOTE: CMake can be obtained at http://www.cmake.org/
 # ----------------------------------------------------------------------------

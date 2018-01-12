@@ -24,11 +24,11 @@ the GitHub contributors page (https://github.com/MRPT/mrpt/graphs/contributors).
   - Initial version of MRPT logging module - COutputLogger
   - Introduction of the clang-format files, scripts, etc.
 
-* Jesus Briales (University of Malaga, 2014-2017)  https://github.com/jbriales
+* Jesus Briales (University of Malaga, 2014-2018)  https://github.com/jbriales
   - Fixes in mrpt::hwdrivers::CImageGrabber_dc1394
   - MRPT to Matlab (MEX) wrappers.
 
-* Mariano Jaimez Tarifa, University of Malaga (2012-2017) https://github.com/MarianoJT88
+* Mariano Jaimez Tarifa, University of Malaga (2012-2018) https://github.com/MarianoJT88
   - Several improvements and bug fixes in the mrpt-reactivenav library.
   - Development in octomap classes.
   - Some improvements and bug fixes in the mrpt-opengl library.
