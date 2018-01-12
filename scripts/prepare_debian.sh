@@ -1,6 +1,6 @@
 #!/bin/bash
 # Prepare to build a Debian package.
-# JLBC, 2008-2017
+# JLBC, 2008-2018
 
 set -e   # end on error
 
