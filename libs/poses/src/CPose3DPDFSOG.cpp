@@ -108,7 +108,8 @@ void CPose3DPDFSOG::serializeTo(mrpt::serialization::CArchive& out) const
 		out << (it)->val.cov;
 	}
 }
-void CPose3DPDFSOG::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CPose3DPDFSOG::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

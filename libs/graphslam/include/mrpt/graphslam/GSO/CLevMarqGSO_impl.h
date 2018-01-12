@@ -748,13 +748,11 @@ void CLevMarqGSO<GRAPH_T>::OptimizationParams::dumpToTextStream(
 	std::ostream& out) const
 {
 	MRPT_START;
-	out<<"-----------[ Levenberg-Marquardt Optimization ] -------\n";
-	out <<
-		"Optimization on second thread  = "<<
-		(optimization_on_second_thread ? "TRUE" : "FALSE") << std::endl;
-	out <<
-		"Optimize nodes in distance     = "<< optimization_distance<<"\n";
-	out << "Min. node difference for LC    = "<< LC_min_nodeid_diff<<"\n";
+	out << "-----------[ Levenberg-Marquardt Optimization ] -------\n";
+	out << "Optimization on second thread  = "
+		<< (optimization_on_second_thread ? "TRUE" : "FALSE") << std::endl;
+	out << "Optimize nodes in distance     = " << optimization_distance << "\n";
+	out << "Min. node difference for LC    = " << LC_min_nodeid_diff << "\n";
 	out << cfg.getAsString() << std::endl;
 	MRPT_END;
 }
@@ -800,7 +798,8 @@ CLevMarqGSO<GRAPH_T>::GraphVisualizationParams::~GraphVisualizationParams()
 {
 }
 template <class GRAPH_T>
-void CLevMarqGSO<GRAPH_T>::GraphVisualizationParams::dumpToTextStream(std::ostream& out) const
+void CLevMarqGSO<GRAPH_T>::GraphVisualizationParams::dumpToTextStream(
+	std::ostream& out) const
 {
 	MRPT_START;
 

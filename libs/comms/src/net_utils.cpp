@@ -51,7 +51,8 @@ using namespace std;
 ERRORCODE_HTTP mrpt::comms::net::http_get(
 	const string& url, string& out_content, string& out_errormsg, int port,
 	const string& auth_user, const string& auth_pass,
-	int* out_http_responsecode, mrpt::system::TParameters<string>* extra_headers,
+	int* out_http_responsecode,
+	mrpt::system::TParameters<string>* extra_headers,
 	mrpt::system::TParameters<string>* out_headers, int timeout_ms)
 {
 	std::vector<uint8_t> data;
@@ -69,7 +70,8 @@ ERRORCODE_HTTP mrpt::comms::net::http_request(
 	const string& http_method, const string& http_send_content,
 	const string& url, std::vector<uint8_t>& out_content, string& out_errormsg,
 	int port, const string& auth_user, const string& auth_pass,
-	int* out_http_responsecode, mrpt::system::TParameters<string>* extra_headers,
+	int* out_http_responsecode,
+	mrpt::system::TParameters<string>* extra_headers,
 	mrpt::system::TParameters<string>* out_headers, int timeout_ms)
 {
 	// Reset output data:
@@ -384,7 +386,8 @@ ERRORCODE_HTTP mrpt::comms::net::http_request(
 ERRORCODE_HTTP mrpt::comms::net::http_get(
 	const string& url, std::vector<uint8_t>& out_content, string& out_errormsg,
 	int port, const string& auth_user, const string& auth_pass,
-	int* out_http_responsecode, mrpt::system::TParameters<string>* extra_headers,
+	int* out_http_responsecode,
+	mrpt::system::TParameters<string>* extra_headers,
 	mrpt::system::TParameters<string>* out_headers, int timeout_ms)
 {
 	return http_request(

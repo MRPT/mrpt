@@ -67,11 +67,13 @@ struct TUncertaintyPath : public mrpt::config::CLoadableOptions
 	 * \exception std::runtime_error in case the conditions don't hold
 	 */
 	void assertIsBetweenNodeIDs(
-		const mrpt::graphs::TNodeID& from, const mrpt::graphs::TNodeID& to) const;
+		const mrpt::graphs::TNodeID& from,
+		const mrpt::graphs::TNodeID& to) const;
 
 	// no need to load anything..
 	void loadFromConfigFile(
-		const mrpt::config::CConfigFileBase& source, const std::string& section);
+		const mrpt::config::CConfigFileBase& source,
+		const std::string& section);
 	void dumpToTextStream(std::ostream& out) const;
 	std::string getAsString() const;
 	void getAsString(std::string* str) const;

@@ -51,8 +51,8 @@ struct CTexturedObject_MemPoolData
 	vector<unsigned char> data;
 };
 
-typedef mrpt::system::CGenericMemoryPool<
-	CTexturedObject_MemPoolParams, CTexturedObject_MemPoolData>
+typedef mrpt::system::CGenericMemoryPool<CTexturedObject_MemPoolParams,
+										 CTexturedObject_MemPoolData>
 	TMyMemPool;
 #endif
 
@@ -290,9 +290,10 @@ void CTexturedObject::loadTextureInOpenGL() const
 
 				// Prepare image data types:
 				const GLenum img_type = GL_UNSIGNED_BYTE;
-				const bool is_RGB_order = (!::strcmp(
-					m_textureImage.getChannelsOrder(),
-					"RGB"));  // Reverse RGB <-> BGR order?
+				const bool is_RGB_order =
+					(!::strcmp(
+						m_textureImage.getChannelsOrder(),
+						"RGB"));  // Reverse RGB <-> BGR order?
 				const GLenum img_format = (is_RGB_order ? GL_RGBA : GL_BGRA);
 
 				// Send image data to OpenGL:
@@ -316,9 +317,10 @@ void CTexturedObject::loadTextureInOpenGL() const
 				// Prepare image data types:
 				const GLenum img_type = GL_UNSIGNED_BYTE;
 				const int nBytesPerPixel = m_textureImage.isColor() ? 3 : 1;
-				const bool is_RGB_order = (!::strcmp(
-					m_textureImage.getChannelsOrder(),
-					"RGB"));  // Reverse RGB <-> BGR order?
+				const bool is_RGB_order =
+					(!::strcmp(
+						m_textureImage.getChannelsOrder(),
+						"RGB"));  // Reverse RGB <-> BGR order?
 				const GLenum img_format = nBytesPerPixel == 3
 											  ? (is_RGB_order ? GL_RGB : GL_BGR)
 											  : GL_LUMINANCE;

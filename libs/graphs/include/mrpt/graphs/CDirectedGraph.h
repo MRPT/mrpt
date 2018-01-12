@@ -62,8 +62,8 @@ struct edge_annotations_empty
  * mrpt::graphs::CDirectedTree
  * \ingroup mrpt_graphs_grp
  */
-template <
-	class TYPE_EDGES, class EDGE_ANNOTATIONS = detail::edge_annotations_empty>
+template <class TYPE_EDGES,
+		  class EDGE_ANNOTATIONS = detail::edge_annotations_empty>
 class CDirectedGraph
 {
    public:

@@ -65,8 +65,7 @@ void CStereoRectifyMap::enableBothCentersCoincide(bool enable)
 /** Prepares the mapping from the distortion parameters of a camera.
   * Must be called before invoking \a undistort().
   */
-void CStereoRectifyMap::setFromCamParams(
-	const mrpt::img::TStereoCamera& params)
+void CStereoRectifyMap::setFromCamParams(const mrpt::img::TStereoCamera& params)
 {
 	MRPT_START
 #if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x200
@@ -118,7 +117,8 @@ void CStereoRectifyMap::setFromCamParams(
 	CMatrixDouble44 hMatrix;
 	// NOTE!: OpenCV seems to expect the INVERSE of the pose we keep, so invert
 	// it:
-	mrpt::poses::CPose3D(params.rightCameraPose).getInverseHomogeneousMatrix(hMatrix);
+	mrpt::poses::CPose3D(params.rightCameraPose)
+		.getInverseHomogeneousMatrix(hMatrix);
 
 	double m1[3][3];
 	for (unsigned int i = 0; i < 3; ++i)
@@ -267,8 +267,7 @@ validPixROI2=0 );
 
 void CStereoRectifyMap::rectify(
 	const mrpt::img::CImage& in_left_image,
-	const mrpt::img::CImage& in_right_image,
-	mrpt::img::CImage& out_left_image,
+	const mrpt::img::CImage& in_right_image, mrpt::img::CImage& out_left_image,
 	mrpt::img::CImage& out_right_image) const
 {
 	MRPT_START
@@ -379,7 +378,7 @@ void CStereoRectifyMap::rectify(
 	const bool use_internal_mem_cache) const
 {
 	MRPT_START
-		ASSERT_(stereo_image_observation.hasImageRight);
+	ASSERT_(stereo_image_observation.hasImageRight);
 
 	// Rectify images:
 	this->rectify(
@@ -408,7 +407,7 @@ void CStereoRectifyMap::rectify_IPL(
 	void* outImg_right) const
 {
 	MRPT_START
-		ASSERT_(srcImg_left != outImg_left && srcImg_right != outImg_right);
+	ASSERT_(srcImg_left != outImg_left && srcImg_right != outImg_right);
 
 	if (!isSet())
 		THROW_EXCEPTION(
@@ -464,8 +463,7 @@ const mrpt::img::TStereoCamera& CStereoRectifyMap::getRectifiedImageParams()
 	return m_rectified_image_params;
 }
 
-const mrpt::img::TCamera& CStereoRectifyMap::getRectifiedLeftImageParams()
-	const
+const mrpt::img::TCamera& CStereoRectifyMap::getRectifiedLeftImageParams() const
 {
 	if (!isSet())
 		THROW_EXCEPTION("Error: setFromCamParams() must be called before.");

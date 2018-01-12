@@ -502,19 +502,19 @@ void CActionRobotMovement2D::computeFromOdometry_modelThrun(
 	// Draw samples:
 	for (size_t i = 0; i < o.thrunModel.nParticlesCount; i++)
 	{
-		float Arot1_draw =
-			Arot1 - (o.thrunModel.alfa1_rot_rot * fabs(Arot1) +
-					 o.thrunModel.alfa2_rot_trans * Atrans) *
-						getRandomGenerator().drawGaussian1D_normalized();
+		float Arot1_draw = Arot1 -
+						   (o.thrunModel.alfa1_rot_rot * fabs(Arot1) +
+							o.thrunModel.alfa2_rot_trans * Atrans) *
+							   getRandomGenerator().drawGaussian1D_normalized();
 		float Atrans_draw =
 			Atrans -
 			(o.thrunModel.alfa3_trans_trans * Atrans +
 			 o.thrunModel.alfa4_trans_rot * (fabs(Arot1) + fabs(Arot2))) *
 				getRandomGenerator().drawGaussian1D_normalized();
-		float Arot2_draw =
-			Arot2 - (o.thrunModel.alfa1_rot_rot * fabs(Arot2) +
-					 o.thrunModel.alfa2_rot_trans * Atrans) *
-						getRandomGenerator().drawGaussian1D_normalized();
+		float Arot2_draw = Arot2 -
+						   (o.thrunModel.alfa1_rot_rot * fabs(Arot2) +
+							o.thrunModel.alfa2_rot_trans * Atrans) *
+							   getRandomGenerator().drawGaussian1D_normalized();
 
 		// Output:
 		aux->m_particles[i].d->x(

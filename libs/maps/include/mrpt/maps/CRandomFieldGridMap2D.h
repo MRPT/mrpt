@@ -19,7 +19,6 @@
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/graphs/ScalarFactorGraph.h>
 
-
 #include <list>
 
 namespace mrpt
@@ -484,7 +483,6 @@ class CRandomFieldGridMap2D
 		this->m_gmrf.enableProfiler(enable);
 	}
 	bool isProfilerEnabled() const { return this->m_gmrf.isProfilerEnabled(); }
-
    protected:
 	bool m_rfgm_run_update_upon_clear;
 
@@ -651,11 +649,16 @@ class CRandomFieldGridMap2D
 }  // namespace mrpt
 
 MRPT_ENUM_TYPE_BEGIN(mrpt::maps::CRandomFieldGridMap2D::TMapRepresentation)
-MRPT_FILL_ENUM_MEMBER(mrpt::maps::CRandomFieldGridMap2D::TMapRepresentation, mrKernelDM);
-MRPT_FILL_ENUM_MEMBER(mrpt::maps::CRandomFieldGridMap2D::TMapRepresentation, mrKalmanFilter);
-MRPT_FILL_ENUM_MEMBER(mrpt::maps::CRandomFieldGridMap2D::TMapRepresentation, mrKalmanApproximate);
-MRPT_FILL_ENUM_MEMBER(mrpt::maps::CRandomFieldGridMap2D::TMapRepresentation, mrKernelDMV);
-MRPT_FILL_ENUM_MEMBER(mrpt::maps::CRandomFieldGridMap2D::TMapRepresentation, mrGMRF_SD);
+MRPT_FILL_ENUM_MEMBER(
+	mrpt::maps::CRandomFieldGridMap2D::TMapRepresentation, mrKernelDM);
+MRPT_FILL_ENUM_MEMBER(
+	mrpt::maps::CRandomFieldGridMap2D::TMapRepresentation, mrKalmanFilter);
+MRPT_FILL_ENUM_MEMBER(
+	mrpt::maps::CRandomFieldGridMap2D::TMapRepresentation, mrKalmanApproximate);
+MRPT_FILL_ENUM_MEMBER(
+	mrpt::maps::CRandomFieldGridMap2D::TMapRepresentation, mrKernelDMV);
+MRPT_FILL_ENUM_MEMBER(
+	mrpt::maps::CRandomFieldGridMap2D::TMapRepresentation, mrGMRF_SD);
 MRPT_ENUM_TYPE_END()
 
 #endif

@@ -98,17 +98,17 @@ void CPosePDFGrid::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	// The size:
 	out << m_xMin << m_xMax << m_yMin << m_yMax << m_phiMin << m_phiMax
-		<< m_resolutionXY << m_resolutionPhi
-		<< static_cast<int32_t>(m_sizeX) << static_cast<int32_t>(m_sizeY)
-		<< static_cast<int32_t>(m_sizePhi) << static_cast<int32_t>(m_sizeXY)
-		<< static_cast<int32_t>(m_idxLeftX)
+		<< m_resolutionXY << m_resolutionPhi << static_cast<int32_t>(m_sizeX)
+		<< static_cast<int32_t>(m_sizeY) << static_cast<int32_t>(m_sizePhi)
+		<< static_cast<int32_t>(m_sizeXY) << static_cast<int32_t>(m_idxLeftX)
 		<< static_cast<int32_t>(m_idxLeftY)
 		<< static_cast<int32_t>(m_idxLeftPhi);
 
 	// The data:
 	out << m_data;
 }
-void CPosePDFGrid::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CPosePDFGrid::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -146,14 +146,13 @@ bool CPosePDFGrid::saveToTextFile(const std::string& dataFile) const
 	const auto dimsFile = dataFile + std::string("_dims.txt");
 
 	std::ofstream f_d(dataFile), f_s(dimsFile);
-	if (!f_d.is_open() || !f_s.is_open())
-		return false;
+	if (!f_d.is_open() || !f_s.is_open()) return false;
 
 	// Save dims:
 	f_s << mrpt::format(
-		"%u %u %u %f %f %f %f %f %f\n", (unsigned)m_sizeX,
-		(unsigned)m_sizeY, (unsigned)m_sizePhi, m_xMin, m_xMax, m_yMin, m_yMax,
-		m_phiMin, m_phiMax);
+		"%u %u %u %f %f %f %f %f %f\n", (unsigned)m_sizeX, (unsigned)m_sizeY,
+		(unsigned)m_sizePhi, m_xMin, m_xMax, m_yMin, m_yMax, m_phiMin,
+		m_phiMax);
 
 	// Save one rectangular matrix each time:
 	for (unsigned int phiInd = 0; phiInd < m_sizePhi; phiInd++)

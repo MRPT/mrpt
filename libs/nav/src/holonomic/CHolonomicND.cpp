@@ -541,8 +541,7 @@ void CHolonomicND::evaluateGaps(
 		meanDist /= (gap->end - gap->ini + 1);
 
 		double factor1;
-		if (mrpt::abs_diff(gap->representative_sector, target_sector) <=
-				1 &&
+		if (mrpt::abs_diff(gap->representative_sector, target_sector) <= 1 &&
 			target_dist < 1)
 			factor1 = std::min(target_dist, meanDist) / target_dist;
 		else
@@ -624,7 +623,8 @@ void CLogFileRecord_ND::serializeTo(mrpt::serialization::CArchive& out) const
 		<< (uint32_t)situation;
 }
 
-void CLogFileRecord_ND::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CLogFileRecord_ND::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -739,7 +739,8 @@ void CHolonomicND::serializeTo(mrpt::serialization::CArchive& out) const
 	// State:
 	out << m_last_selected_sector;
 }
-void CHolonomicND::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CHolonomicND::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

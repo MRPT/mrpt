@@ -138,7 +138,8 @@ class CBoardSonars : public mrpt::comms::CInterfaceFTDI, public CGenericSensor
 
 	/** Loads specific configuration for the device from a given source of
 	 * configuration parameters, for example, an ".ini" file,
-	  *  loading from the section "[iniSection]" (see config::CConfigFileBase and
+	  *  loading from the section "[iniSection]" (see config::CConfigFileBase
+	 * and
 	 * derived classes)
 	  *  See hwdrivers::CBoardSonars for the possible parameters
 	  */

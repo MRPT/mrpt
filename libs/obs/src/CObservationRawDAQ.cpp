@@ -23,14 +23,14 @@ IMPLEMENTS_SERIALIZABLE(CObservationRawDAQ, CObservation, mrpt::obs)
 uint8_t CObservationRawDAQ::serializeGetVersion() const { return 0; }
 void CObservationRawDAQ::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	out << sensorLabel << timestamp << sample_rate << AIN_8bits
-		<< AIN_16bits << AIN_32bits << AIN_float << AIN_double
-		<< AIN_channel_count << AIN_interleaved << AOUT_8bits << AOUT_16bits
-		<< AOUT_float << AOUT_double << DIN << DOUT << CNTRIN_32bits
-		<< CNTRIN_double;
+	out << sensorLabel << timestamp << sample_rate << AIN_8bits << AIN_16bits
+		<< AIN_32bits << AIN_float << AIN_double << AIN_channel_count
+		<< AIN_interleaved << AOUT_8bits << AOUT_16bits << AOUT_float
+		<< AOUT_double << DIN << DOUT << CNTRIN_32bits << CNTRIN_double;
 }
 
-void CObservationRawDAQ::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CObservationRawDAQ::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

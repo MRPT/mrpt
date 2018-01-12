@@ -59,7 +59,6 @@ mrpt::maps::CMetricMap* CSimplePointsMap::internal_CreateFromMapDefinition(
 IMPLEMENTS_SERIALIZABLE(CSimplePointsMap, CPointsMap, mrpt::maps)
 
 CSimplePointsMap::CSimplePointsMap() { reserve(400); }
-
 void CSimplePointsMap::reserve(size_t newLength)
 {
 	newLength = mrpt::length2length4N(newLength);
@@ -123,7 +122,8 @@ void CSimplePointsMap::serializeTo(mrpt::serialization::CArchive& out) const
    Implements the reading from a CStream capability of
 	  CSerializable objects
   ---------------------------------------------------------------*/
-void CSimplePointsMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CSimplePointsMap::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

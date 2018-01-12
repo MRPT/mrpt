@@ -122,14 +122,15 @@ void CPointPDFSOG::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	uint32_t N = m_modes.size();
 	out << N;
-	for (const auto & m: m_modes)
+	for (const auto& m : m_modes)
 	{
 		out << m.log_w;
 		out << m.val.mean;
 		mrpt::math::serializeSymmetricMatrixTo(m.val.cov, out);
 	}
 }
-void CPointPDFSOG::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CPointPDFSOG::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -139,7 +140,7 @@ void CPointPDFSOG::serializeFrom(mrpt::serialization::CArchive& in, uint8_t vers
 			uint32_t N;
 			in >> N;
 			this->resize(N);
-			for (auto & m : m_modes)
+			for (auto& m : m_modes)
 			{
 				in >> m.log_w;
 
@@ -201,8 +202,7 @@ bool CPointPDFSOG::saveToTextFile(const std::string& file) const
  ---------------------------------------------------------------*/
 void CPointPDFSOG::changeCoordinatesReference(const CPose3D& newReferenceBase)
 {
-	for (auto & m: m_modes)
-		m.val.changeCoordinatesReference(newReferenceBase);
+	for (auto& m : m_modes) m.val.changeCoordinatesReference(newReferenceBase);
 }
 
 /*---------------------------------------------------------------

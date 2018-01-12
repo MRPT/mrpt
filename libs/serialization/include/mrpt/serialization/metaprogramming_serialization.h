@@ -27,7 +27,8 @@ struct ObjectReadFromStream
 	mrpt::serialization::CArchive* m_stream;
 
    public:
-	inline ObjectReadFromStream(mrpt::serialization::CArchive* stream) : m_stream(stream)
+	inline ObjectReadFromStream(mrpt::serialization::CArchive* stream)
+		: m_stream(stream)
 	{
 	}
 	// T can be CSerializable::Ptr, CSerializable, or any other class
@@ -67,7 +68,8 @@ struct ObjectWriteToStream
 	mrpt::serialization::CArchive* m_stream;
 
    public:
-	inline ObjectWriteToStream(mrpt::serialization::CArchive* stream) : m_stream(stream)
+	inline ObjectWriteToStream(mrpt::serialization::CArchive* stream)
+		: m_stream(stream)
 	{
 	}
 

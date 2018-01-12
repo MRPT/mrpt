@@ -133,8 +133,9 @@ void CBaseGUIWindow::destroyWxWindow()
 #else
 			6000;
 #endif
-		if (m_windowDestroyed.get_future().wait_for(std::chrono::milliseconds(
-				maxTimeout)) == std::future_status::timeout)
+		if (m_windowDestroyed.get_future().wait_for(
+				std::chrono::milliseconds(maxTimeout)) ==
+			std::future_status::timeout)
 		{
 			cerr << "[CBaseGUIWindow::dtor] Timeout waiting window destruction."
 				 << endl;

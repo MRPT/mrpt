@@ -1150,8 +1150,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			ADD_WIN_TEXTMSG_COL(
 				mrpt::format(
 					"PTG#%u: SelDir=%+7.01f deg SelSpeed=%.03f Eval=%5.03f. %s",
-					nPTG, mrpt::RAD2DEG(pI.desiredDirection),
-					pI.desiredSpeed, pI.evaluation, sFactors.c_str()),
+					nPTG, mrpt::RAD2DEG(pI.desiredDirection), pI.desiredSpeed,
+					pI.evaluation, sFactors.c_str()),
 				col);
 		}
 

@@ -30,9 +30,10 @@ CArrow::Ptr CArrow::Create(
 	float smallRadius, float largeRadius, float arrow_roll, float arrow_pitch,
 	float arrow_yaw)
 {
-	return CArrow::Ptr(new CArrow(
-		x0, y0, z0, x1, y1, z1, headRatio, smallRadius, largeRadius, arrow_roll,
-		arrow_pitch, arrow_yaw));
+	return CArrow::Ptr(
+		new CArrow(
+			x0, y0, z0, x1, y1, z1, headRatio, smallRadius, largeRadius,
+			arrow_roll, arrow_pitch, arrow_yaw));
 }
 /*---------------------------------------------------------------
 							render
@@ -138,7 +139,7 @@ void CArrow::render_dl() const
 		mat + 8,  // 1st vector
 		mat + 0,  // 2nd vector
 		out_v3  // Output cross product
-	);
+		);
 
 	glPushMatrix();
 

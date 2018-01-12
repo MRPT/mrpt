@@ -49,7 +49,6 @@ class CArchive
    public:
 	CArchive() {}
 	virtual ~CArchive() {}
-
 	/** @name Serialization API for generic "archives" I/O streams
 	 * @{ */
 	/** Reads a block of bytes from the stream into Buffer
@@ -165,7 +164,6 @@ class CArchive
 	 * object raises a plain std::exception instead.
 	 */
 	CSerializable::Ptr ReadObject() { return ReadObject<CSerializable>(); }
-
 	/** Reads an object from stream, its class determined at runtime, and
 	 * returns a smart pointer to the object. This version is similar to
 	 * mrpt::make_aligned_shared<T>.
@@ -405,14 +403,13 @@ DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(long double);
 		::memcpy(&_VARIABLE, &val, sizeof(val));                             \
 	} while (0)
 
-	// Why this shouldn't be templatized?: There's a more modern system
-	// in MRPT that serializes any kind of vector<T>, deque<T>, etc... but
-	// to keep COMPATIBILITY with old serialized objects we must preserve
-	// the ones listed here:
+// Why this shouldn't be templatized?: There's a more modern system
+// in MRPT that serializes any kind of vector<T>, deque<T>, etc... but
+// to keep COMPATIBILITY with old serialized objects we must preserve
+// the ones listed here:
 
-	// Write --------------------
-	CArchive&
-	operator<<(CArchive& s, const char* a);
+// Write --------------------
+CArchive& operator<<(CArchive& s, const char* a);
 CArchive& operator<<(CArchive& s, const std::string& str);
 
 CArchive& operator<<(CArchive&, const std::vector<int32_t>& a);
@@ -457,9 +454,9 @@ CArchive& operator<<(CArchive& s, const std::vector<double>& a);
 CArchive& operator>>(CArchive& s, std::vector<size_t>& a);
 #endif
 //
-template <
-	typename T, std::enable_if_t<std::is_base_of<
-					mrpt::serialization::CSerializable, T>::value>* = nullptr>
+template <typename T,
+		  std::enable_if_t<std::is_base_of<mrpt::serialization::CSerializable,
+										   T>::value>* = nullptr>
 CArchive& operator>>(CArchive& in, typename std::shared_ptr<T>& pObj)
 {
 	pObj = in.ReadObject<T>();
@@ -490,7 +487,6 @@ class CArchiveStreamBase : public CArchive
 
    public:
 	CArchiveStreamBase(STREAM& s) : m_s(s) {}
-
    protected:
 	size_t write(const void* d, size_t n) override { return m_s.Write(d, n); }
 	size_t read(void* d, size_t n) override { return m_s.Read(d, n); }

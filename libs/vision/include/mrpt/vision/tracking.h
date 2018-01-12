@@ -205,8 +205,9 @@ struct CGenericFeatureTracker
 	{
 		out_featureList = in_featureList;
 		std::for_each(
-			out_featureList.begin(), out_featureList.end(),
-			[](auto &ptr) {ptr.reset(dynamic_cast<CFeature*>(ptr->clone())); });
+			out_featureList.begin(), out_featureList.end(), [](auto& ptr) {
+				ptr.reset(dynamic_cast<CFeature*>(ptr->clone()));
+			});
 		this->trackFeatures(old_img, new_img, out_featureList);
 	}
 

@@ -147,10 +147,10 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 
 	// Extract features from grid-maps:
 	// ------------------------------------------------------
-	const size_t N1 = std::max(
-		40, mrpt::round(m1->getArea() * options.featsPerSquareMeter));
-	const size_t N2 = std::max(
-		40, mrpt::round(m2->getArea() * options.featsPerSquareMeter));
+	const size_t N1 =
+		std::max(40, mrpt::round(m1->getArea() * options.featsPerSquareMeter));
+	const size_t N2 =
+		std::max(40, mrpt::round(m2->getArea() * options.featsPerSquareMeter));
 
 	m_grid_feat_extr.extractFeatures(
 		*m1, *lm1, N1, options.feature_descriptor,
@@ -375,9 +375,9 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 
 			// The list of SOG modes & their corresponding sub-sets of
 			// matchings:
-			using TMapMatchingsToPoseMode = mrpt::aligned_std_map<
-				mrpt::tfest::TMatchingPairList,
-				CPosePDFSOG::TGaussianMode>;
+			using TMapMatchingsToPoseMode =
+				mrpt::aligned_std_map<mrpt::tfest::TMatchingPairList,
+									  CPosePDFSOG::TGaussianMode>;
 			TMapMatchingsToPoseMode sog_modes;
 
 			// ---------------------------------------------------------------

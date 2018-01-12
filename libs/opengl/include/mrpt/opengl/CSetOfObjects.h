@@ -193,8 +193,9 @@ typename T::Ptr CSetOfObjects::getByClass(const size_t& ith) const
 	// If not found directly, search recursively:
 	for (const auto& o : m_objects)
 	{
-		if (o && o->GetRuntimeClass() ==
-					 CLASS_ID_NAMESPACE(CSetOfObjects, mrpt::opengl))
+		if (o &&
+			o->GetRuntimeClass() ==
+				CLASS_ID_NAMESPACE(CSetOfObjects, mrpt::opengl))
 		{
 			typename T::Ptr o = std::dynamic_pointer_cast<CSetOfObjects>(o)
 									->template getByClass<T>(ith);

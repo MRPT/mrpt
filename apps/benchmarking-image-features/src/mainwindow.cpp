@@ -3027,9 +3027,11 @@ void MainWindow::on_place_recog_clicked()
 	place_recog_label->setVisible(true);
 
 	place_recog_image = new QLabel;
-	place_recog_qimage.load(QString::fromStdString(testing_files_paths.at(
-		current_place_recog_index %
-		testing_files_paths.size())));  // replace this with initial
+	place_recog_qimage.load(
+		QString::fromStdString(
+			testing_files_paths.at(
+				current_place_recog_index %
+				testing_files_paths.size())));  // replace this with initial
 	// image of select an image by
 	// specifying path
 
@@ -3077,9 +3079,11 @@ void MainWindow::on_place_recog_clicked_iterate()
 	string result = place_recog_obj->startPlaceRecognition(fext);
 	place_recog_label->setText(QString::fromStdString(result));
 	place_recog_image = new QLabel;
-	place_recog_qimage.load(QString::fromStdString(testing_files_paths.at(
-		current_place_recog_index %
-		testing_files_paths.size())));  // replace this with initial
+	place_recog_qimage.load(
+		QString::fromStdString(
+			testing_files_paths.at(
+				current_place_recog_index %
+				testing_files_paths.size())));  // replace this with initial
 	// image of select an image by
 	// specifying path
 	QImage qscaled2 = place_recog_qimage.scaled(
@@ -4263,10 +4267,9 @@ void MainWindow::Mouse_Pressed()
 			}
 			drawLineLSD(temp2, 1);  // 1 means right image
 			drawMarker(
-				temp2,
-				Point(
-					featsImage2.getFeatureX(temp_idx),
-					featsImage2.getFeatureY(temp_idx)),
+				temp2, Point(
+						   featsImage2.getFeatureX(temp_idx),
+						   featsImage2.getFeatureY(temp_idx)),
 				Scalar(255, 0, 0), MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
 
 			QImage dest2 = QImage(
@@ -4375,10 +4378,9 @@ void MainWindow::Mouse_Pressed()
 			}
 			drawLineLSD(temp2, 1);  // 1 means draw on right image
 			drawMarker(
-				temp2,
-				Point(
-					featsImage2.getFeatureX(temp_idx),
-					featsImage2.getFeatureY(temp_idx)),
+				temp2, Point(
+						   featsImage2.getFeatureX(temp_idx),
+						   featsImage2.getFeatureY(temp_idx)),
 				Scalar(255, 0, 0), MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
 
 			QImage dest2 = QImage(

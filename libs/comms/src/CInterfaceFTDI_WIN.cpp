@@ -177,7 +177,6 @@ CInterfaceFTDI::~CInterfaceFTDI()
 }
 
 bool CInterfaceFTDI::isOpen() { return m_ftHandle != 0; }
-
 void CInterfaceFTDI::loadDriver()
 {
 	MRPT_START

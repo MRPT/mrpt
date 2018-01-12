@@ -11,11 +11,13 @@
 #include <map>
 namespace mrpt
 {
-	template<class KEY, class VALUE>
-	using aligned_std_map = std::map<KEY, VALUE, std::less<KEY>,
-		mrpt::aligned_allocator_cpp11<std::pair<const KEY, VALUE>>>;
+template <class KEY, class VALUE>
+using aligned_std_map =
+	std::map<KEY, VALUE, std::less<KEY>,
+			 mrpt::aligned_allocator_cpp11<std::pair<const KEY, VALUE>>>;
 
-	template<class KEY, class VALUE>
-	using aligned_std_multimap = std::multimap<KEY, VALUE, std::less<KEY>,
-		mrpt::aligned_allocator_cpp11<std::pair<const KEY, VALUE>>>;
+template <class KEY, class VALUE>
+using aligned_std_multimap =
+	std::multimap<KEY, VALUE, std::less<KEY>,
+				  mrpt::aligned_allocator_cpp11<std::pair<const KEY, VALUE>>>;
 }

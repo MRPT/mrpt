@@ -66,7 +66,7 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 				mrpt::make_aligned_shared<COpenGLScene>();
 
 			// Look for the most likely LMH:
-			for (auto& m: m_LMHs)
+			for (auto& m : m_LMHs)
 			{
 				if (!bestLMH)
 				{

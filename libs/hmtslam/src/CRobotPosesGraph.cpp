@@ -24,11 +24,11 @@ void CRobotPosesGraph::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	uint32_t N = static_cast<uint32_t>(size());
 	out << N;
-	for (const auto& e : *this)
-		out << e.first << e.second.sf << e.second.pdf;
+	for (const auto& e : *this) out << e.first << e.second.sf << e.second.pdf;
 }
 
-void CRobotPosesGraph::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CRobotPosesGraph::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

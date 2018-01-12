@@ -99,7 +99,8 @@ double& CSplineInterpolator1D::query(double x, double& y, bool& out_valid) const
 }
 
 uint8_t CSplineInterpolator1D::serializeGetVersion() const { return 0; }
-void CSplineInterpolator1D::serializeTo(mrpt::serialization::CArchive& out) const
+void CSplineInterpolator1D::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
 	out << m_x2y << m_wrap2pi;
 }

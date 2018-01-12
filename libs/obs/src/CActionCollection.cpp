@@ -31,10 +31,11 @@ uint8_t CActionCollection::serializeGetVersion() const { return 0; }
 void CActionCollection::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	out.WriteAs<uint32_t>(m_actions.size());
-	for (const auto &a : *this) out << *a;
+	for (const auto& a : *this) out << *a;
 }
 
-void CActionCollection::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CActionCollection::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -43,7 +44,9 @@ void CActionCollection::serializeFrom(mrpt::serialization::CArchive& in, uint8_t
 			clear();
 			m_actions.resize(in.ReadAs<uint32_t>());
 			for_each(
-				begin(), end(), mrpt::serialization::metaprogramming::ObjectReadFromStreamToPtrs<CAction::Ptr>(&in));
+				begin(), end(),
+				mrpt::serialization::metaprogramming::
+					ObjectReadFromStreamToPtrs<CAction::Ptr>(&in));
 		}
 		break;
 		default:

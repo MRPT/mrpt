@@ -36,14 +36,15 @@ void CObservationOdometry::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	// The data
 	out << odometry << sensorLabel << timestamp
-	// Added in V1:
-	<< hasEncodersInfo;
+		// Added in V1:
+		<< hasEncodersInfo;
 	if (hasEncodersInfo) out << encoderLeftTicks << encoderRightTicks;
 	out << hasVelocities;
 	if (hasVelocities) out << velocityLocal;
 }
 
-void CObservationOdometry::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CObservationOdometry::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	MRPT_UNUSED_PARAM(in);
 	switch (version)

@@ -812,10 +812,11 @@ void CImageGrabber_dc1394::enumerateCameras(TCameraInfoList& out_list)
 			dc1394camera_t* cam = dc1394_camera_new_unit(
 				lib_context, list->ids[i].guid, list->ids[i].unit);
 			if (!cam)
-				throw std::runtime_error(format(
-					"[CImageGrabber_dc1394] ERROR: Failed to query camera "
-					"with GUID %u\n",
-					static_cast<unsigned int>(list->ids[i].guid)));
+				throw std::runtime_error(
+					format(
+						"[CImageGrabber_dc1394] ERROR: Failed to query camera "
+						"with GUID %u\n",
+						static_cast<unsigned int>(list->ids[i].guid)));
 
 			info.unit_spec_ID = cam->unit_spec_ID;
 			info.unit_sw_version = cam->unit_sw_version;

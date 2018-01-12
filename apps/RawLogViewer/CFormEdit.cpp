@@ -1054,8 +1054,8 @@ void CFormEdit::executeOperationOnRawlog(
 
 				if (!isInMemory) archiveFrom(*out_fil) << *sf;
 			}
-			else if (newObj->GetRuntimeClass()->derivedFrom(
-						 CLASS_ID(CObservation)))
+			else if (
+				newObj->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
 			{
 				// A single observation:
 				dummy_sf->clear();
@@ -1094,9 +1094,10 @@ void CFormEdit::executeOperationOnRawlog(
 			}
 			else
 			{  // Unknown class:
-				THROW_EXCEPTION(format(
-					"Unexpected class found in the file: '%s'",
-					newObj->GetRuntimeClass()->className));
+				THROW_EXCEPTION(
+					format(
+						"Unexpected class found in the file: '%s'",
+						newObj->GetRuntimeClass()->className));
 			}
 		}
 		catch (exception& e)

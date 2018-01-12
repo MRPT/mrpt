@@ -233,8 +233,9 @@ static void velodyne_scan_to_pointcloud(
 			 block++)  // Firings per packet
 		{
 			// ignore packets with mangled or otherwise different contents
-			if ((num_lasers != 64 && CObservationVelodyneScan::UPPER_BANK !=
-										 raw->blocks[block].header) ||
+			if ((num_lasers != 64 &&
+				 CObservationVelodyneScan::UPPER_BANK !=
+					 raw->blocks[block].header) ||
 				(raw->blocks[block].header !=
 					 CObservationVelodyneScan::UPPER_BANK &&
 				 raw->blocks[block].header !=

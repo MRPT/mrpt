@@ -20,7 +20,7 @@ void* mrpt::aligned_malloc(size_t size, size_t alignment)
 {
 #if !defined(_MSC_VER)
 	// size must be an integral multiple of alignment:
-	if ((size % alignment)!=0) size = ((size/alignment)+1)*alignment;
+	if ((size % alignment) != 0) size = ((size / alignment) + 1) * alignment;
 	return ::aligned_alloc(alignment, size);
 #else
 	return _aligned_malloc(size, alignment);
@@ -36,11 +36,11 @@ void mrpt::aligned_free(void* ptr)
 }
 void* mrpt::aligned_realloc(void* ptr, size_t size, size_t alignment)
 {
-	#if !defined(_MSC_VER)
+#if !defined(_MSC_VER)
 	// size must be an integral multiple of alignment:
-	if ((size % alignment)!=0) size = ((size/alignment)+1)*alignment;
-		return std::realloc(ptr,size);
-	#else
-		return _aligned_realloc(ptr,size,alignment);
-	#endif
+	if ((size % alignment) != 0) size = ((size / alignment) + 1) * alignment;
+	return std::realloc(ptr, size);
+#else
+	return _aligned_realloc(ptr, size, alignment);
+#endif
 }

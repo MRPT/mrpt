@@ -1508,9 +1508,8 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 					lfr.infoPerPTG[sel_PTG].HLFR);
 			const size_t nGaps = log->gaps_ini.size();
 
-			const string sSitu =
-				mrpt::typemeta::TEnumType<CHolonomicND::TSituations>::value2name(
-					log->situation);
+			const string sSitu = mrpt::typemeta::TEnumType<
+				CHolonomicND::TSituations>::value2name(log->situation);
 
 			string sLog = mrpt::format("ND situation : %s\n", sSitu.c_str());
 			sLog += mrpt::format(

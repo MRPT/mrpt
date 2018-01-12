@@ -23,7 +23,8 @@ using namespace mrpt::serialization;
 IMPLEMENTS_SERIALIZABLE(CPropertiesValuesList, CSerializable, mrpt::hmtslam)
 
 uint8_t CPropertiesValuesList::serializeGetVersion() const { return 0; }
-void CPropertiesValuesList::serializeTo(mrpt::serialization::CArchive& out) const
+void CPropertiesValuesList::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
 	uint32_t i, n = (uint32_t)size();
 	uint8_t isNull;
@@ -42,7 +43,8 @@ void CPropertiesValuesList::serializeTo(mrpt::serialization::CArchive& out) cons
 	}
 }
 
-void CPropertiesValuesList::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CPropertiesValuesList::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

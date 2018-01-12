@@ -51,11 +51,12 @@ inline typename MATRIXLIKE::Scalar normalPDFInf(
 	T ret = ::exp(
 		static_cast<T>(-0.5) *
 		mrpt::math::multiply_HCHt_scalar((x - mu).eval(), cov_inv));
-	return scaled_pdf ? ret : ret * ::sqrt(
-										cov_inv.det() /
-										::pow(
-											static_cast<T>(M_2PI),
-											static_cast<T>(cov_inv.rows())));
+	return scaled_pdf
+			   ? ret
+			   : ret * ::sqrt(
+						   cov_inv.det() / ::pow(
+											   static_cast<T>(M_2PI),
+											   static_cast<T>(cov_inv.rows())));
 	MRPT_END
 }
 
@@ -91,8 +92,7 @@ typename MATRIXLIKE::Scalar normalPDF(
 			   mrpt::math::multiply_HCHt_scalar(d, cov.inverse())) /
 		   (::pow(
 				static_cast<typename MATRIXLIKE::Scalar>(M_2PI),
-				static_cast<typename MATRIXLIKE::Scalar>(
-					0.5 * cov.cols())) *
+				static_cast<typename MATRIXLIKE::Scalar>(0.5 * cov.cols())) *
 			::sqrt(cov.det()));
 	MRPT_END
 }

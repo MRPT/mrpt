@@ -8,7 +8,6 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-
 // nanoflann library:
 #include <nanoflann.hpp>
 #include <mrpt/math/lightweight_geom_data.h>

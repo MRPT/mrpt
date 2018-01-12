@@ -64,7 +64,7 @@ CServerTCPSocket::CServerTCPSocket(
 
 CServerTCPSocket::~CServerTCPSocket()
 {
-	// Delete socket:
+// Delete socket:
 #if defined(_WIN32)
 	if (m_serverSock != INVALID_SOCKET) closesocket(m_serverSock);
 	WSACleanup();

@@ -116,7 +116,8 @@ class CRangeBearingKFSLAM2D
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(std::ostream& out) const override;  // See base docs
+		void dumpToTextStream(
+			std::ostream& out) const override;  // See base docs
 
 		/** A 3-length vector with the std. deviation of the transition model in
 		 * (x,y,phi) used only when there is no odometry (if there is odo, its
@@ -262,7 +263,8 @@ class CRangeBearingKFSLAM2D
 	void OnGetObservationsAndDataAssociation(
 		vector_KFArray_OBS& out_z, std::vector<int>& out_data_association,
 		const vector_KFArray_OBS& in_all_predictions, const KFMatrix& in_S,
-		const std::vector<size_t>& in_lm_indices_in_S, const KFMatrix_OxO& in_R);
+		const std::vector<size_t>& in_lm_indices_in_S,
+		const KFMatrix_OxO& in_R);
 
 	void OnObservationModel(
 		const std::vector<size_t>& idx_landmarks_to_predict,
@@ -382,7 +384,8 @@ class CRangeBearingKFSLAM2D
 	mrpt::obs::CSensoryFrame::Ptr m_SF;
 
 	/** The mapping between landmark IDs and indexes in the Pkk cov. matrix: */
-	mrpt::containers::bimap<mrpt::maps::CLandmark::TLandmarkID, unsigned int> m_IDs;
+	mrpt::containers::bimap<mrpt::maps::CLandmark::TLandmarkID, unsigned int>
+		m_IDs;
 
 	/** The sequence of all the observations and the robot path (kept for
 	 * debugging, statistics,etc) */

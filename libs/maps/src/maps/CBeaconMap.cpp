@@ -100,7 +100,6 @@ size_t CBeaconMap::size() const { return m_beacons.size(); }
 	Resize
   ---------------------------------------------------------------*/
 void CBeaconMap::resize(const size_t N) { m_beacons.resize(N); }
-
 uint8_t CBeaconMap::serializeGetVersion() const { return 1; }
 void CBeaconMap::serializeTo(mrpt::serialization::CArchive& out) const
 {
@@ -113,7 +112,8 @@ void CBeaconMap::serializeTo(mrpt::serialization::CArchive& out) const
 	for (const_iterator it = begin(); it != end(); ++it) out << (*it);
 }
 
-void CBeaconMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CBeaconMap::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -987,7 +987,8 @@ void CBeaconMap::TLikelihoodOptions::dumpToTextStream(std::ostream& out) const
 {
 	out << mrpt::format(
 		"\n----------- [CBeaconMap::TLikelihoodOptions] ------------ \n\n");
-	out << mrpt::format("rangeStd                                = %f\n", rangeStd);
+	out << mrpt::format(
+		"rangeStd                                = %f\n", rangeStd);
 	out << mrpt::format("\n");
 }
 
@@ -1130,7 +1131,7 @@ void CBeaconMap::saveMetricMapRepresentationToFile(
 
 	getAs3DObject(obj3D);
 	auto objGround = opengl::CGridPlaneXY::Create(
-			-100.0f, 100.0f, -100.0f, 100.0f, .0f, 1.f);
+		-100.0f, 100.0f, -100.0f, 100.0f, .0f, 1.f);
 
 	scene.insert(obj3D);
 	scene.insert(objGround);

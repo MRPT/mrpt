@@ -24,7 +24,8 @@ namespace math
 {
 template <typename T>
 void ransac3Dplane_fit(
-	const CMatrixTemplateNumeric<T>& allData, const std::vector<size_t>& useIndices,
+	const CMatrixTemplateNumeric<T>& allData,
+	const std::vector<size_t>& useIndices,
 	vector<CMatrixTemplateNumeric<T>>& fitModels)
 {
 	ASSERT_(useIndices.size() == 3);

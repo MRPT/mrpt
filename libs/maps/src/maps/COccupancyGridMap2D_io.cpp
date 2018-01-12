@@ -56,8 +56,7 @@ void COccupancyGridMap2D::serializeTo(mrpt::serialization::CArchive& out) const
 	out << uint8_t(16);
 #endif
 
-	out << size_x << size_y << x_min << x_max << y_min << y_max
-		<< resolution;
+	out << size_x << size_y << x_min << x_max << y_min << y_max << resolution;
 	ASSERT_(size_x * size_y == map.size());
 
 #ifdef OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS
@@ -71,8 +70,7 @@ void COccupancyGridMap2D::serializeTo(mrpt::serialization::CArchive& out) const
 		<< insertionOptions.maxDistanceInsertion
 		<< insertionOptions.maxOccupancyUpdateCertainty
 		<< insertionOptions.considerInvalidRangesAsFreeSpace
-		<< insertionOptions.decimation
-		<< insertionOptions.horizontalTolerance;
+		<< insertionOptions.decimation << insertionOptions.horizontalTolerance;
 
 	// Likelihood:
 	out << (int32_t)likelihoodOptions.likelihoodMethod
@@ -101,7 +99,8 @@ void COccupancyGridMap2D::serializeTo(mrpt::serialization::CArchive& out) const
 	out << insertionOptions.wideningBeamsWithDistance;
 }
 
-void COccupancyGridMap2D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void COccupancyGridMap2D::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	m_is_empty = false;
 

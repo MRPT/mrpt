@@ -61,7 +61,8 @@ class CTopLCDetector_FabMap : public CTopLCDetectorBase
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(std::ostream& out) const override;  // See base docs
+		void dumpToTextStream(
+			std::ostream& out) const override;  // See base docs
 
 		std::string vocab_path, vocabName;
 		double p_obs_given_exists, p_at_new_place, df_lik_smooth;

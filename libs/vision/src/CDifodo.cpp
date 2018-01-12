@@ -921,9 +921,10 @@ void CDifodo::filterLevelSolution()
 				df = previous_speed_const_weight * expf(-int(level));
 	Matrix<float, 6, 1> kai_b_fil;
 	for (unsigned int i = 0; i < 6; i++)
-		kai_b_fil(i) = (kai_b(i) + (cf * eigensolver.eigenvalues()(i, 0) + df) *
-									   kai_b_old(i)) /
-					   (1.f + cf * eigensolver.eigenvalues()(i) + df);
+		kai_b_fil(i) =
+			(kai_b(i) +
+			 (cf * eigensolver.eigenvalues()(i, 0) + df) * kai_b_old(i)) /
+			(1.f + cf * eigensolver.eigenvalues()(i) + df);
 
 	// Transform filtered velocity to the local reference frame
 	Matrix<float, 6, 1> kai_loc_fil =

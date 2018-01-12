@@ -466,10 +466,11 @@ unsigned char* CImage::operator()(
 	if (row >= (unsigned int)ipl->height || col >= (unsigned int)ipl->width ||
 		channel >= (unsigned int)ipl->nChannels)
 	{
-		THROW_EXCEPTION(format(
-			"Pixel coordinates/channel out of bounds: row=%u/%u col=%u/%u "
-			"chan=%u/%u",
-			row, ipl->height, col, ipl->width, channel, ipl->nChannels));
+		THROW_EXCEPTION(
+			format(
+				"Pixel coordinates/channel out of bounds: row=%u/%u col=%u/%u "
+				"chan=%u/%u",
+				row, ipl->height, col, ipl->width, channel, ipl->nChannels));
 	}
 #endif
 
@@ -1345,8 +1346,8 @@ void CImage::update_patch(
 	for (unsigned int i = 0; i < patch.getHeight(); i++)
 	{
 		memcpy(
-			&ipl_int->imageData
-				 [(i + row_) * ipl_int->widthStep + col_ * ipl_int->nChannels],
+			&ipl_int->imageData[(i + row_) * ipl_int->widthStep +
+								col_ * ipl_int->nChannels],
 			&ipl_ext->imageData[i * ipl_ext->widthStep], ipl_ext->widthStep);
 	}
 #endif
@@ -1368,10 +1369,11 @@ void CImage::extract_patch(
 	if ((ipl_int->width < (int)(col_ + col_num)) ||
 		(ipl_int->height < (int)(row_ + row_num)))
 	{
-		THROW_EXCEPTION(format(
-			"Trying to extract patch out of image boundaries: Image "
-			"size=%ix%i, Patch size=%ux%u, extraction location=(%u,%u)",
-			ipl_int->width, ipl_int->height, col_num, row_num, col_, row_))
+		THROW_EXCEPTION(
+			format(
+				"Trying to extract patch out of image boundaries: Image "
+				"size=%ix%i, Patch size=%ux%u, extraction location=(%u,%u)",
+				ipl_int->width, ipl_int->height, col_num, row_num, col_, row_))
 	}
 
 	patch.resize(col_num, row_num, ((IplImage*)img)->nChannels, true);
@@ -1382,8 +1384,8 @@ void CImage::extract_patch(
 	{
 		memcpy(
 			&ipl_ext->imageData[i * ipl_ext->widthStep],
-			&ipl_int->imageData
-				 [(i + row_) * ipl_int->widthStep + col_ * ipl_int->nChannels],
+			&ipl_int->imageData[(i + row_) * ipl_int->widthStep +
+								col_ * ipl_int->nChannels],
 			ipl_ext->widthStep);
 	}
 
@@ -1520,9 +1522,8 @@ void CImage::cross_correlation(
 		{
 			memcpy(
 				&aux->imageData[i * aux->widthStep],
-				&im->imageData
-					 [(i + y_search_ini) * im->widthStep +
-					  x_search_ini * im->nChannels],
+				&im->imageData[(i + y_search_ini) * im->widthStep +
+							   x_search_ini * im->nChannels],
 				aux->width * aux->nChannels);  // widthStep);  <-- JLBC:
 			// widthstep SHOULD NOT be used
 			// as the length of each row (the

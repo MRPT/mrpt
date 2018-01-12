@@ -188,9 +188,7 @@ void CSparseMatrix::operator=(const CSparseMatrix& other)
 
 void CSparseMatrix::add_AB(const CSparseMatrix& A, const CSparseMatrix& B)
 {
-	ASSERT_(
-		A.cols() == B.cols() &&
-		A.rows() == B.rows());
+	ASSERT_(A.cols() == B.cols() && A.rows() == B.rows());
 
 	cs* sm = cs_add(&(A.sparse_matrix), &(B.sparse_matrix), 1, 1);
 	ASSERT_(sm);

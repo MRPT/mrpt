@@ -177,7 +177,8 @@ void CWeightedPointsMap::serializeTo(mrpt::serialization::CArchive& out) const
 	likelihoodOptions.writeToStream(out);  // Added in version 5
 }
 
-void CWeightedPointsMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CWeightedPointsMap::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

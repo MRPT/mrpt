@@ -176,10 +176,11 @@ void mrpt::vision::findMultipleChessboardsCorners(
 			// Key idea: The cross product of X * Y must point outwards the
 			// screen:
 
-			const mrpt::math::TPoint2D
-				pt_0{ cornerCoords[i][0].x,cornerCoords[i][0].y },
-				pt_x1{ cornerCoords[i][1].x,cornerCoords[i][1].y },
-				pt_y1{ cornerCoords[i][check_size_x].x,cornerCoords[i][check_size_x].y };
+			const mrpt::math::TPoint2D pt_0{cornerCoords[i][0].x,
+											cornerCoords[i][0].y},
+				pt_x1{cornerCoords[i][1].x, cornerCoords[i][1].y},
+				pt_y1{cornerCoords[i][check_size_x].x,
+					  cornerCoords[i][check_size_x].y};
 			const mrpt::math::TPoint3D Ax = pt_x1 - pt_0;  // z=0
 			const mrpt::math::TPoint3D Ay = pt_y1 - pt_0;  // z=0
 

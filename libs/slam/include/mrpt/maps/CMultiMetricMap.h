@@ -167,7 +167,8 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 	/** @name Access to internal list of maps: direct list, iterators, utility
 	   methods and proxies
 		@{ */
-	typedef std::deque<mrpt::containers::poly_ptr_ptr<mrpt::maps::CMetricMap::Ptr>>
+	typedef std::deque<
+		mrpt::containers::poly_ptr_ptr<mrpt::maps::CMetricMap::Ptr>>
 		TListMaps;
 
 	/** The list of MRPT metric maps in this object. Use dynamic_cast or smart
@@ -199,7 +200,8 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 	typename T::Ptr getMapByClass(const size_t& ith = 0) const
 	{
 		size_t foundCount = 0;
-		const mrpt::rtti::TRuntimeClassId* class_ID = &T::GetRuntimeClassIdStatic();
+		const mrpt::rtti::TRuntimeClassId* class_ID =
+			&T::GetRuntimeClassIdStatic();
 		for (const_iterator it = begin(); it != end(); ++it)
 			if ((*it)->GetRuntimeClass()->derivedFrom(class_ID))
 				if (foundCount++ == ith)

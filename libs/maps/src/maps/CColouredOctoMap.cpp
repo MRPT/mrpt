@@ -92,7 +92,6 @@ CColouredOctoMap::CColouredOctoMap(const double resolution)
 }
 
 CColouredOctoMap::~CColouredOctoMap() {}
-
 uint8_t CColouredOctoMap::serializeGetVersion() const { return 3; }
 void CColouredOctoMap::serializeTo(mrpt::serialization::CArchive& out) const
 {
@@ -102,12 +101,14 @@ void CColouredOctoMap::serializeTo(mrpt::serialization::CArchive& out) const
 
 	// v2->v3: remove CMemoryChunk
 	std::stringstream ss;
-	const_cast<octomap::ColorOcTree*>(&PIMPL_GET_REF(ColorOcTree, m_octomap))->writeBinary(ss);
+	const_cast<octomap::ColorOcTree*>(&PIMPL_GET_REF(ColorOcTree, m_octomap))
+		->writeBinary(ss);
 	const std::string& buf = ss.str();
 	out << buf;
 }
 
-void CColouredOctoMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CColouredOctoMap::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -115,7 +116,9 @@ void CColouredOctoMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t 
 		case 1:
 		case 2:
 		{
-			THROW_EXCEPTION("Deserialization of old versions of this class was discontinued in MRPT 1.9.9 [no CMemoryChunk]");
+			THROW_EXCEPTION(
+				"Deserialization of old versions of this class was "
+				"discontinued in MRPT 1.9.9 [no CMemoryChunk]");
 		}
 		break;
 		case 3:

@@ -124,8 +124,7 @@ void CCamModel::distort_a_point(
 /*************************************************************************************************************************/
 // Removes distortion of a pair of pixel coordinates x,y.
 void CCamModel::undistort_point(
-	const mrpt::img::TPixelCoordf& p,
-	mrpt::img::TPixelCoordf& undistorted_p)
+	const mrpt::img::TPixelCoordf& p, mrpt::img::TPixelCoordf& undistorted_p)
 {
 	std::vector<TPixelCoordf> in_p(1), out_p;
 	in_p[0] = p;
@@ -149,8 +148,7 @@ void CCamModel::undistort_point(
  * relative to the camera (+Z pointing forward, +X to the right)
  */
 void CCamModel::project_3D_point(
-	const mrpt::math::TPoint3D& p3D,
-	mrpt::img::TPixelCoordf& distorted_p) const
+	const mrpt::math::TPoint3D& p3D, mrpt::img::TPixelCoordf& distorted_p) const
 {
 	// JLBC: From Davison's SceneLib:
 	//
@@ -178,8 +176,7 @@ void CCamModel::project_3D_point(
  * (distorted) pixel position
   */
 void CCamModel::unproject_3D_point(
-	const mrpt::img::TPixelCoordf& distorted_p,
-	mrpt::math::TPoint3D& p3D) const
+	const mrpt::img::TPixelCoordf& distorted_p, mrpt::math::TPoint3D& p3D) const
 {
 	// JLBC: From Davison's SceneLib:
 	//
@@ -330,4 +327,7 @@ void CCamModel::loadFromConfigFile(
 
 /** This method displays clearly all the contents of the structure in textual
  * form, sending it to a CStream. */
-void CCamModel::dumpToTextStream(std::ostream& out) const { MRPT_UNUSED_PARAM(out); }
+void CCamModel::dumpToTextStream(std::ostream& out) const
+{
+	MRPT_UNUSED_PARAM(out);
+}

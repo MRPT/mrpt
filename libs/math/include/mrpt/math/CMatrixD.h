@@ -62,7 +62,8 @@ class CMatrixD : public mrpt::serialization::CSerializable,
 	MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(CMatrixD)
 
 };  // end of class definition
-mrpt::serialization::CArchive& operator>>(mrpt::serialization::CArchive& in, CMatrixD::Ptr& pObj);
+mrpt::serialization::CArchive& operator>>(
+	mrpt::serialization::CArchive& in, CMatrixD::Ptr& pObj);
 
 }  // End of namespace
 }  // End of namespace

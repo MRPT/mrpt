@@ -11,6 +11,6 @@
 #include <deque>
 namespace mrpt
 {
-	template<class T>
-	using aligned_std_deque = std::deque<T, mrpt::aligned_allocator_cpp11<T>>;
+template <class T>
+using aligned_std_deque = std::deque<T, mrpt::aligned_allocator_cpp11<T>>;
 }

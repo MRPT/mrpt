@@ -866,8 +866,8 @@ void CFormChangeSensorPositions::executeOperationOnRawlog(
 
 				if (!isInMemory) archiveFrom(*out_fil) << *acts;
 			}
-			else if (newObj->GetRuntimeClass()->derivedFrom(
-						 CLASS_ID(CObservation)))
+			else if (
+				newObj->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
 			{
 				// A sensory frame:
 				CObservation::Ptr o(
@@ -884,9 +884,10 @@ void CFormChangeSensorPositions::executeOperationOnRawlog(
 			}
 			else
 			{  // Unknown class:
-				THROW_EXCEPTION(format(
-					"Unexpected class found in the file: '%s'",
-					newObj->GetRuntimeClass()->className));
+				THROW_EXCEPTION(
+					format(
+						"Unexpected class found in the file: '%s'",
+						newObj->GetRuntimeClass()->className));
 			}
 		}
 		catch (exception& e)

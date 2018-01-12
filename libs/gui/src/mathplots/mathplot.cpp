@@ -1903,12 +1903,14 @@ void mpWindow::ZoomIn(const wxPoint& centerPoint)
 
 	m_desiredXmin = m_posX;
 	m_desiredXmax =
-		m_posX + (m_scrX - m_marginLeft - m_marginRight) /
-					 m_scaleX;  // m_desiredXmax = m_posX + m_scrX / m_scaleX;
+		m_posX +
+		(m_scrX - m_marginLeft - m_marginRight) /
+			m_scaleX;  // m_desiredXmax = m_posX + m_scrX / m_scaleX;
 	m_desiredYmax = m_posY;
 	m_desiredYmin =
-		m_posY - (m_scrY - m_marginTop - m_marginBottom) /
-					 m_scaleY;  // m_desiredYmin = m_posY - m_scrY / m_scaleY;
+		m_posY -
+		(m_scrY - m_marginTop - m_marginBottom) /
+			m_scaleY;  // m_desiredYmin = m_posY - m_scrY / m_scaleY;
 
 #ifdef MATHPLOT_DO_LOGGING
 	wxLogMessage(
@@ -1946,12 +1948,14 @@ void mpWindow::ZoomOut(const wxPoint& centerPoint)
 
 	m_desiredXmin = m_posX;
 	m_desiredXmax =
-		m_posX + (m_scrX - m_marginLeft - m_marginRight) /
-					 m_scaleX;  // m_desiredXmax = m_posX + m_scrX / m_scaleX;
+		m_posX +
+		(m_scrX - m_marginLeft - m_marginRight) /
+			m_scaleX;  // m_desiredXmax = m_posX + m_scrX / m_scaleX;
 	m_desiredYmax = m_posY;
 	m_desiredYmin =
-		m_posY - (m_scrY - m_marginTop - m_marginBottom) /
-					 m_scaleY;  // m_desiredYmin = m_posY - m_scrY / m_scaleY;
+		m_posY -
+		(m_scrY - m_marginTop - m_marginBottom) /
+			m_scaleY;  // m_desiredYmin = m_posY - m_scrY / m_scaleY;
 
 #ifdef MATHPLOT_DO_LOGGING
 	wxLogMessage(
@@ -2144,7 +2148,7 @@ void mpWindow::OnPaint(wxPaintEvent& WXUNUSED(event))
 {
 	wxPaintDC dc(this);
 	dc.GetSize(&m_scrX, &m_scrY);  // This is the size of the visible area only!
-	//     DoPrepareDC(dc);
+//     DoPrepareDC(dc);
 
 #ifdef MATHPLOT_DO_LOGGING
 	{

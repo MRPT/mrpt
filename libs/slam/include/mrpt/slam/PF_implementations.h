@@ -459,7 +459,8 @@ double PF_implementation<PARTICLE_TYPE, MYSELF>::
 	me->m_pfAuxiliaryPFOptimal_maxLikelihood[index] = maxLik;
 
 	if (PF_options.pfAuxFilterOptimal_MLE)
-		me->m_pfAuxiliaryPFOptimal_maxLikDrawnMovement[index] = maxLikDraw.asTPose();
+		me->m_pfAuxiliaryPFOptimal_maxLikDrawnMovement[index] =
+			maxLikDraw.asTPose();
 
 	// and compute the resulting probability of this particle:
 	// ------------------------------------------------------------
@@ -623,8 +624,10 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 
 	// Prepare data for executing "fastDrawSample"
 	using TMyClass = PF_implementation<PARTICLE_TYPE, MYSELF>;
-	auto funcOpt = &TMyClass::template PF_SLAM_particlesEvaluator_AuxPFOptimal<BINTYPE>;
-	auto funcStd = &TMyClass::template PF_SLAM_particlesEvaluator_AuxPFStandard<BINTYPE>;
+	auto funcOpt =
+		&TMyClass::template PF_SLAM_particlesEvaluator_AuxPFOptimal<BINTYPE>;
+	auto funcStd =
+		&TMyClass::template PF_SLAM_particlesEvaluator_AuxPFStandard<BINTYPE>;
 
 	me->prepareFastDrawSample(
 		PF_options, USE_OPTIMAL_SAMPLING ? funcOpt : funcStd,
@@ -739,7 +742,8 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 		newParticlesDerivedFromIdx.clear();
 
 		// ------------------------------------------------------------------------------
-		// 2.1) PRELIMINARY STAGE: Build a list of pairs<TPathBin,std::vector<uint32_t>>
+		// 2.1) PRELIMINARY STAGE: Build a list of
+		// pairs<TPathBin,std::vector<uint32_t>>
 		// with the
 		//      indexes of m_particles that fall into each
 		//      multi-dimensional-path bins

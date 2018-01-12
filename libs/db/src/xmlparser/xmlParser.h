@@ -166,8 +166,7 @@
 #define _XMLWIDECHAR
 #endif
 
-#if defined(WIN32) || defined(UNDER_CE) || defined(_WIN32) || \
-	defined(WIN64)
+#if defined(WIN32) || defined(UNDER_CE) || defined(_WIN32) || defined(WIN64)
 // comment the next line if you are under windows and the compiler is not
 // Microsoft Visual Studio (6.0 or .NET) or Borland
 #define _XMLWINDOWS

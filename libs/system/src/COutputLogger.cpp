@@ -166,10 +166,9 @@ void COutputLogger::writeLogToFile(
 	}
 	std::ofstream f(fname);
 	ASSERTMSG_(
-		f.is_open(),
-		mrpt::format(
-			"[%s:] Could not open external file: %s", m_logger_name.c_str(),
-			fname.c_str()));
+		f.is_open(), mrpt::format(
+						 "[%s:] Could not open external file: %s",
+						 m_logger_name.c_str(), fname.c_str()));
 
 	std::string hist_str;
 	this->getLogAsString(hist_str);
@@ -277,11 +276,11 @@ void COutputLogger::logRegisterCallback(output_logger_callback_t userFunc)
 	m_listCallbacks.emplace_back(userFunc);
 }
 
-template<typename T, typename... U>
+template <typename T, typename... U>
 size_t getAddress(std::function<T(U...)> f)
 {
 	typedef T(fnType)(U...);
-	fnType ** fnPointer = f.template target<fnType*>();
+	fnType** fnPointer = f.template target<fnType*>();
 	return (size_t)*fnPointer;
 }
 

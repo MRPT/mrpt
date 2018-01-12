@@ -173,13 +173,14 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 				// via the dot product. Swap rows/columns order as needed.
 				bool has_to_redraw_corners = false;
 
-				const TPixelCoordf
-					pt_l0 = images[i].left.detected_corners[0],
-					pt_l1 = images[i].left.detected_corners[1],
-					pt_r0 = images[i].right.detected_corners[0],
-					pt_r1 = images[i].right.detected_corners[1];
-				const auto Al = TPoint2D(pt_l1.x, pt_l1.y) - TPoint2D(pt_l0.x, pt_l0.y);
-				const auto Ar = TPoint2D(pt_r1.x, pt_r1.y) - TPoint2D(pt_r0.x, pt_r0.y);
+				const TPixelCoordf pt_l0 = images[i].left.detected_corners[0],
+								   pt_l1 = images[i].left.detected_corners[1],
+								   pt_r0 = images[i].right.detected_corners[0],
+								   pt_r1 = images[i].right.detected_corners[1];
+				const auto Al =
+					TPoint2D(pt_l1.x, pt_l1.y) - TPoint2D(pt_l0.x, pt_l0.y);
+				const auto Ar =
+					TPoint2D(pt_r1.x, pt_r1.y) - TPoint2D(pt_r0.x, pt_r0.y);
 
 				// If the dot product is negative, we have INVERTED order of
 				// corners:

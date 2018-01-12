@@ -367,9 +367,8 @@ CScanMatching::CScanMatching(wxWindow* parent, wxWindowID)
 	FlexGridSizer9->AddGrowableCol(0);
 	FlexGridSizer9->AddGrowableRow(1);
 	StaticText6 = new wxStaticText(
-		Panel3, ID_STATICTEXT6,
-		_("Scan Matching Status:\n(Reference map: Blue "
-		  "or gridmap; Map to be aligned: Red)"),
+		Panel3, ID_STATICTEXT6, _("Scan Matching Status:\n(Reference map: Blue "
+								  "or gridmap; Map to be aligned: Red)"),
 		wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT6"));
 	FlexGridSizer9->Add(
 		StaticText6, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 3);

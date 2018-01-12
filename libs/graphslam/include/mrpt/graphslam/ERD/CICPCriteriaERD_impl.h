@@ -27,7 +27,7 @@ CICPCriteriaERD<GRAPH_T>::CICPCriteriaERD()
 	  m_is_using_3DScan(false)
 {
 	MRPT_START;
-	
+
 	this->initializeLoggers("CICPCriteriaERD");
 
 	// start ICP constraint registration only when
@@ -58,7 +58,7 @@ bool CICPCriteriaERD<GRAPH_T>::updateState(
 	MRPT_START;
 	MRPT_UNUSED_PARAM(action);
 	using namespace mrpt::obs;
-	
+
 	// check possible prior node registration
 	bool registered_new_node = false;
 
@@ -104,13 +104,19 @@ bool CICPCriteriaERD<GRAPH_T>::updateState(
 			{
 				this->m_nodes_to_laser_scans2D[this->m_graph->nodeCount() - 1] =
 					m_last_laser_scan2D;
-				MRPT_LOG_DEBUG(mrpt::format("Added laser scans of nodeID: %u",(unsigned)(this->m_graph->nodeCount() - 1)));
+				MRPT_LOG_DEBUG(
+					mrpt::format(
+						"Added laser scans of nodeID: %u",
+						(unsigned)(this->m_graph->nodeCount() - 1)));
 			}
 			if (m_last_laser_scan3D)
 			{
 				m_nodes_to_laser_scans3D[this->m_graph->nodeCount() - 1] =
 					m_last_laser_scan3D;
-				MRPT_LOG_DEBUG(mrpt::format("Added laser scans of nodeID: %u",(unsigned)(this->m_graph->nodeCount() - 1)));
+				MRPT_LOG_DEBUG(
+					mrpt::format(
+						"Added laser scans of nodeID: %u",
+						(unsigned)(this->m_graph->nodeCount() - 1)));
 			}
 		}
 	}
@@ -134,7 +140,8 @@ bool CICPCriteriaERD<GRAPH_T>::updateState(
 		this->getNearbyNodesOf(
 			&nodes_to_check_ICP, this->m_graph->nodeCount() - 1,
 			params.ICP_max_distance);
-		MRPT_LOG_DEBUG_FMT("Found * %lu * nodes close to nodeID %lu",
+		MRPT_LOG_DEBUG_FMT(
+			"Found * %lu * nodes close to nodeID %lu",
 			nodes_to_check_ICP.size(), this->m_graph->nodeCount() - 1);
 
 		// reset the loop_closure flag and run registration
@@ -309,7 +316,7 @@ void CICPCriteriaERD<GRAPH_T>::registerNewEdge(
 	const mrpt::graphs::TNodeID& from, const mrpt::graphs::TNodeID& to,
 	const constraint_t& rel_edge)
 {
-		parent_t::registerNewEdge(from, to, rel_edge);
+	parent_t::registerNewEdge(from, to, rel_edge);
 
 	this->m_graph->insertEdge(from, to, rel_edge);
 }
@@ -320,12 +327,12 @@ void CICPCriteriaERD<GRAPH_T>::getNearbyNodesOf(
 	const mrpt::graphs::TNodeID& cur_nodeID, double distance)
 {
 	MRPT_START;
-	
+
 	if (distance > 0)
 	{
 		// check all but the last node.
-		for (mrpt::graphs::TNodeID nodeID = 0; nodeID < this->m_graph->nodeCount() - 1;
-			 ++nodeID)
+		for (mrpt::graphs::TNodeID nodeID = 0;
+			 nodeID < this->m_graph->nodeCount() - 1; ++nodeID)
 		{
 			double curr_distance = this->m_graph->nodes[nodeID].distanceTo(
 				this->m_graph->nodes[cur_nodeID]);
@@ -368,7 +375,8 @@ void CICPCriteriaERD<GRAPH_T>::toggleLaserScansVisualization()
 
 	using namespace mrpt::opengl;
 
-	this->logFmt(mrpt::system::LVL_INFO, "Toggling LaserScans visualization...");
+	this->logFmt(
+		mrpt::system::LVL_INFO, "Toggling LaserScans visualization...");
 
 	COpenGLScene::Ptr scene = this->m_win->get3DSceneAndLock();
 
@@ -474,7 +482,7 @@ void CICPCriteriaERD<GRAPH_T>::updateVisuals()
 	MRPT_START;
 	this->m_time_logger.enter("CICPCriteriaERD::Visuals");
 	using namespace mrpt::opengl;
-		using namespace mrpt::math;
+	using namespace mrpt::math;
 	using namespace mrpt::poses;
 	parent_t::updateVisuals();
 
@@ -542,7 +550,7 @@ void CICPCriteriaERD<GRAPH_T>::dumpVisibilityErrorMsg(
 	std::string viz_flag, int sleep_time /* = 500 milliseconds */)
 {
 	MRPT_START;
-		using namespace mrpt;
+	using namespace mrpt;
 
 	MRPT_LOG_ERROR_FMT(
 		"Cannot toggle visibility of specified object.\n "
@@ -633,7 +641,8 @@ CICPCriteriaERD<GRAPH_T>::TParams::~TParams()
 }
 
 template <class GRAPH_T>
-void CICPCriteriaERD<GRAPH_T>::TParams::dumpToTextStream(std::ostream& out) const
+void CICPCriteriaERD<GRAPH_T>::TParams::dumpToTextStream(
+	std::ostream& out) const
 {
 	MRPT_START;
 
@@ -643,9 +652,12 @@ void CICPCriteriaERD<GRAPH_T>::TParams::dumpToTextStream(std::ostream& out) cons
 	out << mrpt::format(
 		"ICP goodness threshold         = %.2f%% \n",
 		ICP_goodness_thresh * 100);
-	out << mrpt::format("ICP max radius for edge search = %.2f\n", ICP_max_distance);
-	out << mrpt::format("Min. node difference for LC    = %lu\n", LC_min_nodeid_diff);
-	out << mrpt::format("Visualize laser scans          = %d\n", visualize_laser_scans);
+	out << mrpt::format(
+		"ICP max radius for edge search = %.2f\n", ICP_max_distance);
+	out << mrpt::format(
+		"Min. node difference for LC    = %lu\n", LC_min_nodeid_diff);
+	out << mrpt::format(
+		"Visualize laser scans          = %d\n", visualize_laser_scans);
 	out << mrpt::format(
 		"3DScans Image Directory        = %s\n",
 		scans_img_external_dir.c_str());

@@ -129,7 +129,7 @@ size_t find_descriptor_pairings(
 			static_cast<const KDTreeElementType*>(ptr_query),  // Query point
 			max_neighbors,  // Number of neigbors
 			&indices[0], &distances[0]  // Output
-		);
+			);
 
 		// Include all correspondences below the absolute and the relative
 		// threshold (indices comes ordered by distances):

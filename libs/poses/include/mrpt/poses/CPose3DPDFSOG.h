@@ -48,7 +48,9 @@ class CPose3DPDFSOG : public CPose3DPDF
 		double log_w;
 	};
 
-	using TModesList = std::vector<TGaussianMode, mrpt::aligned_allocator_cpp11<TGaussianMode>>;
+	using TModesList =
+		std::vector<TGaussianMode,
+					mrpt::aligned_allocator_cpp11<TGaussianMode>>;
 	using const_iterator = TModesList::const_iterator;
 	using iterator = TModesList::iterator;
 

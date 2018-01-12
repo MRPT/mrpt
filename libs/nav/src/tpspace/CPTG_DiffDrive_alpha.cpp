@@ -55,7 +55,8 @@ std::string CPTG_DiffDrive_alpha::getDescription() const
 	return std::string(str);
 }
 
-void CPTG_DiffDrive_alpha::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CPTG_DiffDrive_alpha::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	CPTG_DiffDrive_CollisionGridBased::internal_readFromStream(in);
 

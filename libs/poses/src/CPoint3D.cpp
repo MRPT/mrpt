@@ -20,7 +20,6 @@ using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 
-
 IMPLEMENTS_SERIALIZABLE(CPoint3D, CSerializable, mrpt::poses)
 
 /** Constructor from an CPoint2D object. */  // Here instead of in the .h to

@@ -45,7 +45,7 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 		mrpt::system::TParametersDouble viz_params) const
 {
 	using namespace mrpt::opengl;
-	
+
 	// graph visualization parameters
 	const bool show_ID_labels =
 		0 != viz_params.getWithDefaultVal("show_ID_labels", 0);
@@ -94,7 +94,7 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
 {
 	using namespace mrpt::opengl;
-		ASSERTMSG_(viz_params, "Pointer to viz_params was not provided.");
+	ASSERTMSG_(viz_params, "Pointer to viz_params was not provided.");
 
 	// Estimate bounding box.
 	mrpt::math::TPoint3D BB_min(-10., -10., 0.), BB_max(10., 10., 0.);
@@ -135,7 +135,7 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 
 	using namespace mrpt::opengl;
 	using namespace mrpt::img;
-	
+
 	const double nodes_point_size =
 		viz_params->getWithDefaultVal("nodes_point_size", 0.);
 	const unsigned int nodes_point_color = viz_params->getWithDefaultVal(
@@ -168,7 +168,7 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
 {
 	using namespace mrpt::opengl;
-		using mrpt::poses::CPose3D;
+	using mrpt::poses::CPose3D;
 
 	ASSERTMSG_(viz_params, "Pointer to viz_params was not provided.");
 
@@ -225,7 +225,7 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 		edge_rel_poses_color & 0xffffff, edge_rel_poses_color >> 24);
 	const double edge_width = viz_params->getWithDefaultVal("edge_width", 2.);
 
-	for (auto edge_it = m_graph.begin();edge_it != m_graph.end(); ++edge_it)
+	for (auto edge_it = m_graph.begin(); edge_it != m_graph.end(); ++edge_it)
 	{
 		// Node ID of the source pose:
 		const TNodeID node_id_start = m_graph.edges_store_inverse_poses

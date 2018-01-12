@@ -106,10 +106,10 @@ class CObservationVelodyneScan : public CObservation
 	static const uint8_t RETMODE_STRONGEST = 0x37;
 	static const uint8_t RETMODE_LAST = 0x38;
 	static const uint8_t RETMODE_DUAL = 0x39;
-	/** @} */
+/** @} */
 
-	/** @name Scan data
-		@{ */
+/** @name Scan data
+	@{ */
 
 #pragma pack(push, 1)
 	struct laser_return_t

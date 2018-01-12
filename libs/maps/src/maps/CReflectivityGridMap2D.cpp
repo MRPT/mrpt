@@ -231,7 +231,8 @@ double CReflectivityGridMap2D::internal_computeObservationLikelihood(
 }
 
 uint8_t CReflectivityGridMap2D::serializeGetVersion() const { return 3; }
-void CReflectivityGridMap2D::serializeTo(mrpt::serialization::CArchive& out) const
+void CReflectivityGridMap2D::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
 	dyngridcommon_writeToStream(out);
 
@@ -246,7 +247,8 @@ void CReflectivityGridMap2D::serializeTo(mrpt::serialization::CArchive& out) con
 	out << genericMapParams;  // v1
 }
 
-void CReflectivityGridMap2D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CReflectivityGridMap2D::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -278,7 +280,6 @@ void CReflectivityGridMap2D::serializeFrom(mrpt::serialization::CArchive& in, ui
 					TInsertionOptions
  ---------------------------------------------------------------*/
 CReflectivityGridMap2D::TInsertionOptions::TInsertionOptions() : channel(-1) {}
-
 void CReflectivityGridMap2D::TInsertionOptions::dumpToTextStream(
 	std::ostream& out) const
 {

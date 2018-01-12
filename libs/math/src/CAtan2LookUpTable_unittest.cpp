@@ -9,7 +9,7 @@
 
 #include <mrpt/math/CAtan2LookUpTable.h>
 #include <mrpt/random.h>
-#include <mrpt/core/bits_math.h> // DEG2RAD
+#include <mrpt/core/bits_math.h>  // DEG2RAD
 #include <gtest/gtest.h>
 #include <cmath>
 
@@ -34,8 +34,7 @@ void atan2_lut_test(
 
 		EXPECT_TRUE(atan2_lut_valid);
 		EXPECT_LT(
-			std::abs(atan2_good - atan2_lut),
-			mrpt::DEG2RAD(max_deg_errors))
+			std::abs(atan2_good - atan2_lut), mrpt::DEG2RAD(max_deg_errors))
 			<< "(x,y): (" << x << " , " << y << ")"
 			<< "\natan2_good:" << atan2_good << " atan2_lut:" << atan2_lut
 			<< std::endl;

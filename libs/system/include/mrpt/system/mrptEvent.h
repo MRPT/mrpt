@@ -35,7 +35,6 @@ class mrptEvent
    protected:
 	/** Just to allow this class to be polymorphic */
 	virtual void do_nothing() {}
-
    public:
 	/** Default ctor */
 	inline mrptEvent() : timestamp(mrpt::system::now()) {}
@@ -70,7 +69,6 @@ class mrptEventOnDestroy : public mrptEvent
    protected:
 	/** Just to allow this class to be polymorphic */
 	void do_nothing() override {}
-
    public:
 	inline mrptEventOnDestroy(const CObservable* obj) : source_object(obj) {}
 	const CObservable* source_object;

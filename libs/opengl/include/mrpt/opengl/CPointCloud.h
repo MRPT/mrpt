@@ -294,7 +294,6 @@ class CPointCloud : public CRenderizable,
 
 	/** Private, virtual destructor: only can be deleted from smart pointers */
 	virtual ~CPointCloud() {}
-
    private:
 	/** Buffer for min/max coords when m_colorFromDepth is true. */
 	mutable float m_min, m_max, m_max_m_min, m_max_m_min_inv;
@@ -312,8 +311,8 @@ class CPointCloud : public CRenderizable,
  * \ingroup mrpt_adapters_grp */
 template <>
 class PointCloudAdapter<mrpt::opengl::CPointCloud>
-	: public detail::PointCloudAdapterHelperNoRGB<
-		  mrpt::opengl::CPointCloud, float>
+	: public detail::PointCloudAdapterHelperNoRGB<mrpt::opengl::CPointCloud,
+												  float>
 {
    private:
 	mrpt::opengl::CPointCloud& m_obj;

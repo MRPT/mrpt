@@ -492,7 +492,8 @@ void CHMTSLAM::initializeEmptyMap()
 		// Create new list:
 		//  1: Occupancy Grid matching.
 		//  2: Cummins' image matching.
-		for (std::vector<std::string>::const_iterator d = m_options.TLC_detectors.begin();
+		for (std::vector<std::string>::const_iterator d =
+				 m_options.TLC_detectors.begin();
 			 d != m_options.TLC_detectors.end(); ++d)
 			m_topLCdets.push_back(loopClosureDetector_factory(*d));
 	}

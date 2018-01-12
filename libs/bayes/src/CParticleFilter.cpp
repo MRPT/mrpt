@@ -17,7 +17,7 @@
 #include <exception>  // for exception
 #include <string>  // for string, allocator
 #include <mrpt/system/COutputLogger.h>  // for COutputLogger, MRPT_L...
-#include <mrpt/core/bits_math.h> // square()
+#include <mrpt/core/bits_math.h>  // square()
 
 namespace mrpt
 {

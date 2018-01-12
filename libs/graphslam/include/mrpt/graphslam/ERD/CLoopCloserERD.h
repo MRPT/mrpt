@@ -370,8 +370,8 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	 * calling \a delete.
 	 */
 	void generateHypotsPool(
-		const std::vector<uint32_t>& groupA, const std::vector<uint32_t>& groupB,
-		hypotsp_t* generated_hypots,
+		const std::vector<uint32_t>& groupA,
+		const std::vector<uint32_t>& groupB, hypotsp_t* generated_hypots,
 		const TGenerateHypotsPoolAdParams* ad_params = NULL);
 	/**\brief Compute the pair-wise consistencies Matrix.
 	 *
@@ -392,8 +392,9 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	 * \sa evalPWConsistenciesMatrix
 	 */
 	void generatePWConsistenciesMatrix(
-		const std::vector<uint32_t>& groupA, const std::vector<uint32_t>& groupB,
-		const hypotsp_t& hypots_pool, mrpt::math::CMatrixDouble* consist_matrix,
+		const std::vector<uint32_t>& groupA,
+		const std::vector<uint32_t>& groupB, const hypotsp_t& hypots_pool,
+		mrpt::math::CMatrixDouble* consist_matrix,
 		const paths_t* groupA_opt_paths = NULL,
 		const paths_t* groupB_opt_paths = NULL);
 	/**\brief Evalute the consistencies matrix, fill the valid hypotheses
@@ -490,7 +491,7 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	*/
 	struct TLoopClosureParams : public mrpt::config::CLoadableOptions
 	{
-	public:
+	   public:
 		TLoopClosureParams();
 		~TLoopClosureParams();
 
@@ -809,8 +810,8 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	 *	 each group (Use -1 to disable this threshold).
 	 */
 	void splitPartitionToGroups(
-		std::vector<uint32_t>& partition, std::vector<uint32_t>* groupA, std::vector<uint32_t>* groupB,
-		int max_nodes_in_group = 5);
+		std::vector<uint32_t>& partition, std::vector<uint32_t>* groupA,
+		std::vector<uint32_t>* groupB, int max_nodes_in_group = 5);
 	/**\brief Assign the last recorded 2D Laser scan
 	 *
 	 * \note Compact way of assigning the last recorded laser scan for both

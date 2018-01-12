@@ -95,12 +95,14 @@ void CPose3DQuatPDFGaussian::getCovarianceAndMean(
 }
 
 uint8_t CPose3DQuatPDFGaussian::serializeGetVersion() const { return 0; }
-void CPose3DQuatPDFGaussian::serializeTo(mrpt::serialization::CArchive& out) const
+void CPose3DQuatPDFGaussian::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
 	out << mean;
 	mrpt::math::serializeSymmetricMatrixTo(cov, out);
 }
-void CPose3DQuatPDFGaussian::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CPose3DQuatPDFGaussian::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

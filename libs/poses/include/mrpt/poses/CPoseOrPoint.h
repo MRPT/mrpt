@@ -133,7 +133,6 @@ class CPoseOrPoint
 		return *static_cast<const DERIVEDCLASS*>(this);
 	}
 	DERIVEDCLASS& derived() { return *static_cast<DERIVEDCLASS*>(this); }
-
 	/** Common members of all points & poses classes.
 		@{ */
 	// Note: the access to "z" is implemented (only for 3D data types), in

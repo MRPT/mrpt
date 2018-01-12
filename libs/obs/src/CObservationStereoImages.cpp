@@ -130,9 +130,8 @@ void CObservationStereoImages::serializeFrom(
 			}
 			else
 				rightCameraPose = CPose3DQuat(
-					0.10f, 0, 0,
-					mrpt::math::CQuaternionDouble(
-						1, 0, 0, 0));  // For version 1 to 5
+					0.10f, 0, 0, mrpt::math::CQuaternionDouble(
+									 1, 0, 0, 0));  // For version 1 to 5
 
 			if (version >= 3 && version < 5)  // For versions 3 & 4
 			{

@@ -661,7 +661,8 @@ size_t vision::matchFeatures(
 							(*itList1)->patchSize > 0 &&
 							(*itList2)->patchSize == (*itList1)->patchSize);
 #if !MRPT_HAS_OPENCV
-						THROW_EXCEPTION("MRPT has been compiled without OpenCV");
+						THROW_EXCEPTION(
+							"MRPT has been compiled without OpenCV");
 #else
 						IplImage *aux1, *aux2;
 						if ((*itList1)->patch.isColor() &&
@@ -987,8 +988,7 @@ void vision::addFeaturesToImage(
 -------------------------------------------------------------*/
 void vision::projectMatchedFeatures(
 	const CMatchedFeatureList& matches,
-	const mrpt::img::TStereoCamera& stereo_camera,
-	vector<TPoint3D>& out_points)
+	const mrpt::img::TStereoCamera& stereo_camera, vector<TPoint3D>& out_points)
 {
 	out_points.clear();
 	out_points.reserve(matches.size());
@@ -2358,7 +2358,8 @@ void TStereoSystemParams::loadFromConfigFile(
   ---------------------------------------------------------------*/
 void TStereoSystemParams::dumpToTextStream(std::ostream& out) const
 {
-	out << mrpt::format("\n----------- [vision::TStereoSystemParams] ------------ \n");
+	out << mrpt::format(
+		"\n----------- [vision::TStereoSystemParams] ------------ \n");
 	out << mrpt::format("Method for 3D Uncert. \t= ");
 	switch (uncPropagation)
 	{
@@ -2391,7 +2392,8 @@ void TStereoSystemParams::dumpToTextStream(std::ostream& out) const
 	out << mrpt::format("k Factor [UT]\t\t= %f\n", factor_k);
 	out << mrpt::format("a Factor [UT]\t\t= %f\n", factor_a);
 	out << mrpt::format("b Factor [UT]\t\t= %f\n", factor_b);
-	out << mrpt::format("-------------------------------------------------------- \n");
+	out << mrpt::format(
+		"-------------------------------------------------------- \n");
 }
 
 /*-------------------------------------------------------------
@@ -2515,37 +2517,48 @@ void TMatchingOptions::loadFromConfigFile(
   ---------------------------------------------------------------*/
 void TMatchingOptions::dumpToTextStream(std::ostream& out) const
 {
-	out << mrpt::format("\n----------- [vision::TMatchingOptions] ------------ \n");
+	out << mrpt::format(
+		"\n----------- [vision::TMatchingOptions] ------------ \n");
 	out << mrpt::format("Matching method:                ");
 	switch (matching_method)
 	{
 		case mmCorrelation:
 			out << mrpt::format("Cross Correlation\n");
-			out << mrpt::format("· Min. CC. Threshold:           %f\n", minCC_TH);
-			out << mrpt::format("· Min. Dif. CC Threshold:       %f\n", minDCC_TH);
+			out << mrpt::format(
+				"· Min. CC. Threshold:           %f\n", minCC_TH);
+			out << mrpt::format(
+				"· Min. Dif. CC Threshold:       %f\n", minDCC_TH);
 			out << mrpt::format("· Max. Ratio CC Threshold:      %f\n", rCC_TH);
 			break;
 		case mmDescriptorSIFT:
 			out << mrpt::format("SIFT descriptor\n");
-			out << mrpt::format("· Max. EDD Threshold:           %f\n", maxEDD_TH);
-			out << mrpt::format("· EDD Ratio:                    %f\n", EDD_RATIO);
+			out << mrpt::format(
+				"· Max. EDD Threshold:           %f\n", maxEDD_TH);
+			out << mrpt::format(
+				"· EDD Ratio:                    %f\n", EDD_RATIO);
 			break;
 		case mmDescriptorSURF:
 			out << mrpt::format("SURF descriptor\n");
-			out << mrpt::format("· EDD Ratio:                    %f\n", maxEDSD_TH);
-			out << mrpt::format("· Min. CC Threshold:            %f\n", EDSD_RATIO);
+			out << mrpt::format(
+				"· EDD Ratio:                    %f\n", maxEDSD_TH);
+			out << mrpt::format(
+				"· Min. CC Threshold:            %f\n", EDSD_RATIO);
 			break;
 		case mmSAD:
 			out << mrpt::format("SAD\n");
-			out << mrpt::format("· Max. Dif. SAD Threshold:      %f\n", maxSAD_TH);
-			out << mrpt::format("· Ratio SAD Threshold:          %f\n", SAD_RATIO);
+			out << mrpt::format(
+				"· Max. Dif. SAD Threshold:      %f\n", maxSAD_TH);
+			out << mrpt::format(
+				"· Ratio SAD Threshold:          %f\n", SAD_RATIO);
 			break;
 		case mmDescriptorORB:
 			out << mrpt::format("ORB\n");
-			out << mrpt::format("· Max. distance between desc:	%f\n", maxORB_dist);
+			out << mrpt::format(
+				"· Max. distance between desc:	%f\n", maxORB_dist);
 			break;
 	}  // end switch
-	out << mrpt::format("Epipolar Thres:                 %.2f px\n", epipolar_TH);
+	out << mrpt::format(
+		"Epipolar Thres:                 %.2f px\n", epipolar_TH);
 	out << mrpt::format("Using epipolar restriction?:    ");
 	out << mrpt::format(useEpipolarRestriction ? "Yes\n" : "No\n");
 	out << mrpt::format("Has Fundamental Matrix?:        ");
@@ -2564,14 +2577,19 @@ void TMatchingOptions::dumpToTextStream(std::ostream& out) const
 	out << mrpt::format(estimateDepth ? "Yes\n" : "No\n");
 	if (estimateDepth)
 	{
-		//        out << mrpt::format("· Focal length:                 %f px\n", fx);
-		//        out << mrpt::format("· Principal Point (cx):         %f px\n", cx);
-		//        out << mrpt::format("· Principal Point (cy):         %f px\n", cy);
+		//        out << mrpt::format("· Focal length:                 %f px\n",
+		//        fx);
+		//        out << mrpt::format("· Principal Point (cx):         %f px\n",
+		//        cx);
+		//        out << mrpt::format("· Principal Point (cy):         %f px\n",
+		//        cy);
 		//        out << mrpt::format("· Baseline:                     %f m\n",
 		//        baseline);
-		out << mrpt::format("· Maximum depth allowed:        %f m\n", maxDepthThreshold);
+		out << mrpt::format(
+			"· Maximum depth allowed:        %f m\n", maxDepthThreshold);
 	}
 	out << mrpt::format("Add matches to list?:           ");
 	out << mrpt::format(addMatches ? "Yes\n" : "No\n");
-	out << mrpt::format("-------------------------------------------------------- \n");
+	out << mrpt::format(
+		"-------------------------------------------------------- \n");
 }  // end TMatchingOptions::dumpToTextStream

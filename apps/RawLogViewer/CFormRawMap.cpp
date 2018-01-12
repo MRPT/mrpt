@@ -796,12 +796,14 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent&)
 		plotMap->AddLayer(new mpScaleY());
 
 		if (decimation > 1)
-			lbCount->SetLabel(wxString::Format(
-				_("Point count=%u\n(Decimation=%u)"), unsigned(Xs.size()),
-				unsigned(decimation)));
+			lbCount->SetLabel(
+				wxString::Format(
+					_("Point count=%u\n(Decimation=%u)"), unsigned(Xs.size()),
+					unsigned(decimation)));
 		else
-			lbCount->SetLabel(wxString::Format(
-				_("Point count=%u\n(No decimation)"), unsigned(Xs.size())));
+			lbCount->SetLabel(
+				wxString::Format(
+					_("Point count=%u\n(No decimation)"), unsigned(Xs.size())));
 	}
 
 	// Enable "results" buttons:
@@ -1220,12 +1222,14 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent&)
 		plotMap->AddLayer(new mpScaleY());
 
 		if (decimation > 1)
-			lbCount->SetLabel(wxString::Format(
-				_("Point count=%u\n(Decimation=%u)"), unsigned(Xs.size()),
-				unsigned(decimation)));
+			lbCount->SetLabel(
+				wxString::Format(
+					_("Point count=%u\n(Decimation=%u)"), unsigned(Xs.size()),
+					unsigned(decimation)));
 		else
-			lbCount->SetLabel(wxString::Format(
-				_("Point count=%u\n(No decimation)"), unsigned(Xs.size())));
+			lbCount->SetLabel(
+				wxString::Format(
+					_("Point count=%u\n(No decimation)"), unsigned(Xs.size())));
 	}
 
 	lbLength->SetLabel(
@@ -1385,12 +1389,15 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
 				square(cfg.read_double("ERROR_SENSOR_POSES", "std_y", 1e-3));
 			COV_sensor_local(2, 2) =
 				square(cfg.read_double("ERROR_SENSOR_POSES", "std_z", 1e-3));
-			COV_sensor_local(3, 3) = square(DEG2RAD(
-				cfg.read_double("ERROR_SENSOR_POSES", "std_yaw", 1e-3)));
-			COV_sensor_local(4, 4) = square(DEG2RAD(
-				cfg.read_double("ERROR_SENSOR_POSES", "std_pitch", 1e-3)));
-			COV_sensor_local(5, 5) = square(DEG2RAD(
-				cfg.read_double("ERROR_SENSOR_POSES", "std_roll", 1e-3)));
+			COV_sensor_local(3, 3) = square(
+				DEG2RAD(
+					cfg.read_double("ERROR_SENSOR_POSES", "std_yaw", 1e-3)));
+			COV_sensor_local(4, 4) = square(
+				DEG2RAD(
+					cfg.read_double("ERROR_SENSOR_POSES", "std_pitch", 1e-3)));
+			COV_sensor_local(5, 5) = square(
+				DEG2RAD(
+					cfg.read_double("ERROR_SENSOR_POSES", "std_roll", 1e-3)));
 		}
 
 		ASSERT_(COV_sensor_local.rows() == 6 && COV_sensor_local.isSquare());

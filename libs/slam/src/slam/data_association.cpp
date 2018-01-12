@@ -73,7 +73,8 @@ double joint_pdf_metric(
 	// "currentAssociation":
 	const size_t N = info.currentAssociation.size();
 	ASSERT_(N > 0);
-	std::vector<size_t> indices_pred(N);  // Appearance order indices in the std::maps
+	std::vector<size_t> indices_pred(
+		N);  // Appearance order indices in the std::maps
 	std::vector<size_t> indices_obs(N);
 
 	{

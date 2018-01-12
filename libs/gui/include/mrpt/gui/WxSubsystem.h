@@ -359,9 +359,7 @@ class CWindowDialog : public wxFrame
 		void OnMouseClick(wxMouseEvent& ev);
 		void OnChar(wxKeyEvent& ev);
 
-		void OnEraseBackground(wxEraseEvent& ev)
-		{ /* Do nothing */
-		}
+		void OnEraseBackground(wxEraseEvent& ev) { /* Do nothing */}
 	};
 
    public:

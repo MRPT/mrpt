@@ -19,12 +19,14 @@ using namespace mrpt::poses;
 IMPLEMENTS_SERIALIZABLE(CObservationWindSensor, CObservation, mrpt::obs)
 
 uint8_t CObservationWindSensor::serializeGetVersion() const { return 3; }
-void CObservationWindSensor::serializeTo(mrpt::serialization::CArchive& out) const
+void CObservationWindSensor::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
 	out << speed << direction << sensorLabel << timestamp << sensorPoseOnRobot;
 }
 
-void CObservationWindSensor::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CObservationWindSensor::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

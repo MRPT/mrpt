@@ -185,8 +185,7 @@ void CFrustum::setNearFarPlanes(
 }
 void CFrustum::setHorzFOV(const float fov_horz_degrees)
 {
-	m_fov_horz_right = m_fov_horz_left =
-		0.5f * mrpt::DEG2RAD(fov_horz_degrees);
+	m_fov_horz_right = m_fov_horz_left = 0.5f * mrpt::DEG2RAD(fov_horz_degrees);
 	keep_min(m_fov_horz_left, DEG2RAD(89.9f));
 	keep_max(m_fov_horz_left, 0);
 	keep_min(m_fov_horz_right, DEG2RAD(89.9f));
@@ -195,8 +194,7 @@ void CFrustum::setHorzFOV(const float fov_horz_degrees)
 }
 void CFrustum::setVertFOV(const float fov_vert_degrees)
 {
-	m_fov_vert_down = m_fov_vert_up =
-		0.5f * mrpt::DEG2RAD(fov_vert_degrees);
+	m_fov_vert_down = m_fov_vert_up = 0.5f * mrpt::DEG2RAD(fov_vert_degrees);
 	keep_min(m_fov_vert_down, DEG2RAD(89.9f));
 	keep_max(m_fov_vert_down, 0);
 	keep_min(m_fov_vert_up, DEG2RAD(89.9f));

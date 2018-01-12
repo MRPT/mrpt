@@ -133,7 +133,6 @@ CPose3D::CPose3D(const CPose3DRotVec& p)
 	this->setRotationMatrix(this->exp_rotation(p.m_rotvec));
 }
 
-
 uint8_t CPose3D::serializeGetVersion() const { return 2; }
 void CPose3D::serializeTo(mrpt::serialization::CArchive& out) const
 {
@@ -786,10 +785,9 @@ void CPose3D::exp(
 CArrayDouble<3> CPose3D::ln_rotation() const
 {
 	Sophus::SO3<double> R(this->m_ROT);
-	const auto &r = R.log();
+	const auto& r = R.log();
 	CArrayDouble<3> ret;
-	for (int i = 0; i < 3; i++)
-		ret[i] = r[i];
+	for (int i = 0; i < 3; i++) ret[i] = r[i];
 	return ret;
 }
 
@@ -1047,5 +1045,5 @@ void CPose3D::setToNaN()
 
 mrpt::math::TPose3D CPose3D::asTPose() const
 {
-	return mrpt::math::TPose3D(x(), y(),z(), yaw(), pitch(), roll());
+	return mrpt::math::TPose3D(x(), y(), z(), yaw(), pitch(), roll());
 }

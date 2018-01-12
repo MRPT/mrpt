@@ -16,20 +16,22 @@ using namespace mrpt::serialization;
 
 namespace MyNS
 {
-	class Foo : public CSerializable
-	{
-		DEFINE_SERIALIZABLE(Foo)
-	public:
-		int16_t value;
-	};
-
+class Foo : public CSerializable
+{
+	DEFINE_SERIALIZABLE(Foo)
+   public:
+	int16_t value;
+};
 }
 
 IMPLEMENTS_SERIALIZABLE(Foo, CSerializable, MyNS);
 
 uint8_t MyNS::Foo::serializeGetVersion() const { return 0; }
 void MyNS::Foo::serializeTo(CArchive& out) const { out << value; }
-void MyNS::Foo::serializeFrom(CArchive& in, uint8_t serial_version) { in >> value; }
+void MyNS::Foo::serializeFrom(CArchive& in, uint8_t serial_version)
+{
+	in >> value;
+}
 
 TEST(Serialization, CustomClassSerialize)
 {

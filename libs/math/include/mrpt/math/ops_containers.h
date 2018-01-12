@@ -110,9 +110,8 @@ inline void cumsum_tmpl(const CONTAINER1& in_data, CONTAINER2& out_cumsum)
 template <class CONTAINER1, class CONTAINER2>
 inline void cumsum(const CONTAINER1& in_data, CONTAINER2& out_cumsum)
 {
-	cumsum_tmpl<
-		CONTAINER1, CONTAINER2,
-		typename mrpt::math::ContainerType<CONTAINER2>::element_t>(
+	cumsum_tmpl<CONTAINER1, CONTAINER2,
+				typename mrpt::math::ContainerType<CONTAINER2>::element_t>(
 		in_data, out_cumsum);
 }
 

@@ -179,7 +179,8 @@ void CPosePDFParticles::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeParticlesToStream(out);
 }
-void CPosePDFParticles::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CPosePDFParticles::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

@@ -24,7 +24,6 @@ using namespace mrpt::io;
 using namespace std;
 
 CStream::~CStream() {}
-
 /*---------------------------------------------------------------
 			Writes an elemental data type to stream.
  ---------------------------------------------------------------*/

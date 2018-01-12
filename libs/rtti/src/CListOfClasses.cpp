@@ -61,7 +61,6 @@ static inline std::string& rtrim(std::string& s)
 
 // trim from both ends
 static inline std::string& trim(std::string& s) { return ltrim(rtrim(s)); }
-
 void CListOfClasses::fromString(const std::string& s)
 {
 	MRPT_TRY_START

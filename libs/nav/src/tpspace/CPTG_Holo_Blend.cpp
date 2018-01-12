@@ -263,7 +263,8 @@ std::string CPTG_Holo_Blend::getDescription() const
 		W_MAX);
 }
 
-void CPTG_Holo_Blend::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CPTG_Holo_Blend::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	CParameterizedTrajectoryGenerator::internal_readFromStream(in);
 
@@ -426,8 +427,7 @@ mrpt::kinematics::CVehicleVelCmd::Ptr CPTG_Holo_Blend::directionToMotionCommand(
 	cmd->vel = internal_get_v(dir_local);
 	cmd->dir_local = dir_local;
 	cmd->ramp_time = internal_get_T_ramp(dir_local);
-	cmd->rot_speed =
-		mrpt::signWithZero(dir_local) * internal_get_w(dir_local);
+	cmd->rot_speed = mrpt::signWithZero(dir_local) * internal_get_w(dir_local);
 
 	return mrpt::kinematics::CVehicleVelCmd::Ptr(cmd);
 }
@@ -459,8 +459,7 @@ void CPTG_Holo_Blend::getPathPose(
 	const double t = PATH_TIME_STEP * step;
 	const double dir = CParameterizedTrajectoryGenerator::index2alpha(k);
 	COMMON_PTG_DESIGN_PARAMS;
-	const double wf =
-		mrpt::signWithZero(dir) * this->internal_get_w(dir);
+	const double wf = mrpt::signWithZero(dir) * this->internal_get_w(dir);
 	const double TR2_ = 1.0 / (2 * T_ramp);
 
 	// Translational part:

@@ -212,7 +212,7 @@ bool math::loadVector(std::istream& f, ::std::vector<int>& d)
 	MRPT_START
 
 	std::string str;
-	if (!std::getline(f,str)) return false;
+	if (!std::getline(f, str)) return false;
 
 	const char* s = str.c_str();
 
@@ -236,7 +236,7 @@ bool math::loadVector(std::istream& f, ::std::vector<double>& d)
 	MRPT_START
 
 	std::string str;
-	if (!std::getline(f,str)) return false;
+	if (!std::getline(f, str)) return false;
 
 	const char* s = str.c_str();
 
@@ -430,7 +430,7 @@ string math::MATLAB_plotCovariance2D(
 	return str;
 	MRPT_END_WITH_CLEAN_UP(
 		std::cerr << "The matrix that led to error was: " << std::endl
-			 << cov << std::endl;)
+				  << cov << std::endl;)
 }
 
 double mrpt::math::interpolate2points(
@@ -610,28 +610,27 @@ double mrpt::math::noncentralChi2CDF(
 	return 0.5 * (1.0 + std::erf(t / std::sqrt(2.0)));
 }
 
-
 CArchive& mrpt::math::operator>>(CArchive& s, CVectorFloat& v)
 {
 	v.resize(s.ReadAs<uint32_t>());
-	if (v.size()>0) s.ReadBufferFixEndianness(&v[0], v.size());
+	if (v.size() > 0) s.ReadBufferFixEndianness(&v[0], v.size());
 	return s;
 }
 CArchive& mrpt::math::operator>>(CArchive& s, CVectorDouble& v)
 {
 	v.resize(s.ReadAs<uint32_t>());
-	if (v.size()>0) s.ReadBufferFixEndianness(&v[0], v.size());
+	if (v.size() > 0) s.ReadBufferFixEndianness(&v[0], v.size());
 	return s;
 }
 CArchive& mrpt::math::operator<<(CArchive& s, const CVectorFloat& v)
 {
 	s.WriteAs<uint32_t>(v.size());
-	if (v.size()>0) s.WriteBufferFixEndianness(&v[0], v.size());
+	if (v.size() > 0) s.WriteBufferFixEndianness(&v[0], v.size());
 	return s;
 }
 CArchive& mrpt::math::operator<<(CArchive& s, const CVectorDouble& v)
 {
 	s.WriteAs<uint32_t>(v.size());
-	if (v.size()>0) s.WriteBufferFixEndianness(&v[0], v.size());
+	if (v.size() > 0) s.WriteBufferFixEndianness(&v[0], v.size());
 	return s;
 }

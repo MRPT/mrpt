@@ -530,8 +530,7 @@ void CGPSInterface::parseBuffer()
 				size_t this_parser_min_bytes;
 				if ((*this.*parser_ptr)(this_parser_min_bytes))
 					all_parsers_want_to_skip = false;
-				mrpt::keep_max(
-					global_min_bytes_max, this_parser_min_bytes);
+				mrpt::keep_max(global_min_bytes_max, this_parser_min_bytes);
 			}
 
 			if (all_parsers_want_to_skip)

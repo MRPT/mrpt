@@ -46,8 +46,8 @@ TEST(CObservation3DRangeScan, Project3D_noFilter)
 		fillSampleObs(o, pp, i);
 
 		o.project3DPointsFromDepthImageInto(o, pp, fp);
-		EXPECT_EQ(o.points3D_x.size(), 21U)
-			<< " testcase flags: i=" << i << std::endl;
+		EXPECT_EQ(o.points3D_x.size(), 21U) << " testcase flags: i=" << i
+											<< std::endl;
 	}
 }
 
@@ -73,8 +73,8 @@ TEST(CObservation3DRangeScan, Project3D_filterMinMax1)
 		fp.rangeCheckBetween = (i & 8) != 0;
 
 		o.project3DPointsFromDepthImageInto(o, pp, fp);
-		EXPECT_EQ(o.points3D_x.size(), 20U)
-			<< " testcase flags: i=" << i << std::endl;
+		EXPECT_EQ(o.points3D_x.size(), 20U) << " testcase flags: i=" << i
+											<< std::endl;
 	}
 }
 
@@ -155,8 +155,8 @@ TEST(CObservation3DRangeScan, Project3D_filterMin)
 		fillSampleObs(o, pp, i);
 
 		o.project3DPointsFromDepthImageInto(o, pp, fp);
-		EXPECT_EQ(o.points3D_x.size(), 6U)
-			<< " testcase flags: i=" << i << std::endl;
+		EXPECT_EQ(o.points3D_x.size(), 6U) << " testcase flags: i=" << i
+										   << std::endl;
 	}
 }
 
@@ -179,7 +179,7 @@ TEST(CObservation3DRangeScan, Project3D_filterMax)
 		fillSampleObs(o, pp, i);
 
 		o.project3DPointsFromDepthImageInto(o, pp, fp);
-		EXPECT_EQ(o.points3D_x.size(), 3U)
-			<< " testcase flags: i=" << i << std::endl;
+		EXPECT_EQ(o.points3D_x.size(), 3U) << " testcase flags: i=" << i
+										   << std::endl;
 	}
 }

@@ -130,11 +130,7 @@ class CPoint : public CPoseOrPoint<DERIVEDCLASS>
 	{
 		return static_cast<const DERIVEDCLASS*>(this)->m_coords[i];
 	}
-	inline double& operator[](unsigned int i)
-	{
-		return derived().m_coords[i];
-	}
-
+	inline double& operator[](unsigned int i) { return derived().m_coords[i]; }
 	/** @} */
 
 };  // End of class def.

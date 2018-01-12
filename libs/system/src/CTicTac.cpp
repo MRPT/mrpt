@@ -23,7 +23,7 @@
 #include <type_traits>
 static_assert(
 	!std::is_copy_constructible<mrpt::system::CTicTac>::value &&
-	!std::is_copy_assignable<mrpt::system::CTicTac>::value,
+		!std::is_copy_assignable<mrpt::system::CTicTac>::value,
 	"Copy Check");
 
 // For Windows: get the common code out of CTicTac so it's only run once!

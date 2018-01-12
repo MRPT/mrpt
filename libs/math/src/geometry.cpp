@@ -613,7 +613,7 @@ math::TPolygonWithPlane::TPolygonWithPlane(const TPolygon3D& p) : poly(p)
 {
 	poly.getBestFittingPlane(plane);
 	plane.getAsPose3D(pose);
-	//inversePose = -pose;
+	// inversePose = -pose;
 	CMatrixDouble44 P_inv;
 	pose.getInverseHomogeneousMatrix(P_inv);
 	inversePose.fromHomogeneousMatrix(P_inv);
@@ -1103,10 +1103,11 @@ void math::project3D(
 	// newPlane.coefs[3]=plane.evaluatePoint(TPoint3D(TPose3D(0,0,0,0,0,0)-newXYpose))*sqrt((newPlane.coefs[0]*newPlane.coefs[0]+newPlane.coefs[1]*newPlane.coefs[1]+newPlane.coefs[2]*newPlane.coefs[2])/(plane.coefs[0]*plane.coefs[0]+plane.coefs[1]*plane.coefs[1]+plane.coefs[2]*plane.coefs[2]));
 	CMatrixDouble44 HMinv;
 	newXYpose.getInverseHomogeneousMatrix(HMinv);
-	newPlane.coefs[3] = plane.evaluatePoint(TPoint3D(HMinv(0, 3), HMinv(1, 3), HMinv(2, 3)) ) *
-						sqrt(
-							squareNorm<3, double>(newPlane.coefs) /
-							squareNorm<3, double>(plane.coefs));
+	newPlane.coefs[3] =
+		plane.evaluatePoint(TPoint3D(HMinv(0, 3), HMinv(1, 3), HMinv(2, 3))) *
+		sqrt(
+			squareNorm<3, double>(newPlane.coefs) /
+			squareNorm<3, double>(plane.coefs));
 	newPlane.unitarize();
 }
 
@@ -1170,8 +1171,7 @@ void math::project3D(
 }
 
 void math::project2D(
-	const TPoint2D& point, const TPose2D& newXpose,
-	TPoint2D& newPoint)
+	const TPoint2D& point, const TPose2D& newXpose, TPoint2D& newPoint)
 {
 	newXpose.composePoint(point, newPoint);
 }

@@ -46,9 +46,8 @@ enum TKFMethod
 };
 
 // Forward declaration:
-template <
-	size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
-	typename KFTYPE>
+template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
+		  typename KFTYPE>
 class CKalmanFilterCapable;
 
 /** Generic options for the Kalman Filter algorithm in itself.
@@ -138,51 +137,47 @@ struct TKF_options : public mrpt::config::CLoadableOptions
 namespace detail
 {
 // Auxiliary functions.
-template <
-	size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
-	typename KFTYPE>
+template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
+		  typename KFTYPE>
 inline size_t getNumberOfLandmarksInMap(
 	const CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>&
 		obj);
 // Specialization:
 template <size_t VEH_SIZE, size_t OBS_SIZE, size_t ACT_SIZE, typename KFTYPE>
 inline size_t getNumberOfLandmarksInMap(
-	const CKalmanFilterCapable<
-		VEH_SIZE, OBS_SIZE, 0 /*FEAT_SIZE*/, ACT_SIZE, KFTYPE>& obj);
+	const CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, 0 /*FEAT_SIZE*/, ACT_SIZE,
+							   KFTYPE>& obj);
 
-template <
-	size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
-	typename KFTYPE>
+template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
+		  typename KFTYPE>
 inline bool isMapEmpty(
 	const CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>&
 		obj);
 // Specialization:
 template <size_t VEH_SIZE, size_t OBS_SIZE, size_t ACT_SIZE, typename KFTYPE>
 inline bool isMapEmpty(
-	const CKalmanFilterCapable<
-		VEH_SIZE, OBS_SIZE, 0 /*FEAT_SIZE*/, ACT_SIZE, KFTYPE>& obj);
+	const CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, 0 /*FEAT_SIZE*/, ACT_SIZE,
+							   KFTYPE>& obj);
 
-template <
-	size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
-	typename KFTYPE>
+template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
+		  typename KFTYPE>
 void addNewLandmarks(
 	CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>& obj,
-	const typename CKalmanFilterCapable<
-		VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::vector_KFArray_OBS& Z,
+	const typename CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
+										KFTYPE>::vector_KFArray_OBS& Z,
 	const std::vector<int>& data_association,
-	const typename CKalmanFilterCapable<
-		VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::KFMatrix_OxO& R);
+	const typename CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
+										KFTYPE>::KFMatrix_OxO& R);
 template <size_t VEH_SIZE, size_t OBS_SIZE, size_t ACT_SIZE, typename KFTYPE>
 void addNewLandmarks(
-	CKalmanFilterCapable<
-		VEH_SIZE, OBS_SIZE, 0 /* FEAT_SIZE=0 */, ACT_SIZE, KFTYPE>& obj,
-	const typename CKalmanFilterCapable<
-		VEH_SIZE, OBS_SIZE, 0 /* FEAT_SIZE=0 */, ACT_SIZE,
-		KFTYPE>::vector_KFArray_OBS& Z,
+	CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, 0 /* FEAT_SIZE=0 */, ACT_SIZE,
+						 KFTYPE>& obj,
+	const typename CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, 0 /* FEAT_SIZE=0 */,
+										ACT_SIZE, KFTYPE>::vector_KFArray_OBS&
+		Z,
 	const std::vector<int>& data_association,
-	const typename CKalmanFilterCapable<
-		VEH_SIZE, OBS_SIZE, 0 /* FEAT_SIZE=0 */, ACT_SIZE,
-		KFTYPE>::KFMatrix_OxO& R);
+	const typename CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, 0 /* FEAT_SIZE=0 */,
+										ACT_SIZE, KFTYPE>::KFMatrix_OxO& R);
 }  // namespace detail
 
 /** Virtual base for Kalman Filter (EKF,IEKF,UKF) implementations.
@@ -224,9 +219,8 @@ void addNewLandmarks(
  *  \sa mrpt::slam::CRangeBearingKFSLAM, mrpt::slam::CRangeBearingKFSLAM2D
  * \ingroup mrpt_bayes_grp
  */
-template <
-	size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
-	typename KFTYPE = double>
+template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
+		  typename KFTYPE = double>
 class CKalmanFilterCapable : public mrpt::system::COutputLogger
 {
    public:
@@ -242,8 +236,8 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	/** The numeric type used in the Kalman Filter (default=double) */
 	typedef KFTYPE kftype;
 	/** My class, in a shorter name! */
-	typedef CKalmanFilterCapable<
-		VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>
+	typedef CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
+								 KFTYPE>
 		KFCLASS;
 
 	// ---------- Many useful typedefs to short the notation a bit... --------
@@ -668,18 +662,17 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 		const KFArray_FEAT& x, const std::pair<KFCLASS*, size_t>& dat,
 		KFArray_OBS& out_x);
 
-	template <
-		size_t VEH_SIZEb, size_t OBS_SIZEb, size_t FEAT_SIZEb, size_t ACT_SIZEb,
-		typename KFTYPEb>
+	template <size_t VEH_SIZEb, size_t OBS_SIZEb, size_t FEAT_SIZEb,
+			  size_t ACT_SIZEb, typename KFTYPEb>
 	friend void detail::addNewLandmarks(
-		CKalmanFilterCapable<
-			VEH_SIZEb, OBS_SIZEb, FEAT_SIZEb, ACT_SIZEb, KFTYPEb>& obj,
-		const typename CKalmanFilterCapable<
-			VEH_SIZEb, OBS_SIZEb, FEAT_SIZEb, ACT_SIZEb,
-			KFTYPEb>::vector_KFArray_OBS& Z,
+		CKalmanFilterCapable<VEH_SIZEb, OBS_SIZEb, FEAT_SIZEb, ACT_SIZEb,
+							 KFTYPEb>& obj,
+		const typename CKalmanFilterCapable<VEH_SIZEb, OBS_SIZEb, FEAT_SIZEb,
+											ACT_SIZEb,
+											KFTYPEb>::vector_KFArray_OBS& Z,
 		const std::vector<int>& data_association,
-		const typename CKalmanFilterCapable<
-			VEH_SIZEb, OBS_SIZEb, FEAT_SIZEb, ACT_SIZEb, KFTYPEb>::KFMatrix_OxO&
+		const typename CKalmanFilterCapable<VEH_SIZEb, OBS_SIZEb, FEAT_SIZEb,
+											ACT_SIZEb, KFTYPEb>::KFMatrix_OxO&
 			R);
 };  // end class
 

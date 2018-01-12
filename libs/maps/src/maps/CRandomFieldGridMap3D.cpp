@@ -202,7 +202,8 @@ CRandomFieldGridMap3D::TInsertionOptions::TInsertionOptions()
 void CRandomFieldGridMap3D::TInsertionOptions::dumpToTextStream(
 	std::ostream& out) const
 {
-	out << mrpt::format("GMRF_lambdaPrior                     = %f\n", GMRF_lambdaPrior);
+	out << mrpt::format(
+		"GMRF_lambdaPrior                     = %f\n", GMRF_lambdaPrior);
 	out << mrpt::format(
 		"GMRF_skip_variance                   = %s\n",
 		GMRF_skip_variance ? "true" : "false");
@@ -262,7 +263,7 @@ bool mrpt::maps::CRandomFieldGridMap3D::saveAsCSV(
 	}
 	else
 	{
-		f_mean<< "x coord, y coord, z coord, scalar\n";
+		f_mean << "x coord, y coord, z coord, scalar\n";
 	}
 
 	if (!filName_stddev.empty())
@@ -378,7 +379,8 @@ bool CRandomFieldGridMap3D::insertIndividualReading(
 }
 
 uint8_t CRandomFieldGridMap3D::serializeGetVersion() const { return 0; }
-void CRandomFieldGridMap3D::serializeTo(mrpt::serialization::CArchive& out) const
+void CRandomFieldGridMap3D::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
 	dyngridcommon_writeToStream(out);
 
@@ -403,7 +405,8 @@ void CRandomFieldGridMap3D::serializeTo(mrpt::serialization::CArchive& out) cons
 		<< insertionOptions.GMRF_skip_variance;
 }
 
-void CRandomFieldGridMap3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CRandomFieldGridMap3D::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

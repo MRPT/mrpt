@@ -875,8 +875,7 @@ class CMyReactInterface
 		legend.append("--------------------------------------------\n");
 		legend.append(format("\n        %.02fFPS", window.getRenderingFPS()));
 
-		window.addTextMessage(
-			5, 180, legend, TColorf(1, 1, 1), "Arial", 13);
+		window.addTextMessage(5, 180, legend, TColorf(1, 1, 1), "Arial", 13);
 		window.repaint();
 	}
 
@@ -958,8 +957,7 @@ class CMyReactInterface
 		legend.append("--------------------------------------------\n");
 		legend.append(format("\n        %.02fFPS", window.getRenderingFPS()));
 
-		window.addTextMessage(
-			5, 180, legend, TColorf(1, 1, 1), "Arial", 13);
+		window.addTextMessage(5, 180, legend, TColorf(1, 1, 1), "Arial", 13);
 		window.repaint();
 	}
 

@@ -81,5 +81,5 @@ TEST(TTypeName, types2stdstring)
 	auto st1 = TTypeName<uint8_t>::get();
 	const std::string s1(st1.c_str());
 	const std::string s2("uint8_t");
-	EXPECT_STREQ(s1.c_str(),s2.c_str());
+	EXPECT_STREQ(s1.c_str(), s2.c_str());
 }

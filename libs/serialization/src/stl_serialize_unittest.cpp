@@ -17,7 +17,7 @@ using namespace mrpt::serialization;
 
 TEST(Serialization, STL_stdvector)
 {
-	std::vector<uint32_t> m2, m1 { 1,2,3 };
+	std::vector<uint32_t> m2, m1{1, 2, 3};
 
 	mrpt::io::CMemoryStream f;
 	auto arch = mrpt::serialization::archiveFrom(f);
@@ -46,8 +46,8 @@ TEST(Serialization, STL_stdmap)
 
 TEST(Serialization, STL_complex_error_type)
 {
-	std::map<double, std::array<uint8_t, 2> >  v1;
-	std::map<double, std::array<int8_t, 2> >   v2;  // different type!
+	std::map<double, std::array<uint8_t, 2>> v1;
+	std::map<double, std::array<int8_t, 2>> v2;  // different type!
 
 	v1[0.4].fill(2);
 
@@ -62,9 +62,8 @@ TEST(Serialization, STL_complex_error_type)
 		arch >> v2;
 		EXPECT_TRUE(false) << "Expected exception that was not raised!";
 	}
-	catch (std::exception &)
+	catch (std::exception&)
 	{
 		// Good.
 	}
-
 }

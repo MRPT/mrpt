@@ -474,7 +474,8 @@ void recursive_render(
 				{
 					glTexCoord2f(
 						mesh->mTextureCoords[0][vertexIndex].x,
-						1 - mesh->mTextureCoords[0][vertexIndex]
+						1 -
+							mesh->mTextureCoords[0][vertexIndex]
 								.y);  // mTextureCoords[channel][vertex]
 				}
 
@@ -619,9 +620,10 @@ void load_textures(
 			// Prepare image data types:
 			const GLenum img_type = GL_UNSIGNED_BYTE;
 			const int nBytesPerPixel = img_rgb->isColor() ? 3 : 1;
-			const bool is_RGB_order = (!::strcmp(
-				img_rgb->getChannelsOrder(),
-				"RGB"));  // Reverse RGB <-> BGR order?
+			const bool is_RGB_order =
+				(!::strcmp(
+					img_rgb->getChannelsOrder(),
+					"RGB"));  // Reverse RGB <-> BGR order?
 			const GLenum img_format = nBytesPerPixel == 3
 										  ? (is_RGB_order ? GL_RGB : GL_BGR)
 										  : GL_LUMINANCE;

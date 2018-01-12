@@ -31,7 +31,8 @@ using namespace mrpt::maps;
 using namespace mrpt::math;
 using namespace mrpt::poses;
 
-void CDifodoDatasets::loadConfiguration(const mrpt::config::CConfigFileBase& ini)
+void CDifodoDatasets::loadConfiguration(
+	const mrpt::config::CConfigFileBase& ini)
 {
 	fovh = M_PIf * 62.5f /
 		   180.0f;  // Larger FOV because depth is registered with color

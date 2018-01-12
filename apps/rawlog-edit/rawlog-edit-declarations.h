@@ -21,8 +21,8 @@
 #define VERBOSE_COUT \
 	if (verbose) std::cout << "[rawlog-edit] "
 
-#define DECLARE_OP_FUNCTION(_NAME)                                           \
-	void _NAME(                                                              \
+#define DECLARE_OP_FUNCTION(_NAME)                                        \
+	void _NAME(                                                           \
 		mrpt::io::CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline, \
 		bool verbose)
 

@@ -1444,7 +1444,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 					theArcHypos,  // Hypos
 					&m_map  // The graph
 					);
-				newArc->m_arcType ="RelativePose";
+				newArc->m_arcType = "RelativePose";
 				arcDeltaIsInverted = false;
 			}
 

@@ -45,8 +45,10 @@ void TKLDParams::dumpToTextStream(std::ostream& out) const
 	out << mrpt::format(
 		"KLD_binSize_PHI                         = %f deg\n",
 		RAD2DEG(KLD_binSize_PHI));
-	out << mrpt::format("KLD_delta                               = %f\n", KLD_delta);
-	out << mrpt::format("KLD_epsilon                             = %f\n", KLD_epsilon);
+	out << mrpt::format(
+		"KLD_delta                               = %f\n", KLD_delta);
+	out << mrpt::format(
+		"KLD_epsilon                             = %f\n", KLD_epsilon);
 	out << mrpt::format("\n");
 }
 

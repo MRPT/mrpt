@@ -20,7 +20,6 @@ namespace mrpt
 {
 namespace poses
 {
-
 /** A probability distribution of a 2D/3D point, represented as a set of random
  * samples (particles).
  * \sa CPointPDF
@@ -30,8 +29,8 @@ class CPointPDFParticles
 	: public CPointPDF,
 	  public mrpt::bayes::CParticleFilterData<mrpt::math::TPoint3Df>,
 	  public mrpt::bayes::CParticleFilterDataImpl<
-		  CPointPDFParticles,
-		  mrpt::bayes::CParticleFilterData<mrpt::math::TPoint3Df>::CParticleList>
+		  CPointPDFParticles, mrpt::bayes::CParticleFilterData<
+								  mrpt::math::TPoint3Df>::CParticleList>
 {
 	DEFINE_SERIALIZABLE(CPointPDFParticles)
 
@@ -46,7 +45,8 @@ class CPointPDFParticles
 	 * with a given initial value  */
 	void setSize(
 		size_t numberParticles,
-		const mrpt::math::TPoint3Df& defaultValue = mrpt::math::TPoint3Df{ 0, 0, 0 });
+		const mrpt::math::TPoint3Df& defaultValue = mrpt::math::TPoint3Df{0, 0,
+																		  0});
 
 	/** Returns the number of particles */
 	size_t size() const { return m_particles.size(); }

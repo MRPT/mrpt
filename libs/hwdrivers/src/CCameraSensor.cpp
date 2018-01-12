@@ -115,9 +115,10 @@ void CCameraSensor::initialize()
 		TCameraType ct;
 		try
 		{
-			ct = mrpt::typemeta::TEnumType<TCameraType>::name2value(m_cv_camera_type);
+			ct = mrpt::typemeta::TEnumType<TCameraType>::name2value(
+				m_cv_camera_type);
 		}
-		catch (std::exception &)
+		catch (std::exception&)
 		{
 			m_state = CGenericSensor::ssError;
 			throw;

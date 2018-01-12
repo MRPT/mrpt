@@ -46,7 +46,7 @@ struct PoseDistanceMetric;
 */
 template <class NODE_TYPE_DATA, class EDGE_TYPE,
 		  class MAPS_IMPLEMENTATION = mrpt::containers::map_traits_map_as_vector
-			/* Use std::map<> vs. std::vector<>*/
+		  /* Use std::map<> vs. std::vector<>*/
 		  >
 class TMoveTree : public mrpt::graphs::CDirectedTree<EDGE_TYPE>
 {
@@ -75,9 +75,9 @@ class TMoveTree : public mrpt::graphs::CDirectedTree<EDGE_TYPE>
 	typedef mrpt::graphs::CDirectedTree<EDGE_TYPE> base_t;
 	typedef EDGE_TYPE edge_t;
 	/** Map: TNode_ID => Node info */
-	typedef
-		typename MAPS_IMPLEMENTATION::template map<mrpt::graphs::TNodeID, node_t>
-			node_map_t;
+	typedef typename MAPS_IMPLEMENTATION::template map<mrpt::graphs::TNodeID,
+													   node_t>
+		node_map_t;
 	/** A topological path up-tree */
 	typedef std::list<node_t> path_t;
 
@@ -240,8 +240,7 @@ struct PoseDistanceMetric<TNodeSE2>
 	{
 		return mrpt::square(a.state.x - b.state.x) +
 			   mrpt::square(a.state.y - b.state.y) +
-			   mrpt::square(
-				   mrpt::math::angDistance(a.state.phi, b.state.phi));
+			   mrpt::square(mrpt::math::angDistance(a.state.phi, b.state.phi));
 	}
 	PoseDistanceMetric() {}
 };

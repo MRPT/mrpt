@@ -762,9 +762,10 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 	static inline void resize(const size_t n)
 	{
 		if (n != static_size)
-			throw std::logic_error(format(
-				"Try to change the size of CPose3D to %u.",
-				static_cast<unsigned>(n)));
+			throw std::logic_error(
+				format(
+					"Try to change the size of CPose3D to %u.",
+					static_cast<unsigned>(n)));
 	}
 	/** @} */
 

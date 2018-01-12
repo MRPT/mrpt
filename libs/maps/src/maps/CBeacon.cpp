@@ -343,7 +343,8 @@ void CBeacon::getAsMatlabDrawCommands(std::vector<std::string>& out_Str) const
 				m_locationGauss.cov(1, 0), m_locationGauss.cov(1, 1));
 			out_Str.emplace_back(auxStr);
 
-			out_Str.emplace_back("error_ellipse(C,m,'conf',0.997,'style','k');");
+			out_Str.emplace_back(
+				"error_ellipse(C,m,'conf',0.997,'style','k');");
 		}
 		break;
 		case pdfSOG:
@@ -361,7 +362,7 @@ void CBeacon::getAsMatlabDrawCommands(std::vector<std::string>& out_Str) const
 					(it)->val.cov(1, 0), (it)->val.cov(1, 1));
 				out_Str.emplace_back(auxStr);
 				out_Str.emplace_back(
-						"error_ellipse(C,m,'conf',0.997,'style','k');");
+					"error_ellipse(C,m,'conf',0.997,'style','k');");
 			}
 		}
 		break;

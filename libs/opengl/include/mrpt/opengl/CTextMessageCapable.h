@@ -72,8 +72,7 @@ class CTextMessageCapable
 		const mrpt::opengl::TOpenGLFontStyle font_style = mrpt::opengl::NICE,
 		const size_t unique_index = 0, const double font_spacing = 1.5,
 		const double font_kerning = 0.1, const bool has_shadow = false,
-		const mrpt::img::TColorf& shadow_color =
-			mrpt::img::TColorf(0, 0, 0));
+		const mrpt::img::TColorf& shadow_color = mrpt::img::TColorf(0, 0, 0));
 
 	/** Just updates the text of a given text message, without touching the
 	 * other parameters.

@@ -32,7 +32,8 @@ class Pose3DTests : public ::testing::Test
 	{
 		const CPose3D p1(x1, y1, z1, yaw1, pitch1, roll1);
 
-		const CMatrixDouble44 HM = p1.getHomogeneousMatrixVal<CMatrixDouble44>();
+		const CMatrixDouble44 HM =
+			p1.getHomogeneousMatrixVal<CMatrixDouble44>();
 		CMatrixDouble44 HMi;
 		p1.getInverseHomogeneousMatrix(HMi);
 
@@ -437,7 +438,8 @@ class Pose3DTests : public ::testing::Test
 		for (size_t i = 0; i < 4; i++)
 			for (size_t j = 0; j < 4; j++)
 				EXPECT_NEAR(
-					p.getHomogeneousMatrixVal<CMatrixDouble44>()(i, j), i == j ? 1.0 : 0.0, 1e-8)
+					p.getHomogeneousMatrixVal<CMatrixDouble44>()(i, j),
+					i == j ? 1.0 : 0.0, 1e-8)
 					<< "Failed for (i,j)=" << i << "," << j << endl
 					<< "Matrix is: " << endl
 					<< p.getHomogeneousMatrixVal<CMatrixDouble44>() << endl
@@ -541,7 +543,8 @@ class Pose3DTests : public ::testing::Test
 	{
 		MRPT_UNUSED_PARAM(dummy);
 		const CPose3D p = CPose3D::exp(x);
-		// const CMatrixDouble44 R = p.getHomogeneousMatrixVal<CMatrixDouble44>();
+		// const CMatrixDouble44 R =
+		// p.getHomogeneousMatrixVal<CMatrixDouble44>();
 		p.getAs12Vector(Y);
 	}
 

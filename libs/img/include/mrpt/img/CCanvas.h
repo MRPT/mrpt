@@ -337,10 +337,9 @@ class CCanvas
 					TColor::red());
 			if (showResponse)
 				this->textOut(
-					x, y + 10,
-					format(
-						"R:%u",
-						static_cast<unsigned int>(list.getFeatureResponse(i))),
+					x, y + 10, format(
+								   "R:%u", static_cast<unsigned int>(
+											   list.getFeatureResponse(i))),
 					TColor::red());
 			if (!list.isPointFeature(i))
 				this->drawCircle(x, y, list.getScale(i), TColor::red());

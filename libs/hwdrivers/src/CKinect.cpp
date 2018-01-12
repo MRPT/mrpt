@@ -220,7 +220,8 @@ void CKinect::loadConfig_sensorSpecific(
 	// have some reasonable numbers.
 	sc.rightCamera = m_cameraParamsRGB;
 	sc.rightCameraPose =
-		mrpt::poses::CPose3DQuat(m_relativePoseIntensityWRTDepth - twist).asTPose();
+		mrpt::poses::CPose3DQuat(m_relativePoseIntensityWRTDepth - twist)
+			.asTPose();
 
 	try
 	{

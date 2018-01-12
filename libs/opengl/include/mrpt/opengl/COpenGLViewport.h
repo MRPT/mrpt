@@ -299,8 +299,9 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 		// If not found directly, search recursively:
 		for (const auto& o : m_objects)
 		{
-			if (o && o->GetRuntimeClass() ==
-						 CLASS_ID_NAMESPACE(CSetOfObjects, mrpt::opengl))
+			if (o &&
+				o->GetRuntimeClass() ==
+					CLASS_ID_NAMESPACE(CSetOfObjects, mrpt::opengl))
 			{
 				typename T::Ptr obj = std::dynamic_pointer_cast<T>(
 					std::dynamic_pointer_cast<CSetOfObjects>(o)
@@ -482,7 +483,6 @@ class mrptEventGLPreRender : public mrpt::system::mrptEvent
    protected:
 	/** Just to allow this class to be polymorphic */
 	void do_nothing() override {}
-
    public:
 	inline mrptEventGLPreRender(const COpenGLViewport* obj)
 		: source_viewport(obj)
@@ -508,7 +508,6 @@ class mrptEventGLPostRender : public mrpt::system::mrptEvent
    protected:
 	/** Just to allow this class to be polymorphic */
 	void do_nothing() override {}
-
    public:
 	inline mrptEventGLPostRender(const COpenGLViewport* obj)
 		: source_viewport(obj)

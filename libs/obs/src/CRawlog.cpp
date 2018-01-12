@@ -37,14 +37,16 @@ void CRawlog::clear()
 
 void CRawlog::addObservations(CSensoryFrame& observations)
 {
-	m_seqOfActObs.push_back(std::dynamic_pointer_cast<CSerializable>(
-		observations.duplicateGetSmartPtr()));
+	m_seqOfActObs.push_back(
+		std::dynamic_pointer_cast<CSerializable>(
+			observations.duplicateGetSmartPtr()));
 }
 
 void CRawlog::addActions(CActionCollection& actions)
 {
-	m_seqOfActObs.push_back(std::dynamic_pointer_cast<CSerializable>(
-		actions.duplicateGetSmartPtr()));
+	m_seqOfActObs.push_back(
+		std::dynamic_pointer_cast<CSerializable>(
+			actions.duplicateGetSmartPtr()));
 }
 
 void CRawlog::addActionsMemoryReference(const CActionCollection::Ptr& action)
@@ -212,8 +214,8 @@ bool CRawlog::loadFromRawLogFile(
 				this->swap(*ao);
 				return true;
 			}
-			else if (newObj->GetRuntimeClass()->derivedFrom(
-						 CLASS_ID(CObservation)))
+			else if (
+				newObj->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
 			{
 				if (IS_CLASS(newObj, CObservationComment))
 				{
@@ -571,15 +573,15 @@ std::string CRawlog::detectImagesDirectory(const std::string& str)
 		rawlog_path + extractFileName(str) + std::string("_Images");
 	if (mrpt::system::fileExists(temptative_img_path))
 		return temptative_img_path;
-	else if (mrpt::system::fileExists(
-				 temptative_img_path =
-					 (rawlog_path + extractFileName(str) +
-					  std::string("_images"))))
+	else if (
+		mrpt::system::fileExists(
+			temptative_img_path =
+				(rawlog_path + extractFileName(str) + std::string("_images"))))
 		return temptative_img_path;
-	else if (mrpt::system::fileExists(
-				 temptative_img_path =
-					 (rawlog_path + extractFileName(str) +
-					  std::string("_IMAGES"))))
+	else if (
+		mrpt::system::fileExists(
+			temptative_img_path =
+				(rawlog_path + extractFileName(str) + std::string("_IMAGES"))))
 		return temptative_img_path;
 	else
 		return rawlog_path + "Images";

@@ -71,13 +71,15 @@ void CHMHMapNode::serializeTo(mrpt::serialization::CArchive& out) const
 	out << m_hypotheses;
 }
 
-void CHMHMapNode::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CHMHMapNode::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
 		case 0:
 		{
-			in >> m_ID >> m_label >> m_nodeType  >> m_annotations >> m_hypotheses;
+			in >> m_ID >> m_label >> m_nodeType >> m_annotations >>
+				m_hypotheses;
 
 			// It's not necessary since at ::Create this is already done
 			// (but...check!)
@@ -141,7 +143,7 @@ unsigned int CHMHMapNode::getLevelInTheHierarchy()
 	{
 		// I am a "level+1" from the level below if a "belongs" arc points to
 		// me:
-		if ((*itArc)->m_arcType=="Membership" &&
+		if ((*itArc)->m_arcType == "Membership" &&
 			(*itArc)->m_nodeTo == this->m_ID)
 		{
 			unsigned int L = m_parent->getNodeByID((*itArc)->m_nodeFrom)
@@ -178,7 +180,7 @@ void CHMHMapNode::getArcs(
 	TArcList& out, const char* arcType, const THypothesisID& hyp_id) const
 {
 	out.clear();
-	for (const auto& a: m_arcs)
+	for (const auto& a : m_arcs)
 		if (a->m_hypotheses.has(hyp_id) && a->m_arcType == arcType)
 			out.push_back(a);
 }

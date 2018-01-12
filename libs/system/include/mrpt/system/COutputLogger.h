@@ -12,7 +12,7 @@
 #include <mrpt/typemeta/TEnumType.h>
 #include <mrpt/system/os.h>  // for console color constants
 #include <mrpt/system/CTicTac.h>
-#include <mrpt/system/datetime.h> // TTimeStamp
+#include <mrpt/system/datetime.h>  // TTimeStamp
 
 #include <string>
 #include <deque>
@@ -369,14 +369,14 @@ struct COutputLoggerStreamWrapper
 		}                                                 \
 	} while (0)
 
-#define INTERNAL_MRPT_LOG_STREAM(_LVL, __CONTENTS)                 \
-	do                                                             \
-	{                                                              \
-		if (this->isLoggingLevelVisible(_LVL))                     \
-		{                                                          \
+#define INTERNAL_MRPT_LOG_STREAM(_LVL, __CONTENTS)                  \
+	do                                                              \
+	{                                                               \
+		if (this->isLoggingLevelVisible(_LVL))                      \
+		{                                                           \
 			::mrpt::system::COutputLoggerStreamWrapper(_LVL, *this) \
-				<< __CONTENTS;                                     \
-		}                                                          \
+				<< __CONTENTS;                                      \
+		}                                                           \
 	} while (0)
 
 #define INTERNAL_MRPT_LOG_THROTTLE(_LVL, _PERIOD_SECONDS, _STRING) \
@@ -384,7 +384,7 @@ struct COutputLoggerStreamWrapper
 	{                                                              \
 		if (this->isLoggingLevelVisible(_LVL))                     \
 		{                                                          \
-			static mrpt::system::CTicTac tim;                       \
+			static mrpt::system::CTicTac tim;                      \
 			if (tim.Tac() > _PERIOD_SECONDS)                       \
 			{                                                      \
 				tim.Tic();                                         \
@@ -398,11 +398,11 @@ struct COutputLoggerStreamWrapper
 	{                                                                        \
 		if (this->isLoggingLevelVisible(_LVL))                               \
 		{                                                                    \
-			static mrpt::system::CTicTac tim;                                 \
+			static mrpt::system::CTicTac tim;                                \
 			if (tim.Tac() > _PERIOD_SECONDS)                                 \
 			{                                                                \
 				tim.Tic();                                                   \
-				::mrpt::system::COutputLoggerStreamWrapper(_LVL, *this)       \
+				::mrpt::system::COutputLoggerStreamWrapper(_LVL, *this)      \
 					<< __CONTENTS;                                           \
 			}                                                                \
 		}                                                                    \
@@ -414,7 +414,7 @@ struct COutputLoggerStreamWrapper
 	{                                                         \
 		if (this->isLoggingLevelVisible(_LVL))                \
 		{                                                     \
-			static mrpt::system::CTicTac tim;                  \
+			static mrpt::system::CTicTac tim;                 \
 			if (tim.Tac() > _PERIOD_SECONDS)                  \
 			{                                                 \
 				tim.Tic();                                    \
@@ -526,9 +526,9 @@ struct COutputLoggerStreamWrapper
 #define MRPT_UNSCOPED_LOGGER_START                                      \
 	do                                                                  \
 	{                                                                   \
-		struct dummy_logger_ : public mrpt::system::COutputLogger        \
+		struct dummy_logger_ : public mrpt::system::COutputLogger       \
 		{                                                               \
-			dummy_logger_() : mrpt::system::COutputLogger("MRPT_log")    \
+			dummy_logger_() : mrpt::system::COutputLogger("MRPT_log")   \
 			{                                                           \
 				this->setMinLoggingLevel(DEFAULT_LOGLVL_MRPT_UNSCOPED); \
 			}                                                           \

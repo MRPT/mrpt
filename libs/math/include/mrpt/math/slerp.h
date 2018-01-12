@@ -55,8 +55,7 @@ void slerp(
 	}
 	// Calculate temporary values.
 	const double halfTheta = acos(cosHalfTheta);
-	const double sinHalfTheta =
-		std::sqrt(1.0 - mrpt::square(cosHalfTheta));
+	const double sinHalfTheta = std::sqrt(1.0 - mrpt::square(cosHalfTheta));
 	// if theta = 180 degrees then result is not fully defined
 	// we could rotate around any axis normal to qa or qb
 	if (std::abs(sinHalfTheta) < 0.001)
@@ -83,7 +82,7 @@ void slerp(
   * \param[out] p The output, interpolated pose.
   * \exception std::exception Only in Debug, if t is not in the valid range.
   */
-void slerp(const TPose3D& q0, const TPose3D& q1,const double t, TPose3D& p);
+void slerp(const TPose3D& q0, const TPose3D& q1, const double t, TPose3D& p);
 
 /** \overload Interpolates two SO(3) elements (the rotational part only), given
  * as mrpt::math::TPose3D

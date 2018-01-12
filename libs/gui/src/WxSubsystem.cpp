@@ -330,8 +330,9 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 						wxImage* img = (wxImage*)msg->voidPtr2;
 						if (!img) break;
 
-						wnd->m_image->AssignImage(new wxBitmap(
-							*img));  // Memory will be freed by the object.
+						wnd->m_image->AssignImage(
+							new wxBitmap(
+								*img));  // Memory will be freed by the object.
 
 						if (wnd->m_image->GetSize().GetX() != img->GetWidth() &&
 							wnd->m_image->GetSize().GetY() != img->GetHeight())
@@ -781,9 +782,8 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 #endif
 					app_closed = true;  // Do NOT launch a timer again
 					if (WxSubsystem::CWXMainFrame::oneInstance)
-						((WxSubsystem::CWXMainFrame*)(WxSubsystem::
-														  CWXMainFrame::
-															  oneInstance))
+						((WxSubsystem::
+							  CWXMainFrame*)(WxSubsystem::CWXMainFrame::oneInstance))
 							->Close();
 #ifdef WXSUBSYSTEM_VERBOSE
 					cout << "[WxSubsystem:999] Shutdown done" << endl;
@@ -849,9 +849,10 @@ wxBitmap WxSubsystem::getMRPTDefaultIcon()
 #ifdef _WIN32
 	const wxSize iconsSize(
 		::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON));
-	return wxBitmap(wxBitmap(mrpt_default_icon_xpm)
-						.ConvertToImage()
-						.Scale(iconsSize.x, iconsSize.y));
+	return wxBitmap(
+		wxBitmap(mrpt_default_icon_xpm)
+			.ConvertToImage()
+			.Scale(iconsSize.x, iconsSize.y));
 #else
 	return wxBitmap(mrpt_default_icon_xpm);
 #endif

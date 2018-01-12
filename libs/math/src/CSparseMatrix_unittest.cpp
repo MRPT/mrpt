@@ -209,9 +209,11 @@ TEST(SparseMatrix, CholeskyDecomp)
 {
 	CSparseMatrix SM(10, 10);
 	const CMatrixDouble COV1 =
-		mrpt::random::getRandomGenerator().drawDefinitePositiveMatrix<CMatrixDouble>(6, 0.2);
+		mrpt::random::getRandomGenerator()
+			.drawDefinitePositiveMatrix<CMatrixDouble>(6, 0.2);
 	const CMatrixDouble COV2 =
-		mrpt::random::getRandomGenerator().drawDefinitePositiveMatrix<CMatrixDouble>(4, 0.2);
+		mrpt::random::getRandomGenerator()
+			.drawDefinitePositiveMatrix<CMatrixDouble>(4, 0.2);
 
 	SM.insert_submatrix(0, 0, COV1);
 	SM.insert_submatrix(6, 6, COV2);

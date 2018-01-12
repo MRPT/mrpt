@@ -316,8 +316,7 @@ struct Message_NV_OEM6_RANGECMP : public gnss_message
 	std::vector<TCompressedRangeLog> obs_data;
 	uint32_t crc;
 
-	void dumpToStream(
-		std::ostream& out) const override;  // See docs in base
+	void dumpToStream(std::ostream& out) const override;  // See docs in base
    protected:
 	void internal_writeToStream(
 		mrpt::serialization::CArchive& out) const override;
@@ -366,8 +365,7 @@ struct Message_NV_OEM6_VERSION : public gnss_message
 	std::vector<TComponentVersion> components;
 	uint32_t crc;
 
-	void dumpToStream(
-		std::ostream& out) const override;  // See docs in base
+	void dumpToStream(std::ostream& out) const override;  // See docs in base
    protected:
 	void internal_writeToStream(
 		mrpt::serialization::CArchive& out) const override;

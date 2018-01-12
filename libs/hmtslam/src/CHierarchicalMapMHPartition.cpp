@@ -1454,19 +1454,21 @@ void CHierarchicalMapMHPartition::dumpAsText(std::vector<std::string>& st) const
 						NODE_ANNOTATION_POSES_GRAPH, ann->ID);
 				ASSERT_(posesGraph);
 
-				st.push_back(format(
-					"     CRobotPosesGraph has %i poses:",
-					(int)posesGraph->size()));
+				st.push_back(
+					format(
+						"     CRobotPosesGraph has %i poses:",
+						(int)posesGraph->size()));
 				CPose3D pdfMean;
 				for (CRobotPosesGraph::const_iterator p = posesGraph->begin();
 					 p != posesGraph->end(); ++p)
 				{
 					const CPose3DPDFParticles& pdf = p->second.pdf;
 					pdf.getMean(pdfMean);
-					st.push_back(format(
-						"       Pose %i \t (%.03f,%.03f,%.03fdeg)",
-						(int)p->first, pdfMean.x(), pdfMean.y(),
-						RAD2DEG(pdfMean.yaw())));
+					st.push_back(
+						format(
+							"       Pose %i \t (%.03f,%.03f,%.03fdeg)",
+							(int)p->first, pdfMean.x(), pdfMean.y(),
+							RAD2DEG(pdfMean.yaw())));
 				}
 			}
 		}
@@ -1528,14 +1530,15 @@ void CHierarchicalMapMHPartition::dumpAsText(std::vector<std::string>& st) const
 				relativePoseAcordToArc.copyFrom(
 					*std::dynamic_pointer_cast<CPose3DPDF>(o));
 
-				st.push_back(format(
-					"     VALUE: (%f,%f,%f , %fdeg,%fdeg,%fdeg)",
-					relativePoseAcordToArc.mean.x(),
-					relativePoseAcordToArc.mean.y(),
-					relativePoseAcordToArc.mean.z(),
-					RAD2DEG(relativePoseAcordToArc.mean.yaw()),
-					RAD2DEG(relativePoseAcordToArc.mean.pitch()),
-					RAD2DEG(relativePoseAcordToArc.mean.roll())));
+				st.push_back(
+					format(
+						"     VALUE: (%f,%f,%f , %fdeg,%fdeg,%fdeg)",
+						relativePoseAcordToArc.mean.x(),
+						relativePoseAcordToArc.mean.y(),
+						relativePoseAcordToArc.mean.z(),
+						RAD2DEG(relativePoseAcordToArc.mean.yaw()),
+						RAD2DEG(relativePoseAcordToArc.mean.pitch()),
+						RAD2DEG(relativePoseAcordToArc.mean.roll())));
 			}
 		}
 

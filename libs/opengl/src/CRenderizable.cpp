@@ -341,7 +341,6 @@ CRenderizable& CRenderizable::setPose(const mrpt::poses::CPoint2D& o)
 }
 
 mrpt::math::TPose3D CRenderizable::getPose() const { return m_pose.asTPose(); }
-
 bool CRenderizable::traceRay(const mrpt::poses::CPose3D&, double&) const
 {
 	return false;

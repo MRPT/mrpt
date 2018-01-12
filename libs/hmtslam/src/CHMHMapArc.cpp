@@ -85,11 +85,11 @@ void CHMHMapArc::onNodeDestruction(CHMHMapNode* node)
 uint8_t CHMHMapArc::serializeGetVersion() const { return 0; }
 void CHMHMapArc::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	out << m_nodeFrom << m_nodeTo << m_arcType << m_annotations
-		<< m_hypotheses;
+	out << m_nodeFrom << m_nodeTo << m_arcType << m_annotations << m_hypotheses;
 }
 
-void CHMHMapArc::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CHMHMapArc::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

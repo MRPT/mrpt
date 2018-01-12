@@ -208,8 +208,7 @@ float computeMainOrientation(
   * \param image        [IN]        The input image.
   * \param nimage       [OUTPUT]    The new normalized image.
   */
-void normalizeImage(
-	const mrpt::img::CImage& image, mrpt::img::CImage& nimage);
+void normalizeImage(const mrpt::img::CImage& image, mrpt::img::CImage& nimage);
 
 /** Find the matches between two lists of features which must be of the same
  * type.

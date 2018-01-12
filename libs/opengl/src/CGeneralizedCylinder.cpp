@@ -107,9 +107,10 @@ inline void createMesh(
 	mesh.reserve(R * C);
 	for (size_t i = 0; i < R; i++)
 		for (size_t j = 0; j < C; j++)
-			mesh.push_back(CGeneralizedCylinder::TQuadrilateral(
-				pointsMesh(i, j), pointsMesh(i, j + 1),
-				pointsMesh(i + 1, j + 1), pointsMesh(i + 1, j)));
+			mesh.push_back(
+				CGeneralizedCylinder::TQuadrilateral(
+					pointsMesh(i, j), pointsMesh(i, j + 1),
+					pointsMesh(i + 1, j + 1), pointsMesh(i + 1, j)));
 }
 
 /*void transformMesh(const CPose3D &pose,const CMatrixTemplate<TPoint3D>
@@ -156,7 +157,7 @@ void CGeneralizedCylinder::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
 	out << axis << generatrix;  // In version 0, axis was a vector<TPoint3D>. In
-								// version 1, it is a vector<CPose3D>.
+	// version 1, it is a vector<CPose3D>.
 }
 
 void CGeneralizedCylinder::serializeFrom(

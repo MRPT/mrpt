@@ -7,7 +7,6 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-
 #include "common.h"
 
 double format_test1(int, int)

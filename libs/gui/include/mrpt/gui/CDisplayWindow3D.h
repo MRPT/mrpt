@@ -342,8 +342,7 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 		const mrpt::opengl::TOpenGLFontStyle font_style = mrpt::opengl::NICE,
 		const size_t unique_index = 0, const double font_spacing = 1.5,
 		const double font_kerning = 0.1, const bool draw_shadow = false,
-		const mrpt::img::TColorf& shadow_color =
-			mrpt::img::TColorf(0, 0, 0));
+		const mrpt::img::TColorf& shadow_color = mrpt::img::TColorf(0, 0, 0));
 
 	/**  Clear all text messages created with addTextMessage().
 	  *  You'll need to refresh the display manually with forceRepaint().

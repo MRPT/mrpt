@@ -155,7 +155,7 @@ bool CICPCriteriaNRD<GRAPH_T>::checkRegistrationCondition2D()
 	MRPT_START;
 
 	using namespace mrpt::math;
-	
+
 	bool registered_new_node = false;
 
 	// Constraint that *may* update incrementally the m_since_prev_node_PDF.
@@ -168,9 +168,11 @@ bool CICPCriteriaNRD<GRAPH_T>::checkRegistrationCondition2D()
 
 	// Debugging directives
 	MRPT_LOG_DEBUG(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-	MRPT_LOG_DEBUG_FMT("ICP Alignment operation:\tnIterations: %d\tgoodness: %.f\n",
+	MRPT_LOG_DEBUG_FMT(
+		"ICP Alignment operation:\tnIterations: %d\tgoodness: %.f\n",
 		icp_info.nIterations, icp_info.goodness);
-	MRPT_LOG_DEBUG_FMT("Current ICP constraint: \n\tEdge: %s\n\tNorm: %f",
+	MRPT_LOG_DEBUG_FMT(
+		"Current ICP constraint: \n\tEdge: %s\n\tNorm: %f",
 		rel_edge.getMeanVal().asString().c_str(), rel_edge.getMeanVal().norm());
 	MRPT_LOG_DEBUG_FMT(
 		"Corresponding Odometry constraint: \n\tEdge: %s\n\tNorm: %f",
@@ -285,7 +287,6 @@ void CICPCriteriaNRD<GRAPH_T>::loadParams(const std::string& source_fname)
 	MRPT_START;
 	parent_t::loadParams(source_fname);
 
-	
 	params.loadFromConfigFileName(
 		source_fname, "NodeRegistrationDeciderParameters");
 	// m_mahal_distance_ICP_odom.loadFromConfigFileName(source_fname,
@@ -361,11 +362,12 @@ CICPCriteriaNRD<GRAPH_T>::TParams::~TParams()
 {
 }
 template <class GRAPH_T>
-void CICPCriteriaNRD<GRAPH_T>::TParams::dumpToTextStream(std::ostream& out) const
+void CICPCriteriaNRD<GRAPH_T>::TParams::dumpToTextStream(
+	std::ostream& out) const
 {
 	MRPT_START;
 
-		using namespace mrpt::math;
+	using namespace mrpt::math;
 
 	out << mrpt::format(
 		"------------------[ ICP Fixed Intervals Node Registration "
@@ -386,7 +388,7 @@ void CICPCriteriaNRD<GRAPH_T>::TParams::loadFromConfigFile(
 {
 	MRPT_START;
 
-		using namespace mrpt::math;
+	using namespace mrpt::math;
 
 	registration_max_distance = source.read_double(
 		section, "registration_max_distance", 0.5 /* meter */, false);

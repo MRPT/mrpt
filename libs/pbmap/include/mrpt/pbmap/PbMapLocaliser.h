@@ -20,7 +20,6 @@
 
 #if MRPT_HAS_PCL
 
-
 #include <mrpt/pbmap/PbMap.h>
 #include <mrpt/pbmap/SubgraphMatcher.h>
 #include <mrpt/pbmap/ConsistencyTest.h>

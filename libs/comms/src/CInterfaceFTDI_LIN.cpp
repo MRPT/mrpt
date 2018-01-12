@@ -126,7 +126,7 @@ void CInterfaceFTDI::OpenBySerialNumber(const std::string& serialNumber)
 #else
 		(struct usb_device*)myDev
 #endif
-	);
+		);
 
 	if (ret) THROW_EXCEPTION(string(ftdi_get_error_string(ctx)));
 

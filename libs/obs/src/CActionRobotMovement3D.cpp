@@ -36,7 +36,8 @@ CActionRobotMovement3D::CActionRobotMovement3D()
 }
 
 uint8_t CActionRobotMovement3D::serializeGetVersion() const { return 1; }
-void CActionRobotMovement3D::serializeTo(mrpt::serialization::CArchive& out) const
+void CActionRobotMovement3D::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
 	out.WriteAs<uint32_t>(estimationMethod);
 	out << poseChange;
@@ -44,7 +45,8 @@ void CActionRobotMovement3D::serializeTo(mrpt::serialization::CArchive& out) con
 	out << timestamp;
 }
 
-void CActionRobotMovement3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CActionRobotMovement3D::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

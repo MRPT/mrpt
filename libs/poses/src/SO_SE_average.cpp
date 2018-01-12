@@ -87,8 +87,7 @@ Eigen::Matrix3d SO_average<3>::get_average() const
 	errno = 0;
 	const double d1 = 1.0 / sqrt(vs[0]);
 	const double d2 = 1.0 / sqrt(vs[1]);
-	const double d3 =
-		mrpt::sign(m_accum_rot.determinant()) / sqrt(vs[2]);
+	const double d3 = mrpt::sign(m_accum_rot.determinant()) / sqrt(vs[2]);
 	if (errno != 0)
 	{
 		if (enable_exception_on_undeterminate)

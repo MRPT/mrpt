@@ -86,8 +86,9 @@ void CEnhancedMetaFile::drawImage(int x, int y, const mrpt::img::CImage& img)
 #ifdef _WIN32
 	try
 	{
-		LPBITMAPINFO pBmpInfo = (LPBITMAPINFO) new unsigned char
-			[sizeof(BITMAPINFOHEADER) + (256 * sizeof(RGBQUAD))];
+		LPBITMAPINFO pBmpInfo =
+			(LPBITMAPINFO) new unsigned char[sizeof(BITMAPINFOHEADER) +
+											 (256 * sizeof(RGBQUAD))];
 		//		LPBITMAPINFO		pBmpInfo = (LPBITMAPINFO) new unsigned
 		// char[sizeof(BITMAPINFOHEADER) ];
 

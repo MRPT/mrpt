@@ -94,7 +94,8 @@ void CMetricMapBuilderICP::TConfigParams::loadFromConfigFile(
 	mapInitializers.loadFromConfigFile(source, section);
 }
 
-void CMetricMapBuilderICP::TConfigParams::dumpToTextStream(std::ostream& out) const
+void CMetricMapBuilderICP::TConfigParams::dumpToTextStream(
+	std::ostream& out) const
 {
 	out << mrpt::format(
 		"\n----------- [CMetricMapBuilderICP::TConfigParams] ------------ "
@@ -682,16 +683,14 @@ void CMetricMapBuilderICP::accumulateRobotDisplacementCounters(
 	const CPose2D& new_pose)
 {
 	m_distSinceLastICP.updateDistances(new_pose);
-	for (auto & m : m_distSinceLastInsertion)
-		m.second.updateDistances(new_pose);
+	for (auto& m : m_distSinceLastInsertion) m.second.updateDistances(new_pose);
 }
 
 void CMetricMapBuilderICP::resetRobotDisplacementCounters(
 	const CPose2D& new_pose)
 {
 	m_distSinceLastICP.updatePose(new_pose);
-	for (auto & m: m_distSinceLastInsertion)
-		m.second.updatePose(new_pose);
+	for (auto& m : m_distSinceLastInsertion) m.second.updatePose(new_pose);
 }
 
 void CMetricMapBuilderICP::TDist::updateDistances(const mrpt::poses::CPose2D& p)

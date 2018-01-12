@@ -204,7 +204,8 @@ bool CRejectionSamplingRangeOnlyLocalization::setParams(
 		// Build the grid:
 		// Each cell in the grid is a vector of bools, each one indicating
 		// whether some samples from the i'th beacon falls there.
-		mrpt::containers::CDynamicGrid<std::vector<bool>> grid(xMin, xMax, yMin, yMax, gridRes);
+		mrpt::containers::CDynamicGrid<std::vector<bool>> grid(
+			xMin, xMax, yMin, yMax, gridRes);
 		grid.fill(std::vector<bool>(m_dataPerBeacon.size(), false));
 		std::vector<bool>* cell;
 

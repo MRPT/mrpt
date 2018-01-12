@@ -996,9 +996,8 @@ void xRawLogViewerFrame::OnMenuImportALOG(wxCommandEvent& event)
 						 _("Additional images?"), wxYES_NO))
 		{
 			wxDirDialog dirDialog(
-				this,
-				_("Choose the directory containing the image files from "
-				  "the log"),
+				this, _("Choose the directory containing the image files from "
+						"the log"),
 				_U(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()),
 				0, wxDefaultPosition);
 
@@ -2063,10 +2062,9 @@ void xRawLogViewerFrame::OnGenerateIMUTextFile(wxCommandEvent& event)
 								obs->rawMeasurements.size());
 							for (size_t idx = 0; idx < nValuesPerRow; idx++)
 								::fprintf(
-									f, "%f ",
-									obs->dataIsPresent[idx]
-										? obs->rawMeasurements[idx]
-										: 0);
+									f, "%f ", obs->dataIsPresent[idx]
+												  ? obs->rawMeasurements[idx]
+												  : 0);
 							::fprintf(f, "\n");
 							M++;
 						}  // end if

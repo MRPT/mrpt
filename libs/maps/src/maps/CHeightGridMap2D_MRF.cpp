@@ -70,7 +70,6 @@ void CHeightGridMap2D_MRF::TMapDefinition::dumpToTextStream_map_specific(
 	LOADABLEOPTS_DUMP_VAR(max_y, double);
 	LOADABLEOPTS_DUMP_VAR(resolution, double);
 
-
 	this->insertionOpts.dumpToTextStream(out);
 }
 
@@ -183,8 +182,7 @@ void CHeightGridMap2D_MRF::serializeTo(mrpt::serialization::CArchive& out) const
 #if MRPT_IS_BIG_ENDIAN
 	for (uint32_t i = 0; i < n; i++)
 	{
-		out << m_map[i].kf_mean << m_map[i].dm_mean
-			<< m_map[i].dmv_var_mean;
+		out << m_map[i].kf_mean << m_map[i].dm_mean << m_map[i].dmv_var_mean;
 	}
 #else
 	// Little endian: just write all at once:
@@ -196,8 +194,7 @@ void CHeightGridMap2D_MRF::serializeTo(mrpt::serialization::CArchive& out) const
 
 	out << insertionOptions.sigma << insertionOptions.cutoffRadius
 		<< insertionOptions.R_min << insertionOptions.R_max
-		<< insertionOptions.KF_covSigma
-		<< insertionOptions.KF_initialCellStd
+		<< insertionOptions.KF_covSigma << insertionOptions.KF_initialCellStd
 		<< insertionOptions.KF_observationModelNoise
 		<< insertionOptions.KF_defaultCellMeanValue
 		<< insertionOptions.KF_W_size;
@@ -208,7 +205,8 @@ void CHeightGridMap2D_MRF::serializeTo(mrpt::serialization::CArchive& out) const
 	out << genericMapParams;
 }
 
-void CHeightGridMap2D_MRF::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CHeightGridMap2D_MRF::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -272,9 +270,8 @@ void CHeightGridMap2D_MRF::serializeFrom(mrpt::serialization::CArchive& in, uint
 					TInsertionOptions
  ---------------------------------------------------------------*/
 CHeightGridMap2D_MRF::TInsertionOptions::TInsertionOptions() {}
-
 void CHeightGridMap2D_MRF::TInsertionOptions::dumpToTextStream(
-	std::ostream& out) const 
+	std::ostream& out) const
 {
 	out << mrpt::format(
 		"\n----------- [CHeightGridMap2D_MRF::TInsertionOptions] ------------ "

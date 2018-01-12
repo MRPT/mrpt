@@ -21,13 +21,15 @@ using namespace mrpt::poses;
 IMPLEMENTS_SERIALIZABLE(CObservationRobotPose, CObservation, mrpt::obs)
 
 uint8_t CObservationRobotPose::serializeGetVersion() const { return 0; }
-void CObservationRobotPose::serializeTo(mrpt::serialization::CArchive& out) const
+void CObservationRobotPose::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
 	out << pose;
 	out << sensorLabel << timestamp;
 }
 
-void CObservationRobotPose::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CObservationRobotPose::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

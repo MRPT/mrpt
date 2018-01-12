@@ -1096,8 +1096,8 @@ void CObservation3DRangeScan::convertTo2DScan(
 			mrpt::make_aligned_shared<mrpt::opengl::CPointCloud>();
 		this->project3DPointsFromDepthImageInto(*pc, projParams, fp);
 
-		const std::vector<float>&xs = pc->getArrayX(), &ys = pc->getArrayY(),
-			  &zs = pc->getArrayZ();
+		const std::vector<float> &xs = pc->getArrayX(), &ys = pc->getArrayY(),
+								 &zs = pc->getArrayZ();
 		const size_t N = xs.size();
 
 		const double A_ang = FOV_equiv / (nLaserRays - 1);
@@ -1241,8 +1241,9 @@ void CObservation3DRangeScan::TPixelLabelInfo<
 	in >> pixelLabelNames;
 }
 template <unsigned int BYTES_REQUIRED_>
-void CObservation3DRangeScan::TPixelLabelInfo<BYTES_REQUIRED_>::
-	internal_writeToStream(mrpt::serialization::CArchive& out) const
+void CObservation3DRangeScan::TPixelLabelInfo<
+	BYTES_REQUIRED_>::internal_writeToStream(mrpt::serialization::CArchive& out)
+	const
 {
 	{
 		const uint32_t nR = static_cast<uint32_t>(pixelLabels.rows());

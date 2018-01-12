@@ -38,7 +38,6 @@ CWirelessPower::CWirelessPower() { m_sensorLabel = "WIRELESS_POWER"; }
 
 #endif
 
-
 #ifdef _WIN32
 #if defined(__GNUC__)
 // MinGW: Nothing to do here (yet)

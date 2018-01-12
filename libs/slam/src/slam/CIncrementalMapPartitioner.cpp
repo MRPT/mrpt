@@ -190,8 +190,9 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 		0.20f;
 	options.minDistForCorrespondence =
 		max(options.minDistForCorrespondence,
-			1.3f * newMetricMap.m_pointsMaps[0]
-					   ->insertionOptions.minDistBetweenLaserPoints);
+			1.3f *
+				newMetricMap.m_pointsMaps[0]
+					->insertionOptions.minDistBetweenLaserPoints);
 
 	TMatchingRatioParams mrp;
 	mrp.maxDistForCorr = options.minDistForCorrespondence;
@@ -433,7 +434,7 @@ void CIncrementalMapPartitioner::updatePartitions(
 			A_mods, mods_parts, options.partitionThreshold, true, true,
 			!options.forceBisectionOnly,
 			options.minimumNumberElementsEachCluster, false /* verbose */
-		);
+			);
 
 		// Aggregate the results with the clusters that were not used and return
 		// them
@@ -622,8 +623,9 @@ void CIncrementalMapPartitioner::getAs3DScene(
 	objs->clear();
 	ASSERT_((int)m_individualFrames.size() == m_A.cols());
 
-	objs->insert(mrpt::make_aligned_shared<opengl::CGridPlaneXY>(
-		-100, 100, -100, 100, 0, 5));
+	objs->insert(
+		mrpt::make_aligned_shared<opengl::CGridPlaneXY>(
+			-100, 100, -100, 100, 0, 5));
 
 	for (size_t i = 0; i < m_individualFrames.size(); i++)
 	{

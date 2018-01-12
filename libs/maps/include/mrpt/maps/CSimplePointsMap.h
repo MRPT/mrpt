@@ -151,8 +151,8 @@ namespace opengl
  * \ingroup mrpt_adapters_grp*/
 template <>
 class PointCloudAdapter<mrpt::maps::CSimplePointsMap>
-	: public detail::PointCloudAdapterHelperNoRGB<
-		  mrpt::maps::CSimplePointsMap, float>
+	: public detail::PointCloudAdapterHelperNoRGB<mrpt::maps::CSimplePointsMap,
+												  float>
 {
    private:
 	mrpt::maps::CSimplePointsMap& m_obj;

@@ -12,7 +12,7 @@
 #include <mrpt/core/initializer.h>
 
 // using namespace mrpt::graphs;
-// 
+//
 MRPT_INITIALIZER(registerAllClasses_mrpt_graphs)
 {
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)

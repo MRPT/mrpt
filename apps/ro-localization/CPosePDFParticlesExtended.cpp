@@ -288,14 +288,15 @@ void CPosePDFParticlesExtended::getCovarianceAndMean(
 }
 
 uint8_t CPosePDFParticlesExtended::serializeGetVersion() const { return 0; }
-void CPosePDFParticlesExtended::serializeTo(mrpt::serialization::CArchive& out) const
+void CPosePDFParticlesExtended::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
 	out.WriteAs<uint32_t>(m_particles.size());
-	for (const auto& p : m_particles)
-		out << p.log_w << p.d->pose << p.d->state;
+	for (const auto& p : m_particles) out << p.log_w << p.d->pose << p.d->state;
 }
 
-void CPosePDFParticlesExtended::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CPosePDFParticlesExtended::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

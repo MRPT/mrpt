@@ -161,8 +161,10 @@ void Test()
 		}
 
 		{
-			CFileOutputStream f(format(
-				"MAP-PARTITION_RESULTS/out_part#%03u.simplemap", (unsigned)i));
+			CFileOutputStream f(
+				format(
+					"MAP-PARTITION_RESULTS/out_part#%03u.simplemap",
+					(unsigned)i));
 			mrpt::serialization::archiveFrom(f) << out_map;
 		}
 	}

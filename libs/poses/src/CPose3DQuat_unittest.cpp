@@ -335,7 +335,8 @@ class Pose3DQuatTests : public ::testing::Test
 		const CPose3D p1r = CPose3D(q1);
 
 		EXPECT_NEAR(
-			0, (p1.getHomogeneousMatrixVal<CMatrixDouble44>() - q1.getHomogeneousMatrixVal<CMatrixDouble44>())
+			0, (p1.getHomogeneousMatrixVal<CMatrixDouble44>() -
+				q1.getHomogeneousMatrixVal<CMatrixDouble44>())
 				   .array()
 				   .abs()
 				   .sum(),
@@ -386,7 +387,8 @@ class Pose3DQuatTests : public ::testing::Test
 		const CPose3DQuat q2 = q1;
 
 		EXPECT_NEAR(
-			0, (q1.getHomogeneousMatrixVal<CMatrixDouble44>() - q2.getHomogeneousMatrixVal<CMatrixDouble44>())
+			0, (q1.getHomogeneousMatrixVal<CMatrixDouble44>() -
+				q2.getHomogeneousMatrixVal<CMatrixDouble44>())
 				   .array()
 				   .abs()
 				   .sum(),

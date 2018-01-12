@@ -179,7 +179,7 @@ void mrpt::topography::path_from_rtk_gps(
 						if (GPS_local_coords_on_vehicle.find(
 								obs->sensorLabel) ==
 							GPS_local_coords_on_vehicle.end())
-							GPS_local_coords_on_vehicle[obs->sensorLabel] = 
+							GPS_local_coords_on_vehicle[obs->sensorLabel] =
 								TPoint3D(obs->sensorPose.asTPose());
 
 						// map<string, map<TTimeStamp,TPoint3D> >	gps_paths;

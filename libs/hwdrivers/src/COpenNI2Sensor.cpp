@@ -249,7 +249,8 @@ void COpenNI2Sensor::loadConfig_sensorSpecific(
 		const mrpt::poses::CPose3D twist(
 			0, 0, 0, DEG2RAD(-90), DEG2RAD(0), DEG2RAD(-90));
 		m_relativePoseIntensityWRTDepth =
-			twist + mrpt::poses::CPose3D(mrpt::poses::CPose3DQuat(sc.rightCameraPose));
+			twist +
+			mrpt::poses::CPose3D(mrpt::poses::CPose3DQuat(sc.rightCameraPose));
 	}
 
 	// Id:

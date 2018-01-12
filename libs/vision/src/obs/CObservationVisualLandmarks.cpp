@@ -26,14 +26,16 @@ CObservationVisualLandmarks::CObservationVisualLandmarks()
 }
 
 uint8_t CObservationVisualLandmarks::serializeGetVersion() const { return 1; }
-void CObservationVisualLandmarks::serializeTo(mrpt::serialization::CArchive& out) const
+void CObservationVisualLandmarks::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
 	out << refCameraPose << timestamp
 		// The landmarks:
 		<< landmarks << sensorLabel;
 }
 
-void CObservationVisualLandmarks::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CObservationVisualLandmarks::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

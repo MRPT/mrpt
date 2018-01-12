@@ -54,8 +54,8 @@ namespace containers
   * \ingroup mrpt_containers_grp
   */
 template <typename KEY, typename VALUE,
-		  typename VECTOR_T = typename mrpt::aligned_std_vector<
-			  std::pair<KEY, VALUE>>>
+		  typename VECTOR_T =
+			  typename mrpt::aligned_std_vector<std::pair<KEY, VALUE>>>
 class map_as_vector
 {
    public:
