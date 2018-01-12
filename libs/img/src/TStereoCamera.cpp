@@ -54,8 +54,9 @@ void TStereoCamera::loadFromConfigFile(
 
 	leftCamera.loadFromConfigFile(section + string("_LEFT"), cfg);
 	rightCamera.loadFromConfigFile(section + string("_RIGHT"), cfg);
-	rightCameraPose.fromString(cfg.read_string(
-		section + string("_LEFT2RIGHT_POSE"), "pose_quaternion", ""));
+	rightCameraPose.fromString(
+		cfg.read_string(
+			section + string("_LEFT2RIGHT_POSE"), "pose_quaternion", ""));
 }
 
 uint8_t TStereoCamera::serializeGetVersion() const { return 2; }

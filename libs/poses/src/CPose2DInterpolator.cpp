@@ -22,7 +22,8 @@ void CPose2DInterpolator::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	out << m_path;
 }
-void CPose2DInterpolator::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CPose2DInterpolator::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

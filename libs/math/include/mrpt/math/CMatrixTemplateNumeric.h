@@ -34,16 +34,16 @@ namespace math
  * \ingroup mrpt_math_grp
  */
 template <class T>
-class CMatrixTemplateNumeric : public Eigen::Matrix<
-								   T, Eigen::Dynamic, Eigen::Dynamic,
-								   // Use row major storage for backward
-								   // compatibility with MRPT matrices in all
-								   // cases (even in column vectors!)
-								   Eigen::AutoAlign | Eigen::RowMajor>
+class CMatrixTemplateNumeric
+	: public Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic,
+						   // Use row major storage for backward
+						   // compatibility with MRPT matrices in all
+						   // cases (even in column vectors!)
+						   Eigen::AutoAlign | Eigen::RowMajor>
 {
    public:
-	typedef Eigen::Matrix<
-		T, Eigen::Dynamic, Eigen::Dynamic, Eigen::AutoAlign | Eigen::RowMajor>
+	typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic,
+						  Eigen::AutoAlign | Eigen::RowMajor>
 		Base;
 	using mrpt_autotype = CMatrixTemplateNumeric<T>;
 

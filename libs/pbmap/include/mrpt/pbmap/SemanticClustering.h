@@ -403,7 +403,8 @@ class SemanticClustering
 
 		//      buildCoVisibilityMatrix();
 		buildProximityMatrix();
-		std::vector<std::vector<uint32_t>> parts;  // Vector of vectors to keep the
+		std::vector<std::vector<uint32_t>>
+			parts;  // Vector of vectors to keep the
 		// KFs index of the different
 		// partitions (submaps)
 		mrpt::graphs::CGraphPartitioner<mrpt::math::CMatrix>::

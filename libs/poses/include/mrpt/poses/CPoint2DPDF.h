@@ -43,7 +43,8 @@ class CPoint2DPDF : public mrpt::serialization::CSerializable,
 	  */
 	virtual void copyFrom(const CPoint2DPDF& o) = 0;
 
-	virtual void changeCoordinatesReference(const CPose3D& newReferenceBase) = 0;
+	virtual void changeCoordinatesReference(
+		const CPose3D& newReferenceBase) = 0;
 
 	/** Bayesian fusion of two point distributions (product of two
 	 * distributions->new distribution), then save the result in this object

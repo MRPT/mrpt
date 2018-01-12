@@ -166,9 +166,9 @@ void CEllipsoid::render_dl() const
 
 		glEnable(GL_LIGHTING);
 	}
-	MRPT_END_WITH_CLEAN_UP(cout << "Covariance matrix leading to error is:"
-								<< endl
-								<< m_cov << endl;);
+	MRPT_END_WITH_CLEAN_UP(
+		cout << "Covariance matrix leading to error is:" << endl
+			 << m_cov << endl;);
 #endif
 }
 

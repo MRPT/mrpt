@@ -16,7 +16,4 @@ using namespace mrpt::math;
 using namespace mrpt::random;
 using namespace std;
 
-TEST(KDTreeCapable, test1)
-{
-	MRPT_TODO("Write me!");
-}
+TEST(KDTreeCapable, test1) { MRPT_TODO("Write me!"); }

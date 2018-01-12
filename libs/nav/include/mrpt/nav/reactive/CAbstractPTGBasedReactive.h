@@ -145,7 +145,8 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 	 * CAbstractHolonomicReactiveMethod
 		*/
 	void setHolonomicMethod(
-		const std::string& method, const mrpt::config::CConfigFileBase& cfgBase);
+		const std::string& method,
+		const mrpt::config::CConfigFileBase& cfgBase);
 
 	/** Provides a copy of the last log record with information about execution.
 		* \param o An object where the log will be stored into.
@@ -429,7 +430,8 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 		mrpt::nav::CAbstractHolonomicReactiveMethod& holoMethod,
 		const mrpt::system::TTimeStamp tim_start_iteration,
 		const TNavigationParams& navp = TNavigationParams(),
-		const mrpt::math::TPose2D& relPoseVelCmd_NOP = mrpt::math::TPose2D(0,0,0));
+		const mrpt::math::TPose2D& relPoseVelCmd_NOP =
+			mrpt::math::TPose2D(0, 0, 0));
 
 	struct TSentVelCmd
 	{

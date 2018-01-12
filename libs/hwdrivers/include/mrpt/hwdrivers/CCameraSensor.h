@@ -367,7 +367,8 @@ class CCameraSensor : public mrpt::system::COutputLogger, public CGenericSensor
 	  *		- mrpt::obs::CObservation3DRangeScan (For 3D cameras)
 	  */
 	mrpt::obs::CObservation::Ptr getNextFrame();
-	void getNextFrame(std::vector<mrpt::serialization::CSerializable::Ptr>& out_obs);
+	void getNextFrame(
+		std::vector<mrpt::serialization::CSerializable::Ptr>& out_obs);
 
 	/** Tries to open the camera, after setting all the parameters with a call
 	 * to loadConfig.

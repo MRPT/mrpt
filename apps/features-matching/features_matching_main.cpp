@@ -377,8 +377,10 @@ bool DemoFeatures()
 			case descSIFT:
 			{
 				vector<float> v1, v2;
-				mrpt::containers::copy_container_typecasting(feats1[i1]->descriptors.SIFT, v1);
-				mrpt::containers::copy_container_typecasting(feats2[min_dist_idx]->descriptors.SIFT, v2);
+				mrpt::containers::copy_container_typecasting(
+					feats1[i1]->descriptors.SIFT, v1);
+				mrpt::containers::copy_container_typecasting(
+					feats2[min_dist_idx]->descriptors.SIFT, v2);
 				winptrPlot_descr1->plot(v1);
 				winptrPlot_descr2->plot(v2);
 				winptrPlot_descr1->axis_fit();

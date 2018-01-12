@@ -32,7 +32,8 @@ class CPose2D;
  * \sa CPoseOrPoint,CPose, CPoint
  * \ingroup poses_grp
  */
-class CPoint2D : public CPoint<CPoint2D>, public mrpt::serialization::CSerializable
+class CPoint2D : public CPoint<CPoint2D>,
+				 public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(CPoint2D)
 

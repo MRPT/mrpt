@@ -78,9 +78,10 @@ class CSetOfLines : public CRenderizableDisplayList
 	inline void appendLine(
 		float x0, float y0, float z0, float x1, float y1, float z1)
 	{
-		appendLine(mrpt::math::TSegment3D(
-			mrpt::math::TPoint3D(x0, y0, z0),
-			mrpt::math::TPoint3D(x1, y1, z1)));
+		appendLine(
+			mrpt::math::TSegment3D(
+				mrpt::math::TPoint3D(x0, y0, z0),
+				mrpt::math::TPoint3D(x1, y1, z1)));
 		CRenderizableDisplayList::notifyChange();
 	}
 

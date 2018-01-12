@@ -124,15 +124,22 @@ void TMultiResDescMatchOptions::dumpToTextStream(std::ostream& out) const
 		out << mrpt::format("Lowest scale in list2:          %d\n", lowScl2);
 		out << mrpt::format("Highest scale in list2:         %d\n", highScl2);
 	}
-	out << mrpt::format("#frames last seen threshold:    %d\n", lastSeenThreshold);
-	out << mrpt::format("#frames to be stable threshold: %d\n", timesSeenThreshold);
-	out << mrpt::format("min. # features in system:      %d\n", minFeaturesToFind);
-	out << mrpt::format("min. # features to be lost:     %d\n", minFeaturesToBeLost);
-	out << mrpt::format("Matching threshold:             %.2f\n", matchingThreshold);
+	out << mrpt::format(
+		"#frames last seen threshold:    %d\n", lastSeenThreshold);
+	out << mrpt::format(
+		"#frames to be stable threshold: %d\n", timesSeenThreshold);
+	out << mrpt::format(
+		"min. # features in system:      %d\n", minFeaturesToFind);
+	out << mrpt::format(
+		"min. # features to be lost:     %d\n", minFeaturesToBeLost);
+	out << mrpt::format(
+		"Matching threshold:             %.2f\n", matchingThreshold);
 	out << mrpt::format(
 		"Matching ratio threshold:       %.2f\n", matchingRatioThreshold);
-	out << mrpt::format("Size of the search window:      %d px\n", searchAreaSize);
-	out << mrpt::format("-------------------------------------------------------- \n");
+	out << mrpt::format(
+		"Size of the search window:      %d px\n", searchAreaSize);
+	out << mrpt::format(
+		"-------------------------------------------------------- \n");
 }  // end-dumpToTextStream
 
 // --------------------------------------------------
@@ -206,7 +213,8 @@ void TMultiResDescOptions::saveToConfigFile(
 // --------------------------------------------------
 void TMultiResDescOptions::dumpToTextStream(std::ostream& out) const
 {
-	out << mrpt::format("\n----------- [vision::TMultiResDescOptions] ------------ \n");
+	out << mrpt::format(
+		"\n----------- [vision::TMultiResDescOptions] ------------ \n");
 	out << mrpt::format("Base patch size:                %d px\n", basePSize);
 	out << mrpt::format("Lowest scale to compute:        %d\n", comLScl);
 	out << mrpt::format("Highest scale to compute:       %d\n", comHScl);
@@ -220,7 +228,8 @@ void TMultiResDescOptions::dumpToTextStream(std::ostream& out) const
 		out << mrpt::format("Focal length:                   %.2f px\n", fx);
 		out << mrpt::format("Principal point (cx):           %.2f px\n", cx);
 		out << mrpt::format("Principal point (cy):           %.2f px\n", cy);
-		out << mrpt::format("Baseline:                       %.2f m\n", baseline);
+		out << mrpt::format(
+			"Baseline:                       %.2f m\n", baseline);
 	}
 	else
 		out << mrpt::format("No\n");
@@ -241,14 +250,16 @@ void TMultiResDescOptions::dumpToTextStream(std::ostream& out) const
 	for (unsigned int k = 0; k < scales.size(); ++k)
 		out << mrpt::format("%.2f ", scales[k]);
 	out << mrpt::format("\n");
-	out << mrpt::format("-------------------------------------------------------- \n");
+	out << mrpt::format(
+		"-------------------------------------------------------- \n");
 }  // end-dumpToTextStream
 
 void CFeature::dumpToTextStream(std::ostream& out) const
 {
 	out << mrpt::format("\n----------- [vision::CFeature] ------------ \n");
 	out << mrpt::format("Feature ID:                     %d\n", (int)ID);
-	out << mrpt::format("Coordinates:                    (%.2f,%.2f) px\n", x, y);
+	out << mrpt::format(
+		"Coordinates:                    (%.2f,%.2f) px\n", x, y);
 	out << mrpt::format("PatchSize:                      %d\n", patchSize);
 	out << mrpt::format("Type:                           ");
 	switch (type)
@@ -319,18 +330,22 @@ void CFeature::dumpToTextStream(std::ostream& out) const
 	out << mrpt::format("# frames seen:                  %d\n", nTimesSeen);
 	out << mrpt::format("# frames not seen:              %d\n", nTimesNotSeen);
 	out << mrpt::format("# frames since last seen:       %d\n", nTimesLastSeen);
-	out << mrpt::format("Initial Depth:                  %.2f m\n", initialDepth);
+	out << mrpt::format(
+		"Initial Depth:                  %.2f m\n", initialDepth);
 	out << mrpt::format("Depth:                          %.2f m\n", depth);
 	out << mrpt::format(
 		"3D point:                       (%.2f,%.2f,%.2f) m\n", p3D.x, p3D.y,
 		p3D.z);
 	out << mrpt::format("Is point feature?:              ");
-	isPointFeature() ? out << mrpt::format("Yes\n") : out << mrpt::format("No\n");
+	isPointFeature() ? out << mrpt::format("Yes\n")
+					 : out << mrpt::format("No\n");
 
 	out << mrpt::format("Has SIFT descriptor?:           ");
-	descriptors.hasDescriptorSIFT() ? out << mrpt::format("Yes\n") : out << mrpt::format("No\n");
+	descriptors.hasDescriptorSIFT() ? out << mrpt::format("Yes\n")
+									: out << mrpt::format("No\n");
 	out << mrpt::format("Has SURF descriptor?:           ");
-	descriptors.hasDescriptorSURF() ? out << mrpt::format("Yes\n") : out << mrpt::format("No\n");
+	descriptors.hasDescriptorSURF() ? out << mrpt::format("Yes\n")
+									: out << mrpt::format("No\n");
 	out << mrpt::format("Has Spin image descriptor?:     ");
 	descriptors.hasDescriptorSpinImg() ? out << mrpt::format("Yes\n")
 									   : out << mrpt::format("No\n");
@@ -341,12 +356,15 @@ void CFeature::dumpToTextStream(std::ostream& out) const
 	descriptors.hasDescriptorLogPolarImg() ? out << mrpt::format("Yes\n")
 										   : out << mrpt::format("No\n");
 	out << mrpt::format("Has ORB descriptor?:			");
-	descriptors.hasDescriptorORB() ? out << mrpt::format("Yes\n") : out << mrpt::format("No\n");
+	descriptors.hasDescriptorORB() ? out << mrpt::format("Yes\n")
+								   : out << mrpt::format("No\n");
 	//# added by Raghavender Sahdev
 	out << mrpt::format("Has BLD descriptor?:			");
-	descriptors.hasDescriptorBLD() ? out << mrpt::format("Yes\n") : out << mrpt::format("No\n");
+	descriptors.hasDescriptorBLD() ? out << mrpt::format("Yes\n")
+								   : out << mrpt::format("No\n");
 	out << mrpt::format("Has LATCH descriptor?:			");
-	descriptors.hasDescriptorLATCH() ? out << mrpt::format("Yes\n") : out << mrpt::format("No\n");
+	descriptors.hasDescriptorLATCH() ? out << mrpt::format("Yes\n")
+									 : out << mrpt::format("No\n");
 
 	out << mrpt::format("Has multiscale?:                ");
 	if (!descriptors.hasDescriptorMultiSIFT())
@@ -378,24 +396,20 @@ void CFeature::dumpToTextStream(std::ostream& out) const
 	}  // end else
 }  // end dumpToTextStream
 
-void CFeature::dumpToConsole() const
-{
-	dumpToTextStream(std::cout);
-}
-
+void CFeature::dumpToConsole() const { dumpToTextStream(std::cout); }
 uint8_t CFeature::serializeGetVersion() const { return 2; }
 void CFeature::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	// The coordinates:
 	out << x << y << ID << patch << patchSize << (uint32_t)type
 		<< (uint32_t)track_status << response << orientation << scale
-		<< user_flags << nTimesSeen << nTimesNotSeen << nTimesLastSeen
-		<< depth << initialDepth << p3D << multiScales << multiOrientations
+		<< user_flags << nTimesSeen << nTimesNotSeen << nTimesLastSeen << depth
+		<< initialDepth << p3D << multiScales << multiOrientations
 		<< multiHashCoeffs << descriptors.SIFT << descriptors.SURF
 		<< descriptors.SpinImg << descriptors.SpinImg_range_rows
 		<< descriptors.PolarImg << descriptors.LogPolarImg
-		<< descriptors.polarImgsNoRotation
-		<< descriptors.multiSIFTDescriptors << descriptors.ORB
+		<< descriptors.polarImgsNoRotation << descriptors.multiSIFTDescriptors
+		<< descriptors.ORB
 		//# ADDED by Raghavender Sahdev
 		<< descriptors.BLD << descriptors.LATCH;
 }
@@ -662,8 +676,7 @@ float CFeature::internal_distanceBetweenPolarImages(
 	MRPT_START
 
 	// Find the smallest distance:
-	unsigned int delta, i, j, ii, height = desc1.rows(),
-								  width = desc1.cols();
+	unsigned int delta, i, j, ii, height = desc1.rows(), width = desc1.cols();
 	float dist, minDist = 0;
 
 //#define LM_CORR_BIAS_MEAN
@@ -780,9 +793,12 @@ float CFeature::descriptorPolarImgDistanceTo(
 {
 	MRPT_START
 
-	ASSERT_(descriptors.PolarImg.rows() == oFeature.descriptors.PolarImg.rows());
-	ASSERT_(descriptors.PolarImg.cols() == oFeature.descriptors.PolarImg.cols());
-	ASSERT_(this->descriptors.hasDescriptorPolarImg() &&
+	ASSERT_(
+		descriptors.PolarImg.rows() == oFeature.descriptors.PolarImg.rows());
+	ASSERT_(
+		descriptors.PolarImg.cols() == oFeature.descriptors.PolarImg.cols());
+	ASSERT_(
+		this->descriptors.hasDescriptorPolarImg() &&
 		oFeature.descriptors.hasDescriptorPolarImg());
 	ASSERT_(descriptors.PolarImg.rows() > 1 && descriptors.PolarImg.cols() > 1);
 

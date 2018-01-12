@@ -67,7 +67,8 @@ void CPointPDFGaussian::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	out << CPoint3D(mean) << cov;
 }
-void CPointPDFGaussian::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CPointPDFGaussian::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

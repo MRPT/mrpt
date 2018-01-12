@@ -31,7 +31,8 @@ CObservation6DFeatures::TMeasurement::TMeasurement() : id(INVALID_LANDMARK_ID)
 }
 
 uint8_t CObservation6DFeatures::serializeGetVersion() const { return 0; }
-void CObservation6DFeatures::serializeTo(mrpt::serialization::CArchive& out) const
+void CObservation6DFeatures::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
 	out << minSensorDistance << maxSensorDistance << sensorPose;
 
@@ -46,7 +47,8 @@ void CObservation6DFeatures::serializeTo(mrpt::serialization::CArchive& out) con
 	out << sensorLabel << timestamp;
 }
 
-void CObservation6DFeatures::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CObservation6DFeatures::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

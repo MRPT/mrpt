@@ -163,9 +163,7 @@ class wxMRPTImageControl : public wxPanel
 	void OnMouseMove(wxMouseEvent& ev);
 	void OnMouseClick(wxMouseEvent& ev);
 
-	void OnEraseBackground(wxEraseEvent&)
-	{ /* Do nothing */
-	}
+	void OnEraseBackground(wxEraseEvent&) { /* Do nothing */}
 };
 // end wxMRPTImageControl  -----------
 

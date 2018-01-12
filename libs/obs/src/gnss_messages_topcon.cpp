@@ -58,7 +58,8 @@ void Message_TOPCON_PZS::dumpToStream(std::ostream& out) const
 
 	out << mrpt::format(" Fix: %i  ", (int)Fix);
 	out << mrpt::format(" Error: %i ", (int)error);
-	out << mrpt::format(" Battery levels: TX=%i  RX=%i\n ", TXBattery, RXBattery);
+	out << mrpt::format(
+		" Battery levels: TX=%i  RX=%i\n ", TXBattery, RXBattery);
 
 	out << mrpt::format(
 		" hasCartesianPosVel= %s", hasCartesianPosVel ? "YES -> " : "NO\n");
@@ -70,10 +71,12 @@ void Message_TOPCON_PZS::dumpToStream(std::ostream& out) const
 			" vx=%f  vy=%f  vz=%f\n", cartesian_vx, cartesian_vy, cartesian_vz);
 	}
 	out << mrpt::format("hasPosCov = %s", hasPosCov ? "YES\n" : "NO\n");
-	if (hasPosCov) out << mrpt::format("%s\n", pos_covariance.inMatlabFormat().c_str());
+	if (hasPosCov)
+		out << mrpt::format("%s\n", pos_covariance.inMatlabFormat().c_str());
 
 	out << mrpt::format("hasVelCov = %s", hasVelCov ? "YES\n" : "NO\n");
-	if (hasVelCov) out << mrpt::format("%s\n", vel_covariance.inMatlabFormat().c_str());
+	if (hasVelCov)
+		out << mrpt::format("%s\n", vel_covariance.inMatlabFormat().c_str());
 
 	out << mrpt::format("hasStats = %s", hasStats ? "YES: " : "NO\n");
 	if (hasStats)
@@ -83,7 +86,8 @@ void Message_TOPCON_PZS::dumpToStream(std::ostream& out) const
 			(int)stats_rtk_fix_progress);
 }
 
-void Message_TOPCON_PZS::internal_writeToStream(mrpt::serialization::CArchive& out) const
+void Message_TOPCON_PZS::internal_writeToStream(
+	mrpt::serialization::CArchive& out) const
 {
 	out << latitude_degrees << longitude_degrees << height_meters
 		<< RTK_height_meters << PSigma << angle_transmitter << nId << Fix
@@ -94,7 +98,8 @@ void Message_TOPCON_PZS::internal_writeToStream(mrpt::serialization::CArchive& o
 		<< stats_GLONASS_sats_used << stats_rtk_fix_progress;
 }
 
-void Message_TOPCON_PZS::internal_readFromStream(mrpt::serialization::CArchive& in)
+void Message_TOPCON_PZS::internal_readFromStream(
+	mrpt::serialization::CArchive& in)
 {
 	in >> latitude_degrees >> longitude_degrees >> height_meters >>
 		RTK_height_meters >> PSigma >> angle_transmitter >> nId >> Fix >>
@@ -126,7 +131,8 @@ void Message_TOPCON_SATS::internal_writeToStream(
 	out << USIs << ELs << AZs;
 }
 
-void Message_TOPCON_SATS::internal_readFromStream(mrpt::serialization::CArchive& in)
+void Message_TOPCON_SATS::internal_readFromStream(
+	mrpt::serialization::CArchive& in)
 {
 	in >> USIs >> ELs >> AZs;
 }

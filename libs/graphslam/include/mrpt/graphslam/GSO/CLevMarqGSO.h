@@ -205,7 +205,7 @@ class CLevMarqGSO
 	*/
 	struct GraphVisualizationParams : public mrpt::config::CLoadableOptions
 	{
-	public:
+	   public:
 		GraphVisualizationParams();
 		~GraphVisualizationParams();
 

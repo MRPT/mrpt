@@ -90,7 +90,8 @@ class CMetricMapBuilderRBPF : public mrpt::slam::CMetricMapBuilder
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(std::ostream& out) const override;  // See base docs
+		void dumpToTextStream(
+			std::ostream& out) const override;  // See base docs
 
 		float insertionLinDistance;
 		float insertionAngDistance;

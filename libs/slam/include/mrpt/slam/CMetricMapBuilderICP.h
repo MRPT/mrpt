@@ -48,7 +48,8 @@ class CMetricMapBuilderICP : public mrpt::slam::CMetricMapBuilder
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(std::ostream& out) const override;  // See base docs
+		void dumpToTextStream(
+			std::ostream& out) const override;  // See base docs
 		/** (default:false) Match against the occupancy grid or the points map?
 		 * The former is quicker but less precise. */
 		bool matchAgainstTheGrid;
@@ -188,8 +189,7 @@ class CMetricMapBuilderICP : public mrpt::slam::CMetricMapBuilder
 	};
 	TDist m_distSinceLastICP;
 	/** Indexed by sensor label. */
-	mrpt::aligned_std_map<std::string, TDist>
-		m_distSinceLastInsertion;
+	mrpt::aligned_std_map<std::string, TDist> m_distSinceLastInsertion;
 	bool m_there_has_been_an_odometry;
 
 	void accumulateRobotDisplacementCounters(

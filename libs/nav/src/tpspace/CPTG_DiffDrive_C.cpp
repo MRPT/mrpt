@@ -40,7 +40,8 @@ void CPTG_DiffDrive_C::saveToConfigFile(
 	MRPT_END
 }
 
-void CPTG_DiffDrive_C::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CPTG_DiffDrive_C::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	CPTG_DiffDrive_CollisionGridBased::internal_readFromStream(in);
 

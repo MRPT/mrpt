@@ -16,26 +16,24 @@ using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 
-
 IMPLEMENTS_SERIALIZABLE(CPoses3DSequence, CSerializable, mrpt::poses)
 
 size_t CPoses3DSequence::posesCount() { return m_poses.size(); }
-
-
 uint8_t CPoses3DSequence::serializeGetVersion() const { return 0; }
 void CPoses3DSequence::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	out.WriteAs<uint32_t>(m_poses.size());
-	for (const auto & p : m_poses) out << p;
+	for (const auto& p : m_poses) out << p;
 }
-void CPoses3DSequence::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CPoses3DSequence::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
 		case 0:
 		{
 			m_poses.resize(in.ReadAs<uint32_t>());
-			for (auto & p : m_poses) in >> p;
+			for (auto& p : m_poses) in >> p;
 		}
 		break;
 		default:

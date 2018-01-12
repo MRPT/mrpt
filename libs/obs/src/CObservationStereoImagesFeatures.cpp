@@ -110,7 +110,8 @@ void CObservationStereoImagesFeatures::getDescriptionAsText(
 
 	o << "Homogeneous matrix for the RIGHT camera's 3D pose, relative to LEFT "
 		 "camera reference system:\n";
-	o << rightCameraPose.getHomogeneousMatrixVal<CMatrixDouble44>() << rightCameraPose << endl;
+	o << rightCameraPose.getHomogeneousMatrixVal<CMatrixDouble44>()
+	  << rightCameraPose << endl;
 
 	o << "Intrinsic parameters matrix for the LEFT camera:" << endl;
 	CMatrixDouble33 aux = cameraLeft.intrinsicParams;

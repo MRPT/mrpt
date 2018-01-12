@@ -785,7 +785,6 @@ struct TPose3DQuat : public TPoseOrPoint
 	}
 	/** Default fast constructor. Initializes to garbage. */
 	inline TPose3DQuat() {}
-
 	/** Coordinate access using operator[]. Order: x,y,z,qr,qx,qy,qz */
 	inline double& operator[](size_t i)
 	{
@@ -2335,18 +2334,16 @@ struct TTwist3D
 };
 
 // Binary streaming functions
-template <
-	class PoseOrPoint, typename = std::enable_if_t<std::is_base_of<
-						   mrpt::math::TPoseOrPoint, PoseOrPoint>::value>>
+template <class PoseOrPoint, typename = std::enable_if_t<std::is_base_of<
+								 mrpt::math::TPoseOrPoint, PoseOrPoint>::value>>
 mrpt::serialization::CArchive& operator>>(
 	mrpt::serialization::CArchive& in, PoseOrPoint& o)
 {
 	for (int i = 0; i < o.static_size; i++) in >> o[i];
 	return in;
 }
-template <
-	class PoseOrPoint, typename = std::enable_if_t<std::is_base_of<
-						   mrpt::math::TPoseOrPoint, PoseOrPoint>::value>>
+template <class PoseOrPoint, typename = std::enable_if_t<std::is_base_of<
+								 mrpt::math::TPoseOrPoint, PoseOrPoint>::value>>
 mrpt::serialization::CArchive& operator<<(
 	mrpt::serialization::CArchive& out, const PoseOrPoint& o)
 {

@@ -125,8 +125,8 @@ void CParameterizedTrajectoryGenerator::saveToConfigFile(
 		sSection, "vyi", m_nav_dyn_state.curVelLocal.vy, WN, WV,
 		"(Only for debugging) Current robot velocity vy [m/s].");
 	cfg.write(
-		sSection, "wi", mrpt::RAD2DEG(m_nav_dyn_state.curVelLocal.omega),
-		WN, WV, "(Only for debugging) Current robot velocity omega [deg/s].");
+		sSection, "wi", mrpt::RAD2DEG(m_nav_dyn_state.curVelLocal.omega), WN,
+		WV, "(Only for debugging) Current robot velocity omega [deg/s].");
 
 	cfg.write(
 		sSection, "reltrg_x", m_nav_dyn_state.relTarget.x, WN, WV,
@@ -135,9 +135,8 @@ void CParameterizedTrajectoryGenerator::saveToConfigFile(
 		sSection, "reltrg_y", m_nav_dyn_state.relTarget.y, WN, WV,
 		"(Only for debugging) Relative target y [m].");
 	cfg.write(
-		sSection, "reltrg_phi",
-		mrpt::RAD2DEG(m_nav_dyn_state.relTarget.phi), WN, WV,
-		"(Only for debugging) Relative target phi [deg].");
+		sSection, "reltrg_phi", mrpt::RAD2DEG(m_nav_dyn_state.relTarget.phi),
+		WN, WV, "(Only for debugging) Relative target phi [deg].");
 
 	cfg.write(
 		sSection, "target_rel_speed", m_nav_dyn_state.targetRelSpeed, WN, WV,

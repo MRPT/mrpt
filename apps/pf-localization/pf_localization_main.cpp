@@ -130,7 +130,8 @@ void do_pf_localization(
 
 	CConfigFile cfg(ini_fil);
 
-	std::vector<int> particles_count;  // Number of initial particles (if size>1, run
+	std::vector<int>
+		particles_count;  // Number of initial particles (if size>1, run
 	// the experiments N times)
 
 	// Load configuration:
@@ -617,7 +618,8 @@ void do_pf_localization(
 									GTpt->setName("GT");
 									GTpt->setColor(0, 0, 0, 0.9);
 
-									mrpt::ptr_cast<CDisk>::from(GTpt)->setDiskRadius(0.04f);
+									mrpt::ptr_cast<CDisk>::from(GTpt)
+										->setDiskRadius(0.04f);
 									ptrScene->insert(GTpt);
 								}
 
@@ -647,8 +649,10 @@ void do_pf_localization(
 									ellip->setName("parts_cov");
 									ellip->setColor(1, 0, 0, 0.6);
 
-									mrpt::ptr_cast<CEllipsoid>::from(ellip)->setLineWidth(2);
-									mrpt::ptr_cast<CEllipsoid>::from(ellip)->setQuantiles(3);
+									mrpt::ptr_cast<CEllipsoid>::from(ellip)
+										->setLineWidth(2);
+									mrpt::ptr_cast<CEllipsoid>::from(ellip)
+										->setQuantiles(3);
 									mrpt::ptr_cast<CEllipsoid>::from(ellip)
 										->set2DsegmentsCount(60);
 									ptrScene->insert(ellip);
@@ -656,7 +660,8 @@ void do_pf_localization(
 								ellip->setLocation(
 									meanPose.x(), meanPose.y(), 0.05);
 
-								mrpt::ptr_cast<CEllipsoid>::from(ellip)->setCovMatrix(cov, 2);
+								mrpt::ptr_cast<CEllipsoid>::from(ellip)
+									->setCovMatrix(cov, 2);
 							}
 
 							// The laser scan:
@@ -671,8 +676,8 @@ void do_pf_localization(
 									scanPts->setColor(1, 0, 0, 0.9);
 									mrpt::ptr_cast<CPointCloud>::from(scanPts)
 										->enableColorFromZ(false);
-									mrpt::ptr_cast<CPointCloud>::from(scanPts)->setPointSize(
-										4);
+									mrpt::ptr_cast<CPointCloud>::from(scanPts)
+										->setPointSize(4);
 									ptrScene->insert(scanPts);
 								}
 
@@ -683,10 +688,10 @@ void do_pf_localization(
 								map.clear();
 								observations->insertObservationsInto(&map);
 
-								mrpt::ptr_cast<CPointCloud>::from(scanPts)->loadFromPointsMap(
-									&map);
-								mrpt::ptr_cast<CPointCloud>::from(scanPts)->setPose(
-									robotPose3D);
+								mrpt::ptr_cast<CPointCloud>::from(scanPts)
+									->loadFromPointsMap(&map);
+								mrpt::ptr_cast<CPointCloud>::from(scanPts)
+									->setPose(robotPose3D);
 							}
 
 							// The camera:
@@ -946,7 +951,8 @@ void do_pf_localization(
 								GTpt->setName("GT");
 								GTpt->setColor(0, 0, 0, 0.9);
 
-								mrpt::ptr_cast<CDisk>::from(GTpt)->setDiskRadius(0.04f);
+								mrpt::ptr_cast<CDisk>::from(GTpt)
+									->setDiskRadius(0.04f);
 								scene.insert(GTpt);
 							}
 
@@ -975,15 +981,18 @@ void do_pf_localization(
 								ellip->setName("parts_cov");
 								ellip->setColor(1, 0, 0, 0.6);
 
-								mrpt::ptr_cast<CEllipsoid>::from(ellip)->setLineWidth(4);
-								mrpt::ptr_cast<CEllipsoid>::from(ellip)->setQuantiles(3);
-								mrpt::ptr_cast<CEllipsoid>::from(ellip)->set2DsegmentsCount(
-									60);
+								mrpt::ptr_cast<CEllipsoid>::from(ellip)
+									->setLineWidth(4);
+								mrpt::ptr_cast<CEllipsoid>::from(ellip)
+									->setQuantiles(3);
+								mrpt::ptr_cast<CEllipsoid>::from(ellip)
+									->set2DsegmentsCount(60);
 								scene.insert(ellip);
 							}
 							ellip->setLocation(meanPose.x(), meanPose.y(), 0);
 
-							mrpt::ptr_cast<CEllipsoid>::from(ellip)->setCovMatrix(cov, 2);
+							mrpt::ptr_cast<CEllipsoid>::from(ellip)
+								->setCovMatrix(cov, 2);
 						}
 
 						// The laser scan:
@@ -996,9 +1005,10 @@ void do_pf_localization(
 									mrpt::make_aligned_shared<CPointCloud>();
 								scanPts->setName("scan");
 								scanPts->setColor(1, 0, 0, 0.9);
-								mrpt::ptr_cast<CPointCloud>::from(scanPts)->enableColorFromZ(
-									false);
-								mrpt::ptr_cast<CPointCloud>::from(scanPts)->setPointSize(4);
+								mrpt::ptr_cast<CPointCloud>::from(scanPts)
+									->enableColorFromZ(false);
+								mrpt::ptr_cast<CPointCloud>::from(scanPts)
+									->setPointSize(4);
 								scene.insert(scanPts);
 							}
 
@@ -1009,9 +1019,10 @@ void do_pf_localization(
 							map.clear();
 							observations->insertObservationsInto(&map);
 
-							mrpt::ptr_cast<CPointCloud>::from(scanPts)->loadFromPointsMap(
-								&map);
-							mrpt::ptr_cast<CPointCloud>::from(scanPts)->setPose(robotPose3D);
+							mrpt::ptr_cast<CPointCloud>::from(scanPts)
+								->loadFromPointsMap(&map);
+							mrpt::ptr_cast<CPointCloud>::from(scanPts)->setPose(
+								robotPose3D);
 						}
 
 						// The camera:

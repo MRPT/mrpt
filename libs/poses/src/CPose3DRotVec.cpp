@@ -73,7 +73,8 @@ void CPose3DRotVec::serializeTo(mrpt::serialization::CArchive& out) const
 	out << m_coords[0] << m_coords[1] << m_coords[2] << m_rotvec[0]
 		<< m_rotvec[1] << m_rotvec[2];
 }
-void CPose3DRotVec::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CPose3DRotVec::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

@@ -13,7 +13,7 @@
 #include <cmath>
 #include <iosfwd>
 #include <vector>
-#include <limits> // numeric_limits
+#include <limits>  // numeric_limits
 #include <mrpt/core/exceptions.h>
 #include <mrpt/math/eigen_frwds.h>
 

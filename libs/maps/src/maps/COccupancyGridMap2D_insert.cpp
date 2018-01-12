@@ -14,7 +14,7 @@
 #include <mrpt/obs/CObservationRange.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/core/round.h>  // round()
-#include <mrpt/system/memory.h> // alloca()
+#include <mrpt/system/memory.h>  // alloca()
 
 #if HAVE_ALLOCA_H
 #include <alloca.h>
@@ -94,7 +94,8 @@ bool COccupancyGridMap2D::internal_insertObservation(
 		//  Use the z-axis direction of the transformed Z axis of the sensor
 		//  coordinates:
 		bool sensorIsBottomwards =
-			sensorPose3D.getHomogeneousMatrixVal<CMatrixDouble44>().get_unsafe(2, 2) < 0;
+			sensorPose3D.getHomogeneousMatrixVal<CMatrixDouble44>().get_unsafe(
+				2, 2) < 0;
 
 		if (reallyInsert)
 		{
@@ -1351,7 +1352,8 @@ void COccupancyGridMap2D::TInsertionOptions::loadFromConfigFile(
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void COccupancyGridMap2D::TInsertionOptions::dumpToTextStream(std::ostream& out) const
+void COccupancyGridMap2D::TInsertionOptions::dumpToTextStream(
+	std::ostream& out) const
 {
 	out << mrpt::format(
 		"\n----------- [COccupancyGridMap2D::TInsertionOptions] ------------ "

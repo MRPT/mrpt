@@ -30,8 +30,7 @@ class CPose3DPDFParticles;
 
 namespace hmtslam
 {
-typedef mrpt::aligned_std_map<TPoseID, mrpt::poses::CPose3D>
-	TMapPoseID2Pose3D;
+typedef mrpt::aligned_std_map<TPoseID, mrpt::poses::CPose3D> TMapPoseID2Pose3D;
 
 class CHMTSLAM;
 class CLSLAM_RBPF_2DLASER;
@@ -279,7 +278,8 @@ class CLocalMetricHypothesis
 	mutable unsigned int m_movementDrawsIdx;
 
 	/** Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm. */
-	mutable mrpt::aligned_std_vector<mrpt::poses::CPose2D> m_movementDrawMaximumLikelihood;
+	mutable mrpt::aligned_std_vector<mrpt::poses::CPose2D>
+		m_movementDrawMaximumLikelihood;
 
 };  // End of class def.
 

@@ -47,15 +47,15 @@ void CHierarchicalMHMap::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	// Nodes:
 	out.WriteAs<uint32_t>(nodeCount());
-	for (const auto& n : m_nodes)
-		out << *n.second;
+	for (const auto& n : m_nodes) out << *n.second;
 
 	// Arcs:
 	out.WriteAs<uint32_t>(arcCount());
 	for (const auto& a : m_arcs) out << *a;
 }
 
-void CHierarchicalMHMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CHierarchicalMHMap::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

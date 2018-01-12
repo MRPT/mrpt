@@ -136,20 +136,11 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	/** Translation relative to parent coordinate origin. */
 	inline double getPoseZ() const { return m_pose.z(); }
 	/** Rotation relative to parent coordinate origin, in **DEGREES**. */
-	inline double getPoseYaw() const
-	{
-		return mrpt::RAD2DEG(m_pose.yaw());
-	}
+	inline double getPoseYaw() const { return mrpt::RAD2DEG(m_pose.yaw()); }
 	/** Rotation relative to parent coordinate origin, in **DEGREES**. */
-	inline double getPosePitch() const
-	{
-		return mrpt::RAD2DEG(m_pose.pitch());
-	}
+	inline double getPosePitch() const { return mrpt::RAD2DEG(m_pose.pitch()); }
 	/** Rotation relative to parent coordinate origin, in **DEGREES**. */
-	inline double getPoseRoll() const
-	{
-		return mrpt::RAD2DEG(m_pose.roll());
-	}
+	inline double getPoseRoll() const { return mrpt::RAD2DEG(m_pose.roll()); }
 	/** Rotation relative to parent coordinate origin, in radians. */
 	inline double getPoseYawRad() const { return m_pose.yaw(); }
 	/** Rotation relative to parent coordinate origin, in radians. */
@@ -247,8 +238,9 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	/** Changes the default object color \return a ref to this */
 	CRenderizable& setColor(const mrpt::img::TColorf& c)
 	{
-		return setColor_u8(mrpt::img::TColor(
-			c.R * 255.f, c.G * 255.f, c.B * 255.f, c.A * 255.f));
+		return setColor_u8(
+			mrpt::img::TColor(
+				c.R * 255.f, c.G * 255.f, c.B * 255.f, c.A * 255.f));
 	}
 
 	/** Set the color components of this object (R,G,B,Alpha, in the range 0-1)

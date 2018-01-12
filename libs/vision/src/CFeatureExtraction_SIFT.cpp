@@ -165,8 +165,8 @@ void CFeatureExtraction::extractFeaturesSIFT(
 
 			CMatrix aux;
 			aux.loadFromTextFile(filOut);
-			std::cout << "[computeSiftFeatures] " << aux.rows()
-					  << " features." << std::endl;
+			std::cout << "[computeSiftFeatures] " << aux.rows() << " features."
+					  << std::endl;
 
 			if (onlyDesc)
 				nFeats = feats.size();

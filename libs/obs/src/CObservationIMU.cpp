@@ -31,7 +31,8 @@ void CObservationIMU::serializeTo(mrpt::serialization::CArchive& out) const
 	out << sensorLabel;
 }
 
-void CObservationIMU::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CObservationIMU::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

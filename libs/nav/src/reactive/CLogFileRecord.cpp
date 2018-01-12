@@ -63,7 +63,7 @@ void CLogFileRecord::serializeTo(mrpt::serialization::CArchive& out) const
 				m * sizeof(infoPerPTG[i].TP_Obstacles[0]));
 
 		out << infoPerPTG[i]
-					.TP_Targets;  // v8: CPoint2D -> TPoint2D. v26: vector
+				   .TP_Targets;  // v8: CPoint2D -> TPoint2D. v26: vector
 		out << infoPerPTG[i].TP_Robot;  // v17
 		out << infoPerPTG[i].timeForTPObsTransformation
 			<< infoPerPTG[i].timeForHolonomicMethod;  // made double in v12
@@ -97,8 +97,7 @@ void CLogFileRecord::serializeTo(mrpt::serialization::CArchive& out) const
 	// Removed: v24. out << ptg_last_curRobotVelLocal; // v17
 	ptg_last_navDynState.writeToStream(out);  // v24
 
-	if (ptg_index_NOP < 0)
-		out << cmd_vel /*v10*/ << cmd_vel_original;  // v15
+	if (ptg_index_NOP < 0) out << cmd_vel /*v10*/ << cmd_vel_original;  // v15
 
 	// Previous values: REMOVED IN VERSION #6
 	n = robotShape_x.size();
@@ -106,11 +105,9 @@ void CLogFileRecord::serializeTo(mrpt::serialization::CArchive& out) const
 	if (n)
 	{
 		out.WriteBuffer(
-			(const void*)&(*robotShape_x.begin()),
-			n * sizeof(robotShape_x[0]));
+			(const void*)&(*robotShape_x.begin()), n * sizeof(robotShape_x[0]));
 		out.WriteBuffer(
-			(const void*)&(*robotShape_y.begin()),
-			n * sizeof(robotShape_y[0]));
+			(const void*)&(*robotShape_y.begin()), n * sizeof(robotShape_y[0]));
 	}
 
 	// Version 1 ---------
@@ -130,8 +127,7 @@ void CLogFileRecord::serializeTo(mrpt::serialization::CArchive& out) const
 
 	out << values << timestamps;  // v13
 
-	out << relPoseSense
-		<< relPoseVelCmd;  // v14, v24 changed CPose2D->TPose2D
+	out << relPoseSense << relPoseVelCmd;  // v14, v24 changed CPose2D->TPose2D
 
 	// v15: cmd_vel converted from std::vector<double> into CSerializable
 	out << additional_debug_msgs;  // v18
@@ -139,7 +135,8 @@ void CLogFileRecord::serializeTo(mrpt::serialization::CArchive& out) const
 	navDynState.writeToStream(out);  // v24
 }
 
-void CLogFileRecord::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CLogFileRecord::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -209,7 +206,8 @@ void CLogFileRecord::serializeFrom(mrpt::serialization::CArchive& in, uint8_t ve
 				{
 					mrpt::poses::CPoint2D pos;
 					in >> pos;
-					ipp.TP_Targets.push_back(mrpt::math::TPoint2D(pos.x(),pos.y()));
+					ipp.TP_Targets.push_back(
+						mrpt::math::TPoint2D(pos.x(), pos.y()));
 				}
 				if (version >= 17)
 					in >> ipp.TP_Robot;
@@ -315,7 +313,8 @@ void CLogFileRecord::serializeFrom(mrpt::serialization::CArchive& in, uint8_t ve
 			{
 				mrpt::poses::CPoint2D pos;
 				in >> pos;
-				WS_targets_relative.push_back(mrpt::math::TPoint2D(pos.x(),pos.y()));
+				WS_targets_relative.push_back(
+					mrpt::math::TPoint2D(pos.x(), pos.y()));
 			}
 
 			if (version >= 16)

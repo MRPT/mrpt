@@ -21,7 +21,6 @@ using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 
-
 IMPLEMENTS_SERIALIZABLE(CPose3DPDFParticles, CPose3DPDF, mrpt::poses)
 
 /*---------------------------------------------------------------
@@ -216,7 +215,8 @@ void CPose3DPDFParticles::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeParticlesToStream(out);
 }
-void CPose3DPDFParticles::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CPose3DPDFParticles::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

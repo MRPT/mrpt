@@ -80,7 +80,7 @@ struct TEnumTypeFiller
 
 /** For use in specializations of TEnumTypeFiller */
 #define MRPT_FILL_ENUM(_X) m_map.insert(_X, #_X)
-#define MRPT_FILL_ENUM_CUSTOM_NAME(_X,_NAME) m_map.insert(_X, _NAME)
+#define MRPT_FILL_ENUM_CUSTOM_NAME(_X, _NAME) m_map.insert(_X, _NAME)
 #define MRPT_FILL_ENUM_MEMBER(_CLASS, _VALUE) \
 	m_map.insert(_CLASS::_VALUE, #_VALUE)
 

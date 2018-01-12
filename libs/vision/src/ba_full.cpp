@@ -214,7 +214,8 @@ double mrpt::vision::bundle_adj_full(
 			I_muFrame.unit(FrameDof, mu);
 			I_muPoint.unit(PointDof, mu);
 
-			mrpt::aligned_std_vector<Matrix_FxF> U_star(num_free_frames, I_muFrame);
+			mrpt::aligned_std_vector<Matrix_FxF> U_star(
+				num_free_frames, I_muFrame);
 			mrpt::aligned_std_vector<Matrix_PxP> V_inv(num_free_points);
 
 			for (size_t i = 0; i < U_star.size(); ++i) U_star[i] += H_f[i];
@@ -222,7 +223,8 @@ double mrpt::vision::bundle_adj_full(
 			for (size_t i = 0; i < H_p.size(); ++i)
 				(H_p[i] + I_muPoint).inv_fast(V_inv[i]);
 
-			using WMap = mrpt::aligned_std_map<pair<TCameraPoseID, TLandmarkID>,Matrix_FxP>;
+			using WMap = mrpt::aligned_std_map<pair<TCameraPoseID, TLandmarkID>,
+											   Matrix_FxP>;
 			WMap W, Y;
 
 			// For quick look-up of entries in W affecting a given point ID:
@@ -264,7 +266,8 @@ double mrpt::vision::bundle_adj_full(
 				++jac_iter;
 			}
 
-			mrpt::aligned_std_map<pair<TCameraPoseID, TLandmarkID>,Matrix_FxF> YW_map;
+			mrpt::aligned_std_map<pair<TCameraPoseID, TLandmarkID>, Matrix_FxF>
+				YW_map;
 			for (size_t i = 0; i < H_f.size(); ++i)
 				YW_map[std::pair<TCameraPoseID, TLandmarkID>(i, i)] = U_star[i];
 
@@ -325,7 +328,7 @@ double mrpt::vision::bundle_adj_full(
 
 			CSparseMatrix sS(len_free_frames, len_free_frames);
 
-			for (auto it =YW_map.begin();it != YW_map.end(); ++it)
+			for (auto it = YW_map.begin(); it != YW_map.end(); ++it)
 			{
 				const pair<TCameraPoseID, TLandmarkID>& ids = it->first;
 				const Matrix_FxF& YW = it->second;

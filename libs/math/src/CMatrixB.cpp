@@ -19,7 +19,6 @@ using namespace mrpt::math;
 IMPLEMENTS_SERIALIZABLE(CMatrixB, CSerializable, mrpt::math)
 
 uint8_t CMatrixB::serializeGetVersion() const { return 0; }
-
 void CMatrixB::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	out << (uint32_t)sizeof(m_Val[0][0]);

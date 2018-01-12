@@ -58,14 +58,12 @@ class CCamModel : public mrpt::config::CLoadableOptions
 	/** Calculate the image coordinates undistorted
 	 */
 	void jacob_undistor(
-		const mrpt::img::TPixelCoordf& p,
-		mrpt::math::CMatrixDouble& J_undist);
+		const mrpt::img::TPixelCoordf& p, mrpt::math::CMatrixDouble& J_undist);
 
 	/**	Return the pixel position distorted by the camera
 	 */
 	void distort_a_point(
-		const mrpt::img::TPixelCoordf& p,
-		mrpt::img::TPixelCoordf& distorted_p);
+		const mrpt::img::TPixelCoordf& p, mrpt::img::TPixelCoordf& distorted_p);
 
 	/**	Return the pixel position undistorted by the camera
 	 *	The input values 'col' and 'row' will be replace for the new values

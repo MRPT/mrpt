@@ -32,11 +32,11 @@ class CArrayNumeric : public Eigen::Matrix<T, N, 1>
 	CArrayNumeric() {}
 	/** Constructor from initial values ptr[0]-ptr[N-1] */
 	CArrayNumeric(const T* ptr) : Eigen::Matrix<T, N, 1>(ptr) {}
-
 	/** Initialization from a vector-like source, that is, anything implementing
 	 * operator[]. */
 	template <class Derived>
-	explicit CArrayNumeric(const Eigen::MatrixBase<Derived>& obj) : Eigen::Matrix<T, N, 1>(obj)
+	explicit CArrayNumeric(const Eigen::MatrixBase<Derived>& obj)
+		: Eigen::Matrix<T, N, 1>(obj)
 	{
 	}
 
@@ -72,7 +72,6 @@ using CArrayInt = CArrayNumeric<int, N>;
   * \sa CArrayNumeric, CArray */
 template <std::size_t N>
 using CArrayUInt = CArrayNumeric<unsigned int, N>;
-
 }
 
 namespace typemeta
@@ -83,8 +82,8 @@ struct TTypeName<mrpt::math::CArrayNumeric<T, N>>
 {
 	constexpr static auto get()
 	{
-		return literal("CArrayNumeric<") + TTypeName<T>::get() +
-			literal(",") + literal(num_to_string<N>::value) + literal(">");
+		return literal("CArrayNumeric<") + TTypeName<T>::get() + literal(",") +
+			   literal(num_to_string<N>::value) + literal(">");
 	}
 };
 template <size_t N>
@@ -92,7 +91,8 @@ struct TTypeName<mrpt::math::CArrayDouble<N>>
 {
 	constexpr static auto get()
 	{
-		return literal("CArrayDouble<") + literal(num_to_string<N>::value) + literal(">");
+		return literal("CArrayDouble<") + literal(num_to_string<N>::value) +
+			   literal(">");
 	}
 };
 template <size_t N>
@@ -100,7 +100,8 @@ struct TTypeName<mrpt::math::CArrayFloat<N>>
 {
 	constexpr static auto get()
 	{
-		return literal("CArrayFloat<") + literal(num_to_string<N>::value) + literal(">");
+		return literal("CArrayFloat<") + literal(num_to_string<N>::value) +
+			   literal(">");
 	}
 };
 }

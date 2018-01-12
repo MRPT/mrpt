@@ -111,7 +111,6 @@ class CPTG_DiffDrive_CollisionGridBased : public CPTG_RobotShape_Polygonal
 
 	double getMax_V() const { return V_MAX; }
 	double getMax_W() const { return W_MAX; }
-
    protected:
 	CPTG_DiffDrive_CollisionGridBased();
 
@@ -147,7 +146,8 @@ class CPTG_DiffDrive_CollisionGridBased : public CPTG_RobotShape_Polygonal
 	double m_stepTimeDuration;
 
 	void internal_readFromStream(mrpt::serialization::CArchive& in) override;
-	void internal_writeToStream(mrpt::serialization::CArchive& out) const override;
+	void internal_writeToStream(
+		mrpt::serialization::CArchive& out) const override;
 
 	/** Numerically solve the diferential equations to generate a family of
 	 * trajectories */

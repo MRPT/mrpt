@@ -136,11 +136,12 @@ void CPointPDFParticles::serializeTo(mrpt::serialization::CArchive& out) const
 	out << N;
 
 	for (CParticleList::const_iterator it = m_particles.begin();
-		it != m_particles.end(); ++it)
+		 it != m_particles.end(); ++it)
 		out << it->log_w << it->d->x << it->d->y << it->d->z;
 }
 
-void CPointPDFParticles::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CPointPDFParticles::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -289,4 +290,3 @@ void CPointPDFParticles::bayesianFusion(
 
 	MRPT_END
 }
-

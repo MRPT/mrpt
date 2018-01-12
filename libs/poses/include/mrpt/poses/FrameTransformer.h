@@ -145,10 +145,9 @@ class FrameTransformer : public FrameTransformerInterface<DIM>
 	};
 
 	// map: [parent] -> { [child] -> relPoseChildWRTParent }
-	using pose_tree_t = mrpt::aligned_std_map<
-		std::string,
-		mrpt::aligned_std_map<std::string, TF_TreeEdge>
-		>;
+	using pose_tree_t =
+		mrpt::aligned_std_map<std::string,
+							  mrpt::aligned_std_map<std::string, TF_TreeEdge>>;
 	pose_tree_t m_pose_edges_buffer;
 };
 

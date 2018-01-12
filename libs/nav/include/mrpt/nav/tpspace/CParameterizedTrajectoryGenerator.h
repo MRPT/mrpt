@@ -73,8 +73,9 @@ enum PTG_collision_behavior_t
  *
  *  \ingroup nav_tpspace
  */
-class CParameterizedTrajectoryGenerator : public mrpt::serialization::CSerializable,
-										  public mrpt::config::CLoadableOptions
+class CParameterizedTrajectoryGenerator
+	: public mrpt::serialization::CSerializable,
+	  public mrpt::config::CLoadableOptions
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CParameterizedTrajectoryGenerator)
    public:
@@ -475,7 +476,8 @@ class CParameterizedTrajectoryGenerator : public mrpt::serialization::CSerializa
 		double& inout_tp_obs) const;
 
 	virtual void internal_readFromStream(mrpt::serialization::CArchive& in);
-	virtual void internal_writeToStream(mrpt::serialization::CArchive& out) const;
+	virtual void internal_writeToStream(
+		mrpt::serialization::CArchive& out) const;
 
    public:
 	/** Evals the robot clearance for each robot pose along path `k`, for the
@@ -528,7 +530,8 @@ class CPTG_RobotShape_Polygonal : public CParameterizedTrajectoryGenerator
 	mrpt::math::CPolygon m_robotShape;
 	double m_robotMaxRadius;
 	void loadShapeFromConfigFile(
-		const mrpt::config::CConfigFileBase& source, const std::string& section);
+		const mrpt::config::CConfigFileBase& source,
+		const std::string& section);
 	void saveToConfigFile(
 		mrpt::config::CConfigFileBase& cfg,
 		const std::string& sSection) const override;
@@ -569,7 +572,8 @@ class CPTG_RobotShape_Circular : public CParameterizedTrajectoryGenerator
 	virtual void internal_processNewRobotShape() = 0;
 	double m_robotRadius;
 	void loadShapeFromConfigFile(
-		const mrpt::config::CConfigFileBase& source, const std::string& section);
+		const mrpt::config::CConfigFileBase& source,
+		const std::string& section);
 	void saveToConfigFile(
 		mrpt::config::CConfigFileBase& cfg,
 		const std::string& sSection) const override;

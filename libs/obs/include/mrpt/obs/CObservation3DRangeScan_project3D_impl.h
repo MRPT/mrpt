@@ -156,7 +156,7 @@ void project3DPointsFromDepthImageInto(
 							D,  // x
 							Ky * D,  // y
 							Kz * D  // z
-						);
+							);
 						src_obs.points3D_idxs_x[idx] = c;
 						src_obs.points3D_idxs_y[idx] = r;
 						++idx;
@@ -194,7 +194,7 @@ void project3DPointsFromDepthImageInto(
 						D / std::sqrt(1 + Ky * Ky + Kz * Kz),  // x
 						Ky * D,  // y
 						Kz * D  // z
-					);
+						);
 					src_obs.points3D_idxs_x[idx] = c;
 					src_obs.points3D_idxs_y[idx] = r;
 					++idx;

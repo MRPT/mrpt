@@ -64,17 +64,18 @@ CPose3DQuatPDFGaussianInf::CPose3DQuatPDFGaussianInf(
 }
 
 uint8_t CPose3DQuatPDFGaussianInf::serializeGetVersion() const { return 0; }
-void CPose3DQuatPDFGaussianInf::serializeTo(mrpt::serialization::CArchive& out) const
+void CPose3DQuatPDFGaussianInf::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
 	out << mean;
 
-	for (int r = 0; r < cov_inv.rows(); r++)
-		out << cov_inv.get_unsafe(r, r);
+	for (int r = 0; r < cov_inv.rows(); r++) out << cov_inv.get_unsafe(r, r);
 	for (int r = 0; r < cov_inv.rows(); r++)
 		for (int c = r + 1; c < cov_inv.cols(); c++)
 			out << cov_inv.get_unsafe(r, c);
 }
-void CPose3DQuatPDFGaussianInf::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CPose3DQuatPDFGaussianInf::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

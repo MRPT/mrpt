@@ -71,7 +71,8 @@ class CFaceDetection : public CObjectDetection
 	void experimental_showMeasurements();
 
 	void debug_returnResults(
-		const std::vector<uint32_t>& falsePositives, const std::vector<uint32_t>& ignore,
+		const std::vector<uint32_t>& falsePositives,
+		const std::vector<uint32_t>& ignore,
 		unsigned int& falsePositivesDeleted, unsigned int& realFacesDeleted);
 
    private:

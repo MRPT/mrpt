@@ -161,9 +161,8 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
 			out_info.path.block(iter, 0, 1, N) = x.transpose();
 		}
 		else
-			out_info.path = Eigen::Matrix<
-				NUMTYPE, Eigen::Dynamic,
-				Eigen::Dynamic>();  // Empty matrix
+			out_info.path = Eigen::Matrix<NUMTYPE, Eigen::Dynamic,
+										  Eigen::Dynamic>();  // Empty matrix
 
 		while (!found && ++iter < maxIter)
 		{

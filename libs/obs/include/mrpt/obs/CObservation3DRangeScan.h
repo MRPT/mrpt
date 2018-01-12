@@ -674,7 +674,6 @@ class CObservation3DRangeScan : public CObservation
 
 		// Ctor: pass identification to parent for deserialization
 		TPixelLabelInfo() : TPixelLabelInfoBase(BYTES_REQUIRED_) {}
-
 	   protected:
 		void internal_readFromStream(
 			mrpt::serialization::CArchive& in) override;

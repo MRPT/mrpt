@@ -462,7 +462,7 @@ class CKinect : public mrpt::hwdrivers::CGenericSensor
 		m_grab_3D_points = enable;
 	}
 	inline bool isGrab3DPointsEnabled() const { return m_grab_3D_points; }
-	/** @} */
+/** @} */
 
 #if MRPT_HAS_KINECT_FREENECT
 	// Auxiliary getters/setters (we can't declare the libfreenect callback as

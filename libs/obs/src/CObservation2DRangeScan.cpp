@@ -14,7 +14,7 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/wrap2pi.h>
-#include <mrpt/core/bits_mem.h> // length2length4N()
+#include <mrpt/core/bits_mem.h>  // length2length4N()
 #if MRPT_HAS_MATLAB
 #include <mexplus.h>
 #endif
@@ -60,9 +60,9 @@ CObservation2DRangeScan::CObservation2DRangeScan(
 }
 
 CObservation2DRangeScan::~CObservation2DRangeScan() {}
-
 uint8_t CObservation2DRangeScan::serializeGetVersion() const { return 7; }
-void CObservation2DRangeScan::serializeTo(mrpt::serialization::CArchive& out) const
+void CObservation2DRangeScan::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
 	// The data
 	out << aperture << rightToLeft << maxRange << sensorPose;
@@ -115,7 +115,8 @@ void CObservation2DRangeScan::truncateByDistanceAndAngle(
 	}
 }
 
-void CObservation2DRangeScan::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CObservation2DRangeScan::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -487,7 +488,8 @@ void CObservation2DRangeScan::getDescriptionAsText(std::ostream& o) const
 	CObservation::getDescriptionAsText(o);
 	o << "Homogeneous matrix for the sensor's 3D pose, relative to robot "
 		 "base:\n";
-	o << sensorPose.getHomogeneousMatrixVal<CMatrixDouble44>() << sensorPose << endl;
+	o << sensorPose.getHomogeneousMatrixVal<CMatrixDouble44>() << sensorPose
+	  << endl;
 
 	o << format(
 		"Samples direction: %s\n",

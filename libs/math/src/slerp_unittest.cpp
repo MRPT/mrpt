@@ -29,7 +29,7 @@ TEST(SLERP_tests, correctShortestPath)
 			const TPose3D expected(0, 0, 0, 0, 0, 0);
 			pose_interp.getHomogeneousMatrix(HM);
 			expected.getHomogeneousMatrix(HMe);
-			EXPECT_NEAR(0, (HM - HMe).array().abs().sum(),1e-4)
+			EXPECT_NEAR(0, (HM - HMe).array().abs().sum(), 1e-4)
 				<< "pose_a: " << pose_a << "\npose_b: " << pose_b
 				<< "\ninterp: " << pose_interp << endl;
 		}

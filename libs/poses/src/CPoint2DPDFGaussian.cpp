@@ -52,7 +52,8 @@ void CPoint2DPDFGaussian::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	out << CPoint2D(mean) << cov;
 }
-void CPoint2DPDFGaussian::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CPoint2DPDFGaussian::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -130,8 +131,8 @@ void CPoint2DPDFGaussian::bayesianFusion(
 
 	L.inv(cov);  // The new cov.
 
-	const Eigen::Vector2d x1{ p1.mean.x(), p1.mean.y() };
-	const Eigen::Vector2d x2{ p2.mean.x(), p2.mean.y() };
+	const Eigen::Vector2d x1{p1.mean.x(), p1.mean.y()};
+	const Eigen::Vector2d x2{p2.mean.x(), p2.mean.y()};
 	CMatrixDouble21 x = cov * (C1_inv * x1 + C2_inv * x2);
 
 	mean.x(x.get_unsafe(0, 0));

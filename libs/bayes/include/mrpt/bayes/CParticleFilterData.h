@@ -155,8 +155,9 @@ struct CParticleFilterDataImpl : public CParticleFilterCapable
 			{
 				/* Make a copy of the particle's data: */
 				ASSERT_(derived().m_particles[sorted_idx].d);
-				parts[i].d.reset(new typename Derived::CParticleDataContent(
-					*derived().m_particles[sorted_idx].d));
+				parts[i].d.reset(
+					new typename Derived::CParticleDataContent(
+						*derived().m_particles[sorted_idx].d));
 			}
 		}
 		/* Free memory of unused particles */

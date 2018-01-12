@@ -170,9 +170,10 @@ void CMyGLCanvas_DisplayWindow3D::OnMouseDown(wxMouseEvent& event)
 	{
 		try
 		{
-			m_win3D->publishEvent(mrptEventMouseDown(
-				m_win3D, TPixelCoord(event.GetX(), event.GetY()),
-				event.LeftDown(), event.RightDown()));
+			m_win3D->publishEvent(
+				mrptEventMouseDown(
+					m_win3D, TPixelCoord(event.GetX(), event.GetY()),
+					event.LeftDown(), event.RightDown()));
 		}
 		catch (...)
 		{
@@ -189,9 +190,10 @@ void CMyGLCanvas_DisplayWindow3D::OnMouseMove(wxMouseEvent& event)
 	{
 		try
 		{
-			m_win3D->publishEvent(mrptEventMouseMove(
-				m_win3D, TPixelCoord(event.GetX(), event.GetY()),
-				event.LeftDown(), event.RightDown()));
+			m_win3D->publishEvent(
+				mrptEventMouseMove(
+					m_win3D, TPixelCoord(event.GetX(), event.GetY()),
+					event.LeftDown(), event.RightDown()));
 		}
 		catch (...)
 		{
@@ -377,9 +379,10 @@ void C3DWindowDialog::OnResize(wxSizeEvent& event)
 	{
 		try
 		{
-			m_win3D->publishEvent(mrptEventWindowResize(
-				m_win3D, event.GetSize().GetWidth(),
-				event.GetSize().GetHeight()));
+			m_win3D->publishEvent(
+				mrptEventWindowResize(
+					m_win3D, event.GetSize().GetWidth(),
+					event.GetSize().GetHeight()));
 		}
 		catch (...)
 		{
@@ -448,8 +451,9 @@ CDisplayWindow3D::Ptr CDisplayWindow3D::Create(
 	const std::string& windowCaption, unsigned int initialWindowWidth,
 	unsigned int initialWindowHeight)
 {
-	return CDisplayWindow3D::Ptr(new CDisplayWindow3D(
-		windowCaption, initialWindowWidth, initialWindowHeight));
+	return CDisplayWindow3D::Ptr(
+		new CDisplayWindow3D(
+			windowCaption, initialWindowWidth, initialWindowHeight));
 }
 /*---------------------------------------------------------------
 					Destructor

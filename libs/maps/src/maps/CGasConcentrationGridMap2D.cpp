@@ -296,7 +296,8 @@ double CGasConcentrationGridMap2D::internal_computeObservationLikelihood(
 }
 
 uint8_t CGasConcentrationGridMap2D::serializeGetVersion() const { return 5; }
-void CGasConcentrationGridMap2D::serializeTo(mrpt::serialization::CArchive& out) const
+void CGasConcentrationGridMap2D::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
 	dyngridcommon_writeToStream(out);
 
@@ -312,14 +313,13 @@ void CGasConcentrationGridMap2D::serializeTo(mrpt::serialization::CArchive& out)
 #if MRPT_IS_BIG_ENDIAN
 	for (uint32_t i = 0; i < n; i++)
 	{
-		out << m_map[i].kf_mean << m_map[i].dm_mean
-			<< m_map[i].dmv_var_mean;
+		out << m_map[i].kf_mean << m_map[i].dm_mean << m_map[i].dmv_var_mean;
 	}
 #else
 	// Little endian: just write all at once:
 	out.WriteBuffer(
-		&m_map[0], sizeof(m_map[0]) *
-						m_map.size());  // TODO: Do this endianness safe!!
+		&m_map[0],
+		sizeof(m_map[0]) * m_map.size());  // TODO: Do this endianness safe!!
 #endif
 
 	// Version 1: Save the insertion options:
@@ -327,8 +327,7 @@ void CGasConcentrationGridMap2D::serializeTo(mrpt::serialization::CArchive& out)
 
 	out << insertionOptions.sigma << insertionOptions.cutoffRadius
 		<< insertionOptions.R_min << insertionOptions.R_max
-		<< insertionOptions.KF_covSigma
-		<< insertionOptions.KF_initialCellStd
+		<< insertionOptions.KF_covSigma << insertionOptions.KF_initialCellStd
 		<< insertionOptions.KF_observationModelNoise
 		<< insertionOptions.KF_defaultCellMeanValue
 		<< insertionOptions.KF_W_size;
@@ -347,7 +346,8 @@ struct TOldCellTypeInVersion1
 	float w, wr;
 };
 
-void CGasConcentrationGridMap2D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CGasConcentrationGridMap2D::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -482,7 +482,8 @@ void CGasConcentrationGridMap2D::TInsertionOptions::dumpToTextStream(
 	out << mrpt::format(
 		"useWindInformation						= %u\n", useWindInformation);
 
-	out << mrpt::format("advectionFreq							= %f\n", advectionFreq);
+	out << mrpt::format(
+		"advectionFreq							= %f\n", advectionFreq);
 	out << mrpt::format(
 		"default_wind_direction					= %f\n",
 		default_wind_direction);
@@ -632,8 +633,8 @@ void CGasConcentrationGridMap2D::getWindAs3DObject(
 
 			auto obj = mrpt::opengl::CArrow::Create(
 				xs[cx], ys[cy], 0.f, xs[cx] + scale * (float)cos(dir_xy),
-				ys[cy] + scale * (float)sin(dir_xy), 0.f, 1.15f * scale, 0.3f * scale,
-				0.35f * scale);
+				ys[cy] + scale * (float)sin(dir_xy), 0.f, 1.15f * scale,
+				0.3f * scale, 0.35f * scale);
 
 			float r, g, b;
 			jet2rgb(mod_xy, r, g, b);

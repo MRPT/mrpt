@@ -199,11 +199,11 @@ void CMultiMetricMapPDF::getEstimatedPosePDFAtTime(
 }
 
 uint8_t CRBPFParticleData::serializeGetVersion() const { return 0; }
-void CRBPFParticleData::serializeTo(mrpt::serialization::CArchive& ) const
+void CRBPFParticleData::serializeTo(mrpt::serialization::CArchive&) const
 {
 	THROW_EXCEPTION("Shouldn't arrive here");
 }
-void CRBPFParticleData::serializeFrom(mrpt::serialization::CArchive& , uint8_t )
+void CRBPFParticleData::serializeFrom(mrpt::serialization::CArchive&, uint8_t)
 {
 	THROW_EXCEPTION("Shouldn't arrive here");
 }
@@ -212,7 +212,7 @@ uint8_t CMultiMetricMapPDF::serializeGetVersion() const { return 0; }
 void CMultiMetricMapPDF::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	out.WriteAs<uint32_t>(m_particles.size());
-	for (const auto& part: m_particles)
+	for (const auto& part : m_particles)
 	{
 		out << part.log_w << part.d->mapTillNow;
 		out.WriteAs<uint32_t>(part.d->robotPath.size());
@@ -221,7 +221,8 @@ void CMultiMetricMapPDF::serializeTo(mrpt::serialization::CArchive& out) const
 	out << SFs << SF2robotPath;
 }
 
-void CMultiMetricMapPDF::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CMultiMetricMapPDF::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -614,7 +615,8 @@ CMultiMetricMapPDF::TPredictionParams::TPredictionParams()
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void CMultiMetricMapPDF::TPredictionParams::dumpToTextStream(std::ostream& out) const
+void CMultiMetricMapPDF::TPredictionParams::dumpToTextStream(
+	std::ostream& out) const
 {
 	out << mrpt::format(
 		"\n----------- [CMultiMetricMapPDF::TPredictionParams] ------------ "

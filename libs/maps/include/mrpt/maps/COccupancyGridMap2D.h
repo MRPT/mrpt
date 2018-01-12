@@ -993,9 +993,8 @@ class COccupancyGridMap2D : public CMetricMap,
 	template <class CLANDMARKSMAP>
 	bool saveAsBitmapFileWithLandmarks(
 		const std::string& file, const CLANDMARKSMAP* landmarks,
-		bool addTextLabels = false,
-		const mrpt::img::TColor& marks_color =
-			mrpt::img::TColor(0, 0, 255)) const
+		bool addTextLabels = false, const mrpt::img::TColor& marks_color =
+										mrpt::img::TColor(0, 0, 255)) const
 	{
 		MRPT_START
 		mrpt::img::CImage img(1, 1, 3);

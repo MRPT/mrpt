@@ -116,12 +116,13 @@ class CBeaconMap : public mrpt::maps::CMetricMap
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(std::ostream& out) const override;  // See base docs
+		void dumpToTextStream(
+			std::ostream& out) const override;  // See base docs
 
 		/** The standard deviation used for Beacon ranges likelihood
 		 * (default=0.08m).
 		  */
-		double rangeStd = { 0.08 };
+		double rangeStd = {0.08};
 	} likelihoodOptions;
 
 	/** This struct contains data for choosing the method by which new beacons
@@ -134,35 +135,36 @@ class CBeaconMap : public mrpt::maps::CMetricMap
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(std::ostream& out) const override;  // See base docs
+		void dumpToTextStream(
+			std::ostream& out) const override;  // See base docs
 
 		/** Insert a new beacon as a set of montecarlo samples (default=true),
 		 * or, if false, as a sum of gaussians (see mrpt::maps::CBeacon).
 		  * \sa MC_performResampling
 		  */
-		bool insertAsMonteCarlo{ true };
+		bool insertAsMonteCarlo{true};
 
 		/** Minimum and maximum elevation angles (in degrees) for inserting new
 		 * beacons at the first observation: the default values (both 0), makes
 		 * the beacons to be in the same horizontal plane that the sensors, that
 		 * is, 2D SLAM - the min/max values are -90/90.
 		  */
-		double maxElevation_deg{ 0 }, minElevation_deg{ 0 };
+		double maxElevation_deg{0}, minElevation_deg{0};
 
 		/** Number of particles per meter of range, i.e. per meter of the
 		 * "radius of the ring".
 		  */
-		unsigned int MC_numSamplesPerMeter{ 1000 };
+		unsigned int MC_numSamplesPerMeter{1000};
 
 		/** The threshold for the maximum std (X,Y,and Z) before colapsing the
 		 * particles into a Gaussian PDF (default=0.4).
 		  */
-		float MC_maxStdToGauss = { 0.4f };
+		float MC_maxStdToGauss = {0.4f};
 
 		/** Threshold for the maximum difference from the maximun (log) weight
 		 * in the set of samples for erasing a given sample (default=5).
 		  */
-		double MC_thresholdNegligible{ 5 };
+		double MC_thresholdNegligible{5};
 
 		/** If set to false (default), the samples will be generated the first
 		 * time a beacon is observed, and their weights just updated
@@ -170,26 +172,26 @@ class CBeaconMap : public mrpt::maps::CMetricMap
 		 * the particles will be resamples when necessary, and a small "noise"
 		 * will be added to avoid depletion.
 		  */
-		bool MC_performResampling{ false };
+		bool MC_performResampling{false};
 
 		/** The std.dev. of the Gaussian noise to be added to each sample after
 		 * resampling, only if MC_performResampling=true.
 		  */
-		float MC_afterResamplingNoise{ 0.01f };
+		float MC_afterResamplingNoise{0.01f};
 
 		/** Threshold for the maximum difference from the maximun (log) weight
 		 * in the SOG for erasing a given mode (default=20).
 		  */
-		float SOG_thresholdNegligible{ 20.0f };
+		float SOG_thresholdNegligible{20.0f};
 
 		/** A parameter for initializing 2D/3D SOGs
 		  */
-		float SOG_maxDistBetweenGaussians{ 1.0f };
+		float SOG_maxDistBetweenGaussians{1.0f};
 
 		/** Constant used to compute the std. dev. int the tangent direction
 		 * when creating the Gaussians.
 		  */
-		float SOG_separationConstant{ 3.0f };
+		float SOG_separationConstant{3.0f};
 	} insertionOptions;
 
 	/** Save to a MATLAB script which displays 3D error ellipses for the map.

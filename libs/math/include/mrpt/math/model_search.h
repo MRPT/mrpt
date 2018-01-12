@@ -28,7 +28,8 @@ namespace math
   *  - Methods:
   *    - size_t getSampleCount() const : return the number of samples. This
  * should not change during a model search.
-  *    - bool fitModel( const std::vector<size_t>& useIndices, Model& model ) const :
+  *    - bool fitModel( const std::vector<size_t>& useIndices, Model& model )
+ * const :
  * This function fits a model to the data selected by the indices. The return
  * value indicates the success, hence false means a degenerate case, where no
  * model was found.
@@ -66,7 +67,8 @@ class ModelSearch
 {
    private:
 	//! Select random (unique) indices from the 0..p_size sequence
-	void pickRandomIndex(size_t p_size, size_t p_pick, std::vector<size_t>& p_ind);
+	void pickRandomIndex(
+		size_t p_size, size_t p_pick, std::vector<size_t>& p_ind);
 
 	/** Select random (unique) indices from the set.
 	  *  The set is destroyed during pick */

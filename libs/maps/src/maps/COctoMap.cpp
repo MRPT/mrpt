@@ -86,7 +86,6 @@ COctoMap::COctoMap(const double resolution)
 }
 
 COctoMap::~COctoMap() {}
-
 uint8_t COctoMap::serializeGetVersion() const { return 3; }
 void COctoMap::serializeTo(mrpt::serialization::CArchive& out) const
 {
@@ -95,7 +94,8 @@ void COctoMap::serializeTo(mrpt::serialization::CArchive& out) const
 	out << genericMapParams;
 	// v2->v3: remove CMemoryChunk
 	std::stringstream ss;
-	const_cast<octomap::OcTree*>(&PIMPL_GET_REF(OcTree, m_octomap))->writeBinary(ss);
+	const_cast<octomap::OcTree*>(&PIMPL_GET_REF(OcTree, m_octomap))
+		->writeBinary(ss);
 	const std::string& buf = ss.str();
 	out << buf;
 }
@@ -108,7 +108,9 @@ void COctoMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 		case 1:
 		case 2:
 		{
-			THROW_EXCEPTION("Deserialization of old versions of this class was discontinued in MRPT 1.9.9 [no CMemoryChunk]");
+			THROW_EXCEPTION(
+				"Deserialization of old versions of this class was "
+				"discontinued in MRPT 1.9.9 [no CMemoryChunk]");
 		}
 		break;
 		case 3:

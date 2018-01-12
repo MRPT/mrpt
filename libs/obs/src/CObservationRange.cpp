@@ -41,7 +41,8 @@ void CObservationRange::serializeTo(mrpt::serialization::CArchive& out) const
 	out << sensorLabel << timestamp;
 }
 
-void CObservationRange::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CObservationRange::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -101,7 +102,7 @@ void CObservationRange::getSensorPose(CPose3D& out_sensorPose) const
  ---------------------------------------------------------------*/
 void CObservationRange::setSensorPose(const CPose3D& newSensorPose)
 {
-	for (auto & sd : sensedData) sd.sensorPose = newSensorPose.asTPose();
+	for (auto& sd : sensedData) sd.sensorPose = newSensorPose.asTPose();
 }
 
 void CObservationRange::getDescriptionAsText(std::ostream& o) const

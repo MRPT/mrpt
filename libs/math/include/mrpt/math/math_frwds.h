@@ -92,17 +92,18 @@ struct ContainerType
 	using element_t = typename CONTAINER::value_type;
 };
 
-#define MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(_CLASS_)           \
-	template <class TPOSE,                             \
-		typename = std::enable_if_t<                           \
-			std::is_base_of<mrpt::math::TPoseOrPoint,TPOSE>::value>> \
-	explicit inline _CLASS_(const TPOSE& p) {                  \
-		mrpt::math::containerFromPoseOrPoint(*this, p);        \
-	}                                                          \
-	template <class CPOSE, int = CPOSE::is_3D_val>             \
-	explicit inline _CLASS_(const CPOSE& p) {          \
-		mrpt::math::containerFromPoseOrPoint(*this, p);        \
-	}                                                          \
+#define MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(_CLASS_)                     \
+	template <class TPOSE, typename = std::enable_if_t<std::is_base_of<  \
+							   mrpt::math::TPoseOrPoint, TPOSE>::value>> \
+	explicit inline _CLASS_(const TPOSE& p)                              \
+	{                                                                    \
+		mrpt::math::containerFromPoseOrPoint(*this, p);                  \
+	}                                                                    \
+	template <class CPOSE, int = CPOSE::is_3D_val>                       \
+	explicit inline _CLASS_(const CPOSE& p)                              \
+	{                                                                    \
+		mrpt::math::containerFromPoseOrPoint(*this, p);                  \
+	}
 
 template <class CONTAINER1, class CONTAINER2>
 void cumsum(const CONTAINER1& in_data, CONTAINER2& out_cumsum);

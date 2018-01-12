@@ -948,7 +948,8 @@ void CLocalMetricHypothesis::dumpAsText(std::vector<std::string>& st) const
 /*---------------------------------------------------------------
 					readFromStream
   ---------------------------------------------------------------*/
-void CLocalMetricHypothesis::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CLocalMetricHypothesis::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -969,18 +970,20 @@ void CLocalMetricHypothesis::serializeFrom(mrpt::serialization::CArchive& in, ui
 }
 
 uint8_t CLocalMetricHypothesis::serializeGetVersion() const { return 0; }
-void CLocalMetricHypothesis::serializeTo(mrpt::serialization::CArchive& out) const
+void CLocalMetricHypothesis::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
 	out << m_ID << m_currentRobotPose << m_neighbors << m_nodeIDmemberships
-		<< m_SFs << m_posesPendingAddPartitioner << m_areasPendingTBI
-		<< m_log_w << m_log_w_metric_history
-		<< m_robotPosesGraph.partitioner << m_robotPosesGraph.idx2pose;
+		<< m_SFs << m_posesPendingAddPartitioner << m_areasPendingTBI << m_log_w
+		<< m_log_w_metric_history << m_robotPosesGraph.partitioner
+		<< m_robotPosesGraph.idx2pose;
 
 	// particles:
 	writeParticlesToStream(out);
 }
 
-void CLSLAMParticleData::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CLSLAMParticleData::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

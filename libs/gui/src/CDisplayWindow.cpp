@@ -268,9 +268,10 @@ void CWindowDialog::OnResize(wxSizeEvent& event)
 	{
 		try
 		{
-			m_win2D->publishEvent(mrptEventWindowResize(
-				m_win2D, event.GetSize().GetWidth(),
-				event.GetSize().GetHeight()));
+			m_win2D->publishEvent(
+				mrptEventWindowResize(
+					m_win2D, event.GetSize().GetWidth(),
+					event.GetSize().GetHeight()));
 		}
 		catch (...)
 		{
@@ -286,9 +287,10 @@ void CWindowDialog::OnMouseDown(wxMouseEvent& event)
 	{
 		try
 		{
-			m_win2D->publishEvent(mrptEventMouseDown(
-				m_win2D, TPixelCoord(event.GetX(), event.GetY()),
-				event.LeftDown(), event.RightDown()));
+			m_win2D->publishEvent(
+				mrptEventMouseDown(
+					m_win2D, TPixelCoord(event.GetX(), event.GetY()),
+					event.LeftDown(), event.RightDown()));
 		}
 		catch (...)
 		{
@@ -304,9 +306,10 @@ void CWindowDialog::OnMouseMove(wxMouseEvent& event)
 	{
 		try
 		{
-			m_win2D->publishEvent(mrptEventMouseMove(
-				m_win2D, TPixelCoord(event.GetX(), event.GetY()),
-				event.LeftDown(), event.RightDown()));
+			m_win2D->publishEvent(
+				mrptEventMouseMove(
+					m_win2D, TPixelCoord(event.GetX(), event.GetY()),
+					event.LeftDown(), event.RightDown()));
 		}
 		catch (...)
 		{

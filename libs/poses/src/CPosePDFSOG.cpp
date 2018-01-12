@@ -114,7 +114,8 @@ void CPosePDFSOG::serializeTo(mrpt::serialization::CArchive& out) const
 		mrpt::math::serializeSymmetricMatrixTo(m.cov, out);
 	}
 }
-void CPosePDFSOG::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CPosePDFSOG::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -125,7 +126,7 @@ void CPosePDFSOG::serializeFrom(mrpt::serialization::CArchive& in, uint8_t versi
 			uint32_t N;
 			in >> N;
 			resize(N);
-			for (auto & m : m_modes)
+			for (auto& m : m_modes)
 			{
 				in >> m.log_w;
 
@@ -182,12 +183,11 @@ bool CPosePDFSOG::saveToTextFile(const std::string& file) const
 	FILE* f = os::fopen(file.c_str(), "wt");
 	if (!f) return false;
 
-	for (const auto & m : m_modes)
+	for (const auto& m : m_modes)
 		os::fprintf(
-			f, "%e %e %e %e %e %e %e %e %e %e\n", exp(m.log_w),
-			m.mean.x(), m.mean.y(), m.mean.phi(), m.cov(0, 0),
-			m.cov(1, 1), m.cov(2, 2), m.cov(0, 1), m.cov(0, 2),
-			m.cov(1, 2));
+			f, "%e %e %e %e %e %e %e %e %e %e\n", exp(m.log_w), m.mean.x(),
+			m.mean.y(), m.mean.phi(), m.cov(0, 0), m.cov(1, 1), m.cov(2, 2),
+			m.cov(0, 1), m.cov(0, 2), m.cov(1, 2));
 	os::fclose(f);
 	return true;
 }

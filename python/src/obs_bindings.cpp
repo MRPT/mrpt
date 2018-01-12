@@ -135,8 +135,9 @@ void CObservationOdometry_from_ROS_RawOdometry_msg(
 	// set info
 	self.sensorLabel =
 		extract<std::string>(raw_odometry_msg.attr("header").attr("frame_id"));
-	self.timestamp = extract<uint64_t>(TTimeStamp_from_ROS_Time(
-		raw_odometry_msg.attr("header").attr("stamp")));
+	self.timestamp = extract<uint64_t>(
+		TTimeStamp_from_ROS_Time(
+			raw_odometry_msg.attr("header").attr("stamp")));
 	self.hasEncodersInfo =
 		extract<bool>(raw_odometry_msg.attr("has_encoders_info"));
 	self.hasVelocities = extract<bool>(raw_odometry_msg.attr("has_velocities"));

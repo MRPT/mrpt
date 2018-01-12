@@ -197,7 +197,7 @@ void TMatchingPairList::filterUniqueRobustPairs(
 			c.errorSquareAfterTransformation <
 				bestMatchForThisMap[c.this_idx]
 					->errorSquareAfterTransformation  // or better
-		)
+			)
 		{
 			bestMatchForThisMap[c.this_idx] = &c;
 		}

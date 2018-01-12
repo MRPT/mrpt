@@ -14,7 +14,7 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CMessage.h>
-#include <cstring> // strlen()
+#include <cstring>  // strlen()
 
 using namespace mrpt::serialization;
 
@@ -57,50 +57,52 @@ Writes an elemental data type to stream.
 ---------------------------------------------------------------*/
 #if MRPT_IS_BIG_ENDIAN
 // Big endian system: Convert into little-endian for streaming
-#define IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(T)        \
+#define IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(T)                    \
 	CArchive& mrpt::serialization::operator<<(CArchive& out, const T a) \
-	{                                                      \
-		mrpt::reverseBytesInPlace(a);                      \
-		out.WriteBuffer((void*)&a, sizeof(a));             \
-		return out;                                        \
-	}                                                      \
+	{                                                                   \
+		mrpt::reverseBytesInPlace(a);                                   \
+		out.WriteBuffer((void*)&a, sizeof(a));                          \
+		return out;                                                     \
+	}                                                                   \
 	CArchive& mrpt::serialization::operator>>(CArchive& in, T& a)       \
-	{                                                      \
-		T b;                                               \
-		in.ReadBuffer((void*)&b, sizeof(a));               \
-		mrpt::reverseBytesInPlace(b);                      \
-		::memcpy(&a, &b, sizeof(b));                       \
-		return in;                                         \
+	{                                                                   \
+		T b;                                                            \
+		in.ReadBuffer((void*)&b, sizeof(a));                            \
+		mrpt::reverseBytesInPlace(b);                                   \
+		::memcpy(&a, &b, sizeof(b));                                    \
+		return in;                                                      \
 	}
 #else
 // Little endian system:
-#define IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(T)        \
+#define IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(T)                    \
 	CArchive& mrpt::serialization::operator<<(CArchive& out, const T a) \
-	{                                                      \
-		out.WriteBuffer((void*)&a, sizeof(a));             \
-		return out;                                        \
-	}                                                      \
+	{                                                                   \
+		out.WriteBuffer((void*)&a, sizeof(a));                          \
+		return out;                                                     \
+	}                                                                   \
 	CArchive& mrpt::serialization::operator>>(CArchive& in, T& a)       \
-	{                                                      \
-		in.ReadBuffer((void*)&a, sizeof(a));               \
-		return in;                                         \
+	{                                                                   \
+		in.ReadBuffer((void*)&a, sizeof(a));                            \
+		return in;                                                      \
 	}
 #endif
 
-IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(bool)
-IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(uint8_t)
-IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(int8_t)
-IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(uint16_t)
-IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(int16_t)
-IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(uint32_t)
-IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(int32_t)
-IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(uint64_t)
-IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(int64_t)
-IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(float)
-IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(double)
-IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(long double)
+IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(
+	bool) IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(uint8_t)
+	IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(
+		int8_t) IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(uint16_t)
+		IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(
+			int16_t) IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(uint32_t)
+			IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(int32_t)
+				IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(uint64_t)
+					IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(int64_t)
+						IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(float)
+							IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(double)
+								IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(
+									long double)
 
-CArchive& mrpt::serialization::operator<<(CArchive& out, const char* s)
+									CArchive& mrpt::serialization::operator<<(
+										CArchive& out, const char* s)
 {
 	uint32_t l = (uint32_t)strlen(s);
 	out << l;
@@ -108,7 +110,8 @@ CArchive& mrpt::serialization::operator<<(CArchive& out, const char* s)
 	return out;
 }
 
-CArchive& mrpt::serialization::operator<<(CArchive& out, const std::vector<bool>& a)
+CArchive& mrpt::serialization::operator<<(
+	CArchive& out, const std::vector<bool>& a)
 {
 	uint32_t n = (uint32_t)a.size();
 	out << n;
@@ -200,67 +203,76 @@ CArchive& CArchive::operator>>(CSerializable& obj)
 
 namespace mrpt
 {
-	namespace serialization
-	{
-		// For backward compatibility, since in MRPT<0.8.1 vector_XXX and
-		// std::vector<XXX> were exactly equivalent, now there're not.
-		namespace detail
-		{
-			template <typename VEC>
-			inline CArchive& writeStdVectorToStream(CArchive& s, const VEC& v)
-			{
-				const uint32_t n = static_cast<uint32_t>(v.size());
-				s << n;
-				if (n) s.WriteBufferFixEndianness(&v[0], n);
-				return s;
-			}
-			template <typename VEC>
-			inline CArchive& readStdVectorToStream(CArchive& s, VEC& v)
-			{
-				uint32_t n;
-				s >> n;
-				v.resize(n);
-				if (n) s.ReadBufferFixEndianness(&v[0], n);
-				return s;
-			}
-		}
-	}
+namespace serialization
+{
+// For backward compatibility, since in MRPT<0.8.1 vector_XXX and
+// std::vector<XXX> were exactly equivalent, now there're not.
+namespace detail
+{
+template <typename VEC>
+inline CArchive& writeStdVectorToStream(CArchive& s, const VEC& v)
+{
+	const uint32_t n = static_cast<uint32_t>(v.size());
+	s << n;
+	if (n) s.WriteBufferFixEndianness(&v[0], n);
+	return s;
+}
+template <typename VEC>
+inline CArchive& readStdVectorToStream(CArchive& s, VEC& v)
+{
+	uint32_t n;
+	s >> n;
+	v.resize(n);
+	if (n) s.ReadBufferFixEndianness(&v[0], n);
+	return s;
+}
+}
+}
 }
 
 // Write:
-CArchive& mrpt::serialization::operator<<(CArchive& s, const std::vector<float>& a)
+CArchive& mrpt::serialization::operator<<(
+	CArchive& s, const std::vector<float>& a)
 {
 	return detail::writeStdVectorToStream(s, a);
 }
-CArchive& mrpt::serialization::operator<<(CArchive& s, const std::vector<double>& a)
+CArchive& mrpt::serialization::operator<<(
+	CArchive& s, const std::vector<double>& a)
 {
 	return detail::writeStdVectorToStream(s, a);
 }
-CArchive& mrpt::serialization::operator<<(CArchive& s, const std::vector<int32_t>& a)
+CArchive& mrpt::serialization::operator<<(
+	CArchive& s, const std::vector<int32_t>& a)
 {
 	return detail::writeStdVectorToStream(s, a);
 }
-CArchive& mrpt::serialization::operator<<(CArchive& s, const std::vector<uint32_t>& a)
+CArchive& mrpt::serialization::operator<<(
+	CArchive& s, const std::vector<uint32_t>& a)
 {
 	return detail::writeStdVectorToStream(s, a);
 }
-CArchive& mrpt::serialization::operator<<(CArchive& s, const std::vector<uint16_t>& a)
+CArchive& mrpt::serialization::operator<<(
+	CArchive& s, const std::vector<uint16_t>& a)
 {
 	return detail::writeStdVectorToStream(s, a);
 }
-CArchive& mrpt::serialization::operator<<(CArchive& s, const std::vector<int16_t>& a)
+CArchive& mrpt::serialization::operator<<(
+	CArchive& s, const std::vector<int16_t>& a)
 {
 	return detail::writeStdVectorToStream(s, a);
 }
-CArchive& mrpt::serialization::operator<<(CArchive& s, const std::vector<int64_t>& a)
+CArchive& mrpt::serialization::operator<<(
+	CArchive& s, const std::vector<int64_t>& a)
 {
 	return detail::writeStdVectorToStream(s, a);
 }
-CArchive& mrpt::serialization::operator<<(CArchive& s, const std::vector<uint8_t>& a)
+CArchive& mrpt::serialization::operator<<(
+	CArchive& s, const std::vector<uint8_t>& a)
 {
 	return detail::writeStdVectorToStream(s, a);
 }
-CArchive& mrpt::serialization::operator<<(CArchive& s, const std::vector<int8_t>& a)
+CArchive& mrpt::serialization::operator<<(
+	CArchive& s, const std::vector<int8_t>& a)
 {
 	return detail::writeStdVectorToStream(s, a);
 }
@@ -304,7 +316,8 @@ CArchive& mrpt::serialization::operator>>(CArchive& s, std::vector<int8_t>& a)
 }
 
 #if MRPT_WORD_SIZE != 32  // If it's 32 bit, size_t <=> uint32_t
-CArchive& mrpt::serialization::operator<<(CArchive& s, const std::vector<size_t>& a)
+CArchive& mrpt::serialization::operator<<(
+	CArchive& s, const std::vector<size_t>& a)
 {
 	return detail::writeStdVectorToStream(s, a);
 }
@@ -366,7 +379,7 @@ void CArchive::internal_ReadObjectHeader(
 		// read -> possibly an EOF)
 		if (sizeof(lengthReadClassName) !=
 			ReadBuffer(
-			(void*)&lengthReadClassName, sizeof(lengthReadClassName)))
+				(void*)&lengthReadClassName, sizeof(lengthReadClassName)))
 			THROW_EXCEPTION("Cannot read object header from stream! (EOF?)");
 
 		// Is in old format (< MRPT 0.5.5)?
@@ -426,10 +439,10 @@ void CArchive::internal_ReadObjectHeader(
 				"Cannot read object streaming version from stream!");
 		}
 
-		// In MRPT 0.5.5 an end flag was introduced:
+// In MRPT 0.5.5 an end flag was introduced:
 #if CARCHIVE_VERBOSE
 		cerr << "[CArchive::ReadObject] readClassName:" << strClassName
-			<< " version: " << version << endl;
+			 << " version: " << version << endl;
 #endif
 	}
 	catch (std::bad_alloc&)
@@ -529,7 +542,8 @@ void CArchive::ReadObject(CSerializable* existingObj)
 	internal_ReadObject(existingObj, strClassName, isOldFormat, version);
 }
 
-CArchive& mrpt::serialization::operator<<(CArchive& s, const std::vector<std::string>& vec)
+CArchive& mrpt::serialization::operator<<(
+	CArchive& s, const std::vector<std::string>& vec)
 {
 	uint32_t N = static_cast<uint32_t>(vec.size());
 	s << N;
@@ -537,7 +551,8 @@ CArchive& mrpt::serialization::operator<<(CArchive& s, const std::vector<std::st
 	return s;
 }
 
-CArchive& mrpt::serialization::operator>>(CArchive& s, std::vector<std::string>& vec)
+CArchive& mrpt::serialization::operator>>(
+	CArchive& s, std::vector<std::string>& vec)
 {
 	uint32_t N;
 	s >> N;
@@ -550,7 +565,7 @@ void CArchive::sendMessage(const CMessage& msg)
 {
 	MRPT_START
 
-		unsigned char buf[0x10100];
+	unsigned char buf[0x10100];
 	unsigned int nBytesTx = 0;
 
 	const bool msg_format_is_tiny = msg.content.size() < 256;
@@ -583,7 +598,7 @@ void CArchive::sendMessage(const CMessage& msg)
 bool CArchive::receiveMessage(CMessage& msg)
 {
 	MRPT_START
-		std::vector<unsigned char> buf(66000);
+	std::vector<unsigned char> buf(66000);
 	unsigned int nBytesInFrame = 0;
 	unsigned long nBytesToRx = 0;
 	unsigned char tries = 2;

@@ -37,7 +37,6 @@ class CSerializable : public mrpt::rtti::CObject
 	DEFINE_VIRTUAL_MRPT_OBJECT(CSerializable)
 
 	virtual ~CSerializable() {}
-
    protected:
 	/** @name CSerializable virtual methods
 	 *  @{ */
@@ -109,7 +108,7 @@ void OctetVectorToObject(
 	void serializeTo(mrpt::serialization::CArchive& out) const override;     \
 	void serializeFrom(                                                      \
 		mrpt::serialization::CArchive& in, uint8_t serial_version) override; \
-	/*! @} */
+/*! @} */
 
 /** This must be inserted in all CSerializable classes implementation files */
 #define IMPLEMENTS_SERIALIZABLE(class_name, base, NameSpace) \

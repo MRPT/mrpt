@@ -73,8 +73,8 @@ void TSetOfMetricMapInitializers::loadFromConfigFile(
 	const TMetricMapTypesRegistry::TListRegisteredMaps& allMapKinds =
 		mmr.getAllRegistered();
 	for (TMetricMapTypesRegistry::TListRegisteredMaps::const_iterator
-		itMapKind = allMapKinds.begin();
-		itMapKind != allMapKinds.end(); ++itMapKind)
+			 itMapKind = allMapKinds.begin();
+		 itMapKind != allMapKinds.end(); ++itMapKind)
 	{
 		//  ; Creation of maps:
 		//  occupancyGrid_count=<Number of mrpt::maps::COccupancyGridMap2D maps>

@@ -41,7 +41,8 @@ CObservationBearingRange::CObservationBearingRange()
 }
 
 uint8_t CObservationBearingRange::serializeGetVersion() const { return 3; }
-void CObservationBearingRange::serializeTo(mrpt::serialization::CArchive& out) const
+void CObservationBearingRange::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
 	uint32_t i, n;
 	// The data
@@ -62,13 +63,12 @@ void CObservationBearingRange::serializeTo(mrpt::serialization::CArchive& out) c
 		if (id != INVALID_LANDMARK_ID)
 		{
 			if (0 != lstIDs.count(id))
-				THROW_EXCEPTION_FMT(
-					"Duplicate landmark ID=%i found.", (int)id);
+				THROW_EXCEPTION_FMT("Duplicate landmark ID=%i found.", (int)id);
 			lstIDs.insert(id);
 		}
 
-		out << sensedData[i].range << sensedData[i].yaw
-			<< sensedData[i].pitch << id;
+		out << sensedData[i].range << sensedData[i].yaw << sensedData[i].pitch
+			<< id;
 
 		if (validCovariances) out << sensedData[i].covariance;
 	}
@@ -76,7 +76,8 @@ void CObservationBearingRange::serializeTo(mrpt::serialization::CArchive& out) c
 	out << sensorLabel;
 }
 
-void CObservationBearingRange::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CObservationBearingRange::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

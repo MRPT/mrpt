@@ -197,7 +197,8 @@ double CWirelessPowerGridMap2D::internal_computeObservationLikelihood(
 }
 
 uint8_t CWirelessPowerGridMap2D::serializeGetVersion() const { return 5; }
-void CWirelessPowerGridMap2D::serializeTo(mrpt::serialization::CArchive& out) const
+void CWirelessPowerGridMap2D::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
 	dyngridcommon_writeToStream(out);
 
@@ -213,14 +214,13 @@ void CWirelessPowerGridMap2D::serializeTo(mrpt::serialization::CArchive& out) co
 #if MRPT_IS_BIG_ENDIAN
 	for (uint32_t i = 0; i < n; i++)
 	{
-		out << m_map[i].kf_mean << m_map[i].dm_mean
-			<< m_map[i].dmv_var_mean;
+		out << m_map[i].kf_mean << m_map[i].dm_mean << m_map[i].dmv_var_mean;
 	}
 #else
 	// Little endian: just write all at once:
 	out.WriteBuffer(
-		&m_map[0], sizeof(m_map[0]) *
-						m_map.size());  // TODO: Do this endianness safe!!
+		&m_map[0],
+		sizeof(m_map[0]) * m_map.size());  // TODO: Do this endianness safe!!
 #endif
 
 	// Version 1: Save the insertion options:
@@ -228,8 +228,7 @@ void CWirelessPowerGridMap2D::serializeTo(mrpt::serialization::CArchive& out) co
 
 	out << insertionOptions.sigma << insertionOptions.cutoffRadius
 		<< insertionOptions.R_min << insertionOptions.R_max
-		<< insertionOptions.KF_covSigma
-		<< insertionOptions.KF_initialCellStd
+		<< insertionOptions.KF_covSigma << insertionOptions.KF_initialCellStd
 		<< insertionOptions.KF_observationModelNoise
 		<< insertionOptions.KF_defaultCellMeanValue
 		<< insertionOptions.KF_W_size;
@@ -248,7 +247,8 @@ struct TOldCellTypeInVersion1
 	float w, wr;
 };
 
-void CWirelessPowerGridMap2D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CWirelessPowerGridMap2D::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -340,7 +340,6 @@ void CWirelessPowerGridMap2D::serializeFrom(mrpt::serialization::CArchive& in, u
 }
 
 CWirelessPowerGridMap2D::TInsertionOptions::TInsertionOptions() {}
-
 void CWirelessPowerGridMap2D::TInsertionOptions::dumpToTextStream(
 	std::ostream& out) const
 {

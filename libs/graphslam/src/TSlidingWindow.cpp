@@ -218,7 +218,8 @@ void TSlidingWindow::dumpToTextStream(std::ostream& out) const
 	out << mrpt::format("m_mean_cached       : %.2f\n", m_mean_cached);
 	out << mrpt::format("m_median_cached     : %.2f\n", m_median_cached);
 	out << mrpt::format("m_std_dev_cached    : %.2f\n", m_std_dev_cached);
-	out << mrpt::format("m_mean_updated      : %s\n", m_mean_updated ? "TRUE" : "FALSE");
+	out << mrpt::format(
+		"m_mean_updated      : %s\n", m_mean_updated ? "TRUE" : "FALSE");
 	out << mrpt::format(
 		"m_median_updated    : %s\n", m_median_updated ? "TRUE" : "FALSE");
 	out << mrpt::format(

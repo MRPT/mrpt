@@ -913,7 +913,8 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 				// fusedObsModels.getEstimatedCovariance() << endl << endl;
 
 				// Make sure it was initialized
-				ASSERT_(firstEstimateRobotHeading != 
+				ASSERT_(
+					firstEstimateRobotHeading !=
 					std::numeric_limits<float>::max());
 
 				finalPose.setFromValues(

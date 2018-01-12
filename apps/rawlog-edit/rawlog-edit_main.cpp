@@ -564,7 +564,9 @@ TOutputRawlogCreator::TOutputRawlogCreator()
 		throw runtime_error(
 			string("*ABORTING*: Cannot open output file: ") +
 			out_rawlog_filename);
-	out_rawlog.reset(new mrpt::serialization::CArchiveStreamBase<mrpt::io::CFileGZOutputStream>(out_rawlog_io));
+	out_rawlog.reset(
+		new mrpt::serialization::CArchiveStreamBase<
+			mrpt::io::CFileGZOutputStream>(out_rawlog_io));
 }
 
 bool isFlagSet(TCLAP::CmdLine& cmdline, const std::string& arg_name)

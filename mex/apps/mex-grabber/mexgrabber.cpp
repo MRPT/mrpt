@@ -131,8 +131,8 @@ MEX_DEFINE(new)(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 	std::vector<std::string> sections;
 	iniFile.getAllSections(sections);
 
-	for (std::vector<std::string>::iterator it = sections.begin(); it != sections.end();
-		 ++it)
+	for (std::vector<std::string>::iterator it = sections.begin();
+		 it != sections.end(); ++it)
 	{
 		if (*it == GLOBAL_SECTION_NAME || it->empty() ||
 			iniFile.read_bool(*it, "rawlog-grabber-ignore", false, false))

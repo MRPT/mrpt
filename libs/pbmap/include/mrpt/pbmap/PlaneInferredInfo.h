@@ -19,7 +19,6 @@
 #include <mrpt/config.h>
 #if MRPT_HAS_PCL
 
-
 #include <mrpt/pbmap/PbMap.h>
 #include <mrpt/pbmap/Plane.h>
 

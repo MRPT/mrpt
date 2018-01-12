@@ -91,7 +91,8 @@ void CLandmark::serializeTo(mrpt::serialization::CArchive& out) const
 		<< timestampLastSeen << seenTimesCount;
 }
 
-void CLandmark::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CLandmark::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

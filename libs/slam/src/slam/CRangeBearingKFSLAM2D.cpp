@@ -579,8 +579,8 @@ void CRangeBearingKFSLAM2D::OnGetObservationsAndDataAssociation(
 				obs_idxs_needing_data_assoc.push_back(row);
 			else
 			{
-				mrpt::containers::bimap<
-					CLandmark::TLandmarkID, unsigned int>::iterator itID;
+				mrpt::containers::bimap<CLandmark::TLandmarkID,
+										unsigned int>::iterator itID;
 				if ((itID = m_IDs.find_key(itObs->landmarkID)) != m_IDs.end())
 					*itDA = itID->second;  // This row in Z corresponds to the
 				// i'th map element in the state
@@ -751,8 +751,9 @@ void CRangeBearingKFSLAM2D::TOptions::loadFromConfigFile(
 
 	std_sensor_range =
 		source.read_float(section, "std_sensor_range", std_sensor_range);
-	std_sensor_yaw = DEG2RAD(source.read_float(
-		section, "std_sensor_yaw_deg", RAD2DEG(std_sensor_yaw)));
+	std_sensor_yaw = DEG2RAD(
+		source.read_float(
+			section, "std_sensor_yaw_deg", RAD2DEG(std_sensor_yaw)));
 
 	MRPT_LOAD_CONFIG_VAR(quantiles_3D_representation, float, source, section);
 	MRPT_LOAD_CONFIG_VAR(create_simplemap, bool, source, section);

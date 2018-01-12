@@ -113,8 +113,9 @@ void CAngularObservationMesh::updateMesh() const
 				// Without the pitch since it's already within each sensorPose:
 				actualMesh(i, j) =
 					((origin +
-					 CPose3D(0, 0, 0, rToL ? pYaw : -pYaw, pitchIncr)) +
-					CPoint3D(scan[j], 0, 0)).asTPoint();
+					  CPose3D(0, 0, 0, rToL ? pYaw : -pYaw, pitchIncr)) +
+					 CPoint3D(scan[j], 0, 0))
+						.asTPoint();
 			}
 	}
 	delete[] pitchs;
@@ -310,14 +311,16 @@ void CAngularObservationMesh::generatePointCloud(CPointsMap* out_map) const
 }
 
 uint8_t CAngularObservationMesh::serializeGetVersion() const { return 0; }
-void CAngularObservationMesh::serializeTo(mrpt::serialization::CArchive& out) const
+void CAngularObservationMesh::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
 	// Version 0:
 	out << pitchBounds << scanSet << mWireframe << mEnableTransparency;
 }
 
-void CAngularObservationMesh::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CAngularObservationMesh::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -388,12 +391,12 @@ class FAddUntracedLines
 									0.5);
 				lins->appendLine(
 					obs.sensorPose.asTPose(),
-					(
-						obs.sensorPose +
-						CPose3D(
-							0, 0, 0, obs.rightToLeft ? yaw : -yaw,
-							obs.deltaPitch * i + pitchs.back(), 0) +
-						pDist).asTPoint());
+					(obs.sensorPose +
+					 CPose3D(
+						 0, 0, 0, obs.rightToLeft ? yaw : -yaw,
+						 obs.deltaPitch * i + pitchs.back(), 0) +
+					 pDist)
+						.asTPoint());
 			}
 		pitchs.pop_back();
 	}

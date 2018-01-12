@@ -253,9 +253,10 @@ void optimize_graph_spa_levmarq(
 	{
 		const TNodeID id1 = itJ->first.first;
 		const TNodeID id2 = itJ->first.second;
-		observationIndex_to_relatedFreeNodeIndex.push_back(std::make_pair(
-			mrpt::containers::find_in_vector(id1, *nodes_to_optimize),
-			mrpt::containers::find_in_vector(id2, *nodes_to_optimize)));
+		observationIndex_to_relatedFreeNodeIndex.push_back(
+			std::make_pair(
+				mrpt::containers::find_in_vector(id1, *nodes_to_optimize),
+				mrpt::containers::find_in_vector(id2, *nodes_to_optimize)));
 	}
 
 	// other important vars for the main loop:
@@ -332,7 +333,7 @@ void optimize_graph_spa_levmarq(
 								lstObservationData[idx_obs].edge /* W */,
 								errs[idx_obs] /* err */,
 								grad_parts[idx1] /* out */
-							);
+								);
 
 					if (idx2 != string::npos)
 						detail::AuxErrorEval<typename gst::edge_t, gst>::
@@ -341,7 +342,7 @@ void optimize_graph_spa_levmarq(
 								lstObservationData[idx_obs].edge /* W */,
 								errs[idx_obs] /* err */,
 								grad_parts[idx2] /* out */
-							);
+								);
 				}
 			}
 

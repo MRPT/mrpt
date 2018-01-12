@@ -101,7 +101,8 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(std::ostream& out) const override;  // See base docs
+		void dumpToTextStream(
+			std::ostream& out) const override;  // See base docs
 
 		double maxrange;  //!< maximum range for how long individual beams are
 		//! inserted (default -1: complete beam)
@@ -238,7 +239,8 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(std::ostream& out) const override;  // See base docs
+		void dumpToTextStream(
+			std::ostream& out) const override;  // See base docs
 
 		/** Binary dump to stream */
 		void writeToStream(mrpt::serialization::CArchive& out) const;

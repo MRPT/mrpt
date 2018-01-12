@@ -69,8 +69,8 @@ void checkScalesAndFindMore(
  * computed)
 	*/
 bool computeGradient(
-	const mrpt::img::CImage& image, const unsigned int x,
-	const unsigned int y, double& mag, double& ori);
+	const mrpt::img::CImage& image, const unsigned int x, const unsigned int y,
+	double& mag, double& ori);
 
 /** Computes the main orientations (within 80% of the peak value of orientation
  * histogram) of a certain point within an image (for using in SIFT-based
@@ -86,9 +86,9 @@ bool computeGradient(
  * smooth the orientation histogram (typically 7.5 px).
 	*/
 bool computeMainOrientations(
-	const mrpt::img::CImage& image, const unsigned int x,
-	const unsigned int y, const unsigned int patchSize,
-	std::vector<double>& orientations, const double& sigma);
+	const mrpt::img::CImage& image, const unsigned int x, const unsigned int y,
+	const unsigned int patchSize, std::vector<double>& orientations,
+	const double& sigma);
 
 /** Inserts the orientation value of a certain pixel within the keypoint
  * neighbourhood into the histogram of orientations. This value can
@@ -124,10 +124,10 @@ void interpolateHistEntry(
 	* \sa TMultiResDescOptions
 	*/
 void computeHistogramOfOrientations(
-	const mrpt::img::CImage& image, const unsigned int x,
-	const unsigned int y, const unsigned int patchSize,
-	const double& orientation, std::vector<int32_t>& descriptor,
-	const TMultiResDescOptions& opts, std::vector<int32_t>& hashCoeffs);
+	const mrpt::img::CImage& image, const unsigned int x, const unsigned int y,
+	const unsigned int patchSize, const double& orientation,
+	std::vector<int32_t>& descriptor, const TMultiResDescOptions& opts,
+	std::vector<int32_t>& hashCoeffs);
 
 /** Matches two CFeatureList containing mulit-resolution descriptors. The first
  * list is taken as a base, i.e. its features must contain multi-resolution

@@ -80,10 +80,10 @@ using namespace std;
 // JL: Refactored code from within cvFindChessboardCorners3() and alternative
 // algorithm:
 bool do_special_dilation(
-	CImage& thresh_img, const int dilations,
-	IplConvKernel* kernel_cross, IplConvKernel* kernel_rect,
-	IplConvKernel* kernel_diag1, IplConvKernel* kernel_diag2,
-	IplConvKernel* kernel_horz, IplConvKernel* kernel_vert)
+	CImage& thresh_img, const int dilations, IplConvKernel* kernel_cross,
+	IplConvKernel* kernel_rect, IplConvKernel* kernel_diag1,
+	IplConvKernel* kernel_diag2, IplConvKernel* kernel_horz,
+	IplConvKernel* kernel_vert)
 {
 #if 0
 	// MARTIN's Code

@@ -98,8 +98,8 @@ class CPose2DGridTemplate
 	CPose2DGridTemplate(
 		double xMin = -1.0f, double xMax = 1.0f, double yMin = -1.0f,
 		double yMax = 1.0f, double resolutionXY = 0.5f,
-		double resolutionPhi = mrpt::DEG2RAD(180.0),
-		double phiMin = -M_PI, double phiMax = M_PI)
+		double resolutionPhi = mrpt::DEG2RAD(180.0), double phiMin = -M_PI,
+		double phiMax = M_PI)
 		: m_xMin(),
 		  m_xMax(),
 		  m_yMin(),
@@ -154,8 +154,7 @@ class CPose2DGridTemplate
 		// Compute new required space:
 		m_sizeX = mrpt::round(xMax / resolutionXY) - m_idxLeftX + 1;
 		m_sizeY = mrpt::round(yMax / resolutionXY) - m_idxLeftY + 1;
-		m_sizePhi =
-			mrpt::round(phiMax / resolutionPhi) - m_idxLeftPhi + 1;
+		m_sizePhi = mrpt::round(phiMax / resolutionPhi) - m_idxLeftPhi + 1;
 		m_sizeXY = m_sizeX * m_sizeY;
 
 		// Resize "m_data":

@@ -14,14 +14,14 @@
 #include <mrpt/core/common.h>
 #include <mrpt/core/format.h>
 
-   /** \def THROW_TYPED_EXCEPTION(msg,exceptionClass) */
+/** \def THROW_TYPED_EXCEPTION(msg,exceptionClass) */
 #define THROW_TYPED_EXCEPTION(msg, exceptionClass)                             \
 	do                                                                         \
 	{                                                                          \
 		std::string s = "\n\n =============== MRPT EXCEPTION =============\n"; \
 		s += __CURRENT_FUNCTION_NAME__;                                        \
 		s += ", line ";                                                        \
-		s += mrpt::to_string(__LINE__);                                         \
+		s += mrpt::to_string(__LINE__);                                        \
 		s += ":\n";                                                            \
 		s += msg;                                                              \
 		s += ":\n";                                                            \
@@ -52,7 +52,7 @@
 		s += "\n";                      \
 		s += __FILE__;                  \
 		s += ":";                       \
-		s += mrpt::to_string(__LINE__);  \
+		s += mrpt::to_string(__LINE__); \
 		s += ": In `";                  \
 		s += __CURRENT_FUNCTION_NAME__; \
 		s += "`\n";                     \
@@ -125,11 +125,11 @@
 		s += ") failed with\n";                             \
 		s += __ASTR;                                        \
 		s += "=";                                           \
-		s += mrpt::to_string(__A);                           \
+		s += mrpt::to_string(__A);                          \
 		s += "\n";                                          \
 		s += __BSTR;                                        \
 		s += "=";                                           \
-		s += mrpt::to_string(__B);                           \
+		s += mrpt::to_string(__B);                          \
 		s += "\n";                                          \
 		THROW_EXCEPTION(s);                                 \
 	}

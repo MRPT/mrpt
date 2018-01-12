@@ -78,14 +78,16 @@ void CLandmarksMap::TMapDefinition::loadFromConfigFile_map_specific(
 		source, sectionNamePrefix + string("_likelihoodOpts"));
 }
 
-void CLandmarksMap::TMapDefinition::dumpToTextStream_map_specific(std::ostream& out) const
+void CLandmarksMap::TMapDefinition::dumpToTextStream_map_specific(
+	std::ostream& out) const
 {
 	out << mrpt::format(
 		"number of initial beacons                = %u\n",
 		(int)initialBeacons.size());
 
 	out << mrpt::format("      ID         (X,Y,Z)\n");
-	out << mrpt::format("--------------------------------------------------------\n");
+	out << mrpt::format(
+		"--------------------------------------------------------\n");
 	for (std::deque<TPairIdBeacon>::const_iterator p = initialBeacons.begin();
 		 p != initialBeacons.end(); ++p)
 		out << mrpt::format(
@@ -168,7 +170,6 @@ void CLandmarksMap::internal_clear() { landmarks.clear(); }
 						getLandmarksCount
   ---------------------------------------------------------------*/
 size_t CLandmarksMap::size() const { return landmarks.size(); }
-
 uint8_t CLandmarksMap::serializeGetVersion() const { return 0; }
 void CLandmarksMap::serializeTo(mrpt::serialization::CArchive& out) const
 {
@@ -179,11 +180,12 @@ void CLandmarksMap::serializeTo(mrpt::serialization::CArchive& out) const
 
 	// Write all landmarks:
 	for (TSequenceLandmarks::const_iterator it = landmarks.begin();
-			it != landmarks.end(); ++it)
+		 it != landmarks.end(); ++it)
 		out << (*it);
 }
 
-void CLandmarksMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CLandmarksMap::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -1974,7 +1976,8 @@ void CLandmarksMap::TCustomSequenceLandmarks::hasBeenModifiedAll()
 	for (idx = 0, it = m_landmarks.begin(); it != m_landmarks.end();
 		 idx++, it++)
 	{
-		std::vector<int32_t>* cell = m_grid.cellByPos(it->pose_mean.x, it->pose_mean.y);
+		std::vector<int32_t>* cell =
+			m_grid.cellByPos(it->pose_mean.x, it->pose_mean.y);
 		cell->push_back(idx);
 	}
 
@@ -2121,9 +2124,9 @@ double CLandmarksMap::computeLikelihood_SIFT_LandmarkMap(
 										lm1->features[0] && lm2->features[0]);
 									ASSERT_(
 										lm1->features[0]
-										->descriptors.SIFT.size() ==
+											->descriptors.SIFT.size() ==
 										lm2->features[0]
-										->descriptors.SIFT.size());
+											->descriptors.SIFT.size());
 
 									for (it1 = lm1->features[0]
 												   ->descriptors.SIFT.begin(),
@@ -2338,7 +2341,8 @@ void CLandmarksMap::TInsertionOptions::dumpToTextStream(std::ostream& out) const
 		"SIFTsLoadEllipsoidWidth                 = %f\n",
 		SIFTsLoadEllipsoidWidth);
 	out << mrpt::format("\n");
-	out << mrpt::format("SIFTs_stdXY                             = %f\n", SIFTs_stdXY);
+	out << mrpt::format(
+		"SIFTs_stdXY                             = %f\n", SIFTs_stdXY);
 	out << mrpt::format(
 		"SIFTs_stdDisparity                      = %f\n", SIFTs_stdDisparity);
 	out << mrpt::format("\n");
@@ -2439,7 +2443,8 @@ CLandmarksMap::TLikelihoodOptions::TGPSOrigin::TGPSOrigin()
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void CLandmarksMap::TLikelihoodOptions::dumpToTextStream(std::ostream& out) const
+void CLandmarksMap::TLikelihoodOptions::dumpToTextStream(
+	std::ostream& out) const
 {
 	out << mrpt::format(
 		"\n----------- [CLandmarksMap::TLikelihoodOptions] ------------ \n\n");
@@ -2474,7 +2479,8 @@ void CLandmarksMap::TLikelihoodOptions::dumpToTextStream(std::ostream& out) cons
 		"GPSOrigin:LONGITUDE                     = %f\n", GPSOrigin.longitude);
 	out << mrpt::format(
 		"GPSOrigin:ALTITUDE                      = %f\n", GPSOrigin.altitude);
-	out << mrpt::format("GPSOrigin:Rotation_Angle                = %f\n", GPSOrigin.ang);
+	out << mrpt::format(
+		"GPSOrigin:Rotation_Angle                = %f\n", GPSOrigin.ang);
 	out << mrpt::format(
 		"GPSOrigin:x_shift                       = %f\n", GPSOrigin.x_shift);
 	out << mrpt::format(
@@ -2482,7 +2488,8 @@ void CLandmarksMap::TLikelihoodOptions::dumpToTextStream(std::ostream& out) cons
 	out << mrpt::format(
 		"GPSOrigin:min_sat                       = %i\n", GPSOrigin.min_sat);
 
-	out << mrpt::format("GPS_sigma                               = %f (m)\n", GPS_sigma);
+	out << mrpt::format(
+		"GPS_sigma                               = %f (m)\n", GPS_sigma);
 
 	SIFT_feat_options.dumpToTextStream(out);
 
@@ -2877,8 +2884,8 @@ void CLandmarksMap::simulateRangeBearingReadings(
 	const CPose3D& in_robotPose, const CPose3D& in_sensorLocationOnRobot,
 	CObservationBearingRange& out_Observations, bool sensorDetectsIDs,
 	const float in_stdRange, const float in_stdYaw, const float in_stdPitch,
-	std::vector<size_t>* out_real_associations, const double spurious_count_mean,
-	const double spurious_count_std) const
+	std::vector<size_t>* out_real_associations,
+	const double spurious_count_mean, const double spurious_count_std) const
 {
 	TSequenceLandmarks::const_iterator it;
 	size_t idx;
@@ -2947,8 +2954,8 @@ void CLandmarksMap::simulateRangeBearingReadings(
 		spurious_count_mean, spurious_count_std);
 	size_t nSpurious = 0;
 	if (spurious_count_std != 0 || spurious_count_mean != 0)
-		nSpurious = static_cast<size_t>(
-			mrpt::round_long(std::max(0.0, fSpurious)));
+		nSpurious =
+			static_cast<size_t>(mrpt::round_long(std::max(0.0, fSpurious)));
 
 	// For each spurios reading to generate:
 	// ------------------------------------------

@@ -583,9 +583,11 @@ class xRawLogViewerFrame : public wxFrame
 
 	static void OntreeViewSelectionChanged(
 		wxWindow* me, CRawlogTreeView* the_tree, TRawlogTreeViewEvent ev,
-		int item_index, const mrpt::serialization::CSerializable::Ptr& item_data);
+		int item_index,
+		const mrpt::serialization::CSerializable::Ptr& item_data);
 
-	void SelectObjectInTreeView(const mrpt::serialization::CSerializable::Ptr& sel_obj);
+	void SelectObjectInTreeView(
+		const mrpt::serialization::CSerializable::Ptr& sel_obj);
 
 	void showNextTip(bool forceShow = false);
 

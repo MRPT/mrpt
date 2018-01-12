@@ -65,7 +65,8 @@ class CMatrix : public mrpt::serialization::CSerializable, public CMatrixFloat
 	}
 
 };  // end of class definition
-mrpt::serialization::CArchive& operator>>(mrpt::serialization::CArchive& in, CMatrix::Ptr& pObj);
+mrpt::serialization::CArchive& operator>>(
+	mrpt::serialization::CArchive& in, CMatrix::Ptr& pObj);
 
 }  // End of namespace
 }  // End of namespace

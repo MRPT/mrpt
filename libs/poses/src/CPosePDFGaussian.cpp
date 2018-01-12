@@ -61,7 +61,8 @@ void CPosePDFGaussian::serializeTo(mrpt::serialization::CArchive& out) const
 	out << mean;
 	mrpt::math::serializeSymmetricMatrixTo(cov, out);
 }
-void CPosePDFGaussian::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CPosePDFGaussian::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

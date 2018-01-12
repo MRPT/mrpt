@@ -103,8 +103,9 @@ class CGraphPartitioner : public mrpt::system::COutputLogger
 	 * \exception Throws a std::logic_error if an invalid matrix is passed.
 	 */
 	static void SpectralBisection(
-		GRAPH_MATRIX& in_A, std::vector<uint32_t>& out_part1, std::vector<uint32_t>& out_part2,
-		num_t& out_cut_value, bool forceSimetry = true);
+		GRAPH_MATRIX& in_A, std::vector<uint32_t>& out_part1,
+		std::vector<uint32_t>& out_part2, num_t& out_cut_value,
+		bool forceSimetry = true);
 
 	/** Performs an EXACT minimum n-Cut graph bisection, (Use
 	 * CGraphPartitioner::SpectralBisection for a faster algorithm)
@@ -131,8 +132,9 @@ class CGraphPartitioner : public mrpt::system::COutputLogger
 	 * \exception Throws a std::logic_error if an invalid matrix is passed.
 	 */
 	static void exactBisection(
-		GRAPH_MATRIX& in_A, std::vector<uint32_t>& out_part1, std::vector<uint32_t>& out_part2,
-		num_t& out_cut_value, bool forceSimetry = true);
+		GRAPH_MATRIX& in_A, std::vector<uint32_t>& out_part1,
+		std::vector<uint32_t>& out_part2, num_t& out_cut_value,
+		bool forceSimetry = true);
 
 	/** Returns the normaliced cut of a graph, given its adjacency matrix A and
 	 * a bisection:

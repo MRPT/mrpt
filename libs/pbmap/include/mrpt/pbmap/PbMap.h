@@ -19,7 +19,6 @@
 #include <mrpt/config.h>
 #if MRPT_HAS_PCL
 
-
 #include <mrpt/serialization/CSerializable.h>
 
 #include <mrpt/pbmap/Plane.h>

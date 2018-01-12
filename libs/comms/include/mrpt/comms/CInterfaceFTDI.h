@@ -161,8 +161,7 @@ class CInterfaceFTDI : public mrpt::io::CStream
 
 	/** This virtual method does nothing in this class.
 	*/
-	uint64_t Seek(
-		int64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning);
+	uint64_t Seek(int64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning);
 
 	/** This virtual method does nothing in this class.
 	*/
@@ -172,9 +171,7 @@ class CInterfaceFTDI : public mrpt::io::CStream
 	*/
 	uint64_t getPosition() const;
 
-
    protected:
-
 	/** Used in Read */
 	mrpt::containers::circular_buffer<uint8_t> m_readBuffer;
 

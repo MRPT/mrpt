@@ -481,7 +481,7 @@ void CRangeBearingKFSLAM::OnObservationModel(
 			out_predictions[i][0],  // range
 			out_predictions[i][1],  // yaw
 			out_predictions[i][2]  // pitch
-		);
+			);
 	}
 
 	MRPT_END
@@ -620,8 +620,8 @@ void CRangeBearingKFSLAM::OnGetObservationsAndDataAssociation(
 				obs_idxs_needing_data_assoc.push_back(row);
 			else
 			{
-				mrpt::containers::bimap<
-					CLandmark::TLandmarkID, unsigned int>::iterator itID;
+				mrpt::containers::bimap<CLandmark::TLandmarkID,
+										unsigned int>::iterator itID;
 				if ((itID = m_IDs.find_key(itObs->landmarkID)) != m_IDs.end())
 					*itDA = itID->second;  // This row in Z corresponds to the
 				// i'th map element in the state
@@ -756,10 +756,12 @@ void CRangeBearingKFSLAM::TOptions::loadFromConfigFile(
 	ASSERT_(stds_Q_no_odo.size() == 7);
 	std_sensor_range =
 		source.read_float(section, "std_sensor_range", std_sensor_range);
-	std_sensor_yaw = DEG2RAD(source.read_float(
-		section, "std_sensor_yaw_deg", RAD2DEG(std_sensor_yaw)));
-	std_sensor_pitch = DEG2RAD(source.read_float(
-		section, "std_sensor_pitch_deg", RAD2DEG(std_sensor_pitch)));
+	std_sensor_yaw = DEG2RAD(
+		source.read_float(
+			section, "std_sensor_yaw_deg", RAD2DEG(std_sensor_yaw)));
+	std_sensor_pitch = DEG2RAD(
+		source.read_float(
+			section, "std_sensor_pitch_deg", RAD2DEG(std_sensor_pitch)));
 
 	std_odo_z_additional = source.read_float(
 		section, "std_odo_z_additional", std_odo_z_additional);
@@ -1227,11 +1229,12 @@ double CRangeBearingKFSLAM::computeOffDiagonalBlocksApproximationError(
 		}
 	}
 
-	return sumOffBlocks / H.block(
-							   get_vehicle_size(), get_vehicle_size(),
-							   H.rows() - get_vehicle_size(),
-							   H.cols() - get_vehicle_size())
-							  .sum();  // Starting (7,7)-end
+	return sumOffBlocks /
+		   H.block(
+				get_vehicle_size(), get_vehicle_size(),
+				H.rows() - get_vehicle_size(),
+				H.cols() - get_vehicle_size())
+			   .sum();  // Starting (7,7)-end
 	MRPT_END
 }
 

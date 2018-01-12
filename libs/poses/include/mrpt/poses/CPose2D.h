@@ -339,9 +339,10 @@ class CPose2D : public CPose<CPose2D>, public mrpt::serialization::CSerializable
 	static inline void resize(const size_t n)
 	{
 		if (n != static_size)
-			throw std::logic_error(format(
-				"Try to change the size of CPose2D to %u.",
-				static_cast<unsigned>(n)));
+			throw std::logic_error(
+				format(
+					"Try to change the size of CPose2D to %u.",
+					static_cast<unsigned>(n)));
 	}
 
 	/** @} */

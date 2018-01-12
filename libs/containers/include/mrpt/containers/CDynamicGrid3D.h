@@ -311,7 +311,6 @@ class CDynamicGrid3D
 	inline double idx2x(int cx) const { return m_x_min + (cx)*m_resolution_xy; }
 	inline double idx2y(int cy) const { return m_y_min + (cy)*m_resolution_xy; }
 	inline double idx2z(int cz) const { return m_z_min + (cz)*m_resolution_z; }
-
    protected:
 	/** The cells */
 	mutable std::vector<T> m_map;

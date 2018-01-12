@@ -32,7 +32,7 @@ struct CProbabilityParticle
 	 * relying on compiler-generated copy ctor, etc. */
 	mrpt::containers::copy_ptr<T> d{};
 	/** The (logarithmic) weight value for this particle. */
-	double log_w{ .0 };
+	double log_w{.0};
 };
 
 }  // end namespace

@@ -54,8 +54,7 @@ std::string TWaypoint::getAsText() const
 		s += "target=(**Coordinates not set!!**) ";
 
 	if (target_heading != INVALID_NUM)
-		s += mrpt::format(
-			"phi=%8.03f deg ", mrpt::RAD2DEG(target_heading));
+		s += mrpt::format("phi=%8.03f deg ", mrpt::RAD2DEG(target_heading));
 	else
 		s += " (heading: any) ";
 

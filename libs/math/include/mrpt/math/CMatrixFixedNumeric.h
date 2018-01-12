@@ -132,9 +132,8 @@ struct TTypeName<mrpt::math::CMatrixFixedNumeric<T, N, M>>
 	constexpr static auto get()
 	{
 		return literal("CMatrixFixedNumeric<") + TTypeName<T>::get() +
-			literal(",") + literal(num_to_string<N>::value) +
-			literal(",") + literal(num_to_string<M>::value) +
-			literal(">");
+			   literal(",") + literal(num_to_string<N>::value) + literal(",") +
+			   literal(num_to_string<M>::value) + literal(">");
 	}
 };
 }

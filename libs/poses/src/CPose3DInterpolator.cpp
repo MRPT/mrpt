@@ -22,7 +22,8 @@ void CPose3DInterpolator::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	out << m_path;  // v1: change container element CPose3D->TPose3D
 }
-void CPose3DInterpolator::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CPose3DInterpolator::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

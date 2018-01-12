@@ -160,8 +160,9 @@ void CMetricMapBuilderRBPF::processActionObservation(
 
 	// Used any "options.alwaysInsertByClass" ??
 	for (auto itCl = options.alwaysInsertByClass.data.begin();
-		 !do_map_update && itCl != options.alwaysInsertByClass.data.end(); ++itCl)
-		for (auto & o: observations)
+		 !do_map_update && itCl != options.alwaysInsertByClass.data.end();
+		 ++itCl)
+		for (auto& o : observations)
 			if (o->GetRuntimeClass() == *itCl)
 			{
 				do_map_update = true;
@@ -531,7 +532,8 @@ CMetricMapBuilderRBPF::TConstructionOptions::TConstructionOptions()
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void CMetricMapBuilderRBPF::TConstructionOptions::dumpToTextStream(std::ostream& out) const
+void CMetricMapBuilderRBPF::TConstructionOptions::dumpToTextStream(
+	std::ostream& out) const
 {
 	out << mrpt::format(
 		"\n----------- [CMetricMapBuilderRBPF::TConstructionOptions] "
@@ -557,7 +559,8 @@ void CMetricMapBuilderRBPF::TConstructionOptions::dumpToTextStream(std::ostream&
 
 	PF_options.dumpToTextStream(out);
 
-	out << mrpt::format("  Now showing 'mapsInitializers' and 'predictionOptions':\n");
+	out << mrpt::format(
+		"  Now showing 'mapsInitializers' and 'predictionOptions':\n");
 	out << mrpt::format("\n");
 
 	mapsInitializers.dumpToTextStream(out);

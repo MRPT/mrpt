@@ -109,7 +109,8 @@ void CHolonomicVFF::serializeTo(mrpt::serialization::CArchive& out) const
 	out << options.TARGET_ATTRACTIVE_FORCE
 		<< options.TARGET_SLOW_APPROACHING_DISTANCE;
 }
-void CHolonomicVFF::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CHolonomicVFF::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -129,7 +130,8 @@ void CLogFileRecord_VFF::serializeTo(mrpt::serialization::CArchive& out) const
 {
 }
 
-void CLogFileRecord_VFF::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CLogFileRecord_VFF::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	MRPT_UNUSED_PARAM(in);
 	switch (version)

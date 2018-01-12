@@ -775,9 +775,9 @@ void holonomic_navigator_demoFrame::simulateOneStep(double time_step)
 	gl_scan2D->setScan(simulatedScan);  // Draw scaled scan in right-hand view
 
 	// Navigate:
-	mrpt::math::TPoint2D relTargetPose = (
-		mrpt::poses::CPoint2D(m_targetPoint) -
-		mrpt::poses::CPose2D(m_robotPose)).asTPoint();
+	mrpt::math::TPoint2D relTargetPose = (mrpt::poses::CPoint2D(m_targetPoint) -
+										  mrpt::poses::CPose2D(m_robotPose))
+											 .asTPoint();
 	relTargetPose *=
 		1.0 / simulatedScan.maxRange;  // Normalized relative target:
 

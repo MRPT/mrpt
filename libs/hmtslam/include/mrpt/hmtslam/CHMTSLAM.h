@@ -158,7 +158,8 @@ class CHMTSLAM : public mrpt::system::COutputLogger,
 
 	/** LSLAM thread input queue, messages of type CHMTSLAM::TMessageLSLAMfromAA
 	 */
-	using CMessageQueue = mrpt::containers::CThreadSafeQueue<mrpt::serialization::CMessage>;
+	using CMessageQueue =
+		mrpt::containers::CThreadSafeQueue<mrpt::serialization::CMessage>;
 
 	CMessageQueue m_LSLAM_queue;
 
@@ -439,7 +440,8 @@ class CHMTSLAM : public mrpt::system::COutputLogger,
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(std::ostream& out) const override;  // See base docs
+		void dumpToTextStream(
+			std::ostream& out) const override;  // See base docs
 
 		/** [LOGGING] If it is not an empty string (""), a directory with that
 		 * name will be created and log files save there. */

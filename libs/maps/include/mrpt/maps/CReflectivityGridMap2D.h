@@ -38,10 +38,9 @@ namespace maps
   *		- mrSimpleAverage: Each cell only stores the current average value.
   * \ingroup mrpt_maps_grp
   */
-class CReflectivityGridMap2D :
-	  public CMetricMap,
-	  public mrpt::containers::CDynamicGrid<int8_t>,
-	  public CLogOddsGridMap2D<int8_t>
+class CReflectivityGridMap2D : public CMetricMap,
+							   public mrpt::containers::CDynamicGrid<int8_t>,
+							   public CLogOddsGridMap2D<int8_t>
 {
 	DEFINE_SERIALIZABLE(CReflectivityGridMap2D)
 
@@ -78,7 +77,8 @@ class CReflectivityGridMap2D :
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(std::ostream& out) const override;  // See base docs
+		void dumpToTextStream(
+			std::ostream& out) const override;  // See base docs
 
 		int16_t channel;  //!< The reflectivity channel for this map. If
 		//! channel=-1, then any channel will be accepted.

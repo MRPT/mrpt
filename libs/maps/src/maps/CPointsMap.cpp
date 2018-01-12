@@ -66,7 +66,10 @@ IMPLEMENTS_VIRTUAL_SERIALIZABLE(CPointsMap, CMetricMap, mrpt::maps)
 
 static mrpt::img::TColorf COLOR_3DSCENE_value(0, 0, 1);
 
-void CPointsMap::COLOR_3DSCENE(const mrpt::img::TColorf &value) { COLOR_3DSCENE_value = value; }
+void CPointsMap::COLOR_3DSCENE(const mrpt::img::TColorf& value)
+{
+	COLOR_3DSCENE_value = value;
+}
 mrpt::img::TColorf CPointsMap::COLOR_3DSCENE() { return COLOR_3DSCENE_value; }
 /*---------------------------------------------------------------
 						Constructor
@@ -672,7 +675,8 @@ CPointsMap::TInsertionOptions::TInsertionOptions()
 }
 
 // Binary dump to/read from stream - for usage in derived classes' serialization
-void CPointsMap::TInsertionOptions::writeToStream(mrpt::serialization::CArchive& out) const
+void CPointsMap::TInsertionOptions::writeToStream(
+	mrpt::serialization::CArchive& out) const
 {
 	const int8_t version = 0;
 	out << version;
@@ -683,7 +687,8 @@ void CPointsMap::TInsertionOptions::writeToStream(mrpt::serialization::CArchive&
 		<< insertInvalidPoints;  // v0
 }
 
-void CPointsMap::TInsertionOptions::readFromStream(mrpt::serialization::CArchive& in)
+void CPointsMap::TInsertionOptions::readFromStream(
+	mrpt::serialization::CArchive& in)
 {
 	int8_t version;
 	in >> version;
@@ -707,14 +712,16 @@ CPointsMap::TLikelihoodOptions::TLikelihoodOptions()
 {
 }
 
-void CPointsMap::TLikelihoodOptions::writeToStream(mrpt::serialization::CArchive& out) const
+void CPointsMap::TLikelihoodOptions::writeToStream(
+	mrpt::serialization::CArchive& out) const
 {
 	const int8_t version = 0;
 	out << version;
 	out << sigma_dist << max_corr_distance << decimation;
 }
 
-void CPointsMap::TLikelihoodOptions::readFromStream(mrpt::serialization::CArchive& in)
+void CPointsMap::TLikelihoodOptions::readFromStream(
+	mrpt::serialization::CArchive& in)
 {
 	int8_t version;
 	in >> version;
@@ -730,11 +737,9 @@ void CPointsMap::TLikelihoodOptions::readFromStream(mrpt::serialization::CArchiv
 	}
 }
 
-void CPointsMap::TInsertionOptions::dumpToTextStream(
-	std::ostream& out) const
+void CPointsMap::TInsertionOptions::dumpToTextStream(std::ostream& out) const
 {
-	out<< 
-		"\n----------- [CPointsMap::TInsertionOptions] ------------ \n\n";
+	out << "\n----------- [CPointsMap::TInsertionOptions] ------------ \n\n";
 
 	LOADABLEOPTS_DUMP_VAR(minDistBetweenLaserPoints, double);
 	LOADABLEOPTS_DUMP_VAR(maxDistForInterpolatePoints, double);
@@ -751,11 +756,9 @@ void CPointsMap::TInsertionOptions::dumpToTextStream(
 	out << endl;
 }
 
-void CPointsMap::TLikelihoodOptions::dumpToTextStream(
-	std::ostream& out) const
+void CPointsMap::TLikelihoodOptions::dumpToTextStream(std::ostream& out) const
 {
-	out <<
-		"\n----------- [CPointsMap::TLikelihoodOptions] ------------ \n\n";
+	out << "\n----------- [CPointsMap::TLikelihoodOptions] ------------ \n\n";
 
 	LOADABLEOPTS_DUMP_VAR(sigma_dist, double);
 	LOADABLEOPTS_DUMP_VAR(max_corr_distance, double);

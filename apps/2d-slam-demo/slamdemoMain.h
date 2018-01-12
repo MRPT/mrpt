@@ -324,7 +324,8 @@ class slamdemoFrame : public wxFrame
 		void saveToConfigFile(
 			mrpt::config::CConfigFileBase& source,
 			const std::string& section) const override;  // See base docs
-		void dumpToTextStream(std::ostream& out) const override;  // See base docs
+		void dumpToTextStream(
+			std::ostream& out) const override;  // See base docs
 
 		/** -1: random, other, use as seed */
 		int random_seed;

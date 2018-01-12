@@ -187,7 +187,7 @@ void MapBuilding_ICP_Live(const string& INI_FILENAME)
 
 	using namespace mrpt::slam;
 	using namespace mrpt::obs;
-		using namespace mrpt::opengl;
+	using namespace mrpt::opengl;
 	using namespace mrpt::poses;
 	using namespace mrpt::maps;
 
@@ -362,7 +362,8 @@ void MapBuilding_ICP_Live(const string& INI_FILENAME)
 					 it != obs_copy.end(); ++it)
 					if (it->second &&
 						IS_CLASS(it->second, CObservation2DRangeScan))
-						mrpt::serialization::archiveFrom(out_rawlog) << *it->second;
+						mrpt::serialization::archiveFrom(out_rawlog)
+							<< *it->second;
 			}
 		}
 

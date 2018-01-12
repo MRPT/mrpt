@@ -431,7 +431,8 @@ bool CPTG_DiffDrive_CollisionGridBased::CCollisionGrid::saveToFile(
 						loadFromFile
   ---------------------------------------------------------------*/
 bool CPTG_DiffDrive_CollisionGridBased::CCollisionGrid::loadFromFile(
-	mrpt::serialization::CArchive* f, const mrpt::math::CPolygon& current_robotShape)
+	mrpt::serialization::CArchive* f,
+	const mrpt::math::CPolygon& current_robotShape)
 {
 	try
 	{
@@ -545,7 +546,8 @@ bool CPTG_DiffDrive_CollisionGridBased::inverseMap_WS2TP(
 	using mrpt::square;
 
 	ASSERTMSG_(
-		m_alphaValuesCount > 0, "Have you called simulateTrajectories() first?");
+		m_alphaValuesCount > 0,
+		"Have you called simulateTrajectories() first?");
 
 	// -------------------------------------------------------------------
 	// Optimization: (24-JAN-2007 @ Jose Luis Blanco):

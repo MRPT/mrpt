@@ -36,14 +36,15 @@ struct graphslam_traits
 	using edge_const_iterator = typename graph_t::edges_map_t::const_iterator;
 	using edge_t = typename graph_t::constraint_t;
 	using edge_poses_type = typename edge_t::type_value;
-	using SE_TYPE = mrpt::poses::SE_traits<edge_poses_type::rotation_dimensions>;
+	using SE_TYPE =
+		mrpt::poses::SE_traits<edge_poses_type::rotation_dimensions>;
 	using matrix_VxV_t = typename SE_TYPE::matrix_VxV_t;
 	using Array_O = typename SE_TYPE::array_t;  // An array of the correct size
 	// for an "observation" (i.e. a
 	// relative pose in an edge)
 	using TPairJacobs = std::pair<matrix_VxV_t, matrix_VxV_t>;
 	using map_pairIDs_pairJacobs_t =
-		mrpt::aligned_std_multimap<mrpt::graphs::TPairNodeIDs,TPairJacobs>;
+		mrpt::aligned_std_multimap<mrpt::graphs::TPairNodeIDs, TPairJacobs>;
 
 	/** Auxiliary struct used in graph-slam implementation: It holds the
 	 * relevant information for each of the constraints being taking into

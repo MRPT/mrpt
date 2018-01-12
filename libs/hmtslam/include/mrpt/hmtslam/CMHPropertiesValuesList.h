@@ -138,14 +138,14 @@ class CMHPropertiesValuesList : public mrpt::serialization::CSerializable
 		basic_value.resize(sizeof(T));
 		::memcpy(&basic_value[0], &data, sizeof(T));
 
-		for (auto it =m_properties.begin();it != m_properties.end(); ++it)
+		for (auto it = m_properties.begin(); it != m_properties.end(); ++it)
 		{
 			if (it->ID == hypothesis_ID &&
 				mrpt::system::strCmpI(propertyName, it->name))
 			{
 				// Delete current contents &
 				// Copy new value:
-				it->basic_value= basic_value;
+				it->basic_value = basic_value;
 				return;
 			}
 		}
@@ -172,7 +172,7 @@ class CMHPropertiesValuesList : public mrpt::serialization::CSerializable
 		bool raiseExceptionIfNotFound = false) const
 	{
 		MRPT_START
-		for (auto it = m_properties.begin();it != m_properties.end(); ++it)
+		for (auto it = m_properties.begin(); it != m_properties.end(); ++it)
 		{
 			if (mrpt::system::strCmpI(propertyName, it->name) &&
 				it->ID == hypothesis_ID)

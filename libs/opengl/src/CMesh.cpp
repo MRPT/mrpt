@@ -189,9 +189,8 @@ void CMesh::updateTriangles() const
 
 				// Add triangle:
 				actualMesh.push_back(
-					std::pair<
-						CSetOfTriangles::TTriangle, TTriangleVertexIndices>(
-						tri, tvi));
+					std::pair<CSetOfTriangles::TTriangle,
+							  TTriangleVertexIndices>(tri, tvi));
 
 				// For averaging normals:
 				for (int k = 0; k < 3; k++)
@@ -266,9 +265,8 @@ void CMesh::updateTriangles() const
 
 				// Add triangle:
 				actualMesh.push_back(
-					std::pair<
-						CSetOfTriangles::TTriangle, TTriangleVertexIndices>(
-						tri, tvi));
+					std::pair<CSetOfTriangles::TTriangle,
+							  TTriangleVertexIndices>(tri, tvi));
 
 				// For averaging normals:
 				for (int k = 0; k < 3; k++)

@@ -594,16 +594,18 @@ CLogFileRecord_FullEval::CLogFileRecord_FullEval()
 }
 
 uint8_t CLogFileRecord_FullEval::serializeGetVersion() const { return 3; }
-void CLogFileRecord_FullEval::serializeTo(mrpt::serialization::CArchive& out) const
+void CLogFileRecord_FullEval::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
-	out << CHolonomicLogFileRecord::dirs_eval << dirs_scores
-		<< selectedSector << evaluation << selectedTarget /*v3*/;
+	out << CHolonomicLogFileRecord::dirs_eval << dirs_scores << selectedSector
+		<< evaluation << selectedTarget /*v3*/;
 }
 
 /*---------------------------------------------------------------
 					readFromStream
   ---------------------------------------------------------------*/
-void CLogFileRecord_FullEval::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CLogFileRecord_FullEval::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -774,8 +776,8 @@ void CHolonomicFullEval::serializeTo(mrpt::serialization::CArchive& out) const
 	// Params:
 	out << options.factorWeights << options.HYSTERESIS_SECTOR_COUNT
 		<< options.PHASE_FACTORS <<  // v3
-		options.TARGET_SLOW_APPROACHING_DISTANCE
-		<< options.TOO_CLOSE_OBSTACLE << options.PHASE_THRESHOLDS  // v3
+		options.TARGET_SLOW_APPROACHING_DISTANCE << options.TOO_CLOSE_OBSTACLE
+		<< options.PHASE_THRESHOLDS  // v3
 		<< options.OBSTACLE_SLOW_DOWN_DISTANCE  // v1
 		<< options.factorNormalizeOrNot  // v2
 		<< options.clearance_threshold_ratio
@@ -784,7 +786,8 @@ void CHolonomicFullEval::serializeTo(mrpt::serialization::CArchive& out) const
 	// State:
 	out << m_last_selected_sector;
 }
-void CHolonomicFullEval::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CHolonomicFullEval::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

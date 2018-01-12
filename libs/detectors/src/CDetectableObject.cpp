@@ -20,14 +20,18 @@ IMPLEMENTS_VIRTUAL_SERIALIZABLE(
 IMPLEMENTS_SERIALIZABLE(CDetectable2D, CDetectableObject, mrpt::detectors)
 IMPLEMENTS_SERIALIZABLE(CDetectable3D, CDetectable2D, mrpt::detectors)
 
-void CDetectable2D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version) {}
+void CDetectable2D::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
+{
+}
 uint8_t CDetectable2D::serializeGetVersion() const { return 0; }
 void CDetectable2D::serializeTo(mrpt::serialization::CArchive&) const {}
-
-void CDetectable3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version) {}
+void CDetectable3D::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
+{
+}
 uint8_t CDetectable3D::serializeGetVersion() const { return 0; }
 void CDetectable3D::serializeTo(mrpt::serialization::CArchive&) const {}
-
 CDetectable3D::CDetectable3D(const CDetectable2D::Ptr& object2d)
 	: CDetectable2D(object2d.get()), m_z(0)
 {

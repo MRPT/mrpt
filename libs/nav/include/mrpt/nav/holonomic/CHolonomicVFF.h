@@ -60,8 +60,8 @@ class CHolonomicVFF : public CAbstractHolonomicReactiveMethod
 
 	void initialize(const mrpt::config::CConfigFileBase& INI_FILE)
 		override;  // See base class docs
-	virtual void saveConfigFile(
-		mrpt::config::CConfigFileBase& c) const override;  // See base class docs
+	virtual void saveConfigFile(mrpt::config::CConfigFileBase& c)
+		const override;  // See base class docs
 
 	/** Algorithm options */
 	struct TOptions : public mrpt::config::CLoadableOptions

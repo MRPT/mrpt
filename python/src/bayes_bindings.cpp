@@ -90,9 +90,8 @@ void export_bayes()
 			.value("prSystematic", CParticleFilter::prSystematic);
 
 		// TParticleFilterOptions
-		class_<
-			CParticleFilter::TParticleFilterOptions, bases<CLoadableOptions>>(
-			"TParticleFilterOptions", init<>())
+		class_<CParticleFilter::TParticleFilterOptions,
+			   bases<CLoadableOptions>>("TParticleFilterOptions", init<>())
 			.def_readwrite(
 				"adaptiveSampleSize",
 				&CParticleFilter::TParticleFilterOptions::adaptiveSampleSize)

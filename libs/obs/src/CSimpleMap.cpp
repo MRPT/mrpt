@@ -53,7 +53,6 @@ CSimpleMap& CSimpleMap::operator=(const CSimpleMap& o)
 size_t CSimpleMap::size() const { return m_posesObsPairs.size(); }
 bool CSimpleMap::empty() const { return m_posesObsPairs.empty(); }
 void CSimpleMap::clear() { m_posesObsPairs.clear(); }
-
 void CSimpleMap::get(
 	size_t index, CPose3DPDF::Ptr& out_posePDF,
 	CSensoryFrame::Ptr& out_SF) const

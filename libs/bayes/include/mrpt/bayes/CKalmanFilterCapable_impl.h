@@ -20,11 +20,10 @@ namespace mrpt
 namespace bayes
 {
 // The main entry point in the Kalman Filter class:
-template <
-	size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
-	typename KFTYPE>
-void CKalmanFilterCapable<
-	VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runOneKalmanIteration()
+template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
+		  typename KFTYPE>
+void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
+						  KFTYPE>::runOneKalmanIteration()
 {
 	using namespace std;
 	MRPT_START
@@ -134,10 +133,10 @@ void CKalmanFilterCapable<
 		// ====================================
 		// Replace old covariance:
 		Eigen::Block<typename KFMatrix::Base, VEH_SIZE, VEH_SIZE>(m_pkk, 0, 0) =
-			Q + dfv_dxv *
-					Eigen::Block<typename KFMatrix::Base, VEH_SIZE, VEH_SIZE>(
-						m_pkk, 0, 0) *
-					dfv_dxv.transpose();
+			Q +
+			dfv_dxv * Eigen::Block<typename KFMatrix::Base, VEH_SIZE, VEH_SIZE>(
+						  m_pkk, 0, 0) *
+				dfv_dxv.transpose();
 
 		// ====================================
 		//  3.2:  All Pxy_i
@@ -250,9 +249,8 @@ void CKalmanFilterCapable<
 			const size_t nNew = missing_predictions_to_add.size();
 			MRPT_LOG_WARN_STREAM(
 				"[KF] *Performance Warning*: "
-				<< nNew
-				<< " LMs were not correctly predicted by "
-				   "OnPreComputingPredictions().");
+				<< nNew << " LMs were not correctly predicted by "
+						   "OnPreComputingPredictions().");
 
 			ASSERTDEB_(FEAT_SIZE != 0);
 			for (size_t j = 0; j < nNew; j++)
@@ -366,15 +364,15 @@ void CKalmanFilterCapable<
 
 		if (FEAT_SIZE > 0)
 		{  // SLAM-like problem:
-			const Eigen::Block<
-				const typename KFMatrix::Base, VEH_SIZE, VEH_SIZE>
+			const Eigen::Block<const typename KFMatrix::Base, VEH_SIZE,
+							   VEH_SIZE>
 				Px(m_pkk, 0, 0);  // Covariance of the vehicle pose
 
 			for (size_t i = 0; i < N_pred; ++i)
 			{
 				const size_t lm_idx_i = predictLMidxs[i];
-				const Eigen::Block<
-					const typename KFMatrix::Base, FEAT_SIZE, VEH_SIZE>
+				const Eigen::Block<const typename KFMatrix::Base, FEAT_SIZE,
+								   VEH_SIZE>
 					Pxyi_t(
 						m_pkk, VEH_SIZE + lm_idx_i * FEAT_SIZE, 0);  // Pxyi^t
 
@@ -386,11 +384,11 @@ void CKalmanFilterCapable<
 					Eigen::Block<typename KFMatrix::Base, OBS_SIZE, OBS_SIZE>
 						Sij(S, OBS_SIZE * i, OBS_SIZE * j);
 
-					const Eigen::Block<
-						const typename KFMatrix::Base, VEH_SIZE, FEAT_SIZE>
+					const Eigen::Block<const typename KFMatrix::Base, VEH_SIZE,
+									   FEAT_SIZE>
 						Pxyj(m_pkk, 0, VEH_SIZE + lm_idx_j * FEAT_SIZE);
-					const Eigen::Block<
-						const typename KFMatrix::Base, FEAT_SIZE, FEAT_SIZE>
+					const Eigen::Block<const typename KFMatrix::Base, FEAT_SIZE,
+									   FEAT_SIZE>
 						Pyiyj(
 							m_pkk, VEH_SIZE + lm_idx_i * FEAT_SIZE,
 							VEH_SIZE + lm_idx_j * FEAT_SIZE);
@@ -402,9 +400,9 @@ void CKalmanFilterCapable<
 
 					// Copy transposed to the symmetric lower-triangular part:
 					if (i != j)
-						Eigen::Block<
-							typename KFMatrix::Base, OBS_SIZE, OBS_SIZE>(
-							S, OBS_SIZE * j, OBS_SIZE * i) = Sij.transpose();
+						Eigen::Block<typename KFMatrix::Base, OBS_SIZE,
+									 OBS_SIZE>(S, OBS_SIZE * j, OBS_SIZE * i) =
+							Sij.transpose();
 				}
 
 				// Sum the "R" term to the diagonal blocks:
@@ -431,7 +429,7 @@ void CKalmanFilterCapable<
 		OnGetObservationsAndDataAssociation(
 			Z, data_association,  // Out
 			all_predictions, S, predictLMidxs, R  // In
-		);
+			);
 		ASSERTDEB_(
 			data_association.size() == Z.size() ||
 			(data_association.empty() && FEAT_SIZE == 0));
@@ -484,17 +482,18 @@ void CKalmanFilterCapable<
 				// ---------------------------------------------
 				// Keep only those whose DA is not -1
 				std::vector<int> mapIndicesForKFUpdate(data_association.size());
-				mapIndicesForKFUpdate.resize(std::distance(
-					mapIndicesForKFUpdate.begin(),
-					std::remove_copy_if(
-						data_association.begin(), data_association.end(),
+				mapIndicesForKFUpdate.resize(
+					std::distance(
 						mapIndicesForKFUpdate.begin(),
-						bind1st(equal_to<int>(), -1))));
+						std::remove_copy_if(
+							data_association.begin(), data_association.end(),
+							mapIndicesForKFUpdate.begin(),
+							bind1st(equal_to<int>(), -1))));
 
 				const size_t N_upd =
 					(FEAT_SIZE == 0) ? 1 :  // Non-SLAM problems: Just one
-											// observation for the entire
-											// system.
+						// observation for the entire
+						// system.
 						mapIndicesForKFUpdate
 							.size();  // SLAM: # of observed known landmarks
 
@@ -558,14 +557,12 @@ void CKalmanFilterCapable<
 								//(assoc_idx_in_pred*OBS_SIZE,0, OBS_SIZE,
 								// row_len);
 
-								Eigen::Block<
-									typename KFMatrix::Base, OBS_SIZE,
-									VEH_SIZE>(
+								Eigen::Block<typename KFMatrix::Base, OBS_SIZE,
+											 VEH_SIZE>(
 									dh_dx_full_obs, S_idxs.size(), 0) =
 									Hxs[assoc_idx_in_pred];
-								Eigen::Block<
-									typename KFMatrix::Base, OBS_SIZE,
-									FEAT_SIZE>(
+								Eigen::Block<typename KFMatrix::Base, OBS_SIZE,
+											 FEAT_SIZE>(
 									dh_dx_full_obs, S_idxs.size(),
 									VEH_SIZE + assoc_idx_in_map * FEAT_SIZE) =
 									Hys[assoc_idx_in_pred];
@@ -645,7 +642,7 @@ void CKalmanFilterCapable<
 							K.multiply_Ab(
 								(ytilde - HAx_column), m_xkk,
 								true /* Accumulate in output */
-							);
+								);
 
 							m_timLogger.leave(
 								"KF:8.update stage:2.FULLKF:iter.update xkk");
@@ -763,22 +760,22 @@ void CKalmanFilterCapable<
 							m_timLogger.enter(
 								"KF:8.update stage:2.ScalarAtOnce.update");
 
-							// Compute the scalar S_i for each component j of
-							// the observation: Sij = dhij_dxv Pxx dhij_dxv^t +
-							// 2 * dhij_dyi Pyix dhij_dxv + dhij_dyi Pyiyi
-							// dhij_dyi^t + R
-							//          ^^
-							//         Hx:(O*LxSv)
-							//       \----------------------/
-							//       \--------------------------/
-							//       \------------------------/ \-/
-							//               TERM 1                   TERM 2
-							//               TERM 3 R
-							//
-							// O: Observation size (3)
-							// L: # landmarks
-							// Sv: Vehicle state size (6)
-							//
+// Compute the scalar S_i for each component j of
+// the observation: Sij = dhij_dxv Pxx dhij_dxv^t +
+// 2 * dhij_dyi Pyix dhij_dxv + dhij_dyi Pyiyi
+// dhij_dyi^t + R
+//          ^^
+//         Hx:(O*LxSv)
+//       \----------------------/
+//       \--------------------------/
+//       \------------------------/ \-/
+//               TERM 1                   TERM 2
+//               TERM 3 R
+//
+// O: Observation size (3)
+// L: # landmarks
+// Sv: Vehicle state size (6)
+//
 
 #if defined(_DEBUG)
 							{
@@ -1188,18 +1185,18 @@ void CKalmanFilterCapable<
 
 	m_timLogger.leave("KF:complete_step");
 
-	MRPT_LOG_DEBUG(mrpt::format(
-		"[KF] %u LMs | Pr: %.2fms | Pr.Obs: %.2fms | Obs.DA: %.2fms | Upd: "
-		"%.2fms\n",
-		static_cast<unsigned int>(getNumberOfLandmarksInTheMap()),
-		1e3 * tim_pred, 1e3 * tim_pred_obs, 1e3 * tim_obs_DA,
-		1e3 * tim_update));
+	MRPT_LOG_DEBUG(
+		mrpt::format(
+			"[KF] %u LMs | Pr: %.2fms | Pr.Obs: %.2fms | Obs.DA: %.2fms | Upd: "
+			"%.2fms\n",
+			static_cast<unsigned int>(getNumberOfLandmarksInTheMap()),
+			1e3 * tim_pred, 1e3 * tim_pred_obs, 1e3 * tim_obs_DA,
+			1e3 * tim_update));
 	MRPT_END
 }  // End of "runOneKalmanIteration"
 
-template <
-	size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
-	typename KFTYPE>
+template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
+		  typename KFTYPE>
 void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::
 	KF_aux_estimate_trans_jacobian(
 		const KFArray_VEH& x, const std::pair<KFCLASS*, KFArray_ACT>& dat,
@@ -1210,9 +1207,8 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::
 	dat.first->OnTransitionModel(dat.second, out_x, dumm);
 }
 
-template <
-	size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
-	typename KFTYPE>
+template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
+		  typename KFTYPE>
 void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::
 	KF_aux_estimate_obs_Hx_jacobian(
 		const KFArray_VEH& x, const std::pair<KFCLASS*, size_t>& dat,
@@ -1227,9 +1223,8 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::
 	out_x = prediction[0];
 }
 
-template <
-	size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
-	typename KFTYPE>
+template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
+		  typename KFTYPE>
 void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::
 	KF_aux_estimate_obs_Hy_jacobian(
 		const KFArray_FEAT& x, const std::pair<KFCLASS*, size_t>& dat,
@@ -1250,19 +1245,18 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::
 namespace detail
 {
 // generic version for SLAM. There is a speciation below for NON-SLAM problems.
-template <
-	size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
-	typename KFTYPE>
+template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
+		  typename KFTYPE>
 void addNewLandmarks(
 	CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>& obj,
-	const typename CKalmanFilterCapable<
-		VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::vector_KFArray_OBS& Z,
+	const typename CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
+										KFTYPE>::vector_KFArray_OBS& Z,
 	const std::vector<int>& data_association,
-	const typename CKalmanFilterCapable<
-		VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::KFMatrix_OxO& R)
+	const typename CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
+										KFTYPE>::KFMatrix_OxO& R)
 {
-	typedef CKalmanFilterCapable<
-		VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>
+	typedef CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
+								 KFTYPE>
 		KF;
 
 	for (size_t idxObs = 0; idxObs < Z.size(); idxObs++)
@@ -1370,22 +1364,20 @@ void addNewLandmarks(
 
 template <size_t VEH_SIZE, size_t OBS_SIZE, size_t ACT_SIZE, typename KFTYPE>
 void addNewLandmarks(
-	CKalmanFilterCapable<
-		VEH_SIZE, OBS_SIZE, 0 /* FEAT_SIZE=0 */, ACT_SIZE, KFTYPE>& obj,
-	const typename CKalmanFilterCapable<
-		VEH_SIZE, OBS_SIZE, 0 /* FEAT_SIZE=0 */, ACT_SIZE,
-		KFTYPE>::vector_KFArray_OBS& Z,
+	CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, 0 /* FEAT_SIZE=0 */, ACT_SIZE,
+						 KFTYPE>& obj,
+	const typename CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, 0 /* FEAT_SIZE=0 */,
+										ACT_SIZE, KFTYPE>::vector_KFArray_OBS&
+		Z,
 	const std::vector<int>& data_association,
-	const typename CKalmanFilterCapable<
-		VEH_SIZE, OBS_SIZE, 0 /* FEAT_SIZE=0 */, ACT_SIZE,
-		KFTYPE>::KFMatrix_OxO& R)
+	const typename CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, 0 /* FEAT_SIZE=0 */,
+										ACT_SIZE, KFTYPE>::KFMatrix_OxO& R)
 {
 	// Do nothing: this is NOT a SLAM problem.
 }
 
-template <
-	size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
-	typename KFTYPE>
+template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
+		  typename KFTYPE>
 inline size_t getNumberOfLandmarksInMap(
 	const CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>&
 		obj)
@@ -1395,15 +1387,14 @@ inline size_t getNumberOfLandmarksInMap(
 // Specialization for FEAT_SIZE=0
 template <size_t VEH_SIZE, size_t OBS_SIZE, size_t ACT_SIZE, typename KFTYPE>
 inline size_t getNumberOfLandmarksInMap(
-	const CKalmanFilterCapable<
-		VEH_SIZE, OBS_SIZE, 0 /*FEAT_SIZE*/, ACT_SIZE, KFTYPE>& obj)
+	const CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, 0 /*FEAT_SIZE*/, ACT_SIZE,
+							   KFTYPE>& obj)
 {
 	return 0;
 }
 
-template <
-	size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
-	typename KFTYPE>
+template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
+		  typename KFTYPE>
 inline bool isMapEmpty(
 	const CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>&
 		obj)
@@ -1413,8 +1404,8 @@ inline bool isMapEmpty(
 // Specialization for FEAT_SIZE=0
 template <size_t VEH_SIZE, size_t OBS_SIZE, size_t ACT_SIZE, typename KFTYPE>
 inline bool isMapEmpty(
-	const CKalmanFilterCapable<
-		VEH_SIZE, OBS_SIZE, 0 /*FEAT_SIZE*/, ACT_SIZE, KFTYPE>& obj)
+	const CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, 0 /*FEAT_SIZE*/, ACT_SIZE,
+							   KFTYPE>& obj)
 {
 	return true;
 }

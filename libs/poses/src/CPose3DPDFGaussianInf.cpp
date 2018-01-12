@@ -80,12 +80,14 @@ void CPose3DPDFGaussianInf::copyFrom(const CPose3DQuatPDFGaussian& o)
 }
 
 uint8_t CPose3DPDFGaussianInf::serializeGetVersion() const { return 0; }
-void CPose3DPDFGaussianInf::serializeTo(mrpt::serialization::CArchive& out) const
+void CPose3DPDFGaussianInf::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
 	out << mean;
 	mrpt::math::serializeSymmetricMatrixTo(cov_inv, out);
 }
-void CPose3DPDFGaussianInf::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CPose3DPDFGaussianInf::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

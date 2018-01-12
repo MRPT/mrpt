@@ -76,7 +76,8 @@ class CGenericSensor
 	typedef std::multimap<mrpt::system::TTimeStamp,
 						  mrpt::serialization::CSerializable::Ptr>
 		TListObservations;
-	typedef std::pair<mrpt::system::TTimeStamp, mrpt::serialization::CSerializable::Ptr>
+	typedef std::pair<mrpt::system::TTimeStamp,
+					  mrpt::serialization::CSerializable::Ptr>
 		TListObsPair;
 
 	/** The current state of the sensor

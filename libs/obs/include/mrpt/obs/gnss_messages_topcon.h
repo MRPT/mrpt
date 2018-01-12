@@ -78,11 +78,11 @@ struct Message_TOPCON_PZS : public gnss_message
 		return TGEODETICCOORDS(
 			latitude_degrees, longitude_degrees, height_meters);
 	}
-	void dumpToStream(
-		std::ostream& out) const override;  // See docs in base
+	void dumpToStream(std::ostream& out) const override;  // See docs in base
 
    protected:
-	void internal_writeToStream(mrpt::serialization::CArchive& out) const override;
+	void internal_writeToStream(
+		mrpt::serialization::CArchive& out) const override;
 	void internal_readFromStream(mrpt::serialization::CArchive& in) override;
 
    public:
@@ -109,10 +109,10 @@ struct Message_TOPCON_SATS : public gnss_message
 	/** Azimuth (in degrees, 0-360) for each satellite in USIs. */
 	std::vector<int16_t> AZs;
 
-	void dumpToStream(
-		std::ostream& out) const override;  // See docs in base
+	void dumpToStream(std::ostream& out) const override;  // See docs in base
    protected:
-	void internal_writeToStream(mrpt::serialization::CArchive& out) const override;
+	void internal_writeToStream(
+		mrpt::serialization::CArchive& out) const override;
 	void internal_readFromStream(mrpt::serialization::CArchive& in) override;
 };
 }

@@ -222,7 +222,7 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGB>>
 	}
 
 };  // end of mrpt::opengl::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGB>
-	// >
+// >
 
 /** Specialization
  * mrpt::opengl::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGBA> > for an

@@ -135,7 +135,7 @@ void CFeatureExtraction::extractFeaturesFASTER_N(
 		nDesiredFeatures != 0  // If the user wants us to limit the number of
 		// features, we need to do it according to some
 		// quality measure
-	)
+		)
 	{
 		const int KLT_half_win = 4;
 		const int max_x = inImg_gray.getWidth() - 1 - KLT_half_win;

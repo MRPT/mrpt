@@ -2513,7 +2513,7 @@ void kinect_calibrate_guiDialog::OnbtnLoadImageListClick(wxCommandEvent& event)
 		m_config.Write(_("last_path"), startPath);
 
 		std::vector<std::string> lst;
-		mrpt::io::loadTextFile(lst,file_list);
+		mrpt::io::loadTextFile(lst, file_list);
 
 		if (lst.size() == 0)
 			throw std::runtime_error("Error: List file seems to be empty.");

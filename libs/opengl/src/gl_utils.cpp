@@ -22,7 +22,6 @@ using namespace mrpt::poses;
 using namespace mrpt::system;
 using namespace mrpt::opengl;
 
-
 /** For each object in the list:
 *   - checks visibility of each object
 *   - prepare the GL_MODELVIEW matrix according to its coordinates

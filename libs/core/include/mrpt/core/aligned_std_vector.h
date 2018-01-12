@@ -11,6 +11,6 @@
 #include <vector>
 namespace mrpt
 {
-	template<class T>
-	using aligned_std_vector = std::vector<T, mrpt::aligned_allocator_cpp11<T>>;
+template <class T>
+using aligned_std_vector = std::vector<T, mrpt::aligned_allocator_cpp11<T>>;
 }

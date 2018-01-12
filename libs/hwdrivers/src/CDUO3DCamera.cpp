@@ -126,7 +126,7 @@ TCaptureOptions_DUO3D::TYMLReadResult
 		mrpt::format("_R%dx%d_", this->m_img_width, this->m_img_height));
 	if (found == std::string::npos)
 	{
-		m_stereo_camera.rightCameraPose = TPose3DQuat(0, 0, 0,1.0 ,0 ,0 ,0);
+		m_stereo_camera.rightCameraPose = TPose3DQuat(0, 0, 0, 1.0, 0, 0, 0);
 		return yrr_NAME_NON_CONSISTENT;
 	}
 	// read file
@@ -146,7 +146,7 @@ TCaptureOptions_DUO3D::TYMLReadResult
 	else
 	{
 		empty = true;
-		m_stereo_camera.rightCameraPose = TPose3DQuat(0,0,0,1,0,0,0);
+		m_stereo_camera.rightCameraPose = TPose3DQuat(0, 0, 0, 1, 0, 0, 0);
 	}
 
 	// translation
@@ -160,7 +160,7 @@ TCaptureOptions_DUO3D::TYMLReadResult
 	else
 	{
 		empty = true;
-		m_stereo_camera.rightCameraPose = TPose3DQuat(0,0,0,1,0,0,0);
+		m_stereo_camera.rightCameraPose = TPose3DQuat(0, 0, 0, 1, 0, 0, 0);
 	}
 
 	if (empty) return yrr_EMPTY;

@@ -31,7 +31,8 @@ CObservationBeaconRanges::CObservationBeaconRanges()
 }
 
 uint8_t CObservationBeaconRanges::serializeGetVersion() const { return 3; }
-void CObservationBeaconRanges::serializeTo(mrpt::serialization::CArchive& out) const
+void CObservationBeaconRanges::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
 	uint32_t i, n;
 	// The data
@@ -45,7 +46,8 @@ void CObservationBeaconRanges::serializeTo(mrpt::serialization::CArchive& out) c
 	out << sensorLabel << timestamp;
 }
 
-void CObservationBeaconRanges::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CObservationBeaconRanges::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

@@ -60,8 +60,8 @@ struct THeightGridmapCell
  *
  * \ingroup mrpt_maps_grp
  */
-class CHeightGridMap2D :
-	  public mrpt::maps::CMetricMap,
+class CHeightGridMap2D
+	: public mrpt::maps::CMetricMap,
 	  public mrpt::containers::CDynamicGrid<THeightGridmapCell>,
 	  public CHeightGridMap2D_Base
 {
@@ -188,7 +188,8 @@ bool HEIGHTGRIDMAP_EXPORT3D_AS_MESH();
 }  // namespace mrpt
 
 MRPT_ENUM_TYPE_BEGIN(maps::CHeightGridMap2D::TMapRepresentation)
-MRPT_FILL_ENUM_MEMBER(maps::CHeightGridMap2D::TMapRepresentation, mrSimpleAverage);
+MRPT_FILL_ENUM_MEMBER(
+	maps::CHeightGridMap2D::TMapRepresentation, mrSimpleAverage);
 MRPT_ENUM_TYPE_END()
 
 #endif

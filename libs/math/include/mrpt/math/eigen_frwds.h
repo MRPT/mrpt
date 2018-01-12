@@ -14,9 +14,9 @@
 // Minimum Eigen fwrd-decls:
 namespace Eigen
 {
-template <typename Derived> 
+template <typename Derived>
 struct EigenBase;
-template<typename Derived>
+template <typename Derived>
 class MatrixBase;
 }
 

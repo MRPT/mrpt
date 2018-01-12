@@ -42,7 +42,7 @@ bool CFixedIntervalsNRD<GRAPH_T>::updateState(
 	MRPT_START;
 	using namespace mrpt::obs;
 	using namespace mrpt::math;
-		using namespace mrpt::poses;
+	using namespace mrpt::poses;
 
 	// don't use the measurements in this implementation
 	MRPT_UNUSED_PARAM(observations);
@@ -57,7 +57,8 @@ bool CFixedIntervalsNRD<GRAPH_T>::updateState(
 				std::dynamic_pointer_cast<CObservationOdometry>(observation);
 			// not incremental - gives the absolute odometry reading
 			m_curr_odometry_only_pose = pose_t(obs_odometry->odometry);
-			MRPT_LOG_DEBUG_FMT("Current odometry-only pose: %s",
+			MRPT_LOG_DEBUG_FMT(
+				"Current odometry-only pose: %s",
 				m_curr_odometry_only_pose.asString().c_str());
 
 			// I don't have any information about the covariane of the move in
@@ -164,7 +165,7 @@ template <class GRAPH_T>
 void CFixedIntervalsNRD<GRAPH_T>::loadParams(const std::string& source_fname)
 {
 	MRPT_START;
-		parent_t::loadParams(source_fname);
+	parent_t::loadParams(source_fname);
 
 	params.loadFromConfigFileName(
 		source_fname, "NodeRegistrationDeciderParameters");
@@ -241,7 +242,8 @@ CFixedIntervalsNRD<GRAPH_T>::TParams::~TParams()
 {
 }
 template <class GRAPH_T>
-void CFixedIntervalsNRD<GRAPH_T>::TParams::dumpToTextStream(std::ostream& out) const
+void CFixedIntervalsNRD<GRAPH_T>::TParams::dumpToTextStream(
+	std::ostream& out) const
 {
 	MRPT_START;
 	out << mrpt::format("%s", this->getAsString().c_str());
@@ -253,7 +255,7 @@ void CFixedIntervalsNRD<GRAPH_T>::TParams::loadFromConfigFile(
 {
 	MRPT_START;
 	using namespace mrpt::math;
-	
+
 	registration_max_distance = source.read_double(
 		section, "registration_max_distance", 0.5 /* meter */, false);
 	registration_max_angle = source.read_double(
@@ -269,7 +271,7 @@ void CFixedIntervalsNRD<GRAPH_T>::TParams::getAsString(
 {
 	MRPT_START;
 	using namespace mrpt::math;
-	
+
 	double max_angle_deg = RAD2DEG(registration_max_angle);
 	params_out->clear();
 

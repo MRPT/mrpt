@@ -19,13 +19,15 @@ using namespace mrpt::poses;
 IMPLEMENTS_SERIALIZABLE(CObservationReflectivity, CObservation, mrpt::obs)
 
 uint8_t CObservationReflectivity::serializeGetVersion() const { return 1; }
-void CObservationReflectivity::serializeTo(mrpt::serialization::CArchive& out) const
+void CObservationReflectivity::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
 	out << reflectivityLevel << channel << sensorPose;
 	out << sensorLabel << timestamp;
 }
 
-void CObservationReflectivity::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CObservationReflectivity::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

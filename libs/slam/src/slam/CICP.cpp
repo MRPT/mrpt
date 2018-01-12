@@ -167,7 +167,8 @@ void CICP::TConfigParams::loadFromConfigFile(
   ---------------------------------------------------------------*/
 void CICP::TConfigParams::dumpToTextStream(std::ostream& out) const
 {
-	out << mrpt::format("\n----------- [CICP::TConfigParams] ------------ \n\n");
+	out << mrpt::format(
+		"\n----------- [CICP::TConfigParams] ------------ \n\n");
 
 	out << mrpt::format(
 		"ICP_algorithm                           = %s\n",
@@ -178,13 +179,15 @@ void CICP::TConfigParams::dumpToTextStream(std::ostream& out) const
 		mrpt::typemeta::TEnumType<TICPCovarianceMethod>::value2name(
 			ICP_covariance_method)
 			.c_str());
-	out << mrpt::format("maxIterations                           = %i\n", maxIterations);
+	out << mrpt::format(
+		"maxIterations                           = %i\n", maxIterations);
 	out << mrpt::format(
 		"minAbsStep_trans                        = %f\n", minAbsStep_trans);
 	out << mrpt::format(
 		"minAbsStep_rot                          = %f\n", minAbsStep_rot);
 
-	out << mrpt::format("thresholdDist                           = %f\n", thresholdDist);
+	out << mrpt::format(
+		"thresholdDist                           = %f\n", thresholdDist);
 	out << mrpt::format(
 		"thresholdAng                            = %f deg\n",
 		RAD2DEG(thresholdAng));
@@ -221,7 +224,8 @@ void CICP::TConfigParams::dumpToTextStream(std::ostream& out) const
 		RAD2DEG(ransac_fuseMaxDiffPhi));
 	out << mrpt::format(
 		"normalizationStd                        = %f\n", normalizationStd);
-	out << mrpt::format("kernel_rho                              = %f\n", kernel_rho);
+	out << mrpt::format(
+		"kernel_rho                              = %f\n", kernel_rho);
 	out << mrpt::format(
 		"use_kernel                              = %c\n",
 		use_kernel ? 'Y' : 'N');

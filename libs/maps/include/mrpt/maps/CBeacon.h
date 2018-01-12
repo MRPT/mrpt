@@ -15,7 +15,7 @@
 #include <mrpt/poses/CPointPDFParticles.h>
 #include <mrpt/poses/CPointPDFGaussian.h>
 #include <mrpt/poses/CPointPDFSOG.h>
-#include <mrpt/obs/CObservation.h> // INVALID_BEACON_ID
+#include <mrpt/obs/CObservation.h>  // INVALID_BEACON_ID
 
 #include <mrpt/opengl/CSetOfObjects.h>
 
@@ -68,7 +68,7 @@ class CBeacon : public mrpt::poses::CPointPDF
 	mrpt::poses::CPointPDFGaussian m_locationGauss;
 	/** The individual PDF, if m_typePDF=pdfSOG (publicly accesible for ease of
 	 * use, but the CPointPDF interface is also implemented in CBeacon). */
-	mrpt::poses::CPointPDFSOG m_locationSOG{ 1 };
+	mrpt::poses::CPointPDFSOG m_locationSOG{1};
 
 	/** An ID for the landmark (see details next...)
 	 *  This ID was introduced in the version 3 of this class (21/NOV/2006),

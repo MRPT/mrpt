@@ -20,7 +20,6 @@ using namespace std;
 using namespace mrpt;
 using namespace mrpt::opengl;
 
-
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(
 	CRenderizableDisplayList, CRenderizable, mrpt::opengl)
 

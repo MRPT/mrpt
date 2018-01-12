@@ -105,7 +105,8 @@ void thread_grabbing(TThreadParam& p)
 
 		// Set params:
 		velodyne.setModelName(
-			mrpt::typemeta::TEnumType<mrpt::hwdrivers::CVelodyneScanner::model_t>::
+			mrpt::typemeta::TEnumType<
+				mrpt::hwdrivers::CVelodyneScanner::model_t>::
 				name2value(arg_model.getValue()));
 		if (arg_ip_filter.isSet())
 			velodyne.setDeviceIP(

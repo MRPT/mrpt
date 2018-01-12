@@ -33,16 +33,18 @@ CObservationBatteryState::CObservationBatteryState()
 }
 
 uint8_t CObservationBatteryState::serializeGetVersion() const { return 2; }
-void CObservationBatteryState::serializeTo(mrpt::serialization::CArchive& out) const
+void CObservationBatteryState::serializeTo(
+	mrpt::serialization::CArchive& out) const
 {
 	// The data
 	out << voltageMainRobotBattery << voltageMainRobotComputer
 		<< voltageMainRobotBatteryIsValid << voltageMainRobotComputerIsValid
-		<< voltageOtherBatteries << voltageOtherBatteriesValid
-		<< sensorLabel << timestamp;
+		<< voltageOtherBatteries << voltageOtherBatteriesValid << sensorLabel
+		<< timestamp;
 }
 
-void CObservationBatteryState::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CObservationBatteryState::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

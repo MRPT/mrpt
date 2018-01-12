@@ -119,7 +119,9 @@ bool CRobot2DPoseEstimator::getCurrentEstimate(
 
 	//  Overall estimate:
 	// last_loc (+) [ last_odo (-) odo_ref ] (+) extrapolation_from_vw
-	const TPose2D p = (CPose2D(m_last_loc) + (CPose2D(m_last_odo) - CPose2D(m_loc_odo_ref))).asTPose();
+	const TPose2D p =
+		(CPose2D(m_last_loc) + (CPose2D(m_last_odo) - CPose2D(m_loc_odo_ref)))
+			.asTPose();
 
 	// Add the extrapolation:
 	const double dTimeOdo = timeDifference(m_last_odo_time, tim_query);
@@ -158,7 +160,9 @@ bool CRobot2DPoseEstimator::getLatestRobotPose(TPose2D& pose) const
 		ret_odo = false;
 
 	if (ret_odo)
-		pose = (CPose2D(m_last_loc) + (CPose2D(m_last_odo) - CPose2D(m_loc_odo_ref))).asTPose();
+		pose = (CPose2D(m_last_loc) +
+				(CPose2D(m_last_odo) - CPose2D(m_loc_odo_ref)))
+				   .asTPose();
 	else
 		pose = m_last_loc;
 

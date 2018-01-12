@@ -49,10 +49,15 @@ uint8_t CSensoryFrame::serializeGetVersion() const { return 2; }
 void CSensoryFrame::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	out.WriteAs<uint32_t>(m_observations.size());
-	for (const auto & o : m_observations) { ASSERT_(o);  out << *o; }
+	for (const auto& o : m_observations)
+	{
+		ASSERT_(o);
+		out << *o;
+	}
 }
 
-void CSensoryFrame::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CSensoryFrame::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	MRPT_START
 	switch (version)
@@ -77,7 +82,8 @@ void CSensoryFrame::serializeFrom(mrpt::serialization::CArchive& in, uint8_t ver
 			m_observations.resize(n);
 			for_each(
 				m_observations.begin(), m_observations.end(),
-				mrpt::serialization::metaprogramming::ObjectReadFromStream(&in));
+				mrpt::serialization::metaprogramming::ObjectReadFromStream(
+					&in));
 
 			if (version == 0)
 				for (i = 0; i < n; i++)

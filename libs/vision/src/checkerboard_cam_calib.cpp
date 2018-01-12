@@ -56,9 +56,8 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 //  It should be removed in the future when 2.3 becomes too old to support.
 namespace cv
 {
-template <
-	typename _Tp, int _rows, int _cols, int _options, int _maxRows,
-	int _maxCols>
+template <typename _Tp, int _rows, int _cols, int _options, int _maxRows,
+		  int _maxCols>
 void my_cv2eigen(
 	const Mat& src,
 	Eigen::Matrix<_Tp, _rows, _cols, _options, _maxRows, _maxCols>& dst)
@@ -245,8 +244,9 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 				unsigned int k;
 				for (y = 0, k = 0; y < check_size.height; y++)
 					for (x = 0; x < check_size.width; x++, k++)
-						dat.detected_corners.push_back(mrpt::img::TPixelCoordf(
-							this_img_pts[k].x, this_img_pts[k].y));
+						dat.detected_corners.push_back(
+							mrpt::img::TPixelCoordf(
+								this_img_pts[k].x, this_img_pts[k].y));
 
 				// Draw the checkerboard in the corresponding image:
 				// ----------------------------------------------------
@@ -410,7 +410,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 				dat.reconstructed_camera_pose,
 				out_camera_params.intrinsicParams,  // calib matrix
 				projectedPoints  // Output points in pixels
-			);
+				);
 
 			vision::pinhole::projectPoints_with_distortion(
 				lstPatternPoints,  // Input points
@@ -418,7 +418,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 				out_camera_params.intrinsicParams,  // calib matrix
 				out_camera_params.getDistortionParamsAsVector(),
 				projectedPoints_distorted  // Output points in pixels
-			);
+				);
 
 			ASSERT_(projectedPoints.size() == CORNERS_COUNT);
 			ASSERT_(projectedPoints_distorted.size() == CORNERS_COUNT);

@@ -172,8 +172,8 @@ class CGridMapAligner : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 		 *   - The final sog is the merge of sog3.
 		 *
 		 */
-		mrpt::containers::poly_ptr_ptr<mrpt::poses::CPosePDFSOG::Ptr> sog1, sog2,
-			sog3;
+		mrpt::containers::poly_ptr_ptr<mrpt::poses::CPosePDFSOG::Ptr> sog1,
+			sog2, sog3;
 
 		/** The landmarks of each map (the indices of these landmarks correspond
 		 * to those in "correspondences")  */

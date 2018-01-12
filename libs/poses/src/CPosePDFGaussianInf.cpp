@@ -58,7 +58,8 @@ void CPosePDFGaussianInf::serializeTo(mrpt::serialization::CArchive& out) const
 	out << cov_inv(0, 0) << cov_inv(1, 1) << cov_inv(2, 2);
 	out << cov_inv(0, 1) << cov_inv(0, 2) << cov_inv(1, 2);
 }
-void CPosePDFGaussianInf::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CPosePDFGaussianInf::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

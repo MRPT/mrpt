@@ -90,7 +90,7 @@ void CIncrementalNodeRegistrationDecider<GRAPH_T>::loadParams(
 	const std::string& source_fname)
 {
 	MRPT_START;
-		parent_t::loadParams(source_fname);
+	parent_t::loadParams(source_fname);
 
 	params.loadFromConfigFileName(
 		source_fname, "NodeRegistrationDeciderParameters");
@@ -135,7 +135,8 @@ CIncrementalNodeRegistrationDecider<GRAPH_T>::TParams::~TParams()
 }
 
 template <class GRAPH_T>
-void CIncrementalNodeRegistrationDecider<GRAPH_T>::TParams::dumpToTextStream(std::ostream& out) const
+void CIncrementalNodeRegistrationDecider<GRAPH_T>::TParams::dumpToTextStream(
+	std::ostream& out) const
 {
 	MRPT_START;
 	out << mrpt::format("%s", this->getAsString().c_str());
@@ -148,7 +149,7 @@ void CIncrementalNodeRegistrationDecider<GRAPH_T>::TParams::loadFromConfigFile(
 {
 	MRPT_START;
 	using namespace mrpt::math;
-	
+
 	registration_max_distance = source.read_double(
 		section, "registration_max_distance", 0.5 /* meter */, false);
 	registration_max_angle = source.read_double(
@@ -164,7 +165,7 @@ void CIncrementalNodeRegistrationDecider<GRAPH_T>::TParams::getAsString(
 {
 	MRPT_START;
 	using namespace mrpt::math;
-	
+
 	double max_angle_deg = RAD2DEG(registration_max_angle);
 	params_out->clear();
 

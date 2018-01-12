@@ -656,8 +656,8 @@ double COccupancyGridMap2D::computeLikelihoodField_Thrun(
 					signed int Ax0 = 10 * (xx1 - cx);
 					signed int Ay = 10 * (yy1 - cy);
 
-					unsigned int occupiedMinDistInt = mrpt::round(
-						maxCorrDist_sq * constDist2DiscrUnits);
+					unsigned int occupiedMinDistInt =
+						mrpt::round(maxCorrDist_sq * constDist2DiscrUnits);
 
 					for (int yy = yy1; yy <= yy2; yy++)
 					{
@@ -891,7 +891,8 @@ void COccupancyGridMap2D::TLikelihoodOptions::loadFromConfigFile(
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void COccupancyGridMap2D::TLikelihoodOptions::dumpToTextStream(std::ostream& out) const
+void COccupancyGridMap2D::TLikelihoodOptions::dumpToTextStream(
+	std::ostream& out) const
 {
 	out << mrpt::format(
 		"\n----------- [COccupancyGridMap2D::TLikelihoodOptions] ------------ "
@@ -931,11 +932,16 @@ void COccupancyGridMap2D::TLikelihoodOptions::dumpToTextStream(std::ostream& out
 		"enableLikelihoodCache                   = %c\n",
 		enableLikelihoodCache ? 'Y' : 'N');
 
-	out << mrpt::format("LF_stdHit                               = %f\n", LF_stdHit);
-	out << mrpt::format("LF_zHit                                 = %f\n", LF_zHit);
-	out << mrpt::format("LF_zRandom                              = %f\n", LF_zRandom);
-	out << mrpt::format("LF_maxRange                             = %f\n", LF_maxRange);
-	out << mrpt::format("LF_decimation                           = %u\n", LF_decimation);
+	out << mrpt::format(
+		"LF_stdHit                               = %f\n", LF_stdHit);
+	out << mrpt::format(
+		"LF_zHit                                 = %f\n", LF_zHit);
+	out << mrpt::format(
+		"LF_zRandom                              = %f\n", LF_zRandom);
+	out << mrpt::format(
+		"LF_maxRange                             = %f\n", LF_maxRange);
+	out << mrpt::format(
+		"LF_decimation                           = %u\n", LF_decimation);
 	out << mrpt::format(
 		"LF_maxCorrsDistance                     = %f\n", LF_maxCorrsDistance);
 	out << mrpt::format(
@@ -944,8 +950,10 @@ void COccupancyGridMap2D::TLikelihoodOptions::dumpToTextStream(std::ostream& out
 	out << mrpt::format(
 		"LF_alternateAverageMethod               = %c\n",
 		LF_alternateAverageMethod ? 'Y' : 'N');
-	out << mrpt::format("MI_exponent                             = %f\n", MI_exponent);
-	out << mrpt::format("MI_skip_rays                            = %u\n", MI_skip_rays);
+	out << mrpt::format(
+		"MI_exponent                             = %f\n", MI_exponent);
+	out << mrpt::format(
+		"MI_skip_rays                            = %u\n", MI_skip_rays);
 	out << mrpt::format(
 		"MI_ratio_max_distance                   = %f\n",
 		MI_ratio_max_distance);

@@ -21,7 +21,8 @@ void THypothesisIDSet::serializeTo(mrpt::serialization::CArchive& out) const
 	for (const_iterator it = begin(); it != end(); ++it) out << *it;
 }
 
-void THypothesisIDSet::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void THypothesisIDSet::serializeFrom(
+	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{

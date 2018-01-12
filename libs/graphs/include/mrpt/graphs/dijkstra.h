@@ -96,9 +96,8 @@ class NotConnectedGraph : public std::exception
  *
  * \ingroup mrpt_graphs_grp
  */
-template <
-	class TYPE_GRAPH,
-	class MAPS_IMPLEMENTATION = mrpt::containers::map_traits_stdmap>
+template <class TYPE_GRAPH,
+		  class MAPS_IMPLEMENTATION = mrpt::containers::map_traits_stdmap>
 class CDijkstra
 {
    protected:

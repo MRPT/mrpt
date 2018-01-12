@@ -176,7 +176,7 @@ void CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations,
 {
 	using namespace mrpt::opengl;
 	using namespace mrpt::img;
-	
+
 	ASSERTMSG_(viz_params, "Pointer to viz_params was not provided.");
 	typedef map<pair<string, bool>, CSetOfLines::Ptr> PairToSetOfLines_t;
 

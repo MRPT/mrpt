@@ -9,7 +9,6 @@
 #ifndef T2DScanProperties_H
 #define T2DScanProperties_H
 
-
 namespace mrpt
 {
 namespace obs

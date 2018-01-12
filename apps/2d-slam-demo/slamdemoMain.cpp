@@ -1180,8 +1180,7 @@ void slamdemoFrame::resetSimulator(const std::string& map_type)
 		CLandmark newLM;
 		newLM.pose_mean.z = 0;
 
-		for (int i = 0;
-			 i <= mrpt::round((options.path_square_len) / 2.0); i++)
+		for (int i = 0; i <= mrpt::round((options.path_square_len) / 2.0); i++)
 		{
 			// Bottom & top  corridors:
 			newLM.pose_mean.x = 1 + 2 * i;
@@ -1917,7 +1916,10 @@ void slamdemoFrame::TSimulationOptions::saveToConfigFile(
 	MRPT_SAVE_CONFIG_VAR(spurious_count_std, f, c)
 }
 
-void slamdemoFrame::TSimulationOptions::dumpToTextStream(std::ostream& out) const {}
+void slamdemoFrame::TSimulationOptions::dumpToTextStream(
+	std::ostream& out) const
+{
+}
 /*---------------------------------------------------------------
 						executeOneStep
   ---------------------------------------------------------------*/
