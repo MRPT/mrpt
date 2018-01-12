@@ -315,7 +315,7 @@ Description: Mobile Robot Programming Toolkit - maps library
 Package: libmrpt-maps-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-maps@MRPT_VER_MM@ (= ${binary:Version})
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-maps@MRPT_VER_MM@ (= ${binary:Version}),
          liboctomap-dev
 Description: Mobile Robot Programming Toolkit - maps development package
  This package provides headers and libraries for development.
@@ -331,8 +331,8 @@ Description: Mobile Robot Programming Toolkit - math library
 Package: libmrpt-math-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-math@MRPT_VER_MM@ (= ${binary:Version})
-         libsuitesparse-dev
+Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-math@MRPT_VER_MM@ (= ${binary:Version}),
+         libsuitesparse-dev, libeigen3-dev
 Description: Mobile Robot Programming Toolkit - math development package
  This package provides headers and libraries for development.
 
@@ -556,8 +556,7 @@ Package: libmrpt-dev
 Section: libdevel
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
-         libeigen3-dev,
-         libmrpt-bayes-dev (= ${binary:Version}),
+Recommends: libmrpt-bayes-dev (= ${binary:Version}),
          libmrpt-comms-dev (= ${binary:Version}),
          libmrpt-config-dev (= ${binary:Version}),
          libmrpt-containers-dev (= ${binary:Version}),

@@ -572,6 +572,7 @@ SET( MEX_EXECUTABLE_OUTPUT_PATH ${MRPT_BINARY_DIR}/mex/test CACHE PATH "Output d
 IF(CMAKE_MRPT_USE_DEB_POSTFIXS)
 	# Values when building a Debian package ---------------
 	MESSAGE(STATUS "** mrpt cmake: Using Debian post-fix for install directories **")
+	SET(libmrpt_xxx_dev_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/libmrpt-xxx-dev/usr/")
 	SET(libmrpt_dev_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/libmrpt-dev/usr/")
 	SET(mrpt_apps_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/mrpt-apps/usr/")
 	SET(mrpt_doc_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/mrpt-doc/usr/")
@@ -579,6 +580,7 @@ IF(CMAKE_MRPT_USE_DEB_POSTFIXS)
 	SET(mrpt_pkgconfig_INSTALL_PREFIX "/usr")	# Values when building a Debian package
 ELSE()
 	# Values under normal conditions -----------------------
+	SET(libmrpt_xxx_dev_INSTALL_PREFIX "")
 	SET(libmrpt_dev_INSTALL_PREFIX "")
 	SET(mrpt_apps_INSTALL_PREFIX "")
 	SET(mrpt_doc_INSTALL_PREFIX "")

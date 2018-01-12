@@ -372,7 +372,22 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 		SET(mrpt_pkgconfig_NO_INSTALL_SOURCE "${MRPT_SOURCE_DIR}")
 		SET(mrpt_pkgconfig_NO_INSTALL_BINARY "${MRPT_BINARY_DIR}")
 		CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/parse-files/mrpt_template_no_install.pc.in" "${CMAKE_BINARY_DIR}/pkgconfig-no-install/mrpt-${name}.pc" @ONLY)
-	ENDIF(UNIX)
+
+		IF (NOT IS_DEBIAN_DBG_PKG)
+			STRING(REPLACE "xxx" "${name}" this_lib_dev_INSTALL_PREFIX "${libmrpt_xxx_dev_INSTALL_PREFIX}")
+			# .pc file:
+			INSTALL(
+				FILES "${CMAKE_BINARY_DIR}/pkgconfig/mrpt-${name}.pc"
+				DESTINATION ${this_lib_dev_INSTALL_PREFIX}${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+
+			# Install the headers of all the MRPT libs:
+			# (in win32 the /libs/* tree is install entirely, not only the headers):
+			SET(SRC_DIR "${MRPT_SOURCE_DIR}/libs/${name}/include/")
+			IF (EXISTS "${SRC_DIR}")  # This is mainly to avoid problems with "virtual module" names
+				INSTALL(DIRECTORY "${SRC_DIR}" DESTINATION ${this_lib_dev_INSTALL_PREFIX}include/mrpt/${_LIB}/include/  )
+			ENDIF()
+		ENDIF()
+	ENDIF() # UNIX
 
 	IF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
 		FOREACH(_N ${${name}_PLUGIN_SRCS_NAME})
