@@ -69,6 +69,7 @@ license is as follows:
 #include <string>
 #include <cstring>
 
+#if MRPT_HAS_OPENCV
 struct XPMColorMapData
 {
 	unsigned char R{0}, G{0}, B{0};
@@ -473,6 +474,7 @@ static bool GetRGBFromName(
 
 	return found;
 }
+#endif
 
 /** Loads the image from an XPM array, as #include'd from a ".xpm" file.
  * \sa loadFromFile
