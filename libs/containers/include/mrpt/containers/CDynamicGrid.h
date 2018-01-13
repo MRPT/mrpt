@@ -12,6 +12,7 @@
 #include <vector>
 #include <string>
 #include <cmath>
+#include <cstddef>
 
 namespace mrpt
 {
