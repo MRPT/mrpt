@@ -35,16 +35,7 @@ if(CMAKE_TIMING_VERBOSE AND UNIX)
 endif(CMAKE_TIMING_VERBOSE AND UNIX)
 
 # Require C++17
-if (MSVC)
-	add_compile_options("/std:c++latest")
-else()
-	if(${CMAKE_VERSION} VERSION_LESS "3.8.0")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
-	else()
-		set(CMAKE_CXX_STANDARD 17)
-	endif()
-endif()
-
+# This is now defined as a PUBLIC interface feature of mrpt-core.
 
 # Detect wordsize:
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)  # Size in bytes!
@@ -62,10 +53,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmakemodules") # Directory fo
 # -------------------------
 enable_testing()
 find_package(codecov)
-
-
 # -------------------------
-
 
 set(ALLOW_GPL OFF CACHE BOOL "Allows MRPT to link to GPL code. This effectively makes some MRPT binaries GPL licensed. Use this at your own risk.")
 option(MRPT_ALLOW_LGPLV3 "Allows MRPT to use LGPLV3 code" "OFF")
@@ -349,7 +337,6 @@ include(cmakemodules/script_create_version_h.cmake REQUIRED)  # Build version.h
 # The C++ include & link directories:
 # ---------------------------------------------------------------------------
 include_directories(".")
-include_directories("${MRPT_CONFIG_FILE_INCLUDE_DIR}")
 
 # Add user supplied extra options (optimization, etc...)
 set(USER_EXTRA_CPP_FLAGS "" CACHE STRING "Put extra compiler options here if desired")
@@ -665,8 +652,6 @@ if( BUILD_TESTING)
 	add_subdirectory(tests)  # Build my tests
 endif()
 
-include(cmakemodules/script_create_MRPTConfig.cmake REQUIRED)  # Generate the MRPTConfig.cmake & configure files
-
 #-----------------------------------
 # The python bindings
 # *Note*: This must be AFTER the generation of the MRPTConfig.cmake files
@@ -686,14 +671,6 @@ mark_as_advanced(FORCE
 	wxWidgets_wxrc_EXECUTABLE
 )
 
-#-----------------------------------
-# The examples
-# *Note*: This must be AFTER the generation of the MRPTConfig.cmake files
-#-----------------------------------
-add_definitions(-DMRPT_OPENCV_SRC_DIR="${MRPT_OPENCV_SRC_DIR}")
-set(MRPT_DIR ${MRPT_BINARY_DIR})
-include(cmakemodules/DefineExamples.cmake REQUIRED)
-
 set(IS_DEBIAN_DBG_PKG 0)
 if (CMAKE_MRPT_USE_DEB_POSTFIXS AND CMAKE_BUILD_TYPE STREQUAL "Debug")
 	set(IS_DEBIAN_DBG_PKG 1)
@@ -704,6 +681,14 @@ include(cmakemodules/script_install_commands.cmake REQUIRED)
 
 # Summary
 include(cmakemodules/script_show_final_summary.cmake REQUIRED)
+
+#-----------------------------------
+# The examples
+# *Note*: This must be AFTER the generation of the MRPTConfig.cmake files
+#-----------------------------------
+add_definitions(-DMRPT_OPENCV_SRC_DIR="${MRPT_OPENCV_SRC_DIR}")
+set(MRPT_DIR ${MRPT_BINARY_DIR})
+include(cmakemodules/DefineExamples.cmake REQUIRED)
 
 # evaluate coverage
 coverage_evaluate()

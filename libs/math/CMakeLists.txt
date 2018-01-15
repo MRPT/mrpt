@@ -22,6 +22,13 @@ endif()
 # extra dependencies required by unit tests in this module:
 set_property(GLOBAL PROPERTY mrpt_math_UNIT_TEST_EXTRA_DEPS mrpt-io)
 
+# eigen3:
+if (EIGEN_USE_EMBEDDED_VERSION)
+	set(eigen_dep EP_eigen3)
+else()
+	set(eigen_dep Eigen3) # find_package() lib name
+endif()
+
 define_mrpt_lib(
 	math 		# Lib name
 	# Dependencies:
@@ -32,6 +39,8 @@ define_mrpt_lib(
 	mrpt-random
 	mrpt-system
 	mrpt-nanoflann
+	# Other imported targets:
+	${eigen_dep}
 	)
 
 if(BUILD_mrpt-math)
@@ -43,6 +52,14 @@ if(BUILD_mrpt-math)
 			PROPERTIES COMPILE_FLAGS "/Y-"
 			)
 	endif()
+
+	# eigen3:
+	if (EIGEN_USE_EMBEDDED_VERSION)
+		target_link_libraries(mrpt-math PUBLIC EP_eigen3)
+	else()
+		target_link_libraries(mrpt-math PUBLIC Eigen3::Eigen)
+	endif()
+
 
 	if (NOT "${SuiteSparse_LIBRARIES}" STREQUAL "")
 		target_link_libraries(mrpt-math PRIVATE ${SuiteSparse_LIBRARIES})
