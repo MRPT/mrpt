@@ -240,11 +240,11 @@ if(BUILD_EXAMPLES)
 
 	# === Depending on: vision ===
 	set(LIST_EXAMPLES_IN_THIS_DIR
-		vision_feature_extraction
 		vision_create_video_file_example
 		vision_checkerboard_detectors
-		vision_multiple_checkerboards
+		vision_feature_extraction
 		vision_keypoint_matching_example
+		vision_multiple_checkerboards
 		vision_stereo_calib_example
 		)
 	set(CMAKE_EXAMPLE_DEPS mrpt-vision mrpt-gui)
@@ -370,4 +370,6 @@ if(BUILD_EXAMPLES)
 	set(CMAKE_COMMANDS_INCLUDE_EXAMPLE_DIRS ${CMAKE_COMMANDS_INCLUDE_EXAMPLE_DIRS_ROOT})
 	configure_file(${CMAKE_SOURCE_DIR}/samples/CMakeLists_list_template.txt.in "${CMAKE_SOURCE_DIR}/samples/CMakeLists.txt" )
 	add_subdirectory(samples)
+
+	message(STATUS "Done.")
 endif()
