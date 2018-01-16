@@ -33,6 +33,13 @@ namespace detail
 			using mrpt::utils::DEG2RAD;
 			obj.mark_as_modified();
 
+			// The next may seem useless, but it's required in case the observation
+			// underwent a move or copy operator, which may change the reserved mem
+			// of std::vector's, which need to be >=4*N for SEE instructions to work
+			// without "undefined behavior" of accessing out of vector memory:
+			const_cast<mrpt::obs::CObservation2DRangeScan&>(rangeScan).resizeScan(
+				rangeScan.getScanSize());
+
 			// If robot pose is supplied, compute sensor pose relative to it.
 			CPose3D sensorPose3D(UNINITIALIZED_POSE);
 			if (!robotPose)
@@ -433,5 +440,3 @@ namespace detail
 } // end NS
 
 #endif
-
-
