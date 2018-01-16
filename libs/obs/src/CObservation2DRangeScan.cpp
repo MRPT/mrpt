@@ -27,39 +27,18 @@ using namespace mrpt::math;
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservation2DRangeScan, CObservation, mrpt::obs)
 
-/*---------------------------------------------------------------
-							Constructor
- ---------------------------------------------------------------*/
-CObservation2DRangeScan::CObservation2DRangeScan()
-	: m_scan(),
-	  m_intensity(),
-	  m_validRange(),
-	  m_has_intensity(false),
-	  scan(m_scan),  // proxy ctor
-	  intensity(m_intensity),  // proxy ctor
-	  validRange(m_validRange),  // proxy ctor
-	  aperture(M_PIf),
-	  rightToLeft(true),
-	  maxRange(80.0f),
-	  sensorPose(),
-	  stdError(0.01f),
-	  beamAperture(0),
-	  deltaPitch(0),
-	  m_cachedMap()
-{
-}
-
 CObservation2DRangeScan::CObservation2DRangeScan(
 	const CObservation2DRangeScan& o)
 	: scan(m_scan),  // proxy ctor
 	  intensity(m_intensity),  // proxy ctor
 	  validRange(m_validRange)  // proxy ctor
 {
-	*this = o;  // rely on compiler-generated copy op + the custom = operator in
-	// proxies.
+	// rely on compiler-generated copy op + the custom = operator in proxies.
+	*this = o;
+	// Ensure that padding at the end is kept (useful for SSE ops)
+	this->m_scan.reserve(o.m_scan.capacity());
 }
 
-CObservation2DRangeScan::~CObservation2DRangeScan() {}
 uint8_t CObservation2DRangeScan::serializeGetVersion() const { return 7; }
 void CObservation2DRangeScan::serializeTo(
 	mrpt::serialization::CArchive& out) const
@@ -233,16 +212,20 @@ IMPLEMENTS_MEXPLUS_FROM(mrpt::obs::CObservation2DRangeScan)
 mxArray* CObservation2DRangeScan::writeToMatlab() const
 {
 #if MRPT_HAS_MATLAB
-	const char* fields[] = {
-		"class",  // Data common to any MRPT class
-		"ts", "sensorLabel",  // Data common to any observation
-		"scan", "validRange",
-		"intensity"  // Received raw data
-		"aperture",
-		"rightToLeft", "maxRange",  // Scan plane geometry and properties
-		"stdError", "beamAperture", "deltaPitch",  // Ray properties
-		"pose",  // Sensor pose
-		"map"};  // Points map
+	const char* fields[] = {"class",  // Data common to any MRPT class
+							"ts",
+							"sensorLabel",  // Data common to any observation
+							"scan",
+							"validRange",
+							"intensity"  // Received raw data
+							"aperture",
+							"rightToLeft",
+							"maxRange",  // Scan plane geometry and properties
+							"stdError",
+							"beamAperture",
+							"deltaPitch",  // Ray properties
+							"pose",  // Sensor pose
+							"map"};  // Points map
 	mexplus::MxArray obs_struct(
 		mexplus::MxArray::Struct(sizeof(fields) / sizeof(fields[0]), fields));
 
@@ -449,8 +432,8 @@ void internal_set_build_points_map_from_scan2D(scan2pts_functor fn)
 {
 	ptr_internal_build_points_map_from_scan2D = fn;
 }
-}
-}
+}  // namespace obs
+}  // namespace mrpt
 
 /*---------------------------------------------------------------
 						internal_buildAuxPointsMap
