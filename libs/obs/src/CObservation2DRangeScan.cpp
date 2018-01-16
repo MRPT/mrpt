@@ -55,6 +55,8 @@ CObservation2DRangeScan::CObservation2DRangeScan(const CObservation2DRangeScan &
 	validRange( m_validRange ) // proxy ctor
 {
 	*this = o; // rely on compiler-generated copy op + the custom = operator in proxies.
+	// Ensure that padding at the end is kept (useful for SSE ops)
+	this->m_scan.reserve(o.m_scan.capacity());
 }
 
 /*---------------------------------------------------------------
@@ -579,4 +581,3 @@ void CObservation2DRangeScan::loadFromVectors(size_t nRays, const float *scanRan
 		m_validRange[i] = scanValidity[i];
 	}
 }
-
