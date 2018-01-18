@@ -17,6 +17,8 @@
 #include <mrpt/otherlibs/do_opencv_includes.h>
 
 #include <thread>
+#include <mutex>
+#include <atomic>
 
 #if MRPT_HAS_OPENNI2
 
@@ -36,10 +38,9 @@ using namespace mrpt::obs;
 using namespace std;
 
 // Initialize static member
-std::vector<std::shared_ptr<COpenNI2Generic::CDevice>>
-	COpenNI2Generic::vDevices =
-		std::vector<std::shared_ptr<COpenNI2Generic::CDevice>>();
-int COpenNI2Generic::numInstances = 0;
+std::vector<std::shared_ptr<COpenNI2Generic::CDevice>> vDevices;
+std::recursive_mutex vDevices_mx;
+std::atomic<int> numInstances(0);
 
 #if MRPT_HAS_OPENNI2
 bool setONI2StreamMode(
@@ -72,10 +73,8 @@ COpenNI2Generic::COpenNI2Generic()
 	if (!this->start())
 	{
 #if MRPT_HAS_OPENNI2
-		THROW_EXCEPTION(
-			mrpt::format(
-				"After initialization:\n %s\n",
-				openni::OpenNI::getExtendedError()))
+		THROW_EXCEPTION(mrpt::format(
+			"After initialization:\n %s\n", openni::OpenNI::getExtendedError()))
 #endif
 	}
 }
@@ -102,10 +101,9 @@ COpenNI2Generic::COpenNI2Generic(
 		if (!this->start())
 		{
 #if MRPT_HAS_OPENNI2
-			THROW_EXCEPTION(
-				mrpt::format(
-					"After initialization:\n %s\n",
-					openni::OpenNI::getExtendedError()))
+			THROW_EXCEPTION(mrpt::format(
+				"After initialization:\n %s\n",
+				openni::OpenNI::getExtendedError()))
 #endif
 		}
 	}
@@ -145,7 +143,11 @@ COpenNI2Generic::~COpenNI2Generic()
 	}
 }
 
-int COpenNI2Generic::getNumDevices() const { return vDevices.size(); }
+int COpenNI2Generic::getNumDevices() const
+{
+	std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
+	return vDevices.size();
+}
 void COpenNI2Generic::setVerbose(bool verbose) { m_verbose = verbose; }
 bool COpenNI2Generic::isVerbose() const { return m_verbose; }
 void COpenNI2Generic::showLog(const std::string& message) const
@@ -157,22 +159,22 @@ void COpenNI2Generic::showLog(const std::string& message) const
 	std::cerr << message;
 }
 /** This method can or cannot be implemented in the derived class, depending on
-* the need for it.
-*  \exception This method must throw an exception with a descriptive message if
-* some critical error is found.
-*/
+ * the need for it.
+ *  \exception This method must throw an exception with a descriptive message if
+ * some critical error is found.
+ */
 int COpenNI2Generic::getConnectedDevices()
 {
 #if MRPT_HAS_OPENNI2
+	std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
 	// Get devices list
 	openni::Array<openni::DeviceInfo> oni2InfoArray;
 	openni::OpenNI::enumerateDevices(&oni2InfoArray);
 
 	const size_t numDevices = oni2InfoArray.getSize();
 	showLog(mrpt::format("[%s]\n", __FUNCTION__));
-	showLog(
-		mrpt::format(
-			" Get device list. %d devices connected.\n", (int)numDevices));
+	showLog(mrpt::format(
+		" Get device list. %d devices connected.\n", (int)numDevices));
 
 	// Search new devices.
 	std::set<int> newDevices;
@@ -232,6 +234,7 @@ int COpenNI2Generic::getConnectedDevices()
 
 void COpenNI2Generic::kill()
 {
+	std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
 #if MRPT_HAS_OPENNI2
 	vDevices.clear();
 	openni::OpenNI::shutdown();
@@ -243,6 +246,7 @@ void COpenNI2Generic::kill()
 bool COpenNI2Generic::isOpen(const unsigned sensor_id) const
 {
 #if MRPT_HAS_OPENNI2
+	std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
 	if ((int)sensor_id >= getNumDevices())
 	{
 		return false;
@@ -257,6 +261,7 @@ bool COpenNI2Generic::isOpen(const unsigned sensor_id) const
 void COpenNI2Generic::open(unsigned sensor_id)
 {
 #if MRPT_HAS_OPENNI2
+	std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
 	// Sensor index validation.
 	if (!getNumDevices())
 	{
@@ -302,6 +307,7 @@ unsigned int COpenNI2Generic::openDevicesBySerialNum(
 	const std::set<unsigned>& serial_required)
 {
 #if MRPT_HAS_OPENNI2
+	std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
 	showLog(mrpt::format("[%s]\n", __FUNCTION__));
 	unsigned num_open_dev = 0;
 	for (unsigned sensor_id = 0; sensor_id < vDevices.size(); sensor_id++)
@@ -365,6 +371,7 @@ bool COpenNI2Generic::getDeviceIDFromSerialNum(
 	const unsigned int SerialRequired, int& sensor_id) const
 {
 #if MRPT_HAS_OPENNI2
+	std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
 	for (size_t i = 0, i_end = vDevices.size(); i < i_end; ++i)
 	{
 		unsigned int sn;
@@ -389,6 +396,7 @@ bool COpenNI2Generic::getDeviceIDFromSerialNum(
 void COpenNI2Generic::close(unsigned sensor_id)
 {
 #if MRPT_HAS_OPENNI2
+	std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
 	// Sensor index validation.
 	if (!getNumDevices())
 	{
@@ -407,19 +415,20 @@ void COpenNI2Generic::close(unsigned sensor_id)
 }
 
 /** The main data retrieving function, to be called after calling loadConfig()
-* and initialize().
-*  \param out_obs The output retrieved observation (only if there_is_obs=true).
-*  \param timestamp The timestamp of the capture (only if there_is_obs=true).
-*  \param there_is_obs If set to false, there was no new observation.
-*  \param hardware_error True on hardware/comms error.
-*  \param sensor_id The index of the sensor accessed.
-*
-*/
+ * and initialize().
+ *  \param out_obs The output retrieved observation (only if there_is_obs=true).
+ *  \param timestamp The timestamp of the capture (only if there_is_obs=true).
+ *  \param there_is_obs If set to false, there was no new observation.
+ *  \param hardware_error True on hardware/comms error.
+ *  \param sensor_id The index of the sensor accessed.
+ *
+ */
 void COpenNI2Generic::getNextFrameRGB(
 	mrpt::img::CImage& rgb_img, uint64_t& timestamp, bool& there_is_obs,
 	bool& hardware_error, unsigned sensor_id)
 {
 #if MRPT_HAS_OPENNI2
+	std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
 	// Sensor index validation.
 	if (!getNumDevices())
 	{
@@ -448,19 +457,20 @@ void COpenNI2Generic::getNextFrameRGB(
 }
 
 /** The main data retrieving function, to be called after calling loadConfig()
-* and initialize().
-*  \param depth_img The output retrieved depth image (only if
-* there_is_obs=true).
-*  \param timestamp The timestamp of the capture (only if there_is_obs=true).
-*  \param there_is_obs If set to false, there was no new observation.
-*  \param hardware_error True on hardware/comms error.
-*  \param sensor_id The index of the sensor accessed.
-*
-*/
+ * and initialize().
+ *  \param depth_img The output retrieved depth image (only if
+ * there_is_obs=true).
+ *  \param timestamp The timestamp of the capture (only if there_is_obs=true).
+ *  \param there_is_obs If set to false, there was no new observation.
+ *  \param hardware_error True on hardware/comms error.
+ *  \param sensor_id The index of the sensor accessed.
+ *
+ */
 void COpenNI2Generic::getNextFrameD(
 	mrpt::math::CMatrix& depth_img, uint64_t& timestamp, bool& there_is_obs,
 	bool& hardware_error, unsigned sensor_id)
 {
+	std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
 #if MRPT_HAS_OPENNI2
 	// Sensor index validation.
 	if (getNumDevices() == 0)
@@ -490,18 +500,19 @@ void COpenNI2Generic::getNextFrameD(
 }
 
 /** The main data retrieving function, to be called after calling loadConfig()
-* and initialize().
-*  \param out_obs The output retrieved observation (only if there_is_obs=true).
-*  \param there_is_obs If set to false, there was no new observation.
-*  \param hardware_error True on hardware/comms error.
-*  \param sensor_id The index of the sensor accessed.
-*
-*/
+ * and initialize().
+ *  \param out_obs The output retrieved observation (only if there_is_obs=true).
+ *  \param there_is_obs If set to false, there was no new observation.
+ *  \param hardware_error True on hardware/comms error.
+ *  \param sensor_id The index of the sensor accessed.
+ *
+ */
 void COpenNI2Generic::getNextFrameRGBD(
 	mrpt::obs::CObservation3DRangeScan& out_obs, bool& there_is_obs,
 	bool& hardware_error, unsigned sensor_id)
 {
 #if MRPT_HAS_OPENNI2
+	std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
 	// Sensor index validation.
 	if (!getNumDevices())
 	{
@@ -532,6 +543,7 @@ bool COpenNI2Generic::getColorSensorParam(
 	mrpt::img::TCamera& param, unsigned sensor_id) const
 {
 #if MRPT_HAS_OPENNI2
+	std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
 	if (isOpen(sensor_id) == false)
 	{
 		return false;
@@ -548,6 +560,7 @@ bool COpenNI2Generic::getDepthSensorParam(
 	mrpt::img::TCamera& param, unsigned sensor_id) const
 {
 #if MRPT_HAS_OPENNI2
+	std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
 	if (isOpen(sensor_id) == false)
 	{
 		return false;
@@ -1140,10 +1153,11 @@ bool COpenNI2Generic::CDevice::CStream::open(int w, int h, int fps)
 	openni::VideoMode options = m_stream.getVideoMode();
 	m_log << "[" << __FUNCTION__ << "]" << std::endl;
 	m_log << " " << m_strName << std::endl;
-	m_log << " " << mrpt::format(
-						"Initial resolution (%d, %d) FPS %d Format %d",
-						options.getResolutionX(), options.getResolutionY(),
-						options.getFps(), options.getPixelFormat())
+	m_log << " "
+		  << mrpt::format(
+				 "Initial resolution (%d, %d) FPS %d Format %d",
+				 options.getResolutionX(), options.getResolutionY(),
+				 options.getFps(), options.getPixelFormat())
 		  << std::endl;
 	if (m_verbose) printf("DBG: calling setONI2StreamMode()\n");
 	if (setONI2StreamMode(m_stream, w, h, fps, m_format) == false)
@@ -1155,10 +1169,11 @@ bool COpenNI2Generic::CDevice::CStream::open(int w, int h, int fps)
 	if (m_verbose) printf("DBG: returned OK from setONI2StreamMode()\n");
 	if (m_verbose) printf("DBG: calling stream.getVideoMode()\n");
 	options = m_stream.getVideoMode();
-	m_log << " " << mrpt::format(
-						"-> (%d, %d) FPS %d Format %d",
-						options.getResolutionX(), options.getResolutionY(),
-						options.getFps(), options.getPixelFormat())
+	m_log << " "
+		  << mrpt::format(
+				 "-> (%d, %d) FPS %d Format %d", options.getResolutionX(),
+				 options.getResolutionY(), options.getFps(),
+				 options.getPixelFormat())
 		  << std::endl;
 	if (m_verbose)
 		printf(
