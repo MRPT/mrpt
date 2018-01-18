@@ -109,13 +109,8 @@ namespace mrpt
 			bool  getColorSensorParam(mrpt::utils::TCamera& param, unsigned sensor_id = 0) const;
 			bool  getDepthSensorParam(mrpt::utils::TCamera& param, unsigned sensor_id = 0) const;
 
-		protected:
-
-			/** The list of available devices */
 			class HWDRIVERS_IMPEXP CDevice;
-			static std::vector<stlplus::smart_ptr<CDevice> > vDevices;
-			static int                        numInstances;
-
+		protected:
 			/** A vector with the serial numbers of the available devices */
 			std::vector<int>	vSerialNums;
 

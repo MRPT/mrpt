@@ -16,6 +16,10 @@
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>
+#include <atomic>
+#include <mutex>
+#include <memory>
+#include <mrpt/hwdrivers/COpenNI2Generic_CDevice.h>
 
 #if MRPT_HAS_OPENNI2
 
@@ -35,9 +39,9 @@ using namespace mrpt::synch;
 using namespace std;
 
 
-// Initialize static member
-std::vector<stlplus::smart_ptr<COpenNI2Generic::CDevice> > COpenNI2Generic::vDevices = std::vector<stlplus::smart_ptr<COpenNI2Generic::CDevice> >();
-int COpenNI2Generic::numInstances = 0;
+std::vector<std::unique_ptr<COpenNI2Generic::CDevice> > vDevices;
+std::recursive_mutex vDevices_mx;
+std::atomic<int> numInstances = 0;
 
 #if MRPT_HAS_OPENNI2
 bool        setONI2StreamMode(openni::VideoStream& stream, int w, int h, int fps, openni::PixelFormat format);
@@ -46,7 +50,6 @@ bool        cmpONI2Device(const openni::DeviceInfo& i1, const openni::DeviceInfo
 #endif // MRPT_HAS_OPENNI2
 
 
-#include <mrpt/hwdrivers/COpenNI2Generic_CDevice.h>
 /*-------------------------------------------------------------
 ctor
 -------------------------------------------------------------*/
@@ -127,6 +130,7 @@ COpenNI2Generic::~COpenNI2Generic()
 }
 
 int COpenNI2Generic::getNumDevices()const{
+	std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
 	return vDevices.size();
 }
 
@@ -159,6 +163,7 @@ int COpenNI2Generic::getConnectedDevices()
 	showLog(mrpt::format(" Get device list. %d devices connected.\n", (int)numDevices));
 
 	// Search new devices.
+	std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
 	std::set<int> newDevices;
 	for(unsigned i=0; i < numDevices; i++){
 		const openni::DeviceInfo& info = oni2InfoArray[i];
@@ -202,6 +207,7 @@ int COpenNI2Generic::getConnectedDevices()
 void COpenNI2Generic::kill()
 {
 #if MRPT_HAS_OPENNI2
+	std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
 	vDevices.clear();
 	openni::OpenNI::shutdown();
 #else
@@ -215,6 +221,7 @@ bool COpenNI2Generic::isOpen(const unsigned sensor_id) const
   if((int)sensor_id >= getNumDevices()){
 		return false;
 	}
+	std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
 	return vDevices[sensor_id]->isOpen();
 #else
 	MRPT_UNUSED_PARAM(sensor_id);
@@ -225,6 +232,7 @@ bool COpenNI2Generic::isOpen(const unsigned sensor_id) const
 void COpenNI2Generic::open(unsigned sensor_id)
 {
 #if MRPT_HAS_OPENNI2
+	std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
 	// Sensor index validation.
 	if (!getNumDevices()){
 		THROW_EXCEPTION("No OpenNI2 devices found.")
@@ -258,6 +266,7 @@ void COpenNI2Generic::open(unsigned sensor_id)
 unsigned int COpenNI2Generic::openDevicesBySerialNum(const std::set<unsigned>& serial_required)
 {
 #if MRPT_HAS_OPENNI2
+  std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
   showLog(mrpt::format("[%s]\n", __FUNCTION__));
   unsigned num_open_dev = 0;
   for(unsigned sensor_id=0; sensor_id < vDevices.size(); sensor_id++)
@@ -303,6 +312,7 @@ unsigned int COpenNI2Generic::openDeviceBySerial(const unsigned int SerialRequir
 
 bool COpenNI2Generic::getDeviceIDFromSerialNum(const unsigned int SerialRequired, int& sensor_id) const{
 #if MRPT_HAS_OPENNI2
+	std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
   for(size_t i = 0, i_end = vDevices.size();i < i_end;++i){
     unsigned int sn;
     if(vDevices[i]->getSerialNumber(sn) == false){
@@ -323,6 +333,7 @@ bool COpenNI2Generic::getDeviceIDFromSerialNum(const unsigned int SerialRequired
 void COpenNI2Generic::close(unsigned sensor_id)
 {
 #if MRPT_HAS_OPENNI2
+	std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
 	// Sensor index validation.
 	if (!getNumDevices()){
 		THROW_EXCEPTION("No OpenNI2 devices found.")
@@ -353,6 +364,7 @@ void COpenNI2Generic::getNextFrameRGB(
 	unsigned sensor_id )
 {
 #if MRPT_HAS_OPENNI2
+	std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
 	// Sensor index validation.
 	if (!getNumDevices()){
 		THROW_EXCEPTION("No OpenNI2 devices found.")
@@ -388,6 +400,7 @@ void COpenNI2Generic::getNextFrameD(
 	unsigned sensor_id )
 {
 #if MRPT_HAS_OPENNI2
+	std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
 	// Sensor index validation.
 	if (getNumDevices() == 0){
 		THROW_EXCEPTION("No OpenNI2 devices found.")
@@ -421,6 +434,7 @@ void COpenNI2Generic::getNextFrameRGBD(
 	unsigned sensor_id )
 {
 #if MRPT_HAS_OPENNI2
+	std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
 	// Sensor index validation.
 	if (!getNumDevices()){
 		THROW_EXCEPTION("No OpenNI2 devices found.")
@@ -442,6 +456,7 @@ void COpenNI2Generic::getNextFrameRGBD(
 
 bool  COpenNI2Generic::getColorSensorParam(mrpt::utils::TCamera& param, unsigned sensor_id)const{
 #if MRPT_HAS_OPENNI2
+	std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
 	if(isOpen(sensor_id) == false){
 		return false;
 	}
@@ -454,7 +469,8 @@ bool  COpenNI2Generic::getColorSensorParam(mrpt::utils::TCamera& param, unsigned
 
 bool  COpenNI2Generic::getDepthSensorParam(mrpt::utils::TCamera& param, unsigned sensor_id)const{
 #if MRPT_HAS_OPENNI2
-    if(isOpen(sensor_id) == false){
+	std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
+	if(isOpen(sensor_id) == false){
 		return false;
 	}
 	return vDevices[sensor_id]->getCameraParam(CDevice::DEPTH_STREAM, param);
