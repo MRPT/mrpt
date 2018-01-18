@@ -32,8 +32,8 @@ serialization with variants(To be replaced by std::variant eventually).
 	- Changes in libraries:
 		- \ref mrpt_base_grp => Refactored into several smaller libraries, one
 per namespace.
-			- Removed class std::vector<std::string>. Replace by STL containers of
-`std::string` and functions mrpt::system::stringListAsString() in \ref
+			- Removed class std::vector<std::string>. Replace by STL containers
+of `std::string` and functions mrpt::system::stringListAsString() in \ref
 string_manage.
 		- \ref mrpt_math_grp  [NEW IN MRPT 2.0.0]
 			- Removed functions (replaced by C++11/14 standard library):
@@ -64,6 +64,8 @@ networking classes, with minimal dependencies.
 		- \ref mrpt_maps_grp
 			- Added optional "channel" attribute to CReflectivityGrdMap2D and
 CObservationReflectivity to support different colors of light.
+		- \ref mrpt_hwdrivers_grp
+			- COpenNI2Generic: is safer in multithreading apps.
 	- BUG FIXES:
 		- Fix reactive navigator inconsistent state if navigation API is called
 from within rnav callbacks.
@@ -83,10 +85,12 @@ CMetricMap has empty smart pointers.
 <h2>Version 1.5.5: (Under development) </h2></a>
 - <b>Detailed list of changes:</b>
 	- \ref mrpt_nav_grp
-		- mrpt::nav::CHolonomicFullEval now uses an internal sin/cos LUT cache for improved performance.
+		- mrpt::nav::CHolonomicFullEval now uses an internal sin/cos LUT cache
+for improved performance.
 	- \ref mrpt_hwdrivers_grp
 		- A new class for SICK TIM561(TIM55x/TIM56x) lidar:
-			- A new source file named CSICKTim561Eth_2050101.cpp, which supports SICK TIM series lidar including Tim55x, Tim56x 
+			- A new source file named CSICKTim561Eth_2050101.cpp, which supports
+SICK TIM series lidar including Tim55x, Tim56x
 			- mrpt::hwdrivers::CSICKTim561Eth
 		- A new test sample for SICK TIM561(TIM55x/TIM56x) lidar:
 			- sample/SICK_tim561eth_test/test.cpp
@@ -1374,8 +1378,9 @@ href="http://code.google.com/p/mrpt/source/detail?r=3065" >r3065</a>
 					- New method mrpt::system::CTimeLogger::getStats() for
 programatic execution time stats analysis - <a
 href="http://code.google.com/p/mrpt/source/detail?r=2998" >r2998</a>
-					- New method mrpt::system::CTimeLogger::registerUserMeasure()
-for making stats of user-providen values - <a
+					- New method
+mrpt::system::CTimeLogger::registerUserMeasure() for making stats of
+user-providen values - <a
 href="http://code.google.com/p/mrpt/source/detail?r=3005" >r3005</a>
 				- mrpt::utils::map_as_vector<> can be now customized to use
 different underlying STL containers for storage - <a
@@ -1390,14 +1395,16 @@ existing parameters: - <a
 href="http://code.google.com/p/mrpt/source/detail?r=2954" >r2954</a>
 					- All mrpt::config::CConfigFileBase::write() now have an
 extended signature for formatting.
-					- mrpt::config::CLoadableOptions::dumpToTextStreamstd::ostream::Seek() now supports files larger than
-2GB by using uint64_t instead of long (still see issue report for another patch
-required for MSVC2010) - (Closes <a
+					-
+mrpt::config::CLoadableOptions::dumpToTextStreamstd::ostream::Seek() now
+supports files larger than 2GB by using uint64_t instead of long (still see
+issue report for another patch required for MSVC2010) - (Closes <a
 href="http://code.google.com/p/mrpt/issues/detail?id=39" >issue 39</a>, thanks
 Robert Schattschneider) - <a
 href="http://code.google.com/p/mrpt/source/detail?r=3042" >r3042</a>
 				- mrpt::typemeta::TTypeName<> moved to its own header
-<mrpt/typemeta/TTypeName.h> while refactoring <mrpt/serialization/CSerializable.h>
+<mrpt/typemeta/TTypeName.h> while refactoring
+<mrpt/serialization/CSerializable.h>
 - <a href="http://code.google.com/p/mrpt/source/detail?r=3044" >r3044</a>
 				- mrpt::config::CConfigFileBase::write() now has signatures for
 "uint32_t" and "uint64_t" in both 32 and 64bit builds, instead of relying of the

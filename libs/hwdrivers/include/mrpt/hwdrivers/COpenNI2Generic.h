@@ -132,12 +132,8 @@ class COpenNI2Generic
 	bool getDepthSensorParam(
 		mrpt::img::TCamera& param, unsigned sensor_id = 0) const;
 
-   protected:
-	/** The list of available devices */
 	class CDevice;
-	static std::vector<std::shared_ptr<CDevice>> vDevices;
-	static int numInstances;
-
+   protected:
 	/** A vector with the serial numbers of the available devices */
 	std::vector<int> vSerialNums;
 
