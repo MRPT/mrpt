@@ -156,7 +156,7 @@ void project3DPointsFromDepthImageInto(
 							D,  // x
 							Ky * D,  // y
 							Kz * D  // z
-							);
+						);
 						src_obs.points3D_idxs_x[idx] = c;
 						src_obs.points3D_idxs_y[idx] = r;
 						++idx;
@@ -194,7 +194,7 @@ void project3DPointsFromDepthImageInto(
 						D / std::sqrt(1 + Ky * Ky + Kz * Kz),  // x
 						Ky * D,  // y
 						Kz * D  // z
-						);
+					);
 					src_obs.points3D_idxs_x[idx] = c;
 					src_obs.points3D_idxs_y[idx] = r;
 					++idx;
@@ -262,7 +262,7 @@ void project3DPointsFromDepthImageInto(
 				// the depth camera, into the intensity camera:
 				pca.getPointXYZ(
 					i, pt_wrt_depth[0], pt_wrt_depth[1], pt_wrt_depth[2]);
-				pt_wrt_color.noalias() = T_inv * pt_wrt_depth;
+				pt_wrt_color = T_inv * pt_wrt_depth;
 
 				// Project to image plane:
 				if (pt_wrt_color[2])
@@ -320,7 +320,7 @@ void project3DPointsFromDepthImageInto(
 				*projectParams.robotPoseInTheWorld,
 				mrpt::poses::CPose3D(transf_to_apply));
 
-		const auto HM =
+		const Eigen::Matrix<float, 4, 4> HM =
 			transf_to_apply
 				.getHomogeneousMatrixVal<mrpt::math::CMatrixDouble44>()
 				.cast<float>();
@@ -331,7 +331,7 @@ void project3DPointsFromDepthImageInto(
 		for (size_t i = 0; i < nPts; i++)
 		{
 			pca.getPointXYZ(i, pt[0], pt[1], pt[2]);
-			pt_transf.noalias() = HM * pt;
+			pt_transf = HM * pt;
 			pca.setPointXYZ(i, pt_transf[0], pt_transf[1], pt_transf[2]);
 		}
 	}
