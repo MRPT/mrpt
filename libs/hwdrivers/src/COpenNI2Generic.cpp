@@ -19,7 +19,6 @@
 #include <atomic>
 #include <mutex>
 #include <memory>
-#include <mrpt/hwdrivers/COpenNI2Generic_CDevice.h>
 
 #if MRPT_HAS_OPENNI2
 
@@ -31,6 +30,7 @@
 #	include <OpenNI.h>
 #	include <PS1080.h>
 #endif
+#include <mrpt/hwdrivers/COpenNI2Generic_CDevice.h>
 
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
@@ -39,9 +39,9 @@ using namespace mrpt::synch;
 using namespace std;
 
 
-std::vector<std::unique_ptr<COpenNI2Generic::CDevice> > vDevices;
+std::vector<stlplus::smart_ptr<COpenNI2Generic::CDevice> > vDevices;
 std::recursive_mutex vDevices_mx;
-std::atomic<int> numInstances = 0;
+std::atomic<int> numInstances(0);
 
 #if MRPT_HAS_OPENNI2
 bool        setONI2StreamMode(openni::VideoStream& stream, int w, int h, int fps, openni::PixelFormat format);
