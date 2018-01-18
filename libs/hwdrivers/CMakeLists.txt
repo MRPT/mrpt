@@ -146,7 +146,6 @@ define_mrpt_lib(
 	mrpt-comms # serial ports, etc.
 	mrpt-maps  # used to laser preview, etc.
 	mrpt-gui    # used to camera preview, etc.
-	mrpt-opengl  # needed by mrpt-gui
 	mrpt-vision  # needed to stereo rectification
 	)
 

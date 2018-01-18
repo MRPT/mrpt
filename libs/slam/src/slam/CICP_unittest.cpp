@@ -271,9 +271,6 @@ TEST_F(ICPTests, RayTracingICP3D)
 	const size_t HOW_MANY_YAWS = 150;
 	const size_t HOW_MANY_PITCHS = 150;
 
-	// The scans of the 3D object, taken from 2 different places:
-	vector<CObservation2DRangeScan> sequence_scans1, sequence_scans2;
-
 	// The two origins for the 3D scans
 	CPose3D viewpoint1(-0.3, 0.7, 3, DEG2RAD(5), DEG2RAD(80), DEG2RAD(3));
 	CPose3D viewpoint2(0.5, -0.2, 2.6, DEG2RAD(-5), DEG2RAD(100), DEG2RAD(-7));
@@ -374,10 +371,11 @@ TEST_F(ICPTests, RayTracingICP3D)
 
 	// Checks:
 	EXPECT_NEAR(
-		0, (mean.getAsVectorVal() - SCAN2_POSE_ERROR.getAsVectorVal())
-			   .array()
-			   .abs()
-			   .mean(),
+		0,
+		(mean.getAsVectorVal() - SCAN2_POSE_ERROR.getAsVectorVal())
+			.array()
+			.abs()
+			.mean(),
 		0.02)
 		<< "ICP output: mean= " << mean << endl
 		<< "Real displacement: " << SCAN2_POSE_ERROR << endl;

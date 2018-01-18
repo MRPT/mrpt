@@ -12,6 +12,7 @@
 #include <mrpt/math/kmeans.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/CArrayNumeric.h>
+#include <mrpt/img/CImage.h>
 #include <list>
 
 // Universal include for all versions of OpenCV

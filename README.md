@@ -43,7 +43,6 @@ See [PPA](https://launchpad.net/~joseluisblancoc/+archive/ubuntu/mrpt) for mrpt 
 
 Supported distributions:
   * Ubuntu 16.04LTS Xenial.
-  * Ubuntu 17.04 Zesty.
   * Ubuntu 17.10 Artful.
   * Ubuntu 18.04 Bionic.
 
