@@ -277,16 +277,12 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 #cmakedefine HAVE_OPENTHREAD
 #endif
 
-#ifndef HAVE_POSIX_MEMALIGN
-#cmakedefine HAVE_POSIX_MEMALIGN
+#ifndef HAVE_STRTOK_R
+#cmakedefine HAVE_STRTOK_R
 #endif
 
 #ifndef HAVE_ALIGNED_MALLOC
 #cmakedefine HAVE_ALIGNED_MALLOC
-#endif
-
-#ifndef HAVE_STRTOK_R
-#cmakedefine HAVE_STRTOK_R
 #endif
 
 /* Standard types  */

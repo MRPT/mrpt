@@ -16,6 +16,7 @@
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/containers/ContainerReadOnlyProxyAccessor.h>
+#include <mrpt/core/aligned_std_vector.h>
 
 // Add for declaration of mexplus::from template specialization
 DECLARE_MEXPLUS_FROM(mrpt::obs::CObservation2DRangeScan)
@@ -60,7 +61,7 @@ class CObservation2DRangeScan : public CObservation
    private:
 	/** The range values of the scan, in meters. Must have same length than \a
 	 * validRange */
-	std::vector<float> m_scan;
+	mrpt::aligned_std_vector<float> m_scan;
 	/** The intensity values of the scan. If available, must have same length
 	 * than \a validRange */
 	std::vector<int32_t> m_intensity;
@@ -98,8 +99,9 @@ class CObservation2DRangeScan : public CObservation
 
 	/** The range values of the scan, in meters. Must have same length than \a
 	 * validRange */
-	mrpt::containers::ContainerReadOnlyProxyAccessor<std::vector<float>> scan{
-		m_scan};
+	mrpt::containers::ContainerReadOnlyProxyAccessor<
+		mrpt::aligned_std_vector<float>>
+		scan{m_scan};
 	float getScanRange(const size_t i) const;
 	void setScanRange(const size_t i, const float val);
 

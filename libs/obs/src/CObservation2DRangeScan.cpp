@@ -35,8 +35,6 @@ CObservation2DRangeScan::CObservation2DRangeScan(
 {
 	// rely on compiler-generated copy op + the custom = operator in proxies.
 	*this = o;
-	// Ensure that padding at the end is kept (useful for SSE ops)
-	this->m_scan.reserve(o.m_scan.capacity());
 }
 
 uint8_t CObservation2DRangeScan::serializeGetVersion() const { return 7; }
@@ -70,7 +68,7 @@ void CObservation2DRangeScan::truncateByDistanceAndAngle(
 	float h)
 {
 	// FILTER OUT INVALID POINTS!!
-	std::vector<float>::iterator itScan;
+	mrpt::aligned_std_vector<float>::iterator itScan;
 	std::vector<char>::iterator itValid;
 	CPose3D pose;
 	unsigned int k;
@@ -297,7 +295,7 @@ void CObservation2DRangeScan::filterByExclusionAreas(
 	}
 
 	std::vector<char>::iterator valid_it;
-	std::vector<float>::const_iterator scan_it;
+	mrpt::aligned_std_vector<float>::const_iterator scan_it;
 
 	for (scan_it = m_scan.begin(), valid_it = m_validRange.begin();
 		 scan_it != m_scan.end(); scan_it++, valid_it++)

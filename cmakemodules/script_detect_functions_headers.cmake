@@ -15,9 +15,8 @@ CHECK_FUNCTION_EXISTS(_mkgmtime HAVE_MKGMTIME)
 CHECK_FUNCTION_EXISTS(alloca HAVE_ALLOCA_FUNC)
 CHECK_FUNCTION_EXISTS(gettid HAVE_GETTID)
 CHECK_FUNCTION_EXISTS(sincos HAVE_SINCOS)
-CHECK_FUNCTION_EXISTS(posix_memalign HAVE_POSIX_MEMALIGN)
-CHECK_FUNCTION_EXISTS(_aligned_malloc HAVE_ALIGNED_MALLOC)
 CHECK_FUNCTION_EXISTS(strtok_r HAVE_STRTOK_R)
+CHECK_FUNCTION_EXISTS(_aligned_malloc HAVE_ALIGNED_MALLOC)
 
 #  This seems not to work and is more complex than it looks at first sight... :-(
 #SET(CMAKE_REQUIRED_INCLUDES "windows.h")
@@ -104,4 +103,3 @@ check_type_size("long double"  HAVE_LONG_DOUBLE)
 # ---------------------------------------------------------------
 INCLUDE(TestBigEndian)
 TEST_BIG_ENDIAN(CMAKE_MRPT_IS_BIG_ENDIAN)
-
