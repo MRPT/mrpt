@@ -10,9 +10,9 @@
 #include "system-precomp.h"  // Precompiled headers
 
 #include <cstdio>  // for size_t, fclose, fopen, fscanf, FILE
-#include <cstdlib>  // for free, posix_memalign, realloc
+#include <cstdlib>  // for free, realloc
 #include <exception>  // for exception
-#include <mrpt/config.h>  // for HAVE_POSIX_MEMALIGN, MRPT_OS_LINUX
+#include <mrpt/config.h>  // for MRPT_OS_LINUX
 #include <mrpt/core/exceptions.h>  // for MRPT_END, MRPT_START, MRPT_UNUSE...
 #include <mrpt/system/memory.h>
 
@@ -24,81 +24,6 @@
 using namespace mrpt;
 using namespace mrpt::system;
 using namespace std;
-
-// Management of aligned memory for efficiency:
-// If we have "posix_memalign", use it, then realloc / free as usual.
-// (GCC/Linux)
-// If we have "_aligned_malloc", use it, then _aligned_realloc/_aligned_free
-// (MSVC, MinGW)
-
-/** Returns an aligned memory block.
-  * \param alignment The desired alignment, typ. 8 or 16 bytes. 1 means no
- * alignment required. It must be a power of two.
-  * \sa aligned_free, aligned_realloc
-  * \note Based on code by William Chan
-*/
-void* mrpt::system::os::aligned_malloc(size_t bytes, size_t alignment)
-{
-#if defined(HAVE_ALIGNED_MALLOC)
-#if defined(__GNUC__) && !defined(__MINGW32__)
-	return ::aligned_malloc(bytes, alignment);
-#else
-	return _aligned_malloc(bytes, alignment);
-#endif
-#elif defined(HAVE_POSIX_MEMALIGN)
-	void* ptr = nullptr;
-	int ret = posix_memalign(&ptr, alignment, bytes);
-	if (ret) THROW_EXCEPTION("posix_memalign returned an error.");
-	return ptr;
-#else
-	// We don't have aligned memory:
-	return ::malloc(bytes);
-#endif
-}
-
-/** Frees a memory block reserved by aligned_malloc.
-  * \param alignment The desired alignment, typ. 8 or 16 bytes. 1 means no
- * alignment required.
-  * If old_ptr is nullptr, a new block will be reserved from scratch.
-  * \sa aligned_malloc, aligned_free
-  */
-void* mrpt::system::os::aligned_realloc(
-	void* old_ptr, size_t bytes, size_t alignment)
-{
-#if defined(HAVE_ALIGNED_MALLOC)
-#if defined(__GNUC__) && !defined(__MINGW32__)
-	return ::aligned_realloc(old_ptr, bytes, alignment);
-#else
-	return _aligned_realloc(old_ptr, bytes, alignment);
-#endif
-#elif defined(HAVE_POSIX_MEMALIGN)
-	MRPT_UNUSED_PARAM(alignment);
-	return ::realloc(old_ptr, bytes);
-#else
-	MRPT_UNUSED_PARAM(alignment);
-	// We don't have aligned memory:
-	return ::realloc(old_ptr, bytes);
-#endif
-}
-
-/** Frees a memory block reserved by aligned_malloc
-  * \sa aligned_malloc
-  */
-void mrpt::system::os::aligned_free(void* p)
-{
-#if defined(HAVE_ALIGNED_MALLOC)
-#if defined(__GNUC__) && !defined(__MINGW32__)
-	::aligned_free(p);
-#else
-	_aligned_free(p);
-#endif
-#elif defined(HAVE_POSIX_MEMALIGN)
-	free(p);
-#else
-	// We don't have aligned memory:
-	free(p);
-#endif
-}
 
 #ifdef _WIN32
 #include <windows.h>
@@ -122,10 +47,10 @@ namespace mrpt
 namespace system
 {
 /** This is an auxiliary class for mrpt::system::getMemoryUsage() under Windows.
-  *  It loads in runtime PSAPI.DLL. This is to avoid problems in some platforms,
+ *  It loads in runtime PSAPI.DLL. This is to avoid problems in some platforms,
  * i.e Windows 2000,
-  *  where this DLL must not be present.
-  */
+ *  where this DLL must not be present.
+ */
 class CAuxPSAPI_Loader
 {
    protected:
@@ -174,8 +99,8 @@ class CAuxPSAPI_Loader
 		}
 	}
 };
-}
-}
+}  // namespace system
+}  // namespace mrpt
 
 #endif
 

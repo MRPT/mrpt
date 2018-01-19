@@ -89,17 +89,16 @@ void CAngularObservationMesh::updateMesh() const
 		double p1 = pitchBounds[0];
 		double p2 = pitchBounds[1];
 		for (size_t i = 0; i < numRows; i++)
-			pitchs[i] = p1 +
-						(p2 - p1) * static_cast<double>(i) /
-							static_cast<double>(numRows - 1);
+			pitchs[i] = p1 + (p2 - p1) * static_cast<double>(i) /
+								 static_cast<double>(numRows - 1);
 	}
 	else
 		for (size_t i = 0; i < numRows; i++) pitchs[i] = pitchBounds[i];
 	const bool rToL = scanSet[0].rightToLeft;
 	for (size_t i = 0; i < numRows; i++)
 	{
-		const std::vector<float>& scan = scanSet[i].scan;
-		const std::vector<char> valid = scanSet[i].validRange;
+		const auto& scan = scanSet[i].scan;
+		const auto& valid = scanSet[i].validRange;
 		const double pitchIncr = scanSet[i].deltaPitch;
 		const double aperture = scanSet[i].aperture;
 		const CPose3D origin = scanSet[i].sensorPose;

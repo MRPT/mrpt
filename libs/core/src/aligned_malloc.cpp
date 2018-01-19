@@ -8,39 +8,26 @@
    +------------------------------------------------------------------------+ */
 
 #include "core-precomp.h"  // Precompiled headers
-
 #include <mrpt/core/aligned_allocator.h>
+#include <cstdlib>  // free, realloc, C++17 aligned_alloc
+#include <cstring>  // memset
 
-#include <cstdlib>  // free, posix_memalign, realloc, C++17 aligned_alloc
-#if defined(_MSC_VER)
-#include <malloc.h>  // _aligned_malloc()
-#endif
-
+void* mrpt::aligned_calloc(size_t bytes, size_t alignment)
+{
+	void* ptr = mrpt::aligned_malloc(bytes, alignment);
+	if (ptr) ::memset(ptr, 0, bytes);
+	return ptr;
+}
 void* mrpt::aligned_malloc(size_t size, size_t alignment)
 {
-#if !defined(_MSC_VER)
 	// size must be an integral multiple of alignment:
 	if ((size % alignment) != 0) size = ((size / alignment) + 1) * alignment;
 	return ::aligned_alloc(alignment, size);
-#else
-	return _aligned_malloc(size, alignment);
-#endif
 }
-void mrpt::aligned_free(void* ptr)
-{
-#if !defined(_MSC_VER)
-	return ::free(ptr);
-#else
-	return _aligned_free(ptr);
-#endif
-}
+void mrpt::aligned_free(void* ptr) { return ::free(ptr); }
 void* mrpt::aligned_realloc(void* ptr, size_t size, size_t alignment)
 {
-#if !defined(_MSC_VER)
 	// size must be an integral multiple of alignment:
 	if ((size % alignment) != 0) size = ((size / alignment) + 1) * alignment;
 	return std::realloc(ptr, size);
-#else
-	return _aligned_realloc(ptr, size, alignment);
-#endif
 }
