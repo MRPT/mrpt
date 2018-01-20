@@ -79,6 +79,12 @@ rotation matrices.
 		- Fix segfault in CMetricMap::loadFromSimpleMap() if the provided
 CMetricMap has empty smart pointers.
 
+<hr>
+<a name="1.5.6">
+<h2>Version 1.5.6: (Under development) </h2></a>
+	- \ref mrpt_hwdrivers_grp
+		- mrpt::hwdrivers::COpenNI2Generic: added mutexes for safer
+multi-threading operation.
 
 <hr>
 <a name="1.5.5">
