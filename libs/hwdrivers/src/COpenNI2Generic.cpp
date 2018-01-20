@@ -49,6 +49,10 @@ std::string oni2DevInfoStr(const openni::DeviceInfo& info, int tab = 0);
 bool        cmpONI2Device(const openni::DeviceInfo& i1, const openni::DeviceInfo& i2);
 #endif // MRPT_HAS_OPENNI2
 
+int COpenNI2Generic::getNumInstances()
+{
+	return numInstances; // get atomic
+}
 
 /*-------------------------------------------------------------
 ctor
@@ -364,7 +368,6 @@ void COpenNI2Generic::getNextFrameRGB(
 	unsigned sensor_id )
 {
 #if MRPT_HAS_OPENNI2
-	std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
 	// Sensor index validation.
 	if (!getNumDevices()){
 		THROW_EXCEPTION("No OpenNI2 devices found.")
@@ -400,7 +403,6 @@ void COpenNI2Generic::getNextFrameD(
 	unsigned sensor_id )
 {
 #if MRPT_HAS_OPENNI2
-	std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
 	// Sensor index validation.
 	if (getNumDevices() == 0){
 		THROW_EXCEPTION("No OpenNI2 devices found.")
@@ -434,7 +436,6 @@ void COpenNI2Generic::getNextFrameRGBD(
 	unsigned sensor_id )
 {
 #if MRPT_HAS_OPENNI2
-	std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
 	// Sensor index validation.
 	if (!getNumDevices()){
 		THROW_EXCEPTION("No OpenNI2 devices found.")
