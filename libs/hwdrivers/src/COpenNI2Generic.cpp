@@ -51,6 +51,12 @@ bool cmpONI2Device(const openni::DeviceInfo& i1, const openni::DeviceInfo& i2);
 #endif  // MRPT_HAS_OPENNI2
 
 #include <mrpt/hwdrivers/COpenNI2Generic_CDevice.h>
+
+int COpenNI2Generic::getNumInstances()
+{
+	return numInstances;  // get atomic
+}
+
 /*-------------------------------------------------------------
 ctor
 -------------------------------------------------------------*/
@@ -428,7 +434,6 @@ void COpenNI2Generic::getNextFrameRGB(
 	bool& hardware_error, unsigned sensor_id)
 {
 #if MRPT_HAS_OPENNI2
-	std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
 	// Sensor index validation.
 	if (!getNumDevices())
 	{
@@ -470,7 +475,6 @@ void COpenNI2Generic::getNextFrameD(
 	mrpt::math::CMatrix& depth_img, uint64_t& timestamp, bool& there_is_obs,
 	bool& hardware_error, unsigned sensor_id)
 {
-	std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
 #if MRPT_HAS_OPENNI2
 	// Sensor index validation.
 	if (getNumDevices() == 0)
@@ -512,7 +516,6 @@ void COpenNI2Generic::getNextFrameRGBD(
 	bool& hardware_error, unsigned sensor_id)
 {
 #if MRPT_HAS_OPENNI2
-	std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
 	// Sensor index validation.
 	if (!getNumDevices())
 	{
