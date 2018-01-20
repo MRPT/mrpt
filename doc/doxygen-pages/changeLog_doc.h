@@ -14,7 +14,9 @@
 
 <a name="1.5.6">
 <h2>Version 1.5.6: (Under development) </h2></a>
-	- (No changes yet)
+	- \ref mrpt_hwdrivers_grp
+		- mrpt::hwdrivers::COpenNI2Generic: added mutexes for safer multi-threading
+		  operation.
 
 <hr>
 <a name="1.5.5">

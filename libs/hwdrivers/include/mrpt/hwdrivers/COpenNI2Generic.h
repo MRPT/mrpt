@@ -33,6 +33,9 @@ namespace mrpt
 
 			~COpenNI2Generic();	 //!< Default ctor
 
+			/**Get the number of OpenNI2 cameras currently open via COpenNI2Generic*/
+			static int getNumInstances();
+
 			/** The main data retrieving function, to be called after calling loadConfig() and initialize().
 			  *  \param out_img The output retrieved RGB image (only if there_is_obs=true).
 			  *  \param timestamp The timestamp of the capture (only if there_is_obs=true).
