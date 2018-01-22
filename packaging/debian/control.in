@@ -31,6 +31,7 @@ Build-Depends: debhelper (>= 10),
 	libeigen3-dev,
 	libassimp-dev,
 	qtbase5-dev,
+	liboctomap-dev,
 	libqt5opengl5-dev
 Standards-Version: 4.1.1
 Homepage: https://www.mrpt.org/
@@ -330,7 +331,7 @@ Package: libmrpt-maps-dev
 Section: libdevel
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-maps@MRPT_VER_MM@ (= ${binary:Version}),
-         liboctomap-dev, libmrpt-obs-dev, libmrpt-graphs-dev
+         libmrpt-obs-dev, libmrpt-graphs-dev
 Description: Mobile Robot Programming Toolkit - maps development package
  This package provides headers and libraries for development.
 
