@@ -288,14 +288,15 @@ MRPT_TODO(
 void CMetricMapBuilderRBPF::initialize(
 	const CSimpleMap& initialMap, const CPosePDF* x0)
 {
-	std::lock_guard<std::mutex> csl(
-		critZoneChangingMap);  // Enter critical section (updating map)
-
 	MRPT_LOG_INFO_STREAM(
 		"[initialize] Called with " << initialMap.size()
 									<< " nodes in fixed map");
 
 	this->clear();
+
+	std::lock_guard<std::mutex> csl(
+		critZoneChangingMap);  // Enter critical section (updating map)
+
 	mrpt::poses::CPose3D curPose;
 	if (x0)
 	{
