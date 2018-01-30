@@ -536,7 +536,7 @@ struct COutputLoggerStreamWrapper
 			{                                                           \
 				do                                                      \
 				{                                                       \
-			} while (0)                                                 \
+			} while (0)                                                 
 // Here comes the user code, which is run in the ctor, and will call the object
 // log methods.
 
