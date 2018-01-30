@@ -14,6 +14,7 @@
 #include <mrpt/config/CConfigFileBase.h>
 
 #include <algorithm>
+#include <iostream>
 
 #if MRPT_HAS_PHIDGET
 #include <phidget21.h>
@@ -318,7 +319,7 @@ void CPhidgetInterfaceKitProximitySensors::getObservation(
 
 			obsRange.sensorID = i;
 			obsRange.sensorPose =
-				m_sensorPoses[i];  // The pose of the IR sensor on the robot
+				m_sensorPoses[i].asTPose();  // The pose of the IR sensor on the robot
 			obs.sensedData.push_back(obsRange);
 		}
 	}
