@@ -124,7 +124,7 @@ CAboutBox::CAboutBox(
 		wxFONTENCODING_DEFAULT);
 	lbLicense->SetFont(lbLicenseFont);
 	TextCtrl1 = new wxTextCtrl(
-		Notebook1, ID_TEXTCTRL3, _(tutorial()), wxPoint(4, 24),
+		Notebook1, ID_TEXTCTRL3, _U(tutorial().c_str()), wxPoint(4, 24),
 		wxSize(545, 222), wxTE_MULTILINE | wxTE_READONLY | wxTE_AUTO_URL,
 		wxDefaultValidator, _T("ID_TEXTCTRL3"));
 	wxFont TextCtrl1Font(
