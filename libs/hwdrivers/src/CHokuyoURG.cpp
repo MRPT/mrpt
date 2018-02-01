@@ -27,9 +27,6 @@ using namespace std;
 
 const int MINIMUM_PACKETS_TO_SET_TIMESTAMP_REFERENCE = 10;
 
-/*-------------------------------------------------------------
-						Constructor
--------------------------------------------------------------*/
 CHokuyoURG::CHokuyoURG()
 	: m_firstRange(44),
 	  m_lastRange(725),
@@ -50,9 +47,6 @@ CHokuyoURG::CHokuyoURG()
 	m_sensorLabel = "Hokuyo";
 }
 
-/*-------------------------------------------------------------
-					~CHokuyoURG
--------------------------------------------------------------*/
 CHokuyoURG::~CHokuyoURG()
 {
 	if (m_stream)
@@ -62,14 +56,17 @@ CHokuyoURG::~CHokuyoURG()
 		if (m_I_am_owner_serial_port) delete m_stream;
 		m_stream = nullptr;
 	}
-
-	// FAMD
 	m_win.reset();
 }
 
-/*-------------------------------------------------------------
-						doProcessSimple
--------------------------------------------------------------*/
+bool CHokuyoURG::sendCmd(const char* str)
+{
+	ASSERT_(str != nullptr);
+	ASSERT_(m_stream != nullptr);
+	m_stream->Write(str, strlen(str));
+	m_lastSentMeasCmd = std::string(str); // for echo verification
+}
+
 void CHokuyoURG::doProcessSimple(
 	bool& outThereIsObservation,
 	mrpt::obs::CObservation2DRangeScan& outObservation, bool& hardwareError)
@@ -88,10 +85,11 @@ void CHokuyoURG::doProcessSimple(
 
 	// Wait for a message:
 	char rcv_status0, rcv_status1;
-	std::vector<uint8_t> rcv_data(10000);
 	int rcv_dataLength;
 	int nRanges = m_lastRange - m_firstRange + 1;
 	int expectedSize = nRanges * 3 + 4;
+	m_rcv_data.clear();
+	m_rcv_data.reserve(expectedSize + 1000);
 
 	if (m_intensity)
 	{
@@ -99,9 +97,7 @@ void CHokuyoURG::doProcessSimple(
 	}
 
 	m_state = ssWorking;
-	if (!receiveResponse(
-			m_lastSentMeasCmd.c_str(), rcv_status0, rcv_status1,
-			(char*)&rcv_data[0], rcv_dataLength))
+	if (!receiveResponse(rcv_status0, rcv_status1, m_rcv_data))
 	{
 		// No new data
 		return;
@@ -383,16 +379,10 @@ bool CHokuyoURG::turnOff()
 	return true;
 }
 
-/*-------------------------------------------------------------
-						setHighBaudrate
--------------------------------------------------------------*/
 bool CHokuyoURG::setHighBaudrate()
 {
-	char cmd[20];
 	char rcv_status0, rcv_status1;
-	char rcv_data[100];
 	size_t toWrite;
-	int rcv_dataLength;
 
 	if (!checkCOMisOpen()) return false;
 
@@ -400,14 +390,10 @@ bool CHokuyoURG::setHighBaudrate()
 		"[CHokuyoURG::setHighBaudrate] Changing baudrate to 115200...");
 
 	// Send command:
-	os::strcpy(cmd, 20, "SS115200\x0A");
-	toWrite = 9;
-
-	m_stream->Write(cmd, toWrite);
+	sendCmd("SS115200\x0A");
 
 	// Receive response:
-	if (!receiveResponse(
-			cmd, rcv_status0, rcv_status1, rcv_data, rcv_dataLength))
+	if (!receiveResponse(cmd, rcv_status0, rcv_status1, m_rcv_data))
 	{
 		std::cerr << "Error waiting for response\n";
 		return false;
@@ -467,16 +453,12 @@ bool CHokuyoURG::assureBufferHasBytes(const size_t nDesiredBytes)
 	}
 }
 
-/*-------------------------------------------------------------
-						receiveResponse
--------------------------------------------------------------*/
 bool CHokuyoURG::receiveResponse(
-	const char* sentCmd_forEchoVerification, char& rcv_status0,
-	char& rcv_status1, char* rcv_data, int& rcv_dataLength)
+	char& rcv_status0, char& rcv_status1, std::vector<uint8_t> &rcv_data)
 {
+	rcv_data.clear();
 	if (!checkCOMisOpen()) return false;
-
-	ASSERT_(sentCmd_forEchoVerification != nullptr);
+	ASSERT_(!m_lastSentMeasCmd.empty());
 
 	try
 	{
@@ -485,7 +467,7 @@ bool CHokuyoURG::receiveResponse(
 
 		// COMMAND ECHO ---------
 		int i = 0;
-		const int verifLen = strlen(sentCmd_forEchoVerification);
+		const unsigned int verifLen = m_lastSentMeasCmd.size();
 
 		if (verifLen)
 		{
@@ -494,7 +476,7 @@ bool CHokuyoURG::receiveResponse(
 				if (!assureBufferHasBytes(verifLen - i)) return false;
 
 				// If matches the echo, go on:
-				if (m_rx_buffer.pop() == sentCmd_forEchoVerification[i])
+				if (m_rx_buffer.pop() == m_lastSentMeasCmd[i])
 					i++;
 				else
 					i = 0;
@@ -615,10 +597,7 @@ bool CHokuyoURG::enableSCIP20()
 		"[CHokuyoURG::enableSCIP20] Changing protocol to SCIP2.0...");
 
 	// Send command:
-	os::strcpy(cmd, 20, "SCIP2.0\x0A");
-	toWrite = 8;
-
-	m_stream->Write(cmd, toWrite);
+	sendCmd("SCIP2.0\x0A");
 
 	// Receive response:
 	if (!receiveResponse(
@@ -655,10 +634,7 @@ bool CHokuyoURG::switchLaserOn()
 	MRPT_LOG_DEBUG("[CHokuyoURG::switchLaserOn] Switching laser ON...");
 
 	// Send command:
-	os::strcpy(cmd, 20, "BM\x0A");
-	toWrite = 3;
-
-	m_stream->Write(cmd, toWrite);
+	sendCmd("BM\x0A");
 
 	// Receive response:
 	if (!receiveResponse(
@@ -696,10 +672,7 @@ bool CHokuyoURG::switchLaserOff()
 	MRPT_LOG_DEBUG("[CHokuyoURG::switchLaserOff] Switching laser OFF...");
 
 	// Send command:
-	os::strcpy(cmd, 20, "QT\x0A");
-	toWrite = 3;
-
-	m_stream->Write(cmd, toWrite);
+	sendCmd("QT\x0A");
 
 	// Receive response:
 	if (!receiveResponse(
@@ -745,9 +718,7 @@ bool CHokuyoURG::setMotorSpeed(int motoSpeed_rpm)
 	}
 
 	os::sprintf(cmd, 20, "CR%02i\x0A", motorSpeedCode);
-	toWrite = 5;
-
-	m_stream->Write(cmd, toWrite);
+	sendCmd(cmd);
 
 	// Receive response:
 	if (!receiveResponse(
@@ -787,9 +758,7 @@ bool CHokuyoURG::setHighSensitivityMode(bool enabled)
 
 	// Send command:
 	os::sprintf(cmd, 20, "HS%i\x0A", enabled ? 1 : 0);
-	toWrite = 4;
-
-	m_stream->Write(cmd, toWrite);
+	sendCmd(cmd);
 
 	// Receive response:
 	if (!receiveResponse(
@@ -835,10 +804,7 @@ bool CHokuyoURG::displayVersionInfo()
 	MRPT_LOG_DEBUG("[CHokuyoURG::displayVersionInfo] Asking info...");
 
 	// Send command:
-	os::sprintf(cmd, 20, "VV\x0A");
-	toWrite = 3;
-
-	m_stream->Write(cmd, toWrite);
+	sendCmd("VV\x0A");
 
 	// Receive response:
 	if (!receiveResponse(
@@ -888,10 +854,7 @@ bool CHokuyoURG::displaySensorInfo(TSensorInfo* out_data)
 	MRPT_LOG_DEBUG("[CHokuyoURG::displaySensorInfo] Asking for info...");
 
 	// Send command:
-	os::sprintf(cmd, 20, "PP\x0A");
-	toWrite = 3;
-
-	m_stream->Write(cmd, toWrite);
+	sendCmd("PP\x0A");
 
 	// Receive response:
 	if (!receiveResponse(

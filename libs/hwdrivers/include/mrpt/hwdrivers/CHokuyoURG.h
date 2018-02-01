@@ -161,8 +161,7 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 	  * \return false on any error
 	  */
 	bool receiveResponse(
-		const char* sentCmd_forEchoVerification, char& rcv_status0,
-		char& rcv_status1, char* rcv_data, int& rcv_dataLength);
+		char& rcv_status0,char& rcv_status1, std::vector<uint8_t> &rcv_data);
 
 	/** Assures a minimum number of bytes in the input buffer, reading from the
 	 * serial port only if required.
@@ -234,7 +233,12 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 	  */
 	bool setIntensityMode(bool enabled);
 
+	bool sendCmd(const char* str);
+
    protected:
+	/** temp buffer for incoming data packets */
+	std::vector<uint8_t> m_rcv_data;
+
 	/** Returns true if there is a valid stream bound to the laser scanner,
 	 * otherwise it first try to open the serial port "m_com_port"
 	  */
