@@ -80,13 +80,13 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 		/** The sensor model */
 		std::string model;
 		/** Min/Max ranges, in meters. */
-		double d_min, d_max;
+		double d_min{0}, d_max{0};
 		/** Number of measuremens per 360 degrees. */
-		int scans_per_360deg;
+		int scans_per_360deg{0};
 		/** First, last, and front step of the scanner angular span. */
-		int scan_first, scan_last, scan_front;
+		int scan_first{0}, scan_last{0}, scan_front{0};
 		/** Standard motor speed, rpm. */
-		int motor_speed_rpm;
+		int motor_speed_rpm{0};
 	};
 
    private:
@@ -157,11 +157,11 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 	/** Turns the laser on */
 	void initialize();
 
-	/** Waits for a response from the device.
+	/** Waits for a response from the device. Packet is stored in m_rcv_data,
+	  * and status codes in the reference parameters.
 	  * \return false on any error
 	  */
-	bool receiveResponse(
-		char& rcv_status0,char& rcv_status1, std::vector<uint8_t> &rcv_data);
+	bool receiveResponse(char& rcv_status0,char& rcv_status1);
 
 	/** Assures a minimum number of bytes in the input buffer, reading from the
 	 * serial port only if required.
@@ -233,16 +233,16 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 	  */
 	bool setIntensityMode(bool enabled);
 
-	bool sendCmd(const char* str);
+	void sendCmd(const char* str);
 
    protected:
 	/** temp buffer for incoming data packets */
-	std::vector<uint8_t> m_rcv_data;
+	std::string m_rcv_data;
 
 	/** Returns true if there is a valid stream bound to the laser scanner,
 	 * otherwise it first try to open the serial port "m_com_port"
 	  */
-	bool checkCOMisOpen();
+	bool ensureStreamIsOpen();
 
 	/** Used to reduce artificially the interval of scan ranges. */
 	double m_reduced_fov;
