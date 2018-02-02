@@ -268,31 +268,18 @@ class CICP : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 		TReturnInfo& outInfo);
 };
 }  // namespace slam
-
-// Specializations MUST occur at the same namespace:
-namespace typemeta
-{
-template <>
-struct TEnumTypeFiller<slam::TICPAlgorithm>
-{
-	typedef slam::TICPAlgorithm enum_t;
-	static void fill(internal::bimap<enum_t, std::string>& m_map)
-	{
-		m_map.insert(slam::icpClassic, "icpClassic");
-		m_map.insert(slam::icpLevenbergMarquardt, "icpLevenbergMarquardt");
-	}
-};
-template <>
-struct TEnumTypeFiller<slam::TICPCovarianceMethod>
-{
-	typedef slam::TICPCovarianceMethod enum_t;
-	static void fill(internal::bimap<enum_t, std::string>& m_map)
-	{
-		m_map.insert(slam::icpCovLinealMSE, "icpCovLinealMSE");
-		m_map.insert(slam::icpCovFiniteDifferences, "icpCovFiniteDifferences");
-	}
-};
-}  // namespace typemeta
 }  // namespace mrpt
+
+MRPT_ENUM_TYPE_BEGIN(mrpt::slam::TICPAlgorithm)
+using namespace mrpt::slam;
+MRPT_FILL_ENUM(icpClassic);
+MRPT_FILL_ENUM(icpLevenbergMarquardt);
+MRPT_ENUM_TYPE_END()
+
+MRPT_ENUM_TYPE_BEGIN(mrpt::slam::TICPCovarianceMethod)
+using namespace mrpt::slam;
+MRPT_FILL_ENUM(icpCovLinealMSE);
+MRPT_FILL_ENUM(icpCovFiniteDifferences);
+MRPT_ENUM_TYPE_END()
 
 #endif

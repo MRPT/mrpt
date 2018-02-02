@@ -84,7 +84,7 @@ enum TFeatureType
 	// #added by Raghavender Sahdev
 	featAKAZE,  //!< AKAZE detector, OpenCV's implementation
 	featLSD  //!< LSD detector, OpenCV's implementation
-	// Remember: If new values are added, also update TEnumTypeFiller below!
+	// Remember: If new values are added, also update MRPT_FILL_ENUM below!
 
 };
 
@@ -108,10 +108,9 @@ enum TDescriptorType
 	descLogPolarImages = 16,
 	/** Bit-based feature descriptor */
 	descORB = 32,
-	// Remember: If new values are added, also update TEnumTypeFiller below!
-	// #added by Raghavender Sahdev
 	descBLD = 64,  //!< BLD Line descriptor
 	descLATCH = 128  //!< LATCH Line descriptor
+	// Remember: If new values are added, also update MRPT_FILL_ENUM below!
 };
 
 enum TFeatureTrackStatus
@@ -735,53 +734,35 @@ struct TMultiResDescOptions : public mrpt::config::CLoadableOptions
 
 /** @} */  // end of grouping
 }  // namespace vision
-// Specializations MUST occur at the same namespace:
-namespace typemeta
-{
-template <>
-struct TEnumTypeFiller<mrpt::vision::TFeatureType>
-{
-	typedef mrpt::vision::TFeatureType enum_t;
-	static void fill(
-		mrpt::typemeta::internal::bimap<enum_t, std::string>& m_map)
-	{
-		using namespace mrpt::vision;
-		using namespace mrpt::img;
-		MRPT_FILL_ENUM(featNotDefined);
-		MRPT_FILL_ENUM(featKLT);
-		MRPT_FILL_ENUM(featHarris);
-		MRPT_FILL_ENUM(featBCD);
-		MRPT_FILL_ENUM(featSIFT);
-		MRPT_FILL_ENUM(featSURF);
-		MRPT_FILL_ENUM(featBeacon);
-		MRPT_FILL_ENUM(featFAST);
-		MRPT_FILL_ENUM(featFASTER9);
-		MRPT_FILL_ENUM(featFASTER10);
-		MRPT_FILL_ENUM(featFASTER12);
-		MRPT_FILL_ENUM(featORB);
-		MRPT_FILL_ENUM(featAKAZE);
-		MRPT_FILL_ENUM(featLSD);
-	}
-};
-template <>
-struct TEnumTypeFiller<mrpt::vision::TDescriptorType>
-{
-	typedef mrpt::vision::TDescriptorType enum_t;
-	static void fill(
-		mrpt::typemeta::internal::bimap<enum_t, std::string>& m_map)
-	{
-		using namespace mrpt::vision;
-		using namespace mrpt::img;
-		MRPT_FILL_ENUM(descAny);
-		MRPT_FILL_ENUM(descSIFT);
-		MRPT_FILL_ENUM(descSURF);
-		MRPT_FILL_ENUM(descSpinImages);
-		MRPT_FILL_ENUM(descPolarImages);
-		MRPT_FILL_ENUM(descLogPolarImages);
-		MRPT_FILL_ENUM(descORB);
-		MRPT_FILL_ENUM(descBLD);
-		MRPT_FILL_ENUM(descLATCH);
-	}
-};
-}  // namespace typemeta
 }  // namespace mrpt
+
+MRPT_ENUM_TYPE_BEGIN(mrpt::vision::TFeatureType)
+using namespace mrpt::vision;
+MRPT_FILL_ENUM(featNotDefined);
+MRPT_FILL_ENUM(featKLT);
+MRPT_FILL_ENUM(featHarris);
+MRPT_FILL_ENUM(featBCD);
+MRPT_FILL_ENUM(featSIFT);
+MRPT_FILL_ENUM(featSURF);
+MRPT_FILL_ENUM(featBeacon);
+MRPT_FILL_ENUM(featFAST);
+MRPT_FILL_ENUM(featFASTER9);
+MRPT_FILL_ENUM(featFASTER10);
+MRPT_FILL_ENUM(featFASTER12);
+MRPT_FILL_ENUM(featORB);
+MRPT_FILL_ENUM(featAKAZE);
+MRPT_FILL_ENUM(featLSD);
+MRPT_ENUM_TYPE_END()
+
+MRPT_ENUM_TYPE_BEGIN(mrpt::vision::TDescriptorType)
+using namespace mrpt::vision;
+MRPT_FILL_ENUM(descAny);
+MRPT_FILL_ENUM(descSIFT);
+MRPT_FILL_ENUM(descSURF);
+MRPT_FILL_ENUM(descSpinImages);
+MRPT_FILL_ENUM(descPolarImages);
+MRPT_FILL_ENUM(descLogPolarImages);
+MRPT_FILL_ENUM(descORB);
+MRPT_FILL_ENUM(descBLD);
+MRPT_FILL_ENUM(descLATCH);
+MRPT_ENUM_TYPE_END()

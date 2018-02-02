@@ -462,7 +462,7 @@ class CKinect : public mrpt::hwdrivers::CGenericSensor
 		m_grab_3D_points = enable;
 	}
 	inline bool isGrab3DPointsEnabled() const { return m_grab_3D_points; }
-/** @} */
+	/** @} */
 
 #if MRPT_HAS_KINECT_FREENECT
 	// Auxiliary getters/setters (we can't declare the libfreenect callback as
@@ -544,23 +544,12 @@ class CKinect : public mrpt::hwdrivers::CGenericSensor
 
 };  // End of class
 }  // namespace hwdrivers
-
-// Specializations MUST occur at the same namespace:
-namespace typemeta
-{
-template <>
-struct TEnumTypeFiller<hwdrivers::CKinect::TVideoChannel>
-{
-	typedef hwdrivers::CKinect::TVideoChannel enum_t;
-	static void fill(internal::bimap<enum_t, std::string>& m_map)
-	{
-		m_map.insert(
-			hwdrivers::CKinect::VIDEO_CHANNEL_RGB, "VIDEO_CHANNEL_RGB");
-		m_map.insert(hwdrivers::CKinect::VIDEO_CHANNEL_IR, "VIDEO_CHANNEL_IR");
-	}
-};
-}  // namespace typemeta
-
 }  // namespace mrpt
+
+MRPT_ENUM_TYPE_BEGIN(mrpt::hwdrivers::CKinect::TVideoChannel)
+using namespace mrpt::hwdrivers;
+MRPT_FILL_ENUM_MEMBER(CKinect, VIDEO_CHANNEL_RGB);
+MRPT_FILL_ENUM_MEMBER(CKinect, VIDEO_CHANNEL_IR);
+MRPT_ENUM_TYPE_END()
 
 #endif

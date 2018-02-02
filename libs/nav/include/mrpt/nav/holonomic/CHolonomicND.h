@@ -179,29 +179,14 @@ class CLogFileRecord_ND : public CHolonomicLogFileRecord
 
 /** @} */
 }  // namespace nav
-
-// Specializations MUST occur at the same namespace:
-namespace typemeta
-{
-template <>
-struct TEnumTypeFiller<nav::CHolonomicND::TSituations>
-{
-	typedef nav::CHolonomicND::TSituations enum_t;
-	static void fill(internal::bimap<enum_t, std::string>& m_map)
-	{
-		m_map.insert(
-			nav::CHolonomicND::SITUATION_TARGET_DIRECTLY,
-			"SITUATION_TARGET_DIRECTLY");
-		m_map.insert(
-			nav::CHolonomicND::SITUATION_SMALL_GAP, "SITUATION_SMALL_GAP");
-		m_map.insert(
-			nav::CHolonomicND::SITUATION_WIDE_GAP, "SITUATION_WIDE_GAP");
-		m_map.insert(
-			nav::CHolonomicND::SITUATION_NO_WAY_FOUND,
-			"SITUATION_NO_WAY_FOUND");
-	}
-};
-}  // namespace typemeta
 }  // namespace mrpt
+
+MRPT_ENUM_TYPE_BEGIN(mrpt::nav::CHolonomicND::TSituations)
+using namespace mrpt::nav;
+MRPT_FILL_ENUM_MEMBER(CHolonomicND, SITUATION_TARGET_DIRECTLY);
+MRPT_FILL_ENUM_MEMBER(CHolonomicND, SITUATION_SMALL_GAP);
+MRPT_FILL_ENUM_MEMBER(CHolonomicND, SITUATION_WIDE_GAP);
+MRPT_FILL_ENUM_MEMBER(CHolonomicND, SITUATION_NO_WAY_FOUND);
+MRPT_ENUM_TYPE_END()
 
 #endif

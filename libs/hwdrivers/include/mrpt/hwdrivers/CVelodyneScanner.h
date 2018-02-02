@@ -427,34 +427,21 @@ class CVelodyneScanner : public mrpt::hwdrivers::CGenericSensor
 
 };  // end of class
 }  // namespace hwdrivers
-
-namespace typemeta  // Specializations MUST occur at the same namespace:
-{
-template <>
-struct TEnumTypeFiller<hwdrivers::CVelodyneScanner::model_t>
-{
-	typedef hwdrivers::CVelodyneScanner::model_t enum_t;
-	static void fill(internal::bimap<enum_t, std::string>& m_map)
-	{
-		m_map.insert(hwdrivers::CVelodyneScanner::VLP16, "VLP16");
-		m_map.insert(hwdrivers::CVelodyneScanner::HDL32, "HDL32");
-		m_map.insert(hwdrivers::CVelodyneScanner::HDL64, "HDL64");
-	}
-};
-
-template <>
-struct TEnumTypeFiller<hwdrivers::CVelodyneScanner::return_type_t>
-{
-	typedef hwdrivers::CVelodyneScanner::return_type_t enum_t;
-	static void fill(internal::bimap<enum_t, std::string>& m_map)
-	{
-		m_map.insert(hwdrivers::CVelodyneScanner::UNCHANGED, "UNCHANGED");
-		m_map.insert(hwdrivers::CVelodyneScanner::STRONGEST, "STRONGEST");
-		m_map.insert(hwdrivers::CVelodyneScanner::LAST, "LAST");
-		m_map.insert(hwdrivers::CVelodyneScanner::DUAL, "DUAL");
-	}
-};
-}  // namespace typemeta
 }  // namespace mrpt
+
+MRPT_ENUM_TYPE_BEGIN(mrpt::hwdrivers::CVelodyneScanner::model_t)
+using namespace mrpt::hwdrivers;
+MRPT_FILL_ENUM_MEMBER(CVelodyneScanner, VLP16);
+MRPT_FILL_ENUM_MEMBER(CVelodyneScanner, HDL32);
+MRPT_FILL_ENUM_MEMBER(CVelodyneScanner, HDL64);
+MRPT_ENUM_TYPE_END()
+
+MRPT_ENUM_TYPE_BEGIN(mrpt::hwdrivers::CVelodyneScanner::return_type_t)
+using namespace mrpt::hwdrivers;
+MRPT_FILL_ENUM_MEMBER(CVelodyneScanner, UNCHANGED);
+MRPT_FILL_ENUM_MEMBER(CVelodyneScanner, STRONGEST);
+MRPT_FILL_ENUM_MEMBER(CVelodyneScanner, LAST);
+MRPT_FILL_ENUM_MEMBER(CVelodyneScanner, DUAL);
+MRPT_ENUM_TYPE_END()
 
 #endif
