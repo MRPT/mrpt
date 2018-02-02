@@ -356,21 +356,12 @@ bool operator==(
 	const CAbstractNavigator::TNavigationParamsBase&,
 	const CAbstractNavigator::TNavigationParamsBase&);
 }  // namespace nav
-
-// Specializations MUST occur at the same namespace:
-namespace typemeta
-{
-template <>
-struct TEnumTypeFiller<mrpt::nav::CAbstractNavigator::TState>
-{
-	typedef mrpt::nav::CAbstractNavigator::TState enum_t;
-	static void fill(internal::bimap<enum_t, std::string>& m_map)
-	{
-		m_map.insert(mrpt::nav::CAbstractNavigator::IDLE, "IDLE");
-		m_map.insert(mrpt::nav::CAbstractNavigator::NAVIGATING, "NAVIGATING");
-		m_map.insert(mrpt::nav::CAbstractNavigator::SUSPENDED, "SUSPENDED");
-		m_map.insert(mrpt::nav::CAbstractNavigator::NAV_ERROR, "NAV_ERROR");
-	}
-};
-}  // namespace typemeta
 }  // namespace mrpt
+
+MRPT_ENUM_TYPE_BEGIN(mrpt::nav::CAbstractNavigator::TState)
+using namespace mrpt::nav;
+MRPT_FILL_ENUM_MEMBER(CAbstractNavigator, IDLE);
+MRPT_FILL_ENUM_MEMBER(CAbstractNavigator, NAVIGATING);
+MRPT_FILL_ENUM_MEMBER(CAbstractNavigator, SUSPENDED);
+MRPT_FILL_ENUM_MEMBER(CAbstractNavigator, NAV_ERROR);
+MRPT_ENUM_TYPE_END()

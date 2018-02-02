@@ -227,34 +227,18 @@ void data_association_independent_predictions(
 /** @} */  // end of grouping
 
 }  // namespace slam
-
-// Specializations MUST occur at the same namespace:
-namespace typemeta
-{
-template <>
-struct TEnumTypeFiller<slam::TDataAssociationMethod>
-{
-	typedef slam::TDataAssociationMethod enum_t;
-	static void fill(internal::bimap<enum_t, std::string>& m_map)
-	{
-		m_map.insert(slam::assocNN, "assocNN");
-		m_map.insert(slam::assocJCBB, "assocJCBB");
-	}
-};
-
-template <>
-struct TEnumTypeFiller<slam::TDataAssociationMetric>
-{
-	typedef slam::TDataAssociationMetric enum_t;
-	static void fill(internal::bimap<enum_t, std::string>& m_map)
-	{
-		m_map.insert(slam::metricMaha, "metricMaha");
-		m_map.insert(slam::metricML, "metricML");
-	}
-};
-
-}  // namespace typemeta
-
 }  // namespace mrpt
+
+MRPT_ENUM_TYPE_BEGIN(mrpt::slam::TDataAssociationMethod)
+using namespace mrpt::slam;
+MRPT_FILL_ENUM(assocNN);
+MRPT_FILL_ENUM(assocJCBB);
+MRPT_ENUM_TYPE_END()
+
+MRPT_ENUM_TYPE_BEGIN(mrpt::slam::TDataAssociationMetric)
+using namespace mrpt::slam;
+MRPT_FILL_ENUM(metricMaha);
+MRPT_FILL_ENUM(metricML);
+MRPT_ENUM_TYPE_END()
 
 #endif

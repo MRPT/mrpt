@@ -94,9 +94,9 @@ namespace hwdrivers
  * it up.
  *  # An arbitrary number of commands can be defined, but their names must be
  * "setup_cmd%d" starting at "1".
-  *  # Commands will be sent by index order. Binary commands instead of ASCII
+ *  # Commands will be sent by index order. Binary commands instead of ASCII
  * strings can be set programmatically, not from a config file.
-  *  # custom_cmds_delay   = 0.1   // (Default=0.1) Delay in seconds between
+ *  # custom_cmds_delay   = 0.1   // (Default=0.1) Delay in seconds between
  * consecutive set-up commands
  *  # custom_cmds_append_CRLF = true    // (Default:true) Append "\r\n" to each
  * command
@@ -368,23 +368,14 @@ class CGPSInterface : public mrpt::system::COutputLogger, public CGenericSensor
 	std::string m_last_GGA;
 };  // end class
 }  // namespace hwdrivers
-
-// Specializations MUST occur at the same namespace:
-namespace typemeta
-{
-template <>
-struct TEnumTypeFiller<hwdrivers::CGPSInterface::PARSERS>
-{
-	typedef hwdrivers::CGPSInterface::PARSERS enum_t;
-	static void fill(internal::bimap<enum_t, std::string>& m_map)
-	{
-		m_map.insert(hwdrivers::CGPSInterface::NONE, "NONE");
-		m_map.insert(hwdrivers::CGPSInterface::AUTO, "AUTO");
-		m_map.insert(hwdrivers::CGPSInterface::NMEA, "NMEA");
-		m_map.insert(hwdrivers::CGPSInterface::NOVATEL_OEM6, "NOVATEL_OEM6");
-	}
-};
-}  // namespace typemeta
 }  // namespace mrpt
+
+MRPT_ENUM_TYPE_BEGIN(mrpt::hwdrivers::CGPSInterface::PARSERS)
+using namespace mrpt::hwdrivers;
+MRPT_FILL_ENUM_MEMBER(CGPSInterface, NONE);
+MRPT_FILL_ENUM_MEMBER(CGPSInterface, AUTO);
+MRPT_FILL_ENUM_MEMBER(CGPSInterface, NMEA);
+MRPT_FILL_ENUM_MEMBER(CGPSInterface, NOVATEL_OEM6);
+MRPT_ENUM_TYPE_END()
 
 #endif

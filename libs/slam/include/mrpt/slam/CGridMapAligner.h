@@ -243,24 +243,13 @@ class CGridMapAligner : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 };
 
 }  // namespace slam
-
-// Specializations MUST occur at the same namespace:
-namespace typemeta
-{
-template <>
-struct TEnumTypeFiller<slam::CGridMapAligner::TAlignerMethod>
-{
-	typedef slam::CGridMapAligner::TAlignerMethod enum_t;
-	static void fill(internal::bimap<enum_t, std::string>& m_map)
-	{
-		m_map.insert(slam::CGridMapAligner::amRobustMatch, "amRobustMatch");
-		m_map.insert(slam::CGridMapAligner::amCorrelation, "amCorrelation");
-		m_map.insert(
-			slam::CGridMapAligner::amModifiedRANSAC, "amModifiedRANSAC");
-	}
-};
-}  // namespace typemeta
-
 }  // namespace mrpt
+
+MRPT_ENUM_TYPE_BEGIN(mrpt::slam::CGridMapAligner::TAlignerMethod)
+using namespace mrpt::slam;
+MRPT_FILL_ENUM_MEMBER(CGridMapAligner, amRobustMatch);
+MRPT_FILL_ENUM_MEMBER(CGridMapAligner, amCorrelation);
+MRPT_FILL_ENUM_MEMBER(CGridMapAligner, amModifiedRANSAC);
+MRPT_ENUM_TYPE_END()
 
 #endif
