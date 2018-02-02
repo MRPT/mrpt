@@ -17,6 +17,8 @@
 	- \ref mrpt_hwdrivers_grp
 		- mrpt::hwdrivers::COpenNI2Generic: added mutexes for safer multi-threading
 		  operation.
+		- mrpt::hwdrivers::CHokuyoURG: Added a new parameter to skip scans. Driver
+		  clean up to be safer and perform less memory allocs.
 
 <hr>
 <a name="1.5.5">
