@@ -27,6 +27,8 @@ namespace detail
  */
 struct TMRSlamNodeAnnotations : public TNodeAnnotations
 {
+	DECLARE_TTYPENAME_CLASSNAME(mrpt::graphs::detail::TMRSlamNodeAnnotations)
+
 	typedef TNodeAnnotations parent_t;
 	typedef TMRSlamNodeAnnotations self_t;
 
@@ -107,14 +109,4 @@ struct TMRSlamNodeAnnotations : public TNodeAnnotations
 }  // namespace detail
 }  // namespace graphs
 }  // namespace mrpt
-
-// declare as ttypename - in mrpt::utils namespace
-namespace mrpt
-{
-namespace typemeta
-{
-MRPT_DECLARE_TTYPENAME(mrpt::graphs::detail::TMRSlamNodeAnnotations)
-}
-}  // namespace mrpt
-
 #endif /* end of include guard: TMRSLAMNODEANNOTATIONS_H */
