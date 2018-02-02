@@ -547,7 +547,7 @@ bool CHokuyoURG::receiveResponse(char& rcv_status0, char& rcv_status1)
 					m_rcv_data.resize(i);
 					MRPT_LOG_DEBUG_STREAM("[Hokuyo] receiveResponse(): RX `" << m_rcv_data << "`");
 
-					if (rcv_status0 != '0')
+					if (rcv_status0 != '0' && (rcv_status0 != '9' && rcv_status1 != '9'))
 					{
 						MRPT_LOG_ERROR_STREAM("[Hokuyo] Error LIDAR status: " << (int)rcv_status0 << " after command: `" << m_lastSentMeasCmd << "`");
 						return false;
