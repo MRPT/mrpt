@@ -66,6 +66,9 @@ networking classes, with minimal dependencies.
 CObservationReflectivity to support different colors of light.
 		- \ref mrpt_hwdrivers_grp
 			- COpenNI2Generic: is safer in multithreading apps.
+			- CHokuyoURG:
+				- Rewrite driver to be safer and reduce mem allocs.
+				- New parameter `scan_interval` to decimate scans.
 	- BUG FIXES:
 		- Fix reactive navigator inconsistent state if navigation API is called
 from within rnav callbacks.

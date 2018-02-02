@@ -57,6 +57,10 @@ namespace hwdrivers
   *    # Optional: reduced FOV:
   *    # reduced_fov  = 25 // Deg
   *
+  *    # Sets decimation of scans directly at the Hokuyo scanner.
+  *    # 0=means send all scans, 1=means send 50% of scans, etc.
+  *    # scan_interval = 0
+  *
   *    #preview = true // Enable GUI visualization of captured data
   *
   *    # Optional: Exclusion zones to avoid the robot seeing itself:
@@ -80,13 +84,13 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 		/** The sensor model */
 		std::string model;
 		/** Min/Max ranges, in meters. */
-		double d_min, d_max;
+		double d_min{0}, d_max{0};
 		/** Number of measuremens per 360 degrees. */
-		int scans_per_360deg;
+		int scans_per_360deg{0};
 		/** First, last, and front step of the scanner angular span. */
-		int scan_first, scan_last, scan_front;
+		int scan_first{0}, scan_last{0}, scan_front{0};
 		/** Standard motor speed, rpm. */
-		int motor_speed_rpm;
+		int motor_speed_rpm{0};
 	};
 
    private:
@@ -146,10 +150,10 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 	  */
 	bool displaySensorInfo(CHokuyoURG::TSensorInfo* out_data = nullptr);
 
-	/** Start the scanning mode, using parameters stored in the object (loaded
-	 * from the .ini file)
+	/** Start the continuous scanning mode, using parameters stored in the object (loaded
+	  * from the .ini file). Maps to SCIP2.0 commands MD (no intensity) or ME (intensity).
 	  * After this command the device will start to send scans until
-	 * "switchLaserOff" is called.
+	  * switchLaserOff() is called.
 	  * \return false on any error
 	  */
 	bool startScanningMode();
@@ -157,12 +161,11 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 	/** Turns the laser on */
 	void initialize();
 
-	/** Waits for a response from the device.
+	/** Waits for a response from the device. Packet is stored in m_rcv_data,
+	  * and status codes in the reference parameters.
 	  * \return false on any error
 	  */
-	bool receiveResponse(
-		const char* sentCmd_forEchoVerification, char& rcv_status0,
-		char& rcv_status1, char* rcv_data, int& rcv_dataLength);
+	bool receiveResponse(char& rcv_status0,char& rcv_status1);
 
 	/** Assures a minimum number of bytes in the input buffer, reading from the
 	 * serial port only if required.
@@ -234,11 +237,22 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 	  */
 	bool setIntensityMode(bool enabled);
 
+	/** Set the skip scan count (0 means send all scans). 
+	  * Must be set before initialize() 
+	  */
+	void setScanInterval(unsigned int skipScanCount);
+	unsigned int getScanInterval() const;
+
+	void sendCmd(const char* str);
+
    protected:
+	/** temp buffer for incoming data packets */
+	std::string m_rcv_data;
+
 	/** Returns true if there is a valid stream bound to the laser scanner,
 	 * otherwise it first try to open the serial port "m_com_port"
 	  */
-	bool checkCOMisOpen();
+	bool ensureStreamIsOpen();
 
 	/** Used to reduce artificially the interval of scan ranges. */
 	double m_reduced_fov;
@@ -269,6 +283,7 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 	bool m_disable_firmware_timestamp;
 	/** Get intensity from lidar scan (default: false) */
 	bool m_intensity;
+	unsigned int m_scan_interval;
 
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(
