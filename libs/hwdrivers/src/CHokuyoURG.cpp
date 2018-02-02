@@ -71,7 +71,7 @@ void CHokuyoURG::sendCmd(const char* str)
 
 	MRPT_LOG_DEBUG_STREAM("[Hokuyo] sendCmd(): `" << str << "`");
 
-	m_lastSentMeasCmd = std::string(str); // for echo verification
+	m_lastSentMeasCmd = std::string(str);  // for echo verification
 	MRPT_END
 }
 
@@ -95,8 +95,7 @@ void CHokuyoURG::doProcessSimple(
 	char rcv_status0, rcv_status1;
 	int nRanges = m_lastRange - m_firstRange + 1;
 	int expectedSize = nRanges * 3 + 4;
-	if (m_intensity)
-		expectedSize += nRanges * 3;
+	if (m_intensity) expectedSize += nRanges * 3;
 
 	m_rcv_data.clear();
 	m_rcv_data.reserve(expectedSize + 1000);
@@ -120,11 +119,12 @@ void CHokuyoURG::doProcessSimple(
 	// -----------------------------------------------
 	outObservation.timestamp = mrpt::system::now();
 
-	if (expectedSize != m_rcv_data.size())
+	if ((size_t)expectedSize != m_rcv_data.size())
 	{
 		MRPT_LOG_ERROR_STREAM(
-			"[CHokuyoURG::doProcess] ERROR: Expected " << expectedSize <<
-			" data bytes, received " << m_rcv_data.size() << "instead!");
+			"[CHokuyoURG::doProcess] ERROR: Expected "
+			<< expectedSize << " data bytes, received " << m_rcv_data.size()
+			<< "instead!");
 		hardwareError = true;
 		return;
 	}
@@ -258,10 +258,11 @@ void CHokuyoURG::loadConfig_sensorSpecific(
 		iniSection, "disable_firmware_timestamp", m_disable_firmware_timestamp);
 	m_intensity = configSource.read_bool(iniSection, "intensity", m_intensity),
 
-	MRPT_LOAD_HERE_CONFIG_VAR(scan_interval, int, m_scan_interval, configSource, iniSection);
+	MRPT_LOAD_HERE_CONFIG_VAR(
+		scan_interval, int, m_scan_interval, configSource, iniSection);
 
 	// Parent options:
-		C2DRangeFinderAbstract::loadCommonParams(configSource, iniSection);
+	C2DRangeFinderAbstract::loadCommonParams(configSource, iniSection);
 }
 
 /*-------------------------------------------------------------
@@ -357,9 +358,9 @@ bool CHokuyoURG::turnOn()
 		m_firstRange = center - half_range;
 		m_lastRange = center + half_range;
 		MRPT_LOG_INFO_STREAM(
-			"[HOKUYO::turnOn] Using reduced FOV: ranges [" << m_firstRange
-			<< "-" << m_lastRange << "] for " << RAD2DEG(m_reduced_fov)
-			<< " deg. FOV");
+			"[HOKUYO::turnOn] Using reduced FOV: ranges ["
+			<< m_firstRange << "-" << m_lastRange << "] for "
+			<< RAD2DEG(m_reduced_fov) << " deg. FOV");
 	}
 
 	if (!displayVersionInfo())
@@ -400,7 +401,8 @@ bool CHokuyoURG::setHighBaudrate()
 	// Receive response:
 	if (!receiveResponse(rcv_status0, rcv_status1))
 	{
-		MRPT_LOG_ERROR("[CHokuyoURG::setHighBaudrate] Error waiting for response");
+		MRPT_LOG_ERROR(
+			"[CHokuyoURG::setHighBaudrate] Error waiting for response");
 		return false;
 	}
 
@@ -548,11 +550,17 @@ bool CHokuyoURG::receiveResponse(char& rcv_status0, char& rcv_status1)
 
 					// Done!
 					m_rcv_data.resize(i);
-					MRPT_LOG_DEBUG_STREAM("[Hokuyo] receiveResponse(): RX `" << m_rcv_data << "`");
+					MRPT_LOG_DEBUG_STREAM(
+						"[Hokuyo] receiveResponse(): RX `" << m_rcv_data
+														   << "`");
 
-					if (rcv_status0 != '0' && (rcv_status0 != '9' && rcv_status1 != '9'))
+					if (rcv_status0 != '0' &&
+						(rcv_status0 != '9' && rcv_status1 != '9'))
 					{
-						MRPT_LOG_ERROR_STREAM("[Hokuyo] Error LIDAR status: " << (int)rcv_status0 << " after command: `" << m_lastSentMeasCmd << "`");
+						MRPT_LOG_ERROR_STREAM(
+							"[Hokuyo] Error LIDAR status: "
+							<< (int)rcv_status0 << " after command: `"
+							<< m_lastSentMeasCmd << "`");
 						return false;
 					}
 
@@ -564,9 +572,10 @@ bool CHokuyoURG::receiveResponse(char& rcv_status0, char& rcv_status1)
 				lastWasLF = false;
 		}
 	}
-	catch (std::exception&e)
+	catch (std::exception& e)
 	{
-		MRPT_LOG_ERROR_FMT("[Hokuyo] receiveResponse() Exception: %s", e.what());
+		MRPT_LOG_ERROR_FMT(
+			"[Hokuyo] receiveResponse() Exception: %s", e.what());
 		return false;
 	}
 	catch (...)
@@ -589,7 +598,8 @@ bool CHokuyoURG::enableSCIP20()
 	// Receive response:
 	if (!receiveResponse(rcv_status0, rcv_status1))
 	{
-		MRPT_LOG_ERROR(__CURRENT_FUNCTION_NAME__ ": Error in response");
+		MRPT_LOG_ERROR_STREAM(
+			__CURRENT_FUNCTION_NAME__ << ": Error in response");
 		return false;
 	}
 
@@ -611,7 +621,8 @@ bool CHokuyoURG::switchLaserOn()
 	// Receive response:
 	if (!receiveResponse(rcv_status0, rcv_status1))
 	{
-		MRPT_LOG_ERROR(__CURRENT_FUNCTION_NAME__ ": Error in response");
+		MRPT_LOG_ERROR_STREAM(
+			__CURRENT_FUNCTION_NAME__ << ": Error in response");
 		return false;
 	}
 
@@ -633,7 +644,8 @@ bool CHokuyoURG::switchLaserOff()
 	// Receive response:
 	if (!receiveResponse(rcv_status0, rcv_status1))
 	{
-		MRPT_LOG_ERROR(__CURRENT_FUNCTION_NAME__ ": Error in response");
+		MRPT_LOG_ERROR_STREAM(
+			__CURRENT_FUNCTION_NAME__ << ": Error in response");
 		return false;
 	}
 
@@ -645,11 +657,7 @@ void CHokuyoURG::setScanInterval(unsigned int skipScanCount)
 {
 	m_scan_interval = skipScanCount;
 }
-unsigned int CHokuyoURG::getScanInterval() const
-{
-	return m_scan_interval;
-}
-
+unsigned int CHokuyoURG::getScanInterval() const { return m_scan_interval; }
 
 bool CHokuyoURG::setMotorSpeed(int motoSpeed_rpm)
 {
@@ -663,7 +671,9 @@ bool CHokuyoURG::setMotorSpeed(int motoSpeed_rpm)
 	int motorSpeedCode = (600 - motoSpeed_rpm) / 6;
 	if (motorSpeedCode < 0 || motorSpeedCode > 10)
 	{
-		MRPT_LOG_ERROR(__CURRENT_FUNCTION_NAME__ " Motorspeed must be in the range 540-600 rpm");
+		MRPT_LOG_ERROR_STREAM(
+			__CURRENT_FUNCTION_NAME__
+			<< " Motorspeed must be in the range 540-600 rpm");
 		return false;
 	}
 
@@ -674,7 +684,8 @@ bool CHokuyoURG::setMotorSpeed(int motoSpeed_rpm)
 	// Receive response:
 	if (!receiveResponse(rcv_status0, rcv_status1))
 	{
-		MRPT_LOG_ERROR(__CURRENT_FUNCTION_NAME__ ": Error in response");
+		MRPT_LOG_ERROR_STREAM(
+			__CURRENT_FUNCTION_NAME__ << ": Error in response");
 		return false;
 	}
 
@@ -702,7 +713,8 @@ bool CHokuyoURG::setHighSensitivityMode(bool enabled)
 	// Receive response:
 	if (!receiveResponse(rcv_status0, rcv_status1))
 	{
-		MRPT_LOG_ERROR(__CURRENT_FUNCTION_NAME__ ": Error in response");
+		MRPT_LOG_ERROR_STREAM(
+			__CURRENT_FUNCTION_NAME__ << ": Error in response");
 		return false;
 	}
 
@@ -732,23 +744,25 @@ bool CHokuyoURG::displayVersionInfo()
 	// Receive response:
 	if (!receiveResponse(rcv_status0, rcv_status1))
 	{
-		MRPT_LOG_ERROR(__CURRENT_FUNCTION_NAME__ ": Error in response");
+		MRPT_LOG_ERROR_STREAM(
+			__CURRENT_FUNCTION_NAME__ << ": Error in response");
 		return false;
 	}
 
 	MRPT_LOG_DEBUG("OK\n");
 
 	// PRINT:
-	for (auto & c: m_rcv_data) if (c == ';') c = '\n';
+	for (auto& c : m_rcv_data)
+		if (c == ';') c = '\n';
 	m_rcv_data[m_rcv_data.size()] = '\0';
 
 	if (!m_rcv_data.empty())
 	{
 		MRPT_LOG_INFO_STREAM(
 			"\n------------- HOKUYO Scanner: Version Information ------\n"
-			<< &m_rcv_data[0] << "\n"
-			"-------------------------------------------------------\n\n"
-		);
+			<< &m_rcv_data[0]
+			<< "\n"
+			   "-------------------------------------------------------\n\n");
 	}
 	return true;
 }
@@ -769,22 +783,24 @@ bool CHokuyoURG::displaySensorInfo(TSensorInfo* out_data)
 	// Receive response:
 	if (!receiveResponse(rcv_status0, rcv_status1))
 	{
-		MRPT_LOG_ERROR(__CURRENT_FUNCTION_NAME__ ": Error in response");
+		MRPT_LOG_ERROR_STREAM(
+			__CURRENT_FUNCTION_NAME__ << ": Error in response");
 		return false;
 	}
 	MRPT_LOG_DEBUG("OK\n");
 
 	// PRINT:
-	for (auto & c : m_rcv_data) if (c == ';') c = '\n';
+	for (auto& c : m_rcv_data)
+		if (c == ';') c = '\n';
 	m_rcv_data[m_rcv_data.size()] = '\0';
 
 	if (!m_rcv_data.empty())
 	{
 		MRPT_LOG_INFO_STREAM(
 			"\n------------- HOKUYO Scanner: Product Information ------\n"
-			<< &m_rcv_data[0] << "\n"
-			"-------------------------------------------------------\n\n"
-		);
+			<< &m_rcv_data[0]
+			<< "\n"
+			   "-------------------------------------------------------\n\n");
 	}
 
 	// Parse the data:
@@ -794,31 +810,38 @@ bool CHokuyoURG::displaySensorInfo(TSensorInfo* out_data)
 
 		if (nullptr != (ptr = strstr(&m_rcv_data[0], "DMAX:")))
 			out_data->d_max = 0.001 * atoi(ptr + 5);
-		else MRPT_LOG_ERROR("[Hokuyo] displayVersionInfo() parse error");
+		else
+			MRPT_LOG_ERROR("[Hokuyo] displayVersionInfo() parse error");
 
 		if (nullptr != (ptr = strstr(&m_rcv_data[0], "DMIN:")))
 			out_data->d_min = 0.001 * atoi(ptr + 5);
-		else MRPT_LOG_ERROR("[Hokuyo] displayVersionInfo() parse error");
+		else
+			MRPT_LOG_ERROR("[Hokuyo] displayVersionInfo() parse error");
 
 		if (nullptr != (ptr = strstr(&m_rcv_data[0], "ARES:")))
 			out_data->scans_per_360deg = atoi(ptr + 5);
-		else MRPT_LOG_ERROR("[Hokuyo] displayVersionInfo() parse error");
+		else
+			MRPT_LOG_ERROR("[Hokuyo] displayVersionInfo() parse error");
 
 		if (nullptr != (ptr = strstr(&m_rcv_data[0], "SCAN:")))
 			out_data->motor_speed_rpm = atoi(ptr + 5);
-		else MRPT_LOG_ERROR("[Hokuyo] displayVersionInfo() parse error");
+		else
+			MRPT_LOG_ERROR("[Hokuyo] displayVersionInfo() parse error");
 
 		if (nullptr != (ptr = strstr(&m_rcv_data[0], "AMIN:")))
 			out_data->scan_first = atoi(ptr + 5);
-		else MRPT_LOG_ERROR("[Hokuyo] displayVersionInfo() parse error");
+		else
+			MRPT_LOG_ERROR("[Hokuyo] displayVersionInfo() parse error");
 
 		if (nullptr != (ptr = strstr(&m_rcv_data[0], "AMAX:")))
 			out_data->scan_last = atoi(ptr + 5);
-		else MRPT_LOG_ERROR("[Hokuyo] displayVersionInfo() parse error");
+		else
+			MRPT_LOG_ERROR("[Hokuyo] displayVersionInfo() parse error");
 
 		if (nullptr != (ptr = strstr(&m_rcv_data[0], "AFRT:")))
 			out_data->scan_front = atoi(ptr + 5);
-		else MRPT_LOG_ERROR("[Hokuyo] displayVersionInfo() parse error");
+		else
+			MRPT_LOG_ERROR("[Hokuyo] displayVersionInfo() parse error");
 
 		if (nullptr != (ptr = strstr(&m_rcv_data[0], "MODL:")))
 		{
@@ -827,7 +850,8 @@ bool CHokuyoURG::displaySensorInfo(TSensorInfo* out_data)
 			aux[8] = '\0';
 			out_data->model = aux;
 		}
-		else MRPT_LOG_ERROR("[Hokuyo] displayVersionInfo() parse error");
+		else
+			MRPT_LOG_ERROR("[Hokuyo] displayVersionInfo() parse error");
 	}
 
 	return true;
@@ -841,7 +865,7 @@ bool CHokuyoURG::startScanningMode()
 	MRPT_LOG_DEBUG("[CHokuyoURG::startScanningMode] Starting scanning mode...");
 
 	// Send command:
-	// 'M' 'D' 
+	// 'M' 'D'
 	// 'XXXX' (starting step)
 	// 'XXXX' (end step)
 	// 'XX' (cluster count)
@@ -850,14 +874,17 @@ bool CHokuyoURG::startScanningMode()
 	char cmd[50];
 	unsigned int scan_interval = m_scan_interval;
 	if (scan_interval > 9) scan_interval = 9;
-	os::sprintf(cmd, 50, "M%c%04u%04u01%u00\x0A", m_intensity ? 'E':'D', m_firstRange, m_lastRange, scan_interval);
+	os::sprintf(
+		cmd, 50, "M%c%04u%04u01%u00\x0A", m_intensity ? 'E' : 'D', m_firstRange,
+		m_lastRange, scan_interval);
 
 	sendCmd(cmd);
 
 	// Receive response:
 	if (!receiveResponse(rcv_status0, rcv_status1))
 	{
-		MRPT_LOG_ERROR(__CURRENT_FUNCTION_NAME__ ": Error in response");
+		MRPT_LOG_ERROR_STREAM(
+			__CURRENT_FUNCTION_NAME__ << ": Error in response");
 		return false;
 	}
 
@@ -882,7 +909,9 @@ bool CHokuyoURG::ensureStreamIsOpen()
 				if (COM->isConnected()) return true;
 
 				// It has been disconnected... try to reconnect:
-				MRPT_LOG_ERROR("[CHokuyoURG] Socket connection lost! trying to reconnect...");
+				MRPT_LOG_ERROR(
+					"[CHokuyoURG] Socket connection lost! trying to "
+					"reconnect...");
 
 				try
 				{
@@ -911,7 +940,9 @@ bool CHokuyoURG::ensureStreamIsOpen()
 				if (COM->isOpen()) return true;
 
 				// It has been disconnected... try to reconnect:
-				MRPT_LOG_ERROR(__CURRENT_FUNCTION_NAME__ ": Serial port connection lost! Trying to reconnect...");
+				MRPT_LOG_ERROR_STREAM(
+					__CURRENT_FUNCTION_NAME__
+					<< ": Serial port connection lost! Trying to reconnect...");
 
 				try
 				{
@@ -946,15 +977,17 @@ bool CHokuyoURG::ensureStreamIsOpen()
 			// Try to open the serial port:
 			CClientTCPSocket* theCOM = new CClientTCPSocket();
 
-			MRPT_LOG_INFO_FMT(__CURRENT_FUNCTION_NAME__
-				" Connecting to %s:%u...", m_ip_dir.c_str(),
-				m_port_dir);
+			MRPT_LOG_INFO_STREAM(
+				__CURRENT_FUNCTION_NAME__ << " Connecting to " << m_ip_dir
+										  << ":" << m_port_dir);
 			theCOM->connect(m_ip_dir, m_port_dir);
 
 			if (!theCOM->isConnected())
 			{
-				MRPT_LOG_ERROR_STREAM(__CURRENT_FUNCTION_NAME__
-					" Cannot connect with the server '" << m_com_port << "'");
+				MRPT_LOG_ERROR_STREAM(
+					__CURRENT_FUNCTION_NAME__
+					<< " Cannot connect with the server '" << m_com_port
+					<< "'");
 				delete theCOM;
 				return false;
 			}
@@ -971,8 +1004,9 @@ bool CHokuyoURG::ensureStreamIsOpen()
 
 			if (!theCOM->isOpen())
 			{
-				MRPT_LOG_ERROR_STREAM(__CURRENT_FUNCTION_NAME__
-					" Cannot open serial port '" << m_com_port << "'");
+				MRPT_LOG_ERROR_STREAM(
+					__CURRENT_FUNCTION_NAME__ << " Cannot open serial port '"
+											  << m_com_port << "'");
 				delete theCOM;
 				return false;
 			}
