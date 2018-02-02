@@ -57,6 +57,10 @@ namespace hwdrivers
   *    # Optional: reduced FOV:
   *    # reduced_fov  = 25 // Deg
   *
+  *    # Sets decimation of scans directly at the Hokuyo scanner.
+  *    # 0=means send all scans, 1=means send 50% of scans, etc.
+  *    # scan_interval = 0
+  *
   *    #preview = true // Enable GUI visualization of captured data
   *
   *    # Optional: Exclusion zones to avoid the robot seeing itself:
@@ -146,10 +150,10 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 	  */
 	bool displaySensorInfo(CHokuyoURG::TSensorInfo* out_data = nullptr);
 
-	/** Start the scanning mode, using parameters stored in the object (loaded
-	 * from the .ini file)
+	/** Start the continuous scanning mode, using parameters stored in the object (loaded
+	  * from the .ini file). Maps to SCIP2.0 commands MD (no intensity) or ME (intensity).
 	  * After this command the device will start to send scans until
-	 * "switchLaserOff" is called.
+	  * switchLaserOff() is called.
 	  * \return false on any error
 	  */
 	bool startScanningMode();
@@ -233,6 +237,12 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 	  */
 	bool setIntensityMode(bool enabled);
 
+	/** Set the skip scan count (0 means send all scans). 
+	  * Must be set before initialize() 
+	  */
+	void setScanInterval(unsigned int skipScanCount);
+	unsigned int getScanInterval() const;
+
 	void sendCmd(const char* str);
 
    protected:
@@ -273,6 +283,7 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 	bool m_disable_firmware_timestamp;
 	/** Get intensity from lidar scan (default: false) */
 	bool m_intensity;
+	unsigned int m_scan_interval;
 
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(

@@ -42,7 +42,8 @@ CHokuyoURG::CHokuyoURG()
 	  m_timeStartUI(0),
 	  m_timeStartSynchDelay(0),
 	  m_disable_firmware_timestamp(false),
-	  m_intensity(false)
+	  m_intensity(false),
+	  m_scan_interval(0)
 {
 	m_sensorLabel = "Hokuyo";
 }
@@ -256,6 +257,8 @@ void CHokuyoURG::loadConfig_sensorSpecific(
 	m_disable_firmware_timestamp = configSource.read_bool(
 		iniSection, "disable_firmware_timestamp", m_disable_firmware_timestamp);
 	m_intensity = configSource.read_bool(iniSection, "intensity", m_intensity),
+
+	MRPT_LOAD_HERE_CONFIG_VAR(scan_interval, int, m_scan_interval, configSource, iniSection);
 
 	// Parent options:
 		C2DRangeFinderAbstract::loadCommonParams(configSource, iniSection);
@@ -638,6 +641,16 @@ bool CHokuyoURG::switchLaserOff()
 	return true;
 }
 
+void CHokuyoURG::setScanInterval(unsigned int skipScanCount)
+{
+	m_scan_interval = skipScanCount;
+}
+unsigned int CHokuyoURG::getScanInterval() const
+{
+	return m_scan_interval;
+}
+
+
 bool CHokuyoURG::setMotorSpeed(int motoSpeed_rpm)
 {
 	char rcv_status0, rcv_status1;
@@ -828,11 +841,16 @@ bool CHokuyoURG::startScanningMode()
 	MRPT_LOG_DEBUG("[CHokuyoURG::startScanningMode] Starting scanning mode...");
 
 	// Send command:
+	// 'M' 'D' 
+	// 'XXXX' (starting step)
+	// 'XXXX' (end step)
+	// 'XX' (cluster count)
+	// 'X' (scan interval)
+	// 'XX' (number of scans)
 	char cmd[50];
-	if (m_intensity)
-		os::sprintf(cmd, 50, "ME%04u%04u01000\x0A", m_firstRange, m_lastRange);
-	else
-		os::sprintf(cmd, 50, "MD%04u%04u01000\x0A", m_firstRange, m_lastRange);
+	unsigned int scan_interval = m_scan_interval;
+	if (scan_interval > 9) scan_interval = 9;
+	os::sprintf(cmd, 50, "M%c%04u%04u01%u00\x0A", m_intensity ? 'E':'D', m_firstRange, m_lastRange, scan_interval);
 
 	sendCmd(cmd);
 
