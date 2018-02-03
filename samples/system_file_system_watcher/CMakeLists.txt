@@ -1,10 +1,10 @@
 #-----------------------------------------------------------------------------------------------
-# CMake file for the MRPT example:  /threadsPipe
+# CMake file for the MRPT example:  /system_file_system_watcher
 #
 #  Run with "ccmake ." at the root directory, or use it as a template for
 #   starting your own programs
 #-----------------------------------------------------------------------------------------------
-SET(sampleName threadsPipe)
+SET(sampleName system_file_system_watcher)
 PROJECT(EXAMPLE_${sampleName})
 
 CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
@@ -21,7 +21,7 @@ SET(EXECUTABLE_OUTPUT_PATH ".")
 #  http://www.mrpt.org/Libraries
 # Add the top-level dependencies only.
 # --------------------------------------------------------------------------
-FIND_PACKAGE(MRPT REQUIRED base)
+FIND_PACKAGE(MRPT REQUIRED db)
 
 # Define the executable target:
 ADD_EXECUTABLE(${sampleName} test.cpp  )
@@ -50,5 +50,5 @@ ENDIF()
 # This part can be removed if you are compiling this program outside of
 #  the MRPT tree:
 IF(${CMAKE_PROJECT_NAME} STREQUAL "MRPT") # Fails if build outside of MRPT project.
-	DeclareAppDependencies(${sampleName} mrpt-base) # Dependencies
+	DeclareAppDependencies(${sampleName} mrpt-db) # Dependencies
 ENDIF()

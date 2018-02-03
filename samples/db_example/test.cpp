@@ -7,17 +7,21 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-
+#include <mrpt/db/CSimpleDatabase.h>
+#include <mrpt/system/CTicTac.h>
+#include <cstdio>
 
 // ------------------------------------------------------
 //				TestDB
 // ------------------------------------------------------
 void TestDB()
 {
+	using namespace mrpt::db;
+
 	CSimpleDatabase db, db2, db3;
 	CSimpleDatabaseTable::Ptr table;
 	size_t i;
-	CTicTac tictac;
+	mrpt::system::CTicTac tictac;
 
 	table = db.createTable("table1");
 
