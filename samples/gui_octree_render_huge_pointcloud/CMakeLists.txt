@@ -1,10 +1,10 @@
 #-----------------------------------------------------------------------------------------------
-# CMake file for the MRPT example:  /gui_windows_events
+# CMake file for the MRPT example:  /gui_octree_render_huge_pointcloud
 #
 #  Run with "ccmake ." at the root directory, or use it as a template for
 #   starting your own programs
 #-----------------------------------------------------------------------------------------------
-SET(sampleName gui_windows_events)
+SET(sampleName gui_octree_render_huge_pointcloud)
 PROJECT(EXAMPLE_${sampleName})
 
 CMAKE_MINIMUM_REQUIRED(VERSION 3.1)

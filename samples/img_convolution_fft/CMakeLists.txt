@@ -1,10 +1,10 @@
 #-----------------------------------------------------------------------------------------------
-# CMake file for the MRPT example:  /gui_windows_events
+# CMake file for the MRPT example:  /img_convolution_fft
 #
 #  Run with "ccmake ." at the root directory, or use it as a template for
 #   starting your own programs
 #-----------------------------------------------------------------------------------------------
-SET(sampleName gui_windows_events)
+SET(sampleName img_convolution_fft)
 PROJECT(EXAMPLE_${sampleName})
 
 CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
