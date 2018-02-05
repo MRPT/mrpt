@@ -10,6 +10,7 @@
 #include <mrpt/hwdrivers/CFFMPEG_InputStream.h>
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/system/CTicTac.h>
+#include <iostream>
 
 using namespace mrpt::gui;
 using namespace mrpt::hwdrivers;

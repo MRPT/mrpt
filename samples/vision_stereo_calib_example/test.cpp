@@ -11,6 +11,7 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/system/filesystem.h>  // for ASSERT_FILE_EXISTS_
 #include <mrpt/vision/chessboard_stereo_camera_calib.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::gui;
@@ -114,11 +115,10 @@ int TestStereoCalibrate(int argc, char** argv)
 				view2->setImageView(
 					calib_imgs[i].right.img_rectified);  // img_checkboard );
 
-				win.setWindowTitle(
-					mrpt::format(
-						"Detected corners: %u / %u",
-						static_cast<unsigned int>(i + 1),
-						static_cast<unsigned int>(nPairs)));
+				win.setWindowTitle(mrpt::format(
+					"Detected corners: %u / %u",
+					static_cast<unsigned int>(i + 1),
+					static_cast<unsigned int>(nPairs)));
 
 				win.unlockAccess3DScene();
 				win.repaint();

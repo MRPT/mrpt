@@ -10,6 +10,7 @@
 #include <mrpt/hwdrivers/CNTRIPClient.h>
 #include <mrpt/system/os.h>
 #include <cstdio>
+#include <iostream>
 
 using namespace std;
 using namespace mrpt;

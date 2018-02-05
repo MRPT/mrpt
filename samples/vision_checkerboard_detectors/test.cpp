@@ -11,6 +11,7 @@
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/vision/chessboard_find_corners.h>
 #include <mrpt/gui.h>
+#include <iostream>
 
 using namespace std;
 using namespace mrpt;
@@ -45,7 +46,7 @@ void TestCheckerboardDetectors()
 		img, cornerCoords, checkerboard_size_x, checkerboard_size_y,
 		true,  // normalize_image
 		false  // useScaramuzzaMethod
-		);
+	);
 
 	timlog.leave("findChessboardCorners [OpenCV]");
 
@@ -61,7 +62,7 @@ void TestCheckerboardDetectors()
 		img, cornerCoords, checkerboard_size_x, checkerboard_size_y,
 		true,  // normalize_image
 		true  // useScaramuzzaMethod
-		);
+	);
 
 	timlog.leave("findChessboardCorners [Scaramuzza]");
 

@@ -27,6 +27,7 @@
 #include <mrpt/opengl/CFrustum.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
@@ -179,8 +180,7 @@ void Test_Kinect()
 			0.2f, 5.0f, 90.0f, 5.0f, 2.0f, true, true);
 
 	const double aspect_ratio =
-		480.0 /
-		640.0;  // kinect.rows() / double( kinect.cols() );
+		480.0 / 640.0;  // kinect.rows() / double( kinect.cols() );
 
 	opengl::COpenGLViewport::Ptr viewRange,
 		viewInt;  // Extra viewports for the RGB & D images.
@@ -323,12 +323,13 @@ void Test_Kinect()
 				TColorf(1, 1, 1), "sans", 10, mrpt::opengl::FILL, 110);
 
 			win3D.addTextMessage(
-				10, 25, format(
-							"Show: 3D=%s 2D=%s Frustum=%s (vert. FOV=%.1fdeg)",
-							gl_points->isVisible() ? "YES" : "NO",
-							gl_2d_scan->isVisible() ? "YES" : "NO",
-							gl_frustum->isVisible() ? "YES" : "NO",
-							gl_frustum->getVertFOV()),
+				10, 25,
+				format(
+					"Show: 3D=%s 2D=%s Frustum=%s (vert. FOV=%.1fdeg)",
+					gl_points->isVisible() ? "YES" : "NO",
+					gl_2d_scan->isVisible() ? "YES" : "NO",
+					gl_frustum->isVisible() ? "YES" : "NO",
+					gl_frustum->getVertFOV()),
 				TColorf(1, 1, 1), "sans", 10, mrpt::opengl::FILL, 111);
 			win3D.unlockAccess3DScene();
 
@@ -337,11 +338,12 @@ void Test_Kinect()
 			{
 				win3D.get3DSceneAndLock();
 				win3D.addTextMessage(
-					10, 65, format(
-								"Acc: x=%.02f y=%.02f z=%.02f",
-								last_obs_imu->rawMeasurements[IMU_X_ACC],
-								last_obs_imu->rawMeasurements[IMU_Y_ACC],
-								last_obs_imu->rawMeasurements[IMU_Z_ACC]),
+					10, 65,
+					format(
+						"Acc: x=%.02f y=%.02f z=%.02f",
+						last_obs_imu->rawMeasurements[IMU_X_ACC],
+						last_obs_imu->rawMeasurements[IMU_Y_ACC],
+						last_obs_imu->rawMeasurements[IMU_Z_ACC]),
 					TColorf(.7, .7, .7), "sans", 10, mrpt::opengl::FILL, 102);
 				win3D.unlockAccess3DScene();
 				do_refresh = true;

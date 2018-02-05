@@ -18,6 +18,7 @@
 #include <mrpt/gui.h>
 #include <mrpt/opengl.h>
 #include <mrpt/maps.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace std;

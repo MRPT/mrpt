@@ -13,6 +13,7 @@
 #include <mrpt/system/os.h>
 
 #include <thread>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::obs;

@@ -14,6 +14,7 @@
 
 #include <mrpt/gui.h>
 #include <mrpt/random.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::gui;

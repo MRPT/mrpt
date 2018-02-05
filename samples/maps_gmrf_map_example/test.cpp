@@ -12,6 +12,7 @@
 #include <mrpt/random.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/opengl/CPointCloud.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::maps;
@@ -24,11 +25,11 @@ struct MyConnectivityVisitor
 	: public mrpt::maps::CRandomFieldGridMap2D::ConnectivityDescriptor
 {
 	/** Implement the check of whether node i=(icx,icy) is connected with node
-	* j=(jcx,jcy).
-	* This visitor method will be called only for immediate neighbors.
-	* \return true if connected (and the "information" value should be also
-	* updated in out_edge_information), false otherwise.
-	*/
+	 * j=(jcx,jcy).
+	 * This visitor method will be called only for immediate neighbors.
+	 * \return true if connected (and the "information" value should be also
+	 * updated in out_edge_information), false otherwise.
+	 */
 	bool getEdgeInformation(
 		/** The parent map on which we are running */
 		const CRandomFieldGridMap2D* parent,
@@ -54,7 +55,7 @@ void Example_GMRF()
 	mrpt::maps::CGasConcentrationGridMap2D gasmap(
 		CRandomFieldGridMap2D::mrGMRF_SD /*map type*/, 0, X_SIZE, 0, Y_SIZE,
 		RESOLUTION /* resolution */
-		);
+	);
 
 	mrpt::maps::CGasConcentrationGridMap2D::ConnectivityDescriptor::Ptr conn =
 		mrpt::maps::CGasConcentrationGridMap2D::ConnectivityDescriptor::Ptr(

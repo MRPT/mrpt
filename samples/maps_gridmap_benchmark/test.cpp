@@ -12,6 +12,7 @@
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/config/CConfigFile.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::maps;

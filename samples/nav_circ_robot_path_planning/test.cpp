@@ -14,7 +14,6 @@
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/poses/CPose2D.h>
-
 #include <iostream>
 
 using namespace mrpt;

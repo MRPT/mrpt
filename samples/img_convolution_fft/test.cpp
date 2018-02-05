@@ -9,6 +9,7 @@
 
 #include <mrpt/gui.h>
 #include <mrpt/math.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::gui;

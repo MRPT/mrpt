@@ -95,7 +95,7 @@ IF(BUILD_EXAMPLES)
 		system_dirs_files_manipulation
 		system_params_by_name
 		)
-	SET(CMAKE_EXAMPLE_DEPS mrpt-system mrpt-poses)
+	SET(CMAKE_EXAMPLE_DEPS mrpt-system mrpt-poses mrpt-io)
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 	# === Depending on: mrpt-math ===
@@ -125,7 +125,7 @@ IF(BUILD_EXAMPLES)
 		poses_sog_merge_example
 		poses_unscented_transform_example
 		)
-	SET(CMAKE_EXAMPLE_DEPS mrpt-poses)
+	SET(CMAKE_EXAMPLE_DEPS mrpt-poses mrpt-io mrpt-gui)
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 	# === Depending on: mrpt-comms ===

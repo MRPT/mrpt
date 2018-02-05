@@ -26,6 +26,7 @@
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/gui/CDisplayWindow.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::obs;

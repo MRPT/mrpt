@@ -11,6 +11,7 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/opengl/CTexturedPlane.h>
 #include <mrpt/opengl/CText.h>
+#include <iostream>
 
 #include <mrpt/examples_config.h>
 const std::string myTestFile(

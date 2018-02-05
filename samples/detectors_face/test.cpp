@@ -16,6 +16,7 @@
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/math/ops_containers.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::maps;
@@ -493,8 +494,10 @@ void TestPrepareDetector()
 		for (size_t i = 0; i < numRawlogs; i++)
 		{
 			cfg.read_vector(
-				rawlogs[i], "falsePositives", std::vector<uint32_t>(), falsePositives[i]);
-			cfg.read_vector(rawlogs[i], "ignored", std::vector<uint32_t>(), ignored[i]);
+				rawlogs[i], "falsePositives", std::vector<uint32_t>(),
+				falsePositives[i]);
+			cfg.read_vector(
+				rawlogs[i], "ignored", std::vector<uint32_t>(), ignored[i]);
 		}
 
 		rawlogsDir = cfg.read_string("Example", "rawlogsDir", "");

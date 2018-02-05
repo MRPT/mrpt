@@ -13,6 +13,7 @@
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/system/filesystem.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::system;
@@ -129,7 +130,8 @@ int main(int argc, char** argv)
 								{
 									if (obs->m_readings[enoseID].sensorTypes.at(
 											indexMonitoredSensor) ==
-										std::vector<int>::value_type(sensorType))
+										std::vector<int>::value_type(
+											sensorType))
 										break;
 								}
 							}

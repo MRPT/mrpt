@@ -7,7 +7,8 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/math.h>
+#include <mrpt/math/CLevenbergMarquardt.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::math;

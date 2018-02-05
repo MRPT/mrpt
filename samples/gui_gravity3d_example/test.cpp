@@ -13,6 +13,7 @@
 #include <mrpt/system/os.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CSphere.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace std;

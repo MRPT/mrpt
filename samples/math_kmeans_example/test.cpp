@@ -12,6 +12,7 @@
 #include <mrpt/core/aligned_std_vector.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
+#include <iostream>
 
 using namespace mrpt::math;
 using namespace mrpt::gui;
@@ -37,7 +38,8 @@ void TestKMeans()
 	{
 		// Generate N clusters of random points:
 		mrpt::aligned_std_vector<CPointType> points;
-		const size_t nClusters = 2 + (getRandomGenerator().drawUniform32bit() % 4);
+		const size_t nClusters =
+			2 + (getRandomGenerator().drawUniform32bit() % 4);
 
 		for (size_t cl = 0; cl < nClusters; cl++)
 		{

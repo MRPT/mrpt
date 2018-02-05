@@ -13,6 +13,7 @@
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/graph_tools.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::graphs;
@@ -151,14 +152,13 @@ struct ExampleDemoGraphSLAM
 		}
 
 		/**
-	 * Add some edges
-	 * Also initialize the information matrix used for EACH constraint. For
-	 * simplicity the same information matrix is used for each one of the edges.
-	 * This information matrix is RELATIVE to each constraint/edge (not in
-	 * global ref. frame)
-	 * see also:
-	 * https://groups.google.com/d/msg/mrpt-users/Sr9LSydArgY/wYFeU2BXr4kJ
-	 */
+		 * Add some edges
+		 * Also initialize the information matrix used for EACH constraint. For
+		 * simplicity the same information matrix is used for each one of the
+		 * edges. This information matrix is RELATIVE to each constraint/edge
+		 * (not in global ref. frame) see also:
+		 * https://groups.google.com/d/msg/mrpt-users/Sr9LSydArgY/wYFeU2BXr4kJ
+		 */
 		typedef EdgeAdders<my_graph_t> edge_adder_t;
 		typename edge_adder_t::cov_t inf_matrix;
 		inf_matrix.unit(
@@ -209,15 +209,13 @@ struct ExampleDemoGraphSLAM
 				 graph.edges.begin();
 			 itEdge != graph.edges.end(); ++itEdge)
 		{
-			const typename my_graph_t::edge_t::type_value delta_noise(
-				CPose3D(
-					getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_XYZ),
-					getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_XYZ),
-					getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_XYZ),
-					getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_ANG),
-					getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_ANG),
-					getRandomGenerator().drawGaussian1D(
-						0, STD_NOISE_EDGE_ANG)));
+			const typename my_graph_t::edge_t::type_value delta_noise(CPose3D(
+				getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_XYZ),
+				getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_XYZ),
+				getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_XYZ),
+				getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_ANG),
+				getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_ANG),
+				getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_ANG)));
 			itEdge->second.getPoseMean() +=
 				typename my_graph_t::edge_t::type_value(delta_noise);
 		}
@@ -227,20 +225,19 @@ struct ExampleDemoGraphSLAM
 			 itNode != graph.nodes.end(); ++itNode)
 			if (itNode->first != graph.root)
 				itNode->second.getPoseMean() +=
-					typename my_graph_t::edge_t::type_value(
-						CPose3D(
-							getRandomGenerator().drawGaussian1D(
-								0, STD_NOISE_NODE_XYZ),
-							getRandomGenerator().drawGaussian1D(
-								0, STD_NOISE_NODE_XYZ),
-							getRandomGenerator().drawGaussian1D(
-								0, STD_NOISE_NODE_XYZ),
-							getRandomGenerator().drawGaussian1D(
-								0, STD_NOISE_NODE_ANG),
-							getRandomGenerator().drawGaussian1D(
-								0, STD_NOISE_NODE_ANG),
-							getRandomGenerator().drawGaussian1D(
-								0, STD_NOISE_NODE_ANG)));
+					typename my_graph_t::edge_t::type_value(CPose3D(
+						getRandomGenerator().drawGaussian1D(
+							0, STD_NOISE_NODE_XYZ),
+						getRandomGenerator().drawGaussian1D(
+							0, STD_NOISE_NODE_XYZ),
+						getRandomGenerator().drawGaussian1D(
+							0, STD_NOISE_NODE_XYZ),
+						getRandomGenerator().drawGaussian1D(
+							0, STD_NOISE_NODE_ANG),
+						getRandomGenerator().drawGaussian1D(
+							0, STD_NOISE_NODE_ANG),
+						getRandomGenerator().drawGaussian1D(
+							0, STD_NOISE_NODE_ANG)));
 
 		// This is the initial input graph (make a copy for later use):
 		const my_graph_t graph_initial = graph;

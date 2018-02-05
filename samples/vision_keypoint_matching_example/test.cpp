@@ -13,6 +13,7 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
+#include <iostream>
 
 using mrpt::format;
 using namespace mrpt::gui;

@@ -9,6 +9,7 @@
 
 #include <mrpt/gui.h>
 #include <mrpt/math.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -75,8 +76,8 @@ void TestFFT_2D_complex()
 	printf("ok\n");
 
 	printf(
-		"Computing 2D complex FFT of %ux%u...",
-		(unsigned int)DATA_R.rows(), (unsigned int)DATA_R.cols());
+		"Computing 2D complex FFT of %ux%u...", (unsigned int)DATA_R.rows(),
+		(unsigned int)DATA_R.cols());
 	tictac.Tic();
 	math::dft2_complex(DATA_R, DATA_I, RES_R, RES_I);
 	printf(" Done,%.06fms\n", tictac.Tac() * 1000.0f);
@@ -85,8 +86,8 @@ void TestFFT_2D_complex()
 	RES_I.saveToTextFile("_out_complex_dft2_imag.txt");
 
 	printf(
-		"Computing 2D complex IFFT of %ux%u...",
-		(unsigned int)DATA_R.rows(), (unsigned int)DATA_R.cols());
+		"Computing 2D complex IFFT of %ux%u...", (unsigned int)DATA_R.rows(),
+		(unsigned int)DATA_R.cols());
 	tictac.Tic();
 	math::idft2_complex(RES_R, RES_I, B_R, B_I);
 	printf(" Done,%.06fms\n", tictac.Tac() * 1000.0f);

@@ -12,6 +12,7 @@
 #include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/random.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::graphs;
@@ -153,10 +154,9 @@ void TestDijkstra()
 
 		cout << "to " << i << " -> #steps= " << path.size() << endl;
 
-		win.setWindowTitle(
-			format(
-				"Dijkstra path %u->%u", static_cast<unsigned int>(SOURCE_NODE),
-				static_cast<unsigned int>(i)));
+		win.setWindowTitle(format(
+			"Dijkstra path %u->%u", static_cast<unsigned int>(SOURCE_NODE),
+			static_cast<unsigned int>(i)));
 
 		win.clf();
 

@@ -17,12 +17,15 @@
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/io/CFileOutputStream.h>
 
 #include <string>
 #include <sstream>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::poses;
+using namespace mrpt::io;
 using namespace mrpt::system;
 using namespace std;
 

@@ -12,6 +12,7 @@
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/system/os.h>
+#include <iostream>
 
 using namespace mrpt::hwdrivers;
 using namespace mrpt::obs;
@@ -48,8 +49,9 @@ void TestCapture_FlyCapture2()
 
 	int cnt = 0;
 
-	CObservationImage::Ptr obs = mrpt::make_aligned_shared<
-		CObservationImage>();  // Memory will be freed by SF
+	CObservationImage::Ptr obs =
+		mrpt::make_aligned_shared<CObservationImage>();  // Memory will be freed
+														 // by SF
 	// destructor in each loop.
 
 	while (!mrpt::system::os::kbhit())

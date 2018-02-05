@@ -16,6 +16,7 @@
 
 #include <thread>
 #include <chrono>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::gui;

@@ -7,14 +7,14 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/system/vector_loadsave.h>
+#include <mrpt/io/vector_loadsave.h>
+#include <mrpt/io/zip.h>
 #include <mrpt/system/CTicTac.h>
-#include <mrpt/compress.h>
+#include <mrpt/core/format.h>
 #include <cstdio>
+#include <iostream>
 
 using namespace mrpt;
-using namespace mrpt::math;
-using namespace mrpt::system;
 using namespace std;
 
 // ------------------------------------------------------
@@ -31,9 +31,9 @@ int main(int argc, char** argv)
 			return -1;
 		}
 
-		vector_byte buf;
+		std::vector<uint8_t> buf;
 
-		if (!mrpt::system::loadBinaryFile(buf, argv[1]))
+		if (!mrpt::io::loadBinaryFile(buf, argv[1]))
 		{
 			cerr << "Error loading file: " << argv[1] << endl;
 			return -1;
@@ -45,11 +45,11 @@ int main(int argc, char** argv)
 		{
 			compress_level = atoi(argv[2]);
 		}
-		CTicTac tictac;
+		mrpt::system::CTicTac tictac;
 
 		tictac.Tic();
 
-		if (!mrpt::compress::zip::compress_gz_file(gzfile, buf, compress_level))
+		if (!mrpt::io::zip::compress_gz_file(gzfile, buf, compress_level))
 		{
 			cerr << "Error writing compressing file: " << gzfile << endl;
 			return -1;

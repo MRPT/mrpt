@@ -16,6 +16,7 @@
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/system/CTicTac.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
@@ -48,9 +49,9 @@ void Test_SwissRanger()
 
 	if (cam.isOpen())
 		cout << "[Test_SwissRanger] Camera open, serial #"
-			 << cam.getCameraSerialNumber()
-			 << " resolution: " << cam.cols() << "x" << cam.rows()
-			 << " max. range: " << cam.getMaxRange() << endl;
+			 << cam.getCameraSerialNumber() << " resolution: " << cam.cols()
+			 << "x" << cam.rows() << " max. range: " << cam.getMaxRange()
+			 << endl;
 
 	const double aspect_ratio = cam.rows() / double(cam.cols());
 

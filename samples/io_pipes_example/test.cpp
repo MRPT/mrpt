@@ -9,11 +9,11 @@
 
 #include <mrpt/io/CPipe.h>
 #include <mrpt/poses/CPose3D.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::system;
-using namespace mrpt::synch;
 using namespace std;
 
 void thread_reader(CPipeReadEndPoint& read_pipe)

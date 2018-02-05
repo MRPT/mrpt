@@ -36,6 +36,7 @@ Output files:
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationIMU.h>
+#include <iostream>
 
 using namespace std;
 using namespace mrpt;

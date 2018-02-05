@@ -8,8 +8,10 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/system/TParameters.h>
+#include <iostream>
 
 using namespace std;
+using namespace mrpt::system;
 
 void MyCoolFunction(const TParametersDouble& params)
 {

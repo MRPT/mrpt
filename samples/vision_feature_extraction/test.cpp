@@ -10,6 +10,7 @@
 #include <mrpt/vision/CFeatureExtraction.h>
 #include <mrpt/vision/tracking.h>
 #include <mrpt/gui.h>
+#include <iostream>
 
 using namespace mrpt::gui;
 using namespace mrpt::vision;

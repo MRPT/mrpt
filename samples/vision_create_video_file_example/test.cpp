@@ -9,6 +9,7 @@
 
 #include <mrpt/img/CImage.h>
 #include <mrpt/vision/CVideoFileWriter.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::vision;

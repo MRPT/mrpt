@@ -28,6 +28,7 @@
 #include <mrpt/opengl/CTexturedPlane.h>
 #include <mrpt/opengl/CEllipsoid.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
+#include <iostream>
 
 #define COLORR 1.0f
 #define COLORG 0.0f

@@ -8,7 +8,8 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/gui.h>
-#include <mrpt/math.h>
+#include <mrpt/math/CMatrix.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::math;

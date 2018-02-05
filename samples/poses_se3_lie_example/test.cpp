@@ -7,7 +7,8 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/poses.h>
+#include <mrpt/poses/CPose3D.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::poses;

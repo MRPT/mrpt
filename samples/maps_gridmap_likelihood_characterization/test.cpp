@@ -15,6 +15,7 @@
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::system;

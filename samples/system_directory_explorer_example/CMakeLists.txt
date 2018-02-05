@@ -21,7 +21,7 @@ SET(EXECUTABLE_OUTPUT_PATH ".")
 #  http://www.mrpt.org/Libraries
 # Add the top-level dependencies only.
 # --------------------------------------------------------------------------
-FIND_PACKAGE(MRPT REQUIRED system;poses)
+FIND_PACKAGE(MRPT REQUIRED system;poses;io)
 
 # Define the executable target:
 ADD_EXECUTABLE(${sampleName} test.cpp  )
@@ -50,5 +50,5 @@ ENDIF()
 # This part can be removed if you are compiling this program outside of
 #  the MRPT tree:
 IF(${CMAKE_PROJECT_NAME} STREQUAL "MRPT") # Fails if build outside of MRPT project.
-	DeclareAppDependencies(${sampleName} mrpt-system;mrpt-poses) # Dependencies
+	DeclareAppDependencies(${sampleName} mrpt-system;mrpt-poses;mrpt-io) # Dependencies
 ENDIF()

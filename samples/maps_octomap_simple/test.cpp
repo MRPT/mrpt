@@ -13,6 +13,7 @@
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/system/os.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
+#include <iostream>
 
 //#define HAS_SYSTEM_OCTOMAP
 

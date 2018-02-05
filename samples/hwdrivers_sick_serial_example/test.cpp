@@ -12,6 +12,7 @@
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/system/os.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::obs;

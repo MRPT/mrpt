@@ -12,6 +12,7 @@
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/opengl.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>  // This class is in mrpt-maps
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::obs;

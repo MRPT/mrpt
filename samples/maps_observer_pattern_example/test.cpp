@@ -10,6 +10,7 @@
 #include <mrpt/system/CObserver.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/maps/CSimplePointsMap.h>
+#include <iostream>
 
 using namespace mrpt::obs;
 using namespace mrpt::maps;

@@ -11,6 +11,7 @@
 #include <mrpt/gui.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/opengl.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::obs;

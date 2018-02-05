@@ -12,6 +12,7 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/system/os.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::poses;

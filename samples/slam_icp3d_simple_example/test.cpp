@@ -23,6 +23,7 @@
 #include <mrpt/opengl/CAngularObservationMesh.h>
 #include <mrpt/opengl/CDisk.h>
 #include <mrpt/opengl/stock_objects.h>
+#include <iostream>
 
 using namespace std;
 using namespace mrpt;
@@ -141,7 +142,7 @@ void test_icp3D()
 	CSetOfObjects::Ptr PTNS2 = mrpt::make_aligned_shared<CSetOfObjects>();
 
 <<<<<<< HEAD
-	CPointsMap::COLOR_3DSCENE(mrpt::img::TColorf(1,0,0));
+	CPointsMap::COLOR_3DSCENE(mrpt::img::TColorf(1, 0, 0));
 =======
 	CPointsMap::COLOR_3DSCENE(mrpt::utils::TColorf(1, 0, 0));
 >>>>>>> master

@@ -22,6 +22,7 @@
 #include <mrpt/system/os.h>
 #include <mrpt/opengl.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace std;

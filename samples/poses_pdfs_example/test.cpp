@@ -17,6 +17,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPoses2DSequence.h>
 #include <mrpt/system/CTicTac.h>
+#include <iostream>
 
 using namespace mrpt::poses;
 using namespace std;

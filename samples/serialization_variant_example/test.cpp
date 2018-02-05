@@ -10,6 +10,8 @@
 #include <mrpt/io/CPipe.h>
 #include <mrpt/poses/CPose3D.h>
 #include <unistd.h>
+#include <thread>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::poses;

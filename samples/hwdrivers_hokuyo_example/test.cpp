@@ -14,6 +14,7 @@
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/system/os.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
@@ -143,16 +144,16 @@ void Test_HOKUYO()
 			mrpt::maps::CSimplePointsMap theMap;
 			theMap.insertionOptions.minDistBetweenLaserPoints = 0;
 			theMap.insertObservation(&obs);
-// map.save2D_to_text_file("_out_scan.txt");
+			// map.save2D_to_text_file("_out_scan.txt");
 
-/*
-COpenGLScene			scene3D;
-opengl::CPointCloud::Ptr	points =
-mrpt::make_aligned_shared<opengl::CPointCloud>();
-points->loadFromPointsMap(&map);
-scene3D.insert(points);
-CFileStream("_out_point_cloud.3Dscene",fomWrite) << scene3D;
-*/
+			/*
+			COpenGLScene			scene3D;
+			opengl::CPointCloud::Ptr	points =
+			mrpt::make_aligned_shared<opengl::CPointCloud>();
+			points->loadFromPointsMap(&map);
+			scene3D.insert(points);
+			CFileStream("_out_point_cloud.3Dscene",fomWrite) << scene3D;
+			*/
 
 #if MRPT_HAS_WXWIDGETS
 			std::vector<float> xs, ys, zs;

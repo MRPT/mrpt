@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/topography.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -21,13 +22,13 @@ void TestGPS_coords()
 		RAD2DEG(0.6408472493152757),  // lat
 		RAD2DEG(-0.0780454933097760),  // lon
 		53.200600  // height meters
-		);
+	);
 
 	const mrpt::topography::TGeodeticCoords p1(
 		RAD2DEG(0.6408615769267271),  // lat
 		RAD2DEG(-0.0780621148947297),  // lon
 		56.210100  // meters
-		);
+	);
 
 	cout << "Point 0: lat=" << p0.lat << " lon=" << p0.lon
 		 << " alt=" << p0.height << endl;
@@ -54,15 +55,16 @@ void TestGPS_coords()
 		pt0.lon, pt0.lat, pt0.height, pose_ENU);
 	cout << "ENU system of coordinates for lat=" << pt0.lat
 		 << " lon=" << pt0.lon << " alt=" << pt0.height << " is: \n"
-		 << mrpt::poses::CPose3D(pose_ENU).getHomogeneousMatrixVal<CMatrixDouble44>() << endl;
+		 << mrpt::poses::CPose3D(pose_ENU)
+				.getHomogeneousMatrixVal<CMatrixDouble44>()
+		 << endl;
 
 	cout << "P0->P1: " << (geo1 - geo0) << endl;
 	cout << "(p1.h-p0.h)*ENU_Z: "
-		 << (pt1.height - pt0.height) *
-				mrpt::poses::CPose3D(pose_ENU)
-					.getRotationMatrix()
-					.block<3, 1>(0, 2)
-					.transpose()
+		 << (pt1.height - pt0.height) * mrpt::poses::CPose3D(pose_ENU)
+											.getRotationMatrix()
+											.block<3, 1>(0, 2)
+											.transpose()
 		 << endl;
 
 	// UTM:

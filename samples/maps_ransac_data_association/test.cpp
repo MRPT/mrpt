@@ -20,6 +20,7 @@
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/tfest/se2.h>
 #include <mrpt/maps/CSimplePointsMap.h>
+#include <iostream>
 
 // Method explained in paper:
 //  J.L. Blanco, J. Gonzalez-Jimenez, J.A. Fernandez-Madrigal,
@@ -199,13 +200,11 @@ void TestRANSAC()
 
 			observations[i].ID = idxs[i].first;
 			observations[i].x =
-				lx +
-				mrpt::random::getRandomGenerator().drawGaussian1D(
-					0, normalizationStd);
+				lx + mrpt::random::getRandomGenerator().drawGaussian1D(
+						 0, normalizationStd);
 			observations[i].y =
-				ly +
-				mrpt::random::getRandomGenerator().drawGaussian1D(
-					0, normalizationStd);
+				ly + mrpt::random::getRandomGenerator().drawGaussian1D(
+						 0, normalizationStd);
 		}
 
 		// ----------------------------------------------------
@@ -315,8 +314,7 @@ void TestRANSAC()
 				5, 5,
 				"Blue: map landmarks | Red: Observations | White lines: Found "
 				"correspondences",
-				mrpt::img::TColorf(0, 0, 0), "mono", 12, mrpt::opengl::NICE,
-				0);
+				mrpt::img::TColorf(0, 0, 0), "mono", 12, mrpt::opengl::NICE, 0);
 
 			//
 			gl_obs_map->clear();
@@ -367,14 +365,12 @@ void TestRANSAC()
 
 			win.addTextMessage(
 				5, 20, "Ground truth pose    : " + GT_pose.asString(),
-				mrpt::img::TColorf(0, 0, 0), "mono", 12, mrpt::opengl::NICE,
-				1);
+				mrpt::img::TColorf(0, 0, 0), "mono", 12, mrpt::opengl::NICE, 1);
 			win.addTextMessage(
 				5, 35,
 				"RANSAC estimated pose: " + solution_pose.mean.asString() +
 					mrpt::format(" | RMSE=%f", (nPairs ? sqerr / nPairs : 0.0)),
-				mrpt::img::TColorf(0, 0, 0), "mono", 12, mrpt::opengl::NICE,
-				2);
+				mrpt::img::TColorf(0, 0, 0), "mono", 12, mrpt::opengl::NICE, 2);
 
 			win.unlockAccess3DScene();
 			win.repaint();

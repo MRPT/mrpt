@@ -13,6 +13,7 @@
 #include <mrpt/random.h>
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/system/os.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::slam;

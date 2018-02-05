@@ -29,6 +29,7 @@
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <memory>  // for std::auto_ptr, unique_ptr
+#include <iostream>
 
 // Demonstrate MRPT RGB+D --> PCL point cloud conversion:
 #if MRPT_HAS_PCL
@@ -243,7 +244,7 @@ void Test_KinectOnlineOffline(
 		is_online, rawlog_file,
 		false  // generate_3D_pointcloud_in_this_thread -> Don't, we'll do it in
 		// this main thread.
-		);
+	);
 
 	std::thread thHandle(thread_grabbing, std::ref(thrPar));
 

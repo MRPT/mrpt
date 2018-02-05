@@ -21,6 +21,7 @@
 #include <mrpt/math/distributions.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CObservationBearingRange.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::bayes;
@@ -77,104 +78,105 @@ class CRangeBearing : public mrpt::bayes::CKalmanFilterCapable<
 	 */
 
 	/** Must return the action vector u.
-	  * \param out_u The action vector which will be passed to OnTransitionModel
-	  */
+	 * \param out_u The action vector which will be passed to OnTransitionModel
+	 */
 	void OnGetAction(KFArray_ACT& out_u) const;
 
 	/** Implements the transition model \f$ \hat{x}_{k|k-1} = f(
 	 * \hat{x}_{k-1|k-1}, u_k ) \f$
-	  * \param in_u The vector returned by OnGetAction.
-	  * \param inout_x At input has \f$ \hat{x}_{k-1|k-1} \f$, at output must
+	 * \param in_u The vector returned by OnGetAction.
+	 * \param inout_x At input has \f$ \hat{x}_{k-1|k-1} \f$, at output must
 	 * have \f$ \hat{x}_{k|k-1} \f$.
-	  * \param out_skip Set this to true if for some reason you want to skip the
+	 * \param out_skip Set this to true if for some reason you want to skip the
 	 * prediction step (to do not modify either the vector or the covariance).
 	 * Default:false
-	  */
+	 */
 	void OnTransitionModel(
 		const KFArray_ACT& in_u, KFArray_VEH& inout_x,
 		bool& out_skipPrediction) const;
 
 	/** Implements the transition Jacobian \f$ \frac{\partial f}{\partial x} \f$
-	  * \param out_F Must return the Jacobian.
-	  *  The returned matrix must be \f$N \times N\f$ with N being either the
+	 * \param out_F Must return the Jacobian.
+	 *  The returned matrix must be \f$N \times N\f$ with N being either the
 	 * size of the whole state vector or get_vehicle_size().
-	  */
+	 */
 	void OnTransitionJacobian(KFMatrix_VxV& out_F) const;
 
 	/** Implements the transition noise covariance \f$ Q_k \f$
-	  * \param out_Q Must return the covariance matrix.
-	  *  The returned matrix must be of the same size than the jacobian from
+	 * \param out_Q Must return the covariance matrix.
+	 *  The returned matrix must be of the same size than the jacobian from
 	 * OnTransitionJacobian
-	  */
+	 */
 	void OnTransitionNoise(KFMatrix_VxV& out_Q) const;
 
 	/** Return the observation NOISE covariance matrix, that is, the model of
 	 * the Gaussian additive noise of the sensor.
-	  * \param out_R The noise covariance matrix. It might be non diagonal, but
+	 * \param out_R The noise covariance matrix. It might be non diagonal, but
 	 * it'll usually be.
-	  * \note Upon call, it can be assumed that the previous contents of out_R
+	 * \note Upon call, it can be assumed that the previous contents of out_R
 	 * are all zeros.
-	  */
+	 */
 	void OnGetObservationNoise(KFMatrix_OxO& out_R) const;
 
 	/** This is called between the KF prediction step and the update step, and
 	 * the application must return the observations and, when applicable, the
 	 * data association between these observations and the current map.
-	  *
-	  * \param out_z N vectors, each for one "observation" of length OBS_SIZE, N
+	 *
+	 * \param out_z N vectors, each for one "observation" of length OBS_SIZE, N
 	 * being the number of "observations": how many observed landmarks for a
 	 * map, or just one if not applicable.
-	  * \param out_data_association An empty vector or, where applicable, a
+	 * \param out_data_association An empty vector or, where applicable, a
 	 * vector where the i'th element corresponds to the position of the
 	 * observation in the i'th row of out_z within the system state vector (in
 	 * the range [0,getNumberOfLandmarksInTheMap()-1]), or -1 if it is a new map
 	 * element and we want to insert it at the end of this KF iteration.
-	  * \param in_all_predictions A vector with the prediction of ALL the
+	 * \param in_all_predictions A vector with the prediction of ALL the
 	 * landmarks in the map. Note that, in contrast, in_S only comprises a
 	 * subset of all the landmarks.
-	  * \param in_S The full covariance matrix of the observation predictions
+	 * \param in_S The full covariance matrix of the observation predictions
 	 * (i.e. the "innovation covariance matrix"). This is a M·O x M·O matrix
 	 * with M=length of "in_lm_indices_in_S".
-	  * \param in_lm_indices_in_S The indices of the map landmarks (range
+	 * \param in_lm_indices_in_S The indices of the map landmarks (range
 	 * [0,getNumberOfLandmarksInTheMap()-1]) that can be found in the matrix
 	 * in_S.
-	  *
-	  *  This method will be called just once for each complete KF iteration.
-	  * \note It is assumed that the observations are independent, i.e. there
+	 *
+	 *  This method will be called just once for each complete KF iteration.
+	 * \note It is assumed that the observations are independent, i.e. there
 	 * are NO cross-covariances between them.
-	  */
+	 */
 	void OnGetObservationsAndDataAssociation(
 		vector_KFArray_OBS& out_z, std::vector<int>& out_data_association,
 		const vector_KFArray_OBS& in_all_predictions, const KFMatrix& in_S,
-		const std::vector<size_t>& in_lm_indices_in_S, const KFMatrix_OxO& in_R);
+		const std::vector<size_t>& in_lm_indices_in_S,
+		const KFMatrix_OxO& in_R);
 
 	/** Implements the observation prediction \f$ h_i(x) \f$.
-	  * \param idx_landmark_to_predict The indices of the landmarks in the map
+	 * \param idx_landmark_to_predict The indices of the landmarks in the map
 	 * whose predictions are expected as output. For non SLAM-like problems,
 	 * this input value is undefined and the application should just generate
 	 * one observation for the given problem.
-	  * \param out_predictions The predicted observations.
-	  */
+	 * \param out_predictions The predicted observations.
+	 */
 	void OnObservationModel(
 		const std::vector<size_t>& idx_landmarks_to_predict,
 		vector_KFArray_OBS& out_predictions) const;
 
 	/** Implements the observation Jacobians \f$ \frac{\partial h_i}{\partial x}
 	 * \f$ and (when applicable) \f$ \frac{\partial h_i}{\partial y_i} \f$.
-	  * \param idx_landmark_to_predict The index of the landmark in the map
+	 * \param idx_landmark_to_predict The index of the landmark in the map
 	 * whose prediction is expected as output. For non SLAM-like problems, this
 	 * will be zero and the expected output is for the whole state vector.
-	  * \param Hx  The output Jacobian \f$ \frac{\partial h_i}{\partial x} \f$.
-	  * \param Hy  The output Jacobian \f$ \frac{\partial h_i}{\partial y_i}
+	 * \param Hx  The output Jacobian \f$ \frac{\partial h_i}{\partial x} \f$.
+	 * \param Hy  The output Jacobian \f$ \frac{\partial h_i}{\partial y_i}
 	 * \f$.
-	  */
+	 */
 	void OnObservationJacobians(
 		const size_t& idx_landmark_to_predict, KFMatrix_OxV& Hx,
 		KFMatrix_OxF& Hy) const;
 
 	/** Computes A=A-B, which may need to be re-implemented depending on the
 	 * topology of the individual scalar components (eg, angles).
-	  */
+	 */
 	void OnSubstractObservationVectors(
 		KFArray_OBS& A, const KFArray_OBS& B) const;
 
@@ -217,7 +219,7 @@ class CRangeBearingParticleFilter
 	void initializeParticles(size_t numParticles);
 
 	/** Computes the average velocity & position
-	  */
+	 */
 	void getMean(float& x, float& y, float& vx, float& vy);
 };
 
@@ -283,9 +285,9 @@ void TestBayesianTracking()
 
 		// Simulate noisy observation:
 		float realBearing = atan2(y, x);
-		float obsBearing = realBearing +
-						   BEARING_SENSOR_NOISE_STD *
-							   getRandomGenerator().drawGaussian1D_normalized();
+		float obsBearing =
+			realBearing + BEARING_SENSOR_NOISE_STD *
+							  getRandomGenerator().drawGaussian1D_normalized();
 		printf(
 			"Real/Simulated bearing: %.03f / %.03f deg\n", RAD2DEG(realBearing),
 			RAD2DEG(obsBearing));
@@ -451,18 +453,18 @@ void CRangeBearing::doProcess(
 }
 
 /** Must return the action vector u.
-  * \param out_u The action vector which will be passed to OnTransitionModel
-  */
+ * \param out_u The action vector which will be passed to OnTransitionModel
+ */
 void CRangeBearing::OnGetAction(KFArray_ACT& u) const { u[0] = m_deltaTime; }
 /** Implements the transition model \f$ \hat{x}_{k|k-1} = f( \hat{x}_{k-1|k-1},
  * u_k ) \f$
-  * \param in_u The vector returned by OnGetAction.
-  * \param inout_x At input has \f$ \hat{x}_{k-1|k-1} \f$, at output must have
+ * \param in_u The vector returned by OnGetAction.
+ * \param inout_x At input has \f$ \hat{x}_{k-1|k-1} \f$, at output must have
  * \f$ \hat{x}_{k|k-1} \f$.
-  * \param out_skip Set this to true if for some reason you want to skip the
+ * \param out_skip Set this to true if for some reason you want to skip the
  * prediction step (to do not modify either the vector or the covariance).
  * Default:false
-  */
+ */
 void CRangeBearing::OnTransitionModel(
 	const KFArray_ACT& in_u, KFArray_VEH& inout_x,
 	bool& out_skipPrediction) const
@@ -474,10 +476,10 @@ void CRangeBearing::OnTransitionModel(
 }
 
 /** Implements the transition Jacobian \f$ \frac{\partial f}{\partial x} \f$
-  * \param out_F Must return the Jacobian.
-  *  The returned matrix must be \f$N \times N\f$ with N being either the size
+ * \param out_F Must return the Jacobian.
+ *  The returned matrix must be \f$N \times N\f$ with N being either the size
  * of the whole state vector or get_vehicle_size().
-  */
+ */
 void CRangeBearing::OnTransitionJacobian(KFMatrix_VxV& F) const
 {
 	F.unit();
@@ -487,10 +489,10 @@ void CRangeBearing::OnTransitionJacobian(KFMatrix_VxV& F) const
 }
 
 /** Implements the transition noise covariance \f$ Q_k \f$
-  * \param out_Q Must return the covariance matrix.
-  *  The returned matrix must be of the same size than the jacobian from
+ * \param out_Q Must return the covariance matrix.
+ *  The returned matrix must be of the same size than the jacobian from
  * OnTransitionJacobian
-  */
+ */
 void CRangeBearing::OnTransitionNoise(KFMatrix_VxV& Q) const
 {
 	Q(0, 0) = Q(1, 1) = square(TRANSITION_MODEL_STD_XY);
@@ -498,12 +500,12 @@ void CRangeBearing::OnTransitionNoise(KFMatrix_VxV& Q) const
 }
 
 /** Return the observation NOISE covariance matrix, that is, the model of the
-* Gaussian additive noise of the sensor.
-* \param out_R The noise covariance matrix. It might be non diagonal, but it'll
-* usually be.
-* \note Upon call, it can be assumed that the previous contents of out_R are all
-* zeros.
-*/
+ * Gaussian additive noise of the sensor.
+ * \param out_R The noise covariance matrix. It might be non diagonal, but it'll
+ * usually be.
+ * \note Upon call, it can be assumed that the previous contents of out_R are
+ * all zeros.
+ */
 void CRangeBearing::OnGetObservationNoise(KFMatrix_OxO& R) const
 {
 	R(0, 0) = square(BEARING_SENSOR_NOISE_STD);
@@ -523,12 +525,12 @@ void CRangeBearing::OnGetObservationsAndDataAssociation(
 }
 
 /** Implements the observation prediction \f$ h_i(x) \f$.
-  * \param idx_landmark_to_predict The indices of the landmarks in the map whose
+ * \param idx_landmark_to_predict The indices of the landmarks in the map whose
  * predictions are expected as output. For non SLAM-like problems, this input
  * value is undefined and the application should just generate one observation
  * for the given problem.
-  * \param out_predictions The predicted observations.
-  */
+ * \param out_predictions The predicted observations.
+ */
 void CRangeBearing::OnObservationModel(
 	const std::vector<size_t>& idx_landmarks_to_predict,
 	vector_KFArray_OBS& out_predictions) const
@@ -548,12 +550,12 @@ void CRangeBearing::OnObservationModel(
 
 /** Implements the observation Jacobians \f$ \frac{\partial h_i}{\partial x} \f$
  * and (when applicable) \f$ \frac{\partial h_i}{\partial y_i} \f$.
-  * \param idx_landmark_to_predict The index of the landmark in the map whose
+ * \param idx_landmark_to_predict The index of the landmark in the map whose
  * prediction is expected as output. For non SLAM-like problems, this will be
  * zero and the expected output is for the whole state vector.
-  * \param Hx  The output Jacobian \f$ \frac{\partial h_i}{\partial x} \f$.
-  * \param Hy  The output Jacobian \f$ \frac{\partial h_i}{\partial y_i} \f$.
-  */
+ * \param Hx  The output Jacobian \f$ \frac{\partial h_i}{\partial x} \f$.
+ * \param Hy  The output Jacobian \f$ \frac{\partial h_i}{\partial y_i} \f$.
+ */
 void CRangeBearing::OnObservationJacobians(
 	const size_t& idx_landmark_to_predict, KFMatrix_OxV& Hx,
 	KFMatrix_OxF& Hy) const
@@ -574,7 +576,7 @@ void CRangeBearing::OnObservationJacobians(
 
 /** Computes A=A-B, which may need to be re-implemented depending on the
  * topology of the individual scalar components (eg, angles).
-  */
+ */
 void CRangeBearing::OnSubstractObservationVectors(
 	KFArray_OBS& A, const KFArray_OBS& B) const
 {
@@ -583,17 +585,17 @@ void CRangeBearing::OnSubstractObservationVectors(
 }
 
 /** Update the m_particles, predicting the posterior of robot pose and map after
-* a movement command.
-*  This method has additional configuration parameters in "options".
-*  Performs the update stage of the RBPF, using the sensed Sensorial Frame:
-*
-*   \param action This is a pointer to CActionCollection, containing the pose
-* change the robot has been commanded.
-*   \param observation This must be a pointer to a CSensoryFrame object, with
-* robot sensed observations.
-*
-* \sa options
-*/
+ * a movement command.
+ *  This method has additional configuration parameters in "options".
+ *  Performs the update stage of the RBPF, using the sensed Sensorial Frame:
+ *
+ *   \param action This is a pointer to CActionCollection, containing the pose
+ * change the robot has been commanded.
+ *   \param observation This must be a pointer to a CSensoryFrame object, with
+ * robot sensed observations.
+ *
+ * \sa options
+ */
 void CRangeBearingParticleFilter::prediction_and_update_pfStandardProposal(
 	const mrpt::obs::CActionCollection* action,
 	const mrpt::obs::CSensoryFrame* observation,
@@ -672,7 +674,7 @@ void CRangeBearingParticleFilter::initializeParticles(size_t M)
 }
 
 /** Computes the average velocity
-  */
+ */
 void CRangeBearingParticleFilter::getMean(
 	float& x, float& y, float& vx, float& vy)
 {

@@ -13,6 +13,7 @@
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/random.h>
 #include <mrpt/system/os.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::bayes;
@@ -37,7 +38,7 @@ class CMyRejectionSampling : public CRejectionSamplingCapable<CPose2D>
 
 	/** Returns the NORMALIZED observation likelihood at a given point of the
 	 * state space (values in the range [0,1]).
-	  */
+	 */
 	double RS_observationLikelihood(const CPose2D& x)
 	{
 		return exp(

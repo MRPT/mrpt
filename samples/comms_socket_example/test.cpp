@@ -9,6 +9,7 @@
 
 #define SOCKET_TEST_VERBOSE
 #include "SocketsTest_impl.cpp"
+#include <iostream>
 
 // ------------------------------------------------------
 //						MAIN

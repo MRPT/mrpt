@@ -16,6 +16,7 @@
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/opengl/CTexturedPlane.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::gui;
@@ -78,16 +79,15 @@ void ransac3Dplane_distance(
 	out_inlierIndices.reserve(100);
 	for (size_t i = 0; i < N; i++)
 	{
-		const double d = plane.distance(
-			TPoint3D(
-				allData.get_unsafe(0, i), allData.get_unsafe(1, i),
-				allData.get_unsafe(2, i)));
+		const double d = plane.distance(TPoint3D(
+			allData.get_unsafe(0, i), allData.get_unsafe(1, i),
+			allData.get_unsafe(2, i)));
 		if (d < distanceThreshold) out_inlierIndices.push_back(i);
 	}
 }
 
 /** Return "true" if the selected points are a degenerate (invalid) case.
-  */
+ */
 bool ransac3Dplane_degenerate(
 	const CMatrixDouble& allData, const std::vector<size_t>& useIndices)
 {
@@ -145,7 +145,7 @@ void TestRANSAC()
 			best_inliers, best_model,
 			iters == 0 ? mrpt::system::LVL_DEBUG
 					   : mrpt::system::LVL_INFO  // Verbose
-			);
+		);
 
 	cout << "Computation time: " << tictac.Tac() * 1000.0 / TIMES << " ms"
 		 << endl;
@@ -164,9 +164,8 @@ void TestRANSAC()
 	opengl::COpenGLScene::Ptr scene =
 		mrpt::make_aligned_shared<opengl::COpenGLScene>();
 
-	scene->insert(
-		mrpt::make_aligned_shared<opengl::CGridPlaneXY>(
-			-20, 20, -20, 20, 0, 1));
+	scene->insert(mrpt::make_aligned_shared<opengl::CGridPlaneXY>(
+		-20, 20, -20, 20, 0, 1));
 	scene->insert(opengl::stock_objects::CornerXYZ());
 
 	opengl::CPointCloud::Ptr points =

@@ -14,6 +14,7 @@
 #include <mrpt/vision/types.h>
 #include <mrpt/vision/CFeatureExtraction.h>
 #include <mrpt/vision/TSimpleFeature.h>
+#include <iostream>
 
 using namespace std;
 using namespace mrpt;
@@ -101,7 +102,7 @@ void TestVideoBuildPyr()
 		mrpt::opengl::FILL,
 		10  // An arbitrary ID to always overwrite the same, previous 2D text
 		// message
-		);
+	);
 
 	// The image pyramid: Initially empty
 	CImagePyramid imgpyr;
@@ -166,7 +167,7 @@ void TestVideoBuildPyr()
 					mrpt::opengl::FILL,
 					11  // An arbitrary ID to always overwrite the same,
 					// previous 2D text message
-					);
+				);
 
 				win.unlockAccess3DScene();
 				win.repaint();

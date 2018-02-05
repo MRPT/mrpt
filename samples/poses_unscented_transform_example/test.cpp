@@ -19,6 +19,7 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CEllipsoid.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -78,9 +79,8 @@ void Test_SUT()
 	// 3D view:
 	mrpt::opengl::COpenGLScene::Ptr scene =
 		mrpt::make_aligned_shared<mrpt::opengl::COpenGLScene>();
-	scene->insert(
-		mrpt::make_aligned_shared<opengl::CGridPlaneXY>(
-			-10, 10, -10, 10, 0, 1));
+	scene->insert(mrpt::make_aligned_shared<opengl::CGridPlaneXY>(
+		-10, 10, -10, 10, 0, 1));
 
 	{
 		opengl::CEllipsoid::Ptr el =
@@ -105,7 +105,7 @@ void Test_SUT()
 			y_mean, y_cov,
 			5e5,  // Samples
 			&MC_samples  // we want the samples.
-			);
+		);
 
 	cout << "MC: Time (ms): " << 1e3 * tictac.Tac() / N << endl;
 
@@ -256,7 +256,7 @@ void TestCalibrate_pose2quat()
 		1e-3,  // alpha
 		0,  // K
 		2.0  // beta
-		);
+	);
 
 	cout << "SUT: " << endl
 		 << y_mean << endl

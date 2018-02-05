@@ -12,6 +12,7 @@
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/random.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::maps;

@@ -17,6 +17,7 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
+#include <iostream>
 
 using namespace std;
 using namespace mrpt;

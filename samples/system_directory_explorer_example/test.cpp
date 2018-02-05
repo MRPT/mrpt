@@ -8,6 +8,9 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/system/CDirectoryExplorer.h>
+#include <mrpt/system/filesystem.h>
+#include <iostream>
+#include <string>
 
 using namespace mrpt;
 using namespace mrpt::system;

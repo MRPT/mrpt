@@ -15,6 +15,7 @@
 #include <mrpt/math/data_utils.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <map>
+#include <iostream>
 
 using namespace mrpt::bayes;
 using namespace mrpt::math;

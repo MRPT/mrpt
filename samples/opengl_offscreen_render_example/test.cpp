@@ -10,6 +10,7 @@
 #include <mrpt/opengl/CFBORender.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/img/CImage.h>
+#include <iostream>
 
 using namespace std;
 using namespace mrpt;

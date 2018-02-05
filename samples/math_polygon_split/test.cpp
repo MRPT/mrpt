@@ -10,6 +10,7 @@
 #include <mrpt/system/datetime.h>
 #include <mrpt/gui.h>
 #include <mrpt/math/geometry.h>
+#include <iostream>
 
 using namespace std;
 using namespace mrpt;
@@ -24,9 +25,8 @@ const double DIFF_RADIUS = MAX_RADIUS - MIN_RADIUS;
 
 inline double randomDouble(size_t precision = 1000)
 {
-	return MIN_RADIUS +
-		   DIFF_RADIUS * (static_cast<double>(rand() % precision) /
-						  static_cast<double>(precision - 1));
+	return MIN_RADIUS + DIFF_RADIUS * (static_cast<double>(rand() % precision) /
+									   static_cast<double>(precision - 1));
 }
 
 void display()
@@ -67,9 +67,8 @@ void display()
 
 int main(int argc, char** argv)
 {
-	srand(
-		(unsigned int)mrpt::system::extractDayTimeFromTimestamp(
-			mrpt::system::getCurrentLocalTime()));
+	srand((unsigned int)mrpt::system::extractDayTimeFromTimestamp(
+		mrpt::system::getCurrentLocalTime()));
 	display();
 	return 0;
 }

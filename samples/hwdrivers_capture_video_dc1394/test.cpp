@@ -10,6 +10,7 @@
 #include <mrpt/hwdrivers/CImageGrabber_dc1394.h>
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/system/CTicTac.h>
+#include <iostream>
 
 using namespace mrpt::hwdrivers;
 using namespace mrpt::gui;
@@ -74,8 +75,9 @@ void TestCapture_1394()
 			tictac.Tic();
 		}
 
-		CObservationImage::Ptr obs = mrpt::make_aligned_shared<
-			CObservationImage>();  // Memory will be freed by
+		CObservationImage::Ptr obs =
+			mrpt::make_aligned_shared<CObservationImage>();  // Memory will be
+															 // freed by
 		// SF destructor in each
 		// loop.
 		if (!capture.getObservation(*obs))

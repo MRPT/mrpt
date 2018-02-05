@@ -14,6 +14,7 @@
 #include <mrpt/opengl/CSphere.h>
 #include <mrpt/system/os.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
+#include <iostream>
 
 using namespace std;
 using namespace mrpt;

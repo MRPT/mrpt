@@ -12,21 +12,22 @@
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
+#include <iostream>
 
 using namespace std;
 using namespace mrpt::graphs;
 
 /**
-  * This is a example of problem resolution using the CAStarAlgorithm template.
+ * This is a example of problem resolution using the CAStarAlgorithm template.
  * Although this problem is better solved with dynamic programming, it
  * illustrates
-  * perfectly how to inherit from that template in order to solve a problem.
-  *
-  * Let's assume a currency composed of coins whose values are 2, 7, 8 and 19.
+ * perfectly how to inherit from that template in order to solve a problem.
+ *
+ * Let's assume a currency composed of coins whose values are 2, 7, 8 and 19.
  * The problem consists of finding a minimal set of these coins whose total
  * value
-  * equals a given amount.
-  */
+ * equals a given amount.
+ */
 
 class CCoinDistribution
 {
@@ -37,19 +38,19 @@ class CCoinDistribution
 	size_t coins19;
 	CCoinDistribution() : coins2(0), coins7(0), coins8(0), coins19(0) {}
 	/**
-	  * Auxiliary function to calculate the amount of money. Not strictly
+	 * Auxiliary function to calculate the amount of money. Not strictly
 	 * necessary, but handy.
-	  */
+	 */
 	size_t money() const
 	{
 		return 2 * coins2 + 7 * coins7 + 8 * coins8 + 19 * coins19;
 	}
 	/**
-	  * Implementing the == operator is mandatory, because it allows the A*
+	 * Implementing the == operator is mandatory, because it allows the A*
 	 * algorithm to reject repeated solutions. Actually, the template should not
 	 * compile if
-	  * this operator is not present.
-	  */
+	 * this operator is not present.
+	 */
 	inline bool operator==(const CCoinDistribution& mon) const
 	{
 		return (coins2 == mon.coins2) && (coins7 == mon.coins7) &&
@@ -58,26 +59,26 @@ class CCoinDistribution
 };
 
 /**
-  * To use the template, a class must be derived from CAStarAlgorithm<Solution
+ * To use the template, a class must be derived from CAStarAlgorithm<Solution
  * Class>. In this case, the Solution Class is CCoinDistribution.
-  */
+ */
 class CAStarExample : public CAStarAlgorithm<CCoinDistribution>
 {
    private:
 	/**
-	  * Problem goal.
-	  */
+	 * Problem goal.
+	 */
 	const size_t N;
 
    public:
 	/**
-	  * When a class derives from CAStarAlgorithm, its constructor should
+	 * When a class derives from CAStarAlgorithm, its constructor should
 	 * include all the data that define the specific problem.
-	  */
+	 */
 	CAStarExample(size_t goal) : N(goal) {}
 	/**
-	  * The following five methods must be implemented to use the algorithm:
-	  */
+	 * The following five methods must be implemented to use the algorithm:
+	 */
 	virtual bool isSolutionEnded(const CCoinDistribution& s)
 	{  // True if the solution is complete.
 		return s.money() == N;
@@ -111,8 +112,8 @@ class CAStarExample : public CAStarAlgorithm<CCoinDistribution>
 };
 
 /**
-  * Main function. Just calls the A* algorithm as many times as needed.
-  */
+ * Main function. Just calls the A* algorithm as many times as needed.
+ */
 int main(int argc, char** argv)
 {
 	for (;;)

@@ -16,6 +16,7 @@
 #include <mrpt/math/utils.h>
 #include <mrpt/random.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
+#include <iostream>
 
 using namespace mrpt::gui;
 using namespace mrpt::random;
