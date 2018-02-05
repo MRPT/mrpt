@@ -76,14 +76,14 @@ IF(BUILD_EXAMPLES)
 		io_pipes_example
 		io_compress_example
 		)
-	SET(CMAKE_EXAMPLE_DEPS mrpt-serialization mrpt-io)
+	SET(CMAKE_EXAMPLE_DEPS mrpt-serialization mrpt-io mrpt-poses)
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 	# === Depending on: db ===
 	SET(LIST_EXAMPLES_IN_THIS_DIR
 		db_example
 		)
-	SET(CMAKE_EXAMPLE_DEPS mrpt-db)
+	SET(CMAKE_EXAMPLE_DEPS mrpt-db mrpt-io mrpt-serialization)
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 	# === Depending on: system ===
@@ -95,7 +95,7 @@ IF(BUILD_EXAMPLES)
 		system_dirs_files_manipulation
 		system_params_by_name
 		)
-	SET(CMAKE_EXAMPLE_DEPS mrpt-db)
+	SET(CMAKE_EXAMPLE_DEPS mrpt-system mrpt-poses)
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 	# === Depending on: mrpt-math ===
@@ -135,7 +135,7 @@ IF(BUILD_EXAMPLES)
 		comms_socket_example
 		comms_ftdi_usb_enumerate_example
 		)
-	SET(CMAKE_EXAMPLE_DEPS mrpt-comms)
+	SET(CMAKE_EXAMPLE_DEPS mrpt-comms mrpt-serialization mrpt-poses)
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 	# === Depending on: mrpt-gui, mrpt-img, mrpt-opengl ===

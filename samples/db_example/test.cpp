@@ -8,8 +8,11 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/db/CSimpleDatabase.h>
+#include <mrpt/io/CFileStream.h>
 #include <mrpt/system/CTicTac.h>
+#include <mrpt/serialization/CArchive.h>
 #include <cstdio>
+#include <iostream>
 
 // ------------------------------------------------------
 //				TestDB
@@ -17,6 +20,8 @@
 void TestDB()
 {
 	using namespace mrpt::db;
+	using namespace mrpt::io;
+	using namespace mrpt::serialization;
 
 	CSimpleDatabase db, db2, db3;
 	CSimpleDatabaseTable::Ptr table;
@@ -46,8 +51,14 @@ void TestDB()
 	// Save/load as binary:
 	// ------------------------------
 	tictac.Tic();
-	CFileStream("test_db.bin", fomWrite) << db;
-	CFileStream("test_db.bin", fomRead) >> db2;
+	{
+		CFileStream f("test_db.bin", fomWrite);
+		archiveFrom(f) << db;
+	}
+	{
+		CFileStream f("test_db.bin", fomRead);
+		archiveFrom(f) >> db2;
+	}
 	double t_bin = tictac.Tac();
 
 	printf(

@@ -13,8 +13,6 @@
  */
 
 #include <mrpt/gui.h>
-#include <mrpt/math.h>
-#include <mrpt/system.h>
 #include <mrpt/random.h>
 
 using namespace mrpt;
@@ -126,7 +124,7 @@ void TestRandomGenerators()
 		getRandomGenerator().drawGaussianMultivariateMany(
 			v1, 10000, cov, &Mean);
 
-#if 0 
+#if 0
 		CVectorDouble m;
 		CMatrixDouble c;
 		mrpt::math::meanAndCov(v1,m,c);

@@ -7,7 +7,9 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/system.h>
+#include <mrpt/system/CFileSystemWatcher.h>
+#include <cstdio>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::system;

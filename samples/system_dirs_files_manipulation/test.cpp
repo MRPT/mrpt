@@ -16,7 +16,7 @@
 
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPosePDF.h>
-#include <mrpt/system.h>
+#include <mrpt/system/filesystem.h>
 
 #include <string>
 #include <sstream>

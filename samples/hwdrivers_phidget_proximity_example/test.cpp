@@ -11,7 +11,6 @@
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/obs/CObservationRange.h>
-#include <mrpt/system.h>
 
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;

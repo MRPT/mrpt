@@ -12,6 +12,8 @@
  * Prints current time instances in UTC format
  */
 
+#include <mrpt/system/datetime.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::system;
