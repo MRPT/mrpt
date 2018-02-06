@@ -2241,7 +2241,7 @@ void xRawLogViewerFrame::loadRawlogFile(const string& str, int first, int last)
 			else if (newObj->GetRuntimeClass() == CLASS_ID(CRawlog))
 			{
 				CRawlog::Ptr rw = std::dynamic_pointer_cast<CRawlog>(newObj);
-				rawlog.moveFrom(*rw);
+				rawlog = std::move(*rw);
 			}
 			else
 			{
