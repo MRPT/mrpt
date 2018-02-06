@@ -885,7 +885,7 @@ void xRawLogViewerFrame::OnMenuResortByTimestamp(wxCommandEvent& event)
 		temp_rawlog.addObservationMemoryReference(rawlog.getAsObservation(idx));
 	}
 
-	rawlog.moveFrom(temp_rawlog);
+	rawlog = std::move(temp_rawlog);
 
 	// Update the views:
 	rebuildTreeView();
@@ -1113,7 +1113,7 @@ void xRawLogViewerFrame::OnMenuConvertSF(wxCommandEvent& event)
 	progDia.Update(nEntries);
 
 	// Update:
-	rawlog.moveFrom(new_rawlog);
+	rawlog = std::move(new_rawlog);
 	rebuildTreeView();
 
 	WX_END_TRY
