@@ -101,7 +101,10 @@ function test ()
 #  if command_exists gdb ; then
 #    make test_gdb
 #  else
-    make tests_build_all test
+    make tests_build_all
+    make test
+    make gcov
+    make lcov
 #  fi
   bash <(curl -s https://codecov.io/bash)
 
