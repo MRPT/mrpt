@@ -304,18 +304,6 @@ bool CRawlog::saveToRawLogFile(const std::string& fileName) const
 	}
 }
 
-void CRawlog::moveFrom(CRawlog& obj)
-{
-	MRPT_START
-	if (this == &obj) return;
-	clear();
-	m_commentTexts = obj.m_commentTexts;
-	m_seqOfActObs = obj.m_seqOfActObs;
-	obj.m_seqOfActObs.clear();
-	obj.m_commentTexts.text.clear();
-	MRPT_END
-}
-
 void CRawlog::swap(CRawlog& obj)
 {
 	if (this == &obj) return;

@@ -366,12 +366,6 @@ class CRawlog : public mrpt::serialization::CSerializable
 		TListTimeAndObservations& out_found,
 		size_t guess_start_position = 0) const;
 
-	/** Efficiently copy the contents from other existing object, and remove the
-	 * data from the origin (after calling this, the original object will have
-	 * no actions/observations).
-	  */
-	void moveFrom(CRawlog& obj);
-
 	/** Efficiently swap the contents of two existing objects.
 	  */
 	void swap(CRawlog& obj);
