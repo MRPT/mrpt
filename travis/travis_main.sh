@@ -104,7 +104,6 @@ function test ()
     make tests_build_all
     make test
     make gcov
-    make lcov
 #  fi
   bash <(curl -s https://codecov.io/bash)
 
