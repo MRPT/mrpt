@@ -14,21 +14,12 @@ SOURCE_DATE_EPOCH
 
 # Vim-related files
 Session.vim
+*.swo
+*.swp
 
 # common results directories
 graphslam_results/
 
-<<<<<<< HEAD
-# Ignore IDE directories
-.idea/*
-
-# Ignore swap file
-=======
-# idea
+# Intellij IDE
 .idea/*
 cmake-build-debug/*
-
-# VIM
->>>>>>> dea6b5aa12dd2eba7e382d3af36787ae880cf1c5
-*.swo
-*.swp
