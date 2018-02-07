@@ -81,6 +81,7 @@ rotation matrices.
 (via the new `MRPT_READ_POD()` macro).
 		- Fix segfault in CMetricMap::loadFromSimpleMap() if the provided
 CMetricMap has empty smart pointers.
+    - Fix crash in CGPSInterface when not setting an external mutex.
 
 <hr>
 <a name="1.5.6">
