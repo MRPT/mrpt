@@ -273,7 +273,8 @@ class CGPSInterface : public mrpt::system::COutputLogger, public CGenericSensor
 	/** Typically a CSerialPort created by this class, but may be set
 	 * externally. */
 	mrpt::io::CStream* m_data_stream;
-	std::mutex* m_data_stream_cs;
+	std::mutex *m_data_stream_cs;
+	std::mutex m_data_stream_mine_cs;
 	bool m_data_stream_is_external;
 
 	poses::CPose3D m_sensorPose;

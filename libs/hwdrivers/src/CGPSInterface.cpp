@@ -254,6 +254,7 @@ bool CGPSInterface::tryToOpenTheCOM()
 	{
 		m_data_stream = new mrpt::comms::CSerialPort();
 		m_data_stream_is_external = false;
+		m_data_stream_cs = &m_data_stream_mine_cs;
 	}
 
 	auto serial = dynamic_cast<CSerialPort*>(m_data_stream);
