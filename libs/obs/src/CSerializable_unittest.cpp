@@ -13,6 +13,7 @@
 #include <mrpt/io/CMemoryStream.h>
 #include <gtest/gtest.h>
 #include <CTraitsTest.h>
+#include <sstream>
 
 using namespace mrpt;
 using namespace mrpt::obs;
@@ -70,7 +71,7 @@ const mrpt::rtti::TRuntimeClassId* lstClasses[] = {
 
 // Create a set of classes, then serialize and deserialize to test possible
 // bugs:
-TEST(SerializeTestObs, WriteReadToMem)
+TEST(Observations, WriteReadToMem)
 {
 	for (size_t i = 0; i < sizeof(lstClasses) / sizeof(lstClasses[0]); i++)
 	{
@@ -99,7 +100,7 @@ TEST(SerializeTestObs, WriteReadToMem)
 }
 
 // Also try to convert them to octect vectors:
-TEST(SerializeTestObs, WriteReadToOctectVectors)
+TEST(Observations, WriteReadToOctectVectors)
 {
 	for (size_t i = 0; i < sizeof(lstClasses) / sizeof(lstClasses[0]); i++)
 	{
@@ -123,4 +124,35 @@ TEST(SerializeTestObs, WriteReadToOctectVectors)
 						 << e.what() << endl;
 		}
 	}
+}
+
+// Try to invoke a copy ctor and = operator:
+template <class T>
+void run_copy_tests()
+{
+	std::stringstream ss;
+	{
+		auto ptr_org = T::Create();
+		auto ptr_copy_op = T::Create();
+		*ptr_copy_op = *ptr_org;  // copy op
+		ptr_org.reset();
+		// make sure the copy works without erroneous mem accesses,etc.
+		ptr_copy_op->getDescriptionAsText(ss);
+	}
+	{
+		auto ptr_org = T::Create();
+		auto ptr_copy_ctor = T::Create(*ptr_org);  // copy ctor
+		ptr_org.reset();
+		// make sure the copy works without erroneous mem accesses,etc.
+		ptr_copy_ctor->getDescriptionAsText(ss);
+	}
+}
+
+TEST(Observations, CopyCtorAssignOp)
+{
+	run_copy_tests<CObservation2DRangeScan>();
+	run_copy_tests<CObservation3DRangeScan>();
+	run_copy_tests<CObservationGPS>();
+	run_copy_tests<CObservationIMU>();
+	run_copy_tests<CObservationOdometry>();
 }
