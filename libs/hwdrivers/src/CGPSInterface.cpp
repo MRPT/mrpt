@@ -260,13 +260,14 @@ bool CGPSInterface::tryToOpenTheCOM()
 	auto serial = dynamic_cast<CSerialPort*>(m_data_stream);
 	if (serial)
 	{
-		std::lock_guard<std::mutex> lock(*m_data_stream_cs);
-		if (serial->isOpen()) return true;  // Already open
+		{
+			std::lock_guard<std::mutex> lock(*m_data_stream_cs);
+			if (serial->isOpen()) return true;  // Already open
 
-		if (m_verbose)
-			cout << "[CGPSInterface] Opening " << m_COMname << " @ "
-				 << m_COMbauds << endl;
-
+			if (m_verbose)
+				cout << "[CGPSInterface] Opening " << m_COMname << " @ "
+					 << m_COMbauds << endl;
+		}
 		try
 		{
 			serial->open(m_COMname);
