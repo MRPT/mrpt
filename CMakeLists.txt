@@ -40,6 +40,7 @@ if(COMMAND cmake_policy)
 endif()
 # -------------------------
 
+
 # Detect wordsize:
 IF(CMAKE_SIZEOF_VOID_P EQUAL 8)  # Size in bytes!
 	SET(CMAKE_MRPT_WORD_SIZE 64)
@@ -50,6 +51,16 @@ ENDIF()
 include(cmakemodules/script_version_number.cmake REQUIRED)	#  Loads MRPT version number
 
 LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmakemodules") # Directory for CMake scripts
+
+# -------------------------
+#            CodeCov
+# -------------------------
+enable_testing()
+find_package(codecov)
+
+
+# -------------------------
+
 
 SET(ALLOW_GPL OFF CACHE BOOL "Allows MRPT to link to GPL code. This effectively makes some MRPT binaries GPL licensed. Use this at your own risk.")
 
@@ -679,3 +690,6 @@ include(cmakemodules/script_install_commands.cmake REQUIRED)
 
 # Summary
 include(cmakemodules/script_show_final_summary.cmake REQUIRED)
+
+# evaluate coverage
+coverage_evaluate()
