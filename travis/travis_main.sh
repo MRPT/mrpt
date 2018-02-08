@@ -93,6 +93,7 @@ function test ()
   cmake $MRPT_DIR \
     -DBUILD_APPLICATIONS=FALSE \
     -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+    -DENABLE_COVERAGE=On \
     $EXTRA_CMAKE_ARGS
 
   # Remove gdb use for coverage test reports.
@@ -100,8 +101,11 @@ function test ()
 #  if command_exists gdb ; then
 #    make test_gdb
 #  else
+    make tests_build_all
     make test
+    make gcov
 #  fi
+  bash <(curl -s https://codecov.io/bash)
 
   cd $MRPT_DIR
 }
