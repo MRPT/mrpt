@@ -25,6 +25,7 @@ using namespace mrpt::gui;
 using namespace mrpt::math;
 using namespace mrpt::random;
 using namespace mrpt::poses;
+using namespace mrpt::system;
 using namespace std;
 
 mrpt::gui::CDisplayWindow3D::Ptr win;
@@ -103,7 +104,7 @@ void TestRANSACPlanes()
 		opengl::CTexturedPlane::Ptr glPlane =
 			mrpt::make_aligned_shared<opengl::CTexturedPlane>(-10, 10, -10, 10);
 
-		CPose3D glPlanePose;
+		TPose3D glPlanePose;
 		p->second.getAsPose3D(glPlanePose);
 		glPlane->setPose(glPlanePose);
 

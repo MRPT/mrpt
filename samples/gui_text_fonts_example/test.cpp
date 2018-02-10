@@ -12,6 +12,7 @@
 
 using namespace mrpt;
 using namespace mrpt::gui;
+using namespace mrpt::img;
 using namespace std;
 
 // ------------------------------------------------------

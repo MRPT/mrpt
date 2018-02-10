@@ -20,7 +20,7 @@ using namespace std;
 #include <mrpt/examples_config.h>
 string myDataDir(
 	MRPT_EXAMPLES_BASE_DIRECTORY +
-	string("imageCorrelation/"));  // Reuse it's images
+	string("img_correlation_example/"));  // Reuse it's images
 
 // ------------------------------------------------------
 //				TestFFT_2D_real
@@ -164,9 +164,9 @@ void TestImageConversion()
 
 	{
 		tictac.Tic();
-		if (!img.loadFromFile("../imageBasics/frame_color.bmp"))
+		if (!img.loadFromFile("../img_basic_example/frame_color.bmp"))
 		{
-			cerr << "Error loading ../imageBasics/frame_color.bmp" << endl;
+			cerr << "Error loading ../img_basic_example/frame_color.bmp" << endl;
 			return;
 		}
 		printf("bmp file loaded in %.03fms\n", 1000.0f * tictac.Tac());

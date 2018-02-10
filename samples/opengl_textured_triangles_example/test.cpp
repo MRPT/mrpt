@@ -24,7 +24,7 @@ using namespace mrpt::opengl;
 #include <mrpt/examples_config.h>
 
 string myDataDir(
-	MRPT_EXAMPLES_BASE_DIRECTORY + string("setOfTexturedTrianglesTest/"));
+	MRPT_EXAMPLES_BASE_DIRECTORY + string("opengl_textured_triangles_example/"));
 
 // ------------------------------------------------------
 //				TestDisplay3D

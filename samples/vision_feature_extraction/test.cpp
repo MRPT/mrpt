@@ -18,7 +18,7 @@ using namespace std;
 using mrpt::format;
 
 #include <mrpt/examples_config.h>
-string myDataDir(MRPT_EXAMPLES_BASE_DIRECTORY + string("imageConvolutionFFT/"));
+string myDataDir(MRPT_EXAMPLES_BASE_DIRECTORY + string("img_convolution_fft/"));
 const string the_img_for_extract_feats = myDataDir + string("test_image.jpg");
 
 void TestTrackFeatures()
@@ -60,9 +60,9 @@ void TestExtractMatchProjectAndPaint()
 	CMatchedFeatureList mHarris, mSIFT, mSURF;
 	CImage imL, imR;
 
-	string imgL = MRPT_EXAMPLES_BASE_DIRECTORY + string("feature_extraction/") +
+	string imgL = MRPT_EXAMPLES_BASE_DIRECTORY + string("vision_feature_extraction/") +
 				  string("imgs/imL_p01.jpg");  // Left image
-	string imgR = MRPT_EXAMPLES_BASE_DIRECTORY + string("feature_extraction/") +
+	string imgR = MRPT_EXAMPLES_BASE_DIRECTORY + string("vision_feature_extraction/") +
 				  string("imgs/imR_p01.jpg");  // Right image
 
 	// Load and check images
@@ -123,9 +123,9 @@ void TestMatchFeatures()
 	CMatchedFeatureList mHarris, mSIFT, mSURF, mHarris_SAD, mFAST_CC, mFAST_SAD;
 	CImage imL, imR;
 
-	string imgL = MRPT_EXAMPLES_BASE_DIRECTORY + string("feature_extraction/") +
+	string imgL = MRPT_EXAMPLES_BASE_DIRECTORY + string("vision_feature_extraction/") +
 				  string("imgs/imL_p01.jpg");  // Left image
-	string imgR = MRPT_EXAMPLES_BASE_DIRECTORY + string("feature_extraction/") +
+	string imgR = MRPT_EXAMPLES_BASE_DIRECTORY + string("vision_feature_extraction/") +
 				  string("imgs/imR_p01.jpg");  // Right image
 
 	//	string imgL = "../../bin/imgs/640x480_left_rect.jpg";		// Left
@@ -273,9 +273,9 @@ void TestMatchFeatures()
 void TestMatchingComparative()
 {
 	// Take two images
-	string imgL = MRPT_EXAMPLES_BASE_DIRECTORY + string("feature_extraction/") +
+	string imgL = MRPT_EXAMPLES_BASE_DIRECTORY + string("vision_feature_extraction/") +
 				  string("imgs/imL_p01.jpg");  // Left image
-	string imgR = MRPT_EXAMPLES_BASE_DIRECTORY + string("feature_extraction/") +
+	string imgR = MRPT_EXAMPLES_BASE_DIRECTORY + string("vision_feature_extraction/") +
 				  string("imgs/imR_p01.jpg");  // Right image
 
 	CImage im1, im2;

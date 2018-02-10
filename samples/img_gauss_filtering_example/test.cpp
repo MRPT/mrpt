@@ -13,10 +13,12 @@
 #include <iostream>
 
 using namespace mrpt::gui;
+using namespace mrpt::img;
+using namespace mrpt::system;
 using namespace std;
 
 #include <mrpt/examples_config.h>
-string myDataDir(MRPT_EXAMPLES_BASE_DIRECTORY + string("gauss_img_filtering/"));
+string myDataDir(MRPT_EXAMPLES_BASE_DIRECTORY + string("img_gauss_filtering_example/"));
 
 // ------------------------------------------------------
 //					Test

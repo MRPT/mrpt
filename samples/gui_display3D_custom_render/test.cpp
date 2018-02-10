@@ -24,6 +24,7 @@ using namespace std;
 using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::opengl;
+using namespace mrpt::system;
 
 // This is my custom class to handle the pre/post render events:
 struct TMyExtraRenderingStuff : public mrpt::system::CObserver
@@ -132,7 +133,7 @@ void TestDisplay3D()
 	{
 		opengl::CSphere::Ptr obj = mrpt::make_aligned_shared<opengl::CSphere>();
 		obj->setColor(0, 0, 1);
-		obj->setRadius(0.3);
+		obj->setRadius(0.3f);
 		obj->setLocation(0, 0, 1);
 		obj->setName("ball_1");
 		theScene->insert(obj);
@@ -146,7 +147,7 @@ void TestDisplay3D()
 
 	// Texts:
 	win.addTextMessage(
-		0.01, 0.85, "This is a 2D message", TColorf(1, 1, 1), 0,
+		0.01, 0.85, "This is a 2D message", mrpt::img::TColorf(1, 1, 1), 0,
 		MRPT_GLUT_BITMAP_TIMES_ROMAN_10);
 
 	win.setCameraElevationDeg(25.0f);
@@ -179,7 +180,7 @@ void TestDisplay3D()
 		// Update the texts on the gl display:
 		win.addTextMessage(
 			5, 5, mrpt::format("FPS=%5.02f", win.getRenderingFPS()),
-			TColorf(1, 1, 1), 0, MRPT_GLUT_BITMAP_HELVETICA_18);
+			mrpt::img::TColorf(1, 1, 1), 0, MRPT_GLUT_BITMAP_HELVETICA_18);
 
 		// IMPORTANT!!! IF NOT UNLOCKED, THE WINDOW WILL NOT BE UPDATED!
 		win.unlockAccess3DScene();

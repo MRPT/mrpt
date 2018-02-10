@@ -15,7 +15,7 @@
 
 #include <mrpt/examples_config.h>
 const std::string myTestFile(
-	MRPT_EXAMPLES_BASE_DIRECTORY + std::string("imageBasics/frame_color.jpg"));
+	MRPT_EXAMPLES_BASE_DIRECTORY + std::string("img_basic_example/frame_color.jpg"));
 
 using namespace std;
 using namespace mrpt;

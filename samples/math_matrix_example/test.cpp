@@ -16,7 +16,7 @@ using namespace mrpt::math;
 using namespace std;
 
 #include <mrpt/examples_config.h>
-string myDataDir(MRPT_EXAMPLES_BASE_DIRECTORY + string("matrix/"));
+string myDataDir(MRPT_EXAMPLES_BASE_DIRECTORY + string("math_matrix_example/"));
 
 // ------------------------------------------------------
 //				TestChol

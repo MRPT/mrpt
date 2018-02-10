@@ -19,7 +19,7 @@ using namespace mrpt::gui;
 
 #include <mrpt/examples_config.h>
 std::string myDataDir =
-	MRPT_EXAMPLES_BASE_DIRECTORY + string("checkerboardDetectors/");
+	MRPT_EXAMPLES_BASE_DIRECTORY + string("vision_checkerboard_detectors/");
 
 // ------------------------------------------------------
 //				TestCheckerboardDetectors

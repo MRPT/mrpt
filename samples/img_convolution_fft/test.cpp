@@ -7,17 +7,22 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/gui.h>
-#include <mrpt/math.h>
+#include <mrpt/gui/CDisplayWindow.h>
+#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/fourier.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/img/CImage.h>
 #include <iostream>
 
 using namespace mrpt;
+using namespace mrpt::img;
 using namespace mrpt::gui;
 using namespace mrpt::math;
+using namespace mrpt::system;
 using namespace std;
 
 #include <mrpt/examples_config.h>
-string myDataDir(MRPT_EXAMPLES_BASE_DIRECTORY + string("imageConvolutionFFT/"));
+string myDataDir(MRPT_EXAMPLES_BASE_DIRECTORY + string("img_convolution_fft/"));
 
 // ------------------------------------------------------
 //				TestImageConvolutionFFT
@@ -29,7 +34,8 @@ void TestImageConvolutionFFT()
 	CMatrix imgCorr;
 
 	// ====================  1  ===================
-	img.loadFromFile(myDataDir + string("test_image.jpg"));
+	if (!img.loadFromFile(myDataDir + string("test_image.jpg")))
+		throw std::runtime_error("Cannot load test image!");
 
 	printf(
 		"Computing %ux%u image convolution ...", (unsigned)img.getWidth(),

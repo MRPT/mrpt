@@ -22,7 +22,7 @@ using namespace mrpt::poses;
 using namespace std;
 
 #include <mrpt/examples_config.h>
-string myDataDir(MRPT_EXAMPLES_BASE_DIRECTORY + string("benchmark-gridmaps/"));
+string myDataDir(MRPT_EXAMPLES_BASE_DIRECTORY + string("maps_gridmap_benchmark/"));
 
 // Default .ini file:
 string iniFile(myDataDir + string("benchmark-options.ini"));

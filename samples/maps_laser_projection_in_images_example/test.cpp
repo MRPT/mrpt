@@ -42,8 +42,6 @@ using namespace std;
 // Default path, or user path passed thru command line:
 std::string RAWLOG_FILE = MRPT_EXAMPLES_BASE_DIRECTORY
 	"../share/mrpt/datasets/localization_demo.rawlog";
-// std::string		RAWLOG_FILE =
-// "J:/Trabajo/RAWLogs/2007-03MAR-08_Stereo_20fps_pasillo.rawlog";
 
 // ------------------------------------------------------
 //                  TestGeometry3D

@@ -9,11 +9,13 @@
 
 #include <mrpt/io/CPipe.h>
 #include <mrpt/poses/CPose3D.h>
+#include <mrpt/serialization/CArchive.h>
 #include <iostream>
+#include <thread>
 
 using namespace mrpt;
 using namespace mrpt::poses;
-using namespace mrpt::system;
+using namespace mrpt::io;
 using namespace std;
 
 void thread_reader(CPipeReadEndPoint& read_pipe)
@@ -26,8 +28,8 @@ void thread_reader(CPipeReadEndPoint& read_pipe)
 		// Simple read commands:
 		size_t len = 0;
 		char buf[100];
-		read_pipe.ReadBuffer(&len, sizeof(len));
-		read_pipe.ReadBuffer(buf, len);
+		read_pipe.Read(&len, sizeof(len));
+		read_pipe.Read(buf, len);
 		buf[len] = 0;
 
 		cout << "RX: " << buf << endl;
@@ -35,7 +37,8 @@ void thread_reader(CPipeReadEndPoint& read_pipe)
 		// Read MRPT object from a pipe:
 		// *Note*: If the object class is known in advance, one can avoid smart
 		// pointers with ReadObject(&existingObj)
-		CSerializable::Ptr obj = read_pipe.ReadObject();
+		auto arch = mrpt::serialization::archiveFrom(read_pipe);
+		auto obj = arch.ReadObject();
 		if (IS_CLASS(obj, CPose3D))
 		{
 			CPose3D::Ptr ptrPose = std::dynamic_pointer_cast<CPose3D>(obj);
@@ -60,14 +63,15 @@ void thread_writer(CPipeWriteEndPoint& write_pipe)
 		// Simple write commands:
 		const char* str = "Hello world!";
 		size_t len = strlen(str);
-		write_pipe.WriteBuffer(&len, sizeof(len));
-		write_pipe.WriteBuffer(str, len);
+		write_pipe.Write(&len, sizeof(len));
+		write_pipe.Write(str, len);
 
 		// Send MRPT objects:
 		// *NOTE*: For efficiency, one should first write to an intermediary
 		// mrpt::utils::CMemoryChunk to write only once to the pipe.
 		mrpt::poses::CPose3D pose(1, 2, 3, 0.1, 0.2, 0.3);
-		write_pipe.WriteObject(&pose);
+		auto arch = mrpt::serialization::archiveFrom(write_pipe);
+		arch.WriteObject(&pose);
 
 		printf("[thread_writer] Finished.\n");
 	}

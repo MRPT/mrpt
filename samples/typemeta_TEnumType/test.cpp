@@ -11,6 +11,7 @@
 //! [example]
 #include <mrpt/typemeta/TEnumType.h>
 #include <iostream>
+#include <string>
 
 // Example declaration of "enum class"
 enum class TestColors

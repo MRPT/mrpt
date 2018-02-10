@@ -8,8 +8,9 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/io/CPipe.h>
+#include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
-#include <unistd.h>
+#include <mrpt/serialization/CArchive.h>
 #include <thread>
 #include <iostream>
 
@@ -17,6 +18,7 @@ using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::system;
 using namespace mrpt::io;
+using namespace mrpt::serialization;
 using namespace std;
 
 void thread_reader(CPipeReadEndPoint& read_pipe)
@@ -29,19 +31,20 @@ void thread_reader(CPipeReadEndPoint& read_pipe)
 		// Simple read commands:
 		size_t len = 0;
 		char buf[100];
-		read_pipe.ReadBuffer(&len, sizeof(len));
-		read_pipe.ReadBuffer(buf, len);
+		read_pipe.Read(&len, sizeof(len));
+		read_pipe.Read(buf, len);
 		buf[len] = 0;
 		cout << "RX: " << buf << endl;
 
 		// Read MRPT object from a pipe:
 		// *Note*: If the object class is known in advance, one can avoid smart
 		// pointers with ReadObject(&existingObj)
-		auto var =
-			read_pipe.ReadVariant<mrpt::poses::CPose2D, mrpt::poses::CPose3D>();
+		auto arch = archiveFrom(read_pipe);
+		auto var = 
+			arch.ReadVariant<mrpt::poses::CPose2D, mrpt::poses::CPose3D>();
 		var.match([](auto& pose) { cout << "RX pose: " << pose << endl; });
 		var =
-			read_pipe.ReadVariant<mrpt::poses::CPose2D, mrpt::poses::CPose3D>();
+			arch.ReadVariant<mrpt::poses::CPose2D, mrpt::poses::CPose3D>();
 		var.match([](auto& pose) { cout << "RX pose: " << pose << endl; });
 
 		printf("[thread_reader] Finished.\n");
@@ -62,18 +65,19 @@ void thread_writer(CPipeWriteEndPoint& write_pipe)
 		// Simple write commands:
 		const char* str = "Hello world!";
 		size_t len = strlen(str);
-		write_pipe.WriteBuffer(&len, sizeof(len));
-		write_pipe.WriteBuffer(str, len);
+		write_pipe.Write(&len, sizeof(len));
+		write_pipe.Write(str, len);
 
 		// Send MRPT objects:
 		mrpt::poses::CPose3D pose1(1, 2, 3, 1.57, 3.14, 0);
 		mrpt::poses::CPose2D pose2(1.0, 2.0, 3.1415);
-		mrpt::utils::variant<mrpt::poses::CPose3D, mrpt::poses::CPose2D> var1(
+		mrpt::rtti::variant<mrpt::poses::CPose3D, mrpt::poses::CPose2D> var1(
 			std::move(pose1));
-		mrpt::utils::variant<mrpt::poses::CPose3D, mrpt::poses::CPose2D> var2(
+		mrpt::rtti::variant<mrpt::poses::CPose3D, mrpt::poses::CPose2D> var2(
 			std::move(pose2));
-		write_pipe.WriteVariant(var1);
-		write_pipe.WriteVariant(var2);
+		auto arch = archiveFrom(write_pipe);
+		arch.WriteVariant(var1);
+		arch.WriteVariant(var2);
 
 		printf("[thread_writer] Finished.\n");
 	}
@@ -98,12 +102,12 @@ void ThreadsTest()
 	std::thread hT1(thread_reader, std::ref(*read_pipe));
 	std::thread hT2(thread_writer, std::ref(*write_pipe));
 
-	usleep(1000);
+	std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	// Wait for the threads to end.
-	hT1.join();
+	hT2.join();
 	// We need to close this to ensure the pipe gets flushed
 	// Remember Unix uses buffered io
-	write_pipe.reset();
+	//write_pipe.reset();
 	hT1.join();
 }
 

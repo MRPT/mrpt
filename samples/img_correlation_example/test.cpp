@@ -7,17 +7,19 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/gui.h>
-#include <mrpt/math.h>
+#include <mrpt/gui/CDisplayWindow.h>
+#include <mrpt/img/CImage.h>
+#include <mrpt/math/CMatrix.h>
 #include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::gui;
+using namespace mrpt::img;
 using namespace mrpt::math;
 using namespace std;
 
 #include <mrpt/examples_config.h>
-string myDataDir(MRPT_EXAMPLES_BASE_DIRECTORY + string("imageCorrelation/"));
+string myDataDir(MRPT_EXAMPLES_BASE_DIRECTORY + string("img_correlation_example/"));
 
 void TestWindow()
 {

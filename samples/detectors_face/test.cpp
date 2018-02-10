@@ -29,10 +29,10 @@ using namespace std;
 
 #include <mrpt/examples_config.h>
 
-string myDataDir(MRPT_EXAMPLES_BASE_DIRECTORY + string("face_detection/"));
+string myDataDir(MRPT_EXAMPLES_BASE_DIRECTORY + string("detectors_face/"));
 string myInitFile(
 	MRPT_EXAMPLES_BASE_DIRECTORY +
-	string("face_detection/FACE_DETECTION_TEST.INI"));
+	string("detectors_face/FACE_DETECTION_TEST.INI"));
 
 CFaceDetection faceDetector;  // Face detector object
 

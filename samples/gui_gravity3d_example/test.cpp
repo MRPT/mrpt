@@ -153,8 +153,6 @@ void simulateGravity(vector<TMass>& objs, double At)
 {
 	const size_t N = objs.size();
 
-	//	typedef vector<double> TForce;
-
 	vector<TForce> forces(N);
 
 	// Index in the array must be larger than its content!!
@@ -256,7 +254,7 @@ void simulateGravity(vector<TMass>& objs, double At)
 		objs[newObj].radius = M2R * pow(newMass, 1.0 / 3.0);
 		objs[newObj].obj3d->setRadius(objs[newObj].radius);
 
-		objs[i].obj3d.reset();  // Delete Sphere
+		objs[i].obj3d->setVisibility(false);  // Hide sphere
 		objs.erase(objs.begin() + i);
 	}
 }

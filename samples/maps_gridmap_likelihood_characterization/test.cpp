@@ -27,7 +27,7 @@ using namespace std;
 #include <mrpt/examples_config.h>
 string myDataDir(
 	MRPT_EXAMPLES_BASE_DIRECTORY +
-	string("gridMapLikelihoodCharacterization/"));
+	string("maps_gridmap_likelihood_characterization/"));
 
 // Default .ini file:
 string iniFile(myDataDir + string("config_likelihood.ini"));

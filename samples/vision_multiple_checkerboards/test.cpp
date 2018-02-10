@@ -15,11 +15,13 @@
 
 using namespace std;
 using namespace mrpt;
+using namespace mrpt::img;
+using namespace mrpt::vision;
 using namespace mrpt::gui;
 
 #include <mrpt/examples_config.h>
 std::string myDataDir =
-	MRPT_EXAMPLES_BASE_DIRECTORY + string("multipleCheckerboards/");
+	MRPT_EXAMPLES_BASE_DIRECTORY + string("vision_multiple_checkerboards/");
 
 // ------------------------------------------------------
 //				TestMultipleCheckerboard
