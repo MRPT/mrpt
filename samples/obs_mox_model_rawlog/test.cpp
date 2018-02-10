@@ -13,12 +13,16 @@
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/serialization/CArchive.h>
 #include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::system;
 using namespace mrpt::obs;
 using namespace std;
+using namespace mrpt::config;
+using namespace mrpt::io;
+using namespace mrpt::serialization;
 
 int main(int argc, char** argv)
 {
@@ -89,7 +93,7 @@ int main(int argc, char** argv)
 		try
 		{
 			CObservation::Ptr o;
-			file_input >> o;
+			archiveFrom(file_input) >> o;
 
 			if (o)  // ASSERT_(o);
 			{
@@ -156,9 +160,8 @@ int main(int argc, char** argv)
 						}
 
 						// Obtain MOX model output
-						mrpt::poses::CPose3D MOXmodel_pose =
-							mrpt::poses::CPose3D(
-								obs->m_readings[enoseID].eNosePoseOnTheRobot);
+						mrpt::poses::TPose3D MOXmodel_pose =
+								obs->m_readings[enoseID].eNosePoseOnTheRobot;
 						float MOXmodel_estimation = raw_reading;
 						mrpt::system::TTimeStamp MOXmodel_timestamp =
 							obs->timestamp;
@@ -190,7 +193,7 @@ int main(int argc, char** argv)
 							obs_GDM->timestamp = MOXmodel_timestamp;
 							obs_GDM->m_readings.push_back(gd_est);
 
-							file_output << obs_GDM;
+							archiveFrom(file_output) << obs_GDM;
 						}
 					}
 				}
