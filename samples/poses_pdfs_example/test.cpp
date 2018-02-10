@@ -19,7 +19,9 @@
 #include <mrpt/system/CTicTac.h>
 #include <iostream>
 
+using namespace mrpt;
 using namespace mrpt::poses;
+using namespace mrpt::system;
 using namespace std;
 
 // ------------------------------------------------------

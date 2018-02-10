@@ -10,12 +10,14 @@
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/math/CMatrix.h>
+#include <mrpt/system/CTicTac.h>
 #include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::img;
 using namespace mrpt::math;
+using namespace mrpt::system;
 using namespace std;
 
 #include <mrpt/examples_config.h>

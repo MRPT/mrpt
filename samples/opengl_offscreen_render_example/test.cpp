@@ -10,12 +10,15 @@
 #include <mrpt/opengl/CFBORender.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/img/CImage.h>
+#include <mrpt/serialization/CArchive.h>
 #include <iostream>
 
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::opengl;
-
+using namespace mrpt::io;
+using namespace mrpt::serialization;
+using namespace mrpt::img;
 // ------------------------------------------------------
 //				TestOffscreenRender
 // ------------------------------------------------------
@@ -35,12 +38,12 @@ int TestOffscreenRender(int argc, char* argv[])
 	const int height = atoi(argv[3]);
 	const string sOut = argv[4];
 
-	ASSERT_ABOVE_(width, 0)
-	ASSERT_ABOVE_(height, 0)
+	ASSERT_ABOVE_(width, 0);
+	ASSERT_ABOVE_(height, 0);
 
 	COpenGLScene scene;
 	CFileGZInputStream f(sFil);
-	f >> scene;
+	archiveFrom(f) >> scene;
 
 	CFBORender render(width, height);
 	CImage frame(width, height, 3, false);

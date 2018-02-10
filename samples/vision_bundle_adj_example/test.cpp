@@ -31,7 +31,7 @@
 #include <mrpt/math/geometry.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/config/CConfigFile.h>
-#include <mrpt/system/CTextFileLinesParser.h>
+#include <mrpt/io/CTextFileLinesParser.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/stock_objects.h>

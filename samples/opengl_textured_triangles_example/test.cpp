@@ -20,6 +20,7 @@ using namespace std;
 using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::opengl;
+using namespace mrpt::img;
 
 #include <mrpt/examples_config.h>
 

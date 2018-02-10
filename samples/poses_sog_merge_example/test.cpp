@@ -12,13 +12,16 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/system/os.h>
+#include <mrpt/serialization/CArchive.h>
 #include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::opengl;
 using namespace mrpt::gui;
+using namespace mrpt::io;
 using namespace mrpt::system;
+using namespace mrpt::serialization;
 using namespace std;
 
 /* ------------------------------------------------------------------------
@@ -60,7 +63,9 @@ void Test_SoG_Merge()
 		scene.insert(o);
 		scene.insert(
 			mrpt::make_aligned_shared<CGridPlaneXY>(-5, 5, -5, 5, 0, 1));
-		CFileGZOutputStream("sog_before.3Dscene") << scene;
+
+		CFileGZOutputStream f("sog_before.3Dscene");
+		archiveFrom(f) << scene;
 
 #if MRPT_HAS_WXWIDGETS
 		COpenGLScene::Ptr sc = win_before.get3DSceneAndLock();
@@ -86,7 +91,9 @@ void Test_SoG_Merge()
 		scene.insert(o);
 		scene.insert(
 			mrpt::make_aligned_shared<CGridPlaneXY>(-5, 5, -5, 5, 0, 1));
-		CFileGZOutputStream("sog_after.3Dscene") << scene;
+
+		CFileGZOutputStream f("sog_after.3Dscene");
+		archiveFrom(f) << scene;
 
 #if MRPT_HAS_WXWIDGETS
 		COpenGLScene::Ptr sc = win_after.get3DSceneAndLock();
