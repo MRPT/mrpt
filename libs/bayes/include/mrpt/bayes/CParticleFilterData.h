@@ -10,6 +10,7 @@
 
 #include <mrpt/bayes/CProbabilityParticle.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
+#include <mrpt/core/exceptions.h>
 
 #include <deque>
 #include <algorithm>

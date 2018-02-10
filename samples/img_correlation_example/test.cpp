@@ -11,6 +11,8 @@
 #include <mrpt/img/CImage.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/system/CTicTac.h>
+#include <mrpt/math/ops_matrices.h>
+#include <mrpt/math/fourier.h>
 #include <iostream>
 
 using namespace mrpt;
