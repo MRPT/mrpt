@@ -14,6 +14,7 @@
 
 #include <mrpt/math/slerp.h>
 #include <mrpt/system/CTicTac.h>
+#include <mrpt/img/TColor.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
@@ -25,6 +26,7 @@ using namespace mrpt::math;
 using namespace mrpt::gui;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;
+using namespace mrpt::img;
 
 // ------------------------------------------------------
 //				TestSLERP
@@ -51,8 +53,8 @@ void TestSLERP()
 	}
 
 	// Initialize the start, end pose of the animation
-	const CPose3D pose_a(0, 0, 0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0));
-	const CPose3D pose_b(3, 4, 1, DEG2RAD(120), DEG2RAD(40), DEG2RAD(50));
+	const TPose3D pose_a(0, 0, 0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0));
+	const TPose3D pose_b(3, 4, 1, DEG2RAD(120), DEG2RAD(40), DEG2RAD(50));
 
 	{
 		// XYZ corner at A:
@@ -96,7 +98,7 @@ void TestSLERP()
 			t = 1 - (t - MOVE_PERIOD) / MOVE_PERIOD;
 
 		// SLERP & LERP interpolation:
-		CPose3D pose_interp;
+		TPose3D pose_interp;
 		mrpt::math::slerp(pose_a, pose_b, t, pose_interp);
 
 		// Move the scene:

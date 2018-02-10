@@ -18,6 +18,7 @@
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/system/datetime.h>
 
 #include <string>
 #include <sstream>
@@ -99,7 +100,7 @@ void renameDirContents()
 		if (!success)
 		{
 			THROW_EXCEPTION(
-				"There was an error creating the directory: " << dir_name)
+				"There was an error creating the directory: " + dir_name)
 		}
 	}
 
@@ -134,7 +135,7 @@ void renameDirContents()
 	}
 	else
 	{
-		THROW_EXCEPTION("Error while trying to rename directory: " << dir_name);
+		THROW_EXCEPTION("Error while trying to rename directory: " + dir_name);
 	}
 }
 
