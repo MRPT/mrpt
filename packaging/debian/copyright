@@ -29,21 +29,11 @@ Files: otherlibs/wxThings/*
 Copyright: 2000-2002, John Labenki
 License: WXwindows
 
-Files: libs/base/include/mrpt/otherlibs/stlplus/*
-Copyright: 1999-2004, Southampton University
-           2004-2008, Andy Rushton
-License: BSD-3-clause
-Comment: Project website is http://stlplus.sourceforge.net/
-
-Files: libs/base/include/mrpt/utils/msvc_inttypes.h
-Copyright: 2006, Alexander Chemeris
-License: BSD-3-clause
-
-Files: libs/base/src/utils/simpleini/*
+Files: libs/config/src/simpleini/*
 Copyright: 2006, Brodie Thiesfield
 License: Expat
 
-Files: libs/base/src/utils/xmlparser/*
+Files: libs/db/src/xmlparser/*
 Copyright: 2002, Frank Vanden Berghen
 License: BSD-3-clause
 Comment: BSD-3 license sent by the author through personal communication.
@@ -62,12 +52,12 @@ License: mt-sdk-license
 Comment: Permission is granted by Xsens Technologies to distribute this code as
          part of MRPT sources.
 
-Files: libs/base/src/utils/md5.cpp
+Files: libs/system/src/md5.cpp
 Copyright: 1991-1992, RSA Data Security, Inc.
            2009 Frank Thilo <thilo@unix-ag.org>
 License: rsa-license
 
-Files: libs/base/include/mrpt/otherlibs/exprtk.hpp
+Files: libs/expr/include/mrpt/otherlibs/exprtk.hpp
 Copyright: 1999-2016, Arash Partow
 License: Expat
 
@@ -79,22 +69,20 @@ Files: doc/pbmap-guide/*
 Copyright: 2013-2015, Eduardo Fernández-Moral
 License: CC-BY-SA
 
-Files: libs/base/include/mrpt/otherlibs/CSparse/* libs/base/src/math/CSparse/*
+Files: libs/math/include/mrpt/otherlibs/CSparse/* libs/math/src/CSparse/*
 Copyright: 2006, Timothy A. Davis.
 License: LGPL
 
-Files: libs/base/src/math/kmeans++/*
+Files: libs/math/src/kmeans++/*
 Copyright: 2007, David Arthur
 License: public-domain
   You may use and modify the code as you see fit, but please maintain a
   reference in the comments to this implementation:
   http://www.stanford.edu/~darthur/kmpp.zip
 
-Files: libs/base/src/utils/PLY_import_export.cpp
+Files: libs/opengl/src/PLY_import_export.cpp
 Copyright: 1994, The Board of Trustees of The Leland Stanford Junior University
 License: Expat
-
-
 
 License: Apache
   Licensed under the Apache License, Version 2.0 (the "License"); you may not
