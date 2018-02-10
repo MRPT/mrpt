@@ -18,6 +18,7 @@
 #include <mrpt/gui.h>
 #include <mrpt/random.h>
 #include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPoint3D.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/opengl/CAngularObservationMesh.h>
 #include <mrpt/opengl/CAxis.h>
@@ -45,6 +46,8 @@ using namespace mrpt::opengl;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::random;
+using namespace mrpt::serialization;
+using namespace mrpt::system;
 
 using mrpt::opengl::CAngularObservationMesh;
 

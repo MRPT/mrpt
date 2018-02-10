@@ -8,11 +8,14 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/math/CLevenbergMarquardt.h>
+#include <mrpt/system/CTicTac.h>
 #include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::math;
+using namespace mrpt::system;
 using namespace std;
+
 
 // The error function F(x):
 void myFunction(

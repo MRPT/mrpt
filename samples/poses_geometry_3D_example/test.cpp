@@ -7,11 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
+#include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/system/CTicTac.h>
 #include <iostream>
 
+using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::system;
 using namespace std;

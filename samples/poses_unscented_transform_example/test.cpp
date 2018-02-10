@@ -24,6 +24,7 @@
 using namespace mrpt;
 using namespace mrpt::math;
 using namespace mrpt::poses;
+using namespace mrpt::system;
 using namespace std;
 
 // Example non-linear function for SUT

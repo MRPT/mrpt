@@ -16,6 +16,7 @@
 #include <mrpt/opengl/CAxis.h>
 #include <mrpt/opengl/CBox.h>
 #include <mrpt/opengl/CSphere.h>
+#include <mrpt/img/TColor.h>
 #include <iostream>
 
 using namespace std;
@@ -23,7 +24,8 @@ using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::math;
 using namespace mrpt::opengl;
-
+using namespace mrpt::img;
+using namespace mrpt::system;
 // ------------------------------------------------------
 //				TestDisplay3D
 // ------------------------------------------------------

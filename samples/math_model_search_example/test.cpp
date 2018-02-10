@@ -24,6 +24,7 @@ using namespace mrpt::gui;
 using namespace mrpt::math;
 using namespace mrpt::random;
 using namespace mrpt::poses;
+using namespace mrpt::system;
 using namespace std;
 
 struct Fit3DPlane
@@ -163,7 +164,7 @@ void TestRANSAC()
 	opengl::CTexturedPlane::Ptr glPlane =
 		mrpt::make_aligned_shared<opengl::CTexturedPlane>(-4, 4, -4, 4);
 
-	CPose3D glPlanePose;
+	TPose3D glPlanePose;
 	best_model.getAsPose3D(glPlanePose);
 	glPlane->setPose(glPlanePose);
 

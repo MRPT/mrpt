@@ -98,7 +98,7 @@ IF(BUILD_EXAMPLES)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-system mrpt-poses mrpt-io)
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
-	# === Depending on: mrpt-math ===
+	# === Depending on: mrpt-math mrpt-random mrpt-gui ===
 	SET(LIST_EXAMPLES_IN_THIS_DIR
 		math_csparse_example
 		math_kmeans_example
@@ -111,9 +111,14 @@ IF(BUILD_EXAMPLES)
 		math_ransac_examples
 		math_model_search_example
 		math_polygon_split
-		math_polyhedron_intersection_example
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-math mrpt-random mrpt-gui)
+	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
+
+	SET(LIST_EXAMPLES_IN_THIS_DIR
+		math_polyhedron_intersection_example
+		)
+	SET(CMAKE_EXAMPLE_DEPS mrpt-math mrpt-random mrpt-gui mrpt-maps)
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 	# === Depending on: mrpt-poses ===
@@ -145,10 +150,7 @@ IF(BUILD_EXAMPLES)
 		opengl_offscreen_render_example
 		opengl_octree_render_huge_pointcloud
 		opengl_texture_sizes_test
-		opengl_ray_trace_example
 		opengl_textured_triangles_example
-		opengl_video_demo
-		opengl_video_viewport_demo
 		# -------
 		img_basic_example
 		img_correlation_example
@@ -166,6 +168,21 @@ IF(BUILD_EXAMPLES)
 		gui_windows_events
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-gui)
+	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
+
+	# === Depending on: mrpt-gui, mrpt-hwdrivers ===
+	SET(LIST_EXAMPLES_IN_THIS_DIR
+		opengl_video_demo
+		opengl_video_viewport_demo
+		)
+	SET(CMAKE_EXAMPLE_DEPS mrpt-gui mrpt-hwdrivers)
+	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
+
+	# === Depending on: mrpt-gui, mrpt-maps ===
+	SET(LIST_EXAMPLES_IN_THIS_DIR
+		opengl_ray_trace_example
+		)
+	SET(CMAKE_EXAMPLE_DEPS mrpt-gui mrpt-maps)
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 	# === Depending on: mrpt-random ===

@@ -14,6 +14,7 @@
 
 #include <mrpt/gui.h>
 #include <mrpt/random.h>
+#include <mrpt/math/distributions.h>
 #include <iostream>
 
 using namespace mrpt;

@@ -9,10 +9,15 @@
 
 #include <mrpt/gui.h>
 #include <mrpt/math/CMatrix.h>
+#include <mrpt/math/utils.h>
+#include <mrpt/math/ops_vectors.h>
+#include <mrpt/math/ops_matrices.h>
+#include <mrpt/system/CTicTac.h>
 #include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::math;
+using namespace mrpt::system;
 using namespace std;
 
 #include <mrpt/examples_config.h>

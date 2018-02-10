@@ -13,6 +13,7 @@
 #include <mrpt/opengl/CSphere.h>
 #include <mrpt/opengl/CFBORender.h>
 #include <mrpt/gui/CDisplayWindow.h>
+#include <mrpt/img/CImage.h>
 
 #include <thread>
 #include <chrono>
@@ -21,6 +22,7 @@
 using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::opengl;
+using namespace mrpt::img;
 
 using namespace std::literals;
 

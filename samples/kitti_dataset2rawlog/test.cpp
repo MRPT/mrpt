@@ -34,13 +34,15 @@ Output files:
 #include <mrpt/system/string_utils.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/img/TCamera.h>
-#include <mrpt/system/CTextFileLinesParser.h>
+#include <mrpt/io/CTextFileLinesParser.h>
 #include <mrpt/obs/CObservationStereoImages.h>
+#include <mrpt/serialization/CArchive.h>
 #include <iostream>
 
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::obs;
+using namespace mrpt::serialization;
 
 const double STEREO_FPS = 10.0;
 
@@ -71,7 +73,7 @@ void stereo2rawlog(
 	const string name_P1 = is_kitti_dataset ? "P1:" : "P2_roi:";
 
 	std::istringstream ss;
-	mrpt::utils::CTextFileLinesParser fp;
+	mrpt::io::CTextFileLinesParser fp;
 	fp.open(calib_file);
 	while (fp.getNextLine(ss))
 	{
@@ -80,13 +82,13 @@ void stereo2rawlog(
 		if (mrpt::system::strStartsI(sStart, name_P0))
 		{
 			P1_roi.loadFromTextFile(ss);
-			ASSERT_(P1_roi.cols() == 12 && P1_roi.rows() == 1)
+			ASSERT_(P1_roi.cols() == 12 && P1_roi.rows() == 1);
 			p1_ok = true;
 		}
 		if (mrpt::system::strStartsI(sStart, name_P1))
 		{
 			P2_roi.loadFromTextFile(ss);
-			ASSERT_(P2_roi.cols() == 12 && P2_roi.rows() == 1)
+			ASSERT_(P2_roi.cols() == 12 && P2_roi.rows() == 1);
 			p2_ok = true;
 		}
 	}
@@ -190,7 +192,7 @@ void stereo2rawlog(
 		obs.sensorLabel = "CAMERA1";
 
 		// save:
-		f_out << obs;
+		archiveFrom(f_out) << obs;
 
 		// Copy img:
 		if (is_kitti_dataset)

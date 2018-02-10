@@ -23,6 +23,7 @@ using namespace mrpt::gui;
 using namespace mrpt::math;
 using namespace mrpt::random;
 using namespace mrpt::poses;
+using namespace mrpt::system;
 using namespace std;
 
 void ransac3Dplane_fit(
@@ -62,11 +63,11 @@ void ransac3Dplane_distance(
 	const double distanceThreshold, unsigned int& out_bestModelIndex,
 	std::vector<size_t>& out_inlierIndices)
 {
-	ASSERT_(testModels.size() == 1)
+	ASSERT_(testModels.size() == 1);
 	out_bestModelIndex = 0;
 	const CMatrixDouble& M = testModels[0];
 
-	ASSERT_(M.rows() == 1 && M.cols() == 4)
+	ASSERT_(M.rows() == 1 && M.cols() == 4);
 
 	TPlane plane;
 	plane.coefs[0] = M(0, 0);
@@ -150,7 +151,7 @@ void TestRANSAC()
 	cout << "Computation time: " << tictac.Tac() * 1000.0 / TIMES << " ms"
 		 << endl;
 
-	ASSERT_(best_model.rows() == 1 && best_model.cols() == 4)
+	ASSERT_(best_model.rows() == 1 && best_model.cols() == 4);
 
 	cout << "RANSAC finished: Best model: " << best_model << endl;
 	//	cout << "Best inliers: " << best_inliers << endl;
@@ -188,7 +189,7 @@ void TestRANSAC()
 	opengl::CTexturedPlane::Ptr glPlane =
 		mrpt::make_aligned_shared<opengl::CTexturedPlane>(-4, 4, -4, 4);
 
-	CPose3D glPlanePose;
+	TPose3D glPlanePose;
 	plane.getAsPose3D(glPlanePose);
 	glPlane->setPose(glPlanePose);
 

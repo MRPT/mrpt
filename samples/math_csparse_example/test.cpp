@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/math/CSparseMatrix.h>
-#include <mrpt/random.h>
+#include <mrpt/random/RandomGenerators.h>
 #include <iostream>
 
 using namespace mrpt;
@@ -21,10 +21,10 @@ void ExampleCSparse()
 	CSparseMatrix SM(10, 10);
 
 	// With 2 dense blocks of 6x6 and 4x4:
-	const CMatrixDouble COV1 =
-		mrpt::random::getRandomGenerator().drawDefinitePositiveMatrix(6, 0.2);
-	const CMatrixDouble COV2 =
-		mrpt::random::getRandomGenerator().drawDefinitePositiveMatrix(4, 0.2);
+	const auto COV1 =
+		mrpt::random::getRandomGenerator().drawDefinitePositiveMatrix<CMatrixDouble>(6, 0.2);
+	const auto COV2 =
+		mrpt::random::getRandomGenerator().drawDefinitePositiveMatrix<CMatrixDouble>(4, 0.2);
 	SM.insert_submatrix(0, 0, COV1);
 	SM.insert_submatrix(6, 6, COV2);
 

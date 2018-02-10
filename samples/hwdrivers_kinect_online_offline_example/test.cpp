@@ -28,7 +28,8 @@
 #include <mrpt/opengl/CFrustum.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
-#include <memory>  // for std::auto_ptr, unique_ptr
+#include <mrpt/system/CTicTac.h>
+#include <memory>
 #include <iostream>
 
 // Demonstrate MRPT RGB+D --> PCL point cloud conversion:
@@ -40,6 +41,7 @@ using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::gui;
 using namespace mrpt::obs;
+using namespace mrpt::system;
 using namespace std;
 
 // Thread for online/offline capturing: This should be done in another thread

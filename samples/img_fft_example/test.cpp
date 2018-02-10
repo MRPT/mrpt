@@ -8,13 +8,17 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/gui.h>
-#include <mrpt/math.h>
+#include <mrpt/math/CMatrix.h>
+#include <mrpt/img/CImage.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/math/fourier.h>
 #include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::math;
 using namespace mrpt::gui;
 using namespace mrpt::system;
+using namespace mrpt::img;
 using namespace std;
 
 #include <mrpt/examples_config.h>
