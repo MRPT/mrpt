@@ -12,12 +12,14 @@
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/opengl.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>  // This class is in mrpt-maps
+#include <mrpt/img/TColor.h>
 #include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::obs;
 using namespace mrpt::opengl;
 using namespace mrpt::hwdrivers;
+using namespace mrpt::img;
 using namespace std;
 
 const float vert_FOV = DEG2RAD(4.0);

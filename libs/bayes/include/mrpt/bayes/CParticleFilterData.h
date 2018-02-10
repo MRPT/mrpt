@@ -11,7 +11,8 @@
 #include <mrpt/bayes/CProbabilityParticle.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/core/exceptions.h>
-
+#include <mrpt/core/bits_math.h>
+#include <cmath>
 #include <deque>
 #include <algorithm>
 
@@ -80,7 +81,7 @@ struct CParticleFilterDataImpl : public CParticleFilterCapable
 		if (out_max_log_w) *out_max_log_w = maxW;
 
 		/* Return the max/min ratio: */
-		return exp(maxW - minW);
+		return std::exp(maxW - minW);
 		MRPT_END
 	}
 
@@ -94,12 +95,12 @@ struct CParticleFilterDataImpl : public CParticleFilterCapable
 		for (typename particle_list_t::const_iterator it =
 				 derived().m_particles.begin();
 			 it != derived().m_particles.end(); ++it)
-			sumLinearWeights += exp(it->log_w);
+			sumLinearWeights += std::exp(it->log_w);
 		/* Compute ESS: */
 		for (typename particle_list_t::const_iterator it =
 				 derived().m_particles.begin();
 			 it != derived().m_particles.end(); ++it)
-			cum += mrpt::square(exp(it->log_w) / sumLinearWeights);
+			cum += mrpt::square(std::exp(it->log_w) / sumLinearWeights);
 
 		if (cum == 0)
 			return 0;
