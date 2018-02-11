@@ -14,7 +14,6 @@
 #endif
 #include <OpenNI.h>
 
-#include <mrpt/base.h>
 #include <mrpt/gui.h>
 #include <mrpt/opengl.h>
 #include <mrpt/maps.h>
