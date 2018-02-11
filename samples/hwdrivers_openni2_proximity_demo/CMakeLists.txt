@@ -21,7 +21,7 @@ SET(EXECUTABLE_OUTPUT_PATH ".")
 #  http://www.mrpt.org/Libraries
 # Add the top-level dependencies only.
 # --------------------------------------------------------------------------
-FIND_PACKAGE(MRPT REQUIRED hwdrivers;gui;opengl;maps)
+FIND_PACKAGE(MRPT REQUIRED gui;opengl;maps)
 
 # Define the executable target:
 ADD_EXECUTABLE(${sampleName} test.cpp  )
@@ -39,7 +39,7 @@ ENDIF()
 
 # Add the required libraries for linking:
 TARGET_LINK_LIBRARIES(${sampleName}
-	${MRPT_LIBRARIES}  # This is filled by FIND_PACKAGE(MRPT ...)
+	${MRPT_LIBRARIES} /usr/lib/libOpenNI2.so # This is filled by FIND_PACKAGE(MRPT ...)
 	)
 
 # Set optimized building:
@@ -50,5 +50,5 @@ ENDIF()
 # This part can be removed if you are compiling this program outside of
 #  the MRPT tree:
 IF(${CMAKE_PROJECT_NAME} STREQUAL "MRPT") # Fails if build outside of MRPT project.
-	DeclareAppDependencies(${sampleName} mrpt-hwdrivers;mrpt-gui;mrpt-opengl;mrpt-maps) # Dependencies
+	DeclareAppDependencies(${sampleName} mrpt-gui;mrpt-opengl;mrpt-maps) # Dependencies
 ENDIF()
