@@ -81,7 +81,7 @@ void TestNTRIP()
 	{
 		cout << "Reading stream... press any key to finish." << endl;
 
-		vector_byte dat;
+		std::vector<uint8_t> dat;
 		while (!mrpt::system::os::kbhit())
 		{
 			ntrip.stream_data.readAndClear(dat);
@@ -118,7 +118,7 @@ void TestNTRIP2()
 	{
 		cout << "Reading stream... press any key to finish." << endl;
 
-		vector_byte dat;
+		std::vector<uint8_t> dat;
 		while (!mrpt::system::os::kbhit())
 		{
 			ntrip.stream_data.readAndClear(dat);
