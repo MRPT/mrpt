@@ -17,6 +17,9 @@
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/math/ops_containers.h>
 #include <iostream>
+#include <mrpt/core/exceptions.h>
+#include <mrpt/examples_config.h>
+#include <mrpt/img/TColor.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;
@@ -25,9 +28,10 @@ using namespace mrpt::gui;
 using namespace mrpt::math;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::detectors;
+using namespace mrpt::config;
 using namespace std;
-
-#include <mrpt/examples_config.h>
+using namespace mrpt::img;
+using namespace mrpt::serialization;
 
 string myDataDir(MRPT_EXAMPLES_BASE_DIRECTORY + string("detectors_face/"));
 string myInitFile(
@@ -139,7 +143,7 @@ void TestCamera3DFaceDetection(CCameraSensor::Ptr cam)
 		{
 			for (unsigned int i = 0; i < detected.size(); i++)
 			{
-				ASSERT_(IS_CLASS(detected[i], CDetectable3D);
+				ASSERT_(IS_CLASS(detected[i], CDetectable3D));
 				CDetectable3D::Ptr obj =
 					std::dynamic_pointer_cast<CDetectable3D>(detected[i]);
 
@@ -289,7 +293,7 @@ void TestCameraFaceDetection()
 				std::dynamic_pointer_cast<CObservationImage>(obs);
 			for (unsigned int i = 0; i < detected.size(); i++)
 			{
-				ASSERT_(IS_CLASS(detected[i], CDetectable2D);
+				ASSERT_(IS_CLASS(detected[i], CDetectable2D));
 				CDetectable2D::Ptr obj =
 					std::dynamic_pointer_cast<CDetectable2D>(detected[i]);
 				o->image.rectangle(
@@ -309,7 +313,7 @@ void TestCameraFaceDetection()
 
 			for (unsigned int i = 0; i < detected.size(); i++)
 			{
-				ASSERT_(IS_CLASS(detected[i], CDetectable2D);
+				ASSERT_(IS_CLASS(detected[i], CDetectable2D));
 				CDetectable2D::Ptr obj =
 					std::dynamic_pointer_cast<CDetectable2D>(detected[i]);
 				o->imageRight.rectangle(
@@ -362,7 +366,7 @@ void TestImagesFaceDetection(int argc, char* argv[])
 
 		for (unsigned int i = 0; i < detected.size(); i++)
 		{
-			ASSERT_(IS_CLASS(detected[i], CDetectable2D);
+			ASSERT_(IS_CLASS(detected[i], CDetectable2D));
 			CDetectable2D::Ptr obj =
 				std::dynamic_pointer_cast<CDetectable2D>(detected[i]);
 			img.rectangle(
@@ -459,11 +463,7 @@ void mySplit(const string& str)
 // ------------------------------------------------------
 void TestPrepareDetector()
 {
-	std::vector<std::string> lst;
-	CConfigFileMemory cfg;
-
-	lst.loadFromFile(myInitFile);
-	cfg.setContent(lst);
+	CConfigFile cfg(myInitFile);
 
 	int classifierType = cfg.read_int("Example", "classifierType", 0);
 
