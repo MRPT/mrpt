@@ -13,6 +13,8 @@
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/graph_tools.h>
+#include <mrpt/img/TColor.h>
+#include <mrpt/system/TParameters.h>
 #include <iostream>
 
 using namespace mrpt;
@@ -23,7 +25,9 @@ using namespace mrpt::math;
 using namespace mrpt::gui;
 using namespace mrpt::opengl;
 using namespace mrpt::random;
+using namespace mrpt::img;
 using namespace std;
+using namespace mrpt::system;
 
 // Level of noise in nodes initial positions:
 const double STD_NOISE_NODE_XYZ = 0.5;
