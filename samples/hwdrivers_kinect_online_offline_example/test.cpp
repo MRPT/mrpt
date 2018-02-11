@@ -29,6 +29,8 @@
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/system/CTicTac.h>
+#include <mrpt/img/TColor.h>
+#include <mrpt/serialization/CArchive.h>
 #include <memory>
 #include <iostream>
 
@@ -42,6 +44,9 @@ using namespace mrpt::hwdrivers;
 using namespace mrpt::gui;
 using namespace mrpt::obs;
 using namespace mrpt::system;
+using namespace mrpt::img;
+using namespace mrpt::serialization;
+using namespace mrpt::io;
 using namespace std;
 
 // Thread for online/offline capturing: This should be done in another thread
@@ -161,12 +166,12 @@ void thread_grabbing(TThreadParam& p)
 			else
 			{
 				// Offline:
-				CObservation::Ptr obs;
+				CSerializable::Ptr obs;
 				do
 				{
 					try
 					{
-						dataset >> obs;
+						archiveFrom(dataset) >> obs;
 					}
 					catch (std::exception& e)
 					{
@@ -175,7 +180,7 @@ void thread_grabbing(TThreadParam& p)
 								"\nError reading from dataset file (EOF?):\n") +
 							string(e.what()));
 					}
-					ASSERT_(obs)
+					ASSERT_(obs);
 				} while (!IS_CLASS(obs, CObservation3DRangeScan));
 
 				// We have one observation:
