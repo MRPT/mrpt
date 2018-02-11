@@ -23,6 +23,9 @@ using namespace mrpt::vision;
 using namespace mrpt::system;
 using namespace mrpt::img;
 using namespace mrpt::obs;
+using namespace mrpt::system;
+using namespace mrpt::config;
+using namespace mrpt::img;
 using namespace std;
 
 // ------------------------------------------------------
