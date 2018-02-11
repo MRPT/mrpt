@@ -14,6 +14,7 @@
 #include <mrpt/vision/types.h>
 #include <mrpt/vision/CFeatureExtraction.h>
 #include <mrpt/vision/TSimpleFeature.h>
+#include <mrpt/img/TColor.h>
 #include <iostream>
 
 using namespace std;
@@ -22,6 +23,7 @@ using namespace mrpt::gui;
 using namespace mrpt::opengl;
 using namespace mrpt::obs;
 using namespace mrpt::vision;
+using namespace mrpt::img;
 
 // ------------------------------------------------------
 //				TestVideoBuildPyr
@@ -61,7 +63,7 @@ void TestVideoBuildPyr()
 	{
 		COpenGLScene::Ptr& theScene = win.get3DSceneAndLock();
 		gl_views[0] = theScene->getViewport("main");
-		ASSERT_(gl_views[0])
+		ASSERT_(gl_views[0]);
 
 		// Create the other viewports:
 		for (size_t i = 1; i < N_OCTAVES; i++)
