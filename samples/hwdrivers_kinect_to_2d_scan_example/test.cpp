@@ -27,6 +27,7 @@
 #include <mrpt/opengl/CFrustum.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
+#include <mrpt/img/TColor.h>
 #include <iostream>
 
 using namespace mrpt;
@@ -36,6 +37,8 @@ using namespace mrpt::gui;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::opengl;
+using namespace mrpt::system;
+using namespace mrpt::img;
 using namespace std;
 
 // Thread for grabbing: Do this is another thread so we divide rendering and
