@@ -16,6 +16,7 @@
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/system/CTicTac.h>
+#include <mrpt/img/TColor.h>
 #include <iostream>
 
 using namespace mrpt;
@@ -25,6 +26,8 @@ using namespace mrpt::gui;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
 using namespace mrpt::opengl;
+using namespace mrpt::system;
+using namespace mrpt::img;
 using namespace std;
 
 // ------------------------------------------------------
