@@ -4,7 +4,6 @@ sudo: required
 dist: trusty
 
 before_script:
-  - export DOCKER_IMAGE=ubuntu:$DISTRO
   - export CI_SOURCE_PATH=$(pwd)
   - export REPOSITORY_NAME=${PWD##*/}
   - docker images
@@ -21,28 +20,28 @@ matrix:
   include:
   - compiler: gcc
     os: linux
-    env: TASK="build" DISTRO=xenial
+    env: TASK="build" DOCKER_IMAGE=mrpt/build-env-full:latest
   - compiler: gcc
     os: linux
-    env: TASK="test" DISTRO=xenial
+    env: TASK="test" DOCKER_IMAGE=mrpt/build-env-full:latest
   - compiler: gcc
     os: linux
-    env: TASK="build" DEPS="headless" DISTRO=xenial
+    env: TASK="build" DEPS="headless" DOCKER_IMAGE=mrpt/build-env-full:latest
   - compiler: gcc
     os: linux
-    env: TASK="test" DEPS="headless" DISTRO=xenial
+    env: TASK="test" DEPS="headless" DOCKER_IMAGE=mrpt/build-env-full:latest
   - compiler: gcc
     os: linux
-    env: TASK="build" DEPS="minimal" DISTRO=xenial
+    env: TASK="build" DEPS="minimal" DOCKER_IMAGE=mrpt/build-env-full:latest
   - compiler: gcc
     os: linux
-    env: TASK="test" DEPS="minimal" DISTRO=xenial
+    env: TASK="test" DEPS="minimal" DOCKER_IMAGE=mrpt/build-env-full:latest
   - compiler: clang
     os: linux
-    env: TASK="build" DISTRO=xenial
+    env: TASK="build" DOCKER_IMAGE=mrpt/build-env-full:latest
   - compiler: clang
     os: linux
-    env: TASK="test" DISTRO=xenial
+    env: TASK="test" DOCKER_IMAGE=mrpt/build-env-full:latest
   - language: python
     os: linux
-    env: TASK="lint" DISTRO=xenial
+    env: TASK="lint" DOCKER_IMAGE=mrpt/build-env-full:latest
