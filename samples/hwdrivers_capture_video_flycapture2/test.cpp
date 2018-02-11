@@ -11,12 +11,17 @@
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/gui/CDisplayWindow.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
+#include <mrpt/system/CTicTac.h>
 #include <iostream>
 
 using namespace mrpt::hwdrivers;
 using namespace mrpt::obs;
 using namespace mrpt::gui;
+using namespace mrpt::io;
+using namespace mrpt::serialization;
+using namespace mrpt::system;
 using namespace std;
 
 // ------------------------------------------------------
@@ -77,7 +82,7 @@ void TestCapture_FlyCapture2()
 		cout.flush();
 		if (win.isOpen()) win.showImage(obs->image);
 
-		fil << obs;
+		archiveFrom(fil) << obs;
 	}
 }
 

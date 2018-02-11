@@ -21,6 +21,7 @@ using namespace mrpt::maps;
 using namespace mrpt::system;
 using namespace mrpt::random;
 using namespace mrpt::poses;
+using namespace mrpt::config;
 using namespace std;
 
 float SIGMA = 0.03f;

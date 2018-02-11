@@ -11,11 +11,15 @@
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/gui/CDisplayWindow.h>
+#include <mrpt/serialization/CArchive.h>
 #include <iostream>
 
 using namespace mrpt::hwdrivers;
 using namespace mrpt::gui;
 using namespace mrpt::obs;
+using namespace mrpt::system;
+using namespace mrpt::io;
+using namespace mrpt::serialization;
 using namespace std;
 
 // ------------------------------------------------------
@@ -79,7 +83,7 @@ void TestCapture_OpenCV()
 			break;
 		}
 
-		fil << obs;
+		archiveFrom(fil) << obs;
 
 		cout << ".";
 		cout.flush();
