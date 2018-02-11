@@ -14,6 +14,7 @@
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/system/os.h>
+#include <mrpt/system/CTicTac.h>
 #include <iostream>
 
 using namespace mrpt;
@@ -22,6 +23,7 @@ using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::gui;
 using namespace mrpt::poses;
+using namespace mrpt::system;
 using namespace std;
 
 string SERIAL_NAME;  // Name of the serial port to open
