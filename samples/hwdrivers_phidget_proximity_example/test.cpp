@@ -12,10 +12,12 @@
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/obs/CObservationRange.h>
 #include <iostream>
+#include <thread>
 
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
 using namespace mrpt::obs;
+using namespace mrpt::config;
 using namespace std;
 
 /** Usage : ./test <conf file name>.ini
