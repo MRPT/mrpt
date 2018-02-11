@@ -90,7 +90,7 @@ int main(int argc, char** argv)
 	{
 		try
 		{
-			CObservation::Ptr o;
+			CSerializable::Ptr o;
 			archiveFrom(file_input) >> o;
 
 			if (o)  // ASSERT_(o);

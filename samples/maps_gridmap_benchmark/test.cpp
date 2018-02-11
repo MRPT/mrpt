@@ -12,6 +12,7 @@
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/config/CConfigFile.h>
+#include <mrpt/system/CTicTac.h>
 #include <iostream>
 
 using namespace mrpt;
@@ -19,6 +20,7 @@ using namespace mrpt::maps;
 using namespace mrpt::obs;
 using namespace mrpt::random;
 using namespace mrpt::poses;
+using namespace mrpt::system;
 using namespace std;
 
 #include <mrpt/examples_config.h>

@@ -17,6 +17,7 @@
 
 using namespace std;
 using namespace mrpt;
+using namespace mrpt::system;
 using namespace mrpt::hwdrivers;
 
 // ------------------------------------------------------

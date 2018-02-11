@@ -13,11 +13,15 @@
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/system/os.h>
+#include <mrpt/serialization/CArchive.h>
 #include <iostream>
 
 using namespace mrpt::hwdrivers;
 using namespace mrpt::gui;
 using namespace mrpt::obs;
+using namespace mrpt::io;
+using namespace mrpt::system;
+using namespace mrpt::serialization;
 using namespace std;
 
 // ------------------------------------------------------
@@ -127,7 +131,7 @@ void TestCapture_FlyCapture2_stereo()
 		if (winL.isOpen()) winL.showImage(obsL->image);
 		if (winR.isOpen()) winR.showImage(obsR->image);
 
-		fil << obsL << obsR;
+		archiveFrom(fil) << obsL << obsR;
 	}
 }
 
