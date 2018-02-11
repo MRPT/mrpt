@@ -22,9 +22,11 @@
 #include <mrpt/system/os.h>
 #include <mrpt/opengl.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/serialization/CArchive.h>
 #include <iostream>
 
 using namespace mrpt;
+using namespace mrpt::serialization;
 using namespace std;
 
 // This simple demo records form an OpenNI2 device into a rawlog as 3D
@@ -332,7 +334,7 @@ int main(int argc, char** argv)
 				obs.intensityImage.setExternalStorage(
 					out_img_dir + string("/") + sRGBfile);
 
-				f_out << obs;
+				archiveFrom(f_out) << obs;
 			}
 		}
 
