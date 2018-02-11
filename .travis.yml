@@ -20,28 +20,28 @@ matrix:
   include:
   - compiler: gcc
     os: linux
-    env: TASK="build" DOCKER_IMAGE=mrpt/build-env-full:latest
+    env: TASK="build" DOCKER_IMAGE=mrpt/mrpt-build-env:full
   - compiler: gcc
     os: linux
-    env: TASK="test" DOCKER_IMAGE=mrpt/build-env-full:latest
+    env: TASK="test" DOCKER_IMAGE=mrpt/mrpt-build-env:full
   - compiler: gcc
     os: linux
-    env: TASK="build" DEPS="headless" DOCKER_IMAGE=mrpt/build-env-full:latest
+    env: TASK="build" DEPS="headless" DOCKER_IMAGE=mrpt/mrpt-build-env:headless
   - compiler: gcc
     os: linux
-    env: TASK="test" DEPS="headless" DOCKER_IMAGE=mrpt/build-env-full:latest
+    env: TASK="test" DEPS="headless" DOCKER_IMAGE=mrpt/mrpt-build-env:headless
   - compiler: gcc
     os: linux
-    env: TASK="build" DEPS="minimal" DOCKER_IMAGE=mrpt/build-env-full:latest
+    env: TASK="build" DEPS="minimal" DOCKER_IMAGE=mrpt/mrpt-build-env:minimal
   - compiler: gcc
     os: linux
-    env: TASK="test" DEPS="minimal" DOCKER_IMAGE=mrpt/build-env-full:latest
+    env: TASK="test" DEPS="minimal" DOCKER_IMAGE=mrpt/mrpt-build-env:minimal
   - compiler: clang
     os: linux
-    env: TASK="build" DOCKER_IMAGE=mrpt/build-env-full:latest
+    env: TASK="build" DOCKER_IMAGE=mrpt/mrpt-build-env:full
   - compiler: clang
     os: linux
-    env: TASK="test" DOCKER_IMAGE=mrpt/build-env-full:latest
+    env: TASK="test" DOCKER_IMAGE=mrpt/mrpt-build-env:full
   - language: python
     os: linux
-    env: TASK="lint" DOCKER_IMAGE=mrpt/build-env-full:latest
+    env: TASK="lint" DOCKER_IMAGE=mrpt/mrpt-build-env:full
