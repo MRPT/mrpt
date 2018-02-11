@@ -11,12 +11,15 @@
 #include <mrpt/gui.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/opengl.h>
+#include <mrpt/img/TColor.h>
 #include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::obs;
 using namespace mrpt::opengl;
 using namespace mrpt::hwdrivers;
+using namespace mrpt::system;
+using namespace mrpt::img;
 using namespace std;
 
 // This simple demo records form an OpenNI2 device into a rawlog as 3D
