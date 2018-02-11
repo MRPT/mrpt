@@ -54,7 +54,7 @@ void TestDisplay3D()
 	{
 		opengl::CSphere::Ptr obj = mrpt::make_aligned_shared<opengl::CSphere>();
 		obj->setColor(0, 0, 1);
-		obj->setRadius(0.3);
+		obj->setRadius(0.3f);
 		obj->setLocation(0, 0, 1);
 		obj->setName("ball_1");
 		scene->insert(obj);
@@ -62,7 +62,7 @@ void TestDisplay3D()
 	{
 		opengl::CSphere::Ptr obj = mrpt::make_aligned_shared<opengl::CSphere>();
 		obj->setColor(1, 0, 0);
-		obj->setRadius(0.3);
+		obj->setRadius(0.3f);
 		obj->setLocation(-1, -1, 1);
 		obj->setName("ball_2");
 		scene->insert(obj);

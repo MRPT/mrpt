@@ -14,6 +14,8 @@
 
 using namespace mrpt::gui;
 using namespace mrpt::hwdrivers;
+using namespace mrpt::system;
+using namespace mrpt::img;
 using namespace std;
 
 // ------------------------------------------------------

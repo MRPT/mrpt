@@ -22,15 +22,13 @@ using namespace mrpt::obs;
 using namespace std;
 using namespace mrpt::config;
 using namespace mrpt::io;
+using namespace mrpt::math;
 using namespace mrpt::serialization;
 
 int main(int argc, char** argv)
 {
 	// Variables
 	string rawlog_file, sensorLabel;
-	// float													a_rise,a_decay,;
-	// //b_decay,
-	// b_rise
 	int enoseID, sensorType, indexMonitoredSensor,
 		delay_value;  // decimate_value, winNoise_size
 	mrpt::obs::CObservationGasSensors::CMOSmodel MOSmodel;
@@ -160,7 +158,7 @@ int main(int argc, char** argv)
 						}
 
 						// Obtain MOX model output
-						mrpt::poses::TPose3D MOXmodel_pose =
+						TPose3D MOXmodel_pose =
 								obs->m_readings[enoseID].eNosePoseOnTheRobot;
 						float MOXmodel_estimation = raw_reading;
 						mrpt::system::TTimeStamp MOXmodel_timestamp =
@@ -199,7 +197,8 @@ int main(int argc, char** argv)
 				}
 
 				// Save current sensor obs to the new Rawlog file
-				file_output << o;
+				auto arch = archiveFrom(file_output);
+				arch << o;
 			}
 		}
 		catch (exception& e)

@@ -110,7 +110,7 @@ void BenchmarkGridmaps()
 	TSetOfMetricMapInitializers mapInit;
 
 	// Create gridmap:
-	mapInit.loadFromConfigFile(CConfigFile(iniFile), "METRIC_MAPS");
+	mapInit.loadFromConfigFile(mrpt::config::CConfigFile(iniFile), "METRIC_MAPS");
 	metricMap.setListOfMaps(&mapInit);
 
 	// prepare the laser scan:

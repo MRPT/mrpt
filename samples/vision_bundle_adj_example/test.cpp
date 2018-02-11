@@ -27,6 +27,7 @@
 #include <mrpt/vision/pinhole.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
+#include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/random.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/system/filesystem.h>
@@ -40,8 +41,10 @@
 using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::math;
+using namespace mrpt::system;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;
+using namespace mrpt::img;
 using namespace mrpt::vision;
 using namespace std;
 
@@ -225,7 +228,7 @@ int main(int argc, char** argv)
 
 					// Too far?
 					const double dist = math::distance(
-						TPoint3D(frame_poses_real[i]), landmark_points_real[j]);
+						TPoint3D(frame_poses_real[i].asTPose()), landmark_points_real[j]);
 					if (dist > max_camera_dist) continue;
 
 					// Ok, accept it:
@@ -246,8 +249,8 @@ int main(int argc, char** argv)
 				std::map<TLandmarkID, TLandmarkID> old2new_lmIDs;
 				allObs2.compressIDs(&old2new_camIDs, &old2new_lmIDs);
 
-				ASSERT_EQUAL_(old2new_camIDs.size(), frame_poses_real.size();
-				ASSERT_EQUAL_(old2new_lmIDs.size(), landmark_points_real.size();
+				ASSERT_EQUAL_(old2new_camIDs.size(), frame_poses_real.size());
+				ASSERT_EQUAL_(old2new_lmIDs.size(), landmark_points_real.size());
 			}
 
 			// Add noise to the data:
@@ -327,9 +330,9 @@ int main(int argc, char** argv)
 				allObs.decimateCameraFrames(20);
 				allObs.compressIDs();
 
-				ASSERT_(mrpt::system::fileExists(cam_fil);
+				ASSERT_(mrpt::system::fileExists(cam_fil));
 				cout << "Loading camera params from: " << cam_fil;
-				CConfigFile cfgCam(cam_fil);
+				mrpt::config::CConfigFile cfgCam(cam_fil);
 				camera_params.loadFromConfigFile("CAMERA", cfgCam);
 				cout << "Done.\n";
 
@@ -351,7 +354,7 @@ int main(int argc, char** argv)
 						 << cam_frames_fil << "...";
 					cout.flush();
 
-					mrpt::utils::CTextFileLinesParser fil(cam_frames_fil);
+					mrpt::io::CTextFileLinesParser fil(cam_frames_fil);
 					frame_poses.clear();
 
 					std::istringstream ss;
@@ -380,7 +383,7 @@ int main(int argc, char** argv)
 						 << obs_fil << "...";
 					cout.flush();
 
-					mrpt::utils::CTextFileLinesParser fil(obs_fil);
+					mrpt::io::CTextFileLinesParser fil(obs_fil);
 					landmark_points.clear();
 					allObs.clear();
 

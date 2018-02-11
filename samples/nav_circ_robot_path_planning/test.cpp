@@ -13,14 +13,19 @@
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/poses/CPose2D.h>
 #include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::maps;
 using namespace mrpt::nav;
+using namespace mrpt::serialization;
+using namespace mrpt::img;
 using namespace mrpt::math;
 using namespace mrpt::poses;
+using namespace mrpt::io;
+using namespace mrpt::system;
 using namespace std;
 
 #include <mrpt/examples_config.h>
@@ -41,7 +46,11 @@ void TestPathPlanning()
 		THROW_EXCEPTION_FMT("Map file '%s' not found", myGridMap.c_str());
 
 	printf("Loading gridmap...");
-	CFileGZInputStream(myGridMap) >> gridmap;
+	{
+		CFileGZInputStream f(myGridMap);
+		auto arch = archiveFrom(f);
+		arch >> gridmap;
+	}
 	printf(
 		"Done! %f x %f m\n", gridmap.getXMax() - gridmap.getXMin(),
 		gridmap.getYMax() - gridmap.getYMin());

@@ -205,7 +205,6 @@ IF(BUILD_EXAMPLES)
 	SET(LIST_EXAMPLES_IN_THIS_DIR
 		# -----
 		maps_gridmap_likelihood_characterization
-		maps_gridmap_benchmark
 		maps_gridmap_voronoi_example
 	)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-maps mrpt-gui)
@@ -213,6 +212,7 @@ IF(BUILD_EXAMPLES)
 
 	# === Depending on: slam ===
 	SET(LIST_EXAMPLES_IN_THIS_DIR
+		maps_gridmap_benchmark
 		slam_icp_simple_example
 		slam_icp3d_simple_example
 		slam_range_only_localization_rej_sampling_example

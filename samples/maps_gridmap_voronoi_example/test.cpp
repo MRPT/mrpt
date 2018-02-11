@@ -19,6 +19,7 @@ using namespace mrpt::maps;
 using namespace mrpt::random;
 using namespace mrpt::gui;
 using namespace mrpt::math;
+using namespace mrpt::img;
 using namespace std;
 
 #include <mrpt/examples_config.h>
@@ -46,13 +47,13 @@ void TestVoronoi()
 	// Load a grid map:
 	cout << "Building gridmap...\n";
 
-	COccupancyGridMap2D gridmap(-5, 5, -5, 5, 0.10);
+	COccupancyGridMap2D gridmap(-5, 5, -5, 5, 0.10f);
 	gridmap.loadFromSimpleMap(simplemap);
 
 	// Build voronoi:
 	cout << "Building Voronoi diagram...\n";
 
-	gridmap.buildVoronoiDiagram(0.5, 0.3);
+	gridmap.buildVoronoiDiagram(0.5f, 0.3f);
 
 	// Show results:
 	CImage img_grid;

@@ -14,6 +14,7 @@
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/random.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include <iostream>
 
@@ -46,7 +47,11 @@ void TestRRT1()
 	ASSERT_FILE_EXISTS_(mySimpleMap);
 
 	cout << "Loading map...";
-	CFileGZInputStream(mySimpleMap) >> simplemap;
+	{
+		mrpt::io::CFileGZInputStream f(mySimpleMap);
+		auto arch = mrpt::serialization::archiveFrom(f);
+		arch >> simplemap;
+	}
 	cout << "Done! Number of sensory frames: " << simplemap.size() << endl;
 
 	// Set planner params:

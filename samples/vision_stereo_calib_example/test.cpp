@@ -15,7 +15,9 @@
 
 using namespace mrpt;
 using namespace mrpt::gui;
+using namespace mrpt::vision;
 using namespace mrpt::opengl;
+using namespace mrpt::system;
 using namespace mrpt::vision;
 using namespace std;
 
@@ -55,8 +57,8 @@ int TestStereoCalibrate(int argc, char** argv)
 	{
 		const string sImgL = argv[1 + 2 * i + 0];
 		const string sImgR = argv[1 + 2 * i + 1];
-		ASSERT_FILE_EXISTS_(sImgL)
-		ASSERT_FILE_EXISTS_(sImgR)
+		ASSERT_FILE_EXISTS_(sImgL);
+		ASSERT_FILE_EXISTS_(sImgR);
 
 		calib_imgs.resize(calib_imgs.size() + 1);
 		TImageStereoCalibData& stereo_dat = *calib_imgs.rbegin();

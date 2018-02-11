@@ -15,6 +15,7 @@
 using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::poses;
+using namespace mrpt::system;
 using namespace std;
 
 // Load a example laser scan:

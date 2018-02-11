@@ -26,6 +26,7 @@
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/gui/CDisplayWindow.h>
+#include <mrpt/serialization/CArchive.h>
 #include <iostream>
 
 using namespace mrpt;
@@ -35,6 +36,7 @@ using namespace mrpt::gui;
 using namespace mrpt::system;
 using namespace mrpt::math;
 using namespace mrpt::poses;
+using namespace mrpt::img;
 using namespace std;
 
 #include <mrpt/examples_config.h>
@@ -64,7 +66,7 @@ void TestLaser2Imgs()
 	rawlog_images_path += "/Images";
 	CImage::setImagesPathBase(rawlog_images_path);  // Set it.
 
-	CFileGZInputStream rawlogFile(RAWLOG_FILE);
+	mrpt::io::CFileGZInputStream rawlogFile(RAWLOG_FILE);
 
 	for (;;)
 	{
@@ -77,8 +79,9 @@ void TestLaser2Imgs()
 		// Load action/observation pair from the rawlog:
 		// --------------------------------------------------
 		cout << "Reading act/oct pair from rawlog..." << endl;
+		auto arch = mrpt::serialization::archiveFrom(rawlogFile);
 		if (!CRawlog::readActionObservationPair(
-				rawlogFile, action, observations, rawlogEntry))
+				arch , action, observations, rawlogEntry))
 			break;  // file EOF
 
 		// CAMERA............

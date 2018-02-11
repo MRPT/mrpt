@@ -12,6 +12,7 @@
 #include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/random.h>
+#include <mrpt/core/aligned_std_map.h>
 #include <iostream>
 
 using namespace mrpt;
@@ -20,6 +21,7 @@ using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::gui;
 using namespace mrpt::random;
+using namespace mrpt::system;
 using namespace std;
 
 // The type of my Dijkstra problem:
@@ -33,7 +35,7 @@ typedef CDijkstra<CNetworkOfPoses2D>
 // position of the two nodes
 void addEdge(
 	TNodeID from, TNodeID to,
-	const aligned_containers<TNodeID, CPose2D>::map_t& real_poses,
+	const mrpt::aligned_std_map<TNodeID, CPose2D>& real_poses,
 	CNetworkOfPoses2D& graph_links)
 {
 	CPose2D p = real_poses.find(to)->second - real_poses.find(from)->second;
@@ -57,7 +59,7 @@ void TestDijkstra()
 	CTicTac tictac;
 	CNetworkOfPoses2D graph_links;
 	CNetworkOfPoses2D::global_poses_t optimal_poses, optimal_poses_dijkstra;
-	aligned_containers<TNodeID, CPose2D>::map_t real_poses;
+	mrpt::aligned_std_map<TNodeID, CPose2D> real_poses;
 
 	getRandomGenerator().randomize(10);
 

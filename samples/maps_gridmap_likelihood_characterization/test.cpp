@@ -46,7 +46,7 @@ void theMainThing()
 	obsScan.aperture = M_2PIf;
 
 	ASSERT_(mrpt::system::fileExists(iniFile));
-	CConfigFile cfgFile(iniFile);
+	mrpt::config::CConfigFile cfgFile(iniFile);
 
 	string bmp = cfgFile.read_string("Params", "bitmap_file", "", true);
 	float res =
