@@ -21,6 +21,9 @@ using namespace mrpt::opengl;
 using namespace mrpt::gui;
 using namespace mrpt::vision;
 using namespace mrpt::obs;
+using namespace mrpt::system;
+using namespace mrpt::config;
+using namespace mrpt::img;
 using namespace std;
 
 // ------------------------------------------------------
@@ -44,7 +47,7 @@ void TestStereoRectify(int argc, char** argv)
 	if (argc == 2)
 	{
 		const string sCfgFile = argv[1];
-		ASSERT_FILE_EXISTS_(sCfgFile)
+		ASSERT_FILE_EXISTS_(sCfgFile);
 
 		// Load params from file:
 		mrpt::img::TStereoCamera params;
@@ -75,7 +78,7 @@ void TestStereoRectify(int argc, char** argv)
 	{
 		COpenGLScene::Ptr& theScene = win.get3DSceneAndLock();
 		gl_views[0] = theScene->getViewport("main");
-		ASSERT_(gl_views[0])
+		ASSERT_(gl_views[0]);
 		gl_views[1] = theScene->createViewport("right_image");
 
 		// Assign sizes:
