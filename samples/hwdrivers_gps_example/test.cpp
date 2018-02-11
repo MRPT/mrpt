@@ -19,6 +19,7 @@ using namespace mrpt;
 using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::hwdrivers;
+using namespace mrpt::config;
 using namespace std;
 
 string SERIAL_NAME;  // Name of the serial port to open
@@ -87,7 +88,7 @@ void Test_GPS()
 
 				CObservationGPS::Ptr gpsData =
 					std::dynamic_pointer_cast<CObservationGPS>(itObs->second);
-				gpsData->dumpToConsole();
+				gpsData->dumpToConsole(std::cout);
 			}
 			lstObs.clear();
 		}
