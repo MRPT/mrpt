@@ -38,10 +38,6 @@ enum
  */
 class CFileStream : public CStream
 {
-   protected:
-	size_t Read(void* Buffer, size_t Count) override;
-	size_t Write(const void* Buffer, size_t Count) override;
-
    private:
 	/** The actual input file stream. */
 	std::fstream m_f;
@@ -66,13 +62,16 @@ class CFileStream : public CStream
 	/** Destructor */
 	virtual ~CFileStream();
 
+	size_t Read(void* Buffer, size_t Count) override;
+	size_t Write(const void* Buffer, size_t Count) override;
+
 	/** Opens the file, returning true on success.
-	  * \param fileName The file to be open in this stream
-	  * \param mode The open mode: can be an or'd conbination of different
+	 * \param fileName The file to be open in this stream
+	 * \param mode The open mode: can be an or'd conbination of different
 	 * values.
-	  *  By default the file is opened for open and write and created if not
+	 *  By default the file is opened for open and write and created if not
 	 * found.
-	  */
+	 */
 	bool open(
 		const std::string& fileName, TFileOpenModes mode = fomRead | fomWrite);
 	/** Closes the file */
@@ -97,9 +96,9 @@ class CFileStream : public CStream
 	uint64_t getPositionO();
 
 	/** Reads one string line from the file (until a new-line character)
-	  * \return true if a line has been read, false on EOF or error */
+	 * \return true if a line has been read, false on EOF or error */
 	bool readLine(std::string& str);
 
 };  // End of class def.
-}  // End of namespace
-}  // end of namespace
+}  // namespace io
+}  // namespace mrpt

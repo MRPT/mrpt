@@ -178,7 +178,7 @@ class CDirectedTree
 			: public mrpt::graphs::CDirectedTree<TYPE_EDGES>::Visitor
 		{
 			std::stringstream& m_s;
-			CMyVisitor(std::ostringstream& s) : m_s(s) {}
+			CMyVisitor(std::stringstream& s) : m_s(s) {}
 			virtual void OnVisitNode(
 				const TNodeID parent,
 				const typename mrpt::graphs::CDirectedTree<

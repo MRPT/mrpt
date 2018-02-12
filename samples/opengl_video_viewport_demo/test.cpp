@@ -10,6 +10,7 @@
 #include <mrpt/gui.h>
 #include <mrpt/opengl.h>
 #include <mrpt/hwdrivers/CCameraSensor.h>
+#include <iostream>
 
 using namespace std;
 using namespace mrpt;
@@ -43,7 +44,7 @@ void TestOpenGLVideo()
 	{
 		COpenGLScene::Ptr& theScene = win.get3DSceneAndLock();
 		gl_view_main = theScene->getViewport("main");
-		ASSERT_(gl_view_main)
+		ASSERT_(gl_view_main);
 		// IMPORTANT!!! IF NOT UNLOCKED, THE WINDOW WILL NOT BE UPDATED!
 		win.unlockAccess3DScene();
 	}
