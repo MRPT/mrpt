@@ -39,7 +39,7 @@ ENDIF()
 
 # Add the required libraries for linking:
 TARGET_LINK_LIBRARIES(${sampleName}
-	${MRPT_LIBRARIES}  # This is filled by FIND_PACKAGE(MRPT ...)
+	${MRPT_LIBRARIES} @CMAKE_EXAMPLE_EXTRA_LIBS@ # This is filled by FIND_PACKAGE(MRPT ...)
 	)
 
 # Set optimized building:
