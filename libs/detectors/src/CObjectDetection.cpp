@@ -21,7 +21,7 @@
 using namespace mrpt::detectors;
 
 void CObjectDetection::detectObjects(
-	const CImage* img, vector_detectable_object& detected)
+	const mrpt::img::CImage* img, vector_detectable_object& detected)
 {
 	mrpt::obs::CObservationImage o;
 	o.timestamp = mrpt::system::now();
