@@ -2,7 +2,7 @@ The MRPT project
 ====================================================
 [![Travis](https://travis-ci.org/MRPT/mrpt.png?branch=master)](https://travis-ci.org/MRPT/mrpt)
 [![Shippable](http://mrpt.ual.es:50000/projects/59fa7483a5b9410700f38883/badge?branch=master)](http://150.214.150.101:50001/github/MRPT/mrpt)
-[![Coverage Badge](http://150.214.150.101:50000/projects/5940153f75d24b06002327b7/coverageBadge?branch=master)](http://150.214.150.101:50001/github/MRPT/mrpt)
+[![codecov](https://codecov.io/gh/MRPT/mrpt/branch/master/graph/badge.svg)](https://codecov.io/gh/MRPT/mrpt)
 [![Releases](https://img.shields.io/github/release/MRPT/mrpt.svg)](https://github.com/MRPT/mrpt/releases)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/MRPT/mrpt)
 
