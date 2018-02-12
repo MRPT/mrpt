@@ -9,7 +9,7 @@ before_script:
   - docker images
 
 script:
-  - docker run -v $HOME:$HOME -e MAKEFLAGS -e CCACHE_SLOPPINESS -e TASK -e DEPS -e CI_SOURCE_PATH -e REPOSITORY_NAME -e HOME -e DISTRO -e CI_ROS_DISTRO -e CODECOV_TOKEN $DOCKER_IMAGE bash -c 'cd $CI_SOURCE_PATH; apt-get update -qq ; source travis/check_style.sh; source travis/travis_main.sh'
+  - docker run -v $HOME:$HOME -e CI -e TRAVIS -e TRAVIS_BRANCH -e TRAVIS_JOB_NUMBER -e TRAVIS_PULL_REQUEST -e TRAVIS_JOB_ID -e TRAVIS_TAG -e TRAVIS_REPO_SLUG -e TRAVIS_COMMIT -e TRAVIS_BUILD_DIR -e TRAVIS_OS_NAME -e MAKEFLAGS -e CCACHE_SLOPPINESS -e TASK -e DEPS -e CI_SOURCE_PATH -e REPOSITORY_NAME -e HOME -e DISTRO -e CI_ROS_DISTRO -e CODECOV_TOKEN $DOCKER_IMAGE bash -c 'cd $CI_SOURCE_PATH; apt-get update -qq ; source travis/check_style.sh; source travis/travis_main.sh'
 
 env:
   global:

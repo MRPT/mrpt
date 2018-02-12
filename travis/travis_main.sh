@@ -78,9 +78,9 @@ function test ()
 #  if command_exists gdb ; then
 #    make test_gdb
 #  else
-    make tests_build_all
-    make test
-    make gcov
+    make -j2 tests_build_all
+    make -j2 test
+    make -j2 gcov
 #  fi
   bash <(curl -s https://codecov.io/bash)
 
