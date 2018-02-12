@@ -15,6 +15,8 @@
 
 #include <mrpt/otherlibs/do_opencv_includes.h>
 
+#include <map>
+
 // We must define & store OpenCV-specific data like this in the .cpp, we don't
 // want to force users to need opencv headers:
 struct TDUOParams
