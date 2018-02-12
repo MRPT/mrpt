@@ -11,6 +11,7 @@
 #include <mrpt/random.h>
 
 #include <mrpt/opengl.h>
+#include <iostream>
 
 using namespace std;
 using namespace mrpt;

@@ -15,6 +15,7 @@
 #include <sstream>
 #include <iostream>
 #include <stdexcept>
+#include <algorithm> // std::max
 #include <mrpt/config.h>
 #include <mrpt/core/common.h>  // Disable MSVC warning 4251 in this class
 
@@ -131,15 +132,13 @@ struct TParameters : public std::map<std::string, T>
 	void getAsString(std::string& s) const
 	{
 		size_t maxStrLen = 10;
-		for (typename BASE::const_iterator it = BASE::begin();
-			 it != BASE::end(); ++it)
-			maxStrLen = std::max(maxStrLen, it->first.size());
+		for (const auto & e : *this)
+			maxStrLen = std::max(maxStrLen, e.first.size());
 		maxStrLen++;
 		std::stringstream str;
-		for (typename BASE::const_iterator it = BASE::begin();
-			 it != BASE::end(); ++it)
-			str << it->first << std::string(maxStrLen - it->first.size(), ' ')
-				<< " = " << it->second << std::endl;
+		for (const auto & e : *this)
+			str << e.first << std::string(maxStrLen - e.first.size(), ' ')
+				<< " = " << e.second << std::endl;
 		s = str.str();
 	}
 };

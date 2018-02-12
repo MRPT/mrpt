@@ -39,8 +39,7 @@ void Test_TypeName()
 	constexpr auto s1 = TTypeName<int32_t>::get();
 	cout << s1 << endl;
 
-	constexpr auto s2 = TTypeName<set<vector<double>>>::get();
-	cout << s2 << endl;
+	cout << TTypeName<set<vector<double>>>::get() << endl;
 
 	// Evaluation of user-defined types:
 	cout << TTypeName<MyFooClass>::get() << endl;

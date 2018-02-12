@@ -551,53 +551,43 @@ const std::string& mrpt::system::getMRPTLicense()
 	return sLicenseText;
 }
 
+#ifdef _WIN32
+std::string winerror2str(const char* errorPlaceName)
+{
+	char str[700];
+	DWORD e = GetLastError();
+	FormatMessageA(
+		FORMAT_MESSAGE_FROM_SYSTEM, 0, e, 0, str, sizeof(str), NULL);
+	std::string s;
+	s = "[";
+	s += errorPlaceName;
+	s += "] Error: ";
+	s += str;
+	return s;
+}
+#endif
+
 /*---------------------------------------------------------------
-
 launchProcess
-
 ---------------------------------------------------------------*/
-
 bool mrpt::system::launchProcess(const std::string& command)
-
 {
 #ifdef _WIN32
-
 	STARTUPINFOA SI;
-
 	PROCESS_INFORMATION PI;
-
 	memset(&SI, 0, sizeof(STARTUPINFOA));
-
 	SI.cb = sizeof(STARTUPINFOA);
-
 	if (CreateProcessA(
 			NULL, (LPSTR)command.c_str(), NULL, NULL, true, 0, NULL, NULL, &SI,
 			&PI))
-
 	{
 		// Wait:
-
 		WaitForSingleObject(PI.hProcess, INFINITE);
-
 		return true;
-
 	}  // End of process executed OK
-
 	else
-
 	{
-		char str[300];
-
-		DWORD e = GetLastError();
-
-		FormatMessageA(
-			FORMAT_MESSAGE_FROM_SYSTEM, 0, e, 0, str, sizeof(str), NULL);
-
-		// ERROR:
-
-		std::cerr << "[launchProcess] Couldn't spawn process. Error msg: "
-				  << str << std::endl;
-
+		std::cerr << winerror2str("launchProcess");
 		return false;
 	}
 
@@ -667,6 +657,7 @@ int mrpt::system::executeCommand(
 
 	// Create the stringstream
 	stringstream sout;
+	int exit_code = -1;
 
 #ifdef MRPT_OS_LINUX
 	// Run Popen
@@ -689,8 +680,117 @@ int mrpt::system::executeCommand(
 	}
 
 	// Close
-	int exit_code = pclose(in);
+	exit_code = pclose(in);
+#else
+	try
+	{
+		exit_code = -1;
 
+		HANDLE g_hChildStd_IN_Rd = NULL;
+		HANDLE g_hChildStd_IN_Wr = NULL;
+		HANDLE g_hChildStd_OUT_Rd = NULL;
+		HANDLE g_hChildStd_OUT_Wr = NULL;
+
+		HANDLE g_hInputFile = NULL;
+		SECURITY_ATTRIBUTES saAttr;
+		// Set the bInheritHandle flag so pipe handles are inherited.
+		saAttr.nLength = sizeof(SECURITY_ATTRIBUTES);
+		saAttr.bInheritHandle = TRUE;
+		saAttr.lpSecurityDescriptor = NULL;
+		// Create a pipe for the child process's STDOUT.
+		if (!CreatePipe(&g_hChildStd_OUT_Rd, &g_hChildStd_OUT_Wr, &saAttr, 0))
+			throw winerror2str("StdoutRd CreatePipe");
+
+		// Ensure the read handle to the pipe for STDOUT is not inherited.
+
+		if (!SetHandleInformation(g_hChildStd_OUT_Rd, HANDLE_FLAG_INHERIT, 0))
+			throw winerror2str("Stdout SetHandleInformation");
+
+		// Create a pipe for the child process's STDIN. 
+
+		if (!CreatePipe(&g_hChildStd_IN_Rd, &g_hChildStd_IN_Wr, &saAttr, 0))
+			throw winerror2str("Stdin CreatePipe");
+
+		// Ensure the write handle to the pipe for STDIN is not inherited. 
+
+		if (!SetHandleInformation(g_hChildStd_IN_Wr, HANDLE_FLAG_INHERIT, 0))
+			throw winerror2str("Stdin SetHandleInformation");
+
+		// Create the child process:
+		PROCESS_INFORMATION piProcInfo;
+		STARTUPINFOA siStartInfo;
+		BOOL bSuccess = FALSE;
+
+		// Set up members of the PROCESS_INFORMATION structure. 
+
+		ZeroMemory(&piProcInfo, sizeof(PROCESS_INFORMATION));
+
+		// Set up members of the STARTUPINFO structure. 
+		// This structure specifies the STDIN and STDOUT handles for redirection.
+
+		ZeroMemory(&siStartInfo, sizeof(STARTUPINFO));
+		siStartInfo.cb = sizeof(STARTUPINFO);
+		siStartInfo.hStdError = g_hChildStd_OUT_Wr;
+		siStartInfo.hStdOutput = g_hChildStd_OUT_Wr;
+		siStartInfo.hStdInput = g_hChildStd_IN_Rd;
+		siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
+
+		// Create the child process.
+		bSuccess = CreateProcessA(NULL,
+			(LPSTR)command.c_str(),     // command line 
+			NULL,          // process security attributes 
+			NULL,          // primary thread security attributes 
+			TRUE,          // handles are inherited 
+			0,             // creation flags 
+			NULL,          // use parent's environment 
+			NULL,          // use parent's current directory 
+			&siStartInfo,  // STARTUPINFO pointer 
+			&piProcInfo);  // receives PROCESS_INFORMATION 
+
+						   // If an error occurs, exit the application. 
+		if (!bSuccess)
+			throw winerror2str("CreateProcess");
+
+		// Read from pipe that is the standard output for child process.
+		DWORD dwRead;
+		CHAR chBuf[4096];
+		bSuccess = FALSE;
+		DWORD exitval = 0;
+		exit_code = 0;
+		for (;;)
+		{
+			DWORD dwAvailable = 0;
+			PeekNamedPipe(g_hChildStd_OUT_Rd, NULL, NULL, NULL, &dwAvailable, NULL);
+			if (dwAvailable)
+			{
+				bSuccess = ReadFile(g_hChildStd_OUT_Rd, chBuf, sizeof(chBuf), &dwRead, NULL);
+				if (!bSuccess || dwRead == 0) break;
+				sout.write(chBuf, dwRead);
+			}
+			else
+			{
+				// process ended?
+				if (GetExitCodeProcess(piProcInfo.hProcess, &exitval))
+				{
+					if (exitval != STILL_ACTIVE)
+					{
+						exit_code = exitval;
+						break;
+					}
+				}
+			}
+		}
+
+		// Close handles to the child process and its primary thread.
+		CloseHandle(piProcInfo.hProcess);
+		CloseHandle(piProcInfo.hThread);
+	}
+	catch (std::string &errStr)
+	{
+		std::cerr << errStr;
+		return 1; // !=0 means error
+	}
+#endif
 	// set output - if valid pointer given
 	if (output)
 	{
@@ -699,9 +799,4 @@ int mrpt::system::executeCommand(
 
 	// Return exit code
 	return exit_code;
-#else
-	MRPT_TODO("Write popen alternative for Windows")
-	THROW_EXCEPTION("not implemented for Windows yet!");
-#endif
-
 }  // end of executeCommand
