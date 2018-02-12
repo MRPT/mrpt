@@ -82,7 +82,7 @@ function test ()
     make -j2 test
     make -j2 gcov
 #  fi
-  bash <(curl -s https://codecov.io/bash)
+  bash <(curl -s https://codecov.io/bash) -X gcov
 
   cd $MRPT_DIR
 }
