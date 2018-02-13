@@ -331,12 +331,9 @@ IF(BUILD_EXAMPLES)
 	# === OPENNI2 examples ===
 	IF (MRPT_HAS_OPENNI2)
 		SET(LIST_EXAMPLES_IN_THIS_DIR
-			hwdrivers_openni2_rgbd_demo
-			hwdrivers_openni2_proximity_demo
 			hwdrivers_openni2_driver_demo
 			hwdrivers_openni2_2d_icp_slam
-			hwdrivers_openni2_to_rawlog)
-
+			)
 		SET(CMAKE_EXAMPLE_DEPS mrpt-hwdrivers mrpt-gui mrpt-opengl mrpt-maps)
 		GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 	ENDIF(MRPT_HAS_OPENNI2)
