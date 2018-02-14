@@ -86,12 +86,12 @@ class epnp
 	{
 		for (int i = 0; i < number_of_correspondences; i++)
 		{
-			pws[3 * i] = opoints.at<OpointType>(0, i).x;
-			pws[3 * i + 1] = opoints.at<OpointType>(0, i).y;
-			pws[3 * i + 2] = opoints.at<OpointType>(0, i).z;
+			pws[3 * i] = opoints.at<OpointType>(i, 0);
+			pws[3 * i + 1] = opoints.at<OpointType>(i, 1);
+			pws[3 * i + 2] = opoints.at<OpointType>(i, 2);
 
-			us[2 * i] = ipoints.at<IpointType>(0, i).x * fu + uc;
-			us[2 * i + 1] = ipoints.at<IpointType>(0, i).y * fv + vc;
+			us[2 * i] = ipoints.at<IpointType>(i, 0) * fu + uc;
+			us[2 * i + 1] = ipoints.at<IpointType>(i, 1) * fv + vc;
 		}
 	}
 

@@ -53,9 +53,9 @@ class dls
 	{
 		for (int i = 0; i < N; i++)
 		{
-			p.at<double>(0, i) = opoints.at<OpointType>(i).x;
-			p.at<double>(1, i) = opoints.at<OpointType>(i).y;
-			p.at<double>(2, i) = opoints.at<OpointType>(i).z;
+			p.at<double>(0, i) = opoints.at<OpointType>(i,0);
+			p.at<double>(1, i) = opoints.at<OpointType>(i,1);
+			p.at<double>(2, i) = opoints.at<OpointType>(i,2);
 
 			// compute mean of object points
 			mn.at<double>(0) += p.at<double>(0, i);
@@ -63,12 +63,12 @@ class dls
 			mn.at<double>(2) += p.at<double>(2, i);
 
 			// make z into unit vectors from normalized pixel coords
-			double sr = std::pow(ipoints.at<IpointType>(i).x, 2) +
-						std::pow(ipoints.at<IpointType>(i).y, 2) + (double)1;
+			double sr = std::pow(ipoints.at<IpointType>(i,0), 2) +
+						std::pow(ipoints.at<IpointType>(i,1), 2) + (double)1;
 			sr = std::sqrt(sr);
 
-			z.at<double>(0, i) = ipoints.at<IpointType>(i).x / sr;
-			z.at<double>(1, i) = ipoints.at<IpointType>(i).y / sr;
+			z.at<double>(0, i) = ipoints.at<IpointType>(i,0) / sr;
+			z.at<double>(1, i) = ipoints.at<IpointType>(i,1) / sr;
 			z.at<double>(2, i) = (double)1 / sr;
 		}
 

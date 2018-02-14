@@ -42,14 +42,14 @@ mrpt::vision::pnp::epnp::epnp(
 	if (opoints.depth() == ipoints.depth())
 	{
 		if (opoints.depth() == CV_32F)
-			init_points<cv::Point3f, cv::Point2f>(opoints, ipoints);
+			init_points<float, float>(opoints, ipoints);
 		else
-			init_points<cv::Point3d, cv::Point2d>(opoints, ipoints);
+			init_points<double, double>(opoints, ipoints);
 	}
 	else if (opoints.depth() == CV_32F)
-		init_points<cv::Point3f, cv::Point2d>(opoints, ipoints);
+		init_points<float, double>(opoints, ipoints);
 	else
-		init_points<cv::Point3d, cv::Point2f>(opoints, ipoints);
+		init_points<double, float>(opoints, ipoints);
 
 	alphas.resize(4 * number_of_correspondences);
 	pcs.resize(3 * number_of_correspondences);
