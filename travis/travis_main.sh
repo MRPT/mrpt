@@ -4,8 +4,8 @@ set -e   # Make sure any error makes the script to return an error code
 MRPT_DIR=`pwd`
 BUILD_DIR=build
 
-CMAKE_C_FLAGS="-Wall -Wextra -Wabi -O2"
-CMAKE_CXX_FLAGS="-Wall -Wextra -Wabi -O2"
+CMAKE_C_FLAGS="-Wall -Wextra -Wabi"
+CMAKE_CXX_FLAGS="-Wall -Wextra -Wabi"
 EXTRA_CMAKE_ARGS="-DDISABLE_PCL=ON"  # PCL causes link errors (?!)
 
 function prepare_install()
@@ -47,6 +47,7 @@ function build ()
     -DBUILD_EXAMPLES=$BUILD_EXAMPLES \
     -DBUILD_APPLICATIONS=TRUE \
     -DBUILD_TESTING=FALSE \
+    -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
     -DDISABLE_PYTHON_BINDINGS=$DISABLE_PYTHON_BINDINGS \
     $EXTRA_CMAKE_ARGS
 
