@@ -42,14 +42,14 @@ mrpt::vision::pnp::dls::dls(const cv::Mat& opoints, const cv::Mat& ipoints)
 	if (opoints.depth() == ipoints.depth())
 	{
 		if (opoints.depth() == CV_32F)
-			init_points<cv::Point3f, cv::Point2f>(opoints, ipoints);
+			init_points<float, float>(opoints, ipoints);
 		else
-			init_points<cv::Point3d, cv::Point2d>(opoints, ipoints);
+			init_points<double, double>(opoints, ipoints);
 	}
 	else if (opoints.depth() == CV_32F)
-		init_points<cv::Point3f, cv::Point2d>(opoints, ipoints);
+		init_points<float, double>(opoints, ipoints);
 	else
-		init_points<cv::Point3d, cv::Point2f>(opoints, ipoints);
+		init_points<double, float>(opoints, ipoints);
 }
 
 mrpt::vision::pnp::dls::~dls()
