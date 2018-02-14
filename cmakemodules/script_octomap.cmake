@@ -25,12 +25,11 @@ IF (NOT OCTOMAP_FOUND)
 		if (MSVC)
 			SET(LIB_EXT "lib")
 			SET(LIB_PREFIX "")
-			SET(CMD_CMAKE_POSTFIX "-DCMAKE_DEBUG_POSTFIX=d")
 		else()
 			SET(LIB_EXT "a")
 			SET(LIB_PREFIX "lib")
-			SET(CMD_CMAKE_POSTFIX "")
 		endif()
+		SET(CMD_CMAKE_POSTFIX "-DCMAKE_DEBUG_POSTFIX=${CMAKE_DEBUG_POSTFIX}")
 
 		# Include embedded version headers:
 		include(ExternalProject)
@@ -52,8 +51,8 @@ IF (NOT OCTOMAP_FOUND)
 			${CMD_CMAKE_POSTFIX}
 		  BUILD_COMMAND
 			${CMAKE_COMMAND} --build ${MRPT_BINARY_DIR}/EP_octomap-prefix/src/EP_octomap-build --config $<CONFIG> --target octomap-static
-			COMMAND ${CMAKE_COMMAND} -E copy ${MRPT_BINARY_DIR}/otherlibs/octomap/lib/${LIB_PREFIX}octomap$<$<CONFIG:Debug>:d>.${LIB_EXT} ${MRPT_BINARY_DIR}/lib/
-			COMMAND ${CMAKE_COMMAND} -E copy ${MRPT_BINARY_DIR}/otherlibs/octomap/lib/${LIB_PREFIX}octomath$<$<CONFIG:Debug>:d>.${LIB_EXT} ${MRPT_BINARY_DIR}/lib/
+			COMMAND ${CMAKE_COMMAND} -E copy ${MRPT_BINARY_DIR}/otherlibs/octomap/lib/${LIB_PREFIX}octomap$<$<CONFIG:Debug>:${CMAKE_DEBUG_POSTFIX}>.${LIB_EXT} ${MRPT_BINARY_DIR}/lib/
+			COMMAND ${CMAKE_COMMAND} -E copy ${MRPT_BINARY_DIR}/otherlibs/octomap/lib/${LIB_PREFIX}octomath$<$<CONFIG:Debug>:${CMAKE_DEBUG_POSTFIX}>.${LIB_EXT} ${MRPT_BINARY_DIR}/lib/
 		  INSTALL_COMMAND   ""
 		  TEST_COMMAND      ""
 		)
@@ -64,8 +63,8 @@ IF (NOT OCTOMAP_FOUND)
 		set(OCTOMAP_LIBRARIES "")
 
 		LIST(APPEND OCTOMAP_LIBRARIES
-			${MRPT_BINARY_DIR}/lib/${LIB_PREFIX}octomath$<$<CONFIG:Debug>:d>.${LIB_EXT}
-			${MRPT_BINARY_DIR}/lib/${LIB_PREFIX}octomap$<$<CONFIG:Debug>:d>.${LIB_EXT}
+			${MRPT_BINARY_DIR}/lib/${LIB_PREFIX}octomath$<$<CONFIG:Debug>:${CMAKE_DEBUG_POSTFIX}>.${LIB_EXT}
+			${MRPT_BINARY_DIR}/lib/${LIB_PREFIX}octomap$<$<CONFIG:Debug>:${CMAKE_DEBUG_POSTFIX}>.${LIB_EXT}
 			)
 		SET(OCTOMAP_INCLUDE_DIRS
 			"${MRPT_BINARY_DIR}/otherlibs/octomap/octomap/include/"
