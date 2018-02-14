@@ -5,6 +5,7 @@ The MRPT project
 [![codecov](https://codecov.io/gh/MRPT/mrpt/branch/master/graph/badge.svg)](https://codecov.io/gh/MRPT/mrpt)
 [![Releases](https://img.shields.io/github/release/MRPT/mrpt.svg)](https://github.com/MRPT/mrpt/releases)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/MRPT/mrpt)
+[![Open Source Helpers](https://www.codetriage.com/mrpt/mrpt/badges/users.svg)](https://www.codetriage.com/mrpt/mrpt)
 
 ## 1. Introduction
 <img align="right" src="https://mrpt.github.io/imgs/mrpt-videos-mix2.gif">
