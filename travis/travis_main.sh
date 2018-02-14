@@ -10,31 +10,8 @@ EXTRA_CMAKE_ARGS="-DDISABLE_PCL=ON"  # PCL causes link errors (?!)
 
 function prepare_install()
 {
-  apt-get install build-essential software-properties-common gcc g++ clang pkg-config cmake python-pip -y
-  apt-get install git-core -y
-  apt-get install ccache -y
-
   if [ "$TASK" == "lint" ]; then
     pip install -r travis/python_reqs.txt
-  fi
-
-  if [ "$DEPS" != "minimal" ]; then
-    apt-get install libftdi-dev zlib1g-dev libusb-1.0-0-dev libdc1394-22-dev -y
-    apt-get install libjpeg-dev libopencv-dev libgtest-dev libeigen3-dev -y
-    apt-get install libsuitesparse-dev libopenni2-dev libudev-dev -y
-    apt-get install libboost-python-dev libpython-dev python-numpy -y
-
-    # We must use a custom PPA to solve errors in PCL official pkgs
-    add-apt-repository ppa:jolting/backport-mrpt
-    apt-get update -qq
-    apt-get install libpcl-dev -y
-    if [ "$DEPS" != "headless" ]; then
-      apt-get install libwxgtk3.0-dev -y
-      apt-get install freeglut3-dev -y
-      apt-get install libavformat-dev libswscale-dev -y
-      apt-get install libassimp-dev -y
-      apt-get install qtbase5-dev libqt5opengl5-dev -y
-    fi
   fi
 }
 
@@ -101,11 +78,11 @@ function test ()
 #  if command_exists gdb ; then
 #    make test_gdb
 #  else
-    make tests_build_all
-    make test
-    make gcov
+    make -j2 tests_build_all
+    make -j2 test
+    make -j2 gcov
 #  fi
-  bash <(curl -s https://codecov.io/bash)
+  bash <(curl -s https://codecov.io/bash) -X gcov
 
   cd $MRPT_DIR
 }

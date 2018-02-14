@@ -32,14 +32,17 @@ Output files:
    ------------------------------------------------------ */
 
 #include <mrpt/system/filesystem.h>
-#include <mrpt/system/CTextFileLinesParser.h>
+#include <mrpt/io/CTextFileLinesParser.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationIMU.h>
+#include <mrpt/serialization/CArchive.h>
+#include <iostream>
 
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::obs;
+using namespace mrpt::serialization;
 
 const double KINECT_FPS = 30.0;
 
@@ -78,7 +81,7 @@ void rgbd2rawlog(const string& src_path, const string& out_name)
 	std::istringstream line;
 	if (mrpt::system::fileExists(in_fil_rgb))
 	{
-		mrpt::utils::CTextFileLinesParser fparser(in_fil_rgb);
+		mrpt::io::CTextFileLinesParser fparser(in_fil_rgb);
 		while (fparser.getNextLine(line))
 		{
 			double tim;
@@ -88,7 +91,7 @@ void rgbd2rawlog(const string& src_path, const string& out_name)
 	}
 	if (mrpt::system::fileExists(in_fil_depth))
 	{
-		mrpt::utils::CTextFileLinesParser fparser(in_fil_depth);
+		mrpt::io::CTextFileLinesParser fparser(in_fil_depth);
 		while (fparser.getNextLine(line))
 		{
 			double tim;
@@ -98,7 +101,7 @@ void rgbd2rawlog(const string& src_path, const string& out_name)
 	}
 	if (mrpt::system::fileExists(in_fil_acc))
 	{
-		mrpt::utils::CTextFileLinesParser fparser(in_fil_acc);
+		mrpt::io::CTextFileLinesParser fparser(in_fil_acc);
 		while (fparser.getNextLine(line))
 		{
 			double tim;
@@ -227,7 +230,7 @@ void rgbd2rawlog(const string& src_path, const string& out_name)
 					sDepthfile, out_img_dir + string("/"));
 
 				// save:
-				f_out << obs;
+				archiveFrom(f_out) << obs;
 
 				// Search for acc data:
 				map<double, vector<double>>::const_iterator it_list_acc =
@@ -243,7 +246,7 @@ void rgbd2rawlog(const string& src_path, const string& out_name)
 					obs_imu.rawMeasurements[IMU_Y_ACC] = it_list_acc->second[1];
 					obs_imu.rawMeasurements[IMU_Z_ACC] = it_list_acc->second[2];
 
-					f_out << obs_imu;
+					archiveFrom(f_out) << obs_imu;
 				}
 			}
 		}
@@ -290,7 +293,7 @@ void rgbd2rawlog(const string& src_path, const string& out_name)
 				sDepthfile, out_img_dir + string("/"));
 
 			// save:
-			f_out << obs;
+			archiveFrom(f_out) << obs;
 		}
 	}
 	else if (only_rgb)
@@ -314,7 +317,7 @@ void rgbd2rawlog(const string& src_path, const string& out_name)
 			obs.intensityImage.setExternalStorage(sRGBfile);
 
 			// save:
-			f_out << obs;
+			archiveFrom(f_out) << obs;
 		}
 	}
 
