@@ -10,15 +10,18 @@
 #include <mrpt/gui.h>
 #include <mrpt/system/CObserver.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::math;
+using namespace mrpt::system;
+using namespace mrpt::img;
 using namespace std;
 
 #include <mrpt/examples_config.h>
 string myExampleImage(
-	MRPT_EXAMPLES_BASE_DIRECTORY + string("imageBasics/frame_color.jpg"));
+	MRPT_EXAMPLES_BASE_DIRECTORY + string("img_basic_example/frame_color.jpg"));
 
 class MyObserver : public mrpt::system::CObserver
 {

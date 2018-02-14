@@ -4,13 +4,13 @@ sudo: required
 dist: trusty
 
 before_script:
-  - export DOCKER_IMAGE=ubuntu:$DISTRO
   - export CI_SOURCE_PATH=$(pwd)
   - export REPOSITORY_NAME=${PWD##*/}
+  - export CODECOV_VARS=$(bash <(curl -s https://codecov.io/env))
   - docker images
 
 script:
-  - docker run -v $HOME:$HOME -e MAKEFLAGS -e CCACHE_SLOPPINESS -e TASK -e DEPS -e CI_SOURCE_PATH -e REPOSITORY_NAME -e HOME -e DISTRO -e CI_ROS_DISTRO -e CODECOV_TOKEN $DOCKER_IMAGE bash -c 'cd $CI_SOURCE_PATH; apt-get update -qq ; source travis/check_style.sh; source travis/travis_main.sh'
+  - docker run -v $HOME:$HOME $CODECOV_VARS -e MAKEFLAGS -e CCACHE_SLOPPINESS -e TASK -e DEPS -e CI_SOURCE_PATH -e REPOSITORY_NAME -e HOME -e DISTRO -e CI_ROS_DISTRO -e CODECOV_TOKEN $DOCKER_IMAGE bash -c 'cd $CI_SOURCE_PATH; apt-get update -qq ; source travis/check_style.sh; source travis/travis_main.sh'
 
 env:
   global:
@@ -21,28 +21,28 @@ matrix:
   include:
   - compiler: gcc
     os: linux
-    env: TASK="build" DISTRO=xenial
+    env: TASK="build" DOCKER_IMAGE=mrpt/mrpt-build-env:full
   - compiler: gcc
     os: linux
-    env: TASK="test" DISTRO=xenial
+    env: TASK="test" DOCKER_IMAGE=mrpt/mrpt-build-env:full
   - compiler: gcc
     os: linux
-    env: TASK="build" DEPS="headless" DISTRO=xenial
+    env: TASK="build" DEPS="headless" DOCKER_IMAGE=mrpt/mrpt-build-env:headless
   - compiler: gcc
     os: linux
-    env: TASK="test" DEPS="headless" DISTRO=xenial
+    env: TASK="test" DEPS="headless" DOCKER_IMAGE=mrpt/mrpt-build-env:headless
   - compiler: gcc
     os: linux
-    env: TASK="build" DEPS="minimal" DISTRO=xenial
+    env: TASK="build" DEPS="minimal" DOCKER_IMAGE=mrpt/mrpt-build-env:minimal
   - compiler: gcc
     os: linux
-    env: TASK="test" DEPS="minimal" DISTRO=xenial
+    env: TASK="test" DEPS="minimal" DOCKER_IMAGE=mrpt/mrpt-build-env:minimal
   - compiler: clang
     os: linux
-    env: TASK="build" DISTRO=xenial
+    env: TASK="build" DOCKER_IMAGE=mrpt/mrpt-build-env:full
   - compiler: clang
     os: linux
-    env: TASK="test" DISTRO=xenial
+    env: TASK="test" DOCKER_IMAGE=mrpt/mrpt-build-env:full
   - language: python
     os: linux
-    env: TASK="lint" DISTRO=xenial
+    env: TASK="lint" DOCKER_IMAGE=mrpt/mrpt-build-env:full

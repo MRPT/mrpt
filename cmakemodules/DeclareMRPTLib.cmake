@@ -155,6 +155,7 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 
 		set_target_properties(mrpt-${name} PROPERTIES FOLDER "modules")
 		set(iftype PUBLIC)
+		add_coverage(mrpt-${name})
 	ELSE()
 		# A hdr-only library: needs no real compiling
 		add_library(mrpt-${name} INTERFACE)

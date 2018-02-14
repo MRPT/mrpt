@@ -494,9 +494,8 @@ std::string mrpt::comms::net::getLastSocketErrorStr()
 #endif
 }
 
-MRPT_TODO("Modify ping to run on Windows + Test this");
 bool mrpt::comms::net::Ping(
-	const std::string& address, const int& max_attempts,
+	const std::string& address, const int max_attempts,
 	std::string* output_str /*=NULL*/)
 {
 	using namespace std;
@@ -504,24 +503,25 @@ bool mrpt::comms::net::Ping(
 	// Format a command string
 	string cmd_str = "ping";
 
-// different "count" argument for Windows and *NIX  systems
+	// different "count" argument for Windows and *NIX  systems
 #if defined(MRPT_OS_LINUX) || defined(__APPLE__)
-	string count_arg_str = "-c " + std::to_string(max_attempts);
+	cmd_str += " -c ";
 #else
-	THROW_EXCEPTION("Ping not implemented on Windows Yet.");
+	cmd_str += " -n ";
+#endif
+	cmd_str += std::to_string(max_attempts);
 
-	string count_arg_str = "-n " + std::to_string(max_attempts);
+	// Address:
+	cmd_str += " ";
+	cmd_str += address;
+
+	// Redirection:
+#if defined(MRPT_OS_LINUX) || defined(__APPLE__)
+	cmd_str += " 2>&1";
 #endif
 
-	string redirection_str = "2>&1";
-
-	// Join the command subparts
-	string cmd_full_str = mrpt::format(
-		"%s %s %s %s", cmd_str.c_str(), count_arg_str.c_str(), address.c_str(),
-		redirection_str.c_str());
-
 	// Finally exec the command
-	int code = executeCommand(cmd_full_str, output_str);
+	int code = executeCommand(cmd_str, output_str);
 
 	return (code == 0);
 }

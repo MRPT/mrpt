@@ -19,6 +19,7 @@
 #include <mrpt/system/os.h>
 #include <pcl/io/io.h>
 #include <pcl/io/pcd_io.h>
+#include <iostream>
 
 using namespace std;
 using namespace mrpt::system;
