@@ -432,6 +432,8 @@ bool CSickLaserSerial::LMS_setupSerialComms()
 			// Are we already receiving at 500k?
 			// ------------------------------------------------
 			COM->setConfig(rates[i]);
+			if (m_verbose) printf("[CSickLaserSerial] Testing if the scanner is "
+				"set to %i bauds...\n",rates[i]);
 
 			LMS_endContinuousMode();  // Stop continuous mode.
 			std::this_thread::sleep_for(100ms);
@@ -485,6 +487,7 @@ bool CSickLaserSerial::LMS_setupSerialComms()
 bool CSickLaserSerial::LMS_setupBaudrate(int baud)
 {
 	ASSERT_(m_stream);
+	if (m_verbose) printf("[CSickLaserSerial::LMS_setupBaudrate] rate=%i\n",baud);
 
 	uint8_t cmd[4];
 	cmd[0] = 0x20;
@@ -580,6 +583,10 @@ bool CSickLaserSerial::LMS_waitIncomingFrame(uint16_t timeout)
 				// Store in frame:
 				m_received_frame_buffer[nBytes] = b;
 				nBytes++;
+				if (m_verbose)
+				{
+			    printf("[CSickLaserSerial::Receive] RX: %02X\n",b);
+				}
 			}
 		}
 		if (tictac.Tac() >= maxTime) return false;  // Timeout
@@ -795,12 +802,13 @@ bool CSickLaserSerial::SendCommandToSICK(
 
 	const size_t toWrite = 4 + cmd_len + 2;
 
-#if 0
-    printf("TX: ");
+	if (m_verbose)
+	{
+    printf("[CSickLaserSerial::SendCommandToSICK] TX: ");
     for (unsigned int i=0;i<toWrite;i++)
         printf("%02X ",cmd_full[i]);
     printf("\n");
-#endif
+	}
 
 	const int NTRIES = 3;
 
