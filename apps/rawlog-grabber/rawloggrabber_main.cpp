@@ -316,16 +316,21 @@ int main(int argc, char** argv)
 								{
 									gps = curSF.getObservationByClass<
 										CObservationGPS>(idx++);
-									if (gps && gps->has_GGA_datum)
+									if (gps)
 									{
-										cout << "  GPS mode: "
-											 << (int)gps
-													->getMsgByClass<
-														mrpt::obs::gnss::
-															Message_NMEA_GGA>()
-													.fields.fix_quality
-											 << " label: " << gps->sensorLabel
-											 << endl;
+										if (gps->has_GGA_datum)
+										{
+											cout
+												<< "  GPS mode: "
+												<< (int)gps
+													   ->getMsgByClass<
+														   mrpt::obs::gnss::
+															   Message_NMEA_GGA>()
+													   .fields.fix_quality
+												<< " label: "
+												<< gps->sensorLabel << endl;
+										}
+										gps->getDescriptionAsText(cout);
 									}
 								} while (gps);
 
@@ -339,15 +344,12 @@ int main(int argc, char** argv)
 												"   IMU angles (degrees): "
 												"(yaw,pitch,roll)=(%.06f, "
 												"%.06f, %.06f)",
-												RAD2DEG(
-													imu->rawMeasurements
-														[IMU_YAW]),
-												RAD2DEG(
-													imu->rawMeasurements
-														[IMU_PITCH]),
-												RAD2DEG(
-													imu->rawMeasurements
-														[IMU_ROLL]))
+												RAD2DEG(imu->rawMeasurements
+															[IMU_YAW]),
+												RAD2DEG(imu->rawMeasurements
+															[IMU_PITCH]),
+												RAD2DEG(imu->rawMeasurements
+															[IMU_ROLL]))
 										 << endl;
 								}
 							}
@@ -399,6 +401,7 @@ int main(int argc, char** argv)
 													Message_NMEA_GGA>()
 											.fields.fix_quality
 									 << " label: " << gps->sensorLabel << endl;
+							gps->getDescriptionAsText(cout);
 						}
 						else if (
 							(it->second)->GetRuntimeClass() ==
