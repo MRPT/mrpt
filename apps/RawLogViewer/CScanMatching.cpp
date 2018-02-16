@@ -32,6 +32,7 @@
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/slam/CICP.h>
 #include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/obs/CObservationVelodyneScan.h>
 
 #include <mrpt/gui/WxUtils.h>
 
@@ -527,6 +528,31 @@ class CMyButtonsDisabler
 	}
 };
 
+static void insert_obs_into_map(const CSerializable::Ptr & obj, mrpt::maps::CMetricMap *theMap)
+{
+	if (IS_CLASS(obj, CSensoryFrame))
+	{
+		auto SF= std::dynamic_pointer_cast<CSensoryFrame>(obj);
+		SF->insertObservationsInto(theMap);
+	}
+	else if (IS_DERIVED(obj, CObservation))
+	{
+		CObservationVelodyneScan::Ptr obs_velodyne;
+		if (IS_CLASS(obj, CObservationVelodyneScan))
+		{
+			obs_velodyne = mrpt::ptr_cast<CObservationVelodyneScan>::from(obj);
+			obs_velodyne->generatePointCloud();
+		}
+		auto obs_ref = std::dynamic_pointer_cast<CObservation>(obj);
+		theMap->insertObservation(obs_ref.get());
+
+		// free mem:
+		if (obs_velodyne) obs_velodyne->point_cloud.clear_deep();
+	}
+	else
+		THROW_EXCEPTION("Unexpected runtime class found.");
+}
+
 // Perform the ICP:
 void CScanMatching::OnbtnICPClick(wxCommandEvent&)
 {
@@ -585,8 +611,6 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
 	txtLog->Clear();
 
 	// Redirect cout to the log text:
-	// wxStreamToTextRedirector redirect( txtLog );
-
 	CMyRedirector myRedirector(txtLog);
 
 	icp.options.dumpToConsole();
@@ -630,36 +654,8 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
 
 	// Insert the observations:
 	// --------------------------------------
-	if (IS_CLASS(obj_ref, CSensoryFrame))
-	{
-		CSensoryFrame::Ptr SF_ref =
-			std::dynamic_pointer_cast<CSensoryFrame>(obj_ref);
-		SF_ref->insertObservationsInto(refMap);
-	}
-	else if (IS_DERIVED(obj_ref, CObservation))
-	{
-		CObservation::Ptr obs_ref =
-			std::dynamic_pointer_cast<CObservation>(obj_ref);
-		refMap->insertObservation(obs_ref.get());
-	}
-	else
-		THROW_EXCEPTION("Unexpected runtime class found.");
-
-	CPose3D newMapRobotPose(0, 0, 0);
-	if (obj_new->GetRuntimeClass() == CLASS_ID(CSensoryFrame))
-	{
-		CSensoryFrame::Ptr SF_new =
-			std::dynamic_pointer_cast<CSensoryFrame>(obj_new);
-		SF_new->insertObservationsInto(&newMapPt, &newMapRobotPose);
-	}
-	else if (obj_new->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
-	{
-		CObservation::Ptr obs_new =
-			std::dynamic_pointer_cast<CObservation>(obj_new);
-		newMapPt.insertObservation(obs_new.get());
-	}
-	else
-		THROW_EXCEPTION("Unexpected runtime class found.");
+	insert_obs_into_map(obj_ref, refMap);
+	insert_obs_into_map(obj_new, &newMapPt);
 
 	// Create initial graphs:
 	// --------------------------------------
