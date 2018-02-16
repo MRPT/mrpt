@@ -29,6 +29,9 @@ are removed. They moved to their own namespaces in MRPT v1.3.0 (Jan 2015).
 	- Using a variant type from the mapbox variant library, and added
 serialization with variants(To be replaced by std::variant eventually).
 - <b>Detailed list of changes:</b>
+	- Changes in applications:
+		- RawLogViewer:
+			- The ICP module now supports Velodyne 3D scans.
 	- Changes in libraries:
 		- \ref mrpt_base_grp => Refactored into several smaller libraries, one
 per namespace.
