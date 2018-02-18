@@ -70,7 +70,7 @@ class CRawlog : public mrpt::serialization::CSerializable
 	DEFINE_SERIALIZABLE(CRawlog)
 
    private:
-	typedef std::vector<mrpt::serialization::CSerializable::Ptr> TListObjects;
+	using TListObjects = std::vector<mrpt::serialization::CSerializable::Ptr>;
 	/** The list where the objects really are in. */
 	TListObjects m_seqOfActObs;
 

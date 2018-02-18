@@ -28,7 +28,7 @@ using namespace std;
 template <int ColRowOrder>
 void do_test_EigenVal4x4_sym_vs_generic_eigen()
 {
-	typedef Matrix<double,4,4,ColRowOrder> Mat44;
+	using Mat44 = Matrix<double,4,4,ColRowOrder>;
 
 	const double   dat_C1[] = {
 		13.737245,10.248641,-5.839599,11.108320,

@@ -271,7 +271,7 @@ class CKinect : public mrpt::hwdrivers::CGenericSensor
 
    public:
 	/** A typedef for an array that converts raw depth to ranges in meters. */
-	typedef float TDepth2RangeArray[KINECT_RANGES_TABLE_LEN];
+	using TDepth2RangeArray = float[KINECT_RANGES_TABLE_LEN];
 
 	/** RGB or IR video channel identifiers \sa setVideoChannel */
 	enum TVideoChannel

@@ -55,8 +55,8 @@ template <typename TCELL>
 struct CLogOddsGridMap2D : public detail::logoddscell_traits<TCELL>
 {
 	/** The type of cells */
-	typedef TCELL cell_t;
-	typedef detail::logoddscell_traits<TCELL> traits_t;
+	using cell_t = TCELL;
+	using traits_t = detail::logoddscell_traits<TCELL>;
 
 	/** Performs the Bayesian fusion of a new observation of a cell, without
 	 * checking for grid limits nor updateInfoChangeOnly.
@@ -157,8 +157,8 @@ template <typename TCELL>
 struct CLogOddsGridMapLUT : public detail::logoddscell_traits<TCELL>
 {
 	/** The type of */
-	typedef TCELL cell_t;
-	typedef detail::logoddscell_traits<TCELL> traits_t;
+	using cell_t = TCELL;
+	using traits_t = detail::logoddscell_traits<TCELL>;
 
 	/** A lookup table to compute occupancy probabilities in [0,1] from integer
 	 * log-odds values in the cells, using \f$ p(m_{xy}) =

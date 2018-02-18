@@ -58,17 +58,17 @@ class CHMHMapNode;
  * in which all hypotheses agree".
   *  They can be generated from CHMTSLAM::generateHypothesisID()
   */
-typedef int64_t THypothesisID;
+using THypothesisID = int64_t;
 
 /** An integer number uniquely identifying each robot pose stored in HMT-SLAM.
   * They can be generated from CHMTSLAM::generatePoseID()
   */
-typedef uint64_t TPoseID;
+using TPoseID = uint64_t;
 
-typedef std::pair<TPoseID, TPoseID> TPairPoseIDs;
+using TPairPoseIDs = std::pair<TPoseID, TPoseID>;
 
-typedef std::vector<TPoseID> TPoseIDList;
-typedef std::set<TPoseID> TPoseIDSet;
+using TPoseIDList = std::vector<TPoseID>;
+using TPoseIDSet = std::set<TPoseID>;
 
 /** A set of hypothesis IDs, used for arcs and nodes in multi-hypothesis hybrid
  * maps.

@@ -32,7 +32,7 @@ class CEmptyGSO
 	: public mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_T>
 {
    public:
-	typedef typename GRAPH_T::constraint_t constraint_t;
+	using constraint_t = typename GRAPH_T::constraint_t;
 
 	CEmptyGSO();
 	~CEmptyGSO();

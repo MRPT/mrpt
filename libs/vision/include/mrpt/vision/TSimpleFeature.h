@@ -34,9 +34,9 @@ template <typename PIXEL_COORD_TYPE>
 struct TSimpleFeature_templ
 {
 	/** The type of \a pt */
-	typedef PIXEL_COORD_TYPE pixel_coords_t;
+	using pixel_coords_t = PIXEL_COORD_TYPE;
 	/** The type of pt.x and pt.y */
-	typedef typename PIXEL_COORD_TYPE::pixel_coord_t pixel_coord_t;
+	using pixel_coord_t = typename PIXEL_COORD_TYPE::pixel_coord_t;
 
 	/** Coordinates in the image */
 	pixel_coords_t pt;
@@ -80,10 +80,10 @@ struct TSimpleFeature_templ
  * nor patch).
  *  \sa TSimpleFeaturef, CFeature, TSimpleFeatureList
  */
-typedef TSimpleFeature_templ<mrpt::img::TPixelCoord> TSimpleFeature;
+using TSimpleFeature = TSimpleFeature_templ<mrpt::img::TPixelCoord>;
 
 /** A version of  TSimpleFeature with subpixel precision */
-typedef TSimpleFeature_templ<mrpt::img::TPixelCoordf> TSimpleFeaturef;
+using TSimpleFeaturef = TSimpleFeature_templ<mrpt::img::TPixelCoordf>;
 
 template <typename FEATURE>
 struct TSimpleFeatureTraits;
@@ -91,7 +91,7 @@ struct TSimpleFeatureTraits;
 template <>
 struct TSimpleFeatureTraits<TSimpleFeature>
 {
-	typedef int coord_t;
+	using coord_t = int;
 
 	static inline coord_t f2coord(float f) { return mrpt::round(f); }
 };
@@ -99,7 +99,7 @@ struct TSimpleFeatureTraits<TSimpleFeature>
 template <>
 struct TSimpleFeatureTraits<TSimpleFeaturef>
 {
-	typedef float coord_t;
+	using coord_t = float;
 
 	static inline coord_t f2coord(float f) { return f; }
 };
@@ -113,8 +113,8 @@ template <typename FEATURE>
 struct TSimpleFeatureList_templ
 {
    public:
-	typedef std::vector<FEATURE> TFeatureVector;
-	typedef FEATURE feature_t;
+	using TFeatureVector = std::vector<FEATURE>;
+	using feature_t = FEATURE;
 
 	/** @name Utilities
 		@{ */
@@ -164,10 +164,10 @@ struct TSimpleFeatureList_templ
 
 	/** @name Method and datatypes to emulate a STL container
 		@{ */
-	typedef typename TFeatureVector::iterator iterator;
-	typedef typename TFeatureVector::const_iterator const_iterator;
+	using iterator = typename TFeatureVector::iterator;
+	using const_iterator = typename TFeatureVector::const_iterator;
 
-	typedef typename TFeatureVector::reverse_iterator reverse_iterator;
+	using reverse_iterator = typename TFeatureVector::reverse_iterator;
 	typedef
 		typename TFeatureVector::const_reverse_iterator const_reverse_iterator;
 
@@ -291,11 +291,11 @@ struct TSimpleFeatureList_templ
 
 /** A list of image features using the structure TSimpleFeature for each feature
  * - capable of KD-tree computations */
-typedef TSimpleFeatureList_templ<TSimpleFeature> TSimpleFeatureList;
+using TSimpleFeatureList = TSimpleFeatureList_templ<TSimpleFeature>;
 
 /** A list of image features using the structure TSimpleFeaturef for each
  * feature - capable of KD-tree computations */
-typedef TSimpleFeatureList_templ<TSimpleFeaturef> TSimpleFeaturefList;
+using TSimpleFeaturefList = TSimpleFeatureList_templ<TSimpleFeaturef>;
 
 /** A helper struct to sort keypoints by their response: It can be used with
  *these types:

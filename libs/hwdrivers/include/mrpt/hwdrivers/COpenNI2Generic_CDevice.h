@@ -18,7 +18,7 @@ namespace hwdrivers
 class COpenNI2Generic::CDevice
 {
    public:
-	typedef std::shared_ptr<CDevice> Ptr;
+	using Ptr = std::shared_ptr<CDevice>;
 	enum
 	{
 		COLOR_STREAM,
@@ -32,7 +32,7 @@ class COpenNI2Generic::CDevice
 	class CStream
 	{
 	   public:
-		typedef std::shared_ptr<CStream> Ptr;
+		using Ptr = std::shared_ptr<CStream>;
 
 	   private:
 		std::ostream& m_log;

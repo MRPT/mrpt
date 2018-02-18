@@ -188,7 +188,7 @@ typedef std::map<mrpt::vision::TFeatureID, TRelativeFeaturePos>
  */
 struct TSequenceFeatureObservations : public std::vector<TFeatureObservation>
 {
-	typedef std::vector<TFeatureObservation> BASE;
+	using BASE = std::vector<TFeatureObservation>;
 
 	inline TSequenceFeatureObservations() {}
 	inline TSequenceFeatureObservations(size_t size) : BASE(size) {}

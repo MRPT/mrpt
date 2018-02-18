@@ -97,7 +97,7 @@ class CPose3DQuatPDF
 	template <class OPENGL_SETOFOBJECTSPTR>
 	inline void getAs3DObject(OPENGL_SETOFOBJECTSPTR& out_obj) const
 	{
-		typedef typename OPENGL_SETOFOBJECTSPTR::value_type SETOFOBJECTS;
+		using SETOFOBJECTS = typename OPENGL_SETOFOBJECTSPTR::value_type;
 		out_obj->insertCollection(*SETOFOBJECTS::posePDF2opengl(*this));
 	}
 
@@ -108,7 +108,7 @@ class CPose3DQuatPDF
 	template <class OPENGL_SETOFOBJECTSPTR>
 	inline OPENGL_SETOFOBJECTSPTR getAs3DObject() const
 	{
-		typedef typename OPENGL_SETOFOBJECTSPTR::value_type SETOFOBJECTS;
+		using SETOFOBJECTS = typename OPENGL_SETOFOBJECTSPTR::value_type;
 		return SETOFOBJECTS::posePDF2opengl(*this);
 	}
 

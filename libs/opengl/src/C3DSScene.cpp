@@ -160,7 +160,7 @@ struct _player_texture
 	// TEX_XSIZE and TEX_YSIZE
 };
 
-typedef struct _player_texture Player_texture;
+using Player_texture = struct _player_texture;
 Player_texture* pt;
 int tex_mode = 0;  // Texturing active ?
 

@@ -37,8 +37,8 @@ class CSetOfObjects : public CRenderizable
 	CListOpenGLObjects m_objects;
 
    public:
-	typedef CListOpenGLObjects::const_iterator const_iterator;
-	typedef CListOpenGLObjects::iterator iterator;
+	using const_iterator = CListOpenGLObjects::const_iterator;
+	using iterator = CListOpenGLObjects::iterator;
 
 	inline const_iterator begin() const { return m_objects.begin(); }
 	inline const_iterator end() const { return m_objects.end(); }

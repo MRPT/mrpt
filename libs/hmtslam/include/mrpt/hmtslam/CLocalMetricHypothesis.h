@@ -30,7 +30,7 @@ class CPose3DPDFParticles;
 
 namespace hmtslam
 {
-typedef mrpt::aligned_std_map<TPoseID, mrpt::poses::CPose3D> TMapPoseID2Pose3D;
+using TMapPoseID2Pose3D = mrpt::aligned_std_map<TPoseID, mrpt::poses::CPose3D>;
 
 class CHMTSLAM;
 class CLSLAM_RBPF_2DLASER;

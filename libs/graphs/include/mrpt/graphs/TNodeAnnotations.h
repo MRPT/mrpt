@@ -30,7 +30,7 @@ namespace detail
  */
 struct TNodeAnnotations
 {
-	typedef TNodeAnnotations self_t;
+	using self_t = TNodeAnnotations;
 
 	/**\brief Constructor */
 	TNodeAnnotations() : is_node_annots_empty(false) {}

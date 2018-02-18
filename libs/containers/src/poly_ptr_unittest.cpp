@@ -48,7 +48,7 @@ TEST(copy_ptr, SimpleOps)
 
 TEST(copy_ptr, StlContainer)
 {
-	typedef mrpt::utils::copy_ptr<std::pair<std::string, int>> str2d_ptr;
+	using str2d_ptr = mrpt::utils::copy_ptr<std::pair<std::string, int>>;
 
 	str2d_ptr ptr;
 	EXPECT_FALSE(ptr);
@@ -99,7 +99,7 @@ TEST(poly_ptr, SimpleOps)
 
 TEST(poly_ptr, StlContainer)
 {
-	typedef mrpt::utils::poly_ptr<mrpt::poses::CPose2D> str2d_ptr;
+	using str2d_ptr = mrpt::utils::poly_ptr<mrpt::poses::CPose2D>;
 
 	str2d_ptr ptr;
 	EXPECT_FALSE(ptr);

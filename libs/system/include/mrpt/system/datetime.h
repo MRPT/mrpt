@@ -28,7 +28,7 @@ namespace system
  * \sa system::getCurrentTime, system::timeDifference, INVALID_TIMESTAMP,
  * TTimeParts
  */
-typedef uint64_t TTimeStamp;
+using TTimeStamp = uint64_t;
 
 /** The parts of a date/time (it's like the standard 'tm' but with fractions of
  * seconds).

@@ -55,7 +55,7 @@ typedef struct
 	JOCTET* buffer; /* start of buffer */
 } mrpt_destination_mgr;
 
-typedef mrpt_destination_mgr* mrpt_dest_ptr;
+using mrpt_dest_ptr = mrpt_destination_mgr*;
 
 #define OUTPUT_BUF_SIZE 4096 /* choose an efficiently fwrite'able size */
 
@@ -169,7 +169,7 @@ typedef struct
 	boolean start_of_file; /* have we gotten any data yet? */
 } my_source_mgr;
 
-typedef my_source_mgr* my_src_ptr;
+using my_src_ptr = my_source_mgr*;
 
 #define INPUT_BUF_SIZE 4096 /* choose an efficiently fread'able size */
 

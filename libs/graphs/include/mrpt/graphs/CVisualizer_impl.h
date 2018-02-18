@@ -24,7 +24,7 @@ CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 	: m_graph(graph_in)
 {
 	// Is a 2D or 3D graph network?
-	typedef typename GRAPH_T::constraint_t constraint_t;
+	using constraint_t = typename GRAPH_T::constraint_t;
 	m_is_3D_graph = constraint_t::is_3D();
 }
 template <class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,

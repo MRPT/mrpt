@@ -49,7 +49,7 @@ template <class POINTMAPTYPE, typename coords_t>
 class PointCloudAdapterHelperNoRGB
 {
    public:
-	typedef PointCloudAdapter<POINTMAPTYPE> Derived;
+	using Derived = PointCloudAdapter<POINTMAPTYPE>;
 
 	inline Derived& derived() { return *static_cast<Derived*>(this); }
 	inline const Derived& derived() const

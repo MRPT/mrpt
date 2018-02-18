@@ -673,7 +673,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 
 				// 1) First, make a list of nodes WITHIN the LMH with arcs to
 				// "a":
-				typedef map<CHMHMapNode::Ptr, CHMHMapArc::Ptr> TListNodesArcs;
+				using TListNodesArcs = map<CHMHMapNode::Ptr, CHMHMapArc::Ptr>;
 				TListNodesArcs lstWithinLMH;
 
 				for (TArcList::const_iterator a = arcs.begin(); a != arcs.end();

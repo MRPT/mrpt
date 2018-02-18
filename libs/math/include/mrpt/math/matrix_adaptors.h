@@ -34,13 +34,13 @@ template <typename U>
 class MatrixWrapper<U, true>
 {
    public:
-	typedef CMatrixTemplateObjects<U> MatrixType;
+	using MatrixType = CMatrixTemplateObjects<U>;
 };
 template <typename U>
 class MatrixWrapper<U, false>
 {
    public:
-	typedef CMatrixTemplate<U> MatrixType;
+	using MatrixType = CMatrixTemplate<U>;
 };
 
 template <typename T, typename U, bool UIsObject, typename FunctionType>
@@ -63,11 +63,11 @@ class AccessorIterator
 
    public:
 	// typedefs for iterator_traits:
-	typedef std::random_access_iterator_tag iterator_category;
-	typedef T value_type;
-	typedef int difference_type;
-	typedef T* pointer;
-	typedef T& reference;
+	using iterator_category = std::random_access_iterator_tag;
+	using value_type = T;
+	using difference_type = int;
+	using pointer = T*;
+	using reference = T&;
 
 	inline AccessorIterator(A& obj, size_t N) : base(&obj), pos(N) {}
 	inline T& operator*() const { return (*base)[pos]; }
@@ -142,11 +142,11 @@ class ReverseAccessorIterator
 
    public:
 	// typedefs for iterator_traits:
-	typedef std::random_access_iterator_tag iterator_category;
-	typedef T value_type;
-	typedef int difference_type;
-	typedef T* pointer;
-	typedef T& reference;
+	using iterator_category = std::random_access_iterator_tag;
+	using value_type = T;
+	using difference_type = int;
+	using pointer = T*;
+	using reference = T&;
 
 	inline ReverseAccessorIterator(A& obj, size_t N) : base(&obj), pos(N) {}
 	inline T& operator*() const { return (*base)[pos]; }
@@ -225,7 +225,7 @@ class CMatrixRowAccessor
 	size_t m_rowInd;
 
    public:
-	typedef typename MAT::Scalar value_type;
+	using value_type = typename MAT::Scalar;
 	using mrpt_autotype = CMatrixRowAccessor<MAT>;
 	inline CMatrixRowAccessor(MAT& mat, size_t rowIdx)
 		: m_mat(&mat), m_rowInd(rowIdx)
@@ -302,7 +302,7 @@ class CMatrixRowAccessorExtended
 	size_t howMany;
 
    public:
-	typedef typename MAT::Scalar value_type;
+	using value_type = typename MAT::Scalar;
 	using mrpt_autotype = CMatrixRowAccessorExtended<MAT>;
 	inline CMatrixRowAccessorExtended(
 		MAT& mat, size_t row, size_t offset, size_t space)
@@ -381,7 +381,7 @@ class CConstMatrixRowAccessor
 	size_t m_rowInd;
 
    public:
-	typedef typename MAT::Scalar value_type;
+	using value_type = typename MAT::Scalar;
 	using mrpt_autotype = CConstMatrixRowAccessor<MAT>;
 	inline CConstMatrixRowAccessor(const MAT& mat, size_t row)
 		: m_mat(&mat), m_rowInd(row)
@@ -443,7 +443,7 @@ class CConstMatrixRowAccessorExtended
 	size_t howMany;
 
    public:
-	typedef typename MAT::Scalar value_type;
+	using value_type = typename MAT::Scalar;
 	using mrpt_autotype = CConstMatrixRowAccessorExtended<MAT>;
 	inline CConstMatrixRowAccessorExtended(
 		const MAT& mat, size_t row, size_t offset, size_t space)
@@ -503,7 +503,7 @@ class CMatrixColumnAccessor
 	size_t m_colInd;
 
    public:
-	typedef typename MAT::Scalar value_type;
+	using value_type = typename MAT::Scalar;
 	using mrpt_autotype = CMatrixColumnAccessor<MAT>;
 	inline CMatrixColumnAccessor(MAT& mat, size_t colIdx)
 		: m_mat(&mat), m_colInd(colIdx)
@@ -579,7 +579,7 @@ class CMatrixColumnAccessorExtended
 	size_t howMany;
 
    public:
-	typedef typename MAT::Scalar value_type;
+	using value_type = typename MAT::Scalar;
 	using mrpt_autotype = CMatrixColumnAccessorExtended<MAT>;
 	inline CMatrixColumnAccessorExtended(
 		MAT& mat, size_t col, size_t offset, size_t space)
@@ -656,7 +656,7 @@ class CConstMatrixColumnAccessor
 	size_t m_colInd;
 
    public:
-	typedef typename MAT::Scalar value_type;
+	using value_type = typename MAT::Scalar;
 	using mrpt_autotype = CConstMatrixColumnAccessor<MAT>;
 	inline CConstMatrixColumnAccessor(const MAT& mat, size_t colIdx)
 		: m_mat(&mat), m_colInd(colIdx)
@@ -717,7 +717,7 @@ class CConstMatrixColumnAccessorExtended
 	size_t howMany;
 
    public:
-	typedef typename MAT::Scalar value_type;
+	using value_type = typename MAT::Scalar;
 	using mrpt_autotype = CMatrixColumnAccessorExtended<MAT>;
 	inline CConstMatrixColumnAccessorExtended(
 		const MAT& mat, size_t col, size_t offset, size_t space)

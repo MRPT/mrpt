@@ -226,11 +226,11 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
 
 	/** You can use CSensoryFrame::begin to get a iterator to the first element.
 	  */
-	typedef std::deque<CObservation::Ptr>::iterator iterator;
+	using iterator = std::deque<CObservation::Ptr>::iterator;
 
 	/** You can use CSensoryFrame::begin to get a iterator to the first element.
 	  */
-	typedef std::deque<CObservation::Ptr>::const_iterator const_iterator;
+	using const_iterator = std::deque<CObservation::Ptr>::const_iterator;
 
 	/** Returns a constant iterator to the first observation: this is an example
 	  *of usage:

@@ -32,8 +32,8 @@ class CProbabilityDensityFunction
 	 * pose (x y z yaw pitch roll). */
 	static const size_t state_length = STATE_LEN;
 	/** The type of the state the PDF represents */
-	typedef TDATA type_value;
-	typedef CProbabilityDensityFunction<TDATA, STATE_LEN> self_t;
+	using type_value = TDATA;
+	using self_t = CProbabilityDensityFunction<TDATA, STATE_LEN>;
 
 	/** Returns the mean, or mathematical expectation of the probability density
 	 * distribution (PDF).

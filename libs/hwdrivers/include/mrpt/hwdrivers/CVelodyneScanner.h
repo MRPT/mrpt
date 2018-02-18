@@ -196,7 +196,7 @@ class CVelodyneScanner : public mrpt::hwdrivers::CGenericSensor
 	{
 		double maxRange;
 	};
-	typedef std::map<model_t, TModelProperties> model_properties_list_t;
+	using model_properties_list_t = std::map<model_t, TModelProperties>;
 	/** Access to default sets of parameters for Velodyne LIDARs */
 	struct TModelPropertiesFactory
 	{

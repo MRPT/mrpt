@@ -33,7 +33,7 @@ struct TCPoint
 	}
 	float x, y, phi, t, dist, v, w;
 };
-typedef std::vector<TCPoint> TCPointVector;
+using TCPointVector = std::vector<TCPoint>;
 mrpt::serialization::CArchive& operator<<(
 	mrpt::serialization::CArchive& o, const mrpt::nav::TCPoint& p);
 mrpt::serialization::CArchive& operator>>(
@@ -162,7 +162,7 @@ class CPTG_DiffDrive_CollisionGridBased : public CPTG_RobotShape_Polygonal
 	 *	 - map value (float)    -> the MINIMUM distance (d), in meters,
 	 *associated with that "k".
 	 */
-	typedef std::vector<std::pair<uint16_t, float>> TCollisionCell;
+	using TCollisionCell = std::vector<std::pair<uint16_t, float>>;
 
 	/** An internal class for storing the collision grid  */
 	class CCollisionGrid : public mrpt::containers::CDynamicGrid<TCollisionCell>

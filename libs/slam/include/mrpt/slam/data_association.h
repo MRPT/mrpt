@@ -55,9 +55,9 @@ enum TDataAssociationMetric
 };
 
 /** Used in mrpt::slam::TDataAssociationResults */
-typedef size_t observation_index_t;
+using observation_index_t = size_t;
 /** Used in mrpt::slam::TDataAssociationResults */
-typedef size_t prediction_index_t;
+using prediction_index_t = size_t;
 
 /** The results from mrpt::slam::data_association
  */

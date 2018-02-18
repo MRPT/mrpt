@@ -63,15 +63,15 @@ double mrpt::vision::bundle_adj_full(
 	static const unsigned int ObsDim = 2;  // Obs: x y (pixels)
 
 	// Typedefs for this specific BA problem:
-	typedef JacData<FrameDof, PointDof, ObsDim> MyJacData;
-	typedef mrpt::aligned_std_vector<MyJacData> MyJacDataVec;
+	using MyJacData = JacData<FrameDof, PointDof, ObsDim>;
+	using MyJacDataVec = mrpt::aligned_std_vector<MyJacData>;
 
-	typedef std::array<double, ObsDim> Array_O;
-	typedef CArrayDouble<FrameDof> Array_F;
-	typedef CArrayDouble<PointDof> Array_P;
-	typedef CMatrixFixedNumeric<double, FrameDof, FrameDof> Matrix_FxF;
-	typedef CMatrixFixedNumeric<double, PointDof, PointDof> Matrix_PxP;
-	typedef CMatrixFixedNumeric<double, FrameDof, PointDof> Matrix_FxP;
+	using Array_O = std::array<double, ObsDim>;
+	using Array_F = CArrayDouble<FrameDof>;
+	using Array_P = CArrayDouble<PointDof>;
+	using Matrix_FxF = CMatrixFixedNumeric<double, FrameDof, FrameDof>;
+	using Matrix_PxP = CMatrixFixedNumeric<double, PointDof, PointDof>;
+	using Matrix_FxP = CMatrixFixedNumeric<double, FrameDof, PointDof>;
 
 	// Extra params:
 	const bool use_robust_kernel =
@@ -190,7 +190,7 @@ double mrpt::vision::bundle_adj_full(
 	Matrix_PxP I_muPoint(UNINITIALIZED_MATRIX);
 
 	// Cholesky object, as a pointer to reuse it between iterations:
-	typedef std::unique_ptr<CSparseMatrix::CholeskyDecomp> SparseCholDecompPtr;
+	using SparseCholDecompPtr = std::unique_ptr<CSparseMatrix::CholeskyDecomp>;
 
 	SparseCholDecompPtr ptrCh;
 

@@ -112,10 +112,10 @@ class CICPCriteriaNRD
 	/**\brief Handy typedefs */
 	/**\{*/
 	/**\brief type of graph constraints */
-	typedef typename GRAPH_T::constraint_t constraint_t;
+	using constraint_t = typename GRAPH_T::constraint_t;
 	/**\brief type of underlying poses (2D/3D). */
-	typedef typename GRAPH_T::constraint_t::type_value pose_t;
-	typedef typename GRAPH_T::global_pose_t global_pose_t;
+	using pose_t = typename GRAPH_T::constraint_t::type_value;
+	using global_pose_t = typename GRAPH_T::global_pose_t;
 
 	typedef mrpt::math::CMatrixFixedNumeric<double, constraint_t::state_length,
 											constraint_t::state_length>
@@ -123,7 +123,7 @@ class CICPCriteriaNRD
 	/**\brief Typedef for accessing methods of the RangeScanRegistrationDecider
 	 * parent class.
 	 */
-	typedef mrpt::graphslam::deciders::CRangeScanOps<GRAPH_T> range_ops_t;
+	using range_ops_t = mrpt::graphslam::deciders::CRangeScanOps<GRAPH_T>;
 	typedef CICPCriteriaNRD<GRAPH_T>
 		decider_t; /**< self type - Handy typedef */
 	/**\brief Node Registration Decider */

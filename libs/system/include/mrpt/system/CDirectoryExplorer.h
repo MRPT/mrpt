@@ -57,7 +57,7 @@ class CDirectoryExplorer
 	/** The list type used in "explore".
 	  * \sa explore
 	  */
-	typedef std::deque<TFileInfo> TFileInfoList;
+	using TFileInfoList = std::deque<TFileInfo>;
 
    public:
 	/** The path of the directory to examine must be passed to this constructor,

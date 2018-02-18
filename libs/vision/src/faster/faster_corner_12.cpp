@@ -100,7 +100,7 @@ void faster_corner_detect_12(
 
 	const int w = I->width;
 	const int stride = 3 * I->widthStep;  // 3*w;
-	typedef std::list<const uint8_t*> Passed;
+	using Passed = std::list<const uint8_t*>;
 	Passed passed;
 
 	// The compiler refuses to reserve a register for this,

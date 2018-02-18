@@ -191,7 +191,7 @@ double computeJacobiansAndErrors(
 	mrpt::aligned_std_vector<typename graphslam_traits<GRAPH_T>::Array_O>& errs)
 {
 	MRPT_UNUSED_PARAM(graph);
-	typedef graphslam_traits<GRAPH_T> gst;
+	using gst = graphslam_traits<GRAPH_T>;
 
 	lstJacobians.clear();
 	errs.clear();

@@ -137,14 +137,14 @@ class CLevMarqGSO
 	//////////////////////////////////////////////////////////////
 	/**\brief Handy typedefs */
 	/**\{*/
-	typedef typename GRAPH_T::constraint_t constraint_t;
+	using constraint_t = typename GRAPH_T::constraint_t;
 	typedef typename GRAPH_T::constraint_t::type_value
 		pose_t;  // type of underlying poses (2D/3D)
 	typedef mrpt::math::CMatrixFixedNumeric<double, constraint_t::state_length,
 											constraint_t::state_length>
 		InfMat;
-	typedef mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_T> grandpa;
-	typedef mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_T> parent;
+	using grandpa = mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_T>;
+	using parent = mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_T>;
 	/**\}*/
 
 	CLevMarqGSO();

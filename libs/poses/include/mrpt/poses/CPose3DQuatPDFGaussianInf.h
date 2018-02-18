@@ -46,7 +46,7 @@ class CPose3DQuatPDFGaussianInf : public CPose3DQuatPDF
 {
 	// This must be added to any CSerializable derived class:
 	DEFINE_SERIALIZABLE(CPose3DQuatPDFGaussianInf)
-	typedef CPose3DQuatPDFGaussianInf self_t;
+	using self_t = CPose3DQuatPDFGaussianInf;
 
    public:
 	/** Default constructor - set all values to zero. */
