@@ -175,12 +175,12 @@ class CSimpleIniTempl
 		TKeyVal;
 
 	/** map sections to key/value map */
-	typedef std::map<Entry, TKeyVal, typename Entry::KeyOrder> TSection;
+	using TSection = std::map<Entry, TKeyVal, typename Entry::KeyOrder>;
 
 	/** set of dependent string pointers. Note that these pointers are
 		dependent on memory owned by CSimpleIni.
 	*/
-	typedef std::list<Entry> TNamesDepend;
+	using TNamesDepend = std::list<Entry>;
 
 	/** interface definition for the OutputWriter object to pass to Save()
 		in order to output the INI file data.
@@ -1398,7 +1398,7 @@ SI_Error CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::AddEntry(
 			oKey.pComment = a_pComment;
 		}
 		typename TSection::value_type oEntry(oKey, TKeyVal());
-		typedef typename TSection::iterator SectionIterator;
+		using SectionIterator = typename TSection::iterator;
 		std::pair<SectionIterator, bool> i = m_data.insert(oEntry);
 		iSection = i.first;
 		bInserted = true;

@@ -109,8 +109,8 @@ struct TUserOptionsChecker
 	 * the corresponding strings
 	 */
 	/**\{*/
-	typedef typename GRAPH_t::constraint_t constraint_t;
-	typedef typename GRAPH_t::constraint_t::type_value pose_t;
+	using constraint_t = typename GRAPH_t::constraint_t;
+	using pose_t = typename GRAPH_t::constraint_t::type_value;
 	typedef std::map<
 		std::string,
 		mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t>* (*)()>

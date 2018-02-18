@@ -162,11 +162,11 @@ void CHierarchicalMHMap::loadFromXMLfile(std::string fileName)
 
 	std::map<size_t, CHMHMapNode::Ptr> nodemap;
 	std::map<size_t, CHMHMapNode::Ptr>::iterator nodemapit;
-	typedef std::pair<size_t, CHMHMapNode::Ptr> IDPair;
+	using IDPair = std::pair<size_t, CHMHMapNode::Ptr>;
 
 	std::map<size_t, CHMHMapNode::TNodeID> nodeanotmap;
 	std::map<size_t, CHMHMapNode::TNodeID>::iterator nodeanotmapit;
-	typedef std::pair<size_t, CHMHMapNode::TNodeID> IDnodeanotPair;
+	using IDnodeanotPair = std::pair<size_t, CHMHMapNode::TNodeID>;
 
 	db.loadFromXML(fileName);
 

@@ -61,14 +61,14 @@ class map_as_vector
    public:
 	/** @name Iterators stuff and other types
 		@{ */
-	typedef KEY key_type;
-	typedef std::pair<KEY, VALUE> value_type;
-	typedef VECTOR_T vec_t;
-	typedef typename vec_t::size_type size_type;
-	typedef typename vec_t::iterator iterator;
-	typedef typename vec_t::const_iterator const_iterator;
-	typedef std::reverse_iterator<iterator> reverse_iterator;
-	typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+	using key_type = KEY;
+	using value_type = std::pair<KEY, VALUE>;
+	using vec_t = VECTOR_T;
+	using size_type = typename vec_t::size_type;
+	using iterator = typename vec_t::iterator;
+	using const_iterator = typename vec_t::const_iterator;
+	using reverse_iterator = std::reverse_iterator<iterator>;
+	using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
 	inline iterator begin() { return m_vec.begin(); }
 	inline iterator end() { return m_vec.end(); }

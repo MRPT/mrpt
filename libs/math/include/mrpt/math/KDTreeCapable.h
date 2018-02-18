@@ -79,7 +79,7 @@ class KDTreeCapable
 {
    public:
 	// Types ---------------
-	typedef KDTreeCapable<Derived, num_t, metric_t> self_t;
+	using self_t = KDTreeCapable<Derived, num_t, metric_t>;
 	// ---------------------
 
 	/// Constructor
@@ -777,7 +777,7 @@ class KDTreeCapable
 	/// asking the child class for the data points.
 	void rebuild_kdTree_2D() const
 	{
-		typedef typename TKDTreeDataHolder<2>::kdtree_index_t tree2d_t;
+		using tree2d_t = typename TKDTreeDataHolder<2>::kdtree_index_t;
 
 		if (!m_kdtree_is_uptodate)
 		{
@@ -811,7 +811,7 @@ class KDTreeCapable
 	/// asking the child class for the data points.
 	void rebuild_kdTree_3D() const
 	{
-		typedef typename TKDTreeDataHolder<3>::kdtree_index_t tree3d_t;
+		using tree3d_t = typename TKDTreeDataHolder<3>::kdtree_index_t;
 
 		if (!m_kdtree_is_uptodate)
 		{

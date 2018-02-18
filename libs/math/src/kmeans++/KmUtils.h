@@ -41,7 +41,7 @@
 #include <cstdlib>
 
 // The data-type used for a single coordinate for points
-typedef double Scalar;
+using Scalar = double;
 
 // Point utilities
 // ===============

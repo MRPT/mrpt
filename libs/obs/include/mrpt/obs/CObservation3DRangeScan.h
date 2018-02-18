@@ -528,7 +528,7 @@ class CObservation3DRangeScan : public CObservation
 	{
 		/** Used in CObservation3DRangeScan::pixelLabels */
 		using Ptr = std::shared_ptr<TPixelLabelInfoBase>;
-		typedef std::map<uint32_t, std::string> TMapLabelID2Name;
+		using TMapLabelID2Name = std::map<uint32_t, std::string>;
 
 		/** The 'semantic' or human-friendly name of the i'th bit in
 		 * pixelLabels(r,c) can be found in pixelLabelNames[i] as a std::string
@@ -806,7 +806,7 @@ class PointCloudAdapter<mrpt::obs::CObservation3DRangeScan>
 
    public:
 	/** The type of each point XYZ coordinates */
-	typedef float coords_t;
+	using coords_t = float;
 	/** Has any color RGB info? */
 	static const int HAS_RGB = 0;
 	/** Has native RGB info (as floats)? */

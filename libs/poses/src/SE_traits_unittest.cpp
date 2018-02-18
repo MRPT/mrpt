@@ -25,7 +25,7 @@ class SE_traits_tests : public ::testing::Test
    protected:
 	virtual void SetUp() {}
 	virtual void TearDown() {}
-	typedef mrpt::poses::SE_traits<POSE_TYPE::rotation_dimensions> SE_TYPE;
+	using SE_TYPE = mrpt::poses::SE_traits<POSE_TYPE::rotation_dimensions>;
 
 	struct TParams
 	{
@@ -180,8 +180,8 @@ class SE_traits_tests : public ::testing::Test
 	}
 };
 
-typedef SE_traits_tests<mrpt::poses::CPose3D> SE3_traits_tests;
-typedef SE_traits_tests<mrpt::poses::CPose2D> SE2_traits_tests;
+using SE3_traits_tests = SE_traits_tests<mrpt::poses::CPose3D>;
+using SE2_traits_tests = SE_traits_tests<mrpt::poses::CPose2D>;
 
 TEST_F(SE3_traits_tests, SE3_jacobs) { do_all_jacobs_test(); }
 TEST_F(SE2_traits_tests, SE2_jacobs) { do_all_jacobs_test(); }

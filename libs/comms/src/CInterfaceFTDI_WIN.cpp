@@ -35,7 +35,7 @@ namespace comms
 #define FTD2XX_API __declspec(dllimport)
 #endif
 
-typedef unsigned long FT_HANDLE;
+using FT_HANDLE = unsigned long;
 
 //
 // FT_OpenEx Flags
@@ -119,7 +119,7 @@ typedef unsigned long FT_HANDLE;
 // Events
 //
 
-typedef void (*PFT_EVENT_HANDLER)(unsigned long, unsigned long);
+using PFT_EVENT_HANDLER = void (*)(unsigned long, unsigned, long);
 
 #define FT_EVENT_RXCHAR 1
 #define FT_EVENT_MODEM_STATUS 2

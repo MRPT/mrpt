@@ -146,7 +146,7 @@ static void realft(float data[], unsigned long n)
 	You may use, copy, modify this code for any purpose and
 	without fee. You may distribute this ORIGINAL package.
   */
-typedef float FFT_TYPE;
+using FFT_TYPE = float;
 
 static void makewt(int nw, int* ip, FFT_TYPE* w);
 static void bitrv2(int n, int* ip, FFT_TYPE* a);
@@ -973,7 +973,7 @@ void math::dft2_real(
 	MRPT_START
 
 	size_t i, j;
-	typedef FFT_TYPE* float_ptr;
+	using float_ptr = FFT_TYPE*;
 
 	// The dimensions:
 	size_t dim1 = in_data.rows();
@@ -1074,7 +1074,7 @@ void math::idft2_real(
 	MRPT_START
 
 	size_t i, j;
-	typedef FFT_TYPE* float_ptr;
+	using float_ptr = FFT_TYPE*;
 
 	ASSERT_(in_real.rows() == in_imag.rows());
 	ASSERT_(in_real.cols() == in_imag.cols());
@@ -1252,7 +1252,7 @@ void math::dft2_complex(
 		// ----------------------------------------
 		//			Optimized FFT:
 		// ----------------------------------------
-		typedef FFT_TYPE* float_ptr;
+		using float_ptr = FFT_TYPE*;
 
 		// Transform to format compatible with C routines:
 		// ------------------------------------------------------------
@@ -1354,7 +1354,7 @@ void math::idft2_complex(
 	// FFT or DFT??
 	if (dim1IsPower2 && dim2IsPower2)
 	{
-		typedef FFT_TYPE* float_ptr;
+		using float_ptr = FFT_TYPE*;
 		// ----------------------------------------
 		//			Optimized FFT:
 		// ----------------------------------------

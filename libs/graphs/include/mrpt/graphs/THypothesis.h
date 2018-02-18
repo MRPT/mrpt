@@ -39,10 +39,10 @@ struct THypothesis
 	/**\brief Handy typedefs */
 	/**\{*/
 	/**\brief type of graph constraints */
-	typedef typename GRAPH_T::constraint_t constraint_t;
+	using constraint_t = typename GRAPH_T::constraint_t;
 	/**\brief type of underlying poses (2D/3D). */
-	typedef typename constraint_t::type_value pose_t;
-	typedef THypothesis<GRAPH_T> self_t;
+	using pose_t = typename constraint_t::type_value;
+	using self_t = THypothesis<GRAPH_T>;
 	/**\}*/
 	/**\brief Constructor */
 	THypothesis();

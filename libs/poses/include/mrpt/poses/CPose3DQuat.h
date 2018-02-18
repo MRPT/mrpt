@@ -351,7 +351,7 @@ class CPose3DQuat : public CPose<CPose3DQuat>,
    public:
 	/** Used to emulate CPosePDF types, for example, in
 	 * mrpt::graphs::CNetworkOfPoses */
-	typedef CPose3DQuat type_value;
+	using type_value = CPose3DQuat;
 	enum
 	{
 		is_3D_val = 1
@@ -371,11 +371,11 @@ class CPose3DQuat : public CPose<CPose3DQuat>,
 	/** @name STL-like methods and typedefs
 	   @{   */
 	/** The type of the elements */
-	typedef double value_type;
-	typedef double& reference;
-	typedef const double& const_reference;
-	typedef std::size_t size_type;
-	typedef std::ptrdiff_t difference_type;
+	using value_type = double;
+	using reference = double&;
+	using const_reference = const double&;
+	using size_type = std::size_t;
+	using difference_type = std::ptrdiff_t;
 
 	// size is constant
 	enum
@@ -414,7 +414,7 @@ class CPose3DQuat : public CPose<CPose3DQuat>,
 		/** The iterator points to this element. */
 		size_t m_cur_idx;
 		/** The type of the matrix elements */
-		typedef value_type T;
+		using T = value_type;
 
 		inline void check_limits(bool allow_end = false) const
 		{
@@ -524,7 +524,7 @@ class CPose3DQuat : public CPose<CPose3DQuat>,
 		/** The iterator points to this element. */
 		size_t m_cur_idx;
 		/** The type of the matrix elements */
-		typedef value_type T;
+		using T = value_type;
 
 		inline void check_limits(bool allow_end = false) const
 		{
@@ -625,8 +625,8 @@ class CPose3DQuat : public CPose<CPose3DQuat>,
 		}
 	};  // end const_iterator
 
-	typedef std::reverse_iterator<iterator> reverse_iterator;
-	typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+	using reverse_iterator = std::reverse_iterator<iterator>;
+	using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 	inline iterator begin() { return iterator(*this, 0); }
 	inline iterator end() { return iterator(*this, static_size); }
 	inline const_iterator begin() const { return const_iterator(*this, 0); }

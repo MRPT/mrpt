@@ -47,8 +47,8 @@ template <typename T, typename Copier>
 class generic_copier_ptr
 {
    public:
-	typedef T value_type;
-	typedef Copier copier_t;
+	using value_type = T;
+	using copier_t = Copier;
 	/** Ctor from a pointer; takes ownership. */
 	explicit generic_copier_ptr(T* ptr) : m_ptr(ptr) {}
 	/** Default ctor; init to nullptr. */

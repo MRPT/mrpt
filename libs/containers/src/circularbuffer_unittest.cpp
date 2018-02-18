@@ -16,7 +16,7 @@
 
 template class mrpt::CTraitsTest<mrpt::containers::circular_buffer<char>>;
 
-typedef int cb_t;
+using cb_t = int;
 
 TEST(circular_buffer_tests, EmptyPop)
 {

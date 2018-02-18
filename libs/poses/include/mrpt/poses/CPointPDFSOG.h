@@ -50,9 +50,9 @@ class CPointPDFSOG : public CPointPDF
 		double log_w;
 	};
 
-	typedef std::deque<TGaussianMode> CListGaussianModes;
-	typedef std::deque<TGaussianMode>::const_iterator const_iterator;
-	typedef std::deque<TGaussianMode>::iterator iterator;
+	using CListGaussianModes = std::deque<TGaussianMode>;
+	using const_iterator = std::deque<TGaussianMode>::const_iterator;
+	using iterator = std::deque<TGaussianMode>::iterator;
 
    protected:
 	/** Assures the symmetry of the covariance matrix (eventually certain

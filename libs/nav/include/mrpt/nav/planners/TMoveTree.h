@@ -72,14 +72,14 @@ class TMoveTree : public mrpt::graphs::CDirectedTree<EDGE_TYPE>
 		node_t() {}
 	};
 
-	typedef mrpt::graphs::CDirectedTree<EDGE_TYPE> base_t;
-	typedef EDGE_TYPE edge_t;
+	using base_t = mrpt::graphs::CDirectedTree<EDGE_TYPE>;
+	using edge_t = EDGE_TYPE;
 	/** Map: TNode_ID => Node info */
 	typedef typename MAPS_IMPLEMENTATION::template map<mrpt::graphs::TNodeID,
 													   node_t>
 		node_map_t;
 	/** A topological path up-tree */
-	typedef std::list<node_t> path_t;
+	using path_t = std::list<node_t>;
 
 	/** Finds the nearest node to a given pose, using the given metric */
 	template <class NODE_TYPE_FOR_METRIC>
@@ -290,10 +290,10 @@ struct PoseDistanceMetric<TNodeSE2_TP>
 	const mrpt::nav::CParameterizedTrajectoryGenerator& m_ptg;
 };
 
-// typedef TMoveTree<TNodeSE2   ,TMoveEdgeSE2> TMoveTreeSE2_TP;  //!< tree data
+// using TMoveTreeSE2_TP = TMoveTree<TNodeSE2   ,TMoveEdgeSE2>;  //!< tree data
 // structure for planning in SE2
 /** tree data structure for planning in SE2 within TP-Space manifolds */
-typedef TMoveTree<TNodeSE2_TP, TMoveEdgeSE2_TP> TMoveTreeSE2_TP;
+using TMoveTreeSE2_TP = TMoveTree<TNodeSE2_TP, TMoveEdgeSE2_TP>;
 
 /** @} */
 }

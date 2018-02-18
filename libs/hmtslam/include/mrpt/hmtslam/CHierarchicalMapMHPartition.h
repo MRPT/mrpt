@@ -47,8 +47,8 @@ class CHierarchicalMapMHPartition : public mrpt::system::COutputLogger
 	TArcList m_arcs;
 
    public:
-	typedef TNodeList::iterator iterator;
-	typedef TNodeList::const_iterator const_iterator;
+	using iterator = TNodeList::iterator;
+	using const_iterator = TNodeList::const_iterator;
 
 	/** Returns an iterator to the first node in the graph. */
 	const_iterator begin() const { return m_nodes.begin(); }
@@ -61,7 +61,7 @@ class CHierarchicalMapMHPartition : public mrpt::system::COutputLogger
 	CHierarchicalMapMHPartition() : m_nodes(), m_arcs() {}
 	/** A type that reprensents a sequence of node IDs
 	  */
-	typedef std::vector<CHMHMapNode::TNodeID> TNodeIDsList;
+	using TNodeIDsList = std::vector<CHMHMapNode::TNodeID>;
 
 	/** Returns the number of nodes in the partition:
 	  */

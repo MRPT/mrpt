@@ -67,7 +67,7 @@ using namespace std;
 class MD5
 {
    public:
-	typedef uint32_t size_type;  // must be 32bit
+	using size_type = uint32_t;  // must be 32bit
 
 	MD5();
 	MD5(const std::string& text);
@@ -79,8 +79,8 @@ class MD5
 
    private:
 	void init();
-	typedef unsigned char uint1;  //  8bit
-	typedef unsigned int uint4;  // 32bit
+	using uint1 = unsigned char;  //  8bit
+	using uint4 = unsigned int;  // 32bit
 	enum
 	{
 		blocksize = 64

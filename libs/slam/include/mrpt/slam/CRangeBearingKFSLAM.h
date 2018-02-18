@@ -58,7 +58,7 @@ class CRangeBearingKFSLAM
 {
    public:
 	/** Either mrpt::math::TPoint2D or mrpt::math::TPoint3D */
-	typedef mrpt::math::TPoint3D landmark_point_t;
+	using landmark_point_t = mrpt::math::TPoint3D;
 
 	/** Constructor. */
 	CRangeBearingKFSLAM();

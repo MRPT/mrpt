@@ -56,7 +56,7 @@ class CSetOfTriangles : public CRenderizableDisplayList
 	/**
 	 * Const iterator type.
 	 */
-	typedef std::vector<TTriangle>::const_iterator const_iterator;
+	using const_iterator = std::vector<TTriangle>::const_iterator;
 	/**
 	 * Const reverse iterator type.
 	 */

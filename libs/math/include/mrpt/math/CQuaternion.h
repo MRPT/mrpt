@@ -45,7 +45,7 @@ enum TConstructorFlags_Quaternions
 template <class T>
 class CQuaternion : public CArrayNumeric<T, 4>
 {
-	typedef CArrayNumeric<T, 4> Base;
+	using Base = CArrayNumeric<T, 4>;
 
    public:
 	/* @{ Constructors
@@ -501,9 +501,9 @@ class CQuaternion : public CArrayNumeric<T, 4>
 };  // end class
 
 /** A quaternion of data type "double" */
-typedef CQuaternion<double> CQuaternionDouble;
+using CQuaternionDouble = CQuaternion<double>;
 /** A quaternion of data type "float" */
-typedef CQuaternion<float> CQuaternionFloat;
+using CQuaternionFloat = CQuaternion<float>;
 
 }  // namespace math
 }  // end namespace mrpt

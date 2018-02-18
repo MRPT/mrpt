@@ -178,7 +178,7 @@ void CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations,
 	using namespace mrpt::img;
 
 	ASSERTMSG_(viz_params, "Pointer to viz_params was not provided.");
-	typedef map<pair<string, bool>, CSetOfLines::Ptr> PairToSetOfLines_t;
+	using PairToSetOfLines_t = map<pair<string, bool>, CSetOfLines::Ptr>;
 
 	// Color manager instance managing the used colors for the registered edges
 	TColorManager edges_color_mngr;

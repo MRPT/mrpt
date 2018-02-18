@@ -797,11 +797,11 @@ typedef struct
 } NextToken;
 
 // Enumeration used when parsing attributes
-typedef enum Attrib { eAttribName = 0, eAttribEquals, eAttribValue } Attrib;
+using Attrib = enum Attrib { eAttribName = 0, eAttribEquals, eAttribValue };
 
 // Enumeration used when parsing elements to dictate whether we are currently
 // inside a tag
-typedef enum Status { eInsideTag = 0, eOutsideTag } Status;
+using Status = enum Status { eInsideTag = 0, eOutsideTag };
 
 XMLError XMLNode::writeToFile(
 	XMLCSTR filename, const char* encoding, char nFormat) const

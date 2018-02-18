@@ -21,7 +21,7 @@ namespace io
 	- fomWrite (creates the file if it didn't exist, otherwise truncates it).
 	- fomAppend (creates the file if it didn't exist)
   */
-typedef int TFileOpenModes;
+using TFileOpenModes = int;
 enum
 {
 	fomRead = 1,

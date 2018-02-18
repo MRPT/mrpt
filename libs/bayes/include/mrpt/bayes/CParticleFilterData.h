@@ -200,11 +200,11 @@ class CParticleFilterData
 {
    public:
 	/** This is the type inside the corresponding CParticleData class */
-	typedef T CParticleDataContent;
+	using CParticleDataContent = T;
 	/** Use this to refer to each element in the m_particles array. */
-	typedef CProbabilityParticle<T> CParticleData;
+	using CParticleData = CProbabilityParticle<T>;
 	/** Use this type to refer to the list of particles m_particles. */
-	typedef std::deque<CParticleData> CParticleList;
+	using CParticleList = std::deque<CParticleData>;
 
 	/** The array of particles */
 	CParticleList m_particles;

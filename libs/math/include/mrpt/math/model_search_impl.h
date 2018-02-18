@@ -101,7 +101,7 @@ bool ModelSearch::geneticSingleModel(
 	std::vector<size_t>& p_inliers)
 {
 	// a single specie of the population
-	typedef TSpecies<TModelFit> Species;
+	using Species = TSpecies<TModelFit>;
 	std::vector<Species> storage;
 	std::vector<Species*> population;
 	std::vector<Species*> sortedPopulation;

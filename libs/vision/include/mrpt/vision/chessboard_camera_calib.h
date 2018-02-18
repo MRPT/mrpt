@@ -56,7 +56,7 @@ struct TImageCalibData
 /**  A list of images, used in checkerBoardCameraCalibration
   * \sa checkerBoardCameraCalibration
   */
-typedef std::map<std::string, TImageCalibData> TCalibrationImageList;
+using TCalibrationImageList = std::map<std::string, TImageCalibData>;
 
 /** Performs a camera calibration (computation of projection and distortion
  * parameters) from a sequence of captured images of a checkerboard.

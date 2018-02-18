@@ -240,15 +240,15 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	}
 	inline bool isMapEmpty() const { return detail::isMapEmpty(*this); }
 	/** The numeric type used in the Kalman Filter (default=double) */
-	typedef KFTYPE kftype;
+	using kftype = KFTYPE;
 	/** My class, in a shorter name! */
 	typedef CKalmanFilterCapable<
 		VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>
 		KFCLASS;
 
 	// ---------- Many useful typedefs to short the notation a bit... --------
-	typedef Eigen::Matrix<KFTYPE, Eigen::Dynamic, 1> KFVector;
-	typedef mrpt::math::CMatrixTemplateNumeric<KFTYPE> KFMatrix;
+	using KFVector = Eigen::Matrix<KFTYPE, Eigen::Dynamic, 1>;
+	using KFMatrix = mrpt::math::CMatrixTemplateNumeric<KFTYPE>;
 
 	typedef mrpt::math::CMatrixFixedNumeric<KFTYPE, VEH_SIZE, VEH_SIZE>
 		KFMatrix_VxV;
@@ -274,11 +274,11 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	typedef mrpt::math::CMatrixFixedNumeric<KFTYPE, OBS_SIZE, VEH_SIZE>
 		KFMatrix_OxV;
 
-	typedef mrpt::math::CArrayNumeric<KFTYPE, VEH_SIZE> KFArray_VEH;
-	typedef mrpt::math::CArrayNumeric<KFTYPE, ACT_SIZE> KFArray_ACT;
-	typedef mrpt::math::CArrayNumeric<KFTYPE, OBS_SIZE> KFArray_OBS;
-	typedef mrpt::aligned_std_vector<KFArray_OBS> vector_KFArray_OBS;
-	typedef mrpt::math::CArrayNumeric<KFTYPE, FEAT_SIZE> KFArray_FEAT;
+	using KFArray_VEH = mrpt::math::CArrayNumeric<KFTYPE, VEH_SIZE>;
+	using KFArray_ACT = mrpt::math::CArrayNumeric<KFTYPE, ACT_SIZE>;
+	using KFArray_OBS = mrpt::math::CArrayNumeric<KFTYPE, OBS_SIZE>;
+	using vector_KFArray_OBS = mrpt::aligned_std_vector<KFArray_OBS>;
+	using KFArray_FEAT = mrpt::math::CArrayNumeric<KFTYPE, FEAT_SIZE>;
 
 	inline size_t getStateVectorLength() const { return m_xkk.size(); }
 	inline KFVector& internal_getXkk() { return m_xkk; }

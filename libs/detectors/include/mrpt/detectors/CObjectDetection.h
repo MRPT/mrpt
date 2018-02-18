@@ -18,7 +18,7 @@ namespace mrpt
 {
 namespace detectors
 {
-typedef std::vector<CDetectableObject::Ptr> vector_detectable_object;
+using vector_detectable_object = std::vector<CDetectableObject::Ptr>;
 
 /** \ingroup mrpt_detectors_grp */
 class CObjectDetection

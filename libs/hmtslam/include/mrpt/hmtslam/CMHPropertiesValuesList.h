@@ -194,8 +194,8 @@ class CMHPropertiesValuesList : public mrpt::serialization::CSerializable
 	 */
 	std::vector<std::string> getPropertyNames() const;
 
-	typedef std::vector<TPropertyValueIDTriplet>::iterator iterator;
-	typedef std::vector<TPropertyValueIDTriplet>::const_iterator const_iterator;
+	using iterator = std::vector<TPropertyValueIDTriplet>::iterator;
+	using const_iterator = std::vector<TPropertyValueIDTriplet>::const_iterator;
 
 	iterator begin() { return m_properties.begin(); }
 	const_iterator begin() const { return m_properties.begin(); }

@@ -35,8 +35,8 @@ class CEmptyNRD
 {
 	/**\brief Handy typedefs */
 	/**\{*/
-	typedef typename GRAPH_T::constraint_t::type_value pose_t;
-	typedef typename GRAPH_T::global_pose_t global_pose_t;
+	using pose_t = typename GRAPH_T::constraint_t::type_value;
+	using global_pose_t = typename GRAPH_T::global_pose_t;
 	/**\}*/
    public:
 	CEmptyNRD();

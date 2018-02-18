@@ -55,7 +55,7 @@ namespace system
 template <typename T>
 struct TParameters : public std::map<std::string, T>
 {
-	typedef std::map<std::string, T> BASE;
+	using BASE = std::map<std::string, T>;
 	/** Default constructor (initializes empty) */
 	TParameters() : BASE() {}
 	/** Constructor with a list of initial values (see the description and use
@@ -144,9 +144,9 @@ struct TParameters : public std::map<std::string, T>
 };
 
 /** See the generic template mrpt::system::TParameters */
-typedef TParameters<double> TParametersDouble;
+using TParametersDouble = TParameters<double>;
 /** See the generic template mrpt::system::TParameters */
-typedef TParameters<std::string> TParametersString;
+using TParametersString = TParameters<std::string>;
 
 }  // end namespace
 }

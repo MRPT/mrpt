@@ -29,7 +29,7 @@
 #include <mrpt/pbmap/SemanticClustering.h>
 #include <set>
 
-typedef pcl::PointXYZRGBA PointT;
+using PointT = pcl::PointXYZRGBA;
 
 namespace mrpt
 {

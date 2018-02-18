@@ -52,10 +52,10 @@ class CIncrementalNodeRegistrationDecider
 	/**\brief Handy typedefs */
 	/**\{*/
 	/**\brief type of graph constraints */
-	typedef typename GRAPH_T::constraint_t constraint_t;
+	using constraint_t = typename GRAPH_T::constraint_t;
 	/**\brief type of underlying poses (2D/3D). */
-	typedef typename GRAPH_T::constraint_t::type_value pose_t;
-	typedef typename GRAPH_T::global_pose_t global_pose_t;
+	using pose_t = typename GRAPH_T::constraint_t::type_value;
+	using global_pose_t = typename GRAPH_T::global_pose_t;
 	typedef CIncrementalNodeRegistrationDecider<GRAPH_T>
 		decider_t; /**< self type - Handy typedef */
 	/**\brief Node Registration Decider */

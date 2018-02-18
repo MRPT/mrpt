@@ -34,7 +34,7 @@ CSetOfObjects::Ptr graph_visualize(
 	using mrpt::poses::CPose3D;
 
 	// Is a 2D or 3D graph network?
-	typedef typename GRAPH_T::constraint_t constraint_t;
+	using constraint_t = typename GRAPH_T::constraint_t;
 
 	const bool is_3D_graph = constraint_t::is_3D();
 

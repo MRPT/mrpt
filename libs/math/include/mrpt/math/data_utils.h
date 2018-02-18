@@ -270,7 +270,7 @@ template<class VECTOR_OF_VECTORS, class MATRIXLIKE,class VECTORLIKE,class VECTOR
 	ASSERTMSG_(
 		elements.size() != 0,
 		"No samples provided, so there is no way to deduce the output size.");
-	typedef typename MATRIXLIKE::Scalar T;
+	using T = typename MATRIXLIKE::Scalar;
 	const size_t DIM = elements[0].size();
 	means.resize(DIM);
 	covariances.setSize(DIM, DIM);
@@ -408,7 +408,7 @@ void weightedHistogram(
 	VECTORLIKE2& out_binCenters, VECTORLIKE2& out_binValues)
 {
 	MRPT_START
-	typedef typename mrpt::math::ContainerType<VECTORLIKE1>::element_t TNum;
+	using TNum = typename mrpt::math::ContainerType<VECTORLIKE1>::element_t;
 
 	ASSERT_(values.size() == weights.size());
 	ASSERT_(binWidth > 0);
@@ -465,7 +465,7 @@ void weightedHistogramLog(
 	VECTORLIKE2& out_binCenters, VECTORLIKE2& out_binValues)
 {
 	MRPT_START
-	typedef typename mrpt::math::ContainerType<VECTORLIKE1>::element_t TNum;
+	using TNum = typename mrpt::math::ContainerType<VECTORLIKE1>::element_t;
 
 	ASSERT_(values.size() == log_weights.size());
 	ASSERT_(binWidth > 0);

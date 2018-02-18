@@ -43,7 +43,7 @@ inline typename MATRIXLIKE::Scalar normalPDFInf(
 	const bool scaled_pdf = false)
 {
 	MRPT_START
-	typedef typename MATRIXLIKE::Scalar T;
+	using T = typename MATRIXLIKE::Scalar;
 	ASSERTDEB_(cov_inv.isSquare());
 	ASSERTDEB_(
 		size_t(cov_inv.cols()) == size_t(x.size()) &&

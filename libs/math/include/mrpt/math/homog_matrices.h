@@ -86,7 +86,7 @@ void homogeneousMatrixInverse(
 	out_xyz.resize(3);
 
 	// translation part:
-	typedef typename IN_ROTMATRIX::Scalar T;
+	using T = typename IN_ROTMATRIX::Scalar;
 	const T tx = -in_xyz[0];
 	const T ty = -in_xyz[1];
 	const T tz = -in_xyz[2];

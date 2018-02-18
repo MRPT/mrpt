@@ -39,8 +39,8 @@ class CMesh3D : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CMesh3D)
 
-	typedef int f_verts[4];
-	typedef float coord3D[3];
+	using f_verts = int[4];
+	using coord3D = float[3];
 
    protected:
 	bool m_enableTransparency;

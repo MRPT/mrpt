@@ -69,9 +69,9 @@ template <typename T>
 class dynamic_vector : public Eigen::Matrix<T, Eigen::Dynamic, 1>
 {
    public:
-	typedef Eigen::Matrix<T, Eigen::Dynamic, 1> Base;
+	using Base = Eigen::Matrix<T, Eigen::Dynamic, 1>;
 	using mrpt_autotype = dynamic_vector<T>;
-	typedef T value_type;
+	using value_type = T;
 	MRPT_EIGEN_DERIVED_CLASS_CTOR_OPERATOR_EQUAL(dynamic_vector)
 
 	/** Default constructor (vector of given size set to zero) */
@@ -86,10 +86,10 @@ class dynamic_vector : public Eigen::Matrix<T, Eigen::Dynamic, 1>
 
 /** Column vector, like Eigen::MatrixXf, but automatically initialized to zeros
  * since construction */
-typedef dynamic_vector<float> CVectorFloat;
+using CVectorFloat = dynamic_vector<float>;
 /** Column vector, like Eigen::MatrixXd, but automatically initialized to zeros
  * since construction */
-typedef dynamic_vector<double> CVectorDouble;
+using CVectorDouble = dynamic_vector<double>;
 
 mrpt::serialization::CArchive& operator<<(
 	mrpt::serialization::CArchive& s, const mrpt::math::CVectorFloat& a);

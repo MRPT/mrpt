@@ -21,7 +21,7 @@ using namespace mrpt::random;
 using namespace mrpt::poses;
 using namespace std;
 
-typedef std::vector<std::vector<double>> TPoints;
+using TPoints = std::vector<std::vector<double>>;
 
 // ------------------------------------------------------
 //				Generate both sets of points

@@ -197,7 +197,7 @@ class CSetOfLines : public CRenderizableDisplayList
 
 	// Iterator management
 	/** Iterator to the set. */
-	typedef std::vector<mrpt::math::TSegment3D>::iterator iterator;
+	using iterator = std::vector<mrpt::math::TSegment3D>::iterator;
 	/** Iterator to the set. */
 	typedef std::vector<mrpt::math::TSegment3D>::reverse_iterator
 		reverse_iterator;
@@ -205,7 +205,7 @@ class CSetOfLines : public CRenderizableDisplayList
 	/**
 	 * Const iterator to the set.
 	 */
-	typedef std::vector<mrpt::math::TSegment3D>::const_iterator const_iterator;
+	using const_iterator = std::vector<mrpt::math::TSegment3D>::const_iterator;
 	/**
 	 * Const reverse iterator to the set.
 	 */

@@ -33,7 +33,7 @@ namespace mrpt
 {
 namespace pbmap
 {
-typedef pcl::PointXYZRGBA PointT;
+using PointT = pcl::PointXYZRGBA;
 
 /*!Transform the (x,y,z) coordinates of a PCL point into a Eigen::Vector3f.*/
 template <class pointPCL>

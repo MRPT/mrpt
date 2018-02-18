@@ -519,7 +519,7 @@ struct Point
 
 struct Font
 {
-	typedef unsigned short Index;
+	using Index = unsigned short;
 
 	struct Char
 	{
@@ -599,7 +599,7 @@ struct Font
 
 struct FontData
 {
-	typedef map<string, Font*> FontMap;
+	using FontMap = map<string, Font*>;
 
 	FontData()
 	{

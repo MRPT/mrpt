@@ -45,7 +45,7 @@ template <class DATA_PARAMS, class POOLABLE_DATA>
 class CGenericMemoryPool
 {
    private:
-	typedef std::list<std::pair<DATA_PARAMS, POOLABLE_DATA*>> TList;
+	using TList = std::list<std::pair<DATA_PARAMS, POOLABLE_DATA*>>;
 	TList m_pool;
 	std::mutex m_pool_cs;
 	size_t m_maxPoolEntries;

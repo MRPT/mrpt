@@ -80,7 +80,7 @@ class RANSAC_Template : public mrpt::system::COutputLogger
 };  // end class
 
 /** The default instance of RANSAC, for double type */
-typedef RANSAC_Template<double> RANSAC;
+using RANSAC = RANSAC_Template<double>;
 
 /** @} */
 

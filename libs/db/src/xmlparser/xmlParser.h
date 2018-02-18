@@ -293,7 +293,7 @@ typedef struct XMLAttribute
 } XMLAttribute;
 
 /// XMLElementPosition are not interchangeable with simple indexes
-typedef int XMLElementPosition;
+using XMLElementPosition = int;
 
 struct XMLNodeContents;
 

@@ -24,7 +24,7 @@ namespace kinematics
 class CVehicleSimul_Holo : public CVehicleSimulVirtualBase
 {
    public:
-	typedef CVehicleVelCmd_Holo kinematic_cmd_t;
+	using kinematic_cmd_t = CVehicleVelCmd_Holo;
 
 	CVehicleSimul_Holo();
 
