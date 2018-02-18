@@ -28,7 +28,7 @@ namespace maps
 {
 namespace internal
 {
-typedef std::vector<CLandmark> TSequenceLandmarks;
+using TSequenceLandmarks = std::vector<CLandmark>;
 }
 
 /** A class for storing a map of 3D probabilistic landmarks.
@@ -127,7 +127,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 	/** The color of landmark ellipsoids in CLandmarksMap::getAs3DObject */
 	static mrpt::img::TColorf COLOR_LANDMARKS_IN_3DSCENES;
 
-	typedef mrpt::maps::CLandmark landmark_type;
+	using landmark_type = mrpt::maps::CLandmark;
 
 	/** The list of landmarks: the wrapper class is just for maintaining the
 	 * KD-Tree representation
@@ -158,12 +158,12 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 		  */
 		TCustomSequenceLandmarks();
 
-		typedef internal::TSequenceLandmarks::iterator iterator;
+		using iterator = internal::TSequenceLandmarks::iterator;
 		inline iterator begin() { return m_landmarks.begin(); };
 		inline iterator end() { return m_landmarks.end(); };
 		void clear();
 		inline size_t size() const { return m_landmarks.size(); };
-		typedef internal::TSequenceLandmarks::const_iterator const_iterator;
+		using const_iterator = internal::TSequenceLandmarks::const_iterator;
 		inline const_iterator begin() const { return m_landmarks.begin(); };
 		inline const_iterator end() const { return m_landmarks.end(); };
 		/** The object is copied, thus the original copy passed as a parameter
@@ -705,7 +705,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 	virtual void auxParticleFilterCleanUp() override;
 
 	MAP_DEFINITION_START(CLandmarksMap)
-	typedef std::pair<mrpt::math::TPoint3D, unsigned int> TPairIdBeacon;
+	using TPairIdBeacon = std::pair<mrpt::math::TPoint3D, unsigned int>;
 	/** Initial contents of the map, especified by a set of 3D Beacons with
 	 * associated IDs */
 	std::deque<TPairIdBeacon> initialBeacons;

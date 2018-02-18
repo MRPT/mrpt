@@ -178,8 +178,8 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 	  */
 	TListMaps maps;
 
-	typedef TListMaps::iterator iterator;
-	typedef TListMaps::const_iterator const_iterator;
+	using iterator = TListMaps::iterator;
+	using const_iterator = TListMaps::const_iterator;
 	iterator begin() { return maps.begin(); }
 	const_iterator begin() const { return maps.begin(); }
 	iterator end() { return maps.end(); }
@@ -218,8 +218,8 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 	template <class SELECTED_CLASS_PTR, class CONTAINER>
 	struct ProxyFilterContainerByClass
 	{
-		typedef typename SELECTED_CLASS_PTR::element_type* ptr_t;
-		typedef const typename SELECTED_CLASS_PTR::element_type* const_ptr_t;
+		using ptr_t = typename SELECTED_CLASS_PTR::element_type*;
+		using const_ptr_t = const typename SELECTED_CLASS_PTR::element_type*;
 		ProxyFilterContainerByClass(CONTAINER& source) : m_source(&source) {}
 		ProxyFilterContainerByClass(
 			ProxyFilterContainerByClass<SELECTED_CLASS_PTR, CONTAINER>&)
@@ -281,9 +281,9 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 	template <class SELECTED_CLASS_PTR, class CONTAINER>
 	struct ProxySelectorContainerByClass
 	{
-		typedef typename SELECTED_CLASS_PTR::element_type pointee_t;
-		typedef typename SELECTED_CLASS_PTR::element_type* ptr_t;
-		typedef const typename SELECTED_CLASS_PTR::element_type* const_ptr_t;
+		using pointee_t = typename SELECTED_CLASS_PTR::element_type;
+		using ptr_t = typename SELECTED_CLASS_PTR::element_type*;
+		using const_ptr_t = const typename SELECTED_CLASS_PTR::element_type*;
 		ProxySelectorContainerByClass(CONTAINER& source) : m_source(&source) {}
 		ProxySelectorContainerByClass(
 			ProxySelectorContainerByClass<SELECTED_CLASS_PTR, CONTAINER>&)

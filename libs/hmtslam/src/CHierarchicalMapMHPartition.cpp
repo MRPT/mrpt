@@ -876,7 +876,7 @@ void CHierarchicalMapMHPartition::computeCoordinatesTransformationBetweenNodes(
 	CHMHMapNode::TNodeID lastNode, nextNode;
 	size_t pathLength;
 
-	typedef mrpt::aligned_std_vector<CPose3D> TPose3DList;
+	using TPose3DList = mrpt::aligned_std_vector<CPose3D>;
 	std::vector<TPose3DList> listSamples;
 	std::vector<TPose3DList>::iterator lstIt;
 	TPose3DList dummyList;

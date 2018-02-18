@@ -74,7 +74,7 @@ class CObservationBearingRange : public CObservation
 		mrpt::math::CMatrixDouble33 covariance;
 	};
 
-	typedef std::vector<TMeasurement> TMeasurementList;
+	using TMeasurementList = std::vector<TMeasurement>;
 
 	/** The list of observed ranges:  */
 	TMeasurementList sensedData;

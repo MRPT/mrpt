@@ -53,10 +53,10 @@ class FrameTransformerInterface
 {
    public:
 	/** This will be mapped to CPose2D (DIM=2) or CPose3D (DIM=3) */
-	typedef typename SE_traits<DIM>::pose_t pose_t;
+	using pose_t = typename SE_traits<DIM>::pose_t;
 	/** This will be mapped to mrpt::math::TPose2D (DIM=2) or
 	 * mrpt::math::TPose3D (DIM=3) */
-	typedef typename SE_traits<DIM>::lightweight_pose_t lightweight_pose_t;
+	using lightweight_pose_t = typename SE_traits<DIM>::lightweight_pose_t;
 
 	FrameTransformerInterface();
 	virtual ~FrameTransformerInterface();
@@ -91,7 +91,7 @@ template <int DIM>
 class FrameTransformer : public FrameTransformerInterface<DIM>
 {
    public:
-	typedef FrameTransformerInterface<DIM> base_t;
+	using base_t = FrameTransformerInterface<DIM>;
 
 	FrameTransformer();
 	~FrameTransformer();

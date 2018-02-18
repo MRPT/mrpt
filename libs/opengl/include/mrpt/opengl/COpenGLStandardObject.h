@@ -16,7 +16,7 @@ namespace mrpt
 {
 namespace opengl
 {
-typedef uint32_t _GLENUM;
+using _GLENUM = uint32_t;
 
 /**
   * Objects of this class represent a generic openGL object without specific

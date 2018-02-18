@@ -181,7 +181,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 		const TKLDParams& KLD_options)
 {
 	MRPT_START
-	typedef std::set<BINTYPE, typename BINTYPE::lt_operator> TSetStateSpaceBins;
+	using TSetStateSpaceBins = std::set<BINTYPE, typename BINTYPE::lt_operator>;
 
 	MYSELF* me = static_cast<MYSELF*>(this);
 
@@ -587,7 +587,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 		const TKLDParams& KLD_options, const bool USE_OPTIMAL_SAMPLING)
 {
 	MRPT_START
-	typedef std::set<BINTYPE, typename BINTYPE::lt_operator> TSetStateSpaceBins;
+	using TSetStateSpaceBins = std::set<BINTYPE, typename BINTYPE::lt_operator>;
 
 	MYSELF* me = static_cast<MYSELF*>(this);
 

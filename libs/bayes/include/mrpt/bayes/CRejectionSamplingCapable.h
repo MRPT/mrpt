@@ -28,7 +28,7 @@ template <class TStateSpace>
 class CRejectionSamplingCapable
 {
    public:
-	typedef CProbabilityParticle<TStateSpace> TParticle;
+	using TParticle = CProbabilityParticle<TStateSpace>;
 
 	/** Virtual destructor
 	  */

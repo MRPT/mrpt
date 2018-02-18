@@ -312,7 +312,7 @@ class CMetricMap : public mrpt::serialization::CSerializable,
 
 /** A list of metric maps (used in the mrpt::poses::CPosePDFParticles class):
   */
-typedef std::deque<CMetricMap*> TMetricMapList;
+using TMetricMapList = std::deque<CMetricMap*>;
 
 }  // End of namespace
 }  // End of namespace

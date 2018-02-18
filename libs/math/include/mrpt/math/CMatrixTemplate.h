@@ -74,11 +74,11 @@ class CMatrixTemplate
    public:
 	// type definitions
 	/** The type of the matrix elements */
-	typedef T value_type;
-	typedef T& reference;
-	typedef const T& const_reference;
-	typedef std::size_t size_type;
-	typedef std::ptrdiff_t difference_type;
+	using value_type = T;
+	using reference = T&;
+	using const_reference = const T&;
+	using size_type = std::size_t;
+	using difference_type = std::ptrdiff_t;
 
    protected:
 	T** m_Val;
@@ -692,7 +692,7 @@ class CMatrixTemplate
 /** Declares a matrix of booleans (non serializable).
  *  \sa CMatrixDouble, CMatrixFloat, CMatrixB
  */
-// typedef CMatrixTemplate<bool> CMatrixBool;
+// using CMatrixBool = CMatrixTemplate<bool>;
 class CMatrixBool : public CMatrixTemplate<bool>
 {
    public:

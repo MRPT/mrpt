@@ -493,7 +493,7 @@ class CPose3DRotVec : public CPose<CPose3DRotVec>,
 
 	/** Used to emulate CPosePDF types, for example, in
 	 * mrpt::graphs::CNetworkOfPoses */
-	typedef CPose3DRotVec type_value;
+	using type_value = CPose3DRotVec;
 	enum
 	{
 		is_3D_val = 1
@@ -515,11 +515,11 @@ class CPose3DRotVec : public CPose<CPose3DRotVec>,
 	/** @name STL-like methods and typedefs
 	   @{   */
 	/** The type of the elements */
-	typedef double value_type;
-	typedef double& reference;
-	typedef const double& const_reference;
-	typedef std::size_t size_type;
-	typedef std::ptrdiff_t difference_type;
+	using value_type = double;
+	using reference = double&;
+	using const_reference = const double&;
+	using size_type = std::size_t;
+	using difference_type = std::ptrdiff_t;
 
 	// size is constant
 	enum

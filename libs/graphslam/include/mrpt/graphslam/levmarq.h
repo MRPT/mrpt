@@ -95,7 +95,7 @@ void optimize_graph_spa_levmarq(
 	MRPT_START
 
 	// Typedefs to make life easier:
-	typedef graphslam_traits<GRAPH_T> gst;
+	using gst = graphslam_traits<GRAPH_T>;
 
 	typename gst::Array_O array_O_zeros;
 	array_O_zeros.fill(0);  // Auxiliary var with all zeros
@@ -166,7 +166,7 @@ void optimize_graph_spa_levmarq(
 	// The list of those edges that will be considered in this optimization
 	// (many may be discarded
 	//  if we are optimizing just a subset of all the nodes):
-	typedef typename gst::observation_info_t observation_info_t;
+	using observation_info_t = typename gst::observation_info_t;
 	vector<observation_info_t> lstObservationData;
 
 	// Note: We'll need those Jacobians{i->j} where at least one "i" or "j"

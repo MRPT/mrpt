@@ -74,12 +74,12 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableDisplayList
 {
    public:
 	/** The type of fixed-size covariance matrices for this representation */
-	typedef mrpt::math::CMatrixFixedNumeric<double, DIM, DIM> cov_matrix_t;
+	using cov_matrix_t = mrpt::math::CMatrixFixedNumeric<double, DIM, DIM>;
 	/** The type of fixed-size vector for this representation */
-	typedef mrpt::math::CMatrixFixedNumeric<double, DIM, 1> mean_vector_t;
+	using mean_vector_t = mrpt::math::CMatrixFixedNumeric<double, DIM, 1>;
 
-	typedef mrpt::math::CMatrixFixedNumeric<float, DIM, 1> array_parameter_t;
-	typedef mrpt::math::CMatrixFixedNumeric<float, DIM, 1> array_point_t;
+	using array_parameter_t = mrpt::math::CMatrixFixedNumeric<float, DIM, 1>;
+	using array_point_t = mrpt::math::CMatrixFixedNumeric<float, DIM, 1>;
 
 	/**  Set the NxN covariance matrix that will determine the aspect of the
 	 * ellipsoid - Notice that the

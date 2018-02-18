@@ -300,7 +300,7 @@ class CPose2D : public CPose<CPose2D>, public mrpt::serialization::CSerializable
 
 	/** Used to emulate CPosePDF types, for example, in
 	 * mrpt::graphs::CNetworkOfPoses */
-	typedef CPose2D type_value;
+	using type_value = CPose2D;
 	enum
 	{
 		is_3D_val = 0
@@ -322,11 +322,11 @@ class CPose2D : public CPose<CPose2D>, public mrpt::serialization::CSerializable
 	/** @name STL-like methods and typedefs
 	   @{   */
 	/** The type of the elements */
-	typedef double value_type;
-	typedef double& reference;
-	typedef const double& const_reference;
-	typedef std::size_t size_type;
-	typedef std::ptrdiff_t difference_type;
+	using value_type = double;
+	using reference = double&;
+	using const_reference = const double&;
+	using size_type = std::size_t;
+	using difference_type = std::ptrdiff_t;
 
 	// size is constant
 	enum

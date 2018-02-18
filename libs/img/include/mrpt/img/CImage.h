@@ -40,7 +40,7 @@ enum TInterpolationMethod
 };
 
 /** For use in mrpt::img::CImage */
-typedef int TImageChannels;
+using TImageChannels = int;
 #define CH_GRAY 1
 #define CH_RGB 3
 

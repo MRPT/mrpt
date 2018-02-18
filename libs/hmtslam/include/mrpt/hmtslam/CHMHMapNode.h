@@ -44,7 +44,7 @@ class CHMHMapNode : public mrpt::serialization::CSerializable
    public:
 	/** The type of the IDs of nodes.
 	  */
-	typedef mrpt::graphs::TNodeID TNodeID;
+	using TNodeID = mrpt::graphs::TNodeID;
 
 	/** The hypothesis IDs under which this node exists.
 	  */
@@ -141,10 +141,10 @@ class CHMHMapNode : public mrpt::serialization::CSerializable
 /** A map between node IDs and nodes (used in HMT-SLAM).
   * \sa CHMTSLAM
   */
-typedef std::map<CHMHMapNode::TNodeID, std::shared_ptr<CHMHMapNode>> TNodeList;
-typedef mrpt::containers::list_searchable<CHMHMapNode::TNodeID> TNodeIDList;
-typedef std::set<CHMHMapNode::TNodeID> TNodeIDSet;
-typedef std::pair<CHMHMapNode::TNodeID, CHMHMapNode::TNodeID> TPairNodeIDs;
+using TNodeList = std::map<CHMHMapNode::TNodeID, std::shared_ptr<CHMHMapNode>>;
+using TNodeIDList = mrpt::containers::list_searchable<CHMHMapNode::TNodeID>;
+using TNodeIDSet = std::set<CHMHMapNode::TNodeID>;
+using TPairNodeIDs = std::pair<CHMHMapNode::TNodeID, CHMHMapNode::TNodeID>;
 
 }  // End of namespace
 }  // End of namespace

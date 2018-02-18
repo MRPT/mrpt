@@ -86,8 +86,8 @@ class CRangeScanOps
 {
 	/**\brief Handy typedefs */
 	/**\{*/
-	typedef typename GRAPH_T::constraint_t constraint_t;
-	typedef CRangeScanOps<GRAPH_T> self_t;
+	using constraint_t = typename GRAPH_T::constraint_t;
+	using self_t = CRangeScanOps<GRAPH_T>;
 	/**\}*/
 
    protected:

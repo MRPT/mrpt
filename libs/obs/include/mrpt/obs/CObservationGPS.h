@@ -221,15 +221,15 @@ class CObservationGPS : public CObservation
 	/** @name Deprecated, backwards compatible (MRPT <1.4.0) data and types
 	 * @{ */
 	/** Deprecated, kept for backwards compatibility */
-	typedef gnss::UTC_time TUTCTime;
+	using TUTCTime = gnss::UTC_time;
 	/** Deprecated, kept for backwards compatibility */
-	typedef gnss::Message_TOPCON_PZS TGPSDatum_PZS;
+	using TGPSDatum_PZS = gnss::Message_TOPCON_PZS;
 	/** Deprecated, kept for backwards compatibility */
-	typedef gnss::Message_TOPCON_SATS TGPSDatum_SATS;
+	using TGPSDatum_SATS = gnss::Message_TOPCON_SATS;
 	/** Deprecated, kept for backwards compatibility */
-	typedef gnss::Message_NMEA_GGA TGPSDatum_GGA;
+	using TGPSDatum_GGA = gnss::Message_NMEA_GGA;
 	/** Deprecated, kept for backwards compatibility */
-	typedef gnss::Message_NMEA_RMC TGPSDatum_RMC;
+	using TGPSDatum_RMC = gnss::Message_NMEA_RMC;
 
 	/** Proxy class for type-based testing existence of data inside
 	 * CObservationGPS::messages */

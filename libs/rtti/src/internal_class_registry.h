@@ -16,7 +16,7 @@ namespace mrpt
 {
 namespace rtti
 {
-typedef void (*TRegisterFunction)();  // A void(void) function
+using TRegisterFunction = void(*)();  // A void(void) function
 
 struct queue_register_functions_t
 {

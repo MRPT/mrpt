@@ -118,14 +118,14 @@ class CICPCriteriaERD
 	/**\brief Handy typedefs */
 	/**\{*/
 	/**\brief type of graph constraints */
-	typedef typename GRAPH_T::constraint_t constraint_t;
+	using constraint_t = typename GRAPH_T::constraint_t;
 	/**\brief type of underlying poses (2D/3D). */
-	typedef typename GRAPH_T::constraint_t::type_value pose_t;
-	typedef CRangeScanEdgeRegistrationDecider<GRAPH_T> parent_t;
-	typedef typename parent_t::range_ops_t range_ops_t;
+	using pose_t = typename GRAPH_T::constraint_t::type_value;
+	using parent_t = CRangeScanEdgeRegistrationDecider<GRAPH_T>;
+	using range_ops_t = typename parent_t::range_ops_t;
 	typedef CICPCriteriaERD<GRAPH_T>
 		decider_t; /**< self type - Handy typedef */
-	typedef typename parent_t::nodes_to_scans2D_t nodes_to_scans2D_t;
+	using nodes_to_scans2D_t = typename parent_t::nodes_to_scans2D_t;
 	/**\}*/
 
 	// Public methods

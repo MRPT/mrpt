@@ -48,9 +48,9 @@ class CBeaconMap : public mrpt::maps::CMetricMap
 	DEFINE_SERIALIZABLE(CBeaconMap)
 
    public:
-	typedef std::deque<CBeacon> TSequenceBeacons;
-	typedef std::deque<CBeacon>::iterator iterator;
-	typedef std::deque<CBeacon>::const_iterator const_iterator;
+	using TSequenceBeacons = std::deque<CBeacon>;
+	using iterator = std::deque<CBeacon>::iterator;
+	using const_iterator = std::deque<CBeacon>::const_iterator;
 
    protected:
 	/** The individual beacons */

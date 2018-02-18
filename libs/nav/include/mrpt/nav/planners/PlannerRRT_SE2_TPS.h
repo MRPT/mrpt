@@ -69,7 +69,7 @@ class PlannerRRT_SE2_TPS : public PlannerTPS_VirtualBase
 {
    public:
 	/** The type of poses at nodes */
-	typedef mrpt::math::TPose2D node_pose_t;
+	using node_pose_t = mrpt::math::TPose2D;
 
 	struct TPlannerInput : public TPlannerInputTempl<node_pose_t, node_pose_t>
 	{

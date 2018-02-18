@@ -100,7 +100,7 @@ class TSetOfMetricMapInitializers : public mrpt::config::CLoadableOptions
 
 	void push_back(const TMetricMapInitializer::Ptr& o) { m_list.push_back(o); }
 	size_t size() const { return m_list.size(); }
-	typedef std::deque<TMetricMapInitializer::Ptr>::iterator iterator;
+	using iterator = std::deque<TMetricMapInitializer::Ptr>::iterator;
 	typedef std::deque<TMetricMapInitializer::Ptr>::const_iterator
 		const_iterator;
 	iterator begin() { return m_list.begin(); }

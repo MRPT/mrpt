@@ -256,7 +256,7 @@ struct graph_ops
 		using mrpt::system::strCmpI;
 		using namespace mrpt::math;
 
-		typedef typename graph_t::constraint_t CPOSE;
+		using CPOSE = typename graph_t::constraint_t;
 
 		set<string> alreadyWarnedUnknowns;  // for unknown line types, show a
 		// warning to cerr just once.
@@ -732,7 +732,7 @@ struct graph_ops
 	static size_t graph_of_poses_collapse_dup_edges(graph_t* g)
 	{
 		MRPT_START
-		typedef typename graph_t::edges_map_t::iterator TEdgeIterator;
+		using TEdgeIterator = typename graph_t::edges_map_t::iterator;
 
 		// Data structure: (id1,id2) -> all edges between them
 		//  (with id1 < id2)
@@ -788,7 +788,7 @@ struct graph_ops
 		// Do Dijkstra shortest path from "root" to all other nodes:
 		typedef CDijkstra<graph_t, typename graph_t::maps_implementation_t>
 			dijkstra_t;
-		typedef typename graph_t::constraint_t constraint_t;
+		using constraint_t = typename graph_t::constraint_t;
 
 		// initialize corresponding dijkstra object from root.
 		dijkstra_t dijkstra(*g, g->root);
@@ -995,7 +995,7 @@ struct graph_ops
 				static_cast<unsigned int>(to_id)));
 
 		// The global poses:
-		typedef typename graph_t::constraint_t constraint_t;
+		using constraint_t = typename graph_t::constraint_t;
 
 		const typename constraint_t::type_value& from_mean = itPoseFrom->second;
 		const typename constraint_t::type_value& to_mean = itPoseTo->second;

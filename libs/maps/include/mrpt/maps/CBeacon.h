@@ -42,7 +42,7 @@ class CBeacon : public mrpt::poses::CPointPDF
    public:
 	/** The type for the IDs of landmarks.
 	 */
-	typedef int64_t TBeaconID;
+	using TBeaconID = int64_t;
 
 	/** See m_typePDF
 	 */

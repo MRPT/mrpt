@@ -38,7 +38,7 @@ class CLandmark : public mrpt::serialization::CSerializable
 
    public:
 	/** The type for the IDs of landmarks. */
-	typedef int64_t TLandmarkID;
+	using TLandmarkID = int64_t;
 
 	/** The set of features from which the landmark comes. */
 	std::vector<mrpt::vision::CFeature::Ptr> features;

@@ -37,7 +37,7 @@ typename OBSERVATION_T::Ptr getObservation(
 	mrpt::obs::CSensoryFrame::Ptr& observations,
 	mrpt::obs::CObservation::Ptr& observation, bool priority_to_sf = true)
 {
-	typedef typename OBSERVATION_T::Ptr obs_t;
+	using obs_t = typename OBSERVATION_T::Ptr;
 
 	obs_t cobs_ptr;
 	obs_t sf_ptr;

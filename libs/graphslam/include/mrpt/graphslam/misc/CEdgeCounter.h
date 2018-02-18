@@ -35,8 +35,8 @@ namespace detail
 class CEdgeCounter
 {
    public:
-	typedef std::map<std::string, int>::iterator iterator;
-	typedef std::map<std::string, int>::const_iterator const_iterator;
+	using iterator = std::map<std::string, int>::iterator;
+	using const_iterator = std::map<std::string, int>::const_iterator;
 
 	/**\brief Constructor class
 	 */

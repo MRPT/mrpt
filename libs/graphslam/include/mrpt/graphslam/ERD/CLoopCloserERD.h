@@ -245,30 +245,30 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 {
    public:
 	/**\brief Edge Registration Decider */
-	typedef CRangeScanEdgeRegistrationDecider<GRAPH_T> parent_t;
+	using parent_t = CRangeScanEdgeRegistrationDecider<GRAPH_T>;
 
 	/**\brief Handy typedefs */
 	/**\{*/
 	/**\brief type of graph constraints */
-	typedef typename GRAPH_T::constraint_t constraint_t;
+	using constraint_t = typename GRAPH_T::constraint_t;
 	/**\brief type of underlying poses (2D/3D). */
-	typedef typename GRAPH_T::constraint_t::type_value pose_t;
-	typedef typename GRAPH_T::global_pose_t global_pose_t;
-	typedef CLoopCloserERD<GRAPH_T> decider_t; /**< self type - Handy typedef */
-	typedef typename parent_t::range_ops_t range_ops_t;
-	typedef typename parent_t::nodes_to_scans2D_t nodes_to_scans2D_t;
+	using pose_t = typename GRAPH_T::constraint_t::type_value;
+	using global_pose_t = typename GRAPH_T::global_pose_t;
+	using decider_t = CLoopCloserERD<GRAPH_T>; /**< self type - Handy typedef */
+	using range_ops_t = typename parent_t::range_ops_t;
+	using nodes_to_scans2D_t = typename parent_t::nodes_to_scans2D_t;
 	/**\brief Typedef for referring to a list of partitions */
-	typedef std::vector<std::vector<uint32_t>> partitions_t;
-	typedef typename GRAPH_T::edges_map_t::const_iterator edges_citerator;
-	typedef typename GRAPH_T::edges_map_t::iterator edges_iterator;
-	typedef typename mrpt::graphs::detail::THypothesis<GRAPH_T> hypot_t;
-	typedef std::vector<hypot_t> hypots_t;
-	typedef std::vector<hypot_t*> hypotsp_t;
+	using partitions_t = std::vector<std::vector<uint32_t>>;
+	using edges_citerator = typename GRAPH_T::edges_map_t::const_iterator;
+	using edges_iterator = typename GRAPH_T::edges_map_t::iterator;
+	using hypot_t = typename mrpt::graphs::detail::THypothesis<GRAPH_T>;
+	using hypots_t = std::vector<hypot_t>;
+	using hypotsp_t = std::vector<hypot_t*>;
 	typedef std::map<std::pair<hypot_t*, hypot_t*>, double>
 		hypotsp_to_consist_t;
-	typedef mrpt::graphslam::TUncertaintyPath<GRAPH_T> path_t;
-	typedef std::vector<path_t> paths_t;
-	typedef mrpt::graphslam::detail::TNodeProps<GRAPH_T> node_props_t;
+	using path_t = mrpt::graphslam::TUncertaintyPath<GRAPH_T>;
+	using paths_t = std::vector<path_t>;
+	using node_props_t = mrpt::graphslam::detail::TNodeProps<GRAPH_T>;
 	/**\}*/
 
 	// Public methods
@@ -317,7 +317,7 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	 */
 	struct TGetICPEdgeAdParams
 	{
-		typedef TGetICPEdgeAdParams self_t;
+		using self_t = TGetICPEdgeAdParams;
 
 		node_props_t from_params; /**< Ad. params for the from_node */
 		node_props_t to_params; /**< Ad. params for the to_node */
@@ -351,7 +351,7 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	 */
 	struct TGenerateHypotsPoolAdParams
 	{
-		typedef std::map<mrpt::graphs::TNodeID, node_props_t> group_t;
+		using group_t = std::map<mrpt::graphs::TNodeID, node_props_t>;
 
 		/**\brief  Ad. params for groupA */
 		group_t groupA_params;

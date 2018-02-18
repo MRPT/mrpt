@@ -44,8 +44,8 @@ double stub_kmeans(
 	size_t dims = 0;
 	const typename LIST_OF_VECTORS1::const_iterator it_first = points.begin();
 	const typename LIST_OF_VECTORS1::const_iterator it_end = points.end();
-	typedef typename LIST_OF_VECTORS1::value_type TInnerVector;
-	typedef typename LIST_OF_VECTORS2::value_type TInnerVectorCenters;
+	using TInnerVector = typename LIST_OF_VECTORS1::value_type;
+	using TInnerVectorCenters = typename LIST_OF_VECTORS2::value_type;
 	std::vector<typename TInnerVector::value_type> raw_vals;
 	typename TInnerVector::value_type* trg_ptr = nullptr;
 	for (typename LIST_OF_VECTORS1::const_iterator it = it_first; it != it_end;

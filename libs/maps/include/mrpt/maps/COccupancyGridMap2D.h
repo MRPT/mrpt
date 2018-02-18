@@ -71,11 +71,11 @@ class COccupancyGridMap2D : public CMetricMap,
    public:
 /** The type of the map cells: */
 #ifdef OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS
-	typedef int8_t cellType;
-	typedef uint8_t cellTypeUnsigned;
+	using cellType = int8_t;
+	using cellTypeUnsigned = uint8_t;
 #else
-	typedef int16_t cellType;
-	typedef uint16_t cellTypeUnsigned;
+	using cellType = int16_t;
+	using cellTypeUnsigned = uint16_t;
 #endif
 
 	/** Discrete to float conversion factors: The min/max values of the integer
@@ -643,7 +643,7 @@ class COccupancyGridMap2D : public CMetricMap,
 	} likelihoodOptions;
 
 	/** Auxiliary private class. */
-	typedef std::pair<double, mrpt::math::TPoint2D> TPairLikelihoodIndex;
+	using TPairLikelihoodIndex = std::pair<double, mrpt::math::TPoint2D>;
 
 	/** Some members of this struct will contain intermediate or output data
 	 * after calling "computeObservationLikelihood" for some likelihood

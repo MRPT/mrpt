@@ -41,8 +41,8 @@ template <typename Scalar, int NROWS, int NCOLS, typename INFO, bool HAS_REMAP,
 			  mrpt::utils::map_as_vector<size_t, size_t>>
 struct MatrixBlockSparseCols
 {
-	typedef Eigen::Matrix<Scalar, NROWS, NCOLS> matrix_t;
-	typedef INFO symbolic_t;
+	using matrix_t = Eigen::Matrix<Scalar, NROWS, NCOLS>;
+	using symbolic_t = INFO;
 
 	struct TEntry
 	{
@@ -53,7 +53,7 @@ struct MatrixBlockSparseCols
 	};
 
 	/** Each compressed sparse column */
-	typedef mrpt::aligned_std_map<size_t, TEntry> col_t;
+	using col_t = mrpt::aligned_std_map<size_t, TEntry>;
 
    private:
 	/** -> cols[i]: i'th column.

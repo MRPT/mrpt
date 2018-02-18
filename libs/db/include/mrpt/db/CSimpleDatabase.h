@@ -184,8 +184,8 @@ class CSimpleDatabase : public mrpt::serialization::CSerializable
 
    private:
 	/** The tables of the DB indexed by their names: */
-	typedef std::map<std::string, CSimpleDatabaseTable::Ptr> TTableList;
-	typedef std::map<std::string, CSimpleDatabaseTable::Ptr>::iterator iterator;
+	using TTableList = std::map<std::string, CSimpleDatabaseTable::Ptr>;
+	using iterator = std::map<std::string, CSimpleDatabaseTable::Ptr>::iterator;
 	typedef std::map<std::string, CSimpleDatabaseTable::Ptr>::const_iterator
 		const_iterator;
 

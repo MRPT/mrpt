@@ -46,12 +46,12 @@ class CNodeRegistrationDecider
 	/**\brief Handy typedefs */
 	/**\{*/
 	/**\brief Parent of current class */
-	typedef mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_T> parent_t;
+	using parent_t = mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_T>;
 	/**\brief type of graph constraints */
-	typedef typename GRAPH_T::constraint_t constraint_t;
+	using constraint_t = typename GRAPH_T::constraint_t;
 	/**\brief type of underlying poses (2D/3D). */
-	typedef typename GRAPH_T::constraint_t::type_value pose_t;
-	typedef typename GRAPH_T::global_pose_t global_pose_t;
+	using pose_t = typename GRAPH_T::constraint_t::type_value;
+	using global_pose_t = typename GRAPH_T::global_pose_t;
 	typedef mrpt::math::CMatrixFixedNumeric<double, constraint_t::state_length,
 											constraint_t::state_length>
 		inf_mat_t;

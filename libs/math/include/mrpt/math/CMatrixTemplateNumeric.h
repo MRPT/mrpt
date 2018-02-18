@@ -136,31 +136,31 @@ class CMatrixTemplateNumeric
  *  For a serializable version, use math::CMatrix
  *  \sa CMatrixDouble, CMatrix, CMatrixD
  */
-typedef CMatrixTemplateNumeric<float> CMatrixFloat;
+using CMatrixFloat = CMatrixTemplateNumeric<float>;
 
 /** Declares a matrix of double numbers (non serializable).
  *  For a serializable version, use math::CMatrixD
  *  \sa CMatrixFloat, CMatrix, CMatrixD
  */
-typedef CMatrixTemplateNumeric<double> CMatrixDouble;
+using CMatrixDouble = CMatrixTemplateNumeric<double>;
 
 /** Declares a matrix of unsigned ints (non serializable).
  *  \sa CMatrixDouble, CMatrixFloat
  */
-typedef CMatrixTemplateNumeric<unsigned int> CMatrixUInt;
+using CMatrixUInt = CMatrixTemplateNumeric<unsigned int>;
 
 #ifdef HAVE_LONG_DOUBLE
 /** Declares a matrix of "long doubles" (non serializable), or of "doubles" if
  * the compiler does not support "long double".
  *  \sa CMatrixDouble, CMatrixFloat
  */
-typedef CMatrixTemplateNumeric<long double> CMatrixLongDouble;
+using CMatrixLongDouble = CMatrixTemplateNumeric<long double>;
 #else
 /** Declares a matrix of "long doubles" (non serializable), or of "doubles" if
  * the compiler does not support "long double".
  *  \sa CMatrixDouble, CMatrixFloat
  */
-typedef CMatrixTemplateNumeric<double> CMatrixLongDouble;
+using CMatrixLongDouble = CMatrixTemplateNumeric<double>;
 #endif
 
 namespace detail

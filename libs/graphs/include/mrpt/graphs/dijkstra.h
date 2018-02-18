@@ -154,11 +154,11 @@ class CDijkstra
 
 	/** The type of the graph, typically a mrpt::graphs::CDirectedGraph<> or any
 	 * other derived class */
-	typedef TYPE_GRAPH graph_t;
+	using graph_t = TYPE_GRAPH;
 	/** The type of edge data in graph_t */
-	typedef typename graph_t::edge_t edge_t;
+	using edge_t = typename graph_t::edge_t;
 	/** A list of edges used to describe a path on the graph */
-	typedef std::list<TPairNodeIDs> edge_list_t;
+	using edge_list_t = std::list<TPairNodeIDs>;
 
 	using functor_edge_weight_t = std::function<double(
 		const graph_t& graph, const TNodeID id_from, const TNodeID id_to,
@@ -447,7 +447,7 @@ class CDijkstra
 	 * input graph, but with edge data being pointers to the original data
 	 * (to save copy time & memory)
 	 */
-	typedef CDirectedTree<const edge_t*> tree_graph_t;
+	using tree_graph_t = CDirectedTree<const edge_t*>;
 
 	/** Returns a tree representation of the graph, as determined by the
 	 * Dijkstra shortest paths from the root node.
@@ -459,7 +459,7 @@ class CDijkstra
 	 */
 	void getTreeGraph(tree_graph_t& out_tree) const
 	{
-		typedef typename tree_graph_t::TEdgeInfo TreeEdgeInfo;
+		using TreeEdgeInfo = typename tree_graph_t::TEdgeInfo;
 
 		out_tree.clear();
 		out_tree.root = m_source_node_ID;

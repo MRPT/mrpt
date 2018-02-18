@@ -134,7 +134,7 @@ struct TStereoCalibResults
 /**  A list of images, used in checkerBoardStereoCalibration
   * \sa checkerBoardStereoCalibration
   */
-typedef std::vector<TImageStereoCalibData> TCalibrationStereoImageList;
+using TCalibrationStereoImageList = std::vector<TImageStereoCalibData>;
 
 /** Optimize the calibration parameters of a stereo camera or a RGB+D (Kinect)
  * camera.

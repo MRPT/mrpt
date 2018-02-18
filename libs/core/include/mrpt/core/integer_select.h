@@ -25,27 +25,27 @@ struct int_select_by_bytecount;
 template <>
 struct int_select_by_bytecount<1>
 {
-	typedef int8_t type;
+	using type = int8_t;
 };
 template <>
 struct int_select_by_bytecount<2>
 {
-	typedef int16_t type;
+	using type = int16_t;
 };
 template <>
 struct int_select_by_bytecount<3>
 {
-	typedef int32_t type;
+	using type = int32_t;
 };
 template <>
 struct int_select_by_bytecount<4>
 {
-	typedef int32_t type;
+	using type = int32_t;
 };
 template <>
 struct int_select_by_bytecount<8>
 {
-	typedef int64_t type;
+	using type = int64_t;
 };
 
 /** Usage: `uint_select_by_bytecount<N>::type  var;` allows defining var as a
@@ -55,27 +55,27 @@ struct uint_select_by_bytecount;
 template <>
 struct uint_select_by_bytecount<1>
 {
-	typedef uint8_t type;
+	using type = uint8_t;
 };
 template <>
 struct uint_select_by_bytecount<2>
 {
-	typedef uint16_t type;
+	using type = uint16_t;
 };
 template <>
 struct uint_select_by_bytecount<3>
 {
-	typedef uint32_t type;
+	using type = uint32_t;
 };
 template <>
 struct uint_select_by_bytecount<4>
 {
-	typedef uint32_t type;
+	using type = uint32_t;
 };
 template <>
 struct uint_select_by_bytecount<8>
 {
-	typedef uint64_t type;
+	using type = uint64_t;
 };
 
 /** @} */

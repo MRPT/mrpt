@@ -61,7 +61,7 @@ class ClearanceDiagram
 	void writeToStream(mrpt::serialization::CArchive& out) const;
 
 	/** [TPS_distance] => normalized_clearance_for_exactly_that_robot_pose  */
-	typedef std::map<double, double> dist2clearance_t;
+	using dist2clearance_t = std::map<double, double>;
 	dist2clearance_t& get_path_clearance(size_t actual_k);
 	const dist2clearance_t& get_path_clearance(size_t actual_k) const;
 

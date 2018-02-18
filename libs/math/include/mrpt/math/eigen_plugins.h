@@ -23,8 +23,8 @@ enum
 /** @name MRPT plugin: Basic iterators. These iterators are intended for 1D
  * matrices only, i.e. column or row vectors.
   *  @{ */
-typedef Scalar* iterator;
-typedef const Scalar* const_iterator;
+using iterator = Scalar*;
+using const_iterator = const Scalar*;
 
 EIGEN_STRONG_INLINE iterator begin() { return derived().data(); }
 EIGEN_STRONG_INLINE iterator end()

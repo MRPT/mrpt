@@ -89,8 +89,8 @@ class GraphSlamLevMarqTester : public GraphSlamLevMarqTest<my_graph_t>,
 	}
 };
 
-typedef GraphSlamLevMarqTester<CNetworkOfPoses2D> GraphSlamLevMarqTester2D;
-typedef GraphSlamLevMarqTester<CNetworkOfPoses3D> GraphSlamLevMarqTester3D;
+using GraphSlamLevMarqTester2D = GraphSlamLevMarqTester<CNetworkOfPoses2D>;
+using GraphSlamLevMarqTester3D = GraphSlamLevMarqTester<CNetworkOfPoses3D>;
 
 TEST_F(GraphSlamLevMarqTester2D, OptimizeSampleRingPath)
 {

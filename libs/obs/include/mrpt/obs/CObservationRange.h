@@ -61,9 +61,9 @@ class CObservationRange : public CObservation
 		float sensedDistance;
 	};
 
-	typedef std::deque<TMeasurement> TMeasurementList;
-	typedef std::deque<TMeasurement>::const_iterator const_iterator;
-	typedef std::deque<TMeasurement>::iterator iterator;
+	using TMeasurementList = std::deque<TMeasurement>;
+	using const_iterator = std::deque<TMeasurement>::const_iterator;
+	using iterator = std::deque<TMeasurement>::iterator;
 
 	/** All the measurements */
 	TMeasurementList sensedData;

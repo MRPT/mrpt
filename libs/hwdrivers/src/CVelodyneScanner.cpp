@@ -26,7 +26,7 @@
 #endif
 
 #include <winsock2.h>
-typedef int socklen_t;
+using socklen_t = int;
 
 #if defined(_MSC_VER)
 #pragma comment(lib, "WS2_32.LIB")

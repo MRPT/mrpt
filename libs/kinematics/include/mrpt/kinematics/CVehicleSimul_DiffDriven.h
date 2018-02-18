@@ -23,7 +23,7 @@ namespace kinematics
 class CVehicleSimul_DiffDriven : public CVehicleSimulVirtualBase
 {
    public:
-	typedef CVehicleVelCmd_DiffDriven kinematic_cmd_t;
+	using kinematic_cmd_t = CVehicleVelCmd_DiffDriven;
 
 	CVehicleSimul_DiffDriven();
 	virtual ~CVehicleSimul_DiffDriven();
