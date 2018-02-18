@@ -93,11 +93,11 @@ class CPoint2D : public CPoint<CPoint2D>,
 	/** @name STL-like methods and typedefs
 	  @{   */
 	/** The type of the elements */
-	typedef double value_type;
-	typedef double& reference;
-	typedef const double& const_reference;
-	typedef std::size_t size_type;
-	typedef std::ptrdiff_t difference_type;
+	using value_type = double;
+	using reference = double&;
+	using const_reference = const double&;
+	using size_type = std::size_t;
+	using difference_type = std::ptrdiff_t;
 
 	// size is constant
 	enum

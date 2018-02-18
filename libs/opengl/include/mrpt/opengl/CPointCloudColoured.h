@@ -61,11 +61,11 @@ class CPointCloudColoured : public CRenderizable,
 	};
 
    private:
-	typedef std::vector<TPointColour> TListPointColour;
+	using TListPointColour = std::vector<TPointColour>;
 	TListPointColour m_points;
 
-	typedef TListPointColour::iterator iterator;
-	typedef TListPointColour::const_iterator const_iterator;
+	using iterator = TListPointColour::iterator;
+	using const_iterator = TListPointColour::const_iterator;
 	inline iterator begin() { return m_points.begin(); }
 	inline const_iterator begin() const { return m_points.begin(); }
 	inline iterator end() { return m_points.end(); }
@@ -282,7 +282,7 @@ class PointCloudAdapter<mrpt::opengl::CPointCloudColoured>
 
    public:
 	/** The type of each point XYZ coordinates */
-	typedef float coords_t;
+	using coords_t = float;
 	/** Has any color RGB info? */
 	static const int HAS_RGB = 1;
 	/** Has native RGB info (as floats)? */

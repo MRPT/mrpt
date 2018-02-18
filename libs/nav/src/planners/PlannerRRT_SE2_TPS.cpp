@@ -116,7 +116,7 @@ void PlannerRRT_SE2_TPS::solve(
 
 		// [Algo `tp_space_rrt`: Line 4]: Init empty solution set
 		// -----------------------------------------
-		typedef std::map<double, TMoveEdgeSE2_TP> sorted_solution_list_t;
+		using sorted_solution_list_t = std::map<double, TMoveEdgeSE2_TP>;
 		sorted_solution_list_t candidate_new_nodes;  // Map: cost -> info. Pick
 		// begin() to select the
 		// lowest-cose one.

@@ -1402,7 +1402,7 @@ struct TPlane
 	void getAsPose3DForcingOrigin(const TPoint3D& newOrigin, TPose3D& pose);
 };
 
-typedef TPlane TPlane3D;
+using TPlane3D = TPlane;
 
 /**
  * 2D polygon, inheriting from std::vector<TPoint2D>.

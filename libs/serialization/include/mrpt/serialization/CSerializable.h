@@ -15,7 +15,7 @@
 // Make this frwd decl independent of MRPT_HAS_MATLAB in config.h:
 /** Forward declaration for mxArray (avoid #including as much as possible to
  * speed up compiling) */
-typedef struct mxArray_tag mxArray;
+using mxArray = struct mxArray_tag;
 
 namespace mrpt
 {

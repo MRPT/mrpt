@@ -126,7 +126,7 @@ class CNetworkOfPoses
 	/** @name Typedef's
 		@{ */
 	/** The base class "CDirectedGraph<CPOSE,EDGE_ANNOTATIONS>" */
-	typedef mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATIONS> BASE;
+	using BASE = mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATIONS>;
 	/** My own type */
 	typedef CNetworkOfPoses<
 		CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>
@@ -134,18 +134,18 @@ class CNetworkOfPoses
 
 	/** The type of PDF poses in the contraints (edges) (=CPOSE template
 	 * argument) */
-	typedef CPOSE constraint_t;
+	using constraint_t = CPOSE;
 	/** The extra annotations in nodes, apart from a \a constraint_no_pdf_t */
-	typedef NODE_ANNOTATIONS node_annotations_t;
+	using node_annotations_t = NODE_ANNOTATIONS;
 	/** The extra annotations in edges, apart from a \a constraint_t */
-	typedef EDGE_ANNOTATIONS edge_annotations_t;
+	using edge_annotations_t = EDGE_ANNOTATIONS;
 
 	/** The type of map's implementation (=MAPS_IMPLEMENTATION template
 	 * argument) */
-	typedef MAPS_IMPLEMENTATION maps_implementation_t;
+	using maps_implementation_t = MAPS_IMPLEMENTATION;
 	/** The type of edges or their means if they are PDFs (that is, a simple
 	 * "edge" value) */
-	typedef typename CPOSE::type_value constraint_no_pdf_t;
+	using constraint_no_pdf_t = typename CPOSE::type_value;
 
 	constexpr static auto getClassName()
 	{
@@ -414,7 +414,7 @@ class CNetworkOfPoses
 		using namespace mrpt::math;
 		using namespace mrpt::graphs::detail;
 
-		typedef CDijkstra<self_t, MAPS_IMPLEMENTATION> dijkstra_t;
+		using dijkstra_t = CDijkstra<self_t, MAPS_IMPLEMENTATION>;
 
 		// assert that the given pointers are valid
 		ASSERTMSG_(
@@ -726,7 +726,7 @@ class CNetworkOfPoses
 
 		typedef
 			typename vector<THypothesis<self_t>>::const_iterator hypots_cit_t;
-		typedef typename global_poses_t::const_iterator nodes_cit_t;
+		using nodes_cit_t = typename global_poses_t::const_iterator;
 
 		const self_t& graph_from = (hypots_from_other_to_self ? other : *this);
 		const self_t& graph_to = (hypots_from_other_to_self ? *this : other);

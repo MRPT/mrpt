@@ -49,11 +49,11 @@ class CEdgeRegistrationDecider
 	/**\brief Handy typedefs */
 	/**\{*/
 	/**\brief Parent of current class */
-	typedef mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_T> parent;
+	using parent = mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_T>;
 	/**\brief type of graph constraints */
-	typedef typename GRAPH_T::constraint_t constraint_t;
+	using constraint_t = typename GRAPH_T::constraint_t;
 	/**\brief type of underlying poses (2D/3D). */
-	typedef typename GRAPH_T::constraint_t::type_value pose_t;
+	using pose_t = typename GRAPH_T::constraint_t::type_value;
 	/**\}*/
 
 	/**\brief Default class constructor.*/

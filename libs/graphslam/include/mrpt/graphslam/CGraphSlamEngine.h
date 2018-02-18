@@ -196,16 +196,16 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
 	/**\brief Handy typedefs */
 	/**\{*/
 	/**\brief Map for managing output file streams.*/
-	typedef std::map<std::string, mrpt::io::CFileOutputStream*> fstreams_out;
+	using fstreams_out = std::map<std::string, mrpt::io::CFileOutputStream*>;
 	/**\brief Map for iterating over output file streams.*/
 	typedef std::map<std::string, mrpt::io::CFileOutputStream*>::iterator
 		fstreams_out_it;
 
 	/**\brief Type of graph constraints */
-	typedef typename GRAPH_T::constraint_t constraint_t;
+	using constraint_t = typename GRAPH_T::constraint_t;
 	/**\brief Type of underlying poses (2D/3D). */
-	typedef typename GRAPH_T::constraint_t::type_value pose_t;
-	typedef typename GRAPH_T::global_pose_t global_pose_t;
+	using pose_t = typename GRAPH_T::constraint_t::type_value;
+	using global_pose_t = typename GRAPH_T::global_pose_t;
 	typedef std::map<mrpt::graphs::TNodeID,
 					 mrpt::obs::CObservation2DRangeScan::Ptr>
 		nodes_to_scans2D_t;

@@ -84,7 +84,7 @@ class CNTRIPClient
 	};
 
 	/** Used in CNTRIPClient::retrieveListOfMountpoints */
-	typedef std::list<TMountPoint> TListMountPoints;
+	using TListMountPoints = std::list<TMountPoint>;
 
 	/**  The arguments for connecting to a NTRIP stream, used in
 	 * CNTRIPClient::open

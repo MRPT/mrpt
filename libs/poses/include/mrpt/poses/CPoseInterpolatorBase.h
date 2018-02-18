@@ -59,18 +59,18 @@ class CPoseInterpolatorBase
 	 * @{ */
 
 	/** TPose2D or TPose3D */
-	typedef typename mrpt::poses::SE_traits<DIM>::lightweight_pose_t pose_t;
+	using pose_t = typename mrpt::poses::SE_traits<DIM>::lightweight_pose_t;
 	/** CPose2D or CPose3D */
-	typedef typename mrpt::poses::SE_traits<DIM>::pose_t cpose_t;
+	using cpose_t = typename mrpt::poses::SE_traits<DIM>::pose_t;
 	/** TPoint2D or TPoint3D */
-	typedef typename mrpt::poses::SE_traits<DIM>::point_t point_t;
+	using point_t = typename mrpt::poses::SE_traits<DIM>::point_t;
 
-	typedef std::pair<mrpt::system::TTimeStamp, pose_t> TTimePosePair;
-	typedef std::map<mrpt::system::TTimeStamp, pose_t> TPath;
-	typedef typename TPath::iterator iterator;
-	typedef typename TPath::const_iterator const_iterator;
-	typedef typename TPath::reverse_iterator reverse_iterator;
-	typedef typename TPath::const_reverse_iterator const_reverse_iterator;
+	using TTimePosePair = std::pair<mrpt::system::TTimeStamp, pose_t>;
+	using TPath = std::map<mrpt::system::TTimeStamp, pose_t>;
+	using iterator = typename TPath::iterator;
+	using const_iterator = typename TPath::const_iterator;
+	using reverse_iterator = typename TPath::reverse_iterator;
+	using const_reverse_iterator = typename TPath::const_reverse_iterator;
 
 	inline iterator begin() { return m_path.begin(); }
 	inline const_iterator begin() const { return m_path.begin(); }

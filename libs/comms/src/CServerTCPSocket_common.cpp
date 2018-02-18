@@ -33,7 +33,7 @@ using namespace mrpt::comms;
 
 #ifdef _WIN32
 #include <winsock.h>
-typedef int socklen_t;
+using socklen_t = int;
 #endif
 
 std::string CServerTCPSocket::getLastErrorStr()

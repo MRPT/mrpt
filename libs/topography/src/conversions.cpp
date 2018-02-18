@@ -44,9 +44,9 @@ bool mrpt::topography::operator!=(
 
 // Define a generic type for "precission numbers":
 #ifdef HAVE_LONG_DOUBLE
-typedef long double precnum_t;
+using precnum_t = long double;
 #else
-typedef double precnum_t;
+using precnum_t = double;
 #endif
 
 std::ostream& mrpt::topography::operator<<(std::ostream& out, const TCoords& o)

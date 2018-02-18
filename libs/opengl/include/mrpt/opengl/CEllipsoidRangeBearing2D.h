@@ -42,7 +42,7 @@ namespace opengl
   */
 class CEllipsoidRangeBearing2D : public CGeneralizedEllipsoidTemplate<2>
 {
-	typedef CGeneralizedEllipsoidTemplate<2> BASE;
+	using BASE = CGeneralizedEllipsoidTemplate<2>;
 	DEFINE_SERIALIZABLE(CEllipsoidRangeBearing2D)
    protected:
 	/** To be implemented by derived classes: maps, using some arbitrary space

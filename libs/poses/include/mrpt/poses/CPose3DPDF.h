@@ -121,7 +121,7 @@ class CPose3DPDF : public mrpt::serialization::CSerializable,
 	template <class OPENGL_SETOFOBJECTSPTR>
 	inline void getAs3DObject(OPENGL_SETOFOBJECTSPTR& out_obj) const
 	{
-		typedef typename OPENGL_SETOFOBJECTSPTR::element_type SETOFOBJECTS;
+		using SETOFOBJECTS = typename OPENGL_SETOFOBJECTSPTR::element_type;
 		out_obj->insertCollection(*SETOFOBJECTS::posePDF2opengl(*this));
 	}
 
@@ -132,7 +132,7 @@ class CPose3DPDF : public mrpt::serialization::CSerializable,
 	template <class OPENGL_SETOFOBJECTSPTR>
 	inline OPENGL_SETOFOBJECTSPTR getAs3DObject() const
 	{
-		typedef typename OPENGL_SETOFOBJECTSPTR::value_type SETOFOBJECTS;
+		using SETOFOBJECTS = typename OPENGL_SETOFOBJECTSPTR::value_type;
 		return SETOFOBJECTS::posePDF2opengl(*this);
 	}
 

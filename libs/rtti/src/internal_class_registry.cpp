@@ -45,7 +45,7 @@ namespace mrpt
 {
 namespace rtti
 {
-typedef std::map<std::string, const TRuntimeClassId*> TClassnameToRuntimeId;
+using TClassnameToRuntimeId = std::map<std::string, const TRuntimeClassId*>;
 
 /** A singleton with the central registry for CSerializable run-time classes:
  * users do not use this class in any direct way.

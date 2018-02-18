@@ -27,18 +27,18 @@ template <class T, size_t AligmentBytes = 16>
 class aligned_allocator_cpp11 : public std::allocator<T>
 {
    public:
-	typedef std::size_t size_type;
-	typedef std::ptrdiff_t difference_type;
-	typedef T* pointer;
-	typedef const T* const_pointer;
-	typedef T& reference;
-	typedef const T& const_reference;
-	typedef T value_type;
+	using size_type = std::size_t;
+	using difference_type = std::ptrdiff_t;
+	using pointer = T*;
+	using const_pointer = const T*;
+	using reference = T&;
+	using const_reference = const T&;
+	using value_type = T;
 
 	template <class U>
 	struct rebind
 	{
-		typedef aligned_allocator_cpp11<U> other;
+		using other = aligned_allocator_cpp11<U>;
 	};
 
 	aligned_allocator_cpp11() : std::allocator<T>() {}
@@ -69,7 +69,7 @@ class aligned_allocator_cpp11 : public std::allocator<T>
 template <typename T, class... Args>
 std::shared_ptr<T> make_aligned_shared(Args&&... args)
 {
-	typedef typename std::remove_const<T>::type T_nc;
+	using T_nc = typename std::remove_const<T>::type;
 	return std::allocate_shared<T>(
 		mrpt::aligned_allocator_cpp11<T_nc>(), std::forward<Args>(args)...);
 }

@@ -307,7 +307,7 @@ class CHMTSLAM : public mrpt::system::COutputLogger,
 	   TBI thread.
 		@{ */
    protected:
-	typedef CTopLCDetectorBase* (*TLopLCDetectorFactory)(CHMTSLAM*);
+	using TLopLCDetectorFactory = CTopLCDetectorBase* (*)(CHMTSLAM*);
 
 	std::map<std::string, TLopLCDetectorFactory> m_registeredLCDetectors;
 

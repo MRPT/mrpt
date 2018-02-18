@@ -304,7 +304,7 @@ class CFeature : public mrpt::serialization::CSerializable
 class CFeatureList : public mrpt::math::KDTreeCapable<CFeatureList>
 {
    protected:
-	typedef std::vector<CFeature::Ptr> TInternalFeatList;
+	using TInternalFeatList = std::vector<CFeature::Ptr>;
 
 	TInternalFeatList
 		m_feats;  //!< The actual container with the list of features
@@ -362,11 +362,11 @@ class CFeatureList : public mrpt::math::KDTreeCapable<CFeatureList>
 	inline void mark_kdtree_as_outdated() const { kdtree_mark_as_outdated(); }
 	/** @name Method and datatypes to emulate a STL container
 		@{ */
-	typedef TInternalFeatList::iterator iterator;
-	typedef TInternalFeatList::const_iterator const_iterator;
+	using iterator = TInternalFeatList::iterator;
+	using const_iterator = TInternalFeatList::const_iterator;
 
-	typedef TInternalFeatList::reverse_iterator reverse_iterator;
-	typedef TInternalFeatList::const_reverse_iterator const_reverse_iterator;
+	using reverse_iterator = TInternalFeatList::reverse_iterator;
+	using const_reverse_iterator = TInternalFeatList::const_reverse_iterator;
 
 	inline iterator begin() { return m_feats.begin(); }
 	inline iterator end() { return m_feats.end(); }

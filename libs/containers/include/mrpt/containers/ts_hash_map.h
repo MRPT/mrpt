@@ -68,9 +68,9 @@ class ts_hash_map
 	typedef ts_hash_map<KEY, VALUE, NUM_BYTES_HASH_TABLE,
 						NUM_HAS_TABLE_COLLISIONS_ALLOWED, VECTOR_T>
 		self_t;
-	typedef KEY key_type;
-	typedef ts_map_entry<KEY, VALUE> value_type;
-	typedef VECTOR_T vec_t;
+	using key_type = KEY;
+	using value_type = ts_map_entry<KEY, VALUE>;
+	using vec_t = VECTOR_T;
 
 	struct iterator;
 	struct const_iterator

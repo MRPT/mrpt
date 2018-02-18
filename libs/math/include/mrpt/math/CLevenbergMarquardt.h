@@ -37,9 +37,9 @@ template <typename VECTORTYPE = Eigen::VectorXd, class USERPARAM = VECTORTYPE>
 class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
 {
    public:
-	typedef typename VECTORTYPE::Scalar NUMTYPE;
-	typedef Eigen::Matrix<NUMTYPE, Eigen::Dynamic, Eigen::Dynamic> matrix_t;
-	typedef VECTORTYPE vector_t;
+	using NUMTYPE = typename VECTORTYPE::Scalar;
+	using matrix_t = Eigen::Matrix<NUMTYPE, Eigen::Dynamic, Eigen::Dynamic>;
+	using vector_t = VECTORTYPE;
 
 	CLevenbergMarquardtTempl()
 		: mrpt::system::COutputLogger("CLevenbergMarquardt")
@@ -257,7 +257,7 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
 };  // End of class def.
 
 /** The default name for the LM class is an instantiation for "double" */
-typedef CLevenbergMarquardtTempl<mrpt::math::CVectorDouble> CLevenbergMarquardt;
+using CLevenbergMarquardt = CLevenbergMarquardtTempl<mrpt::math::CVectorDouble>;
 
 }  // namespace math
 }  // namespace mrpt

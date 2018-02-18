@@ -37,7 +37,7 @@ class CPosePDFGaussianInf : public CPosePDF
 {
 	// This must be added to any CSerializable derived class:
 	DEFINE_SERIALIZABLE(CPosePDFGaussianInf)
-	typedef CPosePDFGaussianInf self_t;
+	using self_t = CPosePDFGaussianInf;
 
    protected:
 	/** Assures the symmetry of the covariance matrix (eventually certain

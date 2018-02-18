@@ -187,8 +187,8 @@ struct TEllipsoid
 	}
 };
 
-typedef mrpt::math::TPoint3D TUTMCoords;
-typedef mrpt::math::TPoint3D TGeocentricCoords;
+using TUTMCoords = mrpt::math::TPoint3D;
+using TGeocentricCoords = mrpt::math::TPoint3D;
 
 /**  A set of geodetic coordinates: latitude, longitude and height, defined over
  * a given geoid (typically, WGS84)  */

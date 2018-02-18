@@ -36,12 +36,12 @@ struct SE_traits<3>
 	{
 		VECTOR_SIZE = 6
 	};
-	typedef mrpt::math::CArrayDouble<VECTOR_SIZE> array_t;
+	using array_t = mrpt::math::CArrayDouble<VECTOR_SIZE>;
 	typedef mrpt::math::CMatrixFixedNumeric<double, VECTOR_SIZE, VECTOR_SIZE>
 		matrix_VxV_t;
-	typedef CPose3D pose_t;
-	typedef mrpt::math::TPose3D lightweight_pose_t;
-	typedef mrpt::math::TPoint3D point_t;
+	using pose_t = CPose3D;
+	using lightweight_pose_t = mrpt::math::TPose3D;
+	using point_t = mrpt::math::TPoint3D;
 
 	/** Exponential map in SE(3), with XYZ different from the first three values
 	 * of "x" \sa pseudo_exp */
@@ -87,12 +87,12 @@ struct SE_traits<2>
 	{
 		VECTOR_SIZE = 3
 	};
-	typedef mrpt::math::CArrayDouble<VECTOR_SIZE> array_t;
+	using array_t = mrpt::math::CArrayDouble<VECTOR_SIZE>;
 	typedef mrpt::math::CMatrixFixedNumeric<double, VECTOR_SIZE, VECTOR_SIZE>
 		matrix_VxV_t;
-	typedef CPose2D pose_t;
-	typedef mrpt::math::TPose2D lightweight_pose_t;
-	typedef mrpt::math::TPoint2D point_t;
+	using pose_t = CPose2D;
+	using lightweight_pose_t = mrpt::math::TPose2D;
+	using point_t = mrpt::math::TPoint2D;
 
 	/** Exponential map in SE(2) */
 	static inline void exp(const array_t& x, CPose2D& P)

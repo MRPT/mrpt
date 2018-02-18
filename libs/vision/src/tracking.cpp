@@ -80,7 +80,7 @@ inline void trackFeatures_checkResponses_impl_simple(
 {
 	if (featureList.empty()) return;
 
-	typedef typename FEAT_LIST::feature_t::pixel_coord_t pixel_coord_t;
+	using pixel_coord_t = typename FEAT_LIST::feature_t::pixel_coord_t;
 	const pixel_coord_t half_win =
 		static_cast<pixel_coord_t>(KLT_response_half_win);
 	const pixel_coord_t max_x = static_cast<pixel_coord_t>(max_x_);

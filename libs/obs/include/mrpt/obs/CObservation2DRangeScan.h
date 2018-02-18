@@ -74,7 +74,7 @@ class CObservation2DRangeScan : public CObservation
 
    public:
 	/** Used in filterByExclusionAreas */
-	typedef std::vector<mrpt::math::CPolygon> TListExclusionAreas;
+	using TListExclusionAreas = std::vector<mrpt::math::CPolygon>;
 	/** Used in filterByExclusionAreas */
 	typedef std::vector<
 		std::pair<mrpt::math::CPolygon, std::pair<double, double>>>

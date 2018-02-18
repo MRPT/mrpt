@@ -292,7 +292,7 @@ struct CGenericFeatureTracker
 		FEATLIST& inout_featureList);
 };
 
-typedef std::unique_ptr<CGenericFeatureTracker> CGenericFeatureTrackerAutoPtr;
+using CGenericFeatureTrackerAutoPtr = std::unique_ptr<CGenericFeatureTracker>;
 
 /** Track a set of features from old_img -> new_img using sparse optimal flow
   *(classic KL method).

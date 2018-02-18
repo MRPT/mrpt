@@ -71,8 +71,8 @@ struct TMatchingPair
 #pragma pack(pop)  // End of pack = 1
 #endif
 
-typedef TMatchingPair* TMatchingPairPtr;
-typedef TMatchingPair const* TMatchingPairConstPtr;
+using TMatchingPairPtr = TMatchingPair*;
+using TMatchingPairConstPtr = TMatchingPair const*;
 
 std::ostream& operator<<(
 	std::ostream& o, const mrpt::tfest::TMatchingPair& pair);

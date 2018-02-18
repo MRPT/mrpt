@@ -38,12 +38,12 @@ struct ContainerType<Eigen::EigenBase<Derived>>
 // Dynamic size:
 template <class T>
 class CMatrixTemplateNumeric;
-typedef CMatrixTemplateNumeric<float> CMatrixFloat;
-typedef CMatrixTemplateNumeric<double> CMatrixDouble;
+using CMatrixFloat = CMatrixTemplateNumeric<float>;
+using CMatrixDouble = CMatrixTemplateNumeric<double>;
 template <typename T>
 class dynamic_vector;
-typedef dynamic_vector<float> CVectorFloat;
-typedef dynamic_vector<double> CVectorDouble;
+using CVectorFloat = dynamic_vector<float>;
+using CVectorDouble = dynamic_vector<double>;
 
 // Fixed size:
 template <typename T, size_t NROWS, size_t NCOLS>
@@ -51,42 +51,42 @@ class CMatrixFixedNumeric;
 
 /** @name Typedefs for common sizes
 	@{ */
-typedef CMatrixFixedNumeric<double, 2, 2> CMatrixDouble22;
-typedef CMatrixFixedNumeric<double, 2, 3> CMatrixDouble23;
-typedef CMatrixFixedNumeric<double, 3, 2> CMatrixDouble32;
-typedef CMatrixFixedNumeric<double, 3, 3> CMatrixDouble33;
+using CMatrixDouble22 = CMatrixFixedNumeric<double, 2, 2>;
+using CMatrixDouble23 = CMatrixFixedNumeric<double, 2, 3>;
+using CMatrixDouble32 = CMatrixFixedNumeric<double, 3, 2>;
+using CMatrixDouble33 = CMatrixFixedNumeric<double, 3, 3>;
 using CMatrixDouble44 = CMatrixFixedNumeric<double, 4, 4>;
-typedef CMatrixFixedNumeric<double, 6, 6> CMatrixDouble66;
-typedef CMatrixFixedNumeric<double, 7, 7> CMatrixDouble77;
-typedef CMatrixFixedNumeric<double, 1, 3> CMatrixDouble13;
-typedef CMatrixFixedNumeric<double, 3, 1> CMatrixDouble31;
-typedef CMatrixFixedNumeric<double, 1, 2> CMatrixDouble12;
-typedef CMatrixFixedNumeric<double, 2, 1> CMatrixDouble21;
-typedef CMatrixFixedNumeric<double, 6, 1> CMatrixDouble61;
-typedef CMatrixFixedNumeric<double, 1, 6> CMatrixDouble16;
-typedef CMatrixFixedNumeric<double, 7, 1> CMatrixDouble71;
-typedef CMatrixFixedNumeric<double, 1, 7> CMatrixDouble17;
-typedef CMatrixFixedNumeric<double, 5, 1> CMatrixDouble51;
-typedef CMatrixFixedNumeric<double, 1, 5> CMatrixDouble15;
-typedef CMatrixFixedNumeric<double, 4, 1> CMatrixDouble41;
+using CMatrixDouble66 = CMatrixFixedNumeric<double, 6, 6>;
+using CMatrixDouble77 = CMatrixFixedNumeric<double, 7, 7>;
+using CMatrixDouble13 = CMatrixFixedNumeric<double, 1, 3>;
+using CMatrixDouble31 = CMatrixFixedNumeric<double, 3, 1>;
+using CMatrixDouble12 = CMatrixFixedNumeric<double, 1, 2>;
+using CMatrixDouble21 = CMatrixFixedNumeric<double, 2, 1>;
+using CMatrixDouble61 = CMatrixFixedNumeric<double, 6, 1>;
+using CMatrixDouble16 = CMatrixFixedNumeric<double, 1, 6>;
+using CMatrixDouble71 = CMatrixFixedNumeric<double, 7, 1>;
+using CMatrixDouble17 = CMatrixFixedNumeric<double, 1, 7>;
+using CMatrixDouble51 = CMatrixFixedNumeric<double, 5, 1>;
+using CMatrixDouble15 = CMatrixFixedNumeric<double, 1, 5>;
+using CMatrixDouble41 = CMatrixFixedNumeric<double, 4, 1>;
 
-typedef CMatrixFixedNumeric<float, 2, 2> CMatrixFloat22;
-typedef CMatrixFixedNumeric<float, 2, 3> CMatrixFloat23;
-typedef CMatrixFixedNumeric<float, 3, 2> CMatrixFloat32;
-typedef CMatrixFixedNumeric<float, 3, 3> CMatrixFloat33;
-typedef CMatrixFixedNumeric<float, 4, 4> CMatrixFloat44;
-typedef CMatrixFixedNumeric<float, 6, 6> CMatrixFloat66;
-typedef CMatrixFixedNumeric<float, 7, 7> CMatrixFloat77;
-typedef CMatrixFixedNumeric<float, 1, 3> CMatrixFloat13;
-typedef CMatrixFixedNumeric<float, 3, 1> CMatrixFloat31;
-typedef CMatrixFixedNumeric<float, 1, 2> CMatrixFloat12;
-typedef CMatrixFixedNumeric<float, 2, 1> CMatrixFloat21;
-typedef CMatrixFixedNumeric<float, 6, 1> CMatrixFloat61;
-typedef CMatrixFixedNumeric<float, 1, 6> CMatrixFloat16;
-typedef CMatrixFixedNumeric<float, 7, 1> CMatrixFloat71;
-typedef CMatrixFixedNumeric<float, 1, 7> CMatrixFloat17;
-typedef CMatrixFixedNumeric<float, 5, 1> CMatrixFloat51;
-typedef CMatrixFixedNumeric<float, 1, 5> CMatrixFloat15;
+using CMatrixFloat22 = CMatrixFixedNumeric<float, 2, 2>;
+using CMatrixFloat23 = CMatrixFixedNumeric<float, 2, 3>;
+using CMatrixFloat32 = CMatrixFixedNumeric<float, 3, 2>;
+using CMatrixFloat33 = CMatrixFixedNumeric<float, 3, 3>;
+using CMatrixFloat44 = CMatrixFixedNumeric<float, 4, 4>;
+using CMatrixFloat66 = CMatrixFixedNumeric<float, 6, 6>;
+using CMatrixFloat77 = CMatrixFixedNumeric<float, 7, 7>;
+using CMatrixFloat13 = CMatrixFixedNumeric<float, 1, 3>;
+using CMatrixFloat31 = CMatrixFixedNumeric<float, 3, 1>;
+using CMatrixFloat12 = CMatrixFixedNumeric<float, 1, 2>;
+using CMatrixFloat21 = CMatrixFixedNumeric<float, 2, 1>;
+using CMatrixFloat61 = CMatrixFixedNumeric<float, 6, 1>;
+using CMatrixFloat16 = CMatrixFixedNumeric<float, 1, 6>;
+using CMatrixFloat71 = CMatrixFixedNumeric<float, 7, 1>;
+using CMatrixFloat17 = CMatrixFixedNumeric<float, 1, 7>;
+using CMatrixFloat51 = CMatrixFixedNumeric<float, 5, 1>;
+using CMatrixFloat15 = CMatrixFixedNumeric<float, 1, 5>;
 /**  @} */
 }
 }

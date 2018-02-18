@@ -38,7 +38,7 @@ namespace graphs
  *
  *  Example of insertion of a new edge:
  *  \code
- *  typedef CDirectedTree<edge_t>  my_tree_t;
+ *  using my_tree_t = CDirectedTree<edge_t> ;
  *  my_tree_t  tree;
  *  TNodeID id_root = XXX;
  *  TNodeID id_child = XXX;
@@ -73,8 +73,8 @@ class CDirectedTree
 		}
 	};
 
-	typedef std::list<TEdgeInfo> TListEdges;
-	typedef std::map<TNodeID, TListEdges> TMapNode2ListEdges;
+	using TListEdges = std::list<TEdgeInfo>;
+	using TMapNode2ListEdges = std::map<TNodeID, TListEdges>;
 
 	/** @name Data
 		@{ */
@@ -97,7 +97,7 @@ class CDirectedTree
 	/** Virtual base class for user-defined visitors */
 	struct Visitor
 	{
-		typedef CDirectedTree<TYPE_EDGES> tree_t;
+		using tree_t = CDirectedTree<TYPE_EDGES>;
 
 		/** Virtual method to be implemented by the user and which will be
 		 * called during the visit to a graph with visitDepthFirst or

@@ -19,7 +19,7 @@ namespace img
 struct TPixelCoordf
 {
 	/** The type of \a x and \a y */
-	typedef float pixel_coord_t;
+	using pixel_coord_t = float;
 
 	float x, y;
 
@@ -36,7 +36,7 @@ std::ostream& operator<<(std::ostream& o, const TPixelCoordf& p);
 struct TPixelCoord
 {
 	/** The type of \a x and \a y */
-	typedef int pixel_coord_t;
+	using pixel_coord_t = int;
 
 	TPixelCoord() : x(0), y(0) {}
 	TPixelCoord(const int _x, const int _y) : x(_x), y(_y) {}

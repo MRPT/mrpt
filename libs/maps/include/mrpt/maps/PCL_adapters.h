@@ -36,7 +36,7 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZ>>
 
    public:
 	/** The type of each point XYZ coordinates */
-	typedef float coords_t;
+	using coords_t = float;
 	/** Has any color RGB info? */
 	static const int HAS_RGB = 0;
 	/** Has native RGB info (as floats)? */
@@ -91,7 +91,7 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGB>>
 
    public:
 	/** The type of each point XYZ coordinates */
-	typedef float coords_t;
+	using coords_t = float;
 	/** Has any color RGB info? */
 	static const int HAS_RGB = 1;
 	/** Has native RGB info (as floats)? */
@@ -235,7 +235,7 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGBA>>
 
    public:
 	/** The type of each point XYZ coordinates */
-	typedef float coords_t;
+	using coords_t = float;
 	/** Has any color RGB info? */
 	static const int HAS_RGB = 1;
 	/** Has native RGB info (as floats)? */

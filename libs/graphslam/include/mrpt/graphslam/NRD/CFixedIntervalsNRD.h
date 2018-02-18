@@ -89,10 +89,10 @@ class CFixedIntervalsNRD
 		node_reg;
 
 	/**\brief type of graph constraints */
-	typedef typename GRAPH_T::constraint_t constraint_t;
+	using constraint_t = typename GRAPH_T::constraint_t;
 	/**\brief type of underlying poses (2D/3D). */
-	typedef typename GRAPH_T::constraint_t::type_value pose_t;
-	typedef typename GRAPH_T::global_pose_t global_pose_t;
+	using pose_t = typename GRAPH_T::constraint_t::type_value;
+	using global_pose_t = typename GRAPH_T::global_pose_t;
 
 	typedef mrpt::math::CMatrixFixedNumeric<double, constraint_t::state_length,
 											constraint_t::state_length>

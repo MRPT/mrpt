@@ -29,8 +29,8 @@ struct TMRSlamNodeAnnotations : public TNodeAnnotations
 {
 	DECLARE_TTYPENAME_CLASSNAME(mrpt::graphs::detail::TMRSlamNodeAnnotations)
 
-	typedef TNodeAnnotations parent_t;
-	typedef TMRSlamNodeAnnotations self_t;
+	using parent_t = TNodeAnnotations;
+	using self_t = TMRSlamNodeAnnotations;
 
 	TMRSlamNodeAnnotations() : agent_ID_str(""), nodeID_loc(INVALID_NODEID) {}
 	TMRSlamNodeAnnotations(const TMRSlamNodeAnnotations& other)

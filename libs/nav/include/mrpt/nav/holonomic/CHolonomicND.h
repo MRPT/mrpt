@@ -73,7 +73,7 @@ class CHolonomicND : public CAbstractHolonomicReactiveMethod
 		unsigned int representative_sector;
 	};
 
-	typedef std::vector<TGap> TGapArray;
+	using TGapArray = std::vector<TGap>;
 
 	/** The set of posible situations for each trajectory.
 	 * (mrpt::typemeta::TEnumType works with this enum) */
