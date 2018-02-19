@@ -10,55 +10,22 @@
 #ifndef GRAPHSLAMENGINE_H
 #define GRAPHSLAMENGINE_H
 
-#include <mrpt/math/CQuaternion.h>
-#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/COctoMap.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
-#include <mrpt/gui/CBaseGUIWindow.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
-#include <mrpt/opengl/stock_objects.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>  // It's in the lib mrpt-maps now
-#include <mrpt/opengl/CPointCloud.h>
-#include <mrpt/opengl/CRenderizable.h>
-#include <mrpt/opengl/CAxis.h>
-#include <mrpt/opengl/CCamera.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/obs/CAction.h>
-#include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
-#include <mrpt/obs/CObservationImage.h>
-#include <mrpt/obs/CRawlog.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/obs_utils.h>
-#include <mrpt/math/CProbabilityDensityFunction.h>
-#include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/poses/CPosePDFGaussianInf.h>
-#include <mrpt/poses/CPose3DPDFGaussianInf.h>
-#include <mrpt/slam/CICP.h>
-#include <mrpt/slam/CMetricMapBuilder.h>
-#include <mrpt/slam/CMetricMapBuilderICP.h>
-#include <mrpt/system/filesystem.h>
-#include <mrpt/system/datetime.h>
-#include <mrpt/system/os.h>
-#include <mrpt/system/string_utils.h>
-#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/io/CFileOutputStream.h>
-#include <mrpt/io/CFileInputStream.h>
-#include <mrpt/system/CTicTac.h>
-#include <cstdint>
-#include <mrpt/core/exceptions.h>
-#include <mrpt/config/CConfigFile.h>
-#include <cstdint>
 #include <mrpt/img/TColor.h>
-#include <mrpt/img/CImage.h>
 #include <mrpt/system/COutputLogger.h>
 
 #include <mrpt/graphslam/misc/CEdgeCounter.h>
@@ -66,15 +33,9 @@
 #include <mrpt/graphslam/interfaces/CEdgeRegistrationDecider.h>
 #include <mrpt/graphslam/interfaces/CGraphSlamOptimizer.h>
 
-#include <cstdlib>
 #include <string>
-#include <sstream>
 #include <map>
-#include <cerrno>
-#include <cmath>  // fabs function, power
 #include <set>
-#include <algorithm>
-#include <cstdlib>
 
 namespace mrpt
 {

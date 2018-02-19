@@ -13,12 +13,8 @@
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CObservation.h>
-#include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
-#include <mrpt/system/TParameters.h>
-#include <mrpt/system/CTimeLogger.h>
 
-#include <mrpt/graphslam/misc/CWindowManager.h>
 #include "CRegistrationDeciderOrOptimizer.h"
 
 namespace mrpt

@@ -12,10 +12,6 @@
 
 #include <mrpt/config/CLoadableOptions.h>
 
-#include <algorithm>  // std::transform
-#include <cmath>  // sqrt
-#include <functional>  // std::bind2nd
-#include <numeric>  // std::accumulate
 #include <string>
 #include <vector>
 

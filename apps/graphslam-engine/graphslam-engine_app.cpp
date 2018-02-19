@@ -7,19 +7,8 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/obs/CRawlog.h>
-#include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/maps/COccupancyGridMap2D.h>
-#include <mrpt/system/filesystem.h>
-#include <mrpt/system/os.h>
-#include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/img/CImage.h>
 #include <mrpt/system/COutputLogger.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>
-#include <mrpt/poses/CPoses2DSequence.h>
-#include <mrpt/poses/CPosePDF.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
-#include <mrpt/system/string_utils.h>
 
 #include <mrpt/graphslam/CGraphSlamEngine.h>
 #include <mrpt/graphslam/apps_related/TUserOptionsChecker.h>
@@ -28,18 +17,10 @@
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 
 #include <string>
-#include <map>
-#include <vector>
-#include <sstream>
-#include <cerrno>
 
 using namespace mrpt;
-using namespace mrpt::poses;
-using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::graphs;
-using namespace mrpt::math;
-using namespace mrpt::opengl;
 using namespace mrpt::graphslam;
 using namespace mrpt::graphslam::deciders;
 using namespace mrpt::graphslam::optimizers;
