@@ -9,6 +9,7 @@
 
 #ifndef CICPCRITERIAERD_IMPL_H
 #define CICPCRITERIAERD_IMPL_H
+#include <mrpt/opengl/CDisk.h>
 
 namespace mrpt
 {

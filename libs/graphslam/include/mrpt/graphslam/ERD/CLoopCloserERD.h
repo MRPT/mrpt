@@ -10,33 +10,15 @@
 #ifndef CLOOPCLOSERERD_H
 #define CLOOPCLOSERERD_H
 
-#include <mrpt/core/exceptions.h>
 #include <mrpt/math/CMatrix.h>
-#include <mrpt/math/data_utils.h>
-#include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/containers/stl_containers_utils.h>
 #include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/config/CConfigFile.h>
 #include <mrpt/config/CConfigFileBase.h>
-#include <cstdint>
 #include <mrpt/img/TColor.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CSensoryFrame.h>
-#include <mrpt/obs/CRawlog.h>
-#include <mrpt/obs/obs_utils.h>
-#include <mrpt/opengl/COpenGLScene.h>
-#include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/opengl/CSetOfLines.h>
-#include <mrpt/opengl/CRenderizable.h>
-#include <mrpt/opengl/CSphere.h>
-#include <mrpt/opengl/CEllipsoid.h>
-#include <mrpt/poses/CPoint3D.h>
-#include <mrpt/poses/CPose2D.h>
-#include <mrpt/poses/CPose3D.h>
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
 #include <mrpt/slam/CICP.h>
-#include <mrpt/system/os.h>
 
 #include <mrpt/graphslam/interfaces/CRangeScanEdgeRegistrationDecider.h>
 #include <mrpt/graphslam/misc/TSlidingWindow.h>
@@ -45,18 +27,11 @@
 #include <mrpt/graphs/THypothesis.h>
 #include <mrpt/graphs/CHypothesisNotFoundException.h>
 
-#include <Eigen/Dense>
-
-#include <algorithm>
-#include <cmath>
-#include <iostream>
-#include <iterator>
 #include <map>
 #include <vector>
 #include <string>
 #include <set>
-#include <sstream>
-#include <stdlib.h>  // abs
+#include <utility>
 
 namespace mrpt
 {

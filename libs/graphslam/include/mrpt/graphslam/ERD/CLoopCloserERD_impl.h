@@ -11,6 +11,9 @@
 #define CLOOPCLOSERERD_IMPL_H
 #include <mrpt/math/utils.h>
 #include <mrpt/containers/stl_containers_utils.h>
+#include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/CSphere.h>
+#include <mrpt/math/data_utils.h>
 
 namespace mrpt
 {

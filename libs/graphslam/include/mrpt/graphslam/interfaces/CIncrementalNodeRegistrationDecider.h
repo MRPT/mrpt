@@ -1,16 +1,12 @@
 #ifndef CINCREMENTALNODEREGISTRATIONDECIDER_H_WPM0MYXZ
 #define CINCREMENTALNODEREGISTRATIONDECIDER_H_WPM0MYXZ
 
-#include <mrpt/poses/CPosePDF.h>
-#include <mrpt/poses/CPose3DPDF.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/config/CConfigFile.h>
 #include <mrpt/config/CConfigFileBase.h>
-#include <mrpt/serialization/CArchive.h>
 
 #include <mrpt/graphslam/interfaces/CNodeRegistrationDecider.h>
-
-#include <math.h>
 
 namespace mrpt
 {

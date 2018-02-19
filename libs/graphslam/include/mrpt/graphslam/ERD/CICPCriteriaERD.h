@@ -10,32 +10,17 @@
 #ifndef CICPCRITERIAERD_H
 #define CICPCRITERIAERD_H
 
-#include <mrpt/math/CMatrix.h>
-#include <mrpt/math/utils.h>
-#include <mrpt/img/CImage.h>
 #include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/config/CConfigFile.h>
 #include <mrpt/config/CConfigFileBase.h>
-#include <mrpt/system/CTimeLogger.h>
-#include <mrpt/serialization/CArchive.h>
-#include <cstdint>
 #include <mrpt/img/TColor.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CSensoryFrame.h>
-#include <mrpt/obs/CRawlog.h>
-#include <mrpt/opengl/CDisk.h>
-#include <mrpt/opengl/CRenderizable.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>
 #include <mrpt/slam/CICP.h>
-#include <mrpt/system/os.h>
-#include <mrpt/system/filesystem.h>
 
-#include <stdlib.h>  // abs
-
-#include <iostream>
 #include <map>
+#include <set>
 #include <string>
 
 #include <mrpt/graphslam/interfaces/CRangeScanEdgeRegistrationDecider.h>

@@ -14,6 +14,9 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/graphslam/misc/TSlidingWindow.h>
 
+#include <algorithm>
+#include <numeric>
+
 using namespace mrpt::graphslam;
 
 TSlidingWindow::TSlidingWindow(std::string name /* = "window" */)

@@ -10,9 +10,8 @@
 #ifndef CEmptyGSO_H
 #define CEmptyGSO_H
 
-#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CSensoryFrame.h>
-#include <mrpt/obs/CRawlog.h>
 
 #include <mrpt/graphslam/interfaces/CGraphSlamOptimizer.h>
 
