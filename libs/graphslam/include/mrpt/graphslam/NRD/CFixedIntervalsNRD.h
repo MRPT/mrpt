@@ -13,16 +13,10 @@
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CActionCollection.h>
-#include <mrpt/obs/CRawlog.h>
 #include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/config/CConfigFile.h>
 #include <mrpt/config/CConfigFileBase.h>
-#include <mrpt/serialization/CArchive.h>
-#include <cstdint>
 
 #include <mrpt/graphslam/interfaces/CNodeRegistrationDecider.h>
-
-#include <iostream>
 
 namespace mrpt
 {

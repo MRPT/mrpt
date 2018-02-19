@@ -11,17 +11,9 @@
 #define TUNCERTAINTYPATH_H
 
 #include <mrpt/graphs/CNetworkOfPoses.h>
-#include <mrpt/math/CMatrix.h>
-#include <mrpt/math/data_utils.h>
-#include <mrpt/containers/stl_containers_utils.h>
 #include <mrpt/config/CLoadableOptions.h>
-#include <cstdint>
-#include <mrpt/poses/CPose2D.h>
-#include <mrpt/poses/CPose3D.h>
-#include <mrpt/math/CProbabilityDensityFunction.h>
 
 #include <string>
-#include <sstream>
 
 namespace mrpt
 {

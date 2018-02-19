@@ -12,7 +12,6 @@
 
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CSensoryFrame.h>
-#include <mrpt/obs/CRawlog.h>
 
 #include <mrpt/graphslam/interfaces/CNodeRegistrationDecider.h>
 

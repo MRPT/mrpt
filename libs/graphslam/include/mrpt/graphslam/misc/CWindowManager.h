@@ -9,7 +9,6 @@
 #ifndef CWINDOWMANAGER_H
 #define CWINDOWMANAGER_H
 
-#include <mrpt/gui/CBaseGUIWindow.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/system/COutputLogger.h>
 

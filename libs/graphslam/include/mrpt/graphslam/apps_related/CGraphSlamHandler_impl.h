@@ -14,6 +14,7 @@
 #include "CGraphSlamHandler.h"
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/obs/CRawlog.h>
 
 template <class GRAPH_T>
 CGraphSlamHandler<GRAPH_T>::CGraphSlamHandler(

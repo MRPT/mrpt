@@ -10,14 +10,9 @@
 #ifndef CWINDOWOBSERVER_H
 #define CWINDOWOBSERVER_H
 
-#include <mrpt/gui/CBaseGUIWindow.h>
 #include <mrpt/system/CTicTac.h>
-#include <mrpt/system/TParameters.h>
 #include <mrpt/system/CObserver.h>
-#include <mrpt/opengl/gl_utils.h>
-#include <mrpt/system/string_utils.h>
 
-#include <iostream>
 #include <string>
 #include <map>
 

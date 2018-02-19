@@ -9,6 +9,13 @@
 
 #ifndef CGRAPHSLAMENGINE_IMPL_H
 #define CGRAPHSLAMENGINE_IMPL_H
+#include <mrpt/system/filesystem.h>
+#include <mrpt/obs/CObservationOdometry.h>
+#include <mrpt/opengl/CAxis.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/io/CFileInputStream.h>
+#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/opengl/CPlanarLaserScan.h>
 
 namespace mrpt
 {
