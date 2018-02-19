@@ -70,47 +70,6 @@ CPosePDF::Ptr CICP::AlignPDF(
 }
 
 /*---------------------------------------------------------------
-					TConfigParams
-  ---------------------------------------------------------------*/
-CICP::TConfigParams::TConfigParams()
-	: ICP_algorithm(icpClassic),
-	  ICP_covariance_method(icpCovFiniteDifferences),
-
-	  onlyClosestCorrespondences(true),
-	  onlyUniqueRobust(false),
-	  maxIterations(40),
-	  minAbsStep_trans(1e-6f),
-	  minAbsStep_rot(1e-6f),
-	  thresholdDist(0.75f),
-	  thresholdAng(DEG2RAD(0.15f)),
-	  ALFA(0.50f),
-	  smallestThresholdDist(0.10f),
-	  covariance_varPoints(square(0.02f)),
-	  doRANSAC(false),
-
-	  ransac_minSetSize(3),
-	  ransac_maxSetSize(20),
-	  ransac_nSimulations(100),
-	  ransac_mahalanobisDistanceThreshold(3.0f),
-	  normalizationStd(0.02f),
-	  ransac_fuseByCorrsMatch(true),
-	  ransac_fuseMaxDiffXY(0.01f),
-	  ransac_fuseMaxDiffPhi(DEG2RAD(0.1f)),
-
-	  kernel_rho(0.07f),
-	  use_kernel(true),
-	  Axy_aprox_derivatives(0.05f),
-
-	  LM_initial_lambda(1e-4f),
-
-	  skip_cov_calculation(false),
-	  skip_quality_calculation(true),
-
-	  corresponding_points_decimation(5)
-{
-}
-
-/*---------------------------------------------------------------
 					loadFromConfigFile
   ---------------------------------------------------------------*/
 void CICP::TConfigParams::loadFromConfigFile(
@@ -132,7 +91,6 @@ void CICP::TConfigParams::loadFromConfigFile(
 
 	MRPT_LOAD_CONFIG_VAR(ALFA, float, iniFile, section);
 	MRPT_LOAD_CONFIG_VAR(smallestThresholdDist, float, iniFile, section);
-	MRPT_LOAD_CONFIG_VAR(onlyClosestCorrespondences, bool, iniFile, section);
 	MRPT_LOAD_CONFIG_VAR(onlyUniqueRobust, bool, iniFile, section);
 	MRPT_LOAD_CONFIG_VAR(doRANSAC, bool, iniFile, section);
 	MRPT_LOAD_CONFIG_VAR(covariance_varPoints, float, iniFile, section);
@@ -162,93 +120,40 @@ void CICP::TConfigParams::loadFromConfigFile(
 		corresponding_points_decimation, int, iniFile, section);
 }
 
-/*---------------------------------------------------------------
-					dumpToTextStream
-  ---------------------------------------------------------------*/
-void CICP::TConfigParams::dumpToTextStream(std::ostream& out) const
+void CICP::TConfigParams::saveToConfigFile(
+	mrpt::config::CConfigFileBase& c, const std::string& s) const
 {
-	out << mrpt::format(
-		"\n----------- [CICP::TConfigParams] ------------ \n\n");
-
-	out << mrpt::format(
-		"ICP_algorithm                           = %s\n",
-		mrpt::typemeta::TEnumType<TICPAlgorithm>::value2name(ICP_algorithm)
-			.c_str());
-	out << mrpt::format(
-		"ICP_covariance_method                   = %s\n",
-		mrpt::typemeta::TEnumType<TICPCovarianceMethod>::value2name(
-			ICP_covariance_method)
-			.c_str());
-	out << mrpt::format(
-		"maxIterations                           = %i\n", maxIterations);
-	out << mrpt::format(
-		"minAbsStep_trans                        = %f\n", minAbsStep_trans);
-	out << mrpt::format(
-		"minAbsStep_rot                          = %f\n", minAbsStep_rot);
-
-	out << mrpt::format(
-		"thresholdDist                           = %f\n", thresholdDist);
-	out << mrpt::format(
-		"thresholdAng                            = %f deg\n",
-		RAD2DEG(thresholdAng));
-	out << mrpt::format("ALFA                                    = %f\n", ALFA);
-	out << mrpt::format(
-		"smallestThresholdDist                   = %f\n",
-		smallestThresholdDist);
-	out << mrpt::format(
-		"onlyClosestCorrespondences              = %c\n",
-		onlyClosestCorrespondences ? 'Y' : 'N');
-	out << mrpt::format(
-		"onlyUniqueRobust                        = %c\n",
-		onlyUniqueRobust ? 'Y' : 'N');
-	out << mrpt::format(
-		"covariance_varPoints                    = %f\n", covariance_varPoints);
-	out << mrpt::format(
-		"doRANSAC                                = %c\n", doRANSAC ? 'Y' : 'N');
-	out << mrpt::format(
-		"ransac_minSetSize                       = %i\n", ransac_minSetSize);
-	out << mrpt::format(
-		"ransac_maxSetSize                       = %i\n", ransac_maxSetSize);
-	out << mrpt::format(
-		"ransac_mahalanobisDistanceThreshold     = %f\n",
-		ransac_mahalanobisDistanceThreshold);
-	out << mrpt::format(
-		"ransac_nSimulations                     = %i\n", ransac_nSimulations);
-	out << mrpt::format(
-		"ransac_fuseByCorrsMatch                 = %c\n",
-		ransac_fuseByCorrsMatch ? 'Y' : 'N');
-	out << mrpt::format(
-		"ransac_fuseMaxDiffXY                    = %f\n", ransac_fuseMaxDiffXY);
-	out << mrpt::format(
-		"ransac_fuseMaxDiffPhi                   = %f deg\n",
-		RAD2DEG(ransac_fuseMaxDiffPhi));
-	out << mrpt::format(
-		"normalizationStd                        = %f\n", normalizationStd);
-	out << mrpt::format(
-		"kernel_rho                              = %f\n", kernel_rho);
-	out << mrpt::format(
-		"use_kernel                              = %c\n",
-		use_kernel ? 'Y' : 'N');
-	out << mrpt::format(
-		"Axy_aprox_derivatives                   = %f\n",
-		Axy_aprox_derivatives);
-	out << mrpt::format(
-		"LM_initial_lambda                       = %f\n", LM_initial_lambda);
-	out << mrpt::format(
-		"skip_cov_calculation                    = %c\n",
-		skip_cov_calculation ? 'Y' : 'N');
-	out << mrpt::format(
-		"skip_quality_calculation                = %c\n",
-		skip_quality_calculation ? 'Y' : 'N');
-	out << mrpt::format(
-		"corresponding_points_decimation         = %u\n",
-		(unsigned int)corresponding_points_decimation);
-	out << mrpt::format("\n");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(ICP_algorithm, "The ICP algorithm to use (see enum TICPAlgorithm)");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(ICP_covariance_method,"Method to use for covariance estimation (see enum TICPCovarianceMethod)");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(onlyUniqueRobust,"Only the closest correspondence for each reference point will be kept");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(maxIterations, "Iterations");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(minAbsStep_trans, "Termination criteria");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(minAbsStep_rot, "Termination criteria");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(thresholdDist, "Initial threshold distance for two points to be a match");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(thresholdAng, "Initial threshold distance for two points to be a match");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(ALFA, "The scale factor for thresholds everytime convergence is achieved");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(smallestThresholdDist,
+		"The size for threshold such that iterations will stop, "
+		"since it is considered precise enough.");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(covariance_varPoints, "");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(doRANSAC, "Perform a RANSAC step");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(ransac_minSetSize, "");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(ransac_maxSetSize, "");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(ransac_nSimulations, "");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(ransac_mahalanobisDistanceThreshold, "");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(normalizationStd, "");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(ransac_fuseByCorrsMatch, "");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(ransac_fuseMaxDiffXY, "");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(ransac_fuseMaxDiffPhi, "");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(kernel_rho, "");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(use_kernel, "");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(Axy_aprox_derivatives, "");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(LM_initial_lambda, "");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(skip_cov_calculation, "");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(skip_quality_calculation, "");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(corresponding_points_decimation, "");
 }
 
-/*---------------------------------------------------------------
-					kernel
-  ---------------------------------------------------------------*/
 float CICP::kernel(const float& x2, const float& rho2)
 {
 	return options.use_kernel ? (x2 / (x2 + rho2)) : x2;
@@ -301,10 +206,11 @@ CPosePDF::Ptr CICP::ICP_Method_Classic(
 	mrpt::maps::TMatchingExtraResults matchExtraResults;
 
 	matchParams.maxDistForCorrespondence =
-		options.thresholdDist;  // Distance threshold
+		options.thresholdDist;  // Distance threshold.
 	matchParams.maxAngularDistForCorrespondence =
-		options.thresholdAng;  // Angular threshold
-	matchParams.onlyKeepTheClosest = options.onlyClosestCorrespondences;
+		options.thresholdAng;  // Angular threshold.
+	// Option onlyClosestCorrespondences removed in MRPT 2.0.
+	matchParams.onlyKeepTheClosest = true;
 	matchParams.onlyUniqueRobust = options.onlyUniqueRobust;
 	matchParams.decimation_other_map_points =
 		options.corresponding_points_decimation;
@@ -651,7 +557,6 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 	CPose2D q_new;
 
 	const bool onlyUniqueRobust = options.onlyUniqueRobust;
-	const bool onlyKeepTheClosest = options.onlyClosestCorrespondences;
 
 	// Assure the class of the maps:
 	ASSERT_(mm1->GetRuntimeClass()->derivedFrom(CLASS_ID(CPointsMap)));
@@ -675,7 +580,7 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 		options.thresholdAng;  // Angular threshold
 	matchParams.angularDistPivotPoint =
 		TPoint3D(q.x(), q.y(), 0);  // Pivot point for angular measurements
-	matchParams.onlyKeepTheClosest = onlyKeepTheClosest;
+	matchParams.onlyKeepTheClosest = true;
 	matchParams.onlyUniqueRobust = onlyUniqueRobust;
 	matchParams.decimation_other_map_points =
 		options.corresponding_points_decimation;
@@ -1084,7 +989,7 @@ CPose3DPDF::Ptr CICP::ICP3D_Method_Classic(
 		options.thresholdDist;  // Distance threshold
 	matchParams.maxAngularDistForCorrespondence =
 		options.thresholdAng;  // Angular threshold
-	matchParams.onlyKeepTheClosest = options.onlyClosestCorrespondences;
+	matchParams.onlyKeepTheClosest = true;
 	matchParams.onlyUniqueRobust = options.onlyUniqueRobust;
 	matchParams.decimation_other_map_points =
 		options.corresponding_points_decimation;
