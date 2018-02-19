@@ -17,6 +17,7 @@
 #include <wx/checkbox.h>
 #include <wx/splitter.h>
 #include <wx/radiobut.h>
+#include "MyGLCanvas.h"
 #include <wx/panel.h>
 #include <wx/bmpbuttn.h>
 #include <wx/button.h>
@@ -24,9 +25,7 @@
 #include <wx/gauge.h>
 //*)
 
-// The "custom class" mpWindow, from the wxMathPlot libray by David Schalig
-//  See http://sourceforge.net/projects/wxmathplot
-#include <mrpt/otherlibs/mathplot/mathplot.h>
+#include <mrpt/opengl/CSetOfObjects.h>
 
 class CScanMatching : public wxDialog
 {
@@ -39,7 +38,6 @@ class CScanMatching : public wxDialog
 	wxGauge* pbSteps;
 	wxPanel* Panel5;
 	wxNotebook* Notebook1;
-	mpWindow* plotMaps;
 	wxTextCtrl* edOptRefPnt;
 	wxStaticText* StaticText2;
 	wxPanel* Panel4;
@@ -64,6 +62,7 @@ class CScanMatching : public wxDialog
 	wxStaticText* txtStep;
 	wxSplitterWindow* SplitterWindow1;
 	wxStaticText* StaticText4;
+	CMyGLCanvas* m_plot3D;
 	//*)
 
    protected:
@@ -84,7 +83,7 @@ class CScanMatching : public wxDialog
 	static const long ID_TEXTCTRL7;
 	static const long ID_PANEL1;
 	static const long ID_STATICTEXT6;
-	static const long ID_CUSTOM1;
+	static const long ID_XY_GLCANVAS;
 	static const long ID_BUTTON1;
 	static const long ID_CHECKBOX1;
 	static const long ID_BUTTON2;
@@ -111,6 +110,8 @@ class CScanMatching : public wxDialog
 	//*)
 
 	DECLARE_EVENT_TABLE()
+
+	mrpt::opengl::CSetOfObjects::Ptr m_gl_map_ref, m_gl_map_new;
 };
 
 #endif

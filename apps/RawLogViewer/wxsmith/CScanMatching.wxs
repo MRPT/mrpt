@@ -283,13 +283,15 @@
 												<option>1</option>
 											</object>
 											<object class="sizeritem">
-												<object class="Custom" name="ID_CUSTOM1" subclass="mpWindow" variable="plotMaps" member="yes">
-													<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),0);</creating_code>
-													<style></style>
-													<size>341,359</size>
-													<minsize>100,100</minsize>
+												<object class="Custom" name="ID_XY_GLCANVAS" subclass="CMyGLCanvas" variable="m_plot3D" member="yes">
+													<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),$(STYLE),$(NAME));</creating_code>
+													<include_file>MyGLCanvas.h</include_file>
+													<local_include>1</local_include>
+													<style>wxTAB__TRAVERSAL</style>
+													<focused>1</focused>
+													<tooltip>Reconstrucción 3D de la carretera</tooltip>
 												</object>
-												<flag>wxALL|wxEXPAND|wxFIXED_MINSIZE|wxALIGN_LEFT|wxALIGN_TOP</flag>
+												<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 												<option>1</option>
 											</object>
 											<object class="sizeritem">
