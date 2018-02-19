@@ -24,6 +24,16 @@ else()
 	CMAKE_MINIMUM_REQUIRED(VERSION 3.3)
 endif()
 
+# Display timing information for each compiler instance on screen
+option(CMAKE_TIMING_VERBOSE "Enable the display of timing information for each compiler instance." OFF)
+mark_as_advanced(CMAKE_TIMING_VERBOSE)
+
+# Enable verbose timing display?
+if(CMAKE_TIMING_VERBOSE AND UNIX)
+  set_property(GLOBAL PROPERTY RULE_MESSAGES OFF)
+  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CMAKE_SOURCE_DIR}/cmakemodules/custom_output.sh")
+endif(CMAKE_TIMING_VERBOSE AND UNIX)
+
 set (CMAKE_CXX_STANDARD 14)  # Require C++14
 if(COMMAND cmake_policy)
 	cmake_policy(SET CMP0003 NEW) # We don't want to mix relative and absolute paths in linker lib lists.
