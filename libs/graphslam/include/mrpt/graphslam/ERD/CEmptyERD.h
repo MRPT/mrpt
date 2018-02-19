@@ -10,9 +10,7 @@
 #ifndef CEmptyERD_H
 #define CEmptyERD_H
 
-#include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CSensoryFrame.h>
-#include <mrpt/obs/CRawlog.h>
 
 #include <mrpt/graphslam/interfaces/CEdgeRegistrationDecider.h>
 

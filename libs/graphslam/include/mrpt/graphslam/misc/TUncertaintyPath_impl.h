@@ -10,6 +10,8 @@
 #ifndef TUNCERTAINTYPATH_IMPL_H
 #define TUNCERTAINTYPATH_IMPL_H
 
+#include <mrpt/containers/stl_containers_utils.h>
+
 // Implementattion file for TUncertaintyPath struct
 
 namespace mrpt

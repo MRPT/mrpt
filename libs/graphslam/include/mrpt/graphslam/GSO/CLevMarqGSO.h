@@ -10,21 +10,11 @@
 #ifndef CLEVMARQGSO_H
 #define CLEVMARQGSO_H
 
-#include <mrpt/obs/CObservationOdometry.h>
-#include <mrpt/obs/CRawlog.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/config/CConfigFile.h>
 #include <mrpt/config/CConfigFileBase.h>
-#include <mrpt/serialization/CArchive.h>
-#include <mrpt/system/CTicTac.h>
-#include <cstdint>
 #include <mrpt/img/TColor.h>
-#include <mrpt/opengl/graph_tools.h>
-#include <mrpt/opengl/CDisk.h>
-#include <mrpt/opengl/CSphere.h>
 #include <mrpt/opengl/CRenderizable.h>
-#include <mrpt/img/TColor.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 

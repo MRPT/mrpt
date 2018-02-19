@@ -9,12 +9,6 @@
 #ifndef GRAPH_SLAM_LEVMARQ_IMPL_H
 #define GRAPH_SLAM_LEVMARQ_IMPL_H
 
-#include <mrpt/graphs/CNetworkOfPoses.h>
-#include <mrpt/system/CTimeLogger.h>
-#include <mrpt/math/CSparseMatrix.h>
-
-#include <memory>
-
 namespace mrpt
 {
 namespace graphslam

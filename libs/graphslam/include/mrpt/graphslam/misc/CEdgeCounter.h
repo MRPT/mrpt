@@ -10,13 +10,10 @@
 #ifndef CEDGECOUNTER_H
 #define CEDGECOUNTER_H
 
-#include <mrpt/core/exceptions.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 
 #include "CWindowManager.h"
 
-#include <iostream>
-#include <sstream>
 #include <string>
 #include <map>
 
