@@ -865,7 +865,6 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfOptimalProposal(
 	icp.options.thresholdAng = DEG2RAD(20);
 	icp.options.smallestThresholdDist = 0.05f;
 	icp.options.ALFA = 0.5f;
-	icp.options.onlyClosestCorrespondences = true;
 	icp.options.doRANSAC = false;
 
 	// Build the map of points to align:
