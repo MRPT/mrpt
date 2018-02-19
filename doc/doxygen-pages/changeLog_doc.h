@@ -54,6 +54,7 @@ classes.
 `MRPT_READ_POD()` for reading unaligned POD variables.-
 		- \ref mrpt_slam_grp
 			- rbpf-slam: Add support for simplemap continuation.
+			- CICP: parameter `onlyClosestCorrespondences` deleted (always true now).
 		- \ref mrpt_nav_grp
 			- Removed deprecated mrpt::nav::THolonomicMethod.
 			- mrpt::nav::CAbstractNavigator: callbacks in

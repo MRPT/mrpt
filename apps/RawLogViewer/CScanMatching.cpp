@@ -284,6 +284,18 @@ CScanMatching::CScanMatching(wxWindow* parent, wxWindowID)
 
 	Fit();
 
+	// Load default ICP options:
+	{
+		mrpt::config::CConfigFileMemory cfg;
+		mrpt::slam::CICP::TConfigParams icp_params;
+		cfg.write("InitialPosition", "x", 0.0);
+		cfg.write("InitialPosition", "y", 0.0);
+		cfg.write("InitialPosition", "phi_DEG", 0.0);
+		icp_params.saveToConfigFile(cfg, "ICP");
+
+		edOptICP->SetValue(_U(cfg.getContent().c_str()));
+	}
+
 	wxLog* old_log = wxLog::SetActiveTarget(new wxLogTextCtrl(txtLog));
 	delete old_log;
 }

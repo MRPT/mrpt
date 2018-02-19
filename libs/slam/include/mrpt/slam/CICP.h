@@ -72,32 +72,26 @@ class CICP : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 	class TConfigParams : public mrpt::config::CLoadableOptions
 	{
 	   public:
-		/** Initializer for default values: */
-		TConfigParams();
-
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			std::ostream& out) const override;  // See base docs
+		void saveToConfigFile(
+			mrpt::config::CConfigFileBase& c, const std::string& s) const;
 
 		/** @name Algorithms selection
 			@{ */
 		/** The algorithm to use (default: icpClassic). See
 		 * http://www.mrpt.org/tutorials/programming/scan-matching-and-icp/ for
 		 * details */
-		TICPAlgorithm ICP_algorithm;
+		TICPAlgorithm ICP_algorithm{ icpClassic };
 		/** The method to use for covariance estimation (Default:
 		 * icpCovFiniteDifferences) */
-		TICPCovarianceMethod ICP_covariance_method;
+		TICPCovarianceMethod ICP_covariance_method{ icpCovFiniteDifferences };
 		/** @} */
 
 		/** @name Correspondence-finding criteria
 			@{ */
-		/** The usual approach: to consider only the closest correspondence for
-		 * each local point (Default to true) */
-		bool onlyClosestCorrespondences;
-		bool onlyUniqueRobust;  //! Apart of "onlyClosestCorrespondences=true",
+		bool onlyUniqueRobust{ false };
 		//! if this option is enabled only the closest
 		//! correspondence for each reference point will
 		//! be kept (default=false).
@@ -106,25 +100,25 @@ class CICP : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 		/** @name Termination criteria
 			@{ */
 		/** Maximum number of iterations to run. */
-		unsigned int maxIterations;
+		unsigned int maxIterations{ 40 };
 		/** If the correction in all translation coordinates (X,Y,Z) is below
 		 * this threshold (in meters), iterations are terminated (Default:1e-6)
 		 */
-		float minAbsStep_trans;
+		double minAbsStep_trans{ 1e-6 };
 		/** If the correction in all rotation coordinates (yaw,pitch,roll) is
 		 * below this threshold (in radians), iterations are terminated
 		 * (Default:1e-6) */
-		float minAbsStep_rot;
+		double minAbsStep_rot{ 1e-6 };
 		/** @} */
 
 		/** Initial threshold distance for two points to become a
 		 * correspondence. */
-		float thresholdDist, thresholdAng;
-		/** The scale factor for threshold everytime convergence is achieved. */
-		float ALFA;
+		double thresholdDist{ 0.75 }, thresholdAng{ 0.15*M_PI/180.0 };
+		/** The scale factor for thresholds everytime convergence is achieved. */
+		double ALFA{ 0.5 };
 		/** The size for threshold such that iterations will stop, since it is
 		 * considered precise enough. */
-		float smallestThresholdDist;
+		double smallestThresholdDist{ 0.1 };
 
 		/** This is the normalization constant \f$ \sigma^2_p \f$ that is used
 		 * to scale the whole 3x3 covariance.
@@ -133,44 +127,45 @@ class CICP : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 		 * Fernandez-Madrigal, "A Robust, Multi-Hypothesis Approach to Matching
 		 * Occupancy Grid Maps", Robotica, vol. 31, no. 5, pp. 687-701, 2013.
 		 */
-		float covariance_varPoints;
+		double covariance_varPoints{0.02*0.02};
 
 		/** Perform a RANSAC step, mrpt::tfest::se2_l2_robust(), after the ICP
 		 * convergence, to obtain a better estimation of the pose PDF. */
-		bool doRANSAC;
+		bool doRANSAC{ false };
 
 		/** @name RANSAC-step options for mrpt::tfest::se2_l2_robust() if \a
 		 * doRANSAC=true
 		 * @{ */
-		unsigned int ransac_minSetSize, ransac_maxSetSize, ransac_nSimulations;
-		float ransac_mahalanobisDistanceThreshold;
+		unsigned int ransac_minSetSize{3}, ransac_maxSetSize{20},
+			ransac_nSimulations{100};
+		double ransac_mahalanobisDistanceThreshold{3.0};
 		/** RANSAC-step option: The standard deviation in X,Y of
 		 * landmarks/points which are being matched (used to compute covariances
 		 * in the SoG) */
-		float normalizationStd;
-		bool ransac_fuseByCorrsMatch;
-		float ransac_fuseMaxDiffXY, ransac_fuseMaxDiffPhi;
+		double normalizationStd{0.02};
+		bool ransac_fuseByCorrsMatch{ true };
+		double ransac_fuseMaxDiffXY{ 0.01 }, ransac_fuseMaxDiffPhi{0.1*M_PI/180.0};
 		/** @} */
 
 		/** Cauchy kernel rho, for estimating the optimal transformation
 		 * covariance, in meters (default = 0.07m) */
-		float kernel_rho;
+		double kernel_rho{0.07};
 		/** Whether to use kernel_rho to smooth distances, or use distances
 		 * directly (default=true) */
-		bool use_kernel;
+		bool use_kernel{ true };
 		/** [LM method only] The size of the perturbance in x & y used to
 		 * estimate the Jacobians of the square error (default=0.05) */
-		float Axy_aprox_derivatives;
+		double Axy_aprox_derivatives{0.05};
 		/** [LM method only] The initial value of the lambda parameter in the LM
 		 * method (default=1e-4) */
-		float LM_initial_lambda;
+		double LM_initial_lambda{1e-4};
 
 		/** Skip the computation of the covariance (saves some time)
 		 * (default=false) */
-		bool skip_cov_calculation;
+		bool skip_cov_calculation{ false };
 		/** Skip the (sometimes) expensive evaluation of the term 'quality' at
 		 * ICP output (Default=true) */
-		bool skip_quality_calculation;
+		bool skip_quality_calculation{true};
 
 		/** Decimation of the point cloud being registered against the reference
 		 * one (default=5) - set to 1 to have the older (MRPT <0.9.5) behavior
@@ -178,7 +173,7 @@ class CICP : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 		 * points. The speed-up comes from a decimation of the number of KD-tree
 		 * queries,
 		 *  the most expensive step in ICP */
-		uint32_t corresponding_points_decimation;
+		uint32_t corresponding_points_decimation{5};
 	};
 
 	/** The options employed by the ICP align. */
