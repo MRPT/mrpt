@@ -467,9 +467,6 @@ void export_slam()
 			"TConfigParams", init<>())
 			.def_readwrite("ICP_algorithm", &CICP::TConfigParams::ICP_algorithm)
 			.def_readwrite(
-				"onlyClosestCorrespondences",
-				&CICP::TConfigParams::onlyClosestCorrespondences)
-			.def_readwrite(
 				"onlyUniqueRobust", &CICP::TConfigParams::onlyUniqueRobust)
 			.def_readwrite("maxIterations", &CICP::TConfigParams::maxIterations)
 			.def_readwrite(
