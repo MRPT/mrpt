@@ -711,6 +711,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 					selectedHolonomicMovement->PTG->alpha2index(selectedHolonomicMovement->direction)
 					:
 					0;
+				m_lastSentVelCmd.original_holo_eval = selectedHolonomicMovement->props["holo_stage_eval"];
 
 				m_lastSentVelCmd.colfreedist_move_k = best_ptg_idx >= 0 ?
 					m_infoPerPTG[best_ptg_idx].TP_Obstacles[m_lastSentVelCmd.ptg_alpha_index]
@@ -856,7 +857,8 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	const bool this_is_PTG_continuation,
 	const mrpt::math::TPose2D & rel_cur_pose_wrt_last_vel_cmd_NOP,
 	const unsigned int ptg_idx4weights,
-	const mrpt::system::TTimeStamp tim_start_iteration)
+	const mrpt::system::TTimeStamp tim_start_iteration,
+	const mrpt::nav::CHolonomicLogFileRecordPtr &hlfr)
 {
 	MRPT_START;
 
@@ -939,6 +941,12 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 		:
 		(cm.PTG->supportSpeedAtTarget() && TP_Target.target_k == move_k);
 	cm.props["is_slowdown"] = is_slowdown ? 1:0;
+	cm.props["holo_stage_eval"] =
+		this_is_PTG_continuation ?
+		m_lastSentVelCmd.original_holo_eval
+		:
+		(hlfr && !hlfr->dirs_eval.empty() && hlfr->dirs_eval.rbegin()->size() == in_TPObstacles.size()) ? hlfr->dirs_eval.rbegin()->at(move_k) : .0
+		;
 
 	// Factor 1: Free distance for the chosen PTG and "alpha" in the TP-Space:
 	// ----------------------------------------------------------------------
@@ -1251,6 +1259,7 @@ void CAbstractPTGBasedReactive::TSentVelCmd::reset()
 	was_slowdown = false;
 	speed_scale = 1.0;
 	ptg_dynState = CParameterizedTrajectoryGenerator::TNavDynamicState();
+	original_holo_eval = .0;
 }
 bool CAbstractPTGBasedReactive::TSentVelCmd::isValid() const
 {
@@ -1437,7 +1446,8 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 				newLogRec.infoPerPTG[idx_in_log_infoPerPTGs], newLogRec,
 				this_is_PTG_continuation, rel_cur_pose_wrt_last_vel_cmd_NOP,
 				indexPTG,
-				tim_start_iteration);
+				tim_start_iteration,
+				HLFR);
 
 			// Store NOP related extra vars:
 			cm.props["original_col_free_dist"] =
