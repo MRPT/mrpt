@@ -19,6 +19,8 @@
 		  operation.
 		- mrpt::hwdrivers::CHokuyoURG: Added a new parameter to skip scans. Driver
 		  clean up to be safer and perform less memory allocs.
+	- \ref mrpt_reactivenav_grp
+		- CAbstractPTGBasedReactive: Added new score `holo_stage_eval`.
 
 <hr>
 <a name="1.5.5">
