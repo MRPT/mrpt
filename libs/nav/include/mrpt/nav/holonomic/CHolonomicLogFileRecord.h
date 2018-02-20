@@ -17,8 +17,8 @@ namespace mrpt
 namespace nav
 {
 /** \addtogroup nav_holo Holonomic navigation methods
-  * \ingroup mrpt_nav_grp
-  * @{ */
+ * \ingroup mrpt_nav_grp
+ * @{ */
 
 /** A base class for log records for different holonomic navigation methods.
  *
@@ -28,8 +28,9 @@ class CHolonomicLogFileRecord : public mrpt::serialization::CSerializable
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CHolonomicLogFileRecord)
    public:
-	/** Final [0] and alternative [1..N] evaluation scores for each direction,
-	 * in the same order of TP-Obstacles. May be not filled by all methods. */
+	/** Final [N-1] and earlier stages [0...N-1] evaluation scores for each
+	 * direction, in the same order of TP-Obstacles. May be not filled by all
+	 * methods. */
 	std::vector<std::vector<double>> dirs_eval;
 
 	virtual const mrpt::math::CMatrixD* getDirectionScores() const
@@ -39,7 +40,7 @@ class CHolonomicLogFileRecord : public mrpt::serialization::CSerializable
 };
 
 /** @} */
-}
-}
+}  // namespace nav
+}  // namespace mrpt
 
 #endif

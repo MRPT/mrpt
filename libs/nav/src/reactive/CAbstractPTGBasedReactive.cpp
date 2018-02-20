@@ -191,11 +191,10 @@ void CAbstractPTGBasedReactive::enableLogFile(bool enable)
 				}
 			}
 
-			MRPT_LOG_DEBUG(
-				mrpt::format(
-					"[CAbstractPTGBasedReactive::enableLogFile] Logging to "
-					"file `%s`\n",
-					aux));
+			MRPT_LOG_DEBUG(mrpt::format(
+				"[CAbstractPTGBasedReactive::enableLogFile] Logging to "
+				"file `%s`\n",
+				aux));
 		}
 	}
 	catch (std::exception& e)
@@ -558,10 +557,9 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		}
 		if (is_all_ptg_collision)
 		{
-			m_pending_events.push_back(
-				std::bind(
-					&CRobot2NavInterface::sendApparentCollisionEvent,
-					std::ref(m_robot)));
+			m_pending_events.push_back(std::bind(
+				&CRobot2NavInterface::sendApparentCollisionEvent,
+				std::ref(m_robot)));
 		}
 
 		// Round #2: Evaluate dont sending any new velocity command ("NOP"
@@ -831,6 +829,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 						? selectedHolonomicMovement->PTG->alpha2index(
 							  selectedHolonomicMovement->direction)
 						: 0;
+				m_lastSentVelCmd.original_holo_eval =
+					selectedHolonomicMovement->props["holo_stage_eval"];
 
 				m_lastSentVelCmd.colfreedist_move_k =
 					best_ptg_idx >= 0
@@ -880,19 +880,17 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 		if (m_enableConsoleOutput)
 		{
-			MRPT_LOG_DEBUG(
-				mrpt::format(
-					"CMD: %s "
-					"speedScale=%.04f "
-					"T=%.01lfms Exec:%.01lfms|%.01lfms "
-					"PTG#%i\n",
-					new_vel_cmd ? new_vel_cmd->asString().c_str() : "NOP",
-					selectedHolonomicMovement ? selectedHolonomicMovement->speed
-											  : .0,
-					1000.0 * meanExecutionPeriod.getLastOutput(),
-					1000.0 * meanExecutionTime.getLastOutput(),
-					1000.0 * meanTotalExecutionTime.getLastOutput(),
-					best_ptg_idx));
+			MRPT_LOG_DEBUG(mrpt::format(
+				"CMD: %s "
+				"speedScale=%.04f "
+				"T=%.01lfms Exec:%.01lfms|%.01lfms "
+				"PTG#%i\n",
+				new_vel_cmd ? new_vel_cmd->asString().c_str() : "NOP",
+				selectedHolonomicMovement ? selectedHolonomicMovement->speed
+										  : .0,
+				1000.0 * meanExecutionPeriod.getLastOutput(),
+				1000.0 * meanExecutionTime.getLastOutput(),
+				1000.0 * meanTotalExecutionTime.getLastOutput(), best_ptg_idx));
 		}
 		if (fill_log_record)
 		{
@@ -906,10 +904,9 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 	catch (std::exception& e)
 	{
 		doEmergencyStop(
-			std::string(
-				"[CAbstractPTGBasedReactive::performNavigationStep] "
-				"Stopping robot and finishing navigation due to "
-				"exception:\n") +
+			std::string("[CAbstractPTGBasedReactive::performNavigationStep] "
+						"Stopping robot and finishing navigation due to "
+						"exception:\n") +
 			std::string(e.what()));
 	}
 	catch (...)
@@ -996,7 +993,8 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	const bool this_is_PTG_continuation,
 	const mrpt::math::TPose2D& rel_cur_pose_wrt_last_vel_cmd_NOP,
 	const unsigned int ptg_idx4weights,
-	const mrpt::system::TTimeStamp tim_start_iteration)
+	const mrpt::system::TTimeStamp tim_start_iteration,
+	const mrpt::nav::CHolonomicLogFileRecord::Ptr& hlfr)
 {
 	MRPT_START;
 
@@ -1018,9 +1016,8 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 		double best_trg_angdist = std::numeric_limits<double>::max();
 		for (size_t i = 0; i < TP_Targets.size(); i++)
 		{
-			const double angdist = std::abs(
-				mrpt::math::angDistance(
-					TP_Targets[i].target_alpha, cm.direction));
+			const double angdist = std::abs(mrpt::math::angDistance(
+				TP_Targets[i].target_alpha, cm.direction));
 			if (angdist < best_trg_angdist)
 			{
 				best_trg_angdist = angdist;
@@ -1055,7 +1052,7 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 		!cm.PTG->supportSpeedAtTarget()  // If the PTG is able to handle the
 		// slow-down on its own, dont change
 		// speed here
-		)
+	)
 	{
 		const double TARGET_SLOW_APPROACHING_DISTANCE =
 			m_holonomicMethod[0]->getTargetApproachSlowDownDistance();
@@ -1101,7 +1098,13 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 			? m_lastSentVelCmd.was_slowdown
 			: (cm.PTG->supportSpeedAtTarget() && TP_Target.target_k == move_k);
 	cm.props["is_slowdown"] = is_slowdown ? 1 : 0;
-
+	cm.props["holo_stage_eval"] =
+		this_is_PTG_continuation
+			? m_lastSentVelCmd.original_holo_eval
+			: (hlfr && !hlfr->dirs_eval.empty() &&
+			   hlfr->dirs_eval.rbegin()->size() == in_TPObstacles.size())
+				  ? hlfr->dirs_eval.rbegin()->at(move_k)
+				  : .0;
 	// Factor 1: Free distance for the chosen PTG and "alpha" in the TP-Space:
 	// ----------------------------------------------------------------------
 	double& colfree = cm.props["collision_free_distance"];
@@ -1499,6 +1502,7 @@ void CAbstractPTGBasedReactive::TSentVelCmd::reset()
 	colfreedist_move_k = .0;
 	was_slowdown = false;
 	speed_scale = 1.0;
+	original_holo_eval = .0;
 	ptg_dynState = CParameterizedTrajectoryGenerator::TNavDynamicState();
 }
 bool CAbstractPTGBasedReactive::TSentVelCmd::isValid() const
@@ -1708,7 +1712,7 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 				cm, ipf.TP_Obstacles, ipf.clearance, relTargets, ipf.targets,
 				newLogRec.infoPerPTG[idx_in_log_infoPerPTGs], newLogRec,
 				this_is_PTG_continuation, rel_cur_pose_wrt_last_vel_cmd_NOP,
-				indexPTG, tim_start_iteration);
+				indexPTG, tim_start_iteration, HLFR);
 
 			// Store NOP related extra vars:
 			cm.props["original_col_free_dist"] =
@@ -1791,9 +1795,8 @@ void CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::saveToConfigFile(
 	}
 	MRPT_SAVE_CONFIG_VAR_COMMENT(
 		holonomic_method,
-		string(
-			"C++ class name of the holonomic navigation method to run in "
-			"the transformed TP-Space.\n") +
+		string("C++ class name of the holonomic navigation method to run in "
+			   "the transformed TP-Space.\n") +
 			lstHoloStr);
 
 	// Build list of known decider methods:
