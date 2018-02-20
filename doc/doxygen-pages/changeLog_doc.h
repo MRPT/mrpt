@@ -54,7 +54,8 @@ classes.
 `MRPT_READ_POD()` for reading unaligned POD variables.-
 		- \ref mrpt_slam_grp
 			- rbpf-slam: Add support for simplemap continuation.
-			- CICP: parameter `onlyClosestCorrespondences` deleted (always true now).
+			- CICP: parameter `onlyClosestCorrespondences` deleted (always true
+now).
 		- \ref mrpt_nav_grp
 			- Removed deprecated mrpt::nav::THolonomicMethod.
 			- mrpt::nav::CAbstractNavigator: callbacks in
@@ -85,7 +86,7 @@ rotation matrices.
 (via the new `MRPT_READ_POD()` macro).
 		- Fix segfault in CMetricMap::loadFromSimpleMap() if the provided
 CMetricMap has empty smart pointers.
-    - Fix crash in CGPSInterface when not setting an external mutex.
+	- Fix crash in CGPSInterface when not setting an external mutex.
 
 <hr>
 <a name="1.5.6">
@@ -93,6 +94,8 @@ CMetricMap has empty smart pointers.
 	- \ref mrpt_hwdrivers_grp
 		- mrpt::hwdrivers::COpenNI2Generic: added mutexes for safer
 multi-threading operation.
+	- \ref mrpt_reactivenav_grp
+		- CAbstractPTGBasedReactive: Added new score `holo_stage_eval`.
 
 <hr>
 <a name="1.5.5">

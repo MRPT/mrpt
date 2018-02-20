@@ -29,67 +29,69 @@ namespace nav
 {
 /** Base class for reactive navigator systems based on TP-Space, with an
  * arbitrary holonomic
-  * reactive method running on it and any number of PTGs for transforming the
+ * reactive method running on it and any number of PTGs for transforming the
  * navigation space.
-  * Both, the holonomic method and the PTGs can be customized by the apropriate
+ * Both, the holonomic method and the PTGs can be customized by the apropriate
  * user derived classes.
-  *
-  * How to use:
-  *  - Instantiate a reactive navigation object (one of the derived classes of
+ *
+ * How to use:
+ *  - Instantiate a reactive navigation object (one of the derived classes of
  * this virtual class).
-  *  - A class with callbacks must be defined by the user and provided to the
+ *  - A class with callbacks must be defined by the user and provided to the
  * constructor (derived from CRobot2NavInterface)
-  *  - loadConfigFile() must be called to set up the bunch of parameters from a
+ *  - loadConfigFile() must be called to set up the bunch of parameters from a
  * config file (could be a memory-based virtual config file).
-  *  - navigationStep() must be called periodically in order to effectively run
+ *  - navigationStep() must be called periodically in order to effectively run
  * the navigation. This method will internally call the callbacks to gather
  * sensor data and robot positioning data.
-  *
-  * For working examples, refer to the source code of the apps:
-  *  -
+ *
+ * For working examples, refer to the source code of the apps:
+ *  -
  * [ReactiveNavigationDemo](http://www.mrpt.org/list-of-mrpt-apps/application-reactivenavigationdemo/)
-  *  -
+ *  -
  * [ReactiveNav3D-Demo](http://www.mrpt.org/list-of-mrpt-apps/application-reactivenav3d-demo/)
-  *
-  * Publications:
-  *  - See derived classes for papers on each specific method.
-  *
-  * Available "variables" or "score names" for each motion candidate (these can
+ *
+ * Publications:
+ *  - See derived classes for papers on each specific method.
+ *
+ * Available "variables" or "score names" for each motion candidate (these can
  * be used in runtime-compiled expressions
-  * in the configuration files of motion deciders):
-  *
-  * - `clearance`: Clearance (larger means larger distances to obstacles) for
+ * in the configuration files of motion deciders):
+ *
+ * - `clearance`: Clearance (larger means larger distances to obstacles) for
  * the path from "current pose" up to "end of trajectory".
-  * - `collision_free_distance`: Normalized [0,1] collision-free distance in
+ * - `collision_free_distance`: Normalized [0,1] collision-free distance in
  * selected path. For NOP candidates, the traveled distances is substracted.
-  * - `dist_eucl_final`: Euclidean distance (in the real-world WordSpace)
+ * - `dist_eucl_final`: Euclidean distance (in the real-world WordSpace)
  * between "end of trajectory" and target.
-  * - `eta`: Estimated Time of Arrival at "end of trajectory".
-  * - `hysteresis`: Measure of similarity with previous command [0,1]
-  * - `is_PTG_cont`: 1 (is "NOP" motion command), 0 otherwise
-  * - `is_slowdown`: 1 if PTG returns true in
+ * - `eta`: Estimated Time of Arrival at "end of trajectory".
+ * - `holo_stage_eval`: Final evaluation of the selected direction from inside
+ * of the holonomic algorithm.
+ * - `hysteresis`: Measure of similarity with previous command [0,1]
+ * - `is_PTG_cont`: 1 (is "NOP" motion command), 0 otherwise
+ * - `is_slowdown`: 1 if PTG returns true in
  * CParameterizedTrajectoryGenerator::supportSpeedAtTarget() for this step.
-  * - `move_cur_d`: Normalized distance already traveled over the selected PTG.
+ * - `move_cur_d`: Normalized distance already traveled over the selected PTG.
  * Normally 0, unless in a "NOP motion".
-  * - `move_k`: Motion candidate path 0-based index.
-  * - `num_paths`: Number of paths in the PTG
-  * - `original_col_free_dist`: Only for "NOP motions", the collision-free
+ * - `move_k`: Motion candidate path 0-based index.
+ * - `num_paths`: Number of paths in the PTG
+ * - `original_col_free_dist`: Only for "NOP motions", the collision-free
  * distance when the motion command was originally issued.
-  * - `ptg_idx`: PTG index (0-based)
-  * - `ptg_priority`: Product of PTG getScorePriority() times PTG
+ * - `ptg_idx`: PTG index (0-based)
+ * - `ptg_priority`: Product of PTG getScorePriority() times PTG
  * evalPathRelativePriority()
-  * - `ref_dist`: PTG ref distance [m]
-  * - `robpose_x`, `robpose_y`, `robpose_phi`: Robot pose ([m] and [rad]) at the
+ * - `ref_dist`: PTG ref distance [m]
+ * - `robpose_x`, `robpose_y`, `robpose_phi`: Robot pose ([m] and [rad]) at the
  * "end of trajectory": at collision or at target distance.
-  * - `target_d_norm`: Normalized target distance. Can be >1 if distance is
+ * - `target_d_norm`: Normalized target distance. Can be >1 if distance is
  * larger than ref_distance.
-  * - `target_dir`: Angle of target in TP-Space [rad]
-  * - `target_k`: Same as target_dir but in discrete path 0-based indices.
-  * - `WS_target_x`, `WS_target_y`: Target coordinates in realworld [m]
-  *
-  * \sa CReactiveNavigationSystem, CReactiveNavigationSystem3D
-  *  \ingroup nav_reactive
-  */
+ * - `target_dir`: Angle of target in TP-Space [rad]
+ * - `target_k`: Same as target_dir but in discrete path 0-based indices.
+ * - `WS_target_x`, `WS_target_y`: Target coordinates in realworld [m]
+ *
+ * \sa CReactiveNavigationSystem, CReactiveNavigationSystem3D
+ *  \ingroup nav_reactive
+ */
 class CAbstractPTGBasedReactive : public CWaypointsNavigator
 {
    public:
@@ -118,41 +120,42 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 	};
 
 	/** Constructor.
-	  * \param[in] react_iterf_impl An instance of an object that implement all
+	 * \param[in] react_iterf_impl An instance of an object that implement all
 	 * the required interfaces to read from and control a robot.
-	  * \param[in] enableConsoleOutput Can be set to false to reduce verbosity.
-	  * \param[in] enableLogFile Set to true to enable creation of navigation
+	 * \param[in] enableConsoleOutput Can be set to false to reduce verbosity.
+	 * \param[in] enableLogFile Set to true to enable creation of navigation
 	 * log files, useful for inspection and debugging.
-	  */
+	 */
 	CAbstractPTGBasedReactive(
 		CRobot2NavInterface& react_iterf_impl, bool enableConsoleOutput = true,
-		bool enableLogFile = false, const std::string& logFileDirectory =
-										std::string("./reactivenav.logs"));
+		bool enableLogFile = false,
+		const std::string& logFileDirectory =
+			std::string("./reactivenav.logs"));
 
 	virtual ~CAbstractPTGBasedReactive();
 
 	/** Must be called for loading collision grids, or the first navigation
 	 * command may last a long time to be executed.
-	  * Internally, it just calls STEP1_CollisionGridsBuilder().
-	  */
+	 * Internally, it just calls STEP1_CollisionGridsBuilder().
+	 */
 	void initialize() override;
 
 	/** Selects which one from the set of available holonomic methods will be
 	 * used
-		*  into transformed TP-Space, and sets its configuration from a
+	 *  into transformed TP-Space, and sets its configuration from a
 	 * configuration file.
-		* Available methods: class names of those derived from
+	 * Available methods: class names of those derived from
 	 * CAbstractHolonomicReactiveMethod
-		*/
+	 */
 	void setHolonomicMethod(
 		const std::string& method,
 		const mrpt::config::CConfigFileBase& cfgBase);
 
 	/** Provides a copy of the last log record with information about execution.
-		* \param o An object where the log will be stored into.
-		* \note Log records are not prepared unless either "enableLogFile" is
+	 * \param o An object where the log will be stored into.
+	 * \note Log records are not prepared unless either "enableLogFile" is
 	 * enabled in the constructor or "enableLogFile()" has been called.
-		*/
+	 */
 	void getLastLogRecord(CLogFileRecord& o);
 
 	/** Enables keeping an internal registry of navigation logs that can be
@@ -189,22 +192,22 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 		double speedfilter_tau;
 
 		/** In normalized distances, the start and end of a ramp function that
-		* scales the velocity
-		*  output from the holonomic navigator:
-		*
-		* \code
-		*  velocity scale
-		*   ^
-		*   |           _____________
-		*   |          /
-		* 1 |         /
-		*   |        /
-		* 0 +-------+---|----------------> normalized distance
-		*         Start
-		*              End
-		* \endcode
-		*
-		*/
+		 * scales the velocity
+		 *  output from the holonomic navigator:
+		 *
+		 * \code
+		 *  velocity scale
+		 *   ^
+		 *   |           _____________
+		 *   |          /
+		 * 1 |         /
+		 *   |        /
+		 * 0 +-------+---|----------------> normalized distance
+		 *         Start
+		 *              End
+		 * \endcode
+		 *
+		 */
 		double secure_distance_start, secure_distance_end;
 		bool use_delays_model;
 		/** Max distance [meters] to discard current PTG and issue a new vel cmd
@@ -242,9 +245,9 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 
 	/** Enables/disables the detailed time logger (default:disabled upon
 	 * construction)
-		*  When enabled, a report will be dumped to std::cout upon destruction.
-		* \sa getTimeLogger
-		*/
+	 *  When enabled, a report will be dumped to std::cout upon destruction.
+	 * \sa getTimeLogger
+	 */
 	void enableTimeLog(bool enable = true) { m_timelogger.enable(enable); }
 	/** Gives access to a const-ref to the internal time logger \sa
 	 * enableTimeLog */
@@ -337,9 +340,9 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 	bool STEP2_SenseObstacles();
 
 	/** Builds TP-Obstacles from Workspace obstacles for the given PTG.
-	  * "out_TPObstacles" is already initialized to the proper length and
+	 * "out_TPObstacles" is already initialized to the proper length and
 	 * maximum collision-free distance for each "k" trajectory index.
-	  * Distances are in "pseudo-meters". They will be normalized automatically
+	 * Distances are in "pseudo-meters". They will be normalized automatically
 	 * to [0,1] upon return. */
 	virtual void STEP3_WSpaceToTPSpace(
 		const size_t ptg_idx, std::vector<double>& out_TPObstacles,
@@ -376,7 +379,8 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 		const bool this_is_PTG_continuation,
 		const mrpt::math::TPose2D& relPoseVelCmd_NOP,
 		const unsigned int ptg_idx4weights,
-		const mrpt::system::TTimeStamp tim_start_iteration);
+		const mrpt::system::TTimeStamp tim_start_iteration,
+		const mrpt::nav::CHolonomicLogFileRecord::Ptr& hlfr);
 
 	/** Return the [0,1] velocity scale of raw PTG cmd_vel */
 	virtual double generate_vel_cmd(
@@ -449,6 +453,7 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 		bool was_slowdown;
 		/** [0,1] scale of the raw cmd_vel as generated by the PTG */
 		double speed_scale;
+		double original_holo_eval;
 		CParameterizedTrajectoryGenerator::TNavDynamicState ptg_dynState;
 
 		bool isValid() const;
@@ -470,7 +475,7 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 	std::unique_ptr<TNavigationParams> m_copy_prev_navParams;
 
 };  // end of CAbstractPTGBasedReactive
-}
-}
+}  // namespace nav
+}  // namespace mrpt
 
 #endif
