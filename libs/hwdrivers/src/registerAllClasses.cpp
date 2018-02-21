@@ -49,5 +49,6 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_hwdrivers)
 	CSkeletonTracker::doRegister();
 	CVelodyneScanner::doRegister();
 	CSICKTim561Eth::doRegister();
+	CLMS151Eth::doRegister();
 #endif
 }

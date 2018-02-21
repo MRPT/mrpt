@@ -14,7 +14,12 @@ SOURCE_DATE_EPOCH
 
 # Vim-related files
 Session.vim
+*.swo
+*.swp
 
 # common results directories
 graphslam_results/
 
+# Intellij IDE
+.idea/*
+cmake-build-debug/*
