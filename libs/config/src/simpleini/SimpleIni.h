@@ -2120,28 +2120,45 @@ struct MRPT_IniFileParser : public SI_ConvertA<char>
 	std::string parse_process_var_eval(const ParseContext& pc, std::string expr)
 	{
 		expr = mrpt::system::trim(expr);
-		while (expr.size() > 6)
+		while (expr.size() > 5)
 		{
-			auto p = expr.find("$eval{");
-			if (p == std::string::npos) break;  // done!
-			auto pend = expr.find("}", p);
-			if (pend == std::string::npos)
-				throw std::runtime_error(
-					mrpt::format(
-						"Line %u: Expected closing `}` near: `%s`",
-						pc.line_count, expr.c_str()));
+			auto p = expr.find("$env{");
+			if (p != std::string::npos)
+			{
+				auto pend = expr.find("}", p);
+				if (pend == std::string::npos)
+					throw std::runtime_error(
+						mrpt::format(
+							"Line %u: Expected closing `}` near: `%s`",
+							pc.line_count, expr.c_str()));
+				const auto substr = expr.substr(p + 5, pend - p - 5);
+				std::string new_expr = expr.substr(0, p);
+				auto env_val = ::getenv(substr.c_str());
+				if (env_val) new_expr += std::string(env_val);
+				new_expr += expr.substr(pend + 1);
+				new_expr.swap(expr);
+			}
+			else if ((p = expr.find("$eval{")) != std::string::npos)
+			{
+				auto pend = expr.find("}", p);
+				if (pend == std::string::npos)
+					throw std::runtime_error(
+						mrpt::format(
+							"Line %u: Expected closing `}` near: `%s`",
+							pc.line_count, expr.c_str()));
 
-			const auto substr = expr.substr(p + 6, pend - p - 6);
-			mrpt::expr::CRuntimeCompiledExpression cexpr;
-			cexpr.compile(
-				substr, pc.defined_vars_values,
-				mrpt::format("Line %u: ", pc.line_count));
+				const auto substr = expr.substr(p + 6, pend - p - 6);
+				mrpt::expr::CRuntimeCompiledExpression cexpr;
+				cexpr.compile(
+					substr, pc.defined_vars_values,
+					mrpt::format("Line %u: ", pc.line_count));
 
-			std::string new_expr = expr.substr(0, p);
-			new_expr += mrpt::format("%e", cexpr.eval());
-			new_expr += expr.substr(pend + 1);
-
-			new_expr.swap(expr);
+				std::string new_expr = expr.substr(0, p);
+				new_expr += mrpt::format("%e", cexpr.eval());
+				new_expr += expr.substr(pend + 1);
+				new_expr.swap(expr);
+			}
+			else break; // nothing else to evaluate
 		}
 		return expr;
 	}
@@ -2287,6 +2304,41 @@ struct MRPT_IniFileParser : public SI_ConvertA<char>
 
 				// Handle "$eval{expression}"
 				if (in_len > i + 7 && !strncmp(in_str + i, "$eval{", 6))
+				{
+					// extract expression:
+					std::string expr;
+					bool end_ok = false;
+					while (i < in_len && in_str[i] != '\n' && in_str[i] != '\r')
+					{
+						const char ch = in_str[i];
+						i++;
+						expr += ch;
+						if (ch == '}')
+						{
+							end_ok = true;
+							break;
+						}
+					}
+					if (!end_ok)
+					{
+						throw std::runtime_error(
+							mrpt::format(
+								"Line %u: Expected closing `}` near: `%s`",
+								pc.line_count, expr.c_str()));
+					}
+
+					const std::string res = parse_process_var_eval(pc, expr);
+
+					for (const char ch : res)
+					{
+						if (out_str) out_str[out_len] = ch;
+						out_len++;
+					}
+					continue;
+				}
+
+				// Handle "$env{var}"
+				if (in_len > i + 6 && !strncmp(in_str + i, "$env{", 5))
 				{
 					// extract expression:
 					std::string expr;
