@@ -49,6 +49,7 @@ first non-blank character of the value.
 		[test]
 		var1=${MAXSPEED}
 		var2=$eval{1+2*MAXSPEED}
+		var3=$env{MY_ENV_VARIABLE}
 		\endcode
 
 # Examples

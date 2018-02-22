@@ -52,6 +52,7 @@ classes.
 		- \ref mrpt_serialization_grp  [NEW IN MRPT 2.0.0]
 			- New method mrpt::serialization::CArchive::ReadPOD() and macro
 `MRPT_READ_POD()` for reading unaligned POD variables.-
+			- Add support for `$env{}` syntax to evaluate environment variables.
 		- \ref mrpt_slam_grp
 			- rbpf-slam: Add support for simplemap continuation.
 			- CICP: parameter `onlyClosestCorrespondences` deleted (always true
