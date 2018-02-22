@@ -45,7 +45,7 @@ void CHistogram::add(const double x)
 	if (x < m_min || x > m_max) return;
 
 	size_t ind = static_cast<size_t>(m_binSizeInv * (x - m_min));
-	if (ind>=m_bins.size()) ind=m_bins.size()-1;
+	if (ind >= m_bins.size()) ind = m_bins.size() - 1;
 
 	m_bins[ind]++;
 	m_count++;

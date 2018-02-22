@@ -40,11 +40,10 @@ void thread_reader(CPipeReadEndPoint& read_pipe)
 		// *Note*: If the object class is known in advance, one can avoid smart
 		// pointers with ReadObject(&existingObj)
 		auto arch = archiveFrom(read_pipe);
-		auto var = 
+		auto var =
 			arch.ReadVariant<mrpt::poses::CPose2D, mrpt::poses::CPose3D>();
 		var.match([](auto& pose) { cout << "RX pose: " << pose << endl; });
-		var =
-			arch.ReadVariant<mrpt::poses::CPose2D, mrpt::poses::CPose3D>();
+		var = arch.ReadVariant<mrpt::poses::CPose2D, mrpt::poses::CPose3D>();
 		var.match([](auto& pose) { cout << "RX pose: " << pose << endl; });
 
 		printf("[thread_reader] Finished.\n");
@@ -107,7 +106,7 @@ void ThreadsTest()
 	hT2.join();
 	// We need to close this to ensure the pipe gets flushed
 	// Remember Unix uses buffered io
-	//write_pipe.reset();
+	// write_pipe.reset();
 	hT1.join();
 }
 

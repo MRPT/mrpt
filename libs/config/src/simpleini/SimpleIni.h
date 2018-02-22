@@ -2158,7 +2158,8 @@ struct MRPT_IniFileParser : public SI_ConvertA<char>
 				new_expr += expr.substr(pend + 1);
 				new_expr.swap(expr);
 			}
-			else break; // nothing else to evaluate
+			else
+				break;  // nothing else to evaluate
 		}
 		return expr;
 	}

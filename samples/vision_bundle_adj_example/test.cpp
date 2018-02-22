@@ -228,7 +228,8 @@ int main(int argc, char** argv)
 
 					// Too far?
 					const double dist = math::distance(
-						TPoint3D(frame_poses_real[i].asTPose()), landmark_points_real[j]);
+						TPoint3D(frame_poses_real[i].asTPose()),
+						landmark_points_real[j]);
 					if (dist > max_camera_dist) continue;
 
 					// Ok, accept it:
@@ -250,7 +251,8 @@ int main(int argc, char** argv)
 				allObs2.compressIDs(&old2new_camIDs, &old2new_lmIDs);
 
 				ASSERT_EQUAL_(old2new_camIDs.size(), frame_poses_real.size());
-				ASSERT_EQUAL_(old2new_lmIDs.size(), landmark_points_real.size());
+				ASSERT_EQUAL_(
+					old2new_lmIDs.size(), landmark_points_real.size());
 			}
 
 			// Add noise to the data:
@@ -364,9 +366,8 @@ int main(int argc, char** argv)
 						ss >> q[0] >> q[1] >> q[2] >> q[3] >> t[0] >> t[1] >>
 							t[2];
 						mrpt::poses::CPose3DQuat p(
-							t[0], t[1], t[2],
-							mrpt::math::CQuaternionDouble(
-								q[0], q[1], q[2], q[3]));
+							t[0], t[1], t[2], mrpt::math::CQuaternionDouble(
+												  q[0], q[1], q[2], q[3]));
 						// cout << "cam: " << p << endl;
 						frame_poses.push_back(CPose3D(p));
 					}

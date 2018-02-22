@@ -131,10 +131,9 @@ void TestDisplay3D()
 			obj1->getPoseZ() - sin(obj1->getPoseX() / 2) * 0.08);
 
 		win.addTextMessage(
-			0.02, 0.98,
-			format(
-				"ball#1 pos: %.02f %.02f %.02f ", obj1->getPoseX(),
-				obj1->getPoseY(), obj1->getPoseZ()),
+			0.02, 0.98, format(
+							"ball#1 pos: %.02f %.02f %.02f ", obj1->getPoseX(),
+							obj1->getPoseY(), obj1->getPoseZ()),
 			mrpt::img::TColorf(0, 0, 1),
 			10,  // An arbitrary ID to always overwrite the same, previous 2D
 			// text message

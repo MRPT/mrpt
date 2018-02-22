@@ -123,16 +123,30 @@ void CICP::TConfigParams::loadFromConfigFile(
 void CICP::TConfigParams::saveToConfigFile(
 	mrpt::config::CConfigFileBase& c, const std::string& s) const
 {
-	MRPT_SAVE_CONFIG_VAR_COMMENT(ICP_algorithm, "The ICP algorithm to use (see enum TICPAlgorithm)");
-	MRPT_SAVE_CONFIG_VAR_COMMENT(ICP_covariance_method,"Method to use for covariance estimation (see enum TICPCovarianceMethod)");
-	MRPT_SAVE_CONFIG_VAR_COMMENT(onlyUniqueRobust,"Only the closest correspondence for each reference point will be kept");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		ICP_algorithm, "The ICP algorithm to use (see enum TICPAlgorithm)");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		ICP_covariance_method,
+		"Method to use for covariance estimation (see enum "
+		"TICPCovarianceMethod)");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		onlyUniqueRobust,
+		"Only the closest correspondence for each reference point will be "
+		"kept");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(maxIterations, "Iterations");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(minAbsStep_trans, "Termination criteria");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(minAbsStep_rot, "Termination criteria");
-	MRPT_SAVE_CONFIG_VAR_COMMENT(thresholdDist, "Initial threshold distance for two points to be a match");
-	MRPT_SAVE_CONFIG_VAR_COMMENT(thresholdAng, "Initial threshold distance for two points to be a match");
-	MRPT_SAVE_CONFIG_VAR_COMMENT(ALFA, "The scale factor for thresholds everytime convergence is achieved");
-	MRPT_SAVE_CONFIG_VAR_COMMENT(smallestThresholdDist,
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		thresholdDist,
+		"Initial threshold distance for two points to be a match");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		thresholdAng,
+		"Initial threshold distance for two points to be a match");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		ALFA,
+		"The scale factor for thresholds everytime convergence is achieved");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		smallestThresholdDist,
 		"The size for threshold such that iterations will stop, "
 		"since it is considered precise enough.");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(covariance_varPoints, "");

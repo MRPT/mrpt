@@ -40,7 +40,7 @@ void thread_server()
 #else
 			mrpt::system::LVL_ERROR
 #endif
-		);
+			);
 		std::unique_ptr<CClientTCPSocket> client = server.accept(2000);
 
 		if (client)

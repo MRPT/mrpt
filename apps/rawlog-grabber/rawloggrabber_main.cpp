@@ -344,12 +344,15 @@ int main(int argc, char** argv)
 												"   IMU angles (degrees): "
 												"(yaw,pitch,roll)=(%.06f, "
 												"%.06f, %.06f)",
-												RAD2DEG(imu->rawMeasurements
-															[IMU_YAW]),
-												RAD2DEG(imu->rawMeasurements
-															[IMU_PITCH]),
-												RAD2DEG(imu->rawMeasurements
-															[IMU_ROLL]))
+												RAD2DEG(
+													imu->rawMeasurements
+														[IMU_YAW]),
+												RAD2DEG(
+													imu->rawMeasurements
+														[IMU_PITCH]),
+												RAD2DEG(
+													imu->rawMeasurements
+														[IMU_ROLL]))
 										 << endl;
 								}
 							}

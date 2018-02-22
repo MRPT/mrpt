@@ -658,7 +658,6 @@ void CHokuyoURG::setScanInterval(unsigned int skipScanCount)
 	m_scan_interval = skipScanCount;
 }
 unsigned int CHokuyoURG::getScanInterval() const { return m_scan_interval; }
-
 bool CHokuyoURG::setMotorSpeed(int motoSpeed_rpm)
 {
 	char rcv_status0, rcv_status1;

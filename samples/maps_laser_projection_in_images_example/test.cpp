@@ -81,7 +81,7 @@ void TestLaser2Imgs()
 		cout << "Reading act/oct pair from rawlog..." << endl;
 		auto arch = mrpt::serialization::archiveFrom(rawlogFile);
 		if (!CRawlog::readActionObservationPair(
-				arch , action, observations, rawlogEntry))
+				arch, action, observations, rawlogEntry))
 			break;  // file EOF
 
 		// CAMERA............

@@ -285,9 +285,9 @@ void TestBayesianTracking()
 
 		// Simulate noisy observation:
 		float realBearing = atan2(y, x);
-		float obsBearing =
-			realBearing + BEARING_SENSOR_NOISE_STD *
-							  getRandomGenerator().drawGaussian1D_normalized();
+		float obsBearing = realBearing +
+						   BEARING_SENSOR_NOISE_STD *
+							   getRandomGenerator().drawGaussian1D_normalized();
 		printf(
 			"Real/Simulated bearing: %.03f / %.03f deg\n", RAD2DEG(realBearing),
 			RAD2DEG(obsBearing));

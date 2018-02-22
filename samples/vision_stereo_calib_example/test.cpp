@@ -117,10 +117,11 @@ int TestStereoCalibrate(int argc, char** argv)
 				view2->setImageView(
 					calib_imgs[i].right.img_rectified);  // img_checkboard );
 
-				win.setWindowTitle(mrpt::format(
-					"Detected corners: %u / %u",
-					static_cast<unsigned int>(i + 1),
-					static_cast<unsigned int>(nPairs)));
+				win.setWindowTitle(
+					mrpt::format(
+						"Detected corners: %u / %u",
+						static_cast<unsigned int>(i + 1),
+						static_cast<unsigned int>(nPairs)));
 
 				win.unlockAccess3DScene();
 				win.repaint();

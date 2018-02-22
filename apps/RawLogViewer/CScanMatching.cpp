@@ -110,164 +110,388 @@ CScanMatching::CScanMatching(wxWindow* parent, wxWindowID)
 	wxFlexGridSizer* FlexGridSizer1;
 	wxFlexGridSizer* FlexGridSizer11;
 	wxStaticBoxSizer* StaticBoxSizer5;
-	
-	Create(parent, wxID_ANY, _("Scan Matching Experimenting Module"), wxDefaultPosition, wxDefaultSize, wxCAPTION|wxDEFAULT_DIALOG_STYLE|wxSYSTEM_MENU|wxRESIZE_BORDER|wxCLOSE_BOX|wxMAXIMIZE_BOX|wxMINIMIZE_BOX, _T("wxID_ANY"));
-	SetMinSize(wxSize(200,200));
+
+	Create(
+		parent, wxID_ANY, _("Scan Matching Experimenting Module"),
+		wxDefaultPosition, wxDefaultSize,
+		wxCAPTION | wxDEFAULT_DIALOG_STYLE | wxSYSTEM_MENU | wxRESIZE_BORDER |
+			wxCLOSE_BOX | wxMAXIMIZE_BOX | wxMINIMIZE_BOX,
+		_T("wxID_ANY"));
+	SetMinSize(wxSize(200, 200));
 	FlexGridSizer1 = new wxFlexGridSizer(1, 1, 0, 0);
 	FlexGridSizer1->AddGrowableCol(0);
 	FlexGridSizer1->AddGrowableRow(0);
-	SplitterWindow1 = new wxSplitterWindow(this, ID_SPLITTERWINDOW1, wxDefaultPosition, wxDefaultSize, wxSP_3D|wxSP_LIVE_UPDATE, _T("ID_SPLITTERWINDOW1"));
-	SplitterWindow1->SetMinSize(wxSize(50,50));
+	SplitterWindow1 = new wxSplitterWindow(
+		this, ID_SPLITTERWINDOW1, wxDefaultPosition, wxDefaultSize,
+		wxSP_3D | wxSP_LIVE_UPDATE, _T("ID_SPLITTERWINDOW1"));
+	SplitterWindow1->SetMinSize(wxSize(50, 50));
 	SplitterWindow1->SetMinimumPaneSize(50);
-	Panel1 = new wxPanel(SplitterWindow1, ID_PANEL1, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL1"));
-	Panel1->SetMinSize(wxSize(100,-1));
+	Panel1 = new wxPanel(
+		SplitterWindow1, ID_PANEL1, wxDefaultPosition, wxDefaultSize,
+		wxTAB_TRAVERSAL, _T("ID_PANEL1"));
+	Panel1->SetMinSize(wxSize(100, -1));
 	FlexGridSizer2 = new wxFlexGridSizer(4, 1, 0, 0);
 	FlexGridSizer2->AddGrowableCol(0);
 	FlexGridSizer2->AddGrowableRow(1);
 	FlexGridSizer2->AddGrowableRow(2);
 	FlexGridSizer2->AddGrowableRow(3);
-	StaticBoxSizer1 = new wxStaticBoxSizer(wxHORIZONTAL, Panel1, _("Observation indexes"));
+	StaticBoxSizer1 =
+		new wxStaticBoxSizer(wxHORIZONTAL, Panel1, _("Observation indexes"));
 	FlexGridSizer5 = new wxFlexGridSizer(2, 1, 0, 0);
 	FlexGridSizer5->AddGrowableCol(0);
 	FlexGridSizer13 = new wxFlexGridSizer(0, 2, 0, 0);
 	FlexGridSizer13->AddGrowableCol(0);
-	StaticText2 = new wxStaticText(Panel1, ID_STATICTEXT2, _("Enter the rawlog indexes of the observations\n to use for generating the maps to align:"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT2"));
-	FlexGridSizer13->Add(StaticText2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	btnHelp = new wxBitmapButton(Panel1, ID_BITMAPBUTTON1, wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_INFORMATION")),wxART_BUTTON), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW, wxDefaultValidator, _T("ID_BITMAPBUTTON1"));
-	FlexGridSizer13->Add(btnHelp, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer5->Add(FlexGridSizer13, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+	StaticText2 = new wxStaticText(
+		Panel1, ID_STATICTEXT2,
+		_("Enter the rawlog indexes of the observations\n to use for "
+		  "generating the maps to align:"),
+		wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT2"));
+	FlexGridSizer13->Add(
+		StaticText2, 1,
+		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+	btnHelp = new wxBitmapButton(
+		Panel1, ID_BITMAPBUTTON1,
+		wxArtProvider::GetBitmap(
+			wxART_MAKE_ART_ID_FROM_STR(_T("wxART_INFORMATION")), wxART_BUTTON),
+		wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW, wxDefaultValidator,
+		_T("ID_BITMAPBUTTON1"));
+	FlexGridSizer13->Add(
+		btnHelp, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
+		5);
+	FlexGridSizer5->Add(
+		FlexGridSizer13, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
 	FlexGridSizer6 = new wxFlexGridSizer(0, 2, 0, 0);
 	FlexGridSizer6->AddGrowableCol(1);
-	StaticText3 = new wxStaticText(Panel1, ID_STATICTEXT3, _("First (reference):"), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT, _T("ID_STATICTEXT3"));
-	FlexGridSizer6->Add(StaticText3, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
-	edFirst = new wxTextCtrl(Panel1, ID_TEXTCTRL2, _("0"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL2"));
-	FlexGridSizer6->Add(edFirst, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
-	StaticText4 = new wxStaticText(Panel1, ID_STATICTEXT4, _("Second (to align with first):"), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT, _T("ID_STATICTEXT4"));
-	FlexGridSizer6->Add(StaticText4, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
-	edSecond = new wxTextCtrl(Panel1, ID_TEXTCTRL3, _("0"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL3"));
-	FlexGridSizer6->Add(edSecond, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
-	FlexGridSizer5->Add(FlexGridSizer6, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
-	StaticBoxSizer1->Add(FlexGridSizer5, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
-	FlexGridSizer2->Add(StaticBoxSizer1, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
-	StaticBoxSizer5 = new wxStaticBoxSizer(wxHORIZONTAL, Panel1, _("Config of the ICP algorithm:"));
-	edOptICP = new wxTextCtrl(Panel1, ID_TEXTCTRL6, _("; Options for CICP::TConfigParams. See the MRPT reference for further information\n; -------------------------------------------------------------------------------------\n[InitialPosition]\nx=0 ; The initial position for the iterative ICP algorithm\ny=0 ; x/y in meters, phi in degrees\nphi_DEG=0\n\n[ICP]\n; The maximum number of iterations to execute if convergence is not achieved before\nmaxIterations=40 \n\n; Initial maximum distance for matching a pair of points\nthresholdDist=0.75 \n\n; An angular factor (in degrees) to increase the matching distance for distant points.\nthresholdAng_DEG=0.15 \n\n; After convergence, the thresholds are multiplied by this constant and ICP keep running (provides finer matching)\nALFA=0.30 \n\n; This is the smallest the distance threshold can become after stopping ICP and accepting the result.\nsmallestThresholdDist=0.10\n\n; 1: Use the closest points only, 0: Use all the correspondences within the threshold (more robust sometimes, but slower)\nonlyClosestCorrespondences=1 \n\n; This is the variance in X & Y of the input points, used to scale\n; the covariance of the output estimation (given as a 2D+heading Gaussian).\n; Refer to ScanMatching::leastSquareErrorRigidTransformation\ncovariance_varPoints=0.004\n\n\n; Whether to perform a RANSAC step after convergence, to improve\n; the result. \ndoRANSAC=0\n\n; Parameters for the RANSAC step. See reference for ScanMatching::robustRigidTransformation\nransac_minSetSize=3\nransac_maxSetSize=20\nransac_mahalanobisDistanceThreshold=3.0\nransac_nSimulations=100\nnormalizationStd=0.02\n"), wxDefaultPosition, wxSize(300,87), wxTE_MULTILINE|wxHSCROLL|wxVSCROLL, wxDefaultValidator, _T("ID_TEXTCTRL6"));
-	wxFont edOptICPFont(8,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,_T("Monospace"),wxFONTENCODING_DEFAULT);
+	StaticText3 = new wxStaticText(
+		Panel1, ID_STATICTEXT3, _("First (reference):"), wxDefaultPosition,
+		wxDefaultSize, wxALIGN_RIGHT, _T("ID_STATICTEXT3"));
+	FlexGridSizer6->Add(
+		StaticText3, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	edFirst = new wxTextCtrl(
+		Panel1, ID_TEXTCTRL2, _("0"), wxDefaultPosition, wxDefaultSize, 0,
+		wxDefaultValidator, _T("ID_TEXTCTRL2"));
+	FlexGridSizer6->Add(
+		edFirst, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	StaticText4 = new wxStaticText(
+		Panel1, ID_STATICTEXT4, _("Second (to align with first):"),
+		wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT, _T("ID_STATICTEXT4"));
+	FlexGridSizer6->Add(
+		StaticText4, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	edSecond = new wxTextCtrl(
+		Panel1, ID_TEXTCTRL3, _("0"), wxDefaultPosition, wxDefaultSize, 0,
+		wxDefaultValidator, _T("ID_TEXTCTRL3"));
+	FlexGridSizer6->Add(
+		edSecond, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer5->Add(
+		FlexGridSizer6, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	StaticBoxSizer1->Add(
+		FlexGridSizer5, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer2->Add(
+		StaticBoxSizer1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	StaticBoxSizer5 = new wxStaticBoxSizer(
+		wxHORIZONTAL, Panel1, _("Config of the ICP algorithm:"));
+	edOptICP = new wxTextCtrl(
+		Panel1, ID_TEXTCTRL6,
+		_("; Options for CICP::TConfigParams. See the MRPT reference for "
+		  "further information\n; "
+		  "--------------------------------------------------------------------"
+		  "-----------------\n[InitialPosition]\nx=0 ; The initial position "
+		  "for the iterative ICP algorithm\ny=0 ; x/y in meters, phi in "
+		  "degrees\nphi_DEG=0\n\n[ICP]\n; The maximum number of iterations to "
+		  "execute if convergence is not achieved before\nmaxIterations=40 "
+		  "\n\n; Initial maximum distance for matching a pair of "
+		  "points\nthresholdDist=0.75 \n\n; An angular factor (in degrees) to "
+		  "increase the matching distance for distant "
+		  "points.\nthresholdAng_DEG=0.15 \n\n; After convergence, the "
+		  "thresholds are multiplied by this constant and ICP keep running "
+		  "(provides finer matching)\nALFA=0.30 \n\n; This is the smallest the "
+		  "distance threshold can become after stopping ICP and accepting the "
+		  "result.\nsmallestThresholdDist=0.10\n\n; 1: Use the closest points "
+		  "only, 0: Use all the correspondences within the threshold (more "
+		  "robust sometimes, but slower)\nonlyClosestCorrespondences=1 \n\n; "
+		  "This is the variance in X & Y of the input points, used to scale\n; "
+		  "the covariance of the output estimation (given as a 2D+heading "
+		  "Gaussian).\n; Refer to "
+		  "ScanMatching::leastSquareErrorRigidTransformation\ncovariance_"
+		  "varPoints=0.004\n\n\n; Whether to perform a RANSAC step after "
+		  "convergence, to improve\n; the result. \ndoRANSAC=0\n\n; Parameters "
+		  "for the RANSAC step. See reference for "
+		  "ScanMatching::robustRigidTransformation\nransac_minSetSize="
+		  "3\nransac_maxSetSize=20\nransac_mahalanobisDistanceThreshold=3."
+		  "0\nransac_nSimulations=100\nnormalizationStd=0.02\n"),
+		wxDefaultPosition, wxSize(300, 87),
+		wxTE_MULTILINE | wxHSCROLL | wxVSCROLL, wxDefaultValidator,
+		_T("ID_TEXTCTRL6"));
+	wxFont edOptICPFont(
+		8, wxTELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL, false, _T("Monospace"),
+		wxFONTENCODING_DEFAULT);
 	edOptICP->SetFont(edOptICPFont);
-	StaticBoxSizer5->Add(edOptICP, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
-	FlexGridSizer2->Add(StaticBoxSizer5, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 2);
-	StaticBoxSizer3 = new wxStaticBoxSizer(wxHORIZONTAL, Panel1, _("Config of the first (reference) map:"));
+	StaticBoxSizer5->Add(
+		edOptICP, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer2->Add(
+		StaticBoxSizer5, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
+	StaticBoxSizer3 = new wxStaticBoxSizer(
+		wxHORIZONTAL, Panel1, _("Config of the first (reference) map:"));
 	FlexGridSizer3 = new wxFlexGridSizer(2, 1, 0, 0);
 	FlexGridSizer3->AddGrowableCol(0);
 	FlexGridSizer3->AddGrowableRow(1);
 	FlexGridSizer8 = new wxFlexGridSizer(1, 3, 0, 0);
 	FlexGridSizer8->AddGrowableCol(0);
-	StaticText5 = new wxStaticText(Panel1, ID_STATICTEXT5, _("Map type:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT5"));
-	FlexGridSizer8->Add(StaticText5, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	rbPoint = new wxRadioButton(Panel1, ID_RADIOBUTTON1, _("Point map"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_RADIOBUTTON1"));
+	StaticText5 = new wxStaticText(
+		Panel1, ID_STATICTEXT5, _("Map type:"), wxDefaultPosition,
+		wxDefaultSize, 0, _T("ID_STATICTEXT5"));
+	FlexGridSizer8->Add(
+		StaticText5, 1,
+		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+	rbPoint = new wxRadioButton(
+		Panel1, ID_RADIOBUTTON1, _("Point map"), wxDefaultPosition,
+		wxDefaultSize, 0, wxDefaultValidator, _T("ID_RADIOBUTTON1"));
 	rbPoint->SetValue(true);
-	FlexGridSizer8->Add(rbPoint, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	rbGrid = new wxRadioButton(Panel1, ID_RADIOBUTTON2, _("Occupancy grid map"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_RADIOBUTTON2"));
-	FlexGridSizer8->Add(rbGrid, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer3->Add(FlexGridSizer8, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
-	Notebook1 = new wxNotebook(Panel1, ID_NOTEBOOK1, wxDefaultPosition, wxDefaultSize, 0, _T("ID_NOTEBOOK1"));
-	edOptRefPnt = new wxTextCtrl(Notebook1, ID_TEXTCTRL4, _("; Configuration for CPointsMap::TInsertionOptions - See MRPT reference for help\n; ---------------------------------------------------------------------------------\n[InsertionOptions]\nminDistBetweenLaserPoints=0.05 ; The minimum distance between points (in 3D): If two points are too close, one of them is not inserted into the map.\nalso_interpolate=0 ; If set to true, far points (<1m) are interpolated with samples at minDistSqrBetweenLaserPoints intervals (Default is false).\ndisableDeletion=1 ; If set to false (default) points in the same plane as the inserted scan and inside the free space, are erased.\nfuseWithExisting=0 ; If set to true (default), inserted points are fused with previously existent ones.\nisPlanarMap=1 ; If set to true, only HORIZONTAL (i.e. XY plane) measurements will be inserted in the map. Default value is false, thus 3D maps are generated\nmaxDistForInterpolatePoints=1 ; The maximum distance between two points to interpolate between them (ONLY when also_interpolate=true).\n"), wxDefaultPosition, wxSize(300,87), wxTE_MULTILINE|wxHSCROLL|wxVSCROLL, wxDefaultValidator, _T("ID_TEXTCTRL4"));
-	wxFont edOptRefPntFont(8,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,_T("Monospace"),wxFONTENCODING_DEFAULT);
+	FlexGridSizer8->Add(
+		rbPoint, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
+		5);
+	rbGrid = new wxRadioButton(
+		Panel1, ID_RADIOBUTTON2, _("Occupancy grid map"), wxDefaultPosition,
+		wxDefaultSize, 0, wxDefaultValidator, _T("ID_RADIOBUTTON2"));
+	FlexGridSizer8->Add(
+		rbGrid, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer3->Add(
+		FlexGridSizer8, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	Notebook1 = new wxNotebook(
+		Panel1, ID_NOTEBOOK1, wxDefaultPosition, wxDefaultSize, 0,
+		_T("ID_NOTEBOOK1"));
+	edOptRefPnt = new wxTextCtrl(
+		Notebook1, ID_TEXTCTRL4,
+		_("; Configuration for CPointsMap::TInsertionOptions - See MRPT "
+		  "reference for help\n; "
+		  "--------------------------------------------------------------------"
+		  "-------------\n[InsertionOptions]\nminDistBetweenLaserPoints=0.05 ; "
+		  "The minimum distance between points (in 3D): If two points are too "
+		  "close, one of them is not inserted into the "
+		  "map.\nalso_interpolate=0 ; If set to true, far points (<1m) are "
+		  "interpolated with samples at minDistSqrBetweenLaserPoints intervals "
+		  "(Default is false).\ndisableDeletion=1 ; If set to false (default) "
+		  "points in the same plane as the inserted scan and inside the free "
+		  "space, are erased.\nfuseWithExisting=0 ; If set to true (default), "
+		  "inserted points are fused with previously existent "
+		  "ones.\nisPlanarMap=1 ; If set to true, only HORIZONTAL (i.e. XY "
+		  "plane) measurements will be inserted in the map. Default value is "
+		  "false, thus 3D maps are generated\nmaxDistForInterpolatePoints=1 ; "
+		  "The maximum distance between two points to interpolate between them "
+		  "(ONLY when also_interpolate=true).\n"),
+		wxDefaultPosition, wxSize(300, 87),
+		wxTE_MULTILINE | wxHSCROLL | wxVSCROLL, wxDefaultValidator,
+		_T("ID_TEXTCTRL4"));
+	wxFont edOptRefPntFont(
+		8, wxTELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL, false, _T("Monospace"),
+		wxFONTENCODING_DEFAULT);
 	edOptRefPnt->SetFont(edOptRefPntFont);
-	edOptRefGrid = new wxTextCtrl(Notebook1, ID_TEXTCTRL9, _("; Configuration for COccupancyGridMap2D::TInsertionOptions - See MRPT reference for help\n; ---------------------------------------------------------------------------------\n[Construction]\nresolution=0.05 ; The grid cell size, in meters.\n\n[InsertionOptions]\nmapAltitude=0 ; The height (z axis) over the ground at which this grid map is at\nuseMapAltitude=0 ; If this is set to 1, only observations that match the grid height are inserted in the map.\nmaxDistanceInsertion=40 ; The maximum distance from the scan origin for updating cells, in meters\nmaxOccupancyUpdateCertainty=0.8 ; The \"certainty\" used to update the cells using the Bayes update formulas. Values are in the range 0.5 (No update) to 1.0 (last value is taken forgetting all old readings of that cell).\nconsiderInvalidRangesAsFreeSpace=1 ; Whether to consider \"lost-ranges\" as free space.\n\n"), wxDefaultPosition, wxSize(300,87), wxTE_MULTILINE|wxHSCROLL|wxVSCROLL, wxDefaultValidator, _T("ID_TEXTCTRL9"));
-	wxFont edOptRefGridFont(8,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,_T("Monospace"),wxFONTENCODING_DEFAULT);
+	edOptRefGrid = new wxTextCtrl(
+		Notebook1, ID_TEXTCTRL9,
+		_("; Configuration for COccupancyGridMap2D::TInsertionOptions - See "
+		  "MRPT reference for help\n; "
+		  "--------------------------------------------------------------------"
+		  "-------------\n[Construction]\nresolution=0.05 ; The grid cell "
+		  "size, in meters.\n\n[InsertionOptions]\nmapAltitude=0 ; The height "
+		  "(z axis) over the ground at which this grid map is "
+		  "at\nuseMapAltitude=0 ; If this is set to 1, only observations that "
+		  "match the grid height are inserted in the "
+		  "map.\nmaxDistanceInsertion=40 ; The maximum distance from the scan "
+		  "origin for updating cells, in "
+		  "meters\nmaxOccupancyUpdateCertainty=0.8 ; The \"certainty\" used to "
+		  "update the cells using the Bayes update formulas. Values are in the "
+		  "range 0.5 (No update) to 1.0 (last value is taken forgetting all "
+		  "old readings of that cell).\nconsiderInvalidRangesAsFreeSpace=1 ; "
+		  "Whether to consider \"lost-ranges\" as free space.\n\n"),
+		wxDefaultPosition, wxSize(300, 87),
+		wxTE_MULTILINE | wxHSCROLL | wxVSCROLL, wxDefaultValidator,
+		_T("ID_TEXTCTRL9"));
+	wxFont edOptRefGridFont(
+		8, wxTELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL, false, _T("Monospace"),
+		wxFONTENCODING_DEFAULT);
 	edOptRefGrid->SetFont(edOptRefGridFont);
 	Notebook1->AddPage(edOptRefPnt, _("Point map config"), false);
 	Notebook1->AddPage(edOptRefGrid, _("Grid map config"), false);
-	FlexGridSizer3->Add(Notebook1, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
-	StaticBoxSizer3->Add(FlexGridSizer3, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
-	FlexGridSizer2->Add(StaticBoxSizer3, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 2);
-	StaticBoxSizer4 = new wxStaticBoxSizer(wxHORIZONTAL, Panel1, _("Config of the second (to align) point map:"));
-	edOptAlignMap = new wxTextCtrl(Panel1, ID_TEXTCTRL7, _("; Configuration for CPointsMap::TInsertionOptions - See MRPT reference for help\n; ---------------------------------------------------------------------------------\n[InsertionOptions]\nminDistBetweenLaserPoints=0.05 ; The minimum distance between points (in 3D): If two points are too close, one of them is not inserted into the map.\nalso_interpolate=0 ; If set to true, far points (<1m) are interpolated with samples at minDistSqrBetweenLaserPoints intervals (Default is false).\ndisableDeletion=1 ; If set to false (default) points in the same plane as the inserted scan and inside the free space, are erased.\nfuseWithExisting=0 ; If set to true (default), inserted points are fused with previously existent ones.\nisPlanarMap=1 ; If set to true, only HORIZONTAL (i.e. XY plane) measurements will be inserted in the map. Default value is false, thus 3D maps are generated\nmaxDistForInterpolatePoints=1 ; The maximum distance between two points to interpolate between them (ONLY when also_interpolate=true).\n"), wxDefaultPosition, wxSize(300,87), wxTE_MULTILINE|wxHSCROLL|wxVSCROLL, wxDefaultValidator, _T("ID_TEXTCTRL7"));
-	wxFont edOptAlignMapFont(8,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,_T("Monospace"),wxFONTENCODING_DEFAULT);
+	FlexGridSizer3->Add(
+		Notebook1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
+	StaticBoxSizer3->Add(
+		FlexGridSizer3, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
+	FlexGridSizer2->Add(
+		StaticBoxSizer3, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
+	StaticBoxSizer4 = new wxStaticBoxSizer(
+		wxHORIZONTAL, Panel1, _("Config of the second (to align) point map:"));
+	edOptAlignMap = new wxTextCtrl(
+		Panel1, ID_TEXTCTRL7,
+		_("; Configuration for CPointsMap::TInsertionOptions - See MRPT "
+		  "reference for help\n; "
+		  "--------------------------------------------------------------------"
+		  "-------------\n[InsertionOptions]\nminDistBetweenLaserPoints=0.05 ; "
+		  "The minimum distance between points (in 3D): If two points are too "
+		  "close, one of them is not inserted into the "
+		  "map.\nalso_interpolate=0 ; If set to true, far points (<1m) are "
+		  "interpolated with samples at minDistSqrBetweenLaserPoints intervals "
+		  "(Default is false).\ndisableDeletion=1 ; If set to false (default) "
+		  "points in the same plane as the inserted scan and inside the free "
+		  "space, are erased.\nfuseWithExisting=0 ; If set to true (default), "
+		  "inserted points are fused with previously existent "
+		  "ones.\nisPlanarMap=1 ; If set to true, only HORIZONTAL (i.e. XY "
+		  "plane) measurements will be inserted in the map. Default value is "
+		  "false, thus 3D maps are generated\nmaxDistForInterpolatePoints=1 ; "
+		  "The maximum distance between two points to interpolate between them "
+		  "(ONLY when also_interpolate=true).\n"),
+		wxDefaultPosition, wxSize(300, 87),
+		wxTE_MULTILINE | wxHSCROLL | wxVSCROLL, wxDefaultValidator,
+		_T("ID_TEXTCTRL7"));
+	wxFont edOptAlignMapFont(
+		8, wxTELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL, false, _T("Monospace"),
+		wxFONTENCODING_DEFAULT);
 	edOptAlignMap->SetFont(edOptAlignMapFont);
-	StaticBoxSizer4->Add(edOptAlignMap, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
-	FlexGridSizer2->Add(StaticBoxSizer4, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 2);
+	StaticBoxSizer4->Add(
+		edOptAlignMap, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer2->Add(
+		StaticBoxSizer4, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
 	Panel1->SetSizer(FlexGridSizer2);
 	FlexGridSizer2->Fit(Panel1);
 	FlexGridSizer2->SetSizeHints(Panel1);
-	Panel2 = new wxPanel(SplitterWindow1, ID_PANEL2, wxDefaultPosition, wxSize(200,200), wxTAB_TRAVERSAL, _T("ID_PANEL2"));
+	Panel2 = new wxPanel(
+		SplitterWindow1, ID_PANEL2, wxDefaultPosition, wxSize(200, 200),
+		wxTAB_TRAVERSAL, _T("ID_PANEL2"));
 	FlexGridSizer4 = new wxFlexGridSizer(1, 1, 0, 0);
 	FlexGridSizer4->AddGrowableCol(0);
 	FlexGridSizer4->AddGrowableRow(0);
-	SplitterWindow2 = new wxSplitterWindow(Panel2, ID_SPLITTERWINDOW2, wxDefaultPosition, wxDefaultSize, wxSP_3D, _T("ID_SPLITTERWINDOW2"));
-	SplitterWindow2->SetMinSize(wxSize(10,10));
+	SplitterWindow2 = new wxSplitterWindow(
+		Panel2, ID_SPLITTERWINDOW2, wxDefaultPosition, wxDefaultSize, wxSP_3D,
+		_T("ID_SPLITTERWINDOW2"));
+	SplitterWindow2->SetMinSize(wxSize(10, 10));
 	SplitterWindow2->SetMinimumPaneSize(10);
-	Panel3 = new wxPanel(SplitterWindow2, ID_PANEL3, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL3"));
+	Panel3 = new wxPanel(
+		SplitterWindow2, ID_PANEL3, wxDefaultPosition, wxDefaultSize,
+		wxTAB_TRAVERSAL, _T("ID_PANEL3"));
 	FlexGridSizer9 = new wxFlexGridSizer(3, 1, 0, 0);
 	FlexGridSizer9->AddGrowableCol(0);
 	FlexGridSizer9->AddGrowableRow(1);
-	StaticText6 = new wxStaticText(Panel3, ID_STATICTEXT6, _("Scan Matching Status:\n(Reference map: Blue or gridmap; Map to be aligned: Red)"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT6"));
-	FlexGridSizer9->Add(StaticText6, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 3);
-	m_plot3D = new CMyGLCanvas(Panel3,ID_XY_GLCANVAS,wxDefaultPosition,wxDefaultSize,wxTAB_TRAVERSAL,_T("ID_XY_GLCANVAS"));
-	FlexGridSizer9->Add(m_plot3D, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
-	Panel5 = new wxPanel(Panel3, ID_PANEL5, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL5"));
+	StaticText6 = new wxStaticText(
+		Panel3, ID_STATICTEXT6, _("Scan Matching Status:\n(Reference map: Blue "
+								  "or gridmap; Map to be aligned: Red)"),
+		wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT6"));
+	FlexGridSizer9->Add(
+		StaticText6, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 3);
+	m_plot3D = new CMyGLCanvas(
+		Panel3, ID_XY_GLCANVAS, wxDefaultPosition, wxDefaultSize,
+		wxTAB_TRAVERSAL, _T("ID_XY_GLCANVAS"));
+	FlexGridSizer9->Add(
+		m_plot3D, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	Panel5 = new wxPanel(
+		Panel3, ID_PANEL5, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL,
+		_T("ID_PANEL5"));
 	FlexGridSizer7 = new wxFlexGridSizer(2, 1, 0, 0);
 	FlexGridSizer7->AddGrowableCol(0);
 	FlexGridSizer7->AddGrowableRow(0);
 	FlexGridSizer11 = new wxFlexGridSizer(1, 3, 0, 0);
 	FlexGridSizer11->AddGrowableCol(1);
-	btnRunICP = new wxButton(Panel5, ID_BUTTON1, _("Run ICP"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON1"));
+	btnRunICP = new wxButton(
+		Panel5, ID_BUTTON1, _("Run ICP"), wxDefaultPosition, wxDefaultSize, 0,
+		wxDefaultValidator, _T("ID_BUTTON1"));
 	btnRunICP->SetDefault();
-	FlexGridSizer11->Add(btnRunICP, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	cbAnimate = new wxCheckBox(Panel5, ID_CHECKBOX1, _("Animate step by step"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1"));
+	FlexGridSizer11->Add(
+		btnRunICP, 1,
+		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+	cbAnimate = new wxCheckBox(
+		Panel5, ID_CHECKBOX1, _("Animate step by step"), wxDefaultPosition,
+		wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1"));
 	cbAnimate->SetValue(false);
-	FlexGridSizer11->Add(cbAnimate, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	btnClose = new wxButton(Panel5, ID_BUTTON2, _("CLOSE"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON2"));
-	FlexGridSizer11->Add(btnClose, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer7->Add(FlexGridSizer11, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+	FlexGridSizer11->Add(
+		cbAnimate, 1,
+		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+	btnClose = new wxButton(
+		Panel5, ID_BUTTON2, _("CLOSE"), wxDefaultPosition, wxDefaultSize, 0,
+		wxDefaultValidator, _T("ID_BUTTON2"));
+	FlexGridSizer11->Add(
+		btnClose, 1, wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer7->Add(
+		FlexGridSizer11, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
 	FlexGridSizer12 = new wxFlexGridSizer(1, 2, 0, 0);
 	FlexGridSizer12->AddGrowableCol(1);
-	txtStep = new wxStaticText(Panel5, ID_STATICTEXT1, _("Step: 0 / 0"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT1"));
-	FlexGridSizer12->Add(txtStep, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	pbSteps = new wxGauge(Panel5, ID_GAUGE1, 100, wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_GAUGE1"));
-	FlexGridSizer12->Add(pbSteps, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
-	FlexGridSizer7->Add(FlexGridSizer12, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+	txtStep = new wxStaticText(
+		Panel5, ID_STATICTEXT1, _("Step: 0 / 0"), wxDefaultPosition,
+		wxDefaultSize, 0, _T("ID_STATICTEXT1"));
+	FlexGridSizer12->Add(
+		txtStep, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
+		5);
+	pbSteps = new wxGauge(
+		Panel5, ID_GAUGE1, 100, wxDefaultPosition, wxDefaultSize, 0,
+		wxDefaultValidator, _T("ID_GAUGE1"));
+	FlexGridSizer12->Add(
+		pbSteps, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer7->Add(
+		FlexGridSizer12, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
 	Panel5->SetSizer(FlexGridSizer7);
 	FlexGridSizer7->Fit(Panel5);
 	FlexGridSizer7->SetSizeHints(Panel5);
-	FlexGridSizer9->Add(Panel5, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+	FlexGridSizer9->Add(
+		Panel5, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
 	Panel3->SetSizer(FlexGridSizer9);
 	FlexGridSizer9->Fit(Panel3);
 	FlexGridSizer9->SetSizeHints(Panel3);
-	Panel4 = new wxPanel(SplitterWindow2, ID_PANEL4, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL4"));
+	Panel4 = new wxPanel(
+		SplitterWindow2, ID_PANEL4, wxDefaultPosition, wxDefaultSize,
+		wxTAB_TRAVERSAL, _T("ID_PANEL4"));
 	FlexGridSizer10 = new wxFlexGridSizer(1, 1, 0, 0);
 	FlexGridSizer10->AddGrowableCol(0);
 	FlexGridSizer10->AddGrowableRow(0);
-	txtLog = new wxTextCtrl(Panel4, ID_TEXTCTRL1, _("(Log messages)"), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL|wxVSCROLL, wxDefaultValidator, _T("ID_TEXTCTRL1"));
-	wxFont txtLogFont(8,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,_T("Monospace"),wxFONTENCODING_DEFAULT);
+	txtLog = new wxTextCtrl(
+		Panel4, ID_TEXTCTRL1, _("(Log messages)"), wxDefaultPosition,
+		wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY | wxHSCROLL | wxVSCROLL,
+		wxDefaultValidator, _T("ID_TEXTCTRL1"));
+	wxFont txtLogFont(
+		8, wxTELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL, false, _T("Monospace"),
+		wxFONTENCODING_DEFAULT);
 	txtLog->SetFont(txtLogFont);
-	FlexGridSizer10->Add(txtLog, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+	FlexGridSizer10->Add(
+		txtLog, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
 	Panel4->SetSizer(FlexGridSizer10);
 	FlexGridSizer10->Fit(Panel4);
 	FlexGridSizer10->SetSizeHints(Panel4);
 	SplitterWindow2->SplitHorizontally(Panel3, Panel4);
-	FlexGridSizer4->Add(SplitterWindow2, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+	FlexGridSizer4->Add(
+		SplitterWindow2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
 	Panel2->SetSizer(FlexGridSizer4);
 	FlexGridSizer4->SetSizeHints(Panel2);
 	SplitterWindow1->SplitVertically(Panel1, Panel2);
-	FlexGridSizer1->Add(SplitterWindow1, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+	FlexGridSizer1->Add(
+		SplitterWindow1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
 	SetSizer(FlexGridSizer1);
 	FlexGridSizer1->Fit(this);
 	FlexGridSizer1->SetSizeHints(this);
 	Center();
-	
-	Connect(ID_BITMAPBUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CScanMatching::OnbtnHelpClick);
-	Connect(ID_RADIOBUTTON1,wxEVT_COMMAND_RADIOBUTTON_SELECTED,(wxObjectEventFunction)&CScanMatching::OChangeSelectedMapType);
-	Connect(ID_RADIOBUTTON2,wxEVT_COMMAND_RADIOBUTTON_SELECTED,(wxObjectEventFunction)&CScanMatching::OChangeSelectedMapType);
-	Connect(ID_NOTEBOOK1,wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGING,(wxObjectEventFunction)&CScanMatching::OnNotebook1PageChanging);
-	Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CScanMatching::OnbtnICPClick);
-	Connect(ID_CHECKBOX1,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&CScanMatching::OncbAnimateClick);
-	Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CScanMatching::OnbtnCloseClick);
+
+	Connect(
+		ID_BITMAPBUTTON1, wxEVT_COMMAND_BUTTON_CLICKED,
+		(wxObjectEventFunction)&CScanMatching::OnbtnHelpClick);
+	Connect(
+		ID_RADIOBUTTON1, wxEVT_COMMAND_RADIOBUTTON_SELECTED,
+		(wxObjectEventFunction)&CScanMatching::OChangeSelectedMapType);
+	Connect(
+		ID_RADIOBUTTON2, wxEVT_COMMAND_RADIOBUTTON_SELECTED,
+		(wxObjectEventFunction)&CScanMatching::OChangeSelectedMapType);
+	Connect(
+		ID_NOTEBOOK1, wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGING,
+		(wxObjectEventFunction)&CScanMatching::OnNotebook1PageChanging);
+	Connect(
+		ID_BUTTON1, wxEVT_COMMAND_BUTTON_CLICKED,
+		(wxObjectEventFunction)&CScanMatching::OnbtnICPClick);
+	Connect(
+		ID_CHECKBOX1, wxEVT_COMMAND_CHECKBOX_CLICKED,
+		(wxObjectEventFunction)&CScanMatching::OncbAnimateClick);
+	Connect(
+		ID_BUTTON2, wxEVT_COMMAND_BUTTON_CLICKED,
+		(wxObjectEventFunction)&CScanMatching::OnbtnCloseClick);
 	//*)
 
 	// Initialize 3D view:
 	auto openGLSceneRef = m_plot3D->getOpenGLSceneRef();
-	openGLSceneRef->insert( mrpt::opengl::CGridPlaneXY::Create(
+	openGLSceneRef->insert(
+		mrpt::opengl::CGridPlaneXY::Create(
 			-150, 150, -150, 150, 0 /* z */, 5 /* freq */));
 	openGLSceneRef->insert(
 		mrpt::opengl::stock_objects::CornerXYZSimple(
@@ -326,11 +550,12 @@ class CMyButtonsDisabler
 	}
 };
 
-static void insert_obs_into_map(const CSerializable::Ptr & obj, mrpt::maps::CMetricMap *theMap)
+static void insert_obs_into_map(
+	const CSerializable::Ptr& obj, mrpt::maps::CMetricMap* theMap)
 {
 	if (IS_CLASS(obj, CSensoryFrame))
 	{
-		auto SF= std::dynamic_pointer_cast<CSensoryFrame>(obj);
+		auto SF = std::dynamic_pointer_cast<CSensoryFrame>(obj);
 		SF->insertObservationsInto(theMap);
 	}
 	else if (IS_DERIVED(obj, CObservation))
@@ -508,7 +733,8 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
 			poseEst->getCovarianceAndMean(estCov, estMean);
 
 			m_gl_map_new->setPose(CPose3D(estMean));
-			const mrpt::math::CMatrixFixedNumeric<double, 2, 2> C = estCov.block<2, 2>(0, 0);
+			const mrpt::math::CMatrixFixedNumeric<double, 2, 2> C =
+				estCov.block<2, 2>(0, 0);
 			gl_ellipse->setCovMatrix(C);
 
 			m_plot3D->Refresh();

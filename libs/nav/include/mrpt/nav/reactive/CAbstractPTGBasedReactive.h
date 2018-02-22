@@ -128,9 +128,8 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 	 */
 	CAbstractPTGBasedReactive(
 		CRobot2NavInterface& react_iterf_impl, bool enableConsoleOutput = true,
-		bool enableLogFile = false,
-		const std::string& logFileDirectory =
-			std::string("./reactivenav.logs"));
+		bool enableLogFile = false, const std::string& logFileDirectory =
+										std::string("./reactivenav.logs"));
 
 	virtual ~CAbstractPTGBasedReactive();
 

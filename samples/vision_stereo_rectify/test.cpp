@@ -53,7 +53,8 @@ void TestStereoRectify(int argc, char** argv)
 
 		// Load params from file:
 		mrpt::img::TStereoCamera params;
-		params.loadFromConfigFile("CAMERA_PARAMS", mrpt::config::CConfigFile(sCfgFile));
+		params.loadFromConfigFile(
+			"CAMERA_PARAMS", mrpt::config::CConfigFile(sCfgFile));
 
 		// Prepare rectify map:
 		timlog.enter("rectifyMap.setFromCamParams");
@@ -107,11 +108,10 @@ void TestStereoRectify(int argc, char** argv)
 			5, 5, format("%.02fFPS", win.getRenderingFPS()), TColorf(1, 1, 1),
 			"sans", 15, mrpt::opengl::FILL, 0);
 		win.addTextMessage(
-			5, 25,
-			format(
-				"'r': Switch rectify (Now is: %s) | '+'/'-': Modify "
-				"alpha (Now is: %.02f)",
-				enable_rectify ? "ON" : "OFF", rectifyMap.getAlpha()),
+			5, 25, format(
+					   "'r': Switch rectify (Now is: %s) | '+'/'-': Modify "
+					   "alpha (Now is: %.02f)",
+					   enable_rectify ? "ON" : "OFF", rectifyMap.getAlpha()),
 			TColorf(1, 1, 1), "sans", 15, mrpt::opengl::FILL, 10);
 		win.addTextMessage(
 			5, 50,

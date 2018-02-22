@@ -124,7 +124,6 @@ TEST(CConfigFileMemory, parseVariables)
 	mrpt::config::CConfigFileMemory cfg;
 	cfg.setContent(sampleCfgTxt2);
 
-
 	EXPECT_EQ(cfg.read_int("test", "var1", 0), 5);
 	EXPECT_EQ(cfg.read_int("test", "var2", 0), 10);
 	EXPECT_EQ(cfg.read_int("test", "var3", 0), -30);

@@ -79,8 +79,10 @@ COpenNI2Generic::COpenNI2Generic()
 	if (!this->start())
 	{
 #if MRPT_HAS_OPENNI2
-		THROW_EXCEPTION(mrpt::format(
-			"After initialization:\n %s\n", openni::OpenNI::getExtendedError()))
+		THROW_EXCEPTION(
+			mrpt::format(
+				"After initialization:\n %s\n",
+				openni::OpenNI::getExtendedError()))
 #endif
 	}
 }
@@ -107,9 +109,10 @@ COpenNI2Generic::COpenNI2Generic(
 		if (!this->start())
 		{
 #if MRPT_HAS_OPENNI2
-			THROW_EXCEPTION(mrpt::format(
-				"After initialization:\n %s\n",
-				openni::OpenNI::getExtendedError()))
+			THROW_EXCEPTION(
+				mrpt::format(
+					"After initialization:\n %s\n",
+					openni::OpenNI::getExtendedError()))
 #endif
 		}
 	}
@@ -179,8 +182,9 @@ int COpenNI2Generic::getConnectedDevices()
 
 	const size_t numDevices = oni2InfoArray.getSize();
 	showLog(mrpt::format("[%s]\n", __FUNCTION__));
-	showLog(mrpt::format(
-		" Get device list. %d devices connected.\n", (int)numDevices));
+	showLog(
+		mrpt::format(
+			" Get device list. %d devices connected.\n", (int)numDevices));
 
 	// Search new devices.
 	std::set<int> newDevices;
@@ -1156,11 +1160,10 @@ bool COpenNI2Generic::CDevice::CStream::open(int w, int h, int fps)
 	openni::VideoMode options = m_stream.getVideoMode();
 	m_log << "[" << __FUNCTION__ << "]" << std::endl;
 	m_log << " " << m_strName << std::endl;
-	m_log << " "
-		  << mrpt::format(
-				 "Initial resolution (%d, %d) FPS %d Format %d",
-				 options.getResolutionX(), options.getResolutionY(),
-				 options.getFps(), options.getPixelFormat())
+	m_log << " " << mrpt::format(
+						"Initial resolution (%d, %d) FPS %d Format %d",
+						options.getResolutionX(), options.getResolutionY(),
+						options.getFps(), options.getPixelFormat())
 		  << std::endl;
 	if (m_verbose) printf("DBG: calling setONI2StreamMode()\n");
 	if (setONI2StreamMode(m_stream, w, h, fps, m_format) == false)
@@ -1172,11 +1175,10 @@ bool COpenNI2Generic::CDevice::CStream::open(int w, int h, int fps)
 	if (m_verbose) printf("DBG: returned OK from setONI2StreamMode()\n");
 	if (m_verbose) printf("DBG: calling stream.getVideoMode()\n");
 	options = m_stream.getVideoMode();
-	m_log << " "
-		  << mrpt::format(
-				 "-> (%d, %d) FPS %d Format %d", options.getResolutionX(),
-				 options.getResolutionY(), options.getFps(),
-				 options.getPixelFormat())
+	m_log << " " << mrpt::format(
+						"-> (%d, %d) FPS %d Format %d",
+						options.getResolutionX(), options.getResolutionY(),
+						options.getFps(), options.getPixelFormat())
 		  << std::endl;
 	if (m_verbose)
 		printf(

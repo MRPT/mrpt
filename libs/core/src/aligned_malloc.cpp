@@ -12,7 +12,6 @@
 #include <cstdlib>  // free, realloc, C++17 aligned_alloc
 #include <cstring>  // memset
 
-
 void* mrpt::aligned_calloc(size_t bytes, size_t alignment)
 {
 	void* ptr = mrpt::aligned_malloc(bytes, alignment);
