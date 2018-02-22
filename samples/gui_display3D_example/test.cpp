@@ -191,7 +191,7 @@ void TestDisplay3D()
 			mrpt::opengl::FILL,
 			10  // An arbitrary ID to always overwrite the same, previous 2D
 			// text message
-		);
+			);
 
 		win.addTextMessage(
 			5, -15,  // |X|,|Y|>1 means absolute coordinates, negative means
@@ -204,7 +204,7 @@ void TestDisplay3D()
 			mrpt::opengl::NICE,
 			20  // An arbitrary ID to always overwrite the same, previous 2D
 			// text message
-		);
+			);
 
 		// Show management of (x,y) mouse coordinates and 3D rays:
 		// ------------------------------------------------------------

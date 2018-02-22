@@ -159,7 +159,7 @@ int main(int argc, char** argv)
 
 						// Obtain MOX model output
 						TPose3D MOXmodel_pose =
-								obs->m_readings[enoseID].eNosePoseOnTheRobot;
+							obs->m_readings[enoseID].eNosePoseOnTheRobot;
 						float MOXmodel_estimation = raw_reading;
 						mrpt::system::TTimeStamp MOXmodel_timestamp =
 							obs->timestamp;

@@ -194,8 +194,9 @@ void PbMapVisualizer::viz_cb(pcl::visualization::PCLVisualizer& viz)
 			{
 				Plane& plane_i = pbmap.vPlanes[i];
 				//        sprintf (name, "normal_%u", static_cast<unsigned>(i));
-				name[0] = *(mrpt::format("normal_%u", static_cast<unsigned>(i))
-								.c_str());
+				name[0] =
+					*(mrpt::format("normal_%u", static_cast<unsigned>(i))
+						  .c_str());
 				pcl::PointXYZ pt1, pt2;  // Begin and end points of normal's
 				// arrow for visualization
 				pt1 = pcl::PointXYZ(

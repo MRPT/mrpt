@@ -16,7 +16,6 @@ using namespace mrpt::math;
 using namespace mrpt::system;
 using namespace std;
 
-
 // The error function F(x):
 void myFunction(
 	const CVectorDouble& x, const CVectorDouble& y, CVectorDouble& out_f)

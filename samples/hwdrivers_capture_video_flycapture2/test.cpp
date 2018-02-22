@@ -56,7 +56,7 @@ void TestCapture_FlyCapture2()
 
 	CObservationImage::Ptr obs =
 		mrpt::make_aligned_shared<CObservationImage>();  // Memory will be freed
-														 // by SF
+	// by SF
 	// destructor in each loop.
 
 	while (!mrpt::system::os::kbhit())

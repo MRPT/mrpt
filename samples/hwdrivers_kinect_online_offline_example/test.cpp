@@ -251,7 +251,7 @@ void Test_KinectOnlineOffline(
 		is_online, rawlog_file,
 		false  // generate_3D_pointcloud_in_this_thread -> Don't, we'll do it in
 		// this main thread.
-	);
+		);
 
 	std::thread thHandle(thread_grabbing, std::ref(thrPar));
 

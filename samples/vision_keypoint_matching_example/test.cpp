@@ -25,7 +25,8 @@ using namespace std;
 
 #include <mrpt/examples_config.h>
 string myDataDir(
-	MRPT_EXAMPLES_BASE_DIRECTORY + string("vision_keypoint_matching_example/imgs/"));
+	MRPT_EXAMPLES_BASE_DIRECTORY +
+	string("vision_keypoint_matching_example/imgs/"));
 
 // ------------------------------------------------------
 //	TestExtractMatchProjectAndPaint

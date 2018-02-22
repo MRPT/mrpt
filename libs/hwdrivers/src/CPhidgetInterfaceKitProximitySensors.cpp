@@ -319,7 +319,8 @@ void CPhidgetInterfaceKitProximitySensors::getObservation(
 
 			obsRange.sensorID = i;
 			obsRange.sensorPose =
-				m_sensorPoses[i].asTPose();  // The pose of the IR sensor on the robot
+				m_sensorPoses[i]
+					.asTPose();  // The pose of the IR sensor on the robot
 			obs.sensedData.push_back(obsRange);
 		}
 	}

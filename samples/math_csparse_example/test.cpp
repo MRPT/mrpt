@@ -21,10 +21,10 @@ void ExampleCSparse()
 	CSparseMatrix SM(10, 10);
 
 	// With 2 dense blocks of 6x6 and 4x4:
-	const auto COV1 =
-		mrpt::random::getRandomGenerator().drawDefinitePositiveMatrix<CMatrixDouble>(6, 0.2);
-	const auto COV2 =
-		mrpt::random::getRandomGenerator().drawDefinitePositiveMatrix<CMatrixDouble>(4, 0.2);
+	const auto COV1 = mrpt::random::getRandomGenerator()
+						  .drawDefinitePositiveMatrix<CMatrixDouble>(6, 0.2);
+	const auto COV2 = mrpt::random::getRandomGenerator()
+						  .drawDefinitePositiveMatrix<CMatrixDouble>(4, 0.2);
 	SM.insert_submatrix(0, 0, COV1);
 	SM.insert_submatrix(6, 6, COV2);
 

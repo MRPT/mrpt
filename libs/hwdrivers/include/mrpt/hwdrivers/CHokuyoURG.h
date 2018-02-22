@@ -150,8 +150,10 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 	  */
 	bool displaySensorInfo(CHokuyoURG::TSensorInfo* out_data = nullptr);
 
-	/** Start the continuous scanning mode, using parameters stored in the object (loaded
-	  * from the .ini file). Maps to SCIP2.0 commands MD (no intensity) or ME (intensity).
+	/** Start the continuous scanning mode, using parameters stored in the
+	 * object (loaded
+	  * from the .ini file). Maps to SCIP2.0 commands MD (no intensity) or ME
+	 * (intensity).
 	  * After this command the device will start to send scans until
 	  * switchLaserOff() is called.
 	  * \return false on any error
@@ -165,7 +167,7 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 	  * and status codes in the reference parameters.
 	  * \return false on any error
 	  */
-	bool receiveResponse(char& rcv_status0,char& rcv_status1);
+	bool receiveResponse(char& rcv_status0, char& rcv_status1);
 
 	/** Assures a minimum number of bytes in the input buffer, reading from the
 	 * serial port only if required.
@@ -237,8 +239,8 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 	  */
 	bool setIntensityMode(bool enabled);
 
-	/** Set the skip scan count (0 means send all scans). 
-	  * Must be set before initialize() 
+	/** Set the skip scan count (0 means send all scans).
+	  * Must be set before initialize()
 	  */
 	void setScanInterval(unsigned int skipScanCount);
 	unsigned int getScanInterval() const;

@@ -37,7 +37,7 @@ float CGlCanvasBase::SENSIBILITY_DEG_PER_PIXEL = 0.1f;
 #include <GL/freeglut_ext.h>
 #endif
 #endif
-#endif // MRPT_HAS_OPENGL_GLUT
+#endif  // MRPT_HAS_OPENGL_GLUT
 
 void CGlCanvasBase::setMinimumZoom(float zoom) { m_minZoom = zoom; }
 void CGlCanvasBase::setMaximumZoom(float zoom) { m_maxZoom = zoom; }
@@ -332,7 +332,7 @@ double CGlCanvasBase::renderCanvas(int width, int height)
 
 	return At;
 #else
-THROW_EXCEPTION("Cant render: MRPT was built without OpenGL");
+	THROW_EXCEPTION("Cant render: MRPT was built without OpenGL");
 #endif
 }
 

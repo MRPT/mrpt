@@ -24,7 +24,8 @@ using namespace mrpt::system;
 using namespace std;
 
 #include <mrpt/examples_config.h>
-string myDataDir(MRPT_EXAMPLES_BASE_DIRECTORY + string("maps_gridmap_benchmark/"));
+string myDataDir(
+	MRPT_EXAMPLES_BASE_DIRECTORY + string("maps_gridmap_benchmark/"));
 
 // Default .ini file:
 string iniFile(myDataDir + string("benchmark-options.ini"));
@@ -112,7 +113,8 @@ void BenchmarkGridmaps()
 	TSetOfMetricMapInitializers mapInit;
 
 	// Create gridmap:
-	mapInit.loadFromConfigFile(mrpt::config::CConfigFile(iniFile), "METRIC_MAPS");
+	mapInit.loadFromConfigFile(
+		mrpt::config::CConfigFile(iniFile), "METRIC_MAPS");
 	metricMap.setListOfMaps(&mapInit);
 
 	// prepare the laser scan:

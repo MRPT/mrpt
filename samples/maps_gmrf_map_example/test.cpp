@@ -55,7 +55,7 @@ void Example_GMRF()
 	mrpt::maps::CGasConcentrationGridMap2D gasmap(
 		CRandomFieldGridMap2D::mrGMRF_SD /*map type*/, 0, X_SIZE, 0, Y_SIZE,
 		RESOLUTION /* resolution */
-	);
+		);
 
 	mrpt::maps::CGasConcentrationGridMap2D::ConnectivityDescriptor::Ptr conn =
 		mrpt::maps::CGasConcentrationGridMap2D::ConnectivityDescriptor::Ptr(

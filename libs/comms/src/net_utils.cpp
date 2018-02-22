@@ -503,7 +503,7 @@ bool mrpt::comms::net::Ping(
 	// Format a command string
 	string cmd_str = "ping";
 
-	// different "count" argument for Windows and *NIX  systems
+// different "count" argument for Windows and *NIX  systems
 #if defined(MRPT_OS_LINUX) || defined(__APPLE__)
 	cmd_str += " -c ";
 #else
@@ -515,7 +515,7 @@ bool mrpt::comms::net::Ping(
 	cmd_str += " ";
 	cmd_str += address;
 
-	// Redirection:
+// Redirection:
 #if defined(MRPT_OS_LINUX) || defined(__APPLE__)
 	cmd_str += " 2>&1";
 #endif

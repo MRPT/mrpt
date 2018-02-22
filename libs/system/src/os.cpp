@@ -556,8 +556,7 @@ std::string winerror2str(const char* errorPlaceName)
 {
 	char str[700];
 	DWORD e = GetLastError();
-	FormatMessageA(
-		FORMAT_MESSAGE_FROM_SYSTEM, 0, e, 0, str, sizeof(str), NULL);
+	FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM, 0, e, 0, str, sizeof(str), NULL);
 	std::string s;
 	s = "[";
 	s += errorPlaceName;
@@ -706,12 +705,12 @@ int mrpt::system::executeCommand(
 		if (!SetHandleInformation(g_hChildStd_OUT_Rd, HANDLE_FLAG_INHERIT, 0))
 			throw winerror2str("Stdout SetHandleInformation");
 
-		// Create a pipe for the child process's STDIN. 
+		// Create a pipe for the child process's STDIN.
 
 		if (!CreatePipe(&g_hChildStd_IN_Rd, &g_hChildStd_IN_Wr, &saAttr, 0))
 			throw winerror2str("Stdin CreatePipe");
 
-		// Ensure the write handle to the pipe for STDIN is not inherited. 
+		// Ensure the write handle to the pipe for STDIN is not inherited.
 
 		if (!SetHandleInformation(g_hChildStd_IN_Wr, HANDLE_FLAG_INHERIT, 0))
 			throw winerror2str("Stdin SetHandleInformation");
@@ -721,12 +720,13 @@ int mrpt::system::executeCommand(
 		STARTUPINFOA siStartInfo;
 		BOOL bSuccess = FALSE;
 
-		// Set up members of the PROCESS_INFORMATION structure. 
+		// Set up members of the PROCESS_INFORMATION structure.
 
 		ZeroMemory(&piProcInfo, sizeof(PROCESS_INFORMATION));
 
-		// Set up members of the STARTUPINFO structure. 
-		// This structure specifies the STDIN and STDOUT handles for redirection.
+		// Set up members of the STARTUPINFO structure.
+		// This structure specifies the STDIN and STDOUT handles for
+		// redirection.
 
 		ZeroMemory(&siStartInfo, sizeof(STARTUPINFO));
 		siStartInfo.cb = sizeof(STARTUPINFO);
@@ -736,20 +736,20 @@ int mrpt::system::executeCommand(
 		siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
 
 		// Create the child process.
-		bSuccess = CreateProcessA(NULL,
-			(LPSTR)command.c_str(),     // command line 
-			NULL,          // process security attributes 
-			NULL,          // primary thread security attributes 
-			TRUE,          // handles are inherited 
-			0,             // creation flags 
-			NULL,          // use parent's environment 
-			NULL,          // use parent's current directory 
-			&siStartInfo,  // STARTUPINFO pointer 
-			&piProcInfo);  // receives PROCESS_INFORMATION 
+		bSuccess = CreateProcessA(
+			NULL,
+			(LPSTR)command.c_str(),  // command line
+			NULL,  // process security attributes
+			NULL,  // primary thread security attributes
+			TRUE,  // handles are inherited
+			0,  // creation flags
+			NULL,  // use parent's environment
+			NULL,  // use parent's current directory
+			&siStartInfo,  // STARTUPINFO pointer
+			&piProcInfo);  // receives PROCESS_INFORMATION
 
-						   // If an error occurs, exit the application. 
-		if (!bSuccess)
-			throw winerror2str("CreateProcess");
+		// If an error occurs, exit the application.
+		if (!bSuccess) throw winerror2str("CreateProcess");
 
 		// Read from pipe that is the standard output for child process.
 		DWORD dwRead;
@@ -760,10 +760,12 @@ int mrpt::system::executeCommand(
 		for (;;)
 		{
 			DWORD dwAvailable = 0;
-			PeekNamedPipe(g_hChildStd_OUT_Rd, NULL, NULL, NULL, &dwAvailable, NULL);
+			PeekNamedPipe(
+				g_hChildStd_OUT_Rd, NULL, NULL, NULL, &dwAvailable, NULL);
 			if (dwAvailable)
 			{
-				bSuccess = ReadFile(g_hChildStd_OUT_Rd, chBuf, sizeof(chBuf), &dwRead, NULL);
+				bSuccess = ReadFile(
+					g_hChildStd_OUT_Rd, chBuf, sizeof(chBuf), &dwRead, NULL);
 				if (!bSuccess || dwRead == 0) break;
 				sout.write(chBuf, dwRead);
 			}
@@ -785,10 +787,10 @@ int mrpt::system::executeCommand(
 		CloseHandle(piProcInfo.hProcess);
 		CloseHandle(piProcInfo.hThread);
 	}
-	catch (std::string &errStr)
+	catch (std::string& errStr)
 	{
 		std::cerr << errStr;
-		return 1; // !=0 means error
+		return 1;  // !=0 means error
 	}
 #endif
 	// set output - if valid pointer given

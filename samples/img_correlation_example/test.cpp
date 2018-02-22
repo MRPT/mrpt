@@ -23,7 +23,8 @@ using namespace mrpt::system;
 using namespace std;
 
 #include <mrpt/examples_config.h>
-string myDataDir(MRPT_EXAMPLES_BASE_DIRECTORY + string("img_correlation_example/"));
+string myDataDir(
+	MRPT_EXAMPLES_BASE_DIRECTORY + string("img_correlation_example/"));
 
 void TestWindow()
 {

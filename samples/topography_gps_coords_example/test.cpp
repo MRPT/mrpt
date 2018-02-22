@@ -22,13 +22,13 @@ void TestGPS_coords()
 		RAD2DEG(0.6408472493152757),  // lat
 		RAD2DEG(-0.0780454933097760),  // lon
 		53.200600  // height meters
-	);
+		);
 
 	const mrpt::topography::TGeodeticCoords p1(
 		RAD2DEG(0.6408615769267271),  // lat
 		RAD2DEG(-0.0780621148947297),  // lon
 		56.210100  // meters
-	);
+		);
 
 	cout << "Point 0: lat=" << p0.lat << " lon=" << p0.lon
 		 << " alt=" << p0.height << endl;
@@ -61,10 +61,11 @@ void TestGPS_coords()
 
 	cout << "P0->P1: " << (geo1 - geo0) << endl;
 	cout << "(p1.h-p0.h)*ENU_Z: "
-		 << (pt1.height - pt0.height) * mrpt::poses::CPose3D(pose_ENU)
-											.getRotationMatrix()
-											.block<3, 1>(0, 2)
-											.transpose()
+		 << (pt1.height - pt0.height) *
+				mrpt::poses::CPose3D(pose_ENU)
+					.getRotationMatrix()
+					.block<3, 1>(0, 2)
+					.transpose()
 		 << endl;
 
 	// UTM:

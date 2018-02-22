@@ -213,14 +213,12 @@ mxArray* CObservation2DRangeScan::writeToMatlab() const
 	const char* fields[] = {"class",  // Data common to any MRPT class
 							"ts",
 							"sensorLabel",  // Data common to any observation
-							"scan",
-							"validRange",
+							"scan", "validRange",
 							"intensity"  // Received raw data
 							"aperture",
 							"rightToLeft",
 							"maxRange",  // Scan plane geometry and properties
-							"stdError",
-							"beamAperture",
+							"stdError", "beamAperture",
 							"deltaPitch",  // Ray properties
 							"pose",  // Sensor pose
 							"map"};  // Points map

@@ -170,7 +170,8 @@ void TestImageConversion()
 		tictac.Tic();
 		if (!img.loadFromFile("../img_basic_example/frame_color.bmp"))
 		{
-			cerr << "Error loading ../img_basic_example/frame_color.bmp" << endl;
+			cerr << "Error loading ../img_basic_example/frame_color.bmp"
+				 << endl;
 			return;
 		}
 		printf("bmp file loaded in %.03fms\n", 1000.0f * tictac.Tac());

@@ -18,7 +18,8 @@ using namespace mrpt::system;
 using namespace std;
 
 #include <mrpt/examples_config.h>
-string myDataDir(MRPT_EXAMPLES_BASE_DIRECTORY + string("img_gauss_filtering_example/"));
+string myDataDir(
+	MRPT_EXAMPLES_BASE_DIRECTORY + string("img_gauss_filtering_example/"));
 
 // ------------------------------------------------------
 //					Test

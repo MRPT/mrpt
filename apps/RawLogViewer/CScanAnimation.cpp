@@ -73,105 +73,225 @@ CScanAnimation::CScanAnimation(
 	wxFlexGridSizer* FlexGridSizer7;
 	wxFlexGridSizer* FlexGridSizer6;
 	wxFlexGridSizer* FlexGridSizer1;
-	
-	Create(parent, wxID_ANY, _("Animate laser scans"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER, _T("wxID_ANY"));
+
+	Create(
+		parent, wxID_ANY, _("Animate laser scans"), wxDefaultPosition,
+		wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER,
+		_T("wxID_ANY"));
 	FlexGridSizer1 = new wxFlexGridSizer(4, 1, 0, 0);
 	FlexGridSizer1->AddGrowableCol(0);
 	FlexGridSizer1->AddGrowableRow(2);
-	StaticBoxSizer1 = new wxStaticBoxSizer(wxHORIZONTAL, this, _("Get data from:"));
+	StaticBoxSizer1 =
+		new wxStaticBoxSizer(wxHORIZONTAL, this, _("Get data from:"));
 	BoxSizer4 = new wxBoxSizer(wxVERTICAL);
 	BoxSizer5 = new wxBoxSizer(wxHORIZONTAL);
 	FlexGridSizer8 = new wxFlexGridSizer(2, 4, 0, 0);
 	FlexGridSizer8->AddGrowableCol(2);
-	rbLoaded = new wxRadioButton(this, ID_RADIOBUTTON1, _("Currently loaded rawlog"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_RADIOBUTTON1"));
+	rbLoaded = new wxRadioButton(
+		this, ID_RADIOBUTTON1, _("Currently loaded rawlog"), wxDefaultPosition,
+		wxDefaultSize, 0, wxDefaultValidator, _T("ID_RADIOBUTTON1"));
 	rbLoaded->SetValue(true);
-	FlexGridSizer8->Add(rbLoaded, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer8->Add(-1,-1,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer8->Add(-1,-1,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer8->Add(-1,-1,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	rbFile = new wxRadioButton(this, ID_RADIOBUTTON2, _("Rawlog in file:"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_RADIOBUTTON2"));
-	FlexGridSizer8->Add(rbFile, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
-	StaticText22 = new wxStaticText(this, ID_STATICTEXT22, _("Input file:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT22"));
-	FlexGridSizer8->Add(StaticText22, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
-	edFile = new wxTextCtrl(this, ID_TEXTCTRL11, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL11"));
-	FlexGridSizer8->Add(edFile, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
-	btnPickInput = new wxButton(this, ID_BUTTON5, _("Select..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON5"));
-	FlexGridSizer8->Add(btnPickInput, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-	BoxSizer5->Add(FlexGridSizer8, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
-	BoxSizer4->Add(BoxSizer5, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
-	StaticBoxSizer1->Add(BoxSizer4, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
-	FlexGridSizer1->Add(StaticBoxSizer1, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+	FlexGridSizer8->Add(
+		rbLoaded, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer8->Add(
+		-1, -1, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
+		5);
+	FlexGridSizer8->Add(
+		-1, -1, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
+		5);
+	FlexGridSizer8->Add(
+		-1, -1, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
+		5);
+	rbFile = new wxRadioButton(
+		this, ID_RADIOBUTTON2, _("Rawlog in file:"), wxDefaultPosition,
+		wxDefaultSize, 0, wxDefaultValidator, _T("ID_RADIOBUTTON2"));
+	FlexGridSizer8->Add(
+		rbFile, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 5);
+	StaticText22 = new wxStaticText(
+		this, ID_STATICTEXT22, _("Input file:"), wxDefaultPosition,
+		wxDefaultSize, 0, _T("ID_STATICTEXT22"));
+	FlexGridSizer8->Add(
+		StaticText22, 1, wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
+	edFile = new wxTextCtrl(
+		this, ID_TEXTCTRL11, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0,
+		wxDefaultValidator, _T("ID_TEXTCTRL11"));
+	FlexGridSizer8->Add(
+		edFile, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	btnPickInput = new wxButton(
+		this, ID_BUTTON5, _("Select..."), wxDefaultPosition, wxDefaultSize, 0,
+		wxDefaultValidator, _T("ID_BUTTON5"));
+	FlexGridSizer8->Add(
+		btnPickInput, 1,
+		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 0);
+	BoxSizer5->Add(
+		FlexGridSizer8, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	BoxSizer4->Add(
+		BoxSizer5, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	StaticBoxSizer1->Add(
+		BoxSizer4, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer1->Add(
+		StaticBoxSizer1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
 	FlexGridSizer4 = new wxFlexGridSizer(1, 7, 0, 0);
 	FlexGridSizer4->AddGrowableCol(5);
 	FlexGridSizer4->AddGrowableRow(0);
-	btnPlay = new wxButton(this, ID_BUTTON1, _("Start"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON1"));
+	btnPlay = new wxButton(
+		this, ID_BUTTON1, _("Start"), wxDefaultPosition, wxDefaultSize, 0,
+		wxDefaultValidator, _T("ID_BUTTON1"));
 	btnPlay->SetDefault();
-	FlexGridSizer4->Add(btnPlay, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	btnStop = new wxButton(this, ID_BUTTON2, _("Stop"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON2"));
+	FlexGridSizer4->Add(
+		btnPlay, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
+		5);
+	btnStop = new wxButton(
+		this, ID_BUTTON2, _("Stop"), wxDefaultPosition, wxDefaultSize, 0,
+		wxDefaultValidator, _T("ID_BUTTON2"));
 	btnStop->Disable();
-	FlexGridSizer4->Add(btnStop, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	StaticText2 = new wxStaticText(this, ID_STATICTEXT4, _("Animation delay (ms):"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT4"));
-	FlexGridSizer4->Add(StaticText2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	edDelay = new wxSpinCtrl(this, ID_SPINCTRL2, _T("5"), wxDefaultPosition, wxDefaultSize, 0, 0, 1000, 5, _T("ID_SPINCTRL2"));
+	FlexGridSizer4->Add(
+		btnStop, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
+		5);
+	StaticText2 = new wxStaticText(
+		this, ID_STATICTEXT4, _("Animation delay (ms):"), wxDefaultPosition,
+		wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT4"));
+	FlexGridSizer4->Add(
+		StaticText2, 1,
+		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+	edDelay = new wxSpinCtrl(
+		this, ID_SPINCTRL2, _T("5"), wxDefaultPosition, wxDefaultSize, 0, 0,
+		1000, 5, _T("ID_SPINCTRL2"));
 	edDelay->SetValue(_T("5"));
-	FlexGridSizer4->Add(edDelay, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	cbAllowMix = new wxCheckBox(this, ID_CHECKBOX1, _("Enable mixing of diff. lasers"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1"));
+	FlexGridSizer4->Add(
+		edDelay, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
+		5);
+	cbAllowMix = new wxCheckBox(
+		this, ID_CHECKBOX1, _("Enable mixing of diff. lasers"),
+		wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator,
+		_T("ID_CHECKBOX1"));
 	cbAllowMix->SetValue(true);
-	FlexGridSizer4->Add(cbAllowMix, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer4->Add(-1,-1,1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
-	btnClose = new wxButton(this, ID_BUTTON3, _("Close"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON3"));
-	FlexGridSizer4->Add(btnClose, 1, wxALL|wxALIGN_BOTTOM|wxALIGN_CENTER_HORIZONTAL, 5);
-	FlexGridSizer1->Add(FlexGridSizer4, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+	FlexGridSizer4->Add(
+		cbAllowMix, 1,
+		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer4->Add(
+		-1, -1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	btnClose = new wxButton(
+		this, ID_BUTTON3, _("Close"), wxDefaultPosition, wxDefaultSize, 0,
+		wxDefaultValidator, _T("ID_BUTTON3"));
+	FlexGridSizer4->Add(
+		btnClose, 1, wxALL | wxALIGN_BOTTOM | wxALIGN_CENTER_HORIZONTAL, 5);
+	FlexGridSizer1->Add(
+		FlexGridSizer4, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
 	FlexGridSizer2 = new wxFlexGridSizer(1, 1, 0, 0);
 	FlexGridSizer2->AddGrowableCol(0);
 	FlexGridSizer2->AddGrowableRow(0);
-	m_plot3D = new CMyGLCanvas(this,ID_XY_GLCANVAS,wxDefaultPosition,wxDefaultSize,wxTAB_TRAVERSAL,_T("ID_XY_GLCANVAS"));
-	FlexGridSizer2->Add(m_plot3D, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
-	FlexGridSizer1->Add(FlexGridSizer2, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+	m_plot3D = new CMyGLCanvas(
+		this, ID_XY_GLCANVAS, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL,
+		_T("ID_XY_GLCANVAS"));
+	FlexGridSizer2->Add(
+		m_plot3D, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer1->Add(
+		FlexGridSizer2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
 	FlexGridSizer3 = new wxFlexGridSizer(2, 1, 0, 0);
 	FlexGridSizer3->AddGrowableCol(0);
 	FlexGridSizer6 = new wxFlexGridSizer(1, 1, 0, 0);
 	FlexGridSizer6->AddGrowableCol(0);
-	slPos = new wxSlider(this, ID_SLIDER1, 0, 0, 100, wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_SLIDER1"));
-	FlexGridSizer6->Add(slPos, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
-	FlexGridSizer3->Add(FlexGridSizer6, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+	slPos = new wxSlider(
+		this, ID_SLIDER1, 0, 0, 100, wxDefaultPosition, wxDefaultSize, 0,
+		wxDefaultValidator, _T("ID_SLIDER1"));
+	FlexGridSizer6->Add(
+		slPos, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer3->Add(
+		FlexGridSizer6, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
 	FlexGridSizer7 = new wxFlexGridSizer(2, 4, 0, 0);
 	FlexGridSizer7->AddGrowableCol(3);
-	StaticText1 = new wxStaticText(this, ID_STATICTEXT1, _("Rawlog index:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT1"));
-	FlexGridSizer7->Add(StaticText1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	edIndex = new wxSpinCtrl(this, ID_SPINCTRL1, _T("0"), wxDefaultPosition, wxDefaultSize, 0, 0, 100, 0, _T("ID_SPINCTRL1"));
+	StaticText1 = new wxStaticText(
+		this, ID_STATICTEXT1, _("Rawlog index:"), wxDefaultPosition,
+		wxDefaultSize, 0, _T("ID_STATICTEXT1"));
+	FlexGridSizer7->Add(
+		StaticText1, 1,
+		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+	edIndex = new wxSpinCtrl(
+		this, ID_SPINCTRL1, _T("0"), wxDefaultPosition, wxDefaultSize, 0, 0,
+		100, 0, _T("ID_SPINCTRL1"));
 	edIndex->SetValue(_T("0"));
-	FlexGridSizer7->Add(edIndex, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	btnJump = new wxButton(this, ID_BUTTON4, _("Jump"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON4"));
-	FlexGridSizer7->Add(btnJump, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	lbNumScans = new wxStaticText(this, ID_STATICTEXT2, _("Number of laser scans: 0"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT2"));
-	FlexGridSizer7->Add(lbNumScans, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
-	cbViewOrtho = new wxCheckBox(this, ID_CHECKBOX2, _("Orthogonal projection"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX2"));
+	FlexGridSizer7->Add(
+		edIndex, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
+		5);
+	btnJump = new wxButton(
+		this, ID_BUTTON4, _("Jump"), wxDefaultPosition, wxDefaultSize, 0,
+		wxDefaultValidator, _T("ID_BUTTON4"));
+	FlexGridSizer7->Add(
+		btnJump, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
+		5);
+	lbNumScans = new wxStaticText(
+		this, ID_STATICTEXT2, _("Number of laser scans: 0"), wxDefaultPosition,
+		wxDefaultSize, 0, _T("ID_STATICTEXT2"));
+	FlexGridSizer7->Add(
+		lbNumScans, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 5);
+	cbViewOrtho = new wxCheckBox(
+		this, ID_CHECKBOX2, _("Orthogonal projection"), wxDefaultPosition,
+		wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX2"));
 	cbViewOrtho->SetValue(false);
-	FlexGridSizer7->Add(cbViewOrtho, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer7->Add(-1,-1,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer7->Add(-1,-1,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	lbNumPoints = new wxStaticText(this, ID_STATICTEXT3, _("Number of points: 0"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT3"));
-	FlexGridSizer7->Add(lbNumPoints, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer3->Add(FlexGridSizer7, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
-	FlexGridSizer1->Add(FlexGridSizer3, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+	FlexGridSizer7->Add(
+		cbViewOrtho, 1,
+		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer7->Add(
+		-1, -1, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
+		5);
+	FlexGridSizer7->Add(
+		-1, -1, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
+		5);
+	lbNumPoints = new wxStaticText(
+		this, ID_STATICTEXT3, _("Number of points: 0"), wxDefaultPosition,
+		wxDefaultSize, 0, _T("ID_STATICTEXT3"));
+	FlexGridSizer7->Add(
+		lbNumPoints, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer3->Add(
+		FlexGridSizer7, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer1->Add(
+		FlexGridSizer3, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
 	SetSizer(FlexGridSizer1);
 	FlexGridSizer1->Fit(this);
 	FlexGridSizer1->SetSizeHints(this);
 	Center();
-	
-	Connect(ID_RADIOBUTTON1,wxEVT_COMMAND_RADIOBUTTON_SELECTED,(wxObjectEventFunction)&CScanAnimation::OnrbLoadedSelect);
-	Connect(ID_RADIOBUTTON2,wxEVT_COMMAND_RADIOBUTTON_SELECTED,(wxObjectEventFunction)&CScanAnimation::OnrbFile);
-	Connect(ID_BUTTON5,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CScanAnimation::OnbtnPickInputClick);
-	Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CScanAnimation::OnbtnPlayClick);
-	Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CScanAnimation::OnbtnStopClick);
-	Connect(ID_CHECKBOX1,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&CScanAnimation::OncbAllowMixClick);
-	Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CScanAnimation::OnbtnCloseClick);
-	Connect(ID_SLIDER1,wxEVT_SCROLL_TOP|wxEVT_SCROLL_BOTTOM|wxEVT_SCROLL_LINEUP|wxEVT_SCROLL_LINEDOWN|wxEVT_SCROLL_PAGEUP|wxEVT_SCROLL_PAGEDOWN|wxEVT_SCROLL_THUMBTRACK|wxEVT_SCROLL_THUMBRELEASE|wxEVT_SCROLL_CHANGED,(wxObjectEventFunction)&CScanAnimation::OnslPosCmdScrollChanged);
-	Connect(ID_SLIDER1,wxEVT_SCROLL_THUMBTRACK,(wxObjectEventFunction)&CScanAnimation::OnslPosCmdScrollChanged);
-	Connect(ID_SLIDER1,wxEVT_SCROLL_CHANGED,(wxObjectEventFunction)&CScanAnimation::OnslPosCmdScrollChanged);
-	Connect(ID_BUTTON4,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CScanAnimation::OnbtnJumpClick);
-	Connect(wxID_ANY,wxEVT_INIT_DIALOG,(wxObjectEventFunction)&CScanAnimation::OnInit);
+
+	Connect(
+		ID_RADIOBUTTON1, wxEVT_COMMAND_RADIOBUTTON_SELECTED,
+		(wxObjectEventFunction)&CScanAnimation::OnrbLoadedSelect);
+	Connect(
+		ID_RADIOBUTTON2, wxEVT_COMMAND_RADIOBUTTON_SELECTED,
+		(wxObjectEventFunction)&CScanAnimation::OnrbFile);
+	Connect(
+		ID_BUTTON5, wxEVT_COMMAND_BUTTON_CLICKED,
+		(wxObjectEventFunction)&CScanAnimation::OnbtnPickInputClick);
+	Connect(
+		ID_BUTTON1, wxEVT_COMMAND_BUTTON_CLICKED,
+		(wxObjectEventFunction)&CScanAnimation::OnbtnPlayClick);
+	Connect(
+		ID_BUTTON2, wxEVT_COMMAND_BUTTON_CLICKED,
+		(wxObjectEventFunction)&CScanAnimation::OnbtnStopClick);
+	Connect(
+		ID_CHECKBOX1, wxEVT_COMMAND_CHECKBOX_CLICKED,
+		(wxObjectEventFunction)&CScanAnimation::OncbAllowMixClick);
+	Connect(
+		ID_BUTTON3, wxEVT_COMMAND_BUTTON_CLICKED,
+		(wxObjectEventFunction)&CScanAnimation::OnbtnCloseClick);
+	Connect(
+		ID_SLIDER1,
+		wxEVT_SCROLL_TOP | wxEVT_SCROLL_BOTTOM | wxEVT_SCROLL_LINEUP |
+			wxEVT_SCROLL_LINEDOWN | wxEVT_SCROLL_PAGEUP |
+			wxEVT_SCROLL_PAGEDOWN | wxEVT_SCROLL_THUMBTRACK |
+			wxEVT_SCROLL_THUMBRELEASE | wxEVT_SCROLL_CHANGED,
+		(wxObjectEventFunction)&CScanAnimation::OnslPosCmdScrollChanged);
+	Connect(
+		ID_SLIDER1, wxEVT_SCROLL_THUMBTRACK,
+		(wxObjectEventFunction)&CScanAnimation::OnslPosCmdScrollChanged);
+	Connect(
+		ID_SLIDER1, wxEVT_SCROLL_CHANGED,
+		(wxObjectEventFunction)&CScanAnimation::OnslPosCmdScrollChanged);
+	Connect(
+		ID_BUTTON4, wxEVT_COMMAND_BUTTON_CLICKED,
+		(wxObjectEventFunction)&CScanAnimation::OnbtnJumpClick);
+	Connect(
+		wxID_ANY, wxEVT_INIT_DIALOG,
+		(wxObjectEventFunction)&CScanAnimation::OnInit);
 	//*)
 
 	// Initialize 3D view:
