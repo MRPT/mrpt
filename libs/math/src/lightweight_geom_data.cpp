@@ -76,7 +76,7 @@ mrpt::math::TPose2D mrpt::math::TPose2D::operator+(
 	const double A_cosphi = cos(this->phi), A_sinphi = sin(this->phi);
 	// Use temporary variables for the cases (A==this) or (B==this)
 	const double new_x = this->x + b.x * A_cosphi - b.y * A_sinphi;
-	const double new_y = this->y + b.x * A_cosphi + b.y * A_sinphi;
+	const double new_y = this->y + b.x * A_sinphi + b.y * A_cosphi;
 	const double new_phi = mrpt::math::wrapToPi(this->phi + b.phi);
 
 	return mrpt::math::TPose2D(new_x, new_y, new_phi);
