@@ -133,16 +133,15 @@ TEST(circular_buffer_tests, RandomWriteAndPeekOverrun)
 TEST(circular_buffer_tests, Size)
 {
 	mrpt::containers::circular_buffer<cb_t> cb(10);
-	for (size_t i = 0; i < cb.capacity()-1; i++)
+	for (size_t i = 0; i < cb.capacity() - 1; i++)
 	{
 		cb.push(0);
-		EXPECT_EQ(cb.size(),i+1);
+		EXPECT_EQ(cb.size(), i + 1);
 	}
 	EXPECT_ANY_THROW(cb.push(0));
-	for (size_t i = 0; i < cb.capacity()-1; i++)
+	for (size_t i = 0; i < cb.capacity() - 1; i++)
 	{
 		cb.pop();
 		EXPECT_EQ(cb.size(), cb.capacity() - 2 - i);
 	}
 }
-
