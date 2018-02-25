@@ -36,18 +36,18 @@ class circular_buffer
 	{
 		if (m_size <= 2) throw std::invalid_argument("size must be >2");
 	}
-	// virtual ~circular_buffer()  { }
 
 	/** Insert a copy of the given element in the buffer.
 	  * \exception std::out_of_range If the buffer run out of space.
 	  */
 	void push(T d)
 	{
-		m_data[m_next_write++] = d;
-		if (m_next_write == m_size) m_next_write = 0;
-
-		if (m_next_write == m_next_read)
+		auto new_idx = m_next_write+1;
+		if (new_idx == m_size) new_idx = 0;
+		if (new_idx == m_next_read)
 			throw std::out_of_range("push: circular_buffer is full");
+		m_data[m_next_write] = d;
+		m_next_write = new_idx;
 	}
 
 	/** Insert a reference of the given element in the buffer.
