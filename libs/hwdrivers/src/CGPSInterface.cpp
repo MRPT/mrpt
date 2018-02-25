@@ -507,7 +507,7 @@ void CGPSInterface::parseBuffer()
 		{
 			if (!(*this.*parser_ptr)(min_bytes))
 			{
-				if (m_rx_buffer.size()!=0)
+				if (m_rx_buffer.size() != 0)
 					m_rx_buffer.pop();  // Not the start of a frame, skip 1 byte
 			}
 			if (m_customInit.empty() /* If we are not in old legacy mode */ &&
@@ -536,7 +536,7 @@ void CGPSInterface::parseBuffer()
 				mrpt::keep_max(global_min_bytes_max, this_parser_min_bytes);
 			}
 
-			if (all_parsers_want_to_skip && m_rx_buffer.size()!=0)
+			if (all_parsers_want_to_skip && m_rx_buffer.size() != 0)
 				m_rx_buffer.pop();  // Not the start of a frame, skip 1 byte
 
 			if (m_customInit.empty() /* If we are not in old legacy mode */ &&

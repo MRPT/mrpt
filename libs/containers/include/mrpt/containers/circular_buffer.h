@@ -42,7 +42,7 @@ class circular_buffer
 	  */
 	void push(T d)
 	{
-		auto new_idx = m_next_write+1;
+		auto new_idx = m_next_write + 1;
 		if (new_idx == m_size) new_idx = 0;
 		if (new_idx == m_next_read)
 			throw std::out_of_range("push: circular_buffer is full");
