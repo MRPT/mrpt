@@ -265,7 +265,7 @@ int main(int argc, char** argv)
 	mrpt::io::CFileGZInputStream serialized_pbmap;
 	if (serialized_pbmap.open(PbMapFile))
 	{
-		serialized_pbmap >> mapViewer.pbmap;
+		mrpt::serialization::archiveFrom(serialized_pbmap) >> mapViewer.pbmap;
 	}
 	else
 		cout << "Error: cannot open " << PbMapFile << "\n";
