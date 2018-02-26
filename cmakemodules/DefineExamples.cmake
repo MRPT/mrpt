@@ -338,16 +338,6 @@ IF(BUILD_EXAMPLES)
 		GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 	ENDIF(MRPT_HAS_OPENNI2)
 
-	# === PbMap examples ===
-	IF(BUILD_mrpt-pbmap)
-		SET(LIST_EXAMPLES_IN_THIS_DIR
-			pbmap-tutorial-construction
-			pbmap-tutorial-visualizer
-			)
-		SET(CMAKE_EXAMPLE_DEPS mrpt-pbmap mrpt-gui)
-		GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
-	ENDIF()
-
 	# === Navigation examples ===
 	IF(BUILD_mrpt-nav)
 		SET(LIST_EXAMPLES_IN_THIS_DIR
