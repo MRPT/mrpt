@@ -62,7 +62,7 @@ void testPbMapConstruction(const string& config_file)
 
 		if (serialized_pose.open(poseFile))
 		{
-			serialized_pose.ReadBufferFixEndianness<Eigen::Matrix4f::Scalar>(
+			mrpt::serialization::archiveFrom(serialized_pose).ReadBufferFixEndianness<Eigen::Matrix4f::Scalar>(
 				&cloudAndPose.pose(0), 16);
 		}
 		else
@@ -85,7 +85,7 @@ void testPbMapConstruction(const string& config_file)
 
 	// Serialize PbMap
 	mrpt::io::CFileGZOutputStream serialize_pbmap("test.pbmap");
-	serialize_pbmap << pbmap_maker.getPbMap();
+	mrpt::serialization::archiveFrom(serialize_pbmap) << pbmap_maker.getPbMap();
 	serialize_pbmap.close();
 
 	// Save reconstructed point cloud
