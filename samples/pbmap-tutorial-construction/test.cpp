@@ -53,7 +53,7 @@ void testPbMapConstruction(const string& config_file)
 		frameRGBDandPose cloudAndPose;
 		cloudAndPose.cloudPtr.reset(new pcl::PointCloud<PointT>);
 		cloudFile = mrpt::format("pointcloud%i.pcd", i);
-		ASSERT_FILE_EXISTS_(path + cloudFile)
+		ASSERT_FILE_EXISTS_(path + cloudFile);
 		reader.read(path + cloudFile, *cloudAndPose.cloudPtr);
 
 		// Read pose
