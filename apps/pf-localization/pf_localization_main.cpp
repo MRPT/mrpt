@@ -480,7 +480,8 @@ void do_pf_localization(
 			}
 
 			TTimeStamp cur_obs_timestamp;
-			CPose2D last_used_abs_odo(0, 0, 0), pending_most_recent_odo(0, 0, 0);
+			CPose2D last_used_abs_odo(0, 0, 0),
+				pending_most_recent_odo(0, 0, 0);
 
 			auto arch = archiveFrom(rawlog_in_stream);
 
@@ -515,12 +516,16 @@ void do_pf_localization(
 					//  montecarlo-localization only accepts those pairs as
 					//  input:
 
-					// If it's an odometry reading, don't feed it to the PF. Instead, 
-					// store its value for use as an "action" together with the next
+					// If it's an odometry reading, don't feed it to the PF.
+					// Instead,
+					// store its value for use as an "action" together with the
+					// next
 					// actual observation:
 					if (IS_CLASS(obs, CObservationOdometry))
 					{
-						auto obs_odo = std::dynamic_pointer_cast<CObservationOdometry>(obs);
+						auto obs_odo =
+							std::dynamic_pointer_cast<CObservationOdometry>(
+								obs);
 						pending_most_recent_odo = obs_odo->odometry;
 						static bool is_1st_odo = true;
 						if (is_1st_odo)
@@ -534,16 +539,19 @@ void do_pf_localization(
 					{
 						// SF: Just one observation:
 						// ------------------------------------------------------
-						observations = mrpt::make_aligned_shared<CSensoryFrame>();
+						observations =
+							mrpt::make_aligned_shared<CSensoryFrame>();
 						observations->insert(obs);
 
-						// ActionCollection: Just one action with a dummy odometry
+						// ActionCollection: Just one action with a dummy
+						// odometry
 						// ------------------------------------------------------
 						action = mrpt::make_aligned_shared<CActionCollection>();
 
 						CActionRobotMovement2D dummy_odom;
 
-						const CPose2D odo_incr = pending_most_recent_odo - last_used_abs_odo;
+						const CPose2D odo_incr =
+							pending_most_recent_odo - last_used_abs_odo;
 						last_used_abs_odo = pending_most_recent_odo;
 
 						dummy_odom.computeFromOdometry(
