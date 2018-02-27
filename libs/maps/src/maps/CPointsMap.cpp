@@ -1566,7 +1566,7 @@ double CPointsMap::internal_computeObservationLikelihood(
 		// -------------------------------------------
 		const CObservationVelodyneScan* o =
 			dynamic_cast<const CObservationVelodyneScan*>(obs);
-		ASSERT_(o!=nullptr);
+		ASSERT_(o != nullptr);
 
 		double sumSqrDist = 0;
 
@@ -1589,7 +1589,7 @@ double CPointsMap::internal_computeObservationLikelihood(
 		int nPtsForAverage = 0;
 
 		for (size_t i = 0; i < N;
-			i += likelihoodOptions.decimation, nPtsForAverage++)
+			 i += likelihoodOptions.decimation, nPtsForAverage++)
 		{
 			// Transform the point from the scan reference to its global 3D
 			// position:
@@ -1601,7 +1601,7 @@ double CPointsMap::internal_computeObservationLikelihood(
 				closest_x, closest_y,
 				closest_z,  // save here the closest match
 				closest_err  // save here the min. distance squared
-			);
+				);
 
 			// Put a limit:
 			mrpt::keep_min(closest_err, max_sqr_err);
