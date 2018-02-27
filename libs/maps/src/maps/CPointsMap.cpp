@@ -1560,6 +1560,60 @@ double CPointsMap::internal_computeObservationLikelihood(
 		// Log-likelihood:
 		ret = -sumSqrDist / likelihoodOptions.sigma_dist;
 	}
+	else if (obs->GetRuntimeClass() == CLASS_ID(CObservationVelodyneScan))
+	{
+		// Observation is a laser range scan:
+		// -------------------------------------------
+		const CObservationVelodyneScan* o =
+			dynamic_cast<const CObservationVelodyneScan*>(obs);
+		ASSERT_(o!=nullptr);
+
+		double sumSqrDist = 0;
+
+		// Automatically generate pointcloud if needed:
+		if (!o->point_cloud.size())
+			const_cast<CObservationVelodyneScan*>(o)->generatePointCloud();
+
+		const size_t N = o->point_cloud.size();
+		if (!N || !this->size()) return -100;
+
+		const CPose3D sensorAbsPose = takenFrom + o->sensorPose;
+
+		const float* xs = &o->point_cloud.x[0];
+		const float* ys = &o->point_cloud.y[0];
+		const float* zs = &o->point_cloud.z[0];
+
+		float closest_x, closest_y, closest_z;
+		float closest_err;
+		const float max_sqr_err = square(likelihoodOptions.max_corr_distance);
+		int nPtsForAverage = 0;
+
+		for (size_t i = 0; i < N;
+			i += likelihoodOptions.decimation, nPtsForAverage++)
+		{
+			// Transform the point from the scan reference to its global 3D
+			// position:
+			float xg, yg, zg;
+			sensorAbsPose.composePoint(xs[i], ys[i], zs[i], xg, yg, zg);
+
+			kdTreeClosestPoint3D(
+				xg, yg, zg,  // Look for the closest to this guy
+				closest_x, closest_y,
+				closest_z,  // save here the closest match
+				closest_err  // save here the min. distance squared
+			);
+
+			// Put a limit:
+			mrpt::keep_min(closest_err, max_sqr_err);
+
+			sumSqrDist += closest_err;
+		}
+
+		sumSqrDist /= nPtsForAverage;
+
+		// Log-likelihood:
+		ret = -sumSqrDist / likelihoodOptions.sigma_dist;
+	}
 
 	return ret;
 	/**/
