@@ -14,6 +14,9 @@
 
 <a name="1.5.6">
 <h2>Version 1.5.6: (Under development) </h2></a>
+	- Applications:
+		- pf-localization: 
+			- Odometry is now used also for observation-only rawlogs.
 	- \ref mrpt_hwdrivers_grp
 		- mrpt::hwdrivers::COpenNI2Generic: added mutexes for safer multi-threading
 		  operation.
