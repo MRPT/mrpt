@@ -522,6 +522,12 @@ void do_pf_localization(
 					{
 						auto obs_odo = std::dynamic_pointer_cast<CObservationOdometry>(obs);
 						pending_most_recent_odo = obs_odo->odometry;
+						static bool is_1st_odo = true;
+						if (is_1st_odo)
+						{
+							is_1st_odo = false;
+							last_used_abs_odo = pending_most_recent_odo;
+						}
 						continue;
 					}
 					else
