@@ -1890,6 +1890,10 @@ bool  CPointsMap::internal_insertObservation(
 
 		const CObservationVelodyneScan *o = static_cast<const CObservationVelodyneScan *>(obs);
 
+		// Automatically generate pointcloud if needed:
+		if (!o->point_cloud.size())
+			const_cast<CObservationVelodyneScan*>(o)->generatePointCloud();
+
 		if (insertionOptions.fuseWithExisting) {
 			// Fuse:
 			CSimplePointsMap	auxMap;
