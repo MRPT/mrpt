@@ -93,12 +93,22 @@ struct TTypeName
 	{                                                           \
 		constexpr static auto get() { return literal(#_TYPE); } \
 	};
-
+/** Declares a typename to be "namespace::type"
+  * \sa MRPT_DECLARE_TTYPENAME_NO_NAMESPACE */
 #define MRPT_DECLARE_TTYPENAME_NAMESPACE(_TYPE, __NS)                      \
 	template <>                                                            \
 	struct TTypeName<__NS::_TYPE>                                          \
 	{                                                                      \
 		constexpr static auto get() { return literal(#__NS "::" #_TYPE); } \
+	};
+
+/** Declares a typename to be "type" (without the NS prefix)
+  * \sa MRPT_DECLARE_TTYPENAME_NAMESPACE */
+#define MRPT_DECLARE_TTYPENAME_NO_NAMESPACE(_TYPE, __NS)                   \
+	template <>                                                            \
+	struct TTypeName<__NS::_TYPE>                                          \
+	{                                                                      \
+		constexpr static auto get() { return literal(#_TYPE); } \
 	};
 
 #define MRPT_DECLARE_TTYPENAME_PTR(_TYPE)                     \
