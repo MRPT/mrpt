@@ -32,6 +32,8 @@ serialization with variants(To be replaced by std::variant eventually).
 	- Changes in applications:
 		- RawLogViewer:
 			- The ICP module now supports Velodyne 3D scans.
+		- pf-localization: 
+			- Odometry is now used also for observation-only rawlogs.
 	- Changes in libraries:
 		- \ref mrpt_base_grp => Refactored into several smaller libraries, one
 per namespace.

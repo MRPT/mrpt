@@ -28,6 +28,7 @@
 
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/obs/CActionCollection.h>
+#include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
@@ -479,6 +480,7 @@ void do_pf_localization(
 			}
 
 			TTimeStamp cur_obs_timestamp;
+			CPose2D last_used_abs_odo(0, 0, 0), pending_most_recent_odo(0, 0, 0);
 
 			auto arch = archiveFrom(rawlog_in_stream);
 
@@ -513,23 +515,35 @@ void do_pf_localization(
 					//  montecarlo-localization only accepts those pairs as
 					//  input:
 
-					// SF: Just one observation:
-					// ------------------------------------------------------
-					observations = mrpt::make_aligned_shared<CSensoryFrame>();
-					observations->insert(obs);
+					// If it's an odometry reading, don't feed it to the PF. Instead, 
+					// store its value for use as an "action" together with the next
+					// actual observation:
+					if (IS_CLASS(obs, CObservationOdometry))
+					{
+						auto obs_odo = std::dynamic_pointer_cast<CObservationOdometry>(obs);
+						pending_most_recent_odo = obs_odo->odometry;
+						continue;
+					}
+					else
+					{
+						// SF: Just one observation:
+						// ------------------------------------------------------
+						observations = mrpt::make_aligned_shared<CSensoryFrame>();
+						observations->insert(obs);
 
-					// ActionCollection: Just one action with a dummy odometry
-					// ------------------------------------------------------
-					action = mrpt::make_aligned_shared<CActionCollection>();
+						// ActionCollection: Just one action with a dummy odometry
+						// ------------------------------------------------------
+						action = mrpt::make_aligned_shared<CActionCollection>();
 
-					CActionRobotMovement2D dummy_odom;
+						CActionRobotMovement2D dummy_odom;
 
-					// TODO: Another good idea would be to take
-					// CObservationOdometry objects and use that information, if
-					// available.
-					dummy_odom.computeFromOdometry(
-						CPose2D(0, 0, 0), dummy_odom_params);
-					action->insert(dummy_odom);
+						const CPose2D odo_incr = pending_most_recent_odo - last_used_abs_odo;
+						last_used_abs_odo = pending_most_recent_odo;
+
+						dummy_odom.computeFromOdometry(
+							odo_incr, dummy_odom_params);
+						action->insert(dummy_odom);
+					}
 				}
 				else
 				{
