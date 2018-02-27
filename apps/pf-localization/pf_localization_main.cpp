@@ -27,6 +27,7 @@
 #include <mrpt/random.h>
 
 #include <mrpt/obs/CActionRobotMovement2D.h>
+#include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/maps/CSimpleMap.h>
@@ -434,6 +435,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 			}
 
 			TTimeStamp cur_obs_timestamp;
+			CPose2D last_used_abs_odo(0, 0, 0), pending_most_recent_odo(0, 0, 0);
 
 			while (!end)
 			{
@@ -462,23 +464,41 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 				// Determine if we are reading a Act-SF or an Obs-only rawlog:
 				if (obs)
 				{
-					// It's an observation-only rawlog: build an auxiliary pair of action-SF, since
-					//  montecarlo-localization only accepts those pairs as input:
+					// It's an observation-only rawlog: build an auxiliary pair
+					// of action-SF, since
+					//  montecarlo-localization only accepts those pairs as
+					//  input:
 
-					// SF: Just one observation:
-					// ------------------------------------------------------
-					observations = CSensoryFrame::Create();
-					observations->insert(obs);
+					// If it's an odometry reading, don't feed it to the PF. Instead, 
+					// store its value for use as an "action" together with the next
+					// actual observation:
+					if (IS_CLASS(obs, CObservationOdometry))
+					{
+						auto obs_odo = mrpt::ptr_cast<CObservationOdometry>::from(obs);
+						ASSERT_(obs_odo);
+						pending_most_recent_odo = obs_odo->odometry;
+						continue;
+					}
+					else
+					{
+						// SF: Just one observation:
+						// ------------------------------------------------------
+						observations = CSensoryFrame::Create();
+						observations->insert(obs);
 
-					// ActionCollection: Just one action with a dummy odometry
-					// ------------------------------------------------------
-					action       = CActionCollection::Create();
+						// ActionCollection: Just one action with a dummy odometry
+						// ------------------------------------------------------
+						action = CActionCollection::Create();
 
-					CActionRobotMovement2D dummy_odom;
+						CActionRobotMovement2D dummy_odom;
 
-					// TODO: Another good idea would be to take CObservationOdometry objects and use that information, if available.
-					dummy_odom.computeFromOdometry(CPose2D(0,0,0),dummy_odom_params);
-					action->insert(dummy_odom);
+						const CPose2D odo_incr = pending_most_recent_odo - last_used_abs_odo;
+						last_used_abs_odo = pending_most_recent_odo;
+
+						dummy_odom.computeFromOdometry(
+							odo_incr, dummy_odom_params);
+						action->insert(dummy_odom);
+					}
 				}
 				else
 				{
