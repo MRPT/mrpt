@@ -206,7 +206,6 @@ class CColouredPointsMap : public CPointsMap
 	virtual bool hasColorPoints() const override { return true; }
 	/** Override of the default 3D scene builder to account for the individual
 	 * points' color.
-	 * \sa mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE
 	 */
 	virtual void getAs3DObject(
 		mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;

@@ -331,8 +331,8 @@ void CColouredPointsMap::internal_clear()
 }
 
 /** Changes a given point from map. First index is 0.
-* \exception Throws std::exception on index out of bound.
-*/
+ * \exception Throws std::exception on index out of bound.
+ */
 void CColouredPointsMap::setPoint(
 	size_t index, float x, float y, float z, float R, float G, float B)
 {
@@ -347,8 +347,8 @@ void CColouredPointsMap::setPoint(
 }
 
 /** Changes just the color of a given point from the map. First index is 0.
-* \exception Throws std::exception on index out of bound.
-*/
+ * \exception Throws std::exception on index out of bound.
+ */
 void CColouredPointsMap::setPointColor(size_t index, float R, float G, float B)
 {
 	if (index >= this->x.size()) THROW_EXCEPTION("Index out of bounds");
@@ -399,7 +399,7 @@ void CColouredPointsMap::getAs3DObject(
 	obj->loadFromPointsMap(this);
 	obj->setColor(1, 1, 1, 1.0);
 
-	obj->setPointSize(mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE());
+	obj->setPointSize(this->renderOptions.point_size);
 
 	outObj->insert(obj);
 }
@@ -464,7 +464,7 @@ void CColouredPointsMap::getPoint(
 }
 
 /** Retrieves a point color (colors range is [0,1])
-*/
+ */
 void CColouredPointsMap::getPointColor(
 	size_t index, float& R, float& G, float& B) const
 {
@@ -624,17 +624,17 @@ bool CColouredPointsMap::save3D_and_colour_to_text_file(
 // ================================
 
 /** In a base class, reserve memory to prepare subsequent calls to
-* PLY_import_set_vertex */
+ * PLY_import_set_vertex */
 void CColouredPointsMap::PLY_import_set_vertex_count(const size_t N)
 {
 	this->setSize(N);
 }
 
 /** In a base class, will be called after PLY_import_set_vertex_count() once for
-* each loaded point.
-*  \param pt_color Will be nullptr if the loaded file does not provide color
-* info.
-*/
+ * each loaded point.
+ *  \param pt_color Will be nullptr if the loaded file does not provide color
+ * info.
+ */
 void CColouredPointsMap::PLY_import_set_vertex(
 	const size_t idx, const mrpt::math::TPoint3Df& pt, const TColorf* pt_color)
 {
@@ -646,10 +646,10 @@ void CColouredPointsMap::PLY_import_set_vertex(
 }
 
 /** In a base class, will be called after PLY_export_get_vertex_count() once for
-* each exported point.
-*  \param pt_color Will be nullptr if the loaded file does not provide color
-* info.
-*/
+ * each exported point.
+ *  \param pt_color Will be nullptr if the loaded file does not provide color
+ * info.
+ */
 void CColouredPointsMap::PLY_export_get_vertex(
 	const size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
 	TColorf& pt_color) const
@@ -689,7 +689,7 @@ void CColouredPointsMap::addFrom_classSpecific(
 }
 
 /** Save the point cloud as a PCL PCD file, in either ASCII or binary format
-* \return false on any error */
+ * \return false on any error */
 bool CColouredPointsMap::savePCDFile(
 	const std::string& filename, bool save_as_binary) const
 {
@@ -745,9 +745,9 @@ template <>
 struct pointmap_traits<CColouredPointsMap>
 {
 	/** Helper method fot the generic implementation of
-	* CPointsMap::loadFromRangeScan(), to be called only once before inserting
-	* points - this is the place to reserve memory in lric for extra working
-	* variables. */
+	 * CPointsMap::loadFromRangeScan(), to be called only once before inserting
+	 * points - this is the place to reserve memory in lric for extra working
+	 * variables. */
 	inline static void internal_loadFromRangeScan2D_init(
 		CColouredPointsMap& me,
 		mrpt::maps::CPointsMap::TLaserRange2DInsertContext& lric)
@@ -764,7 +764,7 @@ struct pointmap_traits<CColouredPointsMap>
 	}
 
 	/** Helper method fot the generic implementation of
-	* CPointsMap::loadFromRangeScan(), to be called once per range data */
+	 * CPointsMap::loadFromRangeScan(), to be called once per range data */
 	inline static void internal_loadFromRangeScan2D_prepareOneRange(
 		CColouredPointsMap& me, const float gx, const float gy, const float gz,
 		mrpt::maps::CPointsMap::TLaserRange2DInsertContext& lric)
@@ -815,8 +815,8 @@ struct pointmap_traits<CColouredPointsMap>
 		}
 	}
 	/** Helper method fot the generic implementation of
-	* CPointsMap::loadFromRangeScan(), to be called after each
-	* "{x,y,z}.push_back(...);" */
+	 * CPointsMap::loadFromRangeScan(), to be called after each
+	 * "{x,y,z}.push_back(...);" */
 	inline static void internal_loadFromRangeScan2D_postPushBack(
 		CColouredPointsMap& me,
 		mrpt::maps::CPointsMap::TLaserRange2DInsertContext& lric)
@@ -831,9 +831,9 @@ struct pointmap_traits<CColouredPointsMap>
 	}
 
 	/** Helper method fot the generic implementation of
-	* CPointsMap::loadFromRangeScan(), to be called only once before inserting
-	* points - this is the place to reserve memory in lric for extra working
-	* variables. */
+	 * CPointsMap::loadFromRangeScan(), to be called only once before inserting
+	 * points - this is the place to reserve memory in lric for extra working
+	 * variables. */
 	inline static void internal_loadFromRangeScan3D_init(
 		CColouredPointsMap& me,
 		mrpt::maps::CPointsMap::TLaserRange3DInsertContext& lric)
@@ -919,7 +919,7 @@ struct pointmap_traits<CColouredPointsMap>
 	}
 
 	/** Helper method fot the generic implementation of
-	* CPointsMap::loadFromRangeScan(), to be called once per range data */
+	 * CPointsMap::loadFromRangeScan(), to be called once per range data */
 	inline static void internal_loadFromRangeScan3D_prepareOneRange(
 		CColouredPointsMap& me, const float gx, const float gy, const float gz,
 		mrpt::maps::CPointsMap::TLaserRange3DInsertContext& lric)
@@ -997,8 +997,8 @@ struct pointmap_traits<CColouredPointsMap>
 						img_idx_y = cy + fy * pt.y / pt.z;
 
 						hasValidColor = img_idx_x < imgW &&  // img_idx_x>=0
-										// isn't needed for
-										// unsigned.
+															 // isn't needed for
+															 // unsigned.
 										img_idx_y < imgH;
 					}
 				}
@@ -1029,8 +1029,8 @@ struct pointmap_traits<CColouredPointsMap>
 	}
 
 	/** Helper method fot the generic implementation of
-	* CPointsMap::loadFromRangeScan(), to be called after each
-	* "{x,y,z}.push_back(...);" */
+	 * CPointsMap::loadFromRangeScan(), to be called after each
+	 * "{x,y,z}.push_back(...);" */
 	inline static void internal_loadFromRangeScan3D_postPushBack(
 		CColouredPointsMap& me,
 		mrpt::maps::CPointsMap::TLaserRange3DInsertContext& lric)
@@ -1047,8 +1047,8 @@ struct pointmap_traits<CColouredPointsMap>
 	}
 
 	/** Helper method fot the generic implementation of
-	* CPointsMap::loadFromRangeScan(), to be called once per range data, at the
-	* end */
+	 * CPointsMap::loadFromRangeScan(), to be called once per range data, at the
+	 * end */
 	inline static void internal_loadFromRangeScan3D_postOneRange(
 		CColouredPointsMap& me,
 		mrpt::maps::CPointsMap::TLaserRange3DInsertContext& lric)
@@ -1073,9 +1073,9 @@ struct pointmap_traits<CColouredPointsMap>
 		}
 	}
 };
-}
-}
-}
+}  // namespace detail
+}  // namespace maps
+}  // namespace mrpt
 
 /** See CPointsMap::loadFromRangeScan() */
 void CColouredPointsMap::loadFromRangeScan(

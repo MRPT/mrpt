@@ -19,7 +19,7 @@
 #include <mrpt/opengl/PLY_import_export.h>
 #include <mrpt/obs/obs_frwds.h>
 #include <mrpt/opengl/pointcloud_adapters.h>
-#include <mrpt/imgs/color_maps.h>
+#include <mrpt/img/color_maps.h>
 
 // Add for declaration of mexplus::from template specialization
 DECLARE_MEXPLUS_FROM(mrpt::maps::CPointsMap)
@@ -289,8 +289,30 @@ class CPointsMap : public CMetricMap,
 		 * rays (default=10) */
 		uint32_t decimation;
 	};
-
 	TLikelihoodOptions likelihoodOptions;
+
+	/** Rendering options, used in getAs3DObject()
+	 */
+	struct TRenderOptions : public config::CLoadableOptions
+	{
+		void loadFromConfigFile(
+			const mrpt::config::CConfigFileBase& source,
+			const std::string& section) override;  // See base docs
+		void dumpToTextStream(
+			std::ostream& out) const override;  // See base docs
+
+		/** Binary dump to stream - used in derived classes' serialization */
+		void writeToStream(mrpt::serialization::CArchive& out) const;
+		/** Binary dump to stream - used in derived classes' serialization */
+		void readFromStream(mrpt::serialization::CArchive& in);
+
+		float point_size{3.0f};
+		/** Color of points. Superseded by colormap if the latter is set. */
+		mrpt::img::TColorf color{.0f, .0f, 1.0f};
+		/** Colormap for points (index is "z" coordinates) */
+		mrpt::img::TColormap colormap{mrpt::img::cmNONE};
+	};
+	TRenderOptions renderOptions;
 
 	/** Adds all the points from \a anotherMap to this map, without fusing.
 	 *  This operation can be also invoked via the "+=" operator, for example:
@@ -830,8 +852,7 @@ class CPointsMap : public CMetricMap,
 	/** STL-like method to check whether the map is empty: */
 	inline bool empty() const { return isEmpty(); }
 	/** Returns a 3D object representing the map.
-	 *  The color of the points is controlled by COLOR_3DSCENE()
-	 * \sa mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE
+	 *  The color of the points is controlled by renderOptions
 	 */
 	virtual void getAs3DObject(
 		mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
@@ -934,14 +955,6 @@ class CPointsMap : public CMetricMap,
 	}
 
 	/** @} */
-
-	/** The color of points in getAs3DObject() (default=blue).
-	 *Setting a color overrides the colormap set via COLORMAP_3DSCENE() */
-	static void COLOR_3DSCENE(const mrpt::img::TColorf& value);
-	static mrpt::img::TColorf COLOR_3DSCENE();
-	/** Enables coloring points by height (z) using the given colormap. Setting
-	 * a colormap overrides the color set via COLOR_3DSCENE() */
-	static void COLORMAP_3DSCENE(const mrpt::img::TColorMap& colormap);
 
 	// See docs in base class
 	virtual double internal_computeObservationLikelihood(
@@ -1155,16 +1168,6 @@ class CPointsMap : public CMetricMap,
 };  // End of class def.
 
 }  // namespace maps
-
-namespace global_settings
-{
-/** The size of points when exporting with getAs3DObject() (default=3.0)
- * Affects to:
- *		- mrpt::maps::CPointsMap and all its children classes.
- */
-void POINTSMAPS_3DOBJECT_POINTSIZE(float value);
-float POINTSMAPS_3DOBJECT_POINTSIZE();
-}  // namespace global_settings
 
 namespace opengl
 {
