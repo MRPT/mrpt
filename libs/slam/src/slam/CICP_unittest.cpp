@@ -342,10 +342,10 @@ TEST_F(ICPTests, RayTracingICP3D)
 	CSetOfObjects::Ptr PTNS1 = mrpt::make_aligned_shared<CSetOfObjects>();
 	CSetOfObjects::Ptr PTNS2 = mrpt::make_aligned_shared<CSetOfObjects>();
 
-	CPointsMap::COLOR_3DSCENE(mrpt::img::TColorf(1, 0, 0));
+	M1.renderOptions.color = mrpt::img::TColorf(1, 0, 0);
 	M1.getAs3DObject(PTNS1);
 
-	CPointsMap::COLOR_3DSCENE(mrpt::img::TColorf(0, 0, 1));
+	M2_noisy.renderOptions.color = mrpt::img::TColorf(0, 0, 1);
 	M2_noisy.getAs3DObject(PTNS2);
 
 	scene2->insert(PTNS1);
