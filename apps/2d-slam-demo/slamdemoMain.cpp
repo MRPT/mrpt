@@ -212,9 +212,8 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 		_T("wxID_ANY"));
 	{
 		wxIcon FrameIcon;
-		FrameIcon.CopyFromBitmap(
-			wxArtProvider::GetBitmap(
-				wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")), wxART_FRAME_ICON));
+		FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(
+			wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")), wxART_FRAME_ICON));
 		SetIcon(FrameIcon);
 	}
 	FlexGridSizer1 = new wxFlexGridSizer(2, 1, 0, 0);
@@ -1090,10 +1089,9 @@ void slamdemoFrame::OnbtnOneStepClicked(wxCommandEvent& event)
 	tictac.Tic();
 	executeOneStep();
 	const double T = tictac.Tac();
-	StatusBar1->SetStatusText(
-		wxString::Format(
-			_("Step %u done in %.03fms"), (unsigned)m_historicData.size(),
-			1e3 * T));
+	StatusBar1->SetStatusText(wxString::Format(
+		_("Step %u done in %.03fms"), (unsigned)m_historicData.size(),
+		1e3 * T));
 	updateAllGraphs();
 }
 
@@ -1318,11 +1316,10 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 			ys.push_back(i->pose_mean.y);
 		}
 
-		lbGT->SetLabel(
-			_U(format(
-				   "Ground truth (%u landmarks)",
-				   (unsigned)m_GT_map.landmarks.size())
-				   .c_str()));
+		lbGT->SetLabel(_U(format(
+							  "Ground truth (%u landmarks)",
+							  (unsigned)m_GT_map.landmarks.size())
+							  .c_str()));
 
 		m_lyGTMap->Clear();
 		m_lyGTMap->SetData(xs, ys);
@@ -1341,11 +1338,10 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 	// Observation ----------------------
 	m_lyObsvisibleRange->setPoints(xs_area, ys_area);
 
-	lbObs->SetLabel(
-		_U(format(
-			   "Observation (%u landmarks)",
-			   (unsigned)m_lastObservation.sensedData.size())
-			   .c_str()));
+	lbObs->SetLabel(_U(format(
+						   "Observation (%u landmarks)",
+						   (unsigned)m_lastObservation.sensedData.size())
+						   .c_str()));
 
 	for (size_t i = 0; i < m_lyObsLMs.size(); i++)
 		plotObs->DelLayer(m_lyObsLMs[i], true);
@@ -1361,10 +1357,9 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 		mpCovarianceEllipse* cov = new mpCovarianceEllipse();
 		cov->SetPen(wxPen(wxColour(255, 0, 0), 2));
 		if (m_lastObservation.sensedData[i].landmarkID != INVALID_LANDMARK_ID)
-			cov->SetName(
-				wxString::Format(
-					_("#%u"),
-					(unsigned)m_lastObservation.sensedData[i].landmarkID));
+			cov->SetName(wxString::Format(
+				_("#%u"),
+				(unsigned)m_lastObservation.sensedData[i].landmarkID));
 		else
 			cov->SetName(_("?"));
 
@@ -1409,9 +1404,8 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 
 		m_SLAM.getCurrentState(estRobotPose, LMs, landmarkIDs, Xkk, Pkk);
 
-		lbMap->SetLabel(
-			wxString::Format(
-				_("Estimated map (%u landmarks)"), (unsigned)LMs.size()));
+		lbMap->SetLabel(wxString::Format(
+			_("Estimated map (%u landmarks)"), (unsigned)LMs.size()));
 
 		// mean robot pose:
 		m_lyMapRobot->SetCoordinateBase(
@@ -1451,9 +1445,8 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 			cov->SetPen(wxPen(wxColour(0, 0, 255), 2));
 
 			if (options.show_map_real_correspondences)
-				cov->SetName(
-					wxString::Format(
-						_("#%u->%u"), (unsigned)i, (unsigned)idx_in_real_map));
+				cov->SetName(wxString::Format(
+					_("#%u->%u"), (unsigned)i, (unsigned)idx_in_real_map));
 			else
 				cov->SetName(wxString::Format(_("#%u"), (unsigned)i));
 
@@ -1523,10 +1516,9 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 		{
 			THistoric& h = m_historicData[i];
 			m_lyERRPHI_err->AppendDataPoint(
-				i, RAD2DEG(
-					   mrpt::math::wrapToPi(
-						   h.GT_robot_pose.phi() -
-						   h.estimate_robot_pose.mean.phi())));
+				i,
+				RAD2DEG(mrpt::math::wrapToPi(
+					h.GT_robot_pose.phi() - h.estimate_robot_pose.mean.phi())));
 			const double std_p = sqrt(h.estimate_robot_pose.cov(2, 2));
 			m_lyERRPHI_boundUp->AppendDataPoint(i, RAD2DEG(3 * std_p));
 			m_lyERRPHI_boundDown->AppendDataPoint(i, RAD2DEG(-3 * std_p));
@@ -1596,10 +1588,9 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 			cov->SetPen(wxPen(wxColour(255, 0, 0), 2));
 			if (m_lastObservation.sensedData[i].landmarkID !=
 				INVALID_LANDMARK_ID)
-				cov->SetName(
-					wxString::Format(
-						_("O(%u)"),
-						(unsigned)m_lastObservation.sensedData[i].landmarkID));
+				cov->SetName(wxString::Format(
+					_("O(%u)"),
+					(unsigned)m_lastObservation.sensedData[i].landmarkID));
 			else
 				cov->SetName(wxString::Format(_("O%u"), (unsigned)i));
 
@@ -1631,10 +1622,10 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 
 			cov->SetQuantiles(2);
 			cov->SetCoordinateBase(RAD2DEG(ha), hr);
-			if (da.Y_pred_covs.cols() == obs_size)
+			if (size_t(da.Y_pred_covs.cols()) == obs_size)
 			{  // Independent predictions:
 				ASSERT_(
-					da.Y_pred_covs.rows() ==
+					size_t(da.Y_pred_covs.rows()) ==
 					obs_size * da.predictions_IDs.size());
 				cov->SetCovarianceMatrix(
 					RAD2DEGSQ * da.Y_pred_covs(obs_size * i + 1, 1),
@@ -1645,7 +1636,7 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 			{  // Full cov. predictions:
 				ASSERT_(
 					da.Y_pred_covs.isSquare() &&
-					da.Y_pred_covs.cols() ==
+					size_t(da.Y_pred_covs.cols()) ==
 						obs_size * da.predictions_IDs.size());
 				cov->SetCovarianceMatrix(
 					RAD2DEGSQ *
@@ -1676,9 +1667,8 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 				{
 					mpFXYVector* v = new mpFXYVector(wxEmptyString, mpALIGN_SW);
 					v->SetPen(wxPen(wxColour(0, 0, 0), is_final_assoc ? 4 : 2));
-					v->SetName(
-						wxString::Format(
-							_("%f"), da.results.indiv_distances(p, o)));
+					v->SetName(wxString::Format(
+						_("%f"), da.results.indiv_distances(p, o)));
 
 					const double hr = da.Y_pred_means(p, 0);
 					const double ha = da.Y_pred_means(p, 1);
@@ -1858,10 +1848,8 @@ void slamdemoFrame::TSimulationOptions::loadFromConfigFile(
 		f.read_double(c, "sensorOnTheRobot.x", sensorOnTheRobot.x()));
 	sensorOnTheRobot.y(
 		f.read_double(c, "sensorOnTheRobot.y", sensorOnTheRobot.y()));
-	sensorOnTheRobot.phi(
-		DEG2RAD(
-			f.read_double(
-				c, "sensorOnTheRobot.phi", RAD2DEG(sensorOnTheRobot.phi()))));
+	sensorOnTheRobot.phi(DEG2RAD(f.read_double(
+		c, "sensorOnTheRobot.phi", RAD2DEG(sensorOnTheRobot.phi()))));
 
 	MRPT_LOAD_CONFIG_VAR(sensor_max_range, double, f, c)
 	MRPT_LOAD_CONFIG_VAR(sensor_min_range, double, f, c)
@@ -2012,18 +2000,15 @@ void slamdemoFrame::executeOneStep()
 
 			// Add noise:
 			CPose2D noisyPoseIncr = poseIncr;
-			noisyPoseIncr.x_incr(
-				getRandomGenerator().drawGaussian1D(
-					0, options.odometry_noise_std_xy /
-						   options.uncert_overestim_odom));
-			noisyPoseIncr.y_incr(
-				getRandomGenerator().drawGaussian1D(
-					0, options.odometry_noise_std_xy /
-						   options.uncert_overestim_odom));
-			noisyPoseIncr.phi_incr(
-				getRandomGenerator().drawGaussian1D(
-					0, options.odometry_noise_std_phi /
-						   options.uncert_overestim_odom));
+			noisyPoseIncr.x_incr(getRandomGenerator().drawGaussian1D(
+				0,
+				options.odometry_noise_std_xy / options.uncert_overestim_odom));
+			noisyPoseIncr.y_incr(getRandomGenerator().drawGaussian1D(
+				0,
+				options.odometry_noise_std_xy / options.uncert_overestim_odom));
+			noisyPoseIncr.phi_incr(getRandomGenerator().drawGaussian1D(
+				0, options.odometry_noise_std_phi /
+					   options.uncert_overestim_odom));
 
 			actmov.computeFromOdometry(noisyPoseIncr, odo_opts);
 			actmov.timestamp = mrpt::system::now();
@@ -2033,9 +2018,8 @@ void slamdemoFrame::executeOneStep()
 			m_lastObservation.timestamp = mrpt::system::now();
 			m_lastObservation.sensorLabel = "SIMUL_2D_RB";
 
-			sf->insert(
-				CObservationBearingRange::Ptr(
-					new CObservationBearingRange(m_lastObservation)));
+			sf->insert(CObservationBearingRange::Ptr(
+				new CObservationBearingRange(m_lastObservation)));
 
 			tictac.Tic();
 
@@ -2183,10 +2167,9 @@ void slamdemoFrame::OntimSimulTrigger(wxTimerEvent& event)
 
 	updateAllGraphs();
 
-	StatusBar1->SetStatusText(
-		wxString::Format(
-			_("Step %u done in %.03fms"), (unsigned)m_historicData.size(),
-			1e3 * T));
+	StatusBar1->SetStatusText(wxString::Format(
+		_("Step %u done in %.03fms"), (unsigned)m_historicData.size(),
+		1e3 * T));
 
 	wxTheApp->Yield(true);  // Let the app. process messages
 
@@ -2261,9 +2244,8 @@ void slamdemoFrame::OnConfigClicked(wxCommandEvent& event)
 	dlg.rbDAMethod->SetSelection(int(m_SLAM.options.data_assoc_method));
 	dlg.rbDAMetric->SetSelection(int(m_SLAM.options.data_assoc_metric));
 	dlg.rbICmetric->SetSelection(int(m_SLAM.options.data_assoc_IC_metric));
-	dlg.edICMLrefDist->SetValue(
-		wxString::Format(
-			_("%.04f"), m_SLAM.options.data_assoc_IC_ml_threshold));
+	dlg.edICMLrefDist->SetValue(wxString::Format(
+		_("%.04f"), m_SLAM.options.data_assoc_IC_ml_threshold));
 
 	dlg.edOverOdom->SetValue(options.uncert_overestim_odom * 100);
 	dlg.edOverSensor->SetValue(options.uncert_overestim_sensor * 100);
@@ -2498,9 +2480,10 @@ void slamdemoFrame::OnmnuItemSaveRawlogSelected(wxCommandEvent& event)
 		obs.text = std::string(
 					   "Rawlog generated by 2d-slam-demo\n"
 					   " MRPT version: ") +
-				   mrpt::system::MRPT_getVersion() + std::string(
-														 "\n"
-														 " Creation date: ") +
+				   mrpt::system::MRPT_getVersion() +
+				   std::string(
+					   "\n"
+					   " Creation date: ") +
 				   mrpt::system::dateTimeLocalToString(mrpt::system::now()) +
 				   std::string("\n");
 

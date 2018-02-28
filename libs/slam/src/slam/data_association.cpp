@@ -55,12 +55,12 @@ struct TAuxDataRecursiveJCBB
 
 /**  Computes the joint distance metric (mahalanobis or matching likelihood)
  * between two  a set of associations
-  *
-  * On "currentAssociation":  maps "ID_obs" -> "ID_pred"
-  *  For each landmark ID in the observations (ID_obs), its association
-  *  in the predictions, that is: ID_pred = associations[ID_obs]
-  *
-  */
+ *
+ * On "currentAssociation":  maps "ID_obs" -> "ID_pred"
+ *  For each landmark ID in the observations (ID_obs), its association
+ *  in the predictions, that is: ID_pred = associations[ID_obs]
+ *
+ */
 template <typename T, TDataAssociationMetric METRIC>
 double joint_pdf_metric(
 	const CMatrixTemplateNumeric<T>& Z_observations_mean,
@@ -260,8 +260,8 @@ void JCBB_recursive(
 	}
 }
 
-}  // end namespace
-}  // end namespace
+}  // namespace slam
+}  // namespace mrpt
 
 /* ==================================================================================================
 Computes the data-association between the prediction of a set of landmarks and
@@ -328,8 +328,8 @@ void mrpt::slam::data_association_full_covariance(
 
 	ASSERT_(nPredictions != 0);
 	ASSERT_(nObservations != 0);
-	ASSERT_(length_O == Y_predictions_mean.cols());
-	ASSERT_(length_O * nPredictions == Y_predictions_cov.rows());
+	ASSERT_(length_O == (size_t)Y_predictions_mean.cols());
+	ASSERT_(length_O * nPredictions == (size_t)Y_predictions_cov.rows());
 	ASSERT_(Y_predictions_cov.isSquare());
 	ASSERT_(chi2quantile > 0 && chi2quantile < 1);
 	ASSERT_(metric == metricMaha || metric == metricML);
@@ -351,9 +351,8 @@ void mrpt::slam::data_association_full_covariance(
 	if (DAT_ASOC_USE_KDTREE)
 	{
 		// Construct kd-tree for the predictions:
-		kd_tree = KDTreeMatrixPtr(
-			new KDTreeEigenMatrixAdaptor<CMatrixDouble>(
-				length_O, Y_predictions_mean));
+		kd_tree = KDTreeMatrixPtr(new KDTreeEigenMatrixAdaptor<CMatrixDouble>(
+			length_O, Y_predictions_mean));
 	}
 
 	// Initialize with the worst possible distance:
@@ -484,8 +483,9 @@ void mrpt::slam::data_association_full_covariance(
 			//     NOTE: distances are saved so smaller is always better,
 			//            hence "metricML" are made negative.
 			// -------------------------------------------------------------------
-			typedef multimap<double, pair<observation_index_t,
-										  multimap<double, prediction_index_t>>>
+			typedef multimap<
+				double,
+				pair<observation_index_t, multimap<double, prediction_index_t>>>
 				TListAllICs;
 			TListAllICs lst_all_ICs;
 
@@ -606,8 +606,9 @@ void mrpt::slam::data_association_independent_predictions(
 
 	ASSERT_(nPredictions != 0);
 	ASSERT_(nObservations != 0);
-	ASSERT_(length_O == Y_predictions_mean.cols());
-	ASSERT_(length_O * nPredictions == Y_predictions_cov_stacked.rows());
+	ASSERT_(length_O == (size_t)Y_predictions_mean.cols());
+	ASSERT_(
+		length_O * nPredictions == (size_t)Y_predictions_cov_stacked.rows());
 	ASSERT_(chi2quantile > 0 && chi2quantile < 1);
 	ASSERT_(metric == metricMaha || metric == metricML);
 	// const double chi2thres = mrpt::math::chi2inv( chi2quantile, length_O );

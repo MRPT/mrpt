@@ -53,8 +53,6 @@ void CHMTSLAM::thread_3D_viewer()
 
 		// Finish thread:
 		// -------------------------
-		time_t timCreat, timExit;
-		double timCPU = 0;
 		MRPT_TODO("Fix thread times")
 		// try { mrpt::system::getCurrentThreadTimes( timCreat,timExit,timCPU);
 		// } catch(...) {};

@@ -239,15 +239,10 @@ void CHMTSLAM::thread_LSLAM()
 
 		// Finish thread:
 		// -------------------------
-		time_t timCreat, timExit;
-		double timCPU = 0;
 		MRPT_TODO("Fix thread times");
 		// try { mrpt::system::getCurrentThreadTimes( timCreat,timExit,timCPU);
 		// } catch(...) {};
-		obj->logFmt(
-			mrpt::system::LVL_DEBUG,
-			"[thread_LSLAM] Thread finished. CPU time used:%.06f secs \n",
-			timCPU);
+		obj->logFmt(mrpt::system::LVL_DEBUG, "[thread_LSLAM] Thread finished");
 		obj->m_terminationFlag_LSLAM = true;
 	}
 	catch (std::exception& e)
@@ -416,10 +411,9 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 		m_map.dumpAsText(s);
 		std::string ss;
 		mrpt::system::stringListAsString(s, ss);
-		std::ofstream f(
-			format(
-				"%s/HMAP_txt/HMAP_%05i_before.txt",
-				m_options.LOG_OUTPUT_DIR.c_str(), DEBUG_STEP));
+		std::ofstream f(format(
+			"%s/HMAP_txt/HMAP_%05i_before.txt",
+			m_options.LOG_OUTPUT_DIR.c_str(), DEBUG_STEP));
 		f << ss;
 		logFmt(
 			mrpt::system::LVL_INFO,
@@ -892,7 +886,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 									node_c,  // Target
 									LMH->m_ID,  // Hypos
 									&m_map  // The graph
-									);
+								);
 								newArc->m_arcType = "RelativePose";
 								arcDeltaIsInverted = false;
 							}
@@ -1340,10 +1334,8 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 					lstClosestDoubtfulNeigbors.end())
 				{
 					// Add link to closest area:
-					lstInternalArcsToCreate.insert(
-						TPairNodeIDs(
-							area_ID,
-							lstClosestDoubtfulNeigbors[area_ID].first));
+					lstInternalArcsToCreate.insert(TPairNodeIDs(
+						area_ID, lstClosestDoubtfulNeigbors[area_ID].first));
 
 					// Now they have a link:
 					areasWithLink.insert(area_ID);
@@ -1443,7 +1435,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 					area_b_ID,  // Target
 					theArcHypos,  // Hypos
 					&m_map  // The graph
-					);
+				);
 				newArc->m_arcType = "RelativePose";
 				arcDeltaIsInverted = false;
 			}
@@ -1572,10 +1564,9 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 		std::string ss;
 		mrpt::system::stringListAsString(s, ss);
 
-		std::ofstream f(
-			format(
-				"%s/HMAP_txt/HMAP_%05i_mid.txt",
-				m_options.LOG_OUTPUT_DIR.c_str(), DEBUG_STEP));
+		std::ofstream f(format(
+			"%s/HMAP_txt/HMAP_%05i_mid.txt", m_options.LOG_OUTPUT_DIR.c_str(),
+			DEBUG_STEP));
 		f << ss;
 		logFmt(
 			mrpt::system::LVL_INFO,
@@ -1813,10 +1804,9 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 		LMH->dumpAsText(s);
 		std::string ss;
 		mrpt::system::stringListAsString(s, ss);
-		std::ofstream f(
-			format(
-				"%s/HMAP_txt/HMAP_%05i_LMH_mid.txt",
-				m_options.LOG_OUTPUT_DIR.c_str(), DEBUG_STEP));
+		std::ofstream f(format(
+			"%s/HMAP_txt/HMAP_%05i_LMH_mid.txt",
+			m_options.LOG_OUTPUT_DIR.c_str(), DEBUG_STEP));
 		f << ss;
 		logFmt(
 			mrpt::system::LVL_INFO,
@@ -1921,10 +1911,9 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 		m_map.dumpAsText(s);
 		std::string ss;
 		mrpt::system::stringListAsString(s, ss);
-		std::ofstream f(
-			format(
-				"%s/HMAP_txt/HMAP_%05i_after.txt",
-				m_options.LOG_OUTPUT_DIR.c_str(), DEBUG_STEP));
+		std::ofstream f(format(
+			"%s/HMAP_txt/HMAP_%05i_after.txt", m_options.LOG_OUTPUT_DIR.c_str(),
+			DEBUG_STEP));
 		f << ss;
 		logFmt(
 			mrpt::system::LVL_INFO,
@@ -1936,10 +1925,9 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 		LMH->dumpAsText(s);
 		std::string ss;
 		mrpt::system::stringListAsString(s, ss);
-		std::ofstream f(
-			format(
-				"%s/HMAP_txt/HMAP_%05i_LMH_after.txt",
-				m_options.LOG_OUTPUT_DIR.c_str(), DEBUG_STEP));
+		std::ofstream f(format(
+			"%s/HMAP_txt/HMAP_%05i_LMH_after.txt",
+			m_options.LOG_OUTPUT_DIR.c_str(), DEBUG_STEP));
 		f << ss;
 		logFmt(
 			mrpt::system::LVL_INFO,
@@ -2000,7 +1988,7 @@ void CHMTSLAM::LSLAM_process_message_from_TBI(const TMessageLSLAMfromTBI& myMsg)
 			// "currentArea" (The order is critical!!)
 			candidate->first, pdfPartsHMap, myMsg.hypothesisID, 100, 0.10f,
 			DEG2RAD(1.0f)  // Extra noise in each "arc"
-			);
+		);
 
 		CPose3DPDFGaussian pdfDeltaMap;
 		pdfDeltaMap.copyFrom(pdfPartsHMap);
