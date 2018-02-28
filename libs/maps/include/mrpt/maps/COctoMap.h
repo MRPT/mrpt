@@ -51,7 +51,7 @@ class COctoMap : public COctoMapBase<octomap::OcTree, octomap::OcTreeNode>
 		insertionOpts;  //!< Observations insertion options
 	mrpt::maps::COctoMap::TLikelihoodOptions
 		likelihoodOpts;  //!< Probabilistic observation likelihood options
-	MAP_DEFINITION_END(COctoMap, )
+	MAP_DEFINITION_END(COctoMap)
 
 	/** Returns true if the map is empty/no observation has been inserted */
 	virtual bool isEmpty() const override { return size() == 1; }

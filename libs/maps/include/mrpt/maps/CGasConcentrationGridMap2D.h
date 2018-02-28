@@ -176,7 +176,7 @@ class CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
 	mrpt::maps::CGasConcentrationGridMap2D::TMapRepresentation mapType;
 	/** Observations insertion options */
 	mrpt::maps::CGasConcentrationGridMap2D::TInsertionOptions insertionOpts;
-	MAP_DEFINITION_END(CGasConcentrationGridMap2D, )
+	MAP_DEFINITION_END(CGasConcentrationGridMap2D)
 };
 
 }  // End of namespace

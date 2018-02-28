@@ -19,6 +19,7 @@
 #include <mrpt/opengl/PLY_import_export.h>
 #include <mrpt/obs/obs_frwds.h>
 #include <mrpt/opengl/pointcloud_adapters.h>
+#include <mrpt/imgs/color_maps.h>
 
 // Add for declaration of mexplus::from template specialization
 DECLARE_MEXPLUS_FROM(mrpt::maps::CPointsMap)
@@ -934,9 +935,13 @@ class CPointsMap : public CMetricMap,
 
 	/** @} */
 
-	/** The color of points in getAs3DObject() (default=blue) */
+	/** The color of points in getAs3DObject() (default=blue).
+	 *Setting a color overrides the colormap set via COLORMAP_3DSCENE() */
 	static void COLOR_3DSCENE(const mrpt::img::TColorf& value);
 	static mrpt::img::TColorf COLOR_3DSCENE();
+	/** Enables coloring points by height (z) using the given colormap. Setting
+	 * a colormap overrides the color set via COLOR_3DSCENE() */
+	static void COLORMAP_3DSCENE(const mrpt::img::TColorMap& colormap);
 
 	// See docs in base class
 	virtual double internal_computeObservationLikelihood(

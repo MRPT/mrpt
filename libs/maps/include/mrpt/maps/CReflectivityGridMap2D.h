@@ -118,7 +118,7 @@ class CReflectivityGridMap2D : public CMetricMap,
 	/** See CReflectivityGridMap2DOptions::CReflectivityGridMap2DOptions */
 	double min_x, max_x, min_y, max_y, resolution;
 	mrpt::maps::CReflectivityGridMap2D::TInsertionOptions insertionOpts;
-	MAP_DEFINITION_END(CReflectivityGridMap2D, )
+	MAP_DEFINITION_END(CReflectivityGridMap2D)
 };
 
 }  // End of namespace

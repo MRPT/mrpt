@@ -89,7 +89,7 @@ class CWirelessPowerGridMap2D : public CRandomFieldGridMap2D
 	 * CWirelessPowerGridMap2D::CWirelessPowerGridMap2D) */
 	mrpt::maps::CWirelessPowerGridMap2D::TMapRepresentation mapType;
 	mrpt::maps::CWirelessPowerGridMap2D::TInsertionOptions insertionOpts;
-	MAP_DEFINITION_END(CWirelessPowerGridMap2D, )
+	MAP_DEFINITION_END(CWirelessPowerGridMap2D)
 };
 
 }  // End of namespace
