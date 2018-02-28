@@ -20,6 +20,7 @@
 #include <mrpt/maps/CSimplePointsMap.h>
 
 #include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/CPointCloudColoured.h>
 
 // Observations:
 #include <mrpt/obs/CObservationRange.h>
@@ -51,26 +52,8 @@ using namespace mrpt::img;
 using namespace mrpt::system;
 using namespace std;
 
-float POINTSMAPS_3DOBJECT_POINTSIZE_value = 3.0f;
-
-void mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE(float value)
-{
-	POINTSMAPS_3DOBJECT_POINTSIZE_value = value;
-}
-float mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE()
-{
-	return POINTSMAPS_3DOBJECT_POINTSIZE_value;
-}
-
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CPointsMap, CMetricMap, mrpt::maps)
 
-static mrpt::img::TColorf COLOR_3DSCENE_value(0, 0, 1);
-
-void CPointsMap::COLOR_3DSCENE(const mrpt::img::TColorf& value)
-{
-	COLOR_3DSCENE_value = value;
-}
-mrpt::img::TColorf CPointsMap::COLOR_3DSCENE() { return COLOR_3DSCENE_value; }
 /*---------------------------------------------------------------
 						Constructor
   ---------------------------------------------------------------*/
@@ -375,10 +358,10 @@ void CPointsMap::determineMatching2D(
 	const double sin_phi = sin(otherMapPose.phi);
 	const double cos_phi = cos(otherMapPose.phi);
 
-// Do matching only there is any chance of the two maps to overlap:
-// -----------------------------------------------------------
+	// Do matching only there is any chance of the two maps to overlap:
+	// -----------------------------------------------------------
 
-// Translate and rotate all local points:
+	// Translate and rotate all local points:
 
 #if MRPT_HAS_SSE2
 	// Number of 4-floats:
@@ -536,7 +519,7 @@ void CPointsMap::determineMatching2D(
 		unsigned int tentativ_this_idx = kdTreeClosestPoint2D(
 			x_local, y_local,  // Look closest to this guy
 			tentativ_err_sq  // save here the min. distance squared
-			);
+		);
 
 		// Compute max. allowed distance:
 		maxDistForCorrespondenceSquared = square(
@@ -623,7 +606,7 @@ void CPointsMap::changeCoordinatesReference(const CPose2D& newBase)
 		newBase3D.composePoint(
 			x[i], y[i], z[i],  // In
 			x[i], y[i], z[i]  // Out
-			);
+		);
 
 	mark_as_modified();
 }
@@ -639,7 +622,7 @@ void CPointsMap::changeCoordinatesReference(const CPose3D& newBase)
 		newBase.composePoint(
 			x[i], y[i], z[i],  // In
 			x[i], y[i], z[i]  // Out
-			);
+		);
 
 	mark_as_modified();
 }
@@ -737,6 +720,32 @@ void CPointsMap::TLikelihoodOptions::readFromStream(
 	}
 }
 
+void CPointsMap::TRenderOptions::writeToStream(
+	mrpt::serialization::CArchive& out) const
+{
+	const int8_t version = 0;
+	out << version;
+	out << point_size << color << int8_t(colormap);
+}
+
+void CPointsMap::TRenderOptions::readFromStream(
+	mrpt::serialization::CArchive& in)
+{
+	int8_t version;
+	in >> version;
+	switch (version)
+	{
+		case 0:
+		{
+			in >> point_size >> this->color;
+			in.ReadAsAndCastTo<int8_t>(this->colormap);
+		}
+		break;
+		default:
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+	}
+}
+
 void CPointsMap::TInsertionOptions::dumpToTextStream(std::ostream& out) const
 {
 	out << "\n----------- [CPointsMap::TInsertionOptions] ------------ \n\n";
@@ -765,6 +774,16 @@ void CPointsMap::TLikelihoodOptions::dumpToTextStream(std::ostream& out) const
 	LOADABLEOPTS_DUMP_VAR(decimation, int);
 }
 
+void CPointsMap::TRenderOptions::dumpToTextStream(std::ostream& out) const
+{
+	out << "\n----------- [CPointsMap::TRenderOptions] ------------ \n\n";
+
+	LOADABLEOPTS_DUMP_VAR(point_size, float);
+	LOADABLEOPTS_DUMP_VAR(color.R, float);
+	LOADABLEOPTS_DUMP_VAR(color.G, float);
+	LOADABLEOPTS_DUMP_VAR(color.B, float);
+	// LOADABLEOPTS_DUMP_VAR(colormap, int);
+}
 /*---------------------------------------------------------------
 					loadFromConfigFile
   ---------------------------------------------------------------*/
@@ -793,6 +812,16 @@ void CPointsMap::TLikelihoodOptions::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR(decimation, int, iniFile, section);
 }
 
+void CPointsMap::TRenderOptions::loadFromConfigFile(
+	const mrpt::config::CConfigFileBase& iniFile, const string& section)
+{
+	MRPT_LOAD_CONFIG_VAR(point_size, float, iniFile, section);
+	MRPT_LOAD_CONFIG_VAR(color.R, float, iniFile, section);
+	MRPT_LOAD_CONFIG_VAR(color.G, float, iniFile, section);
+	MRPT_LOAD_CONFIG_VAR(color.B, float, iniFile, section);
+	colormap = iniFile.read_enum(section, "colormap", this->colormap);
+}
+
 /*---------------------------------------------------------------
 						getAs3DObject
 ---------------------------------------------------------------*/
@@ -800,17 +829,29 @@ void CPointsMap::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
 {
 	if (!genericMapParams.enableSaveAs3DObject) return;
 
-	opengl::CPointCloud::Ptr obj =
-		mrpt::make_aligned_shared<opengl::CPointCloud>();
+	if (renderOptions.colormap == mrpt::img::cmNONE)
+	{
+		// Single color:
+		auto obj = opengl::CPointCloud::Create();
+		obj->loadFromPointsMap(this);
+		obj->setColor(renderOptions.color);
+		obj->setPointSize(renderOptions.point_size);
+		obj->enableColorFromZ(true);
 
-	obj->loadFromPointsMap(this);
-	obj->setColor(COLOR_3DSCENE_value);
-	obj->setPointSize(POINTSMAPS_3DOBJECT_POINTSIZE_value);
-	obj->enableColorFromZ(true);
-
-	obj->setGradientColors(TColorf(0.0, 0, 0), COLOR_3DSCENE_value);
-
-	outObj->insert(obj);
+		obj->setGradientColors(TColorf(0.0, 0, 0), renderOptions.color);
+		outObj->insert(obj);
+	}
+	else
+	{
+		auto obj = opengl::CPointCloudColoured::Create();
+		obj->loadFromPointsMap(this);
+		obj->setPointSize(renderOptions.point_size);
+		mrpt::math::TPoint3D pMin, pMax;
+		this->boundingBox(pMin, pMax);
+		obj->recolorizeByCoordinate(
+			pMin.z, pMax.z, 2 /*z*/, renderOptions.colormap);
+		outObj->insert(obj);
+	}
 }
 
 float CPointsMap::compute3DMatchingRatio(
@@ -893,7 +934,7 @@ void CPointsMap::getAllPoints(
 float CPointsMap::squareDistanceToClosestCorrespondence(
 	float x0, float y0) const
 {
-// Just the closest point:
+	// Just the closest point:
 
 #if 1
 	return kdTreeClosestPoint2DsqrError(x0, y0);
@@ -923,7 +964,7 @@ float CPointsMap::squareDistanceToClosestCorrespondence(
 			x0, y0,  // the point
 			x1, y1, x2, y2,  // The segment
 			interp_x, interp_y  // out
-			);
+		);
 
 		return square(interp_x - x0) + square(interp_y - y0);
 	}
@@ -1186,7 +1227,7 @@ void CPointsMap::determineMatching3D(
 			const unsigned int tentativ_this_idx = kdTreeClosestPoint3D(
 				x_local, y_local, z_local,  // Look closest to this guy
 				tentativ_err_sq  // save here the min. distance squared
-				);
+			);
 
 			// Compute max. allowed distance:
 			maxDistForCorrespondenceSquared = square(
@@ -1372,16 +1413,15 @@ void CPointsMap::compute3DDistanceToMesh(
 				outX, outY, outZ,  // output vectors
 				outIdx,  // output indexes
 				tentativeErrSq  // save here the min. distance squared
-				);
+			);
 
 			// get the centroid
 			const float mX = (outX[0] + outX[1] + outX[2]) / 3.0;
 			const float mY = (outY[0] + outY[1] + outY[2]) / 3.0;
 			const float mZ = (outZ[0] + outZ[1] + outZ[2]) / 3.0;
 
-			const float distanceForThisPoint = fabs(
-				mrpt::math::distance(
-					TPoint3D(x_local, y_local, z_local), TPoint3D(mX, mY, mZ)));
+			const float distanceForThisPoint = fabs(mrpt::math::distance(
+				TPoint3D(x_local, y_local, z_local), TPoint3D(mX, mY, mZ)));
 
 			// Distance below the threshold??
 			if (distanceForThisPoint < maxDistForCorrespondence)
@@ -1428,8 +1468,8 @@ void CPointsMap::compute3DDistanceToMesh(
 		if (best.find(i0) != best.end() &&
 			best[i0].find(i1) != best[i0].end() &&
 			best[i0][i1].find(i2) !=
-				best[i0]
-					[i1].end())  // if there is a match, check if it is better
+				best[i0][i1]
+					.end())  // if there is a match, check if it is better
 		{
 			if (best[i0][i1][i2].second > it->errorSquareAfterTransformation)
 			{
@@ -1521,7 +1561,7 @@ double CPointsMap::internal_computeObservationLikelihood(
 					xg, yg,  // Look for the closest to this guy
 					closest_x, closest_y,  // save here the closest match
 					closest_err  // save here the min. distance squared
-					);
+				);
 
 				// Put a limit:
 				mrpt::keep_min(closest_err, max_sqr_err);
@@ -1546,7 +1586,7 @@ double CPointsMap::internal_computeObservationLikelihood(
 					closest_x, closest_y,
 					closest_z,  // save here the closest match
 					closest_err  // save here the min. distance squared
-					);
+				);
 
 				// Put a limit:
 				mrpt::keep_min(closest_err, max_sqr_err);
@@ -1601,7 +1641,7 @@ double CPointsMap::internal_computeObservationLikelihood(
 				closest_x, closest_y,
 				closest_z,  // save here the closest match
 				closest_err  // save here the min. distance squared
-				);
+			);
 
 			// Put a limit:
 			mrpt::keep_min(closest_err, max_sqr_err);
@@ -1631,8 +1671,8 @@ using scan2pts_functor = void (*)(
 	mrpt::maps::CMetricMap::Ptr& out_map, const void* insertOps);
 
 extern void internal_set_build_points_map_from_scan2D(scan2pts_functor fn);
-}
-}
+}  // namespace obs
+}  // namespace mrpt
 
 void internal_build_points_map_from_scan2D(
 	const mrpt::obs::CObservation2DRangeScan& obs,
@@ -1667,9 +1707,9 @@ TAuxLoadFunctor dummy_loader;  // used just to set
 
 /** In a base class, will be called after PLY_import_set_vertex_count() once for
  * each loaded point.
-  *  \param pt_color Will be nullptr if the loaded file does not provide color
+ *  \param pt_color Will be nullptr if the loaded file does not provide color
  * info.
-  */
+ */
 void CPointsMap::PLY_import_set_vertex(
 	const size_t idx, const mrpt::math::TPoint3Df& pt,
 	const mrpt::img::TColorf* pt_color)
@@ -1682,9 +1722,9 @@ void CPointsMap::PLY_import_set_vertex(
 size_t CPointsMap::PLY_export_get_vertex_count() const { return this->size(); }
 /** In a base class, will be called after PLY_export_get_vertex_count() once for
  * each exported point.
-  *  \param pt_color Will be nullptr if the loaded file does not provide color
+ *  \param pt_color Will be nullptr if the loaded file does not provide color
  * info.
-  */
+ */
 void CPointsMap::PLY_export_get_vertex(
 	const size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
 	mrpt::img::TColorf& pt_color) const
@@ -1895,14 +1935,14 @@ bool CPointsMap::internal_insertObservation(
 				auxMap.loadFromRangeScan(
 					*o,  // The laser range scan observation
 					&robotPose3D  // The robot pose
-					);
+				);
 
 				fuseWith(
 					&auxMap,  // Fuse with this map
 					insertionOptions.minDistBetweenLaserPoints,  // Min dist.
 					&checkForDeletion  // Set to "false" if a point in "map" has
 					// been fused.
-					);
+				);
 
 				if (!insertionOptions.disableDeletion)
 				{
@@ -1944,7 +1984,7 @@ bool CPointsMap::internal_insertObservation(
 				loadFromRangeScan(
 					*o,  // The laser range scan observation
 					&robotPose3D  // The robot pose
-					);
+				);
 			}
 
 			return true;
@@ -1985,14 +2025,14 @@ bool CPointsMap::internal_insertObservation(
 				auxMap.loadFromRangeScan(
 					*o,  // The laser range scan observation
 					&robotPose3D  // The robot pose
-					);
+				);
 
 				fuseWith(
 					&auxMap,  // Fuse with this map
 					insertionOptions.minDistBetweenLaserPoints,  // Min dist.
 					NULL  // rather than &checkForDeletion which we don't need
 					// for 3D observations
-					);
+				);
 			}
 			else
 			{
@@ -2001,7 +2041,7 @@ bool CPointsMap::internal_insertObservation(
 				loadFromRangeScan(
 					*o,  // The laser range scan observation
 					&robotPose3D  // The robot pose
-					);
+				);
 			}
 
 			// This could be implemented to check whether existing points fall
@@ -2086,8 +2126,7 @@ bool CPointsMap::internal_insertObservation(
 			auxMap.insertionOptions.addToExistingPointsMap = false;
 			auxMap.loadFromVelodyneScan(*o, &robotPose3D);
 			fuseWith(
-				&auxMap, insertionOptions.minDistBetweenLaserPoints,
-				nullptr /* rather than &checkForDeletion which we don't need for 3D observations */);
+				&auxMap, insertionOptions.minDistBetweenLaserPoints, nullptr /* rather than &checkForDeletion which we don't need for 3D observations */);
 		}
 		else
 		{
@@ -2262,6 +2301,6 @@ void CPointsMap::loadFromVelodyneScan(
 		this->setPoint(
 			nOldPtsCount + i, gx, gy, gz,  // XYZ
 			inten, inten, inten  // RGB
-			);
+		);
 	}
 }

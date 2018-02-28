@@ -28,13 +28,12 @@ MAP_DEFINITION_REGISTER(
 
 CSimplePointsMap::TMapDefinition::TMapDefinition() {}
 void CSimplePointsMap::TMapDefinition::loadFromConfigFile_map_specific(
-	const mrpt::config::CConfigFileBase& source,
-	const std::string& sectionNamePrefix)
+	const mrpt::config::CConfigFileBase& c,
+	const std::string& s)
 {
-	insertionOpts.loadFromConfigFile(
-		source, sectionNamePrefix + string("_insertOpts"));
-	likelihoodOpts.loadFromConfigFile(
-		source, sectionNamePrefix + string("_likelihoodOpts"));
+	insertionOpts.loadFromConfigFile(c, s + string("_insertOpts"));
+	likelihoodOpts.loadFromConfigFile(c, s + string("_likelihoodOpts"));
+	renderOpts.loadFromConfigFile(c, s + string("_renderOpts"));
 }
 
 void CSimplePointsMap::TMapDefinition::dumpToTextStream_map_specific(
@@ -42,6 +41,7 @@ void CSimplePointsMap::TMapDefinition::dumpToTextStream_map_specific(
 {
 	this->insertionOpts.dumpToTextStream(out);
 	this->likelihoodOpts.dumpToTextStream(out);
+	this->renderOpts.dumpToTextStream(out);
 }
 
 mrpt::maps::CMetricMap* CSimplePointsMap::internal_CreateFromMapDefinition(
@@ -52,6 +52,7 @@ mrpt::maps::CMetricMap* CSimplePointsMap::internal_CreateFromMapDefinition(
 	CSimplePointsMap* obj = new CSimplePointsMap();
 	obj->insertionOptions = def.insertionOpts;
 	obj->likelihoodOptions = def.likelihoodOpts;
+	obj->renderOptions = def.renderOpts;
 	return obj;
 }
 //  =========== End of Map definition Block =========
@@ -98,7 +99,7 @@ void CSimplePointsMap::copyFrom(const CPointsMap& obj)
 		obj);  // This also does a ::resize(N) of all data fields.
 }
 
-uint8_t CSimplePointsMap::serializeGetVersion() const { return 9; }
+uint8_t CSimplePointsMap::serializeGetVersion() const { return 10; }
 void CSimplePointsMap::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	uint32_t n = x.size();
@@ -115,6 +116,7 @@ void CSimplePointsMap::serializeTo(mrpt::serialization::CArchive& out) const
 	out << genericMapParams;  // v9
 	insertionOptions.writeToStream(out);  // v9
 	likelihoodOptions.writeToStream(out);  // v5
+	renderOptions.writeToStream(out);  // v10
 }
 
 /*---------------------------------------------------------------
@@ -129,6 +131,7 @@ void CSimplePointsMap::serializeFrom(
 	{
 		case 8:
 		case 9:
+		case 10:
 		{
 			mark_as_modified();
 
@@ -152,9 +155,9 @@ void CSimplePointsMap::serializeFrom(
 				in >> disableSaveAs3DObject;
 				genericMapParams.enableSaveAs3DObject = !disableSaveAs3DObject;
 			}
-
 			insertionOptions.readFromStream(in);
 			likelihoodOptions.readFromStream(in);
+			if (version>=10) renderOptions.readFromStream(in);
 		}
 		break;
 
