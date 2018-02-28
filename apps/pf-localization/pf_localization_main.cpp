@@ -177,6 +177,11 @@ void do_pf_localization(
 	double STATS_CONF_INTERVAL =
 		cfg.read_double(sect, "STATS_CONF_INTERVAL", 0.2);
 
+	CPose2D initial_odo;
+	initial_odo.x(cfg.read_double(sect, "initial_odo_x", 0));
+	initial_odo.y(cfg.read_double(sect, "initial_odo_y", 0));
+	initial_odo.phi(cfg.read_double(sect, "initial_odo_phi", 0));
+
 #if !MRPT_HAS_WXWIDGETS
 	SHOW_PROGRESS_3D_REAL_TIME = false;
 #endif
@@ -365,6 +370,7 @@ void do_pf_localization(
 		tictacGlobal.Tic();
 		for (int repetition = 0; repetition < NUM_REPS; repetition++)
 		{
+			CVectorDouble indivConvergenceErrors, executionTimes, odoError;
 			cout << "\n--------------------------------------------------------"
 					"-----\n"
 				 << "      RUNNING FOR " << PARTICLE_COUNT
@@ -465,7 +471,7 @@ void do_pf_localization(
 			// -----------------------------
 			//		Particle filter
 			// -----------------------------
-			CPose2D pdfEstimation, odometryEstimation;
+			CPose2D pdfEstimation, odometryEstimation = initial_odo;
 			CMatrixDouble cov;
 			bool end = false;
 
@@ -788,10 +794,12 @@ void do_pf_localization(
 							&PF_stats  // Output statistics
 						);
 
+						double run_time = tictac.Tac();
+						executionTimes.push_back(run_time);
 						if (!SAVE_STATS_ONLY)
 							printf(
-								" Done! in %.03fms, ESS=%f\n",
-								1000.0f * tictac.Tac(), pdf.ESS());
+								" Done! in %.03fms, ESS=%f\n", 1e3f * run_time,
+								pdf.ESS());
 					}
 
 					// Avrg. error:
@@ -799,16 +807,19 @@ void do_pf_localization(
 					CActionRobotMovement2D::Ptr best_mov_estim =
 						action->getBestMovementEstimation();
 					if (best_mov_estim)
+					{
 						odometryEstimation =
 							odometryEstimation +
 							best_mov_estim->poseChange->getMeanVal();
+					}
 
 					pdf.getMean(pdfEstimation);
 
 					getGroundTruth(
 						expectedPose, rawlogEntry, GT, cur_obs_timestamp);
 
-#if 1
+					if (expectedPose.x() != 0 || expectedPose.y() != 0 ||
+						expectedPose.phi() != 0)
 					{  // Averaged error to GT
 						double sumW = 0;
 						double locErr = 0;
@@ -819,12 +830,10 @@ void do_pf_localization(
 										  pdf.getParticlePose(k)) *
 									  exp(pdf.getW(k)) / sumW;
 						covergenceErrors.push_back(locErr);
+						indivConvergenceErrors.push_back(locErr);
+						odoError.push_back(
+							expectedPose.distanceTo(odometryEstimation));
 					}
-#else
-					// Error of the mean to GT
-					covergenceErrors.push_back(
-						expectedPose.distanceTo(pdfEstimation));
-#endif
 
 					CPosePDFGaussian current_pdf_gaussian;
 					pdf.getCovarianceAndMean(
@@ -1101,6 +1110,9 @@ void do_pf_localization(
 				}
 			};  // while rawlogEntries
 
+			indivConvergenceErrors.saveToTextFile(sOUT_DIR + "/GT_error.txt");
+			odoError.saveToTextFile(sOUT_DIR + "/ODO_error.txt");
+			executionTimes.saveToTextFile(sOUT_DIR + "/exec_times.txt");
 		}  // for repetitions
 
 		double repetitionTime = tictacGlobal.Tac();
