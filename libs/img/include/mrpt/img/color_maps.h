@@ -28,6 +28,7 @@ void rgb2hsv(float r, float g, float b, float& h, float& s, float& v);
 /** Different colormaps for use in mrpt::img::colormap() */
 enum TColormap
 {
+	cmNONE = -1, /** Undefined colormap [New in MRPT 2.0] */
 	cmGRAYSCALE = 0,
 	cmJET,
 	/** [New in MRPT 1.5.0] */
