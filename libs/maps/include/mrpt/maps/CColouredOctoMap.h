@@ -85,7 +85,7 @@ class CColouredOctoMap
 		insertionOpts;  //!< Observations insertion options
 	mrpt::maps::CColouredOctoMap::TLikelihoodOptions
 		likelihoodOpts;  //!< Probabilistic observation likelihood options
-	MAP_DEFINITION_END(CColouredOctoMap, )
+	MAP_DEFINITION_END(CColouredOctoMap)
 
 	/** Returns true if the map is empty/no observation has been inserted */
 	virtual bool isEmpty() const override { return size() == 1; }

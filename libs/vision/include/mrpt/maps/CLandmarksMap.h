@@ -711,7 +711,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 	std::deque<TPairIdBeacon> initialBeacons;
 	mrpt::maps::CLandmarksMap::TInsertionOptions insertionOpts;
 	mrpt::maps::CLandmarksMap::TLikelihoodOptions likelihoodOpts;
-	MAP_DEFINITION_END(CLandmarksMap, )
+	MAP_DEFINITION_END(CLandmarksMap)
 
 };  // End of class def.
 

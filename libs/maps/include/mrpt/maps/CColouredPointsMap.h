@@ -346,7 +346,7 @@ class CColouredPointsMap : public CPointsMap
 	mrpt::maps::CPointsMap::TInsertionOptions insertionOpts;
 	mrpt::maps::CPointsMap::TLikelihoodOptions likelihoodOpts;
 	mrpt::maps::CColouredPointsMap::TColourOptions colourOpts;
-	MAP_DEFINITION_END(CColouredPointsMap, )
+	MAP_DEFINITION_END(CColouredPointsMap)
 
 };  // End of class def.
 

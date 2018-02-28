@@ -64,7 +64,7 @@ struct TMetricMapTypesRegistry
 	};                                                                          \
 	struct TMapDefinition : public TMapDefinitionBase                           \
 	{
-#define MAP_DEFINITION_END(_CLASS_NAME_, _LINKAGE_)                          \
+#define MAP_DEFINITION_END(_CLASS_NAME_)                                     \
 	TMapDefinition();                                                        \
                                                                              \
    protected:                                                                \

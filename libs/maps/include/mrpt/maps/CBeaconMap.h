@@ -313,7 +313,7 @@ class CBeaconMap : public mrpt::maps::CMetricMap
 	mrpt::maps::CBeaconMap::TInsertionOptions insertionOpts;
 	/** Probabilistic observation likelihood options */
 	mrpt::maps::CBeaconMap::TLikelihoodOptions likelihoodOpts;
-	MAP_DEFINITION_END(CBeaconMap, )
+	MAP_DEFINITION_END(CBeaconMap)
 
 };  // End of class def.
 

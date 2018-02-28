@@ -170,7 +170,7 @@ class CHeightGridMap2D
 	 */
 	mrpt::maps::CHeightGridMap2D::TMapRepresentation mapType;
 	mrpt::maps::CHeightGridMap2D::TInsertionOptions insertionOpts;
-	MAP_DEFINITION_END(CHeightGridMap2D, )
+	MAP_DEFINITION_END(CHeightGridMap2D)
 };
 
 }  // namespace maps

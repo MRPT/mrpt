@@ -140,7 +140,7 @@ class CSimplePointsMap : public CPointsMap
 	mrpt::maps::CPointsMap::TInsertionOptions insertionOpts;
 	/** Probabilistic observation likelihood options */
 	mrpt::maps::CPointsMap::TLikelihoodOptions likelihoodOpts;
-	MAP_DEFINITION_END(CSimplePointsMap, )
+	MAP_DEFINITION_END(CSimplePointsMap)
 
 };  // End of class def.
 }  // namespace maps

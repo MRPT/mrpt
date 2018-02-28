@@ -149,7 +149,7 @@ class CWeightedPointsMap : public CPointsMap
 	mrpt::maps::CPointsMap::TInsertionOptions insertionOpts;
 	/** Probabilistic observation likelihood options */
 	mrpt::maps::CPointsMap::TLikelihoodOptions likelihoodOpts;
-	MAP_DEFINITION_END(CWeightedPointsMap, )
+	MAP_DEFINITION_END(CWeightedPointsMap)
 };  // End of class def.
 }  // namespace maps
 

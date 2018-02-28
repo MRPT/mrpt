@@ -110,7 +110,7 @@ class CHeightGridMap2D_MRF : public CRandomFieldGridMap2D,
 	mrpt::maps::CHeightGridMap2D_MRF::TMapRepresentation mapType;
 	/** Observations insertion options */
 	mrpt::maps::CHeightGridMap2D_MRF::TInsertionOptions insertionOpts;
-	MAP_DEFINITION_END(CHeightGridMap2D_MRF, )
+	MAP_DEFINITION_END(CHeightGridMap2D_MRF)
 };
 
 }  // End of namespace
