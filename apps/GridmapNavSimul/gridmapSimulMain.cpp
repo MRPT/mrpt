@@ -294,9 +294,8 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent, wxWindowID id)
 	SetMinSize(wxSize(400, 400));
 	{
 		wxIcon FrameIcon;
-		FrameIcon.CopyFromBitmap(
-			wxArtProvider::GetBitmap(
-				wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")), wxART_FRAME_ICON));
+		FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(
+			wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")), wxART_FRAME_ICON));
 		SetIcon(FrameIcon);
 	}
 	FlexGridSizer1 = new wxFlexGridSizer(1, 1, 0, 0);
@@ -653,9 +652,8 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent, wxWindowID id)
 	MenuItem1 = new wxMenuItem(
 		Menu1, ID_MENUITEM1, _("Set &output rawlog file..."), wxEmptyString,
 		wxITEM_NORMAL);
-	MenuItem1->SetBitmap(
-		wxArtProvider::GetBitmap(
-			wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_SAVE")), wxART_MENU));
+	MenuItem1->SetBitmap(wxArtProvider::GetBitmap(
+		wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_SAVE")), wxART_MENU));
 	Menu1->Append(MenuItem1);
 
 	MenuItemLoadMap = new wxMenuItem(
@@ -665,17 +663,15 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent, wxWindowID id)
 
 	MenuItem2 = new wxMenuItem(
 		Menu1, ID_MENUITEM2, _("&Quit"), wxEmptyString, wxITEM_NORMAL);
-	MenuItem2->SetBitmap(
-		wxArtProvider::GetBitmap(
-			wxART_MAKE_ART_ID_FROM_STR(_T("wxART_QUIT")), wxART_MENU));
+	MenuItem2->SetBitmap(wxArtProvider::GetBitmap(
+		wxART_MAKE_ART_ID_FROM_STR(_T("wxART_QUIT")), wxART_MENU));
 	Menu1->Append(MenuItem2);
 	MenuBar1->Append(Menu1, _("&File"));
 	Menu2 = new wxMenu();
 	MenuItem3 = new wxMenuItem(
 		Menu2, ID_MENUITEM3, _("&About..."), wxEmptyString, wxITEM_NORMAL);
-	MenuItem3->SetBitmap(
-		wxArtProvider::GetBitmap(
-			wxART_MAKE_ART_ID_FROM_STR(_T("wxART_HELP_BOOK")), wxART_MENU));
+	MenuItem3->SetBitmap(wxArtProvider::GetBitmap(
+		wxART_MAKE_ART_ID_FROM_STR(_T("wxART_HELP_BOOK")), wxART_MENU));
 	Menu2->Append(MenuItem3);
 	MenuBar1->Append(Menu2, _("&Help"));
 	SetMenuBar(MenuBar1);
@@ -931,15 +927,13 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 
 			Eigen::VectorXd ci1 =
 				ssu_out.scanWithUncert.rangesMean +
-				3 *
-					ssu_out.scanWithUncert.rangesCovar.diagonal()
+				3 * ssu_out.scanWithUncert.rangesCovar.diagonal()
 						.array()
 						.sqrt()
 						.matrix();
 			Eigen::VectorXd ci2 =
 				ssu_out.scanWithUncert.rangesMean -
-				3 *
-					ssu_out.scanWithUncert.rangesCovar.diagonal()
+				3 * ssu_out.scanWithUncert.rangesCovar.diagonal()
 						.array()
 						.sqrt()
 						.matrix();
@@ -1036,9 +1030,8 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 					// Observation:
 					CSensoryFrame sf;
 					the_scan.timestamp = act.timestamp;
-					sf.insert(
-						CObservation2DRangeScan::Ptr(
-							new CObservation2DRangeScan(the_scan)));
+					sf.insert(CObservation2DRangeScan::Ptr(
+						new CObservation2DRangeScan(the_scan)));
 					archiveFrom(outs) << sf;
 				}
 				else
@@ -1312,7 +1305,7 @@ void gridmapSimulFrame::OnbtnResimulateClick(wxCommandEvent& event)
 	ASSERT_(rawlog.size() > 0);
 	ASSERT_(GT.cols() >= 4);
 	ASSERT_(rawlog.getType(0) == CRawlog::etActionCollection);
-	ASSERT_(rawlog.size() / 2 == GT.rows());
+	ASSERT_(rawlog.size() / 2 == (size_t)GT.rows());
 
 	// Ask for the output:
 	string out_raw_file, out_GT_file;

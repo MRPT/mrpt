@@ -59,15 +59,10 @@ void CHMTSLAM::thread_TBI()
 
 		// Finish thread:
 		// -------------------------
-		time_t timCreat, timExit;
-		double timCPU = 0;
 		MRPT_TODO("Fix thread times");
 		//		try { mrpt::system::getCurrentThreadTimes(
 		// timCreat,timExit,timCPU); } catch(...) {};
-		obj->logFmt(
-			mrpt::system::LVL_DEBUG,
-			"[thread_TBI] Thread finished. CPU time used:%.06f secs \n",
-			timCPU);
+		obj->logFmt(mrpt::system::LVL_DEBUG, "[thread_TBI] Thread finished");
 		obj->m_terminationFlag_TBI = true;
 	}
 	catch (std::exception& e)

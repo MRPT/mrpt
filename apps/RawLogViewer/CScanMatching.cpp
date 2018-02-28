@@ -371,8 +371,9 @@ CScanMatching::CScanMatching(wxWindow* parent, wxWindowID)
 	FlexGridSizer9->AddGrowableCol(0);
 	FlexGridSizer9->AddGrowableRow(1);
 	StaticText6 = new wxStaticText(
-		Panel3, ID_STATICTEXT6, _("Scan Matching Status:\n(Reference map: Blue "
-								  "or gridmap; Map to be aligned: Red)"),
+		Panel3, ID_STATICTEXT6,
+		_("Scan Matching Status:\n(Reference map: Blue "
+		  "or gridmap; Map to be aligned: Red)"),
 		wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT6"));
 	FlexGridSizer9->Add(
 		StaticText6, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 3);
@@ -490,12 +491,10 @@ CScanMatching::CScanMatching(wxWindow* parent, wxWindowID)
 
 	// Initialize 3D view:
 	auto openGLSceneRef = m_plot3D->getOpenGLSceneRef();
-	openGLSceneRef->insert(
-		mrpt::opengl::CGridPlaneXY::Create(
-			-150, 150, -150, 150, 0 /* z */, 5 /* freq */));
-	openGLSceneRef->insert(
-		mrpt::opengl::stock_objects::CornerXYZSimple(
-			1.0 /*scale*/, 3.0 /*line width*/));
+	openGLSceneRef->insert(mrpt::opengl::CGridPlaneXY::Create(
+		-150, 150, -150, 150, 0 /* z */, 5 /* freq */));
+	openGLSceneRef->insert(mrpt::opengl::stock_objects::CornerXYZSimple(
+		1.0 /*scale*/, 3.0 /*line width*/));
 
 	m_gl_map_ref = mrpt::opengl::CSetOfObjects::Create();
 	m_gl_map_new = mrpt::opengl::CSetOfObjects::Create();
@@ -648,6 +647,7 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
 			refCfg, "InsertionOptions");
 		cout << "REFERENCE MAP FOR THE ICP:" << endl;
 		refMapPt.insertionOptions.dumpToConsole();
+		refMapPt.renderOptions.color = mrpt::img::TColorf(.0f, .0f, 1.0f);
 	}
 	else
 	{
@@ -670,6 +670,7 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
 		CConfigFileMemory refCfg(string(edOptAlignMap->GetValue().mb_str()));
 		newMapPt.insertionOptions.loadFromConfigFile(
 			refCfg, "InsertionOptions");
+		newMapPt.renderOptions.color = mrpt::img::TColorf(1.0f, .0f, .0f);
 
 		cout << "NEW MAP (TO ALIGN) FOR THE ICP:" << endl;
 		newMapPt.insertionOptions.dumpToConsole();
@@ -684,10 +685,7 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
 	m_gl_map_ref->clear();
 	m_gl_map_new->clear();
 
-	mrpt::maps::CPointsMap::COLOR_3DSCENE(mrpt::img::TColorf(.0f, .0f, 1.0f));
 	refMap->getAs3DObject(m_gl_map_ref);
-
-	mrpt::maps::CPointsMap::COLOR_3DSCENE(mrpt::img::TColorf(1.0f, .0f, .0f));
 	newMapPt.getAs3DObject(m_gl_map_new);
 
 	auto gl_ellipse = mrpt::opengl::CEllipsoid::Create();

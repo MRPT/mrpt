@@ -116,20 +116,24 @@ void do_grid_align()
 
 	CMultiMetricMap the_map1, the_map2;
 
-	TSetOfMetricMapInitializers map_inits;
+	TSetOfMetricMapInitializers map1_inits, map2_inits;
 	{
 		COccupancyGridMap2D::TMapDefinition def;
 		def.resolution = 0.05f;
 		def.insertionOpts.maxOccupancyUpdateCertainty = 0.8f;
 		def.insertionOpts.maxDistanceInsertion = 30;
-		map_inits.push_back(def);
+		map1_inits.push_back(def);
+		map2_inits.push_back(def);
 	}
 
 	if (!SKIP_ICP_STAGE)
 	{
 		CSimplePointsMap::TMapDefinition def;
 		def.insertionOpts.minDistBetweenLaserPoints = 0.10f;
-		map_inits.push_back(def);
+		def.renderOpts.color = mrpt::img::TColorf(0, 0, 1);
+		map1_inits.push_back(def);
+		def.renderOpts.color = mrpt::img::TColorf(1, 0, 0);
+		map2_inits.push_back(def);
 	}
 
 	mrpt::system::deleteFiles(format("%s/*.*", RESULTS_DIR.c_str()));
@@ -162,7 +166,8 @@ void do_grid_align()
 		// load alternative config. for the metric maps:
 		if (cfg.sectionExists("metric_maps"))
 		{
-			map_inits.loadFromConfigFile(cfg, "metric_maps");
+			map1_inits.loadFromConfigFile(cfg, "metric_maps");
+			map2_inits = map1_inits;
 		}
 	}
 
@@ -170,12 +175,12 @@ void do_grid_align()
 	if (IS_VERBOSE)
 	{
 		gridAlign.options.dumpToConsole();
-		map_inits.dumpToConsole();
+		map1_inits.dumpToConsole();
 	}
 
 	// Create the map with a points & grid-map within:
-	the_map1.setListOfMaps(&map_inits);
-	the_map2.setListOfMaps(&map_inits);
+	the_map1.setListOfMaps(&map1_inits);
+	the_map2.setListOfMaps(&map2_inits);
 
 	ASSERT_(the_map1.m_gridMaps.size() >= 1);
 	ASSERT_(the_map2.m_gridMaps.size() >= 1);
@@ -287,9 +292,8 @@ void do_grid_align()
 						getRandomGenerator().drawGaussian1D(0, STD_NOISE_XY));
 					newPDF->mean.y_incr(
 						getRandomGenerator().drawGaussian1D(0, STD_NOISE_XY));
-					newPDF->mean.phi_incr(
-						getRandomGenerator().drawGaussian1D(
-							0, DEG2RAD(STD_NOISE_PHI)));
+					newPDF->mean.phi_incr(getRandomGenerator().drawGaussian1D(
+						0, DEG2RAD(STD_NOISE_PHI)));
 					newPDF->mean.normalizePhi();
 
 					// Change into the map:
@@ -317,10 +321,8 @@ void do_grid_align()
 			// test, save time
 			{
 				// Save maps:
-				grid2->saveAsBitmapFile(
-					format(
-						"%s/map2_noise_%f.png", RESULTS_DIR.c_str(),
-						STD_NOISE_XY));
+				grid2->saveAsBitmapFile(format(
+					"%s/map2_noise_%f.png", RESULTS_DIR.c_str(), STD_NOISE_XY));
 				grid2->saveAsBitmapFileWithLandmarks(
 					format(
 						"%s/map2_LM_noise_%f.png", RESULTS_DIR.c_str(),
@@ -328,10 +330,9 @@ void do_grid_align()
 					&lm2, true);
 				CImage img;
 				grid2->getAsImageFiltered(img);
-				img.saveToFile(
-					format(
-						"%s/map2_filt_noise_%f.png", RESULTS_DIR.c_str(),
-						STD_NOISE_XY));
+				img.saveToFile(format(
+					"%s/map2_filt_noise_%f.png", RESULTS_DIR.c_str(),
+					STD_NOISE_XY));
 			}
 
 			// Only if the case of "save-corr-dists" we can do NOT align the
@@ -371,9 +372,8 @@ void do_grid_align()
 					fabs(math::wrapToPi(estimateMean.phi() - GT_Aphi_rad));
 				float AxyBrute =
 					info.noRobustEstimation.distance2DTo(GT_Ax, GT_Ay);
-				float AphiBrute = fabs(
-					math::wrapToPi(
-						info.noRobustEstimation.phi() - GT_Aphi_rad));
+				float AphiBrute = fabs(math::wrapToPi(
+					info.noRobustEstimation.phi() - GT_Aphi_rad));
 
 				printf("Done in %.03fms\n", 1000.0f * tim);
 
@@ -386,10 +386,9 @@ void do_grid_align()
 					CPosePDFParticles::Ptr partsPdf =
 						std::dynamic_pointer_cast<CPosePDFParticles>(parts);
 
-					partsPdf->saveToTextFile(
-						format(
-							"%s/particles_noise_%.03f.txt", RESULTS_DIR.c_str(),
-							STD_NOISE_XY));
+					partsPdf->saveToTextFile(format(
+						"%s/particles_noise_%.03f.txt", RESULTS_DIR.c_str(),
+						STD_NOISE_XY));
 
 					printf("Goodness: %.03f%%\n", 100 * info.goodness);
 					std::cout << partsPdf->particlesCount() << " particles\n";
@@ -404,9 +403,8 @@ void do_grid_align()
 					pdf_SOG->normalizeWeights();
 					// pdf_SOG->saveToTextFile("_debug_SoG.txt");
 
-					stats_GT_likelihood.push_back(
-						(float)pdf_SOG->evaluatePDF(
-							CPose2D(GT_Ax, GT_Ay, GT_Aphi_rad), true));
+					stats_GT_likelihood.push_back((float)pdf_SOG->evaluatePDF(
+						CPose2D(GT_Ax, GT_Ay, GT_Aphi_rad), true));
 
 					if (f_out_log.fileOpenCorrectly())
 					{
@@ -502,21 +500,15 @@ void do_grid_align()
 								imgGrid1LY - 1 - grid1->y2idx(pp1.y),
 								TColor::black());
 
-							imgCanvas.saveToFile(
-								format(
-									"%s/_OVERLAP_MAPS_SOG_MODE_%04u.png",
-									RESULTS_DIR.c_str(), (unsigned int)nNode));
+							imgCanvas.saveToFile(format(
+								"%s/_OVERLAP_MAPS_SOG_MODE_%04u.png",
+								RESULTS_DIR.c_str(), (unsigned int)nNode));
 
 							// Save as 3D scene:
 							COpenGLScene scene;
-							CPointsMap::COLOR_3DSCENE(
-								mrpt::img::TColorf(0, 0, 1));
 							CSetOfObjects::Ptr obj1 =
 								mrpt::make_aligned_shared<CSetOfObjects>();
 							the_map1.getAs3DObject(obj1);
-
-							CPointsMap::COLOR_3DSCENE(
-								mrpt::img::TColorf(1, 0, 0));
 							CSetOfObjects::Ptr obj2 =
 								mrpt::make_aligned_shared<CSetOfObjects>();
 							the_map2.getAs3DObject(obj2);
@@ -544,10 +536,9 @@ void do_grid_align()
 
 							scene.insert(lines);
 
-							scene.saveToFile(
-								format(
-									"%s/_OVERLAP_MAPS_SOG_MODE_%04u.3Dscene",
-									RESULTS_DIR.c_str(), (unsigned int)nNode));
+							scene.saveToFile(format(
+								"%s/_OVERLAP_MAPS_SOG_MODE_%04u.3Dscene",
+								RESULTS_DIR.c_str(), (unsigned int)nNode));
 						}
 
 					}  // end SAVE_SOG_ALL
@@ -559,22 +550,20 @@ void do_grid_align()
 					gridLimits(0, 1) = estimateMean.x + 0.10f,
 								  gridLimits(0, 2) = estimateMean.y - 0.10f;
 					gridLimits(0, 3) = estimateMean.y + 0.10f;
-					gridLimits.saveToTextFile(
-						format(
-							"%s/SOG_grid_limits_noise_%f.txt",
-							RESULTS_DIR.c_str(), STD_NOISE_XY));
+					gridLimits.saveToTextFile(format(
+						"%s/SOG_grid_limits_noise_%f.txt", RESULTS_DIR.c_str(),
+						STD_NOISE_XY));
 
 					CMatrixD evalGrid;
 					pdf_SOG->evaluatePDFInArea(
 						gridLimits(0, 0), gridLimits(0, 1), gridLimits(0, 2),
 						gridLimits(0, 3), 0.002f, 0, evalGrid,
 						true  // Sum over all phis
-						);
+					);
 
-					evalGrid.saveToTextFile(
-						format(
-							"%s/SOG_grid_noise_%f.txt", RESULTS_DIR.c_str(),
-							STD_NOISE_XY));
+					evalGrid.saveToTextFile(format(
+						"%s/SOG_grid_noise_%f.txt", RESULTS_DIR.c_str(),
+						STD_NOISE_XY));
 #endif
 				}  // end if is SOG
 
@@ -659,12 +648,10 @@ void do_grid_align()
 					if (dErrs[best_match] < 0.20)
 					{
 						CLandmark* l2 = lm2->landmarks.get(best_match);
-						gt_corrs.push_back(
-							TMatchingPair(
-								i1, best_match, l1->pose_mean.x,
-								l1->pose_mean.y, l1->pose_mean.z,
-								l2->pose_mean.x, l2->pose_mean.y,
-								l2->pose_mean.z));
+						gt_corrs.push_back(TMatchingPair(
+							i1, best_match, l1->pose_mean.x, l1->pose_mean.y,
+							l1->pose_mean.z, l2->pose_mean.x, l2->pose_mean.y,
+							l2->pose_mean.z));
 					}
 					else
 						best_match = (unsigned int)(-1);
