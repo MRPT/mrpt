@@ -1094,7 +1094,7 @@ void do_pf_localization(
 					// Convergence??
 					if (sqrt(cov.det()) < 2)
 					{
-						if (pdfEstimation.distanceTo(expectedPose) < 1.00f)
+						if (pdfEstimation.distanceTo(expectedPose) < 2)
 							nConvergenceOK++;
 					}
 					end = true;
