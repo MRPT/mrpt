@@ -421,7 +421,7 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 	# High level of warnings.
 	# The -Wno-long-long is required in 64bit systems when including sytem headers.
 	# The -Wno-variadic-macros was needed for Eigen3, StdVector.h
- 	add_compile_options(${CMAKE_CONFIGURE_CFLAGS} -Wall -Wno-long-long -Wno-variadic-macros)
+ 	add_compile_options(${CMAKE_CONFIGURE_CFLAGS} -Wall -Wno-long-long -Wno-variadic-macros -Wshadow)
 
 	# Workaround: Eigen <3.4 produces *tons* of warnings in GCC >=6. See http://eigen.tuxfamily.org/bz/show_bug.cgi?id=1221
 	IF (NOT ${CMAKE_CXX_COMPILER_VERSION} LESS "6.0" AND "${MRPT_EIGEN_VERSION}" VERSION_LESS "3.4")
@@ -462,7 +462,7 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
 
 	# High level of warnings.
 	# no-unused-private-field: clang seems to complain in templates without reason.
-	add_compile_options(${CMAKE_CONFIGURE_CFLAGS} -Wall -Wno-unused-private-field)
+	add_compile_options(${CMAKE_CONFIGURE_CFLAGS} -Wall -Wno-unused-private-field -Wshadow-all)
  	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_CONFIGURE_CFLAGS}")
 
 	# Use "modern" C99 ! ;-)
