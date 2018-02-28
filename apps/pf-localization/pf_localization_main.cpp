@@ -23,6 +23,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/poses/CPose2D.h>
+#include <mrpt/poses/CPose2DInterpolator.h>
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/random.h>
 
@@ -237,9 +238,8 @@ void do_pf_localization(
 
 		// Detect file extension:
 		// -----------------------------
-		string mapExt = lowerCase(
-			extractFileExtension(
-				MAP_FILE, true));  // Ignore possible .gz extensions
+		string mapExt = lowerCase(extractFileExtension(
+			MAP_FILE, true));  // Ignore possible .gz extensions
 
 		if (!mapExt.compare("simplemap"))
 		{
@@ -329,9 +329,8 @@ void do_pf_localization(
 	}
 
 	{
-		scene.insert(
-			mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>(
-				-50, 50, -50, 50, 0, 5));
+		scene.insert(mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>(
+			-50, 50, -50, 50, 0, 5));
 
 		CSetOfObjects::Ptr gl_obj = mrpt::make_aligned_shared<CSetOfObjects>();
 		metricMap.getAs3DObject(gl_obj);
@@ -596,11 +595,12 @@ void do_pf_localization(
 								meanPose.x(), meanPose.y(), 0);
 
 							win3D->addTextMessage(
-								10, 10, mrpt::format(
-											"timestamp: %s",
-											mrpt::system::dateTimeLocalToString(
-												cur_obs_timestamp)
-												.c_str()),
+								10, 10,
+								mrpt::format(
+									"timestamp: %s",
+									mrpt::system::dateTimeLocalToString(
+										cur_obs_timestamp)
+										.c_str()),
 								mrpt::img::TColorf(.8f, .8f, .8f), "mono", 15,
 								mrpt::opengl::NICE, 6001);
 
@@ -613,9 +613,10 @@ void do_pf_localization(
 								mrpt::opengl::NICE, 6002);
 
 							win3D->addTextMessage(
-								10, 55, mrpt::format(
-											"mean pose (x y phi_deg)= %s",
-											meanPose.asString().c_str()),
+								10, 55,
+								mrpt::format(
+									"mean pose (x y phi_deg)= %s",
+									meanPose.asString().c_str()),
 								mrpt::img::TColorf(.8f, .8f, .8f), "mono", 15,
 								mrpt::opengl::NICE, 6003);
 
@@ -785,7 +786,7 @@ void do_pf_localization(
 							action.get(),  // Action
 							observations.get(),  // Obs.
 							&PF_stats  // Output statistics
-							);
+						);
 
 						if (!SAVE_STATS_ONLY)
 							printf(
@@ -914,16 +915,14 @@ void do_pf_localization(
 
 								Eigen::VectorXd ci1 =
 									ssu_out.scanWithUncert.rangesMean +
-									3 *
-										ssu_out.scanWithUncert.rangesCovar
+									3 * ssu_out.scanWithUncert.rangesCovar
 											.diagonal()
 											.array()
 											.sqrt()
 											.matrix();
 								Eigen::VectorXd ci2 =
 									ssu_out.scanWithUncert.rangesMean -
-									3 *
-										ssu_out.scanWithUncert.rangesCovar
+									3 * ssu_out.scanWithUncert.rangesCovar
 											.diagonal()
 											.array()
 											.sqrt()
@@ -931,10 +930,9 @@ void do_pf_localization(
 								win.plot(ci1, "k-", "CI+");
 								win.plot(ci2, "k-", "CI-");
 
-								win.setWindowTitle(
-									mrpt::format(
-										"obs_reliability_estim: %f",
-										obs_reliability_estim));
+								win.setWindowTitle(mrpt::format(
+									"obs_reliability_estim: %f",
+									obs_reliability_estim));
 								win.axis_fit();
 							}
 						}
@@ -1072,18 +1070,16 @@ void do_pf_localization(
 						(step % SCENE3D_FREQ) == 0)
 					{
 						// Save 3D scene:
-						CFileGZOutputStream f(
-							format(
-								"%s/progress_%05u.3Dscene", sOUT_DIR_3D.c_str(),
-								(unsigned)step));
+						CFileGZOutputStream f(format(
+							"%s/progress_%05u.3Dscene", sOUT_DIR_3D.c_str(),
+							(unsigned)step));
 						archiveFrom(f) << scene;
 
 						// Generate text files for matlab:
 						// ------------------------------------
-						pdf.saveToTextFile(
-							format(
-								"%s/particles_%05u.txt", sOUT_DIR_PARTS.c_str(),
-								(unsigned)step));
+						pdf.saveToTextFile(format(
+							"%s/particles_%05u.txt", sOUT_DIR_PARTS.c_str(),
+							(unsigned)step));
 					}
 
 				}  // end if rawlog_offset
@@ -1145,10 +1141,15 @@ void getGroundTruth(
 	CPose2D& expectedPose, size_t rawlogEntry, const CMatrixDouble& GT,
 	const TTimeStamp& cur_time)
 {
-	if (GT.cols() == 4)
+	// Either:
+	// - time x y phi
+	// or
+	// - time x y z yaw pitch roll
+	if (GT.cols() == 4 || GT.cols() == 7)
 	{
 		static bool first_step = true;
 		static bool GT_index_is_time;
+		const bool GT_is_3D = (GT.cols() == 7);
 
 		// First column can be: timestamps, or rawlogentries:
 		//  Auto-figure it out:
@@ -1165,25 +1166,23 @@ void getGroundTruth(
 		if (GT_index_is_time)
 		{
 			// Look for the timestamp:
-			static mrpt::aligned_std_map<double, CPose2D> GT_path;
-			mrpt::aligned_std_map<double, CPose2D>::iterator it;
+			static CPose2DInterpolator GT_path;
+			GT_path.setMaxTimeInterpolation(0.2);
 			if (first_step)
 			{
 				for (int i = 0; i < GT.rows(); i++)
-					GT_path[mrpt::round_10power(GT(i, 0), -4)] =
-						CPose2D(GT(i, 1), GT(i, 2), GT(i, 3));
+				{
+					GT_path.insert(
+						mrpt::system::time_tToTimestamp(GT(i, 0)),
+						TPose2D(GT(i, 1), GT(i, 2), GT(i, GT_is_3D ? 4 : 3)));
+				}
 			}
-
-			double TT = mrpt::system::timestampTotime_t(cur_time);
-			double T = mrpt::round_10power(TT, -4);
-
-			it = GT_path.find(T);
-			if (it != GT_path.end())
-			{
-				expectedPose = it->second;
-			}
-			else
-				cout << format("GT time not found: %f\n", T);
+			bool interp_ok = false;
+			GT_path.interpolate(cur_time, expectedPose, interp_ok);
+			if (!interp_ok)
+				cerr << format(
+					"GT time not found: %f\n",
+					mrpt::system::timestampTotime_t(cur_time));
 		}
 		else
 		{
