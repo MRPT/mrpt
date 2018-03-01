@@ -15,18 +15,21 @@
 #include <mrpt/core/format.h>
 
 /** \def THROW_TYPED_EXCEPTION(msg,exceptionClass) */
-#define THROW_TYPED_EXCEPTION(msg, exceptionClass)                             \
-	do                                                                         \
-	{                                                                          \
-		std::string s = "\n\n =============== MRPT EXCEPTION =============\n"; \
-		s += __CURRENT_FUNCTION_NAME__;                                        \
-		s += ", line ";                                                        \
-		s += mrpt::to_string(__LINE__);                                        \
-		s += ":\n";                                                            \
-		s += msg;                                                              \
-		s += ":\n";                                                            \
-		throw exceptionClass(s);                                               \
-	} while (0)
+#define THROW_TYPED_EXCEPTION(msg, exceptionClass) \
+	throw exceptionClass(throw_typed_exception(msg, __CURRENT_FUNCTION_NAME__, __LINE__))
+
+template <typename T>
+inline std::string throw_typed_exception(const T&msg, const char * function_name, unsigned int line)
+{
+	std::string s = "\n\n =============== MRPT EXCEPTION =============\n";
+	s += function_name;
+	s += ", line ";
+	s += mrpt::to_string(line);
+	s += ":\n";
+	s += msg;
+	s += ":\n";
+	return s;
+}
 
 /** \def THROW_EXCEPTION(msg);
 * \param msg This can be a char*, a std::string, or a literal string.
@@ -45,19 +48,22 @@
 /** \def THROW_STACKED_EXCEPTION
  * \sa MRPT_TRY_START, MRPT_TRY_END
  */
-#define THROW_STACKED_EXCEPTION(e)      \
-	do                                  \
-	{                                   \
-		std::string s = e.what();       \
-		s += "\n";                      \
-		s += __FILE__;                  \
-		s += ":";                       \
-		s += mrpt::to_string(__LINE__); \
-		s += ": In `";                  \
-		s += __CURRENT_FUNCTION_NAME__; \
-		s += "`\n";                     \
-		throw std::logic_error(s);      \
-	} while (0)
+#define THROW_STACKED_EXCEPTION(e) \
+throw std::logic_error(throw_stacked_exception(e, __FILE__, __LINE__, __CURRENT_FUNCTION_NAME__))
+
+template <typename E>
+inline std::string throw_stacked_exception (E&& e, char *file, unsigned long line, const char *funcName)
+{
+	std::string s = e.what();
+	s += "\n";
+	s += file;
+	s += ":";
+	s += mrpt::to_string(line);
+	s += ": In `";
+	s += funcName;
+	s += "`\n";
+	return s;
+}
 
 /** \def THROW_STACKED_EXCEPTION_CUSTOM_MSG
   * \param e The caught exception.
