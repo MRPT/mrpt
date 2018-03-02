@@ -64,9 +64,9 @@ void CSimplePointsMap::reserve(size_t newLength)
 {
 	newLength = mrpt::length2length4N(newLength);
 
-	x.reserve(newLength);
-	y.reserve(newLength);
-	z.reserve(newLength);
+	m_x.reserve(newLength);
+	m_y.reserve(newLength);
+	m_z.reserve(newLength);
 }
 
 // Resizes all point buffers so they can hold the given number of points: newly
@@ -75,9 +75,9 @@ void CSimplePointsMap::reserve(size_t newLength)
 void CSimplePointsMap::resize(size_t newLength)
 {
 	this->reserve(newLength);  // to ensure 4N capacity
-	x.resize(newLength, 0);
-	y.resize(newLength, 0);
-	z.resize(newLength, 0);
+	m_x.resize(newLength, 0);
+	m_y.resize(newLength, 0);
+	m_z.resize(newLength, 0);
 	mark_as_modified();
 }
 
@@ -87,9 +87,9 @@ void CSimplePointsMap::resize(size_t newLength)
 void CSimplePointsMap::setSize(size_t newLength)
 {
 	this->reserve(newLength);  // to ensure 4N capacity
-	x.assign(newLength, 0);
-	y.assign(newLength, 0);
-	z.assign(newLength, 0);
+	m_x.assign(newLength, 0);
+	m_y.assign(newLength, 0);
+	m_z.assign(newLength, 0);
 	mark_as_modified();
 }
 
@@ -102,16 +102,16 @@ void CSimplePointsMap::copyFrom(const CPointsMap& obj)
 uint8_t CSimplePointsMap::serializeGetVersion() const { return 10; }
 void CSimplePointsMap::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	uint32_t n = x.size();
+	uint32_t n = m_x.size();
 
 	// First, write the number of points:
 	out << n;
 
 	if (n > 0)
 	{
-		out.WriteBufferFixEndianness(&x[0], n);
-		out.WriteBufferFixEndianness(&y[0], n);
-		out.WriteBufferFixEndianness(&z[0], n);
+		out.WriteBufferFixEndianness(&m_x[0], n);
+		out.WriteBufferFixEndianness(&m_y[0], n);
+		out.WriteBufferFixEndianness(&m_z[0], n);
 	}
 	out << genericMapParams;  // v9
 	insertionOptions.writeToStream(out);  // v9
@@ -143,9 +143,9 @@ void CSimplePointsMap::serializeFrom(
 
 			if (n > 0)
 			{
-				in.ReadBufferFixEndianness(&x[0], n);
-				in.ReadBufferFixEndianness(&y[0], n);
-				in.ReadBufferFixEndianness(&z[0], n);
+				in.ReadBufferFixEndianness(&m_x[0], n);
+				in.ReadBufferFixEndianness(&m_y[0], n);
+				in.ReadBufferFixEndianness(&m_z[0], n);
 			}
 			if (version >= 9)
 				in >> genericMapParams;
@@ -180,9 +180,9 @@ void CSimplePointsMap::serializeFrom(
 
 			if (n > 0)
 			{
-				in.ReadBufferFixEndianness(&x[0], n);
-				in.ReadBufferFixEndianness(&y[0], n);
-				in.ReadBufferFixEndianness(&z[0], n);
+				in.ReadBufferFixEndianness(&m_x[0], n);
+				in.ReadBufferFixEndianness(&m_y[0], n);
+				in.ReadBufferFixEndianness(&m_z[0], n);
 
 				// Version 1: weights are also stored:
 				// Version 4: Type becomes long int -> uint32_t for
@@ -263,25 +263,25 @@ void CSimplePointsMap::serializeFrom(
 void CSimplePointsMap::internal_clear()
 {
 	// This swap() thing is the only way to really deallocate the memory.
-	vector_strong_clear(x);
-	vector_strong_clear(y);
-	vector_strong_clear(z);
+	vector_strong_clear(m_x);
+	vector_strong_clear(m_y);
+	vector_strong_clear(m_z);
 
 	mark_as_modified();
 }
 
 void CSimplePointsMap::setPointFast(size_t index, float x, float y, float z)
 {
-	this->x[index] = x;
-	this->y[index] = y;
-	this->z[index] = z;
+	m_x[index] = x;
+	m_y[index] = y;
+	m_z[index] = z;
 }
 
 void CSimplePointsMap::insertPointFast(float x, float y, float z)
 {
-	this->x.push_back(x);
-	this->y.push_back(y);
-	this->z.push_back(z);
+	m_x.push_back(x);
+	m_y.push_back(y);
+	m_z.push_back(z);
 }
 
 namespace mrpt
