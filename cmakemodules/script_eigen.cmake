@@ -6,18 +6,10 @@ SET(EIGEN_MATRIXBASE_PLUGIN_POST_IMPL "<mrpt/math/eigen_plugins_impl.h>" CACHE S
 MARK_AS_ADVANCED(EIGEN_MATRIXBASE_PLUGIN)
 MARK_AS_ADVANCED(EIGEN_MATRIXBASE_PLUGIN_POST_IMPL)
 
-# By default: Use system version if pkg-config says it exists:
-SET(DEFAULT_EIGEN_USE_EMBEDDED_VERSION ON)
-IF(PKG_CONFIG_FOUND)
-	PKG_CHECK_MODULES(PKG_EIGEN3 QUIET eigen3)	# Find eigen3 with pkg-config:
-	# We require Eigen 3.2 minimum:
-	IF(${PKG_EIGEN3_FOUND} AND ${PKG_EIGEN3_VERSION} VERSION_GREATER "3.1.9")
-		# Use system version:
-		SET(DEFAULT_EIGEN_USE_EMBEDDED_VERSION OFF)
-	ENDIF()
-ENDIF(PKG_CONFIG_FOUND)
+# By default: Use system version
+FIND_PACKAGE(Eigen3 QUIET NO_MODULE)
 
-SET(EIGEN_USE_EMBEDDED_VERSION ${DEFAULT_EIGEN_USE_EMBEDDED_VERSION} CACHE BOOL "Use embedded Eigen3 version or system version")
+SET(EIGEN_USE_EMBEDDED_VERSION OFF CACHE BOOL "Download Eigen3 and use it instead of system version")
 IF (EIGEN_USE_EMBEDDED_VERSION)
 	# Include embedded version headers:
 	include(ExternalProject)
@@ -36,25 +28,17 @@ IF (EIGEN_USE_EMBEDDED_VERSION)
 	MARK_AS_ADVANCED(EIGEN_EMBEDDED_INCLUDE_DIR)
 
 	SET(MRPT_EIGEN_INCLUDE_DIR "${EIGEN_EMBEDDED_INCLUDE_DIR}")
-ELSE(EIGEN_USE_EMBEDDED_VERSION)
-	# Find Eigen headers in the system:
-	IF(NOT PKG_CONFIG_FOUND)
-		MESSAGE(SEND_ERROR "pkg-config is required for this operation!")
-	ELSE(NOT PKG_CONFIG_FOUND)
-		# Find eigen3 with pkg-config:
-		PKG_CHECK_MODULES(PKG_EIGEN3 QUIET eigen3)
-		IF(PKG_EIGEN3_FOUND)
-			SET(MRPT_EIGEN_INCLUDE_DIR "${PKG_EIGEN3_INCLUDE_DIRS}")
-		ELSE(PKG_EIGEN3_FOUND)
-			MESSAGE(SEND_ERROR "pkg-config was unable to find eigen3: install libeigen3-dev or enable EIGEN_USE_EMBEDDED_VERSION")
-		ENDIF(PKG_EIGEN3_FOUND)
-	ENDIF(NOT PKG_CONFIG_FOUND)
-ENDIF(EIGEN_USE_EMBEDDED_VERSION)
+ELSEIF(Eigen3_FOUND)
+	# Use system version
+	SET(MRPT_EIGEN_INCLUDE_DIR "${EIGEN3_INCLUDE_DIR}")
+ELSE()
+	MESSAGE(FATAL_ERROR "eigen3 is required to build MRPT! Either install it and set EIGEN3_DIR or enable the variable EIGEN_USE_EMBEDDED_VERSION to automatically download it now.")
+ENDIF()
 
 INCLUDE_DIRECTORIES("${MRPT_EIGEN_INCLUDE_DIR}")
 IF(EXISTS "${MRPT_EIGEN_INCLUDE_DIR}/unsupported/")
 	INCLUDE_DIRECTORIES("${MRPT_EIGEN_INCLUDE_DIR}/unsupported/")
-ENDIF(EXISTS "${MRPT_EIGEN_INCLUDE_DIR}/unsupported/")
+ENDIF()
 
 # Create variables just for the final summary of the configuration (see bottom of this file):
 SET(CMAKE_MRPT_HAS_EIGEN 1)        # Always, it's a fundamental dep.!
@@ -63,11 +47,10 @@ SET(CMAKE_MRPT_HAS_EIGEN 1)        # Always, it's a fundamental dep.!
 IF(EIGEN_USE_EMBEDDED_VERSION)
 	SET(EIGEN_USE_EMBEDDED_VERSION_BOOL 1)
 	SET(CMAKE_MRPT_HAS_EIGEN_SYSTEM 0)
-ELSE(EIGEN_USE_EMBEDDED_VERSION)
+ELSE()
 	SET(EIGEN_USE_EMBEDDED_VERSION_BOOL 0)
 	SET(CMAKE_MRPT_HAS_EIGEN_SYSTEM 1)
-ENDIF(EIGEN_USE_EMBEDDED_VERSION)
-
+ENDIF()
 
 # Add directories as "-isystem" to avoid warnings with :
 SET(AUX_EIGEN_INCL_DIR ${MRPT_EIGEN_INCLUDE_DIR})
