@@ -45,9 +45,9 @@ class CColouredPointsMap : public CPointsMap
 	 * setPoint */
 	virtual void setPointFast(size_t index, float x, float y, float z) override
 	{
-		this->x[index] = x;
-		this->y[index] = y;
-		this->z[index] = z;
+		m_x[index] = x;
+		m_y[index] = y;
+		m_z[index] = z;
 	}
 
 	/** The virtual method for \a insertPoint() *without* calling
@@ -66,9 +66,9 @@ class CColouredPointsMap : public CPointsMap
 		const size_t index, std::vector<float>& point_data) const override
 	{
 		point_data.resize(6);
-		point_data[0] = x[index];
-		point_data[1] = y[index];
-		point_data[2] = z[index];
+		point_data[0] = m_x[index];
+		point_data[1] = m_y[index];
+		point_data[2] = m_z[index];
 		point_data[3] = m_color_R[index];
 		point_data[4] = m_color_G[index];
 		point_data[5] = m_color_B[index];
@@ -83,9 +83,9 @@ class CColouredPointsMap : public CPointsMap
 		const size_t index, const std::vector<float>& point_data) override
 	{
 		ASSERTDEB_(point_data.size() == 6);
-		x[index] = point_data[0];
-		y[index] = point_data[1];
-		z[index] = point_data[2];
+		m_x[index] = point_data[0];
+		m_y[index] = point_data[1];
+		m_z[index] = point_data[2];
 		m_color_R[index] = point_data[3];
 		m_color_G[index] = point_data[4];
 		m_color_B[index] = point_data[5];

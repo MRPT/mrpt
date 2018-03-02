@@ -404,7 +404,7 @@ class CPointsMap : public CMetricMap,
 
 	/** Returns the number of stored points in the map.
 	 */
-	inline size_t size() const { return x.size(); }
+	inline size_t size() const { return m_x.size(); }
 	/** Access to a given point from map, as a 2D point. First index is 0.
 	 * \return The return value is the weight of the point (the times it has
 	 * been fused), or 1 if weights are not used.
@@ -448,9 +448,9 @@ class CPointsMap : public CMetricMap,
 	 */
 	inline void getPointFast(size_t index, float& x, float& y, float& z) const
 	{
-		x = this->x[index];
-		y = this->y[index];
-		z = this->z[index];
+		x = m_x[index];
+		y = m_y[index];
+		z = m_z[index];
 	}
 
 	/** Returns true if the point map has a color field for each point */
@@ -515,13 +515,13 @@ class CPointsMap : public CMetricMap,
 
 	/** Provides a direct access to a read-only reference of the internal point
 	 * buffer. \sa getAllPoints */
-	inline const std::vector<float>& getPointsBufferRef_x() const { return x; }
+	inline const std::vector<float>& getPointsBufferRef_x() const { return m_x; }
 	/** Provides a direct access to a read-only reference of the internal point
 	 * buffer. \sa getAllPoints */
-	inline const std::vector<float>& getPointsBufferRef_y() const { return y; }
+	inline const std::vector<float>& getPointsBufferRef_y() const { return m_y; }
 	/** Provides a direct access to a read-only reference of the internal point
 	 * buffer. \sa getAllPoints */
-	inline const std::vector<float>& getPointsBufferRef_z() const { return z; }
+	inline const std::vector<float>& getPointsBufferRef_z() const { return m_z; }
 	/** Returns a copy of the 2D/3D points as a std::vector of float
 	 * coordinates.
 	 * If decimation is greater than 1, only 1 point out of that number will be
@@ -537,7 +537,7 @@ class CPointsMap : public CMetricMap,
 	{
 		MRPT_START
 		ASSERT_(decimation > 0);
-		const size_t Nout = x.size() / decimation;
+		const size_t Nout = m_x.size() / decimation;
 		xs.resize(Nout);
 		ys.resize(Nout);
 		zs.resize(Nout);
@@ -545,9 +545,9 @@ class CPointsMap : public CMetricMap,
 		for (idx_in = 0, idx_out = 0; idx_out < Nout;
 			 idx_in += decimation, ++idx_out)
 		{
-			xs[idx_out] = x[idx_in];
-			ys[idx_out] = y[idx_in];
-			zs[idx_out] = z[idx_in];
+			xs[idx_out] = m_x[idx_in];
+			ys[idx_out] = m_y[idx_in];
+			zs[idx_out] = m_z[idx_in];
 		}
 		MRPT_END
 	}
@@ -987,9 +987,9 @@ class CPointsMap : public CMetricMap,
 		cloud.points.resize(cloud.width * cloud.height);
 		for (size_t i = 0; i < nThis; ++i)
 		{
-			cloud.points[i].x = this->x[i];
-			cloud.points[i].y = this->y[i];
-			cloud.points[i].z = this->z[i];
+			cloud.points[i].x = m_x[i];
+			cloud.points[i].y = m_y[i];
+			cloud.points[i].z = m_z[i];
 		}
 	}
 
@@ -1028,11 +1028,11 @@ class CPointsMap : public CMetricMap,
 	inline float kdtree_get_pt(const size_t idx, int dim) const
 	{
 		if (dim == 0)
-			return this->x[idx];
+			return m_x[idx];
 		else if (dim == 1)
-			return this->y[idx];
+			return m_y[idx];
 		else if (dim == 2)
-			return this->z[idx];
+			return m_z[idx];
 		else
 			return 0;
 	}
@@ -1044,15 +1044,15 @@ class CPointsMap : public CMetricMap,
 	{
 		if (size == 2)
 		{
-			const float d0 = p1[0] - x[idx_p2];
-			const float d1 = p1[1] - y[idx_p2];
+			const float d0 = p1[0] - m_x[idx_p2];
+			const float d1 = p1[1] - m_y[idx_p2];
 			return d0 * d0 + d1 * d1;
 		}
 		else
 		{
-			const float d0 = p1[0] - x[idx_p2];
-			const float d1 = p1[1] - y[idx_p2];
-			const float d2 = p1[2] - z[idx_p2];
+			const float d0 = p1[0] - m_x[idx_p2];
+			const float d1 = p1[1] - m_y[idx_p2];
+			const float d2 = p1[2] - m_z[idx_p2];
 			return d0 * d0 + d1 * d1 + d2 * d2;
 		}
 	}
@@ -1090,7 +1090,7 @@ class CPointsMap : public CMetricMap,
 
    protected:
 	/** The point coordinates */
-	std::vector<float> x, y, z;
+	std::vector<float> m_x, m_y, m_z;
 
 	/** Cache of sin/cos values for the latest 2D scan geometries. */
 	mrpt::obs::CSinCosLookUpTableFor2DScans m_scans_sincos_cache;
