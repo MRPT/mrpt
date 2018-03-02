@@ -32,7 +32,7 @@ serialization with variants(To be replaced by std::variant eventually).
 	- Changes in applications:
 		- RawLogViewer:
 			- The ICP module now supports Velodyne 3D scans.
-		- pf-localization: 
+		- pf-localization:
 			- Odometry is now used also for observation-only rawlogs.
 	- Changes in libraries:
 		- \ref mrpt_base_grp => Refactored into several smaller libraries, one
@@ -40,6 +40,10 @@ per namespace.
 			- Removed class std::vector<std::string>. Replace by STL containers
 of `std::string` and functions mrpt::system::stringListAsString() in \ref
 string_manage.
+		- \ref mrpt_core_grp  [NEW IN MRPT 2.0.0]
+			- Memory alignment of aligned_allocator_cpp11<> is set to 16,32 or
+64 depending on whether AVX optimizations are enabled, to be compatible with
+Eigen.
 		- \ref mrpt_math_grp  [NEW IN MRPT 2.0.0]
 			- Removed functions (replaced by C++11/14 standard library):
 				- mrpt::math::erf, mrpt::math::erfc, std::isfinite,
