@@ -72,9 +72,9 @@ CWeightedPointsMap::~CWeightedPointsMap() {}
 void CWeightedPointsMap::reserve(size_t newLength)
 {
 	newLength = mrpt::length2length4N(newLength);
-	x.reserve(newLength);
-	y.reserve(newLength);
-	z.reserve(newLength);
+	m_x.reserve(newLength);
+	m_y.reserve(newLength);
+	m_z.reserve(newLength);
 	pointWeight.reserve(newLength);
 }
 
@@ -84,9 +84,9 @@ void CWeightedPointsMap::reserve(size_t newLength)
 void CWeightedPointsMap::resize(size_t newLength)
 {
 	this->reserve(newLength);  // to ensure 4N capacity
-	x.resize(newLength, 0);
-	y.resize(newLength, 0);
-	z.resize(newLength, 0);
+	m_x.resize(newLength, 0);
+	m_y.resize(newLength, 0);
+	m_z.resize(newLength, 0);
 	pointWeight.resize(newLength, 1);
 }
 
@@ -96,26 +96,26 @@ void CWeightedPointsMap::resize(size_t newLength)
 void CWeightedPointsMap::setSize(size_t newLength)
 {
 	this->reserve(newLength);  // to ensure 4N capacity
-	x.assign(newLength, 0);
-	y.assign(newLength, 0);
-	z.assign(newLength, 0);
+	m_x.assign(newLength, 0);
+	m_y.assign(newLength, 0);
+	m_z.assign(newLength, 0);
 	pointWeight.assign(newLength, 1);
 }
 
 void CWeightedPointsMap::setPointFast(size_t index, float x, float y, float z)
 {
-	this->x[index] = x;
-	this->y[index] = y;
-	this->z[index] = z;
+	m_x[index] = x;
+	m_y[index] = y;
+	m_z[index] = z;
 	// this->pointWeight: Unmodified
 	// mark_as_modified(); -> Fast
 }
 
 void CWeightedPointsMap::insertPointFast(float x, float y, float z)
 {
-	this->x.push_back(x);
-	this->y.push_back(y);
-	this->z.push_back(z);
+	m_x.push_back(x);
+	m_y.push_back(y);
+	m_z.push_back(z);
 	this->pointWeight.push_back(1);
 	// mark_as_modified(); -> Fast
 }
@@ -158,16 +158,16 @@ void CWeightedPointsMap::addFrom_classSpecific(
 uint8_t CWeightedPointsMap::serializeGetVersion() const { return 2; }
 void CWeightedPointsMap::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	uint32_t n = x.size();
+	uint32_t n = m_x.size();
 
 	// First, write the number of points:
 	out << n;
 
 	if (n > 0)
 	{
-		out.WriteBufferFixEndianness(&x[0], n);
-		out.WriteBufferFixEndianness(&y[0], n);
-		out.WriteBufferFixEndianness(&z[0], n);
+		out.WriteBufferFixEndianness(&m_x[0], n);
+		out.WriteBufferFixEndianness(&m_y[0], n);
+		out.WriteBufferFixEndianness(&m_z[0], n);
 		out.WriteBufferFixEndianness(&pointWeight[0], n);
 	}
 
@@ -196,9 +196,9 @@ void CWeightedPointsMap::serializeFrom(
 
 			if (n > 0)
 			{
-				in.ReadBufferFixEndianness(&x[0], n);
-				in.ReadBufferFixEndianness(&y[0], n);
-				in.ReadBufferFixEndianness(&z[0], n);
+				in.ReadBufferFixEndianness(&m_x[0], n);
+				in.ReadBufferFixEndianness(&m_y[0], n);
+				in.ReadBufferFixEndianness(&m_z[0], n);
 				in.ReadBufferFixEndianness(&pointWeight[0], n);
 			}
 
@@ -251,9 +251,9 @@ void CWeightedPointsMap::serializeFrom(
 void CWeightedPointsMap::internal_clear()
 {
 	// This swap() thing is the only way to really deallocate the memory.
-	vector_strong_clear(x);
-	vector_strong_clear(y);
-	vector_strong_clear(z);
+	vector_strong_clear(m_x);
+	vector_strong_clear(m_y);
+	vector_strong_clear(m_z);
 	vector_strong_clear(pointWeight);
 
 	mark_as_modified();

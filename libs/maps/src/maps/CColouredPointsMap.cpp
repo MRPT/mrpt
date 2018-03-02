@@ -79,9 +79,9 @@ void CColouredPointsMap::reserve(size_t newLength)
 {
 	newLength = mrpt::length2length4N(newLength);
 
-	x.reserve(newLength);
-	y.reserve(newLength);
-	z.reserve(newLength);
+	m_x.reserve(newLength);
+	m_y.reserve(newLength);
+	m_z.reserve(newLength);
 	m_color_R.reserve(newLength);
 	m_color_G.reserve(newLength);
 	m_color_B.reserve(newLength);
@@ -94,9 +94,9 @@ void CColouredPointsMap::resize(size_t newLength)
 {
 	this->reserve(newLength);  // to ensure 4N capacity
 
-	x.resize(newLength, 0);
-	y.resize(newLength, 0);
-	z.resize(newLength, 0);
+	m_x.resize(newLength, 0);
+	m_y.resize(newLength, 0);
+	m_z.resize(newLength, 0);
 	m_color_R.resize(newLength, 1);
 	m_color_G.resize(newLength, 1);
 	m_color_B.resize(newLength, 1);
@@ -110,9 +110,9 @@ void CColouredPointsMap::setSize(size_t newLength)
 {
 	this->reserve(newLength);  // to ensure 4N capacity
 
-	x.assign(newLength, 0);
-	y.assign(newLength, 0);
-	z.assign(newLength, 0);
+	m_x.assign(newLength, 0);
+	m_y.assign(newLength, 0);
+	m_z.assign(newLength, 0);
 	m_color_R.assign(newLength, 1);
 	m_color_G.assign(newLength, 1);
 	m_color_B.assign(newLength, 1);
@@ -141,16 +141,16 @@ void CColouredPointsMap::copyFrom(const CPointsMap& obj)
 uint8_t CColouredPointsMap::serializeGetVersion() const { return 9; }
 void CColouredPointsMap::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	uint32_t n = x.size();
+	uint32_t n = m_x.size();
 
 	// First, write the number of points:
 	out << n;
 
 	if (n > 0)
 	{
-		out.WriteBufferFixEndianness(&x[0], n);
-		out.WriteBufferFixEndianness(&y[0], n);
-		out.WriteBufferFixEndianness(&z[0], n);
+		out.WriteBufferFixEndianness(&m_x[0], n);
+		out.WriteBufferFixEndianness(&m_y[0], n);
+		out.WriteBufferFixEndianness(&m_z[0], n);
 	}
 	out << m_color_R << m_color_G << m_color_B;  // added in v4
 
@@ -178,9 +178,9 @@ void CColouredPointsMap::serializeFrom(
 
 			if (n > 0)
 			{
-				in.ReadBufferFixEndianness(&x[0], n);
-				in.ReadBufferFixEndianness(&y[0], n);
-				in.ReadBufferFixEndianness(&z[0], n);
+				in.ReadBufferFixEndianness(&m_x[0], n);
+				in.ReadBufferFixEndianness(&m_y[0], n);
+				in.ReadBufferFixEndianness(&m_z[0], n);
 			}
 			in >> m_color_R >> m_color_G >> m_color_B;
 
@@ -216,9 +216,9 @@ void CColouredPointsMap::serializeFrom(
 
 			if (n > 0)
 			{
-				in.ReadBufferFixEndianness(&x[0], n);
-				in.ReadBufferFixEndianness(&y[0], n);
-				in.ReadBufferFixEndianness(&z[0], n);
+				in.ReadBufferFixEndianness(&m_x[0], n);
+				in.ReadBufferFixEndianness(&m_y[0], n);
+				in.ReadBufferFixEndianness(&m_z[0], n);
 
 				// Version 1: weights are also stored:
 				// Version 4: Type becomes long int -> uint32_t for
@@ -295,9 +295,9 @@ void CColouredPointsMap::serializeFrom(
 			}
 			else
 			{
-				m_color_R.assign(x.size(), 1.0f);
-				m_color_G.assign(x.size(), 1.0f);
-				m_color_B.assign(x.size(), 1.0f);
+				m_color_R.assign(m_x.size(), 1.0f);
+				m_color_G.assign(m_x.size(), 1.0f);
+				m_color_B.assign(m_x.size(), 1.0f);
 				// m_min_dist.assign(x.size(),2000.0f);
 			}
 
@@ -319,9 +319,9 @@ Clear
 void CColouredPointsMap::internal_clear()
 {
 	// This swap() thing is the only way to really deallocate the memory.
-	vector_strong_clear(x);
-	vector_strong_clear(y);
-	vector_strong_clear(z);
+	vector_strong_clear(m_x);
+	vector_strong_clear(m_y);
+	vector_strong_clear(m_z);
 
 	vector_strong_clear(m_color_R);
 	vector_strong_clear(m_color_G);
@@ -336,10 +336,10 @@ void CColouredPointsMap::internal_clear()
 void CColouredPointsMap::setPoint(
 	size_t index, float x, float y, float z, float R, float G, float B)
 {
-	if (index >= this->x.size()) THROW_EXCEPTION("Index out of bounds");
-	this->x[index] = x;
-	this->y[index] = y;
-	this->z[index] = z;
+	if (index >= m_x.size()) THROW_EXCEPTION("Index out of bounds");
+	m_x[index] = x;
+	m_y[index] = y;
+	m_z[index] = z;
 	this->m_color_R[index] = R;
 	this->m_color_G[index] = G;
 	this->m_color_B[index] = B;
@@ -351,7 +351,7 @@ void CColouredPointsMap::setPoint(
  */
 void CColouredPointsMap::setPointColor(size_t index, float R, float G, float B)
 {
-	if (index >= this->x.size()) THROW_EXCEPTION("Index out of bounds");
+	if (index >= m_x.size()) THROW_EXCEPTION("Index out of bounds");
 	this->m_color_R[index] = R;
 	this->m_color_G[index] = G;
 	this->m_color_B[index] = B;
@@ -360,9 +360,9 @@ void CColouredPointsMap::setPointColor(size_t index, float R, float G, float B)
 
 void CColouredPointsMap::insertPointFast(float x, float y, float z)
 {
-	this->x.push_back(x);
-	this->y.push_back(y);
-	this->z.push_back(z);
+	m_x.push_back(x);
+	m_y.push_back(y);
+	m_z.push_back(z);
 	m_color_R.push_back(1);
 	m_color_G.push_back(1);
 	m_color_B.push_back(1);
@@ -373,9 +373,9 @@ void CColouredPointsMap::insertPointFast(float x, float y, float z)
 void CColouredPointsMap::insertPoint(
 	float x, float y, float z, float R, float G, float B)
 {
-	this->x.push_back(x);
-	this->y.push_back(y);
-	this->z.push_back(z);
+	m_x.push_back(x);
+	m_y.push_back(y);
+	m_z.push_back(z);
 	m_color_R.push_back(R);
 	m_color_G.push_back(G);
 	m_color_B.push_back(B);
@@ -436,11 +436,11 @@ void CColouredPointsMap::TColourOptions::dumpToTextStream(
 unsigned long CColouredPointsMap::getPoint(
 	size_t index, float& x, float& y, float& z) const
 {
-	if (index >= this->x.size()) THROW_EXCEPTION("Index out of bounds");
+	if (index >= m_x.size()) THROW_EXCEPTION("Index out of bounds");
 
-	x = this->x[index];
-	y = this->y[index];
-	z = this->z[index];
+	x = m_x[index];
+	y = m_y[index];
+	z = m_z[index];
 
 	return 1;  // Weight
 }
@@ -452,11 +452,11 @@ void CColouredPointsMap::getPoint(
 	size_t index, float& x, float& y, float& z, float& R, float& G,
 	float& B) const
 {
-	if (index >= this->x.size()) THROW_EXCEPTION("Index out of bounds");
+	if (index >= m_x.size()) THROW_EXCEPTION("Index out of bounds");
 
-	x = this->x[index];
-	y = this->y[index];
-	z = this->z[index];
+	x = m_x[index];
+	y = m_y[index];
+	z = m_z[index];
 
 	R = m_color_R[index];
 	G = m_color_G[index];
@@ -468,7 +468,7 @@ void CColouredPointsMap::getPoint(
 void CColouredPointsMap::getPointColor(
 	size_t index, float& R, float& G, float& B) const
 {
-	if (index >= this->x.size()) THROW_EXCEPTION("Index out of bounds");
+	if (index >= m_x.size()) THROW_EXCEPTION("Index out of bounds");
 
 	R = m_color_R[index];
 	G = m_color_G[index];
@@ -547,7 +547,7 @@ bool CColouredPointsMap::colourFromObservation(
 		{
 			TPixelCoordf px;
 			aux_projectPoint_with_distortion(
-				TPoint3D(x[idx], y[idx], z[idx]), obs.cameraParams, px, true);
+				TPoint3D(m_x[idx], m_y[idx], m_z[idx]), obs.cameraParams, px, true);
 			projectedPoints.push_back(px);
 			p_proj.push_back(k);
 		}  // end if
@@ -608,9 +608,9 @@ bool CColouredPointsMap::save3D_and_colour_to_text_file(
 	FILE* f = os::fopen(file.c_str(), "wt");
 	if (!f) return false;
 
-	for (unsigned int i = 0; i < x.size(); i++)
+	for (unsigned int i = 0; i < m_x.size(); i++)
 		os::fprintf(
-			f, "%f %f %f %d %d %d\n", x[i], y[i], z[i],
+			f, "%f %f %f %d %d %d\n", m_x[i], m_y[i], m_z[i],
 			(uint8_t)(255 * m_color_R[i]), (uint8_t)(255 * m_color_G[i]),
 			(uint8_t)(255 * m_color_B[i]));
 	//	os::fprintf(f,"%f %f %f %f %f %f
@@ -656,9 +656,9 @@ void CColouredPointsMap::PLY_export_get_vertex(
 {
 	pt_has_color = true;
 
-	pt.x = x[idx];
-	pt.y = y[idx];
-	pt.z = z[idx];
+	pt.x = m_x[idx];
+	pt.y = m_y[idx];
+	pt.z = m_z[idx];
 
 	pt_color.R = m_color_R[idx];
 	pt_color.G = m_color_G[idx];
@@ -713,9 +713,9 @@ bool CColouredPointsMap::savePCDFile(
 
 	for (size_t i = 0; i < nThis; ++i)
 	{
-		cloud.points[i].x = this->x[i];
-		cloud.points[i].y = this->y[i];
-		cloud.points[i].z = this->z[i];
+		cloud.points[i].x = m_x[i];
+		cloud.points[i].y = m_y[i];
+		cloud.points[i].z = m_z[i];
 
 		aux_val.rgb[0] = static_cast<uint8_t>(this->m_color_B[i] * f);
 		aux_val.rgb[1] = static_cast<uint8_t>(this->m_color_G[i] * f);

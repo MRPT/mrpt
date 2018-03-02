@@ -60,9 +60,9 @@ IMPLEMENTS_VIRTUAL_SERIALIZABLE(CPointsMap, CMetricMap, mrpt::maps)
 CPointsMap::CPointsMap()
 	: insertionOptions(),
 	  likelihoodOptions(),
-	  x(),
-	  y(),
-	  z(),
+	  m_x(),
+	  m_y(),
+	  m_z(),
 	  m_largestDistanceFromOrigin(0),
 	  m_heightfilter_z_min(-10),
 	  m_heightfilter_z_max(10),
@@ -85,8 +85,8 @@ bool CPointsMap::save2D_to_text_file(const string& file) const
 	FILE* f = os::fopen(file.c_str(), "wt");
 	if (!f) return false;
 
-	for (unsigned int i = 0; i < x.size(); i++)
-		os::fprintf(f, "%f %f\n", x[i], y[i]);
+	for (unsigned int i = 0; i < m_x.size(); i++)
+		os::fprintf(f, "%f %f\n", m_x[i], m_y[i]);
 
 	os::fclose(f);
 	return true;
@@ -102,8 +102,8 @@ bool CPointsMap::save3D_to_text_file(const string& file) const
 	FILE* f = os::fopen(file.c_str(), "wt");
 	if (!f) return false;
 
-	for (unsigned int i = 0; i < x.size(); i++)
-		os::fprintf(f, "%f %f %f\n", x[i], y[i], z[i]);
+	for (unsigned int i = 0; i < m_x.size(); i++)
+		os::fprintf(f, "%f %f %f\n", m_x[i], m_y[i], m_z[i]);
 
 	os::fclose(f);
 	return true;
@@ -187,9 +187,9 @@ mxArray* CPointsMap::writeToMatlab() const
 	mexplus::MxArray map_struct(
 		mexplus::MxArray::Struct(sizeof(fields) / sizeof(fields[0]), fields));
 
-	map_struct.set("x", this->x);
-	map_struct.set("y", this->y);
-	map_struct.set("z", this->z);
+	map_struct.set("x", m_x);
+	map_struct.set("y", m_y);
+	map_struct.set("z", m_z);
 	return map_struct.release();
 #else
 	THROW_EXCEPTION("MRPT built without MATLAB/Mex support");
@@ -202,27 +202,27 @@ mxArray* CPointsMap::writeToMatlab() const
   ---------------------------------------------------------------*/
 unsigned long CPointsMap::getPoint(size_t index, float& x, float& y) const
 {
-	ASSERT_BELOW_(index, this->x.size());
-	x = this->x[index];
-	y = this->y[index];
+	ASSERT_BELOW_(index, m_x.size());
+	x = m_x[index];
+	y = m_y[index];
 
 	return getPointWeight(index);
 }
 unsigned long CPointsMap::getPoint(
 	size_t index, float& x, float& y, float& z) const
 {
-	ASSERT_BELOW_(index, this->x.size());
-	x = this->x[index];
-	y = this->y[index];
-	z = this->z[index];
+	ASSERT_BELOW_(index, m_x.size());
+	x = m_x[index];
+	y = m_y[index];
+	z = m_z[index];
 
 	return getPointWeight(index);
 }
 unsigned long CPointsMap::getPoint(size_t index, double& x, double& y) const
 {
-	ASSERT_BELOW_(index, this->x.size());
-	x = this->x[index];
-	y = this->y[index];
+	ASSERT_BELOW_(index, m_x.size());
+	x = m_x[index];
+	y = m_y[index];
 
 	return getPointWeight(index);
 	;
@@ -230,10 +230,10 @@ unsigned long CPointsMap::getPoint(size_t index, double& x, double& y) const
 unsigned long CPointsMap::getPoint(
 	size_t index, double& x, double& y, double& z) const
 {
-	ASSERT_BELOW_(index, this->x.size());
-	x = this->x[index];
-	y = this->y[index];
-	z = this->z[index];
+	ASSERT_BELOW_(index, m_x.size());
+	x = m_x[index];
+	y = m_y[index];
+	z = m_z[index];
 
 	return getPointWeight(index);
 	;
@@ -250,9 +250,9 @@ void CPointsMap::getPointsBuffer(
 
 	if (outPointsCount > 0)
 	{
-		xs = &x[0];
-		ys = &y[0];
-		zs = &z[0];
+		xs = &m_x[0];
+		ys = &m_y[0];
+		zs = &m_z[0];
 	}
 	else
 	{
@@ -270,7 +270,7 @@ void CPointsMap::clipOutOfRangeInZ(float zMin, float zMax)
 
 	// Compute it:
 	for (size_t i = 0; i < n; i++)
-		deletionMask[i] = (z[i] < zMin || z[i] > zMax);
+		deletionMask[i] = (m_z[i] < zMin || m_z[i] > zMax);
 
 	// Perform deletion:
 	applyDeletionMask(deletionMask);
@@ -292,7 +292,7 @@ void CPointsMap::clipOutOfRange(const TPoint2D& p, float maxRange)
 	// Compute it:
 	for (i = 0; i < n; i++)
 		deletionMask[i] =
-			std::sqrt(square(p.x - x[i]) + square(p.y - y[i])) > maxRange;
+			std::sqrt(square(p.x - m_x[i]) + square(p.y - m_y[i])) > maxRange;
 
 	// Perform deletion:
 	applyDeletionMask(deletionMask);
@@ -387,20 +387,20 @@ void CPointsMap::determineMatching2D(
 	// JLBC OCT/2016: resize() methods in maps have been modified to enforce
 	// capacities to be 4*N by design,
 	// but will leave this code here just in case (for some edge cases?)
-	if (otherMap->x.capacity() < nLocalPoints_4align ||
-		otherMap->y.capacity() < nLocalPoints_4align)
+	if (otherMap->m_x.capacity() < nLocalPoints_4align ||
+		otherMap->m_y.capacity() < nLocalPoints_4align)
 	{
 		// This will happen perhaps...once in a lifetime? Anyway:
-		const_cast<vector<float>*>(&otherMap->x)
+		const_cast<vector<float>*>(&otherMap->m_x)
 			->reserve(nLocalPoints_4align + 16);
-		const_cast<vector<float>*>(&otherMap->y)
+		const_cast<vector<float>*>(&otherMap->m_y)
 			->reserve(nLocalPoints_4align + 16);
 	}
 
 	if (nExtraPad)
 	{
-		float* ptr_in_x = const_cast<float*>(&otherMap->x[0]);
-		float* ptr_in_y = const_cast<float*>(&otherMap->y[0]);
+		float* ptr_in_x = const_cast<float*>(&otherMap->m_x[0]);
+		float* ptr_in_y = const_cast<float*>(&otherMap->m_y[0]);
 		for (size_t k = nExtraPad; k; k--)
 		{
 			ptr_in_x[nLocalPoints + k] = 0;
@@ -420,8 +420,8 @@ void CPointsMap::determineMatching2D(
 	__m128 y_mins = x_mins;
 	__m128 y_maxs = x_maxs;
 
-	const float* ptr_in_x = &otherMap->x[0];
-	const float* ptr_in_y = &otherMap->y[0];
+	const float* ptr_in_x = &otherMap->m_x[0];
+	const float* ptr_in_y = &otherMap->m_y[0];
 	float* ptr_out_x = &x_locals[0];
 	float* ptr_out_y = &y_locals[0];
 
@@ -495,9 +495,9 @@ void CPointsMap::determineMatching2D(
 	// Loop for each point in local map:
 	// --------------------------------------------------
 	for (localIdx = params.offset_other_map_points,
-		x_other_it = &otherMap->x[params.offset_other_map_points],
-		y_other_it = &otherMap->y[params.offset_other_map_points],
-		z_other_it = &otherMap->z[params.offset_other_map_points];
+		x_other_it = &otherMap->m_x[params.offset_other_map_points],
+		y_other_it = &otherMap->m_y[params.offset_other_map_points],
+		z_other_it = &otherMap->m_z[params.offset_other_map_points];
 		 localIdx < nLocalPoints;
 		 x_other_it += params.decimation_other_map_points,
 		y_other_it += params.decimation_other_map_points,
@@ -538,9 +538,9 @@ void CPointsMap::determineMatching2D(
 			TMatchingPair& p = _correspondences.back();
 
 			p.this_idx = tentativ_this_idx;
-			p.this_x = x[tentativ_this_idx];
-			p.this_y = y[tentativ_this_idx];
-			p.this_z = z[tentativ_this_idx];
+			p.this_x = m_x[tentativ_this_idx];
+			p.this_y = m_y[tentativ_this_idx];
+			p.this_z = m_z[tentativ_this_idx];
 
 			p.other_idx = localIdx;
 			p.other_x = *x_other_it;
@@ -598,14 +598,14 @@ void CPointsMap::determineMatching2D(
  ---------------------------------------------------------------*/
 void CPointsMap::changeCoordinatesReference(const CPose2D& newBase)
 {
-	const size_t N = x.size();
+	const size_t N = m_x.size();
 
 	const CPose3D newBase3D(newBase);
 
 	for (size_t i = 0; i < N; i++)
 		newBase3D.composePoint(
-			x[i], y[i], z[i],  // In
-			x[i], y[i], z[i]  // Out
+			m_x[i], m_y[i], m_z[i],  // In
+			m_x[i], m_y[i], m_z[i]  // Out
 		);
 
 	mark_as_modified();
@@ -616,12 +616,12 @@ void CPointsMap::changeCoordinatesReference(const CPose2D& newBase)
  ---------------------------------------------------------------*/
 void CPointsMap::changeCoordinatesReference(const CPose3D& newBase)
 {
-	const size_t N = x.size();
+	const size_t N = m_x.size();
 
 	for (size_t i = 0; i < N; i++)
 		newBase.composePoint(
-			x[i], y[i], z[i],  // In
-			x[i], y[i], z[i]  // Out
+			m_x[i], m_y[i], m_z[i],  // In
+			m_x[i], m_y[i], m_z[i]  // Out
 		);
 
 	mark_as_modified();
@@ -640,7 +640,7 @@ void CPointsMap::changeCoordinatesReference(
 /*---------------------------------------------------------------
 				isEmpty
  ---------------------------------------------------------------*/
-bool CPointsMap::isEmpty() const { return x.empty(); }
+bool CPointsMap::isEmpty() const { return m_x.empty(); }
 /*---------------------------------------------------------------
 				TInsertionOptions
  ---------------------------------------------------------------*/
@@ -883,7 +883,7 @@ float CPointsMap::getLargestDistanceFromOrigin() const
 		// NO: Update it:
 		vector<float>::const_iterator X, Y, Z;
 		float maxDistSq = 0, d;
-		for (X = x.begin(), Y = y.begin(), Z = z.begin(); X != x.end();
+		for (X = m_x.begin(), Y = m_y.begin(), Z = m_z.begin(); X != m_x.end();
 			 ++X, ++Y, ++Z)
 		{
 			d = square(*X) + square(*Y) + square(*Z);
@@ -906,19 +906,19 @@ void CPointsMap::getAllPoints(
 	ASSERT_(decimation > 0);
 	if (decimation == 1)
 	{
-		xs = x;
-		ys = y;
+		xs = m_x;
+		ys = m_y;
 	}
 	else
 	{
-		size_t N = x.size() / decimation;
+		size_t N = m_x.size() / decimation;
 
 		xs.resize(N);
 		ys.resize(N);
 
 		vector<float>::const_iterator X, Y;
 		vector<float>::iterator oX, oY;
-		for (X = x.begin(), Y = y.begin(), oX = xs.begin(), oY = ys.begin();
+		for (X = m_x.begin(), Y = m_y.begin(), oX = xs.begin(), oY = ys.begin();
 			 oX != xs.end(); X += decimation, Y += decimation, ++oX, ++oY)
 		{
 			*oX = *X;
@@ -978,7 +978,7 @@ void CPointsMap::boundingBox(
 	float& min_x, float& max_x, float& min_y, float& max_y, float& min_z,
 	float& max_z) const
 {
-	const size_t nPoints = x.size();
+	const size_t nPoints = m_x.size();
 
 	if (!m_boundingBoxIsUpdated)
 	{
@@ -1013,20 +1013,20 @@ void CPointsMap::boundingBox(
 			// JLBC OCT/2016: resize() methods in maps have been modified to
 			// enforce capacities to be 4*N by design,
 			// but will leave this code here just in case (for some edge cases?)
-			if (x.capacity() < nPoints_4align ||
-				y.capacity() < nPoints_4align || z.capacity() < nPoints_4align)
+			if (m_x.capacity() < nPoints_4align ||
+				m_y.capacity() < nPoints_4align || m_z.capacity() < nPoints_4align)
 			{
 				// This will happen perhaps...once in a lifetime? Anyway:
-				const_cast<vector<float>*>(&x)->reserve(nPoints_4align + 16);
-				const_cast<vector<float>*>(&y)->reserve(nPoints_4align + 16);
-				const_cast<vector<float>*>(&z)->reserve(nPoints_4align + 16);
+				const_cast<vector<float>*>(&m_x)->reserve(nPoints_4align + 16);
+				const_cast<vector<float>*>(&m_y)->reserve(nPoints_4align + 16);
+				const_cast<vector<float>*>(&m_z)->reserve(nPoints_4align + 16);
 			}
 
 			if (nExtraPad)
 			{
-				float* ptr_in_x = const_cast<float*>(&x[0]);
-				float* ptr_in_y = const_cast<float*>(&y[0]);
-				float* ptr_in_z = const_cast<float*>(&z[0]);
+				float* ptr_in_x = const_cast<float*>(&m_x[0]);
+				float* ptr_in_y = const_cast<float*>(&m_y[0]);
+				float* ptr_in_z = const_cast<float*>(&m_z[0]);
 				for (size_t k = nExtraPad; k; k--)
 				{
 					ptr_in_x[nPoints + k - 1] = 0;
@@ -1041,9 +1041,9 @@ void CPointsMap::boundingBox(
 			__m128 y_mins = x_mins, y_maxs = x_maxs;
 			__m128 z_mins = x_mins, z_maxs = x_maxs;
 
-			const float* ptr_in_x = &this->x[0];
-			const float* ptr_in_y = &this->y[0];
-			const float* ptr_in_z = &this->z[0];
+			const float* ptr_in_x = &m_x[0];
+			const float* ptr_in_y = &m_y[0];
+			const float* ptr_in_z = &m_z[0];
 
 			for (; nPackets;
 				 nPackets--, ptr_in_x += 4, ptr_in_y += 4, ptr_in_z += 4)
@@ -1177,7 +1177,7 @@ void CPointsMap::determineMatching3D(
 	{
 		float x_local, y_local, z_local;
 		otherMapPose.composePoint(
-			otherMap->x[localIdx], otherMap->y[localIdx], otherMap->z[localIdx],
+			otherMap->m_x[localIdx], otherMap->m_y[localIdx], otherMap->m_z[localIdx],
 			x_local, y_local, z_local);
 
 		x_locals[localIdx] = x_local;
@@ -1245,14 +1245,14 @@ void CPointsMap::determineMatching3D(
 				TMatchingPair& p = _correspondences.back();
 
 				p.this_idx = tentativ_this_idx;
-				p.this_x = x[tentativ_this_idx];
-				p.this_y = y[tentativ_this_idx];
-				p.this_z = z[tentativ_this_idx];
+				p.this_x = m_x[tentativ_this_idx];
+				p.this_y = m_y[tentativ_this_idx];
+				p.this_z = m_z[tentativ_this_idx];
 
 				p.other_idx = localIdx;
-				p.other_x = otherMap->x[localIdx];
-				p.other_y = otherMap->y[localIdx];
-				p.other_z = otherMap->z[localIdx];
+				p.other_x = otherMap->m_x[localIdx];
+				p.other_y = otherMap->m_y[localIdx];
+				p.other_z = otherMap->m_z[localIdx];
 
 				p.errorSquareAfterTransformation = tentativ_err_sq;
 
@@ -1304,11 +1304,11 @@ void CPointsMap::extractCylinder(
 	const double zmax, CPointsMap* outMap)
 {
 	outMap->clear();
-	for (size_t k = 0; k < x.size(); k++)
+	for (size_t k = 0; k < m_x.size(); k++)
 	{
-		if ((z[k] <= zmax && z[k] >= zmin) &&
-			(sqrt(square(center.x - x[k]) + square(center.y - y[k])) < radius))
-			outMap->insertPoint(x[k], y[k], z[k]);
+		if ((m_z[k] <= zmax && m_z[k] >= zmin) &&
+			(sqrt(square(center.x - m_x[k]) + square(center.y - m_y[k])) < radius))
+			outMap->insertPoint(m_x[k], m_y[k], m_z[k]);
 	}
 }
 
@@ -1327,11 +1327,11 @@ void CPointsMap::extractPoints(
 	maxY = max(corner1.y, corner2.y);
 	minZ = min(corner1.z, corner2.z);
 	maxZ = max(corner1.z, corner2.z);
-	for (size_t k = 0; k < x.size(); k++)
+	for (size_t k = 0; k < m_x.size(); k++)
 	{
-		if ((x[k] >= minX && x[k] <= maxX) && (y[k] >= minY && y[k] <= maxY) &&
-			(z[k] >= minZ && z[k] <= maxZ))
-			outMap->insertPoint(x[k], y[k], z[k], R, G, B);
+		if ((m_x[k] >= minX && m_x[k] <= maxX) && (m_y[k] >= minY && m_y[k] <= maxY) &&
+			(m_z[k] >= minZ && m_z[k] <= maxZ))
+			outMap->insertPoint(m_x[k], m_y[k], m_z[k], R, G, B);
 	}
 }
 
@@ -1398,9 +1398,9 @@ void CPointsMap::compute3DDistanceToMesh(
 	for (unsigned int localIdx = 0; localIdx < nLocalPoints; ++localIdx)
 	{
 		// For speed-up:
-		const float x_local = otherMap->x[localIdx];
-		const float y_local = otherMap->y[localIdx];
-		const float z_local = otherMap->z[localIdx];
+		const float x_local = otherMap->m_x[localIdx];
+		const float y_local = otherMap->m_y[localIdx];
+		const float z_local = otherMap->m_z[localIdx];
 
 		{
 			// KD-TREE implementation
@@ -1439,9 +1439,9 @@ void CPointsMap::compute3DDistanceToMesh(
 				p.this_z = mZ;
 
 				p.other_idx = localIdx;
-				p.other_x = otherMap->x[localIdx];
-				p.other_y = otherMap->y[localIdx];
-				p.other_z = otherMap->z[localIdx];
+				p.other_x = otherMap->m_x[localIdx];
+				p.other_y = otherMap->m_y[localIdx];
+				p.other_z = otherMap->m_z[localIdx];
 
 				p.errorSquareAfterTransformation = distanceForThisPoint;
 
@@ -1529,12 +1529,12 @@ double CPointsMap::internal_computeObservationLikelihood(
 
 		float sumSqrDist = 0;
 
-		const size_t N = scanPoints->x.size();
+		const size_t N = scanPoints->m_x.size();
 		if (!N || !this->size()) return -100;
 
-		const float* xs = &scanPoints->x[0];
-		const float* ys = &scanPoints->y[0];
-		const float* zs = &scanPoints->z[0];
+		const float* xs = &scanPoints->m_x[0];
+		const float* ys = &scanPoints->m_y[0];
+		const float* zs = &scanPoints->m_z[0];
 
 		float closest_x, closest_y, closest_z;
 		float closest_err;
@@ -1732,9 +1732,9 @@ void CPointsMap::PLY_export_get_vertex(
 	MRPT_UNUSED_PARAM(pt_color);
 	pt_has_color = false;
 
-	pt.x = x[idx];
-	pt.y = y[idx];
-	pt.z = z[idx];
+	pt.x = m_x[idx];
+	pt.y = m_y[idx];
+	pt.z = m_z[idx];
 }
 
 // Generic implementation (a more optimized one should exist in derived
@@ -1750,9 +1750,9 @@ void CPointsMap::addFrom(const CPointsMap& anotherMap)
 
 	for (size_t i = 0, j = nThis; i < nOther; i++, j++)
 	{
-		this->x[j] = anotherMap.x[i];
-		this->y[j] = anotherMap.y[i];
-		this->z[j] = anotherMap.z[i];
+		m_x[j] = anotherMap.m_x[i];
+		m_y[j] = anotherMap.m_y[i];
+		m_z[j] = anotherMap.m_z[i];
 	}
 
 	// Also copy other data fields (color, ...)
@@ -1862,16 +1862,16 @@ void CPointsMap::base_copyFrom(const CPointsMap& obj)
 
 	if (this == &obj) return;
 
-	x = obj.x;
-	y = obj.y;
-	z = obj.z;
+	m_x = obj.m_x;
+	m_y = obj.m_y;
+	m_z = obj.m_z;
 
 	m_largestDistanceFromOriginIsUpdated =
 		obj.m_largestDistanceFromOriginIsUpdated;
 	m_largestDistanceFromOrigin = obj.m_largestDistanceFromOrigin;
 
 	// Fill missing fields (R,G,B,min_dist) with default values.
-	this->resize(x.size());
+	this->resize(m_x.size());
 
 	kdtree_mark_as_outdated();
 
@@ -2184,12 +2184,12 @@ void CPointsMap::fuseWith(
 	if (notFusedPoints)
 	{
 		notFusedPoints->clear();
-		notFusedPoints->reserve(x.size() + nOther);
-		notFusedPoints->resize(x.size(), true);
+		notFusedPoints->reserve(m_x.size() + nOther);
+		notFusedPoints->resize(m_x.size(), true);
 	}
 
 	// Speeds-up possible memory reallocations:
-	reserve(x.size() + nOther);
+	reserve(m_x.size() + nOther);
 
 	// Merge matched points from both maps:
 	//  AND add new points which have been not matched:
@@ -2227,9 +2227,9 @@ void CPointsMap::fuseWith(
 
 			const float F = 1.0f / (w_a + w_b);
 
-			x[closestCorr] = F * (w_a * a.x + w_b * b.x);
-			y[closestCorr] = F * (w_a * a.y + w_b * b.y);
-			z[closestCorr] = F * (w_a * a.z + w_b * b.z);
+			m_x[closestCorr] = F * (w_a * a.x + w_b * b.x);
+			m_y[closestCorr] = F * (w_a * a.y + w_b * b.y);
+			m_z[closestCorr] = F * (w_a * a.z + w_b * b.z);
 
 			this->setPointWeight(closestCorr, w_a + w_b);
 
