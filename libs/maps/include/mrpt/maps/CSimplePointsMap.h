@@ -61,9 +61,9 @@ class CSimplePointsMap : public CPointsMap
 		const size_t index, std::vector<float>& point_data) const override
 	{
 		point_data.resize(3);
-		point_data[0] = x[index];
-		point_data[1] = y[index];
-		point_data[2] = z[index];
+		point_data[0] = m_x[index];
+		point_data[1] = m_y[index];
+		point_data[2] = m_z[index];
 	}
 	/** Set all the data fields for one point as a vector: [X Y Z]
 	 *  Unlike setPointAllFields(), this method does not check for index out of
@@ -74,9 +74,9 @@ class CSimplePointsMap : public CPointsMap
 		const size_t index, const std::vector<float>& point_data) override
 	{
 		ASSERTDEB_(point_data.size() == 3);
-		x[index] = point_data[0];
-		y[index] = point_data[1];
-		z[index] = point_data[2];
+		m_x[index] = point_data[0];
+		m_y[index] = point_data[1];
+		m_z[index] = point_data[2];
 	}
 
 	// See CPointsMap::loadFromRangeScan()

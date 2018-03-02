@@ -56,9 +56,9 @@ struct loadFromRangeImpl
 		if (!sizeRangeScan) return;  // Nothing to do.
 
 		// For a great gain in efficiency:
-		if (obj.x.size() + sizeRangeScan > obj.x.capacity())
+		if (obj.m_x.size() + sizeRangeScan > obj.m_x.capacity())
 		{
-			obj.reserve((size_t)(obj.x.size() * 1.2f) + 3 * sizeRangeScan);
+			obj.reserve((size_t)(obj.m_x.size() * 1.2f) + 3 * sizeRangeScan);
 		}
 
 		// GENERAL CASE OF SCAN WITH ARBITRARY 3D ORIENTATION:
@@ -116,9 +116,9 @@ struct loadFromRangeImpl
 				nPointsAtStart +
 				(sizeRangeScan *
 				 (obj.insertionOptions.also_interpolate ? 3 : 1));
-			obj.x.resize(expectedMaxSize);
-			obj.y.resize(expectedMaxSize);
-			obj.z.resize(expectedMaxSize);
+			obj.m_x.resize(expectedMaxSize);
+			obj.m_y.resize(expectedMaxSize);
+			obj.m_z.resize(expectedMaxSize);
 		}
 
 		// ------------------------------------------------------
@@ -305,9 +305,9 @@ struct loadFromRangeImpl
 									(i_z >= obj.m_heightfilter_z_min &&
 									 i_z <= obj.m_heightfilter_z_max))
 								{
-									obj.x.push_back(i_x);
-									obj.y.push_back(i_y);
-									obj.z.push_back(i_z);
+									obj.m_x.push_back(i_x);
+									obj.m_y.push_back(i_y);
+									obj.m_z.push_back(i_z);
 									// Allow derived classes to add any other
 									// information to that point:
 									pointmap_traits<Derived>::
@@ -322,9 +322,9 @@ struct loadFromRangeImpl
 						(lz >= obj.m_heightfilter_z_min &&
 						 lz <= obj.m_heightfilter_z_max))
 					{
-						obj.x[nextPtIdx] = lx;
-						obj.y[nextPtIdx] = ly;
-						obj.z[nextPtIdx] = lz;
+						obj.m_x[nextPtIdx] = lx;
+						obj.m_y[nextPtIdx] = ly;
+						obj.m_z[nextPtIdx] = lz;
 						nextPtIdx++;
 
 						// Allow derived classes to add any other information to
@@ -358,9 +358,9 @@ struct loadFromRangeImpl
 				(lz >= obj.m_heightfilter_z_min &&
 				 lz <= obj.m_heightfilter_z_max))
 			{
-				obj.x[nextPtIdx] = lx;
-				obj.y[nextPtIdx] = ly;
-				obj.z[nextPtIdx] = lz;
+				obj.m_x[nextPtIdx] = lx;
+				obj.m_y[nextPtIdx] = ly;
+				obj.m_z[nextPtIdx] = lz;
 				nextPtIdx++;
 				// Allow derived classes to add any other information to that
 				// point:
@@ -370,9 +370,9 @@ struct loadFromRangeImpl
 		}
 
 		// Adjust size:
-		obj.x.resize(nextPtIdx);
-		obj.y.resize(nextPtIdx);
-		obj.z.resize(nextPtIdx);
+		obj.m_x.resize(nextPtIdx);
+		obj.m_y.resize(nextPtIdx);
+		obj.m_z.resize(nextPtIdx);
 	}
 
 	static inline void templ_loadFromRangeScan(
@@ -401,8 +401,8 @@ struct loadFromRangeImpl
 		const size_t sizeRangeScan = rangeScan.points3D_x.size();
 
 		// For a great gain in efficiency:
-		if (obj.x.size() + sizeRangeScan > obj.x.capacity())
-			obj.reserve(size_t(obj.x.size() + 1.1 * sizeRangeScan));
+		if (obj.m_x.size() + sizeRangeScan > obj.m_x.capacity())
+			obj.reserve(size_t(obj.m_x.size() + 1.1 * sizeRangeScan));
 
 		// GENERAL CASE OF SCAN WITH ARBITRARY 3D ORIENTATION:
 		// --------------------------------------------------------------------------
@@ -480,9 +480,9 @@ struct loadFromRangeImpl
 				{
 					thisIsTheFirst = false;
 
-					obj.x.push_back(lx);
-					obj.y.push_back(ly);
-					obj.z.push_back(lz);
+					obj.m_x.push_back(lx);
+					obj.m_y.push_back(ly);
+					obj.m_z.push_back(lz);
 					// Allow derived classes to add any other information to
 					// that point:
 					pointmap_traits<Derived>::
@@ -511,9 +511,9 @@ struct loadFromRangeImpl
 		{
 			if (lx != 0 || ly != 0 || lz != 0)
 			{
-				obj.x.push_back(lx);
-				obj.y.push_back(ly);
-				obj.z.push_back(lz);
+				obj.m_x.push_back(lx);
+				obj.m_y.push_back(ly);
+				obj.m_z.push_back(lz);
 				// Allow derived classes to add any other information to that
 				// point:
 				pointmap_traits<Derived>::
