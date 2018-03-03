@@ -8,15 +8,15 @@ CMAKE_C_FLAGS="-Wall -Wextra -Wabi"
 CMAKE_CXX_FLAGS="-Wall -Wextra -Wabi"
 EXTRA_CMAKE_ARGS="-DDISABLE_PCL=ON"  # PCL causes link errors (?!)
 
-function prepare_install()
+function install_lint_reqs()
 {
-  if [ "$TASK" == "lint" ]; then
-    pip install -r travis/python_reqs.txt
-  fi
+  pip install -r travis/python_reqs.txt
 }
 
-function prepare_build_dir()
+# arguments: extra CMAKE flags to append to common ones
+function do_generate_makefile()
 {
+  # prepare_build_dir
   # Make sure we dont have spurious files:
   cd $MRPT_DIR
   git clean -fd || true
@@ -24,12 +24,21 @@ function prepare_build_dir()
   rm -fr $BUILD_DIR || true
   mkdir -p $BUILD_DIR
   cd $BUILD_DIR
+
+  if [ "$DEPS" == "minimal" ]; then
+    DOWNLOAD_EIGEN_FLAG="-DEIGEN_USE_EMBEDDED_VERSION=ON"
+  else
+    DOWNLOAD_EIGEN_FLAG=""
+  fi
+
+  # configure cmake:
+  VERBOSE=1 cmake $MRPT_DIR \
+    -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+    $EXTRA_CMAKE_ARGS $DOWNLOAD_EIGEN_FLAG $@
 }
 
 function build ()
 {
-  prepare_build_dir
-
   # gcc is too slow and we have a time limit in Travis CI: exclude examples when building with gcc
   if [ "$CC" == "gcc" ]; then
     BUILD_EXAMPLES=FALSE
@@ -43,13 +52,10 @@ function build ()
     DISABLE_PYTHON_BINDINGS=OFF
   fi
 
-  VERBOSE=1 cmake $MRPT_DIR \
+  do_generate_makefile \
     -DBUILD_EXAMPLES=$BUILD_EXAMPLES \
-    -DBUILD_APPLICATIONS=TRUE \
     -DBUILD_TESTING=FALSE \
-    -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
-    -DDISABLE_PYTHON_BINDINGS=$DISABLE_PYTHON_BINDINGS \
-    $EXTRA_CMAKE_ARGS
+    -DDISABLE_PYTHON_BINDINGS=$DISABLE_PYTHON_BINDINGS
 
   make -j3
 
@@ -67,12 +73,7 @@ function test ()
     return
   fi
 
-  prepare_build_dir
-  cmake $MRPT_DIR \
-    -DBUILD_APPLICATIONS=FALSE \
-    -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
-    -DENABLE_COVERAGE=On \
-    $EXTRA_CMAKE_ARGS
+  do_generate_makefile -DBUILD_APPLICATIONS=FALSE -DENABLE_COVERAGE=On
 
   # Remove gdb use for coverage test reports.
   # Use `test_gdb` to show stack traces of failing unit tests.
@@ -88,9 +89,8 @@ function test ()
   cd $MRPT_DIR
 }
 
-prepare_install
-
 case $TASK in
   build ) build;;
   test ) test;;
+  lint ) install_lint_reqs;;
 esac
