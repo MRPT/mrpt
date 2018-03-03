@@ -51,10 +51,10 @@ bool ModelSearch::ransacSingleModel(
 
 		std::vector<size_t> inliers;
 
-		for (size_t i = 0; i < nSamples; i++)
+		for (size_t j = 0; j < nSamples; j++)
 		{
-			if (p_state.testSample(i, currentModel) < p_fitnessThreshold)
-				inliers.push_back(i);
+			if (p_state.testSample(j, currentModel) < p_fitnessThreshold)
+				inliers.push_back(j);
 		}
 		ASSERT_(inliers.size() > 0);
 

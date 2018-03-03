@@ -397,10 +397,10 @@ ERRORCODE_HTTP mrpt::comms::net::http_get(
 
 /** Resolve a server address by its name, returning its IP address as a string -
  * This method has a timeout for the maximum time to wait for the DNS server.
-  *   For example: server_name="www.google.com" -> out_ip="209.85.227.99"
-  *
-  * \return true on success, false on timeout or other error.
-  */
+ *   For example: server_name="www.google.com" -> out_ip="209.85.227.99"
+ *
+ * \return true on success, false on timeout or other error.
+ */
 bool net::DNS_resolve_async(
 	const std::string& server_name, std::string& out_ip,
 	const unsigned int timeout_ms)
@@ -417,7 +417,7 @@ bool net::DNS_resolve_async(
 	// It seems that the only reliable way of *with a timeout* is to launch a
 	// separate thread.
 
-	std::future<std::string> dns_result =
+	std::future<std::string> dns_result_fut =
 		std::async(std::launch::async, [&]() {
 // Windows-specific stuff:
 #ifdef _WIN32
@@ -458,12 +458,13 @@ bool net::DNS_resolve_async(
 			return dns_result;
 		});
 
-	auto status = dns_result.wait_for(std::chrono::milliseconds(timeout_ms));
+	auto status =
+		dns_result_fut.wait_for(std::chrono::milliseconds(timeout_ms));
 
 	if (status == std::future_status::ready)
 	{
 		// Done: Anyway, it can still be an error result:
-		out_ip = dns_result.get();
+		out_ip = dns_result_fut.get();
 		return !out_ip.empty();
 	}
 	else

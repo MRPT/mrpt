@@ -205,6 +205,7 @@ class CSimpleIniTempl
 	   public:
 		FileWriter(FILE* a_file) : m_file(a_file) {}
 		void Write(const char* a_pBuf) override { fputs(a_pBuf, m_file); }
+
 	   private:
 		FileWriter(const FileWriter&);  // disable
 		FileWriter& operator=(const FileWriter&);  // disable
@@ -218,6 +219,7 @@ class CSimpleIniTempl
 	   public:
 		StringWriter(std::string& a_string) : m_string(a_string) {}
 		void Write(const char* a_pBuf) override { m_string.append(a_pBuf); }
+
 	   private:
 		StringWriter(const StringWriter&);  // disable
 		StringWriter& operator=(const StringWriter&);  // disable
@@ -232,6 +234,7 @@ class CSimpleIniTempl
 	   public:
 		StreamWriter(std::ostream& a_ostream) : m_ostream(a_ostream) {}
 		void Write(const char* a_pBuf) { m_ostream << a_pBuf; }
+
 	   private:
 		StreamWriter(const StreamWriter&);  // disable
 		StreamWriter& operator=(const StreamWriter&);  // disable
@@ -267,6 +270,7 @@ class CSimpleIniTempl
 				m_scratch.size());
 		}
 		const char* Data() { return m_scratch.data(); }
+
 	   private:
 		std::string m_scratch;
 	};
@@ -648,7 +652,7 @@ class CSimpleIniTempl
 
    private:
 	/** Parse the data looking for a file comment and store it if found.
-	*/
+	 */
 	SI_Error FindFileComment(SI_CHAR*& a_pData, bool a_bCopyStrings);
 
 	/** Parse the data looking for the next valid entry. The memory pointed to
@@ -2077,8 +2081,8 @@ class SI_ConvertA
 };
 
 /** MRPT custom INI file parser to allow minimal file preprocessing:
-* - multiline entries via an end-of-line backslash ('\')
-*/
+ * - multiline entries via an end-of-line backslash ('\')
+ */
 struct MRPT_IniFileParser : public SI_ConvertA<char>
 {
 	MRPT_IniFileParser() : SI_ConvertA<char>() {}
@@ -2127,10 +2131,9 @@ struct MRPT_IniFileParser : public SI_ConvertA<char>
 			{
 				auto pend = expr.find("}", p);
 				if (pend == std::string::npos)
-					throw std::runtime_error(
-						mrpt::format(
-							"Line %u: Expected closing `}` near: `%s`",
-							pc.line_count, expr.c_str()));
+					throw std::runtime_error(mrpt::format(
+						"Line %u: Expected closing `}` near: `%s`",
+						pc.line_count, expr.c_str()));
 				const auto substr = expr.substr(p + 5, pend - p - 5);
 				std::string new_expr = expr.substr(0, p);
 				auto env_val = ::getenv(substr.c_str());
@@ -2142,10 +2145,9 @@ struct MRPT_IniFileParser : public SI_ConvertA<char>
 			{
 				auto pend = expr.find("}", p);
 				if (pend == std::string::npos)
-					throw std::runtime_error(
-						mrpt::format(
-							"Line %u: Expected closing `}` near: `%s`",
-							pc.line_count, expr.c_str()));
+					throw std::runtime_error(mrpt::format(
+						"Line %u: Expected closing `}` near: `%s`",
+						pc.line_count, expr.c_str()));
 
 				const auto substr = expr.substr(p + 6, pend - p - 6);
 				mrpt::expr::CRuntimeCompiledExpression cexpr;
@@ -2227,9 +2229,9 @@ struct MRPT_IniFileParser : public SI_ConvertA<char>
 					bool in_var_name = false, done_var_name = false;
 					while (i < in_len && in_str[i] != '\r' && in_str[i] != '\n')
 					{
-						const char c = in_str[i];
+						const char ch = in_str[i];
 						i++;
-						if (c != ' ' && c != '\t')
+						if (ch != ' ' && ch != '\t')
 						{
 							// not whitespace
 							if (!in_var_name && !done_var_name)
@@ -2248,11 +2250,11 @@ struct MRPT_IniFileParser : public SI_ConvertA<char>
 						}
 						if (in_var_name)
 						{
-							var_name += c;
+							var_name += ch;
 						}
 						if (done_var_name)
 						{
-							var_value += c;
+							var_value += ch;
 						}
 					}
 
@@ -2280,18 +2282,16 @@ struct MRPT_IniFileParser : public SI_ConvertA<char>
 					}
 					if (!end_ok)
 					{
-						throw std::runtime_error(
-							mrpt::format(
-								"Line %u: Expected closing `}` near: `%s`",
-								pc.line_count, varname.c_str()));
+						throw std::runtime_error(mrpt::format(
+							"Line %u: Expected closing `}` near: `%s`",
+							pc.line_count, varname.c_str()));
 					}
 
 					const auto it = pc.defined_vars.find(varname);
 					if (it == pc.defined_vars.end())
-						throw std::runtime_error(
-							mrpt::format(
-								"Line %u: Unknown variable `${%s}`",
-								pc.line_count, varname.c_str()));
+						throw std::runtime_error(mrpt::format(
+							"Line %u: Unknown variable `${%s}`", pc.line_count,
+							varname.c_str()));
 
 					const auto str_out = parse_process_var_eval(pc, it->second);
 
@@ -2322,10 +2322,9 @@ struct MRPT_IniFileParser : public SI_ConvertA<char>
 					}
 					if (!end_ok)
 					{
-						throw std::runtime_error(
-							mrpt::format(
-								"Line %u: Expected closing `}` near: `%s`",
-								pc.line_count, expr.c_str()));
+						throw std::runtime_error(mrpt::format(
+							"Line %u: Expected closing `}` near: `%s`",
+							pc.line_count, expr.c_str()));
 					}
 
 					const std::string res = parse_process_var_eval(pc, expr);
@@ -2357,10 +2356,9 @@ struct MRPT_IniFileParser : public SI_ConvertA<char>
 					}
 					if (!end_ok)
 					{
-						throw std::runtime_error(
-							mrpt::format(
-								"Line %u: Expected closing `}` near: `%s`",
-								pc.line_count, expr.c_str()));
+						throw std::runtime_error(mrpt::format(
+							"Line %u: Expected closing `}` near: `%s`",
+							pc.line_count, expr.c_str()));
 					}
 
 					const std::string res = parse_process_var_eval(pc, expr);
@@ -2408,8 +2406,8 @@ typedef CSimpleIniTempl<char, SI_GenericNoCase<char>, MRPT_IniFileParser>
 #define SI_NEWLINE SI_NEWLINE_A
 #endif  // _UNICODE
 
-}  // end namespace
-}  // end namespace
-}  // end namespace
+}  // namespace simpleini
+}  // namespace config
+}  // namespace mrpt
 
 #endif  // INCLUDED_SimpleIni_h

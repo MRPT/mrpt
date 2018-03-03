@@ -209,13 +209,13 @@ void COutputLogger::loggerReset()
 // ////////////////////////////////////////////////////////////
 
 COutputLogger::TMsg::TMsg(
-	const mrpt::system::VerbosityLevel level, const std::string& msg_str,
+	const mrpt::system::VerbosityLevel in_level, const std::string& msg_str,
 	const COutputLogger& logger)
 {
 	this->reset();
 
 	name = logger.getLoggerName();
-	this->level = level;
+	this->level = in_level;
 	timestamp = mrpt::system::getCurrentTime();  // fill with the current time
 	body = msg_str;
 }
