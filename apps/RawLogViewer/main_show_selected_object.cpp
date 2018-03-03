@@ -93,8 +93,8 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 							"robot/vehicle frame, "
 						 << pts.size() << " points)\n";
 					cout << "pts=[";
-					const std::vector<float>& xs = pts.getPointsBufferRef_x();
-					const std::vector<float>& ys = pts.getPointsBufferRef_y();
+					const auto& xs = pts.getPointsBufferRef_x();
+					const auto& ys = pts.getPointsBufferRef_y();
 					for (size_t i = 0; i < xs.size(); i++)
 						cout << format("%7.04f %7.04f;", xs[i], ys[i]);
 					cout << "]\n\n";

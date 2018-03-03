@@ -176,9 +176,9 @@ class CColouredPointsMap : public CPointsMap
 	/** Like \c setPointColor but without checking for out-of-index erors */
 	inline void setPointColor_fast(size_t index, float R, float G, float B)
 	{
-		this->m_color_R[index] = R;
-		this->m_color_G[index] = G;
-		this->m_color_B[index] = B;
+		m_color_R[index] = R;
+		m_color_G[index] = G;
+		m_color_B[index] = B;
 	}
 
 	/** Retrieves a point and its color (colors range is [0,1])
@@ -310,7 +310,7 @@ class CColouredPointsMap : public CPointsMap
 
    protected:
 	/** The color data */
-	std::vector<float> m_color_R, m_color_G, m_color_B;
+	mrpt::aligned_std_vector<float> m_color_R, m_color_G, m_color_B;
 
 	/** Minimum distance from where the points have been seen */
 	// std::vector<float>	m_min_dist;

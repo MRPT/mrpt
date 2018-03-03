@@ -366,47 +366,9 @@ void CPointsMap::determineMatching2D(
 #if MRPT_HAS_SSE2
 	// Number of 4-floats:
 	size_t nPackets = nLocalPoints / 4;
-	if ((nLocalPoints & 0x03) != 0) nPackets++;
 
-	// Pad with zeros to make sure we have a number of points multiple of 4
-	size_t nLocalPoints_4align = nLocalPoints;
-	size_t nExtraPad = 0;
-	if (0 != (nLocalPoints & 0x03))
-	{
-		nExtraPad = 4 - (nLocalPoints & 0x03);
-		nLocalPoints_4align += nExtraPad;
-	}
-
-	Eigen::Array<float, Eigen::Dynamic, 1> x_locals(nLocalPoints_4align),
-		y_locals(nLocalPoints_4align);
-
-	// We'll assume that the real allocated memory in the source buffers at
-	// least have room for a maximum
-	//  of 3 more floats, and pad with zeroes there (yeah, fuck
-	//  correct-constness....)
-	// JLBC OCT/2016: resize() methods in maps have been modified to enforce
-	// capacities to be 4*N by design,
-	// but will leave this code here just in case (for some edge cases?)
-	if (otherMap->m_x.capacity() < nLocalPoints_4align ||
-		otherMap->m_y.capacity() < nLocalPoints_4align)
-	{
-		// This will happen perhaps...once in a lifetime? Anyway:
-		const_cast<vector<float>*>(&otherMap->m_x)
-			->reserve(nLocalPoints_4align + 16);
-		const_cast<vector<float>*>(&otherMap->m_y)
-			->reserve(nLocalPoints_4align + 16);
-	}
-
-	if (nExtraPad)
-	{
-		float* ptr_in_x = const_cast<float*>(&otherMap->m_x[0]);
-		float* ptr_in_y = const_cast<float*>(&otherMap->m_y[0]);
-		for (size_t k = nExtraPad; k; k--)
-		{
-			ptr_in_x[nLocalPoints + k] = 0;
-			ptr_in_y[nLocalPoints + k] = 0;
-		}
-	}
+	Eigen::Array<float, Eigen::Dynamic, 1> x_locals(nLocalPoints),
+		y_locals(nLocalPoints);
 
 	const __m128 cos_4val =
 		_mm_set1_ps(cos_phi);  // load 4 copies of the same value
@@ -461,6 +423,23 @@ void CPointsMap::determineMatching2D(
 	_mm_store_ps(temp_nums, y_maxs);
 	local_y_max =
 		max(max(temp_nums[0], temp_nums[1]), max(temp_nums[2], temp_nums[3]));
+
+	for (size_t k = 0; k < nLocalPoints % 4; k++)
+	{
+		float x = ptr_in_x[k];
+		float y = ptr_in_y[k];
+		float out_x = otherMapPose.x + cos_phi * x - sin_phi * y;
+		float out_y = otherMapPose.y + sin_phi * x + cos_phi * y;
+
+		local_x_min = std::min(local_x_min, out_x);
+		local_x_max = std::max(local_x_max, out_x);
+
+		local_y_min = std::min(local_y_min, out_y);
+		local_y_max = std::max(local_y_max, out_y);
+
+		ptr_out_x[k] = out_x;
+		ptr_out_y[k] = out_y;
+	}
 
 #else
 	// Non SSE2 version:
@@ -881,10 +860,10 @@ float CPointsMap::getLargestDistanceFromOrigin() const
 	if (!m_largestDistanceFromOriginIsUpdated)
 	{
 		// NO: Update it:
-		vector<float>::const_iterator X, Y, Z;
 		float maxDistSq = 0, d;
-		for (X = m_x.begin(), Y = m_y.begin(), Z = m_z.begin(); X != m_x.end();
-			 ++X, ++Y, ++Z)
+		for (auto X = m_x.begin(), Y = m_y.begin(), Z = m_z.begin();
+			X != m_x.end();
+			++X, ++Y, ++Z)
 		{
 			d = square(*X) + square(*Y) + square(*Z);
 			maxDistSq = max(d, maxDistSq);
@@ -906,8 +885,8 @@ void CPointsMap::getAllPoints(
 	ASSERT_(decimation > 0);
 	if (decimation == 1)
 	{
-		xs = m_x;
-		ys = m_y;
+		xs = vector<float>(m_x.begin(), m_x.end());
+		ys = vector<float>(m_y.begin(), m_y.end());
 	}
 	else
 	{
@@ -916,9 +895,9 @@ void CPointsMap::getAllPoints(
 		xs.resize(N);
 		ys.resize(N);
 
-		vector<float>::const_iterator X, Y;
-		vector<float>::iterator oX, oY;
-		for (X = m_x.begin(), Y = m_y.begin(), oX = xs.begin(), oY = ys.begin();
+		auto X = m_x.begin();
+		auto Y = m_y.begin();
+		for (auto oX = xs.begin(), oY = ys.begin();
 			 oX != xs.end(); X += decimation, Y += decimation, ++oX, ++oY)
 		{
 			*oX = *X;
@@ -994,46 +973,6 @@ void CPointsMap::boundingBox(
 
 			// Number of 4-floats:
 			size_t nPackets = nPoints / 4;
-			if ((nPoints & 0x03) != 0) nPackets++;
-
-			// Pad with zeros to make sure we have a number of points multiple
-			// of 4
-			size_t nPoints_4align = nPoints;
-			size_t nExtraPad = 0;
-			if (0 != (nPoints & 0x03))
-			{
-				nExtraPad = 4 - (nPoints & 0x03);
-				nPoints_4align += nExtraPad;
-			}
-
-			// We'll assume that the real allocated memory in the source buffers
-			// at least have room for a maximum
-			//  of 3 more floats, and pad with zeroes there (yeah, fuck
-			//  correct-constness....)
-			// JLBC OCT/2016: resize() methods in maps have been modified to
-			// enforce capacities to be 4*N by design,
-			// but will leave this code here just in case (for some edge cases?)
-			if (m_x.capacity() < nPoints_4align ||
-				m_y.capacity() < nPoints_4align || m_z.capacity() < nPoints_4align)
-			{
-				// This will happen perhaps...once in a lifetime? Anyway:
-				const_cast<vector<float>*>(&m_x)->reserve(nPoints_4align + 16);
-				const_cast<vector<float>*>(&m_y)->reserve(nPoints_4align + 16);
-				const_cast<vector<float>*>(&m_z)->reserve(nPoints_4align + 16);
-			}
-
-			if (nExtraPad)
-			{
-				float* ptr_in_x = const_cast<float*>(&m_x[0]);
-				float* ptr_in_y = const_cast<float*>(&m_y[0]);
-				float* ptr_in_z = const_cast<float*>(&m_z[0]);
-				for (size_t k = nExtraPad; k; k--)
-				{
-					ptr_in_x[nPoints + k - 1] = 0;
-					ptr_in_y[nPoints + k - 1] = 0;
-					ptr_in_z[nPoints + k - 1] = 0;
-				}
-			}
 
 			// For the bounding box:
 			__m128 x_mins = _mm_set1_ps(std::numeric_limits<float>::max());
@@ -1060,6 +999,7 @@ void CPointsMap::boundingBox(
 				z_mins = _mm_min_ps(z_mins, zs);
 				z_maxs = _mm_max_ps(z_maxs, zs);
 			}
+
 
 			// Recover the min/max:
 			alignas(16) float temp_nums[4];
@@ -1089,6 +1029,18 @@ void CPointsMap::boundingBox(
 				max(max(temp_nums[0], temp_nums[1]),
 					max(temp_nums[2], temp_nums[3]));
 
+			// extra
+			for (size_t k = 0; k < nPoints%4; k++)
+			{
+				m_bb_min_x = std::min(m_bb_min_x, ptr_in_x[k]);
+				m_bb_max_x = std::max(m_bb_max_x, ptr_in_x[k]);
+
+				m_bb_min_y = std::min(m_bb_min_y, ptr_in_y[k]);
+				m_bb_max_y = std::max(m_bb_max_y, ptr_in_y[k]);
+
+				m_bb_min_z = std::min(m_bb_min_z, ptr_in_z[k]);
+				m_bb_max_z = std::max(m_bb_max_z, ptr_in_z[k]);
+			}
 #else
 			// Non vectorized version:
 			m_bb_min_x = m_bb_min_y = m_bb_min_z =
