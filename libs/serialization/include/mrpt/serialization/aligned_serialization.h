@@ -7,15 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 #pragma once
-
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/core/aligned_std_vector.h>
 namespace mrpt
 {
-/** Like calling a std::vector<>'s clear() method, but really forcing
- * deallocating the memory. */
-template <class VECTOR_T>
-inline void vector_strong_clear(VECTOR_T& v)
+namespace serialization
 {
-	VECTOR_T dummy;
-	dummy.swap(v);
-}
-}  // end of namespace
+CArchive& operator>>(CArchive& s, mrpt::aligned_std_vector<float>& a);
+CArchive& operator<<(CArchive& s, const mrpt::aligned_std_vector<float>& a);
+}  // End of namespace
+}  // End of namespace

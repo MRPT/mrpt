@@ -378,7 +378,7 @@ class FAddUntracedLines
 	void operator()(const CObservation2DRangeScan& obs)
 	{
 		size_t hm = obs.scan.size();
-		for (std::vector<char>::const_iterator it = obs.validRange.begin();
+		for (auto it = obs.validRange.begin();
 			 it != obs.validRange.end(); ++it)
 			if (*it) hm--;
 		lins->reserve(hm);

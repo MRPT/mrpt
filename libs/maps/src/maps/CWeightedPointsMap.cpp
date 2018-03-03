@@ -71,7 +71,6 @@ CWeightedPointsMap::~CWeightedPointsMap() {}
  ---------------------------------------------------------------*/
 void CWeightedPointsMap::reserve(size_t newLength)
 {
-	newLength = mrpt::length2length4N(newLength);
 	m_x.reserve(newLength);
 	m_y.reserve(newLength);
 	m_z.reserve(newLength);
@@ -83,7 +82,6 @@ void CWeightedPointsMap::reserve(size_t newLength)
 //  and old contents are not changed.
 void CWeightedPointsMap::resize(size_t newLength)
 {
-	this->reserve(newLength);  // to ensure 4N capacity
 	m_x.resize(newLength, 0);
 	m_y.resize(newLength, 0);
 	m_z.resize(newLength, 0);
@@ -95,7 +93,6 @@ void CWeightedPointsMap::resize(size_t newLength)
 //  and leaving all points to default values.
 void CWeightedPointsMap::setSize(size_t newLength)
 {
-	this->reserve(newLength);  // to ensure 4N capacity
 	m_x.assign(newLength, 0);
 	m_y.assign(newLength, 0);
 	m_z.assign(newLength, 0);

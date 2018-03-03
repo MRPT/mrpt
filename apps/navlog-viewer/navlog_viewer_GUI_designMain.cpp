@@ -1608,8 +1608,8 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabPlotsSelected(
 			pts.changeCoordinatesReference(
 				logptr->WS_Obstacles, CPose3D(observationBasePose));
 
-			const std::vector<float>& pX = pts.getPointsBufferRef_x();
-			const std::vector<float>& pY = pts.getPointsBufferRef_y();
+			const auto& pX = pts.getPointsBufferRef_x();
+			const auto& pY = pts.getPointsBufferRef_y();
 
 			X.insert(X.begin(), pX.begin(), pX.end());
 			Y.insert(Y.begin(), pY.begin(), pY.end());
