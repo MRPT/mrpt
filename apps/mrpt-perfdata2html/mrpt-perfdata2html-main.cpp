@@ -210,7 +210,8 @@ int run_build_tables(const std::string& PERF_DATA_DIR)
 			PERF_DATA_DIR +
 			format("/perf-html/results_%s.html", P.config_name.c_str());
 		cout << "Generating: " << out_fil << "...\n";
-		CFileOutputStream fo(out_fil);
+		fo.close();
+		fo.open(out_fil);
 
 		fo.printf(
 			"<html><head><title>mrpt-performance results - Configuration: "
@@ -280,7 +281,8 @@ int run_build_tables(const std::string& PERF_DATA_DIR)
 			for (size_t k = 0; k < P2.all_perf_data.size(); k++)
 				P2_dat[P2.all_perf_data[k].first] = P2.all_perf_data[k].second;
 
-			CFileOutputStream fo(out_fil);
+			fo.close();
+			fo.open(out_fil);
 
 			fo.printf(
 				"<html><head><title>mrpt-performance results - %s vs "
