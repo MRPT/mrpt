@@ -70,14 +70,15 @@ inline std::string throw_stacked_exception (E&& e, char *file, unsigned long lin
   *	\param stuff Is a printf-like sequence of params, e.g: "The error happens
   *for x=%i",x
   */
-#define THROW_STACKED_EXCEPTION_CUSTOM_MSG2(e, stuff, param1) \
-	do                                                        \
-	{                                                         \
-		std::string s = e.what();                             \
-		s += mrpt::format(stuff, param1);                     \
-		s += "\n";                                            \
-		throw std::logic_error(s);                            \
-	} while (0)
+#define THROW_STACKED_EXCEPTION_CUSTOM_MSG2(e, stuff, param1) std::logic_error(throw_stacked_exception_custom_msg2(e, stuff, param1))
+template <typename E, typename T>
+inline std::string throw_stacked_exception_custom_msg2(E&& e, const char *stuff, T&& param1)
+{
+	std::string s = e.what();
+	s += mrpt::format(stuff, param1);
+	s += "\n";
+	return s;
+}
 
 /** For use in CSerializable implementations */
 #define MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(__V)                          \
@@ -121,24 +122,25 @@ inline std::string throw_stacked_exception (E&& e, char *file, unsigned long lin
 #define MRPT_COMPILE_TIME_ASSERT(expression) \
 	static_assert(expression, #expression)
 
-#define ASRT_FAIL(__CONDITIONSTR, __A, __B, __ASTR, __BSTR) \
-	{                                                       \
-		std::string s = __CONDITIONSTR;                     \
-		s += "(";                                           \
-		s += __ASTR;                                        \
-		s += ",";                                           \
-		s += __BSTR;                                        \
-		s += ") failed with\n";                             \
-		s += __ASTR;                                        \
-		s += "=";                                           \
-		s += mrpt::to_string(__A);                          \
-		s += "\n";                                          \
-		s += __BSTR;                                        \
-		s += "=";                                           \
-		s += mrpt::to_string(__B);                          \
-		s += "\n";                                          \
-		THROW_EXCEPTION(s);                                 \
-	}
+#define ASRT_FAIL(__CONDITIONSTR, __A, __B, __ASTR, __BSTR) THROW_EXCEPTION(asrt_fail(__CONDITIONSTR, __A, __B, __ASTR, __BSTR))
+template <typename A, typename B>
+inline std::string asrt_fail(std::string s, A&& a, B&& b, const char *astr, const char *bstr)
+{
+	s += "(";
+	s += astr;
+	s += ",";
+	s += bstr;
+	s += ") failed with\n";
+	s += astr;
+	s += "=";
+	s += mrpt::to_string(a);
+	s += "\n";
+	s += bstr;
+	s += "=";
+	s += mrpt::to_string(b);
+	s += "\n";
+	return s;
+}
 
 /** Assert comparing two values, reporting their actual values upon failure */
 #define ASSERT_EQUAL_(__A, __B)                                          \
