@@ -11,7 +11,7 @@ before_script:
   - docker images
 
 script:
-  - docker run -v $HOME:$HOME $CODECOV_VARS -e BUILD_TYPE -e MAKEFLAGS -e CCACHE_SLOPPINESS -e TASK -e DEPS -e CI_SOURCE_PATH -e REPOSITORY_NAME -e HOME -e DISTRO -e CI_ROS_DISTRO -e CODECOV_TOKEN $DOCKER_IMAGE bash -c 'cd $CI_SOURCE_PATH; apt-get update -qq ; source travis/check_style.sh; source travis/travis_main.sh'
+  - travis/travis_docker.sh
 
 env:
   global:
@@ -20,25 +20,30 @@ env:
 
 jobs:
   include:
-    - stage: Core Build
-      env: TASK="build" DOCKER_IMAGE=mrpt/mrpt-build-env:full
+    - stage: Core Build Stage 1
+      env: STAGE=1 TASK="build" DIST=full
       compiler: gcc
-    - env: TASK="build" DOCKER_IMAGE=mrpt/mrpt-build-env:full
+    - env: STAGE=1 TASK="build" DIST=full
+      compiler: clang
+    - stage: Core Build Stage 2
+      env: STAGE=2 TASK="build" DIST=full
+      compiler: gcc
+    - env: STAGE=2 TASK="build" DIST=full
       compiler: clang
     - stage: Core Tests
       compiler: gcc
-      env: TASK="tests" DOCKER_IMAGE=mrpt/mrpt-build-env:full
+      env: TASK="tests" DIST=full
     - compiler: clang
-      env: TASK="tests" DOCKER_IMAGE=mrpt/mrpt-build-env:full
+      env: TASK="tests" DIST=full
     - stage: Extended Builds and Tests
       compiler: gcc
-      env: TASK="build" DEPS="minimal" DOCKER_IMAGE=mrpt/mrpt-build-env:minimal
+      env: TASK="build" DEPS="minimal"
     - compiler: gcc
-      env: TASK="tests" DEPS="minimal" DOCKER_IMAGE=mrpt/mrpt-build-env:minimal
+      env: TASK="tests" DEPS="minimal"
     - compiler: gcc
-      env: TASK="build" DEPS="headless" DOCKER_IMAGE=mrpt/mrpt-build-env:headless
+      env: TASK="build" DEPS="headless"
     - compiler: gcc
-      env: TASK="tests" DEPS="headless" DOCKER_IMAGE=mrpt/mrpt-build-env:headless
+      env: TASK="tests" DEPS="headless"
     - language: python
-      env: TASK="lint" DOCKER_IMAGE=mrpt/mrpt-build-env:full
+      env: TASK="lint"
 
