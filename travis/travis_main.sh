@@ -66,7 +66,7 @@ function build ()
   cd $BUILD_DIR
 
   if [ "$STAGE" == "1" ]; then
-    make -j3 mrpt-poses
+    make -j3 mrpt-poses mrpt-nav mrpt-maps mrpt-graphs
   else
     make -j3
   fi
