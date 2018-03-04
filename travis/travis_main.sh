@@ -1,7 +1,8 @@
 #!/bin/bash
 set -e   # Make sure any error makes the script to return an error code
 
-MRPT_DIR=`pwd`
+ORIG_MRPT_DIR=`pwd`
+MRPT_DIR=/mrpt
 BUILD_DIR=/build
 
 CMAKE_C_FLAGS="-Wall -Wextra -Wabi"
@@ -18,8 +19,10 @@ function do_generate_makefile()
 {
   # prepare_build_dir
   # Make sure we dont have spurious files:
-  cd $MRPT_DIR
+  cd $ORIG_MRPT_DIR
   git clean -fd || true
+  rsync -av --exclude=.git $ORIG_MRPT_DIR /
+  cd $MRPT_DIR
 
   rm -fr $BUILD_DIR || true
   mkdir -p $BUILD_DIR
