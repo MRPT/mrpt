@@ -2,7 +2,7 @@
 set -e   # Make sure any error makes the script to return an error code
 
 MRPT_DIR=`pwd`
-BUILD_DIR=build
+BUILD_DIR=/build
 
 CMAKE_C_FLAGS="-Wall -Wextra -Wabi"
 CMAKE_CXX_FLAGS="-Wall -Wextra -Wabi"
@@ -52,12 +52,21 @@ function build ()
     DISABLE_PYTHON_BINDINGS=OFF
   fi
 
-  do_generate_makefile \
-    -DBUILD_EXAMPLES=$BUILD_EXAMPLES \
-    -DBUILD_TESTING=FALSE \
-    -DDISABLE_PYTHON_BINDINGS=$DISABLE_PYTHON_BINDINGS
+  #don't regenerate makefiles on stage 2
+  if [ "$STAGE" != "2" ]; then
+    do_generate_makefile \
+      -DBUILD_EXAMPLES=$BUILD_EXAMPLES \
+      -DBUILD_TESTING=FALSE \
+      -DDISABLE_PYTHON_BINDINGS=$DISABLE_PYTHON_BINDINGS
+  fi
 
-  make -j3
+  cd $BUILD_DIR
+
+  if [ "$STAGE" == "1" ]; then
+    make -j3 mrpt-poses
+  else
+    make -j3
+  fi
 
   cd $MRPT_DIR
 }
