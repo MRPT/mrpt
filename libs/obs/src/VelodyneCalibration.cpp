@@ -41,9 +41,9 @@ VelodyneCalibration::PerLaserCalib::PerLaserCalib()
 }
 
 VelodyneCalibration::VelodyneCalibration() : laser_corrections(0) {}
-bool VelodyneCalibration::internal_loadFromXMLNode(void* node)
+bool VelodyneCalibration::internal_loadFromXMLNode(void* node_ptr)
 {
-	XMLNode& root = *reinterpret_cast<XMLNode*>(node);
+	XMLNode& root = *reinterpret_cast<XMLNode*>(node_ptr);
 
 	XMLNode node_bs = root.getChildNode("boost_serialization");
 	if (node_bs.isEmpty())

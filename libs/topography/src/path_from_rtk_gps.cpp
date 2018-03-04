@@ -66,8 +66,6 @@ void mrpt::topography::path_from_rtk_gps(
 #endif
 
 	// Go: generate the map:
-	size_t i;
-
 	ASSERT_(first <= last);
 	ASSERT_(last <= rawlog.size() - 1);
 
@@ -130,8 +128,8 @@ void mrpt::topography::path_from_rtk_gps(
 #endif
 
 	// The list with all time ordered gps's in valid RTK mode
-	typedef std::map<mrpt::system::TTimeStamp,
-					 std::map<std::string, CObservationGPS::Ptr>>
+	typedef std::map<
+		mrpt::system::TTimeStamp, std::map<std::string, CObservationGPS::Ptr>>
 		TListGPSs;
 	TListGPSs list_gps_obs;
 
@@ -139,7 +137,7 @@ void mrpt::topography::path_from_rtk_gps(
 	map<string, TPoint3D>
 		GPS_local_coords_on_vehicle;  // label -> local pose on the vehicle
 
-	for (i = first; !abort && i <= last; i++)
+	for (size_t i = first; !abort && i <= last; i++)
 	{
 		switch (rawlog.getType(i))
 		{
@@ -334,11 +332,11 @@ void mrpt::topography::path_from_rtk_gps(
 			--E;
 			--E;
 
-			for (TListGPSs::iterator i = F; i != E; ++i)
+			for (TListGPSs::iterator it = F; it != E; ++it)
 			{
 				// Now check if we have 3 gps with the same time stamp:
 				// const size_t N = i->second.size();
-				std::map<std::string, CObservationGPS::Ptr>& GPS = i->second;
+				std::map<std::string, CObservationGPS::Ptr>& GPS = it->second;
 
 				// Check if any in "lstGPSLabels" is missing here:
 				for (set<string>::iterator l = lstGPSLabels.begin();
@@ -351,9 +349,9 @@ void mrpt::topography::path_from_rtk_gps(
 
 					// Ok, we have "*l" missing in the set "*i".
 					// Try to interpolate from neighbors:
-					TListGPSs::iterator i_b1 = i;
+					TListGPSs::iterator i_b1 = it;
 					--i_b1;
-					TListGPSs::iterator i_a1 = i;
+					TListGPSs::iterator i_a1 = it;
 					++i_a1;
 
 					CObservationGPS::Ptr GPS_b1, GPS_a1;
@@ -405,7 +403,7 @@ void mrpt::topography::path_from_rtk_gps(
 							new_gps->timestamp =
 								(GPS_a1->timestamp + GPS_b1->timestamp) / 2;
 
-							i->second[new_gps->sensorLabel] = new_gps;
+							it->second[new_gps->sensorLabel] = new_gps;
 						}
 					}
 				}
@@ -473,15 +471,14 @@ void mrpt::topography::path_from_rtk_gps(
 						k;  // Save index correspondence
 
 					// Create the correspondence:
-					corrs.push_back(
-						TMatchingPair(
-							k, k,  // Indices
-							P.x, P.y, P.z,  // "This"/Global coords
-							g_it->second->sensorPose.x(),
-							g_it->second->sensorPose.y(),
-							g_it->second->sensorPose
-								.z()  // "other"/local coordinates
-							));
+					corrs.push_back(TMatchingPair(
+						k, k,  // Indices
+						P.x, P.y, P.z,  // "This"/Global coords
+						g_it->second->sensorPose.x(),
+						g_it->second->sensorPose.y(),
+						g_it->second->sensorPose
+							.z()  // "other"/local coordinates
+						));
 
 					X[k] = P.x;
 					Y[k] = P.y;

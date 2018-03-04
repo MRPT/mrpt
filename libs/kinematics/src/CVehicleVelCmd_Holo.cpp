@@ -21,8 +21,11 @@ CVehicleVelCmd_Holo::CVehicleVelCmd_Holo()
 }
 
 CVehicleVelCmd_Holo::CVehicleVelCmd_Holo(
-	double vel, double dir_local, double ramp_time, double rot_speed)
-	: vel(vel), dir_local(dir_local), ramp_time(ramp_time), rot_speed(rot_speed)
+	double vel_, double dir_local_, double ramp_time_, double rot_speed_)
+	: vel(vel_),
+	  dir_local(dir_local_),
+	  ramp_time(ramp_time_),
+	  rot_speed(rot_speed_)
 {
 }
 

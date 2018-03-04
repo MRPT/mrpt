@@ -27,7 +27,8 @@ using mrpt::img::CImage;
 IMPLEMENTS_SERIALIZABLE(CMesh, CRenderizableDisplayList, mrpt::opengl)
 
 CMesh::CMesh(
-	bool enableTransparency, float xMin, float xMax, float yMin, float yMax)
+	bool enableTransparency, float xMin_p, float xMax_p, float yMin_p,
+	float yMax_p)
 	: m_textureImage(0, 0),
 	  m_enableTransparency(enableTransparency),
 	  m_colorFromZ(false),
@@ -44,10 +45,10 @@ CMesh::CMesh(
 	  m_colorMap(mrpt::img::cmHOT),
 	  m_modified_Z(true),
 	  m_modified_Image(false),
-	  xMin(xMin),
-	  xMax(xMax),
-	  yMin(yMin),
-	  yMax(yMax),
+	  xMin(xMin_p),
+	  xMax(xMax_p),
+	  yMin(yMin_p),
+	  yMax(yMax_p),
 	  trianglesUpToDate(false)
 {
 	m_color.A = 255;
@@ -189,8 +190,9 @@ void CMesh::updateTriangles() const
 
 				// Add triangle:
 				actualMesh.push_back(
-					std::pair<CSetOfTriangles::TTriangle,
-							  TTriangleVertexIndices>(tri, tvi));
+					std::pair<
+						CSetOfTriangles::TTriangle, TTriangleVertexIndices>(
+						tri, tvi));
 
 				// For averaging normals:
 				for (int k = 0; k < 3; k++)
@@ -265,8 +267,9 @@ void CMesh::updateTriangles() const
 
 				// Add triangle:
 				actualMesh.push_back(
-					std::pair<CSetOfTriangles::TTriangle,
-							  TTriangleVertexIndices>(tri, tvi));
+					std::pair<
+						CSetOfTriangles::TTriangle, TTriangleVertexIndices>(
+						tri, tvi));
 
 				// For averaging normals:
 				for (int k = 0; k < 3; k++)
@@ -321,12 +324,12 @@ void CMesh::render_dl() const
 			glDisable(GL_LIGHTING);  // Disable lights when drawing lines
 			glBegin(GL_LINE_LOOP);
 		}
-		for (int i = 0; i < 3; i++)
+		for (int k = 0; k < 3; k++)
 		{
-			const mrpt::math::TPoint3D& n = vertex_normals[tvi.vind[i]].first;
+			const mrpt::math::TPoint3D& n = vertex_normals[tvi.vind[k]].first;
 			glNormal3f(n.x, n.y, n.z);
-			glColor4f(t.r[i], t.g[i], t.b[i], t.a[i]);
-			glVertex3f(t.x[i], t.y[i], t.z[i]);
+			glColor4f(t.r[k], t.g[k], t.b[k], t.a[k]);
+			glVertex3f(t.x[k], t.y[k], t.z[k]);
 		}
 		if (m_isWireFrame)
 		{

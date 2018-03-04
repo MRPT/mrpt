@@ -269,7 +269,7 @@ squared, so just a dimension is needed.
 \return False on any error.
  ---------------------------------------------------------------*/
 bool COccupancyGridMap2D::loadFromBitmapFile(
-	const std::string& file, float resolution, float xCentralPixel,
+	const std::string& file, float res, float xCentralPixel,
 	float yCentralPixel)
 {
 	MRPT_START
@@ -278,7 +278,7 @@ bool COccupancyGridMap2D::loadFromBitmapFile(
 	if (!imgFl.loadFromFile(file, 0)) return false;
 
 	m_is_empty = false;
-	return loadFromBitmap(imgFl, resolution, xCentralPixel, yCentralPixel);
+	return loadFromBitmap(imgFl, res, xCentralPixel, yCentralPixel);
 
 	MRPT_END
 }
@@ -287,7 +287,7 @@ bool COccupancyGridMap2D::loadFromBitmapFile(
 					loadFromBitmap
  ---------------------------------------------------------------*/
 bool COccupancyGridMap2D::loadFromBitmap(
-	const mrpt::img::CImage& imgFl, float resolution, float xCentralPixel,
+	const mrpt::img::CImage& imgFl, float res, float xCentralPixel,
 	float yCentralPixel)
 {
 	MRPT_START
@@ -308,12 +308,12 @@ bool COccupancyGridMap2D::loadFromBitmap(
 		}
 
 		// Resize grid:
-		float new_x_max = (imgFl.getWidth() - xCentralPixel) * resolution;
-		float new_x_min = -xCentralPixel * resolution;
-		float new_y_max = (imgFl.getHeight() - yCentralPixel) * resolution;
-		float new_y_min = -yCentralPixel * resolution;
+		float new_x_max = (imgFl.getWidth() - xCentralPixel) * res;
+		float new_x_min = -xCentralPixel * res;
+		float new_y_max = (imgFl.getHeight() - yCentralPixel) * res;
+		float new_y_min = -yCentralPixel * res;
 
-		setSize(new_x_min, new_x_max, new_y_min, new_y_max, resolution);
+		setSize(new_x_min, new_x_max, new_y_min, new_y_max, res);
 	}
 
 	// And load cells content:

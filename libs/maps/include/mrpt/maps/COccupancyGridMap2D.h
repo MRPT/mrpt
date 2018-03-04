@@ -227,10 +227,10 @@ class COccupancyGridMap2D : public CMetricMap,
 	struct TUpdateCellsInfoChangeOnly
 	{
 		TUpdateCellsInfoChangeOnly(
-			bool enabled = false, double I_change = 0, int cellsUpdated = 0)
-			: enabled(enabled),
-			  I_change(I_change),
-			  cellsUpdated(cellsUpdated),
+			bool enabled_ = false, double I_change_ = 0, int cellsUpdated_ = 0)
+			: enabled(enabled_),
+			  I_change(I_change_),
+			  cellsUpdated(cellsUpdated_),
 			  laserRaysSkip(1)
 		{
 		}
@@ -337,13 +337,13 @@ class COccupancyGridMap2D : public CMetricMap,
 
 	/** Transform a coordinate value into a cell index, using a diferent "x_min"
 	 * value */
-	inline int x2idx(float x, float x_min) const
+	inline int x2idx(float x, float xmin) const
 	{
-		return static_cast<int>((x - x_min) / resolution);
+		return static_cast<int>((x - xmin) / resolution);
 	}
-	inline int y2idx(float y, float y_min) const
+	inline int y2idx(float y, float ymin) const
 	{
-		return static_cast<int>((y - y_min) / resolution);
+		return static_cast<int>((y - ymin) / resolution);
 	}
 
 	/** Scales an integer representation of the log-odd into a real valued

@@ -16,10 +16,12 @@
 
 /** \def THROW_TYPED_EXCEPTION(msg,exceptionClass) */
 #define THROW_TYPED_EXCEPTION(msg, exceptionClass) \
-	throw exceptionClass(throw_typed_exception(msg, __CURRENT_FUNCTION_NAME__, __LINE__))
+	throw exceptionClass(                          \
+		throw_typed_exception(msg, __CURRENT_FUNCTION_NAME__, __LINE__))
 
 template <typename T>
-inline std::string throw_typed_exception(const T&msg, const char * function_name, unsigned int line)
+inline std::string throw_typed_exception(
+	const T& msg, const char* function_name, unsigned int line)
 {
 	std::string s = "\n\n =============== MRPT EXCEPTION =============\n";
 	s += function_name;
@@ -32,10 +34,10 @@ inline std::string throw_typed_exception(const T&msg, const char * function_name
 }
 
 /** \def THROW_EXCEPTION(msg);
-* \param msg This can be a char*, a std::string, or a literal string.
-* Defines a unified way of reporting exceptions
-* \sa MRPT_TRY_START, MRPT_TRY_END, THROW_EXCEPTION_FMT
-*/
+ * \param msg This can be a char*, a std::string, or a literal string.
+ * Defines a unified way of reporting exceptions
+ * \sa MRPT_TRY_START, MRPT_TRY_END, THROW_EXCEPTION_FMT
+ */
 #define THROW_EXCEPTION(msg) THROW_TYPED_EXCEPTION(msg, std::logic_error);
 
 #define THROW_EXCEPTION_FMT(_FORMAT_STRING, ...) \
@@ -48,11 +50,13 @@ inline std::string throw_typed_exception(const T&msg, const char * function_name
 /** \def THROW_STACKED_EXCEPTION
  * \sa MRPT_TRY_START, MRPT_TRY_END
  */
-#define THROW_STACKED_EXCEPTION(e) \
-throw std::logic_error(throw_stacked_exception(e, __FILE__, __LINE__, __CURRENT_FUNCTION_NAME__))
+#define THROW_STACKED_EXCEPTION(e)                  \
+	throw std::logic_error(throw_stacked_exception( \
+		e, __FILE__, __LINE__, __CURRENT_FUNCTION_NAME__))
 
 template <typename E>
-inline std::string throw_stacked_exception (E&& e, char *file, unsigned long line, const char *funcName)
+inline std::string throw_stacked_exception(
+	E&& e, char* file, unsigned long line, const char* funcName)
 {
 	std::string s = e.what();
 	s += "\n";
@@ -66,13 +70,15 @@ inline std::string throw_stacked_exception (E&& e, char *file, unsigned long lin
 }
 
 /** \def THROW_STACKED_EXCEPTION_CUSTOM_MSG
-  * \param e The caught exception.
-  *	\param stuff Is a printf-like sequence of params, e.g: "The error happens
-  *for x=%i",x
-  */
-#define THROW_STACKED_EXCEPTION_CUSTOM_MSG2(e, stuff, param1) std::logic_error(throw_stacked_exception_custom_msg2(e, stuff, param1))
+ * \param e The caught exception.
+ *	\param stuff Is a printf-like sequence of params, e.g: "The error happens
+ *for x=%i",x
+ */
+#define THROW_STACKED_EXCEPTION_CUSTOM_MSG2(e, stuff, param1) \
+	std::logic_error(throw_stacked_exception_custom_msg2(e, stuff, param1))
 template <typename E, typename T>
-inline std::string throw_stacked_exception_custom_msg2(E&& e, const char *stuff, T&& param1)
+inline std::string throw_stacked_exception_custom_msg2(
+	E&& e, const char* stuff, T&& param1)
 {
 	std::string s = e.what();
 	s += mrpt::format(stuff, param1);
@@ -81,11 +87,10 @@ inline std::string throw_stacked_exception_custom_msg2(E&& e, const char *stuff,
 }
 
 /** For use in CSerializable implementations */
-#define MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(__V)                          \
-	THROW_EXCEPTION(                                                           \
-		mrpt::format(                                                          \
-			"Cannot parse object: unknown serialization version number: '%i'", \
-			static_cast<int>(__V)))
+#define MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(__V)                      \
+	THROW_EXCEPTION(mrpt::format(                                          \
+		"Cannot parse object: unknown serialization version number: '%i'", \
+		static_cast<int>(__V)))
 
 /** Defines an assertion mechanism.
  * \note Do NOT put code that must be always executed inside this statement, but
@@ -122,9 +127,11 @@ inline std::string throw_stacked_exception_custom_msg2(E&& e, const char *stuff,
 #define MRPT_COMPILE_TIME_ASSERT(expression) \
 	static_assert(expression, #expression)
 
-#define ASRT_FAIL(__CONDITIONSTR, __A, __B, __ASTR, __BSTR) THROW_EXCEPTION(asrt_fail(__CONDITIONSTR, __A, __B, __ASTR, __BSTR))
+#define ASRT_FAIL(__CONDITIONSTR, __A, __B, __ASTR, __BSTR) \
+	THROW_EXCEPTION(asrt_fail(__CONDITIONSTR, __A, __B, __ASTR, __BSTR))
 template <typename A, typename B>
-inline std::string asrt_fail(std::string s, A&& a, B&& b, const char *astr, const char *bstr)
+inline std::string asrt_fail(
+	std::string s, A&& a, B&& b, const char* astr, const char* bstr)
 {
 	s += "(";
 	s += astr;
@@ -199,42 +206,33 @@ inline std::string asrt_fail(std::string s, A&& a, B&& b, const char *astr, cons
 
 /** The start of a standard MRPT "try...catch()" block that allows tracing throw
  * the call stack after an exception.
-  * \sa MRPT_TRY_END,MRPT_TRY_END_WITH_CLEAN_UP
-  */
+ * \sa MRPT_TRY_END,MRPT_TRY_END_WITH_CLEAN_UP
+ */
 #define MRPT_TRY_START \
 	try                \
 	{
 /** The end of a standard MRPT "try...catch()" block that allows tracing throw
  * the call stack after an exception.
-  * \sa MRPT_TRY_START,MRPT_TRY_END_WITH_CLEAN_UP
-  */
-#define MRPT_TRY_END                                           \
-	}                                                          \
-	catch (std::bad_alloc&) { throw; }                         \
-	catch (std::exception & e) { THROW_STACKED_EXCEPTION(e); } \
+ * \sa MRPT_TRY_START,MRPT_TRY_END_WITH_CLEAN_UP
+ */
+#define MRPT_TRY_END                                                       \
+	}                                                                      \
+	catch (std::bad_alloc&) { throw; }                                     \
+	catch (std::exception & __excep) { THROW_STACKED_EXCEPTION(__excep); } \
 	catch (...) { THROW_EXCEPTION("Unexpected runtime error!"); }
 /** The end of a standard MRPT "try...catch()" block that allows tracing throw
  * the call stack after an exception, including a "clean up" piece of code to be
  * run before throwing the exceptions.
-  * \sa MRPT_TRY_END,MRPT_TRY_START
-  */
-#define MRPT_TRY_END_WITH_CLEAN_UP(stuff)             \
-	}                                                 \
-	catch (std::bad_alloc&) { throw; }                \
-	catch (std::exception & e)                        \
-	{                                                 \
-		{                                             \
-			stuff                                     \
-		}                                             \
-		THROW_STACKED_EXCEPTION(e);                   \
-	}                                                 \
-	catch (...)                                       \
-	{                                                 \
-		{                                             \
-			stuff                                     \
-		}                                             \
-		THROW_EXCEPTION("Unexpected runtime error!"); \
-	}
+ * \sa MRPT_TRY_END,MRPT_TRY_START
+ */
+#define MRPT_TRY_END_WITH_CLEAN_UP(stuff)         \
+	}                                             \
+	catch (std::bad_alloc&) { throw; }            \
+	catch (std::exception & __excep)              \
+	{                                             \
+		{stuff} THROW_STACKED_EXCEPTION(__excep); \
+	}                                             \
+	catch (...) { {stuff} THROW_EXCEPTION("Unexpected runtime error!"); }
 
 #if MRPT_ENABLE_EMBEDDED_GLOBAL_PROFILER
 #define MRPT_PROFILE_FUNC_START               \
