@@ -21,29 +21,29 @@ env:
 jobs:
   include:
     - stage: Core Build Stage 1
-      env: STAGE=1 TASK="build" DIST=full
+      env: STAGE=1 TASK="build" DEPS="full" BUILD_TARGET="mrpt-hmtslam"
       compiler: gcc
-    - env: STAGE=1 TASK="build" DIST=full
+    - env: STAGE=1 TASK="build" DEPS="full" BUILD_TARGET="mrpt-hmtslam"
       compiler: clang
     - stage: Core Build Stage 2
-      env: STAGE=2 TASK="build" DIST=full
+      env: STAGE=2 TASK="build" DEPS="full"
       compiler: gcc
-    - env: STAGE=2 TASK="build" DIST=full
+    - env: STAGE=2 TASK="build" DEPS="full"
       compiler: clang
     - stage: Core Tests
       compiler: gcc
-      env: TASK="tests" DIST=full
+      env: TASK="test" DEPS="full"
     - compiler: clang
-      env: TASK="tests" DIST=full
+      env: TASK="test" DEPS="full"
     - stage: Extended Builds and Tests
       compiler: gcc
       env: TASK="build" DEPS="minimal"
     - compiler: gcc
-      env: TASK="tests" DEPS="minimal"
+      env: TASK="test" DEPS="minimal"
     - compiler: gcc
       env: TASK="build" DEPS="headless"
     - compiler: gcc
-      env: TASK="tests" DEPS="headless"
+      env: TASK="test" DEPS="headless"
     - language: python
       env: TASK="lint"
 
