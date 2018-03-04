@@ -18,32 +18,27 @@ env:
     - MAKEFLAGS="-j 2"
     - CCACHE_SLOPPINESS=pch_defines,time_macros
 
-matrix:
+jobs:
   include:
-  - compiler: gcc
-    os: linux
-    env: TASK="build" DOCKER_IMAGE=mrpt/mrpt-build-env:full
-  - compiler: gcc
-    os: linux
-    env: TASK="test" DOCKER_IMAGE=mrpt/mrpt-build-env:full
-  - compiler: gcc
-    os: linux
-    env: TASK="build" DEPS="headless" DOCKER_IMAGE=mrpt/mrpt-build-env:headless
-  - compiler: gcc
-    os: linux
-    env: TASK="test" DEPS="headless" DOCKER_IMAGE=mrpt/mrpt-build-env:headless
-  - compiler: gcc
-    os: linux
-    env: TASK="build" DEPS="minimal" DOCKER_IMAGE=mrpt/mrpt-build-env:minimal
-  - compiler: gcc
-    os: linux
-    env: TASK="test" DEPS="minimal" DOCKER_IMAGE=mrpt/mrpt-build-env:minimal
-  - compiler: clang
-    os: linux
-    env: TASK="build" DOCKER_IMAGE=mrpt/mrpt-build-env:full
-  - compiler: clang
-    os: linux
-    env: TASK="test" DOCKER_IMAGE=mrpt/mrpt-build-env:full
-  - language: python
-    os: linux
-    env: TASK="lint" DOCKER_IMAGE=mrpt/mrpt-build-env:full
+    - stage: Core Build
+      env: TASK="build" DOCKER_IMAGE=mrpt/mrpt-build-env:full
+      compiler: gcc
+    - env: TASK="build" DOCKER_IMAGE=mrpt/mrpt-build-env:full
+      compiler: clang
+    - stage: Core Tests
+      compiler: gcc
+      env: TASK="tests" DOCKER_IMAGE=mrpt/mrpt-build-env:full
+    - compiler: clang
+      env: TASK="tests" DOCKER_IMAGE=mrpt/mrpt-build-env:full
+    - stage: Extended Builds and Tests
+      compiler: gcc
+      env: TASK="build" DEPS="minimal" DOCKER_IMAGE=mrpt/mrpt-build-env:minimal
+    - compiler: gcc
+      env: TASK="tests" DEPS="minimal" DOCKER_IMAGE=mrpt/mrpt-build-env:minimal
+    - compiler: gcc
+      env: TASK="build" DEPS="headless" DOCKER_IMAGE=mrpt/mrpt-build-env:headless
+    - compiler: gcc
+      env: TASK="tests" DEPS="headless" DOCKER_IMAGE=mrpt/mrpt-build-env:headless
+    - language: python
+      env: TASK="lint" DOCKER_IMAGE=mrpt/mrpt-build-env:full
+
