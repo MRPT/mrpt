@@ -137,9 +137,10 @@ IMPLEMENTS_SERIALIZABLE(CLandmarksMap, CMetricMap, mrpt::maps)
 /*---------------------------------------------------------------
 				Static variables initialization
   ---------------------------------------------------------------*/
-std::map<std::pair<mrpt::maps::CLandmark::TLandmarkID,
-				   mrpt::maps::CLandmark::TLandmarkID>,
-		 double>
+std::map<
+	std::pair<
+		mrpt::maps::CLandmark::TLandmarkID, mrpt::maps::CLandmark::TLandmarkID>,
+	double>
 	CLandmarksMap::_mEDD;
 mrpt::maps::CLandmark::TLandmarkID CLandmarksMap::_mapMaxID;
 bool CLandmarksMap::_maxIDUpdated = false;
@@ -1226,8 +1227,9 @@ void CLandmarksMap::computeMatchingWith3DLandmarks(
 								// DESCRIPTORS IF IT HAS NOT BEEN COMPUTED
 								// BEFORE
 								// Make the pair of points
-								std::pair<mrpt::maps::CLandmark::TLandmarkID,
-										  mrpt::maps::CLandmark::TLandmarkID>
+								std::pair<
+									mrpt::maps::CLandmark::TLandmarkID,
+									mrpt::maps::CLandmark::TLandmarkID>
 									mPair(thisIt->ID, otherIt->ID);
 
 								if (CLandmarksMap::_mEDD[mPair] == 0)
@@ -1443,10 +1445,11 @@ bool CLandmarksMap::saveToTextFile(std::string file)
 		os::fprintf(
 			f, "%10f %10f %10f %4i %4u %10f", it->pose_mean.x, it->pose_mean.y,
 			it->pose_mean.z, static_cast<int>(it->getType()),
-			it->seenTimesCount, it->timestampLastSeen == INVALID_TIMESTAMP
-									? 0
-									: mrpt::system::extractDayTimeFromTimestamp(
-										  it->timestampLastSeen));
+			it->seenTimesCount,
+			it->timestampLastSeen == INVALID_TIMESTAMP
+				? 0
+				: mrpt::system::extractDayTimeFromTimestamp(
+					  it->timestampLastSeen));
 
 		if (it->getType() == featSIFT)
 		{
@@ -2015,33 +2018,14 @@ float CLandmarksMap::TCustomSequenceLandmarks::getLargestDistanceFromOrigin()
 double CLandmarksMap::computeLikelihood_SIFT_LandmarkMap(
 	CLandmarksMap* theMap, TMatchingPairList* correspondences,
 	std::vector<bool>* otherCorrespondences)
-// double	 CLandmarksMap::computeLikelihood_SIFT_LandmarkMap( CLandmarksMap
-// *theMap )
 {
-	// std::cout << "Entrando en computeLikelihood -- MAPA_OTHER: " <<
-	// theMap->landmarks.size() << std::endl;
-	// std::cout << "Entrando en computeLikelihood -- MAPA_THIS: " <<
-	// this->landmarks.size() << std::endl;
 	double lik = 0;  // For 'traditional'
 	double lik_i;
 	unsigned long distDesc;
 	double likByDist, likByDesc;
 
-	// FILE						*f;
-
-	// int							nFeaturesThis = this->size();
-	// int							nFeaturesAuxMap = theMap->size();
-	TSequenceLandmarks::iterator lm1, lm2;
 	std::vector<unsigned char>::iterator it1, it2;
-
-	// Fast look-up, precomputed, variables:
-	// double						sigmaDist3 = 4.0 *
-	// likelihoodOptions.SIFTs_sigma_euclidean_dist;
-
-	/**** FAMD ****/
 	double K_dist = -0.5 / square(likelihoodOptions.SIFTs_mahaDist_std);
-	// double						K_dist = - 0.5;
-	/**************/
 	double K_desc =
 		-0.5 / square(likelihoodOptions.SIFTs_sigma_descriptor_dist);
 
@@ -2055,10 +2039,11 @@ double CLandmarksMap::computeLikelihood_SIFT_LandmarkMap(
 	switch (insertionOptions.SIFTLikelihoodMethod)
 	{
 		case 0:  // Our method
-
+		{
 			// lik = 1e-9;		// For consensus
 			lik = 1.0;  // For traditional
 
+			TSequenceLandmarks::iterator lm1, lm2;
 			for (idx1 = 0, lm1 = theMap->landmarks.begin();
 				 lm1 < theMap->landmarks.end();
 				 lm1 += decimation, idx1 += decimation)  // Other theMap LM1
@@ -2097,7 +2082,6 @@ double CLandmarksMap::computeLikelihood_SIFT_LandmarkMap(
 								Cij_1);  //( dij * Cij_1 * (~dij) )(0,0);
 
 							likByDist = exp(K_dist * distMahaFlik2);
-							// std::cout << likByDist << std::endl;
 
 							if (likByDist > 1e-2)
 							{
@@ -2108,8 +2092,9 @@ double CLandmarksMap::computeLikelihood_SIFT_LandmarkMap(
 
 								// IF the EDD has been already computed, we skip
 								// this step!
-								std::pair<mrpt::maps::CLandmark::TLandmarkID,
-										  mrpt::maps::CLandmark::TLandmarkID>
+								std::pair<
+									mrpt::maps::CLandmark::TLandmarkID,
+									mrpt::maps::CLandmark::TLandmarkID>
 									mPair(lm2->ID, lm1->ID);
 								// std::cout << "Par: (" << lm2->ID << "," <<
 								// lm1->ID << ") -> ";
@@ -2132,48 +2117,21 @@ double CLandmarksMap::computeLikelihood_SIFT_LandmarkMap(
 												   ->descriptors.SIFT.begin(),
 										it2 = lm2->features[0]
 												  ->descriptors.SIFT.begin();
-										 it1 !=
-										 lm1->features[0]
-											 ->descriptors.SIFT.end();
+										 it1 != lm1->features[0]
+													->descriptors.SIFT.end();
 										 it1++, it2++)
 										distDesc += square(*it1 - *it2);
 
 									// Insert into the vector of Euclidean
 									// distances
 									CLandmarksMap::_mEDD[mPair] = distDesc;
-									// std::cout << "Nueva entrada! - (LIK): "
-									// << exp( K_desc * distDesc ) << " -> " <<
-									// "(" << mPair.first << "," << mPair.second
-									// << ")" << std::endl;
-
 								}  // end if
 								else
 								{
 									distDesc = (unsigned long)
 										CLandmarksMap::_mEDD[mPair];
-									// std::cout << "Ya esta calculado!: " <<
-									// "(" << mPair.first << "," << mPair.second
-									// << ")"  << ": " << distDesc << std::endl;
 								}
-
 								likByDesc = exp(K_desc * distDesc);
-
-								// likByDesc = max(likByDesc, 1e-5);
-								// printf("LIK (%d,%d) - (Dist) %f , (Desc) %f -
-								// %u\n", idx1, idx2, likByDist, likByDesc,
-								// distDesc );
-
-								// if (likByDesc>0.9)
-								//{
-								//	printf("LM1: %d (%.3f,%.3f,%.3f), LM2: %d
-								//(%.3f,%.3f,%.3f)\n",	idx1, lm1->pose_mean.x,
-								// lm1->pose_mean.y, lm1->pose_mean.z,
-								//																	idx2,
-								// lm2->pose_mean.x, lm2->pose_mean.y,
-								// lm2->pose_mean.z );
-								//	mrpt::system::pause();
-								//}
-
 								lik_i += likByDist *
 										 likByDesc;  // Cumulative Likelihood
 							}
@@ -2185,30 +2143,12 @@ double CLandmarksMap::computeLikelihood_SIFT_LandmarkMap(
 								lik_i += 1e-10f;
 							}
 						}  // end if
-
 					}  // end for "lm2"
-					// lik += (0.1 + 0.9*lik_i);		// (CONSENSUS) Total
-					// likelihood (assuming independent probabilities)
-					// lik += lik_i;					// (CONSENSUS) Total
-					// likelihood
-					// (assuming independent probabilities)
 					lik *= (0.1 + 0.9 * lik_i);  // (TRADITIONAL) Total
-					// likelihood (assuming
-					// independent probabilities)
-					// lik *= lik_i;				// (TRADITIONAL) Total
-					// likelihood
-					// (assuming independent probabilities)
 				}
 			}  // end for "lm1"
-			// std::cout << "LIK OBS:" << lik << std::endl;
-
-			// f = os::fopen("likelihood","a+");
-			// os::fprintf(f, "%e\n", lik);
-			// os::fclose(f);
-			// std::cout << "Fin del computeLikelihood: " << lik << std::endl;
-			// system("pause");
-
-			break;
+		}
+		break;
 
 		case 1:  // SIM, ELINAS, GRIFFIN, LITTLE
 			double dist;
@@ -2260,13 +2200,6 @@ double CLandmarksMap::computeLikelihood_SIFT_LandmarkMap(
 			break;
 
 	}  // end switch
-
-	/** /
-	saveToMATLABScript3D(std::string(("ver_ref.m")),"b.");
-	theMap->saveToMATLABScript3D(std::string(("ver_sensed.m")),"r.");
-	theMap->saveToTextFile(std::string("debug_map1.txt"));
-	this->saveToTextFile(std::string("debug_map2.txt"));
-	/ **/
 
 	lik = log(lik);
 	MRPT_CHECK_NORMAL_NUMBER(lik);
@@ -2819,9 +2752,8 @@ float CLandmarksMap::compute3DMatchingRatio(
 			d(0, 1) = D.y;
 			d(0, 2) = D.z;
 
-			float distMaha = sqrt(
-				d.multiply_HCHt_scalar(
-					COV.inv()));  //(d*COV.inv()*(~d))(0,0) );
+			float distMaha = sqrt(d.multiply_HCHt_scalar(
+				COV.inv()));  //(d*COV.inv()*(~d))(0,0) );
 
 			if (distMaha < params.maxMahaDistForCorr)
 			{

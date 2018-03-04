@@ -114,7 +114,7 @@ bool tfest::se3_l2_robust(
 		}
 
 		CPose3DQuat mbOutQuat;
-		const bool res = mrpt::tfest::se3_l2(
+		bool res = mrpt::tfest::se3_l2(
 			mbInliers, mbOutQuat, scale, params.forceScaleToUnity);
 		if (!res)
 		{
@@ -155,7 +155,7 @@ bool tfest::se3_l2_robust(
 			// Consensus set: Maybe inliers + new point
 			CPose3DQuat csOutQuat;
 			mbInliers.push_back(in_correspondences[idx]);  // Insert
-			const bool res = mrpt::tfest::se3_l2(
+			res = mrpt::tfest::se3_l2(
 				mbInliers, csOutQuat, scale, params.forceScaleToUnity);
 			mbInliers.erase(mbInliers.end() - 1);  // Erase
 
@@ -199,7 +199,7 @@ bool tfest::se3_l2_robust(
 
 			// Compute output: Consensus Set + Initial Inliers Guess
 			CPose3DQuat cIOutQuat;
-			const bool res = mrpt::tfest::se3_l2(
+			res = mrpt::tfest::se3_l2(
 				cSetInliers, cIOutQuat, scale,
 				params.forceScaleToUnity);  // Compute output
 			ASSERTMSG_(

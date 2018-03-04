@@ -887,9 +887,9 @@ CPolyhedron::Ptr CPolyhedron::CreateJohnsonSolidWithConstantBase(
 	TPolyhedronFace face;
 	face.vertices.reserve(numBaseEdges);
 	// Each body is inserted.
-	for (size_t i = 0; i < nParts; i++)
+	for (size_t p = 0; p < nParts; p++)
 	{
-		switch (parts[i])
+		switch (parts[p])
 		{
 			case INF_NO_BODY:
 				// Inferior base.

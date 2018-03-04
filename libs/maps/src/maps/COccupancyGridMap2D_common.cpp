@@ -104,7 +104,7 @@ CLogOddsGridMapLUT<COccupancyGridMap2D::cellType>&
 						Constructor
   ---------------------------------------------------------------*/
 COccupancyGridMap2D::COccupancyGridMap2D(
-	float min_x, float max_x, float min_y, float max_y, float resolution)
+	float min_x, float max_x, float min_y, float max_y, float res)
 	: map(),
 	  size_x(0),
 	  size_y(0),
@@ -126,7 +126,7 @@ COccupancyGridMap2D::COccupancyGridMap2D(
 	  CriticalPointsList()
 {
 	MRPT_START
-	setSize(min_x, max_x, min_y, max_y, resolution, 0.5f);
+	setSize(min_x, max_x, min_y, max_y, res, 0.5f);
 	MRPT_END
 }
 
@@ -154,13 +154,13 @@ void COccupancyGridMap2D::copyMapContentFrom(const COccupancyGridMap2D& o)
 }
 
 void COccupancyGridMap2D::setSize(
-	float x_min, float x_max, float y_min, float y_max, float resolution,
+	float xmin, float xmax, float ymin, float ymax, float res,
 	float default_value)
 {
 	MRPT_START
 
-	ASSERT_(resolution > 0);
-	ASSERT_(x_max > x_min && y_max > y_min);
+	ASSERT_(res > 0);
+	ASSERT_(xmax > xmin && ymax > ymin);
 	ASSERT_(default_value >= 0 && default_value <= 1);
 
 	freeMap();
@@ -168,17 +168,17 @@ void COccupancyGridMap2D::setSize(
 
 	// Adjust sizes to adapt them to full sized cells acording to the
 	// resolution:
-	x_min = resolution * round(x_min / resolution);
-	y_min = resolution * round(y_min / resolution);
-	x_max = resolution * round(x_max / resolution);
-	y_max = resolution * round(y_max / resolution);
+	xmin = res * round(xmin / res);
+	ymin = res * round(ymin / res);
+	xmax = res * round(xmax / res);
+	ymax = res * round(ymax / res);
 
 	// Set parameters:
-	this->resolution = resolution;
-	this->x_min = x_min;
-	this->x_max = x_max;
-	this->y_min = y_min;
-	this->y_max = y_max;
+	this->resolution = res;
+	this->x_min = xmin;
+	this->x_max = xmax;
+	this->y_min = ymin;
+	this->y_max = ymax;
 
 	// Now the number of cells should be integers:
 	size_x = round((x_max - x_min) / resolution);
@@ -401,8 +401,8 @@ void COccupancyGridMap2D::computeEntropy(TEntropyInfo& info) const
 	for (std::vector<cellType>::const_iterator it = map.begin();
 		 it != map.end(); ++it)
 	{
-		cellTypeUnsigned i = static_cast<cellTypeUnsigned>(*it);
-		h = entropyTable[i];
+		cellTypeUnsigned ctu = static_cast<cellTypeUnsigned>(*it);
+		h = entropyTable[ctu];
 		info.H += h;
 		if (h < (MAX_H - 0.001f))
 		{

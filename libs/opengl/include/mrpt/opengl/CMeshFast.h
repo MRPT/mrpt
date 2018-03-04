@@ -21,23 +21,23 @@ namespace opengl
 {
 /** A planar (XY) grid where each cell has an associated height and, optionally,
  * a texture map.
-  * To make it faster to render, instead of drawing lines and triangles it draws
+ * To make it faster to render, instead of drawing lines and triangles it draws
  * a point at each
-  * gridcell.
-  *  A typical usage example would be an elevation map or a 3D model of a
+ * gridcell.
+ *  A typical usage example would be an elevation map or a 3D model of a
  * terrain.
-  *  \sa opengl::COpenGLScene
-  *
-  *  <div align="center">
-  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
+ *  \sa opengl::COpenGLScene
+ *
+ *  <div align="center">
+ *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
  * border-style: solid;">
-  *   <tr> <td> mrpt::opengl::CMeshFast </td> <td> \image html
+ *   <tr> <td> mrpt::opengl::CMeshFast </td> <td> \image html
  * preview_CMeshFast.png </td> </tr>
-  *  </table>
-  *  </div>
-  *
-  * \ingroup mrpt_opengl_grp
-  */
+ *  </table>
+ *  </div>
+ *
+ * \ingroup mrpt_opengl_grp
+ */
 class CMeshFast : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CMeshFast)
@@ -195,7 +195,7 @@ class CMeshFast : public CRenderizableDisplayList
 		float yMin = -1.0f, float yMax = 1.0f);
 
 	/** Render
-	  */
+	 */
 	void render_dl() const override;
 
 	/** Evaluates the bounding box of this object (including possible children)
@@ -205,18 +205,18 @@ class CMeshFast : public CRenderizableDisplayList
 		mrpt::math::TPoint3D& bb_max) const override;
 
 	/** Assigns a texture image, and disable transparency.
-	  */
+	 */
 	void assignImage(const mrpt::img::CImage& img);
 
 	/** Assigns a texture image and Z simultaneously, and disable transparency.
-	  */
+	 */
 	void assignImageAndZ(
 		const mrpt::img::CImage& img,
 		const mrpt::math::CMatrixTemplateNumeric<float>& in_Z);
 
 	/** Adjust grid limits according to the image aspect ratio, maintaining the
 	 * X limits and resizing in the Y direction.
-	  */
+	 */
 	inline void adjustGridToImageAR()
 	{
 		ASSERT_(m_isImage);
@@ -230,10 +230,10 @@ class CMeshFast : public CRenderizableDisplayList
 	}
 
 	/** Constructor
-	  */
+	 */
 	CMeshFast(
-		bool enableTransparency = false, float xMin = -1.0f, float xMax = 1.0f,
-		float yMin = -1.0f, float yMax = 1.0f)
+		bool enableTransparency = false, float xMin_p = -1.0f,
+		float xMax_p = 1.0f, float yMin_p = -1.0f, float yMax_p = 1.0f)
 		: m_textureImage(0, 0),
 		  m_enableTransparency(enableTransparency),
 		  m_colorFromZ(false),
@@ -248,10 +248,10 @@ class CMeshFast : public CRenderizableDisplayList
 		  m_colorMap(mrpt::img::cmJET),
 		  m_modified_Z(true),
 		  m_modified_Image(false),
-		  xMin(xMin),
-		  xMax(xMax),
-		  yMin(yMin),
-		  yMax(yMax),
+		  xMin(xMin_p),
+		  xMax(xMax_p),
+		  yMin(yMin_p),
+		  yMax(yMax_p),
 		  pointsUpToDate(false)
 	{
 		m_color.A = 255;
@@ -263,8 +263,8 @@ class CMeshFast : public CRenderizableDisplayList
 	virtual ~CMeshFast() {}
 };
 
-}  // end namespace
+}  // namespace opengl
 
-}  // End of namespace
+}  // namespace mrpt
 
 #endif
