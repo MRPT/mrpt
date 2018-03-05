@@ -1,8 +1,9 @@
 #!/bin/bash
 set -e   # Make sure any error makes the script to return an error code
 
-MRPT_DIR=`pwd`
-BUILD_DIR=build
+ORIG_MRPT_DIR=`pwd`
+MRPT_DIR=/mrpt
+BUILD_DIR=/build
 
 CMAKE_C_FLAGS="-Wall -Wextra -Wabi"
 CMAKE_CXX_FLAGS="-Wall -Wextra -Wabi"
@@ -18,8 +19,10 @@ function do_generate_makefile()
 {
   # prepare_build_dir
   # Make sure we dont have spurious files:
-  cd $MRPT_DIR
+  cd $ORIG_MRPT_DIR
   git clean -fd || true
+  rsync -av --exclude=.git $ORIG_MRPT_DIR /
+  cd $MRPT_DIR
 
   rm -fr $BUILD_DIR || true
   mkdir -p $BUILD_DIR
@@ -52,12 +55,21 @@ function build ()
     DISABLE_PYTHON_BINDINGS=OFF
   fi
 
-  do_generate_makefile \
-    -DBUILD_EXAMPLES=$BUILD_EXAMPLES \
-    -DBUILD_TESTING=FALSE \
-    -DDISABLE_PYTHON_BINDINGS=$DISABLE_PYTHON_BINDINGS
+  #don't regenerate makefiles on stage 2
+  if [ "$STAGE" != "2" ]; then
+    do_generate_makefile \
+      -DBUILD_EXAMPLES=$BUILD_EXAMPLES \
+      -DBUILD_TESTING=FALSE \
+      -DDISABLE_PYTHON_BINDINGS=$DISABLE_PYTHON_BINDINGS
+  fi
 
-  make -j3
+  cd $BUILD_DIR
+
+  if [ "$STAGE" == "1" ]; then
+    make -j2 $BUILD_TARGET
+  else
+    make -j2
+  fi
 
   cd $MRPT_DIR
 }
