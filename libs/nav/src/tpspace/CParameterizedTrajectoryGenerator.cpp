@@ -540,7 +540,7 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(
 		this->getPathPose(k, step, pose);
 
 		// obstacle to robot clearance:
-		pose.inverseComposePoint(og, ol);
+		ol = pose.inverseComposePoint(og);
 		const double this_clearance =
 			treat_as_obstacle ? this->evalClearanceToRobotShape(ol.x, ol.y)
 							  : ol.norm();
