@@ -289,10 +289,11 @@ void CPointsMap::clipOutOfRange(const TPoint2D& p, float maxRange)
 	// The deletion mask:
 	deletionMask.resize(n);
 
+	const auto max_sq = maxRange*maxRange;
+
 	// Compute it:
 	for (i = 0; i < n; i++)
-		deletionMask[i] =
-			std::sqrt(square(p.x - m_x[i]) + square(p.y - m_y[i])) > maxRange;
+		deletionMask[i] = square(p.x - m_x[i]) + square(p.y - m_y[i]) > max_sq;
 
 	// Perform deletion:
 	applyDeletionMask(deletionMask);
@@ -312,7 +313,7 @@ void CPointsMap::determineMatching2D(
 	ASSERT_ABOVE_(params.decimation_other_map_points, 0);
 	ASSERT_BELOW_(
 		params.offset_other_map_points, params.decimation_other_map_points);
-	ASSERT_(otherMap2->GetRuntimeClass()->derivedFrom(CLASS_ID(CPointsMap)));
+	ASSERT_(IS_DERIVED(otherMap2, CPointsMap));
 	const CPointsMap* otherMap = static_cast<const CPointsMap*>(otherMap2);
 
 	const TPose2D otherMapPose(
@@ -338,8 +339,7 @@ void CPointsMap::determineMatching2D(
 	float x_local, y_local;
 	unsigned int localIdx;
 
-	const float *x_other_it, *y_other_it,
-		*z_other_it;  // *x_global_it,*y_global_it; //,*z_global_it;
+	const float *x_other_it, *y_other_it, *z_other_it;
 
 	// Prepare output: no correspondences initially:
 	correspondences.clear();
@@ -349,29 +349,24 @@ void CPointsMap::determineMatching2D(
 	TMatchingPairList _correspondences;
 	_correspondences.reserve(nLocalPoints);
 
-	// Hay mapa global?
-	if (!nGlobalPoints) return;  // No
-
-	// Hay mapa local?
-	if (!nLocalPoints) return;  // No
+	// Nothing to do if we have an empty map!
+	if (!nGlobalPoints || !nLocalPoints) return;
 
 	const double sin_phi = sin(otherMapPose.phi);
 	const double cos_phi = cos(otherMapPose.phi);
 
 	// Do matching only there is any chance of the two maps to overlap:
 	// -----------------------------------------------------------
-
-	// Translate and rotate all local points:
-
+	// Translate and rotate all local points, while simultaneously 
+	// estimating the bounding box:
 #if MRPT_HAS_SSE2
 	// Number of 4-floats:
 	size_t nPackets = nLocalPoints / 4;
 
-	Eigen::Array<float, Eigen::Dynamic, 1> x_locals(nLocalPoints),
-		y_locals(nLocalPoints);
+	Eigen::ArrayXf x_locals(nLocalPoints), y_locals(nLocalPoints);
 
-	const __m128 cos_4val =
-		_mm_set1_ps(cos_phi);  // load 4 copies of the same value
+	// load 4 copies of the same value
+	const __m128 cos_4val = _mm_set1_ps(cos_phi);
 	const __m128 sin_4val = _mm_set1_ps(sin_phi);
 	const __m128 x0_4val = _mm_set1_ps(otherMapPose.x);
 	const __m128 y0_4val = _mm_set1_ps(otherMapPose.y);
@@ -424,6 +419,7 @@ void CPointsMap::determineMatching2D(
 	local_y_max =
 		max(max(temp_nums[0], temp_nums[1]), max(temp_nums[2], temp_nums[3]));
 
+	// transform extra pts & update BBox
 	for (size_t k = 0; k < nLocalPoints % 4; k++)
 	{
 		float x = ptr_in_x[k];
