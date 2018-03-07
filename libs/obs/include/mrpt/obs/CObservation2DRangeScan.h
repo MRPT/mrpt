@@ -64,10 +64,10 @@ class CObservation2DRangeScan : public CObservation
 	mrpt::aligned_std_vector<float> m_scan;
 	/** The intensity values of the scan. If available, must have same length
 	 * than \a validRange */
-	std::vector<int32_t> m_intensity;
+	mrpt::aligned_std_vector<int32_t> m_intensity;
 	/** It's false (=0) on no reflected rays, referenced to elements in \a scan
 	 */
-	std::vector<char> m_validRange;
+	mrpt::aligned_std_vector<char> m_validRange;
 	/** Whether the intensity values are present or not. If not, space is saved
 	 * during serialization. */
 	bool m_has_intensity{false};
@@ -107,14 +107,14 @@ class CObservation2DRangeScan : public CObservation
 
 	/** The intensity values of the scan. If available, must have same length
 	 * than \a validRange */
-	mrpt::containers::ContainerReadOnlyProxyAccessor<std::vector<int32_t>>
+	mrpt::containers::ContainerReadOnlyProxyAccessor<mrpt::aligned_std_vector<int32_t>>
 		intensity{m_intensity};
 	int32_t getScanIntensity(const size_t i) const;
 	void setScanIntensity(const size_t i, const int val);
 
 	/** It's false (=0) on no reflected rays, referenced to elements in \a scan
 	 */
-	mrpt::containers::ContainerReadOnlyProxyAccessor<std::vector<char>>
+	mrpt::containers::ContainerReadOnlyProxyAccessor<mrpt::aligned_std_vector<char>>
 		validRange{m_validRange};
 	bool getScanRangeValidity(const size_t i) const;
 	void setScanRangeValidity(const size_t i, const bool val);

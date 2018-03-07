@@ -595,9 +595,9 @@ void COccupancyGridMap2D::determineMatching2D(
 	float local_y_min = std::numeric_limits<float>::max();
 	float local_y_max = -std::numeric_limits<float>::max();
 
-	const std::vector<float>& otherMap_pxs = otherMap->getPointsBufferRef_x();
-	const std::vector<float>& otherMap_pys = otherMap->getPointsBufferRef_y();
-	const std::vector<float>& otherMap_pzs = otherMap->getPointsBufferRef_z();
+	const auto & otherMap_pxs = otherMap->getPointsBufferRef_x();
+	const auto & otherMap_pys = otherMap->getPointsBufferRef_y();
+	const auto & otherMap_pzs = otherMap->getPointsBufferRef_z();
 
 	// Translate all local map points:
 	for (unsigned int localIdx = params.offset_other_map_points;

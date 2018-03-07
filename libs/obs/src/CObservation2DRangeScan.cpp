@@ -14,7 +14,6 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/wrap2pi.h>
-#include <mrpt/core/bits_mem.h>  // length2length4N()
 #if MRPT_HAS_MATLAB
 #include <mexplus.h>
 #endif
@@ -68,14 +67,13 @@ void CObservation2DRangeScan::truncateByDistanceAndAngle(
 	float h)
 {
 	// FILTER OUT INVALID POINTS!!
-	mrpt::aligned_std_vector<float>::iterator itScan;
-	std::vector<char>::iterator itValid;
 	CPose3D pose;
-	unsigned int k;
+	unsigned int k = 0;
 	unsigned int nPts = scan.size();
 
-	for (itScan = m_scan.begin(), itValid = m_validRange.begin(), k = 0;
-		 itScan != m_scan.end(); itScan++, itValid++, k++)
+
+	auto itValid = m_validRange.begin();
+	for (auto itScan = m_scan.begin(); itScan != m_scan.end(); itScan++, itValid++, k++)
 	{
 		float ang = fabs(k * aperture / nPts - aperture * 0.5);
 		float x = (*itScan) * cos(ang);
@@ -292,11 +290,8 @@ void CObservation2DRangeScan::filterByExclusionAreas(
 		dA = -aperture / (sizeRangeScan - 1);
 	}
 
-	std::vector<char>::iterator valid_it;
-	mrpt::aligned_std_vector<float>::const_iterator scan_it;
-
-	for (scan_it = m_scan.begin(), valid_it = m_validRange.begin();
-		 scan_it != m_scan.end(); scan_it++, valid_it++)
+	auto valid_it = m_validRange.begin();
+	for (auto scan_it = m_scan.begin(); scan_it != m_scan.end(); scan_it++, valid_it++)
 	{
 		if (!*valid_it)
 		{
@@ -542,11 +537,6 @@ void CObservation2DRangeScan::setScanRangeValidity(
 
 void CObservation2DRangeScan::resizeScan(const size_t len)
 {
-	const size_t capacity = mrpt::length2length4N(len);
-	m_scan.reserve(capacity);
-	m_intensity.reserve(capacity);
-	m_validRange.reserve(capacity);
-
 	m_scan.resize(len);
 	m_intensity.resize(len);
 	m_validRange.resize(len);
@@ -556,11 +546,6 @@ void CObservation2DRangeScan::resizeScanAndAssign(
 	const size_t len, const float rangeVal, const bool rangeValidity,
 	const int32_t rangeIntensity)
 {
-	const size_t capacity = mrpt::length2length4N(len);
-	m_scan.reserve(capacity);
-	m_intensity.reserve(capacity);
-	m_validRange.reserve(capacity);
-
 	m_scan.assign(len, rangeVal);
 	m_validRange.assign(len, rangeValidity);
 	m_intensity.assign(len, rangeIntensity);
