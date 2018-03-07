@@ -12,6 +12,7 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/core/safe_pointers.h>
+#include <mrpt/core/aligned_std_vector.h>
 #include <mrpt/math/KDTreeCapable.h>
 #include <mrpt/obs/CSinCosLookUpTableFor2DScans.h>
 #include <mrpt/math/lightweight_geom_data.h>
@@ -515,13 +516,13 @@ class CPointsMap : public CMetricMap,
 
 	/** Provides a direct access to a read-only reference of the internal point
 	 * buffer. \sa getAllPoints */
-	inline const std::vector<float>& getPointsBufferRef_x() const { return m_x; }
+	inline const mrpt::aligned_std_vector<float>& getPointsBufferRef_x() const { return m_x; }
 	/** Provides a direct access to a read-only reference of the internal point
 	 * buffer. \sa getAllPoints */
-	inline const std::vector<float>& getPointsBufferRef_y() const { return m_y; }
+	inline const mrpt::aligned_std_vector<float>& getPointsBufferRef_y() const { return m_y; }
 	/** Provides a direct access to a read-only reference of the internal point
 	 * buffer. \sa getAllPoints */
-	inline const std::vector<float>& getPointsBufferRef_z() const { return m_z; }
+	inline const mrpt::aligned_std_vector<float>& getPointsBufferRef_z() const { return m_z; }
 	/** Returns a copy of the 2D/3D points as a std::vector of float
 	 * coordinates.
 	 * If decimation is greater than 1, only 1 point out of that number will be
@@ -1090,7 +1091,7 @@ class CPointsMap : public CMetricMap,
 
    protected:
 	/** The point coordinates */
-	std::vector<float> m_x, m_y, m_z;
+	mrpt::aligned_std_vector<float> m_x, m_y, m_z;
 
 	/** Cache of sin/cos values for the latest 2D scan geometries. */
 	mrpt::obs::CSinCosLookUpTableFor2DScans m_scans_sincos_cache;

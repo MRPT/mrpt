@@ -59,11 +59,9 @@ mrpt::maps::CMetricMap* CSimplePointsMap::internal_CreateFromMapDefinition(
 
 IMPLEMENTS_SERIALIZABLE(CSimplePointsMap, CPointsMap, mrpt::maps)
 
-CSimplePointsMap::CSimplePointsMap() { reserve(400); }
+CSimplePointsMap::CSimplePointsMap() { }
 void CSimplePointsMap::reserve(size_t newLength)
 {
-	newLength = mrpt::length2length4N(newLength);
-
 	m_x.reserve(newLength);
 	m_y.reserve(newLength);
 	m_z.reserve(newLength);

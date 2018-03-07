@@ -16,7 +16,7 @@
 #include <mrpt/img/color_maps.h>
 #include <mrpt/system/os.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
-#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/aligned_serialization.h>
 
 #include "CPointsMap_crtp_common.h"
 
@@ -77,8 +77,6 @@ IMPLEMENTS_SERIALIZABLE(CColouredPointsMap, CPointsMap, mrpt::maps)
 
 void CColouredPointsMap::reserve(size_t newLength)
 {
-	newLength = mrpt::length2length4N(newLength);
-
 	m_x.reserve(newLength);
 	m_y.reserve(newLength);
 	m_z.reserve(newLength);
@@ -92,8 +90,6 @@ void CColouredPointsMap::reserve(size_t newLength)
 //  and old contents are not changed.
 void CColouredPointsMap::resize(size_t newLength)
 {
-	this->reserve(newLength);  // to ensure 4N capacity
-
 	m_x.resize(newLength, 0);
 	m_y.resize(newLength, 0);
 	m_z.resize(newLength, 0);
@@ -108,8 +104,6 @@ void CColouredPointsMap::resize(size_t newLength)
 //  and leaving all points to default values.
 void CColouredPointsMap::setSize(size_t newLength)
 {
-	this->reserve(newLength);  // to ensure 4N capacity
-
 	m_x.assign(newLength, 0);
 	m_y.assign(newLength, 0);
 	m_z.assign(newLength, 0);
