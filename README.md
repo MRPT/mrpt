@@ -34,7 +34,7 @@ and [much more](http://www.mrpt.org/list-of-mrpt-apps/).
 
 ## 3. Install
 
-### 3.1. Ubuntu PPA
+### 3.1. Ubuntu
 
 See [PPA](https://launchpad.net/~joseluisblancoc/+archive/ubuntu/mrpt) for mrpt 2.0 branch (for mrpt 1.5.* [read here](https://github.com/MRPT/mrpt/tree/mrpt-1.5#31-ubuntu-ppa)).
 
@@ -43,9 +43,15 @@ See [PPA](https://launchpad.net/~joseluisblancoc/+archive/ubuntu/mrpt) for mrpt 
         sudo apt-get install libmrpt-dev mrpt-apps
 
 Supported distributions:
-  * Ubuntu 16.04LTS Xenial.
-  * Ubuntu 17.10 Artful.
-  * Ubuntu 18.04 Bionic.
+  * Ubuntu 18.04 Bionic
+  * Ubuntu 17.10 Artful (EOL: July 2018)
+  * Ubuntu 16.04LTS Xenial (EOL: April 2021)
+  	* Using 16.04 requires installing gcc-7 due to some bugs in gcc-5:
+
+        add-apt-repository ppa:ubuntu-toolchain-r/test
+        apt-get update
+        apt-get install -y g++-7
+
 
 ### 3.2. Build from sources
 
