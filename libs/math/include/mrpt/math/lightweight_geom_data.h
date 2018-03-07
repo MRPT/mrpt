@@ -65,7 +65,7 @@ struct TPoint2D : public TPoseOrPoint
 	/**
 	 * Constructor from coordinates.
 	 */
-	inline TPoint2D(double xx, double yy) : x(xx), y(yy) {}
+	inline constexpr TPoint2D(double xx, double yy) : x(xx), y(yy) {}
 	/**
 	 * Default fast constructor. Initializes to garbage.
 	 */
@@ -326,7 +326,7 @@ struct TPoint3Df : public TPoseOrPoint
 	float z;
 
 	inline TPoint3Df() {}
-	inline TPoint3Df(const float xx, const float yy, const float zz)
+	inline constexpr TPoint3Df(const float xx, const float yy, const float zz)
 		: x(xx), y(yy), z(zz)
 	{
 	}
@@ -388,7 +388,7 @@ struct TPoint3D : public TPoseOrPoint
 	double x, y, z;
 
 	/** Constructor from coordinates.  */
-	inline TPoint3D(double xx, double yy, double zz) : x(xx), y(yy), z(zz) {}
+	inline constexpr TPoint3D(double xx, double yy, double zz) : x(xx), y(yy), z(zz) {}
 	/** Default fast constructor. Initializes to garbage. */
 	inline TPoint3D() {}
 	/** Explicit constructor from coordinates.  */
@@ -580,7 +580,7 @@ struct TPointXYZfIu8
 	mrpt::math::TPoint3Df pt;
 	uint8_t intensity;
 	inline TPointXYZfIu8() : pt(), intensity(0) {}
-	inline TPointXYZfIu8(float x, float y, float z, uint8_t intensity_val)
+	inline constexpr TPointXYZfIu8(float x, float y, float z, uint8_t intensity_val)
 		: pt(x, y, z), intensity(intensity_val)
 	{
 	}
@@ -591,7 +591,7 @@ struct TPointXYZfRGBu8
 	mrpt::math::TPoint3Df pt;
 	uint8_t R, G, B;
 	inline TPointXYZfRGBu8() : pt(), R(0), G(0), B(0) {}
-	inline TPointXYZfRGBu8(
+	inline constexpr TPointXYZfRGBu8(
 		float x, float y, float z, uint8_t R_val, uint8_t G_val, uint8_t B_val)
 		: pt(x, y, z), R(R_val), G(G_val), B(B_val)
 	{
@@ -636,7 +636,7 @@ struct TPose3D : public TPoseOrPoint
 	/**
 	 * Constructor from coordinates.
 	 */
-	TPose3D(
+	constexpr TPose3D(
 		double _x, double _y, double _z, double _yaw, double _pitch,
 		double _roll)
 		: x(_x), y(_y), z(_z), yaw(_yaw), pitch(_pitch), roll(_roll)
@@ -777,7 +777,7 @@ struct TPose3DQuat : public TPoseOrPoint
 	double qr, qx, qy, qz;
 
 	/** Constructor from coordinates. */
-	inline TPose3DQuat(
+	inline constexpr TPose3DQuat(
 		double _x, double _y, double _z, double _qr, double _qx, double _qy,
 		double _qz)
 		: x(_x), y(_y), z(_z), qr(_qr), qx(_qx), qy(_qy), qz(_qz)
@@ -1226,11 +1226,9 @@ struct TLine2D
 	/**
 	 * Constructor from line's coefficients.
 	 */
-	inline TLine2D(double A, double B, double C)
+	inline constexpr TLine2D(double A, double B, double C) : 
+		coefs{ A,B,C }
 	{
-		coefs[0] = A;
-		coefs[1] = B;
-		coefs[2] = C;
 	}
 	/**
 	 * Construction from 3D object, discarding the Z.
@@ -1385,12 +1383,9 @@ struct TPlane
 	/**
 	 * Constructor from plane coefficients.
 	 */
-	inline TPlane(double A, double B, double C, double D)
+	inline constexpr TPlane(double A, double B, double C, double D) :
+		coefs{A,B,C,D}
 	{
-		coefs[0] = A;
-		coefs[1] = B;
-		coefs[2] = C;
-		coefs[3] = D;
 	}
 	/**
 	 * Constructor from an array of coefficients.
@@ -2162,7 +2157,7 @@ struct TTwist2D
 	double omega;
 
 	/** Constructor from components */
-	inline TTwist2D(double vx_, double vy_, double omega_)
+	inline constexpr TTwist2D(double vx_, double vy_, double omega_)
 		: vx(vx_), vy(vy_), omega(omega_)
 	{
 	}
@@ -2250,7 +2245,7 @@ struct TTwist3D
 	double wx, wy, wz;
 
 	/** Constructor from components */
-	inline TTwist3D(
+	inline constexpr TTwist3D(
 		double vx_, double vy_, double vz_, double wx_, double wy_, double wz_)
 		: vx(vx_), vy(vy_), vz(vz_), wx(wx_), wy(wy_), wz(wz_)
 	{

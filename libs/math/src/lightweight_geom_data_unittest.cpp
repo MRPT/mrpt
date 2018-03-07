@@ -66,3 +66,29 @@ TEST(LightGeomData, ExpectedMemorySizes)
 	EXPECT_EQ(sizeof(TPose3D), 6 * sizeof(double));
 	EXPECT_EQ(sizeof(TPose3DQuat), 7 * sizeof(double));
 }
+
+TEST(LightGeomData, ConstExprCtors)
+{
+	{
+		const TPoint2D p(1.0, 2.0);
+		EXPECT_EQ(p.x, 1.0);
+		EXPECT_EQ(p.y, 2.0);
+	}
+	{
+		constexpr TPoint2D p(1.0, 2.0);
+		static_assert(p.x == 1.0, "p.x == 1.0");
+		static_assert(p.y == 2.0, "p.y == 2.0");
+	}
+	{
+		constexpr TPoint3D p(1.0, 2.0, 3.0);
+		static_assert(p.x == 1.0, "p.x == 1.0");
+		static_assert(p.y == 2.0, "p.y == 2.0");
+		static_assert(p.z == 3.0, "p.z == 3.0");
+	}
+	{
+		constexpr TPose3D p(1.0, 2.0, 3.0, 0.1, 0.2, 0.3);
+		static_assert(p.x == 1.0, "p.x == 1.0");
+		static_assert(p.y == 2.0, "p.y == 2.0");
+		static_assert(p.z == 3.0, "p.z == 3.0");
+	}
+}

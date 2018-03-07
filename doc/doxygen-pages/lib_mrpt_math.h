@@ -23,5 +23,12 @@ This library is part of MRPT and can be installed in Debian-based systems with:
 
 Main classes and concepts associated with this library:
 
+Lightweight geometry entities: Write me!
+
+Comparison: lightweight vs. {CPose*, CPoint*}: (Move to a new doc page?)
+ - Both can be serialized, but CPose* are CSerializable-based.
+ - CPose* require aligned memory (they hold Eigen containers).
+ - CPose* include a cache for precomputed cos/sin values, so they are preferable when doing many pose (+) point compositions.
+ - Lightweight containers can be constexpr constructed, CPose* cannot.
 
 */
