@@ -1159,7 +1159,7 @@ inline void TPolygon2D::createRegularPolygon(
 	size_t numEdges, double radius, TPolygon2D& poly, const TPose2D& pose)
 {
 	createRegularPolygon(numEdges, radius, poly);
-	for (size_t i = 0; i < numEdges; i++) pose.composePoint(poly[i], poly[i]);
+	for (size_t i = 0; i < numEdges; i++) poly[i] = pose.composePoint(poly[i]);
 }
 
 double TPolygon3D::distance(const TPoint3D& point) const
