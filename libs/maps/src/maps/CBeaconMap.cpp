@@ -454,7 +454,7 @@ bool CBeaconMap::internal_insertObservation(
 							newBeac.m_locationSOG,  // Output SOG
 							this,  // My CBeaconMap, for options.
 							sensorPnt  // Sensor point
-							);
+						);
 					}
 
 					// and insert it:
@@ -476,24 +476,17 @@ bool CBeaconMap::internal_insertObservation(
 							double maxW = -1e308, sumW = 0;
 							// Update weights:
 							// --------------------
-							for (CPointPDFParticles::CParticleList::iterator
-									 it =
-										 beac->m_locationMC.m_particles.begin();
-								 it != beac->m_locationMC.m_particles.end();
-								 ++it)
+							for (auto& p : beac->m_locationMC.m_particles)
 							{
 								float expectedRange = sensorPnt.distance3DTo(
-									it->d->x, it->d->y, it->d->z);
-								// Add bias:
-								// expectedRange +=
-								// float(0.1*(1-exp(-0.16*expectedRange)));
-								it->log_w +=
+									p.d->x, p.d->y, p.d->z);
+								p.log_w +=
 									-0.5 * square(
 											   (sensedRange - expectedRange) /
 											   likelihoodOptions.rangeStd);
-								maxW = max(it->log_w, maxW);
-								sumW += exp(it->log_w);
-							}  // end for it
+								maxW = max(p.log_w, maxW);
+								sumW += exp(p.log_w);
+							}
 
 							// Perform resampling (SIR filter) or not (simply
 							// accumulate weights)??
@@ -557,23 +550,21 @@ bool CBeaconMap::internal_insertObservation(
 
 								// Remove very very very unlikely particles:
 								// -------------------------------------------
-								for (CPointPDFParticles::CParticleList::iterator
-										 it = beac->m_locationMC.m_particles
-												  .begin();
-									 it !=
+								for (auto it_p =
+										 beac->m_locationMC.m_particles.begin();
+									 it_p !=
 									 beac->m_locationMC.m_particles.end();)
 								{
-									if (it->log_w <
-										(maxW -
-										 insertionOptions
-											 .MC_thresholdNegligible))
+									if (it_p->log_w <
+										(maxW - insertionOptions
+													.MC_thresholdNegligible))
 									{
-										it->d.reset();
-										it = beac->m_locationMC.m_particles
-												 .erase(it);
+										it_p->d.reset();
+										it_p = beac->m_locationMC.m_particles
+												   .erase(it_p);
 									}
 									else
-										++it;
+										++it_p;
 								}
 							}  // end "do not resample"
 
@@ -582,12 +573,8 @@ bool CBeaconMap::internal_insertObservation(
 							//  log_w -= log(sumW);
 							// -----------------------------------------
 							sumW = log(sumW);
-							for (CPointPDFParticles::CParticleList::iterator
-									 it =
-										 beac->m_locationMC.m_particles.begin();
-								 it != beac->m_locationMC.m_particles.end();
-								 ++it)
-								it->log_w -= sumW;
+							for (auto& p : beac->m_locationMC.m_particles)
+								p.log_w -= sumW;
 
 							// Is the moment to turn into a Gaussian??
 							// -------------------------------------------
@@ -699,13 +686,11 @@ bool CBeaconMap::internal_insertObservation(
 							//  1) Update its weight (using the likelihood of
 							//  the observation linearized at the mean)
 							//  2) Update its mean/cov (as in the simple EKF)
-							CPointPDFSOG::iterator it;
 							double max_w = -1e9;
-							for (it = beac->m_locationSOG.begin();
-								 it != beac->m_locationSOG.end(); ++it)
+							for (auto& mode : beac->m_locationSOG)
 							{
 								double expectedRange =
-									sensorPnt.distanceTo(it->val.mean);
+									sensorPnt.distanceTo(mode.val.mean);
 
 								// An EKF for updating the Gaussian:
 								double y = sensedRange - expectedRange;
@@ -713,56 +698,47 @@ bool CBeaconMap::internal_insertObservation(
 								// Compute the Jacobian H and varZ
 								CMatrixDouble13 H;
 								double varZ;
-								double Ax = (it->val.mean.x() - sensorPnt.x());
-								double Ay = (it->val.mean.y() - sensorPnt.y());
-								double Az = (it->val.mean.z() - sensorPnt.z());
+								double Ax = (mode.val.mean.x() - sensorPnt.x());
+								double Ay = (mode.val.mean.y() - sensorPnt.y());
+								double Az = (mode.val.mean.z() - sensorPnt.z());
 								H(0, 0) = Ax;
 								H(0, 1) = Ay;
 								H(0, 2) = Az;
-								H *= 1.0 /
-									 expectedRange;  // sqrt(Ax*Ax+Ay*Ay+Az*Az);
-								varZ = H.multiply_HCHt_scalar(it->val.cov);
+								H *= 1.0 / expectedRange;
+								varZ = H.multiply_HCHt_scalar(mode.val.cov);
 								varZ += varR;
 								CMatrixDouble31 K;
-								K.multiply(it->val.cov, H.transpose());
+								K.multiply(mode.val.cov, H.transpose());
 								K *= 1.0 / varZ;
 
 								// Update stage of the EKF:
-								it->val.mean.x_incr(K(0, 0) * y);
-								it->val.mean.y_incr(K(1, 0) * y);
-								it->val.mean.z_incr(K(2, 0) * y);
+								mode.val.mean.x_incr(K(0, 0) * y);
+								mode.val.mean.y_incr(K(1, 0) * y);
+								mode.val.mean.z_incr(K(2, 0) * y);
 
-								it->val.cov =
-									(Eigen::Matrix<double, 3, 3>::Identity() -
-									 K * H) *
-									it->val.cov;
-								// it->val.cov.force_symmetry();
+								mode.val.cov =
+									(Eigen::Matrix3d::Identity() - K * H) *
+									mode.val.cov;
 
 								// Update the weight of this mode:
 								// ----------------------------------
-								it->log_w += -0.5 * square(y) / varZ;
+								mode.log_w += -0.5 * square(y) / varZ;
 
-								max_w = max(
-									max_w,
-									it->log_w);  // keep the maximum mode weight
+								// keep the maximum mode weight
+								max_w = max(max_w, mode.log_w);
 							}  // end for each mode
 
 							// Remove modes with negligible weights:
 							// -----------------------------------------------------------
-							for (it = beac->m_locationSOG.begin();
-								 it != beac->m_locationSOG.end();)
+							for (auto it_p = beac->m_locationSOG.begin();
+								 it_p != beac->m_locationSOG.end();)
 							{
-								if (max_w - it->log_w >
+								if (max_w - it_p->log_w >
 									insertionOptions.SOG_thresholdNegligible)
-								{
-									// Remove the mode:
-									it = beac->m_locationSOG.erase(it);
-								}
+									it_p = beac->m_locationSOG.erase(it_p);
 								else
-									++it;
+									++it_p;
 							}
-
-							// printf("ESS: %f\n",beac->m_locationSOG.ESS());
 
 							// Normalize the weights:
 							beac->m_locationSOG.normalizeWeights();
