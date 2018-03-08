@@ -115,14 +115,12 @@ bool mrpt::vision::pnp::rpnp::compute_pose(
 	double D1 = (P.col(i1) - P.col(i2)).norm();
 	Eigen::MatrixXd D4(n - 2, 5);
 
-	int j = 0;
-	Eigen::Vector3d vi;
 	Eigen::VectorXd rowvec(5);
-	for (int i = 0; i < n; i++)
+	for (int i = 0, j = 0; i < n; i++)
 	{
 		if (i == i1 || i == i2) continue;
 
-		vi = Q.col(i);
+		Eigen::Vector3d vi = Q.col(i);
 		double cg2 = v1.dot(vi);
 		double cg3 = v2.dot(vi);
 		double sg2 = sqrt(1 - cg2 * cg2);

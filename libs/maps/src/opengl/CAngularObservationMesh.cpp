@@ -89,9 +89,8 @@ void CAngularObservationMesh::updateMesh() const
 		double p1 = pitchBounds[0];
 		double p2 = pitchBounds[1];
 		for (size_t i = 0; i < numRows; i++)
-			pitchs[i] = p1 +
-						(p2 - p1) * static_cast<double>(i) /
-							static_cast<double>(numRows - 1);
+			pitchs[i] = p1 + (p2 - p1) * static_cast<double>(i) /
+								 static_cast<double>(numRows - 1);
 	}
 	else
 		for (size_t i = 0; i < numRows; i++) pitchs[i] = pitchBounds[i];
@@ -193,10 +192,10 @@ void CAngularObservationMesh::render_dl() const
 		float bz = t.z[2] - t.z[0];
 		glNormal3f(ay * bz - az * by, az * bx - ax * bz, ax * by - ay * bx);
 		if (mWireframe) glBegin(GL_LINE_LOOP);
-		for (int i = 0; i < 3; i++)
+		for (int k = 0; k < 3; k++)
 		{
-			glColor4f(t.r[i], t.g[i], t.b[i], t.a[i]);
-			glVertex3f(t.x[i], t.y[i], t.z[i]);
+			glColor4f(t.r[k], t.g[k], t.b[k], t.a[k]);
+			glVertex3f(t.x[k], t.y[k], t.z[k]);
 		}
 		if (mWireframe) glEnd();
 	}
@@ -378,8 +377,7 @@ class FAddUntracedLines
 	void operator()(const CObservation2DRangeScan& obs)
 	{
 		size_t hm = obs.scan.size();
-		for (auto it = obs.validRange.begin();
-			 it != obs.validRange.end(); ++it)
+		for (auto it = obs.validRange.begin(); it != obs.validRange.end(); ++it)
 			if (*it) hm--;
 		lins->reserve(hm);
 		for (size_t i = 0; i < obs.scan.size(); i++)
