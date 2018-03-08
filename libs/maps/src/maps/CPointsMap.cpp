@@ -289,7 +289,7 @@ void CPointsMap::clipOutOfRange(const TPoint2D& p, float maxRange)
 	// The deletion mask:
 	deletionMask.resize(n);
 
-	const auto max_sq = maxRange*maxRange;
+	const auto max_sq = maxRange * maxRange;
 
 	// Compute it:
 	for (i = 0; i < n; i++)
@@ -357,7 +357,7 @@ void CPointsMap::determineMatching2D(
 
 	// Do matching only there is any chance of the two maps to overlap:
 	// -----------------------------------------------------------
-	// Translate and rotate all local points, while simultaneously 
+	// Translate and rotate all local points, while simultaneously
 	// estimating the bounding box:
 #if MRPT_HAS_SSE2
 	// Number of 4-floats:
@@ -440,9 +440,9 @@ void CPointsMap::determineMatching2D(
 #else
 	// Non SSE2 version:
 	const Eigen::Map<Eigen::Matrix<float, Eigen::Dynamic, 1>> x_org(
-		const_cast<float*>(&otherMap->x[0]), otherMap->x.size(), 1);
+		const_cast<float*>(&otherMap->m_x[0]), otherMap->m_x.size(), 1);
 	const Eigen::Map<Eigen::Matrix<float, Eigen::Dynamic, 1>> y_org(
-		const_cast<float*>(&otherMap->y[0]), otherMap->y.size(), 1);
+		const_cast<float*>(&otherMap->m_y[0]), otherMap->m_y.size(), 1);
 
 	Eigen::Array<float, Eigen::Dynamic, 1> x_locals =
 		otherMapPose.x + cos_phi * x_org.array() - sin_phi * y_org.array();
@@ -858,8 +858,7 @@ float CPointsMap::getLargestDistanceFromOrigin() const
 		// NO: Update it:
 		float maxDistSq = 0, d;
 		for (auto X = m_x.begin(), Y = m_y.begin(), Z = m_z.begin();
-			X != m_x.end();
-			++X, ++Y, ++Z)
+			 X != m_x.end(); ++X, ++Y, ++Z)
 		{
 			d = square(*X) + square(*Y) + square(*Z);
 			maxDistSq = max(d, maxDistSq);
@@ -893,8 +892,8 @@ void CPointsMap::getAllPoints(
 
 		auto X = m_x.begin();
 		auto Y = m_y.begin();
-		for (auto oX = xs.begin(), oY = ys.begin();
-			 oX != xs.end(); X += decimation, Y += decimation, ++oX, ++oY)
+		for (auto oX = xs.begin(), oY = ys.begin(); oX != xs.end();
+			 X += decimation, Y += decimation, ++oX, ++oY)
 		{
 			*oX = *X;
 			*oY = *Y;
@@ -996,7 +995,6 @@ void CPointsMap::boundingBox(
 				z_maxs = _mm_max_ps(z_maxs, zs);
 			}
 
-
 			// Recover the min/max:
 			alignas(16) float temp_nums[4];
 
@@ -1026,7 +1024,7 @@ void CPointsMap::boundingBox(
 					max(temp_nums[2], temp_nums[3]));
 
 			// extra
-			for (size_t k = 0; k < nPoints%4; k++)
+			for (size_t k = 0; k < nPoints % 4; k++)
 			{
 				m_bb_min_x = std::min(m_bb_min_x, ptr_in_x[k]);
 				m_bb_max_x = std::max(m_bb_max_x, ptr_in_x[k]);
@@ -1045,9 +1043,8 @@ void CPointsMap::boundingBox(
 			m_bb_max_x = m_bb_max_y = m_bb_max_z =
 				-(std::numeric_limits<float>::max)();
 
-			for (vector<float>::const_iterator xi = x.begin(), yi = y.begin(),
-											   zi = z.begin();
-				 xi != x.end(); xi++, yi++, zi++)
+			for (auto xi = m_x.begin(), yi = m_y.begin(), zi = m_z.begin();
+				 xi != m_x.end(); xi++, yi++, zi++)
 			{
 				m_bb_min_x = min(m_bb_min_x, *xi);
 				m_bb_max_x = max(m_bb_max_x, *xi);
@@ -1125,8 +1122,8 @@ void CPointsMap::determineMatching3D(
 	{
 		float x_local, y_local, z_local;
 		otherMapPose.composePoint(
-			otherMap->m_x[localIdx], otherMap->m_y[localIdx], otherMap->m_z[localIdx],
-			x_local, y_local, z_local);
+			otherMap->m_x[localIdx], otherMap->m_y[localIdx],
+			otherMap->m_z[localIdx], x_local, y_local, z_local);
 
 		x_locals[localIdx] = x_local;
 		y_locals[localIdx] = y_local;
@@ -1255,7 +1252,8 @@ void CPointsMap::extractCylinder(
 	for (size_t k = 0; k < m_x.size(); k++)
 	{
 		if ((m_z[k] <= zmax && m_z[k] >= zmin) &&
-			(sqrt(square(center.x - m_x[k]) + square(center.y - m_y[k])) < radius))
+			(sqrt(square(center.x - m_x[k]) + square(center.y - m_y[k])) <
+			 radius))
 			outMap->insertPoint(m_x[k], m_y[k], m_z[k]);
 	}
 }
@@ -1277,7 +1275,8 @@ void CPointsMap::extractPoints(
 	maxZ = max(corner1.z, corner2.z);
 	for (size_t k = 0; k < m_x.size(); k++)
 	{
-		if ((m_x[k] >= minX && m_x[k] <= maxX) && (m_y[k] >= minY && m_y[k] <= maxY) &&
+		if ((m_x[k] >= minX && m_x[k] <= maxX) &&
+			(m_y[k] >= minY && m_y[k] <= maxY) &&
 			(m_z[k] >= minZ && m_z[k] <= maxZ))
 			outMap->insertPoint(m_x[k], m_y[k], m_z[k], R, G, B);
 	}
