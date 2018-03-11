@@ -78,17 +78,42 @@ TEST(LightGeomData, ConstExprCtors)
 		constexpr TPoint2D p(1.0, 2.0);
 		static_assert(p.x == 1.0, "p.x == 1.0");
 		static_assert(p.y == 2.0, "p.y == 2.0");
+		static_assert(p[0] == 1.0, "p[0] == 1.0");
+		static_assert(p[1] == 2.0, "p[1] == 2.0");
 	}
 	{
 		constexpr TPoint3D p(1.0, 2.0, 3.0);
 		static_assert(p.x == 1.0, "p.x == 1.0");
 		static_assert(p.y == 2.0, "p.y == 2.0");
 		static_assert(p.z == 3.0, "p.z == 3.0");
+		static_assert(p[0] == 1.0, "p[0] == 1.0");
+		static_assert(p[1] == 2.0, "p[1] == 2.0");
+		static_assert(p[2] == 3.0, "p[2] == 3.0");
 	}
 	{
 		constexpr TPose3D p(1.0, 2.0, 3.0, 0.1, 0.2, 0.3);
 		static_assert(p.x == 1.0, "p.x == 1.0");
 		static_assert(p.y == 2.0, "p.y == 2.0");
 		static_assert(p.z == 3.0, "p.z == 3.0");
+	}
+	{
+		constexpr TPoint2D p1(4.0, 6.0);
+		constexpr TPoint2D p2(2.0, 2.0);
+		constexpr TPoint2D p_add = p1 + p2;
+		constexpr TPoint2D p_sub = p1 - p2;
+		constexpr TPoint2D p_mul = p1 * 2;
+		constexpr TPoint2D p_div = p1 / 2;
+
+		static_assert(p_add.x == 6.0, "p_add.x == 6.0");
+		static_assert(p_add.y == 8.0, "p_add.y == 8.0");
+
+		static_assert(p_sub.x == 2.0, "p_sub.x == 2.0");
+		static_assert(p_sub.y == 4.0, "p_sub.y == 4.0");
+
+		static_assert(p_mul.x == 8.0, "p_mul.x == 8.0");
+		static_assert(p_mul.y == 12.0, "p_mul.y == 12.0");
+
+		static_assert(p_div.x == 2.0, "p_div.x == 2.0");
+		static_assert(p_div.y == 3.0, "p_div.y == 3.0");
 	}
 }

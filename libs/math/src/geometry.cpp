@@ -1173,7 +1173,7 @@ void math::project3D(
 void math::project2D(
 	const TPoint2D& point, const TPose2D& newXpose, TPoint2D& newPoint)
 {
-	newXpose.composePoint(point, newPoint);
+	newPoint = newXpose.composePoint(point);
 }
 
 void math::project2D(
