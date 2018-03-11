@@ -192,7 +192,7 @@ namespace typemeta
 template <typename T>
 struct TTypeName<mrpt::math::CMatrixTemplateNumeric<T>>
 {
-	const static auto get()
+	static auto get()
 	{
 		return literal("CMatrixTemplateNumeric<") + TTypeName<T>::get() +
 			   literal(">");

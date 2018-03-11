@@ -326,9 +326,8 @@ bool CReactiveNavigationSystem::checkCollisionWithLatestObstacles(
 			{
 				continue;
 			}
-			mrpt::math::TPoint2D lo;
-			relative_robot_pose.inverseComposePoint(
-				mrpt::math::TPoint2D(gox, goy), lo);
+			mrpt::math::TPoint2D lo = relative_robot_pose.inverseComposePoint(
+				mrpt::math::TPoint2D(gox, goy));
 
 			if (lo.x >= -R && lo.x <= R && lo.y >= -R && lo.y <= R &&
 				ptg->isPointInsideRobotShape(lo.x, lo.y))

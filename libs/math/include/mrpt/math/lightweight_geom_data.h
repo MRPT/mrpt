@@ -65,13 +65,13 @@ struct TPoint2D : public TPoseOrPoint
 	/**
 	 * Constructor from coordinates.
 	 */
-	inline constexpr TPoint2D(double xx, double yy) : x(xx), y(yy) {}
+	constexpr TPoint2D(double xx, double yy) : x(xx), y(yy) {}
 	/**
 	 * Default fast constructor. Initializes to garbage.
 	 */
-	inline TPoint2D() {}
+	TPoint2D() {}
 	/** Coordinate access using operator[]. Order: x,y */
-	inline double& operator[](size_t i)
+	double& operator[](size_t i)
 	{
 		switch (i)
 		{
@@ -84,7 +84,7 @@ struct TPoint2D : public TPoseOrPoint
 		}
 	}
 	/** Coordinate access using operator[]. Order: x,y */
-	inline const double& operator[](size_t i) const
+	constexpr const double& operator[](size_t i) const
 	{
 		switch (i)
 		{
@@ -96,10 +96,11 @@ struct TPoint2D : public TPoseOrPoint
 				throw std::out_of_range("index out of range");
 		}
 	}
+
 	/**
 	 * Transformation into vector.
 	 */
-	inline void getAsVector(std::vector<double>& v) const
+	void getAsVector(std::vector<double>& v) const
 	{
 		v.resize(2);
 		v[0] = x;
@@ -108,63 +109,59 @@ struct TPoint2D : public TPoseOrPoint
 
 	bool operator<(const TPoint2D& p) const;
 
-	inline TPoint2D& operator+=(const TPoint2D& p)
+	TPoint2D& operator+=(const TPoint2D& p)
 	{
 		x += p.x;
 		y += p.y;
 		return *this;
 	}
 
-	inline TPoint2D& operator-=(const TPoint2D& p)
+	TPoint2D& operator-=(const TPoint2D& p)
 	{
 		x -= p.x;
 		y -= p.y;
 		return *this;
 	}
 
-	inline TPoint2D& operator*=(double d)
+	TPoint2D& operator*=(double d)
 	{
 		x *= d;
 		y *= d;
 		return *this;
 	}
 
-	inline TPoint2D& operator/=(double d)
+	TPoint2D& operator/=(double d)
 	{
 		x /= d;
 		y /= d;
 		return *this;
 	}
 
-	inline TPoint2D operator+(const TPoint2D& p) const
+	constexpr TPoint2D operator+(const TPoint2D& p) const
 	{
-		TPoint2D r(*this);
-		return r += p;
+		return {x + p.x, y + p.y};
 	}
 
-	inline TPoint2D operator-(const TPoint2D& p) const
+	constexpr TPoint2D operator-(const TPoint2D& p) const
 	{
-		TPoint2D r(*this);
-		return r -= p;
+		return {x - p.x, y - p.y};
 	}
 
-	inline TPoint2D operator*(double d) const
+	constexpr TPoint2D operator*(double d) const
 	{
-		TPoint2D r(*this);
-		return r *= d;
+		return {d*x, d*y};
 	}
 
-	inline TPoint2D operator/(double d) const
+	constexpr TPoint2D operator/(double d) const
 	{
-		TPoint2D r(*this);
-		return r /= d;
+		return {x/d, y/d};
 	}
 	/** Returns a human-readable textual representation of the object (eg:
 	 * "[0.02 1.04]" )
 	 * \sa fromString
 	 */
 	void asString(std::string& s) const { s = mrpt::format("[%f %f]", x, y); }
-	inline std::string asString() const
+	std::string asString() const
 	{
 		std::string s;
 		asString(s);
@@ -179,7 +176,7 @@ struct TPoint2D : public TPoseOrPoint
 	void fromString(const std::string& s);
 	static size_t size() { return 2; }
 	/** Point norm. */
-	inline double norm() const { return sqrt(square(x) + square(y)); }
+	double norm() const { return sqrt(square(x) + square(y)); }
 };
 
 /**
@@ -215,15 +212,15 @@ struct TPose2D : public TPoseOrPoint
 	/**
 	 * Constructor from coordinates.
 	 */
-	inline TPose2D(double xx, double yy, double pphi) : x(xx), y(yy), phi(pphi)
+	TPose2D(double xx, double yy, double pphi) : x(xx), y(yy), phi(pphi)
 	{
 	}
 	/**
 	 * Default fast constructor. Initializes to garbage.
 	 */
-	inline TPose2D() {}
+	TPose2D() {}
 	/** Coordinate access using operator[]. Order: x,y,phi */
-	inline double& operator[](size_t i)
+	double& operator[](size_t i)
 	{
 		switch (i)
 		{
@@ -238,7 +235,7 @@ struct TPose2D : public TPoseOrPoint
 		}
 	}
 	/** Coordinate access using operator[]. Order: x,y,phi */
-	inline const double& operator[](size_t i) const
+	constexpr const double& operator[](size_t i) const
 	{
 		switch (i)
 		{
@@ -255,7 +252,7 @@ struct TPose2D : public TPoseOrPoint
 	/**
 	 * Transformation into vector.
 	 */
-	inline void getAsVector(std::vector<double>& v) const
+	void getAsVector(std::vector<double>& v) const
 	{
 		v.resize(3);
 		v[0] = x;
@@ -267,7 +264,7 @@ struct TPose2D : public TPoseOrPoint
 	 * \sa fromString
 	 */
 	void asString(std::string& s) const;
-	inline std::string asString() const
+	std::string asString() const
 	{
 		std::string s;
 		asString(s);
@@ -278,38 +275,36 @@ struct TPose2D : public TPoseOrPoint
 	mrpt::math::TPose2D operator+(const mrpt::math::TPose2D& b) const;
 	/** Operator "ominus" pose composition: "ret=this \ominus b"  \sa CPose2D */
 	mrpt::math::TPose2D operator-(const mrpt::math::TPose2D& b) const;
-	inline void composePoint(const TPoint2D l, TPoint2D& g) const
+
+	mrpt::math::TPoint2D composePoint(const TPoint2D l) const
 	{
 		const double ccos = ::cos(phi), csin = ::sin(phi);
-		TPoint2D res;
-		res.x = x + l.x * ccos - l.y * csin;
-		res.y = y + l.x * csin + l.y * ccos;
-		g = res;  // use buffer to handle case l==g
+		return {x + l.x * ccos - l.y * csin, y + l.x * csin + l.y * ccos};
 	}
+
 	mrpt::math::TPoint2D operator+(const mrpt::math::TPoint2D& b) const
 	{
-		mrpt::math::TPoint2D g;
-		this->composePoint(b, g);
-		return g;
+		return this->composePoint(b);
 	}
-	inline void inverseComposePoint(const TPoint2D g, TPoint2D& l) const
+
+	mrpt::math::TPoint2D inverseComposePoint(const TPoint2D g) const
 	{
 		const double Ax = g.x - x, Ay = g.y - y, ccos = ::cos(phi),
 					 csin = ::sin(phi);
-		TPoint2D res;
-		res.x = Ax * ccos + Ay * csin;
-		res.y = -Ax * csin + Ay * ccos;
-		l = res;  // use buffer to handle case l==g
+		return { Ax * ccos + Ay * csin, -Ax * csin + Ay * ccos };
 	}
+
 	/** Returns the norm of the (x,y) vector (phi is not used) */
-	inline double norm() const { return mrpt::hypot_fast(x, y); }
+	double norm() const { return mrpt::hypot_fast(x, y); }
+
 	/** Set the current object value from a string generated by 'asString' (eg:
 	 * "[0.02 1.04 -45.0]" )
 	 * \sa asString
 	 * \exception std::exception On invalid format
 	 */
 	void fromString(const std::string& s);
-	static size_t size() { return 3; }
+
+	constexpr static size_t size() { return 3; }
 };
 
 /** Lightweight 3D point (float version).
@@ -325,24 +320,24 @@ struct TPoint3Df : public TPoseOrPoint
 	float y;
 	float z;
 
-	inline TPoint3Df() {}
-	inline constexpr TPoint3Df(const float xx, const float yy, const float zz)
+	TPoint3Df() {}
+	constexpr TPoint3Df(const float xx, const float yy, const float zz)
 		: x(xx), y(yy), z(zz)
 	{
 	}
-	inline TPoint3Df& operator+=(const TPoint3Df& p)
+	TPoint3Df& operator+=(const TPoint3Df& p)
 	{
 		x += p.x;
 		y += p.y;
 		z += p.z;
 		return *this;
 	}
-	inline TPoint3Df operator*(const float s)
+	TPoint3Df operator*(const float s)
 	{
 		return TPoint3Df(x * s, y * s, z * s);
 	}
 	/** Coordinate access using operator[]. Order: x,y,z */
-	inline float& operator[](size_t i)
+	float& operator[](size_t i)
 	{
 		switch (i)
 		{
@@ -358,7 +353,7 @@ struct TPoint3Df : public TPoseOrPoint
 	}
 
 	/** Coordinate access using operator[]. Order: x,y,z */
-	inline const float& operator[](size_t i) const
+	constexpr const float& operator[](size_t i) const
 	{
 		switch (i)
 		{
@@ -388,11 +383,11 @@ struct TPoint3D : public TPoseOrPoint
 	double x, y, z;
 
 	/** Constructor from coordinates.  */
-	inline constexpr TPoint3D(double xx, double yy, double zz) : x(xx), y(yy), z(zz) {}
+	constexpr TPoint3D(double xx, double yy, double zz) : x(xx), y(yy), z(zz) {}
 	/** Default fast constructor. Initializes to garbage. */
-	inline TPoint3D() {}
+	TPoint3D() {}
 	/** Explicit constructor from coordinates.  */
-	explicit inline TPoint3D(const TPoint3Df& p) : x(p.x), y(p.y), z(p.z) {}
+	explicit TPoint3D(const TPoint3Df& p) : x(p.x), y(p.y), z(p.z) {}
 	/** Implicit constructor from TPoint2D. Zeroes the z.
 	 * \sa TPoint2D
 	 */
@@ -408,7 +403,7 @@ struct TPoint3D : public TPoseOrPoint
 	 */
 	explicit TPoint3D(const TPose3D& p);
 	/** Coordinate access using operator[]. Order: x,y,z */
-	inline double& operator[](size_t i)
+	double& operator[](size_t i)
 	{
 		switch (i)
 		{
@@ -423,7 +418,7 @@ struct TPoint3D : public TPoseOrPoint
 		}
 	}
 	/** Coordinate access using operator[]. Order: x,y,z */
-	inline const double& operator[](size_t i) const
+	constexpr const double& operator[](size_t i) const
 	{
 		switch (i)
 		{
@@ -440,28 +435,28 @@ struct TPoint3D : public TPoseOrPoint
 	/**
 	 * Point-to-point distance.
 	 */
-	inline double distanceTo(const TPoint3D& p) const
+	double distanceTo(const TPoint3D& p) const
 	{
 		return sqrt(square(p.x - x) + square(p.y - y) + square(p.z - z));
 	}
 	/**
 	 * Point-to-point distance, squared.
 	 */
-	inline double sqrDistanceTo(const TPoint3D& p) const
+	double sqrDistanceTo(const TPoint3D& p) const
 	{
 		return square(p.x - x) + square(p.y - y) + square(p.z - z);
 	}
 	/**
 	 * Point norm.
 	 */
-	inline double norm() const
+	double norm() const
 	{
 		return sqrt(square(x) + square(y) + square(z));
 	}
 	/**
 	 * Point scale.
 	 */
-	inline TPoint3D& operator*=(const double f)
+	TPoint3D& operator*=(const double f)
 	{
 		x *= f;
 		y *= f;
@@ -482,7 +477,7 @@ struct TPoint3D : public TPoseOrPoint
 	/**
 	 * Translation.
 	 */
-	inline TPoint3D& operator+=(const TPoint3D& p)
+	TPoint3D& operator+=(const TPoint3D& p)
 	{
 		x += p.x;
 		y += p.y;
@@ -492,7 +487,7 @@ struct TPoint3D : public TPoseOrPoint
 	/**
 	 * Difference between points.
 	 */
-	inline TPoint3D& operator-=(const TPoint3D& p)
+	TPoint3D& operator-=(const TPoint3D& p)
 	{
 		x -= p.x;
 		y -= p.y;
@@ -502,26 +497,26 @@ struct TPoint3D : public TPoseOrPoint
 	/**
 	 * Points addition.
 	 */
-	inline TPoint3D operator+(const TPoint3D& p) const
+	constexpr TPoint3D operator+(const TPoint3D& p) const
 	{
-		return TPoint3D(x + p.x, y + p.y, z + p.z);
+		return {x + p.x, y + p.y, z + p.z};
 	}
 	/**
 	 * Points substraction.
 	 */
-	inline TPoint3D operator-(const TPoint3D& p) const
+	constexpr TPoint3D operator-(const TPoint3D& p) const
 	{
-		return TPoint3D(x - p.x, y - p.y, z - p.z);
+		return {x - p.x, y - p.y, z - p.z};
 	}
 
-	inline TPoint3D operator*(double d) const
+	constexpr TPoint3D operator*(double d) const
 	{
-		return TPoint3D(x * d, y * d, z * d);
+		return {x * d, y * d, z * d};
 	}
 
-	inline TPoint3D operator/(double d) const
+	constexpr TPoint3D operator/(double d) const
 	{
-		return TPoint3D(x / d, y / d, z / d);
+		return {x / d, y / d, z / d};
 	}
 
 	bool operator<(const TPoint3D& p) const;
@@ -534,7 +529,7 @@ struct TPoint3D : public TPoseOrPoint
 	{
 		s = mrpt::format("[%f %f %f]", x, y, z);
 	}
-	inline std::string asString() const
+	std::string asString() const
 	{
 		std::string s;
 		asString(s);
@@ -547,7 +542,7 @@ struct TPoint3D : public TPoseOrPoint
 	 * \exception std::exception On invalid format
 	 */
 	void fromString(const std::string& s);
-	static size_t size() { return 3; }
+	static constexpr size_t size() { return 3; }
 };
 
 /** XYZ point (double) + Intensity(u8) \sa mrpt::math::TPoint3D */
@@ -555,8 +550,8 @@ struct TPointXYZIu8
 {
 	mrpt::math::TPoint3D pt;
 	uint8_t intensity;
-	inline TPointXYZIu8() : pt(), intensity(0) {}
-	inline TPointXYZIu8(double x, double y, double z, uint8_t intensity_val)
+	TPointXYZIu8() : pt(), intensity(0) {}
+	constexpr TPointXYZIu8(double x, double y, double z, uint8_t intensity_val)
 		: pt(x, y, z), intensity(intensity_val)
 	{
 	}
@@ -566,8 +561,8 @@ struct TPointXYZRGBu8
 {
 	mrpt::math::TPoint3D pt;
 	uint8_t R, G, B;
-	inline TPointXYZRGBu8() : pt(), R(0), G(0), B(0) {}
-	inline TPointXYZRGBu8(
+	TPointXYZRGBu8() : pt(), R(0), G(0), B(0) {}
+	constexpr TPointXYZRGBu8(
 		double x, double y, double z, uint8_t R_val, uint8_t G_val,
 		uint8_t B_val)
 		: pt(x, y, z), R(R_val), G(G_val), B(B_val)
@@ -579,8 +574,8 @@ struct TPointXYZfIu8
 {
 	mrpt::math::TPoint3Df pt;
 	uint8_t intensity;
-	inline TPointXYZfIu8() : pt(), intensity(0) {}
-	inline constexpr TPointXYZfIu8(float x, float y, float z, uint8_t intensity_val)
+	TPointXYZfIu8() : pt(), intensity(0) {}
+	constexpr TPointXYZfIu8(float x, float y, float z, uint8_t intensity_val)
 		: pt(x, y, z), intensity(intensity_val)
 	{
 	}
@@ -590,8 +585,8 @@ struct TPointXYZfRGBu8
 {
 	mrpt::math::TPoint3Df pt;
 	uint8_t R, G, B;
-	inline TPointXYZfRGBu8() : pt(), R(0), G(0), B(0) {}
-	inline constexpr TPointXYZfRGBu8(
+	TPointXYZfRGBu8() : pt(), R(0), G(0), B(0) {}
+	constexpr TPointXYZfRGBu8(
 		float x, float y, float z, uint8_t R_val, uint8_t G_val, uint8_t B_val)
 		: pt(x, y, z), R(R_val), G(G_val), B(B_val)
 	{
@@ -645,9 +640,9 @@ struct TPose3D : public TPoseOrPoint
 	/**
 	 * Default fast constructor. Initializes to garbage.
 	 */
-	inline TPose3D() {}
+	TPose3D() {}
 	/** Coordinate access using operator[]. Order: x,y,z,yaw,pitch,roll */
-	inline double& operator[](size_t i)
+	double& operator[](size_t i)
 	{
 		switch (i)
 		{
@@ -668,7 +663,7 @@ struct TPose3D : public TPoseOrPoint
 		}
 	}
 	/** Coordinate access using operator[]. Order: x,y,z,yaw,pitch,roll */
-	inline const double& operator[](size_t i) const
+	constexpr const double& operator[](size_t i) const
 	{
 		switch (i)
 		{
@@ -710,7 +705,7 @@ struct TPose3D : public TPoseOrPoint
 	 * \sa fromString
 	 */
 	void asString(std::string& s) const;
-	inline std::string asString() const
+	std::string asString() const
 	{
 		std::string s;
 		asString(s);
@@ -777,16 +772,16 @@ struct TPose3DQuat : public TPoseOrPoint
 	double qr, qx, qy, qz;
 
 	/** Constructor from coordinates. */
-	inline constexpr TPose3DQuat(
+	constexpr TPose3DQuat(
 		double _x, double _y, double _z, double _qr, double _qx, double _qy,
 		double _qz)
 		: x(_x), y(_y), z(_z), qr(_qr), qx(_qx), qy(_qy), qz(_qz)
 	{
 	}
 	/** Default fast constructor. Initializes to garbage. */
-	inline TPose3DQuat() {}
+	TPose3DQuat() {}
 	/** Coordinate access using operator[]. Order: x,y,z,qr,qx,qy,qz */
-	inline double& operator[](size_t i)
+	double& operator[](size_t i)
 	{
 		switch (i)
 		{
@@ -809,7 +804,7 @@ struct TPose3DQuat : public TPoseOrPoint
 		}
 	}
 	/** Coordinate access using operator[]. Order: x,y,z,qr,qx,qy,qz */
-	inline const double& operator[](size_t i) const
+	constexpr const double& operator[](size_t i) const
 	{
 		switch (i)
 		{
@@ -847,7 +842,7 @@ struct TPose3DQuat : public TPoseOrPoint
 	{
 		s = mrpt::format("[%f %f %f %f %f %f %f]", x, y, z, qr, qx, qy, qz);
 	}
-	inline std::string asString() const
+	std::string asString() const
 	{
 		std::string s;
 		asString(s);
@@ -873,35 +868,35 @@ std::ostream& operator<<(std::ostream& o, const TPose3DQuat& p);
 /**
  * Unary minus operator for 3D points.
  */
-inline TPoint3D operator-(const TPoint3D& p1)
+constexpr TPoint3D operator-(const TPoint3D& p1)
 {
-	return TPoint3D(-p1.x, -p1.y, -p1.z);
+	return {-p1.x, -p1.y, -p1.z};
 }
 /**
  * Exact comparison between 2D points.
  */
-inline bool operator==(const TPoint2D& p1, const TPoint2D& p2)
+constexpr bool operator==(const TPoint2D& p1, const TPoint2D& p2)
 {
 	return (p1.x == p2.x) && (p1.y == p2.y);  //-V550
 }
 /**
  * Exact comparison between 2D points.
  */
-inline bool operator!=(const TPoint2D& p1, const TPoint2D& p2)
+constexpr bool operator!=(const TPoint2D& p1, const TPoint2D& p2)
 {
 	return (p1.x != p2.x) || (p1.y != p2.y);  //-V550
 }
 /**
  * Exact comparison between 3D points.
  */
-inline bool operator==(const TPoint3D& p1, const TPoint3D& p2)
+constexpr bool operator==(const TPoint3D& p1, const TPoint3D& p2)
 {
 	return (p1.x == p2.x) && (p1.y == p2.y) && (p1.z == p2.z);  //-V550
 }
 /**
  * Exact comparison between 3D points.
  */
-inline bool operator!=(const TPoint3D& p1, const TPoint3D& p2)
+constexpr bool operator!=(const TPoint3D& p1, const TPoint3D& p2)
 {
 	return (p1.x != p2.x) || (p1.y != p2.y) || (p1.z != p2.z);  //-V550
 }
@@ -986,7 +981,7 @@ struct TSegment2D
 	 */
 	bool contains(const TPoint2D& point) const;
 	/** Access to points using operator[0-1] */
-	inline TPoint2D& operator[](size_t i)
+	TPoint2D& operator[](size_t i)
 	{
 		switch (i)
 		{
@@ -999,7 +994,7 @@ struct TSegment2D
 		}
 	}
 	/** Access to points using operator[0-1] */
-	inline const TPoint2D& operator[](size_t i) const
+	constexpr const TPoint2D& operator[](size_t i) const
 	{
 		switch (i)
 		{
@@ -1018,7 +1013,7 @@ struct TSegment2D
 	/**
 	 * Segment's central point.
 	 */
-	inline void getCenter(TPoint2D& p) const
+	void getCenter(TPoint2D& p) const
 	{
 		p.x = (point1.x + point2.x) / 2;
 		p.y = (point1.y + point2.y) / 2;
@@ -1072,7 +1067,7 @@ struct TSegment3D
 	 */
 	bool contains(const TPoint3D& point) const;
 	/** Access to points using operator[0-1] */
-	inline TPoint3D& operator[](size_t i)
+	TPoint3D& operator[](size_t i)
 	{
 		switch (i)
 		{
@@ -1085,7 +1080,7 @@ struct TSegment3D
 		}
 	}
 	/** Access to points using operator[0-1] */
-	inline const TPoint3D& operator[](size_t i) const
+	const TPoint3D& operator[](size_t i) const
 	{
 		switch (i)
 		{
@@ -1100,11 +1095,11 @@ struct TSegment3D
 	/**
 	 * Projection into 2D space, discarding the z.
 	 */
-	inline void generate2DObject(TSegment2D& s) const { s = TSegment2D(*this); }
+	void generate2DObject(TSegment2D& s) const { s = TSegment2D(*this); }
 	/**
 	 * Segment's central point.
 	 */
-	inline void getCenter(TPoint3D& p) const
+	void getCenter(TPoint3D& p) const
 	{
 		p.x = (point1.x + point2.x) / 2;
 		p.y = (point1.y + point2.y) / 2;
@@ -1189,7 +1184,7 @@ struct TLine2D
 	/**
 	 * Get line's normal vector after unitarizing line.
 	 */
-	inline void getUnitaryNormalVector(double (&vector)[2])
+	void getUnitaryNormalVector(double (&vector)[2])
 	{
 		unitarize();
 		getNormalVector(vector);
@@ -1201,7 +1196,7 @@ struct TLine2D
 	/**
 	 * Unitarize line and then get director vector.
 	 */
-	inline void getUnitaryDirectorVector(double (&vector)[2])
+	void getUnitaryDirectorVector(double (&vector)[2])
 	{
 		unitarize();
 		getDirectorVector(vector);
@@ -1226,7 +1221,7 @@ struct TLine2D
 	/**
 	 * Constructor from line's coefficients.
 	 */
-	inline constexpr TLine2D(double A, double B, double C) : 
+	constexpr TLine2D(double A, double B, double C) : 
 		coefs{ A,B,C }
 	{
 	}
@@ -1270,14 +1265,14 @@ struct TLine3D
 	/**
 	 * Get director vector.
 	 */
-	inline void getDirectorVector(double (&vector)[3]) const
+	void getDirectorVector(double (&vector)[3]) const
 	{
 		for (size_t i = 0; i < 3; i++) vector[i] = director[i];
 	}
 	/**
 	 * Unitarize and then get director vector.
 	 */
-	inline void getUnitaryDirectorVector(double (&vector)[3])
+	void getUnitaryDirectorVector(double (&vector)[3])
 	{
 		unitarize();
 		getDirectorVector(vector);
@@ -1287,7 +1282,7 @@ struct TLine3D
 	 * \throw std::logic_error if the line's director vector is orthogonal to
 	 * the XY plane.
 	 */
-	inline void generate2DObject(TLine2D& l) const { l = TLine2D(*this); }
+	void generate2DObject(TLine2D& l) const { l = TLine2D(*this); }
 	/**
 	 * Constructor from two points, through which the line will pass.
 	 * \throw std::logic_error if both points are the same.
@@ -1327,7 +1322,7 @@ struct TPlane
 	/**
 	 * Check whether a segment is fully contained into the plane.
 	 */
-	inline bool contains(const TSegment3D& segment) const
+	bool contains(const TSegment3D& segment) const
 	{
 		return contains(segment.point1) && contains(segment.point2);
 	}
@@ -1356,7 +1351,7 @@ struct TPlane
 	/**
 	 * Unitarize, then get normal vector.
 	 */
-	inline void getUnitaryNormalVector(double (&vec)[3])
+	void getUnitaryNormalVector(double (&vec)[3])
 	{
 		unitarize();
 		getNormalVector(vec);
@@ -1383,14 +1378,14 @@ struct TPlane
 	/**
 	 * Constructor from plane coefficients.
 	 */
-	inline constexpr TPlane(double A, double B, double C, double D) :
+	constexpr TPlane(double A, double B, double C, double D) :
 		coefs{A,B,C,D}
 	{
 	}
 	/**
 	 * Constructor from an array of coefficients.
 	 */
-	inline TPlane(const double (&vec)[4])
+	TPlane(const double (&vec)[4])
 	{
 		for (size_t i = 0; i < 4; i++) coefs[i] = vec[i];
 	}
@@ -1449,7 +1444,7 @@ class TPolygon2D : public std::vector<TPoint2D>
 	 * \throw std::logic_error if radius is near zero or the number of edges is
 	 * less than three.
 	 */
-	static inline void createRegularPolygon(
+	static void createRegularPolygon(
 		size_t numEdges, double radius, TPolygon2D& poly,
 		const mrpt::math::TPose2D& pose);
 };
@@ -1475,7 +1470,7 @@ class TPolygon3D : public std::vector<TPoint3D>
 	 * fits inside or not. \sa getBestFittingPlane */
 	void getBestFittingPlane(TPlane& p) const;
 	/** Projects into a 2D space, discarding the z. \sa getPlane,isSkew */
-	inline void generate2DObject(TPolygon2D& p) const { p = TPolygon2D(*this); }
+	void generate2DObject(TPolygon2D& p) const { p = TPolygon2D(*this); }
 	/** Get polygon's central point. */
 	void getCenter(TPoint3D& p) const;
 	/** Check whether the polygon is skew. Returns true if there doesn't exist a
@@ -1504,7 +1499,7 @@ class TPolygon3D : public std::vector<TPoint3D>
 	 * \throw std::logic_error if number of edges is less than three, or radius
 	 * is near zero.
 	 */
-	static inline void createRegularPolygon(
+	static void createRegularPolygon(
 		size_t numEdges, double radius, TPolygon3D& poly,
 		const mrpt::math::TPose3D& pose);
 };
@@ -1513,32 +1508,32 @@ class TPolygon3D : public std::vector<TPoint3D>
  * Object type identifier for TPoint2D or TPoint3D.
  * \sa TObject2D,TObject3D
  */
-const unsigned char GEOMETRIC_TYPE_POINT = 0;
+static constexpr unsigned char GEOMETRIC_TYPE_POINT = 0;
 /**
  * Object type identifier for TSegment2D or TSegment3D.
  * \sa TObject2D,TObject3D
  */
-const unsigned char GEOMETRIC_TYPE_SEGMENT = 1;
+static constexpr unsigned char GEOMETRIC_TYPE_SEGMENT = 1;
 /**
  * Object type identifier for TLine2D or TLine3D.
  * \sa TObject2D,TObject3D
  */
-const unsigned char GEOMETRIC_TYPE_LINE = 2;
+static constexpr unsigned char GEOMETRIC_TYPE_LINE = 2;
 /**
  * Object type identifier for TPolygon2D or TPolygon3D.
  * \sa TObject2D,TObject3D
  */
-const unsigned char GEOMETRIC_TYPE_POLYGON = 3;
+static constexpr unsigned char GEOMETRIC_TYPE_POLYGON = 3;
 /**
  * Object type identifier for TPlane.
  * \sa TObject3D
  */
-const unsigned char GEOMETRIC_TYPE_PLANE = 4;
+static constexpr unsigned char GEOMETRIC_TYPE_PLANE = 4;
 /**
  * Object type identifier for empty TObject2D or TObject3D.
  * \sa TObject2D,TObject3D
  */
-const unsigned char GEOMETRIC_TYPE_UNDEFINED = 255;
+static constexpr unsigned char GEOMETRIC_TYPE_UNDEFINED = 255;
 
 /**
  * Standard type for storing any lightweight 2D type. Do not inherit from this
@@ -1567,7 +1562,7 @@ struct TObject2D
 	/**
 	 * Destroys the object, releasing the pointer to the content (if any).
 	 */
-	inline void destroy()
+	void destroy()
 	{
 		if (type == GEOMETRIC_TYPE_POLYGON) delete data.polygon;
 		type = GEOMETRIC_TYPE_UNDEFINED;
@@ -1577,28 +1572,28 @@ struct TObject2D
 	/**
 	 * Implicit constructor from point.
 	 */
-	inline TObject2D(const TPoint2D& p) : type(GEOMETRIC_TYPE_POINT)
+	TObject2D(const TPoint2D& p) : type(GEOMETRIC_TYPE_POINT)
 	{
 		data.point = p;
 	}
 	/**
 	 * Implicit constructor from segment.
 	 */
-	inline TObject2D(const TSegment2D& s) : type(GEOMETRIC_TYPE_SEGMENT)
+	TObject2D(const TSegment2D& s) : type(GEOMETRIC_TYPE_SEGMENT)
 	{
 		data.segment = s;
 	}
 	/**
 	 * Implicit constructor from line.
 	 */
-	inline TObject2D(const TLine2D& r) : type(GEOMETRIC_TYPE_LINE)
+	TObject2D(const TLine2D& r) : type(GEOMETRIC_TYPE_LINE)
 	{
 		data.line = r;
 	}
 	/**
 	 * Implicit constructor from polygon.
 	 */
-	inline TObject2D(const TPolygon2D& p) : type(GEOMETRIC_TYPE_POLYGON)
+	TObject2D(const TPolygon2D& p) : type(GEOMETRIC_TYPE_POLYGON)
 	{
 		data.polygon = new TPolygon2D(p);
 	}
@@ -1613,27 +1608,27 @@ struct TObject2D
 	/**
 	 * Checks whether content is a point.
 	 */
-	inline bool isPoint() const { return type == GEOMETRIC_TYPE_POINT; }
+	bool isPoint() const { return type == GEOMETRIC_TYPE_POINT; }
 	/**
 	 * Checks whether content is a segment.
 	 */
-	inline bool isSegment() const { return type == GEOMETRIC_TYPE_SEGMENT; }
+	bool isSegment() const { return type == GEOMETRIC_TYPE_SEGMENT; }
 	/**
 	 * Checks whether content is a line.
 	 */
-	inline bool isLine() const { return type == GEOMETRIC_TYPE_LINE; }
+	bool isLine() const { return type == GEOMETRIC_TYPE_LINE; }
 	/**
 	 * Checks whether content is a polygon.
 	 */
-	inline bool isPolygon() const { return type == GEOMETRIC_TYPE_POLYGON; }
+	bool isPolygon() const { return type == GEOMETRIC_TYPE_POLYGON; }
 	/**
 	 * Gets content type.
 	 */
-	inline unsigned char getType() const { return type; }
+	unsigned char getType() const { return type; }
 	/**
 	 * Gets the content as a point, returning false if the type is inadequate.
 	 */
-	inline bool getPoint(TPoint2D& p) const
+	bool getPoint(TPoint2D& p) const
 	{
 		if (isPoint())
 		{
@@ -1647,7 +1642,7 @@ struct TObject2D
 	 * Gets the content as a segment, returning false if the type is
 	 * inadequate.
 	 */
-	inline bool getSegment(TSegment2D& s) const
+	bool getSegment(TSegment2D& s) const
 	{
 		if (isSegment())
 		{
@@ -1660,7 +1655,7 @@ struct TObject2D
 	/**
 	 * Gets the content as a line, returning false if the type is inadequate.
 	 */
-	inline bool getLine(TLine2D& r) const
+	bool getLine(TLine2D& r) const
 	{
 		if (isLine())
 		{
@@ -1674,7 +1669,7 @@ struct TObject2D
 	 * Gets the content as a polygon, returning false if the type is
 	 * inadequate.
 	 */
-	inline bool getPolygon(TPolygon2D& p) const
+	bool getPolygon(TPolygon2D& p) const
 	{
 		if (isPolygon())
 		{
@@ -1711,7 +1706,7 @@ struct TObject2D
 	/**
 	 * Assign a point to this object.
 	 */
-	inline void operator=(const TPoint2D& p)
+	void operator=(const TPoint2D& p)
 	{
 		destroy();
 		type = GEOMETRIC_TYPE_POINT;
@@ -1720,7 +1715,7 @@ struct TObject2D
 	/**
 	 * Assign a segment to this object.
 	 */
-	inline void operator=(const TSegment2D& s)
+	void operator=(const TSegment2D& s)
 	{
 		destroy();
 		type = GEOMETRIC_TYPE_SEGMENT;
@@ -1729,7 +1724,7 @@ struct TObject2D
 	/**
 	 * Assign a line to this object.
 	 */
-	inline void operator=(const TLine2D& l)
+	void operator=(const TLine2D& l)
 	{
 		destroy();
 		type = GEOMETRIC_TYPE_LINE;
@@ -1738,7 +1733,7 @@ struct TObject2D
 	/**
 	 * Assign a polygon to this object.
 	 */
-	inline void operator=(const TPolygon2D& p)
+	void operator=(const TPolygon2D& p)
 	{
 		destroy();
 		type = GEOMETRIC_TYPE_POLYGON;
@@ -1879,32 +1874,32 @@ struct TObject3D
 	/**
 	 * Checks whether content is a point.
 	 */
-	inline bool isPoint() const { return type == GEOMETRIC_TYPE_POINT; }
+	bool isPoint() const { return type == GEOMETRIC_TYPE_POINT; }
 	/**
 	 * Checks whether content is a segment.
 	 */
-	inline bool isSegment() const { return type == GEOMETRIC_TYPE_SEGMENT; }
+	bool isSegment() const { return type == GEOMETRIC_TYPE_SEGMENT; }
 	/**
 	 * Checks whether content is a line.
 	 */
-	inline bool isLine() const { return type == GEOMETRIC_TYPE_LINE; }
+	bool isLine() const { return type == GEOMETRIC_TYPE_LINE; }
 	/**
 	 * Checks whether content is a polygon.
 	 */
-	inline bool isPolygon() const { return type == GEOMETRIC_TYPE_POLYGON; }
+	bool isPolygon() const { return type == GEOMETRIC_TYPE_POLYGON; }
 	/**
 	 * Checks whether content is a plane.
 	 */
-	inline bool isPlane() const { return type == GEOMETRIC_TYPE_PLANE; }
+	bool isPlane() const { return type == GEOMETRIC_TYPE_PLANE; }
 	/**
 	 * Gets object type.
 	 */
-	inline unsigned char getType() const { return type; }
+	unsigned char getType() const { return type; }
 	/**
 	 * Gets the content as a point, returning false if the type is not
 	 * adequate.
 	 */
-	inline bool getPoint(TPoint3D& p) const
+	bool getPoint(TPoint3D& p) const
 	{
 		if (isPoint())
 		{
@@ -1918,7 +1913,7 @@ struct TObject3D
 	 * Gets the content as a segment, returning false if the type is not
 	 * adequate.
 	 */
-	inline bool getSegment(TSegment3D& s) const
+	bool getSegment(TSegment3D& s) const
 	{
 		if (isSegment())
 		{
@@ -1931,7 +1926,7 @@ struct TObject3D
 	/**
 	 * Gets the content as a line, returning false if the type is not adequate.
 	 */
-	inline bool getLine(TLine3D& r) const
+	bool getLine(TLine3D& r) const
 	{
 		if (isLine())
 		{
@@ -1945,7 +1940,7 @@ struct TObject3D
 	 * Gets the content as a polygon, returning false if the type is not
 	 * adequate.
 	 */
-	inline bool getPolygon(TPolygon3D& p) const
+	bool getPolygon(TPolygon3D& p) const
 	{
 		if (isPolygon())
 		{
@@ -1959,7 +1954,7 @@ struct TObject3D
 	 * Gets the content as a plane, returning false if the type is not
 	 * adequate.
 	 */
-	inline bool getPlane(TPlane& p) const
+	bool getPlane(TPlane& p) const
 	{
 		if (isPlane())
 		{
@@ -2003,7 +1998,7 @@ struct TObject3D
 	/**
 	 * Assigns a point to this object.
 	 */
-	inline void operator=(const TPoint3D& p)
+	void operator=(const TPoint3D& p)
 	{
 		destroy();
 		type = GEOMETRIC_TYPE_POINT;
@@ -2012,7 +2007,7 @@ struct TObject3D
 	/**
 	 * Assigns a segment to this object.
 	 */
-	inline void operator=(const TSegment3D& s)
+	void operator=(const TSegment3D& s)
 	{
 		destroy();
 		type = GEOMETRIC_TYPE_SEGMENT;
@@ -2021,7 +2016,7 @@ struct TObject3D
 	/**
 	 * Assigns a line to this object.
 	 */
-	inline void operator=(const TLine3D& l)
+	void operator=(const TLine3D& l)
 	{
 		destroy();
 		type = GEOMETRIC_TYPE_LINE;
@@ -2030,7 +2025,7 @@ struct TObject3D
 	/**
 	 * Assigns a polygon to this object.
 	 */
-	inline void operator=(const TPolygon3D& p)
+	void operator=(const TPolygon3D& p)
 	{
 		destroy();
 		type = GEOMETRIC_TYPE_POLYGON;
@@ -2039,7 +2034,7 @@ struct TObject3D
 	/**
 	 * Assigns a plane to this object.
 	 */
-	inline void operator=(const TPlane& p)
+	void operator=(const TPlane& p)
 	{
 		destroy();
 		type = GEOMETRIC_TYPE_PLANE;
@@ -2050,7 +2045,7 @@ struct TObject3D
 	 * \throw std::logic_error if the 3D object loses its properties when
 	 * projecting into 2D space (for example, it's a plane or a vertical line).
 	 */
-	inline void generate2DObject(TObject2D& obj) const
+	void generate2DObject(TObject2D& obj) const
 	{
 		switch (type)
 		{
@@ -2157,14 +2152,14 @@ struct TTwist2D
 	double omega;
 
 	/** Constructor from components */
-	inline constexpr TTwist2D(double vx_, double vy_, double omega_)
+	constexpr TTwist2D(double vx_, double vy_, double omega_)
 		: vx(vx_), vy(vy_), omega(omega_)
 	{
 	}
 	/** Default fast constructor. Initializes to garbage  */
-	inline TTwist2D() {}
+	TTwist2D() {}
 	/** Coordinate access using operator[]. Order: vx,vy,vphi */
-	inline double& operator[](size_t i)
+	double& operator[](size_t i)
 	{
 		switch (i)
 		{
@@ -2179,7 +2174,7 @@ struct TTwist2D
 		}
 	}
 	/** Coordinate access using operator[]. Order: vx,vy,vphi */
-	inline const double& operator[](size_t i) const
+	constexpr const double& operator[](size_t i) const
 	{
 		switch (i)
 		{
@@ -2194,7 +2189,7 @@ struct TTwist2D
 		}
 	}
 	/** Transformation into vector */
-	inline void getAsVector(std::vector<double>& v) const
+	void getAsVector(std::vector<double>& v) const
 	{
 		v.resize(3);
 		v[0] = vx;
@@ -2214,7 +2209,7 @@ struct TTwist2D
 	 * \sa fromString
 	 */
 	void asString(std::string& s) const;
-	inline std::string asString() const
+	std::string asString() const
 	{
 		std::string s;
 		asString(s);
@@ -2245,15 +2240,15 @@ struct TTwist3D
 	double wx, wy, wz;
 
 	/** Constructor from components */
-	inline constexpr TTwist3D(
+	constexpr TTwist3D(
 		double vx_, double vy_, double vz_, double wx_, double wy_, double wz_)
 		: vx(vx_), vy(vy_), vz(vz_), wx(wx_), wy(wy_), wz(wz_)
 	{
 	}
 	/** Default fast constructor. Initializes to garbage  */
-	inline TTwist3D() {}
+	TTwist3D() {}
 	/** Coordinate access using operator[]. Order: vx,vy,vphi */
-	inline double& operator[](size_t i)
+	double& operator[](size_t i)
 	{
 		switch (i)
 		{
@@ -2274,7 +2269,7 @@ struct TTwist3D
 		}
 	}
 	/** Coordinate access using operator[]. Order: vx,vy,vphi */
-	inline const double& operator[](size_t i) const
+	constexpr const double& operator[](size_t i) const
 	{
 		switch (i)
 		{
@@ -2295,7 +2290,7 @@ struct TTwist3D
 		}
 	}
 	/** Transformation into vector */
-	inline void getAsVector(std::vector<double>& v) const
+	void getAsVector(std::vector<double>& v) const
 	{
 		v.resize(6);
 		for (int i = 0; i < 6; i++) v[i] = (*this)[i];
@@ -2307,7 +2302,7 @@ struct TTwist3D
 	 * \sa fromString
 	 */
 	void asString(std::string& s) const;
-	inline std::string asString() const
+	std::string asString() const
 	{
 		std::string s;
 		asString(s);
