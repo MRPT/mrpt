@@ -129,12 +129,15 @@ cd ${MRPT_DEBSRC_DIR}
 mkdir debian
 cp -r ${MRPT_EXTERN_DEBIAN_DIR}/* debian
 
-# Use modified control file for Ubuntu PPA packages:
+# Use modified control & rules files for Ubuntu PPA packages:
 if [ $IS_FOR_UBUNTU == "1" ];
 then
 	cp ${MRPT_EXTERN_UBUNTU_PPA_DIR}/control.in debian/
-fi
 
+  # Ubuntu: force use of gcc-7:
+  sed -i '9i\export CXX=/usr/bin/g++-7\' debian/rules
+  sed -i '9i\export CC=/usr/bin/gcc-7\' debian/rules
+fi
 
 # Export signing pub key:
 mkdir debian/upstream/
