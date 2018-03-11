@@ -67,10 +67,8 @@ do
 	cd ${MRPTSRC}
 	bash scripts/prepare_debian.sh -s -u -h -d ${DEBIAN_DIST} -c "${MRPT_PKG_CUSTOM_CMAKE_PARAMS}"
 
-	MRPT_SNAPSHOT_VERSION=`date +%Y%m%d`
-	MRPT_SNAPSHOT_VERSION+="-git-"
-	MRPT_SNAPSHOT_VERSION+=`git rev-parse --short=8 HEAD`
-	MRPT_SNAPSHOT_VERSION+="-"
+	CUR_SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+	source $CUR_SCRIPT_DIR/prepare_debian_gen_snapshot_version.sh # populate MRPT_SNAPSHOT_VERSION
 
 	echo "===== Distribution: ${DEBIAN_DIST}  ========="
 	cd ${MRPT_DEB_DIR}/mrpt-${MRPT_VER_MMP}~snapshot${MRPT_SNAPSHOT_VERSION}${DEBIAN_DIST}/debian
