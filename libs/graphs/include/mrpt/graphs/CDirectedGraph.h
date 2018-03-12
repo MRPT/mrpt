@@ -10,6 +10,7 @@
 #define MRPT_DIRECTEDGRAPH_H
 
 #include <mrpt/typemeta/TTypeName.h>
+#include <mrpt/core/aligned_allocator.h>
 #include <mrpt/core/aligned_std_map.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/graphs/TNodeID.h>
@@ -122,7 +123,7 @@ class CDirectedGraph
 	inline void insertEdge(
 		TNodeID from_nodeID, TNodeID to_nodeID, const edge_t& edge_value)
 	{
-		alignas(16) typename edges_map_t::value_type entry(
+		alignas(MRPT_MAX_ALIGN_BYTES) typename edges_map_t::value_type entry(
 			std::make_pair(from_nodeID, to_nodeID), edge_value);
 		edges.insert(entry);
 	}
@@ -133,7 +134,7 @@ class CDirectedGraph
 	inline void insertEdgeAtEnd(
 		TNodeID from_nodeID, TNodeID to_nodeID, const edge_t& edge_value)
 	{
-		alignas(16) typename edges_map_t::value_type entry(
+		alignas(MRPT_MAX_ALIGN_BYTES) typename edges_map_t::value_type entry(
 			std::make_pair(from_nodeID, to_nodeID), edge_value);
 		edges.insert(edges.end(), entry);
 	}
