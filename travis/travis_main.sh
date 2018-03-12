@@ -1,6 +1,16 @@
 #!/bin/bash
 set -e   # Make sure any error makes the script to return an error code
 
+if [ "$CC" == "gcc" ]; then
+  export CC=gcc-7
+  export CXX=g++-7
+fi
+
+if [ "$CC" == "clang" ]; then
+  export CC=clang-6.0
+  export CXX=clang++-6.0
+fi
+
 ORIG_MRPT_DIR=`pwd`
 MRPT_DIR=/mrpt
 BUILD_DIR=/build
@@ -42,13 +52,6 @@ function do_generate_makefile()
 
 function build ()
 {
-  # gcc is too slow and we have a time limit in Travis CI: exclude examples when building with gcc
-  if [ "$CC" == "gcc" ]; then
-    BUILD_EXAMPLES=FALSE
-  else
-    BUILD_EXAMPLES=TRUE
-  fi
-
   if [ "$DEPS" == "minimal" ]; then
     DISABLE_PYTHON_BINDINGS=ON
   else
