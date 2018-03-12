@@ -15,12 +15,3 @@
 using namespace mrpt::obs;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CAction, CSerializable, mrpt::obs)
-
-/*---------------------------------------------------------------
-			Constructor
-  ---------------------------------------------------------------*/
-CAction::CAction() : timestamp(INVALID_TIMESTAMP) {}
-/*---------------------------------------------------------------
-			Destructor
-  ---------------------------------------------------------------*/
-CAction::~CAction() {}

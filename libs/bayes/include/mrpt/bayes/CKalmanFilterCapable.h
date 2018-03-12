@@ -46,8 +46,9 @@ enum TKFMethod
 };
 
 // Forward declaration:
-template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
-		  typename KFTYPE>
+template <
+	size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
+	typename KFTYPE>
 class CKalmanFilterCapable;
 
 /** Generic options for the Kalman Filter algorithm in itself.
@@ -56,14 +57,7 @@ class CKalmanFilterCapable;
 struct TKF_options : public mrpt::config::CLoadableOptions
 {
 	TKF_options(mrpt::system::VerbosityLevel& verb_level_ref)
-		: method(kfEKFNaive),
-		  verbosity_level(verb_level_ref),
-		  IKF_iterations(5),
-		  enable_profiler(false),
-		  use_analytic_transition_jacobian(true),
-		  use_analytic_observation_jacobian(true),
-		  debug_verify_analytic_jacobians(false),
-		  debug_verify_analytic_jacobians_threshold(1e-2)
+		: verbosity_level(verb_level_ref)
 	{
 	}
 
@@ -109,75 +103,79 @@ struct TKF_options : public mrpt::config::CLoadableOptions
 	}
 
 	/** The method to employ (default: kfEKFNaive) */
-	TKFMethod method;
+	TKFMethod method{kfEKFNaive};
 	mrpt::system::VerbosityLevel& verbosity_level;
 	/** Number of refinement iterations, only for the IKF method. */
-	int IKF_iterations;
+	int IKF_iterations{5};
 	/** If enabled (default=false), detailed timing information will be dumped
 	 * to the console thru a CTimerLog at the end of the execution. */
-	bool enable_profiler;
+	bool enable_profiler{false};
 	/** (default=true) If true, OnTransitionJacobian will be called; otherwise,
 	 * the Jacobian will be estimated from a numeric approximation by calling
 	 * several times to OnTransitionModel. */
-	bool use_analytic_transition_jacobian;
+	bool use_analytic_transition_jacobian{true};
 	/** (default=true) If true, OnObservationJacobians will be called;
 	 * otherwise, the Jacobian will be estimated from a numeric approximation by
 	 * calling several times to OnObservationModel. */
-	bool use_analytic_observation_jacobian;
+	bool use_analytic_observation_jacobian{true};
 	/** (default=false) If true, will compute all the Jacobians numerically and
 	 * compare them to the analytical ones, throwing an exception on mismatch.
 	 */
-	bool debug_verify_analytic_jacobians;
+	bool debug_verify_analytic_jacobians{false};
 	/** (default-1e-2) Sets the threshold for the difference between the
 	 * analytic and the numerical jacobians */
-	double debug_verify_analytic_jacobians_threshold;
+	double debug_verify_analytic_jacobians_threshold{1e-2};
 };
 
 /** Auxiliary functions, for internal usage of MRPT classes */
 namespace detail
 {
 // Auxiliary functions.
-template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
-		  typename KFTYPE>
+template <
+	size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
+	typename KFTYPE>
 inline size_t getNumberOfLandmarksInMap(
 	const CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>&
 		obj);
 // Specialization:
 template <size_t VEH_SIZE, size_t OBS_SIZE, size_t ACT_SIZE, typename KFTYPE>
 inline size_t getNumberOfLandmarksInMap(
-	const CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, 0 /*FEAT_SIZE*/, ACT_SIZE,
-							   KFTYPE>& obj);
+	const CKalmanFilterCapable<
+		VEH_SIZE, OBS_SIZE, 0 /*FEAT_SIZE*/, ACT_SIZE, KFTYPE>& obj);
 
-template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
-		  typename KFTYPE>
+template <
+	size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
+	typename KFTYPE>
 inline bool isMapEmpty(
 	const CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>&
 		obj);
 // Specialization:
 template <size_t VEH_SIZE, size_t OBS_SIZE, size_t ACT_SIZE, typename KFTYPE>
 inline bool isMapEmpty(
-	const CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, 0 /*FEAT_SIZE*/, ACT_SIZE,
-							   KFTYPE>& obj);
+	const CKalmanFilterCapable<
+		VEH_SIZE, OBS_SIZE, 0 /*FEAT_SIZE*/, ACT_SIZE, KFTYPE>& obj);
 
-template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
-		  typename KFTYPE>
+template <
+	size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
+	typename KFTYPE>
 void addNewLandmarks(
 	CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>& obj,
-	const typename CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
-										KFTYPE>::vector_KFArray_OBS& Z,
+	const typename CKalmanFilterCapable<
+		VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::vector_KFArray_OBS& Z,
 	const std::vector<int>& data_association,
-	const typename CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
-										KFTYPE>::KFMatrix_OxO& R);
+	const typename CKalmanFilterCapable<
+		VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::KFMatrix_OxO& R);
 template <size_t VEH_SIZE, size_t OBS_SIZE, size_t ACT_SIZE, typename KFTYPE>
 void addNewLandmarks(
-	CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, 0 /* FEAT_SIZE=0 */, ACT_SIZE,
-						 KFTYPE>& obj,
-	const typename CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, 0 /* FEAT_SIZE=0 */,
-										ACT_SIZE, KFTYPE>::vector_KFArray_OBS&
-		Z,
+	CKalmanFilterCapable<
+		VEH_SIZE, OBS_SIZE, 0 /* FEAT_SIZE=0 */, ACT_SIZE, KFTYPE>& obj,
+	const typename CKalmanFilterCapable<
+		VEH_SIZE, OBS_SIZE, 0 /* FEAT_SIZE=0 */, ACT_SIZE,
+		KFTYPE>::vector_KFArray_OBS& Z,
 	const std::vector<int>& data_association,
-	const typename CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, 0 /* FEAT_SIZE=0 */,
-										ACT_SIZE, KFTYPE>::KFMatrix_OxO& R);
+	const typename CKalmanFilterCapable<
+		VEH_SIZE, OBS_SIZE, 0 /* FEAT_SIZE=0 */, ACT_SIZE,
+		KFTYPE>::KFMatrix_OxO& R);
 }  // namespace detail
 
 /** Virtual base for Kalman Filter (EKF,IEKF,UKF) implementations.
@@ -219,8 +217,9 @@ void addNewLandmarks(
  *  \sa mrpt::slam::CRangeBearingKFSLAM, mrpt::slam::CRangeBearingKFSLAM2D
  * \ingroup mrpt_bayes_grp
  */
-template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
-		  typename KFTYPE = double>
+template <
+	size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE,
+	typename KFTYPE = double>
 class CKalmanFilterCapable : public mrpt::system::COutputLogger
 {
    public:
@@ -236,8 +235,8 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	/** The numeric type used in the Kalman Filter (default=double) */
 	using kftype = KFTYPE;
 	/** My class, in a shorter name! */
-	typedef CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
-								 KFTYPE>
+	typedef CKalmanFilterCapable<
+		VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>
 		KFCLASS;
 
 	// ---------- Many useful typedefs to short the notation a bit... --------
@@ -662,17 +661,18 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 		const KFArray_FEAT& x, const std::pair<KFCLASS*, size_t>& dat,
 		KFArray_OBS& out_x);
 
-	template <size_t VEH_SIZEb, size_t OBS_SIZEb, size_t FEAT_SIZEb,
-			  size_t ACT_SIZEb, typename KFTYPEb>
+	template <
+		size_t VEH_SIZEb, size_t OBS_SIZEb, size_t FEAT_SIZEb, size_t ACT_SIZEb,
+		typename KFTYPEb>
 	friend void detail::addNewLandmarks(
-		CKalmanFilterCapable<VEH_SIZEb, OBS_SIZEb, FEAT_SIZEb, ACT_SIZEb,
-							 KFTYPEb>& obj,
-		const typename CKalmanFilterCapable<VEH_SIZEb, OBS_SIZEb, FEAT_SIZEb,
-											ACT_SIZEb,
-											KFTYPEb>::vector_KFArray_OBS& Z,
+		CKalmanFilterCapable<
+			VEH_SIZEb, OBS_SIZEb, FEAT_SIZEb, ACT_SIZEb, KFTYPEb>& obj,
+		const typename CKalmanFilterCapable<
+			VEH_SIZEb, OBS_SIZEb, FEAT_SIZEb, ACT_SIZEb,
+			KFTYPEb>::vector_KFArray_OBS& Z,
 		const std::vector<int>& data_association,
-		const typename CKalmanFilterCapable<VEH_SIZEb, OBS_SIZEb, FEAT_SIZEb,
-											ACT_SIZEb, KFTYPEb>::KFMatrix_OxO&
+		const typename CKalmanFilterCapable<
+			VEH_SIZEb, OBS_SIZEb, FEAT_SIZEb, ACT_SIZEb, KFTYPEb>::KFMatrix_OxO&
 			R);
 };  // end class
 
