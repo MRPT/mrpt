@@ -12,7 +12,7 @@
 #include <mrpt/obs/CAction.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/serialization/CSerializable.h>
-#include <mrpt/containers/poly_ptr_ptr.h>
+#include <mrpt/containers/deepcopy_poly_ptr.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 
 namespace mrpt
@@ -32,7 +32,7 @@ class CActionCollection : public mrpt::serialization::CSerializable
 
    protected:
 	/** The robot "actionss" */
-	std::deque<mrpt::containers::poly_ptr_ptr<CAction::Ptr>> m_actions;
+	std::deque<mrpt::containers::deepcopy_poly_ptr<CAction::Ptr>> m_actions;
 
    public:
 	/** ctor */
@@ -43,13 +43,13 @@ class CActionCollection : public mrpt::serialization::CSerializable
 	/** You can use CActionCollection::begin to get a iterator to the first
 	 * element.
 	 */
-	typedef std::deque<mrpt::containers::poly_ptr_ptr<CAction::Ptr>>::iterator
+	typedef std::deque<mrpt::containers::deepcopy_poly_ptr<CAction::Ptr>>::iterator
 		iterator;
 
 	/** You can use CActionCollection::begin to get a iterator to the first
 	 * element.
 	 */
-	typedef std::deque<mrpt::containers::poly_ptr_ptr<CAction::Ptr>>::
+	typedef std::deque<mrpt::containers::deepcopy_poly_ptr<CAction::Ptr>>::
 		const_iterator const_iterator;
 
 	/** Returns a iterator to the first action: this is an example of usage:

@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/containers/generic_copier_ptr.h>  // copy_ptr<>
+#include <mrpt/containers/deepcopy_ptr.h>  // copy_ptr<>
 
 namespace mrpt
 {

@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/containers/generic_copier_ptr.h>
+#include <mrpt/containers/deepcopy_ptr.h>
 #include <mrpt/core/common.h>  // TODO
 MRPT_TODO("Re-enable when mrpt-poses is ported!");
 #if 0
