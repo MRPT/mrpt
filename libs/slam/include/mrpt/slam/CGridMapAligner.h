@@ -13,7 +13,7 @@
 #include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/typemeta/TEnumType.h>
-#include <mrpt/containers/poly_ptr_ptr.h>
+#include <mrpt/containers/deepcopy_poly_ptr.h>
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/poses/poses_frwds.h>
 #include <mrpt/vision/CFeatureExtraction.h>
@@ -172,7 +172,7 @@ class CGridMapAligner : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 		 *   - The final sog is the merge of sog3.
 		 *
 		 */
-		mrpt::containers::poly_ptr_ptr<mrpt::poses::CPosePDFSOG::Ptr> sog1,
+		mrpt::containers::deepcopy_poly_ptr<mrpt::poses::CPosePDFSOG::Ptr> sog1,
 			sog2, sog3;
 
 		/** The landmarks of each map (the indices of these landmarks correspond

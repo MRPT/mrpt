@@ -12,7 +12,7 @@
 #include <mrpt/obs/CAction.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPosePDF.h>
-#include <mrpt/containers/poly_ptr_ptr.h>
+#include <mrpt/containers/deepcopy_poly_ptr.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
 namespace mrpt
@@ -47,7 +47,7 @@ class CActionRobotMovement2D : public CAction
 	CActionRobotMovement2D();
 
 	/** The 2D pose change probabilistic estimation. */
-	mrpt::containers::poly_ptr_ptr<mrpt::poses::CPosePDF::Ptr> poseChange;
+	mrpt::containers::deepcopy_poly_ptr<mrpt::poses::CPosePDF::Ptr> poseChange;
 	/** This is the raw odometry reading, and only is used when
 	 * "estimationMethod" is "TEstimationMethod::emOdometry" */
 	mrpt::poses::CPose2D rawOdometryIncrementReading;

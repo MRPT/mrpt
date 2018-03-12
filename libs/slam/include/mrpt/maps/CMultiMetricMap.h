@@ -26,7 +26,7 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/typemeta/TEnumType.h>
-#include <mrpt/containers/poly_ptr_ptr.h>
+#include <mrpt/containers/deepcopy_poly_ptr.h>
 #include <mrpt/obs/obs_frwds.h>
 
 namespace mrpt
@@ -168,7 +168,7 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 	   methods and proxies
 		@{ */
 	typedef std::deque<
-		mrpt::containers::poly_ptr_ptr<mrpt::maps::CMetricMap::Ptr>>
+		mrpt::containers::deepcopy_poly_ptr<mrpt::maps::CMetricMap::Ptr>>
 		TListMaps;
 
 	/** The list of MRPT metric maps in this object. Use dynamic_cast or smart
