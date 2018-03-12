@@ -413,6 +413,11 @@ ENDIF()
 
 # GNU GCC options ================================
 IF(CMAKE_COMPILER_IS_GNUCXX)
+	# Since MRPT 2.0 (March 2018) we need gcc-7.{1,2} due to compiler bugs in older versions:
+	if (NOT "${CMAKE_CXX_COMPILER_VERSION}" VERSION_GREATER "7.0")
+		MESSAGE(FATAL_ERROR "MRPT requires gcc-7 or above. Please, see instructions for upgrading in: https://github.com/MRPT/mrpt/blob/master/README.md#32-build-from-sources")
+	endif()
+
 	# Wall & pedantic?
 	SET(MRPT_BUILD_GCC_PEDANTIC_DEFAULT "OFF")
 	SET( MRPT_BUILD_GCC_PEDANTIC ${MRPT_BUILD_GCC_PEDANTIC_DEFAULT} CACHE BOOL "Enable pedantic error detection (with GCC only)")
