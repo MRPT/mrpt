@@ -6,6 +6,11 @@ if [ "$CC" == "gcc" ]; then
   export CXX=g++-7
 fi
 
+if [ "$CC" == "clang" ]; then
+  export CC=clang-6.0
+  export CXX=clang++-6.0
+fi
+
 ORIG_MRPT_DIR=`pwd`
 MRPT_DIR=/mrpt
 BUILD_DIR=/build
