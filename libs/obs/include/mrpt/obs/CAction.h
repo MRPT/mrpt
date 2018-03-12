@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CAction_H
-#define CAction_H
+#pragma once
 
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/datetime.h>
@@ -29,24 +28,14 @@ class CAction : public mrpt::serialization::CSerializable
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CAction)
 
-	/** Default constructor
-	  */
-	CAction();
+	/** Default ctor */
+	CAction() {}
+	virtual ~CAction() {}
 
-	/** Constructor
-	  */
-	virtual ~CAction();
-
-	/** The associated time-stamp.
-	  *  This was added at 2-Dec-2007, new serialization versions have been
-	 * added to derived classes to manage this time-stamp.
-	  *  Prior versions will be read as having a INVALID_TIMESTAMP value.
-	 */
-	mrpt::system::TTimeStamp timestamp;
+	/** The associated time-stamp.*/
+	mrpt::system::TTimeStamp timestamp{INVALID_TIMESTAMP};
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
-
-#endif
+}  // namespace obs
+}  // namespace mrpt

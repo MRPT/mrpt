@@ -23,10 +23,6 @@ using namespace mrpt::math;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CObservation, CSerializable, mrpt::obs)
 
-/*---------------------------------------------------------------
-					CONSTRUCTOR
-  ---------------------------------------------------------------*/
-CObservation::CObservation() : timestamp(mrpt::system::now()), sensorLabel() {}
 void CObservation::getSensorPose(mrpt::math::TPose3D& out_sensorPose) const
 {
 	CPose3D p;

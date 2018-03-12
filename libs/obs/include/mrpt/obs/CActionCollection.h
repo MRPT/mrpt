@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CActionCollection_H
-#define CActionCollection_H
+#pragma once
 
 #include <mrpt/obs/CAction.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
@@ -43,8 +42,8 @@ class CActionCollection : public mrpt::serialization::CSerializable
 	/** You can use CActionCollection::begin to get a iterator to the first
 	 * element.
 	 */
-	typedef std::deque<mrpt::containers::deepcopy_poly_ptr<CAction::Ptr>>::iterator
-		iterator;
+	typedef std::deque<
+		mrpt::containers::deepcopy_poly_ptr<CAction::Ptr>>::iterator iterator;
 
 	/** You can use CActionCollection::begin to get a iterator to the first
 	 * element.
@@ -188,5 +187,3 @@ class CActionCollection : public mrpt::serialization::CSerializable
 
 }  // namespace obs
 }  // namespace mrpt
-
-#endif

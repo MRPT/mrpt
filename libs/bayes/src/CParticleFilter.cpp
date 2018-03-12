@@ -25,14 +25,14 @@ namespace obs
 {
 class CActionCollection;
 }
-}
+}  // namespace mrpt
 namespace mrpt
 {
 namespace obs
 {
 class CSensoryFrame;
 }
-}
+}  // namespace mrpt
 
 using namespace mrpt::bayes;
 using mrpt::square;
@@ -87,9 +87,8 @@ void CParticleFilter::executeOn(
 	{
 		if (obj.ESS() < m_options.BETA)
 		{
-			MRPT_LOG_DEBUG(
-				mrpt::format(
-					"Resampling particles (ESS was %.02f)\n", obj.ESS()));
+			MRPT_LOG_DEBUG(mrpt::format(
+				"Resampling particles (ESS was %.02f)\n", obj.ESS()));
 			obj.performResampling(m_options);  // Resample
 		}
 	}
@@ -100,20 +99,6 @@ void CParticleFilter::executeOn(
 /*---------------------------------------------------------------
 					TParticleFilterOptions
   ---------------------------------------------------------------*/
-CParticleFilter::TParticleFilterOptions::TParticleFilterOptions()
-	: adaptiveSampleSize(false),
-	  BETA(0.5),
-	  sampleSize(1),
-	  pfAuxFilterOptimal_MaximumSearchSamples(100),
-	  powFactor(1),
-	  PF_algorithm(pfStandardProposal),
-	  resamplingMethod(prMultinomial),
-	  max_loglikelihood_dyn_range(15),
-	  pfAuxFilterStandard_FirstStageWeightsMonteCarlo(false),
-	  pfAuxFilterOptimal_MLE(false)
-{
-}
-
 void CParticleFilter::TParticleFilterOptions::saveToConfigFile(
 	mrpt::config::CConfigFileBase& c, const std::string& s) const
 {

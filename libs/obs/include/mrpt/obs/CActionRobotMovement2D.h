@@ -21,9 +21,8 @@ namespace obs
 {
 /** Represents a probabilistic 2D movement of the robot mobile base
  *
- *  See the tutorial on <a
- * href="http://www.mrpt.org/Probabilistic_Motion_Models" >probabilistic motion
- * models</a>.
+ *  See docs:
+ * https://www.mrpt.org/tutorials/programming/odometry-and-motion-models/probabilistic_motion_models/
  *
  * \note [New in MRPT 1.5.0] Velocity is now encoded as mrpt::math::TTwist2D as
  * a more general version of the old (linVel, angVel).
