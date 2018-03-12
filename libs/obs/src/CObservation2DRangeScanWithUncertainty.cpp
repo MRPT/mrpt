@@ -51,7 +51,7 @@ double CObservation2DRangeScanWithUncertainty::evaluateScanLikelihood(
 		const double otherScanRange =
 			otherScan.validRange[i] ? otherScan.scan[i] : otherScan.maxRange;
 
-		const double likGauss = std::exp(-0.5*mrpt::utils::square(
+		const double likGauss = std::exp(-0.5*mrpt::square(
 			otherScanRange - rangesMean[i]) / prediction_total_var);
 		double pi;
 		if (otherScan.scan[i] > rangesMean[i])
