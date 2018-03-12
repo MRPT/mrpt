@@ -48,7 +48,7 @@ double CObservation2DRangeScanWithUncertainty::evaluateScanLikelihood(const CObs
 
 		const double otherScanRange = otherScan.validRange[i] ? otherScan.scan[i] : otherScan.maxRange;
 
-		const double likGauss = mrpt::math::normalPDF(otherScanRange, rangesMean[i], std::sqrt(prediction_total_var) );
+		const double likGauss = std::exp(-0.5*mrpt::utils::square(otherScanRange - rangesMean[i]) / prediction_total_var);
 		double pi;
 		if (otherScan.scan[i] > rangesMean[i]) {
 			if (otherScan.validRange[i])
@@ -56,7 +56,7 @@ double CObservation2DRangeScanWithUncertainty::evaluateScanLikelihood(const CObs
 			else pi = std::max(likGauss, params.prob_lost_ray);
 		}
 		else {
-			pi = std::max( likGauss, std::min(1.0, params.prob_outliers *otherScanRange/rangesMean[i] ) );
+			pi = std::max( likGauss, std::min(1.0, params.prob_outliers) );
 		}
 
 		double lpi = std::max(params.min_ray_log_lik, log(pi));
