@@ -30,13 +30,13 @@ jobs:
     - env: STAGE=1 TASK="build" DEPS="minimal" BUILD_TARGET="mrpt-hmtslam"
       compiler: gcc
     - stage: Core Build and Test Stage 2
-      env: STAGE=2 TASK="build" DEPS="full"
+      env: STAGE=2 TASK="test" DEPS="full"
       compiler: gcc
-    - env: STAGE=2 TASK="build" DEPS="full"
+    - env: STAGE=2 TASK="test" DEPS="full"
       compiler: clang
-    - env: STAGE=2 TASK="build" DEPS="headless"
+    - env: STAGE=2 TASK="test" DEPS="headless"
       compiler: gcc
-    - env: STAGE=2 TASK="build" DEPS="minimal"
+    - env: STAGE=2 TASK="test" DEPS="minimal"
       compiler: gcc
     - stage: Extended Builds and Tests
       language: python
