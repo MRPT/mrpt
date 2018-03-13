@@ -89,7 +89,7 @@ function test ()
     return
   fi
 
-  make -j2 tests_build_all
+  make -j2
   make -j2 test
   make -j2 gcov
 
