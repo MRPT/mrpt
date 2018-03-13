@@ -61,8 +61,9 @@ function build ()
   #don't regenerate makefiles on stage 2
   if [ "$STAGE" != "2" ]; then
     do_generate_makefile \
-      -DBUILD_EXAMPLES=$BUILD_EXAMPLES \
-      -DBUILD_TESTING=FALSE \
+      -DBUILD_EXAMPLES=On \
+      -DBUILD_TESTING=On \
+      -DENABLE_COVERAGE=On \
       -DDISABLE_PYTHON_BINDINGS=$DISABLE_PYTHON_BINDINGS
   fi
 
@@ -83,22 +84,17 @@ command_exists () {
 
 function test ()
 {
+  cd $BUILD_DIR
+
   # gcc is too slow and we have a time limit in Travis CI:
   if [ "$CC" == "gcc" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then
     return
   fi
 
-  do_generate_makefile -DBUILD_APPLICATIONS=FALSE -DENABLE_COVERAGE=On
+  make -j2
+  make -j2 test
+  make -j2 gcov
 
-  # Remove gdb use for coverage test reports.
-  # Use `test_gdb` to show stack traces of failing unit tests.
-#  if command_exists gdb ; then
-#    make test_gdb
-#  else
-    make -j2 tests_build_all
-    make -j2 test
-    make -j2 gcov
-#  fi
   bash <(curl -s https://codecov.io/bash) -X gcov
 
   cd $MRPT_DIR
