@@ -27,25 +27,18 @@ jobs:
       compiler: clang
     - env: STAGE=1 TASK="build" DEPS="headless" BUILD_TARGET="mrpt-hmtslam"
       compiler: gcc
-    - stage: Core Build Stage 2
+    - env: STAGE=1 TASK="build" DEPS="minimal" BUILD_TARGET="mrpt-hmtslam"
+      compiler: gcc
+    - stage: Core Build and Test Stage 2
       env: STAGE=2 TASK="build" DEPS="full"
       compiler: gcc
     - env: STAGE=2 TASK="build" DEPS="full"
       compiler: clang
     - env: STAGE=2 TASK="build" DEPS="headless"
       compiler: gcc
-    - stage: Core Tests
+    - env: STAGE=2 TASK="build" DEPS="minimal"
       compiler: gcc
-      env: TASK="test" DEPS="full"
-    - compiler: clang
-      env: TASK="test" DEPS="full"
     - stage: Extended Builds and Tests
-      compiler: gcc
-      env: TASK="build" DEPS="minimal"
-    - compiler: gcc
-      env: TASK="test" DEPS="minimal"
-    - compiler: gcc
-      env: TASK="test" DEPS="headless"
-    - language: python
+      language: python
       env: TASK="lint" DEPS="full"
 
