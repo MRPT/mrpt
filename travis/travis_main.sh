@@ -84,6 +84,8 @@ command_exists () {
 
 function test ()
 {
+  cd $MRPT_DIR
+
   # gcc is too slow and we have a time limit in Travis CI:
   if [ "$CC" == "gcc" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then
     return
