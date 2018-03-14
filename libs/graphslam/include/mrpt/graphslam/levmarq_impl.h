@@ -224,7 +224,7 @@ double computeJacobiansAndErrors(
 			P1DP2inv, errs.back(), edge);
 
 		// Compute the jacobians:
-		alignas(16)
+		alignas(MRPT_MAX_ALIGN_BYTES)
 			std::pair<mrpt::graphs::TPairNodeIDs, typename gst::TPairJacobs>
 				newMapEntry;
 		newMapEntry.first = ids;
