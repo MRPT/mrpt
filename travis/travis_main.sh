@@ -95,9 +95,10 @@ function test ()
   make -j2 test
   make -j2 gcov
 
-  bash <(curl -s https://codecov.io/bash) -X gcov
-
   cd $MRPT_DIR
+
+  bash <(curl -s https://codecov.io/bash) -X gcov -y .codecov.yml
+
 }
 
 case $TASK in
