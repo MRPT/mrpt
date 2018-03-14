@@ -362,7 +362,9 @@ void meanAndCovVec(
 	out_mean.assign(M, 0);
 	for (size_t i = 0; i < N; i++)
 		for (size_t j = 0; j < M; j++) out_mean[j] += v[i][j];
-	out_mean *= N_inv;
+	
+	for (size_t j = 0; j < M; j++)
+		out_mean[j] *= N_inv;
 
 	// Second: Compute the covariance
 	//  Save only the above-diagonal part, then after averaging
