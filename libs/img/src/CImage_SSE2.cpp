@@ -76,7 +76,7 @@ void image_SSE2_scale_half_1c8u(const uint8_t* in, uint8_t* out, int w, int h)
 void image_SSE2_scale_half_smooth_1c8u(
 	const uint8_t* in, uint8_t* out, int w, int h)
 {
-	alignas(16) const unsigned long long mask[2] = {0x00FF00FF00FF00FFull,
+	alignas(MRPT_MAX_ALIGN_BYTES) const unsigned long long mask[2] = {0x00FF00FF00FF00FFull,
 													0x00FF00FF00FF00FFull};
 	const uint8_t* nextRow = in + w;
 	__m128i m = _mm_load_si128((const __m128i*)mask);

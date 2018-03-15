@@ -410,7 +410,7 @@ void CPose3DRotVec::composeFrom(
 		const double C = 1 / (1 - qCr * qCr);
 		const double D = acos(qCr) / sqrt(1 - qCr * qCr);
 
-		alignas(16) const double aux_valsH[] = {
+		alignas(MRPT_MAX_ALIGN_BYTES) const double aux_valsH[] = {
 			2 * C * qCx * (D * qCr - 1), 2 * D, 0,	 0,
 			2 * C * qCy * (D * qCr - 1), 0,		2 * D, 0,
 			2 * C * qCz * (D * qCr - 1), 0,		0,	 2 * D};
@@ -421,7 +421,7 @@ void CPose3DRotVec::composeFrom(
 		const double alpha2 = alpha * alpha;
 		const double KA = alpha * cos(alpha / 2) - 2 * sin(alpha / 2);
 
-		alignas(16) const double aux_valsG[] = {
+		alignas(MRPT_MAX_ALIGN_BYTES) const double aux_valsG[] = {
 			-r1 * alpha2 * sin(alpha / 2),
 			-r2 * alpha2 * sin(alpha / 2),
 			-r3 * alpha2 * sin(alpha / 2),
@@ -446,7 +446,7 @@ void CPose3DRotVec::composeFrom(
 			const double& qAy = qA.m_quat[2];
 			const double& qAz = qA.m_quat[3];
 
-			alignas(16) const double aux_valsQA[] = {
+			alignas(MRPT_MAX_ALIGN_BYTES) const double aux_valsQA[] = {
 				qAr, -qAx, -qAy, -qAz, qAx, qAr, qAz,  -qAy,
 				qAy, -qAz, qAr,  qAx,  qAz, qAy, -qAx, qAr};
 			CMatrixDouble44 QA(aux_valsQA);
@@ -467,7 +467,7 @@ void CPose3DRotVec::composeFrom(
 			const double& qBy = qB.m_quat[2];
 			const double& qBz = qB.m_quat[3];
 
-			alignas(16) const double aux_valsQB[] = {
+			alignas(MRPT_MAX_ALIGN_BYTES) const double aux_valsQB[] = {
 				qBr, -qBx, -qBy, -qBz, qBx, qBr,  -qBz, qBy,
 				qBy, qBz,  qBr,  -qBx, qBz, -qBy, qBx,  qBr};
 			CMatrixDouble44 QB(aux_valsQB);

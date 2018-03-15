@@ -33,5 +33,5 @@ class CTicTac
 	alignas(16) unsigned long largeInts[4];
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
+}  // namespace system
+}  // namespace mrpt
