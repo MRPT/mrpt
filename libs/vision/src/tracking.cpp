@@ -290,7 +290,7 @@ inline void trackFeatures_addNewFeats_simple_list(
 					newFeat.response	= feat.response;
 					newFeat.octave		= 0;
 					/** Inactive: right after detection, and before being tried to track */
-					newFeat.track_status = status_IDLE;  
+					newFeat.track_status = status_IDLE;
 				}
 #elif 0
 	// Version with an occupancy grid:
@@ -523,7 +523,6 @@ inline size_t trackFeatures_deleteOOB(
 	CFeatureList& trackedFeats, const size_t img_width, const size_t img_height,
 	const int MIN_DIST_MARGIN_TO_STOP_TRACKING)
 {
-	MRPT_UNUSED_PARAM(MIN_DIST_MARGIN_TO_STOP_TRACKING);
 	CFeatureList::iterator itFeat = trackedFeats.begin();
 	size_t n_removed = 0;
 	while (itFeat != trackedFeats.end())
@@ -535,7 +534,6 @@ inline size_t trackFeatures_deleteOOB(
 			// Also, check if it's too close to the image border:
 			const float x = (*itFeat)->x;
 			const float y = (*itFeat)->y;
-			static const float MIN_DIST_MARGIN_TO_STOP_TRACKING = 10;
 			if (x < MIN_DIST_MARGIN_TO_STOP_TRACKING ||
 				y < MIN_DIST_MARGIN_TO_STOP_TRACKING ||
 				x > (img_width - MIN_DIST_MARGIN_TO_STOP_TRACKING) ||
