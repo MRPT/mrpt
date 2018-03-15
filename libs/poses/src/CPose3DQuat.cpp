@@ -126,7 +126,7 @@ void CPose3DQuat::composePoint(
 		{
 			// 3x3:  df_{qr} / da
 
-			alignas(16) const double vals[3 * 3] = {
+			alignas(MRPT_MAX_ALIGN_BYTES) const double vals[3 * 3] = {
 				1 - 2 * (qy2 + qz2),
 				2 * (m_quat.x() * m_quat.y() - m_quat.r() * m_quat.z()),
 				2 * (m_quat.r() * m_quat.y() + m_quat.x() * m_quat.z()),
@@ -145,11 +145,11 @@ void CPose3DQuat::composePoint(
 		if (out_jacobian_df_dpose)
 		{
 			// 3x7:  df_{qr} / dp
-			alignas(16) const double vals1[3 * 7] = {
+			alignas(MRPT_MAX_ALIGN_BYTES) const double vals1[3 * 7] = {
 				1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0};
 			out_jacobian_df_dpose->loadFromArray(vals1);
 
-			alignas(16) const double vals[3 * 4] = {
+			alignas(MRPT_MAX_ALIGN_BYTES) const double vals[3 * 4] = {
 				2 * (-m_quat.z() * ly + m_quat.y() * lz),
 				2 * (m_quat.y() * ly + m_quat.z() * lz),
 				2 * (-2 * m_quat.y() * lx + m_quat.x() * ly + m_quat.r() * lz),
@@ -211,7 +211,7 @@ void CPose3DQuat::inverseComposePoint(
 			// 2*qy^2 + 1]
 			//
 
-			alignas(16) const double vals[3 * 3] = {
+			alignas(MRPT_MAX_ALIGN_BYTES) const double vals[3 * 3] = {
 				1 - 2 * (qy2 + qz2),
 				2 * (m_quat.x() * m_quat.y() + m_quat.r() * m_quat.z()),
 				2 * (-m_quat.r() * m_quat.y() + m_quat.x() * m_quat.z()),
@@ -249,7 +249,7 @@ void CPose3DQuat::inverseComposePoint(
 			const double qy = m_quat.y();
 			const double qz = m_quat.z();
 
-			alignas(16) const double vals1[3 * 7] = {
+			alignas(MRPT_MAX_ALIGN_BYTES) const double vals1[3 * 7] = {
 				2 * qy2 + 2 * qz2 - 1,
 				-2 * qr * qz - 2 * qx * qy,
 				2 * qr * qy - 2 * qx * qz,
@@ -281,7 +281,7 @@ void CPose3DQuat::inverseComposePoint(
 			const double Ay = 2 * (gy - m_coords[1]);
 			const double Az = 2 * (gz - m_coords[2]);
 
-			alignas(16)
+			alignas(MRPT_MAX_ALIGN_BYTES)
 				const double vals[3 * 4] = {-qy * Az + qz * Ay,
 											qy * Ay + qz * Az,
 											qx * Ay - 2 * qy * Ax - qr * Az,

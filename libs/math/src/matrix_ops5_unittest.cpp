@@ -22,7 +22,7 @@ using namespace std;
 
 TEST(Matrices, loadFromArray)
 {
-	alignas(16)
+	alignas(MRPT_MAX_ALIGN_BYTES)
 		const double nums[3 * 4] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
 
 	CMatrixFixedNumeric<double, 3, 4> mat;
@@ -34,11 +34,11 @@ TEST(Matrices, loadFromArray)
 
 TEST(Matrices, CMatrixFixedNumeric_loadWithEigenMap)
 {
-	alignas(16) double nums[3 * 4] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+	alignas(32) double nums[3 * 4] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
 
 	// Row major
 	const CMatrixFixedNumeric<double, 3, 4> mat =
-		Eigen::Map<CMatrixFixedNumeric<double, 3, 4>::Base, Eigen::Aligned>(
+		Eigen::Map<CMatrixFixedNumeric<double, 3, 4>::Base, Eigen::Aligned32>(
 			nums);
 
 	for (int r = 0; r < 3; r++)
@@ -47,10 +47,10 @@ TEST(Matrices, CMatrixFixedNumeric_loadWithEigenMap)
 
 TEST(Matrices, EigenMatrix_loadWithEigenMap)
 {
-	alignas(16) double nums[3 * 4] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+	alignas(32) double nums[3 * 4] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
 	// Col major
 	const Eigen::Matrix<double, 3, 4> mat =
-		Eigen::Map<Eigen::Matrix<double, 3, 4>, Eigen::Aligned>(nums);
+		Eigen::Map<Eigen::Matrix<double, 3, 4>, Eigen::Aligned32>(nums);
 
 	for (int r = 0; r < 3; r++)  // Transposed!!
 		for (int c = 0; c < 4; c++) EXPECT_EQ(nums[3 * c + r], mat(r, c));

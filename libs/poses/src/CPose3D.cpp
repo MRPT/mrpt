@@ -273,7 +273,7 @@ void CPose3D::rebuildRotationMatrix()
 	const double sr = sin(m_roll);
 #endif
 
-	alignas(16) const double rot_vals[] = {cy * cp,
+	alignas(MRPT_MAX_ALIGN_BYTES) const double rot_vals[] = {cy * cp,
 										   cy * sp * sr - sy * cr,
 										   cy * sp * cr + sy * sr,
 										   sy * cp,
@@ -392,7 +392,7 @@ void CPose3D::composePoint(
 		if (use_small_rot_approx)
 		{
 			// Linearized Jacobians around (yaw,pitch,roll)=(0,0,0):
-			alignas(16) const double nums[3 * 6] = {
+			alignas(MRPT_MAX_ALIGN_BYTES) const double nums[3 * 6] = {
 				1, 0, 0, -ly, lz, 0, 0, 1, 0, lx, 0, -lz, 0, 0, 1, 0, -lx, ly};
 			out_jacobian_df_dpose->loadFromArray(nums);
 		}
@@ -416,7 +416,7 @@ void CPose3D::composePoint(
 			const double sr = sin(m_roll);
 #endif
 
-			alignas(16) const double nums[3 * 6] = {
+			alignas(MRPT_MAX_ALIGN_BYTES) const double nums[3 * 6] = {
 				1, 0, 0,
 				-lx * sy * cp + ly * (-sy * sp * sr - cy * cr) +
 					lz * (-sy * sp * cr + cy * sr),  // d_x'/d_yaw
@@ -449,7 +449,7 @@ void CPose3D::composePoint(
 	// Jacob: df/dse3
 	if (out_jacobian_df_dse3)
 	{
-		alignas(16) const double nums[3 * 6] = {
+		alignas(MRPT_MAX_ALIGN_BYTES) const double nums[3 * 6] = {
 			1, 0, 0, 0, gz, -gy, 0, 1, 0, -gz, 0, gx, 0, 0, 1, gy, -gx, 0};
 		out_jacobian_df_dse3->loadFromArray(nums);
 	}
@@ -717,7 +717,7 @@ void CPose3D::inverseComposePoint(
 		const double Ay = gy - m_coords[1];
 		const double Az = gz - m_coords[2];
 
-		alignas(16) const double nums[3 * 6] = {
+		alignas(MRPT_MAX_ALIGN_BYTES) const double nums[3 * 6] = {
 			-m_ROT(0, 0),
 			-m_ROT(1, 0),
 			-m_ROT(2, 0),
@@ -749,7 +749,7 @@ void CPose3D::inverseComposePoint(
 	// Jacob: df/dse3
 	if (out_jacobian_df_dse3)
 	{
-		alignas(16) const double nums[3 * 6] = {
+		alignas(MRPT_MAX_ALIGN_BYTES) const double nums[3 * 6] = {
 			-1, 0, 0, 0, -lz, ly, 0, -1, 0, lz, 0, -lx, 0, 0, -1, -ly, lx, 0};
 		out_jacobian_df_dse3->loadFromArray(nums);
 	}
@@ -821,7 +821,7 @@ inline void deltaR(const MAT33& R, VEC3& v)
 template <typename VEC3, typename MAT3x3, typename MAT3x9>
 inline void M3x9(const VEC3& a, const MAT3x3& B, MAT3x9& RES)
 {
-	alignas(16) const double vals[] = {
+	alignas(MRPT_MAX_ALIGN_BYTES) const double vals[] = {
 		a[0],	 -B(0, 2), B(0, 1),  B(0, 2),  a[0],	-B(0, 0), -B(0, 1),
 		B(0, 0),  a[0],		a[1],	 -B(1, 2), B(1, 1), B(1, 2),  a[1],
 		-B(1, 0), -B(1, 1), B(1, 0),  a[1],		a[2],	-B(2, 2), B(2, 1),
@@ -840,7 +840,7 @@ inline CMatrixDouble33 ddeltaRt_dR(const CPose3D& P)
 	double b = abc[1];
 	double c = abc[2];
 
-	alignas(16) const double vals[] = {
+	alignas(MRPT_MAX_ALIGN_BYTES) const double vals[] = {
 		-b * t[1] - c * t[2],	 2 * b * t[0] - a * t[1],
 		2 * c * t[0] - a * t[2],  -b * t[0] + 2 * a * t[1],
 		-a * t[0] - c * t[2],	 2 * c * t[1] - b * t[2],
