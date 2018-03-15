@@ -132,7 +132,7 @@ void OctetVectorToObject(
 	/*! @name Virtual methods for MRPT-MEX conversion */ \
 	/*! @{ */                                            \
    public:                                               \
-	virtual mxArray* writeToMatlab() const;              \
+	mxArray* writeToMatlab() const override;              \
 /*! @} */
 
 /** This must be inserted if a custom conversion method for MEX API is
