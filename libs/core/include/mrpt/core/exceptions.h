@@ -56,7 +56,7 @@ inline std::string throw_typed_exception(
 
 template <typename E>
 inline std::string throw_stacked_exception(
-	E&& e, char* file, unsigned long line, const char* funcName)
+	E&& e, const char* file, unsigned long line, const char* funcName)
 {
 	std::string s = e.what();
 	s += "\n";
