@@ -3,4 +3,4 @@ coverage:
     - tests/*
     - samples/*
     - apps/*
-    - otherlibs/*
+    - **/otherlibs
