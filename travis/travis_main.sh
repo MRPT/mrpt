@@ -97,7 +97,7 @@ function test ()
 
   cd $MRPT_DIR
 
-  bash <(curl -s https://codecov.io/bash) -X gcov -y .codecov.yml
+  bash <(curl -s https://codecov.io/bash) -X gcov -y .codecov.yml -R $MRPT_DIR -s $BUILD_DIR
 
 }
 
