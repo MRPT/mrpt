@@ -26,6 +26,8 @@ FIND_PACKAGE(MRPT REQUIRED vision;gui)
 # Define the executable target:
 ADD_EXECUTABLE(${sampleName} test.cpp  )
 
+ADD_DEPENDENCIES(examples ${sampleName})
+
 SET_TARGET_PROPERTIES(
 	${sampleName}
 	PROPERTIES

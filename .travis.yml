@@ -29,7 +29,16 @@ jobs:
       compiler: gcc
     - env: STAGE=1 TASK="build" DEPS="minimal" BUILD_TARGET="mrpt-hmtslam"
       compiler: gcc
-    - stage: Core Build and Test Stage 2
+    - stage: Core Build Examples
+      env: STAGE=2 TASK="build" DEPS="full" BUILD_TARGET="examples"
+      compiler: gcc
+    - env: STAGE=2 TASK="build" DEPS="full" BUILD_TARGET="examples"
+      compiler: clang
+    - env: STAGE=2 TASK="build" DEPS="headless" BUILD_TARGET="examples"
+      compiler: gcc
+    - env: STAGE=2 TASK="build" DEPS="minimal" BUILD_TARGET="examples"
+      compiler: gcc
+    - stage: Core Build Tests Examples
       env: STAGE=2 TASK="test" DEPS="full"
       compiler: gcc
     - env: STAGE=2 TASK="test" DEPS="full"

@@ -69,11 +69,7 @@ function build ()
 
   cd $BUILD_DIR
 
-  if [ "$STAGE" == "1" ]; then
-    make -j2 $BUILD_TARGET
-  else
-    make -j2
-  fi
+  make -j2 $BUILD_TARGET
 
   cd $MRPT_DIR
 }
@@ -91,13 +87,13 @@ function test ()
     return
   fi
 
-  make -j2
+  make -j2 tests_build_all
   make -j2 test
   make -j2 gcov
 
   cd $MRPT_DIR
 
-  bash <(curl -s https://codecov.io/bash) -X gcov -y .codecov.yml -R $MRPT_DIR -s $BUILD_DIR
+  bash <(curl -s https://codecov.io/bash) -X gcov -y .codecov.yml -s $BUILD_DIR
 
 }
 

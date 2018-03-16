@@ -26,6 +26,8 @@ FIND_PACKAGE(MRPT REQUIRED @CMAKE_EXAMPLE_DEPS_STRIP@)
 # Define the executable target:
 ADD_EXECUTABLE(${sampleName} test.cpp @CMAKE_EXAMPLE_EXTRA_SRCS@ )
 
+ADD_DEPENDENCIES(examples ${sampleName})
+
 SET_TARGET_PROPERTIES(
 	${sampleName}
 	PROPERTIES
