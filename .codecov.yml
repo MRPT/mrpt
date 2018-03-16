@@ -4,5 +4,3 @@ coverage:
     - samples/*
     - apps/*
     - **/otherlibs
-  fixes:
-    - "/mrpt/::"        # reduce root e.g., "/mrpt/path/" => "path/"
