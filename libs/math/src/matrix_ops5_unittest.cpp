@@ -32,26 +32,26 @@ TEST(Matrices, loadFromArray)
 		for (int c = 0; c < 4; c++) EXPECT_EQ(nums[4 * r + c], mat(r, c));
 }
 
+alignas(32) static double test_nums[3 * 4] = {1, 2, 3, 4,  5,  6,
+											  7, 8, 9, 10, 11, 12};
+
 TEST(Matrices, CMatrixFixedNumeric_loadWithEigenMap)
 {
-	alignas(32) double nums[3 * 4] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
-
 	// Row major
 	const CMatrixFixedNumeric<double, 3, 4> mat =
 		Eigen::Map<CMatrixFixedNumeric<double, 3, 4>::Base, Eigen::Aligned32>(
-			nums);
+			test_nums);
 
 	for (int r = 0; r < 3; r++)
-		for (int c = 0; c < 4; c++) EXPECT_EQ(nums[4 * r + c], mat(r, c));
+		for (int c = 0; c < 4; c++) EXPECT_EQ(test_nums[4 * r + c], mat(r, c));
 }
 
 TEST(Matrices, EigenMatrix_loadWithEigenMap)
 {
-	alignas(32) double nums[3 * 4] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
 	// Col major
 	const Eigen::Matrix<double, 3, 4> mat =
-		Eigen::Map<Eigen::Matrix<double, 3, 4>, Eigen::Aligned32>(nums);
+		Eigen::Map<Eigen::Matrix<double, 3, 4>, Eigen::Aligned32>(test_nums);
 
 	for (int r = 0; r < 3; r++)  // Transposed!!
-		for (int c = 0; c < 4; c++) EXPECT_EQ(nums[3 * c + r], mat(r, c));
+		for (int c = 0; c < 4; c++) EXPECT_EQ(test_nums[3 * c + r], mat(r, c));
 }
