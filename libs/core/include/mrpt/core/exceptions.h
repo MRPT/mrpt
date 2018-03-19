@@ -75,7 +75,7 @@ inline std::string throw_stacked_exception(
  *for x=%i",x
  */
 #define THROW_STACKED_EXCEPTION_CUSTOM_MSG2(e, stuff, param1) \
-	std::logic_error(throw_stacked_exception_custom_msg2(e, stuff, param1))
+	throw std::logic_error(throw_stacked_exception_custom_msg2(e, stuff, param1))
 template <typename E, typename T>
 inline std::string throw_stacked_exception_custom_msg2(
 	E&& e, const char* stuff, T&& param1)
