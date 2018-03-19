@@ -25,3 +25,9 @@ TEST(FormatTest, LargeStrings)
 	// If it works, out len must be that of the string, plus 3 from "10 "
 	EXPECT_EQ(out_str_len, (test_str_len + 3));
 }
+
+TEST(FormatTest, ToString)
+{
+	EXPECT_EQ(mrpt::to_string(false), "false");
+	EXPECT_EQ(mrpt::to_string(true), "true");
+}
