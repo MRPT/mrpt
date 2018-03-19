@@ -23,6 +23,15 @@ TEST(bits, reverseBytes)
 		EXPECT_EQ(val, val_r_ok);
 	}
 	{
+		int8_t val = 0x66, val_r;
+		const int8_t val_r_ok = 0x66;
+
+		mrpt::reverseBytes(val, val_r);
+		EXPECT_EQ(val_r, val_r_ok);
+		mrpt::reverseBytesInPlace(val);
+		EXPECT_EQ(val, val_r_ok);
+	}
+	{
 		uint16_t val = 0x1122, val_r;
 		const uint16_t val_r_ok = 0x2211;
 
