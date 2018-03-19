@@ -9,7 +9,8 @@
 #pragma once
 
 #include <mrpt/config/CConfigFileBase.h>
-#include <mrpt/core/safe_pointers.h>
+#include <experimental/propagate_const>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -67,7 +68,8 @@ class CConfigFileMemory : public CConfigFileBase
 
    private:
 	/** The IniFile object */
-	void_ptr_noncopy m_ini;
+	struct Impl;
+	std::experimental::propagate_const<std::unique_ptr<Impl>> m_impl;
 
    protected:
 	/** A virtual method to write a generic string */
