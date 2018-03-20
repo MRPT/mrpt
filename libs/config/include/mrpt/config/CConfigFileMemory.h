@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/config/CConfigFileBase.h>
-#include <experimental/propagate_const>
+#include <mrpt/otherlibs/llvm/propagate_const.h>
 #include <memory>
 #include <string>
 #include <vector>
@@ -69,7 +69,7 @@ class CConfigFileMemory : public CConfigFileBase
    private:
 	/** The IniFile object */
 	struct Impl;
-	std::experimental::propagate_const<std::unique_ptr<Impl>> m_impl;
+	mrpt::propagate_const<std::unique_ptr<Impl>> m_impl;
 
    protected:
 	/** A virtual method to write a generic string */
