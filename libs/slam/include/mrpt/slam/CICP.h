@@ -76,7 +76,7 @@ class CICP : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		void saveToConfigFile(
-			mrpt::config::CConfigFileBase& c, const std::string& s) const;
+			mrpt::config::CConfigFileBase& c, const std::string& s) const override;
 
 		/** @name Algorithms selection
 			@{ */
