@@ -34,7 +34,7 @@ Copyright 2011-2017 Hauke Strasdat
           2012-2017 Steven Lovegrove
 License: Expat
 
-Files: libs/base/include/mrpt/utils/bit_cast.h
+Files: libs/core/include/mrpt/core/bit_cast.h
 Copyright: 2016, The Chromium Authors
 License: BSD-3-clause
 
