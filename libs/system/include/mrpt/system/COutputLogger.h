@@ -117,19 +117,19 @@ using output_logger_callback_t = std::function<void(
 class COutputLogger
 {
    public:
-	static mrpt::system::TConsoleColor logging_levels_to_colors
-		[NUMBER_OF_VERBOSITY_LEVELS];  //! Map from VerbosityLevels to their
-	//! corresponding
-	//! mrpt::system::TConsoleColor. Handy
-	//! for coloring the input based on the
-	//! verbosity of the message
+	/** Map from VerbosityLevels to their corresponding
+	 * mrpt::system::TConsoleColor. Handy for coloring the input based on the
+	 * verbosity of the message */
+	static mrpt::system::TConsoleColor
+		logging_levels_to_colors[NUMBER_OF_VERBOSITY_LEVELS];
+
 	/** Map from VerbosityLevels to their corresponding names. Handy for
 	 * printing the current message VerbosityLevel along with the actual content
 	 */
 	static std::string logging_levels_to_names[NUMBER_OF_VERBOSITY_LEVELS];
 
 	/** @name Logging methods
-	  * @{ */
+	 * @{ */
 
 	/**
 	 * \brief Construct a COutputLogger instance with the given name as the
@@ -514,15 +514,16 @@ struct COutputLoggerStreamWrapper
 
 /** For calling any `MRPT_LOG_*()` macro from outside of an object inherited
  * from COutputLogger.
-  * Debug level is `DEBUG` if build with `_DEBUG` preprocessor flag, `INFO`
+ * Debug level is `DEBUG` if build with `_DEBUG` preprocessor flag, `INFO`
  * otherwise.
-  * Use:
-  * \code
-  *  MRPT_UNSCOPED_LOGGER_START;
-  *  MRPT_LOG_WARN("blah");
-  *  MRPT_LOG_ERROR_STREAM("error: " << strval);
-  *  MRPT_UNSCOPED_LOGGER_END;
-  */
+ * Use:
+ * \code
+ *  MRPT_UNSCOPED_LOGGER_START;
+ *  MRPT_LOG_WARN("blah");
+ *  MRPT_LOG_ERROR_STREAM("error: " << strval);
+ *  MRPT_UNSCOPED_LOGGER_END;
+ * \endcode
+ */
 #define MRPT_UNSCOPED_LOGGER_START                                      \
 	do                                                                  \
 	{                                                                   \
@@ -536,7 +537,7 @@ struct COutputLoggerStreamWrapper
 			{                                                           \
 				do                                                      \
 				{                                                       \
-			} while (0)
+				} while (0)
 // Here comes the user code, which is run in the ctor, and will call the object
 // log methods.
 
@@ -548,8 +549,8 @@ struct COutputLoggerStreamWrapper
 	tmp_obj.usercode();           \
 	}                             \
 	while (0)
-}
-}
+}  // namespace system
+}  // namespace mrpt
 // TTypeEnum for verbosity levels:
 MRPT_ENUM_TYPE_BEGIN_NAMESPACE(mrpt::system, mrpt::system::VerbosityLevel)
 MRPT_FILL_ENUM(LVL_DEBUG);
