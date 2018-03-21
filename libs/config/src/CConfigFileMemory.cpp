@@ -27,7 +27,7 @@ struct CConfigFileMemory::Impl
 };
 
 CConfigFileMemory::CConfigFileMemory(const std::vector<std::string>& stringList) :
-	m_impl(std::make_unique<CConfigFileMemory::Impl>())
+	m_impl(mrpt::make_impl<CConfigFileMemory::Impl>())
 {
 	// Load the strings:
 	std::string aux;
@@ -36,7 +36,7 @@ CConfigFileMemory::CConfigFileMemory(const std::vector<std::string>& stringList)
 }
 
 CConfigFileMemory::CConfigFileMemory(const std::string& str) :
-	m_impl(std::make_unique<CConfigFileMemory::Impl>())
+	m_impl(mrpt::make_impl<CConfigFileMemory::Impl>())
 {
 	// Load the strings:
 	THE_INI.Load(str.c_str(), str.size());
@@ -46,24 +46,8 @@ CConfigFileMemory::CConfigFileMemory(const std::string& str) :
 					Constructor
  ---------------------------------------------------------------*/
 CConfigFileMemory::CConfigFileMemory():
-	m_impl(std::make_unique<CConfigFileMemory::Impl>())
+	m_impl(mrpt::make_impl<CConfigFileMemory::Impl>())
 {
-}
-
-/** Copy constructor */
-CConfigFileMemory::CConfigFileMemory(const CConfigFileMemory& o):
-	m_impl(std::make_unique<CConfigFileMemory::Impl>())
-{
-	(*this) = o;
-}
-
-/** Copy operator */
-CConfigFileMemory& CConfigFileMemory::operator=(const CConfigFileMemory& o)
-{
-	std::string str;
-	o.m_impl->m_ini.Save(str);
-	THE_INI.Load(str.c_str(), str.size());
-	return *this;
 }
 
 void CConfigFileMemory::setContent(const std::vector<std::string>& stringList)

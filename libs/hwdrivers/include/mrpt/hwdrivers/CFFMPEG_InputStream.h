@@ -11,7 +11,7 @@
 #define CFFMPEG_InputStream_H
 
 #include <mrpt/img/CImage.h>
-#include <mrpt/core/safe_pointers.h>
+#include <mrpt/core/pimpl.h>
 
 /*---------------------------------------------------------------
 	Class
@@ -43,7 +43,8 @@ class CFFMPEG_InputStream
 {
    private:
 	/** The internal ffmpeg state */
-	mrpt::void_ptr_noncopy m_state;
+	struct Impl;
+	mrpt::pimpl<Impl> m_impl;
 	/** The open URL */
 	std::string m_url;
 	bool m_grab_as_grayscale;

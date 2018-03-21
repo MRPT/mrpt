@@ -16,7 +16,6 @@
 #include <mrpt/opengl/COctoMapVoxels.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/obs/obs_frwds.h>
-#include <mrpt/core/safe_pointers.h>
 #include <mrpt/core/pimpl.h>
 
 namespace mrpt
@@ -54,7 +53,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 
 	/** Constructor, defines the resolution of the octomap (length of each voxel
 	 * side) */
-	COctoMapBase() : insertionOptions(*this) {}
+	COctoMapBase(double resolution);
 	virtual ~COctoMapBase() {}
 	/** Get a reference to the internal octomap object. Example:
 	   * \code
@@ -65,7 +64,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 	template <class OCTOMAP_CLASS>
 	inline OCTOMAP_CLASS& getOctomap()
 	{
-		return *m_octomap.ptr.get();
+		return m_impl->m_octomap;
 	}
 
 	/** With this struct options are provided to the observation insertion
@@ -382,7 +381,9 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 		const mrpt::poses::CPose3D* robotPose, octomap_point3d& sensorPt,
 		octomap_pointcloud& scan) const;
 
-	PIMPL_DECLARE_TYPE(octree_t, m_octomap);  //!< The actual octo-map object.
+	struct Impl;
+
+	mrpt::pimpl<Impl> m_impl;
 
    private:
 	// See docs in base class

@@ -107,7 +107,7 @@ TEST(CConfigFile, readMultiLineStrings)
 
 TEST(CConfigFileMemory, parseVariables)
 {
-	::putenv("ENV_VAR_MULTIPLIER=2");
+	::setenv("ENV_VAR_MULTIPLIER","2", 1);
 
 	const std::string sampleCfgTxt2 =
 		"@define MAXSPEED 10\n"

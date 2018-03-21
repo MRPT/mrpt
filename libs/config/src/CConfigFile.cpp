@@ -18,17 +18,22 @@ using namespace mrpt::config;
 using namespace mrpt::config::simpleini;
 using namespace std;
 
+struct CConfigFile::Impl
+{
+	MRPT_CSimpleIni m_ini;
+};
+
 /*---------------------------------------------------------------
 					Constructor
  ---------------------------------------------------------------*/
-CConfigFile::CConfigFile(const std::string& fileName)
+CConfigFile::CConfigFile(const std::string& fileName) :
+	m_impl(mrpt::make_impl<CConfigFile::Impl>())
 {
 	MRPT_START
 
 	m_file = fileName;
 	m_modified = false;
-	m_ini = (void*)new MRPT_CSimpleIni();
-	static_cast<MRPT_CSimpleIni*>(m_ini.get())->LoadFile(fileName.c_str());
+	m_impl->m_ini.LoadFile(fileName.c_str());
 
 	MRPT_END
 }
@@ -36,13 +41,13 @@ CConfigFile::CConfigFile(const std::string& fileName)
 /*---------------------------------------------------------------
 					Constructor
  ---------------------------------------------------------------*/
-CConfigFile::CConfigFile()
+CConfigFile::CConfigFile() :
+	m_impl(mrpt::make_impl<CConfigFile::Impl>())
 {
 	MRPT_START
 
 	m_file = "";
 	m_modified = false;
-	m_ini = (void*)new MRPT_CSimpleIni();
 
 	MRPT_END
 }
@@ -57,7 +62,7 @@ void CConfigFile::setFileName(const std::string& fil_path)
 	m_file = fil_path;
 	m_modified = false;
 
-	static_cast<MRPT_CSimpleIni*>(m_ini.get())->LoadFile(fil_path.c_str());
+	m_impl->m_ini.LoadFile(fil_path.c_str());
 	MRPT_END
 }
 
@@ -69,7 +74,7 @@ void CConfigFile::writeNow()
 	MRPT_START
 	if (m_modified && !m_file.empty())
 	{
-		static_cast<MRPT_CSimpleIni*>(m_ini.get())->SaveFile(m_file.c_str());
+		m_impl->m_ini.SaveFile(m_file.c_str());
 		m_modified = false;
 	}
 	MRPT_END
@@ -82,7 +87,6 @@ void CConfigFile::discardSavingChanges() { m_modified = false; }
 CConfigFile::~CConfigFile()
 {
 	writeNow();
-	delete static_cast<MRPT_CSimpleIni*>(m_ini.get());
 }
 
 /*---------------------------------------------------------------
@@ -95,8 +99,7 @@ void CConfigFile::writeString(
 
 	m_modified = true;
 
-	if (0 > static_cast<MRPT_CSimpleIni*>(m_ini.get())
-				->SetValue(section.c_str(), name.c_str(), str.c_str(), NULL))
+	if (0 > m_impl->m_ini.SetValue(section.c_str(), name.c_str(), str.c_str(), NULL))
 		THROW_EXCEPTION("Error changing value in INI-style file!");
 
 	MRPT_END
@@ -112,9 +115,7 @@ std::string CConfigFile::readString(
 	MRPT_START
 	const char* defVal = failIfNotFound ? NULL : defaultStr.c_str();
 
-	const char* aux =
-		static_cast<const MRPT_CSimpleIni*>(m_ini.get())
-			->GetValue(
+	const char* aux = m_impl->m_ini.GetValue(
 				section.c_str(), name.c_str(), defVal,
 				NULL);  // The memory is managed by the SimpleIni object
 
@@ -145,7 +146,7 @@ std::string CConfigFile::readString(
 void CConfigFile::getAllSections(std::vector<std::string>& sections) const
 {
 	MRPT_CSimpleIni::TNamesDepend names;
-	static_cast<const MRPT_CSimpleIni*>(m_ini.get())->GetAllSections(names);
+	m_impl->m_ini.GetAllSections(names);
 
 	MRPT_CSimpleIni::TNamesDepend::iterator n;
 	std::vector<std::string>::iterator s;
@@ -161,8 +162,7 @@ void CConfigFile::getAllKeys(
 	const string& section, std::vector<std::string>& keys) const
 {
 	MRPT_CSimpleIni::TNamesDepend names;
-	static_cast<const MRPT_CSimpleIni*>(m_ini.get())
-		->GetAllKeys(section.c_str(), names);
+	m_impl->m_ini.GetAllKeys(section.c_str(), names);
 
 	MRPT_CSimpleIni::TNamesDepend::iterator n;
 	std::vector<std::string>::iterator s;

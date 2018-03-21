@@ -205,7 +205,7 @@ void CPosePDFParticles::resetDeterministic(
 	{
 		clear();
 		m_particles.resize(particlesCount);
-		for (auto& p : m_particles) p.d.resetDefaultCtor();
+		for (auto& p : m_particles) p.d.reset();
 	}
 
 	for (auto& p : m_particles)

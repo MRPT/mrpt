@@ -54,18 +54,21 @@ struct TFFMPEGContext
 }
 #endif
 
-#define MY_FFMPEG_STATE          \
-	const_cast<TFFMPEGContext*>( \
-		static_cast<const TFFMPEGContext*>(m_state.get()))
+struct CFFMPEG_InputStream::Impl
+{
+#if MRPT_HAS_FFMPEG
+	TFFMPEGContext m_state;
+#endif
+};
 
 /* --------------------------------------------------------
 					Ctor
    -------------------------------------------------------- */
 CFFMPEG_InputStream::CFFMPEG_InputStream()
-{
 #if MRPT_HAS_FFMPEG
-	m_state.set(new TFFMPEGContext[1]);
-	TFFMPEGContext* ctx = MY_FFMPEG_STATE;
+: m_impl(mrpt::make_impl<CFFMPEG_InputStream::Impl>())
+{
+	TFFMPEGContext* ctx = &m_impl->m_state;
 
 	ctx->pFormatCtx = nullptr;
 	ctx->pCodecCtx = nullptr;
@@ -77,10 +80,12 @@ CFFMPEG_InputStream::CFFMPEG_InputStream()
 
 	// Register all formats and codecs
 	av_register_all();
-#else
-	THROW_EXCEPTION("MRPT has been compiled without FFMPEG libraries.");
-#endif
 }
+#else
+{
+	THROW_EXCEPTION("MRPT has been compiled without FFMPEG libraries.");
+}
+#endif
 
 /* --------------------------------------------------------
 					Dtor
@@ -91,9 +96,6 @@ CFFMPEG_InputStream::~CFFMPEG_InputStream()
 	// Close everything:
 	this->close();
 
-	// Free context struct. memory
-	delete[] MY_FFMPEG_STATE;
-	m_state.set(nullptr);
 #endif
 }
 
@@ -103,7 +105,7 @@ CFFMPEG_InputStream::~CFFMPEG_InputStream()
 bool CFFMPEG_InputStream::isOpen() const
 {
 #if MRPT_HAS_FFMPEG
-	TFFMPEGContext* ctx = MY_FFMPEG_STATE;
+	const TFFMPEGContext* ctx = &m_impl->m_state;
 	return ctx->pFormatCtx != nullptr;
 #else
 	return false;
@@ -119,7 +121,7 @@ bool CFFMPEG_InputStream::openURL(
 #if MRPT_HAS_FFMPEG
 	this->close();  // Close first
 
-	TFFMPEGContext* ctx = MY_FFMPEG_STATE;
+	TFFMPEGContext* ctx = &m_impl->m_state;
 
 	this->m_url = url;
 	this->m_grab_as_grayscale = grab_as_grayscale;
@@ -283,7 +285,7 @@ void CFFMPEG_InputStream::close()
 #if MRPT_HAS_FFMPEG
 	if (!this->isOpen()) return;
 
-	TFFMPEGContext* ctx = MY_FFMPEG_STATE;
+	TFFMPEGContext* ctx = &m_impl->m_state;
 
 	// Close the codec
 	if (ctx->pCodecCtx)
@@ -342,7 +344,7 @@ bool CFFMPEG_InputStream::retrieveFrame(mrpt::img::CImage& out_img)
 #if MRPT_HAS_FFMPEG
 	if (!this->isOpen()) return false;
 
-	TFFMPEGContext* ctx = MY_FFMPEG_STATE;
+	TFFMPEGContext* ctx = &m_impl->m_state;
 
 	AVPacket packet;
 	int frameFinished;
@@ -433,7 +435,7 @@ double CFFMPEG_InputStream::getVideoFPS() const
 #if MRPT_HAS_FFMPEG
 	if (!this->isOpen()) return -1;
 
-	TFFMPEGContext* ctx = MY_FFMPEG_STATE;
+	const TFFMPEGContext* ctx = &m_impl->m_state;
 	if (!ctx) return -1;
 	if (!ctx->pCodecCtx) return -1;
 
