@@ -26,15 +26,23 @@
 // We only need this to be on this translation unit, hence the advantage of
 // using our MRPT wrapper instead
 // of the original exprtk sources.
-PIMPL_IMPLEMENT(exprtk::expression<double>)
+//PIMPL_IMPLEMENT(exprtk::expression<double>
 
 using namespace mrpt;
 using namespace mrpt::expr;
 
-CRuntimeCompiledExpression::CRuntimeCompiledExpression()
+struct CRuntimeCompiledExpression::Impl
 {
-	PIMPL_CONSTRUCT(exprtk::expression<double>, m_compiled_formula);
+	exprtk::expression<double> m_compiled_formula;
+	std::string m_original_expr_str;
+};
+
+CRuntimeCompiledExpression::CRuntimeCompiledExpression():
+	m_impl(mrpt::make_impl<CRuntimeCompiledExpression::Impl>())
+{
 }
+
+CRuntimeCompiledExpression::~CRuntimeCompiledExpression(){}
 
 void CRuntimeCompiledExpression::compile(
 	/** [in] The expression to be compiled. */
@@ -47,7 +55,7 @@ void CRuntimeCompiledExpression::compile(
 	   reports via an  exception, if needed */
 	const std::string& expr_name_for_error_reporting)
 {
-	m_original_expr_str = expression;
+	m_impl->m_original_expr_str = expression;
 
 	exprtk::symbol_table<double> symbol_table;
 	for (const auto& v : variables)
@@ -58,13 +66,13 @@ void CRuntimeCompiledExpression::compile(
 	symbol_table.add_constant("M_PI", M_PI);
 	symbol_table.add_constants();
 
-	PIMPL_GET_REF(exprtk::expression<double>, m_compiled_formula)
-		.register_symbol_table(symbol_table);
+	m_impl->m_compiled_formula.register_symbol_table(symbol_table);
+
 	// Compile user-given expressions:
 	exprtk::parser<double> parser;
 	if (!parser.compile(
 			expression,
-			PIMPL_GET_REF(exprtk::expression<double>, m_compiled_formula)))
+			m_impl->m_compiled_formula))
 		THROW_EXCEPTION_FMT(
 			"Error compiling expression (name=`%s`): `%s`. Error: `%s`",
 			expr_name_for_error_reporting.c_str(), expression.c_str(),
@@ -73,9 +81,8 @@ void CRuntimeCompiledExpression::compile(
 
 double CRuntimeCompiledExpression::eval() const
 {
-	ASSERT_(m_compiled_formula.ptr.get() != nullptr);
-	return PIMPL_GET_CONSTREF(exprtk::expression<double>, m_compiled_formula)
-		.value();
+	ASSERT_(m_impl);
+	return m_impl->m_compiled_formula.value();
 }
 
 void CRuntimeCompiledExpression::register_symbol_table(
@@ -90,27 +97,27 @@ void CRuntimeCompiledExpression::register_symbol_table(
 		double* var = const_cast<double*>(v.second);
 		symbol_table.add_variable(v.first, *var);
 	}
-	PIMPL_GET_REF(exprtk::expression<double>, m_compiled_formula)
-		.register_symbol_table(symbol_table);
+	m_impl->m_compiled_formula.register_symbol_table(symbol_table);
 }
 
 exprtk::expression<double>& CRuntimeCompiledExpression::get_raw_exprtk_expr()
 {
-	ASSERT_(m_compiled_formula.ptr.get() != nullptr);
-	return PIMPL_GET_REF(exprtk::expression<double>, m_compiled_formula);
+	ASSERT_(m_impl);
+	return m_impl->m_compiled_formula;
 }
 const exprtk::expression<double>&
 	CRuntimeCompiledExpression::get_raw_exprtk_expr() const
 {
-	ASSERT_(m_compiled_formula.ptr.get() != nullptr);
-	return PIMPL_GET_CONSTREF(exprtk::expression<double>, m_compiled_formula);
+	ASSERT_(m_impl);
+	return m_impl->m_compiled_formula;
 }
 
 bool CRuntimeCompiledExpression::is_compiled() const
 {
-	return m_compiled_formula.ptr.get() != nullptr;
+	ASSERT_(m_impl);
+	return m_impl->m_compiled_formula;
 }
 const std::string& CRuntimeCompiledExpression::get_original_expression() const
 {
-	return m_original_expr_str;
+	return m_impl->m_original_expr_str;
 }

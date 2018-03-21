@@ -285,6 +285,14 @@ class CSimpleIniTempl
 	 */
 	CSimpleIniTempl(bool a_bMultiKey = false, bool a_bMultiLine = false);
 
+	/** Copy **/
+	CSimpleIniTempl(const CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER> &o)
+	{
+		std::string str;
+		o.Save(str);
+		Load(str);
+	};
+
 	/** Destructor */
 	~CSimpleIniTempl();
 

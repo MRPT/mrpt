@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/config/CConfigFileBase.h>
-#include <mrpt/core/safe_pointers.h>
+#include <mrpt/core/pimpl.h>
 
 namespace mrpt
 {
@@ -36,7 +36,8 @@ class CConfigFile : public CConfigFileBase
 	/** The name of the file */
 	std::string m_file;
 	/** The interface to the file: */
-	void_ptr_noncopy m_ini;
+	struct Impl;
+	mrpt::pimpl<Impl> m_impl;
 	/** If modified since load. */
 	bool m_modified;
 
