@@ -293,6 +293,15 @@ class CSimpleIniTempl
 		Load(str);
 	};
 
+	CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>&
+		operator=(const CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>& o)
+	{
+		std::string str;
+		o.Save(str);
+		Load(str);
+		return *this;
+	}
+
 	/** Destructor */
 	~CSimpleIniTempl();
 
