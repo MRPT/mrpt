@@ -9,6 +9,7 @@
 
 #ifndef CGRAPHSLAMENGINE_IMPL_H
 #define CGRAPHSLAMENGINE_IMPL_H
+
 #include <mrpt/system/filesystem.h>
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/opengl/CAxis.h>
@@ -72,17 +73,6 @@ CGraphSlamEngine<GRAPH_T>::~CGraphSlamEngine()
 
 	MRPT_LOG_DEBUG_STREAM(
 		"In Destructor: Deleting CGraphSlamEngine instance...");
-
-	// close all open files
-	for (fstreams_out_it it = m_out_streams.begin(); it != m_out_streams.end();
-		 ++it)
-	{
-		if ((it->second)->fileOpenCorrectly())
-		{
-			MRPT_LOG_INFO_STREAM("Closing file: " << (it->first));
-			(it->second)->close();
-		}
-	}
 
 	// change back the CImage path
 	if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum"))
@@ -577,7 +567,6 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
 		else
 		{
 			MRPT_LOG_DEBUG_STREAM("Action-observation dataset!");
-			MRPT_LOG_DEBUG_STREAM("Action-observation dataset!");
 			ASSERT_(action);
 			m_observation_only_dataset = false;
 
@@ -630,10 +619,11 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
 					<< " but got [" << m_graph.nodeCount() << "]");
 				THROW_EXCEPTION(format("Illegal node registration"));
 			}
-			m_is_first_time_node_reg = false;
 
 			m_nodes_to_laser_scans2D.insert(
 				make_pair(m_nodeID_max, m_first_laser_scan2D));
+
+			m_is_first_time_node_reg = false;
 		}
 
 		// going to be incremented in monitorNodeRegistration anyway.
@@ -1195,20 +1185,20 @@ void CGraphSlamEngine<GRAPH_T>::initResultsFile(const std::string& fname)
 	string cur_date_str(dateTimeToString(cur_date));
 	string cur_date_validstr(fileNameStripInvalidChars(cur_date_str));
 
-	m_out_streams[fname] = new mrpt::io::CFileOutputStream(fname);
+	m_out_streams[fname].open(fname);
 	ASSERTMSG_(
-		m_out_streams[fname]->fileOpenCorrectly(),
+		m_out_streams[fname].fileOpenCorrectly(),
 		mrpt::format("\nError while trying to open %s\n", fname.c_str()));
 
 	const std::string sep(80, '#');
 
-	m_out_streams[fname]->printf("# Mobile Robot Programming Toolkit (MRPT)\n");
-	m_out_streams[fname]->printf("# http::/www.mrpt.org\n");
-	m_out_streams[fname]->printf("# GraphSlamEngine Application\n");
-	m_out_streams[fname]->printf(
+	m_out_streams[fname].printf("# Mobile Robot Programming Toolkit (MRPT)\n");
+	m_out_streams[fname].printf("# http::/www.mrpt.org\n");
+	m_out_streams[fname].printf("# GraphSlamEngine Application\n");
+	m_out_streams[fname].printf(
 		"# Automatically generated file - %s: %s\n", time_spec.c_str(),
 		cur_date_str.c_str());
-	m_out_streams[fname]->printf("%s\n\n", sep.c_str());
+	m_out_streams[fname].printf("%s\n\n", sep.c_str());
 
 	MRPT_END;
 }
@@ -2726,8 +2716,8 @@ bool CGraphSlamEngine<GRAPH_T>::getGraphSlamStats(
 	(*node_stats)["nodes_total"] = m_nodeID_max + 1;
 
 	// fill the edge stats
-	for (CEdgeCounter::const_iterator it = m_edge_counter.begin();
-		 it != m_edge_counter.end(); ++it)
+	for (CEdgeCounter::const_iterator it = m_edge_counter.cbegin();
+		 it != m_edge_counter.cend(); ++it)
 	{
 		(*edge_stats)[it->first] = it->second;
 	}
@@ -2758,6 +2748,7 @@ void CGraphSlamEngine<GRAPH_T>::generateReportFiles(
 		format(
 			"Output directory \"%s\" doesn't exist", output_dir_fname.c_str()));
 
+
 	MRPT_LOG_INFO_STREAM("Generating detailed class report...");
 	std::lock_guard<std::mutex> m_graph_lock(m_graph_section);
 
@@ -2771,31 +2762,35 @@ void CGraphSlamEngine<GRAPH_T>::generateReportFiles(
 		// initialize the output file - refer to the stream through the
 		// m_out_streams map
 		this->initResultsFile(fname);
-
-		// write the actual content
 		this->getDescriptiveReport(&report_str);
-		m_out_streams[fname]->printf("%s", report_str.c_str());
+		m_out_streams[fname].printf("%s", report_str.c_str());
+
+		// write the timings into a separate file
+		const std::string time_res = m_time_logger.getStatsAsText();
+		fname = output_dir_fname + "/" + "timings" + ext;
+		this->initResultsFile(fname);
+		m_out_streams[fname].printf("%s", time_res.c_str());
 	}
 	{  // node_registrar
 		report_str.clear();
 		fname = output_dir_fname + "/" + "node_registrar" + ext;
 		this->initResultsFile(fname);
 		m_node_reg->getDescriptiveReport(&report_str);
-		m_out_streams[fname]->printf("%s", report_str.c_str());
+		m_out_streams[fname].printf("%s", report_str.c_str());
 	}
 	{  // edge_registrar
 		report_str.clear();
 		fname = output_dir_fname + "/" + "edge_registrar" + ext;
 		this->initResultsFile(fname);
 		m_edge_reg->getDescriptiveReport(&report_str);
-		m_out_streams[fname]->printf("%s", report_str.c_str());
+		m_out_streams[fname].printf("%s", report_str.c_str());
 	}
 	{  // optimizer
 		report_str.clear();
 		fname = output_dir_fname + "/" + "optimizer" + ext;
 		this->initResultsFile(fname);
 		m_optimizer->getDescriptiveReport(&report_str);
-		m_out_streams[fname]->printf("%s", report_str.c_str());
+		m_out_streams[fname].printf("%s", report_str.c_str());
 	}
 
 	if (m_use_GT)
@@ -2813,12 +2808,12 @@ void CGraphSlamEngine<GRAPH_T>::generateReportFiles(
 		fname = output_dir_fname + "/" + "SLAM_evaluation_metric" + ext;
 		this->initResultsFile(fname);
 
-		m_out_streams[fname]->printf("%s\n", desc.c_str());
+		m_out_streams[fname].printf("%s\n", desc.c_str());
 		for (std::vector<double>::const_iterator vec_it =
 				 m_deformation_energy_vec.begin();
 			 vec_it != m_deformation_energy_vec.end(); ++vec_it)
 		{
-			m_out_streams[fname]->printf("%f\n", *vec_it);
+			m_out_streams[fname].printf("%f\n", *vec_it);
 		}
 	}
 
