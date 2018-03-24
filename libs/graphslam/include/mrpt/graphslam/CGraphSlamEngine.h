@@ -157,7 +157,7 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
 	/**\brief Handy typedefs */
 	/**\{*/
 	/**\brief Map for managing output file streams.*/
-	using fstreams_out = std::map<std::string, mrpt::io::CFileOutputStream*>;
+	using fstreams_out = std::map<std::string, mrpt::io::CFileOutputStream>;
 	/**\brief Map for iterating over output file streams.*/
 	typedef std::map<std::string, mrpt::io::CFileOutputStream*>::iterator
 		fstreams_out_it;
