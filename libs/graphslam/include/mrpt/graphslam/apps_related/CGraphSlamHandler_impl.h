@@ -28,8 +28,8 @@ CGraphSlamHandler<GRAPH_T>::CGraphSlamHandler(
 	  m_enable_visuals(enable_visuals)
 {
 	using namespace mrpt::system;
-	ASSERT_(m_logger);
-	ASSERT_(m_options_checker);
+	ASSERTDEB_(m_logger);
+	ASSERTDEB_(m_options_checker);
 
 	m_engine = NULL;
 	m_win_manager = NULL;
@@ -184,7 +184,7 @@ void CGraphSlamHandler<GRAPH_T>::initOutputDir(
 				string error_msg;
 				bool did_rename =
 					renameFile(output_dir_fname, dst_fname, &error_msg);
-				ASSERTMSG_(
+				ASSERTDEBMSG_(
 					did_rename, format(
 									"\nError while trying to rename the output "
 									"directory: %s",
@@ -227,7 +227,7 @@ void CGraphSlamHandler<GRAPH_T>::setFNames(
 template <class GRAPH_T>
 void CGraphSlamHandler<GRAPH_T>::readConfigFname(const std::string& fname)
 {
-	ASSERTMSG_(
+	ASSERTDEBMSG_(
 		mrpt::system::fileExists(fname),
 		mrpt::format("\nConfiguration file not found: \n%s\n", fname.c_str()));
 
@@ -261,19 +261,19 @@ void CGraphSlamHandler<GRAPH_T>::initEngine(
 {
 	using namespace mrpt;
 
-	ASSERT_(m_has_set_fnames);
+	ASSERTDEB_(m_has_set_fnames);
 
-	ASSERTMSG_(
+	ASSERTDEBMSG_(
 		m_options_checker->checkRegistrationDeciderExists(node_reg_str, "node"),
 		format(
 			"\nNode Registration Decider %s is not available.\n",
 			node_reg_str.c_str()));
-	ASSERTMSG_(
+	ASSERTDEBMSG_(
 		m_options_checker->checkRegistrationDeciderExists(edge_reg_str, "edge"),
 		format(
 			"\nEdge Registration Decider %s is not available.\n",
 			edge_reg_str.c_str()));
-	ASSERTMSG_(
+	ASSERTDEBMSG_(
 		m_options_checker->checkOptimizerExists(optimizer_str),
 		format("\nOptimizer %s is not available\n", optimizer_str.c_str()));
 
@@ -299,7 +299,7 @@ void CGraphSlamHandler<GRAPH_T>::getParamsAsString(std::string* str) const
 {
 	using namespace std;
 
-	ASSERT_(str);
+	ASSERTDEB_(str);
 
 	stringstream ss_out("");
 
@@ -354,7 +354,7 @@ template <class GRAPH_T>
 void CGraphSlamHandler<GRAPH_T>::saveResults(
 	const std::string& output_dir_fname)
 {
-	ASSERT_(m_engine);
+	ASSERTDEB_(m_engine);
 
 	m_logger->logFmt(mrpt::system::LVL_INFO, "Generating overall report...");
 	m_engine->generateReportFiles(output_dir_fname);
@@ -395,7 +395,7 @@ template <class GRAPH_T>
 void CGraphSlamHandler<GRAPH_T>::execute()
 {
 	using namespace mrpt::obs;
-	ASSERT_(m_engine);
+	ASSERTDEB_(m_engine);
 
 	// Variables initialization
 	mrpt::io::CFileGZInputStream rawlog_stream(m_rawlog_fname);

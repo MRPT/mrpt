@@ -33,7 +33,7 @@ struct TNodeProps
 
 	void getAsString(std::string* str) const
 	{
-		ASSERT_(str);
+		ASSERTDEB_(str);
 		str->clear();
 		*str += mrpt::format("Pose: %s|\t", this->pose.asString().c_str());
 		if (this->scan)

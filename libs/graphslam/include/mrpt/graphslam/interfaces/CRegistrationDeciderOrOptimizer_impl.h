@@ -67,7 +67,7 @@ template <class GRAPH_T>
 void CRegistrationDeciderOrOptimizer<GRAPH_T>::setWindowManagerPtr(
 	mrpt::graphslam::CWindowManager* win_manager)
 {
-	ASSERT_(win_manager);
+	ASSERTDEB_(win_manager);
 	m_win_manager = win_manager;
 
 	if (m_win_manager)
@@ -96,22 +96,22 @@ void CRegistrationDeciderOrOptimizer<GRAPH_T>::initializeVisuals()
 template <class GRAPH_T>
 void CRegistrationDeciderOrOptimizer<GRAPH_T>::assertVisualsVars()
 {
-	ASSERTMSG_(this->m_win, "No CDisplayWindow3D* was provided");
-	ASSERTMSG_(this->m_win_manager, "No CWindowManager* was provided");
-	ASSERTMSG_(this->m_win_observer, "No CWindowObserver* was provided");
+	ASSERTDEBMSG_(this->m_win, "No CDisplayWindow3D* was provided");
+	ASSERTDEBMSG_(this->m_win_manager, "No CWindowManager* was provided");
+	ASSERTDEBMSG_(this->m_win_observer, "No CWindowObserver* was provided");
 }
 
 template <class GRAPH_T>
 void CRegistrationDeciderOrOptimizer<GRAPH_T>::updateVisuals()
 {
-	ASSERT_(m_initialized_visuals);
+	ASSERTDEB_(m_initialized_visuals);
 }
 
 template <class GRAPH_T>
 void CRegistrationDeciderOrOptimizer<GRAPH_T>::notifyOfWindowEvents(
 	const std::map<std::string, bool>& events_occurred)
 {
-	ASSERT_(m_initialized_visuals);
+	ASSERTDEB_(m_initialized_visuals);
 }
 
 template <class GRAPH_T>

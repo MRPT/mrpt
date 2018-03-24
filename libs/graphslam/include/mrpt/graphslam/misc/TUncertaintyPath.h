@@ -56,6 +56,8 @@ struct TUncertaintyPath : public mrpt::config::CLoadableOptions
 	 * Call to this method practically checks if the give nodes match the source
 	 * and destination nodeIDs.
 	 *
+	 * \note Assertions will be executed only in \b Debug builds
+	 *
 	 * \exception std::runtime_error in case the conditions don't hold
 	 */
 	void assertIsBetweenNodeIDs(
