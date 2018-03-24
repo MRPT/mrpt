@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/config/CConfigFileBase.h>
-#include <mrpt/core/safe_pointers.h>
+#include <mrpt/core/pimpl.h>
 #include <string>
 #include <vector>
 
@@ -40,11 +40,6 @@ class CConfigFileMemory : public CConfigFileBase
 	/** dtor */
 	virtual ~CConfigFileMemory();
 
-	/** Copy constructor */
-	CConfigFileMemory(const CConfigFileMemory& o);
-	/** Copy operator */
-	CConfigFileMemory& operator=(const CConfigFileMemory& o);
-
 	/** Changes the contents of the virtual "config file" */
 	void setContent(const std::vector<std::string>& stringList);
 	/** Changes the contents of the virtual "config file" */
@@ -67,7 +62,8 @@ class CConfigFileMemory : public CConfigFileBase
 
    private:
 	/** The IniFile object */
-	void_ptr_noncopy m_ini;
+	struct Impl;
+	mrpt::pimpl<Impl> m_impl;
 
    protected:
 	/** A virtual method to write a generic string */

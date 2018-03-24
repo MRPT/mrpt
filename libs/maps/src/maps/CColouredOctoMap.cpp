@@ -11,8 +11,6 @@
 
 #include <octomap/octomap.h>
 #include <octomap/ColorOcTree.h>
-#include <mrpt/core/pimpl.h>
-PIMPL_IMPLEMENT(octomap::ColorOcTree);
 
 #include <mrpt/maps/CColouredOctoMap.h>
 #include <mrpt/maps/CPointsMap.h>
@@ -41,6 +39,7 @@ using namespace mrpt::poses;
 using namespace mrpt::img;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
+
 
 //  =========== Begin of Map definition ============
 MAP_DEFINITION_REGISTER(
@@ -85,10 +84,10 @@ mrpt::maps::CMetricMap* CColouredOctoMap::internal_CreateFromMapDefinition(
 
 IMPLEMENTS_SERIALIZABLE(CColouredOctoMap, CMetricMap, mrpt::maps)
 
-CColouredOctoMap::CColouredOctoMap(const double resolution)
-	: m_colour_method(INTEGRATE)
+CColouredOctoMap::CColouredOctoMap(const double resolution) :
+	COctoMapBase<octomap::ColorOcTree, octomap::ColorOcTreeNode>(resolution),
+	m_colour_method(INTEGRATE)
 {
-	m_octomap.ptr.reset(new octomap::ColorOcTree(resolution));
 }
 
 CColouredOctoMap::~CColouredOctoMap() {}
@@ -101,8 +100,7 @@ void CColouredOctoMap::serializeTo(mrpt::serialization::CArchive& out) const
 
 	// v2->v3: remove CMemoryChunk
 	std::stringstream ss;
-	const_cast<octomap::ColorOcTree*>(&PIMPL_GET_REF(ColorOcTree, m_octomap))
-		->writeBinary(ss);
+	m_impl->m_octomap.writeBinaryConst(ss);
 	const std::string& buf = ss.str();
 	out << buf;
 }
@@ -137,7 +135,7 @@ void CColouredOctoMap::serializeFrom(
 				std::stringstream ss;
 				ss.str(buf);
 				ss.seekg(0);
-				PIMPL_GET_REF(ColorOcTree, m_octomap).readBinary(ss);
+				m_impl->m_octomap.readBinary(ss);
 			}
 		}
 		break;
@@ -198,8 +196,7 @@ bool CColouredOctoMap::internal_insertObservation(
 		}
 
 		// Insert rays:
-		PIMPL_GET_REF(ColorOcTree, m_octomap)
-			.insertPointCloud(
+		m_impl->m_octomap.insertPointCloud(
 				scan, sensorPt, insertionOptions.maxrange,
 				insertionOptions.pruning);
 		return true;
@@ -245,7 +242,7 @@ bool CColouredOctoMap::internal_insertObservation(
 
 		// Insert rays:
 		octomap::KeySet free_cells, occupied_cells;
-		PIMPL_GET_REF(ColorOcTree, m_octomap)
+		m_impl->m_octomap
 			.computeUpdate(
 				scan, sensorPt, free_cells, occupied_cells,
 				insertionOptions.maxrange);
@@ -254,12 +251,12 @@ bool CColouredOctoMap::internal_insertObservation(
 		for (octomap::KeySet::iterator it = free_cells.begin();
 			 it != free_cells.end(); ++it)
 		{
-			PIMPL_GET_REF(ColorOcTree, m_octomap).updateNode(*it, false, false);
+			m_impl->m_octomap.updateNode(*it, false, false);
 		}
 		for (octomap::KeySet::iterator it = occupied_cells.begin();
 			 it != occupied_cells.end(); ++it)
 		{
-			PIMPL_GET_REF(ColorOcTree, m_octomap).updateNode(*it, true, false);
+			m_impl->m_octomap.updateNode(*it, true, false);
 		}
 
 		// Update color -----------------------
@@ -278,7 +275,7 @@ bool CColouredOctoMap::internal_insertObservation(
 
 		// TODO: does pruning make sense if we used "lazy_eval"?
 		if (insertionOptions.pruning)
-			PIMPL_GET_REF(ColorOcTree, m_octomap).prune();
+			m_impl->m_octomap.prune();
 
 		return true;
 	}
@@ -294,11 +291,11 @@ bool CColouredOctoMap::getPointColour(
 	uint8_t& b) const
 {
 	octomap::OcTreeKey key;
-	if (PIMPL_GET_REF(ColorOcTree, m_octomap)
+	if (m_impl->m_octomap
 			.coordToKeyChecked(octomap::point3d(x, y, z), key))
 	{
 		octomap::ColorOcTreeNode* node =
-			PIMPL_GET_REF(ColorOcTree, m_octomap).search(key, 0 /*depth*/);
+			m_impl->m_octomap.search(key, 0 /*depth*/);
 		if (!node) return false;
 
 		const octomap::ColorOcTreeNode::Color& col = node->getColor();
@@ -319,15 +316,15 @@ void CColouredOctoMap::updateVoxelColour(
 	switch (m_colour_method)
 	{
 		case INTEGRATE:
-			PIMPL_GET_REF(ColorOcTree, m_octomap)
+			m_impl->m_octomap
 				.integrateNodeColor(x, y, z, r, g, b);
 			break;
 		case SET:
-			PIMPL_GET_REF(ColorOcTree, m_octomap)
+			m_impl->m_octomap
 				.setNodeColor(x, y, z, r, g, b);
 			break;
 		case AVERAGE:
-			PIMPL_GET_REF(ColorOcTree, m_octomap)
+			m_impl->m_octomap
 				.averageNodeColor(x, y, z, r, g, b);
 			break;
 		default:
@@ -344,7 +341,7 @@ void CColouredOctoMap::getAsOctoMapVoxels(
 
 	// OcTreeVolume voxel; // current voxel, possibly transformed
 	octomap::ColorOcTree::tree_iterator it_end =
-		PIMPL_GET_REF(ColorOcTree, m_octomap).end_tree();
+		m_impl->m_octomap.end_tree();
 
 	const unsigned char max_depth = 0;  // all
 	const TColorf general_color = gl_obj.getColor();
@@ -370,7 +367,7 @@ void CColouredOctoMap::getAsOctoMapVoxels(
 	this->getMetricMax(xmax, ymax, zmax);
 
 	for (octomap::ColorOcTree::tree_iterator it =
-			 PIMPL_GET_REF(ColorOcTree, m_octomap).begin_tree(max_depth);
+			 m_impl->m_octomap.begin_tree(max_depth);
 		 it != it_end; ++it)
 	{
 		const octomap::point3d vx_center = it.getCoordinate();
@@ -389,7 +386,7 @@ void CColouredOctoMap::getAsOctoMapVoxels(
 				vx_color = TColor(node_color.r, node_color.g, node_color.b);
 
 				const size_t vx_set =
-					(PIMPL_GET_REF(ColorOcTree, m_octomap).isNodeOccupied(*it))
+					(m_impl->m_octomap.isNodeOccupied(*it))
 						? VOXEL_SET_OCCUPIED
 						: VOXEL_SET_FREESPACE;
 
@@ -429,7 +426,7 @@ void CColouredOctoMap::insertRay(
 	const float end_x, const float end_y, const float end_z,
 	const float sensor_x, const float sensor_y, const float sensor_z)
 {
-	PIMPL_GET_REF(ColorOcTree, m_octomap)
+	m_impl->m_octomap
 		.insertRay(
 			octomap::point3d(sensor_x, sensor_y, sensor_z),
 			octomap::point3d(end_x, end_y, end_z), insertionOptions.maxrange,
@@ -438,137 +435,137 @@ void CColouredOctoMap::insertRay(
 void CColouredOctoMap::updateVoxel(
 	const double x, const double y, const double z, bool occupied)
 {
-	PIMPL_GET_REF(ColorOcTree, m_octomap).updateNode(x, y, z, occupied);
+	m_impl->m_octomap.updateNode(x, y, z, occupied);
 }
 bool CColouredOctoMap::isPointWithinOctoMap(
 	const float x, const float y, const float z) const
 {
 	octomap::OcTreeKey key;
-	return PIMPL_GET_CONSTREF(ColorOcTree, m_octomap)
+	return m_impl->m_octomap
 		.coordToKeyChecked(octomap::point3d(x, y, z), key);
 }
 
 double CColouredOctoMap::getResolution() const
 {
-	return PIMPL_GET_CONSTREF(ColorOcTree, m_octomap).getResolution();
+	return m_impl->m_octomap.getResolution();
 }
 unsigned int CColouredOctoMap::getTreeDepth() const
 {
-	return PIMPL_GET_CONSTREF(ColorOcTree, m_octomap).getTreeDepth();
+	return m_impl->m_octomap.getTreeDepth();
 }
 size_t CColouredOctoMap::size() const
 {
-	return PIMPL_GET_CONSTREF(ColorOcTree, m_octomap).size();
+	return m_impl->m_octomap.size();
 }
 size_t CColouredOctoMap::memoryUsage() const
 {
-	return PIMPL_GET_CONSTREF(ColorOcTree, m_octomap).memoryUsage();
+	return m_impl->m_octomap.memoryUsage();
 }
 size_t CColouredOctoMap::memoryUsageNode() const
 {
-	return PIMPL_GET_CONSTREF(ColorOcTree, m_octomap).memoryUsageNode();
+	return m_impl->m_octomap.memoryUsageNode();
 }
 size_t CColouredOctoMap::memoryFullGrid() const
 {
-	return PIMPL_GET_CONSTREF(ColorOcTree, m_octomap).memoryFullGrid();
+	return m_impl->m_octomap.memoryFullGrid();
 }
 double CColouredOctoMap::volume()
 {
-	return PIMPL_GET_REF(ColorOcTree, m_octomap).volume();
+	return m_impl->m_octomap.volume();
 }
 void CColouredOctoMap::getMetricSize(double& x, double& y, double& z)
 {
-	return PIMPL_GET_REF(ColorOcTree, m_octomap).getMetricSize(x, y, z);
+	return m_impl->m_octomap.getMetricSize(x, y, z);
 }
 void CColouredOctoMap::getMetricSize(double& x, double& y, double& z) const
 {
-	return PIMPL_GET_CONSTREF(ColorOcTree, m_octomap).getMetricSize(x, y, z);
+	return m_impl->m_octomap.getMetricSize(x, y, z);
 }
 void CColouredOctoMap::getMetricMin(double& x, double& y, double& z)
 {
-	return PIMPL_GET_REF(ColorOcTree, m_octomap).getMetricMin(x, y, z);
+	return m_impl->m_octomap.getMetricMin(x, y, z);
 }
 void CColouredOctoMap::getMetricMin(double& x, double& y, double& z) const
 {
-	return PIMPL_GET_CONSTREF(ColorOcTree, m_octomap).getMetricMin(x, y, z);
+	return m_impl->m_octomap.getMetricMin(x, y, z);
 }
 void CColouredOctoMap::getMetricMax(double& x, double& y, double& z)
 {
-	return PIMPL_GET_REF(ColorOcTree, m_octomap).getMetricMax(x, y, z);
+	return m_impl->m_octomap.getMetricMax(x, y, z);
 }
 void CColouredOctoMap::getMetricMax(double& x, double& y, double& z) const
 {
-	return PIMPL_GET_CONSTREF(ColorOcTree, m_octomap).getMetricMax(x, y, z);
+	return m_impl->m_octomap.getMetricMax(x, y, z);
 }
 size_t CColouredOctoMap::calcNumNodes() const
 {
-	return PIMPL_GET_REF(ColorOcTree, m_octomap).calcNumNodes();
+	return m_impl->m_octomap.calcNumNodes();
 }
 size_t CColouredOctoMap::getNumLeafNodes() const
 {
-	return PIMPL_GET_CONSTREF(ColorOcTree, m_octomap).getNumLeafNodes();
+	return m_impl->m_octomap.getNumLeafNodes();
 }
 void CColouredOctoMap::setOccupancyThres(double prob)
 {
-	PIMPL_GET_REF(ColorOcTree, m_octomap).setOccupancyThres(prob);
+	m_impl->m_octomap.setOccupancyThres(prob);
 }
 void CColouredOctoMap::setProbHit(double prob)
 {
-	PIMPL_GET_REF(ColorOcTree, m_octomap).setProbHit(prob);
+	m_impl->m_octomap.setProbHit(prob);
 }
 void CColouredOctoMap::setProbMiss(double prob)
 {
-	PIMPL_GET_REF(ColorOcTree, m_octomap).setProbMiss(prob);
+	m_impl->m_octomap.setProbMiss(prob);
 }
 void CColouredOctoMap::setClampingThresMin(double thresProb)
 {
-	PIMPL_GET_REF(ColorOcTree, m_octomap).setClampingThresMin(thresProb);
+	m_impl->m_octomap.setClampingThresMin(thresProb);
 }
 void CColouredOctoMap::setClampingThresMax(double thresProb)
 {
-	PIMPL_GET_REF(ColorOcTree, m_octomap).setClampingThresMax(thresProb);
+	m_impl->m_octomap.setClampingThresMax(thresProb);
 }
 double CColouredOctoMap::getOccupancyThres() const
 {
-	return PIMPL_GET_REF(ColorOcTree, m_octomap).getOccupancyThres();
+	return m_impl->m_octomap.getOccupancyThres();
 }
 float CColouredOctoMap::getOccupancyThresLog() const
 {
-	return PIMPL_GET_REF(ColorOcTree, m_octomap).getOccupancyThresLog();
+	return m_impl->m_octomap.getOccupancyThresLog();
 }
 double CColouredOctoMap::getProbHit() const
 {
-	return PIMPL_GET_REF(ColorOcTree, m_octomap).getProbHit();
+	return m_impl->m_octomap.getProbHit();
 }
 float CColouredOctoMap::getProbHitLog() const
 {
-	return PIMPL_GET_REF(ColorOcTree, m_octomap).getProbHitLog();
+	return m_impl->m_octomap.getProbHitLog();
 }
 double CColouredOctoMap::getProbMiss() const
 {
-	return PIMPL_GET_REF(ColorOcTree, m_octomap).getProbMiss();
+	return m_impl->m_octomap.getProbMiss();
 }
 float CColouredOctoMap::getProbMissLog() const
 {
-	return PIMPL_GET_REF(ColorOcTree, m_octomap).getProbMissLog();
+	return m_impl->m_octomap.getProbMissLog();
 }
 double CColouredOctoMap::getClampingThresMin() const
 {
-	return PIMPL_GET_REF(ColorOcTree, m_octomap).getClampingThresMin();
+	return m_impl->m_octomap.getClampingThresMin();
 }
 float CColouredOctoMap::getClampingThresMinLog() const
 {
-	return PIMPL_GET_REF(ColorOcTree, m_octomap).getClampingThresMinLog();
+	return m_impl->m_octomap.getClampingThresMinLog();
 }
 double CColouredOctoMap::getClampingThresMax() const
 {
-	return PIMPL_GET_REF(ColorOcTree, m_octomap).getClampingThresMax();
+	return m_impl->m_octomap.getClampingThresMax();
 }
 float CColouredOctoMap::getClampingThresMaxLog() const
 {
-	return PIMPL_GET_REF(ColorOcTree, m_octomap).getClampingThresMaxLog();
+	return m_impl->m_octomap.getClampingThresMaxLog();
 }
 void CColouredOctoMap::internal_clear()
 {
-	PIMPL_GET_REF(ColorOcTree, m_octomap).clear();
+	m_impl->m_octomap.clear();
 }

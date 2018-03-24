@@ -9,14 +9,16 @@
 #pragma once
 
 #include <mrpt/core/pimpl.h>
+
 #include <map>
 #include <string>
+#include <memory>
 #include "mrpt-expr_export.h"
 
-PIMPL_FORWARD_DECLARATION(namespace exprtk {
+namespace exprtk {
 	template <typename T>
 	class expression;
-})
+}
 
 namespace mrpt
 {
@@ -52,6 +54,7 @@ class MRPT_EXPR_EXPORT CRuntimeCompiledExpression
    public:
 	/** Default ctor */
 	CRuntimeCompiledExpression();
+	~CRuntimeCompiledExpression();
 
 	/** Initializes the object by compiling an expression.
 	  * \exception std::runtime_error On any syntax error or undefined symbol
@@ -96,10 +99,11 @@ class MRPT_EXPR_EXPORT CRuntimeCompiledExpression
 	const exprtk::expression<double>& get_raw_exprtk_expr() const;
 
    private:
-	PIMPL_DECLARE_TYPE(exprtk::expression<double>, m_compiled_formula);
-	std::string m_original_expr_str;
-
+	struct Impl;
+	mrpt::pimpl<Impl> m_impl;
 };  // End of class def.
 
 }  // End of namespace
+
+
 }  // End of namespace
