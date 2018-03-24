@@ -998,8 +998,8 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
 	static const std::string header_sep;
 	static const std::string report_sep;
 };
-}
-}  // end of namespaces
+} // end of namespace graphslam
+} // end of namespace mrpt
 
 // pseudo-split the definition and implementation of template
 #include "CGraphSlamEngine_impl.h"

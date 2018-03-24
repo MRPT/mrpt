@@ -74,7 +74,7 @@ bool CNodeRegistrationDecider<GRAPH_T>::registerNewNodeAtEnd(
 		std::pair<typename GRAPH_T::global_poses_t::const_iterator, bool> res =
 			this->m_graph->nodes.insert(
 				make_pair(this->m_graph->root, tmp_pose));
-		ASSERTMSG_(
+		ASSERTDEBMSG_(
 			res.second, mrpt::format(
 							"nodeID \"%lu\" with pose \"%s\" seems to be "
 							"already registered.",
@@ -97,7 +97,7 @@ bool CNodeRegistrationDecider<GRAPH_T>::registerNewNodeAtEnd(
 		// make sure that this pair hasn't been registered yet.
 		std::pair<typename GRAPH_T::global_poses_t::const_iterator, bool> res =
 			this->m_graph->nodes.insert(make_pair(to, tmp_pose));
-		ASSERTMSG_(
+		ASSERTDEBMSG_(
 			res.second, mrpt::format(
 							"nodeID \"%lu\" with pose \"%s\" seems to be "
 							"already registered.",
@@ -132,10 +132,10 @@ template <class GRAPH_T>
 void CNodeRegistrationDecider<GRAPH_T>::resetPDF(constraint_t* c)
 {
 	MRPT_START;
-	ASSERT_(c);
+	ASSERTDEB_(c);
 
 	*c = constraint_t();
-	ASSERT_(c->isInfType());
+	ASSERTDEB_(c->isInfType());
 	c->cov_inv = this->m_init_inf_mat;
 
 	MRPT_END;

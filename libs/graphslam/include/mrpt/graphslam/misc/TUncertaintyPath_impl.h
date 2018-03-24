@@ -80,12 +80,12 @@ template <class GRAPH_T>
 void TUncertaintyPath<GRAPH_T>::assertIsBetweenNodeIDs(
 	const mrpt::graphs::TNodeID& from, const mrpt::graphs::TNodeID& to) const
 {
-	ASSERTMSG_(
+	ASSERTDEBMSG_(
 		this->getSource() == from,
 		format(
 			"\nnodeID %lu is not the source of the path\n%s\n\n",
 			static_cast<unsigned long>(from), this->getAsString().c_str()));
-	ASSERTMSG_(
+	ASSERTDEBMSG_(
 		this->getDestination() == to,
 		format(
 			"\nnodeID %lu is not the destination of the path\n%s\n\n",
@@ -102,15 +102,15 @@ TUncertaintyPath<GRAPH_T>& TUncertaintyPath<GRAPH_T>::operator+=(
 	using namespace std;
 
 	// other path should start where this ends
-	ASSERTMSG_(
+	ASSERTDEBMSG_(
 		other.nodes_traversed.begin()[0] == this->nodes_traversed.rbegin()[0],
 		"\"other\" instance must start from the nodeID that this "
 		"TUncertaintyPath has ended.");
-	ASSERTMSG_(
+	ASSERTDEBMSG_(
 		other.nodes_traversed.size(),
 		"\"other\" instance doesn't have an initialized list of traversed "
 		"nodes");
-	ASSERTMSG_(
+	ASSERTDEBMSG_(
 		this->nodes_traversed.size(),
 		"\"this\" instance doesn't have an initialized list of traversed "
 		"nodes");
@@ -278,7 +278,7 @@ bool TUncertaintyPath<GRAPH_T>::hasLowerUncertaintyThan(
 	using namespace mrpt::poses;
 	using namespace std;
 
-	ASSERTMSG_(
+	ASSERTDEBMSG_(
 		(curr_pose_pdf.isInfType() && other.curr_pose_pdf.isInfType()) ||
 			(!curr_pose_pdf.isInfType() && !other.curr_pose_pdf.isInfType()),
 		mrpt::format(

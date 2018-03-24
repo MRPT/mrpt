@@ -371,8 +371,8 @@ template <class GRAPH_T>
 void CICPCriteriaERD<GRAPH_T>::toggleLaserScansVisualization()
 {
 	MRPT_START;
-	ASSERTMSG_(this->m_win, "No CDisplayWindow3D* was provided");
-	ASSERTMSG_(this->m_win_manager, "No CWindowManager* was provided");
+	ASSERTDEBMSG_(this->m_win, "No CDisplayWindow3D* was provided");
+	ASSERTDEBMSG_(this->m_win_manager, "No CWindowManager* was provided");
 
 	using namespace mrpt::opengl;
 
@@ -417,7 +417,7 @@ void CICPCriteriaERD<GRAPH_T>::initializeVisuals()
 	this->m_time_logger.enter("CICPCriteriaERD::Visuals");
 	parent_t::initializeVisuals();
 
-	ASSERTMSG_(
+	ASSERTDEBMSG_(
 		params.has_read_config, "Configuration parameters aren't loaded yet");
 
 	this->m_win_observer->registerKeystroke(

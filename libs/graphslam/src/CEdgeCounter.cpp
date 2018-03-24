@@ -40,8 +40,8 @@ void CEdgeCounter::setWindowManagerPtr(
 	mrpt::graphslam::CWindowManager* win_manager)
 {
 	MRPT_START;
-	ASSERT_(win_manager);
-	ASSERT_(win_manager->win);
+	ASSERTDEB_(win_manager);
+	ASSERTDEB_(win_manager->win);
 
 	m_win_manager = win_manager;
 	m_win = m_win_manager->win;
@@ -70,7 +70,7 @@ int CEdgeCounter::getTotalNumOfEdges() const
 
 void CEdgeCounter::getTotalNumOfEdges(int* total_num_edges) const
 {
-	ASSERT_(total_num_edges);
+	ASSERTDEB_(total_num_edges);
 	int sum = 0;
 
 	for (std::map<std::string, int>::const_iterator it =
@@ -264,11 +264,11 @@ void CEdgeCounter::setTextMessageParams(
 	const std::map<std::string, double>& name_to_offset_y,
 	const std::map<std::string, int>& name_to_text_index)
 {
-	ASSERTMSG_(
+	ASSERTDEBMSG_(
 		m_win_manager,
 		"Visualization of data was requested but no CWindowManager pointer was "
 		"provided");
-	ASSERT_EQUAL_(name_to_offset_y.size(), name_to_text_index.size());
+	ASSERTDEB_EQUAL_(name_to_offset_y.size(), name_to_text_index.size());
 
 	for (std::map<std::string, double>::const_iterator it =
 			 name_to_offset_y.begin();
@@ -320,9 +320,9 @@ void CEdgeCounter::setTextMessageParams(
 
 void CEdgeCounter::updateTextMessages() const
 {
-	ASSERT_(m_win_manager);
-	ASSERT_(m_has_read_textmessage_params);
-	ASSERT_EQUAL_(m_name_to_offset_y.size(), m_name_to_text_index.size());
+	ASSERTDEB_(m_win_manager);
+	ASSERTDEB_(m_has_read_textmessage_params);
+	ASSERTDEB_EQUAL_(m_name_to_offset_y.size(), m_name_to_text_index.size());
 
 	// Add text message for the total amount of edges
 	std::stringstream title;

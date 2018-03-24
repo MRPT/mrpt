@@ -60,10 +60,10 @@ void CRangeScanOps<GRAPH_T>::getICPEdge(
 {
 	MRPT_START;
 
-	ASSERTMSG_(
+	ASSERTDEBMSG_(
 		from.hasRangeImage,
 		mrpt::format("Laser scan doesn't contain valid range image"));
-	ASSERTMSG_(
+	ASSERTDEBMSG_(
 		to.hasRangeImage,
 		mrpt::format("Laser scan doesn't contain valid range image"));
 
