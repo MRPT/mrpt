@@ -251,7 +251,7 @@ class PF_implementation : public mrpt::system::COutputLogger
 			 newPartIt != newParticlesArray.end(); ++newPartIt, ++trgPartIt)
 		{
 			trgPartIt->log_w = newPartIt->log_w;
-			trgPartIt->d.move_from(newPartIt->d);
+			trgPartIt->d = std::move(newPartIt->d);
 		}
 	}  // end of PF_SLAM_implementation_replaceByNewParticleSet
 

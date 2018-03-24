@@ -13,8 +13,8 @@
 #include <mrpt/maps/COctoMapBase.h>
 #include <mrpt/obs/obs_frwds.h>
 
-PIMPL_FORWARD_DECLARATION(namespace octomap { class ColorOcTree; })
-PIMPL_FORWARD_DECLARATION(namespace octomap { class ColorOcTreeNode; })
+namespace octomap { class ColorOcTree; }
+namespace octomap { class ColorOcTreeNode; }
 
 namespace mrpt
 {

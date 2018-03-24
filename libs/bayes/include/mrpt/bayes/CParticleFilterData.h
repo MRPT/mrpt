@@ -173,7 +173,7 @@ struct CParticleFilterDataImpl : public CParticleFilterCapable
 			 itSrc != parts.end(); itSrc++, itDest++)
 		{
 			itDest->log_w = itSrc->log_w;
-			itDest->d.move_from(itSrc->d);
+			itDest->d = std::move(itSrc->d);
 		}
 		parts.clear();
 		MRPT_END

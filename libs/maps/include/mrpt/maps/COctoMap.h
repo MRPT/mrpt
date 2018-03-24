@@ -17,8 +17,8 @@
 #include <mrpt/core/safe_pointers.h>
 #include <mrpt/obs/obs_frwds.h>
 
-PIMPL_FORWARD_DECLARATION(namespace octomap { class OcTree; })
-PIMPL_FORWARD_DECLARATION(namespace octomap { class OcTreeNode; })
+namespace octomap { class OcTree; }
+namespace octomap { class OcTreeNode; }
 
 namespace mrpt
 {

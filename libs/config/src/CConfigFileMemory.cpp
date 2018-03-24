@@ -19,52 +19,35 @@ using namespace mrpt::config;
 using namespace mrpt::config::simpleini;
 using namespace std;
 
-#define THE_INI static_cast<MRPT_CSimpleIni*>(m_ini.get())
+#define THE_INI m_impl->m_ini
 
-CConfigFileMemory::CConfigFileMemory(const std::vector<std::string>& stringList)
+struct CConfigFileMemory::Impl
 {
-	// Create the object:
-	m_ini = (void*)new MRPT_CSimpleIni();
+	MRPT_CSimpleIni m_ini;
+};
 
+CConfigFileMemory::CConfigFileMemory(const std::vector<std::string>& stringList) :
+	m_impl(mrpt::make_impl<CConfigFileMemory::Impl>())
+{
 	// Load the strings:
 	std::string aux;
 	mrpt::system::stringListAsString(stringList, aux);
-	THE_INI->Load(aux.c_str(), aux.size());
+	THE_INI.Load(aux.c_str(), aux.size());
 }
 
-CConfigFileMemory::CConfigFileMemory(const std::string& str)
+CConfigFileMemory::CConfigFileMemory(const std::string& str) :
+	m_impl(mrpt::make_impl<CConfigFileMemory::Impl>())
 {
-	// Create the object:
-	m_ini = (void*)new MRPT_CSimpleIni();
-
 	// Load the strings:
-	THE_INI->Load(str.c_str(), str.size());
+	THE_INI.Load(str.c_str(), str.size());
 }
 
 /*---------------------------------------------------------------
 					Constructor
  ---------------------------------------------------------------*/
-CConfigFileMemory::CConfigFileMemory()
+CConfigFileMemory::CConfigFileMemory():
+	m_impl(mrpt::make_impl<CConfigFileMemory::Impl>())
 {
-	// Create the empty object:
-	m_ini = (void*)new MRPT_CSimpleIni();
-}
-
-/** Copy constructor */
-CConfigFileMemory::CConfigFileMemory(const CConfigFileMemory& o)
-{
-	// Create the empty object:
-	m_ini = (void*)new MRPT_CSimpleIni();
-	(*this) = o;
-}
-
-/** Copy operator */
-CConfigFileMemory& CConfigFileMemory::operator=(const CConfigFileMemory& o)
-{
-	std::string str;
-	static_cast<const MRPT_CSimpleIni*>(o.m_ini.get())->Save(str);
-	THE_INI->Load(str.c_str(), str.size());
-	return *this;
 }
 
 void CConfigFileMemory::setContent(const std::vector<std::string>& stringList)
@@ -72,27 +55,27 @@ void CConfigFileMemory::setContent(const std::vector<std::string>& stringList)
 	// Load the strings:
 	std::string aux;
 	mrpt::system::stringListAsString(stringList, aux);
-	THE_INI->Load(aux.c_str(), aux.size());
+	THE_INI.Load(aux.c_str(), aux.size());
 }
 
 void CConfigFileMemory::setContent(const std::string& str)
 {
-	THE_INI->Load(str.c_str(), str.size());
+	THE_INI.Load(str.c_str(), str.size());
 }
 
 void CConfigFileMemory::getContent(std::string& str) const
 {
-	((MRPT_CSimpleIni*)(m_ini.get()))->Save(str);
+	m_impl->m_ini.Save(str);
 }
 
-CConfigFileMemory::~CConfigFileMemory() { delete THE_INI; }
+CConfigFileMemory::~CConfigFileMemory() { }
 void CConfigFileMemory::writeString(
 	const std::string& section, const std::string& name, const std::string& str)
 {
 	MRPT_START
 
 	SI_Error ret =
-		THE_INI->SetValue(section.c_str(), name.c_str(), str.c_str(), nullptr);
+		THE_INI.SetValue(section.c_str(), name.c_str(), str.c_str(), nullptr);
 	if (ret < 0) THROW_EXCEPTION("Error changing value in INI-style file!");
 
 	MRPT_END
@@ -106,10 +89,9 @@ std::string CConfigFileMemory::readString(
 	const char* defVal = failIfNotFound ? nullptr : defaultStr.c_str();
 
 	const char* aux =
-		static_cast<const MRPT_CSimpleIni*>(m_ini.get())
-			->GetValue(
-				section.c_str(), name.c_str(), defVal,
-				nullptr);  // The memory is managed by the SimpleIni object
+		m_impl->m_ini.GetValue(
+			section.c_str(), name.c_str(), defVal,
+			nullptr);  // The memory is managed by the SimpleIni object
 
 	if (failIfNotFound && !aux)
 	{
@@ -134,7 +116,7 @@ std::string CConfigFileMemory::readString(
 void CConfigFileMemory::getAllSections(std::vector<std::string>& sections) const
 {
 	MRPT_CSimpleIni::TNamesDepend names;
-	static_cast<const MRPT_CSimpleIni*>(m_ini.get())->GetAllSections(names);
+	m_impl->m_ini.GetAllSections(names);
 
 	MRPT_CSimpleIni::TNamesDepend::iterator n;
 	std::vector<std::string>::iterator s;
@@ -147,8 +129,7 @@ void CConfigFileMemory::getAllKeys(
 	const string& section, std::vector<std::string>& keys) const
 {
 	MRPT_CSimpleIni::TNamesDepend names;
-	static_cast<const MRPT_CSimpleIni*>(m_ini.get())
-		->GetAllKeys(section.c_str(), names);
+	m_impl->m_ini.GetAllKeys(section.c_str(), names);
 
 	MRPT_CSimpleIni::TNamesDepend::iterator n;
 	std::vector<std::string>::iterator s;
