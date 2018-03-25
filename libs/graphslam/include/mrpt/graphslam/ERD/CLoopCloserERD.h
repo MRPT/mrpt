@@ -267,8 +267,8 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	void printParams() const;
 
 	void getDescriptiveReport(std::string* report_str) const;
-	void getCurrPartitions(partitions_t* partitions_out) const;
-	const partitions_t& getCurrPartitions() const;
+	void getCurrentPartitions(partitions_t& partitions_out) const;
+	const partitions_t& getCurrentPartitions() const;
 	/**\brief Return the minimum number of nodes that should exist in the graph
 	 * prior to running Dijkstra
 	 */
@@ -302,7 +302,6 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 		{
 			using namespace std;
 			using namespace mrpt;
-			ASSERT_(str);
 			str->clear();
 			*str +=
 				format("from_params: %s", from_params.getAsString().c_str());

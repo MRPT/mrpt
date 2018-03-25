@@ -157,7 +157,7 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
 	/**\brief Handy typedefs */
 	/**\{*/
 	/**\brief Map for managing output file streams.*/
-	using fstreams_out = std::map<std::string, mrpt::io::CFileOutputStream*>;
+	using fstreams_out = std::map<std::string, mrpt::io::CFileOutputStream>;
 	/**\brief Map for iterating over output file streams.*/
 	typedef std::map<std::string, mrpt::io::CFileOutputStream*>::iterator
 		fstreams_out_it;
@@ -998,8 +998,8 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
 	static const std::string header_sep;
 	static const std::string report_sep;
 };
-}
-}  // end of namespaces
+} // end of namespace graphslam
+} // end of namespace mrpt
 
 // pseudo-split the definition and implementation of template
 #include "CGraphSlamEngine_impl.h"

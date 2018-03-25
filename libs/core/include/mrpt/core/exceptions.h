@@ -195,6 +195,12 @@ inline std::string asrt_fail(
 #ifdef _DEBUG
 #define ASSERTDEB_(f) ASSERT_(f)
 #define ASSERTDEBMSG_(f, __ERROR_MSG) ASSERTMSG_(f, __ERROR_MSG)
+#define ASSERTDEB_EQUAL_(__A, __B) ASSERT_EQUAL_(__A, __B)
+#define ASSERTDEB_NOT_EQUAL_(__A, __B) ASSERT_NOT_EQUAL_(__A, __B)
+#define ASSERTDEB_BELOW_(__A, __B) ASSERT_BELOW_(__A, __B)
+#define ASSERTDEB_ABOVE_(__A, __B) ASSERT_ABOVE_(__A, __B)
+#define ASSERTDEB_BELOWEQ_(__A, __B) ASSERT_BELOWEQ_(__A, __B)
+#define ASSERTDEB_ABOVEEQ_(__A, __B) ASSERT_ABOVEEQ_(__A, __B)
 #else
 #define ASSERTDEB_(f) \
 	{                 \
@@ -202,6 +208,13 @@ inline std::string asrt_fail(
 #define ASSERTDEBMSG_(f, __ERROR_MSG) \
 	{                                 \
 	}
+#define ASSERTDEB_EQUAL_(__A, __B) {}
+#define ASSERTDEB_NOT_EQUAL_(__A, __B) {}
+#define ASSERTDEB_BELOW_(__A, __B) {}
+#define ASSERTDEB_ABOVE_(__A, __B) {}
+#define ASSERTDEB_BELOWEQ_(__A, __B) {}
+#define ASSERTDEB_ABOVEEQ_(__A, __B) {}
+
 #endif
 
 /** The start of a standard MRPT "try...catch()" block that allows tracing throw

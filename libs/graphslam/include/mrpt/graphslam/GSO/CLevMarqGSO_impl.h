@@ -88,7 +88,7 @@ template <class GRAPH_T>
 void CLevMarqGSO<GRAPH_T>::initializeVisuals()
 {
 	MRPT_START;
-	ASSERT_(m_has_read_config);
+	ASSERTDEB_(m_has_read_config);
 	parent::initializeVisuals();
 
 	this->initGraphVisualization();
@@ -165,7 +165,7 @@ template <class GRAPH_T>
 inline void CLevMarqGSO<GRAPH_T>::initGraphVisualization()
 {
 	MRPT_START;
-	ASSERTMSG_(this->m_win_manager, "No CWindowManager* is given");
+	ASSERTDEBMSG_(this->m_win_manager, "No CWindowManager* is given");
 
 	if (viz_params.visualize_optimized_graph)
 	{
@@ -185,7 +185,7 @@ template <class GRAPH_T>
 inline void CLevMarqGSO<GRAPH_T>::updateGraphVisualization()
 {
 	MRPT_START;
-	ASSERTMSG_(this->m_win_manager, "No CWindowManager* is given");
+	ASSERTDEBMSG_(this->m_win_manager, "No CWindowManager* is given");
 	using namespace mrpt::opengl;
 
 	this->logFmt(
@@ -255,7 +255,7 @@ void CLevMarqGSO<GRAPH_T>::fitGraphInView()
 	MRPT_START;
 	using namespace mrpt::opengl;
 
-	ASSERTMSG_(
+	ASSERTDEBMSG_(
 		this->m_win,
 		"\nVisualization of data was requested but no CDisplayWindow3D pointer "
 		"was given\n");
@@ -366,7 +366,7 @@ template <class GRAPH_T>
 void CLevMarqGSO<GRAPH_T>::updateOptDistanceVisualization()
 {
 	MRPT_START;
-	ASSERTMSG_(this->m_win_manager, "No CWindowManager* is given");
+	ASSERTDEBMSG_(this->m_win_manager, "No CWindowManager* is given");
 	using namespace mrpt::opengl;
 
 	// update ICP_max_distance Disk
@@ -768,7 +768,7 @@ void CLevMarqGSO<GRAPH_T>::OptimizationParams::loadFromConfigFile(
 	optimization_distance =
 		source.read_double(section, "optimization_distance", 5, false);
 	// asert the previous value
-	ASSERTMSG_(
+	ASSERTDEBMSG_(
 		optimization_distance == 1 || optimization_distance > 0,
 		format(
 			"Invalid value for optimization distance: %.2f",
