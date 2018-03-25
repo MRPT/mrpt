@@ -411,7 +411,7 @@ void CLevMarqGSO<GRAPH_T>::optimizeGraph()
 									<< "\t"
 									<< "Trying to grab lock... ");
 
-	std::lock_guard<std::mutex> m_graph_lock(*this->m_graph_section);
+	std::lock_guard<std::mutex> graph_lock(*this->m_graph_section);
 	this->_optimizeGraph();
 
 	this->logFmt(mrpt::system::LVL_DEBUG, "2nd thread grabbed the lock..");
