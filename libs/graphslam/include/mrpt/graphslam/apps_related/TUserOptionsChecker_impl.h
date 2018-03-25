@@ -119,7 +119,7 @@ void TUserOptionsChecker<GRAPH_t>::dumpRegistrarsToConsole(
 	using namespace std;
 	using namespace mrpt;
 
-	ASSERTMSG_(
+	ASSERTDEBMSG_(
 		(system::strCmpI(reg_type, "node") ||
 		 system::strCmpI(reg_type, "edge") || system::strCmpI(reg_type, "all")),
 		format(
@@ -232,7 +232,7 @@ bool TUserOptionsChecker<GRAPH_t>::checkRegistrationDeciderExists(
 	using namespace mrpt;
 	using namespace mrpt::poses;
 
-	ASSERTMSG_(
+	ASSERTDEBMSG_(
 		(system::strCmpI(reg_type, "node") ||
 		 system::strCmpI(reg_type, "edge")),
 		format(

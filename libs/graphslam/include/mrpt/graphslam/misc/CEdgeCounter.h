@@ -142,9 +142,9 @@ class CEdgeCounter
 
 	/**\brief Instance Iterators */
 	inline iterator begin() { return m_name_to_edges_num.begin(); }
-	inline const_iterator begin() const { return m_name_to_edges_num.begin(); }
+	inline const_iterator cbegin() const { return m_name_to_edges_num.cbegin(); }
 	inline iterator end() { return m_name_to_edges_num.end(); }
-	inline const_iterator end() const { return m_name_to_edges_num.end(); }
+	inline const_iterator cend() const { return m_name_to_edges_num.cend(); }
    private:
 	/**\brief Initialization method to be called from the various Constructors.
 	 */
