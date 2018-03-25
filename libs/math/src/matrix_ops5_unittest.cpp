@@ -32,8 +32,8 @@ TEST(Matrices, loadFromArray)
 		for (int c = 0; c < 4; c++) EXPECT_EQ(nums[4 * r + c], mat(r, c));
 }
 
-alignas(32) static double test_nums[3 * 4] = {1, 2, 3, 4,  5,  6,
-											  7, 8, 9, 10, 11, 12};
+alignas(MRPT_MAX_ALIGN_BYTES) static double test_nums[3 * 4] = {
+	1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
 
 TEST(Matrices, CMatrixFixedNumeric_loadWithEigenMap)
 {
