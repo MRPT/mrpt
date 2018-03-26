@@ -219,11 +219,10 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
 	global_pose_t getCurrentRobotPosEstimation() const;
 	/***\brief Get the estimated trajectory of the robot given by the running
 	 * graphSLAM algorithm.
-	 * \param[out] graph_nodes Nodes of the graph that have been registered so
-	 * far. graph_nodes contains a map of nodeIDs to their corresponding poses.
+	 * @returns Current list of nodes registered in the graph
 	 */
-	virtual void getRobotEstimatedTrajectory(
-		typename GRAPH_T::global_poses_t* graph_poses) const;
+	virtual typename GRAPH_T::global_poses_t
+		getRobotEstimatedTrajectory() const;
 	/**\brief Return the list of nodeIDs which make up robot trajectory
 	 * \sa updateEstimatedTrajectoryVisualization
 	 */
