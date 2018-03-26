@@ -521,6 +521,12 @@ class COccupancyGridMap2D : public CMetricMap,
 		/** A value in the range [0.5,1] used for updating cell with a bayesian
 		 * approach (default 0.8) */
 		float maxOccupancyUpdateCertainty;
+		/** A value in the range [0.5,1] for updating a free cell. (default=0
+		 * means use the same than maxOccupancyUpdateCertainty) */
+		float maxFreenessUpdateCertainty;
+		/** Like maxFreenessUpdateCertainty, but for invalid ranges (no echo).
+		 * (default=0 means same than maxOccupancyUpdateCertainty)*/
+		float maxFreenessInvalidRanges;
 		/** If set to true (default), invalid range values (no echo rays) as
 		 * consider as free space until "maxOccupancyUpdateCertainty", but ONLY
 		 * when the previous and next rays are also an invalid ray. */
