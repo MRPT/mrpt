@@ -63,6 +63,22 @@ bool  COccupancyGridMap2D::internal_insertObservation(
 		// Default values are (0,0,0)
 	}
 
+	// the occupied and free probabilities:
+	const float maxCertainty =  insertionOptions.maxOccupancyUpdateCertainty;
+	float maxFreeCertainty = insertionOptions.maxFreenessUpdateCertainty;
+	if (maxFreeCertainty==.0f) maxFreeCertainty = maxCertainty;
+	float maxFreeCertaintyNoEcho = insertionOptions.maxFreenessInvalidRanges;
+	if (maxFreeCertaintyNoEcho==.0f) maxFreeCertaintyNoEcho = maxCertainty;
+
+	cellType logodd_observation_free  = std::max<cellType>(1, p2l(maxFreeCertainty));
+	cellType logodd_observation_occupied = 3*std::max<cellType>(1, p2l(maxCertainty));
+	cellType logodd_noecho_free = std::max<cellType>(1, p2l(maxFreeCertaintyNoEcho));
+
+	// saturation limits:
+	cellType    logodd_thres_occupied = OCCGRID_CELLTYPE_MIN+logodd_observation_occupied;
+	cellType    logodd_thres_free     = OCCGRID_CELLTYPE_MAX-std::max(logodd_noecho_free, logodd_observation_free);
+
+
 	if ( CLASS_ID(CObservation2DRangeScan)==obs->GetRuntimeClass())
 	{
 	/********************************************************************
@@ -105,18 +121,6 @@ bool  COccupancyGridMap2D::internal_insertObservation(
 			float		new_x_max, new_x_min;
 			float		new_y_max, new_y_min;
 			float		last_valid_range	= maxDistanceInsertion;
-
-			float		maxCertainty		= insertionOptions.maxOccupancyUpdateCertainty;
-			cellType    logodd_observation  = p2l(maxCertainty);
-			cellType    logodd_observation_occupied = 3*logodd_observation;
-
-			// Assure minimum change in cells!
-			if (logodd_observation<=0)
-				logodd_observation=1;
-
-			cellType    logodd_thres_occupied = OCCGRID_CELLTYPE_MIN+logodd_observation_occupied;
-			cellType    logodd_thres_free     = OCCGRID_CELLTYPE_MAX-logodd_observation;
-
 
 			int		K = updateInfoChangeOnly.enabled ? updateInfoChangeOnly.laserRaysSkip : decimation;
 			size_t	idx,nRanges = o->scan.size();
@@ -265,10 +269,11 @@ bool  COccupancyGridMap2D::internal_insertObservation(
 
 					int frCX = cx << FRBITS;
 					int frCY = cy << FRBITS;
+					const auto logodd_free = o->validRange[idx] ? logodd_observation_free : logodd_noecho_free;
 
 					for (int nStep = 0;nStep<nStepsRay;nStep++)
 					{
-						updateCell_fast_free(cx,cy, logodd_observation, logodd_thres_free, theMapArray, theMapSize_x );
+						updateCell_fast_free(cx,cy, logodd_free, logodd_thres_free, theMapArray, theMapSize_x );
 
 						frCX += frAcx;
 						frCY += frAcy;
@@ -461,7 +466,7 @@ bool  COccupancyGridMap2D::internal_insertObservation(
 						int max_cx = max3(P0.cx,P1.cx,P2.cx);
 
 						for (int ccx=min_cx;ccx<=max_cx;ccx++)
-							updateCell_fast_free(ccx,P0.cy, logodd_observation, logodd_thres_free, theMapArray, theMapSize_x );
+							updateCell_fast_free(ccx,P0.cy, logodd_observation_free, logodd_thres_free, theMapArray, theMapSize_x );
 					}
 					else
 					{
@@ -533,7 +538,7 @@ bool  COccupancyGridMap2D::internal_insertObservation(
 							//	last_insert_cx = R1.cx;
 
 								for (int ccx=R1.cx;ccx<=R2.cx;ccx++)
-									updateCell_fast_free(ccx,R1.cy, logodd_observation, logodd_thres_free, theMapArray, theMapSize_x );
+									updateCell_fast_free(ccx,R1.cy, logodd_observation_free, logodd_thres_free, theMapArray, theMapSize_x );
 							}
 
 							R1.frX += frAx_R1;    R1.frY += frAy_R1;
@@ -604,7 +609,7 @@ bool  COccupancyGridMap2D::internal_insertObservation(
 							//	last_insert_cx = R1.cx;
 								last_insert_cy = R1.cy;
 								for (int ccx=R1.cx;ccx<=R2.cx;ccx++)
-									updateCell_fast_free(ccx,R1.cy, logodd_observation, logodd_thres_free, theMapArray, theMapSize_x );
+									updateCell_fast_free(ccx,R1.cy, logodd_observation_free, logodd_thres_free, theMapArray, theMapSize_x );
 							}
 
 							R1.frX += frAx_R1;    R1.frY += frAy_R1;
@@ -727,18 +732,6 @@ bool  COccupancyGridMap2D::internal_insertObservation(
 			float		new_x_max, new_x_min;
 			float		new_y_max, new_y_min;
 			float		last_valid_range	= maxDistanceInsertion;
-
-			float		maxCertainty		= insertionOptions.maxOccupancyUpdateCertainty;
-			cellType    logodd_observation  = p2l(maxCertainty);
-			cellType    logodd_observation_occupied = 3*logodd_observation;
-
-			// Assure minimum change in cells!
-			if (logodd_observation<=0)
-				logodd_observation=1;
-
-			cellType    logodd_thres_occupied = OCCGRID_CELLTYPE_MIN+logodd_observation_occupied;
-			cellType    logodd_thres_free     = OCCGRID_CELLTYPE_MAX-logodd_observation;
-
 
 			int		K = updateInfoChangeOnly.enabled ? updateInfoChangeOnly.laserRaysSkip : decimation;
 			size_t	idx,nRanges = o->sensedData.size();
@@ -907,7 +900,7 @@ bool  COccupancyGridMap2D::internal_insertObservation(
 					int max_cx = max3(P0.cx,P1.cx,P2.cx);
 
 					for (int ccx=min_cx;ccx<=max_cx;ccx++)
-						updateCell_fast_free(ccx,P0.cy, logodd_observation, logodd_thres_free, theMapArray, theMapSize_x );
+						updateCell_fast_free(ccx,P0.cy, logodd_observation_free, logodd_thres_free, theMapArray, theMapSize_x );
 				}
 				else
 				{
@@ -978,7 +971,7 @@ bool  COccupancyGridMap2D::internal_insertObservation(
 						//	last_insert_cx = R1.cx;
 
 							for (int ccx=R1.cx;ccx<=R2.cx;ccx++)
-								updateCell_fast_free(ccx,R1.cy, logodd_observation, logodd_thres_free, theMapArray, theMapSize_x );
+								updateCell_fast_free(ccx,R1.cy, logodd_observation_free, logodd_thres_free, theMapArray, theMapSize_x );
 						}
 
 						R1.frX += frAx_R1;    R1.frY += frAy_R1;
@@ -1048,7 +1041,7 @@ bool  COccupancyGridMap2D::internal_insertObservation(
 						//	last_insert_cx = R1.cx;
 							last_insert_cy = R1.cy;
 							for (int ccx=R1.cx;ccx<=R2.cx;ccx++)
-								updateCell_fast_free(ccx,R1.cy, logodd_observation, logodd_thres_free, theMapArray, theMapSize_x );
+								updateCell_fast_free(ccx,R1.cy, logodd_observation_free, logodd_thres_free, theMapArray, theMapSize_x );
 						}
 
 						R1.frX += frAx_R1;    R1.frY += frAy_R1;
@@ -1150,6 +1143,8 @@ COccupancyGridMap2D::TInsertionOptions::TInsertionOptions() :
 	useMapAltitude						( false ),
 	maxDistanceInsertion				(  15.0f ),
 	maxOccupancyUpdateCertainty			(  0.65f ),
+	maxFreenessUpdateCertainty			( .0f ),
+	maxFreenessInvalidRanges			( .0f ),
 	considerInvalidRangesAsFreeSpace	(  true ),
 	decimation							( 1 ),
 	horizontalTolerance					( DEG2RAD(0.05) ),
@@ -1171,6 +1166,8 @@ void  COccupancyGridMap2D::TInsertionOptions::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR(mapAltitude,float,  					iniFile, section );
 	MRPT_LOAD_CONFIG_VAR(maxDistanceInsertion,float,  			iniFile, section );
 	MRPT_LOAD_CONFIG_VAR(maxOccupancyUpdateCertainty,float,  	iniFile, section );
+	MRPT_LOAD_CONFIG_VAR(maxFreenessUpdateCertainty, float,		iniFile, section );
+	MRPT_LOAD_CONFIG_VAR(maxFreenessInvalidRanges, float,		iniFile, section );
 	MRPT_LOAD_CONFIG_VAR(useMapAltitude,bool,  					iniFile, section );
 	MRPT_LOAD_CONFIG_VAR(considerInvalidRangesAsFreeSpace,bool,	iniFile, section );
 	MRPT_LOAD_CONFIG_VAR(decimation,int,  						iniFile, section );
@@ -1191,6 +1188,8 @@ void  COccupancyGridMap2D::TInsertionOptions::dumpToTextStream(mrpt::utils::CStr
 	LOADABLEOPTS_DUMP_VAR(mapAltitude, float)
 	LOADABLEOPTS_DUMP_VAR(maxDistanceInsertion, float)
 	LOADABLEOPTS_DUMP_VAR(maxOccupancyUpdateCertainty, float)
+	LOADABLEOPTS_DUMP_VAR(maxFreenessUpdateCertainty, float)
+	LOADABLEOPTS_DUMP_VAR(maxFreenessInvalidRanges, float)
 	LOADABLEOPTS_DUMP_VAR(useMapAltitude, bool)
 	LOADABLEOPTS_DUMP_VAR(considerInvalidRangesAsFreeSpace, bool)
 	LOADABLEOPTS_DUMP_VAR(decimation, int)

@@ -26,7 +26,7 @@
 #include <mrpt/maps/link_pragmas.h>
 
 #include <mrpt/config.h>
-#if (!defined(OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS) && !defined(OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS)) || (defined(OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS) && defined(OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS)) 
+#if (!defined(OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS) && !defined(OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS)) || (defined(OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS) && defined(OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS))
 	#error One of OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS or OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS must be defined.
 #endif
 
@@ -121,7 +121,7 @@ namespace maps
 		static std::vector<float> entropyTable; //!< Internally used to speed-up entropy calculation
 
 		/** Change the contents [0,1] of a cell, given its index */
-		inline void   setCell_nocheck(int x,int y,float value) { 
+		inline void   setCell_nocheck(int x,int y,float value) {
 			map[x+y*size_x]=p2l(value);
 		}
 
@@ -172,7 +172,7 @@ namespace maps
 		/** An internal structure for storing data related to counting the new information apported by some observation */
 		struct MAPS_IMPEXP TUpdateCellsInfoChangeOnly
 		{
-			TUpdateCellsInfoChangeOnly( bool enabled = false, double I_change = 0, int cellsUpdated=0) : enabled(enabled), I_change(I_change), cellsUpdated(cellsUpdated), laserRaysSkip(1) 
+			TUpdateCellsInfoChangeOnly( bool enabled = false, double I_change = 0, int cellsUpdated=0) : enabled(enabled), I_change(I_change), cellsUpdated(cellsUpdated), laserRaysSkip(1)
 			{
 			}
 			bool   enabled; //!< If set to false (default), this struct is not used. Set to true only when measuring the info of an observation.
@@ -365,10 +365,12 @@ namespace maps
 			bool     useMapAltitude; //!< The parameter "mapAltitude" has effect while inserting observations in the grid only if this is true.
 			float    maxDistanceInsertion; //!< The largest distance at which cells will be updated (Default 15 meters)
 			float    maxOccupancyUpdateCertainty; //!< A value in the range [0.5,1] used for updating cell with a bayesian approach (default 0.8)
+			float    maxFreenessUpdateCertainty; //!< A value in the range [0.5,1] for updating a free cell. (default=0 means use the same than maxOccupancyUpdateCertainty)
+			float    maxFreenessInvalidRanges;   //!< Like maxFreenessUpdateCertainty, but for invalid ranges (no echo). (default=0 means same than maxOccupancyUpdateCertainty)
 			bool     considerInvalidRangesAsFreeSpace; //!< If set to true (default), invalid range values (no echo rays) as consider as free space until "maxOccupancyUpdateCertainty", but ONLY when the previous and next rays are also an invalid ray.
 			uint16_t decimation; //!< Specify the decimation of the range scan (default=1 : take all the range values!)
 			float    horizontalTolerance; //!< The tolerance in rads in pitch & roll for a laser scan to be considered horizontal, then processed by calls to this class (default=0).
-			float    CFD_features_gaussian_size; //!< Gaussian sigma of the filter used in getAsImageFiltered (for features detection) (Default=1) (0:Disabled) 
+			float    CFD_features_gaussian_size; //!< Gaussian sigma of the filter used in getAsImageFiltered (for features detection) (Default=1) (0:Disabled)
 			float    CFD_features_median_size; //!< Size of the Median filter used in getAsImageFiltered (for features detection) (Default=3) (0:Disabled)
 			bool     wideningBeamsWithDistance;	//!< Enabled: Rays widen with distance to approximate the real behavior of lasers, disabled: insert rays as simple lines (Default=false)
 		};
@@ -623,13 +625,13 @@ namespace maps
 
 			TLaserSimulUncertaintyResult();
 		};
-		
 
-		/** Like laserScanSimulatorWithUncertainty() (see it for a discussion of most parameters) but taking into account 
+
+		/** Like laserScanSimulatorWithUncertainty() (see it for a discussion of most parameters) but taking into account
 		 *  the robot pose uncertainty and generating a vector of predicted variances for each ray.
-		 *  Range uncertainty includes both, sensor noise and large non-linear effects caused by borders and discontinuities in the environment 
+		 *  Range uncertainty includes both, sensor noise and large non-linear effects caused by borders and discontinuities in the environment
 		 *  as seen from different robot poses.
-		 * 
+		 *
 		 * \param in_params [IN] Input settings. See TLaserSimulUncertaintyParams
 		 * \param in_params [OUT] Output range + uncertainty.
 		 *
