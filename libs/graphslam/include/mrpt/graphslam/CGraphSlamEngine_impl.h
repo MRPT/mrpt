@@ -102,7 +102,7 @@ typename GRAPH_T::global_pose_t
 }
 
 template <class GRAPH_T>
-GRAPH_T::global_poses_t
+typename GRAPH_T::global_poses_t
 CGraphSlamEngine<GRAPH_T>::getRobotEstimatedTrajectory() const
 {
 	std::lock_guard<std::mutex> m_graph_lock(m_graph_section);
@@ -113,10 +113,8 @@ template <class GRAPH_T>
 void CGraphSlamEngine<GRAPH_T>::getNodeIDsOfEstimatedTrajectory(
 	std::set<mrpt::graphs::TNodeID>* nodes_set) const
 {
-	MRPT_START;
 	ASSERTDEB_(nodes_set);
 	m_graph.getAllNodes(*nodes_set);
-	MRPT_END;
 }
 
 template <class GRAPH_T>
