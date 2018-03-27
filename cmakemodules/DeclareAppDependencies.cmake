@@ -1,9 +1,13 @@
 # Declares the dependencies of an application:
 # Usage: DeclareAppDependencies( appTargetName [mrpt-xxx [mrpt-yyy] ...] )
 #
+add_custom_target(apps ALL)
+
 macro(DeclareAppDependencies name)
+	add_dependencies(apps ${name})
+
 	# Set app names:
-		set_target_properties(${name} PROPERTIES FOLDER "applications")
+	set_target_properties(${name} PROPERTIES FOLDER "applications")
 
 	# set deps:
 	set(ALL_DEPS "")
