@@ -20,7 +20,7 @@ env:
 
 jobs:
   include:
-    - stage: Core Build Stage 1
+    - stage: Build Stage 1
       env: STAGE=1 TASK="build" DEPS="full" BUILD_TARGET="mrpt-hmtslam"
       compiler: gcc
     - env: STAGE=1 TASK="build" DEPS="full" BUILD_TARGET="mrpt-hmtslam"
@@ -29,16 +29,7 @@ jobs:
       compiler: gcc
     - env: STAGE=1 TASK="build" DEPS="minimal" BUILD_TARGET="mrpt-hmtslam"
       compiler: gcc
-    - stage: Core Build Examples
-      env: STAGE=2 TASK="build" DEPS="full" BUILD_TARGET="examples"
-      compiler: gcc
-    - env: STAGE=2 TASK="build" DEPS="full" BUILD_TARGET="examples"
-      compiler: clang
-    - env: STAGE=2 TASK="build" DEPS="headless" BUILD_TARGET="examples"
-      compiler: gcc
-    - env: STAGE=2 TASK="build" DEPS="minimal" BUILD_TARGET="examples"
-      compiler: gcc
-    - stage: Core Build Tests Examples
+    - stage: Tests, Examples, apps
       env: STAGE=2 TASK="test" DEPS="full"
       compiler: gcc
     - env: STAGE=2 TASK="test" DEPS="full"
@@ -46,6 +37,22 @@ jobs:
     - env: STAGE=2 TASK="test" DEPS="headless"
       compiler: gcc
     - env: STAGE=2 TASK="test" DEPS="minimal"
+      compiler: gcc
+    - env: STAGE=2 TASK="build" DEPS="full" BUILD_TARGET="examples"
+      compiler: gcc
+    - env: STAGE=2 TASK="build" DEPS="full" BUILD_TARGET="examples"
+      compiler: clang
+    - env: STAGE=2 TASK="build" DEPS="headless" BUILD_TARGET="examples"
+      compiler: gcc
+    - env: STAGE=2 TASK="build" DEPS="minimal" BUILD_TARGET="examples"
+      compiler: gcc
+    - env: STAGE=2 TASK="build" DEPS="full" BUILD_TARGET="apps"
+      compiler: gcc
+    - env: STAGE=2 TASK="build" DEPS="full" BUILD_TARGET="apps"
+      compiler: clang
+    - env: STAGE=2 TASK="build" DEPS="headless" BUILD_TARGET="apps"
+      compiler: gcc
+    - env: STAGE=2 TASK="build" DEPS="minimal" BUILD_TARGET="apps"
       compiler: gcc
     - stage: Extended Builds and Tests
       language: python
