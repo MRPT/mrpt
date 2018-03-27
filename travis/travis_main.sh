@@ -88,7 +88,7 @@ function test ()
   fi
 
   make -j2 tests_build_all
-  make -j2 test
+  make CTEST_OUTPUT_ON_FAILURE=1 -j2 test
   make -j2 gcov
 
   cd $MRPT_DIR
