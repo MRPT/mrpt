@@ -39,7 +39,7 @@ TEST(Matrices, CMatrixFixedNumeric_loadWithEigenMap)
 {
 	// Row major
 	const CMatrixFixedNumeric<double, 3, 4> mat =
-		Eigen::Map<CMatrixFixedNumeric<double, 3, 4>::Base, Eigen::Aligned32>(
+		Eigen::Map<CMatrixFixedNumeric<double, 3, 4>::Base, MRPT_MAX_ALIGN_BYTES>(
 			test_nums);
 
 	for (int r = 0; r < 3; r++)
@@ -50,7 +50,7 @@ TEST(Matrices, EigenMatrix_loadWithEigenMap)
 {
 	// Col major
 	const Eigen::Matrix<double, 3, 4> mat =
-		Eigen::Map<Eigen::Matrix<double, 3, 4>, Eigen::Aligned32>(test_nums);
+		Eigen::Map<Eigen::Matrix<double, 3, 4>, MRPT_MAX_ALIGN_BYTES>(test_nums);
 
 	for (int r = 0; r < 3; r++)  // Transposed!!
 		for (int c = 0; c < 4; c++) EXPECT_EQ(test_nums[3 * c + r], mat(r, c));
