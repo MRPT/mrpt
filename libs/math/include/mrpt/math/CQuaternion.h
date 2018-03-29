@@ -32,7 +32,7 @@ enum TConstructorFlags_Quaternions
  *		- r(), x(), y(), z(), or
  *		- the operator [] with indices running from 0 (=r) to 3 (=z).
  *
- *  Users will usually employ the typedef "CQuaternionDouble" instead of this
+ *  Users will usually employ the type `CQuaternionDouble` instead of this
  *template.
  *
  * For more information about quaternions, see:

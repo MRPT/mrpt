@@ -124,9 +124,9 @@ TEST(SparseMatrix, InitFromRandom)
 	generateRandomSparseMatrix(20, 10, 15, SM);
 }
 
-typedef void (*TMatrixSMOperator)(
+using TMatrixSMOperator = void (*)(
 	const CSparseMatrix& M1, const CSparseMatrix& M2, CSparseMatrix& res);
-typedef void (*TMatrixDenseOperator)(
+using TMatrixDenseOperator = void (*)(
 	const CMatrixDouble& M1, const CMatrixDouble& M2, CMatrixDouble& res);
 
 void do_matrix_op_test(

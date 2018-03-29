@@ -79,8 +79,8 @@ class CFixedIntervalsNRD
 	/**\brief Handy typedefs */
 	/**\{*/
 	/**\brief Node Registration Decider */
-	typedef mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>
-		node_reg;
+	using node_reg =
+		mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>;
 
 	/**\brief type of graph constraints */
 	using constraint_t = typename GRAPH_T::constraint_t;
@@ -88,12 +88,11 @@ class CFixedIntervalsNRD
 	using pose_t = typename GRAPH_T::constraint_t::type_value;
 	using global_pose_t = typename GRAPH_T::global_pose_t;
 
-	typedef mrpt::math::CMatrixFixedNumeric<double, constraint_t::state_length,
-											constraint_t::state_length>
-		inf_mat_t;
+	using inf_mat_t = mrpt::math::CMatrixFixedNumeric<
+		double, constraint_t::state_length, constraint_t::state_length>;
 	/**\brief Node Registration Decider */
-	typedef mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>
-		parent_t;
+	using parent_t =
+		mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>;
 	/**\}*/
 
 	/**\brief Class constructor */
@@ -177,9 +176,9 @@ class CFixedIntervalsNRD
 	 */
 	bool m_observation_only_rawlog;
 };
-}
-}
-}  // end of namespaces
+}  // namespace deciders
+}  // namespace graphslam
+}  // namespace mrpt
 
 #include "CFixedIntervalsNRD_impl.h"
 #endif /* end of include guard: CFIXEDINTERVALSNRD_H */

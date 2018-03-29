@@ -338,8 +338,8 @@ void mrpt::slam::data_association_full_covariance(
 	// ------------------------------------------------------------
 	// Build a KD-tree of the predictions for quick look-up:
 	// ------------------------------------------------------------
-	typedef std::unique_ptr<KDTreeEigenMatrixAdaptor<CMatrixDouble>>
-		KDTreeMatrixPtr;
+	using KDTreeMatrixPtr =
+		std::unique_ptr<KDTreeEigenMatrixAdaptor<CMatrixDouble>>;
 	KDTreeMatrixPtr kd_tree;
 	const size_t N_KD_RESULTS = nPredictions;
 	std::vector<double> kd_result_distances(
@@ -483,10 +483,10 @@ void mrpt::slam::data_association_full_covariance(
 			//     NOTE: distances are saved so smaller is always better,
 			//            hence "metricML" are made negative.
 			// -------------------------------------------------------------------
-			typedef multimap<
+			using TListAllICs = multimap<
 				double,
-				pair<observation_index_t, multimap<double, prediction_index_t>>>
-				TListAllICs;
+				pair<
+					observation_index_t, multimap<double, prediction_index_t>>>;
 			TListAllICs lst_all_ICs;
 
 			for (observation_index_t j = 0; j < nObservations; ++j)

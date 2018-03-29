@@ -83,19 +83,21 @@ class Pose3DTests : public ::testing::Test
 		const CPose3D p2_c_p1_i_p2 = p2 + p1_i_p2;  // Should be -> p1
 
 		EXPECT_NEAR(
-			0, (p1_c_p2_i_p2.getAsVectorVal() - p2.getAsVectorVal())
-				   .array()
-				   .abs()
-				   .sum(),
+			0,
+			(p1_c_p2_i_p2.getAsVectorVal() - p2.getAsVectorVal())
+				.array()
+				.abs()
+				.sum(),
 			1e-5)
 			<< "p2          : " << p2 << endl
 			<< "p1_c_p2_i_p2: " << p1_c_p2_i_p2 << endl;
 
 		EXPECT_NEAR(
-			0, (p2_c_p1_i_p2.getAsVectorVal() - p1.getAsVectorVal())
-				   .array()
-				   .abs()
-				   .sum(),
+			0,
+			(p2_c_p1_i_p2.getAsVectorVal() - p1.getAsVectorVal())
+				.array()
+				.abs()
+				.sum(),
 			1e-5)
 			<< "p1          : " << p1 << endl
 			<< "p2          : " << p2 << endl
@@ -111,10 +113,11 @@ class Pose3DTests : public ::testing::Test
 			CPose3D C = p1;
 			CPose3D A = C + p2;
 			EXPECT_NEAR(
-				0, (A.getAsVectorVal() - p1_c_p2.getAsVectorVal())
-					   .array()
-					   .abs()
-					   .sum(),
+				0,
+				(A.getAsVectorVal() - p1_c_p2.getAsVectorVal())
+					.array()
+					.abs()
+					.sum(),
 				1e-6);
 		}
 		// Test + operator: trg same var
@@ -122,10 +125,11 @@ class Pose3DTests : public ::testing::Test
 			CPose3D A = p1;
 			A = A + p2;
 			EXPECT_NEAR(
-				0, (A.getAsVectorVal() - p1_c_p2.getAsVectorVal())
-					   .array()
-					   .abs()
-					   .sum(),
+				0,
+				(A.getAsVectorVal() - p1_c_p2.getAsVectorVal())
+					.array()
+					.abs()
+					.sum(),
 				1e-6);
 		}
 		// Test =+ operator
@@ -133,10 +137,11 @@ class Pose3DTests : public ::testing::Test
 			CPose3D A = p1;
 			A += p2;
 			EXPECT_NEAR(
-				0, (A.getAsVectorVal() - p1_c_p2.getAsVectorVal())
-					   .array()
-					   .abs()
-					   .sum(),
+				0,
+				(A.getAsVectorVal() - p1_c_p2.getAsVectorVal())
+					.array()
+					.abs()
+					.sum(),
 				1e-6);
 		}
 	}
@@ -231,22 +236,24 @@ class Pose3DTests : public ::testing::Test
 			p1_plus_p2.z());
 
 		EXPECT_NEAR(
-			0, (p1_plus_p2.getAsVectorVal() - p1_plus_p.getAsVectorVal())
-				   .array()
-				   .abs()
-				   .sum(),
+			0,
+			(p1_plus_p2.getAsVectorVal() - p1_plus_p.getAsVectorVal())
+				.array()
+				.abs()
+				.sum(),
 			1e-5);
 
 		// Repeat using same input/output variables:
 		{
-			double x = p.x();
-			double y = p.y();
-			double z = p.z();
+			double lx = p.x();
+			double ly = p.y();
+			double lz = p.z();
 
-			p1.composePoint(x, y, z, x, y, z);
+			p1.composePoint(lx, ly, lz, lx, ly, lz);
 			EXPECT_NEAR(
-				0, std::abs(x - p1_plus_p.x()) + std::abs(y - p1_plus_p.y()) +
-					   std::abs(z - p1_plus_p.z()),
+				0,
+				std::abs(lx - p1_plus_p.x()) + std::abs(ly - p1_plus_p.y()) +
+					std::abs(lz - p1_plus_p.z()),
 				1e-5);
 		}
 
@@ -258,10 +265,11 @@ class Pose3DTests : public ::testing::Test
 			p_recov2.y(), p_recov2.z());
 
 		EXPECT_NEAR(
-			0, (p_recov2.getAsVectorVal() - p_recov.getAsVectorVal())
-				   .array()
-				   .abs()
-				   .sum(),
+			0,
+			(p_recov2.getAsVectorVal() - p_recov.getAsVectorVal())
+				.array()
+				.abs()
+				.sum(),
 			1e-5);
 
 		EXPECT_NEAR(
@@ -322,9 +330,10 @@ class Pose3DTests : public ::testing::Test
 			x_incrs.assign(1e-7);
 			CMatrixDouble numJacobs;
 			mrpt::math::estimateJacobian(
-				x_mean, std::function<void(
-							const CArrayDouble<6 + 3>& x, const double& dummy,
-							CArrayDouble<3>& Y)>(&func_compose_point),
+				x_mean,
+				std::function<void(
+					const CArrayDouble<6 + 3>& x, const double& dummy,
+					CArrayDouble<3>& Y)>(&func_compose_point),
 				x_incrs, DUMMY, numJacobs);
 
 			numJacobs.extractMatrix(0, 0, num_df_dpose);
@@ -397,9 +406,10 @@ class Pose3DTests : public ::testing::Test
 			x_incrs.assign(1e-7);
 			CMatrixDouble numJacobs;
 			mrpt::math::estimateJacobian(
-				x_mean, std::function<void(
-							const CArrayDouble<6 + 3>& x, const double& dummy,
-							CArrayDouble<3>& Y)>(&func_inv_compose_point),
+				x_mean,
+				std::function<void(
+					const CArrayDouble<6 + 3>& x, const double& dummy,
+					CArrayDouble<3>& Y)>(&func_inv_compose_point),
 				x_incrs, DUMMY, numJacobs);
 
 			numJacobs.extractMatrix(0, 0, num_df_dpose);
@@ -484,9 +494,10 @@ class Pose3DTests : public ::testing::Test
 			CArrayDouble<6> x_incrs;
 			x_incrs.assign(1e-9);
 			mrpt::math::estimateJacobian(
-				x_mean, std::function<void(
-							const CArrayDouble<6>& x, const CArrayDouble<3>& P,
-							CArrayDouble<3>& Y)>(&func_compose_point_se3),
+				x_mean,
+				std::function<void(
+					const CArrayDouble<6>& x, const CArrayDouble<3>& P,
+					CArrayDouble<3>& Y)>(&func_compose_point_se3),
 				x_incrs, P, num_df_dse3);
 		}
 
@@ -521,9 +532,10 @@ class Pose3DTests : public ::testing::Test
 			CArrayDouble<6> x_incrs;
 			x_incrs.assign(1e-9);
 			mrpt::math::estimateJacobian(
-				x_mean, std::function<void(
-							const CArrayDouble<6>& x, const CArrayDouble<3>& P,
-							CArrayDouble<3>& Y)>(&func_invcompose_point_se3),
+				x_mean,
+				std::function<void(
+					const CArrayDouble<6>& x, const CArrayDouble<3>& P,
+					CArrayDouble<3>& Y)>(&func_invcompose_point_se3),
 				x_incrs, P, num_df_dse3);
 		}
 
@@ -559,9 +571,10 @@ class Pose3DTests : public ::testing::Test
 		x_incrs.assign(1e-9);
 		CMatrixDouble numJacobs;
 		mrpt::math::estimateJacobian(
-			x_mean, std::function<void(
-						const CArrayDouble<6>& x, const double& dummy,
-						CArrayDouble<12>& Y)>(&func_jacob_expe_e),
+			x_mean,
+			std::function<void(
+				const CArrayDouble<6>& x, const double& dummy,
+				CArrayDouble<12>& Y)>(&func_jacob_expe_e),
 			x_incrs, dummy, numJacobs);
 
 		// Theoretical matrix:
@@ -621,9 +634,10 @@ class Pose3DTests : public ::testing::Test
 			CArrayDouble<12> x_incrs;
 			x_incrs.assign(1e-6);
 			mrpt::math::estimateJacobian(
-				x_mean, std::function<void(
-							const CArrayDouble<12>& x, const double& dummy,
-							CArrayDouble<6>& Y)>(&func_jacob_LnT_T),
+				x_mean,
+				std::function<void(
+					const CArrayDouble<12>& x, const double& dummy,
+					CArrayDouble<6>& Y)>(&func_jacob_LnT_T),
 				x_incrs, dummy, numJacobs);
 		}
 
@@ -668,9 +682,10 @@ class Pose3DTests : public ::testing::Test
 			CArrayDouble<6> x_incrs;
 			x_incrs.assign(1e-6);
 			mrpt::math::estimateJacobian(
-				x_mean, std::function<void(
-							const CArrayDouble<6>& eps, const CPose3D& D,
-							CArrayDouble<12>& Y)>(&func_jacob_expe_D),
+				x_mean,
+				std::function<void(
+					const CArrayDouble<6>& eps, const CPose3D& D,
+					CArrayDouble<12>& Y)>(&func_jacob_expe_D),
 				x_incrs, p, numJacobs);
 		}
 
@@ -725,10 +740,11 @@ class Pose3DTests : public ::testing::Test
 			CArrayDouble<6> x_incrs;
 			x_incrs.assign(1e-6);
 			mrpt::math::estimateJacobian(
-				x_mean, std::function<void(
-							const CArrayDouble<6>& eps,
-							const TParams_func_jacob_Aexpe_D& params,
-							CArrayDouble<12>& Y)>(&func_jacob_Aexpe_D),
+				x_mean,
+				std::function<void(
+					const CArrayDouble<6>& eps,
+					const TParams_func_jacob_Aexpe_D& params,
+					CArrayDouble<12>& Y)>(&func_jacob_Aexpe_D),
 				x_incrs, params, numJacobs);
 		}
 

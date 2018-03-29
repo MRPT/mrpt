@@ -147,7 +147,7 @@ class CDlgPoseEst : public wxDialog
 	mrpt::opengl::CGridPlaneXY::Ptr grid;
 
    public:
-	typedef bool (mrpt::vision::pnp::CPnP::*CPNP_PTR)(
+	using CPNP_PTR = bool (mrpt::vision::pnp::CPnP::*)(
 		const Eigen::Ref<Eigen::MatrixXd> obj_pts,
 		const Eigen::Ref<Eigen::MatrixXd> img_pts, int n,
 		const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic,

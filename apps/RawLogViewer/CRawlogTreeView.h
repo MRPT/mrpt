@@ -29,8 +29,8 @@ enum TRawlogTreeViewEvent
 class CRawlogTreeView;
 
 /** The type for event handler
-  */
-typedef void (*wxRawlogTreeEventFunction)(
+ */
+using wxRawlogTreeEventFunction = void (*)(
 	wxWindow* me, CRawlogTreeView* the_tree, TRawlogTreeViewEvent ev,
 	int item_index, const mrpt::serialization::CSerializable::Ptr& item_data);
 
@@ -40,7 +40,7 @@ class CRawlogTreeView : public wxScrolledWindow
 {
    public:
 	/** Constructor
-	  */
+	 */
 	CRawlogTreeView(
 		wxWindow* parent = nullptr, wxWindowID id = -1,
 		const wxPoint& pos = wxDefaultPosition,
@@ -55,23 +55,23 @@ class CRawlogTreeView : public wxScrolledWindow
 	void AssignImageList(wxImageList* imageList) { m_imageList = imageList; }
 	/** Sets the rawlog to be rendered in the control (It's kept as a pointer,
 	 * so the original object cannot be destroyed).
-	  *  It automatically calls "reloadFromRawlog".
-	  */
+	 *  It automatically calls "reloadFromRawlog".
+	 */
 	void setRawlogSource(mrpt::obs::CRawlog* rawlog);
 
 	/** Sets the name of the rawlog file, used for the root item */
 	void setRawlogName(const std::string& s) { m_rawlog_name = s; }
 	/** Reloads from the rawlog: it adapts the size of the scroll window and
 	 * refresh the view.
-	  */
+	 */
 	void reloadFromRawlog(int hint_rawlog_items = -1);
 
 	/** Sets a handler for the event of selected item changes.
-	  */
+	 */
 	void ConnectSelectedItemChange(wxRawlogTreeEventFunction func);
 
 	/** This method MUST be called to obtain feedback from events.
-	  */
+	 */
 	void setWinParent(wxWindow* win) { m_win_parent = win; }
 	/** Returns the time of the first element in the rawlog. */
 	mrpt::system::TTimeStamp getFirstTimestamp() const
@@ -83,6 +83,7 @@ class CRawlogTreeView : public wxScrolledWindow
 	 * any. */
 	void SetSelectedItem(int index, bool force_refresh = false);
 	int GetSelectedItem() const { return m_selectedItem; }
+
    protected:
 	/** A reference to the rawlog to be rendered. */
 	mrpt::obs::CRawlog* m_rawlog;
@@ -115,7 +116,7 @@ class CRawlogTreeView : public wxScrolledWindow
 
 	/** Returns an icon index depending on the class of the object in the tree
 	 * view
-	  */
+	 */
 	static int iconIndexFromClass(const mrpt::rtti::TRuntimeClassId* class_ID);
 
 	static const int ROW_HEIGHT;

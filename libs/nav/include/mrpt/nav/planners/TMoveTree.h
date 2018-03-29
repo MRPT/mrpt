@@ -21,33 +21,34 @@ namespace mrpt
 namespace nav
 {
 /** \addtogroup nav_planners Path planning
-  * \ingroup mrpt_nav_grp
-  * @{ */
+ * \ingroup mrpt_nav_grp
+ * @{ */
 
 /** Generic base for metrics */
 template <class node_t>
 struct PoseDistanceMetric;
 
 /** This class contains motions and motions tree structures for the hybrid
-* navigation algorithm
-*
-*  <b>Usage:</b><br>
-*      \note: this class inheredit mrpt::graphs::CDirectedTree, please refer to
-* inheritance for detail about generic tree methods
-*
-*      - initialize a motions tree using .initializeMoveTree()
-*      - addEdge (from, to)
-*      - add here more instructions
-*
-*
-* <b>Changes history</b>
-*      - 06/MAR/2014: Creation (MB)
-*      - 21/JAN/2015: Refactoring (JLBC)
-*/
-template <class NODE_TYPE_DATA, class EDGE_TYPE,
-		  class MAPS_IMPLEMENTATION = mrpt::containers::map_traits_map_as_vector
-		  /* Use std::map<> vs. std::vector<>*/
-		  >
+ * navigation algorithm
+ *
+ *  <b>Usage:</b><br>
+ *      \note: this class inheredit mrpt::graphs::CDirectedTree, please refer to
+ * inheritance for detail about generic tree methods
+ *
+ *      - initialize a motions tree using .initializeMoveTree()
+ *      - addEdge (from, to)
+ *      - add here more instructions
+ *
+ *
+ * <b>Changes history</b>
+ *      - 06/MAR/2014: Creation (MB)
+ *      - 21/JAN/2015: Refactoring (JLBC)
+ */
+template <
+	class NODE_TYPE_DATA, class EDGE_TYPE,
+	class MAPS_IMPLEMENTATION = mrpt::containers::map_traits_map_as_vector
+	/* Use std::map<> vs. std::vector<>*/
+	>
 class TMoveTree : public mrpt::graphs::CDirectedTree<EDGE_TYPE>
 {
    public:
@@ -75,9 +76,8 @@ class TMoveTree : public mrpt::graphs::CDirectedTree<EDGE_TYPE>
 	using base_t = mrpt::graphs::CDirectedTree<EDGE_TYPE>;
 	using edge_t = EDGE_TYPE;
 	/** Map: TNode_ID => Node info */
-	typedef typename MAPS_IMPLEMENTATION::template map<mrpt::graphs::TNodeID,
-													   node_t>
-		node_map_t;
+	using node_map_t = typename MAPS_IMPLEMENTATION::template map<
+		mrpt::graphs::TNodeID, node_t>;
 	/** A topological path up-tree */
 	using path_t = std::list<node_t>;
 
@@ -123,10 +123,8 @@ class TMoveTree : public mrpt::graphs::CDirectedTree<EDGE_TYPE>
 		// edge:
 		typename base_t::TListEdges& edges_of_parent =
 			base_t::edges_to_children[parent_id];
-		edges_of_parent.push_back(
-			typename base_t::TEdgeInfo(
-				new_child_id, false /*direction_child_to_parent*/,
-				new_edge_data));
+		edges_of_parent.push_back(typename base_t::TEdgeInfo(
+			new_child_id, false /*direction_child_to_parent*/, new_edge_data));
 		// node:
 		m_nodes[new_child_id] = node_t(
 			new_child_id, parent_id, &edges_of_parent.back().data,
@@ -145,8 +143,8 @@ class TMoveTree : public mrpt::graphs::CDirectedTree<EDGE_TYPE>
 	const node_map_t& getAllNodes() const { return m_nodes; }
 	/** Builds the path (sequence of nodes, with info about next edge) up-tree
 	 * from a `target_node` towards the root
-	  * Nodes are ordered in the direction ROOT -> start_node
-	  */
+	 * Nodes are ordered in the direction ROOT -> start_node
+	 */
 	void backtrackPath(
 		const mrpt::graphs::TNodeID target_node, path_t& out_path) const
 	{
@@ -296,5 +294,5 @@ struct PoseDistanceMetric<TNodeSE2_TP>
 using TMoveTreeSE2_TP = TMoveTree<TNodeSE2_TP, TMoveEdgeSE2_TP>;
 
 /** @} */
-}
-}
+}  // namespace nav
+}  // namespace mrpt

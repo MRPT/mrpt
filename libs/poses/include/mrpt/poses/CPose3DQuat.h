@@ -388,10 +388,9 @@ class CPose3DQuat : public CPose<CPose3DQuat>,
 	static inline void resize(const size_t n)
 	{
 		if (n != static_size)
-			throw std::logic_error(
-				format(
-					"Try to change the size of CPose3DQuat to %u.",
-					static_cast<unsigned>(n)));
+			throw std::logic_error(format(
+				"Try to change the size of CPose3DQuat to %u.",
+				static_cast<unsigned>(n)));
 	}
 
 	inline void assign(const size_t N, const double val)
@@ -407,8 +406,8 @@ class CPose3DQuat : public CPose<CPose3DQuat>,
 		: public std::iterator<std::random_access_iterator_tag, value_type>
 	{
 	   private:
-		typedef std::iterator<std::random_access_iterator_tag, value_type>
-			iterator_base;
+		using iterator_base =
+			std::iterator<std::random_access_iterator_tag, value_type>;
 		/** A reference to the source of this iterator */
 		CPose3DQuat* m_obj;
 		/** The iterator points to this element. */
@@ -517,8 +516,8 @@ class CPose3DQuat : public CPose<CPose3DQuat>,
 		: public std::iterator<std::random_access_iterator_tag, value_type>
 	{
 	   private:
-		typedef std::iterator<std::random_access_iterator_tag, value_type>
-			iterator_base;
+		using iterator_base =
+			std::iterator<std::random_access_iterator_tag, value_type>;
 		/** A reference to the source of this iterator */
 		const CPose3DQuat* m_obj;
 		/** The iterator points to this element. */

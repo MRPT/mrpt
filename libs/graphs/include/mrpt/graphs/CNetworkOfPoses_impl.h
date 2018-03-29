@@ -290,20 +290,18 @@ struct graph_ops
 
 			string key;
 			if (!(s >> key) || key.empty())
-				THROW_EXCEPTION(
-					format(
-						"Line %u: Can't read string for entry type in: '%s'",
-						lineNum, lin.c_str()));
+				THROW_EXCEPTION(format(
+					"Line %u: Can't read string for entry type in: '%s'",
+					lineNum, lin.c_str()));
 
 			if (mrpt::system::strCmpI(key, "EQUIV"))
 			{
 				// Process these ones at the end, for now store in a list:
 				TNodeID id1, id2;
 				if (!(s >> id1 >> id2))
-					THROW_EXCEPTION(
-						format(
-							"Line %u: Can't read id1 & id2 in EQUIV line: '%s'",
-							lineNum, lin.c_str()));
+					THROW_EXCEPTION(format(
+						"Line %u: Can't read id1 & id2 in EQUIV line: '%s'",
+						lineNum, lin.c_str()));
 				lstEquivs[std::max(id1, id2)] = std::min(id1, id2);
 			}
 		}  // end 1st pass
@@ -334,10 +332,9 @@ struct graph_ops
 			//  EQUIV id1 id2
 			string key;
 			if (!(s >> key) || key.empty())
-				THROW_EXCEPTION(
-					format(
-						"Line %u: Can't read string for entry type in: '%s'",
-						lineNum, lin.c_str()));
+				THROW_EXCEPTION(format(
+					"Line %u: Can't read string for entry type in: '%s'",
+					lineNum, lin.c_str()));
 
 			if (strCmpI(key, "VERTEX2") || strCmpI(key, "VERTEX") ||
 				strCmpI(key, "VERTEX_SE2"))
@@ -345,19 +342,16 @@ struct graph_ops
 				TNodeID id;
 				TPose2D p2D;
 				if (!(s >> id >> p2D.x >> p2D.y >> p2D.phi))
-					THROW_EXCEPTION(
-						format(
-							"Line %u: Error parsing VERTEX2 line: '%s'",
-							lineNum, lin.c_str()));
+					THROW_EXCEPTION(format(
+						"Line %u: Error parsing VERTEX2 line: '%s'", lineNum,
+						lin.c_str()));
 
 				// Make sure the node is new:
 				if (g->nodes.find(id) != g->nodes.end())
-					THROW_EXCEPTION(
-						format(
-							"Line %u: Error, duplicated verted ID %u in line: "
-							"'%s'",
-							lineNum, static_cast<unsigned int>(id),
-							lin.c_str()));
+					THROW_EXCEPTION(format(
+						"Line %u: Error, duplicated verted ID %u in line: "
+						"'%s'",
+						lineNum, static_cast<unsigned int>(id), lin.c_str()));
 
 				// EQUIV? Replace ID by new one.
 				{
@@ -369,22 +363,20 @@ struct graph_ops
 				// Add to map: ID -> absolute pose:
 				if (g->nodes.find(id) == g->nodes.end())
 				{
-					typedef typename CNetworkOfPoses<
-						CPOSE>::constraint_t::type_value pose_t;
+					using pose_t = typename CNetworkOfPoses<
+						CPOSE>::constraint_t::type_value;
 					pose_t& newNode = g->nodes[id];
-					newNode = pose_t(
-						CPose2D(
-							p2D));  // Convert to mrpt::poses::CPose3D if needed
+					newNode = pose_t(CPose2D(
+						p2D));  // Convert to mrpt::poses::CPose3D if needed
 				}
 			}
 			else if (strCmpI(key, "VERTEX3"))
 			{
 				if (!graph_is_3D)
-					THROW_EXCEPTION(
-						format(
-							"Line %u: Try to load VERTEX3 into a 2D graph: "
-							"'%s'",
-							lineNum, lin.c_str()));
+					THROW_EXCEPTION(format(
+						"Line %u: Try to load VERTEX3 into a 2D graph: "
+						"'%s'",
+						lineNum, lin.c_str()));
 
 				//  VERTEX3 id x y z roll pitch yaw
 				TNodeID id;
@@ -393,19 +385,16 @@ struct graph_ops
 				// order vs. MRPT's YPR.
 				if (!(s >> id >> p3D.x >> p3D.y >> p3D.z >> p3D.roll >>
 					  p3D.pitch >> p3D.yaw))
-					THROW_EXCEPTION(
-						format(
-							"Line %u: Error parsing VERTEX3 line: '%s'",
-							lineNum, lin.c_str()));
+					THROW_EXCEPTION(format(
+						"Line %u: Error parsing VERTEX3 line: '%s'", lineNum,
+						lin.c_str()));
 
 				// Make sure the node is new:
 				if (g->nodes.find(id) != g->nodes.end())
-					THROW_EXCEPTION(
-						format(
-							"Line %u: Error, duplicated verted ID %u in line: "
-							"'%s'",
-							lineNum, static_cast<unsigned int>(id),
-							lin.c_str()));
+					THROW_EXCEPTION(format(
+						"Line %u: Error, duplicated verted ID %u in line: "
+						"'%s'",
+						lineNum, static_cast<unsigned int>(id), lin.c_str()));
 
 				// EQUIV? Replace ID by new one.
 				{
@@ -418,38 +407,33 @@ struct graph_ops
 				if (g->nodes.find(id) == g->nodes.end())
 				{
 					g->nodes[id] = typename CNetworkOfPoses<CPOSE>::
-						constraint_t::type_value(
-							CPose3D(
-								p3D));  // Auto converted to CPose2D if needed
+						constraint_t::type_value(CPose3D(
+							p3D));  // Auto converted to CPose2D if needed
 				}
 			}
 			else if (strCmpI(key, "VERTEX_SE3:QUAT"))
 			{
 				if (!graph_is_3D)
-					THROW_EXCEPTION(
-						format(
-							"Line %u: Try to load VERTEX_SE3:QUAT into a 2D "
-							"graph: '%s'",
-							lineNum, lin.c_str()));
+					THROW_EXCEPTION(format(
+						"Line %u: Try to load VERTEX_SE3:QUAT into a 2D "
+						"graph: '%s'",
+						lineNum, lin.c_str()));
 
 				// VERTEX_SE3:QUAT id x y z qx qy qz qw
 				TNodeID id;
 				TPose3DQuat p3D;
 				if (!(s >> id >> p3D.x >> p3D.y >> p3D.z >> p3D.qx >> p3D.qy >>
 					  p3D.qz >> p3D.qr))
-					THROW_EXCEPTION(
-						format(
-							"Line %u: Error parsing VERTEX_SE3:QUAT line: '%s'",
-							lineNum, lin.c_str()));
+					THROW_EXCEPTION(format(
+						"Line %u: Error parsing VERTEX_SE3:QUAT line: '%s'",
+						lineNum, lin.c_str()));
 
 				// Make sure the node is new:
 				if (g->nodes.find(id) != g->nodes.end())
-					THROW_EXCEPTION(
-						format(
-							"Line %u: Error, duplicated verted ID %u in line: "
-							"'%s'",
-							lineNum, static_cast<unsigned int>(id),
-							lin.c_str()));
+					THROW_EXCEPTION(format(
+						"Line %u: Error, duplicated verted ID %u in line: "
+						"'%s'",
+						lineNum, static_cast<unsigned int>(id), lin.c_str()));
 
 				// EQUIV? Replace ID by new one.
 				{
@@ -482,10 +466,9 @@ struct graph_ops
 				//
 				TNodeID to_id, from_id;
 				if (!(s >> from_id >> to_id))
-					THROW_EXCEPTION(
-						format(
-							"Line %u: Error parsing EDGE2 line: '%s'", lineNum,
-							lin.c_str()));
+					THROW_EXCEPTION(format(
+						"Line %u: Error parsing EDGE2 line: '%s'", lineNum,
+						lin.c_str()));
 
 				// EQUIV? Replace ID by new one.
 				{
@@ -508,10 +491,9 @@ struct graph_ops
 						  Ap_cov_inv(0, 0) >> Ap_cov_inv(0, 1) >>
 						  Ap_cov_inv(1, 1) >> Ap_cov_inv(2, 2) >>
 						  Ap_cov_inv(0, 2) >> Ap_cov_inv(1, 2)))
-						THROW_EXCEPTION(
-							format(
-								"Line %u: Error parsing EDGE2 line: '%s'",
-								lineNum, lin.c_str()));
+						THROW_EXCEPTION(format(
+							"Line %u: Error parsing EDGE2 line: '%s'", lineNum,
+							lin.c_str()));
 
 					// Complete low triangular part of inf matrix:
 					Ap_cov_inv(1, 0) = Ap_cov_inv(0, 1);
@@ -529,19 +511,17 @@ struct graph_ops
 			else if (strCmpI(key, "EDGE3"))
 			{
 				if (!graph_is_3D)
-					THROW_EXCEPTION(
-						format(
-							"Line %u: Try to load EDGE3 into a 2D graph: '%s'",
-							lineNum, lin.c_str()));
+					THROW_EXCEPTION(format(
+						"Line %u: Try to load EDGE3 into a 2D graph: '%s'",
+						lineNum, lin.c_str()));
 
 				//  EDGE3 from_id to_id Ax Ay Az Aroll Apitch Ayaw inf_11 inf_12
 				//  .. inf_16 inf_22 .. inf_66
 				TNodeID to_id, from_id;
 				if (!(s >> from_id >> to_id))
-					THROW_EXCEPTION(
-						format(
-							"Line %u: Error parsing EDGE3 line: '%s'", lineNum,
-							lin.c_str()));
+					THROW_EXCEPTION(format(
+						"Line %u: Error parsing EDGE3 line: '%s'", lineNum,
+						lin.c_str()));
 
 				// EQUIV? Replace ID by new one.
 				{
@@ -564,10 +544,9 @@ struct graph_ops
 					// RPY order vs. MRPT's YPR.
 					if (!(s >> Ap_mean.x >> Ap_mean.y >> Ap_mean.z >>
 						  Ap_mean.roll >> Ap_mean.pitch >> Ap_mean.yaw))
-						THROW_EXCEPTION(
-							format(
-								"Line %u: Error parsing EDGE3 line: '%s'",
-								lineNum, lin.c_str()));
+						THROW_EXCEPTION(format(
+							"Line %u: Error parsing EDGE3 line: '%s'", lineNum,
+							lin.c_str()));
 
 					// **CAUTION** Indices are shuffled to the change YAW(3) <->
 					// ROLL(5) in the order of the data.
@@ -615,10 +594,9 @@ struct graph_ops
 			else if (strCmpI(key, "EDGE_SE3:QUAT"))
 			{
 				if (!graph_is_3D)
-					THROW_EXCEPTION(
-						format(
-							"Line %u: Try to load EDGE3 into a 2D graph: '%s'",
-							lineNum, lin.c_str()));
+					THROW_EXCEPTION(format(
+						"Line %u: Try to load EDGE3 into a 2D graph: '%s'",
+						lineNum, lin.c_str()));
 
 				//  EDGE_SE3:QUAT from_id to_id Ax Ay Az qx qy qz qw inf_11
 				//  inf_12 .. inf_16 inf_22 .. inf_66
@@ -626,10 +604,9 @@ struct graph_ops
 				//  .. inf_16 inf_22 .. inf_66
 				TNodeID to_id, from_id;
 				if (!(s >> from_id >> to_id))
-					THROW_EXCEPTION(
-						format(
-							"Line %u: Error parsing EDGE_SE3:QUAT line: '%s'",
-							lineNum, lin.c_str()));
+					THROW_EXCEPTION(format(
+						"Line %u: Error parsing EDGE_SE3:QUAT line: '%s'",
+						lineNum, lin.c_str()));
 
 				// EQUIV? Replace ID by new one.
 				{
@@ -650,11 +627,10 @@ struct graph_ops
 					mrpt::math::CMatrixDouble66 Ap_cov_inv;
 					if (!(s >> Ap_mean.x >> Ap_mean.y >> Ap_mean.z >>
 						  Ap_mean.qx >> Ap_mean.qy >> Ap_mean.qz >> Ap_mean.qr))
-						THROW_EXCEPTION(
-							format(
-								"Line %u: Error parsing EDGE_SE3:QUAT line: "
-								"'%s'",
-								lineNum, lin.c_str()));
+						THROW_EXCEPTION(format(
+							"Line %u: Error parsing EDGE_SE3:QUAT line: "
+							"'%s'",
+							lineNum, lin.c_str()));
 
 					// **CAUTION** Indices are shuffled to the change YAW(3) <->
 					// ROLL(5) in the order of the data.
@@ -736,8 +712,10 @@ struct graph_ops
 
 		// Data structure: (id1,id2) -> all edges between them
 		//  (with id1 < id2)
-		typedef map<pair<TNodeID, TNodeID>, vector<TEdgeIterator>>
-			TListAllEdges;  // For god's sake... when will ALL compilers support
+		using TListAllEdges =
+			map<pair<TNodeID, TNodeID>,
+				vector<TEdgeIterator>>;  // For god's sake... when will ALL
+										 // compilers support
 		// auto!! :'-(
 		TListAllEdges lstAllEdges;
 
@@ -786,8 +764,8 @@ struct graph_ops
 		using namespace std;
 
 		// Do Dijkstra shortest path from "root" to all other nodes:
-		typedef CDijkstra<graph_t, typename graph_t::maps_implementation_t>
-			dijkstra_t;
+		using dijkstra_t =
+			CDijkstra<graph_t, typename graph_t::maps_implementation_t>;
 		using constraint_t = typename graph_t::constraint_t;
 
 		// initialize corresponding dijkstra object from root.
@@ -847,9 +825,8 @@ struct graph_ops
 					 g->nodes.begin();
 				 poses_cit != g->nodes.end(); ++poses_cit)
 			{
-				nodeID_to_annots.insert(
-					make_pair(
-						poses_cit->first, poses_cit->second.getCopyOfAnnots()));
+				nodeID_to_annots.insert(make_pair(
+					poses_cit->first, poses_cit->second.getCopyOfAnnots()));
 			}
 		}
 

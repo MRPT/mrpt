@@ -108,8 +108,8 @@ class CICPCriteriaERD
 	using pose_t = typename GRAPH_T::constraint_t::type_value;
 	using parent_t = CRangeScanEdgeRegistrationDecider<GRAPH_T>;
 	using range_ops_t = typename parent_t::range_ops_t;
-	typedef CICPCriteriaERD<GRAPH_T>
-		decider_t; /**< self type - Handy typedef */
+	/** self type - Handy type */
+	using decider_t = CICPCriteriaERD<GRAPH_T>;
 	using nodes_to_scans2D_t = typename parent_t::nodes_to_scans2D_t;
 	/**\}*/
 
@@ -213,9 +213,9 @@ class CICPCriteriaERD
 	// visualization reasons
 	mrpt::obs::CObservation2DRangeScan::Ptr m_fake_laser_scan2D;
 };
-}
-}
-}  // end of namespaces
+}  // namespace deciders
+}  // namespace graphslam
+}  // namespace mrpt
 
 #include "CICPCriteriaERD_impl.h"
 #endif /* end of include guard: CICPCRITERIAERD_H */

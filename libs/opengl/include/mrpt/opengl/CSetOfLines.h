@@ -78,10 +78,9 @@ class CSetOfLines : public CRenderizableDisplayList
 	inline void appendLine(
 		float x0, float y0, float z0, float x1, float y1, float z1)
 	{
-		appendLine(
-			mrpt::math::TSegment3D(
-				mrpt::math::TPoint3D(x0, y0, z0),
-				mrpt::math::TPoint3D(x1, y1, z1)));
+		appendLine(mrpt::math::TSegment3D(
+			mrpt::math::TPoint3D(x0, y0, z0),
+			mrpt::math::TPoint3D(x1, y1, z1)));
 		CRenderizableDisplayList::notifyChange();
 	}
 
@@ -196,21 +195,12 @@ class CSetOfLines : public CRenderizableDisplayList
 	void render_dl() const override;
 
 	// Iterator management
-	/** Iterator to the set. */
 	using iterator = std::vector<mrpt::math::TSegment3D>::iterator;
-	/** Iterator to the set. */
-	typedef std::vector<mrpt::math::TSegment3D>::reverse_iterator
-		reverse_iterator;
-
-	/**
-	 * Const iterator to the set.
-	 */
+	using reverse_iterator =
+		std::vector<mrpt::math::TSegment3D>::reverse_iterator;
 	using const_iterator = std::vector<mrpt::math::TSegment3D>::const_iterator;
-	/**
-	 * Const reverse iterator to the set.
-	 */
-	typedef std::vector<mrpt::math::TSegment3D>::const_reverse_iterator
-		const_reverse_iterator;
+	using const_reverse_iterator =
+		std::vector<mrpt::math::TSegment3D>::const_reverse_iterator;
 	/**
 	 * Beginning const iterator.
 	 * \sa end,rbegin,rend

@@ -23,10 +23,10 @@ CSetOfObjects.
 Also, it provides work with *.simplemap.
 */
 
-typedef mrpt::containers::deepcopy_poly_ptr<mrpt::maps::CMetricMap::Ptr>
-	MetricPolyPtr;
-typedef std::map<SType, mrpt::opengl::CSetOfObjects::Ptr> RenderizableMaps;
-typedef std::map<TypeOfConfig, std::vector<MetricPolyPtr>> TypeConfig;
+using MetricPolyPtr =
+	mrpt::containers::deepcopy_poly_ptr<mrpt::maps::CMetricMap::Ptr>;
+using RenderizableMaps = std::map<SType, mrpt::opengl::CSetOfObjects::Ptr>;
+using TypeConfig = std::map<TypeOfConfig, std::vector<MetricPolyPtr>>;
 
 class CDocument
 {

@@ -65,7 +65,7 @@ using namespace std;
  * returns void and takes 4 input parameters as explained in the latter
  * parentheses
  */
-typedef void (*TOperationFunctor)(
+using TOperationFunctor = void (*)(
 	const std::string& in_file, bool is3D, TCLAP::CmdLine& cmdline,
 	bool verbose);
 
@@ -130,33 +130,30 @@ int main(int argc, char** argv)
 		// Only one of the following operators have to be specified by the user
 		map<string, TOperationFunctor> ops_functors;
 
-		arg_ops.push_back(
-			new TCLAP::SwitchArg(
-				"", "levmarq",
-				"Op: Optimizes the graph with sparse Levenberg-Marquartd using "
-				"global coordinates (via "
-				"mrpt::graphslam::optimize_graph_spa_levmarq).\n"
-				"   Can be used together with: --view, --output, --max-iters, "
-				"--no-span, --initial-lambda",
-				cmd, false));
+		arg_ops.push_back(new TCLAP::SwitchArg(
+			"", "levmarq",
+			"Op: Optimizes the graph with sparse Levenberg-Marquartd using "
+			"global coordinates (via "
+			"mrpt::graphslam::optimize_graph_spa_levmarq).\n"
+			"   Can be used together with: --view, --output, --max-iters, "
+			"--no-span, --initial-lambda",
+			cmd, false));
 		ops_functors["levmarq"] = &op_levmarq;
 
-		arg_ops.push_back(
-			new TCLAP::SwitchArg(
-				"", "dijkstra",
-				"Op: Executes CNetworkOfPoses::dijkstra_nodes_estimate() to "
-				"estimate the global pose of nodes from a Dijkstra tree and "
-				"the edge relative poses.\n"
-				"   Can be used together with: --view, --output",
-				cmd, false));
+		arg_ops.push_back(new TCLAP::SwitchArg(
+			"", "dijkstra",
+			"Op: Executes CNetworkOfPoses::dijkstra_nodes_estimate() to "
+			"estimate the global pose of nodes from a Dijkstra tree and "
+			"the edge relative poses.\n"
+			"   Can be used together with: --view, --output",
+			cmd, false));
 		ops_functors["dijkstra"] = &op_dijkstra;
 
-		arg_ops.push_back(
-			new TCLAP::SwitchArg(
-				"", "info",
-				"Op: Loads the graph and displays statistics and information "
-				"on it.\n",
-				cmd, false));
+		arg_ops.push_back(new TCLAP::SwitchArg(
+			"", "info",
+			"Op: Loads the graph and displays statistics and information "
+			"on it.\n",
+			cmd, false));
 		ops_functors["info"] = &op_info;
 		// --------------- End of list of possible operations --------
 

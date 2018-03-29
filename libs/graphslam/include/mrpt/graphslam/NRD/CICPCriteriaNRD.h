@@ -102,18 +102,16 @@ class CICPCriteriaNRD
 	using pose_t = typename GRAPH_T::constraint_t::type_value;
 	using global_pose_t = typename GRAPH_T::global_pose_t;
 
-	typedef mrpt::math::CMatrixFixedNumeric<double, constraint_t::state_length,
-											constraint_t::state_length>
-		InfMat;
+	using InfMat = mrpt::math::CMatrixFixedNumeric<
+		double, constraint_t::state_length, constraint_t::state_length>;
 	/**\brief Typedef for accessing methods of the RangeScanRegistrationDecider
 	 * parent class.
 	 */
 	using range_ops_t = mrpt::graphslam::deciders::CRangeScanOps<GRAPH_T>;
-	typedef CICPCriteriaNRD<GRAPH_T>
-		decider_t; /**< self type - Handy typedef */
+	using decider_t = CICPCriteriaNRD<GRAPH_T>; /**< self type */
 	/**\brief Node Registration Decider */
-	typedef mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>
-		parent_t;
+	using parent_t =
+		mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>;
 	/**\}*/
 
 	/**\brief Class constructor */
@@ -247,9 +245,9 @@ class CICPCriteriaNRD
 	/**How many times we used the Odometry Edge instead of the ICP edge */
 	int m_times_used_odom;
 };
-}
-}
-}  // end of namespaces
+}  // namespace deciders
+}  // namespace graphslam
+}  // namespace mrpt
 
 #include "CICPCriteriaNRD_impl.h"
 #endif /* end of include guard: CICPCRITERIANRD_H */

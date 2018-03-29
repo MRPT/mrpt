@@ -36,14 +36,14 @@ class CFormEdit : public wxDialog
 	virtual ~CFormEdit();
 
 	/** Used in executeOperationOnRawlogFiles
-	  */
-	typedef void (*TRawlogFilter)(
+	 */
+	using TRawlogFilter = void (*)(
 		mrpt::obs::CActionCollection* acts, mrpt::obs::CSensoryFrame* SF,
 		int& changesCount);
 	/** This is the common function for all operations over a rawlog file
 	 * ("filter" a rawlog file into a new one) or over the loaded rawlog
 	 * (depending on the user selection in the GUI).
-	  */
+	 */
 	void executeOperationOnRawlog(TRawlogFilter operation, const char* endMsg);
 
 	//(*Identifiers(CFormEdit)

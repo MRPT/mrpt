@@ -96,8 +96,9 @@ class NotConnectedGraph : public std::exception
  *
  * \ingroup mrpt_graphs_grp
  */
-template <class TYPE_GRAPH,
-		  class MAPS_IMPLEMENTATION = mrpt::containers::map_traits_stdmap>
+template <
+	class TYPE_GRAPH,
+	class MAPS_IMPLEMENTATION = mrpt::containers::map_traits_stdmap>
 class CDijkstra
 {
    protected:
@@ -128,15 +129,14 @@ class CDijkstra
 	// Private typedefs:
 	/** A std::map (or a similar container according to MAPS_IMPLEMENTATION)
 	 * with all the neighbors of every node. */
-	typedef
-		typename MAPS_IMPLEMENTATION::template map<TNodeID, std::set<TNodeID>>
-			list_all_neighbors_t;
-	typedef typename MAPS_IMPLEMENTATION::template map<TNodeID, TPairNodeIDs>
-		id2pairIDs_map_t;
-	typedef typename MAPS_IMPLEMENTATION::template map<TNodeID, TDistance>
-		id2dist_map_t;
-	typedef typename MAPS_IMPLEMENTATION::template map<TNodeID, TPrevious>
-		id2id_map_t;
+	using list_all_neighbors_t =
+		typename MAPS_IMPLEMENTATION::template map<TNodeID, std::set<TNodeID>>;
+	using id2pairIDs_map_t =
+		typename MAPS_IMPLEMENTATION::template map<TNodeID, TPairNodeIDs>;
+	using id2dist_map_t =
+		typename MAPS_IMPLEMENTATION::template map<TNodeID, TDistance>;
+	using id2id_map_t =
+		typename MAPS_IMPLEMENTATION::template map<TNodeID, TPrevious>;
 
 	// Intermediary and final results:
 	/** All the distances */

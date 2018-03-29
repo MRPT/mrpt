@@ -35,8 +35,8 @@ namespace graphslam
 namespace apps
 {
 /**\brief Properties struct for both the Registration Decider and Optimizer
-	* classes
-	*/
+ * classes
+ */
 struct TRegistrationDeciderOrOptimizerProps
 {
 	TRegistrationDeciderOrOptimizerProps()
@@ -111,18 +111,15 @@ struct TUserOptionsChecker
 	/**\{*/
 	using constraint_t = typename GRAPH_t::constraint_t;
 	using pose_t = typename GRAPH_t::constraint_t::type_value;
-	typedef std::map<
+	using node_regs_t = std::map<
 		std::string,
-		mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t>* (*)()>
-		node_regs_t;
-	typedef std::map<
+		mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t>* (*)()>;
+	using edge_regs_t = std::map<
 		std::string,
-		mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>* (*)()>
-		edge_regs_t;
-	typedef std::map<
+		mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>* (*)()>;
+	using optimizers_t = std::map<
 		std::string,
-		mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_t>* (*)()>
-		optimizers_t;
+		mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_t>* (*)()>;
 
 	/**\}*/
 
@@ -223,9 +220,9 @@ struct TUserOptionsChecker
 	const std::string sep_header;
 	const std::string sep_subheader;
 };
-}
-}
-}  // END OF NAMESPACES
+}  // namespace apps
+}  // namespace graphslam
+}  // namespace mrpt
 #include "TUserOptionsChecker_impl.h"
 
 #endif /* end of include guard: TUSEROPTIONSCHECKER_H */

@@ -48,19 +48,18 @@ template <class octree_t, class octree_node_t>
 class COctoMapBase : public mrpt::maps::CMetricMap
 {
    public:
-	typedef COctoMapBase<octree_t, octree_node_t>
-		myself_t;  //!< The type of this MRPT class
+	using myself_t = COctoMapBase<octree_t, octree_node_t>;
 
 	/** Constructor, defines the resolution of the octomap (length of each voxel
 	 * side) */
 	COctoMapBase(double resolution);
 	virtual ~COctoMapBase() {}
 	/** Get a reference to the internal octomap object. Example:
-	   * \code
-	   *  mrpt::maps::COctoMap  map;
-	   *  octomap::OcTree &om = map.getOctomap<octomap::OcTree>();
-	   * \endcode
-	   */
+	 * \code
+	 *  mrpt::maps::COctoMap  map;
+	 *  octomap::OcTree &om = map.getOctomap<octomap::OcTree>();
+	 * \endcode
+	 */
 	template <class OCTOMAP_CLASS>
 	inline OCTOMAP_CLASS& getOctomap()
 	{
@@ -68,9 +67,9 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 	}
 
 	/** With this struct options are provided to the observation insertion
-	* process.
-	* \sa CObservation::insertObservationInto()
-	*/
+	 * process.
+	 * \sa CObservation::insertObservationInto()
+	 */
 	struct TInsertionOptions : public mrpt::config::CLoadableOptions
 	{
 		/** Initilization of default parameters */
@@ -227,12 +226,12 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 	//! observations in the map
 
 	/** Options used when evaluating "computeObservationLikelihood"
-	* \sa CObservation::computeObservationLikelihood
-	*/
+	 * \sa CObservation::computeObservationLikelihood
+	 */
 	struct TLikelihoodOptions : public mrpt::config::CLoadableOptions
 	{
 		/** Initilization of default parameters
-			*/
+		 */
 		TLikelihoodOptions();
 		virtual ~TLikelihoodOptions() {}
 		void loadFromConfigFile(
@@ -293,8 +292,8 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 	TRenderingOptions renderingOptions;
 
 	/** Returns a 3D object representing the map.
-		* \sa renderingOptions
-		*/
+	 * \sa renderingOptions
+	 */
 	virtual void getAs3DObject(
 		mrpt::opengl::CSetOfObjects::Ptr& outObj) const override
 	{
@@ -305,13 +304,13 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 
 	/** Builds a renderizable representation of the octomap as a
 	 * mrpt::opengl::COctoMapVoxels object.
-		* \sa renderingOptions
-		*/
+	 * \sa renderingOptions
+	 */
 	virtual void getAsOctoMapVoxels(
 		mrpt::opengl::COctoMapVoxels& gl_obj) const = 0;
 
 	/** Get the occupancy probability [0,1] of a point
-		* \return false if the point is not mapped, in which case the returned
+	 * \return false if the point is not mapped, in which case the returned
 	 * "prob" is undefined. */
 	bool getPointOccupancy(
 		const float x, const float y, const float z,
@@ -320,10 +319,10 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 	/** Update the octomap with a 2D or 3D scan, given directly as a point cloud
 	 * and the 3D location of the sensor (the origin of the rays) in this map's
 	 * frame of reference.
-	  * Insertion parameters can be found in \a insertionOptions.
-	  * \sa The generic observation insertion method
+	 * Insertion parameters can be found in \a insertionOptions.
+	 * \sa The generic observation insertion method
 	 * CMetricMap::insertObservation()
-	  */
+	 */
 	void insertPointCloud(
 		const CPointsMap& ptMap, const float sensor_x, const float sensor_y,
 		const float sensor_z);
@@ -370,11 +369,11 @@ class COctoMapBase : public mrpt::maps::CMetricMap
    protected:
 	/**  Builds the list of 3D points in global coordinates for a generic
 	 * observation. Used for both, insertObservation() and computeLikelihood().
-	  * \param[out] point3d_sensorPt Is a pointer to a "point3D".
-	  * \param[out] ptr_scan Is in fact a pointer to "octomap::Pointcloud". Not
+	 * \param[out] point3d_sensorPt Is a pointer to a "point3D".
+	 * \param[out] ptr_scan Is in fact a pointer to "octomap::Pointcloud". Not
 	 * declared as such to avoid headers dependencies in user code.
-	  * \return false if the observation kind is not applicable.
-	  */
+	 * \return false if the observation kind is not applicable.
+	 */
 	template <class octomap_point3d, class octomap_pointcloud>
 	bool internal_build_PointCloud_for_observation(
 		const mrpt::obs::CObservation* obs,
@@ -392,7 +391,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 		const mrpt::poses::CPose3D& takenFrom) override;
 
 };  // End of class def.
-}  // End of namespace
-}  // End of namespace
+}  // namespace maps
+}  // namespace mrpt
 
 #endif

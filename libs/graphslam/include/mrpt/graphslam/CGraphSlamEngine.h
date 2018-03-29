@@ -159,17 +159,15 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
 	/**\brief Map for managing output file streams.*/
 	using fstreams_out = std::map<std::string, mrpt::io::CFileOutputStream>;
 	/**\brief Map for iterating over output file streams.*/
-	typedef std::map<std::string, mrpt::io::CFileOutputStream*>::iterator
-		fstreams_out_it;
+	using fstreams_out_it = typename fstreams_out::iterator;
 
 	/**\brief Type of graph constraints */
 	using constraint_t = typename GRAPH_T::constraint_t;
 	/**\brief Type of underlying poses (2D/3D). */
 	using pose_t = typename GRAPH_T::constraint_t::type_value;
 	using global_pose_t = typename GRAPH_T::global_pose_t;
-	typedef std::map<mrpt::graphs::TNodeID,
-					 mrpt::obs::CObservation2DRangeScan::Ptr>
-		nodes_to_scans2D_t;
+	using nodes_to_scans2D_t = std::map<
+		mrpt::graphs::TNodeID, mrpt::obs::CObservation2DRangeScan::Ptr>;
 	/**\}*/
 
 	/**\brief Constructor of CGraphSlamEngine class template.
@@ -221,8 +219,8 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
 	 * graphSLAM algorithm.
 	 * @returns Current list of nodes registered in the graph
 	 */
-	virtual typename GRAPH_T::global_poses_t
-		getRobotEstimatedTrajectory() const;
+	virtual typename GRAPH_T::global_poses_t getRobotEstimatedTrajectory()
+		const;
 	/**\brief Return the list of nodeIDs which make up robot trajectory
 	 * \sa updateEstimatedTrajectoryVisualization
 	 */
@@ -574,8 +572,8 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
 	 * \sa updateEstimatedTrajectoryVisualization
 	 */
 	void updateMapVisualization(
-		const std::map<mrpt::graphs::TNodeID,
-					   mrpt::obs::CObservation2DRangeScan::Ptr>&
+		const std::map<
+			mrpt::graphs::TNodeID, mrpt::obs::CObservation2DRangeScan::Ptr>&
 			nodes_to_laser_scans2D,
 		bool full_update = false);
 	/**\brief Display the next ground truth position in the visualization
@@ -997,8 +995,8 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
 	static const std::string header_sep;
 	static const std::string report_sep;
 };
-} // end of namespace graphslam
-} // end of namespace mrpt
+}  // end of namespace graphslam
+}  // end of namespace mrpt
 
 // pseudo-split the definition and implementation of template
 #include "CGraphSlamEngine_impl.h"

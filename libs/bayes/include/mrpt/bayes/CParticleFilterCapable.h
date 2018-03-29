@@ -40,33 +40,33 @@ class CParticleFilterCapable
    public:
 	CParticleFilterCapable() : m_fastDrawAuxiliary() {}
 	/** Virtual destructor
-	  */
+	 */
 	virtual ~CParticleFilterCapable() {}
 	/** A callback function type for evaluating the probability of m_particles
 	 * of being selected, used in "fastDrawSample".
-	  *  The default evaluator function "defaultEvaluator" simply returns the
+	 *  The default evaluator function "defaultEvaluator" simply returns the
 	 * particle weight.
-	  * \param index This is the index of the particle its probability is being
+	 * \param index This is the index of the particle its probability is being
 	 * computed.
-	  * \param action The value of this is the parameter passed to
+	 * \param action The value of this is the parameter passed to
 	 * "prepareFastDrawSample"
-	  * \param observation The value of this is the parameter passed to
+	 * \param observation The value of this is the parameter passed to
 	 * "prepareFastDrawSample"
-	  *  The action and the observation are declared as "void*" for a greater
+	 *  The action and the observation are declared as "void*" for a greater
 	 * flexibility.
-	  * \sa prepareFastDrawSample
-	  */
-	typedef double (*TParticleProbabilityEvaluator)(
+	 * \sa prepareFastDrawSample
+	 */
+	using TParticleProbabilityEvaluator = double (*)(
 		const bayes::CParticleFilter::TParticleFilterOptions& PF_options,
 		const CParticleFilterCapable* obj, size_t index, const void* action,
 		const void* observation);
 
 	/** The default evaluator function, which simply returns the particle
 	 * weight.
-	  *  The action and the observation are declared as "void*" for a greater
+	 *  The action and the observation are declared as "void*" for a greater
 	 * flexibility.
-	  * \sa prepareFastDrawSample
-	  */
+	 * \sa prepareFastDrawSample
+	 */
 	static double defaultEvaluator(
 		const bayes::CParticleFilter::TParticleFilterOptions& PF_options,
 		const CParticleFilterCapable* obj, size_t index, const void* action,
@@ -79,69 +79,69 @@ class CParticleFilterCapable
 	}
 
 	/** Prepares data structures for calling fastDrawSample method next.
-	  *  This method must be called once before using "fastDrawSample" (calling
-	  *this more than once has no effect, but it takes time for nothing!)
-	  *  The behavior depends on the configuration of the PF (see
-	  *CParticleFilter::TParticleFilterOptions):
-	  *		- <b>DYNAMIC SAMPLE SIZE=NO</b>: In this case this method fills out
-	  *an
-	  *internal array (m_fastDrawAuxiliary.alreadyDrawnIndexes) with
-	  *			the random indexes generated according to the selected resample
-	  *scheme
-	  *in TParticleFilterOptions. Those indexes are
-	  *			read sequentially by subsequent calls to fastDrawSample.
-	  *		- <b>DYNAMIC SAMPLE SIZE=YES</b>: Then:
-	  *			- If TParticleFilterOptions.resamplingMethod = prMultinomial,
-	  *the
-	  *internal buffers will be filled out (m_fastDrawAuxiliary.CDF, CDF_indexes
-	  *& PDF) and
-	  *				then fastDrawSample can be called an arbitrary number of
-	  *times
-	  *to
-	  *generate random indexes.
-	  *			- For the rest of resampling algorithms, an exception will be
-	  *raised
-	  *since they are not appropriate for a dynamic (unknown in advance) number
-	  *of particles.
-	  *
-	  * The function pointed by "partEvaluator" should take into account the
-	  *particle filter algorithm selected in "m_PFAlgorithm".
-	  * If called without arguments (defaultEvaluator), the default behavior is
-	  *to draw samples with a probability proportional to their current weights.
-	  *  The action and the observation are declared as "void*" for a greater
-	  *flexibility.
-	  *  For a more detailed information see the <a
-	  *href="http://www.mrpt.org/Particle_Filters" >Particle Filter
-	  *tutorial</a>.
-	  *  Custom supplied "partEvaluator" functions must take into account the
-	  *previous particle weight, i.e. multiplying the current observation
-	  *likelihood by the weights.
-	  * \sa fastDrawSample
-	  */
+	 *  This method must be called once before using "fastDrawSample" (calling
+	 *this more than once has no effect, but it takes time for nothing!)
+	 *  The behavior depends on the configuration of the PF (see
+	 *CParticleFilter::TParticleFilterOptions):
+	 *		- <b>DYNAMIC SAMPLE SIZE=NO</b>: In this case this method fills out
+	 *an
+	 *internal array (m_fastDrawAuxiliary.alreadyDrawnIndexes) with
+	 *			the random indexes generated according to the selected resample
+	 *scheme
+	 *in TParticleFilterOptions. Those indexes are
+	 *			read sequentially by subsequent calls to fastDrawSample.
+	 *		- <b>DYNAMIC SAMPLE SIZE=YES</b>: Then:
+	 *			- If TParticleFilterOptions.resamplingMethod = prMultinomial,
+	 *the
+	 *internal buffers will be filled out (m_fastDrawAuxiliary.CDF, CDF_indexes
+	 *& PDF) and
+	 *				then fastDrawSample can be called an arbitrary number of
+	 *times
+	 *to
+	 *generate random indexes.
+	 *			- For the rest of resampling algorithms, an exception will be
+	 *raised
+	 *since they are not appropriate for a dynamic (unknown in advance) number
+	 *of particles.
+	 *
+	 * The function pointed by "partEvaluator" should take into account the
+	 *particle filter algorithm selected in "m_PFAlgorithm".
+	 * If called without arguments (defaultEvaluator), the default behavior is
+	 *to draw samples with a probability proportional to their current weights.
+	 *  The action and the observation are declared as "void*" for a greater
+	 *flexibility.
+	 *  For a more detailed information see the <a
+	 *href="http://www.mrpt.org/Particle_Filters" >Particle Filter
+	 *tutorial</a>.
+	 *  Custom supplied "partEvaluator" functions must take into account the
+	 *previous particle weight, i.e. multiplying the current observation
+	 *likelihood by the weights.
+	 * \sa fastDrawSample
+	 */
 	void prepareFastDrawSample(
 		const bayes::CParticleFilter::TParticleFilterOptions& PF_options,
 		TParticleProbabilityEvaluator partEvaluator = defaultEvaluator,
 		const void* action = nullptr, const void* observation = nullptr) const;
 
 	/** Draws a random sample from the particle filter, in such a way that each
-	  *particle has a probability proportional to its weight (in the standard PF
-	  *algorithm).
-	  *   This method can be used to generate a variable number of m_particles
-	  *when resampling: to vary the number of m_particles in the filter.
-	  *   See prepareFastDrawSample for more information, or the <a
-	  *href="http://www.mrpt.org/Particle_Filters" >Particle Filter
-	  *tutorial</a>.
-	  *
-	  * NOTES:
-	  *		- You MUST call "prepareFastDrawSample" ONCE before calling this
-	  *method. That method must be called after modifying the particle filter
-	  *(executing one step, resampling, etc...)
-	  *		- This method returns ONE index for the selected ("drawn") particle,
-	  *in
-	  *the range [0,M-1]
-	  *		- You do not need to call "normalizeWeights" before calling this.
-	  * \sa prepareFastDrawSample
-	  */
+	 *particle has a probability proportional to its weight (in the standard PF
+	 *algorithm).
+	 *   This method can be used to generate a variable number of m_particles
+	 *when resampling: to vary the number of m_particles in the filter.
+	 *   See prepareFastDrawSample for more information, or the <a
+	 *href="http://www.mrpt.org/Particle_Filters" >Particle Filter
+	 *tutorial</a>.
+	 *
+	 * NOTES:
+	 *		- You MUST call "prepareFastDrawSample" ONCE before calling this
+	 *method. That method must be called after modifying the particle filter
+	 *(executing one step, resampling, etc...)
+	 *		- This method returns ONE index for the selected ("drawn") particle,
+	 *in
+	 *the range [0,M-1]
+	 *		- You do not need to call "normalizeWeights" before calling this.
+	 * \sa prepareFastDrawSample
+	 */
 	size_t fastDrawSample(
 		const bayes::CParticleFilter::TParticleFilterOptions& PF_options) const;
 
@@ -183,22 +183,22 @@ class CParticleFilterCapable
 	virtual double normalizeWeights(double* out_max_log_w = nullptr) = 0;
 
 	/** Returns the normalized ESS (Estimated Sample Size), in the range [0,1].
-	  *  Note that you do NOT need to normalize the weights before calling this.
+	 *  Note that you do NOT need to normalize the weights before calling this.
 	 */
 	virtual double ESS() const = 0;
 
 	/** Performs a resample of the m_particles, using the method selected in the
 	 * constructor.
-	  * After computing the surviving samples, this method internally calls
+	 * After computing the surviving samples, this method internally calls
 	 * "performSubstitution" to actually perform the particle replacement.
-	  * This method is called automatically by CParticleFilter::execute,
+	 * This method is called automatically by CParticleFilter::execute,
 	 * andshould not be invoked manually normally.
-	  * To just obtaining the sequence of resampled indexes from a sequence of
+	 * To just obtaining the sequence of resampled indexes from a sequence of
 	 * weights, use "resample"
-	  * \param[in] out_particle_count The desired number of output particles
+	 * \param[in] out_particle_count The desired number of output particles
 	 * after resampling; 0 means don't modify the current number.
-	  * \sa resample
-	  */
+	 * \sa resample
+	 */
 	void performResampling(
 		const bayes::CParticleFilter::TParticleFilterOptions& PF_options,
 		size_t out_particle_count = 0);
@@ -206,14 +206,14 @@ class CParticleFilterCapable
 	/** A static method to perform the computation of the samples resulting from
 	 * resampling a given set of particles, given their logarithmic weights, and
 	 * a resampling method.
-	  * It returns the sequence of indexes from the resampling. The number of
+	 * It returns the sequence of indexes from the resampling. The number of
 	 * output samples is the same than the input population.
-	  *  This generic method just computes these indexes, to actually perform a
+	 *  This generic method just computes these indexes, to actually perform a
 	 * resampling in a particle filter object, call performResampling
-	  * \param[in] out_particle_count The desired number of output particles
+	 * \param[in] out_particle_count The desired number of output particles
 	 * after resampling; 0 means don't modify the current number.
-	  * \sa performResampling
-	  */
+	 * \sa performResampling
+	 */
 	static void computeResampling(
 		CParticleFilter::TParticleResamplingAlgorithm method,
 		const std::vector<double>& in_logWeights,
@@ -221,8 +221,8 @@ class CParticleFilterCapable
 
 	/** A static method to compute the linear, normalized (the sum the unity)
 	 * weights from log-weights.
-	  * \sa performResampling
-	  */
+	 * \sa performResampling
+	 */
 	static void log2linearWeights(
 		const std::vector<double>& in_logWeights,
 		std::vector<double>& out_linWeights);
@@ -267,7 +267,7 @@ class CParticleFilterCapable
 
 	/** Auxiliary vectors, see CParticleFilterCapable::prepareFastDrawSample for
 	 * more information
-	  */
+	 */
 	struct TFastDrawAuxVars
 	{
 		TFastDrawAuxVars()
@@ -289,10 +289,10 @@ class CParticleFilterCapable
 
 	/** Auxiliary vectors, see CParticleFilterCapable::prepareFastDrawSample for
 	 * more information
-	  */
+	 */
 	mutable TFastDrawAuxVars m_fastDrawAuxiliary;
 
 };  // End of class def.
 
-}  // end namespace
-}  // end namespace
+}  // namespace bayes
+}  // namespace mrpt

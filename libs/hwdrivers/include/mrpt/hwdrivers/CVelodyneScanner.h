@@ -392,7 +392,7 @@ class CVelodyneScanner : public mrpt::hwdrivers::CGenericSensor
 
    private:
 	/** Handles for the UDP sockets, or INVALID_SOCKET (-1) */
-	typedef
+	using platform_socket_t =
 #ifdef _WIN32
 #if MRPT_WORD_SIZE == 64
 		uint64_t
@@ -402,7 +402,7 @@ class CVelodyneScanner : public mrpt::hwdrivers::CGenericSensor
 #else
 		int
 #endif
-			platform_socket_t;
+		;
 
 	platform_socket_t m_hDataSock, m_hPositionSock;
 

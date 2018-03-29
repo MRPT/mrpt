@@ -248,8 +248,8 @@ class CGPSInterface : public mrpt::system::COutputLogger, public CGenericSensor
 	 */
 	std::string getLastGGA(bool reset = true);
 
-	typedef bool (CGPSInterface::*ptr_parser_t)(
-		size_t& out_minimum_rx_buf_to_decide);
+	using ptr_parser_t =
+		bool (CGPSInterface::*)(size_t& out_minimum_rx_buf_to_decide);
 
 	/** @name Parser implementations: each method must try to parse the first
 	 * bytes in the

@@ -26,7 +26,7 @@ class CGenericSensor;
 
 /** A structure for runtime ID class type information in the context of
  * hwdrivers::CGenericSensor.
-  */
+ */
 struct TSensorClassId
 {
 	/** Class name */
@@ -36,53 +36,51 @@ struct TSensorClassId
 };
 
 /** A generic interface for a wide-variety of sensors designed to be used in the
-  *application RawLogGrabber.
-  *  Derived classes should be designed with the following execution flow in
-  *mind:
-  *		- Object constructor
-  *		- CGenericSensor::loadConfig: The following parameters are common to all
-  *sensors in rawlog-grabber (they are automatically loaded by rawlog-grabber) -
-  *see each class documentation for additional parameters:
-  *			- "process_rate": (Mandatory) The rate in Hertz (Hz) at which the
-  *sensor
-  *thread should invoke "doProcess".
-  *			- "max_queue_len": (Optional) The maximum number of objects in the
-  *observations queue (default is 200). If overflow occurs, an error message
-  *will be issued at run-time.
-  *			- "grab_decimation": (Optional) Grab only 1 out of N observations
-  *captured
-  *by the sensor (default is 1, i.e. do not decimate).
-  *		- CGenericSensor::initialize
-  *		- CGenericSensor::doProcess
-  *		- CGenericSensor::getObservations
-  *
-  *  Notice that there are helper methods for managing the internal list of
-  *objects (see CGenericSensor::appendObservation).
-  *
-  *  <b>Class Factory:</b> This is also a factory of derived classes, through
-  *the static method CGenericSensor::createSensor
-  *
-  *
-  *  For more details on RawLogGrabber refer to the wiki page:
-  *    http://www.mrpt.org/Application:RawLogGrabber
-  * \ingroup mrpt_hwdrivers_grp
-  */
+ *application RawLogGrabber.
+ *  Derived classes should be designed with the following execution flow in
+ *mind:
+ *		- Object constructor
+ *		- CGenericSensor::loadConfig: The following parameters are common to all
+ *sensors in rawlog-grabber (they are automatically loaded by rawlog-grabber) -
+ *see each class documentation for additional parameters:
+ *			- "process_rate": (Mandatory) The rate in Hertz (Hz) at which the
+ *sensor
+ *thread should invoke "doProcess".
+ *			- "max_queue_len": (Optional) The maximum number of objects in the
+ *observations queue (default is 200). If overflow occurs, an error message
+ *will be issued at run-time.
+ *			- "grab_decimation": (Optional) Grab only 1 out of N observations
+ *captured
+ *by the sensor (default is 1, i.e. do not decimate).
+ *		- CGenericSensor::initialize
+ *		- CGenericSensor::doProcess
+ *		- CGenericSensor::getObservations
+ *
+ *  Notice that there are helper methods for managing the internal list of
+ *objects (see CGenericSensor::appendObservation).
+ *
+ *  <b>Class Factory:</b> This is also a factory of derived classes, through
+ *the static method CGenericSensor::createSensor
+ *
+ *
+ *  For more details on RawLogGrabber refer to the wiki page:
+ *    http://www.mrpt.org/Application:RawLogGrabber
+ * \ingroup mrpt_hwdrivers_grp
+ */
 class CGenericSensor
 {
    public:
 	using Ptr = std::shared_ptr<CGenericSensor>;
 	virtual const mrpt::hwdrivers::TSensorClassId* GetRuntimeClass() const = 0;
 
-	typedef std::multimap<mrpt::system::TTimeStamp,
-						  mrpt::serialization::CSerializable::Ptr>
-		TListObservations;
-	typedef std::pair<mrpt::system::TTimeStamp,
-					  mrpt::serialization::CSerializable::Ptr>
-		TListObsPair;
+	using TListObservations = std::multimap<
+		mrpt::system::TTimeStamp, mrpt::serialization::CSerializable::Ptr>;
+	using TListObsPair = std::pair<
+		mrpt::system::TTimeStamp, mrpt::serialization::CSerializable::Ptr>;
 
 	/** The current state of the sensor
-	  * \sa CGenericSensor::getState
-	  */
+	 * \sa CGenericSensor::getState
+	 */
 	enum TSensorState
 	{
 		ssInitializing = 0,
@@ -101,18 +99,18 @@ class CGenericSensor
 
 	/** Enable or disable extra debug info dumped to std::cout during sensor
 	 * operation.
-	  * Default: disabled unless the environment variable
+	 * Default: disabled unless the environment variable
 	 * "MRPT_HWDRIVERS_VERBOSE" is set to "1" during object creation.
-	  */
+	 */
 	inline void enableVerbose(bool enabled = true) { m_verbose = enabled; }
 	inline bool isVerboseEnabled() const { return m_verbose; }
 	/** Register a class into the internal list of "CGenericSensor" descendents.
-	  *  Used internally in the macros DEFINE_GENERIC_SENSOR, etc...
-	  *
-	  *  Can be used as "CGenericSensor::registerClass(
+	 *  Used internally in the macros DEFINE_GENERIC_SENSOR, etc...
+	 *
+	 *  Can be used as "CGenericSensor::registerClass(
 	 * SENSOR_CLASS_ID(CMySensor) );" if
-	  *    building custom sensors outside mrpt libraries in user code.
-	  */
+	 *    building custom sensors outside mrpt libraries in user code.
+	 */
 	static void registerClass(const TSensorClassId* pNewClass);
 
    private:
@@ -122,8 +120,8 @@ class CGenericSensor
 	TListObservations m_objList;
 
 	/** Used in registerClass */
-	typedef std::map<std::string, const TSensorClassId*>
-		registered_sensor_classes_t;
+	using registered_sensor_classes_t =
+		std::map<std::string, const TSensorClassId*>;
 	/** Access to singleton */
 	static registered_sensor_classes_t& get_registered_sensor_classes();
 
@@ -185,7 +183,7 @@ class CGenericSensor
 	}
 
 	/** Auxiliary structure used for CSerializable runtime class ID support.
-	  */
+	 */
 	struct CLASSINIT_GENERIC_SENSOR
 	{
 		CLASSINIT_GENERIC_SENSOR(const TSensorClassId* pNewClass)
@@ -197,23 +195,23 @@ class CGenericSensor
 	/** Loads specific configuration for the device from a given source of
 	 * configuration parameters, for example, an ".ini" file, loading from the
 	 * section "[iniSection]" (see config::CConfigFileBase and derived classes)
-	  *  \exception This method must throw an exception with a descriptive
+	 *  \exception This method must throw an exception with a descriptive
 	 * message if some critical parameter is missing or has an invalid value.
-	  */
+	 */
 	virtual void loadConfig_sensorSpecific(
 		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& section) = 0;
 
    public:
 	/** Creates a sensor by a name of the class.
-	  *  Typically the user may want to create a smart pointer around the
+	 *  Typically the user may want to create a smart pointer around the
 	 * returned pointer, whis is made with:
-	  *  \code
-	  *   CGenericSensor::Ptr sensor = CGenericSensor::Ptr(
+	 *  \code
+	 *   CGenericSensor::Ptr sensor = CGenericSensor::Ptr(
 	 * CGenericSensor::createSensor("XXX") );
-	  *  \endcode
-	  * \return A pointer to a new class, or nullptr if class name is unknown.
-	  */
+	 *  \endcode
+	 * \return A pointer to a new class, or nullptr if class name is unknown.
+	 */
 	static CGenericSensor* createSensor(const std::string& className);
 
 	/** Just like createSensor, but returning a smart pointer to the newly
@@ -235,37 +233,37 @@ class CGenericSensor
 
 	/** Loads the generic settings common to any sensor (See CGenericSensor),
 	 * then call to "loadConfig_sensorSpecific"
-	  *  \exception This method throws an exception with a descriptive message
+	 *  \exception This method throws an exception with a descriptive message
 	 * if some critical parameter is missing or has an invalid value.
-	  */
+	 */
 	void loadConfig(
 		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& section);
 
 	/** This method can or cannot be implemented in the derived class, depending
 	 * on the need for it.
-	  *  \exception This method must throw an exception with a descriptive
+	 *  \exception This method must throw an exception with a descriptive
 	 * message if some critical error is found.
-	  */
+	 */
 	virtual void initialize() {}  // Default method does nothing.
 	/** This method will be invoked at a minimum rate of "process_rate" (Hz)
-	  *  \exception This method must throw an exception with a descriptive
+	 *  \exception This method must throw an exception with a descriptive
 	 * message if some critical error is found.
-	  */
+	 */
 	virtual void doProcess() = 0;
 
 	/** Returns a list of enqueued objects, emptying it (thread-safe). The
 	 * objects must be freed by the invoker.
-	  */
+	 */
 	void getObservations(TListObservations& lstObjects);
 
 	/**  Set the path where to save off-rawlog image files (will be ignored in
 	 * those sensors where this is not applicable).
-	  *  An  empty string (the default value at construction) means to save
+	 *  An  empty string (the default value at construction) means to save
 	 * images embedded in the rawlog, instead of on separate files.
-	  * \exception std::exception If the directory doesn't exists and cannot be
+	 * \exception std::exception If the directory doesn't exists and cannot be
 	 * created.
-	  */
+	 */
 	virtual void setPathForExternalImages(const std::string& directory)
 	{
 		MRPT_UNUSED_PARAM(directory);
@@ -274,9 +272,9 @@ class CGenericSensor
 
 	/**  Set the extension ("jpg","gif","png",...) that determines the format of
 	 * images saved externally
-	  *   The default is "jpg".
-	  * \sa setPathForExternalImages, setExternalImageJPEGQuality
-	  */
+	 *   The default is "jpg".
+	 * \sa setPathForExternalImages, setExternalImageJPEGQuality
+	 */
 	void setExternalImageFormat(const std::string& ext)
 	{
 		m_external_images_format = ext;
@@ -312,7 +310,7 @@ static_assert(
 
 /** This declaration must be inserted in all CGenericSensor classes definition,
  * within the class declaration.
-  */
+ */
 #define DEFINE_GENERIC_SENSOR(class_name)                                   \
    protected:                                                               \
 	static mrpt::hwdrivers::CGenericSensor::CLASSINIT_GENERIC_SENSOR        \
@@ -328,7 +326,7 @@ static_assert(
 	}
 
 /** This must be inserted in all CGenericSensor classes implementation files:
-  */
+ */
 #define IMPLEMENTS_GENERIC_SENSOR(class_name, NameSpace)                       \
 	mrpt::hwdrivers::CGenericSensor* NameSpace::class_name::CreateObject()     \
 	{                                                                          \
@@ -343,7 +341,7 @@ static_assert(
 		return SENSOR_CLASS_ID(class_name);                                    \
 	}
 
-}  // end of namespace
-}  // end of namespace
+}  // namespace hwdrivers
+}  // namespace mrpt
 
 #endif
