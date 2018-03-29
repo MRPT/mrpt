@@ -43,7 +43,7 @@ struct TFTDIDevice
 std::ostream& operator<<(std::ostream& o, const TFTDIDevice& d);
 
 /** Used in  CInterfaceFTDI::ListAllDevices */
-typedef std::deque<TFTDIDevice> TFTDIDeviceList;
+using TFTDIDeviceList = std::deque<TFTDIDevice>;
 
 /** A definition of a CStream actually representing a USB connection to a FTDI
  *chip.
@@ -147,28 +147,28 @@ class CInterfaceFTDI : public mrpt::io::CStream
 	virtual size_t ReadBufferImmediate(void* Buffer, size_t Count);
 
 	/** Introduces a pure virtual method responsible for reading from the
-	* stream.
-	*  It integrates a cache buffer to speed-up sequences of many, small
-	* readings.
-	*/
+	 * stream.
+	 *  It integrates a cache buffer to speed-up sequences of many, small
+	 * readings.
+	 */
 	size_t Read(void* Buffer, size_t Count);
 
 	/** Introduces a pure virtual method responsible for writing to the stream.
-	*  Write attempts to write up to Count bytes to Buffer, and returns the
-	* number of bytes actually written.
-	*/
+	 *  Write attempts to write up to Count bytes to Buffer, and returns the
+	 * number of bytes actually written.
+	 */
 	size_t Write(const void* Buffer, size_t Count);
 
 	/** This virtual method does nothing in this class.
-	*/
+	 */
 	uint64_t Seek(int64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning);
 
 	/** This virtual method does nothing in this class.
-	*/
+	 */
 	uint64_t getTotalBytesCount() const;
 
 	/** This virtual method does nothing in this class.
-	*/
+	 */
 	uint64_t getPosition() const;
 
    protected:

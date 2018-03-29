@@ -19,7 +19,7 @@ using namespace mrpt::system;
 using namespace mrpt::tfest;
 using namespace std;
 
-typedef std::vector<std::vector<double>> TPoints;
+using TPoints = std::vector<std::vector<double>>;
 
 // ------------------------------------------------------
 //				Generate both sets of points
@@ -210,7 +210,6 @@ void register_tests_scan_matching()
 		TestData("tfest: se2_l2 [x10 corrs]", scan_matching_test_4, 10, 1e6));
 	lstTests.push_back(
 		TestData("tfest: se2_l2 [x100 corrs]", scan_matching_test_4, 100, 1e6));
-	lstTests.push_back(
-		TestData(
-			"tfest: se2_l2 [x1000 corrs]", scan_matching_test_4, 1000, 1e5));
+	lstTests.push_back(TestData(
+		"tfest: se2_l2 [x1000 corrs]", scan_matching_test_4, 1000, 1e5));
 }

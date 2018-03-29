@@ -639,8 +639,8 @@ class CObservation3DRangeScan : public CObservation
 		 * bitfield of possible categories.
 		 * \sa hasPixelLabels
 		 */
-		typedef Eigen::Matrix<bitmask_t, Eigen::Dynamic, Eigen::Dynamic>
-			TPixelLabelMatrix;
+		using TPixelLabelMatrix =
+			Eigen::Matrix<bitmask_t, Eigen::Dynamic, Eigen::Dynamic>;
 		TPixelLabelMatrix pixelLabels;
 
 		void setSize(const int NROWS, const int NCOLS) override
@@ -674,6 +674,7 @@ class CObservation3DRangeScan : public CObservation
 
 		// Ctor: pass identification to parent for deserialization
 		TPixelLabelInfo() : TPixelLabelInfoBase(BYTES_REQUIRED_) {}
+
 	   protected:
 		void internal_readFromStream(
 			mrpt::serialization::CArchive& in) override;

@@ -34,8 +34,8 @@ class CDisplayWindowPlots : public mrpt::gui::CBaseGUIWindow
 	using Ptr = std::shared_ptr<CDisplayWindowPlots>;
 
 	/** Type for the callback function used in setMenuCallback */
-	typedef void (*TCallbackMenu)(
-		int menuID, float cursor_x, float cursor_y, void* userParam);
+	using TCallbackMenu =
+		void (*)(int menuID, float cursor_x, float cursor_y, void* userParam);
 
    protected:
 	friend class CWindowDialogPlots;
@@ -111,45 +111,45 @@ class CDisplayWindowPlots : public mrpt::gui::CBaseGUIWindow
 	void setPos(int x, int y) override;
 
 	/** Changes the window title text.
-	  */
+	 */
 	void setWindowTitle(const std::string& str) override;
 
 	/** Enable/disable the feature of pan/zoom with the mouse (default=enabled)
-	*/
+	 */
 	void enableMousePanZoom(bool enabled);
 
 	/** Adds a new layer with a 2D plot based on two vectors of X and Y points,
-	  *using a MATLAB-like syntax.
-	  *  Each call to this function creates a new plot, unless the plot name
-	  *coincides with an already existing plot: in this case the X & Y points
-	  *are used to update this existing layer (this also applies to using the
-	  *default plot name).
-	  *  If "hold_on" is enabled, then every call will always create a new plot,
-	  *even if no "plotName" is provided.
-	  *
-	  *  The lineFormat string is a combination of the following characters:
-	  * - Line styles:
-	  *		- '.': One point for each data point
-	  *		- '-': A continuous line
-	  *		- ':': A dashed line
-	  * - Colors:
-	  *		- k: black
-	  *		- r: red
-	  *		- g: green
-	  *		- b: blue
-	  *		- m: magenta
-	  *		- c: cyan
-	  * - Line width:
-	  *		- '1' to '9': The line width (default=1)
-	  *
-	  *  Examples:
-	  *   - 'r.' -> red points.
-	  *   - 'k3' or 'k-3' -> A black line with a line width of 3 pixels.
-	  * \note The vectors x & y can be of types: float or double.
-	  * \sa axis, axis_equal, axis_fit, clear, hold_on, hold_off
-	  * \tparam VECTOR Can be std::vector<float/double> or
-	  *mrpt::dynamicsize_vector<float/double> or a column/row Eigen::Matrix<>
-	  */
+	 *using a MATLAB-like syntax.
+	 *  Each call to this function creates a new plot, unless the plot name
+	 *coincides with an already existing plot: in this case the X & Y points
+	 *are used to update this existing layer (this also applies to using the
+	 *default plot name).
+	 *  If "hold_on" is enabled, then every call will always create a new plot,
+	 *even if no "plotName" is provided.
+	 *
+	 *  The lineFormat string is a combination of the following characters:
+	 * - Line styles:
+	 *		- '.': One point for each data point
+	 *		- '-': A continuous line
+	 *		- ':': A dashed line
+	 * - Colors:
+	 *		- k: black
+	 *		- r: red
+	 *		- g: green
+	 *		- b: blue
+	 *		- m: magenta
+	 *		- c: cyan
+	 * - Line width:
+	 *		- '1' to '9': The line width (default=1)
+	 *
+	 *  Examples:
+	 *   - 'r.' -> red points.
+	 *   - 'k3' or 'k-3' -> A black line with a line width of 3 pixels.
+	 * \note The vectors x & y can be of types: float or double.
+	 * \sa axis, axis_equal, axis_fit, clear, hold_on, hold_off
+	 * \tparam VECTOR Can be std::vector<float/double> or
+	 *mrpt::dynamicsize_vector<float/double> or a column/row Eigen::Matrix<>
+	 */
 	template <typename T1, typename T2>
 	inline void plot(
 		const std::vector<T1>& x, const std::vector<T2>& y,
@@ -219,24 +219,24 @@ class CDisplayWindowPlots : public mrpt::gui::CBaseGUIWindow
 	void axis_fit(bool aspectRatioFix = false);
 
 	/** Plots a 2D ellipse given its mean, covariance matrix, and
-	  *  Each call to this function creates a new plot, unless the plot name
+	 *  Each call to this function creates a new plot, unless the plot name
 	 * coincides with an already existing plot: in this case the new values are
 	 * used to update this existing layer (this also applies to using the
 	 * default plot name).
-	  *  If "hold_on" is enabled, then every call will always create a new plot,
+	 *  If "hold_on" is enabled, then every call will always create a new plot,
 	 * even if no "plotName" is provided.
-	  *
-	  *  For a description of lineFormat see CDisplayWindowPlots::plot.
-	  *  The "quantiles" value determines the confidence interval for the
+	 *
+	 *  For a description of lineFormat see CDisplayWindowPlots::plot.
+	 *  The "quantiles" value determines the confidence interval for the
 	 * ellipse:
-	  *     - 1 : 68.27% confidence interval
-	  *     - 2 : 95.45%
-	  *     - 3 : 99.73%
-	  *     - 4 : 99.994%
-	  * \note This method can be called with 2x2 fixed-sized or dynamic-size
+	 *     - 1 : 68.27% confidence interval
+	 *     - 2 : 95.45%
+	 *     - 3 : 99.73%
+	 *     - 4 : 99.994%
+	 * \note This method can be called with 2x2 fixed-sized or dynamic-size
 	 * matrices of types: float or double.
-	  * \sa axis, axis_equal, axis_fit, hold_on, hold_off
-	  */
+	 * \sa axis, axis_equal, axis_fit, hold_on, hold_off
+	 */
 	template <typename T>
 	void plotEllipse(
 		const T mean_x, const T mean_y,
@@ -257,55 +257,55 @@ class CDisplayWindowPlots : public mrpt::gui::CBaseGUIWindow
 		bool showName = false);
 
 	/** Adds a bitmap image layer.
-	  *  Each call to this function creates a new layer, unless the plot name
+	 *  Each call to this function creates a new layer, unless the plot name
 	 * coincides with an already existing plot: in this case the new values are
 	 * used to update this existing layer (this also applies to using the
 	 * default plot name).
-	  *
-	  * \sa axis, axis_equal, axis_fit, hold_on, hold_off
-	  */
+	 *
+	 * \sa axis, axis_equal, axis_fit, hold_on, hold_off
+	 */
 	void image(
 		const mrpt::img::CImage& img, const float& x_left,
 		const float& y_bottom, const float& x_width, const float& y_height,
 		const std::string& plotName = std::string("image"));
 
 	/** Remove all plot objects in the display.
-	  * \sa plot
-	  */
+	 * \sa plot
+	 */
 	void clear();
 
 	/** Remove all plot objects in the display (clear and clf do exactly the
 	 * same).
-	  * \sa plot, hold_on, hold_off
-	  */
+	 * \sa plot, hold_on, hold_off
+	 */
 	inline void clf() { clear(); }
 	/** Enables keeping all the graphs, instead of overwritting them.
-	  * \sa hold_off, plot
-	  */
+	 * \sa hold_off, plot
+	 */
 	void hold_on();
 
 	/** Disables keeping all the graphs (this is the default behavior).
-	  * \sa hold_on, plot
-	  */
+	 * \sa hold_on, plot
+	 */
 	void hold_off();
 
 	/** Disables keeping all the graphs (this is the default behavior).
-	  * \param label The text that appears in the new popup menu item.
-	  * \param menuID Any positive number (0,1,..). Used to tell which menu was
+	 * \param label The text that appears in the new popup menu item.
+	 * \param menuID Any positive number (0,1,..). Used to tell which menu was
 	 * selected in the user callback.
-	  * \sa setMenuCallback
-	  */
+	 * \sa setMenuCallback
+	 */
 	void addPopupMenuEntry(const std::string& label, int menuID);
 
 	/** Must be called to have a callback when the user selects one of the
 	 * user-defined entries in the popup menu.
-	  * \sa addPopupMenuEntry
-	  */
+	 * \sa addPopupMenuEntry
+	 */
 	void setMenuCallback(TCallbackMenu userFunction, void* userParam = nullptr);
 
 };  // End of class def.
-}
+}  // namespace gui
 
-}  // End of namespace
+}  // namespace mrpt
 
 #endif

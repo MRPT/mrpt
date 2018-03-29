@@ -128,9 +128,8 @@ void mrpt::topography::path_from_rtk_gps(
 #endif
 
 	// The list with all time ordered gps's in valid RTK mode
-	typedef std::map<
-		mrpt::system::TTimeStamp, std::map<std::string, CObservationGPS::Ptr>>
-		TListGPSs;
+	using TListGPSs = std::map<
+		mrpt::system::TTimeStamp, std::map<std::string, CObservationGPS::Ptr>>;
 	TListGPSs list_gps_obs;
 
 	map<string, size_t> GPS_RTK_reads;  // label-># of RTK readings

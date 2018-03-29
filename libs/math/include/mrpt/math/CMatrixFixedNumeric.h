@@ -46,11 +46,10 @@ class CMatrixFixedNumeric
 			  ((NCOLS == 1 && NROWS != 1) ? Eigen::ColMajor : Eigen::RowMajor)>
 {
    public:
-	typedef Eigen::Matrix<T, NROWS, NCOLS,
-						  Eigen::AutoAlign |
-							  ((NCOLS == 1 && NROWS != 1) ? Eigen::ColMajor
-														  : Eigen::RowMajor)>
-		Base;
+	using Base = Eigen::Matrix<
+		T, NROWS, NCOLS,
+		Eigen::AutoAlign |
+			((NCOLS == 1 && NROWS != 1) ? Eigen::ColMajor : Eigen::RowMajor)>;
 	using mrpt_autotype = CMatrixFixedNumeric<T, NROWS, NCOLS>;
 	MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(CMatrixFixedNumeric)
 	MRPT_EIGEN_DERIVED_CLASS_CTOR_OPERATOR_EQUAL(
@@ -62,15 +61,16 @@ class CMatrixFixedNumeric
 	/** Constructor from an array in row major */
 	inline CMatrixFixedNumeric(const T* vals) : Base(vals) {}
 	/** Constructor which leaves the matrix uninitialized.
-	  *  Example of usage: CMatrixFixedNumeric<double,3,2>
+	 *  Example of usage: CMatrixFixedNumeric<double,3,2>
 	 * M(mrpt::math::UNINITIALIZED_MATRIX);
-	  */
+	 */
 	inline CMatrixFixedNumeric(TConstructorFlags_Matrices) : Base() {}
 	template <size_t N, typename ReturnType>
 	inline ReturnType getVicinity(size_t c, size_t r) const
 	{
-		return detail::getVicinity<CMatrixFixedNumeric<T, NROWS, NCOLS>, T,
-								   ReturnType, N>::get(c, r, *this);
+		return detail::getVicinity<
+			CMatrixFixedNumeric<T, NROWS, NCOLS>, T, ReturnType,
+			N>::get(c, r, *this);
 	}
 
 	inline void loadFromArray(const T* vals)
@@ -102,8 +102,8 @@ class CMatrixFixedNumeric
 namespace detail
 {
 /**
-  * Vicinity traits class specialization for fixed size matrices.
-  */
+ * Vicinity traits class specialization for fixed size matrices.
+ */
 template <typename T, size_t D>
 class VicinityTraits<CMatrixFixedNumeric<T, D, D>>
 {
@@ -119,9 +119,9 @@ class VicinityTraits<CMatrixFixedNumeric<T, D, D>>
 		mat.get_unsafe(r, c) = t;
 	}
 };
-}  // End of detail namespace.
+}  // namespace detail
 
-}  // End of namespace
+}  // namespace math
 
 namespace typemeta
 {
@@ -136,6 +136,6 @@ struct TTypeName<mrpt::math::CMatrixFixedNumeric<T, N, M>>
 			   literal(num_to_string<M>::value) + literal(">");
 	}
 };
-}
+}  // namespace typemeta
 
-}  // End of namespace
+}  // namespace mrpt

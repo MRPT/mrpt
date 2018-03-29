@@ -42,10 +42,10 @@ class CGraphSlamOptimizer
    public:
 	/**\brief Handy typedefs */
 	/**\{*/
-	typedef typename GRAPH_t::constraint_t
-		constraint_t;  // type of underlying constraints
-	typedef typename GRAPH_t::constraint_t::type_value
-		pose_t;  // type of underlying poses (2D/3D)
+	/** type of underlying constraints */
+	using constraint_t = typename GRAPH_t::constraint_t;
+	/** type of underlying poses (2D/3D) */
+	using pose_t = typename GRAPH_t::constraint_t::type_value;
 	/**\}*/
 
 	CGraphSlamOptimizer() {}
@@ -68,13 +68,14 @@ class CGraphSlamOptimizer
 	 * on the latest optimizer run
 	 */
 	virtual bool justFullyOptimizedGraph() const { return false; }
+
    protected:
 	/**\brief method called for optimizing the underlying graph.
 	 */
 	virtual void optimizeGraph() = 0;
 };
-}
-}
-}  // end of namespaces
+}  // namespace optimizers
+}  // namespace graphslam
+}  // namespace mrpt
 
 #endif /* end of include guard: CGRAPHSLAMOPTIMIZER_H */

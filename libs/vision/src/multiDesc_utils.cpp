@@ -99,8 +99,8 @@ void vision::saveQTableToFile(
 {
 	FILE* f = mrpt::system::os::fopen(filename, "wt");
 
-	typedef map<int, map<int, map<int, deque<pair<TFeatureID, double>>>>>
-		TQuantizationTable;
+	using TQuantizationTable =
+		map<int, map<int, map<int, deque<pair<TFeatureID, double>>>>>;
 
 	TQuantizationTable::const_iterator it1;
 	map<int, map<int, deque<pair<TFeatureID, double>>>>::const_iterator it2;
@@ -222,8 +222,8 @@ TMultiResMatchingOutput vision::relocalizeMultiDesc(
 									for (int n = 0; n < int(it3->second.size());
 										 ++n)
 									{
-										featsToCompareMap[qTable[m1][m2][m3]
-																[n].first]
+										featsToCompareMap[qTable[m1][m2][m3][n]
+															  .first]
 											.push_back(
 												qTable[m1][m2][m3][n].second);
 									}  // endfor n
@@ -237,8 +237,8 @@ TMultiResMatchingOutput vision::relocalizeMultiDesc(
 			// Erase duplicates
 			vID.resize(featsToCompareMap.size());  // To store only the IDs
 			int counter = 0;
-			for (map<TFeatureID, vector<double>>::iterator
-					 nit = featsToCompareMap.begin();
+			for (map<TFeatureID, vector<double>>::iterator nit =
+					 featsToCompareMap.begin();
 				 nit != featsToCompareMap.end(); ++nit, ++counter)
 			{
 				// Remove duplicates
@@ -261,8 +261,8 @@ TMultiResMatchingOutput vision::relocalizeMultiDesc(
 			int minDist = 1e6;
 			int minBaseScl = 0;
 			int minBaseFeat = 0;
-			for (map<TFeatureID, vector<double>>::iterator
-					 nit = featsToCompareMap.begin();
+			for (map<TFeatureID, vector<double>>::iterator nit =
+					 featsToCompareMap.begin();
 				 nit != featsToCompareMap.end(); ++nit, ++counter)
 			{
 				int baseIdx;
@@ -297,8 +297,8 @@ TMultiResMatchingOutput vision::relocalizeMultiDesc(
 								{
 									// check orientation
 									if (fabs(
-											baseFeat->multiOrientations[k1]
-																	   [k3] -
+											baseFeat
+												->multiOrientations[k1][k3] -
 											(*it)->multiOrientations[0][k4]) >
 										DEG2RAD(10))
 										continue;
@@ -326,11 +326,9 @@ TMultiResMatchingOutput vision::relocalizeMultiDesc(
 												 .size());
 										 ++d)
 										dist += fabs(
-											float(
-												baseFeat->descriptors
-													.multiSIFTDescriptors[k1]
-																		 [k3]
-																		 [d]) -
+											float(baseFeat->descriptors
+													  .multiSIFTDescriptors
+														  [k1][k3][d]) -
 											float(
 												(*it)
 													->descriptors
@@ -698,9 +696,9 @@ bool vision::computeMainOrientations(
 			double int_bin =
 				k +
 				0.5 * (pv - nv) / (pv - 2.0 * oris[k] + nv);  // Hess formulae
-			int_bin = (int_bin < 0) ? NBINS + int_bin : (int_bin >= NBINS)
-															? int_bin - NBINS
-															: int_bin;
+			int_bin = (int_bin < 0)
+						  ? NBINS + int_bin
+						  : (int_bin >= NBINS) ? int_bin - NBINS : int_bin;
 			double int_ori =
 				((M_2PI * int_bin) / NBINS) - M_PI;  // Back to -pi:pi
 			orientations.push_back(int_ori);

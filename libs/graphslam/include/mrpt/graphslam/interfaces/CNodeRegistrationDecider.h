@@ -47,9 +47,8 @@ class CNodeRegistrationDecider
 	/**\brief type of underlying poses (2D/3D). */
 	using pose_t = typename GRAPH_T::constraint_t::type_value;
 	using global_pose_t = typename GRAPH_T::global_pose_t;
-	typedef mrpt::math::CMatrixFixedNumeric<double, constraint_t::state_length,
-											constraint_t::state_length>
-		inf_mat_t;
+	using inf_mat_t = mrpt::math::CMatrixFixedNumeric<
+		double, constraint_t::state_length, constraint_t::state_length>;
 	/**\}*/
 
 	/**\brief Default class constructor.*/
@@ -135,9 +134,9 @@ class CNodeRegistrationDecider
 	 */
 	inf_mat_t m_init_inf_mat;
 };
-}
-}
-}  // end of namespaces
+}  // namespace deciders
+}  // namespace graphslam
+}  // namespace mrpt
 
 #include "CNodeRegistrationDecider_impl.h"
 

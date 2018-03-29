@@ -76,9 +76,8 @@ class CObservation2DRangeScan : public CObservation
 	/** Used in filterByExclusionAreas */
 	using TListExclusionAreas = std::vector<mrpt::math::CPolygon>;
 	/** Used in filterByExclusionAreas */
-	typedef std::vector<
-		std::pair<mrpt::math::CPolygon, std::pair<double, double>>>
-		TListExclusionAreasWithRanges;
+	using TListExclusionAreasWithRanges =
+		std::vector<std::pair<mrpt::math::CPolygon, std::pair<double, double>>>;
 
 	/** Default constructor */
 	CObservation2DRangeScan() = default;
@@ -107,14 +106,16 @@ class CObservation2DRangeScan : public CObservation
 
 	/** The intensity values of the scan. If available, must have same length
 	 * than \a validRange */
-	mrpt::containers::ContainerReadOnlyProxyAccessor<mrpt::aligned_std_vector<int32_t>>
+	mrpt::containers::ContainerReadOnlyProxyAccessor<
+		mrpt::aligned_std_vector<int32_t>>
 		intensity{m_intensity};
 	int32_t getScanIntensity(const size_t i) const;
 	void setScanIntensity(const size_t i, const int val);
 
 	/** It's false (=0) on no reflected rays, referenced to elements in \a scan
 	 */
-	mrpt::containers::ContainerReadOnlyProxyAccessor<mrpt::aligned_std_vector<char>>
+	mrpt::containers::ContainerReadOnlyProxyAccessor<
+		mrpt::aligned_std_vector<char>>
 		validRange{m_validRange};
 	bool getScanRangeValidity(const size_t i) const;
 	void setScanRangeValidity(const size_t i, const bool val);

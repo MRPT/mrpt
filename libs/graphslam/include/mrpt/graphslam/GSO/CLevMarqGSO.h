@@ -128,11 +128,10 @@ class CLevMarqGSO
 	/**\brief Handy typedefs */
 	/**\{*/
 	using constraint_t = typename GRAPH_T::constraint_t;
-	typedef typename GRAPH_T::constraint_t::type_value
-		pose_t;  // type of underlying poses (2D/3D)
-	typedef mrpt::math::CMatrixFixedNumeric<double, constraint_t::state_length,
-											constraint_t::state_length>
-		InfMat;
+	/** type of underlying poses (2D/3D)*/
+	using pose_t = typename GRAPH_T::constraint_t::type_value;
+	using InfMat = mrpt::math::CMatrixFixedNumeric<
+		double, constraint_t::state_length, constraint_t::state_length>;
 	using grandpa = mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_T>;
 	using parent = mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_T>;
 	/**\}*/
@@ -171,8 +170,8 @@ class CLevMarqGSO
 		bool optimization_on_second_thread;
 
 		/**\brief optimize only for the nodes found in a certain distance from
-		* the current position. Optimize for the entire graph if set to1
-		*/
+		 * the current position. Optimize for the entire graph if set to1
+		 */
 		double optimization_distance;
 		double offset_y_optimization_distance;
 		int text_index_optimization_distance;
@@ -191,8 +190,8 @@ class CLevMarqGSO
 	};
 
 	/**\brief struct for holding the graph visualization-related variables in a
-	* compact form
-	*/
+	 * compact form
+	 */
 	struct GraphVisualizationParams : public mrpt::config::CLoadableOptions
 	{
 	   public:
@@ -399,9 +398,9 @@ class CLevMarqGSO
 	/**\brief Minimum number of nodes before we try optimizing the graph */
 	size_t m_min_nodes_for_optimization;
 };
-}
-}
-}  // end of namespaces
+}  // namespace optimizers
+}  // namespace graphslam
+}  // namespace mrpt
 
 #include "CLevMarqGSO_impl.h"
 

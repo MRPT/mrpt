@@ -235,37 +235,34 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	/** The numeric type used in the Kalman Filter (default=double) */
 	using kftype = KFTYPE;
 	/** My class, in a shorter name! */
-	typedef CKalmanFilterCapable<
-		VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>
-		KFCLASS;
+	using KFCLASS =
+		CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>;
 
 	// ---------- Many useful typedefs to short the notation a bit... --------
 	using KFVector = Eigen::Matrix<KFTYPE, Eigen::Dynamic, 1>;
 	using KFMatrix = mrpt::math::CMatrixTemplateNumeric<KFTYPE>;
 
-	typedef mrpt::math::CMatrixFixedNumeric<KFTYPE, VEH_SIZE, VEH_SIZE>
-		KFMatrix_VxV;
-	typedef mrpt::math::CMatrixFixedNumeric<KFTYPE, OBS_SIZE, OBS_SIZE>
-		KFMatrix_OxO;
-	typedef mrpt::math::CMatrixFixedNumeric<KFTYPE, FEAT_SIZE, FEAT_SIZE>
-		KFMatrix_FxF;
-	typedef mrpt::math::CMatrixFixedNumeric<KFTYPE, ACT_SIZE, ACT_SIZE>
-		KFMatrix_AxA;
+	using KFMatrix_VxV =
+		mrpt::math::CMatrixFixedNumeric<KFTYPE, VEH_SIZE, VEH_SIZE>;
+	using KFMatrix_OxO =
+		mrpt::math::CMatrixFixedNumeric<KFTYPE, OBS_SIZE, OBS_SIZE>;
+	using KFMatrix_FxF =
+		mrpt::math::CMatrixFixedNumeric<KFTYPE, FEAT_SIZE, FEAT_SIZE>;
+	using KFMatrix_AxA =
+		mrpt::math::CMatrixFixedNumeric<KFTYPE, ACT_SIZE, ACT_SIZE>;
 
-	typedef mrpt::math::CMatrixFixedNumeric<KFTYPE, VEH_SIZE, OBS_SIZE>
-		KFMatrix_VxO;
-	typedef mrpt::math::CMatrixFixedNumeric<KFTYPE, VEH_SIZE, FEAT_SIZE>
-		KFMatrix_VxF;
-
-	typedef mrpt::math::CMatrixFixedNumeric<KFTYPE, FEAT_SIZE, VEH_SIZE>
-		KFMatrix_FxV;
-	typedef mrpt::math::CMatrixFixedNumeric<KFTYPE, FEAT_SIZE, OBS_SIZE>
-		KFMatrix_FxO;
-
-	typedef mrpt::math::CMatrixFixedNumeric<KFTYPE, OBS_SIZE, FEAT_SIZE>
-		KFMatrix_OxF;
-	typedef mrpt::math::CMatrixFixedNumeric<KFTYPE, OBS_SIZE, VEH_SIZE>
-		KFMatrix_OxV;
+	using KFMatrix_VxO =
+		mrpt::math::CMatrixFixedNumeric<KFTYPE, VEH_SIZE, OBS_SIZE>;
+	using KFMatrix_VxF =
+		mrpt::math::CMatrixFixedNumeric<KFTYPE, VEH_SIZE, FEAT_SIZE>;
+	using KFMatrix_FxV =
+		mrpt::math::CMatrixFixedNumeric<KFTYPE, FEAT_SIZE, VEH_SIZE>;
+	using KFMatrix_FxO =
+		mrpt::math::CMatrixFixedNumeric<KFTYPE, FEAT_SIZE, OBS_SIZE>;
+	using KFMatrix_OxF =
+		mrpt::math::CMatrixFixedNumeric<KFTYPE, OBS_SIZE, FEAT_SIZE>;
+	using KFMatrix_OxV =
+		mrpt::math::CMatrixFixedNumeric<KFTYPE, OBS_SIZE, VEH_SIZE>;
 
 	using KFArray_VEH = mrpt::math::CArrayNumeric<KFTYPE, VEH_SIZE>;
 	using KFArray_ACT = mrpt::math::CArrayNumeric<KFTYPE, ACT_SIZE>;

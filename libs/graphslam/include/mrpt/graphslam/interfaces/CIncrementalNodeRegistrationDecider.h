@@ -52,11 +52,11 @@ class CIncrementalNodeRegistrationDecider
 	/**\brief type of underlying poses (2D/3D). */
 	using pose_t = typename GRAPH_T::constraint_t::type_value;
 	using global_pose_t = typename GRAPH_T::global_pose_t;
-	typedef CIncrementalNodeRegistrationDecider<GRAPH_T>
-		decider_t; /**< self type - Handy typedef */
+	using decider_t =
+		CIncrementalNodeRegistrationDecider<GRAPH_T>; /**< self type */
 	/**\brief Node Registration Decider */
-	typedef mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>
-		parent_t;
+	using parent_t =
+		mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>;
 
 	/**\}*/
 
@@ -64,7 +64,7 @@ class CIncrementalNodeRegistrationDecider
 	virtual ~CIncrementalNodeRegistrationDecider();
 
 	/**\name Registration Conditions Specifiers
-	*/
+	 */
 	/**\{ */
 	/**\brief If estimated position surpasses the registration max values since
 	 * the previous registered node, register a new node in the graph.
@@ -97,7 +97,7 @@ class CIncrementalNodeRegistrationDecider
 			const std::string& section);
 		void dumpToTextStream(std::ostream& out) const;
 		/**\brief Return a string with the configuration parameters
-		*/
+		 */
 		void getAsString(std::string* params_out) const;
 		std::string getAsString() const;
 
@@ -112,10 +112,10 @@ class CIncrementalNodeRegistrationDecider
 
    private:
 };
-}
-}
-}  // end of namespaces
+}  // namespace deciders
+}  // namespace graphslam
+}  // namespace mrpt
 
 #include "CIncrementalNodeRegistrationDecider_impl.h"
 #endif /* end of include guard: CINCREMENTALNODEREGISTRATIONDECIDER_H_WPM0MYXZ \
-		  */
+		*/

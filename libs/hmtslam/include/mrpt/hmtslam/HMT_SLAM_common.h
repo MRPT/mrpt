@@ -54,15 +54,15 @@ class CHMHMapNode;
 
 /** An integer number uniquely identifying each of the concurrent hypotheses for
  * the robot topological path (& possibly local metric clusters) in HMT-SLAM.
-  *   The number 0 has the special meaning of "that part of the map/robot path
+ *   The number 0 has the special meaning of "that part of the map/robot path
  * in which all hypotheses agree".
-  *  They can be generated from CHMTSLAM::generateHypothesisID()
-  */
+ *  They can be generated from CHMTSLAM::generateHypothesisID()
+ */
 using THypothesisID = int64_t;
 
 /** An integer number uniquely identifying each robot pose stored in HMT-SLAM.
-  * They can be generated from CHMTSLAM::generatePoseID()
-  */
+ * They can be generated from CHMTSLAM::generatePoseID()
+ */
 using TPoseID = uint64_t;
 
 using TPairPoseIDs = std::pair<TPoseID, TPoseID>;
@@ -72,9 +72,9 @@ using TPoseIDSet = std::set<TPoseID>;
 
 /** A set of hypothesis IDs, used for arcs and nodes in multi-hypothesis hybrid
  * maps.
-  *  \sa THypothesisID, CHierarchicalMHMap
-  * \ingroup mrpt_hmtslam_grp
-  */
+ *  \sa THypothesisID, CHierarchicalMHMap
+ * \ingroup mrpt_hmtslam_grp
+ */
 class THypothesisIDSet : public mrpt::serialization::CSerializable,
 						 public std::set<THypothesisID>
 {
@@ -82,34 +82,33 @@ class THypothesisIDSet : public mrpt::serialization::CSerializable,
 
    public:
 	/** Default constructor
-	  */
+	 */
 	THypothesisIDSet() {}
 	/** Constructor with one initial element
-	  */
+	 */
 	THypothesisIDSet(const THypothesisID& val) { insert(val); }
 	virtual ~THypothesisIDSet() {}
 	/** Returns true if the hypothesis is into the set.
-	  */
+	 */
 	bool has(const THypothesisID& val) const
 	{
 		return find(val) != end() || find(COMMON_TOPOLOG_HYP) != end();
 	}
 
 	/** Dump to console.
-	  */
+	 */
 	void debugDump() const;
 };
 
 /** A class for storing a sequence of arcs (a path).
-  * \sa CHMTSLAM
-  */
+ * \sa CHMTSLAM
+ */
 class TArcList : public mrpt::containers::list_searchable<
 					 std::shared_ptr<mrpt::hmtslam::CHMHMapArc>>
 {
    private:
-	typedef mrpt::containers::list_searchable<
-		std::shared_ptr<mrpt::hmtslam::CHMHMapArc>>
-		BASE;
+	using BASE = mrpt::containers::list_searchable<
+		std::shared_ptr<mrpt::hmtslam::CHMHMapArc>>;
 
    public:
 	void debugDump();
@@ -117,7 +116,7 @@ class TArcList : public mrpt::containers::list_searchable<
 	void write(mrpt::serialization::CArchive& out) const;
 };
 
-}  // End of namespace
-}  // End of namespace
+}  // namespace hmtslam
+}  // namespace mrpt
 
 #endif
