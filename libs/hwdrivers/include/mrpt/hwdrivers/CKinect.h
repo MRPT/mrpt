@@ -270,7 +270,7 @@ class CKinect : public mrpt::hwdrivers::CGenericSensor
 	DEFINE_GENERIC_SENSOR(CKinect)
 
    public:
-	/** A typedef for an array that converts raw depth to ranges in meters. */
+	/** A type for an array that converts raw depth to ranges in meters. */
 	using TDepth2RangeArray = float[KINECT_RANGES_TABLE_LEN];
 
 	/** RGB or IR video channel identifiers \sa setVideoChannel */
@@ -462,7 +462,7 @@ class CKinect : public mrpt::hwdrivers::CGenericSensor
 		m_grab_3D_points = enable;
 	}
 	inline bool isGrab3DPointsEnabled() const { return m_grab_3D_points; }
-/** @} */
+	/** @} */
 
 #if MRPT_HAS_KINECT_FREENECT
 	// Auxiliary getters/setters (we can't declare the libfreenect callback as

@@ -24,39 +24,39 @@ template <typename distance_t, typename element_t = uint8_t>
 struct TSIFTDesc2KDTree_Adaptor;
 template <typename distance_t, typename element_t = float>
 struct TSURFDesc2KDTree_Adaptor;
-}
+}  // namespace detail
 
 /** \defgroup mrptvision_descr_kdtrees KD-Tree construction of visual
  * descriptors
-  * \ingroup mrpt_vision_grp
-  */
+ * \ingroup mrpt_vision_grp
+ */
 
 /** \addtogroup  mrptvision_descr_kdtrees
 	@{ */
 
 /** A kd-tree builder for sets of features with SIFT descriptors.
-  *   Example of usage:
-  *  \code
-  *    TSIFTDescriptorsKDTreeIndex<double>  feats_kdtree(feats);
-  *    feats_kdtree.get_kdtree().knnSearch( ... );
-  *  \endcode
-  * \sa CFeatureList, mrpt::vision::find_descriptor_pairings
-  */
-template <typename distance_t,
-		  class metric_t = nanoflann::L2_Simple_Adaptor<
-			  uint8_t /*SIFT desc elements*/,
-			  detail::TSIFTDesc2KDTree_Adaptor<distance_t>, distance_t>>
+ *   Example of usage:
+ *  \code
+ *    TSIFTDescriptorsKDTreeIndex<double>  feats_kdtree(feats);
+ *    feats_kdtree.get_kdtree().knnSearch( ... );
+ *  \endcode
+ * \sa CFeatureList, mrpt::vision::find_descriptor_pairings
+ */
+template <
+	typename distance_t,
+	class metric_t = nanoflann::L2_Simple_Adaptor<
+		uint8_t /*SIFT desc elements*/,
+		detail::TSIFTDesc2KDTree_Adaptor<distance_t>, distance_t>>
 struct TSIFTDescriptorsKDTreeIndex
 {
    public:
-	typedef typename nanoflann::KDTreeSingleIndexAdaptor<
-		metric_t, detail::TSIFTDesc2KDTree_Adaptor<distance_t>>
-		kdtree_t;
+	using kdtree_t = typename nanoflann::KDTreeSingleIndexAdaptor<
+		metric_t, detail::TSIFTDesc2KDTree_Adaptor<distance_t>>;
 
 	/** Constructor from a list of SIFT features.
-	  *  Automatically build the KD-tree index. The list of features must NOT be
+	 *  Automatically build the KD-tree index. The list of features must NOT be
 	 * empty or an exception will be raised.
-	  */
+	 */
 	TSIFTDescriptorsKDTreeIndex(const CFeatureList& feats)
 		: m_adaptor(feats), m_kdtree(nullptr), m_feats(feats)
 	{
@@ -93,28 +93,28 @@ struct TSIFTDescriptorsKDTreeIndex
 };  // end of TSIFTDescriptorsKDTreeIndex
 
 /** A kd-tree builder for sets of features with SURF descriptors.
-  *   Example of usage:
-  *  \code
-  *    TSURFDescriptorsKDTreeIndex<double>  feats_kdtree(feats);
-  *    feats_kdtree.get_kdtree().knnSearch( ... );
-  *  \endcode
-  * \sa CFeatureList, mrpt::vision::find_descriptor_pairings
-  */
-template <typename distance_t,
-		  class metric_t = nanoflann::L2_Simple_Adaptor<
-			  float /*SURF desc elements*/,
-			  detail::TSURFDesc2KDTree_Adaptor<distance_t>, distance_t>>
+ *   Example of usage:
+ *  \code
+ *    TSURFDescriptorsKDTreeIndex<double>  feats_kdtree(feats);
+ *    feats_kdtree.get_kdtree().knnSearch( ... );
+ *  \endcode
+ * \sa CFeatureList, mrpt::vision::find_descriptor_pairings
+ */
+template <
+	typename distance_t,
+	class metric_t = nanoflann::L2_Simple_Adaptor<
+		float /*SURF desc elements*/,
+		detail::TSURFDesc2KDTree_Adaptor<distance_t>, distance_t>>
 struct TSURFDescriptorsKDTreeIndex
 {
    public:
-	typedef typename nanoflann::KDTreeSingleIndexAdaptor<
-		metric_t, detail::TSURFDesc2KDTree_Adaptor<distance_t>>
-		kdtree_t;
+	using kdtree_t = typename nanoflann::KDTreeSingleIndexAdaptor<
+		metric_t, detail::TSURFDesc2KDTree_Adaptor<distance_t>>;
 
 	/** Constructor from a list of SIFT features.
-	  *  Automatically build the KD-tree index. The list of features must NOT be
+	 *  Automatically build the KD-tree index. The list of features must NOT be
 	 * empty or an exception will be raised.
-	  */
+	 */
 	TSURFDescriptorsKDTreeIndex(const CFeatureList& feats)
 		: m_adaptor(feats), m_kdtree(nullptr), m_feats(feats)
 	{
@@ -223,7 +223,7 @@ struct TSURFDesc2KDTree_Adaptor
 		return false;
 	}
 };
-}  // end detail
-}
-}
+}  // namespace detail
+}  // namespace vision
+}  // namespace mrpt
 #endif

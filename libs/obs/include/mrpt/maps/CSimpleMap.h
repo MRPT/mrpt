@@ -28,7 +28,7 @@ namespace maps
  * files with the extension ".simplemap".
  *
  * \note Before MRPT 0.9.0 the name of this class was "CSensFrameProbSequence",
- * that's why there is a typedef with that name to allow backward compatibility.
+ * that's why there is a type with that name to allow backward compatibility.
  * \sa CSensoryFrame, CPosePDF
  * \ingroup mrpt_obs_grp
  */

@@ -42,14 +42,14 @@ class CActionCollection : public mrpt::serialization::CSerializable
 	/** You can use CActionCollection::begin to get a iterator to the first
 	 * element.
 	 */
-	typedef std::deque<
-		mrpt::containers::deepcopy_poly_ptr<CAction::Ptr>>::iterator iterator;
+	using iterator =
+		std::deque<mrpt::containers::deepcopy_poly_ptr<CAction::Ptr>>::iterator;
 
 	/** You can use CActionCollection::begin to get a iterator to the first
 	 * element.
 	 */
-	typedef std::deque<mrpt::containers::deepcopy_poly_ptr<CAction::Ptr>>::
-		const_iterator const_iterator;
+	using const_iterator = std::deque<
+		mrpt::containers::deepcopy_poly_ptr<CAction::Ptr>>::const_iterator;
 
 	/** Returns a iterator to the first action: this is an example of usage:
 	 * \code

@@ -77,7 +77,7 @@ your `.vimrc` to enable the aforementioned settings.
     **inside** the scope of a function implementation in a header, e.g. an
     inline function or method.
 
-* Member variables of a `struct` should have **no** suffix or prefix, e.g: 
+* Member variables of a `struct` should have **no** suffix or prefix, e.g:
 
   ```c++
   struct TFoo {
@@ -100,8 +100,8 @@ your `.vimrc` to enable the aforementioned settings.
   };
   ```
 
-* In general, typedefs will use lowercase with underscores, e.g. `typedef
-    std::vector<int> vector_int;`
+* In general, `typedefs` and `using` will use lowercase with underscores, e.g.
+   `using vector_int = std::vector<int>;`
 
 * If a packed structure is defined (i.e. `#pragma pack(push,1) ... #pragma
     pack(pop)`), it will be much safer to make all fields protected and offer

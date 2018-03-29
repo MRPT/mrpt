@@ -171,8 +171,8 @@ class CSimpleIniTempl
 	};
 
 	/** map keys to values */
-	typedef std::multimap<Entry, const SI_CHAR*, typename Entry::KeyOrder>
-		TKeyVal;
+	using TKeyVal =
+		std::multimap<Entry, const SI_CHAR*, typename Entry::KeyOrder>;
 
 	/** map sections to key/value map */
 	using TSection = std::map<Entry, TKeyVal, typename Entry::KeyOrder>;
@@ -286,15 +286,15 @@ class CSimpleIniTempl
 	CSimpleIniTempl(bool a_bMultiKey = false, bool a_bMultiLine = false);
 
 	/** Copy **/
-	CSimpleIniTempl(const CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER> &o)
+	CSimpleIniTempl(const CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>& o)
 	{
 		std::string str;
 		o.Save(str);
 		Load(str);
 	};
 
-	CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>&
-		operator=(const CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>& o)
+	CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>& operator=(
+		const CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>& o)
 	{
 		std::string str;
 		o.Save(str);
@@ -2405,13 +2405,13 @@ struct MRPT_IniFileParser : public SI_ConvertA<char>
 //                                  TYPE DEFINITIONS
 // ---------------------------------------------------------------------------
 
-typedef CSimpleIniTempl<char, SI_GenericNoCase<char>, SI_ConvertA<char>>
-	CSimpleIniA;
-typedef CSimpleIniTempl<char, SI_GenericCase<char>, SI_ConvertA<char>>
-	CSimpleIniCaseA;
+using CSimpleIniA =
+	CSimpleIniTempl<char, SI_GenericNoCase<char>, SI_ConvertA<char>>;
+using CSimpleIniCaseA =
+	CSimpleIniTempl<char, SI_GenericCase<char>, SI_ConvertA<char>>;
 
-typedef CSimpleIniTempl<char, SI_GenericNoCase<char>, MRPT_IniFileParser>
-	MRPT_CSimpleIni;
+using MRPT_CSimpleIni =
+	CSimpleIniTempl<char, SI_GenericNoCase<char>, MRPT_IniFileParser>;
 
 #ifdef _UNICODE
 #define CSimpleIni CSimpleIniW

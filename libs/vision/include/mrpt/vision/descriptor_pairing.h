@@ -62,11 +62,10 @@ size_t find_descriptor_pairings(
 	ASSERT_ABOVEEQ_(max_neighbors, 1);
 	ASSERT_(pairings_1_to_multi_2 != nullptr || pairings_1_to_2 != nullptr);
 
-	typedef typename DESCRIPTOR_KDTREE::kdtree_t::ElementType
-		KDTreeElementType;  // The expected data type of elements for the
-	// kd-tree
-	typedef
-		typename DESCRIPTOR_KDTREE::kdtree_t::DistanceType KDTreeDistanceType;
+	/** The expected data type of elements for the kd-tree*/
+	using KDTreeElementType = typename DESCRIPTOR_KDTREE::kdtree_t::ElementType;
+	using KDTreeDistanceType =
+		typename DESCRIPTOR_KDTREE::kdtree_t::DistanceType;
 
 	const size_t N = feats_img1.size();
 	if (pairings_1_to_multi_2)
@@ -129,7 +128,7 @@ size_t find_descriptor_pairings(
 			static_cast<const KDTreeElementType*>(ptr_query),  // Query point
 			max_neighbors,  // Number of neigbors
 			&indices[0], &distances[0]  // Output
-			);
+		);
 
 		// Include all correspondences below the absolute and the relative
 		// threshold (indices comes ordered by distances):

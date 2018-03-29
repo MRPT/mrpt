@@ -89,10 +89,8 @@ int main(int argc, char** argv)
 				"MappingApplication", "rawlog_file", std::string("log.rawlog"));
 
 		// 2D or 3D implementation:
-		const string kf_implementation = mrpt::system::trim(
-			cfg.read_string(
-				"MappingApplication", "kf_implementation",
-				"CRangeBearingKFSLAM"));
+		const string kf_implementation = mrpt::system::trim(cfg.read_string(
+			"MappingApplication", "kf_implementation", "CRangeBearingKFSLAM"));
 
 		if (kf_implementation == "CRangeBearingKFSLAM")
 			Run_KF_SLAM<CRangeBearingKFSLAM>(cfg, rawlogFileName);
@@ -129,10 +127,10 @@ struct kfslam_traits;
 template <>
 struct kfslam_traits<CRangeBearingKFSLAM2D>
 {
-	typedef CRangeBearingKFSLAM2D ekfslam_t;
-	typedef CPosePDFGaussian posepdf_t;
-	typedef CPose2D pose_t;
-	typedef TPoint2D lm_t;
+	using ekfslam_t = CRangeBearingKFSLAM2D;
+	using posepdf_t = CPosePDFGaussian;
+	using pose_t = CPose2D;
+	using lm_t = TPoint2D;
 	template <class ARR>
 	static void landmark_to_3d(const ARR& lm, TPoint3D& p)
 	{
@@ -152,10 +150,10 @@ struct kfslam_traits<CRangeBearingKFSLAM2D>
 template <>
 struct kfslam_traits<CRangeBearingKFSLAM>
 {
-	typedef CRangeBearingKFSLAM ekfslam_t;
-	typedef CPose3DQuatPDFGaussian posepdf_t;
-	typedef CPose3D pose_t;
-	typedef CPoint3D lm_t;
+	using ekfslam_t = CRangeBearingKFSLAM;
+	using posepdf_t = CPose3DQuatPDFGaussian;
+	using pose_t = CPose3D;
+	using lm_t = CPoint3D;
 
 	template <class ARR>
 	static void landmark_to_3d(const ARR& lm, TPoint3D& p)
@@ -262,10 +260,9 @@ template <class IMPL>
 void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 {
 	// The EKF-SLAM class:
-	typedef kfslam_traits<IMPL>
-		traits_t;  // Traits for this KF implementation (2D or 3D)
-
-	typedef typename traits_t::ekfslam_t ekfslam_t;
+	// Traits for this KF implementation (2D or 3D)
+	using traits_t = kfslam_traits<IMPL>;
+	using ekfslam_t = typename traits_t::ekfslam_t;
 
 	ekfslam_t mapping;
 
@@ -489,9 +486,8 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 
 					for (size_t i = 0; i < obsRB->sensedData.size(); i++)
 					{
-						std::map<observation_index_t,
-								 prediction_index_t>::const_iterator it =
-							da.results.associations.find(i);
+						std::map<observation_index_t, prediction_index_t>::
+							const_iterator it = da.results.associations.find(i);
 						int assoc_ID_in_SLAM;
 						if (it != da.results.associations.end())
 							assoc_ID_in_SLAM = it->second;
@@ -544,9 +540,9 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 							ASSERT_BELOW_(i, vDA.size());
 							const int GT_ASSOC = vDA[i];
 
-							std::map<observation_index_t,
-									 prediction_index_t>::const_iterator it =
-								da.results.associations.find(i);
+							std::map<observation_index_t, prediction_index_t>::
+								const_iterator it =
+									da.results.associations.find(i);
 							if (it != da.results.associations.end())
 							{
 								// This observation was assigned the already
@@ -740,9 +736,9 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 						mrpt::make_aligned_shared<mrpt::opengl::CSetOfLines>();
 					lins->setLineWidth(1.2f);
 					lins->setColor(1, 1, 1);
-					for (std::map<observation_index_t,
-								  prediction_index_t>::const_iterator it =
-							 da.results.associations.begin();
+					for (std::map<observation_index_t, prediction_index_t>::
+							 const_iterator it =
+								 da.results.associations.begin();
 						 it != da.results.associations.end(); ++it)
 					{
 						const prediction_index_t idxPred = it->second;
@@ -875,9 +871,8 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 					if (LM_IDs[i] == GT(r, 6))
 					{
 						const CPoint3D gtPt(GT(r, 0), GT(r, 1), GT(r, 2));
-						ERRS.push_back(
-							gtPt.distanceTo(
-								CPoint3D(TPoint3D(LMs[i]))));  // All these
+						ERRS.push_back(gtPt.distanceTo(
+							CPoint3D(TPoint3D(LMs[i]))));  // All these
 						// conversions
 						// are to make it
 						// work with

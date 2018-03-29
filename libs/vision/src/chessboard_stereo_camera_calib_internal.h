@@ -69,8 +69,8 @@ struct TResidJacobElement
 	Eigen::Matrix<double, 4, 30> J;
 };
 
-typedef std::vector<mrpt::aligned_std_vector<TResidJacobElement>>
-	TResidualJacobianList;
+using TResidualJacobianList =
+	std::vector<mrpt::aligned_std_vector<TResidJacobElement>>;
 
 // Auxiliary functions for the Lev-Marq algorithm:
 double recompute_errors_and_Jacobians(
@@ -82,7 +82,7 @@ void build_linear_system(
 void add_lm_increment(
 	const Eigen::VectorXd& eps, const std::vector<size_t>& var_indxs,
 	lm_stat_t& new_lm_stat);
-}
-}
+}  // namespace vision
+}  // namespace mrpt
 
 #endif  // MRPT_VISION_INTERNAL_STEREO_CALIB_H

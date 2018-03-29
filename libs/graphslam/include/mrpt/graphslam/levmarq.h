@@ -210,8 +210,8 @@ void optimize_graph_spa_levmarq(
 	ASSERTDEB_ABOVE_(nObservations, 0);
 	// Cholesky object, as a pointer to reuse it between iterations:
 
-	typedef std::unique_ptr<CSparseMatrix::CholeskyDecomp>
-		SparseCholeskyDecompPtr;
+	using SparseCholeskyDecompPtr =
+		std::unique_ptr<CSparseMatrix::CholeskyDecomp>;
 	SparseCholeskyDecompPtr ptrCh;
 
 	// The list of Jacobians: for each constraint i->j,
@@ -253,10 +253,9 @@ void optimize_graph_spa_levmarq(
 	{
 		const TNodeID id1 = itJ->first.first;
 		const TNodeID id2 = itJ->first.second;
-		observationIndex_to_relatedFreeNodeIndex.push_back(
-			std::make_pair(
-				mrpt::containers::find_in_vector(id1, *nodes_to_optimize),
-				mrpt::containers::find_in_vector(id2, *nodes_to_optimize)));
+		observationIndex_to_relatedFreeNodeIndex.push_back(std::make_pair(
+			mrpt::containers::find_in_vector(id1, *nodes_to_optimize),
+			mrpt::containers::find_in_vector(id2, *nodes_to_optimize)));
 	}
 
 	// other important vars for the main loop:
@@ -333,7 +332,7 @@ void optimize_graph_spa_levmarq(
 								lstObservationData[idx_obs].edge /* W */,
 								errs[idx_obs] /* err */,
 								grad_parts[idx1] /* out */
-								);
+							);
 
 					if (idx2 != string::npos)
 						detail::AuxErrorEval<typename gst::edge_t, gst>::
@@ -342,7 +341,7 @@ void optimize_graph_spa_levmarq(
 								lstObservationData[idx_obs].edge /* W */,
 								errs[idx_obs] /* err */,
 								grad_parts[idx2] /* out */
-								);
+							);
 				}
 			}
 

@@ -38,22 +38,22 @@ void reduced_hash(const std::string& value, uint64_t& hash);
 /** A thread-safe (ts) container which minimally emulates a std::map<>'s [] and
  * find() methods but which is implemented as a linear vector indexed by a hash
  * of KEY.
-  * Any custom hash function can be implemented, we don't rely by default on
+ * Any custom hash function can be implemented, we don't rely by default on
  * C++11 std::hash<> due to its limitation in some implementations.
-  *
-  * This implementation is much more efficient than std::map<> when the most
+ *
+ * This implementation is much more efficient than std::map<> when the most
  * common operation is accesing elements
-  *  by KEY with find() or [], and is also thread-safe if different threads
+ *  by KEY with find() or [], and is also thread-safe if different threads
  * create entries with different hash values.
-  *
-  * The default underlying non-associative container is a "memory-aligned
+ *
+ * The default underlying non-associative container is a "memory-aligned
  * std::vector<>", but it can be changed to a
-  *  standard vector<> or to a deque<> (to avoid memory reallocations) by
+ *  standard vector<> or to a deque<> (to avoid memory reallocations) by
  * changing the template parameter \a VECTOR_T.
-  *
-  * \note Defined in #include <mrpt/containers/ts_hash_map.h>
-	* \ingroup mrpt_containers_grp
-  */
+ *
+ * \note Defined in #include <mrpt/containers/ts_hash_map.h>
+ * \ingroup mrpt_containers_grp
+ */
 template <
 	typename KEY, typename VALUE, unsigned int NUM_BYTES_HASH_TABLE = 1,
 	unsigned int NUM_HAS_TABLE_COLLISIONS_ALLOWED = 5,
@@ -65,9 +65,9 @@ class ts_hash_map
    public:
 	/** @name Types
 		@{ */
-	typedef ts_hash_map<KEY, VALUE, NUM_BYTES_HASH_TABLE,
-						NUM_HAS_TABLE_COLLISIONS_ALLOWED, VECTOR_T>
-		self_t;
+	using self_t = ts_hash_map<
+		KEY, VALUE, NUM_BYTES_HASH_TABLE, NUM_HAS_TABLE_COLLISIONS_ALLOWED,
+		VECTOR_T>;
 	using key_type = KEY;
 	using value_type = ts_map_entry<KEY, VALUE>;
 	using vec_t = VECTOR_T;
@@ -221,9 +221,9 @@ class ts_hash_map
 		typename mrpt::uint_select_by_bytecount<NUM_BYTES_HASH_TABLE>::type
 			hash;
 		reduced_hash(key, hash);
-		const std::array<ts_map_entry<KEY, VALUE>,
-						 NUM_HAS_TABLE_COLLISIONS_ALLOWED>& match_arr =
-			m_vec[hash];
+		const std::array<
+			ts_map_entry<KEY, VALUE>, NUM_HAS_TABLE_COLLISIONS_ALLOWED>&
+			match_arr = m_vec[hash];
 		for (unsigned int i = 0; i < NUM_HAS_TABLE_COLLISIONS_ALLOWED; i++)
 		{
 			if (match_arr[i].used && match_arr[i].first == key)
@@ -253,5 +253,5 @@ class ts_hash_map
 
 };  // end class ts_hash_map
 
-}  // End of namespace
-}  // End of namespace
+}  // namespace containers
+}  // namespace mrpt

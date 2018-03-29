@@ -106,7 +106,7 @@ struct TSimpleFeatureTraits<TSimpleFeaturef>
 
 /** A list of image features using the structure TSimpleFeature for each feature
  * - capable of KD-tree computations
- *  Users normally use directly the typedef's: TSimpleFeatureList &
+ *  Users normally use directly the type TSimpleFeatureList &
  * TSimpleFeaturefList
  */
 template <typename FEATURE>
@@ -168,8 +168,8 @@ struct TSimpleFeatureList_templ
 	using const_iterator = typename TFeatureVector::const_iterator;
 
 	using reverse_iterator = typename TFeatureVector::reverse_iterator;
-	typedef
-		typename TFeatureVector::const_reverse_iterator const_reverse_iterator;
+	using const_reverse_iterator =
+		typename TFeatureVector::const_reverse_iterator;
 
 	inline iterator begin() { return m_feats.begin(); }
 	inline iterator end() { return m_feats.end(); }

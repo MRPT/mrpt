@@ -20,8 +20,8 @@ namespace mrpt
 namespace vision
 {
 /** \addtogroup chessboard_calib Chessboard calibration
-  *  \ingroup mrpt_vision_grp
-  *  @{  */
+ *  \ingroup mrpt_vision_grp
+ *  @{  */
 
 /** Data associated to each stereo image in the calibration process
  * mrpt::vision::checkerBoardCameraCalibration (All the information can be left
@@ -49,8 +49,8 @@ struct TImageStereoCallbackData
 };
 
 /** Prototype of optional user callback function. */
-typedef void (*TSteroCalibCallbackFunctor)(
-	const TImageStereoCallbackData& d, void* user_data);
+using TSteroCalibCallbackFunctor =
+	void (*)(const TImageStereoCallbackData& d, void* user_data);
 
 /** Input parameters for mrpt::vision::checkerBoardStereoCalibration */
 struct TStereoCalibParams
@@ -107,7 +107,7 @@ struct TStereoCalibResults
 
 	/** Poses of the origin of coordinates of the pattern wrt the left camera
 	 * (i.e. the origin of coordinates, as seen from the different camera poses)
-	  */
+	 */
 	mrpt::aligned_std_vector<mrpt::poses::CPose3D> left_cam_poses;
 	/** true if a checkerboard was correctly detected in both left/right images.
 	 * false if it wasn't, so the image pair didn't make it to the optimization.
@@ -132,8 +132,8 @@ struct TStereoCalibResults
 };
 
 /**  A list of images, used in checkerBoardStereoCalibration
-  * \sa checkerBoardStereoCalibration
-  */
+ * \sa checkerBoardStereoCalibration
+ */
 using TCalibrationStereoImageList = std::vector<TImageStereoCalibData>;
 
 /** Optimize the calibration parameters of a stereo camera or a RGB+D (Kinect)
@@ -166,7 +166,7 @@ bool checkerBoardStereoCalibration(
 	TStereoCalibResults& out_results);
 
 /** @}  */  // end of grouping
-}
-}
+}  // namespace vision
+}  // namespace mrpt
 
 #endif
