@@ -175,8 +175,8 @@ struct TRelativeFeaturePos
 };
 
 /** An index of feature IDs and their relative locations */
-typedef std::map<mrpt::vision::TFeatureID, TRelativeFeaturePos>
-	TRelativeFeaturePosMap;
+using TRelativeFeaturePosMap =
+	std::map<mrpt::vision::TFeatureID, TRelativeFeaturePos>;
 
 /** A complete sequence of observations of features from different camera frames
  * (poses).

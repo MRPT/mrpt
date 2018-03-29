@@ -181,7 +181,7 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
 	static const mrpt::rtti::TRuntimeClassId runtimeClassId;              \
                                                                           \
    public:                                                                \
-	/*! A typedef for the associated smart pointer */                     \
+	/*! A type for the associated smart pointer */                        \
 	using Ptr = std::shared_ptr<class_name>;                              \
 	using ConstPtr = std::shared_ptr<const class_name>;                   \
 	using UniquePtr = std::unique_ptr<class_name>;                        \

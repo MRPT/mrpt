@@ -36,15 +36,14 @@ class CRangeScanEdgeRegistrationDecider
 	  public CRangeScanOps<GRAPH_T>
 {
    public:
-	typedef mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_T>
-		parent_t;
+	using parent_t =
+		mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_T>;
 	/**\brief Typedef for accessing methods of the
 	 * RangeScanRegistrationDecider_t parent class.
 	 */
 	using range_ops_t = mrpt::graphslam::deciders::CRangeScanOps<GRAPH_T>;
-	typedef std::map<mrpt::graphs::TNodeID,
-					 mrpt::obs::CObservation2DRangeScan::Ptr>
-		nodes_to_scans2D_t;
+	using nodes_to_scans2D_t = std::map<
+		mrpt::graphs::TNodeID, mrpt::obs::CObservation2DRangeScan::Ptr>;
 
 	CRangeScanEdgeRegistrationDecider();
 	~CRangeScanEdgeRegistrationDecider();
@@ -77,9 +76,9 @@ class CRangeScanEdgeRegistrationDecider
 
    private:
 };
-}
-}
-}  // end of namespaces
+}  // namespace deciders
+}  // namespace graphslam
+}  // namespace mrpt
 
 #include "CRangeScanEdgeRegistrationDecider_impl.h"
 

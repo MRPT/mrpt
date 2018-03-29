@@ -53,15 +53,9 @@ class CSetOfTriangles : public CRenderizableDisplayList
 		float x[3], y[3], z[3];
 		float r[3], g[3], b[3], a[3];
 	};
-	/**
-	 * Const iterator type.
-	 */
 	using const_iterator = std::vector<TTriangle>::const_iterator;
-	/**
-	 * Const reverse iterator type.
-	 */
-	typedef std::vector<TTriangle>::const_reverse_iterator
-		const_reverse_iterator;
+	using const_reverse_iterator =
+		std::vector<TTriangle>::const_reverse_iterator;
 
    protected:
 	/**

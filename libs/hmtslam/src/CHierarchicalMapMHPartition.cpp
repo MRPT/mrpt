@@ -1089,9 +1089,8 @@ bool CHierarchicalMapMHPartition::areNodesNeightbour(
 			{
 				if (!requiredAnnotation)
 					return true;
-				else if (
-					(*itArc)->m_annotations.get(
-						requiredAnnotation, hypothesisID))
+				else if ((*itArc)->m_annotations.get(
+							 requiredAnnotation, hypothesisID))
 					return true;
 			}
 	}
@@ -1123,19 +1122,18 @@ void CHierarchicalMapMHPartition::getAs3DScene(
 		outScene.insert(obj);
 	}
 
-	typedef std::map<CHMHMapNode::TNodeID, CPose3DPDFGaussian,
-					 std::less<CHMHMapNode::TNodeID>,
-					 Eigen::aligned_allocator<std::pair<
-						 const CHMHMapNode::TNodeID, CPose3DPDFGaussian>>>
-		TMapID2PosePDF;
+	using TMapID2PosePDF = std::map<
+		CHMHMapNode::TNodeID, CPose3DPDFGaussian,
+		std::less<CHMHMapNode::TNodeID>,
+		Eigen::aligned_allocator<
+			std::pair<const CHMHMapNode::TNodeID, CPose3DPDFGaussian>>>;
 	TMapID2PosePDF nodesPoses;  // The ref. pose of each area
 	TMapID2PosePDF::iterator it;
 
-	typedef std::map<CHMHMapNode::TNodeID, CPose2D,
-					 std::less<CHMHMapNode::TNodeID>,
-					 Eigen::aligned_allocator<
-						 std::pair<const CHMHMapNode::TNodeID, CPose2D>>>
-		TMapID2Pose2D;
+	using TMapID2Pose2D = std::map<
+		CHMHMapNode::TNodeID, CPose2D, std::less<CHMHMapNode::TNodeID>,
+		Eigen::aligned_allocator<
+			std::pair<const CHMHMapNode::TNodeID, CPose2D>>>;
 	TMapID2Pose2D
 		nodesMeanPoses;  // The mean pose of the observations in the area
 	TMapID2Pose2D::iterator it2;
@@ -1326,10 +1324,11 @@ void CHierarchicalMapMHPartition::getAs3DScene(
 			computeGloballyConsistentNodeCoordinates
   ---------------------------------------------------------------*/
 void CHierarchicalMapMHPartition::computeGloballyConsistentNodeCoordinates(
-	std::map<CHMHMapNode::TNodeID, CPose3DPDFGaussian,
-			 std::less<CHMHMapNode::TNodeID>,
-			 Eigen::aligned_allocator<std::pair<
-				 const CHMHMapNode::TNodeID, CPose3DPDFGaussian>>>& nodePoses,
+	std::map<
+		CHMHMapNode::TNodeID, CPose3DPDFGaussian,
+		std::less<CHMHMapNode::TNodeID>,
+		Eigen::aligned_allocator<std::pair<
+			const CHMHMapNode::TNodeID, CPose3DPDFGaussian>>>& nodePoses,
 	const CHMHMapNode::TNodeID& idReferenceNode,
 	const THypothesisID& hypothesisID,
 	const unsigned int& numberOfIterations) const
@@ -1454,21 +1453,19 @@ void CHierarchicalMapMHPartition::dumpAsText(std::vector<std::string>& st) const
 						NODE_ANNOTATION_POSES_GRAPH, ann->ID);
 				ASSERT_(posesGraph);
 
-				st.push_back(
-					format(
-						"     CRobotPosesGraph has %i poses:",
-						(int)posesGraph->size()));
+				st.push_back(format(
+					"     CRobotPosesGraph has %i poses:",
+					(int)posesGraph->size()));
 				CPose3D pdfMean;
 				for (CRobotPosesGraph::const_iterator p = posesGraph->begin();
 					 p != posesGraph->end(); ++p)
 				{
 					const CPose3DPDFParticles& pdf = p->second.pdf;
 					pdf.getMean(pdfMean);
-					st.push_back(
-						format(
-							"       Pose %i \t (%.03f,%.03f,%.03fdeg)",
-							(int)p->first, pdfMean.x(), pdfMean.y(),
-							RAD2DEG(pdfMean.yaw())));
+					st.push_back(format(
+						"       Pose %i \t (%.03f,%.03f,%.03fdeg)",
+						(int)p->first, pdfMean.x(), pdfMean.y(),
+						RAD2DEG(pdfMean.yaw())));
 				}
 			}
 		}
@@ -1530,15 +1527,14 @@ void CHierarchicalMapMHPartition::dumpAsText(std::vector<std::string>& st) const
 				relativePoseAcordToArc.copyFrom(
 					*std::dynamic_pointer_cast<CPose3DPDF>(o));
 
-				st.push_back(
-					format(
-						"     VALUE: (%f,%f,%f , %fdeg,%fdeg,%fdeg)",
-						relativePoseAcordToArc.mean.x(),
-						relativePoseAcordToArc.mean.y(),
-						relativePoseAcordToArc.mean.z(),
-						RAD2DEG(relativePoseAcordToArc.mean.yaw()),
-						RAD2DEG(relativePoseAcordToArc.mean.pitch()),
-						RAD2DEG(relativePoseAcordToArc.mean.roll())));
+				st.push_back(format(
+					"     VALUE: (%f,%f,%f , %fdeg,%fdeg,%fdeg)",
+					relativePoseAcordToArc.mean.x(),
+					relativePoseAcordToArc.mean.y(),
+					relativePoseAcordToArc.mean.z(),
+					RAD2DEG(relativePoseAcordToArc.mean.yaw()),
+					RAD2DEG(relativePoseAcordToArc.mean.pitch()),
+					RAD2DEG(relativePoseAcordToArc.mean.roll())));
 			}
 		}
 

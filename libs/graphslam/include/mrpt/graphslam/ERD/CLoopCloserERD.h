@@ -229,7 +229,7 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	/**\brief type of underlying poses (2D/3D). */
 	using pose_t = typename GRAPH_T::constraint_t::type_value;
 	using global_pose_t = typename GRAPH_T::global_pose_t;
-	using decider_t = CLoopCloserERD<GRAPH_T>; /**< self type - Handy typedef */
+	using decider_t = CLoopCloserERD<GRAPH_T>; /**< self type */
 	using range_ops_t = typename parent_t::range_ops_t;
 	using nodes_to_scans2D_t = typename parent_t::nodes_to_scans2D_t;
 	/**\brief Typedef for referring to a list of partitions */
@@ -239,8 +239,8 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	using hypot_t = typename mrpt::graphs::detail::THypothesis<GRAPH_T>;
 	using hypots_t = std::vector<hypot_t>;
 	using hypotsp_t = std::vector<hypot_t*>;
-	typedef std::map<std::pair<hypot_t*, hypot_t*>, double>
-		hypotsp_to_consist_t;
+	using hypotsp_to_consist_t =
+		std::map<std::pair<hypot_t*, hypot_t*>, double>;
 	using path_t = mrpt::graphslam::TUncertaintyPath<GRAPH_T>;
 	using paths_t = std::vector<path_t>;
 	using node_props_t = mrpt::graphslam::detail::TNodeProps<GRAPH_T>;
@@ -429,7 +429,7 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 		void dumpToTextStream(std::ostream& out) const;
 		mrpt::slam::CICP icp;
 		/**\brief How many nodes back to check ICP against?
-		*/
+		 */
 		int prev_nodes_for_ICP;
 
 		/** see Constructor for initialization */
@@ -440,29 +440,29 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 		std::string keystroke_laser_scans;
 
 		/**\brief Indicate whethet to use scan-matching at all during
-		* graphSLAM [on by default].
-		*
-		* \warning It is strongly recomended that the user does not set this
-		* to false (via the .ini file). graphSLAM may diverge significantly if
-		* no scan-matching is not used.
-		*/
+		 * graphSLAM [on by default].
+		 *
+		 * \warning It is strongly recomended that the user does not set this
+		 * to false (via the .ini file). graphSLAM may diverge significantly if
+		 * no scan-matching is not used.
+		 */
 		bool use_scan_matching;
 		bool has_read_config;
 		/**\brief Keep track of the mahalanobis distance between the initial
-		* pose
-		* difference and the suggested new edge for the pairs of checked
-		* nodes.
-		*/
+		 * pose
+		 * difference and the suggested new edge for the pairs of checked
+		 * nodes.
+		 */
 		TSlidingWindow mahal_distance_ICP_odom_win;
 		/**\brief Keep track of ICP Goodness values for ICP between nearby
-		* nodes and adapt the Goodness threshold based on the median of the
-		* recorded Goodness values.
-		*/
+		 * nodes and adapt the Goodness threshold based on the median of the
+		 * recorded Goodness values.
+		 */
 		TSlidingWindow goodness_threshold_win;
 	};
 
 	/**\brief Struct for storing together the loop-closing related parameters.
-	*/
+	 */
 	struct TLoopClosureParams : public mrpt::config::CLoadableOptions
 	{
 	   public:
@@ -852,9 +852,9 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	 */
 	double m_lc_icp_constraint_factor;
 };
-}
-}
-}  // end of namespaces
+}  // namespace deciders
+}  // namespace graphslam
+}  // namespace mrpt
 
 #include "CLoopCloserERD_impl.h"
 #endif /* end of include guard: CLOOPCLOSERERD_H */

@@ -20,11 +20,11 @@ namespace mrpt
 namespace obs
 {
 /** For usage with CRawlog classes. */
-typedef std::pair<mrpt::system::TTimeStamp, CObservation::Ptr>
-	TTimeObservationPair;
+using TTimeObservationPair =
+	std::pair<mrpt::system::TTimeStamp, CObservation::Ptr>;
 /** For usage with CRawlog classes. */
-typedef std::multimap<mrpt::system::TTimeStamp, CObservation::Ptr>
-	TListTimeAndObservations;
+using TListTimeAndObservations =
+	std::multimap<mrpt::system::TTimeStamp, CObservation::Ptr>;
 
 /** This class stores a rawlog (robotic datasets) in one of two possible
  *formats:
@@ -90,8 +90,8 @@ class CRawlog : public mrpt::serialization::CSerializable
 		mrpt::config::CConfigFileMemory& memCfg) const;
 
 	/** The type of each entry in a rawlog.
-	  * \sa CRawlog::getType
-	  */
+	 * \sa CRawlog::getType
+	 */
 	enum TEntryType
 	{
 		etSensoryFrame = 0,
@@ -112,121 +112,121 @@ class CRawlog : public mrpt::serialization::CSerializable
 
 	/** Add an action to the sequence: a collection of just one element is
 	 * created.
-	  *   The object is duplicated, so the original one can be freed if desired.
-	  */
+	 *   The object is duplicated, so the original one can be freed if desired.
+	 */
 	void addAction(CAction& action);
 
 	/** Add a set of actions to the sequence; the object is duplicated, so the
 	 * original one can be freed if desired.
-	  * \sa addObservations, addActionsMemoryReference
-	  */
+	 * \sa addObservations, addActionsMemoryReference
+	 */
 	void addActions(CActionCollection& action);
 
 	/** Add a set of observations to the sequence; the object is duplicated, so
 	 * the original one can be free if desired.
-	  * \sa addActions, addObservationsMemoryReference
-	  */
+	 * \sa addActions, addObservationsMemoryReference
+	 */
 	void addObservations(CSensoryFrame& observations);
 
 	/** Add a set of actions to the sequence, using a smart pointer to the
 	 * object to add.
-	  * \sa addActions, addObservationsMemoryReference,
+	 * \sa addActions, addObservationsMemoryReference,
 	 * addObservationMemoryReference
-	  */
+	 */
 	void addActionsMemoryReference(const CActionCollection::Ptr& action);
 
 	/** Add a set of observations to the sequence, using a smart pointer to the
 	 * object to add.
-	  * \sa addObservations, addActionsMemoryReference,
+	 * \sa addObservations, addActionsMemoryReference,
 	 * addObservationMemoryReference
-	  */
+	 */
 	void addObservationsMemoryReference(const CSensoryFrame::Ptr& observations);
 
 	/** Add a single observation to the sequence, using a smart pointer to the
 	 * object to add.
-	  * \sa addObservations, addActionsMemoryReference
-	  */
+	 * \sa addObservations, addActionsMemoryReference
+	 */
 	void addObservationMemoryReference(const CObservation::Ptr& observation);
 
 	/** Generic add for a smart pointer to a CSerializable object:
-	  * \sa addObservations, addActionsMemoryReference,
+	 * \sa addObservations, addActionsMemoryReference,
 	 * addObservationMemoryReference
-	  */
+	 */
 	void addGenericObject(const mrpt::serialization::CSerializable::Ptr& obj);
 
 	/** Load the contents from a file containing one of these possibilities:
-	  *  - A "CRawlog" object.
-	  *  - Directly the sequence of objects (pairs
+	 *  - A "CRawlog" object.
+	 *  - Directly the sequence of objects (pairs
 	 * `CSensoryFrame`/`CActionCollection` or `CObservation*` objects). In this
 	 * case the method stops reading on EOF of an unrecogniced class name.
-	  *  - Only if `non_obs_objects_are_legal` is true, any `CSerializable`
+	 *  - Only if `non_obs_objects_are_legal` is true, any `CSerializable`
 	 * object is allowed in the log file. Otherwise, the read stops on classes
 	 * different from the ones listed in the item above.
-	  * \returns It returns false upon error reading or accessing the file.
-	  */
+	 * \returns It returns false upon error reading or accessing the file.
+	 */
 	bool loadFromRawLogFile(
 		const std::string& fileName, bool non_obs_objects_are_legal = false);
 
 	/** Saves the contents to a rawlog-file, compatible with RawlogViewer (As
 	 * the sequence of internal objects).
-	  *  The file is saved with gz-commpressed if MRPT has gz-streams.
-	  * \returns It returns false if any error is found while writing/creating
+	 *  The file is saved with gz-commpressed if MRPT has gz-streams.
+	 * \returns It returns false if any error is found while writing/creating
 	 * the target file.
-	  */
+	 */
 	bool saveToRawLogFile(const std::string& fileName) const;
 
 	/** Returns the number of actions / observations object in the sequence. */
 	size_t size() const;
 
 	/** Returns the type of a given element.
-	  * \sa isAction, isObservation
-	  */
+	 * \sa isAction, isObservation
+	 */
 	TEntryType getType(size_t index) const;
 
 	/** Delete the action or observation stored in the given index.
-	  * \exception std::exception If index is out of bounds
-	  */
+	 * \exception std::exception If index is out of bounds
+	 */
 	void remove(size_t index);
 
 	/** Delete the elements stored in the given range of indices (including both
 	 * the first and last one).
-	  * \exception std::exception If any index is out of bounds
-	  */
+	 * \exception std::exception If any index is out of bounds
+	 */
 	void remove(size_t first_index, size_t last_index);
 
 	/** Returns the i'th element in the sequence, as being actions, where
 	 * index=0 is the first object.
-	  *  If it is not a CActionCollection, it throws an exception. Do neighter
+	 *  If it is not a CActionCollection, it throws an exception. Do neighter
 	 * modify nor delete the returned pointer.
-	  * \sa size, isAction, getAsObservations, getAsObservation
-	  * \exception std::exception If index is out of bounds
-	  */
+	 * \sa size, isAction, getAsObservations, getAsObservation
+	 * \exception std::exception If index is out of bounds
+	 */
 	CActionCollection::Ptr getAsAction(size_t index) const;
 
 	/** Returns the i'th element in the sequence, as being an action, where
 	 * index=0 is the first object.
-	  *  If it is not an CSensoryFrame, it throws an exception. Do neighter
+	 *  If it is not an CSensoryFrame, it throws an exception. Do neighter
 	 * modify nor delete the returned pointer.
-	  * \sa size, isAction, getAsAction, getAsObservation
-	  * \exception std::exception If index is out of bounds
-	  */
+	 * \sa size, isAction, getAsAction, getAsObservation
+	 * \exception std::exception If index is out of bounds
+	 */
 	CSensoryFrame::Ptr getAsObservations(size_t index) const;
 
 	/** Returns the i'th element in the sequence, being its class whatever.
-	  * \sa size, isAction, getAsAction, getAsObservations
-	  * \exception std::exception If index is out of bounds
-	  */
+	 * \sa size, isAction, getAsAction, getAsObservations
+	 * \exception std::exception If index is out of bounds
+	 */
 	mrpt::serialization::CSerializable::Ptr getAsGeneric(size_t index) const;
 
 	/** Returns the i'th element in the sequence, as being an observation, where
 	 * index=0 is the first object.
-	  *  If it is not an CObservation, it throws an exception. Do neighter
+	 *  If it is not an CObservation, it throws an exception. Do neighter
 	 * modify nor delete the returned pointer.
-	  *  This is the proper method to obtain the objects stored in a "only
+	 *  This is the proper method to obtain the objects stored in a "only
 	 * observations"-rawlog file (named "format #2" above.
-	  * \sa size, isAction, getAsAction
-	  * \exception std::exception If index is out of bounds
-	  */
+	 * \sa size, isAction, getAsAction
+	 * \exception std::exception If index is out of bounds
+	 */
 	CObservation::Ptr getAsObservation(size_t index) const;
 
 	/** A normal iterator, plus the extra method "getType" to determine the type
@@ -276,9 +276,8 @@ class CRawlog : public mrpt::serialization::CSerializable
 		{
 			if ((*m_it)->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
 				return etObservation;
-			else if (
-				(*m_it)->GetRuntimeClass()->derivedFrom(
-					CLASS_ID(CSensoryFrame)))
+			else if ((*m_it)->GetRuntimeClass()->derivedFrom(
+						 CLASS_ID(CSensoryFrame)))
 				return etSensoryFrame;
 			else
 				return etActionCollection;
@@ -335,9 +334,8 @@ class CRawlog : public mrpt::serialization::CSerializable
 		{
 			if ((*m_it)->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
 				return etObservation;
-			else if (
-				(*m_it)->GetRuntimeClass()->derivedFrom(
-					CLASS_ID(CSensoryFrame)))
+			else if ((*m_it)->GetRuntimeClass()->derivedFrom(
+						 CLASS_ID(CSensoryFrame)))
 				return etSensoryFrame;
 			else
 				return etActionCollection;
@@ -355,11 +353,11 @@ class CRawlog : public mrpt::serialization::CSerializable
 
 	/** Returns the sub-set of observations of a given class whose time-stamp t
 	 * fulfills  time_start <= t < time_end.
-	  *  This method requires the timestamps of the sensors to be in strict
+	 *  This method requires the timestamps of the sensors to be in strict
 	 * ascending order (which should be the normal situation).
-	  *   Otherwise, the output is undeterminate.
-	  * \sa findClosestObservationsByClass
-	  */
+	 *   Otherwise, the output is undeterminate.
+	 * \sa findClosestObservationsByClass
+	 */
 	void findObservationsByClassInRange(
 		mrpt::system::TTimeStamp time_start, mrpt::system::TTimeStamp time_end,
 		const mrpt::rtti::TRuntimeClassId* class_type,
@@ -367,41 +365,41 @@ class CRawlog : public mrpt::serialization::CSerializable
 		size_t guess_start_position = 0) const;
 
 	/** Efficiently swap the contents of two existing objects.
-	  */
+	 */
 	void swap(CRawlog& obj);
 
 	/** Reads a consecutive pair action / observation from the rawlog opened at
 	 * some input stream.
-	  *   Previous contents of action and observations are discarded (using
+	 *   Previous contents of action and observations are discarded (using
 	 * stlplus::smart_ptr::reset), and
-	  *    at exit they contain the new objects read from the rawlog file.
-	  *  The input/output variable "rawlogEntry" is just a counter of the last
+	 *    at exit they contain the new objects read from the rawlog file.
+	 *  The input/output variable "rawlogEntry" is just a counter of the last
 	 * rawlog entry read, for logging or monitoring purposes.
-	  * \return false if there was some error, true otherwise.
-	  * \sa getActionObservationPair, getActionObservationPairOrObservation
-	  */
+	 * \return false if there was some error, true otherwise.
+	 * \sa getActionObservationPair, getActionObservationPairOrObservation
+	 */
 	static bool readActionObservationPair(
 		mrpt::serialization::CArchive& inStream, CActionCollection::Ptr& action,
 		CSensoryFrame::Ptr& observations, size_t& rawlogEntry);
 
 	/** Reads a consecutive pair action/sensory_frame OR an observation,
-	  *depending of the rawlog format, from the rawlog opened at some input
-	  *stream.
-	  *   Previous contents of action and observations are discarded (using
-	  *stlplus::smart_ptr::reset), and
-	  *    at exit they contain the new objects read from the rawlog file.
-	  *
-	  *  At return, one of this will happen:
-	  *		- action/observations contain objects (i.e. action() evaluates as
-	  *true).
-	  *		- observation contains an object (i.e. observation evaluates as
-	  *true).
-	  *
-	  *  The input/output variable "rawlogEntry" is just a counter of the last
-	  *rawlog entry read, for logging or monitoring purposes.
-	  * \return false if there was some error, true otherwise.
-	  * \sa getActionObservationPair
-	  */
+	 *depending of the rawlog format, from the rawlog opened at some input
+	 *stream.
+	 *   Previous contents of action and observations are discarded (using
+	 *stlplus::smart_ptr::reset), and
+	 *    at exit they contain the new objects read from the rawlog file.
+	 *
+	 *  At return, one of this will happen:
+	 *		- action/observations contain objects (i.e. action() evaluates as
+	 *true).
+	 *		- observation contains an object (i.e. observation evaluates as
+	 *true).
+	 *
+	 *  The input/output variable "rawlogEntry" is just a counter of the last
+	 *rawlog entry read, for logging or monitoring purposes.
+	 * \return false if there was some error, true otherwise.
+	 * \sa getActionObservationPair
+	 */
 	static bool getActionObservationPairOrObservation(
 		mrpt::serialization::CArchive& inStream, CActionCollection::Ptr& action,
 		CSensoryFrame::Ptr& observations, CObservation::Ptr& observation,
@@ -409,36 +407,36 @@ class CRawlog : public mrpt::serialization::CSerializable
 
 	/** Gets the next consecutive pair action / observation from the rawlog
 	 * loaded into this object.
-	  *   Previous contents of action and observations are discarded (using
+	 *   Previous contents of action and observations are discarded (using
 	 * stlplus::smart_ptr::reset), and
-	  *    at exit they contain the new objects read from the rawlog file.
-	  *  The input/output variable "rawlogEntry" is just a counter of the last
+	 *    at exit they contain the new objects read from the rawlog file.
+	 *  The input/output variable "rawlogEntry" is just a counter of the last
 	 * rawlog entry read, for logging or monitoring purposes.
-	  * \return false if there was some error, true otherwise.
-	  * \sa readActionObservationPair
-	  */
+	 * \return false if there was some error, true otherwise.
+	 * \sa readActionObservationPair
+	 */
 	bool getActionObservationPair(
 		CActionCollection::Ptr& action, CSensoryFrame::Ptr& observations,
 		size_t& rawlogEntry) const;
 
 	/** Tries to auto-detect the external-images directory of the given rawlog
-	  *file.
-	  *  This searches for the existence of the directories:
-	  *		- "<rawlog_file_path>/<rawlog_filename>_Images"
-	  *		- "<rawlog_file_path>/<rawlog_filename>_images"
-	  *		- "<rawlog_file_path>/<rawlog_filename>_IMAGES"
-	  *		- "<rawlog_file_path>/Images"  (This one is returned if none of the
-	  *choices actually exists).
-	  *
-	  *  The results from this function should be written into
-	  *mrpt::img::CImage::getImagesPathBase() to enable automatic
-	  *  loading of extenrnally-stored images in rawlogs.
-	  */
+	 *file.
+	 *  This searches for the existence of the directories:
+	 *		- "<rawlog_file_path>/<rawlog_filename>_Images"
+	 *		- "<rawlog_file_path>/<rawlog_filename>_images"
+	 *		- "<rawlog_file_path>/<rawlog_filename>_IMAGES"
+	 *		- "<rawlog_file_path>/Images"  (This one is returned if none of the
+	 *choices actually exists).
+	 *
+	 *  The results from this function should be written into
+	 *mrpt::img::CImage::getImagesPathBase() to enable automatic
+	 *  loading of extenrnally-stored images in rawlogs.
+	 */
 	static std::string detectImagesDirectory(const std::string& rawlogFilename);
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
+}  // namespace obs
+}  // namespace mrpt
 
 #endif

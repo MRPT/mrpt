@@ -167,15 +167,14 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 	/** @name Access to internal list of maps: direct list, iterators, utility
 	   methods and proxies
 		@{ */
-	typedef std::deque<
-		mrpt::containers::deepcopy_poly_ptr<mrpt::maps::CMetricMap::Ptr>>
-		TListMaps;
+	using TListMaps = std::deque<
+		mrpt::containers::deepcopy_poly_ptr<mrpt::maps::CMetricMap::Ptr>>;
 
 	/** The list of MRPT metric maps in this object. Use dynamic_cast or smart
 	 * pointer-based downcast to access maps by their actual type.
-	  * You can directly manipulate this list. Helper methods to initialize it
+	 * You can directly manipulate this list. Helper methods to initialize it
 	 * are described in the docs of CMultiMetricMap
-	  */
+	 */
 	TListMaps maps;
 
 	using iterator = TListMaps::iterator;
@@ -189,13 +188,13 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 
 	/** Returns the i'th observation of a given class (or of a descendant
 	 * class), or nullptr if there is no such observation in the array.
-	  *  Example:
-	  * \code
-	  *  CObservationImage::Ptr obs =
+	 *  Example:
+	 * \code
+	 *  CObservationImage::Ptr obs =
 	 * m_SF->getObservationByClass<CObservationImage>();
-	  * \endcode
-	  * By default (ith=0), the first observation is returned.
-	  */
+	 * \endcode
+	 * By default (ith=0), the first observation is returned.
+	 */
 	template <typename T>
 	typename T::Ptr getMapByClass(const size_t& ith = 0) const
 	{
@@ -211,9 +210,9 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 
 	/** Takes a const ref of a STL non-associative container of smart pointers
 	 * at construction and exposes an interface
-	  * mildly similar to that of another STL container containing only those
+	 * mildly similar to that of another STL container containing only those
 	 * elements
-	  * in the original container that can be `dynamic_cast`ed to
+	 * in the original container that can be `dynamic_cast`ed to
 	 * `SELECTED_CLASS_PTR` */
 	template <class SELECTED_CLASS_PTR, class CONTAINER>
 	struct ProxyFilterContainerByClass
@@ -276,7 +275,7 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 	};  // end ProxyFilterContainerByClass
 
 	/** A proxy like ProxyFilterContainerByClass, but it directly appears as if
-	  * it was a single smart pointer (empty if no matching object is found in
+	 * it was a single smart pointer (empty if no matching object is found in
 	 * the container) */
 	template <class SELECTED_CLASS_PTR, class CONTAINER>
 	struct ProxySelectorContainerByClass
@@ -371,33 +370,33 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 	ProxyFilterContainerByClass<mrpt::maps::CColouredOctoMap::Ptr, TListMaps>
 		m_colourOctoMaps;
 	/** STL-like proxy to access this kind of maps in \ref maps */
-	ProxyFilterContainerByClass<mrpt::maps::CGasConcentrationGridMap2D::Ptr,
-								TListMaps>
+	ProxyFilterContainerByClass<
+		mrpt::maps::CGasConcentrationGridMap2D::Ptr, TListMaps>
 		m_gasGridMaps;
 	/** STL-like proxy to access this kind of maps in \ref maps */
-	ProxyFilterContainerByClass<mrpt::maps::CWirelessPowerGridMap2D::Ptr,
-								TListMaps>
+	ProxyFilterContainerByClass<
+		mrpt::maps::CWirelessPowerGridMap2D::Ptr, TListMaps>
 		m_wifiGridMaps;
 	/** STL-like proxy to access this kind of maps in \ref maps */
 	ProxyFilterContainerByClass<mrpt::maps::CHeightGridMap2D::Ptr, TListMaps>
 		m_heightMaps;
 	/** STL-like proxy to access this kind of maps in \ref maps */
-	ProxyFilterContainerByClass<mrpt::maps::CHeightGridMap2D_MRF::Ptr,
-								TListMaps>
+	ProxyFilterContainerByClass<
+		mrpt::maps::CHeightGridMap2D_MRF::Ptr, TListMaps>
 		m_heightMRFMaps;
 	/** STL-like proxy to access this kind of maps in \ref maps */
-	ProxyFilterContainerByClass<mrpt::maps::CReflectivityGridMap2D::Ptr,
-								TListMaps>
+	ProxyFilterContainerByClass<
+		mrpt::maps::CReflectivityGridMap2D::Ptr, TListMaps>
 		m_reflectivityMaps;
 	/** Proxy that looks like a smart pointer to the first matching object in
 	 * \ref maps */
-	ProxySelectorContainerByClass<mrpt::maps::CColouredPointsMap::Ptr,
-								  TListMaps>
+	ProxySelectorContainerByClass<
+		mrpt::maps::CColouredPointsMap::Ptr, TListMaps>
 		m_colourPointsMap;
 	/** Proxy that looks like a smart pointer to the first matching object in
 	 * \ref maps */
-	ProxySelectorContainerByClass<mrpt::maps::CWeightedPointsMap::Ptr,
-								  TListMaps>
+	ProxySelectorContainerByClass<
+		mrpt::maps::CWeightedPointsMap::Ptr, TListMaps>
 		m_weightedPointsMap;
 	/** Proxy that looks like a smart pointer to the first matching object in
 	 * \ref maps */
@@ -462,19 +461,19 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 	/** This method is called at the end of each "prediction-update-map
 	 * insertion" cycle within
 	 * "mrpt::slam::CMetricMapBuilderRBPF::processActionObservation".
-	  *  This method should normally do nothing, but in some cases can be used
+	 *  This method should normally do nothing, but in some cases can be used
 	 * to free auxiliary cached variables.
-	  */
+	 */
 	void auxParticleFilterCleanUp() override;
 
 	/** Returns a 3D object representing the map.
-	  */
+	 */
 	void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
 
 	/** If the map is a simple point map or it's a multi-metric map that
 	 * contains EXACTLY one simple point map, return it.
-		* Otherwise, return NULL
-		*/
+	 * Otherwise, return NULL
+	 */
 	virtual const mrpt::maps::CSimplePointsMap* getAsSimplePointsMap()
 		const override;
 	virtual mrpt::maps::CSimplePointsMap* getAsSimplePointsMap() override;
@@ -482,12 +481,12 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 	/** An auxiliary variable that can be used freely by the users (this will be
 	 * copied to other maps using the copy constructor, copy operator,
 	 * streaming,etc) The default value is 0.
-	  */
+	 */
 	unsigned int m_ID;
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
+}  // namespace maps
+}  // namespace mrpt
 
 #endif

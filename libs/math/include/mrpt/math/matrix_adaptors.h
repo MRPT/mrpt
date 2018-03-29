@@ -22,10 +22,10 @@ class CBinaryRelation;
 namespace detail
 {
 /**
-  * This template is a trick to switch the type of a variable using a boolean
+ * This template is a trick to switch the type of a variable using a boolean
  * variable in the template. It's easy to extend its functionality to several
-  * types, using a unsigned char instead of a bool.
-  */
+ * types, using a unsigned char instead of a bool.
+ */
 template <typename U, bool B>
 class MatrixWrapper;
 
@@ -47,13 +47,13 @@ template <typename T, typename U, bool UIsObject, typename FunctionType>
 inline void applyFunction(
 	CBinaryRelation<T, U, UIsObject>& o, FunctionType fun, size_t e1, size_t e2,
 	const T& T1, const T& T2);
-}
+}  // namespace detail
 
 namespace detail
 {
 /** Template class for matrix accessor's iterators.
-  * \sa CMatrixRowAccessor,CMatrixColumnAccessor
-  */
+ * \sa CMatrixRowAccessor,CMatrixColumnAccessor
+ */
 template <typename A, typename T>
 class AccessorIterator
 {
@@ -131,8 +131,8 @@ class AccessorIterator
 };
 
 /** Template class for matrix accessor's iterators.
-  * \sa CMatrixRowAccessor,CMatrixColumnAccessor
-  */
+ * \sa CMatrixRowAccessor,CMatrixColumnAccessor
+ */
 template <typename A, typename T>
 class ReverseAccessorIterator
 {
@@ -208,15 +208,15 @@ class ReverseAccessorIterator
 		return !(operator==(it));
 	}
 };
-}  // End of detail namespace
+}  // namespace detail
 
 /** A vector-like wrapper for a Matrix for accessing the elements of a given row
  * with a [] operator.
-  *  For usage with MRPT's CMatrixTemplate only (for MRPT numeric matrices, use
+ *  For usage with MRPT's CMatrixTemplate only (for MRPT numeric matrices, use
  * Eigen methods)
-  * \sa
+ * \sa
  * CMatrixColumnAccessor,CMatrixRowAccessorExtended,CConstMatrixRowAccessor,CConstMatrixRowAccessorExtended
-  */
+ */
 template <typename MAT>
 class CMatrixRowAccessor
 {
@@ -241,16 +241,14 @@ class CMatrixRowAccessor
 	{
 		return (*m_mat)(m_rowInd, i);
 	}
-	typedef detail::AccessorIterator<CMatrixRowAccessor<MAT>, value_type>
-		iterator;
-	typedef detail::AccessorIterator<const CMatrixRowAccessor<MAT>,
-									 const value_type>
-		const_iterator;
-	typedef detail::ReverseAccessorIterator<CMatrixRowAccessor<MAT>, value_type>
-		reverse_iterator;
-	typedef detail::ReverseAccessorIterator<const CMatrixRowAccessor<MAT>,
-											const value_type>
-		const_reverse_iterator;
+	using iterator =
+		detail::AccessorIterator<CMatrixRowAccessor<MAT>, value_type>;
+	using const_iterator = detail::AccessorIterator<
+		const CMatrixRowAccessor<MAT>, const value_type>;
+	using reverse_iterator =
+		detail::ReverseAccessorIterator<CMatrixRowAccessor<MAT>, value_type>;
+	using const_reverse_iterator = detail::ReverseAccessorIterator<
+		const CMatrixRowAccessor<MAT>, const value_type>;
 	inline iterator begin() { return iterator(*this, 0); }
 	inline const_iterator begin() const { return const_iterator(*this, 0); }
 	inline iterator end() { return iterator(*this, m_mat->cols()); }
@@ -286,11 +284,11 @@ inline CMatrixRowAccessor<MAT> getRowAccessor(MAT& m, size_t rowIdx)
 
 /** A vector-like wrapper for a Matrix for accessing the elements of a given row
  * with a [] operator, with offset and custom spacing.
-  *  For usage with MRPT's CMatrixTemplate only (for MRPT numeric matrices, use
+ *  For usage with MRPT's CMatrixTemplate only (for MRPT numeric matrices, use
  * Eigen methods)
-  * \sa
+ * \sa
  * CMatrixColumnAccessorExtended,CMatrixRowAccessor,CConstMatrixRowAccessor,CConstMatrixRowAccessorExtended
-  */
+ */
 template <class MAT>
 class CMatrixRowAccessorExtended
 {
@@ -323,18 +321,14 @@ class CMatrixRowAccessorExtended
 	{
 		return (*m_mat)(m_rowInd, m_colOffset + (i * m_elementsSpace));
 	}
-	typedef detail::AccessorIterator<CMatrixRowAccessorExtended<MAT>,
-									 value_type>
-		iterator;
-	typedef detail::AccessorIterator<const CMatrixRowAccessorExtended<MAT>,
-									 const value_type>
-		const_iterator;
-	typedef detail::ReverseAccessorIterator<CMatrixRowAccessorExtended<MAT>,
-											value_type>
-		reverse_iterator;
-	typedef detail::ReverseAccessorIterator<
-		const CMatrixRowAccessorExtended<MAT>, const value_type>
-		const_reverse_iterator;
+	using iterator =
+		detail::AccessorIterator<CMatrixRowAccessorExtended<MAT>, value_type>;
+	using const_iterator = detail::AccessorIterator<
+		const CMatrixRowAccessorExtended<MAT>, const value_type>;
+	using reverse_iterator = detail::ReverseAccessorIterator<
+		CMatrixRowAccessorExtended<MAT>, value_type>;
+	using const_reverse_iterator = detail::ReverseAccessorIterator<
+		const CMatrixRowAccessorExtended<MAT>, const value_type>;
 	inline iterator begin() { return iterator(*this, 0); }
 	inline const_iterator begin() const { return const_iterator(*this, 0); }
 	inline iterator end() { return iterator(*this, howMany); }
@@ -368,11 +362,11 @@ inline CMatrixRowAccessorExtended<MAT> getRowAccessor(
 
 /** A vector-like wrapper for a const Matrix for accessing the elements of a
  * given row with a [] operator.
-  *  For usage with MRPT's CMatrixTemplate only (for MRPT numeric matrices, use
+ *  For usage with MRPT's CMatrixTemplate only (for MRPT numeric matrices, use
  * Eigen methods)
-  * \sa
+ * \sa
  * CConstMatrixColumnAccessor,CMatrixRowAccessorExtended,CMatrixRowAccessor,CConstMatrixRowAccessorExtended
-  */
+ */
 template <class MAT>
 class CConstMatrixRowAccessor
 {
@@ -393,12 +387,10 @@ class CConstMatrixRowAccessor
 	{
 		return (*m_mat)(m_rowInd, i);
 	}
-	typedef detail::AccessorIterator<const CConstMatrixRowAccessor<MAT>,
-									 const value_type>
-		const_iterator;
-	typedef detail::ReverseAccessorIterator<const CConstMatrixRowAccessor<MAT>,
-											const value_type>
-		const_reverse_iterator;
+	using const_iterator = detail::AccessorIterator<
+		const CConstMatrixRowAccessor<MAT>, const value_type>;
+	using const_reverse_iterator = detail::ReverseAccessorIterator<
+		const CConstMatrixRowAccessor<MAT>, const value_type>;
 	inline const_iterator begin() const { return const_iterator(*this, 0); }
 	inline const_iterator end() const
 	{
@@ -427,11 +419,11 @@ inline CConstMatrixRowAccessor<MAT> getRowAccessor(const MAT& m, size_t rowIdx)
 
 /** A vector-like wrapper for a const Matrix for accessing the elements of a
  * given row with a [] operator, with offset and custom spacing.
-  *  For usage with MRPT's CMatrixTemplate only (for MRPT numeric matrices, use
+ *  For usage with MRPT's CMatrixTemplate only (for MRPT numeric matrices, use
  * Eigen methods)
-  * \sa
+ * \sa
  * CConstMatrixColumnAccessorExtended,CMatrixRowAccessor,CConstMatrixRowAccessor,CMatrixRowAccessorExtended
-  */
+ */
 template <class MAT>
 class CConstMatrixRowAccessorExtended
 {
@@ -460,12 +452,10 @@ class CConstMatrixRowAccessorExtended
 	{
 		return (*m_mat)(m_rowInd, m_colOffset + (i * m_elementsSpace));
 	}
-	typedef detail::AccessorIterator<const CConstMatrixRowAccessorExtended<MAT>,
-									 const value_type>
-		const_iterator;
-	typedef detail::ReverseAccessorIterator<
-		const CConstMatrixRowAccessorExtended<MAT>, const value_type>
-		const_reverse_iterator;
+	using const_iterator = detail::AccessorIterator<
+		const CConstMatrixRowAccessorExtended<MAT>, const value_type>;
+	using const_reverse_iterator = detail::ReverseAccessorIterator<
+		const CConstMatrixRowAccessorExtended<MAT>, const value_type>;
 	inline const_iterator begin() const { return const_iterator(*this, 0); }
 	inline const_iterator end() const { return const_iterator(*this, howMany); }
 	inline const_reverse_iterator rbegin() const
@@ -492,9 +482,9 @@ inline CConstMatrixRowAccessorExtended<MAT> getRowAccessor(
 
 /** A vector-like wrapper for a Matrix for accessing the elements of a given
  * column with a [] operator.
-  * \sa
+ * \sa
  * CMatrixRowAccessor,CMatrixColumnAccessorExtended,CConstMatrixColumnAccessor,CConstMatrixColumnAccessorExtended
-  */
+ */
 template <typename MAT>
 class CMatrixColumnAccessor
 {
@@ -519,17 +509,14 @@ class CMatrixColumnAccessor
 	{
 		return (*m_mat)(i, m_colInd);
 	}
-	typedef detail::AccessorIterator<CMatrixColumnAccessor<MAT>, value_type>
-		iterator;
-	typedef detail::AccessorIterator<const CMatrixColumnAccessor<MAT>,
-									 const value_type>
-		const_iterator;
-	typedef detail::ReverseAccessorIterator<CMatrixColumnAccessor<MAT>,
-											value_type>
-		reverse_iterator;
-	typedef detail::ReverseAccessorIterator<const CMatrixColumnAccessor<MAT>,
-											const value_type>
-		const_reverse_iterator;
+	using iterator =
+		detail::AccessorIterator<CMatrixColumnAccessor<MAT>, value_type>;
+	using const_iterator = detail::AccessorIterator<
+		const CMatrixColumnAccessor<MAT>, const value_type>;
+	using reverse_iterator =
+		detail::ReverseAccessorIterator<CMatrixColumnAccessor<MAT>, value_type>;
+	using const_reverse_iterator = detail::ReverseAccessorIterator<
+		const CMatrixColumnAccessor<MAT>, const value_type>;
 	inline iterator begin() { return iterator(*this, 0); }
 	inline const_iterator begin() const { return const_iterator(*this, 0); }
 	inline iterator end() { return iterator(*this, m_mat->rows()); }
@@ -565,9 +552,9 @@ inline CMatrixColumnAccessor<MAT> getColumnAccessor(MAT& m, size_t colIdx)
 
 /** A vector-like wrapper for a Matrix for accessing the elements of a given
  * column with a [] operator, with offset and custom spacing.
-  * \sa
+ * \sa
  * CMatrixRowAccessorExtended,CMatrixColumnAccessor,CConstMatrixColumnAccessor,CConstMatrixColumnAccessorExtended
-  */
+ */
 template <typename MAT>
 class CMatrixColumnAccessorExtended
 {
@@ -600,18 +587,14 @@ class CMatrixColumnAccessorExtended
 	{
 		return (*m_mat)(m_rowOffset + (i * m_elementsSpace), m_colInd);
 	}
-	typedef detail::AccessorIterator<CMatrixColumnAccessorExtended<MAT>,
-									 value_type>
-		iterator;
-	typedef detail::AccessorIterator<const CMatrixColumnAccessorExtended<MAT>,
-									 const value_type>
-		const_iterator;
-	typedef detail::ReverseAccessorIterator<CMatrixColumnAccessorExtended<MAT>,
-											value_type>
-		reverse_iterator;
-	typedef detail::ReverseAccessorIterator<
-		const CMatrixColumnAccessorExtended<MAT>, const value_type>
-		const_reverse_iterator;
+	using iterator = detail::AccessorIterator<
+		CMatrixColumnAccessorExtended<MAT>, value_type>;
+	using const_iterator = detail::AccessorIterator<
+		const CMatrixColumnAccessorExtended<MAT>, const value_type>;
+	using reverse_iterator = detail::ReverseAccessorIterator<
+		CMatrixColumnAccessorExtended<MAT>, value_type>;
+	using const_reverse_iterator = detail::ReverseAccessorIterator<
+		const CMatrixColumnAccessorExtended<MAT>, const value_type>;
 	inline iterator begin() { return iterator(*this, 0); }
 	inline const_iterator begin() const { return const_iterator(*this, 0); }
 	inline iterator end() { return iterator(*this, howMany); }
@@ -645,9 +628,9 @@ inline CMatrixColumnAccessorExtended<MAT> getColumnAccessor(
 
 /** A vector-like wrapper for a const Matrix for accessing the elements of a
  * given column with a [] operator.
-  * \sa
+ * \sa
  * CConstMatrixRowAccessor,CMatrixColumnAccessorExtended,CMatrixColumnAccessor,CConstMatrixColumnAccessorExtended
-  */
+ */
 template <class MAT>
 class CConstMatrixColumnAccessor
 {
@@ -668,12 +651,10 @@ class CConstMatrixColumnAccessor
 	{
 		return (*m_mat)(i, m_colInd);
 	}
-	typedef detail::AccessorIterator<const CConstMatrixColumnAccessor<MAT>,
-									 const value_type>
-		const_iterator;
-	typedef detail::ReverseAccessorIterator<
-		const CConstMatrixColumnAccessor<MAT>, const value_type>
-		const_reverse_iterator;
+	using const_iterator = detail::AccessorIterator<
+		const CConstMatrixColumnAccessor<MAT>, const value_type>;
+	using const_reverse_iterator = detail::ReverseAccessorIterator<
+		const CConstMatrixColumnAccessor<MAT>, const value_type>;
 	inline const_iterator begin() const { return const_iterator(*this, 0); }
 	inline const_iterator end() const
 	{
@@ -703,9 +684,9 @@ inline CConstMatrixColumnAccessor<MAT> getColumnAccessor(
 
 /** A vector-like wrapper for a const Matrix for accessing the elements of a
  * given column with a [] operator, with offset and custom spacing.
-  * \sa
+ * \sa
  * CConstMatrixRowAccessorExtended,CMatrixColumnAccessor,CConstMatrixColumnAccessor,CMatrixColumnAccessorExtended
-  */
+ */
 template <typename MAT>
 class CConstMatrixColumnAccessorExtended
 {
@@ -734,12 +715,10 @@ class CConstMatrixColumnAccessorExtended
 	{
 		return (*m_mat)(m_rowOffset + (i * m_elementsSpace), m_colInd);
 	}
-	typedef detail::AccessorIterator<
-		const CConstMatrixColumnAccessorExtended<MAT>, const value_type>
-		const_iterator;
-	typedef detail::ReverseAccessorIterator<
-		const CConstMatrixColumnAccessorExtended<MAT>, const value_type>
-		const_reverse_iterator;
+	using const_iterator = detail::AccessorIterator<
+		const CConstMatrixColumnAccessorExtended<MAT>, const value_type>;
+	using const_reverse_iterator = detail::ReverseAccessorIterator<
+		const CConstMatrixColumnAccessorExtended<MAT>, const value_type>;
 	inline const_iterator begin() const { return const_iterator(*this, 0); }
 	inline const_iterator end() const { return const_iterator(*this, howMany); }
 	inline const_reverse_iterator rbegin() const
@@ -764,7 +743,7 @@ inline CConstMatrixColumnAccessorExtended<MAT> getColumnAccessor(
 	return CConstMatrixColumnAccessorExtended<MAT>(m, colIdx, offset, space);
 }
 
-}  // End of namespace
-}  // End of namespace
+}  // namespace math
+}  // namespace mrpt
 
 #endif

@@ -22,7 +22,7 @@
 #include <mrpt/serialization/CSerializable.h>
 
 #include <mrpt/pbmap/Plane.h>
-#include <mrpt/pbmap/Miscellaneous.h>  // For typedef PointT;
+#include <mrpt/pbmap/Miscellaneous.h>  // For type PointT;
 
 //#include <boost/thread/thread.hpp>
 
@@ -31,19 +31,19 @@ namespace mrpt
 namespace pbmap
 {
 /** A class used to store a Plane-based Map (PbMap). A PbMap consists of a set
-* of planar patches
-* described by geometric features (shape, relative position, etc.) and/or
-* radiometric features
-* (dominant color). It is organized as an annotated, undirected graph, where
-* nodes stand for planar
-* patches and edges connect neighbor planes when the distance between their
-* closest points is under
-* a threshold. This graph structure permits to find efficiently the closest
-* neighbors of a plane,
-* or to select groups of nearby planes representing part of the scene.
-*
-*\ingroup mrpt_pbmap_grp
-*/
+ * of planar patches
+ * described by geometric features (shape, relative position, etc.) and/or
+ * radiometric features
+ * (dominant color). It is organized as an annotated, undirected graph, where
+ * nodes stand for planar
+ * patches and edges connect neighbor planes when the distance between their
+ * closest points is under
+ * a threshold. This graph structure permits to find efficiently the closest
+ * neighbors of a plane,
+ * or to select groups of nearby planes representing part of the scene.
+ *
+ *\ingroup mrpt_pbmap_grp
+ */
 class PbMap : public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(PbMap)
@@ -84,8 +84,8 @@ class PbMap : public mrpt::serialization::CSerializable
 
 	//    boost::mutex mtx_pbmap_busy;
 };
-}
-}  // End of namespaces
+}  // namespace pbmap
+}  // namespace mrpt
 
 #endif
 

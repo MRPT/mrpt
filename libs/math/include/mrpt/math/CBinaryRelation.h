@@ -24,20 +24,20 @@ namespace math
 using std::vector;
 
 /**
-  * This class models a binary relation through the elements of any given set.
+ * This class models a binary relation through the elements of any given set.
  * I.e. for each pair of elements (A,B) it assigns two values, f(A,B) and
  * f(B,A).
-  * This class is useful when calling the base function is costly, since it acts
+ * This class is useful when calling the base function is costly, since it acts
  * like a proxy. It's also useful if the relationship values do not correspond
-  * with the return value of a function. Although it theoretically supports
+ * with the return value of a function. Although it theoretically supports
  * objects with non-trivial constructors or destructors (indicated by specifying
-  * "true" as the thrid parameter of the template instantiation), certain
+ * "true" as the thrid parameter of the template instantiation), certain
  * operations will cause memory leaks and may even cause undefined behaviour, so
  * it's
-  * reccomended to use only basic types for the parameter U. The parameter T may
+ * reccomended to use only basic types for the parameter U. The parameter T may
  * be any complex object, however, like a smart pointer.
  * \ingroup mrpt_math_grp
-  */
+ */
 template <typename T, typename U, bool UIsObject = false>
 class CBinaryRelation
 {
@@ -46,29 +46,29 @@ class CBinaryRelation
 	// CMATRIXTEMPLATEOBJECTS.
 
 	/**Matrix type used to store the actual relation. */
-	typedef typename detail::MatrixWrapper<U, UIsObject>::MatrixType MatrixType;
+	using MatrixType = typename detail::MatrixWrapper<U, UIsObject>::MatrixType;
 
    public:
 	/** Simple function type, used to initialize chunks of the matrix. */
-	typedef U (*SimpleFunctionByReturnValue)(T, T);
+	using SimpleFunctionByReturnValue = U (*)(T, T);
 	/**Function type which obtains the relation value by a return value. */
-	typedef U (*FunctionByReturnValue)(const T&, const T&);
+	using FunctionByReturnValue = U (*)(const T&, const T&);
 	/**Function type which obtains the relation value by reference pass. */
-	typedef void (*FunctionByReferencePass)(const T&, const T&, U&);
+	using FunctionByReferencePass = void (*)(const T&, const T&, U&);
 	/**Constant iterator through the set elements. */
-	typedef typename std::set<T>::const_iterator const_iterator;
+	using const_iterator = typename std::set<T>::const_iterator;
 	/**Constant reverse iterator through the set elements. */
-	typedef typename std::set<T>::const_reverse_iterator const_reverse_iterator;
+	using const_reverse_iterator = typename std::set<T>::const_reverse_iterator;
 	/**Accessor type to every value related to any element A, i.e., f(A,x). */
-	typedef CMatrixRowAccessor<U> AccessorForFirstElement;
+	using AccessorForFirstElement = CMatrixRowAccessor<U>;
 	/**Accessor type to every value related to any element B, i.e., f(x,B). */
-	typedef CMatrixColumnAccessor<U> AccessorForSecondElement;
+	using AccessorForSecondElement = CMatrixColumnAccessor<U>;
 	/**Const accessor type to every value related to any element A, i.e.,
 	 * f(A,x). */
-	typedef CConstMatrixRowAccessor<U> ConstAccessorForFirstElement;
+	using ConstAccessorForFirstElement = CConstMatrixRowAccessor<U>;
 	/**Const accessor type to every value related to any element B, i.e.,
 	 * f(x,B). */
-	typedef CConstMatrixColumnAccessor<U> ConstAccessorForSecondElement;
+	using ConstAccessorForSecondElement = CConstMatrixColumnAccessor<U>;
 
    private:
 	/**Actual set of elements. */
@@ -77,11 +77,11 @@ class CBinaryRelation
 	MatrixType relation;
 
 	/**
-	  * Template used to make the function interface independent from the
+	 * Template used to make the function interface independent from the
 	 * function type.
-	  *  (wrapper for the global method - needed to make this compile under
+	 *  (wrapper for the global method - needed to make this compile under
 	 * GCC).
-	  */
+	 */
 	template <typename FunctionType>
 	inline void applyFunction(
 		FunctionType fun, size_t e1, size_t e2, const T& T1, const T& T2)
@@ -92,15 +92,15 @@ class CBinaryRelation
 
    public:
 	/**
-	  * Default constructor, doesn't initialize the relation.
-	  */
+	 * Default constructor, doesn't initialize the relation.
+	 */
 	explicit inline CBinaryRelation(const std::set<T>& els)
 		: elements(els), relation(els.size(), els.size())
 	{
 	}
 	/**
-	  * Constructor which initializes the relation using a given function.
-	  */
+	 * Constructor which initializes the relation using a given function.
+	 */
 	template <typename FunctionType>
 	inline CBinaryRelation(const std::set<T>& els, FunctionType fun)
 		: elements(els), relation(els.size(), els.size())
@@ -108,8 +108,8 @@ class CBinaryRelation
 		initializeWith(fun);
 	}
 	/**
-	  * Initialize the whole relation with a given function.
-	  */
+	 * Initialize the whole relation with a given function.
+	 */
 	template <typename FunctionType>
 	void initializeWith(FunctionType fun)
 	{
@@ -122,9 +122,9 @@ class CBinaryRelation
 		}
 	}
 	/**
-	  * Initialize the whole relation with a given function, assuming that the
+	 * Initialize the whole relation with a given function, assuming that the
 	 * relation is symmetrical.
-	  */
+	 */
 	template <typename FunctionType>
 	void initializeSymmetricallyWith(FunctionType fun)
 	{
@@ -142,15 +142,15 @@ class CBinaryRelation
 		}
 	}
 	/**
-	  * Manually set a relationship value, given the indices.
-	  */
+	 * Manually set a relationship value, given the indices.
+	 */
 	inline void setRelationValue(size_t e1, size_t e2, const U& newVal)
 	{
 		relation.get_unsafe(e1, e2) = newVal;
 	}
 	/**
-	  * Get a relation value, given the indices.
-	  */
+	 * Get a relation value, given the indices.
+	 */
 	inline const U& getRelationValue(size_t e1, size_t e2) const
 	{
 		return relation.get_unsafe(e1, e2);
@@ -160,9 +160,9 @@ class CBinaryRelation
 		return getRelationValue(e1, e2);
 	}
 	/**
-	  * Get a reference to a relation value given its indices, which allows both
+	 * Get a reference to a relation value given its indices, which allows both
 	 * querying and setting the value.
-	  */
+	 */
 	inline U& getRelationValue(size_t e1, size_t e2)
 	{
 		return relation.get_unsafe(e1, e2);
@@ -172,9 +172,9 @@ class CBinaryRelation
 		return getRelationValue(e1, e2);
 	}
 	/**
-	  * Manually set a relationship value, given the elements. Returns false if
+	 * Manually set a relationship value, given the elements. Returns false if
 	 * any of the elements is not present.
-	  */
+	 */
 	inline bool setRelationValue(const T& t1, const T& t2, const U& newVal)
 	{
 		typename std::set<T>::const_iterator b = elements.begin(),
@@ -188,9 +188,9 @@ class CBinaryRelation
 		return true;
 	}
 	/**
-	  * Get a relation value, given the elements. Throws domain_error if any of
+	 * Get a relation value, given the elements. Throws domain_error if any of
 	 * the elements is not present.
-	  */
+	 */
 	inline U getRelationValue(const T& t1, const T& t2) const
 	{
 		typename std::set<T>::const_iterator b = elements.begin(),
@@ -203,11 +203,11 @@ class CBinaryRelation
 			static_cast<size_t>(std::distance(b, it2)));
 	}
 	/**
-	  * Get a reference to a relation value given the elements, which allows
+	 * Get a reference to a relation value given the elements, which allows
 	 * both querying and setting. Throws domain_error if any of the elements is
 	 * not
-	  * present.
-	  */
+	 * present.
+	 */
 	inline U& getRelationValue(const T& t1, const T& t2)
 	{
 		typename std::set<T>::const_iterator b = elements.begin(),
@@ -220,24 +220,24 @@ class CBinaryRelation
 			static_cast<size_t>(distance(b, it2)));
 	}
 	/**
-	  * Gets an iterator to the starting point of the elements set.
-	  */
+	 * Gets an iterator to the starting point of the elements set.
+	 */
 	inline const_iterator begin() const { return elements.begin(); }
 	/**
-	  * Gets an iterator to the ending point of the elements set.
-	  */
+	 * Gets an iterator to the ending point of the elements set.
+	 */
 	inline const_iterator end() const { return elements.end(); }
 	/**
-	  * Gets a reverse iterator to the ending point of the elements set.
-	  */
+	 * Gets a reverse iterator to the ending point of the elements set.
+	 */
 	inline const_reverse_iterator rbegin() const { return elements.rbegin(); }
 	/**
-	  * Gets a reverse iterator to the starting point of the elements set.
-	  */
+	 * Gets a reverse iterator to the starting point of the elements set.
+	 */
 	inline const_reverse_iterator rend() const { return elements.rend(); }
 	/**
-	  * Operator for direct access to a element given its index.
-	  */
+	 * Operator for direct access to a element given its index.
+	 */
 	T operator[](size_t i) const
 	{
 		ASSERT_BELOW_(i, elements.size();
@@ -246,42 +246,42 @@ class CBinaryRelation
 		return *it;
 	}
 	/**
-	  * Gets an accessor for every value related to an element A given its
+	 * Gets an accessor for every value related to an element A given its
 	 * index, i.e., every f(A,x). This accessor is iterable.
-	  */
+	 */
 	inline AccessorForFirstElement getRelationFrom(size_t i)
 	{
 		return AccessorForFirstElement(relation, i);
 	}
 	/**
-	  * Gets a constant accessor for every value related to an element A given
+	 * Gets a constant accessor for every value related to an element A given
 	 * its index, i.e., every f(A,x). This accessor is iterable.
-	  */
+	 */
 	inline ConstAccessorForFirstElement getRelationFrom(size_t i) const
 	{
 		return ConstAccessorForFirstElement(relation, i);
 	}
 	/**
-	  * Gets an accessor for every value related to an element B given its
+	 * Gets an accessor for every value related to an element B given its
 	 * index, i.e., every f(x,B). This accessor is iterable.
-	  */
+	 */
 	inline AccessorForSecondElement getRelationTo(size_t i)
 	{
 		return AccessorForSecondElement(relation, i);
 	}
 	/**
-	  * Gets a constant accessor for every value related to an element B given
+	 * Gets a constant accessor for every value related to an element B given
 	 * its index, i.e., every f(x,B). This accessor is fully iterable.
-	  */
+	 */
 	inline ConstAccessorForSecondElement getRelationTo(size_t i) const
 	{
 		return ConstAccessorForSecondElement(relation, i);
 	}
 	/**
-	  * Gets an iterable accessor for every value related to an element A, i.e.,
+	 * Gets an iterable accessor for every value related to an element A, i.e.,
 	 * every f(A,x). A domain_error will be thrown if the element is not
 	 * present.
-	  */
+	 */
 	inline AccessorForFirstElement getRelationFrom(const T& t)
 	{
 		typename std::set<T>::const_iterator b = elements.begin(),
@@ -291,11 +291,11 @@ class CBinaryRelation
 		return getRelationFrom(static_cast<size_t>(std::distance(b, it)));
 	}
 	/**
-	  * Gets an iterable constant accessor for every value related to an element
+	 * Gets an iterable constant accessor for every value related to an element
 	 * A, i.e., every f(A,x). A domain_error will be thrown if the element is
 	 * not
-	  * present.
-	  */
+	 * present.
+	 */
 	inline ConstAccessorForFirstElement getRelationFrom(const T& t) const
 	{
 		typename std::set<T>::const_iterator b = elements.begin(),
@@ -321,10 +321,10 @@ class CBinaryRelation
 		getRelationFrom(static_cast<size_t>(std::distance(b, it)), vec);
 	}
 	/**
-	  * Gets an iterable accessor for every value related to an element B, i.e.,
+	 * Gets an iterable accessor for every value related to an element B, i.e.,
 	 * every f(x,B). A domain_error will be thrown if the element is not
 	 * present.
-	  */
+	 */
 	inline AccessorForSecondElement getRelationTo(const T& t)
 	{
 		typename std::set<T>::const_iterator b = elements.begin(),
@@ -334,11 +334,11 @@ class CBinaryRelation
 		return getRelationTo(static_cast<size_t>(std::distance(b, it)));
 	}
 	/**
-	  * Gets an iterable constant accessor for every value related to an alement
+	 * Gets an iterable constant accessor for every value related to an alement
 	 * B, i.e., every f(x,B). A domain_error will be thrown if the element is
 	 * not
-	  * present.
-	  */
+	 * present.
+	 */
 	inline ConstAccessorForSecondElement getRelationTo(const T& t) const
 	{
 		typename std::set<T>::const_iterator b = elements.begin(),
@@ -364,8 +364,8 @@ class CBinaryRelation
 		getRelationTo(static_cast<size_t>(std::distance(b, it)), vec);
 	}
 	/**
-	  * Removes an element at a concrete position.
-	  */
+	 * Removes an element at a concrete position.
+	 */
 	void removeElementAt(size_t i)
 	{
 		ASSERT_(i < elements.size());
@@ -377,9 +377,9 @@ class CBinaryRelation
 		relation.removeRowsAndCols(ii, ii);
 	}
 	/**
-	  * Removes an element. Returns false if the element was not present and
+	 * Removes an element. Returns false if the element was not present and
 	 * thus could'nt be eliminated.
-	  */
+	 */
 	bool removeElement(const T& el)
 	{
 		typename std::set<T>::const_iterator b = elements.begin(),
@@ -390,9 +390,9 @@ class CBinaryRelation
 		return true;
 	}
 	/**
-	  * Removes a set of elements. Returns the number of elements which were
+	 * Removes a set of elements. Returns the number of elements which were
 	 * actually erased.
-	  */
+	 */
 	size_t removeElements(const std::set<T>& vals)
 	{
 		std::set<size_t> positions;
@@ -419,11 +419,11 @@ class CBinaryRelation
 		}
 	}
 	/**
-	  * Inserts an element. If the element was present, returns false and its
+	 * Inserts an element. If the element was present, returns false and its
 	 * current position. If it wasn't, returns true and the position in which it
 	 * was
-	  * inserted.
-	  */
+	 * inserted.
+	 */
 	std::pair<bool, size_t> insertElement(const T& el)
 	{
 		std::pair<typename std::set<T>::iterator, bool> ins =
@@ -440,9 +440,9 @@ class CBinaryRelation
 			return std::make_pair(false, dist);
 	}
 	/**
-	  * Inserts an element and initializes its relationship values, even if it
+	 * Inserts an element and initializes its relationship values, even if it
 	 * was already present.
-	  */
+	 */
 	template <typename FunctionType>
 	std::pair<bool, size_t> insertElement(const T& el, FunctionType fun)
 	{
@@ -457,9 +457,9 @@ class CBinaryRelation
 		return ins;
 	}
 	/**
-	  * Inserts a set of elements into the relation. Does not initialize the
+	 * Inserts a set of elements into the relation. Does not initialize the
 	 * actual relation.
-	  */
+	 */
 	size_t insertElements(const std::set<T>& els)
 	{
 		if (els.empty()) return 0;
@@ -497,9 +497,9 @@ class CBinaryRelation
 		return added.size();
 	}
 	/**
-	  * Inserts a set of elements into the relation, initializing the actual
+	 * Inserts a set of elements into the relation, initializing the actual
 	 * relation with a given function.
-	  */
+	 */
 	template <typename FunctionType>
 	size_t insertElements(const std::set<T>& els, FunctionType fun)
 	{
@@ -541,9 +541,9 @@ class CBinaryRelation
 		return howMany;
 	}
 	/**
-	  * Completely resets the relation, using a new set of elements. Does not
+	 * Completely resets the relation, using a new set of elements. Does not
 	 * initialize the relation.
-	  */
+	 */
 	void setElements(const std::set<T>& newEls)
 	{
 		relation.setSize(0, 0);
@@ -551,8 +551,8 @@ class CBinaryRelation
 		relation.setSize(newEls.size(), newEls.size());
 	}
 	/**
-	  * Returns the amount of elements present in the relation.
-	  */
+	 * Returns the amount of elements present in the relation.
+	 */
 	inline size_t size() const { return elements.size(); }
 };
 
@@ -568,7 +568,7 @@ inline void applyFunction(
 }
 
 /** Template specialization by reference type.
-  */
+ */
 template <typename T, typename U, bool UIsObject>
 inline void applyFunction(
 	CBinaryRelation<T, U, UIsObject>& o,
@@ -577,7 +577,7 @@ inline void applyFunction(
 {
 	fun(T1, T2, o.getRelationValue(e1, e2));
 }
-}
-}
-}  // End of namespaces
+}  // namespace detail
+}  // namespace math
+}  // namespace mrpt
 #endif

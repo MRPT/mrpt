@@ -43,10 +43,10 @@ struct TMetricMapTypesRegistry
 	/** Return nullptr if not found */
 	mrpt::maps::CMetricMap* factoryMapObjectFromDefinition(
 		const mrpt::maps::TMetricMapInitializer& mi) const;
-	typedef std::map<std::string,
-					 std::pair<MapDefCtorFunctor, MapCtorFromDefFunctor>>
-		TListRegisteredMaps;
+	using TListRegisteredMaps = std::map<
+		std::string, std::pair<MapDefCtorFunctor, MapCtorFromDefFunctor>>;
 	const TListRegisteredMaps& getAllRegistered() const { return m_registry; }
+
    private:
 	TMetricMapTypesRegistry() {}  // Access thru singleton in Instance()
 	TListRegisteredMaps m_registry;
@@ -54,15 +54,16 @@ struct TMetricMapTypesRegistry
 
 /** Add a MAP_DEFINITION_START() ... MAP_DEFINITION_END() block inside the
  * declaration of each metric map */
-#define MAP_DEFINITION_START(_CLASS_NAME_)                                      \
-   public:                                                                      \
-	/** @name Map Definition Interface stuff (see                               \
-	 * mrpt::maps::TMetricMapInitializer) @{ */                                 \
-	struct TMapDefinitionBase : public mrpt::maps::TMetricMapInitializer        \
-	{                                                                           \
-		TMapDefinitionBase() : TMetricMapInitializer(CLASS_ID(_CLASS_NAME_)) {} \
-	};                                                                          \
-	struct TMapDefinition : public TMapDefinitionBase                           \
+#define MAP_DEFINITION_START(_CLASS_NAME_)                               \
+   public:                                                               \
+	/** @name Map Definition Interface stuff (see                        \
+	 * mrpt::maps::TMetricMapInitializer) @{ */                          \
+	struct TMapDefinitionBase : public mrpt::maps::TMetricMapInitializer \
+	{                                                                    \
+		TMapDefinitionBase()                                             \
+			: TMetricMapInitializer(CLASS_ID(_CLASS_NAME_)) {}           \
+	};                                                                   \
+	struct TMapDefinition : public TMapDefinitionBase                    \
 	{
 #define MAP_DEFINITION_END(_CLASS_NAME_)                                     \
 	TMapDefinition();                                                        \

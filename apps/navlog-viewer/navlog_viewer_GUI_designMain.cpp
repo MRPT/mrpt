@@ -459,9 +459,8 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(
 
 	{
 		wxIcon FrameIcon;
-		FrameIcon.CopyFromBitmap(
-			wxArtProvider::GetBitmap(
-				wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")), wxART_FRAME_ICON));
+		FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(
+			wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")), wxART_FRAME_ICON));
 		SetIcon(FrameIcon);
 	}
 
@@ -687,10 +686,9 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 		std::dynamic_pointer_cast<CLogFileRecord>(m_logdata[i]);
 	const CLogFileRecord& log = *logptr;
 
-	txtSelectedPTG->SetLabel(
-		wxString::Format(
-			_("%i from [0-%u]"), static_cast<int>(log.nSelectedPTG),
-			static_cast<unsigned int>(log.nPTGs - 1)));
+	txtSelectedPTG->SetLabel(wxString::Format(
+		_("%i from [0-%u]"), static_cast<int>(log.nSelectedPTG),
+		static_cast<unsigned int>(log.nPTGs - 1)));
 
 	const bool is_NOP_cmd = log.ptg_index_NOP >= 0;
 	const int sel_ptg_idx = !is_NOP_cmd ? log.nSelectedPTG : log.ptg_index_NOP;
@@ -752,9 +750,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 				// Global or local coordinates?
 				if (cbList->IsChecked(m_cbIdx_GlobalFrame))
 				{
-					gl_robot_frame->setPose(
-						mrpt::poses::CPose3D(
-							mrpt::poses::CPose2D(log.robotPoseLocalization)));
+					gl_robot_frame->setPose(mrpt::poses::CPose3D(
+						mrpt::poses::CPose2D(log.robotPoseLocalization)));
 					// Move the window focus:
 					float px, py, pz;
 					win1->getCameraPointingToPoint(px, py, pz);
@@ -901,9 +898,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 						// Draw path:
 						const int selected_k =
 							log.ptg_index_NOP < 0
-								? ptg->alpha2index(
-									  log.infoPerPTG[sel_ptg_idx]
-										  .desiredDirection)
+								? ptg->alpha2index(log.infoPerPTG[sel_ptg_idx]
+													   .desiredDirection)
 								: log.ptg_last_k_NOP;
 						float max_dist = ptg->getRefDistance();
 						ptg->add_robotShape_to_setOfLines(*gl_path);
@@ -1056,10 +1052,9 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 		if (cbList->IsChecked(m_cbIdx_ShowAllDebugFields))
 		{
 			for (const auto& e : log.timestamps)
-				ADD_WIN_TEXTMSG(
-					mrpt::format(
-						"Timestamp %-20s=%s", e.first.c_str(),
-						mrpt::system::dateTimeLocalToString(e.second).c_str()));
+				ADD_WIN_TEXTMSG(mrpt::format(
+					"Timestamp %-20s=%s", e.first.c_str(),
+					mrpt::system::dateTimeLocalToString(e.second).c_str()));
 		}
 
 		{
@@ -1069,10 +1064,9 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 
 			if (nObsFiltered)
 			{
-				ADD_WIN_TEXTMSG(
-					mrpt::format(
-						"Obstacle points=%u (%u filtered out)", nObs,
-						nObsFiltered));
+				ADD_WIN_TEXTMSG(mrpt::format(
+					"Obstacle points=%u (%u filtered out)", nObs,
+					nObsFiltered));
 			}
 			else
 			{
@@ -1080,32 +1074,26 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			}
 		}
 
-		ADD_WIN_TEXTMSG(
-			mrpt::format(
-				"cmd_vel=%s", log.cmd_vel ? log.cmd_vel->asString().c_str()
-										  : "NOP (Continue last PTG)"));
+		ADD_WIN_TEXTMSG(mrpt::format(
+			"cmd_vel=%s", log.cmd_vel ? log.cmd_vel->asString().c_str()
+									  : "NOP (Continue last PTG)"));
 
-		ADD_WIN_TEXTMSG(
-			mrpt::format(
-				"cur_vel      =[%.02f m/s, %0.2f m/s, %.02f dps]",
-				log.cur_vel.vx, log.cur_vel.vy,
-				mrpt::RAD2DEG(log.cur_vel.omega)));
-		ADD_WIN_TEXTMSG(
-			mrpt::format(
-				"cur_vel_local=[%.02f m/s, %0.2f m/s, %.02f dps]",
-				log.cur_vel_local.vx, log.cur_vel_local.vy,
-				mrpt::RAD2DEG(log.cur_vel_local.omega)));
+		ADD_WIN_TEXTMSG(mrpt::format(
+			"cur_vel      =[%.02f m/s, %0.2f m/s, %.02f dps]", log.cur_vel.vx,
+			log.cur_vel.vy, mrpt::RAD2DEG(log.cur_vel.omega)));
+		ADD_WIN_TEXTMSG(mrpt::format(
+			"cur_vel_local=[%.02f m/s, %0.2f m/s, %.02f dps]",
+			log.cur_vel_local.vx, log.cur_vel_local.vy,
+			mrpt::RAD2DEG(log.cur_vel_local.omega)));
 
-		ADD_WIN_TEXTMSG(
-			mrpt::format(
-				"robot_pose=%s", log.robotPoseLocalization.asString().c_str()));
+		ADD_WIN_TEXTMSG(mrpt::format(
+			"robot_pose=%s", log.robotPoseLocalization.asString().c_str()));
 		{
 			for (unsigned int i = 0; i < log.WS_targets_relative.size(); i++)
 			{
-				ADD_WIN_TEXTMSG(
-					mrpt::format(
-						"rel_target[%u]=%s", i,
-						log.WS_targets_relative[i].asString().c_str()));
+				ADD_WIN_TEXTMSG(mrpt::format(
+					"rel_target[%u]=%s", i,
+					log.WS_targets_relative[i].asString().c_str()));
 			}
 		}
 
@@ -1155,19 +1143,17 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 				col);
 		}
 
-		ADD_WIN_TEXTMSG(
-			mrpt::format(
-				"relPoseSense: %s relPoseVelCmd:%s",
-				log.relPoseSense.asString().c_str(),
-				log.relPoseVelCmd.asString().c_str()));
+		ADD_WIN_TEXTMSG(mrpt::format(
+			"relPoseSense: %s relPoseVelCmd:%s",
+			log.relPoseSense.asString().c_str(),
+			log.relPoseVelCmd.asString().c_str()));
 
 		if (cbList->IsChecked(m_cbIdx_ShowAllDebugFields))
 		{
 			for (const auto& e : log.values)
-				ADD_WIN_TEXTMSG(
-					format(
-						"%-30s=%s ", e.first.c_str(),
-						mrpt::system::unitsFormat(e.second, 3, false).c_str()));
+				ADD_WIN_TEXTMSG(format(
+					"%-30s=%s ", e.first.c_str(),
+					mrpt::system::unitsFormat(e.second, 3, false).c_str()));
 
 			for (const auto& e : log.additional_debug_msgs)
 				ADD_WIN_TEXTMSG(
@@ -1772,9 +1758,8 @@ void navlog_viewer_GUI_designDialog::OntimMouseXY(wxTimerEvent& event)
 		mrpt::math::TPoint3D inters_pt;
 		if (inters.getPoint(inters_pt))
 		{
-			ADD_WIN_TEXTMSG(
-				mrpt::format(
-					"Mouse pos: X=%.04f  Y=%.04f", inters_pt.x, inters_pt.y));
+			ADD_WIN_TEXTMSG(mrpt::format(
+				"Mouse pos: X=%.04f  Y=%.04f", inters_pt.x, inters_pt.y));
 			win1->repaint();
 		}
 	}
@@ -1824,7 +1809,7 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabExportPaths(
 		vals_timoff_sendVelCmd;  // time: tim_start_iteration
 
 	const int MAX_CMDVEL_COMPONENTS = 15;
-	typedef Eigen::Matrix<double, 1, MAX_CMDVEL_COMPONENTS> cmdvel_vector_t;
+	using cmdvel_vector_t = Eigen::Matrix<double, 1, MAX_CMDVEL_COMPONENTS>;
 	mrpt::aligned_std_map<double, cmdvel_vector_t>
 		cmdvels;  // time: tim_send_cmd_vel
 

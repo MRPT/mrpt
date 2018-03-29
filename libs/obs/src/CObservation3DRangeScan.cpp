@@ -83,10 +83,9 @@ struct CObservation3DRangeScan_Points_MemPoolData
 	/** for each point, the corresponding (x,y) pixel coordinates */
 	std::vector<uint16_t> idxs_x, idxs_y;
 };
-typedef mrpt::system::CGenericMemoryPool<
+using TMyPointsMemPool = mrpt::system::CGenericMemoryPool<
 	CObservation3DRangeScan_Points_MemPoolParams,
-	CObservation3DRangeScan_Points_MemPoolData>
-	TMyPointsMemPool;
+	CObservation3DRangeScan_Points_MemPoolData>;
 
 // Memory pool for the rangeImage matrix ----------------
 struct CObservation3DRangeScan_Ranges_MemPoolParams
@@ -103,10 +102,9 @@ struct CObservation3DRangeScan_Ranges_MemPoolData
 {
 	mrpt::math::CMatrix rangeImage;
 };
-typedef mrpt::system::CGenericMemoryPool<
+using TMyRangesMemPool = mrpt::system::CGenericMemoryPool<
 	CObservation3DRangeScan_Ranges_MemPoolParams,
-	CObservation3DRangeScan_Ranges_MemPoolData>
-	TMyRangesMemPool;
+	CObservation3DRangeScan_Ranges_MemPoolData>;
 
 void mempool_donate_xyz_buffers(CObservation3DRangeScan& obs)
 {
@@ -737,8 +735,8 @@ double CObservation3DRangeScan::recoverCameraCalibrationParameters(
 		obs.points3D_x.size() == obs.points3D_y.size() &&
 		obs.points3D_x.size() == obs.points3D_z.size());
 
-	typedef CLevenbergMarquardtTempl<CVectorDouble, detail::TLevMarData>
-		TMyLevMar;
+	using TMyLevMar =
+		CLevenbergMarquardtTempl<CVectorDouble, detail::TLevMarData>;
 	TMyLevMar::TResultInfo info;
 
 	const size_t nR = obs.rangeImage.rows();
@@ -1096,8 +1094,8 @@ void CObservation3DRangeScan::convertTo2DScan(
 			mrpt::make_aligned_shared<mrpt::opengl::CPointCloud>();
 		this->project3DPointsFromDepthImageInto(*pc, projParams, fp);
 
-		const std::vector<float> &xs = pc->getArrayX(), &ys = pc->getArrayY(),
-								 &zs = pc->getArrayZ();
+		const std::vector<float>&xs = pc->getArrayX(), &ys = pc->getArrayY(),
+			  &zs = pc->getArrayZ();
 		const size_t N = xs.size();
 
 		const double A_ang = FOV_equiv / (nLaserRays - 1);
@@ -1241,9 +1239,8 @@ void CObservation3DRangeScan::TPixelLabelInfo<
 	in >> pixelLabelNames;
 }
 template <unsigned int BYTES_REQUIRED_>
-void CObservation3DRangeScan::TPixelLabelInfo<
-	BYTES_REQUIRED_>::internal_writeToStream(mrpt::serialization::CArchive& out)
-	const
+void CObservation3DRangeScan::TPixelLabelInfo<BYTES_REQUIRED_>::
+	internal_writeToStream(mrpt::serialization::CArchive& out) const
 {
 	{
 		const uint32_t nR = static_cast<uint32_t>(pixelLabels.rows());

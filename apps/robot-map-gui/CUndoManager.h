@@ -14,10 +14,10 @@
 #include "mrpt/poses/CPose3DPDF.h"
 #include "mrpt/obs/CSensoryFrame.h"
 
-typedef std::function<void()> UserAction;
+using UserAction = std::function<void()>;
 
 /** Singleton for undo and redo user actions
-*/
+ */
 
 class CUndoManager
 {

@@ -33,20 +33,20 @@ namespace detail
  * runs specifically for TMRSlamNodeAnnotations as the 3rd template argument.
  *
  */
-template <class CPOSE,  // Type of edges
-		  class MAPS_IMPLEMENTATION,  // Use std::map<> vs. std::vector<>
-		  class NODE_ANNOTATIONS = mrpt::graphs::detail::TMRSlamNodeAnnotations,
-		  class EDGE_ANNOTATIONS = mrpt::graphs::detail::edge_annotations_empty>
-class CMRVisualizer : public CVisualizer<CPOSE, MAPS_IMPLEMENTATION,
-										 NODE_ANNOTATIONS, EDGE_ANNOTATIONS>
+template <
+	class CPOSE,  // Type of edges
+	class MAPS_IMPLEMENTATION,  // Use std::map<> vs. std::vector<>
+	class NODE_ANNOTATIONS = mrpt::graphs::detail::TMRSlamNodeAnnotations,
+	class EDGE_ANNOTATIONS = mrpt::graphs::detail::edge_annotations_empty>
+class CMRVisualizer
+	: public CVisualizer<
+		  CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>
 {
    public:
-	typedef CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
-						EDGE_ANNOTATIONS>
-		parent;
-	typedef mrpt::graphs::CNetworkOfPoses<CPOSE, MAPS_IMPLEMENTATION,
-										  NODE_ANNOTATIONS, EDGE_ANNOTATIONS>
-		GRAPH_T;
+	using parent = CVisualizer<
+		CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>;
+	using GRAPH_T = mrpt::graphs::CNetworkOfPoses<
+		CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>;
 
 	CMRVisualizer(const GRAPH_T& graph_in);
 
@@ -64,21 +64,20 @@ class CMRVisualizer : public CVisualizer<CPOSE, MAPS_IMPLEMENTATION,
 // Specialized version
 //////////////////////////////////////////////////////////
 
-template <class CPOSE,  // Type of edges
-		  class MAPS_IMPLEMENTATION,  // Use std::map<> vs. std::vector<>
-		  class EDGE_ANNOTATIONS>
-class CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations,
-					EDGE_ANNOTATIONS>
-	: public CVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations,
-						 EDGE_ANNOTATIONS>
+template <
+	class CPOSE,  // Type of edges
+	class MAPS_IMPLEMENTATION,  // Use std::map<> vs. std::vector<>
+	class EDGE_ANNOTATIONS>
+class CMRVisualizer<
+	CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations, EDGE_ANNOTATIONS>
+	: public CVisualizer<
+		  CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations, EDGE_ANNOTATIONS>
 {
    public:
-	typedef CVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations,
-						EDGE_ANNOTATIONS>
-		parent;
-	typedef mrpt::graphs::CNetworkOfPoses<
-		CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations, EDGE_ANNOTATIONS>
-		GRAPH_T;
+	using parent = CVisualizer<
+		CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations, EDGE_ANNOTATIONS>;
+	using GRAPH_T = mrpt::graphs::CNetworkOfPoses<
+		CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations, EDGE_ANNOTATIONS>;
 
 	CMRVisualizer(const GRAPH_T& graph_in);
 
@@ -92,9 +91,9 @@ class CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations,
 
    private:
 };
-}
-}
-}  // end of namespaces
+}  // namespace detail
+}  // namespace graphs
+}  // namespace mrpt
 
 #include <mrpt/graphs/CMRVisualizer_impl.h>
 
