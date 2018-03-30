@@ -52,3 +52,17 @@ TEST(TEnumType, str2value)
 
 	EXPECT_THROW(TEnumType<TestColors>::name2value("Violet"), std::exception);
 }
+
+TEST(TEnumType, value2str)
+{
+	using mrpt::typemeta::TEnumType;
+
+	EXPECT_EQ(TEnumType<TestColors>::value2name(TestColors::White), "White");
+	EXPECT_EQ(TEnumType<TestColors>::value2name(TestColors::Black), "Black");
+	EXPECT_EQ(TEnumType<TestColors>::value2name(TestColors::Gray), "Gray");
+
+	EXPECT_EQ(TEnumType<Directions>::value2name(East), "East");
+
+
+	EXPECT_THROW(TEnumType<TestColors>::value2name(static_cast<TestColors>(5)), std::exception);
+}
