@@ -32,10 +32,7 @@ struct SE_traits;
 template <>
 struct SE_traits<3>
 {
-	enum
-	{
-		VECTOR_SIZE = 6
-	};
+	constexpr static size_t VECTOR_SIZE = 6;
 	using array_t = mrpt::math::CArrayDouble<VECTOR_SIZE>;
 	using matrix_VxV_t =
 		mrpt::math::CMatrixFixedNumeric<double, VECTOR_SIZE, VECTOR_SIZE>;
@@ -83,10 +80,7 @@ struct SE_traits<3>
 template <>
 struct SE_traits<2>
 {
-	enum
-	{
-		VECTOR_SIZE = 3
-	};
+	constexpr static size_t VECTOR_SIZE = 3;
 	using array_t = mrpt::math::CArrayDouble<VECTOR_SIZE>;
 	using matrix_VxV_t =
 		mrpt::math::CMatrixFixedNumeric<double, VECTOR_SIZE, VECTOR_SIZE>;
