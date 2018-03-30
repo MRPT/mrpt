@@ -24,12 +24,5 @@ TEST(XAssert, build_time)
 	foo_i_below_10(0);
 
 	// throws:
-	try
-	{
-		foo_i_below_10(11);
-		EXPECT_TRUE(false) << "Exception expected but did not happen";
-	}
-	catch (std::exception&)
-	{
-	}  // OK
+	EXPECT_THROW(foo_i_below_10(11), std::exception);
 }
