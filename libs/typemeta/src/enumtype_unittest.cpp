@@ -50,13 +50,5 @@ TEST(TEnumType, str2value)
 
 	EXPECT_EQ(TEnumType<Directions>::name2value("East"), East);
 
-	try
-	{
-		TEnumType<TestColors>::name2value("Violet");
-		EXPECT_FALSE(true) << "Expected exception but it didn't happen!";
-	}
-	catch (std::exception&)
-	{
-		// All good
-	}
+	EXPECT_THROW(TEnumType<TestColors>::name2value("Violet"), std::exception);
 }
