@@ -21,9 +21,7 @@ using cb_t = int;
 TEST(circular_buffer_tests, EmptyPop)
 {
 	mrpt::containers::circular_buffer<cb_t> cb(10);
-	try
-	{
-		cb_t ret;
+	cb_t ret;
 	EXPECT_THROW(cb.pop(ret),std::exception);
 }
 TEST(circular_buffer_tests, EmptyPopAfterPushes)
