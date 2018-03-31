@@ -22,7 +22,7 @@ TEST(circular_buffer_tests, EmptyPop)
 {
 	mrpt::containers::circular_buffer<cb_t> cb(10);
 	cb_t ret;
-	EXPECT_THROW(cb.pop(ret),std::exception);
+	EXPECT_THROW(cb.pop(ret), std::exception);
 }
 TEST(circular_buffer_tests, EmptyPopAfterPushes)
 {
@@ -34,7 +34,7 @@ TEST(circular_buffer_tests, EmptyPopAfterPushes)
 		cb_t ret;
 		for (size_t i = 0; i < nWr; i++) cb.pop(ret);
 		// The next one must fail:
-		EXPECT_THROW(cb.pop(ret),std::exception);
+		EXPECT_THROW(cb.pop(ret), std::exception);
 	}
 }
 
@@ -75,7 +75,7 @@ TEST(circular_buffer_tests, RandomWriteManyAndPeek)
 		dum_buf.resize(nWr);
 		cb.push_many(&dum_buf[0], nWr);
 		cb_t ret;
-		if (iter % 1)
+		if (iter % 2)
 		{
 			for (size_t i = 0; i < nWr; i++) ret = cb.peek(i);
 			MRPT_UNUSED_PARAM(ret);
@@ -84,7 +84,15 @@ TEST(circular_buffer_tests, RandomWriteManyAndPeek)
 		{
 			cb.peek_many(&dum_buf[0], nWr);
 		}
-		cb.pop_many(&dum_buf[0], nWr);
+		if (iter % 3)
+		{
+			for (size_t i = 0; i < nWr; i++) cb.pop(ret);
+			MRPT_UNUSED_PARAM(ret);
+		}
+		else
+		{
+			cb.pop_many(&dum_buf[0], nWr);
+		}
 	}
 }
 TEST(circular_buffer_tests, RandomWriteAndPeekOverrun)
