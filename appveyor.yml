@@ -1,0 +1,22 @@
+# version format
+version: 1.9.9-{branch}-build{build}
+
+os: Visual Studio 2017
+
+clone_folder: c:\projects\mrpt
+
+platform: x64
+configuration: Release
+
+build:
+  project: c:\projects\mrpt\build\MRPT.sln 
+
+#install:
+#  - set PATH=%PATH%;%QTDIR%\bin
+  
+before_build:
+  - cd c:\projects\mrpt
+  - mkdir build
+  - cd build
+  - cmake -G "Visual Studio 15 2017 Win64" -DEIGEN_USE_EMBEDDED_VERSION=ON ..
+    
