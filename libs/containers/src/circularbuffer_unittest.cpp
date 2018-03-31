@@ -24,13 +24,7 @@ TEST(circular_buffer_tests, EmptyPop)
 	try
 	{
 		cb_t ret;
-		cb.pop(ret);
-		GTEST_FAIL() << "Exception was expected but didn't happen!";
-	}
-	catch (std::exception&)
-	{
-		// OK
-	}
+	EXPECT_THROW(cb.pop(ret),std::exception);
 }
 TEST(circular_buffer_tests, EmptyPopAfterPushes)
 {
@@ -42,15 +36,7 @@ TEST(circular_buffer_tests, EmptyPopAfterPushes)
 		cb_t ret;
 		for (size_t i = 0; i < nWr; i++) cb.pop(ret);
 		// The next one must fail:
-		try
-		{
-			cb.pop(ret);
-			GTEST_FAIL() << "Exception was expected but didn't happen!";
-		}
-		catch (std::exception&)
-		{
-			// OK
-		}
+		EXPECT_THROW(cb.pop(ret),std::exception);
 	}
 }
 
