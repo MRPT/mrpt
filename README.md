@@ -1,11 +1,13 @@
 The MRPT project
 ====================================================
-[![Travis](https://travis-ci.org/MRPT/mrpt.png?branch=master)](https://travis-ci.org/MRPT/mrpt)
-[![Shippable](http://mrpt.ual.es:50000/projects/59fa7483a5b9410700f38883/badge?branch=master)](http://150.214.150.101:50001/github/MRPT/mrpt)
+[![Travis:gcc,clang](https://travis-ci.org/MRPT/mrpt.png?branch=master)](https://travis-ci.org/MRPT/mrpt)
+[![AppVeyor:msvc](https://ci.appveyor.com/api/projects/status/yjs4lpj02f6a1ylg?svg=true)](https://ci.appveyor.com/project/jlblancoc/mrpt-k05a9)
 [![codecov](https://codecov.io/gh/MRPT/mrpt/branch/master/graph/badge.svg)](https://codecov.io/gh/MRPT/mrpt)
 [![Releases](https://img.shields.io/github/release/MRPT/mrpt.svg)](https://github.com/MRPT/mrpt/releases)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/MRPT/mrpt)
 [![Open Source Helpers](https://www.codetriage.com/mrpt/mrpt/badges/users.svg)](https://www.codetriage.com/mrpt/mrpt)
+![SourceForge](https://img.shields.io/sourceforge/dt/mrpt.svg)
+![GitHub](https://img.shields.io/github/downloads/mrpt/mrpt/total.svg)
 
 ## 1. Introduction
 <img align="right" src="https://mrpt.github.io/imgs/mrpt-videos-mix2.gif">
