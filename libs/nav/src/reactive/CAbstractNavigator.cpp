@@ -96,7 +96,6 @@ CAbstractNavigator::CAbstractNavigator(CRobot2NavInterface& react_iterf_impl)
 	  m_counter_check_target_is_blocked(0),
 	  m_navigationState(IDLE),
 	  m_robot(react_iterf_impl),
-	  m_frame_tf(nullptr),
 	  m_curPoseVel(),
 	  m_last_curPoseVelUpdate_robot_time(-1e9),
 	  m_latestPoses(),
@@ -151,7 +150,8 @@ void CAbstractNavigator::resetNavError()
 	if (m_navigationState == NAV_ERROR) m_navigationState = IDLE;
 }
 
-void CAbstractNavigator::setFrameTF(mrpt::poses::FrameTransformer<2>* frame_tf)
+void CAbstractNavigator::setFrameTF(
+	const std::weak_ptr<mrpt::poses::FrameTransformer<2>>& frame_tf)
 {
 	m_frame_tf = frame_tf;
 }
@@ -215,11 +215,9 @@ void CAbstractNavigator::navigationStep()
 				if (m_lastNavigationState == NAVIGATING &&
 					m_navigationState == NAV_ERROR)
 				{
-					m_pending_events.push_back(
-						std::bind(
-							&CRobot2NavInterface::
-								sendNavigationEndDueToErrorEvent,
-							std::ref(m_robot)));
+					m_pending_events.push_back(std::bind(
+						&CRobot2NavInterface::sendNavigationEndDueToErrorEvent,
+						std::ref(m_robot)));
 				}
 
 				// If we just arrived at this state, stop the robot:
@@ -505,11 +503,10 @@ void CAbstractNavigator::performNavigationStepNavigating(
 				"[CAbstractNavigator::navigationStep()] Starting Navigation. "
 				"Watchdog initiated...\n");
 			if (m_navigationParams)
-				MRPT_LOG_DEBUG(
-					mrpt::format(
-						"[CAbstractNavigator::navigationStep()] Navigation "
-						"Params:\n%s\n",
-						m_navigationParams->getAsText().c_str()));
+				MRPT_LOG_DEBUG(mrpt::format(
+					"[CAbstractNavigator::navigationStep()] Navigation "
+					"Params:\n%s\n",
+					m_navigationParams->getAsText().c_str()));
 
 			internal_onStartNewNavigation();
 		}
@@ -517,10 +514,9 @@ void CAbstractNavigator::performNavigationStepNavigating(
 		// Have we just started the navigation?
 		if (m_lastNavigationState == IDLE)
 		{
-			m_pending_events.push_back(
-				std::bind(
-					&CRobot2NavInterface::sendNavigationStartEvent,
-					std::ref(m_robot)));
+			m_pending_events.push_back(std::bind(
+				&CRobot2NavInterface::sendNavigationStartEvent,
+				std::ref(m_robot)));
 		}
 
 		/* ----------------------------------------------------------------
@@ -551,10 +547,9 @@ void CAbstractNavigator::performNavigationStepNavigating(
 					params_abstract_navigator.dist_to_target_for_sending_event)
 			{
 				m_navigationEndEventSent = true;
-				m_pending_events.push_back(
-					std::bind(
-						&CRobot2NavInterface::sendNavigationEndEvent,
-						std::ref(m_robot)));
+				m_pending_events.push_back(std::bind(
+					&CRobot2NavInterface::sendNavigationEndEvent,
+					std::ref(m_robot)));
 			}
 
 			// Have we really reached the target?
@@ -573,10 +568,9 @@ void CAbstractNavigator::performNavigationStepNavigating(
 					if (!m_navigationEndEventSent)
 					{
 						m_navigationEndEventSent = true;
-						m_pending_events.push_back(
-							std::bind(
-								&CRobot2NavInterface::sendNavigationEndEvent,
-								std::ref(m_robot)));
+						m_pending_events.push_back(std::bind(
+							&CRobot2NavInterface::sendNavigationEndEvent,
+							std::ref(m_robot)));
 					}
 				}
 				return;
@@ -603,10 +597,9 @@ void CAbstractNavigator::performNavigationStepNavigating(
 
 					m_navigationState = NAV_ERROR;
 
-					m_pending_events.push_back(
-						std::bind(
-							&CRobot2NavInterface::sendWaySeemsBlockedEvent,
-							std::ref(m_robot)));
+					m_pending_events.push_back(std::bind(
+						&CRobot2NavInterface::sendWaySeemsBlockedEvent,
+						std::ref(m_robot)));
 					return;
 				}
 			}
@@ -633,11 +626,10 @@ void CAbstractNavigator::performNavigationStepNavigating(
 							"Target seems to be blocked by obstacles. Invoking"
 							" sendCannotGetCloserToBlockedTargetEvent().");
 
-						m_pending_events.push_back(
-							std::bind(
-								&CRobot2NavInterface::
-									sendCannotGetCloserToBlockedTargetEvent,
-								std::ref(m_robot)));
+						m_pending_events.push_back(std::bind(
+							&CRobot2NavInterface::
+								sendCannotGetCloserToBlockedTargetEvent,
+							std::ref(m_robot)));
 
 						m_counter_check_target_is_blocked = 0;
 					}

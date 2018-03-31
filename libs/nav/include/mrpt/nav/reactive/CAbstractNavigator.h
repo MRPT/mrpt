@@ -183,16 +183,12 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
 	 * targets in a frame ID
 	 * different than the one in which robot odometry is given (both IDs
 	 * default to `"map"`).
-	 * Ownership of the pointee object remains belonging to the user, which is
-	 * responsible of deleting it
-	 * and ensuring its a valid pointer during the lifetime of this navigator
-	 * object.
-	 * \todo [MRPT 2.0: Make this a weak_ptr]
 	 */
-	void setFrameTF(mrpt::poses::FrameTransformer<2>* frame_tf);
+	void setFrameTF(
+		const std::weak_ptr<mrpt::poses::FrameTransformer<2>>& frame_tf);
 
 	/** Get the current frame tf object (defaults to nullptr) \sa setFrameTF */
-	const mrpt::poses::FrameTransformer<2>* getFrameTF() const
+	std::weak_ptr<mrpt::poses::FrameTransformer<2>> getFrameTF() const
 	{
 		return m_frame_tf;
 	}
@@ -313,9 +309,8 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
 	/** The navigator-robot interface. */
 	CRobot2NavInterface& m_robot;
 
-	/** Optional, user-provided frame transformer.
-	 * Note: We dont have ownership of the pointee object! */
-	mrpt::poses::FrameTransformer<2>* m_frame_tf;
+	/** Optional, user-provided frame transformer. */
+	std::weak_ptr<mrpt::poses::FrameTransformer<2>> m_frame_tf;
 
 	/** mutex for all navigation methods */
 	std::recursive_mutex m_nav_cs;
