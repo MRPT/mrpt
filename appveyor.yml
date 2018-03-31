@@ -18,4 +18,6 @@ before_build:
   - cd c:\projects\mrpt
   - mkdir build
   - cd build
-  - cmake -G "Visual Studio 15 2017 Win64" ..
+  - cmake -G "Visual Studio 15 2017 Win64" .. \
+    -DEIGEN_USE_EMBEDDED_VERSION=ON
+    
