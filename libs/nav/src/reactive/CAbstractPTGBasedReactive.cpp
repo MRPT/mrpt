@@ -191,11 +191,10 @@ void CAbstractPTGBasedReactive::enableLogFile(bool enable)
 				}
 			}
 
-			MRPT_LOG_DEBUG(
-				mrpt::format(
-					"[CAbstractPTGBasedReactive::enableLogFile] Logging to "
-					"file `%s`\n",
-					aux));
+			MRPT_LOG_DEBUG(mrpt::format(
+				"[CAbstractPTGBasedReactive::enableLogFile] Logging to "
+				"file `%s`\n",
+				aux));
 		}
 	}
 	catch (std::exception& e)
@@ -451,16 +450,18 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		{
 			if (t.target_frame_id != m_curPoseVel.pose_frame_id)
 			{
-				if (m_frame_tf == nullptr)
+				auto frame_tf = m_frame_tf.lock();
+				if (!frame_tf)
 				{
 					THROW_EXCEPTION_FMT(
 						"Different frame_id's but no frame_tf object "
-						"attached!: target_frame_id=`%s` != pose_frame_id=`%s`",
+						"attached (or it expired)!: target_frame_id=`%s` != "
+						"pose_frame_id=`%s`",
 						t.target_frame_id.c_str(),
 						m_curPoseVel.pose_frame_id.c_str());
 				}
 				mrpt::math::TPose2D robot_frame2map_frame;
-				m_frame_tf->lookupTransform(
+				frame_tf->lookupTransform(
 					t.target_frame_id, m_curPoseVel.pose_frame_id,
 					robot_frame2map_frame);
 
@@ -558,10 +559,9 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		}
 		if (is_all_ptg_collision)
 		{
-			m_pending_events.push_back(
-				std::bind(
-					&CRobot2NavInterface::sendApparentCollisionEvent,
-					std::ref(m_robot)));
+			m_pending_events.push_back(std::bind(
+				&CRobot2NavInterface::sendApparentCollisionEvent,
+				std::ref(m_robot)));
 		}
 
 		// Round #2: Evaluate dont sending any new velocity command ("NOP"
@@ -882,19 +882,17 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 		if (m_enableConsoleOutput)
 		{
-			MRPT_LOG_DEBUG(
-				mrpt::format(
-					"CMD: %s "
-					"speedScale=%.04f "
-					"T=%.01lfms Exec:%.01lfms|%.01lfms "
-					"PTG#%i\n",
-					new_vel_cmd ? new_vel_cmd->asString().c_str() : "NOP",
-					selectedHolonomicMovement ? selectedHolonomicMovement->speed
-											  : .0,
-					1000.0 * meanExecutionPeriod.getLastOutput(),
-					1000.0 * meanExecutionTime.getLastOutput(),
-					1000.0 * meanTotalExecutionTime.getLastOutput(),
-					best_ptg_idx));
+			MRPT_LOG_DEBUG(mrpt::format(
+				"CMD: %s "
+				"speedScale=%.04f "
+				"T=%.01lfms Exec:%.01lfms|%.01lfms "
+				"PTG#%i\n",
+				new_vel_cmd ? new_vel_cmd->asString().c_str() : "NOP",
+				selectedHolonomicMovement ? selectedHolonomicMovement->speed
+										  : .0,
+				1000.0 * meanExecutionPeriod.getLastOutput(),
+				1000.0 * meanExecutionTime.getLastOutput(),
+				1000.0 * meanTotalExecutionTime.getLastOutput(), best_ptg_idx));
 		}
 		if (fill_log_record)
 		{
@@ -908,10 +906,9 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 	catch (std::exception& e)
 	{
 		doEmergencyStop(
-			std::string(
-				"[CAbstractPTGBasedReactive::performNavigationStep] "
-				"Stopping robot and finishing navigation due to "
-				"exception:\n") +
+			std::string("[CAbstractPTGBasedReactive::performNavigationStep] "
+						"Stopping robot and finishing navigation due to "
+						"exception:\n") +
 			std::string(e.what()));
 	}
 	catch (...)
@@ -1021,9 +1018,8 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 		double best_trg_angdist = std::numeric_limits<double>::max();
 		for (size_t i = 0; i < TP_Targets.size(); i++)
 		{
-			const double angdist = std::abs(
-				mrpt::math::angDistance(
-					TP_Targets[i].target_alpha, cm.direction));
+			const double angdist = std::abs(mrpt::math::angDistance(
+				TP_Targets[i].target_alpha, cm.direction));
 			if (angdist < best_trg_angdist)
 			{
 				best_trg_angdist = angdist;
@@ -1058,7 +1054,7 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 		!cm.PTG->supportSpeedAtTarget()  // If the PTG is able to handle the
 		// slow-down on its own, dont change
 		// speed here
-		)
+	)
 	{
 		const double TARGET_SLOW_APPROACHING_DISTANCE =
 			m_holonomicMethod[0]->getTargetApproachSlowDownDistance();
@@ -1801,9 +1797,8 @@ void CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::saveToConfigFile(
 	}
 	MRPT_SAVE_CONFIG_VAR_COMMENT(
 		holonomic_method,
-		string(
-			"C++ class name of the holonomic navigation method to run in "
-			"the transformed TP-Space.\n") +
+		string("C++ class name of the holonomic navigation method to run in "
+			   "the transformed TP-Space.\n") +
 			lstHoloStr);
 
 	// Build list of known decider methods:
