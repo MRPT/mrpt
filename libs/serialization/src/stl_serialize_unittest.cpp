@@ -57,13 +57,5 @@ TEST(Serialization, STL_complex_error_type)
 
 	// Trying to read to a different variable raises an exception:
 	f.Seek(0);
-	try
-	{
-		arch >> v2;
-		EXPECT_TRUE(false) << "Expected exception that was not raised!";
-	}
-	catch (std::exception&)
-	{
-		// Good.
-	}
+	EXPECT_THROW(arch >> v2, std::exception);
 }
