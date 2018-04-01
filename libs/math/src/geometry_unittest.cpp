@@ -78,6 +78,24 @@ TEST(Geometry, Segment2DIntersect)
 #endif
 }
 
+TEST(Geometry, Intersection3D)
+{
+	{
+		TPolygon3D p3d({
+			{ 1,0,0},
+			{ 0,1,0},
+			{ 0,0,1}
+		});
+		TSegment3D s3d({
+			{ 1,0,0},
+			{ 0,1,0},
+		});
+		TObject3D inter;
+		EXPECT_TRUE(intersect(p3d, s3d, inter));
+		EXPECT_EQ(inter.getType(), GEOMETRIC_TYPE_SEGMENT);
+	}
+}
+
 void myTestPolygonContainsPoint(std::vector<TPoint2D>& vs, bool convex)
 {
 	const mrpt::math::TPolygon2D poly(vs);
