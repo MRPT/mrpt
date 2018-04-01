@@ -44,6 +44,11 @@ IF(NOT MSVC)
     SET(CMAKE_THREAD_LIBS_INIT ${CMAKE_THREAD_LIBS_INIT} "-lpthread")
 ENDIF()
 
+if(MSVC)
+	# avoid MSVC pedantic warning on tr1. See: https://github.com/google/googletest/issues/1111
+	ADD_DEFINITIONS(/D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING)
+endif()
+
 
 get_property(LST_LIB_TESTS GLOBAL PROPERTY "MRPT_TEST_LIBS")
 FOREACH(_TSTLIB ${LST_LIB_TESTS})
