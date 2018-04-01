@@ -147,6 +147,60 @@ TEST(Geometry, Intersection3D)
 	}
 }
 
+TEST(Geometry, IntersectionPlanePlane)
+{
+	{
+		//Parallel planes
+		TPlane plane1({
+			{ 1,0,0},
+			{ 0,1,0},
+			{ 0,0,1},
+		});
+		TPlane plane2({
+			{ 2,0,0},
+			{ 0,2,0},
+			{ 0,0,2},
+		});
+
+		TObject3D inter;
+		EXPECT_FALSE(intersect(plane1, plane2, inter));
+	}
+	{
+		//Same plane
+		TPlane plane1({
+			{ 1,0,0},
+			{ 0,1,0},
+			{ 0,0,1},
+		});
+		TPlane plane2({
+			{ -1,1,1},
+			{ 1,-1,1},
+			{ 1,1,-1},
+		});
+
+		TObject3D inter;
+		EXPECT_TRUE(intersect(plane1, plane2, inter));
+		EXPECT_EQ(inter.getType(), GEOMETRIC_TYPE_PLANE);
+	}
+	{
+		//Intersecting planes
+		TPlane plane1({
+			{ 1,0,0},
+			{ 0,1,0},
+			{ 0,0,1},
+		});
+		TPlane plane2({
+			{ 1,0,0},
+			{ 0,-1,0},
+			{ 0,0,-1},
+		});
+
+		TObject3D inter;
+		EXPECT_TRUE(intersect(plane1, plane2, inter));
+		EXPECT_EQ(inter.getType(), GEOMETRIC_TYPE_LINE);
+	}
+}
+
 void myTestPolygonContainsPoint(std::vector<TPoint2D>& vs, bool convex)
 {
 	const mrpt::math::TPolygon2D poly(vs);
