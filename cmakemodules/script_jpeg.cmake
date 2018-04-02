@@ -6,13 +6,33 @@ IF(MSVC OR APPLE)
 ELSE(MSVC OR APPLE)
 	FIND_PACKAGE(JPEG)
 	IF(JPEG_FOUND)
-			#MESSAGE(STATUS "Found library: jpeg  - Include: ${JPEG_INCLUDE_DIR}")
-			INCLUDE_DIRECTORIES("${JPEG_INCLUDE_DIR}")
+		#MESSAGE(STATUS "Found library: jpeg  - Include: ${JPEG_INCLUDE_DIR}")
+		INCLUDE_DIRECTORIES("${JPEG_INCLUDE_DIR}")
 
-			SET(JPEG_LIBS ${JPEG_LIBRARIES})  #APPEND_MRPT_LIBS(jpeg)
+		SET(JPEG_LIBS ${JPEG_LIBRARIES})  #APPEND_MRPT_LIBS(jpeg)
 
-			SET(CMAKE_MRPT_HAS_JPEG_SYSTEM 1)
+		SET(CMAKE_MRPT_HAS_JPEG_SYSTEM 1)
 	ELSE(JPEG_FOUND)
-			SET(CMAKE_MRPT_HAS_JPEG_SYSTEM 0)
+		SET(CMAKE_MRPT_HAS_JPEG_SYSTEM 0)
 	ENDIF(JPEG_FOUND)
 ENDIF(MSVC OR APPLE)
+
+IF(${CMAKE_MRPT_HAS_JPEG_SYSTEM} EQUAL 0)
+	# Include embedded version headers:
+	include(ExternalProject)
+	# download Eigen from bitbucket
+	ExternalProject_Add(JPEG
+		URL               "https://github.com/libjpeg-turbo/libjpeg-turbo/archive/1.5.90.tar.gz"
+		URL_MD5           "85f7f9c377b70cbf48e61726097d4efa"
+		SOURCE_DIR        "${MRPT_BINARY_DIR}/otherlibs/libjpeg-turbo/"
+		CMAKE_ARGS
+			-DENABLE_SHARED=OFF
+			-DCMAKE_POSITION_INDEPENDENT_CODE=ON
+		INSTALL_COMMAND   ""
+	)
+
+	INCLUDE_DIRECTORIES("${MRPT_BINARY_DIR}/otherlibs/libjpeg-turbo/")
+	INCLUDE_DIRECTORIES("${MRPT_BINARY_DIR}/JPEG-prefix/src/JPEG-build")
+	SET(JPEG_LIBS ${MRPT_BINARY_DIR}/JPEG-prefix/src/JPEG-build/libjpeg.a)
+
+ENDIF(${CMAKE_MRPT_HAS_JPEG_SYSTEM} EQUAL 0)

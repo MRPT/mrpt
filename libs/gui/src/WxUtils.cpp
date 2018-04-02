@@ -164,7 +164,7 @@ wxImage* mrpt::gui::MRPTImage2wxImage(const mrpt::img::CImage& img)
 // An auxiliary function for passing MRPT images to wxWidgets images.
 //   The returned object MUST be deleted by hand!
 //------------------------------------------------------------------------
-wxBitmap* mrpt::gui::MRPTImage2wxBitmap(const CImage& img)
+wxBitmap* mrpt::gui::MRPTImage2wxBitmap(const mrpt::img::CImage& img)
 {
 #if MRPT_HAS_OPENCV
 	IplImage* image = const_cast<IplImage*>(img.getAs<IplImage>());
@@ -278,7 +278,7 @@ wxImage* mrpt::gui::IplImage2wxImage(void* img)
 //------------------------------------------------------------------------
 mrpt::img::CImage* mrpt::gui::wxImage2MRPTImage(const wxImage& img)
 {
-	CImage* newImg = new CImage();
+	mrpt::img::CImage* newImg = new mrpt::img::CImage();
 
 	const size_t lx = img.GetWidth();
 	const size_t ly = img.GetHeight();
@@ -968,7 +968,7 @@ void CPanelCameraSelection::writeConfigFromVideoSourcePanel(
 			if (!rawlog_lb.empty())
 				cfg->write(sect, "rawlog_camera_sensor_label", rawlog_lb);
 
-			CImage::setImagesPathBase(
+			mrpt::img::CImage::setImagesPathBase(
 				string(this->edRawlogImgDir->GetValue().mb_str()));
 		}
 		break;
