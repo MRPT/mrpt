@@ -1,9 +1,3 @@
-# Embedded version of libjpeg for (mostly) Windows:
-IF (CMAKE_MRPT_HAS_JPEG AND NOT CMAKE_MRPT_HAS_JPEG_SYSTEM)
-	LIST(APPEND img_EXTRA_SRCS			"${MRPT_LIBS_ROOT}/img/src/jpeglib/*.cpp" "${MRPT_LIBS_ROOT}/img/src/jpeglib/*.h")
-	LIST(APPEND img_EXTRA_SRCS_NAME 	"img/jpeglib" "img/jpeglib")
-ENDIF ()
-
 IF(CMAKE_MRPT_HAS_OPENCV)
 	INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${OPENCV_INCLUDE_DIRS} ${OPENCV_INCLUDEDIR})
 ENDIF()
