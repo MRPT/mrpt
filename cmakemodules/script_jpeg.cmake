@@ -16,9 +16,15 @@ ELSE(MSVC OR APPLE)
 ENDIF(MSVC OR APPLE)
 
 IF(NOT CMAKE_MRPT_HAS_JPEG_SYSTEM)
-	# Include embedded version headers:
 	include(ExternalProject)
-	# download Eigen from bitbucket
+
+	FIND_PROGRAM(NASM_PATH nasm)
+	if(NASM_PATH)
+		SET(JPEG_ENABLE_SIMD 1)
+	else(NASM_PATH)
+		SET(JPEG_ENABLE_SIMD 0)
+	endif(NASM_PATH)
+
 	ExternalProject_Add(JPEG
 		URL               "https://github.com/libjpeg-turbo/libjpeg-turbo/archive/1.5.90.tar.gz"
 		URL_MD5           "85f7f9c377b70cbf48e61726097d4efa"
@@ -26,6 +32,7 @@ IF(NOT CMAKE_MRPT_HAS_JPEG_SYSTEM)
 		CMAKE_ARGS
 			-DENABLE_SHARED=OFF
 			-DCMAKE_POSITION_INDEPENDENT_CODE=ON
+			-DWITH_SIMD=${JPEG_ENABLE_SIMD}
 		INSTALL_COMMAND   ""
 	)
 
