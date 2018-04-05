@@ -36,10 +36,10 @@ IF (NOT ASSIMP_FOUND)
 		include(ExternalProject)
 		# download from GH
 		ExternalProject_Add(EP_assimp
-		  URL               "https://github.com/assimp/assimp/archive/v4.0.1.tar.gz"
-		  URL_MD5           "23a6301c728a413aafbfa1cca19ba91f"
+		  URL               "https://github.com/assimp/assimp/archive/v4.1.0.tar.gz"
+		  URL_MD5           "83b53a10c38d964bd1e69da0606e2727"
 		  SOURCE_DIR        "${MRPT_BINARY_DIR}/otherlibs/assimp/"
-		  CMAKE_ARGS
+		  CMAKE_ARGS 
 			-DASSIMP_BUILD_ASSIMP_TOOLS=OFF
 			-DASSIMP_BUILD_SAMPLES=OFF
 			-DASSIMP_BUILD_STATIC_LIB=ON
