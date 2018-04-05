@@ -81,6 +81,8 @@ CObservationReflectivity to support different colors of light.
 			- CHokuyoURG:
 				- Rewrite driver to be safer and reduce mem allocs.
 				- New parameter `scan_interval` to decimate scans.
+		- \ref mrpt_opengl_grp
+			- Update Assimp lib version 4.0.1 -> 4.1.0 (when built as ExternalProject)
 	- BUG FIXES:
 		- Fix reactive navigator inconsistent state if navigation API is called
 from within rnav callbacks.
