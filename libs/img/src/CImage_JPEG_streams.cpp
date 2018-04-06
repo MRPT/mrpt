@@ -29,21 +29,8 @@ using namespace mrpt::img;
 
 #include <stdio.h>
 
-// In Windows, we HAVE TO (YES dear...) include our custom jpeglib
-//  The problem is that, without .so/.dlls, all the libs have their
-//  own jpeglib and runtime checks of expected type-sizes fail
-//  causing asserts.... (fix: JLBC 20/OCT/2008)
-#if MRPT_HAS_JPEG_SYSTEM
-// Normal: System libraries (typ. unix)
 #include <jpeglib.h>
-
-// Convert mrpt-names to normal ones:
 #define mrpt_jpeg_source_mgr jpeg_source_mgr
-
-#elif MRPT_HAS_JPEG  // Built-in version
-#include "jpeglib/mrpt_jpeglib.h"
-#define mrpt_jpeg_source_mgr jpeg_source_mgr
-#endif
 
 using mrpt::io::CStream;
 
