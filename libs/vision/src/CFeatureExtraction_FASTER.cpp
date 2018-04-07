@@ -15,7 +15,7 @@
 #include <mrpt/otherlibs/do_opencv_includes.h>
 
 #if MRPT_HAS_OPENCV
-#include "faster/faster_corner_prototypes.h"
+#include "faster_corner_prototypes.h"
 #endif
 
 using namespace mrpt;
