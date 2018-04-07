@@ -1,0 +1,8 @@
+#ifndef CVD_INCLUDE_CONFIG_H_3216ac8
+#define CVD_INCLUDE_CONFIG_H_3216ac8
+	#undef CVD_HAVE_TOON
+	#undef CVD_HAVE_JPEG
+	#undef CVD_HAVE_PNG
+	#undef CVD_HAVE_TIFF
+	#undef CVD_HAVE_GLOB
+#endif

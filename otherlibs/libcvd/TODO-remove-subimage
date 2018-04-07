@@ -1,0 +1,10 @@
+Move colourspace conversion functions from asm to SSE intrinsics where applicable.
+
+Move other C style ones to CVD style ones
+
+Test the code
+
+Fix up image.zero() / utility/ZeroPixels
+
+Is Gradient ever used? Seems oddly written.
+

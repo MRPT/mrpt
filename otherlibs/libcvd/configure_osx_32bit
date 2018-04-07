@@ -1,0 +1,26 @@
+#!/bin/bash
+#This script forces Snow Leopard (10.6) to build using Leopard (10.5)
+and to build a 32 bit build.
+# Use it when building livCVD, GVars, and lib3ds
+#
+# Originally wirrten by Damian Stewart
+# http://lists.nongnu.org/archive/html/libcvd-members/2010-05/msg00000.html
+# Modified by Robert Castle
+
+SDK="-isysroot /Developer/SDKs/MacOSX10.6.sdk"
+SDKLIB="-Wl,-syslibroot,/Developer/SDKs/MacOSX10.6.sdk"
+export MACOSX_DEPLOYMENT_TARGET="10.5"
+
+ARCH="-arch i386"
+
+export CFLAGS="$ARCH $SDK -mmacosx-version-min=10.5 -m32 -D_OSX"
+export CXXFLAGS="$ARCH $SDK -mmacosx-version-min=10.5 -m32 -D_OSX"
+export CPPFLAGS="$ARCH $SDK -mmacosx-version-min=10.5 -m32 -D_OSX"
+export LDFLAGS="$ARCH $SDKLIB -mmacosx-version-min=10.5 -m32"
+
+CC="/usr/bin/gcc-4.2"
+CXX="/usr/bin/g++-4.2"
+OBJC="/usr/bin/gcc-4.2"
+
+./configure $1 $2 $3 $4 $5 $6 $7 $8 $9
+
