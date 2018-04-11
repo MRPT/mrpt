@@ -19,12 +19,31 @@ IF(CMAKE_MRPT_HAS_SIFT_HESS)
 	LIST(APPEND vision_EXTRA_SRCS_NAME 	"sift-hess" "sift-hess" "sift-hess" "sift-hess")
 ENDIF()
 
-LIST(APPEND vision_EXTRA_SRCS
-	"${MRPT_SOURCE_DIR}/libs/vision/src/faster/*.cpp"
-	"${MRPT_SOURCE_DIR}/libs/vision/src/faster/*.h" )
-LIST(APPEND vision_EXTRA_SRCS_NAME 	"faster" "faster")
-
 IF(CMAKE_MRPT_HAS_OPENCV)
+
+	include(ExternalProject)
+
+	ExternalProject_Add(libcvd
+		SOURCE_DIR ${MRPT_SOURCE_DIR}/otherlibs/libcvd
+		CMAKE_ARGS
+			-DCMAKE_POSITION_INDEPENDENT_CODE=ON
+			-DCVD_SSE2=${CMAKE_MRPT_HAS_SSE2}
+			-DCVD_TESTS=OFF
+			-DCVD_PROGS=OFF
+			-DCVD_EXAMPLES=OFF
+		INSTALL_COMMAND ""
+	)
+
+	set(CVD_DIR "${MRPT_SOURCE_DIR}/otherlibs/libcvd")
+	set(CVD_BIN_DIR "${MRPT_BINARY_DIR}/libs/vision/libcvd-prefix/src/libcvd-build")
+
+	if(MSVC)
+		set(CVD_LIB "${CVD_BIN_DIR}/$<CONFIG>/CVD$<$<CONFIG:Debug>:_debug>.lib")
+	else()
+		set(CVD_LIB "${CVD_BIN_DIR}/libCVD.a")
+	endif()
+	INCLUDE_DIRECTORIES(${CVD_DIR})
+
 	INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${OPENCV_INCLUDE_DIRS} ${OPENCV_INCLUDEDIR})
 ENDIF()
 
@@ -37,6 +56,10 @@ define_mrpt_lib(
 	# Dependencies:
 	mrpt-obs
 	)
+
+IF(CMAKE_MRPT_HAS_OPENCV)
+	add_dependencies(mrpt-vision libcvd)
+ENDIF()
 
 IF(BUILD_mrpt-vision)
 	IF(CMAKE_MRPT_HAS_SIFT_HESS)
@@ -57,7 +80,7 @@ IF(BUILD_mrpt-vision)
 	ENDIF ()
 
 	IF(CMAKE_MRPT_HAS_OPENCV)
-		target_link_libraries(mrpt-vision PRIVATE ${OpenCV_LIBRARIES})
+		target_link_libraries(mrpt-vision PRIVATE ${OpenCV_LIBRARIES} ${CVD_LIB})
 	ENDIF()
 
 ENDIF()

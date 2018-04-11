@@ -1,0 +1,320 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A361D5CA134DC1A400B594C3 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A361D5C9134DC1A400B594C3 /* UIKit.framework */; };
+		A361D5CC134DC1A400B594C3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A361D5CB134DC1A400B594C3 /* Foundation.framework */; };
+		A361D5CE134DC1A400B594C3 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A361D5CD134DC1A400B594C3 /* CoreGraphics.framework */; };
+		A361D5D0134DC1A400B594C3 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A361D5CF134DC1A400B594C3 /* QuartzCore.framework */; };
+		A361D5D2134DC1A400B594C3 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A361D5D1134DC1A400B594C3 /* OpenGLES.framework */; };
+		A361D5D8134DC1A400B594C3 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A361D5D6134DC1A400B594C3 /* InfoPlist.strings */; };
+		A361D5DB134DC1A400B594C3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A361D5DA134DC1A400B594C3 /* main.m */; };
+		A361D5DE134DC1A400B594C3 /* videoAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A361D5DD134DC1A400B594C3 /* videoAppDelegate.m */; };
+		A361D5E1134DC1A400B594C3 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = A361D5DF134DC1A400B594C3 /* MainWindow.xib */; };
+		A361D5E8134DC1A400B594C3 /* EAGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = A361D5E7134DC1A400B594C3 /* EAGLView.m */; };
+		A361D5EB134DC1A400B594C3 /* videoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A361D5EA134DC1A400B594C3 /* videoViewController.m */; };
+		A361D5EE134DC1A400B594C3 /* videoViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A361D5EC134DC1A400B594C3 /* videoViewController.xib */; };
+		A361D5F6134DC1DA00B594C3 /* Camera.m in Sources */ = {isa = PBXBuildFile; fileRef = A361D5F5134DC1DA00B594C3 /* Camera.m */; };
+		A361D5FF134E4D3D00B594C3 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A361D5FE134E4D3D00B594C3 /* AVFoundation.framework */; };
+		A361D601134E4D5000B594C3 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A361D600134E4D5000B594C3 /* CoreVideo.framework */; };
+		A361D603134E4D5B00B594C3 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A361D602134E4D5B00B594C3 /* CoreMedia.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A361D5C5134DC1A400B594C3 /* video.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = video.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A361D5C9134DC1A400B594C3 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		A361D5CB134DC1A400B594C3 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		A361D5CD134DC1A400B594C3 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		A361D5CF134DC1A400B594C3 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		A361D5D1134DC1A400B594C3 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		A361D5D5134DC1A400B594C3 /* video-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "video-Info.plist"; sourceTree = "<group>"; };
+		A361D5D7134DC1A400B594C3 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		A361D5D9134DC1A400B594C3 /* video-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "video-Prefix.pch"; sourceTree = "<group>"; };
+		A361D5DA134DC1A400B594C3 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		A361D5DC134DC1A400B594C3 /* videoAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = videoAppDelegate.h; sourceTree = "<group>"; };
+		A361D5DD134DC1A400B594C3 /* videoAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = videoAppDelegate.m; sourceTree = "<group>"; };
+		A361D5E0134DC1A400B594C3 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainWindow.xib; sourceTree = "<group>"; };
+		A361D5E6134DC1A400B594C3 /* EAGLView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EAGLView.h; sourceTree = "<group>"; };
+		A361D5E7134DC1A400B594C3 /* EAGLView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EAGLView.m; sourceTree = "<group>"; };
+		A361D5E9134DC1A400B594C3 /* videoViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = videoViewController.h; sourceTree = "<group>"; };
+		A361D5EA134DC1A400B594C3 /* videoViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = videoViewController.m; sourceTree = "<group>"; };
+		A361D5ED134DC1A400B594C3 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/videoViewController.xib; sourceTree = "<group>"; };
+		A361D5F4134DC1DA00B594C3 /* Camera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Camera.h; sourceTree = "<group>"; };
+		A361D5F5134DC1DA00B594C3 /* Camera.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Camera.m; sourceTree = "<group>"; };
+		A361D5FE134E4D3D00B594C3 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		A361D600134E4D5000B594C3 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		A361D602134E4D5B00B594C3 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A361D5C2134DC1A400B594C3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A361D603134E4D5B00B594C3 /* CoreMedia.framework in Frameworks */,
+				A361D601134E4D5000B594C3 /* CoreVideo.framework in Frameworks */,
+				A361D5FF134E4D3D00B594C3 /* AVFoundation.framework in Frameworks */,
+				A361D5CA134DC1A400B594C3 /* UIKit.framework in Frameworks */,
+				A361D5CC134DC1A400B594C3 /* Foundation.framework in Frameworks */,
+				A361D5CE134DC1A400B594C3 /* CoreGraphics.framework in Frameworks */,
+				A361D5D0134DC1A400B594C3 /* QuartzCore.framework in Frameworks */,
+				A361D5D2134DC1A400B594C3 /* OpenGLES.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A361D5BA134DC1A400B594C3 = {
+			isa = PBXGroup;
+			children = (
+				A361D5D3134DC1A400B594C3 /* video */,
+				A361D5C8134DC1A400B594C3 /* Frameworks */,
+				A361D5C6134DC1A400B594C3 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A361D5C6134DC1A400B594C3 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A361D5C5134DC1A400B594C3 /* video.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A361D5C8134DC1A400B594C3 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A361D602134E4D5B00B594C3 /* CoreMedia.framework */,
+				A361D600134E4D5000B594C3 /* CoreVideo.framework */,
+				A361D5FE134E4D3D00B594C3 /* AVFoundation.framework */,
+				A361D5C9134DC1A400B594C3 /* UIKit.framework */,
+				A361D5CB134DC1A400B594C3 /* Foundation.framework */,
+				A361D5CD134DC1A400B594C3 /* CoreGraphics.framework */,
+				A361D5CF134DC1A400B594C3 /* QuartzCore.framework */,
+				A361D5D1134DC1A400B594C3 /* OpenGLES.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A361D5D3134DC1A400B594C3 /* video */ = {
+			isa = PBXGroup;
+			children = (
+				A361D5F4134DC1DA00B594C3 /* Camera.h */,
+				A361D5F5134DC1DA00B594C3 /* Camera.m */,
+				A361D5DC134DC1A400B594C3 /* videoAppDelegate.h */,
+				A361D5DD134DC1A400B594C3 /* videoAppDelegate.m */,
+				A361D5DF134DC1A400B594C3 /* MainWindow.xib */,
+				A361D5E6134DC1A400B594C3 /* EAGLView.h */,
+				A361D5E7134DC1A400B594C3 /* EAGLView.m */,
+				A361D5E9134DC1A400B594C3 /* videoViewController.h */,
+				A361D5EA134DC1A400B594C3 /* videoViewController.m */,
+				A361D5EC134DC1A400B594C3 /* videoViewController.xib */,
+				A361D5D4134DC1A400B594C3 /* Supporting Files */,
+			);
+			path = video;
+			sourceTree = "<group>";
+		};
+		A361D5D4134DC1A400B594C3 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				A361D5D5134DC1A400B594C3 /* video-Info.plist */,
+				A361D5D6134DC1A400B594C3 /* InfoPlist.strings */,
+				A361D5D9134DC1A400B594C3 /* video-Prefix.pch */,
+				A361D5DA134DC1A400B594C3 /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A361D5C4134DC1A400B594C3 /* video */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A361D5F1134DC1A400B594C3 /* Build configuration list for PBXNativeTarget "video" */;
+			buildPhases = (
+				A361D5C1134DC1A400B594C3 /* Sources */,
+				A361D5C2134DC1A400B594C3 /* Frameworks */,
+				A361D5C3134DC1A400B594C3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = video;
+			productName = video;
+			productReference = A361D5C5134DC1A400B594C3 /* video.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A361D5BC134DC1A400B594C3 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				ORGANIZATIONNAME = "TU Graz";
+			};
+			buildConfigurationList = A361D5BF134DC1A400B594C3 /* Build configuration list for PBXProject "video" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = A361D5BA134DC1A400B594C3;
+			productRefGroup = A361D5C6134DC1A400B594C3 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A361D5C4134DC1A400B594C3 /* video */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A361D5C3134DC1A400B594C3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A361D5D8134DC1A400B594C3 /* InfoPlist.strings in Resources */,
+				A361D5E1134DC1A400B594C3 /* MainWindow.xib in Resources */,
+				A361D5EE134DC1A400B594C3 /* videoViewController.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A361D5C1134DC1A400B594C3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A361D5DB134DC1A400B594C3 /* main.m in Sources */,
+				A361D5DE134DC1A400B594C3 /* videoAppDelegate.m in Sources */,
+				A361D5E8134DC1A400B594C3 /* EAGLView.m in Sources */,
+				A361D5EB134DC1A400B594C3 /* videoViewController.m in Sources */,
+				A361D5F6134DC1DA00B594C3 /* Camera.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		A361D5D6134DC1A400B594C3 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A361D5D7134DC1A400B594C3 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		A361D5DF134DC1A400B594C3 /* MainWindow.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A361D5E0134DC1A400B594C3 /* en */,
+			);
+			name = MainWindow.xib;
+			sourceTree = "<group>";
+		};
+		A361D5EC134DC1A400B594C3 /* videoViewController.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A361D5ED134DC1A400B594C3 /* en */,
+			);
+			name = videoViewController.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		A361D5EF134DC1A400B594C3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		A361D5F0134DC1A400B594C3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				SDKROOT = iphoneos;
+			};
+			name = Release;
+		};
+		A361D5F2134DC1A400B594C3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "video/video-Prefix.pch";
+				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
+				INFOPLIST_FILE = "video/video-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		A361D5F3134DC1A400B594C3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "video/video-Prefix.pch";
+				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
+				INFOPLIST_FILE = "video/video-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				VALIDATE_PRODUCT = YES;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A361D5BF134DC1A400B594C3 /* Build configuration list for PBXProject "video" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A361D5EF134DC1A400B594C3 /* Debug */,
+				A361D5F0134DC1A400B594C3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A361D5F1134DC1A400B594C3 /* Build configuration list for PBXNativeTarget "video" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A361D5F2134DC1A400B594C3 /* Debug */,
+				A361D5F3134DC1A400B594C3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A361D5BC134DC1A400B594C3 /* Project object */;
+}
