@@ -1,0 +1,9 @@
+#ifndef CVD_INCLUDE_CONFIG_H_3216ac8
+#define CVD_INCLUDE_CONFIG_H_3216ac8
+#cmakedefine CVD_VERSION_STRING
+#cmakedefine CVD_HAVE_TOON
+#cmakedefine CVD_HAVE_JPEG
+#cmakedefine CVD_HAVE_PNG
+#cmakedefine CVD_HAVE_TIFF
+#cmakedefine CVD_HAVE_GLOB
+#endif

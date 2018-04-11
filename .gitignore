@@ -18,3 +18,5 @@ Session.vim
 # common results directories
 graphslam_results/
 
+#visual studio
+.vs/*

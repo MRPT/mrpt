@@ -1,0 +1,42 @@
+In no particular order 
+
+	Exceptions in o2buffer
+	Exceptions in dvbuffer
+
+	More helper functions for diskbuffer
+
+	mplayerbuffer
+
+
+	Ethan's algorithms stuff
+
+	Memory leak occurs if an exception is thrown in v4l2buffer after the new in the constructor
+	
+	More image libraries.
+
+
+	move EndOfBufferBehaviour in to LocalVideoBuffer base class
+
+
+	Make imagestreambuffer
+
+	Put dynamic_cast<> type checking in all put_frame()s in all VideoBuffer s
+
+	Fix alpha loading in TIFF images. Currently, the loading loads precomposited and noncomposited images in the same way. Also, it loads alpha as an opacity (1 = opaque) value, whereas the convert_pixel stuff treats aplha as transparency (0 = opaque). This needs to be fixed.
+
+Done
+	There is a FIXME in videofilebuffer.cc to be fixed
+	Colourspace buffer
+	Templated v4l2buffer
+	Working v4l2buffer for 2.6
+	Prevent JPEG loader from trashing the next one in the stream
+	Auto configuration
+	JPEG saving
+	Get .so to work with exceptions
+	MPEG buffer
+	General owned image buffer from which one would derive diskbuffer, etc
+	Templated MPEG buffer
+	Move frames_per_second() in to video buffer base class
+	wls_c? fixed.
+	Redo configuration, so it is only done once. Autoconf now used.
+	v4l1buffer
