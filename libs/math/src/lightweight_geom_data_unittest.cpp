@@ -117,3 +117,53 @@ TEST(LightGeomData, ConstExprCtors)
 		static_assert(p_div.y == 3.0, "p_div.y == 3.0");
 	}
 }
+
+TEST(LightGeomData, Conversions)
+{
+	{
+		TPose3D p1{1.0,2.0,3.0,4.0,5.0,6.0};
+		TPoint2D p2(p1);
+		EXPECT_EQ(p2.x, 1);
+		EXPECT_EQ(p2.y, 2);
+	}
+	{
+		TPoint3D p1{1.0,2.0,3.0};
+		TPose2D p2(p1);
+		EXPECT_EQ(p2.x, 1.0);
+		EXPECT_EQ(p2.y, 2.0);
+		EXPECT_EQ(p2.phi, 0.0);
+	}
+}
+
+TEST(LightGeomData, Comparisons)
+{
+	{
+		TPoint2D p1 {1,1};
+		TPoint2D p2 {1,1};
+		EXPECT_FALSE(p1 < p2);
+	}
+	{
+		TPoint2D p1 {1,1};
+		TPoint2D p2 {2,2};
+		EXPECT_TRUE(p1 < p2);
+		EXPECT_FALSE(p2 < p1);
+	}
+}
+
+TEST(LightGeomData, Strings)
+{
+	{
+		TPose2D p {1,2,M_PI};
+		std::string s;		
+		p.asString(s);
+		//note this is printed in degrees
+		EXPECT_EQ(s, "[1.000000 2.000000 180.000000]");
+	}
+	{
+		TPose2D p;
+		p.fromString("[1 2 180]");
+		EXPECT_DOUBLE_EQ(p.x, 1);
+		EXPECT_DOUBLE_EQ(p.y, 2);
+		EXPECT_DOUBLE_EQ(p.phi, M_PI);
+	}
+}
