@@ -28,7 +28,7 @@ IMPLEMENTS_SERIALIZABLE(CSimpleMap, CSerializable, mrpt::maps)
 const auto fn_pair_make_unique = [](auto& ptr) {
 	ptr.first.reset(dynamic_cast<mrpt::poses::CPose3DPDF*>(ptr.first->clone()));
 	ptr.second.reset(
-		dynamic_cast<mrpt::obs::CSensoryFrame*>(ptr.first->clone()));
+		dynamic_cast<mrpt::obs::CSensoryFrame*>(ptr.second->clone()));
 };
 
 CSimpleMap::CSimpleMap(const CSimpleMap& o) : m_posesObsPairs(o.m_posesObsPairs)
