@@ -184,6 +184,10 @@ class CArchive
 		{
 			const mrpt::rtti::TRuntimeClassId* classId =
 				mrpt::rtti::findRegisteredClass(strClassName);
+			if (!classId)
+				THROW_EXCEPTION_FMT(
+					"Stored object has class '%s' which is not registered!",
+					strClassName.c_str());
 			obj.reset(dynamic_cast<CSerializable*>(classId->createObject()));
 		}
 		internal_ReadObject(
@@ -251,7 +255,7 @@ class CArchive
 		if (!classId)
 			THROW_EXCEPTION_FMT(
 				"Stored object has class '%s' which is not registered!",
-				strClassName.c_str())
+				strClassName.c_str());
 		if (strClassName != "nullptr")
 		{
 			obj.reset(dynamic_cast<CSerializable*>(classId->createObject()));
@@ -332,11 +336,11 @@ class CArchive
 	void sendMessage(const CMessage& msg);
 
 	/** Tries to receive a message from the device.
-	  * \exception std::exception On communication errors
-	  * \returns True if successful, false if there is no new data from the
+	 * \exception std::exception On communication errors
+	 * \returns True if successful, false if there is no new data from the
 	 * device (but communications seem to work fine)
-	  * \sa The frame format is described in sendMessage()
-	  */
+	 * \sa The frame format is described in sendMessage()
+	 */
 	bool receiveMessage(CMessage& msg);
 
 	/** Write an object to a stream in the binary MRPT format. */
@@ -454,9 +458,9 @@ CArchive& operator<<(CArchive& s, const std::vector<double>& a);
 CArchive& operator>>(CArchive& s, std::vector<size_t>& a);
 #endif
 //
-template <typename T,
-		  std::enable_if_t<std::is_base_of<mrpt::serialization::CSerializable,
-										   T>::value>* = nullptr>
+template <
+	typename T, std::enable_if_t<std::is_base_of<
+					mrpt::serialization::CSerializable, T>::value>* = nullptr>
 CArchive& operator>>(CArchive& in, typename std::shared_ptr<T>& pObj)
 {
 	pObj = in.ReadObject<T>();
@@ -487,6 +491,7 @@ class CArchiveStreamBase : public CArchive
 
    public:
 	CArchiveStreamBase(STREAM& s) : m_s(s) {}
+
    protected:
 	size_t write(const void* d, size_t n) override { return m_s.Write(d, n); }
 	size_t read(void* d, size_t n) override { return m_s.Read(d, n); }
