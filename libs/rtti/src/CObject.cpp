@@ -82,8 +82,8 @@ CObject* TRuntimeClassId::createObject() const
 	{
 		fprintf(
 			stderr,
-			"[TRuntimeClassId::createObject] Trying to create an object with "
-			"not dynamic constructor. classname=`%s`\n",
+			"[TRuntimeClassId::createObject] Trying to create an object "
+			"without dynamic constructor. classname=`%s`\n",
 			className != nullptr ? className : "nullptr");
 		return nullptr;
 	}
