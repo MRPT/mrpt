@@ -16,6 +16,7 @@
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/graphs/CGraphPartitioner.h>
 #include <mrpt/system/CTicTac.h>
+#include <mrpt/config/CConfigFilePrefixer.h>
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CSetOfObjects.h>
@@ -33,189 +34,99 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CIncrementalMapPartitioner, CSerializable, mrpt::slam)
 
-/*---------------------------------------------------------------
-						Constructor
-  ---------------------------------------------------------------*/
-CIncrementalMapPartitioner::CIncrementalMapPartitioner()
-	: COutputLogger("CIncrementalMapPartitioner"),
-	  options(),
-	  m_individualFrames(),
-	  m_individualMaps(),
-	  m_A(0, 0),
-	  m_last_partition(),
-	  m_last_last_partition_are_new_ones(false),
-	  m_modified_nodes()
+
+static double eval_similarity_metric_map_matching(
+	const CIncrementalMapPartitioner *parent,
+	const mrpt::maps::CMultiMetricMap &m1,
+	const mrpt::maps::CMultiMetricMap &m2,
+	const mrpt::obs::CSensoryFrame &sf1,
+	const mrpt::obs::CSensoryFrame &sf2,
+	const mrpt::poses::CPose3D &relPose2wrt1
+)
 {
-	clear();
+	return m1.compute3DMatchingRatio(&m2, relPose2wrt1, parent->options.mrp);
+}
+static double eval_similarity_observation_overlap(
+	const mrpt::maps::CMultiMetricMap &m1,
+	const mrpt::maps::CMultiMetricMap &m2,
+	const mrpt::obs::CSensoryFrame &sf1,
+	const mrpt::obs::CSensoryFrame &sf2,
+	const mrpt::poses::CPose3D &relPose2wrt1
+)
+{
+	return observationsOverlap(sf1, sf2, &relPose2wrt1);
 }
 
-/*---------------------------------------------------------------
-						Destructor
-  ---------------------------------------------------------------*/
-CIncrementalMapPartitioner::~CIncrementalMapPartitioner() { clear(); }
-/*---------------------------------------------------------------
-						Destructor
-  ---------------------------------------------------------------*/
 CIncrementalMapPartitioner::TOptions::TOptions()
-	: partitionThreshold(1.0f),
-	  gridResolution(0.10f),
-	  minDistForCorrespondence(0.20f),
-	  minMahaDistForCorrespondence(2.0f),
-	  forceBisectionOnly(false),
-	  useMapMatching(true),
-	  minimumNumberElementsEachCluster(1)
 {
+	CSimplePointsMap::TMapDefinition def;
+	metricmap.push_back(def);
 }
 
-/*---------------------------------------------------------------
-						loadFromConfigFile
-  ---------------------------------------------------------------*/
 void CIncrementalMapPartitioner::TOptions::loadFromConfigFile(
 	const mrpt::config::CConfigFileBase& source, const string& section)
 {
 	MRPT_START
 
-	MRPT_LOAD_CONFIG_VAR(partitionThreshold, float, source, section);
-	MRPT_LOAD_CONFIG_VAR(gridResolution, float, source, section);
-	MRPT_LOAD_CONFIG_VAR(minDistForCorrespondence, float, source, section);
+	MRPT_LOAD_CONFIG_VAR(partitionThreshold, double, source, section);
 	MRPT_LOAD_CONFIG_VAR(forceBisectionOnly, bool, source, section);
-	MRPT_LOAD_CONFIG_VAR(useMapMatching, bool, source, section);
+	MRPT_LOAD_CONFIG_VAR(simil_method, enum, source, section);
 	MRPT_LOAD_CONFIG_VAR(
-		minimumNumberElementsEachCluster, int, source, section);
+		minimumNumberElementsEachCluster, uint64_t, source, section);
+	MRPT_LOAD_HERE_CONFIG_VAR(
+		"minDistForCorrespondence", double, mrp.maxDistForCorr,
+		source, section);
+	MRPT_LOAD_HERE_CONFIG_VAR(
+		"minMahaDistForCorrespondence", double, mrp.maxMahaDistForCorr,
+		source, section);
+
+	mrpt::config::CConfigFilePrefixer cfp(source, section + std::string("."), "");
+	metricmap.loadFromConfigFile(cfp, "metricmap");
+	MRPT_TODO("Add link to example INI file");
 
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-						dumpToTextStream
-  ---------------------------------------------------------------*/
-void CIncrementalMapPartitioner::TOptions::dumpToTextStream(
-	std::ostream& out) const
+void CIncrementalMapPartitioner::TOptions::saveToConfigFile(
+	mrpt::config::CConfigFileBase& target,
+	const std::string& section) const
 {
-	out << mrpt::format(
-		"\n----------- [CIncrementalMapPartitioner::TOptions] ------------ "
-		"\n\n");
-
-	out << mrpt::format(
-		"partitionThreshold                      = %f\n", partitionThreshold);
-	out << mrpt::format(
-		"gridResolution                          = %f\n", gridResolution);
-	out << mrpt::format(
-		"minDistForCorrespondence                = %f\n",
-		minDistForCorrespondence);
-	out << mrpt::format(
-		"forceBisectionOnly                      = %c\n",
-		forceBisectionOnly ? 'Y' : 'N');
-	out << mrpt::format(
-		"useMapMatching                          = %c\n",
-		useMapMatching ? 'Y' : 'N');
-	out << mrpt::format(
-		"minimumNumberElementsEachCluster        = %i\n",
-		minimumNumberElementsEachCluster);
+	MRPT_TODO("Write me");
 }
 
-/*---------------------------------------------------------------
-						clear
-  ---------------------------------------------------------------*/
 void CIncrementalMapPartitioner::clear()
 {
 	m_last_last_partition_are_new_ones = false;
-
 	m_A.setSize(0, 0);
-
 	m_individualFrames.clear();  // Free the map...
-
-	// Free individual maps:
-	// for (deque_serializable<mrpt::maps::CMultiMetricMap>::iterator
-	// it=m_individualMaps.begin();it!=m_individualMaps.end();++it)	delete
-	// (*it);
 	m_individualMaps.clear();
-
 	m_last_partition.clear();  // Delete last partitions
-	m_modified_nodes.clear();  // Delete modified nodes
 }
 
-/*---------------------------------------------------------------
-						addMapFrame
-  ---------------------------------------------------------------*/
-unsigned int CIncrementalMapPartitioner::addMapFrame(
-	const CSensoryFrame::Ptr& frame, const CPosePDF::Ptr& robotPose)
-{
-	MRPT_START
-	return addMapFrame(
-		frame, CPose3DPDF::Ptr(CPose3DPDF::createFrom2D(*robotPose)));
-	MRPT_END
-}
-
-/*---------------------------------------------------------------
-						addMapFrame
-  ---------------------------------------------------------------*/
-unsigned int CIncrementalMapPartitioner::addMapFrame(
-	const CSensoryFrame::Ptr& frame, const CPose3DPDF::Ptr& robotPose)
+uint32_t CIncrementalMapPartitioner::addMapFrame(
+	const mrpt::obs::CSensoryFrame& frame,
+	const mrpt::poses::CPose3DPDF& robotPose)
 {
 	size_t i = 0, j = 0, n = 0;
 	CPose3D pose_i, pose_j, relPose;
 	CPose3DPDF::Ptr posePDF_i, posePDF_j;
 	CSensoryFrame::Ptr sf_i, sf_j;
-	CMultiMetricMap *map_i = NULL, *map_j = NULL;
-	mrpt::tfest::TMatchingPairList corrs;
-	static CPose3D nullPose(0, 0, 0);
-
-	// Create the maps:
-	TSetOfMetricMapInitializers mapInitializer;
-
-	{
-		CSimplePointsMap::TMapDefinition def;
-		mapInitializer.push_back(def);
-	}
-
-	{
-		CLandmarksMap::TMapDefinition def;
-		mapInitializer.push_back(def);
-	}
 
 	// Add new metric map to "m_individualMaps"
 	// --------------------------------------------
-	m_individualMaps.push_back(CMultiMetricMap());
+	m_individualMaps.resize(m_individualMaps.size()+1);
 	CMultiMetricMap& newMetricMap = m_individualMaps.back();
-	newMetricMap.setListOfMaps(&mapInitializer);
+	newMetricMap.setListOfMaps(&options.metricmap);
 
 	MRPT_START
 
-	// Create the metric map:
-	// -----------------------------------------------------------------
-	ASSERT_(newMetricMap.m_pointsMaps.size() > 0);
-	newMetricMap.m_pointsMaps[0]->insertionOptions.isPlanarMap = false;  // true
-	newMetricMap.m_pointsMaps[0]->insertionOptions.minDistBetweenLaserPoints =
-		0.20f;
-	options.minDistForCorrespondence =
-		max(options.minDistForCorrespondence,
-			1.3f *
-				newMetricMap.m_pointsMaps[0]
-					->insertionOptions.minDistBetweenLaserPoints);
+	auto &mrp = options.mrp;
 
-	TMatchingRatioParams mrp;
-	mrp.maxDistForCorr = options.minDistForCorrespondence;
-	mrp.maxMahaDistForCorr = options.minMahaDistForCorrespondence;
-
-	// JLBC,17/AGO/2006: "m_individualMaps" were created from the robot pose,
-	// but it is
-	//   more convenient now to save them as the robot being at (0,0,0).
-
-	// frame->insertObservationsInto(newMetricMap.m_pointsMaps[0]);
-	newMetricMap.m_pointsMaps[0]->copyFrom(
-		*frame->buildAuxPointsMap<CPointsMap>(
-			&newMetricMap.m_pointsMaps[0]->insertionOptions));  // Faster :-)
-
-	// Insert just the VisualLandmarkObservations:
-	mrpt::maps::CLandmarksMap& lm = *newMetricMap.m_landmarksMap;
-	lm.insertionOptions.insert_SIFTs_from_monocular_images = false;
-	lm.insertionOptions.insert_SIFTs_from_stereo_images = false;
-	lm.insertionOptions.insert_Landmarks_from_range_scans = false;
-	frame->insertObservationsInto(&lm);
+	// Build robo-centric pointcloud for each keyframe:
+	frame.insertObservationsInto(&newMetricMap);
 
 	// Add to corresponding vectors:
-	m_individualFrames.insert(robotPose, frame);
+	m_individualFrames.insert(&robotPose, frame);
 	// Already added to "m_individualMaps" above
 
 	// Expand the adjacency matrix
@@ -229,16 +140,26 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 
 	// Adjust size of vector containing the modified nodes
 	// ---------------------------------------------------
-	// The new must be taken into account as well.
-	m_modified_nodes.push_back(true);
 
-	// Methods to compute adjacency matrix:
-	// true:  matching between maps
-	// false: matching between observations through
-	// "CObservation::likelihoodWith"
-	// ------------------------------------------------------------------------------
-	bool useMapOrSF = options.useMapMatching;
+	// Select method to evaluate similarity:
+	similarity_func_t sim_func;
+	using namespace std::placeholders; // for _1, _2 etc.
+	switch (options.simil_method)
+	{
+	case smMETRIC_MAP_MATCHING:
+		sim_func = std::bind(&eval_similarity_metric_map_matching, this, _1, _2, _3, _4, _5);
+		break;
+	case smOBSERVATION_OVERLAP:
+		sim_func = &eval_similarity_observation_overlap;
+		break;
+	case smCUSTOM_FUNCTION:
+		sim_func = m_sim_func;
+		break;
+	default:
+		THROW_EXCEPTION("Invalid value for `simil_method`");
+	};
 
+	MRPT_TODO("unify in one loop:");
 	// Calculate the new matches - put them in the matrix
 	// ----------------------------------------------------------------
 	// for (i=n-1;i<n;i++)
@@ -249,7 +170,7 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 		posePDF_i->getMean(pose_i);
 
 		// And its points map:
-		map_i = &m_individualMaps[i];
+		CMultiMetricMap *map_i = &m_individualMaps[i];
 
 		for (j = 0; j < n - 1; j++)
 		{
@@ -260,18 +181,10 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 			relPose = pose_j - pose_i;
 
 			// And its points map:
-			map_j = &m_individualMaps[j];
+			CMultiMetricMap *map_j = &m_individualMaps[j];
 
 			// Compute matching ratio:
-			if (useMapOrSF)
-			{
-				m_A(i, j) = map_i->compute3DMatchingRatio(map_j, relPose, mrp);
-			}
-			else
-			{
-				// m_A(i,j) = sf_i->likelihoodWith(sf_j.pointer());
-				m_A(i, j) = observationsOverlap(sf_i, sf_j, &relPose);
-			}
+			m_A(i, j) = sim_func(*map_i, *map_j, *sf_i, *sf_j, relPose);
 
 		}  // for j
 
@@ -285,7 +198,7 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 		posePDF_i->getMean(pose_i);
 
 		// And its points map:
-		map_i = &m_individualMaps[i];
+		CMultiMetricMap *map_i = &m_individualMaps[i];
 
 		j = n - 1;  // for (j=n-1;j<n;j++)
 		{
@@ -296,19 +209,10 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 			relPose = pose_j - pose_i;
 
 			// And its points map:
-			map_j = &m_individualMaps[j];
+			CMultiMetricMap *map_j = &m_individualMaps[j];
 
 			// Compute matching ratio:
-			if (useMapOrSF)
-			{
-				m_A(i, j) =
-					map_i->compute3DMatchingRatio(map_j, CPose3D(relPose), mrp);
-			}
-			else
-			{
-				// m_A(i,j) = sf_i->likelihoodWith(sf_j.pointer());
-				m_A(i, j) = observationsOverlap(sf_i, sf_j, &relPose);
-			}
+			m_A(i, j) = sim_func(*map_i, *map_j, *sf_i, *sf_j, relPose);
 		}  // for j
 	}  // for i
 
@@ -319,11 +223,7 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 	// -----------------------------------------------------------------
 	for (i = 0; i < n; i++)
 		for (j = i + 1; j < n; j++)
-			m_A(i, j) = m_A(j, i) = 0.5f * (m_A(i, j) + m_A(j, i));
-
-	/* DEBUG: Save the matrix: * /
-	A.saveToTextFile("debug_matriz.txt",1);
-	/ **/
+			m_A(i, j) = m_A(j, i) = 0.5 * (m_A(i, j) + m_A(j, i));
 
 	// Add the affected nodes to the list of modified ones
 	// -----------------------------------------------------------------
@@ -362,9 +262,6 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 		m_A.saveToTextFile("debug_DUMP_exception_A.txt"););
 }
 
-/*---------------------------------------------------------------
-						updatePartitions
-  ---------------------------------------------------------------*/
 void CIncrementalMapPartitioner::updatePartitions(
 	vector<std::vector<uint32_t>>& partitions)
 {
@@ -392,11 +289,9 @@ void CIncrementalMapPartitioner::updatePartitions(
 
 		// Recorrer esta particion:
 		last_parts_are_mods[i] = false;
-
 		//			for (j=0;j<p.size();j++)
 		//				if (m_modified_nodes[ p[j] ])
 		//					last_parts_are_mods[i] = true;
-
 		last_parts_are_mods[i] = true;
 
 		// If changed mark all the nodes
@@ -475,17 +370,11 @@ void CIncrementalMapPartitioner::updatePartitions(
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-						getNodesCount
-  ------------------------------------------------------------	---*/
-unsigned int CIncrementalMapPartitioner::getNodesCount()
+size_t CIncrementalMapPartitioner::getNodesCount()
 {
 	return m_individualFrames.size();
 }
 
-/*---------------------------------------------------------------
-				removeSetOfNodes
-  ---------------------------------------------------------------*/
 void CIncrementalMapPartitioner::removeSetOfNodes(
 	std::vector<uint32_t> indexesToRemove, bool changeCoordsRef)
 {
@@ -534,9 +423,6 @@ void CIncrementalMapPartitioner::removeSetOfNodes(
 
 	m_last_last_partition_are_new_ones = false;
 
-	// The matrix "A" is supposed to be right, thus recomputing is not required:
-	m_modified_nodes.assign(nNew, false);
-
 	// The new sequence of maps:
 	// --------------------------------------------------
 	std::vector<uint32_t>::reverse_iterator it;
@@ -544,7 +430,6 @@ void CIncrementalMapPartitioner::removeSetOfNodes(
 	{
 		deque<mrpt::maps::CMultiMetricMap>::iterator itM =
 			m_individualMaps.begin() + *it;
-		// delete *itM; // Delete map
 		m_individualMaps.erase(itM);  // Delete from list
 	}
 
@@ -572,33 +457,14 @@ void CIncrementalMapPartitioner::removeSetOfNodes(
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-				markAllNodesForReconsideration
-  ---------------------------------------------------------------*/
-void CIncrementalMapPartitioner::markAllNodesForReconsideration()
-{
-	m_last_last_partition_are_new_ones = false;
-	m_last_partition.clear();  // No partitions in last step
-
-	for (vector<uint8_t>::iterator it = m_modified_nodes.begin();
-		 it != m_modified_nodes.end(); ++it)
-		*it = 1;  // true;
-}
-
-/*---------------------------------------------------------------
-				changeCoordinatesOrigin
-  ---------------------------------------------------------------*/
 void CIncrementalMapPartitioner::changeCoordinatesOrigin(
 	const CPose3D& newOrigin)
 {
 	m_individualFrames.changeCoordinatesOrigin(newOrigin);
 }
 
-/*---------------------------------------------------------------
-				changeCoordinatesOriginPoseIndex
-  ---------------------------------------------------------------*/
 void CIncrementalMapPartitioner::changeCoordinatesOriginPoseIndex(
-	const unsigned& newOriginPose)
+	unsigned int newOriginPose)
 {
 	MRPT_START
 
@@ -613,9 +479,6 @@ void CIncrementalMapPartitioner::changeCoordinatesOriginPoseIndex(
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-				getAs3DScene
-  ---------------------------------------------------------------*/
 void CIncrementalMapPartitioner::getAs3DScene(
 	mrpt::opengl::CSetOfObjects::Ptr& objs,
 	const std::map<uint32_t, int64_t>* renameIndexes) const
@@ -623,9 +486,8 @@ void CIncrementalMapPartitioner::getAs3DScene(
 	objs->clear();
 	ASSERT_((int)m_individualFrames.size() == m_A.cols());
 
-	objs->insert(
-		mrpt::make_aligned_shared<opengl::CGridPlaneXY>(
-			-100, 100, -100, 100, 0, 5));
+	auto gl_grid = opengl::CGridPlaneXY::Create();
+	objs->insert(gl_grid);
 
 	for (size_t i = 0; i < m_individualFrames.size(); i++)
 	{
@@ -684,6 +546,9 @@ void CIncrementalMapPartitioner::getAs3DScene(
 			}
 		}
 	}
+	MRPT_TODO("Autodetermine bounding box");
+	gl_grid->setPlaneLimits(-100, 100, -100, 100);
+	gl_grid->setGridFrequency(5);
 }
 
 void CIncrementalMapPartitioner::serializeFrom(
