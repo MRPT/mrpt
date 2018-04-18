@@ -218,7 +218,7 @@ class CVelodyneScanner : public mrpt::hwdrivers::CGenericSensor
 	std::string m_device_ip;
 	/** Default: true Output whole frames and not data packets  */
 	bool m_return_frames;
-	/** Default: "" (do not operate from an offline file) */
+	/** Default: true Output PCAP Info msgs */ 
 	bool m_pcap_verbose;
 	/** Default: "" (do not operate from an offline file) */
 	std::string m_pcap_input_file;
