@@ -115,7 +115,8 @@ CVelodyneScanner::CVelodyneScanner()
 	  m_hPositionSock(INVALID_SOCKET),
 	  m_last_gps_rmc_age(INVALID_TIMESTAMP),
 	  m_lidar_rpm(0),
-	  m_lidar_return(UNCHANGED)
+	  m_lidar_return(UNCHANGED),
+	  m_return_frames(true)
 {
 	m_sensorLabel = "Velodyne";
 
@@ -273,8 +274,9 @@ bool CVelodyneScanner::getNextObservation(
 			// ready:
 			if (m_rx_scan && !m_rx_scan->scan_packets.empty())
 			{
-				if (rx_pkt_start_angle <
-					m_rx_scan->scan_packets.rbegin()->blocks[0].rotation)
+				if ((rx_pkt_start_angle <
+					m_rx_scan->scan_packets.rbegin()->blocks[0].rotation) || 
+					!m_return_frames)
 				{
 					outScan = m_rx_scan;
 					m_rx_scan.reset();
@@ -1088,6 +1090,14 @@ bool CVelodyneScanner::setLidarOnOff(bool on)
 	MRPT_START;
 	const std::string cmd = mrpt::format("laser=%s", on ? "on" : "off");
 	return this->internal_send_http_post(cmd);
+	MRPT_END;
+}
+
+void CVelodyneScanner::setFramePublishing(bool on)
+{
+	//frame publishing | data packet publishing = on|off
+	MRPT_START;
+	m_return_frames = on;
 	MRPT_END;
 }
 
