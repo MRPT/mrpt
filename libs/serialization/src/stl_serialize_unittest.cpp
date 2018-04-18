@@ -108,7 +108,7 @@ TEST(Serialization, vector_shared_ptr)
 	f.Seek(0);
 	arch >> m2;
 	EXPECT_EQ(m1.size(), m2.size());
-	for (auto i = 0; i < m1.size(); i++)
+	for (auto i = 0U; i < m1.size(); i++)
 	{
 		if (!m1[i])
 		{
