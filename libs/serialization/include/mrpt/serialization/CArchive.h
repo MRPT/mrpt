@@ -344,8 +344,9 @@ class CArchive
 	bool receiveMessage(CMessage& msg);
 
 	/** Write a shared_ptr to a non-CSerializable object */
-	template <class T, std::enable_if_t<!std::is_base_of<
-		mrpt::serialization::CSerializable, T>::value>* = nullptr>
+	template <class T,
+			  std::enable_if_t<!std::is_base_of<
+				  mrpt::serialization::CSerializable, T>::value>* = nullptr>
 	CArchive& operator<<(const std::shared_ptr<T>& pObj)
 	{
 		if (pObj)
@@ -361,8 +362,9 @@ class CArchive
 	}
 
 	/** Read a smart pointer to a non-CSerializable (POD,...) data type*/
-	template <class T, std::enable_if_t<!std::is_base_of<
-		mrpt::serialization::CSerializable, T>::value>* = nullptr>
+	template <class T,
+			  std::enable_if_t<!std::is_base_of<
+				  mrpt::serialization::CSerializable, T>::value>* = nullptr>
 	CArchive& operator>>(std::shared_ptr<T>& pObj)
 	{
 		std::string stored_name;
@@ -380,7 +382,6 @@ class CArchive
 		}
 		return *this;
 	}
-
 
 	/** Write an object to a stream in the binary MRPT format. */
 	CArchive& operator<<(const CSerializable& obj);
@@ -494,9 +495,9 @@ CArchive& operator>>(CArchive& s, std::vector<size_t>& a);
 #endif
 //
 
-template <
-	typename T, std::enable_if_t<std::is_base_of<
-					mrpt::serialization::CSerializable, T>::value>* = nullptr>
+template <typename T,
+		  std::enable_if_t<std::is_base_of<mrpt::serialization::CSerializable,
+										   T>::value>* = nullptr>
 CArchive& operator>>(CArchive& in, typename std::shared_ptr<T>& pObj)
 {
 	pObj = in.ReadObject<T>();
@@ -527,7 +528,6 @@ class CArchiveStreamBase : public CArchive
 
    public:
 	CArchiveStreamBase(STREAM& s) : m_s(s) {}
-
    protected:
 	size_t write(const void* d, size_t n) override { return m_s.Write(d, n); }
 	size_t read(void* d, size_t n) override { return m_s.Read(d, n); }

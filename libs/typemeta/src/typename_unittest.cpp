@@ -11,7 +11,7 @@
 #include <mrpt/typemeta/TTypeName_stl.h>
 #include <gtest/gtest.h>
 #include <iostream>
-#include <memory> // shared_ptr
+#include <memory>  // shared_ptr
 
 struct MyFooClass
 {
@@ -81,7 +81,9 @@ TEST(TTypeName, types2str_shared_ptr)
 
 	TST_FOR_TYPE(std::shared_ptr<MyFooClass>);
 	TST_FOR_TYPE(std::vector<std::shared_ptr<MyFooClass>>);
-	EXPECT_STREQ("std::shared_ptr<MyFooClass>", TTypeName<MyFooClass::Ptr>::get().c_str());
+	EXPECT_STREQ(
+		"std::shared_ptr<MyFooClass>",
+		TTypeName<MyFooClass::Ptr>::get().c_str());
 }
 
 TEST(TTypeName, types2stdstring)

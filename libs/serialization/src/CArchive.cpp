@@ -276,7 +276,8 @@ CArchive& mrpt::serialization::operator>>(CArchive& s, std::vector<float>& a)
 {
 	return detail::readStdVectorToStream(s, a);
 }
-CArchive& mrpt::serialization::operator>>(CArchive& s, mrpt::aligned_std_vector<float>& a)
+CArchive& mrpt::serialization::operator>>(
+	CArchive& s, mrpt::aligned_std_vector<float>& a)
 {
 	return detail::readStdVectorToStream(s, a);
 }

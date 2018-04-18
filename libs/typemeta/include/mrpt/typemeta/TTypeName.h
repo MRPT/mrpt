@@ -12,8 +12,9 @@
 #include <mrpt/typemeta/static_string.h>
 
 // frwd decl for TTypeName specialization:
-namespace std {
-template<class T>
+namespace std
+{
+template <class T>
 class shared_ptr;
 }
 

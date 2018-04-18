@@ -12,7 +12,7 @@
 #include <mrpt/typemeta/TTypeName.h>
 #include <mrpt/typemeta/TTypeName_stl.h>
 #include <iostream>
-#include <memory> // shared_ptr
+#include <memory>  // shared_ptr
 
 // Declare custom user types:
 struct MyFooClass
