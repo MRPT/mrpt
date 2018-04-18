@@ -271,11 +271,11 @@ bool CVelodyneScanner::getNextObservation(
 
 			// Return the observation as done when a complete 360 deg scan is
 			// ready:
-			if (m_rx_scan && !m_rx_scan->scan_packets.empty() && 
-				m_return_frames)
+			if (m_rx_scan && !m_rx_scan->scan_packets.empty())
 			{
-				if (rx_pkt_start_angle <
-					m_rx_scan->scan_packets.rbegin()->blocks[0].rotation)
+				if ((rx_pkt_start_angle <
+					m_rx_scan->scan_packets.rbegin()->blocks[0].rotation) || 
+					!m_return_frames)
 				{
 					outScan = m_rx_scan;
 					m_rx_scan.reset();
@@ -283,7 +283,7 @@ bool CVelodyneScanner::getNextObservation(
 					if (m_pcap)
 					{
 						// Keep the reader from blowing through the file.
-						if (!m_pcap_read_fast)
+						if (!m_pcap_read_fast && m_return_frames)
 							std::this_thread::sleep_for(
 								std::chrono::duration<double, std::milli>(
 									m_pcap_read_full_scan_delay_ms));
