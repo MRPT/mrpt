@@ -33,15 +33,23 @@ enum similarity_method_t : uint8_t
 	smCUSTOM_FUNCTION
 };
 
+/** Map keyframe, comprising raw observations and they as a metric map.
+  * For use in CIncrementalMapPartitioner
+  * \ingroup mrpt_slam_grp */
+struct map_keyframe_t
+{
+	uint32_t kf_id{ 0 };
+	mrpt::maps::CMultiMetricMap::Ptr metric_map;
+	mrpt::obs::CSensoryFrame::Ptr raw_observations;
+};
+
+
 /** Type of similarity evaluator for map keyframes.
 * For use in CIncrementalMapPartitioner
 * \ingroup mrpt_slam_grp  */
 using similarity_func_t = std::function<double(
-	const mrpt::maps::CMultiMetricMap &m1,
-	const mrpt::maps::CMultiMetricMap &m2,
-	const mrpt::obs::CSensoryFrame &sf1,
-	const mrpt::obs::CSensoryFrame &sf2,
-	uint32_t id_kf1, uint32_t id_kf2,
+	const map_keyframe_t &kf1,
+	const map_keyframe_t &kf2,
 	const mrpt::poses::CPose3D &relPose2wrt1
 	)>;
 
@@ -194,7 +202,7 @@ class CIncrementalMapPartitioner : public mrpt::system::COutputLogger,
 
    private:
 	mrpt::maps::CSimpleMap m_individualFrames;
-	std::deque<mrpt::maps::CMultiMetricMap> m_individualMaps;
+	std::deque<mrpt::maps::CMultiMetricMap::Ptr> m_individualMaps;
 
 	/** Adjacency matrix */
 	mrpt::math::CMatrixD m_A{ 0,0 };

@@ -37,26 +37,19 @@ IMPLEMENTS_SERIALIZABLE(CIncrementalMapPartitioner, CSerializable, mrpt::slam)
 
 static double eval_similarity_metric_map_matching(
 	const CIncrementalMapPartitioner *parent,
-	const mrpt::maps::CMultiMetricMap &m1,
-	const mrpt::maps::CMultiMetricMap &m2,
-	const mrpt::obs::CSensoryFrame &sf1,
-	const mrpt::obs::CSensoryFrame &sf2,
-	uint32_t id_kf1, uint32_t id_kf2,
-	const mrpt::poses::CPose3D &relPose2wrt1
-)
+	const map_keyframe_t &kf1,
+	const map_keyframe_t &kf2,
+	const mrpt::poses::CPose3D &relPose2wrt1)
 {
-	return m1.compute3DMatchingRatio(&m2, relPose2wrt1, parent->options.mrp);
+	return  kf1.metric_map.compute3DMatchingRatio(&kf2.metric_map, relPose2wrt1, parent->options.mrp);
 }
 static double eval_similarity_observation_overlap(
-	const mrpt::maps::CMultiMetricMap &m1,
-	const mrpt::maps::CMultiMetricMap &m2,
-	const mrpt::obs::CSensoryFrame &sf1,
-	const mrpt::obs::CSensoryFrame &sf2,
-	uint32_t id_kf1, uint32_t id_kf2,
+	const map_keyframe_t &kf1,
+	const map_keyframe_t &kf2,
 	const mrpt::poses::CPose3D &relPose2wrt1
 )
 {
-	return observationsOverlap(sf1, sf2, &relPose2wrt1);
+	return observationsOverlap(kf1.raw_observations, kf2.raw_observations, &relPose2wrt1);
 }
 
 CIncrementalMapPartitioner::TOptions::TOptions()
@@ -97,11 +90,11 @@ void CIncrementalMapPartitioner::TOptions::saveToConfigFile(
 	MRPT_SAVE_CONFIG_VAR_COMMENT(forceBisectionOnly, "Force bisection (true) or automatically determine number of partitions(false = default)");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(simil_method, "Similarity method");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(minimumNumberElementsEachCluster, "");
-	MRPT_SAVE_CONFIG_VAR_COMMENT(, "");
-	MRPT_SAVE_CONFIG_VAR_COMMENT(, "");
-	MRPT_SAVE_CONFIG_VAR_COMMENT(, "");
+	c.write(s, "minDistForCorrespondence", mrp.maxDistForCorr, mrpt::config::MRPT_SAVE_NAME_PADDING(), mrpt::config::MRPT_SAVE_VALUE_PADDING());
+	c.write(s, "minMahaDistForCorrespondence", mrp.maxMahaDistForCorr, mrpt::config::MRPT_SAVE_NAME_PADDING(), mrpt::config::MRPT_SAVE_VALUE_PADDING());
 
-	MRPT_TODO("Write me");
+	mrpt::config::CConfigFilePrefixer cfp(c, s + std::string("."), "");
+	metricmap.saveToConfigFile(cfp, "metricmap");
 }
 
 void CIncrementalMapPartitioner::clear()
@@ -119,15 +112,16 @@ uint32_t CIncrementalMapPartitioner::addMapFrame(
 {
 	MRPT_START
 
-	const size_t n = m_individualMaps.size() + 1; // new size
+	const uint32_t new_id = m_individualMaps.size();
+	const size_t n = new_id + 1; // new size
 
 	// Create new new metric map:
-	m_individualMaps.resize(n);
-	CMultiMetricMap& newMetricMap = m_individualMaps.back();
-	newMetricMap.setListOfMaps(&options.metricmap);
+	m_individualMaps.push_back(CMultiMetricMap::Create());
+	auto& newMetricMap = m_individualMaps.back();
+	newMetricMap->setListOfMaps(&options.metricmap);
 
 	// Build robo-centric map for each keyframe:
-	frame.insertObservationsInto(&newMetricMap);
+	frame.insertObservationsInto(newMetricMap.get());
 
 	// Add tuple (pose,SF) to "simplemap":
 	m_individualFrames.insert(&robotPose, frame);
@@ -144,7 +138,7 @@ uint32_t CIncrementalMapPartitioner::addMapFrame(
 	switch (options.simil_method)
 	{
 	case smMETRIC_MAP_MATCHING:
-		sim_func = std::bind(&eval_similarity_metric_map_matching, this, _1, _2, _3, _4, _5, _6, _7);
+		sim_func = std::bind(&eval_similarity_metric_map_matching, this, _1, _2, _3);
 		break;
 	case smOBSERVATION_OVERLAP:
 		sim_func = &eval_similarity_observation_overlap;
@@ -157,74 +151,48 @@ uint32_t CIncrementalMapPartitioner::addMapFrame(
 	};
 
 	MRPT_TODO("unify in one loop:");
-	// Calculate the new matches - put them in the matrix
-	// ----------------------------------------------------------------
-	size_t i = 0, j = 0, n = 0;
-	// for (i=n-1;i<n;i++)
-	i = n - 1;  // Execute procedure until "i=n-1"; Last row/column is empty
-	{
-		CPose3DPDF::Ptr posePDF_i, posePDF_j;
-		CSensoryFrame::Ptr sf_i, sf_j;
 
-		// Get node "i":
-		m_individualFrames.get(i, posePDF_i, sf_i);
+	// Evaluate the similarity metric for the last row & column:
+	// (0:new_id, new_id)  and (new_id, 0:new_id)
+	// ----------------------------------------------------------------
+	{
+		auto i = new_id;
+
+		// KF "i":
+		map_keyframe_t map_i;
+		map_i.kf_id = i;
+		map_i.metric_map = m_individualMaps[i];
+		CPose3DPDF::Ptr posePDF_i;
+		m_individualFrames.get(i, posePDF_i, map_i.raw_observations);
 		auto pose_i = posePDF_i->getMeanVal();
 
-		// And its points map:
-		CMultiMetricMap &map_i = m_individualMaps[i];
-
-		for (j = 0; j < n - 1; j++)
+		for (uint32_t j = 0; j < new_id; j++)
 		{
-			// Get node "j":
-			m_individualFrames.get(j, posePDF_j, sf_j);
+			// KF "j":
+			map_keyframe_t map_j;
+			CPose3DPDF::Ptr posePDF_j;
+			map_j.kf_id = j;
+			m_individualFrames.get(j, posePDF_j, map_j.raw_observations);
 			auto pose_j = posePDF_j->getMeanVal();
+			map_j.metric_map = m_individualMaps[j];
+
 			auto relPose = pose_j - pose_i;
-
-			// And its points map:
-			CMultiMetricMap &map_j = m_individualMaps[j];
-
-			// Compute matching ratio:
-			m_A(i, j) = sim_func(map_i, map_j, *sf_i, *sf_j, i, j, relPose);
-
+			
+			// Evaluate similarity metric & make it symetric:
+			const auto s_ij = sim_func(map_i, map_j, relPose);
+			const auto s_ji = sim_func(map_j, map_i, relPose);
+			const auto s_sym = 0.5*(s_ij+ s_ji);
+			m_A(i, j) = m_A(j, i) = s_sym;
 		}  // for j
-
-	}  // for i
-
-	for (i = 0; i < n - 1;
-		 i++)  // Execute procedure until "i=n-1"; Last row/column is empty
-	{
-		// Get node "i":
-		m_individualFrames.get(i, posePDF_i, sf_i);
-		posePDF_i->getMean(pose_i);
-
-		// And its points map:
-		CMultiMetricMap *map_i = &m_individualMaps[i];
-
-		j = n - 1;  // for (j=n-1;j<n;j++)
-		{
-			// Get node "j":
-			m_individualFrames.get(j, posePDF_j, sf_j);
-			posePDF_j->getMean(pose_j);
-
-			relPose = pose_j - pose_i;
-
-			// And its points map:
-			CMultiMetricMap *map_j = &m_individualMaps[j];
-
-			// Compute matching ratio:
-			m_A(i, j) = sim_func(*map_i, *map_j, *sf_i, *sf_j, i, j, relPose);
-		}  // for j
-	}  // for i
+	}  // i=n-1=new_id
 
 	// Self-similatity: Not used
-	m_A(n - 1, n - 1) = 0;
+	m_A(new_id, new_id) = 0;
 
-	// make matrix symetric
-	// -----------------------------------------------------------------
-	for (i = 0; i < n; i++)
-		for (j = i + 1; j < n; j++)
-			m_A(i, j) = m_A(j, i) = 0.5 * (m_A(i, j) + m_A(j, i));
-
+	// If a partition has been already computed, add these new keyframes
+	// into a new partition on its own. When the user calls updatePartitions()
+	// all keyframes will be re-distributed according to the real similarity 
+	// scores.
 	if (m_last_last_partition_are_new_ones)
 	{
 		// Insert into the "new_ones" partition:
