@@ -15,7 +15,7 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <vector>
 #include <string>
-#include <type_traits>  // remove_reference_t
+#include <type_traits>  // remove_reference_t, is_polymorphic
 #include <stdexcept>
 #include <mrpt/rtti/variant.h>
 
@@ -343,12 +343,47 @@ class CArchive
 	 */
 	bool receiveMessage(CMessage& msg);
 
-	/** Write an object to a stream in the binary MRPT format. */
-	CArchive& operator<<(const CSerializable::Ptr& pObj);
+	/** Write a shared_ptr to a non-CSerializable object */
+	template <class T, std::enable_if_t<!std::is_base_of<
+		mrpt::serialization::CSerializable, T>::value>* = nullptr>
+	CArchive& operator<<(const std::shared_ptr<T>& pObj)
+	{
+		if (pObj)
+		{
+			*this << mrpt::typemeta::TTypeName<T>::get();
+			*this << *pObj;
+		}
+		else
+		{
+			*this << std::string("nullptr");
+		}
+		return *this;
+	}
+
+	/** Read a smart pointer to a non-CSerializable (POD,...) data type*/
+	template <class T, std::enable_if_t<!std::is_base_of<
+		mrpt::serialization::CSerializable, T>::value>* = nullptr>
+	CArchive& operator>>(std::shared_ptr<T>& pObj)
+	{
+		std::string stored_name;
+		*this >> stored_name;
+		const std::string expected_name = mrpt::typemeta::TTypeName<T>::get();
+		if (stored_name == std::string("nullptr"))
+		{
+			pObj.reset();
+		}
+		else
+		{
+			ASSERT_EQUAL_(expected_name, stored_name);
+			pObj.reset(new T);
+			*this >> *pObj;
+		}
+		return *this;
+	}
+
+
 	/** Write an object to a stream in the binary MRPT format. */
 	CArchive& operator<<(const CSerializable& obj);
-
-	CArchive& operator>>(CSerializable::Ptr& pObj);
 	CArchive& operator>>(CSerializable& obj);
 
 	/** @} */
@@ -458,6 +493,7 @@ CArchive& operator<<(CArchive& s, const std::vector<double>& a);
 CArchive& operator>>(CArchive& s, std::vector<size_t>& a);
 #endif
 //
+
 template <
 	typename T, std::enable_if_t<std::is_base_of<
 					mrpt::serialization::CSerializable, T>::value>* = nullptr>

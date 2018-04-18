@@ -177,22 +177,10 @@ void CArchive::WriteObject(const CSerializable* o)
 	MRPT_END;
 }
 
-CArchive& CArchive::operator<<(const CSerializable::Ptr& pObj)
-{
-	WriteObject(pObj.get());
-	return *this;
-}
-
 /** Write an object to a stream in the binary MRPT format. */
 CArchive& CArchive::operator<<(const CSerializable& obj)
 {
 	WriteObject(&obj);
-	return *this;
-}
-
-CArchive& CArchive::operator>>(CSerializable::Ptr& pObj)
-{
-	pObj = ReadObject();
 	return *this;
 }
 
