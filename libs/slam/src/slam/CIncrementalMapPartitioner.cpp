@@ -41,6 +41,7 @@ static double eval_similarity_metric_map_matching(
 	const mrpt::maps::CMultiMetricMap &m2,
 	const mrpt::obs::CSensoryFrame &sf1,
 	const mrpt::obs::CSensoryFrame &sf2,
+	uint32_t id_kf1, uint32_t id_kf2,
 	const mrpt::poses::CPose3D &relPose2wrt1
 )
 {
@@ -51,6 +52,7 @@ static double eval_similarity_observation_overlap(
 	const mrpt::maps::CMultiMetricMap &m2,
 	const mrpt::obs::CSensoryFrame &sf1,
 	const mrpt::obs::CSensoryFrame &sf2,
+	uint32_t id_kf1, uint32_t id_kf2,
 	const mrpt::poses::CPose3D &relPose2wrt1
 )
 {
@@ -88,9 +90,17 @@ void CIncrementalMapPartitioner::TOptions::loadFromConfigFile(
 }
 
 void CIncrementalMapPartitioner::TOptions::saveToConfigFile(
-	mrpt::config::CConfigFileBase& target,
-	const std::string& section) const
+	mrpt::config::CConfigFileBase& c,
+	const std::string& s) const
 {
+	MRPT_SAVE_CONFIG_VAR_COMMENT(partitionThreshold, "N-cut partition threshold [0,2]");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(forceBisectionOnly, "Force bisection (true) or automatically determine number of partitions(false = default)");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(simil_method, "Similarity method");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(minimumNumberElementsEachCluster, "");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(, "");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(, "");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(, "");
+
 	MRPT_TODO("Write me");
 }
 
@@ -107,39 +117,26 @@ uint32_t CIncrementalMapPartitioner::addMapFrame(
 	const mrpt::obs::CSensoryFrame& frame,
 	const mrpt::poses::CPose3DPDF& robotPose)
 {
-	size_t i = 0, j = 0, n = 0;
-	CPose3D pose_i, pose_j, relPose;
-	CPose3DPDF::Ptr posePDF_i, posePDF_j;
-	CSensoryFrame::Ptr sf_i, sf_j;
+	MRPT_START
 
-	// Add new metric map to "m_individualMaps"
-	// --------------------------------------------
-	m_individualMaps.resize(m_individualMaps.size()+1);
+	const size_t n = m_individualMaps.size() + 1; // new size
+
+	// Create new new metric map:
+	m_individualMaps.resize(n);
 	CMultiMetricMap& newMetricMap = m_individualMaps.back();
 	newMetricMap.setListOfMaps(&options.metricmap);
 
-	MRPT_START
-
-	auto &mrp = options.mrp;
-
-	// Build robo-centric pointcloud for each keyframe:
+	// Build robo-centric map for each keyframe:
 	frame.insertObservationsInto(&newMetricMap);
 
-	// Add to corresponding vectors:
+	// Add tuple (pose,SF) to "simplemap":
 	m_individualFrames.insert(&robotPose, frame);
-	// Already added to "m_individualMaps" above
 
-	// Expand the adjacency matrix
-	// -----------------------------------------------------------------
-	n = m_A.cols();
-	n++;
+	// Expand the adjacency matrix (pads with 0)
 	m_A.setSize(n, n);
 
 	ASSERT_(m_individualMaps.size() == n);
 	ASSERT_(m_individualFrames.size() == n);
-
-	// Adjust size of vector containing the modified nodes
-	// ---------------------------------------------------
 
 	// Select method to evaluate similarity:
 	similarity_func_t sim_func;
@@ -147,7 +144,7 @@ uint32_t CIncrementalMapPartitioner::addMapFrame(
 	switch (options.simil_method)
 	{
 	case smMETRIC_MAP_MATCHING:
-		sim_func = std::bind(&eval_similarity_metric_map_matching, this, _1, _2, _3, _4, _5);
+		sim_func = std::bind(&eval_similarity_metric_map_matching, this, _1, _2, _3, _4, _5, _6, _7);
 		break;
 	case smOBSERVATION_OVERLAP:
 		sim_func = &eval_similarity_observation_overlap;
@@ -162,29 +159,32 @@ uint32_t CIncrementalMapPartitioner::addMapFrame(
 	MRPT_TODO("unify in one loop:");
 	// Calculate the new matches - put them in the matrix
 	// ----------------------------------------------------------------
+	size_t i = 0, j = 0, n = 0;
 	// for (i=n-1;i<n;i++)
 	i = n - 1;  // Execute procedure until "i=n-1"; Last row/column is empty
 	{
+		CPose3DPDF::Ptr posePDF_i, posePDF_j;
+		CSensoryFrame::Ptr sf_i, sf_j;
+
 		// Get node "i":
 		m_individualFrames.get(i, posePDF_i, sf_i);
-		posePDF_i->getMean(pose_i);
+		auto pose_i = posePDF_i->getMeanVal();
 
 		// And its points map:
-		CMultiMetricMap *map_i = &m_individualMaps[i];
+		CMultiMetricMap &map_i = m_individualMaps[i];
 
 		for (j = 0; j < n - 1; j++)
 		{
 			// Get node "j":
 			m_individualFrames.get(j, posePDF_j, sf_j);
-			posePDF_j->getMean(pose_j);
-
-			relPose = pose_j - pose_i;
+			auto pose_j = posePDF_j->getMeanVal();
+			auto relPose = pose_j - pose_i;
 
 			// And its points map:
-			CMultiMetricMap *map_j = &m_individualMaps[j];
+			CMultiMetricMap &map_j = m_individualMaps[j];
 
 			// Compute matching ratio:
-			m_A(i, j) = sim_func(*map_i, *map_j, *sf_i, *sf_j, relPose);
+			m_A(i, j) = sim_func(map_i, map_j, *sf_i, *sf_j, i, j, relPose);
 
 		}  // for j
 
@@ -212,7 +212,7 @@ uint32_t CIncrementalMapPartitioner::addMapFrame(
 			CMultiMetricMap *map_j = &m_individualMaps[j];
 
 			// Compute matching ratio:
-			m_A(i, j) = sim_func(*map_i, *map_j, *sf_i, *sf_j, relPose);
+			m_A(i, j) = sim_func(*map_i, *map_j, *sf_i, *sf_j, i, j, relPose);
 		}  // for j
 	}  // for i
 
@@ -225,10 +225,6 @@ uint32_t CIncrementalMapPartitioner::addMapFrame(
 		for (j = i + 1; j < n; j++)
 			m_A(i, j) = m_A(j, i) = 0.5 * (m_A(i, j) + m_A(j, i));
 
-	// Add the affected nodes to the list of modified ones
-	// -----------------------------------------------------------------
-	for (i = 0; i < n; i++) m_modified_nodes[i] = m_A(i, n - 1) > 0;
-
 	if (m_last_last_partition_are_new_ones)
 	{
 		// Insert into the "new_ones" partition:
@@ -239,7 +235,7 @@ uint32_t CIncrementalMapPartitioner::addMapFrame(
 		// Add a new partition:
 		std::vector<uint32_t> dummyPart;
 		dummyPart.push_back(n - 1);
-		m_last_partition.push_back(dummyPart);
+		m_last_partition.emplace_back(dummyPart);
 
 		// The last one is the new_ones partition:
 		m_last_last_partition_are_new_ones = true;
@@ -247,19 +243,7 @@ uint32_t CIncrementalMapPartitioner::addMapFrame(
 
 	return n - 1;  // Index of the new node
 
-	MRPT_END_WITH_CLEAN_UP(
-		cout << "Unexpected runtime error:\n"; cout << "\tn=" << n << "\n";
-		cout << "\ti=" << i << "\n"; cout << "\tj=" << j << "\n";
-		cout << "\tmap_i=" << map_i << "\n";
-		cout << "\tmap_j=" << map_j << "\n";
-		cout << "relPose: " << relPose << endl;
-		cout << "map_i.size()=" << map_i->m_pointsMaps[0]->size() << "\n";
-		cout << "map_j.size()=" << map_j->m_pointsMaps[0]->size() << "\n";
-		map_i->m_pointsMaps[0]->save2D_to_text_file(
-			string("debug_DUMP_map_i.txt"));
-		map_j->m_pointsMaps[0]->save2D_to_text_file(
-			string("debug_DUMP_map_j.txt"));
-		m_A.saveToTextFile("debug_DUMP_exception_A.txt"););
+	MRPT_END
 }
 
 void CIncrementalMapPartitioner::updatePartitions(

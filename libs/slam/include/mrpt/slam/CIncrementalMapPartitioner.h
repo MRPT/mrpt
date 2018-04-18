@@ -41,6 +41,7 @@ using similarity_func_t = std::function<double(
 	const mrpt::maps::CMultiMetricMap &m2,
 	const mrpt::obs::CSensoryFrame &sf1,
 	const mrpt::obs::CSensoryFrame &sf2,
+	uint32_t id_kf1, uint32_t id_kf2,
 	const mrpt::poses::CPose3D &relPose2wrt1
 	)>;
 
