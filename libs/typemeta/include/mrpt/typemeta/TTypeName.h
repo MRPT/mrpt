@@ -11,6 +11,12 @@
 #include <cstdint>
 #include <mrpt/typemeta/static_string.h>
 
+// frwd decl for TTypeName specialization:
+namespace std {
+template<class T>
+class shared_ptr;
+}
+
 namespace mrpt
 {
 namespace typemeta
@@ -58,6 +64,16 @@ template <typename T>
 struct TTypeName
 {
 	constexpr static auto get() { return T::getClassName(); }
+};
+
+/** Specialization for shared_ptr<T> */
+template <typename T>
+struct TTypeName<std::shared_ptr<T>>
+{
+	constexpr static auto get()
+	{
+		return literal("std::shared_ptr<") + TTypeName<T>::get() + literal(">");
+	}
 };
 
 /** Identical to MRPT_DECLARE_TTYPENAME but intended for user code.

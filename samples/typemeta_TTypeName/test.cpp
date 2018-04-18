@@ -12,10 +12,12 @@
 #include <mrpt/typemeta/TTypeName.h>
 #include <mrpt/typemeta/TTypeName_stl.h>
 #include <iostream>
+#include <memory> // shared_ptr
 
 // Declare custom user types:
 struct MyFooClass
 {
+	using Ptr = std::shared_ptr<MyFooClass>;
 };
 namespace MyNS
 {
@@ -43,6 +45,7 @@ void Test_TypeName()
 
 	// Evaluation of user-defined types:
 	cout << TTypeName<MyFooClass>::get() << endl;
+	cout << TTypeName<MyFooClass::Ptr>::get() << endl;
 	cout << TTypeName<MyNS::MyBarClass>::get() << endl;
 	cout << TTypeName<MyNS::MyBarClass2>::get() << endl;
 

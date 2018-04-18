@@ -9,7 +9,7 @@
 
 /** \defgroup mrpt_typemeta_grp [mrpt-typemeta]
 
-Metaprogramming header-only library to obtain `constexpr` textual string representations of enum types and type names, including complex STL compound types.
+Metaprogramming header-only library to obtain `constexpr` textual string representations of enum types and type names, including smart pointers and complex STL compound types.
 
 <small> <a href="index.html#libs">Back to list of all libraries</a> | <a href="modules.html" >See all modules</a> </small>
 <br>

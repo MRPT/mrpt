@@ -1,6 +1,7 @@
 int32_t
 std::set<std::vector<double>>
 MyFooClass
+std::shared_ptr<MyFooClass>
 MyNS::MyBarClass
 MyNS::MyBarClass2
 double
