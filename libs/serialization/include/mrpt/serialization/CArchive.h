@@ -15,9 +15,10 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <vector>
 #include <string>
-#include <type_traits>  // remove_reference_t
+#include <type_traits>  // remove_reference_t, is_polymorphic
 #include <stdexcept>
 #include <mrpt/rtti/variant.h>
+#include <mrpt/typemeta/TTypeName.h>
 
 namespace mrpt
 {
@@ -343,13 +344,14 @@ class CArchive
 	 */
 	bool receiveMessage(CMessage& msg);
 
-	/** Write an object to a stream in the binary MRPT format. */
-	CArchive& operator<<(const CSerializable::Ptr& pObj);
-	/** Write an object to a stream in the binary MRPT format. */
+	/** Write a CSerializable object to a stream in the binary MRPT format */
 	CArchive& operator<<(const CSerializable& obj);
-
-	CArchive& operator>>(CSerializable::Ptr& pObj);
+	/** \overload */
+	CArchive& operator<<(const CSerializable::Ptr& pObj);
+	/** Reads a CSerializable object from the stream */
 	CArchive& operator>>(CSerializable& obj);
+	/** \overload */
+	CArchive& operator>>(CSerializable::Ptr& pObj);
 
 	/** @} */
 
@@ -458,6 +460,7 @@ CArchive& operator<<(CArchive& s, const std::vector<double>& a);
 CArchive& operator>>(CArchive& s, std::vector<size_t>& a);
 #endif
 //
+
 template <
 	typename T, std::enable_if_t<std::is_base_of<
 					mrpt::serialization::CSerializable, T>::value>* = nullptr>
@@ -480,6 +483,47 @@ CArchive& operator<<(
 {
 	pObj.match([&](auto& t) { out << t; });
 	return out;
+}
+
+/** Write a shared_ptr to a non-CSerializable object */
+template <
+	class T, std::enable_if_t<!std::is_base_of<
+				 mrpt::serialization::CSerializable, T>::value>* = nullptr>
+CArchive& operator<<(CArchive& out, const std::shared_ptr<T>& pObj)
+{
+	if (pObj)
+	{
+		out << mrpt::typemeta::TTypeName<T>::get();
+		out << *pObj;
+	}
+	else
+	{
+		out << std::string("nullptr");
+	}
+	return out;
+}
+
+/** Read a smart pointer to a non-CSerializable (POD,...) data type*/
+template <
+	class T, std::enable_if_t<!std::is_base_of<
+				 mrpt::serialization::CSerializable, T>::value>* = nullptr>
+CArchive& operator>>(CArchive& in, std::shared_ptr<T>& pObj)
+{
+	std::string stored_name;
+	in >> stored_name;
+	const std::string expected_name =
+		mrpt::typemeta::TTypeName<T>::get().c_str();
+	if (stored_name == std::string("nullptr"))
+	{
+		pObj.reset();
+	}
+	else
+	{
+		ASSERT_EQUAL_(expected_name, stored_name);
+		pObj.reset(new T);
+		in >> *pObj;
+	}
+	return in;
 }
 
 /** CArchive for mrpt::io::CStream classes (use as template argument).
