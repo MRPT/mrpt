@@ -41,7 +41,7 @@ static double eval_similarity_metric_map_matching(
 	const map_keyframe_t &kf2,
 	const mrpt::poses::CPose3D &relPose2wrt1)
 {
-	return  kf1.metric_map.compute3DMatchingRatio(&kf2.metric_map, relPose2wrt1, parent->options.mrp);
+	return  kf1.metric_map->compute3DMatchingRatio(kf2.metric_map.get(), relPose2wrt1, parent->options.mrp);
 }
 static double eval_similarity_observation_overlap(
 	const map_keyframe_t &kf1,
@@ -74,6 +74,7 @@ void CIncrementalMapPartitioner::TOptions::loadFromConfigFile(
 	MRPT_LOAD_HERE_CONFIG_VAR(
 		"minMahaDistForCorrespondence", double, mrp.maxMahaDistForCorr,
 		source, section);
+	MRPT_LOAD_CONFIG_VAR(maxKeyFrameDistanceToEval, uint64_t, source, section);
 
 	mrpt::config::CConfigFilePrefixer cfp(source, section + std::string("."), "");
 	metricmap.loadFromConfigFile(cfp, "metricmap");
@@ -90,6 +91,7 @@ void CIncrementalMapPartitioner::TOptions::saveToConfigFile(
 	MRPT_SAVE_CONFIG_VAR_COMMENT(forceBisectionOnly, "Force bisection (true) or automatically determine number of partitions(false = default)");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(simil_method, "Similarity method");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(minimumNumberElementsEachCluster, "");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(maxKeyFrameDistanceToEval, "Max KF ID distance");
 	c.write(s, "minDistForCorrespondence", mrp.maxDistForCorr, mrpt::config::MRPT_SAVE_NAME_PADDING(), mrpt::config::MRPT_SAVE_VALUE_PADDING());
 	c.write(s, "minMahaDistForCorrespondence", mrp.maxMahaDistForCorr, mrpt::config::MRPT_SAVE_NAME_PADDING(), mrpt::config::MRPT_SAVE_VALUE_PADDING());
 
@@ -150,8 +152,6 @@ uint32_t CIncrementalMapPartitioner::addMapFrame(
 		THROW_EXCEPTION("Invalid value for `simil_method`");
 	};
 
-	MRPT_TODO("unify in one loop:");
-
 	// Evaluate the similarity metric for the last row & column:
 	// (0:new_id, new_id)  and (new_id, 0:new_id)
 	// ----------------------------------------------------------------
@@ -168,20 +168,30 @@ uint32_t CIncrementalMapPartitioner::addMapFrame(
 
 		for (uint32_t j = 0; j < new_id; j++)
 		{
-			// KF "j":
-			map_keyframe_t map_j;
-			CPose3DPDF::Ptr posePDF_j;
-			map_j.kf_id = j;
-			m_individualFrames.get(j, posePDF_j, map_j.raw_observations);
-			auto pose_j = posePDF_j->getMeanVal();
-			map_j.metric_map = m_individualMaps[j];
+			const auto id_diff = new_id - j;
+			double s_sym;
+			if (id_diff > options.maxKeyFrameDistanceToEval)
+			{
+				// skip evaluation
+				s_sym = .0;
+			}
+			else
+			{
+				// KF "j":
+				map_keyframe_t map_j;
+				CPose3DPDF::Ptr posePDF_j;
+				map_j.kf_id = j;
+				m_individualFrames.get(j, posePDF_j, map_j.raw_observations);
+				auto pose_j = posePDF_j->getMeanVal();
+				map_j.metric_map = m_individualMaps[j];
 
-			auto relPose = pose_j - pose_i;
-			
-			// Evaluate similarity metric & make it symetric:
-			const auto s_ij = sim_func(map_i, map_j, relPose);
-			const auto s_ji = sim_func(map_j, map_i, relPose);
-			const auto s_sym = 0.5*(s_ij+ s_ji);
+				auto relPose = pose_j - pose_i;
+
+				// Evaluate similarity metric & make it symetric:
+				const auto s_ij = sim_func(map_i, map_j, relPose);
+				const auto s_ji = sim_func(map_j, map_i, relPose);
+				s_sym = 0.5*(s_ij + s_ji);
+			}
 			m_A(i, j) = m_A(j, i) = s_sym;
 		}  // for j
 	}  // i=n-1=new_id
@@ -219,104 +229,14 @@ void CIncrementalMapPartitioner::updatePartitions(
 {
 	MRPT_START
 
-	unsigned int i, j;
-	unsigned int n_nodes;
-	unsigned int n_clusters_last;
-	std::vector<uint32_t>
-		mods;  // The list of nodes that will have been regrouped
-	std::vector<bool> last_parts_are_mods;
+	partitions.clear();
+	CGraphPartitioner<CMatrixD>::RecursiveSpectralPartition(
+		m_A, partitions, options.partitionThreshold, true, true,
+		!options.forceBisectionOnly,
+		options.minimumNumberElementsEachCluster, false /* verbose */
+		);
 
-	n_nodes = m_modified_nodes.size();  // total number of nodes (scans)
-	n_clusters_last =
-		m_last_partition.size();  // Number of clusters in the last partition
-
-	last_parts_are_mods.resize(n_clusters_last);
-
-	// If a single scan of the cluster is affected, the whole cluster is
-	// affected
-	// -------------------------------------------------------------------
-	for (i = 0; i < n_clusters_last; i++)
-	{
-		std::vector<uint32_t> p = m_last_partition[i];
-
-		// Recorrer esta particion:
-		last_parts_are_mods[i] = false;
-		//			for (j=0;j<p.size();j++)
-		//				if (m_modified_nodes[ p[j] ])
-		//					last_parts_are_mods[i] = true;
-		last_parts_are_mods[i] = true;
-
-		// If changed mark all the nodes
-		if (last_parts_are_mods[i])
-			for (j = 0; j < p.size(); j++) m_modified_nodes[p[j]] = true;
-	}
-
-	// How many nodes are going to be partitioned?
-	mods.clear();
-	for (i = 0; i < n_nodes; i++)
-		if (m_modified_nodes[i]) mods.push_back(i);
-
-	// printf("[%u nodes to be recomputed]", mods.size());
-
-	if (mods.size() > 0)
-	{
-		// Construct submatrix of adjacencies only with the nodes that are going
-		// to be regrouped
-		// -------------------------------------------------------------------
-		CMatrix A_mods;
-		A_mods.setSize(mods.size(), mods.size());
-		for (i = 0; i < mods.size(); i++)
-		{
-			for (j = 0; j < mods.size(); j++)
-			{
-				A_mods(i, j) = m_A(mods[i], mods[j]);
-			}
-		}
-
-		// Partitions of the modified nodes
-		vector<std::vector<uint32_t>> mods_parts;
-		mods_parts.clear();
-
-		CGraphPartitioner<CMatrix>::RecursiveSpectralPartition(
-			A_mods, mods_parts, options.partitionThreshold, true, true,
-			!options.forceBisectionOnly,
-			options.minimumNumberElementsEachCluster, false /* verbose */
-			);
-
-		// Aggregate the results with the clusters that were not used and return
-		// them
-		// --------------------------------------------------------------------------
-		partitions.clear();
-
-		// 1) Add the partitions that have not been modified
-		// -----------------------------------------------
-		for (i = 0; i < m_last_partition.size(); i++)
-			if (!last_parts_are_mods[i])
-				partitions.push_back(m_last_partition[i]);
-
-		// 2) Add the modified partitions
-		// WARNING: Translate the indices acordingly
-		// -----------------------------------------------
-		for (i = 0; i < mods_parts.size(); i++)
-		{
-			std::vector<uint32_t> v;
-			v.clear();
-			for (j = 0; j < mods_parts[i].size(); j++)
-				v.push_back(mods[mods_parts[i][j]]);
-
-			partitions.push_back(v);
-		}
-	}
-
-	// Update all nodes
-	for (i = 0; i < n_nodes; i++) m_modified_nodes[i] = false;
-
-	// Save partition so that we take it into account in the next iteration
-	// ------------------------------------------------------------------------
-	size_t n = partitions.size();
-	m_last_partition.resize(n);
-	for (i = 0; i < n; i++) m_last_partition[i] = partitions[i];
-
+	m_last_partition = partitions;
 	m_last_last_partition_are_new_ones = false;
 
 	MRPT_END
@@ -377,17 +297,15 @@ void CIncrementalMapPartitioner::removeSetOfNodes(
 
 	// The new sequence of maps:
 	// --------------------------------------------------
-	std::vector<uint32_t>::reverse_iterator it;
-	for (it = indexesToRemove.rbegin(); it != indexesToRemove.rend(); ++it)
+	for (auto it = indexesToRemove.rbegin(); it != indexesToRemove.rend(); ++it)
 	{
-		deque<mrpt::maps::CMultiMetricMap>::iterator itM =
-			m_individualMaps.begin() + *it;
+		auto itM = m_individualMaps.begin() + *it;
 		m_individualMaps.erase(itM);  // Delete from list
 	}
 
 	// The new sequence of localized SFs:
 	// --------------------------------------------------
-	for (it = indexesToRemove.rbegin(); it != indexesToRemove.rend(); ++it)
+	for (auto it = indexesToRemove.rbegin(); it != indexesToRemove.rend(); ++it)
 		m_individualFrames.remove(*it);
 
 	// Change coordinates reference of frames:
@@ -405,7 +323,6 @@ void CIncrementalMapPartitioner::removeSetOfNodes(
 	}
 
 	// All done!
-
 	MRPT_END
 }
 
@@ -440,6 +357,8 @@ void CIncrementalMapPartitioner::getAs3DScene(
 
 	auto gl_grid = opengl::CGridPlaneXY::Create();
 	objs->insert(gl_grid);
+	int bbminx = std::numeric_limits<int>::max(), bbminy = std::numeric_limits<int>::max();
+	int bbmaxx = -bbminx, bbmaxy = -bbminy;
 
 	for (size_t i = 0; i < m_individualFrames.size(); i++)
 	{
@@ -449,6 +368,11 @@ void CIncrementalMapPartitioner::getAs3DScene(
 
 		CPose3D i_mean;
 		i_pdf->getMean(i_mean);
+
+		mrpt::keep_min(bbminx, (int)floor(i_mean.x()));
+		mrpt::keep_min(bbminy, (int)floor(i_mean.y()));
+		mrpt::keep_max(bbmaxx, (int)ceil(i_mean.x()));
+		mrpt::keep_max(bbmaxy, (int)ceil(i_mean.y()));
 
 		opengl::CSphere::Ptr i_sph =
 			mrpt::make_aligned_shared<opengl::CSphere>();
@@ -498,8 +422,7 @@ void CIncrementalMapPartitioner::getAs3DScene(
 			}
 		}
 	}
-	MRPT_TODO("Autodetermine bounding box");
-	gl_grid->setPlaneLimits(-100, 100, -100, 100);
+	gl_grid->setPlaneLimits(bbminx, bbmaxx, bbminy, bbmaxy);
 	gl_grid->setGridFrequency(5);
 }
 
@@ -509,10 +432,16 @@ void CIncrementalMapPartitioner::serializeFrom(
 	switch (version)
 	{
 		case 0:
+		case 1:
 		{
 			in >> m_individualFrames >> m_individualMaps >> m_A >>
-				m_last_partition >> m_last_last_partition_are_new_ones >>
-				m_modified_nodes;
+				m_last_partition >> m_last_last_partition_are_new_ones;
+			if (version == 0)
+			{
+				// field removed in v1
+				std::vector<uint8_t> old_modified_nodes;
+				in >> old_modified_nodes;
+			}
 		}
 		break;
 		default:
@@ -520,22 +449,10 @@ void CIncrementalMapPartitioner::serializeFrom(
 	};
 }
 
-uint8_t CIncrementalMapPartitioner::serializeGetVersion() const { return 0; }
+uint8_t CIncrementalMapPartitioner::serializeGetVersion() const { return 1; }
 void CIncrementalMapPartitioner::serializeTo(
 	mrpt::serialization::CArchive& out) const
 {
 	out << m_individualFrames << m_individualMaps << m_A << m_last_partition
-		<< m_last_last_partition_are_new_ones << m_modified_nodes;
-}
-
-/*---------------------------------------------------------------
-					addMapFrame
-  ---------------------------------------------------------------*/
-unsigned int CIncrementalMapPartitioner::addMapFrame(
-	const CSensoryFrame& frame, const CPose3DPDF& robotPose3D)
-{
-	return addMapFrame(
-		CSensoryFrame::Ptr(new CSensoryFrame(frame)),
-		std::dynamic_pointer_cast<CPose3DPDF>(
-			robotPose3D.duplicateGetSmartPtr()));
+		<< m_last_last_partition_are_new_ones;
 }

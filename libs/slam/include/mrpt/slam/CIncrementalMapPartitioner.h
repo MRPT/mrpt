@@ -18,6 +18,7 @@
 #include <mrpt/poses/poses_frwds.h>
 #include <mrpt/typemeta/TEnumType.h>
 #include <functional>
+#include <limits>
 
 namespace mrpt
 {
@@ -102,6 +103,11 @@ class CIncrementalMapPartitioner : public mrpt::system::COutputLogger,
 		  * with the prefix of this "TOptions" section + ".metricmap".
 		  * Default: a CSimplePointsMap */
 		mrpt::maps::TSetOfMetricMapInitializers metricmap;
+
+		/** Maximum distance, in KF identifier numbers, to check for similarity.
+		  * Default=Infinite. Can be used to constraint the wrong detection of clusters 
+		  * after loop closures but before correcting global poses. */
+		uint64_t maxKeyFrameDistanceToEval{std::numeric_limits<uint64_t>::max()};
 
 		TOptions();
 	};
