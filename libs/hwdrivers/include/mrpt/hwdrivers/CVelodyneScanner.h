@@ -342,10 +342,12 @@ class CVelodyneScanner : public mrpt::hwdrivers::CGenericSensor
 	 * \return false on error*/
 	bool setLidarOnOff(bool on);
 	
-	/** Switches whole frame(points in a single revolution) on/off publication  
-	 * to datapacket publication. When on, getNextObservation() will return 
+	/** Switches whole frame (points in a single revolution) on/off publication  
+	 * to data packet publication. When on, getNextObservation() will return 
 	 * true whenever a frame is avaliable, when off, getNextObservation() will 
-	 * return true whenever a datapacket is avaliable.*/
+	 * return true whenever a data packet is avaliable. The default is on. When
+	 * listening to data packets on a PCAP, pcap_read_fast is enforced.
+	 */
 	void setFramePublishing(bool on);
 
 	/** @} */
