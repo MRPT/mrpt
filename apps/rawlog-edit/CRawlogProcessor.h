@@ -160,8 +160,8 @@ class CRawlogProcessorOnEachObservation : public CRawlogProcessor
    public:
 	CRawlogProcessorOnEachObservation(
 		mrpt::io::CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
-		bool verbose)
-		: CRawlogProcessor(in_rawlog, cmdline, verbose)
+		bool enable_verbose)
+		: CRawlogProcessor(in_rawlog, cmdline, enable_verbose)
 	{
 	}
 
@@ -219,8 +219,8 @@ class CRawlogProcessorFilterObservations
 
 	CRawlogProcessorFilterObservations(
 		mrpt::io::CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
-		bool verbose, mrpt::io::CFileGZOutputStream& out_rawlog)
-		: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, verbose),
+		bool enable_verbose, mrpt::io::CFileGZOutputStream& out_rawlog)
+		: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, enable_verbose),
 		  m_out_rawlog(out_rawlog),
 		  m_entries_removed(0),
 		  m_entries_parsed(0),

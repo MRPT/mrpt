@@ -46,7 +46,7 @@ void PlannerRRT_SE2_TPS::solve(
 	const PlannerRRT_SE2_TPS::TPlannerInput& pi,
 	PlannerRRT_SE2_TPS::TPlannerResult& result)
 {
-	mrpt::system::CTimeLoggerEntry tle(m_timelogger, "PT_RRT::solve");
+	mrpt::system::CTimeLoggerEntry tleg(m_timelogger, "PT_RRT::solve");
 
 	// Sanity checks:
 	ASSERTMSG_(m_initialized, "initialize() must be called before!");
@@ -86,10 +86,9 @@ void PlannerRRT_SE2_TPS::solve(
 			 elap_tim > end_criteria.maxComputationTime)  // Max comp time
 			||
 			(result.goal_distance < end_criteria.acceptedDistToTarget &&
-			 elap_tim >=
-				 end_criteria
-					 .minComputationTime)  // Reach closer than this to target
-			)
+			 elap_tim >= end_criteria.minComputationTime)  // Reach closer than
+														   // this to target
+		)
 		{
 			break;
 		}
@@ -172,11 +171,10 @@ void PlannerRRT_SE2_TPS::solve(
 					mrpt::opengl::COpenGLScene scene;
 					renderMoveTree(scene, pi, result, render_options);
 					mrpt::system::createDirectory("./rrt_log_trees");
-					scene.saveToFile(
-						mrpt::format(
-							"./rrt_log_trees/rrt_log_%03u_%06u.3Dscene",
-							static_cast<unsigned int>(SAVE_LOG_SOLVE_COUNT),
-							static_cast<unsigned int>(rrt_iter_counter)));
+					scene.saveToFile(mrpt::format(
+						"./rrt_log_trees/rrt_log_%03u_%06u.3Dscene",
+						static_cast<unsigned int>(SAVE_LOG_SOLVE_COUNT),
+						static_cast<unsigned int>(rrt_iter_counter)));
 				}
 
 				continue;  // Skip
@@ -252,7 +250,8 @@ void PlannerRRT_SE2_TPS::solve(
 				D_max,
 				d_rand);  // distance of the new candidate state in TP-space
 
-// mrpt::poses::CPose2D *log_new_state_ptr=NULL; // For graphical logs only
+			// mrpt::poses::CPose2D *log_new_state_ptr=NULL; // For graphical
+			// logs only
 
 #ifdef DO_LOG_TXTS
 			sLogTxt += mrpt::format(
@@ -319,8 +318,8 @@ void PlannerRRT_SE2_TPS::solve(
 					if (new_nearest_id != INVALID_NODEID)
 					{
 						// Also check angular distance:
-						const double new_nearest_ang = std::abs(
-							mrpt::math::angDistance(
+						const double new_nearest_ang =
+							std::abs(mrpt::math::angDistance(
 								new_state.phi(), result.move_tree.getAllNodes()
 													 .find(new_nearest_id)
 													 ->second.state.phi));
@@ -387,9 +386,8 @@ void PlannerRRT_SE2_TPS::solve(
 			const double goal_dist =
 				mrpt::poses::CPose2D(best_edge.end_state)
 					.distance2DTo(pi.goal_pose.x, pi.goal_pose.y);
-			const double goal_ang = std::abs(
-				mrpt::math::angDistance(
-					best_edge.end_state.phi, pi.goal_pose.phi));
+			const double goal_ang = std::abs(mrpt::math::angDistance(
+				best_edge.end_state.phi, pi.goal_pose.phi));
 
 			const bool is_acceptable_goal =
 				(goal_dist < end_criteria.acceptedDistToTarget) &&
@@ -454,11 +452,10 @@ void PlannerRRT_SE2_TPS::solve(
 			renderMoveTree(scene, pi, result, render_options);
 
 			mrpt::system::createDirectory("./rrt_log_trees");
-			scene.saveToFile(
-				mrpt::format(
-					"./rrt_log_trees/rrt_log_%03u_%06u.3Dscene",
-					static_cast<unsigned int>(SAVE_LOG_SOLVE_COUNT),
-					static_cast<unsigned int>(rrt_iter_counter)));
+			scene.saveToFile(mrpt::format(
+				"./rrt_log_trees/rrt_log_%03u_%06u.3Dscene",
+				static_cast<unsigned int>(SAVE_LOG_SOLVE_COUNT),
+				static_cast<unsigned int>(rrt_iter_counter)));
 		}
 
 	}  // end loop until end conditions

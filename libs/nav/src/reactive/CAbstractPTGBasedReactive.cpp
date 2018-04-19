@@ -1791,9 +1791,9 @@ void CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::saveToConfigFile(
 	{
 		const auto lst = mrpt::rtti::getAllRegisteredClassesChildrenOf(
 			CLASS_ID(CAbstractHolonomicReactiveMethod));
-		for (const auto& c : lst)
+		for (const auto& cl : lst)
 			lstHoloStr +=
-				string("# - `") + string(c->className) + string("`\n");
+				string("# - `") + string(cl->className) + string("`\n");
 	}
 	MRPT_SAVE_CONFIG_VAR_COMMENT(
 		holonomic_method,
@@ -1806,9 +1806,9 @@ void CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::saveToConfigFile(
 	{
 		const auto lst = mrpt::rtti::getAllRegisteredClassesChildrenOf(
 			CLASS_ID(CMultiObjectiveMotionOptimizerBase));
-		for (const auto& c : lst)
+		for (const auto& cl : lst)
 			lstDecidersStr +=
-				string("# - `") + string(c->className) + string("`\n");
+				string("# - `") + string(cl->className) + string("`\n");
 	}
 	MRPT_SAVE_CONFIG_VAR_COMMENT(
 		motion_decider_method,

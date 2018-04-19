@@ -120,18 +120,18 @@ class CDirectedTree
 	 * from the visit), invoking a user-provided function for each node/edge.
 	 * \sa visitBreadthFirst */
 	void visitDepthFirst(
-		const TNodeID root, Visitor& user_visitor,
+		const TNodeID vroot, Visitor& user_visitor,
 		const size_t root_depth_level = 0) const
 	{
 		const size_t next_depth_level = root_depth_level + 1;
 		typename TMapNode2ListEdges::const_iterator itChildren =
-			edges_to_children.find(root);
+			edges_to_children.find(vroot);
 		if (itChildren == edges_to_children.end()) return;  // No children
 		const TListEdges& children = itChildren->second;
 		for (typename TListEdges::const_iterator itEdge = children.begin();
 			 itEdge != children.end(); ++itEdge)
 		{
-			user_visitor.OnVisitNode(root, *itEdge, next_depth_level);
+			user_visitor.OnVisitNode(vroot, *itEdge, next_depth_level);
 			visitDepthFirst(
 				itEdge->id, user_visitor,
 				next_depth_level);  // Recursive depth-first call.
@@ -142,17 +142,17 @@ class CDirectedTree
 	 * excluded from the visit), invoking a user-provided function for each
 	 * node/edge. \sa visitDepthFirst */
 	void visitBreadthFirst(
-		const TNodeID root, Visitor& user_visitor,
+		const TNodeID vroot, Visitor& user_visitor,
 		const size_t root_depth_level = 0) const
 	{
 		const size_t next_depth_level = root_depth_level + 1;
 		typename TMapNode2ListEdges::const_iterator itChildren =
-			edges_to_children.find(root);
+			edges_to_children.find(vroot);
 		if (itChildren == edges_to_children.end()) return;  // No children
 		const TListEdges& children = itChildren->second;
 		for (typename TListEdges::const_iterator itEdge = children.begin();
 			 itEdge != children.end(); ++itEdge)
-			user_visitor.OnVisitNode(root, *itEdge, next_depth_level);
+			user_visitor.OnVisitNode(vroot, *itEdge, next_depth_level);
 		for (typename TListEdges::const_iterator itEdge = children.begin();
 			 itEdge != children.end(); ++itEdge)
 			visitDepthFirst(

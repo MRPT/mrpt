@@ -197,11 +197,10 @@ int CMultiObjectiveMotionOptimizerBase::decide(
 				if (val == 0)
 				{
 					assert_failed = true;
-					extra_info.log_entries.emplace_back(
-						mrpt::format(
-							"[CMultiObjectiveMotionOptimizerBase] "
-							"mov_idx=%u ASSERT failed: `%s`",
-							mov_idx, ma.get_original_expression().c_str()));
+					extra_info.log_entries.emplace_back(mrpt::format(
+						"[CMultiObjectiveMotionOptimizerBase] "
+						"mov_idx=%u ASSERT failed: `%s`",
+						mov_idx, ma.get_original_expression().c_str()));
 					break;
 				}
 			}
@@ -369,9 +368,9 @@ void CMultiObjectiveMotionOptimizerBase::TParamsBase::saveToConfigFile(
 
 	{
 		std::string sLst;
-		for (const auto& s : scores_to_normalize)
+		for (const auto& sc : scores_to_normalize)
 		{
-			sLst += s;
+			sLst += sc;
 			sLst += std::string(",");
 		}
 		c.write(s, "scores_to_normalize", sLst);

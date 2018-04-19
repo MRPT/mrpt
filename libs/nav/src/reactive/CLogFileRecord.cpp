@@ -258,9 +258,9 @@ void CLogFileRecord::serializeFrom(
 						in >> raw_clearances;
 						ipp.clearance.resize(
 							raw_clearances.size(), raw_clearances.size());
-						for (size_t i = 0; i < raw_clearances.size(); i++)
-							ipp.clearance.get_path_clearance_decimated(i) =
-								raw_clearances[i];
+						for (size_t k = 0; k < raw_clearances.size(); k++)
+							ipp.clearance.get_path_clearance_decimated(k) =
+								raw_clearances[k];
 					}
 					else
 					{
@@ -366,8 +366,8 @@ void CLogFileRecord::serializeFrom(
 					else
 						cmd_vel = mrpt::kinematics::CVehicleVelCmd::Ptr(
 							new mrpt::kinematics::CVehicleVelCmd_Holo);
-					for (size_t i = 0; i < cmd_vel->getVelCmdLength(); i++)
-						cmd_vel->setVelCmdElement(i, vel[i]);
+					for (size_t k = 0; k < cmd_vel->getVelCmdLength(); k++)
+						cmd_vel->setVelCmdElement(i, vel[k]);
 				}
 			}
 			else

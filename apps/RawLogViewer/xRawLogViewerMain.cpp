@@ -3180,13 +3180,11 @@ void xRawLogViewerFrame::OnGenOdoLaser(wxCommandEvent& event)
 	os::fclose(f_odo);
 	if (f_odo_times) os::fclose(f_odo_times);
 
-	for (std::map<string, std::pair<FILE*, std::pair<FILE*, FILE*>>>::iterator
-			 i = lstFiles.begin();
-		 i != lstFiles.end(); ++i)
+	for (auto l : lstFiles.begin())
 	{
-		os::fclose(i->second.first);
-		os::fclose(i->second.second.first);
-		os::fclose(i->second.second.second);
+		os::fclose(l.second.first);
+		os::fclose(l.second.second.first);
+		os::fclose(l.second.second.second);
 	}
 
 	wxMessageBox(
