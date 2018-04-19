@@ -14,9 +14,9 @@
 #define BASE_BIT_CAST_H_
 #include <string.h>
 #include <type_traits>
-#include "base/compiler_specific.h"
-#include "base/template_util.h"
-#include "build/build_config.h"
+//#include "base/compiler_specific.h"  // mrpt
+//#include "base/template_util.h"  // mrpt
+//#include "build/build_config.h"  // mrpt
 // bit_cast<Dest,Source> is a template function that implements the equivalent
 // of "*reinterpret_cast<Dest*>(&source)".  We need this in very low-level
 // functions like the protobuf library and fast math support.
@@ -71,10 +71,10 @@ inline Dest bit_cast(const Source& source)
 		sizeof(Dest) == sizeof(Source),
 		"bit_cast requires source and destination to be the same size");
 	static_assert(
-		base::is_trivially_copyable<Dest>::value,
+		std::is_trivially_copyable<Dest>::value,
 		"bit_cast requires the destination type to be copyable");
 	static_assert(
-		base::is_trivially_copyable<Source>::value,
+		std::is_trivially_copyable<Source>::value,
 		"bit_cast requires the source type to be copyable");
 	Dest dest;
 	memcpy(&dest, &source, sizeof(dest));

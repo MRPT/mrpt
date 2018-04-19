@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/core/reverse_bytes.h>
+#include <mrpt/core/bit_cast.h>
 #include <gtest/gtest.h>
 
 // Load data from constant file and check for exact match.
@@ -86,7 +87,7 @@ TEST(bits, reverseBytes)
 		EXPECT_EQ(val, val_r_ok);
 	}
 	{
-		bool valTrue  = true;
+		bool valTrue = true;
 		bool valFalse = false;
 		mrpt::reverseBytesInPlace(valTrue);
 		mrpt::reverseBytesInPlace(valFalse);
@@ -100,21 +101,21 @@ TEST(bits, reverseBytes)
 		EXPECT_EQ(val, 0xc1);
 	}
 	{
-		//1.0 == 0x3F800000
+		// 1.0 == 0x3F800000
 		float val = 1;
 		const uint32_t val_r_ok = UINT32_C(0x803f);
 
 		mrpt::reverseBytesInPlace(val);
-		uint32_t val_check = *reinterpret_cast<uint32_t*>(&val);
+		uint32_t val_check = bit_cast<uint32_t>(val);
 		EXPECT_EQ(val_check, val_r_ok);
 	}
 	{
-		//1.0 == 0x3ff0000000000000
+		// 1.0 == 0x3ff0000000000000
 		double val = 1;
 		const uint64_t val_r_ok = UINT32_C(0xf03f);
 
 		mrpt::reverseBytesInPlace(val);
-		uint32_t val_check = *reinterpret_cast<uint32_t*>(&val);
+		uint64_t val_check = bit_cast<uint64_t>(val);
 		EXPECT_EQ(val_check, val_r_ok);
 	}
 }
