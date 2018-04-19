@@ -77,10 +77,10 @@ bool THypothesis<GRAPH_T>::hasEnds(
 }
 
 template <class GRAPH_T>
-void THypothesis<GRAPH_T>::getEdge(constraint_t* edge) const
+void THypothesis<GRAPH_T>::getEdge(constraint_t* out_edge) const
 {
-	ASSERT_(edge);
-	edge->copyFrom(this->edge);
+	ASSERT_(out_edge);
+	out_edge->copyFrom(edge);
 }
 
 template <class GRAPH_T>
@@ -90,16 +90,16 @@ typename GRAPH_T::constraint_t THypothesis<GRAPH_T>::getEdge() const
 }
 
 template <class GRAPH_T>
-void THypothesis<GRAPH_T>::setEdge(const constraint_t& edge)
+void THypothesis<GRAPH_T>::setEdge(const constraint_t& in_edge)
 {
-	this->edge.copyFrom(edge);
+	edge.copyFrom(in_edge);
 }
 
 template <class GRAPH_T>
-void THypothesis<GRAPH_T>::getInverseEdge(constraint_t* edge) const
+void THypothesis<GRAPH_T>::getInverseEdge(constraint_t* out_edge) const
 {
-	ASSERT_(edge);
-	this->edge.inverse(*edge);
+	ASSERT_(out_edge);
+	edge.inverse(*out_edge);
 }
 
 template <class GRAPH_T>
@@ -129,8 +129,8 @@ bool THypothesis<GRAPH_T>::operator<(const self_t& other) const
 {
 	return this->id < other.id;
 }
-}
-}
-}  // end of namespaces
+}  // namespace detail
+}  // namespace graphs
+}  // namespace mrpt
 
 #endif /* end of include guard: THYPOTHESIS_IMPL_H */

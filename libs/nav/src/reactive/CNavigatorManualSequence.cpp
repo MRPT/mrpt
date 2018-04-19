@@ -41,14 +41,13 @@ void CNavigatorManualSequence::loadConfigFile(
 
 	for (size_t i = 0; i < lstKeys.size(); i++)
 	{
-		std::string s = c.read_string(s, lstKeys[i], "", true);
+		std::string str = c.read_string(s, lstKeys[i], "", true);
 		std::vector<std::string> toks;
-		mrpt::system::tokenize(s, " \t\r\n", toks);
+		mrpt::system::tokenize(str, " \t\r\n", toks);
 		ASSERTMSG_(
 			toks.size() > 2,
-			std::string(
-				"Wrong format while parsing CNavigatorManualSequence "
-				"cfg file in entry: ") +
+			std::string("Wrong format while parsing CNavigatorManualSequence "
+						"cfg file in entry: ") +
 				lstKeys[i]);
 
 		const double t = atof(toks[0].c_str());
@@ -69,8 +68,8 @@ void CNavigatorManualSequence::loadConfigFile(
 				THROW_EXCEPTION("Expected 2 or 4 velocity components!");
 		};
 
-		for (size_t i = 0; i < nComps; i++)
-			krc.cmd_vel->setVelCmdElement(i, atof(toks[i + 1].c_str()));
+		for (size_t j = 0; j < nComps; j++)
+			krc.cmd_vel->setVelCmdElement(j, atof(toks[j + 1].c_str()));
 
 		// insert:
 		programmed_orders[t] = krc;
