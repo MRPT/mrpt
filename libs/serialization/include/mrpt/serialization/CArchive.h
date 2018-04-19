@@ -344,9 +344,14 @@ class CArchive
 	 */
 	bool receiveMessage(CMessage& msg);
 
-	/** Write an object to a stream in the binary MRPT format. */
+	/** Write a CSerializable object to a stream in the binary MRPT format */
 	CArchive& operator<<(const CSerializable& obj);
+	/** \overload */
+	CArchive& operator<<(const CSerializable::Ptr& pObj);
+	/** Reads a CSerializable object from the stream */
 	CArchive& operator>>(CSerializable& obj);
+	/** \overload */
+	CArchive& operator>>(CSerializable::Ptr& pObj);
 
 	/** @} */
 
