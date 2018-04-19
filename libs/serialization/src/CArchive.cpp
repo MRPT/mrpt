@@ -227,9 +227,9 @@ inline CArchive& readStdVectorToStream(CArchive& s, VEC& v)
 	if (n) s.ReadBufferFixEndianness(&v[0], n);
 	return s;
 }
-}
-}
-}
+}  // namespace detail
+}  // namespace serialization
+}  // namespace mrpt
 
 // Write:
 CArchive& mrpt::serialization::operator<<(
@@ -288,7 +288,8 @@ CArchive& mrpt::serialization::operator>>(CArchive& s, std::vector<float>& a)
 {
 	return detail::readStdVectorToStream(s, a);
 }
-CArchive& mrpt::serialization::operator>>(CArchive& s, mrpt::aligned_std_vector<float>& a)
+CArchive& mrpt::serialization::operator>>(
+	CArchive& s, mrpt::aligned_std_vector<float>& a)
 {
 	return detail::readStdVectorToStream(s, a);
 }
@@ -543,11 +544,10 @@ void CArchive::ReadObject(CSerializable* existingObj)
 			"Stored object has class '%s' which is not registered!",
 			strClassName.c_str());
 	if (id != id2)
-		THROW_EXCEPTION(
-			format(
-				"Stored class does not match with existing object!!:\n Stored: "
-				"%s\n Expected: %s",
-				id2->className, id->className));
+		THROW_EXCEPTION(format(
+			"Stored class does not match with existing object!!:\n Stored: "
+			"%s\n Expected: %s",
+			id2->className, id->className));
 
 	internal_ReadObject(existingObj, strClassName, isOldFormat, version);
 }
