@@ -9,7 +9,7 @@ define_mrpt_lib(
 	)
 
 # extra dependencies required by unit tests in this module:
-set_property(GLOBAL PROPERTY mrpt_containers_UNIT_TEST_EXTRA_DEPS mrpt-random)
+set_property(GLOBAL PROPERTY mrpt_containers_UNIT_TEST_EXTRA_DEPS mrpt-random mrpt-poses)
 
 IF(BUILD_mrpt-containers)
 
