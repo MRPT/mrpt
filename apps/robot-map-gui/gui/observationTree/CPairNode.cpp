@@ -16,8 +16,9 @@ using namespace mrpt;
 using namespace mrpt::maps;
 
 CPairNode::CPairNode(
-	CNode* parent, const CSimpleMap::TPosePDFSensFramePair& poseSensFramePair)
-	: CNode(parent)
+	CNode* parent, const CSimpleMap::TPosePDFSensFramePair& poseSensFramePair,
+	size_t indexInSimpleMap)
+	: CNode(parent), m_indexInSimpleMap(indexInSimpleMap)
 {
 	mrpt::poses::CPose3D pos = poseSensFramePair.first->getMeanVal();
 	m_pose = std::make_unique<CPosesNode>(this, pos);
@@ -34,7 +35,11 @@ CNode::ObjectType CPairNode::type() const
 	return ObjectType::PosWithObservationPair;
 }
 
-std::string CPairNode::displayName() const { return "Position"; }
+std::string CPairNode::displayName() const
+{
+	return std::string("[") + std::to_string(m_indexInSimpleMap) +
+		   std::string("] Pose-SF pair");
+}
 CNode* CPairNode::getChild(int id) const
 {
 	switch (id)

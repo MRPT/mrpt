@@ -22,7 +22,8 @@ class CPairNode : public CNode
    public:
 	CPairNode(
 		CNode* parent,
-		const mrpt::maps::CSimpleMap::TPosePDFSensFramePair& poseSensFramePair);
+		const mrpt::maps::CSimpleMap::TPosePDFSensFramePair& poseSensFramePair,
+		size_t indexInSimpleMap);
 	virtual ~CPairNode();
 
 	int childCount() const;
@@ -37,4 +38,5 @@ class CPairNode : public CNode
 
 	std::unique_ptr<CPosesNode> m_pose;
 	std::unique_ptr<CObservationsNode> m_observations;
+	size_t m_indexInSimpleMap;
 };
