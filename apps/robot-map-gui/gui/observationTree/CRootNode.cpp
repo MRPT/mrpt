@@ -16,11 +16,14 @@ using namespace mrpt::maps;
 CRootNode::CRootNode(const CSimpleMap& simplemap) : CNode(nullptr)
 {
 	if (!simplemap.empty())
-		for (auto iter = simplemap.begin(); iter != simplemap.end(); ++iter)
+	{
+		size_t idx = 0;
+		for (auto& p : simplemap)
 		{
-			CPairNode* node = new CPairNode(this, *iter);
+			CPairNode* node = new CPairNode(this, p, idx++);
 			m_posesNode.push_back(node);
 		}
+	}
 }
 
 int CRootNode::childCount() const { return m_posesNode.size(); }
