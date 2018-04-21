@@ -3180,7 +3180,7 @@ void xRawLogViewerFrame::OnGenOdoLaser(wxCommandEvent& event)
 	os::fclose(f_odo);
 	if (f_odo_times) os::fclose(f_odo_times);
 
-	for (auto l : lstFiles.begin())
+	for (auto l : lstFiles)
 	{
 		os::fclose(l.second.first);
 		os::fclose(l.second.second.first);
