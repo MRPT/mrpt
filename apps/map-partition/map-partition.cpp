@@ -59,11 +59,10 @@ void Test()
 	printf("Output files will be saved in directory ./MAP-PARTITION_RESULTS\n");
 
 	// Options:
-	imp.options.partitionThreshold = 0.90f;
-	imp.options.gridResolution = 0.10f;
-	imp.options.minDistForCorrespondence = 0.20f;
-	imp.options.minMahaDistForCorrespondence = 10.00f;
-	imp.options.useMapMatching = true;
+	imp.options.partitionThreshold = 0.9;
+	imp.options.mrp.maxDistForCorr = 0.2f;
+	imp.options.mrp.maxMahaDistForCorr = 10.0f;
+	imp.options.simil_method = mrpt::slam::smMETRIC_MAP_MATCHING;
 
 	if (fileExists("./MAP-PARTITION_CONFIG.ini"))
 	{
@@ -103,7 +102,7 @@ void Test()
 
 		in_map.get(i, posePDF, sf);
 
-		imp.addMapFrame(sf, posePDF);
+		imp.addMapFrame(*sf, *posePDF);
 
 		printf("[%u/%u]...", (unsigned int)i, (unsigned int)n);
 

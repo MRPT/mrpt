@@ -51,6 +51,9 @@ struct TMetricMapInitializer : public mrpt::config::CLoadableOptions
 	void loadFromConfigFile(
 		const mrpt::config::CConfigFileBase& source,
 		const std::string& sectionNamePrefix) override;  // See base docs
+	void saveToConfigFile(
+		mrpt::config::CConfigFileBase& target,
+		const std::string& section) const override;
 	void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
 	/** Query the map type (C++ class), as set by the factory method
@@ -318,7 +321,9 @@ class TSetOfMetricMapInitializers : public mrpt::config::CLoadableOptions
 	void loadFromConfigFile(
 		const mrpt::config::CConfigFileBase& source,
 		const std::string& sectionName) override;
-
+	void saveToConfigFile(
+		mrpt::config::CConfigFileBase& target,
+		const std::string& section) const override;
 	/** This method dumps the options of the multi-metric map AND those of every
 	 * internal map. */
 	void dumpToTextStream(std::ostream& out) const override;

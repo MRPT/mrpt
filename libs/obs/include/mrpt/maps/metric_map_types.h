@@ -101,7 +101,9 @@ class TMapGenericParams : public mrpt::config::CLoadableOptions,
 	void loadFromConfigFile(
 		const mrpt::config::CConfigFileBase& source,
 		const std::string& sectionNamePrefix) override;  // See base docs
-	void dumpToTextStream(std::ostream& out) const override;  // See base docs
+	void saveToConfigFile(
+		mrpt::config::CConfigFileBase& target,
+		const std::string& section) const override;
 };
 
 }  // namespace maps

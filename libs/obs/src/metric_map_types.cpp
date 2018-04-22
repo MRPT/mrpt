@@ -26,12 +26,14 @@ void TMapGenericParams::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR(enableObservationLikelihood, bool, source, sct);
 	MRPT_LOAD_CONFIG_VAR(enableObservationInsertion, bool, source, sct);
 }
-void TMapGenericParams::dumpToTextStream(std::ostream& out) const
+void TMapGenericParams::saveToConfigFile(
+	mrpt::config::CConfigFileBase& c,
+	const std::string& s) const
 {
 	// Common:
-	LOADABLEOPTS_DUMP_VAR(enableSaveAs3DObject, bool);
-	LOADABLEOPTS_DUMP_VAR(enableObservationLikelihood, bool);
-	LOADABLEOPTS_DUMP_VAR(enableObservationInsertion, bool);
+	MRPT_SAVE_CONFIG_VAR_COMMENT(enableSaveAs3DObject, "");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(enableObservationLikelihood, "");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(enableObservationInsertion, "");
 }
 
 uint8_t TMapGenericParams::serializeGetVersion() const { return 0; }

@@ -78,7 +78,7 @@ void CRangeBearingKFSLAM::reset()
 
 	// Use SF-based matching (faster & easier for bearing-range observations
 	// with ID).
-	mapPartitioner.options.useMapMatching = false;
+	mapPartitioner.options.simil_method = smOBSERVATION_OVERLAP;
 }
 
 /*---------------------------------------------------------------
@@ -225,7 +225,7 @@ void CRangeBearingKFSLAM::processActionObservation(
 		if (options.partitioningMethod == 0)
 		{
 			// Use spectral-graph technique:
-			mapPartitioner.addMapFrame(SF, auxPosePDF);
+			mapPartitioner.addMapFrame(*SF, *auxPosePDF);
 
 			vector<std::vector<uint32_t>> partitions;
 			mapPartitioner.updatePartitions(partitions);
@@ -1243,14 +1243,10 @@ double CRangeBearingKFSLAM::computeOffDiagonalBlocksApproximationError(
   ---------------------------------------------------------------*/
 void CRangeBearingKFSLAM::reconsiderPartitionsNow()
 {
-	mapPartitioner.markAllNodesForReconsideration();
-
-	vector<std::vector<uint32_t>>
-		partitions;  // A different buffer for making this
+	// A different buffer for making this
 	// thread-safe some day...
-
+	vector<std::vector<uint32_t>> partitions;
 	mapPartitioner.updatePartitions(partitions);
-
 	m_lastPartitionSet = partitions;
 }
 
