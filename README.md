@@ -3,20 +3,20 @@
 <table>
  <tr>
   <td>gcc/clang</td>
-  <td><a src="https://travis-ci.org/MRPT/mrpt" alt="Travis:gcc,clang"><img src="https://travis-ci.org/MRPT/mrpt.png?branch=master" /></a></td>
+  <td><a href="https://travis-ci.org/MRPT/mrpt" alt="Travis:gcc,clang"><img src="https://travis-ci.org/MRPT/mrpt.png?branch=master" /></a></td>
   <td>MSVC</td>
-  <td><a src="https://ci.appveyor.com/project/jlblancoc/mrpt-k05a9" alt="AppVeyor:msvc"><img src="https://ci.appveyor.com/api/projects/status/yjs4lpj02f6a1ylg?svg=true" /></a></td>
-  <td><a src="https://ci.appveyor.com/project/jlblancoc/mrpt-k05a9" alt="codecov"><img src="https://codecov.io/gh/MRPT/mrpt/branch/master/graph/badge.svg" /></a></td>
-  <td><a src="https://gitter.im/MRPT/mrpt" alt="Gitter"><img src="https://badges.gitter.im/Join%20Chat.svg" /></a></td>
-  <td><a src="https://www.codetriage.com/mrpt/mrpt" alt="Open Source Helpers"><img src="https://www.codetriage.com/mrpt/mrpt/badges/users.svg" /></a></td>
+  <td><a href="https://ci.appveyor.com/project/jlblancoc/mrpt-k05a9" alt="AppVeyor:msvc"><img src="https://ci.appveyor.com/api/projects/status/yjs4lpj02f6a1ylg?svg=true" /></a></td>
+  <td><a href="https://ci.appveyor.com/project/jlblancoc/mrpt-k05a9" alt="codecov"><img src="https://codecov.io/gh/MRPT/mrpt/branch/master/graph/badge.svg" /></a></td>
+  <td><a href="https://gitter.im/MRPT/mrpt" alt="Gitter"><img src="https://badges.gitter.im/Join%20Chat.svg" /></a></td>
+  <td><a href="https://www.codetriage.com/mrpt/mrpt" alt="Open Source Helpers"><img src="https://www.codetriage.com/mrpt/mrpt/badges/users.svg" /></a></td>
  </tr>
  <tr>
   <td>GH</td>
-  <td><a src="https://github.com/MRPT/mrpt/releases" alt="GitHub"><img src="https://img.shields.io/github/downloads/mrpt/mrpt/total.svg" /></a></td>
+  <td><a href="https://github.com/MRPT/mrpt/releases" alt="GitHub"><img src="https://img.shields.io/github/downloads/mrpt/mrpt/total.svg" /></a></td>
   <td>SF(datasets)</td>
-  <td><a src="https://sourceforge.net/projects/mrpt/files/" alt="SourceForge"><img src="https://img.shields.io/sourceforge/dt/mrpt.svg" /></a></td>
+  <td><a href="https://sourceforge.net/projects/mrpt/files/" alt="SourceForge"><img src="https://img.shields.io/sourceforge/dt/mrpt.svg" /></a></td>
   <td>Stable</td>
-  <td><a src="https://github.com/MRPT/mrpt/releases" alt="Releases"><img src="https://img.shields.io/github/release/MRPT/mrpt.svg" /></a></td>
+  <td><a href="https://github.com/MRPT/mrpt/releases" alt="Releases"><img src="https://img.shields.io/github/release/MRPT/mrpt.svg" /></a></td>
 
 </tr>
 </table>
