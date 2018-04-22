@@ -91,10 +91,6 @@ CHMTSLAM::TMessageLSLAMfromAA::Ptr CHMTSLAM::areaAbstraction(
 	vector<std::vector<uint32_t>> partitions;
 	{
 		std::lock_guard<std::mutex> locker(LMH->m_robotPosesGraph.lock);
-		// Recompute partitions:
-		LMH->m_robotPosesGraph.partitioner
-			.markAllNodesForReconsideration();  // We will have always small
-		// local maps.
 		LMH->m_robotPosesGraph.partitioner.updatePartitions(partitions);
 	}
 
