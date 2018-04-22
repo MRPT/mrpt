@@ -48,6 +48,14 @@ void TMetricMapInitializer::loadFromConfigFile(
 	this->loadFromConfigFile_map_specific(source, sectionNamePrefix);
 }
 
+void TMetricMapInitializer::saveToConfigFile(
+	mrpt::config::CConfigFileBase& target,
+	const std::string& section) const
+{
+	auto s = section + std::string("_") + std::string(this->metricMapClassType->className);
+	this->genericMapParams.saveToConfigFile(target, s);
+}
+
 void TMetricMapInitializer::dumpToTextStream(std::ostream& out) const
 {
 	out << "-----------------TMetricMapInitializer --------------------\n";
@@ -104,6 +112,14 @@ void TSetOfMetricMapInitializers::loadFromConfigFile(
 	}  // end for each map kind
 
 	MRPT_END
+}
+
+void TSetOfMetricMapInitializers::saveToConfigFile(
+	mrpt::config::CConfigFileBase& target,
+	const std::string& section) const
+{
+	for (auto & mi : *this)
+		mi->saveToConfigFile(target, section);
 }
 
 void TSetOfMetricMapInitializers::dumpToTextStream(std::ostream& out) const
