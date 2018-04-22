@@ -5,7 +5,7 @@ INCLUDE(../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake
 # ----------------------------------------------------------------------------
 PROJECT(tests)
 
-SET(EXECUTABLE_OUTPUT_PATH "${${PROJECT_NAME}_BINARY_DIR}")
+SET(EXECUTABLE_OUTPUT_PATH "${MRPT_BINARY_DIR}/bin")
 
 # -----------------------------
 # Add the "make test" target:
@@ -60,7 +60,7 @@ FOREACH(_TSTLIB ${LST_LIB_TESTS})
 
 	# Test project:
 	ADD_EXECUTABLE( test_${_TSTLIB} test_main.cpp ${lstfiles})
-	ADD_TEST(test_${_TSTLIB} ${CMAKE_CURRENT_BINARY_DIR}/test_${_TSTLIB})
+	ADD_TEST(test_${_TSTLIB} ${EXECUTABLE_OUTPUT_PATH}/test_${_TSTLIB})
 	add_coverage(test_${_TSTLIB})
 
 	# Add the required libraries for linking:
