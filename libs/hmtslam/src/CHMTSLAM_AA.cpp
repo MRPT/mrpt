@@ -83,7 +83,7 @@ CHMTSLAM::TMessageLSLAMfromAA::Ptr CHMTSLAM::areaAbstraction(
 
 			unsigned int newIdx =
 				LMH->m_robotPosesGraph.partitioner.addMapFrame(
-					CSensoryFrame::Ptr(new CSensoryFrame(*sf)), posePDF);
+					*sf, *posePDF);
 			LMH->m_robotPosesGraph.idx2pose[newIdx] = *newID;
 		}  // end of critical section lock on "m_robotPosesGraph.lock"
 	}  // end for each new ID
