@@ -2537,14 +2537,15 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitions(
 		}
 
 		// pose
-		pose_t curr_pose = search->second;
-		mrpt::poses::CPosePDF::Ptr posePDF(new constraint_t(curr_pose));
+		const auto& curr_pose = search->second;
+		const auto curr_constraint = constraint_t(curr_pose);
+		mrpt::poses::CPose3DPDF::Ptr pose3d(mrpt::poses::CPose3DPDF::createFrom2D(curr_constraint));
 
 		// laser scan
 		mrpt::obs::CSensoryFrame sf;
 		sf.insert(it->second);
 
-		m_partitioner.addMapFrame(sf, *posePDF);
+		m_partitioner.addMapFrame(sf, *pose3d);
 	}
 
 	// update the last partitions list
