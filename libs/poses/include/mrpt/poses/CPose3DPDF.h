@@ -47,17 +47,20 @@ class CPose3DPDF : public mrpt::serialization::CSerializable,
    public:
 	/** Copy operator, translating if necesary (for example, between particles
 	 * and gaussian representations)
-	  * \sa createFrom2D
-	  */
+	 * \sa createFrom2D
+	 */
 	virtual void copyFrom(const CPose3DPDF& o) = 0;
 
 	/** This is a static transformation method from 2D poses to 3D PDFs,
 	 * preserving the representation type (particles->particles,
 	 * Gaussians->Gaussians,etc)
-	  *  It returns a new object of any of the derived classes of CPose3DPDF.
-	 * This object must be deleted by the user when not required anymore.
-	  *  \sa copyFrom
-	  */
+	 *
+	 * \warning It returns a new object of any of the derived classes of
+	 * CPose3DPDF. This object must be deleted by the user when not required
+	 * anymore.
+	 *
+	 * \sa copyFrom
+	 */
 	static CPose3DPDF* createFrom2D(const CPosePDF& o);
 
 	virtual void changeCoordinatesReference(
