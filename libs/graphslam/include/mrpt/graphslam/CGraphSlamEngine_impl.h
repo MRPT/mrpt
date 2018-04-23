@@ -305,7 +305,7 @@ void CGraphSlamEngine<GRAPH_T>::initClass()
 		std::string rawlog_fname_noext =
 			system::extractFileName(m_rawlog_fname);
 		std::string rawlog_dir = system::extractFileDirectory(m_rawlog_fname);
-		std::string m_img_external_storage_dir =
+		m_img_external_storage_dir =
 			rawlog_dir + rawlog_fname_noext + "_Images/";
 		mrpt::img::CImage::setImagesPathBase(m_img_external_storage_dir);
 	}
@@ -1523,7 +1523,6 @@ void CGraphSlamEngine<GRAPH_T>::readGTFileRGBD_TUM(
 	// parse the file - get timestamp and pose and fill in the pose_t vector
 	for (; file_GT.readLine(curr_line);)
 	{
-		vector<string> curr_tokens;
 		system::tokenize(curr_line, " ", curr_tokens);
 		ASSERTDEBMSG_(
 			curr_tokens.size() == 8,
@@ -1540,7 +1539,6 @@ void CGraphSlamEngine<GRAPH_T>::readGTFileRGBD_TUM(
 		}
 
 		// quaternion
-		CQuaternionDouble quat;
 		quat.r(atof(curr_tokens[7].c_str()));
 		quat.x(atof(curr_tokens[4].c_str()));
 		quat.y(atof(curr_tokens[5].c_str()));
@@ -1548,19 +1546,18 @@ void CGraphSlamEngine<GRAPH_T>::readGTFileRGBD_TUM(
 		quat.rpy(r, p, y);
 
 		// pose
-		CVectorDouble curr_coords(3);
 		curr_coords[0] = atof(curr_tokens[1].c_str());
 		curr_coords[1] = atof(curr_tokens[2].c_str());
 		curr_coords[2] = atof(curr_tokens[3].c_str());
 
 		// current ground-truth pose
-		pose_t curr_pose(curr_coords[0], curr_coords[1], y);
+		pose_t p(curr_coords[0], curr_coords[1], y);
 
-		curr_pose.x() -= pose_diff.x();
-		curr_pose.y() -= pose_diff.y();
-		curr_pose.phi() -= pose_diff.phi();
+		p.x() -= pose_diff.x();
+		p.y() -= pose_diff.y();
+		p.phi() -= pose_diff.phi();
 		// curr_pose += -pose_diff;
-		gt_poses->push_back(curr_pose);
+		gt_poses->push_back(p);
 	}
 
 	file_GT.close();

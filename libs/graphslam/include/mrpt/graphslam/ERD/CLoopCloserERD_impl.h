@@ -2541,12 +2541,10 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitions(
 		mrpt::poses::CPosePDF::Ptr posePDF(new constraint_t(curr_pose));
 
 		// laser scan
-		mrpt::obs::CSensoryFrame::Ptr sf =
-			mrpt::make_aligned_shared<mrpt::obs::CSensoryFrame>();
-		sf->insert(it->second);
+		mrpt::obs::CSensoryFrame sf;
+		sf.insert(it->second);
 
-		m_partitioner.addMapFrame(sf, posePDF);
-		// mrpt::system::pause();
+		m_partitioner.addMapFrame(sf, *posePDF);
 	}
 
 	// update the last partitions list
