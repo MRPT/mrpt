@@ -16,7 +16,7 @@
 //    more details.
 //
 //  Some functions here are derived from sources in libcvd, released
-//   under LGPL. See http://mi.eng.cam.ac.uk/~er258/cvd/
+//   under BSD. https://www.edwardrosten.com/cvd/
 //
 // ---------------------------------------------------------------------------
 

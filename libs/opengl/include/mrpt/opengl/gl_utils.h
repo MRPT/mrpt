@@ -205,7 +205,7 @@ const std::string& glGetFont();
 /// @param style rendering style
 /// @param spacing distance between individual text lines
 /// @param kerning distance between characters
-/// \note This functions comes from libcvd (LGPL,
+/// \note This functions comes from libcvd (BSD,
 /// http://www.edwardrosten.com/cvd/ )
 mrpt::img::TPixelCoordf glDrawText(
 	const std::string& text, const double textScale,
@@ -214,7 +214,7 @@ mrpt::img::TPixelCoordf glDrawText(
 
 /// returns the size of the bounding box of a text to be rendered, similar to
 /// @ref glDrawText but without any visual output
-/// \note This functions comes from libcvd (LGPL,
+/// \note This functions comes from libcvd (BSD,
 /// http://www.edwardrosten.com/cvd/ )
 mrpt::img::TPixelCoordf glGetExtends(
 	const std::string& text, const double textScale, double spacing = 1.5,

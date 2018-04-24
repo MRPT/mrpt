@@ -38,7 +38,7 @@ namespace opengl
   *  </table>
   *  </div>
   *
-  * \note This class is based on code from libcvd (LGPL,
+  * \note This class is based on code from libcvd (BSD,
  * http://www.edwardrosten.com/cvd/ )
   * \ingroup mrpt_opengl_grp
   */
