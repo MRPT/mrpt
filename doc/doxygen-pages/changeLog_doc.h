@@ -13,7 +13,7 @@
 <p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or [browse it on-line](http://www.mrpt.org/).</i></p>
 
 <a name="1.5.6">
-<h2>Version 1.5.6: (Under development) </h2></a>
+<h2>Version 1.5.6: Released 24/APR/2018 </h2></a>
 	- Applications:
 		- pf-localization:
 			- Odometry is now used also for observation-only rawlogs.
@@ -26,6 +26,8 @@
 		- COccupancyGridMap2D: New LIDAR insertion parameters: maxFreenessUpdateCertainty, maxFreenessInvalidRanges.
 	- \ref mrpt_reactivenav_grp
 		- CAbstractPTGBasedReactive: Added new score `holo_stage_eval`.
+	- BUG FIXES:
+		- circular_buffer: exception made state preserving
 
 <hr>
 <a name="1.5.5">
