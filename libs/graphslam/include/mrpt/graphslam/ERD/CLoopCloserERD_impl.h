@@ -2519,7 +2519,7 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitions(
 			 nodes_to_scans.begin();
 		 it != nodes_to_scans.end(); ++it)
 	{
-		if (it->second)
+		if (!it->second)
 		{  // if laserScan invalid go to next...
 			MRPT_LOG_WARN_STREAM(
 				"nodeID \"" << it->first << "\" has invalid laserScan");
