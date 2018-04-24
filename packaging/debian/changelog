@@ -1,10 +1,16 @@
+mrpt (1:1.5.6-1) unstable; urgency=medium
+
+  * New version of upstream sources.
+
+ -- José Luis Blanco Claraco <joseluisblancoc@gmail.com>  Tue, 24 Apr 2018 08:23:18 +0200
+
 mrpt (1:1.5.5-1) unstable; urgency=medium
 
   * New version of upstream sources.
   * Fix SIGBUS in armhf (Closes: #880388).
   * debian/copyright: Updated to machine-readable format.
   * debian/rules: disable generating Doxygen caller graphs in doc pkg.
-  * debian/rules: override build-indep target.
+  * debian/rules: provide build-indep, test-indep, and install-indep targets.
 
  -- José Luis Blanco Claraco <joseluisblancoc@gmail.com>  Fri, 01 Dec 2017 07:13:14 +0100
 
