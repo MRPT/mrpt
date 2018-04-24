@@ -21,6 +21,8 @@ IF(WIN32)
 ENDIF()
 
 # Glext headers only (for Windows)
+INCLUDE_DIRECTORIES(${CVD_DIR})
+
 INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/libs/opengl/src/glext")
 
 # Assimp:
@@ -54,6 +56,9 @@ define_mrpt_lib(
 	mrpt-img
 	)
 
+add_dependencies(mrpt-opengl libcvd)
+INCLUDE_DIRECTORIES(${CVD_INCLUDE_DIRS})
+
 IF(BUILD_mrpt-opengl)
 	# Ignore precompiled headers in some sources:
 	IF(MRPT_ENABLE_PRECOMPILED_HDRS)
@@ -74,7 +79,7 @@ IF(BUILD_mrpt-opengl)
 	ENDIF()
 
 	# Link against gl, glu, glut:
-	TARGET_LINK_LIBRARIES(mrpt-opengl PUBLIC ${MRPT_OPENGL_LIBS} ${MRPT_3DS_LIBS})
+	TARGET_LINK_LIBRARIES(mrpt-opengl PUBLIC ${MRPT_OPENGL_LIBS} ${MRPT_3DS_LIBS} ${CVD_LIB})
 
 	# Link against assimp:
 	IF (CMAKE_MRPT_HAS_ASSIMP)
