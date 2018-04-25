@@ -821,7 +821,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 		// Instead of picking randomly from "permutationPathsAuxVector", we can
 		// shuffle it now just once,
 		// then pick in sequence from the tail and resize the container:
-		std::random_shuffle(
+		mrpt::random::shuffle(
 			permutationPathsAuxVector.begin(), permutationPathsAuxVector.end(),
 			mrpt::random::random_generator_for_STL);
 

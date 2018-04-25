@@ -25,9 +25,9 @@ class SelfAdjointEigenSolver;
 
 namespace mrpt
 {
-/** A namespace of pseudo-random numbers genrators of diferent distributions.
+/** A namespace of pseudo-random numbers generators of diferent distributions.
  * The central class in this namespace is mrpt::random::CRandomGenerator
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_random_grp
  */
 namespace random
 {
@@ -41,7 +41,7 @@ namespace random
   *
   * Single-thread programs can use the static object
  * mrpt::random::randomGenerator
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_random_grp
   */
 class CRandomGenerator
 {
@@ -364,7 +364,7 @@ class CRandomGenerator
 	{
 		out_result = in_vector;
 		const size_t N = out_result.size();
-		if (N > 1) std::random_shuffle(&out_result[0], &out_result[N - 1]);
+		if (N > 1) mrpt::random::shuffle(&out_result[0], &out_result[N - 1]);
 	}
 
 	/** @} */

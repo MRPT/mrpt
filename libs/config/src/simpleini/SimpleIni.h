@@ -27,6 +27,7 @@
 #include <map>
 #include <list>
 #include <algorithm>
+#include <functional>
 #include <stdio.h>
 #include <cstring>
 #include <mrpt/core/common.h>
@@ -147,7 +148,7 @@ class CSimpleIniTempl
 #endif
 
 		/** Strict less ordering by name of key only */
-		struct KeyOrder : std::binary_function<Entry, Entry, bool>
+		struct KeyOrder : std::function<bool(Entry, Entry)>
 		{
 			bool operator()(const Entry& lhs, const Entry& rhs) const
 			{
@@ -157,7 +158,7 @@ class CSimpleIniTempl
 		};
 
 		/** Strict less ordering by order, and then name of key */
-		struct LoadOrder : std::binary_function<Entry, Entry, bool>
+		struct LoadOrder : std::function<bool(Entry, Entry)>
 		{
 			bool operator()(const Entry& lhs, const Entry& rhs) const
 			{
