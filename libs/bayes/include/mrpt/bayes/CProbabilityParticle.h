@@ -14,25 +14,55 @@ namespace mrpt
 {
 namespace bayes
 {
-/** A template class for holding a the data and the weight of a particle.
-*    Particles are composed of two parts:
- *		- A state vector descritor, which in this case can be any user defined
-*CSerializable class
- *		- A (logarithmic) weight value.
- *
- *  This structure is used within CParticleFilterData, see that class for more
-*information.
+/** use for CProbabilityParticle
  * \ingroup mrpt_bayes_grp
  */
-template <class T>
-struct CProbabilityParticle
+enum class particle_storage_mode
 {
-   public:
+	VALUE,
+	POINTER
+};
+
+/** A template class for holding a the data and the weight of a particle.
+ * Particles comprise two parts: a "data payload field", and a logarithmic
+ * importance sampling weight.
+ *
+ * \tparam T The type of the payload. Must be default constructable.
+ * \tparam STORAGE If `POINTER`, a (wrapper to a) pointer is used to store
+ * the payload; if `VALUE`, the payload is stored directly as a value.
+ *
+ * \sa CParticleFilterData
+ * \ingroup mrpt_bayes_grp
+ */
+template <class T, particle_storage_mode STORAGE>
+struct CProbabilityParticle;
+
+struct CProbabilityParticleBase
+{
+	/** The (logarithmic) weight value for this particle. */
+	double log_w{ .0 };
+};
+
+template <class T>
+struct CProbabilityParticle<T, particle_storage_mode::POINTER>
+	: public CProbabilityParticleBase
+{
 	/** The data associated with this particle. The use of copy_ptr<> allows
 	 * relying on compiler-generated copy ctor, etc. */
 	mrpt::containers::copy_ptr<T> d{};
-	/** The (logarithmic) weight value for this particle. */
-	double log_w{.0};
+};
+
+template <class T>
+struct CProbabilityParticle<T, particle_storage_mode::VALUE>
+	: public CProbabilityParticleBase
+{
+	CProbabilityParticle() {}
+	CProbabilityParticle(const T& data, const double logw)
+		: d(data), log_w(logw)
+	{
+	}
+	/** The data associated with this particle */
+	T d{};
 };
 
 }  // end namespace

@@ -182,7 +182,7 @@ void CPosePDFGrid::changeCoordinatesReference(const CPose3D& newReferenceBase)
  ---------------------------------------------------------------*/
 void CPosePDFGrid::bayesianFusion(
 	const CPosePDF& p1, const CPosePDF& p2,
-	const double& minMahalanobisDistToDrop)
+	const double minMahalanobisDistToDrop)
 {
 	MRPT_UNUSED_PARAM(p1);
 	MRPT_UNUSED_PARAM(p2);

@@ -130,6 +130,13 @@ void SE_average<2>::append(const mrpt::poses::CPose2D& p, const double weight)
 	m_accum_y += weight * p.y();
 	m_rot_part.append(p.phi(), weight);
 }
+void SE_average<2>::append(const mrpt::math::TPose2D& p, const double weight)
+{
+	m_count += weight;
+	m_accum_x += weight * p.x;
+	m_accum_y += weight * p.y;
+	m_rot_part.append(p.phi, weight);
+}
 void SE_average<2>::get_average(mrpt::poses::CPose2D& ret_mean) const
 {
 	ASSERT_ABOVE_(m_count, 0);
