@@ -21,10 +21,6 @@
 #include <mach/task.h>
 #endif
 
-using namespace mrpt;
-using namespace mrpt::system;
-using namespace std;
-
 #ifdef _WIN32
 #include <windows.h>
 // Windows:
@@ -41,6 +37,10 @@ typedef struct _PROCESS_MEMORY_COUNTERS
 	SIZE_T PagefileUsage;
 	SIZE_T PeakPagefileUsage;
 } PROCESS_MEMORY_COUNTERS, *PPROCESS_MEMORY_COUNTERS;
+
+using namespace mrpt;
+using namespace mrpt::system;
+using namespace std;
 
 namespace mrpt
 {
