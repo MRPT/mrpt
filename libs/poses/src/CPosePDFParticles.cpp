@@ -364,17 +364,14 @@ void CPosePDFParticles::saveParzenPDFToTextFile(
 	const double y_min, const double y_max, const double phi,
 	const double stepSizeXY, const double stdXY, const double stdPhi) const
 {
-	FILE* f = os::fopen(fileName, "wt");
-	if (!f) return;
+	std::string buf;
 
 	for (double y = y_min; y < y_max; y += stepSizeXY)
-	{
 		for (double x = x_min; x < x_max; x += stepSizeXY)
-		{
-			os::fprintf(f, "%f ", evaluatePDF_parzen(x, y, phi, stdXY, stdPhi));
-		}  // y
-		os::fprintf(f, "\n");
-	}  // x
+			buf+=mrpt::format("%f ", evaluatePDF_parzen(x, y, phi, stdXY, stdPhi));
+		buf += "\n";
 
-	os::fclose(f);
+	std::ofstream f(fileName);
+	if (!f.is_open()) return;
+	f << buf;
 }

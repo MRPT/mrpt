@@ -168,6 +168,7 @@ class SE_average<3>
 	void append(const mrpt::poses::CPose3D& p);
 	/** Adds a new pose to the weighted-average computation \sa get_average */
 	void append(const mrpt::poses::CPose3D& p, const double weight);
+	void append(const mrpt::math::TPose3D& p, const double weight);
 	/** Returns the average pose.
 	  * \exception std::logic_error If no data point were inserted.
 	  * \exception std::runtime_error Upon undeterminate average value (ie the
