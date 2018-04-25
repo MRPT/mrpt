@@ -9,6 +9,7 @@
 #pragma once
 
 #include <iosfwd>
+#include <utility>
 
 namespace mrpt
 {
@@ -27,6 +28,8 @@ struct TPixelCoordf
 	TPixelCoordf() : x(), y() {}
 	/** Constructor from x,y values */
 	TPixelCoordf(const float _x, const float _y) : x(_x), y(_y) {}
+	template <typename T>
+	TPixelCoordf(const std::pair<T,T>& p) : x(p.first), y(p.second) {}
 };
 
 /** Prints TPixelCoordf as "(x,y)" */
