@@ -148,7 +148,7 @@ class CPointPDFGaussian : public CPointPDF
 	  */
 	void bayesianFusion(
 		const CPointPDF& p1, const CPointPDF& p2,
-		const double& minMahalanobisDistToDrop = 0) override;
+		const double minMahalanobisDistToDrop = 0) override;
 
 	/** Returns the Mahalanobis distance from this PDF to another PDF, that is,
 	 * it's evaluation at (0,0,0) */

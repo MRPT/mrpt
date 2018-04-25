@@ -28,20 +28,15 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CPosePDFParticles, CPosePDF, mrpt::poses)
 
-/*---------------------------------------------------------------
-	Constructor
-  ---------------------------------------------------------------*/
 CPosePDFParticles::CPosePDFParticles(size_t M)
 {
 	m_particles.resize(M);
-
 	for (auto& p : m_particles)
 	{
 		p.log_w = .0;
-		p.d.reset(new CPose2D());
+		p.d = TPose2D();
 	}
-
-	CPose2D nullPose(0, 0, 0);
+	TPose2D nullPose(0, 0, 0);
 	resetDeterministic(nullPose);
 }
 
@@ -79,12 +74,10 @@ void CPosePDFParticles::copyFrom(const CPosePDF& o)
 			 itDest != m_particles.end(); ++itDest, ++partsIt)
 		{
 			itDest->log_w = 0;
-			itDest->d.reset(
-				new CPose2D(
-					(pdf->mean.x() + (*partsIt)[0]),
-					(pdf->mean.y() + (*partsIt)[1]),
-					(pdf->mean.phi() + (*partsIt)[2])));
-			itDest->d->normalizePhi();
+			itDest->d = TPose2D(
+				pdf->mean.x() + (*partsIt)[0], (pdf->mean.y() + (*partsIt)[1]),
+				(pdf->mean.phi() + (*partsIt)[2]));
+			itDest->d.normalizePhi();
 		}
 	}
 
@@ -92,12 +85,7 @@ void CPosePDFParticles::copyFrom(const CPosePDF& o)
 }
 
 void CPosePDFParticles::clear() { clearParticles(); }
-/*---------------------------------------------------------------
-						getMean
-  Returns an estimate of the pose, (the mean, or mathematical expectation of the
- PDF), computed
-		as a weighted average over all m_particles.
- ---------------------------------------------------------------*/
+
 void CPosePDFParticles::getMean(CPose2D& est_) const
 {
 	// Calc average on SE(2)
@@ -107,9 +95,8 @@ void CPosePDFParticles::getMean(CPose2D& est_) const
 		mrpt::poses::SE_average<2> se_averager;
 		for (size_t i = 0; i < n; i++)
 		{
-			const CPose2D& p = *m_particles[i].d;
 			double w = exp(m_particles[i].log_w);
-			se_averager.append(p, w);
+			se_averager.append(m_particles[i].d, w);
 		}
 		se_averager.get_average(est_);
 	}
@@ -119,9 +106,6 @@ void CPosePDFParticles::getMean(CPose2D& est_) const
 	}
 }
 
-/*---------------------------------------------------------------
-						getEstimatedCovariance
-  ---------------------------------------------------------------*/
 void CPosePDFParticles::getCovarianceAndMean(
 	CMatrixDouble33& cov, CPose2D& mean) const
 {
@@ -144,10 +128,10 @@ void CPosePDFParticles::getCovarianceAndMean(
 		double w = exp(m_particles[i].log_w) / lin_w_sum;
 
 		// Manage 1 PI range:
-		double err_x = m_particles[i].d->x() - mean.x();
-		double err_y = m_particles[i].d->y() - mean.y();
+		double err_x = m_particles[i].d.x - mean.x();
+		double err_y = m_particles[i].d.y - mean.y();
 		double err_phi =
-			math::wrapToPi(fabs(m_particles[i].d->phi() - mean_phi));
+			math::wrapToPi(fabs(m_particles[i].d.phi - mean_phi));
 
 		var_x += square(err_x) * w;
 		var_y += square(err_y) * w;
@@ -194,55 +178,35 @@ void CPosePDFParticles::serializeFrom(
 	};
 }
 
-/*---------------------------------------------------------------
-							resetDeterministic
-	Reset PDF to a single point and set the number of m_particles
- ---------------------------------------------------------------*/
 void CPosePDFParticles::resetDeterministic(
-	const CPose2D& location, size_t particlesCount)
+	const TPose2D& location, size_t particlesCount)
 {
 	if (particlesCount > 0)
-	{
-		clear();
 		m_particles.resize(particlesCount);
-		for (auto& p : m_particles) p.d.reset();
-	}
 
 	for (auto& p : m_particles)
 	{
-		*p.d = location;
+		p.d = location;
 		p.log_w = .0;
 	}
 }
 
-/*---------------------------------------------------------------
-						resetUniform
- ---------------------------------------------------------------*/
 void CPosePDFParticles::resetUniform(
-	const double& x_min, const double& x_max, const double& y_min,
-	const double& y_max, const double& phi_min, const double& phi_max,
-	const int& particlesCount)
+	const double x_min, const double x_max, const double y_min,
+	const double y_max, const double phi_min, const double phi_max,
+	const int particlesCount)
 {
 	MRPT_START
-
 	if (particlesCount > 0)
-	{
-		clear();
 		m_particles.resize(particlesCount);
-		for (int i = 0; i < particlesCount; i++)
-			m_particles[i].d.reset(new CPose2D());
-	}
 
-	size_t i, M = m_particles.size();
-	for (i = 0; i < M; i++)
+	for (auto& p : m_particles)
 	{
-		m_particles[i].d->x(getRandomGenerator().drawUniform(x_min, x_max));
-		m_particles[i].d->y(getRandomGenerator().drawUniform(y_min, y_max));
-		m_particles[i].d->phi(
-			getRandomGenerator().drawUniform(phi_min, phi_max));
-		m_particles[i].log_w = 0;
+		p.d.x= getRandomGenerator().drawUniform(x_min, x_max);
+		p.d.y = getRandomGenerator().drawUniform(y_min, y_max);
+		p.d.phi = getRandomGenerator().drawUniform(phi_min, phi_max);
+		p.log_w = 0;
 	}
-
 	MRPT_END
 }
 
@@ -265,119 +229,80 @@ void CPosePDFParticles::resetAroundSetOfPoses(
 		const mrpt::math::TPose2D& p = list_poses[nSpot];
 		for (size_t k = 0; k < num_particles_per_pose; k++, i++)
 		{
-			m_particles[i].d.reset(new CPose2D());
-			m_particles[i].d->x(
+			m_particles[i].d.x=
 				getRandomGenerator().drawUniform(
-					p.x - spread_x * 0.5, p.x + spread_x * 0.5));
-			m_particles[i].d->y(
+					p.x - spread_x * 0.5, p.x + spread_x * 0.5);
+			m_particles[i].d.y=
 				getRandomGenerator().drawUniform(
-					p.y - spread_y * 0.5, p.y + spread_y * 0.5));
-			m_particles[i].d->phi(
-				getRandomGenerator().drawUniform(
-					p.phi - spread_phi_rad * 0.5,
-					p.phi + spread_phi_rad * 0.5));
+					p.y - spread_y * 0.5, p.y + spread_y * 0.5);
+			m_particles[i].d.phi = getRandomGenerator().drawUniform(
+				p.phi - spread_phi_rad * 0.5, p.phi + spread_phi_rad * 0.5);
 			m_particles[i].log_w = 0;
 		}
 	}
-
 	ASSERT_EQUAL_(i, N);
-
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-						saveToTextFile
-   Save PDF's m_particles to a text file. In each line it
-	  will go: "x y phi weight"
- ---------------------------------------------------------------*/
 bool CPosePDFParticles::saveToTextFile(const std::string& file) const
 {
-	FILE* f = os::fopen(file.c_str(), "wt");
-	if (!f) return false;
-	os::fprintf(f, "%% x  y  yaw[rad] log_weight\n");
+	std::string buf;
+	buf += mrpt::format("%% x  y  yaw[rad] log_weight\n");
 
-	for (unsigned int i = 0; i < m_particles.size(); i++)
-		os::fprintf(
-			f, "%f %f %f %e\n", m_particles[i].d->x(), m_particles[i].d->y(),
-			m_particles[i].d->phi(), m_particles[i].log_w);
+	for (const auto & p : m_particles)
+		buf += mrpt::format("%f %f %f %e\n", p.d.x, p.d.y, p.d.phi, p.log_w);
 
-	os::fclose(f);
+	std::ofstream f(file);
+	if (!f.is_open()) return false;
+	f << buf;
 	return true;
 }
 
-/*---------------------------------------------------------------
-						getParticlePose
- ---------------------------------------------------------------*/
-CPose2D CPosePDFParticles::getParticlePose(size_t i) const
+TPose2D CPosePDFParticles::getParticlePose(size_t i) const
 {
-	return *m_particles[i].d;
+	return m_particles[i].d;
 }
 
-/*---------------------------------------------------------------
-						changeCoordinatesReference
- ---------------------------------------------------------------*/
 void CPosePDFParticles::changeCoordinatesReference(
 	const CPose3D& newReferenceBase_)
 {
-	const CPose2D newReferenceBase = CPose2D(newReferenceBase_);
-
-	for (CParticleList::iterator it = m_particles.begin();
-		 it != m_particles.end(); ++it)
-		it->d->composeFrom(newReferenceBase, *it->d);
+	const TPose2D newReferenceBase = CPose2D(newReferenceBase_).asTPose();
+	for (auto &p : m_particles)
+		p.d = newReferenceBase + p.d;
 }
 
-/*---------------------------------------------------------------
-					drawSingleSample
- ---------------------------------------------------------------*/
 void CPosePDFParticles::drawSingleSample(CPose2D& outPart) const
 {
 	const double uni = getRandomGenerator().drawUniform(0.0, 0.9999);
 	double cum = 0;
 
-	for (CParticleList::const_iterator it = m_particles.begin();
-		 it != m_particles.end(); ++it)
+	for (auto &p : m_particles)
 	{
-		cum += exp(it->log_w);
+		cum += exp(p.log_w);
 		if (uni <= cum)
 		{
-			outPart = (*it->d);
+			outPart = CPose2D(p.d);
 			return;
 		}
 	}
 
 	// Might not come here normally:
-	outPart = *(m_particles.rbegin())->d;
+	outPart = CPose2D(m_particles.rbegin()->d);
 }
 
-/*---------------------------------------------------------------
-						+=
- ---------------------------------------------------------------*/
-void CPosePDFParticles::operator+=(const CPose2D& Ap)
+void CPosePDFParticles::operator+=(const TPose2D& Ap)
 {
-	for (CParticleList::iterator it = m_particles.begin();
-		 it != m_particles.end(); ++it)
-		it->d->composeFrom(*it->d, Ap);
+	for (auto &p : m_particles)
+		p.d = p.d + Ap;
 }
 
-/*---------------------------------------------------------------
-					append
- ---------------------------------------------------------------*/
 void CPosePDFParticles::append(CPosePDFParticles& o)
 {
-	for (unsigned int i = 0; i < o.m_particles.size(); i++)
-	{
-		CParticleData part;
-		part.d.reset(new CPose2D(*o.m_particles[i].d));
-		part.log_w = o.m_particles[i].log_w;
-		m_particles.push_back(part);
-	}
-
+	for (auto &p : o.m_particles)
+		m_particles.emplace_back(p);
 	normalizeWeights();
 }
 
-/*---------------------------------------------------------------
-					inverse
- ---------------------------------------------------------------*/
 void CPosePDFParticles::inverse(CPosePDF& o) const
 {
 	MRPT_START
@@ -385,40 +310,32 @@ void CPosePDFParticles::inverse(CPosePDF& o) const
 	CPosePDFParticles* out = static_cast<CPosePDFParticles*>(&o);
 
 	out->copyFrom(*this);
-	static CPose2D nullPose(0, 0, 0);
+	TPose2D nullPose(0, 0, 0);
 
-	for (unsigned int i = 0; i < out->m_particles.size(); i++)
-		(*out->m_particles[i].d) = nullPose - (*out->m_particles[i].d);
+	for (auto &p : out->m_particles)
+		p.d = nullPose - p.d;
 
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-					getMostLikelyParticle
- ---------------------------------------------------------------*/
-CPose2D CPosePDFParticles::getMostLikelyParticle() const
+mrpt::math::TPose2D CPosePDFParticles::getMostLikelyParticle() const
 {
-	CParticleList::const_iterator it, itMax = m_particles.begin();
-	double max_w = -1e300;
-
-	for (it = m_particles.begin(); it != m_particles.end(); ++it)
+	mrpt::math::TPose2D ret{ 0,0,0 };
+	double max_w = -std::numeric_limits<double>::max();
+	for (const auto & p: m_particles)
 	{
-		if (it->log_w > max_w)
+		if (p.log_w > max_w)
 		{
-			itMax = it;
-			max_w = it->log_w;
+			ret = p.d;
+			max_w = p.log_w;
 		}
 	}
-
-	return *itMax->d;
+	return ret;
 }
 
-/*---------------------------------------------------------------
-					bayesianFusion
- ---------------------------------------------------------------*/
 void CPosePDFParticles::bayesianFusion(
 	const CPosePDF& p1, const CPosePDF& p2,
-	const double& minMahalanobisDistToDrop)
+	const double minMahalanobisDistToDrop)
 {
 	MRPT_UNUSED_PARAM(p1);
 	MRPT_UNUSED_PARAM(p2);
@@ -427,35 +344,25 @@ void CPosePDFParticles::bayesianFusion(
 	THROW_EXCEPTION("Not implemented yet!");
 }
 
-/*---------------------------------------------------------------
-					evaluatePDF_parzen
- ---------------------------------------------------------------*/
 double CPosePDFParticles::evaluatePDF_parzen(
-	const double& x, const double& y, const double& phi, const double& stdXY,
-	const double& stdPhi) const
+	const double x, const double y, const double phi, const double stdXY,
+	const double stdPhi) const
 {
 	double ret = 0;
-
-	for (CParticleList::const_iterator it = m_particles.begin();
-		 it != m_particles.end(); ++it)
+	for (const auto & p : m_particles)
 	{
-		double difPhi = math::wrapToPi(phi - it->d->phi());
-
-		ret += exp(it->log_w) *
-			   math::normalPDF(it->d->distance2DTo(x, y), 0, stdXY) *
-			   math::normalPDF(fabs(difPhi), 0, stdPhi);
+		double difPhi = math::wrapToPi(phi - p.d.phi);
+		ret += exp(p.log_w) *
+			   math::normalPDF(std::sqrt(square(p.d.x-x)+square(p.d.y - y)), 0, stdXY) *
+			   math::normalPDF(std::abs(difPhi), 0, stdPhi);
 	}
-
 	return ret;
 }
 
-/*---------------------------------------------------------------
-					saveParzenPDFToTextFile
- ---------------------------------------------------------------*/
 void CPosePDFParticles::saveParzenPDFToTextFile(
-	const char* fileName, const double& x_min, const double& x_max,
-	const double& y_min, const double& y_max, const double& phi,
-	const double& stepSizeXY, const double& stdXY, const double& stdPhi) const
+	const char* fileName, const double x_min, const double x_max,
+	const double y_min, const double y_max, const double phi,
+	const double stepSizeXY, const double stdXY, const double stdPhi) const
 {
 	FILE* f = os::fopen(fileName, "wt");
 	if (!f) return;

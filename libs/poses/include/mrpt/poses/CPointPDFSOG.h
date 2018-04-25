@@ -175,7 +175,7 @@ class CPointPDFSOG : public CPointPDF
 	  */
 	void bayesianFusion(
 		const CPointPDF& p1, const CPointPDF& p2,
-		const double& minMahalanobisDistToDrop = 0) override;
+		const double minMahalanobisDistToDrop = 0) override;
 
 	/** Evaluates the PDF within a rectangular grid and saves the result in a
 	 * matrix (each row contains values for a fixed y-coordinate value).

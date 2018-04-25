@@ -162,7 +162,7 @@ class CPosePDFGaussianInf : public CPosePDF
    */
 	void bayesianFusion(
 		const CPosePDF& p1, const CPosePDF& p2,
-		const double& minMahalanobisDistToDrop = 0) override;
+		const double minMahalanobisDistToDrop = 0) override;
 
 	/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF */
 	void inverse(CPosePDF& o) const override;
