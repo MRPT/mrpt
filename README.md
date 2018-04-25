@@ -75,7 +75,7 @@ Minimum compiler requisites:
     * gcc-7 or newer.
       * Ubuntu 18.04LTS Bionic: Its default gcc version is ok.
       * Ubuntu 16.04LTS Xenial: [Instructions](https://gist.github.com/jlblancoc/99521194aba975286c80f93e47966dc5) for installing gcc-7 in this version of Ubuntu.
-    * Windows: Visual Studio 2017.
+    * Windows: Visual Studio 2017 version 15.3 or newer.
     * cmake >= 3.3 required (>=3.4 for Windows).
   * mrpt 1.5.* and maintenance `mrpt-1.5` branch:
     * Ubuntu 14.04LTS Trusty: default gcc/clang versions
