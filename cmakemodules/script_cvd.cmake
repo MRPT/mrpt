@@ -12,7 +12,7 @@ ExternalProject_Add(libcvd
 )
 
 set(CVD_DIR "${MRPT_SOURCE_DIR}/otherlibs/libcvd")
-set(CVD_BIN_DIR "${MRPT_BINARY_DIR}/libs/vision/libcvd-prefix/src/libcvd-build")
+set(CVD_BIN_DIR "${MRPT_BINARY_DIR}/libcvd-prefix/src/libcvd-build")
 
 set(CVD_INCLUDE_DIRS "${CVD_DIR}" "${CVD_BIN_DIR}/include")
  
