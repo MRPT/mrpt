@@ -173,6 +173,10 @@ void SE_average<3>::append(const mrpt::poses::CPose3D& p, const double weight)
 	m_accum_z += weight * p.z();
 	m_rot_part.append(p.getRotationMatrix(), weight);
 }
+void SE_average<3>::append(const mrpt::math::TPose3D& p, const double weight)
+{
+	append(CPose3D(p),weight);
+}
 void SE_average<3>::get_average(mrpt::poses::CPose3D& ret_mean) const
 {
 	ASSERT_ABOVE_(m_count, 0);

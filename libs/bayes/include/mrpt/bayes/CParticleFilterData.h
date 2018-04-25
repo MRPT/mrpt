@@ -119,18 +119,19 @@ struct CParticleFilterDataImpl : public CParticleFilterCapable
 		std::vector<size_t> sorted_indx(indx);
 		std::sort(sorted_indx.begin(), sorted_indx.end());
 
+		/* Temporary buffer: */
 		particle_list_t parts;
-		typename particle_list_t::iterator itDest, itSrc;
-		const size_t M_old = derived().m_particles.size();
-		size_t i, j, lastIndxOld = 0;
+		parts.resize(sorted_indx.size());
+
 		// Implementation for particles as pointers:
-		if constexpr(typename Derived::PARTICLE_STORAGE == particle_storage_mode::POINTER)
+		if constexpr(Derived::PARTICLE_STORAGE == particle_storage_mode::POINTER)
 		{
+			const size_t M_old = derived().m_particles.size();
 			std::vector<bool> oldParticlesReused(M_old, false);
 			std::vector<bool>::const_iterator oldPartIt;
+			typename particle_list_t::iterator itDest, itSrc;
+			size_t i, lastIndxOld = 0;
 
-			/* Set the new size: */
-			parts.resize(sorted_indx.size());
 			for (i = 0, itDest = parts.begin(); itDest != parts.end();
 				i++, itDest++)
 			{
@@ -138,7 +139,7 @@ struct CParticleFilterDataImpl : public CParticleFilterCapable
 				itDest->log_w = derived().m_particles[sorted_idx].log_w;
 				/* We can safely delete old m_particles from [lastIndxOld,indx[i]-1]
 				 * (inclusive): */
-				for (j = lastIndxOld; j < sorted_idx; j++)
+				for (size_t j = lastIndxOld; j < sorted_idx; j++)
 				{
 					if (!oldParticlesReused
 						[j]) /* If reused we can not delete that memory! */
@@ -148,8 +149,7 @@ struct CParticleFilterDataImpl : public CParticleFilterCapable
 				/* For the next iteration:*/
 				lastIndxOld = sorted_idx;
 
-				/* If this is the first time that the old particle "indx[i]"
-				 * appears, */
+				/* If this is the first time that the old particle "indx[i]" appears, */
 				 /*  we can reuse the old "data" instead of creating a new copy: */
 				if (!oldParticlesReused[sorted_idx])
 				{
@@ -171,20 +171,17 @@ struct CParticleFilterDataImpl : public CParticleFilterCapable
 				oldPartIt = oldParticlesReused.begin();
 				itSrc != derived().m_particles.end(); itSrc++, oldPartIt++)
 				if (!*oldPartIt) itSrc->d.reset();
-			/* Copy the pointers only to the final destination */
-			derived().m_particles.resize(parts.size());
-			for (itSrc = parts.begin(), itDest = derived().m_particles.begin();
-				itSrc != parts.end(); itSrc++, itDest++)
-			{
-				itDest->log_w = itSrc->log_w;
-				itDest->d = std::move(itSrc->d);
-			}
 		}
 		else
 		{
 			// Implementation for particles as values:
-			static_assert(false, "Implement me!");
+			auto it_idx = sorted_indx.begin();
+			auto itDest = parts.begin();
+			for (; itDest != parts.end(); ++it_idx, ++itDest)
+				*itDest = derived().m_particles[*it_idx];
 		}
+		/* Move particles to the final container: */
+		derived().m_particles = std::move(parts);
 		MRPT_END
 	}
 
@@ -237,7 +234,12 @@ class CParticleFilterData
 		out << n;
 		typename CParticleList::const_iterator it;
 		for (it = m_particles.begin(); it != m_particles.end(); ++it)
-			out << it->log_w << (*it->d);
+		{
+			out << it->log_w;
+			if constexpr(STORAGE == particle_storage_mode::POINTER)
+				out << (*it->d);
+			else out << it->d;
+		}
 		MRPT_END
 	}
 
@@ -257,8 +259,15 @@ class CParticleFilterData
 		for (it = m_particles.begin(); it != m_particles.end(); ++it)
 		{
 			in >> it->log_w;
-			it->d.reset(new T());
-			in >> *it->d;
+			if constexpr(STORAGE == particle_storage_mode::POINTER)
+			{
+				it->d.reset(new T());
+				in >> *it->d;
+			}
+			else
+			{
+				in >> it->d;
+			}
 		}
 		MRPT_END
 	}
