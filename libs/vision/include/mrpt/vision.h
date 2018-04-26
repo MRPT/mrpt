@@ -31,7 +31,6 @@ MRPT_WARNING(
 #include <mrpt/vision/tracking.h>
 #include <mrpt/vision/descriptor_kdtrees.h>
 #include <mrpt/vision/descriptor_pairing.h>
-#include <mrpt/vision/bundle_adjustment.h>
 #include <mrpt/vision/CUndistortMap.h>
 #include <mrpt/vision/CStereoRectifyMap.h>
 #include <mrpt/vision/CImagePyramid.h>

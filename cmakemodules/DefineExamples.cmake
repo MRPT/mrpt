@@ -235,11 +235,19 @@ IF(BUILD_EXAMPLES)
 		vision_checkerboard_detectors
 		vision_multiple_checkerboards
 		vision_keypoint_matching_example
-		vision_bundle_adj_example
 		vision_stereo_calib_example
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-vision mrpt-gui)
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
+
+	IF(MRPT_ALLOW_LGPLV3)
+		# === Depending on: vision-lgpl ===
+		SET(LIST_EXAMPLES_IN_THIS_DIR
+			vision_bundle_adj_example
+			)
+		SET(CMAKE_EXAMPLE_DEPS mrpt-vision-lgpl mrpt-gui)
+		GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
+	ENDIF()
 
 	# === Depending on: obs ===
 	SET(LIST_EXAMPLES_IN_THIS_DIR
