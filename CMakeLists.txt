@@ -73,6 +73,7 @@ find_package(codecov)
 
 
 SET(ALLOW_GPL OFF CACHE BOOL "Allows MRPT to link to GPL code. This effectively makes some MRPT binaries GPL licensed. Use this at your own risk.")
+OPTION(MRPT_ALLOW_LGPLV3 "Allows MRPT to use LGPLV3 code" "OFF")
 
 # The root directory for all MRPT libraries/modules:
 SET(MRPT_LIBS_ROOT "${CMAKE_SOURCE_DIR}/libs" CACHE INTERNAL "")  # This emulates global vars
