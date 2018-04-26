@@ -13,7 +13,9 @@
 #include <mrpt/system/os.h>
 #include "opengl_internals.h"
 
+#if MRPT_HAS_OPENGL_GLUT
 #include <cvd/gl_helpers.h>
+#endif
 
 #include <map>
 
