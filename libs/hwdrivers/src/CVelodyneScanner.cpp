@@ -100,6 +100,7 @@ CVelodyneScanner::CVelodyneScanner()
 	  m_pos_packets_min_period(0.5),
 	  m_pos_packets_timing_timeout(30.0),
 	  m_device_ip(""),
+	  m_return_frames(true),
 	  m_pcap_verbose(true),
 	  m_last_pos_packet_timestamp(INVALID_TIMESTAMP),
 	  m_pcap(nullptr),
@@ -115,8 +116,7 @@ CVelodyneScanner::CVelodyneScanner()
 	  m_hPositionSock(INVALID_SOCKET),
 	  m_last_gps_rmc_age(INVALID_TIMESTAMP),
 	  m_lidar_rpm(0),
-	  m_lidar_return(UNCHANGED),
-	  m_return_frames(true)
+	  m_lidar_return(UNCHANGED)
 {
 	m_sensorLabel = "Velodyne";
 
