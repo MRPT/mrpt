@@ -162,5 +162,8 @@ the GitHub contributors page (https://github.com/MRPT/mrpt/graphs/contributors).
   - Driver for SICK TIM561/55x/56x via ethernet (mrpt::hwdrivers::CSICKTim561Eth)
   - A testing sample for SICK TIM55x/TIM56x series
 
+* David Serret
+  - Small changes in Velodyne drivers
+
 Several bug reports have been provided from MRPT users world-wide. We kindly thank all of
 them for this valuable feedback, and they are usually mentioned in changelogs.
