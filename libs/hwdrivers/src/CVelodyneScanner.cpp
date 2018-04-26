@@ -115,7 +115,8 @@ CVelodyneScanner::CVelodyneScanner()
 	  m_hPositionSock(INVALID_SOCKET),
 	  m_last_gps_rmc_age(INVALID_TIMESTAMP),
 	  m_lidar_rpm(0),
-	  m_lidar_return(UNCHANGED)
+	  m_lidar_return(UNCHANGED),
+	  m_return_frames(true)
 {
 	m_sensorLabel = "Velodyne";
 
@@ -283,7 +284,7 @@ bool CVelodyneScanner::getNextObservation(
 					if (m_pcap)
 					{
 						// Keep the reader from blowing through the file.
-						if (!m_pcap_read_fast && m_return_frames)
+						if (!m_pcap_read_fast)
 							std::this_thread::sleep_for(
 								std::chrono::duration<double, std::milli>(
 									m_pcap_read_full_scan_delay_ms));
