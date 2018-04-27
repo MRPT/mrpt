@@ -100,6 +100,7 @@ CVelodyneScanner::CVelodyneScanner()
 	  m_pos_packets_min_period(0.5),
 	  m_pos_packets_timing_timeout(30.0),
 	  m_device_ip(""),
+	  m_return_frames(true),
 	  m_pcap_verbose(true),
 	  m_last_pos_packet_timestamp(INVALID_TIMESTAMP),
 	  m_pcap(nullptr),
@@ -273,8 +274,9 @@ bool CVelodyneScanner::getNextObservation(
 			// ready:
 			if (m_rx_scan && !m_rx_scan->scan_packets.empty())
 			{
-				if (rx_pkt_start_angle <
-					m_rx_scan->scan_packets.rbegin()->blocks[0].rotation)
+				if ((rx_pkt_start_angle <
+					m_rx_scan->scan_packets.rbegin()->blocks[0].rotation) || 
+					!m_return_frames)
 				{
 					outScan = m_rx_scan;
 					m_rx_scan.reset();
@@ -1088,6 +1090,14 @@ bool CVelodyneScanner::setLidarOnOff(bool on)
 	MRPT_START;
 	const std::string cmd = mrpt::format("laser=%s", on ? "on" : "off");
 	return this->internal_send_http_post(cmd);
+	MRPT_END;
+}
+
+void CVelodyneScanner::setFramePublishing(bool on)
+{
+	//frame publishing | data packet publishing = on|off
+	MRPT_START;
+	m_return_frames = on;
 	MRPT_END;
 }
 
