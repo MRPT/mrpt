@@ -138,7 +138,7 @@ void CMultiMetricMapPDF::clear(
 				ASSERT_(pdf_parts);
 				if (pdf_parts->particlesCount() == nParts)
 				{
-					kf_pose = *pdf_parts->m_particles[idxPart].d;
+					kf_pose = CPose3D(pdf_parts->m_particles[idxPart].d);
 					kf_pose_set = true;
 				}
 			}
@@ -192,8 +192,7 @@ void CMultiMetricMapPDF::getEstimatedPosePDFAtTime(
 	out_estimation.m_particles.resize(n);
 	for (i = 0; i < n; i++)
 	{
-		out_estimation.m_particles[i].d.reset(
-			new CPose3D(m_particles[i].d->robotPath[timeStep]));
+		out_estimation.m_particles[i].d = m_particles[i].d->robotPath[timeStep];
 		out_estimation.m_particles[i].log_w = m_particles[i].log_w;
 	}
 }

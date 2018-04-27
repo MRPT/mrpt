@@ -477,7 +477,7 @@ void CActionRobotMovement2D::computeFromOdometry_modelThrun(
 	// The Gaussian PDF:
 	// ---------------------------
 	CPosePDFParticles* aux;
-	static CPose2D nullPose(0, 0, 0);
+	const mrpt::math::TPose2D nullPose(0, 0, 0);
 
 	poseChange = mrpt::make_aligned_shared<CPosePDFParticles>();
 	aux = static_cast<CPosePDFParticles*>(poseChange.get());
@@ -517,19 +517,19 @@ void CActionRobotMovement2D::computeFromOdometry_modelThrun(
 							   getRandomGenerator().drawGaussian1D_normalized();
 
 		// Output:
-		aux->m_particles[i].d->x(
+		aux->m_particles[i].d.x =
 			Atrans_draw * cos(Arot1_draw) +
 			motionModelConfiguration.thrunModel.additional_std_XY *
-				getRandomGenerator().drawGaussian1D_normalized());
-		aux->m_particles[i].d->y(
+				getRandomGenerator().drawGaussian1D_normalized();
+		aux->m_particles[i].d.y =
 			Atrans_draw * sin(Arot1_draw) +
 			motionModelConfiguration.thrunModel.additional_std_XY *
-				getRandomGenerator().drawGaussian1D_normalized());
-		aux->m_particles[i].d->phi(
+				getRandomGenerator().drawGaussian1D_normalized();
+		aux->m_particles[i].d.phi = 
 			Arot1_draw + Arot2_draw +
 			motionModelConfiguration.thrunModel.additional_std_phi *
-				getRandomGenerator().drawGaussian1D_normalized());
-		aux->m_particles[i].d->normalizePhi();
+				getRandomGenerator().drawGaussian1D_normalized();
+		aux->m_particles[i].d.normalizePhi();
 	}
 }
 

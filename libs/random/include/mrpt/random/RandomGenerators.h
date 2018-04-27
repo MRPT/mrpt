@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <type_traits>  // remove_reference
+#include <mrpt/random/random_shuffle.h>
 
 // Frwd decl:
 namespace Eigen
