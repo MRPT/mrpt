@@ -24,11 +24,13 @@ namespace bayes
  *   virtual methods, and add any required internal data.
  * \ingroup mrpt_bayes_grp
  */
-template <class TStateSpace>
+template <
+	class TStateSpace, mrpt::bayes::particle_storage_mode STORAGE =
+						   mrpt::bayes::particle_storage_mode::POINTER>
 class CRejectionSamplingCapable
 {
    public:
-	using TParticle = CProbabilityParticle<TStateSpace>;
+	using TParticle = CProbabilityParticle<TStateSpace,STORAGE>;
 
 	/** Virtual destructor
 	  */

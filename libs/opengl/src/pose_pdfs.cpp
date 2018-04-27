@@ -117,12 +117,12 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPosePDF& o)
 
 		for (size_t i = 0; i < p->size(); ++i)
 		{
-			const mrpt::poses::CPose2D* po = p->m_particles[i].d.get();
-			pnts->insertPoint(po->x(), po->y(), 0);
+			const auto po = p->m_particles[i].d;
+			pnts->insertPoint(po.x, po.y, 0);
 			lins->appendLine(
-				po->x(), po->y(), 0,
-				po->x() + POSE_TAIL_LENGTH * cos(po->phi()),
-				po->y() + POSE_TAIL_LENGTH * sin(po->phi()), 0);
+				po.x, po.y, 0,
+				po.x + POSE_TAIL_LENGTH * cos(po.phi),
+				po.y + POSE_TAIL_LENGTH * sin(po.phi), 0);
 		}
 		outObj->insert(pnts);
 		outObj->insert(lins);
@@ -258,7 +258,7 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPose3DPDF& o)
 		{
 			opengl::CSetOfObjects::Ptr axes =
 				opengl::stock_objects::CornerXYZSimple(POSE_AXIS_SCALE);
-			axes->setPose(*p->m_particles[i].d);
+			axes->setPose(p->m_particles[i].d);
 			outObj->insert(axes);
 		}
 	}

@@ -55,7 +55,9 @@ const int INVALID_CLICK_COORDS = -99999;
 #include <wx/image.h>
 #include <wx/tipwin.h>
 
+#ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES  // (For VS to define M_PI, etc. in cmath)
+#endif
 #include <cmath>
 #include <cstdio>  // used only for debug
 #include <ctime>  // used for representation of x axes involving date

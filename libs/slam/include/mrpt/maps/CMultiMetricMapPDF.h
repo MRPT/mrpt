@@ -61,8 +61,9 @@ class CMultiMetricMapPDF
 	  public mrpt::bayes::CParticleFilterDataImpl<
 		  CMultiMetricMapPDF,
 		  mrpt::bayes::CParticleFilterData<CRBPFParticleData>::CParticleList>,
-	  public mrpt::slam::PF_implementation<CRBPFParticleData,
-										   CMultiMetricMapPDF>
+	  public mrpt::slam::PF_implementation<
+		  CRBPFParticleData, CMultiMetricMapPDF,
+		  mrpt::bayes::particle_storage_mode::POINTER>
 {
 	friend class mrpt::slam::CMetricMapBuilderRBPF;
 

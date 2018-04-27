@@ -115,7 +115,7 @@ void CActionRobotMovement3D::computeFromOdometry_model6DOF(
 	// The Gaussian PDF:
 	// ---------------------------
 	CPose3DPDFParticles* aux;
-	static CPose3D nullPose(0, 0, 0, 0, 0, 0);
+	const mrpt::math::TPose3D nullPose(0, 0, 0, 0, 0, 0);
 
 	mrpt::poses::CPose3DPDF::Ptr poseChangeTemp =
 		mrpt::make_aligned_shared<CPose3DPDFParticles>();
@@ -218,18 +218,18 @@ void CActionRobotMovement3D::computeFromOdometry_model6DOF(
 				getRandomGenerator().drawGaussian1D_normalized();
 
 		// Output:
-		aux->m_particles[i].d->x(
+		aux->m_particles[i].d.x =
 			Atrans_draw * sin(Apitch1_draw) * cos(Ayaw1_draw) +
 			motionModelConfiguration.mm6DOFModel.additional_std_XYZ *
-				getRandomGenerator().drawGaussian1D_normalized());
-		aux->m_particles[i].d->y(
+				getRandomGenerator().drawGaussian1D_normalized();
+		aux->m_particles[i].d.y = 
 			Atrans_draw * sin(Apitch1_draw) * sin(Ayaw1_draw) +
 			motionModelConfiguration.mm6DOFModel.additional_std_XYZ *
-				getRandomGenerator().drawGaussian1D_normalized());
-		aux->m_particles[i].d->z(
+				getRandomGenerator().drawGaussian1D_normalized();
+		aux->m_particles[i].d.z = 
 			Atrans_draw * cos(Apitch1_draw) +
 			motionModelConfiguration.mm6DOFModel.additional_std_XYZ *
-				getRandomGenerator().drawGaussian1D_normalized());
+				getRandomGenerator().drawGaussian1D_normalized();
 
 		double new_yaw =
 			Ayaw1_draw + Ayaw2_draw +
@@ -244,8 +244,9 @@ void CActionRobotMovement3D::computeFromOdometry_model6DOF(
 			motionModelConfiguration.mm6DOFModel.additional_std_angle *
 				getRandomGenerator().drawGaussian1D_normalized();
 
-		aux->m_particles[i].d->setYawPitchRoll(new_yaw, new_pitch, new_roll);
-		aux->m_particles[i].d->normalizeAngles();
+		aux->m_particles[i].d.yaw = new_yaw;
+		aux->m_particles[i].d.pitch = new_pitch;
+		aux->m_particles[i].d.roll = new_roll;
 	}
 
 	poseChange.copyFrom(*poseChangeTemp);
