@@ -143,8 +143,8 @@ void CHMTSLAM::thread_LSLAM()
 							5)  // Option: Do this only one out of N new added
 						// poses:
 						{
-							static CTicTac tictac;
-							tictac.Tic();
+							CTicTac tictac2;
+							tictac2.Tic();
 
 							unsigned nPosesToInsert =
 								it->second.m_posesPendingAddPartitioner.size();
@@ -157,7 +157,7 @@ void CHMTSLAM::thread_LSLAM()
 								mrpt::system::LVL_DEBUG,
 								"[AreaAbstraction] Took %.03fms to insert %u "
 								"new poses.               AA\n",
-								1000 * tictac.Tac(), nPosesToInsert);
+								1000 * tictac2.Tac(), nPosesToInsert);
 
 							// Empty the list, it's done for now:
 							it->second.m_posesPendingAddPartitioner.clear();
@@ -184,8 +184,8 @@ void CHMTSLAM::thread_LSLAM()
 								 areaID != it->second.m_areasPendingTBI.end();
 								 ++areaID)
 							{
-								static CTicTac tictac;
-								tictac.Tic();
+								CTicTac tictac2;
+								tictac2.Tic();
 								if (obj->m_options.random_seed)
 									getRandomGenerator().randomize(
 										obj->m_options.random_seed);
@@ -198,7 +198,7 @@ void CHMTSLAM::thread_LSLAM()
 									mrpt::system::LVL_DEBUG,
 									"[TBI] Took %.03fms	                    "
 									" TBI\n",
-									1000 * tictac.Tac());
+									1000 * tictac2.Tac());
 
 								// -----------------------------------------------------------------------
 								//   Process the set of (potentially) several
@@ -1769,7 +1769,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 						// independent...
 						itTrg->d->robotPoses[poseID] =
 							itTrg->d->robotPoses[refPoseIDAtCurArea] +
-							Delta_c2a + *itSrc->d;
+							Delta_c2a + CPose3D(itSrc->d);
 					}
 
 					// Update m_nodeIDmemberships

@@ -39,8 +39,9 @@ struct CProbabilityParticle;
 
 struct CProbabilityParticleBase
 {
+	CProbabilityParticleBase(double logw = 0) : log_w(logw) {}
 	/** The (logarithmic) weight value for this particle. */
-	double log_w{ .0 };
+	double log_w{.0};
 };
 
 template <class T>
@@ -58,12 +59,12 @@ struct CProbabilityParticle<T, particle_storage_mode::VALUE>
 {
 	CProbabilityParticle() {}
 	CProbabilityParticle(const T& data, const double logw)
-		: d(data), log_w(logw)
+		: CProbabilityParticleBase(logw), d(data)
 	{
 	}
 	/** The data associated with this particle */
 	T d{};
 };
 
-}  // end namespace
-}  // end namespace
+}  // namespace bayes
+}  // namespace mrpt

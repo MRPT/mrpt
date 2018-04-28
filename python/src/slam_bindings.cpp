@@ -577,8 +577,9 @@ void export_slam()
 	// CMetricMapBuilderICP
 	{
 		scope s =
-			class_<CMetricMapBuilderICP, bases<CMetricMapBuilder>,
-				   boost::noncopyable>("CMetricMapBuilderICP", init<>())
+			class_<
+				CMetricMapBuilderICP, bases<CMetricMapBuilder>,
+				boost::noncopyable>("CMetricMapBuilderICP", init<>())
 				.def(
 					"initialize", &CMetricMapBuilderICP_initialize,
 					"Initialize the method, starting with a known location PDF "
@@ -617,8 +618,9 @@ void export_slam()
 	// CMetricMapBuilderRBPF
 	{
 		scope s =
-			class_<CMetricMapBuilderRBPF, bases<CMetricMapBuilder>,
-				   boost::noncopyable>(
+			class_<
+				CMetricMapBuilderRBPF, bases<CMetricMapBuilder>,
+				boost::noncopyable>(
 				"CMetricMapBuilderRBPF",
 				init<CMetricMapBuilderRBPF::TConstructionOptions>())
 				.def(
@@ -643,8 +645,9 @@ void export_slam()
 				.def_readwrite("mapPDF", &CMetricMapBuilderRBPF::mapPDF);
 
 		// TConstructionOptions
-		class_<CMetricMapBuilderRBPF::TConstructionOptions,
-			   bases<CLoadableOptions>>("TConstructionOptions", init<>())
+		class_<
+			CMetricMapBuilderRBPF::TConstructionOptions,
+			bases<CLoadableOptions>>("TConstructionOptions", init<>())
 			.def_readwrite(
 				"insertionLinDistance",
 				&CMetricMapBuilderRBPF::TConstructionOptions::
@@ -764,8 +767,9 @@ void export_slam()
 	// CMonteCarloLocalization2D
 	{
 		scope s =
-			class_<CMonteCarloLocalization2D, boost::noncopyable,
-				   bases<CParticleFilterCapable>>(
+			class_<
+				CMonteCarloLocalization2D, boost::noncopyable,
+				bases<CParticleFilterCapable>>(
 				"CMonteCarloLocalization2D", init<optional<size_t>>())
 				.def(
 					"resetUniformFreeSpace",
@@ -831,7 +835,7 @@ void export_slam()
 					&CMonteCarloLocalization2D_drawSingleSample,
 					"Draws a single sample from the distribution (WARNING: "
 					"weights are assumed to be normalized!).")
-				.def(self += CPose2D())
+				.def(self += mrpt::math::TPose2D())
 				.def(
 					"append", &CMonteCarloLocalization2D::append,
 					"Appends (add to the list) a set of m_particles to the "
@@ -916,8 +920,9 @@ void export_slam()
 	// CMonteCarloLocalization3D
 	{
 		scope s =
-			class_<CMonteCarloLocalization3D, boost::noncopyable,
-				   bases<CParticleFilterCapable>>(
+			class_<
+				CMonteCarloLocalization3D, boost::noncopyable,
+				bases<CParticleFilterCapable>>(
 				"CMonteCarloLocalization3D", init<optional<size_t>>())
 				.def(
 					"prediction_and_update_pfStandardProposal",
