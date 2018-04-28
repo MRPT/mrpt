@@ -13,11 +13,8 @@
 #include <mrpt/maps/CMultiMetricMapPDF.h>
 #include <mrpt/maps/TMetricMapInitializer.h>
 #include <mrpt/maps/metric_map_types.h>
-
 #include <mrpt/poses/CPosePDFGaussian.h>
-
 #include <mrpt/system/datetime.h>
-
 #include <mrpt/opengl/CSetOfObjects.h>
 
 /* std */
@@ -757,39 +754,45 @@ void export_maps()
 						  "The list of MRPT metric maps in this object.")
 						  MAKE_CREATE(CMultiMetricMap);
 
+#if 0
 		// TListMaps
 		class_<CMultiMetricMap::TListMaps>("TListMaps", init<>())
 			.def("__len__", &CMultiMetricMap::TListMaps::size)
 			.def("clear", &CMultiMetricMap::TListMaps::clear)
 			.def(
 				"append", &StlListLike<CMultiMetricMap::TListMaps>::add,
-				with_custodian_and_ward<1, 2>())  // to let container keep value
+				with_custodian_and_ward<1, 2>())  // to let container keep
+												  // value
 			.def(
 				"__getitem__", &StlListLike<CMultiMetricMap::TListMaps>::get,
 				return_value_policy<copy_non_const_reference>())
 			.def(
 				"__setitem__", &StlListLike<CMultiMetricMap::TListMaps>::set,
-				with_custodian_and_ward<1, 2>())  // to let container keep value
+				with_custodian_and_ward<1, 2>())  // to let container keep
+												  // value
 			.def("__delitem__", &StlListLike<CMultiMetricMap::TListMaps>::del);
+#endif
 	}
 
 	// CMultiMetricMapPDF
 	{
 		MAKE_PTR(CMultiMetricMapPDF)
 
-		scope s =
+		scope sc =
 			class_<CMultiMetricMapPDF>("CMultiMetricMapPDF", init<>())
 				.def(
 					"getLastPose", &CMultiMetricMapPDF_getLastPose,
 					"Return the last robot pose for the i'th particle.")
 				.def(
 					"getPath", &CMultiMetricMapPDF_getPath,
-					"Return the path (in absolute coordinate poses) for the "
+					"Return the path (in absolute coordinate poses) for "
+					"the "
 					"i'th particle.")
 				.def(
 					"getEstimatedPosePDFAtTime",
 					&CMultiMetricMapPDF_getEstimatedPosePDFAtTime,
-					"Returns the estimate of the robot pose as a particles PDF "
+					"Returns the estimate of the robot pose as a particles "
+					"PDF "
 					"for the instant of time \"timeStep\", from 0 to N-1.")
 				.def(
 					"getCurrentMostLikelyMetricMap",
