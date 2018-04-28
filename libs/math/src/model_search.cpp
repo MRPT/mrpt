@@ -10,9 +10,11 @@
 #include "math-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/model_search.h>
+#include <mrpt/random/random_shuffle.h>
 
 using namespace mrpt;
 using namespace mrpt::math;
+
 
 //----------------------------------------------------------------------
 //! Select random (unique) indices from the 0..p_size sequence
@@ -24,7 +26,7 @@ void ModelSearch::pickRandomIndex(
 	std::vector<size_t> a(p_size);
 	for (size_t i = 0; i < p_size; i++) a[i] = i;
 
-	std::random_shuffle(a.begin(), a.end());
+	mrpt::random::shuffle(a.begin(), a.end());
 	p_ind.resize(p_pick);
 	for (size_t i = 0; i < p_pick; i++) p_ind[i] = a[i];
 }
@@ -38,7 +40,7 @@ void ModelSearch::pickRandomIndex(
 	p_ind.resize(p_pick);
 	std::vector<size_t> inds(p_set.begin(), p_set.end());
 
-	std::random_shuffle(inds.begin(), inds.end());
+	mrpt::random::shuffle(inds.begin(), inds.end());
 	p_ind.resize(p_pick);
 	for (size_t i = 0; i < p_pick; i++) p_ind[i] = inds[i];
 }

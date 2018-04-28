@@ -37,7 +37,9 @@ namespace slam
  */
 class CMonteCarloLocalization2D
 	: public mrpt::poses::CPosePDFParticles,
-	  public PF_implementation<mrpt::poses::CPose2D, CMonteCarloLocalization2D>
+	  public PF_implementation<
+		  mrpt::math::TPose2D, CMonteCarloLocalization2D,
+		  mrpt::poses::CPosePDFParticles::PARTICLE_STORAGE>
 {
    public:
 	/** MCL parameters */
@@ -140,7 +142,7 @@ class CMonteCarloLocalization2D
 		const size_t i, bool& is_valid_pose) const override;
 
 	void PF_SLAM_implementation_custom_update_particle_with_new_pose(
-		CParticleDataContent* particleData,
+		mrpt::math::TPose2D* particleData,
 		const mrpt::math::TPose3D& newPose) const override;
 
 	// We'll redefine this one:

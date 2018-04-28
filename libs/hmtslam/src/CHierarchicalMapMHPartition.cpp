@@ -872,7 +872,7 @@ void CHierarchicalMapMHPartition::computeCoordinatesTransformationBetweenNodes(
 
 	TArcList arcsPath;
 	TArcList::const_iterator arcsIt;
-	static const CPose3D nullPose(0, 0, 0);
+	const TPose3D nullPose(0, 0, 0, 0, 0, 0);
 	CHMHMapNode::TNodeID lastNode, nextNode;
 	size_t pathLength;
 
@@ -956,7 +956,7 @@ void CHierarchicalMapMHPartition::computeCoordinatesTransformationBetweenNodes(
 				(*samplIt)[4], (*samplIt)[5]);
 
 			// Pose composition:
-			if (reversedArc) *poseIt = nullPose - *poseIt;
+			if (reversedArc) *poseIt = (CPose3D() - CPose3D(*poseIt));
 		}
 
 		// for the next iter:
@@ -966,7 +966,7 @@ void CHierarchicalMapMHPartition::computeCoordinatesTransformationBetweenNodes(
 	// Compute the pose composition:
 	for (unsigned int i = 0; i < particlesCount; i++)
 	{
-		CPose3D& sample = *posePDF.m_particles[i].d;
+		CPose3D sample = CPose3D(posePDF.m_particles[i].d);
 
 		for (unsigned int j = 0; j < pathLength; j++)
 		{
@@ -1650,8 +1650,8 @@ double CHierarchicalMapMHPartition::computeOverlapProbabilityBetweenNodes(
 	{
 		if (math::RectanglesIntersection(
 				r1_x_min, r1_x_max, r1_y_min, r1_y_max, r2_x_min, r2_x_max,
-				r2_y_min, r2_y_max, posePDF.m_particles[i].d->x(),
-				posePDF.m_particles[i].d->y(), posePDF.m_particles[i].d->yaw()))
+				r2_y_min, r2_y_max, posePDF.m_particles[i].d.x,
+				posePDF.m_particles[i].d.y, posePDF.m_particles[i].d.yaw))
 		{
 			hits++;
 		}

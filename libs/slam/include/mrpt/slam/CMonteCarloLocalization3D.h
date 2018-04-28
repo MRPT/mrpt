@@ -31,7 +31,9 @@ namespace slam
  */
 class CMonteCarloLocalization3D
 	: public mrpt::poses::CPose3DPDFParticles,
-	  public PF_implementation<mrpt::poses::CPose3D, CMonteCarloLocalization3D>
+	  public PF_implementation<
+		  mrpt::math::TPose3D, CMonteCarloLocalization3D,
+		  mrpt::bayes::particle_storage_mode::VALUE>
 {
    public:
 	/** MCL parameters */

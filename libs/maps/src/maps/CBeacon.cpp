@@ -107,7 +107,7 @@ void CBeacon::getCovarianceAndMean(CMatrixDouble33& COV, CPoint3D& p) const
   ---------------------------------------------------------------*/
 void CBeacon::bayesianFusion(
 	const CPointPDF& p1, const CPointPDF& p2,
-	const double& minMahalanobisDistToDrop)
+	const double minMahalanobisDistToDrop)
 {
 	MRPT_START
 	switch (m_typePDF)

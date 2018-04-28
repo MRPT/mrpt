@@ -2,7 +2,7 @@
 set -e   # Make sure any error makes the script to return an error code
 
 
-export DOCKER_IMAGE=mrpt/mrpt-build-env:$DEPS
+export DOCKER_IMAGE=mrpt/mrpt-build-env:$DEPS-bionic
 export STAGE1_OUTPUT_IMAGE=mrpt/mrpt-travis-archive:$DEPS-$CC-$TRAVIS_COMMIT
 
 if [ "$STAGE" == "2" ]; then

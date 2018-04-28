@@ -10,7 +10,6 @@
 #define CPose3DPDFParticles_H
 
 #include <mrpt/poses/CPose3DPDF.h>
-#include <mrpt/bayes/CProbabilityParticle.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/bayes/CParticleFilterData.h>
 
@@ -31,10 +30,13 @@ namespace poses
  */
 class CPose3DPDFParticles
 	: public CPose3DPDF,
-	  public mrpt::bayes::CParticleFilterData<CPose3D>,
+	  public mrpt::bayes::CParticleFilterData<
+		  mrpt::math::TPose3D, mrpt::bayes::particle_storage_mode::VALUE>,
 	  public mrpt::bayes::CParticleFilterDataImpl<
 		  CPose3DPDFParticles,
-		  mrpt::bayes::CParticleFilterData<CPose3D>::CParticleList>
+		  mrpt::bayes::CParticleFilterData<
+			  mrpt::math::TPose3D,
+			  mrpt::bayes::particle_storage_mode::VALUE>::CParticleList>
 {
 	DEFINE_SERIALIZABLE(CPose3DPDFParticles)
 
@@ -54,7 +56,8 @@ class CPose3DPDFParticles
 	  * \param particlesCount If this is set to 0 the number of m_particles
 	 * remains unchanged.
 	  *  \sa resetUniform, resetUniformFreeSpace */
-	void resetDeterministic(const CPose3D& location, size_t particlesCount = 0);
+	void resetDeterministic(
+		const mrpt::math::TPose3D& location, size_t particlesCount = 0);
 
 	/** Returns an estimate of the pose, (the mean, or mathematical expectation
 	 * of the PDF), computed as a weighted average over all m_particles. \sa
@@ -66,7 +69,7 @@ class CPose3DPDFParticles
 		mrpt::math::CMatrixDouble66& cov, CPose3D& mean_point) const override;
 
 	/** Returns the pose of the i'th particle */
-	CPose3D getParticlePose(int i) const;
+	mrpt::math::TPose3D getParticlePose(int i) const;
 
 	/** Save PDF's m_particles to a text file. In each line it will go: "x y z"
 	 */
@@ -95,7 +98,7 @@ class CPose3DPDFParticles
 	/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF */
 	void inverse(CPose3DPDF& o) const override;
 	/** Returns the particle with the highest weight. */
-	CPose3D getMostLikelyParticle() const;
+	mrpt::math::TPose3D getMostLikelyParticle() const;
 	/** Bayesian fusion */
 	void bayesianFusion(const CPose3DPDF& p1, const CPose3DPDF& p2) override;
 

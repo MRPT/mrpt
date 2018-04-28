@@ -326,7 +326,8 @@ CPose3DPDF::Ptr CMetricMapBuilderRBPF::getCurrentPoseEstimation() const
 	// localization update:
 	for (auto& p : posePDF->m_particles)
 	{
-		(*p.d) = (*p.d) + this->odoIncrementSinceLastLocalization.mean;
+		p.d.composePose(
+			this->odoIncrementSinceLastLocalization.mean.asTPose(), p.d);
 	}
 	return posePDF;
 }

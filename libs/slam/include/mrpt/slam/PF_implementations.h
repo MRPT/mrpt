@@ -42,9 +42,11 @@ namespace slam
  * CActionRobotMovement3D, whatever comes in.
  *   \ingroup mrpt_slam_grp
  */
-template <class PARTICLE_TYPE, class MYSELF>
+template <
+	class PARTICLE_TYPE, class MYSELF,
+	mrpt::bayes::particle_storage_mode STORAGE>
 template <class BINTYPE>
-bool PF_implementation<PARTICLE_TYPE, MYSELF>::
+bool PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 	PF_SLAM_implementation_gatherActionsCheckBothActObs(
 		const mrpt::obs::CActionCollection* actions,
 		const mrpt::obs::CSensoryFrame* sf)
@@ -149,9 +151,10 @@ bool PF_implementation<PARTICLE_TYPE, MYSELF>::
  *     Robot Localization," in Proc. IEEE International Conference on Robotics
  *     and Automation (ICRA'08), 2008, pp. 461466.
  */
-template <class PARTICLE_TYPE, class MYSELF>
+template <class PARTICLE_TYPE, class MYSELF,
+	mrpt::bayes::particle_storage_mode STORAGE>
 template <class BINTYPE>
-void PF_implementation<PARTICLE_TYPE, MYSELF>::
+void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 	PF_SLAM_implementation_pfAuxiliaryPFOptimal(
 		const mrpt::obs::CActionCollection* actions,
 		const mrpt::obs::CSensoryFrame* sf,
@@ -171,9 +174,10 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
  * - BINTYPE: TPoseBin or whatever to discretize the sample space for
  * KLD-sampling.
  */
-template <class PARTICLE_TYPE, class MYSELF>
+template <class PARTICLE_TYPE, class MYSELF,
+	mrpt::bayes::particle_storage_mode STORAGE>
 template <class BINTYPE>
-void PF_implementation<PARTICLE_TYPE, MYSELF>::
+void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 	PF_SLAM_implementation_pfStandardProposal(
 		const mrpt::obs::CActionCollection* actions,
 		const mrpt::obs::CSensoryFrame* sf,
@@ -249,8 +253,16 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 
 				// Update the particle with the new pose: this part is
 				// caller-dependant and must be implemented there:
-				PF_SLAM_implementation_custom_update_particle_with_new_pose(
-					me->m_particles[i].d.get(), finalPose.asTPose());
+				if constexpr(STORAGE == mrpt::bayes::particle_storage_mode::POINTER)
+				{
+					PF_SLAM_implementation_custom_update_particle_with_new_pose(
+						me->m_particles[i].d.get(), finalPose.asTPose());
+				}
+				else
+				{
+					PF_SLAM_implementation_custom_update_particle_with_new_pose(
+						&me->m_particles[i].d, finalPose.asTPose());
+				}
 			}
 		}
 		else
@@ -300,10 +312,14 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 
 				// Now, look if the particle falls in a new bin or not:
 				// --------------------------------------------------------
+				const PARTICLE_TYPE *part;
+				if constexpr(STORAGE == mrpt::bayes::particle_storage_mode::POINTER)
+					part = me->m_particles[drawn_idx].d.get();
+				else part = &me->m_particles[drawn_idx].d;
+
 				BINTYPE p;
 				KLF_loadBinFromParticle<PARTICLE_TYPE, BINTYPE>(
-					p, KLD_options, me->m_particles[drawn_idx].d.get(),
-					&newPose_s);
+					p, KLD_options, part, &newPose_s);
 
 				if (stateSpaceBins.find(p) == stateSpaceBins.end())
 				{
@@ -380,9 +396,10 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
  * doi:10.2307/2670179.
  *
  */
-template <class PARTICLE_TYPE, class MYSELF>
+template <class PARTICLE_TYPE, class MYSELF,
+	mrpt::bayes::particle_storage_mode STORAGE>
 template <class BINTYPE>
-void PF_implementation<PARTICLE_TYPE, MYSELF>::
+void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 	PF_SLAM_implementation_pfAuxiliaryPFStandard(
 		const mrpt::obs::CActionCollection* actions,
 		const mrpt::obs::CSensoryFrame* sf,
@@ -398,9 +415,10 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 /*---------------------------------------------------------------
 			PF_SLAM_particlesEvaluator_AuxPFOptimal
  ---------------------------------------------------------------*/
-template <class PARTICLE_TYPE, class MYSELF>
+template <class PARTICLE_TYPE, class MYSELF,
+	mrpt::bayes::particle_storage_mode STORAGE>
 template <class BINTYPE>
-double PF_implementation<PARTICLE_TYPE, MYSELF>::
+double PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 	PF_SLAM_particlesEvaluator_AuxPFOptimal(
 		const mrpt::bayes::CParticleFilter::TParticleFilterOptions& PF_options,
 		const mrpt::bayes::CParticleFilterCapable* obj, size_t index,
@@ -476,9 +494,10 @@ double PF_implementation<PARTICLE_TYPE, MYSELF>::
  * \param action MUST be a "const mrpt::poses::CPose3D*"
  * \param observation MUST be a "const CSensoryFrame*"
  */
-template <class PARTICLE_TYPE, class MYSELF>
+template <class PARTICLE_TYPE, class MYSELF,
+	mrpt::bayes::particle_storage_mode STORAGE>
 template <class BINTYPE>
-double PF_implementation<PARTICLE_TYPE, MYSELF>::
+double PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 	PF_SLAM_particlesEvaluator_AuxPFStandard(
 		const mrpt::bayes::CParticleFilter::TParticleFilterOptions& PF_options,
 		const mrpt::bayes::CParticleFilterCapable* obj, size_t index,
@@ -577,9 +596,10 @@ double PF_implementation<PARTICLE_TYPE, MYSELF>::
 // USE_OPTIMAL_SAMPLING:
 //   true -> PF_SLAM_implementation_pfAuxiliaryPFOptimal
 //  false -> PF_SLAM_implementation_pfAuxiliaryPFStandard
-template <class PARTICLE_TYPE, class MYSELF>
+template <class PARTICLE_TYPE, class MYSELF,
+	mrpt::bayes::particle_storage_mode STORAGE>
 template <class BINTYPE>
-void PF_implementation<PARTICLE_TYPE, MYSELF>::
+void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 	PF_SLAM_implementation_pfAuxiliaryPFStandardAndOptimal(
 		const mrpt::obs::CActionCollection* actions,
 		const mrpt::obs::CSensoryFrame* sf,
@@ -623,7 +643,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 	m_movementDrawer.getSamplingMean3D(meanRobotMovement);
 
 	// Prepare data for executing "fastDrawSample"
-	using TMyClass = PF_implementation<PARTICLE_TYPE, MYSELF>;
+	using TMyClass = PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>;
 	auto funcOpt =
 		&TMyClass::template PF_SLAM_particlesEvaluator_AuxPFOptimal<BINTYPE>;
 	auto funcStd =
@@ -763,9 +783,14 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 			 partIt != me->m_particles.end(); ++partIt, ++partIndex)
 		{
 			// Load the bin from the path data:
+			const PARTICLE_TYPE *part;
+			if constexpr(STORAGE == mrpt::bayes::particle_storage_mode::POINTER)
+				part = partIt->d.get();
+			else part = &partIt->d;
+
 			BINTYPE p;
 			KLF_loadBinFromParticle<PARTICLE_TYPE, BINTYPE>(
-				p, KLD_options, partIt->d.get());
+				p, KLD_options, part);
 
 			// Is it a new bin?
 			typename TSetStateSpaceBins::iterator posFound =
@@ -821,9 +846,8 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 		// Instead of picking randomly from "permutationPathsAuxVector", we can
 		// shuffle it now just once,
 		// then pick in sequence from the tail and resize the container:
-		std::random_shuffle(
-			permutationPathsAuxVector.begin(), permutationPathsAuxVector.end(),
-			mrpt::random::random_generator_for_STL);
+		mrpt::random::shuffle(
+			permutationPathsAuxVector.begin(), permutationPathsAuxVector.end());
 
 		size_t k = 0;
 		size_t N = 0;
@@ -923,10 +947,15 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 			// Now, the KLD-sampling dynamic sample size stuff:
 			//  look if the particle's PATH falls into a new bin or not:
 			// ----------------------------------------------------------------
+			const PARTICLE_TYPE *part;
+			if constexpr(STORAGE == mrpt::bayes::particle_storage_mode::POINTER)
+				part = me->m_particles[k].d.get();
+			else part = &me->m_particles[k].d;
+
 			BINTYPE p;
 			const mrpt::math::TPose3D newPose_s = newPose.asTPose();
 			KLF_loadBinFromParticle<PARTICLE_TYPE, BINTYPE>(
-				p, KLD_options, me->m_particles[k].d.get(), &newPose_s);
+				p, KLD_options, part, &newPose_s);
 
 			// -----------------------------------------------------------------------------
 			// Look for the bin "p" into "stateSpaceBins": If it is not yet into
@@ -985,9 +1014,10 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 /* ------------------------------------------------------------------------
 					PF_SLAM_aux_perform_one_rejection_sampling_step
    ------------------------------------------------------------------------ */
-template <class PARTICLE_TYPE, class MYSELF>
+template <class PARTICLE_TYPE, class MYSELF,
+	mrpt::bayes::particle_storage_mode STORAGE>
 template <class BINTYPE>
-void PF_implementation<PARTICLE_TYPE, MYSELF>::
+void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 	PF_SLAM_aux_perform_one_rejection_sampling_step(
 		const bool USE_OPTIMAL_SAMPLING, const bool doResample,
 		const double maxMeanLik,

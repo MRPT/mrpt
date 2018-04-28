@@ -11,14 +11,6 @@
 #include <mrpt/gui/CGlCanvasBase.h>
 #include <mrpt/system/CTicTac.h>
 
-using namespace mrpt;
-using namespace mrpt::gui;
-using namespace mrpt::opengl;
-using namespace std;
-using mrpt::system::CTicTac;
-
-float CGlCanvasBase::SENSIBILITY_DEG_PER_PIXEL = 0.1f;
-
 #if MRPT_HAS_OPENGL_GLUT
 #ifdef _WIN32
 // Windows:
@@ -38,6 +30,14 @@ float CGlCanvasBase::SENSIBILITY_DEG_PER_PIXEL = 0.1f;
 #endif
 #endif
 #endif  // MRPT_HAS_OPENGL_GLUT
+
+using namespace mrpt;
+using namespace mrpt::gui;
+using namespace mrpt::opengl;
+using namespace std;
+using mrpt::system::CTicTac;
+
+float CGlCanvasBase::SENSIBILITY_DEG_PER_PIXEL = 0.1f;
 
 void CGlCanvasBase::setMinimumZoom(float zoom) { m_minZoom = zoom; }
 void CGlCanvasBase::setMaximumZoom(float zoom) { m_maxZoom = zoom; }

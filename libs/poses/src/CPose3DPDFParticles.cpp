@@ -23,79 +23,49 @@ using namespace mrpt::math;
 
 IMPLEMENTS_SERIALIZABLE(CPose3DPDFParticles, CPose3DPDF, mrpt::poses)
 
-/*---------------------------------------------------------------
-	Constructor
-  ---------------------------------------------------------------*/
 CPose3DPDFParticles::CPose3DPDFParticles(size_t M)
 {
 	m_particles.resize(M);
-
-	for (auto& it : m_particles)
-	{
-		it.log_w = .0;
-		it.d.reset(new CPose3D());
-	}
-
-	CPose3D nullPose(0, 0, 0);
+	TPose3D nullPose(0, 0, 0, 0, 0, 0);
 	resetDeterministic(nullPose);
 }
 
 void CPose3DPDFParticles::copyFrom(const CPose3DPDF& o)
 {
 	MRPT_START
-
-	CPose3DPDFParticles::CParticleList::const_iterator itSrc;
-	CPose3DPDFParticles::CParticleList::iterator itDest;
-
 	if (this == &o) return;  // It may be used sometimes
-
 	if (o.GetRuntimeClass() == CLASS_ID(CPose3DPDFParticles))
 	{
 		const CPose3DPDFParticles* pdf =
 			dynamic_cast<const CPose3DPDFParticles*>(&o);
 		ASSERT_(pdf);
-
 		m_particles = pdf->m_particles;
 	}
 	else if (o.GetRuntimeClass() == CLASS_ID(CPose3DPDFGaussian))
 	{
 		THROW_EXCEPTION("TO DO!!");
 	}
-
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-						getMean
-  Returns an estimate of the pose, (the mean, or mathematical expectation of the
- PDF), computed
-		as a weighted average over all m_particles.
- ---------------------------------------------------------------*/
 void CPose3DPDFParticles::getMean(CPose3D& p) const
 {
 	MRPT_START
-
 	// Default to (0,..,0)
 	p = CPose3D();
 	if (m_particles.empty()) return;
 
 	// Calc average on SE(3)
 	mrpt::poses::SE_average<3> se_averager;
-	for (CPose3DPDFParticles::CParticleList::const_iterator it =
-			 m_particles.begin();
-		 it != m_particles.end(); ++it)
+	for (const auto& part : m_particles)
 	{
-		const double w = exp(it->log_w);
-		se_averager.append(*it->d, w);
+		const double w = exp(part.log_w);
+		se_averager.append(part.d, w);
 	}
 	se_averager.get_average(p);
-
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-						getCovarianceAndMean
-  ---------------------------------------------------------------*/
 void CPose3DPDFParticles::getCovarianceAndMean(
 	CMatrixDouble66& cov, CPose3D& mean) const
 {
@@ -128,28 +98,23 @@ void CPose3DPDFParticles::getCovarianceAndMean(
 
 	// Sum all weight values:
 	double W = 0;
-	for (CPose3DPDFParticles::CParticleList::const_iterator it =
-			 m_particles.begin();
-		 it != m_particles.end(); ++it)
-		W += exp(it->log_w);
+	for (const auto& p : m_particles) W += exp(p.log_w);
 
 	ASSERT_(W > 0);
 
 	// Compute covariance:
-	for (CPose3DPDFParticles::CParticleList::const_iterator it =
-			 m_particles.begin();
-		 it != m_particles.end(); ++it)
+	for (const auto& p : m_particles)
 	{
-		double w = exp(it->log_w) / W;
+		double w = exp(p.log_w) / W;
 
 		// Manage 1 PI range:
-		double err_yaw = wrapToPi(fabs(it->d->yaw() - mean_yaw));
-		double err_pitch = wrapToPi(fabs(it->d->pitch() - mean_pitch));
-		double err_roll = wrapToPi(fabs(it->d->roll() - mean_roll));
+		double err_yaw = wrapToPi(std::abs(p.d.yaw - mean_yaw));
+		double err_pitch = wrapToPi(std::abs(p.d.pitch - mean_pitch));
+		double err_roll = wrapToPi(std::abs(p.d.roll - mean_roll));
 
-		double err_x = it->d->x() - mean.x();
-		double err_y = it->d->y() - mean.y();
-		double err_z = it->d->z() - mean.z();
+		double err_x = p.d.x - mean.x();
+		double err_y = p.d.y - mean.y();
+		double err_z = p.d.z - mean.z();
 
 		vars[0] += square(err_x) * w;
 		vars[1] += square(err_y) * w;
@@ -246,44 +211,31 @@ bool CPose3DPDFParticles::saveToTextFile(const std::string& file) const
 
 	for (const auto& p : m_particles)
 		os::fprintf(
-			f, "%f %f %f %f %f %f %e\n", p.d->x(), p.d->y(), p.d->z(),
-			p.d->yaw(), p.d->pitch(), p.d->roll(), p.log_w);
+			f, "%f %f %f %f %f %f %e\n", p.d.x, p.d.y, p.d.z, p.d.yaw,
+			p.d.pitch, p.d.roll, p.log_w);
 
 	os::fclose(f);
 	return true;
 }
 
-/*---------------------------------------------------------------
-						getParticlePose
- ---------------------------------------------------------------*/
-CPose3D CPose3DPDFParticles::getParticlePose(int i) const
+mrpt::math::TPose3D CPose3DPDFParticles::getParticlePose(int i) const
 {
-	return *m_particles[i].d;
+	return m_particles[i].d;
 }
 
-/*---------------------------------------------------------------
-						changeCoordinatesReference
- ---------------------------------------------------------------*/
 void CPose3DPDFParticles::changeCoordinatesReference(
 	const CPose3D& newReferenceBase)
 {
-	for (CParticleList::iterator it = m_particles.begin();
-		 it != m_particles.end(); ++it)
-		it->d->composeFrom(newReferenceBase, *it->d);
+	for (auto& p : m_particles)
+		p.d = (newReferenceBase + CPose3D(p.d)).asTPose();
 }
 
-/*---------------------------------------------------------------
-					drawSingleSample
- ---------------------------------------------------------------*/
 void CPose3DPDFParticles::drawSingleSample(CPose3D& outPart) const
 {
 	MRPT_UNUSED_PARAM(outPart);
 	THROW_EXCEPTION("TO DO!");
 }
 
-/*---------------------------------------------------------------
-					drawManySamples
- ---------------------------------------------------------------*/
 void CPose3DPDFParticles::drawManySamples(
 	size_t N, std::vector<CVectorDouble>& outSamples) const
 {
@@ -292,69 +244,45 @@ void CPose3DPDFParticles::drawManySamples(
 	THROW_EXCEPTION("TO DO!");
 }
 
-/*---------------------------------------------------------------
-						+=
- ---------------------------------------------------------------*/
 void CPose3DPDFParticles::operator+=(const CPose3D& Ap)
 {
 	MRPT_UNUSED_PARAM(Ap);
 	THROW_EXCEPTION("TO DO!");
 }
 
-/*---------------------------------------------------------------
-					append
- ---------------------------------------------------------------*/
 void CPose3DPDFParticles::append(CPose3DPDFParticles& o)
 {
 	MRPT_UNUSED_PARAM(o);
 	THROW_EXCEPTION("TO DO!");
 }
 
-/*---------------------------------------------------------------
-					inverse
- ---------------------------------------------------------------*/
 void CPose3DPDFParticles::inverse(CPose3DPDF& o) const
 {
 	MRPT_START
 	ASSERT_(o.GetRuntimeClass() == CLASS_ID(CPose3DPDFParticles));
 	CPose3DPDFParticles* out = static_cast<CPose3DPDFParticles*>(&o);
-
 	// Prepare the output:
 	out->copyFrom(*this);
-
-	CPose3DPDFParticles::CParticleList::iterator it;
-	CPose3D zero(0, 0, 0);
-
-	for (it = out->m_particles.begin(); it != out->m_particles.end(); ++it)
-		*it->d = zero - *it->d;
-
+	const CPose3D zero(0, 0, 0);
+	for (auto& p : out->m_particles) p.d = (zero - CPose3D(p.d)).asTPose();
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-					getMostLikelyParticle
- ---------------------------------------------------------------*/
-CPose3D CPose3DPDFParticles::getMostLikelyParticle() const
+TPose3D CPose3DPDFParticles::getMostLikelyParticle() const
 {
-	CPose3DPDFParticles::CParticleList::const_iterator it,
-		itMax = m_particles.begin();
-	double max_w = -1e300;
-
-	for (it = m_particles.begin(); it != m_particles.end(); ++it)
+	mrpt::math::TPose3D ret{0, 0, 0, 0, 0, 0};
+	double max_w = -std::numeric_limits<double>::max();
+	for (const auto& p : m_particles)
 	{
-		if (it->log_w > max_w)
+		if (p.log_w > max_w)
 		{
-			itMax = it;
-			max_w = it->log_w;
+			ret = p.d;
+			max_w = p.log_w;
 		}
 	}
-
-	return *itMax->d;
+	return ret;
 }
 
-/*---------------------------------------------------------------
-					bayesianFusion
- ---------------------------------------------------------------*/
 void CPose3DPDFParticles::bayesianFusion(
 	const CPose3DPDF& p1, const CPose3DPDF& p2)
 {
@@ -363,26 +291,14 @@ void CPose3DPDFParticles::bayesianFusion(
 	THROW_EXCEPTION("Not implemented yet!");
 }
 
-/*---------------------------------------------------------------
-							resetDeterministic
-	Reset PDF to a single point and set the number of m_particles
- ---------------------------------------------------------------*/
 void CPose3DPDFParticles::resetDeterministic(
-	const CPose3D& location, size_t particlesCount)
+	const TPose3D& location, size_t particlesCount)
 {
-	CPose3DPDFParticles::CParticleList::iterator it;
+	if (particlesCount > 0) m_particles.resize(particlesCount);
 
-	if (particlesCount > 0)
+	for (auto& p : m_particles)
 	{
-		clearParticles();
-		m_particles.resize(particlesCount);
-		for (it = m_particles.begin(); it != m_particles.end(); ++it)
-			it->d.reset(new CPose3D());
-	}
-
-	for (it = m_particles.begin(); it != m_particles.end(); ++it)
-	{
-		*it->d = location;
-		it->log_w = 0;
+		p.d = location;
+		p.log_w = 0;
 	}
 }

@@ -489,7 +489,7 @@ void CKalmanFilterCapable<
 					std::remove_copy_if(
 						data_association.begin(), data_association.end(),
 						mapIndicesForKFUpdate.begin(),
-						bind1st(equal_to<int>(), -1))));
+						[](int i) { return i == -1; })));
 
 				const size_t N_upd =
 					(FEAT_SIZE == 0) ? 1 :  // Non-SLAM problems: Just one

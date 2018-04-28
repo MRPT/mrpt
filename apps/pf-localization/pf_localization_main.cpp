@@ -826,9 +826,13 @@ void do_pf_localization(
 						for (size_t k = 0; k < pdf.size(); k++)
 							sumW += exp(pdf.getW(k));
 						for (size_t k = 0; k < pdf.size(); k++)
-							locErr += expectedPose.distanceTo(
-										  pdf.getParticlePose(k)) *
-									  exp(pdf.getW(k)) / sumW;
+						{
+							const auto pk = pdf.getParticlePose(k);
+							locErr +=
+								(decltype(pk)(expectedPose.asTPose()) - pk)
+									.norm() *
+								exp(pdf.getW(k)) / sumW;
+						}
 						covergenceErrors.push_back(locErr);
 						indivConvergenceErrors.push_back(locErr);
 						odoError.push_back(
