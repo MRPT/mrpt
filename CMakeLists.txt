@@ -34,9 +34,15 @@ if(CMAKE_TIMING_VERBOSE AND UNIX)
   set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CMAKE_SOURCE_DIR}/cmakemodules/custom_output.sh")
 endif(CMAKE_TIMING_VERBOSE AND UNIX)
 
-set (CMAKE_CXX_STANDARD 17)  # Require C++17
-if (MSVC)  # May be a bug in cmake? the line above does not add this flag:
- 	add_compile_options("/std:c++latest")
+# Require C++17
+if (MSVC)
+	add_compile_options("/std:c++latest")
+else()
+	if(${CMAKE_VERSION} VERSION_LESS "3.8.0")
+		add_compile_options(-std=c++17)
+	else()
+		set (CMAKE_CXX_STANDARD 17)
+	endif()
 endif()
 
 if(COMMAND cmake_policy)
