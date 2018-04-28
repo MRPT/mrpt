@@ -35,8 +35,12 @@ namespace mrpt
 {
 namespace bayes
 {
-typedef std::deque<CProbabilityParticle<CPose2D>> CParticle2DList;
-typedef std::deque<CProbabilityParticle<CPose3D>> CParticle3DList;
+typedef std::deque<
+	CProbabilityParticle<TPose2D, particle_storage_mode::POINTER>>
+	CParticle2DList;
+typedef std::deque<
+	CProbabilityParticle<TPose3D, particle_storage_mode::POINTER>>
+	CParticle3DList;
 }  // namespace bayes
 }  // namespace mrpt
 
@@ -90,8 +94,9 @@ void export_bayes()
 			.value("prSystematic", CParticleFilter::prSystematic);
 
 		// TParticleFilterOptions
-		class_<CParticleFilter::TParticleFilterOptions,
-			   bases<CLoadableOptions>>("TParticleFilterOptions", init<>())
+		class_<
+			CParticleFilter::TParticleFilterOptions, bases<CLoadableOptions>>(
+			"TParticleFilterOptions", init<>())
 			.def_readwrite(
 				"adaptiveSampleSize",
 				&CParticleFilter::TParticleFilterOptions::adaptiveSampleSize)

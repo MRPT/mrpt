@@ -51,8 +51,8 @@ DECLARE_OP_FUNCTION(op_export_gps_kml)
 	   public:
 		CRawlogProcessor_ExportGPS_KML(
 			CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
-			bool verbose)
-			: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, verbose)
+			bool _verbose)
+			: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, _verbose)
 		{
 			getArgValue<string>(cmdline, "input", m_inFile);
 		}
@@ -144,8 +144,8 @@ DECLARE_OP_FUNCTION(op_export_gps_kml)
 
 			// For each sensor label:
 			int color_idx = 0;
-			for (map<string, TDataPerGPS>::const_iterator
-					 it = m_gps_paths.begin();
+			for (map<string, TDataPerGPS>::const_iterator it =
+					 m_gps_paths.begin();
 				 it != m_gps_paths.end(); ++it, color_idx++)
 			{
 				const string& label = it->first;
@@ -161,7 +161,7 @@ DECLARE_OP_FUNCTION(op_export_gps_kml)
 					"      <styleUrl>#gpscolor%i</styleUrl>\n",
 					label.c_str(), label.c_str(),
 					int(color_idx % NCOLORS)  // Color
-					);
+				);
 				f.printf("%s", LineString_START.c_str());
 
 				for (map<TTimeStamp, TGPSDataPoint>::const_iterator itP =
@@ -194,7 +194,7 @@ DECLARE_OP_FUNCTION(op_export_gps_kml)
 						"      <styleUrl>#gpscolor%i_thick</styleUrl>\n",
 						label.c_str(), label.c_str(),
 						int(color_idx % NCOLORS)  // Color
-						);
+					);
 
 					f.printf(" <MultiGeometry>\n");
 					f.printf("%s", LineString_START.c_str());
@@ -216,10 +216,9 @@ DECLARE_OP_FUNCTION(op_export_gps_kml)
 							// Compute distance between points, in meters:
 							//  (very rough, but fast spherical approximation):
 							const double dist =
-								6.371e6 * DEG2RAD(
-											  ::hypot(
-												  last_valid.lon - d.lon,
-												  last_valid.lat - d.lat));
+								6.371e6 * DEG2RAD(::hypot(
+											  last_valid.lon - d.lon,
+											  last_valid.lat - d.lat));
 
 							// If the distance is above a threshold, finish the
 							// line and start another one:
@@ -296,19 +295,17 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 		string m_filPrefix;
 
 		void doSaveJointFile(
-			map<TTimeStamp, map<string, CPoint3D>>& lstXYZallGPS,
-			set<string>& lstAllGPSlabels, const char* gpsKindLabel)
+			map<TTimeStamp, map<string, CPoint3D>>& lstxyz,
+			set<string>& lstlabels, const char* gpsKindLabel)
 		{
 			// Remove those entries with not all the GPSs:
-			for (map<TTimeStamp, map<string, CPoint3D>>::iterator a =
-					 lstXYZallGPS.begin();
-				 a != lstXYZallGPS.end();)
+			for (auto a = lstxyz.begin(); a != lstxyz.end();)
 			{
-				if (a->second.size() != lstAllGPSlabels.size())
+				if (a->second.size() != lstlabels.size())
 				{
-					map<TTimeStamp, map<string, CPoint3D>>::iterator b = a;
+					auto b = a;
 					b++;
-					lstXYZallGPS.erase(a);
+					lstxyz.erase(a);
 					a = b;
 				}
 				else
@@ -316,20 +313,17 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 			}
 
 			VERBOSE_COUT << "Number of timestamps in ALL the " << gpsKindLabel
-						 << " GPSs     : " << lstXYZallGPS.size() << endl;
+						 << " GPSs     : " << lstxyz.size() << endl;
 
-			CMatrixDouble MAT(
-				lstXYZallGPS.size(), 1 + 3 * lstAllGPSlabels.size());
+			CMatrixDouble MAT(lstxyz.size(), 1 + 3 * lstlabels.size());
 			int nLabels = 0;
-			for (map<TTimeStamp, map<string, CPoint3D>>::iterator
-					 a = lstXYZallGPS.begin();
-				 a != lstXYZallGPS.end(); ++a, nLabels++)
+			for (auto a = lstxyz.begin(); a != lstxyz.end(); ++a, nLabels++)
 			{
 				MAT(nLabels, 0) = timestampTotime_t(a->first);
-				map<string, CPoint3D>& m = a->second;
+				auto& m = a->second;
 				int k = 0;
-				for (set<string>::iterator it = lstAllGPSlabels.begin();
-					 it != lstAllGPSlabels.end(); ++it, k++)
+				for (auto it = lstlabels.begin(); it != lstlabels.end();
+					 ++it, k++)
 				{
 					MAT(nLabels, 1 + 3 * k + 0) = m[*it].x();
 					MAT(nLabels, 1 + 3 * k + 1) = m[*it].y();
@@ -339,8 +333,7 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 
 			// The name of the file:
 			string joint_name;
-			for (set<string>::iterator it = lstAllGPSlabels.begin();
-				 it != lstAllGPSlabels.end(); ++it)
+			for (auto it = lstlabels.begin(); it != lstlabels.end(); ++it)
 			{
 				joint_name += *it;
 			}
@@ -382,8 +375,8 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 
 		CRawlogProcessor_ExportGPS_TXT(
 			CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
-			bool verbose)
-			: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, verbose),
+			bool _verbose)
+			: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, _verbose),
 			  m_GPS_entriesSaved(0)
 		{
 			getArgValue<string>(cmdline, "input", m_inFile);
@@ -515,16 +508,14 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 					gga.fields.altitude_meters, gga.fields.fix_quality,
 					gga.fields.satellitesUsed,
 					obs->has_RMC_datum
-						? DEG2RAD(
-							  obs->getMsgByClass<
-									 mrpt::obs::gnss::Message_NMEA_RMC>()
-								  .fields.speed_knots)
+						? DEG2RAD(obs->getMsgByClass<
+										 mrpt::obs::gnss::Message_NMEA_RMC>()
+									  .fields.speed_knots)
 						: 0.0,
 					obs->has_RMC_datum
-						? DEG2RAD(
-							  obs->getMsgByClass<
-									 mrpt::obs::gnss::Message_NMEA_RMC>()
-								  .fields.direction_degrees)
+						? DEG2RAD(obs->getMsgByClass<
+										 mrpt::obs::gnss::Message_NMEA_RMC>()
+									  .fields.direction_degrees)
 						: 0.0,
 					p.x, p.y, p.z,
 					(int)m_rawlogEntry,  // rawlog index
@@ -610,8 +601,8 @@ DECLARE_OP_FUNCTION(op_export_gps_all)
 
 		CRawlogProcessor_ExportGPS_ALL(
 			CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
-			bool verbose)
-			: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, verbose),
+			bool _verbose)
+			: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, _verbose),
 			  m_GPS_entriesSaved(0)
 		{
 			getArgValue<string>(cmdline, "input", m_inFile);

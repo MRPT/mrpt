@@ -131,16 +131,14 @@ void COccupancyGridMap2D_from_ROS_OccupancyGrid_msg(
 	COccupancyGridMap2D& self, object occupancy_grid_msg)
 {
 	// set info
-	float x_min = extract<float>(
-		occupancy_grid_msg.attr("info")
-			.attr("origin")
-			.attr("position")
-			.attr("x"));
-	float y_min = extract<float>(
-		occupancy_grid_msg.attr("info")
-			.attr("origin")
-			.attr("position")
-			.attr("y"));
+	float x_min = extract<float>(occupancy_grid_msg.attr("info")
+									 .attr("origin")
+									 .attr("position")
+									 .attr("x"));
+	float y_min = extract<float>(occupancy_grid_msg.attr("info")
+									 .attr("origin")
+									 .attr("position")
+									 .attr("y"));
 	float resolution =
 		extract<float>(occupancy_grid_msg.attr("info").attr("resolution"));
 	int32_t width =
@@ -264,7 +262,7 @@ list CMultiMetricMapPDF_getPath(CMultiMetricMapPDF& self, size_t i)
 	std::deque<mrpt::math::TPose3D> path;
 	list ret_val;
 	self.getPath(i, path);
-	for (size_t i = 0; i < path.size(); ++i) ret_val.append(path[i]);
+	for (size_t k = 0; k < path.size(); ++k) ret_val.append(path[k]);
 	return ret_val;
 }
 
@@ -543,8 +541,9 @@ void export_maps()
 					wideningBeamsWithDistance);
 
 		// TLikelihoodOptions
-		class_<COccupancyGridMap2D::TLikelihoodOptions,
-			   bases<CLoadableOptions>>("TLikelihoodOptions", init<>())
+		class_<
+			COccupancyGridMap2D::TLikelihoodOptions, bases<CLoadableOptions>>(
+			"TLikelihoodOptions", init<>())
 			.def_readwrite(
 				"likelihoodMethod",
 				&COccupancyGridMap2D::TLikelihoodOptions::likelihoodMethod)
@@ -710,13 +709,13 @@ void export_maps()
 		class_<TMetricMapInitializer::Ptr>(
 			"TMetricMapInitializer::Ptr", init<TMetricMapInitializer*>());
 
-		scope s =
-			class_<TMetricMapInitializer, boost::noncopyable,
-				   bases<CLoadableOptions>>("TMetricMapInitializer", no_init)
-				.def(
-					"factory", &TMetricMapInitializer::factory,
-					return_value_policy<manage_new_object>())
-				.staticmethod("factory");
+		scope s = class_<
+					  TMetricMapInitializer, boost::noncopyable,
+					  bases<CLoadableOptions>>("TMetricMapInitializer", no_init)
+					  .def(
+						  "factory", &TMetricMapInitializer::factory,
+						  return_value_policy<manage_new_object>())
+					  .staticmethod("factory");
 	}
 
 	// TSetOfMetricMapInitializers

@@ -831,7 +831,7 @@ CPose2D CPosePDFParticlesExtended::getMostLikelyParticle() const
  ---------------------------------------------------------------*/
 void CPosePDFParticlesExtended::bayesianFusion(
 	const CPosePDF& p1, const CPosePDF& p2,
-	const double& minMahalanobisDistToDrop)
+	const double minMahalanobisDistToDrop)
 {
 	MRPT_UNUSED_PARAM(p1);
 	MRPT_UNUSED_PARAM(p2);

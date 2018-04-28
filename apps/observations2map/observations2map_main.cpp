@@ -106,8 +106,8 @@ int main(int argc, char** argv)
 				"%s_gridmap_no%02u.gridmap", outprefix.c_str(), (unsigned)i);
 			cout << "Saving gridmap #" << i << " to " << str << endl;
 
-			CFileGZOutputStream f(str);
-			mrpt::serialization::archiveFrom(f) << *metricMap.m_gridMaps[i];
+			CFileGZOutputStream fo(str);
+			mrpt::serialization::archiveFrom(fo) << *metricMap.m_gridMaps[i];
 
 			cout << "done." << endl;
 		}
