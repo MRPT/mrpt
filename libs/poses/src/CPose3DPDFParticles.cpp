@@ -57,10 +57,10 @@ void CPose3DPDFParticles::getMean(CPose3D& p) const
 
 	// Calc average on SE(3)
 	mrpt::poses::SE_average<3> se_averager;
-	for (const auto & p: m_particles)
+	for (const auto& part : m_particles)
 	{
-		const double w = exp(p.log_w);
-		se_averager.append(p.d, w);
+		const double w = exp(part.log_w);
+		se_averager.append(part.d, w);
 	}
 	se_averager.get_average(p);
 	MRPT_END
@@ -98,13 +98,12 @@ void CPose3DPDFParticles::getCovarianceAndMean(
 
 	// Sum all weight values:
 	double W = 0;
-	for (const auto & p: m_particles)
-		W += exp(p.log_w);
+	for (const auto& p : m_particles) W += exp(p.log_w);
 
 	ASSERT_(W > 0);
 
 	// Compute covariance:
-	for (const auto & p : m_particles)
+	for (const auto& p : m_particles)
 	{
 		double w = exp(p.log_w) / W;
 
@@ -212,8 +211,8 @@ bool CPose3DPDFParticles::saveToTextFile(const std::string& file) const
 
 	for (const auto& p : m_particles)
 		os::fprintf(
-			f, "%f %f %f %f %f %f %e\n", p.d.x, p.d.y, p.d.z,
-			p.d.yaw, p.d.pitch, p.d.roll, p.log_w);
+			f, "%f %f %f %f %f %f %e\n", p.d.x, p.d.y, p.d.z, p.d.yaw,
+			p.d.pitch, p.d.roll, p.log_w);
 
 	os::fclose(f);
 	return true;
@@ -227,7 +226,7 @@ mrpt::math::TPose3D CPose3DPDFParticles::getParticlePose(int i) const
 void CPose3DPDFParticles::changeCoordinatesReference(
 	const CPose3D& newReferenceBase)
 {
-	for (auto & p : m_particles)
+	for (auto& p : m_particles)
 		p.d = (newReferenceBase + CPose3D(p.d)).asTPose();
 }
 
@@ -265,8 +264,7 @@ void CPose3DPDFParticles::inverse(CPose3DPDF& o) const
 	// Prepare the output:
 	out->copyFrom(*this);
 	const CPose3D zero(0, 0, 0);
-	for (auto & p : out->m_particles)
-		p.d = (zero - CPose3D(p.d)).asTPose();
+	for (auto& p : out->m_particles) p.d = (zero - CPose3D(p.d)).asTPose();
 	MRPT_END
 }
 
@@ -274,7 +272,7 @@ TPose3D CPose3DPDFParticles::getMostLikelyParticle() const
 {
 	mrpt::math::TPose3D ret{0, 0, 0, 0, 0, 0};
 	double max_w = -std::numeric_limits<double>::max();
-	for (const auto & p : m_particles)
+	for (const auto& p : m_particles)
 	{
 		if (p.log_w > max_w)
 		{
@@ -296,8 +294,7 @@ void CPose3DPDFParticles::bayesianFusion(
 void CPose3DPDFParticles::resetDeterministic(
 	const TPose3D& location, size_t particlesCount)
 {
-	if (particlesCount > 0)
-		m_particles.resize(particlesCount);
+	if (particlesCount > 0) m_particles.resize(particlesCount);
 
 	for (auto& p : m_particles)
 	{

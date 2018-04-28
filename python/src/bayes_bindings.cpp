@@ -27,6 +27,7 @@
 /* namespaces */
 using namespace boost::python;
 using namespace mrpt::poses;
+using namespace mrpt::math;
 using namespace mrpt::bayes;
 using namespace mrpt::config;
 
@@ -35,11 +36,9 @@ namespace mrpt
 {
 namespace bayes
 {
-typedef std::deque<
-	CProbabilityParticle<TPose2D, particle_storage_mode::POINTER>>
+typedef std::deque<CProbabilityParticle<TPose2D, particle_storage_mode::VALUE>>
 	CParticle2DList;
-typedef std::deque<
-	CProbabilityParticle<TPose3D, particle_storage_mode::POINTER>>
+typedef std::deque<CProbabilityParticle<TPose3D, particle_storage_mode::VALUE>>
 	CParticle3DList;
 }  // namespace bayes
 }  // namespace mrpt
@@ -145,6 +144,7 @@ void export_bayes()
 
 	// CParticleList
 	{
+#if 0
 		class_<CParticle2DList>("CParticle2DList", init<>())
 			.def("__len__", &CParticle2DList::size)
 			.def("clear", &CParticle2DList::clear)
@@ -172,5 +172,6 @@ void export_bayes()
 				"__setitem__", &StlListLike<CParticle3DList>::set,
 				with_custodian_and_ward<1, 2>())  // to let container keep value
 			.def("__delitem__", &StlListLike<CParticle3DList>::del);
+#endif
 	}
 }
