@@ -8,7 +8,6 @@ SET(sampleName kitti_dataset2rawlog)
 PROJECT(EXAMPLE_${sampleName})
 
 CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
-set (CMAKE_CXX_STANDARD 14)  # Require C++14
 cmake_policy(SET CMP0003 NEW)  # Required by CMake 2.7+
 
 # ---------------------------------------------------------------------------
