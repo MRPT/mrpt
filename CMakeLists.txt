@@ -34,7 +34,17 @@ if(CMAKE_TIMING_VERBOSE AND UNIX)
   set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CMAKE_SOURCE_DIR}/cmakemodules/custom_output.sh")
 endif(CMAKE_TIMING_VERBOSE AND UNIX)
 
-set (CMAKE_CXX_STANDARD 14)  # Require C++14
+# Require C++17
+if (MSVC)
+	add_compile_options("/std:c++latest")
+else()
+	if(${CMAKE_VERSION} VERSION_LESS "3.8.0")
+		add_compile_options(-std=c++17)
+	else()
+		set (CMAKE_CXX_STANDARD 17)
+	endif()
+endif()
+
 if(COMMAND cmake_policy)
 	cmake_policy(SET CMP0003 NEW) # We don't want to mix relative and absolute paths in linker lib lists.
 	cmake_policy(SET CMP0005 NEW) # Escape definitions (-D) strings
@@ -374,6 +384,7 @@ IF(MSVC)
 	add_compile_options(/W3)
 	add_definitions(-D_CRT_SECURE_NO_DEPRECATE)
 	add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE)
+	add_definitions(-D_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS)
 
 	LINK_DIRECTORIES("${CMAKE_BINARY_DIR}/lib")  # Required to find libraries
 

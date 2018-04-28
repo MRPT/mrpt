@@ -135,9 +135,8 @@ void CObservationOdometry_from_ROS_RawOdometry_msg(
 	// set info
 	self.sensorLabel =
 		extract<std::string>(raw_odometry_msg.attr("header").attr("frame_id"));
-	self.timestamp = extract<uint64_t>(
-		TTimeStamp_from_ROS_Time(
-			raw_odometry_msg.attr("header").attr("stamp")));
+	self.timestamp = extract<uint64_t>(TTimeStamp_from_ROS_Time(
+		raw_odometry_msg.attr("header").attr("stamp")));
 	self.hasEncodersInfo =
 		extract<bool>(raw_odometry_msg.attr("has_encoders_info"));
 	self.hasVelocities = extract<bool>(raw_odometry_msg.attr("has_velocities"));
@@ -396,7 +395,7 @@ void export_obs()
 
 		{
 			// TMotionModelOptions
-			scope s =
+			scope s2 =
 				class_<CActionRobotMovement2D::TMotionModelOptions>(
 					"TMotionModelOptions", init<>())
 					.def_readwrite(
@@ -563,6 +562,7 @@ void export_obs()
 				&CObservationRange::TMeasurement::sensedDistance);
 
 		// TMeasurementList
+#if 0
 		class_<CObservationRange::TMeasurementList>(
 			"TMeasurementList", init<>())
 			.def("__len__", &CObservationRange::TMeasurementList::size)
@@ -582,6 +582,7 @@ void export_obs()
 			.def(
 				"__delitem__",
 				&StlListLike<CObservationRange::TMeasurementList>::del);
+#endif
 	}
 
 	// CObservation2DRangeScan
@@ -665,6 +666,7 @@ void export_obs()
 				&CObservationBearingRange::TMeasurement::covariance);
 
 		// TMeasurementList
+#if 0
 		class_<CObservationBearingRange::TMeasurementList>(
 			"TMeasurementList", init<>())
 			.def("__len__", &CObservationBearingRange::TMeasurementList::size)
@@ -684,6 +686,7 @@ void export_obs()
 			.def(
 				"__delitem__",
 				&StlListLike<CObservationBearingRange::TMeasurementList>::del);
+#endif
 	}
 
 	// CRawlog

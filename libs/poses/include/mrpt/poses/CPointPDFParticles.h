@@ -13,7 +13,6 @@
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
-#include <mrpt/bayes/CProbabilityParticle.h>
 #include <mrpt/bayes/CParticleFilterData.h>
 
 namespace mrpt
@@ -91,7 +90,7 @@ class CPointPDFParticles
 	  */
 	void bayesianFusion(
 		const CPointPDF& p1, const CPointPDF& p2,
-		const double& minMahalanobisDistToDrop = 0) override;
+		const double minMahalanobisDistToDrop = 0) override;
 
 };  // End of class def.
 }  // End of namespace

@@ -55,9 +55,9 @@ void KLF_loadBinFromParticle(
 	else
 	{
 		ASSERT_(currentParticleValue);
-		outBin.x = round(currentParticleValue->x() / opts.KLD_binSize_XY);
-		outBin.y = round(currentParticleValue->y() / opts.KLD_binSize_XY);
-		outBin.phi = round(currentParticleValue->phi() / opts.KLD_binSize_PHI);
+		outBin.x = round(currentParticleValue->x / opts.KLD_binSize_XY);
+		outBin.y = round(currentParticleValue->y / opts.KLD_binSize_XY);
+		outBin.phi = round(currentParticleValue->phi / opts.KLD_binSize_PHI);
 	}
 }
 }
@@ -76,9 +76,6 @@ CMonteCarloLocalization2D::CMonteCarloLocalization2D(size_t M)
 	this->setLoggerName("CMonteCarloLocalization2D");
 }
 
-/*---------------------------------------------------------------
-				Dtor
- ---------------------------------------------------------------*/
 CMonteCarloLocalization2D::~CMonteCarloLocalization2D() {}
 TPose3D CMonteCarloLocalization2D::getLastPose(
 	const size_t i, bool& is_valid_pose) const
@@ -86,8 +83,7 @@ TPose3D CMonteCarloLocalization2D::getLastPose(
 	if (i >= m_particles.size())
 		THROW_EXCEPTION("Particle index out of bounds!");
 	is_valid_pose = true;
-	ASSERTDEB_(m_particles[i].d);
-	return TPose3D(m_particles[i].d->asTPose());
+	return TPose3D(m_particles[i].d);
 }
 
 /*---------------------------------------------------------------
@@ -197,9 +193,9 @@ double
 // Specialization for my kind of particles:
 void CMonteCarloLocalization2D::
 	PF_SLAM_implementation_custom_update_particle_with_new_pose(
-		CPose2D* particleData, const TPose3D& newPose) const
+		TPose2D* particleData, const TPose3D& newPose) const
 {
-	*particleData = CPose2D(TPose2D(newPose));
+	*particleData = TPose2D(newPose);
 }
 
 void CMonteCarloLocalization2D::PF_SLAM_implementation_replaceByNewParticleSet(
@@ -225,7 +221,7 @@ void CMonteCarloLocalization2D::PF_SLAM_implementation_replaceByNewParticleSet(
 	for (size_t i = 0; i < N; i++)
 	{
 		old_particles[i].log_w = newParticlesWeight[i];
-		old_particles[i].d.reset(new CPose2D(TPose2D(newParticles[i])));
+		old_particles[i].d = TPose2D(newParticles[i]);
 	}
 }
 
@@ -280,29 +276,23 @@ void CMonteCarloLocalization2D::resetUniformFreeSpace(
 	ASSERT_(nFreeCells);
 
 	if (particlesCount > 0)
-	{
-		clear();
 		m_particles.resize(particlesCount);
-		for (int i = 0; i < particlesCount; i++)
-			m_particles[i].d.reset(new CPose2D());
-	}
 
 	const size_t M = m_particles.size();
-
 	// Generate pose m_particles:
 	for (size_t i = 0; i < M; i++)
 	{
 		int idx =
 			round(getRandomGenerator().drawUniform(0.0, nFreeCells - 1.001));
 
-		m_particles[i].d->x(
+		m_particles[i].d.x=
 			freeCells_x[idx] +
-			getRandomGenerator().drawUniform(-gridRes, gridRes));
-		m_particles[i].d->y(
+			getRandomGenerator().drawUniform(-gridRes, gridRes);
+		m_particles[i].d.y=
 			freeCells_y[idx] +
-			getRandomGenerator().drawUniform(-gridRes, gridRes));
-		m_particles[i].d->phi(
-			getRandomGenerator().drawUniform(phi_min, phi_max));
+			getRandomGenerator().drawUniform(-gridRes, gridRes);
+		m_particles[i].d.phi =
+			getRandomGenerator().drawUniform(phi_min, phi_max);
 		m_particles[i].log_w = 0;
 	}
 

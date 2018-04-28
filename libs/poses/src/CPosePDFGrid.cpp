@@ -77,7 +77,7 @@ void CPosePDFGrid::getCovarianceAndMean(CMatrixDouble33& cov, CPose2D& p) const
 {
 	CPosePDFParticles auxParts;
 	auxParts.resetDeterministic(
-		CPose2D(0, 0, 0), m_sizePhi * m_sizeY * m_sizeX);
+		TPose2D(0, 0, 0), m_sizePhi * m_sizeY * m_sizeX);
 	size_t idx = 0;
 	for (size_t phiInd = 0; phiInd < m_sizePhi; phiInd++)
 	{
@@ -86,8 +86,8 @@ void CPosePDFGrid::getCovarianceAndMean(CMatrixDouble33& cov, CPose2D& p) const
 			{
 				auxParts.m_particles[idx].log_w =
 					log(*getByIndex(x, y, phiInd));
-				*auxParts.m_particles[idx].d =
-					CPose2D(idx2x(x), idx2y(y), idx2phi(phiInd));
+				auxParts.m_particles[idx].d =
+					TPose2D(idx2x(x), idx2y(y), idx2phi(phiInd));
 			}
 	}
 	auxParts.getCovarianceAndMean(cov, p);
@@ -182,7 +182,7 @@ void CPosePDFGrid::changeCoordinatesReference(const CPose3D& newReferenceBase)
  ---------------------------------------------------------------*/
 void CPosePDFGrid::bayesianFusion(
 	const CPosePDF& p1, const CPosePDF& p2,
-	const double& minMahalanobisDistToDrop)
+	const double minMahalanobisDistToDrop)
 {
 	MRPT_UNUSED_PARAM(p1);
 	MRPT_UNUSED_PARAM(p2);

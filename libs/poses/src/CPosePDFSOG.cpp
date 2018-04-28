@@ -275,7 +275,7 @@ void CPosePDFSOG::drawManySamples(
  ---------------------------------------------------------------*/
 void CPosePDFSOG::bayesianFusion(
 	const CPosePDF& p1_, const CPosePDF& p2_,
-	const double& minMahalanobisDistToDrop)
+	const double minMahalanobisDistToDrop)
 {
 	MRPT_START
 

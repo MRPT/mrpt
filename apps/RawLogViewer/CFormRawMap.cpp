@@ -1003,7 +1003,7 @@ void CFormRawMap::OnbtnGeneratePathsClick(wxCommandEvent&)
 		{
 			// Save for the covariance:
 			// ----------------------------
-			*(pdfParts.m_particles[pathIter].d) = CPose2D(
+			pdfParts.m_particles[pathIter].d = TPose2D(
 				pathX[pathX.size() - 1], pathY[pathX.size() - 1],
 				pathPhi[pathX.size() - 1]);
 

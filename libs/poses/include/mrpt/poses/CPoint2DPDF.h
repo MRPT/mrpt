@@ -58,7 +58,7 @@ class CPoint2DPDF : public mrpt::serialization::CSerializable,
 	  */
 	virtual void bayesianFusion(
 		const CPoint2DPDF& p1, const CPoint2DPDF& p2,
-		const double& minMahalanobisDistToDrop = 0) = 0;
+		const double minMahalanobisDistToDrop = 0) = 0;
 
 	enum
 	{

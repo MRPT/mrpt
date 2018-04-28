@@ -13,11 +13,8 @@
 #include <mrpt/maps/CMultiMetricMapPDF.h>
 #include <mrpt/maps/TMetricMapInitializer.h>
 #include <mrpt/maps/metric_map_types.h>
-
 #include <mrpt/poses/CPosePDFGaussian.h>
-
 #include <mrpt/system/datetime.h>
-
 #include <mrpt/opengl/CSetOfObjects.h>
 
 /* std */
@@ -131,16 +128,14 @@ void COccupancyGridMap2D_from_ROS_OccupancyGrid_msg(
 	COccupancyGridMap2D& self, object occupancy_grid_msg)
 {
 	// set info
-	float x_min = extract<float>(
-		occupancy_grid_msg.attr("info")
-			.attr("origin")
-			.attr("position")
-			.attr("x"));
-	float y_min = extract<float>(
-		occupancy_grid_msg.attr("info")
-			.attr("origin")
-			.attr("position")
-			.attr("y"));
+	float x_min = extract<float>(occupancy_grid_msg.attr("info")
+									 .attr("origin")
+									 .attr("position")
+									 .attr("x"));
+	float y_min = extract<float>(occupancy_grid_msg.attr("info")
+									 .attr("origin")
+									 .attr("position")
+									 .attr("y"));
 	float resolution =
 		extract<float>(occupancy_grid_msg.attr("info").attr("resolution"));
 	int32_t width =
@@ -264,7 +259,7 @@ list CMultiMetricMapPDF_getPath(CMultiMetricMapPDF& self, size_t i)
 	std::deque<mrpt::math::TPose3D> path;
 	list ret_val;
 	self.getPath(i, path);
-	for (size_t i = 0; i < path.size(); ++i) ret_val.append(path[i]);
+	for (size_t k = 0; k < path.size(); ++k) ret_val.append(path[k]);
 	return ret_val;
 }
 
@@ -543,8 +538,9 @@ void export_maps()
 					wideningBeamsWithDistance);
 
 		// TLikelihoodOptions
-		class_<COccupancyGridMap2D::TLikelihoodOptions,
-			   bases<CLoadableOptions>>("TLikelihoodOptions", init<>())
+		class_<
+			COccupancyGridMap2D::TLikelihoodOptions, bases<CLoadableOptions>>(
+			"TLikelihoodOptions", init<>())
 			.def_readwrite(
 				"likelihoodMethod",
 				&COccupancyGridMap2D::TLikelihoodOptions::likelihoodMethod)
@@ -710,13 +706,13 @@ void export_maps()
 		class_<TMetricMapInitializer::Ptr>(
 			"TMetricMapInitializer::Ptr", init<TMetricMapInitializer*>());
 
-		scope s =
-			class_<TMetricMapInitializer, boost::noncopyable,
-				   bases<CLoadableOptions>>("TMetricMapInitializer", no_init)
-				.def(
-					"factory", &TMetricMapInitializer::factory,
-					return_value_policy<manage_new_object>())
-				.staticmethod("factory");
+		scope s = class_<
+					  TMetricMapInitializer, boost::noncopyable,
+					  bases<CLoadableOptions>>("TMetricMapInitializer", no_init)
+					  .def(
+						  "factory", &TMetricMapInitializer::factory,
+						  return_value_policy<manage_new_object>())
+					  .staticmethod("factory");
 	}
 
 	// TSetOfMetricMapInitializers
@@ -758,39 +754,45 @@ void export_maps()
 						  "The list of MRPT metric maps in this object.")
 						  MAKE_CREATE(CMultiMetricMap);
 
+#if 0
 		// TListMaps
 		class_<CMultiMetricMap::TListMaps>("TListMaps", init<>())
 			.def("__len__", &CMultiMetricMap::TListMaps::size)
 			.def("clear", &CMultiMetricMap::TListMaps::clear)
 			.def(
 				"append", &StlListLike<CMultiMetricMap::TListMaps>::add,
-				with_custodian_and_ward<1, 2>())  // to let container keep value
+				with_custodian_and_ward<1, 2>())  // to let container keep
+												  // value
 			.def(
 				"__getitem__", &StlListLike<CMultiMetricMap::TListMaps>::get,
 				return_value_policy<copy_non_const_reference>())
 			.def(
 				"__setitem__", &StlListLike<CMultiMetricMap::TListMaps>::set,
-				with_custodian_and_ward<1, 2>())  // to let container keep value
+				with_custodian_and_ward<1, 2>())  // to let container keep
+												  // value
 			.def("__delitem__", &StlListLike<CMultiMetricMap::TListMaps>::del);
+#endif
 	}
 
 	// CMultiMetricMapPDF
 	{
 		MAKE_PTR(CMultiMetricMapPDF)
 
-		scope s =
+		scope sc =
 			class_<CMultiMetricMapPDF>("CMultiMetricMapPDF", init<>())
 				.def(
 					"getLastPose", &CMultiMetricMapPDF_getLastPose,
 					"Return the last robot pose for the i'th particle.")
 				.def(
 					"getPath", &CMultiMetricMapPDF_getPath,
-					"Return the path (in absolute coordinate poses) for the "
+					"Return the path (in absolute coordinate poses) for "
+					"the "
 					"i'th particle.")
 				.def(
 					"getEstimatedPosePDFAtTime",
 					&CMultiMetricMapPDF_getEstimatedPosePDFAtTime,
-					"Returns the estimate of the robot pose as a particles PDF "
+					"Returns the estimate of the robot pose as a particles "
+					"PDF "
 					"for the instant of time \"timeStep\", from 0 to N-1.")
 				.def(
 					"getCurrentMostLikelyMetricMap",

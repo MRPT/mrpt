@@ -61,7 +61,7 @@ class CPosePDF : public mrpt::serialization::CSerializable,
 	  */
 	virtual void bayesianFusion(
 		const CPosePDF& p1, const CPosePDF& p2,
-		const double& minMahalanobisDistToDrop = 0) = 0;
+		const double minMahalanobisDistToDrop = 0) = 0;
 
 	/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF
 	  */

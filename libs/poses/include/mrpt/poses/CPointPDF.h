@@ -59,7 +59,7 @@ class CPointPDF : public mrpt::serialization::CSerializable,
 	  */
 	virtual void bayesianFusion(
 		const CPointPDF& p1, const CPointPDF& p2,
-		const double& minMahalanobisDistToDrop = 0) = 0;
+		const double minMahalanobisDistToDrop = 0) = 0;
 
 	virtual void changeCoordinatesReference(
 		const CPose3D& newReferenceBase) = 0;

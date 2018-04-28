@@ -29,6 +29,11 @@
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>
 
+#ifdef _WIN32
+#include <process.h>
+#include <windows.h>  // TODO: This is temporary!!!
+#endif
+
 using namespace mrpt;
 using namespace mrpt::vision;
 using namespace mrpt::img;
@@ -40,12 +45,6 @@ using namespace mrpt::system;
 using namespace mrpt::poses;
 using namespace mrpt::obs;
 using namespace std;
-
-#ifdef _WIN32
-#include <process.h>
-#include <windows.h>  // TODO: This is temporary!!!
-#endif
-
 const int FEAT_FREE = -1;
 // const int NOT_ASIG = 0;
 // const int ASG_FEAT = 1;
