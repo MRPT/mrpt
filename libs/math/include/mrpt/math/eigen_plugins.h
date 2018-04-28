@@ -560,7 +560,7 @@ EIGEN_STRONG_INLINE void removeRows(const std::vector<size_t>& idxsToRemove)
 EIGEN_STRONG_INLINE void unsafeRemoveRows(const std::vector<size_t>& idxs)
 {
 	size_t k = 1;
-	for (std::vector<size_t>::reverse_iterator it = idxs.rbegin();
+	for (auto it = idxs.rbegin();
 		 it != idxs.rend(); ++it, ++k)
 	{
 		const size_t nR = rows() - *it - k;
