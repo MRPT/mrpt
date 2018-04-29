@@ -17,7 +17,7 @@ BUILD_DIR=/build
 
 CMAKE_C_FLAGS="-Wall -Wextra -Wabi"
 CMAKE_CXX_FLAGS="-Wall -Wextra -Wabi"
-EXTRA_CMAKE_ARGS="-DDISABLE_PCL=ON"  # PCL causes link errors (?!)
+EXTRA_CMAKE_ARGS=""
 
 function install_lint_reqs()
 {
