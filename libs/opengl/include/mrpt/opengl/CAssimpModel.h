@@ -82,7 +82,7 @@ class CAssimpModel : public CRenderizableDisplayList
 	virtual ~CAssimpModel();
 
    private:
-	/** A container for automatic deletion of lib3ds's scene when the last
+	/** A container for automatic deletion of assimp scene when the last
 	 * reference of the smart_ptr's is destroyed.
 	 */
 	struct TImplAssimp
