@@ -19,7 +19,6 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_opengl)
 {
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 	// Opengl classes:
-	registerClass(CLASS_ID(C3DSScene));
 	registerClass(CLASS_ID(CArrow));
 	registerClass(CLASS_ID(CAssimpModel));
 	registerClass(CLASS_ID(CAxis));

@@ -12,7 +12,6 @@ namespace mrpt
 {
 namespace opengl
 {
-class C3DSScene;
 class CArrow;
 class CAssimpModel;
 class CAxis;
