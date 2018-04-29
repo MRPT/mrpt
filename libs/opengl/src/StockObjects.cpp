@@ -17,7 +17,6 @@
 #include <mrpt/opengl/CBox.h>
 #include <mrpt/opengl/CPolyhedron.h>
 #include <mrpt/opengl/CSimpleLine.h>
-#include <mrpt/opengl/C3DSScene.h>
 #include <mrpt/io/CFileOutputStream.h>
 
 using namespace mrpt::opengl;

@@ -14,7 +14,6 @@
 // opengl includes
 #include <mrpt/opengl/CSphere.h>
 #include <mrpt/opengl/CSimpleLine.h>
-#include <mrpt/opengl/C3DSScene.h>
 #include <mrpt/opengl/CGridPlaneXZ.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CBox.h>
