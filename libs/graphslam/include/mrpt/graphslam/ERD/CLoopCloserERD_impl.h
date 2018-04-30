@@ -44,9 +44,8 @@ CLoopCloserERD<GRAPH_T>::~CLoopCloserERD()
 
 	// release memory of m_node_optimal_paths map.
 	MRPT_LOG_DEBUG_STREAM("Releasing memory of m_node_optimal_paths map...");
-	for (typename std::map<mrpt::graphs::TNodeID, path_t*>::iterator it =
-			 m_node_optimal_paths.begin();
-		 it != m_node_optimal_paths.end(); ++it)
+	for (auto it = m_node_optimal_paths.begin();
+			 it != m_node_optimal_paths.end(); ++it)
 	{
 		delete it->second;
 	}
@@ -145,7 +144,6 @@ bool CLoopCloserERD<GRAPH_T>::updateState(
 			 this->m_just_inserted_lc)
 				? true
 				: false;
-
 		this->updateMapPartitions(
 			m_partitions_full_update,
 			/* is_first_time_node_reg = */ num_registered == 2);
@@ -1826,12 +1824,9 @@ void CLoopCloserERD<GRAPH_T>::initMapPartitionsVisualization()
 	using namespace mrpt::opengl;
 
 	// textmessage - display the number of partitions
-	if (!m_lc_params.LC_check_curr_partition_only)
-	{
-		this->m_win_manager->assignTextMessageParameters(
-			/* offset_y*	= */ &m_lc_params.offset_y_map_partitions,
-			/* text_index* = */ &m_lc_params.text_index_map_partitions);
-	}
+	this->m_win_manager->assignTextMessageParameters(
+		/* offset_y*	= */ &m_lc_params.offset_y_map_partitions,
+		/* text_index* = */ &m_lc_params.text_index_map_partitions);
 
 	// just add an empty CSetOfObjects in the scene - going to populate it later
 	CSetOfObjects::Ptr map_partitions_obj =
@@ -1854,19 +1849,14 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitionsVisualization()
 	using namespace mrpt::poses;
 
 	// textmessage
-	// ////////////////////////////////////////////////////////////
-	if (!m_lc_params.LC_check_curr_partition_only)
-	{
-		std::stringstream title;
-		title << "# Partitions: " << m_curr_partitions.size();
-		this->m_win_manager->addTextMessage(
-			5, -m_lc_params.offset_y_map_partitions, title.str(),
-			mrpt::img::TColorf(m_lc_params.balloon_std_color),
-			/* unique_index = */ m_lc_params.text_index_map_partitions);
-	}
+	std::stringstream title;
+	title << "# Partitions: " << m_curr_partitions.size();
+	this->m_win_manager->addTextMessage(
+		5, -m_lc_params.offset_y_map_partitions, title.str(),
+		mrpt::img::TColorf(m_lc_params.balloon_std_color),
+		/* unique_index = */ m_lc_params.text_index_map_partitions);
 
 	// update the partitioning visualization
-	// ////////////////////////////////////////////////////////////
 	COpenGLScene::Ptr& scene = this->m_win->get3DSceneAndLock();
 
 	// fetch the partitions CSetOfObjects
@@ -2168,7 +2158,7 @@ void CLoopCloserERD<GRAPH_T>::updateLaserScansVisualization()
 		laser_scan_viz->setScan(*m_last_laser_scan2D);
 
 		// set the pose of the laser scan
-		typename GRAPH_T::global_poses_t::const_iterator search =
+		const auto search =
 			this->m_graph->nodes.find(this->m_graph->nodeCount() - 1);
 		if (search != this->m_graph->nodes.end())
 		{
@@ -2479,7 +2469,6 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitions(
 	MRPT_START;
 	using namespace mrpt::math;
 	using namespace std;
-
 	this->m_time_logger.enter("updateMapPartitions");
 
 	// Initialize the nodeIDs => LaserScans map
@@ -2515,9 +2504,7 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitions(
 	// TODO - Should always exist.
 	// for each one of the above nodes - add its position and correspoding
 	// laserScan to the partitioner object
-	for (typename nodes_to_scans2D_t::const_iterator it =
-			 nodes_to_scans.begin();
-		 it != nodes_to_scans.end(); ++it)
+	for (auto it = nodes_to_scans.begin(); it != nodes_to_scans.end(); ++it)
 	{
 		if (!it->second)
 		{  // if laserScan invalid go to next...
@@ -2528,8 +2515,7 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitions(
 
 		// find pose of node, if it exists...
 		// TODO - investigate this case. Why should this be happening?
-		typename GRAPH_T::global_poses_t::const_iterator search;
-		search = this->m_graph->nodes.find(it->first);
+		const auto& search = this->m_graph->nodes.find(it->first);
 		if (search == this->m_graph->nodes.end())
 		{
 			MRPT_LOG_WARN_STREAM("Couldn't find pose for nodeID " << it->first);
@@ -2537,9 +2523,8 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitions(
 		}
 
 		// pose
-		const auto& curr_pose = search->second;
-		const auto curr_constraint = constraint_t(curr_pose);
-		mrpt::poses::CPose3DPDF::Ptr pose3d(mrpt::poses::CPose3DPDF::createFrom2D(curr_constraint));
+		const auto curr_constraint = constraint_t(search->second);
+		const auto pose3d(mrpt::poses::CPose3DPDF::createFrom2D(curr_constraint));
 
 		// laser scan
 		mrpt::obs::CSensoryFrame sf;
@@ -2665,7 +2650,6 @@ void CLoopCloserERD<GRAPH_T>::TLoopClosureParams::loadFromConfigFile(
 	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {
 	MRPT_START;
-
 	LC_min_nodeid_diff = source.read_int(
 		"GeneralConfiguration", "LC_min_nodeid_diff", 30, false);
 	LC_min_remote_nodes =
