@@ -54,6 +54,11 @@ else()
 	endif()
 endif()
 
+# missing math consts (M_PI) in msvc:
+IF(MSVC)
+	ADD_DEFINITIONS(-D_USE_MATH_DEFINES)
+ENDIF()
+
 # Extract the directory where *this* file has been installed (determined at cmake run-time)
 get_filename_component(THIS_MRPT_CONFIG_PATH "${CMAKE_CURRENT_LIST_FILE}" PATH)
 
