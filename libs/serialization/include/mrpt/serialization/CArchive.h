@@ -17,9 +17,9 @@
 #include <string>
 #include <type_traits>  // remove_reference_t, is_polymorphic
 #include <stdexcept>
-#include <mrpt/rtti/variant.h>
 #include <mrpt/typemeta/TTypeName.h>
 
+#include <variant>
 namespace mrpt
 {
 namespace serialization
@@ -244,7 +244,7 @@ class CArchive
 	 * object raises a plain std::exception instead.
 	 */
 	template <typename... T>
-	typename mrpt::rtti::variant<T...> ReadVariant()
+	typename std::variant<T...> ReadVariant()
 	{
 		CSerializable::Ptr obj;
 		std::string strClassName;
@@ -264,11 +264,11 @@ class CArchive
 		internal_ReadObject(obj.get(), strClassName, isOldFormat, version);
 		if (!obj)
 		{
-			return mrpt::rtti::variant<T...>();
+			return std::variant<T...>();
 		}
 		else
 		{
-			return ReadVariant_helper<mrpt::rtti::variant<T...>, T...>(obj);
+			return ReadVariant_helper<std::variant<T...>, T...>(obj);
 		}
 	}
 
@@ -471,7 +471,7 @@ CArchive& operator>>(CArchive& in, typename std::shared_ptr<T>& pObj)
 }
 
 template <typename... T>
-CArchive& operator>>(CArchive& in, typename mrpt::rtti::variant<T...>& pObj)
+CArchive& operator>>(CArchive& in, typename std::variant<T...>& pObj)
 {
 	pObj = in.ReadVariant<T...>();
 	return in;
@@ -479,7 +479,7 @@ CArchive& operator>>(CArchive& in, typename mrpt::rtti::variant<T...>& pObj)
 
 template <typename... T>
 CArchive& operator<<(
-	CArchive& out, const typename mrpt::rtti::variant<T...>& pObj)
+	CArchive& out, const typename std::variant<T...>& pObj)
 {
 	pObj.match([&](auto& t) { out << t; });
 	return out;
