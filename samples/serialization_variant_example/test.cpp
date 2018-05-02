@@ -40,11 +40,12 @@ void thread_reader(CPipeReadEndPoint& read_pipe)
 		// *Note*: If the object class is known in advance, one can avoid smart
 		// pointers with ReadObject(&existingObj)
 		auto arch = archiveFrom(read_pipe);
+		auto doprint = [](auto& pose) { cout << "RX pose: " << pose << endl; };
 		auto var =
 			arch.ReadVariant<mrpt::poses::CPose2D, mrpt::poses::CPose3D>();
-		var.match([](auto& pose) { cout << "RX pose: " << pose << endl; });
+		std::visit(doprint, var);
 		var = arch.ReadVariant<mrpt::poses::CPose2D, mrpt::poses::CPose3D>();
-		var.match([](auto& pose) { cout << "RX pose: " << pose << endl; });
+		std::visit(doprint, var);
 
 		printf("[thread_reader] Finished.\n");
 	}
