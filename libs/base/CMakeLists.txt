@@ -123,4 +123,9 @@ IF(BUILD_mrpt-base)
 	IF(CMAKE_MRPT_HAS_JPEG)
 		target_link_libraries(mrpt-base ${JPEG_LIBS})
 	ENDIF()
+
+	# -ldl required by dladdr
+	IF(UNIX)
+					TARGET_LINK_LIBRARIES(mrpt-base dl)
+	ENDIF()
 ENDIF()

@@ -12,6 +12,13 @@
 
 <p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or [browse it on-line](http://www.mrpt.org/).</i></p>
 
+<hr>
+<a name="1.5.7">
+<h2>Version 1.5.7: (Under development) </h2></a>
+- <b>Detailed list of changes:</b>
+	- BUG FIXES: 
+		- Fix missing "-ldl" linker flag.
+
 <a name="1.5.6">
 <h2>Version 1.5.6: Released 24/APR/2018 </h2></a>
 	- Applications:
