@@ -65,7 +65,7 @@ class PbMapMaker
 	~PbMapMaker();
 
 	/*!Get the PbMap.*/
-	PbMap getPbMap() { return mPbMap; };
+    PbMap getPbMap() { return mPbMap; }
 	/*!Serialize the PbMap.*/
 	void serializePbMap(std::string path);
 
@@ -160,10 +160,6 @@ class PbMapMaker
 	/*!PbMapMaker's stop var*/
 	bool m_pbmaker_finished;
 
-	// Color paper
-	void watchProperties(
-		std::set<unsigned>& observedPlanes, Plane& observedPlane);
-	void saveInfoFiles();
 	// Unary
 	float rejectAreaF, acceptAreaF, rejectAreaT, acceptAreaT;
 	float rejectElongF, acceptElongF, rejectElongT, acceptElongT;
