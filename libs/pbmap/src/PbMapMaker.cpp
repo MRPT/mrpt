@@ -195,17 +195,6 @@ PbMapMaker::PbMapMaker(const string& config_file)
 	if (configPbMap.makeClusters) clusterize = new SemanticClustering(mPbMap);
 
 	pbmaker_hd = std::thread(&PbMapMaker::run, this);
-
-	// Unary
-	rejectAreaF = 0, acceptAreaF = 0, rejectAreaT = 0, acceptAreaT = 0;
-	rejectElongF = 0, acceptElongF = 0, rejectElongT = 0, acceptElongT = 0;
-	rejectC1C2C3_F = 0, acceptC1C2C3_F = 0, rejectC1C2C3_T = 0,
-	acceptC1C2C3_T = 0;
-	rejectNrgb_F = 0, acceptNrgb_F = 0, rejectNrgb_T = 0, acceptNrgb_T = 0;
-	rejectIntensity_F = 0, acceptIntensity_F = 0, rejectIntensity_T = 0,
-	acceptIntensity_T = 0;
-	rejectColor_F = 0, acceptColor_F = 0, rejectColor_T = 0, acceptColor_T = 0;
-	rejectHistH_F = 0, acceptHistH_F = 0, rejectHistH_T = 0, acceptHistH_T = 0;
 }
 
 bool PbMapMaker::arePlanesNearby(
