@@ -277,7 +277,7 @@ class CArchive
 	template <typename T>
 	void WriteVariant(T t)
 	{
-		t.match([&](auto& o) { this->WriteObject(o); });
+		std::visit([&](auto& o) { this->WriteObject(o); }, t);
 	}
 
 	/** Reads a simple POD type and returns by value. Useful when `stream >>
@@ -478,8 +478,7 @@ CArchive& operator>>(CArchive& in, typename std::variant<T...>& pObj)
 }
 
 template <typename... T>
-CArchive& operator<<(
-	CArchive& out, const typename std::variant<T...>& pObj)
+CArchive& operator<<(CArchive& out, const typename std::variant<T...>& pObj)
 {
 	pObj.match([&](auto& t) { out << t; });
 	return out;
