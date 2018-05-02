@@ -37,9 +37,6 @@
 #include <iostream>
 
 //#define _VERBOSE 0
-#define WATCH_UNARY 0
-#define WATCH_BINARY 0
-#define WATCH_COLOR 1
 
 using namespace std;
 using namespace Eigen;
@@ -198,17 +195,6 @@ PbMapMaker::PbMapMaker(const string& config_file)
 	if (configPbMap.makeClusters) clusterize = new SemanticClustering(mPbMap);
 
 	pbmaker_hd = std::thread(&PbMapMaker::run, this);
-
-	// Unary
-	rejectAreaF = 0, acceptAreaF = 0, rejectAreaT = 0, acceptAreaT = 0;
-	rejectElongF = 0, acceptElongF = 0, rejectElongT = 0, acceptElongT = 0;
-	rejectC1C2C3_F = 0, acceptC1C2C3_F = 0, rejectC1C2C3_T = 0,
-	acceptC1C2C3_T = 0;
-	rejectNrgb_F = 0, acceptNrgb_F = 0, rejectNrgb_T = 0, acceptNrgb_T = 0;
-	rejectIntensity_F = 0, acceptIntensity_F = 0, rejectIntensity_T = 0,
-	acceptIntensity_T = 0;
-	rejectColor_F = 0, acceptColor_F = 0, rejectColor_T = 0, acceptColor_T = 0;
-	rejectHistH_F = 0, acceptHistH_F = 0, rejectHistH_T = 0, acceptHistH_T = 0;
 }
 
 bool PbMapMaker::arePlanesNearby(
@@ -278,39 +264,6 @@ bool PbMapMaker::arePlanesNearby(
 					plane1.polygonContourPtr))
 				return true;
 
-	// cout << "Polygons intersect?\n";
-	// d)
-	//  for(unsigned i=1; i < plane1.polygonContourPtr->size(); i++)
-	//    if(
-	//    plane2.v3normal.dot(getVector3fromPointXYZ(plane1.polygonContourPtr->points[i])
-	//    - plane2.v3center) < distThreshold )
-	//    {
-	////    cout << "Elements\n" << plane2.v3normal << "\n xyz " <<
-	/// plane1.polygonContourPtr->points[i].x << " " <<
-	/// plane1.polygonContourPtr->points[i].y << " " <<
-	/// plane1.polygonContourPtr->points[i].z
-	////          << " xyz2 " << plane1.polygonContourPtr->points[i-1].x << " "
-	///<< plane1.polygonContourPtr->points[i-1].y << " " <<
-	/// plane1.polygonContourPtr->points[i-1].z << endl;
-	////    assert(
-	/// plane2.v3normal.dot(diffPoints(plane1.polygonContourPtr->points[i],
-	/// plane1.polygonContourPtr->points[i-1]) ) != 0 );
-	//      float d = (plane2.v3normal.dot(plane2.v3center -
-	//      getVector3fromPointXYZ(plane1.polygonContourPtr->points[i-1]) ) ) /
-	//      (plane2.v3normal.dot(diffPoints(plane1.polygonContourPtr->points[i],
-	//      plane1.polygonContourPtr->points[i-1]) ) );
-	//      PointT intersection;
-	//      intersection.x = d * plane1.polygonContourPtr->points[i].x + (1-d) *
-	//      plane1.polygonContourPtr->points[i-1].x;
-	//      intersection.y = d * plane1.polygonContourPtr->points[i].y + (1-d) *
-	//      plane1.polygonContourPtr->points[i-1].y;
-	//      intersection.z = d * plane1.polygonContourPtr->points[i].z + (1-d) *
-	//      plane1.polygonContourPtr->points[i-1].z;
-	//      if(isInHull(intersection, plane2.polygonContourPtr) )
-	//        return true;
-	//    }
-	// if (plane1.id==2 && frameQueue.size() == 12)
-	// cout << "pasaFinal\n";
 	return false;
 }
 
@@ -334,317 +287,6 @@ void PbMapMaker::checkProximity(Plane& plane, float proximity)
 	}
 }
 
-////  double area_THRESHOLD=10.0;
-//  double area_THRESHOLD_inv=1/configPbMap.area_THRESHOLD;
-////  double elongation_THRESHOLD=1.15;
-//  double elongation_THRESHOLD_inv=1/configPbMap.elongation_THRESHOLD;
-////  double color_threshold=0.3;
-// double colorDev_THRESHOLD;
-//  double dist_THRESHOLD = 1.6;      double dist_THRESHOLD_inv =
-//  1/dist_THRESHOLD;
-////  double dist_THRESHOLDFull = 1.2;  double dist_THRESHOLDFull_inv =
-/// 1/dist_THRESHOLDFull;
-//  double height_THRESHOLD=0.5;
-//  double height_THRESHOLD_parallel=0.03;
-//  double normal_THRESHOLD=1.0;
-//  double ppaldir_normal_THRESHOLD=8;
-//
-//  double singleC_THRESHOLD = 0.2;
-//  double elong_rely_ppal_THRESHOLD=1.5;
-//  double elong_rely_ppal_THRESHOLD_tight=1.3;
-
-void PbMapMaker::watchProperties(
-	set<unsigned>& observedPlanes, Plane& observedPlane)
-{
-	cout << "PbMapMaker::watchProperties..." << configPbMap.color_threshold
-		 << " " << configPbMap.intensity_threshold << " "
-		 << configPbMap.hue_threshold << "\n";
-	// Watch properties
-	//  double tCondition;
-	//  mrpt::system::CTicTac clock;
-	//  colorDev_THRESHOLD=configPbMap.color_threshold/10;
-
-	if (observedPlane.numObservations > 2)
-	{
-		// Previous instanes of same plane
-		for (size_t i = 0; i < observedPlane.prog_Nrgb.size(); i++)
-		{
-#if WATCH_UNARY
-			//    tCondition = pcl::getTime();
-			//    clock.Tic();
-			// Check area unary
-			double rel_areas = observedPlane.area / observedPlane.prog_area[i];
-			if (rel_areas < area_THRESHOLD_inv ||
-				rel_areas > configPbMap.area_THRESHOLD)
-				rejectAreaT++;
-			else
-				acceptAreaT++;
-			//    timeCompareArea.push_back( (pcl::getTime() - tCondition)*1e6
-			//    );
-			//    timeCompareArea.push_back( clock.Tac()*1e6 );
-
-			//    tCondition = pcl::getTime();
-			// Check ratio unary
-			double rel_ratios =
-				observedPlane.elongation / observedPlane.prog_elongation[i];
-			if (rel_ratios < elongation_THRESHOLD_inv ||
-				rel_ratios > configPbMap.elongation_THRESHOLD)
-				rejectElongT++;
-			else
-				acceptElongT++;
-//    timeCompareElong.push_back( (pcl::getTime() - tCondition)*1e6 );
-#endif
-
-#if WATCH_COLOR
-			//    tCondition = pcl::getTime();
-			// Check colorC1C2C3 unary
-			double dif_C1C2C3 =
-				(observedPlane.v3colorC1C2C3 - observedPlane.prog_C1C2C3[i])
-					.norm();
-			//    cout << "color1 " << observedPlane.v3colorC1C2C3 << " color2 "
-			//    << prevPlane.v3colorC1C2C3 << endl;
-			if (dif_C1C2C3 > configPbMap.color_threshold)
-				rejectC1C2C3_T++;
-			else
-				acceptC1C2C3_T++;
-			//    timeCompareC1C2C3.push_back( (pcl::getTime() - tCondition)*1e6
-			//    );
-
-			double dif_Nrgb =
-				(observedPlane.v3colorNrgb - observedPlane.prog_Nrgb[i]).norm();
-			//    cout << "color1 " << observedPlane.v3colorNrgb << " color2 "
-			//    << prevPlane.v3colorNrgb << endl;
-			//      if( dif_Nrgb > configPbMap.color_threshold ||
-			//      fabs(observedPlane.dominantIntensity -
-			//      observedPlane.prog_intensity[i]) > 255)
-			if (dif_Nrgb > configPbMap.color_threshold)
-				rejectNrgb_T++;
-			else
-				acceptNrgb_T++;
-			//    timeCompareNrgb.push_back( (pcl::getTime() - tCondition)*1e6
-			//    );
-
-			if (fabs(
-					observedPlane.dominantIntensity -
-					observedPlane.prog_intensity[i]) >
-				configPbMap.intensity_threshold)
-				rejectIntensity_T++;
-			else
-				acceptIntensity_T++;
-
-			if (fabs(
-					observedPlane.dominantIntensity -
-					observedPlane.prog_intensity[i]) >
-					configPbMap.intensity_threshold ||
-				dif_Nrgb > configPbMap.color_threshold)
-				rejectColor_T++;
-			else
-				acceptColor_T++;
-
-			// Hue histogram
-			double hist_dist = BhattacharyyaDist(
-				observedPlane.hist_H, observedPlane.prog_hist_H[i]);
-			if (hist_dist > configPbMap.hue_threshold)
-				rejectHistH_T++;
-			else
-				acceptHistH_T++;
-#endif
-		}
-
-		// cout << "Watch rejection. Planes " << mPbMap.vPlanes.size() << "\n";
-		// Get unary rejection rate
-		for (size_t i = 0; i < mPbMap.vPlanes.size(); i++)
-		{
-			if (i == observedPlane.id) continue;
-
-			Plane& prevPlane = mPbMap.vPlanes[i];
-//    cout << "color prev plane " <<
-//    prevPlane.v3colorNrgb.transpose() << " " <<
-//    prevPlane.dominantIntensity << " " << prevPlane.bDominantColor
-//    << endl;
-
-#if WATCH_UNARY
-			//    tCondition = pcl::getTime();
-			//    clock.Tic();
-			double rel_areas = observedPlane.area / prevPlane.area;
-			if (rel_areas < area_THRESHOLD_inv ||
-				rel_areas > configPbMap.area_THRESHOLD)
-				rejectAreaF++;
-			else
-				acceptAreaF++;
-			//    timeCompareArea.push_back( (pcl::getTime() - tCondition)*1e6
-			//    );
-			//    timeCompareArea.push_back( clock.Tac()*1e6 );
-
-			//    tCondition = pcl::getTime();
-			double rel_ratios = observedPlane.elongation / prevPlane.elongation;
-			if (rel_ratios < elongation_THRESHOLD_inv ||
-				rel_ratios > configPbMap.elongation_THRESHOLD)
-				rejectElongF++;
-			else
-				acceptElongF++;
-//    timeCompareElong.push_back( (pcl::getTime() - tCondition)*1e6 );
-#endif
-
-#if WATCH_COLOR
-			//    tCondition = pcl::getTime();
-			double dif_C1C2C3 =
-				(observedPlane.v3colorC1C2C3 - prevPlane.v3colorC1C2C3).norm();
-			//          cout << "color1 " << observedPlane.v3colorC1C2C3 << "
-			//          color2 " << prevPlane.v3colorC1C2C3 << endl;
-			if (dif_C1C2C3 > configPbMap.color_threshold)
-				rejectC1C2C3_F++;
-			else
-				acceptC1C2C3_F++;
-			//    timeCompareC1C2C3.push_back( (pcl::getTime() - tCondition)*1e6
-			//    );
-
-			//      // Nrgb
-			double dif_Nrgb =
-				(observedPlane.v3colorNrgb - prevPlane.v3colorNrgb).norm();
-			//          cout << "color1 " << observedPlane.v3colorNrgb << "
-			//          color2 " << prevPlane.v3colorNrgb << endl;
-			//      if( dif_Nrgb > configPbMap.color_threshold ||
-			//      fabs(observedPlane.dominantIntensity -
-			//      prevPlane.dominantIntensity) > 255)
-			if (dif_Nrgb > configPbMap.color_threshold)
-				rejectNrgb_F++;
-			else
-				acceptNrgb_F++;
-			//    timeCompareNrgb.push_back( (pcl::getTime() - tCondition)*1e6
-			//    );
-
-			// cout << "intensity conditions\n";
-			// cout << "   elements " << observedPlane.dominantIntensity <<" "
-			// << prevPlane.dominantIntensity << " " <<
-			// configPbMap.intensity_threshold;
-			// cout << " " << rejectIntensity_F << " " << acceptIntensity_F <<
-			// endl;
-
-			if (fabs(
-					observedPlane.dominantIntensity -
-					prevPlane.dominantIntensity) >
-				configPbMap.intensity_threshold)
-				rejectIntensity_F++;
-			else
-				acceptIntensity_F++;
-
-			if (fabs(
-					observedPlane.dominantIntensity -
-					prevPlane.dominantIntensity) >
-					configPbMap.intensity_threshold ||
-				dif_Nrgb > configPbMap.color_threshold)
-				rejectColor_F++;
-			else
-				acceptColor_F++;
-			// cout << "rejectColor_F " << rejectColor_F << "acceptColor_F " <<
-			// acceptColor_F << endl;
-
-			// Hue histogram
-			double hist_dist =
-				BhattacharyyaDist(observedPlane.hist_H, prevPlane.hist_H);
-			if (hist_dist > configPbMap.hue_threshold)
-				rejectHistH_F++;
-			else
-				acceptHistH_F++;
-// cout << "finish reject conditions\n";
-
-#endif
-		}
-
-#if WATCH_UNARY
-		observedPlane.prog_area.push_back(observedPlane.area);
-		//    observedPlane.prog_v3center.push_back(observedPlane.v3center);
-		//    observedPlane.prog_v3normal.push_back(observedPlane.v3normal);
-		observedPlane.prog_elongation.push_back(observedPlane.elongation);
-//    observedPlane.prog_v3PpalDir.push_back(observedPlane.v3PpalDir);
-#endif
-
-// cout << "Update progression\n";
-
-#if WATCH_COLOR
-		observedPlane.prog_C1C2C3.push_back(observedPlane.v3colorC1C2C3);
-		observedPlane.prog_Nrgb.push_back(observedPlane.v3colorNrgb);
-		observedPlane.prog_intensity.push_back(observedPlane.dominantIntensity);
-		observedPlane.prog_hist_H.push_back(observedPlane.hist_H);
-#endif
-	}
-	cout << "  ...Watching finished\n";
-}
-
-void PbMapMaker::saveInfoFiles()
-{
-	cout << "PbMapMaker::saveInfoFiles(...)\n";
-
-	//  cout << "DiscAreaF rate " << rejectAreaF/(rejectAreaF+acceptAreaF) << "
-	//  meas " << rejectAreaF+acceptAreaF << endl;
-	//  cout << "DiscElongF rate " << rejectElongF/(rejectElongF+acceptElongF)
-	//  << " meas " << rejectElongF+acceptElongF << endl;
-	//  cout << "DiscC1C2C3_F rate " <<
-	//  rejectC1C2C3_F/(rejectC1C2C3_F+acceptC1C2C3_F) << " meas " <<
-	//  rejectC1C2C3_F+acceptC1C2C3_F << endl;
-	//
-	//  cout << "DiscAreaT rate " << rejectAreaT/(rejectAreaT+acceptAreaT) << "
-	//  meas " << rejectAreaT+acceptAreaT << endl;
-	//  cout << "DiscElongT rate " << rejectElongT/(rejectElongT+acceptElongT)
-	//  << " meas " << rejectElongT+acceptElongT << endl;
-	//  cout << "DiscC1C2C3_T rate " <<
-	//  rejectC1C2C3_T/(rejectC1C2C3_T+acceptC1C2C3_T) << " meas " <<
-	//  rejectC1C2C3_T+acceptC1C2C3_T << endl;
-
-	string results_file;
-	ofstream file;
-
-#if WATCH_UNARY
-	results_file = "results/areaRestriction.txt";
-	file.open(results_file.c_str(), ios::app);
-	file << configPbMap.area_THRESHOLD << " " << rejectAreaT << " "
-		 << acceptAreaT << " " << rejectAreaF << " " << acceptAreaF << endl;
-	file.close();
-
-	results_file = "results/elongRestriction.txt";
-	file.open(results_file.c_str(), ios::app);
-	file << configPbMap.elongation_THRESHOLD << " " << rejectElongT << " "
-		 << acceptElongT << " " << rejectElongF << " " << acceptElongF << endl;
-	file.close();
-#endif
-
-#if WATCH_COLOR
-	results_file = "results/c1c2c3Restriction.txt";
-	file.open(results_file.c_str(), ios::app);
-	file << configPbMap.color_threshold << " " << rejectC1C2C3_T << " "
-		 << acceptC1C2C3_T << " " << rejectC1C2C3_F << " " << acceptC1C2C3_F
-		 << endl;
-	file.close();
-
-	results_file = "results/NrgbRestriction.txt";
-	file.open(results_file.c_str(), ios::app);
-	file << configPbMap.color_threshold << " " << rejectNrgb_T << " "
-		 << acceptNrgb_T << " " << rejectNrgb_F << " " << acceptNrgb_F << endl;
-	file.close();
-
-	results_file = "results/IntensityRestriction.txt";
-	file.open(results_file.c_str(), ios::app);
-	file << configPbMap.intensity_threshold << " " << rejectIntensity_T << " "
-		 << acceptIntensity_T << " " << rejectIntensity_F << " "
-		 << acceptIntensity_F << endl;
-	file.close();
-
-	results_file = "results/ColorRestriction.txt";
-	file.open(results_file.c_str(), ios::app);
-	file << configPbMap.intensity_threshold << " " << rejectColor_T << " "
-		 << acceptColor_T << " " << rejectColor_F << " " << acceptColor_F
-		 << endl;
-	file.close();
-
-	results_file = "results/HueRestriction.txt";
-	file.open(results_file.c_str(), ios::app);
-	file << configPbMap.hue_threshold << " " << rejectHistH_T << " "
-		 << acceptHistH_T << " " << rejectHistH_F << " " << acceptHistH_F
-		 << endl;
-	file.close();
-#endif
-}
 
 void PbMapMaker::detectPlanesCloud(
 	pcl::PointCloud<PointT>::Ptr& pointCloudPtr_arg, Eigen::Matrix4f& poseKF,
@@ -825,112 +467,14 @@ void PbMapMaker::detectPlanesCloud(
 			for (size_t j = 0; j < numPrevPlanes;
 				 j++, itPlane++)  // numPrevPlanes
 			{
+                // The planes are merged if they are the same
 				if (areSamePlane(
 						mPbMap.vPlanes[j], detectedPlanes[i],
 						configPbMap.max_cos_normal,
 						configPbMap.max_dist_center_plane,
-						configPbMap.proximity_threshold))  // The planes are
-				// merged if they are
-				// the same
+                        configPbMap.proximity_threshold))
 				{
-					//        if (j==2 && frameQueue.size() == 12)
-					//        {
-					//          cout << "Same plane\n";
-					//
-					////          ofstream pbm;
-					////          pbm.open("comparePlanes.txt");
-					//          {
-					//            cout << " ID " << mPbMap.vPlanes[j].id << "
-					//            obs " << mPbMap.vPlanes[j].numObservations;
-					//            cout << " areaVoxels " <<
-					//            mPbMap.vPlanes[j].areaVoxels << " areaVoxels "
-					//            << mPbMap.vPlanes[j].areaHull;
-					//            cout << " ratioXY " <<
-					//            mPbMap.vPlanes[j].elongation << " structure "
-					//            << mPbMap.vPlanes[j].bFromStructure << " label
-					//            " << mPbMap.vPlanes[j].label;
-					//            cout << "\n normal\n" <<
-					//            mPbMap.vPlanes[j].v3normal << "\n center\n" <<
-					//            mPbMap.vPlanes[j].v3center;
-					//            cout << "\n PpalComp\n" <<
-					//            mPbMap.vPlanes[j].v3PpalDir << "\n RGB\n" <<
-					//            mPbMap.vPlanes[j].v3colorNrgb;
-					//            cout << "\n Neighbors (" <<
-					//            mPbMap.vPlanes[j].neighborPlanes.size() << "):
-					//            ";
-					//            for(map<unsigned,unsigned>::iterator
-					//            it=mPbMap.vPlanes[j].neighborPlanes.begin();
-					//            it != mPbMap.vPlanes[j].neighborPlanes.end();
-					//            it++)
-					//              cout << it->first << " ";
-					//            cout << "\n CommonObservations: ";
-					//            for(map<unsigned,unsigned>::iterator
-					//            it=mPbMap.vPlanes[j].neighborPlanes.begin();
-					//            it != mPbMap.vPlanes[j].neighborPlanes.end();
-					//            it++)
-					//              cout << it->second << " ";
-					//            cout << "\n ConvexHull (" <<
-					//            mPbMap.vPlanes[j].polygonContourPtr->size() <<
-					//            "): \n";
-					//            for(unsigned jj=0; jj <
-					//            mPbMap.vPlanes[j].polygonContourPtr->size();
-					//            jj++)
-					//              cout << "\t" <<
-					//              mPbMap.vPlanes[j].polygonContourPtr->points[jj].x
-					//              << " " <<
-					//              mPbMap.vPlanes[j].polygonContourPtr->points[jj].y
-					//              << " " <<
-					//              mPbMap.vPlanes[j].polygonContourPtr->points[jj].z
-					//              << endl;
-					//            cout << endl;
-					//          }
-					//          {
-					////            cout << " ID " << detectedPlanes[i].id << "
-					/// obs " << detectedPlanes[i].numObservations;
-					////            cout << " areaVoxels " <<
-					/// detectedPlanes[i].areaVoxels << " areaVoxels " <<
-					/// detectedPlanes[i].areaHull;
-					////            cout << " ratioXY " <<
-					/// detectedPlanes[i].elongation << " structure " <<
-					/// detectedPlanes[i].bFromStructure << " label " <<
-					/// detectedPlanes[i].label;
-					//            cout << "\n normal\n" <<
-					//            detectedPlanes[i].v3normal << "\n center\n" <<
-					//            detectedPlanes[i].v3center;
-					////            cout << "\n PpalComp\n" <<
-					/// detectedPlanes[i].v3PpalDir << "\n RGB\n" <<
-					/// detectedPlanes[i].v3colorNrgb;
-					////            cout << "\n Neighbors (" <<
-					/// detectedPlanes[i].neighborPlanes.size() << "): ";
-					////            for(map<unsigned,unsigned>::iterator
-					/// it=detectedPlanes[i].neighborPlanes.begin(); it !=
-					/// detectedPlanes[i].neighborPlanes.end(); it++)
-					////              cout << it->first << " ";
-					////            cout << "\n CommonObservations: ";
-					////            for(map<unsigned,unsigned>::iterator
-					/// it=detectedPlanes[i].neighborPlanes.begin(); it !=
-					/// detectedPlanes[i].neighborPlanes.end(); it++)
-					////              cout << it->second << " ";
-					//            cout << "\n ConvexHull (" <<
-					//            detectedPlanes[i].polygonContourPtr->size() <<
-					//            "): \n";
-					//            for(unsigned jj=0; jj <
-					//            detectedPlanes[i].polygonContourPtr->size();
-					//            jj++)
-					//              cout << "\t" <<
-					//              detectedPlanes[i].polygonContourPtr->points[jj].x
-					//              << " " <<
-					//              detectedPlanes[i].polygonContourPtr->points[jj].y
-					//              << " " <<
-					//              detectedPlanes[i].polygonContourPtr->points[jj].z
-					//              << endl;
-					//            cout << endl;
-					//          }
-					////          pbm.close();
-					//        }
-
 					isSamePlane = true;
-
 					mergePlanes(mPbMap.vPlanes[j], detectedPlanes[i]);
 
 					// Update proximity graph
@@ -980,18 +524,14 @@ void PbMapMaker::detectPlanesCloud(
 #endif
 
 					itPlane++;
-					for (size_t k = j + 1; k < numPrevPlanes;
-						 k++, itPlane++)  // numPrevPlanes
+                    for (size_t k = j + 1; k < numPrevPlanes; k++, itPlane++)  // numPrevPlanes
 						if (areSamePlane(
 								mPbMap.vPlanes[j], mPbMap.vPlanes[k],
 								configPbMap.max_cos_normal,
 								configPbMap.max_dist_center_plane,
-								configPbMap.proximity_threshold))  // The planes
-						// are merged
-						// if they
-						// are the
-						// same
+                                configPbMap.proximity_threshold))
 						{
+                            // The planes are merged if they are the same
 							mergePlanes(mPbMap.vPlanes[j], mPbMap.vPlanes[k]);
 
 							mPbMap.vPlanes[j].numObservations +=
@@ -1104,12 +644,6 @@ void PbMapMaker::detectPlanesCloud(
 		}
 	}
 
-//  if(frameQueue.size() == 12)
-//   cout << "Same plane? " << areSamePlane(mPbMap.vPlanes[2],
-//   mPbMap.vPlanes[9], configPbMap.max_cos_normal,
-//   configPbMap.max_dist_center_plane, configPbMap.proximity_threshold) <<
-//   endl;
-
 #ifdef _VERBOSE
 	cout << "\n\tobservedPlanes: ";
 	cout << observedPlanes.size() << " Planes observed\n";
@@ -1142,14 +676,6 @@ void PbMapMaker::detectPlanesCloud(
 		if (configPbMap.inferStructure)
 			mpPlaneInferInfo->searchTheFloor(poseKF, observedPlane);
 	}  // End for obsevedPlanes
-	// cout << "Updated planes\n";
-
-	//    for(set<unsigned>::iterator it = observedPlanes.begin(); it !=
-	//    observedPlanes.end(); it++)
-	//    {
-	//      Plane &observedPlane = mPbMap.vPlanes[*it];
-	//      watchProperties(observedPlanes, observedPlane); // Color paper
-	//    }
 
 	// Search the floor plane
 	if (mPbMap.FloorPlane !=
@@ -1223,9 +749,6 @@ bool PbMapMaker::areSamePlane(
 {
 	// Check that both planes have similar orientation
 	if (plane1.v3normal.dot(plane2.v3normal) < cosAngleThreshold) return false;
-	//  if(plane1.id == 2)
-	//    cout << "normal " << plane1.v3normal.dot(plane2.v3normal) << " " <<
-	//    cosAngleThreshold << endl;
 
 	// Check the normal distance of the planes centers using their average
 	// normal
@@ -1239,13 +762,6 @@ bool PbMapMaker::areSamePlane(
 	if (fabs(dist_normal) >
 		thres_max_dist)  // Avoid matching different parallel planes
 		return false;
-	//  if(plane1.id == 2)
-	//  {
-	//    cout << "dist_normal " << dist_normal << " " << thres_max_dist <<
-	//    endl;
-	//    if(arePlanesNearby(plane1, plane2, proxThreshold))
-	//      cout << "planes rearby" << endl;
-	//  }
 
 	// Once we know that the planes are almost coincident (parallelism and
 	// position)
@@ -1693,10 +1209,6 @@ bool PbMapMaker::stop_pbMapMaker()
 
 PbMapMaker::~PbMapMaker()
 {
-	cout << "\n\n\nPbMapMaker destructor called -> Save color information to "
-			"file\n";
-	saveInfoFiles();
-
 	delete mpPlaneInferInfo;
 	delete mpPbMapLocaliser;
 
