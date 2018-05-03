@@ -9,6 +9,9 @@
 #ifndef CFeatureLines_H
 #define CFeatureLines_H
 
+#include <mrpt/config.h>
+
+#if MRPT_HAS_OPENCV
 #include <mrpt/vision/utils.h>
 //#include <mrpt/utils/CImage.h>
 #include <opencv2/core/core.hpp>
@@ -24,7 +27,7 @@ namespace mrpt
           *
           *  \ingroup mrpt_vision_grp
           */
-        class VISION_IMPEXP CFeatureLines
+        class CFeatureLines
         {
           public:
             void extractLines (const cv::Mat & image,
@@ -40,4 +43,5 @@ namespace mrpt
     } // end of namespace
 } // end of namespace
 
+#endif
 #endif
