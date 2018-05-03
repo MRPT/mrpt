@@ -18,8 +18,13 @@
 #include <type_traits>  // remove_reference_t, is_polymorphic
 #include <stdexcept>
 #include <mrpt/typemeta/TTypeName.h>
-
 #include <variant>
+
+// See: https://gcc.gnu.org/viewcvs/gcc?view=revision&revision=258854
+#if defined(__clang__) && (__GLIBCXX__ <= 20180419)
+#define HAS_BROKEN_CLANG_STD_VISIT
+#endif
+
 namespace mrpt
 {
 namespace serialization
@@ -272,6 +277,7 @@ class CArchive
 		}
 	}
 
+#ifndef HAS_BROKEN_CLANG_STD_VISIT
 	/** Writes a Variant to the stream.
 	 */
 	template <typename T>
@@ -279,6 +285,7 @@ class CArchive
 	{
 		std::visit([&](auto& o) { this->WriteObject(o); }, t);
 	}
+#endif
 
 	/** Reads a simple POD type and returns by value. Useful when `stream >>
 	 * var;`
