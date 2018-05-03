@@ -11,7 +11,7 @@
 
 #include <mrpt/config.h>
 
-#ifdef MRPT_HAS_OPENCV
+#if MRPT_HAS_OPENCV
 #include <mrpt/vision/utils.h>
 //#include <mrpt/utils/CImage.h>
 #include <opencv2/core/core.hpp>
