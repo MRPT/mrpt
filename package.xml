@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- This is a ROS package file, intended to allow MRPT 2.x to be built
+<!-- This is a ROS package file, intended to allow MRPT2 to be built
      side-by-side to real ROS packages in a catkin environment.
      Real MRPT ROS packages are found elsewhere: https://github.com/mrpt-ros-pkg
 -->
@@ -16,16 +16,18 @@
 
   <license>BSD</license>
 
-  <depend>ffmpeg</depend>
-  <depend>libjpeg</depend>
-  <depend>zlib</depend>
-  <depend>wx-common</depend>
-  <depend>wxwidgets</depend>
   <depend>eigen</depend>
+  <depend>ffmpeg</depend>
+  <depend>glut</depend>
+  <depend>libjpeg</depend>
+  <depend>libopencv-dev</depend>
+  <depend>libpcap</depend>
   <depend>libudev-dev</depend>
   <depend>libusb-1.0-dev</depend>
-  <depend>libpcap</depend>
-  <depend>glut</depend>
+  <depend>suitesparse</depend>
+  <depend>wx-common</depend>
+  <depend>wxwidgets</depend>
+  <depend>zlib</depend>
 
   <doc_depend>doxygen</doc_depend>
 
