@@ -15,11 +15,6 @@
 
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 
-using namespace mrpt;
-using namespace mrpt::gui;
-using namespace mrpt::opengl;
-using namespace std;
-
 #if MRPT_HAS_OPENGL_GLUT
 #ifdef _WIN32
 // Windows:
@@ -44,6 +39,11 @@ using namespace std;
 #if !wxUSE_GLCANVAS
 #error "OpenGL required: set wxUSE_GLCANVAS to 1 and rebuild wxWidgets"
 #endif
+
+using namespace mrpt;
+using namespace mrpt::gui;
+using namespace mrpt::opengl;
+using namespace std;
 
 /*----------------------------------------------------------------
   Implementation of Test-GLCanvas

@@ -16,10 +16,6 @@
 static int LINUX_IMG_WIDTH_value = 800;
 static int LINUX_IMG_HEIGHT_value = 600;
 
-using namespace mrpt;
-using namespace mrpt::img;
-using namespace mrpt::system;
-
 void CEnhancedMetaFile::LINUX_IMG_WIDTH(int value)
 {
 	LINUX_IMG_WIDTH_value = value;
@@ -34,6 +30,10 @@ int CEnhancedMetaFile::LINUX_IMG_HEIGHT() { return LINUX_IMG_HEIGHT_value; }
 #ifdef _WIN32
 #include <windows.h>
 #endif
+
+using namespace mrpt;
+using namespace mrpt::img;
+using namespace mrpt::system;
 
 /*---------------------------------------------------------------
 						Constructor
@@ -86,9 +86,8 @@ void CEnhancedMetaFile::drawImage(int x, int y, const mrpt::img::CImage& img)
 #ifdef _WIN32
 	try
 	{
-		LPBITMAPINFO pBmpInfo =
-			(LPBITMAPINFO) new unsigned char[sizeof(BITMAPINFOHEADER) +
-											 (256 * sizeof(RGBQUAD))];
+		LPBITMAPINFO pBmpInfo = (LPBITMAPINFO) new unsigned char
+			[sizeof(BITMAPINFOHEADER) + (256 * sizeof(RGBQUAD))];
 		//		LPBITMAPINFO		pBmpInfo = (LPBITMAPINFO) new unsigned
 		// char[sizeof(BITMAPINFOHEADER) ];
 

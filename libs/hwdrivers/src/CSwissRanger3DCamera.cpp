@@ -14,10 +14,6 @@
 #include <mrpt/system/string_utils.h>
 #include <mrpt/system/filesystem.h>
 
-using namespace mrpt::hwdrivers;
-using namespace mrpt::system;
-using namespace std;
-
 IMPLEMENTS_GENERIC_SENSOR(CSwissRanger3DCamera, mrpt::hwdrivers)
 
 #if MRPT_HAS_SWISSRANGE
@@ -38,6 +34,10 @@ IMPLEMENTS_GENERIC_SENSOR(CSwissRanger3DCamera, mrpt::hwdrivers)
 #include <sys/select.h>
 #endif
 #endif
+
+using namespace mrpt::hwdrivers;
+using namespace mrpt::system;
+using namespace std;
 
 /*-------------------------------------------------------------
 		ctor
@@ -128,19 +128,19 @@ void do_init_table_16u_to_8u()
 }
 
 /** This method can or cannot be implemented in the derived class, depending on
-* the need for it.
-*  \exception This method must throw an exception with a descriptive message if
-* some critical error is found.
-*/
+ * the need for it.
+ *  \exception This method must throw an exception with a descriptive message if
+ * some critical error is found.
+ */
 void CSwissRanger3DCamera::initialize()
 {
 	if (!open()) THROW_EXCEPTION("Error opening SwissRanger 3D camera.");
 }
 
 /** This method will be invoked at a minimum rate of "process_rate" (Hz)
-*  \exception This method must throw an exception with a descriptive message if
-* some critical error is found.
-*/
+ *  \exception This method must throw an exception with a descriptive message if
+ * some critical error is found.
+ */
 void CSwissRanger3DCamera::doProcess()
 {
 	using namespace mrpt::obs;
@@ -167,11 +167,11 @@ void CSwissRanger3DCamera::doProcess()
 }
 
 /** Loads specific configuration for the device from a given source of
-* configuration parameters, for example, an ".ini" file, loading from the
-* section "[iniSection]" (see config::CConfigFileBase and derived classes)
-*  \exception This method must throw an exception with a descriptive message if
-* some critical parameter is missing or has an invalid value.
-*/
+ * configuration parameters, for example, an ".ini" file, loading from the
+ * section "[iniSection]" (see config::CConfigFileBase and derived classes)
+ *  \exception This method must throw an exception with a descriptive message if
+ * some critical parameter is missing or has an invalid value.
+ */
 void CSwissRanger3DCamera::loadConfig_sensorSpecific(
 	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
@@ -215,9 +215,8 @@ void CSwissRanger3DCamera::loadConfig_sensorSpecific(
 	m_ip_address =
 		configSource.read_string(iniSection, "ip_address", m_ip_address);
 
-	m_external_images_format = mrpt::system::trim(
-		configSource.read_string(
-			iniSection, "external_images_format", m_external_images_format));
+	m_external_images_format = mrpt::system::trim(configSource.read_string(
+		iniSection, "external_images_format", m_external_images_format));
 	m_external_images_jpeg_quality = configSource.read_int(
 		iniSection, "external_images_jpeg_quality",
 		m_external_images_jpeg_quality);
@@ -342,8 +341,8 @@ void CSwissRanger3DCamera::internal_resendParamsToCamera() const
 	SR_SetMode(
 		SRCAM(m_cam),
 		AM_COR_FIX_PTRN |  // turns on fix pattern noise correction <b>this
-			// should always be enabled for good distance
-			// measurement</b>
+						   // should always be enabled for good distance
+						   // measurement</b>
 			(m_enable_median_filter ? AM_MEDIAN : 0) |
 			(m_enable_conv_gray ? AM_CONV_GRAY : 0) |
 			(m_enable_denoise_anf ? AM_DENOISE_ANF : 0) |
@@ -354,13 +353,13 @@ void CSwissRanger3DCamera::internal_resendParamsToCamera() const
 
 /** The main data retrieving function, to be called after calling loadConfig()
  * and initialize().
-  *  \param out_obs The output retrieved observation (only if
+ *  \param out_obs The output retrieved observation (only if
  * there_is_obs=true).
-  *  \param there_is_obs If set to false, there was no new observation.
-  *  \param hardware_error True on hardware/comms error.
-  *
-  * \sa doProcess
-  */
+ *  \param there_is_obs If set to false, there was no new observation.
+ *  \param hardware_error True on hardware/comms error.
+ *
+ * \sa doProcess
+ */
 void CSwissRanger3DCamera::getNextObservation(
 	mrpt::obs::CObservation3DRangeScan& _out_obs, bool& there_is_obs,
 	bool& hardware_error)
