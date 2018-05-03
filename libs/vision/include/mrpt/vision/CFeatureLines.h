@@ -24,7 +24,7 @@ namespace mrpt
           *
           *  \ingroup mrpt_vision_grp
           */
-        class VISION_IMPEXP CFeatureLines
+        class CFeatureLines
         {
           public:
             void extractLines (const cv::Mat & image,
