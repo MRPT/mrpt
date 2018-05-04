@@ -13,6 +13,15 @@
 #include <mrpt/system/os.h>
 #include <mrpt/img/CImage.h>
 
+#include <mrpt/config.h>
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
+using namespace mrpt;
+using namespace mrpt::img;
+using namespace mrpt::system;
+
 static int LINUX_IMG_WIDTH_value = 800;
 static int LINUX_IMG_HEIGHT_value = 600;
 
@@ -26,14 +35,7 @@ void CEnhancedMetaFile::LINUX_IMG_HEIGHT(int value)
 	LINUX_IMG_HEIGHT_value = value;
 }
 int CEnhancedMetaFile::LINUX_IMG_HEIGHT() { return LINUX_IMG_HEIGHT_value; }
-#include <mrpt/config.h>
-#ifdef _WIN32
-#include <windows.h>
-#endif
 
-using namespace mrpt;
-using namespace mrpt::img;
-using namespace mrpt::system;
 
 /*---------------------------------------------------------------
 						Constructor
