@@ -11,6 +11,7 @@
 
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/system/datetime.h>
+#include <mrpt/poses/poses_frwds.h>
 #include <mutex>
 
 namespace mrpt
@@ -73,7 +74,7 @@ class CRobot2DPoseEstimator
 	bool getLatestRobotPose(mrpt::math::TPose2D& pose) const;
 
 	/** \overload */
-	bool getLatestRobotPose(CPose2D& pose) const;
+	bool getLatestRobotPose(mrpt::poses::CPose2D& pose) const;
 
 	struct TOptions
 	{
