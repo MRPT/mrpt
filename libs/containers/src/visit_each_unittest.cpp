@@ -7,22 +7,25 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/containers/with.h>
+#include <mrpt/containers/visit_each.h>
 #include <mrpt/core/common.h>
 
 #include <gtest/gtest.h>
 
 int counter = 0;
-struct MyType
+struct Bar1
+{
+	void foo() { ++counter; }
+};
+struct Bar2
 {
 	void foo() { ++counter; }
 };
 
-TEST(containers_with, call_all)
+TEST(containers_visit_each, call_all)
 {
-	MyType a, b, c, d;
-	mrpt::containers::with(a, b, c, d).call([&](auto obj) -> void {
-		obj.foo();
-	});
+	Bar1 a, b;
+	Bar2 c, d;
+	mrpt::visit_each([&](auto obj) -> void { obj.foo(); }, a, b, c, d);
 	EXPECT_EQ(counter, 4);
 }
