@@ -78,9 +78,9 @@ namespace testing {
 // destructor is not virtual.
 //
 // Note that stringstream behaves differently in gcc and in MSVC.  You
-// can stream a nullptr char pointer to it in the former, but not in the
+// can stream a NULL char pointer to it in the former, but not in the
 // latter (it causes an access violation if you do).  The Message
-// class hides this difference by treating a nullptr char pointer as
+// class hides this difference by treating a NULL char pointer as
 // "(null)".
 class GTEST_API_ Message {
  private:
@@ -140,14 +140,14 @@ class GTEST_API_ Message {
   // [temp.func.order].)  If you stream a non-pointer, then the
   // previous definition will be used.
   //
-  // The reason for this overload is that streaming a nullptr pointer to
+  // The reason for this overload is that streaming a NULL pointer to
   // ostream is undefined behavior.  Depending on the compiler, you
   // may get "0", "(nil)", "(null)", or an access violation.  To
   // ensure consistent result across compilers, we always treat NULL
   // as "(null)".
   template <typename T>
   inline Message& operator <<(T* const& pointer) {  // NOLINT
-    if (pointer == nullptr) {
+    if (pointer == NULL) {
       *ss_ << "(null)";
     } else {
       *ss_ << pointer;
@@ -196,7 +196,6 @@ class GTEST_API_ Message {
   std::string GetString() const;
 
  private:
-
 #if GTEST_OS_SYMBIAN
   // These are needed as the Nokia Symbian Compiler cannot decide between
   // const T& and const T* in a function template. The Nokia compiler _can_
@@ -204,7 +203,7 @@ class GTEST_API_ Message {
   // tr1::type_traits-like is_pointer works, and we can overload on that.
   template <typename T>
   inline void StreamHelper(internal::true_type /*is_pointer*/, T* pointer) {
-    if (pointer == nullptr) {
+    if (pointer == NULL) {
       *ss_ << "(null)";
     } else {
       *ss_ << pointer;
@@ -235,7 +234,7 @@ inline std::ostream& operator <<(std::ostream& os, const Message& sb) {
 
 namespace internal {
 
-// Converts a streamable value to an std::string.  A nullptr pointer is
+// Converts a streamable value to an std::string.  A NULL pointer is
 // converted to "(null)".  When the input value is a ::string,
 // ::std::string, ::wstring, or ::std::wstring object, each NUL
 // character in it is replaced with "\\0".
