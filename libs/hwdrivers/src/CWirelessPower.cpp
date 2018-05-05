@@ -12,9 +12,6 @@
 #include <mrpt/hwdrivers/CWirelessPower.h>
 #include <iostream>
 
-IMPLEMENTS_GENERIC_SENSOR(CWirelessPower, mrpt::hwdrivers)
-
-CWirelessPower::CWirelessPower() { m_sensorLabel = "WIRELESS_POWER"; }
 #ifdef MRPT_OS_LINUX
 #include <iostream>
 #include <sstream>
@@ -37,6 +34,10 @@ CWirelessPower::CWirelessPower() { m_sensorLabel = "WIRELESS_POWER"; }
 
 using namespace mrpt::hwdrivers;
 using namespace std;
+
+IMPLEMENTS_GENERIC_SENSOR(CWirelessPower, mrpt::hwdrivers)
+
+CWirelessPower::CWirelessPower() { m_sensorLabel = "WIRELESS_POWER"; }
 
 #ifdef _WIN32
 #if defined(__GNUC__)
