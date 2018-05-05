@@ -16,12 +16,6 @@
 #include <iostream>
 #include <thread>
 
-IMPLEMENTS_GENERIC_SENSOR(CIMUXSens_MT4, mrpt::hwdrivers)
-
-using namespace mrpt::obs;
-using namespace mrpt::hwdrivers;
-using namespace std;
-
 #if MRPT_HAS_xSENS_MT4
 /* Copyright (c) Xsens Technologies B.V., 2006-2012. All rights reserved.
 
@@ -320,6 +314,12 @@ class DeviceClass
 #endif
 #endif  // _WIN32
 #endif  // MRPT_HAS_xSENS_MT4
+
+IMPLEMENTS_GENERIC_SENSOR(CIMUXSens_MT4, mrpt::hwdrivers)
+
+using namespace mrpt::obs;
+using namespace mrpt::hwdrivers;
+using namespace std;
 
 /*-------------------------------------------------------------
 					CIMUXSens_MT4

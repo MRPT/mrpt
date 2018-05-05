@@ -12,12 +12,6 @@
 #include <mrpt/hwdrivers/CWirelessPower.h>
 #include <iostream>
 
-using namespace mrpt::hwdrivers;
-using namespace std;
-
-IMPLEMENTS_GENERIC_SENSOR(CWirelessPower, mrpt::hwdrivers)
-
-CWirelessPower::CWirelessPower() { m_sensorLabel = "WIRELESS_POWER"; }
 #ifdef MRPT_OS_LINUX
 #include <iostream>
 #include <sstream>
@@ -37,6 +31,13 @@ CWirelessPower::CWirelessPower() { m_sensorLabel = "WIRELESS_POWER"; }
 #endif
 
 #endif
+
+using namespace mrpt::hwdrivers;
+using namespace std;
+
+IMPLEMENTS_GENERIC_SENSOR(CWirelessPower, mrpt::hwdrivers)
+
+CWirelessPower::CWirelessPower() { m_sensorLabel = "WIRELESS_POWER"; }
 
 #ifdef _WIN32
 #if defined(__GNUC__)
@@ -273,9 +274,9 @@ std::vector<PWLAN_AVAILABLE_NETWORK> ListNetworksW(
  ---------------------------------------------------------------*/
 /** Gets a handle to the network that has been set by setNet() (in Windows
  * format)
-		 * \exception std::exception In case there is a failure
-		 * \return PWLAN_AVAILABLE_NETWORK returns a handle to the network
-		 */
+ * \exception std::exception In case there is a failure
+ * \return PWLAN_AVAILABLE_NETWORK returns a handle to the network
+ */
 PWLAN_AVAILABLE_NETWORK GetNetworkW(
 	HANDLE hClient, const std::string& ssid, const std::string& guid)
 {
@@ -546,9 +547,8 @@ void CWirelessPower::doProcess()
 		mrpt::make_aligned_shared<mrpt::obs::CObservationWirelessPower>();
 	getObservation(*outObservation);
 
-	appendObservation(
-		mrpt::obs::CObservationWirelessPower::Ptr(
-			new mrpt::obs::CObservationWirelessPower(*outObservation)));
+	appendObservation(mrpt::obs::CObservationWirelessPower::Ptr(
+		new mrpt::obs::CObservationWirelessPower(*outObservation)));
 }
 
 void CWirelessPower::loadConfig_sensorSpecific(
@@ -566,7 +566,7 @@ void CWirelessPower::loadConfig_sensorSpecific(
 	ssid = configSource.read_string(iniSection, "ssid", "", true);
 	guid = configSource.read_string(
 		iniSection, "guid", "", true);  // in the case of Linux, the "GUID" is
-// the interface name (wlanX)
+	// the interface name (wlanX)
 
 #ifdef _WIN32
 #if defined(__GNUC__)
