@@ -12,9 +12,7 @@
 
 #include <mrpt/opengl/CRenderizable.h>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 /** A 2D text (bitmap rendering): it always "faces the observer" despite it's at
  * some 3D location.
@@ -74,8 +72,7 @@ class CText : public CRenderizable
 	virtual ~CText();
 };
 
-}  // end namespace
-
-}  // End of namespace
-
+}
 #endif
+
+

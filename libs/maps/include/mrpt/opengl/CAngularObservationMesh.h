@@ -19,9 +19,7 @@
 
 #include <mrpt/math/geometry.h>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 /**
   * A mesh built from a set of 2D laser scan observations.
@@ -599,5 +597,6 @@ void CAngularObservationMesh::trace2DSetOfRays(
 	caom->setScanSet(vObs);
 }
 }
-}
 #endif
+
+

@@ -19,9 +19,7 @@
 #include <mutex>
 #include <future>
 
-namespace mrpt
-{
-namespace gui
+namespace mrpt::gui
 {
 /** The base class for GUI window classes.
  *
@@ -294,5 +292,5 @@ class mrptEventWindowClosed : public mrpt::system::mrptEvent
 
 /**  @} */
 
-}  // namespace gui
-}  // namespace mrpt
+}
+

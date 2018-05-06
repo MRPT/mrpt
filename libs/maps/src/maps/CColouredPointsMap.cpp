@@ -727,11 +727,7 @@ bool CColouredPointsMap::savePCDFile(
 #endif
 }
 
-namespace mrpt
-{
-namespace maps
-{
-namespace detail
+namespace mrpt::maps::detail
 {
 using mrpt::maps::CColouredPointsMap;
 
@@ -1067,10 +1063,7 @@ struct pointmap_traits<CColouredPointsMap>
 		}
 	}
 };
-}  // namespace detail
-}  // namespace maps
-}  // namespace mrpt
-
+}
 /** See CPointsMap::loadFromRangeScan() */
 void CColouredPointsMap::loadFromRangeScan(
 	const CObservation2DRangeScan& rangeScan, const CPose3D* robotPose)
@@ -1086,3 +1079,5 @@ void CColouredPointsMap::loadFromRangeScan(
 	mrpt::maps::detail::loadFromRangeImpl<CColouredPointsMap>::
 		templ_loadFromRangeScan(*this, rangeScan, robotPose);
 }
+
+

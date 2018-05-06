@@ -12,9 +12,7 @@
 #include <vector>
 #include <cstddef>
 
-namespace mrpt
-{
-namespace system
+namespace mrpt::system
 {
 /** \addtogroup mrpt_md5 MD5 functions (in #include <mrpt/system/md5.h>)
   *  \ingroup mrpt_system_grp
@@ -27,4 +25,4 @@ std::string md5(const std::vector<uint8_t>& str);
 std::string md5(const unsigned char* data, const size_t len);
 /** @} */
 }
-}
+

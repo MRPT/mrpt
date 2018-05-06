@@ -11,9 +11,7 @@
 #include <cstddef>
 #include <functional>
 
-namespace mrpt
-{
-namespace tfest
+namespace mrpt::tfest
 {
 /** \addtogroup mrpt_tfest_grp
  * @{ */
@@ -31,5 +29,5 @@ struct TPotentialMatch
 using TFunctorCheckPotentialMatch = std::function<bool(const TPotentialMatch&)>;
 
 /** @} */  // end of grouping
-}  // namespace tfest
-}  // namespace mrpt
+}
+

@@ -10,9 +10,7 @@
 
 #include <map>
 
-namespace mrpt
-{
-namespace containers
+namespace mrpt::containers
 {
 /** A bidirectional version of std::map, declared as bimap<KEY,VALUE> and which
  * actually contains two std::map's, one for keys and another for values.
@@ -147,5 +145,5 @@ class bimap
 	inline iterator_inverse find_value(const VALUE& v) { return m_v2k.find(v); }
 };  // end class bimap
 
-}  // End of namespace
-}  // End of namespace
+}
+

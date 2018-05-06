@@ -29,9 +29,7 @@
 #include <pcl/point_cloud.h>
 #include <mrpt/math/ops_containers.h>
 
-namespace mrpt
-{
-namespace pbmap
+namespace mrpt::pbmap
 {
 using PointT = pcl::PointXYZRGBA;
 
@@ -344,9 +342,10 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T>& v)
 	std::copy(v.begin(), v.end(), std::ostream_iterator<T>(os, " "));
 	return os;
 }
-}  // namespace pbmap
 }  // namespace mrpt
 
 #endif
 
 #endif
+
+

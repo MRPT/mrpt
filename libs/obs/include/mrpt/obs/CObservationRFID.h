@@ -14,9 +14,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose2D.h>
 
-namespace mrpt
-{
-namespace obs
+namespace mrpt::obs
 {
 /** This represents one or more RFID tags observed by a receiver.
  *
@@ -66,7 +64,7 @@ class CObservationRFID : public CObservation
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

@@ -11,9 +11,7 @@
 #include <vector>
 #include <string>
 
-namespace mrpt
-{
-namespace system
+namespace mrpt::system
 {
 /** Used in getCallStackBackTrace() */
 struct TCallStackEntry
@@ -48,5 +46,5 @@ struct TCallStackBackTrace
   */
 void getCallStackBackTrace(TCallStackBackTrace& out_bt);
 
-}  // End of namespace
-}  // End of namespace
+}
+

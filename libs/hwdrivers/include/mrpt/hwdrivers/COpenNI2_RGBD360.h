@@ -15,9 +15,7 @@
 #include <mrpt/typemeta/TEnumType.h>
 #include <mrpt/gui/CDisplayWindow.h>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** A class for grabing RGBD images from several OpenNI2 sensors. This is used
   *to obtain larger fields of view using a radial configuration of the sensors.
@@ -309,8 +307,7 @@ class COpenNI2_RGBD360 : public mrpt::hwdrivers::CGenericSensor,
 	bool m_grab_rgb, m_grab_depth, m_grab_3D_points;
 
 };  // End of class
-}  // End of NS
-
-}  // End of NS
-
+}
 #endif
+
+

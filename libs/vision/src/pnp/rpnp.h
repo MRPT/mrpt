@@ -11,11 +11,7 @@
 
 #include <mrpt/math/types_math.h>  // Eigen must be included first via MRPT to enable the plugin system
 
-namespace mrpt
-{
-namespace vision
-{
-namespace pnp
+namespace mrpt::vision::pnp
 {
 /** \addtogroup pnp Perspective-n-Point pose estimation
  *  \ingroup mrpt_vision_grp
@@ -94,7 +90,6 @@ class rpnp
 
 /** @}  */  // end of grouping
 }
-}
-}
-
 #endif
+
+

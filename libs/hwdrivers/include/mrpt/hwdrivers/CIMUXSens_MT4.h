@@ -13,9 +13,7 @@
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/poses/CPose3D.h>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** A class for interfacing XSens 4th generation Inertial Measuring Units
  * (IMUs): MTi 10-series, MTi 100-series.
@@ -99,7 +97,7 @@ class CIMUXSens_MT4 : public hwdrivers::CGenericSensor
 
 };  // end of class
 
-}  // end of namespace
-}  // end of namespace
-
+}
 #endif
+
+

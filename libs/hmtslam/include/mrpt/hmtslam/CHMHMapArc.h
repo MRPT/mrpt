@@ -13,9 +13,7 @@
 #include <mrpt/hmtslam/CHMHMapNode.h>
 #include <mrpt/serialization/CSerializable.h>
 
-namespace mrpt
-{
-namespace hmtslam
+namespace mrpt::hmtslam
 {
 class CHierarchicalMHMap;
 
@@ -107,7 +105,7 @@ class CHMHMapArc : public mrpt::serialization::CSerializable
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

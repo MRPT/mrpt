@@ -11,9 +11,7 @@
 #include <string>
 #include <vector>
 
-namespace mrpt
-{
-namespace system
+namespace mrpt::system
 {
 /** @defgroup vector_loadsave Load and save vectors to files (in #include
  * <mrpt/system/vector_loadsave.h>)
@@ -64,5 +62,5 @@ bool vectorFromTextFile(
 
 /** @} */
 
-}  // End of namespace
-}  // End of namespace
+}
+

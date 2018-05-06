@@ -13,9 +13,7 @@
 #include <cmath>
 #include <mrpt/system/CTicTac.h>
 
-namespace mrpt
-{
-namespace graphs
+namespace mrpt::graphs
 {
 /** This class is intended to efficiently solve graph-search problems using
  * heuristics to determine the best path. To use it, a solution class must be
@@ -165,5 +163,6 @@ class CAStarAlgorithm
 	}
 };
 }
-}  // End of namespaces
 #endif
+
+

@@ -11,9 +11,7 @@
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 /** A 3D arrow
   *  \sa opengl::COpenGLScene
@@ -119,7 +117,7 @@ class CArrow : public CRenderizableDisplayList
 	virtual ~CArrow() {}
 };
 
-}  // end namespace
-}  // End of namespace
-
+}
 #endif
+
+

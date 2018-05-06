@@ -15,9 +15,7 @@
 #include <mrpt/poses/poses_frwds.h>
 #include <mrpt/tfest/indiv-compat-decls.h>
 
-namespace mrpt
-{
-namespace tfest
+namespace mrpt::tfest
 {
 /** \addtogroup mrpt_tfest_grp
  * @{ */
@@ -140,6 +138,5 @@ bool se3_l2_robust(
 	const TSE3RobustParams& in_params, TSE3RobustResult& out_results);
 
 /** @} */  // end of grouping
-}  // namespace tfest
+}
 
-}  // namespace mrpt

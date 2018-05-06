@@ -33,9 +33,7 @@
 
 #include "arch/macOS/arch_macOS.h"
 
-namespace rp
-{
-namespace arch
+namespace rp::arch
 {
 _u64 getus()
 {
@@ -51,4 +49,5 @@ _u32 rp_getms()
 	return now.tv_sec * 1000L + now.tv_usec / 1000L;
 }
 }
-}
+
+

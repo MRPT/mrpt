@@ -14,9 +14,7 @@
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/math/CMatrix.h>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 /** A 2D vector field representation, consisting of points and arrows drawn on a
  * plane (invisible grid).
@@ -266,8 +264,7 @@ class CVectorField2D : public CRenderizableDisplayList
 	virtual ~CVectorField2D() {}
 };
 
-}  // end namespace
-
-}  // End of namespace
-
+}
 #endif
+
+

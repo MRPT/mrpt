@@ -13,9 +13,7 @@
 #include <mrpt/comms/CSerialPort.h>
 #include <mrpt/hwdrivers/CPtuBase.h>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** This class implements initialization and comunication methods to
   * control a Pan and Tilt Unit model PTU-46-17.5, working in radians .
@@ -426,8 +424,7 @@ class CPtuDPerception : public CPtuBase
 
 };  // End of class
 
-}  // End of namespace
-
-}  // End of namespace
-
+}
 #endif
+
+

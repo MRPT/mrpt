@@ -12,9 +12,7 @@
 
 #include <mrpt/detectors/CObjectDetection.h>
 
-namespace mrpt
-{
-namespace detectors
+namespace mrpt::detectors
 {
 /**
   * \ingroup mrpt_detectors_grp
@@ -52,6 +50,6 @@ class CCascadeClassifierDetection : virtual public CObjectDetection
 
 };  // End of class
 }
-}
-
 #endif
+
+

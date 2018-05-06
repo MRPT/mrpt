@@ -14,9 +14,7 @@
 #include <mrpt/obs/CObservationIMU.h>
 #include <mrpt/vision/CStereoRectifyMap.h>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** Options used when creating a camera capture object of type
  * CImageGrabber_FlyCapture2   \ingroup mrpt_hwdrivers_grp */
@@ -254,6 +252,7 @@ class CDUO3DCamera
 
 static_assert(!std::is_copy_constructible<CDUO3DCamera>::value, "Copy Check");
 static_assert(!std::is_copy_assignable<CDUO3DCamera>::value, "Assign Check");
-}  // End of namespace
-}  // End of namespace
+}
 #endif
+
+

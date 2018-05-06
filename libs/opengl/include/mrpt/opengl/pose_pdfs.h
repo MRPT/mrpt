@@ -11,9 +11,7 @@
 
 #include <mrpt/opengl/CSetOfObjects.h>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 /** @name Functions to obtain a 3D representation of a pose PDF
 	@{  */
@@ -28,6 +26,6 @@ inline CSetOfObjects::Ptr posePDF2opengl(const POSE_PDF& o)
 
 /**  @}  */
 }
-}  // End of namespace
-
 #endif
+
+

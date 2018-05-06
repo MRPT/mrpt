@@ -13,9 +13,7 @@
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/math/types_math.h>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 /** \addtogroup poses_grp
   *  @{ */
@@ -189,7 +187,7 @@ class SE_average<3>
 
 /** @} */  // end of grouping
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

@@ -11,9 +11,7 @@
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/wrap2pi.h>
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 /** @addtogroup interpolation_grp Interpolation, least-squares fit, splines
   * \ingroup mrpt_math_grp
@@ -82,5 +80,5 @@ void leastSquareLinearFit(
 
 /** @} */  // end grouping interpolation_grp
 
-}  // End of MATH namespace
-}  // End of namespace
+}
+

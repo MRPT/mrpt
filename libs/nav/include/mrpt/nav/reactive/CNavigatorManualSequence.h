@@ -12,9 +12,7 @@
 #include <map>
 #include <mrpt/system/CTicTac.h>
 
-namespace mrpt
-{
-namespace nav
+namespace mrpt::nav
 {
 /** "Fake navigator" for tests: it just sends out a pre-programmed sequence of
  * commands to the robot.
@@ -58,4 +56,4 @@ class CNavigatorManualSequence : public mrpt::nav::CAbstractNavigator
 	virtual void performNavigationStep() override {}
 };
 }
-}
+

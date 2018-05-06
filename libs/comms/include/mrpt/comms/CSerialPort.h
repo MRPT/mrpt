@@ -11,9 +11,7 @@
 #include <mrpt/io/CStream.h>
 #include <mrpt/system/CTicTac.h>
 
-namespace mrpt
-{
-namespace comms
+namespace mrpt::comms
 {
 /** A communications serial port built as an implementation of a utils::CStream.
  * On communication errors (eg. the given port number does not exist,
@@ -167,5 +165,5 @@ class CSerialPort : public mrpt::io::CStream
 	int hCOM;
 #endif
 };  // end of class
-}  // end of namespace
-}  // end of namespace
+}
+

@@ -19,9 +19,7 @@
 #include <mrpt/system/TParameters.h>
 #include <memory>  // for unique_ptr
 
-namespace mrpt
-{
-namespace vision
+namespace mrpt::vision
 {
 /** \addtogroup vision_tracking Feature detection and tracking
   *  \ingroup mrpt_vision_grp
@@ -361,6 +359,6 @@ void filterBadCorrsByDistance(
 
 /**  @}  */  // end of grouping
 }
-}
-
 #endif
+
+

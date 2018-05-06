@@ -25,11 +25,7 @@
 
 #include <mrpt/graphslam/interfaces/CRangeScanEdgeRegistrationDecider.h>
 
-namespace mrpt
-{
-namespace graphslam
-{
-namespace deciders
+namespace mrpt::graphslam::deciders
 {
 /**\brief ICP-based Edge Registration.
  *
@@ -213,9 +209,8 @@ class CICPCriteriaERD
 	// visualization reasons
 	mrpt::obs::CObservation2DRangeScan::Ptr m_fake_laser_scan2D;
 };
-}  // namespace deciders
-}  // namespace graphslam
-}  // namespace mrpt
-
+}
 #include "CICPCriteriaERD_impl.h"
 #endif /* end of include guard: CICPCRITERIAERD_H */
+
+

@@ -22,9 +22,7 @@
 #include <mrpt/math/types_math.h>  // Eigen
 #include <mrpt/pbmap/PbMap.h>
 
-namespace mrpt
-{
-namespace pbmap
+namespace mrpt::pbmap
 {
 /*! This class computes the rigid transformation between two sets of matched
  * planes,
@@ -116,7 +114,7 @@ class ConsistencyTest
 	// void TestRANSAC();
 };
 }
-}  // End of namespaces
+#endif
+#endif
 
-#endif
-#endif
+

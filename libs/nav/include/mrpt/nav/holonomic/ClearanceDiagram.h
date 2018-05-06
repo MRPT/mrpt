@@ -14,9 +14,7 @@
 #include <mrpt/opengl/opengl_frwds.h>
 #include <mrpt/serialization/serialization_frwds.h>
 
-namespace mrpt
-{
-namespace nav
+namespace mrpt::nav
 {
 /** Clearance information for one particular PTG and one set of obstacles.
  * Usage:
@@ -88,5 +86,5 @@ class ClearanceDiagram
 	double m_k_a2d, m_k_d2a;
 };
 
-}  // namespace nav
-}  // namespace mrpt
+}
+

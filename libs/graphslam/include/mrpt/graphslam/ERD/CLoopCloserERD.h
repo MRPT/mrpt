@@ -33,11 +33,7 @@
 #include <set>
 #include <utility>
 
-namespace mrpt
-{
-namespace graphslam
-{
-namespace deciders
+namespace mrpt::graphslam::deciders
 {
 /**\brief Edge Registration Decider scheme specialized in Loop Closing.
  *
@@ -852,9 +848,8 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	 */
 	double m_lc_icp_constraint_factor;
 };
-}  // namespace deciders
-}  // namespace graphslam
-}  // namespace mrpt
-
+}
 #include "CLoopCloserERD_impl.h"
 #endif /* end of include guard: CLOOPCLOSERERD_H */
+
+

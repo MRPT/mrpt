@@ -16,9 +16,7 @@
 #include <mrpt/math/CMatrixTemplate.h>
 #include <mrpt/core/aligned_std_vector.h>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 class CGeneralizedCylinder;
 /**
@@ -436,6 +434,7 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 	 */
 	virtual ~CGeneralizedCylinder(){};
 };
-}  // namespace opengl
-}  // namespace mrpt
+}
 #endif
+
+

@@ -13,9 +13,7 @@
 #include <thread>
 #include <mutex>
 
-namespace mrpt
-{
-namespace containers
+namespace mrpt::containers
 {
 /** This class is a bulk sequence of bytes with MultiThread (MT)-safe read and
  * write operations.
@@ -77,5 +75,5 @@ class MT_buffer
 
 };  // end of MT_buffer
 
-}  // namespace containers
-}  // namespace mrpt
+}
+

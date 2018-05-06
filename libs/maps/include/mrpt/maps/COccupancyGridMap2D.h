@@ -31,9 +31,7 @@
 #error One of OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS or OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS must be defined.
 #endif
 
-namespace mrpt
-{
-namespace maps
+namespace mrpt::maps
 {
 /** A class for storing an occupancy grid map.
  *  COccupancyGridMap2D is a class for storing a metric map
@@ -1182,9 +1180,7 @@ class COccupancyGridMap2D : public CMetricMap,
 bool operator<(
 	const COccupancyGridMap2D::TPairLikelihoodIndex& e1,
 	const COccupancyGridMap2D::TPairLikelihoodIndex& e2);
-}  // namespace maps
-}  // namespace mrpt
-
+}
 MRPT_ENUM_TYPE_BEGIN(mrpt::maps::COccupancyGridMap2D::TLikelihoodMethod)
 MRPT_FILL_ENUM_MEMBER(mrpt::maps::COccupancyGridMap2D, lmMeanInformation);
 MRPT_FILL_ENUM_MEMBER(mrpt::maps::COccupancyGridMap2D, lmRayTracing);
@@ -1194,3 +1190,5 @@ MRPT_FILL_ENUM_MEMBER(mrpt::maps::COccupancyGridMap2D, lmLikelihoodField_Thrun);
 MRPT_FILL_ENUM_MEMBER(mrpt::maps::COccupancyGridMap2D, lmLikelihoodField_II);
 MRPT_FILL_ENUM_MEMBER(mrpt::maps::COccupancyGridMap2D, lmConsensusOWA);
 MRPT_ENUM_TYPE_END()
+
+

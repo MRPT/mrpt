@@ -22,11 +22,7 @@ using namespace std;
 /*---------------------------------------------------------------
 						Render: 2D implementation
   ---------------------------------------------------------------*/
-namespace mrpt
-{
-namespace opengl
-{
-namespace detail
+namespace mrpt::opengl::detail
 {
 template <>
 void renderGeneralizedEllipsoidTemplate<2>(
@@ -248,6 +244,6 @@ void generalizedEllipsoidPoints<3>(
 
 	MRPT_END
 }
-}
-}
 }  // end namespaces
+
+

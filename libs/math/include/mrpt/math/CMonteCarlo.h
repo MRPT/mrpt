@@ -18,9 +18,7 @@
 #include <mrpt/random.h>
 #include <mrpt/system/CTicTac.h>
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 /** Montecarlo simulation for experiments in 1D.
 	 Template arguments are:
@@ -154,5 +152,6 @@ class CMonteCarlo
 	}
 };
 }
-}  // End of namespaces
 #endif
+
+

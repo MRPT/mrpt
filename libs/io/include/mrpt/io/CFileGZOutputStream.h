@@ -10,9 +10,7 @@
 
 #include <mrpt/io/CStream.h>
 
-namespace mrpt
-{
-namespace io
+namespace mrpt::io
 {
 /** Saves data to a file and transparently compress the data using the given
  * compression level.
@@ -74,5 +72,5 @@ static_assert(
 	!std::is_copy_constructible<CFileGZOutputStream>::value &&
 		!std::is_copy_assignable<CFileGZOutputStream>::value,
 	"Copy Check");
-}  // End of namespace
-}  // end of namespace
+}
+

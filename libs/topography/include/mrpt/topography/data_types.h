@@ -11,9 +11,7 @@
 
 #include <mrpt/math/lightweight_geom_data.h>
 
-namespace mrpt
-{
-namespace topography
+namespace mrpt::topography
 {
 /** \addtogroup mrpt_topography_grp
   *  @{ */
@@ -414,8 +412,7 @@ struct TDatumTransfInterpolation
 
 /** @} */  // end of grouping
 
-}  // End of namespace
-
-}  // End of namespace
-
+}
 #endif
+
+

@@ -20,9 +20,7 @@
 #include <mrpt/containers/circular_buffer.h>
 #include <mrpt/obs/obs_frwds.h>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** A class capable of reading GPS/GNSS/GNSS+IMU receiver data, from a serial
  * port or from any input stream,
@@ -368,9 +366,7 @@ class CGPSInterface : public mrpt::system::COutputLogger, public CGenericSensor
 	/** Used in getLastGGA() */
 	std::string m_last_GGA;
 };  // end class
-}  // namespace hwdrivers
-}  // namespace mrpt
-
+}
 MRPT_ENUM_TYPE_BEGIN(mrpt::hwdrivers::CGPSInterface::PARSERS)
 using namespace mrpt::hwdrivers;
 MRPT_FILL_ENUM_MEMBER(CGPSInterface, NONE);
@@ -380,3 +376,5 @@ MRPT_FILL_ENUM_MEMBER(CGPSInterface, NOVATEL_OEM6);
 MRPT_ENUM_TYPE_END()
 
 #endif
+
+

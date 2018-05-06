@@ -14,9 +14,7 @@
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/CMatrixD.h>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 /** Declares a class that represents a Probability Density function (PDF) of a
  * 3D point \f$ p(\mathbf{x}) = [x ~ y ~ z ]^t \f$.
@@ -188,6 +186,7 @@ class CPointPDFSOG : public CPointPDF
 	double evaluatePDF(const CPoint3D& x, bool sumOverAllZs) const;
 
 };  // End of class def.
-}  // End of namespace
-}  // End of namespace
+}
 #endif
+
+

@@ -9,9 +9,7 @@
 #ifndef T2DScanProperties_H
 #define T2DScanProperties_H
 
-namespace mrpt
-{
-namespace obs
+namespace mrpt::obs
 {
 /** Auxiliary struct that holds all the relevant *geometry* information about a
  * 2D scan.
@@ -31,7 +29,7 @@ struct T2DScanProperties
  * containers. */
 bool operator<(const T2DScanProperties& a, const T2DScanProperties& b);
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

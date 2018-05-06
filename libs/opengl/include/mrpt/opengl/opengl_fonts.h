@@ -14,9 +14,7 @@
 #include <mrpt/core/common.h>  // disable warnings
 #include <string>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 /** Existing fonts for 2D texts in mrpt::opengl methods.
   * \sa mrpt::opengl::CWxGLCanvasBase::renderTextBitmap
@@ -98,6 +96,6 @@ struct T2DTextData : public TFontParams
 	double x, y;
 };
 }
-}
-
 #endif
+
+

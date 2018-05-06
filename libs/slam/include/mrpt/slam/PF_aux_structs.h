@@ -13,11 +13,7 @@
 #include <iostream>
 #include <iterator>
 
-namespace mrpt
-{
-namespace slam
-{
-namespace detail
+namespace mrpt::slam::detail
 {
 using namespace mrpt;
 using namespace mrpt::math;
@@ -99,8 +95,7 @@ struct TPoseBin3D
 	};
 };
 
-}  // End of namespace
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

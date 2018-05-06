@@ -23,9 +23,7 @@
 #include <mrpt/pbmap/PbMap.h>
 #include <mrpt/pbmap/Subgraph.h>
 
-namespace mrpt
-{
-namespace pbmap
+namespace mrpt::pbmap
 {
 /*!This class finds the best correspondence between the planes of two subgraphs
  * (i.e. sets of neighbor planes).
@@ -113,7 +111,7 @@ class SubgraphMatcher
 	float calcAreaUnmatched(std::set<unsigned>& unmatched_planes);
 };
 }
-}  // End of namespaces
+#endif
+#endif
 
-#endif
-#endif
+

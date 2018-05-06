@@ -23,11 +23,7 @@
 
 #include <string>
 
-namespace mrpt
-{
-namespace graphslam
-{
-namespace deciders
+namespace mrpt::graphslam::deciders
 {
 /**\brief ICP-based Fixed Intervals Node Registration
  *
@@ -245,9 +241,8 @@ class CICPCriteriaNRD
 	/**How many times we used the Odometry Edge instead of the ICP edge */
 	int m_times_used_odom;
 };
-}  // namespace deciders
-}  // namespace graphslam
-}  // namespace mrpt
-
+}
 #include "CICPCriteriaNRD_impl.h"
 #endif /* end of include guard: CICPCRITERIANRD_H */
+
+

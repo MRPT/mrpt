@@ -11,9 +11,7 @@
 #include <mrpt/kinematics/CVehicleSimulVirtualBase.h>
 #include <mrpt/kinematics/CVehicleVelCmd_DiffDriven.h>
 
-namespace mrpt
-{
-namespace kinematics
+namespace mrpt::kinematics
 {
 /** Simulates the kinematics of a differential-driven planar mobile
  * robot/vehicle, including odometry errors and dynamics limitations.
@@ -86,5 +84,5 @@ class CVehicleSimul_DiffDriven : public CVehicleSimulVirtualBase
 	void internal_clear() override;
 };
 
-}  // End of namespace
-}  // End of namespace
+}
+

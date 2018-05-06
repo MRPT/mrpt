@@ -15,9 +15,7 @@
 #include <mrpt/poses/poses_frwds.h>
 #include <mrpt/core/common.h>  // MRPT_IS_X86_AMD64
 
-namespace mrpt
-{
-namespace tfest
+namespace mrpt::tfest
 {
 // Pragma defined to ensure no structure packing, so we can use SSE2
 // vectorization on parts of this struture
@@ -156,5 +154,5 @@ bool operator==(const TMatchingPair& a, const TMatchingPair& b);
 /** A comparison operator */
 bool operator==(const TMatchingPairList& a, const TMatchingPairList& b);
 
-}  // namespace tfest
-}  // namespace mrpt
+}
+

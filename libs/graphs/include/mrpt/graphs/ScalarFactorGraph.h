@@ -13,9 +13,7 @@
 #include <mrpt/system/CTimeLogger.h>
 #include <deque>
 
-namespace mrpt
-{
-namespace graphs
+namespace mrpt::graphs
 {
 /** Sparse solver for GMRF (Gaussian Markov Random Fields) graphical models.
  *  The design of this class is optimized for large problems (e.g. >1e3 nodes,
@@ -114,5 +112,5 @@ class ScalarFactorGraph : public mrpt::system::COutputLogger
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
+}
+

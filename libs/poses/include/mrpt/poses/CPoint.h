@@ -12,9 +12,7 @@
 #include <mrpt/poses/CPoseOrPoint.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 /** A base class for representing a point in 2D or 3D.
  *   For more information refer to the <a
@@ -177,8 +175,8 @@ bool operator!=(const CPoint<DERIVEDCLASS>& p1, const CPoint<DERIVEDCLASS>& p2)
 		if (p1[i] != p2[i]) return true;  //-V550
 	return false;
 }
-
-}  // namespace poses
 }  // namespace mrpt
 
 #endif
+
+

@@ -10,9 +10,7 @@
 
 #include <mrpt/config/CConfigFileBase.h>
 
-namespace mrpt
-{
-namespace config
+namespace mrpt::config
 {
 /** A wrapper for other CConfigFileBase-based objects that prefixes a given
  * token to every key and/or section.
@@ -82,5 +80,5 @@ class CConfigFilePrefixer : public CConfigFileBase
 		const override;  // See base class docs
 
 };  // End of class def.
-}  // End of namespace
-}  // end of namespace
+}
+

@@ -14,9 +14,7 @@
 #include <stdexcept>
 #include <string>
 
-namespace mrpt
-{
-namespace graphs
+namespace mrpt::graphs
 {
 // TODO - include docstring, group etc.
 class HypothesisNotFoundException : public std::runtime_error
@@ -39,5 +37,5 @@ class HypothesisNotFoundException : public std::runtime_error
 	/**\brief Error message */
 	std::string m_msg;
 };
-}  // namespace graphs
-}  // namespace mrpt
+}
+

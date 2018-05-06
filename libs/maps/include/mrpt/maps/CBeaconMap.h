@@ -16,9 +16,7 @@
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/obs/obs_frwds.h>
 
-namespace mrpt
-{
-namespace maps
+namespace mrpt::maps
 {
 /** A class for storing a map of 3D probabilistic beacons, using a Montecarlo,
  *Gaussian, or Sum of Gaussians (SOG) representation (for range-only SLAM).
@@ -317,7 +315,7 @@ class CBeaconMap : public mrpt::maps::CMetricMap
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

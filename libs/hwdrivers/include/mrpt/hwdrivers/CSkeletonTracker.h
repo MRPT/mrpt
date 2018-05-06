@@ -16,9 +16,7 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/obs/CObservationSkeleton.h>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 // clang-format off
 /** A class for grabbing mrpt::obs::CObservationSkeleton from a PrimeSense
@@ -133,7 +131,7 @@ class CSkeletonTracker : public hwdrivers::CGenericSensor
 	}
 };  // end of class
 
-}  // end of namespace
-}  // end of namespace
-
+}
 #endif
+
+

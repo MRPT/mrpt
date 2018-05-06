@@ -15,11 +15,7 @@
 #include <mrpt/opengl/CSphere.h>
 #include <mrpt/math/data_utils.h>
 
-namespace mrpt
-{
-namespace graphslam
-{
-namespace deciders
+namespace mrpt::graphslam::deciders
 {
 // Ctors, Dtors
 // //////////////////////////////////
@@ -2666,8 +2662,8 @@ void CLoopCloserERD<GRAPH_T>::TLoopClosureParams::loadFromConfigFile(
 	has_read_config = true;
 	MRPT_END;
 }
-}
-}
 }  // end of namespaces
 
 #endif /* end of include guard: CLOOPCLOSERERD_IMPL_H */
+
+

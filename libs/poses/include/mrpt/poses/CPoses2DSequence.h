@@ -12,9 +12,7 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/core/aligned_std_vector.h>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 /** This class stores a sequence of relative, incremental 2D poses. It is useful
  * as the bases storing unit for more complex probability particles and for
@@ -90,5 +88,5 @@ class CPoses2DSequence : public mrpt::serialization::CSerializable
 	mrpt::aligned_std_vector<CPose2D> poses;
 
 };  // End of class def.
-}  // End of namespace
-}  // End of namespace
+}
+

@@ -18,11 +18,7 @@
 #include <string>
 #include <sstream>
 
-namespace mrpt
-{
-namespace graphs
-{
-namespace detail
+namespace mrpt::graphs::detail
 {
 /**\brief An edge hypothesis between two nodeIDs.
  *
@@ -129,9 +125,8 @@ struct THypothesis
 	constraint_t edge;
 };
 }
-}
-}  // end of namespaces
-
 #include "THypothesis_impl.h"
 
 #endif /* end of include guard: THYPOTHESIS_H */
+
+

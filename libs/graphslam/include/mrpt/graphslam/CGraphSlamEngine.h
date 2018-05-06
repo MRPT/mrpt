@@ -37,9 +37,7 @@
 #include <map>
 #include <set>
 
-namespace mrpt
-{
-namespace graphslam
+namespace mrpt::graphslam
 {
 /**\brief Main file for the GraphSlamEngine.
  *
@@ -995,10 +993,10 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
 	static const std::string header_sep;
 	static const std::string report_sep;
 };
-}  // end of namespace graphslam
-}  // end of namespace mrpt
-
+}
 // pseudo-split the definition and implementation of template
 #include "CGraphSlamEngine_impl.h"
 
 #endif /* end of include guard: GRAPHSLAMENGINE_H */
+
+

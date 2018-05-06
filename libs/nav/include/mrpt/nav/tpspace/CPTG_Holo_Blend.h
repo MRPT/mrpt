@@ -11,9 +11,7 @@
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/expr/CRuntimeCompiledExpression.h>
 
-namespace mrpt
-{
-namespace nav
+namespace mrpt::nav
 {
 /** A PTG for circular-shaped robots with holonomic kinematics.
  * - **Compatible kinematics**: Holonomic robot capable of velocity commands
@@ -115,4 +113,4 @@ class CPTG_Holo_Blend : public CPTG_RobotShape_Circular
 		double t, double a, double b, double c);
 };
 }
-}
+

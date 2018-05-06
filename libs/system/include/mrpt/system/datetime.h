@@ -14,9 +14,7 @@
 /** Represents an invalid timestamp, where applicable. */
 #define INVALID_TIMESTAMP (0)
 
-namespace mrpt
-{
-namespace system
+namespace mrpt::system
 {
 /** @defgroup time_date Time and date functions (in #include
  * <mrpt/system/datetime.h>)
@@ -177,5 +175,5 @@ std::string intervalFormat(const double seconds);
 
 /** @} */
 
-}  // End of namespace
-}  // End of namespace
+}
+

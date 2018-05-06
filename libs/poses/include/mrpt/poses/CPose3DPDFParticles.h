@@ -13,9 +13,7 @@
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/bayes/CParticleFilterData.h>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 /** Declares a class that represents a Probability Density function (PDF) of a
  * 3D pose
@@ -103,6 +101,7 @@ class CPose3DPDFParticles
 	void bayesianFusion(const CPose3DPDF& p1, const CPose3DPDF& p2) override;
 
 };  // End of class def.
-}  // End of namespace
-}  // End of namespace
+}
 #endif
+
+

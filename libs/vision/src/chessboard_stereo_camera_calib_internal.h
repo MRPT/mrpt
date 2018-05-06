@@ -14,9 +14,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/math/geometry.h>
 
-namespace mrpt
-{
-namespace vision
+namespace mrpt::vision
 {
 // State of the Lev-Marq optimization:
 struct lm_stat_t
@@ -82,7 +80,7 @@ void build_linear_system(
 void add_lm_increment(
 	const Eigen::VectorXd& eps, const std::vector<size_t>& var_indxs,
 	lm_stat_t& new_lm_stat);
-}  // namespace vision
-}  // namespace mrpt
-
+}
 #endif  // MRPT_VISION_INTERNAL_STEREO_CALIB_H
+
+

@@ -15,9 +15,7 @@
 
 #include <mrpt/poses/CPose3D.h>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** A class for interfacing XSens 3rd generation Inertial Measuring Units
   *(IMUs), the "XSens MTi" model.
@@ -103,7 +101,7 @@ class CIMUXSens : public hwdrivers::CGenericSensor
 
 };  // end of class
 
-}  // end of namespace
-}  // end of namespace
-
+}
 #endif
+
+

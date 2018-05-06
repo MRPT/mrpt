@@ -13,9 +13,7 @@
 #include <mrpt/comms/CSerialPort.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** This "software driver" implements the communication protocol for interfacing
  * a SICK LMS 2XX laser scanners through a standard RS232 serial port (or a
@@ -213,7 +211,7 @@ class CSickLaserSerial : public C2DRangeFinderAbstract
 
 };  // End of class
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

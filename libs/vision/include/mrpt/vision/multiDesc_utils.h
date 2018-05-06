@@ -22,9 +22,7 @@
 #include <mrpt/vision/types.h>
 #include <mrpt/vision/chessboard_camera_calib.h>
 
-namespace mrpt
-{
-namespace vision
+namespace mrpt::vision
 {
 /** \addtogroup multidesc_desc Multiresolution SIFTs (experimental)
  * \ingroup mrpt_vision_grp
@@ -274,7 +272,7 @@ void computeMultiOrientations(
 	const TMultiResDescOptions& opts);
 
 /** @} */  // end of grouping
-}  // namespace vision
-}  // namespace mrpt
-
+}
 #endif
+
+

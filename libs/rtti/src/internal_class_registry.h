@@ -12,9 +12,7 @@
 #include <mutex>
 #include <queue>
 
-namespace mrpt
-{
-namespace rtti
+namespace mrpt::rtti
 {
 using TRegisterFunction = void (*)();  // A void(void) function
 
@@ -48,5 +46,5 @@ queue_register_functions_t& pending_class_registers();
  * registerAllPendingClasses(). Startup value is false. */
 extern bool pending_class_registers_modified;
 
-}  // End of namespace
-}  // End of namespace
+}
+

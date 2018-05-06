@@ -22,9 +22,7 @@
 #include <mrpt/obs/obs_frwds.h>
 #include <deque>
 
-namespace mrpt
-{
-namespace maps
+namespace mrpt::maps
 {
 /** Declares a virtual base class for all metric maps storage classes.
  *  In this class virtual methods are provided to allow the insertion
@@ -314,7 +312,7 @@ class CMetricMap : public mrpt::serialization::CSerializable,
   */
 using TMetricMapList = std::deque<CMetricMap*>;
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

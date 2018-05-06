@@ -11,9 +11,7 @@
 #include <stdexcept>
 #include <cstdlib>
 
-namespace mrpt
-{
-namespace containers
+namespace mrpt::containers
 {
 /** \addtogroup mrpt_containers_grp
  * @{ */
@@ -98,5 +96,5 @@ class deepcopy_poly_ptr
 };
 
 /** @} */  // end of grouping
-}  // namespace containers
-}  // namespace mrpt
+}
+

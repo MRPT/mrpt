@@ -17,11 +17,7 @@
 #include <iostream>
 #include <string>
 
-namespace mrpt
-{
-namespace graphs
-{
-namespace detail
+namespace mrpt::graphs::detail
 {
 /**\brief  Abstract class from which NodeAnnotations related classes can be
  * implemented
@@ -85,6 +81,6 @@ struct TNodeAnnotationsEmpty : public TNodeAnnotations
 	DECLARE_TTYPENAME_CLASSNAME(mrpt::graphs::detail::TNodeAnnotationsEmpty)
 };
 }
-}
-}  // end of namespaces
 #endif /* end of include guard: TNODEANNOTATIONS_H */
+
+

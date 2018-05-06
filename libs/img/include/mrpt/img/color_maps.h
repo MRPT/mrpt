@@ -10,9 +10,7 @@
 
 #include <mrpt/typemeta/TEnumType.h>
 
-namespace mrpt
-{
-namespace img
+namespace mrpt::img
 {
 /** \addtogroup color_maps Color map functions (in #include
  * <mrpt/img/color_maps.h>)
@@ -52,12 +50,12 @@ void jet2rgb(const float color_index, float& r, float& g, float& b);
 void hot2rgb(const float color_index, float& r, float& g, float& b);
 
 /** @} */
-}  // namespace img
-}  // namespace mrpt
-
+}
 MRPT_ENUM_TYPE_BEGIN(mrpt::img::TColormap)
 MRPT_FILL_ENUM_MEMBER(mrpt::img, cmNONE);
 MRPT_FILL_ENUM_MEMBER(mrpt::img, cmGRAYSCALE);
 MRPT_FILL_ENUM_MEMBER(mrpt::img, cmJET);
 MRPT_FILL_ENUM_MEMBER(mrpt::img, cmHOT);
 MRPT_ENUM_TYPE_END()
+
+

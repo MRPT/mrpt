@@ -16,9 +16,7 @@
 
 #include <mutex>
 
-namespace mrpt
-{
-namespace gui
+namespace mrpt::gui
 {
 class C3DWindowDialog;
 class CMyGLCanvas_DisplayWindow3D;
@@ -452,7 +450,7 @@ class CDisplayWindow3DLocker
 	CDisplayWindow3D& m_win;
 };
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

@@ -8,9 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** Options used when creating a bumblebee camera capture object
   * \sa CStereoGrabber_Bumblebee, CStereoGrabber_Bumblebee_dc1394
@@ -32,4 +30,4 @@ struct TCaptureOptions_bumblebee
 	double framerate;
 };
 }
-}
+

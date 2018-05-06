@@ -11,9 +11,7 @@
 
 #include <mrpt/poses/CPoint2DPDF.h>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 /** A gaussian distribution for 2D points. Also a method for bayesian fusion is
  * provided.
@@ -127,6 +125,7 @@ class CPoint2DPDFGaussian : public CPoint2DPDF
 	double mahalanobisDistanceToPoint(const double x, const double y) const;
 
 };  // End of class def.
-}  // End of namespace
-}  // End of namespace
+}
 #endif
+
+

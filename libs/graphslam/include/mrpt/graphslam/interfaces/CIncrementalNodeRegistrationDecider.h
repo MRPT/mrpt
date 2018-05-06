@@ -8,11 +8,7 @@
 
 #include <mrpt/graphslam/interfaces/CNodeRegistrationDecider.h>
 
-namespace mrpt
-{
-namespace graphslam
-{
-namespace deciders
+namespace mrpt::graphslam::deciders
 {
 /**\brief Incremental Node registration decider. Decider adds new nodes in the
  * graph in an incremental fashion (adding nodes at the end of the graph)
@@ -112,10 +108,9 @@ class CIncrementalNodeRegistrationDecider
 
    private:
 };
-}  // namespace deciders
-}  // namespace graphslam
-}  // namespace mrpt
-
+}
 #include "CIncrementalNodeRegistrationDecider_impl.h"
 #endif /* end of include guard: CINCREMENTALNODEREGISTRATIONDECIDER_H_WPM0MYXZ \
 		*/
+
+

@@ -11,9 +11,7 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <map>
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 /** A (persistent) sequence of (x,y) coordinates, allowing queries of
  * intermediate points through spline interpolation, where possible.
@@ -99,5 +97,5 @@ class CSplineInterpolator1D : public mrpt::serialization::CSerializable
 	}
 };
 
-}  // End of namespace
-}  // End of namespace
+}
+

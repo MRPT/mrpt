@@ -15,9 +15,7 @@
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/obs/obs_frwds.h>
 
-namespace mrpt
-{
-namespace maps
+namespace mrpt::maps
 {
 /** This class stores a sequence of <Probabilistic Pose,SensoryFrame> pairs,
  * thus a "metric map" can be totally determined with this information.
@@ -207,6 +205,7 @@ class CSimpleMap : public mrpt::serialization::CSerializable
 
 };  // End of class def.
 
-}  // namespace maps
-}  // namespace mrpt
+}
 #endif
+
+

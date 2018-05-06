@@ -13,9 +13,7 @@
 #include <set>
 #include <set>
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 /** Model search implementations: RANSAC and genetic algorithm
   *
@@ -106,8 +104,8 @@ class ModelSearch
 		typename TModelFit::Model& p_bestModel, std::vector<size_t>& p_inliers);
 };  // end of class
 
-}  // namespace math
-}  // namespace mrpt
-
+}
 // Template implementations:
 #include "model_search_impl.h"
+
+

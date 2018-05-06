@@ -245,9 +245,7 @@ void CSensoryFrame::eraseByLabel(const std::string& label)
 	m_cachedMap.reset();
 }
 
-namespace mrpt
-{
-namespace obs
+namespace mrpt::obs
 {
 // Tricky way to call to a library that depends on us, a sort of "run-time"
 // linking: ptr_internal_build_points_map_from_scan2D is a functor in
@@ -258,8 +256,6 @@ using scan2pts_functor = void (*)(
 extern scan2pts_functor ptr_internal_build_points_map_from_scan2D;  // impl in
 // CObservation2DRangeScan.cpp
 }
-}
-
 /*---------------------------------------------------------------
 						internal_buildAuxPointsMap
   ---------------------------------------------------------------*/
@@ -285,3 +281,5 @@ bool CSensoryFrame::insertObservationsInto(
 		anyone |= (*it)->insertObservationInto(theMap, robotPose);
 	return anyone;
 }
+
+

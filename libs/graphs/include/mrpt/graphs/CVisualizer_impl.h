@@ -9,11 +9,7 @@
 #ifndef CVISUALIZER_IMPL_H
 #define CVISUALIZER_IMPL_H
 
-namespace mrpt
-{
-namespace graphs
-{
-namespace detail
+namespace mrpt::graphs::detail
 {
 // constructor, destructor
 ////////////////////////////////////////////////////////////
@@ -319,8 +315,8 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 	}
 	object->insert(gl_edges);
 }
-}
-}
 }  // end of namespaces
 
 #endif /* end of include guard: CVISUALIZER_IMPL_H */
+
+

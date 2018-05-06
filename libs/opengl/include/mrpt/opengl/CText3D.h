@@ -12,9 +12,7 @@
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 /** A 3D text (rendered with OpenGL primitives), with selectable font face and
  * drawing style.
@@ -118,8 +116,7 @@ class CText3D : public CRenderizableDisplayList
 	virtual ~CText3D();
 };
 
-}  // end namespace
-
-}  // End of namespace
-
+}
 #endif
+
+

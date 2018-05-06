@@ -12,9 +12,7 @@
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 /**  This class is a "CSerializable" wrapper for "CMatrixFloat".
  * \note For a complete introduction to Matrices and vectors in MRPT, see:
@@ -68,5 +66,5 @@ class CMatrix : public mrpt::serialization::CSerializable, public CMatrixFloat
 mrpt::serialization::CArchive& operator>>(
 	mrpt::serialization::CArchive& in, CMatrix::Ptr& pObj);
 
-}  // End of namespace
-}  // End of namespace
+}
+

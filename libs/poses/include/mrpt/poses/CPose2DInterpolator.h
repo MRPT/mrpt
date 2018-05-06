@@ -11,9 +11,7 @@
 #include <mrpt/poses/CPoseInterpolatorBase.h>
 #include <mrpt/serialization/CSerializable.h>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 /** This class stores a time-stamped trajectory in SE(2) (mrpt::math::TPose2D
  * poses).
@@ -54,5 +52,5 @@ class CPose2DInterpolator : public mrpt::serialization::CSerializable,
 	DEFINE_SERIALIZABLE(CPose2DInterpolator)
 
 };  // End of class def.
-}  // End of namespace
-}  // End of namespace
+}
+

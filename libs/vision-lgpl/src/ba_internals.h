@@ -34,9 +34,7 @@
 // Declarations shared between ba_*.cpp files, but which are private to MRPT
 //  not to be seen by an MRPT API user.
 
-namespace mrpt
-{
-namespace vision
+namespace mrpt::vision
 {
 using mrpt::math::CArrayDouble;  // Allow these "using"s since these headers are
 // internal to mrpt
@@ -262,7 +260,7 @@ void ba_build_gradient_Hessians(
 	mrpt::aligned_std_vector<CArrayDouble<3>>& eps_point,
 	const size_t num_fix_frames, const size_t num_fix_points,
 	const vector<double>* kernel_1st_deriv);
-}  // namespace vision
-}  // namespace mrpt
-
+}
 #endif
+
+

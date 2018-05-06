@@ -14,9 +14,7 @@
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/obs/CSensoryFrame.h>
 
-namespace mrpt
-{
-namespace hmtslam
+namespace mrpt::hmtslam
 {
 /** The virtual base class for Topological Loop-closure Detectors; used in
  * HMT-SLAM
@@ -85,6 +83,7 @@ class CTopLCDetectorBase
 
 };  // end class
 
-}  // end namespace
-}  // end namespace
+}
 #endif
+
+

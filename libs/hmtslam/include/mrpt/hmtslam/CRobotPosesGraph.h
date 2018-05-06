@@ -17,9 +17,7 @@
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 
-namespace mrpt
-{
-namespace hmtslam
+namespace mrpt::hmtslam
 {
 /** Information kept for each robot pose used in CRobotPosesGraph */
 struct TPoseInfo
@@ -51,6 +49,7 @@ class CRobotPosesGraph : public mrpt::serialization::CSerializable,
 
 };  // end of class
 
-}  // End of namespace
-}  // End of namespace
+}
 #endif
+
+

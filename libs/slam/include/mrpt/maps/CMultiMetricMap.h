@@ -29,9 +29,7 @@
 #include <mrpt/containers/deepcopy_poly_ptr.h>
 #include <mrpt/obs/obs_frwds.h>
 
-namespace mrpt
-{
-namespace maps
+namespace mrpt::maps
 {
 class TSetOfMetricMapInitializers;
 
@@ -486,7 +484,7 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 
 };  // End of class def.
 
-}  // namespace maps
-}  // namespace mrpt
-
+}
 #endif
+
+

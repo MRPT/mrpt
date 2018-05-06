@@ -47,11 +47,7 @@
 #define SI_ASSERT(x)
 #endif
 
-namespace mrpt
-{
-namespace config
-{
-namespace simpleini
+namespace mrpt::config::simpleini
 {
 enum SI_Error
 {
@@ -2424,8 +2420,7 @@ using MRPT_CSimpleIni =
 #define SI_NEWLINE SI_NEWLINE_A
 #endif  // _UNICODE
 
-}  // namespace simpleini
-}  // namespace config
-}  // namespace mrpt
-
+}
 #endif  // INCLUDED_SimpleIni_h
+
+

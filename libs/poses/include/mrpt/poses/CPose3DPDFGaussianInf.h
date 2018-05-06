@@ -14,9 +14,7 @@
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/math/CMatrixD.h>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 class CPosePDFGaussian;
 class CPose3DQuatPDFGaussian;
@@ -201,7 +199,7 @@ CPose3DPDFGaussianInf operator-(
 /** Dumps the mean and covariance matrix to a text stream. */
 std::ostream& operator<<(std::ostream& out, const CPose3DPDFGaussianInf& obj);
 
-}  // End of namespace
-
-}  // End of namespace
+}
 #endif
+
+

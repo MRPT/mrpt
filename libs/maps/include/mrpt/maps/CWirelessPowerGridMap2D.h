@@ -13,9 +13,7 @@
 #include <mrpt/maps/CRandomFieldGridMap2D.h>
 #include <mrpt/obs/CObservationWirelessPower.h>
 
-namespace mrpt
-{
-namespace maps
+namespace mrpt::maps
 {
 /** CWirelessPowerGridMap2D represents a PDF of wifi concentrations over a 2D
  * area.
@@ -92,7 +90,7 @@ class CWirelessPowerGridMap2D : public CRandomFieldGridMap2D
 	MAP_DEFINITION_END(CWirelessPowerGridMap2D)
 };
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

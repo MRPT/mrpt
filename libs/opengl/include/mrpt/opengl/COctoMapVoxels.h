@@ -11,9 +11,7 @@
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 enum predefined_voxel_sets_t
 {
@@ -355,5 +353,5 @@ class COctoMapVoxels : public CRenderizableDisplayList
 	virtual ~COctoMapVoxels() {}
 };
 
-}  // namespace opengl
-}  // namespace mrpt
+}
+

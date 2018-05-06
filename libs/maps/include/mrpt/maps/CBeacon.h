@@ -19,9 +19,7 @@
 
 #include <mrpt/opengl/CSetOfObjects.h>
 
-namespace mrpt
-{
-namespace maps
+namespace mrpt::maps
 {
 class CBeaconMap;
 
@@ -192,7 +190,7 @@ class CBeacon : public mrpt::poses::CPointPDF
 
 };  // End of class definition
 
-}  // namespace maps
-}  // namespace mrpt
-
+}
 #endif
+
+

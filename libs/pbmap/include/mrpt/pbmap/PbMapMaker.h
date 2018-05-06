@@ -31,9 +31,7 @@
 
 using PointT = pcl::PointXYZRGBA;
 
-namespace mrpt
-{
-namespace pbmap
+namespace mrpt::pbmap
 {
 /*!frameRGBDandPose stores a dupla containing a pointCloud (built from a RGBD
  * frame) and a pose.
@@ -171,8 +169,8 @@ class PbMapMaker
 	float rejectHistH_F, acceptHistH_F, rejectHistH_T, acceptHistH_T;
 };
 }
-}  // End of namespaces
-
 #endif
 
 #endif
+
+
