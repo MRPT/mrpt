@@ -39,9 +39,9 @@ if (MSVC)
 	add_compile_options("/std:c++latest")
 else()
 	if(${CMAKE_VERSION} VERSION_LESS "3.8.0")
-		add_compile_options(-std=c++17)
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 	else()
-		set (CMAKE_CXX_STANDARD 17)
+		set(CMAKE_CXX_STANDARD 17)
 	endif()
 endif()
 
@@ -499,7 +499,7 @@ endif()
 # ======================================
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
 	# Even more warnings for different compilers
-	add_compile_options(-Wreturn-type -Wc++17-extensions -Wextra -Wabi -Wtype-limits -Wcast-align -Wparentheses -Wno-unused-parameter) # -Wold-style-cast  -Woverloaded-virtual
+	add_compile_options(-Wreturn-type -Wextra -Wabi -Wtype-limits -Wcast-align -Wparentheses -Wno-unused-parameter) # -Wold-style-cast  -Woverloaded-virtual
 
 	IF(MRPT_WARNINGS_ARE_ERRORS)
 		add_compile_options(-Werror)
