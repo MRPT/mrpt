@@ -17,9 +17,7 @@
  * speed up compiling) */
 using mxArray = struct mxArray_tag;
 
-namespace mrpt
-{
-namespace serialization
+namespace mrpt::serialization
 {
 /** The virtual base class which provides a unified interface for all persistent
  *objects in MRPT.
@@ -155,6 +153,6 @@ void OctetVectorToObject(
 		return var.writeToMatlab();            \
 	}                                          \
 	}
-
-}  // namespace serialization
 }  // namespace mrpt
+
+

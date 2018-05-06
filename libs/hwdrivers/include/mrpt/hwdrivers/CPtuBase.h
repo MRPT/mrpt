@@ -12,9 +12,7 @@
 
 #include <mrpt/comms/CSerialPort.h>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** This class implements initialization and comunication methods to
   * control a generic Pan and Tilt Unit, working in radians.
@@ -313,8 +311,7 @@ class CPtuBase
 
 };  // End of class
 
-}  // End of namespace
-
-}  // End of namespace
-
+}
 #endif
+
+

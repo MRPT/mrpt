@@ -17,8 +17,8 @@
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <fstream>
 
-namespace mrpt {
-namespace poses {
+namespace mrpt::poses
+{
 
 template <int DIM>
 CPoseInterpolatorBase<DIM>::CPoseInterpolatorBase() : m_method( mrpt::poses::imLinearSlerp )
@@ -414,7 +414,7 @@ void CPoseInterpolatorBase<DIM>::filter( unsigned int component, unsigned int sa
 		aux[it1->first] = pose_t(auxPose.asTPose());
 	} // end for it1
 	m_path = aux;
-} // end filter
+}
+} // end ns
 
-} // end ns
-} // end ns
+

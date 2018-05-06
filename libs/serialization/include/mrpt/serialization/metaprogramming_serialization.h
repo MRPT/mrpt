@@ -10,11 +10,7 @@
 
 #include <mrpt/serialization/serialization_frwds.h>
 
-namespace mrpt
-{
-namespace serialization
-{
-namespace metaprogramming
+namespace mrpt::serialization::metaprogramming
 {
 /** \addtogroup stlext_grp
   * @{ */
@@ -84,5 +80,4 @@ struct ObjectWriteToStream
 
 /** @} */  // end of grouping
 }
-}
-}
+

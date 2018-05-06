@@ -18,11 +18,7 @@
 
 #include <mrpt/graphslam/interfaces/CNodeRegistrationDecider.h>
 
-namespace mrpt
-{
-namespace graphslam
-{
-namespace deciders
+namespace mrpt::graphslam::deciders
 {
 /**\brief Fixed Intervals Odometry-based Node Registration
  *
@@ -176,9 +172,8 @@ class CFixedIntervalsNRD
 	 */
 	bool m_observation_only_rawlog;
 };
-}  // namespace deciders
-}  // namespace graphslam
-}  // namespace mrpt
-
+}
 #include "CFixedIntervalsNRD_impl.h"
 #endif /* end of include guard: CFIXEDINTERVALSNRD_H */
+
+

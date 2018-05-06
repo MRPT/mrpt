@@ -210,9 +210,7 @@ DECLARE_CUSTOM_TTYPENAME(COctoMapVoxels::TInfoPerVoxelSet)
 DECLARE_CUSTOM_TTYPENAME(COctoMapVoxels::TGridCube)
 DECLARE_CUSTOM_TTYPENAME(COctoMapVoxels::TVoxel)
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 using mrpt::serialization::CArchive;
 CArchive& operator<<(CArchive& out, const COctoMapVoxels::TInfoPerVoxelSet& a)
@@ -247,8 +245,7 @@ CArchive& operator>>(CArchive& in, COctoMapVoxels::TVoxel& a)
 	in >> a.coords >> a.side_length >> a.color;
 	return in;
 }
-}  // namespace opengl
-}  // namespace mrpt
+} // end of namespace mrpt::opengl
 
 uint8_t COctoMapVoxels::serializeGetVersion() const { return 2; }
 void COctoMapVoxels::serializeTo(CArchive& out) const

@@ -12,9 +12,7 @@
 #include <mrpt/poses/CPoint.h>
 #include <mrpt/serialization/CSerializable.h>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 /** A class used to store a 3D point.
  *
@@ -125,7 +123,7 @@ class CPoint3D : public CPoint<CPoint3D>,
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

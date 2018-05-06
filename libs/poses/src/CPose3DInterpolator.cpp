@@ -48,9 +48,7 @@ void CPose3DInterpolator::serializeFrom(
 	};
 }
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 // Specialization for DIM=3
 template <>
@@ -216,4 +214,4 @@ void CPoseInterpolatorBase<3>::impl_interpolation(
 // Explicit instantations:
 template class CPoseInterpolatorBase<3>;
 }
-}
+

@@ -17,9 +17,7 @@
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/poses/CPose2D.h>
 
-namespace mrpt
-{
-namespace obs
+namespace mrpt::obs
 {
 /** Observation class for either a pair of left+right or left+disparity images
  *from a stereo camera.
@@ -137,10 +135,10 @@ class CObservationStereoImages : public mrpt::obs::CObservation
 
 };  // End of class def.
 
-}  // namespace obs
-}  // namespace mrpt
-
+}
 // Add for declaration of mexplus::from template specialization
 DECLARE_MEXPLUS_FROM(mrpt::obs::CObservationStereoImages)
 
 #endif
+
+

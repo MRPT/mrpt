@@ -19,9 +19,7 @@
 #include <mrpt/config.h>
 #include <mrpt/core/common.h>  // Disable MSVC warning 4251 in this class
 
-namespace mrpt
-{
-namespace system
+namespace mrpt::system
 {
 /** For usage when passing a dynamic number of (numeric) arguments to a
  * function, by name.
@@ -148,5 +146,5 @@ using TParametersDouble = TParameters<double>;
 /** See the generic template mrpt::system::TParameters */
 using TParametersString = TParameters<std::string>;
 
-}  // end namespace
 }
+

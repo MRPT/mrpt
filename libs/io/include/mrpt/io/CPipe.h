@@ -12,9 +12,7 @@
 #include <string>
 #include <memory>  // for unique_ptr<>
 
-namespace mrpt
-{
-namespace io
+namespace mrpt::io
 {
 class CPipeReadEndPoint;
 class CPipeWriteEndPoint;
@@ -175,6 +173,6 @@ void CPipe::createPipe(ReadPtr& outReadPipe, WritePtr& outWritePipe)
 	outWritePipe = WritePtr(new CPipeWriteEndPoint);
 	CPipe::initializePipe(*outReadPipe, *outWritePipe);
 }
+}  // End of namespace
 
-}  // End of namespace
-}  // End of namespace
+

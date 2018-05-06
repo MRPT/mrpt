@@ -18,9 +18,7 @@
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/core/safe_pointers.h>
 
-namespace mrpt
-{
-namespace slam
+namespace mrpt::slam
 {
 /** This class implements a Rao-Blackwelized Particle Filter (RBPF) approach to
  * map building (SLAM).
@@ -206,6 +204,7 @@ of type CMetricMapBuilderRBPF  */
 
 };  // End of class def.
 
-}  // end NS
-}  // end NS
+}
 #endif
+
+

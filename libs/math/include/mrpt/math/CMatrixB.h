@@ -11,9 +11,7 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/math/CMatrixTemplate.h>
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 /**  This class is a "CSerializable" wrapper for "CMatrixBool".
  * \note For a complete introduction to Matrices and vectors in MRPT, see:
@@ -36,5 +34,5 @@ class CMatrixB : public mrpt::serialization::CSerializable, public CMatrixBool
 	}
 };  // end of class definition
 
-}  // End of namespace
-}  // End of namespace
+}
+

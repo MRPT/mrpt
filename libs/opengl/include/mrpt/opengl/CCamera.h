@@ -13,9 +13,7 @@
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/poses/CPoseOrPoint.h>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 class COpenGLViewport;
 class CCamera;
@@ -111,8 +109,7 @@ class CCamera : public CRenderizable
 	virtual ~CCamera() {}
 };
 
-}  // end namespace opengl
-
-}  // End of namespace
-
+}
 #endif
+
+

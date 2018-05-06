@@ -13,9 +13,7 @@
 #include <mrpt/containers/map_as_vector.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>  // For mrpt::math::CMatrixDouble
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 /** A templated column-indexed efficient storage of block-sparse Jacobian or
  * Hessian matrices, together with other arbitrary information.
@@ -249,7 +247,7 @@ struct MatrixBlockSparseCols
 
 };  // end of MatrixBlockSparseCols
 
-}  // end NS
-}  // end NS
-
+}
 #endif  //_mrpt_math_MatrixBlockSparseCols_H
+
+

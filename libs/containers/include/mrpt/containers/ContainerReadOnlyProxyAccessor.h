@@ -11,9 +11,7 @@
 #include <cstdlib>  // size_t
 #include <mrpt/core/exceptions.h>
 
-namespace mrpt
-{
-namespace containers
+namespace mrpt::containers
 {
 /** \addtogroup stlext_grp
   * @{ */
@@ -65,4 +63,4 @@ struct ContainerReadOnlyProxyAccessor
 
 /** @} */  // end of grouping
 }
-}
+

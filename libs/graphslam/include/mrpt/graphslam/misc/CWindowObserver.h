@@ -16,9 +16,7 @@
 #include <string>
 #include <map>
 
-namespace mrpt
-{
-namespace graphslam
+namespace mrpt::graphslam
 {
 /**\brief Monitor events in the visualization window.
  *
@@ -62,6 +60,6 @@ class CWindowObserver : public mrpt::system::CObserver
 	mrpt::system::CTicTac m_tim_show_start, m_tim_show_end;
 };
 }
-}  // END OF NAMESPACES
-
 #endif /* end of include guard: CWINDOWOBSERVER_H */
+
+

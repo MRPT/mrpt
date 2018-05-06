@@ -14,9 +14,7 @@
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/obs/CObservationRange.h>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /**   This "software driver" implements the communication protocol for
  * interfacing a Ultrasonic range finder SRF10 through a custom USB board.
@@ -148,7 +146,7 @@ class CBoardSonars : public mrpt::comms::CInterfaceFTDI, public CGenericSensor
 		const std::string& iniSection);
 
 };  // End of class
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

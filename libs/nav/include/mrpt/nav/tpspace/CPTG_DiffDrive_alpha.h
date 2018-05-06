@@ -10,9 +10,7 @@
 
 #include <mrpt/nav/tpspace/CPTG_DiffDrive_CollisionGridBased.h>
 
-namespace mrpt
-{
-namespace nav
+namespace mrpt::nav
 {
 /** The "a(symptotic)-alpha PTG", as named in PTG papers.
  * - **Compatible kinematics**: differential-driven / Ackermann steering
@@ -61,4 +59,4 @@ class CPTG_DiffDrive_alpha : public CPTG_DiffDrive_CollisionGridBased
 	double cte_a0v, cte_a0w;
 };
 }
-}
+

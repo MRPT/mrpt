@@ -13,9 +13,7 @@
 #include <istream>
 #include <ostream>
 
-namespace mrpt
-{
-namespace serialization
+namespace mrpt::serialization
 {
 /** Specialization for std::istream */
 template <>
@@ -90,5 +88,5 @@ class CArchiveStreamBase<std::iostream> : public CArchive
 	}
 };
 
-}  // namespace serialization
-}  // namespace mrpt
+}
+

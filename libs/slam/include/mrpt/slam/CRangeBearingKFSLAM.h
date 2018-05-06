@@ -28,9 +28,7 @@
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
 #include <mrpt/slam/data_association.h>
 
-namespace mrpt
-{
-namespace slam
+namespace mrpt::slam
 {
 /** An implementation of EKF-based SLAM with range-bearing sensors, odometry, a
  * full 6D robot pose, and 3D landmarks.
@@ -509,7 +507,7 @@ class CRangeBearingKFSLAM
 	mrpt::poses::CPose3DQuat getIncrementFromOdometry() const;
 
 };  // end class
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

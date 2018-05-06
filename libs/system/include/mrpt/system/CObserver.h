@@ -11,9 +11,7 @@
 #include <mrpt/system/mrptEvent.h>
 #include <set>
 
-namespace mrpt
-{
-namespace system
+namespace mrpt::system
 {
 class CObservable;
 
@@ -63,5 +61,5 @@ class CObserver
 
 };  // End of class def.
 
-}  // namespace system
-}  // namespace mrpt
+}
+

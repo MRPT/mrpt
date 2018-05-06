@@ -20,9 +20,7 @@
 
 /** \file This file extends TTypeName.h for STL C++ types. */
 
-namespace mrpt
-{
-namespace typemeta
+namespace mrpt::typemeta
 {
 /** @name Conversion of type to string at compile time
 @{ */
@@ -86,5 +84,5 @@ struct TTypeName<std::pair<T1, T2>>
 
 /** @} */
 
-}  // End of namespace
-}  // End of namespace
+}
+

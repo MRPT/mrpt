@@ -23,9 +23,7 @@
 #include <mrpt/maps/CPointCloudFilterBase.h>
 #include <memory>  // unique_ptr
 
-namespace mrpt
-{
-namespace nav
+namespace mrpt::nav
 {
 /** Base class for reactive navigator systems based on TP-Space, with an
  * arbitrary holonomic
@@ -474,7 +472,7 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 	std::unique_ptr<TNavigationParams> m_copy_prev_navParams;
 
 };  // end of CAbstractPTGBasedReactive
-}  // namespace nav
-}  // namespace mrpt
-
+}
 #endif
+
+

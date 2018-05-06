@@ -16,9 +16,7 @@
 // Many of the functions originally in this file are now in ops_containers.h
 #include <mrpt/math/ops_containers.h>
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 // Frwd. decl.
 template <typename T, std::size_t N>
@@ -164,5 +162,5 @@ mrpt::serialization::CArchive& operator>>(
 
 /**  @} */  // end of grouping
 
-}  // namespace math
-}  // namespace mrpt
+}
+

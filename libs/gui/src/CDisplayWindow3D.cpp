@@ -54,9 +54,7 @@ using namespace std;
 #include <mrpt/gui/CWxGLCanvasBase.h>
 #include <mrpt/opengl/CTextMessageCapable.h>
 
-namespace mrpt
-{
-namespace gui
+namespace mrpt::gui
 {
 class CMyGLCanvas_DisplayWindow3D : public mrpt::gui::CWxGLCanvasBase
 {
@@ -95,8 +93,7 @@ class CMyGLCanvas_DisplayWindow3D : public mrpt::gui::CWxGLCanvasBase
 	static void display3D_processKeyEvent(
 		CDisplayWindow3D* m_win3D, wxKeyEvent& ev);
 };
-}  // namespace gui
-}  // namespace mrpt
+}
 
 CMyGLCanvas_DisplayWindow3D::CMyGLCanvas_DisplayWindow3D(
 	CDisplayWindow3D* win3D, wxWindow* parent, wxWindowID id,

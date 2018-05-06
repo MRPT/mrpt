@@ -17,9 +17,7 @@
 using Eigen::Array;
 using Eigen::Dynamic;
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 /** A 3D mesh composed of Triangles and/or Quads.
   * A typical usage example would be a 3D model of an object.
@@ -174,8 +172,7 @@ class CMesh3D : public CRenderizableDisplayList
 	virtual ~CMesh3D();
 };
 
-}  // end namespace
-
-}  // End of namespace
-
+}
 #endif
+
+

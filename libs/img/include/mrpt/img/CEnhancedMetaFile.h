@@ -11,9 +11,7 @@
 #include <mrpt/img/CCanvas.h>
 #include <mrpt/core/safe_pointers.h>
 
-namespace mrpt
-{
-namespace img
+namespace mrpt::img
 {
 /** This class represents a Windows Enhanced Meta File (EMF) for generating and
  * saving graphics.
@@ -210,5 +208,5 @@ class CEnhancedMetaFile : public CCanvas
 					  << *cov2D << std::endl;);
 	}
 };  // End of class def.
-}  // namespace img
-}  // namespace mrpt
+}
+

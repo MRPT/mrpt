@@ -26,11 +26,7 @@
 #include <mrpt/poses/CPose3DPDFGaussianInf.h>
 #include <mrpt/graphs/TNodeAnnotations.h>
 
-namespace mrpt
-{
-namespace graphs
-{
-namespace detail
+namespace mrpt::graphs::detail
 {
 using namespace std;
 using namespace mrpt;
@@ -1016,8 +1012,7 @@ struct graph_ops
 
 };  // end of graph_ops<graph_t>
 
-}  // namespace detail
-}  // namespace graphs
-}  // namespace mrpt
-
+}
 #endif
+
+

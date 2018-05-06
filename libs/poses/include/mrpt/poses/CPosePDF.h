@@ -14,9 +14,7 @@
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/CProbabilityDensityFunction.h>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 class CPosePDFGaussian;  // frd decl.
 
@@ -134,7 +132,7 @@ class CPosePDF : public mrpt::serialization::CSerializable,
 	MRPT_MAKE_ALIGNED_OPERATOR_NEW
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

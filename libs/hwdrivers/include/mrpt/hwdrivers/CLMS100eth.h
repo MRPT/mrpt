@@ -13,9 +13,7 @@
 #include <mrpt/hwdrivers/C2DRangeFinderAbstract.h>
 #include <mrpt/comms/CClientTCPSocket.h>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** This "software driver" implements the communication protocol for interfacing
 *a SICK LMS100 laser scanners through an ethernet controller.
@@ -158,5 +156,6 @@ class CLMS100Eth : public C2DRangeFinderAbstract
 		const std::string& iniSection);
 };
 }
-}
 #endif  // CLMS100ETH_H
+
+

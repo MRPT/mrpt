@@ -15,9 +15,7 @@
 #include <mrpt/system/CTicTac.h>
 #include <fstream>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** This "virtual driver" encapsulates a NTRIP client (see CNTRIPClient) but
  * adds the functionality of dumping the received datastream to a given serial
@@ -130,7 +128,7 @@ class CNTRIPEmitter : public CGenericSensor
 	const CNTRIPClient& getNTRIPClient() const { return m_client; }
 };  // End of class
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

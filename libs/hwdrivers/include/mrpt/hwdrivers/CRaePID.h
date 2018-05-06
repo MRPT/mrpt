@@ -14,9 +14,7 @@
 #include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/config/CConfigFileBase.h>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** This class implements a driver for the RAE Systems gas PhotoIonization
  * Detector (PID) (Tested on a MiniRAE Lite)
@@ -102,6 +100,7 @@ class CRaePID : public mrpt::hwdrivers::CGenericSensor
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
+}
 #endif
+
+

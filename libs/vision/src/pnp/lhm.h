@@ -21,11 +21,7 @@
 #define TOL_LHM 0.00001
 #define EPSILON_LHM 0.00000001
 
-namespace mrpt
-{
-namespace vision
-{
-namespace pnp
+namespace mrpt::vision::pnp
 {
 /** \addtogroup pnp Perspective-n-Point pose estimation
  *  \ingroup mrpt_vision_grp
@@ -106,6 +102,6 @@ class lhm
 
 /** @}  */  // end of grouping
 }
-}
-}
 #endif
+
+

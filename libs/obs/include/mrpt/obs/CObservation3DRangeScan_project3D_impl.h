@@ -11,11 +11,7 @@
 
 #include <mrpt/core/round.h>  // round()
 
-namespace mrpt
-{
-namespace obs
-{
-namespace detail
+namespace mrpt::obs::detail
 {
 // Auxiliary functions which implement SSE-optimized proyection of 3D point
 // cloud:
@@ -500,8 +496,7 @@ inline void do_project_3d_pointcloud_SSE2(
 	pca.resize(idx);
 #endif
 }
-
-}  // namespace detail
-}  // namespace obs
 }  // namespace mrpt
 #endif
+
+

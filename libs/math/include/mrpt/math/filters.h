@@ -11,9 +11,7 @@
 #include <cstdlib>
 #include <cmath>
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 /** @addtogroup filtering_grp Filtering algorithms
   * \ingroup mrpt_math_grp
@@ -38,5 +36,5 @@ struct LowPassFilter_IIR1
 };
 
 /** @} */  // end grouping filtering_grp
-}  // end NS
-}  // end NS
+}
+

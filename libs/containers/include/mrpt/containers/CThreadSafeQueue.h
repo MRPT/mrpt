@@ -11,9 +11,7 @@
 #include <mutex>
 #include <queue>
 
-namespace mrpt
-{
-namespace containers
+namespace mrpt::containers
 {
 /** A thread-safe template queue for object passing between threads; for a
  * template argument of T, the objects being passed in the queue are "T*".
@@ -142,5 +140,5 @@ class CThreadSafeQueue
 	}
 
 };  // End of class def.
-}  // End of namespace
-}  // end of namespace
+}
+

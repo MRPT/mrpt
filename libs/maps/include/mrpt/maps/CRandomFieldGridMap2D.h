@@ -21,9 +21,7 @@
 
 #include <list>
 
-namespace mrpt
-{
-namespace maps
+namespace mrpt::maps
 {
 class COccupancyGridMap2D;
 
@@ -645,9 +643,7 @@ class CRandomFieldGridMap2D
 		const size_t objective_cyo);
 };
 
-}  // namespace maps
-}  // namespace mrpt
-
+}
 MRPT_ENUM_TYPE_BEGIN(mrpt::maps::CRandomFieldGridMap2D::TMapRepresentation)
 MRPT_FILL_ENUM_MEMBER(
 	mrpt::maps::CRandomFieldGridMap2D::TMapRepresentation, mrKernelDM);
@@ -662,3 +658,5 @@ MRPT_FILL_ENUM_MEMBER(
 MRPT_ENUM_TYPE_END()
 
 #endif
+
+

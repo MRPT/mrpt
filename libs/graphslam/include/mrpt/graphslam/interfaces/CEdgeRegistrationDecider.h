@@ -20,11 +20,7 @@
 #include <map>
 #include <string>
 
-namespace mrpt
-{
-namespace graphslam
-{
-namespace deciders
+namespace mrpt::graphslam::deciders
 {
 /** \brief Interface for implementing edge registration classes.
  *
@@ -116,9 +112,8 @@ class CEdgeRegistrationDecider
 	bool m_override_registered_nodes_check;
 };
 }
-}
-}  // end of namespaces
-
 #include "CEdgeRegistrationDecider_impl.h"
 
 #endif /* end of include guard: CEDGEREGISTRATIONDECIDER_H */
+
+

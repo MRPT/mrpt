@@ -17,9 +17,7 @@
 
 #include <thread>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** A class to interface a Rovio robot (manufactured by WowWee).
   *  Supports: Simple motion commands, video streaming.
@@ -208,8 +206,7 @@ class CRovio
 
 };  // End of class
 
-}  // End of namespace
-
-}  // End of namespace
-
+}
 #endif
+
+

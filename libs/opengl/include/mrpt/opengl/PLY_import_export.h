@@ -13,9 +13,7 @@
 #include <vector>
 #include <string>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 /** A virtual base class that implements the capability of importing 3D point
  * clouds and faces from a file in the Stanford PLY format.
@@ -134,5 +132,5 @@ class PLY_Exporter
 
 };  // End of class def.
 
-}  // namespace opengl
-}  // namespace mrpt
+}
+

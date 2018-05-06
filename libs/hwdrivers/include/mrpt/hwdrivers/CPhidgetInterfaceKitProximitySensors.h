@@ -15,9 +15,7 @@
 #include <mrpt/system/COutputLogger.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** \brief : An interface for the phidget Interface kit board (1018).
  *  \class CPhidgetInterfaceKitProximitySensors
@@ -179,7 +177,7 @@ class CPhidgetInterfaceKitProximitySensors : public mrpt::system::COutputLogger,
 		const std::string& iniSection);
 };  // end class
 
-}  // end namespace
-}  // end namespace
-
+}
 #endif
+
+

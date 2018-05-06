@@ -14,9 +14,7 @@
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/math/CMatrix.h>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 /** A 3D vector field representation, consisting of points and arrows drawn at
  * any spatial position.
@@ -398,8 +396,7 @@ class CVectorField3D : public CRenderizableDisplayList
 	virtual ~CVectorField3D() {}
 };
 
-}  // namespace opengl
-
-}  // namespace mrpt
-
+}
 #endif
+
+

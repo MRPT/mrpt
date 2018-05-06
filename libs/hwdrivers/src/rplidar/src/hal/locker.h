@@ -32,9 +32,7 @@
  */
 
 #pragma once
-namespace rp
-{
-namespace hal
+namespace rp::hal
 {
 class Locker
 {
@@ -167,4 +165,4 @@ class AutoLocker
 	Locker& _binded;
 };
 }
-}
+

@@ -28,9 +28,7 @@
  * mrpt::slam::PF_implementation
  */
 
-namespace mrpt
-{
-namespace slam
+namespace mrpt::slam
 {
 /** Auxiliary method called by PF implementations: return true if we have both
  * action & observation,
@@ -1169,9 +1167,9 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 		}
 	}
 	// Done.
-}  // end PF_SLAM_aux_perform_one_rejection_sampling_step
-
-}  // end namespace
+}
 }  // end namespace
 
 #endif
+
+

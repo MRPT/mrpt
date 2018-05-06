@@ -33,11 +33,7 @@
 
 #pragma once
 
-namespace rp
-{
-namespace standalone
-{
-namespace rplidar
+namespace rp::standalone::rplidar
 {
 class RPlidarDriverSerialImpl : public RPlidarDriver
 {
@@ -136,5 +132,4 @@ class RPlidarDriverSerialImpl : public RPlidarDriver
 	rp::hal::Thread _cachethread;
 };
 }
-}
-}
+

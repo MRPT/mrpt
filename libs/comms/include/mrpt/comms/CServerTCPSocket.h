@@ -13,9 +13,7 @@
 #include <string>
 #include <memory>  // unique_ptr
 
-namespace mrpt
-{
-namespace comms
+namespace mrpt::comms
 {
 class CClientTCPSocket;
 
@@ -78,5 +76,5 @@ class CServerTCPSocket : public mrpt::system::COutputLogger
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
+}
+

@@ -32,9 +32,7 @@
  */
 
 #pragma once
-namespace rp
-{
-namespace hal
+namespace rp::hal
 {
 class Event
 {
@@ -184,4 +182,4 @@ class Event
 #endif
 };
 }
-}
+

@@ -10,9 +10,7 @@
 
 #include <mrpt/containers/deepcopy_ptr.h>  // copy_ptr<>
 
-namespace mrpt
-{
-namespace bayes
+namespace mrpt::bayes
 {
 /** use for CProbabilityParticle
  * \ingroup mrpt_bayes_grp
@@ -66,5 +64,4 @@ struct CProbabilityParticle<T, particle_storage_mode::VALUE>
 	T d{};
 };
 
-}  // namespace bayes
-}  // namespace mrpt
+}

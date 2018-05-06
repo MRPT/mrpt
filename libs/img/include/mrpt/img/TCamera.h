@@ -13,9 +13,7 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <array>
 
-namespace mrpt
-{
-namespace img
+namespace mrpt::img
 {
 /** Structure to hold the parameters of a pinhole camera model.
  *  The parameters obtained for one camera resolution can be used for any other
@@ -198,8 +196,8 @@ class TCamera : public mrpt::serialization::CSerializable
 bool operator==(const mrpt::img::TCamera& a, const mrpt::img::TCamera& b);
 bool operator!=(const mrpt::img::TCamera& a, const mrpt::img::TCamera& b);
 
-}  // namespace img
-}  // namespace mrpt
-
+}
 // Add for declaration of mexplus::from template specialization
 DECLARE_MEXPLUS_FROM(mrpt::img::TCamera)  // Not working at the beginning?
+
+

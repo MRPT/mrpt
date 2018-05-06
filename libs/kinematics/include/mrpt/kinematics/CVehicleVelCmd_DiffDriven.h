@@ -10,9 +10,7 @@
 
 #include <mrpt/kinematics/CVehicleVelCmd.h>
 
-namespace mrpt
-{
-namespace kinematics
+namespace mrpt::kinematics
 {
 /** Kinematic model for Ackermann-like or differential-driven vehicles.
  *
@@ -53,5 +51,5 @@ class CVehicleVelCmd_DiffDriven : public CVehicleVelCmd
 	double filter_max_vw(double& v, double& w, const TVelCmdParams& p);
 };
 
-}  // namespace kinematics
-}  // namespace mrpt
+}
+

@@ -11,9 +11,7 @@
 /*! \file lightweight_geom_data_frwds.h
   * Forward declarations of all mrpt::math classes related to poses and points.
   */
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 struct TPoint2D;
 struct TPoint3D;
@@ -21,5 +19,5 @@ struct TPose2D;
 struct TPose3D;
 struct TPose3DQuat;
 struct TPoseOrPoint;
-}  // End of namespace
-}  // End of namespace
+}
+

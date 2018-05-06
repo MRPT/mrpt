@@ -16,9 +16,7 @@
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/serialization/CSerializable.h>
 
-namespace mrpt
-{
-namespace hmtslam
+namespace mrpt::hmtslam
 {
 /** The most high level class for storing hybrid, multi-hypothesis maps in a
  * graph-based model.
@@ -82,7 +80,7 @@ class CHierarchicalMHMap : public mrpt::serialization::CSerializable,
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

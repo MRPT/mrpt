@@ -14,9 +14,7 @@
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/core/aligned_std_map.h>
 
-namespace mrpt
-{
-namespace topography
+namespace mrpt::topography
 {
 /** \addtogroup mrpt_topography_grp
  *  @{ */
@@ -64,5 +62,5 @@ void path_from_rtk_gps(
 
 /** @} */  // end of grouping
 
-}  // namespace topography
-}  // namespace mrpt
+}
+

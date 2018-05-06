@@ -13,9 +13,7 @@
 #include <mrpt/hwdrivers/CNTRIPEmitter.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** A combination of GPS receiver + NTRIP receiver capable of submitting GGA
  * frames to enable RTCM 3.0.
@@ -97,5 +95,5 @@ class CGPS_NTRIP : public CGenericSensor
 		const std::string& iniSection);
 };  // end class
 
-}  // end namespace
-}  // end namespace
+}
+

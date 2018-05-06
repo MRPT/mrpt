@@ -26,9 +26,7 @@ using namespace mrpt::maps;
 
 #include <mrpt/slam/PF_implementations_data.h>
 
-namespace mrpt
-{
-namespace slam
+namespace mrpt::slam
 {
 /** Fills out a "TPoseBin3D" variable, given a path hypotesis and (if not set to
  * nullptr) a new pose appended at the end, using the KLD params in "options".
@@ -63,8 +61,7 @@ void KLF_loadBinFromParticle(
 		outBin.roll = round(currentParticleValue->roll / opts.KLD_binSize_PHI);
 	}
 }
-}  // namespace slam
-}  // namespace mrpt
+}
 
 #include <mrpt/slam/PF_implementations.h>
 

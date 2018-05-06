@@ -17,9 +17,7 @@
 
 #include <thread>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** This "software driver" implements the communication protocol for interfacing
 * a Ibeo Lux laser scanners through an ethernet controller.
@@ -108,6 +106,6 @@ class CIbeoLuxETH : public mrpt::hwdrivers::CGenericSensor
 		const std::string& iniSection);
 };
 }
-}
-
 #endif
+
+

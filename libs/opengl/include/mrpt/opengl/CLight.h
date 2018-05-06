@@ -10,9 +10,7 @@
 
 #include <mrpt/typemeta/TTypeName.h>
 #include <mrpt/serialization/serialization_frwds.h>
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 /** Each of the possible lights of a 3D scene \sa COpenGLViewport
  * *IMPORTANT NOTE*: It's the user responsibility to define unique light IDs
@@ -63,5 +61,5 @@ mrpt::serialization::CArchive& operator>>(
 mrpt::serialization::CArchive& operator<<(
 	mrpt::serialization::CArchive& out, const mrpt::opengl::CLight& o);
 
-}  // namespace opengl
-}  // namespace mrpt
+}
+

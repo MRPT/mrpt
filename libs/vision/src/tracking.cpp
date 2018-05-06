@@ -24,12 +24,9 @@ using namespace std;
 
 // ------------------------------- internal helper templates
 // ---------------------------------
-namespace mrpt
+namespace mrpt::vision::detail
 {
-namespace vision
-{
-namespace detail
-{
+
 template <typename FEATLIST>
 inline void trackFeatures_checkResponses(
 	FEATLIST& featureList, const CImage& cur_gray,
@@ -552,8 +549,6 @@ inline size_t trackFeatures_deleteOOB(
 	}
 	return n_removed;
 }  // end of trackFeatures_deleteOOB
-}
-}
 }  // end NS's
 // ---------------------------- end of internal helper templates
 // -------------------------------
