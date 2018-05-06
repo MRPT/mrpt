@@ -14,11 +14,7 @@
 #include <sstream>
 #include <string>
 
-namespace mrpt
-{
-namespace graphs
-{
-namespace detail
+namespace mrpt::graphs::detail
 {
 /**\brief Struct to be used as the NODE_ANNOTATIONS template argument in
  * CNetworkOfPoses class instances for use in multiple-robot SLAM applications
@@ -106,7 +102,7 @@ struct TMRSlamNodeAnnotations : public TNodeAnnotations
 	 */
 	mrpt::graphs::TNodeID nodeID_loc;
 };
-}  // namespace detail
-}  // namespace graphs
-}  // namespace mrpt
+}
 #endif /* end of include guard: TMRSLAMNODEANNOTATIONS_H */
+
+

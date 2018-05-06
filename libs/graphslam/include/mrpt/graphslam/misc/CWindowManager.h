@@ -14,9 +14,7 @@
 
 #include "CWindowObserver.h"
 
-namespace mrpt
-{
-namespace graphslam
+namespace mrpt::graphslam
 {
 /**\brief Class acts as a container for storing pointers to
  * mrpt::gui::CDisplayWindow3D,
@@ -194,6 +192,6 @@ class CWindowManager : public mrpt::system::COutputLogger
 	double m_viewp_margin;
 };
 }
-}  // END OF NAMESPACES
-
 #endif /* end of include guard: CWINDOWMANAGER_H */
+
+

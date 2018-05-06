@@ -1606,9 +1606,7 @@ double CPointsMap::internal_computeObservationLikelihood(
 	/**/
 }
 
-namespace mrpt
-{
-namespace obs
+namespace mrpt::obs
 {
 // Tricky way to call to a library that depends on us, a sort of "run-time"
 // linking: ptr_internal_build_points_map_from_scan2D is a functor in
@@ -1618,8 +1616,7 @@ using scan2pts_functor = void (*)(
 	mrpt::maps::CMetricMap::Ptr& out_map, const void* insertOps);
 
 extern void internal_set_build_points_map_from_scan2D(scan2pts_functor fn);
-}  // namespace obs
-}  // namespace mrpt
+}
 
 void internal_build_points_map_from_scan2D(
 	const mrpt::obs::CObservation2DRangeScan& obs,

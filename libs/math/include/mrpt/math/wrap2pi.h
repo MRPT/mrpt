@@ -12,9 +12,7 @@
 #include <cmath>
 #include <cstddef>  // size_t
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 /** \addtogroup container_ops_grp
   * @{ */
@@ -109,7 +107,7 @@ inline T angDistance(T from, T to)
 
 /** @} */
 
-}  // End of MATH namespace
-}  // End of namespace
-
+}
 #endif
+
+

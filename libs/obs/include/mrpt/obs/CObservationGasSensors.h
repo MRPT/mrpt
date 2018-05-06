@@ -14,9 +14,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose2D.h>
 
-namespace mrpt
-{
-namespace obs
+namespace mrpt::obs
 {
 /** Declares a class derived from "CObservation" that represents a set of
  * readings from gas sensors.
@@ -177,7 +175,7 @@ class CObservationGasSensors : public CObservation
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

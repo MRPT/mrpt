@@ -12,9 +12,7 @@
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 class CPose3DPDF;
 class CPoint2DPDFGaussian;
@@ -219,7 +217,7 @@ poses::CPosePDFGaussian operator+(
 
 bool operator==(const CPosePDFGaussian& p1, const CPosePDFGaussian& p2);
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

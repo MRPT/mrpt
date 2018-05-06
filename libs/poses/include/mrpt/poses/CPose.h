@@ -11,9 +11,7 @@
 
 #include <mrpt/poses/CPoseOrPoint.h>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 /** A base class for representing a pose in 2D or 3D.
  *   For more information refer to the <a
@@ -28,7 +26,7 @@ class CPose : public CPoseOrPoint<DERIVEDCLASS>
 {
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

@@ -12,9 +12,7 @@
 #include <mrpt/poses/CPoint.h>
 #include <mrpt/math/CArrayNumeric.h>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 class CPose2D;
 
@@ -121,7 +119,7 @@ class CPoint2D : public CPoint<CPoint2D>,
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

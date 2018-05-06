@@ -15,9 +15,7 @@
 #include <mrpt/system/datetime.h>
 #include <mrpt/kinematics/CVehicleVelCmd.h>
 
-namespace mrpt
-{
-namespace nav
+namespace mrpt::nav
 {
 /** The pure virtual interface between a real or simulated robot and any
  * `CAbstractNavigator`-derived class.
@@ -197,4 +195,4 @@ class CRobot2NavInterface : public mrpt::system::COutputLogger
 	mrpt::system::CTicTac m_navtime;
 };
 }
-}
+

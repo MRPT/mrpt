@@ -17,9 +17,7 @@
 #include <mrpt/comms/CServerTCPSocket.h>
 #include <memory>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** This class implements an interface to an Impinj RFID reader. This object
  * connects to a program that does the actual communication with the receiver.
@@ -104,6 +102,7 @@ class CImpinjRFID : public mrpt::hwdrivers::CGenericSensor
 	void closeReader();
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
+}
 #endif
+
+

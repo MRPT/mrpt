@@ -14,9 +14,7 @@
 #include <mrpt/math/CMatrixTemplate.h>  // mrpt::math::CMatrixBool
 #include <mrpt/typemeta/TEnumType.h>
 
-namespace mrpt
-{
-namespace slam
+namespace mrpt::slam
 {
 /** \addtogroup data_assoc_grp Data association
  * \ingroup mrpt_slam_grp
@@ -226,9 +224,7 @@ void data_association_independent_predictions(
 
 /** @} */  // end of grouping
 
-}  // namespace slam
-}  // namespace mrpt
-
+}
 MRPT_ENUM_TYPE_BEGIN(mrpt::slam::TDataAssociationMethod)
 using namespace mrpt::slam;
 MRPT_FILL_ENUM(assocNN);
@@ -242,3 +238,5 @@ MRPT_FILL_ENUM(metricML);
 MRPT_ENUM_TYPE_END()
 
 #endif
+
+

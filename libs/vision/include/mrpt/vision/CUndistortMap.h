@@ -12,9 +12,7 @@
 #include <mrpt/img/TCamera.h>
 #include <mrpt/img/CImage.h>
 
-namespace mrpt
-{
-namespace vision
+namespace mrpt::vision
 {
 /** Use this class to undistort monocular images if the same distortion map is
  * used over and over again.
@@ -89,6 +87,7 @@ class CUndistortMap
 	mrpt::img::TCamera m_camera_params;
 
 };  // end class
-}  // end namespace
-}  // end namespace
+}
 #endif
+
+

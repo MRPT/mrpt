@@ -11,9 +11,7 @@
 
 #include <cstdlib>
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 /** @addtogroup  polynomial_roots Find polynomial roots (`#include
  * <mrpt/math/poly_roots.h>`)
@@ -72,6 +70,5 @@ int solve_poly2(double a, double b, double c, double& r1, double& r2) noexcept;
 
 /** @} */
 
-}  // End of MATH namespace
+}
 
-}  // End of namespace

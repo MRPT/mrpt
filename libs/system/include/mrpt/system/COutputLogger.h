@@ -20,9 +20,7 @@
 #include <iosfwd>
 #include <functional>
 
-namespace mrpt
-{
-namespace system
+namespace mrpt::system
 {
 /** \brief Enumeration of available verbosity levels. \sa COutputLogger */
 enum VerbosityLevel
@@ -549,8 +547,7 @@ struct COutputLoggerStreamWrapper
 	tmp_obj.usercode();           \
 	}                             \
 	while (0)
-}  // namespace system
-}  // namespace mrpt
+}
 // TTypeEnum for verbosity levels:
 MRPT_ENUM_TYPE_BEGIN_NAMESPACE(mrpt::system, mrpt::system::VerbosityLevel)
 MRPT_FILL_ENUM(LVL_DEBUG);
@@ -562,3 +559,5 @@ MRPT_FILL_ENUM_CUSTOM_NAME(LVL_INFO, "INFO");
 MRPT_FILL_ENUM_CUSTOM_NAME(LVL_WARN, "WARN");
 MRPT_FILL_ENUM_CUSTOM_NAME(LVL_ERROR, "ERROR");
 MRPT_ENUM_TYPE_END()
+
+

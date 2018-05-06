@@ -14,9 +14,7 @@
 #include <cstdio>
 #include <sstream>
 
-namespace mrpt
-{
-namespace hmtslam
+namespace mrpt::hmtslam
 {
 /** Internal triplet for each property in utils::CMHPropertiesValuesList */
 struct TPropertyValueIDTriplet
@@ -203,6 +201,7 @@ class CMHPropertiesValuesList : public mrpt::serialization::CSerializable
 	const_iterator end() const { return m_properties.end(); }
 	size_t size() const { return m_properties.size(); }
 };  // End of class def.
-}  // namespace hmtslam
-}  // namespace mrpt
+}
 #endif
+
+

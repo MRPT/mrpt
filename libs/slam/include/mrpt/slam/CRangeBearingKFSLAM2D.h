@@ -27,9 +27,7 @@
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
 #include <mrpt/slam/data_association.h>
 
-namespace mrpt
-{
-namespace slam
+namespace mrpt::slam
 {
 /** An implementation of EKF-based SLAM with range-bearing sensors, odometry,
   *and a 2D (+heading) robot pose, and 2D landmarks.
@@ -394,7 +392,7 @@ class CRangeBearingKFSLAM2D
 	/** Last data association */
 	TDataAssocInfo m_last_data_association;
 };  // end class
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

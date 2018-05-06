@@ -17,9 +17,7 @@
 // Add for declaration of mexplus::from template specialization
 DECLARE_MEXPLUS_FROM(mrpt::poses::CPose3D)
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 class CPose3DQuat;
 class CPose3DRotVec;
@@ -780,7 +778,7 @@ CPose3D operator-(const CPose3D& p);
 bool operator==(const CPose3D& p1, const CPose3D& p2);
 bool operator!=(const CPose3D& p1, const CPose3D& p2);
 
-}  // namespace poses
-}  // namespace mrpt
-
+}
 #endif
+
+

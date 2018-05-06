@@ -11,9 +11,7 @@
 
 #include <mrpt/opengl/CRenderizable.h>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 #define INVALID_DISPLAY_LIST_ID static_cast<unsigned int>(-1)
 
@@ -127,8 +125,7 @@ class CRenderizableDisplayList : public mrpt::opengl::CRenderizable
 	/** @} */
 };
 
-}  // namespace opengl
-
-}  // namespace mrpt
-
+}
 #endif
+
+

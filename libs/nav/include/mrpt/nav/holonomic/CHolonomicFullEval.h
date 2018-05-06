@@ -12,9 +12,7 @@
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/obs/CSinCosLookUpTableFor2DScans.h>
 
-namespace mrpt
-{
-namespace nav
+namespace mrpt::nav
 {
 /** \addtogroup nav_holo Holonomic navigation methods
   * \ingroup mrpt_nav_grp
@@ -185,5 +183,5 @@ class CLogFileRecord_FullEval : public CHolonomicLogFileRecord
 };
 
 /** @} */
-}  // end namespace
 }
+

@@ -10,9 +10,7 @@
 
 #include <mrpt/system/datetime.h>
 
-namespace mrpt
-{
-namespace system
+namespace mrpt::system
 {
 class CObservable;
 
@@ -75,5 +73,5 @@ class mrptEventOnDestroy : public mrptEvent
 
 };  // End of class def.
 
-}  // namespace system
-}  // namespace mrpt
+}
+

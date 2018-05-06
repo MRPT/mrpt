@@ -15,9 +15,7 @@
 #include <mrpt/core/aligned_std_vector.h>
 #include <ostream>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 /** Declares a class that represents a Probability Density  function (PDF) of a
  * 2D pose \f$ p(\mathbf{x}) = [x ~ y ~ \phi ]^t \f$.
@@ -219,6 +217,7 @@ class CPosePDFSOG : public CPosePDF
 		const double minMahalanobisDistToDrop = 0) override;
 
 };  // End of class def.
-}  // End of namespace
-}  // End of namespace
+}
 #endif
+
+

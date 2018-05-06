@@ -13,9 +13,7 @@
 #include <mrpt/hmtslam/CTopLCDetectorBase.h>
 #include <mrpt/slam/CGridMapAligner.h>
 
-namespace mrpt
-{
-namespace hmtslam
+namespace mrpt::hmtslam
 {
 /** \ingroup mrpt_hmtslam_grp */
 class CTopLCDetector_GridMatching : public CTopLCDetectorBase
@@ -69,6 +67,7 @@ class CTopLCDetector_GridMatching : public CTopLCDetectorBase
 			std::ostream& out) const override;  // See base docs
 	};
 };  // end class
-}  // end namespace
-}  // end namespace
+}
 #endif
+
+

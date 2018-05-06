@@ -10,9 +10,7 @@
 
 #include <mrpt/math/math_frwds.h>  // forward declarations
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 /** \name Container initializer from pose classes
   * @{
@@ -31,5 +29,5 @@ CONTAINER& containerFromPoseOrPoint(CONTAINER& C, const POINT_OR_POSE& p)
 
 /** @} */
 
-}  // End of math namespace
-}  // End of mrpt namespace
+}
+

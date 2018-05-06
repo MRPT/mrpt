@@ -12,9 +12,7 @@
 #include <stdexcept>
 #include <iosfwd>
 
-namespace mrpt
-{
-namespace config
+namespace mrpt::config
 {
 // Frwd. decls:
 class CConfigFileBase;
@@ -113,6 +111,5 @@ class CLoadableOptions
 		dumpVar_double(                                                      \
 			out, #variableName, RAD2DEG(static_cast<double>(variableName))); \
 	}
-
-}  // end NS config
 }  // end NS mrpt
+

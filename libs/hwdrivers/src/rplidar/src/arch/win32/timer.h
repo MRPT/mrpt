@@ -37,13 +37,11 @@
 
 #define delay(x) ::Sleep(x)
 
-namespace rp
-{
-namespace arch
+namespace rp::arch
 {
 void HPtimer_reset();
 _u32 getHDTimer();
 }
-}
-
 #define getms() rp::arch::getHDTimer()
+
+

@@ -18,9 +18,7 @@
 #include <mrpt/obs/obs_frwds.h>
 #include <mrpt/core/pimpl.h>
 
-namespace mrpt
-{
-namespace maps
+namespace mrpt::maps
 {
 /** A three-dimensional probabilistic occupancy grid, implemented as an
  * octo-tree with the "octomap" C++ library.
@@ -391,7 +389,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 		const mrpt::poses::CPose3D& takenFrom) override;
 
 };  // End of class def.
-}  // namespace maps
-}  // namespace mrpt
-
+}
 #endif
+
+

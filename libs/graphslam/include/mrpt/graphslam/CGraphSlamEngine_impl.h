@@ -18,9 +18,7 @@
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>
 
-namespace mrpt
-{
-namespace graphslam
+namespace mrpt::graphslam
 {
 
 template <class GRAPH_T>
@@ -2840,8 +2838,8 @@ void CGraphSlamEngine<GRAPH_T>::getDeformationEnergyVector(
 
 	MRPT_END;
 }
-
-} // end of namespace graphslam
 } // end of namespace mrpt
 
 #endif /* end of include guard: CGRAPHSLAMENGINE_IMPL_H */
+
+

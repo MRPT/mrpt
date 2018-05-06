@@ -11,9 +11,7 @@
 #include <mrpt/math/CProbabilityDensityFunction.h>
 #include <mrpt/poses/CPoint2D.h>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 /** Declares a class that represents a Probability Distribution function (PDF)
  * of a 2D point (x,y).
@@ -72,5 +70,5 @@ class CPoint2DPDF : public mrpt::serialization::CSerializable,
 	static inline bool is_PDF() { return is_PDF_val != 0; }
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
+}
+

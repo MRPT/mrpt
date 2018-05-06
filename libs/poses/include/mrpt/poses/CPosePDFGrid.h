@@ -13,9 +13,7 @@
 #include <mrpt/poses/CPose2DGridTemplate.h>
 #include <mrpt/core/bits_math.h>  // DEG2RAD()
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 /** Declares a class that represents a Probability Distribution
  *    function (PDF) of a 2D pose (x,y,phi).
@@ -85,6 +83,7 @@ class CPosePDFGrid : public CPosePDF, public CPose2DGridTemplate<double>
 		std::vector<mrpt::math::CVectorDouble>& outSamples) const override;
 
 };  // End of class def.
-}  // End of namespace
-}  // End of namespace
+}
 #endif
+
+

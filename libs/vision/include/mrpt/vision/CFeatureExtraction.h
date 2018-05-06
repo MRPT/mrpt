@@ -16,9 +16,7 @@
 #include <mrpt/vision/CFeature.h>
 #include <mrpt/vision/TSimpleFeature.h>
 
-namespace mrpt
-{
-namespace vision
+namespace mrpt::vision
 {
 /** The central class from which images can be analyzed in search of different
   *kinds of interest points and descriptors computed for them.
@@ -721,6 +719,7 @@ class CFeatureExtraction
 		const TImageROI& ROI = TImageROI()) const;
 
 };  // end of class
-}  // end of namespace
-}  // end of namespace
+}
 #endif
+
+

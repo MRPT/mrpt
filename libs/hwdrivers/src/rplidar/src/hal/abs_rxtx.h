@@ -35,9 +35,7 @@
 
 #include "rptypes.h"
 
-namespace rp
-{
-namespace hal
+namespace rp::hal
 {
 class serial_rxtx
 {
@@ -82,4 +80,4 @@ class serial_rxtx
 	volatile bool _is_serial_opened;
 };
 }
-}
+

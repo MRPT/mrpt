@@ -11,9 +11,7 @@
 #include <mrpt/io/CStream.h>
 #include <fstream>
 
-namespace mrpt
-{
-namespace io
+namespace mrpt::io
 {
 /** This CStream derived class allow using a file as a read-only, binary stream.
  *
@@ -71,5 +69,5 @@ class CFileInputStream : public CStream
 	size_t Read(void* Buffer, size_t Count) override;
 	size_t Write(const void* Buffer, size_t Count) override;
 };  // End of class def.
-}  // End of namespace
-}  // end of namespace
+}
+

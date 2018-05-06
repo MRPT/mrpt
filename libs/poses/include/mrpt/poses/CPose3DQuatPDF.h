@@ -14,9 +14,7 @@
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/CProbabilityDensityFunction.h>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 class CPosePDF;
 class CPose3DPDF;
@@ -113,7 +111,7 @@ class CPose3DQuatPDF
 	}
 
 };  // End of class def.
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

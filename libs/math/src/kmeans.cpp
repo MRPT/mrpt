@@ -21,11 +21,7 @@ using namespace std;
 using namespace mrpt;
 using namespace mrpt::math;
 
-namespace mrpt
-{
-namespace math
-{
-namespace detail
+namespace mrpt::math::detail
 {
 /* -------------------------------------------
 				 internal_kmeans
@@ -66,5 +62,5 @@ double internal_kmeans<float>(
 	return ret;
 }
 }
-}
-}
+
+

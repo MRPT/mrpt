@@ -13,11 +13,7 @@
 
 #if MRPT_HAS_OPENCV
 
-namespace mrpt
-{
-namespace vision
-{
-namespace pnp
+namespace mrpt::vision::pnp
 {
 /** \addtogroup pnp Perspective-n-Point pose estimation
  *  \ingroup mrpt_vision_grp
@@ -273,7 +269,7 @@ class epnp
 
 /** @}  */  // end of grouping
 }
-}
-}
 #endif
 #endif
+
+

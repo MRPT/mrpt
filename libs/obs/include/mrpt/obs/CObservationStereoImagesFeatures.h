@@ -17,9 +17,7 @@
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/poses/CPose2D.h>
 
-namespace mrpt
-{
-namespace obs
+namespace mrpt::obs
 {
 struct TStereoImageFeatures
 {
@@ -117,7 +115,7 @@ class CObservationStereoImagesFeatures : public CObservation
 	}
 };  // End of class def.
 
-}  // namespace obs
-}  // namespace mrpt
-
+}
 #endif
+
+

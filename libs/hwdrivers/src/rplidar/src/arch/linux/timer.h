@@ -47,13 +47,11 @@ static inline void delay(_word_size_t ms)
 }
 
 // TODO: the highest timer interface should be clock_gettime
-namespace rp
-{
-namespace arch
+namespace rp::arch
 {
 _u64 rp_getus();
 _u32 rp_getms();
 }
-}
-
 #define getms() rp::arch::rp_getms()
+
+

@@ -282,11 +282,7 @@ void CSimplePointsMap::insertPointFast(float x, float y, float z)
 	m_z.push_back(z);
 }
 
-namespace mrpt
-{
-namespace maps
-{
-namespace detail
+namespace mrpt::maps::detail
 {
 using mrpt::maps::CSimplePointsMap;
 
@@ -372,9 +368,6 @@ struct pointmap_traits<CSimplePointsMap>
 	}
 };
 }
-}
-}
-
 /** See CPointsMap::loadFromRangeScan() */
 void CSimplePointsMap::loadFromRangeScan(
 	const CObservation2DRangeScan& rangeScan, const CPose3D* robotPose)
@@ -400,3 +393,5 @@ void CSimplePointsMap::PLY_import_set_vertex_count(const size_t N)
 {
 	this->setSize(N);
 }
+
+

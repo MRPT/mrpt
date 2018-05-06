@@ -20,9 +20,7 @@
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/kinematics/CVehicleVelCmd.h>
 
-namespace mrpt
-{
-namespace nav
+namespace mrpt::nav
 {
 /** A class for storing, saving and loading a reactive navigation
  *   log record for the CReactiveNavigationSystem class.
@@ -133,6 +131,6 @@ class CLogFileRecord : public mrpt::serialization::CSerializable
 		ptg_last_navDynState;
 };
 }
-}
-
 #endif
+
+

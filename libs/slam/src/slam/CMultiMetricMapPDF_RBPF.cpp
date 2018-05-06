@@ -36,9 +36,7 @@ using namespace mrpt::poses;
 using namespace mrpt::random;
 using namespace std;
 
-namespace mrpt
-{
-namespace slam
+namespace mrpt::slam
 {
 /** Fills out a "TPoseBin2D" variable, given a path hypotesis and (if not set to
  * nullptr) a new pose appended at the end, using the KLD params in "options".
@@ -106,7 +104,6 @@ void KLF_loadBinFromParticle(
 		outBin.bins[lenBinPath].phi =
 			round(newPoseToBeInserted->yaw / opts.KLD_binSize_PHI);
 	}
-}
 }
 }
 

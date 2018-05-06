@@ -20,9 +20,7 @@
 // Fwdr decl:
 class vtkStructuredGrid;
 
-namespace mrpt
-{
-namespace maps
+namespace mrpt::maps
 {
 /** The contents of each voxel in a CRandomFieldGridMap3D map.
   * \ingroup mrpt_maps_grp
@@ -290,5 +288,5 @@ class CRandomFieldGridMap3D
 	std::deque<TPriorFactorGMRF> m_mrf_factors_priors;
 };
 
-}  // End of namespace
-}  // End of namespace
+}
+

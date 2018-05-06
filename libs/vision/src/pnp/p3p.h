@@ -15,11 +15,7 @@
 #include <Eigen/SVD>
 #include <mrpt/otherlibs/do_opencv_includes.h>
 
-namespace mrpt
-{
-namespace vision
-{
-namespace pnp
+namespace mrpt::vision::pnp
 {
 /** \addtogroup pnp Perspective-n-Point pose estimation
  *  \ingroup mrpt_vision_grp
@@ -219,7 +215,6 @@ class p3p
 
 /** @}  */  // end of grouping
 }
-}
-}
-
 #endif  // P3P_H
+
+

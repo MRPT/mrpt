@@ -14,9 +14,7 @@
 
 // Implementattion file for TUncertaintyPath struct
 
-namespace mrpt
-{
-namespace graphslam
+namespace mrpt::graphslam
 {
 template <class GRAPH_T>
 TUncertaintyPath<GRAPH_T>::TUncertaintyPath()
@@ -300,7 +298,8 @@ bool TUncertaintyPath<GRAPH_T>::hasLowerUncertaintyThan(
 
 	return has_lower;
 }
-}
 }  // end of namespaces
 
 #endif /* end of include guard: TUNCERTAINTYPATH_IMPL_H */
+
+

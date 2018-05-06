@@ -11,9 +11,7 @@
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 /** Draw a 3D world axis, with coordinate marks at some regular interval
   *  \sa opengl::COpenGLScene
@@ -86,7 +84,7 @@ class CAxis : public CRenderizableDisplayList
 	virtual ~CAxis() {}
 };
 
-}  // end namespace
-}  // End of namespace
-
+}
 #endif
+
+

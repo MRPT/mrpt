@@ -29,9 +29,7 @@
 
 static std::vector<unsigned> DEFAULT_VECTOR_U;
 
-namespace mrpt
-{
-namespace pbmap
+namespace mrpt::pbmap
 {
 /*! This class arranges the planes of a PbMap into groups according to a
  * co-visibility measure
@@ -475,7 +473,7 @@ class SemanticClustering
 	};
 };
 }
-}  // End of namespaces
+#endif
+#endif
 
-#endif
-#endif
+

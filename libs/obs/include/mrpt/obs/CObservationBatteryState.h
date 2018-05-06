@@ -14,9 +14,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose2D.h>
 
-namespace mrpt
-{
-namespace obs
+namespace mrpt::obs
 {
 /** This represents a measurement of the batteries on the robot.
  *  The battery levels are in volts in the form of the public members:
@@ -70,7 +68,7 @@ class CObservationBatteryState : public CObservation
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

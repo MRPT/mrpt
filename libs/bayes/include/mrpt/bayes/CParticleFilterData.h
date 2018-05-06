@@ -16,9 +16,7 @@
 #include <deque>
 #include <algorithm>
 
-namespace mrpt
-{
-namespace bayes
+namespace mrpt::bayes
 {
 class CParticleFilterCapable;
 
@@ -303,5 +301,5 @@ class CParticleFilterData
 
 };  // End of class def.
 
-}  // namespace bayes
-}  // namespace mrpt
+}
+

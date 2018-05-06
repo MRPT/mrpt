@@ -25,9 +25,7 @@
 #define HAS_BROKEN_CLANG_STD_VISIT
 #endif
 
-namespace mrpt
-{
-namespace serialization
+namespace mrpt::serialization
 {
 class CMessage;
 
@@ -554,6 +552,6 @@ CArchiveStreamBase<STREAM> archiveFrom(STREAM& s)
 {
 	return CArchiveStreamBase<STREAM>(s);
 }
-
-}  // namespace serialization
 }  // namespace mrpt
+
+

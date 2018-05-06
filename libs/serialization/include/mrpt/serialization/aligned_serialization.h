@@ -9,11 +9,9 @@
 #pragma once
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/core/aligned_std_vector.h>
-namespace mrpt
-{
-namespace serialization
+namespace mrpt::serialization
 {
 CArchive& operator>>(CArchive& s, mrpt::aligned_std_vector<float>& a);
 CArchive& operator<<(CArchive& s, const mrpt::aligned_std_vector<float>& a);
-}  // End of namespace
-}  // End of namespace
+}
+

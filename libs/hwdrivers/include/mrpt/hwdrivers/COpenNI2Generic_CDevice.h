@@ -11,9 +11,7 @@
 
 /** @file Include this file only from your user code if you have OPENNI2 */
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 class COpenNI2Generic::CDevice
 {
@@ -239,4 +237,4 @@ class COpenNI2Generic::CDevice
 #endif  // MRPT_HAS_OPENNI2
 };
 }
-}
+

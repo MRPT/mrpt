@@ -13,9 +13,7 @@
 #include <mrpt/graphs/TNodeID.h>
 #include <sstream>
 
-namespace mrpt
-{
-namespace graphs
+namespace mrpt::graphs
 {
 /** A special kind of graph in the form of a tree with directed edges and
  *optional edge annotations of templatized type "TYPE_EDGES".
@@ -198,6 +196,7 @@ class CDirectedTree
 };
 
 /** @} */
-}  // namespace graphs
-}  // namespace mrpt
+}
 #endif
+
+

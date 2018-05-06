@@ -16,9 +16,7 @@
 /*---------------------------------------------------------------
 	Class
   ---------------------------------------------------------------*/
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** A generic class which process a video file or other kind of input stream
  * (http, rtsp) and allows the extraction of images frame by frame.
@@ -94,6 +92,6 @@ class CFFMPEG_InputStream
 	bool retrieveFrame(mrpt::img::CImage& out_img);
 };
 }
-}
-
 #endif
+
+

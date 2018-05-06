@@ -622,11 +622,7 @@ void CObservation3DRangeScan::rangeImage_convertToExternalStorage(
 
 #define CALIB_DECIMAT 15
 
-namespace mrpt
-{
-namespace obs
-{
-namespace detail
+namespace mrpt::obs::detail
 {
 struct TLevMarData
 {
@@ -713,9 +709,7 @@ void cost_func(
 		}
 	}
 }  // end error_func
-}  // namespace detail
-}  // namespace obs
-}  // namespace mrpt
+}
 
 /** A Levenberg-Marquart-based optimizer to recover the calibration parameters
  * of a 3D camera given a range (depth) image and the corresponding 3D point

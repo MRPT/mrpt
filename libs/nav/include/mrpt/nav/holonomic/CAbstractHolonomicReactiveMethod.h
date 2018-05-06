@@ -18,9 +18,7 @@
 
 #include "CHolonomicLogFileRecord.h"
 
-namespace mrpt
-{
-namespace nav
+namespace mrpt::nav
 {
 /** \addtogroup nav_holo Holonomic navigation methods
   * \ingroup mrpt_nav_grp
@@ -137,6 +135,6 @@ class CAbstractHolonomicReactiveMethod
 };
 /** @} */
 }
-}
-
 #endif
+
+

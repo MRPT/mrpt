@@ -16,9 +16,7 @@
 
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 
-namespace mrpt
-{
-namespace nav
+namespace mrpt::nav
 {
 /** \addtogroup nav_planners Path planning
  * \ingroup mrpt_nav_grp
@@ -294,5 +292,5 @@ struct PoseDistanceMetric<TNodeSE2_TP>
 using TMoveTreeSE2_TP = TMoveTree<TNodeSE2_TP, TMoveEdgeSE2_TP>;
 
 /** @} */
-}  // namespace nav
-}  // namespace mrpt
+}
+

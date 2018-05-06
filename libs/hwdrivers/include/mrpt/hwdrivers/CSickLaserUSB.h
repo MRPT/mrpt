@@ -12,9 +12,7 @@
 #include <mrpt/hwdrivers/C2DRangeFinderAbstract.h>
 #include <mrpt/comms/CInterfaceFTDI.h>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** This "software driver" implements the communication protocol for interfacing
  * a SICK LMS2XX laser scanners through a custom USB RS-422 interface board.
@@ -128,7 +126,7 @@ class CSickLaserUSB : public C2DRangeFinderAbstract
 
 };  // End of class
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

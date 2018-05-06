@@ -13,9 +13,7 @@
 #include <mrpt/maps/CRandomFieldGridMap2D.h>
 #include <mrpt/obs/CObservationGasSensors.h>
 
-namespace mrpt
-{
-namespace maps
+namespace mrpt::maps
 {
 /** CGasConcentrationGridMap2D represents a PDF of gas concentrations over a 2D
  * area.
@@ -179,8 +177,7 @@ class CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
 	MAP_DEFINITION_END(CGasConcentrationGridMap2D)
 };
 
-}  // End of namespace
-
-}  // End of namespace
-
+}
 #endif
+
+

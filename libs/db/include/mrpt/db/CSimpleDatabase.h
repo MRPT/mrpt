@@ -11,9 +11,7 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <map>
 
-namespace mrpt
-{
-namespace db
+namespace mrpt::db
 {
 /**  This class implements the tables of databases.
  * \sa CSimpleDatabase \ingroup mrpt_base_grp
@@ -192,5 +190,5 @@ class CSimpleDatabase : public mrpt::serialization::CSerializable
 	TTableList m_tables;
 
 };  // end of class definition
-}  // namespace db
-}  // namespace mrpt
+}
+
