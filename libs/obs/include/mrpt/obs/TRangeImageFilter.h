@@ -11,9 +11,7 @@
 
 #include <mrpt/math/CMatrix.h>
 
-namespace mrpt
-{
-namespace obs
+namespace mrpt::obs
 {
 /** Used in CObservation3DRangeScan::project3DPointsFromDepthImageInto() */
 struct TRangeImageFilterParams
@@ -91,8 +89,9 @@ bool TRangeImageFilter::do_range_filter(size_t r, size_t c, const float D) const
 	}
 	else
 		return pass_gt && pass_lt;
-}  // do_range_filter()
 }
 }  // End of namespaces
 
 #endif
+
+

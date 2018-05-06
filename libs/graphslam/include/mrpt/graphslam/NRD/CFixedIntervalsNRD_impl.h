@@ -10,11 +10,7 @@
 #ifndef CFIXEDINTERVALSNRD_IMPL_H
 #define CFIXEDINTERVALSNRD_IMPL_H
 
-namespace mrpt
-{
-namespace graphslam
-{
-namespace deciders
+namespace mrpt::graphslam::deciders
 {
 // Ctors, Dtors
 //////////////////////////////////////////////////////////////
@@ -296,8 +292,8 @@ std::string CFixedIntervalsNRD<GRAPH_T>::TParams::getAsString() const
 
 	MRPT_END;
 }
-}
-}
 }  // end of namespaces
 
 #endif /* end of include guard: CFIXEDINTERVALSNRD_IMPL_H */
+
+

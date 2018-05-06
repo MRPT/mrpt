@@ -28,9 +28,7 @@ extern "C" {
 #endif
 }
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 /** Used in mrpt::math::CSparseMatrix */
 struct CExceptionNotDefPos : public std::runtime_error
@@ -507,5 +505,5 @@ class CSparseMatrix
 	/** @} */
 
 };  // end class CSparseMatrix
-}  // namespace math
-}  // namespace mrpt
+}
+

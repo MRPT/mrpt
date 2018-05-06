@@ -14,9 +14,7 @@
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/ops_vectors.h>
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 /** \addtogroup stats_grp Statistics functions, probability distributions
   *  \ingroup mrpt_math_grp
@@ -258,5 +256,5 @@ void confidenceIntervals(
 
 /** @} */
 
-}  // End of MATH namespace
-}  // End of namespace
+}
+

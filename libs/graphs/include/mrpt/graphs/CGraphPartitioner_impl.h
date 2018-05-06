@@ -11,9 +11,7 @@
 #error "This file can't be included from outside of CGraphPartitioner.h"
 #endif
 
-namespace mrpt
-{
-namespace graphs
+namespace mrpt::graphs
 {
 /*---------------------------------------------------------------
 					SpectralPartition
@@ -351,5 +349,5 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::exactBisection(
 	}
 }
 
-}  // namespace graphs
-}  // namespace mrpt
+}
+

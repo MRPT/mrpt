@@ -11,9 +11,7 @@
 
 #include <mrpt/opengl/CGeneralizedEllipsoidTemplate.h>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 /** An especial "ellipsoid" in 3D computed as the uncertainty iso-surfaces of a
  * (inv_range,yaw) variable.
@@ -77,8 +75,7 @@ class CEllipsoidInverseDepth2D : public CGeneralizedEllipsoidTemplate<2>
 	virtual ~CEllipsoidInverseDepth2D() {}
 };
 
-}  // end namespace
-
-}  // End of namespace
-
+}
 #endif
+
+

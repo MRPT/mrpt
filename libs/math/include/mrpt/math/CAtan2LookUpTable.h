@@ -11,9 +11,7 @@
 #include <mrpt/containers/CDynamicGrid.h>
 #include <map>
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 /** A look-up-table (LUT) of atan values for any (x,y) value in a
  * square/rectangular grid of predefined resolution
@@ -82,5 +80,5 @@ class CAtan2LookUpTableMultiRes
 	std::map<double, mrpt::containers::CDynamicGrid<double>> m_grids;
 };
 
-}  // end NS math
-}  // end NS mrpt
+}
+

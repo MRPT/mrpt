@@ -12,9 +12,7 @@
 #include <mrpt/obs/CAction.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 
-namespace mrpt
-{
-namespace obs
+namespace mrpt::obs
 {
 /** Represents a probabilistic 3D (6D) movement.
 *   Currently this can be determined from visual odometry for full 6D, or from
@@ -119,7 +117,7 @@ class CActionRobotMovement3D : public CAction
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

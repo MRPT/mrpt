@@ -9,11 +9,7 @@
 #ifndef CRANGESCANEDGEREGISTRATIONDECIDER_IMPL_H
 #define CRANGESCANEDGEREGISTRATIONDECIDER_IMPL_H
 
-namespace mrpt
-{
-namespace graphslam
-{
-namespace deciders
+namespace mrpt::graphslam::deciders
 {
 template <class GRAPH_T>
 CRangeScanEdgeRegistrationDecider<GRAPH_T>::CRangeScanEdgeRegistrationDecider()
@@ -48,8 +44,8 @@ void CRangeScanEdgeRegistrationDecider<GRAPH_T>::printParams() const
 
 	MRPT_END;
 }
-}
-}
 }  // end of namespaces
 
 #endif /* end of include guard: CRANGESCANEDGEREGISTRATIONDECIDER_IMPL_H */
+
+

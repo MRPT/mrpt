@@ -11,9 +11,7 @@
 #include <mrpt/img/TCamera.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
-namespace mrpt
-{
-namespace img
+namespace mrpt::img
 {
 /** Structure to hold the parameters of a pinhole stereo camera model.
  *  The parameters obtained for one camera resolution can be used for any other
@@ -89,5 +87,5 @@ class TStereoCamera : public mrpt::serialization::CSerializable
 	}
 
 };  // end class TStereoCamera
-}  // namespace img
-}  // namespace mrpt
+}
+

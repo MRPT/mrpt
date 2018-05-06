@@ -11,9 +11,7 @@
 #include <mrpt/poses/CPose.h>
 #include <mrpt/serialization/CSerializable.h>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 class CPose3D;
 /** A class used to store a 2D pose, including the 2D coordinate point and a
@@ -362,5 +360,5 @@ mrpt::math::TPoint2D operator+(
 bool operator==(const CPose2D& p1, const CPose2D& p2);
 bool operator!=(const CPose2D& p1, const CPose2D& p2);
 
-}  // namespace poses
-}  // namespace mrpt
+}
+

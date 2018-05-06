@@ -45,9 +45,7 @@
 #define MSG_SOURCE_LSLAM 1
 #define MSG_SOURCE_AA 2
 
-namespace mrpt
-{
-namespace hmtslam
+namespace mrpt::hmtslam
 {
 class CHMHMapArc;
 class CHMHMapNode;
@@ -116,7 +114,7 @@ class TArcList : public mrpt::containers::list_searchable<
 	void write(mrpt::serialization::CArchive& out) const;
 };
 
-}  // namespace hmtslam
-}  // namespace mrpt
-
+}
 #endif
+
+

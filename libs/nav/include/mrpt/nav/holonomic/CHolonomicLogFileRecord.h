@@ -12,9 +12,7 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/math/CMatrixD.h>
 
-namespace mrpt
-{
-namespace nav
+namespace mrpt::nav
 {
 /** \addtogroup nav_holo Holonomic navigation methods
  * \ingroup mrpt_nav_grp
@@ -40,7 +38,7 @@ class CHolonomicLogFileRecord : public mrpt::serialization::CSerializable
 };
 
 /** @} */
-}  // namespace nav
-}  // namespace mrpt
-
+}
 #endif
+
+

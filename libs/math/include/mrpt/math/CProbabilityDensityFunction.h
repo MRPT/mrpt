@@ -12,9 +12,7 @@
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/math_frwds.h>
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 /** A generic template for probability density distributions (PDFs).
  * This template is used as base for many classes in mrpt::poses
@@ -178,5 +176,5 @@ class CProbabilityDensityFunction
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
+}
+

@@ -13,9 +13,7 @@
 #include <map>
 #include <vector>
 
-namespace mrpt
-{
-namespace containers
+namespace mrpt::containers
 {
 /** A STL-like container which looks and behaves (almost exactly) like a
  * std::map<> but is implemented as a linear std::vector<> indexed by KEY.
@@ -161,6 +159,7 @@ class map_as_vector
 
 };  // end class map_as_vector
 
-}  // End of namespace
-}  // End of namespace
+}
 #endif
+
+

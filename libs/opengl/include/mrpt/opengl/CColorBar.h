@@ -12,9 +12,7 @@
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/img/color_maps.h>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 /** A colorbar indicator. This class renders a colorbar as a 3D object, in the
  * XY plane.
@@ -92,5 +90,5 @@ class CColorBar : public CRenderizableDisplayList
 		/** Label text font size */
 		double label_font_size = .05);
 };
-}  // namespace opengl
-}  // namespace mrpt
+}
+

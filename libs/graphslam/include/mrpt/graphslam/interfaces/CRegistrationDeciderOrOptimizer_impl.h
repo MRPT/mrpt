@@ -10,9 +10,7 @@
 #ifndef CREGISTRATIONDECIDEROROPTIMIZER_IMPL_H
 #define CREGISTRATIONDECIDEROROPTIMIZER_IMPL_H
 
-namespace mrpt
-{
-namespace graphslam
+namespace mrpt::graphslam
 {
 template <class GRAPH_T>
 const std::string CRegistrationDeciderOrOptimizer<GRAPH_T>::header_sep =
@@ -147,7 +145,8 @@ bool CRegistrationDeciderOrOptimizer<GRAPH_T>::isMultiRobotSlamClass()
 {
 	return is_mr_slam_class;
 }
-}
 }  // end of namespaces
 
 #endif /* end of include guard: CREGISTRATIONDECIDEROROPTIMIZER_IMPL_H */
+
+

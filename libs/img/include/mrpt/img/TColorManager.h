@@ -14,9 +14,7 @@
 #include <cstdlib>
 #include <iostream>
 
-namespace mrpt
-{
-namespace img
+namespace mrpt::img
 {
 // TODO - finish this.
 /**\brief Manage R, G, B color triads and ask class instance of the next
@@ -78,5 +76,5 @@ struct TColorManager
 	/**\brief Mark the given color as used. */
 	void markColorAsUsed(mrpt::img::TColor color);
 };
-}  // namespace img
-}  // namespace mrpt
+}
+

@@ -11,9 +11,7 @@
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/poses/poses_frwds.h>  // All these are needed for the auxiliary methods posePDF2opengl()
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 /** A set of object, which are referenced to the coordinates framework
  *established in this object.
@@ -206,7 +204,6 @@ typename T::Ptr CSetOfObjects::getByClass(const size_t& ith) const
 	return typename T::Ptr();  // Not found: return empty smart pointer
 	MRPT_END
 }
-
-}  // namespace opengl
-
 }  // namespace mrpt
+
+

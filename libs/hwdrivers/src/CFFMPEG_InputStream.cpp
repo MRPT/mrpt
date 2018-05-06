@@ -34,10 +34,9 @@ using namespace mrpt::hwdrivers;
 // JLBC: This file takes portions of code from the example
 // "avcodec_sample.0.4.9.cpp"
 #if MRPT_HAS_FFMPEG
-namespace mrpt
+namespace mrpt::hwdrivers
 {
-namespace hwdrivers
-{
+
 // All context for ffmpeg:
 struct TFFMPEGContext
 {
@@ -50,7 +49,6 @@ struct TFFMPEGContext
 	SwsContext* img_convert_ctx;
 	std::vector<uint8_t> buffer;
 };
-}
 }
 #endif
 

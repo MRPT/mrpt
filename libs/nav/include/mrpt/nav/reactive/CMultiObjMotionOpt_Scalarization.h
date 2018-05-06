@@ -10,9 +10,7 @@
 
 #include <mrpt/nav/reactive/CMultiObjectiveMotionOptimizerBase.h>
 
-namespace mrpt
-{
-namespace nav
+namespace mrpt::nav
 {
 /** Implementation of multi-objective motion chooser using scalarization: a
  * user-given formula is used to
@@ -65,4 +63,4 @@ class CMultiObjMotionOpt_Scalarization
 		TResultInfo& extra_info) override;
 };
 }
-}
+

@@ -25,9 +25,7 @@ using namespace mrpt::serialization;  // CArchive, << operator for STL
 using mrpt::DEG2RAD;
 using mrpt::RAD2DEG;
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 TPoint2D::TPoint2D(const TPose2D& p) : x(p.x), y(p.y) {}
 TPoint2D::TPoint2D(const TPoint3D& p) : x(p.x), y(p.y) {}
@@ -1629,5 +1627,6 @@ CArchive& operator<<(CArchive& out, const mrpt::math::TObject3D& o)
 	}
 	return out;
 }
-}  // namespace math
 }  // namespace mrpt
+
+

@@ -14,9 +14,7 @@
 #include <mrpt/comms/CSerialPort.h>
 #include <mrpt/poses/CPose3D.h>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 // clang-format off
 /** A class for interfacing Intersense Inertial Measuring Units (IMUs).
@@ -121,7 +119,7 @@ class CIMUIntersense : public hwdrivers::CGenericSensor
 
 };  // end of class
 
-}  // end of namespace
-}  // end of namespace
-
+}
 #endif
+
+

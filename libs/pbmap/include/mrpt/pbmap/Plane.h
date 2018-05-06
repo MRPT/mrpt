@@ -31,9 +31,7 @@
 
 static std::vector<size_t> DEFAULT_VECTOR;
 
-namespace mrpt
-{
-namespace pbmap
+namespace mrpt::pbmap
 {
 /** A class used to store a planar feature (Plane for short).
  *  It is described with geometric features representing the shape and relative
@@ -219,8 +217,8 @@ normal
 	//    vector<vector<float> > HSV;
 };
 }
-}  // End of namespaces
-
 #endif
 
 #endif
+
+

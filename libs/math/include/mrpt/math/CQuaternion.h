@@ -14,9 +14,7 @@
 #include <mrpt/core/exceptions.h>
 #include <mrpt/core/bits_math.h>  // square()
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 // For use with a constructor of CQuaternion
 enum TConstructorFlags_Quaternions
@@ -505,5 +503,5 @@ using CQuaternionDouble = CQuaternion<double>;
 /** A quaternion of data type "float" */
 using CQuaternionFloat = CQuaternion<float>;
 
-}  // namespace math
-}  // end namespace mrpt
+}
+

@@ -12,9 +12,7 @@
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/poses/CPose3D.h>
 
-namespace mrpt
-{
-namespace obs
+namespace mrpt::obs
 {
 /** Declares a class derived from "CObservation" that encapsules a single
  * short-range reflectivity measurement.
@@ -61,7 +59,7 @@ class CObservationReflectivity : public CObservation
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

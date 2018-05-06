@@ -19,9 +19,7 @@
 #endif
 #include <mrpt/math/math_frwds.h>
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 #if MRPT_HAS_MATLAB
 /** \addtogroup matlab_grp Helper functions for MEX & MATLAB
@@ -64,6 +62,6 @@ mxArray* convertVectorToMatlab(const CONTAINER& vec)
 /** @} */
 #endif
 }
-}
-
 #endif
+
+

@@ -14,9 +14,7 @@
 #include <cstdint>
 #include <sstream>
 
-namespace mrpt
-{
-namespace system
+namespace mrpt::system
 {
 /** \addtogroup string_manage String management and utilities (in #include
  * <mrpt/system/string_utils.h>)
@@ -155,5 +153,5 @@ T str2num(std::string const& value)
 /**\}*/
 
 /** @} */
-}  // namespace system
-}  // namespace mrpt
+}
+

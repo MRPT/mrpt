@@ -11,9 +11,7 @@
 #include <map>
 #include <vector>
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 /** A sparse matrix container (with cells of any type), with iterators.
  *  This class stores only those elements created by assigning them a value,
@@ -446,5 +444,5 @@ class CSparseSymmetricalMatrix : public CSparseMatrixTemplate<T>
 	}
 
 };  // end of CSparseSymmetricalMatrix
-}  // namespace math
-}  // namespace mrpt
+}
+

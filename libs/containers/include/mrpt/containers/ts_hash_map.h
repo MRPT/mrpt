@@ -13,9 +13,7 @@
 #include <array>
 #include <stdexcept>
 
-namespace mrpt
-{
-namespace containers
+namespace mrpt::containers
 {
 template <typename KEY, typename VALUE>
 struct ts_map_entry
@@ -253,5 +251,5 @@ class ts_hash_map
 
 };  // end class ts_hash_map
 
-}  // namespace containers
-}  // namespace mrpt
+}
+

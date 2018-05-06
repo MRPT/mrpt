@@ -11,9 +11,7 @@
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 /** A set of independent lines (or segments), one line with its own start and
  * end positions (X,Y,Z).
@@ -273,5 +271,6 @@ inline CSetOfLines::Ptr& operator<<(
 	l->appendLine(s);
 	return l;
 }
-}  // namespace opengl
 }  // namespace mrpt
+
+

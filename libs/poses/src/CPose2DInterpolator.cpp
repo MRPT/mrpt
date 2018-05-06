@@ -37,9 +37,7 @@ void CPose2DInterpolator::serializeFrom(
 	};
 }
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 // Specialization for DIM=2
 template <>
@@ -152,4 +150,4 @@ void CPoseInterpolatorBase<2>::impl_interpolation(
 // Explicit instantations:
 template class CPoseInterpolatorBase<2>;
 }
-}
+

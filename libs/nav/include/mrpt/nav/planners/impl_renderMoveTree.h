@@ -17,9 +17,7 @@
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CText3D.h>
 
-namespace mrpt
-{
-namespace nav
+namespace mrpt::nav
 {
 template <typename node_pose_t, typename world_limits_t, typename tree_t>
 void PlannerTPS_VirtualBase::renderMoveTree(
@@ -331,4 +329,4 @@ void PlannerTPS_VirtualBase::renderMoveTree(
 
 }  // end renderMoveTree()
 }
-}
+

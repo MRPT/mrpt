@@ -13,9 +13,7 @@
 #include <mrpt/obs/CObservationWirelessPower.h>
 #include <mrpt/config/CConfigFileBase.h>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** This class implements a wireless power probe.
   *  \sa mrpt::maps::CWirelessPowerGridMap2D,
@@ -92,6 +90,7 @@ class CWirelessPower : public mrpt::hwdrivers::CGenericSensor
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
+}
 #endif
+
+

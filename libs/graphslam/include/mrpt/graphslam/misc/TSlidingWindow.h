@@ -15,9 +15,7 @@
 #include <string>
 #include <vector>
 
-namespace mrpt
-{
-namespace graphslam
+namespace mrpt::graphslam
 {
 /**\brief Class to monitor the evolution of a statistical quantity.
  *
@@ -116,5 +114,6 @@ struct TSlidingWindow : public mrpt::config::CLoadableOptions
 	bool m_is_initialized;
 };
 }
-}  // end of namespaces
 #endif /* end of include guard: TSLIDINGWINDOW_H */
+
+

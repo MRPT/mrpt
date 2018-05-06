@@ -10,11 +10,7 @@
 
 #include "gnss_messages_common.h"
 
-namespace mrpt
-{
-namespace obs
-{
-namespace gnss
+namespace mrpt::obs::gnss
 {
 // Pragma to ensure we can safely serialize some of these structures
 #pragma pack(push, 1)
@@ -237,6 +233,5 @@ struct Message_NMEA_ZDA : public gnss_message
 	bool getAllFieldValues(std::ostream& o) const override;
 };
 #pragma pack(pop)  // End of pack = 1
-}  // namespace gnss
-}  // namespace obs
-}  // namespace mrpt
+}
+

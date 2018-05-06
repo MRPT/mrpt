@@ -15,9 +15,7 @@
 #include <future>
 #include <list>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** A client for NTRIP (HTTP) sources of differential GPS corrections from
   *internet servers, or Global navigation satellite system (GNSS) internet
@@ -191,8 +189,7 @@ class CNTRIPClient
 
 };  // End of class
 
-}  // End of namespace
-
-}  // End of namespace
-
+}
 #endif
+
+

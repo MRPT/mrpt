@@ -17,9 +17,7 @@
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/math/CSparseMatrix.h>
 
-namespace mrpt
-{
-namespace graphslam
+namespace mrpt::graphslam
 {
 /** Optimize a graph of pose constraints using the Sparse Pose Adjustment (SPA)
  *sparse representation and a Levenberg-Marquardt optimizer.
@@ -716,7 +714,7 @@ void optimize_graph_spa_levmarq(
 
 /**  @} */  // end of grouping
 
-}  // namespace graphslam
-}  // namespace mrpt
-
+}
 #endif
+
+

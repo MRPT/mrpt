@@ -11,9 +11,7 @@
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 class CCylinder;
 /** A cylinder or cone whose base lies in the XY plane.
@@ -205,5 +203,6 @@ class CCylinder : public CRenderizableDisplayList
 	}
 };
 }
-}
 #endif
+
+

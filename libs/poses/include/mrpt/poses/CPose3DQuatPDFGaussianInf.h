@@ -14,9 +14,7 @@
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/math/CMatrixD.h>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 class CPosePDFGaussian;
 class CPose3DPDFGaussian;
@@ -166,7 +164,7 @@ CPose3DQuatPDFGaussianInf operator-(
 std::ostream& operator<<(
 	std::ostream& out, const CPose3DQuatPDFGaussianInf& obj);
 
-}  // End of namespace
-
-}  // End of namespace
+}
 #endif
+
+

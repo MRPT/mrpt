@@ -11,9 +11,7 @@
 
 #include <mrpt/obs/CObservationStereoImages.h>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** Options used when creating a STOC Videre Design camera capture object
   * \ingroup mrpt_hwdrivers_grp
@@ -119,7 +117,7 @@ static_assert(
 	!std::is_copy_constructible<CStereoGrabber_SVS>::value &&
 		!std::is_copy_assignable<CStereoGrabber_SVS>::value,
 	"Copy Check");
-}  // End of NS
-}  // End of NS
-
+}
 #endif
+
+

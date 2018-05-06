@@ -10,9 +10,7 @@
 
 #include <mrpt/system/CTicTac.h>
 
-namespace mrpt
-{
-namespace system
+namespace mrpt::system
 {
 /** A class for calling sleep() in a loop, such that the amount of sleep time
  * will be computed
@@ -42,5 +40,5 @@ class CRateTimer
 	mrpt::system::CTicTac m_tictac;
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
+}
+

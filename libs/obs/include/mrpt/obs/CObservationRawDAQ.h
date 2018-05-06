@@ -12,9 +12,7 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/obs/CObservation.h>
 
-namespace mrpt
-{
-namespace obs
+namespace mrpt::obs
 {
 /** Store raw data from a Data Acquisition (DAQ) device, such that input or
  * output analog and digital channels, counters from encoders, etc. at one
@@ -102,7 +100,7 @@ class CObservationRawDAQ : public CObservation
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

@@ -3,8 +3,8 @@
 
 #include <sophus/types.hpp>
 
-namespace Sophus {
-namespace details {
+namespace Sophus::details
+{
 
 template <class Scalar>
 class Pretty {
@@ -42,8 +42,6 @@ void processTestResult(bool passed) {
   }
   std::cerr << "passed." << std::endl << std::endl;
 }
-}  // namespace Sophus
-
 #define SOPHUS_STRINGIFY(x) #x
 
 // GenericTests whether condition is true.
@@ -107,3 +105,5 @@ void processTestResult(bool passed) {
   } while (false)
 
 #endif  // SOPUHS_TESTS_MACROS_HPP
+
+

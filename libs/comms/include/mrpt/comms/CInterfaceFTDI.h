@@ -14,9 +14,7 @@
 
 #include <deque>
 
-namespace mrpt
-{
-namespace comms
+namespace mrpt::comms
 {
 /** A list of FTDI devices and their descriptors.
  * \sa CInterfaceFTDI::ListAllDevices
@@ -249,5 +247,5 @@ class CInterfaceFTDI : public mrpt::io::CStream
 
 };  // end of class
 
-}  // namespace comms
-}  // namespace mrpt
+}
+

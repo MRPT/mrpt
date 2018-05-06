@@ -13,9 +13,7 @@
 #include <iostream>
 #include <mrpt/serialization/serialization_frwds.h>
 
-namespace mrpt
-{
-namespace img
+namespace mrpt::img
 {
 /** A RGB color - 8bit
  * \ingroup mrpt_img_grp */
@@ -111,5 +109,5 @@ mrpt::serialization::CArchive& operator<<(
 mrpt::serialization::CArchive& operator>>(
 	mrpt::serialization::CArchive& i, TColorf& c);
 
-}  // namespace img
-}  // namespace mrpt
+}
+

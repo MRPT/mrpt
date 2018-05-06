@@ -13,9 +13,7 @@
 #include <mrpt/img/CImage.h>
 #include <mrpt/math/geometry.h>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 /** A base class for all OpenGL objects with loadable textures.
  *  \sa opengl::COpenGLScene, opengl::CTexturedPlane,
@@ -84,8 +82,7 @@ class CTexturedObject : public CRenderizableDisplayList
 	virtual void render_dl() const override;
 };
 
-}  // namespace opengl
-
-}  // namespace mrpt
-
+}
 #endif
+
+

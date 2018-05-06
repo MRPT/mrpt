@@ -11,9 +11,7 @@
 
 #include <mrpt/obs/CObservation3DRangeScan.h>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** An abstract class for accessing OpenNI2 compatible sensors.
  * This class permits to access several sensors simultaneously. The same
@@ -26,13 +24,16 @@ namespace hwdrivers
 class COpenNI2Generic
 {
    public:
-	/** Default ctor (width=640, height=480, fps=30) */
+	/** Default ctor (width=640, height=480, fps=30)
+ */
 	COpenNI2Generic();
-	/** Ctor. \sa start() */
+	/** Ctor. \sa start()
+ */
 	COpenNI2Generic(
 		int width, int height, float fps = 30.0f, bool open_streams_now = true);
 
-	/** Default ctor */
+	/** Default ctor
+ */
 	~COpenNI2Generic();
 
 	/**Get the number of OpenNI2 cameras currently open via COpenNI2Generic*/
@@ -106,23 +107,29 @@ class COpenNI2Generic
 	 */
 	unsigned int openDeviceBySerial(const unsigned int SerialRequired);
 
-	/** Get the ID of the device corresponding to 'SerialRequired'. */
+	/** Get the ID of the device corresponding to 'SerialRequired'.
+ */
 	bool getDeviceIDFromSerialNum(
 		const unsigned int SerialRequired, int& sensor_id) const;
 	/** Open all sensor streams (normally called automatically at constructor,
 	 * no need to call it manually). \return false on error \sa kill() to close
 	 */
 	bool start();
-	/** Kill the OpenNI2 driver \sa start() */
+	/** Kill the OpenNI2 driver \sa start()
+ */
 	void kill();
-	/** Whether there is a working connection to the sensor */
+	/** Whether there is a working connection to the sensor
+ */
 	bool isOpen(const unsigned sensor_id) const;
 	/** Close the connection to the sensor (no need to call it manually unless
-	 * desired for some reason, since it's called at destructor */
+	 * desired for some reason, since it's called at destructor
+ */
 	void close(unsigned sensor_id = 0);
-	/** The number of available devices at initialization */
+	/** The number of available devices at initialization
+ */
 	int getNumDevices() const;
-	/** Get a list of the connected OpenNI2 sensors. */
+	/** Get a list of the connected OpenNI2 sensors.
+ */
 	int getConnectedDevices();
 
 	/** @} */
@@ -149,9 +156,11 @@ class COpenNI2Generic
 	bool m_verbose;
 	void showLog(const std::string& message) const;
 	/** The data that the RGBD sensors can return */
-	/** Default: all true */
+	/** Default: all true
+ */
 	bool m_grab_image, m_grab_depth, m_grab_3D_points;
 };  // End of class
-}  // namespace hwdrivers
-}  // namespace mrpt
+}
 #endif
+
+

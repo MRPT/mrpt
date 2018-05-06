@@ -15,9 +15,7 @@
 #include <mrpt/maps/metric_map_types.h>
 #include <deque>
 
-namespace mrpt
-{
-namespace maps
+namespace mrpt::maps
 {
 class TSetOfMetricMapInitializers;
 
@@ -329,5 +327,5 @@ class TSetOfMetricMapInitializers : public mrpt::config::CLoadableOptions
 	void dumpToTextStream(std::ostream& out) const override;
 };
 
-}  // namespace maps
-}  // namespace mrpt
+}
+

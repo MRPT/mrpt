@@ -34,9 +34,7 @@
 
 // The methods declared in this file are implemented in separate files in:
 // vision/src/ba_*.cpp
-namespace mrpt
-{
-namespace vision
+namespace mrpt::vision
 {
 /** \defgroup bundle_adj Bundle-Adjustment methods
   * \ingroup mrpt_vision_grp
@@ -216,5 +214,6 @@ void add_3d_deltas_to_points(
 
 /** @} */
 }
-}
 #endif
+
+

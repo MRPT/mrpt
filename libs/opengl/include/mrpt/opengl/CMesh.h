@@ -16,9 +16,7 @@
 #include <mrpt/img/color_maps.h>
 #include <mrpt/opengl/CSetOfTriangles.h>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 /** A planar (XY) grid where each cell has an associated height and, optionally,
  * a texture map.
@@ -262,8 +260,7 @@ class CMesh : public CRenderizableDisplayList
 	virtual ~CMesh();
 };
 
-}  // end namespace
-
-}  // End of namespace
-
+}
 #endif
+
+

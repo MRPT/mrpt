@@ -12,9 +12,7 @@
 #include <mrpt/poses/CPointPDF.h>
 #include <mrpt/math/CMatrix.h>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 /** A gaussian distribution for 3D points. Also a method for bayesian fusion is
  * provided.
@@ -156,7 +154,7 @@ class CPointPDFGaussian : public CPointPDF
 		const CPointPDFGaussian& other, bool only_2D = false) const;
 
 };  // End of class def.
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

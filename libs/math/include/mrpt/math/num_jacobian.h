@@ -11,9 +11,7 @@
 #include <mrpt/core/exceptions.h>
 #include <functional>
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 /** Estimate the Jacobian of a multi-dimensional function around a point "x",
  * using finite differences of a given size in each input dimension.
@@ -76,6 +74,6 @@ void estimateJacobian(
 
 	MRPT_END
 }
-
-}  // End of MATH namespace
 }  // End of namespace
+
+

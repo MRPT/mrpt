@@ -19,9 +19,7 @@
 #include <list>
 #include <algorithm>  // for_each()
 
-namespace mrpt
-{
-namespace serialization
+namespace mrpt::serialization
 {
 /** \addtogroup stlext_grp
   * @{ */
@@ -255,5 +253,5 @@ CArchive& operator>>(CArchive& in, std::pair<T1, T2>& obj)
 }
 
 /** @} */  // end of grouping
-}  // End of namespace
-}  // End of namespace
+}
+

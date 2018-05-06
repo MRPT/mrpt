@@ -13,11 +13,7 @@
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CObservation.h>
 
-namespace mrpt
-{
-namespace obs
-{
-namespace utils
+namespace mrpt::obs::utils
 {
 /**\brief Given an mrpt::obs::CSensoryFrame and a mrpt::obs::CObservation
  * pointer if a OBSERVATION_T type observation is included and return a
@@ -77,8 +73,8 @@ typename OBSERVATION_T::Ptr getObservation(
 
 	return obs_out;
 }
-}
-}
 }  // end of namespaces
 
 #endif /* end of include guard: OBS_UTILS_H */
+
+

@@ -14,9 +14,7 @@
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/img/CImage.h>
 
-namespace mrpt
-{
-namespace detectors
+namespace mrpt::detectors
 {
 using vector_detectable_object = std::vector<CDetectableObject::Ptr>;
 
@@ -59,6 +57,6 @@ class CObjectDetection
 
 };  // End of class
 }
-}
-
 #endif
+
+

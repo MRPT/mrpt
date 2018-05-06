@@ -10,9 +10,7 @@
 
 #include <mrpt/io/CStream.h>
 
-namespace mrpt
-{
-namespace io
+namespace mrpt::io
 {
 /** Transparently opens a compressed "gz" file and reads uncompressed data from
  * it.
@@ -72,5 +70,5 @@ class CFileGZInputStream : public CStream
 	size_t Read(void* Buffer, size_t Count) override;
 	size_t Write(const void* Buffer, size_t Count) override;
 };  // End of class def.
-}  // End of namespace
-}  // end of namespace
+}
+

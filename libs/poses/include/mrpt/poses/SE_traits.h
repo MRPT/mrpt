@@ -14,9 +14,7 @@
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 /** \addtogroup poses_grp
  *  @{ */
@@ -128,7 +126,7 @@ struct SE_traits<2>
 
 /** @} */  // end of grouping
 
-}  // namespace poses
-}  // namespace mrpt
-
+}
 #endif
+
+

@@ -13,9 +13,7 @@
 #include <vector>
 #include <cstdio>
 
-namespace mrpt
-{
-namespace containers
+namespace mrpt::containers
 {
 /** \addtogroup
  * @{ */
@@ -59,5 +57,5 @@ void printf_vector(const char* fmt, const std::vector<T>& V)
 }
 
 /** @} */  // end of grouping
-}  // namespace containers
-}  // namespace mrpt
+}
+

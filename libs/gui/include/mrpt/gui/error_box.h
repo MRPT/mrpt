@@ -11,12 +11,10 @@
 #include <string>
 #include <functional>
 
-namespace mrpt
-{
-namespace gui
+namespace mrpt::gui
 {
 void tryCatch(
 	const std::function<void()>& tryPart, const std::string& catchMessage);
 void showErrorMessage(const std::string& str);
-}  // namespace gui
-}  // namespace mrpt
+}
+

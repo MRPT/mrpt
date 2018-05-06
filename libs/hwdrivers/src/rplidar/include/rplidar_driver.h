@@ -37,11 +37,7 @@
 #error "The RPlidar SDK requires a C++ compiler to be built"
 #endif
 
-namespace rp
-{
-namespace standalone
-{
-namespace rplidar
+namespace rp::standalone::rplidar
 {
 class RPlidarDriver
 {
@@ -264,5 +260,4 @@ class RPlidarDriver
 	virtual ~RPlidarDriver() {}
 };
 }
-}
-}
+

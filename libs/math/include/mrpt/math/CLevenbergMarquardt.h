@@ -16,9 +16,7 @@
 #include <mrpt/math/ops_containers.h>
 #include <functional>
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 /** An implementation of the Levenberg-Marquardt algorithm for least-square
  * minimization.
@@ -259,6 +257,7 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
 /** The default name for the LM class is an instantiation for "double" */
 using CLevenbergMarquardt = CLevenbergMarquardtTempl<mrpt::math::CVectorDouble>;
 
-}  // namespace math
-}  // namespace mrpt
+}
 #endif
+
+

@@ -14,9 +14,7 @@
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/poses/poses_frwds.h>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 /** Type to select the interpolation method in CPoseInterpolatorBase derived
  * classes.
@@ -213,9 +211,7 @@ class CPoseInterpolatorBase
 		const TInterpolatorMethod method, double td, pose_t& out_interp) const;
 
 };  // End of class def.
-}  // End of namespace
 }
-
 MRPT_ENUM_TYPE_BEGIN(mrpt::poses::TInterpolatorMethod)
 MRPT_FILL_ENUM_MEMBER(mrpt::poses, imSpline);
 MRPT_FILL_ENUM_MEMBER(mrpt::poses, imLinear2Neig);
@@ -224,3 +220,5 @@ MRPT_FILL_ENUM_MEMBER(mrpt::poses, imSSLLLL);
 MRPT_FILL_ENUM_MEMBER(mrpt::poses, imLinearSlerp);
 MRPT_FILL_ENUM_MEMBER(mrpt::poses, imSplineSlerp);
 MRPT_ENUM_TYPE_END()
+
+

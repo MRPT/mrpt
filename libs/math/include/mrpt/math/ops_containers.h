@@ -50,9 +50,7 @@
 
 #include "ops_vectors.h"
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 /** Computes the normalized or normal histogram of a sequence of numbers given
  * the number of bins and the limits.
@@ -431,9 +429,9 @@ double ncc_vector(const CONT1& patch1, const CONT2& patch2)
 
 /** @} Misc ops */
 
-}  // namespace math
-}  // namespace mrpt
-
+}
 /**  @} */  // end of grouping
 
 #endif
+
+

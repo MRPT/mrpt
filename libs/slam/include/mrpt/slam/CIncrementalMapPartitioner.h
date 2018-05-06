@@ -20,9 +20,7 @@
 #include <functional>
 #include <limits>
 
-namespace mrpt
-{
-namespace slam
+namespace mrpt::slam
 {
 
 /** For use in CIncrementalMapPartitioner 
@@ -224,11 +222,11 @@ class CIncrementalMapPartitioner : public mrpt::system::COutputLogger,
 
 };  // End of class def.
 }
-}  // End of namespace
-
 MRPT_ENUM_TYPE_BEGIN(mrpt::slam::similarity_method_t)
 MRPT_FILL_ENUM_MEMBER(mrpt::slam, smMETRIC_MAP_MATCHING);
 MRPT_FILL_ENUM_MEMBER(mrpt::slam, smOBSERVATION_OVERLAP);
 MRPT_FILL_ENUM_MEMBER(mrpt::slam, smCUSTOM_FUNCTION);
 MRPT_ENUM_TYPE_END()
+
+
 

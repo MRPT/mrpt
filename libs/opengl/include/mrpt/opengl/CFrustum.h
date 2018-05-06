@@ -12,9 +12,7 @@
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 /** A solid or wireframe frustum in 3D (a rectangular truncated pyramid), with
  * arbitrary (possibly assymetric) field-of-view angles.
@@ -143,5 +141,6 @@ class CFrustum : public CRenderizableDisplayList
 	virtual ~CFrustum() {}
 };
 }
-}
 #endif
+
+

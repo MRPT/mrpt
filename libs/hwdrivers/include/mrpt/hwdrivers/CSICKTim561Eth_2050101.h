@@ -13,9 +13,7 @@
 #include <mrpt/hwdrivers/C2DRangeFinderAbstract.h>
 #include <mrpt/comms/CClientTCPSocket.h>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 class CSICKTim561Eth : public C2DRangeFinderAbstract
 {
@@ -111,7 +109,7 @@ class CSICKTim561Eth : public C2DRangeFinderAbstract
 		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& iniSection);
 };
-}  // namespace hwdrivers
-}  // namespace mrpt
-
+}
 #endif  // _CSICKTIM561ETH_2050101_H__
+
+

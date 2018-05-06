@@ -14,9 +14,7 @@
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/config/CLoadableOptions.h>
 
-namespace mrpt
-{
-namespace maps
+namespace mrpt::maps
 {
 /** Implementation of pointcloud filtering based on requisities for minimum
  * neigbouring points in both,
@@ -82,4 +80,4 @@ class CPointCloudFilterByDistance : public mrpt::maps::CPointCloudFilterBase
 	mrpt::aligned_std_map<mrpt::system::TTimeStamp, FrameInfo> m_last_frames;
 };
 }
-}  // End of namespace
+

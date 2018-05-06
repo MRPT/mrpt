@@ -15,9 +15,7 @@
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/bayes/CParticleFilterData.h>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 /** A probability distribution of a 2D/3D point, represented as a set of random
  * samples (particles).
@@ -93,7 +91,7 @@ class CPointPDFParticles
 		const double minMahalanobisDistToDrop = 0) override;
 
 };  // End of class def.
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

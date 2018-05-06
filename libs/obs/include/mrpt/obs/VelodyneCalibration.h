@@ -12,9 +12,7 @@
 #include <string>
 #include <vector>
 
-namespace mrpt
-{
-namespace obs
+namespace mrpt::obs
 {
 /** Velodyne calibration data, for usage in mrpt::obs::CObservationVelodyneScan
   *
@@ -73,7 +71,7 @@ struct VelodyneCalibration
    private:
 	bool internal_loadFromXMLNode(void* node);
 };
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

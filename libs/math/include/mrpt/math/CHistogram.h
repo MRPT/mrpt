@@ -11,9 +11,7 @@
 #include <vector>
 #include <mrpt/math/eigen_frwds.h>
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 /** This class provides an easy way of computing histograms for unidimensional
 real valued variables.
@@ -110,5 +108,5 @@ class CHistogram
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
+}
+

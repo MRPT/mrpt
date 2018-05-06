@@ -117,9 +117,7 @@ void CLight::setDirection(float dx, float dy, float dz)
 	direction[2] = dz;
 }
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 mrpt::serialization::CArchive& operator>>(
 	mrpt::serialization::CArchive& in, mrpt::opengl::CLight& o)
@@ -133,5 +131,6 @@ mrpt::serialization::CArchive& operator<<(
 	o.writeToStream(out);
 	return out;
 }
-}  // namespace opengl
 }  // namespace mrpt
+
+

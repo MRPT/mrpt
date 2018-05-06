@@ -11,9 +11,7 @@
 
 #include <mrpt/serialization/CSerializable.h>
 
-namespace mrpt
-{
-namespace hmtslam
+namespace mrpt::hmtslam
 {
 /** An arbitrary list of "annotations", or named attributes, each being an
  * instance of any CSerializable object.
@@ -74,7 +72,7 @@ class CPropertiesValuesList : public mrpt::serialization::CSerializable
 	std::vector<std::string> getPropertyNames() const;
 
 };  // End of class def.
-}  // namespace hmtslam
-}  // namespace mrpt
-
+}
 #endif
+
+

@@ -10,11 +10,7 @@
 #ifndef CLEVMARQGSO_IMPL_H
 #define CLEVMARQGSO_IMPL_H
 
-namespace mrpt
-{
-namespace graphslam
-{
-namespace optimizers
+namespace mrpt::graphslam::optimizers
 {
 // Ctors, Dtors
 //////////////////////////////////////////////////////////////
@@ -851,8 +847,8 @@ void CLevMarqGSO<GRAPH_T>::GraphVisualizationParams::loadFromConfigFile(
 
 	MRPT_END;
 }
-}  // namespace optimizers
-}  // namespace graphslam
 }  // namespace mrpt
 
 #endif /* end of include guard: CLEVMARQGSO_IMPL_H */
+
+

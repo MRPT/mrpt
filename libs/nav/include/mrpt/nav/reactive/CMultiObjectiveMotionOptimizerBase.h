@@ -14,9 +14,7 @@
 #include <mrpt/rtti/CObject.h>
 #include <mrpt/expr/CRuntimeCompiledExpression.h>
 
-namespace mrpt
-{
-namespace nav
+namespace mrpt::nav
 {
 /** Virtual base class for multi-objective motion choosers, as used for reactive
   *navigation engines.
@@ -109,4 +107,4 @@ class CMultiObjectiveMotionOptimizerBase : public mrpt::rtti::CObject
 	std::map<std::string, double> m_expr_vars;
 };
 }
-}
+

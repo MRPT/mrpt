@@ -16,9 +16,7 @@
 #include <mrpt/math/math_frwds.h>  // forward declarations
 #include <mrpt/math/wrap2pi.h>
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 /** \addtogroup geometry_grp Geometry: lines, planes, intersections, SLERP,
  * "lightweight" point & pose classes
@@ -1164,5 +1162,5 @@ CMatrixTemplateNumeric<T> generateAxisBaseFromDirection(T dx, T dy, T dz)
 
 /** @} */  // end of grouping
 
-}  // namespace math
-}  // namespace mrpt
+}
+

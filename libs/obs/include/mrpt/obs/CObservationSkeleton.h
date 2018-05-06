@@ -14,9 +14,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose2D.h>
 
-namespace mrpt
-{
-namespace obs
+namespace mrpt::obs
 {
 /** This class stores a skeleton as tracked by OPENNI2 & NITE2 libraries from
  * PrimeSense sensors
@@ -87,7 +85,7 @@ class CObservationSkeleton : public CObservation
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

@@ -13,9 +13,7 @@
 #include <mrpt/slam/CICP.h>
 #include <mrpt/poses/CRobot2DPoseEstimator.h>
 
-namespace mrpt
-{
-namespace slam
+namespace mrpt::slam
 {
 /** A class for very simple 2D SLAM based on ICP. This is a non-probabilistic
  *pose tracking algorithm.
@@ -197,7 +195,7 @@ class CMetricMapBuilderICP : public mrpt::slam::CMetricMapBuilder
 	void resetRobotDisplacementCounters(const mrpt::poses::CPose2D& new_pose);
 };
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

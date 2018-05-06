@@ -19,9 +19,7 @@ using namespace std;
 using namespace mrpt::math;
 
 // Next we declare some auxiliary functions:
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 // Replaces data[1..2*nn] by its discrete Fourier transform, if isign is input
 // as 1; or replaces
@@ -923,8 +921,7 @@ static void cdft2d(
 	}
 }
 
-}  // namespace math
-}  // namespace mrpt
+} // namespace mrpt::math
 
 void mrpt::math::fft_real(
 	CVectorFloat& in_realData, CVectorFloat& out_FFT_Re,

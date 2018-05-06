@@ -12,9 +12,7 @@
 
 #include <mrpt/vision/types.h>
 
-namespace mrpt
-{
-namespace vision
+namespace mrpt::vision
 {
 /** \addtogroup  mrptvision_features
 	@{ */
@@ -153,6 +151,7 @@ size_t find_descriptor_pairings(
 }
 
 /** @} */
-}  // namespace vision
-}  // namespace mrpt
+}
 #endif
+
+

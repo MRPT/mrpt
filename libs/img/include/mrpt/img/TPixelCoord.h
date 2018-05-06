@@ -11,9 +11,7 @@
 #include <iosfwd>
 #include <utility>
 
-namespace mrpt
-{
-namespace img
+namespace mrpt::img
 {
 /** A pair (x,y) of pixel coordinates (subpixel resolution). \ingroup
  * mrpt_img_grp  */
@@ -52,5 +50,5 @@ std::ostream& operator<<(std::ostream& o, const TPixelCoord& p);
 /** A type for image sizes. */
 using TImageSize = TPixelCoord;
 
-}  // namespace img
-}  // namespace mrpt
+}
+

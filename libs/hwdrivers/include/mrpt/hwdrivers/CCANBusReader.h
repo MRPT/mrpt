@@ -14,9 +14,7 @@
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/comms/CSerialPort.h>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** This "software driver" implements the communication protocol for interfacing
  * a SICK LMS 2XX laser scanners through a standard RS232 serial port (or a
@@ -173,7 +171,7 @@ class CCANBusReader : public mrpt::system::COutputLogger, public CGenericSensor
 
 };  // End of class
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

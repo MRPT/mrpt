@@ -14,9 +14,7 @@
 #include <array>
 #include <cstring>  // memset()
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 /** Auxiliary class used in CMatrixTemplate:size(), CMatrixTemplate::resize(),
  * CMatrixFixedNumeric::size(), CMatrixFixedNumeric::resize(), to mimic the
@@ -704,5 +702,5 @@ class CMatrixBool : public CMatrixTemplate<bool>
 	CMatrixBool& operator=(const CMatrixTemplate<bool>& m);
 };
 
-}  // namespace math
-}  // namespace mrpt
+}
+

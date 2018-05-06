@@ -15,9 +15,7 @@
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/maps/CLandmarksMap.h>
 
-namespace mrpt
-{
-namespace obs
+namespace mrpt::obs
 {
 /** Declares a class derived from "CObservation" that stores a Landmarks Map as
  * seen from a stereo camera at a given instant of time.
@@ -71,7 +69,7 @@ class CObservationVisualLandmarks : public CObservation
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

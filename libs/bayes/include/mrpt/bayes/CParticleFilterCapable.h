@@ -13,9 +13,7 @@
 #include <cstdlib>
 #include <cstdint>
 
-namespace mrpt
-{
-namespace bayes
+namespace mrpt::bayes
 {
 #define INVALID_LIKELIHOOD_VALUE \
 	(-1e300)  // An invalid log-likelihood value, used to signal non-initialized
@@ -294,5 +292,5 @@ class CParticleFilterCapable
 
 };  // End of class def.
 
-}  // namespace bayes
-}  // namespace mrpt
+}
+
