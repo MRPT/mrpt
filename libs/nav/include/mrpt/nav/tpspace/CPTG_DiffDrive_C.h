@@ -10,9 +10,7 @@
 
 #include <mrpt/nav/tpspace/CPTG_DiffDrive_CollisionGridBased.h>
 
-namespace mrpt
-{
-namespace nav
+namespace mrpt::nav
 {
 /** A PTG for circular paths ("C" type PTG in papers).
  * - **Compatible kinematics**: differential-driven / Ackermann steering
@@ -71,4 +69,4 @@ class CPTG_DiffDrive_C : public CPTG_DiffDrive_CollisionGridBased
 	double K;
 };
 }
-}
+

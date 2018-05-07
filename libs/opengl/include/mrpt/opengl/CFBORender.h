@@ -14,9 +14,7 @@
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CTextMessageCapable.h>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 /** A class for rendering 3D scenes off-screen directly into an image using
  * OpenGL extensions (glext).
@@ -89,8 +87,7 @@ class CFBORender : public mrpt::opengl::CTextMessageCapable
 	  */
 	int isExtensionSupported(const char* extension);
 };
-}  // end namespace
-
-}  // End of namespace
-
+}
 #endif
+
+

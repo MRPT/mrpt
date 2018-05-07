@@ -13,9 +13,7 @@
 #include <mrpt/opengl/COpenGLScene.h>
 #include <map>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 /** This class can load & render 3D models in a number of different formats
  * (requires the library assimp).
@@ -104,7 +102,7 @@ class CAssimpModel : public CRenderizableDisplayList
 	mutable std::map<std::string, TInfoPerTexture> m_textureIdMap;
 };
 
-}  // namespace opengl
-}  // namespace mrpt
-
+}
 #endif
+
+

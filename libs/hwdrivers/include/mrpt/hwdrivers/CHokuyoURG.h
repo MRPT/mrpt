@@ -14,9 +14,7 @@
 #include <mrpt/containers/circular_buffer.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** This software driver implements the protocol SCIP-2.0 for interfacing HOKUYO
  * URG/UTM/UXM/UST laser scanners (USB or Ethernet).
@@ -294,8 +292,7 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 
 };  // End of class
 
-}  // End of namespace
-
-}  // End of namespace
-
+}
 #endif
+
+

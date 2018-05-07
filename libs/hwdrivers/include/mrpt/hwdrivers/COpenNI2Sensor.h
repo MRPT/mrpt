@@ -14,9 +14,7 @@
 #include <mrpt/typemeta/TEnumType.h>
 #include <mrpt/gui/CDisplayWindow.h>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** A class for grabing "range images", intensity images (either RGB or IR) and
   *other information from an OpenNI2 sensor.
@@ -383,8 +381,7 @@ class COpenNI2Sensor : public mrpt::hwdrivers::CGenericSensor,
 	int m_serial_number;
 
 };  // End of class
-}  // End of NS
-
-}  // End of NS
-
+}
 #endif
+
+

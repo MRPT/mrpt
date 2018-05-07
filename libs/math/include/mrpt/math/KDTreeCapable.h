@@ -13,9 +13,7 @@
 #include <mrpt/math/lightweight_geom_data.h>
 #include <memory>  // unique_ptr
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 /** \addtogroup kdtree_grp KD-Trees
  *  \ingroup mrpt_math_grp
@@ -846,5 +844,5 @@ class KDTreeCapable
 
 /**  @} */  // end of grouping
 
-}  // namespace math
-}  // namespace mrpt
+}
+

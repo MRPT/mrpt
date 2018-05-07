@@ -11,9 +11,7 @@
 #include <cstring>
 #include <type_traits>
 
-namespace mrpt
-{
-namespace system
+namespace mrpt::system
 {
 /** \addtogroup mrpt_memory Memory utilities (#include <mrpt/system/memory.h>)
  * \ingroup mrpt_system_grp
@@ -70,5 +68,5 @@ bool is_aligned(T ptr)
 }
 /** @} */
 
-}  // namespace system
-}  // namespace mrpt
+}
+

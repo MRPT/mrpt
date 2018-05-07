@@ -21,9 +21,7 @@
 #include <memory>  // unique_ptr
 #include <functional>
 
-namespace mrpt
-{
-namespace nav
+namespace mrpt::nav
 {
 /** This is the base class for any reactive/planned navigation system. See
  * derived classes.
@@ -350,9 +348,7 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
 bool operator==(
 	const CAbstractNavigator::TNavigationParamsBase&,
 	const CAbstractNavigator::TNavigationParamsBase&);
-}  // namespace nav
-}  // namespace mrpt
-
+}
 MRPT_ENUM_TYPE_BEGIN(mrpt::nav::CAbstractNavigator::TState)
 using namespace mrpt::nav;
 MRPT_FILL_ENUM_MEMBER(CAbstractNavigator, IDLE);
@@ -360,3 +356,5 @@ MRPT_FILL_ENUM_MEMBER(CAbstractNavigator, NAVIGATING);
 MRPT_FILL_ENUM_MEMBER(CAbstractNavigator, SUSPENDED);
 MRPT_FILL_ENUM_MEMBER(CAbstractNavigator, NAV_ERROR);
 MRPT_ENUM_TYPE_END()
+
+

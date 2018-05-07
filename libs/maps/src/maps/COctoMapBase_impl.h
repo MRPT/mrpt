@@ -14,9 +14,7 @@
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/serialization/CArchive.h>
 
-namespace mrpt
-{
-namespace maps
+namespace mrpt::maps
 {
 
 template <class OCTREE, class OCTREE_NODE>
@@ -423,5 +421,5 @@ void COctoMapBase<OCTREE, OCTREE_NODE>::TRenderingOptions::readFromStream(
 	}
 }
 
-}  // namespace maps
-}  // namespace mrpt
+}
+

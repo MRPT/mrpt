@@ -19,9 +19,7 @@
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/system/filesystem.h>
 
-namespace mrpt
-{
-namespace pbmap
+namespace mrpt::pbmap
 {
 /** A class used to define the heuristic parameters and thresholds used to match
  * sets of planes.
@@ -155,7 +153,7 @@ struct config_heuristics
 		cout << "height_threshold " << height_threshold << endl;
 	};
 };
-}  // namespace pbmap
-}  // namespace mrpt
-
+}
 #endif
+
+

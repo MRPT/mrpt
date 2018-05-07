@@ -26,11 +26,7 @@
 #include <map>
 #include <cmath>  // fabs function
 
-namespace mrpt
-{
-namespace graphslam
-{
-namespace optimizers
+namespace mrpt::graphslam::optimizers
 {
 /**\brief Levenberg-Marquardt non-linear graph slam optimization scheme.
  *
@@ -398,10 +394,9 @@ class CLevMarqGSO
 	/**\brief Minimum number of nodes before we try optimizing the graph */
 	size_t m_min_nodes_for_optimization;
 };
-}  // namespace optimizers
-}  // namespace graphslam
-}  // namespace mrpt
-
+}
 #include "CLevMarqGSO_impl.h"
 
 #endif /* end of include guard: CLEVMARQGSO_H */
+
+

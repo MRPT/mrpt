@@ -20,9 +20,7 @@
 
 #include <mutex>
 
-namespace mrpt
-{
-namespace slam
+namespace mrpt::slam
 {
 /** @defgroup metric_slam_grp Metric SLAM algorithms
   * \ingroup mrpt_slam_grp */
@@ -146,7 +144,7 @@ class CMetricMapBuilder : public mrpt::system::COutputLogger
 	MRPT_MAKE_ALIGNED_OPERATOR_NEW
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

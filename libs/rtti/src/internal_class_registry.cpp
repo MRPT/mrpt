@@ -41,9 +41,7 @@ queue_register_functions_t& mrpt::rtti::pending_class_registers()
 	return lst;
 }
 
-namespace mrpt
-{
-namespace rtti
+namespace mrpt::rtti
 {
 using TClassnameToRuntimeId = std::map<std::string, const TRuntimeClassId*>;
 
@@ -124,8 +122,7 @@ class CClassRegistry
 	std::atomic<bool> m_being_modified;
 };
 
-}  // End of namespace
-}  // End of namespace
+}  // namespace mrpt::rtti
 
 /** Register all pending classes - to be called just before de-serializing an
  * object, for example.

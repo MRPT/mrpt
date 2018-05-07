@@ -8,9 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-namespace mrpt
-{
-namespace system
+namespace mrpt::system
 {
 /** A high-performance stopwatch, with typical resolution of nanoseconds.
  *  \note The class is named after the Spanish equivalent of "Tic-Toc" ;-)
@@ -33,5 +31,5 @@ class CTicTac
 	alignas(16) unsigned long largeInts[4];
 };  // End of class def.
 
-}  // namespace system
-}  // namespace mrpt
+}
+

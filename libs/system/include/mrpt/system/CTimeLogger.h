@@ -16,9 +16,7 @@
 #include <stack>
 #include <map>
 
-namespace mrpt
-{
-namespace system
+namespace mrpt::system
 {
 /** A versatile "profiler" that logs the time spent within each pair of calls to
  * enter(X)-leave(X), among other stats.
@@ -164,5 +162,5 @@ void global_profiler_leave(const char* func_name) noexcept;
 mrpt::system::CTimeLogger& global_profiler_getref() noexcept;
 /** @} */
 
-}  // End of namespace
-}  // End of namespace
+}
+

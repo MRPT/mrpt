@@ -13,9 +13,7 @@
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/obs/obs_frwds.h>
 
-namespace mrpt
-{
-namespace maps
+namespace mrpt::maps
 {
 /** Parameters for the determination of matchings between point clouds, etc. \sa
  * CMetricMap::determineMatching2D, CMetricMap::determineMatching3D */
@@ -106,5 +104,5 @@ class TMapGenericParams : public mrpt::config::CLoadableOptions,
 		const std::string& section) const override;
 };
 
-}  // namespace maps
-}  // namespace mrpt
+}
+

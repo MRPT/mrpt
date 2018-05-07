@@ -42,9 +42,7 @@ using namespace mrpt::math;
 using namespace mrpt::poses;
 using namespace mrpt::slam;
 
-namespace mrpt
-{
-namespace slam
+namespace mrpt::slam
 {
 struct TAuxDataRecursiveJCBB
 {
@@ -260,8 +258,7 @@ void JCBB_recursive(
 	}
 }
 
-}  // namespace slam
-}  // namespace mrpt
+}
 
 /* ==================================================================================================
 Computes the data-association between the prediction of a set of landmarks and

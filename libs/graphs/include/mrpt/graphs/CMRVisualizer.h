@@ -15,11 +15,7 @@
 #include <mrpt/graphs/TMRSlamNodeAnnotations.h>
 #include <utility>
 
-namespace mrpt
-{
-namespace graphs
-{
-namespace detail
+namespace mrpt::graphs::detail
 {
 // (Dummy) standard version
 //////////////////////////////////////////////////////////
@@ -91,10 +87,9 @@ class CMRVisualizer<
 
    private:
 };
-}  // namespace detail
-}  // namespace graphs
-}  // namespace mrpt
-
+}
 #include <mrpt/graphs/CMRVisualizer_impl.h>
 
 #endif /* end of include guard: CMRVISUALIZER_H */
+
+

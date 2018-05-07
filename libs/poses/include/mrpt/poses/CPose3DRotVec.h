@@ -14,9 +14,7 @@
 #include <mrpt/math/CQuaternion.h>
 #include <mrpt/poses/poses_frwds.h>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 /** A 3D pose, with a 3D translation and a rotation in 3D parameterized in
  * rotation-vector form (equivalent to axis-angle).
@@ -550,7 +548,7 @@ CPose3DRotVec operator-(const CPose3DRotVec& p);
 bool operator==(const CPose3DRotVec& p1, const CPose3DRotVec& p2);
 bool operator!=(const CPose3DRotVec& p1, const CPose3DRotVec& p2);
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

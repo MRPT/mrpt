@@ -11,9 +11,7 @@
 #include <mrpt/kinematics/CVehicleSimulVirtualBase.h>
 #include <mrpt/kinematics/CVehicleVelCmd_Holo.h>
 
-namespace mrpt
-{
-namespace kinematics
+namespace mrpt::kinematics
 {
 /** Kinematic simulator of a holonomic 2D robot capable of moving in any
  * direction, with "blended"
@@ -76,4 +74,4 @@ class CVehicleSimul_Holo : public CVehicleSimulVirtualBase
 	void internal_clear() override;
 };
 }
-}
+

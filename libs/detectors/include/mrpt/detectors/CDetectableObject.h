@@ -14,9 +14,7 @@
 #include <mrpt/obs/CObservation.h>
 #include <cmath>
 
-namespace mrpt
-{
-namespace detectors
+namespace mrpt::detectors
 {
 /** Base class that contains common atributes and functions of detectable
  * objects.
@@ -92,6 +90,6 @@ class CDetectable3D : public CDetectable2D
 
 };  // End of class
 }
-}
-
 #endif
+
+

@@ -21,9 +21,7 @@
 #include <QOpenGLWidget>
 #endif
 
-namespace mrpt
-{
-namespace gui
+namespace mrpt::gui
 {
 class CQtGlCanvasBase : public QOpenGLWidget, public mrpt::gui::CGlCanvasBase
 {
@@ -71,7 +69,7 @@ class CQtGlCanvasBase : public QOpenGLWidget, public mrpt::gui::CGlCanvasBase
 
 };  // end of class
 
-}  // end namespace
-}  // end namespace
-
+}
 #endif  // MRPT_HAS_Qt5
+
+

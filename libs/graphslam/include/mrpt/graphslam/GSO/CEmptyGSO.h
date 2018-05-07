@@ -15,11 +15,7 @@
 
 #include <mrpt/graphslam/interfaces/CGraphSlamOptimizer.h>
 
-namespace mrpt
-{
-namespace graphslam
-{
-namespace optimizers
+namespace mrpt::graphslam::optimizers
 {
 /**\brief Empty Edge Registration Decider
  *
@@ -73,8 +69,8 @@ void CEmptyGSO<GRAPH_T>::registerNewEdge(
 	const constraint_t& rel_edge)
 {
 }
-}
-}
 }  // end of namespaces
 
 #endif /* end of include guard: CEmptyGSO_H */
+
+

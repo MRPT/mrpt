@@ -17,9 +17,7 @@
 
 /** \file matrix_serialization.h
  * This file implements matrix/vector text and binary serialization */
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 /** \addtogroup container_ops_grp
  *  @{ */
@@ -148,5 +146,5 @@ void serializeSymmetricMatrixTo(MAT& m, mrpt::serialization::CArchive& out)
 /** @} */  // end MRPT matrices stream operators
 
 /**  @} */  // end of grouping
-}  // namespace math
-}  // namespace mrpt
+}
+

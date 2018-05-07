@@ -16,9 +16,7 @@
 #include <vector>
 #include <string>
 
-namespace mrpt
-{
-namespace nav
+namespace mrpt::nav
 {
 /** A single waypoint within TWaypointSequence. \ingroup nav_reactive */
 struct TWaypoint
@@ -162,5 +160,5 @@ struct TWaypointStatusSequence
 		const mrpt::nav::TWaypointsRenderingParams& params =
 			mrpt::nav::TWaypointsRenderingParams()) const;
 };
-}  // namespace nav
-}  // namespace mrpt
+}
+

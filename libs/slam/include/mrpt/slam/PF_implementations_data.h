@@ -19,9 +19,7 @@
 #include <mrpt/slam/TKLDParams.h>
 #include <mrpt/system/COutputLogger.h>
 
-namespace mrpt
-{
-namespace slam
+namespace mrpt::slam
 {
 // Frwd decl:
 template <class PARTICLETYPE, class BINTYPE>
@@ -328,6 +326,6 @@ class PF_implementation : public mrpt::system::COutputLogger
 
 };  // end PF_implementation
 }
-}
-
 #endif
+
+

@@ -11,9 +11,7 @@
 #include <mrpt/poses/CPoseInterpolatorBase.h>
 #include <mrpt/serialization/CSerializable.h>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 /** This class stores a time-stamped trajectory in SE(3) (CPose3D poses).
   *  It can also interpolate SE(3) poses over time using linear, splines or
@@ -51,5 +49,5 @@ class CPose3DInterpolator : public mrpt::serialization::CSerializable,
 {
 	DEFINE_SERIALIZABLE(CPose3DInterpolator)
 };  // End of class def.
-}  // End of namespace
-}  // End of namespace
+}
+

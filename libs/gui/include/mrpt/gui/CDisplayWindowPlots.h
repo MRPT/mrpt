@@ -15,9 +15,7 @@
 #include <mrpt/img/CImage.h>
 #include <mrpt/gui/gui_frwds.h>
 
-namespace mrpt
-{
-namespace gui
+namespace mrpt::gui
 {
 /** Create a GUI window and display plots with MATLAB-like interfaces and
  * commands.
@@ -304,8 +302,7 @@ class CDisplayWindowPlots : public mrpt::gui::CBaseGUIWindow
 	void setMenuCallback(TCallbackMenu userFunction, void* userParam = nullptr);
 
 };  // End of class def.
-}  // namespace gui
-
-}  // namespace mrpt
-
+}
 #endif
+
+

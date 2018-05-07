@@ -11,9 +11,7 @@
 
 #include "CAbstractPTGBasedReactive.h"
 
-namespace mrpt
-{
-namespace nav
+namespace mrpt::nav
 {
 /** \defgroup nav_reactive Reactive navigation classes
   * \ingroup mrpt_nav_grp
@@ -158,6 +156,6 @@ class CReactiveNavigationSystem : public CAbstractPTGBasedReactive
 
 };  // end class
 }
-}
-
 #endif
+
+

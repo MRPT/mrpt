@@ -16,9 +16,7 @@
 
 #include <limits>
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 //----------------------------------------------------------------------
 //! Run the ransac algorithm searching for a single model
@@ -224,8 +222,8 @@ bool ModelSearch::geneticSingleModel(
 
 	return !p_inliers.empty();
 }
-
-}  // namespace math
 }  // namespace mrpt
 
 #endif  // math_modelsearch_h
+
+

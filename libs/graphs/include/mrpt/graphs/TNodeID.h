@@ -9,14 +9,12 @@
 #pragma once
 #include <cstdint>
 #include <utility>  // pair
-namespace mrpt
-{
-namespace graphs
+
+namespace mrpt::graphs
 {
 /** A generic numeric type for unique IDs of nodes or entities */
 using TNodeID = uint64_t;
 /** A pair of node IDs */
 using TPairNodeIDs = std::pair<TNodeID, TNodeID>;
 #define INVALID_NODEID static_cast<mrpt::graphs::TNodeID>(-1)
-}  // namespace graphs
-}  // namespace mrpt
+}

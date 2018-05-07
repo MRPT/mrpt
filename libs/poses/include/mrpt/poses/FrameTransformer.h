@@ -14,9 +14,7 @@
 #include <string>
 #include <map>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 enum FrameLookUpStatus
 {
@@ -151,5 +149,5 @@ class FrameTransformer : public FrameTransformerInterface<DIM>
 	pose_tree_t m_pose_edges_buffer;
 };
 
-}  // ns
-}  // ns
+}
+

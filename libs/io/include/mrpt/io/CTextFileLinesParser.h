@@ -12,9 +12,7 @@
 #include <string>
 #include <iosfwd>
 
-namespace mrpt
-{
-namespace io
+namespace mrpt::io
 {
 /** A class for parsing text files, returning each non-empty and non-comment
 * line, along its line number. Lines are strip out of leading and trailing
@@ -71,5 +69,5 @@ class CTextFileLinesParser
 	bool m_filter_SH_comments{true};
 
 };  // end of CTextFileLinesParser
-}  // End of namespace
-}  // end of namespace
+}
+

@@ -11,9 +11,7 @@
 
 #include <mrpt/opengl/CTexturedObject.h>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 /** A 2D plane in the XY plane with a texture image.
   *  \sa opengl::COpenGLScene
@@ -91,8 +89,7 @@ class CTexturedPlane : public CTexturedObject
 	virtual ~CTexturedPlane();
 };
 
-}  // end namespace
-
-}  // End of namespace
-
+}
 #endif
+
+

@@ -12,9 +12,7 @@
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <vector>
 
-namespace mrpt
-{
-namespace obs
+namespace mrpt::obs
 {
 /** A 2D range scan plus an uncertainty model for each range.
   * \sa mrpt::maps::COccupancyGridMap2D::laserScanSimulatorWithUncertainty()
@@ -54,6 +52,7 @@ class CObservation2DRangeScanWithUncertainty
 		const TEvalParams& params) const;
 };
 
-}  // End of namespace
-}  // End of namespace
+}
 #endif
+
+

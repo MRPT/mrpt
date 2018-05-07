@@ -13,9 +13,7 @@
 #include <mrpt/opengl/PLY_import_export.h>
 #include <mrpt/opengl/pointcloud_adapters.h>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 /** A cloud of points, all with the same color or each depending on its value
  * along a particular coordinate axis.
@@ -375,5 +373,5 @@ void CPointCloud::loadFromPointsMap(const POINTSMAP* themap)
 		pc_dst.setPointXYZ(i, x, y, z);
 	}
 }
-}  // namespace opengl
-}  // namespace mrpt
+}
+

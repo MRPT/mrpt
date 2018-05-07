@@ -11,9 +11,7 @@
 
 #include <mrpt/opengl/CGeneralizedEllipsoidTemplate.h>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 /** An especial "ellipsoid" in 2D computed as the uncertainty iso-surfaces of a
  * (range,bearing) variable.
@@ -61,8 +59,7 @@ class CEllipsoidRangeBearing2D : public CGeneralizedEllipsoidTemplate<2>
 	virtual ~CEllipsoidRangeBearing2D() {}
 };
 
-}  // end namespace
-
-}  // End of namespace
-
+}
 #endif
+
+

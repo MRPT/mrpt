@@ -12,9 +12,7 @@
 #include <vector>
 #include <mrpt/serialization/CSerializable.h>
 
-namespace mrpt
-{
-namespace serialization
+namespace mrpt::serialization
 {
 /** A class that contain generic messages, that can be sent and received from a
  * "CClientTCPSocket" object.
@@ -114,5 +112,5 @@ class CMessage
 
 };  // End of class
 
-}  // namespace serialization
-}  // namespace mrpt
+}
+

@@ -33,9 +33,7 @@
 
 #include "arch/linux/arch_linux.h"
 
-namespace rp
-{
-namespace arch
+namespace rp::arch
 {
 _u64 rp_getus()
 {
@@ -52,4 +50,5 @@ _u32 rp_getms()
 	return t.tv_sec * 1000L + t.tv_nsec / 1000000L;
 }
 }
-}
+
+

@@ -15,9 +15,7 @@
 #include <mrpt/vision/types.h>
 #include <mrpt/vision/chessboard_camera_calib.h>
 
-namespace mrpt
-{
-namespace vision
+namespace mrpt::vision
 {
 /** \addtogroup chessboard_calib Chessboard calibration
  *  \ingroup mrpt_vision_grp
@@ -166,7 +164,7 @@ bool checkerBoardStereoCalibration(
 	TStereoCalibResults& out_results);
 
 /** @}  */  // end of grouping
-}  // namespace vision
-}  // namespace mrpt
-
+}
 #endif
+
+

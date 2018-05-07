@@ -14,9 +14,7 @@
 #include <cmath>
 #include <cstddef>
 
-namespace mrpt
-{
-namespace containers
+namespace mrpt::containers
 {
 /** A 3D rectangular grid of dynamic size which stores any kind of data at each
  * voxel.
@@ -350,5 +348,5 @@ class CDynamicGrid3D
 
 };  // end of CDynamicGrid3D<>
 
-}  // namespace containers
-}  // namespace mrpt
+}
+

@@ -12,9 +12,7 @@
 #include <mrpt/math/eigen_frwds.h>
 #include <cmath>  // sin() cos()
 
-namespace mrpt
-{
-namespace img
+namespace mrpt::img
 {
 class CImage;
 
@@ -347,5 +345,5 @@ class CCanvas
 	}
 };  // End of class
 
-}  // end of namespace img
-}  // end of namespace mrpt
+}
+

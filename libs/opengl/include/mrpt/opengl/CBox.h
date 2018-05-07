@@ -12,9 +12,7 @@
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 /** A solid or wireframe box in 3D, defined by 6 rectangular faces parallel to
   *the planes X, Y and Z (note that the object can be translated and rotated
@@ -133,5 +131,6 @@ class CBox : public CRenderizableDisplayList
    private:
 };
 }
-}
 #endif
+
+

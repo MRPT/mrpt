@@ -11,9 +11,7 @@
 
 #include <mrpt/config/CLoadableOptions.h>
 
-namespace mrpt
-{
-namespace slam
+namespace mrpt::slam
 {
 /** Option set for KLD algorithm.  \ingroup mrpt_slam_grp
   */
@@ -45,7 +43,7 @@ class TKLDParams : public mrpt::config::CLoadableOptions
 	double KLD_minSamplesPerBin;
 };
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

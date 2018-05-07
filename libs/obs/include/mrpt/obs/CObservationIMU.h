@@ -15,9 +15,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose2D.h>
 
-namespace mrpt
-{
-namespace obs
+namespace mrpt::obs
 {
 /** Symbolic names for the indices of IMU data (refer to
  * mrpt::obs::CObservationIMU)
@@ -150,7 +148,7 @@ class CObservationIMU : public CObservation
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

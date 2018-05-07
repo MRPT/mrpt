@@ -10,9 +10,7 @@
 
 #include <mrpt/system/TParameters.h>
 
-namespace mrpt
-{
-namespace nav
+namespace mrpt::nav
 {
 class CParameterizedTrajectoryGenerator;
 
@@ -43,4 +41,4 @@ struct TCandidateMovementPTG
 	TCandidateMovementPTG();
 };
 }
-}
+

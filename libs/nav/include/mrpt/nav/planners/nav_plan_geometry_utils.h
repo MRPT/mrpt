@@ -11,9 +11,7 @@
 
 #include <mrpt/math/lightweight_geom_data.h>
 
-namespace mrpt
-{
-namespace nav
+namespace mrpt::nav
 {
 /** @addtogroup  nav_geom_grp Motion planning geometry utility functions
 * (`#include <mrpt/nav/nav_plan_geometry_utils.h>`)
@@ -44,4 +42,4 @@ bool collision_free_dist_arc_circ_robot(
 
 /** @} */
 }
-}
+

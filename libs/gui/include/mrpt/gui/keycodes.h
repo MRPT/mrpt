@@ -11,9 +11,7 @@
 
 #include <mrpt/config.h>
 
-namespace mrpt
-{
-namespace gui
+namespace mrpt::gui
 {
 // These key codes are an exact replication of those of wxWidgets.
 //  They are defined within MRPT for convenience, since users don't have to
@@ -172,6 +170,7 @@ enum mrptKeyModifier
 #endif
 };
 
-}  // End of namespace
-}  // End of namespace
+}
 #endif
+
+

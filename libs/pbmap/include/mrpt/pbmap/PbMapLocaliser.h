@@ -25,9 +25,7 @@
 #include <mrpt/pbmap/ConsistencyTest.h>
 #include <thread>
 
-namespace mrpt
-{
-namespace pbmap
+namespace mrpt::pbmap
 {
 /*! This class is used to explore the PbMap (or other previously acquired
  * PbMaps)
@@ -116,8 +114,8 @@ class PbMapLocaliser
 	bool m_pbMapLocaliser_finished;
 };
 }
-}  // End of namespaces
-
 #endif
 
 #endif
+
+

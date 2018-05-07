@@ -406,9 +406,7 @@ void CObservation2DRangeScan::filterByExclusionAngles(
 	MRPT_END
 }
 
-namespace mrpt
-{
-namespace obs
+namespace mrpt::obs
 {
 // Tricky way to call to a library that depends on us, a sort of "run-time"
 // linking: ptr_internal_build_points_map_from_scan2D is a functor in
@@ -423,8 +421,7 @@ void internal_set_build_points_map_from_scan2D(scan2pts_functor fn)
 {
 	ptr_internal_build_points_map_from_scan2D = fn;
 }
-}  // namespace obs
-}  // namespace mrpt
+}
 
 /*---------------------------------------------------------------
 						internal_buildAuxPointsMap

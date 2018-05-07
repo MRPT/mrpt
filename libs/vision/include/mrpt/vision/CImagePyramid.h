@@ -12,9 +12,7 @@
 
 #include <mrpt/img/CImage.h>
 
-namespace mrpt
-{
-namespace vision
+namespace mrpt::vision
 {
 /** Holds and builds a pyramid of images: starting with an image at full
  * resolution (octave=1), it builds
@@ -94,6 +92,6 @@ class CImagePyramid
 	std::vector<mrpt::img::CImage> images;
 };
 }
-}
-
 #endif
+
+

@@ -17,11 +17,7 @@
 
 #include "CRegistrationDeciderOrOptimizer.h"
 
-namespace mrpt
-{
-namespace graphslam
-{
-namespace optimizers
+namespace mrpt::graphslam::optimizers
 {
 /**\brief Interface for implementing graphSLAM optimizer classes.
  *
@@ -74,8 +70,7 @@ class CGraphSlamOptimizer
 	 */
 	virtual void optimizeGraph() = 0;
 };
-}  // namespace optimizers
-}  // namespace graphslam
-}  // namespace mrpt
-
+}
 #endif /* end of include guard: CGRAPHSLAMOPTIMIZER_H */
+
+

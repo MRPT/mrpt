@@ -10,9 +10,7 @@
 
 #include <mrpt/kinematics/CVehicleVelCmd.h>
 
-namespace mrpt
-{
-namespace kinematics
+namespace mrpt::kinematics
 {
 /** Kinematic model for
 *
@@ -51,5 +49,5 @@ class CVehicleVelCmd_Holo : public CVehicleVelCmd
 		const TVelCmdParams& params) override;
 };
 
-}  // End of namespace
-}  // End of namespace
+}
+

@@ -11,9 +11,7 @@
 
 #include <cmath>  // std::sqrt()
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 /** \addtogroup mrpt_math_grp
  *  @{ */
@@ -77,5 +75,5 @@ struct RobustKernel<rkPseudoHuber, T>
 };
 
 /** @} */  // end of grouping
-}  // namespace math
-}  // namespace mrpt
+}
+

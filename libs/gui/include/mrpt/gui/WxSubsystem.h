@@ -75,9 +75,7 @@
 #endif
 #include <mrpt/gui/gui_frwds.h>
 
-namespace mrpt
-{
-namespace gui
+namespace mrpt::gui
 {
 /** This class implements the GUI thread required for the wxWidgets-based GUI.
  *  This system is employed internally by gui::CDisplayWindow and
@@ -509,5 +507,5 @@ class CWindowDialogPlots : public wxFrame
 
 #endif
 
-}  // namespace gui
-}  // namespace mrpt
+}
+

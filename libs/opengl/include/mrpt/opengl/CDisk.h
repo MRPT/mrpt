@@ -13,9 +13,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/math/geometry.h>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 /** A planar disk in the XY plane.
   *  \sa opengl::COpenGLScene
@@ -87,8 +85,7 @@ class CDisk : public CRenderizableDisplayList
 	virtual ~CDisk() {}
 };
 
-}  // end namespace
-
-}  // End of namespace
-
+}
 #endif
+
+

@@ -17,9 +17,7 @@
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** This is the base, abstract class for "software drivers" interfaces to 2D
  * scanners (laser range finders).
@@ -161,7 +159,7 @@ class C2DRangeFinderAbstract : public mrpt::system::COutputLogger,
 	virtual bool turnOff() = 0;
 
 };  // End of class
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

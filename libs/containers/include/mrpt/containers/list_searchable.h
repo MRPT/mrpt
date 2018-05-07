@@ -11,9 +11,7 @@
 #include <list>
 #include <algorithm>
 
-namespace mrpt
-{
-namespace containers
+namespace mrpt::containers
 {
 /** This class implements a STL container with features of both, a std::set and
  * a std::list.
@@ -57,5 +55,5 @@ class list_searchable : public std::list<T>
 		return std::list<T>::end();
 	}
 };
-}  // End of namespace
-}  // End of namespace
+}
+

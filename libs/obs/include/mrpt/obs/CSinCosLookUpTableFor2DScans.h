@@ -13,9 +13,7 @@
 #include <mrpt/obs/T2DScanProperties.h>
 #include <map>
 
-namespace mrpt
-{
-namespace obs
+namespace mrpt::obs
 {
 // Frwd decl:
 class CObservation2DRangeScan;
@@ -58,7 +56,7 @@ class CSinCosLookUpTableFor2DScans
 	mutable std::map<T2DScanProperties, TSinCosValues> m_cache;
 };
 
-}  // end NS obs
-}  // end NS mrpt
-
+}
 #endif
+
+

@@ -17,9 +17,7 @@
 #include <typeinfo>
 #include <map>
 
-namespace mrpt
-{
-namespace obs
+namespace mrpt::obs
 {
 /** This class <b>stores messages</b> from GNSS or GNSS+IMU devices, from
  * consumer-grade inexpensive GPS receivers to Novatel/Topcon/... advanced RTK
@@ -280,7 +278,7 @@ class CObservationGPS : public CObservation
 	/** @} */
 };  // End of class def.
 
-}  // namespace obs
-}  // namespace mrpt
-
+}
 #endif
+
+

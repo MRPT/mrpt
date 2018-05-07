@@ -12,9 +12,7 @@
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/math/geometry.h>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 /** A set of colored triangles.
  *  This class can be used to draw any solid, arbitrarily complex object
@@ -235,9 +233,8 @@ inline CSetOfTriangles::Ptr& operator<<(
 	s->insertTriangle(t);
 	return s;
 }
-
-}  // namespace opengl
-
 }  // namespace mrpt
 
 #endif
+
+

@@ -19,9 +19,7 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 /** Specialization
  * mrpt::opengl::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZ> > for an XYZ
@@ -374,7 +372,7 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGBA>>
 
 };  // end of mrpt::opengl::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGBA>
 // >
-}  // namespace opengl
-}  // namespace mrpt
-
+}
 #endif
+
+

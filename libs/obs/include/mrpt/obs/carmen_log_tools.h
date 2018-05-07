@@ -13,9 +13,7 @@
 #include <mrpt/system/datetime.h>
 #include <mrpt/obs/CObservation.h>
 
-namespace mrpt
-{
-namespace obs
+namespace mrpt::obs
 {
 /** Parse one line from an text input stream and interpret it as a CARMEN log
   *entry,
@@ -66,6 +64,7 @@ bool carmen_log_parse_line(
 	std::vector<mrpt::obs::CObservation::Ptr>& out_imported_observations,
 	const mrpt::system::TTimeStamp& time_start_log);
 
-}  // end NS
-}  // end NS
+}
 #endif
+
+

@@ -15,9 +15,7 @@
 
 #include <string>
 
-namespace mrpt
-{
-namespace graphslam
+namespace mrpt::graphslam
 {
 /**\brief Holds the data of an information path.
  *
@@ -116,8 +114,8 @@ struct TUncertaintyPath : public mrpt::config::CLoadableOptions
 	/**\}*/
 };
 }
-}  // end of namespaces
-
 #include "TUncertaintyPath_impl.h"
 
 #endif /* end of include guard: TUNCERTAINTYPATH_H */
+
+
