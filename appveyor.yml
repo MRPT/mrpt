@@ -11,6 +11,12 @@ configuration: Release
 build:
   project: c:\projects\mrpt\build\MRPT.sln 
 
+init:
+  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+  
+on_finish:
+  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+
 #install:
 #  - set PATH=%PATH%;%QTDIR%\bin
   
