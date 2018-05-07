@@ -11,9 +11,7 @@
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 /** A line segment
   *  \sa opengl::COpenGLScene
@@ -90,8 +88,7 @@ class CSimpleLine : public CRenderizableDisplayList
 	virtual ~CSimpleLine() {}
 };
 
-}  // end namespace
-
-}  // End of namespace
-
+}
 #endif
+
+

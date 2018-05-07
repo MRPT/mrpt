@@ -15,9 +15,7 @@
 
 #include <mrpt/system/CObserver.h>
 
-namespace mrpt
-{
-namespace slam
+namespace mrpt::slam
 {
 /**  A class for detecting features from occupancy grid maps.
  *   The main method is "COccupancyGridMapFeatureExtractor::extractFeatures()",
@@ -75,7 +73,7 @@ class COccupancyGridMapFeatureExtractor : public mrpt::system::CObserver
 
 };  // End of class def.
 
-}  // namespace slam
-}  // namespace mrpt
-
+}
 #endif
+
+

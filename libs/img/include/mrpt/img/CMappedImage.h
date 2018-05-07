@@ -10,9 +10,7 @@
 
 #include <mrpt/img/CImage.h>
 
-namespace mrpt
-{
-namespace img
+namespace mrpt::img
 {
 /** This class encapsulates a MRPT Image and allows the sampling of individual
  * pixels with sub-pixel accuracy and with a change of coordinates (eg, meters).
@@ -58,5 +56,5 @@ class CMappedImage
 	double getPixel(double x, double y) const;
 
 };  // End of class
-}  // end of namespace img
-}  // end of namespace mrpt
+}
+

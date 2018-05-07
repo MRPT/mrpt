@@ -14,9 +14,7 @@
 
 #include <mrpt/vision/types.h>
 
-namespace mrpt
-{
-namespace vision
+namespace mrpt::vision
 {
 /** \addtogroup chessboard_calib
 	@{ */
@@ -105,5 +103,6 @@ void findMultipleChessboardsCorners(
 
 /** @} */
 }
-}
 #endif
+
+

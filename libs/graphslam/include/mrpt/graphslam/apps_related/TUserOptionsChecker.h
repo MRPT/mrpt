@@ -28,11 +28,7 @@
 #include <iostream>
 #include <vector>
 
-namespace mrpt
-{
-namespace graphslam
-{
-namespace apps
+namespace mrpt::graphslam::apps
 {
 /**\brief Properties struct for both the Registration Decider and Optimizer
  * classes
@@ -220,9 +216,9 @@ struct TUserOptionsChecker
 	const std::string sep_header;
 	const std::string sep_subheader;
 };
-}  // namespace apps
-}  // namespace graphslam
-}  // namespace mrpt
+}
 #include "TUserOptionsChecker_impl.h"
 
 #endif /* end of include guard: TUSEROPTIONSCHECKER_H */
+
+

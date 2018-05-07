@@ -35,9 +35,7 @@ struct MyGlobalProfiler : public mrpt::system::CTimeLogger
 };
 MyGlobalProfiler global_profiler;
 
-namespace mrpt
-{
-namespace system
+namespace mrpt::system
 {
 CTimeLogger& global_profiler_getref() noexcept { return global_profiler; }
 void global_profiler_enter(const char* func_name) noexcept
@@ -47,7 +45,6 @@ void global_profiler_enter(const char* func_name) noexcept
 void global_profiler_leave(const char* func_name) noexcept
 {
 	global_profiler.leave(func_name);
-}
 }
 }
 

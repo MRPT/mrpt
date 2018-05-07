@@ -11,9 +11,7 @@
 #include <mrpt/containers/map_as_vector.h>
 #include <mrpt/core/aligned_allocator.h>
 
-namespace mrpt
-{
-namespace containers
+namespace mrpt::containers
 {
 /** \addtogroup stlext_grp
  *  @{ */
@@ -49,5 +47,5 @@ struct map_traits_map_as_vector
 /** @} */
 /** @} */  // end of grouping
 
-}  // namespace containers
-}  // namespace mrpt
+}
+

@@ -11,9 +11,7 @@
 #include <mrpt/io/CStream.h>
 #include <fstream>
 
-namespace mrpt
-{
-namespace io
+namespace mrpt::io
 {
 /** File open modes are used in CFileStream
   *  Posible values are:
@@ -100,5 +98,5 @@ class CFileStream : public CStream
 	bool readLine(std::string& str);
 
 };  // End of class def.
-}  // namespace io
-}  // namespace mrpt
+}
+

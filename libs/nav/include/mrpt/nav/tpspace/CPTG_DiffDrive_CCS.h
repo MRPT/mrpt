@@ -10,9 +10,7 @@
 
 #include <mrpt/nav/tpspace/CPTG_DiffDrive_CollisionGridBased.h>
 
-namespace mrpt
-{
-namespace nav
+namespace mrpt::nav
 {
 /** A PTG for optimal paths of type "C|C,S" (as named in PTG papers).
  * - **Compatible kinematics**: differential-driven / Ackermann steering
@@ -52,4 +50,4 @@ class CPTG_DiffDrive_CCS : public CPTG_DiffDrive_CollisionGridBased
 	double R, K;
 };
 }
-}
+

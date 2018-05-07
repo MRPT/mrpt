@@ -14,9 +14,7 @@
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPosePDF.h>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 /** Declares a class that represents a Probability Distribution
  *    function (PDF) of a 3D point (x,y,z).
@@ -101,7 +99,7 @@ class CPointPDF : public mrpt::serialization::CSerializable,
 	}
 
 };  // End of class def.
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

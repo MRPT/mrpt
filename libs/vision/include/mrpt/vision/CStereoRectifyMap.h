@@ -14,9 +14,7 @@
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/poses/CPose3DQuat.h>
 
-namespace mrpt
-{
-namespace vision
+namespace mrpt::vision
 {
 /** Use this class to rectify stereo images if the same distortion maps are
  * reused over and over again.
@@ -305,6 +303,7 @@ class CStereoRectifyMap
 
 };  // end class
 
-}  // end namespace
-}  // end namespace
+}
 #endif
+
+

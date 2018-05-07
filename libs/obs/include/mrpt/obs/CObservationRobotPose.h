@@ -13,9 +13,7 @@
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 
-namespace mrpt
-{
-namespace obs
+namespace mrpt::obs
 {
 /** An observation providing an alternative robot pose from an external source.
  * \sa CObservation
@@ -40,7 +38,7 @@ class CObservationRobotPose : public CObservation
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

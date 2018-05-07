@@ -16,9 +16,7 @@
 
 #include <mrpt/system/COutputLogger.h>
 
-namespace mrpt
-{
-namespace slam
+namespace mrpt::slam
 {
 /** A base class for any algorithm able of maps alignment. There are two methods
  *   depending on an PDF or a single 2D Pose value is available as initial guess
@@ -170,7 +168,7 @@ class CMetricMapsAlignmentAlgorithm : public mrpt::system::COutputLogger
 		float* runningTime = nullptr, void* info = nullptr) = 0;
 };
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

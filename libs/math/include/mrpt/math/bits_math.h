@@ -8,9 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 // This inline function is used everywhere, so just move it here even it's not a
 // forward declaration!
@@ -31,6 +29,6 @@ inline size_t size(const MATRIXLIKE& m, const int dim)
 			"size: Queried matrix dimension must be 1 or 2. Called with i=%i",
 			dim);
 }
-
-}  // End of namespace
 }  // end of namespace
+
+

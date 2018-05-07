@@ -22,9 +22,7 @@
 #include <mrpt/pbmap/PbMap.h>
 #include <mrpt/pbmap/Plane.h>
 
-namespace mrpt
-{
-namespace pbmap
+namespace mrpt::pbmap
 {
 /** A class used to infer some semantic meaning to the planes of a PbMap. This
  * knowledge
@@ -84,8 +82,8 @@ class PlaneInferredInfo
 	PbMap& mPbMap;
 };
 }
-}  // End of namespaces
-
 #endif
 
 #endif
+
+

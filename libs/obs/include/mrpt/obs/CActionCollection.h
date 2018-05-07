@@ -14,9 +14,7 @@
 #include <mrpt/containers/deepcopy_poly_ptr.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 
-namespace mrpt
-{
-namespace obs
+namespace mrpt::obs
 {
 /** Declares a class for storing a collection of robot actions. It is used in
  * mrpt::obs::CRawlog,
@@ -185,5 +183,5 @@ class CActionCollection : public mrpt::serialization::CSerializable
 
 };  // End of class def.
 
-}  // namespace obs
-}  // namespace mrpt
+}
+

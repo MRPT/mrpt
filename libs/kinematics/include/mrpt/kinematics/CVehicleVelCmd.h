@@ -12,9 +12,7 @@
 #include <mrpt/config/CConfigFileBase.h>
 #include <string>
 
-namespace mrpt
-{
-namespace kinematics
+namespace mrpt::kinematics
 {
 /** Virtual base for velocity commands of different kinematic models of planar
  * mobile robot.
@@ -91,5 +89,5 @@ class CVehicleVelCmd : public mrpt::serialization::CSerializable
 		const TVelCmdParams& params) = 0;
 };
 
-}  // End of namespace
-}  // End of namespace
+}
+

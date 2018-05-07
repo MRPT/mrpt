@@ -11,9 +11,7 @@
 
 #include <mrpt/math/CMatrixTemplate.h>
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 /**  This template class extends the class "CMatrixTemplate" for storing
  *"objects" at each matrix entry.
@@ -128,7 +126,7 @@ class CMatrixTemplateObjects : public CMatrixTemplate<T*>
 
 };  // end of class definition
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

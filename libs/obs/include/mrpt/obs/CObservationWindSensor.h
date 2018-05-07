@@ -15,9 +15,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose2D.h>
 
-namespace mrpt
-{
-namespace obs
+namespace mrpt::obs
 {
 /** Declares a class derived from "CObservation" that represents the wind
  * measurements taken on the robot by an anemometer.
@@ -53,7 +51,7 @@ class CObservationWindSensor : public CObservation
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

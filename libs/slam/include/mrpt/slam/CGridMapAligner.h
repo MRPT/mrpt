@@ -19,9 +19,7 @@
 #include <mrpt/vision/CFeatureExtraction.h>
 #include <mrpt/slam/COccupancyGridMapFeatureExtractor.h>
 
-namespace mrpt
-{
-namespace slam
+namespace mrpt::slam
 {
 /** A class for aligning two multi-metric maps (with an occupancy grid maps and
  * a points map, at least) based on features extraction and matching.
@@ -242,9 +240,7 @@ class CGridMapAligner : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 		float* runningTime = nullptr, void* info = nullptr);
 };
 
-}  // namespace slam
-}  // namespace mrpt
-
+}
 MRPT_ENUM_TYPE_BEGIN(mrpt::slam::CGridMapAligner::TAlignerMethod)
 using namespace mrpt::slam;
 MRPT_FILL_ENUM_MEMBER(CGridMapAligner, amRobustMatch);
@@ -253,3 +249,5 @@ MRPT_FILL_ENUM_MEMBER(CGridMapAligner, amModifiedRANSAC);
 MRPT_ENUM_TYPE_END()
 
 #endif
+
+

@@ -18,11 +18,7 @@
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/slam/CICP.h>
 
-namespace mrpt
-{
-namespace graphslam
-{
-namespace deciders
+namespace mrpt::graphslam::deciders
 {
 /**\brief Class for keeping together all the RangeScanner-related functions.
  *
@@ -153,8 +149,7 @@ class CRangeScanOps
 	TParams params;
 };
 }
-}
-}  // end of namespaces
-
 #include "CRangeScanOps_impl.h"
 #endif /* end of include guard: CRANGESCANOPS_H */
+
+

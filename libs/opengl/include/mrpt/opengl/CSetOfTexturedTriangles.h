@@ -10,9 +10,7 @@
 
 #include <mrpt/opengl/CTexturedObject.h>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 /** A set of textured triangles.
  *  This class can be used to draw any solid, arbitrarily complex object with
@@ -101,5 +99,5 @@ class CSetOfTexturedTriangles : public CTexturedObject
 	virtual ~CSetOfTexturedTriangles();
 };
 
-}  // namespace opengl
-}  // namespace mrpt
+}
+

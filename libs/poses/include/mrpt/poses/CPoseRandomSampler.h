@@ -17,9 +17,7 @@
 #include <mrpt/math/math_frwds.h>
 #include <memory>  // unique_ptr
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 /** An efficient generator of random samples drawn from a given 2D (CPosePDF) or
  * 3D (CPose3DPDF) pose probability density function (pdf).
@@ -154,7 +152,7 @@ class CPoseRandomSampler
 	}
 
 };  // End of class def.
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

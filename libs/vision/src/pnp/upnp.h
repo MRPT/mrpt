@@ -69,11 +69,7 @@
 //#include <opencv2/core/core_c.h>
 #include <iostream>
 
-namespace mrpt
-{
-namespace vision
-{
-namespace pnp
+namespace mrpt::vision::pnp
 {
 /** \addtogroup pnp Perspective-n-Point pose estimation
  *  \ingroup mrpt_vision_grp
@@ -362,7 +358,7 @@ class upnp
 
 /** @}  */  // end of grouping
 }
-}
-}
 #endif  // Check for OPENCV_LIB
 #endif  // OPENCV_CALIB3D_UPNP_H_
+
+

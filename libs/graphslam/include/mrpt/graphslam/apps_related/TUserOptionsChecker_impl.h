@@ -8,11 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 // implementation of the TUserOptionsChecker class template methods
-namespace mrpt
-{
-namespace graphslam
-{
-namespace apps
+namespace mrpt::graphslam::apps
 {
 template <class GRAPH_t>
 TUserOptionsChecker<GRAPH_t>::TUserOptionsChecker()
@@ -430,6 +426,6 @@ void TUserOptionsChecker<GRAPH_t>::populateDeciderOptimizerProperties()
 
 	MRPT_END
 }
-}
-}
 }  // END OF NAMESPACES
+
+

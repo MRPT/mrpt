@@ -13,9 +13,7 @@
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 /** A 2D ellipse or 3D ellipsoid, depending on the size of the m_cov matrix (2x2
   *or 3x3).
@@ -179,8 +177,7 @@ class CEllipsoid : public CRenderizableDisplayList
 	virtual ~CEllipsoid() {}
 };
 
-}  // end namespace
-
-}  // End of namespace
-
+}
 #endif
+
+

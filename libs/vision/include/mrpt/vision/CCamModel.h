@@ -15,9 +15,7 @@
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/math/CArrayNumeric.h>
 
-namespace mrpt
-{
-namespace vision
+namespace mrpt::vision
 {
 /** This class represent a pinhole camera model for Monocular SLAM and
  * implements some associated Jacobians
@@ -359,6 +357,7 @@ class CCamModel : public mrpt::config::CLoadableOptions
 
 };  // end class
 
-}  // end namespace
-}  // end namespace
+}
 #endif  //__CCamModel_H
+
+

@@ -12,9 +12,7 @@
 #include <mrpt/math/ransac.h>
 #include <mrpt/math/geometry.h>
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 using std::vector;
 
@@ -79,7 +77,7 @@ inline void ransac_detect_3D_planes(
 /** @} */
 /** @} */  // end of grouping
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

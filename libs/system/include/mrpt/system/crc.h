@@ -12,9 +12,7 @@
 #include <cstdint>
 #include <cstddef>
 
-namespace mrpt
-{
-namespace system
+namespace mrpt::system
 {
 /** \addtogroup mrpt_crc CRC functions (in #include <mrpt/system/crc.h>)
  *  \ingroup mrpt_system_grp
@@ -34,5 +32,5 @@ uint32_t compute_CRC32(
 	const uint8_t* data, const size_t len,
 	const uint32_t gen_pol = 0xEDB88320L);
 /** @} */
-}  // namespace system
-}  // namespace mrpt
+}
+

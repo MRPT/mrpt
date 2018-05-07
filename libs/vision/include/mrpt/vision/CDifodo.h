@@ -15,9 +15,7 @@
 #include <mrpt/poses/CPose3D.h>
 //#include <unsupported/Eigen/MatrixFunctions>
 
-namespace mrpt
-{
-namespace vision
+namespace mrpt::vision
 {
 /** This abstract class implements a method called "Difodo" to perform Visual
   *odometry with range cameras.
@@ -310,6 +308,6 @@ class CDifodo
 	CDifodo();
 };
 }
-}
-
 #endif
+
+

@@ -11,9 +11,7 @@
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 /** A solid or wire-frame sphere.
   *  \sa opengl::COpenGLScene
@@ -98,8 +96,7 @@ class CSphere : public CRenderizableDisplayList
 	virtual ~CSphere() {}
 };
 
-}  // end namespace
-
-}  // End of namespace
-
+}
 #endif
+
+

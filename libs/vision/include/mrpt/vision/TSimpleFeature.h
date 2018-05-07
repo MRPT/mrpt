@@ -18,9 +18,7 @@
 #include <mrpt/core/round.h>
 #include <functional>
 
-namespace mrpt
-{
-namespace vision
+namespace mrpt::vision
 {
 /** \addtogroup  mrptvision_features
 	@{ */
@@ -381,8 +379,7 @@ class CFeatureListKDTree
 
 /** @} */  // End of add to module: mrptvision_features
 
-}  // namespace vision
-
-}  // namespace mrpt
-
+}
 #endif
+
+

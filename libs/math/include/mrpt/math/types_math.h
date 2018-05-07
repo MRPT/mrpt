@@ -59,9 +59,7 @@
 	{                                                            \
 	}
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 /** Column vector, like Eigen::MatrixX*, but automatically initialized to zeros
  * since construction */
@@ -100,4 +98,4 @@ mrpt::serialization::CArchive& operator>>(
 mrpt::serialization::CArchive& operator>>(
 	mrpt::serialization::CArchive& in, mrpt::math::CVectorFloat& a);
 }
-}
+

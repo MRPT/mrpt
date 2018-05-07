@@ -18,9 +18,7 @@
 #include <mrpt/graphs/TNodeID.h>
 #include <map>
 
-namespace mrpt
-{
-namespace hmtslam
+namespace mrpt::hmtslam
 {
 class CHierarchicalMHMap;
 class CHMHMapArc;
@@ -146,7 +144,7 @@ using TNodeIDList = mrpt::containers::list_searchable<CHMHMapNode::TNodeID>;
 using TNodeIDSet = std::set<CHMHMapNode::TNodeID>;
 using TPairNodeIDs = std::pair<CHMHMapNode::TNodeID, CHMHMapNode::TNodeID>;
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

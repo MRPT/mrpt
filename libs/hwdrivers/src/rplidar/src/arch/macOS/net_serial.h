@@ -35,11 +35,7 @@
 
 #include "hal/abs_rxtx.h"
 
-namespace rp
-{
-namespace arch
-{
-namespace net
+namespace rp::arch::net
 {
 class raw_serial : public rp::hal::serial_rxtx
 {
@@ -91,5 +87,4 @@ class raw_serial : public rp::hal::serial_rxtx
 	size_t required_rx_cnt;
 };
 }
-}
-}
+

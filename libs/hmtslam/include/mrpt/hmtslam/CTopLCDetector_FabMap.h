@@ -11,9 +11,7 @@
 
 #include <mrpt/hmtslam/CTopLCDetectorBase.h>
 
-namespace mrpt
-{
-namespace hmtslam
+namespace mrpt::hmtslam
 {
 /** \ingroup mrpt_hmtslam_grp */
 class CTopLCDetector_FabMap : public CTopLCDetectorBase
@@ -69,7 +67,7 @@ class CTopLCDetector_FabMap : public CTopLCDetectorBase
 	};
 
 };  // end class
-}  // end namespace
-}  // end namespace
-
+}
 #endif
+
+

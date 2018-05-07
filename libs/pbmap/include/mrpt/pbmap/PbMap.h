@@ -26,9 +26,7 @@
 
 //#include <boost/thread/thread.hpp>
 
-namespace mrpt
-{
-namespace pbmap
+namespace mrpt::pbmap
 {
 /** A class used to store a Plane-based Map (PbMap). A PbMap consists of a set
  * of planar patches
@@ -84,9 +82,9 @@ class PbMap : public mrpt::serialization::CSerializable
 
 	//    boost::mutex mtx_pbmap_busy;
 };
-}  // namespace pbmap
-}  // namespace mrpt
-
+}
 #endif
 
 #endif
+
+

@@ -16,11 +16,7 @@
 
 #include "CRegistrationDeciderOrOptimizer.h"
 
-namespace mrpt
-{
-namespace graphslam
-{
-namespace deciders
+namespace mrpt::graphslam::deciders
 {
 /**\brief Interface for implementing node registration classes.
  *
@@ -134,10 +130,9 @@ class CNodeRegistrationDecider
 	 */
 	inf_mat_t m_init_inf_mat;
 };
-}  // namespace deciders
-}  // namespace graphslam
-}  // namespace mrpt
-
+}
 #include "CNodeRegistrationDecider_impl.h"
 
 #endif /* end of include guard: CNODEREGISTRATIONDECIDER_H */
+
+

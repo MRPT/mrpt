@@ -256,11 +256,7 @@ void CWeightedPointsMap::internal_clear()
 	mark_as_modified();
 }
 
-namespace mrpt
-{
-namespace maps
-{
-namespace detail
+namespace mrpt::maps::detail
 {
 using mrpt::maps::CWeightedPointsMap;
 
@@ -346,9 +342,6 @@ struct pointmap_traits<CWeightedPointsMap>
 	}
 };
 }
-}
-}
-
 /** See CPointsMap::loadFromRangeScan() */
 void CWeightedPointsMap::loadFromRangeScan(
 	const CObservation2DRangeScan& rangeScan, const CPose3D* robotPose)
@@ -374,3 +367,5 @@ void CWeightedPointsMap::PLY_import_set_vertex_count(const size_t N)
 {
 	this->setSize(N);
 }
+
+

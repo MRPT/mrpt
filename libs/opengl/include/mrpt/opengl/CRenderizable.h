@@ -17,9 +17,7 @@
 #include <mrpt/math/lightweight_geom_data.h>
 #include <deque>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 class COpenGLViewport;
 class CSetOfObjects;
@@ -338,7 +336,7 @@ using CListOpenGLObjects = std::deque<CRenderizable::Ptr>;
 CRenderizable::Ptr& operator<<(
 	CRenderizable::Ptr& r, const mrpt::poses::CPose3D& p);
 
-}  // namespace opengl
-}  // namespace mrpt
-
+}
 #endif
+
+

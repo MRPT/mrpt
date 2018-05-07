@@ -11,11 +11,7 @@
 #include "gnss_messages_common.h"
 #include <mrpt/math/CMatrixFixedNumeric.h>
 
-namespace mrpt
-{
-namespace obs
-{
-namespace gnss
+namespace mrpt::obs::gnss
 {
 /** GPS datum for TopCon's mmGPS devices: PZS. \sa mrpt::obs::CObservationGPS */
 struct Message_TOPCON_PZS : public gnss_message
@@ -116,5 +112,4 @@ struct Message_TOPCON_SATS : public gnss_message
 	void internal_readFromStream(mrpt::serialization::CArchive& in) override;
 };
 }
-}
-}  // End of namespaces
+

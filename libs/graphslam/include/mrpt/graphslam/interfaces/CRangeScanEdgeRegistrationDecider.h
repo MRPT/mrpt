@@ -13,11 +13,7 @@
 #include <mrpt/graphslam/misc/CRangeScanOps.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 
-namespace mrpt
-{
-namespace graphslam
-{
-namespace deciders
+namespace mrpt::graphslam::deciders
 {
 /**\brief Edge Registration Decider Interface from which RangeScanner-based
  * ERDs can inherit from.
@@ -76,10 +72,9 @@ class CRangeScanEdgeRegistrationDecider
 
    private:
 };
-}  // namespace deciders
-}  // namespace graphslam
-}  // namespace mrpt
-
+}
 #include "CRangeScanEdgeRegistrationDecider_impl.h"
 
 #endif /* end of include guard: CRANGESCANEDGEREGISTRATIONDECIDER_H */
+
+

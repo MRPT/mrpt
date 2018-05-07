@@ -13,9 +13,7 @@
 #include <mrpt/system/datetime.h>
 #include <mrpt/kinematics/CVehicleVelCmd.h>
 
-namespace mrpt
-{
-namespace kinematics
+namespace mrpt::kinematics
 {
 /** This class can be used to simulate the kinematics and dynamics of a
  * differential driven planar mobile robot, including odometry errors and
@@ -141,5 +139,5 @@ class CVehicleSimulVirtualBase
    private:
 };
 
-}  // End of namespace
-}  // End of namespace
+}
+

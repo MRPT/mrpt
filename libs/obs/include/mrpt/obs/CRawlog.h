@@ -15,9 +15,7 @@
 #include <mrpt/obs/CObservationComment.h>
 #include <mrpt/config/CConfigFileMemory.h>
 
-namespace mrpt
-{
-namespace obs
+namespace mrpt::obs
 {
 /** For usage with CRawlog classes. */
 using TTimeObservationPair =
@@ -436,7 +434,7 @@ class CRawlog : public mrpt::serialization::CSerializable
 
 };  // End of class def.
 
-}  // namespace obs
-}  // namespace mrpt
-
+}
 #endif
+
+

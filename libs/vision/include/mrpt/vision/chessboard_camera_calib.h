@@ -15,9 +15,7 @@
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/vision/types.h>
 
-namespace mrpt
-{
-namespace vision
+namespace mrpt::vision
 {
 /** \addtogroup chessboard_calib Chessboard calibration
   *  \ingroup mrpt_vision_grp
@@ -109,6 +107,6 @@ bool checkerBoardCameraCalibration(
 
 /** @}  */  // end of grouping
 }
-}
-
 #endif
+
+

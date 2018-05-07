@@ -15,9 +15,7 @@
 #include <mrpt/img/CImage.h>
 #include <mrpt/img/color_maps.h>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 /** A planar (XY) grid where each cell has an associated height and, optionally,
  * a texture map.
@@ -263,8 +261,7 @@ class CMeshFast : public CRenderizableDisplayList
 	virtual ~CMeshFast() {}
 };
 
-}  // namespace opengl
-
-}  // namespace mrpt
-
+}
 #endif
+
+

@@ -8,9 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-namespace mrpt
-{
-namespace containers
+namespace mrpt::containers
 {
 /** \addtogroup containers_grp
   * @{ */
@@ -39,5 +37,5 @@ inline void copy_container_typecasting(
 		*target = static_cast<typename dst_container::value_type>(*i);
 }
 /** @} */  // end of grouping
-}  // End of namespace
-}  // end of namespace
+}
+

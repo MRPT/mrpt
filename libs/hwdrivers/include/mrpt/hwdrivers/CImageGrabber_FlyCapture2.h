@@ -12,9 +12,7 @@
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** Options used when creating a camera capture object of type
  * CImageGrabber_FlyCapture2   \ingroup mrpt_hwdrivers_grp */
@@ -285,7 +283,7 @@ static_assert(
 	!std::is_copy_constructible<CImageGrabber_FlyCapture2>::value &&
 		!std::is_copy_assignable<CImageGrabber_FlyCapture2>::value,
 	"Copy Check");
-}  // End of NS
-}  // End of NS
-
+}
 #endif
+
+

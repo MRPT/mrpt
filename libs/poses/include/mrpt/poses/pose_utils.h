@@ -22,11 +22,7 @@
 #include <vector>
 #include <string>
 
-namespace mrpt
-{
-namespace poses
-{
-namespace internal
+namespace mrpt::poses::internal
 {
 inline void getPoseFromString(const std::string& s, mrpt::poses::CPose2D& p)
 {
@@ -217,6 +213,5 @@ void readFileWithPoses(
 	file_GT.close();
 
 	MRPT_END;
-}  // end of readFileWithPoses
-}  // namespace poses
-}  // namespace mrpt
+}
+

@@ -12,9 +12,7 @@
 #include <mutex>
 #include <utility>  // std::pair
 
-namespace mrpt
-{
-namespace system
+namespace mrpt::system
 {
 /** A generic system for versatile memory pooling.
  *   This class implements the singleton pattern so a unique instance exists
@@ -140,5 +138,5 @@ class CGenericMemoryPool
 	}
 };
 
-}  // namespace system
-}  // namespace mrpt
+}
+

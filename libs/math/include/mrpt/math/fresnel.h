@@ -10,9 +10,7 @@
 #pragma once
 #include <cstdlib>
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 /** @addtogroup  fresnel_integrals_grp Fresnel integrals (`#include
  * <mrpt/math/fresnel.h>`)
@@ -41,6 +39,5 @@ long double lfresnel_cos_integral(long double x) noexcept;
 
 /** @} */
 
-}  // End of MATH namespace
+}
 
-}  // End of namespace

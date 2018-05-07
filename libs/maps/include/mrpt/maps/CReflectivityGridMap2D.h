@@ -18,9 +18,7 @@
 #include <mrpt/maps/CLogOddsGridMap2D.h>
 #include <mrpt/obs/obs_frwds.h>
 
-namespace mrpt
-{
-namespace maps
+namespace mrpt::maps
 {
 /** A 2D grid map representing the reflectivity of the environment (for example,
   *measured with an IR proximity sensor).
@@ -121,8 +119,7 @@ class CReflectivityGridMap2D : public CMetricMap,
 	MAP_DEFINITION_END(CReflectivityGridMap2D)
 };
 
-}  // End of namespace
-
-}  // End of namespace
-
+}
 #endif
+
+

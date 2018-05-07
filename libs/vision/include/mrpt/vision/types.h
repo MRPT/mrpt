@@ -16,9 +16,7 @@
 #include <mrpt/typemeta/TEnumType.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
-namespace mrpt
-{
-namespace vision
+namespace mrpt::vision
 {
 /** \addtogroup mrpt_vision_grp
  *  @{ */
@@ -733,9 +731,7 @@ struct TMultiResDescOptions : public mrpt::config::CLoadableOptions
 };  // end TMultiResDescOptions
 
 /** @} */  // end of grouping
-}  // namespace vision
-}  // namespace mrpt
-
+}
 MRPT_ENUM_TYPE_BEGIN(mrpt::vision::TFeatureType)
 using namespace mrpt::vision;
 MRPT_FILL_ENUM(featNotDefined);
@@ -766,3 +762,5 @@ MRPT_FILL_ENUM(descORB);
 MRPT_FILL_ENUM(descBLD);
 MRPT_FILL_ENUM(descLATCH);
 MRPT_ENUM_TYPE_END()
+
+

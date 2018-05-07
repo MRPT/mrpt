@@ -13,11 +13,7 @@
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 
-namespace mrpt
-{
-namespace maps
-{
-namespace detail
+namespace mrpt::maps::detail
 {
 template <class Derived>
 struct loadFromRangeImpl
@@ -523,8 +519,7 @@ struct loadFromRangeImpl
 	}
 };
 
-}  // end NS
-}  // end NS
-}  // end NS
-
+}
 #endif
+
+

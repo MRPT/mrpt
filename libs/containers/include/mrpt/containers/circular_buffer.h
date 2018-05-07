@@ -12,9 +12,7 @@
 #include <vector>
 #include <stdexcept>
 
-namespace mrpt
-{
-namespace containers
+namespace mrpt::containers
 {
 /** A circular buffer of fixed size (defined at construction-time), implemented
  * with a std::vector as the underlying storage.
@@ -163,6 +161,7 @@ class circular_buffer
 	void clear() { m_next_write = m_next_read = 0; }
 };  // end class circular_buffer
 
-}  // End of namespace
-}  // End of namespace
+}
 #endif
+
+

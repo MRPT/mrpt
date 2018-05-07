@@ -17,11 +17,7 @@
 #include <string>
 #include <map>
 
-namespace mrpt
-{
-namespace graphslam
-{
-namespace detail
+namespace mrpt::graphslam::detail
 {
 /**\brief Generic class for tracking the total number of edges for different
  * tpes of edges and for storing visualization-related information for each
@@ -178,7 +174,6 @@ class CEdgeCounter
 	int m_text_index_total_edges, m_text_index_loop_closures;
 };
 }
-}
-}  // END OF NAMESPACES
-
 #endif /* end of include guard: CEDGECOUNTER_H */
+
+

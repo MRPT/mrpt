@@ -11,11 +11,7 @@
 
 // implementation file for the THypothesis struct template
 
-namespace mrpt
-{
-namespace graphs
-{
-namespace detail
+namespace mrpt::graphs::detail
 {
 template <class GRAPH_T>
 THypothesis<GRAPH_T>::THypothesis() : is_valid(true), goodness(0)
@@ -129,8 +125,8 @@ bool THypothesis<GRAPH_T>::operator<(const self_t& other) const
 {
 	return this->id < other.id;
 }
-}  // namespace detail
-}  // namespace graphs
 }  // namespace mrpt
 
 #endif /* end of include guard: THYPOTHESIS_IMPL_H */
+
+

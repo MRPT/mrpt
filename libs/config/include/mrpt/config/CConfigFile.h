@@ -11,9 +11,7 @@
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/core/pimpl.h>
 
-namespace mrpt
-{
-namespace config
+namespace mrpt::config
 {
 /** This class allows loading and storing values and vectors of different types
  * from ".ini" files easily.
@@ -95,5 +93,5 @@ class CConfigFile : public CConfigFileBase
 
 };  // End of class def.
 
-}  // End of namespace
-}  // end of namespace
+}
+

@@ -36,9 +36,7 @@
 #include "rptypes.h"
 #define CLASS_THREAD(c, x) rp::hal::Thread::create_member<c, &c::x>(this)
 
-namespace rp
-{
-namespace hal
+namespace rp::hal
 {
 class Thread
 {
@@ -90,4 +88,4 @@ class Thread
 	_word_size_t _handle;
 };
 }
-}
+

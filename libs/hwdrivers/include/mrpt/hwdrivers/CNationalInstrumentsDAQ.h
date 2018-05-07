@@ -20,9 +20,7 @@
 #include <thread>
 #include <atomic>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** An interface to read from data acquisition boards compatible with National
 * Instruments "DAQmx Base" or "DAQmx".
@@ -486,7 +484,7 @@ class CNationalInstrumentsDAQ : public mrpt::system::COutputLogger,
 
 };  // end class
 
-}  // end namespace
-}  // end namespace
-
+}
 #endif
+
+

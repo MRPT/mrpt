@@ -11,9 +11,7 @@
 
 #include "CAbstractPTGBasedReactive.h"
 
-namespace mrpt
-{
-namespace nav
+namespace mrpt::nav
 {
 /** A 3D robot shape stored as a "sliced" stack of 2D polygons, used for
  * CReactiveNavigationSystem3D
@@ -181,6 +179,6 @@ class CReactiveNavigationSystem3D : public CAbstractPTGBasedReactive
 
 };  // end class
 }
-}
-
 #endif
+
+

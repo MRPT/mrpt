@@ -14,9 +14,7 @@
 #include <mrpt/nav/planners/PlannerRRT_common.h>
 #include <numeric>
 
-namespace mrpt
-{
-namespace nav
+namespace mrpt::nav
 {
 /** \addtogroup nav_planners Path planning
   * \ingroup mrpt_nav_grp
@@ -109,4 +107,4 @@ class PlannerRRT_SE2_TPS : public PlannerTPS_VirtualBase
 
 /** @} */
 }
-}
+

@@ -12,9 +12,7 @@
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 /** A grid of lines over the XY plane.
   *  \sa opengl::COpenGLScene
@@ -109,8 +107,7 @@ class CGridPlaneXY : public CRenderizableDisplayList
 	virtual ~CGridPlaneXY() {}
 };
 
-}  // end namespace
-
-}  // End of namespace
-
+}
 #endif
+
+

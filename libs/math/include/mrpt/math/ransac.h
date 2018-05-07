@@ -13,9 +13,7 @@
 #include <set>
 #include <functional>
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 /** @addtogroup ransac_grp RANSAC and other model fitting algorithms
   * \ingroup mrpt_math_grp
@@ -84,5 +82,5 @@ using RANSAC = RANSAC_Template<double>;
 
 /** @} */
 
-}  // End of namespace
-}  // End of namespace
+}
+

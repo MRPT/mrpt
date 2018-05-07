@@ -8,11 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-namespace mrpt
-{
-namespace obs
-{
-namespace gnss
+namespace mrpt::obs::gnss
 {
 /** List of all known GNSS message types.
   * Normally, each type here has a corresponding class, derived from
@@ -101,5 +97,4 @@ enum gnss_message_type_t
 
 };
 }
-}
-}  // End of namespaces
+

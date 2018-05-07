@@ -16,9 +16,7 @@
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/typemeta/TEnumType.h>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** A C++ interface to Velodyne laser scanners (HDL-64, HDL-32, VLP-16), working
  * on Linux and Windows.
@@ -436,9 +434,7 @@ class CVelodyneScanner : public mrpt::hwdrivers::CGenericSensor
 	bool internal_send_http_post(const std::string& post_data);
 
 };  // end of class
-}  // namespace hwdrivers
-}  // namespace mrpt
-
+}
 MRPT_ENUM_TYPE_BEGIN(mrpt::hwdrivers::CVelodyneScanner::model_t)
 using namespace mrpt::hwdrivers;
 MRPT_FILL_ENUM_MEMBER(CVelodyneScanner, VLP16);
@@ -455,3 +451,5 @@ MRPT_FILL_ENUM_MEMBER(CVelodyneScanner, DUAL);
 MRPT_ENUM_TYPE_END()
 
 #endif
+
+

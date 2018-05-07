@@ -14,11 +14,7 @@
 
 #include <mrpt/graphslam/interfaces/CEdgeRegistrationDecider.h>
 
-namespace mrpt
-{
-namespace graphslam
-{
-namespace deciders
+namespace mrpt::graphslam::deciders
 {
 /**\brief Empty Edge Registration Decider
  *
@@ -72,8 +68,8 @@ void CEmptyERD<GRAPH_T>::registerNewEdge(
 	const constraint_t& rel_edge)
 {
 }
-}
-}
 }  // end of namespaces
 
 #endif /* end of include guard: CEmptyERD_H */
+
+

@@ -13,9 +13,7 @@
 #include "CHolonomicLogFileRecord.h"
 #include <mrpt/config/CLoadableOptions.h>
 
-namespace mrpt
-{
-namespace nav
+namespace mrpt::nav
 {
 /** \addtogroup nav_holo Holonomic navigation methods
   * \ingroup mrpt_nav_grp
@@ -96,6 +94,6 @@ class CHolonomicVFF : public CAbstractHolonomicReactiveMethod
 };
 /** @} */
 }
-}
-
 #endif
+
+

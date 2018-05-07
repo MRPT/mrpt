@@ -10,9 +10,7 @@
 
 #include <set>
 
-namespace mrpt
-{
-namespace system
+namespace mrpt::system
 {
 class CObserver;
 class mrptEvent;
@@ -55,5 +53,5 @@ class CObservable
 	inline bool hasSubscribers() const { return !m_subscribers.empty(); }
 };  // End of class def.
 
-}  // namespace system
-}  // namespace mrpt
+}
+

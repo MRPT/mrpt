@@ -14,9 +14,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/core/aligned_std_deque.h>
 
-namespace mrpt
-{
-namespace obs
+namespace mrpt::obs
 {
 /** An observation of one or more "features" or "objects", possibly identified
  * with a unique ID, whose relative SE(3) pose is observed with respect to the
@@ -67,7 +65,7 @@ class CObservation6DFeatures : public CObservation
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

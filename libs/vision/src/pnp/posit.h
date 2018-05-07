@@ -15,11 +15,7 @@
 
 #define LOOP_MAX_COUNT 30
 
-namespace mrpt
-{
-namespace vision
-{
-namespace pnp
+namespace mrpt::vision::pnp
 {
 /** \addtogroup pnp Perspective-n-Point pose estimation
  *  \ingroup mrpt_vision_grp
@@ -81,5 +77,4 @@ class posit
 
 /** @}  */  // end of grouping
 }
-}
-}
+

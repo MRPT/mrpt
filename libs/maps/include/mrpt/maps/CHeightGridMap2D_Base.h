@@ -13,9 +13,7 @@
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
-namespace mrpt
-{
-namespace maps
+namespace mrpt::maps
 {
 /** Virtual base class for Digital Elevation Model (DEM) maps. See derived
  * classes for details.
@@ -80,6 +78,7 @@ class CHeightGridMap2D_Base
 		const mrpt::obs::CObservation* obs,
 		const mrpt::poses::CPose3D* robotPose = nullptr);
 };
-}  // End of namespace
-}  // End of namespace
+}
 #endif
+
+

@@ -16,9 +16,7 @@
 #include <mrpt/poses/poses_frwds.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 /** A class used to store a 3D pose as a translation (x,y,z) and a quaternion
  * (qr,qx,qy,qz).
@@ -675,7 +673,7 @@ mrpt::math::TPoint3D operator-(
 bool operator==(const CPose3DQuat& p1, const CPose3DQuat& p2);
 bool operator!=(const CPose3DQuat& p1, const CPose3DQuat& p2);
 
-}  // namespace poses
-}  // namespace mrpt
-
+}
 #endif
+
+

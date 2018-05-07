@@ -14,9 +14,7 @@
 #include <mrpt/hwdrivers/CPtuBase.h>
 #include <mrpt/system/COutputLogger.h>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** This class implements initialization and comunication methods to
   * control a Tilt Unit model DT-80, working in radians .
@@ -327,8 +325,7 @@ class CTuMicos : public CPtuBase, public mrpt::system::COutputLogger
 
 };  // End of class
 
-}  // End of namespace
-
-}  // End of namespace
-
+}
 #endif
+
+

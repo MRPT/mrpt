@@ -17,9 +17,7 @@
 #include <mrpt/vision/CFeature.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
-namespace mrpt
-{
-namespace maps
+namespace mrpt::maps
 {
 /** The class for storing "landmarks" (visual or laser-scan-extracted
  * features,...)
@@ -129,7 +127,7 @@ class CLandmark : public mrpt::serialization::CSerializable
 
 };  // End of class definition
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

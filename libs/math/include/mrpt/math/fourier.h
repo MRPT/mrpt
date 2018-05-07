@@ -10,9 +10,7 @@
 
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 /** \addtogroup fourier_grp Fourier transform functions
   *  \ingroup mrpt_math_grp
@@ -97,5 +95,5 @@ void cross_correlation_FFT(
 
 /** @} */
 
-}  // End of MATH namespace
-}  // End of namespace
+}
+

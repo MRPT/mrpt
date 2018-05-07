@@ -21,9 +21,7 @@
 #include <string>
 #include <map>
 
-namespace mrpt
-{
-namespace graphslam
+namespace mrpt::graphslam
 {
 /**\brief Interface for implementing node/edge registration deciders or
  * optimizer classes.
@@ -176,7 +174,7 @@ class CRegistrationDeciderOrOptimizer : public mrpt::system::COutputLogger
 	static const std::string report_sep;
 };
 }
-}  // end of namespaces
-
 #include "CRegistrationDeciderOrOptimizer_impl.h"
 #endif /* end of include guard: CREGISTRATIONDECIDEROROPTIMIZER_H */
+
+

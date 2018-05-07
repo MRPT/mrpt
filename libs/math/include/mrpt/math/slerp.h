@@ -11,9 +11,7 @@
 #include <mrpt/math/CQuaternion.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 /** \addtogroup geometry_grp
   *  @{ */
@@ -96,4 +94,4 @@ void slerp_ypr(
 
 /** @} */  // grouping
 }
-}
+

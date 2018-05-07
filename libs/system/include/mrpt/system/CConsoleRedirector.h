@@ -13,9 +13,7 @@
 #include <fstream>
 #include <cstdio>  // EOF
 
-namespace mrpt
-{
-namespace system
+namespace mrpt::system
 {
 /** By creating an object of this class, all the output to std::cout (and
  * std::cerr) will be redirected to a text file, and optionally also shown on
@@ -135,5 +133,5 @@ class CConsoleRedirector : public std::streambuf
 		return 0;
 	}
 };
-}  // namespace system
-}  // namespace mrpt
+}
+

@@ -15,9 +15,7 @@
 #include <mrpt/containers/deepcopy_poly_ptr.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
-namespace mrpt
-{
-namespace obs
+namespace mrpt::obs
 {
 /** Represents a probabilistic 2D movement of the robot mobile base
  *
@@ -210,7 +208,7 @@ class CActionRobotMovement2D : public CAction
 
 };  // End of class def.
 
-}  // namespace obs
-}  // namespace mrpt
-
+}
 #endif
+
+

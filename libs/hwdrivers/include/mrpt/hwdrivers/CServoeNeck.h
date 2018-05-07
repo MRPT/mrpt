@@ -13,9 +13,7 @@
 #include <mrpt/comms/CInterfaceFTDI.h>
 #include <mrpt/core/exceptions.h>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** A USB-interface for a custom "robotic neck" designed at MAPIR lab.
  * \ingroup mrpt_hwdrivers_grp */
@@ -160,8 +158,7 @@ class CServoeNeck : public mrpt::comms::CInterfaceFTDI
 
 };  // End of class
 
-}  // namespace hwdrivers
-
-}  // namespace mrpt
-
+}
 #endif
+
+

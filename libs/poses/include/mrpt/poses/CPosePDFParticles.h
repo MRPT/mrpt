@@ -15,9 +15,7 @@
 #include <mrpt/bayes/CParticleFilterData.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 /** Declares a class that represents a Probability Density Function (PDF) over a
  * 2D pose (x,y,phi), using a set of weighted samples.
@@ -178,7 +176,7 @@ class CPosePDFParticles
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

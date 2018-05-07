@@ -13,9 +13,7 @@
 #include <mrpt/hwdrivers/C2DRangeFinderAbstract.h>
 #include <mrpt/containers/circular_buffer.h>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** Interfaces a Robo Peak LIDAR laser scanner.
   *
@@ -108,8 +106,7 @@ class CRoboPeakLidar : public C2DRangeFinderAbstract
 
 };  // End of class
 
-}  // End of namespace
-
-}  // End of namespace
-
+}
 #endif
+
+

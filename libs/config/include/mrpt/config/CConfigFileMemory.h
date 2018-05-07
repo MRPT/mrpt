@@ -13,9 +13,7 @@
 #include <string>
 #include <vector>
 
-namespace mrpt
-{
-namespace config
+namespace mrpt::config
 {
 /** This class implements a config file-like interface over a memory-stored
  * string list.
@@ -78,5 +76,5 @@ class CConfigFileMemory : public CConfigFileBase
 
 };  // End of class def.
 
-}  // End of namespace
-}  // end of namespace
+}
+

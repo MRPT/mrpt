@@ -12,9 +12,7 @@
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/math/geometry.h>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 using _GLENUM = uint32_t;
 
@@ -147,6 +145,7 @@ class COpenGLStandardObject : public CRenderizableDisplayList
 	  */
 	virtual ~COpenGLStandardObject() {}
 };
-}  // end namespace
-}  // End of namespace
+}
 #endif
+
+

@@ -17,9 +17,7 @@
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
 
-namespace mrpt
-{
-namespace detectors
+namespace mrpt::detectors
 {
 /**
  *
@@ -120,7 +118,7 @@ class CDetectorDoorCrossing : public mrpt::system::COutputLogger
 	bool lastEntropyValid;
 };
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

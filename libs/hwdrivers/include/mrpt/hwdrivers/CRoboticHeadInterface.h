@@ -17,9 +17,7 @@
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/obs/CObservationRange.h>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /**   This "software driver" implements the communication protocol for
  * interfacing a Robotic Head Board through a custom
@@ -120,7 +118,7 @@ class CRoboticHeadInterface : public mrpt::system::COutputLogger
 
 };  // End of class
 
-}  // End of namespace
-}  // end of namespace
-
+}
 #endif
+
+

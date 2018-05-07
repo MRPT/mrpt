@@ -13,9 +13,7 @@
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/poses/CPose3D.h>
 
-namespace mrpt
-{
-namespace obs
+namespace mrpt::obs
 {
 /** This observation represents a number of range-bearing value pairs, each one
  * for a detected landmark, which optionally can have identification IDs.
@@ -112,7 +110,7 @@ class CObservationBearingRange : public CObservation
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+
