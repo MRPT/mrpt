@@ -175,17 +175,30 @@ void CPose3DPDFParticles::getCovarianceAndMean(
 	MRPT_END
 }
 
-uint8_t CPose3DPDFParticles::serializeGetVersion() const { return 0; }
+uint8_t CPose3DPDFParticles::serializeGetVersion() const { return 1; }
 void CPose3DPDFParticles::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	writeParticlesToStream(out);
+	writeParticlesToStream(out);  // v1: CPose3D -> TPose3D
 }
 void CPose3DPDFParticles::serializeFrom(
 	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
-		case 0:
+	case 0:
+	{
+		mrpt::bayes::CParticleFilterData<mrpt::poses::CPose3D, PARTICLE_STORAGE> old;
+		old.readParticlesFromStream(in);
+		m_particles.clear();
+		std::transform(
+			old.m_particles.begin(), old.m_particles.end(),
+			std::back_inserter(m_particles),
+			[](const auto& p) -> CParticleData {
+				return CParticleData(p.d.asTPose(), p.log_w);
+			});
+	}
+	break;
+	case 1:
 		{
 			readParticlesFromStream(in);
 		}
