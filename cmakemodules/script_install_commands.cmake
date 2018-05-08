@@ -20,6 +20,9 @@ ELSE(WIN32)
 	ENDIF(NOT IS_DEBIAN_DBG_PKG)
 ENDIF(WIN32)
 
+# For ROS package "mrpt1"
+install(FILES package.xml DESTINATION share/mrpt1)
+
 # Docs, examples and the rest of files:
 IF(WIN32)
 	IF (PACKAGE_INCLUDES_SOURCES)
