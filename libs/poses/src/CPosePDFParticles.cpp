@@ -130,8 +130,7 @@ void CPosePDFParticles::getCovarianceAndMean(
 		// Manage 1 PI range:
 		double err_x = m_particles[i].d.x - mean.x();
 		double err_y = m_particles[i].d.y - mean.y();
-		double err_phi =
-			math::wrapToPi(fabs(m_particles[i].d.phi - mean_phi));
+		double err_phi = math::wrapToPi(fabs(m_particles[i].d.phi - mean_phi));
 
 		var_x += square(err_x) * w;
 		var_y += square(err_y) * w;
@@ -158,10 +157,10 @@ void CPosePDFParticles::getCovarianceAndMean(
 	}
 }
 
-uint8_t CPosePDFParticles::serializeGetVersion() const { return 0; }
+uint8_t CPosePDFParticles::serializeGetVersion() const { return 1; }
 void CPosePDFParticles::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	writeParticlesToStream(out);
+	writeParticlesToStream(out);  // v1: changed CPose2D -> TPose2D
 }
 void CPosePDFParticles::serializeFrom(
 	mrpt::serialization::CArchive& in, uint8_t version)
@@ -169,6 +168,19 @@ void CPosePDFParticles::serializeFrom(
 	switch (version)
 	{
 		case 0:
+		{
+			mrpt::bayes::CParticleFilterData<mrpt::poses::CPose2D, PARTICLE_STORAGE> old;
+			old.readParticlesFromStream(in);
+			m_particles.clear();
+			std::transform(
+				old.m_particles.begin(), old.m_particles.end(),
+				std::back_inserter(m_particles),
+				[](const auto& p) -> CParticleData {
+					return CParticleData(p.d.asTPose(), p.log_w);
+				});
+		}
+		break;
+		case 1:
 		{
 			readParticlesFromStream(in);
 		}
@@ -181,8 +193,7 @@ void CPosePDFParticles::serializeFrom(
 void CPosePDFParticles::resetDeterministic(
 	const TPose2D& location, size_t particlesCount)
 {
-	if (particlesCount > 0)
-		m_particles.resize(particlesCount);
+	if (particlesCount > 0) m_particles.resize(particlesCount);
 
 	for (auto& p : m_particles)
 	{
@@ -197,12 +208,11 @@ void CPosePDFParticles::resetUniform(
 	const int particlesCount)
 {
 	MRPT_START
-	if (particlesCount > 0)
-		m_particles.resize(particlesCount);
+	if (particlesCount > 0) m_particles.resize(particlesCount);
 
 	for (auto& p : m_particles)
 	{
-		p.d.x= getRandomGenerator().drawUniform(x_min, x_max);
+		p.d.x = getRandomGenerator().drawUniform(x_min, x_max);
 		p.d.y = getRandomGenerator().drawUniform(y_min, y_max);
 		p.d.phi = getRandomGenerator().drawUniform(phi_min, phi_max);
 		p.log_w = 0;
@@ -229,12 +239,10 @@ void CPosePDFParticles::resetAroundSetOfPoses(
 		const mrpt::math::TPose2D& p = list_poses[nSpot];
 		for (size_t k = 0; k < num_particles_per_pose; k++, i++)
 		{
-			m_particles[i].d.x=
-				getRandomGenerator().drawUniform(
-					p.x - spread_x * 0.5, p.x + spread_x * 0.5);
-			m_particles[i].d.y=
-				getRandomGenerator().drawUniform(
-					p.y - spread_y * 0.5, p.y + spread_y * 0.5);
+			m_particles[i].d.x = getRandomGenerator().drawUniform(
+				p.x - spread_x * 0.5, p.x + spread_x * 0.5);
+			m_particles[i].d.y = getRandomGenerator().drawUniform(
+				p.y - spread_y * 0.5, p.y + spread_y * 0.5);
 			m_particles[i].d.phi = getRandomGenerator().drawUniform(
 				p.phi - spread_phi_rad * 0.5, p.phi + spread_phi_rad * 0.5);
 			m_particles[i].log_w = 0;
@@ -249,7 +257,7 @@ bool CPosePDFParticles::saveToTextFile(const std::string& file) const
 	std::string buf;
 	buf += mrpt::format("%% x  y  yaw[rad] log_weight\n");
 
-	for (const auto & p : m_particles)
+	for (const auto& p : m_particles)
 		buf += mrpt::format("%f %f %f %e\n", p.d.x, p.d.y, p.d.phi, p.log_w);
 
 	std::ofstream f(file);
@@ -267,8 +275,7 @@ void CPosePDFParticles::changeCoordinatesReference(
 	const CPose3D& newReferenceBase_)
 {
 	const TPose2D newReferenceBase = CPose2D(newReferenceBase_).asTPose();
-	for (auto &p : m_particles)
-		p.d = newReferenceBase + p.d;
+	for (auto& p : m_particles) p.d = newReferenceBase + p.d;
 }
 
 void CPosePDFParticles::drawSingleSample(CPose2D& outPart) const
@@ -276,7 +283,7 @@ void CPosePDFParticles::drawSingleSample(CPose2D& outPart) const
 	const double uni = getRandomGenerator().drawUniform(0.0, 0.9999);
 	double cum = 0;
 
-	for (auto &p : m_particles)
+	for (auto& p : m_particles)
 	{
 		cum += exp(p.log_w);
 		if (uni <= cum)
@@ -292,14 +299,12 @@ void CPosePDFParticles::drawSingleSample(CPose2D& outPart) const
 
 void CPosePDFParticles::operator+=(const TPose2D& Ap)
 {
-	for (auto &p : m_particles)
-		p.d = p.d + Ap;
+	for (auto& p : m_particles) p.d = p.d + Ap;
 }
 
 void CPosePDFParticles::append(CPosePDFParticles& o)
 {
-	for (auto &p : o.m_particles)
-		m_particles.emplace_back(p);
+	for (auto& p : o.m_particles) m_particles.emplace_back(p);
 	normalizeWeights();
 }
 
@@ -312,17 +317,16 @@ void CPosePDFParticles::inverse(CPosePDF& o) const
 	out->copyFrom(*this);
 	TPose2D nullPose(0, 0, 0);
 
-	for (auto &p : out->m_particles)
-		p.d = nullPose - p.d;
+	for (auto& p : out->m_particles) p.d = nullPose - p.d;
 
 	MRPT_END
 }
 
 mrpt::math::TPose2D CPosePDFParticles::getMostLikelyParticle() const
 {
-	mrpt::math::TPose2D ret{ 0,0,0 };
+	mrpt::math::TPose2D ret{0, 0, 0};
 	double max_w = -std::numeric_limits<double>::max();
-	for (const auto & p: m_particles)
+	for (const auto& p : m_particles)
 	{
 		if (p.log_w > max_w)
 		{
@@ -349,11 +353,12 @@ double CPosePDFParticles::evaluatePDF_parzen(
 	const double stdPhi) const
 {
 	double ret = 0;
-	for (const auto & p : m_particles)
+	for (const auto& p : m_particles)
 	{
 		double difPhi = math::wrapToPi(phi - p.d.phi);
 		ret += exp(p.log_w) *
-			   math::normalPDF(std::sqrt(square(p.d.x-x)+square(p.d.y - y)), 0, stdXY) *
+			   math::normalPDF(
+				   std::sqrt(square(p.d.x - x) + square(p.d.y - y)), 0, stdXY) *
 			   math::normalPDF(std::abs(difPhi), 0, stdPhi);
 	}
 	return ret;
@@ -368,8 +373,9 @@ void CPosePDFParticles::saveParzenPDFToTextFile(
 
 	for (double y = y_min; y < y_max; y += stepSizeXY)
 		for (double x = x_min; x < x_max; x += stepSizeXY)
-			buf+=mrpt::format("%f ", evaluatePDF_parzen(x, y, phi, stdXY, stdPhi));
-		buf += "\n";
+			buf += mrpt::format(
+				"%f ", evaluatePDF_parzen(x, y, phi, stdXY, stdPhi));
+	buf += "\n";
 
 	std::ofstream f(fileName);
 	if (!f.is_open()) return;
