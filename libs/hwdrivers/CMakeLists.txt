@@ -221,6 +221,8 @@ IF(BUILD_mrpt-hwdrivers)
 	IF (MSVC)
 		#set_target_properties()
 		set_property(TARGET mrpt-hwdrivers APPEND_STRING PROPERTY LINK_FLAGS " /SAFESEH:NO")
+
+		set_target_properties(mrpt-hwdrivers PROPERTIES LINK_FLAGS "/DELAYLOAD:wlanapi.dll")
 	ENDIF()
 
 	IF(CMAKE_MRPT_HAS_FREENECT)
