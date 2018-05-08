@@ -5,7 +5,7 @@
 -->
 <package format="2">
   <name>mrpt1</name>
-  <version>1.5.6</version>
+  <version>1.5.7</version>
   <description>Mobile Robot Programming Toolkit (MRPT) version 1.5.x</description>
 
   <author     email="joseluisblancoc@gmail.com">Jose-Luis Blanco-Claraco</author>
@@ -31,9 +31,12 @@
 
   <doc_depend>doxygen</doc_depend>
 
+  <!-- Minimum entries to release non-catkin pkgs: -->
   <buildtool_depend>cmake</buildtool_depend>
-
+  <exec_depend>catkin</exec_depend>
   <export>
     <build_type>cmake</build_type>
   </export>
+  <!-- End -->
+
 </package>
