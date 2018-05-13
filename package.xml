@@ -28,6 +28,7 @@
   <depend>wx-common</depend>
   <depend>wxwidgets</depend>
   <depend>zlib</depend>
+  <depend>assimp-dev</depend>
 
   <doc_depend>doxygen</doc_depend>
 
