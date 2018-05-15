@@ -57,6 +57,7 @@ MESSAGE(STATUS " Host                        : "             ${CMAKE_HOST_SYSTEM
 if(CMAKE_CROSSCOMPILING)
 MESSAGE(STATUS " Target                      : "         ${CMAKE_SYSTEM_NAME} ${CMAKE_SYSTEM_VERSION} ${CMAKE_SYSTEM_PROCESSOR})
 endif(CMAKE_CROSSCOMPILING)
+message(STATUS " Architecture (uname -m)     : " ${CMAKE_MRPT_ARCH})
 SHOW_CONFIG_LINE("Is the system big endian?  " CMAKE_MRPT_IS_BIG_ENDIAN)
 MESSAGE(STATUS " Word size (32/64 bit)       : ${CMAKE_MRPT_WORD_SIZE}")
 MESSAGE(STATUS " CMake version               : " ${CMAKE_VERSION})
