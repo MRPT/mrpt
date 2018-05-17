@@ -27,7 +27,7 @@ macro(DEFINE_SSE_VAR  _setname)
 		ENDIF()
 	ELSE (DO_SSE_AUTODETECT)
 		# Manual:
-		SET("DISABLE_${_setname}" OFF CACHE BOOL "Forces compilation WITHOUT ${_setname} extensions")
+		SET("DISABLE_${_setname}" ON CACHE BOOL "Forces compilation WITHOUT ${_setname} extensions")
 		MARK_AS_ADVANCED("DISABLE_${_setname}")
 		SET(CMAKE_MRPT_HAS_${_setname} 0)
 		IF (NOT DISABLE_${_setname})
