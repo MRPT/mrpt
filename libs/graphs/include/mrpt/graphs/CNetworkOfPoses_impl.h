@@ -73,18 +73,16 @@ namespace mrpt
 
 				static void write_EDGE_line(const TPairNodeIDs &edgeIDs,const CPosePDFGaussianInf & edge, std::ofstream &f)
 				{
-					//  EDGE2 from_id to_id Ax Ay Aphi inf_xx inf_xy inf_yy inf_pp inf_xp inf_yp
-					// **CAUTION** TORO docs say "from_id" "to_id" in the opposite order, but it seems from the data that this is the correct expected format.
-					f << "EDGE2 " << edgeIDs.first << " " << edgeIDs.second << " " <<
+					//  G2O: EDGE_SE2 from_id to_id Ax Ay Aphi inf_xx inf_xy inf_yy inf_pp inf_xp inf_yp
+					f << "EDGE_SE2 " << edgeIDs.first << " " << edgeIDs.second << " " <<
 							edge.mean.x()<<" "<<edge.mean.y()<<" "<<edge.mean.phi()<<" "<<
-							edge.cov_inv(0,0)<<" "<<edge.cov_inv(0,1)<<" "<<edge.cov_inv(1,1)<<" "<<
-							edge.cov_inv(2,2)<<" "<<edge.cov_inv(0,2)<<" "<<edge.cov_inv(1,2) << endl;
+							edge.cov_inv(0,0)<<" "<<edge.cov_inv(0,1)<<" "<<edge.cov_inv(0,2)<<" "<<
+							edge.cov_inv(1,1)<<" "<<edge.cov_inv(1,2)<<" "<<edge.cov_inv(2,2) << std::endl;
 				}
 				static void write_EDGE_line(const TPairNodeIDs &edgeIDs,const CPose3DPDFGaussianInf & edge, std::ofstream &f)
 				{
 					//  EDGE3 from_id to_id Ax Ay Az Aroll Apitch Ayaw inf_11 inf_12 .. inf_16 inf_22 .. inf_66
 					// **CAUTION** In the TORO graph format angles are in the RPY order vs. MRPT's YPR.
-					// **CAUTION** TORO docs say "from_id" "to_id" in the opposite order, but it seems from the data that this is the correct expected format.
 					f << "EDGE3 " << edgeIDs.first << " " << edgeIDs.second << " " <<
 							edge.mean.x()<<" "<<edge.mean.y()<<" "<<edge.mean.z()<<" "<<
 							edge.mean.roll()<<" "<<edge.mean.pitch()<<" "<<edge.mean.yaw()<<" "<<
@@ -93,7 +91,7 @@ namespace mrpt
 							edge.cov_inv(2,2)<<" "<<edge.cov_inv(2,5)<<" "<<edge.cov_inv(2,4)<<" "<<edge.cov_inv(2,3)<<" "<<
 							edge.cov_inv(5,5)<<" "<<edge.cov_inv(5,4)<<" "<<edge.cov_inv(5,3)<<" "<<
 							edge.cov_inv(4,4)<<" "<<edge.cov_inv(4,3)<<" "<<
-							edge.cov_inv(3,3) << endl;
+							edge.cov_inv(3,3) << std::endl;
 				}
 				static void write_EDGE_line(const TPairNodeIDs &edgeIDs,const CPosePDFGaussian & edge, std::ofstream &f)
 				{
@@ -256,7 +254,7 @@ namespace mrpt
 						// Recognized strings:
 						//  VERTEX2 id x y phi
 						//   =(VERTEX_SE2)
-						//  EDGE2 from_id to_id Ax Ay Aphi inf_xx inf_xy inf_yy inf_pp inf_xp inf_yp
+						//  EDGE2 from_id to_id Ax Ay Aphi inf_xx inf_xy inf_xp inf_yy inf_yp inf_pp
 						//   =(EDGE or EDGE_SE2 or ODOMETRY)
 						//  VERTEX3 id x y z roll pitch yaw
 						//  VERTEX_SE3:QUAT id x y z qx qy qz qw
@@ -349,8 +347,8 @@ namespace mrpt
 						}
 						else if (strCmpI(key,"EDGE2") || strCmpI(key,"EDGE") || strCmpI(key,"ODOMETRY") || strCmpI(key,"EDGE_SE2"))
 						{
-							//  EDGE2 from_id to_id Ax Ay Aphi inf_xx inf_xy inf_yy inf_pp inf_xp inf_yp
-							//                                   s00   s01     s11    s22    s02    s12
+							//  EDGE_SE2 from_id to_id Ax Ay Aphi inf_xx inf_xy inf_xp inf_yy inf_yp inf_pp
+							//                                      s00   s01    s02     s11    s12   s22
 							//  Read values are:
 							//    [ s00 s01 s02 ]
 							//    [  -  s11 s12 ]
@@ -376,9 +374,9 @@ namespace mrpt
 								mrpt::math::CMatrixDouble33 Ap_cov_inv;
 								if (!(s>>
 										Ap_mean.x >> Ap_mean.y >> Ap_mean.phi >>
-										Ap_cov_inv(0,0) >> Ap_cov_inv(0,1) >> Ap_cov_inv(1,1) >>
-										Ap_cov_inv(2,2) >> Ap_cov_inv(0,2) >> Ap_cov_inv(1,2)))
-									THROW_EXCEPTION(format("Line %u: Error parsing EDGE2 line: '%s'", lineNum, lin.c_str()));
+										Ap_cov_inv(0,0) >> Ap_cov_inv(0,1) >> Ap_cov_inv(0,2) >>
+										Ap_cov_inv(1,1) >> Ap_cov_inv(1,2) >> Ap_cov_inv(2,2)))
+									THROW_EXCEPTION(format("Line %u: Error parsing EDGE_SE2 line: '%s'", lineNum, lin.c_str()));
 
 								// Complete low triangular part of inf matrix:
 								Ap_cov_inv(1,0) = Ap_cov_inv(0,1);

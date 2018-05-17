@@ -12,6 +12,12 @@
 
 <p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or [browse it on-line](http://www.mrpt.org/).</i></p>
 
+<a name="1.5.7">
+<h2>Version 1.5.7: (Under development) </h2></a>
+- \ref mrpt_graphslam_grp
+  - CNetworkOfPoses: read/write format made compatible with G2O EDGE_SE2 types.
+
+
 <a name="1.5.6">
 <h2>Version 1.5.6: Released 24/APR/2018 </h2></a>
 	- Applications:
