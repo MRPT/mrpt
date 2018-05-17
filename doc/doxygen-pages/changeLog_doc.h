@@ -16,9 +16,12 @@
 <a name="1.5.7">
 <h2>Version 1.5.7: (Under development) </h2></a>
 - <b>Detailed list of changes:</b>
+	- \ref mrpt_graphslam_grp
+		- CNetworkOfPoses: read/write format made compatible with G2O EDGE_SE2 types.
 	- BUG FIXES: 
 		- Fix missing "-ldl" linker flag.
 
+<hr>
 <a name="1.5.6">
 <h2>Version 1.5.6: Released 24/APR/2018 </h2></a>
 	- Applications:
