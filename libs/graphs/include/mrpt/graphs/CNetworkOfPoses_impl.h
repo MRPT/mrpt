@@ -94,15 +94,12 @@ struct graph_ops
 		const TPairNodeIDs& edgeIDs, const CPosePDFGaussianInf& edge,
 		std::ofstream& f)
 	{
-		//  EDGE2 from_id to_id Ax Ay Aphi inf_xx inf_xy inf_yy inf_pp inf_xp
-		//  inf_yp
-		// **CAUTION** TORO docs say "from_id" "to_id" in the opposite order,
-		// but it seems from the data that this is the correct expected format.
-		f << "EDGE2 " << edgeIDs.first << " " << edgeIDs.second << " "
+		//  G2O: EDGE_SE2 from_id to_id Ax Ay Aphi i_xx i_xy i_xp i_yy i_yp inf_pp
+		f << "EDGE_SE2 " << edgeIDs.first << " " << edgeIDs.second << " "
 		  << edge.mean.x() << " " << edge.mean.y() << " " << edge.mean.phi()
 		  << " " << edge.cov_inv(0, 0) << " " << edge.cov_inv(0, 1) << " "
-		  << edge.cov_inv(1, 1) << " " << edge.cov_inv(2, 2) << " "
-		  << edge.cov_inv(0, 2) << " " << edge.cov_inv(1, 2) << endl;
+		  << edge.cov_inv(0, 2) << " " << edge.cov_inv(1, 1) << " "
+		  << edge.cov_inv(1, 2) << " " << edge.cov_inv(2, 2) << endl;
 	}
 	static void write_EDGE_line(
 		const TPairNodeIDs& edgeIDs, const CPose3DPDFGaussianInf& edge,
@@ -451,10 +448,7 @@ struct graph_ops
 				strCmpI(key, "EDGE2") || strCmpI(key, "EDGE") ||
 				strCmpI(key, "ODOMETRY") || strCmpI(key, "EDGE_SE2"))
 			{
-				//  EDGE2 from_id to_id Ax Ay Aphi inf_xx inf_xy inf_yy inf_pp
-				//  inf_xp inf_yp
-				//                                   s00   s01     s11    s22
-				//                                   s02    s12
+				//  EDGE_SE2 from_id to_id Ax Ay Aphi inf_xx i_xy i_xp i_yy i_yp i_pp
 				//  Read values are:
 				//    [ s00 s01 s02 ]
 				//    [  -  s11 s12 ]
@@ -485,8 +479,8 @@ struct graph_ops
 					mrpt::math::CMatrixDouble33 Ap_cov_inv;
 					if (!(s >> Ap_mean.x >> Ap_mean.y >> Ap_mean.phi >>
 						  Ap_cov_inv(0, 0) >> Ap_cov_inv(0, 1) >>
-						  Ap_cov_inv(1, 1) >> Ap_cov_inv(2, 2) >>
-						  Ap_cov_inv(0, 2) >> Ap_cov_inv(1, 2)))
+						  Ap_cov_inv(0, 2) >> Ap_cov_inv(1, 1) >>
+						  Ap_cov_inv(1, 2) >> Ap_cov_inv(2, 2)))
 						THROW_EXCEPTION(format(
 							"Line %u: Error parsing EDGE2 line: '%s'", lineNum,
 							lin.c_str()));
@@ -1014,5 +1008,3 @@ struct graph_ops
 
 }
 #endif
-
-

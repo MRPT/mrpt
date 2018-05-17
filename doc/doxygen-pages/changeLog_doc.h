@@ -98,21 +98,31 @@ CMetricMap has empty smart pointers.
 	- Fix crash in CGPSInterface when not setting an external mutex.
 
 <hr>
+<a name="1.5.7">
+<h2>Version 1.5.7: (Under development) </h2></a>
+- <b>Detailed list of changes:</b>
+	- \ref mrpt_graphslam_grp
+		- CNetworkOfPoses: read/write format made compatible with G2O EDGE_SE2 types.
+	- BUG FIXES:
+		- Fix missing "-ldl" linker flag.
+
+<hr>
 <a name="1.5.6">
-<h2>Version 1.5.6: (Under development) </h2></a>
+<h2>Version 1.5.6: Released 24/APR/2018 </h2></a>
 	- Applications:
 		- pf-localization:
 			- Odometry is now used also for observation-only rawlogs.
 	- \ref mrpt_hwdrivers_grp
-		- mrpt::hwdrivers::COpenNI2Generic: added mutexes for safer
-multi-threading operation.
-		- mrpt::hwdrivers::CHokuyoURG: Added a new parameter to skip scans.
-Driver clean up to be safer and perform less memory allocs.
+		- mrpt::hwdrivers::COpenNI2Generic: added mutexes for safer multi-threading
+		  operation.
+		- mrpt::hwdrivers::CHokuyoURG: Added a new parameter to skip scans. Driver
+		  clean up to be safer and perform less memory allocs.
 	- \ref mrpt_maps_grp
-		- COccupancyGridMap2D: New LIDAR insertion parameters:
-maxFreenessUpdateCertainty, maxFreenessInvalidRanges.
+		- COccupancyGridMap2D: New LIDAR insertion parameters: maxFreenessUpdateCertainty, maxFreenessInvalidRanges.
 	- \ref mrpt_reactivenav_grp
 		- CAbstractPTGBasedReactive: Added new score `holo_stage_eval`.
+	- BUG FIXES:
+		- circular_buffer: exception made state preserving
 
 <hr>
 <a name="1.5.5">
