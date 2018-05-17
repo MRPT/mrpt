@@ -29,6 +29,7 @@
   <depend>wxwidgets</depend>
   <depend>zlib</depend>
   <depend>assimp-dev</depend>
+  <depend>octomap</depend>
 
   <doc_depend>doxygen</doc_depend>
 
