@@ -674,6 +674,15 @@ struct graph_ops
 			{
 				// Already read in the 1st pass.
 			}
+			else if (strCmpI(key, "FIX"))
+			{
+				TNodeID id;
+				if (!(s >> id))
+					THROW_EXCEPTION(format(
+						"Line %u: Can't read id in FIX line: '%s'",
+						lineNum, lin.c_str()));
+				g->root = id;
+			}
 			else
 			{  // Unknown entry: Warn the user just once:
 				if (alreadyWarnedUnknowns.find(key) ==

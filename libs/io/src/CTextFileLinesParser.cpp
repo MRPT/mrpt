@@ -56,12 +56,8 @@ void CTextFileLinesParser::close()
 void CTextFileLinesParser::rewind()
 {
 	m_curLineNum = 0;
-	auto ifs = dynamic_cast<std::ifstream*>(m_in);
-	if (ifs)
-	{
-		ifs->clear();
-		ifs->seekg(0);
-	}
+	m_in->clear();
+	m_in->seekg(0);
 }
 
 bool CTextFileLinesParser::getNextLine(std::string& out_str)
