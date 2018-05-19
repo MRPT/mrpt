@@ -82,7 +82,7 @@ class GraphTester : public GraphSlamLevMarqTest<my_graph_t>,
 					.array()
 					.abs()
 					.sum(),
-				1e-9);
+				1e-4);
 		}
 	}
 
