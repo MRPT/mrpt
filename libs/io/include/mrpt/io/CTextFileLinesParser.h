@@ -28,10 +28,24 @@ class CTextFileLinesParser
 	CTextFileLinesParser() {}
 	/** Constructor for opening a file  \exception std::exception On error
 	 * opening file */
-	CTextFileLinesParser(const std::string& fil);
+	explicit CTextFileLinesParser(const std::string& filename);
+
+	/** Constructor for reading from a generic std::istream. Note that a 
+	  * reference to the stream is stored in the object, so it's the user 
+	  * responsibility to make sure the stream is not destroyed before than 
+	  * this object.
+	  */
+	explicit CTextFileLinesParser(std::istream& in);
 
 	/** Open a file (an alternative to the constructor with a file name) */
 	void open(const std::string& fil);
+
+	/** Opens for reading a generic std::istream. Note that a
+	* reference to the stream is stored in the object, so it's the user
+	* responsibility to make sure the stream is not destroyed before than
+	* this object.
+	*/
+	void open(std::istream& in);
 
 	/** Close the file (no need to call it normally, the file is closed upon
 	 * destruction) */
@@ -62,7 +76,8 @@ class CTextFileLinesParser
 
    private:
 	std::string m_fileName;
-	std::ifstream m_in;
+	std::istream *m_in{ nullptr };
+	bool m_in_ownership{ true };
 	size_t m_curLineNum{0};
 	bool m_filter_MATLAB_comments{true};
 	bool m_filter_C_comments{true};
