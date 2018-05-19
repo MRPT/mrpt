@@ -253,24 +253,27 @@ class CNetworkOfPoses
 
 	/** @} */
 
-	/** @name I/O file methods
+	/** @name I/O methods
 		@{ */
 
-	/** Saves to a text file in the format used by TORO & HoG-man (more on
-	 * the format <a href="http://www.mrpt.org/Robotics_file_formats" *
-	 * >here</a>)
-	 * For 2D graphs only VERTEX2 & EDGE2 entries will be saved,
-	 * and VERTEX3 & EDGE3 entries for 3D graphs.  Note that EQUIV entries
-	 * will not be saved, but instead several EDGEs will be stored between
-	 * the same node IDs.
-	 *
-	 * \sa saveToBinaryFile, loadFromTextFile
+	/** Saves to a text file in the format used by TORO, HoG-man, G2O.
+	 * See: https://www.mrpt.org/Graph-SLAM_maps
+	 * \sa saveToBinaryFile, loadFromTextFile, writeAsText
 	 * \exception On any error
 	 */
-	inline void saveToTextFile(const std::string& fileName) const
+	void saveToTextFile(const std::string& fileName) const
 	{
 		detail::graph_ops<self_t>::save_graph_of_poses_to_text_file(
 			this, fileName);
+	}
+	/** Writes as text in the format used by TORO, HoG-man, G2O.
+	 * See: https://www.mrpt.org/Graph-SLAM_maps
+	 * \sa saveToBinaryFile, loadFromTextFile, saveToTextFile, readAsText
+	 * \exception On any error
+	 */
+	void writeAsText(std::ostream& o) const
+	{
+		detail::graph_ops<self_t>::save_graph_of_poses_to_ostream(this, o);
 	}
 
 	/** Loads from a text file in the format used by TORO & HoG-man (more on the
@@ -297,6 +300,17 @@ class CNetworkOfPoses
 		detail::graph_ops<self_t>::load_graph_of_poses_from_text_file(
 			this, fileName);
 		if (collapse_dup_edges) this->collapseDuplicatedEdges();
+	}
+
+	/** Reads as text in the format used by TORO, HoG-man, G2O.
+	 * See: https://www.mrpt.org/Graph-SLAM_maps
+	 * \sa saveToBinaryFile, loadFromTextFile, saveToTextFile
+	 * \exception On any error
+	 */
+	void readAsText(std::istream& i)
+	{
+		detail::graph_ops<self_t>::load_graph_of_poses_from_text_stream(
+			this, i);
 	}
 
 	/** @} */
@@ -364,23 +378,22 @@ class CNetworkOfPoses
 			this);
 	}
 
-	/** Computes the overall square error from all the pose constraints (edges)
-	 * with respect to the global poses in \a nodes
-	 *  If \a ignoreCovariances is false, the squared Mahalanobis distance will
-	 * be computed instead of the straight square error.
+	/** Returns the total chi-squared error of the graph. Shortcut for
+	 * getGlobalSquareError(false). */
+	double chi2() const { return getGlobalSquareError(false); }
+
+	/** Evaluates the graph total square error (ignoreCovariances=true) or
+	 * chi2 (ignoreCovariances=false) from all the pose constraints (edges)
+	 * with respect to the global poses in \a nodes.
 	 * \sa getEdgeSquareError
 	 * \exception std::exception On global poses not in \a nodes
 	 */
 	double getGlobalSquareError(bool ignoreCovariances = true) const
 	{
 		double sqErr = 0;
-		const typename BASE::edges_map_t::const_iterator last_it =
-			BASE::edges.end();
-		for (typename BASE::edges_map_t::const_iterator itEdge =
-				 BASE::edges.begin();
-			 itEdge != last_it; ++itEdge)
+		for (auto it = BASE::edges.begin(); it != BASE::edges.end(); ++it)
 			sqErr += detail::graph_ops<self_t>::graph_edge_sqerror(
-				this, itEdge, ignoreCovariances);
+				this, it, ignoreCovariances);
 		return sqErr;
 	}
 
@@ -493,26 +506,19 @@ class CNetworkOfPoses
 		// set the root of the extracted graph
 		if (root_node == INVALID_NODEID)
 		{
-			// smallest nodeID by default
-			// http://stackoverflow.com/questions/1342045/how-do-i-find-the-largest-int-in-a-stdsetint
-			// std::set sorts elements in ascending order
+			// smallest nodeID by default: already ordered inside std::map
 			root_node = sub_graph->nodes.begin()->first;
 		}
 		sub_graph->root = root_node;
 
-		// TODO - Remove these lines - not needed
-		// set the corresponding root pose
-		// sub_graph->nodes.at(sub_graph->root) = nodes.at(sub_graph->root);
-
 		// find all edges (in the initial graph), that exist in the given set
 		// of nodes; add them to the given graph
 		sub_graph->clearEdges();
-		for (typename BASE::const_iterator it = BASE::edges.begin();
-			 it != BASE::edges.end(); ++it)
+		for (const auto& e : BASE::edges)
 		{
-			const TNodeID& from = it->first.first;
-			const TNodeID& to = it->first.second;
-			const typename BASE::edge_t& curr_edge = it->second;
+			const TNodeID& from = e.first.first;
+			const TNodeID& to = e.first.second;
+			const typename BASE::edge_t& curr_edge = e.second;
 
 			// if both nodes exist in the given set, add the corresponding edge
 			if (sub_graph->nodes.find(from) != sub_graph->nodes.end() &&
@@ -990,28 +996,23 @@ mrpt::serialization::CArchive& operator>>(
 
 /** The specialization of CNetworkOfPoses for poses of type CPose2D (not a
  * PDF!), also implementing serialization. */
-using CNetworkOfPoses2D =
-	CNetworkOfPoses<mrpt::poses::CPose2D, mrpt::containers::map_traits_stdmap>;
+using CNetworkOfPoses2D = CNetworkOfPoses<mrpt::poses::CPose2D>;
 /** The specialization of CNetworkOfPoses for poses of type mrpt::poses::CPose3D
  * (not a PDF!), also implementing serialization. */
-using CNetworkOfPoses3D =
-	CNetworkOfPoses<mrpt::poses::CPose3D, mrpt::containers::map_traits_stdmap>;
+using CNetworkOfPoses3D = CNetworkOfPoses<mrpt::poses::CPose3D>;
 /** The specialization of CNetworkOfPoses for poses of type CPosePDFGaussian,
  * also implementing serialization. */
-using CNetworkOfPoses2DCov = CNetworkOfPoses<
-	mrpt::poses::CPosePDFGaussian, mrpt::containers::map_traits_stdmap>;
+using CNetworkOfPoses2DCov = CNetworkOfPoses<mrpt::poses::CPosePDFGaussian>;
 /** The specialization of CNetworkOfPoses for poses of type CPose3DPDFGaussian,
  * also implementing serialization. */
-using CNetworkOfPoses3DCov = CNetworkOfPoses<
-	mrpt::poses::CPose3DPDFGaussian, mrpt::containers::map_traits_stdmap>;
+using CNetworkOfPoses3DCov = CNetworkOfPoses<mrpt::poses::CPose3DPDFGaussian>;
 /** The specialization of CNetworkOfPoses for poses of type CPosePDFGaussianInf,
  * also implementing serialization. */
-using CNetworkOfPoses2DInf = CNetworkOfPoses<
-	mrpt::poses::CPosePDFGaussianInf, mrpt::containers::map_traits_stdmap>;
+using CNetworkOfPoses2DInf = CNetworkOfPoses<mrpt::poses::CPosePDFGaussianInf>;
 /** The specialization of CNetworkOfPoses for poses of type
  * CPose3DPDFGaussianInf, also implementing serialization. */
-using CNetworkOfPoses3DInf = CNetworkOfPoses<
-	mrpt::poses::CPose3DPDFGaussianInf, mrpt::containers::map_traits_stdmap>;
+using CNetworkOfPoses3DInf =
+	CNetworkOfPoses<mrpt::poses::CPose3DPDFGaussianInf>;
 
 /**\brief Specializations of CNetworkOfPoses for graphs whose nodes inherit from
  * TMRSlamNodeAnnotations struct */

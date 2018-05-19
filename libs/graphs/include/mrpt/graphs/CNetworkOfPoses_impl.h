@@ -75,13 +75,14 @@ template <class graph_t>
 struct graph_ops
 {
 	static void write_VERTEX_line(
-		const TNodeID id, const mrpt::poses::CPose2D& p, std::ofstream& f)
+		const TNodeID id, const mrpt::poses::CPose2D& p, std::ostream& f)
 	{
 		//  VERTEX2 id x y phi
-		f << "VERTEX2 " << id << " " << p.x() << " " << p.y() << " " << p.phi();
+		f << "VERTEX_SE2 " << id << " " << p.x() << " " << p.y() << " "
+		  << p.phi();
 	}
 	static void write_VERTEX_line(
-		const TNodeID id, const mrpt::poses::CPose3D& p, std::ofstream& f)
+		const TNodeID id, const mrpt::poses::CPose3D& p, std::ostream& f)
 	{
 		//  VERTEX3 id x y z roll pitch yaw
 		// **CAUTION** In the TORO graph format angles are in the RPY order vs.
@@ -92,9 +93,10 @@ struct graph_ops
 
 	static void write_EDGE_line(
 		const TPairNodeIDs& edgeIDs, const CPosePDFGaussianInf& edge,
-		std::ofstream& f)
+		std::ostream& f)
 	{
-		//  G2O: EDGE_SE2 from_id to_id Ax Ay Aphi i_xx i_xy i_xp i_yy i_yp inf_pp
+		//  G2O: EDGE_SE2 from_id to_id Ax Ay Aphi i_xx i_xy i_xp i_yy i_yp
+		//  inf_pp
 		f << "EDGE_SE2 " << edgeIDs.first << " " << edgeIDs.second << " "
 		  << edge.mean.x() << " " << edge.mean.y() << " " << edge.mean.phi()
 		  << " " << edge.cov_inv(0, 0) << " " << edge.cov_inv(0, 1) << " "
@@ -103,7 +105,7 @@ struct graph_ops
 	}
 	static void write_EDGE_line(
 		const TPairNodeIDs& edgeIDs, const CPose3DPDFGaussianInf& edge,
-		std::ofstream& f)
+		std::ostream& f)
 	{
 		//  EDGE3 from_id to_id Ax Ay Az Aroll Apitch Ayaw inf_11 inf_12 ..
 		//  inf_16 inf_22 .. inf_66
@@ -128,7 +130,7 @@ struct graph_ops
 	}
 	static void write_EDGE_line(
 		const TPairNodeIDs& edgeIDs, const CPosePDFGaussian& edge,
-		std::ofstream& f)
+		std::ostream& f)
 	{
 		CPosePDFGaussianInf p;
 		p.copyFrom(edge);
@@ -136,7 +138,7 @@ struct graph_ops
 	}
 	static void write_EDGE_line(
 		const TPairNodeIDs& edgeIDs, const CPose3DPDFGaussian& edge,
-		std::ofstream& f)
+		std::ostream& f)
 	{
 		CPose3DPDFGaussianInf p;
 		p.copyFrom(edge);
@@ -144,7 +146,7 @@ struct graph_ops
 	}
 	static void write_EDGE_line(
 		const TPairNodeIDs& edgeIDs, const mrpt::poses::CPose2D& edge,
-		std::ofstream& f)
+		std::ostream& f)
 	{
 		CPosePDFGaussianInf p;
 		p.mean = edge;
@@ -153,13 +155,35 @@ struct graph_ops
 	}
 	static void write_EDGE_line(
 		const TPairNodeIDs& edgeIDs, const mrpt::poses::CPose3D& edge,
-		std::ofstream& f)
+		std::ostream& f)
 	{
 		CPose3DPDFGaussianInf p;
 		p.mean = edge;
 		p.cov_inv.unit(6, 1.0);
 		write_EDGE_line(edgeIDs, p, f);
 	}
+
+	static void save_graph_of_poses_to_ostream(
+		const graph_t* g, std::ostream& f)
+	{
+		// 1st: Nodes
+		for (const auto& n : g->nodes)
+		{
+			write_VERTEX_line(n.first, n.second, f);
+			// Node annotations:
+			const auto sAnnot = n.second.retAnnotsAsString();
+			if (!sAnnot.empty()) f << " | " << sAnnot;
+			f << endl;
+			// Root?
+			if (n.first == g->root) f << "FIX " << n.first << endl;
+		}
+
+		// 2nd: Edges:
+		for (const auto& e : *g)
+			if (e.first.first != e.first.second)  // ignore EQUIV edges
+				write_EDGE_line(e.first, e.second, f);
+
+	}  // end save_graph
 
 	// =================================================================
 	//                     save_graph_of_poses_to_text_file
@@ -172,28 +196,8 @@ struct graph_ops
 		if (!f.is_open())
 			THROW_EXCEPTION_FMT(
 				"Error opening file '%s' for writing", fil.c_str());
-
-		// 1st: Nodes
-		for (typename graph_t::global_poses_t::const_iterator itNod =
-				 g->nodes.begin();
-			 itNod != g->nodes.end(); ++itNod)
-		{
-			write_VERTEX_line(itNod->first, itNod->second, f);
-
-			// write whatever the NODE_ANNOTATION instance want's to write.
-			f << " | " << itNod->second.retAnnotsAsString() << endl;
-		}
-
-		// 2nd: Edges:
-		for (typename graph_t::const_iterator it = g->begin(); it != g->end();
-			 ++it)
-			if (it->first.first != it->first.second)  // Ignore self-edges,
-				// typically from
-				// importing files with
-				// EQUIV's
-				write_EDGE_line(it->first, it->second, f);
-
-	}  // end save_graph
+		save_graph_of_poses_to_ostream(g, f);
+	}
 
 	// =================================================================
 	//                     save_graph_of_poses_to_binary_file
@@ -243,8 +247,9 @@ struct graph_ops
 	// =================================================================
 	//                     load_graph_of_poses_from_text_file
 	// =================================================================
-	static void load_graph_of_poses_from_text_file(
-		graph_t* g, const std::string& fil)
+	static void load_graph_of_poses_from_text_stream(
+		graph_t* g, std::istream& f,
+		const std::string& fil = std::string("(none)"))
 	{
 		using mrpt::system::strCmpI;
 		using namespace mrpt::math;
@@ -262,8 +267,7 @@ struct graph_ops
 		//  it would be an unintentional loss of information:
 		const bool graph_is_3D = CPOSE::is_3D();
 
-		mrpt::io::CTextFileLinesParser filParser(
-			fil);  // raises an exception on error
+		mrpt::io::CTextFileLinesParser filParser(f);
 
 		// -------------------------------------------
 		// 1st PASS: Read EQUIV entries only
@@ -448,8 +452,8 @@ struct graph_ops
 				strCmpI(key, "EDGE2") || strCmpI(key, "EDGE") ||
 				strCmpI(key, "ODOMETRY") || strCmpI(key, "EDGE_SE2"))
 			{
-				//  EDGE_SE2 from_id to_id Ax Ay Aphi inf_xx i_xy i_xp i_yy i_yp i_pp
-				//  Read values are:
+				//  EDGE_SE2 from_id to_id Ax Ay Aphi inf_xx i_xy i_xp i_yy i_yp
+				//  i_pp Read values are:
 				//    [ s00 s01 s02 ]
 				//    [  -  s11 s12 ]
 				//    [  -   -  s22 ]
@@ -684,6 +688,16 @@ struct graph_ops
 		}  // end while
 
 	}  // end load_graph
+
+	static void load_graph_of_poses_from_text_file(
+		graph_t* g, const std::string& fil)
+	{
+		std::ifstream f(fil);
+		if (!f.is_open())
+			THROW_EXCEPTION_FMT(
+				"Error opening file '%s' for reading", fil.c_str());
+		load_graph_of_poses_from_text_stream(g, f, fil);
+	}
 
 	// --------------------------------------------------------------------------------
 	//               Implements: collapseDuplicatedEdges
@@ -1006,5 +1020,5 @@ struct graph_ops
 
 };  // end of graph_ops<graph_t>
 
-}
+}  // namespace mrpt::graphs::detail
 #endif

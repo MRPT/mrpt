@@ -31,9 +31,24 @@ class GraphSlamLevMarqTest
 		const typename my_graph_t::global_poses_t& real_poses,
 		my_graph_t& graph)
 	{
-		typename my_graph_t::edge_t RelativePose =
+		auto RelativePose =
 			real_poses.find(to)->second - real_poses.find(from)->second;
-		graph.insertEdge(from, to, RelativePose);
+
+		// Add information matrix if present:
+		if constexpr (my_graph_t::edge_t::is_PDF())
+		{
+			const auto N = my_graph_t::edge_t::state_length;
+			using InfMat = mrpt::math::CMatrixFixedNumeric<double, N, N>;
+			auto mat = getRandomGenerator()
+						   .drawDefinitePositiveMatrix<InfMat, Eigen::VectorXd>(
+							   N, 2.0 /*std*/, 1.0 /*diagonal offset*/);
+			graph.insertEdge(
+				from, to, typename my_graph_t::edge_t(RelativePose, mat));
+		}
+		else
+		{
+			graph.insertEdge(from, to, RelativePose);
+		}
 	}
 
 	// The graph: nodes + edges:
@@ -89,36 +104,69 @@ class GraphSlamLevMarqTest
 		const my_graph_t graph_GT = graph;
 
 		// Add noise to edges & nodes:
-		for (typename my_graph_t::edges_map_t::iterator itEdge =
-				 graph.edges.begin();
-			 itEdge != graph.edges.end(); ++itEdge)
-			itEdge->second += typename my_graph_t::edge_t(
-				CPose3D(
+		for (auto& edge : graph.edges)
+		{
+			// edge_t::type_value: for edge_t a plain pose, type_value is the
+			// edge_t itself. For poses+uncertainty, it is the underlying pose
+			// type.
+			if constexpr (my_graph_t::edge_t::type_value::size() == 6)
+			{
+				const auto noise = CPose3D(
 					getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_XYZ),
 					getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_XYZ),
 					getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_XYZ),
 					getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_ANG),
 					getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_ANG),
-					getRandomGenerator().drawGaussian1D(
-						0, STD_NOISE_EDGE_ANG)));
+					getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_ANG));
+
+				if constexpr (my_graph_t::edge_t::is_PDF())
+				{
+					const auto N = my_graph_t::edge_t::state_length;
+					using InfMat =
+						mrpt::math::CMatrixFixedNumeric<double, N, N>;
+					InfMat mat;
+					mat.setIdentity();
+					edge.second += typename my_graph_t::edge_t(noise, mat);
+				}
+				else
+				{
+					edge.second += typename my_graph_t::edge_t(noise);
+				}
+			}
+			else
+			{
+				const auto noise = CPose2D(
+					getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_XYZ),
+					getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_XYZ),
+					getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_ANG));
+				if constexpr (my_graph_t::edge_t::is_PDF())
+				{
+					const auto N = my_graph_t::edge_t::state_length;
+					using InfMat =
+						mrpt::math::CMatrixFixedNumeric<double, N, N>;
+					InfMat mat;
+					mat.setIdentity();
+					edge.second += typename my_graph_t::edge_t(noise, mat);
+				}
+				else
+				{
+					edge.second += typename my_graph_t::edge_t(noise);
+				}
+			}
+		}
 
 		for (typename my_graph_t::global_poses_t::iterator itNode =
 				 graph.nodes.begin();
 			 itNode != graph.nodes.end(); ++itNode)
 			if (itNode->first != graph.root)
-				itNode->second += typename my_graph_t::edge_t::type_value(
-					CPose3D(
-						getRandomGenerator().drawGaussian1D(
-							0, STD_NOISE_NODE_XYZ),
-						getRandomGenerator().drawGaussian1D(
-							0, STD_NOISE_NODE_XYZ),
-						getRandomGenerator().drawGaussian1D(
-							0, STD_NOISE_NODE_XYZ),
-						getRandomGenerator().drawGaussian1D(
-							0, STD_NOISE_NODE_ANG),
-						getRandomGenerator().drawGaussian1D(
-							0, STD_NOISE_NODE_ANG),
-						getRandomGenerator().drawGaussian1D(
-							0, STD_NOISE_NODE_ANG)));
+				itNode
+					->second += typename my_graph_t::edge_t::type_value(CPose3D(
+					getRandomGenerator().drawGaussian1D(0, STD_NOISE_NODE_XYZ),
+					getRandomGenerator().drawGaussian1D(0, STD_NOISE_NODE_XYZ),
+					getRandomGenerator().drawGaussian1D(0, STD_NOISE_NODE_XYZ),
+					getRandomGenerator().drawGaussian1D(0, STD_NOISE_NODE_ANG),
+					getRandomGenerator().drawGaussian1D(0, STD_NOISE_NODE_ANG),
+					getRandomGenerator().drawGaussian1D(
+						0, STD_NOISE_NODE_ANG)));
 	}
 };
