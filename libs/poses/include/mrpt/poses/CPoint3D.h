@@ -86,12 +86,12 @@ class CPoint3D : public CPoint<CPoint3D>,
 	{
 		is_3D_val = 1
 	};
-	static inline bool is_3D() { return is_3D_val != 0; }
+	static constexpr bool is_3D() { return is_3D_val != 0; }
 	enum
 	{
 		is_PDF_val = 0
 	};
-	static inline bool is_PDF() { return is_PDF_val != 0; }
+	static constexpr bool is_PDF() { return is_PDF_val != 0; }
 	/** @name STL-like methods and typedefs
 	   @{   */
 	/** The type of the elements */
@@ -106,16 +106,15 @@ class CPoint3D : public CPoint<CPoint3D>,
 	{
 		static_size = 3
 	};
-	static inline size_type size() { return static_size; }
-	static inline bool empty() { return false; }
-	static inline size_type max_size() { return static_size; }
+	static constexpr size_type size() { return static_size; }
+	static constexpr bool empty() { return false; }
+	static constexpr size_type max_size() { return static_size; }
 	static inline void resize(const size_t n)
 	{
 		if (n != static_size)
-			throw std::logic_error(
-				format(
-					"Try to change the size of CPoint3D to %u.",
-					static_cast<unsigned>(n)));
+			throw std::logic_error(format(
+				"Try to change the size of CPoint3D to %u.",
+				static_cast<unsigned>(n)));
 	}
 	/** @} */
 
@@ -123,7 +122,5 @@ class CPoint3D : public CPoint<CPoint3D>,
 
 };  // End of class def.
 
-}
+}  // namespace mrpt::poses
 #endif
-
-

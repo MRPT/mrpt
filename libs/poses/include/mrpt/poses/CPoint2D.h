@@ -73,21 +73,21 @@ class CPoint2D : public CPoint<CPoint2D>,
 	mrpt::math::TPoint2D asTPoint() const;
 
 	/** The operator D="this"-b is the pose inverse compounding operator,
-	*   the resulting points "D" fulfils: "this" = b + D, so that: b == a +
-	* (b-a)
-	*/
+	 *   the resulting points "D" fulfils: "this" = b + D, so that: b == a +
+	 * (b-a)
+	 */
 	CPoint2D operator-(const CPose2D& b) const;
 
 	enum
 	{
 		is_3D_val = 0
 	};
-	static inline bool is_3D() { return is_3D_val != 0; }
+	static constexpr bool is_3D() { return is_3D_val != 0; }
 	enum
 	{
 		is_PDF_val = 0
 	};
-	static inline bool is_PDF() { return is_PDF_val != 0; }
+	static constexpr bool is_PDF() { return is_PDF_val != 0; }
 	/** @name STL-like methods and typedefs
 	  @{   */
 	/** The type of the elements */
@@ -102,16 +102,15 @@ class CPoint2D : public CPoint<CPoint2D>,
 	{
 		static_size = 2
 	};
-	static inline size_type size() { return static_size; }
-	static inline bool empty() { return false; }
-	static inline size_type max_size() { return static_size; }
+	static constexpr size_type size() { return static_size; }
+	static constexpr bool empty() { return false; }
+	static constexpr size_type max_size() { return static_size; }
 	static inline void resize(const size_t n)
 	{
 		if (n != static_size)
-			throw std::logic_error(
-				format(
-					"Try to change the size of CPoint2D to %u.",
-					static_cast<unsigned>(n)));
+			throw std::logic_error(format(
+				"Try to change the size of CPoint2D to %u.",
+				static_cast<unsigned>(n)));
 	}
 	/** @} */
 
@@ -119,7 +118,5 @@ class CPoint2D : public CPoint<CPoint2D>,
 
 };  // End of class def.
 
-}
+}  // namespace mrpt::poses
 #endif
-
-

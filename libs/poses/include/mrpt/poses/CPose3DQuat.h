@@ -354,7 +354,7 @@ class CPose3DQuat : public CPose<CPose3DQuat>,
 	{
 		is_3D_val = 1
 	};
-	static inline bool is_3D() { return is_3D_val != 0; }
+	static constexpr bool is_3D() { return is_3D_val != 0; }
 	enum
 	{
 		rotation_dimensions = 3
@@ -363,7 +363,7 @@ class CPose3DQuat : public CPose<CPose3DQuat>,
 	{
 		is_PDF_val = 1
 	};
-	static inline bool is_PDF() { return is_PDF_val != 0; }
+	static constexpr bool is_PDF() { return is_PDF_val != 0; }
 	inline const type_value& getPoseMean() const { return *this; }
 	inline type_value& getPoseMean() { return *this; }
 	/** @name STL-like methods and typedefs
@@ -380,9 +380,9 @@ class CPose3DQuat : public CPose<CPose3DQuat>,
 	{
 		static_size = 7
 	};
-	static inline size_type size() { return static_size; }
-	static inline bool empty() { return false; }
-	static inline size_type max_size() { return static_size; }
+	static constexpr size_type size() { return static_size; }
+	static constexpr bool empty() { return false; }
+	static constexpr size_type max_size() { return static_size; }
 	static inline void resize(const size_t n)
 	{
 		if (n != static_size)
@@ -673,7 +673,5 @@ mrpt::math::TPoint3D operator-(
 bool operator==(const CPose3DQuat& p1, const CPose3DQuat& p2);
 bool operator!=(const CPose3DQuat& p1, const CPose3DQuat& p2);
 
-}
+}  // namespace mrpt::poses
 #endif
-
-
