@@ -113,10 +113,10 @@ class CPose3DRotVec : public CPose<CPose3DRotVec>,
 		const double z);
 
 	/** Constructor from an array with these 6 elements: [w1 w2 w3 x y z]
-	  *  where r{ij} are the entries of the 3x3 rotation matrix and t{x,y,z} are
+	 *  where r{ij} are the entries of the 3x3 rotation matrix and t{x,y,z} are
 	 * the 3D translation of the pose
-	  *  \sa setFrom12Vector, getAs12Vector
-	  */
+	 *  \sa setFrom12Vector, getAs12Vector
+	 */
 	inline explicit CPose3DRotVec(const double* vec6)
 	{
 		m_coords[0] = vec6[3];
@@ -134,8 +134,8 @@ class CPose3DRotVec : public CPose<CPose3DRotVec>,
 
 	/** Returns the corresponding 4x4 homogeneous transformation matrix for the
 	 * point(translation) or pose (translation+orientation).
-	  * \sa getInverseHomogeneousMatrix, getRotationMatrix
-	  */
+	 * \sa getInverseHomogeneousMatrix, getRotationMatrix
+	 */
 	inline void getHomogeneousMatrix(mrpt::math::CMatrixDouble44& out_HM) const
 	{
 		out_HM.block<3, 3>(0, 0) = getRotationMatrix();
@@ -204,11 +204,11 @@ class CPose3DRotVec : public CPose<CPose3DRotVec>,
 
 	/** An alternative, slightly more efficient way of doing \f$ G = P \oplus L
 	 * \f$ with G and L being 3D points and P this 6D pose.
-	  *  If pointers are provided, the corresponding Jacobians are returned.
-	  *  See <a
+	 *  If pointers are provided, the corresponding Jacobians are returned.
+	 *  See <a
 	 * href="http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty"
 	 * >this report</a> for mathematical details.
-	  */
+	 */
 	void composePoint(
 		double lx, double ly, double lz, double& gx, double& gy, double& gz,
 		mrpt::math::CMatrixFixedNumeric<double, 3, 3>* out_jacobian_df_dpoint =
@@ -218,9 +218,9 @@ class CPose3DRotVec : public CPose<CPose3DRotVec>,
 
 	/** An alternative, slightly more efficient way of doing \f$ G = P \oplus L
 	 * \f$ with G and L being 3D points and P this 6D pose.
-	  * \note local_point is passed by value to allow global and local point to
+	 * \note local_point is passed by value to allow global and local point to
 	 * be the same variable
-	  */
+	 */
 	inline void composePoint(
 		const mrpt::math::TPoint3D local_point,
 		mrpt::math::TPoint3D& global_point) const
@@ -231,12 +231,12 @@ class CPose3DRotVec : public CPose<CPose3DRotVec>,
 	}
 
 	/**  Computes the 3D point L such as \f$ L = G \ominus this \f$.
-	  *  If pointers are provided, the corresponding Jacobians are returned.
-	  *  See <a
+	 *  If pointers are provided, the corresponding Jacobians are returned.
+	 *  See <a
 	 * href="http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty"
 	 * >this report</a> for mathematical details.
-	  * \sa composePoint, composeFrom
-	  */
+	 * \sa composePoint, composeFrom
+	 */
 	void inverseComposePoint(
 		const double gx, const double gy, const double gz, double& lx,
 		double& ly, double& lz,
@@ -247,8 +247,8 @@ class CPose3DRotVec : public CPose<CPose3DRotVec>,
 
 	/**  Makes "this = A (+) B"; this method is slightly more efficient than
 	 * "this= A + B;" since it avoids the temporary object.
-	  *  \note A or B can be "this" without problems.
-	  */
+	 *  \note A or B can be "this" without problems.
+	 */
 	void composeFrom(
 		const CPose3DRotVec& A, const CPose3DRotVec& B,
 		mrpt::math::CMatrixFixedNumeric<double, 6, 6>*
@@ -257,7 +257,7 @@ class CPose3DRotVec : public CPose<CPose3DRotVec>,
 			out_jacobian_drvtC_drvtB = nullptr);
 
 	/**  Convert this RVT into a quaternion + XYZ
-	  */
+	 */
 	void toQuatXYZ(CPose3DQuat& q) const;
 
 	/** Make \f$ this = this \oplus b \f$  (\a b can be "this" without problems)
@@ -278,9 +278,9 @@ class CPose3DRotVec : public CPose<CPose3DRotVec>,
 
 	/**  Makes \f$ this = A \ominus B \f$ this method is slightly more efficient
 	 * than "this= A - B;" since it avoids the temporary object.
-	  *  \note A or B can be "this" without problems.
-	  * \sa composeFrom, composePoint
-	  */
+	 *  \note A or B can be "this" without problems.
+	 * \sa composeFrom, composePoint
+	 */
 	void inverseComposeFrom(const CPose3DRotVec& A, const CPose3DRotVec& B);
 
 	/** Compute \f$ RET = this \oplus b \f$  */
@@ -332,14 +332,14 @@ class CPose3DRotVec : public CPose<CPose3DRotVec>,
 
 	/** Create a vector with 3 components according to the input transformation
 	 * matrix (only the rotation will be taken into account)
-	  */
+	 */
 	mrpt::math::CArrayDouble<3> rotVecFromRotMat(
 		const math::CMatrixDouble44& m);
 
 	/** Set the pose from a 3D position (meters) and yaw/pitch/roll angles
 	 * (radians) - This method recomputes the internal rotation matrix.
-	  * \sa getYawPitchRoll, setYawPitchRoll
-	  */
+	 * \sa getYawPitchRoll, setYawPitchRoll
+	 */
 	void setFromValues(
 		const double x0, const double y0, const double z0, const double vx,
 		const double vy, const double vz)
@@ -353,10 +353,10 @@ class CPose3DRotVec : public CPose<CPose3DRotVec>,
 	}
 
 	/** Set pose from an array with these 6 elements: [x y z vx vy vz]
-	  *  where v{xyz} is the rotation vector and {xyz} the 3D translation of the
+	 *  where v{xyz} is the rotation vector and {xyz} the 3D translation of the
 	 * pose
-	  *  \sa getAs6Vector
-	  */
+	 *  \sa getAs6Vector
+	 */
 	template <class ARRAYORVECTOR>
 	inline void setFrom6Vector(const ARRAYORVECTOR& vec6)
 	{
@@ -369,12 +369,12 @@ class CPose3DRotVec : public CPose<CPose3DRotVec>,
 	}
 
 	/** Gets pose as an array with these 6 elements: [x y z vx vy vz]
-	  *  where v{xyz} is the rotation vector and {xyz} the 3D translation of the
+	 *  where v{xyz} is the rotation vector and {xyz} the 3D translation of the
 	 * pose
-	  *  The target vector MUST ALREADY have space for 6 elements (i.e. no
+	 *  The target vector MUST ALREADY have space for 6 elements (i.e. no
 	 * .resize() method will be called).
-	  *  \sa setAs6Vector, getAsVector
-	  */
+	 *  \sa setAs6Vector, getAsVector
+	 */
 	template <class ARRAYORVECTOR>
 	inline void getAs6Vector(ARRAYORVECTOR& vec6) const
 	{
@@ -440,8 +440,8 @@ class CPose3DRotVec : public CPose<CPose3DRotVec>,
 
 	/** Returns a human-readable textual representation of the object: "[x y z
 	 * rx ry rz]"
-	  * \sa fromString
-	  */
+	 * \sa fromString
+	 */
 	void asString(std::string& s) const
 	{
 		s = mrpt::format(
@@ -457,9 +457,9 @@ class CPose3DRotVec : public CPose<CPose3DRotVec>,
 
 	/** Set the current object value from a string generated by 'asString' (eg:
 	 * "[x y z yaw pitch roll]", angles in deg. )
-	  * \sa asString
-	  * \exception std::exception On invalid format
-	  */
+	 * \sa asString
+	 * \exception std::exception On invalid format
+	 */
 	void fromString(const std::string& s)
 	{
 		mrpt::math::CMatrixDouble m;
@@ -496,7 +496,7 @@ class CPose3DRotVec : public CPose<CPose3DRotVec>,
 	{
 		is_3D_val = 1
 	};
-	static inline bool is_3D() { return is_3D_val != 0; }
+	static constexpr bool is_3D() { return is_3D_val != 0; }
 	enum
 	{
 		rotation_dimensions = 3
@@ -505,7 +505,7 @@ class CPose3DRotVec : public CPose<CPose3DRotVec>,
 	{
 		is_PDF_val = 0
 	};
-	static inline bool is_PDF() { return is_PDF_val != 0; }
+	static constexpr bool is_PDF() { return is_PDF_val != 0; }
 	inline const type_value& getPoseMean() const { return *this; }
 	inline type_value& getPoseMean() { return *this; }
 	void setToNaN() override;
@@ -524,16 +524,15 @@ class CPose3DRotVec : public CPose<CPose3DRotVec>,
 	{
 		static_size = 6
 	};
-	static inline size_type size() { return static_size; }
-	static inline bool empty() { return false; }
-	static inline size_type max_size() { return static_size; }
+	static constexpr size_type size() { return static_size; }
+	static constexpr bool empty() { return false; }
+	static constexpr size_type max_size() { return static_size; }
 	static inline void resize(const size_t n)
 	{
 		if (n != static_size)
-			throw std::logic_error(
-				format(
-					"Try to change the size of CPose3DRotVec to %u.",
-					static_cast<unsigned>(n)));
+			throw std::logic_error(format(
+				"Try to change the size of CPose3DRotVec to %u.",
+				static_cast<unsigned>(n)));
 	}
 	/** @} */
 
@@ -548,7 +547,5 @@ CPose3DRotVec operator-(const CPose3DRotVec& p);
 bool operator==(const CPose3DRotVec& p1, const CPose3DRotVec& p2);
 bool operator!=(const CPose3DRotVec& p1, const CPose3DRotVec& p2);
 
-}
+}  // namespace mrpt::poses
 #endif
-
-
