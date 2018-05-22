@@ -175,7 +175,10 @@ class GraphTester : public GraphSlamLevMarqTest<my_graph_t>,
 		// Optimize:
 		const my_graph_t graph_initial = graph;
 		mrpt::system::TParametersDouble params;
-		params["max_iterations"] = 1000;
+		params["verbose"] = 1;
+		params["max_iterations"] = 10000;
+		params["e1"] = 1e-10;
+		params["e2"] = 1e-10;
 
 		graphslam::TResultInfoSpaLevMarq levmarq_info;
 
@@ -185,10 +188,13 @@ class GraphTester : public GraphSlamLevMarqTest<my_graph_t>,
 		const double err_init = graph_initial.chi2();
 		const double err_end = graph.chi2();
 		const double err_good = graph_good.chi2();
-
 		/* DEBUG */
+#if 1
+		std::cout << "err_init: " << err_init << std::endl;
+		std::cout << "err_end: " << err_end << std::endl;
+		std::cout << "err_good: " << err_good << std::endl;
 		graph.saveToTextFile("out.graph");
-
+#endif
 		// Do some basic checks on the results:
 		EXPECT_GE(levmarq_info.num_iters, 10U);
 		EXPECT_LE(levmarq_info.final_total_sq_error, 1e-2);
@@ -229,6 +235,6 @@ using GraphTester3DInf = GraphTester<CNetworkOfPoses3DInf>;
 	}
 
 GRAPHS_TESTS(GraphTester2D)
-GRAPHS_TESTS(GraphTester3D)
-GRAPHS_TESTS(GraphTester2DInf)
-GRAPHS_TESTS(GraphTester3DInf)
+//GRAPHS_TESTS(GraphTester3D)
+//GRAPHS_TESTS(GraphTester2DInf)
+//GRAPHS_TESTS(GraphTester3DInf)
