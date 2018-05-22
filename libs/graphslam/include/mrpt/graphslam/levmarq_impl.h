@@ -172,7 +172,7 @@ struct AuxErrorEval<CPose3DPDFGaussianInf, gst>
 	}
 };
 
-}  // end NS detail
+}  // namespace detail
 
 // Compute, at once, jacobians and the error vectors for each constraint in
 // "lstObservationData", returns the overall squared error.
@@ -195,14 +195,14 @@ double computeJacobiansAndErrors(
 	for (size_t i = 0; i < nObservations; i++)
 	{
 		const typename gst::observation_info_t& obs = lstObservationData[i];
-		typename gst::edge_const_iterator it = obs.edge;
+		auto e = obs.edge;
 		const typename gst::graph_t::constraint_t::type_value* EDGE_POSE =
 			obs.edge_mean;
 		typename gst::graph_t::constraint_t::type_value* P1 = obs.P1;
 		typename gst::graph_t::constraint_t::type_value* P2 = obs.P2;
 
-		const auto& ids = it->first;
-		const auto& edge = it->second;
+		const auto& ids = e->first;
+		const auto& edge = e->second;
 
 		// Compute the residual pose error of these pair of nodes + its
 		// constraint,
@@ -243,7 +243,7 @@ double computeJacobiansAndErrors(
 	return ret_err;
 }
 
-}  // end of NS
-}  // end of NS
+}  // namespace graphslam
+}  // namespace mrpt
 
 #endif
