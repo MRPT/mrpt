@@ -34,6 +34,7 @@ struct graphslam_traits
 	/** Typ:  mrpt::graphs::CNetworkOfPoses<...> */
 	using graph_t = GRAPH_T;
 	using edge_const_iterator = typename graph_t::edges_map_t::const_iterator;
+	using edge_map_entry_t = typename graph_t::edges_map_t::value_type;
 	using edge_t = typename graph_t::constraint_t;
 	using edge_poses_type = typename edge_t::type_value;
 	using SE_TYPE =
@@ -53,7 +54,7 @@ struct graphslam_traits
 	{
 		using gst = graphslam_traits<GRAPH_T>;
 		// Data:
-		typename gst::edge_const_iterator edge;
+		const typename gst::edge_map_entry_t* edge{ nullptr };
 		const typename gst::graph_t::constraint_t::type_value* edge_mean;
 		typename gst::graph_t::constraint_t::type_value *P1, *P2;
 	};
