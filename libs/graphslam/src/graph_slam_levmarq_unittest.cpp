@@ -53,9 +53,8 @@ class GraphTester : public GraphSlamLevMarqTest<my_graph_t>,
 		//  Run graph slam:
 		// ----------------------------
 		mrpt::system::TParametersDouble params;
-		// params["verbose"]  = 1;
-		// params["profiler"] = 1;
-		params["max_iterations"] = 1000;
+		//		params["verbose"] = 1;
+		params["max_iterations"] = 100;
 
 		graphslam::TResultInfoSpaLevMarq levmarq_info;
 
@@ -64,19 +63,17 @@ class GraphTester : public GraphSlamLevMarqTest<my_graph_t>,
 
 		const double err_init = graph_initial.chi2();
 		const double err_end = graph.chi2();
-		graph_initial.saveToTextFile("in.graph");
-		graph.saveToTextFile("out.graph");
 
 		// Do some basic checks on the results:
 		EXPECT_GE(levmarq_info.num_iters, 10U);
-		EXPECT_LE(levmarq_info.final_total_sq_error, 1e-2);
+		EXPECT_LE(levmarq_info.final_total_sq_error, 5e-2);
 		EXPECT_LT(err_end, err_init);
 
 	}  // end test_ring_path
 
 	void compare_two_graphs(
 		const my_graph_t& g1, const my_graph_t& g2,
-		const double eps_node_pos = 1e-4, const double eps_edges = 1e-4)
+		const double eps_node_pos = 1e-3, const double eps_edges = 1e-3)
 	{
 		EXPECT_EQ(g1.edges.size(), g2.edges.size());
 		EXPECT_EQ(g1.nodes.size(), g2.nodes.size());
@@ -99,7 +96,7 @@ class GraphTester : public GraphSlamLevMarqTest<my_graph_t>,
 					 it2->second.getPoseMean().getAsVectorVal())
 						.array()
 						.abs()
-						.sum(),
+						.maxCoeff(),
 					eps_edges);
 			}
 		}
@@ -116,8 +113,11 @@ class GraphTester : public GraphSlamLevMarqTest<my_graph_t>,
 					 itn2->second.getAsVectorVal())
 						.array()
 						.abs()
-						.sum(),
-					eps_node_pos);
+						.maxCoeff(),
+					eps_node_pos)
+					<< "Poses of keyframe #" << itn1->first << " do not match:" << std::endl
+					<< "- Expected: " << itn2->second
+					<< std::endl << "- Got     : " << itn1->second << std::endl;
 			}
 		}
 	}
@@ -175,10 +175,8 @@ class GraphTester : public GraphSlamLevMarqTest<my_graph_t>,
 		// Optimize:
 		const my_graph_t graph_initial = graph;
 		mrpt::system::TParametersDouble params;
-		params["verbose"] = 1;
-		params["max_iterations"] = 10000;
-		params["e1"] = 1e-10;
-		params["e2"] = 1e-10;
+		//		params["verbose"] = 1;
+		params["max_iterations"] = 100;
 
 		graphslam::TResultInfoSpaLevMarq levmarq_info;
 
@@ -197,11 +195,11 @@ class GraphTester : public GraphSlamLevMarqTest<my_graph_t>,
 #endif
 		// Do some basic checks on the results:
 		EXPECT_GE(levmarq_info.num_iters, 10U);
-		EXPECT_LE(levmarq_info.final_total_sq_error, 1e-2);
+		EXPECT_LE(levmarq_info.final_total_sq_error, 5e-2);
 		EXPECT_LT(err_end, err_init);
 
 		// Compare to good solution:
-		compare_two_graphs(graph, graph_good, 1e-4, 1e-4);
+		compare_two_graphs(graph, graph_good);
 	}
 };
 
@@ -216,7 +214,7 @@ using GraphTester3DInf = GraphTester<CNetworkOfPoses3DInf>;
 		for (int seed = 1; seed < 3; seed++)          \
 		{                                             \
 			getRandomGenerator().randomize(seed);     \
-			/*test_ring_path(); */                    \
+			test_ring_path();                         \
 		}                                             \
 	}                                                 \
 	TEST_F(_TYPE, BinarySerialization)                \
@@ -235,6 +233,6 @@ using GraphTester3DInf = GraphTester<CNetworkOfPoses3DInf>;
 	}
 
 GRAPHS_TESTS(GraphTester2D)
-//GRAPHS_TESTS(GraphTester3D)
-//GRAPHS_TESTS(GraphTester2DInf)
-//GRAPHS_TESTS(GraphTester3DInf)
+GRAPHS_TESTS(GraphTester3D)
+GRAPHS_TESTS(GraphTester2DInf)
+GRAPHS_TESTS(GraphTester3DInf)

@@ -50,8 +50,6 @@ namespace mrpt::graphslam
  *		- "verbose": (default=0) If !=0, produce verbose ouput.
  *		- "max_iterations": (default=100) Maximum number of Lev-Marq.
  *iterations.
- *		- "scale_hessian": (default=0.1) Multiplies the Hessian matrix by this
- *scalar (may improve convergence speed).
  *		- "initial_lambda": (default=0) <=0 means auto guess, otherwise, initial
  *lambda value for the lev-marq algorithm.
  *		- "tau": (default=1e-3) Initial tau value for the lev-marq algorithm.
@@ -113,9 +111,6 @@ void optimize_graph_spa_levmarq(
 	const double tau = extra_params.getWithDefaultVal("tau", 1e-3);
 	const double e1 = extra_params.getWithDefaultVal("e1", 1e-6);
 	const double e2 = extra_params.getWithDefaultVal("e2", 1e-6);
-
-	const double SCALE_HESSIAN =
-		extra_params.getWithDefaultVal("scale_hessian", 1);
 
 	mrpt::system::CTimeLogger profiler(enable_profiler);
 	profiler.enter("optimize_graph_spa_levmarq (entire)");
@@ -180,12 +175,8 @@ void optimize_graph_spa_levmarq(
 		// get the current global poses of both nodes in this constraint:
 		auto itP1 = graph.nodes.find(ids.first);
 		auto itP2 = graph.nodes.find(ids.second);
-		ASSERTDEBMSG_(
-			itP1 != graph.nodes.end(),
-			"Node1 in an edge does not have a global pose in 'graph.nodes'.");
-		ASSERTDEBMSG_(
-			itP2 != graph.nodes.end(),
-			"Node2 in an edge does not have a global pose in 'graph.nodes'.");
+		ASSERTMSG_(itP1 != graph.nodes.end(), "Edge node1 has no global pose");
+		ASSERTMSG_(itP2 != graph.nodes.end(), "Edge node2 has no global pose");
 
 		const auto& EDGE_POSE = edge.getPoseMean();
 
@@ -216,9 +207,9 @@ void optimize_graph_spa_levmarq(
 	typename gst::map_pairIDs_pairJacobs_t lstJacobians;
 	// The vector of errors: err_k = SE(2/3)::pseudo_Ln( P_i * EDGE_ij *
 	// inv(P_j) )
-	mrpt::aligned_std_vector<typename gst::Array_O>
-		errs;  // Separated vectors for each edge. i \in [0,nObservations-1], in
+	// Separated vectors for each edge. i \in [0,nObservations-1], in
 	// same order than lstObservationData
+	mrpt::aligned_std_vector<typename gst::Array_O> errs;
 
 	// ===================================
 	// Compute Jacobians & errors
@@ -233,14 +224,10 @@ void optimize_graph_spa_levmarq(
 	//  indices of the free nodes associated to the (first_id,second_id) of each
 	//  Jacobian pair:
 	// ------------------------------------------------------------------------
-	vector<pair<size_t, size_t>>
-		observationIndex_to_relatedFreeNodeIndex;  // "relatedFreeNodeIndex"
-	// means into
-	// [0,nFreeNodes-1], or "-1"
-	// if that node is fixed, as
-	// ordered in
-	// "nodes_to_optimize"
-	observationIndex_to_relatedFreeNodeIndex.reserve(nObservations);
+	vector<pair<size_t, size_t>> obsIdx2fnIdx;
+	// "relatedFreeNodeIndex" is in [0,nFreeNodes-1], or "-1" if that node
+	// is fixed, as defined by "nodes_to_optimize"
+	obsIdx2fnIdx.reserve(nObservations);
 	ASSERTDEB_(lstJacobians.size() == nObservations);
 	for (typename gst::map_pairIDs_pairJacobs_t::const_iterator itJ =
 			 lstJacobians.begin();
@@ -248,7 +235,7 @@ void optimize_graph_spa_levmarq(
 	{
 		const TNodeID id1 = itJ->first.first;
 		const TNodeID id2 = itJ->first.second;
-		observationIndex_to_relatedFreeNodeIndex.push_back(std::make_pair(
+		obsIdx2fnIdx.push_back(std::make_pair(
 			mrpt::containers::find_in_vector(id1, *nodes_to_optimize),
 			mrpt::containers::find_in_vector(id2, *nodes_to_optimize)));
 	}
@@ -267,7 +254,7 @@ void optimize_graph_spa_levmarq(
 	// -----------------------------------------------------------
 	// Main iterative loop of Levenberg-Marquardt algorithm
 	//  For notation and overall algorithm overview, see:
-	//  http://www.mrpt.org/Levenberg%E2%80%93Marquardt_algorithm
+	//  https://www.mrpt.org/Levenberg-Marquardt_algorithm
 	// -----------------------------------------------------------
 	size_t last_iter = 0;
 
@@ -275,13 +262,11 @@ void optimize_graph_spa_levmarq(
 	{
 		last_iter = iter;
 
-		if (have_to_recompute_H_and_grad)  // This will be false only when the
-		// delta leads to a worst solution
-		// and only a change in lambda is
-		// needed.
+		// This will be false only when the delta leads to a worst solution and
+		// only a change in lambda is needed.
+		if (have_to_recompute_H_and_grad)
 		{
 			have_to_recompute_H_and_grad = false;
-
 			// ======================================================================
 			// Compute the gradient: grad = J^t * errs
 			// ======================================================================
@@ -314,11 +299,8 @@ void optimize_graph_spa_levmarq(
 
 					// Get the corresponding indices in the vector of "free
 					// variables" being optimized:
-					const size_t idx1 =
-						observationIndex_to_relatedFreeNodeIndex[idx_obs].first;
-					const size_t idx2 =
-						observationIndex_to_relatedFreeNodeIndex[idx_obs]
-							.second;
+					const size_t idx1 = obsIdx2fnIdx[idx_obs].first;
+					const size_t idx2 = obsIdx2fnIdx[idx_obs].second;
 
 					if (idx1 != string::npos)
 						detail::AuxErrorEval<typename gst::edge_t, gst>::
@@ -344,7 +326,6 @@ void optimize_graph_spa_levmarq(
 			::memcpy(
 				&grad[0], &grad_parts[0],
 				nFreeNodes * DIMS_POSE * sizeof(grad[0]));  // Ohh yeahh!
-			grad /= SCALE_HESSIAN;
 			profiler.leave("optimize_graph_spa_levmarq.grad");
 
 			// End condition #1
@@ -382,14 +363,12 @@ void optimize_graph_spa_levmarq(
 				for (idxObs = 0, itJacobPair = lstJacobians.begin();
 					 idxObs < nObservations; ++itJacobPair, ++idxObs)
 				{
-					const bool edge_straight =
+					const bool Hij_upper_triang =
 						itJacobPair->first.first < itJacobPair->first.second;
 
 					// Indices in the "H_map" vector:
-					const size_t idx_i =
-						observationIndex_to_relatedFreeNodeIndex[idxObs].first;
-					const size_t idx_j =
-						observationIndex_to_relatedFreeNodeIndex[idxObs].second;
+					const size_t idx_i = obsIdx2fnIdx[idxObs].first;
+					const size_t idx_j = obsIdx2fnIdx[idxObs].second;
 
 					const bool is_i_free_node = idx_i != string::npos;
 					const bool is_j_free_node = idx_j != string::npos;
@@ -430,9 +409,12 @@ void optimize_graph_spa_levmarq(
 						detail::AuxErrorEval<typename gst::edge_t, gst>::
 							multiplyJ1tLambdaJ2(
 								J1, J2, JtJ, lstObservationData[idxObs].edge);
-						// We sort IDs such as "i" < "j" and we can build just the
-						// upper triangular part of the Hessian:
-						H_map[std::max(idx_i,idx_j)][std::min(idx_i, idx_j)] += JtJ;
+						// We sort IDs such as "i" < "j" and we can build just
+						// the upper triangular part of the Hessian:
+						if (Hij_upper_triang) // H_map[col][row]
+							H_map[idx_j][idx_i] += JtJ;
+						else
+							H_map[idx_i][idx_j] += JtJ.transpose();
 					}
 				}
 			}
