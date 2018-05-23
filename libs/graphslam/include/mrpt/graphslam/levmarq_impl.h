@@ -45,7 +45,7 @@ struct AuxErrorEval<CPose2D, gst>
 		const MAT& J1, MAT& JtJ, const EDGE_ITERATOR& edge)
 	{
 		MRPT_UNUSED_PARAM(edge);
-		JtJ.multiply_AtA(J1);
+		JtJ = J1.transpose()*J1;
 	}
 
 	template <class MAT, class EDGE_ITERATOR>
@@ -53,7 +53,7 @@ struct AuxErrorEval<CPose2D, gst>
 		const MAT& J1, const MAT& J2, MAT& JtJ, const EDGE_ITERATOR& edge)
 	{
 		MRPT_UNUSED_PARAM(edge);
-		JtJ.multiply_AtB(J1, J2);
+		JtJ = J1.transpose() * J2;
 	}
 
 	template <class JAC, class EDGE_ITERATOR, class VEC1, class VEC2>
@@ -61,7 +61,7 @@ struct AuxErrorEval<CPose2D, gst>
 		const JAC& J, const EDGE_ITERATOR& edge, const VEC1& ERR, VEC2& OUT)
 	{
 		MRPT_UNUSED_PARAM(edge);
-		J.multiply_Atb(ERR, OUT, true /* accumulate in output */);
+		OUT += J.transpose() * ERR;
 	}
 };
 
@@ -82,7 +82,7 @@ struct AuxErrorEval<CPose3D, gst>
 		const MAT& J1, MAT& JtJ, const EDGE_ITERATOR& edge)
 	{
 		MRPT_UNUSED_PARAM(edge);
-		JtJ.multiply_AtA(J1);
+		JtJ = J1.transpose() * J1;
 	}
 
 	template <class MAT, class EDGE_ITERATOR>
@@ -90,7 +90,7 @@ struct AuxErrorEval<CPose3D, gst>
 		const MAT& J1, const MAT& J2, MAT& JtJ, const EDGE_ITERATOR& edge)
 	{
 		MRPT_UNUSED_PARAM(edge);
-		JtJ.multiply_AtB(J1, J2);
+		JtJ = J1.transpose() * J2;
 	}
 
 	template <class JAC, class EDGE_ITERATOR, class VEC1, class VEC2>
@@ -98,7 +98,7 @@ struct AuxErrorEval<CPose3D, gst>
 		const JAC& J, const EDGE_ITERATOR& edge, const VEC1& ERR, VEC2& OUT)
 	{
 		MRPT_UNUSED_PARAM(edge);
-		J.multiply_Atb(ERR, OUT, true /* accumulate in output */);
+		OUT += J.transpose() * ERR;
 	}
 };
 
@@ -117,22 +117,20 @@ struct AuxErrorEval<CPosePDFGaussianInf, gst>
 	static inline void multiplyJtLambdaJ(
 		const MAT& J1, MAT& JtJ, const EDGE_ITERATOR& edge)
 	{
-		JtJ.multiply_AtBC(J1, edge->second.cov_inv, J1);
+		JtJ = (J1.transpose() * edge->second.cov_inv) * J1;
 	}
 	template <class MAT, class EDGE_ITERATOR>
 	static inline void multiplyJ1tLambdaJ2(
 		const MAT& J1, const MAT& J2, MAT& JtJ, const EDGE_ITERATOR& edge)
 	{
-		JtJ.multiply_AtBC(J1, edge->second.cov_inv, J2);
+		JtJ = (J1.transpose() * edge->second.cov_inv) * J2;
 	}
 
 	template <class JAC, class EDGE_ITERATOR, class VEC1, class VEC2>
 	static inline void multiply_Jt_W_err(
 		const JAC& J, const EDGE_ITERATOR& edge, const VEC1& ERR, VEC2& OUT)
 	{
-		mrpt::math::CMatrixDouble33 JtInf(mrpt::math::UNINITIALIZED_MATRIX);
-		JtInf.multiply_AtB(J, edge->second.cov_inv);
-		JtInf.multiply_Ab(ERR, OUT, true /* accumulate in output */);
+		OUT += (J.transpose() * edge->second.cov_inv) * ERR;
 	}
 };
 
@@ -152,23 +150,21 @@ struct AuxErrorEval<CPose3DPDFGaussianInf, gst>
 	static inline void multiplyJtLambdaJ(
 		const MAT& J1, MAT& JtJ, const EDGE_ITERATOR& edge)
 	{
-		JtJ.multiply_AtBC(J1, edge->second.cov_inv, J1);
+		JtJ = (J1.transpose() * edge->second.cov_inv) * J1;
 	}
 
 	template <class MAT, class EDGE_ITERATOR>
 	static inline void multiplyJ1tLambdaJ2(
 		const MAT& J1, const MAT& J2, MAT& JtJ, const EDGE_ITERATOR& edge)
 	{
-		JtJ.multiply_AtBC(J1, edge->second.cov_inv, J2);
+		JtJ = (J1.transpose() * edge->second.cov_inv) * J2;
 	}
 
 	template <class JAC, class EDGE_ITERATOR, class VEC1, class VEC2>
 	static inline void multiply_Jt_W_err(
 		const JAC& J, const EDGE_ITERATOR& edge, const VEC1& ERR, VEC2& OUT)
 	{
-		mrpt::math::CMatrixDouble66 JtInf(mrpt::math::UNINITIALIZED_MATRIX);
-		JtInf.multiply_AtB(J, edge->second.cov_inv);
-		JtInf.multiply_Ab(ERR, OUT, true /* accumulate in output */);
+		OUT += (J.transpose() * edge->second.cov_inv) * ERR;
 	}
 };
 
