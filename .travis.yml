@@ -20,41 +20,49 @@ env:
 
 jobs:
   include:
-    - stage: Build Stage 1
-      env: STAGE=1 TASK="build" DEPS="full" BUILD_TARGET="mrpt-hmtslam"
+    - stage: Build libs (stage 1/2)
+      env: STAGE=1 TASK="build" DEPS="full" BUILD_TARGET="mrpt-hwdrivers"
       compiler: gcc
-    - env: STAGE=1 TASK="build" DEPS="full" BUILD_TARGET="mrpt-hmtslam"
+    - env: STAGE=1 TASK="build" DEPS="full" BUILD_TARGET="mrpt-hwdrivers"
       compiler: clang
-    - env: STAGE=1 TASK="build" DEPS="headless" BUILD_TARGET="mrpt-hmtslam"
+    - env: STAGE=1 TASK="build" DEPS="headless" BUILD_TARGET="mrpt-hwdrivers"
       compiler: gcc
-    - env: STAGE=1 TASK="build" DEPS="minimal" BUILD_TARGET="mrpt-hmtslam"
+    - env: STAGE=1 TASK="build" DEPS="minimal" BUILD_TARGET="mrpt-hwdrivers"
+      compiler: gcc
+    - stage: Build libs (stage 2/2)
+      env: STAGE=2 TASK="build" DEPS="full" BUILD_TARGET="mrpt-hmtslam"
+      compiler: gcc
+    - env: STAGE=2 TASK="build" DEPS="full" BUILD_TARGET="mrpt-hmtslam"
+      compiler: clang
+    - env: STAGE=2 TASK="build" DEPS="headless" BUILD_TARGET="mrpt-hmtslam"
+      compiler: gcc
+    - env: STAGE=2 TASK="build" DEPS="minimal" BUILD_TARGET="mrpt-hmtslam"
       compiler: gcc
     - stage: Tests, Examples, apps
-      env: STAGE=2 TASK="test" DEPS="full"
+      env: STAGE=3 TASK="test" DEPS="full"
       compiler: gcc
-    - env: STAGE=2 TASK="test" DEPS="full"
+    - env: STAGE=3 TASK="test" DEPS="full"
       compiler: clang
-    - env: STAGE=2 TASK="test" DEPS="headless"
+    - env: STAGE=3 TASK="test" DEPS="headless"
       compiler: gcc
-    - env: STAGE=2 TASK="test" DEPS="minimal"
+    - env: STAGE=3 TASK="test" DEPS="minimal"
       compiler: gcc
-    - env: STAGE=2 TASK="build" DEPS="full" BUILD_TARGET="examples"
+    - env: STAGE=3 TASK="build" DEPS="full" BUILD_TARGET="examples"
       compiler: gcc
-    - env: STAGE=2 TASK="build" DEPS="full" BUILD_TARGET="examples"
+    - env: STAGE=3 TASK="build" DEPS="full" BUILD_TARGET="examples"
       compiler: clang
-    - env: STAGE=2 TASK="build" DEPS="headless" BUILD_TARGET="examples"
+    - env: STAGE=3 TASK="build" DEPS="headless" BUILD_TARGET="examples"
       compiler: gcc
-    - env: STAGE=2 TASK="build" DEPS="minimal" BUILD_TARGET="examples"
+    - env: STAGE=3 TASK="build" DEPS="minimal" BUILD_TARGET="examples"
       compiler: gcc
-    - env: STAGE=2 TASK="build" DEPS="full" BUILD_TARGET="apps"
+    - env: STAGE=3 TASK="build" DEPS="full" BUILD_TARGET="apps"
       compiler: gcc
-    - env: STAGE=2 TASK="build" DEPS="full" BUILD_TARGET="apps"
+    - env: STAGE=3 TASK="build" DEPS="full" BUILD_TARGET="apps"
       compiler: clang
-    - env: STAGE=2 TASK="build" DEPS="headless" BUILD_TARGET="apps"
+    - env: STAGE=3 TASK="build" DEPS="headless" BUILD_TARGET="apps"
       compiler: gcc
-    - env: STAGE=2 TASK="build" DEPS="minimal" BUILD_TARGET="apps"
+    - env: STAGE=3 TASK="build" DEPS="minimal" BUILD_TARGET="apps"
       compiler: gcc
     - stage: Extended Builds and Tests
       language: python
       env: TASK="lint" DEPS="full"
-
