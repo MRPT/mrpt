@@ -27,12 +27,13 @@ using namespace mrpt::math;
 using namespace std;
 
 // Define in/out files for testing:
-using in_out_filenames = std::tuple<std::string, std::string>;
+using in_out_filenames = std::set<std::tuple<std::string, std::string>>;
 const std::map<std::string, in_out_filenames> inout_graph_files{
 	{"GraphTester2D",
-	 {"graphslam_SE2_in.graph", "graphslam_SE2_out_good.graph"}},
+	 {{"graphslam_SE2_in.graph", "graphslam_SE2_out_good.graph"}}},
 	{"GraphTester2DInf",
-	 {"graphslam_SE2pdf_in.graph", "graphslam_SE2pdf_out_good.graph"}}};
+	 {{"graphslam_SE2_in.graph", "graphslam_SE2_out_good.graph"},
+	  {"graphslam_SE2pdf_in.graph", "graphslam_SE2pdf_out_good.graph"}}}};
 
 template <class my_graph_t>
 class GraphTester : public GraphSlamLevMarqTest<my_graph_t>,
@@ -41,7 +42,7 @@ class GraphTester : public GraphSlamLevMarqTest<my_graph_t>,
    protected:
 	virtual void SetUp() {}
 	virtual void TearDown() {}
-	void test_ring_path()
+	void test_ring_path(const char* className)
 	{
 		// This is the initial input graph (make a copy for later use):
 		my_graph_t graph;
@@ -53,7 +54,7 @@ class GraphTester : public GraphSlamLevMarqTest<my_graph_t>,
 		//  Run graph slam:
 		// ----------------------------
 		mrpt::system::TParametersDouble params;
-		//		params["verbose"] = 1;
+		//params["verbose"] = 1;
 		params["max_iterations"] = 100;
 
 		graphslam::TResultInfoSpaLevMarq levmarq_info;
@@ -63,9 +64,13 @@ class GraphTester : public GraphSlamLevMarqTest<my_graph_t>,
 
 		const double err_init = graph_initial.chi2();
 		const double err_end = graph.chi2();
+		std::cout << "err_init: " << err_init << std::endl;
+		std::cout << "err_end: " << err_end << std::endl;
+		//		graph_initial.saveToTextFile(
+		//			string("in_") + string(className) + string(".graph"));
 
 		// Do some basic checks on the results:
-		EXPECT_GE(levmarq_info.num_iters, 10U);
+		EXPECT_GE(levmarq_info.num_iters, 2U);
 		EXPECT_LE(levmarq_info.final_total_sq_error, 5e-2);
 		EXPECT_LT(err_end, err_init);
 
@@ -115,9 +120,10 @@ class GraphTester : public GraphSlamLevMarqTest<my_graph_t>,
 						.abs()
 						.maxCoeff(),
 					eps_node_pos)
-					<< "Poses of keyframe #" << itn1->first << " do not match:" << std::endl
-					<< "- Expected: " << itn2->second
-					<< std::endl << "- Got     : " << itn1->second << std::endl;
+					<< "Poses of keyframe #" << itn1->first
+					<< " do not match:" << std::endl
+					<< "- Expected: " << itn2->second << std::endl
+					<< "- Got     : " << itn1->second << std::endl;
 			}
 		}
 	}
@@ -160,46 +166,49 @@ class GraphTester : public GraphSlamLevMarqTest<my_graph_t>,
 			return;  // No tests for this type
 
 		const string prefix = MRPT_GLOBAL_UNITTEST_SRC_DIR + string("/tests/");
-		const string in_f = prefix + std::get<0>(files_it->second);
-		ASSERT_FILE_EXISTS_(in_f);
-		const string good_f = prefix + std::get<1>(files_it->second);
-		ASSERT_FILE_EXISTS_(good_f);
+		for (const auto& tst : files_it->second)
+		{
+			std::cout << "Testing graph type `" << type << "`, in_file=`"
+					  << std::get<0>(tst) << "`" << std::endl;
 
-		my_graph_t graph, graph_good;
-		graph.loadFromTextFile(in_f);
-		graph_good.loadFromTextFile(good_f);
-		ASSERT_(graph.nodeCount() > 1);
-		ASSERT_EQ(graph.nodeCount(), graph_good.nodeCount());
-		ASSERT_EQ(graph.edgeCount(), graph_good.edgeCount());
+			const string in_f = prefix + std::get<0>(tst);
+			ASSERT_FILE_EXISTS_(in_f);
+			const string good_f = prefix + std::get<1>(tst);
+			ASSERT_FILE_EXISTS_(good_f);
 
-		// Optimize:
-		const my_graph_t graph_initial = graph;
-		mrpt::system::TParametersDouble params;
-		//		params["verbose"] = 1;
-		params["max_iterations"] = 100;
+			my_graph_t graph, graph_good;
+			graph.loadFromTextFile(in_f);
+			graph_good.loadFromTextFile(good_f);
+			ASSERT_(graph.nodeCount() > 1);
+			ASSERT_EQ(graph.nodeCount(), graph_good.nodeCount());
+			ASSERT_EQ(graph.edgeCount(), graph_good.edgeCount());
 
-		graphslam::TResultInfoSpaLevMarq levmarq_info;
+			// Optimize:
+			const my_graph_t graph_initial = graph;
+			mrpt::system::TParametersDouble params;
+			params["max_iterations"] = 100;
 
-		graphslam::optimize_graph_spa_levmarq(
-			graph, levmarq_info, nullptr, params);
+			graphslam::TResultInfoSpaLevMarq levmarq_info;
 
-		const double err_init = graph_initial.chi2();
-		const double err_end = graph.chi2();
-		const double err_good = graph_good.chi2();
-		/* DEBUG */
-#if 1
-		std::cout << "err_init: " << err_init << std::endl;
-		std::cout << "err_end: " << err_end << std::endl;
-		std::cout << "err_good: " << err_good << std::endl;
-		graph.saveToTextFile("out.graph");
-#endif
-		// Do some basic checks on the results:
-		EXPECT_GE(levmarq_info.num_iters, 10U);
-		EXPECT_LE(levmarq_info.final_total_sq_error, 5e-2);
-		EXPECT_LT(err_end, err_init);
+			graphslam::optimize_graph_spa_levmarq(
+				graph, levmarq_info, nullptr, params);
 
-		// Compare to good solution:
-		compare_two_graphs(graph, graph_good);
+			/* DEBUG */
+			const double err_init = graph_initial.chi2();
+			const double err_end = graph.chi2();
+			const double err_good = graph_good.chi2();
+			std::cout << "err_init: " << err_init << std::endl;
+			std::cout << "err_end: " << err_end << std::endl;
+			std::cout << "err_good: " << err_good << std::endl;
+
+			// Do some basic checks on the results:
+			EXPECT_GE(levmarq_info.num_iters, 2U);
+			EXPECT_LE(levmarq_info.final_total_sq_error, 5e-2);
+			EXPECT_LT(err_end, err_init);
+
+			// Compare to good solution:
+			compare_two_graphs(graph, graph_good);
+		}
 	}
 };
 
@@ -211,10 +220,10 @@ using GraphTester3DInf = GraphTester<CNetworkOfPoses3DInf>;
 #define GRAPHS_TESTS(_TYPE)                           \
 	TEST_F(_TYPE, OptimizeSampleRingPath)             \
 	{                                                 \
-		for (int seed = 1; seed < 3; seed++)          \
+		for (int seed = 1; seed <= 3; seed++)         \
 		{                                             \
 			getRandomGenerator().randomize(seed);     \
-			test_ring_path();                         \
+			test_ring_path(#_TYPE);                   \
 		}                                             \
 	}                                                 \
 	TEST_F(_TYPE, BinarySerialization)                \
