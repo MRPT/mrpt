@@ -245,7 +245,6 @@ void optimize_graph_spa_levmarq(
 	grad.setZero();
 	using map_ID2matrix_VxV_t =
 		mrpt::aligned_std_map<TNodeID, typename gst::matrix_VxV_t>;
-	vector<map_ID2matrix_VxV_t> H_map(nFreeNodes);
 
 	double lambda = initial_lambda;  // Will be actually set on first iteration.
 	double v = 1;  // was 2, changed since it's modified in the first pass.
@@ -261,6 +260,8 @@ void optimize_graph_spa_levmarq(
 	for (size_t iter = 0; iter < max_iters; ++iter)
 	{
 		last_iter = iter;
+
+		vector<map_ID2matrix_VxV_t> H_map(nFreeNodes);
 
 		// This will be false only when the delta leads to a worst solution and
 		// only a change in lambda is needed.
