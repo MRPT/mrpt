@@ -23,33 +23,77 @@ using namespace std;
 template <class my_graph_t>
 class GraphSlamLevMarqTest
 {
-   public:
-	// adds a new edge to the graph. The edge is annotated with the relative
-	// position of the two nodes
-	static void addEdge(
-		TNodeID from, TNodeID to,
-		const typename my_graph_t::global_poses_t& real_poses,
-		my_graph_t& graph)
-	{
-		auto RelativePose =
-			real_poses.find(to)->second - real_poses.find(from)->second;
+public:
 
-		// Add information matrix if present:
-		if constexpr (my_graph_t::edge_t::is_PDF())
+	// SFINAE seems to be badly supported in MSVC 2015...sigh. Just do non-templatized overloading:
+	template <class edge_t> struct EdgeAdder;
+
+	template <> struct EdgeAdder<mrpt::poses::CPose2D>
+	{
+		template <class my_graph_t>
+		static void add(
+			TNodeID from, TNodeID to,
+			const typename my_graph_t::global_poses_t& real_poses,
+			my_graph_t& graph)
 		{
+			auto RelativePose =
+				real_poses.find(to)->second - real_poses.find(from)->second;
+			graph.insertEdge(from, to, RelativePose);
+		}
+	};
+	template <> struct EdgeAdder<mrpt::poses::CPose3D>
+	{
+		template <class my_graph_t>
+		static void add(
+			TNodeID from, TNodeID to,
+			const typename my_graph_t::global_poses_t& real_poses,
+			my_graph_t& graph)
+		{
+			auto RelativePose =
+				real_poses.find(to)->second - real_poses.find(from)->second;
+			graph.insertEdge(from, to, RelativePose);
+		}
+	};
+	template <> struct EdgeAdder<mrpt::poses::CPosePDFGaussianInf>
+	{
+		template <class my_graph_t>
+		static void add(
+			TNodeID from, TNodeID to,
+			const typename my_graph_t::global_poses_t& real_poses,
+			my_graph_t& graph)
+		{
+			auto RelativePose =
+				real_poses.find(to)->second - real_poses.find(from)->second;
+			// Add information matrix :
 			const auto N = my_graph_t::edge_t::state_length;
-			using InfMat = mrpt::math::CMatrixFixedNumeric<double, N, N>;
+			typedef mrpt::math::CMatrixFixedNumeric<double, N, N> InfMat;
 			auto mat = randomGenerator
-						   .drawDefinitePositiveMatrix<InfMat, Eigen::VectorXd>(
-							   N, 2.0 /*std*/, 1.0 /*diagonal offset*/);
+				.drawDefinitePositiveMatrix<InfMat, Eigen::VectorXd>(
+					N, 2.0 /*std*/, 1.0 /*diagonal offset*/);
 			graph.insertEdge(
 				from, to, typename my_graph_t::edge_t(RelativePose, mat));
 		}
-		else
+	};
+	template <> struct EdgeAdder<mrpt::poses::CPose3DPDFGaussianInf>
+	{
+		template <class my_graph_t>
+		static void add(
+			TNodeID from, TNodeID to,
+			const typename my_graph_t::global_poses_t& real_poses,
+			my_graph_t& graph)
 		{
-			graph.insertEdge(from, to, RelativePose);
+			auto RelativePose =
+				real_poses.find(to)->second - real_poses.find(from)->second;
+			// Add information matrix :
+			const auto N = my_graph_t::edge_t::state_length;
+			typedef mrpt::math::CMatrixFixedNumeric<double, N, N> InfMat;
+			auto mat = randomGenerator
+				.drawDefinitePositiveMatrix<InfMat, Eigen::VectorXd>(
+					N, 2.0 /*std*/, 1.0 /*diagonal offset*/);
+			graph.insertEdge(
+				from, to, typename my_graph_t::edge_t(RelativePose, mat));
 		}
-	}
+	};
 
 	// The graph: nodes + edges:
 	static void create_ring_path(
@@ -90,12 +134,12 @@ class GraphSlamLevMarqTest
 			{
 				if (real_node_poses[i].distanceTo(real_node_poses[j]) <
 					DIST_THRES)
-					addEdge(i, j, real_node_poses, graph);
+					EdgeAdder<typename my_graph_t::edge_t>::add<graph_t>(i, j, real_node_poses, graph);
 			}
 		}
 
 		// Cross-links:
-		addEdge(0, N_VERTEX / 2, real_node_poses, graph);
+		EdgeAdder<typename my_graph_t::edge_t>::add<graph_t>(0, N_VERTEX / 2, real_node_poses, graph);
 
 		// The root node (the origin of coordinates):
 		graph.root = TNodeID(0);
