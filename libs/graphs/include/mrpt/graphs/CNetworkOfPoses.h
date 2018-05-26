@@ -187,45 +187,67 @@ namespace mrpt
 			/** @} */
 
 
-			/** @name I/O file methods
-			    @{ */
+			/** @name I/O methods
+			@{ */
 
-			/** Saves to a text file in the format used by TORO & HoG-man (more on
-			 * the format <a href="http://www.mrpt.org/Robotics_file_formats" * >here</a>)
-			 * For 2D graphs only VERTEX2 & EDGE2 entries will be saved,
-			 * and VERTEX3 & EDGE3 entries for 3D graphs.  Note that EQUIV entries
-			 * will not be saved, but instead several EDGEs will be stored between
-			 * the same node IDs.
-			 *
-			 * \sa saveToBinaryFile, loadFromTextFile
-			 * \exception On any error
-			 */
-			inline void saveToTextFile(const std::string &fileName) const {
-				detail::graph_ops<self_t>::save_graph_of_poses_to_text_file(this,fileName);
+			/** Saves to a text file in the format used by TORO, HoG-man, G2O.
+			* See: https://www.mrpt.org/Graph-SLAM_maps
+			* \sa saveToBinaryFile, loadFromTextFile, writeAsText
+			* \exception On any error
+			*/
+			void saveToTextFile(const std::string& fileName) const
+			{
+				detail::graph_ops<self_t>::save_graph_of_poses_to_text_file(
+					this, fileName);
+			}
+			/** Writes as text in the format used by TORO, HoG-man, G2O.
+			* See: https://www.mrpt.org/Graph-SLAM_maps
+			* \sa saveToBinaryFile, loadFromTextFile, saveToTextFile, readAsText
+			* \exception On any error
+			*/
+			void writeAsText(std::ostream& o) const
+			{
+				detail::graph_ops<self_t>::save_graph_of_poses_to_ostream(this, o);
 			}
 
-			/** Loads from a text file in the format used by TORO & HoG-man (more on the format <a href="http://www.mrpt.org/Robotics_file_formats" >here</a>)
-			 *   Recognized line entries are: VERTEX2, VERTEX3, EDGE2, EDGE3, EQUIV.
-			 *   If an unknown entry is found, a warning is dumped to std::cerr (only once for each unknown keyword).
-			 *   An exception will be raised if trying to load a 3D graph into a 2D class (in the opposite case, missing 3D data will default to zero).
-			 *
-			 * \param[in] fileName The file to load.
-			 * \param[in] collapse_dup_edges If true, \a collapseDuplicatedEdges will be
-			 * called automatically after loading (note that this operation may take
-			 * significant time for very large graphs).
-			 *
-			 * \sa loadFromBinaryFile, saveToTextFile
-			 *
-			 * \exception On any error, as a malformed line or loading a 3D graph in
-			 * a 2D graph.
-			 */
-			inline void loadFromTextFile(const std::string &fileName, bool collapse_dup_edges = true) {
-				detail::graph_ops<self_t>::load_graph_of_poses_from_text_file(this,fileName);
+			/** Loads from a text file in the format used by TORO & HoG-man (more on the
+			* format <a href="http://www.mrpt.org/Robotics_file_formats" >here</a>)
+			*   Recognized line entries are: VERTEX2, VERTEX3, EDGE2, EDGE3, EQUIV.
+			*   If an unknown entry is found, a warning is dumped to std::cerr (only
+			* once for each unknown keyword).
+			*   An exception will be raised if trying to load a 3D graph into a 2D
+			* class (in the opposite case, missing 3D data will default to zero).
+			*
+			* \param[in] fileName The file to load.
+			* \param[in] collapse_dup_edges If true, \a collapseDuplicatedEdges will be
+			* called automatically after loading (note that this operation may take
+			* significant time for very large graphs).
+			*
+			* \sa loadFromBinaryFile, saveToTextFile
+			*
+			* \exception On any error, as a malformed line or loading a 3D graph in
+			* a 2D graph.
+			*/
+			inline void loadFromTextFile(
+				const std::string& fileName, bool collapse_dup_edges = true)
+			{
+				detail::graph_ops<self_t>::load_graph_of_poses_from_text_file(
+					this, fileName);
 				if (collapse_dup_edges) this->collapseDuplicatedEdges();
 			}
 
-			/** @} */
+			/** Reads as text in the format used by TORO, HoG-man, G2O.
+			* See: https://www.mrpt.org/Graph-SLAM_maps
+			* \sa saveToBinaryFile, loadFromTextFile, saveToTextFile
+			* \exception On any error
+			*/
+			void readAsText(std::istream& i)
+			{
+				detail::graph_ops<self_t>::load_graph_of_poses_from_text_stream(
+					this, i);
+			}
 
+			/** @} */
 			/** @name Utility methods
 			    @{ */
 			/**\brief Return 3D Visual Representation of the edges and nodes in the
@@ -282,6 +304,10 @@ namespace mrpt
 			 * \return Overall number of removed edges.
 			 */
 			inline size_t collapseDuplicatedEdges() { return detail::graph_ops<self_t>::graph_of_poses_collapse_dup_edges(this); }
+
+			/** Returns the total chi-squared error of the graph. Shortcut for
+			* getGlobalSquareError(false). */
+			double chi2() const { return getGlobalSquareError(false); }
 
 			/** Computes the overall square error from all the pose constraints (edges) with respect to the global poses in \a nodes
 			 *  If \a ignoreCovariances is false, the squared Mahalanobis distance will be computed instead of the straight square error.
