@@ -12,6 +12,7 @@
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/system/string_utils.h>
 #include <fstream>
+#include <iosfwd>
 
 namespace mrpt
 {
@@ -21,17 +22,21 @@ namespace mrpt
 			  *  Lines are strip out of leading and trailing whitespaces.
 			  *  By default, lines starting with either "#", "//" or "%" are skipped (comment lines),
 			  *   unless this behavior is explicitly disabled with  \a enableCommentFilters
-		 * \ingroup mrpt_base_grp
+			  * \ingroup mrpt_base_grp
 			  */
 			class BASE_IMPEXP CTextFileLinesParser
 			{
 			public:
 				/** Default constructor; should call \a open() at some moment later. */
-				CTextFileLinesParser() : m_curLineNum(0), m_filter_MATLAB_comments(true), m_filter_C_comments(true), m_filter_SH_comments(true) { }
+				CTextFileLinesParser() : m_curLineNum(0), m_filter_MATLAB_comments(true), m_filter_C_comments(true), m_filter_SH_comments(true), m_in{ NULL }, m_in_ownership{ true } { }
 
 				/** Constructor for opening a file  \exception std::exception On error opening file */
-				CTextFileLinesParser(const std::string &fil) : m_filter_MATLAB_comments(true), m_filter_C_comments(true), m_filter_SH_comments(true) {
+				explicit CTextFileLinesParser(const std::string &fil) : m_filter_MATLAB_comments(true), m_filter_C_comments(true), m_filter_SH_comments(true), m_in{ NULL }, m_in_ownership{ true } {
 					open(fil);
+				}
+
+				explicit CTextFileLinesParser(std::istream& in) : m_filter_MATLAB_comments(true), m_filter_C_comments(true), m_filter_SH_comments(true), m_in{ NULL }, m_in_ownership{ true } {
+					open(in);
 				}
 
 				/** Open a file (an alternative to the constructor with a file name) */
@@ -39,22 +44,37 @@ namespace mrpt
 				{
 					m_curLineNum = 0;
 					m_fileName = fil;
-					m_in.close();
-					m_in.clear();
-					m_in.open(fil.c_str());
-					if (!m_in.is_open())
+					this->close();
+					std::ifstream *ifs = new std::ifstream;
+					m_in = ifs;
+					ifs->open(fil.c_str());
+					if (!ifs->is_open())
 						THROW_EXCEPTION_FMT("Error opening file '%s' for reading",fil.c_str());
 				}
 
+				void open(std::istream& in)
+				{
+					m_curLineNum = 0;
+					m_fileName = "{std::istream}";
+					this->close();
+					m_in = &in;
+					m_in_ownership = false;
+				}
+
+
 				/** Close the file (no need to call it normally, the file is closed upon destruction) */
-				void close() { m_in.close(); }
+				void close() {
+					if (!m_in) return;
+					if (m_in_ownership) delete m_in;
+					m_in = nullptr;
+				}
 
 				/** Reset the read pointer to the beginning of the file */
 				void rewind()
 				{
 					m_curLineNum = 0;
-					m_in.clear();
-					m_in.seekg(0);
+					m_in->clear();
+					m_in->seekg(0);
 				}
 
 				/** Reads from the file and return the next (non-comment) line, as a std::string
@@ -80,10 +100,11 @@ namespace mrpt
 				  */
 				bool getNextLine( std::istringstream &buf )
 				{
-					while (!m_in.fail())
+					ASSERT_(m_in != NULL);
+					while (!m_in->fail())
 					{
 						std::string lin;
-						std::getline(m_in,lin);
+						std::getline(*m_in,lin);
 						m_curLineNum++;
 						lin = mrpt::system::trim(lin);
 						if (lin.empty()) continue; // Ignore empty lines.
@@ -117,11 +138,12 @@ namespace mrpt
 
 			private:
 				std::string   m_fileName;
-				std::ifstream m_in;
 				size_t        m_curLineNum;
 				bool		  m_filter_MATLAB_comments;
 				bool		  m_filter_C_comments;
 				bool		  m_filter_SH_comments;
+				std::istream *m_in;
+				bool m_in_ownership;
 
 			};  // end of CTextFileLinesParser
 	} // End of namespace
