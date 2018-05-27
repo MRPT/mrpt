@@ -52,7 +52,7 @@ namespace mrpt::graphslam
  *iterations.
  *		- "initial_lambda": (default=0) <=0 means auto guess, otherwise, initial
  *lambda value for the lev-marq algorithm.
- *		- "tau": (default=1e-3) Initial tau value for the lev-marq algorithm.
+ *		- "tau": (default=1e-6) Initial tau value for the lev-marq algorithm.
  *		- "e1": (default=1e-6) Lev-marq algorithm iteration stopping criterion
  *#1:
  *|gradient| < e1
@@ -259,9 +259,8 @@ void optimize_graph_spa_levmarq(
 
 	for (size_t iter = 0; iter < max_iters; ++iter)
 	{
-		last_iter = iter;
-
 		vector<map_ID2matrix_VxV_t> H_map(nFreeNodes);
+		last_iter = iter;
 
 		// This will be false only when the delta leads to a worst solution and
 		// only a change in lambda is needed.
@@ -412,7 +411,7 @@ void optimize_graph_spa_levmarq(
 								J1, J2, JtJ, lstObservationData[idxObs].edge);
 						// We sort IDs such as "i" < "j" and we can build just
 						// the upper triangular part of the Hessian:
-						if (Hij_upper_triang) // H_map[col][row]
+						if (Hij_upper_triang)  // H_map[col][row]
 							H_map[idx_j][idx_i] += JtJ;
 						else
 							H_map[idx_i][idx_j] += JtJ.transpose();
@@ -500,9 +499,11 @@ void optimize_graph_spa_levmarq(
 							it->second.get_unsafe(r, r) + lambda);
 						// c>r:
 						for (size_t c = r + 1; c < DIMS_POSE; c++)
+						{
 							sp_H.insert_entry_fast(
 								j_offset + r, i_offset + c,
 								it->second.get_unsafe(r, c));
+						}
 					}
 				}
 				else
@@ -603,24 +604,19 @@ void optimize_graph_spa_levmarq(
 						 nodes_to_optimize->begin();
 					 it != nodes_to_optimize->end(); ++it)
 				{
-					// exp_delta_i = Exp_SE( delta_i )
-					typename gst::graph_t::constraint_t::type_value
-						exp_delta_pose(UNINITIALIZED_POSE);
 					typename gst::Array_O exp_delta;
 					for (size_t i = 0; i < DIMS_POSE; i++)
-						exp_delta[i] = -*delta_ptr++;  // The "-" sign is for
-					// the missing "-"
-					// carried all this time
-					// from above
-					gst::SE_TYPE::exp(exp_delta, exp_delta_pose);
+						exp_delta[i] = -*delta_ptr++;
+					// The "-" above is for the missing "-" dragged from the
+					// Gauss-Newton formula above.
 
 					// new_x_i =  exp_delta_i (+) old_x_i
 					typename gst::graph_t::global_poses_t::iterator
 						it_old_value = graph.nodes.find(*it);
 					old_poses_backup[*it] =
 						it_old_value->second;  // back up the old pose as a copy
-					it_old_value->second.composeFrom(
-						exp_delta_pose, it_old_value->second);
+					detail::AuxPoseOPlus<typename gst::edge_t, gst>::sumIncr(
+						it_old_value->second, exp_delta);
 				}
 			}
 
