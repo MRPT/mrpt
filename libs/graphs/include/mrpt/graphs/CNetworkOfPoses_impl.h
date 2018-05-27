@@ -61,7 +61,7 @@ namespace mrpt
 				static void write_VERTEX_line(const TNodeID id, const mrpt::poses::CPose2D &p, std::ostream &f)
 				{
 					//  VERTEX2 id x y phi
-					f << "VERTEX2 " << id << " " << p.x() << " " << p.y() << " " << p.phi();
+					f << "VERTEX_SE2 " << id << " " << p.x() << " " << p.y() << " " << p.phi();
 				}
 				static void write_VERTEX_line(const TNodeID id, const mrpt::poses::CPose3D &p, std::ostream &f)
 				{
