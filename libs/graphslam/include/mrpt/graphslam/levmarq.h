@@ -509,16 +509,14 @@ namespace mrpt
 						for (set<TNodeID>::const_iterator it=nodes_to_optimize->begin();it!=nodes_to_optimize->end();++it)
 						{
 							// exp_delta_i = Exp_SE( delta_i )
-							typename gst::graph_t::constraint_t::type_value exp_delta_pose(UNINITIALIZED_POSE);
 							typename gst::Array_O exp_delta;
 							for (size_t i=0;i<DIMS_POSE;i++)
 								exp_delta[i]= - *delta_ptr++;  // The "-" sign is for the missing "-" carried all this time from above
-							gst::SE_TYPE::exp(exp_delta,exp_delta_pose);
 
 							// new_x_i =  exp_delta_i (+) old_x_i
 							typename gst::graph_t::global_poses_t::iterator it_old_value = graph.nodes.find(*it);
 							old_poses_backup[*it] = it_old_value->second; // back up the old pose as a copy
-							it_old_value->second.composeFrom(exp_delta_pose, it_old_value->second);
+							detail::AuxPoseOPlus<typename gst::edge_t, gst>::sumIncr(it_old_value->second, exp_delta);
 						}
 					}
 

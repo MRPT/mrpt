@@ -29,6 +29,69 @@ namespace mrpt
 			using namespace mrpt::utils;
 			using namespace std;
 
+			// Auxiliary struct to update the oplus increments after each iteration
+			// Specializations are below.
+			template <class POSE, class gst>
+			struct AuxPoseOPlus;
+
+			// Nodes: CPose2D
+			template <class gst>
+			struct AuxPoseOPlus<CPose2D, gst>
+			{
+				static inline void sumIncr(CPose2D& p, const typename gst::Array_O& delta)
+				{
+					p.x_incr(delta[0]);
+					p.y_incr(delta[1]);
+					p.phi_incr(delta[2]);
+					p.normalizePhi();
+				}
+			};
+
+			// Nodes: CPosePDFGaussianInf
+			template <class gst>
+			struct AuxPoseOPlus<CPosePDFGaussianInf, gst>
+			{
+				template <class POSE>
+				static inline void sumIncr(POSE& p, const typename gst::Array_O& delta)
+				{
+					p.x_incr(delta[0]);
+					p.y_incr(delta[1]);
+					p.phi_incr(delta[2]);
+					p.normalizePhi();
+				}
+			};
+
+			// Nodes: CPose2D
+			template <class gst>
+			struct AuxPoseOPlus<CPose3D, gst>
+			{
+				static inline void sumIncr(CPose3D& p, const typename gst::Array_O& delta)
+				{
+					// exp_delta_i = Exp_SE( delta_i )
+					typename gst::graph_t::constraint_t::type_value exp_delta_pose(
+						UNINITIALIZED_POSE);
+					gst::SE_TYPE::exp(delta, exp_delta_pose);
+					p = p + exp_delta_pose;
+				}
+			};
+
+			// Nodes: CPosePDFGaussianInf
+			template <class gst>
+			struct AuxPoseOPlus<CPose3DPDFGaussianInf, gst>
+			{
+				template <class POSE>
+				static inline void sumIncr(POSE& p, const typename gst::Array_O& delta)
+				{
+					// exp_delta_i = Exp_SE( delta_i )
+					typename gst::graph_t::constraint_t::type_value exp_delta_pose(
+						UNINITIALIZED_POSE);
+					gst::SE_TYPE::exp(delta, exp_delta_pose);
+					p = p + exp_delta_pose;
+				}
+			};
+
+
+
 			// An auxiliary struct to compute the pseudo-ln of a pose error, possibly modified with an information matrix.
 			//  Specializations are below.
 			template <class EDGE,class gst> struct AuxErrorEval;
@@ -36,10 +99,10 @@ namespace mrpt
 			// For graphs of 2D constraints (no information matrix)
 			template <class gst> struct AuxErrorEval<CPose2D,gst> {
 				template <class POSE,class VEC,class EDGE_ITERATOR>
-				static inline void computePseudoLnError(const POSE &P1DP2inv, VEC &err,
+				static inline void computePseudoLnError(const POSE &DinvP1invP2, VEC &err,
 					const EDGE_ITERATOR &edge) {
 					MRPT_UNUSED_PARAM(edge);
-					gst::SE_TYPE::pseudo_ln(P1DP2inv, err);
+					gst::SE_TYPE::pseudo_ln(DinvP1invP2, err);
 				}
 
 				template <class MAT,class EDGE_ITERATOR>
@@ -68,10 +131,10 @@ namespace mrpt
 			template <class gst> struct AuxErrorEval<CPose3D,gst>
 			{
 				template <class POSE,class VEC,class EDGE_ITERATOR>
-				static inline void computePseudoLnError(const POSE &P1DP2inv, VEC &err,
+				static inline void computePseudoLnError(const POSE &DinvP1invP2, VEC &err,
 					const EDGE_ITERATOR &edge) {
 					MRPT_UNUSED_PARAM(edge);
-					gst::SE_TYPE::pseudo_ln(P1DP2inv, err);
+					gst::SE_TYPE::pseudo_ln(DinvP1invP2, err);
 				}
 
 				template <class MAT,class EDGE_ITERATOR>
@@ -100,9 +163,9 @@ namespace mrpt
 			template <class gst> struct AuxErrorEval<CPosePDFGaussianInf,gst>
 			{
 				template <class POSE,class VEC,class EDGE_ITERATOR>
-				static inline void computePseudoLnError(const POSE &P1DP2inv, VEC &err,const EDGE_ITERATOR &edge)
+				static inline void computePseudoLnError(const POSE &DinvP1invP2, VEC &err,const EDGE_ITERATOR &edge)
 				{
-					gst::SE_TYPE::pseudo_ln(P1DP2inv, err);
+					gst::SE_TYPE::pseudo_ln(DinvP1invP2, err);
 				}
 
 				template <class MAT,class EDGE_ITERATOR>
@@ -122,9 +185,9 @@ namespace mrpt
 			// For graphs of 3D constraints (with information matrix)
 			template <class gst> struct AuxErrorEval<CPose3DPDFGaussianInf,gst> {
 				template <class POSE,class VEC,class EDGE_ITERATOR>
-				static inline void computePseudoLnError(const POSE &P1DP2inv, VEC &err,const EDGE_ITERATOR &edge) {
+				static inline void computePseudoLnError(const POSE &DinvP1invP2, VEC &err,const EDGE_ITERATOR &edge) {
 					MRPT_UNUSED_PARAM(edge);
-					gst::SE_TYPE::pseudo_ln(P1DP2inv, err);
+					gst::SE_TYPE::pseudo_ln(DinvP1invP2, err);
 				}
 
 				template <class MAT,class EDGE_ITERATOR>
@@ -172,24 +235,18 @@ namespace mrpt
 				const mrpt::utils::TPairNodeIDs                   &ids  = it->first;
 				const typename gst::graph_t::edge_t  &edge = it->second;
 
-				// Compute the residual pose error of these pair of nodes + its constraint,
-				//  that is: P1DP2inv = P1 * EDGE * inv(P2)
-				typename gst::graph_t::constraint_t::type_value P1DP2inv(mrpt::poses::UNINITIALIZED_POSE);
-				{
-					typename gst::graph_t::constraint_t::type_value P1D(mrpt::poses::UNINITIALIZED_POSE);
-					P1D.composeFrom(*P1,*EDGE_POSE);
-					const typename gst::graph_t::constraint_t::type_value P2inv = -(*P2); // Pose inverse (NOT just switching signs!)
-					P1DP2inv.composeFrom(P1D,P2inv);
-				}
+				// Compute the residual pose error of these pair of nodes + its constraint:
+				// DinvP1invP2 = inv(EDGE) * inv(P1) * P2 = (P2 \ominus P1) \ominus EDGE
+				typename gst::graph_t::constraint_t::type_value DinvP1invP2 = ((*P2) - (*P1)) - *EDGE_POSE;
 
 				// Add to vector of errors:
 				errs.resize(errs.size()+1);
-				detail::AuxErrorEval<typename gst::edge_t,gst>::computePseudoLnError(P1DP2inv, errs.back(),edge);
+				detail::AuxErrorEval<typename gst::edge_t,gst>::computePseudoLnError(DinvP1invP2, errs.back(),edge);
 
 				// Compute the jacobians:
 				MRPT_ALIGN16 std::pair<mrpt::utils::TPairNodeIDs,typename gst::TPairJacobs> newMapEntry;
 				newMapEntry.first = ids;
-				gst::SE_TYPE::jacobian_dP1DP2inv_depsilon(P1DP2inv, &newMapEntry.second.first,&newMapEntry.second.second);
+				gst::SE_TYPE::jacobian_dDinvP1invP2_depsilon(-(*EDGE_POSE), *P1, *P2, &newMapEntry.second.first,&newMapEntry.second.second);
 
 				// And insert into map of jacobians:
 				lstJacobians.insert(lstJacobians.end(),newMapEntry );
