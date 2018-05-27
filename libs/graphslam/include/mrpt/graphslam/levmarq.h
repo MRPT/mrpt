@@ -377,10 +377,8 @@ void optimize_graph_spa_levmarq(
 					// Take references to both Jacobians (wrt pose "i" and pose
 					// "j"), taking into account the possible
 					// switch in their order:
-					const typename gst::matrix_VxV_t& J1 =
-						itJacobPair->second.first;
-					const typename gst::matrix_VxV_t& J2 =
-						itJacobPair->second.second;
+					const typename gst::matrix_VxV_t& J1 = itJacobPair->second.first;
+					const typename gst::matrix_VxV_t& J2 = itJacobPair->second.second;
 
 					// Is "i" a free (to be optimized) node? -> Ji^t * Inf *  Ji
 					if (is_i_free_node)
