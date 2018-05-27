@@ -63,7 +63,7 @@ namespace mrpt
 				template <typename ARG1> inline edge_t (const ARG1 &a1) : TYPE_EDGES(a1) { }
 				template <typename ARG1,typename ARG2> inline edge_t (const ARG1 &a1,const ARG2 &a2) : TYPE_EDGES(a1,a2) { }
 			};
-
+			typedef TYPE_EDGES edge_underlying_t;
 
 			typedef typename mrpt::aligned_containers<TPairNodeIDs,edge_t>::multimap_t	edges_map_t;  //!< The type of the member \a edges
 			typedef typename edges_map_t::iterator                iterator;

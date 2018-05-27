@@ -40,6 +40,11 @@ public:
 				real_poses.find(to)->second - real_poses.find(from)->second;
 			graph.insertEdge(from, to, RelativePose);
 		}
+
+		static void addNoise(mrpt::poses::CPose2D& p, const mrpt::poses::CPose3D & noise)
+		{
+			p += mrpt::poses::CPose2D(noise);
+		}
 	};
 	template <> struct EdgeAdder<mrpt::poses::CPose3D>
 	{
@@ -52,6 +57,10 @@ public:
 			auto RelativePose =
 				real_poses.find(to)->second - real_poses.find(from)->second;
 			graph.insertEdge(from, to, RelativePose);
+		}
+		static void addNoise(mrpt::poses::CPose3D& p, const mrpt::poses::CPose3D & noise)
+		{
+			p += noise;
 		}
 	};
 	template <> struct EdgeAdder<mrpt::poses::CPosePDFGaussianInf>
@@ -68,10 +77,14 @@ public:
 			const auto N = my_graph_t::edge_t::state_length;
 			typedef mrpt::math::CMatrixFixedNumeric<double, N, N> InfMat;
 			auto mat = randomGenerator
-				.drawDefinitePositiveMatrix<InfMat, Eigen::VectorXd>(
+				.drawDefinitePositiveMatrix(
 					N, 2.0 /*std*/, 1.0 /*diagonal offset*/);
 			graph.insertEdge(
 				from, to, typename my_graph_t::edge_t(RelativePose, mat));
+		}
+		static void addNoise(mrpt::poses::CPosePDFGaussianInf& p, const mrpt::poses::CPose3D & noise)
+		{
+			p.mean += mrpt::poses::CPose2D(noise);
 		}
 	};
 	template <> struct EdgeAdder<mrpt::poses::CPose3DPDFGaussianInf>
@@ -88,10 +101,14 @@ public:
 			const auto N = my_graph_t::edge_t::state_length;
 			typedef mrpt::math::CMatrixFixedNumeric<double, N, N> InfMat;
 			auto mat = randomGenerator
-				.drawDefinitePositiveMatrix<InfMat, Eigen::VectorXd>(
+				.drawDefinitePositiveMatrix(
 					N, 2.0 /*std*/, 1.0 /*diagonal offset*/);
 			graph.insertEdge(
 				from, to, typename my_graph_t::edge_t(RelativePose, mat));
+		}
+		static void addNoise(mrpt::poses::CPose3DPDFGaussianInf& p, const mrpt::poses::CPose3D & noise)
+		{
+			p.mean += noise;
 		}
 	};
 
@@ -111,8 +128,8 @@ public:
 		const double STD_NOISE_NODE_ANG = DEG2RAD(5);
 
 		// Level of noise in edges:
-		const double STD_NOISE_EDGE_XYZ = 0;  // 0.01;
-		const double STD_NOISE_EDGE_ANG = 0;  // DEG2RAD(0.1);
+		const double STD_NOISE_EDGE_XYZ = 1e-3;
+		const double STD_NOISE_EDGE_ANG = DEG2RAD(0.01);
 
 		for (TNodeID j = 0; j < N_VERTEX; j++)
 		{
@@ -125,6 +142,16 @@ public:
 
 			// Copy the nodes to the graph, and add some noise:
 			graph.nodes[j] = p;
+
+			const auto noise = CPose3D(
+				randomGenerator.drawGaussian1D(0, STD_NOISE_NODE_XYZ),
+				randomGenerator.drawGaussian1D(0, STD_NOISE_NODE_XYZ),
+				randomGenerator.drawGaussian1D(0, STD_NOISE_NODE_XYZ),
+				randomGenerator.drawGaussian1D(0, STD_NOISE_NODE_ANG),
+				randomGenerator.drawGaussian1D(0, STD_NOISE_NODE_ANG),
+				randomGenerator.drawGaussian1D(0, STD_NOISE_NODE_ANG));
+			EdgeAdder<typename my_graph_t::constraint_no_pdf_t>::addNoise(graph.nodes[j], noise);
+
 		}
 
 		// Add some edges
@@ -134,25 +161,19 @@ public:
 			{
 				if (real_node_poses[i].distanceTo(real_node_poses[j]) <
 					DIST_THRES)
-					EdgeAdder<typename my_graph_t::edge_t>::add<graph_t>(i, j, real_node_poses, graph);
+					EdgeAdder<typename my_graph_t::edge_underlying_t>::add<my_graph_t>(i, j, real_node_poses, graph);
 			}
 		}
 
 		// Cross-links:
-		EdgeAdder<typename my_graph_t::edge_t>::add<graph_t>(0, N_VERTEX / 2, real_node_poses, graph);
+		EdgeAdder<typename my_graph_t::edge_underlying_t>::add<my_graph_t>(0, N_VERTEX / 2, real_node_poses, graph);
 
 		// The root node (the origin of coordinates):
 		graph.root = TNodeID(0);
 
-		// This is the ground truth graph (make a copy for later use):
-		const my_graph_t graph_GT = graph;
-
 		// Add noise to edges & nodes:
 		for (auto& edge : graph.edges)
 		{
-			// edge_t::type_value: for edge_t a plain pose, type_value is the
-			// edge_t itself. For poses+uncertainty, it is the underlying pose
-			// type.
 			const auto noise = CPose3D(
 				randomGenerator.drawGaussian1D(0, STD_NOISE_EDGE_XYZ),
 				randomGenerator.drawGaussian1D(0, STD_NOISE_EDGE_XYZ),
@@ -160,8 +181,7 @@ public:
 				randomGenerator.drawGaussian1D(0, STD_NOISE_EDGE_ANG),
 				randomGenerator.drawGaussian1D(0, STD_NOISE_EDGE_ANG),
 				randomGenerator.drawGaussian1D(0, STD_NOISE_EDGE_ANG));
-
-			edge.second += typename my_graph_t::edge_t(noise);
+			EdgeAdder<typename my_graph_t::edge_underlying_t>::addNoise(edge.second, noise);
 		}
 
 	}

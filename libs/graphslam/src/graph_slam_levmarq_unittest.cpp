@@ -12,11 +12,16 @@
 #include <gtest/gtest.h>
 #include <mrpt/utils/CMemoryStream.h>
 #include <mrpt/system/filesystem.h>
+#include <set>
+#include <map>
 
 // Defined in tests/test_main.cpp
 namespace mrpt
 {
+namespace utils
+{
 extern std::string MRPT_GLOBAL_UNITTEST_SRC_DIR;
+}
 }
 
 using namespace mrpt;
@@ -28,12 +33,13 @@ using namespace mrpt::utils;
 using namespace std;
 
 // Define in/out files for testing:
-using in_out_filenames = std::tuple<std::string, std::string>;
+using in_out_filenames = std::set<std::pair<std::string, std::string>>;
 const std::map<std::string, in_out_filenames> inout_graph_files{
-	{"GraphTester2D",
-	 {"graphslam_SE2_in.graph", "graphslam_SE2_out_good.graph"}},
-	{"GraphTester2DInf",
-	 {"graphslam_SE2pdf_in.graph", "graphslam_SE2pdf_out_good.graph"}}};
+	{ "GraphTester2D",
+	{ { "graphslam_SE2_in.graph", "graphslam_SE2_out_good.graph" } } },
+	{ "GraphTester2DInf",
+	{ { "graphslam_SE2_in.graph", "graphslam_SE2_out_good.graph" },
+	{ "graphslam_SE2pdf_in.graph", "graphslam_SE2pdf_out_good.graph" } } } };
 
 template <class my_graph_t>
 class GraphTester : public GraphSlamLevMarqTest<my_graph_t>,
@@ -54,7 +60,7 @@ class GraphTester : public GraphSlamLevMarqTest<my_graph_t>,
 		//  Run graph slam:
 		// ----------------------------
 		mrpt::utils::TParametersDouble params;
-		//		params["verbose"] = 1;
+		//params["verbose"] = 1;
 		params["max_iterations"] = 100;
 
 		graphslam::TResultInfoSpaLevMarq levmarq_info;
@@ -66,7 +72,7 @@ class GraphTester : public GraphSlamLevMarqTest<my_graph_t>,
 		const double err_end = graph.chi2();
 
 		// Do some basic checks on the results:
-		EXPECT_GE(levmarq_info.num_iters, 10U);
+		EXPECT_GE(levmarq_info.num_iters, 2U);
 		EXPECT_LE(levmarq_info.final_total_sq_error, 5e-2);
 		EXPECT_LT(err_end, err_init);
 
@@ -160,46 +166,53 @@ class GraphTester : public GraphSlamLevMarqTest<my_graph_t>,
 			return;  // No tests for this type
 
 		const string prefix = MRPT_GLOBAL_UNITTEST_SRC_DIR + string("/tests/");
-		const string in_f = prefix + std::get<0>(files_it->second);
-		ASSERT_FILE_EXISTS_(in_f);
-		const string good_f = prefix + std::get<1>(files_it->second);
-		ASSERT_FILE_EXISTS_(good_f);
 
-		my_graph_t graph, graph_good;
-		graph.loadFromTextFile(in_f);
-		graph_good.loadFromTextFile(good_f);
-		ASSERT_(graph.nodeCount() > 1);
-		ASSERT_EQ(graph.nodeCount(), graph_good.nodeCount());
-		ASSERT_EQ(graph.edgeCount(), graph_good.edgeCount());
+		for (const auto& tst : files_it->second)
+		{
+			std::cout << "Testing graph type `" << type << "`, in_file=`"
+				<< tst.first << "`" << std::endl;
 
-		// Optimize:
-		const my_graph_t graph_initial = graph;
-		mrpt::utils::TParametersDouble params;
-		//		params["verbose"] = 1;
-		params["max_iterations"] = 100;
+			const string in_f = prefix + tst.first;
+			ASSERT_FILE_EXISTS_(in_f);
+			const string good_f = prefix + tst.second;
+			ASSERT_FILE_EXISTS_(good_f);
 
-		graphslam::TResultInfoSpaLevMarq levmarq_info;
+			my_graph_t graph, graph_good;
+			graph.loadFromTextFile(in_f);
+			graph_good.loadFromTextFile(good_f);
+			ASSERT_(graph.nodeCount() > 1);
+			ASSERT_EQ(graph.nodeCount(), graph_good.nodeCount());
+			ASSERT_EQ(graph.edgeCount(), graph_good.edgeCount());
 
-		graphslam::optimize_graph_spa_levmarq(
-			graph, levmarq_info, nullptr, params);
+			// Optimize:
+			const my_graph_t graph_initial = graph;
+			mrpt::utils::TParametersDouble params;
+			//params["verbose"] = 1;
+			params["max_iterations"] = 100;
 
-		const double err_init = graph_initial.chi2();
-		const double err_end = graph.chi2();
-		const double err_good = graph_good.chi2();
-		/* DEBUG */
+			graphslam::TResultInfoSpaLevMarq levmarq_info;
+
+			graphslam::optimize_graph_spa_levmarq(
+				graph, levmarq_info, nullptr, params);
+
+			const double err_init = graph_initial.chi2();
+			const double err_end = graph.chi2();
+			const double err_good = graph_good.chi2();
+			/* DEBUG */
 #if 1
-		std::cout << "err_init: " << err_init << std::endl;
-		std::cout << "err_end: " << err_end << std::endl;
-		std::cout << "err_good: " << err_good << std::endl;
-		graph.saveToTextFile("out.graph");
+			std::cout << "err_init: " << err_init << std::endl;
+			std::cout << "err_end: " << err_end << std::endl;
+			std::cout << "err_good: " << err_good << std::endl;
+			graph.saveToTextFile("out.graph");
 #endif
-		// Do some basic checks on the results:
-		EXPECT_GE(levmarq_info.num_iters, 10U);
-		EXPECT_LE(levmarq_info.final_total_sq_error, 5e-2);
-		EXPECT_LT(err_end, err_init);
+			// Do some basic checks on the results:
+			EXPECT_GE(levmarq_info.num_iters, 2U);
+			EXPECT_LE(levmarq_info.final_total_sq_error, 5e-2);
+			EXPECT_LT(err_end, err_init);
 
-		// Compare to good solution:
-		compare_two_graphs(graph, graph_good);
+			// Compare to good solution:
+			compare_two_graphs(graph, graph_good);
+		}
 	}
 };
 
