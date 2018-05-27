@@ -18,9 +18,9 @@ using namespace mrpt::poses;
 
 /** A pseudo-Logarithm map in SE(3), where the output = [X,Y,Z, Ln(ROT)], that
  * is, the normal
-  *  SO(3) logarithm is used for the rotation components, but the translation is
+ *  SO(3) logarithm is used for the rotation components, but the translation is
  * left unmodified.
-  */
+ */
 void SE_traits<3>::pseudo_ln(const CPose3D& P, array_t& x)
 {
 	x[0] = P.m_coords[0];
@@ -34,7 +34,7 @@ void SE_traits<3>::pseudo_ln(const CPose3D& P, array_t& x)
 
 /** Return one or both of the following 6x6 Jacobians, useful in graph-slam
  * problems...
-  */
+ */
 void SE_traits<3>::jacobian_dP1DP2inv_depsilon(
 	const CPose3D& P1DP2inv, matrix_VxV_t* df_de1, matrix_VxV_t* df_de2)
 {
@@ -103,9 +103,15 @@ void SE_traits<3>::jacobian_dP1DP2inv_depsilon(
 	}
 }
 
-/** Return one or both of the following 6x6 Jacobians, useful in graph-slam
- * problems...
-  */
+void SE_traits<3>::jacobian_dDinvP1invP2_depsilon(
+	const CPose3D& Dinv, const CPose3D& P1, const CPose3D& P2,
+	matrix_VxV_t* df_de1, matrix_VxV_t* df_de2)
+{
+	MRPT_TODO("Implement me!");
+	THROW_EXCEPTION("Implement me!");
+}
+
+
 void SE_traits<2>::jacobian_dP1DP2inv_depsilon(
 	const CPose2D& P1DP2inv, matrix_VxV_t* df_de1, matrix_VxV_t* df_de2)
 {
@@ -135,5 +141,50 @@ void SE_traits<2>::jacobian_dP1DP2inv_depsilon(
 
 		const double vals[] = {-ccos, csin, 0, -csin, -ccos, 0, 0, 0, -1};
 		J2 = CMatrixFixedNumeric<double, 3, 3>(vals);
+	}
+}
+
+void SE_traits<2>::jacobian_dDinvP1invP2_depsilon(
+	const CPose2D& Dinv, const CPose2D& P1, const CPose2D& P2,
+	matrix_VxV_t* df_de1, matrix_VxV_t* df_de2)
+{
+	using mrpt::math::TPoint2D;
+	const double phi1 = P1.phi();
+
+	const TPoint2D dt(P2.x() - P1.x(), P2.y() - P1.y());
+	const double si = std::sin(phi1), ci = std::cos(phi1);
+	
+	CMatrixDouble22 RotDinv;
+	Dinv.getRotationMatrix(RotDinv);
+	CMatrixDouble33  K; // zeros
+	K.block<2, 2>(0, 0) = RotDinv;
+	K(2, 2) = 1.0;
+
+	if (df_de1)
+	{
+		(*df_de1)(0, 0) = -ci;
+		(*df_de1)(0, 1) = -si;
+		(*df_de1)(0, 2) = -si * dt.x + ci * dt.y;
+		(*df_de1)(1, 0) = si;
+		(*df_de1)(1, 1) = -ci;
+		(*df_de1)(1, 2) = -ci * dt.x - si * dt.y;
+		(*df_de1)(2, 0) = 0;
+		(*df_de1)(2, 1) = 0;
+		(*df_de1)(2, 2) = -1;
+		(*df_de1) = K * (*df_de1);
+	}
+
+	if (df_de2)
+	{
+		(*df_de2)(0, 0) = ci;
+		(*df_de2)(0, 1) = si;
+		(*df_de2)(0, 2) = 0;
+		(*df_de2)(1, 0) = -si;
+		(*df_de2)(1, 1) = ci;
+		(*df_de2)(1, 2) = 0;
+		(*df_de2)(2, 0) = 0;
+		(*df_de2)(2, 1) = 0;
+		(*df_de2)(2, 2) = 1;
+		(*df_de2) = K * (*df_de2);
 	}
 }
