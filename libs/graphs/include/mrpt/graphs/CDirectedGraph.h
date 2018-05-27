@@ -86,7 +86,8 @@ class CDirectedGraph
 				   literal(">");
 		}
 	};
-
+	/** Underlying type for edge_t = TYPE_EDGES + annotations */
+	using edge_underlying_t = TYPE_EDGES;
 	/** The type of the member \a edges */
 	using edges_map_t = mrpt::aligned_std_multimap<TPairNodeIDs, edge_t>;
 	using iterator = typename edges_map_t::iterator;
