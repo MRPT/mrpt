@@ -30,7 +30,9 @@ using namespace std;
 using in_out_filenames = std::set<std::tuple<std::string, std::string>>;
 const std::map<std::string, in_out_filenames> inout_graph_files{
 	{"GraphTester2D",
-	 {{"graphslam_SE2_in.graph", "graphslam_SE2_out_good.graph"}}},
+	 {{"graphslam_SE2_in.graph", "graphslam_SE2_out_good.graph"},
+	  {"graphslam_SE2_in2.graph", "graphslam_SE2_out_good2.graph"},
+	  {"graphslam_SE2_in3.graph", "graphslam_SE2_out_good3.graph"}}},
 	{"GraphTester2DInf",
 	 {{"graphslam_SE2_in.graph", "graphslam_SE2_out_good.graph"},
 	  {"graphslam_SE2pdf_in.graph", "graphslam_SE2pdf_out_good.graph"}}}};
@@ -54,7 +56,7 @@ class GraphTester : public GraphSlamLevMarqTest<my_graph_t>,
 		//  Run graph slam:
 		// ----------------------------
 		mrpt::system::TParametersDouble params;
-		//params["verbose"] = 1;
+		// params["verbose"] = 1;
 		params["max_iterations"] = 100;
 
 		graphslam::TResultInfoSpaLevMarq levmarq_info;
