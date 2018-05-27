@@ -58,8 +58,8 @@ function build ()
     DISABLE_PYTHON_BINDINGS=OFF
   fi
 
-  #don't regenerate makefiles on stage 2
-  if [ "$STAGE" != "2" ]; then
+  # regenerate makefiles only on stage 1
+  if [ "$STAGE" == "1" ]; then
     do_generate_makefile \
       -DBUILD_EXAMPLES=On \
       -DBUILD_TESTING=On \
