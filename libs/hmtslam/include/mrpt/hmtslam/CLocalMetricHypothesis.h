@@ -20,6 +20,7 @@
 #include <mrpt/opengl/opengl_frwds.h>
 
 #include <list>
+#include <mutex>
 
 namespace mrpt
 {
