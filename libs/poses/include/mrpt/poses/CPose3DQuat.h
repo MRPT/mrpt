@@ -649,7 +649,44 @@ class CPose3DQuat : public CPose<CPose3DQuat>,
 		std::swap(o.m_coords, m_coords);
 		o.m_quat.swap(m_quat);
 	}
+	/** Templatized serializeTo function */
+	template <typename SCHEMA_CAPABLE>
+	SCHEMA_CAPABLE serializeTo() const
+	{
+		SCHEMA_CAPABLE out;
+		out["datatype"] = this->GetRuntimeClass()->className;
+		out["version"] = 1;
+		out["point"] = CPoint3D(m_coords[0],m_coords[1],m_coords[2]).serializeTo<SCHEMA_CAPABLE>();
+		out["orientation"] = m_quat.serializeTo<SCHEMA_CAPABLE>();
+		return out;	
+	}
 
+	/** Templatized serializeFrom function 
+	 * Serializes only if the datatype matched to className 
+	*/
+	template <typename SCHEMA_CAPABLE>
+	void serializeFrom(SCHEMA_CAPABLE& in)
+	{
+		uint8_t version = in.get("version",0);
+		if(in["datatype"] == this->GetRuntimeClass()->className)
+		{
+			switch(version)
+			{
+				case 1:
+				{
+					CPoint3D p;
+					p.serializeFrom<SCHEMA_CAPABLE>(in["point"]);
+					m_coords[0] = p.m_coords[0];
+					m_coords[1] = p.m_coords[1];
+					m_coords[2] = p.m_coords[2];
+					m_quat.serializeFrom<SCHEMA_CAPABLE>(in["orientation"]);
+				}
+				break;
+				default:
+					MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			}
+		}
+	}
 	/** @} */
 	//! See ops_containers.h
 	using mrpt_autotype = CPose3DQuat;

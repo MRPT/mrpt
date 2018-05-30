@@ -21,7 +21,7 @@ SET(EXECUTABLE_OUTPUT_PATH ".")
 #  http://www.mrpt.org/Libraries
 # Add the top-level dependencies only.
 # --------------------------------------------------------------------------
-FIND_PACKAGE(MRPT REQUIRED math;random;gui)
+FIND_PACKAGE(MRPT REQUIRED math;random;gui;config)
 
 # Define the executable target:
 ADD_EXECUTABLE(${sampleName} test.cpp  )

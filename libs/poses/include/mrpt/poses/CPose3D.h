@@ -10,6 +10,7 @@
 #define CPOSE3D_H
 
 #include <mrpt/poses/CPose.h>
+#include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/CQuaternion.h>
 #include <mrpt/system/string_utils.h>
@@ -766,6 +767,49 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 				format(
 					"Try to change the size of CPose3D to %u.",
 					static_cast<unsigned>(n)));
+	}
+
+	/** Templatized serializeTo function */
+	template <typename SCHEMA_CAPABLE>
+	SCHEMA_CAPABLE serializeTo() const
+	{
+		SCHEMA_CAPABLE out;
+		const CPose3DQuat q(*this);
+		out = q.serializeTo<SCHEMA_CAPABLE>();
+		//change the datatype to CPose3D
+		out["datatype"] = this->GetRuntimeClass()->className;
+		return out;	
+	}
+
+	/** Templatized serializeFrom function 
+	 * Serializes only if the datatype matched to className 
+	*/
+	template <typename SCHEMA_CAPABLE>
+	void serializeFrom(SCHEMA_CAPABLE& in)
+	{
+		uint8_t version = in.get("version",0);
+		if(in["datatype"] == this->GetRuntimeClass()->className)
+		{
+			switch(version)
+			{
+				case 1:
+				{
+					CPose3DQuat p(mrpt::math::UNINITIALIZED_QUATERNION);
+					in["datatype"] = p.GetRuntimeClass()->className;
+					p.serializeFrom<SCHEMA_CAPABLE>(in);
+					
+					//Extract XYZ + ROT from quaternion
+					m_ypr_uptodate = false;
+					m_coords[0] = p.x();
+					m_coords[1] = p.y();
+					m_coords[2] = p.z();
+					p.quat().rotationMatrixNoResize(m_ROT);
+				}
+				break;
+				default:
+					MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			}
+		}
 	}
 	/** @} */
 

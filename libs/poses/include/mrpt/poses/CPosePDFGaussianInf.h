@@ -193,7 +193,40 @@ class CPosePDFGaussianInf : public CPosePDF
 	{
 		this->inverseComposition(*this, ref);
 	}
+	/** Templatized serializeTo function */
+	template <typename SCHEMA_CAPABLE>
+	SCHEMA_CAPABLE serializeTo() const
+	{
+		SCHEMA_CAPABLE out;
+		out["datatype"] = this->GetRuntimeClass()->className;
+		out["version"] = 1;
+		out["mean"] = mean.serializeTo<SCHEMA_CAPABLE>();
+		out["cov"] = cov_inv.serializeTo<SCHEMA_CAPABLE>();
+		return out;	
+	}
 
+	/** Templatized serializeFrom function 
+	 * Serializes only if the datatype matched to className 
+	*/
+	template <typename SCHEMA_CAPABLE>
+	void serializeFrom(SCHEMA_CAPABLE& in)
+	{
+		uint8_t version = in.get("version",0);
+		if(in["datatype"] == this->GetRuntimeClass()->className)
+		{
+			switch(version)
+			{
+				case 1:
+				{
+					mean.serializeFrom<SCHEMA_CAPABLE>(in["mean"]);
+					cov_inv.serializeFrom<SCHEMA_CAPABLE>(in["cov"]);
+				}
+				break;
+				default:
+					MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			}
+		}
+	}
 };  // End of class def.
 
 bool operator==(const CPosePDFGaussianInf& p1, const CPosePDFGaussianInf& p2);

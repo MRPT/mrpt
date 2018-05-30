@@ -72,6 +72,40 @@ class CPoint2D : public CPoint<CPoint2D>,
 		m_coords[2] = 0;
 	}
 
+	/** Templatized serializeTo function */
+	template <typename SCHEMA_CAPABLE>
+	SCHEMA_CAPABLE serializeTo() const
+	{
+		SCHEMA_CAPABLE out;
+		out["datatype"] = this->GetRuntimeClass()->className;
+		out["version"] = 1;
+		out["x"] = m_coords[0];
+		out["y"] = m_coords[1];
+		return out;	
+	}
+
+	/** Templatized serializeFrom function 
+	 * Serializes only if the datatype matched to className 
+	*/
+	template <typename SCHEMA_CAPABLE>
+	void serializeFrom(SCHEMA_CAPABLE& in)
+	{
+		uint8_t version = in.get("version",0);
+		if(in["datatype"] == this->GetRuntimeClass()->className)
+		{
+			switch(version)
+			{
+				case 1:
+				{
+					m_coords[0] = in["x"];
+					m_coords[1] = in["y"];
+				}
+				break;
+				default:
+					MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			}
+		}
+	}
 	mrpt::math::TPoint2D asTPoint() const;
 
 	/** The operator D="this"-b is the pose inverse compounding operator,
