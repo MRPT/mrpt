@@ -495,6 +495,44 @@ class CQuaternion : public CArrayNumeric<T, 4>
 		q *= factor;
 		return q;
 	}
+	/** Templatized serializeTo function */
+	template <typename SCHEMA_CAPABLE>
+	SCHEMA_CAPABLE serializeTo() const
+	{
+		SCHEMA_CAPABLE out;
+		out["datatype"] = "CQuaternion";
+		out["version"] = 1;
+		out["r"] = (*this)[0];
+		out["x"] = (*this)[1];
+		out["y"] = (*this)[2];
+		out["z"] = (*this)[3];
+		return out;	
+	}
+
+	/** Templatized serializeFrom function 
+	 * Serializes only if the datatype matched to className 
+	*/
+	template <typename SCHEMA_CAPABLE>
+	void serializeFrom(SCHEMA_CAPABLE& in)
+	{
+		uint8_t version = in.get("version",0);
+		if(in["datatype"] == "CQuaternion")
+		{
+			switch(version)
+			{
+				case 1:
+				{
+					(*this)[0] = in["r"];
+					(*this)[1] = in["x"];
+					(*this)[2] = in["y"];
+					(*this)[3] = in["z"];
+				}
+				break;
+				default:
+					MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			}
+		}
+	}
 
 };  // end class
 

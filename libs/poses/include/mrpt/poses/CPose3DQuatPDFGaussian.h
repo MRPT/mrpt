@@ -159,7 +159,41 @@ class CPose3DQuatPDFGaussian : public CPose3DQuatPDF
 	  *   "infinity" is returned if the corresponding elements are not exactly
 	 * equal. */
 	double mahalanobisDistanceTo(const CPose3DQuatPDFGaussian& theOther);
+	
+	/** Templatized serializeTo function */
+	template <typename SCHEMA_CAPABLE>
+	SCHEMA_CAPABLE serializeTo() const
+	{
+		SCHEMA_CAPABLE out;
+		out["datatype"] = this->GetRuntimeClass()->className;
+		out["version"] = 1;
+		out["mean"] = mean.serializeTo<SCHEMA_CAPABLE>();
+		out["cov"] = cov.serializeTo<SCHEMA_CAPABLE>();
+		return out;	
+	}
 
+	/** Templatized serializeFrom function 
+	 * Serializes only if the datatype matched to className 
+	*/
+	template <typename SCHEMA_CAPABLE>
+	void serializeFrom(SCHEMA_CAPABLE& in)
+	{
+		uint8_t version = in.get("version",0);
+		if(in["datatype"] == this->GetRuntimeClass()->className)
+		{
+			switch(version)
+			{
+				case 1:
+				{
+					mean.serializeFrom<SCHEMA_CAPABLE>(in["mean"]);
+					cov.serializeFrom<SCHEMA_CAPABLE>(in["cov"]);
+				}
+				break;
+				default:
+					MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			}
+		}
+	}
 };  // End of class def.
 
 bool operator==(

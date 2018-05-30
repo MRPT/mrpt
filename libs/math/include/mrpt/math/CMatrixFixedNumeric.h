@@ -96,6 +96,48 @@ class CMatrixFixedNumeric
 	{
 		return !((*this) == m2);
 	}
+	/** Templatized serializeTo function */
+	template <typename SCHEMA_CAPABLE>
+	SCHEMA_CAPABLE serializeTo() const
+	{
+		SCHEMA_CAPABLE out;
+		out["datatype"] = "CMatrixFixedNumeric";
+		out["version"] = 1;
+		out["nrows"] = NROWS;
+		out["ncols"] = NCOLS;
+		for(int i = 0; i < NROWS; i++)
+			for(int j = 0; j < NCOLS; j++)
+				out["data"][i][j] = (*this)(i,j);
+		return out;	
+	}
+
+	/** Templatized serializeFrom function 
+	 * Serializes only if the datatype matched to className 
+	*/
+	template <typename SCHEMA_CAPABLE>
+	void serializeFrom(SCHEMA_CAPABLE& in)
+	{
+		uint8_t version = in.get("version",0);
+		if(in["datatype"] == "CMatrixFixedNumeric")
+		{
+			switch(version)
+			{
+				case 1:
+				{
+					size_t nrows = in["nrows"];
+					size_t ncols = in["ncols"];
+					if(ncols == NCOLS && nrows == NROWS){
+						for(int i = 0; i < NROWS; i++)
+							for(int j = 0; j < NCOLS; j++)
+								(*this)(i,j) = in["data"][i][j];
+					}
+				}
+				break;
+				default:
+					MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			}
+		}
+	}
 
 };  // end of class definition ------------------------------
 
