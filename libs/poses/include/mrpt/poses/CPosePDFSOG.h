@@ -214,7 +214,7 @@ class CPosePDFSOG : public CPosePDF
 	 * and p2 a mrpt::poses::CPosePDFGaussian object) */
 	void bayesianFusion(
 		const CPosePDF& p1, const CPosePDF& p2,
-		const double& minMahalanobisDistToDrop = 0) override;
+		const double minMahalanobisDistToDrop = 0) override;
 	
 	/** Templatized serializeTo function */
 	template <typename SCHEMA_CAPABLE>

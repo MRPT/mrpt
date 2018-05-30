@@ -112,7 +112,7 @@ class CPose3DPDFParticles
 			it != m_particles.end(); ++it)
 			{
 				out["particles"][k]["log_w"] = it->log_w;
-				out["particles"][k]["pose"] = it->d->serializeTo<SCHEMA_CAPABLE>();
+				out["particles"][k]["pose"] = it->d.serializeTo<SCHEMA_CAPABLE>();
 				++k;
 			}
 				
@@ -133,14 +133,14 @@ class CPose3DPDFParticles
 				case 1:
 				{
 					uint32_t N = in["N"];
-					CPose3D pose;
+					mrpt::math::TPose3D pose;
 					resetDeterministic(pose, N);
 					int k = 0;
 					for(CParticleList::const_iterator it = m_particles.begin();
 						it != m_particles.end(); ++it)
 						{
 							it->log_w = in["particles"][k]["log_w"];
-							it->d->serializeFrom<SCHEMA_CAPABLE>(in["particles"][k]["pose"]);
+							it->d.serializeFrom<SCHEMA_CAPABLE>(in["particles"][k]["pose"]);
 							++k;
 						}
 				}
