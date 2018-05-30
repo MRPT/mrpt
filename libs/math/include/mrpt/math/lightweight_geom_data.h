@@ -177,6 +177,40 @@ struct TPoint2D : public TPoseOrPoint
 	static size_t size() { return 2; }
 	/** Point norm. */
 	double norm() const { return sqrt(square(x) + square(y)); }
+	/** templatized serializeTo function*/
+	template <typename SCHEMA_CAPABLE>
+	SCHEMA_CAPABLE serializeTo() const
+	{
+		SCHEMA_CAPABLE out;
+		out["datatype"] = "TPoint2D";
+		out["version"] = 1;
+		out["x"] = x;
+		out["y"] = y;
+		return out;	
+	}
+
+	/** Templatized serializeFrom function 
+	 * Serializes only if the datatype matched to className 
+	*/
+	template <typename SCHEMA_CAPABLE>
+	void serializeFrom(SCHEMA_CAPABLE& in)
+	{
+		uint8_t version = in.get("version",0);
+		if(in["datatype"] == "TPoint2D")
+		{
+			switch(version)
+			{
+				case 1:
+				{
+					x = in["x"];
+					y = in["y"];
+				}
+				break;
+				default:
+					MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			}
+		}
+	}
 };
 
 /**
@@ -307,6 +341,43 @@ struct TPose2D : public TPoseOrPoint
 	void fromString(const std::string& s);
 
 	constexpr static size_t size() { return 3; }
+	
+	/** templatized serializeTo function*/
+	template <typename SCHEMA_CAPABLE>
+	SCHEMA_CAPABLE serializeTo() const
+	{
+		SCHEMA_CAPABLE out;
+		out["datatype"] = "TPose2D";
+		out["version"] = 1;
+		out["x"] = x;
+		out["y"] = y;
+		out["phi"] = phi;
+		return out;	
+	}
+
+	/** Templatized serializeFrom function 
+	 * Serializes only if the datatype matched to className 
+	*/
+	template <typename SCHEMA_CAPABLE>
+	void serializeFrom(SCHEMA_CAPABLE& in)
+	{
+		uint8_t version = in.get("version",0);
+		if(in["datatype"] == "TPose2D")
+		{
+			switch(version)
+			{
+				case 1:
+				{
+					x = in["x"];
+					y = in["y"];
+					phi = in["phi"];
+				}
+				break;
+				default:
+					MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			}
+		}
+	}
 };
 
 /** Lightweight 3D point (float version).
@@ -367,6 +438,42 @@ struct TPoint3Df : public TPoseOrPoint
 				return z;
 			default:
 				throw std::out_of_range("index out of range");
+		}
+	}
+	/** templatized serializeTo function*/
+	template <typename SCHEMA_CAPABLE>
+	SCHEMA_CAPABLE serializeTo() const
+	{
+		SCHEMA_CAPABLE out;
+		out["datatype"] = "TPoint3Df";
+		out["version"] = 1;
+		out["x"] = x;
+		out["y"] = y;
+		out["z"] = z;
+		return out;	
+	}
+
+	/** Templatized serializeFrom function 
+	 * Serializes only if the datatype matched to className 
+	*/
+	template <typename SCHEMA_CAPABLE>
+	void serializeFrom(SCHEMA_CAPABLE& in)
+	{
+		uint8_t version = in.get("version",0);
+		if(in["datatype"] == "TPoint3Df")
+		{
+			switch(version)
+			{
+				case 1:
+				{
+					x = in["x"];
+					y = in["y"];
+					z = in["z"];
+				}
+				break;
+				default:
+					MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			}
 		}
 	}
 };
@@ -545,6 +652,43 @@ struct TPoint3D : public TPoseOrPoint
 	 */
 	void fromString(const std::string& s);
 	static constexpr size_t size() { return 3; }
+	
+	/** templatized serializeTo function*/
+	template <typename SCHEMA_CAPABLE>
+	SCHEMA_CAPABLE serializeTo() const
+	{
+		SCHEMA_CAPABLE out;
+		out["datatype"] = "TPoint3D";
+		out["version"] = 1;
+		out["x"] = x;
+		out["y"] = y;
+		out["z"] = z;
+		return out;	
+	}
+
+	/** Templatized serializeFrom function 
+	 * Serializes only if the datatype matched to className 
+	*/
+	template <typename SCHEMA_CAPABLE>
+	void serializeFrom(SCHEMA_CAPABLE& in)
+	{
+		uint8_t version = in.get("version",0);
+		if(in["datatype"] == "TPoint3D")
+		{
+			switch(version)
+			{
+				case 1:
+				{
+					x = in["x"];
+					y = in["y"];
+					z = in["z"];
+				}
+				break;
+				default:
+					MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			}
+		}
+	}
 };
 
 /** XYZ point (double) + Intensity(u8) \sa mrpt::math::TPoint3D */
@@ -750,6 +894,48 @@ struct TPose3D : public TPoseOrPoint
 	 */
 	void fromString(const std::string& s);
 	static size_t size() { return 6; }
+	/** templatized serializeTo function*/
+	template <typename SCHEMA_CAPABLE>
+	SCHEMA_CAPABLE serializeTo() const
+	{
+		SCHEMA_CAPABLE out;
+		out["datatype"] = "TPose3D";
+		out["version"] = 1;
+		out["x"] = x;
+		out["y"] = y;
+		out["z"] = z;
+		out["roll"] = roll;
+		out["pitch"] = pitch;
+		out["yaw"] = yaw;
+		return out;	
+	}
+
+	/** Templatized serializeFrom function 
+	 * Serializes only if the datatype matched to className 
+	*/
+	template <typename SCHEMA_CAPABLE>
+	void serializeFrom(SCHEMA_CAPABLE& in)
+	{
+		uint8_t version = in.get("version",0);
+		if(in["datatype"] == "TPose3D")
+		{
+			switch(version)
+			{
+				case 1:
+				{
+					x = in["x"];
+					y = in["y"];
+					z = in["z"];
+					roll = in["roll"];
+					pitch = in["pitch"];
+					yaw = in["yaw"];
+				}
+				break;
+				default:
+					MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			}
+		}
+	}	
 };
 
 /** Unary $\ominus\$ operator: computes inverse SE(3) element */
@@ -858,6 +1044,51 @@ struct TPose3DQuat : public TPoseOrPoint
 	 */
 	void fromString(const std::string& s);
 	static size_t size() { return 7; }
+	/** templatized serializeTo function*/
+	template <typename SCHEMA_CAPABLE>
+	SCHEMA_CAPABLE serializeTo() const
+	{
+		SCHEMA_CAPABLE out;
+		out["datatype"] = "TPose3DQuat";
+		out["version"] = 1;
+		out["x"] = x;
+		out["y"] = y;
+		out["z"] = z;
+		out["qr"] = qr;
+		out["qx"] = qx;
+		out["qy"] = qy;
+		out["qz"] = qz;
+		return out;	
+	}
+
+	/** Templatized serializeFrom function 
+	 * Serializes only if the datatype matched to className 
+	*/
+	template <typename SCHEMA_CAPABLE>
+	void serializeFrom(SCHEMA_CAPABLE& in)
+	{
+		uint8_t version = in.get("version",0);
+		if(in["datatype"] == "TPose3DQuat")
+		{
+			switch(version)
+			{
+				case 1:
+				{
+					x = in["x"];
+					y = in["y"];
+					z = in["z"];
+					qr = in["qr"];
+					qx = in["qx"];
+					qy = in["qy"];
+					qz = in["qz"];
+
+				}
+				break;
+				default:
+					MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			}
+		}
+	}
 };
 
 // Text streaming functions:

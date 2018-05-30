@@ -87,6 +87,49 @@ class CPoses2DSequence : public mrpt::serialization::CSerializable
 	 */
 	mrpt::aligned_std_vector<CPose2D> poses;
 
+	public:
+	/** Templatized serializeTo function */
+	template <typename SCHEMA_CAPABLE>
+	SCHEMA_CAPABLE serializeTo() const
+	{
+		SCHEMA_CAPABLE out;
+		out["datatype"] = this->GetRuntimeClass()->className;
+		out["version"] = 1;
+		out["N"] = (uint32_t)poses.size();
+		int k = 0;
+		for (const auto& p : poses)
+			{
+				out["sequence"][k] = p.serializeTo<SCHEMA_CAPABLE>();
+				++k;
+			}
+				
+		return out;	
+	}
+
+	/** Templatized serializeFrom function 
+	 * Serializes only if the datatype matched to className 
+	*/
+	template <typename SCHEMA_CAPABLE>
+	void serializeFrom(SCHEMA_CAPABLE& in)
+	{
+		uint8_t version = in.get("version",0);
+		if(in["datatype"] == this->GetRuntimeClass()->className)
+		{
+			switch(version)
+			{
+				case 1:
+				{
+					uint32_t N = in["N"];
+					poses.resize(N);
+					int k = 0;
+					for (auto& p : poses) p.serializeFrom<SCHEMA_CAPABLE>(in["sequence"][k]),++k;
+				}
+				break;
+				default:
+					MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			}
+		}
+	}
 };  // End of class def.
 }
 

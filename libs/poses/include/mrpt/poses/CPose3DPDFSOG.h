@@ -144,6 +144,54 @@ class CPose3DPDFSOG : public CPose3DPDF
 	/** Append the Gaussian modes from "o" to the current set of modes of "this"
 	 * density */
 	void appendFrom(const CPose3DPDFSOG& o);
+	
+	/** Templatized serializeTo function */
+	template <typename SCHEMA_CAPABLE>
+	SCHEMA_CAPABLE serializeTo() const
+	{
+		SCHEMA_CAPABLE out;
+		out["datatype"] = this->GetRuntimeClass()->className;
+		out["version"] = 1;
+		out["N"] = (uint32_t)m_modes.size();
+		int k = 0;
+		for (const auto& m : m_modes)
+		{
+			out["modes"][k]["log_w"] = m.log_w;
+			out["modes"][k]["val"] = m.val.serializeTo<SCHEMA_CAPABLE>();
+			++k;
+		}
+		return out;	
+	}
+
+	/** Templatized serializeFrom function 
+	 * Serializes only if the datatype matched to className 
+	*/
+	template <typename SCHEMA_CAPABLE>
+	void serializeFrom(SCHEMA_CAPABLE& in)
+	{
+		uint8_t version = in.get("version",0);
+		if(in["datatype"] == this->GetRuntimeClass()->className)
+		{
+			switch(version)
+			{
+				case 1:
+				{
+					uint32_t N = in["N"];
+					this->resize(N);
+					int k = 0;
+					for (auto& m : m_modes)
+					{
+						m.log_w = in["modes"][k]["log_w"];
+						m.val.serializeFrom<SCHEMA_CAPABLE>(in["modes"][k]["val"]); 
+						++k;
+					}
+				}
+				break;
+				default:
+					MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			}
+		}
+	}
 
 };  // End of class def.
 }

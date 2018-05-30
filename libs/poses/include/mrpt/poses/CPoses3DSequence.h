@@ -86,7 +86,49 @@ class CPoses3DSequence : public mrpt::serialization::CSerializable
 	 * first one is referenced to (0,0,0deg)
 	 */
 	std::vector<mrpt::math::TPose3D> m_poses;
+	public:
+	/** Templatized serializeTo function */
+	template <typename SCHEMA_CAPABLE>
+	SCHEMA_CAPABLE serializeTo() const
+	{
+		SCHEMA_CAPABLE out;
+		out["datatype"] = this->GetRuntimeClass()->className;
+		out["version"] = 1;
+		out["N"] = (uint32_t)m_poses.size();
+		int k = 0;
+		for (const auto& p : m_poses)
+			{
+				out["sequence"][k] = p.serializeTo<SCHEMA_CAPABLE>();
+				++k;
+			}
+				
+		return out;	
+	}
 
+	/** Templatized serializeFrom function 
+	 * Serializes only if the datatype matched to className 
+	*/
+	template <typename SCHEMA_CAPABLE>
+	void serializeFrom(SCHEMA_CAPABLE& in)
+	{
+		uint8_t version = in.get("version",0);
+		if(in["datatype"] == this->GetRuntimeClass()->className)
+		{
+			switch(version)
+			{
+				case 1:
+				{
+					uint32_t N = in["N"];
+					m_poses.resize(N);
+					int k = 0;
+					for (auto& p : m_poses) p.serializeFrom<SCHEMA_CAPABLE>(in["sequence"][k]),++k;
+				}
+				break;
+				default:
+					MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			}
+		}
+	}
 };  // End of class def.
 }
 #endif

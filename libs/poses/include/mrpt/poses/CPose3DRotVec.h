@@ -534,6 +534,48 @@ class CPose3DRotVec : public CPose<CPose3DRotVec>,
 				"Try to change the size of CPose3DRotVec to %u.",
 				static_cast<unsigned>(n)));
 	}
+	/** Templatized serializeTo function */
+	template <typename SCHEMA_CAPABLE>
+	SCHEMA_CAPABLE serializeTo() const
+	{
+		SCHEMA_CAPABLE out;
+		out["datatype"] = this->GetRuntimeClass()->className;
+		out["version"] = 1;
+		out["x"] = m_coords[0];
+		out["y"] = m_coords[1];
+		out["z"] = m_coords[2];
+		out["vx"] = m_rotvec[0];
+		out["vy"] = m_rotvec[1];
+		out["vz"] = m_rotvec[2];
+		return out;	
+	}
+
+	/** Templatized serializeFrom function 
+	 * Serializes only if the datatype matched to className 
+	*/
+	template <typename SCHEMA_CAPABLE>
+	void serializeFrom(SCHEMA_CAPABLE& in)
+	{
+		uint8_t version = in.get("version",0);
+		if(in["datatype"] == this->GetRuntimeClass()->className)
+		{
+			switch(version)
+			{
+				case 1:
+				{
+					m_coords[0] = in["x"];
+					m_coords[1] = in["y"];
+					m_coords[2] = in["z"];
+					m_rotvec[0] = in["vx"];
+					m_rotvec[1] = in["vy"];
+					m_rotvec[2] = in["vz"];
+				}
+				break;
+				default:
+					MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			}
+		}
+	}
 	/** @} */
 
 };  // End of class def.

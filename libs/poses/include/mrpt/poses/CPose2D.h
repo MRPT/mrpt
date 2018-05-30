@@ -341,6 +341,43 @@ class CPose2D : public CPose<CPose2D>, public mrpt::serialization::CSerializable
 				"Try to change the size of CPose2D to %u.",
 				static_cast<unsigned>(n)));
 	}
+	
+	/** Templatized serializeTo function */
+	template <typename SCHEMA_CAPABLE>
+	SCHEMA_CAPABLE serializeTo() const
+	{
+		SCHEMA_CAPABLE out;
+		out["datatype"] = this->GetRuntimeClass()->className;
+		out["version"] = 1;
+		out["x"] = m_coords[0];
+		out["y"] = m_coords[1];
+		out["phi"] = m_phi;
+		return out;	
+	}
+
+	/** Templatized serializeFrom function 
+	 * Serializes only if the datatype matched to className 
+	*/
+	template <typename SCHEMA_CAPABLE>
+	void serializeFrom(SCHEMA_CAPABLE& in)
+	{
+		uint8_t version = in.get("version",0);
+		if(in["datatype"] == this->GetRuntimeClass()->className)
+		{
+			switch(version)
+			{
+				case 1:
+				{
+					m_coords[0] = in["x"];
+					m_coords[1] = in["y"];
+					m_phi = in["phi"];
+				}
+				break;
+				default:
+					MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			}
+		}
+	}
 
 	/** @} */
 

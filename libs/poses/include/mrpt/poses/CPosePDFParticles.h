@@ -174,6 +174,57 @@ class CPosePDFParticles
 		const double y_min, const double y_max, const double phi,
 		const double stepSizeXY, const double stdXY, const double stdPhi) const;
 
+	/** Templatized serializeTo function */
+	template <typename SCHEMA_CAPABLE>
+	SCHEMA_CAPABLE serializeTo() const
+	{
+		SCHEMA_CAPABLE out;
+		out["datatype"] = this->GetRuntimeClass()->className;
+		out["version"] = 1;
+		out["N"] = (uint32_t)size();
+		int k = 0;
+		for(CParticleList::const_iterator it = m_particles.begin();
+			it != m_particles.end(); ++it)
+			{
+				out["particles"][k]["log_w"] = it->log_w;
+				out["particles"][k]["pose"] = it->d.serializeTo<SCHEMA_CAPABLE>();
+				++k;
+			}
+				
+		return out;	
+	}
+
+	/** Templatized serializeFrom function 
+	 * Serializes only if the datatype matched to className 
+	*/
+	template <typename SCHEMA_CAPABLE>
+	void serializeFrom(SCHEMA_CAPABLE& in)
+	{
+		uint8_t version = in.get("version",0);
+		if(in["datatype"] == this->GetRuntimeClass()->className)
+		{
+			switch(version)
+			{
+				case 1:
+				{
+					uint32_t N = in["N"];
+					mrpt::math::TPose2D pose;
+					resetDeterministic(pose, N);
+					int k = 0;
+					for(CParticleList::const_iterator it = m_particles.begin();
+						it != m_particles.end(); ++it)
+						{
+							it->log_w = in["particles"][k]["log_w"];
+							it->d.serializeFrom<SCHEMA_CAPABLE>(in["particles"][k]["pose"]);
+							++k;
+						}
+				}
+				break;
+				default:
+					MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			}
+		}
+	}
 };  // End of class def.
 
 }

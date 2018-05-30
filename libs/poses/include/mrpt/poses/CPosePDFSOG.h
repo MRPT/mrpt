@@ -215,7 +215,56 @@ class CPosePDFSOG : public CPosePDF
 	void bayesianFusion(
 		const CPosePDF& p1, const CPosePDF& p2,
 		const double minMahalanobisDistToDrop = 0) override;
+	
+	/** Templatized serializeTo function */
+	template <typename SCHEMA_CAPABLE>
+	SCHEMA_CAPABLE serializeTo() const
+	{
+		SCHEMA_CAPABLE out;
+		out["datatype"] = this->GetRuntimeClass()->className;
+		out["version"] = 1;
+		out["N"] = (uint32_t)m_modes.size();
+		int k = 0;
+		for (const auto& m : m_modes)
+		{
+			out["modes"][k]["log_w"] = m.log_w;
+			out["modes"][k]["mean"] = m.mean.serializeTo<SCHEMA_CAPABLE>();
+			out["modes"][k]["cov"] = m.cov.serializeTo<SCHEMA_CAPABLE>();
+			++k;
+		}
+		return out;	
+	}
 
+	/** Templatized serializeFrom function 
+	 * Serializes only if the datatype matched to className 
+	*/
+	template <typename SCHEMA_CAPABLE>
+	void serializeFrom(SCHEMA_CAPABLE& in)
+	{
+		uint8_t version = in.get("version",0);
+		if(in["datatype"] == this->GetRuntimeClass()->className)
+		{
+			switch(version)
+			{
+				case 1:
+				{
+					uint32_t N = in["N"];
+					this->resize(N);
+					int k = 0;
+					for (auto& m : m_modes)
+					{
+						m.log_w = in["modes"][k]["log_w"];
+						m.mean.serializeFrom<SCHEMA_CAPABLE>(in["modes"][k]["mean"]);
+						m.cov.serializeFrom<SCHEMA_CAPABLE>(in["modes"][k]["cov"]); 
+						++k;
+					}
+				}
+				break;
+				default:
+					MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			}
+		}
+	}
 };  // End of class def.
 }
 #endif
