@@ -11,11 +11,7 @@
 
 #include <mrpt/img/TColorManager.h>
 
-namespace mrpt
-{
-namespace graphs
-{
-namespace detail
+namespace mrpt::graphs::detail
 {
 // (Dummy) standard version
 // vvvvvvvvvvvvvvvvvvvvvvvv
@@ -282,9 +278,9 @@ void CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations,
 	{
 		object->insert(it->second);
 	}
-}  // end of drawEdges
-}
 }
 }  // end of namespaces
 
 #endif /* end of include guard: CMRVISUALIZER_IMPL_H */
+
+

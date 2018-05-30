@@ -11,9 +11,7 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 /**  This class is a "CSerializable" wrapper for
  * "CMatrixTemplateNumeric<double>".
@@ -65,5 +63,5 @@ class CMatrixD : public mrpt::serialization::CSerializable,
 mrpt::serialization::CArchive& operator>>(
 	mrpt::serialization::CArchive& in, CMatrixD::Ptr& pObj);
 
-}  // End of namespace
-}  // End of namespace
+}
+

@@ -17,12 +17,15 @@
 #include <string>
 #include <type_traits>  // remove_reference_t, is_polymorphic
 #include <stdexcept>
-#include <mrpt/rtti/variant.h>
 #include <mrpt/typemeta/TTypeName.h>
+#include <variant>
 
-namespace mrpt
-{
-namespace serialization
+// See: https://gcc.gnu.org/viewcvs/gcc?view=revision&revision=258854
+#if defined(__clang__) && (__GLIBCXX__ <= 20180419)
+#define HAS_BROKEN_CLANG_STD_VISIT
+#endif
+
+namespace mrpt::serialization
 {
 class CMessage;
 
@@ -244,7 +247,7 @@ class CArchive
 	 * object raises a plain std::exception instead.
 	 */
 	template <typename... T>
-	typename mrpt::rtti::variant<T...> ReadVariant()
+	typename std::variant<T...> ReadVariant()
 	{
 		CSerializable::Ptr obj;
 		std::string strClassName;
@@ -264,21 +267,23 @@ class CArchive
 		internal_ReadObject(obj.get(), strClassName, isOldFormat, version);
 		if (!obj)
 		{
-			return mrpt::rtti::variant<T...>();
+			return std::variant<T...>();
 		}
 		else
 		{
-			return ReadVariant_helper<mrpt::rtti::variant<T...>, T...>(obj);
+			return ReadVariant_helper<std::variant<T...>, T...>(obj);
 		}
 	}
 
+#ifndef HAS_BROKEN_CLANG_STD_VISIT
 	/** Writes a Variant to the stream.
 	 */
 	template <typename T>
 	void WriteVariant(T t)
 	{
-		t.match([&](auto& o) { this->WriteObject(o); });
+		std::visit([&](auto& o) { this->WriteObject(o); }, t);
 	}
+#endif
 
 	/** Reads a simple POD type and returns by value. Useful when `stream >>
 	 * var;`
@@ -471,15 +476,14 @@ CArchive& operator>>(CArchive& in, typename std::shared_ptr<T>& pObj)
 }
 
 template <typename... T>
-CArchive& operator>>(CArchive& in, typename mrpt::rtti::variant<T...>& pObj)
+CArchive& operator>>(CArchive& in, typename std::variant<T...>& pObj)
 {
 	pObj = in.ReadVariant<T...>();
 	return in;
 }
 
 template <typename... T>
-CArchive& operator<<(
-	CArchive& out, const typename mrpt::rtti::variant<T...>& pObj)
+CArchive& operator<<(CArchive& out, const typename std::variant<T...>& pObj)
 {
 	pObj.match([&](auto& t) { out << t; });
 	return out;
@@ -548,6 +552,6 @@ CArchiveStreamBase<STREAM> archiveFrom(STREAM& s)
 {
 	return CArchiveStreamBase<STREAM>(s);
 }
-
-}  // namespace serialization
 }  // namespace mrpt
+
+

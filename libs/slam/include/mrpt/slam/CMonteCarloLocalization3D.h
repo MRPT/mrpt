@@ -14,9 +14,7 @@
 #include <mrpt/slam/TMonteCarloLocalizationParams.h>
 #include <mrpt/obs/obs_frwds.h>
 
-namespace mrpt
-{
-namespace slam
+namespace mrpt::slam
 {
 /** Declares a class that represents a Probability Density Function (PDF) over a
  * 3D pose (x,y,phi,yaw,pitch,roll), using a set of weighted samples.
@@ -31,7 +29,9 @@ namespace slam
  */
 class CMonteCarloLocalization3D
 	: public mrpt::poses::CPose3DPDFParticles,
-	  public PF_implementation<mrpt::poses::CPose3D, CMonteCarloLocalization3D>
+	  public PF_implementation<
+		  mrpt::math::TPose3D, CMonteCarloLocalization3D,
+		  mrpt::bayes::particle_storage_mode::VALUE>
 {
    public:
 	/** MCL parameters */
@@ -122,7 +122,7 @@ class CMonteCarloLocalization3D
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

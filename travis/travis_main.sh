@@ -17,7 +17,7 @@ BUILD_DIR=/build
 
 CMAKE_C_FLAGS="-Wall -Wextra -Wabi"
 CMAKE_CXX_FLAGS="-Wall -Wextra -Wabi"
-EXTRA_CMAKE_ARGS="-DDISABLE_PCL=ON"  # PCL causes link errors (?!)
+EXTRA_CMAKE_ARGS=""
 
 function install_lint_reqs()
 {
@@ -58,8 +58,8 @@ function build ()
     DISABLE_PYTHON_BINDINGS=OFF
   fi
 
-  #don't regenerate makefiles on stage 2
-  if [ "$STAGE" != "2" ]; then
+  # regenerate makefiles only on stage 1
+  if [ "$STAGE" == "1" ]; then
     do_generate_makefile \
       -DBUILD_EXAMPLES=On \
       -DBUILD_TESTING=On \

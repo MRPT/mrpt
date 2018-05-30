@@ -13,9 +13,7 @@
 #include <mrpt/img/CImage.h>
 #include <mrpt/core/safe_pointers.h>
 
-namespace mrpt
-{
-namespace vision
+namespace mrpt::vision
 {
 /**  An output stream which takes a sequence of images and writes a video file
  * in any of a given of compatible formats.
@@ -95,7 +93,7 @@ class CVideoFileWriter
 
 };  // end of class
 
-}  // end of namespace
-}  // end of namespace
-
+}
 #endif
+
+

@@ -18,11 +18,7 @@
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/img/TColor.h>
 
-namespace mrpt
-{
-namespace opengl
-{
-namespace graph_tools
+namespace mrpt::opengl::graph_tools
 {
 template <class GRAPH_T>
 CSetOfObjects::Ptr graph_visualize(
@@ -227,9 +223,8 @@ CSetOfObjects::Ptr graph_visualize(
 
 	MRPT_TRY_END
 }
-
-}  // namespace graph_tools
-}  // namespace opengl
 }  // namespace mrpt
 
 #endif
+
+

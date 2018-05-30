@@ -12,9 +12,7 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/obs/CObservation.h>
 
-namespace mrpt
-{
-namespace obs
+namespace mrpt::obs
 {
 /** This "observation" is actually a placeholder for a text block with comments
  * or additional parameters attached to a given rawlog file.
@@ -45,7 +43,7 @@ class CObservationComment : public CObservation
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

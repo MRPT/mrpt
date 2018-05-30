@@ -19,9 +19,7 @@
 
 #include <mrpt/opengl/CSetOfObjects.h>
 
-namespace mrpt
-{
-namespace maps
+namespace mrpt::maps
 {
 class CBeaconMap;
 
@@ -145,7 +143,7 @@ class CBeacon : public mrpt::poses::CPointPDF
 	 */
 	void bayesianFusion(
 		const CPointPDF& p1, const CPointPDF& p2,
-		const double& minMahalanobisDistToDrop = 0) override;
+		const double minMahalanobisDistToDrop = 0) override;
 
 	/** Compute the observation model p(z_t|x_t) for a given observation (range
 	 * value), and return it as an approximate SOG.
@@ -192,7 +190,7 @@ class CBeacon : public mrpt::poses::CPointPDF
 
 };  // End of class definition
 
-}  // namespace maps
-}  // namespace mrpt
-
+}
 #endif
+
+

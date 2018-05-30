@@ -27,6 +27,7 @@
 #include <map>
 #include <list>
 #include <algorithm>
+#include <functional>
 #include <stdio.h>
 #include <cstring>
 #include <mrpt/core/common.h>
@@ -46,11 +47,7 @@
 #define SI_ASSERT(x)
 #endif
 
-namespace mrpt
-{
-namespace config
-{
-namespace simpleini
+namespace mrpt::config::simpleini
 {
 enum SI_Error
 {
@@ -147,7 +144,7 @@ class CSimpleIniTempl
 #endif
 
 		/** Strict less ordering by name of key only */
-		struct KeyOrder : std::binary_function<Entry, Entry, bool>
+		struct KeyOrder : std::function<bool(Entry, Entry)>
 		{
 			bool operator()(const Entry& lhs, const Entry& rhs) const
 			{
@@ -157,7 +154,7 @@ class CSimpleIniTempl
 		};
 
 		/** Strict less ordering by order, and then name of key */
-		struct LoadOrder : std::binary_function<Entry, Entry, bool>
+		struct LoadOrder : std::function<bool(Entry, Entry)>
 		{
 			bool operator()(const Entry& lhs, const Entry& rhs) const
 			{
@@ -2423,8 +2420,7 @@ using MRPT_CSimpleIni =
 #define SI_NEWLINE SI_NEWLINE_A
 #endif  // _UNICODE
 
-}  // namespace simpleini
-}  // namespace config
-}  // namespace mrpt
-
+}
 #endif  // INCLUDED_SimpleIni_h
+
+

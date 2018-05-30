@@ -13,9 +13,7 @@
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/typemeta/TEnumType.h>
 
-namespace mrpt
-{
-namespace slam
+namespace mrpt::slam
 {
 /** The ICP algorithm selection, used in mrpt::slam::CICP::options  \ingroup
  * mrpt_slam_grp  */
@@ -264,9 +262,7 @@ class CICP : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 		const mrpt::poses::CPose3DPDFGaussian& initialEstimationPDF,
 		TReturnInfo& outInfo);
 };
-}  // namespace slam
-}  // namespace mrpt
-
+}
 MRPT_ENUM_TYPE_BEGIN(mrpt::slam::TICPAlgorithm)
 using namespace mrpt::slam;
 MRPT_FILL_ENUM(icpClassic);
@@ -280,3 +276,5 @@ MRPT_FILL_ENUM(icpCovFiniteDifferences);
 MRPT_ENUM_TYPE_END()
 
 #endif
+
+

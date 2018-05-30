@@ -10,11 +10,7 @@
 #ifndef CRANGESCANOPS_IMPL_H
 #define CRANGESCANOPS_IMPL_H
 
-namespace mrpt
-{
-namespace graphslam
-{
-namespace deciders
+namespace mrpt::graphslam::deciders
 {
 template <class GRAPH_T>
 void CRangeScanOps<GRAPH_T>::getICPEdge(
@@ -235,8 +231,8 @@ void CRangeScanOps<GRAPH_T>::TParams::loadFromConfigFile(
 
 	MRPT_END;
 }
-}
-}
 }  // end of namespaces
 
 #endif /* end of include guard: CRANGESCANOPS_IMPL_H */
+
+

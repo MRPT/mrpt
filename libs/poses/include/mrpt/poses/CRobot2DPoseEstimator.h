@@ -11,11 +11,10 @@
 
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/system/datetime.h>
+#include <mrpt/poses/poses_frwds.h>
 #include <mutex>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 /** A simple filter to estimate and extrapolate the robot 2D (x,y,phi) pose from
   *asynchronous odometry and localization/SLAM data.
@@ -73,7 +72,7 @@ class CRobot2DPoseEstimator
 	bool getLatestRobotPose(mrpt::math::TPose2D& pose) const;
 
 	/** \overload */
-	bool getLatestRobotPose(CPose2D& pose) const;
+	bool getLatestRobotPose(mrpt::poses::CPose2D& pose) const;
 
 	struct TOptions
 	{
@@ -112,7 +111,7 @@ class CRobot2DPoseEstimator
 
 };  // end of class
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

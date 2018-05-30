@@ -8,10 +8,8 @@
 +------------------------------------------------------------------------+ */
 #pragma once
 
-namespace mrpt
-{
-namespace serialization
+namespace mrpt::serialization
 {
 class CArchive;
 }
-}
+

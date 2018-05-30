@@ -11,9 +11,7 @@
 #include <mrpt/system/os.h>
 #include <deque>
 
-namespace mrpt
-{
-namespace system
+namespace mrpt::system
 {
 #define FILE_ATTRIB_ARCHIVE 0x0020
 #define FILE_ATTRIB_DIRECTORY 0x0010
@@ -90,5 +88,5 @@ class CDirectoryExplorer
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
+}
+

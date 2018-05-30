@@ -8,11 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-namespace mrpt
+namespace mrpt::opengl
 {
-namespace opengl
-{
-class C3DSScene;
 class CArrow;
 class CAssimpModel;
 class CAxis;
@@ -48,5 +45,5 @@ class CText3D;
 class CTexturedPlane;
 class CVectorField2D;
 class CVectorField3D;
-}  // namespace opengl
-}  // namespace mrpt
+}
+

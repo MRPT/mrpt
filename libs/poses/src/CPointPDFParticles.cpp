@@ -279,7 +279,7 @@ void CPointPDFParticles::drawSingleSample(CPoint3D& outSample) const
  ---------------------------------------------------------------*/
 void CPointPDFParticles::bayesianFusion(
 	const CPointPDF& p1_, const CPointPDF& p2_,
-	const double& minMahalanobisDistToDrop)
+	const double minMahalanobisDistToDrop)
 {
 	MRPT_UNUSED_PARAM(p1_);
 	MRPT_UNUSED_PARAM(p2_);

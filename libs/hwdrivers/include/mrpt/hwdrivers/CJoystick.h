@@ -14,9 +14,7 @@
 /*---------------------------------------------------------------
 	Class
   ---------------------------------------------------------------*/
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** Access to joysticks and gamepads (read buttons and position), and request
  * number of joysticks in the system.
@@ -102,7 +100,7 @@ class CJoystick
 #endif
 };  // End of class def.
 
-}  // namespace hwdrivers
-}  // namespace mrpt
-
+}
 #endif
+
+

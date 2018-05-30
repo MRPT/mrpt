@@ -11,11 +11,7 @@
 #ifndef CGRAPHSLAMOPTIMIZER_IMPL_H_N4XWUTK5
 #define CGRAPHSLAMOPTIMIZER_IMPL_H_N4XWUTK5
 
-namespace mrpt
-{
-namespace graphslam
-{
-namespace optimizers
+namespace mrpt::graphslam::optimizers
 {
 template <class GRAPH_T>
 void CGraphSlamOptimizer<GRAPH_T>::loadParams(const std::string& source_fname)
@@ -30,8 +26,8 @@ void CGraphSlamOptimizer<GRAPH_T>::printParams() const
 	using namespace std;
 	std::cout << "GSO Verbosity: " << this->getMinLoggingLevelStr() << endl;
 }
-}
-}
 }  // end of namespaces
 
 #endif /* end of include guard: CGRAPHSLAMOPTIMIZER_IMPL_H_N4XWUTK5 */
+
+

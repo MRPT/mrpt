@@ -8,7 +8,6 @@ SET(sampleName vision_bundle_adj_example)
 PROJECT(EXAMPLE_${sampleName})
 
 CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
-set (CMAKE_CXX_STANDARD 14)  # Require C++14
 cmake_policy(SET CMP0003 NEW)  # Required by CMake 2.7+
 
 # ---------------------------------------------------------------------------
@@ -21,7 +20,7 @@ SET(EXECUTABLE_OUTPUT_PATH ".")
 #  http://www.mrpt.org/Libraries
 # Add the top-level dependencies only.
 # --------------------------------------------------------------------------
-FIND_PACKAGE(MRPT REQUIRED vision;gui)
+FIND_PACKAGE(MRPT REQUIRED vision-lgpl;gui)
 
 # Define the executable target:
 ADD_EXECUTABLE(${sampleName} test.cpp  )
@@ -52,5 +51,5 @@ ENDIF()
 # This part can be removed if you are compiling this program outside of
 #  the MRPT tree:
 IF(${CMAKE_PROJECT_NAME} STREQUAL "MRPT") # Fails if build outside of MRPT project.
-	DeclareAppDependencies(${sampleName} mrpt-vision;mrpt-gui) # Dependencies
+	DeclareAppDependencies(${sampleName} mrpt-vision-lgpl;mrpt-gui) # Dependencies
 ENDIF()

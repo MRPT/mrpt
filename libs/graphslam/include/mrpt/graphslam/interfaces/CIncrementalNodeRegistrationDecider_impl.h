@@ -1,11 +1,7 @@
 #ifndef CINCREMENTALNODEREGISTRATIONDECIDER_IMPL_H_UQKZGLEM
 #define CINCREMENTALNODEREGISTRATIONDECIDER_IMPL_H_UQKZGLEM
 
-namespace mrpt
-{
-namespace graphslam
-{
-namespace deciders
+namespace mrpt::graphslam::deciders
 {
 template <class GRAPH_T>
 CIncrementalNodeRegistrationDecider<
@@ -192,9 +188,9 @@ std::string CIncrementalNodeRegistrationDecider<GRAPH_T>::TParams::getAsString()
 
 	MRPT_END;
 }
-}
-}
 }  // end of namespaces
 
 #endif /* end of include guard: \
 		  CINCREMENTALNODEREGISTRATIONDECIDER_IMPL_H_UQKZGLEM */
+
+

@@ -12,9 +12,7 @@
 #include <mrpt/obs/obs_frwds.h>
 #include <mrpt/obs/CSensoryFrame.h>
 
-namespace mrpt
-{
-namespace slam
+namespace mrpt::slam
 {
 /**  \addtogroup mrpt_slam_grp
   *   @{ */
@@ -70,7 +68,7 @@ inline double observationsOverlap(
 
 /** @} */  // end grouping
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

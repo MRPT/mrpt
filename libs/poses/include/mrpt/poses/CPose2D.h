@@ -11,9 +11,7 @@
 #include <mrpt/poses/CPose.h>
 #include <mrpt/serialization/CSerializable.h>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 class CPose3D;
 /** A class used to store a 2D pose, including the 2D coordinate point and a
@@ -305,7 +303,7 @@ class CPose2D : public CPose<CPose2D>, public mrpt::serialization::CSerializable
 	{
 		is_3D_val = 0
 	};
-	static inline bool is_3D() { return is_3D_val != 0; }
+	static constexpr bool is_3D() { return is_3D_val != 0; }
 	enum
 	{
 		rotation_dimensions = 2
@@ -314,7 +312,7 @@ class CPose2D : public CPose<CPose2D>, public mrpt::serialization::CSerializable
 	{
 		is_PDF_val = 0
 	};
-	static inline bool is_PDF() { return is_PDF_val != 0; }
+	static constexpr bool is_PDF() { return is_PDF_val != 0; }
 	inline const type_value& getPoseMean() const { return *this; }
 	inline type_value& getPoseMean() { return *this; }
 	void setToNaN() override;
@@ -333,16 +331,15 @@ class CPose2D : public CPose<CPose2D>, public mrpt::serialization::CSerializable
 	{
 		static_size = 3
 	};
-	static inline size_type size() { return static_size; }
-	static inline bool empty() { return false; }
-	static inline size_type max_size() { return static_size; }
+	static constexpr size_type size() { return static_size; }
+	static constexpr bool empty() { return false; }
+	static constexpr size_type max_size() { return static_size; }
 	static inline void resize(const size_t n)
 	{
 		if (n != static_size)
-			throw std::logic_error(
-				format(
-					"Try to change the size of CPose2D to %u.",
-					static_cast<unsigned>(n)));
+			throw std::logic_error(format(
+				"Try to change the size of CPose2D to %u.",
+				static_cast<unsigned>(n)));
 	}
 	
 	/** Templatized serializeTo function */
@@ -399,5 +396,4 @@ mrpt::math::TPoint2D operator+(
 bool operator==(const CPose2D& p1, const CPose2D& p2);
 bool operator!=(const CPose2D& p1, const CPose2D& p2);
 
-}  // namespace poses
-}  // namespace mrpt
+}  // namespace mrpt::poses

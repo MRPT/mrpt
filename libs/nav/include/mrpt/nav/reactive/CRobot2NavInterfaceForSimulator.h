@@ -12,9 +12,7 @@
 #include <mrpt/kinematics/CVehicleSimul_Holo.h>
 #include <mrpt/kinematics/CVehicleSimul_DiffDriven.h>
 
-namespace mrpt
-{
-namespace nav
+namespace mrpt::nav
 {
 /** CRobot2NavInterface implemented for a simulator object based on
  * mrpt::kinematics::CVehicleSimul_Holo.
@@ -176,4 +174,4 @@ class CRobot2NavInterfaceForSimulator_DiffDriven : public CRobot2NavInterface
 	}
 };
 }
-}
+

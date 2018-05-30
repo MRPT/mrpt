@@ -1,11 +1,25 @@
-/* +------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          http://www.mrpt.org/                          |
-   |                                                                        |
-   | Copyright (c) 2005-2018, Individual contributors, see AUTHORS file     |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                |
-   | Released under BSD License. See details in http://www.mrpt.org/License |
-   +------------------------------------------------------------------------+ */
+/**
+ * Copyright (C) 2010  Hauke Strasdat
+ *                     Imperial College London
+ * Copyright (c) 2005-2018, Individual contributors, see AUTHORS file
+ *   See: http://www.mrpt.org/Authors - All rights reserved.
+ *
+ * bundle_adjuster.h is part of RobotVision.
+ *
+ * RobotVision is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or any later version.
+ *
+ * RobotVision is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * and the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #ifndef mrpt_vision_ba_H
 #define mrpt_vision_ba_H
@@ -20,9 +34,7 @@
 
 // The methods declared in this file are implemented in separate files in:
 // vision/src/ba_*.cpp
-namespace mrpt
-{
-namespace vision
+namespace mrpt::vision
 {
 /** \defgroup bundle_adj Bundle-Adjustment methods
   * \ingroup mrpt_vision_grp
@@ -202,5 +214,6 @@ void add_3d_deltas_to_points(
 
 /** @} */
 }
-}
 #endif
+
+

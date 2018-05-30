@@ -15,9 +15,7 @@
 #include <mrpt/core/safe_pointers.h>
 #include <mrpt/typemeta/TEnumType.h>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** These capture types are like their OpenCV equivalents. */
 enum TCameraType
@@ -116,8 +114,7 @@ class CImageGrabber_OpenCV
 
 };  // End of class
 
-}  // End of NS
-}  // End of NS
+}
 MRPT_ENUM_TYPE_BEGIN(mrpt::hwdrivers::TCameraType)
 MRPT_FILL_ENUM_MEMBER(mrpt::hwdrivers, CAMERA_CV_AUTODETECT);
 MRPT_FILL_ENUM_MEMBER(mrpt::hwdrivers, CAMERA_CV_DC1394);
@@ -128,3 +125,5 @@ MRPT_FILL_ENUM_MEMBER(mrpt::hwdrivers, CAMERA_CV_DSHOW);
 MRPT_ENUM_TYPE_END()
 
 #endif
+
+

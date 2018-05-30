@@ -16,10 +16,9 @@
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/vision/types.h>
 #include <mrpt/core/round.h>
+#include <functional>
 
-namespace mrpt
-{
-namespace vision
+namespace mrpt::vision
 {
 /** \addtogroup  mrptvision_features
 	@{ */
@@ -304,7 +303,7 @@ using TSimpleFeaturefList = TSimpleFeatureList_templ<TSimpleFeaturef>;
  */
 template <typename FEATURE_LIST>
 struct KeypointResponseSorter
-	: public std::binary_function<size_t, size_t, bool>
+	: public std::function<bool(size_t, size_t)>
 {
 	const FEATURE_LIST& m_data;
 	KeypointResponseSorter(const FEATURE_LIST& data) : m_data(data) {}
@@ -380,8 +379,7 @@ class CFeatureListKDTree
 
 /** @} */  // End of add to module: mrptvision_features
 
-}  // namespace vision
-
-}  // namespace mrpt
-
+}
 #endif
+
+

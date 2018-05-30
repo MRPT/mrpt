@@ -12,9 +12,7 @@
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/core/aligned_allocator.h>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 /** Declares a class that represents a Probability Density function (PDF) of a
  * 3D(6D) pose \f$ p(\mathbf{x}) = [x ~ y ~ z ~ yaw ~ pitch ~ roll]^t \f$.
@@ -196,5 +194,5 @@ class CPose3DPDFSOG : public CPose3DPDF
 	}
 
 };  // End of class def.
-}  // End of namespace
-}  // End of namespace
+}
+

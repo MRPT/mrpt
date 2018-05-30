@@ -12,9 +12,7 @@
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/poses/CPoint2D.h>
 
-namespace mrpt
-{
-namespace nav
+namespace mrpt::nav
 {
 /** \addtogroup nav_planners Path planning
   * \ingroup mrpt_nav_grp
@@ -81,7 +79,7 @@ class PlannerSimple2D
 };
 
 /** @} */
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

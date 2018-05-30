@@ -806,9 +806,7 @@ void CPose3D::ln(CArrayDouble<6>& result) const
 
 /* The following code fragments are based on formulas originally reported in the
  * TooN and RobotVision packages */
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 template <class VEC3, class MAT33>
 inline void deltaR(const MAT33& R, VEC3& v)
@@ -901,7 +899,6 @@ inline void dVinvt_dR(const CPose3D& P, CMatrixFixedNumeric<double, 3, 9>& J)
 		B += -(theta * cot - 2) / (8 * oned2) * ddeltaRt_dR(P);
 	}
 	M3x9(a, B, J);
-}
 }
 }
 

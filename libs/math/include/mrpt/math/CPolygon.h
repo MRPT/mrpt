@@ -11,9 +11,7 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 /** A wrapper of a TPolygon2D class, implementing CSerializable.
  * \ingroup geometry_grp
@@ -68,5 +66,5 @@ class CPolygon : public mrpt::serialization::CSerializable,
 	}
 };
 
-}  // End of namespace
-}  // End of namespace
+}
+

@@ -13,9 +13,7 @@
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/math/types_math.h>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 /** \addtogroup poses_grp
   *  @{ */
@@ -130,6 +128,7 @@ class SE_average<2>
 	void append(const mrpt::poses::CPose2D& p);
 	/** Adds a new pose to the weighted-average computation \sa get_average */
 	void append(const mrpt::poses::CPose2D& p, const double weight);
+	void append(const mrpt::math::TPose2D& p, const double weight);
 	/** Returns the average pose.
 	  * \exception std::logic_error If no data point were inserted.
 	  * \exception std::runtime_error Upon undeterminate average value (ie the
@@ -167,6 +166,7 @@ class SE_average<3>
 	void append(const mrpt::poses::CPose3D& p);
 	/** Adds a new pose to the weighted-average computation \sa get_average */
 	void append(const mrpt::poses::CPose3D& p, const double weight);
+	void append(const mrpt::math::TPose3D& p, const double weight);
 	/** Returns the average pose.
 	  * \exception std::logic_error If no data point were inserted.
 	  * \exception std::runtime_error Upon undeterminate average value (ie the
@@ -187,7 +187,7 @@ class SE_average<3>
 
 /** @} */  // end of grouping
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

@@ -22,23 +22,42 @@ CTextFileLinesParser::CTextFileLinesParser(const std::string& fil)
 	open(fil);
 }
 
+CTextFileLinesParser::CTextFileLinesParser(std::istream& in) { open(in); }
+
+void CTextFileLinesParser::open(std::istream& in)
+{
+	m_curLineNum = 0;
+	m_fileName = "{std::istream}";
+	this->close();
+	m_in = &in;
+	m_in_ownership = false;
+}
+
 void CTextFileLinesParser::open(const std::string& fil)
 {
 	m_curLineNum = 0;
 	m_fileName = fil;
-	m_in.close();
-	m_in.clear();
-	m_in.open(fil.c_str());
-	if (!m_in.is_open())
+	this->close();
+	auto ifs = new std::ifstream;
+	m_in = ifs;
+	m_in_ownership = true;
+	ifs->clear();
+	ifs->open(fil.c_str());
+	if (!ifs->is_open())
 		THROW_EXCEPTION_FMT("Error opening file '%s' for reading", fil.c_str());
 }
 
-void CTextFileLinesParser::close() { m_in.close(); }
+void CTextFileLinesParser::close()
+{
+	if (!m_in) return;
+	if (m_in_ownership) delete m_in;
+	m_in = nullptr;
+}
 void CTextFileLinesParser::rewind()
 {
 	m_curLineNum = 0;
-	m_in.clear();
-	m_in.seekg(0);
+	m_in->clear();
+	m_in->seekg(0);
 }
 
 bool CTextFileLinesParser::getNextLine(std::string& out_str)
@@ -49,17 +68,17 @@ bool CTextFileLinesParser::getNextLine(std::string& out_str)
 		out_str = buf.str();
 		return true;
 	}
-
 	out_str.clear();
 	return false;
 }
 
 bool CTextFileLinesParser::getNextLine(std::istringstream& buf)
 {
-	while (!m_in.fail())
+	ASSERT_(m_in != nullptr);
+	while (!m_in->fail())
 	{
 		std::string lin;
-		std::getline(m_in, lin);
+		std::getline(*m_in, lin);
 		m_curLineNum++;
 		lin = mrpt::system::trim(lin);
 		if (lin.empty()) continue;  // Ignore empty lines.

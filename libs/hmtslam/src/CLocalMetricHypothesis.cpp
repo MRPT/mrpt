@@ -454,7 +454,7 @@ void CLocalMetricHypothesis::getPathParticles(
 			 it != m_particles.end(); it++, itP++)
 		{
 			itP->log_w = it->log_w;
-			*itP->d = it->d->robotPoses.find(itPoseID->first)->second;
+			itP->d = it->d->robotPoses.find(itPoseID->first)->second.asTPose();
 		}
 
 		// Save PDF:
@@ -475,7 +475,7 @@ void CLocalMetricHypothesis::getPoseParticles(
 	ASSERT_(!m_particles.empty());
 
 	CParticleList::const_iterator it;
-	outPDF.resetDeterministic(CPose3D(), m_particles.size());
+	outPDF.resetDeterministic(TPose3D(0, 0, 0, 0, 0, 0), m_particles.size());
 	CPose3DPDFParticles::CParticleList::iterator itP;
 	for (it = m_particles.begin(), itP = outPDF.m_particles.begin();
 		 it != m_particles.end(); it++, itP++)
@@ -484,7 +484,7 @@ void CLocalMetricHypothesis::getPoseParticles(
 		TMapPoseID2Pose3D::const_iterator itPose =
 			it->d->robotPoses.find(poseID);
 		ASSERT_(itPose != it->d->robotPoses.end());
-		*itP->d = itPose->second;
+		itP->d = itPose->second.asTPose();
 	}
 
 	MRPT_END
@@ -502,9 +502,8 @@ void CLocalMetricHypothesis::clearRobotPoses()
 	{
 		// Create particle:
 		it->log_w = 0;
-		it->d.reset(
-			new CLSLAMParticleData(
-				&m_parent->m_options.defaultMapsInitializers));
+		it->d.reset(new CLSLAMParticleData(
+			&m_parent->m_options.defaultMapsInitializers));
 
 		// Fill in:
 		it->d->robotPoses.clear();
@@ -550,7 +549,7 @@ void CLocalMetricHypothesis::getRelativePose(
 	MRPT_START
 
 	// Resize output:
-	outPDF.resetDeterministic(CPose3D(), m_particles.size());
+	outPDF.resetDeterministic(TPose3D(0, 0, 0, 0, 0, 0), m_particles.size());
 
 	CParticleList::const_iterator it;
 	CPose3DPDFParticles::CParticleList::iterator itP;
@@ -564,7 +563,8 @@ void CLocalMetricHypothesis::getRelativePose(
 
 		ASSERT_(srcPose != it->d->robotPoses.end());
 		ASSERT_(trgPose != it->d->robotPoses.end());
-		*itP->d = trgPose->second - srcPose->second;
+		itP->d =
+			(CPose3D(trgPose->second) - CPose3D(srcPose->second)).asTPose();
 	}
 
 	MRPT_END
@@ -588,7 +588,7 @@ void CLocalMetricHypothesis::changeCoordinateOrigin(const TPoseID& newOrigin)
 		const CPose3D& refPose = refPoseIt->second;
 
 		// Save in pdf to compute mean:
-		*itOrgPDF->d = refPose;
+		itOrgPDF->d = refPose.asTPose();
 		itOrgPDF->log_w = it->log_w;
 
 		TMapPoseID2Pose3D::iterator End = it->d->robotPoses.end();
@@ -655,17 +655,17 @@ void CLocalMetricHypothesis::rebuildMetricMaps()
 }
 
 /** Removes a given area from the LMH:
-  *	- The corresponding node in the HMT map is updated with the robot poses &
-  *SFs in the LMH.
-  *	- Robot poses belonging to that area are removed from:
-  *		- the particles.
-  *		- the graph partitioner.
-  *		- the list of SFs.
-  *		- the list m_nodeIDmemberships.
-  *		- The weights of all particles are changed to remove the effects of the
-  *removed metric observations.
-  *	- After calling this the metric maps should be updated.
-  */
+ *	- The corresponding node in the HMT map is updated with the robot poses &
+ *SFs in the LMH.
+ *	- Robot poses belonging to that area are removed from:
+ *		- the particles.
+ *		- the graph partitioner.
+ *		- the list of SFs.
+ *		- the list m_nodeIDmemberships.
+ *		- The weights of all particles are changed to remove the effects of the
+ *removed metric observations.
+ *	- After calling this the metric maps should be updated.
+ */
 void CLocalMetricHypothesis::removeAreaFromLMH(
 	const CHMHMapNode::TNodeID areaID)
 {
@@ -762,8 +762,8 @@ void CLocalMetricHypothesis::removeAreaFromLMH(
 		// "m_robotPosesGraph.partitioner":
 		unsigned idx = 0;
 		map<uint32_t, TPoseID> newList;
-		for (map<uint32_t, TPoseID>::iterator
-				 i = m_robotPosesGraph.idx2pose.begin();
+		for (map<uint32_t, TPoseID>::iterator i =
+				 m_robotPosesGraph.idx2pose.begin();
 			 i != m_robotPosesGraph.idx2pose.end(); ++i, idx++)
 			newList[idx] = i->second;
 		m_robotPosesGraph.idx2pose = newList;
@@ -900,7 +900,7 @@ void CLocalMetricHypothesis::updateAreaFromLMH(
 		for (pdfIt = it->second.pdf.m_particles.begin(),
 			orgIt = pdfOriginInv.m_particles.begin();
 			 orgIt != pdfOriginInv.m_particles.end(); orgIt++, pdfIt++)
-			*pdfIt->d = *orgIt->d + *pdfIt->d;
+			pdfIt->d = (CPose3D(orgIt->d) + CPose3D(pdfIt->d)).asTPose();
 	}
 
 	// 2) One single metric map built from the most likelily robot poses

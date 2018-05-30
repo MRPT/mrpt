@@ -1,12 +1,25 @@
-/* +------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          http://www.mrpt.org/                          |
-   |                                                                        |
-   | Copyright (c) 2005-2018, Individual contributors, see AUTHORS file     |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                |
-   | Released under BSD License. See details in http://www.mrpt.org/License |
-   +------------------------------------------------------------------------+ */
-
+/**
+ * Copyright (C) 2010  Hauke Strasdat
+ *                     Imperial College London
+ * Copyright (c) 2005-2018, Individual contributors, see AUTHORS file
+ *   See: http://www.mrpt.org/Authors - All rights reserved.
+ *
+ * bundle_adjuster.h is part of RobotVision.
+ *
+ * RobotVision is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or any later version.
+ *
+ * RobotVision is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * and the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
+ */
 #ifndef ba_internals_H
 #define ba_internals_H
 
@@ -21,9 +34,7 @@
 // Declarations shared between ba_*.cpp files, but which are private to MRPT
 //  not to be seen by an MRPT API user.
 
-namespace mrpt
-{
-namespace vision
+namespace mrpt::vision
 {
 using mrpt::math::CArrayDouble;  // Allow these "using"s since these headers are
 // internal to mrpt
@@ -249,7 +260,7 @@ void ba_build_gradient_Hessians(
 	mrpt::aligned_std_vector<CArrayDouble<3>>& eps_point,
 	const size_t num_fix_frames, const size_t num_fix_points,
 	const vector<double>* kernel_1st_deriv);
-}  // namespace vision
-}  // namespace mrpt
-
+}
 #endif
+
+

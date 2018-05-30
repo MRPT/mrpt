@@ -12,11 +12,7 @@
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <string>
 
-namespace mrpt
-{
-namespace graphslam
-{
-namespace detail
+namespace mrpt::graphslam::detail
 {
 template <class GRAPH_T>
 struct TNodeProps
@@ -60,7 +56,6 @@ struct TNodeProps
 	}
 };
 }
-}
-}  // end of namespaces
-
 #endif /* end of include guard: TNODEPROPS_H */
+
+

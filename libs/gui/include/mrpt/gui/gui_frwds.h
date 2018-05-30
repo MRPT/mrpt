@@ -8,9 +8,7 @@
    +------------------------------------------------------------------------+ */
 #ifndef MRPT_GUI_FWRDS_H
 #define MRPT_GUI_FWRDS_H
-namespace mrpt
-{
-namespace gui
+namespace mrpt::gui
 {
 class CDisplayWindow;
 class CDisplayWindow3D;
@@ -21,6 +19,7 @@ class CWindowDialogPlots;
 class C3DWindowDialog;
 class CMyGLCanvas_DisplayWindow3D;
 
-}  // End of namespace
-}  // End of namespace
+}
 #endif
+
+

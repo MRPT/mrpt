@@ -41,6 +41,23 @@ SET(MRPT_VERSION_MAJOR @CMAKE_MRPT_VERSION_NUMBER_MAJOR@)
 SET(MRPT_VERSION_MINOR @CMAKE_MRPT_VERSION_NUMBER_MINOR@)
 SET(MRPT_VERSION_PATCH @CMAKE_MRPT_VERSION_NUMBER_PATCH@)
 
+# Require C++17
+if (MSVC)
+	add_compile_options("/std:c++latest")
+else()
+	if(${CMAKE_VERSION} VERSION_LESS "3.8.0")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
+	else()
+		if ("${CMAKE_CXX_STANDARD}" STREQUAL "" OR "${CMAKE_CXX_STANDARD}" LESS 17)
+			set(CMAKE_CXX_STANDARD 17)
+		endif()
+	endif()
+endif()
+
+# missing math consts (M_PI) in msvc:
+IF(MSVC)
+	ADD_DEFINITIONS(-D_USE_MATH_DEFINES)
+ENDIF()
 
 # Extract the directory where *this* file has been installed (determined at cmake run-time)
 get_filename_component(THIS_MRPT_CONFIG_PATH "${CMAKE_CURRENT_LIST_FILE}" PATH)

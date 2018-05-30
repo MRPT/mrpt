@@ -16,9 +16,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
-namespace mrpt
-{
-namespace obs
+namespace mrpt::obs
 {
 /** An observation of the current (cumulative) odometry for a wheeled robot.
  *   This kind of observation will only occur in a "observation-only" rawlog
@@ -63,7 +61,7 @@ class CObservationOdometry : public CObservation
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

@@ -13,9 +13,7 @@
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/obs/CObservation.h>
 
-namespace mrpt
-{
-namespace obs
+namespace mrpt::obs
 {
 /** Declares a class for storing a "sensory frame", a set of "observations"
  * taken by the robot approximately at the same time as one "snapshot" of the
@@ -355,7 +353,7 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

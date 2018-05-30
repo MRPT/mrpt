@@ -12,9 +12,7 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/obs/CObservation.h>
 
-namespace mrpt
-{
-namespace obs
+namespace mrpt::obs
 {
 /** This class stores a message from a CAN BUS with the protocol J1939
  *
@@ -73,7 +71,7 @@ class CObservationCANBusJ1939 : public CObservation
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

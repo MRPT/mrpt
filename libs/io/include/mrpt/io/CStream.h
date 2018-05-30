@@ -12,9 +12,7 @@
 #include <cstdint>
 #include <string>
 
-namespace mrpt
-{
-namespace io
+namespace mrpt::io
 {
 /** This base class is used to provide a unified interface to
  *    files,memory buffers,..Please see the derived classes. This class is
@@ -122,5 +120,5 @@ class CStream
 
 };  // End of class def.
 
-}  // namespace io
-}  // namespace mrpt
+}
+

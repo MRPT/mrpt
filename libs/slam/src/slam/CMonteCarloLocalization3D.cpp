@@ -26,9 +26,7 @@ using namespace mrpt::maps;
 
 #include <mrpt/slam/PF_implementations_data.h>
 
-namespace mrpt
-{
-namespace slam
+namespace mrpt::slam
 {
 /** Fills out a "TPoseBin3D" variable, given a path hypotesis and (if not set to
  * nullptr) a new pose appended at the end, using the KLD params in "options".
@@ -53,19 +51,17 @@ void KLF_loadBinFromParticle(
 	else
 	{
 		ASSERT_(currentParticleValue);
-		outBin.x = round(currentParticleValue->x() / opts.KLD_binSize_XY);
-		outBin.y = round(currentParticleValue->y() / opts.KLD_binSize_XY);
-		outBin.z = round(currentParticleValue->z() / opts.KLD_binSize_XY);
+		outBin.x = round(currentParticleValue->x / opts.KLD_binSize_XY);
+		outBin.y = round(currentParticleValue->y / opts.KLD_binSize_XY);
+		outBin.z = round(currentParticleValue->z / opts.KLD_binSize_XY);
 
-		outBin.yaw = round(currentParticleValue->yaw() / opts.KLD_binSize_PHI);
+		outBin.yaw = round(currentParticleValue->yaw / opts.KLD_binSize_PHI);
 		outBin.pitch =
-			round(currentParticleValue->pitch() / opts.KLD_binSize_PHI);
-		outBin.roll =
-			round(currentParticleValue->roll() / opts.KLD_binSize_PHI);
+			round(currentParticleValue->pitch / opts.KLD_binSize_PHI);
+		outBin.roll = round(currentParticleValue->roll / opts.KLD_binSize_PHI);
 	}
 }
-}  // namespace slam
-}  // namespace mrpt
+}
 
 #include <mrpt/slam/PF_implementations.h>
 
@@ -88,8 +84,7 @@ TPose3D CMonteCarloLocalization3D::getLastPose(
 	if (i >= m_particles.size())
 		THROW_EXCEPTION("Particle index out of bounds!");
 	is_valid_pose = true;
-	ASSERTDEB_(m_particles[i].d);
-	return m_particles[i].d->asTPose();
+	return m_particles[i].d;
 }
 
 /*---------------------------------------------------------------
@@ -173,11 +168,10 @@ void CMonteCarloLocalization3D::prediction_and_update_pfAuxiliaryPFOptimal(
  ---------------------------------------------------------------*/
 double
 	CMonteCarloLocalization3D::PF_SLAM_computeObservationLikelihoodForParticle(
-		const CParticleFilter::TParticleFilterOptions& PF_options,
+		[[maybe_unused]] const CParticleFilter::TParticleFilterOptions& PF_options,
 		const size_t particleIndexForMap, const CSensoryFrame& observation,
 		const CPose3D& x) const
 {
-	MRPT_UNUSED_PARAM(PF_options);
 	ASSERT_(
 		options.metricMap || particleIndexForMap < options.metricMaps.size());
 
@@ -199,17 +193,16 @@ double
 // Specialization for my kind of particles:
 void CMonteCarloLocalization3D::
 	PF_SLAM_implementation_custom_update_particle_with_new_pose(
-		CPose3D* particleData, const TPose3D& newPose) const
+		TPose3D* particleData, const TPose3D& newPose) const
 {
-	*particleData = CPose3D(newPose);
+	*particleData = newPose;
 }
 
 void CMonteCarloLocalization3D::PF_SLAM_implementation_replaceByNewParticleSet(
 	CParticleList& old_particles, const vector<TPose3D>& newParticles,
 	const vector<double>& newParticlesWeight,
-	const vector<size_t>& newParticlesDerivedFromIdx) const
+	[[maybe_unused]] const vector<size_t>& newParticlesDerivedFromIdx) const
 {
-	MRPT_UNUSED_PARAM(newParticlesDerivedFromIdx);
 	ASSERT_(size_t(newParticlesWeight.size()) == newParticles.size());
 	// ---------------------------------------------------------------------------------
 	// Substitute old by new particle set:
@@ -225,6 +218,6 @@ void CMonteCarloLocalization3D::PF_SLAM_implementation_replaceByNewParticleSet(
 	for (size_t i = 0; i < N; i++)
 	{
 		old_particles[i].log_w = newParticlesWeight[i];
-		old_particles[i].d.reset(new CPose3D(newParticles[i]));
+		old_particles[i].d = newParticles[i];
 	}
 }

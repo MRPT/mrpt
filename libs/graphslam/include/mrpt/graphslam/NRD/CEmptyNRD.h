@@ -15,11 +15,7 @@
 
 #include <mrpt/graphslam/interfaces/CNodeRegistrationDecider.h>
 
-namespace mrpt
-{
-namespace graphslam
-{
-namespace deciders
+namespace mrpt::graphslam::deciders
 {
 /**\brief Empty Node Registration Decider
  *
@@ -82,8 +78,8 @@ typename GRAPH_T::global_pose_t
 {
 	return typename GRAPH_T::global_pose_t();
 }
-}
-}
 }  // end of namespaces
 
 #endif /* end of include guard: CEMPTYNRD_H */
+
+

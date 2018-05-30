@@ -27,7 +27,6 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Authors: wan@google.com (Zhanyong Wan), eefacm@gmail.com (Sean Mcafee)
 //
 // The Google C++ Testing Framework (Google Test)
 //
@@ -35,7 +34,8 @@
 // Google Test.  They are subject to change without notice. They should not used
 // by code external to Google Test.
 //
-// This header file is #included by <gtest/internal/gtest-internal.h>.
+// This header file is #included by
+// gtest/internal/gtest-internal.h.
 // It should not be #included by other files.
 
 #ifndef GTEST_INCLUDE_GTEST_INTERNAL_GTEST_STRING_H_
@@ -61,7 +61,7 @@ class GTEST_API_ String {
 
   // Clones a 0-terminated C string, allocating memory using new.  The
   // caller is responsible for deleting the return value using
-  // delete[].  Returns the cloned string, or nullptr if the input is
+  // delete[].  Returns the cloned string, or NULL if the input is
   // NULL.
   //
   // This is different from strdup() in string.h, which allocates
@@ -75,7 +75,7 @@ class GTEST_API_ String {
 
   // Creates a UTF-16 wide string from the given ANSI string, allocating
   // memory using new. The caller is responsible for deleting the return
-  // value using delete[]. Returns the wide string, or nullptr if the
+  // value using delete[]. Returns the wide string, or NULL if the
   // input is NULL.
   //
   // The wide string is created using the ANSI codepage (CP_ACP) to
@@ -85,7 +85,7 @@ class GTEST_API_ String {
 
   // Creates an ANSI string from the given wide string, allocating
   // memory using new. The caller is responsible for deleting the return
-  // value using delete[]. Returns the ANSI string, or nullptr if the
+  // value using delete[]. Returns the ANSI string, or NULL if the
   // input is NULL.
   //
   // The returned string is created using the ANSI codepage (CP_ACP) to
@@ -96,13 +96,13 @@ class GTEST_API_ String {
 
   // Compares two C strings.  Returns true iff they have the same content.
   //
-  // Unlike strcmp(), this function can handle nullptr argument(s).  A
-  // nullptr C string is considered different to any non-NULL C string,
+  // Unlike strcmp(), this function can handle NULL argument(s).  A
+  // NULL C string is considered different to any non-NULL C string,
   // including the empty string.
   static bool CStringEquals(const char* lhs, const char* rhs);
 
   // Converts a wide C string to a String using the UTF-8 encoding.
-  // nullptr will be converted to "(null)".  If an error occurred during
+  // NULL will be converted to "(null)".  If an error occurred during
   // the conversion, "(failed to convert from wide string)" is
   // returned.
   static std::string ShowWideCString(const wchar_t* wide_c_str);
@@ -110,16 +110,16 @@ class GTEST_API_ String {
   // Compares two wide C strings.  Returns true iff they have the same
   // content.
   //
-  // Unlike wcscmp(), this function can handle nullptr argument(s).  A
-  // nullptr C string is considered different to any non-NULL C string,
+  // Unlike wcscmp(), this function can handle NULL argument(s).  A
+  // NULL C string is considered different to any non-NULL C string,
   // including the empty string.
   static bool WideCStringEquals(const wchar_t* lhs, const wchar_t* rhs);
 
   // Compares two C strings, ignoring case.  Returns true iff they
   // have the same content.
   //
-  // Unlike strcasecmp(), this function can handle nullptr argument(s).
-  // A nullptr C string is considered different to any non-NULL C string,
+  // Unlike strcasecmp(), this function can handle NULL argument(s).
+  // A NULL C string is considered different to any non-NULL C string,
   // including the empty string.
   static bool CaseInsensitiveCStringEquals(const char* lhs,
                                            const char* rhs);
@@ -127,8 +127,8 @@ class GTEST_API_ String {
   // Compares two wide C strings, ignoring case.  Returns true iff they
   // have the same content.
   //
-  // Unlike wcscasecmp(), this function can handle nullptr argument(s).
-  // A nullptr C string is considered different to any non-NULL wide C string,
+  // Unlike wcscasecmp(), this function can handle NULL argument(s).
+  // A NULL C string is considered different to any non-NULL wide C string,
   // including the empty string.
   // NB: The implementations on different platforms slightly differ.
   // On windows, this method uses _wcsicmp which compares according to LC_CTYPE

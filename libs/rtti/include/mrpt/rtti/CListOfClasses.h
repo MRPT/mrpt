@@ -12,9 +12,7 @@
 //#include <mrpt/system/string_utils.h>
 #include <set>
 
-namespace mrpt
-{
-namespace rtti
+namespace mrpt::rtti
 {
 /** A list (actually based on a std::set) of MRPT classes, capable of keeping
  * any class registered by the mechanism of CObject classes. Access to "data"
@@ -59,5 +57,5 @@ class CListOfClasses
 
 };  // end of class
 
-}  // namespace rtti
-}  // namespace mrpt
+}
+

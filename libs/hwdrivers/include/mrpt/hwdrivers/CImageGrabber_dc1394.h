@@ -15,9 +15,7 @@
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <list>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 typedef enum {
 	FRAMERATE_1_875 = 32,
@@ -256,7 +254,7 @@ class CImageGrabber_dc1394
 
 };  // End of class
 
-}  // End of NS
-}  // End of NS
-
+}
 #endif
+
+

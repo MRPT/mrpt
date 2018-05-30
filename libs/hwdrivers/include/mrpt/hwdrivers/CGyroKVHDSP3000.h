@@ -16,9 +16,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/obs/CObservationIMU.h>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 enum GYRO_MODE
 {
@@ -125,7 +123,7 @@ class CGyroKVHDSP3000 : public hwdrivers::CGenericSensor
 
 };  // end of class
 
-}  // end of namespace
-}  // end of namespace
-
+}
 #endif
+
+

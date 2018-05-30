@@ -251,7 +251,7 @@ void CPointPDFSOG::drawSingleSample(CPoint3D& outSample) const
  ---------------------------------------------------------------*/
 void CPointPDFSOG::bayesianFusion(
 	const CPointPDF& p1_, const CPointPDF& p2_,
-	const double& minMahalanobisDistToDrop)
+	const double minMahalanobisDistToDrop)
 {
 	MRPT_START
 

@@ -8,9 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 // Values:
 template <class DERIVEDCLASS>
@@ -48,4 +46,4 @@ struct CPose3DPDFGaussianInfPtr;
 class CPose3DQuatPDFGaussianInf;
 struct CPose3DQuatPDFGaussianInfPtr;
 }
-}
+

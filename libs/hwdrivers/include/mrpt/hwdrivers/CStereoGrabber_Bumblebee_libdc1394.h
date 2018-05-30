@@ -13,9 +13,7 @@
 
 #include <mrpt/config.h>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** Grabs from a "Bumblebee" or "Bumblebee2" stereo camera using raw access to
  * the libdc1394 library.
@@ -74,5 +72,5 @@ static_assert(
 	!std::is_copy_constructible<CStereoGrabber_Bumblebee_libdc1394>::value &&
 		!std::is_copy_assignable<CStereoGrabber_Bumblebee_libdc1394>::value,
 	"Copy Check");
-}  // End of NS
-}  // End of NS
+}
+

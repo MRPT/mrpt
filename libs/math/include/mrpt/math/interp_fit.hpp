@@ -11,9 +11,7 @@
 
 #include <mrpt/math/interp_fit.h>
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 template <class T, class VECTOR>
 T interpolate(const T& x, const VECTOR& ys, const T& x0, const T& x1)
@@ -191,6 +189,6 @@ void leastSquareLinearFit(
 			outs[k] = mrpt::math::wrapToPi(B[0] + B[1] * (ts[k] - x_min));
 	MRPT_END
 }
-
-}  // namespace math
 }  // namespace mrpt
+
+

@@ -18,9 +18,7 @@
 // Add for declaration of mexplus::from template specialization
 DECLARE_MEXPLUS_FROM(mrpt::poses::CPose3D)
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 class CPose3DQuat;
 class CPose3DRotVec;
@@ -731,7 +729,7 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 	{
 		is_3D_val = 1
 	};
-	static inline bool is_3D() { return is_3D_val != 0; }
+	static constexpr bool is_3D() { return is_3D_val != 0; }
 	enum
 	{
 		rotation_dimensions = 3
@@ -740,7 +738,7 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 	{
 		is_PDF_val = 0
 	};
-	static inline bool is_PDF() { return is_PDF_val != 0; }
+	static constexpr bool is_PDF() { return is_PDF_val != 0; }
 	inline const type_value& getPoseMean() const { return *this; }
 	inline type_value& getPoseMean() { return *this; }
 	/** @name STL-like methods and typedefs
@@ -757,16 +755,15 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 	{
 		static_size = 6
 	};
-	static inline size_type size() { return static_size; }
-	static inline bool empty() { return false; }
-	static inline size_type max_size() { return static_size; }
+	static constexpr size_type size() { return static_size; }
+	static constexpr bool empty() { return false; }
+	static constexpr size_type max_size() { return static_size; }
 	static inline void resize(const size_t n)
 	{
 		if (n != static_size)
-			throw std::logic_error(
-				format(
-					"Try to change the size of CPose3D to %u.",
-					static_cast<unsigned>(n)));
+			throw std::logic_error(format(
+				"Try to change the size of CPose3D to %u.",
+				static_cast<unsigned>(n)));
 	}
 
 	/** Templatized serializeTo function */
@@ -824,7 +821,5 @@ CPose3D operator-(const CPose3D& p);
 bool operator==(const CPose3D& p1, const CPose3D& p2);
 bool operator!=(const CPose3D& p1, const CPose3D& p2);
 
-}  // namespace poses
-}  // namespace mrpt
-
+}  // namespace mrpt::poses
 #endif

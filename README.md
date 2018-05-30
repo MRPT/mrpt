@@ -6,7 +6,7 @@
   <td><a href="https://travis-ci.org/MRPT/mrpt" alt="Travis:gcc,clang"><img src="https://travis-ci.org/MRPT/mrpt.png?branch=master" /></a></td>
   <td>MSVC</td>
   <td><a href="https://ci.appveyor.com/project/jlblancoc/mrpt-k05a9" alt="AppVeyor:msvc"><img src="https://ci.appveyor.com/api/projects/status/yjs4lpj02f6a1ylg?svg=true" /></a></td>
-  <td><a href="https://ci.appveyor.com/project/jlblancoc/mrpt-k05a9" alt="codecov"><img src="https://codecov.io/gh/MRPT/mrpt/branch/master/graph/badge.svg" /></a></td>
+  <td><a href="https://codecov.io/gh/MRPT/mrpt" alt="codecov"><img src="https://codecov.io/gh/MRPT/mrpt/branch/master/graph/badge.svg" /></a></td>
   <td><a href="https://gitter.im/MRPT/mrpt" alt="Gitter"><img src="https://badges.gitter.im/Join%20Chat.svg" /></a></td>
   <td><a href="https://www.codetriage.com/mrpt/mrpt" alt="Open Source Helpers"><img src="https://www.codetriage.com/mrpt/mrpt/badges/users.svg" /></a></td>
  </tr>
@@ -75,7 +75,8 @@ Minimum compiler requisites:
     * gcc-7 or newer.
       * Ubuntu 18.04LTS Bionic: Its default gcc version is ok.
       * Ubuntu 16.04LTS Xenial: [Instructions](https://gist.github.com/jlblancoc/99521194aba975286c80f93e47966dc5) for installing gcc-7 in this version of Ubuntu.
-    * Windows: Visual Studio 2017.
+    * clang-4 or newer.
+    * Windows: Visual Studio 2017 version 15.3 or newer.
     * cmake >= 3.3 required (>=3.4 for Windows).
   * mrpt 1.5.* and maintenance `mrpt-1.5` branch:
     * Ubuntu 14.04LTS Trusty: default gcc/clang versions

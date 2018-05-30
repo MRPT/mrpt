@@ -33,9 +33,7 @@
 #include <memory>  // unique_ptr
 #include <functional>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** The central class for camera grabbers in MRPT, implementing the "generic
  * sensor" interface.
@@ -604,7 +602,7 @@ void readConfigIntoVideoSourcePanel(
   */
 CCameraSensor::Ptr prepareVideoSourceFromUserSelection();
 
-}  // end namespace
-}  // end namespace
-
+}
 #endif
+
+

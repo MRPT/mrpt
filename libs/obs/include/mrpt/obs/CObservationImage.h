@@ -17,9 +17,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose2D.h>
 
-namespace mrpt
-{
-namespace obs
+namespace mrpt::obs
 {
 /** Declares a class derived from "CObservation" that encapsules an image from a
  camera, whose relative pose to robot is also stored.
@@ -78,10 +76,10 @@ class CObservationImage : public CObservation
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
-
+}
 // Add for declaration of mexplus::from template specialization
 DECLARE_MEXPLUS_FROM(mrpt::obs::CObservationImage)
 
 #endif
+
+

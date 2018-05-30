@@ -32,9 +32,7 @@
 #define KINECT_RANGES_TABLE_MASK 0x07FF
 #endif
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** A class for grabing "range images", intensity images (either RGB or IR) and
  *other information from an Xbox Kinect sensor.
@@ -543,9 +541,7 @@ class CKinect : public mrpt::hwdrivers::CGenericSensor
 	void calculate_range2meters();
 
 };  // End of class
-}  // namespace hwdrivers
-}  // namespace mrpt
-
+}
 MRPT_ENUM_TYPE_BEGIN(mrpt::hwdrivers::CKinect::TVideoChannel)
 using namespace mrpt::hwdrivers;
 MRPT_FILL_ENUM_MEMBER(CKinect, VIDEO_CHANNEL_RGB);
@@ -553,3 +549,5 @@ MRPT_FILL_ENUM_MEMBER(CKinect, VIDEO_CHANNEL_IR);
 MRPT_ENUM_TYPE_END()
 
 #endif
+
+

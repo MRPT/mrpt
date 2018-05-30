@@ -13,9 +13,7 @@
 #include <mrpt/maps/CRandomFieldGridMap2D.h>
 #include <mrpt/maps/CHeightGridMap2D_Base.h>
 
-namespace mrpt
-{
-namespace maps
+namespace mrpt::maps
 {
 /** CHeightGridMap2D_MRF represents digital-elevation-model over a 2D area, with
  * uncertainty, based on a Markov-Random-Field (MRF) estimator.
@@ -113,6 +111,7 @@ class CHeightGridMap2D_MRF : public CRandomFieldGridMap2D,
 	MAP_DEFINITION_END(CHeightGridMap2D_MRF)
 };
 
-}  // End of namespace
-}  // End of namespace
+}
 #endif
+
+

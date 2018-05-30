@@ -13,9 +13,7 @@
 #include <mrpt/opengl/COpenGLScene.h>
 #include <map>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 /** This class can load & render 3D models in a number of different formats
  * (requires the library assimp).
@@ -82,7 +80,7 @@ class CAssimpModel : public CRenderizableDisplayList
 	virtual ~CAssimpModel();
 
    private:
-	/** A container for automatic deletion of lib3ds's scene when the last
+	/** A container for automatic deletion of assimp scene when the last
 	 * reference of the smart_ptr's is destroyed.
 	 */
 	struct TImplAssimp
@@ -104,7 +102,7 @@ class CAssimpModel : public CRenderizableDisplayList
 	mutable std::map<std::string, TInfoPerTexture> m_textureIdMap;
 };
 
-}  // namespace opengl
-}  // namespace mrpt
-
+}
 #endif
+
+

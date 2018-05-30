@@ -34,7 +34,17 @@ if(CMAKE_TIMING_VERBOSE AND UNIX)
   set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CMAKE_SOURCE_DIR}/cmakemodules/custom_output.sh")
 endif(CMAKE_TIMING_VERBOSE AND UNIX)
 
-set (CMAKE_CXX_STANDARD 14)  # Require C++14
+# Require C++17
+if (MSVC)
+	add_compile_options("/std:c++latest")
+else()
+	if(${CMAKE_VERSION} VERSION_LESS "3.8.0")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
+	else()
+		set(CMAKE_CXX_STANDARD 17)
+	endif()
+endif()
+
 if(COMMAND cmake_policy)
 	cmake_policy(SET CMP0003 NEW) # We don't want to mix relative and absolute paths in linker lib lists.
 	cmake_policy(SET CMP0005 NEW) # Escape definitions (-D) strings
@@ -73,6 +83,7 @@ find_package(codecov)
 
 
 SET(ALLOW_GPL OFF CACHE BOOL "Allows MRPT to link to GPL code. This effectively makes some MRPT binaries GPL licensed. Use this at your own risk.")
+OPTION(MRPT_ALLOW_LGPLV3 "Allows MRPT to use LGPLV3 code" "OFF")
 
 # The root directory for all MRPT libraries/modules:
 SET(MRPT_LIBS_ROOT "${CMAKE_SOURCE_DIR}/libs" CACHE INTERNAL "")  # This emulates global vars
@@ -259,7 +270,6 @@ include(cmakemodules/script_wxwidgets.cmake REQUIRED)   # Check for wxWidgets + 
 include(cmakemodules/script_qt.cmake REQUIRED)          # Check for wxWidgets + GL
 include(cmakemodules/script_libdc1394.cmake REQUIRED)   # Check for libdc1394-2
 include(cmakemodules/script_assimp.cmake REQUIRED)      # Check for system assimp lib (3D models)
-include(cmakemodules/script_lib3ds.cmake REQUIRED)      # Check for system lib3ds
 include(cmakemodules/script_liblas.cmake REQUIRED)      # Check for the LAS LiDAR format library
 include(cmakemodules/script_libtclap.cmake REQUIRED)    # Check for system libtclap
 include(cmakemodules/script_zlib.cmake REQUIRED)        # Check for zlib
@@ -373,6 +383,7 @@ IF(MSVC)
 	add_compile_options(/W3)
 	add_definitions(-D_CRT_SECURE_NO_DEPRECATE)
 	add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE)
+	add_definitions(-D_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS)
 
 	LINK_DIRECTORIES("${CMAKE_BINARY_DIR}/lib")  # Required to find libraries
 

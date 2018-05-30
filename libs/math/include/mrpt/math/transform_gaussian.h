@@ -18,9 +18,7 @@
 #include <mrpt/random.h>
 #include <functional>
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 /** @addtogroup  gausspdf_transform_grp Gaussian PDF transformation functions
   *  \ingroup mrpt_math_grp
@@ -172,5 +170,5 @@ void transform_gaussian_linear(
 
 /** @} */
 
-}  // End of MATH namespace
-}  // End of namespace
+}
+

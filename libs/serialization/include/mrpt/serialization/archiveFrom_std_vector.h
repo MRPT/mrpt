@@ -13,9 +13,7 @@
 #include <cstdint>
 #include <cstring>
 
-namespace mrpt
-{
-namespace serialization
+namespace mrpt::serialization
 {
 /** Specialization for std::vector, suitable for read/write, using the
  * `vector<uint8_t>` as the underlaying stream container. Writing always happen
@@ -75,5 +73,5 @@ class CArchiveStreamBase<const std::vector<uint8_t>> : public CArchive
 		return n;
 	};
 };
-}  // namespace serialization
-}  // namespace mrpt
+}
+

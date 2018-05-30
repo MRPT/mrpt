@@ -11,9 +11,7 @@
 #include <mrpt/math/CProbabilityDensityFunction.h>
 #include <mrpt/poses/CPoint2D.h>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 /** Declares a class that represents a Probability Distribution function (PDF)
  * of a 2D point (x,y).
@@ -58,19 +56,19 @@ class CPoint2DPDF : public mrpt::serialization::CSerializable,
 	  */
 	virtual void bayesianFusion(
 		const CPoint2DPDF& p1, const CPoint2DPDF& p2,
-		const double& minMahalanobisDistToDrop = 0) = 0;
+		const double minMahalanobisDistToDrop = 0) = 0;
 
 	enum
 	{
 		is_3D_val = 0
 	};
-	static inline bool is_3D() { return is_3D_val != 0; }
+	static constexpr bool is_3D() { return is_3D_val != 0; }
 	enum
 	{
 		is_PDF_val = 1
 	};
-	static inline bool is_PDF() { return is_PDF_val != 0; }
+	static constexpr bool is_PDF() { return is_PDF_val != 0; }
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
+}
+

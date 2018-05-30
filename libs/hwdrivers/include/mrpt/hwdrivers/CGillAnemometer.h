@@ -14,9 +14,7 @@
 #include <mrpt/obs/CObservationWindSensor.h>
 #include <mrpt/config/CConfigFileBase.h>
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** This class implements a driver for the Gill Windsonic Option 1 Anemometer
   *   The sensor is accessed via a standard serial port.
@@ -66,6 +64,7 @@ class CGillAnemometer : public mrpt::hwdrivers::CGenericSensor
 		const std::string& section);
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
+}
 #endif
+
+

@@ -21,9 +21,7 @@
 
 #include <mrpt/pbmap/PbMap.h>
 
-namespace mrpt
-{
-namespace pbmap
+namespace mrpt::pbmap
 {
 /*! This class defines a subgraph inside a PbMap.
  *  This subgraph represents the entity to be matched in order to recognize a
@@ -67,7 +65,7 @@ class Subgraph
 	std::set<unsigned> subgraphPlanesIdx;
 };
 }
-}  // End of namespaces
+#endif
+#endif
 
-#endif
-#endif
+

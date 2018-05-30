@@ -18,11 +18,7 @@
 #include <mrpt/system/TParameters.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
 
-namespace mrpt
-{
-namespace graphs
-{
-namespace detail
+namespace mrpt::graphs::detail
 {
 /**\brief Base class for C*Visualizer classes.
  *
@@ -88,10 +84,9 @@ class CVisualizer
 	bool m_is_3D_graph;
 	const GRAPH_T& m_graph;
 };
-}  // namespace detail
-}  // namespace graphs
-}  // namespace mrpt
-
+}
 #include <mrpt/graphs/CVisualizer_impl.h>
 
 #endif /* end of include guard: CVISUALIZER_H */
+
+

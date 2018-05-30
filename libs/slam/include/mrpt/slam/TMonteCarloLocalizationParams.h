@@ -12,9 +12,7 @@
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/slam/TKLDParams.h>
 
-namespace mrpt
-{
-namespace slam
+namespace mrpt::slam
 {
 /** The struct for passing extra simulation parameters to the prediction stage
 	*    when running a particle filter.
@@ -50,7 +48,7 @@ struct TMonteCarloLocalizationParams
 	TKLDParams KLD_params;
 };
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

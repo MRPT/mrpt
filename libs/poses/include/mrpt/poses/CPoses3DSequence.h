@@ -12,9 +12,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CSerializable.h>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 /** This class stores a sequence of relative, incremental 3D poses. It is useful
  * as the bases storing unit for more complex probability particles and for
@@ -132,7 +130,7 @@ class CPoses3DSequence : public mrpt::serialization::CSerializable
 		}
 	}
 };  // End of class def.
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

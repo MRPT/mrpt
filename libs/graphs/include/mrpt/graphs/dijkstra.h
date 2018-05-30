@@ -21,9 +21,7 @@
 #include <exception>
 #include <functional>
 
-namespace mrpt
-{
-namespace graphs
+namespace mrpt::graphs
 {
 namespace detail
 {
@@ -496,6 +494,5 @@ class CDijkstra
 
 };  // end class
 
-}  // namespace graphs
-}  // namespace mrpt
+}
 #endif

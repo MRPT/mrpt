@@ -17,8 +17,8 @@
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <fstream>
 
-namespace mrpt {
-namespace poses {
+namespace mrpt::poses
+{
 
 template <int DIM>
 CPoseInterpolatorBase<DIM>::CPoseInterpolatorBase() : m_method( mrpt::poses::imLinearSlerp )
@@ -395,15 +395,17 @@ void CPoseInterpolatorBase<DIM>::filter( unsigned int component, unsigned int sa
 		for( unsigned int i = 0; it2 != it3; ++it2, ++i )
 		{
 			particles.m_particles[i].log_w = 0;
-			*particles.m_particles[i].d = mrpt::poses::CPose3D(it1->second);
+			particles.m_particles[i].d = it1->second;
 			switch( component )
 			{
-				case 0:	particles.m_particles[i].d->x(it2->second[0]);		break;
-				case 1:	particles.m_particles[i].d->y(it2->second[1]);		break;
-				case 2:	particles.m_particles[i].d->z(it2->second[2]);		break;
-				case 3:	particles.m_particles[i].d->setYawPitchRoll(it2->second[3],it1->second[4],it1->second[5]); break;
-				case 4:	particles.m_particles[i].d->setYawPitchRoll(it1->second[3],it2->second[4],it1->second[5]); 	break;
-				case 5:	particles.m_particles[i].d->setYawPitchRoll(it1->second[3],it1->second[4],it2->second[5]); 	break;
+				case 0:	particles.m_particles[i].d.x= it2->second[0];		break;
+				case 1:	particles.m_particles[i].d.y=it2->second[1];		break;
+				case 2:	particles.m_particles[i].d.z=it2->second[2];		break;
+				case 3:	particles.m_particles[i].d.yaw = it2->second[3]; break;
+				case 4:
+					particles.m_particles[i].d.pitch = it2->second[4];
+					break;
+				case 5:	particles.m_particles[i].d.roll= it2->second[5]; 	break;
 			} // end switch
 		} // end for it2
 
@@ -412,7 +414,7 @@ void CPoseInterpolatorBase<DIM>::filter( unsigned int component, unsigned int sa
 		aux[it1->first] = pose_t(auxPose.asTPose());
 	} // end for it1
 	m_path = aux;
-} // end filter
+}
+} // end ns
 
-} // end ns
-} // end ns
+

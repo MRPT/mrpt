@@ -10,9 +10,7 @@
 
 #include <string>
 
-namespace mrpt
-{
-namespace system
+namespace mrpt::system
 {
 /** @defgroup filesystem Directories, files, and file names (in #include
  * <mrpt/system/filesystem.h>)
@@ -159,5 +157,5 @@ bool copyFile(
 	std::string* outErrStr = nullptr, bool copyAttribs = true);
 
 /** @} */
-}  // End of namespace
-}  // End of namespace
+}
+

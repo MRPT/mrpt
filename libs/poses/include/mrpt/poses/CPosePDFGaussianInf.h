@@ -12,9 +12,7 @@
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 class CPose3DPDF;
 
@@ -162,7 +160,7 @@ class CPosePDFGaussianInf : public CPosePDF
    */
 	void bayesianFusion(
 		const CPosePDF& p1, const CPosePDF& p2,
-		const double& minMahalanobisDistToDrop = 0) override;
+		const double minMahalanobisDistToDrop = 0) override;
 
 	/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF */
 	void inverse(CPosePDF& o) const override;
@@ -246,7 +244,7 @@ poses::CPosePDFGaussianInf operator+(
 /** Dumps the mean and covariance matrix to a text stream. */
 std::ostream& operator<<(std::ostream& out, const CPosePDFGaussianInf& obj);
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

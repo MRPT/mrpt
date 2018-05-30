@@ -13,9 +13,7 @@
 #include <set>
 #include <iostream>
 
-namespace mrpt
-{
-namespace containers
+namespace mrpt::containers
 {
 /** \addtogroup stlext_grp
   * @{ */
@@ -147,4 +145,4 @@ void printMap(const std::map<T1, T2>& m)
 
 /** @} */  // end of grouping
 }
-}
+

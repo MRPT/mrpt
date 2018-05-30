@@ -13,9 +13,7 @@
 #include <mrpt/poses/CPose2DGridTemplate.h>
 #include <mrpt/core/bits_math.h>  // DEG2RAD()
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 /** Declares a class that represents a Probability Distribution
  *    function (PDF) of a 2D pose (x,y,phi).
@@ -72,7 +70,7 @@ class CPosePDFGrid : public CPosePDF, public CPose2DGridTemplate<double>
 	 * a pointwise multiplication) */
 	void bayesianFusion(
 		const CPosePDF& p1, const CPosePDF& p2,
-		const double& minMahalanobisDistToDrop = 0) override;
+		const double minMahalanobisDistToDrop = 0) override;
 	/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF */
 	void inverse(CPosePDF& o) const override;
 	/** Draws a single sample from the distribution (WARNING: weights are
@@ -85,6 +83,7 @@ class CPosePDFGrid : public CPosePDF, public CPose2DGridTemplate<double>
 		std::vector<mrpt::math::CVectorDouble>& outSamples) const override;
 
 };  // End of class def.
-}  // End of namespace
-}  // End of namespace
+}
 #endif
+
+

@@ -3,8 +3,8 @@
 
 #include "types.hpp"
 
-namespace Sophus {
-namespace details {
+namespace Sophus::details
+{
 
 template <class Scalar, int N>
 Matrix<Scalar, N, N> calcW(Matrix<Scalar, N, N> const& Omega,
@@ -95,8 +95,8 @@ Matrix<Scalar, N, N> calcWInv(Matrix<Scalar, N, N> const& Omega,
   }
   return a * Omega + b * Omega2 + c * I;
 }
-
-}  // details
 }  // Sophus
 
 #endif
+
+

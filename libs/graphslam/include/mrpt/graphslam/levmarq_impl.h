@@ -22,6 +22,67 @@ using namespace mrpt::graphslam;
 using namespace mrpt::math;
 using namespace std;
 
+// Auxiliary struct to update the oplus increments after each iteration
+// Specializations are below.
+template <class POSE, class gst>
+struct AuxPoseOPlus;
+
+// Nodes: CPose2D
+template <class gst>
+struct AuxPoseOPlus<CPose2D, gst>
+{
+	static inline void sumIncr(CPose2D& p, const typename gst::Array_O& delta)
+	{
+		p.x_incr(delta[0]);
+		p.y_incr(delta[1]);
+		p.phi_incr(delta[2]);
+		p.normalizePhi();
+	}
+};
+
+// Nodes: CPosePDFGaussianInf
+template <class gst>
+struct AuxPoseOPlus<CPosePDFGaussianInf, gst>
+{
+	template <class POSE>
+	static inline void sumIncr(POSE& p, const typename gst::Array_O& delta)
+	{
+		p.x_incr(delta[0]);
+		p.y_incr(delta[1]);
+		p.phi_incr(delta[2]);
+		p.normalizePhi();
+	}
+};
+
+// Nodes: CPose2D
+template <class gst>
+struct AuxPoseOPlus<CPose3D, gst>
+{
+	static inline void sumIncr(CPose3D& p, const typename gst::Array_O& delta)
+	{
+		// exp_delta_i = Exp_SE( delta_i )
+		typename gst::graph_t::constraint_t::type_value exp_delta_pose(
+			UNINITIALIZED_POSE);
+		gst::SE_TYPE::exp(delta, exp_delta_pose);
+		p = p + exp_delta_pose;
+	}
+};
+
+// Nodes: CPosePDFGaussianInf
+template <class gst>
+struct AuxPoseOPlus<CPose3DPDFGaussianInf, gst>
+{
+	template <class POSE>
+	static inline void sumIncr(POSE& p, const typename gst::Array_O& delta)
+	{
+		// exp_delta_i = Exp_SE( delta_i )
+		typename gst::graph_t::constraint_t::type_value exp_delta_pose(
+			UNINITIALIZED_POSE);
+		gst::SE_TYPE::exp(delta, exp_delta_pose);
+		p = p + exp_delta_pose;
+	}
+};
+
 // An auxiliary struct to compute the pseudo-ln of a pose error, possibly
 // modified with an information matrix.
 //  Specializations are below.
@@ -34,10 +95,10 @@ struct AuxErrorEval<CPose2D, gst>
 {
 	template <class POSE, class VEC, class EDGE_ITERATOR>
 	static inline void computePseudoLnError(
-		const POSE& P1DP2inv, VEC& err, const EDGE_ITERATOR& edge)
+		const POSE& DinvP1invP2, VEC& err, const EDGE_ITERATOR& edge)
 	{
 		MRPT_UNUSED_PARAM(edge);
-		gst::SE_TYPE::pseudo_ln(P1DP2inv, err);
+		gst::SE_TYPE::pseudo_ln(DinvP1invP2, err);
 	}
 
 	template <class MAT, class EDGE_ITERATOR>
@@ -45,7 +106,7 @@ struct AuxErrorEval<CPose2D, gst>
 		const MAT& J1, MAT& JtJ, const EDGE_ITERATOR& edge)
 	{
 		MRPT_UNUSED_PARAM(edge);
-		JtJ.multiply_AtA(J1);
+		JtJ = J1.transpose() * J1;
 	}
 
 	template <class MAT, class EDGE_ITERATOR>
@@ -53,7 +114,7 @@ struct AuxErrorEval<CPose2D, gst>
 		const MAT& J1, const MAT& J2, MAT& JtJ, const EDGE_ITERATOR& edge)
 	{
 		MRPT_UNUSED_PARAM(edge);
-		JtJ.multiply_AtB(J1, J2);
+		JtJ = J1.transpose() * J2;
 	}
 
 	template <class JAC, class EDGE_ITERATOR, class VEC1, class VEC2>
@@ -61,7 +122,8 @@ struct AuxErrorEval<CPose2D, gst>
 		const JAC& J, const EDGE_ITERATOR& edge, const VEC1& ERR, VEC2& OUT)
 	{
 		MRPT_UNUSED_PARAM(edge);
-		J.multiply_Atb(ERR, OUT, true /* accumulate in output */);
+		const auto grad_incr = (J.transpose() * ERR).eval();
+		OUT += grad_incr;
 	}
 };
 
@@ -71,10 +133,10 @@ struct AuxErrorEval<CPose3D, gst>
 {
 	template <class POSE, class VEC, class EDGE_ITERATOR>
 	static inline void computePseudoLnError(
-		const POSE& P1DP2inv, VEC& err, const EDGE_ITERATOR& edge)
+		const POSE& DinvP1invP2, VEC& err, const EDGE_ITERATOR& edge)
 	{
 		MRPT_UNUSED_PARAM(edge);
-		gst::SE_TYPE::pseudo_ln(P1DP2inv, err);
+		gst::SE_TYPE::pseudo_ln(DinvP1invP2, err);
 	}
 
 	template <class MAT, class EDGE_ITERATOR>
@@ -82,7 +144,7 @@ struct AuxErrorEval<CPose3D, gst>
 		const MAT& J1, MAT& JtJ, const EDGE_ITERATOR& edge)
 	{
 		MRPT_UNUSED_PARAM(edge);
-		JtJ.multiply_AtA(J1);
+		JtJ = J1.transpose() * J1;
 	}
 
 	template <class MAT, class EDGE_ITERATOR>
@@ -90,7 +152,7 @@ struct AuxErrorEval<CPose3D, gst>
 		const MAT& J1, const MAT& J2, MAT& JtJ, const EDGE_ITERATOR& edge)
 	{
 		MRPT_UNUSED_PARAM(edge);
-		JtJ.multiply_AtB(J1, J2);
+		JtJ = J1.transpose() * J2;
 	}
 
 	template <class JAC, class EDGE_ITERATOR, class VEC1, class VEC2>
@@ -98,7 +160,7 @@ struct AuxErrorEval<CPose3D, gst>
 		const JAC& J, const EDGE_ITERATOR& edge, const VEC1& ERR, VEC2& OUT)
 	{
 		MRPT_UNUSED_PARAM(edge);
-		J.multiply_Atb(ERR, OUT, true /* accumulate in output */);
+		OUT += J.transpose() * ERR;
 	}
 };
 
@@ -108,31 +170,29 @@ struct AuxErrorEval<CPosePDFGaussianInf, gst>
 {
 	template <class POSE, class VEC, class EDGE_ITERATOR>
 	static inline void computePseudoLnError(
-		const POSE& P1DP2inv, VEC& err, const EDGE_ITERATOR& edge)
+		const POSE& DinvP1invP2, VEC& err, const EDGE_ITERATOR& edge)
 	{
-		gst::SE_TYPE::pseudo_ln(P1DP2inv, err);
+		gst::SE_TYPE::pseudo_ln(DinvP1invP2, err);
 	}
 
 	template <class MAT, class EDGE_ITERATOR>
 	static inline void multiplyJtLambdaJ(
 		const MAT& J1, MAT& JtJ, const EDGE_ITERATOR& edge)
 	{
-		JtJ.multiply_AtBC(J1, edge->second.cov_inv, J1);
+		JtJ = (J1.transpose() * edge->second.cov_inv) * J1;
 	}
 	template <class MAT, class EDGE_ITERATOR>
 	static inline void multiplyJ1tLambdaJ2(
 		const MAT& J1, const MAT& J2, MAT& JtJ, const EDGE_ITERATOR& edge)
 	{
-		JtJ.multiply_AtBC(J1, edge->second.cov_inv, J2);
+		JtJ = (J1.transpose() * edge->second.cov_inv) * J2;
 	}
 
 	template <class JAC, class EDGE_ITERATOR, class VEC1, class VEC2>
 	static inline void multiply_Jt_W_err(
 		const JAC& J, const EDGE_ITERATOR& edge, const VEC1& ERR, VEC2& OUT)
 	{
-		mrpt::math::CMatrixDouble33 JtInf(mrpt::math::UNINITIALIZED_MATRIX);
-		JtInf.multiply_AtB(J, edge->second.cov_inv);
-		JtInf.multiply_Ab(ERR, OUT, true /* accumulate in output */);
+		OUT += (J.transpose() * edge->second.cov_inv) * ERR;
 	}
 };
 
@@ -142,37 +202,35 @@ struct AuxErrorEval<CPose3DPDFGaussianInf, gst>
 {
 	template <class POSE, class VEC, class EDGE_ITERATOR>
 	static inline void computePseudoLnError(
-		const POSE& P1DP2inv, VEC& err, const EDGE_ITERATOR& edge)
+		const POSE& DinvP1invP2, VEC& err, const EDGE_ITERATOR& edge)
 	{
 		MRPT_UNUSED_PARAM(edge);
-		gst::SE_TYPE::pseudo_ln(P1DP2inv, err);
+		gst::SE_TYPE::pseudo_ln(DinvP1invP2, err);
 	}
 
 	template <class MAT, class EDGE_ITERATOR>
 	static inline void multiplyJtLambdaJ(
 		const MAT& J1, MAT& JtJ, const EDGE_ITERATOR& edge)
 	{
-		JtJ.multiply_AtBC(J1, edge->second.cov_inv, J1);
+		JtJ = (J1.transpose() * edge->second.cov_inv) * J1;
 	}
 
 	template <class MAT, class EDGE_ITERATOR>
 	static inline void multiplyJ1tLambdaJ2(
 		const MAT& J1, const MAT& J2, MAT& JtJ, const EDGE_ITERATOR& edge)
 	{
-		JtJ.multiply_AtBC(J1, edge->second.cov_inv, J2);
+		JtJ = (J1.transpose() * edge->second.cov_inv) * J2;
 	}
 
 	template <class JAC, class EDGE_ITERATOR, class VEC1, class VEC2>
 	static inline void multiply_Jt_W_err(
 		const JAC& J, const EDGE_ITERATOR& edge, const VEC1& ERR, VEC2& OUT)
 	{
-		mrpt::math::CMatrixDouble66 JtInf(mrpt::math::UNINITIALIZED_MATRIX);
-		JtInf.multiply_AtB(J, edge->second.cov_inv);
-		JtInf.multiply_Ab(ERR, OUT, true /* accumulate in output */);
+		OUT += (J.transpose() * edge->second.cov_inv) * ERR;
 	}
 };
 
-}  // end NS detail
+}  // namespace detail
 
 // Compute, at once, jacobians and the error vectors for each constraint in
 // "lstObservationData", returns the overall squared error.
@@ -195,41 +253,34 @@ double computeJacobiansAndErrors(
 	for (size_t i = 0; i < nObservations; i++)
 	{
 		const typename gst::observation_info_t& obs = lstObservationData[i];
-		typename gst::edge_const_iterator it = obs.edge;
+		auto e = obs.edge;
 		const typename gst::graph_t::constraint_t::type_value* EDGE_POSE =
 			obs.edge_mean;
 		typename gst::graph_t::constraint_t::type_value* P1 = obs.P1;
 		typename gst::graph_t::constraint_t::type_value* P2 = obs.P2;
 
-		const auto& ids = it->first;
-		const auto& edge = it->second;
+		const auto& ids = e->first;
+		const auto& edge = e->second;
 
 		// Compute the residual pose error of these pair of nodes + its
-		// constraint,
-		//  that is: P1DP2inv = P1 * EDGE * inv(P2)
-		typename gst::graph_t::constraint_t::type_value P1DP2inv(
-			mrpt::poses::UNINITIALIZED_POSE);
-		{
-			typename gst::graph_t::constraint_t::type_value P1D(
-				mrpt::poses::UNINITIALIZED_POSE);
-			P1D.composeFrom(*P1, *EDGE_POSE);
-			const typename gst::graph_t::constraint_t::type_value P2inv =
-				-(*P2);  // Pose inverse (NOT just switching signs!)
-			P1DP2inv.composeFrom(P1D, P2inv);
-		}
+		// constraint:
+		// DinvP1invP2 = inv(EDGE) * inv(P1) * P2 = (P2 \ominus P1) \ominus EDGE
+		typename gst::graph_t::constraint_t::type_value DinvP1invP2 =
+			((*P2) - (*P1)) - *EDGE_POSE;
 
 		// Add to vector of errors:
 		errs.resize(errs.size() + 1);
 		detail::AuxErrorEval<typename gst::edge_t, gst>::computePseudoLnError(
-			P1DP2inv, errs.back(), edge);
+			DinvP1invP2, errs.back(), edge);
 
 		// Compute the jacobians:
 		alignas(MRPT_MAX_ALIGN_BYTES)
 			std::pair<mrpt::graphs::TPairNodeIDs, typename gst::TPairJacobs>
 				newMapEntry;
 		newMapEntry.first = ids;
-		gst::SE_TYPE::jacobian_dP1DP2inv_depsilon(
-			P1DP2inv, &newMapEntry.second.first, &newMapEntry.second.second);
+		gst::SE_TYPE::jacobian_dDinvP1invP2_depsilon(
+			-(*EDGE_POSE), *P1, *P2, &newMapEntry.second.first,
+			&newMapEntry.second.second);
 
 		// And insert into map of jacobians:
 		lstJacobians.insert(lstJacobians.end(), newMapEntry);
@@ -243,7 +294,7 @@ double computeJacobiansAndErrors(
 	return ret_err;
 }
 
-}  // end of NS
-}  // end of NS
+}  // namespace graphslam
+}  // namespace mrpt
 
 #endif

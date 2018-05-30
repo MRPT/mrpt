@@ -12,9 +12,7 @@
 #include "CAbstractHolonomicReactiveMethod.h"
 #include <mrpt/config/CLoadableOptions.h>
 
-namespace mrpt
-{
-namespace nav
+namespace mrpt::nav
 {
 class CLogFileRecord_ND;
 /** \addtogroup nav_holo Holonomic navigation methods
@@ -178,9 +176,7 @@ class CLogFileRecord_ND : public CHolonomicLogFileRecord
 };
 
 /** @} */
-}  // namespace nav
-}  // namespace mrpt
-
+}
 MRPT_ENUM_TYPE_BEGIN(mrpt::nav::CHolonomicND::TSituations)
 using namespace mrpt::nav;
 MRPT_FILL_ENUM_MEMBER(CHolonomicND, SITUATION_TARGET_DIRECTLY);
@@ -190,3 +186,5 @@ MRPT_FILL_ENUM_MEMBER(CHolonomicND, SITUATION_NO_WAY_FOUND);
 MRPT_ENUM_TYPE_END()
 
 #endif
+
+

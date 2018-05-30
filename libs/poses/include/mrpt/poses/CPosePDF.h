@@ -14,9 +14,7 @@
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/CProbabilityDensityFunction.h>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 class CPosePDFGaussian;  // frd decl.
 
@@ -61,7 +59,7 @@ class CPosePDF : public mrpt::serialization::CSerializable,
 	  */
 	virtual void bayesianFusion(
 		const CPosePDF& p1, const CPosePDF& p2,
-		const double& minMahalanobisDistToDrop = 0) = 0;
+		const double minMahalanobisDistToDrop = 0) = 0;
 
 	/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF
 	  */
@@ -98,12 +96,12 @@ class CPosePDF : public mrpt::serialization::CSerializable,
 	{
 		is_3D_val = 0
 	};
-	static inline bool is_3D() { return is_3D_val != 0; }
+	static constexpr bool is_3D() { return is_3D_val != 0; }
 	enum
 	{
 		is_PDF_val = 1
 	};
-	static inline bool is_PDF() { return is_PDF_val != 0; }
+	static constexpr bool is_PDF() { return is_PDF_val != 0; }
 	/** Returns a 3D representation of this PDF (it doesn't clear the current
 	 * contents of out_obj, but append new OpenGL objects to that list)
 	  * \note Needs the mrpt-opengl library, and using
@@ -134,7 +132,7 @@ class CPosePDF : public mrpt::serialization::CSerializable,
 	MRPT_MAKE_ALIGNED_OPERATOR_NEW
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

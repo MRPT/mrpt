@@ -14,9 +14,7 @@
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPosePDF.h>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 /** Declares a class that represents a Probability Distribution
  *    function (PDF) of a 3D point (x,y,z).
@@ -59,7 +57,7 @@ class CPointPDF : public mrpt::serialization::CSerializable,
 	  */
 	virtual void bayesianFusion(
 		const CPointPDF& p1, const CPointPDF& p2,
-		const double& minMahalanobisDistToDrop = 0) = 0;
+		const double minMahalanobisDistToDrop = 0) = 0;
 
 	virtual void changeCoordinatesReference(
 		const CPose3D& newReferenceBase) = 0;
@@ -68,12 +66,12 @@ class CPointPDF : public mrpt::serialization::CSerializable,
 	{
 		is_3D_val = 1
 	};
-	static inline bool is_3D() { return is_3D_val != 0; }
+	static constexpr bool is_3D() { return is_3D_val != 0; }
 	enum
 	{
 		is_PDF_val = 1
 	};
-	static inline bool is_PDF() { return is_PDF_val != 0; }
+	static constexpr bool is_PDF() { return is_PDF_val != 0; }
 	/** Returns a 3D representation of this PDF (it doesn't clear the current
 	 * contents of out_obj, but append new OpenGL objects to that list)
 	  * \note Needs the mrpt-opengl library, and using
@@ -101,7 +99,7 @@ class CPointPDF : public mrpt::serialization::CSerializable,
 	}
 
 };  // End of class def.
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

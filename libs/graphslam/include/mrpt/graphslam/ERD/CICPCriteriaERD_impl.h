@@ -11,11 +11,7 @@
 #define CICPCRITERIAERD_IMPL_H
 #include <mrpt/opengl/CDisk.h>
 
-namespace mrpt
-{
-namespace graphslam
-{
-namespace deciders
+namespace mrpt::graphslam::deciders
 {
 // Ctors, Dtors
 // //////////////////////////////////
@@ -686,8 +682,8 @@ void CICPCriteriaERD<GRAPH_T>::TParams::loadFromConfigFile(
 
 	MRPT_END;
 }
-}
-}
 }  // end of namespaces
 
 #endif /* end of include guard: CICPCRITERIAERD_IMPL_H */
+
+

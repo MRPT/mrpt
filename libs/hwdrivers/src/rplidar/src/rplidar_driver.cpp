@@ -42,11 +42,7 @@
 #define min(a, b) (((a) < (b)) ? (a) : (b))
 #endif
 
-namespace rp
-{
-namespace standalone
-{
-namespace rplidar
+namespace rp::standalone::rplidar
 {
 // Factory Impl
 RPlidarDriver* RPlidarDriver::CreateDriver(_u32 drivertype)
@@ -1207,5 +1203,5 @@ u_result RPlidarDriverSerialImpl::stopMotor()
 	}
 }
 }
-}
-}
+
+

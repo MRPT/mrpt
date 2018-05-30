@@ -16,9 +16,7 @@
 #include <deque>
 #include <algorithm>
 
-namespace mrpt
-{
-namespace bayes
+namespace mrpt::bayes
 {
 class CParticleFilterCapable;
 
@@ -115,67 +113,73 @@ struct CParticleFilterDataImpl : public CParticleFilterCapable
 	void performSubstitution(const std::vector<size_t>& indx) override
 	{
 		MRPT_START
-		particle_list_t parts;
-		typename particle_list_t::iterator itDest, itSrc;
-		const size_t M_old = derived().m_particles.size();
-		size_t i, j, lastIndxOld = 0;
-		std::vector<bool> oldParticlesReused(M_old, false);
-		std::vector<bool>::const_iterator oldPartIt;
+		// Ensure input indices are sorted
 		std::vector<size_t> sorted_indx(indx);
-
-		/* Assure the input index is sorted: */
 		std::sort(sorted_indx.begin(), sorted_indx.end());
-		/* Set the new size: */
+
+		/* Temporary buffer: */
+		particle_list_t parts;
 		parts.resize(sorted_indx.size());
-		for (i = 0, itDest = parts.begin(); itDest != parts.end();
-			 i++, itDest++)
+
+		// Implementation for particles as pointers:
+		if constexpr(Derived::PARTICLE_STORAGE == particle_storage_mode::POINTER)
 		{
-			const size_t sorted_idx = sorted_indx[i];
-			itDest->log_w = derived().m_particles[sorted_idx].log_w;
-			/* We can safely delete old m_particles from [lastIndxOld,indx[i]-1]
-			 * (inclusive): */
-			for (j = lastIndxOld; j < sorted_idx; j++)
+			const size_t M_old = derived().m_particles.size();
+			std::vector<bool> oldParticlesReused(M_old, false);
+			std::vector<bool>::const_iterator oldPartIt;
+			typename particle_list_t::iterator itDest, itSrc;
+			size_t i, lastIndxOld = 0;
+
+			for (i = 0, itDest = parts.begin(); itDest != parts.end();
+				i++, itDest++)
 			{
-				if (!oldParticlesReused
+				const size_t sorted_idx = sorted_indx[i];
+				itDest->log_w = derived().m_particles[sorted_idx].log_w;
+				/* We can safely delete old m_particles from [lastIndxOld,indx[i]-1]
+				 * (inclusive): */
+				for (size_t j = lastIndxOld; j < sorted_idx; j++)
+				{
+					if (!oldParticlesReused
 						[j]) /* If reused we can not delete that memory! */
-					derived().m_particles[j].d.reset();
-			}
+						derived().m_particles[j].d.reset();
+				}
 
-			/* For the next iteration:*/
-			lastIndxOld = sorted_idx;
+				/* For the next iteration:*/
+				lastIndxOld = sorted_idx;
 
-			/* If this is the first time that the old particle "indx[i]"
-			 * appears, */
-			/*  we can reuse the old "data" instead of creating a new copy: */
-			if (!oldParticlesReused[sorted_idx])
-			{
-				/* Reuse the data from the particle: */
-				parts[i].d.reset(derived().m_particles[sorted_idx].d.get());
-				oldParticlesReused[sorted_idx] = true;
+				/* If this is the first time that the old particle "indx[i]" appears, */
+				 /*  we can reuse the old "data" instead of creating a new copy: */
+				if (!oldParticlesReused[sorted_idx])
+				{
+					/* Reuse the data from the particle: */
+					parts[i].d.reset(derived().m_particles[sorted_idx].d.get());
+					oldParticlesReused[sorted_idx] = true;
+				}
+				else
+				{
+					/* Make a copy of the particle's data: */
+					ASSERT_(derived().m_particles[sorted_idx].d);
+					parts[i].d.reset(
+						new typename Derived::CParticleDataContent(
+							*derived().m_particles[sorted_idx].d));
+				}
 			}
-			else
-			{
-				/* Make a copy of the particle's data: */
-				ASSERT_(derived().m_particles[sorted_idx].d);
-				parts[i].d.reset(
-					new typename Derived::CParticleDataContent(
-						*derived().m_particles[sorted_idx].d));
-			}
+			/* Free memory of unused particles */
+			for (itSrc = derived().m_particles.begin(),
+				oldPartIt = oldParticlesReused.begin();
+				itSrc != derived().m_particles.end(); itSrc++, oldPartIt++)
+				if (!*oldPartIt) itSrc->d.reset();
 		}
-		/* Free memory of unused particles */
-		for (itSrc = derived().m_particles.begin(),
-			oldPartIt = oldParticlesReused.begin();
-			 itSrc != derived().m_particles.end(); itSrc++, oldPartIt++)
-			if (!*oldPartIt) itSrc->d.reset();
-		/* Copy the pointers only to the final destination */
-		derived().m_particles.resize(parts.size());
-		for (itSrc = parts.begin(), itDest = derived().m_particles.begin();
-			 itSrc != parts.end(); itSrc++, itDest++)
+		else
 		{
-			itDest->log_w = itSrc->log_w;
-			itDest->d = std::move(itSrc->d);
+			// Implementation for particles as values:
+			auto it_idx = sorted_indx.begin();
+			auto itDest = parts.begin();
+			for (; itDest != parts.end(); ++it_idx, ++itDest)
+				*itDest = derived().m_particles[*it_idx];
 		}
-		parts.clear();
+		/* Move particles to the final container: */
+		derived().m_particles = std::move(parts);
 		MRPT_END
 	}
 
@@ -195,16 +199,18 @@ struct CParticleFilterDataImpl : public CParticleFilterCapable
  * \sa CParticleFilter, CParticleFilterCapable, CParticleFilterDataImpl
  * \ingroup mrpt_bayes_grp
  */
-template <class T>
+template <
+	class T, particle_storage_mode STORAGE = particle_storage_mode::POINTER>
 class CParticleFilterData
 {
    public:
 	/** This is the type inside the corresponding CParticleData class */
 	using CParticleDataContent = T;
 	/** Use this to refer to each element in the m_particles array. */
-	using CParticleData = CProbabilityParticle<T>;
+	using CParticleData = CProbabilityParticle<T, STORAGE>;
 	/** Use this type to refer to the list of particles m_particles. */
 	using CParticleList = std::deque<CParticleData>;
+	static const particle_storage_mode PARTICLE_STORAGE = STORAGE;
 
 	/** The array of particles */
 	CParticleList m_particles;
@@ -226,7 +232,12 @@ class CParticleFilterData
 		out << n;
 		typename CParticleList::const_iterator it;
 		for (it = m_particles.begin(); it != m_particles.end(); ++it)
-			out << it->log_w << (*it->d);
+		{
+			out << it->log_w;
+			if constexpr(STORAGE == particle_storage_mode::POINTER)
+				out << (*it->d);
+			else out << it->d;
+		}
 		MRPT_END
 	}
 
@@ -246,8 +257,15 @@ class CParticleFilterData
 		for (it = m_particles.begin(); it != m_particles.end(); ++it)
 		{
 			in >> it->log_w;
-			it->d.reset(new T());
-			in >> *it->d;
+			if constexpr(STORAGE == particle_storage_mode::POINTER)
+			{
+				it->d.reset(new T());
+				in >> *it->d;
+			}
+			else
+			{
+				in >> it->d;
+			}
 		}
 		MRPT_END
 	}
@@ -283,5 +301,5 @@ class CParticleFilterData
 
 };  // End of class def.
 
-}  // namespace bayes
-}  // namespace mrpt
+}
+

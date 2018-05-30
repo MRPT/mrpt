@@ -10,9 +10,7 @@
 
 #include <mrpt/core/exceptions.h>
 
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 /** Efficiently compute the inverse of a 4x4 homogeneous matrix by only
  * transposing the rotation 3x3 part and solving the translation with dot
@@ -128,4 +126,5 @@ inline void homogeneousMatrixInverse(MATRIXLIKE& M)
 	M(2, 1) = t;
 }
 }
-}
+
+

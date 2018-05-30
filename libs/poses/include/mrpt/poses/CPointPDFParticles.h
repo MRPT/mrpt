@@ -13,12 +13,9 @@
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
-#include <mrpt/bayes/CProbabilityParticle.h>
 #include <mrpt/bayes/CParticleFilterData.h>
 
-namespace mrpt
-{
-namespace poses
+namespace mrpt::poses
 {
 /** A probability distribution of a 2D/3D point, represented as a set of random
  * samples (particles).
@@ -91,7 +88,8 @@ class CPointPDFParticles
 	  */
 	void bayesianFusion(
 		const CPointPDF& p1, const CPointPDF& p2,
-		const double& minMahalanobisDistToDrop = 0) override;
+		const double minMahalanobisDistToDrop = 0) override;
+		
 	/** Templatized serializeTo function */
 	template <typename SCHEMA_CAPABLE>
 	SCHEMA_CAPABLE serializeTo() const
@@ -113,7 +111,6 @@ class CPointPDFParticles
 				
 		return out;	
 	}
-
 	/** Templatized serializeFrom function 
 	 * Serializes only if the datatype matched to className 
 	*/
@@ -147,7 +144,7 @@ class CPointPDFParticles
 		}
 	}
 };  // End of class def.
-}  // End of namespace
-}  // End of namespace
-
+}
 #endif
+
+

@@ -13,9 +13,7 @@
 #include <mrpt/opengl/opengl_fonts.h>
 #include <map>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 /** Keeps a list of text messages which can be rendered to OpenGL contexts by
  * graphic classes.
@@ -82,7 +80,7 @@ class CTextMessageCapable
 
 };  // end of CTextMessageCapable
 
-}  // end namespace
-}  // End of namespace
-
+}
 #endif
+
+

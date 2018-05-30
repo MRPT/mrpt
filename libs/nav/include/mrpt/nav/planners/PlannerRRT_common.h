@@ -18,9 +18,7 @@
 #include <string>
 #include <cstdlib>  // size_t
 
-namespace mrpt
-{
-namespace nav
+namespace mrpt::nav
 {
 /** \addtogroup nav_planners Path planning
 * \ingroup mrpt_nav_grp
@@ -282,7 +280,6 @@ class PlannerTPS_VirtualBase
 };  // end class PlannerTPS_VirtualBase
 /** @} */
 }
-}
-
-// Impl of renderMoveTree<>
 #include "impl_renderMoveTree.h"
+
+

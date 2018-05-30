@@ -14,6 +14,9 @@ SOURCE_DATE_EPOCH
 
 # Vim-related files
 Session.vim
+.projections.json
+compile_commands.json
+.mypy_cache/
 
 # common results directories
 graphslam_results/

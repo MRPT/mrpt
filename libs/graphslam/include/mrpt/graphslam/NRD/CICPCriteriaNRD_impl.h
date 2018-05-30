@@ -10,11 +10,7 @@
 #ifndef CICPCRITERIANRD_IMPL_H
 #define CICPCRITERIANRD_IMPL_H
 
-namespace mrpt
-{
-namespace graphslam
-{
-namespace deciders
+namespace mrpt::graphslam::deciders
 {
 // Ctors, Dtors
 //////////////////////////////////////////////////////////////
@@ -401,8 +397,8 @@ void CICPCriteriaNRD<GRAPH_T>::TParams::loadFromConfigFile(
 
 	MRPT_END;
 }
-}
-}
 }  // end of namespace
 
 #endif /* end of include guard: CICPCRITERIANRD_IMPL_H */
+
+

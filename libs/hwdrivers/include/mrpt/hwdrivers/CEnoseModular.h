@@ -17,9 +17,7 @@
 #include <mrpt/config/CConfigFileBase.h>
 #include <memory>  // unique_ptr
 
-namespace mrpt
-{
-namespace hwdrivers
+namespace mrpt::hwdrivers
 {
 /** A class for interfacing an e-NoseModular via a FTDI USB link.
   *  Implemented for the Mdular board v1.0 designed by 2013 @ MAPIR (University
@@ -124,7 +122,7 @@ class CEnoseModular : public mrpt::hwdrivers::CGenericSensor
 	inline void setSerialPortBaud(unsigned int baud) { m_COM_baud = baud; }
 	inline unsigned int getSerialPortBaud() const { return m_COM_baud; }
 };  // end of class
-}  // end of namespace
-}  // end of namespace
-
+}
 #endif
+
+

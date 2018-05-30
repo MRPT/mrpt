@@ -11,9 +11,7 @@
 #include <string>
 #include <vector>
 
-namespace mrpt
-{
-namespace io
+namespace mrpt::io
 {
 /** @defgroup vector_loadsave Load and save vectors to files (in #include
  * <mrpt/io/vector_loadsave.h>)
@@ -40,5 +38,5 @@ bool loadBinaryFile(
 bool loadTextFile(std::vector<std::string>& o, const std::string& fileName);
 /** @} */
 
-}  // namespace io
-}  // namespace mrpt
+}
+

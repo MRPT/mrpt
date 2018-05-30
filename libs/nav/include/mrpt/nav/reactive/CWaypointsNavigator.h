@@ -11,9 +11,7 @@
 #include <mrpt/nav/reactive/CAbstractNavigator.h>
 #include <mrpt/nav/reactive/TWaypoint.h>
 
-namespace mrpt
-{
-namespace nav
+namespace mrpt::nav
 {
 /** This class extends `CAbstractNavigator` with the capability of following a
  * list of waypoints. By default, waypoints are followed one by one,
@@ -174,4 +172,4 @@ class CWaypointsNavigator : public mrpt::nav::CAbstractNavigator
 	mrpt::system::TTimeStamp m_last_alignment_cmd;
 };
 }
-}
+

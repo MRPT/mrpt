@@ -10,8 +10,8 @@
 #include "so2.hpp"
 #include "so3.hpp"
 
-namespace Sophus {
-namespace interp_details {
+namespace Sophus::interp_details
+{
 
 template <class Group>
 struct Traits;
@@ -99,7 +99,7 @@ struct Traits<Sim3<Scalar>> {
   }
 };
 
-}  // namespace details
-}  // namespace Sophus
-
+}
 #endif  // SOPHUS_INTERPOLATE_DETAILS_HPP
+
+

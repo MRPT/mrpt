@@ -31,9 +31,7 @@
 
 using PointT = pcl::PointXYZRGBA;
 
-namespace mrpt
-{
-namespace pbmap
+namespace mrpt::pbmap
 {
 /*!frameRGBDandPose stores a dupla containing a pointCloud (built from a RGBD
  * frame) and a pose.
@@ -65,7 +63,7 @@ class PbMapMaker
 	~PbMapMaker();
 
 	/*!Get the PbMap.*/
-	PbMap getPbMap() { return mPbMap; };
+    PbMap getPbMap() { return mPbMap; }
 	/*!Serialize the PbMap.*/
 	void serializePbMap(std::string path);
 
@@ -160,10 +158,6 @@ class PbMapMaker
 	/*!PbMapMaker's stop var*/
 	bool m_pbmaker_finished;
 
-	// Color paper
-	void watchProperties(
-		std::set<unsigned>& observedPlanes, Plane& observedPlane);
-	void saveInfoFiles();
 	// Unary
 	float rejectAreaF, acceptAreaF, rejectAreaT, acceptAreaT;
 	float rejectElongF, acceptElongF, rejectElongT, acceptElongT;
@@ -175,8 +169,8 @@ class PbMapMaker
 	float rejectHistH_F, acceptHistH_F, rejectHistH_T, acceptHistH_T;
 };
 }
-}  // End of namespaces
-
 #endif
 
 #endif
+
+

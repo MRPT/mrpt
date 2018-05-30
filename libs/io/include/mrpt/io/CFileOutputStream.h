@@ -11,9 +11,7 @@
 #include <mrpt/io/CStream.h>
 #include <fstream>
 
-namespace mrpt
-{
-namespace io
+namespace mrpt::io
 {
 /** This CStream derived class allow using a file as a write-only, binary
  * stream.
@@ -81,5 +79,5 @@ static_assert(
 	!std::is_copy_constructible<CFileOutputStream>::value &&
 		!std::is_copy_assignable<CFileOutputStream>::value,
 	"Copy Check");
-}  // End of namespace
-}  // end of namespace
+}
+

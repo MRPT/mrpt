@@ -19,9 +19,7 @@
 #include <mrpt/slam/TKLDParams.h>
 #include <mrpt/system/COutputLogger.h>
 
-namespace mrpt
-{
-namespace slam
+namespace mrpt::slam
 {
 // Frwd decl:
 template <class PARTICLETYPE, class BINTYPE>
@@ -34,7 +32,9 @@ void KLF_loadBinFromParticle(
  * localization
   *   \ingroup mrpt_slam_grp
   */
-template <class PARTICLE_TYPE, class MYSELF>
+template <
+	class PARTICLE_TYPE, class MYSELF,
+	mrpt::bayes::particle_storage_mode STORAGE>
 class PF_implementation : public mrpt::system::COutputLogger
 {
    public:
@@ -181,8 +181,8 @@ class PF_implementation : public mrpt::system::COutputLogger
 	 * particle data structs.
 	  */
 	virtual void PF_SLAM_implementation_replaceByNewParticleSet(
-		typename mrpt::bayes::CParticleFilterData<PARTICLE_TYPE>::CParticleList&
-			old_particles,
+		typename mrpt::bayes::CParticleFilterData<
+		PARTICLE_TYPE, STORAGE>::CParticleList& old_particles,
 		const std::vector<mrpt::math::TPose3D>& newParticles,
 		const std::vector<double>& newParticlesWeight,
 		const std::vector<size_t>& newParticlesDerivedFromIdx) const
@@ -193,71 +193,80 @@ class PF_implementation : public mrpt::system::COutputLogger
 		//   New are in "newParticles",
 		//   "newParticlesWeight","newParticlesDerivedFromIdx"
 		// ---------------------------------------------------------------------------------
-		const size_t N = newParticles.size(), N_old = old_particles.size();
-		typename MYSELF::CParticleList newParticlesArray(N);
-
-		// For efficiency, just copy the "CParticleData" from the old particle
-		// into the
-		//  new one, but this can be done only once:
-		std::vector<bool> oldParticleAlreadyCopied(N_old, false);
-		std::vector<PARTICLE_TYPE*> oldParticleFirstCopies(N_old, nullptr);
-
-		size_t i;
-		typename MYSELF::CParticleList::iterator newPartIt;
-		for (newPartIt = newParticlesArray.begin(), i = 0;
-			 newPartIt != newParticlesArray.end(); ++newPartIt, ++i)
+		const size_t N = newParticles.size();
+		std::remove_reference_t<decltype(old_particles)> newParticlesArray(N);
+		if constexpr(STORAGE == mrpt::bayes::particle_storage_mode::POINTER)
 		{
-			// The weight:
-			newPartIt->log_w = newParticlesWeight[i];
+			// For efficiency, just copy the "CParticleData" from the old particle
+			// into the new one, but this can be done only once:
+			const auto N_old = old_particles.size();
+			std::vector<bool> oldParticleAlreadyCopied(N_old, false);
+			std::vector<PARTICLE_TYPE*> oldParticleFirstCopies(N_old, nullptr);
 
-			// The data (CParticleData):
-			PARTICLE_TYPE* newPartData;
-			const size_t i_in_old = newParticlesDerivedFromIdx[i];
-			if (!oldParticleAlreadyCopied[i_in_old])
+			auto newPartIt = newParticlesArray.begin();
+			for (size_t i = 0; newPartIt != newParticlesArray.end();
+				++newPartIt, ++i)
 			{
-				// The first copy of this old particle:
-				newPartData = old_particles[i_in_old].d.release();
-				oldParticleAlreadyCopied[i_in_old] = true;
-				oldParticleFirstCopies[i_in_old] = newPartData;
-			}
-			else
-			{
-				// Make a copy:
-				ASSERT_(oldParticleFirstCopies[i_in_old]);
-				newPartData =
-					new PARTICLE_TYPE(*oldParticleFirstCopies[i_in_old]);
-			}
+				// The weight:
+				newPartIt->log_w = newParticlesWeight[i];
 
-			newPartIt->d.reset(newPartData);
-		}  // end for "newPartIt"
+				// The data (CParticleData):
+				PARTICLE_TYPE* newPartData;
+				const size_t i_in_old = newParticlesDerivedFromIdx[i];
+				if (!oldParticleAlreadyCopied[i_in_old])
+				{
+					// The first copy of this old particle:
+					newPartData = old_particles[i_in_old].d.release();
+					oldParticleAlreadyCopied[i_in_old] = true;
+					oldParticleFirstCopies[i_in_old] = newPartData;
+				}
+				else
+				{
+					// Make a copy:
+					ASSERT_(oldParticleFirstCopies[i_in_old]);
+					newPartData =
+						new PARTICLE_TYPE(*oldParticleFirstCopies[i_in_old]);
+				}
 
-		// Now add the new robot pose to the paths:
-		//  (this MUST be done after the above loop, separately):
-		// Update the particle with the new pose: this part is caller-dependant
-		// and must be implemented there:
-		for (newPartIt = newParticlesArray.begin(), i = 0; i < N;
-			 ++newPartIt, ++i)
-			PF_SLAM_implementation_custom_update_particle_with_new_pose(
-				newPartIt->d.get(), newParticles[i]);
+				newPartIt->d.reset(newPartData);
+			}  // end for "newPartIt"
 
-		// Free those old m_particles not being copied into the new ones: not
-		// needed since use of smart ptr.
-
-		// Copy into "m_particles"
-		old_particles.resize(newParticlesArray.size());
-		typename MYSELF::CParticleList::iterator trgPartIt;
-		for (newPartIt = newParticlesArray.begin(),
-			trgPartIt = old_particles.begin();
-			 newPartIt != newParticlesArray.end(); ++newPartIt, ++trgPartIt)
-		{
-			trgPartIt->log_w = newPartIt->log_w;
-			trgPartIt->d = std::move(newPartIt->d);
+			// Now add the new robot pose to the paths:
+			//  (this MUST be done after the above loop, separately):
+			// Update the particle with the new pose: this part is caller-dependant
+			// and must be implemented there:
+			newPartIt = newParticlesArray.begin();
+			for (size_t i = 0; i < N;
+				++newPartIt, ++i)
+				PF_SLAM_implementation_custom_update_particle_with_new_pose(
+					newPartIt->d.get(), newParticles[i]);
 		}
+		else
+		{
+			// Particles as values:
+
+			auto newPartIt = newParticlesArray.begin();
+			for (size_t i = 0; newPartIt != newParticlesArray.end();
+				 ++newPartIt, ++i)
+			{
+				newPartIt->log_w = newParticlesWeight[i];
+				const size_t i_in_old = newParticlesDerivedFromIdx[i];
+				newPartIt->d = old_particles[i_in_old].d;
+			}
+
+			// Now add the new robot pose to the paths:
+			newPartIt = newParticlesArray.begin();
+			for (size_t i = 0; i < N; ++newPartIt, ++i)
+				PF_SLAM_implementation_custom_update_particle_with_new_pose(
+					&newPartIt->d, newParticles[i]);
+		}
+		// Move to "m_particles"
+		old_particles = std::move(newParticlesArray);
 	}  // end of PF_SLAM_implementation_replaceByNewParticleSet
 
 	virtual bool PF_SLAM_implementation_doWeHaveValidObservations(
 		const typename mrpt::bayes::CParticleFilterData<
-			PARTICLE_TYPE>::CParticleList& particles,
+			PARTICLE_TYPE,STORAGE>::CParticleList& particles,
 		const mrpt::obs::CSensoryFrame* sf) const
 	{
 		MRPT_UNUSED_PARAM(particles);
@@ -317,6 +326,6 @@ class PF_implementation : public mrpt::system::COutputLogger
 
 };  // end PF_implementation
 }
-}
-
 #endif
+
+

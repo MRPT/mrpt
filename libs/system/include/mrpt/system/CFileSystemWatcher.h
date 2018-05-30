@@ -13,9 +13,7 @@
 #include <mutex>
 #include <queue>
 
-namespace mrpt
-{
-namespace system
+namespace mrpt::system
 {
 /** This class subscribes to notifications of file system changes, thus it can
  * be used to efficiently stay informed about changes in a directory tree.
@@ -85,5 +83,5 @@ class CFileSystemWatcher
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
+}
+
