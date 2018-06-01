@@ -20,97 +20,96 @@ using namespace mrpt::math;
 using namespace mrpt::utils;
 using namespace std;
 
+// SFINAE seems to be badly supported in MSVC 2015...sigh. Just do non-templatized overloading:
+template <class edge_t> struct EdgeAdder;
+
+template <> struct EdgeAdder<mrpt::poses::CPose2D>
+{
+	template <class my_graph_t>
+	static void add(
+		TNodeID from, TNodeID to,
+		const typename my_graph_t::global_poses_t& real_poses,
+		my_graph_t& graph)
+	{
+		auto RelativePose =
+			real_poses.find(to)->second - real_poses.find(from)->second;
+		graph.insertEdge(from, to, RelativePose);
+	}
+
+	static void addNoise(mrpt::poses::CPose2D& p, const mrpt::poses::CPose3D & noise)
+	{
+		p += mrpt::poses::CPose2D(noise);
+	}
+};
+template <> struct EdgeAdder<mrpt::poses::CPose3D>
+{
+	template <class my_graph_t>
+	static void add(
+		TNodeID from, TNodeID to,
+		const typename my_graph_t::global_poses_t& real_poses,
+		my_graph_t& graph)
+	{
+		auto RelativePose =
+			real_poses.find(to)->second - real_poses.find(from)->second;
+		graph.insertEdge(from, to, RelativePose);
+	}
+	static void addNoise(mrpt::poses::CPose3D& p, const mrpt::poses::CPose3D & noise)
+	{
+		p += noise;
+	}
+};
+template <> struct EdgeAdder<mrpt::poses::CPosePDFGaussianInf>
+{
+	template <class my_graph_t>
+	static void add(
+		TNodeID from, TNodeID to,
+		const typename my_graph_t::global_poses_t& real_poses,
+		my_graph_t& graph)
+	{
+		auto RelativePose =
+			real_poses.find(to)->second - real_poses.find(from)->second;
+		// Add information matrix :
+		const auto N = my_graph_t::edge_t::state_length;
+		auto mat = randomGenerator
+			.drawDefinitePositiveMatrix(
+				N, 2.0 /*std*/, 1.0 /*diagonal offset*/);
+		graph.insertEdge(
+			from, to, typename my_graph_t::edge_t(RelativePose, mat));
+	}
+	static void addNoise(mrpt::poses::CPosePDFGaussianInf& p, const mrpt::poses::CPose3D & noise)
+	{
+		p.mean += mrpt::poses::CPose2D(noise);
+	}
+};
+template <> struct EdgeAdder<mrpt::poses::CPose3DPDFGaussianInf>
+{
+	template <class my_graph_t>
+	static void add(
+		TNodeID from, TNodeID to,
+		const typename my_graph_t::global_poses_t& real_poses,
+		my_graph_t& graph)
+	{
+		auto RelativePose =
+			real_poses.find(to)->second - real_poses.find(from)->second;
+		// Add information matrix :
+		const auto N = my_graph_t::edge_t::state_length;
+		auto mat = randomGenerator
+			.drawDefinitePositiveMatrix(
+				N, 2.0 /*std*/, 1.0 /*diagonal offset*/);
+		graph.insertEdge(
+			from, to, typename my_graph_t::edge_t(RelativePose, mat));
+	}
+	static void addNoise(mrpt::poses::CPose3DPDFGaussianInf& p, const mrpt::poses::CPose3D & noise)
+	{
+		p.mean += noise;
+	}
+};
+
+
 template <class my_graph_t>
 class GraphSlamLevMarqTest
 {
 public:
-
-	// SFINAE seems to be badly supported in MSVC 2015...sigh. Just do non-templatized overloading:
-	template <class edge_t> struct EdgeAdder;
-
-	template <> struct EdgeAdder<mrpt::poses::CPose2D>
-	{
-		template <class my_graph_t>
-		static void add(
-			TNodeID from, TNodeID to,
-			const typename my_graph_t::global_poses_t& real_poses,
-			my_graph_t& graph)
-		{
-			auto RelativePose =
-				real_poses.find(to)->second - real_poses.find(from)->second;
-			graph.insertEdge(from, to, RelativePose);
-		}
-
-		static void addNoise(mrpt::poses::CPose2D& p, const mrpt::poses::CPose3D & noise)
-		{
-			p += mrpt::poses::CPose2D(noise);
-		}
-	};
-	template <> struct EdgeAdder<mrpt::poses::CPose3D>
-	{
-		template <class my_graph_t>
-		static void add(
-			TNodeID from, TNodeID to,
-			const typename my_graph_t::global_poses_t& real_poses,
-			my_graph_t& graph)
-		{
-			auto RelativePose =
-				real_poses.find(to)->second - real_poses.find(from)->second;
-			graph.insertEdge(from, to, RelativePose);
-		}
-		static void addNoise(mrpt::poses::CPose3D& p, const mrpt::poses::CPose3D & noise)
-		{
-			p += noise;
-		}
-	};
-	template <> struct EdgeAdder<mrpt::poses::CPosePDFGaussianInf>
-	{
-		template <class my_graph_t>
-		static void add(
-			TNodeID from, TNodeID to,
-			const typename my_graph_t::global_poses_t& real_poses,
-			my_graph_t& graph)
-		{
-			auto RelativePose =
-				real_poses.find(to)->second - real_poses.find(from)->second;
-			// Add information matrix :
-			const auto N = my_graph_t::edge_t::state_length;
-			typedef mrpt::math::CMatrixFixedNumeric<double, N, N> InfMat;
-			auto mat = randomGenerator
-				.drawDefinitePositiveMatrix(
-					N, 2.0 /*std*/, 1.0 /*diagonal offset*/);
-			graph.insertEdge(
-				from, to, typename my_graph_t::edge_t(RelativePose, mat));
-		}
-		static void addNoise(mrpt::poses::CPosePDFGaussianInf& p, const mrpt::poses::CPose3D & noise)
-		{
-			p.mean += mrpt::poses::CPose2D(noise);
-		}
-	};
-	template <> struct EdgeAdder<mrpt::poses::CPose3DPDFGaussianInf>
-	{
-		template <class my_graph_t>
-		static void add(
-			TNodeID from, TNodeID to,
-			const typename my_graph_t::global_poses_t& real_poses,
-			my_graph_t& graph)
-		{
-			auto RelativePose =
-				real_poses.find(to)->second - real_poses.find(from)->second;
-			// Add information matrix :
-			const auto N = my_graph_t::edge_t::state_length;
-			typedef mrpt::math::CMatrixFixedNumeric<double, N, N> InfMat;
-			auto mat = randomGenerator
-				.drawDefinitePositiveMatrix(
-					N, 2.0 /*std*/, 1.0 /*diagonal offset*/);
-			graph.insertEdge(
-				from, to, typename my_graph_t::edge_t(RelativePose, mat));
-		}
-		static void addNoise(mrpt::poses::CPose3DPDFGaussianInf& p, const mrpt::poses::CPose3D & noise)
-		{
-			p.mean += noise;
-		}
-	};
 
 	// The graph: nodes + edges:
 	static void create_ring_path(
@@ -161,12 +160,12 @@ public:
 			{
 				if (real_node_poses[i].distanceTo(real_node_poses[j]) <
 					DIST_THRES)
-					EdgeAdder<typename my_graph_t::edge_underlying_t>::add<my_graph_t>(i, j, real_node_poses, graph);
+					EdgeAdder<typename my_graph_t::edge_underlying_t>::template add<my_graph_t>(i, j, real_node_poses, graph);
 			}
 		}
 
 		// Cross-links:
-		EdgeAdder<typename my_graph_t::edge_underlying_t>::add<my_graph_t>(0, N_VERTEX / 2, real_node_poses, graph);
+		EdgeAdder<typename my_graph_t::edge_underlying_t>::template add<my_graph_t>(0, N_VERTEX / 2, real_node_poses, graph);
 
 		// The root node (the origin of coordinates):
 		graph.root = TNodeID(0);
