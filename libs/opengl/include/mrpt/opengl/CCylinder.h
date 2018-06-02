@@ -30,6 +30,7 @@ class CCylinder;
 class CCylinder : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CCylinder)
+	DEFINE_SCHEMA_SERIALIZABLE()
    protected:
 	/**
 	  * Cylinder's radii. If mBaseRadius==mTopRadius, then the object is an
