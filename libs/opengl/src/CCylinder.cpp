@@ -11,7 +11,7 @@
 #include <mrpt/opengl/CCylinder.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/serialization/CArchive.h>
-
+#include <mrpt/serialization/CSchemeArchiveBase.h>
 #include "opengl_internals.h"
 
 using namespace mrpt;
@@ -59,7 +59,42 @@ void CCylinder::render_dl() const
 
 #endif
 }
-
+void CCylinder::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
+{
+	out["datatype"] = std::string(this->GetRuntimeClass()->className);
+	out["version"] = 1;
+	out["baseRadius"] = mBaseRadius;
+	out["topRadius"] = mTopRadius;
+	out["height"] = mHeight;
+	out["slices"] = mSlices;
+	out["stacks"] = mStacks;
+	out["hasBottomBase"] = mHasBottomBase;
+	out["hasTopBase"] = mHasTopBase;
+}
+void CCylinder::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
+{
+	uint8_t version = static_cast<int>(in["version"]);	// default is 0
+	if(static_cast<std::string>(in["datatype"]) ==
+		std::string(this->GetRuntimeClass()->className))	// match the class name
+	{
+		switch(version)
+		{
+			case 1:
+			{
+				mBaseRadius = static_cast<float>(in["baseRadius"]);
+				mTopRadius = static_cast<float>(in["topRadius"]);
+				mHeight = static_cast<float>(in["height"]);
+				mSlices = static_cast<uint32_t>(in["slices"]);
+				mStacks = static_cast<uint32_t>(in["stacks"]);
+				mHasBottomBase = static_cast<bool>(in["hasBottomBase"]);
+				mHasTopBase = static_cast<bool>(in["hasTopBase"]);
+			}
+			break;
+			default:
+				MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+		}
+	}
+}
 uint8_t CCylinder::serializeGetVersion() const { return 0; }
 void CCylinder::serializeTo(mrpt::serialization::CArchive& out) const
 {
