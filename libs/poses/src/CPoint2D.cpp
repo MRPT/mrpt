@@ -48,7 +48,19 @@ void CPoint2D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	};
 }
-
+void CPoint2D::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
+{
+	out["x"] = m_coords[0];
+	out["y"] = m_coords[1];
+}
+void CPoint2D::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
+{
+	//Need to verify this
+	// m_coords[0] = in["x"];
+	// m_coords[1] = in["y"];
+	int x = 1;
+	m_coords[0] = x;
+}
 /*---------------------------------------------------------------
 The operator D="this"-b is the pose inverse compounding operator.
    The resulting pose "D" is the diference between this pose and "b"

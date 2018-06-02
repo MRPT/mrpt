@@ -10,6 +10,7 @@
 
 #include <mrpt/rtti/CObject.h>
 #include <mrpt/serialization/serialization_frwds.h>
+#include <mrpt/serialization/CSchemeArchiveBase.h> //no definite use in mind currently
 #include <cstdint>
 
 // Make this frwd decl independent of MRPT_HAS_MATLAB in config.h:
@@ -19,6 +20,14 @@ using mxArray = struct mxArray_tag;
 
 namespace mrpt::serialization
 {
+
+// /** Used in mrpt::serialization::CSerializable */
+// std::string notImplementedErrorString(const std::string& class_name)
+// {
+// 	return class_name + 
+// 			" : class does not support schema based serialization";
+// }
+
 /** The virtual base class which provides a unified interface for all persistent
  *objects in MRPT.
  *  Many important properties of this class are inherited from
@@ -56,6 +65,24 @@ class CSerializable : public mrpt::rtti::CObject
 	 *data. \exception std::exception On any I/O error
 	 */
 	virtual void serializeFrom(CArchive& in, uint8_t serial_version) = 0;
+	/** Virtual method for writing (serializing) to an abstract
+	 *  schema based archive. 
+	 */
+	virtual void serializeTo(CSchemeArchiveBase& out) const
+	{
+		const std::string err = std::string(this->GetRuntimeClass()->className) +
+			std::string(" : class does not support schema based serialization");
+		THROW_EXCEPTION(err);
+	}
+	/** Virtual method for reading (deserializing) from an abstract
+	 *  schema based archive.
+	 */
+	virtual void serializeFrom(CSchemeArchiveBase& in) const
+	{
+		const std::string err = std::string(this->GetRuntimeClass()->className) +
+			std::string(" : class does not support schema based serialization");
+		THROW_EXCEPTION(err);
+	}
 	/** @} */
 
    public:
@@ -94,6 +121,16 @@ void OctetVectorToObject(
 	const std::vector<uint8_t>& in_data, CSerializable::Ptr& obj);
 
 /** @} */
+/** This declaration must be inserted in all CSerializable classes definition,
+ * within the class declaration. */
+#define DEFINE_SCHEMA_SERIALIZABLE()                                              \
+   protected:                                                                     \
+	/*! @name CSerializable virtual methods for schema based archives*/           \
+	/*! @{ */                                                                	  \
+	void serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const;\
+	void serializeFrom(                                                           \
+		mrpt::serialization::CSchemeArchiveBase& in);                    \
+/*! @} */																		  \
 
 /** This declaration must be inserted in all CSerializable classes definition,
  * within the class declaration. */
