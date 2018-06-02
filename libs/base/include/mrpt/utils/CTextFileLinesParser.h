@@ -66,7 +66,7 @@ namespace mrpt
 				void close() {
 					if (!m_in) return;
 					if (m_in_ownership) delete m_in;
-					m_in = nullptr;
+					m_in = NULL;
 				}
 
 				/** Reset the read pointer to the beginning of the file */
