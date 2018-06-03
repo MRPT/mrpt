@@ -10,7 +10,6 @@
 
 #include <mrpt/rtti/CObject.h>
 #include <mrpt/serialization/serialization_frwds.h>
-#include <mrpt/serialization/CSchemeArchiveBase.h> //no definite use in mind currently
 #include <cstdint>
 
 // Make this frwd decl independent of MRPT_HAS_MATLAB in config.h:
@@ -39,6 +38,7 @@ namespace mrpt::serialization
 class CSerializable : public mrpt::rtti::CObject
 {
 	friend class CArchive;
+	friend class CSchemeArchiveBase;
 
 	// This must be added to any CObject derived class:
 	DEFINE_VIRTUAL_MRPT_OBJECT(CSerializable)
@@ -77,7 +77,7 @@ class CSerializable : public mrpt::rtti::CObject
 	/** Virtual method for reading (deserializing) from an abstract
 	 *  schema based archive.
 	 */
-	virtual void serializeFrom(CSchemeArchiveBase& in) const
+	virtual void serializeFrom(CSchemeArchiveBase& in)
 	{
 		const std::string err = std::string(this->GetRuntimeClass()->className) +
 			std::string(" : class does not support schema based serialization");
@@ -127,9 +127,8 @@ void OctetVectorToObject(
    protected:                                                                     \
 	/*! @name CSerializable virtual methods for schema based archives*/           \
 	/*! @{ */                                                                	  \
-	void serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const;\
-	void serializeFrom(                                                           \
-		mrpt::serialization::CSchemeArchiveBase& in);                    \
+	void serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const;		  \
+	void serializeFrom(mrpt::serialization::CSchemeArchiveBase& in);              \
 /*! @} */																		  \
 
 /** This declaration must be inserted in all CSerializable classes definition,
