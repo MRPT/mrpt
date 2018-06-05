@@ -34,15 +34,15 @@ class CSchemeArchiveBase
     virtual CSchemeArchiveBase &operator=(float) = 0;
     virtual CSchemeArchiveBase &operator=(double) = 0;
     virtual CSchemeArchiveBase &operator=(std::nullptr_t) = 0;
-    virtual CSchemeArchiveBase &operator=(std::string) = 0;
+    virtual CSchemeArchiveBase &operator=(const std::string) = 0;
     virtual CSchemeArchiveBase &operator=(bool) = 0;
 
     //Type conversion methods
-    virtual int asInt() = 0;
-    virtual float asFloat() = 0;
-    virtual double asDouble() = 0;
-    virtual bool asBool() = 0;
-    virtual std::string asString() = 0;
+    virtual explicit operator int() const = 0;
+    virtual explicit operator float() const = 0;
+    virtual explicit operator double() const = 0;
+    virtual explicit operator bool() const = 0;
+    virtual explicit operator std::string() const = 0;
     virtual void asSerializableObject(CSerializable& obj) = 0;
     //Converts CSerializable Objects to CSchemeArchiveBase based object 
     virtual CSchemeArchiveBase &operator=(mrpt::serialization::CSerializable&) = 0;

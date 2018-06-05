@@ -47,7 +47,7 @@ class CPose3DQuat : public CPose<CPose3DQuat>,
 					public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(CPose3DQuat)
-
+	DEFINE_SCHEMA_SERIALIZABLE()
    public:
 	/** The translation vector [x,y,z] */
 	mrpt::math::CArrayDouble<3> m_coords;
