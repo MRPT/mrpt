@@ -30,15 +30,21 @@ class CSchemeArchiveBase
     /** @name Serialization API for schema based "archives"
      * @{ */
     //Virtual Assignment methods
-    virtual CSchemeArchiveBase &operator=(int) = 0;
-    virtual CSchemeArchiveBase &operator=(float) = 0;
-    virtual CSchemeArchiveBase &operator=(double) = 0;
-    virtual CSchemeArchiveBase &operator=(std::nullptr_t) = 0;
+    virtual CSchemeArchiveBase &operator=(const int32_t) = 0;
+    virtual CSchemeArchiveBase &operator=(const uint32_t) = 0;
+    virtual CSchemeArchiveBase &operator=(const int64_t) = 0;
+    virtual CSchemeArchiveBase &operator=(const uint64_t) = 0;
+    virtual CSchemeArchiveBase &operator=(const float) = 0;
+    virtual CSchemeArchiveBase &operator=(const double) = 0;
+    virtual CSchemeArchiveBase &operator=(const std::nullptr_t) = 0;
     virtual CSchemeArchiveBase &operator=(const std::string) = 0;
     virtual CSchemeArchiveBase &operator=(bool) = 0;
 
     //Type conversion methods
-    virtual explicit operator int() const = 0;
+    virtual explicit operator int32_t() const = 0;
+    virtual explicit operator uint32_t() const = 0;
+    virtual explicit operator int64_t() const = 0;
+    virtual explicit operator uint64_t() const = 0;    
     virtual explicit operator float() const = 0;
     virtual explicit operator double() const = 0;
     virtual explicit operator bool() const = 0;
