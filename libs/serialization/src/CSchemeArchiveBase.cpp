@@ -5,3 +5,11 @@
 #include <mrpt/serialization/CSchemeArchiveBase.h>
 
 using namespace mrpt::serialization;
+void CSchemeArchiveBase_impl::ReadObject(CSchemeArchiveBase& out, CSerializable& obj)
+{
+    CSchemeArchiveBase::ReadObject(out, obj);
+}
+void CSchemeArchiveBase_impl::WriteObject(CSchemeArchiveBase& in, CSerializable& obj)
+{
+    CSchemeArchiveBase::WriteObject(in, obj);
+}

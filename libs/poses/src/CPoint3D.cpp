@@ -80,26 +80,26 @@ void CPoint3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 /** Serialize CSerializable Object to CSchemeArchiveBase derived object*/ 
 void CPoint3D::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
 {
-	(*out["datatype"]) = std::string(this->GetRuntimeClass()->className);
-	(*out["version"]) = 1;
-	(*out["x"]) = m_coords[0];
-	(*out["y"]) = m_coords[1];
-	(*out["z"]) = m_coords[2];
+	out["datatype"] = std::string(this->GetRuntimeClass()->className);
+	out["version"] = 1;
+	out["x"] = m_coords[0];
+	out["y"] = m_coords[1];
+	out["z"] = m_coords[2];
 }
 /** Serialize CSchemeArchiveBase derived object to CSerializable Object*/
 void CPoint3D::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 {
-	uint8_t version = static_cast<int>(*in["version"]);	//default is 0
-	if(static_cast<std::string>(*in["datatype"]) == 
+	uint8_t version = static_cast<int>(in["version"]);	//default is 0
+	if(static_cast<std::string>(in["datatype"]) == 
 		std::string(this->GetRuntimeClass()->className)) //match the classname
 	{
 		switch(version)
 		{
 			case 1:
 			{
-				m_coords[0] = static_cast<double>(*in["x"]);
-				m_coords[1] = static_cast<double>(*in["y"]);
-				m_coords[2] = static_cast<double>(*in["z"]);
+				m_coords[0] = static_cast<double>(in["x"]);
+				m_coords[1] = static_cast<double>(in["y"]);
+				m_coords[2] = static_cast<double>(in["z"]);
 			}
 			break;
 			default:
