@@ -16,6 +16,8 @@ macro(define_mrpt_metalib name)
 	internal_define_mrpt_lib(${name} 1 1 ${ARGN}) # headers_only = 1, is_metalib=1
 endmacro(define_mrpt_metalib)
 
+include(GNUInstallDirs)
+
 # Implementation of both define_mrpt_lib() and define_mrpt_lib_headers_only():
 #-----------------------------------------------------------------------------
 macro(internal_define_mrpt_lib name headers_only is_metalib)
