@@ -16,22 +16,30 @@
 
   <license>BSD</license>
 
-  <depend>ffmpeg</depend>
-  <depend>libjpeg</depend>
-  <depend>zlib</depend>
-  <depend>wx-common</depend>
-  <depend>wxwidgets</depend>
   <depend>eigen</depend>
+  <depend>ffmpeg</depend>
+  <depend>glut</depend>
+  <depend>libjpeg</depend>
+  <depend>libopencv-dev</depend>
+  <depend>libpcap</depend>
   <depend>libudev-dev</depend>
   <depend>libusb-1.0-dev</depend>
-  <depend>libpcap</depend>
-  <depend>glut</depend>
+  <depend>suitesparse</depend>
+  <depend>wx-common</depend>
+  <depend>wxwidgets</depend>
+  <depend>zlib</depend>
+  <depend>assimp-dev</depend>
+  <depend>octomap</depend>
 
   <doc_depend>doxygen</doc_depend>
 
+  <!-- Minimum entries to release non-catkin pkgs: -->
   <buildtool_depend>cmake</buildtool_depend>
-
+  <exec_depend>catkin</exec_depend>
   <export>
     <build_type>cmake</build_type>
+    <rosdoc config="doc/rosdoc.yaml" />
   </export>
+  <!-- End -->
+
 </package>
