@@ -252,7 +252,7 @@ ENDIF()
 # ======================================================
 # Link directories to add to the user project:
 # ======================================================
-LINK_DIRECTORIES(${MRPT_DIR}/lib)
 LIST(APPEND MRPT_LINK_DIRECTORIES ${MRPT_DIR}/lib)
+LINK_DIRECTORIES(${MRPT_LINK_DIRECTORIES})
 
 SET(MRPT_LIBS ${MRPT_LIBRARIES}) # For backward compatible code
