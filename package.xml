@@ -16,6 +16,8 @@
 
   <license>BSD</license>
 
+  <depend>assimp-dev</depend>
+  <depend>boost</depend>  <!-- for pymrpt -->
   <depend>eigen</depend>
   <depend>ffmpeg</depend>
   <depend>glut</depend>
@@ -24,12 +26,13 @@
   <depend>libpcap</depend>
   <depend>libudev-dev</depend>
   <depend>libusb-1.0-dev</depend>
+  <depend>octomap</depend>
+  <depend>python</depend>  <!-- for pymrpt -->
+  <depend>python-numpy</depend>  <!-- for pymrpt -->
   <depend>suitesparse</depend>
   <depend>wx-common</depend>
   <depend>wxwidgets</depend>
   <depend>zlib</depend>
-  <depend>assimp-dev</depend>
-  <depend>octomap</depend>
 
   <doc_depend>doxygen</doc_depend>
 
