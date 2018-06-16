@@ -30,8 +30,8 @@ Copyright: 2000-2002, John Labenki
 License: WXwindows
 
 Files: libs/poses/include/mrpt/otherlibs/sophus/*
-Copyright 2011-2017 Hauke Strasdat           
-          2012-2017 Steven Lovegrove
+Copyright: 2011-2017 Hauke Strasdat
+           2012-2017 Steven Lovegrove
 License: Expat
 
 Files: libs/core/include/mrpt/core/bit_cast.h
@@ -289,7 +289,7 @@ License: Boost
 License: NCSA
  University of Illinois/NCSA
  Open Source License
- . 
+ .
  All rights reserved.
  .
  Developed by:
@@ -318,7 +318,7 @@ License: NCSA
       Urbana-Champaign, nor the names of its contributors may be used to
       endorse or promote products derived from this Software without specific
       prior written permission.
- . 
+ .
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
@@ -485,4 +485,3 @@ License: WXwindows
   whether to permit this exception to apply to your modifications. If you do
   not wish that, you must delete the exception notice from such code and/or
   adjust the licensing conditions notice accordingly.
-
