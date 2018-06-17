@@ -12,6 +12,13 @@
 #
 #  NOTE: CMake can be obtained at http://www.cmake.org/
 # ----------------------------------------------------------------------------
+include(cmake/HunterGate.cmake)
+HunterGate(
+    URL "https://github.com/lsolanka/hunter/archive/v0.21.6-rosdevel4.tar.gz"
+    SHA1 "a569b63bef4ea73e109d01c03891f91b8e32739c"
+    LOCAL
+)
+
 # Tell CMake we'll use both C & C++ for use in its tests/flags.
 PROJECT(MRPT LANGUAGES C CXX)
 
@@ -44,6 +51,12 @@ else()
 		set(CMAKE_CXX_STANDARD 17)
 	endif()
 endif()
+
+hunter_add_package(Eigen)
+hunter_add_package(ZLIB)
+hunter_add_package(Jpeg)
+hunter_add_package(OpenCV)
+hunter_add_package(Assimp)
 
 if(COMMAND cmake_policy)
 	cmake_policy(SET CMP0003 NEW) # We don't want to mix relative and absolute paths in linker lib lists.
@@ -125,8 +138,6 @@ endif()
 IF(MSVC)
 	set(MRPT_LIB_PREFIX "lib")  # Libs are: "libXXX"
 	set(CMAKE_DEBUG_POSTFIX  "-dbg")
-ELSE()
-	set(CMAKE_DEBUG_POSTFIX "")
 ENDIF()
 
 # In case of Makefiles if the user does not setup CMAKE_BUILD_TYPE, assume it's Release:
@@ -543,7 +554,7 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
 		# If we're building a Debian package, just DO NOT use -mtune=native
 	ELSE()
 		IF(MRPT_OPTIMIZE_NATIVE AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
-			add_compile_options(-O3 -mtune=native)
+			add_compile_options(-mtune=native)
 		ENDIF()
 	ENDIF()
 
