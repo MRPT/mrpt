@@ -12,23 +12,20 @@
 
 #include <mrpt/synch/atomic_incr.h>
 
-using namespace mrpt::synch;
-
 #include <atomic>
 
-#define MY_ATOMIC (*reinterpret_cast<std::atomic_long *>(m_atomic))
+using namespace mrpt::synch;
 
-CAtomicCounter::CAtomicCounter()
-    : m_atomic(reinterpret_cast<long *>(new std::atomic_long)) {}
-CAtomicCounter::CAtomicCounter(long v)
-    : m_atomic(reinterpret_cast<long *>(new std::atomic_long)) {
-  MY_ATOMIC = v;
-}
-CAtomicCounter::~CAtomicCounter() {
-  delete reinterpret_cast<std::atomic_long *>(m_atomic);
-  m_atomic = NULL;
-}
+#define MY_ATOMIC reinterpret_cast<std::atomic_long *>(m_atomic)
+#define MY_ATOMIC_CONST reinterpret_cast<const std::atomic_long *>(m_atomic)
 
-void CAtomicCounter::operator++() { MY_ATOMIC++; }
-long CAtomicCounter::operator--() { return MY_ATOMIC--; }
-CAtomicCounter::operator long() const { return MY_ATOMIC; }
+CAtomicCounter::CAtomicCounter() {
+  static_assert(sizeof(m_atomic) >= sizeof(std::atomic_long));
+  new (MY_ATOMIC) std::atomic_long();
+}
+CAtomicCounter::~CAtomicCounter() { (MY_ATOMIC)->~atomic<long>(); }
+CAtomicCounter::CAtomicCounter(long v) { new (MY_ATOMIC) std::atomic_long(v); }
+
+void CAtomicCounter::operator++() { (*MY_ATOMIC)++; }
+long CAtomicCounter::operator--() { return (*MY_ATOMIC)--; }
+CAtomicCounter::operator long() const { return (*MY_ATOMIC_CONST); }
