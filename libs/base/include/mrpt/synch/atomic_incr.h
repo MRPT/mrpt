@@ -24,15 +24,15 @@ namespace synch {
 class BASE_IMPEXP CAtomicCounter {
 public:
   CAtomicCounter();
-  explicit CAtomicCounter(long v);
   ~CAtomicCounter();
+  explicit CAtomicCounter(long v);
 
   void operator++();     //!< Atomic increment of value.
   long operator--();     //!< Atomic decrement of value and return new value.
   operator long() const; //!< Get current value
 
 private:
-  long *m_atomic; //!< opaque ptr to C++11 std::atomic_long
+  long m_atomic[3];
 
   CAtomicCounter(CAtomicCounter const &);            //!< Forbidden method
   CAtomicCounter &operator=(CAtomicCounter const &); //!< Forbidden method
