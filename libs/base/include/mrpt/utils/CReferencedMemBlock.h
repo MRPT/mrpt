@@ -11,9 +11,7 @@
 
 #include <mrpt/base/link_pragmas.h>
 #include <vector>
-
-// STL+ library:
-#include <mrpt/otherlibs/stlplus/smart_ptr.hpp>
+#include <memory>
 
 namespace mrpt
 {
@@ -56,7 +54,7 @@ namespace mrpt
 			/** Frees the underlying memory block */
 			void clear();
 		protected:
-			stlplus::smart_ptr< std::vector<char> > m_data;
+			std::shared_ptr< std::vector<char> > m_data;
 		}; // End of class
 
 	} // End of namespace
