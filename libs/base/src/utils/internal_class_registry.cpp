@@ -33,9 +33,9 @@ using namespace std;
 volatile bool mrpt::utils::pending_class_registers_modified = false;
 
 // Creation on first call pattern:
-CAtomicCounter	& mrpt::utils::pending_class_registers_count()
+std::atomic<int>	& mrpt::utils::pending_class_registers_count()
 {
-	static CAtomicCounter cnt(0);
+	static std::atomic<int> cnt(0);
 	return cnt;
 }
 
