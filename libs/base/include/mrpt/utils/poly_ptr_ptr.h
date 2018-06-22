@@ -18,8 +18,8 @@ namespace mrpt
 		/** \addtogroup stlext_grp
 		  * @{ */
 
-		/** Wrapper to a stlplus clone smart pointer to polymorphic classes, capable of handling 
-		* copy operator, etc. making deep copies. 
+		/** Wrapper to a smart pointer to polymorphic classes, capable of handling 
+		* copy operator, etc. making deep copies.
 		* Example use: `poly_ptr_ptr<mrpt::poses::CPosePDFPtr>`
 		* \sa copy_ptr<T>
 		*/

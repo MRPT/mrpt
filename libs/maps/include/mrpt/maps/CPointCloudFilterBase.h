@@ -10,8 +10,8 @@
 
 #include <mrpt/system/datetime.h>
 #include <mrpt/maps/link_pragmas.h>
-#include <mrpt/otherlibs/stlplus/smart_ptr.hpp>
 #include <vector>
+#include <memory>
 
 namespace mrpt
 {
@@ -47,7 +47,7 @@ namespace mrpt
 			) = 0;
 		};
 
-		typedef stlplus::smart_ptr<CPointCloudFilterBase> CPointCloudFilterBasePtr;
+		typedef std::shared_ptr<CPointCloudFilterBase> CPointCloudFilterBasePtr;
 
 	}
 } // End of namespace

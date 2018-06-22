@@ -39,7 +39,7 @@ using namespace mrpt::synch;
 using namespace std;
 
 
-std::vector<stlplus::smart_ptr<COpenNI2Generic::CDevice> > vDevices;
+std::vector<std::shared_ptr<COpenNI2Generic::CDevice> > vDevices;
 std::recursive_mutex vDevices_mx;
 std::atomic<int> numInstances(0);
 

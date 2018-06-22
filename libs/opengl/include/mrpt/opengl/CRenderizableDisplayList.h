@@ -23,7 +23,7 @@ namespace mrpt
 		/** A renderizable object suitable for rendering with OpenGL's display lists.
 		  *   The idea is to use the derived classes' ::render() method to save all the primitives
 		  *   into one display list, then in subsequent rendering events, just execute the list.
-		  *   This method is normally faster since it avoids the bottleneck between CPU-GPU. On the 
+		  *   This method is normally faster since it avoids the bottleneck between CPU-GPU. On the
 		  *   other hand, it demands more memory on the graphic card.
 		  *
 		  *  Instructions for implementing derived classes:
@@ -42,7 +42,7 @@ namespace mrpt
 			mutable bool			m_dl_recreate; //!< If using display lists, this is true when the list must be updated (the object changes, it's the first rendering, etc...).
 
 		protected:
-			/** @name Methods accesible or implemented by derived classes 
+			/** @name Methods accesible or implemented by derived classes
 			    @{ */
 
 			/** Must be called to notify that the object has changed (so, the display list must be updated) */
@@ -51,12 +51,12 @@ namespace mrpt
 			/** Derived classes must implement this method to the render the object. */
 			virtual void render_dl() const = 0;
 
-			/** Optional: If the object has some state in which creating a display list is NOT preferred over direct rendering, 
+			/** Optional: If the object has some state in which creating a display list is NOT preferred over direct rendering,
 			  *  implement this method and return "true" in those cases. */
 			virtual bool should_skip_display_list_cache() const { return false; }
 
 			inline void  readFromStreamRender(mrpt::utils::CStream &in)
-			{ 
+			{
 				CRenderizable::readFromStreamRender(in);
 				notifyChange();
 			}
@@ -67,7 +67,7 @@ namespace mrpt
 			CRenderizableDisplayList();
 			virtual ~CRenderizableDisplayList();
 
-			/** Interface for the stlplus smart pointer class. */
+			/** Interface for the smart pointer class. */
 			inline CRenderizableDisplayList * clone() const
 			{
 				return static_cast<CRenderizableDisplayList*>( this->duplicate() );

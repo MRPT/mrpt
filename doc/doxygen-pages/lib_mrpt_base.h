@@ -40,7 +40,7 @@ See mrpt::poses for the complete list of classes here.
 <li><b>RTTI (RunTime Type Information):</b> A cross-platform, compiler-independent RTTI system is built around the base class
 mrpt::utils::CObject.</li>
 
-<li><b>Smart pointers:</b> Based on the STLplus library, any class CFoo inheriting from CObject, automatically has an associated smart
+<li><b>Smart pointers:</b> Based on the std::shared_ptr<>, any class CFoo inheriting from CObject, automatically has an associated smart
 pointer class CFooPtr. MRPT implements advanced smart pointers capable of multi-thread safe usage and smart pointer typecasting with
 runtime check for correct castings (<a href="http://www.mrpt.org/Smart_pointers" >tutorial</a>).</li>
 
@@ -110,4 +110,3 @@ GZip compression methods can be found in this namespace.
 
 
 */
-

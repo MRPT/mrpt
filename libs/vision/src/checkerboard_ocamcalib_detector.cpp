@@ -14,7 +14,7 @@
 // Note for MRPT: what follows below is a modified part of the "OCamCalib Toolbox":
 //  See: http://robotics.ethz.ch/~scaramuzza/Davide_Scaramuzza_files/Research/OcamCalib_Tutorial.htm
 // Modifications include:
-//  - Clean up of code and update to use STL containers, and stlplus smart pointers.
+//  - Clean up of code and update to use STL containers, and smart pointers.
 //  - Addition of a new method to detect a number of checkerboards.
 //  - Modification of the dilation algorithm - see do_special_dilation().
 //

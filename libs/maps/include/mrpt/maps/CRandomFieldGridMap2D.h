@@ -243,7 +243,7 @@ namespace maps
 		{
 			ConnectivityDescriptor();
 			virtual ~ConnectivityDescriptor();
-			
+
 			/** Implement the check of whether node i=(icx,icy) is connected with node j=(jcx,jcy).
 			  * This visitor method will be called only for immediate neighbors.
 			  * \return true if connected (and the "information" value should be also updated in out_edge_information), false otherwise.
@@ -255,7 +255,7 @@ namespace maps
 				double &out_edge_information          //!< Must output here the inverse of the variance of the constraint edge.
 			) = 0;
 		};
-		typedef stlplus::smart_ptr<ConnectivityDescriptor> ConnectivityDescriptorPtr;
+		typedef std::shared_ptr<ConnectivityDescriptor> ConnectivityDescriptorPtr;
 
 		/** Sets a custom object to define the connectivity between cells. Must call clear() or setSize() afterwards for the changes to take place. */
 		void setCellsConnectivity(const ConnectivityDescriptorPtr &new_connectivity_descriptor);

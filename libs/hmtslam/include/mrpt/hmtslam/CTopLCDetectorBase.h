@@ -84,7 +84,7 @@ namespace mrpt
 
 		}; // end class
 
-		typedef stlplus::smart_ptr<CTopLCDetectorBase> CTopLCDetectorBasePtr;
+		typedef std::shared_ptr<CTopLCDetectorBase> CTopLCDetectorBasePtr;
 
 	} // end namespace
 } // end namespace
