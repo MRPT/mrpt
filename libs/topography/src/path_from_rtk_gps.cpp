@@ -62,9 +62,9 @@ void  mrpt::topography::path_from_rtk_gps(
 
 #if MRPT_HAS_WXWIDGETS
 	// Use a smart pointer so we are safe against exceptions:
-	stlplus::smart_ptr<wxBusyCursor>	waitCursorPtr;
+	std::shared_ptr<wxBusyCursor>	waitCursorPtr;
 	if (isGUI)
-		waitCursorPtr = stlplus::smart_ptr<wxBusyCursor>( new  wxBusyCursor() );
+		waitCursorPtr = std::shared_ptr<wxBusyCursor>( new  wxBusyCursor() );
 #else
 	MRPT_UNUSED_PARAM(isGUI);
 #endif

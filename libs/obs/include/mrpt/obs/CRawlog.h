@@ -282,7 +282,7 @@ namespace mrpt
 			void swap( CRawlog &obj);
 
 			/** Reads a consecutive pair action / observation from the rawlog opened at some input stream.
-			  *   Previous contents of action and observations are discarded (using stlplus::smart_ptr::clear_unique), and
+			  *   Previous contents of action and observations are discarded , and
 			  *    at exit they contain the new objects read from the rawlog file.
 			  *  The input/output variable "rawlogEntry" is just a counter of the last rawlog entry read, for logging or monitoring purposes.
 			  * \return false if there was some error, true otherwise.
@@ -295,7 +295,7 @@ namespace mrpt
 				size_t			& rawlogEntry );
 
 			/** Reads a consecutive pair action/sensory_frame OR an observation, depending of the rawlog format, from the rawlog opened at some input stream.
-			  *   Previous contents of action and observations are discarded (using stlplus::smart_ptr::clear_unique), and
+			  *   Previous contents of action and observations are discarded , and
 			  *    at exit they contain the new objects read from the rawlog file.
 			  *
 			  *  At return, one of this will happen:
@@ -314,7 +314,7 @@ namespace mrpt
 				size_t			& rawlogEntry );
 
 			/** Gets the next consecutive pair action / observation from the rawlog loaded into this object.
-			  *   Previous contents of action and observations are discarded (using stlplus::smart_ptr::clear_unique), and
+			  *   Previous contents of action and observations are discarded , and
 			  *    at exit they contain the new objects read from the rawlog file.
 			  *  The input/output variable "rawlogEntry" is just a counter of the last rawlog entry read, for logging or monitoring purposes.
 			  * \return false if there was some error, true otherwise.

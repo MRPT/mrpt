@@ -21,7 +21,6 @@ using namespace mrpt::opengl;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using mrpt::opengl::CAngularObservationMesh;
-using namespace stlplus;
 using namespace mrpt::system;
 
 const double GRID_R=1.0;

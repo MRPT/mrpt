@@ -38,7 +38,7 @@ namespace mrpt
 			CGenericSensor*		(*ptrCreateObject)();			//!< Pointer to class constructor
 		};
 
-		typedef stlplus::smart_ptr<CGenericSensor>	CGenericSensorPtr;
+		typedef std::shared_ptr<CGenericSensor>	CGenericSensorPtr;
 
 		/** A generic interface for a wide-variety of sensors designed to be used in the application RawLogGrabber.
 		  *  Derived classes should be designed with the following execution flow in mind:
@@ -100,7 +100,7 @@ namespace mrpt
 			  */
 			static void registerClass(const TSensorClassId* pNewClass);
 			typedef CGenericSensorPtr Ptr;
-			typedef stlplus::smart_ptr<const CGenericSensor> ConstPtr;
+			typedef std::shared_ptr<const CGenericSensor> ConstPtr;
 		private:
 			synch::CCriticalSection			m_csObjList;		//!< The critical section for m_objList
 			TListObservations				m_objList;		//!< The queue of objects to be returned by getObservations

@@ -12,6 +12,7 @@
 #include <string>
 #include <mutex>
 #include <condition_variable>
+#include <mrpt/base/link_pragmas.h>
 
 namespace mrpt
 {

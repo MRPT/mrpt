@@ -49,7 +49,7 @@ namespace mrpt
 			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
 			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
 
-			/**  Loads a scene from a file in any supported file. 
+			/**  Loads a scene from a file in any supported file.
 			  * \exception std::runtime_error On any error during loading or importing the file.
 			  */
 			void loadScene( const std::string &file_name );
@@ -82,7 +82,7 @@ namespace mrpt
 				~TImplAssimp();
 				void	*scene;	//!< aiScene*
 			};
-			stlplus::smart_ptr<TImplAssimp>	m_assimp_scene;
+			std::shared_ptr<TImplAssimp>	m_assimp_scene;
 
 			mrpt::math::TPoint3D   m_bbox_min, m_bbox_max; //!< Bounding box
 

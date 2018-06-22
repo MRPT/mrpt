@@ -16,7 +16,7 @@ namespace mrpt {
 
 class COpenNI2Generic::CDevice{
     public:
-        typedef stlplus::smart_ptr<CDevice> Ptr;
+        typedef std::shared_ptr<CDevice> Ptr;
         enum{
 			COLOR_STREAM, DEPTH_STREAM, IR_STREAM,
 			STREAM_TYPE_SIZE  // this last value is to know the number of possible channels, leave it always at the end!
@@ -25,7 +25,7 @@ class COpenNI2Generic::CDevice{
     private:
         class CStream{
             public:
-                typedef stlplus::smart_ptr<CStream> Ptr;
+                typedef std::shared_ptr<CStream> Ptr;
             private:
 
                 std::ostream&       m_log;
