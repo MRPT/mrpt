@@ -154,6 +154,10 @@ namespace mrpt
 			inline void clear() { m_ptr.reset(); }
 			inline bool operator !() const { return !m_ptr.operator bool();  }
 			inline operator bool() const { return m_ptr.operator bool(); }
+			void make_unique() { if (!m_ptr) return; m_ptr.reset(m_ptr.get()->clone()); }
+			inline bool present() const { return m_ptr.get()!=NULL; }
+			inline void set(CObject* p) { m_ptr.reset(p); }
+			inline void clear_unique() { m_ptr.reset(); }
 		};
 
 		inline mrpt::utils::CObjectPtr mrpt::utils::CObject::duplicateGetSmartPtr() const { return mrpt::utils::CObjectPtr(this->duplicate()); }
@@ -219,6 +223,10 @@ namespace mrpt
 				inline void clear() { m_ptr.reset(); } \
 				inline bool operator !() const { return !m_ptr.operator bool();  } \
 				inline operator bool() const { return m_ptr.operator bool(); } \
+				void make_unique() { if (!m_ptr) return; m_ptr.reset(dynamic_cast<class_name*>(m_ptr.get()->clone())); } \
+				inline bool present() const { return m_ptr.get()!=NULL; } \
+				inline void set(class_name* p) { m_ptr.reset(p); } \
+				inline void clear_unique() { m_ptr.reset(); } \
 			private: \
 				std::shared_ptr<class_name> m_ptr; \
 			};

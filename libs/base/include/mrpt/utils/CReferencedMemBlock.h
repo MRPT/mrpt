@@ -50,7 +50,6 @@ namespace mrpt
 			template <class T> T&       getAs()       { return *getAsPtr<T>(); }
 			template <class T> const T& getAs() const { return *getAsPtr<T>(); }
 
-			unsigned int alias_count() const;
 			/** Frees the underlying memory block */
 			void clear();
 		protected:

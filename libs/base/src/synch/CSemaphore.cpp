@@ -9,25 +9,42 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/CReferencedMemBlock.h>
+#include <mrpt/synch/CSemaphore.h>
 
-using namespace mrpt::utils;
+using namespace mrpt;
+using namespace mrpt::synch;
 
-CReferencedMemBlock::CReferencedMemBlock(size_t mem_block_size) :
-	m_data( new std::vector<char>(mem_block_size) )
+CSemaphore::CSemaphore(
+	unsigned int    initialCount,
+	unsigned int    maxCount)
 {
+	m_count = initialCount;
 }
 
-CReferencedMemBlock::~CReferencedMemBlock()
+bool CSemaphore::waitForSignal( unsigned int timeout_ms )
 {
+	MRPT_START
+
+	std::unique_lock<decltype(m_mutex)> lck(m_mutex);
+	while (m_count==0)
+	{
+		if (std::cv_status::timeout==m_condition.wait_for(lck, std::chrono::milliseconds(timeout_ms)))
+			return false;
+	}
+	--m_count;
+
+	return true;
+
+	MRPT_END
 }
 
-void CReferencedMemBlock::resize(size_t mem_block_size)
+void CSemaphore::release(unsigned int increaseCount )
 {
-	m_data->resize(mem_block_size);
-}
+	MRPT_START
 
-void CReferencedMemBlock::clear() 
-{
-	m_data.reset();
+	std::unique_lock<decltype(m_mutex)> lck(m_mutex);
+	++m_count;
+	m_condition.notify_one();
+
+	MRPT_END
 }

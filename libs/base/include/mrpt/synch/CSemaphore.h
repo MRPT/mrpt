@@ -9,8 +9,9 @@
 #ifndef  mrpt_synch_semaphore_H
 #define  mrpt_synch_semaphore_H
 
-#include <mrpt/utils/CReferencedMemBlock.h>
 #include <string>
+#include <mutex>
+#include <condition_variable>
 
 namespace mrpt
 {
@@ -28,12 +29,13 @@ namespace mrpt
 		class BASE_IMPEXP CSemaphore
 		{
 		protected:
-			mrpt::utils::CReferencedMemBlock m_data;
+			std::mutex m_mutex;
+			std::condition_variable m_condition;
+			unsigned long m_count{ 0 };
+
 		public:
 			/** Creates a semaphore.*/
 			CSemaphore(unsigned int    initialCount, unsigned int    maxCount);
-
-			virtual ~CSemaphore(); //!< Dtor
 
 			/** Blocks until the count of the semaphore to be non-zero.
 				* \param timeout_ms The timeout in milliseconds, or set to zero to wait indefinidely.
