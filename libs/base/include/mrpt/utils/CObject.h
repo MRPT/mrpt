@@ -13,8 +13,7 @@
 #include <mrpt/utils/safe_pointers.h>
 #include <vector>
 
-// STL+ library:
-#include <mrpt/otherlibs/stlplus/smart_ptr.hpp>
+#include <memory> // shared_ptr
 
 namespace mrpt
 {
@@ -29,16 +28,7 @@ namespace mrpt
 		  * \note Declared as a class instead of a typedef to avoid multiple defined symbols when linking dynamic libs.
 		  * \ingroup mrpt_base_grp
 		  */
-		class BASE_IMPEXP CObjectPtr : public stlplus::smart_ptr_clone<CObject>
-		{
-			typedef stlplus::smart_ptr_clone<CObject> BASE;
-		public:
-			inline CObjectPtr() : BASE() {}
-			explicit inline CObjectPtr(const CObject& data) :  BASE(data) {}
-			explicit inline CObjectPtr(CObject* data) :  BASE(data) { }
-			inline CObjectPtr& operator=(const CObject& data) { BASE::operator=(data); return *this; }
-			inline CObjectPtr& operator=(const CObjectPtr& r) { BASE::operator=(r); return *this; }
-		};
+		class BASE_IMPEXP CObjectPtr;
 
 		/** A structure that holds runtime class type information. Use CLASS_ID(<class_name>) to get a reference to the class_name's TRuntimeClassId descriptor.
 		  * \ingroup mrpt_base_grp
@@ -137,7 +127,7 @@ namespace mrpt
 			virtual CObject *duplicate() const = 0;
 
 			/** Returns a copy of the object, indepently of its class, as a smart pointer (the newly created object will exist as long as any copy of this smart pointer). */
-			inline mrpt::utils::CObjectPtr duplicateGetSmartPtr() const { return mrpt::utils::CObjectPtr( this->duplicate() ); }
+			inline mrpt::utils::CObjectPtr duplicateGetSmartPtr() const;
 
 			/** Cloning interface for smart pointers */
 			inline CObject *clone() const { return duplicate(); }
@@ -145,6 +135,24 @@ namespace mrpt
 			virtual ~CObject() {  }
 
 		}; // End of class def.
+
+		class BASE_IMPEXP CObjectPtr
+		{
+			std::shared_ptr<CObject> m_ptr;
+		public:
+			inline CObjectPtr() {}
+			explicit inline CObjectPtr(CObject* data) : m_ptr(data) { }
+			inline CObject * pointer() { return dynamic_cast<CObject*>(m_ptr.get()); }
+			inline CObject * get() { return this->pointer(); }
+			inline const CObject * pointer() const { return dynamic_cast<const CObject*>(m_ptr.get()); }
+			inline const CObject * get() const { return this->pointer(); }
+			inline CObject* operator ->(void) { return dynamic_cast<CObject*>(m_ptr.get()); }
+			inline const CObject* operator ->(void) const { return dynamic_cast<const CObject*>(m_ptr.get()); }
+			inline CObject& operator *(void) { ASSERT_(m_ptr); return *dynamic_cast<CObject*>(m_ptr.get()); }
+			inline const CObject& operator *(void) const { ASSERT_(m_ptr); return *dynamic_cast<const CObject*>(m_ptr.get()); }
+		};
+
+		inline mrpt::utils::CObjectPtr mrpt::utils::CObject::duplicateGetSmartPtr() const { return mrpt::utils::CObjectPtr(this->duplicate()); }
 
 
 		/** Just like DEFINE_MRPT_OBJECT but with DLL export/import linkage keywords. Note: The replication of macro arguments is to avoid errors with empty macro arguments */
@@ -193,9 +201,6 @@ namespace mrpt
 				typedef class_name value_type; \
 				inline class_name##Ptr() : base_name##Ptr(static_cast<base_name*>(NULL)) { } \
 				inline explicit class_name##Ptr(class_name* p) : base_name##Ptr( static_cast<base_name*>(p) ) { } \
-				inline explicit class_name##Ptr(const base_name##Ptr & p) : base_name##Ptr(p) { if(!p.null()) ASSERTMSG_( p->GetRuntimeClass()->derivedFrom(#class_name),::mrpt::format("Wrong typecasting of smart pointers: %s -> %s",p->GetRuntimeClass()->className, #class_name) )  } \
-				inline explicit class_name##Ptr(const mrpt::utils::CObjectPtr & p) : base_name##Ptr(p) { if(!p.null())ASSERTMSG_( p->GetRuntimeClass()->derivedFrom(#class_name),::mrpt::format("Wrong typecasting of smart pointers: %s -> %s",p->GetRuntimeClass()->className, #class_name) )  } \
-				inline void setFromPointerDoNotFreeAtDtor(const class_name* p) { this->set(const_cast<mrpt::utils::CObject*>(static_cast<const mrpt::utils::CObject*>(p))); m_holder->increment(); } \
 				/*! Return the internal plain C++ pointer */ \
 				inline class_name * pointer() { return dynamic_cast<class_name*>(base_name##Ptr::pointer()); } \
 				inline class_name * get() { return this->pointer(); } \
@@ -320,22 +325,5 @@ struct ptr_cast
 };
 
 } // End of namespace
-
-// JL: I want these operators to reside in std so STL algorithms can always find them.
-namespace std
-{
-	/**  This operator enables comparing two smart pointers with "==" to test whether they point to the same object.
-	  */
-	template <typename T,typename C, typename COUNTER>
-	inline bool operator == ( const stlplus::smart_ptr_base<T,C,COUNTER>&a,const stlplus::smart_ptr_base<T,C,COUNTER>&b) {
-		return a.aliases(b);
-	}
-	/**  This operator enables comparing two smart pointers with "!=" to test whether they don't point to the same object.
-	  */
-	template <typename T,typename C, typename COUNTER>
-	inline bool operator != ( const stlplus::smart_ptr_base<T,C,COUNTER>&a,const stlplus::smart_ptr_base<T,C,COUNTER>&b) {
-		return !a.aliases(b);
-	}
-}
 
 #endif
