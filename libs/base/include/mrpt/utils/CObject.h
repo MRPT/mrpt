@@ -138,26 +138,24 @@ namespace mrpt
 
 		struct BASE_IMPEXP CObjectPtr
 		{
-		private:
 			std::shared_ptr<CObject> m_ptr;
-		public:
 			inline CObjectPtr() {}
 			explicit inline CObjectPtr(CObject* data) : m_ptr(data) { }
-			inline CObject * pointer() { return m_ptr.get(); }
-			inline CObject * get() { return m_ptr.get(); }
-			inline const CObject * pointer() const { return m_ptr.get(); }
-			inline const CObject * get() const { return m_ptr.get(); }
-			inline CObject* operator ->(void) { return m_ptr.get(); }
-			inline const CObject* operator ->(void) const { return m_ptr.get(); }
-			inline CObject& operator *(void) { ASSERT_(m_ptr); return *m_ptr.get(); }
-			inline const CObject& operator *(void) const { ASSERT_(m_ptr); return *m_ptr.get(); }
-			inline void clear() { m_ptr.reset(); }
-			inline bool operator !() const { return !m_ptr.operator bool();  }
-			inline operator bool() const { return m_ptr.operator bool(); }
+			virtual CObject * pointer() { return m_ptr.get(); }
+			virtual CObject * get() { return m_ptr.get(); }
+			virtual const CObject * pointer() const { return m_ptr.get(); }
+			virtual const CObject * get() const { return m_ptr.get(); }
+			virtual CObject* operator ->(void) { return m_ptr.get(); }
+			virtual const CObject* operator ->(void) const { return m_ptr.get(); }
+			virtual CObject& operator *(void) { ASSERT_(m_ptr); return *m_ptr.get(); }
+			virtual const CObject& operator *(void) const { ASSERT_(m_ptr); return *m_ptr.get(); }
+			void clear() { m_ptr.reset(); }
+			bool operator !() const { return !m_ptr.operator bool();  }
+			operator bool() const { return m_ptr.operator bool(); }
 			void make_unique() { if (!m_ptr) return; m_ptr.reset(m_ptr.get()->clone()); }
-			inline bool present() const { return m_ptr.get()!=NULL; }
-			inline void set(CObject* p) { m_ptr.reset(p); }
-			inline void clear_unique() { m_ptr.reset(); }
+			bool present() const { return m_ptr.get()!=NULL; }
+			void set(CObject* p) { m_ptr.reset(p); }
+			void clear_unique() { m_ptr.reset(); }
 		};
 
 		inline mrpt::utils::CObjectPtr mrpt::utils::CObject::duplicateGetSmartPtr() const { return mrpt::utils::CObjectPtr(this->duplicate()); }
@@ -204,31 +202,22 @@ namespace mrpt
 /**  This declaration must be inserted in all CObject classes definition, after the class declaration.  */
 #define DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE2(class_name, base_name, class_name_LINKAGE_ ) \
 			/*! The smart pointer type for the associated class */ \
-			struct class_name_LINKAGE_##Ptr \
+			struct class_name_LINKAGE_##Ptr : public base_name##Ptr \
 			{ \
 				typedef class_name value_type; \
-				inline class_name##Ptr() : m_ptr(NULL) { } \
-				inline explicit class_name##Ptr(class_name* p) : m_ptr(p) { } \
-				inline class_name##Ptr(mrpt::utils::CObjectPtr &p) : m_ptr(dynamic_cast<class_name*>(p.get())) { } \
+				inline class_name##Ptr() { } \
+				inline explicit class_name##Ptr(class_name* p) : base_name##Ptr(p) { } \
+				inline class_name##Ptr(const mrpt::utils::CObjectPtr &p) { m_ptr = p.m_ptr; } \
 				/*! Return the internal plain C++ pointer */ \
-				inline class_name * pointer() { return m_ptr.get(); } \
-				inline class_name * get() { return m_ptr.get(); } \
+				inline class_name * pointer() { return dynamic_cast<class_name*>(m_ptr.get()); } \
+				inline class_name * get() { return dynamic_cast<class_name*>(m_ptr.get()); } \
 				/*! Return the internal plain C++ pointer (const) */ \
-				inline const class_name * pointer() const { return m_ptr.get(); } \
-				inline const class_name * get() const { return m_ptr.get(); } \
-				inline class_name* operator ->(void) { return m_ptr.get(); } \
-				inline const class_name* operator ->(void) const { return m_ptr.get(); } \
-				inline class_name& operator *(void) { ASSERT_(m_ptr); return *m_ptr.get(); } \
-				inline const class_name& operator *(void) const { ASSERT_(m_ptr); return *m_ptr.get(); } \
-				inline void clear() { m_ptr.reset(); } \
-				inline bool operator !() const { return !m_ptr.operator bool();  } \
-				inline operator bool() const { return m_ptr.operator bool(); } \
-				void make_unique() { if (!m_ptr) return; m_ptr.reset(dynamic_cast<class_name*>(m_ptr.get()->clone())); } \
-				inline bool present() const { return m_ptr.get()!=NULL; } \
-				inline void set(class_name* p) { m_ptr.reset(p); } \
-				inline void clear_unique() { m_ptr.reset(); } \
-			private: \
-				std::shared_ptr<class_name> m_ptr; \
+				inline const class_name * pointer() const { return dynamic_cast<const class_name*>(m_ptr.get()); } \
+				inline const class_name * get() const { return dynamic_cast<const class_name*>(m_ptr.get()); } \
+				inline class_name* operator ->(void) { return dynamic_cast<class_name*>(m_ptr.get()); } \
+				inline const class_name* operator ->(void) const { return dynamic_cast<const class_name*>(m_ptr.get()); } \
+				inline class_name& operator *(void) { ASSERT_(m_ptr); return *dynamic_cast<class_name*>(m_ptr.get()); } \
+				inline const class_name& operator *(void) const { ASSERT_(m_ptr); return *dynamic_cast<const class_name*>(m_ptr.get()); } \
 			};
 
 
