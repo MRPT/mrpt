@@ -382,6 +382,10 @@ class PointCloudAdapter<mrpt::maps::CColouredPointsMap>
 	inline size_t size() const { return m_obj.size(); }
 	/** Set number of points (to uninitialized values) */
 	inline void resize(const size_t N) { m_obj.resize(N); }
+	/** Does nothing as of now */
+	inline void setDimensions(const size_t &height, const size_t &width)
+	{
+	}
 	/** Get XYZ coordinates of i'th point */
 	template <typename T>
 	inline void getPointXYZ(const size_t idx, T& x, T& y, T& z) const
