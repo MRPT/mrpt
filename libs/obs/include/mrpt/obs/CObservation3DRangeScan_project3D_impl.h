@@ -56,6 +56,9 @@ void project3DPointsFromDepthImageInto(
 	pca.resize(WH);  // Reserve memory for 3D points. It will be later resized
 	// again to the actual number of valid points
 
+	if(projectParams.MAKE_ORGANIZED)
+		pca.setDimensions(H,W);
+
 	if (src_obs.range_is_depth)
 	{
 		// range_is_depth = true

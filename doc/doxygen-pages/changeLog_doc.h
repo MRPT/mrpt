@@ -83,6 +83,8 @@ CObservationReflectivity to support different colors of light.
 				- New parameter `scan_interval` to decimate scans.
 		- \ref mrpt_opengl_grp
 			- Update Assimp lib version 4.0.1 -> 4.1.0 (when built as ExternalProject)
+		- \ref mrpt_obs_grp
+			- mrpt::obs::T3DPointsProjectionParams and mrpt::obs::CObservation3DRangeScan::project3DPointsFromDepthImageInto now together support organized PCL point clouds.
 	- BUG FIXES:
 		- Fix reactive navigator inconsistent state if navigation API is called
 from within rnav callbacks.
