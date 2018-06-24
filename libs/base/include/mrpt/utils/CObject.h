@@ -155,6 +155,7 @@ namespace mrpt
 			void make_unique() { if (!m_ptr) return; m_ptr.reset(m_ptr.get()->clone()); }
 			bool present() const { return m_ptr.get()!=NULL; }
 			void set(CObject* p) { m_ptr.reset(p); }
+			void reset(CObject* p) { m_ptr.reset(p); }
 			void clear_unique() { m_ptr.reset(); }
 		};
 
@@ -205,19 +206,19 @@ namespace mrpt
 			struct class_name_LINKAGE_##Ptr : public base_name##Ptr \
 			{ \
 				typedef class_name value_type; \
-				inline class_name##Ptr() { } \
-				inline explicit class_name##Ptr(class_name* p) : base_name##Ptr(p) { } \
-				inline class_name##Ptr(const mrpt::utils::CObjectPtr &p) { m_ptr = p.m_ptr; } \
+				class_name##Ptr() { } \
+				explicit class_name##Ptr(class_name* p) : base_name##Ptr(p) { } \
+				class_name##Ptr(const mrpt::utils::CObjectPtr &p) { m_ptr = p.m_ptr; } \
 				/*! Return the internal plain C++ pointer */ \
-				inline class_name * pointer() { return dynamic_cast<class_name*>(m_ptr.get()); } \
-				inline class_name * get() { return dynamic_cast<class_name*>(m_ptr.get()); } \
+				class_name * pointer() { return dynamic_cast<class_name*>(m_ptr.get()); } \
+				class_name * get() { return dynamic_cast<class_name*>(m_ptr.get()); } \
 				/*! Return the internal plain C++ pointer (const) */ \
-				inline const class_name * pointer() const { return dynamic_cast<const class_name*>(m_ptr.get()); } \
-				inline const class_name * get() const { return dynamic_cast<const class_name*>(m_ptr.get()); } \
-				inline class_name* operator ->(void) { return dynamic_cast<class_name*>(m_ptr.get()); } \
-				inline const class_name* operator ->(void) const { return dynamic_cast<const class_name*>(m_ptr.get()); } \
-				inline class_name& operator *(void) { ASSERT_(m_ptr); return *dynamic_cast<class_name*>(m_ptr.get()); } \
-				inline const class_name& operator *(void) const { ASSERT_(m_ptr); return *dynamic_cast<const class_name*>(m_ptr.get()); } \
+				const class_name * pointer() const { return dynamic_cast<const class_name*>(m_ptr.get()); } \
+				const class_name * get() const { return dynamic_cast<const class_name*>(m_ptr.get()); } \
+				class_name* operator ->(void) { return dynamic_cast<class_name*>(m_ptr.get()); } \
+				const class_name* operator ->(void) const { return dynamic_cast<const class_name*>(m_ptr.get()); } \
+				class_name& operator *(void) { ASSERT_(m_ptr); return *dynamic_cast<class_name*>(m_ptr.get()); } \
+				const class_name& operator *(void) const { ASSERT_(m_ptr); return *dynamic_cast<const class_name*>(m_ptr.get()); } \
 			};
 
 
