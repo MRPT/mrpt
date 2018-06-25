@@ -137,7 +137,7 @@ void CGraphSlamEngine<GRAPH_T>::initClass() {
 	ASSERT_(m_node_reg);
 	ASSERT_(m_edge_reg);
 	ASSERT_(m_optimizer);
-	
+
 	// Assert that the graph class used is supported.
 	{
 		MRPT_LOG_INFO_STREAM("Verifying support for given MRPT graph class...");
@@ -779,11 +779,11 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
 
 	// 3DRangeScans viewports update
 	if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) {
-		if (m_enable_range_viewport && !m_last_laser_scan3D.null()) {
+		if (m_enable_range_viewport && m_last_laser_scan3D.get()!=NULL) {
 			this->updateRangeImageViewport();
 		}
 
-		if (m_enable_intensity_viewport && !m_last_laser_scan3D.null()) {
+		if (m_enable_intensity_viewport && m_last_laser_scan3D.get()!=NULL) {
 			this->updateIntensityImageViewport();
 		}
 	}
@@ -1123,7 +1123,7 @@ void CGraphSlamEngine<GRAPH_T>::initResultsFile(
 	m_out_streams[fname]->printf("# Mobile Robot Programming Toolkit (MRPT)\n");
 	m_out_streams[fname]->printf("# http::/www.mrpt.org\n");
 	m_out_streams[fname]->printf("# GraphSlamEngine Application\n");
-	m_out_streams[fname]->printf("# Automatically generated file - %s: %s\n", 
+	m_out_streams[fname]->printf("# Automatically generated file - %s: %s\n",
 			time_spec.c_str(),
 			cur_date_str.c_str());
 	m_out_streams[fname]->printf("%s\n\n", sep.c_str());
@@ -1822,7 +1822,7 @@ void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
 
 		// make sure that the laser scan exists and is valid
 		if (search != nodes_to_laser_scans2D.end() &&
-				!(search->second.null())) {
+				(search->second.get()!=NULL)) {
 			scan_content = search->second;
 
 			CObservation2DRangeScan scan_decimated;
@@ -1833,7 +1833,7 @@ void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
 			// adjust its pose
 			CRenderizablePtr obj = map_obj->getByName(scan_name.str());
 			CSetOfObjectsPtr scan_obj = static_cast<CSetOfObjectsPtr>(obj);
-			if (scan_obj.null()) {
+			if (!scan_obj) {
 				scan_obj = CSetOfObjects::Create();
 
 				// creating and inserting the observation in the CSetOfObjects
@@ -2376,7 +2376,7 @@ void CGraphSlamEngine<GRAPH_T>::computeSlamMetric(mrpt::utils::TNodeID nodeID, s
 	pose_t prev_node_pos = m_graph.nodes[prev_it->first];
 	pose_t prev_gt_pos = m_GT_poses[prev_it->second];
 
-	// temporary constraint type 
+	// temporary constraint type
 	constraint_t c;
 
 	for (std::map<mrpt::utils::TNodeID, size_t>::const_iterator

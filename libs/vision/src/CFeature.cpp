@@ -997,7 +997,7 @@ void CFeatureList::copyListFrom( const CFeatureList &otherList )
     CFeatureList::const_iterator it1;
     CFeatureList::iterator it2;
     for( it1 = otherList.begin(), it2 = this->begin(); it1 != otherList.end(); ++it1, ++it2 )
-        (*it2).copy(*it1);
+        (*it2) = CFeaturePtr( dynamic_cast<CFeature*>((*it1)->clone()));
 } // end-copyListFrom
 
 // --------------------------------------------------

@@ -93,7 +93,7 @@ struct TMRSlamNodeAnnotations : public TNodeAnnotations {
 // declare as ttypename - in mrpt::utils namespace
 namespace mrpt { namespace utils {
 
-	MRPT_DECLARE_TTYPENAME(mrpt::graphs::detail::TMRSlamNodeAnnotations);
+	MRPT_DECLARE_TTYPENAME(mrpt::graphs::detail::TMRSlamNodeAnnotations)
 
 } } // end of namespaces
 

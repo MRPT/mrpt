@@ -51,7 +51,7 @@
 #	define MRPT_DAQmxReadDigitalU8 DAQmxBaseReadDigitalU8
 #	define MRPT_DAQmxWriteAnalogF64 DAQmxBaseWriteAnalogF64
 #	define MRPT_DAQmxWriteDigitalU32 DAQmxBaseWriteDigitalU32
-#	define MRPT_DAQmxWriteDigitalLines DAQmxBaseWriteDigitalLines 
+#	define MRPT_DAQmxWriteDigitalLines DAQmxBaseWriteDigitalLines
 #else
 #	define MRPT_DAQmxGetExtendedErrorInfo DAQmxGetExtendedErrorInfo
 #	define MRPT_DAQmxCreateTask DAQmxCreateTask
@@ -76,7 +76,7 @@
 #	define MRPT_DAQmxReadDigitalU8 DAQmxReadDigitalU8
 #	define MRPT_DAQmxWriteAnalogF64 DAQmxWriteAnalogF64
 #	define MRPT_DAQmxWriteDigitalU32 DAQmxWriteDigitalU32
-#	define MRPT_DAQmxWriteDigitalLines DAQmxWriteDigitalLines 
+#	define MRPT_DAQmxWriteDigitalLines DAQmxWriteDigitalLines
 #endif
 
 // An auxiliary macro to check and report errors in the DAQmx library as exceptions with a well-explained message.
@@ -106,22 +106,6 @@ CNationalInstrumentsDAQ::TInfoPerTask::TInfoPerTask() :
 	new_obs_available(0),
 	task()
 { }
-
-// Copy ctor (needed for the auto_ptr semantics)
-CNationalInstrumentsDAQ::TInfoPerTask::TInfoPerTask(const TInfoPerTask &o) :
-	taskHandle(o.taskHandle),
-	hThread(o.hThread),
-	read_pipe(o.read_pipe.get()),
-	write_pipe(o.write_pipe.get()),
-	must_close(o.must_close),
-	is_closed(o.is_closed),
-	new_obs_available(0),
-	task(o.task)
-{
-	const_cast<TInfoPerTask*>(&o)->read_pipe.release();
-	const_cast<TInfoPerTask*>(&o)->write_pipe.release();
-}
-
 
 /* -----------------------------------------------------
                 Constructor
@@ -153,7 +137,7 @@ void  CNationalInstrumentsDAQ::loadConfig_sensorSpecific(
 	const mrpt::utils::CConfigFileBase &cfg,
 	const std::string	  &sect )
 {
-	//std::vector<TaskDescription>  task_definitions; 
+	//std::vector<TaskDescription>  task_definitions;
 	task_definitions.clear();
 
 	const unsigned int nTasks = cfg.read_uint64_t(sect, "num_tasks", 0, true );
@@ -174,7 +158,7 @@ void  CNationalInstrumentsDAQ::loadConfig_sensorSpecific(
 		mrpt::system::tokenize(sChanns," \t,",lstStrChanns);
 		if (lstStrChanns.empty())
 			THROW_EXCEPTION_FMT("List of channels for task %u is empty!",i)
-		
+
 		MY_LOAD_HERE_CONFIG_VAR( sTask+string(".samplesPerSecond"), double, t.samplesPerSecond, cfg,sect)
 		MY_LOAD_HERE_CONFIG_VAR( sTask+string(".samplesPerChannelToRead"), double, t.samplesPerChannelToRead, cfg,sect)
         MY_LOAD_HERE_CONFIG_VAR( sTask+string(".sampleClkSource"), string, t.sampleClkSource, cfg,sect)
@@ -219,7 +203,7 @@ void  CNationalInstrumentsDAQ::loadConfig_sensorSpecific(
 				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ci_period.units"), string, t.ci_period.units, cfg,sect)
 				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ci_period.edge"), string, t.ci_period.edge, cfg,sect)
 				MY_LOAD_HERE_CONFIG_VAR( sTask+string(".ci_period.measTime"), double, t.ci_period.measTime, cfg,sect)
-				MY_LOAD_HERE_CONFIG_VAR( sTask+string(".ci_period.divisor"), int, t.ci_period.divisor, cfg,sect)				
+				MY_LOAD_HERE_CONFIG_VAR( sTask+string(".ci_period.divisor"), int, t.ci_period.divisor, cfg,sect)
 			}
 			else if (strCmpI(lstStrChanns[j],"ci_count_edges"))
 			{
@@ -278,7 +262,7 @@ void  CNationalInstrumentsDAQ::loadConfig_sensorSpecific(
 				THROW_EXCEPTION_FMT("Unknown channel type '%s'! See the docs of CNationalInstrumentsDAQ",lstStrChanns[j].c_str())
 			}
 		} // end for each "k" channel in channel "i"
-	} // end for "i", each task	
+	} // end for "i", each task
 }
 
 /* -----------------------------------------------------
@@ -415,7 +399,7 @@ void  CNationalInstrumentsDAQ::initialize()
 					tf.ci_lin_encoder.ZidxVal,
 					daqmx_defstr2num(tf.ci_lin_encoder.ZidxPhase),
 					daqmx_defstr2num(tf.ci_lin_encoder.units),
-					tf.ci_lin_encoder.distPerPulse, 
+					tf.ci_lin_encoder.distPerPulse,
 					tf.ci_lin_encoder.initialPos,
 					NULL));
 			}
@@ -427,7 +411,7 @@ void  CNationalInstrumentsDAQ::initialize()
 					tf.ci_ang_encoder.ZidxVal,
 					daqmx_defstr2num(tf.ci_ang_encoder.ZidxPhase),
 					daqmx_defstr2num(tf.ci_ang_encoder.units),
-					tf.ci_ang_encoder.pulsesPerRev, 
+					tf.ci_ang_encoder.pulsesPerRev,
 					tf.ci_ang_encoder.initialAngle,
 					NULL));
 			}
@@ -441,7 +425,7 @@ void  CNationalInstrumentsDAQ::initialize()
 					tf.co_pulses.dutyCycle));
 			}
 
-			// Seems to be needed to avoid an errors avoid like: 
+			// Seems to be needed to avoid an errors avoid like:
 			// " Onboard device memory overflow. Because of system and/or bus-bandwidth limitations, the driver could not read data from the device fast enough to keep up with the device throughput."
 			if (tf.has_ai || tf.has_di || tf.has_ci_period || tf.has_ci_count_edges ||tf.has_ci_pulse_width || tf.has_ci_lin_encoder || tf.has_ci_ang_encoder )
 			{
@@ -472,7 +456,7 @@ void  CNationalInstrumentsDAQ::initialize()
 			MRPT_DAQmx_ErrChk (MRPT_DAQmxStartTask(taskHandle));
 
 			ipt.hThread = mrpt::system::createThreadFromObjectMethodRef<CNationalInstrumentsDAQ,TInfoPerTask>(this, &CNationalInstrumentsDAQ::grabbing_thread, ipt);
-			
+
 
 		}
 		catch (std::exception const &e)
@@ -567,14 +551,14 @@ void  CNationalInstrumentsDAQ::readFromDAQ(
 
 	// Read from the pipe:
 	m_state = ssWorking;
-	
+
 
 	for (list<TInfoPerTask>::iterator it=m_running_tasks.begin();it!=m_running_tasks.end();++it)
 	{
 		CObservationRawDAQ tmp_obs;
 		try
 		{
-			if (it->new_obs_available!=0) 
+			if (it->new_obs_available!=0)
 			{
 				it->read_pipe->ReadObject(&tmp_obs);
 				--(it->new_obs_available);
@@ -608,7 +592,7 @@ void  CNationalInstrumentsDAQ::doProcess()
 	if (!m_nextObservations.empty())
 	{
 		m_state = ssWorking;
-					
+
 		std::vector<mrpt::utils::CSerializablePtr> new_obs;
 		new_obs.resize(m_nextObservations.size());
 
@@ -656,7 +640,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 
 			// Read from each channel in this task:
 			// -----------------------------------------------
-			if (ipt.task.has_ai) 
+			if (ipt.task.has_ai)
 			{
 				obs.AIN_channel_count = ipt.task.ai.physicalChannelCount;
 				obs.AIN_interleaved = true;
@@ -668,7 +652,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 					taskHandle,
 					ipt.task.samplesPerChannelToRead,timeout, obs.AIN_interleaved ? DAQmx_Val_GroupByScanNumber : DAQmx_Val_GroupByChannel,
 					&dBuf[0],dBuf.size(),
-					&pointsReadPerChan,NULL))<0 && err!=DAQmxErrorSamplesNotYetAvailable) 
+					&pointsReadPerChan,NULL))<0 && err!=DAQmxErrorSamplesNotYetAvailable)
 				{
 					MRPT_DAQmx_ErrChk(err)
 				}
@@ -679,7 +663,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 					if (m_verbose) cout << "[CNationalInstrumentsDAQ::grabbing_thread] " << pointsReadPerChan << " analog samples read.\n";
 				}
 			} // end AI
-			if (ipt.task.has_di) 
+			if (ipt.task.has_di)
 			{
 				const uint32_t totalSamplesToRead = 1 * ipt.task.samplesPerChannelToRead;
 				u8Buf.resize(totalSamplesToRead);
@@ -689,7 +673,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 					taskHandle,
 					ipt.task.samplesPerChannelToRead,timeout, DAQmx_Val_GroupByChannel,
 					&u8Buf[0],u8Buf.size(),
-					&pointsReadPerChan,NULL))<0 && err!=DAQmxErrorSamplesNotYetAvailable) 
+					&pointsReadPerChan,NULL))<0 && err!=DAQmxErrorSamplesNotYetAvailable)
 				{
 					MRPT_DAQmx_ErrChk(err)
 				}
@@ -700,7 +684,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 					if (m_verbose) cout << "[CNationalInstrumentsDAQ::grabbing_thread] " << pointsReadPerChan << " digital samples read.\n";
 				}
 			} // end DI
-			if (ipt.task.has_ci_ang_encoder || ipt.task.has_ci_lin_encoder) 
+			if (ipt.task.has_ci_ang_encoder || ipt.task.has_ci_lin_encoder)
 			{
 				const int32 totalSamplesToRead = ipt.task.samplesPerChannelToRead;
 				dBuf.resize(totalSamplesToRead);
@@ -709,7 +693,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 					taskHandle,
 					totalSamplesToRead,timeout,
 					&dBuf[0],dBuf.size(),
-					&pointsReadPerChan,NULL))<0 && err!=DAQmxErrorSamplesNotYetAvailable) 
+					&pointsReadPerChan,NULL))<0 && err!=DAQmxErrorSamplesNotYetAvailable)
 				{
 					MRPT_DAQmx_ErrChk(err)
 				}
@@ -723,7 +707,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 
 						obs.CNTRIN_double = dBuf;
 						there_are_data = true;
-						if (m_verbose && !obs.CNTRIN_double.empty()) 
+						if (m_verbose && !obs.CNTRIN_double.empty())
 						{
 							static int decim=0;
 							if (!decim)
@@ -762,7 +746,7 @@ void CNationalInstrumentsDAQ::writeAnalogOutputTask(size_t task_index, size_t nS
 #if MRPT_HAS_SOME_NIDAQMX
 	ASSERT_(task_index<m_running_tasks.size())
 
-	std::list<TInfoPerTask>::iterator it = m_running_tasks.begin(); 
+	std::list<TInfoPerTask>::iterator it = m_running_tasks.begin();
 	std::advance(it, task_index);
 	TInfoPerTask & ipt = *it;
 	TaskHandle  &taskHandle= *reinterpret_cast<TaskHandle*>(&ipt.taskHandle);
@@ -788,7 +772,7 @@ void CNationalInstrumentsDAQ::writeDigitalOutputTask(size_t task_index, bool lin
 #if MRPT_HAS_SOME_NIDAQMX
 	ASSERT_(task_index<m_running_tasks.size())
 
-	std::list<TInfoPerTask>::iterator it = m_running_tasks.begin(); 
+	std::list<TInfoPerTask>::iterator it = m_running_tasks.begin();
 	std::advance(it, task_index);
 	TInfoPerTask & ipt = *it;
 	TaskHandle  &taskHandle= *reinterpret_cast<TaskHandle*>(&ipt.taskHandle);
@@ -821,4 +805,3 @@ CNationalInstrumentsDAQ::TaskDescription::TaskDescription() :
 	samplesPerChannelToRead(1000)
 {
 }
-

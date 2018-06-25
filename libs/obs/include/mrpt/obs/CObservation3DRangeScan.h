@@ -356,7 +356,7 @@ namespace obs
 		/** Returns true if the field CObservation3DRangeScan::pixelLabels contains a non-NULL smart pointer.
 		  * To enhance a 3D point cloud with labeling info, just assign an appropiate object to \a pixelLabels
 		  */
-		bool hasPixelLabels() const { return pixelLabels.present(); }
+		bool hasPixelLabels() const { return !(!pixelLabels); }
 
 		/** Virtual interface to all pixel-label information structs. See CObservation3DRangeScan::pixelLabels */
 		struct OBS_IMPEXP TPixelLabelInfoBase
