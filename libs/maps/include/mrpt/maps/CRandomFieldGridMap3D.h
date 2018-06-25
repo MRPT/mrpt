@@ -50,12 +50,12 @@ namespace maps
 
 	/** CRandomFieldGridMap3D represents a 3D regular grid where each voxel is associated one real-valued property which is to be estimated by this class.
 	  *
-	  *  This class implements a Gaussian Markov Random Field (GMRF) estimator, with each voxel being connected to its 
+	  *  This class implements a Gaussian Markov Random Field (GMRF) estimator, with each voxel being connected to its
 	  *   6 immediate neighbors (Up, down, left, right, front, back).
 	  *  - See papers:
 	  *    - "Time-variant gas distribution mapping with obstacle information", Monroy, J. G., Blanco, J. L., & Gonzalez-Jimenez, J. Autonomous Robots, 40(1), 1-16, 2016.
 	  *
-	  *  Note that this class does not derive from mrpt::maps::CMetricMap since the estimated values do not have sensor-especific semantics, 
+	  *  Note that this class does not derive from mrpt::maps::CMetricMap since the estimated values do not have sensor-especific semantics,
 	  *  i.e. the grid can be used to estimate temperature, gas concentration, etc.
 	  *
 	  *  Usage:
@@ -81,15 +81,15 @@ namespace maps
 	public:
 		static bool ENABLE_GMRF_PROFILER; //!< [default:false] Enables a profiler to show a performance report at application end.
 
-		/** Constructor. 
-		  * If you set call_initialize_now to false, the object will be initialized immediately (without the heavy initialization of the GMRF), 
+		/** Constructor.
+		  * If you set call_initialize_now to false, the object will be initialized immediately (without the heavy initialization of the GMRF),
 		  * but you then must call `setSize()` or `clear()` later to properly initialize the object before using it to insert observations.
 		  */
 		CRandomFieldGridMap3D(
 			double x_min = -2, double x_max = 2,
 			double y_min = -2, double y_max = 2,
 			double z_min = -2, double z_max = 2,
-			double voxel_size = 0.5, 
+			double voxel_size = 0.5,
 			bool call_initialize_now = true
 			);
 
@@ -162,7 +162,7 @@ namespace maps
 				double &out_edge_information          //!< Must output here the inverse of the variance of the constraint edge.
 			) = 0;
 		};
-		typedef stlplus::smart_ptr<ConnectivityDescriptor> ConnectivityDescriptorPtr;
+		typedef std::shared_ptr<ConnectivityDescriptor> ConnectivityDescriptorPtr;
 
 		/** Sets a custom object to define the connectivity between voxels. Must call clear() or setSize() afterwards for the changes to take place. */
 		void setVoxelsConnectivity(const ConnectivityDescriptorPtr &new_connectivity_descriptor);
@@ -232,4 +232,3 @@ namespace maps
 
 	} // End of namespace
 } // End of namespace
-

@@ -25,7 +25,7 @@ namespace mrpt
 		/** Virtual base for specifying the kind and parameters of one map (normally, to be inserted into mrpt::maps::CMultiMetricMap)
 		  *  See `mrpt::maps::TSetOfMetricMapInitializers::loadFromConfigFile()` as an easy way of initialize this object, or
 		  *  construct with the factory methods `<metric_map_class>::MapDefinition()` and `TMetricMapInitializer::factory()`
-		  * 
+		  *
 		  * \sa TSetOfMetricMapInitializers, mrpt::maps::CMultiMetricMap
 		  * \ingroup mrpt_obs_grp
 		  */
@@ -36,7 +36,7 @@ namespace mrpt
 			/** Common params for all maps: These are automatically set in TMetricMapTypesRegistry::factoryMapObjectFromDefinition()  */
 			mrpt::maps::TMapGenericParams  genericMapParams;
 
-			/** Load all params from a config file/source. For examples and format, read the docs of mrpt::maps::CMultiMetricMap 
+			/** Load all params from a config file/source. For examples and format, read the docs of mrpt::maps::CMultiMetricMap
 			  * Typical section names:
 			  *  - `<sectionNamePrefix>_creationOpts`
 			  *  - `<sectionNamePrefix>_insertOpts`
@@ -49,7 +49,7 @@ namespace mrpt
 			const mrpt::utils::TRuntimeClassIdPtr & getMetricMapClassType() const { return metricMapClassType; }
 
 			/** Looks up in the registry of known map types and call the corresponding `<metric_map_class>::MapDefinition()`. */
-			static TMetricMapInitializer* factory(const std::string &mapClassName);			
+			static TMetricMapInitializer* factory(const std::string &mapClassName);
 
 		protected:
 			TMetricMapInitializer(const mrpt::utils::TRuntimeClassId* classID );
@@ -60,7 +60,7 @@ namespace mrpt
 			virtual void  dumpToTextStream_map_specific(mrpt::utils::CStream	&out) const = 0;
 		}; // end TMetricMapInitializer
 
-		typedef stlplus::smart_ptr_clone<TMetricMapInitializer> TMetricMapInitializerPtr; //!< Smart pointer to TMetricMapInitializer 
+		typedef std::shared_ptr<TMetricMapInitializer> TMetricMapInitializerPtr; //!< Smart pointer to TMetricMapInitializer 
 
 		/** A set of TMetricMapInitializer structures, passed to the constructor CMultiMetricMap::CMultiMetricMap
 		  *  See the comments for TSetOfMetricMapInitializers::loadFromConfigFile, and "CMultiMetricMap::setListOfMaps" for
@@ -297,4 +297,3 @@ namespace mrpt
 
 	} // End of namespace
 } // End of namespace
-

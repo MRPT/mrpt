@@ -9,7 +9,6 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
-
 #include <mrpt/utils/CObject.h>
 #include <mrpt/utils/CMemoryStream.h>
 #include <mrpt/system/os.h>

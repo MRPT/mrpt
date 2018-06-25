@@ -178,7 +178,7 @@ bool CReactiveNavigationSystem::implementSenseObstacles(mrpt::system::TTimeStamp
 
 		// Optional filtering of obstacles:
 		m_WS_Obstacles_original = m_WS_Obstacles;
-		if (ret && m_WS_filter.present())
+		if (ret && m_WS_filter.get()!=NULL)
 		{
 			m_WS_filter->filter(&m_WS_Obstacles, obstacles_timestamp, mrpt::poses::CPose3D(mrpt::math::TPose3D(m_curPoseVel.pose)) );
 		}

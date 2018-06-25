@@ -11,10 +11,12 @@
 #define INTERNAL_CHECKERBOARD_INCL_H
 
 // Universal include for all versions of OpenCV
-#include <mrpt/otherlibs/do_opencv_includes.h> 
+#include <mrpt/otherlibs/do_opencv_includes.h>
 
 #include <cmath>
 #include <cstdio>
+#include <memory>
+
 
 #if MRPT_HAS_OPENCV
 
@@ -31,7 +33,7 @@ struct CvContourEx
 
 // Definition Corner Struct
 struct CvCBCorner;
-typedef stlplus::smart_ptr<CvCBCorner> CvCBCornerPtr;
+typedef std::shared_ptr<CvCBCorner> CvCBCornerPtr;
 
 struct CvCBCorner
 {
@@ -50,7 +52,7 @@ struct CvCBCorner
 // Definition Quadrangle Struct
 // This structure stores information about the chessboard quadrange
 struct CvCBQuad;
-typedef stlplus::smart_ptr<CvCBQuad>  CvCBQuadPtr;
+typedef std::shared_ptr<CvCBQuad>  CvCBQuadPtr;
 
 struct CvCBQuad
 {
@@ -63,7 +65,7 @@ struct CvCBQuad
     CvCBCornerPtr	corners[4];				//CvCBCorner *corners[4];				// Coordinates of quad corners
     CvCBQuadPtr		neighbors[4];		// Pointers of quad neighbors
 	bool labeled;						// Has this corner been labeled?
-	double          area, area_ratio; 
+	double          area, area_ratio;
 };
 
 
@@ -126,4 +128,3 @@ bool do_special_dilation(mrpt::utils::CImage &thresh_img, const int dilations,
 #endif // MRPT_HAS_OPENCV
 
 #endif
-

@@ -145,7 +145,7 @@ bool find_chessboard_corners_multiple(
 		quad_centers.resize(quads.size());
 		for (size_t i=0;i<quads.size();i++)
 		{
-			const CvCBQuad* q= quads[i].pointer();
+			const CvCBQuad* q= quads[i].get();
 			quad_centers[i][0] = 0.25 * (q->corners[0]->pt.x + q->corners[1]->pt.x + q->corners[2]->pt.x + q->corners[3]->pt.x);
 			quad_centers[i][1] = 0.25 * (q->corners[0]->pt.y + q->corners[1]->pt.y + q->corners[2]->pt.y + q->corners[3]->pt.y);
 		}
@@ -306,4 +306,3 @@ bool find_chessboard_corners_multiple(
 
 
 #endif // MRPT_HAS_OPENCV
-

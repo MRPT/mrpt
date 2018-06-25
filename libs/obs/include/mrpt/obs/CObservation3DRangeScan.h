@@ -45,8 +45,8 @@ namespace obs
 		double angle_sup, angle_inf; //!< (Default=5 degrees) [Only if use_origin_sensor_pose=false] The upper & lower half-FOV angle (in radians).
 		double z_min,z_max;          //!< (Default:-inf, +inf) [Only if use_origin_sensor_pose=true] Only obstacle points with Z coordinates within the range [z_min,z_max] will be taken into account.
 		double oversampling_ratio;   //!< (Default=1.2=120%) How many more laser scans rays to create (read docs for CObservation3DRangeScan::convertTo2DScan()).
-		
-		/** (Default:false) If `false`, the conversion will be such that the 2D observation pose on the robot coincides with that in the original 3D range scan. 
+
+		/** (Default:false) If `false`, the conversion will be such that the 2D observation pose on the robot coincides with that in the original 3D range scan.
 		  * If `true`, the sensed points will be "reprojected" as seen from a sensor pose at the robot/vehicle frame origin  (and angle_sup, angle_inf will be ignored) */
 		bool use_origin_sensor_pose;
 
@@ -64,7 +64,7 @@ namespace obs
 	/** Declares a class derived from "CObservation" that encapsules a 3D range scan measurement, as from a time-of-flight range camera or any other RGBD sensor.
 	 *
 	 *  This kind of observations can carry one or more of these data fields:
-	 *    - 3D point cloud (as float's). 
+	 *    - 3D point cloud (as float's).
 	 *    - Each 3D point has its associated (u,v) pixel coordinates in \a points3D_idxs_x & \a points3D_idxs_y (New in MRPT 1.4.0)
 	 *    - 2D range image (as a matrix): Each entry in the matrix "rangeImage(ROW,COLUMN)" contains a distance or a depth (in meters), depending on \a range_is_depth.
 	 *    - 2D intensity (grayscale or RGB) image (as a mrpt::utils::CImage): For SwissRanger cameras, a logarithmic A-law compression is used to convert the original 16bit intensity to a more standard 8bit graylevel.
@@ -124,7 +124,7 @@ namespace obs
 	 *   // Assume obs of type CObservation3DRangeScanPtr
 	 *   obs->pixelLabels = CObservation3DRangeScan::TPixelLabelInfoPtr( new CObservation3DRangeScan::TPixelLabelInfo<NUM_BYTES>() );
 	 *   obs->pixelLabels->setSize(ROWS,COLS);
-	 *   obs->pixelLabels->setLabel(col,row, label_idx);   // label_idxs = [0,2^NUM_BYTES-1] 
+	 *   obs->pixelLabels->setLabel(col,row, label_idx);   // label_idxs = [0,2^NUM_BYTES-1]
 	 *   //...
 	 * \endcode
 	 *
@@ -219,7 +219,7 @@ namespace obs
 			const mrpt::math::CMatrix * rangeMask_min = NULL
 			)
 		{
-			T3DPointsProjectionParams pp; 
+			T3DPointsProjectionParams pp;
 			pp.takeIntoAccountSensorPoseOnRobot = takeIntoAccountSensorPoseOnRobot;
 			pp.robotPoseInTheWorld = robotPoseInTheWorld;
 			pp.PROJ3D_USE_LUT = PROJ3D_USE_LUT;
@@ -255,9 +255,9 @@ namespace obs
 		  *  Obviously, a requisite for calling this method is the 3D observation having range data,
 		  *  i.e. hasRangeImage must be true. It's not needed to have RGB data nor the raw 3D point clouds
 		  *  for this method to work.
-		  *  
-		  *  If `scanParams.use_origin_sensor_pose` is `true`, the points will be projected to 3D and then reprojected 
-		  *  as seen from a different sensorPose at the vehicle frame origin. Otherwise (the default), the output 2D observation will share the sensorPose of the input 3D scan 
+		  *
+		  *  If `scanParams.use_origin_sensor_pose` is `true`, the points will be projected to 3D and then reprojected
+		  *  as seen from a different sensorPose at the vehicle frame origin. Otherwise (the default), the output 2D observation will share the sensorPose of the input 3D scan
 		  *  (using a more efficient algorithm that avoids trigonometric functions).
 		  *
 		  *  \param[out] out_scan2d The resulting 2D equivalent scan.
@@ -276,7 +276,7 @@ namespace obs
 			const mrpt::math::CMatrix * rangeMask_min = NULL
 			);
 
-		/** Whether external files (3D points, range and confidence) are to be 
+		/** Whether external files (3D points, range and confidence) are to be
 		  * saved as `.txt` text files (MATLAB compatible) or `*.bin` binary (faster).
 		  * Loading always will determine the type by inspecting the file extension.
 		  * \note Default=false
@@ -353,10 +353,10 @@ namespace obs
 
 		/** \name Pixel-wise classification labels (for semantic labeling, etc.)
 		  * @{ */
-		/** Returns true if the field CObservation3DRangeScan::pixelLabels contains a non-NULL smart pointer. 
+		/** Returns true if the field CObservation3DRangeScan::pixelLabels contains a non-NULL smart pointer.
 		  * To enhance a 3D point cloud with labeling info, just assign an appropiate object to \a pixelLabels
 		  */
-		bool hasPixelLabels() const { return pixelLabels.present(); }
+		bool hasPixelLabels() const { return !(!pixelLabels); }
 
 		/** Virtual interface to all pixel-label information structs. See CObservation3DRangeScan::pixelLabels */
 		struct OBS_IMPEXP TPixelLabelInfoBase
@@ -366,7 +366,7 @@ namespace obs
 			/** The 'semantic' or human-friendly name of the i'th bit in pixelLabels(r,c) can be found in pixelLabelNames[i] as a std::string */
 			TMapLabelID2Name pixelLabelNames;
 
-			const std::string & getLabelName(unsigned int label_idx) const  { 
+			const std::string & getLabelName(unsigned int label_idx) const  {
 				std::map<uint32_t,std::string>::const_iterator it = pixelLabelNames.find(label_idx);
 				if (it==pixelLabelNames.end()) throw std::runtime_error("Error: label index has no defined name");
 				return it->second;
@@ -384,16 +384,16 @@ namespace obs
 
 			/** Resizes the matrix pixelLabels to the given size, setting all bitfields to zero (that is, all pixels are assigned NONE category). */
 			virtual void setSize(const int NROWS, const int NCOLS) =0;
-			/** Mark the pixel(row,col) as classified in the category \a label_idx, which may be in the range 0 to MAX_NUM_LABELS-1 
+			/** Mark the pixel(row,col) as classified in the category \a label_idx, which may be in the range 0 to MAX_NUM_LABELS-1
 			  * Note that 0 is a valid label index, it does not mean "no label" \sa unsetLabel, unsetAll */
 			virtual void setLabel(const int row, const int col, uint8_t label_idx) =0;
 			virtual void getLabels( const int row, const int col, uint8_t &labels ) =0;
-			/** For the pixel(row,col), removes its classification into the category \a label_idx, which may be in the range 0 to 7 
+			/** For the pixel(row,col), removes its classification into the category \a label_idx, which may be in the range 0 to 7
 			  * Note that 0 is a valid label index, it does not mean "no label" \sa setLabel, unsetAll */
 			virtual void unsetLabel(const int row, const int col, uint8_t label_idx)=0;
 			/** Removes all categories for pixel(row,col)  \sa setLabel, unsetLabel */
 			virtual void unsetAll(const int row, const int col, uint8_t label_idx) =0;
-			/** Checks whether pixel(row,col) has been clasified into category \a label_idx, which may be in the range 0 to 7 
+			/** Checks whether pixel(row,col) has been clasified into category \a label_idx, which may be in the range 0 to 7
 			  * \sa unsetLabel, unsetAll */
 			virtual bool checkLabel(const int row, const int col, uint8_t label_idx) const =0;
 
@@ -406,7 +406,7 @@ namespace obs
 				return out;
 			}
 
-			TPixelLabelInfoBase(unsigned int BITFIELD_BYTES_) : 
+			TPixelLabelInfoBase(unsigned int BITFIELD_BYTES_) :
 				BITFIELD_BYTES (BITFIELD_BYTES_)
 			{
 			}
@@ -420,20 +420,20 @@ namespace obs
 			virtual void internal_writeToStream(mrpt::utils::CStream &out) const = 0;
 			virtual void Print( std::ostream& ) const =0;
 		};
-		typedef stlplus::smart_ptr<TPixelLabelInfoBase>  TPixelLabelInfoPtr;  //!< Used in CObservation3DRangeScan::pixelLabels
+		typedef std::shared_ptr<TPixelLabelInfoBase>  TPixelLabelInfoPtr;  //!< Used in CObservation3DRangeScan::pixelLabels
 
-		template <unsigned int BYTES_REQUIRED_> 
+		template <unsigned int BYTES_REQUIRED_>
 		struct TPixelLabelInfo : public TPixelLabelInfoBase
 		{
 			enum {
-			      BYTES_REQUIRED = BYTES_REQUIRED_ // ((MAX_LABELS-1)/8)+1 
+			      BYTES_REQUIRED = BYTES_REQUIRED_ // ((MAX_LABELS-1)/8)+1
 			};
 
 			/** Automatically-determined integer type of the proper size such that all labels fit as one bit (max: 64)  */
 			typedef typename mrpt::utils::uint_select_by_bytecount<BYTES_REQUIRED>::type  bitmask_t;
 
-			/** Each pixel may be assigned between 0 and MAX_NUM_LABELS-1 'labels' by 
-			  * setting to 1 the corresponding i'th bit [0,MAX_NUM_LABELS-1] in the byte in pixelLabels(r,c). 
+			/** Each pixel may be assigned between 0 and MAX_NUM_LABELS-1 'labels' by
+			  * setting to 1 the corresponding i'th bit [0,MAX_NUM_LABELS-1] in the byte in pixelLabels(r,c).
 			  * That is, each pixel is assigned an 8*BITFIELD_BYTES bit-wide bitfield of possible categories.
 			  * \sa hasPixelLabels
 			  */
@@ -515,7 +515,7 @@ namespace obs
 			}
 		}; // end TPixelLabelInfo
 
-		/** All information about pixel labeling is stored in this (smart pointer to) structure; refer to TPixelLabelInfo for details on the contents 
+		/** All information about pixel labeling is stored in this (smart pointer to) structure; refer to TPixelLabelInfo for details on the contents
 		  * User is responsible of creating a new object of the desired data type. It will be automatically (de)serialized no matter its specific type. */
 		TPixelLabelInfoPtr  pixelLabels;
 

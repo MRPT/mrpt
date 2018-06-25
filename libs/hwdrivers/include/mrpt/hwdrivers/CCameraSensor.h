@@ -38,7 +38,7 @@ namespace mrpt
 		/** The central class for camera grabbers in MRPT, implementing the "generic sensor" interface.
 		  *   This class provides the user with a uniform interface to a variety of other classes which manage only one specific camera "driver" (opencv, ffmpeg, PGR FlyCapture,...)
 		  *
-		  *   Following the "generic sensor" interface, all the parameters must be passed int the form of a configuration file, 
+		  *   Following the "generic sensor" interface, all the parameters must be passed int the form of a configuration file,
 		  *   which may be also formed on the fly (without being a real config file) as in this example:
 		  *
 		  *  \code
@@ -59,10 +59,10 @@ namespace mrpt
 		  *  - "grabber_type" determines the class to use internally for image capturing (see below).
 		  *  - For the meaning of cv_camera_type and other parameters, refer to mrpt::hwdrivers::CImageGrabber_OpenCV
 		  *  - For the parameters of dc1394 parameters, refer to generic IEEE1394 documentation, and to mrpt::hwdrivers::TCaptureOptions_dc1394.
-		  *  - If the high number of existing parameters annoy you, try the function prepareVideoSourceFromUserSelection(), 
+		  *  - If the high number of existing parameters annoy you, try the function prepareVideoSourceFromUserSelection(),
 		  *     which displays a GUI dialog to the user so he/she can choose the desired camera & its parameters.
 		  *
-		  *  Images can be saved in the "external storage" mode. Detached threads are created for this task. See \a setPathForExternalImages() and \a setExternalImageFormat(). 
+		  *  Images can be saved in the "external storage" mode. Detached threads are created for this task. See \a setPathForExternalImages() and \a setExternalImageFormat().
 		  *  These methods are called automatically from the app rawlog-grabber.
 		  *
 		  *  These is the list of all accepted parameters:
@@ -185,7 +185,7 @@ namespace mrpt
 		  *    #... (all the parameters enumerated in mrpt::hwdrivers::TCaptureOptions_FlyCapture2 with the prefix "fcs_RIGHT_")
 		  *
 		  *    # Options for grabber_type= image_dir
-		  *    image_dir_url					= 				// [string] URL of the directory 
+		  *    image_dir_url					= 				// [string] URL of the directory
 		  *    left_filename_format				= imL_%05d.jpg	// [string] Format including prefix, number of trailing zeros, digits and image format (extension)
 		  *    right_filename_format			= imR_%05d.jpg	// [string] Format including prefix, number of trailing zeros, digits and image format (extension). Leave blank if only images from one camera will be used.
 		  *    start_index						= 0				// [int]	Starting index for images
@@ -357,10 +357,10 @@ namespace mrpt
 			std::string		m_img_dir_right_format;
 			int				m_img_dir_start_index;
 			int				m_img_dir_end_index;
-			
+
 			bool			m_img_dir_is_stereo;
 			int				m_img_dir_counter;
-			
+
 			// Options for grabber type= duo3d
 			TCaptureOptions_DUO3D	m_duo3d_options;
 
@@ -404,14 +404,14 @@ namespace mrpt
 			mrpt::synch::CCriticalSection	m_csToSaveList;		//!< The critical section for m_toSaveList
 			std::vector<TListObservations>	m_toSaveList;		//!< The queues of objects to be returned by getObservations, one for each working thread.
 			void thread_save_images(unsigned int my_working_thread_index); //!< Thread to save images to files.
-			
+
 			TPreSaveUserHook  m_hook_pre_save;
 			void            * m_hook_pre_save_param;
 			/**  @} */
 
 		}; // end class
 
-		typedef stlplus::smart_ptr<CCameraSensor>    CCameraSensorPtr; //!< A smart pointer to a CCameraSensor
+		typedef std::shared_ptr<CCameraSensor>    CCameraSensorPtr; //!< A smart pointer to a CCameraSensor
 
 		/** Used only from MRPT apps: Use with caution since "panel" MUST be a "mrpt::gui::CPanelCameraSelection *"
 		  */
