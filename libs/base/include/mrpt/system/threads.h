@@ -30,6 +30,7 @@ namespace mrpt
 			std::shared_ptr<std::thread> m_thread;
 
 			TThreadHandle() : m_thread(std::make_shared<std::thread>()) {}
+			~TThreadHandle() { clear(); }
 
 			/** Mark the handle as invalid.
 			  * \sa isClear
