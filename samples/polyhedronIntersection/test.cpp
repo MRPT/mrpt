@@ -52,14 +52,21 @@ public:
 	}
 };
 
-void piThreadFunction(PIThreadParam &p)	{
+void piThreadFunction(PIThreadParam *p)	{
+	try
+	{
 	vector<TObject3D> ints;
-	CPolyhedron::getIntersection(p.polys->first,p.polys->second,ints);
-	TObject3D::getSegments(ints,p.intersection);
+	CPolyhedron::getIntersection(p->polys->first,p->polys->second,ints);
+	TObject3D::getSegments(ints,p->intersection);
+	}
+	catch (std::exception &e)
+	{
+		std::cerr << e.what();
+	}
 }
 
 inline TThreadHandle piCreateThread(PIThreadParam &p)	{
-	return createThread<PIThreadParam &>(&piThreadFunction,p);
+	return createThread(&piThreadFunction,&p);
 }
 
 class AggregatorFunctor	{
