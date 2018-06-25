@@ -64,6 +64,20 @@ SET(MRPT_INCLUDE_DIRS "@THE_INCLUDE_DIRECTORIES@")
 # MRPT library directories
 SET(MRPT_LINK_DIRECTORIES "@THE_LINK_DIRECTORIES@")
 
+# Require C++11
+if (MSVC)
+	# nothing required
+else()
+	if("${CMAKE_VERSION}" VERSION_LESS "3.8.0")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+	else()
+		if ("${CMAKE_CXX_STANDARD}" STREQUAL "" OR "${CMAKE_CXX_STANDARD}" LESS 11)
+			set(CMAKE_CXX_STANDARD 11)
+		endif()
+	endif()
+endif()
+
+
 # ======================================================
 # Include directories where Eigen3 headers are... if
 #  they are not embedded under mrpt-base headers:
