@@ -12,6 +12,7 @@
 #include <string>
 #include <mutex>
 #include <condition_variable>
+#include <exception>
 #include <mrpt/base/link_pragmas.h>
 
 namespace mrpt
@@ -37,6 +38,9 @@ namespace mrpt
 		public:
 			/** Creates a semaphore.*/
 			CSemaphore(unsigned int    initialCount, unsigned int    maxCount);
+
+			// throw instead of deleting the copy operator to allow mrpt-1.5 legacy code to build.
+			CSemaphore(const CSemaphore&o) { throw std::runtime_error("CSemaphore cannot be copied"); }
 
 			/** Blocks until the count of the semaphore to be non-zero.
 				* \param timeout_ms The timeout in milliseconds, or set to zero to wait indefinidely.

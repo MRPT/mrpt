@@ -238,7 +238,7 @@ void  CMultiMetricMap::setListOfMaps( const mrpt::maps::TSetOfMetricMapInitializ
 		for (TSetOfMetricMapInitializers::const_iterator it = initializers->begin();it!=initializers->end();++it)
 		{
 			// Create map from the list of all params:
-			mrpt::maps::CMetricMap *theMap = mmr.factoryMapObjectFromDefinition(*it->pointer());
+			mrpt::maps::CMetricMap *theMap = mmr.factoryMapObjectFromDefinition(*it->get());
 			ASSERT_(theMap)
 
 			// Add to the list of maps:
@@ -298,7 +298,7 @@ void  CMultiMetricMap::readFromStream(mrpt::utils::CStream &in, int version)
 	{
 	case 11:
 		{
-			// ID: 
+			// ID:
 			{
 				uint32_t	ID;
 				in >> ID; m_ID = ID;

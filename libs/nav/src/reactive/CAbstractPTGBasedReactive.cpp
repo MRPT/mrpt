@@ -1578,7 +1578,7 @@ void CAbstractPTGBasedReactive::loadConfigFile(const mrpt::utils::CConfigFileBas
 	}
 	else
 	{
-		m_WS_filter.clear_unique();
+		m_WS_filter.reset();
 	}
 
 	// Movement chooser:

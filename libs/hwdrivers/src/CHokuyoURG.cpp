@@ -47,7 +47,7 @@ CHokuyoURG::~CHokuyoURG() {
       delete m_stream;
     m_stream = nullptr;
   }
-  m_win.reset();
+  m_win.reset(NULL);
 }
 
 void CHokuyoURG::sendCmd(const char *str) {

@@ -259,7 +259,7 @@ void  CObservation3DRangeScan::readFromStream(mrpt::utils::CStream &in, int vers
 					in.ReadBufferFixEndianness( &points3D_y[0], N);
 					in.ReadBufferFixEndianness( &points3D_z[0], N);
 
-					if (version==0) 
+					if (version==0)
 					{
 						vector<char> validRange(N);  // for v0.
 						in.ReadBuffer( &validRange[0], sizeof(validRange[0])*N );
@@ -348,7 +348,7 @@ void  CObservation3DRangeScan::readFromStream(mrpt::utils::CStream &in, int vers
 				intensityImageChannel = CH_VISIBLE;
 			}
 
-			pixelLabels.clear_unique(); // Remove existing data first (_unique() is to leave alive any user copies of the shared pointer).
+			pixelLabels.reset(); // Remove existing data first (_unique() is to leave alive any user copies of the shared pointer).
 			if (version>=7)
 			{
 
@@ -553,7 +553,7 @@ void CObservation3DRangeScan::rangeImage_convertToExternalStorage( const std::st
 			real_absolute_file_path,
 			MATRIX_FORMAT_FIXED );
 	}
-	else 
+	else
 	{
 		mrpt::utils::CFileGZOutputStream f(real_absolute_file_path);
 		f  << rangeImage;
@@ -688,7 +688,7 @@ double CObservation3DRangeScan::recoverCameraCalibrationParameters(
 	detail::cam2vec(camInit,initial_x);
 
 	initial_x.resize(8);
-	CVectorDouble increments_x(initial_x.size()); 
+	CVectorDouble increments_x(initial_x.size());
 	increments_x.assign(1e-4);
 
 	CVectorDouble optimal_x;
@@ -942,7 +942,7 @@ void CObservation3DRangeScan::convertTo2DScan(mrpt::obs::CObservation2DRangeScan
 	out_scan2d.aperture = FOV_equiv;
 	out_scan2d.maxRange = this->maxRange;
 	out_scan2d.resizeScan(nLaserRays);
-		
+
 	out_scan2d.resizeScanAndAssign(nLaserRays, 2.0 * this->maxRange, false ); // default: all ranges=invalid
 	if (sp.use_origin_sensor_pose)
 	     out_scan2d.sensorPose = mrpt::poses::CPose3D();
@@ -1014,7 +1014,7 @@ void CObservation3DRangeScan::convertTo2DScan(mrpt::obs::CObservation2DRangeScan
 
 		T3DPointsProjectionParams projParams;
 		projParams.takeIntoAccountSensorPoseOnRobot = true;
-		
+
 		mrpt::opengl::CPointCloudPtr pc = mrpt::opengl::CPointCloud::Create();
 		this->project3DPointsFromDepthImageInto(*pc, projParams, fp);
 
@@ -1042,7 +1042,7 @@ void CObservation3DRangeScan::convertTo2DScan(mrpt::obs::CObservation2DRangeScan
 
 	}
 }
-	
+
 void CObservation3DRangeScan::getDescriptionAsText(std::ostream &o) const
 {
 	CObservation::getDescriptionAsText(o);
@@ -1120,7 +1120,7 @@ void CObservation3DRangeScan::getDescriptionAsText(std::ostream &o) const
 void CObservation3DRangeScan::TPixelLabelInfoBase::writeToStream(mrpt::utils::CStream &out) const
 {
 	const uint8_t version = 1; // for possible future changes.
-	out << version; 
+	out << version;
 
 	// 1st: Save number MAX_NUM_DIFFERENT_LABELS so we can reconstruct the object in the class factory later on.
 	out << BITFIELD_BYTES;
@@ -1138,7 +1138,7 @@ CObservation3DRangeScan::TPixelLabelInfoBase* CObservation3DRangeScan::TPixelLab
 
 	switch (version)
 	{
-	case 1: 
+	case 1:
 		{
 			// 1st: Read NUM BYTES
 			uint8_t  bitfield_bytes;
@@ -1156,7 +1156,7 @@ CObservation3DRangeScan::TPixelLabelInfoBase* CObservation3DRangeScan::TPixelLab
 			case 6:
 			case 7:
 			case 8: new_obj = new CObservation3DRangeScan::TPixelLabelInfo<8>(); break;
-			default: 
+			default:
 				throw std::runtime_error("Unknown type of pixelLabel inner class while deserializing!");
 			};
 			// 2nd: data-specific serialization:
@@ -1173,7 +1173,7 @@ CObservation3DRangeScan::TPixelLabelInfoBase* CObservation3DRangeScan::TPixelLab
 
 }
 
-T3DPointsTo2DScanParams::T3DPointsTo2DScanParams() : 
+T3DPointsTo2DScanParams::T3DPointsTo2DScanParams() :
 	angle_sup(mrpt::utils::DEG2RAD(5)), angle_inf(mrpt::utils::DEG2RAD(5)),
 	z_min(-std::numeric_limits<double>::max() ),z_max(std::numeric_limits<double>::max()),
 	oversampling_ratio(1.2),use_origin_sensor_pose(false)

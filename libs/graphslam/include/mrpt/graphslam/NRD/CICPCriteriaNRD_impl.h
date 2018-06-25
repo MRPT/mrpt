@@ -122,7 +122,7 @@ bool CICPCriteriaNRD<GRAPH_T>::updateState2D(
 	bool registered_new_node = false;
 
 	m_curr_laser_scan2D = scan2d;
-	if (m_last_laser_scan2D.null()) {
+	if (!m_last_laser_scan2D) {
 		// initialize the last_laser_scan here - afterwards updated inside the
 		// checkRegistrationCondition*D method
 		m_last_laser_scan2D = m_curr_laser_scan2D;

@@ -921,12 +921,12 @@ void icvCleanFoundConnectedQuads( std::vector<CvCBQuadPtr> &quad_group, const Cv
             {
                 if( q->neighbors[j] == q0 )
                 {
-					q->neighbors[j].clear_unique(); // = 0;
+					q->neighbors[j].reset(); // = 0;
                     q->count--;
                     for( size_t k = 0; k < 4; k++ )
                         if( q0->neighbors[k] == q )
                         {
-							q0->neighbors[k].clear_unique(); // = 0;
+							q0->neighbors[k].reset(); // = 0;
                             q0->count--;
                             break;
                         }
@@ -1021,7 +1021,7 @@ void mrLabelQuadGroup( std::vector<CvCBQuadPtr> &quad_group, const CvSize &patte
 		int max_number = -1;
 		for(size_t i = 0; i < count; i++ )
 		{
-			CvCBQuad* q = quad_group[i].pointer();
+			CvCBQuad* q = quad_group[i].get();
 			if( q->count > max_number)
 			{
 				max_number = q->count;
@@ -1036,7 +1036,7 @@ void mrLabelQuadGroup( std::vector<CvCBQuadPtr> &quad_group, const CvSize &patte
 		// Mark the starting quad's (per definition) upper left corner with
 		//(0,0) and then proceed clockwise
 		// The following labeling sequence enshures a "right coordinate system"
-		CvCBQuad* q = quad_group[max_id].pointer();
+		CvCBQuad* q = quad_group[max_id].get();
 
 		q->labeled = true;
 		q->corners[0]->row = 0;
@@ -1956,9 +1956,9 @@ int mrAugmentBestRun(
 				// We only know one neighbor for shure, initialize rest with
 				// the NULL pointer
 				newQuad->neighbors[closest_corner_idx]		= cur_quad;
-				newQuad->neighbors[(closest_corner_idx+1)%4].clear_unique(); //	= NULL;
-				newQuad->neighbors[(closest_corner_idx+2)%4].clear_unique(); //	= NULL;
-				newQuad->neighbors[(closest_corner_idx+3)%4].clear_unique(); //	= NULL;
+				newQuad->neighbors[(closest_corner_idx+1)%4].reset();
+				newQuad->neighbors[(closest_corner_idx+2)%4].reset();
+				newQuad->neighbors[(closest_corner_idx+3)%4].reset();
 
 				for (int j = 0; j < 4; j++)
 				{
@@ -2334,17 +2334,18 @@ void quadListMakeUnique( std::vector<CvCBQuadPtr> &quads)
 {
 	std::map<CvCBQuad*,size_t> pointer2index;
 	for (size_t i=0;i<quads.size();i++)
-		pointer2index[quads[i].pointer()] = i;
+		pointer2index[quads[i].get()] = i;
 
 	vector<CArray<size_t,4> >  neig_indices(quads.size());
 	for (size_t i=0;i<quads.size();i++)
 		for (size_t j=0;j<4;j++)
-			neig_indices[i][j] = pointer2index[ quads[i]->neighbors[j].pointer() ];
+			neig_indices[i][j] = pointer2index[ quads[i]->neighbors[j].get() ];
 
 	std::vector<CvCBQuadPtr> new_quads = quads;
+	// Clone:
 	std::for_each(
 		new_quads.begin(), new_quads.end(),
-		std::mem_fun_ref(&CvCBQuadPtr::make_unique)
+		[](CvCBQuadPtr& p) { p = std::make_shared<CvCBQuad>(*p);  }
 		);
 	for (size_t i=0;i<new_quads.size();i++)
 		for (size_t j=0;j<4;j++)
