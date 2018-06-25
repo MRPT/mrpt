@@ -11,6 +11,7 @@
 
 #include <mrpt/utils/core_defs.h>
 #include <thread>
+#include <memory>
 
 namespace mrpt
 {
@@ -20,24 +21,27 @@ namespace mrpt
 		  *  \ingroup mrpt_base_grp
 		  * @{ */
 
-		/** This structure contains the information needed to interface the threads API on each platform:
+		/** A MRPT thread handle. Like std::thread, but have copy semantics, via
+		  * an internal std::shared_ptr<std::thread> object.
 		  * \sa createThread
 		  */
 		struct TThreadHandle
 		{
-			std::thread m_thread;
+			std::shared_ptr<std::thread> m_thread;
+
+			TThreadHandle() : m_thread(std::make_shared<std::thread>()) {}
 
 			/** Mark the handle as invalid.
 			  * \sa isClear
 			  */
 			void clear()
 			{
-				if (m_thread.joinable())
-					m_thread.detach();
-				m_thread = std::thread();
+				if (m_thread && m_thread->joinable())
+					m_thread->detach();
+				m_thread = std::make_shared<std::thread>();
 			}
 			/** Returns true if the handle is uninitialized */
-			bool isClear() const { return !m_thread.joinable(); }
+			bool isClear() const { return !m_thread || !m_thread->joinable(); }
 		};
 
 		/**  The type for cross-platform process (application) priorities.
@@ -74,19 +78,19 @@ namespace mrpt
 		  */
 		template<typename T> inline TThreadHandle createThread(void (*func)(T),T param)	{
 			TThreadHandle h;
-			h.m_thread = std::thread(func, param);
+			h.m_thread = std::make_shared<std::thread>(func, param);
 			return h;
 		}
 		//! \overload
 		template<typename T> inline TThreadHandle createThreadRef(void (*func)(T&),T& param)	{
 			TThreadHandle h;
-			h.m_thread = std::thread(func, std::ref<T>(param));
+			h.m_thread = std::make_shared<std::thread>(func, std::ref<T>(param));
 			return h;
 		}
 		//! \overload
 		inline TThreadHandle createThread(void (*func)(void))	{
 			TThreadHandle h;
-			h.m_thread = std::thread(func);
+			h.m_thread = std::make_shared<std::thread>(func);
 			return h;
 		}
 
@@ -115,21 +119,21 @@ namespace mrpt
 		template <typename CLASS,typename PARAM>
 		inline TThreadHandle createThreadFromObjectMethod(CLASS *obj, void (CLASS::*func)(PARAM), PARAM param)	{
 			TThreadHandle h;
-			h.m_thread = std::thread(func, obj,param);
+			h.m_thread = std::make_shared<std::thread>(func, obj,param);
 			return h;
 		}
 		//! \overload
 		template <typename CLASS,typename PARAM>
 		inline TThreadHandle createThreadFromObjectMethodRef(CLASS *obj, void (CLASS::*func)(PARAM&), PARAM &param)	{
 			TThreadHandle h;
-			h.m_thread = std::thread(func, obj, param);
+			h.m_thread = std::make_shared<std::thread>(func, obj, param);
 			return h;
 		}
 		//! \overload
 		template <typename CLASS>
 		inline TThreadHandle createThreadFromObjectMethod(CLASS *obj, void (CLASS::*func)(void))	{
 			TThreadHandle h;
-			h.m_thread = std::thread(func, obj);
+			h.m_thread = std::make_shared<std::thread>(func, obj);
 			return h;
 		}
 
