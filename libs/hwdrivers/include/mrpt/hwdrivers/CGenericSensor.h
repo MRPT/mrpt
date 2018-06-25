@@ -38,7 +38,28 @@ namespace mrpt
 			CGenericSensor*		(*ptrCreateObject)();			//!< Pointer to class constructor
 		};
 
-		typedef std::shared_ptr<CGenericSensor>	CGenericSensorPtr;
+		struct HWDRIVERS_IMPEXP CGenericSensorPtr
+		{
+			std::shared_ptr<CGenericSensor> m_ptr;
+			inline CGenericSensorPtr() {}
+			explicit inline CGenericSensorPtr(CGenericSensor* data) : m_ptr(data) { }
+			virtual CGenericSensor * pointer() { return m_ptr.get(); }
+			virtual CGenericSensor * get() { return m_ptr.get(); }
+			virtual const CGenericSensor * pointer() const { return m_ptr.get(); }
+			virtual const CGenericSensor * get() const { return m_ptr.get(); }
+			virtual CGenericSensor* operator ->(void) { return m_ptr.get(); }
+			virtual const CGenericSensor* operator ->(void) const { return m_ptr.get(); }
+			virtual CGenericSensor& operator *(void) { ASSERT_(m_ptr); return *m_ptr.get(); }
+			virtual const CGenericSensor& operator *(void) const { ASSERT_(m_ptr); return *m_ptr.get(); }
+			void clear() { m_ptr.reset(); }
+			bool operator !() const { return !m_ptr.operator bool();  }
+			operator bool() const { return m_ptr.operator bool(); }
+			bool present() const { return m_ptr.get()!=NULL; }
+			void set(CGenericSensor* p) { m_ptr.reset(p); }
+			void reset(CGenericSensor* p) { m_ptr.reset(p); }
+			void clear_unique() { m_ptr.reset(); }
+		};
+
 
 		/** A generic interface for a wide-variety of sensors designed to be used in the application RawLogGrabber.
 		  *  Derived classes should be designed with the following execution flow in mind:

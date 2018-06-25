@@ -73,8 +73,8 @@ void mrpt::system::sleep( int time_ms ) MRPT_NO_THROWS
 
 void mrpt::system::joinThread( TThreadHandle &threadHandle )
 {
-	if (threadHandle.m_thread.joinable())
-		threadHandle.m_thread.join();
+	if (threadHandle.m_thread && threadHandle.m_thread->joinable())
+		threadHandle.m_thread->join();
 }
 
 /*---------------------------------------------------------------
@@ -100,14 +100,14 @@ void BASE_IMPEXP mrpt::system::changeThreadPriority(
 {
 #ifdef MRPT_OS_WINDOWS
 	// TThreadPriority is defined to agree with numbers expected by Win32 API:
-	SetThreadPriority( threadHandle.m_thread.native_handle(), priority);
+	SetThreadPriority( threadHandle.m_thread->native_handle(), priority);
 #else
 
 	const pthread_t tid =
 	#ifdef MRPT_OS_APPLE
-		reinterpret_cast<pthread_t>(threadHandle.m_thread.native_handle());
+		reinterpret_cast<pthread_t>(threadHandle.m_thread->native_handle());
 	#else
-		threadHandle.m_thread.native_handle();
+		threadHandle.m_thread->native_handle();
 	#endif
 
 	int ret, policy;
@@ -387,11 +387,11 @@ void mrpt::system::terminateThread(TThreadHandle &threadHandle) MRPT_NO_THROWS
 	if (threadHandle.isClear()) return; // done
 
 #ifdef MRPT_OS_WINDOWS
-	TerminateThread(threadHandle.m_thread.native_handle(), DWORD(-1));
+	TerminateThread(threadHandle.m_thread->native_handle(), DWORD(-1));
 #elif defined(MRPT_OS_APPLE)
-	pthread_cancel(reinterpret_cast<pthread_t>(threadHandle.m_thread.native_handle()));
+	pthread_cancel(reinterpret_cast<pthread_t>(threadHandle.m_thread->native_handle()));
 #else
-	pthread_cancel(threadHandle.m_thread.native_handle());
+	pthread_cancel(threadHandle.m_thread->native_handle());
 #endif
-	threadHandle.m_thread.join();
+	threadHandle.m_thread->join();
 }
