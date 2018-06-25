@@ -16,9 +16,16 @@
 <a name="1.5.7">
 <h2>Version 1.5.7: (Under development) </h2></a>
 - <b>Detailed list of changes:</b>
+	- \ref mrpt_base_grp
+		- The following features have been finally ported to C++11. User code now requires, at least, C++11 enabled:
+			- stlplus-based smart pointers replaced by std::shared_ptr. Backwards compatibility API is maintained.
+			- mrpt::system::TThreadHandle now is a wrapper around std::thread.
+			- Atomic counters now based on std::atomic. Custom implementation has been removed.
+			- stlplus source code has been removed.
 	- \ref mrpt_graphslam_grp
+		- levenberg-Marquardt graphslam modified to use more stable SE(2) Jacobians.
 		- CNetworkOfPoses: read/write format made compatible with G2O EDGE_SE2 types.
-	- BUG FIXES: 
+	- BUG FIXES:
 		- Fix missing "-ldl" linker flag.
 
 <hr>
