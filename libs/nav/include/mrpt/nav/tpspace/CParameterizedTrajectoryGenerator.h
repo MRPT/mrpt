@@ -19,7 +19,6 @@
 #include <mrpt/nav/holonomic/ClearanceDiagram.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/kinematics/CVehicleVelCmd.h>
-#include <mrpt/otherlibs/stlplus/smart_ptr.hpp>  // STL+ library
 
 namespace mrpt { namespace opengl { class CSetOfLines; } }
 
@@ -58,14 +57,14 @@ namespace nav
 	 *
 	 *  \ingroup nav_tpspace
 	 */
-	class NAV_IMPEXP CParameterizedTrajectoryGenerator : 
+	class NAV_IMPEXP CParameterizedTrajectoryGenerator :
 		public mrpt::utils::CSerializable,
 		public mrpt::utils::CLoadableOptions
 	{
 		DEFINE_VIRTUAL_SERIALIZABLE(CParameterizedTrajectoryGenerator)
 	public:
 		CParameterizedTrajectoryGenerator(); //!< Default ctor. Must call `loadFromConfigFile()` before initialization
-		virtual ~CParameterizedTrajectoryGenerator() //!<  Destructor 
+		virtual ~CParameterizedTrajectoryGenerator() //!<  Destructor
 		{ }
 
 		/** The class factory for creating a PTG from a list of parameters in a section of a given config file (physical file or in memory).
@@ -91,7 +90,7 @@ namespace nav
 		virtual void internal_deinitialize() = 0;
 	public:
 
-		/** Computes the closest (alpha,d) TP coordinates of the trajectory point closest to the Workspace (WS) 
+		/** Computes the closest (alpha,d) TP coordinates of the trajectory point closest to the Workspace (WS)
 		 *   Cartesian coordinates (x,y), relative to the current robot frame.
 		  * \param[in] x X coordinate of the query point, relative to the robot frame.
 		  * \param[in] y Y coordinate of the query point, relative to the robot frame.
@@ -115,7 +114,7 @@ namespace nav
 		/** Converts a discretized "alpha" value into a feasible motion command or action. See derived classes for the meaning of these actions */
 		virtual mrpt::kinematics::CVehicleVelCmdPtr directionToMotionCommand( uint16_t k ) const = 0;
 
-		/** Returns an empty kinematic velocity command object of the type supported by this PTG. 
+		/** Returns an empty kinematic velocity command object of the type supported by this PTG.
 		  * Can be queried to determine the expected kinematic interface of the PTG.  */
 		virtual mrpt::kinematics::CVehicleVelCmdPtr getSupportedKinematicVelocityCommand() const = 0;
 
@@ -183,12 +182,12 @@ namespace nav
 		/** Like updateTPObstacle() but for one direction only (`k`) in TP-Space. `tp_obstacle_k` must be initialized with initTPObstacleSingle() before call (collision-free ranges, in "pseudometers", un-normalized). */
 		virtual void updateTPObstacleSingle(double ox, double oy, uint16_t k, double &tp_obstacle_k) const = 0;
 
-		/** Loads a set of default parameters into the PTG. Users normally will call `loadFromConfigFile()` instead, this method is provided 
+		/** Loads a set of default parameters into the PTG. Users normally will call `loadFromConfigFile()` instead, this method is provided
 		  * exclusively for the PTG-configurator tool. */
 		virtual void loadDefaultParams();
 
-		/** Returns true if it is possible to stop sending velocity commands to the robot and, still, the 
-		  * robot controller will be able to keep following the last sent trajectory ("NOP" velocity commands). 
+		/** Returns true if it is possible to stop sending velocity commands to the robot and, still, the
+		  * robot controller will be able to keep following the last sent trajectory ("NOP" velocity commands).
 		  * Default implementation returns "false". */
 		virtual bool supportVelCmdNOP() const;
 
@@ -198,12 +197,12 @@ namespace nav
 		}
 
 		/** Only for PTGs supporting supportVelCmdNOP(): this is the maximum time (in seconds) for which the path
-		  * can be followed without re-issuing a new velcmd. Note that this is only an absolute maximum duration, 
-		  * navigation implementations will check for many other conditions. Default method in the base virtual class returns 0. 
+		  * can be followed without re-issuing a new velcmd. Note that this is only an absolute maximum duration,
+		  * navigation implementations will check for many other conditions. Default method in the base virtual class returns 0.
 		  * \param path_k Queried path `k` index  [0,N-1] */
 		virtual double maxTimeInVelCmdNOP(int path_k) const;
 
-		/** Returns the actual distance (in meters) of the path, discounting possible circular loops of the path (e.g. if it comes back to the origin). 
+		/** Returns the actual distance (in meters) of the path, discounting possible circular loops of the path (e.g. if it comes back to the origin).
 		  * Default: refDistance */
 		virtual double getActualUnloopedPathLength(uint16_t k) const { return this->refDistance; }
 
@@ -271,7 +270,7 @@ namespace nav
 		virtual void renderPathAsSimpleLine(const uint16_t k,mrpt::opengl::CSetOfLines &gl_obj,const double decimate_distance = 0.1,const double max_path_distance = -1.0) const;
 
 		/** Dump PTG trajectories in four text files: `./reactivenav.logs/PTGs/PTG%i_{x,y,phi,d}.txt`
-		  * Text files are loadable from MATLAB/Octave, and can be visualized with the script `[MRPT_DIR]/scripts/viewPTG.m` 
+		  * Text files are loadable from MATLAB/Octave, and can be visualized with the script `[MRPT_DIR]/scripts/viewPTG.m`
 		  * \note The directory "./reactivenav.logs/PTGs" will be created if doesn't exist.
 		  * \return false on any error writing to disk.
 		  * \sa OUTPUT_DEBUG_PATH_PREFIX
@@ -297,9 +296,9 @@ namespace nav
 
 		void initClearanceDiagram(ClearanceDiagram & cd) const; //!< Must be called to resize a CD to its correct size, before calling updateClearance()
 
-		/** Updates the clearance diagram given one (ox,oy) obstacle point, in coordinates relative 
+		/** Updates the clearance diagram given one (ox,oy) obstacle point, in coordinates relative
 		  * to the PTG path origin.
-		  * \param[in,out] cd The clearance will be updated here. 
+		  * \param[in,out] cd The clearance will be updated here.
 		  * \sa m_clearance_dist_resolution
 		  */
 		void updateClearance(const double ox, const double oy, ClearanceDiagram & cd) const;
@@ -311,7 +310,7 @@ protected:
 		double    m_score_priority;
 		uint16_t  m_clearance_num_points; //!< Number of steps for the piecewise-constant approximation of clearance from TPS distances [0,1] (Default=5) \sa updateClearance()
 		uint16_t  m_clearance_decimated_paths; //!< Number of paths for the decimated paths analysis of clearance
-		TNavDynamicState m_nav_dyn_state; //!< Updated before each nav step by 
+		TNavDynamicState m_nav_dyn_state; //!< Updated before each nav step by
 		uint16_t         m_nav_dyn_state_target_k; //!< Update in updateNavDynamicState(), contains the path index (k) for the target.
 
 		static const uint16_t INVALID_PTG_PATH_INDEX = static_cast<uint16_t>(-1);
@@ -331,7 +330,7 @@ protected:
 	public:
 		/** Evals the robot clearance for each robot pose along path `k`, for the real distances in
 		* the key of the map<>, then keep in the map value the minimum of its current stored clearance,
-		* or the computed clearance. In case of collision, clearance is zero. 
+		* or the computed clearance. In case of collision, clearance is zero.
 		* \param treat_as_obstacle true: normal use for obstacles; false: compute shortest distances to a target point (no collision)
 		*/
 		virtual void evalClearanceSingleObstacle(const double ox, const double oy, const uint16_t k, ClearanceDiagram::dist2clearance_t & inout_realdist2clearance, bool treat_as_obstacle = true) const;

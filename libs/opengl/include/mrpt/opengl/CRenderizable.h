@@ -146,7 +146,7 @@ namespace mrpt
 			CRenderizable();
 			virtual ~CRenderizable();
 
-			/** Interface for the stlplus smart pointer class. */
+			/** Interface for the smart pointer class. */
 			inline CRenderizable * clone() const
 			{
 				return static_cast<CRenderizable*>( this->duplicate() );

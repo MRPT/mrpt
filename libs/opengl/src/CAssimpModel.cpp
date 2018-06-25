@@ -138,7 +138,7 @@ CAssimpModel::CAssimpModel() :
 	m_bbox_max(0,0,0),
 	m_textures_loaded(false)
 {
-	m_assimp_scene.set( new TImplAssimp() );
+	m_assimp_scene.reset( new TImplAssimp() );
 }
 
 CAssimpModel::~CAssimpModel()
@@ -152,7 +152,7 @@ CAssimpModel::~CAssimpModel()
 void   CAssimpModel::clear()
 {
 	CRenderizableDisplayList::notifyChange();
-	m_assimp_scene.set( new TImplAssimp() );
+	m_assimp_scene.reset( new TImplAssimp() );
 	m_modelPath.clear();
 	m_textures_loaded = false;
 

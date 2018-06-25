@@ -9,7 +9,6 @@
 #ifndef  mrpt_synch_criticalsection_H
 #define  mrpt_synch_criticalsection_H
 
-#include <mrpt/utils/CReferencedMemBlock.h>
 #include <mrpt/utils/mrpt_macros.h>
 #include <string>
 

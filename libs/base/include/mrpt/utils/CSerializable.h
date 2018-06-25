@@ -187,7 +187,7 @@ namespace mrpt
 		#define IMPLEMENTS_SERIALIZABLE(class_name, base,NameSpace) \
 			IMPLEMENTS_MRPT_OBJECT(class_name, base,NameSpace) \
 			mrpt::utils::CStream& NameSpace::operator>>(mrpt::utils::CStream& in, NameSpace::class_name##Ptr &pObj) \
-			{ pObj = NameSpace::class_name##Ptr( in.ReadObject() ); return in; }
+			{ pObj = NameSpace::class_name##Ptr(in.ReadObject()); return in; }
 
 		/** This declaration must be inserted in virtual CSerializable classes definition: */
 		#define DEFINE_VIRTUAL_SERIALIZABLE(class_name) \

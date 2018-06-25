@@ -86,14 +86,14 @@ template<class GRAPH_T> bool CICPCriteriaERD<GRAPH_T>::updateState(
 		// New node has been registered.
 		// add the last laser_scan
 		if (registered_new_node) {
-			if (!m_last_laser_scan2D.null()) {
+			if (m_last_laser_scan2D.get()!=NULL) {
 				this->m_nodes_to_laser_scans2D[this->m_graph->nodeCount()-1] =
 					m_last_laser_scan2D;
 				this->logFmt(LVL_DEBUG,
 						"Added laser scans of nodeID: %lu",
 						this->m_graph->nodeCount()-1);
 			}
-			if (!m_last_laser_scan3D.null()) {
+			if (m_last_laser_scan3D.get()!=NULL) {
 				m_nodes_to_laser_scans3D[
 					this->m_graph->nodeCount()-1] = m_last_laser_scan3D;
 				this->logFmt(LVL_DEBUG,
@@ -192,8 +192,8 @@ void CICPCriteriaERD<GRAPH_T>::checkRegistrationCondition2D(
 				// Debugging statements
 				MRPT_LOG_DEBUG_STREAM(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 				MRPT_LOG_DEBUG_STREAM(
-					"ICP constraint between NON-successive nodes: " << 
-					*node_it << " => " << curr_nodeID << 
+					"ICP constraint between NON-successive nodes: " <<
+					*node_it << " => " << curr_nodeID <<
 					std::endl <<
 					"\tnIterations = " << icp_info.nIterations <<
 					"\tgoodness = " << icp_info.goodness);
@@ -462,14 +462,14 @@ void CICPCriteriaERD<GRAPH_T>::updateVisuals() {
 
 	// update laser scan visual
 	if (this->m_win && params.visualize_laser_scans &&
-			(!m_last_laser_scan2D.null() || !m_fake_laser_scan2D.null())) {
+			(m_last_laser_scan2D.get()!=NULL || m_fake_laser_scan2D.get()!=NULL)) {
 		COpenGLScenePtr scene = this->m_win->get3DSceneAndLock();
 
 		CRenderizablePtr obj = scene->getByName("laser_scan_viz");
 		CPlanarLaserScanPtr laser_scan_viz = static_cast<CPlanarLaserScanPtr>(obj);
 
 		// if fake 2D exists use it
-		if (!m_fake_laser_scan2D.null()) {
+		if (m_fake_laser_scan2D.get()!=NULL) {
 			laser_scan_viz->setScan(*m_fake_laser_scan2D);
 		}
 		else {

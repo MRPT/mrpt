@@ -94,7 +94,7 @@ namespace mrpt
 
 				void dumpToConsole( ) const;  //!< for debugging only
 			};
-			typedef stlplus::smart_ptr<TMessageLSLAMfromAA> TMessageLSLAMfromAAPtr;
+			typedef std::shared_ptr<TMessageLSLAMfromAA> TMessageLSLAMfromAAPtr;
 
 			/** Message definition:
 				- From: LSLAM
@@ -106,7 +106,7 @@ namespace mrpt
 				CLocalMetricHypothesis	*LMH;		//!< The LMH
 				TNodeIDList				 areaIDs;	//!< The areas to consider.
 			};
-			typedef stlplus::smart_ptr<TMessageLSLAMtoTBI> TMessageLSLAMtoTBIPtr;
+			typedef std::shared_ptr<TMessageLSLAMtoTBI> TMessageLSLAMtoTBIPtr;
 
 			/** Message definition:
 				- From: TBI
@@ -138,7 +138,7 @@ namespace mrpt
 
 				//MRPT_MAKE_ALIGNED_OPERATOR_NEW
 			};
-			typedef stlplus::smart_ptr<TMessageLSLAMfromTBI>	TMessageLSLAMfromTBIPtr;
+			typedef std::shared_ptr<TMessageLSLAMfromTBI>	TMessageLSLAMfromTBIPtr;
 
 
 			utils::CMessageQueue	m_LSLAM_queue;  //!< LSLAM thread input queue, messages of type CHMTSLAM::TMessageLSLAMfromAA

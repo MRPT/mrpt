@@ -48,7 +48,6 @@ using namespace mrpt::random;
 using namespace mrpt::utils;
 
 using mrpt::opengl::CAngularObservationMesh;
-using namespace stlplus;
 
 //Increase this values to get more precision. It will also increase run time.
 const size_t HOW_MANY_YAWS=150;

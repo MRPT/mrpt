@@ -278,7 +278,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 			//-------------------------------------
 			// Load default values for H_prior:
 			//-------------------------------------
-			if (!m_gmrf_connectivity.present() && this->m_insertOptions_common->GMRF_use_occupancy_information)
+			if (!m_gmrf_connectivity.get() && this->m_insertOptions_common->GMRF_use_occupancy_information)
 			{
 				MRPT_LOG_DEBUG("LOADING PRIOR BASED ON OCCUPANCY GRIDMAP \n");
 				MRPT_LOG_DEBUG_FMT("MRF Map Dimmensions: %u x %u cells \n", static_cast<unsigned int>(m_size_x), static_cast<unsigned int>(m_size_y));
@@ -385,7 +385,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 			}
 			else
 			{
-				ConnectivityDescriptor * custom_connectivity = m_gmrf_connectivity.pointer(); // Use a raw ptr to avoid the cost in the inner loops
+				ConnectivityDescriptor * custom_connectivity = m_gmrf_connectivity.get(); // Use a raw ptr to avoid the cost in the inner loops
 				if (custom_connectivity!=NULL)
 				     MRPT_LOG_DEBUG("[CRandomFieldGridMap2D::clear] Initiating prior (using user-supplied connectivity pattern)");
 				else MRPT_LOG_DEBUG("[CRandomFieldGridMap2D::clear] Initiating prior (fully connected)");

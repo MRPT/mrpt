@@ -605,7 +605,7 @@ void CLoopCloserERD<GRAPH_T>::evalPWConsistenciesMatrix(
 		}
 	}
 	//mrpt::system::pause();
-	
+
 	MRPT_END;
 }
 
@@ -1123,7 +1123,7 @@ CLoopCloserERD<GRAPH_T>::findPathByEnds(
 				const mrpt::utils::TNodeID& dst,
 				bool throw_exc/*=true*/) {
 	using namespace mrpt;
-	
+
 	ASSERT_(vec_paths.size());
 	const path_t* res = NULL;
 
@@ -1415,8 +1415,8 @@ void CLoopCloserERD<GRAPH_T>::getMinUncertaintyPath(
 	//cout << "getMinUncertaintyPath: " << from << " => " << to << endl;
 
 	// don't add to the path_between_nodes, just fill it in afterwards
-	path_between_nodes->clear(); 
-	
+	path_between_nodes->clear();
+
 	// iterate over all the edges, ignore the ones that are all 0s - find the
 	// one that is with the lowest uncertainty
 	double curr_determinant = 0;
@@ -1540,7 +1540,7 @@ bool CLoopCloserERD<GRAPH_T>::mahalanobisDistanceOdometryToICPEdge(
 	pose_t initial_estim = this->m_graph->nodes.at(to) - this->m_graph->nodes.at(from);
 	dynamic_vector<double> mean_diff;
 	(rel_edge.getMeanVal()-initial_estim).getAsVector(mean_diff);
-	
+
 	// covariance matrix
 	CMatrixDouble33 cov_mat; rel_edge.getCovariance(cov_mat);
 
@@ -1736,7 +1736,7 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitionsVisualization() {
 					//partitionID);
 			curr_partition_obj = static_cast<CSetOfObjectsPtr>(obj);
 			if (m_lc_params.LC_check_curr_partition_only) { // make all but the last partition invisible
-				curr_partition_obj->setVisibility(partition_contains_last_node); 
+				curr_partition_obj->setVisibility(partition_contains_last_node);
 			}
 		}
 		else {
@@ -1747,7 +1747,7 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitionsVisualization() {
 			curr_partition_obj->setName(partition_obj_name);
 			if (m_lc_params.LC_check_curr_partition_only) {
  				// make all but the last partition invisible
-				curr_partition_obj->setVisibility(partition_contains_last_node); 
+				curr_partition_obj->setVisibility(partition_contains_last_node);
 			}
 
 			//MRPT_LOG_DEBUG_STREAM("\t\tCreating a new CSphere balloon object");
@@ -1915,7 +1915,7 @@ void CLoopCloserERD<GRAPH_T>::initLaserScansVisualization() {
 	if (m_laser_params.visualize_laser_scans) {
 		mrpt::opengl::COpenGLScenePtr scene = this->m_win->get3DSceneAndLock();
 
-		mrpt::opengl::CPlanarLaserScanPtr laser_scan_viz = 
+		mrpt::opengl::CPlanarLaserScanPtr laser_scan_viz =
 			mrpt::opengl::CPlanarLaserScan::Create();
 		laser_scan_viz->enablePoints(true);
 		laser_scan_viz->enableLine(true);
@@ -1941,7 +1941,7 @@ void CLoopCloserERD<GRAPH_T>::updateLaserScansVisualization() {
 	MRPT_START;
 
 	// update laser scan visual
-	if (m_laser_params.visualize_laser_scans && !m_last_laser_scan2D.null()) {
+	if (m_laser_params.visualize_laser_scans && m_last_laser_scan2D.get()!=NULL) {
 		mrpt::opengl::COpenGLScenePtr scene = this->m_win->get3DSceneAndLock();
 
 		mrpt::opengl::CRenderizablePtr obj = scene->getByName("laser_scan_viz");
@@ -2080,7 +2080,7 @@ void CLoopCloserERD<GRAPH_T>::initCurrCovarianceVisualization() {
 	scene->insert(cov_ellipsis_obj);
 	this->m_win->unlockAccess3DScene();
 	this->m_win->forceRepaint();
-	
+
 	MRPT_END;
 }
 
@@ -2278,7 +2278,7 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitions(
 	for (typename nodes_to_scans2D_t::const_iterator
 			it = nodes_to_scans.begin();
 			it != nodes_to_scans.end(); ++it) {
-		if ((it->second).null()) { // if laserScan invalid go to next...
+		if (!(it->second)) { // if laserScan invalid go to next...
 			MRPT_LOG_WARN_STREAM(
 				"nodeID \"" << it->first << "\" has invalid laserScan");
 			continue;

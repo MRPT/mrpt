@@ -10,9 +10,6 @@
 #include <vector>
 #include <deque>
 
-/* smart_ptr */
-#include <mrpt/otherlibs/stlplus/smart_ptr.hpp>
-
 /* macros */
 #define STRINGIFY(str) #str
 
