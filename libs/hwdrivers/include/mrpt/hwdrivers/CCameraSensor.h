@@ -411,7 +411,29 @@ namespace mrpt
 
 		}; // end class
 
-		typedef std::shared_ptr<CCameraSensor>    CCameraSensorPtr; //!< A smart pointer to a CCameraSensor
+		struct HWDRIVERS_IMPEXP CCameraSensorPtr
+		{
+			std::shared_ptr<CCameraSensor> m_ptr;
+			inline CCameraSensorPtr() {}
+			explicit inline CCameraSensorPtr(CCameraSensor* data) : m_ptr(data) { }
+			virtual CCameraSensor * pointer() { return m_ptr.get(); }
+			virtual CCameraSensor * get() { return m_ptr.get(); }
+			virtual const CCameraSensor * pointer() const { return m_ptr.get(); }
+			virtual const CCameraSensor * get() const { return m_ptr.get(); }
+			virtual CCameraSensor* operator ->(void) { return m_ptr.get(); }
+			virtual const CCameraSensor* operator ->(void) const { return m_ptr.get(); }
+			virtual CCameraSensor& operator *(void) { ASSERT_(m_ptr); return *m_ptr.get(); }
+			virtual const CCameraSensor& operator *(void) const { ASSERT_(m_ptr); return *m_ptr.get(); }
+			void clear() { m_ptr.reset(); }
+			bool operator !() const { return !m_ptr.operator bool();  }
+			operator bool() const { return m_ptr.operator bool(); }
+			bool present() const { return m_ptr.get()!=NULL; }
+			void set(CCameraSensor* p) { m_ptr.reset(p); }
+			void reset(CCameraSensor* p) { m_ptr.reset(p); }
+			void clear_unique() { m_ptr.reset(); }
+		};
+
+
 
 		/** Used only from MRPT apps: Use with caution since "panel" MUST be a "mrpt::gui::CPanelCameraSelection *"
 		  */
