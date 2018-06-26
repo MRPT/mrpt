@@ -91,58 +91,52 @@ unsigned long mrpt::system::getCurrentThreadId() MRPT_NO_THROWS
 #endif
 }
 
-/*---------------------------------------------------------------
-					changeThreadPriority
----------------------------------------------------------------*/
-void BASE_IMPEXP mrpt::system::changeThreadPriority(
-	TThreadHandle &threadHandle,
-	TThreadPriority priority )
+void BASE_IMPEXP mrpt::system::changeCurrentThreadPriority(TThreadPriority priority)
 {
 #ifdef MRPT_OS_WINDOWS
 	// TThreadPriority is defined to agree with numbers expected by Win32 API:
-	SetThreadPriority( threadHandle.m_thread->native_handle(), priority);
+	SetThreadPriority(GetCurrentThread(), priority);
 #else
-
 	const pthread_t tid =
-	#ifdef MRPT_OS_APPLE
-		reinterpret_cast<pthread_t>(threadHandle.m_thread->native_handle());
-	#else
-		threadHandle.m_thread->native_handle();
-	#endif
+#ifdef MRPT_OS_APPLE
+		reinterpret_cast<long unsigned int>(pthread_self());
+#else
+		pthread_self();
+#endif
 
 	int ret, policy;
 	struct sched_param param;
 
-	if (0!=(ret=pthread_getschedparam(tid,&policy,&param))) {
+	if (0 != (ret = pthread_getschedparam(tid, &policy, &param))) {
 		cerr << "[mrpt::system::changeThreadPriority] Warning: Failed call to pthread_getschedparam (error: `" << strerror(ret) << "`)" << endl;
 		return;
 	}
 
 	policy = SCHED_RR;
 	int min_prio = sched_get_priority_min(policy), max_prio = sched_get_priority_max(policy);
-	if (min_prio<0) min_prio=1; // Just in case of error to calls above (!)
-	if (max_prio<0) max_prio=99;
+	if (min_prio<0) min_prio = 1; // Just in case of error to calls above (!)
+	if (max_prio<0) max_prio = 99;
 
 	int prio = 0;
-	switch(priority)
+	switch (priority)
 	{
-		case tpLowests: prio=min_prio; break;
-		case tpLower :  prio=(max_prio+3*min_prio)/4; break;
-		case tpLow :    prio=(max_prio+2*min_prio)/3; break;
-		case tpNormal:  prio=(max_prio+min_prio  )/2; break;
-		case tpHigh :   prio=(2*max_prio+min_prio)/3; break;
-		case tpHigher:  prio=(3*max_prio+min_prio)/4; break;
-		case tpHighest: prio=max_prio; break;
+	case tpLowests: prio = min_prio; break;
+	case tpLower:  prio = (max_prio + 3 * min_prio) / 4; break;
+	case tpLow:    prio = (max_prio + 2 * min_prio) / 3; break;
+	case tpNormal:  prio = (max_prio + min_prio) / 2; break;
+	case tpHigh:   prio = (2 * max_prio + min_prio) / 3; break;
+	case tpHigher:  prio = (3 * max_prio + min_prio) / 4; break;
+	case tpHighest: prio = max_prio; break;
 	}
 
 	param.sched_priority = prio;
-	if (0!=(ret=pthread_setschedparam(tid, policy, &param))) {
+	if (0 != (ret = pthread_setschedparam(tid, policy, &param))) {
 		cerr << "[mrpt::system::changeThreadPriority] Warning: Failed call to pthread_setschedparam (error: `" << strerror(ret) << "`)" << endl;
 		return;
 	}
-
 #endif
 }
+
 
 /*---------------------------------------------------------------
 					changeCurrentProcessPriority

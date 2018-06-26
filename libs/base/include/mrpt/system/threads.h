@@ -166,19 +166,20 @@ namespace mrpt
 				time_t			&exitTime,
 				double			&cpuTime );
 
-		/** Change the priority of the given thread - for Windows, see also changeCurrentProcessPriority()
+		/** Change the priority of the current thread - for Windows, see also changeCurrentProcessPriority()
 		  * - Windows: This is equivalent to [SetThreadPriority()](https://msdn.microsoft.com/en-us/library/windows/desktop/ms686277(v=vs.85).aspx) (read the docs there)
 		  * - Linux (pthreads): May require `root` permissions! This sets the Round Robin scheduler with the given priority level. Read [sched_setscheduler](http://linux.die.net/man/2/sched_setscheduler).
-		  * \sa createThread, changeCurrentProcessPriority
+		  * \sa createThread, changeCurrentProcessPriority, changeCurrentThreadPriority
 		  */
-		void BASE_IMPEXP changeThreadPriority( TThreadHandle &threadHandle, TThreadPriority priority );
+		void BASE_IMPEXP changeCurrentThreadPriority(TThreadPriority priority);
 
 		/** Terminate a thread, giving it no choice to delete objects, etc (use only as a last resource) */
 		void BASE_IMPEXP terminateThread( TThreadHandle &threadHandle) MRPT_NO_THROWS;
 
 		/** Change the priority of the given process (it applies to all the threads, plus independent modifiers for each thread).
 		  *  - Windows: See [SetPriorityClass](https://msdn.microsoft.com/es-es/library/windows/desktop/ms686219(v=vs.85).aspx)
-		  *  - Linux (pthreads): Requires `root` permissions to increase process priority! Internally it calls [nice()](http://linux.die.net/man/3/nice), so it has no effect if changeThreadPriority() was called and a SCHED_RR is already active.
+		  *  - Linux (pthreads): Requires `root` permissions to increase process priority! Internally it calls [nice()](http://linux.die.net/man/3/nice), so it has no effect if 
+		  () was called and a SCHED_RR is already active.
 		  * \sa createThread, changeThreadPriority
 		  */
 		void BASE_IMPEXP changeCurrentProcessPriority( TProcessPriority priority );
