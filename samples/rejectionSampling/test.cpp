@@ -16,7 +16,6 @@
 
 using namespace mrpt;
 using namespace mrpt::utils;
-using namespace mrpt::synch;
 using namespace mrpt::bayes;
 using namespace mrpt::poses;
 using namespace mrpt::random;

@@ -70,7 +70,8 @@ BOOST_PYTHON_MODULE(pymrpt)
 ////////////
 //  maps  //
 ////////////
-    export_maps();
+    export_maps1();
+    export_maps2();
 
 ///////////
 //  gui  //
@@ -101,7 +102,7 @@ BOOST_PYTHON_MODULE(pymrpt)
 //  slam  //
 ////////////
     export_slam();
-    
+
 ///////////
 // kinematics //
 ///////////

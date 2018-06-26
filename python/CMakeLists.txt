@@ -19,7 +19,8 @@ add_library(pymrpt
   src/kinematics_bindings.cpp
   src/poses_bindings.cpp
   src/slam_bindings.cpp
-  src/maps_bindings.cpp
+  src/maps1_bindings.cpp
+  src/maps2_bindings.cpp
   src/obs_bindings.cpp
   src/nav_bindings.cpp
   src/gui_bindings.cpp
