@@ -155,7 +155,7 @@ namespace mrpt
 			void make_unique() { if (!m_ptr) return; m_ptr.reset(m_ptr.get()->clone()); }
 			bool present() const { return m_ptr.get()!=NULL; }
 			void set(CObject* p) { m_ptr.reset(p); }
-			void reset(CObject* p) { m_ptr.reset(p); }
+			void reset(CObject* p=NULL) { m_ptr.reset(p); }
 			void clear_unique() { m_ptr.reset(); }
 		};
 
