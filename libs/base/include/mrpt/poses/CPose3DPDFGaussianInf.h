@@ -21,7 +21,7 @@ namespace mrpt
 		class CPosePDFGaussian;
 		class CPose3DQuatPDFGaussian;
 
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPose3DPDFGaussianInf , CPose3DPDF );
+		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPose3DPDFGaussianInf , CPose3DPDF )
 
 			/** Declares a class that represents a Probability Density function (PDF) of a 3D pose \f$ p(\mathbf{x}) = [x ~ y ~ z ~ yaw ~ pitch ~ roll]^t \f$ as a Gaussian described by its mean and its inverse covariance matrix.
 	 		 *
@@ -38,7 +38,7 @@ namespace mrpt
 		class BASE_IMPEXP CPose3DPDFGaussianInf : public CPose3DPDF
 		{
 			// This must be added to any CSerializable derived class:
-			DEFINE_SERIALIZABLE( CPose3DPDFGaussianInf );
+			DEFINE_SERIALIZABLE( CPose3DPDFGaussianInf )
 			typedef CPose3DPDFGaussianInf self_t;
 
 			protected:
@@ -150,7 +150,7 @@ namespace mrpt
 				double  mahalanobisDistanceTo( const CPose3DPDFGaussianInf& theOther);
 
 		}; // End of class def.
-		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE( CPose3DPDFGaussianInf , CPose3DPDF );
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE( CPose3DPDFGaussianInf , CPose3DPDF )
 
 
 		bool BASE_IMPEXP operator==(const CPose3DPDFGaussianInf &p1,const CPose3DPDFGaussianInf &p2);

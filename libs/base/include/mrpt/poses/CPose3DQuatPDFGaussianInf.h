@@ -40,7 +40,7 @@ namespace mrpt
 	class BASE_IMPEXP CPose3DQuatPDFGaussianInf : public CPose3DQuatPDF
 	{
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE( CPose3DQuatPDFGaussianInf );
+		DEFINE_SERIALIZABLE( CPose3DQuatPDFGaussianInf )
 		typedef CPose3DQuatPDFGaussianInf self_t;
 
 	 public:
