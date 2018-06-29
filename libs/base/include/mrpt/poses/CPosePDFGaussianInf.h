@@ -20,7 +20,7 @@ namespace mrpt
 		class CPose3DPDF;
 
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPosePDFGaussianInf, CPosePDF );
+		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPosePDFGaussianInf, CPosePDF )
 
 		/** A Probability Density  function (PDF) of a 2D pose \f$ p(\mathbf{x}) = [x ~ y ~ \phi ]^t \f$ as a Gaussian with a mean and the inverse of the covariance.
 	 	 *
@@ -35,7 +35,7 @@ namespace mrpt
 		class BASE_IMPEXP CPosePDFGaussianInf : public CPosePDF
 		{
 			// This must be added to any CSerializable derived class:
-			DEFINE_SERIALIZABLE( CPosePDFGaussianInf );
+			DEFINE_SERIALIZABLE( CPosePDFGaussianInf )
 			typedef CPosePDFGaussianInf self_t;
 
 			protected:
@@ -158,7 +158,7 @@ namespace mrpt
 			}
 
 		}; // End of class def.
-		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE( CPosePDFGaussianInf, CPosePDF );
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE( CPosePDFGaussianInf, CPosePDF )
 
 		bool BASE_IMPEXP operator==(const CPosePDFGaussianInf &p1,const CPosePDFGaussianInf &p2);
 		/** Pose compose operator: RES = A (+) B , computing both the mean and the covariance */
