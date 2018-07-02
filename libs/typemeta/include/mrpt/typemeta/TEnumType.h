@@ -23,6 +23,10 @@ struct bimap
 	std::map<KEY, VALUE> m_k2v;
 	std::map<VALUE, KEY> m_v2k;
 
+	using const_iterator = typename std::map<KEY, VALUE>::const_iterator;
+	const_iterator begin() const { return m_k2v.begin(); }
+	const_iterator end() const { return m_k2v.end(); }
+
 	bool direct(const KEY& k, VALUE& out_v) const
 	{
 		auto i = m_k2v.find(k);
@@ -43,12 +47,12 @@ struct bimap
 		m_v2k[v] = k;
 	}
 };  // end bimap
-}  // NS internal
+}  // namespace internal
 
 /** Only specializations of this class are defined for each enum type of
  * interest
-  * \sa TEnumType \ingroup mrpt_io_grp
-  */
+ * \sa TEnumType \ingroup mrpt_io_grp
+ */
 template <typename ENUMTYPE>
 struct TEnumTypeFiller
 {
@@ -99,9 +103,8 @@ struct TEnumType
 		if (!getBimap().inverse(name, val))
 		{
 			throw std::runtime_error(
-				std::string(
-					"TEnumType<" _MRPT_AUXTOSTR(
-						TEnumType) ">::name2value(): Unknown name: ") +
+				std::string("TEnumType<" _MRPT_AUXTOSTR(
+					TEnumType) ">::name2value(): Unknown name: ") +
 				name);
 		}
 		return val;
@@ -115,9 +118,8 @@ struct TEnumType
 		if (!getBimap().direct(val, s))
 		{
 			throw std::runtime_error(
-				std::string(
-					"TEnumType<" _MRPT_AUXTOSTR(
-						TEnumType) ">::value2name(): Unknown value: ") +
+				std::string("TEnumType<" _MRPT_AUXTOSTR(
+					TEnumType) ">::value2name(): Unknown value: ") +
 				std::to_string(static_cast<int>(val)));
 		}
 		return s;
@@ -133,5 +135,5 @@ struct TEnumType
 #undef _MRPT_AUXTOSTR
 };
 
-}  // End of namespace
-}  // end of namespace
+}  // namespace typemeta
+}  // namespace mrpt
