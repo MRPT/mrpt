@@ -44,15 +44,18 @@ struct T3DPointsProjectionParams
 	bool PROJ3D_USE_LUT;
 	/** (Default:true) If possible, use SSE2 optimized code. */
 	bool USE_SSE2;
-	/** (Default:true) set to false if you want to preserve the organization of
-	 * the point cloud */
+	/** (Default:true) set to false if your point cloud can contain undefined values */
 	bool MAKE_DENSE;
+	/** (Default:false) set to true if you want an organized point cloud */
+	bool MAKE_ORGANIZED;
+
 	T3DPointsProjectionParams()
 		: takeIntoAccountSensorPoseOnRobot(false),
 		  robotPoseInTheWorld(nullptr),
 		  PROJ3D_USE_LUT(true),
 		  USE_SSE2(true),
-		  MAKE_DENSE(true)
+		  MAKE_DENSE(true),
+		  MAKE_ORGANIZED(false)
 	{
 	}
 };
@@ -828,6 +831,11 @@ class PointCloudAdapter<mrpt::obs::CObservation3DRangeScan>
 		if (N) m_obj.hasPoints3D = true;
 		m_obj.resizePoints3DVectors(N);
 	}
+	/** Does nothing as of now */
+	inline void setDimensions(const size_t& height, const size_t& width)
+	{
+	}
+
 
 	/** Get XYZ coordinates of i'th point */
 	template <typename T>

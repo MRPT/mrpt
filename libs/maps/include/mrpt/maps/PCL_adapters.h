@@ -51,6 +51,12 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZ>>
 	inline size_t size() const { return m_obj.points.size(); }
 	/** Set number of points (to uninitialized values) */
 	inline void resize(const size_t N) { m_obj.points.resize(N); }
+	/** Set height and width (for organized) */
+	inline void setDimensions(const size_t& height, const size_t& width)
+	{
+		m_obj.height = height;
+		m_obj.width = width;
+	}
 	/** Get XYZ coordinates of i'th point */
 	template <typename T>
 	inline void getPointXYZ(const size_t idx, T& x, T& y, T& z) const
@@ -106,6 +112,13 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGB>>
 	inline size_t size() const { return m_obj.points.size(); }
 	/** Set number of points (to uninitialized values) */
 	inline void resize(const size_t N) { m_obj.points.resize(N); }
+	/** Set height and width (for organized) */
+	inline void setDimensions(const size_t& height, const size_t& width)
+	{
+		m_obj.height = height;
+		m_obj.width = width;
+	}
+
 	/** Get XYZ coordinates of i'th point */
 	template <typename T>
 	inline void getPointXYZ(const size_t idx, T& x, T& y, T& z) const
@@ -250,6 +263,13 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGBA>>
 	inline size_t size() const { return m_obj.points.size(); }
 	/** Set number of points (to uninitialized values) */
 	inline void resize(const size_t N) { m_obj.points.resize(N); }
+	/** Set height and width (for organized) */
+	inline void setDimensions(const size_t& height, const size_t& width)
+	{
+		m_obj.height = height;
+		m_obj.width = width;
+	}
+
 	/** Get XYZ coordinates of i'th point */
 	template <typename T>
 	inline void getPointXYZ(const size_t idx, T& x, T& y, T& z) const
