@@ -10,6 +10,7 @@
 #include <mrpt/comms/CServerTCPSocket.h>
 #include <mrpt/comms/CClientTCPSocket.h>
 #include <mrpt/serialization/CMessage.h>
+#include <mrpt/system/scheduler.h>  // changeCurrentThreadPriority()
 #include <mrpt/poses/CPose3D.h>
 #include <cstdio>  // printf()
 #include <thread>
@@ -40,7 +41,7 @@ void thread_server()
 #else
 			mrpt::system::LVL_ERROR
 #endif
-			);
+		);
 		std::unique_ptr<CClientTCPSocket> client = server.accept(2000);
 
 		if (client)
@@ -76,6 +77,8 @@ void thread_client()
 {
 	using namespace mrpt::comms;
 	using namespace std;
+
+	mrpt::system::changeCurrentThreadPriority(mrpt::system::tpLow);
 
 	try
 	{

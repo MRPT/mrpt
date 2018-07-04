@@ -74,6 +74,10 @@
  *    - `mrpt::synch::CSemaphore sem; sem.waitForSignal(timeout);
  * sem.release();` --> `std::promise<void> sem; auto fut = sem.get_future();
  * fut.wait_for(...); sem.set_value();`
+ *    - Scheduler functions are now in a new header `<mrpt/system/scheduler.h>`,
+ * not in the old `<mrpt/system/threads.h`:
+ *      - `mrpt::system::changeCurrentProcessPriority()`
+ *      - `mrpt::system::changeCurrentThreadPriority()`
  *  - `mrpt::utils::CObject::duplicate()` has been removed, use the equivalent
  * (redundant) `mrpt::utils::CObject::clone()`.
  *  - CSerialPort, `mrpt::utils::net`, sockets: have been moved to its own new
