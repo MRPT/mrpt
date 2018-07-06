@@ -27,6 +27,7 @@
 		- CNetworkOfPoses: read/write format made compatible with G2O EDGE_SE2 types.
 	- BUG FIXES:
 		- Fix missing "-ldl" linker flag.
+		- Fix building against wxWidgets 3.1.1 in Windows (zlib link error).
 
 <hr>
 <a name="1.5.6">
