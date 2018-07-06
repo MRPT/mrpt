@@ -1,25 +1,33 @@
 # Check for system zlib:
 # ===================================================
-SET(CMAKE_MRPT_HAS_ZLIB 1)	# Always present: system or built-in
-IF(MSVC)
-	SET(CMAKE_MRPT_HAS_ZLIB_SYSTEM 0)
-ELSE(MSVC)
-	FIND_PACKAGE(ZLIB)
-	IF(ZLIB_FOUND)
+set(CMAKE_MRPT_HAS_ZLIB 1)	# Always present: system or built-in
+set(CMAKE_MRPT_HAS_ZLIB_SYSTEM_IS_WX 0)
+if (MSVC)
+	set(CMAKE_MRPT_HAS_ZLIB_SYSTEM 0)
+else()
+	find_package(ZLIB)
+	if (ZLIB_FOUND)
 			#MESSAGE(STATUS "Found library: zlib - Include: ${ZLIB_INCLUDE_DIR}")
-			INCLUDE_DIRECTORIES("${ZLIB_INCLUDE_DIR}")
+			include_directories("${ZLIB_INCLUDE_DIR}")
 
-			SET(MRPT_ZLIB_LIBS ${ZLIB_LIBRARIES}) # APPEND_MRPT_LIBS(z)
+			set(MRPT_ZLIB_LIBS ${ZLIB_LIBRARIES}) # APPEND_MRPT_LIBS(z)
 
-			SET(CMAKE_MRPT_HAS_ZLIB_SYSTEM 1)
-	ELSE(ZLIB_FOUND)
+			set(CMAKE_MRPT_HAS_ZLIB_SYSTEM 1)
+			set(CMAKE_MRPT_HAS_ZLIB_SYSTEM_IS_WX 1)
+	else()
 			# If we are using wxWidgets we dont need this... for now check if this is MinGW on Windows...
-			IF (WIN32 AND CMAKE_MRPT_HAS_WXWIDGETS)
-				SET(CMAKE_MRPT_HAS_ZLIB_SYSTEM 1)
-				SET(CMAKE_MRPT_HAS_ZLIB_SYSTEM_IS_WX 1)
-			ELSE(WIN32 AND CMAKE_MRPT_HAS_WXWIDGETS)
-				SET(CMAKE_MRPT_HAS_ZLIB_SYSTEM 0)			
-			ENDIF(WIN32 AND CMAKE_MRPT_HAS_WXWIDGETS)
-	ENDIF(ZLIB_FOUND)
-ENDIF(MSVC)
+			if (WIN32 AND CMAKE_MRPT_HAS_WXWIDGETS)
+				set(CMAKE_MRPT_HAS_ZLIB_SYSTEM 1)
+				set(CMAKE_MRPT_HAS_ZLIB_SYSTEM_IS_WX 1)
+			else()
+				set(CMAKE_MRPT_HAS_ZLIB_SYSTEM 0)
+			endif()
+	endif()
+endif()
 
+# Update: wxWidgets >=3.1.1 no longer comes with zlib
+if (CMAKE_MRPT_HAS_WXWIDGETS AND CMAKE_MRPT_HAS_ZLIB_SYSTEM_IS_WX AND (NOT "${wxWidgets_VERSION_STRING}" VERSION_LESS "3.1.1"))
+	# Use embedded version instead:
+	set(CMAKE_MRPT_HAS_ZLIB_SYSTEM 0)
+	set(CMAKE_MRPT_HAS_ZLIB_SYSTEM_IS_WX 0)
+endif()
