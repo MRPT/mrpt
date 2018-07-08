@@ -13,6 +13,7 @@
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CSchemeArchiveBase.h>
 
 #include "opengl_internals.h"
 
@@ -209,6 +210,47 @@ void CArrow::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	CRenderizableDisplayList::notifyChange();
 }
 
+void CArrow::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
+{
+	out["datatype"] = std::string(this->GetRuntimeClass()->className);
+	out["version"] = 1;
+	out["x0"] = m_x0;
+	out["y0"] = m_y0;
+	out["z0"] = m_z0;
+	out["x1"] = m_x1;
+	out["y1"] = m_y1;
+	out["z1"] = m_z1;
+	out["headRatio"] = m_headRatio;
+	out["smallRadius"] = m_smallRadius;
+	out["largeRadius"] = m_largeRadius;
+}
+
+void CArrow::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
+{
+	uint8_t version = static_cast<int>(in["version"]);	// default is 0
+	if(static_cast<std::string>(in["datatype"]) ==
+		std::string(this->GetRuntimeClass()->className))	// match the class name
+	{
+		switch(version)
+		{
+			case 1:
+			{
+				m_x0 = static_cast<float>(in["x0"]);
+				m_y0 = static_cast<float>(in["y0"]);
+				m_z0 = static_cast<float>(in["z0"]);
+				m_x1 = static_cast<float>(in["x1"]);
+				m_y1 = static_cast<float>(in["y1"]);
+				m_z1 = static_cast<float>(in["z1"]);
+				m_headRatio = static_cast<float>(in["headRatio"]);
+				m_smallRadius = static_cast<float>(in["smallRadius"]);
+				m_largeRadius = static_cast<float>(in["largeRadius"]);
+			}
+			break;
+			default:
+				MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+		}
+	}
+}
 void CArrow::getBoundingBox(
 	mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const
 {
