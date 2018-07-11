@@ -73,6 +73,7 @@ include(cmakemodules/script_detect_unix_arch.cmake REQUIRED) # Detect machine ar
 include(cmakemodules/script_detect_gcc.cmake REQUIRED)       # Detect GNU GCC version
 include(cmakemodules/script_detect_clang.cmake REQUIRED)     # Detect clang compiler version
 
+enable_testing()
 
 # ------------------------------------------
 # We want libraries to be named "libXXX"

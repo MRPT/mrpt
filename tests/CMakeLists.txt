@@ -15,12 +15,10 @@ endif()
 # -----------------------------
 # Add the "make test" target:
 # -----------------------------
-ADD_CUSTOM_TARGET(test)
+ADD_CUSTOM_TARGET(test_legacy)
 ADD_CUSTOM_TARGET(tests_build_all)
-if(ENABLE_SOLUTION_FOLDERS)
-	set_target_properties(test PROPERTIES FOLDER "unit tests")
-	set_target_properties(tests_build_all PROPERTIES FOLDER "unit tests")
-endif()
+set_target_properties(test_legacy PROPERTIES FOLDER "unit tests")
+set_target_properties(tests_build_all PROPERTIES FOLDER "unit tests")
 IF (UNIX)
 	ADD_CUSTOM_TARGET(test_gdb)
 ENDIF()
@@ -58,6 +56,10 @@ FOREACH(_TSTLIB ${LST_LIB_TESTS})
 	# Test project:
 	ADD_EXECUTABLE( test_${_TSTLIB} test_main.cpp ${lstfiles})
 
+	ADD_TEST(test_${_TSTLIB}_build "${CMAKE_COMMAND}" --build ${CMAKE_BINARY_DIR} --target test_${_TSTLIB})
+	ADD_TEST(test_${_TSTLIB}_run ${EXECUTABLE_OUTPUT_PATH}/test_${_TSTLIB})
+	set_tests_properties(test_${_TSTLIB}_run PROPERTIES DEPENDS test_${_TSTLIB}_build)
+
 	# Add the required libraries for linking:
 IF (CMAKE_MRPT_HAS_GTEST_SYSTEM)
 	# System vesion:
@@ -94,7 +96,7 @@ ENDIF ()
 	SET(GENERATED_EXE "$<TARGET_FILE:test_${_TSTLIB}>")
 	ADD_CUSTOM_TARGET(run_tests_${_TSTLIB} COMMAND "${GENERATED_EXE}")
 	ADD_DEPENDENCIES(run_tests_${_TSTLIB} test_${_TSTLIB})
-	ADD_DEPENDENCIES(test run_tests_${_TSTLIB})
+	ADD_DEPENDENCIES(test_legacy run_tests_${_TSTLIB})
 	ADD_DEPENDENCIES(tests_build_all test_${_TSTLIB})
 
 IF (UNIX)
