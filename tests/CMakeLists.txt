@@ -60,7 +60,10 @@ FOREACH(_TSTLIB ${LST_LIB_TESTS})
 
 	# Test project:
 	ADD_EXECUTABLE( test_${_TSTLIB} test_main.cpp ${lstfiles})
-	ADD_TEST(test_${_TSTLIB} ${EXECUTABLE_OUTPUT_PATH}/test_${_TSTLIB})
+	ADD_TEST(test_${_TSTLIB}_build "${CMAKE_COMMAND}" --build ${CMAKE_BINARY_DIR} --target test_${_TSTLIB})
+	ADD_TEST(test_${_TSTLIB}_run ${EXECUTABLE_OUTPUT_PATH}/test_${_TSTLIB})
+	set_tests_properties(test_${_TSTLIB}_run PROPERTIES DEPENDS test_${_TSTLIB}_build)
+
 	add_coverage(test_${_TSTLIB})
 
 	# Add the required libraries for linking:
@@ -80,7 +83,7 @@ FOREACH(_TSTLIB ${LST_LIB_TESTS})
 	# extra deps:
 	get_property(extra_deps GLOBAL PROPERTY "${_TSTLIB}_UNIT_TEST_EXTRA_DEPS")
 	set(lst_deps ${lst_deps} ${extra_deps})
-	
+
 	set(lst_deps ${_TSTLIB_DASH} ${lst_deps}) # The order in this list is very important for linking!
 	FOREACH(_DEPLIB ${lst_deps})
 		# Include dirs:
