@@ -36,6 +36,11 @@ CCriticalSection::~CCriticalSection()
 	m_data = nullptr;
 }
 
+std::string CCriticalSection::getName() const
+{
+	return m_name;
+}
+
 void  CCriticalSection::enter() const
 {
 	const unsigned long threadid = mrpt::system::getCurrentThreadId();
