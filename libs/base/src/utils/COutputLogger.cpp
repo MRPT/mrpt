@@ -212,10 +212,9 @@ void COutputLogger::TMsg::reset() {
 
 std::string COutputLogger::TMsg::getAsString() const {
 	stringstream out;
-	out.str("");
-	out << "[" << name <<  "|" << COutputLogger::logging_levels_to_names[level]  << "|"
-	<< mrpt::system::timeLocalToString(timestamp,4) 
-		<< "] " << body;
+	out << "[" << mrpt::system::timeLocalToString(timestamp,4)  <<  "|" <<
+	 COutputLogger::logging_levels_to_names[level]  << "|"
+	 << name << "] " << body;
 	if (!body.empty() && *body.rbegin()!='\n')
 		out<<std::endl;
 
