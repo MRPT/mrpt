@@ -22,6 +22,7 @@
 			- mrpt::system::TThreadHandle now is a wrapper around std::thread.
 			- Atomic counters now based on std::atomic. Custom implementation has been removed.
 			- stlplus source code has been removed.
+		- mrpt::utils::COutputLogger: change log str format from "[name|type|time]" to "[time|type|name]".
 	- \ref mrpt_graphslam_grp
 		- levenberg-Marquardt graphslam modified to use more stable SE(2) Jacobians.
 		- CNetworkOfPoses: read/write format made compatible with G2O EDGE_SE2 types.
