@@ -174,7 +174,7 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 
 	target_include_directories(mrpt-${name} ${iftype}
 		$<BUILD_INTERFACE:${MRPT_SOURCE_DIR}/libs/${name}/include>
-		$<INSTALL_INTERFACE:include/mrpt/${name}/include>
+		$<INSTALL_INTERFACE:include/>
 	)
 
 	add_dependencies(all_mrpt_libs mrpt-${name}) # for target: all_mrpt_libs
@@ -395,7 +395,7 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 			# (in win32 the /libs/* tree is install entirely, not only the headers):
 			SET(SRC_DIR "${MRPT_SOURCE_DIR}/libs/${name}/include/")
 			IF (EXISTS "${SRC_DIR}")  # This is mainly to avoid problems with "virtual module" names
-				INSTALL(DIRECTORY "${SRC_DIR}" DESTINATION ${this_lib_dev_INSTALL_PREFIX}include/mrpt/${name}/include/  )
+				INSTALL(DIRECTORY "${SRC_DIR}" DESTINATION ${this_lib_dev_INSTALL_PREFIX}include)
 			ENDIF()
 		ENDIF()
 	ENDIF() # UNIX
