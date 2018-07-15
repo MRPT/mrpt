@@ -14,8 +14,8 @@
 # ----------------------------------------------------------------------------
 include(cmake/HunterGate.cmake)
 HunterGate(
-    URL "https://github.com/lsolanka/hunter/archive/v0.21.6-rosdevel4.tar.gz"
-    SHA1 "a569b63bef4ea73e109d01c03891f91b8e32739c"
+    URL "https://github.com/lsolanka/hunter/archive/v0.22.4-rosdevel11.tar.gz"
+    SHA1 "70bae336aafc5301b7347e5b12962258ea7f7ccb"
     LOCAL
 )
 
@@ -52,11 +52,12 @@ else()
 	endif()
 endif()
 
-hunter_add_package(Eigen)
-hunter_add_package(ZLIB)
-hunter_add_package(Jpeg)
-hunter_add_package(OpenCV)
 hunter_add_package(Assimp)
+hunter_add_package(Eigen)
+hunter_add_package(Jpeg)
+hunter_add_package(octomap)
+hunter_add_package(OpenCV)
+hunter_add_package(ZLIB)
 
 if(COMMAND cmake_policy)
 	cmake_policy(SET CMP0003 NEW) # We don't want to mix relative and absolute paths in linker lib lists.

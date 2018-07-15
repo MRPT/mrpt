@@ -35,6 +35,15 @@
 #
 # =========================================================================
 
+find_package(Assimp CONFIG REQUIRED)
+find_package(Eigen CONFIG REQUIRED)
+find_package(Jpeg CONFIG REQUIRED)
+find_package(octomap CONFIG REQUIRED)
+find_package(OpenCV CONFIG REQUIRED)
+find_package(ZLIB CONFIG REQUIRED)
+
+include(${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Targets.cmake)
+
 # MRPT version numbers:
 SET(MRPT_VERSION @CMAKE_MRPT_FULL_VERSION@)
 SET(MRPT_VERSION_MAJOR @CMAKE_MRPT_VERSION_NUMBER_MAJOR@)
@@ -50,6 +59,7 @@ else()
 	else()
 		if ("${CMAKE_CXX_STANDARD}" STREQUAL "" OR "${CMAKE_CXX_STANDARD}" LESS 17)
 			set(CMAKE_CXX_STANDARD 17)
+            set(CMAKE_CXX_EXTENSIONS OFF)
 		endif()
 	endif()
 endif()
