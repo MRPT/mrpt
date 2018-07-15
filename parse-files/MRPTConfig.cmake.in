@@ -36,8 +36,8 @@
 # =========================================================================
 
 find_package(Assimp CONFIG REQUIRED)
-find_package(Eigen CONFIG REQUIRED)
-find_package(Jpeg CONFIG REQUIRED)
+find_package(Eigen3 CONFIG REQUIRED)
+find_package(JPEG CONFIG REQUIRED)
 find_package(octomap CONFIG REQUIRED)
 find_package(OpenCV CONFIG REQUIRED)
 find_package(ZLIB CONFIG REQUIRED)
