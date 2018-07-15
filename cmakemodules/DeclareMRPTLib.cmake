@@ -174,7 +174,7 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 
 	target_include_directories(mrpt-${name} ${iftype}
 		$<BUILD_INTERFACE:${MRPT_SOURCE_DIR}/libs/${name}/include>
-		$<INSTALL_INTERFACE:${name}/include>
+		$<INSTALL_INTERFACE:include/mrpt/${name}/include>
 	)
 
 	add_dependencies(all_mrpt_libs mrpt-${name}) # for target: all_mrpt_libs
