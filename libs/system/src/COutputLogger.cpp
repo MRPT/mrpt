@@ -35,21 +35,32 @@ using namespace std;
 // COutputLogger
 // ////////////////////////////////////////////////////////////
 
-mrpt::system::TConsoleColor
-	COutputLogger::logging_levels_to_colors[NUMBER_OF_VERBOSITY_LEVELS] = {
+static std::array<mrpt::system::TConsoleColor, NUMBER_OF_VERBOSITY_LEVELS>
+	logging_levels_to_colors = {
 		CONCOL_BLUE,  // LVL_DEBUG
 		CONCOL_NORMAL,  // LVL_INFO
 		CONCOL_GREEN,  // LVL_WARN
 		CONCOL_RED  // LVL_ERROR
 };
 
-std::string COutputLogger::logging_levels_to_names[NUMBER_OF_VERBOSITY_LEVELS] =
-	{
+std::array<mrpt::system::TConsoleColor, NUMBER_OF_VERBOSITY_LEVELS>&
+	COutputLogger::logging_levels_to_colors()
+{
+	return ::logging_levels_to_colors;
+}
+
+static std::array<std::string, NUMBER_OF_VERBOSITY_LEVELS>
+	logging_levels_to_names = {
 		"DEBUG",  // LVL_DEBUG
 		"INFO ",  // LVL_INFO
 		"WARN ",  // LVL_WARN
 		"ERROR"  // LVL_ERROR
 };
+std::array<std::string, NUMBER_OF_VERBOSITY_LEVELS>&
+	COutputLogger::logging_levels_to_names()
+{
+	return ::logging_levels_to_names;
+}
 
 COutputLogger::COutputLogger(const std::string& name)
 {
@@ -231,9 +242,9 @@ void COutputLogger::TMsg::reset()
 std::string COutputLogger::TMsg::getAsString() const
 {
 	stringstream out;
-	out << "[" << mrpt::system::timeLocalToString(timestamp, 4) << "|" <<
-		COutputLogger::logging_levels_to_names[level] << "|" << name << "] " <<
-		body;
+	out << "[" << mrpt::system::timeLocalToString(timestamp, 4) << "|"
+		<< COutputLogger::logging_levels_to_names()[level] << "|" << name << "] "
+		<< body;
 	if (!body.empty() && *body.rbegin() != '\n') out << std::endl;
 
 	return out.str();
@@ -259,7 +270,7 @@ void COutputLogger::TMsg::dumpToConsole() const
 	// of stdout
 
 	// Set console color:
-	const TConsoleColor concol = COutputLogger::logging_levels_to_colors[level];
+	const TConsoleColor concol = COutputLogger::logging_levels_to_colors()[level];
 	mrpt::system::setConsoleColor(concol, dump_to_cerr);
 	// Output msg:
 	(dump_to_cerr ? std::cerr : std::cout) << str;
