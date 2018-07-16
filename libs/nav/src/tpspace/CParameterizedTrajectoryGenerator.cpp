@@ -17,10 +17,20 @@
 
 using namespace mrpt::nav;
 
-std::string CParameterizedTrajectoryGenerator::OUTPUT_DEBUG_PATH_PREFIX =
-	"./reactivenav.logs";
-PTG_collision_behavior_t CParameterizedTrajectoryGenerator::COLLISION_BEHAVIOR =
+static std::string OUTPUT_DEBUG_PATH_PREFIX = "./reactivenav.logs";
+static PTG_collision_behavior_t COLLISION_BEHAVIOR =
 	mrpt::nav::COLL_BEH_BACK_AWAY;
+
+std::string& CParameterizedTrajectoryGenerator::OUTPUT_DEBUG_PATH_PREFIX()
+{
+	return ::OUTPUT_DEBUG_PATH_PREFIX;
+}
+
+PTG_collision_behavior_t&
+	CParameterizedTrajectoryGenerator::COLLISION_BEHAVIOR()
+{
+	return ::COLLISION_BEHAVIOR;
+}
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(
 	CParameterizedTrajectoryGenerator, CSerializable, mrpt::nav)
@@ -70,7 +80,9 @@ void CParameterizedTrajectoryGenerator::loadFromConfigFile(
 		sSection);
 
 	// Ensure a minimum of resolution:
-	mrpt::keep_max(m_clearance_num_points, refDistance / 1.0);
+	mrpt::keep_max(
+		m_clearance_num_points,
+		static_cast<decltype(m_clearance_num_points)>(refDistance / 1.0));
 
 	// Optional params, for debugging only
 	MRPT_LOAD_HERE_CONFIG_VAR(
@@ -276,7 +288,7 @@ bool CParameterizedTrajectoryGenerator::debugDumpInFiles(
 	using namespace std;
 
 	const char* sPath =
-		CParameterizedTrajectoryGenerator::OUTPUT_DEBUG_PATH_PREFIX.c_str();
+		CParameterizedTrajectoryGenerator::OUTPUT_DEBUG_PATH_PREFIX().c_str();
 
 	mrpt::system::createDirectory(sPath);
 	mrpt::system::createDirectory(mrpt::format("%s/PTGs", sPath));
@@ -426,7 +438,7 @@ void CParameterizedTrajectoryGenerator::internal_TPObsDistancePostprocess(
 
 	// Handle the special case of obstacles *inside* the robot at the begining
 	// of the PTG path:
-	switch (COLLISION_BEHAVIOR)
+	switch (COLLISION_BEHAVIOR())
 	{
 		case COLL_BEH_STOP:
 			inout_tp_obs = .0;
