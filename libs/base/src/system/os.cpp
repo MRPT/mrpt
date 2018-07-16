@@ -511,6 +511,10 @@ void mrpt::system::setConsoleColor(TConsoleColor color,bool changeStdErr)
         (color & TS_RED ? FOREGROUND_RED : 0)|FOREGROUND_INTENSITY)));
 #else
 	// *nix:
+	static TConsoleColor old_color = mrpt::system::CONCOL_NORMAL;
+	if (old_color == color) return;
+	old_color = color;
+
     static const uint8_t ansi_tab[] = { 30, 34, 32, 36, 31, 35, 33, 37 };
     int code = 0;
 	fflush(changeStdErr ? stdout:stderr);
