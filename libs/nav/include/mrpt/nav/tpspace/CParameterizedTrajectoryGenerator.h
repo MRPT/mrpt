@@ -323,7 +323,7 @@ class CParameterizedTrajectoryGenerator
 
 	/** The path used as defaul output in, for example, debugDumpInFiles.
 	 * (Default="./reactivenav.logs/") */
-	static std::string OUTPUT_DEBUG_PATH_PREFIX;
+	static std::string &OUTPUT_DEBUG_PATH_PREFIX();
 
 	/** Must be called after setting all PTG parameters and before requesting
 	 * converting obstacles to TP-Space, inverseMap_WS2TP(), etc. */
@@ -426,7 +426,7 @@ class CParameterizedTrajectoryGenerator
 	 * right at the beginning of a PTG trajectory.
 	 * Default value: COLL_BEH_BACK_AWAY
 	 */
-	static PTG_collision_behavior_t COLLISION_BEHAVIOR;
+	static PTG_collision_behavior_t &COLLISION_BEHAVIOR();
 
 	/** Must be called to resize a CD to its correct size, before calling
 	 * updateClearance() */
