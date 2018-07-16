@@ -64,7 +64,7 @@ using namespace std;
 #ifndef _WIN32
 /** By ninjalj in
  * http://stackoverflow.com/questions/3962263/checking-if-a-key-was-pressed
-  */
+ */
 void my_aux_sighandler(int) {}
 int myKbhit(void)
 {
@@ -331,16 +331,16 @@ int os::_strcmpi(const char* str1, const char* str2) noexcept
 }
 
 /** An OS-independent version of strncmp.
-* \return It will return 0 when both strings are equal, casi sensitive.
-*/
+ * \return It will return 0 when both strings are equal, casi sensitive.
+ */
 int os::_strncmp(const char* str1, const char* str2, size_t count) noexcept
 {
 	return ::strncmp(str1, str2, count);
 }
 
 /** An OS-independent version of strnicmp.
-* \return It will return 0 when both strings are equal, casi insensitive.
-*/
+ * \return It will return 0 when both strings are equal, casi insensitive.
+ */
 int os::_strnicmp(const char* str1, const char* str2, size_t count) noexcept
 {
 #if defined(_MSC_VER)
@@ -471,12 +471,12 @@ uint64_t mrpt::system::os::_strtoull(const char* nptr, char** endptr, int base)
 }
 
 /** Changes the text color in the console for the text written from now on.
-  * The parameter "color" can be:
-  *  - 0 : Normal text color
-  *  - 1 : Blue text color
-  *  - 2 : Green text color
-  *  - 4 : Red text color
-  */
+ * The parameter "color" can be:
+ *  - 0 : Normal text color
+ *  - 1 : Blue text color
+ *  - 2 : Green text color
+ *  - 4 : Red text color
+ */
 void mrpt::system::setConsoleColor(TConsoleColor color, bool changeStdErr)
 {
 	static const int TS_NORMAL = 0;
@@ -506,6 +506,10 @@ void mrpt::system::setConsoleColor(TConsoleColor color, bool changeStdErr)
 								  FOREGROUND_INTENSITY)));
 #else
 	// *nix:
+	static TConsoleColor last_color = mrpt::system::CONCOL_NORMAL;
+	if (color == last_color) return;
+	last_color = color;
+
 	static const uint8_t ansi_tab[] = {30, 34, 32, 36, 31, 35, 33, 37};
 	int code = 0;
 	fflush(changeStdErr ? stdout : stderr);
