@@ -16,6 +16,7 @@
 
 #include <string>
 #include <deque>
+#include <array>
 #include <sstream>
 #include <iosfwd>
 #include <functional>
@@ -118,13 +119,14 @@ class COutputLogger
 	/** Map from VerbosityLevels to their corresponding
 	 * mrpt::system::TConsoleColor. Handy for coloring the input based on the
 	 * verbosity of the message */
-	static mrpt::system::TConsoleColor
-		logging_levels_to_colors[NUMBER_OF_VERBOSITY_LEVELS];
+	static std::array<mrpt::system::TConsoleColor, NUMBER_OF_VERBOSITY_LEVELS>&
+		logging_levels_to_colors();
 
 	/** Map from VerbosityLevels to their corresponding names. Handy for
 	 * printing the current message VerbosityLevel along with the actual content
 	 */
-	static std::string logging_levels_to_names[NUMBER_OF_VERBOSITY_LEVELS];
+	static std::array<std::string, NUMBER_OF_VERBOSITY_LEVELS>&
+		logging_levels_to_names();
 
 	/** @name Logging methods
 	 * @{ */
@@ -547,7 +549,7 @@ struct COutputLoggerStreamWrapper
 	tmp_obj.usercode();           \
 	}                             \
 	while (0)
-}
+}  // namespace mrpt::system
 // TTypeEnum for verbosity levels:
 MRPT_ENUM_TYPE_BEGIN_NAMESPACE(mrpt::system, mrpt::system::VerbosityLevel)
 MRPT_FILL_ENUM(LVL_DEBUG);
@@ -559,5 +561,3 @@ MRPT_FILL_ENUM_CUSTOM_NAME(LVL_INFO, "INFO");
 MRPT_FILL_ENUM_CUSTOM_NAME(LVL_WARN, "WARN");
 MRPT_FILL_ENUM_CUSTOM_NAME(LVL_ERROR, "ERROR");
 MRPT_ENUM_TYPE_END()
-
-
