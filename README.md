@@ -36,7 +36,7 @@ and [much more](http://www.mrpt.org/list-of-mrpt-apps/).
   * Download the latest unstable code with: `git clone https://github.com/MRPT/mrpt.git --depth 1`
   * Ask questions at: [this Google group](http://www.mrpt.org/forum/) or at [stackoverflow](http://stackoverflow.com/search?q=mrpt) (please, use the tag `mrpt`!)
   * [Main project website](http://www.mrpt.org/), including [sources and Windows installer downloads](http://www.mrpt.org/download-mrpt/)
-  * [C++ API reference](http://reference.mrpt.org/)
+  * [C++ API reference](http://docs.mrpt.org/reference/)
   * ROS packages: [`mrpt_navigation`](http://wiki.ros.org/mrpt_navigation), [`mrpt_slam`](http://wiki.ros.org/mrpt_slam)
   * [Bindings documentation](https://github.com/MRPT/mrpt/wiki) (Python, Matlab)
   * Source code for [dozens of examples](http://www.mrpt.org/tutorials/mrpt-examples/)
