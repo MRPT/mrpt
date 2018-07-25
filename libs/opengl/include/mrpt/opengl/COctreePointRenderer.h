@@ -266,11 +266,11 @@ namespace mrpt
 						// If we are here, it seems at least a part of the Box is visible:
 						m_visible_octree_nodes_ongoing++;
 
-						const float render_area_sqpixels = trust_me_youre_visible ?
+						float render_area_sqpixels = trust_me_youre_visible ?
 							approx_area_sqpixels
 							:
 							std::abs(px_min.x-px_max.x) * std::abs(px_min.y-px_max.y);
-
+						render_area_sqpixels = std::max(1.0f, render_area_sqpixels);
 						// OK: Add to list of rendering-pending:
 						m_render_queue.push_back( TRenderQueueElement(node_idx,render_area_sqpixels) );
 					}
