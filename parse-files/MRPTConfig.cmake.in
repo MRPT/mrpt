@@ -47,6 +47,7 @@ if (MSVC)
 else()
 	if(${CMAKE_VERSION} VERSION_LESS "3.8.0")
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
+		unset(CMAKE_CXX_STANDARD) # Required not to override the flag above to c++14 or lower
 	else()
 		if ("${CMAKE_CXX_STANDARD}" STREQUAL "" OR "${CMAKE_CXX_STANDARD}" LESS 17)
 			set(CMAKE_CXX_STANDARD 17)
