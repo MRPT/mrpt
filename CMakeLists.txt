@@ -45,21 +45,6 @@ else()
 	endif()
 endif()
 
-if(COMMAND cmake_policy)
-	cmake_policy(SET CMP0003 NEW) # We don't want to mix relative and absolute paths in linker lib lists.
-	cmake_policy(SET CMP0005 NEW) # Escape definitions (-D) strings
-	if(POLICY CMP0053)
-		cmake_policy(SET CMP0053 OLD) # Simplify variable reference and escape sequence evaluation.
-	endif()
-	if(POLICY CMP0037)
-		cmake_policy(SET CMP0037 OLD)  # Allow defining target "test"
-	endif()
-	if(POLICY CMP0043)
-		cmake_policy(SET CMP0043 OLD) #  Ignore COMPILE_DEFINITIONS_<Config> properties.
-	endif()
-endif()
-# -------------------------
-
 
 # Detect wordsize:
 IF(CMAKE_SIZEOF_VOID_P EQUAL 8)  # Size in bytes!
