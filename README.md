@@ -58,8 +58,8 @@ See [PPA](https://launchpad.net/~joseluisblancoc/+archive/ubuntu/mrpt) for mrpt 
         sudo apt-get install libmrpt-dev mrpt-apps
 
 Supported distributions:
+  * Ubuntu 18.10 Cosmic
   * Ubuntu 18.04 Bionic
-  * Ubuntu 17.10 Artful (EOL: July 2018)
   * Ubuntu 16.04LTS Xenial (EOL: April 2021)
   	* Using 16.04 requires installing gcc-7 due to some bugs in gcc-5:
 
@@ -73,8 +73,8 @@ Supported distributions:
 Minimum compiler requisites:
   * mrpt >=2.0 (`master` branch):
     * gcc-7 or newer.
-      * Ubuntu 18.04LTS Bionic: Its default gcc version is ok.
       * Ubuntu 16.04LTS Xenial: [Instructions](https://gist.github.com/jlblancoc/99521194aba975286c80f93e47966dc5) for installing gcc-7 in this version of Ubuntu.
+      * Newer distros: default gcc version is ok.
     * clang-4 or newer.
     * Windows: Visual Studio 2017 version 15.3 or newer.
     * cmake >= 3.3 required (>=3.4 for Windows).

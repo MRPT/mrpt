@@ -46,7 +46,7 @@ rm -fr $MRPT_UBUNTU_OUT_DIR/
 # -------------------------------------------------------------------
 # And now create the custom packages for each Ubuntu distribution:
 # -------------------------------------------------------------------
-LST_DISTROS=(xenial artful bionic)
+LST_DISTROS=(xenial bionic cosmic)
 
 # Xenial:armhf does not have any version of liboctomap-dev:
 export MRPT_RELEASE_EXTRA_OTHERLIBS_URL="https://github.com/MRPT/octomap/archive/devel.zip"
