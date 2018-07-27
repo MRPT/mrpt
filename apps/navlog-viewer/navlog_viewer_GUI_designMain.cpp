@@ -880,6 +880,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					gl_path->setColor_u8(mrpt::img::TColor(0x00, 0x00, 0xff));
 					gl_robot_frame->insert(gl_path);
 				}
+				else
+					gl_path = mrpt::ptr_cast<mrpt::opengl::CSetOfLines>::from(gl_path_r);
 				gl_path->clear();
 				if (sel_ptg_idx < int(m_logdata_ptg_paths.size()) &&
 					sel_ptg_idx >= 0)
