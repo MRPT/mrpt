@@ -8,8 +8,8 @@ IF(WIN32)
 	INSTALL(FILES "${MRPT_BINARY_DIR}/unix-install/MRPTConfig-version.cmake" DESTINATION ./ )
 ELSE()
 	IF (NOT IS_DEBIAN_DBG_PKG)
-		INSTALL(FILES "${MRPT_BINARY_DIR}/unix-install/MRPTConfig.cmake" DESTINATION ${libmrpt_dev_INSTALL_PREFIX}share/mrpt )
-		INSTALL(FILES "${MRPT_BINARY_DIR}/unix-install/MRPTConfig-version.cmake" DESTINATION ${libmrpt_dev_INSTALL_PREFIX}share/mrpt )
+		INSTALL(FILES "${MRPT_BINARY_DIR}/unix-install/MRPTConfig.cmake" DESTINATION ${libmrpt_common_dev_INSTALL_PREFIX}share/mrpt )
+		INSTALL(FILES "${MRPT_BINARY_DIR}/unix-install/MRPTConfig-version.cmake" DESTINATION ${libmrpt_common_dev_INSTALL_PREFIX}share/mrpt )
 	ENDIF(NOT IS_DEBIAN_DBG_PKG)
 ENDIF()
 
@@ -111,18 +111,18 @@ ENDIF(WIN32)
 
 # Config-dependent headers:
 IF (NOT IS_DEBIAN_DBG_PKG)
-	INSTALL(FILES "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/config.h" DESTINATION "${libmrpt_dev_INSTALL_PREFIX}include/mrpt/mrpt-config/mrpt/" )
-	INSTALL(FILES "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/version.h" DESTINATION "${libmrpt_dev_INSTALL_PREFIX}include/mrpt/mrpt-config/mrpt/" )
+	INSTALL(FILES "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/config.h" DESTINATION "${libmrpt_common_dev_INSTALL_PREFIX}include/mrpt/mrpt-config/mrpt/" )
+	INSTALL(FILES "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/version.h" DESTINATION "${libmrpt_common_dev_INSTALL_PREFIX}include/mrpt/mrpt-config/mrpt/" )
 ENDIF()
 
 # Using embedded version of libraries that need public headers?
-IF (EIGEN_USE_EMBEDDED_VERSION AND NOT IS_DEBIAN_DBG_PKG)
+IF(EIGEN_USE_EMBEDDED_VERSION AND NOT IS_DEBIAN_DBG_PKG)
 	IF(WIN32)
 		# Eigen headers must end up in /Program Files/MRPT-X.Y.Z/libs/base/...
-		SET(MRPT_INSTALL_EIGEN_PREFIX "libs/base/include/")
+		SET(MRPT_INSTALL_EIGEN_PREFIX "libs/math/include/")
 	ELSE(WIN32)
 		# Eigen headers must end up in /usr/...
-		SET(MRPT_INSTALL_EIGEN_PREFIX "${libmrpt_dev_INSTALL_PREFIX}include/mrpt/base/include/")
+		SET(MRPT_INSTALL_EIGEN_PREFIX "${libmrpt_dev_INSTALL_PREFIX}include/mrpt/math/include/")
 	ENDIF(WIN32)
 
 	INSTALL(
@@ -131,4 +131,4 @@ IF (EIGEN_USE_EMBEDDED_VERSION AND NOT IS_DEBIAN_DBG_PKG)
 	INSTALL(
 		DIRECTORY "${MRPT_BINARY_DIR}/otherlibs/eigen3/unsupported"
 		DESTINATION "${MRPT_INSTALL_EIGEN_PREFIX}" )
-ENDIF (EIGEN_USE_EMBEDDED_VERSION AND NOT IS_DEBIAN_DBG_PKG)
+ENDIF()
