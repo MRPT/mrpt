@@ -21,7 +21,7 @@ endif
 
 # Unit tests can be run with target "test", or "test_gdb", which shows stack
 # traces on failure:
-MRPT_TEST_TARGET = test_legacy 
+MRPT_TEST_TARGET = test_legacy
 
 CMAKE_FLAGS = \
 	-DCMAKE_INSTALL_PREFIX="$(CURDIR)/debian/" \
@@ -78,8 +78,7 @@ override_dh_install:
 	dh_auto_build -O--buildsystem=cmake -- install
 
 	# Move all the ".so" files to the proper place: the -dev package:
-	mkdir -p $(CURDIR)/debian/libmrpt-dev/usr/lib/$(DEB_HOST_MULTIARCH)
-	find $(CURDIR)/debian/ -name "*.so" | grep -v 'libmrpt-dev' | xargs -I FIL mv -f FIL $(CURDIR)/debian/libmrpt-dev/usr/lib/$(DEB_HOST_MULTIARCH)
+	find $(CURDIR)/debian/ -name "*.so" | grep -v 'dev' | while read line; do f=$(basename $line .so); echo "Processing so file: $line, basename: $f"; mkdir -p $(CURDIR)/debian/$f-dev/usr/lib/$(DEB_HOST_MULTIARCH); mv -f $line $(CURDIR)/debian/$f-dev/usr/lib/$(DEB_HOST_MULTIARCH); done
 
 	# Fix Doxygen's embedded JQuery lib:
 	rm $(CURDIR)/debian/mrpt-doc/usr/share/doc/mrpt-doc/html/jquery.js || true
