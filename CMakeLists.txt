@@ -604,7 +604,7 @@ IF(CMAKE_MRPT_USE_DEB_POSTFIXS)
 	SET(mrpt_pkgconfig_INSTALL_PREFIX "/usr")
 ELSE()
 	# Values under normal conditions -----------------------
-	SET(libmrpt_xxx_dev_INSTALL_PREFIX "")
+	SET(libmrpt_common_dev_INSTALL_PREFIX "")
 	SET(libmrpt_dev_INSTALL_PREFIX "")
 	SET(mrpt_apps_INSTALL_PREFIX "")
 	SET(mrpt_doc_INSTALL_PREFIX "")
