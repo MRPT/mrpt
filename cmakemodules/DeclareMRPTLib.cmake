@@ -382,8 +382,14 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 		SET(mrpt_pkgconfig_NO_INSTALL_BINARY "${MRPT_BINARY_DIR}")
 		CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/parse-files/mrpt_template_no_install.pc.in" "${CMAKE_BINARY_DIR}/pkgconfig-no-install/mrpt-${name}.pc" @ONLY)
 
+
+		if (CMAKE_MRPT_USE_DEB_POSTFIXS)
+			set(this_lib_dev_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/libmrpt-${name}-dev/usr/")
+		else()
+			set(this_lib_dev_INSTALL_PREFIX "")
+		endif()
+
 		IF (NOT IS_DEBIAN_DBG_PKG)
-			STRING(REPLACE "xxx" "${name}" this_lib_dev_INSTALL_PREFIX "${libmrpt_xxx_dev_INSTALL_PREFIX}")
 			# .pc file:
 			INSTALL(
 				FILES "${CMAKE_BINARY_DIR}/pkgconfig/mrpt-${name}.pc"
