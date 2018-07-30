@@ -41,6 +41,7 @@ find_package(JPEG CONFIG REQUIRED)
 find_package(octomap CONFIG REQUIRED)
 find_package(OpenCV CONFIG REQUIRED)
 find_package(ZLIB CONFIG REQUIRED)
+find_package(CVD CONFIG REQUIRED)
 
 include(${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Targets.cmake)
 
