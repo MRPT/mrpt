@@ -23,8 +23,8 @@ endif
 # traces on failure:
 MRPT_TEST_TARGET = test_legacy
 
--DCMAKE_INSTALL_PREFIX="$(CURDIR)/debian/" \
 CMAKE_FLAGS = \
+	-DCMAKE_INSTALL_PREFIX="$(CURDIR)/debian/" \
 	-DCMAKE_INSTALL_LIBDIR="lib/$(DEB_HOST_MULTIARCH)" \
 	-DCMAKE_VERBOSE_MAKEFILE=ON \
 	-DCMAKE_BUILD_TYPE=Release  \
