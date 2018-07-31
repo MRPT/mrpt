@@ -136,6 +136,7 @@ IF(BUILD_EXAMPLES)
 	# === Depending on: mrpt-comms ===
 	SET(LIST_EXAMPLES_IN_THIS_DIR
 		comms_http_client
+		comms_nodelets_example
 		comms_serial_port_example
 		comms_socket_example
 		comms_ftdi_usb_enumerate_example
