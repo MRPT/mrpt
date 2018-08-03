@@ -35,7 +35,7 @@ void thread_publisher()
 		for (int i = 0; i < 5; i++)
 		{
 			std::this_thread::sleep_for(100ms);
-			dir->getTopic("/foo/bar")->publish(p_tx);
+			dir->getTopic("/robot/odom")->publish(p_tx);
 		}
 
 #ifdef NODELETS_TEST_VERBOSE
@@ -50,6 +50,13 @@ void thread_publisher()
 	{
 		printf("[thread_publisher] Runtime error!\n");
 	}
+}
+
+void onNewMsg(const mrpt::poses::CPose3D& p)
+{
+#ifdef NODELETS_TEST_VERBOSE
+	std::cout << "sub2: rx CPose3D" << p.asString() << std::endl;
+#endif
 }
 
 void thread_subscriber()
@@ -67,16 +74,27 @@ void thread_subscriber()
 		printf("[subscriber] Connected. Waiting for a message...\n");
 #endif
 
-		auto sub = dir->getTopic("/foo/bar")
+		// Create a subscriber with a lambda:
+		auto sub1 = dir->getTopic("/robot/odom")
 					   ->createSubscriber(
 						   std::function<void(const mrpt::poses::CPose3D&)>(
 							   [](const mrpt::poses::CPose3D& p_rx) -> void {
 #ifdef NODELETS_TEST_VERBOSE
-								   std::cout << "rx CPose3D" << p_rx.asString()
-											 << std::endl;
+								   std::cout << "sub1: rx CPose3D"
+											 << p_rx.asString() << std::endl;
 #endif
 								   nodelets_test_passed_ok = (p_rx == p_tx);
 							   }));
+
+		// Create a subscriber with a regular function:
+		auto sub2 = dir->getTopic("/robot/odom")
+					   ->createSubscriber(
+						   std::function<void(const mrpt::poses::CPose3D&)>(
+							   &onNewMsg));
+
+		// wait for messages to arrive.
+		// The nodelet is up and live until "sub" gets out of scope.
+		std::this_thread::sleep_for(1000ms);
 
 #ifdef NODELETS_TEST_VERBOSE
 		printf("[subscriber] Finish\n");
