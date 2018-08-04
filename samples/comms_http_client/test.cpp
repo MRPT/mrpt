@@ -7,6 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
+/** \example comms_http_client/test.cpp */
+
+//! [example-http-get]
+
 #include <mrpt/comms/net_utils.h>
 #include <iostream>
 
@@ -17,9 +21,6 @@ using namespace std;
 
 string url = "http://www.google.es/";
 
-/* ------------------------------------------------------------------------
-					Test: HTTP get
-   ------------------------------------------------------------------------ */
 void Test_HTTP_get()
 {
 	string content;
@@ -27,8 +28,6 @@ void Test_HTTP_get()
 	mrpt::system::TParameters<string> out_headers;
 
 	cout << "Retrieving " << url << "..." << endl;
-
-	// CClientTCPSocket::DNS_LOOKUP_TIMEOUT_MS = 5000;
 
 	ERRORCODE_HTTP ret = http_get(
 		url, content, errmsg, 80, "", "", nullptr, nullptr, &out_headers);
@@ -45,6 +44,7 @@ void Test_HTTP_get()
 	cout << "Ok: " << content.size() << " bytes of type: " << typ << endl;
 	// cout << content << endl;
 }
+//! [example-http-get]
 
 // ------------------------------------------------------
 //						MAIN
