@@ -7,6 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
+/** \example comms_nodelets_example/NodeletsTest_impl.cpp */
+
+bool nodelets_test_passed_ok = false;
+
+//! [example-nodelets]
 #include <mrpt/comms/nodelets.h>
 #include <mrpt/poses/CPose3D.h>
 #include <cstdio>  // printf()
@@ -14,11 +19,11 @@
 #include <chrono>
 #include <iostream>
 
-bool nodelets_test_passed_ok = false;
-
 // Test payload:
 const mrpt::poses::CPose3D p_tx(1.0, 2.0, 3.0, 0.2, 0.4, 0.6);
 
+// Create the topic directory. Only once per process, and must be shared
+// by all nodelets/threads.
 auto dir = mrpt::comms::TopicDirectory::create();
 
 void thread_publisher()
@@ -107,7 +112,6 @@ void thread_subscriber()
 	catch (...)
 	{
 		cerr << "[thread_subscriber] Runtime error!" << endl;
-		;
 	}
 }
 
@@ -119,3 +123,4 @@ void NodeletsTest()
 	std::thread(thread_subscriber).detach();
 	std::this_thread::sleep_for(1000ms);
 }
+//! [example-nodelets]
