@@ -31,14 +31,14 @@ intra-process (multiple threads) zero-copy super fast communication.
 Thread creation and handling is the responsibility of the user.
 
 The main concepts are:
-* A `topic`: the name of a shared variable. If you are familiar with ROS, you
+- A `topic`: the name of a shared variable. If you are familiar with ROS, you
 already know what a topic is. Topics are identified by unique strings,
 e.g. `odometry`, `scan`.
-* Directory: The central hub that holds all references to existing topics.
+- Directory: The central hub that holds all references to existing topics.
 Usually only one should exist per process, but there is no actual limitation.
-* Subscriber: An object that binds to a given topic and allows a user-given
+- Subscriber: An object that binds to a given topic and allows a user-given
 function to be called whenever new data is published to the topic.
-* Publish: The operation of publishing a new data piece to a named topic.
+- Publish: The operation of publishing a new data piece to a named topic.
 It's important to note that the call is **blocking**: all subscribers are
 executed from the thread invoking publish(). Users are encouraged to design
 subscribers such that their execution time are minimized, delegating heavy
