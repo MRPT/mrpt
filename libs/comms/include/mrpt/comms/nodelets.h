@@ -58,9 +58,8 @@ class Topic : public std::enable_shared_from_this<Topic>
 
 	~Topic();
 
-	template <typename ARG>
-	Subscriber::Ptr createSubscriber(
-		typename std::function<void(const ARG&)>&& func)
+	template <typename ARG, typename Callable>
+	Subscriber::Ptr createSubscriber(Callable&& func)
 	{
 		std::lock_guard<std::mutex> lock(m_mutex);
 		m_subs.emplace_back();
@@ -68,10 +67,10 @@ class Topic : public std::enable_shared_from_this<Topic>
 		it--;
 		auto capturedShared = shared_from_this();
 		auto newNode = Subscriber::create(
-			[=](const std::any& anyArg) {
+			[func{std::forward<Callable>(func)}](const std::any& anyArg) {
 				try
 				{
-					func(std::any_cast<const ARG&>(anyArg));
+					std::invoke(func, std::any_cast<const ARG&>(anyArg));
 				}
 				catch (std::bad_any_cast&)
 				{
