@@ -64,6 +64,14 @@ void onNewMsg(const mrpt::poses::CPose3D& p)
 #endif
 }
 
+void onNewMsg2(int idx, const mrpt::poses::CPose3D& p)
+{
+#ifdef NODELETS_TEST_VERBOSE
+	std::cout << "onNewMsg2: idx=" << idx << " rx CPose3D" << p.asString()
+			  << std::endl;
+#endif
+}
+
 void thread_subscriber()
 {
 	using namespace mrpt::comms;
@@ -80,22 +88,34 @@ void thread_subscriber()
 #endif
 
 		// Create a subscriber with a lambda:
-		Subscriber::Ptr sub1 = dir->getTopic("/robot/odom")
-					   ->createSubscriber(
-						   std::function<void(const mrpt::poses::CPose3D&)>(
-							   [](const mrpt::poses::CPose3D& p_rx) -> void {
+		Subscriber::Ptr sub1 =
+			dir->getTopic("/robot/odom")
+				->createSubscriber<mrpt::poses::CPose3D>(
+					std::function<void(const mrpt::poses::CPose3D&)>(
+						[](const mrpt::poses::CPose3D& p_rx) -> void {
 #ifdef NODELETS_TEST_VERBOSE
-								   std::cout << "sub1: rx CPose3D"
-											 << p_rx.asString() << std::endl;
+							std::cout << "sub1: rx CPose3D" << p_rx.asString()
+									  << std::endl;
 #endif
-								   nodelets_test_passed_ok = (p_rx == p_tx);
-							   }));
+							nodelets_test_passed_ok = (p_rx == p_tx);
+						}));
+
+		// Create a subscriber with a regular function via std::function:
+		auto sub2 = dir->getTopic("/robot/odom")
+						->createSubscriber<mrpt::poses::CPose3D>(
+							std::function<void(const mrpt::poses::CPose3D&)>(
+								&onNewMsg));
 
 		// Create a subscriber with a regular function:
-		auto sub2 = dir->getTopic("/robot/odom")
-					   ->createSubscriber(
-						   std::function<void(const mrpt::poses::CPose3D&)>(
-							   &onNewMsg));
+		auto sub3 = dir->getTopic("/robot/odom")
+						->createSubscriber<mrpt::poses::CPose3D>(&onNewMsg);
+
+		// Create a subscriber with std::bind:
+		using namespace std::placeholders;
+		auto sub4 = dir->getTopic("/robot/odom")
+						->createSubscriber<mrpt::poses::CPose3D>(std::bind(
+							onNewMsg2, 123 /*fixed 1st argument*/,
+							_1 /* 2nd arg is the subscribed data */));
 
 		// wait for messages to arrive.
 		// The nodelet is up and live until "sub" gets out of scope.
