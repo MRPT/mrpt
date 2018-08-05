@@ -80,7 +80,7 @@ void thread_subscriber()
 #endif
 
 		// Create a subscriber with a lambda:
-		auto sub1 = dir->getTopic("/robot/odom")
+		Subscriber::Ptr sub1 = dir->getTopic("/robot/odom")
 					   ->createSubscriber(
 						   std::function<void(const mrpt::poses::CPose3D&)>(
 							   [](const mrpt::poses::CPose3D& p_rx) -> void {
