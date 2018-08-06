@@ -14,13 +14,17 @@
 # ----------------------------------------------------------------------------
 include(cmake/HunterGate.cmake)
 HunterGate(
-    URL "https://github.com/lsolanka/hunter/archive/v0.22.4-rosdevel11.tar.gz"
-    SHA1 "70bae336aafc5301b7347e5b12962258ea7f7ccb"
+    URL "https://github.com/lsolanka/hunter/archive/v0.22.4-rosdevel13.tar.gz"
+    SHA1 "43626e95798c122bba5fd94ae48c403a066f1dcf"
     LOCAL
 )
 
 # Tell CMake we'll use both C & C++ for use in its tests/flags.
 PROJECT(MRPT LANGUAGES C CXX)
+
+# A slight hack to get around the stock FindwxWidgets which doesn't work with Hunter very
+# well - it uses ONLY_CMAKE_FIND_ROOT_PATH in find_program to find wx-config.
+list(APPEND CMAKE_MODULE_PATH "cmake/Modules")
 
 # -------------------------
 #        Setup CMake
