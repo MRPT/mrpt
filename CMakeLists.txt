@@ -22,10 +22,6 @@ HunterGate(
 # Tell CMake we'll use both C & C++ for use in its tests/flags.
 PROJECT(MRPT LANGUAGES C CXX)
 
-# A slight hack to get around the stock FindwxWidgets which doesn't work with Hunter very
-# well - it uses ONLY_CMAKE_FIND_ROOT_PATH in find_program to find wx-config.
-list(APPEND CMAKE_MODULE_PATH "cmake/Modules")
-
 # -------------------------
 #        Setup CMake
 # -------------------------
