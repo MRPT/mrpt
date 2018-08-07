@@ -91,14 +91,13 @@ void thread_subscriber()
 		Subscriber::Ptr sub1 =
 			dir->getTopic("/robot/odom")
 				->createSubscriber<mrpt::poses::CPose3D>(
-					std::function<void(const mrpt::poses::CPose3D&)>(
-						[](const mrpt::poses::CPose3D& p_rx) -> void {
+					[](const mrpt::poses::CPose3D& p_rx) -> void {
 #ifdef NODELETS_TEST_VERBOSE
-							std::cout << "sub1: rx CPose3D" << p_rx.asString()
-									  << std::endl;
+						std::cout << "sub1: rx CPose3D" << p_rx.asString()
+								  << std::endl;
 #endif
-							nodelets_test_passed_ok = (p_rx == p_tx);
-						}));
+						nodelets_test_passed_ok = (p_rx == p_tx);
+					});
 
 		// Create a subscriber with a regular function via std::function:
 		auto sub2 = dir->getTopic("/robot/odom")

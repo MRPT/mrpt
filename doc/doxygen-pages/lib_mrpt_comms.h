@@ -5,21 +5,24 @@
    | Copyright (c) 2005-2018, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+   +---------------------------------------------------------------------------+
+ */
 
 /** \defgroup mrpt_comms_grp [mrpt-comms]
 
-Communication utilities: serial ports, networking (TCP, DNS,...), pub/sub nodelets.
+Communication utilities: serial ports, networking (TCP, DNS,...), pub/sub
+nodelets.
 
-<small> <a href="index.html#libs">Back to list of all libraries</a> | <a href="modules.html" >See all modules</a> </small>
-<br>
+<small> <a href="index.html#libs">Back to list of all libraries</a> | <a
+href="modules.html" >See all modules</a> </small> <br>
 
 # Library `mrpt-comms`
 <small> [New in MRPT 2.0.0] </small>
 
-This C++ library is part of MRPT and can be installed in Debian-based systems with:
+This C++ library is part of MRPT and can be installed in Debian-based systems
+with:
 
-        sudo apt install libmrpt-comms-dev
+		sudo apt install libmrpt-comms-dev
 
 Find below some examples of use.
 
@@ -44,16 +47,18 @@ executed from the thread invoking publish(). Users are encouraged to design
 subscribers such that their execution time are minimized, delegating heavy
 computation to other worker threads.
 
-All these concepts are illustrated in the example below. Note that two
-subscribers are created: one with a lambda and another with a regular function.
+All these concepts are illustrated in the example below. Note that different
+subscribers are created: with a lambda, with a regular function, a std::bind(),
+etc.
 
 See: \ref comms_nodelets_example/NodeletsTest_impl.cpp
 \snippet comms_nodelets_example/NodeletsTest_impl.cpp example-nodelets
 
 ## HTTP request methods
 
-mrpt::comms::net::http_get() is an easy way to GET an HTTP resource from any C++ program.
-You can also use mrpt::comms::net::http_request() to access APIs requiring the POST method.
+mrpt::comms::net::http_get() is an easy way to GET an HTTP resource from any C++
+program. You can also use mrpt::comms::net::http_request() to access APIs
+requiring the POST method.
 
 See: \ref comms_http_client/test.cpp
 \snippet comms_http_client/test.cpp example-http-get
