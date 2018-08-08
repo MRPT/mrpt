@@ -348,11 +348,11 @@ void CPose3DQuat::serializeFrom(
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	};
 }
-/** Serialize CSerializable Object to CSchemeArchiveBase derived object*/ 
-void CPose3DQuat::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
+/** Serialize CSerializable Object to CSchemeArchiveBase derived object*/
+void CPose3DQuat::serializeTo(
+	mrpt::serialization::CSchemeArchiveBase& out) const
 {
-	out["datatype"] = std::string(this->GetRuntimeClass()->className);
-	out["version"] = 1;
+	SCHEMA_SERIALIZE_DATATYPE_VERSION(1);
 	CPoint3D point(m_coords[0], m_coords[1], m_coords[2]);
 	out["point"] = point;
 	out["orientation"]["r"] = m_quat[0];
@@ -363,28 +363,25 @@ void CPose3DQuat::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) cons
 /** Serialize CSchemeArchiveBase derived object to CSerializable Object*/
 void CPose3DQuat::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 {
-	uint8_t version = static_cast<int>(in["version"]);	//default is 0
-	if(static_cast<std::string>(in["datatype"]) == 
-		std::string(this->GetRuntimeClass()->className)) //match the classname
+	uint8_t version;
+	SCHEMA_DESERIALIZE_DATATYPE_VERSION();
+	switch (version)
 	{
-		switch(version)
+		case 1:
 		{
-			case 1:
-			{
-				CPoint3D point;
-				in["point"].asSerializableObject(point);
-				m_coords[0] = point.x();
-				m_coords[1] = point.y();
-				m_coords[2] = point.z();
-				m_quat[0] = static_cast<double>(in["orientation"]["r"]);
-				m_quat[1] = static_cast<double>(in["orientation"]["x"]);
-				m_quat[2] = static_cast<double>(in["orientation"]["y"]);
-				m_quat[3] = static_cast<double>(in["orientation"]["z"]);
-			}
-			break;
-			default:
-				MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			CPoint3D point;
+			in["point"].readTo(point);
+			m_coords[0] = point.x();
+			m_coords[1] = point.y();
+			m_coords[2] = point.z();
+			m_quat[0] = static_cast<double>(in["orientation"]["r"]);
+			m_quat[1] = static_cast<double>(in["orientation"]["x"]);
+			m_quat[2] = static_cast<double>(in["orientation"]["y"]);
+			m_quat[3] = static_cast<double>(in["orientation"]["z"]);
 		}
+		break;
+		default:
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	}
 }
 /*---------------------------------------------------------------

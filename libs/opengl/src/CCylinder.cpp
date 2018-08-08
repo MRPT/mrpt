@@ -61,8 +61,7 @@ void CCylinder::render_dl() const
 }
 void CCylinder::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
 {
-	out["datatype"] = std::string(this->GetRuntimeClass()->className);
-	out["version"] = 1;
+	SCHEMA_SERIALIZE_DATATYPE_VERSION(1);
 	out["baseRadius"] = mBaseRadius;
 	out["topRadius"] = mTopRadius;
 	out["height"] = mHeight;
@@ -73,26 +72,23 @@ void CCylinder::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
 }
 void CCylinder::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 {
-	uint8_t version = static_cast<int>(in["version"]);	// default is 0
-	if(static_cast<std::string>(in["datatype"]) ==
-		std::string(this->GetRuntimeClass()->className))	// match the class name
+	uint8_t version;
+	SCHEMA_DESERIALIZE_DATATYPE_VERSION();
+	switch (version)
 	{
-		switch(version)
+		case 1:
 		{
-			case 1:
-			{
-				mBaseRadius = static_cast<float>(in["baseRadius"]);
-				mTopRadius = static_cast<float>(in["topRadius"]);
-				mHeight = static_cast<float>(in["height"]);
-				mSlices = static_cast<uint32_t>(in["slices"]);
-				mStacks = static_cast<uint32_t>(in["stacks"]);
-				mHasBottomBase = static_cast<bool>(in["hasBottomBase"]);
-				mHasTopBase = static_cast<bool>(in["hasTopBase"]);
-			}
-			break;
-			default:
-				MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			mBaseRadius = static_cast<float>(in["baseRadius"]);
+			mTopRadius = static_cast<float>(in["topRadius"]);
+			mHeight = static_cast<float>(in["height"]);
+			mSlices = static_cast<uint32_t>(in["slices"]);
+			mStacks = static_cast<uint32_t>(in["stacks"]);
+			mHasBottomBase = static_cast<bool>(in["hasBottomBase"]);
+			mHasTopBase = static_cast<bool>(in["hasTopBase"]);
 		}
+		break;
+		default:
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	}
 }
 uint8_t CCylinder::serializeGetVersion() const { return 0; }

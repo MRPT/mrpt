@@ -70,6 +70,7 @@ IF(BUILD_EXAMPLES)
 	# === Depending on: serialization, io ===
 	SET(LIST_EXAMPLES_IN_THIS_DIR
 		# ----
+		serialization_json_example
 		serialization_stl
 		serialization_variant_example
 		# ----

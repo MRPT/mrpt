@@ -18,6 +18,7 @@
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/system/os.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CSchemeArchiveBase.h>
 #include <mrpt/math/matrix_serialization.h>
 
 #include <mrpt/random.h>
@@ -90,6 +91,33 @@ void CPosePDFGaussian::serializeFrom(
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	};
+}
+
+void CPosePDFGaussian::serializeTo(
+	mrpt::serialization::CSchemeArchiveBase& out) const
+{
+	SCHEMA_SERIALIZE_DATATYPE_VERSION(1);
+	out["mean"] = mean;
+	out["cov"] = CMatrixD(cov);
+}
+void CPosePDFGaussian::serializeFrom(
+	mrpt::serialization::CSchemeArchiveBase& in)
+{
+	uint8_t version;
+	SCHEMA_DESERIALIZE_DATATYPE_VERSION();
+	switch (version)
+	{
+		case 1:
+		{
+			in["mean"].readTo(mean);
+			CMatrixD m;
+			in["cov"].readTo(m);
+			cov = m;
+		}
+		break;
+		default:
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+	}
 }
 
 /*---------------------------------------------------------------
@@ -538,7 +566,7 @@ void CPosePDFGaussian::composePoint(
 		df_dx, df_du,
 		true,  // Eval df_dx
 		false  // Eval df_du (not needed)
-		);
+	);
 
 	const CMatrixFixedNumeric<double, 2, 3> dp_dx = df_dx.block<2, 3>(0, 0);
 	g.cov = dp_dx * this->cov * dp_dx.transpose();

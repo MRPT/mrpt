@@ -23,6 +23,7 @@ class CMatrixD : public mrpt::serialization::CSerializable,
 				 public CMatrixTemplateNumeric<double>
 {
 	DEFINE_SERIALIZABLE(CMatrixD)
+	DEFINE_SCHEMA_SERIALIZABLE()
    public:
 	/** Constructor */
 	CMatrixD() : CMatrixTemplateNumeric<double>(1, 1) {}
@@ -63,5 +64,4 @@ class CMatrixD : public mrpt::serialization::CSerializable,
 mrpt::serialization::CArchive& operator>>(
 	mrpt::serialization::CArchive& in, CMatrixD::Ptr& pObj);
 
-}
-
+}  // namespace mrpt::math
