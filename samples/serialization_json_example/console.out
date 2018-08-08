@@ -1,0 +1,32 @@
+{
+	"pose" : 
+	{
+		"datatype" : "CPose2D",
+		"phi" : 0,
+		"version" : 1,
+		"x" : 5,
+		"y" : 6
+	},
+	"pose_pdf" : 
+	{
+		"cov" : 
+		{
+			"data" : "[0.000000e+00 0.000000e+00 0.000000e+00 ;0.000000e+00 0.000000e+00 0.000000e+00 ;0.000000e+00 0.000000e+00 0.000000e+00 ]",
+			"datatype" : "CMatrixD",
+			"ncols" : 3,
+			"nrows" : 3,
+			"version" : 1
+		},
+		"datatype" : "CPosePDFGaussian",
+		"mean" : 
+		{
+			"datatype" : "CPose2D",
+			"phi" : 1.5707963267948966,
+			"version" : 1,
+			"x" : 1,
+			"y" : 2
+		},
+		"version" : 1
+	}
+}
+read pose:[5.000000 6.000000 0.000000deg]

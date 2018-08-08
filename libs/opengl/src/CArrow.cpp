@@ -31,10 +31,9 @@ CArrow::Ptr CArrow::Create(
 	float smallRadius, float largeRadius, float arrow_roll, float arrow_pitch,
 	float arrow_yaw)
 {
-	return CArrow::Ptr(
-		new CArrow(
-			x0, y0, z0, x1, y1, z1, headRatio, smallRadius, largeRadius,
-			arrow_roll, arrow_pitch, arrow_yaw));
+	return CArrow::Ptr(new CArrow(
+		x0, y0, z0, x1, y1, z1, headRatio, smallRadius, largeRadius, arrow_roll,
+		arrow_pitch, arrow_yaw));
 }
 /*---------------------------------------------------------------
 							render
@@ -140,7 +139,7 @@ void CArrow::render_dl() const
 		mat + 8,  // 1st vector
 		mat + 0,  // 2nd vector
 		out_v3  // Output cross product
-		);
+	);
 
 	glPushMatrix();
 
@@ -212,8 +211,7 @@ void CArrow::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 
 void CArrow::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
 {
-	out["datatype"] = std::string(this->GetRuntimeClass()->className);
-	out["version"] = 1;
+	SCHEMA_SERIALIZE_DATATYPE_VERSION(1);
 	out["x0"] = m_x0;
 	out["y0"] = m_y0;
 	out["z0"] = m_z0;
@@ -227,28 +225,25 @@ void CArrow::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
 
 void CArrow::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 {
-	uint8_t version = static_cast<int>(in["version"]);	// default is 0
-	if(static_cast<std::string>(in["datatype"]) ==
-		std::string(this->GetRuntimeClass()->className))	// match the class name
+	uint8_t version;
+	SCHEMA_DESERIALIZE_DATATYPE_VERSION();
+	switch (version)
 	{
-		switch(version)
+		case 1:
 		{
-			case 1:
-			{
-				m_x0 = static_cast<float>(in["x0"]);
-				m_y0 = static_cast<float>(in["y0"]);
-				m_z0 = static_cast<float>(in["z0"]);
-				m_x1 = static_cast<float>(in["x1"]);
-				m_y1 = static_cast<float>(in["y1"]);
-				m_z1 = static_cast<float>(in["z1"]);
-				m_headRatio = static_cast<float>(in["headRatio"]);
-				m_smallRadius = static_cast<float>(in["smallRadius"]);
-				m_largeRadius = static_cast<float>(in["largeRadius"]);
-			}
-			break;
-			default:
-				MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			m_x0 = static_cast<float>(in["x0"]);
+			m_y0 = static_cast<float>(in["y0"]);
+			m_z0 = static_cast<float>(in["z0"]);
+			m_x1 = static_cast<float>(in["x1"]);
+			m_y1 = static_cast<float>(in["y1"]);
+			m_z1 = static_cast<float>(in["z1"]);
+			m_headRatio = static_cast<float>(in["headRatio"]);
+			m_smallRadius = static_cast<float>(in["smallRadius"]);
+			m_largeRadius = static_cast<float>(in["largeRadius"]);
 		}
+		break;
+		default:
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	}
 }
 void CArrow::getBoundingBox(

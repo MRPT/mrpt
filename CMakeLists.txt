@@ -292,6 +292,7 @@ include(cmakemodules/script_pcap.cmake REQUIRED)        # Check for the libpcap 
 include(cmakemodules/script_vtk.cmake REQUIRED)         # Check for VTK
 include(cmakemodules/script_clang_tidy.cmake REQUIRED)  # Clang tidy
 include(cmakemodules/script_cvd.cmake REQUIRED)         # Check for VTK
+include(cmakemodules/script_jsoncpp.cmake REQUIRED)     # Check for jsoncpp
 
 # ---------------------------------------------------------------------------
 #			OPTIONS

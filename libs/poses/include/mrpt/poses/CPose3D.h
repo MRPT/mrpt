@@ -86,6 +86,7 @@ class CPose3DRotVec;
 class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(CPose3D)
+	DEFINE_SCHEMA_SERIALIZABLE()
 
 	// This must be added for declaration of MEX-related functions
 	DECLARE_MEX_CONVERSION

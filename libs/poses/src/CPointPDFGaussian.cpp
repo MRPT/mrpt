@@ -15,6 +15,7 @@
 #include <mrpt/random/RandomGenerators.h>
 #include <mrpt/system/os.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CSchemeArchiveBase.h>
 
 using namespace mrpt::poses;
 
@@ -89,6 +90,32 @@ void CPointPDFGaussian::serializeFrom(
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	};
+}
+void CPointPDFGaussian::serializeTo(
+	mrpt::serialization::CSchemeArchiveBase& out) const
+{
+	SCHEMA_SERIALIZE_DATATYPE_VERSION(1);
+	out["mean"] = mean;
+	out["cov"] = CMatrixD(cov);
+}
+void CPointPDFGaussian::serializeFrom(
+	mrpt::serialization::CSchemeArchiveBase& in)
+{
+	uint8_t version;
+	SCHEMA_DESERIALIZE_DATATYPE_VERSION();
+	switch (version)
+	{
+		case 1:
+		{
+			in["mean"].readTo(mean);
+			CMatrixD m;
+			in["cov"].readTo(m);
+			cov = m;
+		}
+		break;
+		default:
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+	}
 }
 
 void CPointPDFGaussian::copyFrom(const CPointPDF& o)

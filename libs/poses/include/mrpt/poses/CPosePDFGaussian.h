@@ -29,11 +29,12 @@ class CPoint2DPDFGaussian;
 class CPosePDFGaussian : public CPosePDF
 {
 	DEFINE_SERIALIZABLE(CPosePDFGaussian)
+	DEFINE_SCHEMA_SERIALIZABLE()
 
    protected:
 	/** Assures the symmetry of the covariance matrix (eventually certain
 	 * operations in the math-coprocessor lead to non-symmetric matrixes!)
-	  */
+	 */
 	void assureSymmetry();
 
    public:
@@ -50,15 +51,15 @@ class CPosePDFGaussian : public CPosePDF
 	inline const CPose2D& getPoseMean() const { return mean; }
 	inline CPose2D& getPoseMean() { return mean; }
 	/** Default constructor
-	  */
+	 */
 	CPosePDFGaussian();
 
 	/** Constructor
-	  */
+	 */
 	explicit CPosePDFGaussian(const CPose2D& init_Mean);
 
 	/** Constructor
-	  */
+	 */
 	CPosePDFGaussian(
 		const CPose2D& init_Mean, const mrpt::math::CMatrixDouble33& init_Cov);
 
@@ -68,13 +69,13 @@ class CPosePDFGaussian : public CPosePDF
 	explicit CPosePDFGaussian(const CPose3DPDF& o) { copyFrom(o); }
 	/** Returns an estimate of the pose, (the mean, or mathematical expectation
 	 * of the PDF).
-	  * \sa getCovariance
-	  */
+	 * \sa getCovariance
+	 */
 	void getMean(CPose2D& mean_pose) const override { mean_pose = mean; }
 	/** Returns an estimate of the pose covariance matrix (3x3 cov matrix) and
 	 * the mean, both at once.
-	  * \sa getMean
-	  */
+	 * \sa getMean
+	 */
 	void getCovarianceAndMean(
 		mrpt::math::CMatrixDouble33& out_cov,
 		CPose2D& mean_point) const override
@@ -97,23 +98,23 @@ class CPosePDFGaussian : public CPosePDF
 
 	/** this = p (+) this. This can be used to convert a PDF from local
 	 * coordinates to global, providing the point (newReferenceBase) from which
-	  *   "to project" the current pdf. Result PDF substituted the currently
+	 *   "to project" the current pdf. Result PDF substituted the currently
 	 * stored one in the object.
-	  */
+	 */
 	void changeCoordinatesReference(const CPose3D& newReferenceBase) override;
 
 	/** this = p (+) this. This can be used to convert a PDF from local
 	 * coordinates to global, providing the point (newReferenceBase) from which
-	  *   "to project" the current pdf. Result PDF substituted the currently
+	 *   "to project" the current pdf. Result PDF substituted the currently
 	 * stored one in the object.
-	  */
+	 */
 	void changeCoordinatesReference(const CPose2D& newReferenceBase);
 
 	/** Rotate the covariance matrix by replacing it by \f$
 	 * \mathbf{R}~\mathbf{COV}~\mathbf{R}^t \f$, where \f$ \mathbf{R} = \left[
 	 * \begin{array}{ccc} \cos\alpha & -\sin\alpha & 0 \\ \sin\alpha &
 	 * \cos\alpha & 0 \\ 0 & 0 & 1 \end{array}\right] \f$.
-	  */
+	 */
 	void rotateCov(const double ang);
 
 	/** Set \f$ this = x1 \ominus x0 \f$ , computing the mean using the "-"
@@ -130,32 +131,32 @@ class CPosePDFGaussian : public CPosePDF
 		const mrpt::math::CMatrixDouble33& COV_01);
 
 	/** Draws a single sample from the distribution
-	  */
+	 */
 	void drawSingleSample(CPose2D& outPart) const override;
 
 	/** Draws a number of samples from the distribution, and saves as a list of
 	 * 1x3 vectors, where each row contains a (x,y,phi) datum.
-	  */
+	 */
 	void drawManySamples(
 		size_t N,
 		std::vector<mrpt::math::CVectorDouble>& outSamples) const override;
 
 	/** Bayesian fusion of two points gauss. distributions, then save the result
-	  *in this object.
-	  *  The process is as follows:<br>
-	  *		- (x1,S1): Mean and variance of the p1 distribution.
-	  *		- (x2,S2): Mean and variance of the p2 distribution.
-	  *		- (x,S): Mean and variance of the resulting distribution.
-	  *
-	  *    S = (S1<sup>-1</sup> + S2<sup>-1</sup>)<sup>-1</sup>;
-	  *    x = S * ( S1<sup>-1</sup>*x1 + S2<sup>-1</sup>*x2 );
-	  */
+	 *in this object.
+	 *  The process is as follows:<br>
+	 *		- (x1,S1): Mean and variance of the p1 distribution.
+	 *		- (x2,S2): Mean and variance of the p2 distribution.
+	 *		- (x,S): Mean and variance of the resulting distribution.
+	 *
+	 *    S = (S1<sup>-1</sup> + S2<sup>-1</sup>)<sup>-1</sup>;
+	 *    x = S * ( S1<sup>-1</sup>*x1 + S2<sup>-1</sup>*x2 );
+	 */
 	void bayesianFusion(
 		const CPosePDF& p1, const CPosePDF& p2,
 		const double minMahalanobisDistToDrop = 0) override;
 
 	/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF
-	  */
+	 */
 	void inverse(CPosePDF& o) const override;
 
 	/** Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the
@@ -217,7 +218,5 @@ poses::CPosePDFGaussian operator+(
 
 bool operator==(const CPosePDFGaussian& p1, const CPosePDFGaussian& p2);
 
-}
+}  // namespace mrpt::poses
 #endif
-
-

@@ -18,6 +18,7 @@
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/system/os.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CSchemeArchiveBase.h>
 #include <mrpt/random.h>
 
 using namespace mrpt;
@@ -76,6 +77,33 @@ void CPosePDFGaussianInf::serializeFrom(
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	};
+}
+
+void CPosePDFGaussianInf::serializeTo(
+	mrpt::serialization::CSchemeArchiveBase& out) const
+{
+	SCHEMA_SERIALIZE_DATATYPE_VERSION(1);
+	out["mean"] = mean;
+	out["cov_inv"] = CMatrixD(cov_inv);
+}
+void CPosePDFGaussianInf::serializeFrom(
+	mrpt::serialization::CSchemeArchiveBase& in)
+{
+	uint8_t version;
+	SCHEMA_DESERIALIZE_DATATYPE_VERSION();
+	switch (version)
+	{
+		case 1:
+		{
+			in["mean"].readTo(mean);
+			CMatrixD m;
+			in["cov_inv"].readTo(m);
+			cov_inv = m;
+		}
+		break;
+		default:
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+	}
 }
 
 /*---------------------------------------------------------------
@@ -224,9 +252,8 @@ void CPosePDFGaussianInf::drawSingleSample(CPose2D& outPart) const
 	// Range -pi,pi
 	outPart.normalizePhi();
 
-	MRPT_END_WITH_CLEAN_UP(
-		cov_inv.saveToTextFile(
-			"__DEBUG_EXC_DUMP_drawSingleSample_COV_INV.txt"););
+	MRPT_END_WITH_CLEAN_UP(cov_inv.saveToTextFile(
+		"__DEBUG_EXC_DUMP_drawSingleSample_COV_INV.txt"););
 }
 
 /*---------------------------------------------------------------
