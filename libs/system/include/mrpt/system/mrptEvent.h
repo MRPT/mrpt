@@ -8,7 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/system/datetime.h>
+#include <mrpt/system/Clock.h>
+
 
 namespace mrpt::system
 {
@@ -35,7 +36,7 @@ class mrptEvent
 	virtual void do_nothing() {}
    public:
 	/** Default ctor */
-	inline mrptEvent() : timestamp(mrpt::system::now()) {}
+	inline mrptEvent() : timestamp(mrpt::system::Clock::now()) {}
 	template <class EVENTTYPE>
 	inline bool isOfType() const
 	{
@@ -54,7 +55,7 @@ class mrptEvent
 		return const_cast<EVENTTYPE*>(dynamic_cast<const EVENTTYPE*>(this));
 	}
 
-	mrpt::system::TTimeStamp timestamp;
+	mrpt::system::Clock::time_point timestamp;
 
 };  // End of class def.
 

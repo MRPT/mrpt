@@ -13,6 +13,7 @@
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/opengl_fonts.h>
 #include <mrpt/img/CImage.h>
+#include <mrpt/system/datetime.h>
 
 #include <mutex>
 

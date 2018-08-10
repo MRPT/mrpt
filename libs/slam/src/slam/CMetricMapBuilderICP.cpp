@@ -157,7 +157,7 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 
 		// Move our estimation:
 		m_lastPoseEst.processUpdateNewOdometry(
-			odo->odometry.asTPose(), odo->timestamp, odo->hasVelocities,
+			odo->odometry.asTPose(), mrpt::system::toTimePoint(odo->timestamp), odo->hasVelocities,
 			odo->velocityLocal);
 
 		if (pose_before_valid)
@@ -187,7 +187,7 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 					"and new observation timestamp...");
 				if (!m_lastPoseEst.getCurrentEstimate(
 						initialEstimatedRobotPose, robotVelLocal,
-						robotVelGlobal, obs->timestamp))
+						robotVelGlobal, mrpt::system::toTimePoint(obs->timestamp)))
 				{  // couldn't had a good extrapolation estimate... we'll have
 					// to live with the latest pose:
 					m_lastPoseEst.getLatestRobotPose(initialEstimatedRobotPose);
@@ -324,7 +324,7 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 					pEst2D.copyFrom(*pestPose);
 
 					m_lastPoseEst.processUpdateNewPoseLocalization(
-						pEst2D.mean.asTPose(), obs->timestamp);
+						pEst2D.mean.asTPose(), mrpt::system::toTimePoint(obs->timestamp));
 					m_lastPoseEst_cov = pEst2D.cov;
 
 					m_distSinceLastICP.updatePose(pEst2D.mean);
@@ -565,7 +565,7 @@ void CMetricMapBuilderICP::initialize(
 
 	if (x0)
 		m_lastPoseEst.processUpdateNewPoseLocalization(
-			x0->getMeanVal().asTPose(), mrpt::system::now());
+			x0->getMeanVal().asTPose(), mrpt::system::Clock::now());
 
 	for (size_t i = 0; i < SF_Poses_seq.size(); i++)
 	{
