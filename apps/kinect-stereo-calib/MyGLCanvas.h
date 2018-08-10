@@ -11,6 +11,7 @@
 #define MYGLCANVAS_H
 
 #include <mrpt/gui/CWxGLCanvasBase.h>
+#include <mrpt/system/datetime.h>
 
 // This is funny... conflicts with X headers.
 #undef Button1

@@ -32,4 +32,16 @@ public:
 	}
 };
 
+/** Returns the time difference from t1 to t2 (positive if t2 is posterior to
+ * t1), in seconds \sa secondsToTimestamp */
+double timeDifference(
+	const mrpt::system::Clock::time_point &t_first,
+	const mrpt::system::Clock::time_point &t_later);
+
+
+inline Clock::time_point toTimePoint(int64_t time)
+{
+	return Clock::time_point(Clock::duration(time));
+}
+
 }
