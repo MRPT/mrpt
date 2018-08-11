@@ -489,28 +489,28 @@ void loadMapInto3DScene(COpenGLScene& scene)
 		obj2->setLineWidth(2);
 
 		double x0 = 0, y0 = 0, z0 = 0;
-		TTimeStamp last_t = INVALID_TIMESTAMP, this_t;
+		std::optional<mrpt::system::Clock::time_point> last_t;
 
 		for (CPose3DInterpolator::iterator it = robot_path.begin();
 			 it != robot_path.end(); ++it)
 		{
 			auto& p = it->second;
-			this_t = it->first;
+			auto this_t = it->first;
 
 			if (distanceBetweenPoints(x0, y0, z0, p.x, p.y, p.z) < 5.5)
 			{
 				obj->appendLine(x0, y0, z0, p.x, p.y, p.z);
 			}
-			else if (last_t != INVALID_TIMESTAMP)
+			else if (last_t)
 			{
 				// We have a gap without GT:
 				// Try to interpolate using the best GPS path:
-				// map<TTimeStamp,CPoint3D> best_gps_path;		// time -> 3D
+				// map<Clock::time_point,CPoint3D> best_gps_path;		// time -> 3D
 				// local
 				// coords
-				map<TTimeStamp, TPoint3D>::const_iterator i1 =
-					rtk_path_info.best_gps_path.lower_bound(last_t);
-				map<TTimeStamp, TPoint3D>::const_iterator i2 =
+				map<Clock::time_point, TPoint3D>::const_iterator i1 =
+					rtk_path_info.best_gps_path.lower_bound(last_t.value());
+				map<Clock::time_point, TPoint3D>::const_iterator i2 =
 					rtk_path_info.best_gps_path.upper_bound(this_t);
 
 				// cout << mrpt::system::timeLocalToString(last_t) << " -> " <<
@@ -519,7 +519,7 @@ void loadMapInto3DScene(COpenGLScene& scene)
 
 				if (i1 != rtk_path_info.best_gps_path.end())
 				{
-					for (map<TTimeStamp, TPoint3D>::const_iterator t = i1;
+					for (map<Clock::time_point, TPoint3D>::const_iterator t = i1;
 						 t != i2 && t != rtk_path_info.best_gps_path.end(); ++t)
 					{
 						obj2->appendLine(
@@ -540,14 +540,14 @@ void loadMapInto3DScene(COpenGLScene& scene)
 		// Perhaps we have one final segment of the path without GT:
 		if (!rtk_path_info.best_gps_path.empty())
 		{
-			this_t = rtk_path_info.best_gps_path.rbegin()->first;
+			auto this_t = rtk_path_info.best_gps_path.rbegin()->first;
 			// We have a gap without GT:
 			// Try to interpolate using the best GPS path:
-			// map<TTimeStamp,CPoint3D> best_gps_path;		// time -> 3D local
+			// map<Clock::time_point,CPoint3D> best_gps_path;		// time -> 3D local
 			// coords
-			map<TTimeStamp, TPoint3D>::const_iterator i1 =
-				rtk_path_info.best_gps_path.lower_bound(last_t);
-			map<TTimeStamp, TPoint3D>::const_iterator i2 =
+			map<Clock::time_point, TPoint3D>::const_iterator i1 =
+				rtk_path_info.best_gps_path.lower_bound(last_t.value());
+			map<Clock::time_point, TPoint3D>::const_iterator i2 =
 				rtk_path_info.best_gps_path.upper_bound(this_t);
 
 			// cout << mrpt::system::timeLocalToString(last_t) << " -> " <<
@@ -556,7 +556,7 @@ void loadMapInto3DScene(COpenGLScene& scene)
 
 			if (i1 != rtk_path_info.best_gps_path.end())
 			{
-				for (map<TTimeStamp, TPoint3D>::const_iterator t = i1;
+				for (map<Clock::time_point, TPoint3D>::const_iterator t = i1;
 					 t != i2 && t != rtk_path_info.best_gps_path.end(); ++t)
 				{
 					obj2->appendLine(
@@ -659,7 +659,7 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent&)
 	// speed!)
 	if (thePntsMap) thePntsMap->reserve((last - first + 1) * 800);
 
-	TTimeStamp last_tim = INVALID_TIMESTAMP;
+	std::optional<mrpt::system::Clock::time_point> last_tim;
 
 	for (i = first; !abort && i <= last; i++)
 	{
@@ -731,7 +731,7 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent&)
 					CPose3D dumPose(curPose);
 					theMap.insertObservation(
 						rawlog.getAsObservation(i).get(), &dumPose);
-					last_tim = rawlog.getAsObservation(i)->timestamp;
+					last_tim = toTimePoint(rawlog.getAsObservation(i)->timestamp);
 				}
 				addNewPathEntry = true;
 			}
@@ -744,8 +744,8 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent&)
 		{
 			pathX.push_back(curPose.x());
 			pathY.push_back(curPose.y());
-			if (last_tim != INVALID_TIMESTAMP)
-				robot_path.insert(last_tim, CPose3D(curPose));
+			if (last_tim)
+				robot_path.insert(last_tim.value(), CPose3D(curPose));
 		}
 
 		if ((count++ % 50) == 0)
@@ -1134,7 +1134,7 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent&)
 				// Interpolate:
 				CPose3D p;
 				bool valid_interp;
-				robot_path.interpolate(o->timestamp, p, valid_interp);
+				robot_path.interpolate(toTimePoint(o->timestamp), p, valid_interp);
 
 				if (valid_interp)
 				{
@@ -1335,7 +1335,7 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
 		if (dialog.ShowModal() != wxID_OK) return;
 
 		wxBusyCursor waitCursor;
-		const double interval = 0.01;
+		const std::chrono::milliseconds interval(10);
 		if (!robot_path.saveInterpolatedToTextFile(
 				string(dialog.GetPath().mb_str()), interval))
 			::wxMessageBox(_("Error creating file."));
@@ -1424,7 +1424,7 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
 						bool valid;
 						CPose3D intRobotPose;
 						robot_path.interpolate(
-							obs->timestamp, intRobotPose, valid);
+							toTimePoint(obs->timestamp), intRobotPose, valid);
 						if (!valid) continue;
 
 						CPose3DPDFGaussian veh_pose;

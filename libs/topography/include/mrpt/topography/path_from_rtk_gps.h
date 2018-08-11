@@ -24,13 +24,13 @@ namespace mrpt::topography
 struct TPathFromRTKInfo
 {
 	/** the path of the "best" GPS. */
-	std::map<mrpt::system::TTimeStamp, mrpt::math::TPoint3D> best_gps_path;
+	std::map<mrpt::system::Clock::time_point, mrpt::math::TPoint3D> best_gps_path;
 	/** A measure of the quality at each point (may be empty if not there is no
 	 * enough information). */
-	std::map<mrpt::system::TTimeStamp, double> mahalabis_quality_measure;
+	std::map<mrpt::system::Clock::time_point, double> mahalabis_quality_measure;
 	/** The 6x6 covariance matrix for the uncertainty of each vehicle pose (may
 	 * be empty if there is no W_star info). */
-	mrpt::aligned_std_map<mrpt::system::TTimeStamp, mrpt::math::CMatrixDouble66>
+	mrpt::aligned_std_map<mrpt::system::Clock::time_point, mrpt::math::CMatrixDouble66>
 		vehicle_uncertainty;
 	/** The reference covariance matrix used to compute vehicle_uncertainty. */
 	mrpt::math::CMatrixDouble W_star;

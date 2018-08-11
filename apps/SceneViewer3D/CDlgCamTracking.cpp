@@ -171,11 +171,11 @@ void CDlgCamTracking::OnbtnGrabClick(wxCommandEvent& event)
 
 	if (m_poses.empty())
 	{
-		m_poses.insert(now(), p);
+		m_poses.insert(Clock::now(), p);
 	}
 	else
 	{
-		m_poses.insert(now(), p);
+		m_poses.insert(Clock::now(), p);
 	}
 	UpdateTableFromPoses();
 
@@ -184,12 +184,12 @@ void CDlgCamTracking::OnbtnGrabClick(wxCommandEvent& event)
 
 void CDlgCamTracking::OnbtnStartClick(wxCommandEvent& event)
 {
-	m_poses.setMaxTimeInterpolation(10000);
+	m_poses.setMaxTimeInterpolation(std::chrono::seconds(10000));
 	m_poses.setInterpolationMethod(mrpt::poses::imSSLLLL);
 	// m_poses.setInterpolationMethod( CPose3DInterpolator::imLinear2Neig );
 
 	m_main_win->m_travelling_is_arbitrary = true;
-	m_main_win->m_travelling_start_time = now();
+	m_main_win->m_travelling_start_time = Clock::now();
 	m_main_win->m_tTravelling.Start(50);
 }
 
@@ -204,14 +204,12 @@ void CDlgCamTracking::UpdateTableFromPoses()
 	gridPoses->InsertRows(0, N);
 
 	size_t i = 0;
-	TTimeStamp t0 = INVALID_TIMESTAMP;
-	for (CPose3DInterpolator::const_iterator it = m_poses.begin();
-		 it != m_poses.end(); ++it, ++i)
+	auto it = m_poses.begin();
+	Clock::time_point t0 = it->first;
+	for (;it != m_poses.end(); ++it, ++i)
 	{
-		const TTimeStamp t = it->first;
+		const Clock::time_point t = it->first;
 		const auto& p = it->second;
-
-		if (t0 == INVALID_TIMESTAMP) t0 = t;
 
 		gridPoses->SetCellValue(
 			i, 0, wxString::Format(wxT("%.02f"), timeDifference(t0, t)));
