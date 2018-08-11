@@ -67,10 +67,8 @@ TEST(TopographyReconstructPathFrom3RTK, sampleDataset)
 		// -0.045293
 		// 1226225380.000000 377.095830 233.343569 9.724171 0.177037 -0.073565
 		// -0.019024
-		const mrpt::system::TTimeStamp t1 =
-			mrpt::system::time_tToTimestamp(1226225355.000000);
-		const mrpt::system::TTimeStamp t2 =
-			mrpt::system::time_tToTimestamp(1226225380.000000);
+		const mrpt::system::Clock::time_point t1(std::chrono::seconds(1226225355 + 11644473600));
+		const mrpt::system::Clock::time_point t2(std::chrono::seconds(1226225380 + 11644473600));
 		const CPose3D pose_GT_1(
 			279.696, 216.623, 9.21315, 0.195764, -0.0319733, -0.0420478);
 		const CPose3D pose_GT_2(
@@ -91,7 +89,6 @@ TEST(TopographyReconstructPathFrom3RTK, sampleDataset)
 		CVectorDouble p1vec_gt(12), p2vec_gt(12);
 		pose_GT_1.getAs12Vector(p1vec_gt);
 		pose_GT_2.getAs12Vector(p2vec_gt);
-
 		EXPECT_NEAR((p1vec - p1vec_gt).array().abs().sum(), 0, 1e-3);
 		EXPECT_NEAR((p2vec - p2vec_gt).array().abs().sum(), 0, 1e-3);
 	}

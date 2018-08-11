@@ -88,22 +88,34 @@ Writes an elemental data type to stream.
 	}
 #endif
 
-IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(
-	bool) IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(uint8_t)
-	IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(
-		int8_t) IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(uint16_t)
-		IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(
-			int16_t) IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(uint32_t)
-			IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(int32_t)
-				IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(uint64_t)
-					IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(int64_t)
-						IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(float)
-							IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(double)
-								IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(
-									long double)
+IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(bool);
+IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(uint8_t);
+IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(int8_t);
+IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(uint16_t);
+IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(int16_t);
+IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(uint32_t);
+IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(int32_t);
+IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(uint64_t);
+IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(int64_t);
+IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(float);
+IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(double);
+IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(long double);
 
-									CArchive& mrpt::serialization::operator<<(
-										CArchive& out, const char* s)
+CArchive& mrpt::serialization::operator<<(CArchive& out, const mrpt::core::Clock::time_point &s)
+{
+	uint64_t rep = s.time_since_epoch().count();
+	return out << rep;
+}
+
+CArchive& mrpt::serialization::operator>>(CArchive& in, mrpt::core::Clock::time_point &s)
+{
+	uint64_t rep;
+	in >> rep;
+	s = mrpt::core::Clock::time_point(mrpt::core::Clock::duration(rep));
+	return in; 
+}
+
+CArchive& mrpt::serialization::operator<<(CArchive& out, const char* s)
 {
 	uint32_t l = (uint32_t)strlen(s);
 	out << l;

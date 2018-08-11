@@ -34,11 +34,11 @@ double pose_interp_test(int a1, int a2)
 		mrpt::poses::CPose3D(1.0, 2.0, 0, DEG2RAD(10), .0, .0).asTPose());
 
 	PATH_T pose_path;
-	const auto t0 = mrpt::system::now();
-	const auto dt = mrpt::system::secondsToTimestamp(0.25);
+	const auto t0 = mrpt::system::Clock::now();
+	const auto dt = std::chrono::milliseconds(250);
 	auto t = t0;
 
-	std::vector<mrpt::system::TTimeStamp> Ats(N);
+	std::vector<mrpt::system::Clock::duration> Ats(N);
 	for (long i = 0; i < N; i++)
 	{
 		if (INSERT_AT_END)
@@ -47,8 +47,9 @@ double pose_interp_test(int a1, int a2)
 		}
 		else
 		{
-			Ats[i] = mrpt::system::secondsToTimestamp(
+			std::chrono::duration<double> randomDuration(
 				mrpt::random::getRandomGenerator().drawUniform(-5.0, 5.0));
+			Ats[i] = std::chrono::duration_cast<mrpt::system::Clock::duration>(randomDuration); 
 		}
 	}
 
@@ -69,7 +70,7 @@ double pose_interp_test(int a1, int a2)
 			pose_path.insert(t, a);
 			t += 2 * Ats[i];
 		}
-		t = t0 + mrpt::system::secondsToTimestamp(4.512);
+		t = t0 + std::chrono::milliseconds(4512);
 
 		pose_t p;
 		bool valid;

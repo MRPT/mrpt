@@ -28,9 +28,9 @@ using namespace std;
 // ------------------------------------------------------
 void TestCPose3DInterpolation()
 {
-	mrpt::system::TTimeStamp iniTs = mrpt::system::now();
-	mrpt::system::TTimeStamp ts = iniTs;
-	mrpt::system::TTimeStamp ots = iniTs;
+	mrpt::system::Clock::time_point iniTs = mrpt::system::Clock::now();
+	mrpt::system::Clock::time_point ts = iniTs;
+	mrpt::system::Clock::time_point ots = iniTs;
 	mrpt::poses::CPose3D pose(0, 0, 0, 0, 0, 0);
 	mrpt::poses::CPose3DInterpolator poseInt;
 	std::vector<mrpt::poses::CPose3D> p;
@@ -40,24 +40,26 @@ void TestCPose3DInterpolation()
 	FILE* f = mrpt::system::os::fopen("interpolation.txt", "wt");
 
 	// Set the maximum value of the interval time for considering interpolation
-	poseInt.setMaxTimeInterpolation(1.0);
+	poseInt.setMaxTimeInterpolation(std::chrono::seconds(1));
 
 	poseInt.insert(ts, pose);  // First point
 
-	ts += 1e7;
+	ts += std::chrono::seconds(1);
 	pose.setFromValues(1, 1, 0, 0, 1, 0);
 	poseInt.insert(ts, pose);  // Second point
 
-	ts += 1e7;
+	ts += std::chrono::seconds(1);
 	pose.setFromValues(2, 2.5, 1, 0, 1.3, 0);
 	poseInt.insert(ts, pose);  // Third point
 
-	ts += 1e7;
+	ts += std::chrono::seconds(1);
 	pose.setFromValues(3, 1.7, 2, 0, 1.57, 0);
 	poseInt.insert(ts, pose);  // Fourth point
 
 	unsigned int i;
-	for (i = 0, ots = iniTs; ots <= iniTs + 3e7; ots += 1e6, i++)
+	for (i = 0, ots = iniTs;
+		ots <= iniTs + std::chrono::seconds(3);
+		ots += std::chrono::milliseconds(100), i++)
 	{
 		poseInt.interpolate(ots, outPose, valid);
 		p.push_back(outPose);

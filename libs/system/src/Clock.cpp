@@ -11,6 +11,7 @@
 
 #include <mrpt/system/Clock.h>
 #include <mrpt/core/exceptions.h>
+#include <mrpt/system/datetime.h>
 
 namespace mrpt::system
 {
@@ -25,6 +26,17 @@ double timeDifference(
 	return (t1 - t2).count() / 10000000.0;
 
 	MRPT_END
+}
+
+std::string timeLocalToString(
+	const mrpt::system::Clock::time_point &t, unsigned int secondFractionDigits)
+{
+	return timeLocalToString(t.time_since_epoch().count(), secondFractionDigits);
+}
+
+double timestampTotime_t(const mrpt::system::Clock::time_point t)
+{
+        return double(t.time_since_epoch().count() - UINT64_C(116444736) * UINT64_C(1000000000)) / 10000000.0;
 }
 
 }

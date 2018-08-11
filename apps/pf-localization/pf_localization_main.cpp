@@ -75,7 +75,7 @@ void do_pf_localization(
 	const std::string& iniFilename, const std::string& cmdline_rawlog_file);
 void getGroundTruth(
 	CPose2D& expectedPose, size_t rawlogEntry, const CMatrixDouble& GT,
-	const TTimeStamp& cur_time);
+	const Clock::time_point& cur_time);
 
 // ------------------------------------------------------
 //						MAIN
@@ -484,7 +484,7 @@ void do_pf_localization(
 				f_odo_est.open(sOUT_DIR.c_str() + string("/odo_est.txt"));
 			}
 
-			TTimeStamp cur_obs_timestamp;
+			Clock::time_point cur_obs_timestamp;
 			CPose2D last_used_abs_odo(0, 0, 0),
 				pending_most_recent_odo(0, 0, 0);
 
@@ -573,7 +573,7 @@ void do_pf_localization(
 
 				if (observations->size() > 0)
 					cur_obs_timestamp =
-						observations->getObservationByIndex(0)->timestamp;
+						toTimePoint(observations->getObservationByIndex(0)->timestamp);
 
 				if (step >= rawlog_offset)
 				{
@@ -605,7 +605,7 @@ void do_pf_localization(
 								mrpt::format(
 									"timestamp: %s",
 									mrpt::system::dateTimeLocalToString(
-										cur_obs_timestamp)
+										cur_obs_timestamp.time_since_epoch().count())
 										.c_str()),
 								mrpt::img::TColorf(.8f, .8f, .8f), "mono", 15,
 								mrpt::opengl::NICE, 6001);
@@ -1155,7 +1155,7 @@ void do_pf_localization(
 
 void getGroundTruth(
 	CPose2D& expectedPose, size_t rawlogEntry, const CMatrixDouble& GT,
-	const TTimeStamp& cur_time)
+	const Clock::time_point& cur_time)
 {
 	// Either:
 	// - time x y phi
@@ -1183,13 +1183,15 @@ void getGroundTruth(
 		{
 			// Look for the timestamp:
 			static CPose2DInterpolator GT_path;
-			GT_path.setMaxTimeInterpolation(0.2);
+			GT_path.setMaxTimeInterpolation(std::chrono::milliseconds(200));
 			if (first_step)
 			{
 				for (int i = 0; i < GT.rows(); i++)
 				{
+					auto dDur = std::chrono::duration<double>(GT(i, 0));
+					auto iDur = std::chrono::duration_cast<mrpt::system::Clock::duration>(dDur);
 					GT_path.insert(
-						mrpt::system::time_tToTimestamp(GT(i, 0)),
+						mrpt::system::Clock::time_point(iDur),
 						TPose2D(GT(i, 1), GT(i, 2), GT(i, GT_is_3D ? 4 : 3)));
 				}
 			}

@@ -74,14 +74,13 @@ void mrpt::topography::path_from_rtk_gps(
 	size_t count = 0;
 
 	robot_path.clear();
-	robot_path.setMaxTimeInterpolation(
-		3.0);  // Max. seconds of GPS blackout not to interpolate.
+	robot_path.setMaxTimeInterpolation(std::chrono::seconds(3));  // Max. seconds of GPS blackout not to interpolate.
 	robot_path.setInterpolationMethod(mrpt::poses::imSSLSLL);
 
 	TPathFromRTKInfo outInfoTemp;
 	if (outInfo) *outInfo = outInfoTemp;
 
-	map<string, map<TTimeStamp, TPoint3D>>
+	map<string, map<Clock::time_point, TPoint3D>>
 		gps_paths;  // label -> (time -> 3D local coords)
 
 	bool abort = false;
@@ -129,7 +128,7 @@ void mrpt::topography::path_from_rtk_gps(
 
 	// The list with all time ordered gps's in valid RTK mode
 	using TListGPSs = std::map<
-		mrpt::system::TTimeStamp, std::map<std::string, CObservationGPS::Ptr>>;
+		mrpt::system::Clock::time_point, std::map<std::string, CObservationGPS::Ptr>>;
 	TListGPSs list_gps_obs;
 
 	map<string, size_t> GPS_RTK_reads;  // label-># of RTK readings
@@ -157,7 +156,7 @@ void mrpt::topography::path_from_rtk_gps(
 								.fields.fix_quality == 4)
 					{
 						// Add to the list:
-						list_gps_obs[obs->timestamp][obs->sensorLabel] = obs;
+						list_gps_obs[mrpt::system::toTimePoint(obs->timestamp)][obs->sensorLabel] = obs;
 
 						lstGPSLabels.insert(obs->sensorLabel);
 					}
@@ -179,10 +178,10 @@ void mrpt::topography::path_from_rtk_gps(
 							GPS_local_coords_on_vehicle[obs->sensorLabel] =
 								TPoint3D(obs->sensorPose.asTPose());
 
-						// map<string, map<TTimeStamp,TPoint3D> >	gps_paths;
+						// map<string, map<Clock::time_point,TPoint3D> >	gps_paths;
 						// //
 						// label -> (time -> 3D local coords)
-						gps_paths[obs->sensorLabel][obs->timestamp] = TPoint3D(
+						gps_paths[obs->sensorLabel][toTimePoint(obs->timestamp)] = TPoint3D(
 							obs->getMsgByClass<gnss::Message_NMEA_GGA>()
 								.fields.longitude_degrees,
 							obs->getMsgByClass<gnss::Message_NMEA_GGA>()
@@ -661,7 +660,7 @@ void mrpt::topography::path_from_rtk_gps(
 
 		// map<TTimeStamp,TPoint3D> best_gps_path;		// time -> 3D local
 		// coords
-		for (map<TTimeStamp, TPoint3D>::iterator i =
+		for (map<Clock::time_point, TPoint3D>::iterator i =
 				 outInfoTemp.best_gps_path.begin();
 			 i != outInfoTemp.best_gps_path.end(); ++i)
 		{

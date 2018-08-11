@@ -12,6 +12,7 @@
 #include <mrpt/config.h>  // MRPT_IS_BIG_ENDIAN
 #include <mrpt/core/is_shared_ptr.h>
 #include <mrpt/core/reverse_bytes.h>
+#include <mrpt/core/Clock.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <vector>
 #include <string>
@@ -404,6 +405,9 @@ DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(int64_t);
 DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(float);
 DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(double);
 DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(long double);
+
+CArchive& operator<<(CArchive& out, const mrpt::core::Clock::time_point &a);
+CArchive& operator>>(CArchive& in, mrpt::core::Clock::time_point & a);
 
 #define MRPT_READ_POD(_STREAM, _VARIABLE)                                    \
 	do                                                                       \

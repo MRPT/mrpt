@@ -11,6 +11,7 @@
 #include <mrpt/typemeta/TTypeName.h>
 #include <mrpt/typemeta/num_to_string.h>
 #include <mrpt/typemeta/static_string.h>
+#include <chrono>
 #include <list>
 #include <vector>
 #include <deque>
@@ -79,6 +80,16 @@ struct TTypeName<std::pair<T1, T2>>
 	{
 		return literal("std::pair<") + TTypeName<T1>::get() + literal(",") +
 			   TTypeName<T2>::get() + literal(">");
+	}
+};
+
+template <typename T>
+struct TTypeName<std::chrono::time_point<T>>
+{
+	constexpr static auto get()
+	{
+		// uint64_t for backwards compatibility
+		return literal("uint64_t");
 	}
 };
 
