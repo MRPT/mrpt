@@ -22,17 +22,16 @@ TEST(CPose3DInterpolator, interp)
 	using mrpt::math::CMatrixDouble44;
 	using mrpt::DEG2RAD;
 
-	const mrpt::system::TTimeStamp t0 = mrpt::system::now();
-	const mrpt::system::TTimeStamp dt = mrpt::system::secondsToTimestamp(0.10);
+	auto t0 = mrpt::system::Clock::now();
+	mrpt::system::Clock::duration dt(std::chrono::milliseconds(100));
 
 	CPose3DInterpolator pose_path;
 
 	pose_path.insert(
 		t0, TPose3D(1., 2., 3., DEG2RAD(30.0), DEG2RAD(.0), DEG2RAD(.0)));
 	pose_path.insert(
-		t0 + 2 * dt, TPose3D(
-						 1. + 3., 2. + 4., 3. + 5., DEG2RAD(30.0 + 20.0),
-						 DEG2RAD(.0), DEG2RAD(.0)));
+		t0 + 2 * dt, TPose3D(1. + 3., 2. + 4., 3. + 5.,
+			DEG2RAD(30.0 + 20.0), DEG2RAD(.0), DEG2RAD(.0)));
 
 	TPose3D interp;
 	bool valid;

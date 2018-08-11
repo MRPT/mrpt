@@ -14,13 +14,13 @@
 namespace mrpt::poses
 {
 /** This class stores a time-stamped trajectory in SE(2) (mrpt::math::TPose2D
- * poses).
+  * poses).
   *  It can also interpolate SE(2) poses over time using linear, splines or
- * SLERP interpolation, as set in CPose2DInterpolator::setInterpolationMethod()
+  * SLERP interpolation, as set in CPose2DInterpolator::setInterpolationMethod()
   *  Usage:
   *   - Insert new poses into the sequence with CPose2DInterpolator::insert()
   *   - Query an exact/interpolated pose with
- * CPose2DInterpolator::interpolate().
+  * CPose2DInterpolator::interpolate().
   * Example:
   * \code
   * CPose2DInterpolator		path;
@@ -36,14 +36,14 @@ namespace mrpt::poses
   * cout << "Pose at t: " << path.interpolate(t,p,valid).asString() << endl;
   * \endcode
   *
-  *  Time is represented with mrpt::system::TTimeStamp. See mrpt::system for
- * methods and utilities to manage these time references.
+  *  Time is represented with mrpt::system::Clock::time_point.
+  *  See mrpt::system for methods and utilities to manage these time references.
   *
   *  See TInterpolatorMethod for the list of interpolation methods. The default
- * method at constructor is "imLinearSlerp".
+  * method at constructor is "imLinearSlerp".
   *
   * \sa CPoseOrPoint
- * \ingroup interpolation_grp poses_grp
+  * \ingroup interpolation_grp poses_grp
  */
 class CPose2DInterpolator : public mrpt::serialization::CSerializable,
 							public mrpt::poses::CPoseInterpolatorBase<2>

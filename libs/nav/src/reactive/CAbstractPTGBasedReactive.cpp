@@ -638,9 +638,9 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			bool valid_odom, valid_pose;
 
 			m_latestOdomPoses.interpolate(
-				tim_send_cmd_vel_corrected, robot_odom_at_send_cmd, valid_odom);
+				mrpt::system::toTimePoint(tim_send_cmd_vel_corrected), robot_odom_at_send_cmd, valid_odom);
 			m_latestPoses.interpolate(
-				tim_send_cmd_vel_corrected, robot_pose_at_send_cmd, valid_pose);
+				mrpt::system::toTimePoint(tim_send_cmd_vel_corrected), robot_pose_at_send_cmd, valid_pose);
 
 			if (valid_odom && valid_pose)
 			{

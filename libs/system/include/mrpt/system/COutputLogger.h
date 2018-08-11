@@ -12,7 +12,7 @@
 #include <mrpt/typemeta/TEnumType.h>
 #include <mrpt/system/os.h>  // for console color constants
 #include <mrpt/system/CTicTac.h>
-#include <mrpt/system/datetime.h>  // TTimeStamp
+#include <mrpt/system/Clock.h>
 
 #include <string>
 #include <deque>
@@ -37,7 +37,7 @@ enum VerbosityLevel
 /** Callback types for use with mrpt::system::COuputLogger */
 using output_logger_callback_t = std::function<void(
 	const std::string& msg, const mrpt::system::VerbosityLevel level,
-	const std::string& loggerName, const mrpt::system::TTimeStamp timestamp)>;
+	const std::string& loggerName, const mrpt::system::Clock::time_point &timestamp)>;
 
 /** \brief Versatile class for consistent logging and
  *        management of output messages
@@ -258,7 +258,7 @@ class COutputLogger
 	 *
 	 * Upon TMsg initialization, instance fetches the name of the caller
 	 * COutputLogger, as well as the VerbosityLevel and the
-	 * mrpt::system::TTimeStamp of the message provided.
+	 * mrpt::system::Clock::time_point of the message provided.
 	 * The format of the message when this is printed / or written to an
 	 * external file complies is given below:
 	 *
@@ -292,11 +292,9 @@ class COutputLogger
 		 * \sa writeToStream
 		 */
 		void dumpToConsole() const;
-		/** \brief Reset the contents of the TMsg instance */
-		void reset();
 
 		// parameters of the message under construction
-		mrpt::system::TTimeStamp timestamp; /**< Timestamp of the message. */
+		mrpt::system::Clock::time_point timestamp; /**< Timestamp of the message. */
 		VerbosityLevel level; /**< Verbosity level of the message. */
 		std::string name; /**< Name of the COutputLogger instance that called
 							 registered the message. */
