@@ -221,10 +221,7 @@ void display()
 
 int main()
 {
-	uint32_t s = mrpt::system::getCurrentTime();
-	// uint32_t s=1000000;
-	cout << "Random seed: " << s << '\n';
-	mrpt::random::getRandomGenerator().randomize(s);
+	mrpt::random::getRandomGenerator().randomize();
 	try
 	{
 		display();

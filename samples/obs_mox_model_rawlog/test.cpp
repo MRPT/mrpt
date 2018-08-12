@@ -102,8 +102,8 @@ int main(int argc, char** argv)
 
 					// Correct delay on gas readings
 					if (apply_delay)
-						obs->timestamp =
-							obs->timestamp - delay_value * 10000000;
+						obs->timestamp = obs->timestamp -
+										 std::chrono::milliseconds(delay_value);
 
 					if (obs->sensorLabel == sensorLabel)
 					{

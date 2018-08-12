@@ -55,7 +55,7 @@ class COpenNI2Generic::CDevice
 		virtual bool start();
 		virtual void destroy();
 		virtual bool getFrame(
-			openni::VideoFrameRef& frame, uint64_t& timestamp,
+			openni::VideoFrameRef& frame, mrpt::system::TTimeStamp& timestamp,
 			bool& there_is_obs, bool& hardware_error);
 
 		int getFrameWidth() const
@@ -201,10 +201,10 @@ class COpenNI2Generic::CDevice
 	bool open(int w, int h, int fps);
 
 	bool getNextFrameRGB(
-		mrpt::img::CImage& img, uint64_t& timestamp, bool& there_is_obs,
+		mrpt::img::CImage& img, mrpt::system::TTimeStamp& timestamp, bool& there_is_obs,
 		bool& hardware_error);
 	bool getNextFrameD(
-		mrpt::math::CMatrix& img, uint64_t& timestamp, bool& there_is_obs,
+		mrpt::math::CMatrix& img, mrpt::system::TTimeStamp& timestamp, bool& there_is_obs,
 		bool& hardware_error);
 	bool getNextFrameRGBD(
 		mrpt::obs::CObservation3DRangeScan& obs, bool& there_is_obs,
@@ -231,10 +231,10 @@ class COpenNI2Generic::CDevice
 		openni::PixelFormat depth, bool verbose);
 
 	openni::Device& getDevicePtr() { return m_device; }
+
    private:
 	bool getSerialNumber(std::string& sn);
 
 #endif  // MRPT_HAS_OPENNI2
 };
-}
-
+}  // namespace mrpt::hwdrivers

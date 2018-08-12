@@ -349,8 +349,9 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(
 	FlexGridSizer41->Add(
 		StaticText29, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
 	TextCtrl3 = new wxTextCtrl(
-		Panel9, ID_TEXTCTRL10, _("http://www.mrpt.org/downloads/"
-								 "camera-calibration-checker-board_9x7.pdf"),
+		Panel9, ID_TEXTCTRL10,
+		_("http://www.mrpt.org/downloads/"
+		  "camera-calibration-checker-board_9x7.pdf"),
 		wxDefaultPosition, wxDefaultSize, wxTE_READONLY, wxDefaultValidator,
 		_T("ID_TEXTCTRL10"));
 	FlexGridSizer41->Add(
@@ -1309,7 +1310,7 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(
 		true,  // also_cerr
 		true,  // threadSafe -> we must call dumpNow()
 		true  // also_to_cout_cerr
-		);
+	);
 
 	// App icon:
 	this->SetIcon(wxIcon(kinect_xpm));
@@ -1644,9 +1645,8 @@ void kinect_calibrate_guiDialog::ProcessNewGrabbedObs()
 			vector<string> center_messages;
 
 			if (m_grabstate != gsIdle)
-				center_messages.push_back(
-					string(
-						"* DON'T MOVE EITHER THE SENSOR OR THE CHESSBOARD *"));
+				center_messages.push_back(string(
+					"* DON'T MOVE EITHER THE SENSOR OR THE CHESSBOARD *"));
 
 			switch (m_grabstate)
 			{
@@ -1707,10 +1707,9 @@ void kinect_calibrate_guiDialog::ProcessNewGrabbedObs()
 
 					// Done capturing: Back to idle:
 					m_grabstate = gsIdle;
-					lbNumCaptured->SetLabel(
-						wxString::Format(
-							_("Captured image pairs: %u"),
-							static_cast<unsigned int>(m_calib_images.size())));
+					lbNumCaptured->SetLabel(wxString::Format(
+						_("Captured image pairs: %u"),
+						static_cast<unsigned int>(m_calib_images.size())));
 					btnCapture->Enable();
 					btnNextCalib->Enable();
 
@@ -1853,7 +1852,7 @@ void kinect_calibrate_guiDialog::thread_find_corners()
 
 			if (!p.detected_corners_done &&
 				last_img_proc != p.image_timestamp &&
-				p.image_timestamp != INVALID_TIMESTAMP)
+				(p.image_timestamp != INVALID_TIMESTAMP))
 			{
 				// Yes:
 				p.ready_for_new_images = false;
@@ -1865,7 +1864,7 @@ void kinect_calibrate_guiDialog::thread_find_corners()
 				bool detect_ok = mrpt::vision::findChessboardCorners(
 					img_gray, p.detected_corners, cx, cy,
 					cbNormalize->IsChecked()  // normalize_image
-					);
+				);
 
 				if (!detect_ok) p.detected_corners.clear();
 
@@ -2064,9 +2063,8 @@ void kinect_calibrate_guiDialog::ProcessNewSelectedImageListBox()
 	}
 	catch (std::exception& e)
 	{
-		wxMessageBox(
-			wxString::Format(
-				_("[Draw selected image] Exception:\n %s"), e.what()));
+		wxMessageBox(wxString::Format(
+			_("[Draw selected image] Exception:\n %s"), e.what()));
 	}
 }
 
@@ -2399,8 +2397,9 @@ void kinect_calibrate_guiDialog::OnbtnListSaveClick(wxCommandEvent& event)
 	startPath = startPath + _("/calib_images");
 
 	wxDirDialog dlg(
-		this, _("Choose destination DIRECTORY (will be created if it does not "
-				"exist)"),
+		this,
+		_("Choose destination DIRECTORY (will be created if it does not "
+		  "exist)"),
 		startPath, wxDD_DEFAULT_STYLE);
 
 	if (dlg.ShowModal() == wxID_OK)
@@ -2413,11 +2412,10 @@ void kinect_calibrate_guiDialog::OnbtnListSaveClick(wxCommandEvent& event)
 		const string sListFile =
 			mrpt::format("%s/list_calibration_images.txt", trg_dir.c_str());
 		if (mrpt::system::fileExists(sListFile))
-			throw std::runtime_error(
-				mrpt::format(
-					"Error: target listing file already exists (won't "
-					"overwrite as precaution): %s",
-					sListFile.c_str()));
+			throw std::runtime_error(mrpt::format(
+				"Error: target listing file already exists (won't "
+				"overwrite as precaution): %s",
+				sListFile.c_str()));
 
 		{
 			wxBusyCursor busy;
@@ -2439,26 +2437,22 @@ void kinect_calibrate_guiDialog::OnbtnListSaveClick(wxCommandEvent& event)
 					mrpt::format("%s/%s", trg_dir.c_str(), sRr.c_str());
 
 				if (mrpt::system::fileExists(sL))
-					throw std::runtime_error(
-						mrpt::format(
-							"Error: target image filename already exists "
-							"(won't overwrite as precaution): %s",
-							sL.c_str()));
+					throw std::runtime_error(mrpt::format(
+						"Error: target image filename already exists "
+						"(won't overwrite as precaution): %s",
+						sL.c_str()));
 				if (mrpt::system::fileExists(sR))
-					throw std::runtime_error(
-						mrpt::format(
-							"Error: target image filename already exists "
-							"(won't overwrite as precaution): %s",
-							sR.c_str()));
+					throw std::runtime_error(mrpt::format(
+						"Error: target image filename already exists "
+						"(won't overwrite as precaution): %s",
+						sR.c_str()));
 
 				if (!scd.left.img_original.saveToFile(sL))
-					throw std::runtime_error(
-						mrpt::format(
-							"Error: can't write image file: %s", sL.c_str()));
+					throw std::runtime_error(mrpt::format(
+						"Error: can't write image file: %s", sL.c_str()));
 				if (!scd.right.img_original.saveToFile(sR))
-					throw std::runtime_error(
-						mrpt::format(
-							"Error: can't write image file: %s", sR.c_str()));
+					throw std::runtime_error(mrpt::format(
+						"Error: can't write image file: %s", sR.c_str()));
 
 				fo << sLr << endl << sRr << endl;
 			}
@@ -2805,11 +2799,10 @@ double kinect_calibrate_guiDialog::parseGridLine(int r)
 	const wxString s = m_grid_live_calib->GetCellValue(r, 0);
 
 	if (!s.ToDouble(&R))
-		throw std::runtime_error(
-			mrpt::format(
-				"Error parsing double string: '%s'",
-				(const char*)s.mb_str(wxConvUTF8))
-				.c_str());
+		throw std::runtime_error(mrpt::format(
+									 "Error parsing double string: '%s'",
+									 (const char*)s.mb_str(wxConvUTF8))
+									 .c_str());
 	else
 		return R;
 }
@@ -2845,7 +2838,7 @@ void kinect_calibrate_guiDialog::LiveCalibUpdateFromGrid()
 		parseGridLine(r), parseGridLine(r + 1), parseGridLine(r + 2),  // x,y,z
 		parseGridLine(r + 3), parseGridLine(r + 4),
 		parseGridLine(r + 5)  // yaw,pitch,roll
-		);
+	);
 
 	const mrpt::poses::CPose3D r2l = (-l2r);
 	m_calib_result.right2left_camera_pose = r2l;

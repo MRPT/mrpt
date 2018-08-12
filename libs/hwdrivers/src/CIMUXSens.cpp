@@ -55,8 +55,8 @@ using namespace std::literals;
 CIMUXSens::CIMUXSens()
 	: m_COMbauds(0),
 	  m_com_port(),
-	  m_timeStartUI(0),
-	  m_timeStartTT(0),
+	  m_timeStartUI(),
+	  m_timeStartTT(),
 	  m_sensorPose(),
 	  m_cmt3_ptr(nullptr),
 	  m_deviceId_ptr(nullptr),
@@ -171,11 +171,9 @@ void CIMUXSens::doProcess()
 				m_timeStartTT = mrpt::system::now();
 			}
 			else
-				AtUI = nowUI - m_timeStartUI;
+				AtUI = nowUI - m_timeStartUI; // ms
 
-			double AtDO =
-				AtUI * 10000.0;  // Difference in intervals of 100 nsecs
-			obs->timestamp = m_timeStartTT + AtDO;
+			obs->timestamp = m_timeStartTT + std::chrono::milliseconds(AtUI);
 			obs->sensorPose = m_sensorPose;
 			obs->sensorLabel = m_sensorLabel;
 

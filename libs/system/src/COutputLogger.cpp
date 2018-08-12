@@ -222,7 +222,7 @@ void COutputLogger::loggerReset()
 COutputLogger::TMsg::TMsg(
 	const mrpt::system::VerbosityLevel in_level, const std::string& msg_str,
 	const COutputLogger& logger) :
-		timestamp(mrpt::system::Clock::now()),  // fill with the current time
+		timestamp(mrpt::Clock::now()),  // fill with the current time
 		level(in_level),
 		name(logger.getLoggerName()),
 		body(msg_str)

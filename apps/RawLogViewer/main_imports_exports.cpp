@@ -272,8 +272,9 @@ void xRawLogViewerFrame::OnImportSequenceOfImages(wxCommandEvent& event)
 
 	ASSERT_(FPS > 0);
 
-	// Compute the Timestamp increments (of 100ns):
-	TTimeStamp At = (TTimeStamp)((1 / FPS) * 10000000.0);
+	// Compute period:
+	const auto At =
+		std::chrono::microseconds(static_cast<uint64_t>((1e6 / FPS)));
 
 	wxBusyCursor waitCursor;
 	int nEntries = (int)lstFiles.size();
@@ -996,8 +997,9 @@ void xRawLogViewerFrame::OnMenuImportALOG(wxCommandEvent& event)
 						 _("Additional images?"), wxYES_NO))
 		{
 			wxDirDialog dirDialog(
-				this, _("Choose the directory containing the image files from "
-						"the log"),
+				this,
+				_("Choose the directory containing the image files from "
+				  "the log"),
 				_U(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()),
 				0, wxDefaultPosition);
 
@@ -1688,8 +1690,8 @@ void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog(wxCommandEvent& event)
 	std::string line;
 
 	mrpt::system::TTimeStamp cur_timestamp = mrpt::system::now();
-	const mrpt::system::TTimeStamp time_steps =
-		mrpt::system::secondsToTimestamp(0.25);  // why not? ;-)
+	using namespace std::chrono_literals;
+	const auto time_steps = 250ms;
 
 	loadedFileName =
 		import_filename + string(use_SF_format ? ".rawlog" : ".obs.rawlog");
@@ -2062,9 +2064,10 @@ void xRawLogViewerFrame::OnGenerateIMUTextFile(wxCommandEvent& event)
 								obs->rawMeasurements.size());
 							for (size_t idx = 0; idx < nValuesPerRow; idx++)
 								::fprintf(
-									f, "%f ", obs->dataIsPresent[idx]
-												  ? obs->rawMeasurements[idx]
-												  : 0);
+									f, "%f ",
+									obs->dataIsPresent[idx]
+										? obs->rawMeasurements[idx]
+										: 0);
 							::fprintf(f, "\n");
 							M++;
 						}  // end if

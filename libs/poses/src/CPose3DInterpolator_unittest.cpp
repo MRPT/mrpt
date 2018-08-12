@@ -22,8 +22,8 @@ TEST(CPose3DInterpolator, interp)
 	using mrpt::math::CMatrixDouble44;
 	using mrpt::DEG2RAD;
 
-	auto t0 = mrpt::system::Clock::now();
-	mrpt::system::Clock::duration dt(std::chrono::milliseconds(100));
+	auto t0 = mrpt::Clock::now();
+	mrpt::Clock::duration dt(std::chrono::milliseconds(100));
 
 	CPose3DInterpolator pose_path;
 

@@ -145,10 +145,9 @@ void CCameraSensor::initialize()
 			"[CCameraSensor::initialize] dc1394 camera, GUID: 0x%lX  "
 			"UNIT:%d...\n",
 			long(m_dc1394_camera_guid), m_dc1394_camera_unit);
-		m_cap_dc1394.reset(
-			new CImageGrabber_dc1394(
-				m_dc1394_camera_guid, m_dc1394_camera_unit, m_dc1394_options,
-				true /* verbose */));
+		m_cap_dc1394.reset(new CImageGrabber_dc1394(
+			m_dc1394_camera_guid, m_dc1394_camera_unit, m_dc1394_options,
+			true /* verbose */));
 
 		if (!m_cap_dc1394->isOpen())
 		{
@@ -165,10 +164,9 @@ void CCameraSensor::initialize()
 			"GUID:0x%08X Index:%i FPS:%f...\n",
 			(unsigned int)(m_bumblebee_dc1394_camera_guid),
 			m_bumblebee_dc1394_camera_unit, m_bumblebee_dc1394_framerate);
-		m_cap_bumblebee_dc1394.reset(
-			new CStereoGrabber_Bumblebee_libdc1394(
-				m_bumblebee_dc1394_camera_guid, m_bumblebee_dc1394_camera_unit,
-				m_bumblebee_dc1394_framerate));
+		m_cap_bumblebee_dc1394.reset(new CStereoGrabber_Bumblebee_libdc1394(
+			m_bumblebee_dc1394_camera_guid, m_bumblebee_dc1394_camera_unit,
+			m_bumblebee_dc1394_framerate));
 	}
 	else if (m_grabber_type == "svs")
 	{
@@ -594,17 +592,15 @@ void CCameraSensor::loadConfig_sensorSpecific(
 	// Rawlog options:
 	m_rawlog_file = mrpt::system::trim(
 		configSource.read_string(iniSection, "rawlog_file", m_rawlog_file));
-	m_rawlog_camera_sensor_label = mrpt::system::trim(
-		configSource.read_string(
-			iniSection, "rawlog_camera_sensor_label",
-			m_rawlog_camera_sensor_label));
+	m_rawlog_camera_sensor_label = mrpt::system::trim(configSource.read_string(
+		iniSection, "rawlog_camera_sensor_label",
+		m_rawlog_camera_sensor_label));
 
 	// Image directory options:
 	m_img_dir_url = mrpt::system::trim(
 		configSource.read_string(iniSection, "image_dir_url", m_img_dir_url));
-	m_img_dir_left_format = mrpt::system::trim(
-		configSource.read_string(
-			iniSection, "left_format", m_img_dir_left_format));
+	m_img_dir_left_format = mrpt::system::trim(configSource.read_string(
+		iniSection, "left_format", m_img_dir_left_format));
 	m_img_dir_right_format = mrpt::system::trim(
 		configSource.read_string(iniSection, "right_format", ""));
 	m_img_dir_start_index =
@@ -688,8 +684,8 @@ void CCameraSensor::loadConfig_sensorSpecific(
 	ADD_COLOR_MAP(COLOR_CODING_RGB8)
 	ADD_COLOR_MAP(COLOR_CODING_MONO16)
 
-	string the_color_coding = mrpt::system::upperCase(
-		configSource.read_string_first_word(
+	string the_color_coding =
+		mrpt::system::upperCase(configSource.read_string_first_word(
 			iniSection, "dc1394_color_coding", "COLOR_CODING_YUV422"));
 	it_color = map_color.find(the_color_coding);
 	if (it_color == map_color.end())
@@ -698,9 +694,8 @@ void CCameraSensor::loadConfig_sensorSpecific(
 			the_color_coding.c_str());
 	m_dc1394_options.color_coding = it_color->second;
 
-	m_external_images_format = mrpt::system::trim(
-		configSource.read_string(
-			iniSection, "external_images_format", m_external_images_format));
+	m_external_images_format = mrpt::system::trim(configSource.read_string(
+		iniSection, "external_images_format", m_external_images_format));
 	m_external_images_jpeg_quality = configSource.read_int(
 		iniSection, "external_images_jpeg_quality",
 		m_external_images_jpeg_quality);
@@ -811,9 +806,8 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 			m_cap_kinect->getNextObservation(
 				*obs3D, there_is_obs, hardware_error);
 			if (!there_is_obs) std::this_thread::sleep_for(1ms);
-		} while (!there_is_obs &&
-				 mrpt::system::timeDifference(t0, mrpt::system::now()) <
-					 max_timeout);
+		} while (!there_is_obs && mrpt::system::timeDifference(
+									  t0, mrpt::system::now()) < max_timeout);
 
 		if (!there_is_obs || hardware_error)
 		{  // Error
@@ -836,9 +830,8 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 			m_cap_openni2->getNextObservation(
 				*obs3D, there_is_obs, hardware_error);
 			if (!there_is_obs) std::this_thread::sleep_for(1ms);
-		} while (!there_is_obs &&
-				 mrpt::system::timeDifference(t0, mrpt::system::now()) <
-					 max_timeout);
+		} while (!there_is_obs && mrpt::system::timeDifference(
+									  t0, mrpt::system::now()) < max_timeout);
 
 		if (!there_is_obs || hardware_error)
 		{  // Error
@@ -1083,8 +1076,9 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 
 			// It seems that the timestamp is not always filled in from FlyCap
 			// driver?
-			stObs->timestamp =
-				(obsL.timestamp != 0) ? obsL.timestamp : mrpt::system::now();
+			stObs->timestamp = (obsL.timestamp != INVALID_TIMESTAMP)
+								   ? obsL.timestamp
+								   : mrpt::system::now();
 			stObs->imageLeft.copyFastFrom(obsL.image);
 			stObs->imageRight.copyFastFrom(obsR.image);
 			capture_ok = true;

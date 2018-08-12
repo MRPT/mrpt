@@ -102,8 +102,9 @@ CKinect::CKinect()
 	calculate_range2meters();
 
 	// Get maximum range:
-	m_maxRange = m_range2meters[KINECT_RANGES_TABLE_LEN -
-								2];  // Recall: r[Max-1] means error.
+	m_maxRange =
+		m_range2meters[KINECT_RANGES_TABLE_LEN - 2];  // Recall: r[Max-1] means
+													  // error.
 
 	// Default label:
 	m_sensorLabel = "KINECT";
@@ -143,15 +144,15 @@ CKinect::CKinect()
  -------------------------------------------------------------*/
 CKinect::~CKinect() { this->close(); }
 /** This method can or cannot be implemented in the derived class, depending on
-* the need for it.
-*  \exception This method must throw an exception with a descriptive message if
-* some critical error is found.
-*/
+ * the need for it.
+ *  \exception This method must throw an exception with a descriptive message if
+ * some critical error is found.
+ */
 void CKinect::initialize() { open(); }
 /** This method will be invoked at a minimum rate of "process_rate" (Hz)
-*  \exception This method must throw an exception with a descriptive message if
-* some critical error is found.
-*/
+ *  \exception This method must throw an exception with a descriptive message if
+ * some critical error is found.
+ */
 void CKinect::doProcess()
 {
 	bool thereIs, hwError;
@@ -183,11 +184,11 @@ void CKinect::doProcess()
 }
 
 /** Loads specific configuration for the device from a given source of
-* configuration parameters, for example, an ".ini" file, loading from the
-* section "[iniSection]" (see config::CConfigFileBase and derived classes)
-*  \exception This method must throw an exception with a descriptive message if
-* some critical parameter is missing or has an invalid value.
-*/
+ * configuration parameters, for example, an ".ini" file, loading from the
+ * section "[iniSection]" (see config::CConfigFileBase and derived classes)
+ *  \exception This method must throw an exception with a descriptive message if
+ * some critical parameter is missing or has an invalid value.
+ */
 void CKinect::loadConfig_sensorSpecific(
 	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
@@ -381,7 +382,7 @@ void rgb_cb(freenect_device* dev, void* img_data, uint32_t timestamp)
 			reinterpret_cast<unsigned char*>(img_data));
 	}
 
-// obs.intensityImage.setChannelsOrder_RGB();
+	// obs.intensityImage.setChannelsOrder_RGB();
 
 #ifdef KINECT_PROFILE_MEM_ALLOC
 	alloc_tim.leave("depth_rgb loadFromMemoryBuffer");
@@ -412,7 +413,7 @@ void CKinect::open()
 #else
 		FREENECT_LOG_WARNING
 #endif
-		);
+	);
 
 	int nr_devices = freenect_num_devices(f_ctx);
 	// printf("[CKinect] Number of devices found: %d\n", nr_devices);
@@ -438,7 +439,7 @@ void CKinect::open()
 			? FREENECT_VIDEO_IR_8BIT
 			: FREENECT_VIDEO_BAYER  // FREENECT_VIDEO_RGB: Use Bayer instead so
 		// we can directly decode it here
-		);
+	);
 
 	// Switch to that video mode:
 	if (freenect_set_video_mode(f_dev, desiredFrMode) < 0)
@@ -514,7 +515,7 @@ void CKinect::setVideoChannel(const TVideoChannel vch)
 			? FREENECT_VIDEO_IR_8BIT
 			: FREENECT_VIDEO_BAYER  // FREENECT_VIDEO_RGB: Use Bayer instead so
 		// we can directly decode it here
-		);
+	);
 
 	// Switch to that video mode:
 	if (freenect_set_video_mode(f_dev, desiredFrMode) < 0)
@@ -529,13 +530,13 @@ void CKinect::setVideoChannel(const TVideoChannel vch)
 
 /** The main data retrieving function, to be called after calling loadConfig()
  * and initialize().
-  *  \param out_obs The output retrieved observation (only if
+ *  \param out_obs The output retrieved observation (only if
  * there_is_obs=true).
-  *  \param there_is_obs If set to false, there was no new observation.
-  *  \param hardware_error True on hardware/comms error.
-  *
-  * \sa doProcess
-  */
+ *  \param there_is_obs If set to false, there was no new observation.
+ *  \param hardware_error True on hardware/comms error.
+ *
+ * \sa doProcess
+ */
 void CKinect::getNextObservation(
 	mrpt::obs::CObservation3DRangeScan& _out_obs, bool& there_is_obs,
 	bool& hardware_error)
@@ -545,9 +546,8 @@ void CKinect::getNextObservation(
 
 #if MRPT_HAS_KINECT_FREENECT
 
-	static const double max_wait_seconds = 1. / 25.;
-	static const TTimeStamp max_wait =
-		mrpt::system::secondsToTimestamp(max_wait_seconds);
+	using namespace std::chrono_literals;
+	const auto max_wait = 40ms;  // 1/25 FPS
 
 	// Mark previous observation's timestamp as out-dated:
 	m_latest_obs.hasPoints3D = false;
@@ -574,7 +574,7 @@ void CKinect::getNextObservation(
 			(!m_grab_depth ||
 			 m_tim_latest_depth != 0)  // If we are NOT grabbing Depth or we are
 			// and there's a new frame...
-			)
+		)
 		{
 			// Approx: 0.5ms delay between depth frame (first) and RGB frame
 			// (second).

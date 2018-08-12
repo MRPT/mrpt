@@ -143,15 +143,15 @@ bool CEnoseModular::getObservation(mrpt::obs::CObservationGasSensors& obs)
 
 		mrpt::serialization::CMessage msg;
 		bool time_out = false;
-		mrpt::system::TTimeStamp t1 = mrpt::system::getCurrentLocalTime();
+		mrpt::system::TTimeStamp t1 = mrpt::system::now();
 		double time_out_val = 1;  // seconds
 
 		auto arch = mrpt::serialization::archiveFrom(*comms);
 
 		while (!arch.receiveMessage(msg) && !time_out)
 		{
-			if (mrpt::system::timeDifference(
-					t1, mrpt::system::getCurrentLocalTime()) > time_out_val)
+			if (mrpt::system::timeDifference(t1, mrpt::system::now()) >
+				time_out_val)
 				time_out = true;
 		}
 
@@ -245,10 +245,10 @@ bool CEnoseModular::getObservation(mrpt::obs::CObservationGasSensors& obs)
 					doProcess
 -------------------------------------------------------------*/
 /** This method should be called periodically (at least at 1Hz to capture ALL
-* the real-time data)
-*  It is thread safe, i.e. you can call this from one thread, then to other
-* methods from other threads.
-*/
+ * the real-time data)
+ *  It is thread safe, i.e. you can call this from one thread, then to other
+ * methods from other threads.
+ */
 void CEnoseModular::doProcess()
 {
 	CObservationGasSensors::Ptr obs =
