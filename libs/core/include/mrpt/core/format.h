@@ -17,12 +17,15 @@
 namespace mrpt
 {
 /** A std::string version of C sprintf.
-  *  You can call this to obtain a std::string using printf-like syntax.
-  */
+ *  You can call this to obtain a std::string using printf-like syntax.
+ * \ingroup mrpt_core_grp
+ */
 std::string format(const char* fmt, ...) MRPT_printf_format_check(1, 2);
 
 /** Just like std::to_string(), but with an overloaded version
-* for std::string arguments. */
+ * for std::string arguments.
+ * \ingroup mrpt_core_grp
+ */
 template <typename T>
 std::string to_string(T v)
 {
@@ -43,4 +46,4 @@ inline std::string to_string<>(const char* s)
 {
 	return std::string(s);
 }
-}
+}  // namespace mrpt
