@@ -20,14 +20,13 @@ TEST(CPose2DInterpolator, interp)
 	using mrpt::math::TPose2D;
 	using mrpt::DEG2RAD;
 
-	const mrpt::system::TTimeStamp t0 = mrpt::system::now();
-	const mrpt::system::TTimeStamp dt = mrpt::system::secondsToTimestamp(0.10);
+	auto t0 = mrpt::system::Clock::now();
+	std::chrono::milliseconds dt(100);
 
 	CPose2DInterpolator pose_path;
 
 	pose_path.insert(t0, TPose2D(1., 2., DEG2RAD(30.0)));
-	pose_path.insert(
-		t0 + 2 * dt, TPose2D(1. + 3., 2. + 4., DEG2RAD(30.0 + 20.0)));
+	pose_path.insert(t0 + 2 * dt, TPose2D(1. + 3., 2. + 4., DEG2RAD(30.0 + 20.0)));
 
 	TPose2D interp;
 	bool valid;

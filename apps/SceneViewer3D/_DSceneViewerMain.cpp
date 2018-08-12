@@ -385,7 +385,7 @@ BEGIN_EVENT_TABLE(_DSceneViewerFrame, wxFrame)
 END_EVENT_TABLE()
 
 _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
-	: m_travelling_start_time(INVALID_TIMESTAMP), maxv(0)
+	: maxv(0)
 {
 	theWindow = this;
 
@@ -1297,8 +1297,8 @@ void _DSceneViewerFrame::OnTravellingTrigger(wxTimerEvent& event)
 					return;
 				}
 
-				TTimeStamp t = m_dlg_tracking->m_poses.begin()->first +
-							   (mrpt::system::now() - m_travelling_start_time);
+				mrpt::system::Clock::time_point t = m_dlg_tracking->m_poses.begin()->first +
+							   (mrpt::system::Clock::now() - m_travelling_start_time.value());
 				bool valid = false;
 				CPose3D p;
 				while (!valid && t < m_dlg_tracking->m_poses.rbegin()->first)
@@ -1306,9 +1306,9 @@ void _DSceneViewerFrame::OnTravellingTrigger(wxTimerEvent& event)
 					m_dlg_tracking->m_poses.interpolate(t, p, valid);
 					if (!valid)
 					{
-						TTimeStamp At = secondsToTimestamp(0.1);
+						mrpt::system::Clock::duration At = std::chrono::milliseconds(100);
 						t += At;
-						m_travelling_start_time -= At;
+						m_travelling_start_time.value() -= At;
 					}
 				}
 

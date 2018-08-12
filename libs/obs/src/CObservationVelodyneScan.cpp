@@ -534,7 +534,7 @@ void CObservationVelodyneScan::generatePointCloudAlongSE3Trajectory(
 			if (last_query_tim_ != tim)
 			{
 				last_query_tim_ = tim;
-				vehicle_path_.interpolate(tim, last_query_, last_query_valid_);
+				vehicle_path_.interpolate(mrpt::system::toTimePoint(tim), last_query_, last_query_valid_);
 			}
 
 			if (last_query_valid_)

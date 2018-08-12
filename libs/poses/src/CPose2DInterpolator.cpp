@@ -42,11 +42,20 @@ namespace mrpt::poses
 // Specialization for DIM=2
 template <>
 void CPoseInterpolatorBase<2>::impl_interpolation(
-	const mrpt::math::CArrayDouble<4>& ts, const TTimePosePair p1,
-	const TTimePosePair p2, const TTimePosePair p3, const TTimePosePair p4,
-	const TInterpolatorMethod method, double td, pose_t& out_interp) const
+	const TTimePosePair &p1, const TTimePosePair &p2,
+	const TTimePosePair &p3, const TTimePosePair &p4,
+	const TInterpolatorMethod method, const mrpt::system::Clock::time_point &t, pose_t& out_interp) const
 {
 	using mrpt::math::TPose2D;
+	using doubleDuration = std::chrono::duration<double>;
+	doubleDuration durationT(t.time_since_epoch());
+	double td = durationT.count();
+	mrpt::math::CArrayDouble<4> ts;
+	ts[0] = std::chrono::duration_cast<doubleDuration>(p1.first.time_since_epoch()).count();
+	ts[1] = std::chrono::duration_cast<doubleDuration>(p2.first.time_since_epoch()).count();
+	ts[2] = std::chrono::duration_cast<doubleDuration>(p3.first.time_since_epoch()).count();
+	ts[3] = std::chrono::duration_cast<doubleDuration>(p4.first.time_since_epoch()).count();
+
 	mrpt::math::CArrayDouble<4> X, Y, yaw;
 	X[0] = p1.second.x;
 	Y[0] = p1.second.y;
