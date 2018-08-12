@@ -63,6 +63,10 @@ classes.
 			- rbpf-slam: Add support for simplemap continuation.
 			- CICP: parameter `onlyClosestCorrespondences` deleted (always true
 now).
+		- \ref mrpt_system_grp
+			- functions to get timestamp as *local* time were removed, since
+they don't make sense. All timestamps in MRPT are UTC, and they can be formated
+as dates in either UTC or local time frames.
 		- \ref mrpt_nav_grp
 			- Removed deprecated mrpt::nav::THolonomicMethod.
 			- mrpt::nav::CAbstractNavigator: callbacks in
@@ -82,9 +86,12 @@ CObservationReflectivity to support different colors of light.
 				- Rewrite driver to be safer and reduce mem allocs.
 				- New parameter `scan_interval` to decimate scans.
 		- \ref mrpt_opengl_grp
-			- Update Assimp lib version 4.0.1 -> 4.1.0 (when built as ExternalProject)
+			- Update Assimp lib version 4.0.1 -> 4.1.0 (when built as
+ExternalProject)
 		- \ref mrpt_obs_grp
-			- mrpt::obs::T3DPointsProjectionParams and mrpt::obs::CObservation3DRangeScan::project3DPointsFromDepthImageInto now together support organized PCL point clouds.
+			- mrpt::obs::T3DPointsProjectionParams and
+mrpt::obs::CObservation3DRangeScan::project3DPointsFromDepthImageInto now
+together support organized PCL point clouds.
 	- BUG FIXES:
 		- Fix reactive navigator inconsistent state if navigation API is called
 from within rnav callbacks.
@@ -104,7 +111,8 @@ CMetricMap has empty smart pointers.
 <h2>Version 1.5.7: (Under development) </h2></a>
 - <b>Detailed list of changes:</b>
 	- \ref mrpt_graphslam_grp
-		- CNetworkOfPoses: read/write format made compatible with G2O EDGE_SE2 types.
+		- CNetworkOfPoses: read/write format made compatible with G2O EDGE_SE2
+types.
 	- BUG FIXES:
 		- Fix missing "-ldl" linker flag.
 		- Fix building against wxWidgets 3.1.1 in Windows (zlib link error).
@@ -116,12 +124,13 @@ CMetricMap has empty smart pointers.
 		- pf-localization:
 			- Odometry is now used also for observation-only rawlogs.
 	- \ref mrpt_hwdrivers_grp
-		- mrpt::hwdrivers::COpenNI2Generic: added mutexes for safer multi-threading
-		  operation.
-		- mrpt::hwdrivers::CHokuyoURG: Added a new parameter to skip scans. Driver
-		  clean up to be safer and perform less memory allocs.
+		- mrpt::hwdrivers::COpenNI2Generic: added mutexes for safer
+multi-threading operation.
+		- mrpt::hwdrivers::CHokuyoURG: Added a new parameter to skip scans.
+Driver clean up to be safer and perform less memory allocs.
 	- \ref mrpt_maps_grp
-		- COccupancyGridMap2D: New LIDAR insertion parameters: maxFreenessUpdateCertainty, maxFreenessInvalidRanges.
+		- COccupancyGridMap2D: New LIDAR insertion parameters:
+maxFreenessUpdateCertainty, maxFreenessInvalidRanges.
 	- \ref mrpt_reactivenav_grp
 		- CAbstractPTGBasedReactive: Added new score `holo_stage_eval`.
 	- BUG FIXES:

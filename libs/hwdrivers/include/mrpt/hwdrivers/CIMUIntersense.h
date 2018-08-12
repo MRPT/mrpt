@@ -75,23 +75,23 @@ class CIMUIntersense : public hwdrivers::CGenericSensor
 	DEFINE_GENERIC_SENSOR(CIMUIntersense)
    protected:
 	/** Opaque pointer to specifid iSense IMU structure */
-	void* /* ISD_TRACKER_HANDLE* */ m_handles_ptr;
+	void* /* ISD_TRACKER_HANDLE* */ m_handles_ptr{nullptr};
 
 	/** Timestamp management */
-	uint32_t m_timeStartUI;
+	uint32_t m_timeStartUI{0};
 	mrpt::system::TTimeStamp m_timeStartTT;
 
 	mrpt::poses::CPose3D m_sensorPose;
-	int m_nSensors;
+	int m_nSensors{0};
 
 	/* Configurable parameters */
-	uint32_t m_sensitivity;
-	uint32_t m_enhancement;
-	uint32_t m_prediction;
-	bool m_useBuffer;
+	uint32_t m_sensitivity{10};
+	uint32_t m_enhancement{2};
+	uint32_t m_prediction{0};
+	bool m_useBuffer{false};
 
 	/** Timeout counter (for internal use only) */
-	unsigned int m_toutCounter;
+	unsigned int m_toutCounter{0};
 
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(
@@ -121,5 +121,3 @@ class CIMUIntersense : public hwdrivers::CGenericSensor
 
 }
 #endif
-
-

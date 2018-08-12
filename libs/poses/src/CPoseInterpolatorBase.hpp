@@ -15,6 +15,7 @@
 #include <mrpt/math/interp_fit.hpp>
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
+#include <mrpt/system/datetime.h>
 #include <fstream>
 
 namespace mrpt::poses
@@ -34,12 +35,12 @@ void CPoseInterpolatorBase<DIM>::clear()
 }
 
 template <int DIM>
-void CPoseInterpolatorBase<DIM>::insert(const mrpt::system::Clock::time_point &t, const cpose_t &p)
+void CPoseInterpolatorBase<DIM>::insert(const mrpt::Clock::time_point &t, const cpose_t &p)
 {
 	m_path[t] = p.asTPose();
 }
 template <int DIM>
-void CPoseInterpolatorBase<DIM>::insert(const mrpt::system::Clock::time_point &t, const pose_t &p)
+void CPoseInterpolatorBase<DIM>::insert(const mrpt::Clock::time_point &t, const pose_t &p)
 {
 	m_path[t] = p;
 }
@@ -48,7 +49,7 @@ void CPoseInterpolatorBase<DIM>::insert(const mrpt::system::Clock::time_point &t
 						interpolate
   ---------------------------------------------------------------*/
 template <int DIM>
-typename CPoseInterpolatorBase<DIM>::cpose_t & CPoseInterpolatorBase<DIM>::interpolate(const mrpt::system::Clock::time_point &t, cpose_t &out_interp, bool &out_valid_interp) const
+typename CPoseInterpolatorBase<DIM>::cpose_t & CPoseInterpolatorBase<DIM>::interpolate(const mrpt::Clock::time_point &t, cpose_t &out_interp, bool &out_valid_interp) const
 {
 	pose_t p;
 	this->interpolate(t, p, out_valid_interp);
@@ -57,7 +58,7 @@ typename CPoseInterpolatorBase<DIM>::cpose_t & CPoseInterpolatorBase<DIM>::inter
 }
 
 template <int DIM>
-typename CPoseInterpolatorBase<DIM>::pose_t & CPoseInterpolatorBase<DIM>::interpolate(const mrpt::system::Clock::time_point &t, pose_t &out_interp, bool &out_valid_interp ) const
+typename CPoseInterpolatorBase<DIM>::pose_t & CPoseInterpolatorBase<DIM>::interpolate(const mrpt::Clock::time_point &t, pose_t &out_interp, bool &out_valid_interp ) const
 {
 	 // Default value in case of invalid interp
 	for (size_t k=0;k<pose_t::static_size;k++) {
@@ -127,9 +128,9 @@ typename CPoseInterpolatorBase<DIM>::pose_t & CPoseInterpolatorBase<DIM>::interp
 	}
 
 	// Test if the difference between the desired timestamp and the next timestamp is lower than a certain (configurable) value
-	const mrpt::system::Clock::duration dt12 = interp_method_requires_4pts ? (p2.first - p1.first) : mrpt::system::Clock::duration(0);
-	const mrpt::system::Clock::duration dt23 = (p3.first - p2.first);
-	const mrpt::system::Clock::duration dt34 = interp_method_requires_4pts ? (p4.first - p3.first) : mrpt::system::Clock::duration(0);
+	const mrpt::Clock::duration dt12 = interp_method_requires_4pts ? (p2.first - p1.first) : mrpt::Clock::duration(0);
+	const mrpt::Clock::duration dt23 = (p3.first - p2.first);
+	const mrpt::Clock::duration dt34 = interp_method_requires_4pts ? (p4.first - p3.first) : mrpt::Clock::duration(0);
 
 	if( maxTimeInterpolation.count() > 0 &&
 	  (dt12 > maxTimeInterpolation ||
@@ -156,7 +157,7 @@ typename CPoseInterpolatorBase<DIM>::pose_t & CPoseInterpolatorBase<DIM>::interp
 } // end interpolate
 
 template <int DIM>
-bool CPoseInterpolatorBase<DIM>::getPreviousPoseWithMinDistance(const mrpt::system::Clock::time_point &t, double distance, cpose_t &out_pose)
+bool CPoseInterpolatorBase<DIM>::getPreviousPoseWithMinDistance(const mrpt::Clock::time_point &t, double distance, cpose_t &out_pose)
 {
 	pose_t p;
 	bool ret = getPreviousPoseWithMinDistance(t, distance, p);
@@ -165,7 +166,7 @@ bool CPoseInterpolatorBase<DIM>::getPreviousPoseWithMinDistance(const mrpt::syst
 }
 
 template <int DIM>
-bool CPoseInterpolatorBase<DIM>::getPreviousPoseWithMinDistance(const mrpt::system::Clock::time_point &t, double distance, pose_t &out_pose)
+bool CPoseInterpolatorBase<DIM>::getPreviousPoseWithMinDistance(const mrpt::Clock::time_point &t, double distance, pose_t &out_pose)
 {
 	if( m_path.size() == 0 || distance <=0 )
 		return false;
@@ -196,14 +197,14 @@ bool CPoseInterpolatorBase<DIM>::getPreviousPoseWithMinDistance(const mrpt::syst
 } // end getPreviousPose
 
 template <int DIM>
-void CPoseInterpolatorBase<DIM>::setMaxTimeInterpolation(const mrpt::system::Clock::duration &time )
+void CPoseInterpolatorBase<DIM>::setMaxTimeInterpolation(const mrpt::Clock::duration &time )
 {
 	ASSERT_( time.count() > 0 );
 	maxTimeInterpolation = time;
 }
 
 template <int DIM>
-mrpt::system::Clock::duration CPoseInterpolatorBase<DIM>::getMaxTimeInterpolation( )
+mrpt::Clock::duration CPoseInterpolatorBase<DIM>::getMaxTimeInterpolation( )
 {
 	return maxTimeInterpolation;
 }
@@ -238,9 +239,9 @@ bool CPoseInterpolatorBase<DIM>::saveToTextFile(const std::string &s) const
 }
 
 template <int DIM>
-bool CPoseInterpolatorBase<DIM>::saveInterpolatedToTextFile(const std::string &s, const mrpt::system::Clock::duration &period) const
+bool CPoseInterpolatorBase<DIM>::saveInterpolatedToTextFile(const std::string &s, const mrpt::Clock::duration &period) const
 {
-	using mrpt::system::Clock;
+	using mrpt::Clock;
 	try
 	{
 		std::ofstream f;
@@ -301,7 +302,7 @@ bool CPoseInterpolatorBase<DIM>::loadFromTextFile(const std::string &s)
 	for (size_t i=0;i<N;i++) {
 		for (unsigned int k=0;k<pose_t::static_size;k++)
 			p[k] = M(i,k+1);
-		insert(mrpt::system::toTimePoint(M(i,0)), p );
+		insert(mrpt::system::time_tToTimestamp(M(i,0)), p );
 	}
 	return true;
 	MRPT_END

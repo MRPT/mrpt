@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/system/Clock.h>
+#include <mrpt/core/Clock.h>
 #include <mrpt/typemeta/TEnumType.h>
 #include <mrpt/poses/SE_traits.h>
 #include <mrpt/math/lightweight_geom_data.h>
@@ -63,8 +63,8 @@ class CPoseInterpolatorBase
 	/** TPoint2D or TPoint3D */
 	using point_t = typename mrpt::poses::SE_traits<DIM>::point_t;
 
-	using TTimePosePair = std::pair<mrpt::system::Clock::time_point, pose_t>;
-	using TPath = std::map<mrpt::system::Clock::time_point, pose_t>;
+	using TTimePosePair = std::pair<mrpt::Clock::time_point, pose_t>;
+	using TPath = std::map<mrpt::Clock::time_point, pose_t>;
 	using iterator = typename TPath::iterator;
 	using const_iterator = typename TPath::const_iterator;
 	using reverse_iterator = typename TPath::reverse_iterator;
@@ -80,20 +80,20 @@ class CPoseInterpolatorBase
 	inline const_reverse_iterator rbegin() const { return m_path.rbegin(); }
 	inline reverse_iterator rend() { return m_path.rend(); }
 	inline const_reverse_iterator rend() const { return m_path.rend(); }
-	iterator lower_bound(const mrpt::system::Clock::time_point& t)
+	iterator lower_bound(const mrpt::Clock::time_point& t)
 	{
 		return m_path.lower_bound(t);
 	}
-	const_iterator lower_bound(const mrpt::system::Clock::time_point& t) const
+	const_iterator lower_bound(const mrpt::Clock::time_point& t) const
 	{
 		return m_path.lower_bound(t);
 	}
 
-	iterator upper_bound(const mrpt::system::Clock::time_point& t)
+	iterator upper_bound(const mrpt::Clock::time_point& t)
 	{
 		return m_path.upper_bound(t);
 	}
-	const_iterator upper_bound(const mrpt::system::Clock::time_point& t) const
+	const_iterator upper_bound(const mrpt::Clock::time_point& t) const
 	{
 		return m_path.upper_bound(t);
 	}
@@ -106,8 +106,8 @@ class CPoseInterpolatorBase
 
 	size_t size() const { return m_path.size(); }
 	bool empty() const { return m_path.empty(); }
-	iterator find(const mrpt::system::Clock::time_point& t) { return m_path.find(t); }
-	const_iterator find(const mrpt::system::Clock::time_point& t) const
+	iterator find(const mrpt::Clock::time_point& t) { return m_path.find(t); }
+	const_iterator find(const mrpt::Clock::time_point& t) const
 	{
 		return m_path.find(t);
 	}
@@ -116,9 +116,9 @@ class CPoseInterpolatorBase
 	/** Inserts a new pose in the sequence.
 	  *  It overwrites any previously existing pose at exactly the same time.
 	  */
-	void insert(const mrpt::system::Clock::time_point &t, const pose_t& p);
+	void insert(const mrpt::Clock::time_point &t, const pose_t& p);
 	/** Overload (slower) */
-	void insert(const mrpt::system::Clock::time_point &t, const cpose_t& p);
+	void insert(const mrpt::Clock::time_point &t, const cpose_t& p);
 
 	/** Returns the pose at a given time, or interpolates using splines if there
 	 * is not an exact match.
@@ -129,11 +129,11 @@ class CPoseInterpolatorBase
 	  * \return A reference to out_interp
 	  */
 	pose_t& interpolate(
-		const mrpt::system::Clock::time_point &t, pose_t& out_interp,
+		const mrpt::Clock::time_point &t, pose_t& out_interp,
 		bool& out_valid_interp) const;
 	/** \overload (slower) */
 	cpose_t& interpolate(
-		const mrpt::system::Clock::time_point &t, cpose_t& out_interp,
+		const mrpt::Clock::time_point &t, cpose_t& out_interp,
 		bool& out_valid_interp) const;
 
 	/** Clears the current sequence of poses */
@@ -141,17 +141,17 @@ class CPoseInterpolatorBase
 
 	/** Set value of the maximum time to consider interpolation.
 	 * If set to a negative value, the check is disabled (default behavior). */
-	void setMaxTimeInterpolation(const mrpt::system::Clock::duration &time);
+	void setMaxTimeInterpolation(const mrpt::Clock::duration &time);
 	/** Set value of the maximum time to consider interpolation */
-	mrpt::system::Clock::duration getMaxTimeInterpolation();
+	mrpt::Clock::duration getMaxTimeInterpolation();
 
 	/** Get the previous CPose3D in the map with a minimum defined distance.
 	* \return true if pose was found, false otherwise */
 	bool getPreviousPoseWithMinDistance(
-		const mrpt::system::Clock::time_point& t, double distance, pose_t& out_pose);
+		const mrpt::Clock::time_point& t, double distance, pose_t& out_pose);
 	/** \overload (slower) */
 	bool getPreviousPoseWithMinDistance(
-		const mrpt::system::Clock::time_point& t, double distance, cpose_t& out_pose);
+		const mrpt::Clock::time_point& t, double distance, cpose_t& out_pose);
 
 	/** Saves the points in the interpolator to a text file, with this format:
 	  *  Each row contains these elements separated by spaces:
@@ -169,7 +169,7 @@ class CPoseInterpolatorBase
 	  * \sa loadFromTextFile
 	  * \return true on success, false on any error.
 	  */
-	bool saveInterpolatedToTextFile(const std::string& s, const mrpt::system::Clock::duration &period) const;
+	bool saveInterpolatedToTextFile(const std::string& s, const mrpt::Clock::duration &period) const;
 
 	/** Loads from a text file, in the format described by saveToTextFile.
 	  * \return true on success, false on any error.
@@ -202,12 +202,12 @@ class CPoseInterpolatorBase
 	/** Maximum time considered to interpolate. If the difference between the
 	 * desired timestamp where to interpolate and the next timestamp stored in
 	 * the map is bigger than this value, the interpolation will not be done. */
-	mrpt::system::Clock::duration maxTimeInterpolation;
+	mrpt::Clock::duration maxTimeInterpolation;
 	TInterpolatorMethod m_method;
 
 	void impl_interpolation(const TTimePosePair &p1, const TTimePosePair &p2,
 		const TTimePosePair &p3, const TTimePosePair &p4,
-		const TInterpolatorMethod method, const mrpt::system::Clock::time_point &td,
+		const TInterpolatorMethod method, const mrpt::Clock::time_point &td,
 		pose_t& out_interp) const;
 
 };  // End of class def.

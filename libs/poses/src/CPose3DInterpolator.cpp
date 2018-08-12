@@ -29,7 +29,7 @@ void CPose3DInterpolator::serializeFrom(
 	{
 		case 0:
 		{
-			std::map<mrpt::system::Clock::time_point, mrpt::poses::CPose3D> old_path;
+			std::map<mrpt::Clock::time_point, mrpt::poses::CPose3D> old_path;
 			in >> old_path;
 			m_path.clear();
 			for (const auto& p : old_path)
@@ -55,7 +55,7 @@ template <>
 void CPoseInterpolatorBase<3>::impl_interpolation(
 	const TTimePosePair &p1, const TTimePosePair &p2, 
 	const TTimePosePair &p3, const TTimePosePair &p4,
-	const TInterpolatorMethod method, const mrpt::system::Clock::time_point &t, pose_t& out_interp) const
+	const TInterpolatorMethod method, const mrpt::Clock::time_point &t, pose_t& out_interp) const
 {
 	using mrpt::math::TPose3D;
 	mrpt::math::CArrayDouble<4> X, Y, Z, yaw, pitch, roll;

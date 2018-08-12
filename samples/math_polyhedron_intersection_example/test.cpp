@@ -160,73 +160,55 @@ void display()
 	polys.reserve(16);
 	// Addition of polyhedra. Add more polyhedra at wish, but try to avoid
 	// intersections with other pairs, for better visualization.
-	polys.push_back(
-		addPairOfPolys(
-			CPolyhedron::CreateHexahedron(10),
-			CPolyhedron::CreateOctahedron(10), objs, -12.5, -12.5));
-	polys.push_back(
-		addPairOfPolys(
-			CPolyhedron::CreateIcosahedron(10),
-			CPolyhedron::CreateDodecahedron(10), objs, -12.5, 12.5));
-	polys.push_back(
-		addPairOfPolys(
-			CPolyhedron::CreateRhombicuboctahedron(10),
-			CPolyhedron::CreateCuboctahedron(10), objs, 12.5, 12.5));
-	polys.push_back(
-		addPairOfPolys(
-			CPolyhedron::CreateArchimedeanRegularAntiprism(4, 9),
-			CPolyhedron::CreateRegularDoublePyramid(9, 10, 15, 6), objs, 12.5,
-			-12.5));
-	polys.push_back(
-		addPairOfPolys(
-			CPolyhedron::CreateCuboctahedron(10),
-			CPolyhedron::CreateRhombicDodecahedron(10), objs, -37.5, -37.5));
-	polys.push_back(
-		addPairOfPolys(
-			CPolyhedron::CreateRhombicuboctahedron(10),
-			CPolyhedron::CreateDeltoidalIcositetrahedron(10), objs, -37.5,
-			-12.5));
-	polys.push_back(
-		addPairOfPolys(
-			CPolyhedron::CreateIcosidodecahedron(10),
-			CPolyhedron::CreateRhombicTriacontahedron(10), objs, -37.5, 12.5));
-	polys.push_back(
-		addPairOfPolys(
-			CPolyhedron::CreateRhombicosidodecahedron(10),
-			CPolyhedron::CreateDeltoidalHexecontahedron(10), objs, -37.5,
-			37.5));
-	polys.push_back(
-		addPairOfPolys(
-			CPolyhedron::CreateTruncatedTetrahedron(10),
-			CPolyhedron::CreateTriakisTetrahedron(10), objs, -12.5, -37.5));
-	polys.push_back(
-		addPairOfPolys(
-			CPolyhedron::CreateTruncatedHexahedron(10),
-			CPolyhedron::CreateTriakisOctahedron(10), objs, -12.5, 37.5));
-	polys.push_back(
-		addPairOfPolys(
-			CPolyhedron::CreateTruncatedOctahedron(10),
-			CPolyhedron::CreateTetrakisHexahedron(10), objs, 12.5, -37.5));
-	polys.push_back(
-		addPairOfPolys(
-			CPolyhedron::CreateTruncatedDodecahedron(10),
-			CPolyhedron::CreateTriakisIcosahedron(10), objs, 12.5, 37.5));
-	polys.push_back(
-		addPairOfPolys(
-			CPolyhedron::CreateTruncatedIcosahedron(10),
-			CPolyhedron::CreatePentakisDodecahedron(10), objs, 37.5, -37.5));
-	polys.push_back(
-		addPairOfPolys(
-			CPolyhedron::CreateRandomPolyhedron(10),
-			CPolyhedron::CreateRandomPolyhedron(10), objs, 37.5, -12.5));
-	polys.push_back(
-		addPairOfPolys(
-			CPolyhedron::CreateDodecahedron(10),
-			CPolyhedron::CreateDeltoidalHexecontahedron(10), objs, 37.5, 12.5));
-	polys.push_back(
-		addPairOfPolys(
-			CPolyhedron::CreateTriakisIcosahedron(10),
-			CPolyhedron::CreatePentakisDodecahedron(10), objs, 37.5, 37.5));
+	polys.push_back(addPairOfPolys(
+		CPolyhedron::CreateHexahedron(10), CPolyhedron::CreateOctahedron(10),
+		objs, -12.5, -12.5));
+	polys.push_back(addPairOfPolys(
+		CPolyhedron::CreateIcosahedron(10), CPolyhedron::CreateDodecahedron(10),
+		objs, -12.5, 12.5));
+	polys.push_back(addPairOfPolys(
+		CPolyhedron::CreateRhombicuboctahedron(10),
+		CPolyhedron::CreateCuboctahedron(10), objs, 12.5, 12.5));
+	polys.push_back(addPairOfPolys(
+		CPolyhedron::CreateArchimedeanRegularAntiprism(4, 9),
+		CPolyhedron::CreateRegularDoublePyramid(9, 10, 15, 6), objs, 12.5,
+		-12.5));
+	polys.push_back(addPairOfPolys(
+		CPolyhedron::CreateCuboctahedron(10),
+		CPolyhedron::CreateRhombicDodecahedron(10), objs, -37.5, -37.5));
+	polys.push_back(addPairOfPolys(
+		CPolyhedron::CreateRhombicuboctahedron(10),
+		CPolyhedron::CreateDeltoidalIcositetrahedron(10), objs, -37.5, -12.5));
+	polys.push_back(addPairOfPolys(
+		CPolyhedron::CreateIcosidodecahedron(10),
+		CPolyhedron::CreateRhombicTriacontahedron(10), objs, -37.5, 12.5));
+	polys.push_back(addPairOfPolys(
+		CPolyhedron::CreateRhombicosidodecahedron(10),
+		CPolyhedron::CreateDeltoidalHexecontahedron(10), objs, -37.5, 37.5));
+	polys.push_back(addPairOfPolys(
+		CPolyhedron::CreateTruncatedTetrahedron(10),
+		CPolyhedron::CreateTriakisTetrahedron(10), objs, -12.5, -37.5));
+	polys.push_back(addPairOfPolys(
+		CPolyhedron::CreateTruncatedHexahedron(10),
+		CPolyhedron::CreateTriakisOctahedron(10), objs, -12.5, 37.5));
+	polys.push_back(addPairOfPolys(
+		CPolyhedron::CreateTruncatedOctahedron(10),
+		CPolyhedron::CreateTetrakisHexahedron(10), objs, 12.5, -37.5));
+	polys.push_back(addPairOfPolys(
+		CPolyhedron::CreateTruncatedDodecahedron(10),
+		CPolyhedron::CreateTriakisIcosahedron(10), objs, 12.5, 37.5));
+	polys.push_back(addPairOfPolys(
+		CPolyhedron::CreateTruncatedIcosahedron(10),
+		CPolyhedron::CreatePentakisDodecahedron(10), objs, 37.5, -37.5));
+	polys.push_back(addPairOfPolys(
+		CPolyhedron::CreateRandomPolyhedron(10),
+		CPolyhedron::CreateRandomPolyhedron(10), objs, 37.5, -12.5));
+	polys.push_back(addPairOfPolys(
+		CPolyhedron::CreateDodecahedron(10),
+		CPolyhedron::CreateDeltoidalHexecontahedron(10), objs, 37.5, 12.5));
+	polys.push_back(addPairOfPolys(
+		CPolyhedron::CreateTriakisIcosahedron(10),
+		CPolyhedron::CreatePentakisDodecahedron(10), objs, 37.5, 37.5));
 	objs << getIntersections(polys);
 
 	scene1->insert(objs);
@@ -239,9 +221,8 @@ void display()
 
 int main()
 {
-	srand(
-		(unsigned int)mrpt::system::extractDayTimeFromTimestamp(
-			mrpt::system::getCurrentLocalTime()));
+	srand((unsigned int)mrpt::system::extractDayTimeFromTimestamp(
+		mrpt::system::now()));
 	try
 	{
 		display();

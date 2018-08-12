@@ -534,10 +534,9 @@ void xRawLogViewerFrame::OnMenuConvertExternallyStored(wxCommandEvent& event)
 	createDirectory(outDir);
 	if (!fileExists(outDir))
 	{
-		wxMessageBox(
-			_U(format(
-				   "*ABORTING*: Cannot create directory:\n%s", outDir.c_str())
-				   .c_str()));
+		wxMessageBox(_U(
+			format("*ABORTING*: Cannot create directory:\n%s", outDir.c_str())
+				.c_str()));
 		return;
 	}
 
@@ -767,8 +766,8 @@ void xRawLogViewerFrame::OnMenuConvertObservationOnly(wxCommandEvent& event)
 						TTimeObservationPair(newO->timestamp, newO));
 				}
 			}
-			else if (
-				newObj->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
+			else if (newObj->GetRuntimeClass()->derivedFrom(
+						 CLASS_ID(CObservation)))
 			{
 				CObservation::Ptr o =
 					std::dynamic_pointer_cast<CObservation>(newObj);
@@ -858,11 +857,10 @@ void xRawLogViewerFrame::OnMenuResortByTimestamp(wxCommandEvent& event)
 
 				if (tim == INVALID_TIMESTAMP)
 				{
-					wxMessageBox(
-						wxString::Format(
-							_("Error: Element %u does not have a valid "
-							  "timestamp."),
-							(unsigned int)i));
+					wxMessageBox(wxString::Format(
+						_("Error: Element %u does not have a valid "
+						  "timestamp."),
+						(unsigned int)i));
 					return;
 				}
 
@@ -924,7 +922,8 @@ void xRawLogViewerFrame::OnMenuShiftTimestampsByLabel(wxCommandEvent& event)
 	size_t i, n = rawlog.size();
 	unsigned int nChanges = 0;
 
-	TTimeStamp DeltaTime = mrpt::system::secondsToTimestamp(delta_time_secs);
+	auto DeltaTime =
+		std::chrono::microseconds(static_cast<uint64_t>(delta_time_secs * 1e6));
 
 	for (i = 0; i < n; i++)
 	{

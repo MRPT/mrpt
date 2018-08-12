@@ -11,7 +11,7 @@
 #include <chrono>
 #include <string>
 
-namespace mrpt::core
+namespace mrpt
 {
 /** Clock that is compatible with MRPT TTimeStamp representation
  * \ingroup mrpt_core_grp
@@ -27,12 +27,11 @@ class Clock
 
 	static constexpr bool is_steady = std::chrono::system_clock::is_steady;
 
-	static time_point now() noexcept
-	{
-		duration d = std::chrono::duration_cast<duration>(
-			std::chrono::system_clock::now().time_since_epoch());
-		d += std::chrono::seconds(11644473600);  // TTimeStamp offset constant
-		return time_point(d);
-	}
+	/** Returns the current time, with the highest resolution available.
+	 *  Typically this is better than 1 microsecond. */
+	static time_point now() noexcept;
+	/** Create a timestamp from its double representation. \sa
+	 * mrpt::system::timestampToDouble() */
+	static time_point fromDouble(const double t) noexcept;
 };
-}  // namespace mrpt::core
+}  // namespace mrpt

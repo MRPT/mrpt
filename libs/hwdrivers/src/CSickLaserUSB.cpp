@@ -90,12 +90,9 @@ void CSickLaserUSB::doProcessSimple(
 	else
 		AtUI = board_timestamp - m_timeStartUI;
 
-	mrpt::system::TTimeStamp AtDO =
-		mrpt::system::secondsToTimestamp(AtUI * 1e-3 /* Board time is ms */);
-	outObservation.timestamp =
-		m_timeStartTT + AtDO -
-		mrpt::system::secondsToTimestamp(
-			0.05);  // 50 ms delay for scan sending from the scanner
+	/* Board time is ms, -50ms aprox delay for scan sending from the scanner*/
+	auto AtDO = std::chrono::milliseconds(AtUI - 50);
+	outObservation.timestamp = m_timeStartTT + AtDO;
 
 	outObservation.sensorLabel = m_sensorLabel;  // Set label
 

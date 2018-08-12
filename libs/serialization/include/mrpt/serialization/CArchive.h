@@ -406,8 +406,8 @@ DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(float);
 DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(double);
 DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(long double);
 
-CArchive& operator<<(CArchive& out, const mrpt::core::Clock::time_point &a);
-CArchive& operator>>(CArchive& in, mrpt::core::Clock::time_point & a);
+CArchive& operator<<(CArchive& out, const mrpt::Clock::time_point &a);
+CArchive& operator>>(CArchive& in, mrpt::Clock::time_point & a);
 
 #define MRPT_READ_POD(_STREAM, _VARIABLE)                                    \
 	do                                                                       \

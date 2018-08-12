@@ -27,7 +27,8 @@ object system_timestampToParts(long_ timestamp)
 		"ttimeparts = TTimeParts()\n",
 		object(), locals);
 	object ttimeparts = locals["ttimeparts"];
-	uint64_t t = extract<uint64_t>(timestamp);
+	auto t = mrpt::Clock::time_point(
+		mrpt::Clock::duration(extract<uint64_t>(timestamp)));
 	TTimeParts p;
 	timestampToParts(t, p);
 	ttimeparts.attr("year") = p.year;
@@ -49,7 +50,9 @@ long_ system_time_tToTimestamp(const double& t)
 #ifdef ROS_EXTENSIONS
 object TTimeStamp_to_ROS_Time(long_ timestamp)
 {
-	double secs = timestampTotime_t(extract<uint64_t>(timestamp));
+	auto t = mrpt::Clock::time_point(
+		mrpt::Clock::duration(extract<uint64_t>(timestamp)));
+	double secs = timestampTotime_t(t);
 	// import rospy.Time
 	dict locals;
 	locals["secs"] = secs;

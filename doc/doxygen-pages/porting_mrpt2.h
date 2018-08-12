@@ -118,7 +118,11 @@
  *       #include <mrpt/core/aligned_std_vector.h>
  *       mrpt::aligned_std_vector<Foo> v;
  *       \endcode
- *
+ *  - mrpt::system::TTimeStamp is now a C++11-compatible std::chrono clock
+ * time_point. All existing backwards-compatible functions to handle dates and
+ * timestamps in MRPT remain, but C++11 chrono functions can be now also used
+ * instead. mrpt::system::secondsToTimestamp() has been removed since it mixed
+ * up a duration with time_point and may be prone to errors.
  *
  *
  * **Optional changes**

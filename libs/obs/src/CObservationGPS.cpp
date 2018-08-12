@@ -274,6 +274,8 @@ void CObservationGPS::clear()
 }
 void CObservationGPS::getDescriptionAsText(std::ostream& o) const
 {
+	using namespace mrpt::system; // for the TTimeStamp << operator
+
 	CObservation::getDescriptionAsText(o);
 
 	o << "Timestamp (UTC) of reception at the computer: "

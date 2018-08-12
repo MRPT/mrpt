@@ -79,10 +79,8 @@ COpenNI2Generic::COpenNI2Generic()
 	if (!this->start())
 	{
 #if MRPT_HAS_OPENNI2
-		THROW_EXCEPTION(
-			mrpt::format(
-				"After initialization:\n %s\n",
-				openni::OpenNI::getExtendedError()))
+		THROW_EXCEPTION(mrpt::format(
+			"After initialization:\n %s\n", openni::OpenNI::getExtendedError()))
 #endif
 	}
 }
@@ -109,10 +107,9 @@ COpenNI2Generic::COpenNI2Generic(
 		if (!this->start())
 		{
 #if MRPT_HAS_OPENNI2
-			THROW_EXCEPTION(
-				mrpt::format(
-					"After initialization:\n %s\n",
-					openni::OpenNI::getExtendedError()))
+			THROW_EXCEPTION(mrpt::format(
+				"After initialization:\n %s\n",
+				openni::OpenNI::getExtendedError()))
 #endif
 		}
 	}
@@ -182,9 +179,8 @@ int COpenNI2Generic::getConnectedDevices()
 
 	const size_t numDevices = oni2InfoArray.getSize();
 	showLog(mrpt::format("[%s]\n", __FUNCTION__));
-	showLog(
-		mrpt::format(
-			" Get device list. %d devices connected.\n", (int)numDevices));
+	showLog(mrpt::format(
+		" Get device list. %d devices connected.\n", (int)numDevices));
 
 	// Search new devices.
 	std::set<int> newDevices;
@@ -434,8 +430,8 @@ void COpenNI2Generic::close(unsigned sensor_id)
  *
  */
 void COpenNI2Generic::getNextFrameRGB(
-	mrpt::img::CImage& rgb_img, uint64_t& timestamp, bool& there_is_obs,
-	bool& hardware_error, unsigned sensor_id)
+	mrpt::img::CImage& rgb_img, mrpt::system::TTimeStamp& timestamp,
+	bool& there_is_obs, bool& hardware_error, unsigned sensor_id)
 {
 #if MRPT_HAS_OPENNI2
 	// Sensor index validation.
@@ -476,8 +472,8 @@ void COpenNI2Generic::getNextFrameRGB(
  *
  */
 void COpenNI2Generic::getNextFrameD(
-	mrpt::math::CMatrix& depth_img, uint64_t& timestamp, bool& there_is_obs,
-	bool& hardware_error, unsigned sensor_id)
+	mrpt::math::CMatrix& depth_img, mrpt::system::TTimeStamp& timestamp,
+	bool& there_is_obs, bool& hardware_error, unsigned sensor_id)
 {
 #if MRPT_HAS_OPENNI2
 	// Sensor index validation.
@@ -853,8 +849,8 @@ bool COpenNI2Generic::CDevice::open(int w, int h, int fps)
 }
 
 bool COpenNI2Generic::CDevice::getNextFrameRGB(
-	mrpt::img::CImage& img, uint64_t& timestamp, bool& there_is_obs,
-	bool& hardware_error)
+	mrpt::img::CImage& img, mrpt::system::TTimeStamp& timestamp,
+	bool& there_is_obs, bool& hardware_error)
 {
 	MRPT_START
 	if (!hasColor())
@@ -874,8 +870,8 @@ bool COpenNI2Generic::CDevice::getNextFrameRGB(
 }
 
 bool COpenNI2Generic::CDevice::getNextFrameD(
-	mrpt::math::CMatrix& img, uint64_t& timestamp, bool& there_is_obs,
-	bool& hardware_error)
+	mrpt::math::CMatrix& img, mrpt::system::TTimeStamp& timestamp,
+	bool& there_is_obs, bool& hardware_error)
 {
 	MRPT_START
 	if (!hasDepth())
@@ -1160,10 +1156,11 @@ bool COpenNI2Generic::CDevice::CStream::open(int w, int h, int fps)
 	openni::VideoMode options = m_stream.getVideoMode();
 	m_log << "[" << __FUNCTION__ << "]" << std::endl;
 	m_log << " " << m_strName << std::endl;
-	m_log << " " << mrpt::format(
-						"Initial resolution (%d, %d) FPS %d Format %d",
-						options.getResolutionX(), options.getResolutionY(),
-						options.getFps(), options.getPixelFormat())
+	m_log << " "
+		  << mrpt::format(
+				 "Initial resolution (%d, %d) FPS %d Format %d",
+				 options.getResolutionX(), options.getResolutionY(),
+				 options.getFps(), options.getPixelFormat())
 		  << std::endl;
 	if (m_verbose) printf("DBG: calling setONI2StreamMode()\n");
 	if (setONI2StreamMode(m_stream, w, h, fps, m_format) == false)
@@ -1175,10 +1172,11 @@ bool COpenNI2Generic::CDevice::CStream::open(int w, int h, int fps)
 	if (m_verbose) printf("DBG: returned OK from setONI2StreamMode()\n");
 	if (m_verbose) printf("DBG: calling stream.getVideoMode()\n");
 	options = m_stream.getVideoMode();
-	m_log << " " << mrpt::format(
-						"-> (%d, %d) FPS %d Format %d",
-						options.getResolutionX(), options.getResolutionY(),
-						options.getFps(), options.getPixelFormat())
+	m_log << " "
+		  << mrpt::format(
+				 "-> (%d, %d) FPS %d Format %d", options.getResolutionX(),
+				 options.getResolutionY(), options.getFps(),
+				 options.getPixelFormat())
 		  << std::endl;
 	if (m_verbose)
 		printf(
@@ -1214,8 +1212,8 @@ COpenNI2Generic::CDevice::CStream::Ptr
 }
 
 bool COpenNI2Generic::CDevice::CStream::getFrame(
-	openni::VideoFrameRef& frame, uint64_t& timestamp, bool& there_is_obs,
-	bool& hardware_error)
+	openni::VideoFrameRef& frame, mrpt::system::TTimeStamp& timestamp,
+	bool& there_is_obs, bool& hardware_error)
 {
 	there_is_obs = false;
 	hardware_error = false;

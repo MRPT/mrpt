@@ -91,17 +91,14 @@ void xRawLogViewerFrame::OnGenerateSeqImgs(wxCommandEvent& event)
 							CObservationStereoImages::Ptr obsSt =
 								SF->getObservationByIndexAs<
 									CObservationStereoImages::Ptr>(k);
-							obsSt->imageLeft.saveToFile(
-								format(
-									"%s/img_stereo_%u_left_%05u.%s",
-									outDir.c_str(), k, imgSaved,
-									imgFileExtension.c_str()));
+							obsSt->imageLeft.saveToFile(format(
+								"%s/img_stereo_%u_left_%05u.%s", outDir.c_str(),
+								k, imgSaved, imgFileExtension.c_str()));
 
-							obsSt->imageRight.saveToFile(
-								format(
-									"%s/img_stereo_%u_right_%05u.%s",
-									outDir.c_str(), k, imgSaved,
-									imgFileExtension.c_str()));
+							obsSt->imageRight.saveToFile(format(
+								"%s/img_stereo_%u_right_%05u.%s",
+								outDir.c_str(), k, imgSaved,
+								imgFileExtension.c_str()));
 							imgSaved++;
 						}
 						if (SF->getObservationByIndex(k)->GetRuntimeClass() ==
@@ -110,11 +107,9 @@ void xRawLogViewerFrame::OnGenerateSeqImgs(wxCommandEvent& event)
 							CObservationImage::Ptr obsIm =
 								SF->getObservationByIndexAs<
 									CObservationImage::Ptr>(k);
-							obsIm->image.saveToFile(
-								format(
-									"%s/img_monocular_%u_%05u.%s",
-									outDir.c_str(), k, imgSaved,
-									imgFileExtension.c_str()));
+							obsIm->image.saveToFile(format(
+								"%s/img_monocular_%u_%05u.%s", outDir.c_str(),
+								k, imgSaved, imgFileExtension.c_str()));
 							imgSaved++;
 						}
 					}
@@ -130,28 +125,25 @@ void xRawLogViewerFrame::OnGenerateSeqImgs(wxCommandEvent& event)
 						CObservationStereoImages::Ptr obsSt =
 							std::dynamic_pointer_cast<CObservationStereoImages>(
 								o);
-						obsSt->imageLeft.saveToFile(
-							format(
-								"%s/img_stereo_%s_left_%05u.%s", outDir.c_str(),
-								obsSt->sensorLabel.c_str(), imgSaved,
-								imgFileExtension.c_str()));
+						obsSt->imageLeft.saveToFile(format(
+							"%s/img_stereo_%s_left_%05u.%s", outDir.c_str(),
+							obsSt->sensorLabel.c_str(), imgSaved,
+							imgFileExtension.c_str()));
 
-						obsSt->imageRight.saveToFile(
-							format(
-								"%s/img_stereo_%s_right_%05u.%s",
-								outDir.c_str(), obsSt->sensorLabel.c_str(),
-								imgSaved, imgFileExtension.c_str()));
+						obsSt->imageRight.saveToFile(format(
+							"%s/img_stereo_%s_right_%05u.%s", outDir.c_str(),
+							obsSt->sensorLabel.c_str(), imgSaved,
+							imgFileExtension.c_str()));
 						imgSaved++;
 					}
 					else if (IS_CLASS(o, CObservationImage))
 					{
 						CObservationImage::Ptr obsIm =
 							std::dynamic_pointer_cast<CObservationImage>(o);
-						obsIm->image.saveToFile(
-							format(
-								"%s/img_monocular_%s_%05u.%s", outDir.c_str(),
-								obsIm->sensorLabel.c_str(), imgSaved,
-								imgFileExtension.c_str()));
+						obsIm->image.saveToFile(format(
+							"%s/img_monocular_%s_%05u.%s", outDir.c_str(),
+							obsIm->sensorLabel.c_str(), imgSaved,
+							imgFileExtension.c_str()));
 						imgSaved++;
 					}
 				}
@@ -245,7 +237,11 @@ void xRawLogViewerFrame::OnMenuMono2Stereo(wxCommandEvent& event)
 					CObservationStereoImages::Ptr new_obs =
 						mrpt::make_aligned_shared<CObservationStereoImages>();
 
-					new_obs->timestamp = (o_l->timestamp + o_r->timestamp) >> 1;
+					new_obs->timestamp =
+						mrpt::Clock::time_point(mrpt::Clock::duration(
+							(o_l->timestamp.time_since_epoch().count() >> 1) +
+							(o_r->timestamp.time_since_epoch().count() >> 1)));
+
 					new_obs->sensorLabel = lb_stereo;
 
 					new_obs->cameraPose = CPose3DQuat(o_l->cameraPose);
@@ -576,10 +572,9 @@ void xRawLogViewerFrame::OnMenuRenameImageFiles(wxCommandEvent& event)
 							renameExternalImageFile(obsIm);
 							N++;
 						}  // end if CObservationImage
-						else if (
-							IS_CLASS(
-								SF->getObservationByIndex(k),
-								CObservationStereoImages))
+						else if (IS_CLASS(
+									 SF->getObservationByIndex(k),
+									 CObservationStereoImages))
 						{
 							CObservationStereoImages::Ptr obsIm =
 								SF->getObservationByIndexAs<

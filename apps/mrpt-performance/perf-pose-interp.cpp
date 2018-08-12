@@ -23,8 +23,9 @@ using mrpt::DEG2RAD;
 // ------------------------------------------------------
 
 // interpolator tests ======================
-template <typename PATH_T, typename pose_t, bool INSERT_AT_END,
-		  bool BENCHMARK_INSERT_nQUERY>
+template <
+	typename PATH_T, typename pose_t, bool INSERT_AT_END,
+	bool BENCHMARK_INSERT_nQUERY>
 double pose_interp_test(int a1, int a2)
 {
 	const long N = 400000;
@@ -34,11 +35,12 @@ double pose_interp_test(int a1, int a2)
 		mrpt::poses::CPose3D(1.0, 2.0, 0, DEG2RAD(10), .0, .0).asTPose());
 
 	PATH_T pose_path;
-	const auto t0 = mrpt::system::Clock::now();
-	const auto dt = std::chrono::milliseconds(250);
+	const auto t0 = mrpt::Clock::now();
+	using namespace std::chrono_literals;
+	const auto dt = 250ms;
 	auto t = t0;
 
-	std::vector<mrpt::system::Clock::duration> Ats(N);
+	std::vector<mrpt::Clock::duration> Ats(N);
 	for (long i = 0; i < N; i++)
 	{
 		if (INSERT_AT_END)
@@ -49,7 +51,8 @@ double pose_interp_test(int a1, int a2)
 		{
 			std::chrono::duration<double> randomDuration(
 				mrpt::random::getRandomGenerator().drawUniform(-5.0, 5.0));
-			Ats[i] = std::chrono::duration_cast<mrpt::system::Clock::duration>(randomDuration); 
+			Ats[i] = std::chrono::duration_cast<mrpt::Clock::duration>(
+				randomDuration);
 		}
 	}
 
@@ -70,7 +73,7 @@ double pose_interp_test(int a1, int a2)
 			pose_path.insert(t, a);
 			t += 2 * Ats[i];
 		}
-		t = t0 + std::chrono::milliseconds(4512);
+		t = t0 + 4512ms;  // arbitrary period
 
 		pose_t p;
 		bool valid;
@@ -93,46 +96,37 @@ void register_tests_pose_interp()
 {
 	mrpt::random::getRandomGenerator().randomize(1234);
 
-	using mrpt::math::TPose3D;
 	using mrpt::math::TPose2D;
+	using mrpt::math::TPose3D;
 	using namespace mrpt::poses;
 
-	lstTests.push_back(
-		TestData(
-			"CPose3DInterpolator: CPose3D insert pose at end",
-			&pose_interp_test<CPose3DInterpolator, CPose3D, true, true>));
-	lstTests.push_back(
-		TestData(
-			"CPose3DInterpolator: CPose3D insert pose random",
-			&pose_interp_test<CPose3DInterpolator, CPose3D, false, true>));
-	lstTests.push_back(
-		TestData(
-			"CPose3DInterpolator: CPose3D query",
-			&pose_interp_test<CPose3DInterpolator, CPose3D, true, false>));
+	lstTests.push_back(TestData(
+		"CPose3DInterpolator: CPose3D insert pose at end",
+		&pose_interp_test<CPose3DInterpolator, CPose3D, true, true>));
+	lstTests.push_back(TestData(
+		"CPose3DInterpolator: CPose3D insert pose random",
+		&pose_interp_test<CPose3DInterpolator, CPose3D, false, true>));
+	lstTests.push_back(TestData(
+		"CPose3DInterpolator: CPose3D query",
+		&pose_interp_test<CPose3DInterpolator, CPose3D, true, false>));
 
-	lstTests.push_back(
-		TestData(
-			"CPose3DInterpolator: TPose3D insert pose at end",
-			&pose_interp_test<CPose3DInterpolator, TPose3D, true, true>));
-	lstTests.push_back(
-		TestData(
-			"CPose3DInterpolator: TPose3D insert pose random",
-			&pose_interp_test<CPose3DInterpolator, TPose3D, false, true>));
-	lstTests.push_back(
-		TestData(
-			"CPose3DInterpolator: TPose3D query",
-			&pose_interp_test<CPose3DInterpolator, TPose3D, true, false>));
+	lstTests.push_back(TestData(
+		"CPose3DInterpolator: TPose3D insert pose at end",
+		&pose_interp_test<CPose3DInterpolator, TPose3D, true, true>));
+	lstTests.push_back(TestData(
+		"CPose3DInterpolator: TPose3D insert pose random",
+		&pose_interp_test<CPose3DInterpolator, TPose3D, false, true>));
+	lstTests.push_back(TestData(
+		"CPose3DInterpolator: TPose3D query",
+		&pose_interp_test<CPose3DInterpolator, TPose3D, true, false>));
 
-	lstTests.push_back(
-		TestData(
-			"CPose2DInterpolator: TPose2D insert pose at end",
-			&pose_interp_test<CPose2DInterpolator, TPose2D, true, true>));
-	lstTests.push_back(
-		TestData(
-			"CPose2DInterpolator: TPose2D insert pose random",
-			&pose_interp_test<CPose2DInterpolator, TPose2D, false, true>));
-	lstTests.push_back(
-		TestData(
-			"CPose2DInterpolator: TPose2D query",
-			&pose_interp_test<CPose2DInterpolator, TPose2D, true, false>));
+	lstTests.push_back(TestData(
+		"CPose2DInterpolator: TPose2D insert pose at end",
+		&pose_interp_test<CPose2DInterpolator, TPose2D, true, true>));
+	lstTests.push_back(TestData(
+		"CPose2DInterpolator: TPose2D insert pose random",
+		&pose_interp_test<CPose2DInterpolator, TPose2D, false, true>));
+	lstTests.push_back(TestData(
+		"CPose2DInterpolator: TPose2D query",
+		&pose_interp_test<CPose2DInterpolator, TPose2D, true, false>));
 }

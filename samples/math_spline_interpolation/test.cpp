@@ -28,9 +28,9 @@ using namespace std;
 // ------------------------------------------------------
 void TestCPose3DInterpolation()
 {
-	mrpt::system::Clock::time_point iniTs = mrpt::system::Clock::now();
-	mrpt::system::Clock::time_point ts = iniTs;
-	mrpt::system::Clock::time_point ots = iniTs;
+	mrpt::Clock::time_point iniTs = mrpt::Clock::now();
+	mrpt::Clock::time_point ts = iniTs;
+	mrpt::Clock::time_point ots = iniTs;
 	mrpt::poses::CPose3D pose(0, 0, 0, 0, 0, 0);
 	mrpt::poses::CPose3DInterpolator poseInt;
 	std::vector<mrpt::poses::CPose3D> p;

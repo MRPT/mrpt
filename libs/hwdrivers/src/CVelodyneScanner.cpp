@@ -14,6 +14,7 @@
 #include <mrpt/comms/net_utils.h>
 #include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/system/datetime.h>  // timeDifference
 #include <mrpt/core/reverse_bytes.h>
 #include <thread>
 
@@ -193,11 +194,10 @@ void CVelodyneScanner::loadConfig_sensorSpecific(
 	const model_properties_list_t& lstModels = TModelPropertiesFactory::get();
 	if (lstModels.find(m_model) == lstModels.end())
 	{
-		THROW_EXCEPTION(
-			mrpt::format(
-				"Unrecognized `model` parameter: `%u` . Known values are: %s",
-				static_cast<unsigned int>(m_model),
-				TModelPropertiesFactory::getListKnownModels().c_str()))
+		THROW_EXCEPTION(mrpt::format(
+			"Unrecognized `model` parameter: `%u` . Known values are: %s",
+			static_cast<unsigned int>(m_model),
+			TModelPropertiesFactory::getListKnownModels().c_str()))
 	}
 
 	// Optional HTTP-based settings:
@@ -275,7 +275,7 @@ bool CVelodyneScanner::getNextObservation(
 			if (m_rx_scan && !m_rx_scan->scan_packets.empty())
 			{
 				if ((rx_pkt_start_angle <
-					m_rx_scan->scan_packets.rbegin()->blocks[0].rotation) || 
+					 m_rx_scan->scan_packets.rbegin()->blocks[0].rotation) ||
 					!m_return_frames)
 				{
 					outScan = m_rx_scan;
@@ -395,9 +395,9 @@ void CVelodyneScanner::doProcess()
 }
 
 /** Tries to initialize the sensor, after setting all the parameters with a call
-* to loadConfig.
-*  \exception This method must throw an exception with a descriptive message if
-* some critical error is found. */
+ * to loadConfig.
+ *  \exception This method must throw an exception with a descriptive message if
+ * some critical error is found. */
 void CVelodyneScanner::initialize()
 {
 	this->close();
@@ -437,10 +437,9 @@ void CVelodyneScanner::initialize()
 		// (1) Create LIDAR DATA socket
 		// --------------------------------
 		if (INVALID_SOCKET == (m_hDataSock = socket(PF_INET, SOCK_DGRAM, 0)))
-			THROW_EXCEPTION(
-				format(
-					"Error creating UDP socket:\n%s",
-					mrpt::comms::net::getLastSocketErrorStr().c_str()));
+			THROW_EXCEPTION(format(
+				"Error creating UDP socket:\n%s",
+				mrpt::comms::net::getLastSocketErrorStr().c_str()));
 
 		struct sockaddr_in bindAddr;
 		memset(&bindAddr, 0, sizeof(bindAddr));
@@ -471,10 +470,9 @@ void CVelodyneScanner::initialize()
 		// --------------------------------
 		if (INVALID_SOCKET ==
 			(m_hPositionSock = socket(PF_INET, SOCK_DGRAM, 0)))
-			THROW_EXCEPTION(
-				format(
-					"Error creating UDP socket:\n%s",
-					mrpt::comms::net::getLastSocketErrorStr().c_str()));
+			THROW_EXCEPTION(format(
+				"Error creating UDP socket:\n%s",
+				mrpt::comms::net::getLastSocketErrorStr().c_str()));
 
 		bindAddr.sin_port = htons(VELODYNE_POSITION_UDP_PORT);
 
@@ -778,7 +776,7 @@ bool CVelodyneScanner::receivePackets(
 	// Position packet decimation:
 	if (pos_pkt_timestamp != INVALID_TIMESTAMP)
 	{
-		if (m_last_pos_packet_timestamp != INVALID_TIMESTAMP &&
+		if ((m_last_pos_packet_timestamp != INVALID_TIMESTAMP) &&
 			mrpt::system::timeDifference(
 				m_last_pos_packet_timestamp, pos_pkt_timestamp) <
 				m_pos_packets_min_period)
@@ -853,10 +851,9 @@ mrpt::system::TTimeStamp CVelodyneScanner::internal_receive_UDP_packet(
 			if (retval < 0)  // poll() error?
 			{
 				if (errno != EINTR)
-					THROW_EXCEPTION(
-						format(
-							"Error in UDP poll():\n%s",
-							mrpt::comms::net::getLastSocketErrorStr().c_str()));
+					THROW_EXCEPTION(format(
+						"Error in UDP poll():\n%s",
+						mrpt::comms::net::getLastSocketErrorStr().c_str()));
 			}
 			if (retval == 0)  // poll() timeout?
 			{
@@ -901,7 +898,9 @@ mrpt::system::TTimeStamp CVelodyneScanner::internal_receive_UDP_packet(
 	// estimate when the scan occurred.
 	const mrpt::system::TTimeStamp time2 = mrpt::system::now();
 
-	return (time1 / 2 + time2 / 2);
+	return mrpt::Clock::time_point(mrpt::Clock::duration(
+		time1.time_since_epoch().count() / 2 +
+		time2.time_since_epoch().count() / 2));
 }
 
 bool CVelodyneScanner::internal_read_PCAP_packet(
@@ -1095,7 +1094,7 @@ bool CVelodyneScanner::setLidarOnOff(bool on)
 
 void CVelodyneScanner::setFramePublishing(bool on)
 {
-	//frame publishing | data packet publishing = on|off
+	// frame publishing | data packet publishing = on|off
 	MRPT_START;
 	m_return_frames = on;
 	MRPT_END;

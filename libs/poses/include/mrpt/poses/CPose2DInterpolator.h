@@ -36,7 +36,7 @@ namespace mrpt::poses
   * cout << "Pose at t: " << path.interpolate(t,p,valid).asString() << endl;
   * \endcode
   *
-  *  Time is represented with mrpt::system::Clock::time_point.
+  *  Time is represented with mrpt::Clock::time_point.
   *  See mrpt::system for methods and utilities to manage these time references.
   *
   *  See TInterpolatorMethod for the list of interpolation methods. The default

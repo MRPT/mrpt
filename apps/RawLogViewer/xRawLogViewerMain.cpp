@@ -6410,7 +6410,11 @@ void xRawLogViewerFrame::OnMenuRegenerateOdometryTimes(wxCommandEvent& event)
 						if (lastOdo && lastObsTime != INVALID_TIMESTAMP)
 						{  // Do average:
 							lastOdo->timestamp =
-								(lastObsTime >> 1) + (thisObsTime >> 1);
+								mrpt::Clock::time_point(mrpt::Clock::duration(
+									(lastObsTime.time_since_epoch().count() >>
+									 1) +
+									(thisObsTime.time_since_epoch().count() >>
+									 1)));
 							lastOdo.reset();
 							nChanges++;
 						}

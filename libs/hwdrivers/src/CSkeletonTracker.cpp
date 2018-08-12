@@ -56,8 +56,8 @@ string jointNames[] = {
 CSkeletonTracker::CSkeletonTracker()
 	: m_skeletons_ptr(nullptr),
 	  m_userTracker_ptr(nullptr),
-	  m_timeStartUI(0),
-	  m_timeStartTT(0),
+	  m_timeStartUI(),
+	  m_timeStartTT(),
 	  m_sensorPose(),
 	  m_nUsers(0),
 	  m_showPreview(false),
@@ -175,10 +175,8 @@ void CSkeletonTracker::processPreviewNone()
 						CSphere::Ptr part =
 							mrpt::make_aligned_shared<CSphere>(HEAD_RADIUS);
 						part->setColor(1, 1, 1, ALPHA_CH);
-						part->setPose(
-							math::TPose3D(
-								0, 0, 0.5 * BODY_LENGTH + HEAD_RADIUS, 0, 0,
-								0));
+						part->setPose(math::TPose3D(
+							0, 0, 0.5 * BODY_LENGTH + HEAD_RADIUS, 0, 0, 0));
 						dummy->insert(part);
 					}
 					{
@@ -197,10 +195,9 @@ void CSkeletonTracker::processPreviewNone()
 							mrpt::make_aligned_shared<CCylinder>(
 								ARM_RADIUS, ARM_RADIUS, ARM_LENGTH);
 						part->setColor(1, 1, 1, ALPHA_CH);
-						part->setPose(
-							math::TPose3D(
-								-BODY_RADIUS, 0, 0.5 * BODY_LENGTH - ARM_RADIUS,
-								0, DEG2RAD(-90), 0));
+						part->setPose(math::TPose3D(
+							-BODY_RADIUS, 0, 0.5 * BODY_LENGTH - ARM_RADIUS, 0,
+							DEG2RAD(-90), 0));
 						dummy->insert(part);
 					}
 					{
@@ -209,10 +206,9 @@ void CSkeletonTracker::processPreviewNone()
 							mrpt::make_aligned_shared<CCylinder>(
 								ARM_RADIUS, ARM_RADIUS, ARM_LENGTH);
 						part->setColor(1, 1, 1, ALPHA_CH);
-						part->setPose(
-							math::TPose3D(
-								-BODY_RADIUS - ARM_LENGTH + ARM_RADIUS, 0,
-								0.5 * BODY_LENGTH - ARM_RADIUS, 0, 0, 0));
+						part->setPose(math::TPose3D(
+							-BODY_RADIUS - ARM_LENGTH + ARM_RADIUS, 0,
+							0.5 * BODY_LENGTH - ARM_RADIUS, 0, 0, 0));
 						dummy->insert(part);
 					}
 					{
@@ -221,10 +217,9 @@ void CSkeletonTracker::processPreviewNone()
 							mrpt::make_aligned_shared<CCylinder>(
 								ARM_RADIUS, ARM_RADIUS, ARM_LENGTH);
 						part->setColor(1, 1, 1, ALPHA_CH);
-						part->setPose(
-							math::TPose3D(
-								BODY_RADIUS, 0, 0.5 * BODY_LENGTH - ARM_RADIUS,
-								0, DEG2RAD(90), 0));
+						part->setPose(math::TPose3D(
+							BODY_RADIUS, 0, 0.5 * BODY_LENGTH - ARM_RADIUS, 0,
+							DEG2RAD(90), 0));
 						dummy->insert(part);
 					}
 					{
@@ -233,10 +228,9 @@ void CSkeletonTracker::processPreviewNone()
 							mrpt::make_aligned_shared<CCylinder>(
 								ARM_RADIUS, ARM_RADIUS, ARM_LENGTH);
 						part->setColor(1, 1, 1, ALPHA_CH);
-						part->setPose(
-							math::TPose3D(
-								BODY_RADIUS + ARM_LENGTH - ARM_RADIUS, 0,
-								0.5 * BODY_LENGTH - ARM_RADIUS, 0, 0, 0));
+						part->setPose(math::TPose3D(
+							BODY_RADIUS + ARM_LENGTH - ARM_RADIUS, 0,
+							0.5 * BODY_LENGTH - ARM_RADIUS, 0, 0, 0));
 						dummy->insert(part);
 					}
 					{
@@ -245,10 +239,9 @@ void CSkeletonTracker::processPreviewNone()
 							mrpt::make_aligned_shared<CCylinder>(
 								LEG_RADIUS, LEG_RADIUS, LEG_LENGTH);
 						part->setColor(1, 1, 1, ALPHA_CH);
-						part->setPose(
-							math::TPose3D(
-								-BODY_RADIUS + LEG_RADIUS, 0,
-								-(0.5 * BODY_LENGTH + LEG_LENGTH), 0, 0, 0));
+						part->setPose(math::TPose3D(
+							-BODY_RADIUS + LEG_RADIUS, 0,
+							-(0.5 * BODY_LENGTH + LEG_LENGTH), 0, 0, 0));
 						dummy->insert(part);
 					}
 					{
@@ -257,10 +250,9 @@ void CSkeletonTracker::processPreviewNone()
 							mrpt::make_aligned_shared<CCylinder>(
 								LEG_RADIUS, LEG_RADIUS, LEG_LENGTH);
 						part->setColor(1, 1, 1, ALPHA_CH);
-						part->setPose(
-							math::TPose3D(
-								BODY_RADIUS - LEG_RADIUS, 0,
-								-(0.5 * BODY_LENGTH + LEG_LENGTH), 0, 0, 0));
+						part->setPose(math::TPose3D(
+							BODY_RADIUS - LEG_RADIUS, 0,
+							-(0.5 * BODY_LENGTH + LEG_LENGTH), 0, 0, 0));
 						dummy->insert(part);
 					}
 					scene->insert(dummy);
@@ -427,9 +419,8 @@ void CSkeletonTracker::processPreview(
 
 					CSphere::Ptr s = std::dynamic_pointer_cast<CSphere>(
 						body->getByName(jointNames[i]));
-					s->setPose(
-						mrpt::math::TPose3D(
-							j.x * 1e-3, j.y * 1e-3, j.z * 1e-3, 0, 0, 0));
+					s->setPose(mrpt::math::TPose3D(
+						j.x * 1e-3, j.y * 1e-3, j.z * 1e-3, 0, 0, 0));
 					s->setColor(
 						std::min(1.0, 2 * (1 - j.conf)),
 						std::min(1.0, 2 * j.conf), 0);
@@ -519,9 +510,10 @@ void CSkeletonTracker::doProcess()
 			else
 				AtUI = nowUI - m_timeStartUI;
 
-			mrpt::system::TTimeStamp AtDO = mrpt::system::secondsToTimestamp(
-				AtUI * 1e-6 /* Board time is usec */);
+			/* Board time is usec */
+			const auto AtDO = std::chrono::microseconds(AtUI);
 			mrpt::system::TTimeStamp ts = m_timeStartTT + AtDO;
+			obs->timestamp = ts;
 
 			// fill joint data
 			FILL_JOINT_DATA(head, nite::JOINT_HEAD)

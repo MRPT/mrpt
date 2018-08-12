@@ -157,7 +157,7 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 
 		// Move our estimation:
 		m_lastPoseEst.processUpdateNewOdometry(
-			odo->odometry.asTPose(), mrpt::system::toTimePoint(odo->timestamp), odo->hasVelocities,
+			odo->odometry.asTPose(), odo->timestamp, odo->hasVelocities,
 			odo->velocityLocal);
 
 		if (pose_before_valid)
@@ -187,7 +187,7 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 					"and new observation timestamp...");
 				if (!m_lastPoseEst.getCurrentEstimate(
 						initialEstimatedRobotPose, robotVelLocal,
-						robotVelGlobal, mrpt::system::toTimePoint(obs->timestamp)))
+						robotVelGlobal, obs->timestamp))
 				{  // couldn't had a good extrapolation estimate... we'll have
 					// to live with the latest pose:
 					m_lastPoseEst.getLatestRobotPose(initialEstimatedRobotPose);
@@ -315,7 +315,7 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 					// 1.
 					&runningTime,  // Running time
 					&icpReturn  // Returned information
-					);
+				);
 
 				if (icpReturn.goodness > ICP_options.minICPgoodnessToAccept)
 				{
@@ -324,7 +324,7 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 					pEst2D.copyFrom(*pestPose);
 
 					m_lastPoseEst.processUpdateNewPoseLocalization(
-						pEst2D.mean.asTPose(), mrpt::system::toTimePoint(obs->timestamp));
+						pEst2D.mean.asTPose(), obs->timestamp);
 					m_lastPoseEst_cov = pEst2D.cov;
 
 					m_distSinceLastICP.updatePose(pEst2D.mean);
@@ -334,12 +334,11 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 						"processObservation: previousPose="
 						<< previousKnownRobotPose << "-> currentPose="
 						<< pEst2D.getMeanVal() << std::endl);
-					MRPT_LOG_INFO(
-						format(
-							"[CMetricMapBuilderICP]   Fit:%.1f%% Itr:%i In "
-							"%.02fms \n",
-							icpReturn.goodness * 100, icpReturn.nIterations,
-							1000 * runningTime));
+					MRPT_LOG_INFO(format(
+						"[CMetricMapBuilderICP]   Fit:%.1f%% Itr:%i In "
+						"%.02fms \n",
+						icpReturn.goodness * 100, icpReturn.nIterations,
+						1000 * runningTime));
 				}
 				else
 				{
@@ -418,10 +417,9 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 			resetRobotDisplacementCounters(currentKnownRobotPose);
 			// m_distSinceLastInsertion[obs->sensorLabel].updatePose(currentKnownRobotPose);
 
-			MRPT_LOG_INFO(
-				mrpt::format(
-					"Updating map from pose %s\n",
-					currentKnownRobotPose.asString().c_str()));
+			MRPT_LOG_INFO(mrpt::format(
+				"Updating map from pose %s\n",
+				currentKnownRobotPose.asString().c_str()));
 
 			CPose3D estimatedPose3D(currentKnownRobotPose);
 			const bool anymap_update =
@@ -565,7 +563,7 @@ void CMetricMapBuilderICP::initialize(
 
 	if (x0)
 		m_lastPoseEst.processUpdateNewPoseLocalization(
-			x0->getMeanVal().asTPose(), mrpt::system::Clock::now());
+			x0->getMeanVal().asTPose(), mrpt::Clock::now());
 
 	for (size_t i = 0; i < SF_Poses_seq.size(); i++)
 	{

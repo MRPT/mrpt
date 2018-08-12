@@ -17,6 +17,8 @@
 #ifndef KINECT_CALIBRATE_GUIMAIN_H
 #define KINECT_CALIBRATE_GUIMAIN_H
 
+#include <atomic>
+
 #include "wx/defs.h"
 
 //(*Headers(kinect_calibrate_guiDialog)
@@ -79,23 +81,14 @@ struct TThreadParam
 // doesn't freeze.
 struct TThreadDetectCornerParam
 {
-	TThreadDetectCornerParam()
-		: quit(false),
-		  terminated(false),
-		  ready_for_new_images(true),
-		  image_timestamp(INVALID_TIMESTAMP),
-		  detected_corners_done(false)
-	{
-	}
+	std::atomic<bool> quit{false};
+	std::atomic<bool> terminated{false};
 
-	volatile bool quit;
-	volatile bool terminated;
-
-	volatile bool ready_for_new_images;
+	std::atomic<bool> ready_for_new_images{true};
 	mrpt::img::CImage image;
-	volatile mrpt::system::TTimeStamp image_timestamp;
+	mrpt::system::TTimeStamp image_timestamp{INVALID_TIMESTAMP};
 	std::vector<mrpt::img::TPixelCoordf> detected_corners;
-	volatile bool detected_corners_done;
+	std::atomic<bool> detected_corners_done{false};
 };
 
 enum TGrabState
