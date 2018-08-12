@@ -12,6 +12,9 @@
 
 namespace mrpt
 {
+/** \addtogroup mrpt_core_grp
+ * @{ */
+
 /** Reverse the order of the bytes of a given type (useful for transforming btw
  * little/big endian)  */
 void reverseBytesInPlace(bool& v_in_out);
@@ -35,4 +38,5 @@ inline void reverseBytes(const T& v_in, T& v_out)
 	v_out = v_in;
 	reverseBytesInPlace(v_out);
 }
-}  // end of namespace
+/** @} */
+}  // namespace mrpt
