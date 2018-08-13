@@ -25,7 +25,8 @@ static uint64_t getCurrentTime()
 	FILETIME t;
 	GetSystemTimeAsFileTime(&t);
 	return (((uint64_t)t.dwHighDateTime) << 32) | ((uint64_t)t.dwLowDateTime);
-#elif defined(__APPLE__)
+#else
+#if defined(__APPLE__)
 	struct timeval tv;
 	timespec tim;
 	gettimeofday(&tv, nullptr);
@@ -39,6 +40,7 @@ static uint64_t getCurrentTime()
 	// Convert to TTimeStamp 100-nanoseconds representation:
 	return uint64_t(tim.tv_sec) * UINT64_C(10000000) +
 		   UINT64_C(116444736) * UINT64_C(1000000000) + tim.tv_nsec / 100;
+#endif
 }
 
 mrpt::Clock::time_point mrpt::Clock::now() noexcept
