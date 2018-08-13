@@ -273,7 +273,8 @@ void xRawLogViewerFrame::OnImportSequenceOfImages(wxCommandEvent& event)
 	ASSERT_(FPS > 0);
 
 	// Compute the Timestamp increments (of 100ns):
-	TTimeStamp At = (TTimeStamp)((1 / FPS) * 10000000.0);
+	const auto At =
+		std::chrono::microseconds(static_cast<uint64_t>((1e6 / FPS)));
 
 	wxBusyCursor waitCursor;
 	int nEntries = (int)lstFiles.size();

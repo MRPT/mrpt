@@ -605,8 +605,7 @@ void do_pf_localization(
 								mrpt::format(
 									"timestamp: %s",
 									mrpt::system::dateTimeLocalToString(
-										cur_obs_timestamp.time_since_epoch()
-											.count())
+										cur_obs_timestamp)
 										.c_str()),
 								mrpt::img::TColorf(.8f, .8f, .8f), "mono", 15,
 								mrpt::opengl::NICE, 6001);
