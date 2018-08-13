@@ -105,7 +105,8 @@ void ThreadsTest()
 	std::thread hT1(thread_reader, std::ref(*read_pipe));
 	std::thread hT2(thread_writer, std::ref(*write_pipe));
 
-	std::this_thread::sleep_for(std::chrono::milliseconds(10));
+	using namespace std::chrono_literals;
+	std::this_thread::sleep_for(10ms);
 	// Wait for the threads to end.
 	hT2.join();
 	// We need to close this to ensure the pipe gets flushed

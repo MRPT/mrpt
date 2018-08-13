@@ -17,16 +17,18 @@ template class mrpt::CTraitsTest<mrpt::poses::CPose2DInterpolator>;
 TEST(CPose2DInterpolator, interp)
 {
 	using namespace mrpt::poses;
-	using mrpt::math::TPose2D;
 	using mrpt::DEG2RAD;
+	using mrpt::math::TPose2D;
 
 	auto t0 = mrpt::Clock::now();
-	std::chrono::milliseconds dt(100);
+	using namespace std::chrono_literals;
+	auto dt = 100ms;
 
 	CPose2DInterpolator pose_path;
 
 	pose_path.insert(t0, TPose2D(1., 2., DEG2RAD(30.0)));
-	pose_path.insert(t0 + 2 * dt, TPose2D(1. + 3., 2. + 4., DEG2RAD(30.0 + 20.0)));
+	pose_path.insert(
+		t0 + 2 * dt, TPose2D(1. + 3., 2. + 4., DEG2RAD(30.0 + 20.0)));
 
 	TPose2D interp;
 	bool valid;

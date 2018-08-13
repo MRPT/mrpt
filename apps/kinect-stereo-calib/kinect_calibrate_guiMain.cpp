@@ -1851,8 +1851,8 @@ void kinect_calibrate_guiDialog::thread_find_corners()
 			p.ready_for_new_images = true;
 
 			if (!p.detected_corners_done &&
-				last_img_proc != p.image_timestamp.load() &&
-				(p.image_timestamp.load() != INVALID_TIMESTAMP))
+				last_img_proc != p.image_timestamp &&
+				(p.image_timestamp != INVALID_TIMESTAMP))
 			{
 				// Yes:
 				p.ready_for_new_images = false;

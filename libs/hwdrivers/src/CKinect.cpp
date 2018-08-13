@@ -546,9 +546,8 @@ void CKinect::getNextObservation(
 
 #if MRPT_HAS_KINECT_FREENECT
 
-	static const double max_wait_seconds = 1. / 25.;
-	static const auto max_wait = std::chrono::milliseconds(
-		static_cast<uint64_t>(max_wait_seconds * 1e3));
+	using namespace std::chrono_literals;
+	const auto max_wait = 40ms;  // 1/25 FPS
 
 	// Mark previous observation's timestamp as out-dated:
 	m_latest_obs.hasPoints3D = false;

@@ -181,7 +181,7 @@ void CIMUIntersense::doProcess()
 			AtUI = nowUI - m_timeStartUI;
 
 		/* Board time is sec */
-		obs->timestamp = m_timeStartTT + std::chrono::milliseconds(AtUI * 1e-3);
+		obs->timestamp = m_timeStartTT + std::chrono::microseconds(AtUI * 1e+6);
 
 		// other stuff
 		obs->sensorPose = m_sensorPose;

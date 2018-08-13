@@ -86,7 +86,7 @@ struct TThreadDetectCornerParam
 
 	std::atomic<bool> ready_for_new_images{true};
 	mrpt::img::CImage image;
-	std::atomic<mrpt::system::TTimeStamp> image_timestamp{INVALID_TIMESTAMP};
+	mrpt::system::TTimeStamp image_timestamp{INVALID_TIMESTAMP};
 	std::vector<mrpt::img::TPixelCoordf> detected_corners;
 	std::atomic<bool> detected_corners_done{false};
 };

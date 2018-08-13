@@ -1183,7 +1183,8 @@ void getGroundTruth(
 		{
 			// Look for the timestamp:
 			static CPose2DInterpolator GT_path;
-			GT_path.setMaxTimeInterpolation(std::chrono::milliseconds(200));
+			using namespace std::chrono_literals;
+			GT_path.setMaxTimeInterpolation(200ms);
 			if (first_step)
 			{
 				for (int i = 0; i < GT.rows(); i++)

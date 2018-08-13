@@ -1334,7 +1334,8 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
 		if (dialog.ShowModal() != wxID_OK) return;
 
 		wxBusyCursor waitCursor;
-		const std::chrono::milliseconds interval(10);
+		using namespace std::chrono_literals;
+		const auto interval = 10ms;
 		if (!robot_path.saveInterpolatedToTextFile(
 				string(dialog.GetPath().mb_str()), interval))
 			::wxMessageBox(_("Error creating file."));
