@@ -989,7 +989,7 @@ void CLandmarksMap::fuseWith(CLandmarksMap& other, bool justInsertAllOfThem)
 	CLandmark *thisLM, *otherLM;
 	int i, n;
 	bool verbose = true;  // false;
-	TTimeStamp lastestTime = 0;
+	TTimeStamp lastestTime;
 	unsigned int nRemoved = 0;
 
 	if (!justInsertAllOfThem)
@@ -1052,11 +1052,12 @@ void CLandmarksMap::fuseWith(CLandmarksMap& other, bool justInsertAllOfThem)
 			if (landmarks.get(i)->getType() !=
 				featNotDefined)  // Occupancy features
 			{
-				TTimeStamp t =
-					lastestTime - landmarks.get(i)->timestampLastSeen;
-				double tt =
-					(int64_t)t * 0.0000001;  // (int64_t) required by MSVC6
-				if (tt > fuseOptions.ellapsedTime &&
+				const double dt =
+					1e-3 *
+					std::chrono::duration_cast<std::chrono::milliseconds>(
+						lastestTime - landmarks.get(i)->timestampLastSeen)
+						.count();
+				if (dt > fuseOptions.ellapsedTime &&
 					landmarks.get(i)->seenTimesCount < fuseOptions.minTimesSeen)
 				{
 					landmarks.erase(i);

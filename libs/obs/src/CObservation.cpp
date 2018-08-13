@@ -43,6 +43,8 @@ void CObservation::swap(CObservation& o)
 
 void CObservation::getDescriptionAsText(std::ostream& o) const
 {
+	using namespace mrpt::system; // for the TTimeStamp << op
+
 	o << "Timestamp (UTC): " << mrpt::system::dateTimeToString(timestamp)
 	  << std::endl;
 	o << "  (as time_t): " << std::fixed << std::setprecision(5)

@@ -128,8 +128,7 @@ bool mrpt::obs::carmen_log_parse_line(
 		S >> timestamp >> robotName;
 
 		const mrpt::system::TTimeStamp obs_time =
-			time_start_log +
-			mrpt::system::secondsToTimestamp(timestamp);  // seconds -> times
+			time_start_log + std::chrono::microseconds(static_cast<uint64_t>(1e-6 * timestamp));
 
 		obsLaser->timestamp = obs_time;
 
@@ -182,11 +181,11 @@ bool mrpt::obs::carmen_log_parse_line(
 						global_log_params
 							.getWithDefaultVal("robot_front_laser_max", "81.0")
 							.c_str());
-					resolutionDeg = atof(
-						global_log_params
-							.getWithDefaultVal(
-								"laser_front_laser_resolution", "0.5")
-							.c_str());
+					resolutionDeg =
+						atof(global_log_params
+								 .getWithDefaultVal(
+									 "laser_front_laser_resolution", "0.5")
+								 .c_str());
 				}
 				else if (line[0] == 'R')
 				{  // rear:
@@ -194,11 +193,11 @@ bool mrpt::obs::carmen_log_parse_line(
 						global_log_params
 							.getWithDefaultVal("robot_rear_laser_max", "81.0")
 							.c_str());
-					resolutionDeg = atof(
-						global_log_params
-							.getWithDefaultVal(
-								"laser_rear_laser_resolution", "0.5")
-							.c_str());
+					resolutionDeg =
+						atof(global_log_params
+								 .getWithDefaultVal(
+									 "laser_rear_laser_resolution", "0.5")
+								 .c_str());
 				}
 				obsLaser->maxRange = maxRange;
 				obsLaser->aperture = DEG2RAD(resolutionDeg) * nRanges;
@@ -238,8 +237,7 @@ bool mrpt::obs::carmen_log_parse_line(
 		S >> timestamp >> robotName;
 
 		const mrpt::system::TTimeStamp obs_time =
-			time_start_log +
-			mrpt::system::secondsToTimestamp(timestamp);  // seconds -> times
+			time_start_log + std::chrono::microseconds(static_cast<uint64_t>(1e-6 * timestamp));
 
 		obsLaser->timestamp = obs_time;
 

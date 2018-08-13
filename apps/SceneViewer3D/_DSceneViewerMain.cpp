@@ -1297,8 +1297,8 @@ void _DSceneViewerFrame::OnTravellingTrigger(wxTimerEvent& event)
 					return;
 				}
 
-				mrpt::system::Clock::time_point t = m_dlg_tracking->m_poses.begin()->first +
-							   (mrpt::system::Clock::now() - m_travelling_start_time.value());
+				mrpt::Clock::time_point t = m_dlg_tracking->m_poses.begin()->first +
+							   (mrpt::Clock::now() - m_travelling_start_time.value());
 				bool valid = false;
 				CPose3D p;
 				while (!valid && t < m_dlg_tracking->m_poses.rbegin()->first)
@@ -1306,7 +1306,7 @@ void _DSceneViewerFrame::OnTravellingTrigger(wxTimerEvent& event)
 					m_dlg_tracking->m_poses.interpolate(t, p, valid);
 					if (!valid)
 					{
-						mrpt::system::Clock::duration At = std::chrono::milliseconds(100);
+						mrpt::Clock::duration At = std::chrono::milliseconds(100);
 						t += At;
 						m_travelling_start_time.value() -= At;
 					}

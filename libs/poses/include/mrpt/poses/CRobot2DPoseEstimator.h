@@ -10,7 +10,7 @@
 #define CRobot2DPoseEstimator_H
 
 #include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/system/Clock.h>
+#include <mrpt/core/Clock.h>
 #include <mrpt/poses/poses_frwds.h>
 #include <mutex>
 
@@ -41,12 +41,12 @@ class CRobot2DPoseEstimator
 	 * localization / SLAM.
 	  */
 	void processUpdateNewPoseLocalization(
-		const mrpt::math::TPose2D& newPose, mrpt::system::Clock::time_point tim);
+		const mrpt::math::TPose2D& newPose, mrpt::Clock::time_point tim);
 
 	/** Updates the filter with new odometry readings. */
 	void processUpdateNewOdometry(
 		const mrpt::math::TPose2D& newGlobalOdometry,
-		mrpt::system::Clock::time_point cur_tim, bool hasVelocities = false,
+		mrpt::Clock::time_point cur_tim, bool hasVelocities = false,
 		const mrpt::math::TTwist2D& newRobotVelLocal = mrpt::math::TTwist2D());
 
 	/** Get the estimate for a given timestamp (defaults to `now()`), obtained
@@ -61,7 +61,7 @@ class CRobot2DPoseEstimator
 	bool getCurrentEstimate(
 		mrpt::math::TPose2D& pose, mrpt::math::TTwist2D& velLocal,
 		mrpt::math::TTwist2D& velGlobal,
-		mrpt::system::Clock::time_point tim_query = mrpt::system::Clock::now()) const;
+		mrpt::Clock::time_point tim_query = mrpt::Clock::now()) const;
 
 	/** Get the latest known robot pose, either from odometry or localization.
 	*  This differs from getCurrentEstimate() in that this method does NOT
@@ -89,7 +89,7 @@ class CRobot2DPoseEstimator
    private:
 	std::mutex m_cs;
 
-	std::optional<mrpt::system::Clock::time_point> m_last_loc_time;
+	std::optional<mrpt::Clock::time_point> m_last_loc_time;
 	/** Last pose as estimated by the localization/SLAM subsystem. */
 	mrpt::math::TPose2D m_last_loc;
 
@@ -97,7 +97,7 @@ class CRobot2DPoseEstimator
 	 * "coordinates base" for subsequent odo readings) */
 	mrpt::math::TPose2D m_loc_odo_ref;
 
-	std::optional<mrpt::system::Clock::time_point> m_last_odo_time;
+	std::optional<mrpt::Clock::time_point> m_last_odo_time;
 	mrpt::math::TPose2D m_last_odo;
 	/** Robot odometry-based velocity in a local frame of reference. */
 	mrpt::math::TTwist2D m_robot_vel_local;

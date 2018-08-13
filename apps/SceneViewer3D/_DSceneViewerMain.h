@@ -209,7 +209,7 @@ class _DSceneViewerFrame : public wxFrame
 
 	wxTimer m_tTravelling;
 	bool m_travelling_is_arbitrary;
-	std::optional<mrpt::system::Clock::time_point> m_travelling_start_time;
+	std::optional<mrpt::Clock::time_point> m_travelling_start_time;
 
 	int m_nTicksNumber;
 	double m_nCurrentAzimuth;

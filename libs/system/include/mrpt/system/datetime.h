@@ -8,25 +8,29 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/core/Clock.h>
+#include <mrpt/core/exceptions.h>
 #include <cstdint>
 #include <string>
+#include <iosfwd>
 
 /** Represents an invalid timestamp, where applicable. */
-#define INVALID_TIMESTAMP (0)
+#define INVALID_TIMESTAMP mrpt::Clock::time_point()
 
 namespace mrpt::system
 {
 /** @defgroup time_date Time and date functions (in #include
  * <mrpt/system/datetime.h>)
-  * \ingroup mrpt_system_grp
-  * @{ */
+ * \ingroup mrpt_system_grp
+ * @{ */
 
 /** A system independent time type, it holds the the number of 100-nanosecond
- * intervals since January 1, 1601 (UTC).
+ * intervals since January 1, 1601 (UTC) as a mrpt::Clock::time_point
+ * (uint64_t).
  * \sa system::getCurrentTime, system::timeDifference, INVALID_TIMESTAMP,
  * TTimeParts
  */
-using TTimeStamp = uint64_t;
+using TTimeStamp = mrpt::Clock::time_point;
 
 /** The parts of a date/time (it's like the standard 'tm' but with fractions of
  * seconds).
@@ -45,106 +49,109 @@ struct TTimeParts
 };
 
 /** Builds a timestamp from the parts (Parts are in UTC)
-  * \sa timestampToParts
-  */
+ * \sa timestampToParts
+ */
 mrpt::system::TTimeStamp buildTimestampFromParts(
 	const mrpt::system::TTimeParts& p);
 
 /** Builds a timestamp from the parts (Parts are in local time)
-  * \sa timestampToParts, buildTimestampFromParts
-  */
+ * \sa timestampToParts, buildTimestampFromParts
+ */
 mrpt::system::TTimeStamp buildTimestampFromPartsLocalTime(
 	const mrpt::system::TTimeParts& p);
 
 /** Gets the individual parts of a date/time (days, hours, minutes, seconds) -
  * UTC time or local time
-  * \sa buildTimestampFromParts
-  */
+ * \sa buildTimestampFromParts
+ */
 void timestampToParts(TTimeStamp t, TTimeParts& p, bool localTime = false);
 
 /** Returns the current (UTC) system time.
-  * \sa now,getCurrentLocalTime
-  */
-mrpt::system::TTimeStamp getCurrentTime();
+ * \sa now
+ */
+inline mrpt::system::TTimeStamp getCurrentTime() { return mrpt::Clock::now(); }
 
 /** A shortcut for system::getCurrentTime
-  * \sa getCurrentTime, getCurrentLocalTime
+ * \sa getCurrentTime
  */
-inline mrpt::system::TTimeStamp now() { return getCurrentTime(); }
-/** Returns the current (local) time.
-  * \sa now,getCurrentTime
-  */
-mrpt::system::TTimeStamp getCurrentLocalTime();
+inline mrpt::system::TTimeStamp now() { return mrpt::Clock::now(); }
 
 /** Transform from standard "time_t" (actually a double number, it can contain
  * fractions of seconds) to TTimeStamp.
-  * \sa timestampTotime_t
-  */
+ * \sa timestampTotime_t
+ */
 mrpt::system::TTimeStamp time_tToTimestamp(const double t);
 
 /** Transform from standard "time_t" to TTimeStamp.
-  * \sa timestampTotime_t
-  */
+ * \sa timestampTotime_t
+ */
 mrpt::system::TTimeStamp time_tToTimestamp(const time_t& t);
 
 /** Transform from TTimeStamp to standard "time_t" (actually a double number, it
  * can contain fractions of seconds).
-  * \sa time_tToTimestamp, secondsToTimestamp
-  */
+ * \sa time_tToTimestamp
+ */
 double timestampTotime_t(const mrpt::system::TTimeStamp t);
 
 /** Transform from TTimeStamp to standard "time_t" (actually a double number, it
  * can contain fractions of seconds).
-  * This function is just an (inline) alias of timestampTotime_t(), with a more
+ * This function is just an (inline) alias of timestampTotime_t(), with a more
  * significant name.
-  * \sa time_tToTimestamp, secondsToTimestamp
-  */
+ * \sa time_tToTimestamp
+ */
 inline double timestampToDouble(const mrpt::system::TTimeStamp t)
 {
 	return timestampTotime_t(t);
 }
 
 /** Returns the time difference from t1 to t2 (positive if t2 is posterior to
- * t1), in seconds \sa secondsToTimestamp */
-double timeDifference(
+ * t1), in seconds  */
+inline double timeDifference(
 	const mrpt::system::TTimeStamp t_first,
-	const mrpt::system::TTimeStamp t_later);
+	const mrpt::system::TTimeStamp t_later)
+{
+	MRPT_START
+	ASSERT_(t_later != INVALID_TIMESTAMP);
+	ASSERT_(t_first != INVALID_TIMESTAMP);
+	return 1e-6 * std::chrono::duration_cast<std::chrono::microseconds>(
+					  t_later - t_first)
+					  .count();
+	MRPT_END
+}
 
 /** Returns the current time, as a `double` (fractional version of time_t)
-* instead of a `TTimeStamp`.
-* \sa now(), timestampTotime_t() */
+ * instead of a `TTimeStamp`.
+ * \sa now(), timestampTotime_t() */
 inline double now_double()
 {
 	return mrpt::system::timestampTotime_t(mrpt::system::getCurrentTime());
 }
 
 /** Shifts a timestamp the given amount of seconds (>0: forwards in time, <0:
- * backwards) \sa secondsToTimestamp */
-mrpt::system::TTimeStamp timestampAdd(
-	const mrpt::system::TTimeStamp tim, const double num_seconds);
-
-/** Transform a time interval (in seconds) into TTimeStamp (e.g. which can be
- * added to an existing valid timestamp)
-  * \sa timeDifference
-  */
-mrpt::system::TTimeStamp secondsToTimestamp(const double nSeconds);
+ * backwards)  */
+inline mrpt::system::TTimeStamp timestampAdd(
+	const mrpt::system::TTimeStamp tim, const double num_seconds)
+{
+	return tim +
+		   std::chrono::microseconds(static_cast<uint64_t>(num_seconds * 1e6));
+}
 
 /** Returns a formated string with the given time difference (passed as the
  * number of seconds), as a string [H]H:MM:SS.MILISECS
-  * \sa unitsFormat
-  */
+ * \sa unitsFormat
+ */
 std::string formatTimeInterval(const double timeSeconds);
 
 /** Convert a timestamp into this textual form (UTC time):
  * YEAR/MONTH/DAY,HH:MM:SS.MMM
-  * \sa dateTimeLocalToString
-  */
+ * \sa dateTimeLocalToString
+ */
 std::string dateTimeToString(const mrpt::system::TTimeStamp t);
 
 /** Convert a timestamp into this textual form (in local time):
  * YEAR/MONTH/DAY,HH:MM:SS.MMM
-  * \sa dateTimeToString
-  */
+ * \sa dateTimeToString
+ */
 std::string dateTimeLocalToString(const mrpt::system::TTimeStamp t);
 
 /** Convert a timestamp into this textual form: YEAR/MONTH/DAY
@@ -173,7 +180,10 @@ std::string timeLocalToString(
  */
 std::string intervalFormat(const double seconds);
 
+/** Textual representation of a TTimeStamp as the plain number in
+ * time_since_epoch().count() */
+std::ostream& operator<<(std::ostream& o, const TTimeStamp& t);
+
 /** @} */
 
-}
-
+}  // namespace mrpt::system

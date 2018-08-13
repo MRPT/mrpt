@@ -12,6 +12,7 @@
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CRobot2DPoseEstimator.h>
+#include <mrpt/system/datetime.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mutex>
 #include <iostream>
@@ -19,7 +20,6 @@
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::math;
-
 using namespace mrpt::system;
 using namespace std;
 
@@ -108,7 +108,7 @@ void CRobot2DPoseEstimator::processUpdateNewOdometry(
 
 bool CRobot2DPoseEstimator::getCurrentEstimate(
 	mrpt::math::TPose2D& pose, mrpt::math::TTwist2D& velLocal,
-	mrpt::math::TTwist2D& velGlobal, mrpt::system::Clock::time_point tim_query) const
+	mrpt::math::TTwist2D& velGlobal, mrpt::Clock::time_point tim_query) const
 {
 	if (!m_last_odo_time || !m_last_loc_time)
 		return false;

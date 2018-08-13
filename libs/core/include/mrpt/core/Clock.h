@@ -11,7 +11,7 @@
 #include <chrono>
 #include <string>
 
-namespace mrpt::core
+namespace mrpt
 {
 /** Clock that is compatible with MRPT TTimeStamp representation
  * \ingroup mrpt_core_grp
@@ -31,4 +31,4 @@ class Clock
 	 *  Typically this is better than 1 microsecond. */
 	static time_point now() noexcept;
 };
-}  // namespace mrpt::core
+}  // namespace mrpt

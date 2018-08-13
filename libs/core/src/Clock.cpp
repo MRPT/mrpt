@@ -19,8 +19,6 @@
 
 #include <ctime>  // clock_gettime
 
-using namespace mrpt::core;
-
 static uint64_t getCurrentTime()
 {
 #ifdef _WIN32
@@ -43,7 +41,7 @@ static uint64_t getCurrentTime()
 		   UINT64_C(116444736) * UINT64_C(1000000000) + tim.tv_nsec / 100;
 }
 
-Clock::time_point Clock::now() noexcept
+mrpt::Clock::time_point mrpt::Clock::now() noexcept
 {
 	return time_point(duration(getCurrentTime()));
 }

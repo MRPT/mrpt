@@ -20,7 +20,6 @@
 
 namespace mrpt::graphslam
 {
-
 template <class GRAPH_T>
 const std::string CGraphSlamEngine<GRAPH_T>::header_sep = std::string(80, '-');
 template <class GRAPH_T>
@@ -101,7 +100,7 @@ typename GRAPH_T::global_pose_t
 
 template <class GRAPH_T>
 typename GRAPH_T::global_poses_t
-CGraphSlamEngine<GRAPH_T>::getRobotEstimatedTrajectory() const
+	CGraphSlamEngine<GRAPH_T>::getRobotEstimatedTrajectory() const
 {
 	std::lock_guard<std::mutex> graph_lock(m_graph_section);
 	return m_graph.nodes;
@@ -986,9 +985,10 @@ inline void CGraphSlamEngine<GRAPH_T>::computeMap() const
 
 		// traverse all the nodes - add their laser scans at their corresponding
 		// poses
-		for (std::map<mrpt::graphs::TNodeID,
-					  mrpt::obs::CObservation2DRangeScan::Ptr>::const_iterator
-				 it = m_nodes_to_laser_scans2D.begin();
+		for (std::map<
+				 mrpt::graphs::TNodeID,
+				 mrpt::obs::CObservation2DRangeScan::Ptr>::const_iterator it =
+				 m_nodes_to_laser_scans2D.begin();
 			 it != m_nodes_to_laser_scans2D.end(); ++it)
 		{
 			const mrpt::graphs::TNodeID& curr_node = it->first;
@@ -1164,14 +1164,9 @@ void CGraphSlamEngine<GRAPH_T>::initResultsFile(const std::string& fname)
 
 	MRPT_LOG_INFO_STREAM("Setting up file: " << fname);
 
-// current time vars
-#if defined(__APPLE__)
+	// current time vars
 	mrpt::system::TTimeStamp cur_date(getCurrentTime());
 	std::string time_spec = "UTC Time";
-#else
-	mrpt::system::TTimeStamp cur_date(getCurrentLocalTime());
-	std::string time_spec = "Time";
-#endif
 	string cur_date_str(dateTimeToString(cur_date));
 	string cur_date_validstr(fileNameStripInvalidChars(cur_date_str));
 
@@ -1867,8 +1862,8 @@ void CGraphSlamEngine<GRAPH_T>::initMapVisualization()
 
 template <class GRAPH_T>
 void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
-	const std::map<mrpt::graphs::TNodeID,
-				   mrpt::obs::CObservation2DRangeScan::Ptr>&
+	const std::map<
+		mrpt::graphs::TNodeID, mrpt::obs::CObservation2DRangeScan::Ptr>&
 		nodes_to_laser_scans2D,
 	bool full_update /*= false */)
 {
@@ -1920,9 +1915,10 @@ void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
 
 		// get the node laser scan
 		CObservation2DRangeScan::Ptr scan_content;
-		std::map<mrpt::graphs::TNodeID,
-				 mrpt::obs::CObservation2DRangeScan::Ptr>::const_iterator
-			search = nodes_to_laser_scans2D.find(*node_it);
+		std::map<
+			mrpt::graphs::TNodeID,
+			mrpt::obs::CObservation2DRangeScan::Ptr>::const_iterator search =
+			nodes_to_laser_scans2D.find(*node_it);
 
 		// make sure that the laser scan exists and is valid
 		if (search != nodes_to_laser_scans2D.end() && search->second)
@@ -2735,7 +2731,6 @@ void CGraphSlamEngine<GRAPH_T>::generateReportFiles(
 		format(
 			"Output directory \"%s\" doesn't exist", output_dir_fname.c_str()));
 
-
 	MRPT_LOG_INFO_STREAM("Generating detailed class report...");
 	std::lock_guard<std::mutex> graph_lock(m_graph_section);
 
@@ -2838,8 +2833,6 @@ void CGraphSlamEngine<GRAPH_T>::getDeformationEnergyVector(
 
 	MRPT_END;
 }
-} // end of namespace mrpt
+}  // namespace mrpt::graphslam
 
 #endif /* end of include guard: CGRAPHSLAMENGINE_IMPL_H */
-
-

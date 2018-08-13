@@ -20,7 +20,7 @@ TEST(CPose2DInterpolator, interp)
 	using mrpt::math::TPose2D;
 	using mrpt::DEG2RAD;
 
-	auto t0 = mrpt::system::Clock::now();
+	auto t0 = mrpt::Clock::now();
 	std::chrono::milliseconds dt(100);
 
 	CPose2DInterpolator pose_path;

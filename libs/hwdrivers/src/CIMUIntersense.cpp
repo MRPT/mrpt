@@ -41,16 +41,6 @@ using namespace std;
 					CIMUIntersense
 -------------------------------------------------------------*/
 CIMUIntersense::CIMUIntersense()
-	: m_handles_ptr(nullptr),
-	  m_timeStartUI(0),
-	  m_timeStartTT(0),
-	  m_sensorPose(),
-	  m_nSensors(0),
-	  m_sensitivity(10),
-	  m_enhancement(2),
-	  m_prediction(0),
-	  m_useBuffer(false),
-	  m_toutCounter(0)
 {
 	m_sensorLabel = "isenseIMU";
 
@@ -190,11 +180,8 @@ void CIMUIntersense::doProcess()
 		else
 			AtUI = nowUI - m_timeStartUI;
 
-		// mrpt::system::TTimeStamp AtDO = mrpt::system::secondsToTimestamp(
-		// AtUI * 1e-6 /* Board time is usec */ );
-		mrpt::system::TTimeStamp AtDO =
-			mrpt::system::secondsToTimestamp(AtUI /* Board time is sec */);
-		obs->timestamp = m_timeStartTT + AtDO;
+		/* Board time is sec */
+		obs->timestamp = m_timeStartTT + std::chrono::milliseconds(AtUI * 1e-3);
 
 		// other stuff
 		obs->sensorPose = m_sensorPose;
@@ -288,7 +275,7 @@ void CIMUIntersense::initialize()
 					res_ok ? cout << " DONE" << endl : cout << " ERROR" << endl;
 
 #if 0  // set ring buffer to avoid data loss and start it:
-					// 180 samples is ~1 second at maximum data rate for wired devices 
+	   // 180 samples is ~1 second at maximum data rate for wired devices
 					if( station_info[i].State == 1 /*station.State == 1*/ )
 					{
 						if( false && m_useBuffer )
@@ -296,7 +283,7 @@ void CIMUIntersense::initialize()
 							ISD_RingBufferSetup(isense_handles[i],i,nullptr,180);
 							ISD_RingBufferStart(isense_handles[i],i);
 						}
-						
+
 					} // end-if
 #endif
 					std::this_thread::sleep_for(500ms);

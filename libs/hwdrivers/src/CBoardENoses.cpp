@@ -277,8 +277,8 @@ bool CBoardENoses::getObservation(mrpt::obs::CObservationGasSensors& obs)
 						{
 							newRead.hasTemperature = true;
 							newRead.temperature =
-								((int16_t)readings[i * wordsPereNose + 2 * idx +
-												   3]) /
+								((int16_t)readings
+									 [i * wordsPereNose + 2 * idx + 3]) /
 								32.0f;
 						}
 						else  // Is a gas sensors
@@ -312,7 +312,7 @@ bool CBoardENoses::getObservation(mrpt::obs::CObservationGasSensors& obs)
 			// (always last 2
 			// words)
 			obs.timestamp =
-				mrpt::system::secondsToTimestamp(((double)*p) / 1000);
+				mrpt::system::time_tToTimestamp(((double)*p) / 1000);
 
 			if (first_reading)
 			{
@@ -364,10 +364,10 @@ bool CBoardENoses::getObservation(mrpt::obs::CObservationGasSensors& obs)
 					doProcess
 -------------------------------------------------------------*/
 /** This method should be called periodically (at least at 1Hz to capture ALL
-* the real-time data)
-*  It is thread safe, i.e. you can call this from one thread, then to other
-* methods from other threads.
-*/
+ * the real-time data)
+ *  It is thread safe, i.e. you can call this from one thread, then to other
+ * methods from other threads.
+ */
 void CBoardENoses::doProcess()
 {
 	CObservationGasSensors::Ptr obs =
@@ -390,9 +390,9 @@ void CBoardENoses::doProcess()
 -------------------------------------------------------------*/
 /** Tries to open the camera, after setting all the parameters with a call to
  * loadConfig.
-  *  \exception This method must throw an exception with a descriptive message
+ *  \exception This method must throw an exception with a descriptive message
  * if some critical error is found.
-  */
+ */
 void CBoardENoses::initialize()
 {
 	// We'll rather try it in doProcess() since it's quite usual that it fails

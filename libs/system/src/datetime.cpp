@@ -36,6 +36,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <cmath>  // floor()
+#include <iostream>  // for the << operator
 
 using namespace mrpt;
 using namespace mrpt::system;
@@ -43,59 +44,21 @@ using namespace std;
 
 mrpt::system::TTimeStamp mrpt::system::time_tToTimestamp(const time_t& t)
 {
-	return uint64_t(t) * UINT64_C(10000000) +
-		   UINT64_C(116444736) * UINT64_C(1000000000);
+	return time_tToTimestamp(static_cast<double>(t));
 }
 
 mrpt::system::TTimeStamp mrpt::system::time_tToTimestamp(const double t)
 {
-	return uint64_t(t * 10000000.0) +
-		   UINT64_C(116444736) * UINT64_C(1000000000);
+	return mrpt::Clock::time_point(mrpt::Clock::duration(
+		uint64_t(t * 10000000.0) + UINT64_C(116444736) * UINT64_C(1000000000)));
 }
 
 double mrpt::system::timestampTotime_t(const mrpt::system::TTimeStamp t)
 {
-	return double(t - UINT64_C(116444736) * UINT64_C(1000000000)) / 10000000.0;
-}
-
-/* Jerome Monceaux 2011/03/08: bilock@gmail.com
- * comment this include because it is not find
- * under snow leopard
- */
-#if defined(__APPLE__)
-//#	include <CFBase.h> // for CFAbsoluteTimeGetCurrent
-#include <sys/timeb.h>
-#include <sys/types.h>
-#endif
-
-/*---------------------------------------------------------------
-					Returns the current system time.
-  ---------------------------------------------------------------*/
-mrpt::system::TTimeStamp mrpt::system::getCurrentTime()
-{
-#ifdef _WIN32
-	FILETIME t;
-	GetSystemTimeAsFileTime(&t);
-	return (((uint64_t)t.dwHighDateTime) << 32) | ((uint64_t)t.dwLowDateTime);
-#elif defined(__APPLE__)
-
-	/* Jerome Monceaux 2011/03/08: bilock@gmail.com
-	 * comment the next line because it does not compile
-	 * under snow osx and an exception was thrown systematically
-	 */
-	struct timeval tv;
-	timespec tim;
-
-	gettimeofday(&tv, nullptr);
-	tim.tv_sec = tv.tv_sec;
-	tim.tv_nsec = tv.tv_usec * 1000;
-
-	return time_tToTimestamp(tim.tv_sec) + tim.tv_nsec / 100;
-#else
-	timespec tim;
-	clock_gettime(CLOCK_REALTIME, &tim);
-	return time_tToTimestamp(tim.tv_sec) + tim.tv_nsec / 100;
-#endif
+	return double(
+			   t.time_since_epoch().count() -
+			   UINT64_C(116444736) * UINT64_C(1000000000)) /
+		   10000000.0;
 }
 
 /*---------------------------------------------------------------
@@ -169,64 +132,6 @@ TTimeStamp mrpt::system::buildTimestampFromPartsLocalTime(const TTimeParts& p)
 }
 
 /*---------------------------------------------------------------
-					Returns the current local time.
-  ---------------------------------------------------------------*/
-mrpt::system::TTimeStamp mrpt::system::getCurrentLocalTime()
-{
-#ifdef _WIN32
-	FILETIME tt, t;
-	GetSystemTimeAsFileTime(&tt);
-	FileTimeToLocalFileTime(&tt, &t);
-
-	return (((uint64_t)t.dwHighDateTime) << 32) | ((uint64_t)t.dwLowDateTime);
-#elif defined(__APPLE__)
-	// See:
-	// http://www.wand.net.nz/~smr26/wordpress/2009/01/19/monotonic-time-in-mac-os-x/
-	THROW_EXCEPTION("to do");
-#else
-	timespec tim;
-	clock_gettime(CLOCK_REALTIME, &tim);
-
-	time_t tt;
-	struct tm* timeinfo;
-	time(&tt);
-	timeinfo = localtime(&tt);
-
-	return time_tToTimestamp(mktime(timeinfo)) + tim.tv_nsec / 100;
-#endif
-}
-
-mrpt::system::TTimeStamp mrpt::system::timestampAdd(
-	const mrpt::system::TTimeStamp tim, const double num_seconds)
-{
-	return static_cast<mrpt::system::TTimeStamp>(
-		tim + static_cast<int64_t>(num_seconds * 10000000.0));
-}
-
-/*---------------------------------------------------------------
-					timeDifference
-  ---------------------------------------------------------------*/
-double mrpt::system::timeDifference(
-	const mrpt::system::TTimeStamp t1, const mrpt::system::TTimeStamp t2)
-{
-	MRPT_START
-	ASSERT_(t1 != INVALID_TIMESTAMP);
-	ASSERT_(t2 != INVALID_TIMESTAMP);
-
-	return (int64_t(t2) - int64_t(t1)) / 10000000.0;
-
-	MRPT_END
-}
-
-/*---------------------------------------------------------------
-					secondsToTimestamp
-  ---------------------------------------------------------------*/
-mrpt::system::TTimeStamp mrpt::system::secondsToTimestamp(const double nSeconds)
-{
-	return (mrpt::system::TTimeStamp)(nSeconds * 10000000.0);
-}
-
-/*---------------------------------------------------------------
 					formatTimeInterval
   ---------------------------------------------------------------*/
 string mrpt::system::formatTimeInterval(const double t)
@@ -249,7 +154,8 @@ string mrpt::system::dateTimeToString(const mrpt::system::TTimeStamp t)
 {
 	if (t == INVALID_TIMESTAMP) return string("INVALID_TIMESTAMP");
 
-	uint64_t tmp = (t - ((uint64_t)116444736 * 1000000000));
+	uint64_t tmp =
+		(t.time_since_epoch().count() - ((uint64_t)116444736 * 1000000000));
 	time_t auxTime = tmp / (uint64_t)10000000;
 	unsigned int secFractions =
 		(unsigned int)(1000000 * (tmp % 10000000) / 10000000.0);
@@ -271,7 +177,8 @@ string mrpt::system::dateTimeLocalToString(const mrpt::system::TTimeStamp t)
 {
 	if (t == INVALID_TIMESTAMP) return string("INVALID_TIMESTAMP");
 
-	uint64_t tmp = (t - ((uint64_t)116444736 * 1000000000));
+	uint64_t tmp =
+		(t.time_since_epoch().count() - ((uint64_t)116444736 * 1000000000));
 	time_t auxTime = tmp / (uint64_t)10000000;
 	unsigned int secFractions =
 		(unsigned int)(1000000 * (tmp % 10000000) / 10000000.0);
@@ -289,11 +196,12 @@ string mrpt::system::dateTimeLocalToString(const mrpt::system::TTimeStamp t)
 						extractDayTimeFromTimestamp
   ---------------------------------------------------------------*/
 double mrpt::system::extractDayTimeFromTimestamp(
-	const mrpt::system::TTimeStamp t)
+	const mrpt::system::TTimeStamp tt)
 {
 	MRPT_START
-	ASSERT_(t != INVALID_TIMESTAMP);
+	ASSERT_(tt != INVALID_TIMESTAMP);
 
+	auto t = tt.time_since_epoch().count();
 #ifdef _WIN32
 	SYSTEMTIME sysT;
 	FileTimeToSystemTime((FILETIME*)&t, &sysT);
@@ -313,9 +221,10 @@ double mrpt::system::extractDayTimeFromTimestamp(
   Convert a timestamp into this textual form: HH:MM:SS.MMM
   ---------------------------------------------------------------*/
 string mrpt::system::timeLocalToString(
-	const mrpt::system::TTimeStamp t, unsigned int secondFractionDigits)
+	const mrpt::system::TTimeStamp tt, unsigned int secondFractionDigits)
 {
-	if (t == INVALID_TIMESTAMP) return string("INVALID_TIMESTAMP");
+	if (tt == INVALID_TIMESTAMP) return string("INVALID_TIMESTAMP");
+	auto t = tt.time_since_epoch().count();
 
 	uint64_t tmp = (t - ((uint64_t)116444736 * 1000000000));
 	const time_t auxTime = tmp / (uint64_t)10000000;
@@ -335,9 +244,10 @@ string mrpt::system::timeLocalToString(
 /*---------------------------------------------------------------
   Convert a timestamp into this textual form: HH:MM:SS.MMM
   ---------------------------------------------------------------*/
-string mrpt::system::timeToString(const mrpt::system::TTimeStamp t)
+string mrpt::system::timeToString(const mrpt::system::TTimeStamp tt)
 {
-	if (t == INVALID_TIMESTAMP) return string("INVALID_TIMESTAMP");
+	if (tt == INVALID_TIMESTAMP) return string("INVALID_TIMESTAMP");
+	auto t = tt.time_since_epoch().count();
 
 	uint64_t tmp = (t - ((uint64_t)116444736 * 1000000000));
 	time_t auxTime = tmp / (uint64_t)10000000;
@@ -354,9 +264,10 @@ string mrpt::system::timeToString(const mrpt::system::TTimeStamp t)
 /*---------------------------------------------------------------
   Convert a timestamp into this textual form: YEAR/MONTH/DAY
   ---------------------------------------------------------------*/
-string mrpt::system::dateToString(const mrpt::system::TTimeStamp t)
+string mrpt::system::dateToString(const mrpt::system::TTimeStamp tt)
 {
-	if (t == INVALID_TIMESTAMP) return string("INVALID_TIMESTAMP");
+	if (tt == INVALID_TIMESTAMP) return string("INVALID_TIMESTAMP");
+	auto t = tt.time_since_epoch().count();
 
 	uint64_t tmp = (t - ((uint64_t)116444736 * 1000000000));
 	time_t auxTime = tmp / (uint64_t)10000000;
@@ -391,4 +302,11 @@ std::string mrpt::system::intervalFormat(const double seconds)
 		return format("%.2f us", seconds * 1e6);
 	else
 		return format("%.2f ns", seconds * 1e9);
+}
+
+std::ostream& mrpt::system::operator<<(std::ostream& o, const TTimeStamp& t)
+{
+	const uint64_t v = t.time_since_epoch().count();
+	o << v;
+	return o;
 }

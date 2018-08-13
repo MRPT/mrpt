@@ -44,7 +44,7 @@ template <>
 void CPoseInterpolatorBase<2>::impl_interpolation(
 	const TTimePosePair &p1, const TTimePosePair &p2,
 	const TTimePosePair &p3, const TTimePosePair &p4,
-	const TInterpolatorMethod method, const mrpt::system::Clock::time_point &t, pose_t& out_interp) const
+	const TInterpolatorMethod method, const mrpt::Clock::time_point &t, pose_t& out_interp) const
 {
 	using mrpt::math::TPose2D;
 	using doubleDuration = std::chrono::duration<double>;

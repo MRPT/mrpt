@@ -154,8 +154,7 @@ void CHokuyoURG::doProcessSimple(
 		else
 			AtUI = nowUI - m_timeStartUI;
 
-		mrpt::system::TTimeStamp AtDO = mrpt::system::secondsToTimestamp(
-			AtUI * 1e-3 /* Board time is ms */);
+		auto AtDO = std::chrono::milliseconds(AtUI);
 		outObservation.timestamp = m_timeStartTT + AtDO;
 	}
 

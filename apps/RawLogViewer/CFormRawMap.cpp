@@ -489,7 +489,7 @@ void loadMapInto3DScene(COpenGLScene& scene)
 		obj2->setLineWidth(2);
 
 		double x0 = 0, y0 = 0, z0 = 0;
-		std::optional<mrpt::system::Clock::time_point> last_t;
+		std::optional<mrpt::Clock::time_point> last_t;
 
 		for (CPose3DInterpolator::iterator it = robot_path.begin();
 			 it != robot_path.end(); ++it)
@@ -505,9 +505,8 @@ void loadMapInto3DScene(COpenGLScene& scene)
 			{
 				// We have a gap without GT:
 				// Try to interpolate using the best GPS path:
-				// map<Clock::time_point,CPoint3D> best_gps_path;		// time -> 3D
-				// local
-				// coords
+				// map<Clock::time_point,CPoint3D> best_gps_path;		// time
+				// -> 3D local coords
 				map<Clock::time_point, TPoint3D>::const_iterator i1 =
 					rtk_path_info.best_gps_path.lower_bound(last_t.value());
 				map<Clock::time_point, TPoint3D>::const_iterator i2 =
@@ -519,7 +518,8 @@ void loadMapInto3DScene(COpenGLScene& scene)
 
 				if (i1 != rtk_path_info.best_gps_path.end())
 				{
-					for (map<Clock::time_point, TPoint3D>::const_iterator t = i1;
+					for (map<Clock::time_point, TPoint3D>::const_iterator t =
+							 i1;
 						 t != i2 && t != rtk_path_info.best_gps_path.end(); ++t)
 					{
 						obj2->appendLine(
@@ -543,8 +543,8 @@ void loadMapInto3DScene(COpenGLScene& scene)
 			auto this_t = rtk_path_info.best_gps_path.rbegin()->first;
 			// We have a gap without GT:
 			// Try to interpolate using the best GPS path:
-			// map<Clock::time_point,CPoint3D> best_gps_path;		// time -> 3D local
-			// coords
+			// map<Clock::time_point,CPoint3D> best_gps_path;		// time ->
+			// 3D local coords
 			map<Clock::time_point, TPoint3D>::const_iterator i1 =
 				rtk_path_info.best_gps_path.lower_bound(last_t.value());
 			map<Clock::time_point, TPoint3D>::const_iterator i2 =
@@ -659,7 +659,7 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent&)
 	// speed!)
 	if (thePntsMap) thePntsMap->reserve((last - first + 1) * 800);
 
-	std::optional<mrpt::system::Clock::time_point> last_tim;
+	std::optional<mrpt::Clock::time_point> last_tim;
 
 	for (i = first; !abort && i <= last; i++)
 	{
@@ -731,7 +731,7 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent&)
 					CPose3D dumPose(curPose);
 					theMap.insertObservation(
 						rawlog.getAsObservation(i).get(), &dumPose);
-					last_tim = toTimePoint(rawlog.getAsObservation(i)->timestamp);
+					last_tim = rawlog.getAsObservation(i)->timestamp;
 				}
 				addNewPathEntry = true;
 			}
@@ -744,8 +744,7 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent&)
 		{
 			pathX.push_back(curPose.x());
 			pathY.push_back(curPose.y());
-			if (last_tim)
-				robot_path.insert(last_tim.value(), CPose3D(curPose));
+			if (last_tim) robot_path.insert(last_tim.value(), CPose3D(curPose));
 		}
 
 		if ((count++ % 50) == 0)
@@ -1134,7 +1133,7 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent&)
 				// Interpolate:
 				CPose3D p;
 				bool valid_interp;
-				robot_path.interpolate(toTimePoint(o->timestamp), p, valid_interp);
+				robot_path.interpolate(o->timestamp, p, valid_interp);
 
 				if (valid_interp)
 				{
@@ -1424,7 +1423,7 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
 						bool valid;
 						CPose3D intRobotPose;
 						robot_path.interpolate(
-							toTimePoint(obs->timestamp), intRobotPose, valid);
+							obs->timestamp, intRobotPose, valid);
 						if (!valid) continue;
 
 						CPose3DPDFGaussian veh_pose;

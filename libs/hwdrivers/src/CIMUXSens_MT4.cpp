@@ -78,7 +78,7 @@ class DeviceClass
 	}
 
 	/*! \brief Close an IO device
-	*/
+	 */
 	void close()
 	{
 		if (m_streamInterface) m_streamInterface->close();
@@ -328,8 +328,8 @@ CIMUXSens_MT4::CIMUXSens_MT4()
 	: m_port_bauds(0),
 	  m_portname(),
 	  m_sampleFreq(100),
-	  m_timeStartUI(0),
-	  m_timeStartTT(0),
+	  m_timeStartUI(),
+	  m_timeStartTT(),
 	  m_sensorPose(),
 	  m_dev_ptr(nullptr),
 	  m_devid_ptr(nullptr)
@@ -498,11 +498,9 @@ void CIMUXSens_MT4::doProcess()
 				m_timeStartTT = mrpt::system::now();
 			}
 			else
-				AtUI = nowUI - m_timeStartUI;
+				AtUI = nowUI - m_timeStartUI;  // ms
 
-			double AtDO =
-				AtUI * 1000.0;  // Difference in intervals of 100 nsecs
-			obs->timestamp = m_timeStartTT + AtDO;
+			obs->timestamp = m_timeStartTT + std::chrono::milliseconds(AtUI);
 		}
 		else if (packet.containsUtcTime())
 		{
@@ -555,11 +553,17 @@ void CIMUXSens_MT4::doProcess()
 			else
 			{
 				rGPS.UTCTime.hour =
-					((obs->timestamp / (60 * 60 * ((uint64_t)1000000 / 100))) %
+					((obs->timestamp.time_since_epoch().count() /
+					  (60 * 60 * ((uint64_t)1000000 / 100))) %
 					 24);
 				rGPS.UTCTime.minute =
-					((obs->timestamp / (60 * ((uint64_t)1000000 / 100))) % 60);
-				rGPS.UTCTime.sec = fmod(obs->timestamp / (1000000.0 / 100), 60);
+					((obs->timestamp.time_since_epoch().count() /
+					  (60 * ((uint64_t)1000000 / 100))) %
+					 60);
+				rGPS.UTCTime.sec = fmod(
+					obs->timestamp.time_since_epoch().count() /
+						(1000000.0 / 100),
+					60);
 			}
 
 			if (packet.containsVelocity())
