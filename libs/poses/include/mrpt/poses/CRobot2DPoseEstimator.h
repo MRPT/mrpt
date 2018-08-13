@@ -13,6 +13,7 @@
 #include <mrpt/core/Clock.h>
 #include <mrpt/poses/poses_frwds.h>
 #include <mutex>
+#include <optional>
 
 namespace mrpt::poses
 {
