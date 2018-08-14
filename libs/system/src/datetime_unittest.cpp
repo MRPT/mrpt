@@ -53,3 +53,13 @@ TEST(DateTime, fixed_date_check)
 	const double t_d = mrpt::system::timestampTotime_t(t);
 	EXPECT_NEAR(1137772793.09485, t_d, 1e-5);
 }
+
+TEST(DateTime, double_to_from)
+{
+	auto t1 = mrpt::system::now();
+	const double d1 = mrpt::system::timestampToDouble(t1);
+	auto t2 = mrpt::Clock::fromDouble(d1);
+	EXPECT_NEAR(
+		mrpt::system::timestampToDouble(t1),
+		mrpt::system::timestampToDouble(t2), 1e-4);
+}

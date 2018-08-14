@@ -47,3 +47,10 @@ mrpt::Clock::time_point mrpt::Clock::now() noexcept
 {
 	return time_point(duration(getCurrentTime()));
 }
+
+mrpt::Clock::time_point mrpt::Clock::fromDouble(const double t) noexcept
+{
+	return mrpt::Clock::time_point(mrpt::Clock::duration(
+		uint64_t(t * 10000000.0) + UINT64_C(116444736) * UINT64_C(1000000000)));
+}
+

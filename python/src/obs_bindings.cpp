@@ -72,8 +72,7 @@ long_ CObservation_get_timestamp(CObservation& self)
 
 void CObservation_set_timestamp(CObservation& self, long_ timestamp)
 {
-	auto t = mrpt::Clock::time_point(
-		mrpt::Clock::duration(extract<uint64_t>(timestamp)));
+	auto t = mrpt::Clock::fromDouble(extract<uint64_t>(timestamp));
 	self.timestamp = t;
 }
 
@@ -137,9 +136,8 @@ void CObservationOdometry_from_ROS_RawOdometry_msg(
 	// set info
 	self.sensorLabel =
 		extract<std::string>(raw_odometry_msg.attr("header").attr("frame_id"));
-	auto t = mrpt::Clock::time_point(
-		mrpt::Clock::duration(extract<uint64_t>(TTimeStamp_from_ROS_Time(
-			raw_odometry_msg.attr("header").attr("stamp")))));
+	auto t = mrpt::Clock::fromDouble(extract<uint64_t>(TTimeStamp_from_ROS_Time(
+		raw_odometry_msg.attr("header").attr("stamp"))));
 	self.timestamp = t;
 	self.hasEncodersInfo =
 		extract<bool>(raw_odometry_msg.attr("has_encoders_info"));
@@ -187,8 +185,8 @@ void CObservationRange_from_ROS_Range_msg(
 	// set info
 	self.sensorLabel =
 		extract<std::string>(range_msg.attr("header").attr("frame_id"));
-	auto t = mrpt::Clock::time_point(mrpt::Clock::duration(extract<uint64_t>(
-		TTimeStamp_from_ROS_Time(range_msg.attr("header").attr("stamp")))));
+	auto t = mrpt::Clock::fromDouble(extract<uint64_t>(
+		TTimeStamp_from_ROS_Time(range_msg.attr("header").attr("stamp"))));
 	self.timestamp = t;
 	self.minSensorDistance = extract<float>(range_msg.attr("min_range"));
 	self.maxSensorDistance = extract<float>(range_msg.attr("max_range"));
@@ -239,8 +237,8 @@ void CObservation2DRangeScan_from_ROS_LaserScan_msg(
 	// set info
 	self.sensorLabel =
 		extract<std::string>(scan_msg.attr("header").attr("frame_id"));
-	auto t = mrpt::Clock::time_point(mrpt::Clock::duration(extract<uint64_t>(
-		TTimeStamp_from_ROS_Time(scan_msg.attr("header").attr("stamp")))));
+	auto t = mrpt::Clock::fromDouble(extract<uint64_t>(
+		TTimeStamp_from_ROS_Time(scan_msg.attr("header").attr("stamp"))));
 	self.timestamp = t;
 	self.maxRange = extract<float>(scan_msg.attr("range_max"));
 	self.aperture = extract<float>(scan_msg.attr("angle_max")) -

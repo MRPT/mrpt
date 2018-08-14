@@ -80,7 +80,10 @@ inline mrpt::system::TTimeStamp now() { return mrpt::Clock::now(); }
  * fractions of seconds) to TTimeStamp.
  * \sa timestampTotime_t
  */
-mrpt::system::TTimeStamp time_tToTimestamp(const double t);
+inline mrpt::system::TTimeStamp time_tToTimestamp(const double t)
+{
+	return mrpt::Clock::fromDouble(t);
+}
 
 /** Transform from standard "time_t" to TTimeStamp.
  * \sa timestampTotime_t

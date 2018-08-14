@@ -1189,11 +1189,8 @@ void getGroundTruth(
 			{
 				for (int i = 0; i < GT.rows(); i++)
 				{
-					auto dDur = std::chrono::duration<double>(GT(i, 0));
-					auto iDur =
-						std::chrono::duration_cast<mrpt::Clock::duration>(dDur);
 					GT_path.insert(
-						mrpt::Clock::time_point(iDur),
+						mrpt::Clock::fromDouble(GT(i, 0)),
 						TPose2D(GT(i, 1), GT(i, 2), GT(i, GT_is_3D ? 4 : 3)));
 				}
 			}

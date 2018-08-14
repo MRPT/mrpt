@@ -47,12 +47,6 @@ mrpt::system::TTimeStamp mrpt::system::time_tToTimestamp(const time_t& t)
 	return time_tToTimestamp(static_cast<double>(t));
 }
 
-mrpt::system::TTimeStamp mrpt::system::time_tToTimestamp(const double t)
-{
-	return mrpt::Clock::time_point(mrpt::Clock::duration(
-		uint64_t(t * 10000000.0) + UINT64_C(116444736) * UINT64_C(1000000000)));
-}
-
 double mrpt::system::timestampTotime_t(const mrpt::system::TTimeStamp t)
 {
 	return double(
