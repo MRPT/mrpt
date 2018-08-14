@@ -13,15 +13,16 @@
 
 namespace mrpt::system
 {
-/** @defgroup vector_loadsave Load and save vectors to files (in #include
- * <mrpt/system/vector_loadsave.h>)
-  * \ingroup mrpt_system_grp
-  * @{ */
+/** @defgroup vector_loadsave Load and save vectors to files
+ * Header: `#include <mrpt/system/vector_loadsave.h>`.
+ * Library: \ref mrpt_system_grp
+ * \ingroup mrpt_system_grp
+ * @{ */
 
 /** A useful function for debugging, which saves a std::vector into a text file
-* (compat. with MATLAB)
-* \return Returns false on any error, true on everything OK.
-*/
+ * (compat. with MATLAB)
+ * \return Returns false on any error, true on everything OK.
+ */
 bool vectorToTextFile(
 	const std::vector<float>& vec, const std::string& fileName,
 	bool append = false, bool byRows = false);
@@ -53,14 +54,13 @@ bool vectorToTextFile(const EIGEN_MATRIX& vec, const std::string& fileName)
 }
 
 /** Load a std::vector from a text file (compat. with MATLAB)
-* \return Returns false on any error, true on everything OK.
-* \sa loadBinaryFile
-*/
+ * \return Returns false on any error, true on everything OK.
+ * \sa loadBinaryFile
+ */
 bool vectorFromTextFile(
 	std::vector<double>& vec, const std::string& fileName,
 	const bool byRows = false);
 
 /** @} */
 
-}
-
+}  // namespace mrpt::system

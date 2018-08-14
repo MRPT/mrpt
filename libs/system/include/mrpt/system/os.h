@@ -17,107 +17,94 @@
 #include <string>
 #include <mrpt/core/common.h>
 
-namespace mrpt
+namespace mrpt::system
 {
-/** This namespace provides a OS-independent interface to many useful functions:
- * filenames manipulation, time and date, string parsing, file I/O, threading,
- * memory allocation, etc.
- *  \sa mrpt::system::os \ingroup mrpt_system_grp
- */
-namespace system
-{
-/** \defgroup mrpt_system_os OS and compiler abstraction (in #include
- * <mrpt/system/os.h>)
-  * \ingroup mrpt_system_grp */
+/** \defgroup mrpt_system_os OS and compiler abstraction
+ * Header: `#include <mrpt/system/os.h>`.
+ * Library: \ref mrpt_system_grp
+ * \ingroup mrpt_system_grp */
 
-/** This namespace provides a OS-independent interface to low-level functions.
- *   Most of these functions are converted into calls to standard functions,
- * unless we are into Visual Studio 2005 (or newer). In that case the secure
- * version
- *     of the standard library functions (prefix "_s") are used instead.
- * \ingroup mrpt_system_grp mrpt_system_os
- */
 namespace os
 {
 /** \addtogroup mrpt_system_os
-  * @{ */
+ * @{ */
 
 /** An OS-independent version of sprintf (Notice the bufSize param, which may be
  * ignored in some compilers)
-  *  \sa mrpt::format
-  */
+ *  \sa mrpt::format
+ */
 int sprintf(
 	char* buf, size_t bufSize, const char* format,
 	...) noexcept MRPT_printf_format_check(3, 4);
 
 /** An OS-independent version of vsprintf (Notice the bufSize param, which may
  * be ignored in some compilers)
-  */
+ */
 int vsprintf(
 	char* buf, size_t bufSize, const char* format, va_list args) noexcept;
 
 /** An OS-independent version of vsnprintf (Notice the bufSize param, which may
  * be ignored in some compilers)
-  */
+ */
 int vsnprintf(
 	char* buf, size_t bufSize, const char* format, va_list args) noexcept;
 
 /** An OS-independent version of fopen.
-  * \return It will always return nullptr on any error.
-  */
+ * \return It will always return nullptr on any error.
+ */
 FILE* fopen(const char* fileName, const char* mode) noexcept;
 
 /** An OS-independent version of fopen (std::string version)
-  * \return It will always return nullptr on any error.
-  */
+ * \return It will always return nullptr on any error.
+ */
 FILE* fopen(const std::string& fileName, const char* mode) noexcept;
 
 /** An OS-independent version of fprintf
-  */
+ */
 int fprintf(
 	FILE* fil, const char* format, ...) noexcept MRPT_printf_format_check(2, 3);
 
 /** An OS-independent version of fclose.
-  * \exception std::exception On trying to close a nullptr file descriptor.
-  */
+ * \exception std::exception On trying to close a nullptr file descriptor.
+ */
 void fclose(FILE* f);
 
 /** An OS-independent version of strcat.
-  * \return It will always return the "dest" pointer.
-  */
+ * \return It will always return the "dest" pointer.
+ */
 char* strcat(char* dest, size_t destSize, const char* source) noexcept;
 
 /** An OS-independent version of strcpy.
-  * \return It will always return the "dest" pointer.
-  */
+ * \return It will always return the "dest" pointer.
+ */
 char* strcpy(char* dest, size_t destSize, const char* source) noexcept;
 
 /** An OS-independent version of strcmp.
-  * \return It will return 0 when both strings are equal, casi sensitive.
-  */
+ * \return It will return 0 when both strings are equal, casi sensitive.
+ */
 int _strcmp(const char* str1, const char* str2) noexcept;
 
 /** An OS-independent version of strcmpi.
-  * \return It will return 0 when both strings are equal, casi insensitive.
-  */
+ * \return It will return 0 when both strings are equal, casi insensitive.
+ */
 int _strcmpi(const char* str1, const char* str2) noexcept;
 
 /** An OS-independent version of strncmp.
-  * \return It will return 0 when both strings are equal, casi sensitive.
-  */
+ * \return It will return 0 when both strings are equal, casi sensitive.
+ */
 int _strncmp(const char* str, const char* subStr, size_t count) noexcept;
 
 /** An OS-independent version of strnicmp.
-  * \return It will return 0 when both strings are equal, casi insensitive.
-  */
+ * \return It will return 0 when both strings are equal, casi insensitive.
+ */
 int _strnicmp(const char* str, const char* subStr, size_t count) noexcept;
 
 /** An OS-independent version of strtoll.
-  */
+ */
 int64_t _strtoll(const char* nptr, char** endptr, int base);
 
 /** An OS-independent version of strtoull.
-  */
+ */
 uint64_t _strtoull(const char* nptr, char** endptr, int base);
 
 /** An OS-independent version of timegm (which is not present in all compilers):
@@ -125,26 +112,26 @@ uint64_t _strtoull(const char* nptr, char** endptr, int base);
 time_t timegm(struct tm* tm);
 
 /** An OS and compiler independent version of "memcpy"
-  */
+ */
 void memcpy(
 	void* dest, size_t destSize, const void* src, size_t copyCount) noexcept;
 
 /** An OS-independent version of getch, which waits until a key is pushed.
-  * \return The pushed key code
-  */
+ * \return The pushed key code
+ */
 int getch() noexcept;
 
 /** An OS-independent version of kbhit, which returns true if a key has been
  * pushed.
-  */
+ */
 bool kbhit() noexcept;
 
 /** @} */
 
-}  // end namespace "os"
+}  // namespace os
 
 /** \addtogroup mrpt_system_os
-  * @{ */
+ * @{ */
 
 /** Shows the message "Press any key to continue" (or other custom message) to
  * the current standard output and returns when a key is pressed */
@@ -181,11 +168,11 @@ enum TConsoleColor
 };
 
 /** Changes the text color in the console for the text written from now on.
-  * The parameter "color" can be any value in TConsoleColor.
-  *
-  * By default the color of "cout" is changed, unless changeStdErr=true, in
+ * The parameter "color" can be any value in TConsoleColor.
+ *
+ * By default the color of "cout" is changed, unless changeStdErr=true, in
  * which case "cerr" is changed.
-  */
+ */
 void setConsoleColor(TConsoleColor color, bool changeStdErr = false);
 
 /** @brief Execute Generic Shell Command
@@ -212,6 +199,4 @@ bool launchProcess(const std::string& command);
 
 /** @} */
 
-}  // End of namespace
-
-}  // End of namespace
+}  // namespace mrpt::system
