@@ -14,13 +14,20 @@
 #include <string>
 #include <iosfwd>
 
-/** Represents an invalid timestamp, where applicable. */
-#define INVALID_TIMESTAMP mrpt::Clock::time_point()
-
 namespace mrpt::system
 {
-/** @defgroup time_date Time and date functions (in #include
- * <mrpt/system/datetime.h>)
+/** @defgroup time_date Time and date functions.
+ * Header: `#include <mrpt/system/datetime.h>`.
+ * Library: \ref mrpt_system_grp
+ *
+ * Defines types and functions to handle cross-platform timestamps. The basic
+ * type is mrpt::system::TTimeStamp, representing a high-resolution (100ns)
+ * Clock::time_point, compatible with all C++11 std::chrono functions.
+ *
+ * There are also functions to convert forth and back to a `double`
+ * representation of timestamps: numbers just like UNIX epoch timestamps but
+ * with decimals for the fractionary part of seconds.
+ *
  * \ingroup mrpt_system_grp
  * @{ */
 
@@ -31,6 +38,9 @@ namespace mrpt::system
  * TTimeParts
  */
 using TTimeStamp = mrpt::Clock::time_point;
+
+/** Represents an invalid timestamp, where applicable. */
+#define INVALID_TIMESTAMP mrpt::Clock::time_point()
 
 /** The parts of a date/time (it's like the standard 'tm' but with fractions of
  * seconds).

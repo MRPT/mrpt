@@ -16,8 +16,9 @@
 
 namespace mrpt::system
 {
-/** \addtogroup string_manage String management and utilities (in #include
- * <mrpt/system/string_utils.h>)
+/** \addtogroup string_manage String management and utilities
+ * Header: `#include <mrpt/system/string_utils.h>`.
+ * Library: \ref mrpt_system_grp
  * \ingroup mrpt_system_grp
  * @{ */
 
@@ -153,5 +154,4 @@ T str2num(std::string const& value)
 /**\}*/
 
 /** @} */
-}
-
+}  // namespace mrpt::system

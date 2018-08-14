@@ -14,9 +14,11 @@
 
 namespace mrpt::system
 {
-/** \addtogroup mrpt_md5 MD5 functions (in #include <mrpt/system/md5.h>)
-  *  \ingroup mrpt_system_grp
-  * @{ */
+/** \addtogroup mrpt_md5 MD5 functions
+ * Header: `#include <mrpt/system/md5.h>`.
+ * Library: \ref mrpt_system_grp
+ *  \ingroup mrpt_system_grp
+ * @{ */
 /** Computes the md5 of a block of data. */
 std::string md5(const std::string& str);
 /** Computes the md5 of a block of data. */
@@ -24,5 +26,4 @@ std::string md5(const std::vector<uint8_t>& str);
 /** Computes the md5 of a block of data. */
 std::string md5(const unsigned char* data, const size_t len);
 /** @} */
-}
-
+}  // namespace mrpt::system

@@ -14,7 +14,9 @@
 
 namespace mrpt::system
 {
-/** \addtogroup mrpt_crc CRC functions (in #include <mrpt/system/crc.h>)
+/** \addtogroup mrpt_crc CRC functions
+ * Header: `#include <mrpt/system/crc.h>`.
+ * Library: \ref mrpt_system_grp
  *  \ingroup mrpt_system_grp
  * @{ */
 
@@ -32,5 +34,4 @@ uint32_t compute_CRC32(
 	const uint8_t* data, const size_t len,
 	const uint32_t gen_pol = 0xEDB88320L);
 /** @} */
-}
-
+}  // namespace mrpt::system

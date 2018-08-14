@@ -13,7 +13,9 @@
 
 namespace mrpt::system
 {
-/** \addtogroup mrpt_memory Memory utilities (#include <mrpt/system/memory.h>)
+/** \addtogroup mrpt_memory Memory utilities
+ * Header: `#include <mrpt/system/memory.h>`.
+ * Library: \ref mrpt_system_grp
  * \ingroup mrpt_system_grp
  *  @{ */
 
@@ -61,12 +63,13 @@ unsigned long getMemoryUsage();
 
 /** \addtogroup mrpt_memory Memory utilities
  *  @{ */
-template <std::size_t alignment, typename T, typename = std::enable_if_t<std::is_pointer<T>::value>>
+template <
+	std::size_t alignment, typename T,
+	typename = std::enable_if_t<std::is_pointer<T>::value>>
 bool is_aligned(T ptr)
 {
 	return reinterpret_cast<std::size_t>(ptr) % alignment == 0;
 }
 /** @} */
 
-}
-
+}  // namespace mrpt::system
