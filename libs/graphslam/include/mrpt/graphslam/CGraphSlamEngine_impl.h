@@ -1420,8 +1420,8 @@ void CGraphSlamEngine<GRAPH_T>::readGTFile(
 		// timestamp
 		if (gt_timestamps)
 		{
-			mrpt::system::TTimeStamp timestamp(
-				mrpt::system::time_tToTimestamp(atof(curr_tokens[0].c_str())));
+			auto timestamp =
+				mrpt::Clock::fromDouble(atof(curr_tokens[0].c_str()));
 			gt_timestamps->push_back(timestamp);
 		}
 
@@ -1528,7 +1528,8 @@ void CGraphSlamEngine<GRAPH_T>::readGTFileRGBD_TUM(
 		// timestamp
 		if (gt_timestamps)
 		{
-			mrpt::system::TTimeStamp timestamp(atof(curr_tokens[0].c_str()));
+			auto timestamp =
+				mrpt::Clock::fromDouble(atof(curr_tokens[0].c_str()));
 			gt_timestamps->push_back(timestamp);
 		}
 
