@@ -133,8 +133,11 @@ void CHokuyoURG::doProcessSimple(
     } else
       AtUI = nowUI - m_timeStartUI;
 
-    mrpt::system::TTimeStamp AtDO =
-        mrpt::system::secondsToTimestamp(AtUI * 1e-3 /* Board time is ms */);
+    /* Board time is ms */
+    const double At_secs = AtUI*1e-3;
+    MRPT_LOG_THROTTLE_INFO(30.0,mrpt::format("[HOKUYO::doProcess] Timestamp sync offset=%.03f ms", 1e3*At_secs));
+
+    mrpt::system::TTimeStamp AtDO = mrpt::system::secondsToTimestamp(At_secs);
     outObservation.timestamp = m_timeStartTT + AtDO;
   }
 
