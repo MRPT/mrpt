@@ -135,7 +135,9 @@ void CHokuyoURG::doProcessSimple(
 
     /* Board time is ms */
     const double At_secs = AtUI*1e-3;
-    MRPT_LOG_THROTTLE_INFO(30.0,mrpt::format("[HOKUYO::doProcess] Timestamp sync offset=%.03f ms", 1e3*At_secs));
+    const double At_secs_CPU = mrpt::system::timeDifference(m_timeStartTT, mrpt::system::now());
+    const double clock_drift = At_secs - At_secs_CPU;
+    MRPT_LOG_THROTTLE_INFO(10.0,mrpt::format("[HOKUYO::doProcess] Timestamp sync. At_CPU=%e  secs. Drift=%e secs.", At_secs_CPU, clock_drift));
 
     mrpt::system::TTimeStamp AtDO = mrpt::system::secondsToTimestamp(At_secs);
     outObservation.timestamp = m_timeStartTT + AtDO;
