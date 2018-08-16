@@ -34,5 +34,3 @@ endforeach(dir)
 foreach(dir ${LIST_MRPT_LIB_DIRS})
   add_subdirectory(${dir})
 endforeach(dir)
-
-

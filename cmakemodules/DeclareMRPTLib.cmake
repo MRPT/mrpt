@@ -137,7 +137,7 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 
 	# Add main lib header (may not exist in meta-libs only):
 	IF (EXISTS "${CMAKE_SOURCE_DIR}/libs/${name}/include/mrpt/${name}.h")
-		set(all_${name}_srcs ${all_${name}_srcs} "${CMAKE_SOURCE_DIR}/libs/${name}/include/mrpt/${name}.h")
+		set(all_${name}_srcs ${all_${name}_srcs} "include/mrpt/${name}.h")
 	ENDIF ()
 
 	IF (NOT ${headers_only})
@@ -168,13 +168,13 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 		# A hdr-only library: needs no real compiling
 		add_library(mrpt-${name} INTERFACE)
 		# List of hdr files (for editing in IDEs,etc.):
-		target_sources(mrpt-${name} INTERFACE ${all_${name}_srcs})
+        #target_sources(mrpt-${name} INTERFACE ${all_${name}_srcs})
 		set(iftype INTERFACE)
 	ENDIF ()
 
 	target_include_directories(mrpt-${name} ${iftype}
 		$<BUILD_INTERFACE:${MRPT_SOURCE_DIR}/libs/${name}/include>
-		$<INSTALL_INTERFACE:${name}/include>
+		$<INSTALL_INTERFACE:include/>
 	)
 
 	add_dependencies(all_mrpt_libs mrpt-${name}) # for target: all_mrpt_libs
@@ -315,24 +315,26 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 			SET(MRPT_PREFIX_INSTALL "")
 		ENDIF(CMAKE_MRPT_USE_DEB_POSTFIXS)
 
-		# make sure the library gets installed
-		IF (NOT is_metalib)
-			INSTALL(TARGETS mrpt-${name}
-				RUNTIME DESTINATION ${MRPT_PREFIX_INSTALL}bin  COMPONENT Libraries
-				LIBRARY DESTINATION ${MRPT_PREFIX_INSTALL}${CMAKE_INSTALL_LIBDIR} COMPONENT Libraries
-				ARCHIVE DESTINATION ${MRPT_PREFIX_INSTALL}${CMAKE_INSTALL_LIBDIR} COMPONENT Libraries  # WAS: lib${LIB_SUFFIX}
-				)
-
-			# Collect .pdb debug files for optional installation:
-			IF (MSVC)
-				SET(PDB_FILE
-					"${CMAKE_BINARY_DIR}/bin/Debug/${MRPT_LIB_PREFIX}mrpt-${name}${MRPT_DLL_VERSION_POSTFIX}${CMAKE_DEBUG_POSTFIX}.pdb")
-				IF (EXISTS "${PDB_FILE}")
-					INSTALL(FILES ${PDB_FILE} DESTINATION bin COMPONENT LibrariesDebugInfoPDB)
-				ENDIF ()
-			ENDIF(MSVC)
-		ENDIF (NOT is_metalib)
 	ENDIF (NOT ${headers_only})
+
+    # make sure the library gets installed
+    IF (NOT is_metalib)
+        INSTALL(TARGETS mrpt-${name}
+            EXPORT MRPTTargets
+            RUNTIME DESTINATION ${MRPT_PREFIX_INSTALL}bin  COMPONENT Libraries
+            LIBRARY DESTINATION ${MRPT_PREFIX_INSTALL}${CMAKE_INSTALL_LIBDIR} COMPONENT Libraries
+            ARCHIVE DESTINATION ${MRPT_PREFIX_INSTALL}${CMAKE_INSTALL_LIBDIR} COMPONENT Libraries  # WAS: lib${LIB_SUFFIX}
+            )
+
+        # Collect .pdb debug files for optional installation:
+        IF (MSVC)
+            SET(PDB_FILE
+                "${CMAKE_BINARY_DIR}/bin/Debug/${MRPT_LIB_PREFIX}mrpt-${name}${MRPT_DLL_VERSION_POSTFIX}${CMAKE_DEBUG_POSTFIX}.pdb")
+            IF (EXISTS "${PDB_FILE}")
+                INSTALL(FILES ${PDB_FILE} DESTINATION bin COMPONENT LibrariesDebugInfoPDB)
+            ENDIF ()
+        ENDIF(MSVC)
+    ENDIF (NOT is_metalib)
 
 	# Generate the libmrpt-$NAME.pc file for pkg-config:
 	IF(UNIX)
@@ -399,7 +401,7 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 			# (in win32 the /libs/* tree is install entirely, not only the headers):
 			SET(SRC_DIR "${MRPT_SOURCE_DIR}/libs/${name}/include/")
 			IF (EXISTS "${SRC_DIR}")  # This is mainly to avoid problems with "virtual module" names
-				INSTALL(DIRECTORY "${SRC_DIR}" DESTINATION ${this_lib_dev_INSTALL_PREFIX}include/mrpt/${name}/include/  )
+				INSTALL(DIRECTORY "${SRC_DIR}" DESTINATION ${this_lib_dev_INSTALL_PREFIX}include)
 			ENDIF()
 		ENDIF()
 	ENDIF() # UNIX

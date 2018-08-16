@@ -1,5 +1,7 @@
 # SSE{2,3,4} extensions?
 # ===================================================
+include(CheckCXXCompilerFlag)
+
 SET(MRPT_AUTODETECT_SSE ON CACHE BOOL "Check /proc/cpuinfo to determine if SSE{2,3,4} optimizations are available")
 MARK_AS_ADVANCED(MRPT_AUTODETECT_SSE)
 
@@ -11,20 +13,16 @@ IF(MRPT_AUTODETECT_SSE AND EXISTS "/proc/cpuinfo" AND
 	SET(DO_SSE_AUTODETECT 1)
 ENDIF()
 
-IF (DO_SSE_AUTODETECT)
-	FILE(READ "/proc/cpuinfo" MRPT_CPU_INFO)
-ENDIF (DO_SSE_AUTODETECT)
-
 # Macro for each SSE* var: Invoke with name in uppercase:
-macro(DEFINE_SSE_VAR  _setname)
+macro(DEFINE_SSE_VAR _flag  _setname)
 	string(TOLOWER ${_setname} _set)
 
 	IF (DO_SSE_AUTODETECT)
 		# Automatic detection:
-		SET(CMAKE_MRPT_HAS_${_setname} 0)
-		IF (${MRPT_CPU_INFO} MATCHES ".*${_set}.*")
-			SET(CMAKE_MRPT_HAS_${_setname} 1)
-		ENDIF()
+        CHECK_CXX_COMPILER_FLAG(${_flag} CMAKE_MRPT_HAS_${_setname})
+        IF(NOT CMAKE_MRPT_HAS_${_setname})
+		    SET(CMAKE_MRPT_HAS_${_setname} 0)
+        ENDIF()
 	ELSE (DO_SSE_AUTODETECT)
 		# Manual:
 		SET("DISABLE_${_setname}" OFF CACHE BOOL "Forces compilation WITHOUT ${_setname} extensions")
@@ -37,8 +35,8 @@ macro(DEFINE_SSE_VAR  _setname)
 endmacro(DEFINE_SSE_VAR)
 
 # SSE optimizations:
-DEFINE_SSE_VAR(SSE2)
-DEFINE_SSE_VAR(SSE3)
-DEFINE_SSE_VAR(SSE4_1)
-DEFINE_SSE_VAR(SSE4_2)
-DEFINE_SSE_VAR(SSE4_A)
+DEFINE_SSE_VAR("-msse2" SSE2)
+DEFINE_SSE_VAR("-msse3" SSE3)
+DEFINE_SSE_VAR("-msse4.1" SSE4_1)
+DEFINE_SSE_VAR("-msse4.2" SSE4_2)
+DEFINE_SSE_VAR("-msse4a" SSE4_A)

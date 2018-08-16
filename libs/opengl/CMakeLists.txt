@@ -56,7 +56,7 @@ define_mrpt_lib(
 	mrpt-img
 	)
 
-add_dependencies(mrpt-opengl libcvd)
+add_dependencies(mrpt-opengl CVD::CVD)
 INCLUDE_DIRECTORIES(${CVD_INCLUDE_DIRS})
 
 IF(BUILD_mrpt-opengl)

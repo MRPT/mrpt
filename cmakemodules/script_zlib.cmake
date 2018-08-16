@@ -9,8 +9,7 @@ else()
 	if (ZLIB_FOUND)
 			#MESSAGE(STATUS "Found library: zlib - Include: ${ZLIB_INCLUDE_DIR}")
 			include_directories("${ZLIB_INCLUDE_DIR}")
-
-			set(MRPT_ZLIB_LIBS ${ZLIB_LIBRARIES}) # APPEND_MRPT_LIBS(z)
+			SET(MRPT_ZLIB_LIBS ZLIB::zlib) # APPEND_MRPT_LIBS(z)
 
 			set(CMAKE_MRPT_HAS_ZLIB_SYSTEM 1)
 			set(CMAKE_MRPT_HAS_ZLIB_SYSTEM_IS_WX 1)
