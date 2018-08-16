@@ -10,6 +10,7 @@ ELSE()
 	IF (NOT IS_DEBIAN_DBG_PKG)
 		INSTALL(FILES "${MRPT_BINARY_DIR}/unix-install/MRPTConfig.cmake" DESTINATION ${libmrpt_common_dev_INSTALL_PREFIX}share/mrpt )
 		INSTALL(FILES "${MRPT_BINARY_DIR}/unix-install/MRPTConfig-version.cmake" DESTINATION ${libmrpt_common_dev_INSTALL_PREFIX}share/mrpt )
+		install(EXPORT MRPTTargets DESTINATION share/mrpt)
 	ENDIF(NOT IS_DEBIAN_DBG_PKG)
 ENDIF()
 
