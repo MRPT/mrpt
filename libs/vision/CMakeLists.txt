@@ -36,7 +36,7 @@ define_mrpt_lib(
 	)
 
 IF(CMAKE_MRPT_HAS_OPENCV)
-	add_dependencies(mrpt-vision libcvd)
+    add_dependencies(mrpt-vision CVD::CVD)
 ENDIF()
 
 IF(BUILD_mrpt-vision)
