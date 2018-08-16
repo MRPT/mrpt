@@ -12,6 +12,13 @@
 #
 #  NOTE: CMake can be obtained at http://www.cmake.org/
 # ----------------------------------------------------------------------------
+include(cmake/HunterGate.cmake)
+HunterGate(
+    URL "https://github.com/lsolanka/hunter/archive/v0.22.4-rosdevel13.tar.gz"
+    SHA1 "43626e95798c122bba5fd94ae48c403a066f1dcf"
+    LOCAL
+)
+
 # Tell CMake we'll use both C & C++ for use in its tests/flags.
 PROJECT(MRPT LANGUAGES C CXX)
 
@@ -44,6 +51,28 @@ else()
 		set(CMAKE_CXX_STANDARD 17)
 	endif()
 endif()
+
+hunter_add_package(Assimp)
+hunter_add_package(Eigen)
+hunter_add_package(Jpeg)
+hunter_add_package(octomap)
+hunter_add_package(OpenCV)
+hunter_add_package(ZLIB)
+
+if(COMMAND cmake_policy)
+	cmake_policy(SET CMP0003 NEW) # We don't want to mix relative and absolute paths in linker lib lists.
+	cmake_policy(SET CMP0005 NEW) # Escape definitions (-D) strings
+	if(POLICY CMP0053)
+		cmake_policy(SET CMP0053 OLD) # Simplify variable reference and escape sequence evaluation.
+	endif()
+	if(POLICY CMP0037)
+		cmake_policy(SET CMP0037 OLD)  # Allow defining target "test"
+	endif()
+	if(POLICY CMP0043)
+		cmake_policy(SET CMP0043 OLD) #  Ignore COMPILE_DEFINITIONS_<Config> properties.
+	endif()
+endif()
+# -------------------------
 
 
 # Detect wordsize:
@@ -110,8 +139,6 @@ endif()
 IF(MSVC)
 	set(MRPT_LIB_PREFIX "lib")  # Libs are: "libXXX"
 	set(CMAKE_DEBUG_POSTFIX  "-dbg")
-ELSE()
-	set(CMAKE_DEBUG_POSTFIX "")
 ENDIF()
 
 # In case of Makefiles if the user does not setup CMAKE_BUILD_TYPE, assume it's Release:
@@ -528,7 +555,7 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
 		# If we're building a Debian package, just DO NOT use -mtune=native
 	ELSE()
 		IF(MRPT_OPTIMIZE_NATIVE AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
-			add_compile_options(-O3 -mtune=native)
+			add_compile_options(-mtune=native)
 		ENDIF()
 	ENDIF()
 
