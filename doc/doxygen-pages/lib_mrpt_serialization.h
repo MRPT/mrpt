@@ -10,12 +10,9 @@
 
 /** \defgroup mrpt_serialization_grp [mrpt-serialization]
 
-\page mrpt_serialization_grp [mrpt-serialization]
-
 Serialization (marshalling) portable library for C++ objects persistence.
 
-<small> <a href="index.html#libs">Back to list of all libraries</a> | <a
-href="modules.html" >See all modules</a> </small> <br>
+[TOC]
 
 # Library `mrpt-serialization`
 <small> [New in MRPT 2.0.0] </small>
@@ -23,8 +20,6 @@ href="modules.html" >See all modules</a> </small> <br>
 This library is part of MRPT and can be installed in Debian-based systems with:
 
 		sudo apt install libmrpt-serialization-dev
-
-[TOC]
 
 ## Binary serialization (most efficient)
 
