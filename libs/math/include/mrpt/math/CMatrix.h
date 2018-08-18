@@ -22,6 +22,7 @@ namespace mrpt::math
 class CMatrix : public mrpt::serialization::CSerializable, public CMatrixFloat
 {
 	DEFINE_SERIALIZABLE(CMatrix)
+	DEFINE_SCHEMA_SERIALIZABLE()
 
    public:
 	/** Constructor  */
@@ -29,10 +30,10 @@ class CMatrix : public mrpt::serialization::CSerializable, public CMatrixFloat
 	/** Constructor  */
 	CMatrix(size_t row, size_t col) : CMatrixFloat(row, col) {}
 	/** Copy constructor
-	  */
+	 */
 	CMatrix(const CMatrixFloat& m) : CMatrixFloat(m) {}
 	/** Copy constructor
-	  */
+	 */
 	CMatrix(const CMatrixTemplateNumeric<double>& m) : CMatrixFloat(0, 0)
 	{
 		*this = m.eval().cast<float>();
@@ -40,7 +41,7 @@ class CMatrix : public mrpt::serialization::CSerializable, public CMatrixFloat
 	MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(CMatrix)
 
 	/** Assignment operator for float matrixes
-	*/
+	 */
 	template <class OTHERMAT>
 	inline CMatrix& operator=(const OTHERMAT& m)
 	{
@@ -66,5 +67,4 @@ class CMatrix : public mrpt::serialization::CSerializable, public CMatrixFloat
 mrpt::serialization::CArchive& operator>>(
 	mrpt::serialization::CArchive& in, CMatrix::Ptr& pObj);
 
-}
-
+}  // namespace mrpt::math

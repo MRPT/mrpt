@@ -39,6 +39,7 @@ class CPose2D : public CPose<CPose2D>, public mrpt::serialization::CSerializable
 {
    public:
 	DEFINE_SERIALIZABLE(CPose2D)
+	DEFINE_SCHEMA_SERIALIZABLE()
 
    public:
 	/** [x,y] */

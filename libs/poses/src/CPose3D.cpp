@@ -36,6 +36,7 @@
 #include <mrpt/math/lightweight_geom_data.h>  // for TPoint3D
 #include <mrpt/math/ops_containers.h>  // for dotProduct
 #include <mrpt/serialization/CSerializable.h>  // for CSeriali...
+#include <mrpt/serialization/CSchemeArchiveBase.h>
 #include <mrpt/core/bits_math.h>  // for square
 #include <mrpt/math/utils_matlab.h>
 #include <mrpt/otherlibs/sophus/so3.hpp>
@@ -192,6 +193,35 @@ void CPose3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	};
 }
 
+void CPose3D::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
+{
+	SCHEMA_SERIALIZE_DATATYPE_VERSION(1);
+	out["x"] = m_coords[0];
+	out["y"] = m_coords[1];
+	out["z"] = m_coords[2];
+	out["rot"] = CMatrixD(m_ROT);
+}
+void CPose3D::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
+{
+	uint8_t version;
+	SCHEMA_DESERIALIZE_DATATYPE_VERSION();
+	switch (version)
+	{
+		case 1:
+		{
+			m_coords[0] = static_cast<double>(in["x"]);
+			m_coords[1] = static_cast<double>(in["y"]);
+			m_coords[2] = static_cast<double>(in["z"]);
+			CMatrixD m;
+			in["rot"].readTo(m);
+			m_ROT = m;
+		}
+		break;
+		default:
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+	}
+}
+
 /**  Textual output stream function.
  */
 std::ostream& mrpt::poses::operator<<(std::ostream& o, const CPose3D& p)
@@ -273,15 +303,16 @@ void CPose3D::rebuildRotationMatrix()
 	const double sr = sin(m_roll);
 #endif
 
-	alignas(MRPT_MAX_ALIGN_BYTES) const double rot_vals[] = {cy * cp,
-										   cy * sp * sr - sy * cr,
-										   cy * sp * cr + sy * sr,
-										   sy * cp,
-										   sy * sp * sr + cy * cr,
-										   sy * sp * cr - cy * sr,
-										   -sp,
-										   cp * sr,
-										   cp * cr};
+	alignas(MRPT_MAX_ALIGN_BYTES)
+		const double rot_vals[] = {cy * cp,
+								   cy * sp * sr - sy * cr,
+								   cy * sp * cr + sy * sr,
+								   sy * cp,
+								   sy * sp * sr + cy * cr,
+								   sy * sp * cr - cy * sr,
+								   -sp,
+								   cp * sr,
+								   cp * cr};
 	m_ROT.loadFromArray(rot_vals);
 }
 
@@ -417,7 +448,9 @@ void CPose3D::composePoint(
 #endif
 
 			alignas(MRPT_MAX_ALIGN_BYTES) const double nums[3 * 6] = {
-				1, 0, 0,
+				1,
+				0,
+				0,
 				-lx * sy * cp + ly * (-sy * sp * sr - cy * cr) +
 					lz * (-sy * sp * cr + cy * sr),  // d_x'/d_yaw
 				-lx * cy * sp + ly * (cy * cp * sr) +
@@ -425,7 +458,8 @@ void CPose3D::composePoint(
 				ly * (cy * sp * cr + sy * sr) +
 					lz * (-cy * sp * sr + sy * cr),  // d_x'/d_roll
 				0,
-				1, 0,
+				1,
+				0,
 				lx * cy * cp + ly * (cy * sp * sr - sy * cr) +
 					lz * (cy * sp * cr + sy * sr),  // d_y'/d_yaw
 				-lx * sy * sp + ly * (sy * cp * sr) +
@@ -433,7 +467,8 @@ void CPose3D::composePoint(
 				ly * (sy * sp * cr - cy * sr) +
 					lz * (-sy * sp * sr - cy * cr),  // d_y'/d_roll
 				0,
-				0, 1,
+				0,
+				1,
 				0,  // d_z' / d_yaw
 				-lx * cp - ly * sp * sr - lz * sp * cr,  // d_z' / d_pitch
 				ly * cp * cr - lz * cp * sr  // d_z' / d_roll
@@ -615,9 +650,9 @@ bool CPose3D::isHorizontal(const double tolerance) const
 
 /**  Makes \f$ this = A \ominus B \f$ this method is slightly more efficient
  * than "this= A - B;" since it avoids the temporary object.
-  *  \note A or B can be "this" without problems.
-  * \sa composeFrom, composePoint
-  */
+ *  \note A or B can be "this" without problems.
+ * \sa composeFrom, composePoint
+ */
 void CPose3D::inverseComposeFrom(const CPose3D& A, const CPose3D& B)
 {
 	// this    =    A  (-)  B
@@ -644,8 +679,8 @@ void CPose3D::inverseComposeFrom(const CPose3D& A, const CPose3D& B)
 }
 
 /**  Computes the 3D point L such as \f$ L = G \ominus this \f$.
-  * \sa composePoint, composeFrom
-  */
+ * \sa composePoint, composeFrom
+ */
 void CPose3D::inverseComposePoint(
 	const double gx, const double gy, const double gz, double& lx, double& ly,
 	double& lz,
@@ -900,7 +935,7 @@ inline void dVinvt_dR(const CPose3D& P, CMatrixFixedNumeric<double, 3, 9>& J)
 	}
 	M3x9(a, B, J);
 }
-}
+}  // namespace mrpt::poses
 
 void CPose3D::ln_jacob(mrpt::math::CMatrixFixedNumeric<double, 6, 12>& J) const
 {

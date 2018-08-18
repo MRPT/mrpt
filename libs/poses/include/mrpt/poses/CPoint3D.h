@@ -32,7 +32,7 @@ class CPoint3D : public CPoint<CPoint3D>,
 				 public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(CPoint3D)
-
+	DEFINE_SCHEMA_SERIALIZABLE()
    public:
 	/** [x,y,z] */
 	mrpt::math::CArrayDouble<3> m_coords;

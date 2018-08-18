@@ -35,12 +35,13 @@ class CPosePDFGaussianInf : public CPosePDF
 {
 	// This must be added to any CSerializable derived class:
 	DEFINE_SERIALIZABLE(CPosePDFGaussianInf)
+	DEFINE_SCHEMA_SERIALIZABLE()
 	using self_t = CPosePDFGaussianInf;
 
    protected:
 	/** Assures the symmetry of the covariance matrix (eventually certain
 	 * operations in the math-coprocessor lead to non-symmetric matrixes!)
-  */
+	 */
 	void assureSymmetry();
 
    public:
@@ -79,8 +80,8 @@ class CPosePDFGaussianInf : public CPosePDF
 	void getMean(CPose2D& mean_pose) const override { mean_pose = mean; }
 	bool isInfType() const override { return true; }
 	/** Returns an estimate of the pose covariance matrix (3x3 cov matrix) and
-   * the mean, both at once.
-   * \sa getMean */
+	 * the mean, both at once.
+	 * \sa getMean */
 	void getCovarianceAndMean(
 		mrpt::math::CMatrixDouble33& cov, CPose2D& mean_point) const override
 	{
@@ -109,15 +110,15 @@ class CPosePDFGaussianInf : public CPosePDF
 	bool saveToTextFile(const std::string& file) const override;
 
 	/** this = p (+) this. This can be used to convert a PDF from local
-   * coordinates to global, providing the point (newReferenceBase) from which
-   *   "to project" the current pdf. Result PDF substituted the currently stored
-   * one in the object */
+	 * coordinates to global, providing the point (newReferenceBase) from which
+	 *   "to project" the current pdf. Result PDF substituted the currently
+	 * stored one in the object */
 	void changeCoordinatesReference(const CPose3D& newReferenceBase) override;
 
 	/** this = p (+) this. This can be used to convert a PDF from local
-   * coordinates to global, providing the point (newReferenceBase) from which
-   *   "to project" the current pdf. Result PDF substituted the currently stored
-   * one in the object. */
+	 * coordinates to global, providing the point (newReferenceBase) from which
+	 *   "to project" the current pdf. Result PDF substituted the currently
+	 * stored one in the object. */
 	void changeCoordinatesReference(const CPose2D& newReferenceBase);
 
 	/** Rotate the covariance matrix by replacing it by \f$
@@ -149,15 +150,15 @@ class CPosePDFGaussianInf : public CPosePDF
 		std::vector<mrpt::math::CVectorDouble>& outSamples) const override;
 
 	/** Bayesian fusion of two points gauss. distributions, then save the result
-   *in this object.
-   *  The process is as follows:<br>
-   *		- (x1,S1): Mean and variance of the p1 distribution.
-   *		- (x2,S2): Mean and variance of the p2 distribution.
-   *		- (x,S): Mean and variance of the resulting distribution.
-   *
-   *    S = (S1<sup>-1</sup> + S2<sup>-1</sup>)<sup>-1</sup>;
-   *    x = S * ( S1<sup>-1</sup>*x1 + S2<sup>-1</sup>*x2 );
-   */
+	 *in this object.
+	 *  The process is as follows:<br>
+	 *		- (x1,S1): Mean and variance of the p1 distribution.
+	 *		- (x2,S2): Mean and variance of the p2 distribution.
+	 *		- (x,S): Mean and variance of the resulting distribution.
+	 *
+	 *    S = (S1<sup>-1</sup> + S2<sup>-1</sup>)<sup>-1</sup>;
+	 *    x = S * ( S1<sup>-1</sup>*x1 + S2<sup>-1</sup>*x2 );
+	 */
 	void bayesianFusion(
 		const CPosePDF& p1, const CPosePDF& p2,
 		const double minMahalanobisDistToDrop = 0) override;
@@ -211,7 +212,5 @@ poses::CPosePDFGaussianInf operator+(
 /** Dumps the mean and covariance matrix to a text stream. */
 std::ostream& operator<<(std::ostream& out, const CPosePDFGaussianInf& obj);
 
-}
+}  // namespace mrpt::poses
 #endif
-
-

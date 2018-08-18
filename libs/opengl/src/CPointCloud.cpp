@@ -12,6 +12,7 @@
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CSchemeArchiveBase.h>
 #include <mrpt/core/round.h>  // round()
 
 #include "opengl_internals.h"
@@ -189,11 +190,10 @@ void CPointCloud::render_subset(
 #if MRPT_HAS_OPENGL_GLUT
 
 	const size_t N = (all ? m_xs.size() : idxs.size());
-	const size_t decimation = mrpt::round(
-		std::max(
-			1.0f, static_cast<float>(
-					  N / (OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL_value *
-						   render_area_sqpixels))));
+	const size_t decimation = mrpt::round(std::max(
+		1.0f, static_cast<float>(
+				  N / (OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL_value *
+					   render_area_sqpixels))));
 
 	m_last_rendered_count_ongoing += N / decimation;
 
@@ -213,7 +213,77 @@ void CPointCloud::render_subset(
 	MRPT_UNUSED_PARAM(render_area_sqpixels);
 #endif
 }
-
+void CPointCloud::serializeTo(
+	mrpt::serialization::CSchemeArchiveBase& out) const
+{
+	SCHEMA_SERIALIZE_DATATYPE_VERSION(1);
+	out["colorFromDepth"] = static_cast<int32_t>(m_colorFromDepth);
+	out["pointSize"] = m_pointSize;
+	for (uint i = 0; i < m_xs.size(); i++)
+	{
+		out["xs"][i] = m_xs[i];
+	}
+	for (uint i = 0; i < m_ys.size(); i++)
+	{
+		out["ys"][i] = m_ys[i];
+	}
+	for (uint i = 0; i < m_zs.size(); i++)
+	{
+		out["zs"][i] = m_zs[i];
+	}
+	out["colorFromDepth_min"]["R"] = m_colorFromDepth_min.R;
+	out["colorFromDepth_min"]["G"] = m_colorFromDepth_min.G;
+	out["colorFromDepth_min"]["B"] = m_colorFromDepth_min.B;
+	out["colorFromDepth_max"]["R"] = m_colorFromDepth_max.R;
+	out["colorFromDepth_max"]["G"] = m_colorFromDepth_max.G;
+	out["colorFromDepth_max"]["B"] = m_colorFromDepth_max.B;
+	out["pointSmooth"] = m_pointSmooth;
+}
+void CPointCloud::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
+{
+	uint8_t version;
+	SCHEMA_DESERIALIZE_DATATYPE_VERSION();
+	switch (version)
+	{
+		case 1:
+		{
+			/**
+			 *  currently below is being left to what is being set by
+			 *  the default constructor i.e.,CPointCloud::colNone
+			 */
+			// m_colorFromDepth = static_cast<float>(in["colorDepth"]);
+			m_pointSize = static_cast<float>(in["pointSize"]);
+			for (uint i = 0; i < m_xs.size(); i++)
+			{
+				m_xs[i] = static_cast<float>(in["xs"][i]);
+			}
+			for (uint i = 0; i < m_ys.size(); i++)
+			{
+				m_ys[i] = static_cast<float>(in["ys"][i]);
+			}
+			for (uint i = 0; i < m_zs.size(); i++)
+			{
+				m_zs[i] = static_cast<float>(in["zs"][i]);
+			}
+			m_colorFromDepth_min.R =
+				static_cast<float>(in["colorFromDepth_min"]["R"]);
+			m_colorFromDepth_min.G =
+				static_cast<float>(in["colorFromDepth_min"]["G"]);
+			m_colorFromDepth_min.B =
+				static_cast<float>(in["colorFromDepth_min"]["B"]);
+			m_colorFromDepth_max.R =
+				static_cast<float>(in["colorFromDepth_max"]["R"]);
+			m_colorFromDepth_max.G =
+				static_cast<float>(in["colorFromDepth_max"]["G"]);
+			m_colorFromDepth_max.B =
+				static_cast<float>(in["colorFromDepth_max"]["B"]);
+			m_pointSmooth = static_cast<bool>(in["pointSmooth"]);
+		}
+		break;
+		default:
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+	}
+}
 uint8_t CPointCloud::serializeGetVersion() const { return 4; }
 void CPointCloud::serializeTo(mrpt::serialization::CArchive& out) const
 {

@@ -14,6 +14,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CSchemeArchiveBase.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/config.h>  // HAVE_SINCOS
 #include <limits>
@@ -82,6 +83,31 @@ void CPose2D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	};
+}
+
+void CPose2D::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
+{
+	SCHEMA_SERIALIZE_DATATYPE_VERSION(1);
+	out["x"] = m_coords[0];
+	out["y"] = m_coords[1];
+	out["phi"] = m_phi;
+}
+void CPose2D::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
+{
+	uint8_t version;
+	SCHEMA_DESERIALIZE_DATATYPE_VERSION();
+	switch (version)
+	{
+		case 1:
+		{
+			m_coords[0] = static_cast<double>(in["x"]);
+			m_coords[1] = static_cast<double>(in["y"]);
+			m_phi = static_cast<double>(in["phi"]);
+		}
+		break;
+		default:
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+	}
 }
 
 /**  Textual output stream function.
@@ -288,7 +314,7 @@ void CPose2D::getHomogeneousMatrix(CMatrixDouble44& m) const
 }
 
 /** Forces "phi" to be in the range [-pi,pi];
-*/
+ */
 void CPose2D::normalizePhi()
 {
 	m_phi = math::wrapToPi(m_phi);
