@@ -13,8 +13,7 @@
 Runtime Type Information (RTTI) library, providing compiler-independent class
 registry, class factory, and inheritance information.
 
-<small> <a href="index.html#libs">Back to list of all libraries</a> | <a
-href="modules.html" >See all modules</a> </small> <br>
+[TOC]
 
 # Library `mrpt-rtti`
 <small> [New in MRPT 2.0.0] </small>
@@ -22,8 +21,6 @@ href="modules.html" >See all modules</a> </small> <br>
 This library is part of MRPT and can be installed in Debian-based systems with:
 
 		sudo apt install libmrpt-rtti-dev
-
-[TOC]
 
 Any class with RTTI support has to be derived from mrpt::rtti::CObject, either
 directly or via a hierarchy of inheriting classes.
@@ -39,7 +36,7 @@ See: \ref rtti_example1/test.cpp
 \snippet rtti_example1/test.cpp example-define-class
 \snippet rtti_example1/test.cpp example-define-class-test
 Output:
-\include rtti_example1/console.out
+\include rtti_example1/console-ex1.out
 
 ## Example #2: using the class factory
 
@@ -47,6 +44,6 @@ See: \ref rtti_example1/test.cpp
 \snippet rtti_example1/test.cpp example-define-class
 \snippet rtti_example1/test.cpp example-factory
 Output:
-\include rtti_example1/console.out
+\include rtti_example1/console-ex2.out
 
 */

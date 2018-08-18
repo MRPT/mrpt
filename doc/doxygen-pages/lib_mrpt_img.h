@@ -8,28 +8,29 @@
    +---------------------------------------------------------------------------+
  */
 
-/** \defgroup mrpt_system_grp [mrpt-system]
+/** \defgroup mrpt_img_grp [mrpt-img]
 
-An OS abstraction layer and other miscellaneous functionality: filesystem, date
-and time, memory handling and much more.
+Basic computer vision data structures and tools: bitmap images, canvas, color
+maps, and pinhole camera models.
 
 [TOC]
 
-# Library `mrpt-system`
+# Library `mrpt-img`
 <small> [New in MRPT 2.0.0] </small>
 
 This C++ library is part of MRPT and can be installed in Debian-based systems
 with:
 
-		sudo apt install libmrpt-system-dev
+		sudo apt install libmrpt-img-dev
 
-Refer to the list of submodules for details.
+Find below some examples of use.
 
+## Image handling
 
-## Name-based argument passing
-
-See the structure mrpt::system::TParameters.
-
+The class mrpt::img::CImage represents a wrapper around OpenCV images, plus
+extra functionality such as on-the-fly loading of images stored in disk upon
+first usage. The internal `IplImage` or `cv::Mat` is always available so
+OpenCV's functions can be still used to operate on MRPT images.
 
 
 
