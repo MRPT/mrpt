@@ -15,6 +15,7 @@
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/matrix_serialization.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CSchemeArchiveBase.h>
 #include <mrpt/random/RandomGenerators.h>
 #include <mrpt/system/os.h>
 
@@ -65,6 +66,32 @@ void CPoint2DPDFGaussian::serializeFrom(
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	};
+}
+void CPoint2DPDFGaussian::serializeTo(
+	mrpt::serialization::CSchemeArchiveBase& out) const
+{
+	SCHEMA_SERIALIZE_DATATYPE_VERSION(1);
+	out["mean"] = mean;
+	out["cov"] = CMatrixD(cov);
+}
+void CPoint2DPDFGaussian::serializeFrom(
+	mrpt::serialization::CSchemeArchiveBase& in)
+{
+	uint8_t version;
+	SCHEMA_DESERIALIZE_DATATYPE_VERSION();
+	switch (version)
+	{
+		case 1:
+		{
+			in["mean"].readTo(mean);
+			CMatrixD m;
+			in["cov"].readTo(m);
+			cov = m;
+		}
+		break;
+		default:
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+	}
 }
 
 void CPoint2DPDFGaussian::copyFrom(const CPoint2DPDF& o)

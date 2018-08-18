@@ -46,6 +46,7 @@ class CPointCloud : public CRenderizable,
 					public mrpt::opengl::PLY_Exporter
 {
 	DEFINE_SERIALIZABLE(CPointCloud)
+	DEFINE_SCHEMA_SERIALIZABLE()
    protected:
 	enum Axis
 	{

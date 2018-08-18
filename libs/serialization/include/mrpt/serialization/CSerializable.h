@@ -19,6 +19,13 @@ using mxArray = struct mxArray_tag;
 
 namespace mrpt::serialization
 {
+// /** Used in mrpt::serialization::CSerializable */
+// std::string notImplementedErrorString(const std::string& class_name)
+// {
+// 	return class_name +
+// 			" : class does not support schema based serialization";
+// }
+
 /** The virtual base class which provides a unified interface for all persistent
  *objects in MRPT.
  *  Many important properties of this class are inherited from
@@ -30,11 +37,13 @@ namespace mrpt::serialization
 class CSerializable : public mrpt::rtti::CObject
 {
 	friend class CArchive;
+	friend class CSchemeArchiveBase;
 
 	// This must be added to any CObject derived class:
 	DEFINE_VIRTUAL_MRPT_OBJECT(CSerializable)
 
 	virtual ~CSerializable() {}
+
    protected:
 	/** @name CSerializable virtual methods
 	 *  @{ */
@@ -56,6 +65,26 @@ class CSerializable : public mrpt::rtti::CObject
 	 *data. \exception std::exception On any I/O error
 	 */
 	virtual void serializeFrom(CArchive& in, uint8_t serial_version) = 0;
+	/** Virtual method for writing (serializing) to an abstract
+	 *  schema based archive.
+	 */
+	virtual void serializeTo(CSchemeArchiveBase& out) const
+	{
+		const std::string err =
+			std::string(this->GetRuntimeClass()->className) +
+			std::string(" : class does not support schema based serialization");
+		THROW_EXCEPTION(err);
+	}
+	/** Virtual method for reading (deserializing) from an abstract
+	 *  schema based archive.
+	 */
+	virtual void serializeFrom(CSchemeArchiveBase& in)
+	{
+		const std::string err =
+			std::string(this->GetRuntimeClass()->className) +
+			std::string(" : class does not support schema based serialization");
+		THROW_EXCEPTION(err);
+	}
 	/** @} */
 
    public:
@@ -94,6 +123,35 @@ void OctetVectorToObject(
 	const std::vector<uint8_t>& in_data, CSerializable::Ptr& obj);
 
 /** @} */
+/** This declaration must be inserted in all CSerializable classes definition,
+ * within the class declaration. */
+#define DEFINE_SCHEMA_SERIALIZABLE()                                      \
+   protected:                                                             \
+	/*! @name CSerializable virtual methods for schema based archives*/   \
+	/*! @{ */                                                             \
+	void serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const; \
+	void serializeFrom(mrpt::serialization::CSchemeArchiveBase& in);      \
+	/*! @} */
+
+/** For use inside all serializeTo(CSchemeArchiveBase) methods */
+#define SCHEMA_SERIALIZE_DATATYPE_VERSION(ser_version)                     \
+	do                                                                     \
+	{                                                                      \
+		out["datatype"] = std::string(this->GetRuntimeClass()->className); \
+		out["version"] = ser_version;                                      \
+	} while (false)
+
+/** For use inside serializeFrom(CSchemeArchiveBase) methods */
+#define SCHEMA_DESERIALIZE_DATATYPE_VERSION()                                  \
+	version = static_cast<int>(in["version"]);                                 \
+	const std::string read_typename{static_cast<std::string>(in["datatype"])}; \
+	const std::string expected_typename{this->GetRuntimeClass()->className};   \
+	if (expected_typename != read_typename)                                    \
+	{                                                                          \
+		THROW_EXCEPTION(mrpt::format(                                          \
+			"Schema deserializing class `%s` but expected `%s`",               \
+			read_typename.c_str(), expected_typename.c_str()))                 \
+	}
 
 /** This declaration must be inserted in all CSerializable classes definition,
  * within the class declaration. */
@@ -153,6 +211,4 @@ void OctetVectorToObject(
 		return var.writeToMatlab();            \
 	}                                          \
 	}
-}  // namespace mrpt
-
-
+}  // namespace mrpt::serialization

@@ -12,6 +12,7 @@
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CSchemeArchiveBase.h>
 #include <limits>
 
 using namespace mrpt::poses;
@@ -48,7 +49,28 @@ void CPoint2D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	};
 }
-
+void CPoint2D::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
+{
+	SCHEMA_SERIALIZE_DATATYPE_VERSION(1);
+	out["x"] = m_coords[0];
+	out["y"] = m_coords[1];
+}
+void CPoint2D::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
+{
+	uint8_t version;
+	SCHEMA_DESERIALIZE_DATATYPE_VERSION();
+	switch (version)
+	{
+		case 1:
+		{
+			m_coords[0] = static_cast<double>(in["x"]);
+			m_coords[1] = static_cast<double>(in["y"]);
+		}
+		break;
+		default:
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+	}
+}
 /*---------------------------------------------------------------
 The operator D="this"-b is the pose inverse compounding operator.
    The resulting pose "D" is the diference between this pose and "b"
