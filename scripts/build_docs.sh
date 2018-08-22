@@ -15,6 +15,9 @@ skipSVN="NO"
 MRPT_USE_SEARCHENGINE="YES"
 skipMAINMRPTDOCS=0
 
+# Generate call graphs: obbey MRPT_genCALLERGRAPHS if defined. Yes, otherwise.
+genCALLERGRAPHS=${MRPT_genCALLERGRAPHS:-YES}
+
 emptyARGS=1
 errARGS=0
 
@@ -230,6 +233,7 @@ export MRPT_LIST_INPUT
 export MRPT_EXAMPLE_PATH
 export genHTML
 export outCHM
+export genCALLERGRAPHS
 export CHM_FILENAME
 export HHC_INVOKING_CODE
 export MRPT_USE_SEARCHENGINE
