@@ -9,6 +9,8 @@ SET(ASSIMP_FOUND_VIA_CMAKE 0)
 SET(EMBEDDED_ASSIMP_DIR "${MRPT_BINARY_DIR}/otherlibs/assimp")
 
 IF(HUNTER_ENABLED)
+    hunter_add_package(Assimp)
+
     find_package(Assimp CONFIG REQUIRED)
     SET(CMAKE_MRPT_HAS_ASSIMP 1)
     SET(CMAKE_MRPT_HAS_ASSIMP_SYSTEM 0)
@@ -47,7 +49,7 @@ IF (NOT ASSIMP_FOUND)
 		  URL               "https://github.com/assimp/assimp/archive/v4.1.0.tar.gz"
 		  URL_MD5           "83b53a10c38d964bd1e69da0606e2727"
 		  SOURCE_DIR        "${MRPT_BINARY_DIR}/otherlibs/assimp/"
-		  CMAKE_ARGS 
+		  CMAKE_ARGS
 			-DASSIMP_BUILD_ASSIMP_TOOLS=OFF
 			-DASSIMP_BUILD_SAMPLES=OFF
 			-DASSIMP_BUILD_STATIC_LIB=ON

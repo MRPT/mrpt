@@ -12,13 +12,18 @@
 #
 #  NOTE: CMake can be obtained at http://www.cmake.org/
 # ----------------------------------------------------------------------------
-# Use the "Hunter" package manager (mainly for Windows and OSX)
-include(cmake/HunterGate.cmake)
-HunterGate(
-    URL "https://github.com/ruslo/hunter/archive/v0.23.16.tar.gz"
-    SHA1 "dbe5b1c966414c4a055983c11d5251a2d8f2f16d"
-    LOCAL # Use "MRPT/cmake/Hunter/config.cmake"
-)
+
+# Use the "Hunter" package manager:
+# Define this option here to override its default value (in HunterGate) to OFF:
+option(HUNTER_ENABLED "Enable Hunter package manager (useful for Windows and OSX)" OFF)
+if (HUNTER_ENABLED)
+  include(cmake/HunterGate.cmake)
+  HunterGate(
+      URL "https://github.com/ruslo/hunter/archive/v0.23.16.tar.gz"
+      SHA1 "dbe5b1c966414c4a055983c11d5251a2d8f2f16d"
+      LOCAL # Use "MRPT/cmake/Hunter/config.cmake"
+  )
+endif()
 
 # Tell CMake we'll use both C & C++ for use in its tests/flags.
 PROJECT(MRPT LANGUAGES C CXX)
@@ -53,12 +58,13 @@ else()
 	endif()
 endif()
 
-hunter_add_package(Assimp)
-hunter_add_package(Eigen)
-hunter_add_package(Jpeg)
-hunter_add_package(octomap)
-hunter_add_package(OpenCV)
-hunter_add_package(ZLIB)
+if (HUNTER_ENABLED)
+  hunter_add_package(Eigen)
+  hunter_add_package(Jpeg)
+  hunter_add_package(octomap)
+  hunter_add_package(OpenCV)
+  hunter_add_package(ZLIB)
+endif()
 
 if(COMMAND cmake_policy)
 	cmake_policy(SET CMP0003 NEW) # We don't want to mix relative and absolute paths in linker lib lists.

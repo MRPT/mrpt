@@ -35,7 +35,7 @@ ELSEIF(Eigen3_FOUND)
 	# Use system version
 	SET(MRPT_EIGEN_INCLUDE_DIR "${EIGEN3_INCLUDE_DIR}")
 ELSE()
-	MESSAGE(FATAL_ERROR "eigen3 is required to build MRPT! Either install it and set EIGEN3_DIR or enable the variable EIGEN_USE_EMBEDDED_VERSION to automatically download it now.")
+	MESSAGE(FATAL_ERROR "eigen3 is required to build MRPT! Either: install it and set EIGEN3_DIR, or enable the variable EIGEN_USE_EMBEDDED_VERSION to automatically download it now, or set HUNTER_ENABLED to use the Hunter package manager.")
 ENDIF()
 
 INCLUDE_DIRECTORIES("${MRPT_EIGEN_INCLUDE_DIR}")
