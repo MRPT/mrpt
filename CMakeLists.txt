@@ -12,11 +12,12 @@
 #
 #  NOTE: CMake can be obtained at http://www.cmake.org/
 # ----------------------------------------------------------------------------
+# Use the "Hunter" package manager (mainly for Windows and OSX)
 include(cmake/HunterGate.cmake)
 HunterGate(
-    URL "https://github.com/lsolanka/hunter/archive/v0.22.4-rosdevel13.tar.gz"
-    SHA1 "43626e95798c122bba5fd94ae48c403a066f1dcf"
-    LOCAL
+    URL "https://github.com/ruslo/hunter/archive/v0.23.16.tar.gz"
+    SHA1 "dbe5b1c966414c4a055983c11d5251a2d8f2f16d"
+    LOCAL # Use "MRPT/cmake/Hunter/config.cmake"
 )
 
 # Tell CMake we'll use both C & C++ for use in its tests/flags.
