@@ -69,8 +69,8 @@ class CStereoGrabber_Bumblebee_libdc1394
 	bool m_bInitialized;
 };  // End of class
 static_assert(
-	!std::is_copy_constructible<CStereoGrabber_Bumblebee_libdc1394>::value &&
-		!std::is_copy_assignable<CStereoGrabber_Bumblebee_libdc1394>::value,
+	!std::is_copy_constructible_v<CStereoGrabber_Bumblebee_libdc1394> &&
+		!std::is_copy_assignable_v<CStereoGrabber_Bumblebee_libdc1394>,
 	"Copy Check");
 }
 

@@ -297,8 +297,8 @@ class CGenericSensor
 };  // end of class
 
 static_assert(
-	!std::is_copy_constructible<CGenericSensor>::value &&
-		!std::is_copy_assignable<CGenericSensor>::value,
+	!std::is_copy_constructible_v<CGenericSensor> &&
+		!std::is_copy_assignable_v<CGenericSensor>,
 	"Copy Check");
 
 #define SENSOR_CLASS_ID(class_name)                      \

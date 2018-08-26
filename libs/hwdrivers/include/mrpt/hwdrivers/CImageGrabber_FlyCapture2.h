@@ -280,8 +280,8 @@ class CImageGrabber_FlyCapture2
 	inline bool isStereo() { return m_options.stereo_mode; }
 };  // End of class
 static_assert(
-	!std::is_copy_constructible<CImageGrabber_FlyCapture2>::value &&
-		!std::is_copy_assignable<CImageGrabber_FlyCapture2>::value,
+	!std::is_copy_constructible_v<CImageGrabber_FlyCapture2> &&
+		!std::is_copy_assignable_v<CImageGrabber_FlyCapture2>,
 	"Copy Check");
 }
 #endif
