@@ -268,7 +268,7 @@ TEST(CObservation3DRangeScan, LoadAndCheckFloorPoints)
 	*/
 
 	EXPECT_LE(bin_count[11], 100);
-	EXPECT_LE(bin_count[12],1000);
+	EXPECT_LE(bin_count[12], 1000);
 	EXPECT_GE(bin_count[14], 12000);
 	EXPECT_LE(bin_count[18], 700);
 	EXPECT_LE(bin_count[19], 20);
