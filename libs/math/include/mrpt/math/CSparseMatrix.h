@@ -498,8 +498,8 @@ class CSparseMatrix
 		void update(const CSparseMatrix& new_SM);
 	};
 	static_assert(
-		!std::is_copy_constructible<CholeskyDecomp>::value &&
-			!std::is_copy_assignable<CholeskyDecomp>::value,
+		!std::is_copy_constructible_v<CholeskyDecomp> &&
+			!std::is_copy_assignable_v<CholeskyDecomp>,
 		"Copy Check");
 
 	/** @} */

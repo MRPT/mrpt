@@ -114,8 +114,8 @@ class CPipeBaseEndPoint : public mrpt::io::CStream
 	virtual uint64_t getPosition() const override;
 };  // end of CPipeBaseEndPoint
 static_assert(
-	!std::is_copy_constructible<CPipeBaseEndPoint>::value &&
-		!std::is_copy_assignable<CPipeBaseEndPoint>::value,
+	!std::is_copy_constructible_v<CPipeBaseEndPoint> &&
+		!std::is_copy_assignable_v<CPipeBaseEndPoint>,
 	"Copy Check");
 
 /** The read end-point in a pipe created with mrpt::synch::CPipe.

@@ -250,8 +250,8 @@ class CDUO3DCamera
 
 };  // End of class
 
-static_assert(!std::is_copy_constructible<CDUO3DCamera>::value, "Copy Check");
-static_assert(!std::is_copy_assignable<CDUO3DCamera>::value, "Assign Check");
+static_assert(!std::is_copy_constructible_v<CDUO3DCamera>, "Copy Check");
+static_assert(!std::is_copy_assignable_v<CDUO3DCamera>, "Assign Check");
 }
 #endif
 

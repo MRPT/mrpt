@@ -114,8 +114,8 @@ class CStereoGrabber_SVS
 
 };  // End of class
 static_assert(
-	!std::is_copy_constructible<CStereoGrabber_SVS>::value &&
-		!std::is_copy_assignable<CStereoGrabber_SVS>::value,
+	!std::is_copy_constructible_v<CStereoGrabber_SVS> &&
+		!std::is_copy_assignable_v<CStereoGrabber_SVS>,
 	"Copy Check");
 }
 #endif

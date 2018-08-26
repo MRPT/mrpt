@@ -76,8 +76,8 @@ class CFileOutputStream : public CStream
 	size_t Write(const void* Buffer, size_t Count) override;
 };  // End of class def.
 static_assert(
-	!std::is_copy_constructible<CFileOutputStream>::value &&
-		!std::is_copy_assignable<CFileOutputStream>::value,
+	!std::is_copy_constructible_v<CFileOutputStream> &&
+		!std::is_copy_assignable_v<CFileOutputStream>,
 	"Copy Check");
 }
 
