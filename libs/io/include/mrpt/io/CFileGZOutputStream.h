@@ -69,8 +69,8 @@ class CFileGZOutputStream : public CStream
 	size_t Write(const void* Buffer, size_t Count) override;
 };  // End of class def.
 static_assert(
-	!std::is_copy_constructible<CFileGZOutputStream>::value &&
-		!std::is_copy_assignable<CFileGZOutputStream>::value,
+	!std::is_copy_constructible_v<CFileGZOutputStream> &&
+		!std::is_copy_assignable_v<CFileGZOutputStream>,
 	"Copy Check");
 }
 
