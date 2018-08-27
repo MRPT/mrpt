@@ -15,7 +15,7 @@
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/containers/copy_container_typecasting.h>
 #include <mrpt/math/CHistogram.h>
-
+#include <mrpt/config.h>
 #include <gtest/gtest.h>
 
 // Defined in tests/test_main.cpp
@@ -197,6 +197,10 @@ TEST(CObservation3DRangeScan, Project3D_filterMax)
 	}
 }
 
+// We need OPENCV to read the image internal to CObservation3DRangeScan,
+// so skip this test if built without opencv.
+#if MRPT_HAS_OPENCV
+
 TEST(CObservation3DRangeScan, LoadAndCheckFloorPoints)
 {
 	const string rawlog_fil = MRPT_GLOBAL_UNITTEST_SRC_DIR +
@@ -273,3 +277,4 @@ TEST(CObservation3DRangeScan, LoadAndCheckFloorPoints)
 	EXPECT_LE(bin_count[18], 700);
 	EXPECT_LE(bin_count[19], 20);
 }
+#endif
