@@ -709,7 +709,7 @@ void cost_func(
 		}
 	}
 }  // end error_func
-}
+}  // namespace mrpt::obs::detail
 
 /** A Levenberg-Marquart-based optimizer to recover the calibration parameters
  * of a 3D camera given a range (depth) image and the corresponding 3D point

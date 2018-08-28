@@ -520,9 +520,15 @@ void CArchive::internal_ReadObject(
 	{
 		throw;
 	}
-	catch (std::exception&)
+	catch (CExceptionEOF&)
 	{
-		THROW_TYPED_EXCEPTION("Cannot read object due to EOF", CExceptionEOF);
+		throw;
+	}
+	catch (std::exception& e)
+	{
+		THROW_STACKED_EXCEPTION_CUSTOM_MSG2(
+			e, "Exception while parsing typed object '%s' from stream!\n",
+			strClassName.c_str());
 	}
 	catch (...)
 	{
