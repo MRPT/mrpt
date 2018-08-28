@@ -63,9 +63,9 @@ Supported distributions:
   * Ubuntu 16.04LTS Xenial (EOL: April 2021)
   	* Using 16.04 requires installing gcc-7 due to some bugs in gcc-5:
 
-        add-apt-repository ppa:ubuntu-toolchain-r/test
-        apt-get update
-        apt-get install -y g++-7
+          add-apt-repository ppa:ubuntu-toolchain-r/test
+          apt-get update
+          apt-get install -y g++-7
 
 
 ### 3.2. Build from sources
