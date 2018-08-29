@@ -71,7 +71,9 @@ bool CNodeRegistrationDecider<GRAPH_T>::registerNewNodeAtEnd(
 		this->addNodeAnnotsToPose(&tmp_pose);
 
 		// make sure that this pair hasn't been registered yet.
+#if _DEBUG
 		std::pair<typename GRAPH_T::global_poses_t::const_iterator, bool> res =
+#endif
 			this->m_graph->nodes.insert(
 				make_pair(this->m_graph->root, tmp_pose));
 		ASSERTDEBMSG_(
@@ -94,8 +96,9 @@ bool CNodeRegistrationDecider<GRAPH_T>::registerNewNodeAtEnd(
 		global_pose_t tmp_pose = this->getCurrentRobotPosEstimation();
 		this->addNodeAnnotsToPose(&tmp_pose);
 
-		// make sure that this pair hasn't been registered yet.
+#if _DEBUG
 		std::pair<typename GRAPH_T::global_poses_t::const_iterator, bool> res =
+#endif
 			this->m_graph->nodes.insert(make_pair(to, tmp_pose));
 		ASSERTDEBMSG_(
 			res.second, mrpt::format(

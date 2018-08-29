@@ -21,11 +21,11 @@ const std::string CRegistrationDeciderOrOptimizer<GRAPH_T>::report_sep =
 
 template <class GRAPH_T>
 CRegistrationDeciderOrOptimizer<GRAPH_T>::CRegistrationDeciderOrOptimizer()
-	: m_graph(NULL),
-	  m_graph_section(NULL),
-	  m_win_manager(NULL),
-	  m_win(NULL),
-	  m_win_observer(NULL),
+	: m_graph(nullptr),
+	  m_graph_section(nullptr),
+	  m_win_manager(nullptr),
+	  m_win(nullptr),
+	  m_win_observer(nullptr),
 	  m_initialized_visuals(false),
 	  m_class_name("CRegistrationDeciderOrOptimizer"),
 	  is_mr_slam_class(false)

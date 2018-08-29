@@ -71,15 +71,10 @@ namespace mrpt::graphslam::deciders
 template <class GRAPH_T = typename mrpt::graphs::CNetworkOfPoses2DInf>
 class CRangeScanOps
 {
-	/**\brief Handy typedefs */
-	/**\{*/
 	using constraint_t = typename GRAPH_T::constraint_t;
 	using self_t = CRangeScanOps<GRAPH_T>;
-	/**\}*/
 
-   protected:
-	// Protected methods
-	// ////////////////////////////////////////////////////////////
+protected:
 
 	/**\brief Align the 2D range scans provided and fill the potential edge that
 	 * can transform the one into the other.
@@ -122,9 +117,8 @@ class CRangeScanOps
 	 * \return True if operation was successful, false otherwise
 	 */
 	bool convert3DTo2DRangeScan(
-		/*from = */ mrpt::obs::CObservation3DRangeScan::Ptr& scan3D_in,
-		/*to   = */ mrpt::obs::CObservation2DRangeScan::Ptr* scan2D_out =
-			nullptr);
+		mrpt::obs::CObservation3DRangeScan::Ptr& scan3D_in,
+		mrpt::obs::CObservation2DRangeScan::Ptr* scan2D_out);
 
 	struct TParams : public mrpt::config::CLoadableOptions
 	{

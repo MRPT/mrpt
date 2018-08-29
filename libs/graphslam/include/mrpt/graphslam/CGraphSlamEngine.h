@@ -151,9 +151,8 @@ namespace mrpt::graphslam
 template <class GRAPH_T = typename mrpt::graphs::CNetworkOfPoses2DInf>
 class CGraphSlamEngine : public mrpt::system::COutputLogger
 {
-   public:
-	/**\brief Handy typedefs */
-	/**\{*/
+
+public:
 	/**\brief Map for managing output file streams.*/
 	using fstreams_out = std::map<std::string, mrpt::io::CFileOutputStream>;
 	/**\brief Map for iterating over output file streams.*/
@@ -166,7 +165,6 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
 	using global_pose_t = typename GRAPH_T::global_pose_t;
 	using nodes_to_scans2D_t = std::map<
 		mrpt::graphs::TNodeID, mrpt::obs::CObservation2DRangeScan::Ptr>;
-	/**\}*/
 
 	/**\brief Constructor of CGraphSlamEngine class template.
 	 *
@@ -187,31 +185,23 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
 	 * robot. Currently the class can read ground truth files corresponding
 	 * either to <em>RGBD - TUM datasets</em> or to rawlog files generated with
 	 * the \em GridMapNavSimul MRPT application.
-	 * // TODO add the deciders/optimizer
 	 *
 	 *
-	 * \note If a nullptr CWindowManager pointer is porovided, the application
-	 * runs on <em> headless mode </em>. In this case, no visual feedback is
+	 * \note If win_manager is null is provided, the application
+	 * runs on <em>headless mode </em>. In this case, no visual feedback is
 	 * given but application receives a big boost in performance
 	 */
 	CGraphSlamEngine(
 		const std::string& config_file, const std::string& rawlog_fname = "",
 		const std::string& fname_GT = "",
-		mrpt::graphslam::CWindowManager* win_manager = NULL,
+		mrpt::graphslam::CWindowManager* win_manager = nullptr,
 		mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>* node_reg =
-			NULL,
+			nullptr,
 		mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_T>* edge_reg =
-			NULL,
+			nullptr,
 		mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_T>* optimizer =
-			NULL);
-	/**\brief Default Destructor. */
+			nullptr);
 	virtual ~CGraphSlamEngine();
-
-	// Public function definitions
-	//////////////////////////////////////////////////////////////
-	/**\brief Query CGraphSlamEngine instance for the current estimated robot
-	 * position
-	 */
 	global_pose_t getCurrentRobotPosEstimation() const;
 	/***\brief Get the estimated trajectory of the robot given by the running
 	 * graphSLAM algorithm.
@@ -280,10 +270,10 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
 	 */
 	void getMap(
 		mrpt::maps::COccupancyGridMap2D::Ptr map,
-		mrpt::system::TTimeStamp* acquisition_time = NULL) const;
+		mrpt::system::TTimeStamp* acquisition_time = nullptr) const;
 	void getMap(
 		mrpt::maps::COctoMap::Ptr map,
-		mrpt::system::TTimeStamp* acquisition_time = NULL) const;
+		mrpt::system::TTimeStamp* acquisition_time = nullptr) const;
 	/**\brief	Compute the map of the environment based on the
 	 * recorded measurements.
 	 *
@@ -293,7 +283,6 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
 	void computeMap() const;
 	/**\}*/
 	/**\brief Print the problem parameters to the console for verification.
-	 *
 	 * Method is a wrapper around CGraphSlamEngine::getParamsAsString method
 	 * \sa getParamsAsString
 	 */
@@ -348,11 +337,11 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
 	static void readGTFile(
 		const std::string& fname_GT,
 		std::vector<mrpt::poses::CPose2D>* gt_poses,
-		std::vector<mrpt::system::TTimeStamp>* gt_timestamps = NULL);
+		std::vector<mrpt::system::TTimeStamp>* gt_timestamps = nullptr);
 	static void readGTFile(
 		const std::string& fname_GT,
 		std::vector<mrpt::poses::CPose3D>* gt_poses,
-		std::vector<mrpt::system::TTimeStamp>* gt_timestamps = NULL);
+		std::vector<mrpt::system::TTimeStamp>* gt_timestamps = nullptr);
 	/**\brief Parse the ground truth .txt file and fill in the corresponding
 	 * m_GT_poses vector. The poses returned are given with regards to the
 	 * MRPT reference frame.
@@ -374,7 +363,7 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
 	static void readGTFileRGBD_TUM(
 		const std::string& fname_GT,
 		std::vector<mrpt::poses::CPose2D>* gt_poses,
-		std::vector<mrpt::system::TTimeStamp>* gt_timestamps = NULL);
+		std::vector<mrpt::system::TTimeStamp>* gt_timestamps = nullptr);
 
 	/**\}*/
 
@@ -400,7 +389,7 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
 	bool getGraphSlamStats(
 		std::map<std::string, int>* node_stats,
 		std::map<std::string, int>* edge_stats,
-		mrpt::system::TTimeStamp* timestamp = NULL);
+		mrpt::system::TTimeStamp* timestamp = nullptr);
 
 	/**\name pause/resume execution */
 	/**\{ */

@@ -437,10 +437,10 @@ void CLevMarqGSO<GRAPH_T>::_optimizeGraph(bool is_full_update /*=false*/)
 	// is_full_update is not instructed
 	if (is_full_update)
 	{
-		// nodes_to_optimize: List of nodes to optimize. NULL -> all but the
+		// nodes_to_optimize: List of nodes to optimize. nullptr -> all but the
 		// root
 		// node.
-		nodes_to_optimize = NULL;
+		nodes_to_optimize = nullptr;
 	}
 	else
 	{
@@ -827,7 +827,7 @@ void CLevMarqGSO<GRAPH_T>::GraphVisualizationParams::loadFromConfigFile(
 	cfg["show_edges"] =
 		source.read_bool(section, "optimized_show_edges", 1, false);
 	cfg["edge_color"] =
-		source.read_int(section, "optimized_edge_color", 4286611456, false);
+		source.read_int(section, "optimized_edge_color", 1500, false);
 	cfg["edge_width"] =
 		source.read_double(section, "optimized_edge_width", 1.5, false);
 	cfg["show_node_corners"] =
@@ -835,7 +835,7 @@ void CLevMarqGSO<GRAPH_T>::GraphVisualizationParams::loadFromConfigFile(
 	cfg["show_edge_rel_poses"] =
 		source.read_bool(section, "optimized_show_edge_rel_poses", 1, false);
 	cfg["edge_rel_poses_color"] = source.read_int(
-		section, "optimized_edge_rel_poses_color", 1090486272, false);
+		section, "optimized_edge_rel_poses_color", 2000, false);
 	cfg["nodes_edges_corner_scale"] = source.read_double(
 		section, "optimized_nodes_edges_corner_scale", 0.4, false);
 	cfg["nodes_corner_scale"] =
@@ -843,7 +843,7 @@ void CLevMarqGSO<GRAPH_T>::GraphVisualizationParams::loadFromConfigFile(
 	cfg["nodes_point_size"] =
 		source.read_int(section, "optimized_nodes_point_size", 5, false);
 	cfg["nodes_point_color"] = source.read_int(
-		section, "optimized_nodes_point_color", 10526880, false);
+		section, "optimized_nodes_point_color", 3000, false);
 
 	MRPT_END;
 }

@@ -20,21 +20,15 @@ template <class GRAPH_T>
 CGraphSlamHandler<GRAPH_T>::CGraphSlamHandler(
 	mrpt::system::COutputLogger* logger,
 	mrpt::graphslam::apps::TUserOptionsChecker<GRAPH_T>* options_checker,
-	const bool enable_visuals /*=true*/)
+	const bool enable_visuals)
 	: m_logger(logger),
 	  m_options_checker(options_checker),
-	  m_do_save_results(true),
-	  m_has_set_fnames(false),
 	  m_enable_visuals(enable_visuals)
 {
 	using namespace mrpt::system;
 	ASSERTDEB_(m_logger);
 	ASSERTDEB_(m_options_checker);
 
-	m_engine = NULL;
-	m_win_manager = NULL;
-	m_win_observer = NULL;
-	m_win = NULL;
 	if (m_enable_visuals)
 	{
 		this->initVisualization();
@@ -109,7 +103,7 @@ CGraphSlamHandler<GRAPH_T>::~CGraphSlamHandler()
 
 template <class GRAPH_T>
 void CGraphSlamHandler<GRAPH_T>::initOutputDir(
-	const std::string& output_dir_fname /* = graphslam_results */)
+	const std::string& output_dir_fname)
 {
 	MRPT_START;
 	using namespace std;
@@ -182,7 +176,9 @@ void CGraphSlamHandler<GRAPH_T>::initOutputDir(
 					mrpt::system::LVL_INFO, "Renaming directory to: %s",
 					dst_fname.c_str());
 				string error_msg;
+#if _DEBUG
 				bool did_rename =
+#endif
 					renameFile(output_dir_fname, dst_fname, &error_msg);
 				ASSERTDEBMSG_(
 					did_rename, format(
@@ -191,8 +187,8 @@ void CGraphSlamHandler<GRAPH_T>::initOutputDir(
 									error_msg.c_str()));
 				break;
 			}
-		}  // SWITCH (ANSWER_INT)
-	}  // IF DIRECTORY EXISTS..
+		}  // end switch (answer_int)
+	}  // end if directory exists..
 
 	// Now rebuild the directory from scratch
 	m_logger->logFmt(
@@ -211,7 +207,7 @@ void CGraphSlamHandler<GRAPH_T>::initOutputDir(
 template <class GRAPH_T>
 void CGraphSlamHandler<GRAPH_T>::setFNames(
 	const std::string& ini_fname, const std::string& rawlog_fname,
-	const std::string& ground_truth_fname /*=std::string()*/)
+	const std::string& ground_truth_fname)
 {
 	this->m_ini_fname = ini_fname;
 	this->m_rawlog_fname = rawlog_fname;
