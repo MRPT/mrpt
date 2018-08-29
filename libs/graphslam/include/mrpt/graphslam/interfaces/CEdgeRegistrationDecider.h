@@ -49,17 +49,6 @@ class CEdgeRegistrationDecider
 
 	CEdgeRegistrationDecider()=default;;
 	virtual ~CEdgeRegistrationDecider()=default;
-	/**\brief Generic method for fetching the incremental action/observation
-	 * readings from the calling function.
-	 *
-	 * Implementations of this interface should use (part of) the specified
-	 * parameters and call the checkRegistrationCondition to check for
-	 * potential Edge registration
-	 */
-	virtual bool updateState(
-		mrpt::obs::CActionCollection::Ptr action,
-		mrpt::obs::CSensoryFrame::Ptr observations,
-		mrpt::obs::CObservation::Ptr observation) = 0;
 	/**\brief Fill the given map with the type of registered edges as well as
 	 * the corresponding number of registration of each edge.
 	 */
@@ -77,8 +66,7 @@ class CEdgeRegistrationDecider
 		 * graph.
 		 *
 		 * If condition(s) for edge registration is satisfied, method should
-	  *call
-		 * the registerNewEdge method.
+	   * call the registerNewEdge method.
 		 */
 	/**\{*/
 	virtual void checkRegistrationCondition(

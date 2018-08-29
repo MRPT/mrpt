@@ -57,20 +57,6 @@ public:
 	 * position
 	 */
 	virtual global_pose_t getCurrentRobotPosEstimation() const;
-	/**\brief Generic method for fetching the incremental action-observations
-	 * (or observation-only) depending on the rawlog format readings from the
-	 * calling function.
-	 *
-	 * Implementations of this interface should use (part of) the specified
-	 * parameters and call the checkRegistrationCondition to check for
-	 * potential node registration
-	 *
-	 * \return True upon successful node registration in the graph
-	 */
-	virtual bool updateState(
-		mrpt::obs::CActionCollection::Ptr action,
-		mrpt::obs::CSensoryFrame::Ptr observations,
-		mrpt::obs::CObservation::Ptr observation) = 0;
 	virtual void getDescriptiveReport(std::string* report_str) const;
 
 protected:

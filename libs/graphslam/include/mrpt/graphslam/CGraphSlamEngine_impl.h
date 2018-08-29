@@ -2538,8 +2538,8 @@ void CGraphSlamEngine<GRAPH_T>::initSlamMetricVisualization()
 	ASSERTDEB_(m_visualize_SLAM_metric);
 
 	// initialize the m_win_plot on the stack
-	m_win_plot.reset(new mrpt::gui::CDisplayWindowPlots(
-		"Evolution of SLAM metric - Deformation Energy (1:1000)", 400, 300));
+	m_win_plot = std::make_unique<mrpt::gui::CDisplayWindowPlots>(
+		"Evolution of SLAM metric - Deformation Energy (1:1000)", 400, 300);
 
 	m_win_plot->setPos(20, 50);
 	m_win_plot->clf();
