@@ -11,17 +11,6 @@
 
 namespace mrpt::graphslam::deciders
 {
-template <class GRAPH_T>
-CIncrementalNodeRegistrationDecider<
-	GRAPH_T>::CIncrementalNodeRegistrationDecider()
-{
-}
-
-template <class GRAPH_T>
-CIncrementalNodeRegistrationDecider<
-	GRAPH_T>::~CIncrementalNodeRegistrationDecider()
-{
-}
 
 template <class GRAPH_T>
 bool CIncrementalNodeRegistrationDecider<GRAPH_T>::checkRegistrationCondition()
@@ -123,19 +112,6 @@ void CIncrementalNodeRegistrationDecider<GRAPH_T>::getDescriptiveReport(
 	*report_str += this->report_sep;
 
 	MRPT_END;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// TParams
-
-template <class GRAPH_T>
-CIncrementalNodeRegistrationDecider<GRAPH_T>::TParams::TParams()
-{
-}
-
-template <class GRAPH_T>
-CIncrementalNodeRegistrationDecider<GRAPH_T>::TParams::~TParams()
-{
 }
 
 template <class GRAPH_T>

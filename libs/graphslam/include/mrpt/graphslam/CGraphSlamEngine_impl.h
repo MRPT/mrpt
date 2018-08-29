@@ -59,21 +59,11 @@ CGraphSlamEngine<GRAPH_T>::CGraphSlamEngine(
 template <class GRAPH_T>
 CGraphSlamEngine<GRAPH_T>::~CGraphSlamEngine()
 {
-	MRPT_LOG_DEBUG_STREAM(
-		"In Destructor: Deleting CGraphSlamEngine instance...");
-
 	// change back the CImage path
 	if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum"))
 	{
 		MRPT_LOG_DEBUG_STREAM("Changing back the CImage PATH");
 		mrpt::img::CImage::setImagesPathBase(m_img_prev_path_base);
-	}
-
-	// delete the CDisplayWindowPlots object
-	if (m_win_plot)
-	{
-		MRPT_LOG_DEBUG_STREAM("Releasing CDisplayWindowPlots...");
-		delete m_win_plot;
 	}
 }
 
@@ -171,7 +161,6 @@ void CGraphSlamEngine<GRAPH_T>::initClass()
 	// set the CDisplayWindowPlots pointer to null for starters, we don't know
 	// if
 	// we are using it
-	m_win_plot = nullptr;
 
 	m_observation_only_dataset = false;
 	m_request_to_exit = false;
@@ -1017,8 +1006,6 @@ void CGraphSlamEngine<GRAPH_T>::loadParams(const std::string& fname)
 		mrpt::system::fileExists(fname),
 		mrpt::format("\nConfiguration file not found: \n%s\n", fname.c_str()));
 
-	MRPT_LOG_INFO_STREAM("Reading the .ini file... ");
-	MRPT_LOG_INFO_STREAM("Reading the .ini file... ");
 	mrpt::config::CConfigFile cfg_file(fname);
 
 	// Section: GeneralConfiguration
@@ -1532,13 +1519,13 @@ void CGraphSlamEngine<GRAPH_T>::readGTFileRGBD_TUM(
 		curr_coords[2] = atof(curr_tokens[3].c_str());
 
 		// current ground-truth pose
-		pose_t p(curr_coords[0], curr_coords[1], y);
+		pose_t gt_pose(curr_coords[0], curr_coords[1], y);
 
-		p.x() -= pose_diff.x();
-		p.y() -= pose_diff.y();
-		p.phi() -= pose_diff.phi();
+		gt_pose.x() -= pose_diff.x();
+		gt_pose.y() -= pose_diff.y();
+		gt_pose.phi() -= pose_diff.phi();
 		// curr_pose += -pose_diff;
-		gt_poses->push_back(p);
+		gt_poses->push_back(gt_pose);
 	}
 
 	file_GT.close();
@@ -2289,8 +2276,6 @@ void CGraphSlamEngine<GRAPH_T>::updateEstimatedTrajectoryVisualization(
 	MRPT_END;
 }  // end of updateEstimatedTrajectoryVisualization
 
-// TRGBDInfoFileParams
-// ////////////////////////////////
 template <class GRAPH_T>
 CGraphSlamEngine<GRAPH_T>::TRGBDInfoFileParams::TRGBDInfoFileParams(
 	const std::string& rawlog_fname)
@@ -2302,10 +2287,6 @@ template <class GRAPH_T>
 CGraphSlamEngine<GRAPH_T>::TRGBDInfoFileParams::TRGBDInfoFileParams()
 {
 	this->initTRGBDInfoFileParams();
-}
-template <class GRAPH_T>
-CGraphSlamEngine<GRAPH_T>::TRGBDInfoFileParams::~TRGBDInfoFileParams()
-{
 }
 
 template <class GRAPH_T>
@@ -2557,8 +2538,8 @@ void CGraphSlamEngine<GRAPH_T>::initSlamMetricVisualization()
 	ASSERTDEB_(m_visualize_SLAM_metric);
 
 	// initialize the m_win_plot on the stack
-	m_win_plot = new mrpt::gui::CDisplayWindowPlots(
-		"Evolution of SLAM metric - Deformation Energy (1:1000)", 400, 300);
+	m_win_plot.reset(new mrpt::gui::CDisplayWindowPlots(
+		"Evolution of SLAM metric - Deformation Energy (1:1000)", 400, 300));
 
 	m_win_plot->setPos(20, 50);
 	m_win_plot->clf();

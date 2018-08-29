@@ -30,7 +30,7 @@ class CRangeScanEdgeRegistrationDecider
 	: public virtual CEdgeRegistrationDecider<GRAPH_T>,
 	  public CRangeScanOps<GRAPH_T>
 {
-   public:
+public:
 	using parent_t =
 		mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_T>;
 	/**\brief Typedef for accessing methods of the
@@ -40,24 +40,10 @@ class CRangeScanEdgeRegistrationDecider
 	using nodes_to_scans2D_t = std::map<
 		mrpt::graphs::TNodeID, mrpt::obs::CObservation2DRangeScan::Ptr>;
 
-	CRangeScanEdgeRegistrationDecider();
-	~CRangeScanEdgeRegistrationDecider();
+	CRangeScanEdgeRegistrationDecider()=default;
+	~CRangeScanEdgeRegistrationDecider()=default;
 
-   protected:
-	/**\name Relevant-observations manipulation
-	 * Methods for manipulating the underlying storage of the
-	 * observation that the specific decider implementations.
-	 * \note Defining a generic way of dealing with the underlying
-	 * measurements, allows for flexible storage as well as possible
-	 * modification to the method behavior.
-	 */
-	/**\{ */
-	/**\brief Fetch the latest observation that the current instance
-	 * received (most probably during a call to the updateState method.
-	 */
-	// TODO - Implement these
-	/**\} */
-
+protected:
 	virtual void loadParams(const std::string& source_fname);
 	virtual void printParams() const;
 	/**\brief Map for keeping track of the observation recorded at each graph
@@ -67,9 +53,7 @@ class CRangeScanEdgeRegistrationDecider
 	/**\brief Keep track of the total number of registered nodes since the last
 	 * time class method was called
 	 */
-	size_t m_last_total_num_nodes;
-
-   private:
+	size_t m_last_total_num_nodes = 0;
 };
 }
 #include "CRangeScanEdgeRegistrationDecider_impl.h"

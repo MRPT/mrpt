@@ -18,12 +18,8 @@ template <class GRAPH_T>
 CFixedIntervalsNRD<GRAPH_T>::CFixedIntervalsNRD()
 {
 	this->initializeLoggers("CFixedIntervalsNRD");
-	MRPT_LOG_DEBUG("IntervalsNRD: Initialized class object");
 }
-template <class GRAPH_T>
-CFixedIntervalsNRD<GRAPH_T>::~CFixedIntervalsNRD()
-{
-}
+
 
 // Member function implementations
 //////////////////////////////////////////////////////////////
@@ -226,16 +222,6 @@ void CFixedIntervalsNRD<GRAPH_T>::getDescriptiveReport(
 	MRPT_END;
 }
 
-// TParams
-//////////////////////////////////////////////////////////////
-template <class GRAPH_T>
-CFixedIntervalsNRD<GRAPH_T>::TParams::TParams()
-{
-}
-template <class GRAPH_T>
-CFixedIntervalsNRD<GRAPH_T>::TParams::~TParams()
-{
-}
 template <class GRAPH_T>
 void CFixedIntervalsNRD<GRAPH_T>::TParams::dumpToTextStream(
 	std::ostream& out) const

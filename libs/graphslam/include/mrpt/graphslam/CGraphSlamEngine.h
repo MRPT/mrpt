@@ -32,6 +32,7 @@
 #include <mrpt/graphslam/interfaces/CEdgeRegistrationDecider.h>
 #include <mrpt/graphslam/interfaces/CGraphSlamOptimizer.h>
 
+#include <memory>
 #include <string>
 #include <map>
 #include <set>
@@ -46,24 +47,12 @@ namespace mrpt::graphslam
  * constraints (edges) and solve it to find an estimation of the actual robot
  * trajectory.
  *
- * // TODO - change this description
- * The template arguments are listed below:
- * - \em GRAPH_T: The type of Graph to be constructed and optimized. Currently
- *   CGraphSlamEngine works only with CPosePDFGaussianInf GRAPH_T instances.
- * - \em NODE_REGISTRAR: Class responsible of adding new nodes in the graph.
- *   Class should at least implement the deciders::CNodeRegistrationDecider
- *   interface provided in CNodeRegistrationDecider.h file.
- * - \em EDGE_REGISTRAR: Class responsible of adding new edges in the graph.
- *   Class should at least implement the deciders::CEdgeRegistrationDecider
- *   interface provided in CEdgeRegistrationDecider.h file.
- * - \em OPTIMIZER: Class responsible of optimizing the graph. Class should at
- *   least implement the optimizers::CGraphSlamOptimizer interface provided
- *   in CGraphSlamOptimizer.h file.
+ * @tparam GRAPH_T Graph Representation type - only CPosePDFGaussianInf has been
+ * tested at the moment
  *
  * \note The GRAPH_T resource is accessed after having locked the relevant
- * section
- * \em m_graph_section. Critical section is also <em> locked prior to the calls
- * to the deciders/optimizers </em>.
+ * section \em m_graph_section. Critical section is also <em> locked prior to
+ * the calls to the deciders/optimizers </em>.
  *
  * ### .ini Configuration Parameters
  *
@@ -184,11 +173,13 @@ public:
 	 * robot. Currently the class can read ground truth files corresponding
 	 * either to <em>RGBD - TUM datasets</em> or to rawlog files generated with
 	 * the \em GridMapNavSimul MRPT application.
+	 * \param[in] node_reg Node Registration Decider to be used
+	 * \param[in] edge_reg Edge Registration Decider to be used
+	 * \param[in] optimizer Optimizer class to be used
 	 *
-	 *
-	 * \note If win_manager is null is provided, the application
-	 * runs on <em>headless mode </em>. In this case, no visual feedback is
-	 * given but application receives a big boost in performance
+	 * \note If a null win_manager is provided, the application runs on
+	 * <em>headless mode </em>. In this case, no visual feedback is given but
+	 * application receives a big boost in performance
 	 */
 	CGraphSlamEngine(
 		const std::string& config_file, const std::string& rawlog_fname = "",
@@ -755,7 +746,7 @@ public:
 	/**\brief DisplayPlots instance for visualizing the evolution of the SLAM
 	 * metric
 	 */
-	mrpt::gui::CDisplayWindowPlots* m_win_plot;
+	std::unique_ptr<mrpt::gui::CDisplayWindowPlots> m_win_plot = nullptr;
 	/**\}*/
 
 	/** \name Visualization - related flags
@@ -903,7 +894,7 @@ public:
 	{
 		TRGBDInfoFileParams();
 		TRGBDInfoFileParams(const std::string& rawlog_fname);
-		~TRGBDInfoFileParams();
+		~TRGBDInfoFileParams()=default;
 
 		void initTRGBDInfoFileParams();
 		/**\brief Parse the RGBD information file to gain information about the

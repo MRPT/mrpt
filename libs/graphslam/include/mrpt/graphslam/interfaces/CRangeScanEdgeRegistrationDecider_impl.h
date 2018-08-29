@@ -10,16 +10,7 @@
 
 namespace mrpt::graphslam::deciders
 {
-template <class GRAPH_T>
-CRangeScanEdgeRegistrationDecider<GRAPH_T>::CRangeScanEdgeRegistrationDecider()
-	: m_last_total_num_nodes(0)
-{
-}
 
-template <class GRAPH_T>
-CRangeScanEdgeRegistrationDecider<GRAPH_T>::~CRangeScanEdgeRegistrationDecider()
-{
-}
 
 template <class GRAPH_T>
 void CRangeScanEdgeRegistrationDecider<GRAPH_T>::loadParams(

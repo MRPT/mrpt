@@ -19,36 +19,16 @@ const std::string CRegistrationDeciderOrOptimizer<GRAPH_T>::report_sep =
 	std::string(2, '\n');
 
 template <class GRAPH_T>
-CRegistrationDeciderOrOptimizer<GRAPH_T>::CRegistrationDeciderOrOptimizer()
-	: m_graph(nullptr),
-	  m_graph_section(nullptr),
-	  m_win_manager(nullptr),
-	  m_win(nullptr),
-	  m_win_observer(nullptr),
-	  m_initialized_visuals(false),
-	  m_class_name("CRegistrationDeciderOrOptimizer"),
-	  is_mr_slam_class(false)
-{
-}
-
-template <class GRAPH_T>
-CRegistrationDeciderOrOptimizer<GRAPH_T>::~CRegistrationDeciderOrOptimizer()
-{
-}
-
-template <class GRAPH_T>
 void CRegistrationDeciderOrOptimizer<GRAPH_T>::initializeLoggers(
 	const std::string& name)
 {
-	using namespace std;
-
 	this->setClassName(name);  // all the names in one call
 	this->logging_enable_keep_record = true;
 
 	// just for the messages until reading the actual verbosity level, set it to
 	// debug.
 	this->setMinLoggingLevel(mrpt::system::LVL_DEBUG);
-	MRPT_LOG_DEBUG_STREAM("Initialized time, output logger instances." << endl);
+	MRPT_LOG_DEBUG_STREAM("Initialized time, output logger instances.");
 }
 
 template <class GRAPH_T>

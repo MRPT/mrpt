@@ -47,10 +47,8 @@ class CEdgeRegistrationDecider
 	using pose_t = typename GRAPH_T::constraint_t::type_value;
 	/**\}*/
 
-	/**\brief Default class constructor.*/
-	CEdgeRegistrationDecider();
-	/**\brief Default class destructor.*/
-	virtual ~CEdgeRegistrationDecider();
+	CEdgeRegistrationDecider()=default;;
+	virtual ~CEdgeRegistrationDecider()=default;
 	/**\brief Generic method for fetching the incremental action/observation
 	 * readings from the calling function.
 	 *
@@ -101,14 +99,12 @@ class CEdgeRegistrationDecider
 		const mrpt::graphs::TNodeID& from, const mrpt::graphs::TNodeID& to,
 		const constraint_t& rel_edge);
 
-	bool m_just_inserted_lc;
+	bool m_just_inserted_lc = false;
 	/**\brief Indicates whether the ERD implementation expects, at most one
 	 * single node to be registered, between successive calls to the
 	 * updateState method.
-	 *
-	 * By default set to false.
 	 */
-	bool m_override_registered_nodes_check;
+	bool m_override_registered_nodes_check = false;
 };
 }
 #include "CEdgeRegistrationDecider_impl.h"

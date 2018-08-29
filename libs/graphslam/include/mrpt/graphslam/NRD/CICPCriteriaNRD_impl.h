@@ -11,8 +11,6 @@
 
 namespace mrpt::graphslam::deciders
 {
-// Ctors, Dtors
-//////////////////////////////////////////////////////////////
 
 template <class GRAPH_T>
 CICPCriteriaNRD<GRAPH_T>::CICPCriteriaNRD()
@@ -35,10 +33,6 @@ CICPCriteriaNRD<GRAPH_T>::CICPCriteriaNRD()
 	m_times_used_odom = 0;
 
 	this->logFmt(mrpt::system::LVL_DEBUG, "Initialized class object");
-}
-template <class GRAPH_T>
-CICPCriteriaNRD<GRAPH_T>::~CICPCriteriaNRD()
-{
 }
 
 template <class GRAPH_T>
@@ -300,13 +294,8 @@ void CICPCriteriaNRD<GRAPH_T>::loadParams(const std::string& source_fname)
 template <class GRAPH_T>
 void CICPCriteriaNRD<GRAPH_T>::printParams() const
 {
-	MRPT_START;
 	parent_t::printParams();
-
 	params.dumpToConsole();
-	// m_mahal_distance_ICP_odom.dumpToConsole();
-
-	MRPT_END;
 }  // end of printParams
 
 template <class GRAPH_T>
@@ -346,16 +335,9 @@ void CICPCriteriaNRD<GRAPH_T>::getDescriptiveReport(
 	MRPT_END;
 }  // end of getDescriptiveReport
 
-// TParams
-//////////////////////////////////////////////////////////////
 template <class GRAPH_T>
-CICPCriteriaNRD<GRAPH_T>::TParams::TParams(decider_t& d) : decider(d)
-{
-}
-template <class GRAPH_T>
-CICPCriteriaNRD<GRAPH_T>::TParams::~TParams()
-{
-}
+CICPCriteriaNRD<GRAPH_T>::TParams::TParams(decider_t& d) : decider(d) { }
+
 template <class GRAPH_T>
 void CICPCriteriaNRD<GRAPH_T>::TParams::dumpToTextStream(
 	std::ostream& out) const

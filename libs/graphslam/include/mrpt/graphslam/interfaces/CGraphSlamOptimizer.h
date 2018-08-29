@@ -34,31 +34,12 @@ template <class GRAPH_t = typename mrpt::graphs::CNetworkOfPoses2DInf>
 class CGraphSlamOptimizer
 	: public virtual mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_t>
 {
-   public:
-	/**\brief Handy typedefs */
-	/**\{*/
-	/** type of underlying constraints */
+public:
 	using constraint_t = typename GRAPH_t::constraint_t;
-	/** type of underlying poses (2D/3D) */
 	using pose_t = typename GRAPH_t::constraint_t::type_value;
-	/**\}*/
 
-	CGraphSlamOptimizer() {}
-	~CGraphSlamOptimizer() {}
-	/**\brief Generic method for fetching the incremental action/observation
-	 * readings from the calling function.
-	 *
-	 * Implementations of this interface should use (part of) the specified
-	 * parameters and call the optimizeGraph function if the decision is to
-	 * optimize the provided graph
-	 *
-	 * \return True if the optimization procedure was executed.
-	 */
-	virtual bool updateState(
-		mrpt::obs::CActionCollection::Ptr action,
-		mrpt::obs::CSensoryFrame::Ptr observations,
-		mrpt::obs::CObservation::Ptr observation) = 0;
-
+	CGraphSlamOptimizer()=default;
+	~CGraphSlamOptimizer()=default;
 	/**\brief Used by the caller to query for possible full graph optimization
 	 * on the latest optimizer run
 	 */

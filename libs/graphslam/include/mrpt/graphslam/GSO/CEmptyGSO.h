@@ -28,47 +28,18 @@ class CEmptyGSO
    public:
 	using constraint_t = typename GRAPH_T::constraint_t;
 
-	CEmptyGSO();
-	~CEmptyGSO();
+	CEmptyGSO()=default;
+	~CEmptyGSO()=default;
 
 	bool updateState(
 		mrpt::obs::CActionCollection::Ptr action,
 		mrpt::obs::CSensoryFrame::Ptr observations,
-		mrpt::obs::CObservation::Ptr observation);
+		mrpt::obs::CObservation::Ptr observation) { return true; }
 
    private:
 	void registerNewEdge(
 		const mrpt::graphs::TNodeID& from, const mrpt::graphs::TNodeID& to,
-		const constraint_t& rel_edge);
+		const constraint_t& rel_edge) {  }
 };
-
-//////////////////////////////////////////////////////////////////////////////
-
-template <class GRAPH_T>
-CEmptyGSO<GRAPH_T>::CEmptyGSO()
-{
-}
-template <class GRAPH_T>
-CEmptyGSO<GRAPH_T>::~CEmptyGSO()
-{
-}
-
-template <class GRAPH_T>
-bool CEmptyGSO<GRAPH_T>::updateState(
-	mrpt::obs::CActionCollection::Ptr action,
-	mrpt::obs::CSensoryFrame::Ptr observations,
-	mrpt::obs::CObservation::Ptr observation)
-{
-	return true;
-}
-
-template <class GRAPH_T>
-void CEmptyGSO<GRAPH_T>::registerNewEdge(
-	const mrpt::graphs::TNodeID& from, const mrpt::graphs::TNodeID& to,
-	const constraint_t& rel_edge)
-{
-}
 }  // end of namespaces
-
-
 

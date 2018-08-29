@@ -33,50 +33,18 @@ class CEmptyNRD
 	using global_pose_t = typename GRAPH_T::global_pose_t;
 	/**\}*/
    public:
-	CEmptyNRD();
-	~CEmptyNRD();
+	CEmptyNRD()=default;
+	~CEmptyNRD()=default;
 
 	bool updateState(
 		mrpt::obs::CActionCollection::Ptr action,
 		mrpt::obs::CSensoryFrame::Ptr observations,
-		mrpt::obs::CObservation::Ptr observation);
-	global_pose_t getCurrentRobotPosEstimation() const;
+		mrpt::obs::CObservation::Ptr observation) { return false; }
+	global_pose_t getCurrentRobotPosEstimation() const { return typename GRAPH_T::global_pose_t(); };
 
    private:
-	void registerNewNode();
+	void registerNewNode() { };
 };
-
-//////////////////////////////////////////////////////////////////////////////
-
-template <class GRAPH_T>
-CEmptyNRD<GRAPH_T>::CEmptyNRD()
-{
-}
-template <class GRAPH_T>
-CEmptyNRD<GRAPH_T>::~CEmptyNRD()
-{
-}
-
-template <class GRAPH_T>
-bool CEmptyNRD<GRAPH_T>::updateState(
-	mrpt::obs::CActionCollection::Ptr action,
-	mrpt::obs::CSensoryFrame::Ptr observations,
-	mrpt::obs::CObservation::Ptr observation)
-{
-	return false;
-}
-
-template <class GRAPH_T>
-void CEmptyNRD<GRAPH_T>::registerNewNode()
-{
-}
-
-template <class GRAPH_T>
-typename GRAPH_T::global_pose_t
-	CEmptyNRD<GRAPH_T>::getCurrentRobotPosEstimation() const
-{
-	return typename GRAPH_T::global_pose_t();
-}
 }  // end of namespaces
 
 

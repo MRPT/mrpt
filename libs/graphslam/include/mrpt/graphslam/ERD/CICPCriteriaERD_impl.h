@@ -37,10 +37,6 @@ CICPCriteriaERD<GRAPH_T>::CICPCriteriaERD()
 
 	MRPT_END;
 }
-template <class GRAPH_T>
-CICPCriteriaERD<GRAPH_T>::~CICPCriteriaERD()
-{
-}
 
 // Methods implementations
 // //////////////////////////////////

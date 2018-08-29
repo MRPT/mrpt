@@ -38,11 +38,6 @@ TUncertaintyPath<GRAPH_T>::TUncertaintyPath(
 }
 
 template <class GRAPH_T>
-TUncertaintyPath<GRAPH_T>::~TUncertaintyPath()
-{
-}
-
-template <class GRAPH_T>
 void TUncertaintyPath<GRAPH_T>::clear()
 {
 	using namespace mrpt;

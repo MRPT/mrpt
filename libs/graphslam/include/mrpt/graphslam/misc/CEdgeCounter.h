@@ -26,16 +26,12 @@ namespace mrpt::graphslam::detail
  */
 class CEdgeCounter
 {
-   public:
+public:
 	using iterator = std::map<std::string, int>::iterator;
 	using const_iterator = std::map<std::string, int>::const_iterator;
 
-	/**\brief Constructor class
-	 */
 	CEdgeCounter();
-	/**\brief Destructor class
-	 */
-	~CEdgeCounter();
+	~CEdgeCounter()=default;
 	/**\brief Provide the instance with a CWindowManager.
 	 */
 	void setWindowManagerPtr(mrpt::graphslam::CWindowManager* win_manager);
@@ -141,16 +137,13 @@ class CEdgeCounter
 	inline iterator end() { return m_name_to_edges_num.end(); }
 	inline const_iterator cend() const { return m_name_to_edges_num.cend(); }
    private:
-	/**\brief Initialization method to be called from the various Constructors.
-	 */
-	void initCEdgeCounter();
 	/**\brief Update the given CDisplayWindow3D with the edges registered so
 	 * far.
 	 */
 	void updateTextMessages() const;
 
-	mrpt::gui::CDisplayWindow3D* m_win;
-	mrpt::graphslam::CWindowManager* m_win_manager;
+	mrpt::gui::CDisplayWindow3D* m_win = nullptr;
+	mrpt::graphslam::CWindowManager* m_win_manager = nullptr;
 
 	/**\brief Map edge name <=> num of edges
 	 *
@@ -158,7 +151,7 @@ class CEdgeCounter
 	 */
 	std::map<std::string, int> m_name_to_edges_num;
 	int m_num_loop_closures;
-	int m_unique_edges;
+	int m_unique_edges = 0;
 
 	// visualization std::maps
 	std::map<std::string, double> m_name_to_offset_y;
@@ -167,10 +160,12 @@ class CEdgeCounter
 	bool m_has_read_textmessage_params;
 
 	// specifics to loop closures, total edges
-	bool m_display_total_edges,
-		m_display_loop_closures;  // whether to show them at all
-	int m_offset_y_total_edges, m_offset_y_loop_closures;
-	int m_text_index_total_edges, m_text_index_loop_closures;
+	bool m_display_total_edges = false;
+	bool m_display_loop_closures = false;
+	int m_offset_y_total_edges = 0;
+	int m_offset_y_loop_closures = 0;
+	int m_text_index_total_edges = 0;
+	int m_text_index_loop_closures = 0;
 };
 }
 

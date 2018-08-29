@@ -169,16 +169,6 @@ bool CRangeScanOps<GRAPH_T>::convert3DTo2DRangeScan(
 }
 
 template <class GRAPH_T>
-CRangeScanOps<GRAPH_T>::TParams::TParams() : has_read_config(false)
-{
-}
-
-template <class GRAPH_T>
-CRangeScanOps<GRAPH_T>::TParams::~TParams()
-{
-}
-
-template <class GRAPH_T>
 void CRangeScanOps<GRAPH_T>::TParams::dumpToTextStream(std::ostream& out) const
 {
 	MRPT_START;

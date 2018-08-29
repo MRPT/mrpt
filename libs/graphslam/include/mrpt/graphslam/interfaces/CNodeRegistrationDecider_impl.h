@@ -20,16 +20,9 @@ template <class GRAPH_T>
 CNodeRegistrationDecider<GRAPH_T>::CNodeRegistrationDecider()
 	: m_prev_registered_nodeID(INVALID_NODEID)
 {
-	using namespace mrpt::poses;
-
 	m_init_inf_mat.unit();
 	m_init_inf_mat *= 10000;
-	resetPDF(&this->m_since_prev_node_PDF);
-}
-
-template <class GRAPH_T>
-CNodeRegistrationDecider<GRAPH_T>::~CNodeRegistrationDecider()
-{
+	this->resetPDF(&this->m_since_prev_node_PDF);
 }
 
 template <class GRAPH_T>

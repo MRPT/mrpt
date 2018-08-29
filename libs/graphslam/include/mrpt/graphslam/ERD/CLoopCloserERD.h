@@ -217,17 +217,12 @@ public:
 	/**\brief Edge Registration Decider */
 	using parent_t = CRangeScanEdgeRegistrationDecider<GRAPH_T>;
 
-	/**\brief Handy typedefs */
-	/**\{*/
-	/**\brief type of graph constraints */
 	using constraint_t = typename GRAPH_T::constraint_t;
-	/**\brief type of underlying poses (2D/3D). */
 	using pose_t = typename GRAPH_T::constraint_t::type_value;
 	using global_pose_t = typename GRAPH_T::global_pose_t;
 	using decider_t = CLoopCloserERD<GRAPH_T>; /**< self type */
 	using range_ops_t = typename parent_t::range_ops_t;
 	using nodes_to_scans2D_t = typename parent_t::nodes_to_scans2D_t;
-	/**\brief Typedef for referring to a list of partitions */
 	using partitions_t = std::vector<std::vector<uint32_t>>;
 	using edges_citerator = typename GRAPH_T::edges_map_t::const_iterator;
 	using edges_iterator = typename GRAPH_T::edges_map_t::iterator;

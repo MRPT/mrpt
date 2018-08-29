@@ -32,7 +32,7 @@ template <class GRAPH_T>
 class CNodeRegistrationDecider
 	: public virtual mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_T>
 {
-   public:
+public:
 	/**\brief Handy typedefs */
 	/**\{*/
 	/**\brief Parent of current class */
@@ -49,7 +49,7 @@ class CNodeRegistrationDecider
 	/**\brief Default class constructor.*/
 	CNodeRegistrationDecider();
 	/**\brief Default class destructor.*/
-	virtual ~CNodeRegistrationDecider();
+	virtual ~CNodeRegistrationDecider()=default;
 	/**\brief Getter method for fetching the currently estimated robot position.
 	 *
 	 * In single-robot situations this is most likely going to be the last
@@ -73,7 +73,7 @@ class CNodeRegistrationDecider
 		mrpt::obs::CObservation::Ptr observation) = 0;
 	virtual void getDescriptiveReport(std::string* report_str) const;
 
-   protected:
+protected:
 	/**\brief Reset the given PDF method and assign a fixed high-certainty
 	 * Covariance/Information matrix
 	 */

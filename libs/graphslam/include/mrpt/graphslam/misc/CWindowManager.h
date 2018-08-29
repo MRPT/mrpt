@@ -46,7 +46,7 @@ class CWindowManager : public mrpt::system::COutputLogger
 		this->setCDisplayWindow3DPtr(win_in);
 	}
 	/**\brief Class destructor. */
-	~CWindowManager() {}
+	~CWindowManager()=default;
 	/**\brief Store the CDisplayWindow3D pointer in the CWindowManager
 	 * instance.
 	 *
@@ -144,7 +144,7 @@ class CWindowManager : public mrpt::system::COutputLogger
 
 	mrpt::gui::CDisplayWindow3D* win; /**< CDisplayWindow instance */
 	mrpt::graphslam::CWindowObserver* observer; /**< CWindowObserver instance */
-   private:
+private:
 	/**\brief Initialization method, to be called from the various Constructors.
 	 */
 	void initCWindowManager()
@@ -169,7 +169,6 @@ class CWindowManager : public mrpt::system::COutputLogger
 
 		// loger related directives
 		this->setLoggerName("CWindowManager");
-		MRPT_LOG_DEBUG_STREAM("Initializing...");
 	}
 
 	bool m_fetched_observer_pointer;

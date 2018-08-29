@@ -23,7 +23,7 @@ namespace mrpt::graphslam
  */
 class CWindowObserver : public mrpt::system::CObserver
 {
-   public:
+public:
 	CWindowObserver();
 	/**\brief Return a map of key code to a boolean indicating whether it was
 	 * pressed since the previous time the class was quarried.
@@ -42,11 +42,12 @@ class CWindowObserver : public mrpt::system::CObserver
 	void registerKeystroke(
 		const std::string key_str, const std::string key_desc);
 
-   protected:
+ protected:
 	void OnEvent(const mrpt::system::mrptEvent& e);
 
-   private:
-	bool m_showing_help, m_hiding_help;
+ private:
+	bool m_showing_help = false;
+	bool m_hiding_help = false;
 
 	std::string m_help_msg;
 

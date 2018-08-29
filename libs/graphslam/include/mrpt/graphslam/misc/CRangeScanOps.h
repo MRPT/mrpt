@@ -122,8 +122,8 @@ protected:
 	struct TParams : public mrpt::config::CLoadableOptions
 	{
 	   public:
-		TParams();
-		~TParams();
+		TParams()=default;
+		~TParams()=default;
 
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
@@ -137,7 +137,7 @@ protected:
 		 */
 		mrpt::obs::T3DPointsTo2DScanParams conversion_params;
 
-		bool has_read_config;
+		bool has_read_config = false;
 	};
 	TParams params;
 };

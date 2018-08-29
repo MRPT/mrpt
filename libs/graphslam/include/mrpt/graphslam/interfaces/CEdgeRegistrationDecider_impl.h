@@ -7,32 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 #pragma once
-
-using namespace mrpt::graphslam::deciders;
-using namespace std;
-
 #include <sstream>
-
-// Implementation of classes defined in the CNodeRegistrationDecider class
-// template.
-//
-
-template <class GRAPH_T>
-CEdgeRegistrationDecider<GRAPH_T>::CEdgeRegistrationDecider()
-	: m_just_inserted_lc(false), m_override_registered_nodes_check(false)
-{
-}
-
-template <class GRAPH_T>
-CEdgeRegistrationDecider<GRAPH_T>::~CEdgeRegistrationDecider()
-{
-}
 
 template <class GRAPH_T>
 void CEdgeRegistrationDecider<GRAPH_T>::getDescriptiveReport(
 	std::string* report_str) const
 {
-	stringstream ss("");
+	std::stringstream ss("");
 	parent::getDescriptiveReport(report_str);
 
 	ss << "Edge Registration Decider Strategy [ERD]: " << endl;
@@ -44,8 +25,6 @@ void CEdgeRegistrationDecider<GRAPH_T>::registerNewEdge(
 	const mrpt::graphs::TNodeID& from, const mrpt::graphs::TNodeID& to,
 	const constraint_t& rel_edge)
 {
-	using namespace std;
-
 	MRPT_LOG_DEBUG_STREAM(
 		"Registering new edge: " << from << " => " << to << endl
 								 << "\tRelative Edge: "

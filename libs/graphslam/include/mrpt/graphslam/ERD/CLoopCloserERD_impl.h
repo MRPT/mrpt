@@ -28,8 +28,8 @@ CLoopCloserERD<GRAPH_T>::CLoopCloserERD()
 template <class GRAPH_T>
 CLoopCloserERD<GRAPH_T>::~CLoopCloserERD()
 {
-	for (auto it = m_node_optimal_paths.begin();
-			 it != m_node_optimal_paths.end(); ++it)
+	for (auto it = m_node_optimal_paths.begin(); it !=
+			 m_node_optimal_paths.end(); ++it)
 	{
 		delete it->second;
 	}

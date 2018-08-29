@@ -11,8 +11,6 @@
 
 namespace mrpt::graphslam::optimizers
 {
-// Ctors, Dtors
-//////////////////////////////////////////////////////////////
 
 template <class GRAPH_T>
 CLevMarqGSO<GRAPH_T>::CLevMarqGSO()
@@ -20,26 +18,15 @@ CLevMarqGSO<GRAPH_T>::CLevMarqGSO()
 	  m_has_read_config(false),
 	  m_autozoom_active(true),
 	  m_last_total_num_of_nodes(5),
-	  m_optimization_policy(FOP_USE_LC),
+	  m_optimization_policy(OptimizationPolicy::UseLoopClosures),
 	  m_curr_used_consec_lcs(0),
 	  m_curr_ignored_consec_lcs(0),
 	  m_just_fully_optimized_graph(false),
 	  m_min_nodes_for_optimization(3)
 {
-	MRPT_START;
 	this->initializeLoggers("CLevMarqGSO");
-
-	MRPT_END;
-}
-template <class GRAPH_T>
-CLevMarqGSO<GRAPH_T>::~CLevMarqGSO()
-{
-	// JL Removed MRPT_END since it could launch an exception, not allowed in a
-	// dtor
 }
 
-// Member function implementations
-//////////////////////////////////////////////////////////////
 template <class GRAPH_T>
 bool CLevMarqGSO<GRAPH_T>::updateState(
 	mrpt::obs::CActionCollection::Ptr action,
@@ -47,8 +34,6 @@ bool CLevMarqGSO<GRAPH_T>::updateState(
 	mrpt::obs::CObservation::Ptr observation)
 {
 	MRPT_START;
-	MRPT_LOG_DEBUG("In updateOptimizerState... ");
-
 	if (this->m_graph->nodeCount() > m_last_total_num_of_nodes)
 	{
 		m_last_total_num_of_nodes = this->m_graph->nodeCount();
@@ -552,7 +537,7 @@ bool CLevMarqGSO<GRAPH_T>::checkForFullOptimization()
 
 		m_curr_used_consec_lcs = 0;
 		m_curr_ignored_consec_lcs = 0;
-		m_optimization_policy = FOP_USE_LC;
+		m_optimization_policy = OptimizationPolicy::UseLoopClosures;
 
 		return is_full_update;
 	}
@@ -574,16 +559,16 @@ bool CLevMarqGSO<GRAPH_T>::checkForFullOptimization()
 			// decide of the my policy on full optimization
 			if (ignore_limit_reached)
 			{
-				m_optimization_policy = FOP_USE_LC;
+				m_optimization_policy = OptimizationPolicy::UseLoopClosures;
 			}
 			if (use_limit_reached)
 			{
-				m_optimization_policy = FOP_IGNORE_LC;
+				m_optimization_policy = OptimizationPolicy::IgnoreLoopClosures;
 			}
 		}
 		else
 		{  // no limits reached yet.
-			if (m_optimization_policy == FOP_USE_LC)
+			if (m_optimization_policy == OptimizationPolicy::UseLoopClosures)
 			{
 				m_curr_used_consec_lcs += 1;
 			}
@@ -595,7 +580,7 @@ bool CLevMarqGSO<GRAPH_T>::checkForFullOptimization()
 	}
 
 	// Decide on whether to fully optimize the graph based on the mode I am in
-	if (m_optimization_policy == FOP_IGNORE_LC)
+	if (m_optimization_policy == OptimizationPolicy::IgnoreLoopClosures)
 	{
 		is_full_update = false;
 		MRPT_LOG_WARN_STREAM(
@@ -725,8 +710,6 @@ void CLevMarqGSO<GRAPH_T>::getDescriptiveReport(std::string* report_str) const
 	MRPT_END;
 }
 
-// OptimizationParams
-//////////////////////////////////////////////////////////////
 template <class GRAPH_T>
 CLevMarqGSO<GRAPH_T>::OptimizationParams::OptimizationParams()
 	: optimization_distance_color(0, 201, 87),
@@ -781,8 +764,6 @@ void CLevMarqGSO<GRAPH_T>::OptimizationParams::loadFromConfigFile(
 	MRPT_END;
 }
 
-// GraphVisualizationParams
-//////////////////////////////////////////////////////////////
 template <class GRAPH_T>
 CLevMarqGSO<GRAPH_T>::GraphVisualizationParams::GraphVisualizationParams()
 	: keystroke_graph_toggle("s"), keystroke_graph_autofit("a")

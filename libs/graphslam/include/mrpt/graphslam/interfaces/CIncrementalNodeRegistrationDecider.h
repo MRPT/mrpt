@@ -48,24 +48,17 @@ class CIncrementalNodeRegistrationDecider
 	: public virtual mrpt::graphslam::deciders::CNodeRegistrationDecider<
 		  GRAPH_T>
 {
-   public:
-	/**\brief Handy typedefs */
-	/**\{*/
-	/**\brief type of graph constraints */
+
+public:
 	using constraint_t = typename GRAPH_T::constraint_t;
-	/**\brief type of underlying poses (2D/3D). */
 	using pose_t = typename GRAPH_T::constraint_t::type_value;
 	using global_pose_t = typename GRAPH_T::global_pose_t;
-	using decider_t =
-		CIncrementalNodeRegistrationDecider<GRAPH_T>; /**< self type */
-	/**\brief Node Registration Decider */
+	using decider_t = CIncrementalNodeRegistrationDecider<GRAPH_T>;
 	using parent_t =
 		mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>;
 
-	/**\}*/
-
-	CIncrementalNodeRegistrationDecider();
-	virtual ~CIncrementalNodeRegistrationDecider();
+	CIncrementalNodeRegistrationDecider()=default;
+	virtual ~CIncrementalNodeRegistrationDecider()=default;
 
 	/**\name Registration Conditions Specifiers
 	 */
@@ -92,9 +85,9 @@ class CIncrementalNodeRegistrationDecider
 	 */
 	struct TParams : public mrpt::config::CLoadableOptions
 	{
-	   public:
-		TParams();
-		~TParams();
+	public:
+		TParams()=default;
+		~TParams()=default;
 
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
@@ -110,8 +103,6 @@ class CIncrementalNodeRegistrationDecider
 		double registration_max_angle;
 	};
 
-	// Public members
-	// ////////////////////////////
 	TParams params;
 
    private:

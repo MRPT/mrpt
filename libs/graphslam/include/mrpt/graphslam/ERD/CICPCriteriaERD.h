@@ -111,7 +111,7 @@ class CICPCriteriaERD
 	// Public methods
 	//////////////////////////////////////////////////////////////
 	CICPCriteriaERD();
-	~CICPCriteriaERD();
+	~CICPCriteriaERD()=default;
 
 	bool updateState(
 		mrpt::obs::CActionCollection::Ptr action,
