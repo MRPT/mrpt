@@ -72,7 +72,7 @@ class CIncrementalMapPartitioner : public mrpt::system::COutputLogger,
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;
 		void saveToConfigFile(mrpt::config::CConfigFileBase& target,
-			const std::string& section) const;
+			const std::string& section) const override;
 
 		/**!< N-cut partition threshold [0,2] (default=1) */
 		double partitionThreshold{ 1.0 };
