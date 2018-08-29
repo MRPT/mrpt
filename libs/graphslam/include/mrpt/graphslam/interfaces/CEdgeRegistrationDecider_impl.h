@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CEDGEREGISTRATIONDECIDER_IMPL_H
-#define CEDGEREGISTRATIONDECIDER_IMPL_H
+#pragma once
 
 using namespace mrpt::graphslam::deciders;
 using namespace std;
@@ -54,4 +53,3 @@ void CEdgeRegistrationDecider<GRAPH_T>::registerNewEdge(
 								 << "\tNorm: " << rel_edge.getMeanVal().norm());
 }
 
-#endif /* end of include guard: CEDGEREGISTRATIONDECIDER_IMPL_H */

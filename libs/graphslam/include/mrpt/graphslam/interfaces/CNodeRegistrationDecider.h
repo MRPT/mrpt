@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CNODEREGISTRATIONDECIDER_H
-#define CNODEREGISTRATIONDECIDER_H
+#pragma once
 
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CSensoryFrame.h>
@@ -132,7 +131,3 @@ class CNodeRegistrationDecider
 };
 }
 #include "CNodeRegistrationDecider_impl.h"
-
-#endif /* end of include guard: CNODEREGISTRATIONDECIDER_H */
-
-

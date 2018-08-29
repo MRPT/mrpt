@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CGRAPHSLAMHANDLER_H
-#define CGRAPHSLAMHANDLER_H
+#pragma once
 
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/config/CConfigFile.h>
@@ -145,4 +144,3 @@ class CGraphSlamHandler
 
 #include "CGraphSlamHandler_impl.h"
 
-#endif /* end of include guard: CGRAPHSLAMHANDLER_H */

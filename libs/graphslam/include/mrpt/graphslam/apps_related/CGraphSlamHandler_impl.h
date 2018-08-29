@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CGRAPHSLAMHANDLER_IMPL_H
-#define CGRAPHSLAMHANDLER_IMPL_H
+#pragma once
 
 // Implementation file for CGraphSlamHandler class
 #include "CGraphSlamHandler.h"
@@ -458,4 +457,3 @@ bool CGraphSlamHandler<GRAPH_T>::queryObserverForEvents()
 	return !request_to_exit;
 }
 
-#endif /* end of include guard: CGRAPHSLAMHANDLER_IMPL_H */

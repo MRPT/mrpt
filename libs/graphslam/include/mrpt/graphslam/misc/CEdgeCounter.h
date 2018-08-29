@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CEDGECOUNTER_H
-#define CEDGECOUNTER_H
+#pragma once
 
 #include <mrpt/gui/CDisplayWindow3D.h>
 
@@ -174,6 +173,5 @@ class CEdgeCounter
 	int m_text_index_total_edges, m_text_index_loop_closures;
 };
 }
-#endif /* end of include guard: CEDGECOUNTER_H */
 
 

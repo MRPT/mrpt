@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef TUSEROPTIONSCHECKER_H
-#define TUSEROPTIONSCHECKER_H
+#pragma once
 
 #include <mrpt/system/filesystem.h>
 #include <mrpt/core/exceptions.h>
@@ -219,6 +218,5 @@ struct TUserOptionsChecker
 }
 #include "TUserOptionsChecker_impl.h"
 
-#endif /* end of include guard: TUSEROPTIONSCHECKER_H */
 
 

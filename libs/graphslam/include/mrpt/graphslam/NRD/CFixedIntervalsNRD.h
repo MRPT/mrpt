@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CFIXEDINTERVALSNRD_H
-#define CFIXEDINTERVALSNRD_H
+#pragma once
 
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/CSensoryFrame.h>
@@ -174,6 +173,5 @@ class CFixedIntervalsNRD
 };
 }
 #include "CFixedIntervalsNRD_impl.h"
-#endif /* end of include guard: CFIXEDINTERVALSNRD_H */
 
 

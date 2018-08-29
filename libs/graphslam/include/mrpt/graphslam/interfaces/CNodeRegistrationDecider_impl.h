@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CNODEREGISTRATIONDECIDER_IMPL_H
-#define CNODEREGISTRATIONDECIDER_IMPL_H
+#pragma once
 
 using namespace mrpt::graphslam::deciders;
 using namespace std;
@@ -165,4 +164,3 @@ typename GRAPH_T::global_pose_t
 	return pose_out;
 }
 
-#endif /* end of include guard: CNODEREGISTRATIONDECIDER_IMPL_H */

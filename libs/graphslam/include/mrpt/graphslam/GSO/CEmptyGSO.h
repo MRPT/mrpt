@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CEmptyGSO_H
-#define CEmptyGSO_H
+#pragma once
 
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CSensoryFrame.h>
@@ -71,6 +70,5 @@ void CEmptyGSO<GRAPH_T>::registerNewEdge(
 }
 }  // end of namespaces
 
-#endif /* end of include guard: CEmptyGSO_H */
 
 

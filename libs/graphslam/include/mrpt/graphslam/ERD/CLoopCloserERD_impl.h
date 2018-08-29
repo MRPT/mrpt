@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CLOOPCLOSERERD_IMPL_H
-#define CLOOPCLOSERERD_IMPL_H
+#pragma once
 #include <mrpt/math/utils.h>
 #include <mrpt/containers/stl_containers_utils.h>
 #include <mrpt/opengl/CEllipsoid.h>
@@ -2644,6 +2643,5 @@ void CLoopCloserERD<GRAPH_T>::TLoopClosureParams::loadFromConfigFile(
 }
 }  // end of namespaces
 
-#endif /* end of include guard: CLOOPCLOSERERD_IMPL_H */
 
 

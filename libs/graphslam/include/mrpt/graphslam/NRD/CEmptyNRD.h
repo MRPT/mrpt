@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CEMPTYNRD_H
-#define CEMPTYNRD_H
+#pragma once
 
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CSensoryFrame.h>
@@ -80,6 +79,5 @@ typename GRAPH_T::global_pose_t
 }
 }  // end of namespaces
 
-#endif /* end of include guard: CEMPTYNRD_H */
 
 

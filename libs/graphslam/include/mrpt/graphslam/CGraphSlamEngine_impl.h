@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CGRAPHSLAMENGINE_IMPL_H
-#define CGRAPHSLAMENGINE_IMPL_H
+#pragma once
 
 #include <mrpt/system/filesystem.h>
 #include <mrpt/obs/CObservationOdometry.h>
@@ -2801,4 +2800,3 @@ void CGraphSlamEngine<GRAPH_T>::getDeformationEnergyVector(
 }
 }  // namespace mrpt::graphslam
 
-#endif /* end of include guard: CGRAPHSLAMENGINE_IMPL_H */

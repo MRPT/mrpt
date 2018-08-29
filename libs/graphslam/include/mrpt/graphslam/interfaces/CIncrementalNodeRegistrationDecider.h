@@ -1,5 +1,13 @@
-#ifndef CINCREMENTALNODEREGISTRATIONDECIDER_H_WPM0MYXZ
-#define CINCREMENTALNODEREGISTRATIONDECIDER_H_WPM0MYXZ
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2018, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
+
+#pragma once
 
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
@@ -110,7 +118,4 @@ class CIncrementalNodeRegistrationDecider
 };
 }
 #include "CIncrementalNodeRegistrationDecider_impl.h"
-#endif /* end of include guard: CINCREMENTALNODEREGISTRATIONDECIDER_H_WPM0MYXZ \
-		*/
-
 

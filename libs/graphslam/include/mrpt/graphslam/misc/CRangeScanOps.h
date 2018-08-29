@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CRANGESCANOPS_H
-#define CRANGESCANOPS_H
+#pragma once
 
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
@@ -144,6 +143,5 @@ protected:
 };
 }
 #include "CRangeScanOps_impl.h"
-#endif /* end of include guard: CRANGESCANOPS_H */
 
 

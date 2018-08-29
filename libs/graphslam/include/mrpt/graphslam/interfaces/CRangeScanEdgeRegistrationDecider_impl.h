@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CRANGESCANEDGEREGISTRATIONDECIDER_IMPL_H
-#define CRANGESCANEDGEREGISTRATIONDECIDER_IMPL_H
+#pragma once
 
 namespace mrpt::graphslam::deciders
 {
@@ -46,6 +45,5 @@ void CRangeScanEdgeRegistrationDecider<GRAPH_T>::printParams() const
 }
 }  // end of namespaces
 
-#endif /* end of include guard: CRANGESCANEDGEREGISTRATIONDECIDER_IMPL_H */
 
 

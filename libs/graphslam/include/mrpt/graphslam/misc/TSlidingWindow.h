@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef TSLIDINGWINDOW_H
-#define TSLIDINGWINDOW_H
+#pragma once
 
 #include <mrpt/config/CLoadableOptions.h>
 
@@ -114,6 +113,4 @@ struct TSlidingWindow : public mrpt::config::CLoadableOptions
 	bool m_is_initialized;
 };
 }
-#endif /* end of include guard: TSLIDINGWINDOW_H */
-
 

@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CWINDOWOBSERVER_H
-#define CWINDOWOBSERVER_H
+#pragma once
 
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/CObserver.h>
@@ -60,6 +59,5 @@ class CWindowObserver : public mrpt::system::CObserver
 	mrpt::system::CTicTac m_tim_show_start, m_tim_show_end;
 };
 }
-#endif /* end of include guard: CWINDOWOBSERVER_H */
 
 

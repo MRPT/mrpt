@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CEmptyERD_H
-#define CEmptyERD_H
+#pragma once
 
 #include <mrpt/obs/CSensoryFrame.h>
 
@@ -70,6 +69,5 @@ void CEmptyERD<GRAPH_T>::registerNewEdge(
 }
 }  // end of namespaces
 
-#endif /* end of include guard: CEmptyERD_H */
 
 

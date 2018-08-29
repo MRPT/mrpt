@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CLEVMARQGSO_IMPL_H
-#define CLEVMARQGSO_IMPL_H
+#pragma once
 
 namespace mrpt::graphslam::optimizers
 {
@@ -849,6 +848,5 @@ void CLevMarqGSO<GRAPH_T>::GraphVisualizationParams::loadFromConfigFile(
 }
 }  // namespace mrpt
 
-#endif /* end of include guard: CLEVMARQGSO_IMPL_H */
 
 

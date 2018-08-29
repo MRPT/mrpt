@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CICPCRITERIANRD_IMPL_H
-#define CICPCRITERIANRD_IMPL_H
+#pragma once
 
 namespace mrpt::graphslam::deciders
 {
@@ -399,6 +398,5 @@ void CICPCriteriaNRD<GRAPH_T>::TParams::loadFromConfigFile(
 }
 }  // end of namespace
 
-#endif /* end of include guard: CICPCRITERIANRD_IMPL_H */
 
 

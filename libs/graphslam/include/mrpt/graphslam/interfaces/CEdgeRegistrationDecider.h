@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CEDGEREGISTRATIONDECIDER_H
-#define CEDGEREGISTRATIONDECIDER_H
+#pragma once
 
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CSensoryFrame.h>
@@ -114,6 +113,5 @@ class CEdgeRegistrationDecider
 }
 #include "CEdgeRegistrationDecider_impl.h"
 
-#endif /* end of include guard: CEDGEREGISTRATIONDECIDER_H */
 
 

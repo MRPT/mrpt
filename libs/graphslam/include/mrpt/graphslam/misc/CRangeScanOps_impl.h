@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CRANGESCANOPS_IMPL_H
-#define CRANGESCANOPS_IMPL_H
+#pragma once
 
 namespace mrpt::graphslam::deciders
 {
@@ -230,6 +229,5 @@ void CRangeScanOps<GRAPH_T>::TParams::loadFromConfigFile(
 }
 }  // end of namespaces
 
-#endif /* end of include guard: CRANGESCANOPS_IMPL_H */
 
 

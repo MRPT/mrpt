@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef TUNCERTAINTYPATH_H
-#define TUNCERTAINTYPATH_H
+#pragma once
 
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/config/CLoadableOptions.h>
@@ -116,6 +115,5 @@ struct TUncertaintyPath : public mrpt::config::CLoadableOptions
 }
 #include "TUncertaintyPath_impl.h"
 
-#endif /* end of include guard: TUNCERTAINTYPATH_H */
 
 

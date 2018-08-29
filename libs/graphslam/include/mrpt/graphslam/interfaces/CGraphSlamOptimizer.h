@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CGRAPHSLAMOPTIMIZER_H
-#define CGRAPHSLAMOPTIMIZER_H
+#pragma once
 
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CSensoryFrame.h>
@@ -71,6 +70,5 @@ class CGraphSlamOptimizer
 	virtual void optimizeGraph() = 0;
 };
 }
-#endif /* end of include guard: CGRAPHSLAMOPTIMIZER_H */
 
 

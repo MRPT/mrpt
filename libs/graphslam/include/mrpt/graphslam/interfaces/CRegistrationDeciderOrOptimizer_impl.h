@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CREGISTRATIONDECIDEROROPTIMIZER_IMPL_H
-#define CREGISTRATIONDECIDEROROPTIMIZER_IMPL_H
+#pragma once
 
 namespace mrpt::graphslam
 {
@@ -147,6 +146,5 @@ bool CRegistrationDeciderOrOptimizer<GRAPH_T>::isMultiRobotSlamClass()
 }
 }  // end of namespaces
 
-#endif /* end of include guard: CREGISTRATIONDECIDEROROPTIMIZER_IMPL_H */
 
 

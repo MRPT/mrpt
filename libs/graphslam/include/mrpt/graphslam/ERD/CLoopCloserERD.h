@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CLOOPCLOSERERD_H
-#define CLOOPCLOSERERD_H
+#pragma once
 
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/config/CLoadableOptions.h>
@@ -843,6 +842,5 @@ public:
 };
 }
 #include "CLoopCloserERD_impl.h"
-#endif /* end of include guard: CLOOPCLOSERERD_H */
 
 

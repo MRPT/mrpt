@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CRANGESCANEDGEREGISTRATIONDECIDER_H
-#define CRANGESCANEDGEREGISTRATIONDECIDER_H
+#pragma once
 
 #include <mrpt/graphslam/interfaces/CEdgeRegistrationDecider.h>
 #include <mrpt/graphslam/misc/CRangeScanOps.h>
@@ -75,6 +74,5 @@ class CRangeScanEdgeRegistrationDecider
 }
 #include "CRangeScanEdgeRegistrationDecider_impl.h"
 
-#endif /* end of include guard: CRANGESCANEDGEREGISTRATIONDECIDER_H */
 
 

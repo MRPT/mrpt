@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CICPCRITERIANRD_H
-#define CICPCRITERIANRD_H
+#pragma once
 
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CSensoryFrame.h>
@@ -243,6 +242,5 @@ class CICPCriteriaNRD
 };
 }
 #include "CICPCriteriaNRD_impl.h"
-#endif /* end of include guard: CICPCRITERIANRD_H */
 
 

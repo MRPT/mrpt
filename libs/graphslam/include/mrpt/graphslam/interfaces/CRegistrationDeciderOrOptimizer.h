@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CREGISTRATIONDECIDEROROPTIMIZER_H
-#define CREGISTRATIONDECIDEROROPTIMIZER_H
+#pragma once
 
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CSensoryFrame.h>
@@ -175,6 +174,5 @@ class CRegistrationDeciderOrOptimizer : public mrpt::system::COutputLogger
 };
 }
 #include "CRegistrationDeciderOrOptimizer_impl.h"
-#endif /* end of include guard: CREGISTRATIONDECIDEROROPTIMIZER_H */
 
 

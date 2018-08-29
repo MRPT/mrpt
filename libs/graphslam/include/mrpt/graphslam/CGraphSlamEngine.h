@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef GRAPHSLAMENGINE_H
-#define GRAPHSLAMENGINE_H
+# pragma once
 
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
@@ -985,7 +984,3 @@ public:
 }
 // pseudo-split the definition and implementation of template
 #include "CGraphSlamEngine_impl.h"
-
-#endif /* end of include guard: GRAPHSLAMENGINE_H */
-
-

@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CLEVMARQGSO_H
-#define CLEVMARQGSO_H
+#pragma once
 
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/config/CLoadableOptions.h>
@@ -397,6 +396,5 @@ class CLevMarqGSO
 }
 #include "CLevMarqGSO_impl.h"
 
-#endif /* end of include guard: CLEVMARQGSO_H */
 
 

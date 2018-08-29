@@ -8,8 +8,7 @@
 	 +---------------------------------------------------------------------------+
    */
 
-#ifndef CGRAPHSLAMOPTIMIZER_IMPL_H_N4XWUTK5
-#define CGRAPHSLAMOPTIMIZER_IMPL_H_N4XWUTK5
+#pragma once
 
 namespace mrpt::graphslam::optimizers
 {
@@ -28,6 +27,5 @@ void CGraphSlamOptimizer<GRAPH_T>::printParams() const
 }
 }  // end of namespaces
 
-#endif /* end of include guard: CGRAPHSLAMOPTIMIZER_IMPL_H_N4XWUTK5 */
 
 

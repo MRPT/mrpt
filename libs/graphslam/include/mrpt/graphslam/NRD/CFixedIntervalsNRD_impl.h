@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CFIXEDINTERVALSNRD_IMPL_H
-#define CFIXEDINTERVALSNRD_IMPL_H
+#pragma once
 
 namespace mrpt::graphslam::deciders
 {
@@ -294,6 +293,5 @@ std::string CFixedIntervalsNRD<GRAPH_T>::TParams::getAsString() const
 }
 }  // end of namespaces
 
-#endif /* end of include guard: CFIXEDINTERVALSNRD_IMPL_H */
 
 

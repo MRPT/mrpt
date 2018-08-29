@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CWINDOWMANAGER_H
-#define CWINDOWMANAGER_H
+#pragma once
 
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/system/COutputLogger.h>
@@ -192,6 +191,5 @@ class CWindowManager : public mrpt::system::COutputLogger
 	double m_viewp_margin;
 };
 }
-#endif /* end of include guard: CWINDOWMANAGER_H */
 
 

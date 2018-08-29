@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CICPCRITERIAERD_H
-#define CICPCRITERIAERD_H
+#pragma once
 
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/config/CConfigFileBase.h>
@@ -211,6 +210,5 @@ class CICPCriteriaERD
 };
 }
 #include "CICPCriteriaERD_impl.h"
-#endif /* end of include guard: CICPCRITERIAERD_H */
 
 

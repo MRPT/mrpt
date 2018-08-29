@@ -1,5 +1,13 @@
-#ifndef CINCREMENTALNODEREGISTRATIONDECIDER_IMPL_H_UQKZGLEM
-#define CINCREMENTALNODEREGISTRATIONDECIDER_IMPL_H_UQKZGLEM
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2018, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
+
+#pragma once
 
 namespace mrpt::graphslam::deciders
 {
@@ -189,8 +197,4 @@ std::string CIncrementalNodeRegistrationDecider<GRAPH_T>::TParams::getAsString()
 	MRPT_END;
 }
 }  // end of namespaces
-
-#endif /* end of include guard: \
-		  CINCREMENTALNODEREGISTRATIONDECIDER_IMPL_H_UQKZGLEM */
-
 
