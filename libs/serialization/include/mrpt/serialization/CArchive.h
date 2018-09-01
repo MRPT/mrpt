@@ -406,8 +406,8 @@ DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(float);
 DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(double);
 DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(long double);
 
-CArchive& operator<<(CArchive& out, const mrpt::Clock::time_point &a);
-CArchive& operator>>(CArchive& in, mrpt::Clock::time_point & a);
+CArchive& operator<<(CArchive& out, const mrpt::Clock::time_point& a);
+CArchive& operator>>(CArchive& in, mrpt::Clock::time_point& a);
 
 #define MRPT_READ_POD(_STREAM, _VARIABLE)                                    \
 	do                                                                       \
@@ -471,8 +471,8 @@ CArchive& operator>>(CArchive& s, std::vector<size_t>& a);
 //
 
 template <
-	typename T, std::enable_if_t<std::is_base_of<
-					mrpt::serialization::CSerializable, T>::value>* = nullptr>
+	typename T, std::enable_if_t<std::is_base_of_v<
+					mrpt::serialization::CSerializable, T>>* = nullptr>
 CArchive& operator>>(CArchive& in, typename std::shared_ptr<T>& pObj)
 {
 	pObj = in.ReadObject<T>();
@@ -495,8 +495,8 @@ CArchive& operator<<(CArchive& out, const typename std::variant<T...>& pObj)
 
 /** Write a shared_ptr to a non-CSerializable object */
 template <
-	class T, std::enable_if_t<!std::is_base_of<
-				 mrpt::serialization::CSerializable, T>::value>* = nullptr>
+	class T, std::enable_if_t<!std::is_base_of_v<
+				 mrpt::serialization::CSerializable, T>>* = nullptr>
 CArchive& operator<<(CArchive& out, const std::shared_ptr<T>& pObj)
 {
 	if (pObj)
@@ -513,8 +513,8 @@ CArchive& operator<<(CArchive& out, const std::shared_ptr<T>& pObj)
 
 /** Read a smart pointer to a non-CSerializable (POD,...) data type*/
 template <
-	class T, std::enable_if_t<!std::is_base_of<
-				 mrpt::serialization::CSerializable, T>::value>* = nullptr>
+	class T, std::enable_if_t<!std::is_base_of_v<
+				 mrpt::serialization::CSerializable, T>>* = nullptr>
 CArchive& operator>>(CArchive& in, std::shared_ptr<T>& pObj)
 {
 	std::string stored_name;
@@ -556,6 +556,4 @@ CArchiveStreamBase<STREAM> archiveFrom(STREAM& s)
 {
 	return CArchiveStreamBase<STREAM>(s);
 }
-}  // namespace mrpt
-
-
+}  // namespace mrpt::serialization

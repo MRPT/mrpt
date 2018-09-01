@@ -147,15 +147,9 @@ struct TPoint2D : public TPoseOrPoint
 		return {x - p.x, y - p.y};
 	}
 
-	constexpr TPoint2D operator*(double d) const
-	{
-		return {d*x, d*y};
-	}
+	constexpr TPoint2D operator*(double d) const { return {d * x, d * y}; }
 
-	constexpr TPoint2D operator/(double d) const
-	{
-		return {x/d, y/d};
-	}
+	constexpr TPoint2D operator/(double d) const { return {x / d, y / d}; }
 	/** Returns a human-readable textual representation of the object (eg:
 	 * "[0.02 1.04]" )
 	 * \sa fromString
@@ -212,9 +206,7 @@ struct TPose2D : public TPoseOrPoint
 	/**
 	 * Constructor from coordinates.
 	 */
-	TPose2D(double xx, double yy, double pphi) : x(xx), y(yy), phi(pphi)
-	{
-	}
+	TPose2D(double xx, double yy, double pphi) : x(xx), y(yy), phi(pphi) {}
 	/**
 	 * Default fast constructor. Initializes to garbage.
 	 */
@@ -291,7 +283,7 @@ struct TPose2D : public TPoseOrPoint
 	{
 		const double Ax = g.x - x, Ay = g.y - y, ccos = ::cos(phi),
 					 csin = ::sin(phi);
-		return { Ax * ccos + Ay * csin, -Ax * csin + Ay * ccos };
+		return {Ax * ccos + Ay * csin, -Ax * csin + Ay * ccos};
 	}
 
 	/** Returns the norm of the (x,y) vector (phi is not used) */
@@ -451,10 +443,7 @@ struct TPoint3D : public TPoseOrPoint
 	/**
 	 * Point norm.
 	 */
-	double norm() const
-	{
-		return sqrt(square(x) + square(y) + square(z));
-	}
+	double norm() const { return sqrt(square(x) + square(y) + square(z)); }
 	/**
 	 * Point scale.
 	 */
@@ -1223,10 +1212,7 @@ struct TLine2D
 	/**
 	 * Constructor from line's coefficients.
 	 */
-	constexpr TLine2D(double A, double B, double C) : 
-		coefs{ A,B,C }
-	{
-	}
+	constexpr TLine2D(double A, double B, double C) : coefs{A, B, C} {}
 	/**
 	 * Construction from 3D object, discarding the Z.
 	 * \throw std::logic_error if the line is normal to the XY plane.
@@ -1380,8 +1366,7 @@ struct TPlane
 	/**
 	 * Constructor from plane coefficients.
 	 */
-	constexpr TPlane(double A, double B, double C, double D) :
-		coefs{A,B,C,D}
+	constexpr TPlane(double A, double B, double C, double D) : coefs{A, B, C, D}
 	{
 	}
 	/**
@@ -1588,10 +1573,7 @@ struct TObject2D
 	/**
 	 * Implicit constructor from line.
 	 */
-	TObject2D(const TLine2D& r) : type(GEOMETRIC_TYPE_LINE)
-	{
-		data.line = r;
-	}
+	TObject2D(const TLine2D& r) : type(GEOMETRIC_TYPE_LINE) { data.line = r; }
 	/**
 	 * Implicit constructor from polygon.
 	 */
@@ -2326,16 +2308,18 @@ struct TTwist3D
 };
 
 // Binary streaming functions
-template <class PoseOrPoint, typename = std::enable_if_t<std::is_base_of<
-								 mrpt::math::TPoseOrPoint, PoseOrPoint>::value>>
+template <
+	class PoseOrPoint, typename = std::enable_if_t<std::is_base_of_v<
+						   mrpt::math::TPoseOrPoint, PoseOrPoint>>>
 mrpt::serialization::CArchive& operator>>(
 	mrpt::serialization::CArchive& in, PoseOrPoint& o)
 {
 	for (int i = 0; i < o.static_size; i++) in >> o[i];
 	return in;
 }
-template <class PoseOrPoint, typename = std::enable_if_t<std::is_base_of<
-								 mrpt::math::TPoseOrPoint, PoseOrPoint>::value>>
+template <
+	class PoseOrPoint, typename = std::enable_if_t<std::is_base_of_v<
+						   mrpt::math::TPoseOrPoint, PoseOrPoint>>>
 mrpt::serialization::CArchive& operator<<(
 	mrpt::serialization::CArchive& out, const PoseOrPoint& o)
 {
