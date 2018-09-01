@@ -334,9 +334,9 @@ class CNetworkOfPoses
 
 		bool is_multirobot = false;
 		std::unique_ptr<visualizer_t> viz;
-		is_multirobot = (std::is_base_of<
-						 mrpt::graphs::detail::TMRSlamNodeAnnotations,
-						 global_pose_t>::value);
+		is_multirobot =
+			(std::is_base_of_v<
+				mrpt::graphs::detail::TMRSlamNodeAnnotations, global_pose_t>);
 		if (is_multirobot)
 		{
 			viz.reset(new visualizer_multirobot_t(*this));
