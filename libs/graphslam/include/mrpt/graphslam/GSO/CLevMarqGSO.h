@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CLEVMARQGSO_H
-#define CLEVMARQGSO_H
+#pragma once
 
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/config/CLoadableOptions.h>
@@ -24,7 +23,7 @@
 #include <iostream>
 #include <string>
 #include <map>
-#include <cmath>  // fabs function
+#include <cmath>
 
 namespace mrpt::graphslam::optimizers
 {
@@ -133,7 +132,7 @@ class CLevMarqGSO
 	/**\}*/
 
 	CLevMarqGSO();
-	~CLevMarqGSO();
+	~CLevMarqGSO() = default;
 
 	bool updateState(
 		mrpt::obs::CActionCollection::Ptr action,
@@ -214,16 +213,12 @@ class CLevMarqGSO
 
 	bool justFullyOptimizedGraph() const;
 
-	// Public members
-	// ////////////////////////////
 	/** Parameters relevant to the optimizatio nfo the graph. */
 	OptimizationParams opt_params;
 	/** Parameters relevant to the visualization of the graph. */
 	GraphVisualizationParams viz_params;
 
    protected:
-	// protected methods
-	// ////////////////////////////
 
 	/**\brief Feedback of the Levenberg-Marquardt graph optimization procedure.
 	 *
@@ -343,15 +338,14 @@ class CLevMarqGSO
 	/**\brief Enumeration that defines the behaviors towards using or ignoring a
 	 * newly added loop closure to fully optimize the graph
 	 */
-	enum FullOptimizationPolicy
+	enum class OptimizationPolicy
 	{
-		FOP_IGNORE_LC = 0,
-		FOP_USE_LC,
-		FOP_TOTAL_NUM
+		IgnoreLoopClosures = 0,
+		UseLoopClosures,
+
+		Count
 	};
-	/**\brief Should I fully optimize the graph on loop closure?
-	 */
-	FullOptimizationPolicy m_optimization_policy;
+	OptimizationPolicy m_optimization_policy;
 	/**\name Smart Full-Optimization Command
 	 *
 	 * Instead of issuing a full optimization every time a loop closure is
@@ -397,6 +391,5 @@ class CLevMarqGSO
 }
 #include "CLevMarqGSO_impl.h"
 
-#endif /* end of include guard: CLEVMARQGSO_H */
 
 

@@ -1,5 +1,13 @@
-#ifndef CINCREMENTALNODEREGISTRATIONDECIDER_H_WPM0MYXZ
-#define CINCREMENTALNODEREGISTRATIONDECIDER_H_WPM0MYXZ
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2018, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
+
+#pragma once
 
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
@@ -40,24 +48,17 @@ class CIncrementalNodeRegistrationDecider
 	: public virtual mrpt::graphslam::deciders::CNodeRegistrationDecider<
 		  GRAPH_T>
 {
-   public:
-	/**\brief Handy typedefs */
-	/**\{*/
-	/**\brief type of graph constraints */
+
+public:
 	using constraint_t = typename GRAPH_T::constraint_t;
-	/**\brief type of underlying poses (2D/3D). */
 	using pose_t = typename GRAPH_T::constraint_t::type_value;
 	using global_pose_t = typename GRAPH_T::global_pose_t;
-	using decider_t =
-		CIncrementalNodeRegistrationDecider<GRAPH_T>; /**< self type */
-	/**\brief Node Registration Decider */
+	using decider_t = CIncrementalNodeRegistrationDecider<GRAPH_T>;
 	using parent_t =
 		mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>;
 
-	/**\}*/
-
-	CIncrementalNodeRegistrationDecider();
-	virtual ~CIncrementalNodeRegistrationDecider();
+	CIncrementalNodeRegistrationDecider()=default;
+	virtual ~CIncrementalNodeRegistrationDecider()=default;
 
 	/**\name Registration Conditions Specifiers
 	 */
@@ -84,9 +85,9 @@ class CIncrementalNodeRegistrationDecider
 	 */
 	struct TParams : public mrpt::config::CLoadableOptions
 	{
-	   public:
-		TParams();
-		~TParams();
+	public:
+		TParams()=default;
+		~TParams()=default;
 
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
@@ -102,15 +103,10 @@ class CIncrementalNodeRegistrationDecider
 		double registration_max_angle;
 	};
 
-	// Public members
-	// ////////////////////////////
 	TParams params;
 
    private:
 };
 }
 #include "CIncrementalNodeRegistrationDecider_impl.h"
-#endif /* end of include guard: CINCREMENTALNODEREGISTRATIONDECIDER_H_WPM0MYXZ \
-		*/
-
 

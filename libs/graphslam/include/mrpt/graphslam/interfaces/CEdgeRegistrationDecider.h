@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CEDGEREGISTRATIONDECIDER_H
-#define CEDGEREGISTRATIONDECIDER_H
+#pragma once
 
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CSensoryFrame.h>
@@ -48,21 +47,8 @@ class CEdgeRegistrationDecider
 	using pose_t = typename GRAPH_T::constraint_t::type_value;
 	/**\}*/
 
-	/**\brief Default class constructor.*/
-	CEdgeRegistrationDecider();
-	/**\brief Default class destructor.*/
-	virtual ~CEdgeRegistrationDecider();
-	/**\brief Generic method for fetching the incremental action/observation
-	 * readings from the calling function.
-	 *
-	 * Implementations of this interface should use (part of) the specified
-	 * parameters and call the checkRegistrationCondition to check for
-	 * potential Edge registration
-	 */
-	virtual bool updateState(
-		mrpt::obs::CActionCollection::Ptr action,
-		mrpt::obs::CSensoryFrame::Ptr observations,
-		mrpt::obs::CObservation::Ptr observation) = 0;
+	CEdgeRegistrationDecider()=default;;
+	virtual ~CEdgeRegistrationDecider()=default;
 	/**\brief Fill the given map with the type of registered edges as well as
 	 * the corresponding number of registration of each edge.
 	 */
@@ -80,8 +66,7 @@ class CEdgeRegistrationDecider
 		 * graph.
 		 *
 		 * If condition(s) for edge registration is satisfied, method should
-	  *call
-		 * the registerNewEdge method.
+	   * call the registerNewEdge method.
 		 */
 	/**\{*/
 	virtual void checkRegistrationCondition(
@@ -102,18 +87,15 @@ class CEdgeRegistrationDecider
 		const mrpt::graphs::TNodeID& from, const mrpt::graphs::TNodeID& to,
 		const constraint_t& rel_edge);
 
-	bool m_just_inserted_lc;
+	bool m_just_inserted_lc = false;
 	/**\brief Indicates whether the ERD implementation expects, at most one
 	 * single node to be registered, between successive calls to the
 	 * updateState method.
-	 *
-	 * By default set to false.
 	 */
-	bool m_override_registered_nodes_check;
+	bool m_override_registered_nodes_check = false;
 };
 }
 #include "CEdgeRegistrationDecider_impl.h"
 
-#endif /* end of include guard: CEDGEREGISTRATIONDECIDER_H */
 
 

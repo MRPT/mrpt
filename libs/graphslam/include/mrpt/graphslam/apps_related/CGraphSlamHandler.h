@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CGRAPHSLAMHANDLER_H
-#define CGRAPHSLAMHANDLER_H
+#pragma once
 
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/config/CConfigFile.h>
@@ -27,8 +26,7 @@
 /**\brief Manage variables and methods related to applications executing
  * graphSLAM using the mrpt-graphslam API.
  *
- * As a quick overview, CGraphSlamHandler class instances deal with the
- * following:
+ * CGraphSlamHandler class instances deal with the following:
  * - Manage user interaction with the visuals (e.g. CDisplayWindow instance)
  * - Manage general user options (e.g. user output directory preferences)
  */
@@ -36,12 +34,10 @@ template <class GRAPH_T = mrpt::graphs::CNetworkOfPoses2DInf>
 class CGraphSlamHandler
 {
    public:
-	/**\brief Constructor */
 	CGraphSlamHandler(
 		mrpt::system::COutputLogger* logger,
 		mrpt::graphslam::apps::TUserOptionsChecker<GRAPH_T>* options_checker,
-		const bool enable_visuals /*=true*/);
-	/**\brief Destructor */
+		const bool enable_visuals = true);
 	~CGraphSlamHandler();
 	/**\brief Set the relevant filenames for instantiating CGraphSlamEngine
 	 * instance
@@ -56,8 +52,8 @@ class CGraphSlamHandler
 	 * \sa readConfigFname, getParamsAsString
 	 */
 	void printParams() const;
-	/**\name Fetch the general configuraiton variables for
-	 * the current graphSLAM execution
+	/** Fetch the general configuraiton variables for the current graphSLAM
+	 * execution
 	 */
 	/**\{*/
 	void getParamsAsString(std::string* str) const;
@@ -128,25 +124,22 @@ class CGraphSlamHandler
 	std::string m_save_3DScene_fname;
 	std::string m_save_map_fname;
 
-	mrpt::graphslam::CWindowManager* m_win_manager;
-	mrpt::graphslam::CWindowObserver* m_win_observer;
-	mrpt::gui::CDisplayWindow3D* m_win;
+	mrpt::graphslam::CGraphSlamEngine<GRAPH_T>* m_engine = nullptr;
+	mrpt::graphslam::CWindowManager* m_win_manager = nullptr;
+	mrpt::graphslam::CWindowObserver* m_win_observer = nullptr;
+	mrpt::gui::CDisplayWindow3D* m_win = nullptr;
 
 	mrpt::system::COutputLogger* m_logger;
 
-	/**\brief Pointer to the engine instance
-	*/
-	mrpt::graphslam::CGraphSlamEngine<GRAPH_T>* m_engine;
 	/**\brief TUserOptionsChecker instance whose task is to evaluate the
 	 * Registration Decider, Optimizer instances that are given by the user.
 	 */
 	mrpt::graphslam::apps::TUserOptionsChecker<GRAPH_T>* m_options_checker;
 
-	bool m_do_save_results;
-	bool m_has_set_fnames;
+	bool m_do_save_results = true;
+	bool m_has_set_fnames = false;;
 	bool m_enable_visuals;
 };
 
 #include "CGraphSlamHandler_impl.h"
 
-#endif /* end of include guard: CGRAPHSLAMHANDLER_H */

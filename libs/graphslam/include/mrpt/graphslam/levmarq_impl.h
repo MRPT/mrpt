@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef GRAPH_SLAM_LEVMARQ_IMPL_H
-#define GRAPH_SLAM_LEVMARQ_IMPL_H
+#pragma once
 
 namespace mrpt
 {
@@ -297,4 +296,3 @@ double computeJacobiansAndErrors(
 }  // namespace graphslam
 }  // namespace mrpt
 
-#endif

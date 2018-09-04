@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef TUNCERTAINTYPATH_IMPL_H
-#define TUNCERTAINTYPATH_IMPL_H
+#pragma once
 
 #include <mrpt/containers/stl_containers_utils.h>
 
@@ -36,11 +35,6 @@ TUncertaintyPath<GRAPH_T>::TUncertaintyPath(
 	this->clear();
 	nodes_traversed.push_back(starting_node);
 	this->addToPath(ending_node, edge);
-}
-
-template <class GRAPH_T>
-TUncertaintyPath<GRAPH_T>::~TUncertaintyPath()
-{
 }
 
 template <class GRAPH_T>
@@ -300,6 +294,5 @@ bool TUncertaintyPath<GRAPH_T>::hasLowerUncertaintyThan(
 }
 }  // end of namespaces
 
-#endif /* end of include guard: TUNCERTAINTYPATH_IMPL_H */
 
 

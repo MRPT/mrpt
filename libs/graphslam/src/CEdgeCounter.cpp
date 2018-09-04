@@ -13,28 +13,7 @@
 // implementation file of CEdgeCounter class
 using namespace mrpt::graphslam::detail;
 
-CEdgeCounter::CEdgeCounter() { this->initCEdgeCounter(); }
-CEdgeCounter::~CEdgeCounter() {}
-void CEdgeCounter::initCEdgeCounter()
-{
-	this->clearAllEdges();
-	m_has_read_textmessage_params = false;
-
-	// visualization parameters for total edges / loop closures
-	m_display_total_edges = false;
-	m_display_loop_closures = false;
-
-	m_offset_y_total_edges = 0.0;
-	m_offset_y_loop_closures = 0.0;
-
-	m_text_index_total_edges = 0;
-	m_text_index_loop_closures = 0;
-
-	m_unique_edges = 0;
-
-	m_win = nullptr;
-	m_win_manager = nullptr;
-}
+CEdgeCounter::CEdgeCounter() { this->clearAllEdges(); }
 
 void CEdgeCounter::setWindowManagerPtr(
 	mrpt::graphslam::CWindowManager* win_manager)

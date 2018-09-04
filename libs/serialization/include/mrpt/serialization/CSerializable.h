@@ -129,8 +129,8 @@ void OctetVectorToObject(
    protected:                                                             \
 	/*! @name CSerializable virtual methods for schema based archives*/   \
 	/*! @{ */                                                             \
-	void serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const; \
-	void serializeFrom(mrpt::serialization::CSchemeArchiveBase& in);      \
+	void serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const override; \
+	void serializeFrom(mrpt::serialization::CSchemeArchiveBase& in) override;      \
 	/*! @} */
 
 /** For use inside all serializeTo(CSchemeArchiveBase) methods */

@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CREGISTRATIONDECIDEROROPTIMIZER_IMPL_H
-#define CREGISTRATIONDECIDEROROPTIMIZER_IMPL_H
+#pragma once
 
 namespace mrpt::graphslam
 {
@@ -20,36 +19,16 @@ const std::string CRegistrationDeciderOrOptimizer<GRAPH_T>::report_sep =
 	std::string(2, '\n');
 
 template <class GRAPH_T>
-CRegistrationDeciderOrOptimizer<GRAPH_T>::CRegistrationDeciderOrOptimizer()
-	: m_graph(NULL),
-	  m_graph_section(NULL),
-	  m_win_manager(NULL),
-	  m_win(NULL),
-	  m_win_observer(NULL),
-	  m_initialized_visuals(false),
-	  m_class_name("CRegistrationDeciderOrOptimizer"),
-	  is_mr_slam_class(false)
-{
-}
-
-template <class GRAPH_T>
-CRegistrationDeciderOrOptimizer<GRAPH_T>::~CRegistrationDeciderOrOptimizer()
-{
-}
-
-template <class GRAPH_T>
 void CRegistrationDeciderOrOptimizer<GRAPH_T>::initializeLoggers(
 	const std::string& name)
 {
-	using namespace std;
-
 	this->setClassName(name);  // all the names in one call
 	this->logging_enable_keep_record = true;
 
 	// just for the messages until reading the actual verbosity level, set it to
 	// debug.
 	this->setMinLoggingLevel(mrpt::system::LVL_DEBUG);
-	MRPT_LOG_DEBUG_STREAM("Initialized time, output logger instances." << endl);
+	MRPT_LOG_DEBUG_STREAM("Initialized time, output logger instances.");
 }
 
 template <class GRAPH_T>
@@ -147,6 +126,5 @@ bool CRegistrationDeciderOrOptimizer<GRAPH_T>::isMultiRobotSlamClass()
 }
 }  // end of namespaces
 
-#endif /* end of include guard: CREGISTRATIONDECIDEROROPTIMIZER_IMPL_H */
 
 

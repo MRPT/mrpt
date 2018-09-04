@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CREGISTRATIONDECIDEROROPTIMIZER_H
-#define CREGISTRATIONDECIDEROROPTIMIZER_H
+#pragma once
 
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CSensoryFrame.h>
@@ -41,11 +40,10 @@ namespace mrpt::graphslam
 template <class GRAPH_T = typename mrpt::graphs::CNetworkOfPoses2DInf>
 class CRegistrationDeciderOrOptimizer : public mrpt::system::COutputLogger
 {
-   public:
-	/**\Default Ctor*/
-	CRegistrationDeciderOrOptimizer();
-	/**\Dtor*/
-	virtual ~CRegistrationDeciderOrOptimizer();
+
+public:
+	CRegistrationDeciderOrOptimizer()=default;
+	virtual ~CRegistrationDeciderOrOptimizer()=default;
 	/**\brief Generic method for fetching the incremental action-observations
 	 * (or
 	 * observation-only) measurements
@@ -141,8 +139,8 @@ class CRegistrationDeciderOrOptimizer : public mrpt::system::COutputLogger
 	 */
 	virtual void assertVisualsVars();
 	/**\brief Pointer to the graph that is under construction */
-	GRAPH_T* m_graph;
-	std::mutex* m_graph_section;
+	GRAPH_T* m_graph = nullptr;
+	std::mutex* m_graph_section = nullptr;
 
 	/** \name Visuals-related variables methods
 	 */
@@ -150,23 +148,23 @@ class CRegistrationDeciderOrOptimizer : public mrpt::system::COutputLogger
 	/**\brief Pointer to the CWindowManager object used to store
 	 * visuals-related instances
 	 */
-	mrpt::graphslam::CWindowManager* m_win_manager;
+	mrpt::graphslam::CWindowManager* m_win_manager = nullptr;
 	/**\brief Window to use */
-	mrpt::gui::CDisplayWindow3D* m_win;
+	mrpt::gui::CDisplayWindow3D* m_win = nullptr;
 	/**\brief CWindowObserver object for monitoring various visual-oriented
 	 * events.*/
-	mrpt::graphslam::CWindowObserver* m_win_observer;
-	bool m_initialized_visuals;
+	mrpt::graphslam::CWindowObserver* m_win_observer = nullptr;
+	bool m_initialized_visuals = false;
 	/**\}*/
 
 	/**\brief Time logger instance */
 	mrpt::system::CTimeLogger m_time_logger;
 	/**\brief Name of the class instance */
-	std::string m_class_name;
+	std::string m_class_name = "CRegistrationDeciderOrOptimizer";
 	/**\brief Boolean indicating if the current class can be used in
 	 * multi-robot SLAM operations
 	 */
-	bool is_mr_slam_class;
+	bool is_mr_slam_class = false;
 
 	/**\brief Separator string to be used in debugging messages
 	 */
@@ -175,6 +173,5 @@ class CRegistrationDeciderOrOptimizer : public mrpt::system::COutputLogger
 };
 }
 #include "CRegistrationDeciderOrOptimizer_impl.h"
-#endif /* end of include guard: CREGISTRATIONDECIDEROROPTIMIZER_H */
 
 

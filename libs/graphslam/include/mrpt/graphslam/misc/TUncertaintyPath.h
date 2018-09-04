@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef TUNCERTAINTYPATH_H
-#define TUNCERTAINTYPATH_H
+#pragma once
 
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/config/CLoadableOptions.h>
@@ -28,26 +27,17 @@ namespace mrpt::graphslam
 template <class GRAPH_T = typename mrpt::graphs::CNetworkOfPoses2DInf>
 struct TUncertaintyPath : public mrpt::config::CLoadableOptions
 {
-	/**\brief Handy typedefs */
-	/**\{*/
-	/**\brief type of graph constraints */
 	using constraint_t = typename GRAPH_T::constraint_t;
-	/**\brief type of underlying poses (2D/3D). */
 	using pose_t = typename constraint_t::type_value;
 	using self_t = TUncertaintyPath<GRAPH_T>;
-	/**\}*/
 
-	// methods
-	// ////////////////////////////
 	TUncertaintyPath();
 	TUncertaintyPath(const mrpt::graphs::TNodeID& starting_node);
 	TUncertaintyPath(
 		const mrpt::graphs::TNodeID& starting_node,
 		const mrpt::graphs::TNodeID& ending_node, const constraint_t& edge);
-	~TUncertaintyPath();
+	~TUncertaintyPath()=default;
 	void clear();
-	/**\return True if it is indeed empty.
-	 */
 	bool isEmpty() const;
 	/**\brief Assert that the current path is between the given nodeIDs.
 	 *
@@ -116,6 +106,5 @@ struct TUncertaintyPath : public mrpt::config::CLoadableOptions
 }
 #include "TUncertaintyPath_impl.h"
 
-#endif /* end of include guard: TUNCERTAINTYPATH_H */
 
 

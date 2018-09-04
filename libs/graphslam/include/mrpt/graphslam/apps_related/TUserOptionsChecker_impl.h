@@ -426,6 +426,6 @@ void TUserOptionsChecker<GRAPH_t>::populateDeciderOptimizerProperties()
 
 	MRPT_END
 }
-}  // END OF NAMESPACES
+}  // end of namespaces
 
 
