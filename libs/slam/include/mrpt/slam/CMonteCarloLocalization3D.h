@@ -57,7 +57,7 @@ class CMonteCarloLocalization3D
 	void prediction_and_update_pfStandardProposal(
 		const mrpt::obs::CActionCollection* action,
 		const mrpt::obs::CSensoryFrame* observation,
-		const bayes::CParticleFilter::TParticleFilterOptions& PF_options);
+		const bayes::CParticleFilter::TParticleFilterOptions& PF_options) override;
 
 	/** Update the m_particles, predicting the posterior of robot pose and map
 	 * after a movement command.
@@ -74,7 +74,7 @@ class CMonteCarloLocalization3D
 	void prediction_and_update_pfAuxiliaryPFStandard(
 		const mrpt::obs::CActionCollection* action,
 		const mrpt::obs::CSensoryFrame* observation,
-		const bayes::CParticleFilter::TParticleFilterOptions& PF_options);
+		const bayes::CParticleFilter::TParticleFilterOptions& PF_options) override;
 
 	/** Update the m_particles, predicting the posterior of robot pose and map
 	 * after a movement command.
@@ -91,7 +91,7 @@ class CMonteCarloLocalization3D
 	void prediction_and_update_pfAuxiliaryPFOptimal(
 		const mrpt::obs::CActionCollection* action,
 		const mrpt::obs::CSensoryFrame* observation,
-		const bayes::CParticleFilter::TParticleFilterOptions& PF_options);
+		const bayes::CParticleFilter::TParticleFilterOptions& PF_options) override;
 
 	/** \name Virtual methods that the PF_implementations assume exist.
 		@{ */
@@ -102,14 +102,14 @@ class CMonteCarloLocalization3D
 
 	void PF_SLAM_implementation_custom_update_particle_with_new_pose(
 		CParticleDataContent* particleData,
-		const mrpt::math::TPose3D& newPose) const;
+		const mrpt::math::TPose3D& newPose) const override;
 
 	// We'll redefine this one:
 	void PF_SLAM_implementation_replaceByNewParticleSet(
 		CParticleList& old_particles,
 		const std::vector<mrpt::math::TPose3D>& newParticles,
 		const std::vector<double>& newParticlesWeight,
-		const std::vector<size_t>& newParticlesDerivedFromIdx) const;
+		const std::vector<size_t>& newParticlesDerivedFromIdx) const override;
 
 	/** Evaluate the observation likelihood for one particle at a given location
 	 */
@@ -117,7 +117,7 @@ class CMonteCarloLocalization3D
 		const mrpt::bayes::CParticleFilter::TParticleFilterOptions& PF_options,
 		const size_t particleIndexForMap,
 		const mrpt::obs::CSensoryFrame& observation,
-		const mrpt::poses::CPose3D& x) const;
+		const mrpt::poses::CPose3D& x) const override;
 	/** @} */
 
 };  // End of class def.

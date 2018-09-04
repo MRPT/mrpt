@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef _mrpt_graphslam_H
-#define _mrpt_graphslam_H
+#pragma once
 
 // Graph SLAM: Common headers
 #include "graphslam/types.h"

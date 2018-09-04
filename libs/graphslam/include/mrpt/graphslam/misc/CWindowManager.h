@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CWINDOWMANAGER_H
-#define CWINDOWMANAGER_H
+#pragma once
 
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/system/COutputLogger.h>
@@ -47,7 +46,7 @@ class CWindowManager : public mrpt::system::COutputLogger
 		this->setCDisplayWindow3DPtr(win_in);
 	}
 	/**\brief Class destructor. */
-	~CWindowManager() {}
+	~CWindowManager()=default;
 	/**\brief Store the CDisplayWindow3D pointer in the CWindowManager
 	 * instance.
 	 *
@@ -145,7 +144,7 @@ class CWindowManager : public mrpt::system::COutputLogger
 
 	mrpt::gui::CDisplayWindow3D* win; /**< CDisplayWindow instance */
 	mrpt::graphslam::CWindowObserver* observer; /**< CWindowObserver instance */
-   private:
+private:
 	/**\brief Initialization method, to be called from the various Constructors.
 	 */
 	void initCWindowManager()
@@ -170,7 +169,6 @@ class CWindowManager : public mrpt::system::COutputLogger
 
 		// loger related directives
 		this->setLoggerName("CWindowManager");
-		MRPT_LOG_DEBUG_STREAM("Initializing...");
 	}
 
 	bool m_fetched_observer_pointer;
@@ -192,6 +190,5 @@ class CWindowManager : public mrpt::system::COutputLogger
 	double m_viewp_margin;
 };
 }
-#endif /* end of include guard: CWINDOWMANAGER_H */
 
 

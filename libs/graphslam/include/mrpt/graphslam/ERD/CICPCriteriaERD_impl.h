@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CICPCRITERIAERD_IMPL_H
-#define CICPCRITERIAERD_IMPL_H
+#pragma once
 #include <mrpt/opengl/CDisk.h>
 
 namespace mrpt::graphslam::deciders
@@ -37,10 +36,6 @@ CICPCriteriaERD<GRAPH_T>::CICPCriteriaERD()
 	MRPT_LOG_DEBUG("Initialized class object");
 
 	MRPT_END;
-}
-template <class GRAPH_T>
-CICPCriteriaERD<GRAPH_T>::~CICPCriteriaERD()
-{
 }
 
 // Methods implementations
@@ -684,6 +679,5 @@ void CICPCriteriaERD<GRAPH_T>::TParams::loadFromConfigFile(
 }
 }  // end of namespaces
 
-#endif /* end of include guard: CICPCRITERIAERD_IMPL_H */
 
 

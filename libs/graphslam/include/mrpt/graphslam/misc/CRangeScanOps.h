@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CRANGESCANOPS_H
-#define CRANGESCANOPS_H
+#pragma once
 
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
@@ -71,15 +70,10 @@ namespace mrpt::graphslam::deciders
 template <class GRAPH_T = typename mrpt::graphs::CNetworkOfPoses2DInf>
 class CRangeScanOps
 {
-	/**\brief Handy typedefs */
-	/**\{*/
 	using constraint_t = typename GRAPH_T::constraint_t;
 	using self_t = CRangeScanOps<GRAPH_T>;
-	/**\}*/
 
-   protected:
-	// Protected methods
-	// ////////////////////////////////////////////////////////////
+protected:
 
 	/**\brief Align the 2D range scans provided and fill the potential edge that
 	 * can transform the one into the other.
@@ -122,15 +116,14 @@ class CRangeScanOps
 	 * \return True if operation was successful, false otherwise
 	 */
 	bool convert3DTo2DRangeScan(
-		/*from = */ mrpt::obs::CObservation3DRangeScan::Ptr& scan3D_in,
-		/*to   = */ mrpt::obs::CObservation2DRangeScan::Ptr* scan2D_out =
-			nullptr);
+		mrpt::obs::CObservation3DRangeScan::Ptr& scan3D_in,
+		mrpt::obs::CObservation2DRangeScan::Ptr* scan2D_out);
 
 	struct TParams : public mrpt::config::CLoadableOptions
 	{
 	   public:
-		TParams();
-		~TParams();
+		TParams()=default;
+		~TParams()=default;
 
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
@@ -144,12 +137,11 @@ class CRangeScanOps
 		 */
 		mrpt::obs::T3DPointsTo2DScanParams conversion_params;
 
-		bool has_read_config;
+		bool has_read_config = false;
 	};
 	TParams params;
 };
 }
 #include "CRangeScanOps_impl.h"
-#endif /* end of include guard: CRANGESCANOPS_H */
 
 

@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CICPCRITERIANRD_H
-#define CICPCRITERIANRD_H
+#pragma once
 
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CSensoryFrame.h>
@@ -88,8 +87,6 @@ class CICPCriteriaNRD
 	  public mrpt::graphslam::deciders::CRangeScanOps<GRAPH_T>
 {
    public:
-	// Public functions
-	//////////////////////////////////////////////////////////////
 	/**\brief Handy typedefs */
 	/**\{*/
 	/**\brief type of graph constraints */
@@ -110,10 +107,8 @@ class CICPCriteriaNRD
 		mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>;
 	/**\}*/
 
-	/**\brief Class constructor */
 	CICPCriteriaNRD();
-	/**\brief Class destructor */
-	~CICPCriteriaNRD();
+	~CICPCriteriaNRD()=default;
 
 	void loadParams(const std::string& source_fname);
 	void printParams() const;
@@ -149,9 +144,9 @@ class CICPCriteriaNRD
 
 	struct TParams : public mrpt::config::CLoadableOptions
 	{
-	   public:
+	public:
 		TParams(decider_t& d);
-		~TParams();
+		~TParams()=default;
 
 		decider_t& decider; /**< Reference to outer decider class */
 
@@ -159,20 +154,16 @@ class CICPCriteriaNRD
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section);
 		void dumpToTextStream(std::ostream& out) const;
-
-		double registration_max_distance; /**< Maximum distance for new node
-											 registration */
-		double registration_max_angle; /**< Maximum angle difference for new
-										  node registration */
+		/** Maximum distance for new node registration */
+		double registration_max_distance;
+ 		/** Maximum angle difference for new node registration */
+		double registration_max_angle;
 	};
 
-	// Public members
-	// ////////////////////////////
 	TParams params;
 
-   protected:
-	// protected functions
-	//////////////////////////////////////////////////////////////
+protected:
+
 	bool checkRegistrationCondition();
 	/**\brief Specialized checkRegistrationCondtion method used solely when
 	 * dealing with 2DRangeScan information
@@ -185,8 +176,6 @@ class CICPCriteriaNRD
 	 */
 	bool checkRegistrationCondition3D();
 
-	// protected members
-	//////////////////////////////////////////////////////////////
 	bool m_is_using_3DScan;
 
 	/**\brief handy laser scans to use in the class methods
@@ -243,6 +232,5 @@ class CICPCriteriaNRD
 };
 }
 #include "CICPCriteriaNRD_impl.h"
-#endif /* end of include guard: CICPCRITERIANRD_H */
 
 

@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CLOOPCLOSERERD_H
-#define CLOOPCLOSERERD_H
+#pragma once
 
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/config/CLoadableOptions.h>
@@ -214,21 +213,16 @@ template <class GRAPH_T = typename mrpt::graphs::CNetworkOfPoses2DInf>
 class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 						   CRangeScanEdgeRegistrationDecider<GRAPH_T>
 {
-   public:
+public:
 	/**\brief Edge Registration Decider */
 	using parent_t = CRangeScanEdgeRegistrationDecider<GRAPH_T>;
 
-	/**\brief Handy typedefs */
-	/**\{*/
-	/**\brief type of graph constraints */
 	using constraint_t = typename GRAPH_T::constraint_t;
-	/**\brief type of underlying poses (2D/3D). */
 	using pose_t = typename GRAPH_T::constraint_t::type_value;
 	using global_pose_t = typename GRAPH_T::global_pose_t;
 	using decider_t = CLoopCloserERD<GRAPH_T>; /**< self type */
 	using range_ops_t = typename parent_t::range_ops_t;
 	using nodes_to_scans2D_t = typename parent_t::nodes_to_scans2D_t;
-	/**\brief Typedef for referring to a list of partitions */
 	using partitions_t = std::vector<std::vector<uint32_t>>;
 	using edges_citerator = typename GRAPH_T::edges_map_t::const_iterator;
 	using edges_iterator = typename GRAPH_T::edges_map_t::iterator;
@@ -242,8 +236,6 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	using node_props_t = mrpt::graphslam::detail::TNodeProps<GRAPH_T>;
 	/**\}*/
 
-	// Public methods
-	//////////////////////////////////////////////////////////////
 	CLoopCloserERD();
 	virtual ~CLoopCloserERD();
 
@@ -296,13 +288,10 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 
 		void getAsString(std::string* str) const
 		{
-			using namespace std;
-			using namespace mrpt;
 			str->clear();
-			*str +=
-				format("from_params: %s", from_params.getAsString().c_str());
-			*str += format("to_params: %s", to_params.getAsString().c_str());
-			*str += format("init_estim: %s\n", init_estim.asString().c_str());
+			*str += mrpt::format("from_params: %s", from_params.getAsString().c_str());
+			*str += mrpt::format("to_params: %s", to_params.getAsString().c_str());
+			*str += mrpt::format("init_estim: %s\n", init_estim.asString().c_str());
 		}
 		std::string getAsString() const
 		{
@@ -342,7 +331,7 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	void generateHypotsPool(
 		const std::vector<uint32_t>& groupA,
 		const std::vector<uint32_t>& groupB, hypotsp_t* generated_hypots,
-		const TGenerateHypotsPoolAdParams* ad_params = NULL);
+		const TGenerateHypotsPoolAdParams* ad_params = nullptr);
 	/**\brief Compute the pair-wise consistencies Matrix.
 	 *
 	 * \param[in] groupA First group to be used
@@ -365,8 +354,8 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 		const std::vector<uint32_t>& groupA,
 		const std::vector<uint32_t>& groupB, const hypotsp_t& hypots_pool,
 		mrpt::math::CMatrixDouble* consist_matrix,
-		const paths_t* groupA_opt_paths = NULL,
-		const paths_t* groupB_opt_paths = NULL);
+		const paths_t* groupA_opt_paths = nullptr,
+		const paths_t* groupB_opt_paths = nullptr);
 	/**\brief Evalute the consistencies matrix, fill the valid hypotheses
 	 *
 	 * Call to this method should be made right after generating the
@@ -408,7 +397,7 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	bool getPropsOfNodeID(
 		const mrpt::graphs::TNodeID& nodeID, global_pose_t* pose,
 		mrpt::obs::CObservation2DRangeScan::Ptr& scan,
-		const node_props_t* node_props = NULL) const;
+		const node_props_t* node_props = nullptr) const;
 
 	/**\brief Struct for storing together the parameters needed for ICP
 	 * matching, laser scans visualization etc.
@@ -429,11 +418,11 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 		int prev_nodes_for_ICP;
 
 		/** see Constructor for initialization */
-		const mrpt::img::TColor laser_scans_color;
+		const mrpt::img::TColor laser_scans_color = mrpt::img::TColor(0, 20, 255);
 		bool visualize_laser_scans;
 		// keystroke to be used by the user to toggle the LaserScans from
 		// the CDisplayWindow
-		std::string keystroke_laser_scans;
+		std::string keystroke_laser_scans = "l";
 
 		/**\brief Indicate whethet to use scan-matching at all during
 		 * graphSLAM [on by default].
@@ -443,7 +432,7 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 		 * no scan-matching is not used.
 		 */
 		bool use_scan_matching;
-		bool has_read_config;
+		bool has_read_config = false;;
 		/**\brief Keep track of the mahalanobis distance between the initial
 		 * pose
 		 * difference and the suggested new edge for the pairs of checked
@@ -640,7 +629,7 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	double generatePWConsistencyElement(
 		const mrpt::graphs::TNodeID& a1, const mrpt::graphs::TNodeID& a2,
 		const mrpt::graphs::TNodeID& b1, const mrpt::graphs::TNodeID& b2,
-		const hypotsp_t& hypots, const paths_t* opt_paths = NULL);
+		const hypotsp_t& hypots, const paths_t* opt_paths = nullptr);
 	/**\brief Given a vector of THypothesis objects, find the one that
 	 * has the given start and end nodes.
 	 *
@@ -653,7 +642,7 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	 * \param[in] throw_exc If true and hypothesis is not found, <b>throw a
 	 * HypothesisNotFoundException</b>
 	 *
-	 * \return Pointer to the found hypothesis if that is found, otherwise NULL.
+	 * \return Pointer to the found hypothesis if that is found, otherwise nullptr.
 	 *
 	 */
 	static hypot_t* findHypotByEnds(
@@ -665,7 +654,7 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	 * \note If multiple paths between the same start and end node exist,
 	 * only the first one is returned.
 	 *
-	 * \return NULL if a path with the given source and destination NodeIDs is
+	 * \return nullptr if a path with the given source and destination NodeIDs is
 	 * not found, otherwise a pointer to the matching TUncertaintyPath.
 	 *
 	 * \exception std::runtime_error if path was not found and throw_exc is set
@@ -686,7 +675,7 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	 * HypothesisNotFoundException</b>
 	 *
 	 * \return Pointer to the hypothesis with the given ID if that is found,
-	 * otherwies NULL.
+	 * otherwies nullptr.
 	 */
 	static hypot_t* findHypotByID(
 		const hypotsp_t& vec_hypots, const size_t& id, bool throw_exc = true);
@@ -707,8 +696,8 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	 */
 	virtual bool getICPEdge(
 		const mrpt::graphs::TNodeID& from, const mrpt::graphs::TNodeID& to,
-		constraint_t* rel_edge, mrpt::slam::CICP::TReturnInfo* icp_info = NULL,
-		const TGetICPEdgeAdParams* ad_params = NULL);
+		constraint_t* rel_edge, mrpt::slam::CICP::TReturnInfo* icp_info = nullptr,
+		const TGetICPEdgeAdParams* ad_params = nullptr);
 	/**\brief compute the minimum uncertainty of each node position with
 	 * regards to the graph root.
 	 *
@@ -792,13 +781,11 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	 */
 	void setLastLaserScan2D(mrpt::obs::CObservation2DRangeScan::Ptr scan);
 
-	// protected variables
-	//////////////////////////////////////////////////////////////
 	/**\brief Instance responsible for partitioning the map */
 	mrpt::slam::CIncrementalMapPartitioner m_partitioner;
 
-	bool m_visualize_curr_node_covariance;
-	const mrpt::img::TColor m_curr_node_covariance_color;
+	bool m_visualize_curr_node_covariance = false;
+	const mrpt::img::TColor m_curr_node_covariance_color = mrpt::img::TColor(160, 160, 160,  255);
 	double m_offset_y_curr_node_covariance;
 	int m_text_index_curr_node_covariance;
 
@@ -817,7 +804,7 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	partitions_t m_curr_partitions;
 	/**\} */
 	/**\brief Indicate whether the partitions have been updated recently */
-	bool m_partitions_full_update;
+	bool m_partitions_full_update = false;
 	/**\brief Keep track of the evaluated partitions so they are not checked
 	 * again if nothing changed in them.
 	 */
@@ -836,10 +823,10 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	 *
 	 * Handy so that we can assign a measurement to the root node as well.
 	 */
-	bool m_is_first_time_node_reg;
+	bool m_is_first_time_node_reg = true;
 	/**\brief Node Count lower bound before executing dijkstra
 	 */
-	size_t m_dijkstra_node_count_thresh;
+	size_t m_dijkstra_node_count_thresh = 3;
 	/**\brief Factor used for accepting an ICP Constraint as valid.
 	 */
 	double m_consec_icp_constraint_factor;
@@ -850,6 +837,5 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 };
 }
 #include "CLoopCloserERD_impl.h"
-#endif /* end of include guard: CLOOPCLOSERERD_H */
 
 

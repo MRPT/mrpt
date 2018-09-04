@@ -17,6 +17,7 @@ Session.vim
 .projections.json
 compile_commands.json
 .mypy_cache/
+tags
 
 # common results directories
 graphslam_results/

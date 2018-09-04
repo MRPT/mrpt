@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef GRAPH_SLAM_LEVMARQ_H
-#define GRAPH_SLAM_LEVMARQ_H
+#pragma once
 
 #include <mrpt/graphslam/types.h>
 #include <mrpt/system/TParameters.h>
@@ -675,4 +674,3 @@ void optimize_graph_spa_levmarq(
 /**  @} */  // end of grouping
 
 }  // namespace mrpt::graphslam
-#endif

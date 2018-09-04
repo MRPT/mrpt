@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CNODEREGISTRATIONDECIDER_H
-#define CNODEREGISTRATIONDECIDER_H
+#pragma once
 
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CSensoryFrame.h>
@@ -33,7 +32,7 @@ template <class GRAPH_T>
 class CNodeRegistrationDecider
 	: public virtual mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_T>
 {
-   public:
+public:
 	/**\brief Handy typedefs */
 	/**\{*/
 	/**\brief Parent of current class */
@@ -50,7 +49,7 @@ class CNodeRegistrationDecider
 	/**\brief Default class constructor.*/
 	CNodeRegistrationDecider();
 	/**\brief Default class destructor.*/
-	virtual ~CNodeRegistrationDecider();
+	virtual ~CNodeRegistrationDecider()=default;
 	/**\brief Getter method for fetching the currently estimated robot position.
 	 *
 	 * In single-robot situations this is most likely going to be the last
@@ -58,23 +57,9 @@ class CNodeRegistrationDecider
 	 * position
 	 */
 	virtual global_pose_t getCurrentRobotPosEstimation() const;
-	/**\brief Generic method for fetching the incremental action-observations
-	 * (or observation-only) depending on the rawlog format readings from the
-	 * calling function.
-	 *
-	 * Implementations of this interface should use (part of) the specified
-	 * parameters and call the checkRegistrationCondition to check for
-	 * potential node registration
-	 *
-	 * \return True upon successful node registration in the graph
-	 */
-	virtual bool updateState(
-		mrpt::obs::CActionCollection::Ptr action,
-		mrpt::obs::CSensoryFrame::Ptr observations,
-		mrpt::obs::CObservation::Ptr observation) = 0;
 	virtual void getDescriptiveReport(std::string* report_str) const;
 
-   protected:
+protected:
 	/**\brief Reset the given PDF method and assign a fixed high-certainty
 	 * Covariance/Information matrix
 	 */
@@ -132,7 +117,3 @@ class CNodeRegistrationDecider
 };
 }
 #include "CNodeRegistrationDecider_impl.h"
-
-#endif /* end of include guard: CNODEREGISTRATIONDECIDER_H */
-
-

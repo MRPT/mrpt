@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CRANGESCANOPS_IMPL_H
-#define CRANGESCANOPS_IMPL_H
+#pragma once
 
 namespace mrpt::graphslam::deciders
 {
@@ -16,8 +15,8 @@ template <class GRAPH_T>
 void CRangeScanOps<GRAPH_T>::getICPEdge(
 	const mrpt::obs::CObservation2DRangeScan& from,
 	const mrpt::obs::CObservation2DRangeScan& to, constraint_t* rel_edge,
-	const mrpt::poses::CPose2D* initial_pose_in /* = nullptr */,
-	mrpt::slam::CICP::TReturnInfo* icp_info /* = nullptr */)
+	const mrpt::poses::CPose2D* initial_pose_in,
+	mrpt::slam::CICP::TReturnInfo* icp_info)
 {
 	MRPT_START;
 
@@ -51,8 +50,8 @@ template <class GRAPH_T>
 void CRangeScanOps<GRAPH_T>::getICPEdge(
 	const mrpt::obs::CObservation3DRangeScan& from,
 	const mrpt::obs::CObservation3DRangeScan& to, constraint_t* rel_edge,
-	const mrpt::poses::CPose2D* initial_pose_in /* =nullptr */,
-	mrpt::slam::CICP::TReturnInfo* icp_info /* =nullptr */)
+	const mrpt::poses::CPose2D* initial_pose_in,
+	mrpt::slam::CICP::TReturnInfo* icp_info)
 {
 	MRPT_START;
 
@@ -107,8 +106,8 @@ void CRangeScanOps<GRAPH_T>::getICPEdge(
 
 template <class GRAPH_T>
 void CRangeScanOps<GRAPH_T>::decimatePointsMap(
-	mrpt::maps::CPointsMap* m, size_t keep_point_every, /* = 4 */
-	size_t low_lim /* = 8000 */)
+	mrpt::maps::CPointsMap* m, size_t keep_point_every,
+	size_t low_lim)
 {
 	MRPT_START;
 
@@ -142,7 +141,7 @@ void CRangeScanOps<GRAPH_T>::decimatePointsMap(
 template <class GRAPH_T>
 bool CRangeScanOps<GRAPH_T>::convert3DTo2DRangeScan(
 	mrpt::obs::CObservation3DRangeScan::Ptr& scan3D_in,
-	mrpt::obs::CObservation2DRangeScan::Ptr* scan2D_out /*= NULL*/)
+	mrpt::obs::CObservation2DRangeScan::Ptr* scan2D_out)
 {
 	MRPT_START;
 
@@ -167,19 +166,6 @@ bool CRangeScanOps<GRAPH_T>::convert3DTo2DRangeScan(
 
 	return success;
 	MRPT_END;
-}
-
-// TParameter
-// //////////////////////////////////
-
-template <class GRAPH_T>
-CRangeScanOps<GRAPH_T>::TParams::TParams() : has_read_config(false)
-{
-}
-
-template <class GRAPH_T>
-CRangeScanOps<GRAPH_T>::TParams::~TParams()
-{
 }
 
 template <class GRAPH_T>
@@ -233,6 +219,5 @@ void CRangeScanOps<GRAPH_T>::TParams::loadFromConfigFile(
 }
 }  // end of namespaces
 
-#endif /* end of include guard: CRANGESCANOPS_IMPL_H */
 
 

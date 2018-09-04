@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef TSLIDINGWINDOW_H
-#define TSLIDINGWINDOW_H
+#pragma once
 
 #include <mrpt/config/CLoadableOptions.h>
 
@@ -43,8 +42,8 @@ namespace mrpt::graphslam
 struct TSlidingWindow : public mrpt::config::CLoadableOptions
 {
    public:
-	TSlidingWindow(std::string name = "window");
-	~TSlidingWindow();
+	TSlidingWindow(const std::string& name = "window");
+	~TSlidingWindow()=default;
 	/**\brief Return the current median value.  */
 	double getMedian();
 	/**\brief Return the current mean value.  */
@@ -80,7 +79,6 @@ struct TSlidingWindow : public mrpt::config::CLoadableOptions
 	void loadFromConfigFile(
 		const mrpt::config::CConfigFileBase& source,
 		const std::string& section);
-	// TODO - make it use the boundaries
 	void dumpToTextStream(std::ostream& out) const;
 
 	/**\brief Return the size of the window
@@ -94,26 +92,23 @@ struct TSlidingWindow : public mrpt::config::CLoadableOptions
 	bool windowIsFull() const;
 
    private:
-	size_t m_win_size;
+	size_t m_win_size = 5;
 	std::vector<double> m_measurements_vec;
 
 	/**\brief Name of the TSlidingWindow Instance at hand */
 	std::string m_name;
 
-	double m_mean_cached; /**< Cached mean value */
-	double m_median_cached; /**< Cached median value */
-	double m_std_dev_cached; /**< Cached version of the standard deviation */
-	bool m_mean_updated; /**< Is the mean up-to-date? */
-	bool m_median_updated; /**< Is the median up-to-date? */
-	bool m_std_dev_updated; /**< Is the standard deviation up-to-date? */
+	double m_mean_cached = 0.0f; /**< Cached mean value */
+	double m_median_cached = 0.0f; /**< Cached median value */
+	double m_std_dev_cached = 0.0f; /**< Cached version of the standard deviation */
+	bool m_mean_updated = false; /**< Is the mean up-to-date? */
+	bool m_median_updated = false; /**< Is the median up-to-date? */
+	bool m_std_dev_updated = false; /**< Is the standard deviation up-to-date? */
 
 	/**\brief flag is raised the first time that
-	 * TSlidingWindow::addNewMeasurement is
-	 * called
+	 * TSlidingWindow::addNewMeasurement is called
 	 */
-	bool m_is_initialized;
+	bool m_is_initialized = false;
 };
 }
-#endif /* end of include guard: TSLIDINGWINDOW_H */
-
 

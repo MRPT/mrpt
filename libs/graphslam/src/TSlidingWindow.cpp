@@ -19,24 +19,9 @@
 
 using namespace mrpt::graphslam;
 
-TSlidingWindow::TSlidingWindow(std::string name /* = "window" */)
-{
-	MRPT_START;
+TSlidingWindow::TSlidingWindow(const std::string& name /* = "window" */)
+	: m_name(name) { }
 
-	m_win_size = 5;  // just a default value
-	m_name = name;
-
-	m_mean_cached = 0;
-	m_median_cached = 0;
-
-	m_is_initialized = false;
-	m_mean_updated = false;
-	m_median_updated = false;
-	m_std_dev_updated = false;
-
-	MRPT_END;
-}
-TSlidingWindow::~TSlidingWindow() {}
 double TSlidingWindow::getMedian()
 {
 	MRPT_START;

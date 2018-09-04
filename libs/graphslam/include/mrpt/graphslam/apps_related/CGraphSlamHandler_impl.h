@@ -7,10 +7,8 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CGRAPHSLAMHANDLER_IMPL_H
-#define CGRAPHSLAMHANDLER_IMPL_H
+#pragma once
 
-// Implementation file for CGraphSlamHandler class
 #include "CGraphSlamHandler.h"
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/serialization/CArchive.h>
@@ -20,30 +18,21 @@ template <class GRAPH_T>
 CGraphSlamHandler<GRAPH_T>::CGraphSlamHandler(
 	mrpt::system::COutputLogger* logger,
 	mrpt::graphslam::apps::TUserOptionsChecker<GRAPH_T>* options_checker,
-	const bool enable_visuals /*=true*/)
+	const bool enable_visuals)
 	: m_logger(logger),
 	  m_options_checker(options_checker),
-	  m_do_save_results(true),
-	  m_has_set_fnames(false),
 	  m_enable_visuals(enable_visuals)
 {
 	using namespace mrpt::system;
 	ASSERTDEB_(m_logger);
 	ASSERTDEB_(m_options_checker);
 
-	m_engine = NULL;
-	m_win_manager = NULL;
-	m_win_observer = NULL;
-	m_win = NULL;
 	if (m_enable_visuals)
 	{
 		this->initVisualization();
 	}
 }
 
-//////////////////////////////////////////////////////////////////////////////
-
-//////////////////////////////////////////////////////////////////////////////
 template <class GRAPH_T>
 CGraphSlamHandler<GRAPH_T>::~CGraphSlamHandler()
 {
@@ -109,7 +98,7 @@ CGraphSlamHandler<GRAPH_T>::~CGraphSlamHandler()
 
 template <class GRAPH_T>
 void CGraphSlamHandler<GRAPH_T>::initOutputDir(
-	const std::string& output_dir_fname /* = graphslam_results */)
+	const std::string& output_dir_fname)
 {
 	MRPT_START;
 	using namespace std;
@@ -182,7 +171,9 @@ void CGraphSlamHandler<GRAPH_T>::initOutputDir(
 					mrpt::system::LVL_INFO, "Renaming directory to: %s",
 					dst_fname.c_str());
 				string error_msg;
+#if _DEBUG
 				bool did_rename =
+#endif
 					renameFile(output_dir_fname, dst_fname, &error_msg);
 				ASSERTDEBMSG_(
 					did_rename, format(
@@ -191,8 +182,8 @@ void CGraphSlamHandler<GRAPH_T>::initOutputDir(
 									error_msg.c_str()));
 				break;
 			}
-		}  // SWITCH (ANSWER_INT)
-	}  // IF DIRECTORY EXISTS..
+		}  // end switch (answer_int)
+	}  // end if directory exists..
 
 	// Now rebuild the directory from scratch
 	m_logger->logFmt(
@@ -207,11 +198,10 @@ void CGraphSlamHandler<GRAPH_T>::initOutputDir(
 	MRPT_END;
 }  // end of initOutputDir
 
-//////////////////////////////////////////////////////////////////////////////
 template <class GRAPH_T>
 void CGraphSlamHandler<GRAPH_T>::setFNames(
 	const std::string& ini_fname, const std::string& rawlog_fname,
-	const std::string& ground_truth_fname /*=std::string()*/)
+	const std::string& ground_truth_fname)
 {
 	this->m_ini_fname = ini_fname;
 	this->m_rawlog_fname = rawlog_fname;
@@ -221,8 +211,6 @@ void CGraphSlamHandler<GRAPH_T>::setFNames(
 
 	m_has_set_fnames = true;
 }
-
-////////////////////////////////////////////////////////////////////////////////
 
 template <class GRAPH_T>
 void CGraphSlamHandler<GRAPH_T>::readConfigFname(const std::string& fname)
@@ -284,8 +272,6 @@ void CGraphSlamHandler<GRAPH_T>::initEngine(
 		m_options_checker->optimizers_map[optimizer_str]());
 }
 
-//////////////////////////////////////////////////////////////////////////////
-
 template <class GRAPH_T>
 void CGraphSlamHandler<GRAPH_T>::printParams() const
 {
@@ -293,7 +279,6 @@ void CGraphSlamHandler<GRAPH_T>::printParams() const
 	m_engine->printParams();
 }
 
-//////////////////////////////////////////////////////////////////////////////
 template <class GRAPH_T>
 void CGraphSlamHandler<GRAPH_T>::getParamsAsString(std::string* str) const
 {
@@ -330,7 +315,6 @@ void CGraphSlamHandler<GRAPH_T>::getParamsAsString(std::string* str) const
 
 	*str = ss_out.str();
 }
-//////////////////////////////////////////////////////////////////////////////
 template <class GRAPH_T>
 std::string CGraphSlamHandler<GRAPH_T>::getParamsAsString() const
 {
@@ -339,7 +323,6 @@ std::string CGraphSlamHandler<GRAPH_T>::getParamsAsString() const
 	return str;
 }
 
-//////////////////////////////////////////////////////////////////////////////
 
 template <class GRAPH_T>
 void CGraphSlamHandler<GRAPH_T>::setResultsDirName(const std::string& dirname)
@@ -419,7 +402,6 @@ void CGraphSlamHandler<GRAPH_T>::execute()
 	m_logger->logFmt(mrpt::system::LVL_WARN, "Finished graphslam execution.");
 }
 
-//////////////////////////////////////////////////////////////////////////////
 template <class GRAPH_T>
 void CGraphSlamHandler<GRAPH_T>::initVisualization()
 {
@@ -449,7 +431,6 @@ void CGraphSlamHandler<GRAPH_T>::initVisualization()
 	m_win_manager->setWindowObserverPtr(m_win_observer);
 }
 
-//////////////////////////////////////////////////////////////////////////////
 template <class GRAPH_T>
 bool CGraphSlamHandler<GRAPH_T>::queryObserverForEvents()
 {
@@ -462,4 +443,3 @@ bool CGraphSlamHandler<GRAPH_T>::queryObserverForEvents()
 	return !request_to_exit;
 }
 
-#endif /* end of include guard: CGRAPHSLAMHANDLER_IMPL_H */

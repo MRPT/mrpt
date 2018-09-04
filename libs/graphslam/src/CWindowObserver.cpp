@@ -17,7 +17,7 @@
 
 using namespace mrpt::graphslam;
 
-CWindowObserver::CWindowObserver() : m_showing_help(false), m_hiding_help(false)
+CWindowObserver::CWindowObserver()
 {
 	m_help_msg =
 		"User options:\n"
@@ -32,7 +32,6 @@ CWindowObserver::CWindowObserver() : m_showing_help(false), m_hiding_help(false)
 	m_key_codes_to_pressed["Ctrl+c"] = false;
 	m_key_codes_to_pressed["mouse_clicked"] = false;
 
-	std::cout << "WindowObserver initialized." << std::endl;
 }
 
 void CWindowObserver::returnEventsStruct(
@@ -195,9 +194,5 @@ void CWindowObserver::OnEvent(const mrpt::system::mrptEvent& e)
 				m_hiding_help = false;
 			}
 		}
-	}
-	else
-	{
-		// std::cout  << "Unregistered mrptEvent received\n";
 	}
 }

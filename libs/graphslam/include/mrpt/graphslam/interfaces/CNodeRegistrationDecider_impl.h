@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CNODEREGISTRATIONDECIDER_IMPL_H
-#define CNODEREGISTRATIONDECIDER_IMPL_H
+#pragma once
 
 using namespace mrpt::graphslam::deciders;
 using namespace std;
@@ -21,16 +20,9 @@ template <class GRAPH_T>
 CNodeRegistrationDecider<GRAPH_T>::CNodeRegistrationDecider()
 	: m_prev_registered_nodeID(INVALID_NODEID)
 {
-	using namespace mrpt::poses;
-
 	m_init_inf_mat.unit();
 	m_init_inf_mat *= 10000;
-	resetPDF(&this->m_since_prev_node_PDF);
-}
-
-template <class GRAPH_T>
-CNodeRegistrationDecider<GRAPH_T>::~CNodeRegistrationDecider()
-{
+	this->resetPDF(&this->m_since_prev_node_PDF);
 }
 
 template <class GRAPH_T>
@@ -71,7 +63,9 @@ bool CNodeRegistrationDecider<GRAPH_T>::registerNewNodeAtEnd(
 		this->addNodeAnnotsToPose(&tmp_pose);
 
 		// make sure that this pair hasn't been registered yet.
+#if _DEBUG
 		std::pair<typename GRAPH_T::global_poses_t::const_iterator, bool> res =
+#endif
 			this->m_graph->nodes.insert(
 				make_pair(this->m_graph->root, tmp_pose));
 		ASSERTDEBMSG_(
@@ -94,8 +88,9 @@ bool CNodeRegistrationDecider<GRAPH_T>::registerNewNodeAtEnd(
 		global_pose_t tmp_pose = this->getCurrentRobotPosEstimation();
 		this->addNodeAnnotsToPose(&tmp_pose);
 
-		// make sure that this pair hasn't been registered yet.
+#if _DEBUG
 		std::pair<typename GRAPH_T::global_poses_t::const_iterator, bool> res =
+#endif
 			this->m_graph->nodes.insert(make_pair(to, tmp_pose));
 		ASSERTDEBMSG_(
 			res.second, mrpt::format(
@@ -162,4 +157,3 @@ typename GRAPH_T::global_pose_t
 	return pose_out;
 }
 
-#endif /* end of include guard: CNODEREGISTRATIONDECIDER_IMPL_H */

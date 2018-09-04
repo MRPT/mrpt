@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef TUSEROPTIONSCHECKER_H
-#define TUSEROPTIONSCHECKER_H
+#pragma once
 
 #include <mrpt/system/filesystem.h>
 #include <mrpt/core/exceptions.h>
@@ -44,7 +43,7 @@ struct TRegistrationDeciderOrOptimizerProps
 		  is_slam_3d(false)
 	{
 	}
-	~TRegistrationDeciderOrOptimizerProps() {}
+	~TRegistrationDeciderOrOptimizerProps()=default;
 	/**\brief Name of the decider or optimizer class
 	 */
 	std::string name;
@@ -66,7 +65,7 @@ struct TRegistrationDeciderOrOptimizerProps
 struct TRegistrationDeciderProps : public TRegistrationDeciderOrOptimizerProps
 {
 	TRegistrationDeciderProps() : type(""), rawlog_format("") {}
-	~TRegistrationDeciderProps() {}
+	~TRegistrationDeciderProps()=default;
 	/**\brief Type of decider.
 	 *
 	 * Available options are:
@@ -86,8 +85,8 @@ struct TRegistrationDeciderProps : public TRegistrationDeciderOrOptimizerProps
  */
 struct TOptimizerProps : public TRegistrationDeciderOrOptimizerProps
 {
-	TOptimizerProps() {}
-	~TOptimizerProps() {}
+	TOptimizerProps()=default;
+	~TOptimizerProps()=default;
 };
 
 /**\brief Class containing the declarations of supplementary methods that can
@@ -219,6 +218,5 @@ struct TUserOptionsChecker
 }
 #include "TUserOptionsChecker_impl.h"
 
-#endif /* end of include guard: TUSEROPTIONSCHECKER_H */
 
 

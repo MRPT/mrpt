@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CFIXEDINTERVALSNRD_H
-#define CFIXEDINTERVALSNRD_H
+#pragma once
 
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/CSensoryFrame.h>
@@ -91,10 +90,8 @@ class CFixedIntervalsNRD
 		mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>;
 	/**\}*/
 
-	/**\brief Class constructor */
 	CFixedIntervalsNRD();
-	/**\brief Class destructor */
-	~CFixedIntervalsNRD();
+	~CFixedIntervalsNRD()=default;
 
 	void loadParams(const std::string& source_fname);
 	void printParams() const;
@@ -117,8 +114,8 @@ class CFixedIntervalsNRD
 	struct TParams : public mrpt::config::CLoadableOptions
 	{
 	   public:
-		TParams();
-		~TParams();
+		TParams()=default;
+		~TParams()=default;
 
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
@@ -134,30 +131,24 @@ class CFixedIntervalsNRD
 		double registration_max_angle;
 	};
 
-	// Public members
-	// ////////////////////////////
 	TParams params;
 
-   protected:
-	// protected functions
-	//////////////////////////////////////////////////////////////
+protected:
+
 	/**\name Registration Conditions Specifiers
 	 */
-	/**\{ */
 	/**\brief If estimated position surpasses the registration max values since
 	 * the previous registered node, register a new node in the graph.
 	 *
 	 * \return True on successful registration.
 	 */
+	/**\{ */
 	bool checkRegistrationCondition();
 	bool checkRegistrationCondition(
 		const mrpt::poses::CPose2D& p1, const mrpt::poses::CPose2D& p2) const;
 	bool checkRegistrationCondition(
 		const mrpt::poses::CPose3D& p1, const mrpt::poses::CPose3D& p2) const;
 	/**\} */
-
-	// protected members
-	//////////////////////////////////////////////////////////////
 
 	/**\brief pose_t estimation using only odometry information. Handy for
 	 * observation-only rawlogs.
@@ -174,6 +165,5 @@ class CFixedIntervalsNRD
 };
 }
 #include "CFixedIntervalsNRD_impl.h"
-#endif /* end of include guard: CFIXEDINTERVALSNRD_H */
 
 
