@@ -60,18 +60,18 @@ class SerialInterface : public StreamInterface
 #endif
    public:
 	SerialInterface();
-	virtual ~SerialInterface();
+	~SerialInterface() override;
 
 	// Function overrides
-	XsResultValue close(void);
+	XsResultValue close(void) override;
 	XsResultValue closeLive(void);
-	XsResultValue flushData(void);
-	bool isOpen(void) const;
-	XsResultValue getLastResult(void) const;
-	XsResultValue writeData(const XsByteArray& data, XsSize* written = 0);
-	XsResultValue readData(XsSize maxLength, XsByteArray& data);
+	XsResultValue flushData(void) override;
+	bool isOpen(void) const override;
+	XsResultValue getLastResult(void) const override;
+	XsResultValue writeData(const XsByteArray& data, XsSize* written = 0) override;
+	XsResultValue readData(XsSize maxLength, XsByteArray& data) override;
 
-	void cancelIo(void) const;
+	void cancelIo(void) const override;
 
 	// Other functions
 	XsResultValue escape(XsControlLine mask, XsControlLine state);
@@ -79,13 +79,13 @@ class SerialInterface : public StreamInterface
 	XsIoHandle getHandle(void) const;
 	uint16_t getPortNumber(void) const;
 	void getPortName(XsString& portname) const;
-	uint32_t getTimeout(void) const;
+	uint32_t getTimeout(void) const override;
 	XsResultValue open(
 		const XsPortInfo& portInfo,
 		uint32_t readBufSize = XS_DEFAULT_READ_BUFFER_SIZE,
-		uint32_t writeBufSize = XS_DEFAULT_WRITE_BUFFER_SIZE);
-	XsResultValue setTimeout(uint32_t ms);
-	XsResultValue waitForData(XsSize maxLength, XsByteArray& data);
+		uint32_t writeBufSize = XS_DEFAULT_WRITE_BUFFER_SIZE) override;
+	XsResultValue setTimeout(uint32_t ms) override;
+	XsResultValue waitForData(XsSize maxLength, XsByteArray& data) override;
 };
 
 #endif  // file guard

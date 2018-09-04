@@ -111,7 +111,7 @@ class C2DRangeFinderAbstract : public mrpt::system::COutputLogger,
 	/** Default constructor */
 	C2DRangeFinderAbstract();
 	/** Destructor */
-	virtual ~C2DRangeFinderAbstract();
+	~C2DRangeFinderAbstract() override;
 
 	/** Enables GUI visualization in real-time */
 	void showPreview(bool enable = true) { m_showPreview = enable; }
@@ -132,7 +132,7 @@ class C2DRangeFinderAbstract : public mrpt::system::COutputLogger,
 		bool& hardwareError);
 
 	/** Main method for a CGenericSensor */
-	void doProcess();
+	void doProcess() override;
 
 	/** Specific laser scanner "software drivers" must process here new data
 	 * from the I/O stream, and, if a whole scan has arrived, return it.

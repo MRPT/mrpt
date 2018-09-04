@@ -83,7 +83,7 @@ class CHMHMapNode : public mrpt::serialization::CSerializable
 
 	/** Destructor
 	 */
-	virtual ~CHMHMapNode();
+	~CHMHMapNode() override;
 
 	/** The annotations of the node, see the general description of the class
 	 * for possible properties and values.

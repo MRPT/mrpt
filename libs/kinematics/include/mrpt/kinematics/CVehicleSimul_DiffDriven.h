@@ -24,7 +24,7 @@ class CVehicleSimul_DiffDriven : public CVehicleSimulVirtualBase
 	using kinematic_cmd_t = CVehicleVelCmd_DiffDriven;
 
 	CVehicleSimul_DiffDriven();
-	virtual ~CVehicleSimul_DiffDriven();
+	~CVehicleSimul_DiffDriven() override;
 
 	/** Change the model of delays used for the orders sent to the robot \sa
 	 * movementCommand */

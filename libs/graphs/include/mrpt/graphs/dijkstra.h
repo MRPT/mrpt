@@ -39,7 +39,7 @@ class NotConnectedGraph : public std::exception
 
 	using std::exception::what;  // supress clang warning
 	const char* what() { return m_err.c_str(); }
-	~NotConnectedGraph() throw() {}
+	~NotConnectedGraph() throw() override {}
 	/**\brief Fill set with the nodeIDs Dijkstra algorithm could not reach
 	 * starting from the root node.
 	 */

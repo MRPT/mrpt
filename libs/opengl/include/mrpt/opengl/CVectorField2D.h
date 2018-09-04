@@ -260,7 +260,7 @@ class CVectorField2D : public CRenderizableDisplayList
 		mrpt::math::CMatrixFloat Matrix_x, mrpt::math::CMatrixFloat Matrix_y,
 		float xmin = -1, float xmax = 1, float ymin = -1, float ymax = 1);
 	/** Private, virtual destructor: only can be deleted from smart pointers. */
-	virtual ~CVectorField2D() {}
+	~CVectorField2D() override {}
 };
 
 }

@@ -125,7 +125,7 @@ class CPosePDFParticlesExtended
 
 	/** Destructor
 	 */
-	virtual ~CPosePDFParticlesExtended();
+	~CPosePDFParticlesExtended() override;
 
 	/** Copy operator, translating if necesary (for example, between particles
 	 * and gaussian representations)

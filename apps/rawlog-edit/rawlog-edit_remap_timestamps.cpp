@@ -42,7 +42,7 @@ DECLARE_OP_FUNCTION(op_remap_timestamps)
 						 << " b=" << m_b << endl;
 		}
 
-		bool processOneObservation(CObservation::Ptr& obs)
+		bool processOneObservation(CObservation::Ptr& obs) override
 		{
 			// T_NEW = a * T_OLD + b
 			const double t = mrpt::system::timestampToDouble(obs->timestamp);
@@ -53,10 +53,10 @@ DECLARE_OP_FUNCTION(op_remap_timestamps)
 
 		// This method can be reimplemented to save the modified object to an
 		// output stream.
-		virtual void OnPostProcess(
+		void OnPostProcess(
 			mrpt::obs::CActionCollection::Ptr& actions,
 			mrpt::obs::CSensoryFrame::Ptr& SF,
-			mrpt::obs::CObservation::Ptr& obs)
+			mrpt::obs::CObservation::Ptr& obs) override
 		{
 			ASSERT_((actions && SF) || obs);
 			if (actions)

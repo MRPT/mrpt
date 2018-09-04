@@ -34,34 +34,34 @@ class CWeightedPointsMap : public CPointsMap
 	/** Default constructor */
 	CWeightedPointsMap();
 	/** Destructor */
-	virtual ~CWeightedPointsMap();
+	~CWeightedPointsMap() override;
 
 	// --------------------------------------------
 	/** @name Pure virtual interfaces to be implemented by any class derived
 	   from CPointsMap
 		@{ */
-	virtual void reserve(size_t newLength) override;  // See base class docs
-	virtual void resize(size_t newLength) override;  // See base class docs
-	virtual void setSize(size_t newLength) override;  // See base class docs
+	void reserve(size_t newLength) override;  // See base class docs
+	void resize(size_t newLength) override;  // See base class docs
+	void setSize(size_t newLength) override;  // See base class docs
 
 	/** Changes the coordinates of the given point (0-based index), *without*
 	 * checking for out-of-bounds and *without* calling mark_as_modified() \sa
 	 * setPoint */
-	virtual void setPointFast(size_t index, float x, float y, float z) override;
+	void setPointFast(size_t index, float x, float y, float z) override;
 
 	/** The virtual method for \a insertPoint() *without* calling
 	 * mark_as_modified()   */
-	virtual void insertPointFast(float x, float y, float z = 0) override;
+	void insertPointFast(float x, float y, float z = 0) override;
 
 	/** Virtual assignment operator, to be implemented in derived classes  */
-	virtual void copyFrom(const CPointsMap& obj) override;
+	void copyFrom(const CPointsMap& obj) override;
 
 	/** Get all the data fields for one point as a vector: [X Y Z WEIGHT]
 	 *  Unlike getPointAllFields(), this method does not check for index out of
 	 * bounds
 	 * \sa getPointAllFields, setPointAllFields, setPointAllFieldsFast
 	 */
-	virtual void getPointAllFieldsFast(
+	void getPointAllFieldsFast(
 		const size_t index, std::vector<float>& point_data) const override
 	{
 		point_data.resize(4);
@@ -76,7 +76,7 @@ class CWeightedPointsMap : public CPointsMap
 	 * bounds
 	 * \sa setPointAllFields, getPointAllFields, getPointAllFieldsFast
 	 */
-	virtual void setPointAllFieldsFast(
+	void setPointAllFieldsFast(
 		const size_t index, const std::vector<float>& point_data) override
 	{
 		ASSERTDEB_(point_data.size() == 4);
@@ -87,19 +87,19 @@ class CWeightedPointsMap : public CPointsMap
 	}
 
 	/** See CPointsMap::loadFromRangeScan() */
-	virtual void loadFromRangeScan(
+	void loadFromRangeScan(
 		const mrpt::obs::CObservation2DRangeScan& rangeScan,
 		const mrpt::poses::CPose3D* robotPose = nullptr) override;
 
 	/** See CPointsMap::loadFromRangeScan() */
-	virtual void loadFromRangeScan(
+	void loadFromRangeScan(
 		const mrpt::obs::CObservation3DRangeScan& rangeScan,
 		const mrpt::poses::CPose3D* robotPose = nullptr) override;
 
    protected:
 	/** Auxiliary method called from within \a addFrom() automatically, to
 	 * finish the copying of class-specific data  */
-	virtual void addFrom_classSpecific(
+	void addFrom_classSpecific(
 		const CPointsMap& anotherMap, const size_t nPreviousPoints) override;
 
 	// Friend methods:
@@ -115,14 +115,14 @@ class CWeightedPointsMap : public CPointsMap
 	/// Sets the point weight, which is ignored in all classes but those which
 	/// actually store that field (Note: No checks are done for out-of-bounds
 	/// index). \sa getPointWeight
-	virtual void setPointWeight(size_t index, unsigned long w) override
+	void setPointWeight(size_t index, unsigned long w) override
 	{
 		pointWeight[index] = w;
 	}
 	/// Gets the point weight, which is ignored in all classes (defaults to 1)
 	/// but in those which actually store that field (Note: No checks are done
 	/// for out-of-bounds index).  \sa setPointWeight
-	virtual unsigned int getPointWeight(size_t index) const override
+	unsigned int getPointWeight(size_t index) const override
 	{
 		return pointWeight[index];
 	}
@@ -133,14 +133,14 @@ class CWeightedPointsMap : public CPointsMap
 
 	/** Clear the map, erasing all the points.
 	 */
-	virtual void internal_clear() override;
+	void internal_clear() override;
 
    protected:
 	/** @name PLY Import virtual methods to implement in base classes
 		@{ */
 	/** In a base class, reserve memory to prepare subsequent calls to
 	 * PLY_import_set_vertex */
-	virtual void PLY_import_set_vertex_count(const size_t N) override;
+	void PLY_import_set_vertex_count(const size_t N) override;
 	/** @} */
 
 	MAP_DEFINITION_START(CWeightedPointsMap)

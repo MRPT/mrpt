@@ -59,7 +59,7 @@ struct TMRSlamNodeAnnotations : public TNodeAnnotations
 		return res;
 	}
 
-	bool operator==(const TNodeAnnotations& other) const
+	bool operator==(const TNodeAnnotations& other) const override
 	{
 		const TMRSlamNodeAnnotations* mr_slam_annots =
 			dynamic_cast<const TMRSlamNodeAnnotations*>(&other);
@@ -75,7 +75,7 @@ struct TMRSlamNodeAnnotations : public TNodeAnnotations
 		return res;
 	}
 
-	void getAnnotsAsString(std::string* s) const
+	void getAnnotsAsString(std::string* s) const override
 	{
 		parent_t::getAnnotsAsString(s);
 

@@ -104,15 +104,15 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 		 *  the navigator will restrict itself to only employ those PTGs. */
 		std::vector<size_t> restrict_PTG_indices;
 
-		virtual std::string getAsText() const override;
-		virtual std::unique_ptr<TNavigationParams> clone() const override
+		std::string getAsText() const override;
+		std::unique_ptr<TNavigationParams> clone() const override
 		{
 			return std::unique_ptr<TNavigationParams>(
 				new TNavigationParamsPTG(*this));
 		}
 
 	   protected:
-		virtual bool isEqual(
+		bool isEqual(
 			const CAbstractNavigator::TNavigationParamsBase& o) const override;
 	};
 
@@ -128,7 +128,7 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 		bool enableLogFile = false, const std::string& logFileDirectory =
 										std::string("./reactivenav.logs"));
 
-	virtual ~CAbstractPTGBasedReactive();
+	~CAbstractPTGBasedReactive() override;
 
 	/** Must be called for loading collision grids, or the first navigation
 	 * command may last a long time to be executed.
@@ -223,10 +223,10 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 		 * evaluation. */
 		double max_dist_for_timebased_path_prediction;
 
-		virtual void loadFromConfigFile(
+		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& c,
 			const std::string& s) override;
-		virtual void saveToConfigFile(
+		void saveToConfigFile(
 			mrpt::config::CConfigFileBase& c,
 			const std::string& s) const override;
 		TAbstractPTGNavigatorParams();
@@ -234,9 +234,9 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 
 	TAbstractPTGNavigatorParams params_abstract_ptg_navigator;
 
-	virtual void loadConfigFile(const mrpt::config::CConfigFileBase& c)
+	void loadConfigFile(const mrpt::config::CConfigFileBase& c)
 		override;  // See base class docs!
-	virtual void saveConfigFile(mrpt::config::CConfigFileBase& c)
+	void saveConfigFile(mrpt::config::CConfigFileBase& c)
 		const override;  // See base class docs!
 
 	/** Enables/disables the detailed time logger (default:disabled upon
@@ -283,7 +283,7 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 
    protected:
 	/** The main method for the navigator */
-	virtual void performNavigationStep() override;
+	void performNavigationStep() override;
 
 	/** The holonomic navigation algorithm (one object per PTG, so internal
 	 * states are maintained) */
@@ -322,7 +322,7 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 		timoff_curPoseAndSpeed_avr, timoff_sendVelCmd_avr;
 	/** @} */
 
-	virtual bool impl_waypoint_is_reachable(
+	bool impl_waypoint_is_reachable(
 		const mrpt::math::TPoint2D& wp_local_wrt_robot)
 		const override;  // See docs in base class
 
@@ -395,7 +395,7 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 	/** To be called during children destructors to assure thread-safe
 	 * destruction, and free of shared objects. */
 	void preDestructor();
-	virtual void onStartNewNavigation() override;
+	void onStartNewNavigation() override;
 
 	/** Signal that the destructor has been called, so no more calls are
 	 * accepted from other threads */

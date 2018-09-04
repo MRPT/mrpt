@@ -33,8 +33,8 @@ using namespace std;
 class ICPTests : public ::testing::Test
 {
    protected:
-	virtual void SetUp() {}
-	virtual void TearDown() {}
+	void SetUp() override {}
+	void TearDown() override {}
 	void align2scans(const TICPAlgorithm icp_method)
 	{
 		float SCAN_RANGES_1[] = {

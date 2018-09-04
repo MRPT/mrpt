@@ -36,7 +36,7 @@ class CScanAnimation : public wxDialog
 		wxWindow* parent, wxWindowID id = wxID_ANY,
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize);
-	virtual ~CScanAnimation();
+	~CScanAnimation() override;
 
 	//(*Declarations(CScanAnimation)
 	wxBoxSizer* BoxSizer4;

@@ -49,7 +49,7 @@ public:
 	/**\brief Default class constructor.*/
 	CNodeRegistrationDecider();
 	/**\brief Default class destructor.*/
-	virtual ~CNodeRegistrationDecider()=default;
+	~CNodeRegistrationDecider() override =default;
 	/**\brief Getter method for fetching the currently estimated robot position.
 	 *
 	 * In single-robot situations this is most likely going to be the last
@@ -57,7 +57,7 @@ public:
 	 * position
 	 */
 	virtual global_pose_t getCurrentRobotPosEstimation() const;
-	virtual void getDescriptiveReport(std::string* report_str) const;
+	void getDescriptiveReport(std::string* report_str) const override;
 
 protected:
 	/**\brief Reset the given PDF method and assign a fixed high-certainty

@@ -26,8 +26,8 @@ template class mrpt::CTraitsTest<mrpt::math::CQuaternionDouble>;
 class QuaternionTests : public ::testing::Test
 {
    protected:
-	virtual void SetUp() {}
-	virtual void TearDown() {}
+	void SetUp() override {}
+	void TearDown() override {}
 	void test_gimbalLock(double YAW, double PITCH, double ROLL)
 	{
 		CQuaternionDouble q1, q1r;

@@ -54,8 +54,8 @@ class CBeaconMap : public mrpt::maps::CMetricMap
 	TSequenceBeacons m_beacons;
 
 	// See docs in base class
-	virtual void internal_clear() override;
-	virtual bool internal_insertObservation(
+	void internal_clear() override;
+	bool internal_insertObservation(
 		const mrpt::obs::CObservation* obs,
 		const mrpt::poses::CPose3D* robotPose = nullptr) override;
 	double internal_computeObservationLikelihood(
@@ -210,7 +210,7 @@ class CBeaconMap : public mrpt::maps::CMetricMap
 	size_t size() const;
 
 	// See docs in base class
-	virtual void determineMatching2D(
+	void determineMatching2D(
 		const mrpt::maps::CMetricMap* otherMap,
 		const mrpt::poses::CPose2D& otherMapPose,
 		mrpt::tfest::TMatchingPairList& correspondences,

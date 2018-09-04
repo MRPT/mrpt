@@ -46,7 +46,7 @@ class CFormChangeSensorPositions : public wxDialog
 	void executeOperationOnRawlog(TRawlogFilter operation, const char* endMsg);
 
 	CFormChangeSensorPositions(wxWindow* parent, wxWindowID id = wxID_ANY);
-	virtual ~CFormChangeSensorPositions();
+	~CFormChangeSensorPositions() override;
 
 	//(*Declarations(CFormChangeSensorPositions)
 	wxStaticText* StaticText10;

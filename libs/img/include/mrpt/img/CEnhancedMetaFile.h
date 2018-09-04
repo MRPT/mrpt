@@ -47,7 +47,7 @@ class CEnhancedMetaFile : public CCanvas
 	CEnhancedMetaFile(const std::string& targetFileName, int scaleFactor = 1);
 
 	/** Destructor */
-	virtual ~CEnhancedMetaFile();
+	~CEnhancedMetaFile() override;
 
 	/** Changes the value of the pixel (x,y).
 	 *  Pixel coordinates starts at the left-top corner of the image, and start

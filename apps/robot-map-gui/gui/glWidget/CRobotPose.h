@@ -16,7 +16,7 @@ class CRobotPose : public mrpt::opengl::CSetOfObjects
 	using Ptr = std::shared_ptr<CRobotPose>;
 	CRobotPose(size_t id);
 
-	virtual ~CRobotPose() = default;
+	~CRobotPose() override = default;
 	size_t getId() const;
 
 	void setSelected(bool is);

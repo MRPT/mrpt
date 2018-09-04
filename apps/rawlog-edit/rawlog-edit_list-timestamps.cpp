@@ -45,7 +45,7 @@ DECLARE_OP_FUNCTION(op_list_timestamps)
 					"list-timestamps: Cannot open output text file.");
 		}
 
-		bool processOneObservation(CObservation::Ptr& obs)
+		bool processOneObservation(CObservation::Ptr& obs) override
 		{
 			m_out << std::fixed
 				  << mrpt::system::timestampToDouble(obs->timestamp) << " "

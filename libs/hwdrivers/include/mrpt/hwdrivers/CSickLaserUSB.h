@@ -84,7 +84,7 @@ class CSickLaserUSB : public C2DRangeFinderAbstract
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(
 		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& iniSection);
+		const std::string& iniSection) override;
 
    public:
 	/** Constructor
@@ -93,7 +93,7 @@ class CSickLaserUSB : public C2DRangeFinderAbstract
 
 	/** Destructor
 	  */
-	virtual ~CSickLaserUSB();
+	~CSickLaserUSB() override;
 
 	/** Changes the serial number of the device to open (call prior to
 	 * 'doProcess')
@@ -111,17 +111,17 @@ class CSickLaserUSB : public C2DRangeFinderAbstract
 	void doProcessSimple(
 		bool& outThereIsObservation,
 		mrpt::obs::CObservation2DRangeScan& outObservation,
-		bool& hardwareError);
+		bool& hardwareError) override;
 
 	/** Enables the scanning mode (in this class this has no effect).
 	  * \return If everything works "true", or "false" if there is any error.
 	  */
-	bool turnOn();
+	bool turnOn() override;
 
 	/** Disables the scanning mode (in this class this has no effect).
 	  * \return If everything works "true", or "false" if there is any error.
 	  */
-	bool turnOff();
+	bool turnOff() override;
 
 };  // End of class
 

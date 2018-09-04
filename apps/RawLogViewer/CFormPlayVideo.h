@@ -30,7 +30,7 @@ class CFormPlayVideo : public wxDialog
 {
    public:
 	CFormPlayVideo(wxWindow* parent, wxWindowID id = -1);
-	virtual ~CFormPlayVideo();
+	~CFormPlayVideo() override;
 
 	// Set to true to enable play, false to stop.
 	bool m_nowPlaying;

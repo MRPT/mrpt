@@ -36,7 +36,7 @@ class CObservationRawDAQ : public CObservation
 	{
 	}
 	/** Destructor */
-	virtual ~CObservationRawDAQ() {}
+	~CObservationRawDAQ() override {}
 	std::vector<uint8_t>
 		AIN_8bits; /** Readings from 8-bit analog input (ADCs) channels
 					  (vector length=channel count) in ADC units. */

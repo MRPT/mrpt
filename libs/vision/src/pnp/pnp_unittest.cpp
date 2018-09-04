@@ -31,7 +31,7 @@ class CPnPTest : public ::testing::Test
 	Eigen::Vector3d t, t_est;
 	int n;
 
-	virtual void SetUp()
+	void SetUp() override
 	{
 		n = 6;
 
@@ -55,7 +55,7 @@ class CPnPTest : public ::testing::Test
 
 		pose_est = Eigen::MatrixXd::Zero(6, 1);
 	}
-	virtual void TearDown() {}
+	void TearDown() override {}
 };
 
 TEST_F(CPnPTest, p3p_TEST)

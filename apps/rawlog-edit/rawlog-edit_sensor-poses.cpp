@@ -94,7 +94,7 @@ DECLARE_OP_FUNCTION(op_sensors_pose)
 					ini_poses);
 		}
 
-		bool processOneObservation(CObservation::Ptr& obs)
+		bool processOneObservation(CObservation::Ptr& obs) override
 		{
 			// Check the sensor label:
 			TSensor2PoseMap::iterator i =
@@ -109,10 +109,10 @@ DECLARE_OP_FUNCTION(op_sensors_pose)
 
 		// This method can be reimplemented to save the modified object to an
 		// output stream.
-		virtual void OnPostProcess(
+		void OnPostProcess(
 			mrpt::obs::CActionCollection::Ptr& actions,
 			mrpt::obs::CSensoryFrame::Ptr& SF,
-			mrpt::obs::CObservation::Ptr& obs)
+			mrpt::obs::CObservation::Ptr& obs) override
 		{
 			ASSERT_((actions && SF) || obs);
 			if (actions)

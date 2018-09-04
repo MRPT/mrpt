@@ -48,7 +48,7 @@ class CEdgeRegistrationDecider
 	/**\}*/
 
 	CEdgeRegistrationDecider()=default;;
-	virtual ~CEdgeRegistrationDecider()=default;
+	~CEdgeRegistrationDecider() override =default;
 	/**\brief Fill the given map with the type of registered edges as well as
 	 * the corresponding number of registration of each edge.
 	 */
@@ -58,7 +58,7 @@ class CEdgeRegistrationDecider
 	 * last edge registration procedure.
 	 */
 	virtual bool justInsertedLoopClosure() const { return m_just_inserted_lc; }
-	virtual void getDescriptiveReport(std::string* report_str) const;
+	void getDescriptiveReport(std::string* report_str) const override;
 
    protected:
 	/**\name Registration criteria checks

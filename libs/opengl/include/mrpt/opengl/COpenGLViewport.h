@@ -334,7 +334,7 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	// ------------------------------------------------------
 
 	/** Destructor: clears all objects. */
-	virtual ~COpenGLViewport();
+	~COpenGLViewport() override;
 
    protected:
 	/** Constructor, invoked from COpenGLScene only.

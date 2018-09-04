@@ -101,7 +101,7 @@ DECLARE_OP_FUNCTION(op_export_rawdaq_txt)
 		}
 
 		// return false on any error.
-		bool processOneObservation(CObservation::Ptr& o)
+		bool processOneObservation(CObservation::Ptr& o) override
 		{
 			if (!IS_CLASS(o, CObservationRawDAQ)) return true;
 

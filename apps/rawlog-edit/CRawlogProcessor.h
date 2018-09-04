@@ -165,9 +165,9 @@ class CRawlogProcessorOnEachObservation : public CRawlogProcessor
 	{
 	}
 
-	virtual bool processOneEntry(
+	bool processOneEntry(
 		mrpt::obs::CActionCollection::Ptr& actions,
-		mrpt::obs::CSensoryFrame::Ptr& SF, mrpt::obs::CObservation::Ptr& obs)
+		mrpt::obs::CSensoryFrame::Ptr& SF, mrpt::obs::CObservation::Ptr& obs) override
 	{
 		MRPT_UNUSED_PARAM(actions);
 		// Process each observation individually, either from "obs" or each
@@ -232,7 +232,7 @@ class CRawlogProcessorFilterObservations
 	virtual bool tellIfThisObsPasses(mrpt::obs::CObservation::Ptr& obs) = 0;
 
 	// Process each entry. Return false on any error to abort processing.
-	virtual bool processOneObservation(mrpt::obs::CObservation::Ptr& obs)
+	bool processOneObservation(mrpt::obs::CObservation::Ptr& obs) override
 	{
 		if (!tellIfThisObsPasses(obs))
 		{
@@ -247,9 +247,9 @@ class CRawlogProcessorFilterObservations
 		return true;
 	}
 	// Save those entries which are not nullptr.
-	virtual void OnPostProcess(
+	void OnPostProcess(
 		mrpt::obs::CActionCollection::Ptr& actions,
-		mrpt::obs::CSensoryFrame::Ptr& SF, mrpt::obs::CObservation::Ptr& obs)
+		mrpt::obs::CSensoryFrame::Ptr& SF, mrpt::obs::CObservation::Ptr& obs) override
 	{
 		if (actions)
 		{

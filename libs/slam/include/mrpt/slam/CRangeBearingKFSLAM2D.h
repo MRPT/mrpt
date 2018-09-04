@@ -52,7 +52,7 @@ class CRangeBearingKFSLAM2D
 	/** Default constructor */
 	CRangeBearingKFSLAM2D();
 	/** Destructor */
-	virtual ~CRangeBearingKFSLAM2D();
+	~CRangeBearingKFSLAM2D() override;
 	/** Reset the state of the SLAM filter: The map is emptied and the robot put
 	 * back to (0,0,0). */
 	void reset();
@@ -197,7 +197,7 @@ class CRangeBearingKFSLAM2D
 	/** Must return the action vector u.
 	  * \param out_u The action vector which will be passed to OnTransitionModel
 	  */
-	void OnGetAction(KFArray_ACT& out_u) const;
+	void OnGetAction(KFArray_ACT& out_u) const override;
 
 	/** Implements the transition model \f$ \hat{x}_{k|k-1} = f(
 	 * \hat{x}_{k-1|k-1}, u_k ) \f$
@@ -210,7 +210,7 @@ class CRangeBearingKFSLAM2D
 	  */
 	void OnTransitionModel(
 		const KFArray_ACT& in_u, KFArray_VEH& inout_x,
-		bool& out_skipPrediction) const;
+		bool& out_skipPrediction) const override;
 
 	/** Implements the transition Jacobian \f$ \frac{\partial f}{\partial x} \f$
 	  * \param out_F Must return the Jacobian.
@@ -218,21 +218,21 @@ class CRangeBearingKFSLAM2D
 	 * size of the whole state vector (for non-SLAM problems) or VEH_SIZE (for
 	 * SLAM problems).
 	  */
-	void OnTransitionJacobian(KFMatrix_VxV& out_F) const;
+	void OnTransitionJacobian(KFMatrix_VxV& out_F) const override;
 
 	/** Only called if using a numeric approximation of the transition Jacobian,
 	 * this method must return the increments in each dimension of the vehicle
 	 * state vector while estimating the Jacobian.
 	  */
 	void OnTransitionJacobianNumericGetIncrements(
-		KFArray_VEH& out_increments) const;
+		KFArray_VEH& out_increments) const override;
 
 	/** Implements the transition noise covariance \f$ Q_k \f$
 	  * \param out_Q Must return the covariance matrix.
 	  *  The returned matrix must be of the same size than the jacobian from
 	 * OnTransitionJacobian
 	  */
-	void OnTransitionNoise(KFMatrix_VxV& out_Q) const;
+	void OnTransitionNoise(KFMatrix_VxV& out_Q) const override;
 
 	/** This is called between the KF prediction step and the update step, and
 	 * the application must return the observations and, when applicable, the
@@ -261,11 +261,11 @@ class CRangeBearingKFSLAM2D
 		vector_KFArray_OBS& out_z, std::vector<int>& out_data_association,
 		const vector_KFArray_OBS& in_all_predictions, const KFMatrix& in_S,
 		const std::vector<size_t>& in_lm_indices_in_S,
-		const KFMatrix_OxO& in_R);
+		const KFMatrix_OxO& in_R) override;
 
 	void OnObservationModel(
 		const std::vector<size_t>& idx_landmarks_to_predict,
-		vector_KFArray_OBS& out_predictions) const;
+		vector_KFArray_OBS& out_predictions) const override;
 
 	/** Implements the observation Jacobians \f$ \frac{\partial h_i}{\partial x}
 	 * \f$ and (when applicable) \f$ \frac{\partial h_i}{\partial y_i} \f$.
@@ -278,7 +278,7 @@ class CRangeBearingKFSLAM2D
 	  */
 	void OnObservationJacobians(
 		const size_t& idx_landmark_to_predict, KFMatrix_OxV& Hx,
-		KFMatrix_OxF& Hy) const;
+		KFMatrix_OxF& Hy) const override;
 
 	/** Only called if using a numeric approximation of the observation
 	 * Jacobians, this method must return the increments in each dimension of
@@ -286,20 +286,20 @@ class CRangeBearingKFSLAM2D
 	  */
 	void OnObservationJacobiansNumericGetIncrements(
 		KFArray_VEH& out_veh_increments,
-		KFArray_FEAT& out_feat_increments) const;
+		KFArray_FEAT& out_feat_increments) const override;
 
 	/** Computes A=A-B, which may need to be re-implemented depending on the
 	 * topology of the individual scalar components (eg, angles).
 	  */
 	void OnSubstractObservationVectors(
-		KFArray_OBS& A, const KFArray_OBS& B) const;
+		KFArray_OBS& A, const KFArray_OBS& B) const override;
 
 	/** Return the observation NOISE covariance matrix, that is, the model of
 	 * the Gaussian additive noise of the sensor.
 	  * \param out_R The noise covariance matrix. It might be non diagonal, but
 	 * it'll usually be.
 	  */
-	void OnGetObservationNoise(KFMatrix_OxO& out_R) const;
+	void OnGetObservationNoise(KFMatrix_OxO& out_R) const override;
 
 	/** This will be called before OnGetObservationsAndDataAssociation to allow
 	 * the application to reduce the number of covariance landmark predictions
@@ -318,7 +318,7 @@ class CRangeBearingKFSLAM2D
 	  */
 	void OnPreComputingPredictions(
 		const vector_KFArray_OBS& in_all_prediction_means,
-		std::vector<size_t>& out_LM_indices_to_predict) const;
+		std::vector<size_t>& out_LM_indices_to_predict) const override;
 
 	/** If applicable to the given problem, this method implements the inverse
 	 * observation model needed to extend the "map" with a new "element".
@@ -342,7 +342,7 @@ class CRangeBearingKFSLAM2D
 	  */
 	void OnInverseObservationModel(
 		const KFArray_OBS& in_z, KFArray_FEAT& out_yn,
-		KFMatrix_FxV& out_dyn_dxv, KFMatrix_FxO& out_dyn_dhn) const;
+		KFMatrix_FxV& out_dyn_dxv, KFMatrix_FxO& out_dyn_dhn) const override;
 
 	/** If applicable to the given problem, do here any special handling of
 	 * adding a new landmark to the map.
@@ -355,13 +355,13 @@ class CRangeBearingKFSLAM2D
 	  * \sa OnInverseObservationModel
 	  */
 	void OnNewLandmarkAddedToMap(
-		const size_t in_obsIdx, const size_t in_idxNewFeat);
+		const size_t in_obsIdx, const size_t in_idxNewFeat) override;
 
 	/** This method is called after the prediction and after the update, to give
 	 * the user an opportunity to normalize the state vector (eg, keep angles
 	 * within -pi,pi range) if the application requires it.
 	  */
-	void OnNormalizeStateVector();
+	void OnNormalizeStateVector() override;
 
 	/** @}
 	 */

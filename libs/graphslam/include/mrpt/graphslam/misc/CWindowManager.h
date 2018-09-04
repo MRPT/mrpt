@@ -46,7 +46,7 @@ class CWindowManager : public mrpt::system::COutputLogger
 		this->setCDisplayWindow3DPtr(win_in);
 	}
 	/**\brief Class destructor. */
-	~CWindowManager()=default;
+	~CWindowManager() override =default;
 	/**\brief Store the CDisplayWindow3D pointer in the CWindowManager
 	 * instance.
 	 *

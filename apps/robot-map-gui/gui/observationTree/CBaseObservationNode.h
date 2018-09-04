@@ -16,7 +16,7 @@ class CBaseObservationNode : public CNode
 {
    public:
 	CBaseObservationNode(CNode* parent, const mrpt::poses::CPose3D& pose);
-	virtual ~CBaseObservationNode() = default;
+	~CBaseObservationNode() override = default;
 	// CNode interface
 	int childCount() const override;
 	CNode* child(int id) override;

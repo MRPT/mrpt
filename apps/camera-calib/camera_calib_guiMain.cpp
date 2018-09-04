@@ -64,8 +64,8 @@ mrpt::img::TCamera camera_params;
 class MyArtProvider : public wxArtProvider
 {
    protected:
-	virtual wxBitmap CreateBitmap(
-		const wxArtID& id, const wxArtClient& client, const wxSize& size);
+	wxBitmap CreateBitmap(
+		const wxArtID& id, const wxArtClient& client, const wxSize& size) override;
 };
 
 // CreateBitmap function

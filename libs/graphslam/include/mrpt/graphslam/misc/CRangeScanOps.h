@@ -123,12 +123,12 @@ protected:
 	{
 	   public:
 		TParams()=default;
-		~TParams()=default;
+		~TParams() override =default;
 
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
-			const std::string& section);
-		void dumpToTextStream(std::ostream& out) const;
+			const std::string& section) override;
+		void dumpToTextStream(std::ostream& out) const override;
 
 		mrpt::slam::CICP icp;
 

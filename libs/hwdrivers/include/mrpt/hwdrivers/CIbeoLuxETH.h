@@ -54,7 +54,7 @@ class CIbeoLuxETH : public mrpt::hwdrivers::CGenericSensor
 	/** Destructor.
 		* Close communcation with the device, and free memory.
 		*/
-	virtual ~CIbeoLuxETH();
+	~CIbeoLuxETH() override;
 	/** This function acquire a laser scan from the device. If an error occured,
 	 * hardwareError will be set to true.
 		* The new laser scan will be stored in the outObservation argument.
@@ -64,8 +64,8 @@ class CIbeoLuxETH : public mrpt::hwdrivers::CGenericSensor
 		*  * Status is not OK
 		*  * Data in the scan aren't DIST1 (may be RSSIx or DIST2).
 		*/
-	void doProcess();
-	void initialize();
+	void doProcess() override;
+	void initialize() override;
 	void start();
 	void makeCommandHeader(unsigned char* buffer);
 	void makeStartCommand(unsigned char* buffer);
@@ -102,7 +102,7 @@ class CIbeoLuxETH : public mrpt::hwdrivers::CGenericSensor
 		*/
 	void loadConfig_sensorSpecific(
 		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& iniSection);
+		const std::string& iniSection) override;
 };
 }
 

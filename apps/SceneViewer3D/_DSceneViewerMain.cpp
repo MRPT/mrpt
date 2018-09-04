@@ -86,8 +86,8 @@ const mrpt::maps::CColouredPointsMap dummy_map;  // this is to enforce to load
 class MyArtProvider : public wxArtProvider
 {
    protected:
-	virtual wxBitmap CreateBitmap(
-		const wxArtID& id, const wxArtClient& client, const wxSize& size);
+	wxBitmap CreateBitmap(
+		const wxArtID& id, const wxArtClient& client, const wxSize& size) override;
 };
 
 // CreateBitmap function
@@ -1993,7 +1993,7 @@ class OpenGlObjectsFilter_ByClass : public OpenGlObjectsFilterVirtual
 	}
 
    protected:
-	virtual bool checkObj(const mrpt::opengl::CRenderizable::Ptr& obj)
+	bool checkObj(const mrpt::opengl::CRenderizable::Ptr& obj) override
 	{
 		for (size_t i = 0; i < m_selected_classes.size(); i++)
 		{

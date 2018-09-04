@@ -180,7 +180,7 @@ class CCylinder : public CRenderizableDisplayList
 	/**
 	  * Destructor.
 	  */
-	virtual ~CCylinder(){};
+	~CCylinder() override{};
 
    private:
 	/**

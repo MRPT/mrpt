@@ -28,7 +28,7 @@ class CSICKTim561Eth : public C2DRangeFinderAbstract
 	/** Deconstructor.
 	 * Close communication with the device, and free memory.
 	 */
-	virtual ~CSICKTim561Eth();
+	~CSICKTim561Eth() override;
 
 	/** This function acquire a laser scan from the device. If an error occured,
 	 * hardwareError will be set to true.
@@ -42,18 +42,18 @@ class CSICKTim561Eth : public C2DRangeFinderAbstract
 	void doProcessSimple(
 		bool& outThereIsObservation,
 		mrpt::obs::CObservation2DRangeScan& outObservation,
-		bool& hardwareError);
+		bool& hardwareError) override;
 
 	/**
 	 * This method must be called before trying to get a laser scan.
 	 */
-	bool turnOn();
+	bool turnOn() override;
 
 	/**
 	 * This method could be called manually to stop communication with the
 	 * device. Method is also called by destructor.
 	 */
-	bool turnOff();
+	bool turnOff() override;
 
 	/**
 	 * This method could be called manually to reboot the device.
@@ -70,12 +70,12 @@ class CSICKTim561Eth : public C2DRangeFinderAbstract
 	 * This method must be called periodically. Period depend on the
 	 * process_rate in the configuration file.
 	 */
-	void doProcess();
+	void doProcess() override;
 
 	/** Initialize the sensor according to the parameters previously read
 	 * in the configuration file.
 	 */
-	void initialize();
+	void initialize() override;
 
    private:
 	std::string m_ip;
@@ -106,7 +106,7 @@ class CSICKTim561Eth : public C2DRangeFinderAbstract
 	 */
 	void loadConfig_sensorSpecific(
 		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& iniSection);
+		const std::string& iniSection) override;
 };
 }
 

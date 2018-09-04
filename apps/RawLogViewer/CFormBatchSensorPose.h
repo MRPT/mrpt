@@ -22,7 +22,7 @@ class CFormBatchSensorPose : public wxDialog
 {
    public:
 	CFormBatchSensorPose(wxWindow* parent, wxWindowID id = wxID_ANY);
-	virtual ~CFormBatchSensorPose();
+	~CFormBatchSensorPose() override;
 
 	//(*Declarations(CFormBatchSensorPose)
 	wxStaticText* StaticText1;

@@ -39,7 +39,7 @@ class Bar : public BarBase
 	Bar() {}
 	DEFINE_MRPT_OBJECT(Bar)
 
-	virtual void printName() override
+	void printName() override
 	{
 		std::cout << "class: Bar" << std::endl;
 	}

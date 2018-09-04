@@ -350,7 +350,7 @@ class COctoMapVoxels : public CRenderizableDisplayList
 	/** Constructor */
 	COctoMapVoxels();
 	/** Private, virtual destructor: only can be deleted from smart pointers. */
-	virtual ~COctoMapVoxels() {}
+	~COctoMapVoxels() override {}
 };
 
 }

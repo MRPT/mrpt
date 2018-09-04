@@ -85,14 +85,14 @@ class CNTRIPEmitter : public CGenericSensor
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(
 		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& iniSection);
+		const std::string& iniSection) override;
 
    public:
 	/** Constructor  */
 	CNTRIPEmitter();
 
 	/** Destructor  */
-	virtual ~CNTRIPEmitter();
+	~CNTRIPEmitter() override;
 
 	/** Changes the serial port to connect to (call prior to 'doProcess'), for
 	 * example "COM1" or "ttyS0".
@@ -113,13 +113,13 @@ class CNTRIPEmitter : public CGenericSensor
 	  *  Called automatically by rawlog-grabber.
 	  *  If used manually, call after "loadConfig" and before "doProcess".
 	  */
-	void initialize();
+	void initialize() override;
 
 	/** The main loop, which must be called in a timely fashion in order to
 	 * process the incomming NTRIP data stream and dump it to the serial port.
 	  *  This method is called automatically when used within rawlog-grabber.
 	  */
-	void doProcess();
+	void doProcess() override;
 
 	/** Exposes the NTRIP client object */
 	CNTRIPClient& getNTRIPClient() { return m_client; }

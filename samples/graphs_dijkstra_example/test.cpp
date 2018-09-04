@@ -118,7 +118,7 @@ void TestDijkstra()
 
 	struct CMyVisitor : public CMyDijkstra::tree_graph_t::Visitor
 	{
-		virtual void OnVisitNode(
+		void OnVisitNode(
 			const TNodeID parent,
 			const CMyDijkstra::tree_graph_t::TEdgeInfo& edge_to_child,
 			const size_t depth_level) override

@@ -80,7 +80,7 @@ class CInterfaceFTDI : public mrpt::io::CStream
 	/** Destructor, which closes the connection with the chip and unloads the
 	 * driver interface.
 	 */
-	virtual ~CInterfaceFTDI();
+	~CInterfaceFTDI() override;
 
 	/** This object cannot be copied */
 	CInterfaceFTDI(const CInterfaceFTDI& o) = delete;
@@ -142,32 +142,32 @@ class CInterfaceFTDI : public mrpt::io::CStream
 	 *fallback to ReadBuffer().
 	 *	\exception std::exception On any error, or if ZERO bytes are read.
 	 */
-	virtual size_t ReadBufferImmediate(void* Buffer, size_t Count);
+	size_t ReadBufferImmediate(void* Buffer, size_t Count) override;
 
 	/** Introduces a pure virtual method responsible for reading from the
 	 * stream.
 	 *  It integrates a cache buffer to speed-up sequences of many, small
 	 * readings.
 	 */
-	size_t Read(void* Buffer, size_t Count);
+	size_t Read(void* Buffer, size_t Count) override;
 
 	/** Introduces a pure virtual method responsible for writing to the stream.
 	 *  Write attempts to write up to Count bytes to Buffer, and returns the
 	 * number of bytes actually written.
 	 */
-	size_t Write(const void* Buffer, size_t Count);
+	size_t Write(const void* Buffer, size_t Count) override;
 
 	/** This virtual method does nothing in this class.
 	 */
-	uint64_t Seek(int64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning);
+	uint64_t Seek(int64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) override;
 
 	/** This virtual method does nothing in this class.
 	 */
-	uint64_t getTotalBytesCount() const;
+	uint64_t getTotalBytesCount() const override;
 
 	/** This virtual method does nothing in this class.
 	 */
-	uint64_t getPosition() const;
+	uint64_t getPosition() const override;
 
    protected:
 	/** Used in Read */

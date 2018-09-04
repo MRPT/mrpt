@@ -59,7 +59,7 @@ class CSerialPort : public mrpt::io::CStream
 
 	/** Destructor
 	*/
-	virtual ~CSerialPort();
+	~CSerialPort() override;
 
 	/** Sets the serial port to open (it is an error to try to change this while
 	 * open yet).
@@ -119,7 +119,7 @@ class CSerialPort : public mrpt::io::CStream
 	 * communications.
 	  * \exception std::exception On communication errors
 	 */
-	size_t Read(void* Buffer, size_t Count);
+	size_t Read(void* Buffer, size_t Count) override;
 
 	/** Reads one text line from the serial port in POSIX "canonical mode".
 	  *  This method reads from the serial port until one of the characters in

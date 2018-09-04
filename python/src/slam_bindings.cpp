@@ -99,24 +99,24 @@ struct CMetricMapBuilderWrap : CMetricMapBuilder, wrapper<CMetricMapBuilder>
 		this->get_override("initialize")(initialMap, x0);
 	}
 
-	CPose3DPDF::Ptr getCurrentPoseEstimation() const
+	CPose3DPDF::Ptr getCurrentPoseEstimation() const override
 	{
 		return this->get_override("getCurrentPoseEstimation")();
 	}
 
 	void processActionObservation(
-		CActionCollection& action, CSensoryFrame& observations)
+		CActionCollection& action, CSensoryFrame& observations) override
 	{
 		this->get_override("processActionObservation")(action, observations);
 	}
 
-	void getCurrentlyBuiltMap(CSimpleMap& out_map) const
+	void getCurrentlyBuiltMap(CSimpleMap& out_map) const override
 	{
 		this->get_override("getCurrentlyBuiltMap")(out_map);
 	}
 
 	void saveCurrentEstimationToImage(
-		const std::string& file, bool formatEMF_BMP = true)
+		const std::string& file, bool formatEMF_BMP = true) override
 	{
 		this->get_override("saveCurrentEstimationToImage")(file, formatEMF_BMP);
 	}

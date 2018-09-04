@@ -117,7 +117,7 @@ void display_graph(const GRAPHTYPE& g)
 	   protected:
 		/** This virtual function will be called upon receive of any event after
 		 * starting listening at any CObservable object. */
-		virtual void OnEvent(const mrptEvent& e) override
+		void OnEvent(const mrptEvent& e) override
 		{
 			if (e.isOfType<mrpt::gui::mrptEventWindowChar>())
 			{

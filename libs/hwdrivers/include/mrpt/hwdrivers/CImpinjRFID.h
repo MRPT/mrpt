@@ -74,19 +74,19 @@ class CImpinjRFID : public mrpt::hwdrivers::CGenericSensor
 	/** Default constructor.
 	 */
 	CImpinjRFID();
-	virtual ~CImpinjRFID();
+	~CImpinjRFID() override;
 
 	/** Connect to the reader.
 	 */
 	void connect();
 
-	void doProcess();
+	void doProcess() override;
 
-	void initialize();
+	void initialize() override;
 
 	void loadConfig_sensorSpecific(
 		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& section);
+		const std::string& section) override;
 
 	/** Gets the information of the tags as a timestamped observation
 	* NOTE: Deprecated, use getObservations instead. See CGenericSensor

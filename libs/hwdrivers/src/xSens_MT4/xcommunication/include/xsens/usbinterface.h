@@ -36,30 +36,30 @@ class UsbInterface : public StreamInterface
 {
    public:
 	UsbInterface();
-	~UsbInterface();
+	~UsbInterface() override;
 
 	XsResultValue open(
 		const XsPortInfo& portInfo, uint32_t readBufSize = 0,
-		uint32_t writeBufSize = 0);
-	XsResultValue close(void);
+		uint32_t writeBufSize = 0) override;
+	XsResultValue close(void) override;
 	XsResultValue closeUsb(void);
-	XsResultValue flushData(void);
+	XsResultValue flushData(void) override;
 
-	bool isOpen(void) const;
+	bool isOpen(void) const override;
 	uint8_t usbBus() const;
 	uint8_t usbAddress() const;
 
-	XsResultValue getLastResult(void) const;
+	XsResultValue getLastResult(void) const override;
 
-	XsResultValue setTimeout(uint32_t ms);
-	uint32_t getTimeout(void) const;
+	XsResultValue setTimeout(uint32_t ms) override;
+	uint32_t getTimeout(void) const override;
 
 	void setRawIo(bool enable);
 	bool getRawIo(void);
 
-	virtual XsResultValue writeData(
-		const XsByteArray& data, XsSize* written = nullptr);
-	virtual XsResultValue readData(XsSize maxLength, XsByteArray& data);
+	XsResultValue writeData(
+		const XsByteArray& data, XsSize* written = nullptr) override;
+	XsResultValue readData(XsSize maxLength, XsByteArray& data) override;
 	using IoInterface::waitForData;
 
 	// lint -e1411 inherited definitions are also available (see above)

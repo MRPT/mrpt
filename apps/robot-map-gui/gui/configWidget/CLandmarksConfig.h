@@ -22,12 +22,12 @@ class CLandmarksConfig : public CBaseConfig
 {
    public:
 	CLandmarksConfig();
-	virtual ~CLandmarksConfig() = default;
+	~CLandmarksConfig() override = default;
 
-	virtual const QString getName() override;
-	virtual void updateConfiguration(
+	const QString getName() override;
+	void updateConfiguration(
 		mrpt::maps::TMetricMapInitializer* options) override;
-	virtual TypeOfConfig type() const override;
+	TypeOfConfig type() const override;
 
 	void setInsertOpt(
 		const mrpt::maps::CLandmarksMap::TInsertionOptions& insertOpt =

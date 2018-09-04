@@ -61,7 +61,7 @@ class CBoardSonars : public mrpt::comms::CInterfaceFTDI, public CGenericSensor
 
 	/** Destructor
 	  */
-	virtual ~CBoardSonars() {}
+	~CBoardSonars() override {}
 	/** Query the firmware version on the device (can be used to test
 	 * communications).
 	  * \return true on success, false on communications errors or device not
@@ -84,7 +84,7 @@ class CBoardSonars : public mrpt::comms::CInterfaceFTDI, public CGenericSensor
 	bool programI2CAddress(uint8_t currentAddress, uint8_t newAddress);
 
 	// See docs in parent class
-	void doProcess();
+	void doProcess() override;
 
    protected:
 	/** A copy of the device serial number (to open the USB FTDI chip)
@@ -142,7 +142,7 @@ class CBoardSonars : public mrpt::comms::CInterfaceFTDI, public CGenericSensor
 	  */
 	void loadConfig_sensorSpecific(
 		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& iniSection);
+		const std::string& iniSection) override;
 
 };  // End of class
 }

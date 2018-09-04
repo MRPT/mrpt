@@ -87,7 +87,7 @@ class CBaseGUIWindow : public mrpt::system::CObservable
 	CBaseGUIWindow(
 		void* winobj_voidptr, int CMD_CREATE_WIN, int CMD_DESTROY_WIN,
 		const std::string& initial_caption = std::string());
-	virtual ~CBaseGUIWindow();
+	~CBaseGUIWindow() override;
 
 	/** Returns false if the user has already closed the window.
 	 */
@@ -166,7 +166,7 @@ class mrptEventWindowChar : public mrpt::system::mrptEvent
 {
    protected:
 	/** Just to allow this class to be polymorphic */
-	virtual void do_nothing() override {}
+	void do_nothing() override {}
    public:
 	inline mrptEventWindowChar(
 		CBaseGUIWindow* obj, int _char_code, mrptKeyModifier _key_mod)
@@ -192,7 +192,7 @@ class mrptEventWindowResize : public mrpt::system::mrptEvent
 {
    protected:
 	/** Just to allow this class to be polymorphic */
-	virtual void do_nothing() override {}
+	void do_nothing() override {}
    public:
 	inline mrptEventWindowResize(
 		CBaseGUIWindow* obj, size_t _new_width, size_t _new_height)
@@ -217,7 +217,7 @@ class mrptEventMouseDown : public mrpt::system::mrptEvent
 {
    protected:
 	/** Just to allow this class to be polymorphic */
-	virtual void do_nothing() override {}
+	void do_nothing() override {}
    public:
 	inline mrptEventMouseDown(
 		CBaseGUIWindow* obj, mrpt::img::TPixelCoord _coords, bool _leftButton,
@@ -245,7 +245,7 @@ class mrptEventMouseMove : public mrpt::system::mrptEvent
 {
    protected:
 	/** Just to allow this class to be polymorphic */
-	virtual void do_nothing() override {}
+	void do_nothing() override {}
    public:
 	inline mrptEventMouseMove(
 		CBaseGUIWindow* obj, mrpt::img::TPixelCoord _coords, bool _leftButton,
@@ -280,7 +280,7 @@ class mrptEventWindowClosed : public mrpt::system::mrptEvent
 {
    protected:
 	/** Just to allow this class to be polymorphic */
-	virtual void do_nothing() override {}
+	void do_nothing() override {}
    public:
 	inline mrptEventWindowClosed(CBaseGUIWindow* obj, bool _allow_close = true)
 		: source_object(obj), allow_close(_allow_close)

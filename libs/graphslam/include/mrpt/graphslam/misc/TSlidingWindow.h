@@ -43,7 +43,7 @@ struct TSlidingWindow : public mrpt::config::CLoadableOptions
 {
    public:
 	TSlidingWindow(const std::string& name = "window");
-	~TSlidingWindow()=default;
+	~TSlidingWindow() override =default;
 	/**\brief Return the current median value.  */
 	double getMedian();
 	/**\brief Return the current mean value.  */
@@ -78,8 +78,8 @@ struct TSlidingWindow : public mrpt::config::CLoadableOptions
 	void resizeWindow(size_t new_size);
 	void loadFromConfigFile(
 		const mrpt::config::CConfigFileBase& source,
-		const std::string& section);
-	void dumpToTextStream(std::ostream& out) const;
+		const std::string& section) override;
+	void dumpToTextStream(std::ostream& out) const override;
 
 	/**\brief Return the size of the window
 	 */

@@ -149,7 +149,7 @@ class wxMRPTImageControl : public wxPanel
 	wxMRPTImageControl(
 		wxWindow* parent, wxWindowID winID, int x, int y, int width,
 		int height);
-	virtual ~wxMRPTImageControl();
+	~wxMRPTImageControl() override;
 
 	/** Assigns this image. This object has the ownship of the image and will
 	 * delete it when appropriate. Remember to call Refresh to display the
@@ -172,7 +172,7 @@ class CPanelCameraSelection : public wxPanel
 {
    public:
 	CPanelCameraSelection(wxWindow* parent, wxWindowID id = wxID_ANY);
-	virtual ~CPanelCameraSelection();
+	~CPanelCameraSelection() override;
 
 	void readConfigIntoVideoSourcePanel(
 		const std::string& sect,

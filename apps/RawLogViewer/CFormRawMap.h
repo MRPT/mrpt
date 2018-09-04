@@ -31,7 +31,7 @@ class CFormRawMap : public wxDialog
 {
    public:
 	CFormRawMap(wxWindow* parent, wxWindowID id = -1);
-	virtual ~CFormRawMap();
+	~CFormRawMap() override;
 
 	//(*Identifiers(CFormRawMap)
 	static const long ID_STATICTEXT7;

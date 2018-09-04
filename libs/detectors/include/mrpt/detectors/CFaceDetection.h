@@ -37,10 +37,10 @@ class CFaceDetection : public CObjectDetection
 
 	~CFaceDetection();
 
-	virtual void init(const mrpt::config::CConfigFileBase& cfg);
+	void init(const mrpt::config::CConfigFileBase& cfg) override;
 
-	virtual void detectObjects_Impl(
-		const mrpt::obs::CObservation* obs, vector_detectable_object& detected);
+	void detectObjects_Impl(
+		const mrpt::obs::CObservation* obs, vector_detectable_object& detected) override;
 
 	struct TOptions
 	{

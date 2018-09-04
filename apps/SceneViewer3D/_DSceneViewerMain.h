@@ -42,12 +42,12 @@ class CMyGLCanvas : public mrpt::gui::CWxGLCanvasBase
 	{
 	}
 
-	void OnCharCustom(wxKeyEvent& event);
+	void OnCharCustom(wxKeyEvent& event) override;
 
-	void OnPreRender();
-	void OnPostRender();
-	void OnPostRenderSwapBuffers(double At, wxPaintDC& dc);
-	void OnRenderError(const wxString& str);
+	void OnPreRender() override;
+	void OnPostRender() override;
+	void OnPostRenderSwapBuffers(double At, wxPaintDC& dc) override;
+	void OnRenderError(const wxString& str) override;
 };
 
 class _DSceneViewerFrame : public wxFrame
@@ -57,7 +57,7 @@ class _DSceneViewerFrame : public wxFrame
 
    public:
 	_DSceneViewerFrame(wxWindow* parent, wxWindowID id = -1);
-	virtual ~_DSceneViewerFrame();
+	~_DSceneViewerFrame() override;
 
    private:
 	//(*Handlers(_DSceneViewerFrame)

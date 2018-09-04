@@ -19,7 +19,7 @@ class CPosesNode : public CNode
 {
    public:
 	CPosesNode(CNode* parent, const mrpt::poses::CPose3D& pose);
-	~CPosesNode() = default;
+	~CPosesNode() override = default;
 
 	int childCount() const override;
 	CNode* child(int id) override;

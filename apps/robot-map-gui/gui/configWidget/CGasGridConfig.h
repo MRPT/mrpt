@@ -22,12 +22,12 @@ class CGasGridConfig : public CBaseConfig
 {
    public:
 	CGasGridConfig();
-	virtual ~CGasGridConfig() = default;
+	~CGasGridConfig() override = default;
 
-	virtual const QString getName() override;
-	virtual void updateConfiguration(
+	const QString getName() override;
+	void updateConfiguration(
 		mrpt::maps::TMetricMapInitializer* options) override;
-	virtual TypeOfConfig type() const override;
+	TypeOfConfig type() const override;
 
 	void setCreationOpt(
 		float min_x, float max_x, float min_y, float max_y, float resolution);

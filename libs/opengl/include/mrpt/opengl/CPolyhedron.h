@@ -944,7 +944,7 @@ class CPolyhedron : public CRenderizableDisplayList
 	/** Creates an empty Polyhedron. */
 	static CPolyhedron::Ptr CreateEmpty();
 	/** Destructor. */
-	virtual ~CPolyhedron() {}
+	~CPolyhedron() override {}
 };
 
 // Implemented after the definition of Smart::Ptrs in the _POST() macro above.

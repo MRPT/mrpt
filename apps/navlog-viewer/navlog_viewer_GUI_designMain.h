@@ -45,7 +45,7 @@ class navlog_viewer_GUI_designDialog : public wxFrame  // wxDialog
 
    public:
 	navlog_viewer_GUI_designDialog(wxWindow* parent, wxWindowID id = -1);
-	virtual ~navlog_viewer_GUI_designDialog();
+	~navlog_viewer_GUI_designDialog() override;
 
    private:
 	//(*Handlers(navlog_viewer_GUI_designDialog)

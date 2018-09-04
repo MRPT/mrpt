@@ -43,7 +43,7 @@ class CRobot2NavInterface : public mrpt::system::COutputLogger
 {
    public:
 	CRobot2NavInterface();
-	virtual ~CRobot2NavInterface();
+	~CRobot2NavInterface() override;
 
 	/** Get the current pose and velocity of the robot. The implementation
 	* should not take too much time to return,

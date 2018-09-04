@@ -14,5 +14,5 @@
 class ptgConfiguratorApp : public wxApp
 {
    public:
-	virtual bool OnInit();
+	bool OnInit() override;
 };

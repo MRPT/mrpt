@@ -191,7 +191,7 @@ public:
 			nullptr,
 		mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_T>* optimizer =
 			nullptr);
-	virtual ~CGraphSlamEngine();
+	~CGraphSlamEngine() override;
 	global_pose_t getCurrentRobotPosEstimation() const;
 	/***\brief Get the estimated trajectory of the robot given by the running
 	 * graphSLAM algorithm.

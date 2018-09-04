@@ -25,7 +25,7 @@ class CSelectType : public QDialog
 {
    public:
 	CSelectType(QWidget* parent = nullptr);
-	virtual ~CSelectType();
+	~CSelectType() override;
 	int selectedItem() const;
 
    private:

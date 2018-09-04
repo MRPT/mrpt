@@ -794,7 +794,7 @@ struct graph_ops
 			graph_t* m_g;  // The original graph
 
 			VisitorComputePoses(graph_t* g) : m_g(g) {}
-			virtual void OnVisitNode(
+			void OnVisitNode(
 				const TNodeID parent_id,
 				const typename dijkstra_t::tree_graph_t::Visitor::tree_t::
 					TEdgeInfo& edge_to_child,

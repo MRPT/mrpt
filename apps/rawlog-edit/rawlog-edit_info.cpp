@@ -57,9 +57,9 @@ DECLARE_OP_FUNCTION(op_info)
 			nSFs = 0;
 		}
 
-		virtual bool processOneEntry(
+		bool processOneEntry(
 			CActionCollection::Ptr& actions, CSensoryFrame::Ptr& SF,
-			CObservation::Ptr& obs)
+			CObservation::Ptr& obs) override
 		{
 			// Rawlog format: Normally only one of both should exist
 			// simultaneously!

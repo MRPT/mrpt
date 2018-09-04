@@ -337,7 +337,7 @@ class CAngularObservationMesh : public CRenderizableDisplayList
 	{
 	}
 	/** Empty destructor. */
-	virtual ~CAngularObservationMesh() {}
+	~CAngularObservationMesh() override {}
 	/**
 	  * Returns whether the object is configured as wireframe or solid.
 	  */
@@ -366,7 +366,7 @@ class CAngularObservationMesh : public CRenderizableDisplayList
 	  * Renderizes the object.
 	  * \sa mrpt::opengl::CRenderizable
 	  */
-	virtual void render_dl() const override;
+	void render_dl() const override;
 	/**
 	  * Traces a ray to the object, returning the distance to a given pose
 	 * through its X axis.

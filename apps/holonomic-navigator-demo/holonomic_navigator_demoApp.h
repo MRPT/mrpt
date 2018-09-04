@@ -15,7 +15,7 @@
 class holonomic_navigator_demoApp : public wxApp
 {
    public:
-	virtual bool OnInit();
+	bool OnInit() override;
 };
 
 #endif  // HOLONOMIC_NAVIGATOR_DEMOAPP_H

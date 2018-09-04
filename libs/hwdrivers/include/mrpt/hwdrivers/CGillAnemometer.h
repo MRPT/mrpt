@@ -55,12 +55,12 @@ class CGillAnemometer : public mrpt::hwdrivers::CGenericSensor
 	CGillAnemometer();
 	/** Default destructor.
 	 */
-	virtual ~CGillAnemometer() { COM.close(); };
-	void doProcess();
+	~CGillAnemometer() override { COM.close(); };
+	void doProcess() override;
 
 	void loadConfig_sensorSpecific(
 		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& section);
+		const std::string& section) override;
 };  // End of class def.
 
 }

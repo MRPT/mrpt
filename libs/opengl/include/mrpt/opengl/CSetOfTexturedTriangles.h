@@ -89,14 +89,14 @@ class CSetOfTexturedTriangles : public CTexturedObject
 		CRenderizableDisplayList::notifyChange();
 	}
 
-	virtual bool traceRay(
+	bool traceRay(
 		const mrpt::poses::CPose3D& o, double& dist) const override;
 
 	/** Constructor
 	 */
 	CSetOfTexturedTriangles() : m_triangles() {}
 	/** Private, virtual destructor: only can be deleted from smart pointers */
-	virtual ~CSetOfTexturedTriangles();
+	~CSetOfTexturedTriangles() override;
 };
 
 }

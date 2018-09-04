@@ -102,7 +102,7 @@ class SwitchArg : public Arg
 		 * \param args - Mutable list of strings. Passed
 		 * in from main().
 		 */
-		virtual bool processArg(int* i, std::vector<std::string>& args); 
+		bool processArg(int* i, std::vector<std::string>& args) override; 
 
 		/**
 		 * Checks a string to see if any of the chars in the string

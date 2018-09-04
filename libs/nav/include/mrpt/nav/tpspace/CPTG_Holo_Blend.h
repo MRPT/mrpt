@@ -30,17 +30,17 @@ class CPTG_Holo_Blend : public CPTG_RobotShape_Circular
 	CPTG_Holo_Blend();
 	CPTG_Holo_Blend(
 		const mrpt::config::CConfigFileBase& cfg, const std::string& sSection);
-	virtual ~CPTG_Holo_Blend();
+	~CPTG_Holo_Blend() override;
 
-	virtual void loadFromConfigFile(
+	void loadFromConfigFile(
 		const mrpt::config::CConfigFileBase& cfg,
 		const std::string& sSection) override;
-	virtual void saveToConfigFile(
+	void saveToConfigFile(
 		mrpt::config::CConfigFileBase& cfg,
 		const std::string& sSection) const override;
-	virtual void loadDefaultParams() override;
-	virtual bool supportVelCmdNOP() const override;
-	virtual double maxTimeInVelCmdNOP(int path_k) const override;
+	void loadDefaultParams() override;
+	bool supportVelCmdNOP() const override;
+	double maxTimeInVelCmdNOP(int path_k) const override;
 
 	std::string getDescription() const override;
 	bool inverseMap_WS2TP(
@@ -51,9 +51,9 @@ class CPTG_Holo_Blend : public CPTG_RobotShape_Circular
 
 	/** Converts a discretized "alpha" value into a feasible motion command or
 	 * action. See derived classes for the meaning of these actions */
-	virtual mrpt::kinematics::CVehicleVelCmd::Ptr directionToMotionCommand(
+	mrpt::kinematics::CVehicleVelCmd::Ptr directionToMotionCommand(
 		uint16_t k) const override;
-	virtual mrpt::kinematics::CVehicleVelCmd::Ptr
+	mrpt::kinematics::CVehicleVelCmd::Ptr
 		getSupportedKinematicVelocityCommand() const override;
 
 	size_t getPathStepCount(uint16_t k) const override;

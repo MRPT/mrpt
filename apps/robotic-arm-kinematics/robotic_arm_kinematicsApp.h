@@ -15,7 +15,7 @@
 class robotic_arm_kinematicsApp : public wxApp
 {
    public:
-	virtual bool OnInit();
+	bool OnInit() override;
 };
 
 #endif  // robotic_arm_KINEMATICSAPP_H

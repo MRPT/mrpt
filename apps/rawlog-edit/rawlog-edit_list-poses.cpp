@@ -46,7 +46,7 @@ DECLARE_OP_FUNCTION(op_list_poses)
 					"list-poses: Cannot open output text file.");
 		}
 
-		bool processOneObservation(CObservation::Ptr& obs)
+		bool processOneObservation(CObservation::Ptr& obs) override
 		{
 			mrpt::poses::CPose3D pose;
 			obs->getSensorPose(pose);

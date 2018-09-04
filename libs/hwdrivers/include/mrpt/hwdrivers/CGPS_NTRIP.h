@@ -82,17 +82,17 @@ class CGPS_NTRIP : public CGenericSensor
 	/** Constructor */
 	CGPS_NTRIP();
 	/** Destructor */
-	virtual ~CGPS_NTRIP();
+	~CGPS_NTRIP() override;
 
-	void doProcess();  // See docs in parent class
+	void doProcess() override;  // See docs in parent class
 
-	virtual void initialize();
+	void initialize() override;
 
    protected:
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(
 		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& iniSection);
+		const std::string& iniSection) override;
 };  // end class
 
 }

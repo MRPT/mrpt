@@ -74,7 +74,7 @@ DECLARE_OP_FUNCTION(op_cut)
 		}
 
 		/** To be implemented by users: return false means the observation is */
-		virtual bool tellIfThisObsPasses(mrpt::obs::CObservation::Ptr& obs)
+		bool tellIfThisObsPasses(mrpt::obs::CObservation::Ptr& obs) override
 		{
 			if (has_from_index && m_rawlogEntry < m_from_index) return false;
 

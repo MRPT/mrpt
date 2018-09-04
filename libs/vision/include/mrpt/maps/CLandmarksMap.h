@@ -205,7 +205,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 
 	/** Virtual destructor.
 	  */
-	virtual ~CLandmarksMap();
+	~CLandmarksMap() override;
 
 	/**** FAMD ***/
 	/** Map of the Euclidean Distance between the descriptors of two SIFT-based
@@ -701,7 +701,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 	void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
 
 	// See base docs
-	virtual void auxParticleFilterCleanUp() override;
+	void auxParticleFilterCleanUp() override;
 
 	MAP_DEFINITION_START(CLandmarksMap)
 	using TPairIdBeacon = std::pair<mrpt::math::TPoint3D, unsigned int>;

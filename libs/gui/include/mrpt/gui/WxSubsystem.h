@@ -136,7 +136,7 @@ class WxSubsystem
 
 	   public:
 		CWXMainFrame(wxWindow* parent, wxWindowID id = -1);
-		virtual ~CWXMainFrame();
+		~CWXMainFrame() override;
 
 		/** Atomically increments the number of windows created with the main
 		 * frame as parent.
@@ -342,7 +342,7 @@ class CWindowDialog : public wxFrame
 		wxMRPTImageControl(
 			wxWindow* parent, wxWindowID winID, int x, int y, int width,
 			int height);
-		virtual ~wxMRPTImageControl();
+		~wxMRPTImageControl() override;
 
 		wxPoint m_last_mouse_point, m_last_mouse_click;
 		// std::mutex	m_mouse_cs;
@@ -366,7 +366,7 @@ class CWindowDialog : public wxFrame
 		wxWindowID id = -1,
 		const std::string& caption = std::string("[MRPT-CDisplayWindow]"),
 		wxSize initialSize = wxDefaultSize);
-	virtual ~CWindowDialog();
+	~CWindowDialog() override;
 
 	CDisplayWindow* m_win2D;
 	WxSubsystem::CWXMainFrame* m_mainFrame;
@@ -400,7 +400,7 @@ class C3DWindowDialog : public wxFrame
 		wxWindowID id = -1,
 		const std::string& caption = std::string("[MRPT-CDisplayWindow3D]"),
 		wxSize initialSize = wxDefaultSize);
-	virtual ~C3DWindowDialog();
+	~C3DWindowDialog() override;
 
 	CDisplayWindow3D* m_win3D;
 	WxSubsystem::CWXMainFrame* m_mainFrame;
@@ -443,7 +443,7 @@ class CWindowDialogPlots : public wxFrame
 		wxWindowID id = -1,
 		const std::string& caption = std::string("[MRPT-CDisplayWindowPlots]"),
 		wxSize initialSize = wxDefaultSize);
-	virtual ~CWindowDialogPlots();
+	~CWindowDialogPlots() override;
 
 	CDisplayWindowPlots* m_winPlots;
 	WxSubsystem::CWXMainFrame* m_mainFrame;

@@ -184,7 +184,7 @@ class CICP : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 	 * options */
 	CICP(const TConfigParams& icpParams) : options(icpParams) {}
 	/** Destructor */
-	virtual ~CICP() {}
+	~CICP() override {}
 	/** The ICP algorithm return information*/
 	struct TReturnInfo
 	{
@@ -233,13 +233,13 @@ class CICP : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 	mrpt::poses::CPosePDF::Ptr AlignPDF(
 		const mrpt::maps::CMetricMap* m1, const mrpt::maps::CMetricMap* m2,
 		const mrpt::poses::CPosePDFGaussian& initialEstimationPDF,
-		float* runningTime = nullptr, void* info = nullptr);
+		float* runningTime = nullptr, void* info = nullptr) override;
 
 	// See base class for docs
 	mrpt::poses::CPose3DPDF::Ptr Align3DPDF(
 		const mrpt::maps::CMetricMap* m1, const mrpt::maps::CMetricMap* m2,
 		const mrpt::poses::CPose3DPDFGaussian& initialEstimationPDF,
-		float* runningTime = nullptr, void* info = nullptr);
+		float* runningTime = nullptr, void* info = nullptr) override;
 
    protected:
 	/** Computes:

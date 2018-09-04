@@ -256,7 +256,7 @@ class CMesh : public CRenderizableDisplayList
 		float yMin = 0.0f, float yMax = 0.0f);
 
 	/** Private, virtual destructor: only can be deleted from smart pointers */
-	virtual ~CMesh();
+	~CMesh() override;
 };
 
 }

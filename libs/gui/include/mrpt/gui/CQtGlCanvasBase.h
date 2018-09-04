@@ -27,11 +27,11 @@ class CQtGlCanvasBase : public QOpenGLWidget, public mrpt::gui::CGlCanvasBase
 {
    public:
 	CQtGlCanvasBase(QWidget* parent = nullptr);
-	virtual ~CQtGlCanvasBase() = default;
+	~CQtGlCanvasBase() override = default;
 
-	virtual void initializeGL() override;
-	virtual void paintGL() override;
-	virtual void resizeGL(int width, int height) override;
+	void initializeGL() override;
+	void paintGL() override;
+	void resizeGL(int width, int height) override;
 
 	mrpt::opengl::COpenGLViewport::Ptr mainViewport() const;
 
@@ -40,15 +40,15 @@ class CQtGlCanvasBase : public QOpenGLWidget, public mrpt::gui::CGlCanvasBase
 	float getCameraZoomDistance() const;
 
    protected:
-	virtual void mousePressEvent(QMouseEvent* event) override;
-	virtual void mouseMoveEvent(QMouseEvent* event) override;
-	virtual void mouseReleaseEvent(QMouseEvent* event) override;
-	virtual void wheelEvent(QWheelEvent* event) override;
+	void mousePressEvent(QMouseEvent* event) override;
+	void mouseMoveEvent(QMouseEvent* event) override;
+	void mouseReleaseEvent(QMouseEvent* event) override;
+	void wheelEvent(QWheelEvent* event) override;
 
-	virtual void swapBuffers() override {}
-	virtual void preRender() override {}
-	virtual void postRender() override {}
-	virtual void renderError(const std::string& err_msg) override;
+	void swapBuffers() override {}
+	void preRender() override {}
+	void postRender() override {}
+	void renderError(const std::string& err_msg) override;
 
 	virtual void updateCamerasParams();
 	virtual void insertToMap(const opengl::CRenderizable::Ptr& newObject);

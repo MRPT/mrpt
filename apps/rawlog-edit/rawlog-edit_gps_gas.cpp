@@ -73,7 +73,7 @@ DECLARE_OP_FUNCTION(op_export_gps_gas_kml)
 		}
 
 		// return false on any error.
-		bool processOneObservation(CObservation::Ptr& o)
+		bool processOneObservation(CObservation::Ptr& o) override
 		{
 			if (IS_CLASS(o, CObservationGPS))
 			{

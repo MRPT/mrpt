@@ -30,7 +30,7 @@ class CBaseConfig : public QWidget
 {
    public:
 	CBaseConfig();
-	virtual ~CBaseConfig() = default;
+	~CBaseConfig() override = default;
 
 	virtual const QString getName() = 0;
 	virtual void updateConfiguration(

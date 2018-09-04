@@ -50,7 +50,7 @@ class CDlgPoseEst : public wxDialog
 		wxWindow* parent, wxWindowID id = wxID_ANY,
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize);
-	virtual ~CDlgPoseEst();
+	~CDlgPoseEst() override;
 
 	CMyRedirector* redire;
 

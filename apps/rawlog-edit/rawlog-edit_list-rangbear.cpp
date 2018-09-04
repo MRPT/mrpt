@@ -52,7 +52,7 @@ DECLARE_OP_FUNCTION(op_list_rangebearing)
 					 "------------------------------------\n";
 		}
 
-		bool processOneObservation(CObservation::Ptr& obs)
+		bool processOneObservation(CObservation::Ptr& obs) override
 		{
 			if (IS_CLASS(obs, CObservationBearingRange))
 			{

@@ -56,12 +56,12 @@ class CRaePID : public mrpt::hwdrivers::CGenericSensor
 	CRaePID();
 	/** Default destructor.
 	 */
-	virtual ~CRaePID() { COM.close(); };
-	void doProcess();
+	~CRaePID() override { COM.close(); };
+	void doProcess() override;
 
 	void loadConfig_sensorSpecific(
 		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& section);
+		const std::string& section) override;
 
 	/** Get firmware version string.
 	 */

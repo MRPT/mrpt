@@ -131,10 +131,10 @@ class CRandomFieldGridMap3D
 		/** See utils::CLoadableOptions */
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
-			const std::string& section);
+			const std::string& section) override;
 
 		/** See utils::CLoadableOptions */
-		void dumpToTextStream(std::ostream& out) const;
+		void dumpToTextStream(std::ostream& out) const override;
 
 		/** @name Gaussian Markov Random Fields method
 			@{ */
@@ -151,7 +151,7 @@ class CRandomFieldGridMap3D
 
 	/** Changes the size of the grid, maintaining previous contents. \sa setSize
 	 */
-	virtual void resize(
+	void resize(
 		double new_x_min, double new_x_max, double new_y_min, double new_y_max,
 		double new_z_min, double new_z_max,
 		const TRandomFieldVoxel& defaultValueNewvoxels,
@@ -160,7 +160,7 @@ class CRandomFieldGridMap3D
 	/** Changes the size of the grid, erasing previous contents.If
 	 * `resolution_z`<0, the same resolution will be used for all dimensions
 	 * x,y,z as given in `resolution_xy` \sa resize.*/
-	virtual void setSize(
+	void setSize(
 		const double x_min, const double x_max, const double y_min,
 		const double y_max, const double z_min, const double z_max,
 		const double resolution_xy, const double resolution_z = -1.0,

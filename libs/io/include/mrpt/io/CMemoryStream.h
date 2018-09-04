@@ -58,7 +58,7 @@ class CMemoryStream : public CStream
 	void assignMemoryNotOwn(const void* data, const uint64_t nBytesInData);
 
 	/** Destructor */
-	virtual ~CMemoryStream();
+	~CMemoryStream() override;
 
 	/** Clears the memory buffer. */
 	void Clear();

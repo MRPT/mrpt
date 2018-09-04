@@ -47,10 +47,10 @@ class CRawlogTreeView : public wxScrolledWindow
 		const wxSize& size = wxDefaultSize, long style = wxVSCROLL,
 		const wxString& name = wxT("rawlogTreeView"));
 
-	virtual ~CRawlogTreeView();
+	~CRawlogTreeView() override;
 
 	/** Draws the rawlog items */
-	void OnDraw(wxDC& dc);
+	void OnDraw(wxDC& dc) override;
 
 	void AssignImageList(wxImageList* imageList) { m_imageList = imageList; }
 	/** Sets the rawlog to be rendered in the control (It's kept as a pointer,

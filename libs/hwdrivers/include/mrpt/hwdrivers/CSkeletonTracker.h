@@ -98,7 +98,7 @@ class CSkeletonTracker : public hwdrivers::CGenericSensor
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(
 		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& iniSection);
+		const std::string& iniSection) override;
 
 	/** Displays real-time info for the captured skeleton */
 	void processPreview(const mrpt::obs::CObservationSkeleton::Ptr& obs);
@@ -111,17 +111,17 @@ class CSkeletonTracker : public hwdrivers::CGenericSensor
 
 	/** Destructor
 	  */
-	virtual ~CSkeletonTracker();
+	~CSkeletonTracker() override;
 
 	/** This method will be invoked at a minimum rate of "process_rate" (Hz)
 	  *  \exception This method must throw an exception with a descriptive
 	 * message if some critical error is found.
 	  */
-	void doProcess();
+	void doProcess() override;
 
 	/** Connects to the PrimeSense camera and prepares it to get skeleton data
 	 */
-	void initialize();
+	void initialize() override;
 
 	/** Set/unset preview */
 	inline void setPreview(const bool setPreview = true)

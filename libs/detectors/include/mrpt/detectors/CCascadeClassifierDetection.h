@@ -24,15 +24,15 @@ class CCascadeClassifierDetection : virtual public CObjectDetection
 	virtual ~CCascadeClassifierDetection();
 
 	/** Initialize cascade classifier detection */
-	virtual void init(const mrpt::config::CConfigFileBase& cfg);
+	void init(const mrpt::config::CConfigFileBase& cfg) override;
 
    protected:
 	/** Detect objects in a *CObservation
 	 * \return A vector with detected objects
 	 */
 
-	virtual void detectObjects_Impl(
-		const mrpt::obs::CObservation* obs, vector_detectable_object& detected);
+	void detectObjects_Impl(
+		const mrpt::obs::CObservation* obs, vector_detectable_object& detected) override;
 
 	/** Cascade classifier object */
 	void* m_cascade;

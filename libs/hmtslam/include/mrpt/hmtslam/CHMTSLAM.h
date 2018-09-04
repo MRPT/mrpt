@@ -373,7 +373,7 @@ class CHMTSLAM : public mrpt::system::COutputLogger,
 
 	/** Destructor
 	  */
-	virtual ~CHMTSLAM();
+	~CHMTSLAM() override;
 
 	/** Return true if an exception has been caught in any thread leading to the
 	 * end of the mapping application: no more actions/observations will be
@@ -574,7 +574,7 @@ class CLSLAM_RBPF_2DLASER : public CLSLAMAlgorithmBase
 
 	/** Destructor
 	  */
-	virtual ~CLSLAM_RBPF_2DLASER();
+	~CLSLAM_RBPF_2DLASER() override;
 
 	/** Main entry point from HMT-SLAM: process some actions & observations.
 	  *  The passed action/observation will be deleted, so a copy must be made
@@ -591,19 +591,19 @@ class CLSLAM_RBPF_2DLASER : public CLSLAMAlgorithmBase
 	void processOneLMH(
 		CLocalMetricHypothesis* LMH,
 		const mrpt::obs::CActionCollection::Ptr& act,
-		const mrpt::obs::CSensoryFrame::Ptr& sf);
+		const mrpt::obs::CSensoryFrame::Ptr& sf) override;
 
 	/** The PF algorithm implementation.  */
 	void prediction_and_update_pfAuxiliaryPFOptimal(
 		CLocalMetricHypothesis* LMH, const mrpt::obs::CActionCollection* action,
 		const mrpt::obs::CSensoryFrame* observation,
-		const bayes::CParticleFilter::TParticleFilterOptions& PF_options);
+		const bayes::CParticleFilter::TParticleFilterOptions& PF_options) override;
 
 	/** The PF algorithm implementation.  */
 	void prediction_and_update_pfOptimalProposal(
 		CLocalMetricHypothesis* LMH, const mrpt::obs::CActionCollection* action,
 		const mrpt::obs::CSensoryFrame* observation,
-		const bayes::CParticleFilter::TParticleFilterOptions& PF_options);
+		const bayes::CParticleFilter::TParticleFilterOptions& PF_options) override;
 
    protected:
 	/**  For use within PF callback methods */

@@ -112,7 +112,7 @@ class CText3D : public CRenderizableDisplayList
 		const double text_spacing = 1.5, const double text_kerning = 0.1);
 
 	/** Private, virtual destructor: only can be deleted from smart pointers */
-	virtual ~CText3D();
+	~CText3D() override;
 };
 
 }

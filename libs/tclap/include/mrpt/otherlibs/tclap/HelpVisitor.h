@@ -67,7 +67,7 @@ class HelpVisitor: public Visitor
 		 * Calls the usage method of the CmdLineOutput for the 
 		 * specified CmdLine.
 		 */
-		void visit() { (*_out)->usage(*_cmd); throw ActionDoneException(); }
+		void visit() override { (*_out)->usage(*_cmd); throw ActionDoneException(); }
 		
 };
 

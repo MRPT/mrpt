@@ -87,7 +87,7 @@ class CEnoseModular : public mrpt::hwdrivers::CGenericSensor
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(
 		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& section);
+		const std::string& section) override;
 
 	/** Purge the Serial/FTDI buffer */
 	void purgeBuffers();
@@ -109,7 +109,7 @@ class CEnoseModular : public mrpt::hwdrivers::CGenericSensor
 	bool getObservation(mrpt::obs::CObservationGasSensors& outObservation);
 
 	// See docs in parent class
-	void doProcess();
+	void doProcess() override;
 
 	/** If not an empty string, will open that serial port, otherwise will try
 	 * to open USB FTDI device "m_usbSerialNumber"

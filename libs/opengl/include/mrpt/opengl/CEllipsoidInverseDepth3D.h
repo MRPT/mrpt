@@ -62,7 +62,7 @@ class CEllipsoidInverseDepth3D : public CGeneralizedEllipsoidTemplate<3>
 	  *  defining an ellipsoid in parameter space into their corresponding
 	 * points in 2D/3D space.
 	  */
-	virtual void transformFromParameterSpace(
+	void transformFromParameterSpace(
 		const std::vector<BASE::array_parameter_t>& in_pts,
 		std::vector<BASE::array_point_t>& out_pts) const override;
 
@@ -74,7 +74,7 @@ class CEllipsoidInverseDepth3D : public CGeneralizedEllipsoidTemplate<3>
 	  */
 	CEllipsoidInverseDepth3D() : m_underflowMaxRange(1e6) {}
 	/** Private, virtual destructor: only can be deleted from smart pointers */
-	virtual ~CEllipsoidInverseDepth3D() {}
+	~CEllipsoidInverseDepth3D() override {}
 };
 
 }

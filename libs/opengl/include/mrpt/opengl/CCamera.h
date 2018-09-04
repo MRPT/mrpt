@@ -96,7 +96,7 @@ class CCamera : public CRenderizable
 	/** Render does nothing here. */
 	void render() const override {}
 	/** In this class, returns a fixed box (max,max,max), (-max,-max,-max). */
-	virtual void getBoundingBox(
+	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
 
@@ -105,7 +105,7 @@ class CCamera : public CRenderizable
 	CCamera();
 
 	/** Private, virtual destructor: only can be deleted from smart pointers */
-	virtual ~CCamera() {}
+	~CCamera() override {}
 };
 
 }

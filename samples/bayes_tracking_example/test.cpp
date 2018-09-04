@@ -58,7 +58,7 @@ class CRangeBearing : public mrpt::bayes::CKalmanFilterCapable<
 {
    public:
 	CRangeBearing();
-	virtual ~CRangeBearing();
+	~CRangeBearing() override;
 
 	void doProcess(
 		double DeltaTime, double observationRange, double observationBearing);
@@ -80,7 +80,7 @@ class CRangeBearing : public mrpt::bayes::CKalmanFilterCapable<
 	/** Must return the action vector u.
 	 * \param out_u The action vector which will be passed to OnTransitionModel
 	 */
-	void OnGetAction(KFArray_ACT& out_u) const;
+	void OnGetAction(KFArray_ACT& out_u) const override;
 
 	/** Implements the transition model \f$ \hat{x}_{k|k-1} = f(
 	 * \hat{x}_{k-1|k-1}, u_k ) \f$
@@ -93,21 +93,21 @@ class CRangeBearing : public mrpt::bayes::CKalmanFilterCapable<
 	 */
 	void OnTransitionModel(
 		const KFArray_ACT& in_u, KFArray_VEH& inout_x,
-		bool& out_skipPrediction) const;
+		bool& out_skipPrediction) const override;
 
 	/** Implements the transition Jacobian \f$ \frac{\partial f}{\partial x} \f$
 	 * \param out_F Must return the Jacobian.
 	 *  The returned matrix must be \f$N \times N\f$ with N being either the
 	 * size of the whole state vector or get_vehicle_size().
 	 */
-	void OnTransitionJacobian(KFMatrix_VxV& out_F) const;
+	void OnTransitionJacobian(KFMatrix_VxV& out_F) const override;
 
 	/** Implements the transition noise covariance \f$ Q_k \f$
 	 * \param out_Q Must return the covariance matrix.
 	 *  The returned matrix must be of the same size than the jacobian from
 	 * OnTransitionJacobian
 	 */
-	void OnTransitionNoise(KFMatrix_VxV& out_Q) const;
+	void OnTransitionNoise(KFMatrix_VxV& out_Q) const override;
 
 	/** Return the observation NOISE covariance matrix, that is, the model of
 	 * the Gaussian additive noise of the sensor.
@@ -116,7 +116,7 @@ class CRangeBearing : public mrpt::bayes::CKalmanFilterCapable<
 	 * \note Upon call, it can be assumed that the previous contents of out_R
 	 * are all zeros.
 	 */
-	void OnGetObservationNoise(KFMatrix_OxO& out_R) const;
+	void OnGetObservationNoise(KFMatrix_OxO& out_R) const override;
 
 	/** This is called between the KF prediction step and the update step, and
 	 * the application must return the observations and, when applicable, the
@@ -148,7 +148,7 @@ class CRangeBearing : public mrpt::bayes::CKalmanFilterCapable<
 		vector_KFArray_OBS& out_z, std::vector<int>& out_data_association,
 		const vector_KFArray_OBS& in_all_predictions, const KFMatrix& in_S,
 		const std::vector<size_t>& in_lm_indices_in_S,
-		const KFMatrix_OxO& in_R);
+		const KFMatrix_OxO& in_R) override;
 
 	/** Implements the observation prediction \f$ h_i(x) \f$.
 	 * \param idx_landmark_to_predict The indices of the landmarks in the map
@@ -159,7 +159,7 @@ class CRangeBearing : public mrpt::bayes::CKalmanFilterCapable<
 	 */
 	void OnObservationModel(
 		const std::vector<size_t>& idx_landmarks_to_predict,
-		vector_KFArray_OBS& out_predictions) const;
+		vector_KFArray_OBS& out_predictions) const override;
 
 	/** Implements the observation Jacobians \f$ \frac{\partial h_i}{\partial x}
 	 * \f$ and (when applicable) \f$ \frac{\partial h_i}{\partial y_i} \f$.
@@ -172,13 +172,13 @@ class CRangeBearing : public mrpt::bayes::CKalmanFilterCapable<
 	 */
 	void OnObservationJacobians(
 		const size_t& idx_landmark_to_predict, KFMatrix_OxV& Hx,
-		KFMatrix_OxF& Hy) const;
+		KFMatrix_OxF& Hy) const override;
 
 	/** Computes A=A-B, which may need to be re-implemented depending on the
 	 * topology of the individual scalar components (eg, angles).
 	 */
 	void OnSubstractObservationVectors(
-		KFArray_OBS& A, const KFArray_OBS& B) const;
+		KFArray_OBS& A, const KFArray_OBS& B) const override;
 
 	/** @}
 	 */
@@ -214,7 +214,7 @@ class CRangeBearingParticleFilter
 	void prediction_and_update_pfStandardProposal(
 		const mrpt::obs::CActionCollection* action,
 		const mrpt::obs::CSensoryFrame* observation,
-		const bayes::CParticleFilter::TParticleFilterOptions& PF_options);
+		const bayes::CParticleFilter::TParticleFilterOptions& PF_options) override;
 
 	void initializeParticles(size_t numParticles);
 

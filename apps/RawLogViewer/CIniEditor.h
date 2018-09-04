@@ -23,7 +23,7 @@ class CIniEditor : public wxDialog
 		wxWindow* parent, wxWindowID id = wxID_ANY,
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize);
-	virtual ~CIniEditor();
+	~CIniEditor() override;
 
 	//(*Declarations(CIniEditor)
 	wxButton* btnCancel;

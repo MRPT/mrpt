@@ -33,7 +33,7 @@ class CMainWindow : public QMainWindow
 
    public:
 	CMainWindow(QWidget* parent = 0);
-	virtual ~CMainWindow();
+	~CMainWindow() override;
 
 	void addRobotPosesFromMap(
 		std::vector<size_t> idx,

@@ -156,9 +156,9 @@ class CGPSInterface : public mrpt::system::COutputLogger, public CGenericSensor
 	/** Default ctor */
 	CGPSInterface();
 	/** Dtor */
-	virtual ~CGPSInterface();
+	~CGPSInterface() override;
 
-	void doProcess();  // See docs in parent class
+	void doProcess() override;  // See docs in parent class
 
 	/** Returns true if communications work, i.e. if some message has been
 	 * received. */
@@ -280,7 +280,7 @@ class CGPSInterface : public mrpt::system::COutputLogger, public CGenericSensor
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(
 		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& iniSection);
+		const std::string& iniSection) override;
 
 	/** If not empty, will send a cmd "set,/par/pos/pd/port,...". Example value:
 	 * "/dev/ser/b" */

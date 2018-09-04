@@ -130,7 +130,7 @@ DECLARE_OP_FUNCTION(op_stereo_rectify)
 			}
 		}
 
-		bool processOneObservation(CObservation::Ptr& obs)
+		bool processOneObservation(CObservation::Ptr& obs) override
 		{
 			m_this_obs_is_ok = true;
 
@@ -208,10 +208,10 @@ DECLARE_OP_FUNCTION(op_stereo_rectify)
 
 		// This method can be reimplemented to save the modified object to an
 		// output stream.
-		virtual void OnPostProcess(
+		void OnPostProcess(
 			mrpt::obs::CActionCollection::Ptr& actions,
 			mrpt::obs::CSensoryFrame::Ptr& SF,
-			mrpt::obs::CObservation::Ptr& obs)
+			mrpt::obs::CObservation::Ptr& obs) override
 		{
 			if (!m_this_obs_is_ok) return;
 

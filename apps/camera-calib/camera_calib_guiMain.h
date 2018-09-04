@@ -36,7 +36,7 @@ class camera_calib_guiDialog : public wxDialog
 {
    public:
 	camera_calib_guiDialog(wxWindow* parent, wxWindowID id = -1);
-	virtual ~camera_calib_guiDialog();
+	~camera_calib_guiDialog() override;
 
    private:
 	//(*Handlers(camera_calib_guiDialog)

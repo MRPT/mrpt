@@ -76,7 +76,7 @@ class CAssimpModel : public CRenderizableDisplayList
 
 	CAssimpModel();
 	/** Private, virtual destructor: only can be deleted from smart pointers */
-	virtual ~CAssimpModel();
+	~CAssimpModel() override;
 
    private:
 	/** A container for automatic deletion of assimp scene when the last

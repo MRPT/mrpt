@@ -107,7 +107,7 @@ class kinect_calibrate_guiDialog : public wxDialog
 
    public:
 	kinect_calibrate_guiDialog(wxWindow* parent, wxWindowID id = -1);
-	virtual ~kinect_calibrate_guiDialog();
+	~kinect_calibrate_guiDialog() override;
 
    private:
 	wxConfig m_config;

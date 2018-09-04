@@ -50,28 +50,28 @@ class CWaypointsNavigator : public mrpt::nav::CAbstractNavigator
 		  * but the priority is for the latest ones in the sequence. */
 		std::vector<mrpt::nav::CAbstractNavigator::TargetInfo> multiple_targets;
 
-		virtual std::string getAsText() const override;
-		virtual std::unique_ptr<TNavigationParams> clone() const override
+		std::string getAsText() const override;
+		std::unique_ptr<TNavigationParams> clone() const override
 		{
 			return std::unique_ptr<TNavigationParams>(
 				new TNavigationParamsWaypoints(*this));
 		}
 
 	   protected:
-		virtual bool isEqual(
+		bool isEqual(
 			const CAbstractNavigator::TNavigationParamsBase& o) const override;
 	};
 
 	/** ctor */
 	CWaypointsNavigator(CRobot2NavInterface& robot_interface_impl);
 	/** dtor */
-	virtual ~CWaypointsNavigator();
+	~CWaypointsNavigator() override;
 
 	// Overriden to call the general navigationStep(), plus waypoint selection
 	// logic.
-	virtual void navigationStep() override;
+	void navigationStep() override;
 	/** Cancel current navegation. */
-	virtual void cancel() override;
+	void cancel() override;
 
 	/** \name Waypoint navigation control API
 	  * @{ */
@@ -124,10 +124,10 @@ class CWaypointsNavigator : public mrpt::nav::CAbstractNavigator
 		 * (Default=0 : none). */
 		int multitarget_look_ahead;
 
-		virtual void loadFromConfigFile(
+		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& c,
 			const std::string& s) override;
-		virtual void saveToConfigFile(
+		void saveToConfigFile(
 			mrpt::config::CConfigFileBase& c,
 			const std::string& s) const override;
 		TWaypointsNavigatorParams();
@@ -135,9 +135,9 @@ class CWaypointsNavigator : public mrpt::nav::CAbstractNavigator
 
 	TWaypointsNavigatorParams params_waypoints_navigator;
 
-	virtual void loadConfigFile(const mrpt::config::CConfigFileBase& c)
+	void loadConfigFile(const mrpt::config::CConfigFileBase& c)
 		override;  // See base class docs!
-	virtual void saveConfigFile(mrpt::config::CConfigFileBase& c)
+	void saveConfigFile(mrpt::config::CConfigFileBase& c)
 		const override;  // See base class docs!
 
    protected:
@@ -155,11 +155,11 @@ class CWaypointsNavigator : public mrpt::nav::CAbstractNavigator
 	virtual bool impl_waypoint_is_reachable(
 		const mrpt::math::TPoint2D& wp_local_wrt_robot) const = 0;
 
-	virtual void onStartNewNavigation() override;
+	void onStartNewNavigation() override;
 
-	virtual void onNavigateCommandReceived() override;
+	void onNavigateCommandReceived() override;
 
-	virtual bool checkHasReachedTarget(const double targetDist) const override;
+	bool checkHasReachedTarget(const double targetDist) const override;
 	/** The waypoints-specific part of navigationStep() */
 	virtual void waypoints_navigationStep();
 

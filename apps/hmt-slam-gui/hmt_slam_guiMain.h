@@ -52,7 +52,7 @@ class hmt_slam_guiFrame : public wxFrame
 
    public:
 	hmt_slam_guiFrame(wxWindow* parent, wxWindowID id = -1);
-	virtual ~hmt_slam_guiFrame();
+	~hmt_slam_guiFrame() override;
 
    private:
 	//(*Handlers(hmt_slam_guiFrame)

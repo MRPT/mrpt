@@ -148,7 +148,7 @@ public:
         Create(parent,id,label,bitmap,pos,size,style,val,name);
     }
 
-    virtual ~wxCustomButton();
+    ~wxCustomButton() override;
 
     bool Create(wxWindow* parent,
                 wxWindowID id,
@@ -168,8 +168,8 @@ public:
     bool SetButtonStyle( long style );
 
     // Get/Set the text label, wxEmptyString for none
-    wxString GetLabel() const { return m_labelString; }
-    void SetLabel( const wxString &label );
+    wxString GetLabel() const override { return m_labelString; }
+    void SetLabel( const wxString &label ) override;
 
     // set the bitmaps, ONLY this Label bitmap is used for calculating control size
     //   all bitmaps will be centered accordingly in any case
@@ -214,7 +214,7 @@ protected:
 
     // hack for finding the size this should be before creation
     // we cannot call SetSize() if this is a child of toolbar in GTK w/o crashing
-    virtual wxSize DoGetBestSize() const;
+    wxSize DoGetBestSize() const override;
     wxSize DoGetBestSize_(wxWindow* win) const;
 
     virtual void SendEvent();

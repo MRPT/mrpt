@@ -50,7 +50,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 	/** Constructor, defines the resolution of the octomap (length of each voxel
 	 * side) */
 	COctoMapBase(double resolution);
-	virtual ~COctoMapBase() {}
+	~COctoMapBase() override {}
 	/** Get a reference to the internal octomap object. Example:
 	 * \code
 	 *  mrpt::maps::COctoMap  map;
@@ -230,7 +230,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 		/** Initilization of default parameters
 		 */
 		TLikelihoodOptions();
-		virtual ~TLikelihoodOptions() {}
+		~TLikelihoodOptions() override {}
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
@@ -248,7 +248,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 
 	TLikelihoodOptions likelihoodOptions;
 
-	virtual void saveMetricMapRepresentationToFile(
+	void saveMetricMapRepresentationToFile(
 		const std::string& filNamePrefix) const override;
 
 	/** Options for the conversion of a mrpt::maps::COctoMap into a
@@ -291,7 +291,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 	/** Returns a 3D object representing the map.
 	 * \sa renderingOptions
 	 */
-	virtual void getAs3DObject(
+	void getAs3DObject(
 		mrpt::opengl::CSetOfObjects::Ptr& outObj) const override
 	{
 		auto gl_obj = mrpt::opengl::COctoMapVoxels::Create();
@@ -383,7 +383,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 
    private:
 	// See docs in base class
-	virtual double internal_computeObservationLikelihood(
+	double internal_computeObservationLikelihood(
 		const mrpt::obs::CObservation* obs,
 		const mrpt::poses::CPose3D& takenFrom) override;
 

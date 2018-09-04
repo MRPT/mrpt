@@ -35,7 +35,7 @@ class CColouredOctoMap
 
    public:
 	CColouredOctoMap(const double resolution = 0.10);  //!< Default constructor
-	virtual ~CColouredOctoMap();  //!< Destructor
+	~CColouredOctoMap() override;  //!< Destructor
 
 	/** This allows the user to select the desired method to update voxels
 	   colour.
@@ -74,7 +74,7 @@ class CColouredOctoMap
 
 	/// Get the method used to update voxels colour
 	TColourUpdate getVoxelColourMethod() { return m_colour_method; }
-	virtual void getAsOctoMapVoxels(
+	void getAsOctoMapVoxels(
 		mrpt::opengl::COctoMapVoxels& gl_obj) const override;
 
 	MAP_DEFINITION_START(CColouredOctoMap)
@@ -87,7 +87,7 @@ class CColouredOctoMap
 	MAP_DEFINITION_END(CColouredOctoMap)
 
 	/** Returns true if the map is empty/no observation has been inserted */
-	virtual bool isEmpty() const override { return size() == 1; }
+	bool isEmpty() const override { return size() == 1; }
 	/** @name Direct access to octomap library methods
 	@{ */
 
@@ -152,7 +152,7 @@ class CColouredOctoMap
 	/** @} */
 
    protected:
-	virtual void internal_clear() override;
+	void internal_clear() override;
 
 	bool internal_insertObservation(
 		const mrpt::obs::CObservation* obs,

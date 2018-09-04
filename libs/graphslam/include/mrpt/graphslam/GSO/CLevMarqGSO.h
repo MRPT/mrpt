@@ -132,20 +132,20 @@ class CLevMarqGSO
 	/**\}*/
 
 	CLevMarqGSO();
-	~CLevMarqGSO() = default;
+	~CLevMarqGSO() override = default;
 
 	bool updateState(
 		mrpt::obs::CActionCollection::Ptr action,
 		mrpt::obs::CSensoryFrame::Ptr observations,
-		mrpt::obs::CObservation::Ptr observation);
+		mrpt::obs::CObservation::Ptr observation) override;
 
-	void initializeVisuals();
-	void updateVisuals();
+	void initializeVisuals() override;
+	void updateVisuals() override;
 	/**\brief Get a list of the window events that happened since the last
 	 * call.
 	 */
 	void notifyOfWindowEvents(
-		const std::map<std::string, bool>& events_occurred);
+		const std::map<std::string, bool>& events_occurred) override;
 	/**\brief Struct for holding the optimization-related variables in a
 	 * compact form
 	 */
@@ -153,12 +153,12 @@ class CLevMarqGSO
 	{
 	   public:
 		OptimizationParams();
-		~OptimizationParams();
+		~OptimizationParams() override;
 
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
-			const std::string& section);
-		void dumpToTextStream(std::ostream& out) const;
+			const std::string& section) override;
+		void dumpToTextStream(std::ostream& out) const override;
 
 		mrpt::system::TParametersDouble cfg;
 		// True if optimization procedure is to run in a multithreading fashion
@@ -191,12 +191,12 @@ class CLevMarqGSO
 	{
 	   public:
 		GraphVisualizationParams();
-		~GraphVisualizationParams();
+		~GraphVisualizationParams() override;
 
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
-			const std::string& section);
-		void dumpToTextStream(std::ostream& out) const;
+			const std::string& section) override;
+		void dumpToTextStream(std::ostream& out) const override;
 
 		mrpt::system::TParametersDouble cfg;
 		bool visualize_optimized_graph;
@@ -207,11 +207,11 @@ class CLevMarqGSO
 		double offset_y_graph;
 	};
 
-	void loadParams(const std::string& source_fname);
-	void printParams() const;
-	void getDescriptiveReport(std::string* report_str) const;
+	void loadParams(const std::string& source_fname) override;
+	void printParams() const override;
+	void getDescriptiveReport(std::string* report_str) const override;
 
-	bool justFullyOptimizedGraph() const;
+	bool justFullyOptimizedGraph() const override;
 
 	/** Parameters relevant to the optimizatio nfo the graph. */
 	OptimizationParams opt_params;
@@ -242,7 +242,7 @@ class CLevMarqGSO
 	 * Used in multithreaded optimization
 	 * \sa _optimizeGraph()
 	 */
-	void optimizeGraph();
+	void optimizeGraph() override;
 	/**\brief Check if a loop closure edge was added in the graph.
 	 *
 	 * Match the previously registered edges in the graph with the current. If

@@ -68,7 +68,7 @@ class CText : public CRenderizable
 	CText(const std::string& str = std::string(""));
 
 	/** Private, virtual destructor: only can be deleted from smart pointers */
-	virtual ~CText();
+	~CText() override;
 };
 
 }

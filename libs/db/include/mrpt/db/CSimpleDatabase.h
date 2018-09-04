@@ -26,7 +26,7 @@ class CSimpleDatabaseTable : public mrpt::serialization::CSerializable
 
 	/** Destructor
 	 */
-	virtual ~CSimpleDatabaseTable();
+	~CSimpleDatabaseTable() override;
 
 	/** Get the count of fields.
 	 */
@@ -127,7 +127,7 @@ class CSimpleDatabase : public mrpt::serialization::CSerializable
 
 	/** Destructor
 	 */
-	virtual ~CSimpleDatabase();
+	~CSimpleDatabase() override;
 
 	/** Clears the DB.
 	 */

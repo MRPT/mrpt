@@ -24,7 +24,7 @@ class COdometryParams : public wxDialog
 		wxWindow* parent, wxWindowID id = wxID_ANY,
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize);
-	virtual ~COdometryParams();
+	~COdometryParams() override;
 
 	//(*Declarations(COdometryParams)
 	wxButton* btnOk;

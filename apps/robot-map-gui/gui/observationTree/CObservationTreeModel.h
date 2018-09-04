@@ -31,21 +31,21 @@ class CObservationTreeModel : public QAbstractTableModel
    public:
 	CObservationTreeModel(
 		const mrpt::maps::CSimpleMap& simplemap, QObject* parent = nullptr);
-	virtual ~CObservationTreeModel();
+	~CObservationTreeModel() override;
 
 	QItemSelection changeSelected(const std::vector<size_t>& indexes);
 
 	// QAbstractItemModel interface
-	virtual int rowCount(const QModelIndex& parent) const override;
-	virtual int columnCount(const QModelIndex& index) const override;
+	int rowCount(const QModelIndex& parent) const override;
+	int columnCount(const QModelIndex& index) const override;
 
-	virtual QVariant data(
+	QVariant data(
 		const QModelIndex& index, int role = Qt::DisplayRole) const override;
-	virtual Qt::ItemFlags flags(const QModelIndex& index) const override;
+	Qt::ItemFlags flags(const QModelIndex& index) const override;
 
-	virtual QModelIndex index(
+	QModelIndex index(
 		int row, int column, const QModelIndex& parent) const override;
-	virtual QModelIndex parent(const QModelIndex& index) const override;
+	QModelIndex parent(const QModelIndex& index) const override;
 
 	CNode* getNode(const QModelIndex& index) const;
 	CNode* getNodeFromIndexSafe(const QModelIndex& index) const;

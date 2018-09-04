@@ -43,7 +43,7 @@ public:
 		const std::string key_str, const std::string key_desc);
 
  protected:
-	void OnEvent(const mrpt::system::mrptEvent& e);
+	void OnEvent(const mrpt::system::mrptEvent& e) override;
 
  private:
 	bool m_showing_help = false;

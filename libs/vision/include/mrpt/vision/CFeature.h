@@ -283,7 +283,7 @@ class CFeature : public mrpt::serialization::CSerializable
 	CFeature();
 
 	/** Virtual destructor */
-	virtual ~CFeature() {}
+	~CFeature() override {}
    protected:
 	/** Internal function used by "descriptorLogPolarImgDistanceTo" and
 	 * "descriptorPolarImgDistanceTo"

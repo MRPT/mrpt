@@ -80,7 +80,7 @@ class CAxis : public CRenderizableDisplayList
 		float frecuency = 0.25f, float lineWidth = 3.0f, bool marks = false);
 
 	/** Private, virtual destructor: only can be deleted from smart pointers */
-	virtual ~CAxis() {}
+	~CAxis() override {}
 };
 
 }

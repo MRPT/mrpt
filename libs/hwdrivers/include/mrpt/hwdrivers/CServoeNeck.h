@@ -20,7 +20,7 @@ class CServoeNeck : public mrpt::comms::CInterfaceFTDI
 {
    public:
 	CServoeNeck();
-	~CServoeNeck();
+	~CServoeNeck() override;
 
 	/** Gets the firmware version of the eNeck board.
 	 * \param out_firmwareVersion: [OUTPUT] A string containing the firmware

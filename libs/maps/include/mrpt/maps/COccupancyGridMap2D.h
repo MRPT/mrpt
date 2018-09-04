@@ -127,7 +127,7 @@ class COccupancyGridMap2D : public CMetricMap,
 	bool m_is_empty;
 
 	/** See base class */
-	virtual void OnPostSuccesfulInsertObs(
+	void OnPostSuccesfulInsertObs(
 		const mrpt::obs::CObservation*) override;
 
 	/** The free-cells threshold used to compute the Voronoi diagram. */
@@ -195,7 +195,7 @@ class COccupancyGridMap2D : public CMetricMap,
 	/** Clear the map: It set all cells to their default occupancy value (0.5),
 	 * without changing the resolution (the grid extension is reset to the
 	 * default values). */
-	virtual void internal_clear() override;
+	void internal_clear() override;
 
 	/** Insert the observation information into this map.
 	 *
@@ -208,7 +208,7 @@ class COccupancyGridMap2D : public CMetricMap,
 	 *
 	 * \sa insertionOptions, CObservation::insertObservationInto
 	 */
-	virtual bool internal_insertObservation(
+	bool internal_insertObservation(
 		const mrpt::obs::CObservation* obs,
 		const mrpt::poses::CPose3D* robotPose = nullptr) override;
 
@@ -253,7 +253,7 @@ class COccupancyGridMap2D : public CMetricMap,
 		float min_x = -20.0f, float max_x = 20.0f, float min_y = -20.0f,
 		float max_y = 20.0f, float resolution = 0.05f);
 	/** Destructor */
-	virtual ~COccupancyGridMap2D();
+	~COccupancyGridMap2D() override;
 
 	/** Change the size of gridmap, erasing all its previous contents.
 	 * \param x_min The "x" coordinates of left most side of grid.
@@ -1094,7 +1094,7 @@ class COccupancyGridMap2D : public CMetricMap,
 	 *
 	 * \sa computeMatching3DWith
 	 */
-	virtual void determineMatching2D(
+	void determineMatching2D(
 		const mrpt::maps::CMetricMap* otherMap,
 		const mrpt::poses::CPose2D& otherMapPose,
 		mrpt::tfest::TMatchingPairList& correspondences,

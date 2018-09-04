@@ -25,8 +25,8 @@ template class mrpt::CTraitsTest<CPose3DQuat>;
 class Pose3DQuatTests : public ::testing::Test
 {
    protected:
-	virtual void SetUp() {}
-	virtual void TearDown() {}
+	void SetUp() override {}
+	void TearDown() override {}
 	void test_compose(
 		double x1, double y1, double z1, double yaw1, double pitch1,
 		double roll1, double x2, double y2, double z2, double yaw2,

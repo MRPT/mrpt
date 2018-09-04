@@ -68,7 +68,7 @@ class VersionVisitor: public Visitor
 		 * Calls the version method of the output object using the
 		 * specified CmdLine.
 		 */
-		void visit() { (*_out)->version(*_cmd); throw ActionDoneException(); }
+		void visit() override { (*_out)->version(*_cmd); throw ActionDoneException(); }
 
 };
 

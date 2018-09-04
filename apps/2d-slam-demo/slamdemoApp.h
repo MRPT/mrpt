@@ -27,7 +27,7 @@ class slamdemoApp : public wxApp
 	slamdemoFrame* win;
 
    public:
-	virtual bool OnInit();
+	bool OnInit() override;
 
    private:
 	bool m_option_norun;

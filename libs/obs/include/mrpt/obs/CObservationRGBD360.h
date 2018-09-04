@@ -99,7 +99,7 @@ class CObservationRGBD360 : public CObservation
 	/** Default constructor */
 	CObservationRGBD360();
 	/** Destructor */
-	virtual ~CObservationRGBD360();
+	~CObservationRGBD360() override;
 
 	static const unsigned int NUM_SENSORS = 2;
 

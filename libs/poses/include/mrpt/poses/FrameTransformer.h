@@ -92,16 +92,16 @@ class FrameTransformer : public FrameTransformerInterface<DIM>
 	using base_t = FrameTransformerInterface<DIM>;
 
 	FrameTransformer();
-	~FrameTransformer();
+	~FrameTransformer() override;
 
 	// See base docs
-	virtual void sendTransform(
+	void sendTransform(
 		const std::string& parent_frame, const std::string& child_frame,
 		const typename base_t::pose_t& child_wrt_parent,
 		const mrpt::system::TTimeStamp& timestamp =
 			mrpt::system::now()) override;
 	// See base docs
-	virtual FrameLookUpStatus lookupTransform(
+	FrameLookUpStatus lookupTransform(
 		const std::string& target_frame, const std::string& source_frame,
 		typename base_t::lightweight_pose_t& child_wrt_parent,
 		const mrpt::system::TTimeStamp query_time = INVALID_TIMESTAMP,

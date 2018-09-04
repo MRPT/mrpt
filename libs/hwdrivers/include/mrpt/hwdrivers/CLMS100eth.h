@@ -83,7 +83,7 @@ class CLMS100Eth : public C2DRangeFinderAbstract
 	/** Destructor.
 		* Close communcation with the device, and free memory.
 		*/
-	virtual ~CLMS100Eth();
+	~CLMS100Eth() override;
 	/** This function acquire a laser scan from the device. If an error occured,
 	 * hardwareError will be set to true.
 		* The new laser scan will be stored in the outObservation argument.
@@ -96,15 +96,15 @@ class CLMS100Eth : public C2DRangeFinderAbstract
 	void doProcessSimple(
 		bool& outThereIsObservation,
 		mrpt::obs::CObservation2DRangeScan& outObservation,
-		bool& hardwareError);
+		bool& hardwareError) override;
 
 	/** This method must be called before trying to get a laser scan.
 		*/
-	bool turnOn();
+	bool turnOn() override;
 	/** This method could be called manually to stop communication with the
 	 * device. Method is also called by destructor.
 		*/
-	bool turnOff();
+	bool turnOff() override;
 
 	/** A method to set the sensor pose on the robot.
 		* Equivalent to setting the sensor pose via loading it from a config
@@ -115,12 +115,12 @@ class CLMS100Eth : public C2DRangeFinderAbstract
 	/** This method should be called periodically. Period depend on the
 	 * process_rate in the configuration file.
 		*/
-	void doProcess();
+	void doProcess() override;
 
 	/** Initialize the sensor according to the parameters previously read in the
 	 * configuration file.
 		*/
-	void initialize();
+	void initialize() override;
 
    private:
 	std::string m_ip;
@@ -152,7 +152,7 @@ class CLMS100Eth : public C2DRangeFinderAbstract
 		*/
 	void loadConfig_sensorSpecific(
 		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& iniSection);
+		const std::string& iniSection) override;
 };
 }
 

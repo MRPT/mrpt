@@ -48,7 +48,7 @@ class CRobot2NavInterfaceForSimulator_Holo : public CRobot2NavInterface
 		return true;  // ok
 	}
 
-	virtual bool changeSpeeds(
+	bool changeSpeeds(
 		const mrpt::kinematics::CVehicleVelCmd& vel_cmd) override
 	{
 		m_simul.sendVelCmd(vel_cmd);

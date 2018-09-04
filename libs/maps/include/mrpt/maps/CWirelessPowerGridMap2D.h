@@ -40,7 +40,7 @@ class CWirelessPowerGridMap2D : public CRandomFieldGridMap2D
 		double resolution = 0.1);
 
 	/** Destructor */
-	virtual ~CWirelessPowerGridMap2D();
+	~CWirelessPowerGridMap2D() override;
 
 	/** Parameters related with inserting observations into the map:
 	  */
@@ -64,7 +64,7 @@ class CWirelessPowerGridMap2D : public CRandomFieldGridMap2D
    protected:
 	/** Get the part of the options common to all CRandomFieldGridMap2D classes
 	 */
-	virtual CRandomFieldGridMap2D::TInsertionOptionsCommon*
+	CRandomFieldGridMap2D::TInsertionOptionsCommon*
 		getCommonInsertOptions() override
 	{
 		return &insertionOptions;

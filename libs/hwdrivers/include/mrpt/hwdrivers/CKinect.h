@@ -280,14 +280,14 @@ class CKinect : public mrpt::hwdrivers::CGenericSensor
 	/** Default ctor */
 	CKinect();
 	/** Default ctor */
-	~CKinect();
+	~CKinect() override;
 
 	/** Initializes the 3D camera - should be invoked after calling loadConfig()
 	 * or setting the different parameters with the set*() methods.
 	 *  \exception This method must throw an exception with a descriptive
 	 * message if some critical error is found.
 	 */
-	virtual void initialize();
+	void initialize() override;
 
 	/** To be called  at a high rate (>XX Hz), this method populates the
 	 * internal buffer of received observations.
@@ -298,7 +298,7 @@ class CKinect : public mrpt::hwdrivers::CGenericSensor
 	 * message if some critical error is found.
 	 * \sa getNextObservation
 	 */
-	virtual void doProcess();
+	void doProcess() override;
 
 	/** The main data retrieving function, to be called after calling
 	 * loadConfig() and initialize().
@@ -329,7 +329,7 @@ class CKinect : public mrpt::hwdrivers::CGenericSensor
 	 * \exception std::exception If the directory doesn't exists and cannot be
 	 * created.
 	 */
-	virtual void setPathForExternalImages(const std::string& directory);
+	void setPathForExternalImages(const std::string& directory) override;
 
 	/** @name Sensor parameters (alternative to \a loadConfig ) and manual
 	   control
@@ -482,9 +482,9 @@ class CKinect : public mrpt::hwdrivers::CGenericSensor
 
    protected:
 	/** See the class documentation at the top for expected parameters */
-	virtual void loadConfig_sensorSpecific(
+	void loadConfig_sensorSpecific(
 		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& section);
+		const std::string& section) override;
 
 	mrpt::poses::CPose3D m_sensorPoseOnRobot;
 

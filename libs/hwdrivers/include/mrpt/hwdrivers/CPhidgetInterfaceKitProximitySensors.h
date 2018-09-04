@@ -112,7 +112,7 @@ class CPhidgetInterfaceKitProximitySensors : public mrpt::system::COutputLogger,
 
 	/** Destructor
 	  */
-	virtual ~CPhidgetInterfaceKitProximitySensors();
+	~CPhidgetInterfaceKitProximitySensors() override;
 
 	/** This method tries to get a set of range measurements from the IR
 	 * sensors.
@@ -126,12 +126,12 @@ class CPhidgetInterfaceKitProximitySensors : public mrpt::system::COutputLogger,
 	 * \exception throw an exception if the process rate can't be set on one of
 	 * the board channel.
 	 */
-	void initialize();
+	void initialize() override;
 
 	/** This method should be called periodically. Period depend on the
 	 * process_rate in the configuration file.
 	 */
-	void doProcess();
+	void doProcess() override;
 
    private:
 	/** An 8 dimension vector of boolean value wich store the presence or
@@ -173,7 +173,7 @@ class CPhidgetInterfaceKitProximitySensors : public mrpt::system::COutputLogger,
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(
 		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& iniSection);
+		const std::string& iniSection) override;
 };  // end class
 
 }

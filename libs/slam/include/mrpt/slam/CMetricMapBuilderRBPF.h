@@ -115,14 +115,14 @@ of type CMetricMapBuilderRBPF  */
 	CMetricMapBuilderRBPF& operator=(const CMetricMapBuilderRBPF& src);
 
 	/** Destructor. */
-	virtual ~CMetricMapBuilderRBPF();
+	~CMetricMapBuilderRBPF() override;
 
 	/** Initialize the method, starting with a known location PDF "x0"(if
 	 * supplied, set to nullptr to left unmodified) and a given fixed, past map.
 	 */
 	void initialize(
 		const mrpt::maps::CSimpleMap& initialMap = mrpt::maps::CSimpleMap(),
-		const mrpt::poses::CPosePDF* x0 = nullptr);
+		const mrpt::poses::CPosePDF* x0 = nullptr) override;
 
 	/** Clear all elements of the maps.
 	  */
@@ -130,7 +130,7 @@ of type CMetricMapBuilderRBPF  */
 
 	/** Returns a copy of the current best pose estimation as a pose PDF.
 	  */
-	mrpt::poses::CPose3DPDF::Ptr getCurrentPoseEstimation() const;
+	mrpt::poses::CPose3DPDF::Ptr getCurrentPoseEstimation() const override;
 
 	/** Returns the current most-likely path estimation (the path associated to
 	 * the most likely particle).
@@ -149,23 +149,23 @@ of type CMetricMapBuilderRBPF  */
 	 */
 	void processActionObservation(
 		mrpt::obs::CActionCollection& action,
-		mrpt::obs::CSensoryFrame& observations);
+		mrpt::obs::CSensoryFrame& observations) override;
 
 	/** Fills "out_map" with the set of "poses"-"sensory-frames", thus the so
 	 * far built map.
 	  */
-	void getCurrentlyBuiltMap(mrpt::maps::CSimpleMap& out_map) const;
+	void getCurrentlyBuiltMap(mrpt::maps::CSimpleMap& out_map) const override;
 
 	/** Returns the map built so far. NOTE that for efficiency a pointer to the
 	 * internal object is passed, DO NOT delete nor modify the object in any
 	 * way, if desired, make a copy of ir with "clone()".
 	  */
-	const mrpt::maps::CMultiMetricMap* getCurrentlyBuiltMetricMap() const;
+	const mrpt::maps::CMultiMetricMap* getCurrentlyBuiltMetricMap() const override;
 
 	/** Returns just how many sensory-frames are stored in the currently build
 	 * map.
 	  */
-	unsigned int getCurrentlyBuiltMapSize();
+	unsigned int getCurrentlyBuiltMapSize() override;
 
 	/** A useful method for debugging: the current map (and/or poses) estimation
 	 * is dumped to an image file.
@@ -173,7 +173,7 @@ of type CMetricMapBuilderRBPF  */
 	  * \param formatEMF_BMP Output format = true:EMF, false:BMP
 	  */
 	void saveCurrentEstimationToImage(
-		const std::string& file, bool formatEMF_BMP = true);
+		const std::string& file, bool formatEMF_BMP = true) override;
 
 	/** A useful method for debugging: draws the current map and path hypotheses
 	 * to a CCanvas  */

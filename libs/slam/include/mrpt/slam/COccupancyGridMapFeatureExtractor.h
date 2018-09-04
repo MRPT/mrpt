@@ -64,7 +64,7 @@ class COccupancyGridMapFeatureExtractor : public mrpt::system::CObserver
 
    protected:
 	/** This will receive the events from maps in order to purge the cache. */
-	void OnEvent(const mrpt::system::mrptEvent& e);
+	void OnEvent(const mrpt::system::mrptEvent& e) override;
 	using TCache = std::map<
 		const mrpt::maps::COccupancyGridMap2D*, mrpt::maps::CLandmarksMap::Ptr>;
 	/** A cache of already computed maps. */

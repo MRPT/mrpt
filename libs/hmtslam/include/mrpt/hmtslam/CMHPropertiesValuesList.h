@@ -54,7 +54,7 @@ class CMHPropertiesValuesList : public mrpt::serialization::CSerializable
 
 	/** Destructor
 	 */
-	virtual ~CMHPropertiesValuesList();
+	~CMHPropertiesValuesList() override;
 
 	/** Clears the list and frees all object's memory.
 	 */

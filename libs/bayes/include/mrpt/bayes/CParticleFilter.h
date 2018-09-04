@@ -106,7 +106,7 @@ class CParticleFilter : public mrpt::system::COutputLogger
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;
-		virtual void saveToConfigFile(
+		void saveToConfigFile(
 			mrpt::config::CConfigFileBase& target,
 			const std::string& section) const override;
 
@@ -179,7 +179,7 @@ class CParticleFilter : public mrpt::system::COutputLogger
 	 */
 	CParticleFilter();
 
-	virtual ~CParticleFilter() {}
+	~CParticleFilter() override {}
 	/** Executes a complete prediction + update step of the selected particle
 	 * filtering algorithm.
 	 *    The member CParticleFilter::m_options must be set before calling this

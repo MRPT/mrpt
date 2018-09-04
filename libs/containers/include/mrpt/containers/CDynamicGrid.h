@@ -325,9 +325,9 @@ class CDynamicGrid
 		struct aux_saver : public internal::dynamic_grid_txt_saver
 		{
 			aux_saver(const CDynamicGrid<T>& obj) : m_obj(obj) {}
-			virtual unsigned int getSizeX() const { return m_obj.getSizeX(); }
-			virtual unsigned int getSizeY() const { return m_obj.getSizeY(); }
-			virtual float getCellAsFloat(unsigned int cx, unsigned int cy) const
+			unsigned int getSizeX() const override { return m_obj.getSizeX(); }
+			unsigned int getSizeY() const override { return m_obj.getSizeY(); }
+			float getCellAsFloat(unsigned int cx, unsigned int cy) const override
 			{
 				return m_obj.cell2float(
 					m_obj.m_map[cx + cy * m_obj.getSizeX()]);

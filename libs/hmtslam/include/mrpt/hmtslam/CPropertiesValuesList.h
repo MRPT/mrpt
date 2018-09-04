@@ -46,7 +46,7 @@ class CPropertiesValuesList : public mrpt::serialization::CSerializable
 
 	/** Destructor
 	 */
-	virtual ~CPropertiesValuesList();
+	~CPropertiesValuesList() override;
 
 	/** Clears the list.
 	 */

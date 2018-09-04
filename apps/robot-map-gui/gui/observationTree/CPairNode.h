@@ -24,11 +24,11 @@ class CPairNode : public CNode
 		CNode* parent,
 		const mrpt::maps::CSimpleMap::TPosePDFSensFramePair& poseSensFramePair,
 		size_t indexInSimpleMap);
-	virtual ~CPairNode();
+	~CPairNode() override;
 
-	int childCount() const;
+	int childCount() const override;
 
-	CNode* child(int id);
+	CNode* child(int id) override;
 	CNode* child(int id) const;
 	ObjectType type() const override;
 	std::string displayName() const override;

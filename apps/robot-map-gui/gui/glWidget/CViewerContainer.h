@@ -27,7 +27,7 @@ class CViewerContainer : public QWidget
 	Q_OBJECT
    public:
 	CViewerContainer(QWidget* parent = nullptr);
-	virtual ~CViewerContainer();
+	~CViewerContainer() override;
 
 	void changeHelpTextToAboutConfig();
 

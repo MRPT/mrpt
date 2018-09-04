@@ -65,7 +65,7 @@ class CMyGLCanvas_DisplayWindow3D : public mrpt::gui::CWxGLCanvasBase
 		const wxSize& size = wxDefaultSize, long style = 0,
 		const wxString& name = _T("CMyGLCanvas_DisplayWindow3D"));
 
-	virtual ~CMyGLCanvas_DisplayWindow3D();
+	~CMyGLCanvas_DisplayWindow3D() override;
 
 	CDisplayWindow3D* m_win3D = nullptr;
 
@@ -82,13 +82,13 @@ class CMyGLCanvas_DisplayWindow3D : public mrpt::gui::CWxGLCanvasBase
 	};
 	THubClass m_text_msgs;
 
-	void OnCharCustom(wxKeyEvent& event);
+	void OnCharCustom(wxKeyEvent& event) override;
 	void OnMouseDown(wxMouseEvent& event);
 	void OnMouseMove(wxMouseEvent& event);
 
-	void OnPreRender();
-	void OnPostRender();
-	void OnPostRenderSwapBuffers(double At, wxPaintDC& dc);
+	void OnPreRender() override;
+	void OnPostRender() override;
+	void OnPostRenderSwapBuffers(double At, wxPaintDC& dc) override;
 
 	static void display3D_processKeyEvent(
 		CDisplayWindow3D* m_win3D, wxKeyEvent& ev);

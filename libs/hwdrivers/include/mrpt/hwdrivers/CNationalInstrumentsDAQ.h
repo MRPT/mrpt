@@ -219,19 +219,19 @@ class CNationalInstrumentsDAQ : public mrpt::system::COutputLogger,
 	CNationalInstrumentsDAQ();
 
 	/** Destructor */
-	virtual ~CNationalInstrumentsDAQ();
+	~CNationalInstrumentsDAQ() override;
 
 	/** Setup and launch the DAQ tasks, in parallel threads.
 	  * Access to grabbed data with CNationalInstrumentsDAQ::readFromDAQ() or
 	 * the standard CGenericSensor::doProcess() */
-	virtual void initialize();
+	void initialize() override;
 
 	/** Stop the grabbing threads for DAQ tasks. It is automatically called at
 	 * destruction. */
 	void stop();
 
 	// See docs in parent class
-	void doProcess();
+	void doProcess() override;
 
 	/** Receives data from the DAQ thread(s). It returns a maximum number of one
 	 * observation object per running grabber threads, that is, per each DAQmx
@@ -452,7 +452,7 @@ class CNationalInstrumentsDAQ : public mrpt::system::COutputLogger,
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(
 		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& iniSection);
+		const std::string& iniSection) override;
 
    private:
 	/** A buffer for doProcess */

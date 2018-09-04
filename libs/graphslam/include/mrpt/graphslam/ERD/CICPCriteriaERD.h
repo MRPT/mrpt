@@ -111,32 +111,32 @@ class CICPCriteriaERD
 	// Public methods
 	//////////////////////////////////////////////////////////////
 	CICPCriteriaERD();
-	~CICPCriteriaERD()=default;
+	~CICPCriteriaERD() override =default;
 
 	bool updateState(
 		mrpt::obs::CActionCollection::Ptr action,
 		mrpt::obs::CSensoryFrame::Ptr observations,
-		mrpt::obs::CObservation::Ptr observation);
+		mrpt::obs::CObservation::Ptr observation) override;
 
 	void notifyOfWindowEvents(
-		const std::map<std::string, bool>& events_occurred);
-	void getEdgesStats(std::map<std::string, int>* edge_types_to_num) const;
+		const std::map<std::string, bool>& events_occurred) override;
+	void getEdgesStats(std::map<std::string, int>* edge_types_to_num) const override;
 
-	void initializeVisuals();
-	void updateVisuals();
-	void loadParams(const std::string& source_fname);
-	void printParams() const;
+	void initializeVisuals() override;
+	void updateVisuals() override;
+	void loadParams(const std::string& source_fname) override;
+	void printParams() const override;
 
 	struct TParams : public mrpt::config::CLoadableOptions
 	{
 	   public:
 		TParams(decider_t& d);
-		~TParams();
+		~TParams() override;
 
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
-			const std::string& section);
-		void dumpToTextStream(std::ostream& out) const;
+			const std::string& section) override;
+		void dumpToTextStream(std::ostream& out) const override;
 
 		decider_t& decider;
 		// maximum distance for checking other nodes for ICP constraints
@@ -153,7 +153,7 @@ class CICPCriteriaERD
 
 		bool has_read_config;
 	};
-	void getDescriptiveReport(std::string* report_str) const;
+	void getDescriptiveReport(std::string* report_str) const override;
 
 	// Public variables
 	// ////////////////////////////
@@ -168,7 +168,7 @@ class CICPCriteriaERD
 		const std::set<mrpt::graphs::TNodeID>& nodes_set);
 	void registerNewEdge(
 		const mrpt::graphs::TNodeID& from, const mrpt::graphs::TNodeID& to,
-		const constraint_t& rel_edge);
+		const constraint_t& rel_edge) override;
 	void checkIfInvalidDataset(
 		mrpt::obs::CActionCollection::Ptr action,
 		mrpt::obs::CSensoryFrame::Ptr observations,

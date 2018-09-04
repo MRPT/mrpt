@@ -23,7 +23,7 @@ class CVehicleVelCmd : public mrpt::serialization::CSerializable
    public:
 	CVehicleVelCmd();
 	CVehicleVelCmd(const CVehicleVelCmd& other);
-	virtual ~CVehicleVelCmd();
+	~CVehicleVelCmd() override;
 	CVehicleVelCmd& operator=(const CVehicleVelCmd& other);
 
 	/** Get number of components in each velocity command */

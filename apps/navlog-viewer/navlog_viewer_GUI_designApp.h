@@ -15,8 +15,8 @@
 class navlog_viewer_GUI_designApp : public wxApp
 {
    public:
-	virtual bool OnInit();
-	virtual int OnRun();
+	bool OnInit() override;
+	int OnRun() override;
 };
 
 #endif  // NAVLOG_VIEWER_GUI_DESIGNAPP_H

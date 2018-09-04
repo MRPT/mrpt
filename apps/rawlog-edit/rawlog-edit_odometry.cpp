@@ -49,7 +49,7 @@ DECLARE_OP_FUNCTION(op_export_odometry_txt)
 		}
 
 		// return false on any error.
-		bool processOneObservation(CObservation::Ptr& o)
+		bool processOneObservation(CObservation::Ptr& o) override
 		{
 			if (!IS_CLASS(o, CObservationOdometry)) return true;
 
@@ -188,7 +188,7 @@ DECLARE_OP_FUNCTION(op_recalc_odometry)
 		}
 
 		// return false on any error.
-		bool processOneObservation(CObservation::Ptr& o)
+		bool processOneObservation(CObservation::Ptr& o) override
 		{
 			if (!IS_CLASS(o, CObservationOdometry)) return true;
 
@@ -224,10 +224,10 @@ DECLARE_OP_FUNCTION(op_recalc_odometry)
 
 		// This method can be reimplemented to save the modified object to an
 		// output stream.
-		virtual void OnPostProcess(
+		void OnPostProcess(
 			mrpt::obs::CActionCollection::Ptr& actions,
 			mrpt::obs::CSensoryFrame::Ptr& SF,
-			mrpt::obs::CObservation::Ptr& obs)
+			mrpt::obs::CObservation::Ptr& obs) override
 		{
 			ASSERT_((actions && SF) || obs);
 			if (actions)

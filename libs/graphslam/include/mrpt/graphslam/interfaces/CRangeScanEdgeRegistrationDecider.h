@@ -41,11 +41,11 @@ public:
 		mrpt::graphs::TNodeID, mrpt::obs::CObservation2DRangeScan::Ptr>;
 
 	CRangeScanEdgeRegistrationDecider()=default;
-	~CRangeScanEdgeRegistrationDecider()=default;
+	~CRangeScanEdgeRegistrationDecider() override =default;
 
 protected:
-	virtual void loadParams(const std::string& source_fname);
-	virtual void printParams() const;
+	void loadParams(const std::string& source_fname) override;
+	void printParams() const override;
 	/**\brief Map for keeping track of the observation recorded at each graph
 	 * position
 	 */

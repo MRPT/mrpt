@@ -79,7 +79,7 @@ class CTimeLogger : public mrpt::system::COutputLogger
 		bool enabled = true,
 		const std::string& name = "");  //! Default constructor
 	/** Destructor */
-	virtual ~CTimeLogger();
+	~CTimeLogger() override;
 
 	// We must define these 4 because of the definition of a virtual dtor
 	// (compiler will not generate the defaults)

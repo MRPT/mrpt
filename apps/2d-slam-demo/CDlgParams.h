@@ -30,7 +30,7 @@ class CDlgParams : public wxDialog
 		wxWindow* parent, wxWindowID id = wxID_ANY,
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize);
-	virtual ~CDlgParams();
+	~CDlgParams() override;
 
 	//(*Declarations(CDlgParams)
 	wxStaticText* StaticText24;

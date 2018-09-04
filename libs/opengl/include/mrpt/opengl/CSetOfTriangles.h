@@ -210,7 +210,7 @@ class CSetOfTriangles : public CRenderizableDisplayList
 	}
 
 	/** Private, virtual destructor: only can be deleted from smart pointers */
-	virtual ~CSetOfTriangles() {}
+	~CSetOfTriangles() override {}
 };
 /** Inserts a set of triangles into the list; note that this method allows to
  * pass another CSetOfTriangles as argument. Allows call chaining.

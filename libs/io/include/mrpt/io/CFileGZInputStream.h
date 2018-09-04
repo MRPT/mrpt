@@ -42,7 +42,7 @@ class CFileGZInputStream : public CStream
 	CFileGZInputStream& operator=(const CFileGZInputStream&) = delete;
 
 	/** Dtor */
-	virtual ~CFileGZInputStream();
+	~CFileGZInputStream() override;
 
 	/** Opens the file for read.
 	 * \param fileName The file to be open in this stream

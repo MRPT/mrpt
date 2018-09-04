@@ -30,7 +30,7 @@ class CFormMotionModel : public wxDialog
 {
    public:
 	CFormMotionModel(wxWindow* parent, wxWindowID id = -1);
-	virtual ~CFormMotionModel();
+	~CFormMotionModel() override;
 
 	//(*Identifiers(CFormMotionModel)
 	static const long ID_STATICTEXT1;

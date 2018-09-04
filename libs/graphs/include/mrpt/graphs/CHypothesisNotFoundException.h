@@ -23,10 +23,10 @@ class HypothesisNotFoundException : public std::runtime_error
 	HypothesisNotFoundException(
 		mrpt::graphs::TNodeID from, mrpt::graphs::TNodeID to);
 	HypothesisNotFoundException(size_t id);
-	~HypothesisNotFoundException() noexcept;
+	~HypothesisNotFoundException() noexcept override;
 	void clear();
 	std::string getErrorMsg() const noexcept;
-	const char* what() const noexcept;
+	const char* what() const noexcept override;
 
    private:
 	mrpt::graphs::TNodeID m_from, m_to;

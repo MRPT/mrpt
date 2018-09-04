@@ -36,7 +36,7 @@ struct TUncertaintyPath : public mrpt::config::CLoadableOptions
 	TUncertaintyPath(
 		const mrpt::graphs::TNodeID& starting_node,
 		const mrpt::graphs::TNodeID& ending_node, const constraint_t& edge);
-	~TUncertaintyPath()=default;
+	~TUncertaintyPath() override =default;
 	void clear();
 	bool isEmpty() const;
 	/**\brief Assert that the current path is between the given nodeIDs.
@@ -55,8 +55,8 @@ struct TUncertaintyPath : public mrpt::config::CLoadableOptions
 	// no need to load anything..
 	void loadFromConfigFile(
 		const mrpt::config::CConfigFileBase& source,
-		const std::string& section);
-	void dumpToTextStream(std::ostream& out) const;
+		const std::string& section) override;
+	void dumpToTextStream(std::ostream& out) const override;
 	std::string getAsString() const;
 	void getAsString(std::string* str) const;
 

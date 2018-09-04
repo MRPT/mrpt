@@ -90,7 +90,7 @@ class CPosePDFGaussianInf : public CPosePDF
 
 	/** Returns the information (inverse covariance) matrix (a STATE_LEN x
 	 * STATE_LEN matrix) \sa getMean, getCovarianceAndMean */
-	virtual void getInformationMatrix(
+	void getInformationMatrix(
 		mrpt::math::CMatrixDouble33& inf) const override
 	{
 		inf = cov_inv;

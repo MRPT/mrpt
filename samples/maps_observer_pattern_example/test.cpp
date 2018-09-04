@@ -98,7 +98,7 @@ CObservation2DRangeScan getScan()
 class MyObserver : public mrpt::system::CObserver
 {
    protected:
-	void OnEvent(const mrptEvent& e)
+	void OnEvent(const mrptEvent& e) override
 	{
 		if (e.isOfType<mrptEventMetricMapClear>())
 			cout << "[MyObserver] Event received: mrptEventMetricMapClear\n";

@@ -217,7 +217,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	}
 
 	/** Destructor: */
-	virtual ~CImage();
+	~CImage() override;
 
 	/** @} */
 	// ================================================================

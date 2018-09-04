@@ -34,7 +34,7 @@ using namespace mrpt::kinematics;
 class MyObserver : public mrpt::system::CObserver
 {
    protected:
-	void OnEvent(const mrptEvent& e)
+	void OnEvent(const mrptEvent& e) override
 	{
 		if (e.isOfType<mrptEventMouseDown>())
 		{

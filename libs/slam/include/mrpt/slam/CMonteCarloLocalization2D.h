@@ -50,7 +50,7 @@ class CMonteCarloLocalization2D
 	CMonteCarloLocalization2D(size_t M = 1);
 
 	/** Destructor */
-	virtual ~CMonteCarloLocalization2D();
+	~CMonteCarloLocalization2D() override;
 
 	/** Reset the PDF to an uniformly distributed one, but only in the
 	 * free-space

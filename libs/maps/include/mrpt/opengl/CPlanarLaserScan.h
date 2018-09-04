@@ -144,7 +144,7 @@ class CPlanarLaserScan : public CRenderizableDisplayList
 	CPlanarLaserScan();
 
 	/** Private, virtual destructor: only can be deleted from smart pointers */
-	virtual ~CPlanarLaserScan() {}
+	~CPlanarLaserScan() override {}
 };
 
 }  // end namespace

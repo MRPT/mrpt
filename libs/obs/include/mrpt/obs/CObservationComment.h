@@ -31,7 +31,7 @@ class CObservationComment : public CObservation
 	CObservationComment() : text() {}
 	/** Destructor
 	  */
-	virtual ~CObservationComment() {}
+	~CObservationComment() override {}
 	/** The text block. */
 	std::string text;
 
