@@ -29,6 +29,7 @@
 #include <mrpt/poses/CPointPDFGaussian.h>
 #include <mrpt/poses/CPoint2DPDFGaussian.h>
 
+#include <memory>
 #include <set>
 #include <numeric>  // accumulate
 #include <memory>  // unique_ptr
@@ -344,8 +345,8 @@ void mrpt::slam::data_association_full_covariance(
 	if (DAT_ASOC_USE_KDTREE)
 	{
 		// Construct kd-tree for the predictions:
-		kd_tree = KDTreeMatrixPtr(new KDTreeEigenMatrixAdaptor<CMatrixDouble>(
-			length_O, Y_predictions_mean));
+		kd_tree = std::make_unique<KDTreeEigenMatrixAdaptor<CMatrixDouble>>(
+			length_O, Y_predictions_mean);
 	}
 
 	// Initialize with the worst possible distance:

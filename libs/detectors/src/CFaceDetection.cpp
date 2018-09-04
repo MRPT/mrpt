@@ -700,8 +700,7 @@ bool CFaceDetection::checkIfFaceRegions(CObservation3DRangeScan* face)
 
 	if (regions2[0].size() > 0)
 	{
-		for (auto & i : regions2[0])
-			oldPointsX1.push_back(i.x);
+		for (auto& i : regions2[0]) oldPointsX1.push_back(i.x);
 
 		middle1 = floor((double)oldPointsX1.size() / 2);
 		nth_element(
@@ -713,8 +712,7 @@ bool CFaceDetection::checkIfFaceRegions(CObservation3DRangeScan* face)
 
 	if (regions2[2].size() > 0)
 	{
-		for (auto & i : regions2[2])
-			oldPointsX2.push_back(i.x);
+		for (auto& i : regions2[2]) oldPointsX2.push_back(i.x);
 
 		middle2 = floor((double)oldPointsX2.size() / 2);
 		nth_element(
@@ -1637,7 +1635,7 @@ void CFaceDetection::experimental_viewRegions(
 	vector<float> xs, ys, zs;
 
 	for (size_t i = 0; i < 9; i++)
-		for (const auto & j : regions[i])
+		for (const auto& j : regions[i])
 		{
 			xs.push_back(j.x);
 			ys.push_back(j.y);

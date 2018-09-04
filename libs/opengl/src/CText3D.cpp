@@ -26,9 +26,8 @@ CText3D::Ptr CText3D::Create(
 	const mrpt::opengl::TOpenGLFontStyle text_style, const double text_spacing,
 	const double text_kerning)
 {
-	return CText3D::Ptr(
-		new CText3D(
-			str, fontName, scale, text_style, text_spacing, text_kerning));
+	return CText3D::Create(
+		str, fontName, scale, text_style, text_spacing, text_kerning);
 }
 /*---------------------------------------------------------------
 							Constructor

@@ -59,8 +59,7 @@ void mrpt::topography::path_from_rtk_gps(
 #if MRPT_HAS_WXWIDGETS
 	// Use a smart pointer so we are safe against exceptions:
 	std::unique_ptr<wxBusyCursor> waitCursorPtr;
-	if (isGUI)
-		waitCursorPtr = std::unique_ptr<wxBusyCursor>(new wxBusyCursor());
+	if (isGUI) waitCursorPtr = std::make_unique<wxBusyCursor>();
 #else
 	MRPT_UNUSED_PARAM(isGUI);
 #endif
@@ -339,7 +338,7 @@ void mrpt::topography::path_from_rtk_gps(
 				std::map<std::string, CObservationGPS::Ptr>& GPS = it->second;
 
 				// Check if any in "lstGPSLabels" is missing here:
-				for (const auto & lstGPSLabel : lstGPSLabels)
+				for (const auto& lstGPSLabel : lstGPSLabels)
 				{
 					// For each GPS in the current timestamp:
 					bool fnd = (GPS.find(lstGPSLabel) != GPS.end());
@@ -366,8 +365,7 @@ void mrpt::topography::path_from_rtk_gps(
 						if (mrpt::system::timeDifference(
 								GPS_b1->timestamp, GPS_a1->timestamp) < 0.5)
 						{
-							CObservationGPS::Ptr new_gps = CObservationGPS::Ptr(
-								new CObservationGPS(*GPS_a1));
+							auto new_gps = CObservationGPS::Create(*GPS_a1);
 							new_gps->sensorLabel = lstGPSLabel;
 
 							// cout <<
@@ -646,7 +644,7 @@ void mrpt::topography::path_from_rtk_gps(
 	{
 		string bestLabel;
 		size_t bestNum = 0;
-		for (auto & GPS_RTK_read : GPS_RTK_reads)
+		for (auto& GPS_RTK_read : GPS_RTK_reads)
 		{
 			if (GPS_RTK_read.second > bestNum)
 			{
@@ -665,7 +663,7 @@ void mrpt::topography::path_from_rtk_gps(
 
 		// map<TTimeStamp,TPoint3D> best_gps_path;		// time -> 3D local
 		// coords
-		for (auto & i : outInfoTemp.best_gps_path)
+		for (auto& i : outInfoTemp.best_gps_path)
 		{
 			TPoint3D P;
 			TPoint3D& pl = i.second;

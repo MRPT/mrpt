@@ -87,7 +87,8 @@ class MyArtProvider : public wxArtProvider
 {
    protected:
 	wxBitmap CreateBitmap(
-		const wxArtID& id, const wxArtClient& client, const wxSize& size) override;
+		const wxArtID& id, const wxArtClient& client,
+		const wxSize& size) override;
 };
 
 // CreateBitmap function
@@ -994,8 +995,7 @@ void _DSceneViewerFrame::loadFromFile(
 			CCamera::Ptr cam = openGLSceneRef->getByClass<CCamera>();
 
 			bool camIsCCameraObj = cam ? true : false;
-			if (!camIsCCameraObj)
-				cam = CCamera::Ptr(new CCamera(view->getCamera()));
+			if (!camIsCCameraObj) cam = CCamera::Create(view->getCamera());
 
 			m_canvas->setCameraPointing(
 				cam->getPointingAtX(), cam->getPointingAtY(),
@@ -2015,7 +2015,7 @@ void _DSceneViewerFrame::OnmnuSelectByClassSelected(wxCommandEvent& event)
 		init_list = false;
 		vector<const TRuntimeClassId*> all_mrpt_classes =
 			mrpt::rtti::getAllRegisteredClasses();
-		for (auto & all_mrpt_classe : all_mrpt_classes)
+		for (auto& all_mrpt_classe : all_mrpt_classes)
 			if (all_mrpt_classe->derivedFrom(CLASS_ID(CRenderizable)))
 				glClassNames.Add(_U(all_mrpt_classe->className));
 	}
@@ -2055,7 +2055,7 @@ void _DSceneViewerFrame::OnmnuSelectByClassSelected(wxCommandEvent& event)
 // On selection: delete
 void _DSceneViewerFrame::OnmnuSelectionDeleteSelected(wxCommandEvent& event)
 {
-	for (auto & m_selected_gl_object : m_selected_gl_objects)
+	for (auto& m_selected_gl_object : m_selected_gl_objects)
 		m_selected_gl_object.reset();
 	Refresh(false);
 }
@@ -2069,7 +2069,7 @@ void _DSceneViewerFrame::OnmnuSelectionScaleSelected(wxCommandEvent& event)
 	std::string sScale = std::string(ssScale.mb_str());
 	const float s = atof(sScale.c_str());
 
-	for (auto & m_selected_gl_object : m_selected_gl_objects)
+	for (auto& m_selected_gl_object : m_selected_gl_objects)
 		if (m_selected_gl_object)
 		{
 			const float sx = m_selected_gl_object->getScaleX();

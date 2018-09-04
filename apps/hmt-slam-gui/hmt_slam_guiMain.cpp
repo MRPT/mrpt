@@ -30,6 +30,8 @@
 
 #include <mrpt/system/filesystem.h>
 
+#include <memory>
+
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::hmtslam;
@@ -847,7 +849,7 @@ hmt_slam_guiFrame::hmt_slam_guiFrame(wxWindow* parent, wxWindowID id)
 
 	cout << "Initializing HMT-SLAM visual application...\n";
 
-	m_hmtslam.reset(new CHMTSLAM());
+	m_hmtslam = std::make_unique<CHMTSLAM>();
 
 	cout << "Initializing HMT-SLAM visual application DONE.\n";
 

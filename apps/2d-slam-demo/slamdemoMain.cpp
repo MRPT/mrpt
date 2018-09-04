@@ -32,6 +32,8 @@
 #include <mrpt/random.h>
 #include <mrpt/obs/CObservationComment.h>
 #include <mrpt/gui/about_box.h>
+
+#include <memory>
 #include <mrpt/serialization/CArchive.h>
 
 using namespace std;
@@ -65,7 +67,8 @@ class MyArtProvider : public wxArtProvider
 {
    protected:
 	wxBitmap CreateBitmap(
-		const wxArtID& id, const wxArtClient& client, const wxSize& size) override;
+		const wxArtID& id, const wxArtClient& client,
+		const wxSize& size) override;
 };
 wxBitmap MyArtProvider::CreateBitmap(
 	const wxArtID& id, const wxArtClient& client, const wxSize& size)
@@ -1308,7 +1311,7 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 	if (alsoGTMap)
 	{
 		vector<float> xs, ys;
-		for (auto & landmark : m_GT_map.landmarks)
+		for (auto& landmark : m_GT_map.landmarks)
 		{
 			xs.push_back(landmark.pose_mean.x);
 			ys.push_back(landmark.pose_mean.y);
@@ -1341,8 +1344,7 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 						   (unsigned)m_lastObservation.sensedData.size())
 						   .c_str()));
 
-	for (auto & m_lyObsLM : m_lyObsLMs)
-		plotObs->DelLayer(m_lyObsLM, true);
+	for (auto& m_lyObsLM : m_lyObsLMs) plotObs->DelLayer(m_lyObsLM, true);
 	m_lyObsLMs.clear();
 
 	CMatrixDouble22 NOISE;
@@ -1350,14 +1352,12 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 	NOISE(1, 1) = square(m_SLAM.options.std_sensor_yaw);
 
 	// Create an ellipse for each observed landmark:
-	for (auto & i : m_lastObservation.sensedData)
+	for (auto& i : m_lastObservation.sensedData)
 	{
 		mpCovarianceEllipse* cov = new mpCovarianceEllipse();
 		cov->SetPen(wxPen(wxColour(255, 0, 0), 2));
 		if (i.landmarkID != INVALID_LANDMARK_ID)
-			cov->SetName(wxString::Format(
-				_("#%u"),
-				(unsigned)i.landmarkID));
+			cov->SetName(wxString::Format(_("#%u"), (unsigned)i.landmarkID));
 		else
 			cov->SetName(_("?"));
 
@@ -1411,7 +1411,7 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 			estRobotPose.mean.phi());
 
 		// Delete old covs:
-		for (auto & m_lyMapEllipse : m_lyMapEllipses)
+		for (auto& m_lyMapEllipse : m_lyMapEllipses)
 			plotMap->DelLayer(m_lyMapEllipse, true);
 		m_lyMapEllipses.clear();
 
@@ -1574,7 +1574,7 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 		m_lyICvisibleRange->setPoints(xs_area_RG, ys_area_RG);
 
 		// Delete old ellipses:
-		for (auto & m_lyIC_LM : m_lyIC_LMs)
+		for (auto& m_lyIC_LM : m_lyIC_LMs)
 			plotIndivCompat->DelLayer(m_lyIC_LM, true);
 		m_lyIC_LMs.clear();
 
@@ -1982,8 +1982,7 @@ void slamdemoFrame::executeOneStep()
 		double executionTime;
 		static CTicTac tictac;
 		{
-			CActionCollection::Ptr act =
-				mrpt::make_aligned_shared<CActionCollection>();
+			auto act = CActionCollection::Create();
 			CActionRobotMovement2D actmov;
 			CActionRobotMovement2D::TMotionModelOptions odo_opts;
 			odo_opts.modelSelection = CActionRobotMovement2D::mmGaussian;
@@ -2012,12 +2011,11 @@ void slamdemoFrame::executeOneStep()
 			actmov.timestamp = mrpt::system::now();
 			act->insert(actmov);
 
-			CSensoryFrame::Ptr sf = mrpt::make_aligned_shared<CSensoryFrame>();
+			CSensoryFrame::Ptr sf = CSensoryFrame::Create();
 			m_lastObservation.timestamp = mrpt::system::now();
 			m_lastObservation.sensorLabel = "SIMUL_2D_RB";
 
-			sf->insert(CObservationBearingRange::Ptr(
-				new CObservationBearingRange(m_lastObservation)));
+			sf->insert(CObservationBearingRange::Create(m_lastObservation));
 
 			tictac.Tic();
 
@@ -2375,8 +2373,7 @@ void slamdemoFrame::OnMenuSaveFilterState(wxCommandEvent& event)
 		string filName(dialog.GetPath().mb_str());
 
 		// Save as 3D objects:
-		mrpt::opengl::CSetOfObjects::Ptr obj3D =
-			mrpt::make_aligned_shared<mrpt::opengl::CSetOfObjects>();
+		auto obj3D = mrpt::opengl::CSetOfObjects::Create();
 		m_SLAM.getAs3DObject(obj3D);
 
 		mrpt::opengl::COpenGLScene scene;

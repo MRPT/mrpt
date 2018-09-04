@@ -14,6 +14,7 @@
 #include <mrpt/serialization/CMessage.h>
 #include <mrpt/math/ops_vectors.h>
 #include <iostream>
+#include <memory>
 #include <thread>
 
 using namespace mrpt::math;
@@ -130,9 +131,9 @@ CStream* CBoardENoses::checkConnectionAndConnect()
 	if (!m_stream_FTDI && !m_stream_SERIAL)
 	{
 		if (!m_COM_port.empty())
-			m_stream_SERIAL.reset(new mrpt::comms::CSerialPort);
+			m_stream_SERIAL = std::make_unique<mrpt::comms::CSerialPort>();
 		else
-			m_stream_FTDI.reset(new mrpt::comms::CInterfaceFTDI);
+			m_stream_FTDI = std::make_unique<mrpt::comms::CInterfaceFTDI>();
 	}
 
 	if (m_stream_FTDI)

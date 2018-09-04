@@ -120,10 +120,10 @@ CWindowDialogPlots::CWindowDialogPlots(
 	// Increment number of windows:
 	// int winCount =
 	WxSubsystem::CWXMainFrame::notifyWindowCreation();
-// cout << "[CWindowDialogPlots] Notifying new window: " << winCount <<
-// endl;
+	// cout << "[CWindowDialogPlots] Notifying new window: " << winCount <<
+	// endl;
 
-// this->Iconize(false);
+	// this->Iconize(false);
 
 #if 0
 	// JL: TEST CODE: This is the seed of the future new implementation based on wxFreeChart...
@@ -223,10 +223,9 @@ void CWindowDialogPlots::OnResize(wxSizeEvent& event)
 	{
 		try
 		{
-			m_winPlots->publishEvent(
-				mrptEventWindowResize(
-					m_winPlots, event.GetSize().GetWidth(),
-					event.GetSize().GetHeight()));
+			m_winPlots->publishEvent(mrptEventWindowResize(
+				m_winPlots, event.GetSize().GetWidth(),
+				event.GetSize().GetHeight()));
 		}
 		catch (...)
 		{
@@ -242,10 +241,9 @@ void CWindowDialogPlots::OnMouseDown(wxMouseEvent& event)
 	{
 		try
 		{
-			m_winPlots->publishEvent(
-				mrptEventMouseDown(
-					m_winPlots, TPixelCoord(event.GetX(), event.GetY()),
-					event.LeftDown(), event.RightDown()));
+			m_winPlots->publishEvent(mrptEventMouseDown(
+				m_winPlots, TPixelCoord(event.GetX(), event.GetY()),
+				event.LeftDown(), event.RightDown()));
 		}
 		catch (...)
 		{
@@ -296,11 +294,9 @@ void CWindowDialogPlots::OnMouseMove(wxMouseEvent& event)
 	{
 		try
 		{
-			m_winPlots->publishEvent(
-				mrptEventMouseMove(
-					m_winPlots,
-					mrpt::img::TPixelCoord(event.GetX(), event.GetY()),
-					event.LeftDown(), event.RightDown()));
+			m_winPlots->publishEvent(mrptEventMouseMove(
+				m_winPlots, mrpt::img::TPixelCoord(event.GetX(), event.GetY()),
+				event.LeftDown(), event.RightDown()));
 		}
 		catch (...)
 		{
@@ -676,9 +672,8 @@ CDisplayWindowPlots::Ptr CDisplayWindowPlots::Create(
 	const std::string& windowCaption, unsigned int initialWindowWidth,
 	unsigned int initialWindowHeight)
 {
-	return CDisplayWindowPlots::Ptr(
-		new CDisplayWindowPlots(
-			windowCaption, initialWindowWidth, initialWindowHeight));
+	return CDisplayWindowPlots::Create(
+		windowCaption, initialWindowWidth, initialWindowHeight);
 }
 /*---------------------------------------------------------------
 					Constructor

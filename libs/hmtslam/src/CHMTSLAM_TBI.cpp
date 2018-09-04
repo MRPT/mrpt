@@ -14,6 +14,8 @@
 #include <mrpt/io/CFileStream.h>
 #include <mrpt/system/os.h>
 
+#include <memory>
+
 using namespace mrpt::slam;
 using namespace mrpt::hmtslam;
 using namespace mrpt::random;
@@ -113,7 +115,7 @@ CHMTSLAM::TMessageLSLAMfromTBI::Ptr CHMTSLAM::TBI_main_method(
 	std::lock_guard<std::mutex>(obj->m_map_cs);
 
 	TMessageLSLAMfromTBI::Ptr msg =
-		TMessageLSLAMfromTBI::Ptr(new TMessageLSLAMfromTBI());
+		std::make_shared<TMessageLSLAMfromTBI>();
 
 	// Fill out easy data:
 	msg->hypothesisID = LMH_ID;

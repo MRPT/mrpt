@@ -27,7 +27,7 @@ IMPLEMENTS_SERIALIZABLE(CTexturedPlane, CTexturedObject, mrpt::opengl)
 CTexturedPlane::Ptr CTexturedPlane::Create(
 	float x_min, float x_max, float y_min, float y_max)
 {
-	return CTexturedPlane::Ptr(new CTexturedPlane(x_min, x_max, y_min, y_max));
+	return CTexturedPlane::Create(x_min, x_max, y_min, y_max);
 }
 /*---------------------------------------------------------------
 							CTexturedPlane

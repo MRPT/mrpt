@@ -140,7 +140,7 @@ void CSimpleMap::insert(
 
 	TPosePDFSensFramePair pair;
 
-	pair.second = CSensoryFrame::Ptr(new CSensoryFrame(in_SF));
+	pair.second = CSensoryFrame::Create(in_SF);
 	pair.first = CPose3DPDF::Ptr(static_cast<CPose3DPDF*>(in_posePDF->clone()));
 
 	m_posesObsPairs.push_back(pair);
@@ -157,7 +157,7 @@ void CSimpleMap::insert(const CPosePDF* in_posePDF, const CSensoryFrame& in_SF)
 
 	TPosePDFSensFramePair pair;
 
-	pair.second = CSensoryFrame::Ptr(new CSensoryFrame(in_SF));
+	pair.second = CSensoryFrame::Create(in_SF);
 	pair.first = CPose3DPDF::Ptr(static_cast<CPose3DPDF*>(in_posePDF->clone()));
 
 	m_posesObsPairs.push_back(pair);
@@ -259,7 +259,7 @@ void CSimpleMap::serializeFrom(
   ---------------------------------------------------------------*/
 void CSimpleMap::changeCoordinatesOrigin(const CPose3D& newOrigin)
 {
-	for (auto & m_posesObsPair : m_posesObsPairs)
+	for (auto& m_posesObsPair : m_posesObsPairs)
 		m_posesObsPair.first->changeCoordinatesReference(newOrigin);
 }
 

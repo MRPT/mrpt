@@ -10,6 +10,7 @@
 #include "reactive_navigator_demoMain.h"
 #include <wx/msgdlg.h>
 #include <wx/textdlg.h>
+#include <memory>
 
 //(*InternalHeaders(reactive_navigator_demoframe)
 #include <wx/artprov.h>
@@ -41,7 +42,8 @@ class MyArtProvider : public wxArtProvider
 {
    protected:
 	wxBitmap CreateBitmap(
-		const wxArtID& id, const wxArtClient& client, const wxSize& size) override;
+		const wxArtID& id, const wxArtClient& client,
+		const wxSize& size) override;
 };
 
 // CreateBitmap function
@@ -182,9 +184,8 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 	SetClientSize(wxSize(893, 576));
 	{
 		wxIcon FrameIcon;
-		FrameIcon.CopyFromBitmap(
-			wxArtProvider::GetBitmap(
-				wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")), wxART_OTHER));
+		FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(
+			wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")), wxART_OTHER));
 		SetIcon(FrameIcon);
 	}
 	FlexGridSizer1 = new wxFlexGridSizer(1, 2, 0, 0);
@@ -469,8 +470,9 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 	FlexGridSizer7->AddGrowableRow(0);
 	edParamsGeneral = new wxTextCtrl(
 		pnParamsGeneral, ID_TEXTCTRL1, wxEmptyString, wxDefaultPosition,
-		wxDefaultSize, wxTE_PROCESS_ENTER | wxTE_PROCESS_TAB | wxTE_MULTILINE |
-						   wxHSCROLL | wxVSCROLL | wxALWAYS_SHOW_SB,
+		wxDefaultSize,
+		wxTE_PROCESS_ENTER | wxTE_PROCESS_TAB | wxTE_MULTILINE | wxHSCROLL |
+			wxVSCROLL | wxALWAYS_SHOW_SB,
 		wxDefaultValidator, _T("ID_TEXTCTRL1"));
 	edParamsGeneral->SetMinSize(wxSize(-1, 100));
 	wxFont edParamsGeneralFont(
@@ -930,12 +932,14 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 		(wxObjectEventFunction)&reactive_navigator_demoframe::Onplot3DMouseMove,
 		0, this);
 	m_plot3D->Connect(
-		wxEVT_LEFT_DOWN, (wxObjectEventFunction)&reactive_navigator_demoframe::
-							 Onplot3DMouseClick,
+		wxEVT_LEFT_DOWN,
+		(wxObjectEventFunction)&reactive_navigator_demoframe::
+			Onplot3DMouseClick,
 		0, this);
 	m_plot3D->Connect(
-		wxEVT_RIGHT_DOWN, (wxObjectEventFunction)&reactive_navigator_demoframe::
-							  Onplot3DMouseClick,
+		wxEVT_RIGHT_DOWN,
+		(wxObjectEventFunction)&reactive_navigator_demoframe::
+			Onplot3DMouseClick,
 		0, this);
 
 	mnuViewMaxRange->Check(true);
@@ -1322,9 +1326,8 @@ bool reactive_navigator_demoframe::reinitSimulator()
 		}
 		case 1:
 		{
-			m_navMethod.reset(
-				new mrpt::nav::CNavigatorManualSequence(
-					*m_robotSimul2NavInterface));
+			m_navMethod = std::make_unique<mrpt::nav::CNavigatorManualSequence>(
+				*m_robotSimul2NavInterface);
 			cfg.setContent(std::string(edManualSeqs->GetValue().mb_str()));
 			break;
 		}
@@ -1599,10 +1602,10 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 			{
 				// Draw path:
 				const int selected_k =
-					is_NOP_op ? lfr.ptg_last_k_NOP
-							  : ptg->alpha2index(
-									lfr.infoPerPTG[lfr.nSelectedPTG]
-										.desiredDirection);
+					is_NOP_op
+						? lfr.ptg_last_k_NOP
+						: ptg->alpha2index(lfr.infoPerPTG[lfr.nSelectedPTG]
+											   .desiredDirection);
 				float max_dist = ptg->getRefDistance();
 				gl_robot_ptg_prediction->clear();
 
@@ -1661,8 +1664,9 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 
 			edWpLog = new wxTextCtrl(
 				wxFrWpInfo, wxNewId(), wxEmptyString, wxDefaultPosition,
-				wxSize(400, 150), wxTE_MULTILINE | wxTE_READONLY |
-									  wxTE_DONTWRAP | wxALWAYS_SHOW_SB,
+				wxSize(400, 150),
+				wxTE_MULTILINE | wxTE_READONLY | wxTE_DONTWRAP |
+					wxALWAYS_SHOW_SB,
 				wxDefaultValidator, _T("ID_TEXTCTRL_WP"));
 			edWpLog->SetMinSize(wxSize(190, 60));
 			wxFont edLogFont(
@@ -1789,9 +1793,9 @@ void reactive_navigator_demoframe::Onplot3DMouseMove(wxMouseEvent& event)
 						cy < (int)m_gridMap.getSizeY())
 					{
 						m_gridMap.setCell(
-							cx, cy, m_cursorPickState == cpsDrawObstacles
-										? 0.01f
-										: 0.99f);
+							cx, cy,
+							m_cursorPickState == cpsDrawObstacles ? 0.01f
+																  : 0.99f);
 						updateMap3DView();
 						m_plot3D->Refresh();
 					}
@@ -1835,10 +1839,9 @@ void reactive_navigator_demoframe::Onplot3DMouseClick(wxMouseEvent& event)
 					this->edWayPtHeading->GetValue().ToDouble(&heading);
 					heading *= M_PI / 180;
 				}
-				m_waypoints_clicked.waypoints.push_back(
-					TWaypoint(
-						m_curCursorPos.x, m_curCursorPos.y,
-						0.2 /* allowed dist */, allow_skip_wps, heading));
+				m_waypoints_clicked.waypoints.push_back(TWaypoint(
+					m_curCursorPos.x, m_curCursorPos.y, 0.2 /* allowed dist */,
+					allow_skip_wps, heading));
 			}
 			if (event.ButtonIsDown(wxMOUSE_BTN_RIGHT))
 			{
@@ -1887,9 +1890,8 @@ void reactive_navigator_demoframe::Onplot3DMouseClick(wxMouseEvent& event)
 		case cpsPlaceRobot:
 			if (event.ButtonIsDown(wxMOUSE_BTN_LEFT))
 			{
-				m_robotSimul->setCurrentGTPose(
-					mrpt::math::TPose2D(
-						m_curCursorPos.x, m_curCursorPos.y, .0));
+				m_robotSimul->setCurrentGTPose(mrpt::math::TPose2D(
+					m_curCursorPos.x, m_curCursorPos.y, .0));
 
 				btnPlaceRobot->SetValue(false);
 				btnPlaceRobot->Refresh();
@@ -2124,8 +2126,9 @@ void reactive_navigator_demoframe::OnrbKinTypeSelect(wxCommandEvent& event)
 			mrpt::kinematics::CVehicleSimul_DiffDriven* sim =
 				new mrpt::kinematics::CVehicleSimul_DiffDriven();
 			m_robotSimul.reset(sim);
-			m_robotSimul2NavInterface.reset(
-				new MyRobot2NavInterface_Diff(*sim, m_latest_obstacles));
+			m_robotSimul2NavInterface =
+				std::make_unique<MyRobot2NavInterface_Diff>(
+					*sim, m_latest_obstacles);
 			// Opengl viz:
 			create_viz_robot_diff(
 				*std::dynamic_pointer_cast<mrpt::opengl::CSetOfObjects>(
@@ -2139,8 +2142,9 @@ void reactive_navigator_demoframe::OnrbKinTypeSelect(wxCommandEvent& event)
 			mrpt::kinematics::CVehicleSimul_Holo* sim =
 				new mrpt::kinematics::CVehicleSimul_Holo();
 			m_robotSimul.reset(sim);
-			m_robotSimul2NavInterface.reset(
-				new MyRobot2NavInterface_Holo(*sim, m_latest_obstacles));
+			m_robotSimul2NavInterface =
+				std::make_unique<MyRobot2NavInterface_Holo>(
+					*sim, m_latest_obstacles);
 			// Opengl viz:
 			create_viz_robot_holo(
 				*std::dynamic_pointer_cast<mrpt::opengl::CSetOfObjects>(

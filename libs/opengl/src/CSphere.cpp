@@ -26,7 +26,7 @@ IMPLEMENTS_SERIALIZABLE(CSphere, CRenderizableDisplayList, mrpt::opengl)
 CSphere::Ptr CSphere::Create(
 	float radius, int nDivsLongitude, int nDivsLatitude)
 {
-	return CSphere::Ptr(new CSphere(radius, nDivsLongitude, nDivsLatitude));
+	return CSphere::Create(radius, nDivsLongitude, nDivsLatitude);
 }
 /*---------------------------------------------------------------
 							render_dl

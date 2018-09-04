@@ -16,6 +16,8 @@
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/math/CSparseMatrix.h>
 
+#include <memory>
+
 namespace mrpt::graphslam
 {
 /** Optimize a graph of pose constraints using the Sparse Pose Adjustment (SPA)
@@ -375,8 +377,10 @@ void optimize_graph_spa_levmarq(
 					// Take references to both Jacobians (wrt pose "i" and pose
 					// "j"), taking into account the possible
 					// switch in their order:
-					const typename gst::matrix_VxV_t& J1 = itJacobPair->second.first;
-					const typename gst::matrix_VxV_t& J2 = itJacobPair->second.second;
+					const typename gst::matrix_VxV_t& J1 =
+						itJacobPair->second.first;
+					const typename gst::matrix_VxV_t& J2 =
+						itJacobPair->second.second;
 
 					// Is "i" a free (to be optimized) node? -> Ji^t * Inf *  Ji
 					if (is_i_free_node)
@@ -523,8 +527,7 @@ void optimize_graph_spa_levmarq(
 		{
 			profiler.enter("optimize_graph_spa_levmarq.sp_H:chol");
 			if (!ptrCh.get())
-				ptrCh = SparseCholeskyDecompPtr(
-					new CSparseMatrix::CholeskyDecomp(sp_H));
+				ptrCh = std::make_unique<CSparseMatrix::CholeskyDecomp>(sp_H);
 			else
 				ptrCh.get()->update(sp_H);
 			profiler.leave("optimize_graph_spa_levmarq.sp_H:chol");
