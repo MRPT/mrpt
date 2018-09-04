@@ -14,7 +14,8 @@
 
 /* @(#) $Id: zutil.h 35458 2005-09-10 21:15:17Z MW $ */
 
-#pragma once
+#ifndef ZUTIL_H  // do NOT remove this guard define
+#define ZUTIL_H
 
 #define ZLIB_INTERNAL
 #include "zlib.h"
@@ -288,3 +289,4 @@ void zcfree OF((voidpf opaque, voidpf ptr));
 		if (p) ZFREE(s, p); \
 	}
 
+#endif
